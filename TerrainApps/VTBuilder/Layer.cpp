@@ -18,6 +18,7 @@
 #include "StructLayer.h"
 #include "VegLayer.h"
 #include "TransitLayer.h"
+#include "TowerLayer.h"
 #include "RawLayer.h"
 
 char *vtLayer::LayerTypeName[LAYER_TYPES] =
@@ -29,7 +30,8 @@ char *vtLayer::LayerTypeName[LAYER_TYPES] =
 	"Structure",
 	"Water",
 	"Vegetation",
-	"Transit"
+	"Transit",
+	"Utility"
 };
 
 char *vtLayer::LayerFileExtension[LAYER_TYPES] =
@@ -41,7 +43,8 @@ char *vtLayer::LayerFileExtension[LAYER_TYPES] =
 	".vtst",
 	".hyd",
 	".vf",
-	".xml"
+	".xml",
+	".utl"
 };
 
 
@@ -220,6 +223,9 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 		break;
 	case LT_RAW:
 		pLayer = new vtRawLayer();
+		break;
+	case LT_UTILITY:
+		pLayer = new vtTowerLayer();
 		break;
 	case LT_WATER:
 		pLayer = new vtWaterLayer();

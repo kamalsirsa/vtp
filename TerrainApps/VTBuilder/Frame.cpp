@@ -27,6 +27,7 @@
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "StructLayer.h"
+#include "TowerLayer.h"
 // Dialogs
 #include "ElevDlg.h"
 
@@ -75,6 +76,8 @@ static char *dialog5 = NULL;
 
 #  include "select.xpm"
 #  include "str_add_linear.xpm"
+
+#  include "twr_edit.xpm"
 
 #  include "view_hand.xpm"
 #  include "view_mag.xpm"
@@ -287,6 +290,13 @@ void MainFrame::RefreshToolbar()
 		ADD_TOOL(ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), true);
 		ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Features"), true);
 		break;
+	case LT_UTILITY:
+		toolBar_main->AddSeparator();
+		ADD_TOOL(ID_TOWER_ADD,wxBITMAP(rd_select_node), _("Add Tower"), true);
+		toolBar_main->AddSeparator();
+		ADD_TOOL(ID_TOWER_SELECT,wxBITMAP(select),_("Select Towers"), true);
+		ADD_TOOL(ID_TOWER_EDIT, wxBITMAP(twr_edit), _("Edit Towers"),true);
+		break;
 	}
 	toolBar_main->Realize();
 
@@ -295,6 +305,7 @@ void MainFrame::RefreshToolbar()
 //	menuBar->EnableTop(6, lt == LT_VEG);
 	menuBar->EnableTop(7, lt == LT_STRUCTURE);
 	menuBar->EnableTop(8, lt == LT_RAW);
+	menuBar->EnableTop(9, lt == LT_UTILITY);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -336,6 +347,12 @@ void MainFrame::LoadLayer(const wxString &fname)
 		vtStructureLayer *pSL = new vtStructureLayer();
 		if (pSL->Load(fname))
 			pLayer = pSL;
+	}
+	if (ext.CmpNoCase("utl") == 0)
+	{
+		vtTowerLayer *pTR = new vtTowerLayer();
+		if(pTR->Load(fname))
+			pLayer = pTR;
 	}
 	if (ext.CmpNoCase("shp") == 0)
 	{
@@ -473,6 +490,9 @@ void MainFrame::SetActiveLayer(vtLayer *lp, bool refresh)
 			m_pView->SetMode(LB_Road);
 
 		if (lp->GetType() == LT_STRUCTURE && last != LT_STRUCTURE)
+			m_pView->SetMode(LB_FSelect);
+
+		if (lp->GetType() == LT_UTILITY && last != LT_UTILITY)
 			m_pView->SetMode(LB_FSelect);
 	}
 }

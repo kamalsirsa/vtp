@@ -228,6 +228,14 @@ SOURCE=.\StructLayer.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\TowerDLG.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\TowerLayer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\TransitLayer.cpp
 # End Source File
 # Begin Source File
@@ -308,7 +316,7 @@ SOURCE=.\ExtentDlg.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\frame.h
+SOURCE=.\Frame.h
 # End Source File
 # Begin Source File
 
@@ -373,6 +381,14 @@ SOURCE=.\statusbar.h
 # Begin Source File
 
 SOURCE=.\StructLayer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TowerDLG.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TowerLayer.h
 # End Source File
 # Begin Source File
 

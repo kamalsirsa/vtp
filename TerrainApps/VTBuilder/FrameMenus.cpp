@@ -24,12 +24,14 @@
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "StructLayer.h"
+#include "TowerLayer.h"
 // Dialogs
 #include "ElevDlg.h"
 #include "ExtentDlg.h"
 #include "LayerPropDlg.h"
 #include "ProjectionDlg.h"
 #include "DistribVegDlg.h"
+#include "TowerDLG.h"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
@@ -124,6 +126,14 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_UPDATE_UI(ID_ELEV_SHADING,		MainFrame::OnUpdateElevShading)
 	EVT_UPDATE_UI(ID_ELEV_HIDE,			MainFrame::OnUpdateElevHide)
 	EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateExportBitmap)
+
+	EVT_MENU(ID_TOWER_ADD,				MainFrame::OnTowerAdd)
+	EVT_MENU(ID_TOWER_SELECT,			MainFrame::OnTowerSelect)
+	EVT_MENU(ID_TOWER_EDIT,				MainFrame::OnTowerEdit)
+
+	EVT_UPDATE_UI(ID_TOWER_ADD,			MainFrame::OnUpdateTowerAdd)
+	EVT_UPDATE_UI(ID_TOWER_SELECT,		MainFrame::OnUpdateTowerSelect)
+	EVT_UPDATE_UI(ID_TOWER_EDIT,		MainFrame::OnUpdateTowerEdit)
 
 	EVT_MENU(ID_VEG_PLANTS,				MainFrame::OnVegPlants)
 	EVT_MENU(ID_VEG_BIOREGIONS,			MainFrame::OnVegBioregions)
@@ -234,7 +244,14 @@ void MainFrame::CreateMenus()
 	roadMenu->AppendSeparator();
 	roadMenu->Append(ID_ROAD_CLEAN, "Clean RoadMap", "Clean");
 
-	// Elevation (5)
+	// Utilities(5)
+	utilityMenu = new wxMenu;
+	utilityMenu->Append(ID_TOWER_ADD, "Add a Transmission Tower", "Add a Transmission Tower",true);
+	utilityMenu->AppendSeparator();
+	utilityMenu->Append(ID_TOWER_SELECT, "Select Utility Layer", "Select Utility Layer",true);
+	utilityMenu->Append(ID_TOWER_EDIT, "Edit Transmission Towers", "Edit Transmission Towers",true);
+
+	// Elevation (6)
 	elevMenu = new wxMenu;
 	elevMenu->Append(ID_ELEV_SELECT, "Select Elevation Layer", "Select Elevation Layer", true);
 	elevMenu->AppendSeparator();
@@ -246,35 +263,38 @@ void MainFrame::CreateMenus()
 //	elevMenu->AppendSeparator();
 //	elevMenu->Append(ID_AREA_EXPORT_ELEV, "&Merge Area and Export");
 
-	// Vegetation (6)
+	// Vegetation (7)
 	vegMenu = new wxMenu;
 	vegMenu->Append(ID_VEG_PLANTS, "Plants List", "View/Edit list of available plant species");
 	vegMenu->Append(ID_VEG_BIOREGIONS, "BioRegions", "View/Edit list of species & density for each BioRegion");
 //	vegMenu->Append(ID_AREA_GENERATE_VEG, "Generate");
 
-	// Structures (7)
+	// Structures (8)
 	bldMenu = new wxMenu;
 	bldMenu->Append(ID_FEATURE_SELECT, "Select Features", "Select Features", true);
 	bldMenu->Append(ID_STRUCTURE_EDIT_BLD, "Edit Buildings", "Edit Buildings", true);
 	bldMenu->Append(ID_STRUCTURE_ADD_LINEAR, "Add Linear Features", "Add Linear Features", true);
 
-	// Raw (8)
+	// Raw (9)
 	rawMenu = new wxMenu;
 	rawMenu->Append(ID_RAW_SETTYPE, "Set Entity Type", "Set Entity Type");
 	rawMenu->Append(ID_RAW_ADDPOINTS, "Add Points with Mouse", "Add points with the mouse", true);
 	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, "Add Point with Text\tCtrl+T", "Add point");
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, "Add Points with GPS", "Add points with GPS");
 
-	// Area (9)
+	// Area (10)
 	areaMenu = new wxMenu;
-	areaMenu->Append(ID_AREA_STRETCH, "Set to Extents");
-	areaMenu->Append(ID_AREA_TYPEIN, "Numeric Values");
+	areaMenu->Append(ID_AREA_STRETCH, "Set to Extents",
+		"Set the Export Area rectangle to the combined extent of all layers.");
+	areaMenu->Append(ID_AREA_TYPEIN, "Numeric Values",
+		"Set the Export Area rectangle by text entry of coordinates.");
 	areaMenu->AppendSeparator();
-	areaMenu->Append(ID_AREA_EXPORT_ELEV, "&Merge && Export Elevation");
+	areaMenu->Append(ID_AREA_EXPORT_ELEV, "&Merge && Export Elevation",
+		"Sample all elevation data within the Export Area to produce a single, new elevation.");
 	areaMenu->Append(ID_AREA_GENERATE_VEG, "Generate && Export Vegetation",
-		"Generate Vegetation File (*.vf) containg plant distribution");
+		"Generate Vegetation File (*.vf) containg plant distribution.");
 
-	// Help (10)
+	// Help (11)
 	helpMenu = new wxMenu;
     helpMenu->Append(wxID_HELP, "&About", "About VTBuilder");
 
@@ -284,6 +304,7 @@ void MainFrame::CreateMenus()
 	menuBar->Append(layerMenu, "&Layer");
 	menuBar->Append(viewMenu, "&View");
 	menuBar->Append(roadMenu, "&Roads");
+	menuBar->Append(utilityMenu, "Util&ities");
 	menuBar->Append(elevMenu, "Elev&ation");
 	menuBar->Append(vegMenu, "Veg&etation");
 	menuBar->Append(bldMenu, "&Structures");
@@ -360,6 +381,7 @@ void MainFrame::OnEditDelete(wxCommandEvent &event)
 	if (pRL && (pRL->NumSelectedNodes() != 0 || pRL->NumSelectedRoads() != 0))
 	{
 		m_pView->DeleteSelected(pRL);
+		pRL->SetModified(true);
 		return;
 	}
 	vtStructureLayer *pSL = GetActiveStructureLayer();
@@ -463,6 +485,7 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	AddType(filter, FSTRING_BT);	// elevation
 	AddType(filter, FSTRING_SHP);	// raw
 	AddType(filter, FSTRING_VTST);	// structures
+	AddType(filter, FSTRING_UTL);	//utility towers
 
 	// ask the user for a filename
 	wxFileDialog loadFile(NULL, "Open Layer", "", "", filter, wxOPEN);
@@ -1379,6 +1402,36 @@ void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 
 	event.Enable(m_PlantListDlg && m_BioRegionDlg && Density && BioMap &&
 		!m_area.IsEmpty());
+}
+
+
+//////////////////////////////
+// Utility Menu
+
+void MainFrame::OnTowerSelect(wxCommandEvent& event)
+{
+	m_pView->SetMode(LB_TowerSelect);
+
+}
+void MainFrame::OnUpdateTowerSelect(wxUpdateUIEvent &event)
+{
+	event.Check(m_pView->GetMode()== LB_TowerSelect);
+}
+void MainFrame::OnTowerEdit(wxCommandEvent& event)
+{
+	m_pView->SetMode(LB_TowerEdit);
+}
+void MainFrame::OnUpdateTowerEdit(wxUpdateUIEvent &event)
+{
+	event.Check(m_pView->GetMode() == LB_TowerEdit);
+}
+void MainFrame::OnTowerAdd(wxCommandEvent& event)
+{
+	m_pView->SetMode(LB_TowerAdd);
+}
+void MainFrame::OnUpdateTowerAdd(wxUpdateUIEvent& event)
+{
+	event.Check(m_pView->GetMode()==LB_TowerAdd);
 }
 
 

@@ -18,7 +18,7 @@
 #define FSTRING_RMF		"RMF Files (*.rmf)|*.rmf|"
 #define FSTRING_BCF		"BCF Files (*.bcf)|*.bcf|"
 
-#define FSTRING_ADF		"ArcInfo Binary Grid (*hdr.adf)|*hdr.adf|"
+#define FSTRING_ADF		"Arc Data Files (*.adf)|*.adf|"
 #define FSTRING_ASC		"ArcInfo ASCII grid (*.asc)|*.asc|"
 #define FSTRING_BIL		"ArcInfo BIL grid (*.bil)|*.bil|"
 #define FSTRING_CDF		"CDF Files (*.cdf, *.grd)|*.cdf;*.grd|"
@@ -36,6 +36,7 @@
 #define FSTRING_Surfer	"Surfer Binary Grids (*.grd)|*.grd|"
 #define FSTRING_TER		"Terragen terrain (*.ter)|*.ter|"
 #define FSTRING_TIF		"GeoTIFF Files (*.tif)|*.tif|"
+#define FSTRING_UTL		"Utility Files (*.utl)|*.utl|"
 #define FSTRING_VTST	"Structure Files (*.vtst)|*.vtst|"
 #define FSTRING_XML		"XML Files (*.xml)|*.xml|"
 
@@ -50,6 +51,7 @@ enum LayerType
 	LT_WATER,
 	LT_VEG,
 	LT_TRANSIT,
+	LT_UTILITY,
 	LAYER_TYPES
 };
 

@@ -10,10 +10,13 @@
 #include "Terrain.h"
 #include "Light.h"
 #include "Building3d.h"
+#include "Tower3d.h"
+#include "Building3d.h"
 #include "vtdata/StructArray.h"
 #include "IntersectionEngine.h"
 #include "TerrainSurface.h"
 #include "Fence3d.h"
+#include "Route.h"
 
 #define LARGEST_BLOCK_SIZE	16
 #define OCEAN_DEPTH			40.0f	// in meters
@@ -414,6 +417,121 @@ void vtTerrain::RedrawFence(vtFence3d *f)
 	f->BuildGeometry(m_pHeightField);
 }
 
+// routes
+void vtTerrain::AddRoute(vtRoute *f)
+{
+	m_pRoutes.Append(f);
+
+	// Add directly
+	m_pTerrainGroup->AddChild(f->GetGeom());
+
+	// Or add to LOD grid (much more efficient)
+//	m_pLodGrid->AppendToGrid(f->GetGeom());
+}
+
+void vtTerrain::add_routepoint_earth(vtRoute *f, const DPoint2 &epos)
+{
+	f->add_point(epos);
+	f->BuildGeometry(m_pHeightField);
+}
+
+void vtTerrain::RedrawRoute(vtRoute *f)
+{
+	f->BuildGeometry(m_pHeightField);
+}
+
+void vtTerrain::LoadRoute(vtString filename, float fRouteHeight, float fRouteSpacing
+						  , float fRouteOffL, float fRouteOffR, float fRouteStInc
+						  , vtString sRouteName)
+{
+	if(!m_Params.m_bRouteEnable 
+		|| m_Params.m_strRouteFile[0] == '\0') return; //don't load it.
+
+	vtRoute *pRoute;
+	bool stop = false;
+
+	//parse the parameter string passed in
+	char  *end;
+	char holder[40];
+	strcpy(holder, m_Params.m_strRouteFile);
+	if ((end = strstr(holder, ".p3D"))!=0)
+		holder[end-holder]='\0';
+	else return;
+	filename = m_strDataPath + "RouteData/";
+	filename += holder;
+	vtString logFile = filename+".xyz";
+	vtString p3DFile = filename+".p3D";
+
+	FILE *fplog = fopen(logFile, "r"); // m_strDatapath +
+	if (!fplog)
+		return;
+	FILE *fpp3D = fopen(p3DFile, "r"); // m_strDatapath +
+	if (!fpp3D)
+		return;
+
+	pRoute = new vtRoute(fRouteHeight, fRouteSpacing, fRouteOffL
+						, fRouteOffR, fRouteStInc, sRouteName, this);
+//	if (pRoute->TestReader(fp))
+	if (pRoute->logReader(fplog))
+	{
+		if (pRoute->p3DReader(fpp3D))
+		{
+			// Get the needed tower images
+			if (!pRoute->StructureReader(m_strDataPath + "RouteData/"))
+				return;	//error loading structures.  don't display these routes
+			AddRoute(pRoute);
+			pRoute->BuildGeometry(m_pHeightField);
+			m_pRoutes.Append(pRoute);
+
+			// Add directly
+			m_pTerrainGroup->AddChild(pRoute->GetGeom());
+		}
+		else
+			delete pRoute;
+	}
+	else //no route read
+		delete pRoute;
+
+//	while (!stop)  // not EOF
+//	{
+//		if (strncmp(buf, "Begin", 5) == 0) // begin building route
+//		{
+//			// default for now? (TODO)
+//			pRoute = new vtRoute(fRouteHeight, fRouteSpacing, fRouteOffL
+//								, fRouteOffR, fRouteStInc, sRouteName);
+//			stop = pRoute->load(fp);
+//			AddRoute(pRoute);
+//			pRoute->BuildGeometry(m_pHeightField);
+//		}
+//	}
+	fclose(fplog);
+	fclose(fpp3D);
+}
+
+void vtTerrain::SaveRoute()
+{
+	vtString route_fname = m_strDataPath;
+	route_fname += "RouteData/testsave.fmf"; // fix this
+
+	int numroutes = m_pRoutes.GetSize();
+
+	vtRoute *temproute;
+
+	FILE *fp = fopen(route_fname, "w");
+	if (fp)
+	{
+//		fwrite("FMF1.0\n", 7, 1, fp);  // header
+
+		for (int i = 0; i < numroutes; i++)  // save each route
+		{
+			temproute = m_pRoutes.GetAt(i);
+			temproute->save(fp);
+		}
+
+//		fwrite("EOF", 3, 1, fp);
+		fclose(fp);
+	}
+}
 
 /**
  * Create an "ocean plane" at sea level.
@@ -592,8 +710,19 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 	}
 }
 
+///////////////////////////////////////////////////////////////////
+//// Tranmission towers
+
+void vtTerrain::create_towers_from_UTL(vtString strTowerFile)
+{
+	if(!m_pTower.ReadUTL(strTowerFile))
+	{
+	cerr<<"UTL file not found"<<endl;;
+	}
+}
+
 //
-// Load a DSM file from the data directory
+// Load an external 3d model from the data path
 //
 vtNode *vtTerrain::LoadModel(const char *filename)
 {

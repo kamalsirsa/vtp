@@ -11,11 +11,13 @@
 #include "ScaledView.h"
 #include "vtdata/Projections.h"
 #include "vtdata/Building.h"
+#include "vtdata/Tower.h"
 
 class vtLayer;
 class vtRoadLayer;
 class vtElevLayer;
 class vtStructureLayer;
+class vtTowerLayer;
 class RoadEdit;
 
 //
@@ -38,7 +40,10 @@ enum LBMode {
 	LB_FSelect,		// select feature
 	LB_BldEdit,		// edit building
 	LB_AddLinear,	// structures: add linear features
-	LB_AddPoints	// add raw points
+	LB_AddPoints,	// add raw points
+	LB_TowerSelect,	// selectTowers
+	LB_TowerEdit,	// edit towers
+	LB_TowerAdd		// Add Tower to layer
 };
 
 // A useful class to contain an array of bools
@@ -87,6 +92,8 @@ protected:
 	void OnLeftDownEditShape(const wxMouseEvent& event);
 	void OnLeftDownAddPoint(const wxMouseEvent& event);
 	void OnLeftDownAddLinear(const wxMouseEvent& event);
+	void OnLeftDownTowerEdit(const wxMouseEvent& event);
+
 	void UpdateMove();
 	void UpdateResizeScale();
 	void UpdateRotate();
@@ -121,16 +128,19 @@ protected:
 	void OnRightDown(const wxMouseEvent& event);
 	void OnRightUp(const wxMouseEvent& event);
 
-	void OnLButtonClick();
+	void OnLButtonClick(const wxMouseEvent& event);
 	void OnLButtonDragRelease(const wxMouseEvent& event);
 	void OnLButtonClickElement(vtRoadLayer *pRL);
 	void OnLButtonClickDirection(vtRoadLayer *pRL);
 	void OnLButtonClickRoadEdit(vtRoadLayer *pRL);
 	void OnLButtonClickFeature(vtLayer *pL);
+	void OnLButtonClickTowerEdit(vtTowerLayer *TL);
+	void OnLButtonClickTowerAdd(vtTowerLayer *pTL, const DPoint2 &point);
 	void OnDblClickElement(vtRoadLayer *pRL, const DPoint2 &point);
 	void OnDblClickElement(vtStructureLayer *pSL, const DPoint2 &point);
 	void OnRightUpRoad(vtRoadLayer *pRL);
-	void OnRightUpStructure(vtStructureLayer *pBL);
+	void OnRightUpStructure(vtStructureLayer *pSL);
+	void OnRightUpUtility(vtTowerLayer *pTL);
 	void OnLeftDownRoadEdit();
 
 	void OnMouseMove(const wxMouseEvent& event);
@@ -174,6 +184,9 @@ protected:
 	bool	m_bControl;
 	bool	m_bShift;
 	bool	m_bRubber;
+
+	// Used while editing utilities
+	vtTower *m_pCurTower, m_EditTower;
 
 	// Used while editing roads
 	RoadEdit *m_pEditingRoad;

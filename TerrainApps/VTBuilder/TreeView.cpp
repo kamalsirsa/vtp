@@ -36,6 +36,7 @@ DECLARE_APP(MyApp)
 	#include "road.xpm"
 	#include "veg1.xpm"
 	#include "water.xpm"
+	#include "util.xpm"
 #endif
 
 /////////////////////////////////////////////////
@@ -73,7 +74,7 @@ void MyTreeCtrl::CreateImageList(int size)
 	m_imageListNormal = new wxImageList(size, size, TRUE);
 
 	// should correspond to TreeCtrlIcon_xxx enum
-	wxIcon icons[13];
+	wxIcon icons[14];
 	icons[0] = wxICON(file1);
 	icons[1] = wxICON(file2);
 	icons[2] = wxICON(folder1);
@@ -86,7 +87,8 @@ void MyTreeCtrl::CreateImageList(int size)
 	icons[9] = wxICON(veg1);
 	icons[10] = wxICON(water);
 	icons[11] = wxICON(transit);
-	icons[12] = wxICON(raw);
+	icons[12] = wxICON(util);
+	icons[13] = wxICON(raw);
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )
@@ -166,6 +168,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 #if SUPPORT_TRANSIT
 	wxTreeItemId transId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Transit, "Transit");
 #endif
+	wxTreeItemId utilityId = AddRootItem(MyTreeCtrl::TreeCtrlIcon_Utility, "Utilities");
 	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, "Raw");
 
 	image = TreeCtrlIcon_File;
@@ -202,6 +205,9 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 				hItem = AppendItem(transId, str, image, imageSel);
 				break;
 #endif
+			case LT_UTILITY:
+				hItem = AppendItem(utilityId, str, image, imageSel);
+				break;
 			case LT_RAW:
 				hItem = AppendItem(rawId, str, image, imageSel);
 				break;
@@ -222,6 +228,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 #if SUPPORT_TRANSIT
 	Expand(transId);
 #endif
+	Expand(utilityId);
 	Expand(rawId);
 }
 

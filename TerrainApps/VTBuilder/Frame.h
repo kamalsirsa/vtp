@@ -30,6 +30,7 @@ class vtRawLayer;
 class vtElevLayer;
 class vtRoadLayer;
 class vtStructureLayer;
+class vtTowerLayer;
 class BuilderView;
 
 class MainFrame: public wxFrame
@@ -144,6 +145,14 @@ public:
 	void OnUpdateElevHide(wxUpdateUIEvent& event);
 	void OnUpdateExportBitmap(wxUpdateUIEvent& event);
 
+	void OnTowerSelect(wxCommandEvent& event);
+	void OnTowerEdit(wxCommandEvent& event);
+	void OnTowerAdd(wxCommandEvent& event);
+
+	void OnUpdateTowerSelect(wxUpdateUIEvent& event);
+	void OnUpdateTowerEdit(wxUpdateUIEvent& event);
+	void OnUpdateTowerAdd(wxUpdateUIEvent& event);
+
 	void OnVegPlants(wxCommandEvent& event);
 	void OnVegBioregions(wxCommandEvent& event);
 
@@ -205,6 +214,12 @@ public:
 	{
 		if (m_pActiveLayer && m_pActiveLayer->GetType() == LT_STRUCTURE)
 			return (vtStructureLayer *)m_pActiveLayer;
+		return NULL;
+	}
+	vtTowerLayer *GetActiveTowerLayer()
+	{
+		if(m_pActiveLayer &&m_pActiveLayer->GetType() == LT_UTILITY)
+			return (vtTowerLayer *)m_pActiveLayer;
 		return NULL;
 	}
 	void LoadLayer(const wxString &fname);
@@ -283,6 +298,7 @@ protected:
 	wxMenu*    vegMenu;
 	wxMenu*    bldMenu;
 	wxMenu*    roadMenu;
+	wxMenu*	   utilityMenu;
 	wxMenu*    rawMenu;
 	wxMenu*    areaMenu;
 	wxMenu*    helpMenu;

@@ -97,6 +97,9 @@ public:
 	bool		m_bBuildings;
 	vtString	m_strBuildingFile;
 
+	bool		m_bTransTowers;
+	vtString	m_strTowerFile;
+
 	bool		m_bVehicles;
 	float		m_fVehicleSize;
 	float		m_fVehicleSpeed;
@@ -118,6 +121,8 @@ public:
 	float		m_fPreLightFactor;
 
 	bool		m_bAirports;
+	vtString	m_strRouteFile;
+	bool		m_bRouteEnable;
 
 };
 

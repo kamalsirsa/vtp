@@ -36,6 +36,7 @@ public:
 		TreeCtrlIcon_Veg1,
 		TreeCtrlIcon_Water,
 		TreeCtrlIcon_Transit,
+		TreeCtrlIcon_Utility,
 		TreeCtrlIcon_Raw
 	};
 

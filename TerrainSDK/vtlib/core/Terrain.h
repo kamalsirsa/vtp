@@ -11,12 +11,14 @@
 #include "TParams.h"
 #include "Trees.h"
 #include "Structure3d.h"
+#include "Tower3d.h"
 
 class vtTerrainGeom;
 class vtTextureCoverage;
 class vtFence3d;
 class vtRoadMap3d;
 class vtLodGrid;
+class vtRoute;
 
 #include "LKTerrain.h"
 #include "TVTerrain.h"
@@ -44,7 +46,8 @@ enum TFType
 {
 	OCEAN,
 	VEGETATION,
-	ROADS
+	ROADS,
+	TRANS_TOWERS
 };
 
 
@@ -111,6 +114,16 @@ public:
 	void AddFence(vtFence3d *f);
 	void AddFencepoint(vtFence3d *f, const DPoint2 &utm);
 	void RedrawFence(vtFence3d *f);
+
+	// Route
+	void AddRoute(vtRoute *f);
+	void add_routepoint_earth(vtRoute *f, const DPoint2 &utm);
+	void RedrawRoute(vtRoute *f);
+	void LoadRoute(vtString filename, float fRouteHeight, float fRouteSpacing,
+					float fRouteOffL, float fRouteOffR, float fRouteStInc,
+					vtString sRouteName);
+	void SaveRoute();
+	vtRoute* GetLastRoute() { return m_pRoutes.GetSize()>0?m_pRoutes[m_pRoutes.GetSize()-1]:0; }
 
 	// plants
 	void AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
@@ -183,6 +196,8 @@ public:
 	static void SetDataPath(const char *path) { m_strDataPath = path; }
 	static vtString	m_strDataPath;
 
+	// TODO: temporary unprotected
+	vtLodGrid		*m_pLodGrid;
 protected:
 	/********************** Protected Methods ******************/
 
@@ -195,6 +210,7 @@ protected:
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
 	void CreateStructuresFromXML(vtString strFilename);
+	void create_towers_from_UTL(vtString strTowerFile);
 	void create_culture(bool bSound);
 	void create_floating_labels(const char *filename);
 
@@ -216,7 +232,6 @@ protected:
 
 	// data grids
 	vtHeightField	*m_pHeightField;
-	vtLodGrid		*m_pLodGrid;
 
 	// if we're switching between multiple terrains, we can remember where
 	// the camera was in each one
@@ -227,6 +242,9 @@ protected:
 
 	// built structures, e.g. buildings and fences
 	vtStructureArray3d	m_Structures;
+
+	// Transmission Towers
+	vtTowerArray3d		m_pTower;
 
 	vtMaterialArray		*m_pTerrApps1;	// for 'regular' terrain
 	vtMaterialArray		*m_pTerrApps2;	// for dynamic LOD terrain
@@ -239,6 +257,9 @@ protected:
 	vtGroup				*m_pTreeGroup;
 	vtPlantList3d		*m_pPlantList;
 	Array<vtTransform*>	m_PlantGeoms;
+
+	// routes
+	Array<vtRoute *>	m_pRoutes;
 
 	// ground texture
 	vtDIB				*m_pDIB;

@@ -20,11 +20,11 @@
 
 // Implement window functions
 
-void BuildingDialogFunc( wxPanel *parent, bool call_fit )
+wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxSizer *item1 = new wxGridSizer( 2, 0, 0 );
+    wxGridSizer *item1 = new wxGridSizer( 2, 0, 0 );
 
     wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, "Building Color:", wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item2, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -49,7 +49,7 @@ void BuildingDialogFunc( wxPanel *parent, bool call_fit )
     wxCheckBox *item8 = new wxCheckBox( parent, ID_ELEVATED, "Elevated", wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, "Number of Stories:", wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -59,7 +59,7 @@ void BuildingDialogFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item9, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    wxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, "Roof Type:", wxDefaultPosition, wxDefaultSize, 0 );
     item12->Add( item13, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -70,7 +70,7 @@ void BuildingDialogFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item12, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    wxSizer *item15 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item15 = new wxBoxSizer( wxHORIZONTAL );
 
     wxButton *item16 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
     item15->Add( item16, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -80,25 +80,30 @@ void BuildingDialogFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item15, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    parent->SetAutoLayout( TRUE );
-    parent->SetSizer( item0 );
-    if (call_fit)
+    if (set_sizer)
     {
-        item0->Fit( parent );
-        item0->SetSizeHints( parent );
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
     }
+    
+    return item0;
 }
 
-void ExtentDialogFunc( wxPanel *parent, bool call_fit )
+wxSizer *ExtentDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticBox *item3 = new wxStaticBox( parent, -1, "Extents" );
-    wxSizer *item2 = new wxStaticBoxSizer( item3, wxVERTICAL );
+    wxStaticBoxSizer *item2 = new wxStaticBoxSizer( item3, wxVERTICAL );
 
-    wxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, "North:", wxDefaultPosition, wxDefaultSize, 0 );
     item4->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -108,7 +113,7 @@ void ExtentDialogFunc( wxPanel *parent, bool call_fit )
 
     item2->Add( item4, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT, 5 );
 
-    wxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, "West:", wxDefaultPosition, wxDefaultSize, 0 );
     item7->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -116,7 +121,7 @@ void ExtentDialogFunc( wxPanel *parent, bool call_fit )
     wxTextCtrl *item9 = new wxTextCtrl( parent, ID_EXTENT_W, "", wxDefaultPosition, wxDefaultSize, 0 );
     item7->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
 
     item7->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
 
@@ -128,7 +133,7 @@ void ExtentDialogFunc( wxPanel *parent, bool call_fit )
 
     item2->Add( item7, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT, 5 );
 
-    wxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, "South:", wxDefaultPosition, wxDefaultSize, 0 );
     item13->Add( item14, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -140,7 +145,7 @@ void ExtentDialogFunc( wxPanel *parent, bool call_fit )
 
     item1->Add( item2, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    wxSizer *item16 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item16 = new wxBoxSizer( wxVERTICAL );
 
     wxButton *item17 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
     item16->Add( item17, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -152,7 +157,7 @@ void ExtentDialogFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item1, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, "Origin and Size:", wxDefaultPosition, wxDefaultSize, 0 );
     item19->Add( item20, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -162,18 +167,23 @@ void ExtentDialogFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item19, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    parent->SetAutoLayout( TRUE );
-    parent->SetSizer( item0 );
-    if (call_fit)
+    if (set_sizer)
     {
-        item0->Fit( parent );
-        item0->SetSizeHints( parent );
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
     }
+    
+    return item0;
 }
 
-void DistanceDialogFunc( wxPanel *parent, bool call_fit )
+wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxSizer *item0 = new wxFlexGridSizer( 3, 0, 0 );
+    wxFlexGridSizer *item0 = new wxFlexGridSizer( 3, 0, 0 );
 
     wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, "Horizontal Offset X, Y", wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item1, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -184,7 +194,7 @@ void DistanceDialogFunc( wxPanel *parent, bool call_fit )
     wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, "meters", wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
     item0->Add( item4, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
@@ -203,29 +213,34 @@ void DistanceDialogFunc( wxPanel *parent, bool call_fit )
     wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, "meters", wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
 
     item0->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxButton *item11 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
 
     item0->Add( item12, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    parent->SetAutoLayout( TRUE );
-    parent->SetSizer( item0 );
-    if (call_fit)
+    if (set_sizer)
     {
-        item0->Fit( parent );
-        item0->SetSizeHints( parent );
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
     }
+    
+    return item0;
 }
 
-void RawDialogFunc( wxPanel *parent, bool call_fit )
+wxSizer *RawDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxSizer *item0 = new wxGridSizer( 2, 0, 0 );
+    wxGridSizer *item0 = new wxGridSizer( 2, 0, 0 );
 
     wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, "Bytes per sample", wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item1, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -269,26 +284,31 @@ void RawDialogFunc( wxPanel *parent, bool call_fit )
     wxButton *item14 = new wxButton( parent, wxID_CANCEL, "Cancel", wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item14, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    parent->SetAutoLayout( TRUE );
-    parent->SetSizer( item0 );
-    if (call_fit)
+    if (set_sizer)
     {
-        item0->Fit( parent );
-        item0->SetSizeHints( parent );
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
     }
+    
+    return item0;
 }
 
-void ElevPropDialogFunc( wxPanel *parent, bool call_fit )
+wxSizer *ElevPropDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
     wxTextCtrl *item1 = new wxTextCtrl( parent, ID_PROPS, "", wxDefaultPosition, wxSize(300,100), wxTE_MULTILINE );
     item0->Add( item1, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxStaticBox *item3 = new wxStaticBox( parent, -1, "Extents" );
-    wxSizer *item2 = new wxStaticBoxSizer( item3, wxVERTICAL );
+    wxStaticBoxSizer *item2 = new wxStaticBoxSizer( item3, wxVERTICAL );
 
-    wxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, "Left", wxDefaultPosition, wxDefaultSize, 0 );
     item4->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -298,7 +318,7 @@ void ElevPropDialogFunc( wxPanel *parent, bool call_fit )
 
     item2->Add( item4, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, "Top", wxDefaultPosition, wxDefaultSize, 0 );
     item7->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -308,7 +328,7 @@ void ElevPropDialogFunc( wxPanel *parent, bool call_fit )
 
     item2->Add( item7, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, "Right", wxDefaultPosition, wxDefaultSize, 0 );
     item10->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -318,7 +338,7 @@ void ElevPropDialogFunc( wxPanel *parent, bool call_fit )
 
     item2->Add( item10, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, "Bottom", wxDefaultPosition, wxDefaultSize, 0 );
     item13->Add( item14, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -330,7 +350,7 @@ void ElevPropDialogFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item2, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
 
     wxButton *item17 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
     item16->Add( item17, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -340,24 +360,29 @@ void ElevPropDialogFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item16, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    parent->SetAutoLayout( TRUE );
-    parent->SetSizer( item0 );
-    if (call_fit)
+    if (set_sizer)
     {
-        item0->Fit( parent );
-        item0->SetSizeHints( parent );
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
     }
+    
+    return item0;
 }
 
-void ProjectionDialogFunc( wxPanel *parent, bool call_fit )
+wxSizer *ProjectionDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
     wxStaticText *item1 = new wxStaticText( parent, ID_CAPTION, "Caption", wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 10 );
 
     wxStaticBox *item3 = new wxStaticBox( parent, -1, "" );
-    wxSizer *item2 = new wxStaticBoxSizer( item3, wxVERTICAL );
+    wxStaticBoxSizer *item2 = new wxStaticBoxSizer( item3, wxVERTICAL );
 
     wxRadioButton *item4 = new wxRadioButton( parent, ID_GEO, "Geographic (latitude-longitude)", wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
     item2->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP, 5 );
@@ -365,7 +390,7 @@ void ProjectionDialogFunc( wxPanel *parent, bool call_fit )
     wxRadioButton *item5 = new wxRadioButton( parent, ID_UTM, "UTM", wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item5, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
 
     item6->Add( 20, 20, 0, wxALIGN_CENTRE, 5 );
 
@@ -380,7 +405,7 @@ void ProjectionDialogFunc( wxPanel *parent, bool call_fit )
     wxRadioButton *item9 = new wxRadioButton( parent, ID_ALBERS, "Albers Equal Area Conic", wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item9, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, "1st Standard Parallel", wxDefaultPosition, wxDefaultSize, 0 );
     item10->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -390,7 +415,7 @@ void ProjectionDialogFunc( wxPanel *parent, bool call_fit )
 
     item2->Add( item10, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, "2nd Standard Parallel", wxDefaultPosition, wxDefaultSize, 0 );
     item13->Add( item14, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -400,7 +425,7 @@ void ProjectionDialogFunc( wxPanel *parent, bool call_fit )
 
     item2->Add( item13, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item17 = new wxStaticText( parent, ID_TEXT, "Central Meridian", wxDefaultPosition, wxDefaultSize, 0 );
     item16->Add( item17, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -413,7 +438,7 @@ void ProjectionDialogFunc( wxPanel *parent, bool call_fit )
     wxRadioButton *item19 = new wxRadioButton( parent, ID_STATEPLANE, "State Plane Coordinates", wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item19, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxSizer *item20 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item20 = new wxBoxSizer( wxHORIZONTAL );
 
     item20->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 5 );
 
@@ -426,7 +451,7 @@ void ProjectionDialogFunc( wxPanel *parent, bool call_fit )
     wxStaticLine *item22 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
     item2->Add( item22, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, "Datum:", wxDefaultPosition, wxDefaultSize, 0 );
     item23->Add( item24, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -439,7 +464,7 @@ void ProjectionDialogFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
 
     wxButton *item27 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
     item26->Add( item27, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -449,20 +474,25 @@ void ProjectionDialogFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item26, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    parent->SetAutoLayout( TRUE );
-    parent->SetSizer( item0 );
-    if (call_fit)
+    if (set_sizer)
     {
-        item0->Fit( parent );
-        item0->SetSizeHints( parent );
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
     }
+    
+    return item0;
 }
 
-void ImportVegFunc( wxPanel *parent, bool call_fit )
+wxSizer *ImportVegFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxSizer *item1 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item1 = new wxBoxSizer( wxVERTICAL );
 
     wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, "Field to use:", wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -473,7 +503,7 @@ void ImportVegFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item1, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxSizer *item4 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item4 = new wxBoxSizer( wxVERTICAL );
 
     wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, "Interpretation of the field:", wxDefaultPosition, wxDefaultSize, 0 );
     item4->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -489,7 +519,7 @@ void ImportVegFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
 
     wxButton *item10 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -499,20 +529,25 @@ void ImportVegFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    parent->SetAutoLayout( TRUE );
-    parent->SetSizer( item0 );
-    if (call_fit)
+    if (set_sizer)
     {
-        item0->Fit( parent );
-        item0->SetSizeHints( parent );
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
     }
+    
+    return item0;
 }
 
-void DistribVegFunc( wxPanel *parent, bool call_fit )
+wxSizer *DistribVegFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxSizer *item1 = new wxFlexGridSizer( 2, 0, 0 );
+    wxFlexGridSizer *item1 = new wxFlexGridSizer( 2, 0, 0 );
 
     wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, "Grid spacing of sampling, in meters:", wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item2, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -528,7 +563,7 @@ void DistribVegFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item1, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    wxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
 
     wxButton *item7 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
     item6->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
@@ -538,14 +573,76 @@ void DistribVegFunc( wxPanel *parent, bool call_fit )
 
     item0->Add( item6, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    parent->SetAutoLayout( TRUE );
-    parent->SetSizer( item0 );
-    if (call_fit)
+    if (set_sizer)
     {
-        item0->Fit( parent );
-        item0->SetSizeHints( parent );
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
     }
+    
+    return item0;
 }
+
+wxSizer *TowerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxFlexGridSizer *item1 = new wxFlexGridSizer( 2, 0, 0 );
+
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, "Tower Position", wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item3 = new wxTextCtrl( parent, ID_TOWER_XY, "", wxDefaultPosition, wxSize(150,-1), 0 );
+    item1->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, "Tower Type", wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item4, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxString *strs5 = (wxString*) NULL;
+    wxChoice *item5 = new wxChoice( parent, ID_TOWER_TYPE, wxDefaultPosition, wxSize(150,-1), 0, strs5, 0 );
+    item1->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, "Tower Material", wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item6, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxString *strs7 = (wxString*) NULL;
+    wxChoice *item7 = new wxChoice( parent, ID_TOWER_MATERIAL, wxDefaultPosition, wxSize(150,-1), 0, strs7, 0 );
+    item1->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxCheckBox *item8 = new wxCheckBox( parent, ID_TOWER_ELEV, "Tower Elevated", wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item10 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item11 = new wxButton( parent, wxID_CANCEL, "Cancel", wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
+// Implement menu bar functions
 
 // Implement bitmap functions
 

@@ -23,6 +23,7 @@
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "StructLayer.h"
+#include "TowerLayer.h"
 
 #include "cpl_error.h"
 
@@ -579,6 +580,26 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 	case LB_Move:
 		Refresh();
 		break;
+	case LB_TowerSelect:
+		{
+			vtTowerLayer *pTR = GetMainFrame()->GetActiveTowerLayer();
+			int selected =0;
+			for (int i=0;i<pTR->GetSize();i++)
+			{
+				vtTower *twr = pTR->GetAt(i);
+				if(!twr)
+					continue;
+				bool bSelect =world_rect.ContainsPoint(twr->GetLocation());
+				twr->Select(bSelect);
+				if(bSelect) selected++;
+			}
+
+			wxString msg;
+			msg.Printf("Selected %d tower%s", selected, selected == 1 ? "y" : "s");
+			GetMainFrame()->SetStatusText(msg);
+			Refresh(FALSE);
+		}
+		break;
 	case LB_FSelect:
 		{
 			vtStructureLayer *pSL = GetMainFrame()->GetActiveStructureLayer();
@@ -740,6 +761,8 @@ void BuilderView::SetCorrectCursor()
 		SetCursor(wxCURSOR_CROSS); break;
 	case LB_Mag:	// zoom into rectangle
 		SetCursor(wxCURSOR_MAGNIFIER); break;
+	case LB_TowerAdd:
+		SetCursor(wxCURSOR_CROSS);break; // add a tower to the location
 	case LB_Path:	// pick points on a path
 	case LB_Dir:		// show/change road direction
 	case LB_RoadEdit:	// edit road points
@@ -948,6 +971,16 @@ void BuilderView::OnLeftDown(const wxMouseEvent& event)
 	case LB_AddLinear:
 		OnLeftDownAddLinear(event);
 		break;
+
+/*	case LB_TowerAdd:
+		OnLeftDownAddTower(event,m_DownLocation);
+		break;*/
+/*	case LB_TowerSelect:
+		OnLeftDownTowerSelect(event,m_DownLocation);
+		break;*/
+	case LB_TowerEdit:
+		OnLeftDownTowerEdit(event);
+		break;
 	}
 }
 
@@ -1044,6 +1077,46 @@ void BuilderView::OnLeftDownAddLinear(const wxMouseEvent &event)
 	Refresh();
 }
 
+void BuilderView::OnLeftDownTowerEdit(const wxMouseEvent &event)
+{	
+	vtTowerLayer *pTL = GetMainFrame()->GetActiveTowerLayer();
+	if (!pTL)
+		return;
+
+	double error = sdx(6);  //calculate what 6 pixels is as world coord
+
+	int tower1;
+	double dist1;
+
+	bool found1 = pTL->FindClosestCenter(m_DownLocation, error, tower1, dist1);
+
+	if (found1)
+	{
+		// closest point is a building center
+		m_pCurTower = pTL->GetAt(tower1);
+		m_bDragCenter = true;
+	}
+/*	if (found2)
+	{
+		// closest point is a building corner
+		m_pCurTower= pTL->GetAt(tower2)->GetTower();
+		m_bDragCenter = false;
+		m_iCurCorner = corner;
+
+		m_bShift = event.ShiftDown();
+		m_bControl = event.ControlDown();
+
+		m_bRotate = m_bControl;
+	}*/
+	if (found1)// || found2)
+	{
+		m_bRubber = true;
+
+		// make a copy of the tower, to edit and diplay while dragging
+		m_EditTower = *m_pCurTower;
+	}
+}
+
 void BuilderView::OnLeftUp(const wxMouseEvent& event)
 {
 	ReleaseMouse();
@@ -1069,10 +1142,31 @@ void BuilderView::OnLeftUp(const wxMouseEvent& event)
 			GetMainFrame()->GetActiveLayer()->SetModified(true);
 		}
 	}
+	else if (m_mode == LB_TowerEdit)
+	{
+		if(m_bRubber)
+		{
+			DRECT extent_old, extent_new;
+			extent_old = m_pCurTower->GetExtents();
+			extent_new = m_EditTower.GetExtents();
+			wxRect screen_old = WorldToWindow(extent_old);
+			wxRect screen_new = WorldToWindow(extent_new);
+//			screen_old.InflateRect(1, 1);
+//			screen_new.InflateRect(1, 1);
+
+			Refresh(TRUE, &screen_old);
+			Refresh(TRUE, &screen_new);
+
+			// copy back from temp tower to real tower
+			*m_pCurTower = m_EditTower;
+			m_bRubber = false;
+			GetMainFrame()->GetActiveLayer()->SetModified(true);
+		}
+	}
 	else
 	{
 		if (!m_bMouseMoved)
-			OnLButtonClick();
+			OnLButtonClick(event);
 		OnLButtonDragRelease(event);
 	}
 
@@ -1138,10 +1232,14 @@ void BuilderView::OnDblClickElement(vtStructureLayer *pSL, const DPoint2 &point)
 }
 
 
-void BuilderView::OnLButtonClick()
+void BuilderView::OnLButtonClick(const wxMouseEvent& event)
 {
 	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
 	if (!pL) return;
+
+	GetCanvasPosition(event, m_DownPoint);
+	m_CurPoint = m_LastPoint = m_DownPoint;
+	DPoint2 point(ox(m_CurPoint.x), oy(m_CurPoint.y));
 
 	if (pL->GetType() == LT_ROAD)
 	{
@@ -1161,6 +1259,18 @@ void BuilderView::OnLButtonClick()
 		case LB_RoadEdit:
 			OnLButtonClickRoadEdit((vtRoadLayer *)pL);
 			break;
+		}
+	}
+	if (pL->GetType() == LT_UTILITY)
+	{
+		switch (m_mode)
+		{
+		case LB_TowerAdd:
+			OnLButtonClickTowerAdd((vtTowerLayer*)pL, point);
+			break;
+	/*	case LB_TowerEdit:
+			OnLButtonClickTowerEdit((vtTowerLayer*)pL);
+			break;*/
 		}
 	}
 	if (m_mode == LB_FSelect)
@@ -1264,6 +1374,14 @@ void BuilderView::OnDragRoadEdit()
 	m_iEditingPoint = -1;
 }
 
+void BuilderView::OnLButtonClickTowerAdd(vtTowerLayer *pTL,
+										 const DPoint2 &m_DownLocation)
+{
+	pTL = GetMainFrame()->GetActiveTowerLayer();
+	pTL->AddNewTower(m_DownLocation); //Make sure to call edit box for rest of tower info
+	Refresh();
+}
+
 void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 {
 	DRECT world_bound;
@@ -1358,6 +1476,17 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 
 		Refresh(FALSE);
 	}
+	else if (pL->GetType() ==LT_UTILITY)
+	{
+		vtTowerLayer *pTL = (vtTowerLayer *)pL;
+
+		pTL->DeselectAll();
+
+		vtTower *twr = pTL->FindTower(m_DownLocation, odx(12));
+		if(twr)
+			twr->Select(!twr->IsSelected());
+		Refresh(FALSE);
+	}
 }
 
 ////////////////
@@ -1408,6 +1537,9 @@ void BuilderView::OnRightUp(const wxMouseEvent& event)
 	case LT_STRUCTURE:
 		OnRightUpStructure((vtStructureLayer *)pL);
 		break;
+	case LT_UTILITY:
+		OnRightUpUtility((vtTowerLayer *)pL);
+		break;
 	}
 }
 
@@ -1426,6 +1558,13 @@ void BuilderView::OnRightUpRoad(vtRoadLayer *pRL)
 void BuilderView::OnRightUpStructure(vtStructureLayer *pSL) 
 {
 	bool status = pSL->EditBuildingProperties();
+	if (status)
+		Refresh();
+}
+
+void BuilderView::OnRightUpUtility(vtTowerLayer *pTL)
+{
+	bool status =pTL->EditTowerProperties();
 	if (status)
 		Refresh();
 }

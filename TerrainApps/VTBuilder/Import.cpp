@@ -24,6 +24,7 @@
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "VegLayer.h"
+#include "TowerLayer.h"
 // Dialogs
 #include "ProjectionDlg.h"
 #include "ImportVegDlg.h"
@@ -172,6 +173,10 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName, bool b
 			pLayer = ImportElevation(strFileName);
 		}
 		break;
+	case LT_UTILITY:
+		if(!strExt.CmpNoCase("shp"))
+			pLayer = ImportFromSHP(strFileName, ltype);
+		break;
 	case LT_RAW:
 		if (!strExt.CmpNoCase("shp"))
 			pLayer = ImportFromSHP(strFileName, ltype);
@@ -284,6 +289,9 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_SHP);
 		AddType(filter, FSTRING_SDTS);
 		break;
+	case LT_UTILITY:
+		AddType(filter, FSTRING_SHP);
+		break;
 	}
 	return filter;
 }
@@ -388,6 +396,12 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	{
 		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
 		pSL->AddElementsFromSHP(strFileName, proj);
+	}
+
+	if (ltype ==LT_UTILITY)
+	{
+		vtTowerLayer *pTL = (vtTowerLayer *)pLayer;
+		pTL->AddElementsFromSHP(strFileName, proj);
 	}
 
 	if (ltype == LT_RAW)

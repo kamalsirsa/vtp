@@ -165,6 +165,10 @@ SOURCE=..\core\Roads.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\core\Route.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\core\SkyDome.cpp
 # End Source File
 # Begin Source File
@@ -194,6 +198,10 @@ SOURCE=..\core\TerrainSurface.cpp
 # Begin Source File
 
 SOURCE=..\core\TimeEngines.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\Tower3d.cpp
 # End Source File
 # Begin Source File
 
@@ -289,6 +297,10 @@ SOURCE=..\core\Roads.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\core\Route.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\core\SkyDome.h
 # End Source File
 # Begin Source File
@@ -318,6 +330,10 @@ SOURCE=..\core\TerrainSurface.h
 # Begin Source File
 
 SOURCE=..\core\TimeEngines.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\Tower3d.h
 # End Source File
 # Begin Source File
 

@@ -26,6 +26,8 @@ TParams::TParams()
 	m_iTriCount = 10000;
 	m_fPixelError = 2.0f;
 	m_fTimeSpeed = 1;
+	m_bTransTowers = false;
+	m_bRouteEnable = false;
 }
 
 //
@@ -95,6 +97,9 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bBuildings = rhs.m_bBuildings;
 	m_strBuildingFile = rhs.m_strBuildingFile;
 
+	m_bTransTowers = rhs.m_bTransTowers;
+	m_strTowerFile = rhs.m_strTowerFile;
+
 	m_bVehicles = rhs.m_bVehicles;
 	m_fVehicleSize = rhs.m_fVehicleSize;
 	m_fVehicleSpeed = rhs.m_fVehicleSpeed;
@@ -116,6 +121,9 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_fPreLightFactor = rhs.m_fPreLightFactor;
 
 	m_bAirports = rhs.m_bAirports;
+
+	m_strRouteFile = rhs.m_strRouteFile;
+	m_bRouteEnable = rhs.m_bRouteEnable;
 
 	return *this;
 }
@@ -207,6 +215,8 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_LABELS "Labels"
 #define STR_BUILDINGS "Buildings"
 #define STR_BUILDINGFILE "Building_File"
+#define STR_TOWERS "Transmission Towers"
+#define	STR_TOWERFILE "Tower File"
 #define STR_VEHICLES "Vehicles"
 #define STR_VEHICLESIZE "Vehicle_Size"
 #define STR_VEHICLESPEED "Vehicle_Speed"
@@ -217,6 +227,8 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_DETAILTEXTURE "Detail_Texture"
 #define STR_PRELIGHTFACTOR "PreLight_Factor"
 #define STR_AIRPORTS "Airports"
+#define STR_ROUTEFILE "Route_File"
+#define STR_ROUTEENABLE "Route_Enable"
 
 bool TParams::LoadFromFile(const char *filename)
 {
@@ -355,6 +367,10 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bBuildings;
 		else if (strcmp(buf, STR_BUILDINGFILE) == 0)
 			m_strBuildingFile = get_line_from_stream(input);
+		else if (strcmp(buf, STR_TOWERS)==0)
+			input>>m_bTransTowers;
+		else if (strcmp(buf,STR_TOWERFILE)==0)
+			m_strTowerFile= get_line_from_stream(input);
 		else if (strcmp(buf, STR_VEHICLES) == 0)
 			input >> m_bVehicles;
 		else if (strcmp(buf, STR_VEHICLESIZE) == 0)
@@ -375,6 +391,10 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_fPreLightFactor;
 		else if (strcmp(buf, STR_AIRPORTS) == 0)
 			input >> m_bAirports;
+		else if (strcmp(buf, STR_ROUTEFILE) == 0)
+			 m_strRouteFile = get_line_from_stream(input);
+		else if (strcmp(buf, STR_ROUTEENABLE) == 0)
+			input >> m_bRouteEnable;
 		else
 		{
 //			cout << "Input from INI file unrecognized.\n";
@@ -509,6 +529,12 @@ bool TParams::SaveToFile(const char *filename)
 	output << (const char *) m_strBuildingFile << endl;
 
 	output << "\n";
+	output << STR_TOWERS << "\t\t";
+	output << m_bTransTowers<<endl;
+	output << STR_TOWERFILE <<"\t";
+	output << (const char *) m_strTowerFile<<endl;
+
+	output << "\n";
 	output << STR_VEHICLES << "\t\t";
 	output << m_bVehicles << endl;
 	output << STR_VEHICLESIZE << "\t";
@@ -539,6 +565,11 @@ bool TParams::SaveToFile(const char *filename)
 
 	output << STR_AIRPORTS << "\t\t";
 	output << m_bAirports << endl;
+
+	output << STR_ROUTEFILE << "\t\t";
+	output << (const char *) m_strRouteFile << endl;
+	output << STR_ROUTEENABLE << "\t\t";
+	output << m_bRouteEnable << endl;
 
 	return true;
 }
