@@ -201,10 +201,19 @@ void LocationDlg::OnLocList( wxCommandEvent &event )
 
 void LocationDlg::RefreshButtons()
 {
-   int num = m_pLocList->GetSelection();
-   m_pStore->Enable(num != -1);
-   m_pRecall->Enable(num != -1);
-   m_pRemove->Enable(num != -1);
+	int num = m_pLocList->GetSelection();
+	m_pStore->Enable(num != -1);
+	m_pRecall->Enable(num != -1);
+	m_pRemove->Enable(num != -1);
 }
 
+void LocationDlg::RecallFrom(const vtString &locname)
+{
+	int num = m_pSaver->FindLocation(locname);
+	if (num != -1)
+	{
+		m_pSaver->RecallFrom(num);
+		m_pLocList->SetSelection(num);
+	}
+}
 

@@ -54,12 +54,13 @@ public:
 	bool TransferDataToWindow();
 	bool TransferDataFromWindow();
 
-	void SetParams(TParams &Params);
+	void SetParams(const TParams &Params);
 	void GetParams(TParams &Params);
 	void SetDataPaths(const vtStringArray &paths) { m_datapaths = paths; }
 	void UpdateTiledTextureFilename();
 	void UpdateEnableState();
 	void RefreshLabelFields();
+	void RefreshLocationFields();
 
 	wxString2	m_strFilename;
 	wxString2	m_strFilenameTin;
@@ -71,6 +72,7 @@ public:
 	int     m_iNavStyle;
 	float   m_fNavSpeed;
 	wxString2	m_strLocFile;
+	int		m_iInitLocation;	wxString2	m_strInitLocation;
 	float   m_fHither;
 
 	// LOD
@@ -164,6 +166,7 @@ public:
 	wxTextCtrl* GetDepressOceanOffset()  { return (wxTextCtrl*) FindWindow( ID_DEPRESSOCEANOFFSET ); }
 	wxTextCtrl* GetOceanPlaneOffset()  { return (wxTextCtrl*) FindWindow( ID_OCEANPLANEOFFSET ); }
 	wxComboBox* GetLabelFile()  { return (wxComboBox*) FindWindow( ID_LABEL_FILE ); }
+	wxChoice* GetLocField()  { return (wxChoice*) FindWindow( ID_INIT_LOCATION ); }
 	wxChoice* GetLabelField()  { return (wxChoice*) FindWindow( ID_LABEL_FIELD ); }
 	wxListBox* GetStructFiles()  { return (wxListBox*) FindWindow( ID_STRUCTFILES ); }
 
@@ -190,6 +193,7 @@ private:
 	wxComboBox* m_pSkyTexture;
 	wxComboBox* m_pLabelFile;
 	wxChoice* m_pLabelField;
+	wxChoice* m_pLocField;
 	wxListBoxEventHandler *m_pBoxHandler;
 
 private:
@@ -203,6 +207,8 @@ private:
 	void OnCheckBox( wxCommandEvent &event );
 	void OnListDblClick( wxCommandEvent &event );
 	void OnChoiceLabelFile( wxCommandEvent &event );
+	void OnChoiceLocFile( wxCommandEvent &event );
+	void OnChoiceInitLocation( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -44,6 +44,7 @@ public:
 				   const vtLocalConversion &conv);
 	void SetLocFile(const vtString &fname);
 	void RefreshButtons();
+	void RecallFrom(const vtString &locname);
 
 private:
 	// WDR: member variable declarations for LocationDlg

@@ -757,8 +757,6 @@ void vtFrame::OnUpdateViewFollowRoute(wxUpdateUIEvent& event)
 
 void vtFrame::OnViewLocations(wxCommandEvent& event)
 {
-	m_pLocationDlg->SetTarget(vtGetScene()->GetCamera(),
-		GetCurrentTerrain()->GetProjection(), g_Conv);
 	m_pLocationDlg->Show(true);
 }
 
@@ -1171,14 +1169,23 @@ void vtFrame::OnEarthLinear(wxCommandEvent& event)
 void SetTerrainToGUI(vtTerrain *pTerrain)
 {
 	vtFrame *pFrame = (vtFrame *) (wxGetApp().GetTopWindow());
+	pFrame->SetTerrainToGUI(pTerrain);
+}
+
+void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
+{
+	m_pLocationDlg->SetTarget(vtGetScene()->GetCamera(),
+		pTerrain->GetProjection(), g_Conv);
 
 	vtString loc = "Locations/";
 	loc += pTerrain->GetParams().m_strLocFile;
 	vtString path = FindFileOnPaths(pTerrain->m_DataPaths, loc);
 	if (path != "")
-		pFrame->m_pLocationDlg->SetLocFile((const char *)path);
+	{
+		m_pLocationDlg->SetLocFile((const char *)path);
+		m_pLocationDlg->RecallFrom(pTerrain->GetParams().m_strInitLocation);
+	}
 }
-
 
 ///////////////////////////////////////////////////////////////////
 

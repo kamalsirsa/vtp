@@ -6,7 +6,7 @@
 #ifndef __WDR_enviro_H__
 #define __WDR_enviro_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
     #pragma interface "enviro_wdr.h"
 #endif
 
@@ -153,15 +153,16 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_MINHEIGHT 10100
 #define ID_NAVSPEED 10101
 #define ID_LOCFILE 10102
-#define ID_HITHER 10103
-#define ID_INITTIME 10104
-#define ID_TIMEMOVES 10105
-#define ID_TIMESPEED 10106
-#define ID_LABELS 10107
-#define ID_LABEL_FILE 10108
-#define ID_LABEL_FIELD 10109
-#define ID_LABEL_HEIGHT 10110
-#define ID_LABEL_SIZE 10111
+#define ID_INIT_LOCATION 10103
+#define ID_HITHER 10104
+#define ID_INITTIME 10105
+#define ID_TIMEMOVES 10106
+#define ID_TIMESPEED 10107
+#define ID_LABELS 10108
+#define ID_LABEL_FILE 10109
+#define ID_LABEL_FIELD 10110
+#define ID_LABEL_HEIGHT 10111
+#define ID_LABEL_SIZE 10112
 wxSizer *TParams4Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

@@ -17,6 +17,8 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtlib/vtlib.h"
+#include "vtlib/core/Location.h"
 #include "vtdata/boost/directory.h"
 #include "vtdata/Features.h"		// for RefreshLabelFields()
 #include "vtdata/FilePath.h"		// for FindFileOnPaths()
@@ -87,6 +89,8 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_CHECKBOX( ID_FOG, TParamsDlg::OnCheckBox )
 
 	EVT_TEXT( ID_LABEL_FILE, TParamsDlg::OnChoiceLabelFile )
+	EVT_TEXT( ID_LOCFILE, TParamsDlg::OnChoiceLocFile )
+	EVT_CHOICE( ID_INIT_LOCATION, TParamsDlg::OnChoiceInitLocation )
 END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -114,7 +118,7 @@ TParamsDlg::~TParamsDlg()
 //
 // set the values in the dialog from the supplied paramter structure
 //
-void TParamsDlg::SetParams(TParams &Params)
+void TParamsDlg::SetParams(const TParams &Params)
 {
 	m_strFilename = wxString::FromAscii((const char *)Params.m_strElevFile);
 	m_strFilenameTin = wxString::FromAscii((const char *)Params.m_strElevFile);
@@ -123,6 +127,7 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_fNavSpeed = Params.m_fNavSpeed;
 	m_iNavStyle = Params.m_iNavStyle;
 	m_strLocFile = wxString::FromAscii((const char *)Params.m_strLocFile);
+	m_strInitLocation.from_utf8(Params.m_strInitLocation);
 	m_fHither = Params.m_fHither;
 
 	m_iLodMethod = Params.m_eLodMethod;
@@ -214,6 +219,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_fNavSpeed = m_fNavSpeed;
 	Params.m_iNavStyle = m_iNavStyle;
 	Params.m_strLocFile = m_strLocFile.mb_str();
+	Params.m_strInitLocation = m_strInitLocation.to_utf8();
 	Params.m_fHither = m_fHither;
 
 	Params.m_eLodMethod = (enum LodMethodEnum) m_iLodMethod;
@@ -372,6 +378,37 @@ void TParamsDlg::RefreshLabelFields()
 	}
 }
 
+void TParamsDlg::RefreshLocationFields()
+{
+	m_pLocField->Clear();
+	m_pLocField->Append(_T("(default)"));
+
+	vtString fname = "Locations/";
+	fname += m_strLocFile.mb_str();
+	vtString path = FindFileOnPaths(m_datapaths, fname);
+	if (path == "")
+		return;
+	vtLocationSaver saver;
+	if (!saver.Read(path))
+		return;
+
+	int i, num = saver.GetNumLocations();
+	for (i = 0; i < num; i++)
+	{
+		vtLocation *loc = saver.GetLocation(i);
+		wxString2 str;
+		str = loc->m_strName;
+		m_pLocField->Append(str);
+	}
+	if (num)
+	{
+		if (m_iInitLocation < 0)
+			m_iInitLocation = 0;
+		if (m_iInitLocation > num-1)
+			m_iInitLocation = num-1;
+	}
+}
+
 // WDR: handler implementations for TParamsDlg
 
 void TParamsDlg::OnTextureFileBase( wxCommandEvent &event )
@@ -405,6 +442,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pSkyTexture = GetSkytexture();
 	m_pLabelFile = GetLabelFile();
 	m_pLabelField = GetLabelField();
+	m_pLocField = GetLocField();
 	m_pNavStyle = GetNavStyle();
 
 	m_pNone = GetNone();
@@ -492,6 +530,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pNavStyle->Append(_T("Panoramic Flyer"));
 
 	RefreshLabelFields();
+	RefreshLocationFields();
 
 //  DetermineTerrainSizeFromBT();
 //  DetermineSizeFromBMP();
@@ -513,6 +552,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_NAV_STYLE, &m_iNavStyle);
 	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
 	AddValidator(ID_LOCFILE, &m_strLocFile);
+	AddValidator(ID_INIT_LOCATION, &m_iInitLocation);
 	AddNumValidator(ID_HITHER, &m_fHither);
 
 	// LOD
@@ -572,6 +612,10 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_LABEL_FIELD, &m_Style.m_field_index);
 	AddNumValidator(ID_LABEL_HEIGHT, &m_Style.m_label_elevation);
 	AddNumValidator(ID_LABEL_SIZE, &m_Style.m_label_size);
+
+	m_iInitLocation = m_pLocField->FindString(m_strInitLocation);
+	if (m_iInitLocation == -1)
+		m_iInitLocation = 0;
 
 	wxWindow::OnInitDialog(event);
 
@@ -737,5 +781,26 @@ void TParamsDlg::OnChoiceLabelFile( wxCommandEvent &event )
 		TransferDataToWindow();
 		m_bSetting = false;
 	}
+}
+
+void TParamsDlg::OnChoiceLocFile( wxCommandEvent &event )
+{
+	if (m_bSetting || !m_bReady) return;
+
+	wxString2 prev = m_strLocFile;
+	TransferDataFromWindow();
+	if (m_strLocFile != prev)
+	{
+		RefreshLocationFields();
+		m_bSetting = true;
+		TransferDataToWindow();
+		m_bSetting = false;
+	}
+}
+
+void TParamsDlg::OnChoiceInitLocation( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	m_strInitLocation = m_pLocField->GetString(m_iInitLocation);
 }
 

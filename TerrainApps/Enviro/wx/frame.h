@@ -38,6 +38,7 @@ public:
 	void ChangeTerrainDetail(bool bIncrease);
 	void SetFullScreen(bool bFull);
 	void ShowPopupMenu(const IPoint2 &pos);
+	void SetTerrainToGUI(vtTerrain *pTerrain);
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);
