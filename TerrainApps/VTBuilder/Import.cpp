@@ -372,7 +372,9 @@ void MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 		return;
 	}
 	VTLOG("  import succeeded.\n");
-	if (pLayer->GetFilename().IsEmpty())
+
+	wxString2 fname = pLayer->GetFilename();
+	if (fname.IsEmpty() || !fname.Cmp(_T("Untitled")))
 		pLayer->SetFilename(strFileName);
 
 	bool success = AddLayerWithCheck(pLayer, true);
