@@ -98,7 +98,7 @@ void vtBitmapBase::ScalePixel8(int x, int y, float fScale)
 	texel = (int) (texel * fScale);
 	if (texel > 255)
 		texel = 255;
-	SetPixel8(x, y, texel);
+	SetPixel8(x, y, (unsigned char) texel);
 }
 
 void vtBitmapBase::BlitTo(vtBitmapBase &target, int x, int y)
@@ -203,7 +203,7 @@ bool vtDIB::Create(int xsize, int ysize, int bitdepth, bool create_palette)
 	m_Hdr->biWidth = xsize;
 	m_Hdr->biHeight = ysize;
 	m_Hdr->biPlanes = 1;
-	m_Hdr->biBitCount = bitdepth;
+	m_Hdr->biBitCount = (word) bitdepth;
 	m_Hdr->biCompression = BI_RGB;
 	m_Hdr->biSizeImage = ImageSize;
 	m_Hdr->biClrUsed = PaletteColors;
@@ -945,7 +945,6 @@ bool vtDIB::WritePNG(const char *fname)
 	/* close the file */
 	fclose(fp);
 
-
 	/* that's it */
 	return true;
 }
@@ -1251,7 +1250,7 @@ void vtDIB::Invert()
  */
 void vtDIB::Blit(vtDIB &target, int x, int y)
 {
-	int depth = GetDepth();
+	unsigned int depth = GetDepth();
 	if (depth != target.GetDepth())
 		return;
 	int tw = target.GetWidth();
