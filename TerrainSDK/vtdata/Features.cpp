@@ -1144,6 +1144,11 @@ int vtFeatureSet::AddField(const char *name, FieldType ftype, int string_length)
 		f->m_width = 6;
 		f->m_decimals = 0;
 	}
+	else if (ftype == FT_Float)
+	{
+		f->m_width = 8;
+		f->m_decimals = 6;
+	}
 	else if (ftype == FT_Double)
 	{
 		f->m_width = 12;
