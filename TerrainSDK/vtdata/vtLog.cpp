@@ -67,6 +67,23 @@ void vtLog::_Log(const char *msg)
 	fputs(msg, stdout);
 }
 
+void vtLog::_Log(char ch)
+{
+	if (m_log)
+	{
+		fputc(ch, m_log);
+		fflush(m_log);
+	}
+#ifdef _MSC_VER
+	char str[2];
+	str[0] = ch;
+	str[1] = 0;
+	OutputDebugStringA(str);
+#endif
+	// also send to the console, for those console-mode developers!
+	fputc(ch, stdout);
+}
+
 void vtLog::Printf(const char *pFormat, ...)
 {
 	va_list va;

@@ -18,6 +18,7 @@ public:
 
 	void _StartLog(const char *fname);
 	void _Log(const char *str);
+	void _Log(char ch);
 	void Printf(const char *pFormat, ...);
 
 #if SUPPORT_WSTRING
