@@ -96,7 +96,7 @@ void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2)
 	int i, prev, next;
 
 	poly2 = poly;
-	int edges = lev->m_Edges.GetSize();
+	int edges = lev->NumEdges();
 	for (i = 0; i < edges; i++)
 	{
 		prev = (i-1 < 0) ? edges-1 : i-1;
@@ -104,8 +104,8 @@ void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2)
 
 		FPoint3 p = poly[i];
 
-		int islope1 = lev->m_Edges[prev]->m_iSlope;
-		int islope2 = lev->m_Edges[i]->m_iSlope;
+		int islope1 = lev->GetEdge(prev)->m_iSlope;
+		int islope2 = lev->GetEdge(i)->m_iSlope;
 		if (islope1 == 90 && islope2 == 90)
 		{
 			// easy case
@@ -177,7 +177,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	{
 		vtLevel *lev = m_Levels[i];
 		const FLine3 &foot = GetLocalFootprint(i);
-		int edges = lev->m_Edges.GetSize();
+		int edges = lev->NumEdges();
 
 		if (lev->IsHorizontal())
 		{
@@ -311,12 +311,12 @@ vtMesh *vtBuilding3d::FindMatMesh(const vtString &Material,
 void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1,
 	FLine3 &poly2, int iEdge, bool bShowEdge)
 {
-	int num_Edgess = pLev->m_Edges.GetSize();
-	int i = iEdge, j = (i+1)%num_Edgess;
+	int num_edges = pLev->NumEdges();
+	int i = iEdge, j = (i+1)%num_edges;
 
 	FLine3 quad(4);
 
-	vtEdge	*pEdge = pLev->m_Edges[iEdge];
+	vtEdge	*pEdge = pLev->GetEdge(iEdge);
 
 	// start with the whole wall section
 	quad[0] = poly1[i];
@@ -597,7 +597,7 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 	int i, j;
 	FPoint2 uv;
 
-	vtEdge *pEdge = pLev->m_Edges[0];
+	vtEdge *pEdge = pLev->GetEdge(0);
 	const vtString& Material = *pEdge->m_pMaterial;
 	vtMesh *mesh = FindMatMesh(Material, pEdge->m_Color, GL_TRIANGLES);
 	vtMaterialDescriptor *md = s_MaterialDescriptors.FindMaterialDescriptor(Material, pEdge->m_Color);
@@ -687,7 +687,7 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 	{
 		for (i = 0; i < iVertices; i++)
 		{
-			int iSlope = pLev->m_Edges[i]->m_iSlope;
+			int iSlope = pLev->GetEdge(i)->m_iSlope;
 			if (iSlope > 89)
 				iSlope = 90;
 			else if (iSlope < 1)
@@ -699,7 +699,7 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 	{
 		for (i = iVertices - 1; i >= 0; i--)
 		{
-			int iSlope = pLev->m_Edges[i]->m_iSlope;
+			int iSlope = pLev->GetEdge(i)->m_iSlope;
 			if (iSlope > 89)
 				iSlope = 90;
 			else if (iSlope < 1)
@@ -726,8 +726,8 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 		{
 			// For each boundary edge zip round the polygon anticlockwise
 			// and build the vertex array
-			const vtString bmat = *pLev->m_Edges[0]->m_pMaterial;
-			vtMesh *pMesh = FindMatMesh(bmat, pLev->m_Edges[0]->m_Color, GL_TRIANGLES);
+			const vtString bmat = *pLev->GetEdge(0)->m_pMaterial;
+			vtMesh *pMesh = FindMatMesh(bmat, pLev->GetEdge(0)->m_Color, GL_TRIANGLES);
 			FLine2 RoofSection2D;
 			FLine2 TriangulatedRoofSection2D;
 			FLine3 RoofSection3D;
@@ -861,7 +861,7 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 	FLine3 poly2;
 
 	int i;
-	int edges = pLev->m_Edges.GetSize();
+	int edges = pLev->NumEdges();
 	for (i = 0; i < edges; i++)
 		poly1[i].y = fHeight;
 
@@ -875,7 +875,7 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 
 		FLine3 quad(4);
 
-		vtEdge	*pEdge = pLev->m_Edges[i];
+		vtEdge	*pEdge = pLev->GetEdge(i);
 
 		// do the whole wall section
 		quad[0] = poly1[a];

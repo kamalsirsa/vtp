@@ -66,12 +66,12 @@ vtEdge::vtEdge(const vtEdge &lhs)
 	m_Color = lhs.m_Color;
 	m_iSlope = lhs.m_iSlope;
 	m_fEaveLength = lhs.m_fEaveLength;
-	for (int i = 0; i < lhs.m_Features.GetSize(); i++)
-		m_Features.Append(lhs.m_Features[i]);
+	for (unsigned int i = 0; i < lhs.m_Features.size(); i++)
+		m_Features.push_back(lhs.m_Features[i]);
 	m_pMaterial = lhs.m_pMaterial;
 }
 
-void vtEdge::Set(int iDoors, int iWindows, const vtString& material)
+void vtEdge::Set(int iDoors, int iWindows, const char *material)
 {
 	vtEdgeFeature wall, window, door;
 
@@ -87,9 +87,9 @@ void vtEdge::Set(int iDoors, int iWindows, const vtString& material)
 
 	int num_Edgess = iDoors + iWindows + 1;
 
-	m_Features.Empty();
-	m_Features.SetMaxSize((iDoors + iWindows) * 2 + 1);
-	m_Features.Append(wall);
+	m_Features.clear();
+	m_Features.reserve((iDoors + iWindows) * 2 + 1);
+	m_Features.push_back(wall);
 
 	bool do_door, do_window, flip = false;
 	while (iDoors || iWindows)
@@ -109,27 +109,27 @@ void vtEdge::Set(int iDoors, int iWindows, const vtString& material)
 
 		if (do_door)
 		{
-			m_Features.Append(door);
+			m_Features.push_back(door);
 			iDoors--;
 		}
 		if (do_window)
 		{
-			m_Features.Append(window);
+			m_Features.push_back(window);
 			iWindows--;
 		}
-		m_Features.Append(wall);
+		m_Features.push_back(wall);
 	}
-	m_pMaterial = &material;
+	m_pMaterial = GetGlobalMaterials()->FindName(material);
 }
 
 void vtEdge::AddFeature(int code, float width, float vf1, float vf2)
 {
-	m_Features.Append(vtEdgeFeature(code, width, vf1, vf2));
+	m_Features.push_back(vtEdgeFeature(code, width, vf1, vf2));
 }
 
 int vtEdge::NumFeaturesOfCode(int code)
 {
-	int i, count = 0, size = m_Features.GetSize();
+	int i, count = 0, size = m_Features.size();
 	for (i = 0; i < size; i++)
 	{
 		if (m_Features[i].m_code == code)
@@ -141,7 +141,7 @@ int vtEdge::NumFeaturesOfCode(int code)
 float vtEdge::FixedFeaturesWidth()
 {
 	float width = 0.0f, fwidth;
-	int size = m_Features.GetSize();
+	int size = m_Features.size();
 	for (int i = 0; i < size; i++)
 	{
 		fwidth = m_Features[i].m_width;
@@ -154,7 +154,7 @@ float vtEdge::FixedFeaturesWidth()
 float vtEdge::ProportionTotal()
 {
 	float width = 0.0f, fwidth;
-	int size = m_Features.GetSize();
+	int size = m_Features.size();
 	for (int i = 0; i < size; i++)
 	{
 		fwidth = m_Features[i].m_width;
@@ -175,7 +175,7 @@ vtLevel::vtLevel()
 vtLevel::~vtLevel()
 {
 #if OGR_FOOTPRINT
-	m_Foot.empty();
+	m_Foot.clear();
 #endif
 	DeleteEdges();
 }
@@ -275,7 +275,7 @@ void vtLevel::SynchToOGR()
 		int oldsize = pRing->getNumPoints();
 		if (oldsize != size)
 		{
-			m_Foot.empty();
+			m_Foot.clear();
 			pRing = new OGRLinearRing();
 			pRing->setNumPoints(size);
 			m_Foot.addRingDirectly(pRing);
@@ -358,7 +358,7 @@ void vtLevel::SetEdgeColor(RGBi color)
 
 float vtLevel::GetEdgeLength(int i)
 {
-	int edges = GetNumEdges();
+	int edges = NumEdges();
 	int j = i+1;
 	if (j == edges)
 		j = 0;
@@ -398,7 +398,7 @@ bool vtLevel::IsHorizontal()
 
 void vtLevel::SetRoofType(RoofType rt, int iSlope)
 {
-	int i, edges = GetNumEdges();
+	int i, edges = NumEdges();
 
 	if (rt == ROOF_FLAT)
 	{
@@ -420,7 +420,7 @@ void vtLevel::SetRoofType(RoofType rt, int iSlope)
 	if (rt == ROOF_GABLE)
 	{
 		// Algorithm for guessing which edges makes up the gable roof:
-		if (GetNumEdges() == 4)
+		if (NumEdges() == 4)
 		{
 			// In the case of a rectangular footprint, assume that the
 			// shorter edge has the gable
@@ -472,7 +472,7 @@ void vtLevel::SetRoofType(RoofType rt, int iSlope)
 
 void vtLevel::SetEaveLength(float fMeters)
 {
-	int i, edges = GetNumEdges();
+	int i, edges = NumEdges();
 	
 	for (i = 0; i < edges; i++)
 	{
@@ -488,7 +488,7 @@ void vtLevel::SetEaveLength(float fMeters)
 bool vtLevel::IsEdgeConvex(int i)
 {
 	// get the 2 corner indices of this edge
-	int edges = GetNumEdges();
+	int edges = NumEdges();
 	int c1 = i;
 	int c2 = (i+1 == edges) ? 0 : i+1;
 
@@ -498,7 +498,7 @@ bool vtLevel::IsEdgeConvex(int i)
 bool vtLevel::IsCornerConvex(int i)
 {
 	// get the 2 adjacent corner indices
-	int edges = GetNumEdges();
+	int edges = NumEdges();
 	int c1 = (i-1 < 0) ? edges-1 : i-1;
 	int c2 = i;
 	int c3 = (i+1 == edges) ? 0 : i+1;
@@ -518,7 +518,7 @@ bool vtLevel::IsCornerConvex(int i)
  */
 bool vtLevel::IsUniform()
 {
-	int i, edges = GetNumEdges();
+	int i, edges = NumEdges();
 	for (i = 0; i < edges; i++)
 	{
 		vtEdge *edge = m_Edges[i];
@@ -592,7 +592,7 @@ bool vtLevel::DetermineHeightFromSlopes()
 {
 	// In order to find a roof point, we need 3 adjacent edges whose
 	// edges intersect.
-	int i, edges = GetNumEdges();
+	int i, edges = NumEdges();
 
 	bool bFoundASolution = false;
 	FPlane *planes = new FPlane[edges];
@@ -645,7 +645,7 @@ const vtString vtLevel::GetOverallEdgeMaterial()
 {
 	const vtString *most = NULL;
 
-	int edges = GetNumEdges();
+	int edges = NumEdges();
 	for (int i = 0; i < edges; i++)
 	{
 		vtEdge *pEdge = GetEdge(i);
@@ -669,7 +669,7 @@ bool vtLevel::GetOverallEdgeColor(RGBi &color)
 {
 	RGBi col1(-1, -1, -1);
 
-	int edges = GetNumEdges();
+	int edges = NumEdges();
 	for (int i = 0; i < edges; i++)
 	{
 		vtEdge *pEdge = GetEdge(i);
@@ -690,7 +690,7 @@ bool vtLevel::GetOverallEdgeColor(RGBi &color)
 RoofType vtLevel::GuessRoofType()
 {
 	int sloped = 0, vert = 0, hori = 0;
-	int i, edges = GetNumEdges();
+	int i, edges = NumEdges();
 	for (i = 0; i < edges; i++)
 	{
 		vtEdge *edge = GetEdge(i);
@@ -834,7 +834,7 @@ void vtBuilding::SetColor(BldColor which, RGBi col)
 	for (i = 0; i < levs; i++)
 	{
 		vtLevel *pLev = m_Levels[i];
-		int j, edges = pLev->GetNumEdges();
+		int j, edges = pLev->NumEdges();
 		for (j = 0; j < edges; j++)
 		{
 			vtEdge *edge = pLev->GetEdge(j);
@@ -858,7 +858,7 @@ RGBi vtBuilding::GetColor(BldColor which) const
 	for (i = 0; i < levs; i++)
 	{
 		vtLevel *pLev = m_Levels[i];
-		int j, edges = pLev->GetNumEdges();
+		int j, edges = pLev->NumEdges();
 		for (j = 0; j < edges; j++)
 		{
 			vtEdge *edge = pLev->GetEdge(j);
@@ -975,12 +975,12 @@ void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 	}
 
 	// If roof level has no edges then give it some
-	edges = pLev->GetNumEdges();
+	edges = pLev->NumEdges();
 	if (0 == edges)
 	{
 		pLev->SetFootprint(below->GetFootprint());
 	}
-	edges = pLev->GetNumEdges();
+	edges = pLev->NumEdges();
 
 	// provide default slopes for the roof sections
 	if (iSlope == -1)
@@ -1275,7 +1275,7 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 		fprintf(fp, "\t\t\t\t</gml:MultiPolygon>\n");
 		fprintf(fp, "\t\t\t</Footprint>\n");
 
-		int edges = lev->GetNumEdges();
+		int edges = lev->NumEdges();
 		for (j = 0; j < edges; j++)
 		{
 			vtEdge *edge = lev->GetEdge(j);
@@ -1342,7 +1342,7 @@ void vtBuilding::AddDefaultDetails()
 	for (i = 0; i < numlevels - 1; i++)
 	{
 		lev = m_Levels[i];
-		int edges = lev->GetNumEdges();
+		int edges = lev->NumEdges();
 		for (j = 0; j < edges; j++)
 		{
 			edge = lev->GetEdge(j);
@@ -1354,10 +1354,10 @@ void vtBuilding::AddDefaultDetails()
 
 	// process roof level
 	vtLevel *roof = m_Levels[i];
-	int edges = roof->GetNumEdges();
+	int edges = roof->NumEdges();
 	if (0 == edges)
 		roof->SetFootprint(m_Levels[0]->GetFootprint());
-	edges = roof->GetNumEdges();
+	edges = roof->NumEdges();
 
 	for (j = 0; j < edges; j++)
 	{
