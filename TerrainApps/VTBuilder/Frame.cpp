@@ -135,6 +135,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_szIniFilename = APPNAME ".ini";
 	m_bDrawDisabled = false;
 	m_bAdoptFirstCRS = true;
+	m_LSOptions.Defaults();
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
@@ -792,6 +793,26 @@ DRECT MainFrame::GetExtents()
 	}
 	else
 		return DRECT(-180,90,180,-90);	// geo extents of whole planet
+}
+
+//
+// Pick a point, in geographic coords, which is roughly in the middle
+//  of the data that the user is working with.
+//
+DPoint2 MainFrame::EstimateGeoDataCenter()
+{
+	DRECT rect = GetExtents();
+	DPoint2 pos = rect.GetCenter();
+
+	if (!m_proj.IsGeographic())
+	{
+		vtProjection geo;
+		CreateSimilarGeographicProjection(m_proj, geo);
+		OCT *trans = CreateConversionIgnoringDatum(&m_proj, &geo);
+		trans->Transform(1, &pos.x, &pos.y);
+		delete trans;
+	}
+	return pos;
 }
 
 void MainFrame::RefreshTreeView()

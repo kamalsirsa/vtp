@@ -1,7 +1,7 @@
 //
 // Name:		Projection2Dlg.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,6 +22,7 @@
 
 #include "Projection2Dlg.h"
 #include "StatePlaneDlg.h"
+#include "Helper.h"
 #include "vtui/wxString2.h"
 #include "vtdata/vtLog.h"
 
@@ -58,6 +59,8 @@ Projection2Dlg::Projection2Dlg( wxWindow *parent, wxWindowID id, const wxString 
 {
 	m_bInitializedUI = false;
 	m_bShowAllDatums = false;
+
+	m_GeoRefPoint.Set(0,0);
 
 	ProjectionDialog2Func( this, TRUE ); 
 
@@ -488,7 +491,10 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 		// nothing more to do
 		break;
 	case PT_UTM:
-		m_proj.SetUTMZone(1);
+		// To be polite, suggest a UTM zone based roughly on where the user
+		//  might have some data.
+		m_iZone = GuessZoneFromGeo(m_GeoRefPoint);
+		m_proj.SetUTMZone(m_iZone);
 		break;
 	case PT_ALBERS:
 		// Put in some default values

@@ -1196,12 +1196,9 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 	Projection2Dlg dlg(NULL, 200, _("Convert to what projection?"));
 	dlg.SetProjection(m_proj);
 
-	// might go from geo to utm, provide a good guess for UTM zone
-	if (m_proj.IsGeographic())
-	{
-		DRECT extents = GetExtents();
-		dlg.m_iZone = GuessZoneFromLongitude((extents.left + extents.right) / 2.0);
-	}
+	// might switch to utm, help provide a good guess for UTM zone
+	DPoint2 pos = EstimateGeoDataCenter();
+	dlg.SetGeoRefPoint(pos);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
@@ -1240,12 +1237,9 @@ void MainFrame::OnLayerSetProjection(wxCommandEvent &event)
 	Projection2Dlg dlg(NULL, -1, _("Set to what projection?"));
 	dlg.SetProjection(m_proj);
 
-	if (m_proj.IsGeographic())
-	{
-		// might go from geo to utm, provide a good guess for UTM zone
-		DRECT extents = GetExtents();
-		dlg.m_iZone = GuessZoneFromLongitude((extents.left + extents.right) / 2.0);
-	}
+	// might switch to utm, help provide a good guess for UTM zone
+	DPoint2 pos = EstimateGeoDataCenter();
+	dlg.SetGeoRefPoint(pos);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;

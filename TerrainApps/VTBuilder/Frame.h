@@ -312,6 +312,7 @@ public:
 	vtLayer *FindLayerOfType(LayerType lt);
 	int NumModifiedLayers();
 	DRECT GetExtents();
+	DPoint2 EstimateGeoDataCenter();
 	LayerType AskLayerType();
 	int LayerNum(vtLayer *lp);
 	void SwapLayerOrder(int n0, int n1);

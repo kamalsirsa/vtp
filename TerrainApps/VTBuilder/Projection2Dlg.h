@@ -12,7 +12,6 @@
 #include "vtui/AutoDialog.h"
 #include "vtdata/Projections.h"
 
-#ifndef __ProjectionDlg_H__
 enum ProjType
 {
 	PT_ALBERS,
@@ -28,7 +27,6 @@ enum ProjType
 	PT_UTM,
 	PT_DYMAX
 };
-#endif
 
 // WDR: class declarations
 
@@ -45,14 +43,18 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
+	void SetProjection(const vtProjection &proj);
+	void GetProjection(vtProjection &proj);
+	void SetGeoRefPoint(const DPoint2 &p) { m_GeoRefPoint = p; }
+
+protected:
 	// WDR: method declarations for Projection2Dlg
 	wxListCtrl* GetProjparam()  { return (wxListCtrl*) FindWindow( ID_PROJPARAM ); }
 	wxChoice* GetHorizchoice()  { return (wxChoice*) FindWindow( ID_HORUNITS ); }
 	wxChoice* GetZonechoice()  { return (wxChoice*) FindWindow( ID_ZONE ); }
 	wxChoice* GetDatumchoice()  { return (wxChoice*) FindWindow( ID_DATUM ); }
 	wxChoice* GetProjchoice()  { return (wxChoice*) FindWindow( ID_PROJ ); }
-	void SetProjection(const vtProjection &proj);
-	void GetProjection(vtProjection &proj);
+
 	void SetUIFromProjection();
 	void SetProjectionUI(ProjType type);
 	void UpdateControlStatus();
@@ -61,23 +63,23 @@ public:
 	void RefreshDatums();
 	void UpdateDatumStatus();
 
-	int	  m_iDatum;
-	int	  m_iZone;
-	vtProjection	m_proj;
-	bool	m_bShowAllDatums;
-
 private:
 	// WDR: member variable declarations for Projection2Dlg
-	ProjType	m_eProj;
-	int	  m_iProj;
-	int	  m_iUnits;
 	wxListCtrl  *m_pParamCtrl;
 	wxChoice	*m_pZoneCtrl;
 	wxChoice	*m_pHorizCtrl;
 	wxChoice	*m_pDatumCtrl;
 	wxChoice	*m_pProjCtrl;
 
-	bool m_bInitializedUI;
+	vtProjection	m_proj;
+	ProjType		m_eProj;
+	int		m_iDatum;
+	int		m_iZone;
+	int		m_iProj;
+	int		m_iUnits;
+	bool	m_bShowAllDatums;
+	bool	m_bInitializedUI;
+	DPoint2 m_GeoRefPoint;
 
 private:
 	// WDR: handler declarations for Projection2Dlg
