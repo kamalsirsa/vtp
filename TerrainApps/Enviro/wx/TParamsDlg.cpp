@@ -231,6 +231,7 @@ void TParamsDlg::GetParams(TParams &Params)
 //  Params.m_fVehicleSpeed = m_fVehicleSpeed;
 //  Params.m_iNumCars = m_iNumCars;
 
+	Params.m_bSky = m_bSky;
 	Params.m_strSkyTexture = m_strSkyTexture;
 	Params.m_bOceanPlane = m_bOceanPlane;
 	Params.m_bHorizon = m_bHorizon;
