@@ -46,7 +46,7 @@ public:
 	void ChangeTerrainDetail(bool bIncrease);
 	void SetFullScreen(bool bFull);
 	void ShowPopupMenu(const IPoint2 &pos);
-	void SetTerrainToGUI(vtTerrain *pTerrain);
+	virtual void SetTerrainToGUI(vtTerrain *pTerrain);
 	void SetTimeEngine(TimeEngine *pEngine);
 	void Snapshot(bool bNumbered);
 	virtual void EarthPosUpdated(const DPoint3 &pos);
@@ -185,7 +185,9 @@ public:
 	class MyStatusBar	*m_pStatusBar;
 
 	wxMenu				*m_pFileMenu;
+	wxMenu				*m_pToolsMenu;
 	wxMenu				*m_pViewMenu;
+	wxMenu				*m_pNavMenu;
 	wxMenu				*m_pEarthMenu;
 	wxMenu				*m_pTerrainMenu;
 	wxMenu				*m_pSceneMenu;
