@@ -1,7 +1,7 @@
 //
 // ImageLayer.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -194,8 +194,8 @@ bool vtImageLayer::LoadFromGDAL()
 
 			// Compute sizes in metres along NW/SE axis for compatibility with world files
 			// i.e. xright - xleft and ytop - ybottom
-			m_Area.top = (float)(affineTransform[3] * linearConversionFactor);
-			m_Area.bottom = m_Area.top - (float)( - (iPixelWidth * affineTransform[4] + iPixelHeight * affineTransform[5]) * linearConversionFactor);
+			m_Area.bottom = (float)(affineTransform[3] * linearConversionFactor);
+			m_Area.top = m_Area.bottom - (float)( - (iPixelWidth * affineTransform[4] + iPixelHeight * affineTransform[5]) * linearConversionFactor);
 			m_Area.left = (float)(affineTransform[0] * linearConversionFactor);
 			m_Area.right = m_Area.left + (float)((iPixelWidth * affineTransform[1] + iPixelHeight * affineTransform[2]) * linearConversionFactor);
 			m_Proj.SetSpatialReference(&SpatialReference);
