@@ -9,10 +9,12 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Route.h"
-#include "TerrainSceneWP.h"
+#include "vtlib/core/Roads.h"
+
 #include "Engines.h"
 #include "Hawaii.h"
 #include "Globe.h"
+#include "Enviro.h"	// for GetCurrentTerrain
 
 //////////////////////////////////////////////////////////////
 
@@ -337,86 +339,50 @@ void BenchEngine::Convert(float result, FILE* fp, bool last)
 
 //////////////////////////////////////////////////////////////////////
 
-/*
-TriggerEngine::TriggerEngine(vtTerrain* terrain, int jump_index, SwapEngine* swapEng, 
-						     vtTransform* shape, float size)
-{
-	m_pterrain = terrain;
-	m_jump_index = jump_index;
-	m_pswapEng = swapEng;
-	m_shape = shape;
-	m_halfsize = size/2;
-}
-
-void TriggerEngine::Eval()
-{
-	vtTransform *pTarget = (vtTransform*) GetTarget();
-	if (!pTarget)
-		return;
-
-	//check if you are within the bounds of a "cube" superimposed on the portal 
-	FPoint3 curloc = pTarget->GetTrans();
-	FPoint3 boxloc = m_shape->GetTrans();
-
-	if ( (curloc.x > boxloc.x - m_halfsize) && (curloc.x < boxloc.x + m_halfsize) &&
-	     (curloc.z > boxloc.z - m_halfsize) && (curloc.z < boxloc.z + m_halfsize) ) 
-		 m_pswapEng->TriggerHit(m_pterrain, m_jump_index);
-}
-*/
-
 //
 // RouteFollowerEngine
 //
-RouteFollowerEngine::RouteFollowerEngine(vtRoute* route, vtCamera* camera)
+RouteFollowerEngine::RouteFollowerEngine(vtRoute* route)
 {
 	m_pHeightField = GetCurrentTerrain()->GetHeightField();
-	m_bFollowerOn = false;
-	m_bFirstTime=true;
+	m_bFirstTime = true;
 	m_pRoute = route;
-	m_pCamera = camera;
 	m_lnext=0;
 
 	// set the initial camera position
-	vtStation st = (*m_pRoute)[0L];
-	DPoint3 dp = st.m_dpStationPoint;
+	vtUtilNode *st = m_pRoute->GetAt(0);
 	FPoint3 fp;
-	g_Conv.ConvertFromEarth(dp, fp); 
-	m_pHeightField->FindAltitudeAtPoint(fp, fp.y);
+	m_pHeightField->ConvertEarthToSurfacePoint(st->m_Point, fp);
 
-	m_pCamera->Identity();
+	vtCamera* target = (vtCamera*) GetTarget();
 
-	m_pCamera->SetTrans(fp);
-	m_pCamera->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), -st.dRadAzimuth);
+	target->Identity();
+
+	target->SetTrans(fp);
+	target->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), -st->dRadAzimuth);
 	TParams &params = GetCurrentTerrain()->GetParams();
-	m_pCamera->TranslateLocal(FPoint3(-0.01f, params.m_iMinHeight*WORLD_SCALE*2, 0.0f));
+	target->TranslateLocal(FPoint3(-0.01f, params.m_iMinHeight*WORLD_SCALE*2, 0.0f));
 }
 
 void RouteFollowerEngine::Eval()
 {
 	// Position the View to the beginning of the route
 	//	and follow the route with the camera.
-	if (m_bFollowerOn)
-	{
-		vtCamera* target = m_pCamera;
-		if (!target)
-			return;
-		if (!m_pRoute)
-			return;
-		target->Identity();
+	vtCamera* target = (vtCamera*) GetTarget();
+	if (!target)
+		return;
+	if (!m_pRoute)
+		return;
+	target->Identity();
 
-		vtStation st = (*m_pRoute)[(++m_lnext)%m_pRoute->GetSize()];
-		DPoint3 dp = st.m_dpStationPoint;
-		FPoint3 fp;
-		g_Conv.ConvertFromEarth(dp, fp); 
-		m_pHeightField->FindAltitudeAtPoint(fp, fp.y);
+	vtUtilNode *st = m_pRoute->GetAt((++m_lnext)%m_pRoute->GetSize());
+	FPoint3 fp;
+	m_pHeightField->ConvertEarthToSurfacePoint(st->m_Point, fp);
 
-		target->SetTrans(fp);
-		m_pCamera->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), -st.dRadAzimuth);
-		TParams &params = GetCurrentTerrain()->GetParams();
-		m_pCamera->TranslateLocal(FPoint3(-0.01f, params.m_iMinHeight*WORLD_SCALE*2, 0.0f));
-
-		SetTarget(m_pCamera);
-	}
+	target->SetTrans(fp);
+	target->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), -st->dRadAzimuth);
+	TParams &params = GetCurrentTerrain()->GetParams();
+	target->TranslateLocal(FPoint3(-0.01f, params.m_iMinHeight*WORLD_SCALE*2, 0.0f));
 }
 
 
