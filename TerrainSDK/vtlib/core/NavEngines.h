@@ -226,9 +226,9 @@ public:
 	void SetRadius(float fRadius);
 	float GetRadius();
 	void SetZoomScale(float s);
-	void SetRotateButton(int button, int modifier);
-	void SetZoomButton(int button, int modifier);
-	void SetTranslateButton(int button, int modifier);
+	void SetRotateButton(int button, int modifier = 0, bool bExact = true);
+	void SetZoomButton(int button, int modifier = 0, bool bExact = true);
+	void SetTranslateButton(int button, int modifier = 0, bool bExact = true);
 	void SetDirection(float fTheta, float fPhi);
 
 	void OnMouse(vtMouseEvent &event);
@@ -249,10 +249,13 @@ protected:
 
 	int		m_rotate_button;
 	int		m_rotate_modifier;
+	bool	m_rotate_exact;
 	int		m_zoom_button;
 	int		m_zoom_modifier;
+	bool	m_zoom_exact;
 	int		m_trans_button;
 	int		m_trans_modifier;
+	bool	m_trans_exact;
 };
 
 /*@}*/	// Group nav
