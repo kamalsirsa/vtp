@@ -1335,6 +1335,13 @@ void vtHUD::SetWindowSize(int w, int h)
 ///////////////////////////////////////////////////////////////////////
 // vtImageSprite
 
+vtImageSprite::vtImageSprite()
+{
+	m_pMats = NULL;
+	m_pGeom = NULL;
+	m_pMesh = NULL;
+}
+
 /**
  * Create a vtImageSprite.
  *
@@ -1342,14 +1349,25 @@ void vtHUD::SetWindowSize(int w, int h)
  * \param bBlending Set to true for alpha-blending, which produces smooth
  *		edges on transparent textures.
  */
-vtImageSprite::vtImageSprite(const char *szTextureName, bool bBlending)
+bool vtImageSprite::Create(const char *szTextureName, bool bBlending)
 {
+	vtImage *pImage = new vtImage(szTextureName);
+	if (!pImage->LoadedOK())
+	{
+		pImage->Release();
+		return false;
+	}
+	m_Size.x = pImage->GetWidth();
+	m_Size.y = pImage->GetHeight();
+
 	// set up material and geometry container
 	m_pMats = new vtMaterialArray;
 	m_pGeom = new vtGeom;
 	m_pGeom->SetMaterials(m_pMats);
 	m_pMats->Release();
-	m_pMats->AddTextureMaterial2(szTextureName, false, false, bBlending);
+
+	m_pMats->AddTextureMaterial(pImage, false, false, bBlending);
+	pImage->Release();
 
 	// default position of the mesh is just 0,0-1,1
 	m_pMesh = new vtMesh(GL_QUADS, VT_TexCoords, 4);
@@ -1360,6 +1378,7 @@ vtImageSprite::vtImageSprite(const char *szTextureName, bool bBlending)
 	m_pMesh->AddQuad(0, 1, 2, 3);
 	m_pGeom->AddMesh(m_pMesh, 0);
 	m_pMesh->Release();
+	return true;
 }
 
 void vtImageSprite::Release()
@@ -1381,6 +1400,8 @@ void vtImageSprite::Release()
  */
 void vtImageSprite::SetPosition(float l, float t, float r, float b)
 {
+	if (!m_pMesh)	// safety check
+		return;
 	m_pMesh->SetVtxPos(0, FPoint3(l, b, 0));
 	m_pMesh->SetVtxPos(1, FPoint3(r, b, 0));
 	m_pMesh->SetVtxPos(2, FPoint3(r, t, 0));

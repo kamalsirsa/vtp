@@ -485,9 +485,11 @@ protected:
 class vtImageSprite
 {
 public:
-	vtImageSprite(const char *szTextureName, bool bBlending = false);
+	vtImageSprite();
+	bool Create(const char *szTextureName, bool bBlending = false);
+	IPoint2 GetSize() const { return m_Size; }
 	void SetPosition(float l, float t, float r, float b);
-	vtNode *GetNode() { return m_pGeom; }
+	vtNode *GetNode() const { return m_pGeom; }
 	void Release();
 
 protected:
@@ -495,8 +497,12 @@ protected:
 	vtMaterialArray *m_pMats;
 	vtGeom *m_pGeom;
 	vtMesh *m_pMesh;
+	IPoint2 m_Size;
 };
 
+/**
+ * Not yet implemented: a convenience class for adding text to a HUD.
+ */
 class vtTextSprite
 {
 public:
