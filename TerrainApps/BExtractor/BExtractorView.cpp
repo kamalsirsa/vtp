@@ -1332,8 +1332,34 @@ void BExtractorView::UpdateResizeScale()
 	{
 		// drag individual corner points
 		p = foot.GetAt(m_iCurCorner);
-		p += moved_by;
-		foot.SetAt(m_iCurCorner, p);
+
+		int points = foot.GetSize();
+		if (m_bConstrain && points > 3)
+		{
+			// Maintain angles
+			DPoint2 p0 = foot.GetSafePoint(m_iCurCorner - 1);
+			DPoint2 p1 = foot.GetSafePoint(m_iCurCorner + 1);
+			DPoint2 vec0 = (p - p0).Normalize();
+			DPoint2 vec1 = (p - p1).Normalize();
+			DPoint2 vec2 = vec0;
+			vec2.Rotate(PID2d);
+			DPoint2 vec3 = vec1;
+			vec3.Rotate(PID2d);
+
+			p += moved_by;
+			double a;
+
+			a = (p - p0).Dot(vec2);
+			foot.SetSafePoint(m_iCurCorner - 1, p0 + (vec2 * a));
+			a = (p - p1).Dot(vec3);
+			foot.SetSafePoint(m_iCurCorner + 1, p1 + (vec3 * a));
+			foot.SetAt(m_iCurCorner, p);
+		}
+		else
+		{
+			p += moved_by;
+			foot.SetAt(m_iCurCorner, p);
+		}
 	}
 	m_EditBuilding.SetFootprint(0, foot);
 }
