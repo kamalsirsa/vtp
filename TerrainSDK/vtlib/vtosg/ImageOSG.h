@@ -25,7 +25,7 @@ protected:
 	void _CreateFromDIB(vtDIB *pDIB);
 	bool _ReadPNG(const char *filename);
 
-private:
+protected:	// should be private, but that causes an annoying gcc warning
 	virtual ~vtImage();
 };
 
