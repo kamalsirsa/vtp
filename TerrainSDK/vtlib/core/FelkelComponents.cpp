@@ -38,8 +38,8 @@ CRidgeLine CRidgeLine::AngleAxis (const C3DPoint &b, const C3DPoint &a, const CN
 	CNumber d1;
 	CNumber d2;
 	// Clamp tans to first quadrant
-	CNumber tsa = abs(tan(sa));
-	CNumber tsc = abs(tan(sc));
+	CNumber tsa = fabs(tan(sa));
+	CNumber tsc = fabs(tan(sc));
 
 
 	theta = bc.m_Angle - ba.m_Angle;
@@ -79,9 +79,9 @@ C3DPoint CRidgeLine::Intersection(const CRidgeLine &a)
 		{
 			if (m_Origin.m_y == a.m_Origin.m_y)
 			{
-				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))),
+				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
 						0,
-						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))));
+						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 			}
 			else
 			{
@@ -90,21 +90,21 @@ C3DPoint CRidgeLine::Intersection(const CRidgeLine &a)
 
 				if (m_Origin.m_y < a.m_Origin.m_y)
 				{
-					Offset = (a.m_Origin.m_y - m_Origin.m_y)/abs(tan(m_Slope));
+					Offset = (a.m_Origin.m_y - m_Origin.m_y)/fabs(tan(m_Slope));
 					OffsetPoint.m_x = Offset * cos(m_Angle) + m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(m_Angle) + m_Origin.m_z;
-					return C3DPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))),
+					return C3DPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
 							0,
-							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))));
+							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 				}
 				else
 				{
-					Offset = (m_Origin.m_y - a.m_Origin.m_y)/abs(tan(a.m_Slope));
+					Offset = (m_Origin.m_y - a.m_Origin.m_y)/fabs(tan(a.m_Slope));
 					OffsetPoint.m_x = Offset * cos(a.m_Angle) + a.m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(a.m_Angle) + a.m_Origin.m_z;
 					return C3DPoint (m_Origin.m_x + (OffsetPoint.m_x - m_Origin.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
 							0,
-							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))));
+							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 				}
 			}
 		}
@@ -146,9 +146,9 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 		{
 			if (m_Origin.m_y == a.m_Origin.m_y)
 			{
-				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))),
+				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
 						0,
-						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))));
+						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 			}
 			else
 			{
@@ -157,21 +157,21 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 
 				if (m_Origin.m_y < a.m_Origin.m_y)
 				{
-					Offset = (a.m_Origin.m_y - m_Origin.m_y)/abs(tan(m_Slope));
+					Offset = (a.m_Origin.m_y - m_Origin.m_y)/fabs(tan(m_Slope));
 					OffsetPoint.m_x = Offset * cos(m_Angle) + m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(m_Angle) + m_Origin.m_z;
-					return C3DPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))),
+					return C3DPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
 							0,
-							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))));
+							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 				}
 				else
 				{
-					Offset = (m_Origin.m_y - a.m_Origin.m_y)/abs(tan(a.m_Slope));
+					Offset = (m_Origin.m_y - a.m_Origin.m_y)/fabs(tan(a.m_Slope));
 					OffsetPoint.m_x = Offset * cos(a.m_Angle) + a.m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(a.m_Angle) + a.m_Origin.m_z;
-					return C3DPoint (m_Origin.m_x + (OffsetPoint.m_x - m_Origin.m_x) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))),
+					return C3DPoint (m_Origin.m_x + (OffsetPoint.m_x - m_Origin.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
 							0,
-							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))));
+							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 				}
 			}
 		}
@@ -194,9 +194,9 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 		{
 			if (m_Origin.m_y == a.m_Origin.m_y)
 			{
-				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))),
+				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
 						0,
-						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))));
+						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 			}
 			else
 			{
@@ -205,21 +205,21 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 
 				if (m_Origin.m_y < a.m_Origin.m_y)
 				{
-					Offset = (a.m_Origin.m_y - m_Origin.m_y)/abs(tan(m_Slope));
+					Offset = (a.m_Origin.m_y - m_Origin.m_y)/fabs(tan(m_Slope));
 					OffsetPoint.m_x = Offset * cos(m_Angle) + m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(m_Angle) + m_Origin.m_z;
-					return C3DPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))),
+					return C3DPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
 							0,
-							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))));
+							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 				}
 				else
 				{
-					Offset = (m_Origin.m_y - a.m_Origin.m_y)/abs(tan(a.m_Slope));
+					Offset = (m_Origin.m_y - a.m_Origin.m_y)/fabs(tan(a.m_Slope));
 					OffsetPoint.m_x = Offset * cos(a.m_Angle) + a.m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(a.m_Angle) + a.m_Origin.m_z;
-					return C3DPoint (m_Origin.m_x + (OffsetPoint.m_x - m_Origin.m_x) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))),
+					return C3DPoint (m_Origin.m_x + (OffsetPoint.m_x - m_Origin.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
 							0,
-							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + abs(tan(m_Slope))/abs(tan(a.m_Slope))));
+							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 				}
 			}
 		}
@@ -256,7 +256,7 @@ CNumber CRidgeLine::Dist(const C3DPoint &p) const
 {
 	CNumber a = m_Angle - CRidgeLine(m_Origin, p, -1).m_Angle;
 	CNumber d = sin (a) * m_Origin.DistXZ(p);
-	return abs(d);
+	return fabs(d);
 }
 
 
@@ -312,10 +312,10 @@ m_advancingSkeletonLine (NULL)
 	m_rightVertex = &right;
 
 	// Create the associated ridgeline for this vertex
-	CNumber height = m_leftLine.Dist(m_point) * abs(tan(m_leftLine.m_Slope));
+	CNumber height = m_leftLine.Dist(m_point) * fabs(tan(m_leftLine.m_Slope));
 #ifdef _DEBUG
 	{
-		CNumber n2 = m_rightLine.Dist(m_point) * abs(tan(m_rightLine.m_Slope));
+		CNumber n2 = m_rightLine.Dist(m_point) * fabs(tan(m_rightLine.m_Slope));
 		if (height != n2)
 			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 	}
@@ -380,21 +380,21 @@ C3DPoint CVertex::CoordinatesOfAnyIntersectionOfTypeB (const CVertex &left, cons
 #endif
 
 	Reverse = CRidgeLine(poi, m_point, 0, true);
-	Reverse.m_Slope = atan(abs(tan(left.m_rightLine.m_Slope)) * sin(left.m_rightLine.m_Angle - Reverse.m_Angle));
+	Reverse.m_Slope = atan(fabs(tan(left.m_rightLine.m_Slope)) * sin(left.m_rightLine.m_Angle - Reverse.m_Angle));
 
 	poi = m_axis.Intersection(Reverse);
 
 	// Calculate heights
-	poi.m_y = m_leftLine.Dist(poi) * abs(tan(m_leftLine.m_Slope));
+	poi.m_y = m_leftLine.Dist(poi) * fabs(tan(m_leftLine.m_Slope));
 
 #ifdef _DEBUG
 	{
 		if (poi.m_y < 10000.0)
 		{
-			CNumber db0 = (poi - m_axis.m_Origin).LengthXZ() * abs(tan(m_axis.m_Slope));
-			CNumber db1 = m_rightLine.Dist(poi) * abs(tan(m_rightLine.m_Slope));
-			CNumber db2 = left.m_rightLine.Dist(poi) * abs(tan(left.m_rightLine.m_Slope));
-			CNumber db3 = left.m_nextVertex->m_leftLine.Dist(poi) * abs(tan(left.m_nextVertex->m_leftLine.m_Slope));
+			CNumber db0 = (poi - m_axis.m_Origin).LengthXZ() * fabs(tan(m_axis.m_Slope));
+			CNumber db1 = m_rightLine.Dist(poi) * fabs(tan(m_rightLine.m_Slope));
+			CNumber db2 = left.m_rightLine.Dist(poi) * fabs(tan(left.m_rightLine.m_Slope));
+			CNumber db3 = left.m_nextVertex->m_leftLine.Dist(poi) * fabs(tan(left.m_nextVertex->m_leftLine.m_Slope));
 			if (!SIMILAR(poi.m_y, db0))
 				VTLOG("%s %d Assert failed poi.m_y %e db0 %e\n", __FILE__, __LINE__, poi.m_y, db0);
 			if (!SIMILAR(poi.m_y, db1))
@@ -517,8 +517,8 @@ bool CVertex::InvalidIntersection (CVertexList &vl, const CIntersection &is)
 			continue;
 
 		// Calculate height of intersection
-		CNumber dv = m_leftLine.Dist(poi) * abs(tan(m_leftLine.m_Slope));
-		CNumber dvx = m_rightLine.Dist(poi) * abs(tan(m_rightLine.m_Slope));
+		CNumber dv = m_leftLine.Dist(poi) * fabs(tan(m_leftLine.m_Slope));
+		CNumber dvx = m_rightLine.Dist(poi) * fabs(tan(m_rightLine.m_Slope));
 #ifdef FELKELDEBUG
 		if (!(dv == dvx))
 			VTLOG("%s %d Assert failed dv %e dvx %e\n", __FILE__, __LINE__, dv, dvx);
@@ -526,8 +526,8 @@ bool CVertex::InvalidIntersection (CVertexList &vl, const CIntersection &is)
 		if (dv > is.m_height)
 			continue;
 
-		CNumber di = (*i).m_leftLine.Dist(poi) * abs(tan((*i).m_leftLine.m_Slope));
-		CNumber dix = (*i).m_rightLine.Dist(poi) * abs(tan((*i).m_rightLine.m_Slope));
+		CNumber di = (*i).m_leftLine.Dist(poi) * fabs(tan((*i).m_leftLine.m_Slope));
+		CNumber dix = (*i).m_rightLine.Dist(poi) * fabs(tan((*i).m_rightLine.m_Slope));
 #ifdef _DEBUG
 		if (!(di == dix))
 			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
@@ -541,4 +541,3 @@ bool CVertex::InvalidIntersection (CVertexList &vl, const CIntersection &is)
 }
 
 #endif	// DOXYGEN_SHOULD_SKIP_THIS
-

@@ -45,18 +45,18 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 	ar.NormalizeAngle();
 
 	C3DPoint i1 = v.m_axis.FacingTowards(l.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(l.m_axis);
-	i1.m_y = v.m_leftLine.Dist(i1) * abs(tan(v.m_leftLine.m_Slope));
+	i1.m_y = v.m_leftLine.Dist(i1) * fabs(tan(v.m_leftLine.m_Slope));
 	C3DPoint i2 = v.m_axis.FacingTowards (r.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(r.m_axis);
-	i2.m_y = v.m_rightLine.Dist(i2) * abs(tan(v.m_rightLine.m_Slope));
+	i2.m_y = v.m_rightLine.Dist(i2) * fabs(tan(v.m_rightLine.m_Slope));
 	if (SIMILAR(v.m_axis.m_Slope, CN_PI/2))
 	{
-		i1.m_y = C3DPoint(i1 - l.m_point).LengthXZ() * abs(tan(l.m_axis.m_Slope)) + l.m_point.m_y;
-		i2.m_y = C3DPoint(i2 - r.m_point).LengthXZ() * abs(tan(r.m_axis.m_Slope)) + r.m_point.m_y;
+		i1.m_y = C3DPoint(i1 - l.m_point).LengthXZ() * fabs(tan(l.m_axis.m_Slope)) + l.m_point.m_y;
+		i2.m_y = C3DPoint(i2 - r.m_point).LengthXZ() * fabs(tan(r.m_axis.m_Slope)) + r.m_point.m_y;
 	}
 	else
 	{
-		i1.m_y = C3DPoint(i1 - v.m_point).LengthXZ() * abs(tan(v.m_axis.m_Slope)) + v.m_point.m_y;
-		i2.m_y = C3DPoint(i2 - v.m_point).LengthXZ() * abs(tan(v.m_axis.m_Slope)) + v.m_point.m_y;
+		i1.m_y = C3DPoint(i1 - v.m_point).LengthXZ() * fabs(tan(v.m_axis.m_Slope)) + v.m_point.m_y;
+		i2.m_y = C3DPoint(i2 - v.m_point).LengthXZ() * fabs(tan(v.m_axis.m_Slope)) + v.m_point.m_y;
 	}
 
 	CNumber d1 = v.m_point.DistXZ(i1);
@@ -437,4 +437,3 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 }
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
-
