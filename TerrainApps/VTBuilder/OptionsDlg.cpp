@@ -25,6 +25,9 @@
 BEGIN_EVENT_TABLE(OptionsDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_RADIO_OUTLINE_ONLY, OptionsDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_COLOR, OptionsDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_RADIO_NO_SHADING, OptionsDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_RADIO_SIMPLE_SHADING, OptionsDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_RADIO_CAST_SHADOWS, OptionsDlg::OnRadio )
 END_EVENT_TABLE()
 
 OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
