@@ -968,6 +968,7 @@ static void MassageDatumFromWKT(vtString &strDatum )
 
 // GDAL
 #include "gdal_priv.h"
+#include "cpl_csv.h"
 
 // OGR
 #include <ogrsf_frmts.h>
@@ -989,6 +990,14 @@ GDALWrapper::~GDALWrapper()
 	{
 		GDALDestroyDriverManager();
 	}
+
+	// Call CSVDeaccess just in case, because any usage of OGR (e.g.
+	// projections) might have caused stuff to be loaded that's not unloaded
+	// unless CSVDeaccess is called, which is only done in the GeoTIFF driver
+	// unregistering.  So this handles the situation where we've use OGR
+	// but not GDAL.
+	CSVDeaccess(NULL);
+
 	if (m_bOGRFormatsRegistered)
 	{
 		OGRSFDriverRegistrar *reg = OGRSFDriverRegistrar::GetRegistrar();
