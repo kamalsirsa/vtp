@@ -67,9 +67,11 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 
 void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
-	//set the pen options
-	//single pixel solid pen
+	// single pixel solid pen
 	wxPen DefPen(wxColor(128,0,0), 1, wxSOLID);
+	wxPen SelPen(wxColor(255,255,0), 1, wxSOLID);
+	int pen = 0;
+
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(DefPen);
 	int i, j, size, size2;
@@ -80,6 +82,22 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 		size = m_Point2.GetSize();
 		for (i = 0; i < size; i++)
 		{
+			if (m_Selected[i])
+			{
+				if (pen == 0)
+				{
+					pDC->SetPen(SelPen);
+					pen = 1;
+				}
+			}
+			else
+			{
+				if (pen == 1)
+				{
+					pDC->SetPen(DefPen);
+					pen = 0;
+				}
+			}
 			pView->screen(m_Point2[i], p);
 			pDC->DrawPoint(p);
 			pDC->DrawPoint(p.x+1, p.y);
@@ -473,6 +491,62 @@ int vtRawLayer::AddPoint(const DPoint3 &p)
 	return rec;
 }
 
+void vtRawLayer::GetPoint(int num, DPoint3 &p)
+{
+	if (m_nSHPType == SHPT_POINTZ)
+	{
+		p = m_Point3.GetAt(num);
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Selection of Entities
+
+void vtRawLayer::Select(int iEnt, bool set)
+{
+	m_Selected[iEnt] = set;
+}
+
+bool vtRawLayer::IsSelected(int iEnt)
+{
+	return m_Selected[iEnt];
+}
+
+void vtRawLayer::DeselectAll()
+{
+	for (int i = 0; i < m_Selected.GetSize(); i++)
+		m_Selected[i] = false;
+}
+
+int vtRawLayer::DoBoxSelect(const DRECT &rect)
+{
+	int selected = 0;
+	int entities = NumEntities();
+
+	bool bSelect;
+	for (int i = 0; i < entities; i++)
+	{
+		if (m_nSHPType == SHPT_POINT)
+			bSelect = rect.ContainsPoint(m_Point2[i]);
+
+		if (m_nSHPType == SHPT_POINTZ)
+			bSelect = rect.ContainsPoint(DPoint2(m_Point3[i].x, m_Point3[i].y));
+
+		if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+			bSelect = rect.ContainsLine(*m_LinePoly[i]);
+
+		Select(i, bSelect);
+		if (bSelect)
+			selected++;
+	}
+	return selected;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Data Fields
+
 int vtRawLayer::AddField(const char *name, DBFFieldType ftype, int string_length)
 {
 	Field *f = new Field(name, ftype);
@@ -501,6 +575,7 @@ int vtRawLayer::AddRecord()
 	{
 		recs = m_fields[i]->AddRecord();
 	}
+	m_Selected.Append(false);
 	return recs;
 }
 
@@ -517,6 +592,60 @@ void vtRawLayer::SetValue(int record, int field, int value)
 void vtRawLayer::SetValue(int record, int field, double value)
 {
 	m_fields[field]->SetValue(record, value);
+}
+
+void vtRawLayer::GetValueAsString(int iRecord, int iField, vtString &str)
+{
+	Field *field = m_fields[iField];
+	switch (field->m_type)
+	{
+	case FTString:
+		str = *(field->m_string[iRecord]);
+		break;
+	case FTInteger:
+		str.Format("%d", field->m_int[iRecord]);
+		break;
+	case FTDouble:
+		str.Format("%lf", field->m_double[iRecord]);
+		break;
+	}
+}
+
+int vtRawLayer::SelectByCondition(int iField, int iCondition,
+								  const char *szValue)
+{
+	int i, ival;
+	double dval;
+	int entities = NumEntities();
+
+	Field *field = m_fields[iField];
+	switch (field->m_type)
+	{
+	case FTString:
+		for (i = 0; i < entities; i++)
+		{
+			if (! field->m_string[i]->Compare(szValue))
+				Select(i);
+		}
+		break;
+	case FTInteger:
+		ival = atoi(szValue);
+		for (i = 0; i < entities; i++)
+		{
+			if (field->m_int[i] == ival)
+				Select(i);
+		}
+		break;
+	case FTDouble:
+		dval = atof(szValue);
+		for (i = 0; i < entities; i++)
+		{
+			if (field->m_double[i] == dval)
+				Select(i);
+		}
+		break;
+	}
+	return 0;
 }
 
 /////////////////////////////////////////////////

@@ -64,12 +64,23 @@ public:
 	void SetEntityType(int type);
 	int AddPoint(const DPoint2 &p);
 	int AddPoint(const DPoint3 &p);
+	void GetPoint(int num, DPoint3 &p);
 
+	// selection
+	void Select(int iEnt, bool set = true);
+	bool IsSelected(int iEnt);
+	void DeselectAll();
+	int DoBoxSelect(const DRECT &rect);
+
+	int GetNumFields() { return m_fields.GetSize(); }
+	Field *GetField(int i) { return m_fields.GetAt(i); }
 	int AddField(const char *name, DBFFieldType ftype, int string_length = 40);
 	int AddRecord();
 	void SetValue(int record, int field, const char *string);
 	void SetValue(int record, int field, int value);
 	void SetValue(int record, int field, double value);
+	void GetValueAsString(int record, int field, vtString &str);
+	int SelectByCondition(int iField, int iCondition, const char *szValue);
 
 protected:
 	// supported values for shape type are: SHPT_NULL, SHPT_POINT,
@@ -78,6 +89,8 @@ protected:
 	DLine2		m_Point2;		// SHPT_POINT
 	DLine3		m_Point3;		// SHPT_POINTZ
 	DPolyArray2	m_LinePoly;		// SHPT_ARC, SHPT_POLYGON
+
+	Array<bool>	m_Selected;
 
 	Array<Field*> m_fields;
 
