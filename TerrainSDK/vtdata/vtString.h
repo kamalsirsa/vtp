@@ -255,7 +255,7 @@ protected:
 	void AllocBeforeWrite(int nLen);
 	void Release();
 	static void WIN_UNIX_STDCALL Release(vtStringData* pData);
-	static int WIN_UNIX_STDCALL SafeStrlen(pcchar lpsz);
+	static size_t WIN_UNIX_STDCALL SafeStrlen(pcchar lpsz);
 	static void FreeData(vtStringData* pData);
 	};
 
@@ -307,7 +307,7 @@ inline bool vtString::IsEmpty() const
 	{ return GetData()->nDataLength == 0; }
 inline vtString::operator pcchar() const
 	{ return m_pchData; }
-inline int WIN_UNIX_STDCALL vtString::SafeStrlen(pcchar lpsz)
+inline size_t WIN_UNIX_STDCALL vtString::SafeStrlen(pcchar lpsz)
 	{ return (lpsz == NULL) ? 0 : strlen(lpsz); }
 
 // vtString support (windows specific)
