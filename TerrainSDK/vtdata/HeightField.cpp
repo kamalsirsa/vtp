@@ -257,52 +257,81 @@ void vtHeightFieldGrid3d::GetDimensions(int &nColumns, int &nRows) const
 	nRows = m_iRows;
 }
 
-#define PICK_DISTANCE	1000
-
 /**
  * Tests a ray against a heightfield grid.
  *
  * Note: This algorithm is not guaranteed to give absolutely correct results,
- * but it is reasonably fast and efficient.  It checks a series of PICK_DISTANCE
- * points along the ray against the terrain.  When a pair of points (segment)
- * is found to straddle the terrain, it refines the segment in a binary fashion.
+ * but it is reasonably fast and efficient.  It checks a series of points
+ * along the ray against the terrain.  When a pair of points (segment) is
+ * found to straddle the terrain, it refines the segment in a binary fashion.
  *
  * Since the length of the test is proportional to a single grid element,
- * there is a very small chance that it will give results that are off by
- * a small distance (less than 1 grid element)
+ * there is a small chance that it will give results that are off by a small
+ * distance (less than 1 grid element)
  *
- * \return true if hit terrain.
+ * \return true if hit terrain.  The resulting point of intersection is
+ *		placed in the 'result' argument.
  */
 bool vtHeightFieldGrid3d::CastRayToSurface(const FPoint3 &point,
 										   const FPoint3 &dir, FPoint3 &result) const
 {
-	// cast a series of line segment along the ray
-	int i, above;
-	FPoint3 p0 = point, p1, p2 = point;
-	FPoint3 delta = dir * (m_fDiagonalLength / (m_iColumns * 1.41f));
-	bool found_above = false;
-	for (i = 0; i < PICK_DISTANCE; i++)
+	float alt;
+	bool bOn = FindAltitudeAtPoint(point, alt);
+
+	// special case: straight up or down
+	float mag2 = sqrt(dir.x*dir.x+dir.z*dir.z);
+	if (fabs(mag2) < .000001)
 	{
-		above = PointIsAboveTerrain(p2);
-		if (above == 0)	// below
-		{
-			p1 = p2;
-			break;
-		}
-		if (above == 1)	// above
-		{
-			found_above = true;
-			p0 = p2;
-		}
-		p2 += delta;
+		if (!bOn)
+			return false;
+		if (dir.y > 0)	// points up
+			return (point.y < alt);
+		else
+			return (point.y > alt);
 	}
-	if (i == PICK_DISTANCE || !found_above)
+
+	if (bOn && point.y < alt)
+		return false;	// already firmly underground
+
+	// adjust magnitude of dir until 2D component has a good magnitude
+	float smallest = std::min(m_fXStep, m_fZStep);
+	float adjust = smallest / mag2;
+	FPoint3 dir2 = dir * adjust;
+
+	bool found_above = false;
+	FPoint3 p = point, lastp = point;
+	while (true)
+	{
+		// are we out of bounds and moving away?
+		if (p.x < m_WorldExtents.left && dir2.x < 0)
+			return false;
+		if (p.x > m_WorldExtents.right && dir2.x > 0)
+			return false;
+		if (p.z < m_WorldExtents.top && dir2.z < 0)
+			return false;
+		if (p.z > m_WorldExtents.bottom && dir2.z > 0)
+			return false;
+
+		bOn = FindAltitudeAtPoint(p, alt);
+		if (bOn)
+		{
+			if (p.y > alt)
+				found_above = true;
+			else
+				break;
+		}
+		lastp = p;
+		p += dir2;
+	}
+	if (!found_above)
 		return false;
+
 	// now, do a binary search to refine the result
-	for (i = 0; i < 10; i++)
+	FPoint3 p0 = lastp, p1 = p, p2;
+	for (int i = 0; i < 10; i++)
 	{
 		p2 = (p0 + p1) / 2.0f;
-		above = PointIsAboveTerrain(p2);
+		int above = PointIsAboveTerrain(p2);
 		if (above == 1)	// above
 			p0 = p2;
 		else if (above == 0)	// below
@@ -313,6 +342,48 @@ bool vtHeightFieldGrid3d::CastRayToSurface(const FPoint3 &point,
 	FindAltitudeAtPoint(p2, p2.y);
 	result = p2;
 	return true;
+}
+
+
+/**
+ * \return true if a line of sight exists between point1 and point2.
+ */
+bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
+									  const FPoint3 &point2) const
+{
+	float alt;
+	bool bOn;
+
+	// first check if either point is below ground
+	bOn = FindAltitudeAtPoint(point1, alt);
+	if (bOn && point1.y < alt)
+		return false;
+	bOn = FindAltitudeAtPoint(point2, alt);
+	if (bOn && point2.y < alt)
+		return false;
+
+	// special case: straight up or down
+	FPoint3 dir = point2 - point1;
+	float mag2 = sqrt(dir.x*dir.x+dir.z*dir.z);
+	if (fabs(mag2) < .000001)
+		return true;
+
+	// adjust magnitude of dir until 2D component has a good magnitude
+	float smallest = std::min(m_fXStep, m_fZStep);
+	int steps = (int) (mag2 / smallest) + 1;
+	if (steps < 2)
+		steps = 2;
+	dir /= (float) steps;
+
+	FPoint3 p = point1;
+	for (int i = 0; i < steps+1; i++)
+	{
+		bOn = FindAltitudeAtPoint(p, alt);
+		if (bOn && p.y < alt)	// hit the ground
+			return false;
+		p += dir;
+	}
+	return true;	// visible, didn't hit the ground
 }
 
 /**
