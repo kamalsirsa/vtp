@@ -273,6 +273,15 @@ void vtDestroyDir(const char *dirname)
 }
 
 /**
+ * Delete a file.
+ */
+void vtDeleteFile(const char *filename)
+{
+	unlink(filename);
+}
+
+
+/**
  * Given a full path containing a filename, return a pointer to
  * the filename portion of the string.
  */

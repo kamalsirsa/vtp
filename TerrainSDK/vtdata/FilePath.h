@@ -72,6 +72,7 @@ private:
 vtString FindFileOnPaths(const vtStringArray &paths, const char *filename);
 bool vtCreateDir(const char *dirname);
 void vtDestroyDir(const char *dirname);
+void vtDeleteFile(const char *filename);
 const char *StartOfFilename(const char *szFullPath);
 bool PathIsAbsolute(const char *szPath);
 vtString get_line_from_stream(std::ifstream &input);
