@@ -235,7 +235,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	else
 		hNewItem = m_pTree->AppendItem(hParentItem, str, nImage, nImage);
 
-	const type_info &t1 = typeid(*pNode);
+	const std::type_info &t1 = typeid(*pNode);
 	if (t1 == typeid(vtGeom))
 	{
 		vtGeom *pGeom = dynamic_cast<vtGeom*>(pNode);
