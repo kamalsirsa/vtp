@@ -123,7 +123,7 @@ bool BuilderApp::OnInit()
 */
 //	frame->LoadProject("E:/Locations/Romania/giurgiu.vtb");
 //	frame->ImportDataFromFile(LT_ELEVATION, "E:/Earth/NOAA Globe/g10g.hdr", false);
-//	wxString str("E:/VTP User's Data/Mike Flaxman/catrct_nur.tif");
+//	wxString2 str("E:/Data-USA/Terrains/Hawai`i.xml");
 //	frame->LoadLayer(str);
 
 //	wxString fname("E:/VTP User's Data/Hangzhou/Data/BuildingData/a-bldgs-18dec-subset1.vtst");
