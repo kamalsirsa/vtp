@@ -593,7 +593,7 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 			x = (int) (i * xFactor);
 
 			float shade;
-			if (x < gw-1)
+			if (x < gw-1 && y < gh-1)
 			{
 				// compute surface normal
 				GetWorldLocation(x, y, p1);
