@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include "MathTypes.h"
+#include "LocalConversion.h"
 
 ////////////////////////////////////////////////////
 
@@ -91,6 +92,7 @@ public:
 	float ProportionTotal();
 
 	// color
+	RGBi	m_Color;			// overall edge color
 
 	// slope in degrees: 90 is vertical, 0 is horizontal
 	int	m_iSlope;
@@ -108,6 +110,7 @@ public:
 
 class vtLevel
 {
+	friend class vtBuilding;
 public:
 	vtLevel();
 	vtLevel(const vtLevel &from) { *this = from; }
@@ -116,33 +119,42 @@ public:
 	// assignment operator
 	vtLevel &operator=(const vtLevel &v);
 
-	void SetWalls(int n);
-	void SetFootprint(const DLine2 &dl);
 	DLine2 &GetFootprint() { return m_Footprint; }
-	void SetWallMaterial(BldMaterial bm);
-
 	int GetNumEdges() { return m_Edges.GetSize(); }
 	vtEdge *GetEdge(int i) { return m_Edges[i]; }
 	float GetEdgeLength(int i);
 	bool HasSlopedEdges();
 	bool IsHorizontal();
-	void SetRoofType(RoofType rt, int iSlopeDegrees);
-	void SetEaveLength(float fMeters);
 	bool IsEdgeConvex(int i);
 	bool IsCornerConvex(int i);
 	bool IsUniform();
+
+	void SetEdgeMaterial(BldMaterial bm);
+	void SetEdgeColor(RGBi color);
+	void SetRoofType(RoofType rt, int iSlopeDegrees);
+	void SetEaveLength(float fMeters);
 
 	Array<vtEdge *> m_Edges;
 
 	int		m_iStories;
 	float	m_fStoryHeight;
-	RGBi	m_Color;			// overall level color
+
+protected:
+	void SetWalls(int n);
+	void SetFootprint(const DLine2 &dl);
+
+	void DetermineLocalFootprint(float fHeight);
+	void GetEdgePlane(int i, FPlane &plane);
+	bool DetermineHeightFromSlopes();
 
 protected:
 	void DeleteEdges();
 
 	// footprint of the stories in this level
 	DLine2		m_Footprint;
+
+	// footprint in the local CS of this building
+	FLine3		m_LocalFootprint;
 };
 
 class vtBuilding
@@ -179,7 +191,7 @@ public:
 
 	int GetNumLevels() const { return m_Levels.GetSize(); }
 	vtLevel *GetLevel(int i) { return m_Levels[i]; }
-	void AddLevel(vtLevel *pLev) { m_Levels.Append(pLev); }
+	vtLevel *CreateLevel(const DLine2 &footprint);
 
 	bool GetExtents(DRECT &rect) const;
 	void SetCenterFromPoly();
@@ -188,9 +200,12 @@ public:
 
 	void WriteXML(FILE *fp, bool bDegrees);
 	void AddDefaultDetails();
+	void DetermineLocalFootprints();
 
 	bool		m_bMoulding;
 	bool		m_bElevated;
+
+	static vtLocalConversion s_Conv;
 
 protected:
 	// information about each story
