@@ -51,13 +51,13 @@ public:
 	// copy
 	vtPlantSpecies &operator=(const vtPlantSpecies &v);
 
-	void SetSpecieID(short SpecieID) { m_iSpecieID = SpecieID; }
-	short GetSpecieID() const { return m_iSpecieID; }
+	struct CommonName { vtString m_strName, m_strLang; };
 
-	void SetCommonName(const char *CommonName);
-	const char *GetCommonName() const { return m_strCommonName; }
+	void AddCommonName(const char *Name, const char *Lang = NULL);
+	unsigned int NumCommonNames() const { return m_CommonNames.size(); }
+	CommonName GetCommonName(int n = 0) const { return m_CommonNames[n]; }
 
-	void SetSciName(const char *SciName);
+	void SetSciName(const char *szSciName);
 	const char *GetSciName() const { return m_szSciName; }
 
 	void SetMaxHeight(float f) { m_fMaxHeight = f; }
@@ -75,8 +75,8 @@ public:
 	vtPlantAppearance *GetAppearance(int i) const { return m_Apps[i]; }
 
 protected:
-	short		m_iSpecieID;
-	vtString	m_strCommonName;		// Stored in UTF-8
+	std::vector<CommonName> m_CommonNames;
+
 	vtString	m_szSciName;
 	float		m_fMaxHeight;
 	Array<vtPlantAppearance*> m_Apps;
@@ -130,9 +130,6 @@ public:
 	vtSpeciesList();
 	virtual ~vtSpeciesList();
 
-	bool Read(const char *fname);
-	bool Write(const char *fname);
-
 	bool ReadXML(const char *fname);
 	bool WriteXML(const char *fname);
 
@@ -146,8 +143,6 @@ public:
 	}
 	int GetSpeciesIdByName(const char *name) const;
 	int GetSpeciesIdByCommonName(const char *name) const;
-	virtual void AddSpecies(int SpecieID, const char *common_name,
-		const char *SciName, float max_height);
 	void Append(vtPlantSpecies *pSpecies)
 	{
 		m_Species.Append(pSpecies);

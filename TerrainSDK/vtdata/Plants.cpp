@@ -60,12 +60,23 @@ vtPlantSpecies::~vtPlantSpecies()
 
 
 /**
- * Set the common name for this species.  No language is assumed.
- * The encoding may be ASCII or UTF-8.
+ * Set the common name for this species.  Language is options.
+ * 
+ \param Name The common name in UTF-8.  Example: "Colorado Blue Spruce".
+ \param Lang The language, as a lower-case two-character ISO 639 standard language code.
+ *	Examples: en for English, de for German, zh for Chinese.
+ *  The default is English.
  */
-void vtPlantSpecies::SetCommonName(const char *CommonName)
+void vtPlantSpecies::AddCommonName(const char *Name, const char *Lang)
 {
-	m_strCommonName = CommonName;
+	CommonName name;
+	name.m_strName = Name;
+
+	if (Lang != NULL)
+		name.m_strLang = Lang;
+	else
+		name.m_strLang = "en";	// default language is English
+	m_CommonNames.push_back(name);
 }
 
 /**
@@ -93,74 +104,6 @@ vtSpeciesList::~vtSpeciesList()
 	}
 }
 
-bool vtSpeciesList::Read(const char *fname)
-{
-	char buf1[80], buf2[80], buf3[80];
-	int iApps = 0, j, apptype, iNumSpecies = 0, iSpecieID = 0;
-	float f1, f2, f3, f4;
-
-	FILE *fp = fopen(fname, "r");
-	if (!fp) return false;
-
-	fread(buf1, 13, 1, fp);
-	if (strncmp(buf1, "plantlist1.0\n", 12))
-		return false;
-
-	fscanf(fp, "total species: %d\n", &iNumSpecies);
-	for (int i = 0; i < iNumSpecies; i++)
-	{
-		fscanf(fp, "species %d: %s %s %s\n", &iSpecieID, buf1, buf2, buf3);
-		strcat(buf2, " ");
-		strcat(buf2, buf3);
-		fscanf(fp, "max height: %f\n", &f1);
-
-		AddSpecies(iSpecieID, buf1, buf2, f1);
-		vtPlantSpecies *pSpecies = GetSpecies(i);
-
-		fscanf(fp, "appearances: %d\n", &iApps);
-		for (j = 0; j < iApps; j++)
-		{
-			fscanf(fp, "%d %s %f %f %f %f\n", &apptype, buf1, &f1, &f2, &f3, &f4);
-			pSpecies->AddAppearance((apptype == 1) ? AT_BILLBOARD : AT_XFROG,
-				buf1, f1, f2, f3, f4);
-		}
-	}
-	fclose(fp);
-	return true;
-}
-
-bool vtSpeciesList::Write(const char *fname)
-{
-	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
-	FILE *fp = fopen(fname, "wb");
-	if (!fp) return false;
-
-	fprintf(fp, "plantlist1.0\n");
-	fprintf(fp, "total species: %d\n", NumSpecies());
-	for (unsigned int i = 0; i < NumSpecies(); i++)
-	{
-		fprintf(fp, "species %d: %s %s\n",
-			GetSpecies(i)->GetSpecieID(),
-			GetSpecies(i)->GetCommonName(),
-			GetSpecies(i)->GetSciName() );
-		fprintf(fp, "max height: %f\n", GetSpecies(i)->GetMaxHeight() );
-		fprintf(fp, "appearances: %d\n", GetSpecies(i)->NumAppearances() );
-
-		for (unsigned int j = 0; j < GetSpecies(i)->NumAppearances(); j++)
-		{
-			vtPlantAppearance* app = GetSpecies(i)->GetAppearance(j);
-			fprintf(fp, "%d %s %f %f %f %f\n",
-				app->m_eType, (const char *)app->m_filename, app->m_width,
-				app->m_height, app->m_shadow_radius, app->m_shadow_darkness);
-		}
-	}
-	fclose(fp);
-	return true;
-}
-
-
 bool vtSpeciesList::WriteXML(const char *fname)
 {
 	// Avoid trouble with '.' and ',' in Europe
@@ -178,12 +121,17 @@ bool vtSpeciesList::WriteXML(const char *fname)
 
 	for (unsigned int i = 0; i < NumSpecies(); i++)
 	{
-		fprintf(fp, "\t<species id=\"%d\" name=\"%s\" max_height=\"%.2f\">\n",
-			GetSpecies(i)->GetSpecieID(),
-			GetSpecies(i)->GetSciName(),
-			GetSpecies(i)->GetMaxHeight());
-		fprintf(fp, "\t\t<common name=\"%s\" />\n",
-			GetSpecies(i)->GetCommonName());
+		vtPlantSpecies *spe = GetSpecies(i);
+		fprintf(fp, "\t<species name=\"%s\" max_height=\"%.2f\">\n",
+			spe->GetSciName(),
+			spe->GetMaxHeight());
+		for (unsigned int j = 0; j < spe->NumCommonNames(); j++)
+		{
+			vtPlantSpecies::CommonName cname = spe->GetCommonName(j);
+			fprintf(fp, "\t\t<common name=\"%s\" lang=\"%s\" />\n",
+				(const char *) cname.m_strName,
+				(const char *) cname.m_strLang);
+		}
 		for (unsigned int j = 0; j < GetSpecies(i)->NumAppearances(); j++)
 		{
 			vtPlantAppearance* app = GetSpecies(i)->GetAppearance(j);
@@ -199,17 +147,6 @@ bool vtSpeciesList::WriteXML(const char *fname)
 	return true;
 }
 
-
-void vtSpeciesList::AddSpecies(int SpecieID, const char *CommonName,
-						   const char *SciName, float MaxHeight)
-{
-	vtPlantSpecies *pSpecie = new vtPlantSpecies();
-	pSpecie->SetSpecieID(SpecieID);
-	pSpecie->SetCommonName(CommonName);
-	pSpecie->SetSciName(SciName);
-	pSpecie->SetMaxHeight(MaxHeight);
-	m_Species.Append(pSpecie);
-}
 
 int vtSpeciesList::FindSpeciesId(vtPlantSpecies *ps)
 {
@@ -263,19 +200,23 @@ int vtSpeciesList::GetSpeciesIdByName(const char *name) const
 
 int vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
 {
-	for (unsigned int j = 0; j < NumSpecies(); j++)
+	unsigned int i, j;
+	for (i = 0; i < NumSpecies(); i++)
 	{
-		if (!strcmp(name, m_Species[j]->GetCommonName()))
-			return j;
+		vtPlantSpecies *spe = GetSpecies(i);
+		for (j = 0; j < spe->NumCommonNames(); j++)
+		{
+			vtPlantSpecies::CommonName cname = spe->GetCommonName(j);
+			if (!strcmp(name, cname.m_strName))
+				return j;
+
+			// also, for backward compatibility, look for a match without spaces
+			vtString nospace = RemSpaces(cname.m_strName);
+			if (!strcmp(name, nospace))
+				return i;
+		}
 	}
-	// also, for backward compatibility, look for a match without spaces
-	for (unsigned int j = 0; j < NumSpecies(); j++)
-	{
-		vtString nospace = RemSpaces(m_Species[j]->GetCommonName());
-		if (!strcmp(name, nospace))
-			return j;
-	}
-	return -1;
+	return i;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -333,10 +274,7 @@ void PlantListVisitor::startElement(const char * name, const XMLAttributes &atts
 		{
 			m_pSpecies = new vtPlantSpecies();
 
-			// Get id, name, max height.
-			attval = atts.getValue("id");
-			if (attval != NULL)
-				m_pSpecies->SetSpecieID(atoi(attval));
+			// Get name and max_height
 			attval = atts.getValue("name");
 			if (attval != NULL)
 				m_pSpecies->SetSciName(attval);
@@ -351,10 +289,15 @@ void PlantListVisitor::startElement(const char * name, const XMLAttributes &atts
 	{
 		if (string(name) == (string)"common")
 		{
-			// Get the common name (assumes English language)
+			// Get the common name
+			vtString name, lang;
 			attval = atts.getValue("name");
 			if (attval != NULL)
-				m_pSpecies->SetCommonName(attval);
+			{
+				name = attval;
+				attval = atts.getValue("lang");
+				m_pSpecies->AddCommonName(name, attval);
+			}
 		}
 		else if (string(name) == (string)"appearance")
 		{
