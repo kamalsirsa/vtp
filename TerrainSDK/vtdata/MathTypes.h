@@ -167,6 +167,10 @@ public:
 	DPoint3 operator -(const DPoint3 &v) const { return DPoint3(x-v.x, y-v.y, z-v.z); }
 	DPoint3 operator *(double s) const { return DPoint3(x*s, y*s, z*s); }
 	DPoint3 operator /(double s) const { return DPoint3(x/s, y/s, z/s); }
+	bool operator==(const DPoint3 &v2)
+	{ return (x == v2.x && y == v2.y && z == v2.z); }
+	bool operator!=(const DPoint3 &v2)
+	{ return (x != v2.x || y != v2.y || z != v2.z); }
 
 	// dot product
 	double operator *(const DPoint3 &v) const { return x*v.x + y*v.y + z*v.z; }
