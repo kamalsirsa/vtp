@@ -308,6 +308,7 @@ bool vtRawLayer::OnLoad()
 		if (!GetMainFrame()->ConfirmValidCRS(&proj))
 		{
 			delete m_pSet;
+			m_pSet = NULL;
 			return false;
 		}
 	}
