@@ -28,9 +28,8 @@ CStraightSkeleton::~CStraightSkeleton()
 
 CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 {
-
 	while (m_iq.size ())
-		m_iq.pop (); 	
+		m_iq.pop ();
 	m_vl.erase(m_vl.begin(), m_vl.end());
 	m_skeleton.erase(m_skeleton.begin(), m_skeleton.end());
 	m_boundaryedges.erase(m_boundaryedges.begin(), m_boundaryedges.end());
@@ -385,7 +384,7 @@ CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *
 					// matched the lower vertex of an edge
 					NewEdgeVector = (*s1).m_higher.m_vertex->m_point - OldPoint;
 					bTemp = false;
-				}	
+				}
 				else
 				{
 					NewEdgeVector = (*s1).m_lower.m_vertex->m_point - OldPoint;

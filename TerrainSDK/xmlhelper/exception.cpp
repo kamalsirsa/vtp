@@ -90,7 +90,6 @@ string xh_location::asString () const
 	out += buf;
   }
   return out;
-	
 }
 
 

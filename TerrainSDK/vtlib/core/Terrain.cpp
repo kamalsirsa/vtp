@@ -1298,7 +1298,7 @@ bool vtTerrain::CreateFromGrid(int &iError)
 		fOceanDepth = 0.0f;
 
 	tm = clock();
-	
+
 	// create elegant dynamic LOD terrain
 	iError = 0;
 	if (!create_dynamic_terrain(fOceanDepth, iError))

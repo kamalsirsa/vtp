@@ -39,7 +39,7 @@ bool PolyChecker::IntersectProp(const DPoint2 &a, const DPoint2 &b, const DPoint
 	if (Collinear(a, b, c) || Collinear(a, b, d) ||
 		Collinear(c, d, a) || Collinear(c, d, b))
 		return false;
-	
+
 	return Xor(Left(a, b, c), Left(a, b, d)) && Xor(Left(c, d, a), Left(c, d, b));
 }
 
@@ -140,7 +140,7 @@ bool PolyChecker::IntersectProp(const FPoint2 &a, const FPoint2 &b, const FPoint
 	if (Collinear(a, b, c) || Collinear(a, b, d) ||
 		Collinear(c, d, a) || Collinear(c, d, b))
 		return false;
-	
+
 	return Xor(Left(a, b, c), Left(a, b, d)) && Xor(Left(c, d, a), Left(c, d, b));
 }
 

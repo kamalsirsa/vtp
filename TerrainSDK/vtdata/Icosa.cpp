@@ -180,7 +180,7 @@ void DymaxIcosa::FindUV(const DPoint3 &p_in, int face, DPoint3 &uvw)
 
 /**
  * Given a geographic coordinate (lon, lat), find the corresponding
- * face, subface, and 
+ * face, subface, and UVW coordinates on surface of the icosahedron.
  */
 void DymaxIcosa::FindFaceUV(const DPoint2 &p, int &face, int &subface,
 							DPoint3 &uvw)

@@ -257,12 +257,12 @@ void GNS_to_wstring(int region, char *word, std::wstring &output)
 		6 = Vietnam
 	 1 UFI Unique Feature Identifier
 	 2 UNI Unique Name Identifier
-	 3 DD_LAT Latitude  
+	 3 DD_LAT Latitude
 	 4 DD_LONG Longitude
-	 5 DMS_LAT Latitude  
-	 6 DMS_LONG Longitude  
-	 7 UTM Universal Transverse Mercator  
-	 8 JOG Joint Operations Graphic  
+	 5 DMS_LAT Latitude
+	 6 DMS_LONG Longitude
+	 7 UTM Universal Transverse Mercator
+	 8 JOG Joint Operations Graphic
 	 9 FC Feature Classification
 		A = Administrative region;
 		P = Populated place;
@@ -273,13 +273,13 @@ void GNS_to_wstring(int region, char *word, std::wstring &output)
 		T = Hypsographic;
 		H = Hydrographic;
 		S = Spot feature.
-	10 DSG Feature Designation Code 
+	10 DSG Feature Designation Code
 	11 PC Populated Place Classification (1 high, 5 low)
 	12 CC1 Primary Country Code
-	13 ADM1 First-order administrative division 
-	14 ADM2 Second-order administrative division 
-	15 DIM Dimension 
-	16 CC2 Secondary Country Code 
+	13 ADM1 First-order administrative division
+	14 ADM2 Second-order administrative division
+	15 DIM Dimension
+	16 CC2 Secondary Country Code
 	17 NT Name Type
 		C = Conventional;
 		D = Not verified;

@@ -112,7 +112,6 @@ private:
 	// Don't let unsuspecting users stumble into assuming that object
 	// copy semantics will work.  Declare them private and never
 	// define them,
-	
 	Node( const Node & );
 	Node &operator=( const Node & );
 };

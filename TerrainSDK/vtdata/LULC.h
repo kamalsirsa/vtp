@@ -57,8 +57,7 @@ public:
 private:
 	// Don't let unsuspecting users stumble into assuming that object
 	// copy semantics will work.  Declare them private and never
-	// define them,
-	
+	// define them.
 	LULCPoly( const LULCPoly & );
 	LULCPoly &operator=( const LULCPoly & );
 
@@ -84,8 +83,7 @@ public:
 private:
 	// Don't let unsuspecting users stumble into assuming that object
 	// copy semantics will work.  Declare them private and never
-	// define them,
-	
+	// define them.
 	LULCSection( const LULCSection & );
 	LULCSection &operator=( const LULCSection & );
 };
@@ -140,8 +138,7 @@ public:
 private:
 	// Don't let unsuspecting users stumble into assuming that object
 	// copy semantics will work.  Declare them private and never
-	// define them,
-	
+	// define them.
 	vtLULCFile( const vtLULCFile & );
 	vtLULCFile &operator=( const vtLULCFile & );
 

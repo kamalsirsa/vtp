@@ -240,7 +240,7 @@ public:
    * XML document, after all other methods are invoked, and only
    * if there have been no parsing errors.  The application can use
    * this callback to close or write files, finalize data structures,
-   * and so on, but the application will need to be prepared to 
+   * and so on, but the application will need to be prepared to
    * clean up any resources without this callback in the event of
    * an error.
    *
@@ -256,7 +256,7 @@ public:
    * XML element.  Start and end element calls will be balanced
    * and properly nested: every element has both a start and end
    * callback (even if it was specified with an XML empty element tag),
-   * there is exactly one root element, and every element must end 
+   * there is exactly one root element, and every element must end
    * before its parent does.  Elements may not overlap.
    * Note that the attribute list provided is volatile; it's contents
    * are not guaranteed to persist after the end of the callback.
@@ -332,7 +332,7 @@ public:
  * Read an XML document.
  *
  * This function reads an XML document from the input stream provided,
- * and invokes the callback methods in the visitor object to pass the 
+ * and invokes the callback methods in the visitor object to pass the
  * parsing events back to the application.  When this function
  * returns, the parser will have reported all of the data in the XML
  * document to the application through the visitor callback methods,
@@ -355,7 +355,7 @@ extern void readXML (istream &input, XMLVisitor &visitor,
  * Read an XML document.
  *
  * This function reads an XML document from the input stream provided,
- * and invokes the callback methods in the visitor object to pass the 
+ * and invokes the callback methods in the visitor object to pass the
  * parsing events back to the application.  When this function
  * returns, the parser will have reported all of the data in the XML
  * document to the application through the visitor callback methods,

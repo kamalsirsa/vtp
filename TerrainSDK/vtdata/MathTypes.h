@@ -56,7 +56,7 @@
 	#ifndef sqrtf
 	#define sqrtf (float)sqrt
 	#endif
-	
+
 	#ifndef fabsf
 	#define fabsf (float)fabs
 	#endif

@@ -1474,7 +1474,7 @@ vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
 	pMats->Release();
 
 	geom->AddMesh(mesh, 0);
-	mesh->Release();	// pass ownership 
+	mesh->Release();	// pass ownership
 
 	return mgeom;
 }

@@ -562,7 +562,7 @@ void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
 	if (p3 != -1) { AddIndex(p3); prim.Size = 4; }
 	if (p4 != -1) { AddIndex(p4); prim.Size = 5; }
 	if (p5 != -1) { AddIndex(p5); prim.Size = 6; }
-	AddPrim(prim, NULL);	
+	AddPrim(prim, NULL);
 }
 
 void vtMesh::AddFan(int *idx, int iNVerts)

@@ -149,7 +149,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 			 !FileExt.CompareNoCase("tif") ||
 			 !FileExt.CompareNoCase("png") ||
 			 !FileExt.CompareNoCase("adf"))
-	{	
+	{
 		Success = LoadWithGDAL(szFileName, progress_callback);
 	}
 	return Success;
@@ -1885,7 +1885,7 @@ bool vtElevationGrid::SaveToGeoTIFF(const char *szFileName)
 			raster[y*m_iColumns + x] = (short) value;
 		}
 	}
-	pBand->RasterIO( GF_Write, 0, 0, m_iColumns, m_iRows, 
+	pBand->RasterIO( GF_Write, 0, 0, m_iColumns, m_iRows,
 		raster, m_iColumns, m_iRows, GDT_Int16, 0, 0 );
 
 	delete raster;

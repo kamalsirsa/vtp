@@ -45,7 +45,7 @@ vtImage::vtImage(vtDIB *pDIB, int internalformat)
  *		}
  *		return false;
  * }
- */ 
+ */
 bool	_psm_ReadDIB(const char* filename, PSStream* stream, PSLoadEvent* event)
 {
 	vtDIB* dib = (vtDIB*) (PSObj*) event->Object;	// this cast won't work unless vtDIB is a PSObj

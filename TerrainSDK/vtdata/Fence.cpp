@@ -83,7 +83,7 @@ void vtFence::SetFenceType(const FenceType type)
 	case FT_CHAINLINK:
 		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
 		break;
-	
+
 	case FT_HEDGEROW:
 		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
 		break;
@@ -200,7 +200,7 @@ void vtFence::WriteXML_Old(FILE *fp, bool bDegrees)
 		post_type = "steel";
 		conn_type = "chain-link";
 		break;
-	
+
 	case FT_HEDGEROW:
 		post_type = "hedgerow";
 		conn_type = "hedgerow";

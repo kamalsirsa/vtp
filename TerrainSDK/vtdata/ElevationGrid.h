@@ -89,7 +89,7 @@ public:
 
 	// Accessors
 	/** Return the embedded name of the DEM is it has one */
-	const char *GetDEMName()	{ return m_strOriginalDEMName; }	
+	const char *GetDEMName()	{ return m_strOriginalDEMName; }
 
 	/** Return geographic extents of the *area* covered by grid. */
 	DRECT GetAreaExtents() const;

@@ -932,7 +932,7 @@ bool vtDIB::WriteTIF(const char *fname)
 			for (y = 0; y < m_iHeight; y++)
 				raster[y*m_iWidth + x] = GetPixel8(x, y);
 		}
-		pBand->RasterIO( GF_Write, 0, 0, m_iWidth, m_iHeight, 
+		pBand->RasterIO( GF_Write, 0, 0, m_iWidth, m_iHeight,
 			raster, m_iWidth, m_iHeight, GDT_Byte, 0, 0 );
 	}
 	else
@@ -953,7 +953,7 @@ bool vtDIB::WriteTIF(const char *fname)
 					if (i == 3) raster[y*m_iWidth + x] = (GByte) rgb.b;
 				}
 			}
-			pBand->RasterIO( GF_Write, 0, 0, m_iWidth, m_iHeight, 
+			pBand->RasterIO( GF_Write, 0, 0, m_iWidth, m_iHeight,
 				raster, m_iWidth, m_iHeight, GDT_Byte, 0, 0 );
 		}
 	}

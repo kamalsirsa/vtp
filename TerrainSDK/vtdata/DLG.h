@@ -120,7 +120,7 @@ private:
 	// Don't let unsuspecting users stumble into assuming that object
 	// copy semantics will work.  Declare them private and never
 	// define them,
-	
+
 	vtDLGFile( const vtDLGFile & );
 	vtDLGFile &operator=( const vtDLGFile & );
 };

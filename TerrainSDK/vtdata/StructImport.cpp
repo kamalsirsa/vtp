@@ -704,8 +704,6 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		{
 			case wkbPolygon:
 				pPolygon = (OGRPolygon *) pGeom;
-				
-
 				pRing = pPolygon->getExteriorRing();
 				num_points = pRing->getNumPoints();
 
@@ -732,7 +730,6 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 
 			case wkbLineString:
 				pLineString = (OGRLineString *) pGeom;
-				
 				num_points = pLineString->getNumPoints();
 
 				// Ignore last point if it is the same as the first
@@ -982,7 +979,7 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 			continue;
 
 		pLineString = (OGRLineString *) pGeom;
-		
+
 		iNumPoints = pLineString->getNumPoints();
 
 		FencePoints.SetSize(iNumPoints);

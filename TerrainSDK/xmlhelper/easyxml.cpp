@@ -116,11 +116,11 @@ class ExpatAtts : public XMLAttributes
 {
 public:
 	ExpatAtts (const char ** atts) : _atts(atts) {}
-	
+
 	virtual int size () const;
 	virtual const char * getName (int i) const;
 	virtual const char * getValue (int i) const;
-	
+
 private:
 	const char ** _atts;
 };

@@ -473,7 +473,7 @@ void vtLevel::SetRoofType(RoofType rt, int iSlope)
 void vtLevel::SetEaveLength(float fMeters)
 {
 	int i, edges = NumEdges();
-	
+
 	for (i = 0; i < edges; i++)
 	{
 		vtEdge *edge = m_Edges[i];
@@ -1263,7 +1263,7 @@ void vtBuilding::WriteXML_Old(FILE *fp, bool bDegrees)
 	fprintf(fp, "\t<structure type=\"building\">\n");
 
 	int stories = GetStories();
-	if (stories != 0)	
+	if (stories != 0)
 		fprintf(fp, "\t\t<height stories=\"%d\" />\n", stories);
 
 	RGBi color;

@@ -206,7 +206,7 @@ bool vtCreateDir(const char *dirname)
 	while (1)
 	{
 		char hold;
-		
+
 		while(*p && *p != '\\' && *p != '/')
 			p++;
 		hold = *p;

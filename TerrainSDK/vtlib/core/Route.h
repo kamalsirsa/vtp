@@ -87,7 +87,7 @@ protected:
 	void _ComputeStructureRotations();
 	void _CreateStruct(int iNode);
 	void _AddRouteMeshes(vtHeightField3d *pHeightField);
-	void _StringWires(long lTowerIndex, vtHeightField3d *pHeightField);	
+	void _StringWires(long lTowerIndex, vtHeightField3d *pHeightField);
 	void _DrawCat(FPoint3 p0, FPoint3 p1,
 		double catenary, int iNumSegs, vtMesh *pWireMesh);
 

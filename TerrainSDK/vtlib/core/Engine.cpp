@@ -68,7 +68,7 @@ void apply_dead_zone(float amount, float &val)
 
 #define DEAD_ZONE_SIZE 0.07f
 
-/** 
+/**
  * Returns the mouse coordinates in the window, normalized such that X and Y
  * range from -1 to 1 (left to right, top to bottom across the window.
  */

@@ -87,7 +87,7 @@ float vtGetTime()
 {
 	float sec;
 
-	// clock(), while ANSI C, is generally a low-res timer on most systems.  
+	// clock(), while ANSI C, is generally a low-res timer on most systems.
 	//   Use a high-res timer if one exists.
 #ifdef __FreeBSD__
 	struct rusage ru;

@@ -52,15 +52,15 @@ public:
     void Setup(vtBuilding * const pBuilding, vtHeightField *pHeightField);
     void OnLeftClickGrid( wxGridEvent &event );
     void OnGridEditorHidden( wxGridEvent &event );
-    
+
     // WDR: method declarations for CHeightDialog
     wxTextCtrl* GetBaselineoffset()  { return (wxTextCtrl*) FindWindow( ID_BASELINEOFFSET ); }
     wxRadioBox* GetScaleradiobox()  { return (wxRadioBox*) FindWindow( ID_SCALERADIOBOX ); }
     CHeightGrid* GetHeightgrid()  { return (CHeightGrid*) FindWindow( ID_HEIGHTGRID ); }
-    
+
 protected:
     // WDR: member variable declarations for CHeightDialog
-    
+
 protected:
     // WDR: handler declarations for CHeightDialog
     void OnBaselineOffset( wxCommandEvent &event );

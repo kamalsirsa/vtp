@@ -146,11 +146,11 @@ void vtHeightField3d::Initialize(const LinearUnits units,
 		DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
 
 	m_Conversion.convert_earth_to_local_xz(
-		m_EarthExtents.left, m_EarthExtents.bottom, 
+		m_EarthExtents.left, m_EarthExtents.bottom,
 		m_WorldExtents.left, m_WorldExtents.bottom);
 
 	m_Conversion.convert_earth_to_local_xz(
-		m_EarthExtents.right, m_EarthExtents.top, 
+		m_EarthExtents.right, m_EarthExtents.top,
 		m_WorldExtents.right, m_WorldExtents.top);
 
 	FPoint2 hypo(m_WorldExtents.Width(), m_WorldExtents.Height());
@@ -176,7 +176,7 @@ void vtHeightFieldGrid3d::Initialize(const LinearUnits units,
 	// first initialize parent
 	vtHeightField3d::Initialize(units, earthextents, fMinHeight, fMaxHeight);
 
-	m_iColumns = cols; 
+	m_iColumns = cols;
 	m_iRows = rows;
 
 	m_fXStep = m_WorldExtents.Width() / (m_iColumns-1);
