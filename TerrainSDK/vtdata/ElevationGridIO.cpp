@@ -57,18 +57,6 @@ typedef struct
 } GTOPOHeader;
 
 
-// ************** DConvert - DEM Helper function ****************
-
-double DConvert(FILE *fp, int length)
-{
-	char szCharString[64];
-
-	fread(szCharString, length, 1, fp);
-	szCharString[length] = 0;
-
-	return atof(szCharString);
-}
-
 #ifndef min
 #define min(a,b)	(((a) < (b)) ? (a) : (b))
 #endif
@@ -172,6 +160,28 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 }
 
 
+// ************** DConvert - DEM Helper function ****************
+
+double DConvert(FILE *fp, int length)
+{
+	char szCharString[64];
+
+	fread(szCharString, length, 1, fp);
+	szCharString[length] = 0;
+
+	return atof(szCharString);
+}
+
+int IConvert(FILE *fp, int length)
+{
+	char szCharString[64];
+
+	fread(szCharString, length, 1, fp);
+	szCharString[length] = 0;
+
+	return atoi(szCharString);
+}
+
 /**
  * Loads elevation from a USGS DEM file.
  *
@@ -185,20 +195,18 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	int		i, j;
 	int		iRow, iColumn;
 	int		iElev;
-	int		iVUnit, iGUnit;
 	double	fRows;
 	double	fVertUnits;
 	double 	dxdelta, dydelta, dzdelta;
 	double	dElevMax, dElevMin;
 	bool	bOldFormat = false, bNewFormat = false, bFixedLength = true;
 	int		iCoordSystem;
-	int		iProfiles;
 	char	szName[41];
 	char	szDateBuffer[5];
 	DPoint2	corners[4];			// SW, NW, NE, SE
 	double	fGMeters;			// ground (horizontal) units
 	int		iDataStartOffset;
-	bool	bUTM;
+	bool	bGeographic;
 	int		iUTMZone;
 	int		iDatum;
 	int		iProfileRows, iProfileCols;
@@ -227,8 +235,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	else
 	{
 		fseek(fp, 1024, 0); 		// Check for New Format
-		fscanf(fp, "%d", &iRow);
-		fscanf(fp, "%d", &iColumn);
+		iRow = IConvert(fp, 6);
+		iColumn = IConvert(fp, 6);
 		if (iRow==1 && iColumn==1)	// File OK?
 		{
 			bNewFormat = true;
@@ -270,27 +278,106 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		szName[len-1] = 0;
 		len--;
 	}
-	strcpy(m_szOriginalDEMName, szName);
+	m_strOriginalDEMName = szName;
 
 	fseek(fp, 156, 0);
-	fscanf(fp, "%d", &iCoordSystem);
-	fscanf(fp, "%d", &iUTMZone);
+	iCoordSystem = IConvert(fp, 6);
+	iUTMZone = IConvert(fp, 6);
 
-	if (iCoordSystem == 0)	// geographic (lat-lon)
+	fseek(fp, 168, 0);
+	double dProjParams[15];
+	for (i = 0; i < 15; i++)
+		dProjParams[i] = DConvert(fp, 24);
+
+	iDatum = EPSG_DATUM_NAD27;	// default
+
+	// OLD format header ends at byte 864; new format has Datum
+	if (bNewFormat)
 	{
-		bUTM = false;
-		iUTMZone = -1;
+		// year of data compilation
+		fseek(fp, 876, 0);		// 0x36C
+		fread(szDateBuffer, 4, 1, fp);
+		szDateBuffer[4] = 0;
+
+		// Horizontal datum
+		// 1=North American Datum 1927 (NAD 27)
+		// 2=World Geodetic System 1972 (WGS 72)
+		// 3=WGS 84
+		// 4=NAD 83
+		// 5=Old Hawaii Datum
+		// 6=Puerto Rico Datum
+		fseek(fp, 890, 0);	// 0x37A
+		int datum = IConvert(fp, 2);
+		VTLOG("DEM Reader: Read Datum Value %d\n", datum);
+		switch (datum)
+		{
+			case 1: iDatum = EPSG_DATUM_NAD27; break;
+			case 2: iDatum = EPSG_DATUM_WGS72; break;
+			case 3: iDatum = EPSG_DATUM_WGS84; break;
+			case 4:	iDatum = EPSG_DATUM_NAD83; break;
+			case 5: iDatum = EPSG_DATUM_OLD_HAWAIIAN; break;
+			case 6: iDatum = EPSG_DATUM_PUERTO_RICO; break;
+		}
 	}
-	if (iCoordSystem == 1)	// utm
-		bUTM = true;
+
+	// Set up the projection
+	bGeographic = false;
+	switch (iCoordSystem)
+	{
+	case 0:		// geographic (lat-lon)
+		bGeographic = true;
+		iUTMZone = -1;
+		m_proj.SetProjectionSimple(false, iUTMZone, iDatum);
+		break;
+	case 1:		// utm
+		m_proj.SetProjectionSimple(true, iUTMZone, iDatum);
+		break;
+	case 3:		// Albers Conical Equal Area
+		{
+			double semi_major = dProjParams[0];
+			double eccentricity = dProjParams[1];
+			double lat_1st_std_parallel = dProjParams[2];
+			double lat_2nd_std_parallel = dProjParams[3];
+			double lon_central_meridian = dProjParams[4];
+			double lat_origin = dProjParams[5];
+			double false_easting = dProjParams[6];
+			double false_northing = dProjParams[7];
+
+			m_proj.SetGeogCSFromDatum(iDatum);
+			m_proj.SetACEA(lat_1st_std_parallel, lat_2nd_std_parallel, lat_origin,
+				lon_central_meridian, false_easting, false_northing);
+		}
+		break;
+	case 2:		// State Plane (!)
+	case 4:		// Lambert Conformal
+	case 5:		// Mercator
+	case 6:		// Polar Stereographic
+	case 7:		// Polyconic
+	case 8:		// Equidistant Conic Type A / B
+	case 9:		// Transverse Mercator
+	case 10:	// Stereographic
+	case 11:	// Lambert Azimuthal Equal-Area
+	case 12:	// Azimuthal Equidistant
+	case 13:	// Gnomonic
+	case 14:	// Orthographic
+	case 15:	// General Vertical Near-Side Perspective
+	case 16:	// Sinusoidal (Plate Caree)
+	case 17:	// Equirectangular
+	case 18:	// Miller Cylindrical
+	case 19:	// Van Der Grinten I
+	case 20:	// Oblique Mercator
+		VTLOG("Warning!  We don't yet support DEM coordinate system %d.\n", iCoordSystem);
+		break;
+	}
 
 	fseek(fp, 528, 0);
-	fscanf(fp, "%d", &iGUnit);
-	fscanf(fp, "%d", &iVUnit);
+	int iGUnit = IConvert(fp, 6);
+	int iVUnit = IConvert(fp, 6);
 
 	// Ground Units in meters
 	switch (iGUnit)
 	{
+	case 0: fGMeters = 1.0;		break;	// 0 = radians (never encountered)
 	case 1: fGMeters = 0.3048;	break;	// 1 = feet
 	case 2: fGMeters = 1.0;		break;	// 2 = meters
 	case 3: fGMeters = 30.922;	break;	// 3 = arc-seconds
@@ -319,12 +406,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		corners[i].y = DConvert(fp, 24);
 	}
 
-	if (bUTM)	// UTM
-	{
-		for (i = 0; i < 4; i++)
-			m_Corners[i] = corners[i];
-	}
-	else
+	if (bGeographic)
 	{
 		for (i = 0; i < 4; i++)
 		{
@@ -333,50 +415,23 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			m_Corners[i].y = corners[i].y / 3600.0;
 		}
 	}
+	else
+	{
+		// some linear coordinate system
+		for (i = 0; i < 4; i++)
+			m_Corners[i] = corners[i];
+	}
 
 	dElevMin = DConvert(fp, 24);
 	dElevMax = DConvert(fp, 24);
 
-	int rows;
 	fseek(fp, 852, 0);
-	fscanf(fp, "%d", &rows);
-	fscanf(fp, "%d", &iProfiles);
+	int rows = IConvert(fp, 6);
+	int iProfiles = IConvert(fp, 6);
 
-	iDatum = EPSG_DATUM_NAD27;	// default
-
-	// OLD format header ends at byte 864
-	if (bNewFormat)
-	{
-		// year of data compilation
-		fseek(fp, 876, 0);		// 0x36C
-		fread(szDateBuffer, 4, 1, fp);
-		szDateBuffer[4] = 0;
-
-		// Horizontal datum
-		// 1=North American Datum 1927 (NAD 27)
-		// 2=World Geodetic System 1972 (WGS 72)
-		// 3=WGS 84
-		// 4=NAD 83
-		// 5=Old Hawaii Datum
-		// 6=Puerto Rico Datum
-		int datum;
-		fseek(fp, 890, 0);	// 0x37A
-		fscanf(fp, "%d", &datum);
-		switch (datum) {
-			case 1: iDatum = EPSG_DATUM_NAD27; break;
-			case 2: iDatum = EPSG_DATUM_WGS72; break;
-			case 3: iDatum = EPSG_DATUM_WGS84; break;
-			case 4:	iDatum = EPSG_DATUM_NAD83; break;
-			case 5: iDatum = EPSG_DATUM_OLD_HAWAIIAN; break;
-			case 6: iDatum = EPSG_DATUM_PUERTO_RICO; break;
-		}
-	}
-
-	// Set up the projection
-	m_proj.SetProjectionSimple(bUTM, iUTMZone, iDatum);
 	m_iColumns = iProfiles;
 
-	if (!bUTM)
+	if (bGeographic)
 	{
 		// If it's in degrees, it's flush square, so we can simply
 		// derive the extents (m_EarthExtents) from the quad corners (m_Corners)
@@ -397,10 +452,15 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		{
 			if (bFixedLength)
 				fseek(fp, iDataStartOffset + (record * 1024), 0);
+
+			// We cannot use IConvert here, because there *might* be a spurious LF
+			// after the number - seen in some rare files.
 			fscanf(fp, "%d", &iRow);
-			fscanf(fp, "%d", &iColumn);
-			fscanf(fp, "%d", &iProfileRows);
-			fscanf(fp, "%d", &iProfileCols);
+			iColumn = IConvert(fp, 6);
+			// assert(iColumn == i+1);
+			iProfileRows = IConvert(fp, 6);
+			iProfileCols = IConvert(fp, 6);
+
 			start.x = DConvert(fp, 24);
 			start.y = DConvert(fp, 24);
 			m_EarthExtents.GrowToContainPoint(start);
@@ -424,6 +484,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 				dProfileMax = DConvert(fp, 24);
 				for (j = 0; j < iProfileRows; j++)
 				{
+					// We cannot use IConvert here, because there *might* be a spurious LF
+					// after the number - seen in some rare files.
 					fscanf(fp, "%d", &iElev);
 				}
 			}
@@ -432,19 +494,21 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	// Compute number of rows
-	if (bUTM)	// UTM
+	if (bGeographic)
 	{
-		fRows = m_EarthExtents.Height() / dydelta;
-		m_iRows = (int)(fRows + 0.5) + 1;	// round to the nearest integer
-	}
-	else	// degrees
-	{
+		// degrees
 		fRows = m_EarthExtents.Height() * 1200.0f;
 		m_iRows = (int)fRows + 1;	// 1 more than quad spacing
 	}
+	else
+	{
+		// some linear coordinate system
+		fRows = m_EarthExtents.Height() / dydelta;
+		m_iRows = (int)(fRows + 0.5) + 1;	// round to the nearest integer
+	}
 
 	// safety check
-	if (m_iRows > 4000)
+	if (m_iRows > 5000)
 		return false;
 
 	_AllocateArray();
@@ -457,10 +521,15 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		if (progress_callback != NULL)
 			progress_callback(i*100/m_iColumns);
 
+		// We cannot use IConvert here, because there *might* be a spurious LF
+		// after the number - seen in some rare files.
 		fscanf(fp, "%d", &iRow);
-		fscanf(fp, "%d", &iColumn);
-		fscanf(fp, "%d", &iProfileRows);
-		fscanf(fp, "%d", &iProfileCols);
+		iColumn = IConvert(fp, 6);
+		//assert(iColumn == i+1);
+
+		iProfileRows = IConvert(fp, 6);
+		iProfileCols = IConvert(fp, 6);
+
 		start.x = DConvert(fp, 24);
 		start.y = DConvert(fp, 24);
 		dLocalDatumElev = DConvert(fp, 24);
@@ -471,7 +540,10 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 		for (j = ygap; j < (ygap + iProfileRows); j++)
 		{
-//			assert(j < m_iRows);	// useful safety check
+			//assert(j >=0 && j < m_iRows);	// useful safety check
+
+			// We cannot use IConvert here, because there *might* be a spurious LF
+			// after the number - seen in some rare files.
 			fscanf(fp, "%d", &iElev);
 			SetValue(i, j, iElev);
 		}
