@@ -18,7 +18,7 @@
 //
 
 CRidgeLine::CRidgeLine(const C3DPoint &p, const C3DPoint &q, const CNumber &Slope, const bool IsRidgeLine)
-          : m_Origin(p)
+: m_Origin(p)
 {
 	m_Angle = atan2 (q.m_z - p.m_z, q.m_x - p.m_x);
 	m_Angle.NormalizeAngle();
@@ -75,8 +75,8 @@ C3DPoint CRidgeLine::Intersection(const CRidgeLine &a)
 			if (m_Origin.m_y == a.m_Origin.m_y)
 			{
 				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
-								0,
-								m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
+						0,
+						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
 			}
 			else
 			{
@@ -89,8 +89,8 @@ C3DPoint CRidgeLine::Intersection(const CRidgeLine &a)
 					OffsetPoint.m_x = Offset * cos(m_Angle) + m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(m_Angle) + m_Origin.m_z;
 					return C3DPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
-									0,
-									m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
+							0,
+							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
 				}
 				else
 				{
@@ -98,8 +98,8 @@ C3DPoint CRidgeLine::Intersection(const CRidgeLine &a)
 					OffsetPoint.m_x = Offset * cos(a.m_Angle) + a.m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(a.m_Angle) + a.m_Origin.m_z;
 					return C3DPoint (m_Origin.m_x + (OffsetPoint.m_x - m_Origin.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
-									0,
-									m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
+							0,
+							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
 				}
 			}
 		}
@@ -142,8 +142,8 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 			if (m_Origin.m_y == a.m_Origin.m_y)
 			{
 				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
-								0,
-								m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
+						0,
+						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
 			}
 			else
 			{
@@ -156,8 +156,8 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 					OffsetPoint.m_x = Offset * cos(m_Angle) + m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(m_Angle) + m_Origin.m_z;
 					return C3DPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
-									0,
-									m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
+							0,
+							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
 				}
 				else
 				{
@@ -165,8 +165,8 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 					OffsetPoint.m_x = Offset * cos(a.m_Angle) + a.m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(a.m_Angle) + a.m_Origin.m_z;
 					return C3DPoint (m_Origin.m_x + (OffsetPoint.m_x - m_Origin.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
-									0,
-									m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
+							0,
+							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
 				}
 			}
 		}
@@ -190,8 +190,8 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 			if (m_Origin.m_y == a.m_Origin.m_y)
 			{
 				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
-								0,
-								m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
+						0,
+						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
 			}
 			else
 			{
@@ -204,8 +204,8 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 					OffsetPoint.m_x = Offset * cos(m_Angle) + m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(m_Angle) + m_Origin.m_z;
 					return C3DPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
-									0,
-									m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
+							0,
+							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
 				}
 				else
 				{
@@ -213,8 +213,8 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 					OffsetPoint.m_x = Offset * cos(a.m_Angle) + a.m_Origin.m_x;
 					OffsetPoint.m_z = Offset * sin(a.m_Angle) + a.m_Origin.m_z;
 					return C3DPoint (m_Origin.m_x + (OffsetPoint.m_x - m_Origin.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
-									0,
-									m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
+							0,
+							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + tan(m_Slope)/tan(a.m_Slope)));
 				}
 			}
 		}
@@ -296,8 +296,8 @@ CNumber CNumber::NormalizedAngle()
 // Constructor
 //
 CVertex :: CVertex (const C3DPoint &p, CVertex &left, CVertex &right) 
-				: m_point (p), m_done (false), m_higher (NULL), m_ID (-1), m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL),
-				  m_advancingSkeletonLine (NULL)
+: m_point (p), m_done (false), m_higher (NULL), m_ID (-1), m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL),
+m_advancingSkeletonLine (NULL)
 {
 	CNumber slope;
 
@@ -443,8 +443,9 @@ C3DPoint CVertex::IntersectionOfTypeB (const CVertex &left, const CVertex &right
 CNumber CVertex::NearestIntersection (CVertexList &vl, CVertex **left, CVertex **right, C3DPoint &p)
 {
 	CNumber minDist = CN_INFINITY;
-	CVertexList::iterator minI = vl.end (); 
-	for (CVertexList :: iterator i = vl.begin (); i != vl.end (); i++)
+	CVertexList::iterator minI = vl.end ();
+	CVertexList :: iterator i;
+	for (i = vl.begin (); i != vl.end (); i++)
 	{
 #ifdef FELKELDEBUG
 		CVertex TempVertex = *i;

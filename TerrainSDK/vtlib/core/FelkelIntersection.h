@@ -35,19 +35,18 @@ public:
 	CNumber m_height;
 	enum Type { CONVEX, NONCONVEX } m_type;
 
-	operator < (const CIntersection &i) const
+	bool operator < (const CIntersection &i) const
 	{
 		return m_height < i.m_height;
 	}
-	operator > (const CIntersection &i) const
+	bool operator > (const CIntersection &i) const
 	{
 		return m_height > i.m_height;
 	}
-	operator == (const CIntersection &i) const
+	bool operator == (const CIntersection &i) const
 	{
 		return m_poi == i.m_poi;
 	}
 };
 
 #endif // FELKELINTERSECTIONH
-

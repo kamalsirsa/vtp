@@ -54,19 +54,19 @@ public:
 	CNumber& operator = (const CNumber &x) { m_n = x.m_n; return *this; }
 	CNumber& operator = (const double &x) { m_n = x; return *this; }
 	operator double& (void) const { return (double &) m_n; }
-	operator == (const CNumber &x) const { return SIMILAR (m_n, x.m_n); }
-	operator != (const CNumber &x) const { return !SIMILAR (m_n, x.m_n); }
-	operator <= (const CNumber &x) const { return m_n < x.m_n || *this == x; }
-	operator >= (const CNumber &x) const { return m_n > x.m_n || *this == x; }
-	operator <  (const CNumber &x) const { return m_n < x.m_n && *this != x; }
-	operator >  (const CNumber &x) const { return m_n > x.m_n && *this != x; }
+	bool operator == (const CNumber &x) const { return SIMILAR (m_n, x.m_n); }
+	bool operator != (const CNumber &x) const { return !SIMILAR (m_n, x.m_n); }
+	bool operator <= (const CNumber &x) const { return m_n < x.m_n || *this == x; }
+	bool operator >= (const CNumber &x) const { return m_n > x.m_n || *this == x; }
+	bool operator <  (const CNumber &x) const { return m_n < x.m_n && *this != x; }
+	bool operator >  (const CNumber &x) const { return m_n > x.m_n && *this != x; }
 
-	operator == (const double x) const { return *this == CNumber (x); }
-	operator != (const double x) const { return *this != CNumber (x); }
-	operator <= (const double x) const { return *this <= CNumber (x); }
-	operator >= (const double x) const { return *this >= CNumber (x); }
-	operator <  (const double x) const { return *this <  CNumber (x); }
-	operator >  (const double x) const { return *this >  CNumber (x); }
+	bool operator == (const double x) const { return *this == CNumber (x); }
+	bool operator != (const double x) const { return *this != CNumber (x); }
+	bool operator <= (const double x) const { return *this <= CNumber (x); }
+	bool operator >= (const double x) const { return *this >= CNumber (x); }
+	bool operator <  (const double x) const { return *this <  CNumber (x); }
+	bool operator >  (const double x) const { return *this >  CNumber (x); }
 	// Functions
 	CNumber &NormalizeAngle();
 	CNumber NormalizedAngle();
@@ -85,8 +85,8 @@ class C3DPoint
 public:
 	C3DPoint (void) : m_x(0), m_y(0), m_z(0) { }
 	C3DPoint (CNumber X, CNumber Y, CNumber Z) : m_x (X), m_y (Y), m_z(Z) { }
-	operator == (const C3DPoint &p) const { return m_x == p.m_x && m_z == p.m_z; }
-	operator != (const C3DPoint &p) const { return m_x != p.m_x || m_z != p.m_z; }
+	bool operator == (const C3DPoint &p) const { return m_x == p.m_x && m_z == p.m_z; }
+	bool operator != (const C3DPoint &p) const { return m_x != p.m_x || m_z != p.m_z; }
 	C3DPoint operator - (const C3DPoint &p) const {return C3DPoint(m_x - p.m_x, m_y, m_z - p.m_z);}
 	C3DPoint operator * (const CNumber &n) const { return C3DPoint (n*m_x, m_y, n*m_z); }
 	bool IsInfiniteXZ (void) { return *this == C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY) ? true : false; }
@@ -102,7 +102,7 @@ class CEdge
 {
 public:
 	CEdge (CNumber X, CNumber Y, CNumber Z, CNumber Slope) : m_Point(X, Y, Z), m_Slope(Slope) {};
-	operator == (const CEdge &p) const { return m_Point == p.m_Point; }
+	bool operator == (const CEdge &p) const { return m_Point == p.m_Point; }
 	C3DPoint m_Point;
 	CNumber m_Slope;
 };
@@ -149,14 +149,14 @@ class CVertex
 public:
 	CVertex (void) : m_ID (-1) { };
 	CVertex (const C3DPoint &p, const C3DPoint &prev = C3DPoint (), const CNumber &prevslope = -1, const C3DPoint &next = C3DPoint (), const CNumber &nextslope = -1)
-		: m_point (p), m_axis (CRidgeLine::AngleAxis (p, prev, prevslope,  next, nextslope)), m_leftLine (p, prev, prevslope), m_rightLine (p, next, nextslope), m_higher (NULL),
-		m_leftVertex (NULL), m_rightVertex (NULL), m_nextVertex (NULL), m_prevVertex (NULL), m_done (false), m_ID (-1),
-		m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL), m_advancingSkeletonLine (NULL) { }
+	: m_point (p), m_axis (CRidgeLine::AngleAxis (p, prev, prevslope,  next, nextslope)), m_leftLine (p, prev, prevslope), m_rightLine (p, next, nextslope), m_higher (NULL),
+	m_leftVertex (NULL), m_rightVertex (NULL), m_nextVertex (NULL), m_prevVertex (NULL), m_done (false), m_ID (-1),
+	m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL), m_advancingSkeletonLine (NULL) { }
 	CVertex (const C3DPoint &p, CVertex &left, CVertex &right);
 	CVertex *Highest (void) { return m_higher ? m_higher -> Highest () : this; }
 	bool AtContour (void) const { return m_leftVertex == this && m_rightVertex == this; }
-	operator == (const CVertex &v) const { return m_point == v.m_point; }
-	operator < (const CVertex &) const { assert (false); return false; } 
+	bool operator == (const CVertex &v) const { return m_point == v.m_point; }
+	bool operator < (const CVertex &) const { assert (false); return false; } 
 	C3DPoint CoordinatesOfAnyIntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	C3DPoint IntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	CNumber NearestIntersection (CVertexList &vl, CVertex **left, CVertex **right, C3DPoint &p);
@@ -226,11 +226,11 @@ public:
 		int RightID (void) const { if (!m_right) return -1; return m_right -> m_ID; }
 		int VertexID (void) const { if (!m_vertex) return -1; return m_vertex -> m_ID; }
 	} m_lower, m_higher;
-	operator == (const CSkeletonLine &s) const
+	bool operator == (const CSkeletonLine &s) const
 	{
 		return m_higher.m_vertex -> m_ID == s.m_higher.m_vertex -> m_ID  && m_lower.m_vertex -> m_ID  == s.m_lower.m_vertex -> m_ID ;
 	}
-	operator < (const CSkeletonLine &) const { assert (false); return false; }
+	bool operator < (const CSkeletonLine &) const { assert (false); return false; }
 	int m_ID;
 };
 
