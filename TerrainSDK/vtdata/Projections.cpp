@@ -11,6 +11,7 @@
 #include "StatePlane.h"
 #include "MathTypes.h"
 #include "vtString.h"	// for stricmp
+#include "vtLog.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // Implementation of class vtProjection
@@ -18,7 +19,6 @@
 
 vtProjection::vtProjection() : OGRSpatialReference()
 {
-	m_Datum = NO_DATUM;
 }
 
 /**
@@ -32,9 +32,6 @@ vtProjection &vtProjection::operator=(const vtProjection &ref)
 		OGRSpatialReference *ref_copy = ref.Clone();
 		(*(OGRSpatialReference *)this) = *ref_copy;
 	}
-
-	// copy old fields
-	m_Datum = ref.m_Datum;
 	return *this;
 }
 
@@ -739,7 +736,7 @@ OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pT
 		enode2->GetChild(2)->SetValue(enode1->GetChild(2)->GetValue());
 	}
 
-#if DEBUG && 1
+#if DEBUG && 0
 	// Debug: Check texts in PROJ4
 	char *str3, *str4;
 	pSource->exportToProj4(&str3);
@@ -753,7 +750,31 @@ OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pT
 	OGRFree(wkt2);
 #endif
 
-	return OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource, (OGRSpatialReference *)&DummyTarget);
+	return OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource,
+		(OGRSpatialReference *)&DummyTarget);
+}
+
+OCT *CreateCoordTransform(const vtProjection *pSource,
+						  const vtProjection *pTarget, bool bLog)
+{
+	if (bLog)
+	{
+		// display debugging information to the log
+		char *wkt1, *wkt2;
+		OGRErr err = ((vtProjection *)pSource)->exportToWkt(&wkt1);
+		err = ((vtProjection *)pTarget)->exportToWkt(&wkt2);
+		VTLOG(" Converting from: %s\n", wkt1);
+		VTLOG("   Converting to: %s\n", wkt2);
+		OGRFree(wkt1);
+		OGRFree(wkt2);
+	}
+	OCT *result = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource,
+		(OGRSpatialReference *)pTarget);
+	if (bLog)
+	{
+		VTLOG(" Conversion: %s\n", result ? "succeeded" : "failed");
+	}
+	return result;
 }
 
 

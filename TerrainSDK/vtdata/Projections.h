@@ -91,9 +91,6 @@ public:
 	bool WriteProjFile(const char *filename);
 
 	double GeodesicDistance(const DPoint2 &in, DPoint2 &out, bool bQuick = false);
-
-protected:
-	DATUM	m_Datum;
 };
 
 struct StatePlaneInfo
@@ -126,6 +123,8 @@ StatePlaneInfo *GetStatePlaneTable();
 int GetNumStatePlanes();
 void CreateSimilarGeographicProjection(const vtProjection &source, vtProjection &geo);
 OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pTarget);
+OCT *CreateCoordTransform(const vtProjection *pSource,
+						  const vtProjection *pTarget, bool bLog = false);
 
 /**
  * Determine an approximate conversion from degrees of longitude to meters,
