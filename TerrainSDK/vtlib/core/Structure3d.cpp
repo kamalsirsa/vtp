@@ -53,9 +53,10 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 	if (dot > 0)
 	{
 		vtString ext = fname2.Mid(dot+1);
-		if ((ext.CompareNoCase("3ds") == 0) || (ext.CompareNoCase("lwo") == 0))
+//		if ((ext.CompareNoCase("3ds") == 0) || (ext.CompareNoCase("lwo") == 0))
+		if (ext.CompareNoCase("3ds") == 0)
 		{
-			// Must rotate by 90 degrees for 3DS MAX -> OpenGL (or Lightwave LWO)
+			// Must rotate by 90 degrees for 3DS MAX -> OpenGL (or Lightwave LWO?)
 			m_pContainer->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
 		}
 	}
