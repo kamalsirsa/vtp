@@ -11,6 +11,7 @@
 #include "wx/wx.h"
 #endif
 #include <wx/progdlg.h>
+#include <wx/choicdlg.h>
 
 #include "vtdata/config_vtdata.h"
 #include "vtdata/ElevationGrid.h"
@@ -65,6 +66,7 @@ EVT_MENU(ID_LAYER_SAVE_AS,		MainFrame::OnLayerSaveAs)
 EVT_MENU(ID_LAYER_IMPORT,		MainFrame::OnLayerImport)
 EVT_MENU(ID_LAYER_IMPORTTIGER,	MainFrame::OnLayerImportTIGER)
 EVT_MENU(ID_LAYER_IMPORTUTIL,	MainFrame::OnLayerImportUtil)
+EVT_MENU(ID_LAYER_IMPORT_MS,	MainFrame::OnLayerImportMapSource)
 EVT_MENU(ID_LAYER_PROPS,		MainFrame::OnLayerProperties)
 EVT_MENU(ID_LAYER_CONVERTPROJ,	MainFrame::OnLayerConvert)
 EVT_MENU(ID_LAYER_SETPROJ,		MainFrame::OnLayerSetProjection)
@@ -256,6 +258,7 @@ void MainFrame::CreateMenus()
 #ifndef ELEVATION_ONLY
 	layerMenu->Append(ID_LAYER_IMPORTTIGER, _T("Import Data From TIGER"), _T("Import Data From TIGER"));
 	layerMenu->Append(ID_LAYER_IMPORTUTIL, _T("Import Utilites From SHP"), _T("Import Utilites From SHP"));
+	layerMenu->Append(ID_LAYER_IMPORT_MS, _T("Import from MapSource file"));
 #endif
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_PROPS, _T("Layer Properties"), _T("Layer Properties"));
@@ -1004,7 +1007,6 @@ void MainFrame::OnLayerImportTIGER(wxCommandEvent &event)
 	ImportDataFromTIGER(strDirName);
 }
 
-
 void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 {
 	// ask the user for a directory
@@ -1039,6 +1041,113 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 		delete pUL;
 }
 
+void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
+{
+	// Use file dialog to open plant list text file.
+	wxFileDialog loadFile(NULL, _T("Import MapSource File"), _T(""), _T(""),
+		_T("MapSource Export Files (*.txt)|*.txt|"), wxOPEN);
+
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+
+	wxString2 str = loadFile.GetPath();
+
+	FILE *fp = fopen(str.mb_str(), "r");
+	if (!fp)
+		return;
+
+	vtRawLayer *pRL;
+	Array<vtRawLayer *> layers;
+	char buf[200];
+	bool bUTM = false;
+	fscanf(fp, "Grid %s\n", buf);
+	if (!strcmp(buf, "UTM"))
+		bUTM = true;
+	fgets(buf, 200, fp); // assume "Datum   WGS 84" 
+
+	vtProjection proj;
+
+	bool bGotSRS = false;
+	char ch;
+	int i;
+
+	while (fgets(buf, 200, fp))	// get a line
+	{
+		if (!strncmp(buf, "Track\t", 6))
+		{
+			pRL = new vtRawLayer();
+			pRL->SetEntityType(SHPT_POINT);
+			layers.Append(pRL);
+			bGotSRS = false;
+
+			// parse name
+			char name[40];
+			for (i = 6; ; i++)
+			{
+				ch = buf[i];
+				if (ch == '\t' || ch == 0)
+					break;
+				name[i-6] = ch;
+			}
+			name[i] = 0;
+			pRL->SetFilename(wxString2(name));
+		}
+		if (!strncmp(buf, "Trackpoint", 10))
+		{
+			int zone;
+			DPoint2 p;
+			sscanf(buf+10, "%d %c %lf %lf", &zone, &ch, &p.x, &p.y);
+
+			if (!bGotSRS)
+			{
+				proj.SetWellKnownGeogCS("WGS84");
+				if (bUTM)
+					proj.SetUTMZone(zone);
+				pRL->SetProjection(proj);
+				bGotSRS = true;
+			}
+			pRL->AddPoint(p);
+		}
+	}
+
+	// Display the list of imported tracks to the user
+	int n = layers.GetSize();
+	wxString2 *choices = new wxString2[n];
+	wxArrayInt selections;
+	for (i = 0; i < n; i++)
+	{
+		choices[i] = layers[i]->GetFilename();
+
+		choices[i] += _T(" (");
+		if (bUTM)
+		{
+			layers[i]->GetProjection(proj);
+			str.Printf(_T("zone %d, "), proj.GetUTMZone());
+			choices[i] += str;
+		}
+		str.Printf(_T("points %d"), layers[i]->NumEntities());
+		choices[i] += str;
+		choices[i] += _T(")");
+	}
+
+	int nsel = wxGetMultipleChoices(selections, _T("Which layers to import?"),
+		_T("Import Tracks"), n, choices);
+
+	// for each of the layers the user wants, add them to our project
+	for (i = 0; i < nsel; i++)
+	{
+		int sel = selections[i];
+		AddLayerWithCheck(layers[sel]);
+		layers[sel]->SetModified(false);
+	}
+	// for all the rest, delete 'em
+	for (i = 0; i < n; i++)
+	{
+		if (layers[i]->GetModified())
+			delete layers[i];
+	}
+	delete [] choices;
+}
 
 void MainFrame::OnLayerProperties(wxCommandEvent &event)
 {
