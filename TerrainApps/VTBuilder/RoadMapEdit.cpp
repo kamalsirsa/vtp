@@ -523,6 +523,7 @@ DRECT *RoadMapEdit::DeleteSelected(int &nBounds)
 	RoadEdit *prevRoad = NULL;
 	RoadEdit *tmpRoad;
 	RoadEdit *curRoad = GetFirstRoad();
+	Node *tmpNode;
 
 	while (curRoad)
 	{
@@ -539,8 +540,12 @@ DRECT *RoadMapEdit::DeleteSelected(int &nBounds)
 			else
 				m_pFirstRoad = curRoad;
 
-			tmpRoad->GetNode(0)->DetachRoad(tmpRoad);
-			tmpRoad->GetNode(1)->DetachRoad(tmpRoad);
+			tmpNode = tmpRoad->GetNode(0);
+			if (tmpNode)
+				tmpNode->DetachRoad(tmpRoad);
+			tmpNode = tmpRoad->GetNode(1);
+			if (tmpNode)
+				tmpNode->DetachRoad(tmpRoad);
 			delete tmpRoad;
 		}
 		else
