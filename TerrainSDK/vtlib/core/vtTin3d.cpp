@@ -262,6 +262,9 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	return m_pGeom;
 }
 
+/**
+ * Returns true if the point was over the TIN, false otherwise.
+ */
 bool vtTin3d::FindAltitudeAtPoint(const FPoint3 &input, float &fAltitude,
 								  FPoint3 *vNormal) const
 {

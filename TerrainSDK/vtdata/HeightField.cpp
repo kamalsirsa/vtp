@@ -110,13 +110,13 @@ bool vtHeightFieldGrid3d::CastRayToSurface(const FPoint3 &point,
  * Converts a earth coordinate (project or geographic) to a world coordinate
  * on the surface of the heightfield.
  */
-void vtHeightField3d::ConvertEarthToSurfacePoint(double x, double y, FPoint3 &p3)
+bool vtHeightField3d::ConvertEarthToSurfacePoint(double x, double y, FPoint3 &p3)
 {
 	// convert earth -> XZ
 	m_Conversion.ConvertFromEarth(DPoint2(x, y), p3.x, p3.z);
 
 	// look up altitude
-	FindAltitudeAtPoint(p3, p3.y);
+	return FindAltitudeAtPoint(p3, p3.y);
 }
 
 /**

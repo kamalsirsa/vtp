@@ -66,10 +66,10 @@ public:
 
 	int PointIsAboveTerrain(const FPoint3 &p) const;
 
-	void ConvertEarthToSurfacePoint(double ex, double ey, FPoint3 &p3);
-	void ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3)
+	bool ConvertEarthToSurfacePoint(double ex, double ey, FPoint3 &p3);
+	bool ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3)
 	{
-		ConvertEarthToSurfacePoint(epos.x, epos.y, p3);
+		return ConvertEarthToSurfacePoint(epos.x, epos.y, p3);
 	}
 
 	bool ContainsWorldPoint(float x, float z);
