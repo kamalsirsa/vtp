@@ -1,7 +1,7 @@
 //
 // vtString.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -183,6 +183,9 @@ public:
 	void WIN_UNIX_CDECL Format(pcchar lpszFormat, ...);
 	// printf-like formatting using variable arguments parameter
 	void FormatV(pcchar lpszFormat, va_list argList);
+	// produce a string suitable for passing in a URL
+	void FormatForURL(const char *szInput);
+	vtString FormatForURL() const;
 
 	// formatting for localization (uses FormatMessage API)
 	// format using FormatMessage API on passed string

@@ -1,7 +1,7 @@
 //
 // vtString.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -954,6 +954,41 @@ int vtString::Delete(int iIndex, int nCount)
 		memmove( m_pchData+iIndex, m_pchData+iIndex+nCount, nCharsToCopy );
 	}
 	return GetLength();
+}
+
+void vtString::FormatForURL(const char *szInput)
+{
+	*this = "";
+	for (const char *c = szInput; *c; c++)
+	{
+		switch (*c)
+		{
+		case '\r':
+			break;
+		case '\n':
+		case ' ':
+			*this += '+';
+			break;
+		case ',':
+			*this += "%2C";
+			break;
+		case '#':
+			*this += "%23";
+			break;
+		case ':':
+			*this += "%3A";
+			break;
+		default:
+			*this += *c;
+		}
+	}
+}
+
+vtString vtString::FormatForURL() const
+{
+	vtString str;
+	str.FormatForURL(m_pchData);
+	return str;
 }
 
 
