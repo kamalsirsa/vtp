@@ -14,6 +14,7 @@
 
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
+#include "vtdata/vtLog.h"
 
 #include "Frame.h"
 #include "SplitterWin.h"
@@ -205,6 +206,7 @@ void MainFrame::SetupUI()
 			_T(" data files.  If you don't need full support for coordinate systems\n")
 			_T(" including converting between different projections, you can ignore\n")
 			_T(" this warning."), _T(APPNAME) _T("Warning"));
+		VTLOG("Warning! Couldn't find GDAL/PROJ data files.\n");
 	}
 
 	vtProjection proj;
@@ -250,6 +252,15 @@ void MainFrame::OnClose(wxCloseEvent &event)
 			return;
 		}
 	}
+
+	if (m_pFeatInfoDlg != NULL)
+	{
+		// For some reason, destroying the list control in the feature
+		//  dialog is dangerous if allowed to occur naturally, but it is
+		//  safe to do it at this point.
+		m_pFeatInfoDlg->Clear();
+	}
+
 	Destroy();
 }
 
@@ -943,16 +954,14 @@ void MainFrame::OnSelectionChanged()
 ////////////////////////////////////////////////////////////////
 // Project operations
 
-void MainFrame::LoadProject(const wxString &strPathName)
+void MainFrame::LoadProject(const wxString2 &strPathName)
 {
 	// read project file
 	wxString2 str = strPathName;
 	FILE *fp = fopen(str.mb_str(), "rb");
 	if (!fp)
 	{
-		str = _T("Couldn't open project file: ");
-		str += strPathName;
-		wxMessageBox(str);
+		DisplayAndLog("Couldn't open project file: '%s'", strPathName.mb_str());
 		return;
 	}
 
@@ -963,7 +972,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 	OGRErr err = m_proj.importFromWkt(&wkt);
 	if (err != OGRERR_NONE)
 	{
-		wxMessageBox(_T("Had trouble parsing the projection information from that file."));
+		DisplayAndLog("Had trouble parsing the projection information from that file.");
 		fclose(fp);
 		return;
 	}
@@ -1029,7 +1038,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 	RefreshToolbar();
 }
 
-void MainFrame::SaveProject(const wxString &strPathName)
+void MainFrame::SaveProject(const wxString2 &strPathName)
 {
 	// write project file
 	wxString2 str = strPathName;
@@ -1116,8 +1125,8 @@ void MainFrame::ExportElevation()
 	}
 	if (spacing == DPoint2(1.0f, 1.0f))
 	{
-		wxMessageBox(_T("Sorry, you must have some elevation grid layers to\n")
-				_T("perform a sampling operation on them."), _T("Info"));
+		DisplayAndLog("Sorry, you must have some elevation grid layers to\n"
+					  "perform a sampling operation on them.");
 		return;
 	}
 
@@ -1154,16 +1163,11 @@ void MainFrame::ExportElevation()
 #endif
 
 	bool success = pOutput->m_pGrid->SaveToBT(strPathName.mb_str());
-	if (!success)
-	{
-		wxMessageBox(_T("Couldn't open file for writing."));
-		delete pOutput;
-		return;
-	}
+	if (success)
+		DisplayAndLog("Successfully wrote BT file to '%s'", strPathName.mb_str());
+	else
+		DisplayAndLog("Couldn't open file for writing.");
 
-	wxString str = _T("Successfully wrote BT file ");
-	str += strPathName;
-	wxMessageBox(str);
 	delete pOutput;
 }
 
@@ -1186,8 +1190,8 @@ void MainFrame::ExportImage()
 	}
 	if (spacing == DPoint2(0.0f, 0.0f))
 	{
-		wxMessageBox(_T("Sorry, you must have some image layers to\n")
-				_T("perform a sampling operation on them."), _T("Info"));
+		DisplayAndLog("Sorry, you must have some image layers to"
+					  "perform a sampling operation on them.");
 		return;
 	}
 
@@ -1220,16 +1224,10 @@ void MainFrame::ExportImage()
 	SampleCurrentImages(pOutput);
 
 	bool success = pOutput->SaveToFile(strPathName.mb_str());
-	if (!success)
-	{
-		wxMessageBox(_T("Couldn't write image file."));
-		delete pOutput;
-		return;
-	}
-
-	wxString str = _T("Successfully wrote image file ");
-	str += strPathName;
-	wxMessageBox(str);
+	if (success)
+		DisplayAndLog(("Couldn't write image file."));
+	else
+		DisplayAndLog("Successfully wrote image file '%s'", strPathName.mb_str());
 	delete pOutput;
 }
 
@@ -1354,7 +1352,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	CloseProgressDialog();
 
 	// display a useful message informing the user what was planted
-	wxString msg, str;
+	wxString2 msg, str;
 	msg = _T("Vegetation distribution results:\n");
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
 	{
@@ -1369,7 +1367,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 			msg += str;
 		}
 	}
-	wxMessageBox(msg, _T("Results"));
+	DisplayAndLog(msg.mb_str());
 }
 
 
@@ -1380,3 +1378,4 @@ void MainFrame::OnChar(wxKeyEvent& event)
 {
 	m_pView->OnChar(event);
 }
+
