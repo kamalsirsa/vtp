@@ -58,7 +58,6 @@ public:
 	float	m_fFogDistance;
 	BOOL	m_bOverlay;
 	BOOL	m_bOceanPlane;
-	BOOL	m_bLabels;
 	int		m_iMinHeight;
 	CString	m_strBuildingFile;
 	BOOL	m_bVehicles;

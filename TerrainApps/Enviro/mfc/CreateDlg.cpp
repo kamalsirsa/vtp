@@ -46,7 +46,6 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_fFogDistance = 10;
 	m_bOverlay = FALSE;
 	m_bOceanPlane = FALSE;
-	m_bLabels = FALSE;
 	m_iMinHeight = 10;
 	m_strBuildingFile = _T("");
 	m_bVehicles = FALSE;
@@ -132,7 +131,6 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_FOGDISTANCE, m_fFogDistance);
 	DDX_Check(pDX, IDC_OVERLAY, m_bOverlay);
 	DDX_Check(pDX, IDC_OCEANPLANE, m_bOceanPlane);
-	DDX_Check(pDX, IDC_LABELS, m_bLabels);
 	DDX_Text(pDX, IDC_MINHEIGHT, m_iMinHeight);
 	DDX_CBString(pDX, IDC_BUILDINGFILE, m_strBuildingFile);
 	DDX_Check(pDX, IDC_VEHICLES, m_bVehicles);
@@ -298,10 +296,8 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_bFog =			Params.GetValueBool(STR_FOG);
 	m_fFogDistance =	Params.GetValueFloat(STR_FOGDISTANCE);
 
-	if (Params.m_strStructFiles.size() > 0)
-		m_strBuildingFile = (const char *) Params.m_strStructFiles[0].m_strStructFile;
-	else
-		m_strBuildingFile = "";
+	// TODO: real layer support for the MFC version
+	m_strBuildingFile = "";
 
 	m_bVehicles =		Params.GetValueBool(STR_VEHICLES);
 	m_fVehicleSize =	Params.GetValueFloat(STR_VEHICLESIZE);
@@ -311,7 +307,6 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_bSky =			Params.GetValueBool(STR_SKY);
 	m_bOceanPlane =		Params.GetValueBool(STR_OCEANPLANE);
 	m_bOverlay =		Params.GetValueBool(STR_OVERLAY);
-	m_bLabels =			Params.GetValueBool(STR_LABELS);
 }
 
 void CCreateDlg::GetParams(TParams &Params)
@@ -360,10 +355,8 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_FOG, m_bFog);
 	Params.SetValueFloat(STR_FOGDISTANCE, m_fFogDistance);
 
-	Params.m_strStructFiles.clear();
-		ParamStructLayer psl;
-		psl.m_strStructFile = (const char *) m_strBuildingFile;
-		Params.m_strStructFiles.push_back(psl);
+	// TODO: support layers in MFC version
+//	psl.m_strStructFile = (const char *) m_strBuildingFile;
 
 	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
 //	Params.SetValueFloat(STR_VEHICLESIZE, m_fVehicleSize);
@@ -374,7 +367,6 @@ void CCreateDlg::GetParams(TParams &Params)
 
 	Params.SetValueBool(STR_OCEANPLANE, m_bOceanPlane);
 //	Params.SetValueBool(STR_OVERLAY, m_bOverlay);
-	Params.SetValueBool(STR_LABELS, m_bLabels);
 }
 
 
