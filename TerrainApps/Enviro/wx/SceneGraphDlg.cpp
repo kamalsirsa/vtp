@@ -320,7 +320,7 @@ void SceneGraphDlg::OnZoomTo( wxCommandEvent &event )
 	if (m_pSelectedNode)
 	{
 		FSphere sph;
-		m_pSelectedNode->GetBoundSphere(sph);
+		m_pSelectedNode->GetBoundSphere(sph, true);	// global bounds
 		vtGetScene()->GetCamera()->ZoomToSphere(sph);
 	}
 }
