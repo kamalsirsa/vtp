@@ -1891,6 +1891,9 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, void progress_callback
  * FTP site for their 1-degree blocks of SRTM data.
  * It is simply a raw block of signed 2-byte data, in WGS84 geographic coords.
  *
+ * The file will either be:
+ *	 2,884,802 bytes (for 3 arcsec, 1201*1201) or
+ *	25,934,402 bytes (for 1 arcsec, 3601*3601)
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromHGT(const char *szFileName, void progress_callback(int))
@@ -1916,6 +1919,10 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, void progress_callback
 	else if (ew != 'E')
 		return false;
 
+	fseek(fp, 0, SEEK_END);
+	bool b1arcsec = (ftell(fp) > 3000000);
+	fseek(fp, 0, SEEK_SET);
+
 	m_EarthExtents.SetRect(lon, lat+1, lon+1, lat);
 	ComputeCornersFromExtents();
 
@@ -1923,25 +1930,30 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, void progress_callback
 	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
 	m_bFloatMode = false;
 
-	m_iColumns = m_iRows = 1201;
+	if (b1arcsec)
+		m_iColumns = m_iRows = 3601;
+	else
+		m_iColumns = m_iRows = 1201;
 	_AllocateArray();
 
 #define SWAP_2(x) ( (((x) & 0xff) << 8) | ((unsigned short)(x) >> 8) )
 
-	short buf[1201], value;
+	short *buf = new short[m_iColumns];
+	short value;
 	int i, j;
 	for (j = 0; j < m_iRows; j++)
 	{
 		if (progress_callback != NULL)
 			progress_callback(j * 100 / m_iRows);
 
-		fread(buf, 2, 1201, fp);
+		fread(buf, 2, m_iColumns, fp);
 		for (i = 0; i < m_iColumns; i++)
 		{
 			value = SWAP_2(buf[i]);
 			SetValue(i, m_iRows-1-j, value);
 		}
 	}
+	delete [] buf;
 	fclose(fp);
 	return true;
 }
