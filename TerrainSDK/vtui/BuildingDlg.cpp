@@ -127,7 +127,7 @@ void BuildingDlg::HighlightSelectedEdge()
 
 void BuildingDlg::OnModifyFacade( wxCommandEvent &event )
 {
-	wxFileDialog SelectFile(this, _T("Choose facade texture"),
+	wxFileDialog SelectFile(this, _("Choose facade texture"),
 							_T(""),
 							_T(""),
 							_T("Jpeg files (*.jpg)|*.jpg|PNG files(*.png)|*.png|Bitmap files (*.bmp)|*.bmp|All files(*.*)|*.*"),
@@ -149,7 +149,7 @@ void BuildingDlg::OnEditHeights( wxCommandEvent &event )
 	if (!m_pHeightField)
 		return;
 
-	CHeightDialog HeightDialog(this, -1, _T("Baseline Editor"));
+	CHeightDialog HeightDialog(this, -1, _("Baseline Editor"));
 
 	HeightDialog.Setup(m_pBuilding, m_pHeightField);
 
@@ -369,18 +369,17 @@ void BuildingDlg::RefreshLevelsBox()
 		str.Printf(_T("%d"), i);
 		RoofType rt = pLev->GuessRoofType();
 		if (rt == ROOF_FLAT)
-			str += _T(" (flat roof)");
+			str += _(" (flat roof)");
 		else if (rt == ROOF_SHED)
-			str += _T(" (shed roof)");
+			str += _(" (shed roof)");
 		else if (rt == ROOF_GABLE)
-			str += _T(" (gable roof)");
+			str += _(" (gable roof)");
 		else if (rt == ROOF_HIP)
-			str += _T(" (hip roof)");
+			str += _(" (hip roof)");
 		else
 		{
 			wxString str2;
-			str2.Printf(_T(" (%d stor%hs)"), pLev->m_iStories,
-				pLev->m_iStories == 1 ? "y" : "ies");
+			str2.Printf(_(" (stories : %d)"), pLev->m_iStories);
 			str += str2;
 		}
 		m_pLevelListBox->Append(str);
@@ -547,14 +546,14 @@ void BuildingDlg::UpdateColorControl()
 void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 {
 	wxString choices[5];
-	choices[0] = _T("Flat (all edges 0°)");
-	choices[1] = _T("Shed");
-	choices[2] = _T("Gable");
-	choices[3] = _T("Hip");
-	choices[4] = _T("Vertical (all edges 90°)");
+	choices[0] = _("Flat (all edges 0°)");
+	choices[1] = _("Shed");
+	choices[2] = _("Gable");
+	choices[3] = _("Hip");
+	choices[4] = _("Vertical (all edges 90°)");
 
 	wxSingleChoiceDialog dialog(this, _T("Choice"),
-		_T("Please indicate edge slopes"), 5, (const wxString *)choices);
+		_("Please indicate edge slopes"), 5, (const wxString *)choices);
 
 	dialog.SetSelection(0);
 
@@ -569,8 +568,8 @@ void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 		if (sel == 1) slope = 4;
 		if (sel == 2) slope = 15;
 		if (sel == 3) slope = 15;
-		slope = wxGetNumberFromUser(_T("Sloped edges"), _T("Degrees"),
-			_T("Slope"), slope, 0, 90);
+		slope = wxGetNumberFromUser(_("Sloped edges"), _("Degrees"),
+			_("Slope"), slope, 0, 90);
 		if (slope == -1)
 			return;
 		m_pLevel->SetRoofType((RoofType)sel, slope);
@@ -681,8 +680,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	}
 
 	wxSingleChoiceDialog dialog(this, _T("Choice"),
-		_T("Set Building Material for All Edges"), iNumberofMaterials, pChoices);
-
+		_("Set Building Material for All Edges"), iNumberofMaterials, pChoices);
 
 	if (iInitialSelection != -1)
 		dialog.SetSelection(iInitialSelection);
