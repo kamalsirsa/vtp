@@ -398,7 +398,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 		SHPClose(hSHP);
 	}
 
-	// if layer type unknow, ask user input
+	// if layer type unknown, ask user input
 	if (ltype == LT_UNKNOWN)
 		ltype = AskLayerType();
 
@@ -414,7 +414,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	vtProjection proj;
 	dlg.GetProjection(proj);
 
-	// read DLG data into the layer
+	// read SHP data into the layer
 	if (ltype == LT_ROAD)
 	{
 		vtRoadLayer *pRL = (vtRoadLayer *)pLayer;
