@@ -249,7 +249,7 @@ void StartupDlg::OnTnameChoice( wxCommandEvent &event )
 
 void StartupDlg::OnTerrMan( wxCommandEvent &event )
 {
-	TerrainManagerDlg dlg(this, -1, _T("Terrain Manager"), wxDefaultPosition);
+	TerrainManagerDlg dlg(this, -1, _("Terrain Manager"), wxDefaultPosition);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		g_Options.Write();
