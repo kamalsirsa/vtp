@@ -285,16 +285,15 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 				break;
 			case SHPT_ARC:
 			case SHPT_POLYGON:
-				dline.SetSize(psShape->nVertices);
-				m_LinePoly[i] = dline;
-
 				// Store each coordinate
+				dline.SetSize(psShape->nVertices);
 				for (int j = 0; j < psShape->nVertices; j++)
 				{
 					p2.x = psShape->padfX[j];
 					p2.y = psShape->padfY[j];
 					dline.SetAt(j, p2);
 				}
+				m_LinePoly.push_back(dline);
 				break;
 			}
 		}
