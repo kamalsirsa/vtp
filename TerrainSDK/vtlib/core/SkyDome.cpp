@@ -305,7 +305,8 @@ vtDayDome::vtDayDome()
 vtDayDome::~vtDayDome()
 {
 	if (SphVertices) delete[] SphVertices;
-	m_pSunImage->Release();
+	if (m_pSunImage)
+		m_pSunImage->Release();
 	if (m_pMats)
 		m_pMats->Release();
 }
@@ -688,7 +689,8 @@ vtStarDome::~vtStarDome()
 {
 	if (Starfield)
 		delete[] Starfield;
-	m_pMoonImage->Release();
+	if (m_pMoonImage)
+		m_pMoonImage->Release();
 	if (m_pMats)
 		m_pMats->Release();
 }
