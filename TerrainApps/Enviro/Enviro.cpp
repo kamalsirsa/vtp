@@ -546,6 +546,7 @@ void Enviro::SetupScene1()
 	m_fCatenaryFactor = g_Options.m_fCatenaryFactor;
 	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
 	vtNode::s_bDisableMipmaps = g_Options.m_bDisableModelMipmaps;
+	vtFence3d::SetScale(g_Options.m_fPlantScale);
 
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCamera = pScene->GetCamera();
@@ -658,8 +659,6 @@ void Enviro::LoadPlants()
 void Enviro::SetupCommonCulture()
 {
 	VTLOG("SetupCommonCulture\n");
-
-	vtFence3d::SetScale(g_Options.m_fPlantScale);
 
 	if (m_bDoPlants)
 	{
