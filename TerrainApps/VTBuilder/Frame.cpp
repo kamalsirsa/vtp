@@ -915,7 +915,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 	fscanf(fp, "layers: %d\n", &count);
 	for (int i = 0; i < count; i++)
 	{
-		char buf2[80];
+		char buf2[160];
 		fscanf(fp, "type %d, %s\n", &ltype, buf2);
 		fgets(buf, 160, fp);
 
@@ -924,7 +924,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 		if (len && buf[len-1] == 10) buf[len-1] = 0;
 		len = strlen(buf);
 		if (len && buf[len-1] == 13) buf[len-1] = 0;
-		wxString fname(buf, wxConvCurrent);
+		wxString2 fname = buf;
 
 		if (!strcmp(buf2, "import"))
 		{
