@@ -475,7 +475,7 @@ bool JumpingEngine::Eval(float t)
 	float wiggle2 = 1.0f;
 	if (m_vel.y > 0.0f)
 		wiggle2 += sinf(t*10.0f + PIf) * 50.0f * m_vel.y;
-//	TRACE("wiggle %f\n", wiggle1);
+//	VTLOG("wiggle %f\n", wiggle1);
 	pTarget->Scale3(1.0f, wiggle1, wiggle2);
 
 	return true;

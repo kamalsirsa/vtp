@@ -323,7 +323,7 @@ float CarEngine::SetOrientation()
 	/*
 	if (a!=b) {
 		//floating point bug???
-		//TRACE("computation are different: %.8f, %.8f\n", a,b);
+		//VTLOG("computation are different: %.8f, %.8f\n", a,b);
 	}
 	*/
 	return (fM.y+rM.y)/2;
@@ -351,7 +351,7 @@ void CarEngine::SetOrientationAndHeight(FPoint3 &next_pos)
 	//turn the front wheels
 	newangle = 2*angle - m_fWheelSteerRotation;
 	m_fWheelSteerRotation += newangle;
-	//TRACE("newangle: %f\t wheel: %f\t m_CurRot: %f \n",newangle, m_fWheelSteerRotation, m_fCurRotation);
+	//VTLOG("newangle: %f\t wheel: %f\t m_CurRot: %f \n",newangle, m_fWheelSteerRotation, m_fCurRotation);
 	FPoint3 trans;
 	trans = m_pFrontLeft->GetTrans();
 	m_pFrontLeft->Translate2(-trans);
@@ -442,13 +442,13 @@ bool CarEngine::SetTires()
 			} else if (strend  (tName, "rear right")) {
 				m_pRearRight = tModel;
 			} else {
-				TRACE("INVALID TIRE IN MODEL: %s!!!!!\n",((vtTransform *) GetTarget())->GetName2());
+				VTLOG("INVALID TIRE IN MODEL: %s!!!!!\n", ((vtTransform *) GetTarget())->GetName2());
 			}
 			i++;
 		}
 		return true;
 	} else {
-		TRACE("TIRES NOT FOUND IN MODEL: %s!!!!!\n", ((vtTransform *) GetTarget())->GetName2());
+		VTLOG("TIRES NOT FOUND IN MODEL: %s!!!!!\n", ((vtTransform *) GetTarget())->GetName2());
 		return false;
 	}
 
