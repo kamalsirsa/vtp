@@ -74,6 +74,7 @@ and distributed under a completely free <a href="../../license.txt">open source 
 		<li>Countries</li>
 		<li>dir_iter</li>
 		<li>LocaleWrap</li>
+		<li>ColorMap</li>
       </ul>
     </td>
     <td valign="top">
