@@ -41,7 +41,7 @@ typedef class vtPointOfInterest *POIPtr;
 // Terrain Feature Types
 enum TFType
 {
-	TFT_REGULAR,
+	TFT_TERRAINSURFACE,
 	TFT_OCEAN,
 	TFT_VEGETATION,
 	TFT_ROADS,
@@ -164,7 +164,7 @@ public:
 	RGBf GetOceanColor() { return m_ocean_color; }
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
 	vtGroup *GetTopGroup() { return m_pTerrainGroup; }
-	vtHeightField *GetHeightField() { return m_pHeightField; }
+	vtHeightField3d *GetHeightField() { return m_pHeightField; }
 	vtProjection &GetProjection() { return m_proj; }
 
 	// Points of interest
@@ -204,7 +204,6 @@ protected:
 	void create_roads(vtString strRoadFile);
 	void setup_LodGrid(float fLODDistance);
 	void create_textures();
-	bool create_regular_terrain(float fOceanDepth);
 	bool create_dynamic_terrain(float fOceanDepth, int &iError);
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
@@ -214,9 +213,6 @@ protected:
 
 	void CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 								int patches, int patch_size);
-	void _CreateTiledMaterials1(vtMaterialArray *pApp1,
-							 int patches, int patch_size, float ambient,
-							 float diffuse, float emmisive);
 	void _CreateTiledMaterials2(vtMaterialArray *pApp1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
@@ -226,9 +222,6 @@ protected:
 
 	// main scene graph outline
 	vtGroup		*m_pTerrainGroup;
-
-	// regular terrain (brute-force)
-	vtTerrainGeom	*m_pTerrainGeom;
 
 	// dynamic terrain (CLOD)
 	vtDynTerrainGeom *m_pDynGeom;
@@ -242,7 +235,7 @@ protected:
 
 	// data grids
 	vtElevationGrid	*m_pInputGrid;	// if non-NULL, use instead of BT
-	vtHeightField	*m_pHeightField;
+	vtHeightField3d	*m_pHeightField;
 	vtLodGrid		*m_pLodGrid;
 	bool			m_bPreserveInputGrid;
 
@@ -275,7 +268,6 @@ protected:
 	vtDIB				*m_pDIB;
 	Array<vtImagePtr>	m_Images;
 	vtImage				*m_pImage;
-	vtTextureCoverage	*m_pCoverage;
 
 	FSphere			m_bound_sphere;		// bounding sphere of terrain
 									// (without surrounding ocean)

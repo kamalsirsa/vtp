@@ -16,10 +16,10 @@
 #include "Building3d.h"
 #include "vtdata/StructArray.h"
 #include "IntersectionEngine.h"
-#include "TerrainSurface.h"
 #include "Fence3d.h"
 #include "Route.h"
 #include "vtTin3d.h"
+#include "TerrainPatch.h"
 
 //#include "LKTerrain.h"
 #include "TVTerrain.h"
@@ -46,7 +46,6 @@ vtTerrain::vtTerrain()
 
 	m_pTerrainGroup = (vtGroup*) NULL;
 	m_pDIB = NULL;
-	m_pCoverage = NULL;
 	m_pTerrApps1 = NULL;
 	m_pTerrApps2 = NULL;
 	m_pRoadMap = NULL;
@@ -66,7 +65,6 @@ vtTerrain::vtTerrain()
 
 	m_pDynGeom = NULL;
 	m_pDynGeomScale = NULL;
-	m_pTerrainGeom = NULL;
 	m_pTin = NULL;
 	m_pNext = NULL;
 
@@ -91,7 +89,6 @@ vtTerrain::~vtTerrain()
 	{
 		delete m_pElevGrid;
 	}
-	delete m_pCoverage;
 	delete m_pImage;
 	delete m_pDIB;
 //	delete m_pTreeGroup;	// don't delete, same as m_pLodGrid
@@ -116,11 +113,6 @@ vtTerrain::~vtTerrain()
 	{
 		m_pDynGeomScale->RemoveChild(m_pDynGeom);
 		m_pDynGeom->Destroy();
-	}
-	if (m_pTerrainGeom)
-	{
-		m_pTerrainGroup->RemoveChild(m_pTerrainGeom);
-		m_pTerrainGeom->Destroy();
 	}
 	if (m_pDynGeomScale)
 	{
@@ -315,14 +307,9 @@ void vtTerrain::create_textures()
 		m_pDIB->LeaveInternalDIB(false);
 
 		CreateChoppedTextures(m_pElevGrid, m_pDIB, iTiles, m_Params.m_iTilesize);
-		if (m_Params.m_bRegular)
-			_CreateTiledMaterials1(m_pTerrApps1,
-							 iTiles, m_Params.m_iTilesize, ambient, diffuse,
-							 emmisive);
-		if (m_Params.m_bDynamic)
-			_CreateTiledMaterials2(m_pTerrApps2,
-							 iTiles, m_Params.m_iTilesize, ambient, diffuse,
-							 emmisive);
+		_CreateTiledMaterials2(m_pTerrApps2,
+						 iTiles, m_Params.m_iTilesize, ambient, diffuse,
+						 emmisive);
 	}
 	if (eTex == TE_NONE || m_pDIB == NULL)	// none or failed to find texture
 	{
@@ -372,64 +359,6 @@ void vtTerrain::create_textures()
 
 
 /////////////////////
-
-bool  vtTerrain::create_regular_terrain(float fOceanDepth)
-{
-	int texture_patches;
-	if (m_Params.m_eTexture == TE_TILED)
-		texture_patches = 4;	// tiled, which is always 4x4
-	else
-		texture_patches = 1;	// assume one texture
-
-	bool bLighting, bTextured;
-	if (m_Params.m_eTexture == TE_NONE)
-	{
-		bLighting = true;
-		bTextured = false;
-	}
-	else
-	{
-		bLighting = !m_Params.m_bPreLit;
-		bTextured = true;
-	}
-
-	// determine geometry flags
-	int VtxType = 0;
-	if (bLighting)
-		VtxType |= VT_Normals;
-	if (bTextured)
-		VtxType |= VT_TexCoords;
-	if (m_Params.m_bVertexColors)
-		VtxType |= VT_Colors;
-
-	// create terrain surface
-	m_pTerrainGeom = new vtTerrainGeom();
-
-	m_pTerrainGeom->SetName2("RegularTerrain");
-	m_pTerrainGeom->SetMaterials(m_pTerrApps1);
-
-	m_pTerrainGeom->CreateFromLocalGrid(m_pElevGrid, VtxType,
-							m_Params.m_iSubsample, m_Params.m_iSubsample,
-							LARGEST_BLOCK_SIZE,	texture_patches,
-							false,
-							fOceanDepth, bLighting);
-
-	switch (m_Params.m_eTexture)
-	{
-		case TE_SINGLE:
-		case TE_DERIVED:
-			m_pTerrainGeom->DrapeTextureUV();
-			break;
-		case TE_TILED:
-			m_pTerrainGeom->DrapeTextureUVTiled(m_pCoverage);
-			break;
-	}
-
-	// build heirarchy (add terrain to scene graph)
-	m_pTerrainGroup->AddChild(m_pTerrainGeom);
-
-	return true;
-}
 
 bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 {
@@ -1152,37 +1081,18 @@ bool vtTerrain::CreateFromGrid(int &iError)
 	else
 		fOceanDepth = 0.0f;
 
-	if (m_Params.m_bRegular)
-	{
-		// first, create brute-force regular terrain
-		if (!create_regular_terrain(fOceanDepth))
-		{
-			//AfxMessageBox("Couldn't create regular terrain");
-			iError = TERRAIN_ERROR_NOREGULAR;
-			return false;
-		}
-		else
-		{
-			m_pTerrainGeom->SetEnabled(true);
-			m_pHeightField = m_pTerrainGeom;
-		}
-	}
-
 	tm = clock();
-	//
-	if (m_Params.m_bDynamic)
+	
+	// create elegant dynamic LOD terrain
+	if (!create_dynamic_terrain(fOceanDepth, iError))
 	{
-		// then, the somewhat more elegant dynamic LOD terrain
-		if (!create_dynamic_terrain(fOceanDepth, iError))
-		{
-			//AfxMessageBox("Couldn't create dynamic LOD terrain");
-			return false;
-		}
-		else
-		{
-			m_pDynGeom->SetEnabled(!m_Params.m_bRegular);
-			m_pHeightField = m_pDynGeom;
-		}
+		//AfxMessageBox("Couldn't create dynamic LOD terrain");
+		return false;
+	}
+	else
+	{
+		m_pDynGeom->SetEnabled(true);
+		m_pHeightField = m_pDynGeom;
 	}
 
 	if (!m_bPreserveInputGrid)
@@ -1289,8 +1199,6 @@ void vtTerrain::GetTerrainBounds()
 {
 	if (m_pDynGeomScale != NULL)
 		m_pDynGeomScale->GetBoundSphere(m_bound_sphere);
-	else if (m_pTerrainGeom != NULL)
-		m_pTerrainGeom->GetBoundSphere(m_bound_sphere);
 	else
 		m_bound_sphere.Empty();
 }
@@ -1336,9 +1244,9 @@ void vtTerrain::SetFeatureVisible(TFType ftype, bool bOn)
 {
 	switch (ftype)
 	{
-	case TFT_REGULAR:
-		if (m_pTerrainGeom)
-			m_pTerrainGeom->SetEnabled(bOn);
+	case TFT_TERRAINSURFACE:
+		if (m_pDynGeom)
+			m_pDynGeom->SetEnabled(bOn);
 		break;
 	case TFT_OCEAN:
 		if (m_pOceanGeom)
@@ -1359,9 +1267,9 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 {
 	switch (ftype)
 	{
-	case TFT_REGULAR:
-		if (m_pTerrainGeom)
-			return m_pTerrainGeom->GetEnabled();
+	case TFT_TERRAINSURFACE:
+		if (m_pDynGeom)
+			return m_pDynGeom->GetEnabled();
 		break;
 	case TFT_OCEAN:
 		if (m_pOceanGeom)
@@ -1432,55 +1340,6 @@ void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 			delete dib2;
 
 			m_Images.SetAt(i*patches+j, pImage);
-		}
-	}
-}
-
-
-/*
- * Creates an array of materials for the brute force terrain geometry.
- */
-void vtTerrain::_CreateTiledMaterials1(vtMaterialArray *pApp1,
-							 int patches, int patch_size, float ambient,
-							 float diffuse, float emmisive)
-{
-	int size = patch_size;
-
-	int i, j;
-
-	m_pCoverage = new vtTextureCoverage[patches*patches];
-	for (i = 0; i < patches*patches-1; i++)
-		m_pCoverage[i].m_pNext = m_pCoverage + (i+1);
-	m_pCoverage[i].m_pNext = NULL;
-
-	for (i = 0; i < patches; i++)
-	{
-		for (j = 0; j < patches; j++)
-		{
-			vtImage *image = m_Images.GetAt(i*patches+j);
-			int idx = pApp1->AddTextureMaterial(image,
-				true,		// culling
-				!m_Params.m_bPreLit, // lighting
-				false,		// transparency
-				false,		// additive
-				ambient, diffuse,
-				1.0f,		// alpha
-				emmisive,
-				false,			// texgen
-				false,			// clamp
-				m_Params.m_bMipmap);
-			m_pCoverage[i*patches+j].m_appidx = idx;
-		}
-	}
-
-	for (i = 0; i < patches; i++)
-	{
-		for (int j = 0; j < patches; j++)
-		{
-			m_pCoverage[i*patches+(patches-1-j)].m_xmin = (1.0f / patches) * i;
-			m_pCoverage[i*patches+(patches-1-j)].m_xmax = (1.0f / patches) * (i+1);
-			m_pCoverage[i*patches+(patches-1-j)].m_zmin = -(1.0f / patches) * j;
-			m_pCoverage[i*patches+(patches-1-j)].m_zmax = -(1.0f / patches) * (j+1);
 		}
 	}
 }
