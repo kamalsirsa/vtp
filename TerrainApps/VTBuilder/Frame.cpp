@@ -131,6 +131,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_pInstanceDlg = NULL;
 	m_szIniFilename = APPNAME ".ini";
 	m_bDrawDisabled = false;
+	m_bAdoptFirstCRS = true;
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
@@ -139,6 +140,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 
 MainFrame::~MainFrame()
 {
+	VTLOG("Frame destructor\n");
 	WriteINI();
 	DeleteContents();
 }
@@ -291,6 +293,7 @@ void MainFrame::CheckForGDALAndWarn()
 
 void MainFrame::OnClose(wxCloseEvent &event)
 {
+	VTLOG("Frame OnClose\n");
 	int num = NumModifiedLayers();
 	if (num > 0)
 	{
@@ -547,7 +550,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 	pLayer->GetProjection(proj);
 
 	bool bFirst = (m_Layers.GetSize() == 0);
-	if (bFirst)
+	if (bFirst && m_bAdoptFirstCRS)
 	{
 		// if this is our first layer, adopt its projection
 		SetProjection(proj);
@@ -1151,6 +1154,9 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 		return;
 	}
 
+	// even the first layer must match the project's CRS
+	m_bAdoptFirstCRS = false;
+
 	// avoid trying to draw while we're loading the project
 	m_bDrawDisabled = true;
 
@@ -1242,6 +1248,9 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 		}
 	}
 	fclose(fp);
+
+	// reset to default behavior
+	m_bAdoptFirstCRS = true;
 
 	// refresh the view
 	m_bDrawDisabled = false;

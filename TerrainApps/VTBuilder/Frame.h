@@ -430,6 +430,8 @@ protected:
 	bool	m_bDrawDisabled;
 
 	vtProjection	m_proj;
+	bool	m_bAdoptFirstCRS;	// If true, silenty assume user wants to
+		// use the CRS of the first layer they create
 
 	// menu numbers, for each layer type that has a corresponding menu
 	int		m_iLayerMenu[LAYER_TYPES];
