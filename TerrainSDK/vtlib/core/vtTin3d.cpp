@@ -53,7 +53,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 
 	m_pGeom = new vtGeom();
 	m_pGeom->SetMaterials(pMats);
-	pMats->Release();
+	pMats->Release();	// Pass ownership to geometry
 
 	int i, j, k;
 	int verts = NumVerts();
@@ -82,7 +82,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 
 	int divx, divy;		// number of x and y divisions
 	int dsize;
-	Bin *bins;
+	Bin *bins = NULL;
 	int tris = NumTris();
 	int bx, by;
 	DPoint2 gp;
@@ -175,8 +175,12 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 			pMesh->AddTri(vert_base, vert_base+1, vert_base+2);
 		}
 		m_pGeom->AddMesh(pMesh, 0);
+		pMesh->Release();	// pass ownership to Geometry
 		m_Meshes.Append(pMesh);
 	}
+
+	// Free up temp arrays
+	delete [] bins;
 
 	/*
 	int base = 0;
@@ -252,6 +256,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 
 		pBaseMesh->AddFan(0, 1, 2, 3);
 		m_pGeom->AddMesh(pBaseMesh, 1);
+		pBaseMesh->Release();	// Pass ownership
 	}
 	return m_pGeom;
 }
