@@ -165,11 +165,6 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 				fscanf(fp, "%hd %hd %hd\n", &color.r, &color.g, &color.b);
 				bld->SetColor(BLD_ROOF, color);
 			}
-			else if (!strcmp(key, "color_trim"))
-			{
-				fscanf(fp, "%hd %hd %hd\n", &color.r, &color.g, &color.b);
-				bld->SetColor(BLD_MOULDING, color);
-			}
 			else if (!strcmp(key, "size"))
 			{
 				float w, d;
@@ -200,13 +195,6 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 			{
 				int trim;
 				fscanf(fp, "%d\n", &trim);
-				bld->m_bMoulding = (trim != 0);
-			}
-			else if (!strcmp(key, "elev"))
-			{
-				int elev;
-				fscanf(fp, "%d\n", &elev);
-				bld->m_bElevated = (elev != 0);
 			}
 			else if (!strcmp(key, "roof_type"))
 			{
@@ -787,14 +775,6 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			const char *color = atts.getValue("color");
 			if (bld && color)
 				st.wall_color = ParseRGB(color);
-		}
-		if (string(name) == (string)"trim")
-		{
-			if (bld)
-				bld->m_bMoulding = true;
-			const char *color = atts.getValue("color");
-			if (bld && color)
-				bld->SetColor(BLD_MOULDING, ParseRGB(color));
 		}
 		if (string(name) == (string)"shapes")
 		{

@@ -25,7 +25,6 @@ enum BldColor
 {
 	BLD_BASIC,
 	BLD_ROOF,
-	BLD_MOULDING
 };
 
 enum BldMaterial {
@@ -204,9 +203,6 @@ public:
 	void WriteXML(FILE *fp, bool bDegrees);
 	void AddDefaultDetails();
 	void DetermineLocalFootprints();
-
-	bool		m_bMoulding;
-	bool		m_bElevated;
 
 	static vtLocalConversion s_Conv;
 	static const char *GetMaterialString(BldMaterial mat);

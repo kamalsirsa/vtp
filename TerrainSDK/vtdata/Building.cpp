@@ -538,8 +538,6 @@ bool vtLevel::GetOverallEdgeColor(RGBi &color)
 
 vtBuilding::vtBuilding()
 {
-	m_bMoulding = false;
-	m_bElevated = false;			// default placement
 }
 
 vtBuilding::~vtBuilding()
@@ -556,8 +554,6 @@ void vtBuilding::DeleteStories()
 
 vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 {
-	m_bMoulding = v.m_bMoulding;
-	m_bElevated = v.m_bElevated;
 	m_EarthPos = v.m_EarthPos;
 
 	DeleteStories();
@@ -888,11 +884,6 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 	color = GetColor(BLD_BASIC);
 	fprintf(fp, "\t\t<walls color=\"%d %d %d\" />\n", color.r, color.g, color.b);
 
-	if (m_bMoulding)
-	{
-		color = GetColor(BLD_MOULDING);
-		fprintf(fp, "\t\t<trim color=\"%d %d %d\" />\n", color.r, color.g, color.b);
-	}
 	fprintf(fp, "\t\t<shapes>\n");
 
 	vtLevel *lev = m_Levels[0];

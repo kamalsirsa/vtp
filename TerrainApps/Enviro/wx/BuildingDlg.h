@@ -45,8 +45,6 @@ private:
 	wxColour	m_Color[3];
 	int		 m_iStories;
 	int		 m_iRoofType;
-	bool		m_bTrim;
-	bool		m_bElevated;
 
 	wxBitmapButton  *m_pColorBitmapControl[3];
 	wxChoice		*m_pcRoofType;

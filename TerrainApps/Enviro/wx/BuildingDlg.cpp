@@ -120,8 +120,6 @@ void BuildingDlg::OnOK( wxCommandEvent &event )
 
 	m_pBuilding->SetStories(m_iStories);
 	m_pBuilding->SetRoofType((enum RoofType) m_iRoofType);
-	m_pBuilding->m_bMoulding = m_bTrim;
-	m_pBuilding->m_bElevated = m_bElevated;
 	for (c = 0; c < 3; c++)
 		m_pBuilding->SetColor((BldColor) c, color[c]);
 
@@ -148,8 +146,6 @@ void BuildingDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 	m_iStories = m_pBuilding->GetStories();
 	m_iRoofType = m_pBuilding->GetRoofType();
-	m_bTrim = m_pBuilding->m_bMoulding;
-	m_bElevated = m_pBuilding->m_bElevated;
 
 	for (c = 0; c < 3; c++)
 	{
@@ -163,11 +159,8 @@ void BuildingDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pcRoofType->Append("Gable");
 	m_pcRoofType->Append("Hip");
 
-//	AddNumValidator(ID_STORIES, &m_iStories);
 	AddValidator(ID_STORIES, &m_iStories);
 	AddValidator(ID_ROOF, &m_iRoofType);
-	AddValidator(ID_TRIM, &m_bTrim);
-	AddValidator(ID_ELEVATED, &m_bElevated);
 
 	wxDialog::OnInitDialog(event);  // calls TransferDataToWindow()
 }
