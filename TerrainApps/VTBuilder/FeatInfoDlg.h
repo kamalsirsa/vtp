@@ -56,6 +56,8 @@ private:
 	int	 m_iShow;
 	int	 m_iVUnits;
 
+	bool m_bGeo;	// true if coordinates are geographic (lon-lat)
+
 private:
 	// WDR: handler declarations for FeatInfoDlg
 	void OnDeleteHighlighted( wxCommandEvent &event );

@@ -50,15 +50,17 @@ void FeatInfoDlg::SetFeatureSet(vtFeatures *pFeatures)
 
 	m_pFeatures = pFeatures;
 
-	int field = 0;
+	vtProjection &proj = pFeatures->GetAtProjection();
+	m_bGeo = (proj.IsGeographic() != 0);
 
+	int field = 0;
 	GetList()->ClearAll();	// clears all items and columns
 
 	int type = m_pFeatures->GetEntityType();
 	if (type == SHPT_POINT || type == SHPT_POINTZ)
 	{
-		GetList()->InsertColumn(field++, "X", wxLIST_FORMAT_LEFT, 80);
-		GetList()->InsertColumn(field++, "Y", wxLIST_FORMAT_LEFT, 80);
+		GetList()->InsertColumn(field++, "X", wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 40);
+		GetList()->InsertColumn(field++, "Y", wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 40);
 	}
 	if (type == SHPT_POINTZ)
 		GetList()->InsertColumn(field++, "Z", wxLIST_FORMAT_LEFT, 80);
@@ -71,7 +73,10 @@ void FeatInfoDlg::SetFeatureSet(vtFeatures *pFeatures)
 	{
 		Field *pField = m_pFeatures->GetField(i);
 		const char *name = pField->m_name;
-		GetList()->InsertColumn(field++, name, wxLIST_FORMAT_LEFT, 80);
+		int width = pField->m_width * 4;
+		if (width < 20)
+			width = 20;
+		GetList()->InsertColumn(field++, name, wxLIST_FORMAT_LEFT, width);
 	}
 }
 
@@ -149,12 +154,18 @@ void FeatInfoDlg::ShowFeature(int iFeat)
 	DPoint3 p;
 	m_pFeatures->GetPoint(iFeat, p);
 
+	const char *szFormat;
+	if (m_bGeo)
+		szFormat = "%.8lf";
+	else
+		szFormat = "%.2lf";
+
 	int type = m_pFeatures->GetEntityType();
 	if (type == SHPT_POINT || type == SHPT_POINTZ)
 	{
-		str.Format("%.2lf", p.x);
+		str.Format(szFormat, p.x);
 		GetList()->SetItem(next, field++, (const char *) str);
-		str.Format("%.2lf", p.y);
+		str.Format(szFormat, p.y);
 		GetList()->SetItem(next, field++, (const char *) str);
 	}
 	if (type == SHPT_POINTZ)
