@@ -179,10 +179,10 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	imageSel = TreeCtrlIcon_FileSelected;
 	vtLayerPtr lp;
 	int iLayers = 0;
-	if (pFrame) iLayers = pFrame->m_Layers.GetSize();
+	if (pFrame) iLayers = pFrame->NumLayers();
 	for (int i = 0; i < iLayers; i++)
 	{
-		lp = pFrame->m_Layers.GetAt(i);
+		lp = pFrame->GetLayer(i);
 
 		wxString str = MakeItemName(lp);
 
