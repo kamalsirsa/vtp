@@ -124,6 +124,7 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_fNavSpeed = Params.m_fNavSpeed;
 	m_iNavStyle = Params.m_iNavStyle;
 	m_strLocFile = wxString::FromAscii((const char *)Params.m_strLocFile);
+	m_fHither = Params.m_fHither;
 
 	m_iLodMethod = Params.m_eLodMethod;
 	m_fPixelError = Params.m_fPixelError;
@@ -214,6 +215,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_fNavSpeed = m_fNavSpeed;
 	Params.m_iNavStyle = m_iNavStyle;
 	Params.m_strLocFile = m_strLocFile.mb_str();
+	Params.m_fHither = m_fHither;
 
 	Params.m_eLodMethod = (enum LodMethodEnum) m_iLodMethod;
 	Params.m_fPixelError = m_fPixelError;
@@ -511,6 +513,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_NAV_STYLE, &m_iNavStyle);
 	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
 	AddValidator(ID_LOCFILE, &m_strLocFile);
+	AddNumValidator(ID_HITHER, &m_fHither);
 
 	// LOD
 	AddValidator(ID_LODMETHOD, &m_iLodMethod);

@@ -70,6 +70,7 @@ public:
 	int     m_iNavStyle;
 	float   m_fNavSpeed;
 	wxString2	m_strLocFile;
+	float   m_fHither;
 
 	// LOD
 	int		m_iLodMethod;
