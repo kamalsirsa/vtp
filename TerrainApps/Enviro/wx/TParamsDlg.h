@@ -154,7 +154,6 @@ public:
 	bool	m_bVehicles;
 //  float   m_fVehicleSize;
 //  float   m_fVehicleSpeed;
-//  int	 m_iNumCars;
 
 	bool	m_bRouteEnable;		// not yet used
 	wxString2 m_strRouteFile;	// not yet used
