@@ -82,28 +82,28 @@ vtLULCFile::vtLULCFile(const char *fname)
 
 	// subfile A - header
 	if (!GetRecord(fp, buf)) return;
-	int iNumArcs = geti10(buf+0);
-	int iNumCoords = geti10(buf+10);
-	int iNumPolys = geti10(buf+20);
+	geti10(buf+0);		// iNumArcs
+	geti10(buf+10);		// iNumCoords
+	geti10(buf+20);		// iNumPolys
 	m_iNumSections = geti5(buf+40);
-	int iMapType = geti5(buf+45);			// 1 = LULC
-	int iSubfileLength = geti5(buf+50);
-	int iProjectionCode = geti5(buf+55);
-	int iScaleDenominator  = geti10(buf+60);
-	int iMapDate  = geti10(buf+70);
+	geti5(buf+45);		// iMapType, 1 = LULC
+	geti5(buf+50);		// iSubfileLength
+	geti5(buf+55);		// iProjectionCode
+	geti10(buf+60);		// iScaleDenominator
+	geti10(buf+70);		// iMapDate
 
 	// extent of control points, in local coordinates
 	if (!GetRecord(fp, buf)) return;
-	m_cMin.x = geti5(buf+0);
-	m_cMin.y = geti5(buf+5);
-	m_cMax.x = geti5(buf+10);
-	m_cMax.y = geti5(buf+15);
+	m_cMin.x = (short) geti5(buf+0);
+	m_cMin.y = (short) geti5(buf+5);
+	m_cMax.x = (short) geti5(buf+10);
+	m_cMax.y = (short) geti5(buf+15);
 
 	// local coordinates of control points
 	for (i = 0; i < 6; i++)
 	{
-		m_cCorners[i].x = geti5(buf+20+i*10);
-		m_cCorners[i].y = geti5(buf+20+i*10+5);
+		m_cCorners[i].x = (short) geti5(buf+20+i*10);
+		m_cCorners[i].y = (short) geti5(buf+20+i*10+5);
 	}
 
 	// latitude and longitude of control points
@@ -125,11 +125,11 @@ vtLULCFile::vtLULCFile(const char *fname)
 	// try to determine the mapping from local to latlon
 	SetupMapping();
 
-	int iNad  = geti5(buf+40);
+	geti5(buf+40);		// iNad
 	int iNumCharTitle  = geti5(buf+45);
 	if (iNumCharTitle > 64) iNumCharTitle = 64;
-	int iLengthOfFAP  = geti5(buf+50);
-	int iCreationDate  = geti10(buf+60);
+	geti5(buf+50);		// iLengthOfFAP
+	geti10(buf+60);	// CreationDate
 
 	if (!GetRecord(fp, buf)) return;
 	char title[65];
@@ -232,7 +232,7 @@ void vtLULCFile::ReadSection(LULCSection *pSection, FILE *fp)
 
 	// subfile B - section header
 	if (!GetRecord(fp, buf)) return;
-	int iSection = geti5(buf+0);
+	geti5(buf+0);		// iSection
 	pSection->m_iNumArcs = geti5(buf+5);
 	pSection->m_iNumCoords = geti5(buf+10) / 2;
 	pSection->m_iNumPolys = geti5(buf+15);
@@ -246,21 +246,22 @@ void vtLULCFile::ReadSection(LULCSection *pSection, FILE *fp)
 	for (i = 0; i < pSection->m_iNumArcs; i++)
 	{
 		if (!GetRecord(fp, buf)) return;
-		int iArcNum = geti5(buf+0);
+		geti5(buf+0);	// iArcNum
 
 		if (i == 0)
 			pSection->m_pArc[i].first_coord = 0;
 		else
 			pSection->m_pArc[i].first_coord =
 			pSection->m_pArc[i-1].last_coord;
-		pSection->m_pArc[i].last_coord = geti5(buf+5) / 2;	// 2 coords per point
-		pSection->m_pArc[i].PL = geti5(buf+10);
-		pSection->m_pArc[i].PR = geti5(buf+15);
+		// There are 2 coords per point
+		pSection->m_pArc[i].last_coord = (short) geti5(buf+5) / 2;
+		pSection->m_pArc[i].PL = (short) geti5(buf+10);
+		pSection->m_pArc[i].PR = (short) geti5(buf+15);
 		pSection->m_pArc[i].PAL = geti10(buf+20);
 		pSection->m_pArc[i].PAR = geti10(buf+30);
 		pSection->m_pArc[i].Length = geti10(buf+60);
-		pSection->m_pArc[i].StartNode = geti5(buf+70);
-		pSection->m_pArc[i].FinishNode = geti5(buf+75);
+		pSection->m_pArc[i].StartNode = (short) geti5(buf+70);
+		pSection->m_pArc[i].FinishNode = (short) geti5(buf+75);
 	}
 
 	// allocate coords
@@ -275,8 +276,8 @@ void vtLULCFile::ReadSection(LULCSection *pSection, FILE *fp)
 			// read another record
 			if (!GetRecord(fp, buf)) return;
 		}
-		pSection->m_pCoord[i].x = geti5(buf+index*10);
-		pSection->m_pCoord[i].y = geti5(buf+index*10+5);
+		pSection->m_pCoord[i].x = (short) geti5(buf+index*10);
+		pSection->m_pCoord[i].y = (short) geti5(buf+index*10+5);
 	}
 
 	// allocate polys
@@ -286,18 +287,18 @@ void vtLULCFile::ReadSection(LULCSection *pSection, FILE *fp)
 	for (i = 0; i < pSection->m_iNumPolys; i++)
 	{
 		if (!GetRecord(fp, buf)) return;
-		int iPolyNum = geti5(buf+0);
+		geti5(buf+0);		// iPolyNum
 
 		if (i == 0)
 			pSection->m_pPoly[i].first_arc = 0;
 		else
 			pSection->m_pPoly[i].first_arc =
 			pSection->m_pPoly[i-1].last_arc;
-		pSection->m_pPoly[i].last_arc = geti5(buf+5);
+		pSection->m_pPoly[i].last_arc = (short) geti5(buf+5);
 		pSection->m_pPoly[i].Attribute = geti10(buf+20);
 		pSection->m_pPoly[i].PerimeterLength = geti10(buf+60);
-		pSection->m_pPoly[i].NumIslands = geti5(buf+70);
-		pSection->m_pPoly[i].SurroundingPoly = geti5(buf+75);
+		pSection->m_pPoly[i].NumIslands = (short) geti5(buf+70);
+		pSection->m_pPoly[i].SurroundingPoly = (short) geti5(buf+75);
 	}
 
 	// allocate FAP
@@ -312,7 +313,7 @@ void vtLULCFile::ReadSection(LULCSection *pSection, FILE *fp)
 			// read another record
 			if (!GetRecord(fp, buf)) return;
 		}
-		pSection->m_pFAP[i] = geti5(buf+index*5);
+		pSection->m_pFAP[i] = (short) geti5(buf+index*5);
 	}
 }
 
