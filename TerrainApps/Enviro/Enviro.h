@@ -153,6 +153,7 @@ public:
 	void SetRouteOptions(const vtString &sStructType);
 
 	// plants
+	void LoadPlants();
 	vtSpeciesList3d	*GetPlantList() { return m_pPlantList; }
 	PlantingOptions &GetPlantOptions() { return m_PlantOpt; }
 	bool PlantATree(const DPoint2 &epos);

@@ -441,13 +441,6 @@ bool Enviro::SwitchToTerrain(const char *name)
 
 void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 {
-	// The first time we switch to a terrain, try to load the plants
-	if (!m_bPlantsLoaded)
-	{
-		m_bPlantsLoaded = true;
-		SetupCommonCulture();
-	}
-
 	if (m_state == AS_Orbit)
 	{
 		// hide globe
@@ -505,6 +498,12 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	if (m_iInitStep == 3)
 	{
 		pTerr->LoadParams();
+
+		// The first time we try to a contruct a terrain with plants,
+		//  try to load the plants.
+		if (pTerr->GetParams().GetValueBool(STR_TREES))
+			LoadPlants();
+
 		pTerr->SetPlantList(m_pPlantList);
 		if (!pTerr->CreateStep1(iError))
 		{
@@ -1079,6 +1078,17 @@ void Enviro::SetupScene2()
 	m_pGFlyer->SetTarget(m_pNormalCamera);
 	m_pFlatFlyer->SetTarget(m_pNormalCamera);
 	m_pPanoFlyer->SetTarget(m_pNormalCamera);
+}
+
+void Enviro::LoadPlants()
+{
+	if (!m_bPlantsLoaded)
+	{
+		SetupCommonCulture();
+		m_bPlantsLoaded = true;
+		if (GetCurrentTerrain())
+			GetCurrentTerrain()->SetPlantList(m_pPlantList);
+	}
 }
 
 void Enviro::SetupCommonCulture()
