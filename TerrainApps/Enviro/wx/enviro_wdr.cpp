@@ -147,10 +147,10 @@ wxSizer *SceneGraphFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item3 = new wxCheckBox( parent, ID_ENABLED, _("Enabled"), wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item4 = new wxButton( parent, ID_ZOOMTO, _("Zoom To"), wxDefaultPosition, wxSize(60,-1), 0 );
+    wxButton *item4 = new wxButton( parent, ID_ZOOMTO, _("Zoom To"), wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item5 = new wxButton( parent, ID_REFRESH, _("Refresh"), wxDefaultPosition, wxSize(55,-1), 0 );
+    wxButton *item5 = new wxButton( parent, ID_REFRESH, _("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item2, 0, wxALIGN_CENTER|wxALL, 0 );
@@ -1401,7 +1401,7 @@ wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxSlider *item18 = new wxSlider( parent, ID_SLIDER_SPEED, 0, 0, 100, wxDefaultPosition, wxSize(140,-1), wxSL_HORIZONTAL );
     item15->Add( item18, 0, wxALIGN_CENTER, 5 );
 
-    wxButton *item19 = new wxButton( parent, ID_STOP, _("Stop"), wxDefaultPosition, wxSize(40,-1), 0 );
+    wxButton *item19 = new wxButton( parent, ID_STOP, _("Stop"), wxDefaultPosition, wxSize(70,-1), 0 );
     item15->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item15, 0, wxALIGN_CENTER|wxALL, 0 );
