@@ -18,6 +18,7 @@
 #define FSTRING_RMF		"RMF Files (*.rmf)|*.rmf|"
 #define FSTRING_BCF		"BCF Files (*.bcf)|*.bcf|"
 
+#define FSTRING_ADF		"ArcInfo Binary Grid (*hdr.adf)|*hdr.adf|"
 #define FSTRING_ASC		"ArcInfo ASCII grid (*.asc)|*.asc|"
 #define FSTRING_BIL		"ArcInfo BIL grid (*.bil)|*.bil|"
 #define FSTRING_CDF		"CDF Files (*.cdf, *.grd)|*.cdf;*.grd|"
