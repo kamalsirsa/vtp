@@ -39,7 +39,7 @@
 #include "UtilDlg.h"
 #include "CameraDlg.h"
 #include "LocationDlg.h"
-#include "BuildingDlg.h"
+#include "BuildingDlg3d.h"
 
 #include "../Engines.h"
 #include "../Enviro.h"	// for GetCurrentTerrain
@@ -204,7 +204,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_pCameraDlg = new CameraDlg(this, -1, "Camera-View", wxDefaultPosition);
 	m_pLocationDlg = new LocationDlg(this, -1, "Locations",
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pBuildingDlg = new BuildingDlg(this, -1, "Building Properties", wxDefaultPosition);
+	m_pBuildingDlg = new BuildingDlg3d(this, -1, "Building Properties", wxDefaultPosition);
 
 	m_canvas->SetCurrent();
 }

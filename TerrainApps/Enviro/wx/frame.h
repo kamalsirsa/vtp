@@ -15,7 +15,7 @@ class PlantDlg;
 class FenceDlg;
 class CameraDlg;
 class LocationDlg;
-class BuildingDlg;
+class BuildingDlg3d;
 class UtilDlg;
 
 // some shortcuts
@@ -130,7 +130,7 @@ public:
 	UtilDlg				*m_pUtilDlg;
 	CameraDlg			*m_pCameraDlg;
 	LocationDlg			*m_pLocationDlg;
-	BuildingDlg			*m_pBuildingDlg;
+	BuildingDlg3d		*m_pBuildingDlg;
 
 protected:
 	bool m_bMaintainHeight;
