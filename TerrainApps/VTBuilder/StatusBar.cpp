@@ -78,13 +78,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 	SetStatusText(str, Field_Datum);
 
 	LinearUnits lu = proj.GetUnits();
-	switch (lu)
-	{
-	case LU_DEGREES:  str = _T("Degrees");    break;
-	case LU_METERS:	  str = _T("Meters");     break;
-	case LU_FEET_INT: str = _T("Feet");		  break;
-	case LU_FEET_US:  str = _T("Feet (US)");  break;
-	}
+	str = GetLinearUnitName(lu);
 	SetStatusText(str, Field_HUnits);
 
 	DPoint2 p;
