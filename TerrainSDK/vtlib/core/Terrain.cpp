@@ -1436,7 +1436,7 @@ bool vtTerrain::CreateStep1()
 		VTLOG("\t\tNot found.\n");
 
 		vtString msg;
-		msg.Format("Couldn't find elevation '%s'", elev_file);
+		msg.Format("Couldn't find elevation '%s'", (const char *) elev_file);
 		_SetErrorMessage(msg);
 		return false;
 	}
