@@ -39,7 +39,7 @@
 #include "DistanceDlg.h"
 #include "vtui/LinearStructDlg.h"
 
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
+#if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "bld_edit.xpm"
 #  include "distance.xpm"
 #  include "edit_crossing.xpm"
