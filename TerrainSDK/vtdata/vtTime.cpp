@@ -51,6 +51,9 @@ bool vtTime::SetFromString(const vtString &str)
 		return false;
 
 	m_time = mktime(&m_tm);
+	if (m_time == -1)
+		return false;
+
 	m_time += s_DifferenceFromGMT;
 	return true;
 }
@@ -71,6 +74,12 @@ void vtTime::GetSystemTime()
 
 void vtTime::SetDate(int year, int month, int day)
 {
+	// safety checks
+	if (year > 2038)
+		year = 2038;
+	if (year < 1900)
+		year = 1900;
+
 	m_tm.tm_year = year - 1900;
 
 	// note that the tm structure has a 0-based month
