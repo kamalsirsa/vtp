@@ -504,7 +504,7 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 	wxImage img;
 	if (!img.LoadFile(dlg.GetPath()))
 	{
-		wxMessageBox(_T("File open failed"));
+		DisplayAndLog("File open failed");
 		return;
 	}
 	input_x = img.GetWidth();
@@ -580,7 +580,7 @@ bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 	vtDIB dib1, dib2, dib3;
 	if (!dib1.ReadPNG(fname_in))
 	{
-		wxMessageBox(_T("Couldn't read input file."));
+		DisplayAndLog("Couldn't read input file.");
 		return false;
 	}
 	int i, j, width, height, x, y;
@@ -702,9 +702,9 @@ bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 	}
 
 	if (dib2.WritePNG(fname_out))
-		wxMessageBox(_T("Successful."));
+		DisplayAndLog("Successful.");
 	else
-		wxMessageBox(_T("Unsuccessful."));
+		DisplayAndLog("Unsuccessful.");
 	return true;
 }
 
@@ -726,7 +726,7 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 	int res = sscanf(color, "%d %d %d", &bg.r, &bg.g, &bg.b);
 	if (res != 3)
 	{
-		wxMessageBox(_T("Couldn't parse color."));
+		DisplayAndLog("Couldn't parse color.");
 		return;
 	}
 	wxFileDialog dlg2(this, _T("Choose input texture file"), _T(""), _T(""), _T("*.png"));
@@ -936,8 +936,11 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	if (!lp->AskForSaveFilename())
 		return;
 
-	wxString msg = _T("Saving layer to file as ") + lp->GetFilename();
+	wxString2 msg = _T("Saving layer to file as ") + lp->GetFilename();
 	SetStatusText(msg);
+
+	g_Log._Log(msg.mb_str());
+	g_Log._Log("\n");
 
 	bool success = lp->Save();
 	if (success)
@@ -951,6 +954,9 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 		wxMessageBox(msg, _T("Problem"));
 	}
 	SetStatusText(msg);
+
+	g_Log._Log(msg.mb_str());
+	g_Log._Log("\n");
 }
 
 void MainFrame::OnUpdateLayerSaveAs(wxUpdateUIEvent& event)
@@ -1119,13 +1125,11 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 	}
 	if (succeeded < layers)
 	{
-		wxString str;
 		if (layers == 1)
-			str = _T("Failed to convert.");
+			DisplayAndLog("Failed to convert.");
 		else
-			str.Printf(_T("Failed to convert %d of %d layers."),
+			DisplayAndLog("Failed to convert %d of %d layers.",
 				layers-succeeded, layers);
-		wxMessageBox(str);
 	}
 
 	SetProjection(proj);
@@ -1470,15 +1474,13 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	bool bDegrees = (proj.IsGeographic() != 0);
 
 	int count;
-	wxString str;
 	OpenProgressDialog(_T("Cleaning RoadMap"));
 
 	UpdateProgressDialog(10, _T("Removing unused nodes"));
 	count = pRL->RemoveUnusedNodes();
 	if (count)
 	{
-		str.Printf(_T("Removed %i nodes\n"), count);
-		wxMessageBox(str, _T(""), wxOK);
+		DisplayAndLog("Removed %i nodes", count);
 	}
 
 	UpdateProgressDialog(20, _T("Merging redundant nodes"));
@@ -1486,16 +1488,14 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->MergeRedundantNodes(bDegrees, progress_callback);
 	if (count)
 	{
-		str.Printf(_T("Merged %d redundant roads"), count);
-		wxMessageBox(str, _T(""), wxOK);
+		DisplayAndLog("Merged %d redundant roads", count);
 	}
 
 	UpdateProgressDialog(50, _T("Cleaning link points"));
 	count = pRL->CleanLinkPoints();
 	if (count)
 	{
-		str.Printf(_T("Cleaned %d link points"), count);
-		wxMessageBox(str, _T(""), wxOK);
+		DisplayAndLog("Cleaned %d link points", count);
 	}
 
 #if 0
@@ -1505,48 +1505,42 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->RemoveDegenerateRoads();
 	if (count)
 	{
-		str.Printf(_T("Removed %d degenerate links"), count);
-		wxMessageBox(str, _T(""), wxOK);
+		DisplayAndLog("Removed %d degenerate links", count);
 	}
 
 	UpdateProgressDialog(40, _T("Removing unnecessary nodes"));
 	count = pRL->RemoveUnnecessaryNodes();
 	if (count)
 	{
-		str.Printf(_T("Removed %d unnecessary nodes"), count);
-		wxMessageBox(str, _T(""), wxOK);
+		DisplayAndLog("Removed %d unnecessary nodes", count);
 	}
 
 	UpdateProgressDialog(60, _T("Removing dangling links"));
 	count = pRL->DeleteDanglingRoads();
 	if (count)
 	{
-		str.Printf(_T("Removed %i dangling links"), count);
-		wxMessageBox(str, _T(""), wxOK);
+		DisplayAndLog("Removed %i dangling links", count);
 	}
 
 	UpdateProgressDialog(70, _T("Fixing overlapped roads"));
 	count = pRL->FixOverlappedRoads(bDegrees);
 	if (count)
 	{
-		str.Printf(_T("Fixed %i overlapped roads"), count);
-		wxMessageBox(str, _T(""), wxOK);
+		DisplayAndLog("Fixed %i overlapped roads", count);
 	}
 
 	UpdateProgressDialog(80, _T("Fixing extraneous parallels"));
 	count = pRL->FixExtraneousParallels();
 	if (count)
 	{
-		str.Printf(_T("Fixed %i extraneous parallels"), count);
-		wxMessageBox(str, _T(""), wxOK);
+		DisplayAndLog("Fixed %i extraneous parallels", count);
 	}
 
 	UpdateProgressDialog(90, _T("Splitting looping roads"));
 	count = pRL->SplitLoopingRoads();
 	if (count)
 	{
-		str.Printf(_T("Split %d looping roads"), count);
-		wxMessageBox(str, _T(""), wxOK);
+		DisplayAndLog("Split %d looping roads", count);
 	}
 #endif
 
@@ -1719,13 +1713,11 @@ void MainFrame::OnExportTerragen(wxCommandEvent &event)
 	bool success = el->m_pGrid->SaveToTerragen(strPathName.mb_str());
 	if (!success)
 	{
-		wxMessageBox(_T("Couldn't open file for writing."));
+		DisplayAndLog("Couldn't open file for writing.");
 		return;
 	}
 
-	wxString str = _T("Successfully wrote TerraGen file ");
-	str += strPathName;
-	wxMessageBox(str);
+	DisplayAndLog("Successfully wrote TerraGen file '%s'", strPathName.mb_str());
 }
 
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
@@ -1951,8 +1943,7 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 		wxString2 str = loadFile.GetPath();
 		if (!GetPlantList()->ReadXML(str.mb_str()))
 		{
-			wxMessageBox(_T("Couldn't read plant list from that file."),
-				_T("Error"), wxOK, this);
+			DisplayAndLog("Couldn't read plant list from that file.");
 			return;
 		}
 
@@ -1982,8 +1973,7 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 		wxString2 str = loadFile.GetPath();
 		if (!m_BioRegions.Read(str.mb_str()))
 		{
-			wxMessageBox(_T("Couldn't read bioregion list from that file."),
-				_T("Error"), wxOK, this);
+			DisplayAndLog("Couldn't read bioregion list from that file.");
 			return;
 		}
 
@@ -2253,8 +2243,8 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 
 	if (pRL->GetNumFields() == 0)
 	{
-		wxMessageBox(_T("Can't select by condition because the current\n")
-			_T("layer has no fields defined."), _T("Warning"));
+		DisplayAndLog("Can't select by condition because the current\n"
+					  "layer has no fields defined.");
 		return;
 	}
 	SelectDlg dlg(this, -1, _T("Select"));
@@ -2265,12 +2255,16 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 		int selected = pRL->SelectByCondition(dlg.m_iField, dlg.m_iCondition,
 			str.mb_str());
 
-		wxString msg;
+		wxString2 msg;
 		if (selected == -1)
 			msg = _T("Unable to select");
 		else
 			msg.Printf(_T("Selected %d entit%hs"), selected, selected == 1 ? "y" : "ies");
 		SetStatusText(msg);
+
+		msg += _T("\n");
+		g_Log._Log(msg.mb_str());
+
 		m_pView->Refresh(false);
 		OnSelectionChanged();
 	}

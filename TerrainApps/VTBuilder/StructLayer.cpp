@@ -954,9 +954,7 @@ void vtStructureLayer::AddFoundations(vtElevLayer *pEL)
 		pNewLev->SetEdgeColor(RGBi(255, 255, 255));
 		built++;
 	}
-	wxString str;
-	str.Printf(_T("Added a foundation level to %d buildings.\n"), built);
-	wxMessageBox(str);
+	DisplayAndLog("Added a foundation level to %d buildings.\n", built);
 }
 
 void vtStructureLayer::InvertSelection()

@@ -86,7 +86,7 @@ void MainFrame::ImportData(LayerType ltype)
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
-	wxString strFileName = loadFile.GetPath();
+	wxString2 strFileName = loadFile.GetPath();
 
 	// remember the directory they used
 	ImportDirectory[ltype] = loadFile.GetDirectory();
@@ -99,11 +99,10 @@ void MainFrame::ImportData(LayerType ltype)
  * archive file.  If it's an archive, it will be unarchived to a temporary
  * folder, and the contents will be imported.
  */
-void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_org,
+void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in,
 									  bool bRefresh)
 {
 	// check file extension
-	wxString2 fname_in = fname_org;
 	wxString2 fname = fname_in;
 	wxString2 ext = fname.AfterLast('.');
 
@@ -122,7 +121,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_org,
 		result = vtCreateDir(prepend_path.mb_str());
 		if (result == 0 && errno != EEXIST)
 		{
-			wxMessageBox(_T("Couldn't create temporary directory to hold contents of archive."));
+			DisplayAndLog("Couldn't create temporary directory to hold contents of archive.");
 			return;
 		}
 		prepend_path += _T("/");
@@ -132,7 +131,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_org,
 		result = ExpandTGZ(str1, str2);
 		if (result < 1)
 		{
-			wxMessageBox(_T("Couldn't expand archive."));
+			DisplayAndLog("Couldn't expand archive.");
 			prepend_path = GetTempFolderName(fname_in.mb_str());
 			vtDestroyDir(prepend_path.mb_str());
 			return;
@@ -180,7 +179,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_org,
 			}
 			if (!found)
 			{
-				wxMessageBox(_T("Don't know what to do with contents of archive."));
+				DisplayAndLog("Don't know what to do with contents of archive.");
 				return;
 			}
 		}
@@ -198,11 +197,9 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_org,
 	}
 }
 
-void MainFrame::ImportDataFromFile(LayerType ltype, wxString fname_in,
+void MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName,
 								   bool bRefresh)
 {
-	wxString2 strFileName = fname_in;
-
 	// check to see if the file is readable
 	FILE *fp = fopen(strFileName.mb_str(), "rb");
 	if (!fp)
@@ -216,7 +213,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString fname_in,
 	wxString2 msg = _T("Importing Data from ");
 	msg += strFileName;
 	VTLOG(msg.mb_str());
-	VTLOG("...");
+	VTLOG("...\n");
 	OpenProgressDialog(msg);
 
 	// check the file extension
@@ -362,11 +359,11 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString fname_in,
 	if (!pLayer)
 	{
 		// import failed
-		VTLOG(" failed/cancelled.\n");
+		VTLOG("  import failed/cancelled.\n");
 		wxMessageBox(_T("Did not import any data from that file."));
 		return;
 	}
-	VTLOG(" succeeded.\n");
+	VTLOG("  import succeeded.\n");
 	pLayer->SetFilename(strFileName);
 
 	bool success = AddLayerWithCheck(pLayer, true);
@@ -487,7 +484,7 @@ wxString GetImportFilterString(LayerType ltype)
 }
 
 
-vtLayerPtr MainFrame::ImportFromDLG(wxString &fname_in, LayerType ltype)
+vtLayerPtr MainFrame::ImportFromDLG(const wxString2 &fname_in, LayerType ltype)
 {
 	wxString2 strFileName = fname_in;
 
@@ -495,8 +492,7 @@ vtLayerPtr MainFrame::ImportFromDLG(wxString &fname_in, LayerType ltype)
 	bool success = pDLG->Read(strFileName.mb_str(), progress_callback);
 	if (!success)
 	{
-		wxString2 msg = pDLG->GetErrorMessage();
-		wxMessageBox(msg);
+		DisplayAndLog(pDLG->GetErrorMessage());
 		delete pDLG;
 		return NULL;
 	}
@@ -532,11 +528,10 @@ vtLayerPtr MainFrame::ImportFromDLG(wxString &fname_in, LayerType ltype)
 	return pLayer;
 }
 
-vtLayerPtr MainFrame::ImportFromSHP(wxString &fname_in, LayerType ltype)
+vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltype)
 {
 	bool success;
 	int nShapeType;
-	wxString2 strFileName = fname_in;
 
 	SHPHandle hSHP = SHPOpen(strFileName.mb_str(), "rb");
 	if (hSHP == NULL)
@@ -607,7 +602,9 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &fname_in, LayerType ltype)
 			dlg.SetVegLayer(pVL);
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return NULL;
-			pVL->AddElementsFromSHP_Points(strFileName.mb_str(), proj, dlg.m_options);
+			success = pVL->AddElementsFromSHP_Points(strFileName.mb_str(), proj, dlg.m_options);
+			if (!success)
+				return NULL;
 		}
 	}
 
@@ -645,7 +642,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &fname_in, LayerType ltype)
 }
 
 
-vtLayerPtr MainFrame::ImportElevation(wxString &strFileName)
+vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName)
 {
 	bool bFirst = (m_Layers.GetSize() == 0);
 	wxString strExt = strFileName.AfterLast('.');
@@ -663,7 +660,7 @@ vtLayerPtr MainFrame::ImportElevation(wxString &strFileName)
 	}
 }
 
-vtLayerPtr MainFrame::ImportImage(wxString &strFileName)
+vtLayerPtr MainFrame::ImportImage(const wxString2 &strFileName)
 {
 	vtImageLayer *pLayer = new vtImageLayer();
 
@@ -679,10 +676,8 @@ vtLayerPtr MainFrame::ImportImage(wxString &strFileName)
 	}
 }
 
-vtLayerPtr MainFrame::ImportFromLULC(wxString &fname_in, LayerType ltype)
+vtLayerPtr MainFrame::ImportFromLULC(const wxString2 &strFileName, LayerType ltype)
 {
-	wxString2 strFileName = fname_in;
-
 	// Read LULC file, check for errors
 	vtLULCFile *pLULC = new vtLULCFile(strFileName.mb_str());
 	if (pLULC->m_iError)
@@ -713,10 +708,8 @@ vtLayerPtr MainFrame::ImportFromLULC(wxString &fname_in, LayerType ltype)
 	return pLayer;
 }
 
-vtStructureLayer *MainFrame::ImportFromBCF(wxString &fname_in)
+vtStructureLayer *MainFrame::ImportFromBCF(const wxString2 &strFileName)
 {
-	wxString2 strFileName = fname_in;
-
 	vtStructureLayer *pSL = new vtStructureLayer();
 	if (pSL->ReadBCF(strFileName.mb_str()))
 		return pSL;
@@ -727,10 +720,8 @@ vtStructureLayer *MainFrame::ImportFromBCF(wxString &fname_in)
 	}
 }
 
-vtLayerPtr MainFrame::ImportRawFromOGR(wxString &fname_in)
+vtLayerPtr MainFrame::ImportRawFromOGR(const wxString2 &strFileName)
 {
-	wxString2 strFileName = fname_in;
-
 	// create the new layer
 	vtRawLayer *pRL = new vtRawLayer();
 	bool success = pRL->LoadWithOGR(strFileName.mb_str(), progress_callback);
@@ -744,10 +735,9 @@ vtLayerPtr MainFrame::ImportRawFromOGR(wxString &fname_in)
 	}
 }
 
-vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &fname_in, LayerType ltype)
+vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString2 &strFileName, LayerType ltype)
 {
 	vtProjection Projection;
-	wxString2 strFileName = fname_in;
 
 	g_GDALWrapper.RequestOGRFormats();
 
@@ -830,10 +820,8 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &fname_in, LayerType ltype)
 }
 
 
-void MainFrame::ImportDataFromTIGER(wxString &dirname_in)
+void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 {
-	wxString2 strDirName = dirname_in;
-
 	g_GDALWrapper.RequestOGRFormats();
 
 	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(strDirName.mb_str());

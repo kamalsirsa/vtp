@@ -425,9 +425,7 @@ bool vtImageLayer::LoadFromGDAL()
 		m_pBitmap = new wxBitmap(m_pImage);
 		if (!m_pBitmap || (m_pBitmap && !m_pBitmap->Ok()))
 		{
-			wxString str;
-			str.Printf(_T("Couldn't create bitmap of size %d x %d"), m_iXSize, m_iYSize);
-			wxMessageBox(str);
+			DisplayAndLog("Couldn't create bitmap of size %d x %d", m_iXSize, m_iYSize);
 			bRet = false;
 			delete m_pBitmap;
 			m_pBitmap = NULL;
