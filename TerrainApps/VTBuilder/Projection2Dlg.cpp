@@ -26,14 +26,6 @@
 //
 #define CHOICE_OFFSET 10
 
-double MetersPerUnit[4] =
-{
-	1.0,		// actually no definition for 0
-	1.0,		// meters per meter
-	0.3048,		// international foot
-	(1200.0/3937.0)	// U.S. survey foot
-};
-
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
@@ -148,7 +140,6 @@ void Projection2Dlg::UpdateControlStatus()
 				m_iZone = pos;
 			pos++;
 		}
-		m_iUnits = 1;  // meters
 		break;
 	case PT_ALBERS:
 		m_pParamCtrl->Enable(true);
@@ -167,8 +158,6 @@ void Projection2Dlg::UpdateControlStatus()
 	m_pDatumCtrl->SetStringSelection(datumToString((DATUM)m_iDatum));
 
 	// Do horizontal units ("linear units")
-	m_iUnits =  m_proj.GetUnits();
-
 	m_pHorizCtrl->Clear();
 	if (m_eProj == PT_GEO)
 		m_pHorizCtrl->Append("Degrees", (void *) 0);
@@ -182,7 +171,7 @@ void Projection2Dlg::UpdateControlStatus()
 	// manually transfer value
 	for (i = 0; i < m_pHorizCtrl->Number(); i++)
 	{
-		if ((int) m_pHorizCtrl->GetClientData(i) == m_iUnits)
+		if ((int) m_pHorizCtrl->GetClientData(i) == m_proj.GetUnits())
 			m_pHorizCtrl->SetSelection(i);
 	}
 
@@ -325,6 +314,8 @@ void Projection2Dlg::OnHorizUnits( wxCommandEvent &event )
 #endif
 	TransferDataFromWindow();
 
+	m_iUnits = m_pHorizCtrl->GetSelection();
+
 	LinearUnits previous = m_proj.GetUnits();
 	LinearUnits iUnits = (LinearUnits) (int) m_pHorizCtrl->GetClientData(m_iUnits);
 
@@ -334,11 +325,11 @@ void Projection2Dlg::OnHorizUnits( wxCommandEvent &event )
 	}
 	if (iUnits == LU_FEET_INT)
 	{
-		m_proj.SetLinearUnits(SRS_UL_FOOT, MetersPerUnit[2]);
+		m_proj.SetLinearUnits(SRS_UL_FOOT, GetMetersPerUnit(iUnits));
 	}
 	if (iUnits == LU_FEET_US)
 	{
-		m_proj.SetLinearUnits(SRS_UL_US_FOOT, MetersPerUnit[3]);
+		m_proj.SetLinearUnits(SRS_UL_US_FOOT, GetMetersPerUnit(iUnits));
 	}
 
 	// It appears that the EPSG values for false easting and false northing
@@ -349,9 +340,9 @@ void Projection2Dlg::OnHorizUnits( wxCommandEvent &event )
 	// i found some Washington data that needed the EPSG easting/northing to be
 	// in survey feet in order to produce the right results!
 	//
-	if (m_iUnits > 0 && previous > 0)
+	if (iUnits > 0 && previous > 0)
 	{
-		double factor = MetersPerUnit[previous] / MetersPerUnit[iUnits];
+		double factor = GetMetersPerUnit(previous) / GetMetersPerUnit(iUnits);
 
 		OGR_SRSNode *root = m_proj.GetRoot();
 		OGR_SRSNode *node, *par1, *par2;
