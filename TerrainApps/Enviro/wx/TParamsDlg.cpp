@@ -330,7 +330,6 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bVehicles =	   Params.GetValueBool(STR_VEHICLES);
 //  m_fVehicleSize =	Params.GetValueFloat(STR_VEHICLESIZE);
 //  m_fVehicleSpeed =   Params.GetValueFloat(STR_VEHICLESPEED);
-//  m_iNumCars =		Params.GetValueInt(STR_NUMCARS);
 
 	m_bSky =			Params.GetValueBool(STR_SKY);
 	m_strSkyTexture.from_utf8(Params.GetValueString(STR_SKYTEXTURE));
@@ -444,7 +443,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
 //  Params.SetValueFloat(STR_VEHICLESIZE, m_fVehicleSize);
 //  Params.SetValueFloat(STR_VEHICLESPEED, m_fVehicleSpeed);
-//  Params.SetValueInt(STR_NUMCARS, m_iNumCars);
 
 	Params.SetValueBool(STR_SKY, m_bSky);
 	Params.SetValueString(STR_SKYTEXTURE, m_strSkyTexture.to_utf8());
