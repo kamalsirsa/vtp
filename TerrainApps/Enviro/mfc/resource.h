@@ -24,7 +24,7 @@
 #define IDC_MIPMAP                      1006
 #define IDC_TFILEBASE                   1007
 #define IDC_16BIT                       1008
-#define IDC_TREES                       1009
+#define IDC_PLANTS                       1009
 #define IDC_FSPEED1                     1010
 #define IDC_PRELIGHT                    1010
 #define IDC_ROADS                       1011
@@ -78,8 +78,6 @@
 #define IDC_DOSCRIPT                    1058
 #define IDC_NAVSPEED                    1060
 #define IDC_LIGHT_FACTOR                1061
-#define IDC_TREESCARCITY                1062
-#define IDC_TREESPACING                 1063
 #define IDC_CARNUMBER                   1064
 #define IDC_CHECK1                      1065
 #define IDC_ROADCULTURE                 1065

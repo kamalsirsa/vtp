@@ -52,7 +52,7 @@ public:
 	BOOL	m_bRoads;
 	CString	m_strRoadFile;
 	BOOL	m_bTexRoads;
-	BOOL	m_bTrees;
+	BOOL	m_bPlants;
 	CString	m_strTreeFile;
 	UINT	m_iVegDistance;
 	float	m_fFogDistance;

@@ -40,7 +40,7 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_bRoads = FALSE;
 	m_strRoadFile = _T("");
 	m_bTexRoads = TRUE;
-	m_bTrees = FALSE;
+	m_bPlants = FALSE;
 	m_strTreeFile = _T("");
 	m_iVegDistance = 10;
 	m_fFogDistance = 10;
@@ -125,7 +125,7 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_ROADS, m_bRoads);
 	DDX_CBString(pDX, IDC_ROADFILE, m_strRoadFile);
 	DDX_Check(pDX, IDC_TEXROADS, m_bTexRoads);
-	DDX_Check(pDX, IDC_TREES, m_bTrees);
+	DDX_Check(pDX, IDC_PLANTS, m_bPlants);
 	DDX_CBString(pDX, IDC_TREEFILE, m_strTreeFile);
 	DDX_Text(pDX, IDC_VEGDISTANCE, m_iVegDistance);
 	DDV_MinMaxUInt(pDX, m_iVegDistance, 10, 100000);
@@ -288,7 +288,7 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_bTexRoads = Params.m_bTexRoads;
 	m_bRoadCulture = Params.m_bRoadCulture;
 
-	m_bTrees = Params.m_bTrees;
+	m_bPlants = Params.m_bPlants;
 	m_strTreeFile = Params.m_strVegFile;
 	m_iVegDistance = Params.m_iVegDistance;
 
@@ -352,7 +352,7 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_bTexRoads = m_bTexRoads;
 	Params.m_bRoadCulture = m_bRoadCulture;
 
-	Params.m_bTrees = m_bTrees;
+	Params.m_bPlants = m_bPlants;
 	Params.m_strVegFile = m_strTreeFile;
 	Params.m_iVegDistance = m_iVegDistance;
 
@@ -594,7 +594,7 @@ void CCreateDlg::OnSelchangeLodmethod()
 
 void CCreateDlg::OnEnviroShowtrees() 
 {
-	m_bTrees = !m_bTrees;
+	m_bPlants = !m_bPlants;
 }
 
 void CCreateDlg::OnPrelit() 

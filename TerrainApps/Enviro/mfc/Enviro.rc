@@ -270,7 +270,7 @@ BEGIN
     EDITTEXT        IDC_VEGDISTANCE,303,125,29,12,ES_AUTOHSCROLL
     LTEXT           "km",IDC_STATIC,335,127,18,10
     GROUPBOX        "",IDC_STATIC,221,99,196,45
-    CONTROL         "Trees",IDC_TREES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+    CONTROL         "Trees",IDC_PLANTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     227,98,31,10
     RTEXT           "Visibility distance:",IDC_STATIC,237,128,61,10
     CONTROL         "Time Goes By",IDC_TIMEOFDAY,"Button",BS_AUTOCHECKBOX | 
