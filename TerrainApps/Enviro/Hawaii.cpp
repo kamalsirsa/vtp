@@ -49,30 +49,31 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 
 	do_test_code();
 
-	if (m_Params.m_bBuildings)
+	// import the lighthouses
+	vtTransform *lighthouse1 = LoadModel("BuildingModels/mahukonalthse.dsm");
+	if (lighthouse1)
 	{
-		// import the lighthouses
-		vtTransform *lighthouse1 = LoadModel("BuildingModels/mahukonalthse.dsm");
-		if (lighthouse1)
-		{
-			// scale was one unit = 1 m
-			// plant it on the ground
-			PlantModelAtPoint(lighthouse1, DPoint2(197389, 2230283));
+		// scale was one unit = 1 m
+		// plant it on the ground
+		PlantModelAtPoint(lighthouse1, DPoint2(197389, 2230283));
 
-			AddNodeToLodGrid(lighthouse1);
-		}
+		AddNodeToStructGrid(lighthouse1);
 	}
 
 	create_building_manually();
 
-	if (m_Params.m_bAirports)
-	{
-		create_airports();
+	// TODO: replace these with a .vtst in the .ini
+	create_airports();
 
-		// more max-modeled buildings
-		if (PointIsInTerrain(DPoint2(240749, 2194370))) // if area includes top of Mauna Kea
-			create_telescopes();
+#if 0
+	// Here is an example of how to load structures from a VTST file:
+	if (PointIsInTerrain(DPoint2(240749, 2194370))) // if area includes top of Mauna Kea
+	{
+		vtString path = FindFileOnPaths(m_DataPaths, "BuildingData/MaunaKea.vtst");
+		if (path != "")
+			CreateStructuresFromXML(path);
 	}
+#endif
 
 	create_state_park();
 
@@ -120,14 +121,14 @@ void IslandTerrain::create_state_park()
 		// Must rotate by 90 degrees for 3DS MAX -> OpenGL
 		table->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
 		PlantModelAtPoint(table, park_location);
-		m_pLodGrid->AppendToGrid(table);
+		AddNodeToStructGrid(table);
 	}
 
 	// An example of how to add the content definitions from a content
 	//	file (vtco) to the global content manager.
 	try
 	{
-		s_Content.ReadXML("C:/VTP/TerrainApps/Data/kai.vtco");
+		s_Content.ReadXML("../Data/kai.vtco");
 	}
 	catch (xh_io_exception &e)
 	{
@@ -160,15 +161,6 @@ void IslandTerrain::create_state_park()
 		m_pLodGrid->AppendToGrid(xform);
 	}
 #endif
-}
-
-void IslandTerrain::create_telescopes()
-{
-	// We can do something like this once we have support for multiple
-	// structure layers.
-	vtString path = FindFileOnPaths(m_DataPaths, "BuildingData/MaunaKea.vtst");
-	if (path != "")
-		CreateStructuresFromXML(path);
 }
 
 void IslandTerrain::set_detail_texture()
