@@ -1511,6 +1511,9 @@ void vtFrame::UpdateStatus()
 	if (m_pStatusBar)
 		m_pStatusBar->UpdateText();
 
+	if (m_pCameraDlg && m_pCameraDlg->IsShown())
+		m_pCameraDlg->CheckAndUpdatePos();
+
 #if 0
 	vtString vs;
 	g_App.GetStatusText(vs);

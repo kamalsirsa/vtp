@@ -32,6 +32,10 @@
 // WDR: event table for CameraDlg
 
 BEGIN_EVENT_TABLE(CameraDlg,AutoDialog)
+	EVT_TEXT_ENTER( ID_CAMX, CameraDlg::OnTextEnter )
+	EVT_TEXT_ENTER( ID_CAMY, CameraDlg::OnTextEnter )
+	EVT_TEXT_ENTER( ID_CAMZ, CameraDlg::OnTextEnter )
+
 	EVT_TEXT( ID_FOV, CameraDlg::OnText )
 	EVT_TEXT( ID_NEAR, CameraDlg::OnText )
 	EVT_TEXT( ID_FAR, CameraDlg::OnText )
@@ -170,6 +174,25 @@ void CameraDlg::SetValues()
 	}
 }
 
+void CameraDlg::CheckAndUpdatePos()
+{
+	FPoint3 fpos = vtGetScene()->GetCamera()->GetTrans();
+	g_Conv.ConvertToEarth(fpos, m_pos);
+
+	wxString2 newx, newy, newz;
+	newx.Printf(_T("%.7g"), m_pos.x);
+	newy.Printf(_T("%.7g"), m_pos.y);
+	newz.Printf(_T("%.7g"), m_pos.z);
+	if (newx != m_camX || newy != m_camY || newz != m_camZ)
+	{
+		// new to refresh values
+		m_camX = newx;
+		m_camY = newy;
+		m_camZ = newz;
+		TransferDataToWindow();
+	}
+}
+
 void CameraDlg::TransferToWindow()
 {
 	m_bSet = false;
@@ -195,6 +218,10 @@ void CameraDlg::OnSpeedUnits( wxCommandEvent &event )
 
 void CameraDlg::OnInitDialog(wxInitDialogEvent& event)
 {
+	AddValidator(ID_CAMX, &m_camX);
+	AddValidator(ID_CAMY, &m_camY);
+	AddValidator(ID_CAMZ, &m_camZ);
+
 	AddNumValidator(ID_FOV, &m_fFov);
 	AddNumValidator(ID_NEAR, &m_fNear);
 	AddNumValidator(ID_FAR, &m_fFar);
@@ -294,7 +321,6 @@ void CameraDlg::OnSliderRoad( wxCommandEvent &event )
 	TransferToWindow();
 }
 
-
 void CameraDlg::OnText( wxCommandEvent &event )
 {
 	if (!m_bSet)
@@ -305,4 +331,16 @@ void CameraDlg::OnText( wxCommandEvent &event )
 	TransferToWindow();
 }
 
+void CameraDlg::OnTextEnter( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+
+	m_pos.x = atof(m_camX.mb_str());
+	m_pos.y = atof(m_camY.mb_str());
+	m_pos.z = atof(m_camZ.mb_str());
+
+	FPoint3 fpos;
+	g_Conv.ConvertFromEarth(m_pos, fpos);
+	vtGetScene()->GetCamera()->SetTrans(fpos);
+}
 

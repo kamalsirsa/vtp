@@ -14,6 +14,7 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 
 // WDR: class declarations
 
@@ -38,8 +39,12 @@ public:
 	void SetValues();
 	void TransferToWindow();
 
+	void CheckAndUpdatePos();
+
 private:
 	// WDR: member variable declarations for CameraDlg
+	wxString2 m_camX, m_camY, m_camZ;
+
 	int m_iFov;
 	int m_iNear;
 	int m_iFar;
@@ -60,6 +65,7 @@ private:
 	float m_fDistRoad;
 
 	bool m_bSet;
+	DPoint3 m_pos;
 
 private:
 	// WDR: handler declarations for CameraDlg
@@ -75,6 +81,7 @@ private:
 	void OnSliderRoad( wxCommandEvent &event );
 
 	void OnText( wxCommandEvent &event );
+	void OnTextEnter( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
