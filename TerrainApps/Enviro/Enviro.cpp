@@ -535,10 +535,10 @@ void Enviro::DescribeCoordinates(vtString &str)
 		vtCamera *camera = scene->GetCamera();
 		FPoint3 campos = camera->GetTrans();
 
-		// Find corresponding UTM coordinates
+		// Find corresponding earth coordinates
 		g_Conv.ConvertToEarth(campos, epos);
 
-		FormatCoordString(str1, epos, g_Conv.m_units);
+		FormatCoordString(str1, epos, g_Conv.GetUnits());
 		str += str1;
 		str1.Format(" elev %.1f", epos.z);
 		str += str1;
@@ -548,7 +548,7 @@ void Enviro::DescribeCoordinates(vtString &str)
 		bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
 		if (bOn)
 		{
-			FormatCoordString(str1, epos, g_Conv.m_units);
+			FormatCoordString(str1, epos, g_Conv.GetUnits());
 			str += str1;
 			str1.Format(" elev %.1f", epos.z);
 			str += str1;
