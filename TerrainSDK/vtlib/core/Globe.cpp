@@ -15,68 +15,9 @@
 #include "Globe.h"
 #include "vtdata/vtLog.h"	// for logging debug message
 
-//
-// Handy helper to create a moveable wireframe axis geometry.
-//
-vtTransform *WireAxis(RGBf color, float len)
-{
-	vtGeom *geom = new vtGeom();
-	geom->SetName2("axis");
+// Helper
+vtTransform *WireAxis(RGBf color, float len);
 
-	vtMaterialArray *mats = new vtMaterialArray();
-	int index = mats->AddRGBMaterial1(color, false, false);
-	geom->SetMaterials(mats);
-
-	vtMesh *mesh = new vtMesh(GL_LINES, 0, 6);
-	mesh->AddVertex(FPoint3(-len,0,0));
-	mesh->AddVertex(FPoint3( len,0,0));
-	mesh->AddVertex(FPoint3(0,-len,0));
-	mesh->AddVertex(FPoint3(0, len,0));
-	mesh->AddVertex(FPoint3(0,0,-len));
-	mesh->AddVertex(FPoint3(0,0, len));
-	mesh->AddLine(0,1);
-	mesh->AddLine(2,3);
-	mesh->AddLine(4,5);
-	geom->AddMesh(mesh, index);
-	vtTransform *trans = new vtTransform();
-	trans->AddChild(geom);
-	return trans;
-}
-
-vtMovGeom *CreateSimpleEarth(vtString strDataPath)
-{
-	// create simple texture-mapped sphere
-	vtMesh *mesh = new vtMesh(GL_QUADS, VT_Normals | VT_TexCoords, 20*20*2);
-	int res = 20;
-	FPoint3 size(1.0f, 1.0f, 1.0f);
-	mesh->CreateEllipsoid(size, res);
-
-	// fix up the texture coordinates
-	int numvtx = mesh->GetNumVertices();
-	for (int i = 0; i < numvtx; i++)
-	{
-		FPoint2 coord;
-		coord.y = 1.0f - ((float) i / (res * res));
-		coord.x = 1.0f - ((float (i%res)) / res);
-		mesh->SetVtxTexCoord(i, coord);
-	}
-
-	vtGeom *geom = new vtGeom();
-	vtMovGeom *mgeom = new vtMovGeom(geom);
-	mgeom->SetName2("GlobeGeom");
-
-	vtMaterialArray *apps = new vtMaterialArray();
-	bool bCulling = false;
-	bool bLighting = false;
-	bool bTransp = false;
-	apps->AddTextureMaterial2(strDataPath + "WholeEarth/earth2k_free.jpg",
-						 bCulling, bLighting, bTransp);
-	geom->SetMaterials(apps);
-
-	geom->AddMesh(mesh, 0);
-
-	return mgeom;
-}
 
 /////////////////////////////////////////////////////
 
@@ -88,6 +29,470 @@ IcoGlobe::IcoGlobe()
 	m_mats = NULL;
 	m_bUnfolded = false;
 	m_bTilt = true;
+}
+
+/**
+ * Create the globe's geometry and nodes.
+ *
+ * \param iTriangleCount The desired triangle count of the entire globe.  The
+ *		class will attempt to match this value as closely as possible with the
+ *		indicated tessellation.
+ * \param paths The data paths to use when looking for the surface textures
+ * \param strImagePrefix The base of the filename for the set of icosahedral
+ *		surface textures.  For example, if your textures have the name
+ *		"geosphere_*.jpg", pass "geosphere_"
+ * \param style Tessellation style, can be one of:
+ *		- GEODESIC	A classic geodesic tiling based on subdividing the edges
+ *			of the icosahedron and gnomonically projecting them to the sphere.
+ *		- RIGHT_TRIANGLE	An alternative approach where each face is
+ *			divided into right triangles recursively.
+ *		- DYMAX_UNFOLD	Same as RIGHT_TRIANGLE but the faces are also placed
+ *			on seperate geometries so that the globe can be unfolded in the
+ *			Dymaxion style.
+ */
+void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
+					  const vtString &strImagePrefix, Style style)
+{
+	VTLOG("IcoGlobe::Create\n");
+
+	m_style = style;
+	InitIcosa();
+
+	CreateMaterials(paths, strImagePrefix);
+
+	EstimateTesselation(iTriangleCount);
+
+	// Estimate number of meshes, and number of vertices per mesh
+	int i, numvtx;
+	if (m_style == GEODESIC)
+	{
+		numvtx = (m_freq + 1) * (m_freq + 2) / 2;
+		m_mfaces = 20;
+	}
+	else if (style == RIGHT_TRIANGLE || style == DYMAX_UNFOLD)
+	{
+		numvtx = 1 + 2 * ((int) pow(3, m_depth+1));
+		m_mfaces = (style == RIGHT_TRIANGLE) ? 20 : 22;
+	}
+
+	for (i = 0; i < m_mfaces; i++)
+	{
+		m_mesh[i] = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
+		if (strImagePrefix == "")
+			m_mesh[i]->AllowOptimize(true);
+		else
+			m_mesh[i]->AllowOptimize(false);
+	}
+
+	m_top = new vtTransform;
+	m_top->SetName2("GlobeXForm");
+
+	if (style == DYMAX_UNFOLD)
+		CreateUnfoldableDymax();
+	else
+		CreateNormalSphere();
+}
+
+/**
+ * Set the amount of inflation of the globe.
+ *
+ * \param f Ranges from 0 (icosahedron) to 1 (sphere)
+ */
+void IcoGlobe::SetInflation(float f)
+{
+	for (int mface = 0; mface < m_mfaces; mface++)
+	{
+		if (m_style == GEODESIC)
+			set_face_verts1(m_mesh[mface], mface, f);
+		else if (m_style == RIGHT_TRIANGLE || m_style == DYMAX_UNFOLD)
+			set_face_verts2(m_mesh[mface], mface, f);
+	}
+}
+
+/**
+ * Set the amount of unfolding of the globe.
+ *
+ * \param f Ranges from 0 (sphere/icosahedron) to 1 (entirely unfolded flat)
+ */
+void IcoGlobe::SetUnfolding(float f)
+{
+	// only possible on unfoldable globes
+	if (m_style != DYMAX_UNFOLD)
+		return;
+
+	m_bUnfolded = (f != 0.0f);
+
+	m_SurfaceGeom->SetEnabled(!m_bUnfolded);
+
+	float dih = (float) DihedralAngle();
+	for (int i = 1; i < 22; i++)
+	{
+		FPoint3 pos = m_xform[i]->GetTrans();
+		m_xform[i]->Identity();
+		m_xform[i]->SetTrans(pos);
+		m_xform[i]->RotateLocal(m_axis[i], -f * dih);
+	}
+	// deflate as we unfold
+	SetInflation(1.0f-f);
+
+	// gradually undo the current top rotation
+	FQuat qnull(0,0,0,1);
+	FQuat q1, q2;
+	FMatrix3 m3;
+	FMatrix4 m4;
+
+	q1.Slerp(qnull, m_Rotation, 1-f);
+	q1.GetMatrix(m3);
+	m4 = m3;
+	m_top->SetTransform1(m3);
+
+	// interpolate from No rotation to the desired rotation
+	q2.Slerp(qnull, m_diff, f);
+	q2.GetMatrix(m3);
+	m4 = m3;
+	m_xform[0]->SetTransform1(m3);
+}
+
+void IcoGlobe::SetCulling(bool bCull)
+{
+	int pair;
+	for (pair = 0; pair < 10; pair++)
+	{
+		vtMaterial *mat = m_mats->GetAt(m_globe_mat[pair]);
+		mat->SetCulling(bCull);
+	}
+}
+
+void IcoGlobe::SetLighting(bool bLight)
+{
+	for (int i = 0; i < 10; i++)
+	{
+		vtMaterial *pApp = m_mats->GetAt(m_globe_mat[i]);
+		pApp->SetLighting(bLight);
+	}
+}
+
+/*
+ * Set the time for the globe.  The globe will orient itself to properly
+ * reflect the indicate date and time, including seasonal shift of the
+ * polar axis and time of day.
+ *
+ * \param time A time value (assumed to be Greenwich Mean Time).
+ */
+void IcoGlobe::SetTime(time_t time)
+{
+	tm *gmt = gmtime(&time);
+
+	float second_of_day = (gmt->tm_hour * 60 + gmt->tm_min) * 60 + gmt->tm_sec;
+	float fraction_of_day = second_of_day / (24 * 60 * 60);
+	float rotation = fraction_of_day * PI2f;
+
+	// match with actual globe
+	rotation += PID2f;
+
+	FMatrix4 tmp, m4;
+	m4.Identity();
+
+	if (m_bTilt)
+	{
+		FPoint3 xvector(1,0,0), seasonal_axis;
+		// Seasonal axis rotation (days since winter solstice)
+		float season = (gmt->tm_yday + 10) / 365.0f * PI2f;
+		tmp.AxisAngle(FPoint3(0,1,0), season);
+		tmp.Transform(xvector, seasonal_axis);
+
+		// The earth's axis is tilted with respect to the plane of its orbit
+		// at an angle of about 23.4 degrees.  Tilting the northern
+		// hemisphere away from the sun (-tilt) puts this at the winter
+		// solstice.
+		float tilt = 23.4 / 180.0f * PIf;
+		tmp.AxisAngle(seasonal_axis, -tilt);
+		m4.PreMult(tmp);
+	}
+
+	// rotation around axis
+	tmp.AxisAngle(FPoint3(0,1,0), rotation);
+	m4.PreMult(tmp);
+
+	// store rotation to a quaternion
+	FMatrix3 m3 = m4;
+	m_Rotation.SetFromMatrix(m3);
+
+	// don't do time rotation on unfolded(ing) globes
+	if (!m_bUnfolded)
+		m_top->SetTransform1(m4);
+}
+
+void IcoGlobe::ShowAxis(bool bShow)
+{
+	if (m_pAxisGeom)
+		m_pAxisGeom->SetEnabled(bShow);
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Surface feature methods
+
+int IcoGlobe::AddGlobePoints(const char *fname, float fSize)
+{
+	SHPHandle hSHP = SHPOpen(fname, "rb");
+	if (hSHP == NULL)
+		return -1;
+
+	int		nEntities, nShapeType;
+	double 	adfMinBound[4], adfMaxBound[4];
+	DPoint2 point;
+	DLine2	points;
+
+	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
+	if (nShapeType != SHPT_POINT)
+	{
+		SHPClose(hSHP);
+		return -2;
+	}
+
+	for (int i = 0; i < nEntities; i++)
+	{
+		SHPObject *psShape = SHPReadObject(hSHP, i);
+		point.x = psShape->padfX[0];
+		point.y = psShape->padfY[0];
+		if (point.x != 0.0 || point.y != 0.0)
+			points.Append(point);
+		SHPDestroyObject(psShape);
+	}
+	AddPoints(points, fSize);
+	SHPClose(hSHP);
+	return nEntities;
+}
+
+void IcoGlobe::AddPoints(DLine2 &points, float fSize)
+{
+	int i, j, size;
+	Array<FSphere> spheres;
+
+	size = points.GetSize();
+	spheres.SetSize(size);
+
+	int n = 0, s = 0;
+	for (i = 0; i < size; i++)
+	{
+		DPoint2 p = points[i];
+		if (p.x == 0.0 && p.y == 0.0)
+			continue;
+
+		FPoint3 loc;
+		geo_to_xyz(1.0, points[i], loc);
+
+		if (loc.y > 0)
+			n++;
+		else
+			s++;
+
+		spheres[i].center = loc;
+		spheres[i].radius = fSize;
+	}
+
+	FPoint3 diff;
+
+	// volume of sphere, 4/3 PI r^3
+	// surface area of sphere, 4 PI r^2
+	// area of circle of sphere as seen from distance, PI r^2
+	int merges;
+	do {
+		merges = 0;
+		// Try merging overlapping points together, so that information
+		// is not lost in the overlap.
+		// To consider: do we combine the blobs based on their 2d radius,
+		// their 2d area, their 3d radius, or their 3d volume?  See
+		// Tufte, http://www.edwardtufte.com/
+		// Implemented here: preserve 2d area
+		for (i = 0; i < size-1; i++)
+		{
+			for (j = i+1; j < size; j++)
+			{
+				if (spheres[i].radius == 0.0f || spheres[j].radius == 0.0f)
+					continue;
+
+				diff = spheres[i].center - spheres[j].center;
+
+				// if one sphere contains the center of the other
+				if (diff.Length() < spheres[i].radius ||
+					diff.Length() < spheres[j].radius)
+				{
+					// combine
+					float area1 = PIf * spheres[i].radius * spheres[i].radius;
+					float area2 = PIf * spheres[j].radius * spheres[j].radius;
+					float combined = (area1 + area2);
+					float newrad = sqrtf( combined / PIf );
+					// larger eats the smaller
+					if (area1 > area2)
+					{
+						spheres[i].radius = newrad;
+						spheres[j].radius = 0.0f;
+					}
+					else
+					{
+						spheres[j].radius = newrad;
+						spheres[i].radius = 0.0f;
+					}
+					merges++;
+					break;
+				}
+			}
+		}
+		int got = merges;
+	}
+	while (merges != 0);
+
+	// Now create and place the little geometry objects to represent the
+	// point data.
+
+#if 0
+	// create simple hemisphere mesh
+	int res = 6;
+	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, 0, res*res*2);
+	FPoint3 scale(1.0f, 1.0f, 1.0f);
+	mesh->CreateEllipsoid(scale, res, true);
+#else
+	// create cylinder mesh instead
+	int res = 14;
+	int verts = res * 2;
+	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, 0, verts);
+	mesh->CreateCylinder(1.0f, 1.0f, res, true, false, false);
+#endif
+
+	// use Area to show amount, otherwise height
+	bool bArea = true;
+
+	// create and place the geometries
+	size = points.GetSize();
+	for (i = 0; i < size; i++)
+	{
+		if (spheres[i].radius == 0.0f)
+			continue;
+
+		vtGeom *geom = new vtGeom();
+		geom->SetMaterials(m_mats);
+		geom->AddMesh(mesh, m_yellow);
+
+		vtMovGeom *mgeom = new vtMovGeom(geom);
+		mgeom->SetName2("GlobeShape");
+
+		mgeom->PointTowards(spheres[i].center);
+		mgeom->RotateLocal(FPoint3(1,0,0), -PID2f);
+		mgeom->SetTrans(spheres[i].center);
+		if (bArea)
+		{
+			// scale just the radius of the cylinder
+			mgeom->Scale3(spheres[i].radius, 0.001f, spheres[i].radius);
+		}
+		else
+		{
+			// scale just the height of the cylinder
+			double area = PIf * spheres[i].radius * spheres[i].radius;
+			mgeom->Scale3(0.002f, area*1000, 0.002f);
+		}
+		m_top->AddChild(mgeom);
+	}
+}
+
+void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
+{
+	FPoint3 p;
+
+	for (vtTerrain *pTerr = pTerrainScene->GetFirstTerrain(); pTerr;
+			pTerr=pTerr->GetNext())
+	{
+		// skip if undefined
+		if (pTerr->m_Corners_geo.GetSize() == 0)
+			continue;
+
+		int numvtx = 4;
+		vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, numvtx);
+
+		int i, j;
+		DPoint2 p1, p2;
+		for (i = 0; i < 4; i++)
+		{
+			j = (i+1) % 4;
+			p1 = pTerr->m_Corners_geo[i];
+			p2 = pTerr->m_Corners_geo[j];
+			AddSurfaceLineToMesh(mesh, p1, p2);
+		}
+		m_SurfaceGeom->AddMesh(mesh, m_red);
+	}
+}
+
+double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2)
+{
+	// first determine how many points we should use for a smooth arc
+	DPoint3 p1, p2;
+	geo_to_xyz(1.0, g1, p1);
+	geo_to_xyz(1.0, g2, p2);
+	double angle = acos(p1.Dot(p2));
+	int points = (int) (angle * 3000);
+	if (points < 3)
+		points = 3;
+
+	// calculate the axis of rotation
+	DPoint3 cross = p1.Cross(p2);
+	cross.Normalize();
+	double angle_spacing = angle / (points-1);
+	DMatrix4 rot4;
+	rot4.AxisAngle(cross, angle_spacing);
+	DMatrix3 rot3;
+	rot3.SetByMatrix4(rot4);
+
+	// curved arc on great-circle path
+	int start = mesh->GetNumVertices();
+	for (int i = 0; i < points; i++)
+	{
+		FPoint3 fp = p1 * 1.0002;
+		mesh->AddVertex(fp);
+		rot3.Transform(p1, p2);
+		p1 = p2;
+	}
+	mesh->AddStrip2(points, start);
+	return angle;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Internal methods
+//
+
+void IcoGlobe::EstimateTesselation(int iTriangleCount)
+{
+	int per_face = iTriangleCount / 20;
+	if (m_style == GEODESIC)
+	{
+		// Frequency for a traditional geodesic tiling gives (frequency ^ 2)
+		// triangles.  Find what frequency most closely matches the desired
+		// triangle count.
+		double exact = sqrt(per_face);
+		int iLess = floor(exact);
+		int iMore = ceil(exact);
+		if ((iMore*iMore - per_face) < (per_face - iLess*iLess))
+			m_freq = iMore;
+		else
+			m_freq = iLess;
+	}
+	else if (m_style == RIGHT_TRIANGLE || m_style == DYMAX_UNFOLD)
+	{
+		// Recursive right-triangle subdivision gives (2 * 3 ^ (depth+1))
+		// triangles.  Find what depth most closely matches the desired
+		// triangle count.
+		int a, b = 6;
+		for (a = 1; a < 10; a++)
+		{
+			b *= 3;
+			if (b > per_face) break;
+		}
+		if ((b - per_face) < (per_face - b/3))
+			m_depth = a;
+		else
+			m_depth = a-1;
+	}
 }
 
 //
@@ -452,22 +857,6 @@ void IcoGlobe::CreateMaterials(const StringArray &paths, const vtString &strImag
 	}
 }
 
-void IcoGlobe::SetCulling(bool bCull)
-{
-	int pair;
-	for (pair = 0; pair < 10; pair++)
-	{
-		vtMaterial *mat = m_mats->GetAt(m_globe_mat[pair]);
-		mat->SetCulling(bCull);
-	}
-}
-
-void IcoGlobe::ShowAxis(bool bShow)
-{
-	if (m_pAxisGeom)
-		m_pAxisGeom->SetEnabled(bShow);
-}
-
 // This array describes the configuration and topology of the subfaces in
 // the flattened dymaxion map.
 struct dymax_info
@@ -582,169 +971,6 @@ void IcoGlobe::SetMeshConnect(int mface)
 		xform->Translate1(edge_center);
 	else
 		xform->Translate1(edge_center - m_local_origin[parent_mface]);
-}
-
-void IcoGlobe::SetUnfolding(float f)
-{
-	// only possible on unfoldable globes
-	if (m_style != DYMAX_UNFOLD)
-		return;
-
-	m_bUnfolded = (f != 0.0f);
-
-	m_SurfaceGeom->SetEnabled(!m_bUnfolded);
-
-	float dih = (float) DihedralAngle();
-	for (int i = 1; i < 22; i++)
-	{
-		FPoint3 pos = m_xform[i]->GetTrans();
-		m_xform[i]->Identity();
-		m_xform[i]->SetTrans(pos);
-		m_xform[i]->RotateLocal(m_axis[i], -f * dih);
-	}
-	// deflate as we unfold
-	SetInflation(1.0f-f);
-
-	// gradually undo the current top rotation
-	FQuat qnull(0,0,0,1);
-	FQuat q1, q2;
-	FMatrix3 m3;
-	FMatrix4 m4;
-
-	q1.Slerp(qnull, m_Rotation, 1-f);
-	q1.GetMatrix(m3);
-	m4 = m3;
-	m_top->SetTransform1(m3);
-
-	// interpolate from No rotation to the desired rotation
-	q2.Slerp(qnull, m_diff, f);
-	q2.GetMatrix(m3);
-	m4 = m3;
-	m_xform[0]->SetTransform1(m3);
-}
-
-void IcoGlobe::SetTime(time_t time)
-{
-	tm *gmt = gmtime(&time);
-
-	float second_of_day = (gmt->tm_hour * 60 + gmt->tm_min) * 60 + gmt->tm_sec;
-	float fraction_of_day = second_of_day / (24 * 60 * 60);
-	float rotation = fraction_of_day * PI2f;
-
-	// match with actual globe
-	rotation += PID2f;
-
-	FMatrix4 tmp, m4;
-	m4.Identity();
-
-	if (m_bTilt)
-	{
-		FPoint3 xvector(1,0,0), seasonal_axis;
-		// Seasonal axis rotation (days since winter solstice)
-		float season = (gmt->tm_yday + 10) / 365.0f * PI2f;
-		tmp.AxisAngle(FPoint3(0,1,0), season);
-		tmp.Transform(xvector, seasonal_axis);
-
-		// The earth's axis is tilted with respect to the plane of its orbit
-		// at an angle of about 23.4 degrees.  Tilting the northern
-		// hemisphere away from the sun (-tilt) puts this at the winter
-		// solstice.
-		float tilt = 23.4 / 180.0f * PIf;
-		tmp.AxisAngle(seasonal_axis, -tilt);
-		m4.PreMult(tmp);
-	}
-
-	// rotation around axis
-	tmp.AxisAngle(FPoint3(0,1,0), rotation);
-	m4.PreMult(tmp);
-
-	// store rotation to a quaternion
-	FMatrix3 m3 = m4;
-	m_Rotation.SetFromMatrix(m3);
-
-	// don't do time rotation on unfolded(ing) globes
-	if (!m_bUnfolded)
-		m_top->SetTransform1(m4);
-}
-
-/**
- * Create the globe's geometry and nodes.
- */
-void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
-					  const vtString &strImagePrefix, Style style)
-{
-	VTLOG("IcoGlobe::Create\n");
-
-	m_style = style;
-	InitIcosa();
-
-	CreateMaterials(paths, strImagePrefix);
-
-	EstimateTesselation(iTriangleCount);
-
-	// Estimate number of meshes, and number of vertices per mesh
-	int i, numvtx;
-	if (m_style == GEODESIC)
-	{
-		numvtx = (m_freq + 1) * (m_freq + 2) / 2;
-		m_mfaces = 20;
-	}
-	else if (style == RIGHT_TRIANGLE || style == DYMAX_UNFOLD)
-	{
-		numvtx = 1 + 2 * ((int) pow(3, m_depth+1));
-		m_mfaces = (style == RIGHT_TRIANGLE) ? 20 : 22;
-	}
-
-	for (i = 0; i < m_mfaces; i++)
-	{
-		m_mesh[i] = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
-		if (strImagePrefix == "")
-			m_mesh[i]->AllowOptimize(true);
-		else
-			m_mesh[i]->AllowOptimize(false);
-	}
-
-	m_top = new vtTransform;
-	m_top->SetName2("GlobeXForm");
-
-	if (style == DYMAX_UNFOLD)
-		CreateUnfoldableDymax();
-	else
-		CreateNormalSphere();
-}
-
-void IcoGlobe::EstimateTesselation(int iTriangleCount)
-{
-	int per_face = iTriangleCount / 20;
-	if (m_style == GEODESIC)
-	{
-		// Frequency for a traditional geodesic tiling gives (frequency ^ 2)
-		// triangles.  Find what frequency most closely matches the desired
-		// triangle count.
-		double exact = sqrt(per_face);
-		int iLess = floor(exact);
-		int iMore = ceil(exact);
-		if ((iMore*iMore - per_face) < (per_face - iLess*iLess))
-			m_freq = iMore;
-		else
-			m_freq = iLess;
-	}
-	else if (m_style == RIGHT_TRIANGLE || m_style == DYMAX_UNFOLD)
-	{
-		// Recursive right-triangle subdivision gives (2 * 3 ^ (depth+1))
-		// triangles.  Find what depth most closely matches the desired
-		// triangle count.
-		int a, b = 6;
-		for (a = 1; a < 10; a++)
-		{
-			b *= 3;
-			if (b > per_face) break;
-		}
-		if ((b - per_face) < (per_face - b/3))
-			m_depth = a;
-		else
-			m_depth = a-1;
-	}
 }
 
 void IcoGlobe::CreateUnfoldableDymax()
@@ -882,163 +1108,6 @@ void IcoGlobe::CreateNormalSphere()
 	}
 }
 
-/**
- * Set the amount of inflation of the globe.
- *
- * \param f Ranges from 0 (icosahedron) to 1 (sphere)
- */
-void IcoGlobe::SetInflation(float f)
-{
-	for (int mface = 0; mface < m_mfaces; mface++)
-	{
-		if (m_style == GEODESIC)
-			set_face_verts1(m_mesh[mface], mface, f);
-		else if (m_style == RIGHT_TRIANGLE || m_style == DYMAX_UNFOLD)
-			set_face_verts2(m_mesh[mface], mface, f);
-	}
-}
-
-void IcoGlobe::SetLighting(bool bLight)
-{
-	for (int i = 0; i < 10; i++)
-	{
-		vtMaterial *pApp = m_mats->GetAt(m_globe_mat[i]);
-		pApp->SetLighting(bLight);
-	}
-}
-
-void IcoGlobe::AddPoints(DLine2 &points, float fSize)
-{
-	int i, j, size;
-	Array<FSphere> spheres;
-
-	size = points.GetSize();
-	spheres.SetSize(size);
-
-	int n = 0, s = 0;
-	for (i = 0; i < size; i++)
-	{
-		DPoint2 p = points[i];
-		if (p.x == 0.0 && p.y == 0.0)
-			continue;
-
-		FPoint3 loc;
-		geo_to_xyz(1.0, points[i], loc);
-
-		if (loc.y > 0)
-			n++;
-		else
-			s++;
-
-		spheres[i].center = loc;
-		spheres[i].radius = fSize;
-	}
-
-	FPoint3 diff;
-
-	// volume of sphere, 4/3 PI r^3
-	// surface area of sphere, 4 PI r^2
-	// area of circle of sphere as seen from distance, PI r^2
-	int merges;
-	do {
-		merges = 0;
-		// Try merging overlapping points together, so that information
-		// is not lost in the overlap.
-		// To consider: do we combine the blobs based on their 2d radius,
-		// their 2d area, their 3d radius, or their 3d volume?  See
-		// Tufte, http://www.edwardtufte.com/
-		// Implemented here: preserve 2d area
-		for (i = 0; i < size-1; i++)
-		{
-			for (j = i+1; j < size; j++)
-			{
-				if (spheres[i].radius == 0.0f || spheres[j].radius == 0.0f)
-					continue;
-
-				diff = spheres[i].center - spheres[j].center;
-
-				// if one sphere contains the center of the other
-				if (diff.Length() < spheres[i].radius ||
-					diff.Length() < spheres[j].radius)
-				{
-					// combine
-					float area1 = PIf * spheres[i].radius * spheres[i].radius;
-					float area2 = PIf * spheres[j].radius * spheres[j].radius;
-					float combined = (area1 + area2);
-					float newrad = sqrtf( combined / PIf );
-					// larger eats the smaller
-					if (area1 > area2)
-					{
-						spheres[i].radius = newrad;
-						spheres[j].radius = 0.0f;
-					}
-					else
-					{
-						spheres[j].radius = newrad;
-						spheres[i].radius = 0.0f;
-					}
-					merges++;
-					break;
-				}
-			}
-		}
-		int got = merges;
-	}
-	while (merges != 0);
-
-	// Now create and place the little geometry objects to represent the
-	// point data.
-
-#if 0
-	// create simple hemisphere mesh
-	int res = 6;
-	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, 0, res*res*2);
-	FPoint3 scale(1.0f, 1.0f, 1.0f);
-	mesh->CreateEllipsoid(scale, res, true);
-#else
-	// create cylinder mesh instead
-	int res = 14;
-	int verts = res * 2;
-	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, 0, verts);
-	mesh->CreateCylinder(1.0f, 1.0f, res, true, false, false);
-#endif
-
-	// use Area to show amount, otherwise height
-	bool bArea = true;
-
-	// create and place the geometries
-	size = points.GetSize();
-	for (i = 0; i < size; i++)
-	{
-		if (spheres[i].radius == 0.0f)
-			continue;
-
-		vtGeom *geom = new vtGeom();
-		geom->SetMaterials(m_mats);
-		geom->AddMesh(mesh, m_yellow);
-
-		vtMovGeom *mgeom = new vtMovGeom(geom);
-		mgeom->SetName2("GlobeShape");
-
-		mgeom->PointTowards(spheres[i].center);
-		mgeom->RotateLocal(FPoint3(1,0,0), -PID2f);
-		mgeom->SetTrans(spheres[i].center);
-		if (bArea)
-		{
-			// scale just the radius of the cylinder
-			mgeom->Scale3(spheres[i].radius, 0.001f, spheres[i].radius);
-		}
-		else
-		{
-			// scale just the height of the cylinder
-			double area = PIf * spheres[i].radius * spheres[i].radius;
-			mgeom->Scale3(0.002f, area*1000, 0.002f);
-		}
-		m_top->AddChild(mgeom);
-	}
-
-}
-
 //
 // Ray-Sphere intersection
 //
@@ -1150,99 +1219,70 @@ void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo)
 	int foo = 1;
 }
 
-double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2)
+
+///////////////////////////////////////////////////////////////////////
+// Helper functions
+
+//
+// Create a moveable wireframe axis geometry.
+//
+vtTransform *WireAxis(RGBf color, float len)
 {
-	// first determine how many points we should use for a smooth arc
-	DPoint3 p1, p2;
-	geo_to_xyz(1.0, g1, p1);
-	geo_to_xyz(1.0, g2, p2);
-	double angle = acos(p1.Dot(p2));
-	int points = (int) (angle * 3000);
-	if (points < 3)
-		points = 3;
+	vtGeom *geom = new vtGeom();
+	geom->SetName2("axis");
 
-	// calculate the axis of rotation
-	DPoint3 cross = p1.Cross(p2);
-	cross.Normalize();
-	double angle_spacing = angle / (points-1);
-	DMatrix4 rot4;
-	rot4.AxisAngle(cross, angle_spacing);
-	DMatrix3 rot3;
-	rot3.SetByMatrix4(rot4);
+	vtMaterialArray *mats = new vtMaterialArray();
+	int index = mats->AddRGBMaterial1(color, false, false);
+	geom->SetMaterials(mats);
 
-	// curved arc on great-circle path
-	int start = mesh->GetNumVertices();
-	for (int i = 0; i < points; i++)
-	{
-		FPoint3 fp = p1 * 1.0002;
-		mesh->AddVertex(fp);
-		rot3.Transform(p1, p2);
-		p1 = p2;
-	}
-	mesh->AddStrip2(points, start);
-	return angle;
+	vtMesh *mesh = new vtMesh(GL_LINES, 0, 6);
+	mesh->AddVertex(FPoint3(-len,0,0));
+	mesh->AddVertex(FPoint3( len,0,0));
+	mesh->AddVertex(FPoint3(0,-len,0));
+	mesh->AddVertex(FPoint3(0, len,0));
+	mesh->AddVertex(FPoint3(0,0,-len));
+	mesh->AddVertex(FPoint3(0,0, len));
+	mesh->AddLine(0,1);
+	mesh->AddLine(2,3);
+	mesh->AddLine(4,5);
+	geom->AddMesh(mesh, index);
+	vtTransform *trans = new vtTransform();
+	trans->AddChild(geom);
+	return trans;
 }
 
-void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
+vtMovGeom *CreateSimpleEarth(vtString strDataPath)
 {
-	FPoint3 p;
+	// create simple texture-mapped sphere
+	vtMesh *mesh = new vtMesh(GL_QUADS, VT_Normals | VT_TexCoords, 20*20*2);
+	int res = 20;
+	FPoint3 size(1.0f, 1.0f, 1.0f);
+	mesh->CreateEllipsoid(size, res);
 
-	for (vtTerrain *pTerr = pTerrainScene->GetFirstTerrain(); pTerr;
-			pTerr=pTerr->GetNext())
+	// fix up the texture coordinates
+	int numvtx = mesh->GetNumVertices();
+	for (int i = 0; i < numvtx; i++)
 	{
-		// skip if undefined
-		if (pTerr->m_Corners_geo.GetSize() == 0)
-			continue;
-
-		int numvtx = 4;
-		vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, numvtx);
-
-		int i, j;
-		DPoint2 p1, p2;
-		for (i = 0; i < 4; i++)
-		{
-			j = (i+1) % 4;
-			p1 = pTerr->m_Corners_geo[i];
-			p2 = pTerr->m_Corners_geo[j];
-			AddSurfaceLineToMesh(mesh, p1, p2);
-		}
-		m_SurfaceGeom->AddMesh(mesh, m_red);
-	}
-}
-
-
-int IcoGlobe::AddGlobePoints(const char *fname)
-{
-	SHPHandle hSHP = SHPOpen(fname, "rb");
-	if (hSHP == NULL)
-	{
-		return -1;
+		FPoint2 coord;
+		coord.y = 1.0f - ((float) i / (res * res));
+		coord.x = 1.0f - ((float (i%res)) / res);
+		mesh->SetVtxTexCoord(i, coord);
 	}
 
-	int		nEntities, nShapeType;
-	double 	adfMinBound[4], adfMaxBound[4];
-	DPoint2 point;
-	DLine2	points;
+	vtGeom *geom = new vtGeom();
+	vtMovGeom *mgeom = new vtMovGeom(geom);
+	mgeom->SetName2("GlobeGeom");
 
-	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
-	if (nShapeType != SHPT_POINT)
-	{
-		SHPClose(hSHP);
-		return -2;
-	}
+	vtMaterialArray *apps = new vtMaterialArray();
+	bool bCulling = false;
+	bool bLighting = false;
+	bool bTransp = false;
+	apps->AddTextureMaterial2(strDataPath + "WholeEarth/earth2k_free.jpg",
+						 bCulling, bLighting, bTransp);
+	geom->SetMaterials(apps);
 
-	for (int i = 0; i < nEntities; i++)
-	{
-		SHPObject *psShape = SHPReadObject(hSHP, i);
-		point.x = psShape->padfX[0];
-		point.y = psShape->padfY[0];
-		if (point.x != 0.0 || point.y != 0.0)
-			points.Append(point);
-		SHPDestroyObject(psShape);
-	}
-//	AddPoints(points, 0.0015f);	// this size works OK for the VTP recipients
-	AddPoints(points, 0.0005f);
-	SHPClose(hSHP);
-	return nEntities;
+	geom->AddMesh(mesh, 0);
+
+	return mgeom;
 }
 

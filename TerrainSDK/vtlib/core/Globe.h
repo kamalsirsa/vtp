@@ -31,29 +31,31 @@ struct IcoVert
 class IcoGlobe : public DymaxIcosa, public TimeTarget
 {
 public:
-	IcoGlobe();
-
 	enum Style
 	{
 		GEODESIC, RIGHT_TRIANGLE, DYMAX_UNFOLD
 	};
 
+	// construction
+	IcoGlobe();
 	void Create(int iTriangleCount, const StringArray &paths,
 		const vtString &strImagePrefix, Style style = GEODESIC);
-	void SetInflation(float f);
-	void SetLighting(bool bLight);
-	void AddPoints(DLine2 &points, float fSize);
-
-	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
-	int AddGlobePoints(const char *fname);
-	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
 	vtTransform *GetTop() { return m_top; }
 
+	// control globe behavior
+	void SetInflation(float f);
 	void SetUnfolding(float f);
-	void SetTime(time_t time);
 	void SetCulling(bool bCull);
+	void SetLighting(bool bLight);
+	void SetTime(time_t time);
 	void ShowAxis(bool bShow);
 	void DoSeasonalTilt(bool bTilt) { m_bTilt = bTilt; }
+
+	// surface features
+	int AddGlobePoints(const char *fname, float fSize);
+	void AddPoints(DLine2 &points, float fSize);
+	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
+	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
 
 protected:
 	void CreateMaterials(const StringArray &paths, const vtString &strImagePrefix);
