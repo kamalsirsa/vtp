@@ -1,7 +1,7 @@
 //
 // Terrain.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,6 +18,7 @@
 #include "DynTerrain.h"
 #include "Content3d.h"
 #include "GeomUtil.h"	// for MeshFactory
+#include "Location.h"
 
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
@@ -231,9 +232,12 @@ public:
 	void CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray &style);
 	void CreateFeatureLabels(const vtFeatureSet &feat,   const vtTagArray &style);
 
-	// Access the viewpoint associated with this terrain
+	// Access the viewpoint(s) associated with this terrain
 	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }
 	FMatrix4 &GetCamLocation() { return m_CamLocation; }
+	vtLocationSaver *GetLocSaver() { return &m_LocSaver; }
+	void Visited(bool bVisited) { m_bVisited = bVisited; }
+	bool IsVisited() { return m_bVisited; }
 
 	// Sky and Fog
 	void SetFog(bool fog);
@@ -314,6 +318,8 @@ protected:
 	// if we're switching between multiple terrains, we can remember where
 	// the camera was in each one
 	FMatrix4		m_CamLocation;
+	vtLocationSaver	m_LocSaver;
+	bool			m_bVisited;
 
 	// ocean and fog
 	vtMovGeom		*m_pOceanGeom;

@@ -74,6 +74,7 @@ vtTerrain::vtTerrain()
 	m_pStructGrid = NULL;
 
 	m_CamLocation.Identity();
+	m_bVisited = false;
 
 	m_CenterGeoLocation.Set(-999, -999);	// initially unknown
 
@@ -2089,6 +2090,17 @@ bool vtTerrain::CreateStep5()
 
 	// Engines will be activated later in vtTerrainScene::SetTerrain
 	ActivateEngines(false);
+
+	// Read stored locations
+	vtString loc = "Locations/";
+	loc += m_Params.GetValueString(STR_LOCFILE, true);
+	vtString path = FindFileOnPaths(vtGetDataPath(), loc);
+	if (path != "")
+	{
+		m_LocSaver.Read(path);
+		m_LocSaver.SetConversion(m_pHeightField->m_Conversion);
+		m_LocSaver.SetProjection(m_proj);
+	}
 
 	return true;
 }
