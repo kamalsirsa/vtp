@@ -16,7 +16,7 @@
 #include "TerrainSurface.h"
 #include "Fence3d.h"
 #include "Route.h"
-#include "vtTin.h"
+#include "vtTin3d.h"
 
 //#include "LKTerrain.h"
 #include "TVTerrain.h"
@@ -48,6 +48,7 @@ vtTerrain::vtTerrain()
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
 	m_pHeightField = NULL;
+	m_bPreserveInputGrid = false;
 	m_pImage = NULL;
 	m_pLocalGrid = NULL;
 	m_pLodGrid = NULL;
@@ -81,7 +82,10 @@ vtTerrain::~vtTerrain()
 	// list with several different terrains.
 //	delete m_pPlantList;
 
-	delete m_pLocalGrid;
+	if (!m_bPreserveInputGrid)
+	{
+		delete m_pLocalGrid;
+	}
 	delete m_pCoverage;
 	delete m_pImage;
 	delete m_pDIB;
@@ -124,16 +128,17 @@ bool vtTerrain::LoadParams()
  * You must allocate this grid dynamically with 'new', since vtTerrain
  * will 'delete' it after using it during initialization.
  */
-void vtTerrain::SetLocalGrid(vtLocalGrid *pGrid)
+void vtTerrain::SetLocalGrid(vtLocalGrid *pGrid, bool bPreserve)
 {
 	m_pInputGrid = pGrid;
+	m_bPreserveInputGrid = bPreserve;
 }
 
 /**
  * This method allows you to give the terrain a TIN to use directly
  * instead of loading a .tin file as specified in the TParams.
  */
-void vtTerrain::SetTin(vtTin *pTin)
+void vtTerrain::SetTin(vtTin3d *pTin)
 {
 	m_pTin = pTin;
 }
@@ -174,15 +179,13 @@ void vtTerrain::create_roads(vtString strRoadFile)
 
 ///////////////////
 
-void vtTerrain::create_textures(int iTiles,
-								const char *szTextureFile)
+void vtTerrain::create_textures()
 {
+	int iTiles = 4;		// fixed for now
 	TextureEnum eTex = m_Params.m_eTexture;
 
 	m_pTerrApps1 = new vtMaterialArray();
 	m_pTerrApps2 = new vtMaterialArray();
-
-//	int minfilter = m_Params.m_bMipmap ? APP_TriLinear : APP_Linear;
 
 	float ambient, diffuse, emmisive;
 	if (m_Params.m_bPreLit)
@@ -199,36 +202,55 @@ void vtTerrain::create_textures(int iTiles,
 
 	if (eTex == TE_NONE)	// none
 	{
-		// no texture
+		// no texture: create plain white material
 		m_pTerrApps1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 									 RGBf(0.2f, 0.2f, 0.2f),
-									 true, !m_Params.m_bPreLit);	// for shaded white
+									 true, !m_Params.m_bPreLit);
 		m_pTerrApps2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 									 RGBf(0.2f, 0.2f, 0.2f),
-									 true, !m_Params.m_bPreLit);	// for shaded white
-//		AddRGBMaterial(m_pTerrApps, 1.0f, 1.0f, 1.0f, false, true);	// for shaded white, bothsides
-//		AddRGBMaterial(m_pTerrApps, 1.0f, 1.0f, 1.0f, true, false);	// for vertex color
+									 true, !m_Params.m_bPreLit);
 	}
 	if (eTex == TE_SINGLE || eTex == TE_TILED)	// load texture
 	{
-		// Load a DIB of the whole, large texture
-		m_pDIB = new vtDIB(szTextureFile);
-		if (! m_pDIB->m_bLoadedSuccessfully)
+		vtString texture_fname = "GeoSpecific/";
+		if (m_Params.m_eTexture == TE_SINGLE)
+			texture_fname += m_Params.m_strTextureSingle;	// single texture
+		else
+			texture_fname += m_Params.m_strTextureFilename;
+		vtString texture_path = FindFileOnPaths(m_DataPaths, texture_fname);
+
+		if (texture_path != "")
 		{
-			m_pTerrApps1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-										 RGBf(0.2f, 0.2f, 0.2f),
-										 true, !m_Params.m_bPreLit);	// for shaded white
-			m_pTerrApps2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-										 RGBf(0.2f, 0.2f, 0.2f),
-										 true, !m_Params.m_bPreLit);	// for shaded white
-			m_Params.m_eTexture = TE_NONE;
-			return;
+			// Load a DIB of the whole, large texture
+			m_pDIB = new vtDIB(texture_path);
+			if (! m_pDIB->m_bLoadedSuccessfully)
+			{
+				m_pTerrApps1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+											 RGBf(0.2f, 0.2f, 0.2f),
+											 true, !m_Params.m_bPreLit);	// for shaded white
+				m_pTerrApps2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+											 RGBf(0.2f, 0.2f, 0.2f),
+											 true, !m_Params.m_bPreLit);	// for shaded white
+				m_Params.m_eTexture = TE_NONE;
+			}
 		}
 	}
 	if (eTex == TE_DERIVED)
 	{
+		// Determine the correct size for the derived texture: ideally
+		// as large as the input grid, but not larger than the hardware
+		// texture size limit.
+		GLint tmax;
+		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &tmax);
+
+		int cols, rows;
+		m_pLocalGrid->GetDimensions(cols, rows);
+
+		int tsize = cols-1;
+		if (tsize > tmax) tsize = tmax;
+
 		// derive color from elevation
-		m_pDIB = new vtDIB(1024, 1024, 24, false);
+		m_pDIB = new vtDIB(tsize, tsize, 24, false);
 		m_pLocalGrid->ColorDibFromElevation(m_pDIB, RGBi(m_ocean_color));
 	}
 
@@ -373,9 +395,9 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 
 #if 0
 	/*
-     * Set the debug-heap flag to keep freed blocks in the
-     * heap's linked list - This will allow us to catch any
-     * inadvertent use of freed memory
+	 * Set the debug-heap flag to keep freed blocks in the
+	 * heap's linked list - This will allow us to catch any
+	 * inadvertent use of freed memory
 	 */
 	int tmpDbgFlag;
 	tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
@@ -476,7 +498,7 @@ void vtTerrain::RedrawFence(vtFence3d *f)
 // routes
 void vtTerrain::AddRoute(vtRoute *f)
 {
-	m_pRoutes.Append(f);
+	m_Routes.Append(f);
 
 	// Add directly
 	m_pTerrainGroup->AddChild(f->GetGeom());
@@ -485,79 +507,16 @@ void vtTerrain::AddRoute(vtRoute *f)
 //	AddNodeToLodGrid(f->GetGeom());
 }
 
-void vtTerrain::add_routepoint_earth(vtRoute *f, const DPoint2 &epos)
+void vtTerrain::add_routepoint_earth(vtRoute *f, const DPoint2 &epos,
+									 const char *structname)
 {
-	f->add_point(epos);
+	f->AddPoint(epos, structname);
 	f->BuildGeometry(m_pHeightField);
 }
 
 void vtTerrain::RedrawRoute(vtRoute *f)
 {
 	f->BuildGeometry(m_pHeightField);
-}
-
-void vtTerrain::LoadRoute(float fRouteOffL, float fRouteOffR,
-						  float fRouteStInc, vtString sRouteName)
-{
-	vtRoute *pRoute;
-	bool stop = false;
-
-	//parse the parameter string passed in
-	char  *end;
-	char holder[40];
-	strcpy(holder, m_Params.m_strRouteFile);
-	if ((end = strstr(holder, ".p3D"))!=0)
-		holder[end-holder]='\0';
-	else
-		return;
-	vtString base = "RouteData/";
-	base += holder;
-	vtString logFile = FindFileOnPaths(m_DataPaths, base + ".xyz");
-	vtString p3DFile = FindFileOnPaths(m_DataPaths, base + ".p3D");
-
-	FILE *fplog = fopen(logFile, "r"); // m_strDatapath +
-	if (!fplog)
-		return;
-	FILE *fpp3D = fopen(p3DFile, "r"); // m_strDatapath +
-	if (!fpp3D)
-		return;
-
-	pRoute = new vtRoute(fRouteOffL, fRouteOffR, fRouteStInc, sRouteName,
-		this);
-
-	if (pRoute->logReader(fplog))
-	{
-		if (pRoute->p3DReader(fpp3D))
-		{
-			// Get the needed tower images
-			if (!pRoute->StructureReader(*(m_DataPaths[0]) + "RouteData/"))
-				return;	//error loading structures.  don't display these routes
-			AddRoute(pRoute);
-			pRoute->BuildGeometry(m_pHeightField);
-			m_pRoutes.Append(pRoute);
-
-			// Add directly
-			m_pTerrainGroup->AddChild(pRoute->GetGeom());
-		}
-		else
-			delete pRoute;
-	}
-	else //no route read
-		delete pRoute;
-
-//	while (!stop)  // not EOF
-//	{
-//		if (strncmp(buf, "Begin", 5) == 0) // begin building route
-//		{
-//			// default for now? (TODO)
-//			pRoute = new vtRoute(fRouteOffL, fRouteOffR, fRouteStInc, sRouteName);
-//			stop = pRoute->load(fp);
-//			AddRoute(pRoute);
-//			pRoute->BuildGeometry(m_pHeightField);
-//		}
-//	}
-	fclose(fplog);
-	fclose(fpp3D);
 }
 
 void vtTerrain::SaveRoute()
@@ -887,8 +846,7 @@ void vtTerrain::create_culture(bool bSound)
 	// create utility structures (routes = towers and wires)
 	if (m_Params.m_bRouteEnable && m_Params.m_strRouteFile[0] != '\0')
 	{
-//		LoadRoute(m_fRouteOffL, m_fRouteOffR, m_fRouteStInc, m_sRouteName);
-		LoadRoute(0.0f, 0.0f, 0.0f, "route1");
+		// TODO
 	}
 
 	CreateCustomCulture(bSound);
@@ -990,7 +948,7 @@ bool vtTerrain::CreateStep1(int &iError)
 		if (!m_pTin)
 		{
 			// if they did not provide us with a TIN, try to load it
-			m_pTin = new vtTin;
+			m_pTin = new vtTin3d;
 			m_pTin->Read(fullpath);
 		}
 	}
@@ -1022,15 +980,7 @@ bool vtTerrain::CreateStep2(int &iError)
 		m_proj = m_pLocalGrid->GetProjection();
 		g_Conv = m_pLocalGrid->m_Conversion;
 
-		vtString texture_fname = "GeoSpecific/";
-		if (m_Params.m_eTexture == TE_SINGLE)
-			texture_fname += m_Params.m_strTextureSingle;	// single texture
-		else
-			texture_fname += m_Params.m_strTextureFilename;
-		vtString texture_path = FindFileOnPaths(m_DataPaths, texture_fname);
-
-		if (texture_path != "")
-			create_textures(4, texture_path);
+		create_textures();
 	}
 	return true;
 }
@@ -1095,9 +1045,12 @@ bool vtTerrain::CreateFromGrid(int &iError)
 		}
 	}
 
-	// we don't need the original grid any more
-	delete m_pLocalGrid;
-	m_pLocalGrid = NULL;
+	if (!m_bPreserveInputGrid)
+	{
+		// we don't need the original grid any more
+		delete m_pLocalGrid;
+		m_pLocalGrid = NULL;
+	}
 	return true;
 }
 
@@ -1377,7 +1330,7 @@ void vtTerrain::CreateChoppedTextures(vtLocalGrid *pLocalGrid, vtDIB *dib1,
 			y_off = j * (size - 1);
 
 			// make a tile
-		    vtDIB *dib2 = new vtDIB(size, size, dib1->GetDepth(), mono);
+			vtDIB *dib2 = new vtDIB(size, size, dib1->GetDepth(), mono);
 
 			unsigned long pixel;
 			if (mono)
