@@ -281,13 +281,13 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 
 	m_pTree->SetItemData(hNewItem, new MyTreeItemData(pNode, NULL));
 
+	wxTreeItemId hSubItem;
 	vtGroupBase *pGroup = dynamic_cast<vtGroupBase*>(pNode);
 	if (pGroup)
 	{
 		int num_children = pGroup->GetNumChildren();
 		if (num_children > 200)
 		{
-			wxTreeItemId	hSubItem;
 			str.Printf(_T("(%d children)"), num_children);
 			hSubItem = m_pTree->AppendItem(hNewItem, str, 8, 8);
 		}
@@ -296,9 +296,10 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 			for (int i = 0; i < num_children; i++)
 			{
 				vtNode *pChild = pGroup->GetChild(i);
-				if (!pChild) continue;
-
-				AddNodeItemsRecursively(hNewItem, pChild, depth+1);
+				if (pChild)
+					AddNodeItemsRecursively(hNewItem, pChild, depth+1);
+				else
+					hSubItem = m_pTree->AppendItem(hNewItem, "(internal node)", 8, 8);
 			}
 		}
 	}
