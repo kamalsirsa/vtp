@@ -401,6 +401,10 @@ SOURCE=.\VegLayer.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\VegPointOptions.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\VTBuilder_wdr.h
 # End Source File
 # Begin Source File
