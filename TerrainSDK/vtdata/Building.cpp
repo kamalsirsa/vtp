@@ -647,7 +647,7 @@ bool vtLevel::DetermineHeightFromSlopes()
 
 //
 // Look at the materials of this level's edges.  If they all use the
-// same material, return it.  Otherwise, return BMAT_UNKNOWN.
+// same material, return it.  Otherwise, return "Multiple".
 //
 const vtString vtLevel::GetOverallEdgeMaterial()
 {
@@ -855,7 +855,7 @@ void vtBuilding::SetCircle(const DPoint2 &center, float fRad)
 		DPoint2 vec(cos(angle) * fRad, sin(angle) * fRad);
 		fp.Append(center + vec);
 	}
-	m_Levels[0]->SetFootprint(fp);
+	SetFootprint(0, fp);
 }
 
 /**
@@ -948,7 +948,9 @@ void vtBuilding::SetStories(int iStories)
 	}
 	if (levels == 1)
 	{
+		vtLevel *pFirstLev = GetLevel(0);
 		pLev = CreateLevel();
+		pLev->SetFootprint(pFirstLev->GetFootprint());
 		pLev->SetRoofType(ROOF_FLAT, 0);
 		levels++;
 	}
