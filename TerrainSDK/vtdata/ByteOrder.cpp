@@ -9,17 +9,16 @@
 
 static int GetDataTypeSize( DataType type )
 {
-	int tsize;
 	switch ( type )
 	{
-		case DT_SHORT:	tsize = sizeof(short);	break;
-		case DT_INT:	tsize = sizeof(int);	break;
-		case DT_LONG:	tsize = sizeof(long);	break;
-		case DT_FLOAT:	tsize = sizeof(float);	break;
-		case DT_DOUBLE:	tsize = sizeof(double);	break;
-		default: assert(false);
+		case DT_SHORT:	return sizeof(short);	break;
+		case DT_INT:	return sizeof(int);		break;
+		case DT_LONG:	return sizeof(long);	break;
+		case DT_FLOAT:	return sizeof(float);	break;
+		case DT_DOUBLE:	return sizeof(double);	break;
 	}
-	return tsize;
+	assert(false);
+	return 1;
 }
 
 
