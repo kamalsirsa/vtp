@@ -29,7 +29,7 @@ public:
 	int		m_iSpacing;
 	//}}AFX_DATA
 
-	FenceType m_fencetype;
+	vtLinearParams m_linearparams;
 
 // Overrides
 	// ClassWizard generated virtual function overrides

@@ -69,24 +69,25 @@ BOOL CFenceDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	m_iType = 0;
-	m_fHeight = FENCE_DEFAULT_HEIGHT;
-	m_fSpacing = FENCE_DEFAULT_SPACING;
-
-	ValuesToSliders();
-
 	m_cbType.ResetContent();
 	int index;
 
 	index = m_cbType.AddString("Wooden posts, 3 wires");
-	m_cbType.SetItemData(index, FT_WIRE);
+	m_cbType.SetItemData(index, FS_WOOD_POSTS_WIRE);
+
+	index = m_cbType.AddString("Metal poles, 3 wires");
+	m_cbType.SetItemData(index, FS_METAL_POSTS_WIRE);
 
 	index = m_cbType.AddString("Metal poles, chain-link");
-	m_cbType.SetItemData(index, FT_CHAINLINK);
+	m_cbType.SetItemData(index, FS_CHAINLINK);
 
 	UpdateData(FALSE);
 
-	m_fencetype = (FenceType) m_cbType.GetItemData(m_iType);
-	g_App.SetFenceOptions(m_fencetype, m_fHeight, m_fSpacing);
+	enum FenceStyle style = (FenceStyle) m_cbType.GetItemData(m_iType);
+	m_linearparams.ApplyFenceStyle(style);
+	g_App.SetFenceOptions(m_linearparams);
+
+	ValuesToSliders();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -94,20 +95,21 @@ BOOL CFenceDlg::OnInitDialog()
 void CFenceDlg::OnSelchangeFencetype() 
 {
 	UpdateData(TRUE);
-	m_fencetype = (FenceType) m_cbType.GetItemData(m_iType);
-	g_App.SetFenceOptions(m_fencetype, m_fHeight, m_fSpacing);
+	enum FenceStyle style = (FenceStyle) m_cbType.GetItemData(m_iType);
+	m_linearparams.ApplyFenceStyle(style);
+	g_App.SetFenceOptions(m_linearparams);
 }
 
 void CFenceDlg::SlidersToValues()
 {
-	m_fHeight = HEIGHT_MIN + m_iHeight * (HEIGHT_MAX - HEIGHT_MIN) / 100.0f;
-	m_fSpacing = SPACING_MIN + m_iSpacing * (SPACING_MAX - SPACING_MIN) / 100.0f;
+	m_linearparams.m_fPostHeight = HEIGHT_MIN + m_iHeight * (HEIGHT_MAX - HEIGHT_MIN) / 100.0f;
+	m_linearparams.m_fPostSpacing = SPACING_MIN + m_iSpacing * (SPACING_MAX - SPACING_MIN) / 100.0f;
 }
 
 void CFenceDlg::ValuesToSliders()
 {
-	m_iHeight = (int) ((m_fHeight - HEIGHT_MIN) / (HEIGHT_MAX - HEIGHT_MIN) * 100.0f);
-	m_iSpacing = (int) ((m_fSpacing - SPACING_MIN) / (SPACING_MAX - SPACING_MIN) * 100.0f);
+	m_iHeight = (int) ((m_linearparams.m_fPostHeight - HEIGHT_MIN) / (HEIGHT_MAX - HEIGHT_MIN) * 100.0f);
+	m_iSpacing = (int) ((m_linearparams.m_fPostSpacing - SPACING_MIN) / (SPACING_MAX - SPACING_MIN) * 100.0f);
 }
 
 
@@ -116,18 +118,18 @@ void CFenceDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	UpdateData(TRUE);
 	SlidersToValues();
 	UpdateData(FALSE);
-	g_App.SetFenceOptions(m_fencetype, m_fHeight, m_fSpacing);
+	g_App.SetFenceOptions(m_linearparams);
 }
 
 
 void CFenceDlg::OnChangeHeightedit() 
 {
 	UpdateData(TRUE);
-	g_App.SetFenceOptions(m_fencetype, m_fHeight, m_fSpacing);
+	g_App.SetFenceOptions(m_linearparams);
 }
 
 void CFenceDlg::OnChangeSpacingedit() 
 {
 	UpdateData(TRUE);
-	g_App.SetFenceOptions(m_fencetype, m_fHeight, m_fSpacing);
+	g_App.SetFenceOptions(m_linearparams);
 }
