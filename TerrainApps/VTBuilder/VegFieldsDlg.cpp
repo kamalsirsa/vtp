@@ -76,7 +76,7 @@ void VegFieldsDlg::RefreshEnabled()
 
 void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	int i;
+	unsigned int i;
 
 	// Open the SHP File
 	m_hSHP = SHPOpen(m_filename.mb_str(), "rb");

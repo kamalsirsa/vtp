@@ -64,7 +64,7 @@ private:
 	SHPHandle m_hSHP;
 	int	   m_nElem, m_nShapeType;
 	wxString2  m_filename;
-	int	   m_iFields;
+	unsigned int	   m_iFields;
 
 	bool	m_bUseSpecies;
 	bool	m_bSpeciesUseField;
