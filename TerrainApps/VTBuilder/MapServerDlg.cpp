@@ -31,17 +31,45 @@ BEGIN_EVENT_TABLE(MapServerDlg,AutoDialog)
 	EVT_TEXT( ID_BASE_URL, MapServerDlg::OnBaseUrlText )
 	EVT_TEXT( ID_WIDTH, MapServerDlg::OnSize )
 	EVT_TEXT( ID_HEIGHT, MapServerDlg::OnSize )
+	EVT_CHOICE( ID_CHOICE_FORMAT, MapServerDlg::OnFormat )
+	EVT_CHOICE( ID_CHOICE_LAYERS, MapServerDlg::OnLayer )
+	EVT_BUTTON( ID_QUERY_LAYERS, MapServerDlg::OnQueryLayers )
 END_EVENT_TABLE()
 
 MapServerDlg::MapServerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
+	m_iFormat = 0;
 	m_bSetting = false;
 	MapServerDialogFunc( this, TRUE ); 
 }
 
 // WDR: handler implementations for MapServerDlg.cpp
+
+void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
+{
+	
+}
+
+void MapServerDlg::OnLayer( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+
+	TransferDataFromWindow();
+	UpdateURL();
+}
+
+void MapServerDlg::OnFormat( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+
+	TransferDataFromWindow();
+	UpdateURL();
+}
+
 void MapServerDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	m_iXSize = 1024;
@@ -51,8 +79,23 @@ void MapServerDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_HEIGHT, &m_iYSize);
 
 	AddValidator(ID_QUERY, &m_query);
+	AddValidator(ID_CHOICE_FORMAT, &m_iFormat);
 
 	GetBaseUrl()->Append(_("http://wmt.jpl.nasa.gov/cgi-bin/wmt.cgi"));
+	GetBaseUrl()->Append(_("http://globe.digitalearth.gov/viz-bin/wmt.cgi"));
+	GetBaseUrl()->Append(_("http://grid.cr.usgs.gov/cgi-bin/mapserver/elsalvador"));
+	GetBaseUrl()->Append(_("http://www.cubewerx.com/demo/cubeserv/cubeserv.cgi"));
+	GetBaseUrl()->Append(_("http://demo.cubewerx.com/demo/cubexplor/cubexplor.cgi"));
+	GetBaseUrl()->SetSelection(0);
+
+	GetLayers()->Append(_("<none>"));
+	GetLayers()->SetSelection(0);
+
+	GetFormat()->Append(_("JPEG"));
+	GetFormat()->Append(_("PNG"));
+	GetFormat()->SetSelection(0);
+
+	wxWindow::OnInitDialog(event);
 }
 
 void MapServerDlg::OnSize( wxCommandEvent &event )
@@ -84,7 +127,11 @@ void MapServerDlg::UpdateURL()
 
 	str.Format("&WIDTH=%d&HEIGHT=%d", m_iXSize, m_iYSize);
 	url += str;
-	url += "&FORMAT=JPEG&TRANSPARENT=TRUE&EXCEPTIONS=WMS_XML&";
+	if (m_iFormat == 0)
+		url += "&FORMAT=JPEG";
+	else
+		url += "&FORMAT=PNG";
+	url += "&TRANSPARENT=TRUE&EXCEPTIONS=WMS_XML&";
 
 	m_query = url;
 

@@ -35,6 +35,8 @@ public:
 	// WDR: method declarations for MapServerDlg.cpp
 	wxTextCtrl* GetQuery()  { return (wxTextCtrl*) FindWindow( ID_QUERY ); }
 	wxComboBox* GetBaseUrl()  { return (wxComboBox*) FindWindow( ID_BASE_URL ); }
+	wxChoice* GetLayers()  { return (wxChoice*) FindWindow( ID_CHOICE_LAYERS ); }
+	wxChoice* GetFormat()  { return (wxChoice*) FindWindow( ID_CHOICE_FORMAT ); }
 
 	void UpdateURL();
 
@@ -43,12 +45,16 @@ public:
 	wxString2 m_query;
 	DRECT m_area;
 	bool m_bSetting;
+	int m_iFormat;
 
 private:
 	// WDR: member variable declarations for MapServerDlg.cpp
 	
 private:
 	// WDR: handler declarations for MapServerDlg.cpp
+	void OnQueryLayers( wxCommandEvent &event );
+	void OnLayer( wxCommandEvent &event );
+	void OnFormat( wxCommandEvent &event );
 	void OnSize( wxCommandEvent &event );
 	void OnBaseUrlText( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
@@ -57,5 +63,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif	// __MapServerDlg_H__
+#endif  // __MapServerDlg_H__
 
