@@ -33,22 +33,22 @@ vtRawLayer::~vtRawLayer()
 
 bool vtRawLayer::GetExtent(DRECT &rect)
 {
-	int i;
+	int i, entities = NumEntities();
+
+	if (!entities)
+		return false;
+
 	if (m_nSHPType == SHPT_POINT)
 	{
-		if (m_Point2.IsEmpty())
-			return false;
 		rect.SetRect(1E9, -1E9, -1E9, 1E9);
-		for (i = 0; i < m_Point2.GetSize(); i++)
+		for (i = 0; i < entities; i++)
 			rect.GrowToContainPoint(m_Point2[i]);
 	}
 	if (m_nSHPType == SHPT_POINTZ)
 	{
-		if (m_Point3.IsEmpty())
-			return false;
 		rect.SetRect(1E9, -1E9, -1E9, 1E9);
 		DPoint2 p;
-		for (i = 0; i < m_Point3.GetSize(); i++)
+		for (i = 0; i < entities; i++)
 		{
 			p.Set(m_Point3[i].x, m_Point3[i].y);
 			rect.GrowToContainPoint(p);
@@ -56,10 +56,8 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 	}
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
 	{
-		if (m_LinePoly.IsEmpty())
-			return false;
 		rect.SetRect(1E9, -1E9, -1E9, 1E9);
-		for (i = 0; i < m_LinePoly.GetSize(); i++)
+		for (i = 0; i < entities; i++)
 			rect.GrowToContainLine(*m_LinePoly[i]);
 	}
 	return true;
@@ -414,8 +412,44 @@ bool vtRawLayer::OnLoad()
 
 bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 {
-	// unimplemented
-	return false;
+	// safety check
+	if (pL->GetType() != LT_RAW)
+		return false;
+
+	vtRawLayer *pFrom = (vtRawLayer *)pL;
+
+	// compatibility check
+	if (pFrom->m_type != m_type)
+		return false;
+
+	// copy entities
+	int i;
+	int num = pFrom->NumEntities();
+	for (i = 0; i < num; i++)
+	{
+		switch (m_type)
+		{
+		case SHPT_POINT:
+			m_Point2.Append(pFrom->m_Point2[i]);
+			break;
+		case SHPT_POINTZ:
+			m_Point3.Append(pFrom->m_Point3[i]);
+			break;
+		case SHPT_ARC:
+		case SHPT_POLYGON:
+			m_LinePoly.Append(pFrom->m_LinePoly[i]);	// steal pointer
+			break;
+		}
+	}
+	// empty the source layer
+	switch (m_type)
+	{
+	case SHPT_POINT:  pFrom->m_Point2.SetSize(0); break;
+	case SHPT_POINTZ: pFrom->m_Point3.SetSize(0); break;
+	case SHPT_ARC:
+	case SHPT_POLYGON: pFrom->m_LinePoly.SetSize(0); break;
+	}
+	return true;
 }
 
 void vtRawLayer::GetProjection(vtProjection &proj)
@@ -430,20 +464,20 @@ void vtRawLayer::SetProjection(vtProjection &proj)
 
 void vtRawLayer::Offset(const DPoint2 &p)
 {
-	int i;
+	int i, entities = NumEntities();
 	if (m_nSHPType == SHPT_POINT)
 	{
-		for (i = 0; i < m_Point2.GetSize(); i++)
+		for (i = 0; i < entities; i++)
 			m_Point2[i] += p;
 	}
 	if (m_nSHPType == SHPT_POINTZ)
 	{
-		for (i = 0; i < m_Point2.GetSize(); i++)
+		for (i = 0; i < entities; i++)
 			m_Point3[i] += DPoint3(p.x, p.y, 0);
 	}
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
 	{
-		for (i = 0; i < m_LinePoly.GetSize(); i++)
+		for (i = 0; i < entities; i++)
 			m_LinePoly[i]->Add(p);
 	}
 }
@@ -455,8 +489,26 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 	str.Printf("Entity type: %s\n", SHPTypeName(m_nSHPType));
 	strIn += str;
 
-	str.Printf("%d entities\n", NumEntities());
+	str.Printf("Entities: %d\n", NumEntities());
 	strIn += str;
+
+	int entities = NumEntities();
+	if (m_nSHPType == SHPT_POINTZ && entities > 0)
+	{
+		float fmin = 1E9, fmax = -1E9;
+
+		for (int i = 0; i < entities; i++)
+		{
+			if (m_Point3[i].z > fmax) fmax = m_Point3[i].z;
+			if (m_Point3[i].z < fmin) fmin = m_Point3[i].z;
+		}
+
+		str.Printf("Minimum Height: %.2f\n", fmin);
+		strIn += str;
+
+		str.Printf("Maximum Height: %.2f\n", fmax);
+		strIn += str;
+	}
 }
 
 int vtRawLayer::NumEntities()
@@ -549,28 +601,52 @@ void vtRawLayer::InvertSelection()
 		m_Selected[i] = !m_Selected[i];
 }
 
-int vtRawLayer::DoBoxSelect(const DRECT &rect)
+int vtRawLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 {
-	int selected = 0;
+	int affected = 0;
 	int entities = NumEntities();
 
-	bool bSelect;
+	bool bIn;
+	bool bWas;
 	for (int i = 0; i < entities; i++)
 	{
+		bWas = m_Selected[i];
+		if (st == ST_NORMAL)
+			Select(i, false);
+
 		if (m_nSHPType == SHPT_POINT)
-			bSelect = rect.ContainsPoint(m_Point2[i]);
+			bIn = rect.ContainsPoint(m_Point2[i]);
 
 		if (m_nSHPType == SHPT_POINTZ)
-			bSelect = rect.ContainsPoint(DPoint2(m_Point3[i].x, m_Point3[i].y));
+			bIn = rect.ContainsPoint(DPoint2(m_Point3[i].x, m_Point3[i].y));
 
 		if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
-			bSelect = rect.ContainsLine(*m_LinePoly[i]);
+			bIn = rect.ContainsLine(*m_LinePoly[i]);
 
-		Select(i, bSelect);
-		if (bSelect)
-			selected++;
+		if (!bIn)
+			continue;
+
+		switch (st)
+		{
+		case ST_NORMAL:
+			Select(i, true);
+			affected++;
+			break;
+		case ST_ADD:
+			Select(i, true);
+			if (!bWas) affected++;
+			break;
+		case ST_SUBTRACT:
+			Select(i, false);
+			if (bWas) affected++;
+			break;
+		case ST_TOGGLE:
+			Select(i, !bWas);
+			affected++;
+			break;
+		}
 	}
-	return selected;
+	return affected;
 }
 
 int vtRawLayer::SelectByCondition(int iField, int iCondition,
@@ -583,6 +659,40 @@ int vtRawLayer::SelectByCondition(int iField, int iCondition,
 	vtString *sp;
 	bool result;
 
+	if (iField < 0)
+	{
+		dval = atof(szValue);
+		for (i = 0; i < entities; i++)
+		{
+			// special field numbers are used to refer to the spatial components
+			if (m_nSHPType == SHPT_POINT)
+			{
+				if (iField == -1) dtest = m_Point2[i].x;
+				if (iField == -2) dtest = m_Point2[i].y;
+				if (iField == -3) return -1;
+			}
+			else if (m_nSHPType == SHPT_POINTZ)
+			{
+				if (iField == -1) dtest = m_Point3[i].x;
+				if (iField == -2) dtest = m_Point3[i].y;
+				if (iField == -3) dtest = m_Point3[i].z;
+			}
+			else
+				return -1;	// TODO: support non-point types
+			if (con == 0) result = (dtest == dval);
+			if (con == 1) result = (dtest > dval);
+			if (con == 2) result = (dtest < dval);
+			if (con == 3) result = (dtest >= dval);
+			if (con == 4) result = (dtest <= dval);
+			if (con == 5) result = (dtest != dval);
+			if (result)
+			{
+				Select(i);
+				selected++;
+			}
+		}
+		return selected;
+	}
 	Field *field = m_fields[iField];
 	switch (field->m_type)
 	{

@@ -74,7 +74,7 @@ public:
 	int NumSelected();
 	void DeselectAll();
 	void InvertSelection();
-	int DoBoxSelect(const DRECT &rect);
+	int DoBoxSelect(const DRECT &rect, SelectionType st);
 	int SelectByCondition(int iField, int iCondition, const char *szValue);
 	void DeleteSelected();
 
