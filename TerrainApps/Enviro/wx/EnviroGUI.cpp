@@ -145,3 +145,8 @@ void EnviroGUI::SaveStructures()
 	sa->WriteXML(str.mb_str());
 }
 
+bool EnviroGUI::IsAcceptable(vtTerrain *pTerr)
+{
+	return GetFrame()->IsAcceptable(pTerr);
+}
+

@@ -27,6 +27,7 @@ public:
 	virtual bool OnMouseEvent(vtMouseEvent &event);
 	virtual void SetupScene3();
 	virtual void SetTimeEngineToGUI(class TimeEngine *pEngine);
+	virtual bool IsAcceptable(vtTerrain *pTerr);
 
 	// The following are useful methods
 	void SaveVegetation();
