@@ -389,19 +389,19 @@ RoadMapEdit::RoadMapEdit() : vtRoadMap()
 		RoadPen[0].SetColour(128,0,0);
 		RoadPen[0].SetWidth(2);
 
-		RoadPen[ST_GRAVEL].SetColour(128,128,128);
+		RoadPen[SURFT_GRAVEL].SetColour(128,128,128);
 
-		RoadPen[ST_TRAIL].SetColour(130,100,70);
-		RoadPen[ST_TRAIL].SetStyle(wxDOT);
+		RoadPen[SURFT_TRAIL].SetColour(130,100,70);
+		RoadPen[SURFT_TRAIL].SetStyle(wxDOT);
 
-		RoadPen[ST_2TRACK].SetColour(130,100,70);
+		RoadPen[SURFT_2TRACK].SetColour(130,100,70);
 
-		RoadPen[ST_DIRT].SetColour(130,100,70);
+		RoadPen[SURFT_DIRT].SetColour(130,100,70);
 
-		RoadPen[ST_PAVED].SetColour(0,0,0);
+		RoadPen[SURFT_PAVED].SetColour(0,0,0);
 
-		RoadPen[ST_RAILROAD].SetColour(0,0,0);
-		RoadPen[ST_RAILROAD].SetStyle(wxSHORT_DASH);
+		RoadPen[SURFT_RAILROAD].SetColour(0,0,0);
+		RoadPen[SURFT_RAILROAD].SetStyle(wxSHORT_DASH);
 
 		RoadPen[7].SetColour(255,255,255);	// for selection
 		RoadPen[7].SetWidth(3);

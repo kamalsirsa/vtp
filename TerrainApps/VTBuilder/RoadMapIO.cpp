@@ -43,7 +43,7 @@ bool RoadMapEdit::attribute_filter_roads(DLGLine *pLine, int &lanes, SurfaceType
 			road_type = -pLine->m_attr[j].m_iMinorAttr;
 		}
 	}
-	stype = ST_NONE;
+	stype = SURFT_NONE;
 	priority = 0;
 
 	// consider only specific roads (highway)
@@ -51,7 +51,7 @@ bool RoadMapEdit::attribute_filter_roads(DLGLine *pLine, int &lanes, SurfaceType
 	{
 	case -201:
 	case -202:
-		stype = ST_RAILROAD;
+		stype = SURFT_RAILROAD;
 		lanes = 1;
 		priority=1;
 		break;
@@ -59,7 +59,7 @@ bool RoadMapEdit::attribute_filter_roads(DLGLine *pLine, int &lanes, SurfaceType
 	case 202:	//	Primary route, class 1, symbol divided by centerline
 	case 203:	//	Primary route, class 1, divided, lanes separated
 	case 204:	//	Primary route, class 1, one way, other than divided highway
-		stype = ST_PAVED;
+		stype = SURFT_PAVED;
 		lanes = 4;
 		priority = 1;
 		break;
@@ -67,7 +67,7 @@ bool RoadMapEdit::attribute_filter_roads(DLGLine *pLine, int &lanes, SurfaceType
 	case 206:	//	Secondary route, class 2, symbol divided by centerline
 	case 207:	//	Secondary route, class 2, symbol divided, lanes separated
 	case 208:	//	Secondary route, class 2, one way, other then divided highway
-		stype = ST_PAVED;
+		stype = SURFT_PAVED;
 		lanes = 2;
 		priority = 2;
 		break;
@@ -79,28 +79,28 @@ bool RoadMapEdit::attribute_filter_roads(DLGLine *pLine, int &lanes, SurfaceType
 	case 223:	//  Road in service facility, rest area or viewpoint.
 	case 5:		//  cul-de-sac
 	case 405:	//  non-standard section of road...???
-		stype = ST_PAVED;
+		stype = SURFT_PAVED;
 		lanes = 2;
 		priority = 3;
 		break;
 	case 210:	//	Road or street, class 4
 	case 219:	//  Road or street, class 4, 1-way
-		stype = ST_DIRT;
+		stype = SURFT_DIRT;
 		lanes = 2;
 		priority = 5;
 		break;
 	case 402:	//	Ramp in interchange
-		stype = ST_PAVED;
+		stype = SURFT_PAVED;
 		lanes = 1;
 		priority = 4;
 		break;
 	case 211:	//	Trail, class 5, other than four-wheel drive vehicle
-		stype = ST_TRAIL;
+		stype = SURFT_TRAIL;
 		lanes = 1;
 		priority = 10;
 		break;
 	case 212:	//	Trail, class 5, four-wheel-drive vehicle
-		stype = ST_2TRACK;
+		stype = SURFT_2TRACK;
 		lanes = 1;
 		priority = 6;
 		break;
@@ -108,7 +108,7 @@ bool RoadMapEdit::attribute_filter_roads(DLGLine *pLine, int &lanes, SurfaceType
 		break;
 
 	}
-	return (stype != ST_NONE);
+	return (stype != SURFT_NONE);
 }
 
 
@@ -370,7 +370,7 @@ bool RoadMapEdit::ApplyCFCC(RoadEdit *pR, const char *str)
 	case 5:
 		// Vehicular Trail
 		pR->m_iLanes = 1;
-		pR->m_Surface = ST_2TRACK;
+		pR->m_Surface = SURFT_2TRACK;
 		break;
 	// Road with Special Characteristics 
 	case 6:
@@ -406,7 +406,7 @@ bool RoadMapEdit::ApplyCFCC(RoadEdit *pR, const char *str)
 		{
 			// Walkway or trail for pedestrians, usually unnamed
 			pR->m_iLanes = 1;
-			pR->m_Surface = ST_TRAIL;
+			pR->m_Surface = SURFT_TRAIL;
 		}
 		if (code2 == 2)
 		{
@@ -501,7 +501,7 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 		// create new road
 		pR = new RoadEdit();
 		pR->m_fWidth = 1.0f;
-		pR->m_Surface = ST_PAVED;
+		pR->m_Surface = SURFT_PAVED;
 		pR->m_iLanes = 2;
 		pR->SetHeightAt(0, 0);
 		pR->SetHeightAt(1, 0);
@@ -567,7 +567,7 @@ bool RoadMapEdit::extract_road_attributes(const char *strEntity, int &lanes,
 		road_type = -iMinorAttr;
 	}
 
-	stype = ST_NONE;
+	stype = SURFT_NONE;
 	priority = 0;
 
 	// consider only specific roads (highway)
@@ -575,7 +575,7 @@ bool RoadMapEdit::extract_road_attributes(const char *strEntity, int &lanes,
 	{
 	case -201:
 	case -202:
-		stype = ST_RAILROAD;
+		stype = SURFT_RAILROAD;
 		lanes = 1;
 		priority=1;
 		break;
@@ -583,7 +583,7 @@ bool RoadMapEdit::extract_road_attributes(const char *strEntity, int &lanes,
 	case 202:	//	Primary route, class 1, symbol divided by centerline
 	case 203:	//	Primary route, class 1, divided, lanes separated
 	case 204:	//	Primary route, class 1, one way, other than divided highway
-		stype = ST_PAVED;
+		stype = SURFT_PAVED;
 		lanes = 4;
 		priority = 1;
 		break;
@@ -591,7 +591,7 @@ bool RoadMapEdit::extract_road_attributes(const char *strEntity, int &lanes,
 	case 206:	//	Secondary route, class 2, symbol divided by centerline
 	case 207:	//	Secondary route, class 2, symbol divided, lanes separated
 	case 208:	//	Secondary route, class 2, one way, other then divided highway
-		stype = ST_PAVED;
+		stype = SURFT_PAVED;
 		lanes = 2;
 		priority = 2;
 		break;
@@ -603,28 +603,28 @@ bool RoadMapEdit::extract_road_attributes(const char *strEntity, int &lanes,
 	case 223:	//  Road in service facility, rest area or viewpoint.
 	case 5:		//  cul-de-sac
 	case 405:	//  non-standard section of road...???
-		stype = ST_PAVED;
+		stype = SURFT_PAVED;
 		lanes = 2;
 		priority = 3;
 		break;
 	case 210:	//	Road or street, class 4
 	case 219:	//  Road or street, class 4, 1-way
-		stype = ST_DIRT;
+		stype = SURFT_DIRT;
 		lanes = 2;
 		priority = 5;
 		break;
 	case 402:	//	Ramp in interchange
-		stype = ST_PAVED;
+		stype = SURFT_PAVED;
 		lanes = 1;
 		priority = 4;
 		break;
 	case 211:	//	Trail, class 5, other than four-wheel drive vehicle
-		stype = ST_TRAIL;
+		stype = SURFT_TRAIL;
 		lanes = 1;
 		priority = 10;
 		break;
 	case 212:	//	Trail, class 5, four-wheel-drive vehicle
-		stype = ST_2TRACK;
+		stype = SURFT_2TRACK;
 		lanes = 1;
 		priority = 6;
 		break;
@@ -632,7 +632,7 @@ bool RoadMapEdit::extract_road_attributes(const char *strEntity, int &lanes,
 		break;
 
 	}
-	return (stype != ST_NONE);
+	return (stype != SURFT_NONE);
 }
 
 
