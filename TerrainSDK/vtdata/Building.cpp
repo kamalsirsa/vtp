@@ -63,6 +63,8 @@ vtEdge::~vtEdge()
 vtEdge::vtEdge(const vtEdge &lhs)
 {
 	m_Color = lhs.m_Color;
+	m_iSlope = lhs.m_iSlope;
+	m_fEaveLength = lhs.m_fEaveLength;
 	m_Material = lhs.m_Material;
 	for (int i = 0; i < lhs.m_Features.GetSize(); i++)
 		m_Features.Append(lhs.m_Features[i]);
@@ -183,6 +185,9 @@ void vtLevel::DeleteEdges()
 
 vtLevel &vtLevel::operator=(const vtLevel &v)
 {
+	m_iStories = v.m_iStories;
+	m_fStoryHeight = v.m_fStoryHeight;
+
 	DeleteEdges();
 	m_Edges.SetSize(v.m_Edges.GetSize());
 	for (int i = 0; i < v.m_Edges.GetSize(); i++)
@@ -190,7 +195,9 @@ vtLevel &vtLevel::operator=(const vtLevel &v)
 		vtEdge *pnew = new vtEdge(*v.m_Edges[i]);
 		m_Edges.SetAt(i, pnew);
 	}
+
 	m_Footprint = v.m_Footprint;
+	m_LocalFootprint = v.m_LocalFootprint;
 	return *this;
 }
 
@@ -534,6 +541,40 @@ bool vtLevel::GetOverallEdgeColor(RGBi &color)
 	return true;
 }
 
+//
+// try to guess type of roof from looking at slopes of edges of
+// this level
+//
+RoofType vtLevel::GuessRoofType()
+{
+	int sloped = 0, vert = 0, hori = 0;
+	int i, edges = GetNumEdges();
+	for (i = 0; i < edges; i++)
+	{
+		vtEdge *edge = GetEdge(i);
+		if (edge->m_iSlope == 0)
+			hori++;
+		else if (edge->m_iSlope == 90)
+			vert++;
+		else
+			sloped++;
+	}
+	if (hori)
+		return ROOF_FLAT;
+
+	if (sloped == 1 && vert == edges-1)
+		return ROOF_SHED;
+
+	if (sloped == edges)
+		return ROOF_HIP;
+
+	if (sloped > 0 && vert > 0)
+		return ROOF_GABLE;
+
+	return ROOF_UNKNOWN;
+}
+
+
 /////////////////////////////////////
 
 vtBuilding::vtBuilding() : vtStructure()
@@ -754,31 +795,7 @@ RoofType vtBuilding::GetRoofType()
 	// the top level
 	vtLevel *pLev = GetLevel(GetNumLevels()-1);
 
-	int sloped = 0, vert = 0, hori = 0;
-	int i, edges = pLev->GetNumEdges();
-	for (i = 0; i < edges; i++)
-	{
-		vtEdge *edge = pLev->GetEdge(i);
-		if (edge->m_iSlope == 0)
-			hori++;
-		else if (edge->m_iSlope == 90)
-			vert++;
-		else
-			sloped++;
-	}
-	if (hori)
-		return ROOF_FLAT;
-
-	if (sloped == 1 && vert == edges-1)
-		return ROOF_SHED;
-
-	if (sloped == edges)
-		return ROOF_HIP;
-
-	if (sloped > 0 && vert > 0)
-		return ROOF_GABLE;
-
-	return ROOF_UNKNOWN;
+	return pLev->GuessRoofType();
 }
 
 void vtBuilding::SetCenterFromPoly()
@@ -845,6 +862,27 @@ vtLevel *vtBuilding::CreateLevel(const DLine2 &footprint)
 	DetermineLocalFootprints();
 
 	return pLev;
+}
+
+void vtBuilding::InsertLevel(int iLev, vtLevel *pLev)
+{
+	int levels = GetNumLevels();
+	m_Levels.SetSize(levels+1);
+	for (int i = levels; i > iLev; i--)
+	{
+		m_Levels[i] = m_Levels[i-1];
+	}
+	m_Levels[iLev] = pLev;
+}
+
+void vtBuilding::DeleteLevel(int iLev)
+{
+	int levels = GetNumLevels();
+	for (int i = iLev; i < levels-1; i++)
+	{
+		m_Levels[i] = m_Levels[i+1];
+	}
+	m_Levels.SetSize(levels-1);
 }
 
 void vtBuilding::RectToPoly(float fWidth, float fDepth, float fRotation)
@@ -1154,3 +1192,9 @@ bool vtBuilding::IsContainedBy(const DRECT &rect) const
 	return rect.ContainsPoint(GetLocation());
 }
 
+void vtBuilding::SwapLevels(int lev1, int lev2)
+{
+	vtLevel *pTemp = m_Levels[lev1];
+	m_Levels[lev1] = m_Levels[lev2];
+	m_Levels[lev2] = pTemp;
+}

@@ -125,6 +125,7 @@ public:
 	float GetEdgeLength(int i);
 	BldMaterial GetOverallEdgeMaterial();
 	bool GetOverallEdgeColor(RGBi &color);
+	RoofType GuessRoofType();
 
 	bool HasSlopedEdges();
 	bool IsHorizontal();
@@ -137,10 +138,10 @@ public:
 	void SetRoofType(RoofType rt, int iSlopeDegrees);
 	void SetEaveLength(float fMeters);
 
-	Array<vtEdge *> m_Edges;
-
 	int		m_iStories;
 	float	m_fStoryHeight;
+
+	Array<vtEdge *> m_Edges;
 
 protected:
 	void SetWalls(int n);
@@ -196,6 +197,8 @@ public:
 	vtLevel *GetLevel(int i) { return m_Levels[i]; }
 	vtLevel *CreateLevel(const DLine2 &footprint);
 	vtLevel *CreateLevel();
+	void InsertLevel(int iLev, vtLevel *pLev);
+	void DeleteLevel(int iLev);
 
 	bool GetExtents(DRECT &rect) const;
 	void SetCenterFromPoly();
@@ -214,6 +217,7 @@ public:
 	static int		   GetEdgeFeatureValue(const char *value);
 
 	bool IsContainedBy(const DRECT &rect) const;
+	void SwapLevels(int lev1, int lev2);
 
 protected:
 	// information about each story
