@@ -316,9 +316,9 @@ bool vtHeightFieldGrid3d::CastRayToSurface(const FPoint3 &point,
 }
 
 /**
- * Use the height data in the grid to fill a bitmap with a shaded color image.
+ * Use the height data in the grid to fill a bitmap with colors.
  *
- * \param pBM			The bitmap to color.
+ * \param pBM			The bitmap to be colored.
  * \param cmap			The mapping of elevation values to colors.
  * \param progress_callback If supplied, this function will be called back
  *				with a value of 0 to 100 as the operation progresses.
