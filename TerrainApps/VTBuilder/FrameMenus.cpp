@@ -161,6 +161,11 @@ EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
 EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
 EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 
+EVT_UPDATE_UI(ID_RAW_SETTYPE,		MainFrame::OnUpdateRawSetType)
+EVT_UPDATE_UI(ID_RAW_ADDPOINTS,		MainFrame::OnUpdateRawAddPoints)
+EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,	MainFrame::OnUpdateRawAddPointText)
+EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,	MainFrame::OnUpdateRawAddPointsGPS)
+
 EVT_MENU(ID_AREA_STRETCH,			MainFrame::OnAreaStretch)
 EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
 EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
@@ -332,6 +337,7 @@ void MainFrame::CreateMenus()
 	m_pMenuBar->Append(bldMenu, "&Structures");
 	m_iLayerMenu[LT_STRUCTURE] = menu_num;
 	menu_num++;
+#endif
 
 	// Raw
 	rawMenu = new wxMenu;
@@ -342,7 +348,6 @@ void MainFrame::CreateMenus()
 	m_pMenuBar->Append(rawMenu, "Ra&w");
 	m_iLayerMenu[LT_RAW] = menu_num;
 	menu_num++;
-#endif
 
 	// Area
 	areaMenu = new wxMenu;
@@ -1771,6 +1776,12 @@ void MainFrame::OnRawSetType(wxCommandEvent& event)
 	}
 }
 
+void MainFrame::OnUpdateRawSetType(wxUpdateUIEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	event.Enable(pRL != NULL && pRL->GetEntityType() == SHPT_NULL);
+}
+
 void MainFrame::OnRawAddPoints(wxCommandEvent& event)
 {
 	m_pView->SetMode(LB_AddPoints);
@@ -1810,8 +1821,9 @@ void MainFrame::OnRawAddPointsGPS(wxCommandEvent& event)
 
 void MainFrame::OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event)
 {
-	vtRawLayer *pRL = GetActiveRawLayer();
-	event.Enable(pRL != NULL && pRL->GetEntityType() == SHPT_POINT);
+//	vtRawLayer *pRL = GetActiveRawLayer();
+//	event.Enable(pRL != NULL && pRL->GetEntityType() == SHPT_POINT);
+	event.Enable(false);	// not implemented yet
 }
 
 
