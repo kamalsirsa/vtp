@@ -1,7 +1,7 @@
 //
 // NodeOSG.cpp
 //
-// Encapsulate behavior for OSG scene graph nodes
+// Encapsulate behavior for OSG scene graph nodes.
 //
 // Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -16,8 +16,17 @@ using namespace osg;
 // vtNode
 //
 
-vtNode::~vtNode()
+void vtNode::Destroy()
 {
+	// Tell OSG that we're through with this node
+	// The following statement calls unref() on m_pNode, which deletes
+	//  the OSG node, which decrements its reference to us, which would
+	//  delete us, except for the fact that we artificially increase our
+	//  own count.
+	m_pNode = NULL;
+
+	// This allows us to control deletion
+	delete this;
 }
 
 void vtNode::SetEnabled(bool bOn)
@@ -65,8 +74,8 @@ void vtNode::SetOsgNode(Node *n)
 	m_pNode = n;
 	if (m_pNode.valid())
 	{
-		// artificially increment our own "reference count", so that OSG won't
-		// try to delete us
+		// Artificially increment our own "reference count", so that OSG
+		// won't try to delete us when it removes its reference to us.
 		ref();
 		m_pNode->setUserData((vtNode *)this);
 	}
@@ -84,6 +93,22 @@ vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 	else
 		m_pGroup = new Group;
 	SetOsgNode(m_pGroup);
+}
+
+void vtGroup::Destroy()
+{
+	// destroy children depth-first
+	int children = GetNumChildren();
+	vtNode *pChild;
+
+	for (int i = 0; i < children; i++)
+	{
+		pChild = GetChild(0);
+		m_pGroup->removeChild(pChild->GetOsgNode());
+		pChild->Destroy();
+	}
+	// now destroy itself
+	vtNode::Destroy();
 }
 
 void vtGroup::SetOsgGroup(Group *g)
@@ -113,6 +138,16 @@ int vtGroup::GetNumChildren()
 	return m_pGroup->getNumChildren();
 }
 
+bool vtGroup::ContainsChild(vtNode *pNode)
+{
+	int i, children = GetNumChildren();
+	for (i = 0; i < children; i++)
+	{
+		if (GetChild(i) == pNode)
+			return true;
+	}
+	return false;
+}
 
 ///////////////////////////////////////////////////////////////////////
 // vtTransform
@@ -121,7 +156,6 @@ int vtGroup::GetNumChildren()
 vtTransform::vtTransform() : vtGroup(true), vtTransformBase()
 {
 	m_pTransform = new CustomTransform;
-	m_pTransform->ref();
 	SetOsgGroup(m_pTransform);
 }
 
@@ -251,6 +285,7 @@ vtMovLight::vtMovLight(vtLight *pContained) : vtTransform()
 	vtGetScene()->AddMovLight(this);
 }
 
+
 ///////////////////////////////////////////////////////////////////////
 // vtCamera
 //
@@ -336,8 +371,9 @@ void vtCamera::SetOrtho(float fWidth)
 		m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
 }
 
+
 ///////////////////////////////////////////////////////////////////////
-// Sprite?
+// Sprite: TODO?
 void vtSprite::SetText(const char *msg)
 {
 }
@@ -351,10 +387,6 @@ vtGeom::vtGeom() : vtGeomBase(), vtNode()
 {
 	m_pGeode = new Geode();
 	SetOsgNode(m_pGeode);
-}
-
-vtGeom::~vtGeom()
-{
 }
 
 void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
@@ -720,6 +752,4 @@ int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
 	else
 		return VT_Visible;
 }
-
-
 

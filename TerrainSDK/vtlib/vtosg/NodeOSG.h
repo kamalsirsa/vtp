@@ -1,9 +1,9 @@
 //
 // NodeOSG.h
 //
-// Encapsulate behavior for OSG scene graph nodes
+// Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,8 +17,6 @@ namespace osg
 	class Matrix;
 }
 
-//////////////////////
-// wrapper classes
 
 /**
  * Represents a Node in the vtlib Scene Graph.
@@ -26,7 +24,7 @@ namespace osg
 class vtNode : public vtNodeBase, public vtEnabledBase, public osg::Referenced
 {
 public:
-	~vtNode();
+	virtual void Destroy();
 
 	// implement vtEnabledBase methods
 	void SetEnabled(bool bOn);
@@ -64,7 +62,10 @@ class vtGroup : public vtNode, public vtGroupBase
 public:
 	vtGroup(bool suppress = false);
 
+	virtual void Destroy();
+
 	// implement vtGroupBase methods
+
 	/** Add a node as a child of this Group. */
 	void AddChild(vtNode *pChild);
 
@@ -77,6 +78,9 @@ public:
 
 	/** Return the number of child nodes */
 	int GetNumChildren();
+
+	/** Return true if the given node is a child of this group. */
+	bool ContainsChild(vtNode *pNode);
 
 	// OSG-specific Implementation
 	osg::Group *GetOsgGroup() { return m_pGroup; }
@@ -187,7 +191,6 @@ class vtGeom : public vtGeomBase, public vtNode
 {
 public:
 	vtGeom();
-	~vtGeom();
 
 	/** Add a mesh to this geometry.
 		\param pMesh The mesh to add
