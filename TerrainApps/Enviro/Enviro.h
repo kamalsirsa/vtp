@@ -178,7 +178,8 @@ public:
 	//  in which the GUI must be informed of what happens in this object.
 	virtual void ShowPopupMenu(const IPoint2 &pos) {}
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain) {}
-	virtual void StructureSetChanged() {}
+	virtual void ShowLayerView() {}
+	virtual void RefreshLayerView() {}
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;

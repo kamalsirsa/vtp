@@ -310,6 +310,9 @@ void Enviro::FlyToSpace()
 
 	m_state = AS_MovingOut;
 	m_iInitStep = 0;
+
+	// Layer view needs to stop showing terrain layers
+	RefreshLayerView();
 }
 
 void Enviro::SetupGlobe()
@@ -384,6 +387,9 @@ if (pwdemo){
 		else
 			SetMessage("Earth View", 10);
 		m_pGlobePicker->SetEnabled(true);
+
+		// Layer view needs to update
+		RefreshLayerView();
 	}
 }
 
@@ -439,6 +445,9 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 	m_state = AS_MovingIn;
 	m_pTargetTerrain = pTerr;
 	m_iInitStep = 0;
+
+	// Layer view needs to update
+	RefreshLayerView();
 }
 
 void Enviro::SetupTerrain(vtTerrain *pTerr)
@@ -559,6 +568,9 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		vtString str;
 		str.Format("Welcome to %s", (const char *)pTerr->GetName());
 		SetMessage(str, 5.0f);
+
+		// Layer view needs to update
+		RefreshLayerView();
 	}
 }
 
@@ -979,9 +991,12 @@ void Enviro::LookUpTerrainLocations()
 
 int Enviro::AddGlobePoints(const char *fname)
 {
-//	return m_pIcoGlobe->AddGlobePoints(fname, 0.0015f);	// this size works OK for the VTP recipients
-	return m_pIcoGlobe->AddGlobePoints(fname, 0.003f);
-//	return m_pIcoGlobe->AddGlobePoints(fname, 0.0005f);	// better for GeoURL
+//	int num_added = m_pIcoGlobe->AddGlobePoints(fname, 0.0015f);	// this size works OK for the VTP recipients
+	int num_added = m_pIcoGlobe->AddGlobePoints(fname, 0.003f);
+//	int num_added = m_pIcoGlobe->AddGlobePoints(fname, 0.0005f);	// better for GeoURL
+	if (num_added != -1)
+		RefreshLayerView();
+	return num_added;
 }
 
 
@@ -1485,7 +1500,8 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 		if (structures_picked != structures)
 		{
 			// active structure set (layer) has changed due to picking
-			StructureSetChanged();
+			ShowLayerView();
+			RefreshLayerView();
 		}
 	}
 	if (click_plant)
@@ -1742,6 +1758,9 @@ void Enviro::start_new_fence()
 	vtFence3d *fence = new vtFence3d(m_CurFenceType, m_fFenceHeight, m_fFenceSpacing);
 	GetCurrentTerrain()->AddFence(fence);
 	m_pCurFence = fence;
+
+	// update count shown in layer view
+	RefreshLayerView();
 }
 
 void Enviro::finish_fence()
