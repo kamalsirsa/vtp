@@ -351,16 +351,14 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	else
 		SHPClose(hSHP);
 
-	//if layer type unknow, ask user input
+	// if layer type unknow, ask user input
 	if (ltype == LT_UNKNOWN)
-	{
 		ltype = AskLayerType();
-	}
 
 	// create the new layer
 	vtLayerPtr pLayer = vtLayer::CreateNewLayer(ltype);
 
-	// ask use for a projection
+	// ask user for a projection
 	ProjectionDlg dlg(NULL, -1, "Projection", wxDefaultPosition);
 	dlg.m_strCaption = "Shapefiles do not contain projection information.  "
 		"Please indicate the projection of this file:";
@@ -405,7 +403,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	if (ltype ==LT_UTILITY)
 	{
 		vtUtilityLayer *pUL = (vtUtilityLayer *)pLayer;
-		pUL->AddElementsFromSHP(strFileName, proj);
+		pUL->ImportFromSHP(strFileName, proj);
 	}
 
 	if (ltype == LT_RAW)

@@ -69,6 +69,7 @@ public:
 	void OnLayerSaveAs(wxCommandEvent& event);
 	void OnLayerImport(wxCommandEvent& event);
 	void OnLayerImportTIGER(wxCommandEvent& event);
+	void OnLayerImportUtil(wxCommandEvent& event);
 	void OnLayerProperties(wxCommandEvent& event);
 	void OnLayerConvert(wxCommandEvent& event);
 	void OnLayerSetProjection(wxCommandEvent& event);

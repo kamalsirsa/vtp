@@ -52,6 +52,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_LAYER_SAVE_AS,		MainFrame::OnLayerSaveAs)
 	EVT_MENU(ID_LAYER_IMPORT,		MainFrame::OnLayerImport)
 	EVT_MENU(ID_LAYER_IMPORTTIGER,	MainFrame::OnLayerImportTIGER)
+	EVT_MENU(ID_LAYER_IMPORTUTIL,	MainFrame::OnLayerImportUtil)
 	EVT_MENU(ID_LAYER_PROPS,		MainFrame::OnLayerProperties)
 	EVT_MENU(ID_LAYER_CONVERTPROJ,	MainFrame::OnLayerConvert)
 	EVT_MENU(ID_LAYER_SETPROJ,		MainFrame::OnLayerSetProjection)
@@ -199,6 +200,7 @@ void MainFrame::CreateMenus()
 	layerMenu->Append(ID_LAYER_SAVE_AS, "Save Layer As...", "Save Active Layer As");
 	layerMenu->Append(ID_LAYER_IMPORT, "Import Data\tCtrl+I", "Import Data");
 	layerMenu->Append(ID_LAYER_IMPORTTIGER, "Import Data From TIGER", "Import Data From TIGER");
+	layerMenu->Append(ID_LAYER_IMPORTUTIL, "Import Utilites From SHP", "Import Utilites From SHP");
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_PROPS, "Layer Properties", "Layer Properties");
 	layerMenu->AppendSeparator();
@@ -564,8 +566,7 @@ void MainFrame::OnLayerImport(wxCommandEvent &event)
 
 void MainFrame::OnLayerImportTIGER(wxCommandEvent &event)
 {
-	// ask the user for a filename
-	// default the same directory they used last time for a layer of this type
+	// ask the user for a directory
 	wxDirDialog getDir(NULL, "Import TIGER Data From Directory");
 	bool bResult = (getDir.ShowModal() == wxID_OK);
 	if (!bResult)
@@ -573,6 +574,41 @@ void MainFrame::OnLayerImportTIGER(wxCommandEvent &event)
 	wxString strDirName = getDir.GetPath();
 
 	ImportDataFromTIGER(strDirName);
+}
+
+
+void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
+{
+	// ask the user for a directory
+	wxDirDialog getDir(NULL, "Import Utility Data from Directory of SHP Files");
+	bool bResult = (getDir.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+	wxString strDirName = getDir.GetPath();
+
+	// ask user for a projection
+	ProjectionDlg dlg(NULL, -1, "Projection", wxDefaultPosition);
+	dlg.m_strCaption = "Shapefiles do not contain projection information.  "
+		"Please indicate the projection of this file:";
+	dlg.SetProjection(m_proj);
+
+	if (dlg.ShowModal() == wxID_CANCEL)
+		return;
+	vtProjection proj;
+	dlg.GetProjection(proj);
+
+	// create the new layers
+	vtUtilityLayer *pUL = new vtUtilityLayer;
+	if (pUL->ImportFromSHP(strDirName, proj))
+	{
+		pUL->SetFilename(strDirName);
+		pUL->SetModified(true);
+
+		if (!AddLayerWithCheck(pUL, true))
+			delete pUL;
+	}
+	else
+		delete pUL;
 }
 
 
