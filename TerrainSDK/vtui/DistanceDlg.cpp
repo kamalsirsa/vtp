@@ -119,9 +119,9 @@ void DistanceDlg::ShowValues()
 
 	if (m_iUnits1 == 0) // degrees
 	{
-		str.Printf(_T("%s, %s"),
-			(const char *) FormatCoord(true, diff_degrees.x),
-			(const char *) FormatCoord(true, diff_degrees.y));
+		str = FormatCoord(true, diff_degrees.x);
+		str += ", ";
+		str += FormatCoord(true, diff_degrees.y);
 	}
 	else
 	{
@@ -153,6 +153,7 @@ void DistanceDlg::ShowValues()
 	// Approximate Ground Distance
 	bool bShowGround = (m_fGround != FLT_MIN);
 	GetGroundDist()->Enable(bShowGround);
+	GetUnits4()->Enable(bShowGround);
 	if (bShowGround)
 	{
 		scale = GetScaleFromUnits(m_iUnits4);
@@ -165,6 +166,7 @@ void DistanceDlg::ShowValues()
 	// Vertical Difference
 	bool bShowVertical = (m_fVertical != FLT_MIN);
 	GetVertical()->Enable(bShowVertical);
+	GetUnits5()->Enable(bShowVertical);
 	if (bShowVertical)
 	{
 		scale = GetScaleFromUnits(m_iUnits5);
