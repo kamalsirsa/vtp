@@ -264,19 +264,23 @@ void vtTerrain::create_textures()
 			texture_fname += m_Params.m_strTextureSingle;	// single texture
 		else
 			texture_fname += m_Params.m_strTextureFilename;
-		vtString texture_path = FindFileOnPaths(m_DataPaths, texture_fname);
 
+		VTLOG("  Texture: %s\n", (const char *) texture_fname);
+		vtString texture_path = FindFileOnPaths(m_DataPaths, texture_fname);
 		if (texture_path == "")
 		{
 			// failed to find texture
+			VTLOG("  Failed to find texture.\n");
 		}
 		else
 		{
+			VTLOG("  Found texture, path is: %s\n", (const char *) texture_path);
 			// Load a DIB of the whole, large texture
 			m_pDIB = new vtDIB();
 			bool result = m_pDIB->Read(texture_path);
 			if (! result)
 			{
+				VTLOG("  Failed to load texture.\n");
 				m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 											RGBf(0.2f, 0.2f, 0.2f),
 											true, !m_Params.m_bPreLit);	// for shaded white
