@@ -108,6 +108,7 @@ void vtLastMouse::GetNormalizedMouseCoords(float &mx, float &my)
 SimpleBillboardEngine::SimpleBillboardEngine(float fAngleOffset)
 {
 	m_fAngleOffset = fAngleOffset;
+	m_bPitch = true;
 }
 
 void SimpleBillboardEngine::Eval()
@@ -117,20 +118,41 @@ void SimpleBillboardEngine::Eval()
 	//get the target and it's location
 	for (unsigned int i = 0; i < NumTargets(); i++)
 	{
+		vtCamera *cam = vtGetScene()->GetCamera();
 		vtTransform* pTarget = (vtTransform*) GetTarget(i);
 		if (!pTarget)
 			return;
-		FPoint3 camera_loc = vtGetScene()->GetCamera()->GetTrans();
-		FPoint3 target_loc = pTarget->GetTrans();
-		FPoint3 diff = camera_loc - target_loc;
 
-		float angle = atan2f(-diff.z, diff.x);
-
-		// TODO: make this more efficient!
 		FPoint3 pos = pTarget->GetTrans();
-		pTarget->Identity();
-		pTarget->SetTrans(pos);
-		pTarget->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), m_fAngleOffset + angle);
+		if (cam->IsOrtho())
+		{
+			// rotate them up to face an orthographic top-down camera
+			pTarget->Identity();
+			pTarget->SetTrans(pos);
+			pTarget->RotateLocal(FPoint3(1,0,0), -PID2f);
+		}
+		else
+		{
+			FPoint3 camera_loc = cam->GetTrans();
+			FPoint3 target_loc = pTarget->GetTrans();
+			FPoint3 diff = camera_loc - target_loc;
+
+			float angle = atan2f(-diff.z, diff.x);
+
+			// TODO: make this more efficient!
+			pTarget->Identity();
+			pTarget->SetTrans(pos);
+			pTarget->RotateLocal(FPoint3(0,1,0), m_fAngleOffset + angle);
+		}
+#if 0
+		if (m_bPitch)
+		{
+			// also attempt to pitch (rotate around local X) toward the camera
+			float diff_xz = sqrt(diff.x*diff.x+diff.z*diff.z);
+			float pitch = atan2f(diff.y, diff_xz);
+			pTarget->RotateLocal(FPoint3(1,0,0), pitch);
+		}
+#endif
 	}
 }
 

@@ -141,8 +141,11 @@ public:
 	SimpleBillboardEngine(float fAngleOffset = 0.0f);
 	virtual ~SimpleBillboardEngine() {}
 
+	void SetPitch(bool bFlag) { m_bPitch = bFlag; }
+
 	void Eval();
 
+	bool m_bPitch;
 	float m_fAngleOffset;
 };
 
