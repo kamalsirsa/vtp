@@ -7,6 +7,8 @@
 
 #include "vtlib/vtlib.h"
 
+#include "vtdata/vtLog.h"
+
 #include "Terrain.h"
 #include "Light.h"
 #include "Building3d.h"
@@ -832,8 +834,19 @@ void vtTerrain::create_culture(bool bSound)
 	{
 		vtString building_fname = "BuildingData/";
 		building_fname += m_Params.m_strBuildingFile;
+
+		VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
+
 		vtString building_path = FindFileOnPaths(m_DataPaths, building_fname);
-		CreateStructuresFromXML(building_path);
+		if (building_path == "")
+		{
+			VTLOG("\tNot found.\n");
+		}
+		else
+		{
+			VTLOG("\tFound: %s\n", (const char *) building_path);
+			CreateStructuresFromXML(building_path);
+		}
 	}
 	else
 	{
@@ -943,12 +956,17 @@ bool vtTerrain::CreateStep1(int &iError)
 	}
 	vtString fname = "Elevation/";
 	fname += m_Params.m_strElevFile;
+	VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
+
 	vtString fullpath = FindFileOnPaths(m_DataPaths, fname);
 	if (fullpath == "")
 	{
 		iError = TERRAIN_ERROR_NOTFOUND;
+		VTLOG("\t\tNot found.\n");
 		return false;
 	}
+
+	VTLOG("\tFound: %s\n", (const char *) fullpath);
 	if (m_Params.m_bTin)
 	{
 		if (!m_pTin)
