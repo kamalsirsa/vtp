@@ -129,11 +129,21 @@ progress.</p>
     <li>In the Startup Dialog, use the &quot;Generic Terrain&quot; setting,
       press &quot;Edit Properties&quot;, and select your data in
       the Parameters dialog</li>
+    <li>If you want to make your terrain show up as a new terrain in the Enviro 
+    startup dialog, then you can create your own .ini files in the Terrain 
+    folder on the data path.&nbsp; One easy way to do this is to copy one of the 
+    existing .ini files (for example, Generic.ini) and edit it, either as a text 
+    file or with Enviro, to contain the settings you want.&nbsp; The first line 
+    in the file (&quot;Name&quot;) is the name that will appear in Enviro.</li>
   </ul>
-<h4>Using Your Own Textures:</h4>
+<h4>Using Your Own Imagery (Textures)</h4>
 
   <ul>
-    <li>First, learn how large a texture your computer can display.&nbsp; From
+    <li>Your image needs to match your elevation in both projection and extents.&nbsp; 
+    One way to do this is to use VTBuilder to re-project and crop your 
+    elevation, as needed, to match your image.</li>
+    <li>Your imagery should be converted to either the BMP or JPG format.</li>
+    <li>Learn how large a texture your computer can display.&nbsp; From
       the Enviro Start dialog, press &quot;OpenGL Info...&quot; and look at the
       number for &quot;Maximum Texture Dimension&quot;</li>
     <li>If your terrain texture map is not larger than the maximum texture, you
