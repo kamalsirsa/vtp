@@ -436,6 +436,7 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_DEM);
 		AddType(filter, FSTRING_DTED);
 		AddType(filter, FSTRING_GTOPO);
+		AddType(filter, FSTRING_IMG);
 		AddType(filter, FSTRING_MEM);
 		AddType(filter, FSTRING_NTF);
 		AddType(filter, FSTRING_PNG);
@@ -451,6 +452,7 @@ wxString GetImportFilterString(LayerType ltype)
 		// doq, tif
 		AddType(filter, FSTRING_BMP);
 		AddType(filter, FSTRING_DOQ);
+		AddType(filter, FSTRING_IMG);
 		AddType(filter, FSTRING_TIF);
 		break;
 	case LT_ROAD:
