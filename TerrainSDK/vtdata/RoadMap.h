@@ -49,6 +49,12 @@ enum LightStatus {
 // the following are for temporary, runtime use
 #define RF_HIT		0x0000001
 
+// Typical, default values for widths, in meters
+#define SIDEWALK_WIDTH		1.5f
+#define CURB_HEIGHT			0.15f
+#define MARGIN_WIDTH		1.6f
+#define LANE_WIDTH			3.3f
+#define PARKING_WIDTH		LANE_WIDTH
 
 //incomplete code for a node switch that tells which lanes connect to other
 //lanes on other roads.
@@ -174,36 +180,38 @@ public:
 
 	void SetNode(int n, Node *pNode) { m_pNode[n] = pNode; }
 	Node *GetNode(int n) { return m_pNode[n]; }
-	// closet distance from target to the road
+
+	// closest distance from target to the road
 	double DistanceToPoint(DPoint2 target);
+
 	// is the road a loop?
 	bool IsLoop() { return (m_pNode[0] == m_pNode[1]); }
 
-	void SetFlag(int flag, bool value);	//value true, perform bitwise OR with flag.  otherwise, bitwise AND
+	// accessors for flag properties
+	void SetFlag(int flag, bool value);
 	bool GetFlag(int flag);
 
-	float GetHeightAt(int i);	//height at node (0 or 1).
-	float GetHeightAt(Node *node);	//height at node
+	// Height (unused; these methods may be redesigned or removed)
+	float GetHeightAt(int i);		// height at node (0 or 1).
+	float GetHeightAt(Node *node);	// height at node
 	void SetHeightAt(int i, float height);	//set the height at a node (0 or 1)
 	void SetHeightAt(Node *node, float height);	//set the height at a node
-	float Length();	//returns length of road.
 
-	float m_fWidth;		// road width in meters
-	int m_iLanes;		// number of lanes
+	// Return length of road centerline.
+	float Length();
+	float EstimateWidth(bool bIncludeSidewalk = true);
+
+	float	m_fWidth;		// road width in meters
+	int		m_iLanes;		// number of lanes
 	SurfaceType m_Surface;
-
-	int	m_iHwy;			// highway number: -1 for normal roads
-
-	Road *m_pNext;		// the next Road, if roads are maintained in list form
-
-	int m_id;			// only used for reading from DLG
-
-	unsigned int m_iFlags;	// a flag to be used to holding any addition info.
+	int		m_iHwy;			// highway number: -1 for normal roads
+	int		m_id;			// only used for reading from DLG
+	Road	*m_pNext;		// the next Road, if roads are maintained in link list form
+	int		m_iFlags;		// a flag to be used to holding any addition info.
 
 protected:
-	Node *m_pNode[2];	// "from" and "to" nodes
-//	IntersectionType m_iBehavior[2];
-	float m_fHeight[2];
+	Node	*m_pNode[2];	// "from" and "to" nodes
+	float	m_fHeight[2];
 };
 
 typedef Road *RoadPtr;

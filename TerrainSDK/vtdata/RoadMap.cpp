@@ -904,6 +904,18 @@ float Road::Length()
 	return (float) dist;
 }
 
+float Road::EstimateWidth(bool bIncludeSidewalk)
+{
+	float width = m_iLanes * LANE_WIDTH;
+	if (GetFlag(RF_PARKING))
+		width += (PARKING_WIDTH * 2);
+	if (GetFlag(RF_MARGIN))
+		width += (MARGIN_WIDTH * 2);
+	if (bIncludeSidewalk && GetFlag(RF_SIDEWALK))
+		width += (SIDEWALK_WIDTH * 2);
+	return width;
+}
+
 
 //
 // RoadMap class
