@@ -243,6 +243,8 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	// resize bounding box
 	if (m_pHighlight)
 	{
+		bool bEnabled = m_pHighlight->GetEnabled();
+
 		m_pContainer->RemoveChild(m_pHighlight);
 		m_pHighlight->Release();
 
@@ -250,6 +252,8 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		m_pGeom->GetBoundSphere(sphere);
 		m_pHighlight = CreateBoundSphereGeom(sphere);
 		m_pContainer->AddChild(m_pHighlight);
+
+		m_pHighlight->SetEnabled(bEnabled);
 	}
 	return true;
 }
