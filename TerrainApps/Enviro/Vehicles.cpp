@@ -178,13 +178,7 @@ void VehicleType::AttemptModelLoad()
 		{
 			vtTransform *trans = new vtTransform();
 			trans->AddChild(pMod);
-			vtString ext = GetExtension(fname, false);
-			if (ext.CompareNoCase(".3ds") == 0 ||
-				ext.CompareNoCase(".flt") == 0)
-			{
-				// Must rotate by 90 degrees for 3DS -> OpenGL (or Lightwave LWO)
-				trans->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
-			}
+
 			float scale = m_fScale[i];
 			trans->Scale3(scale, scale, scale);
 			m_pModels.SetAt(i, trans);
