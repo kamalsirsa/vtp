@@ -215,7 +215,7 @@ void vtMaterial::SetWireframe(bool bOn)
 	else
 	{
 		// turn wireframe off
-		m_pStateSet->setModeToInherit(GL_POLYGON_MODE);
+		m_pStateSet->setMode(GL_POLYGON_MODE, StateAttribute::OFF);
 	}
 }
 /**
