@@ -305,6 +305,7 @@ vtDayDome::vtDayDome()
 	m_pSunShape = NULL;
 	m_SunApp = NULL;
 	SphVertices = NULL;
+	m_bHasTexture = false;
 }
 
 void vtDayDome::Create(int depth, float radius, const char *sun_texture)
@@ -399,7 +400,6 @@ void vtDayDome::SetRadius(float radius)
 {
 	Identity();
 	Scale3(radius, radius, radius);
-	m_bHasTexture = false;
 }
 
 void vtDayDome::SetDayColors(const RGBf &horizon, const RGBf &azimuth)
