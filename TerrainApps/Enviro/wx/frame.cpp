@@ -1380,8 +1380,7 @@ void vtFrame::OnTerrainReshade(wxCommandEvent& event)
 	if (!pTerr)
 		return;
 
-	vtTime time = GetTerrainScene()->GetTimeEngine()->GetTime();
-	pTerr->recreate_textures(time);
+	pTerr->recreate_textures(GetTerrainScene()->GetSunLight());
 }
 
 
