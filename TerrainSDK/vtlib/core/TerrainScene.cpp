@@ -14,9 +14,9 @@
 
 
 ///////////////////////////////////////////////////////////////////////
-//
-// A small engine that allows the SkyDome to stay around the Camera.
-//
+/**
+ * A small engine that allows the SkyDome to stay around the Camera.
+ */
 class vtSkyTrackEngine : public vtEngine
 {
 public:
@@ -32,11 +32,14 @@ vtSkyTrackEngine::vtSkyTrackEngine() : vtEngine()
 
 void vtSkyTrackEngine::Eval()
 {
+	// get the location of the camera and the target (skydome)
 	vtTransform *pTarget = (vtTransform *) GetTarget();
 	if (!pTarget || !m_pCamera)
 		return;
 	FPoint3 pos1 = m_pCamera->GetTrans();
 	FPoint3 pos2 = pTarget->GetTrans();
+
+	// move the target (skydome) to be centers in XZ on the camera
 	pos2.x = pos1.x;
 	pos2.z = pos1.z;
 	pTarget->SetTrans(pos2);
