@@ -8,15 +8,12 @@
 #ifndef ELEVATIONGRIDH
 #define ELEVATIONGRIDH
 
-#include <limits.h>			// for SHRT_MIN
 #include "MathTypes.h"
 #include "Projections.h"
 #include "LocalConversion.h"
 #include "HeightField.h"
 
 class vtDIB;
-
-#define INVALID_ELEVATION	SHRT_MIN
 
 /**  The vtElevationGrid class represents a generic grid of elevation data.
  * It supports reading and writing the data from several file formats.
