@@ -93,6 +93,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_STRUCTDIST, "2000");		// 2 km
 	AddTag(STR_STRUCT_SHADOWS, "false");
 	AddTag(STR_SHADOW_REZ, "1024");
+	AddTag(STR_SHADOW_DARKNESS, "0.8");
 	AddTag(STR_CONTENT_FILE, "");
 
 	AddTag(STR_TOWERS, "false");

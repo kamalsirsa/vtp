@@ -318,7 +318,15 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 		osg::Referenced *ref = m_pCurrentTerrain->GetTopGroup()->GetOsgGroup()->getChild(0)->getUserData();
 		vtTransform *pTransform = dynamic_cast<vtTransform*>(ref);
 		if (NULL != pTransform)
+		{
 			vtGetScene()->SetShadowedNode(m_pSunLight, pStructures, pTransform, iRez);
+
+			LocaleWrap normal_numbers(LC_NUMERIC, "C");
+			float fDarkness;
+			if (!param.GetValueFloat(STR_SHADOW_DARKNESS, fDarkness))
+				fDarkness = 0.8;
+			vtGetScene()->SetShadowDarkness(fDarkness);
+		}
 #endif
 	}
 }

@@ -157,6 +157,7 @@ protected:
 #define STR_STRUCTDIST	 "Structure_Distance"
 #define STR_STRUCT_SHADOWS "Structure_Shadows"
 #define STR_SHADOW_REZ	"Shadow_Resolution"
+#define STR_SHADOW_DARKNESS "Shadow_Darkness"
 #define STR_CONTENT_FILE "Content_File"
 
 #define STR_TOWERS "Trans_Towers"
