@@ -23,13 +23,16 @@ libdir  	= @libdir@
 # Figure out what to build based on a .dsp file (Windows build project
 # file) to stay in sync.
 
-DSP_HDR_LINES	= $(shell grep "^SOURCE=.*.h$$" $(DSP_FILE))
+# DSP_HDR_LINES	= $(shell grep "^SOURCE=.*.h$$" $(DSP_FILE))
+DSP_HDR_LINES	= $(shell grep '^SOURCE=.*.h' $(DSP_FILE))
 TARGET_HDRS	= $(subst SOURCE=,,$(subst \,/,$(DSP_HDR_LINES))) $(EXTRA_TARGET_HDRS)
 
-DSP_C_LINES	= $(shell grep "^SOURCE=.*\.c$$" $(DSP_FILE))
+# DSP_C_LINES	= $(shell grep "^SOURCE=.*\.c$$" $(DSP_FILE))
+DSP_C_LINES	= $(shell grep '^SOURCE=.*\.c' $(DSP_FILE))
 CFILES		= $(subst SOURCE=,,$(subst \,/,$(DSP_C_LINES)))
 
-DSP_CXX_LINES	= $(shell grep "^SOURCE=.*\.cpp$$" $(DSP_FILE))
+# DSP_CXX_LINES	= $(shell grep "^SOURCE=.*\.cpp$$" $(DSP_FILE))
+DSP_CXX_LINES	= $(shell grep '^SOURCE=.*\.cpp' $(DSP_FILE))
 CXXFILES	= $(subst SOURCE=,,$(subst \,/,$(DSP_CXX_LINES)))
 
 OBJS   		= $(CFILES:%.c=%.o) $(CXXFILES:%.cpp=%.o)
