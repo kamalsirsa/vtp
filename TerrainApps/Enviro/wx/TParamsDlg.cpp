@@ -576,7 +576,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 			m_pTreeFile->SetSelection(sel);
 
 		// fill in Content file
-		AddFilenamesToChoice(GetContentFile(), m_datapaths[i], "*.vtco");
+		AddFilenamesToComboBox(GetContentFile(), m_datapaths[i], "*.vtco");
 		sel = GetContentFile()->FindString(m_strContent);
 		if (sel != -1)
 			GetContentFile()->SetSelection(sel);
@@ -694,7 +694,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_TEXROADS, &m_bTexRoads);
 	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
 
-	AddValidator(ID_CHOICE_CONTENT, &m_strContent);
+	AddValidator(ID_CONTENT_FILE, &m_strContent);
 	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
 	AddValidator(ID_CHECK_STRUCTURE_SHADOWS, &m_bStructureShadows);
 	AddValidator(ID_CHOICE_SHADOW_REZ, &m_bStructureRez);

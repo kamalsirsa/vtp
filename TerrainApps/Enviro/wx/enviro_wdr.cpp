@@ -977,7 +977,7 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item35->Add( item36, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxString *strs37 = (wxString*) NULL;
-    wxChoice *item37 = new wxChoice( parent, ID_CHOICE_CONTENT, wxDefaultPosition, wxSize(100,-1), 0, strs37, 0 );
+    wxComboBox *item37 = new wxComboBox( parent, ID_CONTENT_FILE, wxT(""), wxDefaultPosition, wxSize(100,-1), 0, strs37, wxCB_DROPDOWN );
     item35->Add( item37, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item34->Add( item35, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
