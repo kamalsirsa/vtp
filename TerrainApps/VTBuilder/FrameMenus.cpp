@@ -674,7 +674,7 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	AddType(filter, FSTRING_TIN);	// elevation
 #ifndef ELEVATION_ONLY
 	AddType(filter, FSTRING_RMF);	// roads
-	AddType(filter, FSTRING_SHP);	// raw
+	AddType(filter, FSTRING_GML);	// raw
 	AddType(filter, FSTRING_UTL);	// utility towers
 	AddType(filter, FSTRING_VTST);	// structures
 	AddType(filter, FSTRING_VF);	// vegetation files

@@ -455,7 +455,9 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		if(pTR->Load(fname))
 			pLayer = pTR;
 	}
-	if (ext.CmpNoCase("shp") == 0)
+	if (ext.CmpNoCase("shp") == 0 ||
+		ext.CmpNoCase("gml") == 0 ||
+		ext.CmpNoCase("xml") == 0)
 	{
 		vtRawLayer *pRL = new vtRawLayer();
 		if (pRL->Load(fname))

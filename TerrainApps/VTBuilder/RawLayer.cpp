@@ -180,7 +180,16 @@ bool vtRawLayer::OnSave()
 
 bool vtRawLayer::OnLoad()
 {
-	return LoadFromSHP(m_strFilename);
+	if (!m_strFilename.Right(4).CmpNoCase(".gml") ||
+		 !m_strFilename.Right(4).CmpNoCase(".xml"))
+	{
+		return LoadFromGML(m_strFilename);
+	}
+	else if (!m_strFilename.Right(4).CmpNoCase(".shp"))
+	{
+		return LoadFromSHP(m_strFilename);
+	}
+	return false;
 }
 
 bool vtRawLayer::AppendDataFrom(vtLayer *pL)
