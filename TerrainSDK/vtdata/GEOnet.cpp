@@ -875,24 +875,27 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 	}
 
 	// France
-	if (!strCity.CompareNoCase("Aix en Provence"))
-		strCity = "Aix-en-Provence";
-	if (!strCity.CompareNoCase("Les Sables d'Olonne"))
-		strCity = "Les Sables-d'Olonne";
-	if (!strCity.CompareNoCase("Marly le Roi"))
-		strCity = "Marly-le-Roi";
-	if (!strCity.CompareNoCase("Maisons Laffitte"))
-		strCity = "Maisons-Laffitte";
-	if (!strCity.CompareNoCase("Sophia Antipolis"))
-		strCity = "Nice";
-	if (!strCity.CompareNoCase("Sophia-Antipolis"))
-		strCity = "Nice";
-	if (!strCity.CompareNoCase("Salon de Provence"))
-		strCity = "Salon-de-Provence";
-	if (!strCity.CompareNoCase("St. Cloud"))
-		strCity = "Saint Cloud";
-	if (!strCity.CompareNoCase("St. Georges de Reintembault"))
-		strCity = "Saint Georges de Reintembault";
+	if (!strCountry.CompareNoCase("France"))
+	{
+		if (!strCity.CompareNoCase("Aix en Provence"))
+			strCity = "Aix-en-Provence";
+		if (!strCity.CompareNoCase("Les Sables d'Olonne"))
+			strCity = "Les Sables-d'Olonne";
+		if (!strCity.CompareNoCase("Marly le Roi"))
+			strCity = "Marly-le-Roi";
+		if (!strCity.CompareNoCase("Maisons Laffitte"))
+			strCity = "Maisons-Laffitte";
+		if (!strCity.CompareNoCase("Sophia Antipolis"))
+			strCity = "Nice";
+		if (!strCity.CompareNoCase("Sophia-Antipolis"))
+			strCity = "Nice";
+		if (!strCity.CompareNoCase("Salon de Provence"))
+			strCity = "Salon-de-Provence";
+		if (!strCity.CompareNoCase("St. Cloud"))
+			strCity = "Saint Cloud";
+		if (!strCity.CompareNoCase("St. Georges de Reintembault"))
+			strCity = "Saint Georges de Reintembault";
+	}
 	if (!strCountry.CompareNoCase("France") || !strCountry.CompareNoCase("Reunion") ||
 		!strCountry.CompareNoCase("New Caledonia"))
 	{
@@ -910,28 +913,31 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 	}
 
 	// Germany
-	if (!strCity.CompareNoCase("Bad Arolsen"))
-		strCity = "Arolsen";	// apparently, English name has no "bad"
-	if (!strCity.CompareNoCase("Bad Duerrenberg"))
-		strCity = "Bad Durrenberg";
-	if (!strCity.CompareNoCase("Bedburg - Rath"))
-		strCity = "Bedburg";
-	if (!strCity.CompareNoCase("Goettingen"))
-		strCity = "Gottingen";
-	if (!strCity.CompareNoCase("Grafenwoehr"))
-		strCity = "Grafenwohr";
-	if (!strCity.Left(10).CompareNoCase("Oberthal-G"))
-		strCity = "Gudesweiler";
-	if (!strCity.CompareNoCase("Loehne"))
-		strCity = "Lohne";
-	if (!strCity.CompareNoCase("Osnabrueck"))
-		strCity = "Osnabruck";
-	if (!strCity.CompareNoCase("Saarbruecken"))
-		strCity = "Saarbrucken";
-	if (!strCity.CompareNoCase("St. Ingbert"))
-		strCity = "Saint Ingbert";
-	if (!strCity.CompareNoCase("Tuebingen"))
-		strCity = "Tubingen";
+	if (!strCountry.CompareNoCase("Germany"))
+	{
+		if (!strCity.CompareNoCase("Bad Arolsen"))
+			strCity = "Arolsen";	// apparently, English name has no "bad"
+		if (!strCity.CompareNoCase("Bad Duerrenberg"))
+			strCity = "Bad Durrenberg";
+		if (!strCity.CompareNoCase("Bedburg - Rath"))
+			strCity = "Bedburg";
+		if (!strCity.CompareNoCase("Goettingen"))
+			strCity = "Gottingen";
+		if (!strCity.CompareNoCase("Grafenwoehr"))
+			strCity = "Grafenwohr";
+		if (!strCity.Left(10).CompareNoCase("Oberthal-G"))
+			strCity = "Gudesweiler";
+		if (!strCity.CompareNoCase("Loehne"))
+			strCity = "Lohne";
+		if (!strCity.CompareNoCase("Osnabrueck"))
+			strCity = "Osnabruck";
+		if (!strCity.CompareNoCase("Saarbruecken"))
+			strCity = "Saarbrucken";
+		if (!strCity.CompareNoCase("St. Ingbert"))
+			strCity = "Saint Ingbert";
+		if (!strCity.CompareNoCase("Tuebingen"))
+			strCity = "Tubingen";
+	}
 
 	// Georgia
 	if (!strCity.CompareNoCase("Tbilisi"))
@@ -950,18 +956,22 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 		strCity = "Ambala";
 
 	// Israel
-	if (!strCity.CompareNoCase("Herzlia") || !strCity.CompareNoCase("Hertzlia") ||
-		!strCity.CompareNoCase("Herzlia Pituach"))
-		strCity = "Herzliya";
-	if (!strCity.CompareNoCase("Bat-Yam"))
-		strCity = "Bat Yam";
-	if (!strCity.CompareNoCase("Tel-Aviv"))
-		strCity = "Tel Aviv";
-	if (!strCity.CompareNoCase("Tel-Adashim"))
-		strCity = "Tel Adashim";
-	if (!strCity.CompareNoCase("Raanana"))
-		strCity = "Ra'ananna";
-	// GEOnet doesn't know "Jerusalem" as a city!?
+	if (!strCountry.CompareNoCase("Israel"))
+	{
+		if (!strCity.CompareNoCase("Herzlia") ||
+			!strCity.CompareNoCase("Hertzlia") ||
+			!strCity.CompareNoCase("Herzlia Pituach"))
+			strCity = "Herzliya";
+		if (!strCity.CompareNoCase("Bat-Yam"))
+			strCity = "Bat Yam";
+		if (!strCity.CompareNoCase("Tel-Aviv"))
+			strCity = "Tel Aviv";
+		if (!strCity.CompareNoCase("Tel-Adashim"))
+			strCity = "Tel Adashim";
+		if (!strCity.CompareNoCase("Raanana"))
+			strCity = "Ra'ananna";
+		// GEOnet doesn't know "Jerusalem" as a city!?
+	}
 
 	// Italy
 	if (!strCity.CompareNoCase("Giardini Naxos"))
@@ -1114,14 +1124,9 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 	if (!strCity.CompareNoCase("Sana'a") || !strCity.CompareNoCase("Sana`a"))
 		strCity = "Sanaa";
 
-	VTLOG("Trying: (%s), (%s)\n",
-		(const char *) strCity, (const char *) strCountry);
-
-	bool bFound = FindPlace(strCountry, strCity, geo);
-
 	// If it has no city info, but the country is _very_ small, it's fair to assume
 	//  that the location is in the population center of the country.
-	if (!bFound && strCity == "")
+	if (strCity == "")
 	{
 		if (!strCountry.CompareNoCase("Bahrain"))
 			strCity = "Manama";
@@ -1131,9 +1136,21 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 			strCity = "San Marino";
 		if (!strCountry.CompareNoCase("Reunion"))
 			strCity = "Saint-Denis";
-
-		bFound = FindPlace(strCountry, strCity, geo);
+		if (!strCountry.CompareNoCase("Bahrain"))
+			strCity = "Manama";
 	}
+
+	// By this point, we need a city or it's not going to work
+	if (strCity == "")
+	{
+		VTLOG("  Failed: country (%s) and no city\n", (const char *)strCountry);
+		return false;
+	}
+
+	VTLOG("Trying: (%s), (%s)\n",
+		(const char *) strCity, (const char *) strCountry);
+
+	bool bFound = FindPlace(strCountry, strCity, geo);
 
 	// some addresses have a compound name for city, separated by commas,
 	// e.g. "Arbroath, Angus"
@@ -1213,7 +1230,7 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 	}
 
 	if (bFound)
-		VTLOG("  Found: %3.2lf, %3.2lf\n\n", geo.x, geo.y);
+		VTLOG("  Found: %3.2lf, %3.2lf\n", geo.x, geo.y);
 	else
 		VTLOG("  Failed.\n");
 
