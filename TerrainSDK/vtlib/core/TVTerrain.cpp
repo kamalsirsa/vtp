@@ -805,7 +805,7 @@ float TVTerrain::GetElevation(int iX, int iZ) const
 	return m_pVertex[offset(iX, iZ)];
 }
 
-void TVTerrain::GetLocation(int iX, int iZ, FPoint3 &p) const
+void TVTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const
 {
 	p.Set(MAKE_XYZ2(iX, iZ));
 }

@@ -35,7 +35,7 @@ public:
 	void DoRender();
 	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
 	float GetElevation(int iX, int iZ) const;
-	void GetLocation(int iX, int iZ, FPoint3 &p) const;
+	void GetWorldLocation(int iX, int iZ, FPoint3 &p) const;
 
 	void LoadSingleMaterial();
 	void LoadBlockMaterial(int a, int b);

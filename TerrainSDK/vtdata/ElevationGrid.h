@@ -76,7 +76,6 @@ public:
 	bool SaveToBT(const char *szFileName, void progress_callback(int) = NULL, bool bGZip = false);
 
 	void ComputeHeightExtents();
-	void GetDimensions(int &nColumns, int &nRows) const;
 
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);
@@ -103,9 +102,6 @@ public:
 
 	void GetEarthLocation(int i, int j, DPoint3 &loc) const;
 
-	void ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
-		bool bZeroIsOcean = true, void progress_callback(int) = NULL);
-
 	vtProjection &GetProjection() { return m_proj; }
 	const vtProjection &GetProjection() const { return m_proj; }
 	void SetProjection(const vtProjection &proj) { m_proj = proj; }
@@ -126,16 +122,15 @@ public:
 	void GetChecksum(unsigned char **ppChecksum) const;
 	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const;
 
+	// Implement vtHeightField3d methods
+	virtual float GetElevation(int iX, int iZ) const;
+	virtual void GetWorldLocation(int i, int j, FPoint3 &loc) const;
+
 	// methods that deal with world coordinates
 	void SetupConversion(float fVerticalExag);
-	void GetWorldLocation(int i, int j, FPoint3 &loc) const;
 	float GetWorldValue(int i, int j) const;
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		FPoint3 *vNormal = NULL) const;
-	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
-							   float light_adj, void progress_callback(int) = NULL);
-	void ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
-		float light_adj, void progress_callback(int) = NULL);
 
 protected:
 	bool	m_bFloatMode;

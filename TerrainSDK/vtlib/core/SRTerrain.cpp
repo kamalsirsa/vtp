@@ -313,7 +313,7 @@ float SRTerrain::GetElevation(int iX, int iZ) const
 	return m_pMini->getheight(iX, iZ);
 }
 
-void SRTerrain::GetLocation(int i, int j, FPoint3 &p) const
+void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p) const
 {
 	p.Set(m_fXLookup[i],
 		  m_pMini->getheight(i, j),

@@ -56,8 +56,6 @@ public:
 		FPoint3 *vNormal = NULL) const;
 
 	// overridables
-	virtual float GetElevation(int iX, int iZ) const = 0;
-	virtual void GetLocation(int iX, int iZ, FPoint3 &p) const = 0;
 	virtual void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov) = 0;
 
 	// control

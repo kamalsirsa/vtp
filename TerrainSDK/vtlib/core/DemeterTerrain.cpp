@@ -200,7 +200,7 @@ void DemeterTerrain::RenderPass()
 // position of the terrain at a given grid point.  Supply the height
 // value from your own data structures.
 //
-void DemeterTerrain::GetLocation(int iX, int iZ, FPoint3 &p) const
+void DemeterTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const
 {
 	p.Set(MAKE_XYZ1(iX, iZ));
 }

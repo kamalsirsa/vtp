@@ -173,7 +173,7 @@ float CustomTerrain::GetElevation(int iX, int iZ) const
 	return m_pData[offset(iX,iZ)];
 }
 
-void CustomTerrain::GetLocation(int iX, int iZ, FPoint3 &p) const
+void CustomTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const
 {
 	p.Set(MAKE_XYZ1(iX, iZ));
 }

@@ -5,6 +5,7 @@
 #include <limits.h>			// for SHRT_MIN
 #include "LocalConversion.h"
 
+class vtDIB;
 #define INVALID_ELEVATION	SHRT_MIN
 
 /**
@@ -95,6 +96,18 @@ public:
 		FPoint3 &result) const;
 	DPoint2 GetSpacing() const;
 	FPoint2 GetWorldSpacing() const;
+	void GetDimensions(int &nColumns, int &nRows) const;
+
+	// all grids must be able to return the elevation at a grid point
+	virtual float GetElevation(int iX, int iZ) const = 0;
+	virtual void GetWorldLocation(int i, int j, FPoint3 &loc) const = 0;
+
+	void ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
+		bool bZeroIsOcean = true, void progress_callback(int) = NULL);
+	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
+							   float light_adj, void progress_callback(int) = NULL);
+	void ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
+		float light_adj, void progress_callback(int) = NULL);
 
 protected:
 	int		m_iColumns, m_iRows;

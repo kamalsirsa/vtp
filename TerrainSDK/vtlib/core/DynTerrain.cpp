@@ -12,7 +12,7 @@
 #include "vtdata/HeightField.h"
 #include "DynTerrain.h"
 
-vtDynTerrainGeom::vtDynTerrainGeom() : vtDynGeom()
+vtDynTerrainGeom::vtDynTerrainGeom() : vtDynGeom(), vtHeightFieldGrid3d()
 {
 	m_fPixelError = 2.0f;
 	m_iPolygonTarget = 10000;
@@ -116,10 +116,10 @@ bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	}
 
 	FPoint3 p0, p1, p2, p3;
-	GetLocation(iX, iZ, p0);
-	GetLocation(iX+1, iZ, p1);
-	GetLocation(iX+1, iZ+1, p2);
-	GetLocation(iX, iZ+1, p3);
+	GetWorldLocation(iX, iZ, p0);
+	GetWorldLocation(iX+1, iZ, p1);
+	GetWorldLocation(iX+1, iZ+1, p2);
+	GetWorldLocation(iX, iZ+1, p3);
 
 	// find fractional amount (0..1 across quad)
 	float fX = (float)  (p.x - p0.x) / m_fXStep;

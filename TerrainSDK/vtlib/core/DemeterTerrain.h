@@ -30,7 +30,7 @@ public:
 	// overrides
 	void DoRender();
 	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
-	void GetLocation(int iX, int iZ, FPoint3 &p) const;
+	void GetWorldLocation(int iX, int iZ, FPoint3 &p) const;
 
 protected:
 	// rendering
