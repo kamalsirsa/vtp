@@ -48,7 +48,7 @@ void vtEdgeFeature::SetDefaults()
 vtEdge::vtEdge()
 {
 	m_Material = BMAT_PLAIN;
-	m_iSlope = 180;		// vertical
+	m_iSlope = 90;		// vertical
 	m_fEaveLength = 0.0f;
 }
 
@@ -100,9 +100,15 @@ void vtEdge::Set(int iDoors, int iWindows, BldMaterial material)
 			do_window = true;
 
 		if (do_door)
+		{
 			m_Features.Append(door);
+			iDoors--;
+		}
 		if (do_window)
+		{
 			m_Features.Append(window);
+			iWindows--;
+		}
 		m_Features.Append(wall);
 	}
 	m_Material = material;
@@ -152,10 +158,10 @@ vtLevel::vtLevel()
 
 vtLevel::~vtLevel()
 {
-	DeleteWalls();
+	DeleteEdges();
 }
 
-void vtLevel::DeleteWalls()
+void vtLevel::DeleteEdges()
 {
 	for (int i = 0; i < m_Edges.GetSize(); i++)
 		delete m_Edges.GetAt(i);
@@ -164,7 +170,7 @@ void vtLevel::DeleteWalls()
 
 vtLevel &vtLevel::operator=(const vtLevel &v)
 {
-	DeleteWalls();
+	DeleteEdges();
 	m_Edges.SetSize(v.m_Edges.GetSize());
 	for (int i = 0; i < v.m_Edges.GetSize(); i++)
 	{
@@ -193,9 +199,18 @@ void vtLevel::SetWallMaterial(BldMaterial bm)
 		m_Edges[i]->m_Material = bm;
 }
 
+float vtLevel::GetEdgeLength(int i)
+{
+	int edges = GetNumEdges();
+	int j = i+1;
+	if (j == edges)
+		j = 0;
+	return (float) (m_Footprint[j] - m_Footprint[i]).Length();
+}
+
 void vtLevel::SetWalls(int n)
 {
-	DeleteWalls();
+	DeleteEdges();
 	for (int i = 0; i < n; i++)
 	{
 		vtEdge *pnew = new vtEdge;
@@ -208,7 +223,7 @@ bool vtLevel::HasSlopedEdges()
 {
 	for (int i = 0; i < m_Edges.GetSize(); i++)
 	{
-		if (m_Edges[i]->m_iSlope != 180)
+		if (m_Edges[i]->m_iSlope != 90)
 			return true;
 	}
 	return false;
@@ -222,6 +237,112 @@ bool vtLevel::IsHorizontal()
 			return true;
 	}
 	return false;
+}
+
+void vtLevel::SetRoofType(RoofType rt, int iSlope)
+{
+	int i, edges = GetNumEdges();
+	
+	if (rt == ROOF_FLAT)
+	{
+		for (i = 0; i < edges; i++)
+			m_Edges[i]->m_iSlope = 0;
+	}
+	if (rt == ROOF_SHED)
+	{
+		for (i = 0; i < edges; i++)
+			m_Edges[i]->m_iSlope = 90;
+		m_Edges[0]->m_iSlope = iSlope;
+	}
+	if (rt == ROOF_GABLE)
+	{
+		// Algorithm for guessing which edges makes up the gable roof:
+		if (GetNumEdges() == 4)
+		{
+			// In the case of a rectangular footprint, assume that the
+			// shorter edge has the gable
+			if (GetEdgeLength(1) > GetEdgeLength(0))
+			{
+				m_Edges[0]->m_iSlope = 90;
+				m_Edges[1]->m_iSlope = iSlope;
+				m_Edges[2]->m_iSlope = 90;
+				m_Edges[3]->m_iSlope = iSlope;
+			}
+			else
+			{
+				m_Edges[0]->m_iSlope = iSlope;
+				m_Edges[1]->m_iSlope = 90;
+				m_Edges[2]->m_iSlope = iSlope;
+				m_Edges[3]->m_iSlope = 90;
+			}
+		}
+		else
+		{
+			// Assume that only convex edges can be gables, and no more than
+			// one edge in a row is a gable.  All other edges are hip.
+			bool last_gable = false;
+			for (i = 0; i < edges; i++)
+			{
+				if (IsEdgeConvex(i) && !last_gable)
+				{
+					m_Edges[i]->m_iSlope = 90;
+					last_gable = true;
+				}
+				else
+				{
+					m_Edges[i]->m_iSlope = iSlope;
+					last_gable = false;
+				}
+			}
+		}
+	}
+	if (rt == ROOF_HIP)
+	{
+		for (i = 0; i < edges; i++)
+			m_Edges[i]->m_iSlope = iSlope;
+	}
+}
+
+void vtLevel::SetEaveLength(float fMeters)
+{
+	int i, edges = GetNumEdges();
+	
+	for (i = 0; i < edges; i++)
+	{
+		vtEdge *edge = m_Edges[i];
+		float rise = m_fStoryHeight;
+		// sin(slope) = rise/length
+		// length = rise/sin(slope)
+		float length = rise / sinf(edge->m_iSlope / 180.0f * PIf);
+		edge->m_Features[0].m_vf1 = -(fMeters / length);
+	}
+}
+
+bool vtLevel::IsEdgeConvex(int i)
+{
+	// get the 2 corner indices of this edge
+	int edges = GetNumEdges();
+	int c1 = i;
+	int c2 = (i+1 == edges) ? 0 : i+1;
+
+	return (IsCornerConvex(c1) && IsCornerConvex(c2));
+}
+
+bool vtLevel::IsCornerConvex(int i)
+{
+	// get the 2 adjacent corner indices
+	int edges = GetNumEdges();
+	int c1 = (i-1 < 0) ? edges-1 : i-1;
+	int c2 = i;
+	int c3 = (i+1 == edges) ? 0 : i+1;
+
+	// get edge vectors
+	DPoint2 v1 = m_Footprint[c2] - m_Footprint[c1];
+	DPoint2 v2 = m_Footprint[c3] - m_Footprint[c2];
+
+	// if dot product is positive, it's convex
+	double xprod = v1.Cross(v2);
+	return (xprod > 0);
 }
 
 
@@ -383,7 +504,28 @@ int vtBuilding::GetStories() const
 void vtBuilding::SetFootprint(int i, const DLine2 &dl)
 {
 	m_Levels[i]->SetFootprint(dl);
-};
+}
+
+void vtBuilding::SetRoofType(RoofType rt)
+{
+	m_RoofType = rt;
+
+	// if there is a roof level, attempt to set its edge angles to match the
+	// desired roof type
+	if (GetNumLevels() < 2)
+		return;
+
+	vtLevel *pLev = GetLevel(GetNumLevels()-1);
+
+	// provide default slopes for the roof sections
+	int iSlope = 0;
+	if (rt == ROOF_SHED)
+		iSlope = 4;
+	if (rt == ROOF_GABLE || rt == ROOF_HIP)
+		iSlope = 15;
+
+	pLev->SetRoofType(rt, iSlope);
+}
 
 void vtBuilding::SetCenterFromPoly()
 {
@@ -513,4 +655,36 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 	fprintf(fp, "\t</structure>\n");
 }
 
+void vtBuilding::AddDefaultDetails()
+{
+	// add some default windows/doors
+	vtLevel *lev;
+	vtEdge *edge;
+	int i, j;
+	int levs = m_Levels.GetSize();
+	for (i = 0; i < levs; i++)
+	{
+		lev = m_Levels[i];
+		int edges = lev->GetNumEdges();
+		for (j = 0; j < edges; j++)
+		{
+			edge = lev->GetEdge(j);
+			int doors = 0;
+			int windows = (int) (lev->GetEdgeLength(j) / 6.0f);
+			edge->Set(doors, windows, BMAT_SIDING);
+		}
+	}
+
+	// add a roof level
+	vtLevel *roof = new vtLevel();
+	roof->m_iStories = 1;
+	roof->SetFootprint(m_Levels[0]->GetFootprint());
+	int edges = roof->GetNumEdges();
+	for (j = 0; j < edges; j++)
+	{
+		edge = roof->GetEdge(j);
+		edge->m_iSlope = 0;		// flat roof
+	}
+	AddLevel(roof);
+}
 

@@ -90,7 +90,7 @@ public:
 
 	// color
 
-	// slope in degrees: 180 is vertical, 0 is horizontal
+	// slope in degrees: 90 is vertical, 0 is horizontal
 	int	m_iSlope;
 
 	// eave_length
@@ -114,14 +114,20 @@ public:
 	// assignment operator
 	vtLevel &operator=(const vtLevel &v);
 
-	void DeleteWalls();
 	void SetWalls(int n);
 	void SetFootprint(const DLine2 &dl);
 	DLine2 &GetFootprint() { return m_Footprint; }
 	void SetWallMaterial(BldMaterial bm);
 
+	int GetNumEdges() { return m_Edges.GetSize(); }
+	vtEdge *GetEdge(int i) { return m_Edges[i]; }
+	float GetEdgeLength(int i);
 	bool HasSlopedEdges();
 	bool IsHorizontal();
+	void SetRoofType(RoofType rt, int iSlopeDegrees);
+	void SetEaveLength(float fMeters);
+	bool IsEdgeConvex(int i);
+	bool IsCornerConvex(int i);
 
 	Array<vtEdge *> m_Edges;
 
@@ -129,8 +135,10 @@ public:
 	float	m_fStoryHeight;
 	RGBi	m_Color;			// overall level color
 
-	// footprint of the stories in this level
 protected:
+	void DeleteEdges();
+
+	// footprint of the stories in this level
 	DLine2		m_Footprint;
 };
 
@@ -157,6 +165,9 @@ public:
 	void SetFootprint(int i, const DLine2 &dl);
 	DLine2 &GetFootprint(int i) { return m_Levels[i]->GetFootprint(); }
 
+	void SetRoofType(RoofType rt);
+	RoofType GetRoofType() { return m_RoofType; }
+
 	void SetColor(BldColor which, RGBi col);
 	RGBi GetColor(BldColor which) const;
 
@@ -173,8 +184,8 @@ public:
 	void RectToPoly(float fWidth, float fDepth, float fRotation);
 
 	void WriteXML(FILE *fp, bool bDegrees);
+	void AddDefaultDetails();
 
-	RoofType	m_RoofType;
 	bool		m_bMoulding;
 	bool		m_bElevated;
 
@@ -186,6 +197,7 @@ protected:
 	DPoint2		m_EarthPos;			// location of building center
 
 private:
+	RoofType	m_RoofType;
 	void DeleteStories();
 };
 
@@ -195,3 +207,4 @@ typedef vtBuilding *vtBuildingPtr;
 ///////////////////////////////////////////////////////////////////////
 
 #endif // BUILDINGH
+

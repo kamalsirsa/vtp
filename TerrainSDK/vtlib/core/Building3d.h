@@ -18,6 +18,7 @@ struct MatMesh
 //	vtMaterial	*m_pMat;
 	int			m_iMatIdx;
 	vtMesh		*m_pMesh;
+	bool		m_bFans;
 };
 
 class vtBuilding3d : public vtBuilding
@@ -70,28 +71,29 @@ protected:
 	// internal methods
 	void DetermineWorldFootprints(vtHeightField *pHeightField);
 	float GetHeightOfStories();
+	void CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2);
 
-	void CreateEdgeGeometry(Array<FPoint3> &corners, vtLevel *pLev,
-		float fBase, int iWall, bool details);
+	void CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly2,
+		int iWall, bool details);
 
 	// creates a wall.  base_height is height from base of floor
 	// (to make siding texture match up right.)
-	void AddWallSection(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
-		FPoint3 p0, FPoint3 p1, float h1, float h2);
+	void AddWallSection(vtLevel *pLev, vtEdge *pWall,
+		const FLine3 &quad, float h1, float h2);
 
 	//adds a wall section with a door
 	void AddDoorSection(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
-		const FPoint3 &p0, const FPoint3 &p1);
+		const FLine3 &quad);
 
 	//adds a wall section with a window
 	void AddWindowSection(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
-		FPoint3 p0, FPoint3 p1);
+		const FLine3 &quad);
 
 	void AddWallNormal(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
-			const FPoint3 &p0, const FPoint3 &p1);
+			const FLine3 &quad);
 
-	void AddFlatRoof(Array<FPoint3> &pp, vtLevel *pLev);
-	void AddShedRoof(Array<FPoint3> &pp, vtLevel *pLev, float height);
+	void AddFlatRoof(FLine3 &pp, vtLevel *pLev);
+	void AddShedRoof(FLine3 &pp, vtLevel *pLev, float height);
 	/*	Top view:
 		Hip Roof:			Gable Roof:
 		_______				_______
@@ -107,8 +109,8 @@ protected:
 		/________\			|_________| 
 		(triangular from the other side.)
 	*/
-	void	AddHipRoof(Array<FPoint3> &pp, vtLevel *pLev, float height);
-	void	AddGableRoof(Array<FPoint3> &pp, vtLevel *pLev, float height);
+	void	AddHipRoof(FLine3 &pp, vtLevel *pLev, float height);
+	void	AddGableRoof(FLine3 &pp, vtLevel *pLev, float height);
 	void	BuildRoofPanel(FPoint3 *v, int n, ...);
 	FPoint3	Normal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2);
 
