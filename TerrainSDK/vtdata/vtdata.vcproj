@@ -26,6 +26,7 @@
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release_Unicode/vtdata.pch"
 				AssemblerListingLocation=".\Release_Unicode/"
@@ -74,6 +75,7 @@
 				AdditionalIncludeDirectories=".."
 				PreprocessorDefinitions="_DEBUG;DEBUG=1;WIN32;_WINDOWS;UNICODE"
 				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug_Unicode/vtdata.pch"
 				AssemblerListingLocation=".\Debug_Unicode/"
@@ -123,6 +125,7 @@
 				AdditionalIncludeDirectories=".."
 				PreprocessorDefinitions="_DEBUG;DEBUG=1;WIN32=1;_WINDOWS"
 				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/vtdata.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -175,6 +178,7 @@
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/vtdata.pch"
 				AssemblerListingLocation=".\Release/"
@@ -448,6 +452,9 @@
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\FeatureGeom.cpp">
 			</File>
 			<File
 				RelativePath="Features.cpp">
