@@ -36,6 +36,7 @@ public:
 	wxButton* GetAddTerrain()  { return (wxButton*) FindWindow( ID_ADD_TERRAIN ); }
 	wxTreeCtrl* GetTree()  { return (wxTreeCtrl*) FindWindow( ID_TREECTRL ); }
 	void RefreshTreeContents();
+	void RefreshTreeText();
 	void UpdateEnabling();
 	wxString GetCurrentPath();
 	wxString GetCurrentTerrainPath();

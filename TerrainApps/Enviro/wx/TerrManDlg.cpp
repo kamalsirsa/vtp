@@ -23,7 +23,9 @@
 class TMTreeItemData : public wxTreeItemData
 {
 public:
-	vtString m_strFile;
+	vtString m_strDir;
+	vtString m_strIniFile;
+	vtString m_strIniPath;
 	vtString m_strName;
 };
 
@@ -98,13 +100,41 @@ void TerrainManagerDlg::RefreshTreeContents()
 
 			wxTreeItemId hItem = m_pTree->AppendItem(hPath, wstr);
 			TMTreeItemData *data = new TMTreeItemData;
-			data->m_strFile = name;
+			data->m_strDir = directory;
+			data->m_strIniFile = name;
 			data->m_strName = params.m_strName;
 			m_pTree->SetItemData(hItem, data);
 		}
 		m_pTree->Expand(hPath);
 	}
 	m_pTree->Expand(m_Root);
+}
+
+void TerrainManagerDlg::RefreshTreeText()
+{
+	wxTreeItemId i1, i2;
+	long cookie1, cookie2;
+	TParams params;
+	wxString2 wstr, wstr2;
+
+	for (i1 = m_pTree->GetFirstChild(m_Root, cookie1); i1.IsOk(); i1 = m_pTree->GetNextChild(i1, cookie1))
+	{
+		for (i2 = m_pTree->GetFirstChild(i1, cookie2); i2.IsOk(); i2 = m_pTree->GetNextChild(i2, cookie2))
+		{
+			TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(i2);
+			wxString2 path = data->m_strDir + "/" + data->m_strIniFile;
+			if (params.LoadFromFile(path))
+			{
+				data->m_strName = params.m_strName;
+				wstr = data->m_strIniFile;
+				wstr += _T(" (");
+				wstr2.from_utf8(params.m_strName);
+				wstr += wstr2;
+				wstr += _T(")");
+				m_pTree->SetItemText(i2, wstr);
+			}
+		}
+	}
 }
 
 wxString TerrainManagerDlg::GetCurrentPath()
@@ -118,7 +148,7 @@ wxString TerrainManagerDlg::GetCurrentTerrainPath()
 	wxString2 path = GetCurrentPath();
 	TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
 	path += "Terrains/";
-	path += data->m_strFile;
+	path += data->m_strIniFile;
 	return path;
 }
 
@@ -130,7 +160,7 @@ void TerrainManagerDlg::OnCopy( wxCommandEvent &event )
 		return;
 
 	TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
-	wxString2 file = data->m_strFile;
+	wxString2 file = data->m_strIniFile;
 
 	wxString2 msg = "Please enter the name for the terrain copy.";
 	wxString2 str = wxGetTextFromUser(msg, _T("Add Copy of Terrain"), file);
@@ -152,7 +182,12 @@ void TerrainManagerDlg::OnEditParams( wxCommandEvent &event )
 	if (m_iSelect != 2)
 		return;
 
-	EditTerrainParameters(this, GetCurrentTerrainPath().mb_str());
+	int res = EditTerrainParameters(this, GetCurrentTerrainPath().mb_str());
+	if (res == wxID_OK)
+	{
+		// They might have changed the terrain name
+		RefreshTreeText();
+	}
 }
 
 void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
@@ -179,7 +214,7 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 		path += "Terrains/";
 
 		TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
-		path += data->m_strFile;
+		path += data->m_strIniFile;
 		vtDeleteFile(path.mb_str());
 	}
 	RefreshTreeContents();
