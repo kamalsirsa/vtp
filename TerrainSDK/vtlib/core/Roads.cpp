@@ -783,6 +783,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 #endif
 
 		pGeom = new vtGeom();
+		pGeom->SetName2("road");
 		m_pRoads[a][b]->AddChild(pGeom);
 		pGeom->SetMaterials(m_pMats);
 
