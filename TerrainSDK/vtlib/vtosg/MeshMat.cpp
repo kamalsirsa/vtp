@@ -407,7 +407,6 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	// also increases our own refcount
 	m_pGeometry->setUserData(this);
 
-
 	m_Vert = new Vec3Array;
 	m_Vert->reserve(NumVertices);
 	m_pGeometry->setVertexArray(m_Vert.get());
@@ -415,7 +414,6 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	m_Index = new UIntArray;
 	m_Index->reserve(NumVertices);
 	m_pGeometry->setVertexIndices(m_Index.get());
-
 
 	if (VertType & VT_Normals)
 	{
