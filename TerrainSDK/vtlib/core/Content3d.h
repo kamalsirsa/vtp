@@ -22,10 +22,10 @@ public:
 	vtItem3d();
 	~vtItem3d();
 
-	bool LoadModels(vtStringArray *pDataPaths);
+	bool LoadModels();
 	void UpdateExtents();
 
-	vtGroup *m_pGroup;
+	vtNode *m_pNode;
 };
 
 /**
@@ -37,14 +37,9 @@ class vtContentManager3d : public vtContentManager
 public:
 	vtContentManager3d();
 
-	void SetDataPaths(vtStringArray *pDataPaths) { m_pDataPaths = pDataPaths; }
-	vtGroup *CreateGroupFromItemname(const char *itemname);
-
 	// implementation
+	vtNode *CreateNodeFromItemname(const char *itemname);
 	virtual vtItem *NewItem() { return new vtItem3d; }
-
-protected:
-	vtStringArray *m_pDataPaths;
 };
 
 #endif // VTLIB_CONTENT3DH

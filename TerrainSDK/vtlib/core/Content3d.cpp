@@ -11,43 +11,38 @@
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 #include "Content3d.h"
+#include "TerrainScene.h"
 
 vtItem3d::vtItem3d()
 {
-	m_pGroup = NULL;
+	m_pNode = NULL;
 }
 
 vtItem3d::~vtItem3d()
 {
-	if (m_pGroup)
-		m_pGroup->Release();
-	m_pGroup = NULL;
+	if (m_pNode)
+		m_pNode->Release();
+	m_pNode = NULL;
 }
 
 /**
  * Load the model(s) associated with an item.  If there are several models,
  * generally these are different levels of detail (LOD) for the item.
  */
-bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
+bool vtItem3d::LoadModels()
 {
-	if (m_pGroup)
+	if (m_pNode)
 		return true;	// already loaded
 
 	int i, models = NumModels();
 
 	// attempt to instantiate the item
-	vtGroup *pGroup;
 	vtLOD *pLod;
 
 	if (models > 1)
 	{
 		pLod = new vtLOD;
-		m_pGroup = pLod;
-	}
-	else
-	{
-		pGroup = new vtGroup;
-		m_pGroup = pGroup;
+		m_pNode = pLod;
 	}
 	float ranges[20];
 	ranges[0] = 0.0f;
@@ -57,16 +52,16 @@ bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
 		vtModel *model = GetModel(i);
 		vtNode *pNode = NULL;
 
+		// perhaps it's directly resolvable
+		pNode = vtNode::LoadModel(model->m_filename);
+
 		// if there are some data path(s) to search, use them
-		if (pDataPaths != NULL)
+		if (!pNode)
 		{
-			vtString fullpath = FindFileOnPaths(*pDataPaths, model->m_filename);
+			vtString fullpath = FindFileOnPaths(vtGetDataPath(), model->m_filename);
 			if (fullpath != "")
 				pNode = vtNode::LoadModel(fullpath);
 		}
-		else
-			// perhaps it's directly resolvable
-			pNode = vtNode::LoadModel(model->m_filename);
 
 		if (!pNode)
 		{
@@ -75,16 +70,21 @@ bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
 			return false;
 		}
 
-		// Wrap in a transform node so that we can scale/rotate the node
-		vtTransform *pTrans = new vtTransform();
-		pTrans->AddChild(pNode);
+		if (model->m_scale != 1.0f)
+		{
+			// Wrap in a transform node so that we can scale/rotate the node
+			vtTransform *pTrans = new vtTransform();
+			pTrans->SetName2("scaling xform");
+			pTrans->AddChild(pNode);
+			pTrans->Identity();
+			pTrans->Scale3(model->m_scale, model->m_scale, model->m_scale);
+			pNode = pTrans;
+		}
 
-		vtString ext = GetExtension(model->m_filename, false);
-
-		pTrans->Identity();
-		pTrans->Scale3(model->m_scale, model->m_scale, model->m_scale);
-
-		m_pGroup->AddChild(pTrans);
+		if (models > 1)
+			pLod->AddChild(pNode);
+		else
+			m_pNode = pNode;
 
 		if (models > 1)
 			ranges[i+1] = model->m_distance;
@@ -107,7 +107,7 @@ void vtItem3d::UpdateExtents()
 {
 	m_extents.Empty();
 
-	if (m_pGroup == NULL)
+	if (m_pNode == NULL)
 		return;
 
 	// A good way to do it would be to try to get a tight bounding box,
@@ -117,7 +117,7 @@ void vtItem3d::UpdateExtents()
 	// Both the 3D model and the extents are in approximate meters and
 	//  centered on the item's local origin.
 	FSphere sph;
-	m_pGroup->GetBoundSphere(sph);
+	m_pNode->GetBoundSphere(sph);
 	m_extents.left = sph.center.x - sph.radius;
 	m_extents.right = sph.center.x + sph.radius;
 
@@ -132,17 +132,16 @@ void vtItem3d::UpdateExtents()
 
 vtContentManager3d::vtContentManager3d()
 {
-	m_pDataPaths = NULL;
 }
 
-vtGroup *vtContentManager3d::CreateGroupFromItemname(const char *itemname)
+vtNode *vtContentManager3d::CreateNodeFromItemname(const char *itemname)
 {
 	vtItem3d *pItem = (vtItem3d *) FindItemByName(itemname);
 	if (!pItem)
 		return NULL;
 
-	if (pItem->LoadModels(m_pDataPaths))
-		return pItem->m_pGroup;
+	if (pItem->LoadModels())
+		return pItem->m_pNode;
 	else
 		return NULL;
 }
