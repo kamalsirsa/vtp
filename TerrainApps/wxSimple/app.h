@@ -1,4 +1,6 @@
 //
+// Name: app.h
+//
 // Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
@@ -9,7 +11,7 @@ class vtTerrainScene;
 class vtApp: public wxApp
 {
 public:
-    bool OnInit(void);
+	bool OnInit(void);
 	bool CreateScene();
 	int OnExit();
 
@@ -17,5 +19,3 @@ public:
 	vtTerrainScene *m_pTerrainScene;
 };
 
-// helper
-bool AskForTerrainName(wxWindow *pParent, wxString &str);
