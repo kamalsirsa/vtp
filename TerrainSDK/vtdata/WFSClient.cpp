@@ -12,6 +12,7 @@
 #include "Features.h"
 #include "config_vtdata.h"
 #include "FilePath.h"
+#include "vtLog.h"
 
 // The dependency on Libwww is optional.  If not desired, skip this file.
 #if SUPPORT_HTTP
@@ -59,7 +60,7 @@ PRIVATE int printer (const char * fmt, va_list pArgs)
 {
 	char buf[20000];
 	int ret = vsprintf(buf, fmt, pArgs);
-	OutputDebugString(buf);
+	g_Log._Log(buf);
 	return ret;
 }
 
@@ -67,7 +68,7 @@ PRIVATE int tracer (const char * fmt, va_list pArgs)
 {
 	char buf[20000];
 	int ret = vsprintf(buf, fmt, pArgs);
-	OutputDebugString(buf);
+	g_Log._Log(buf);
 	return ret;
 }
 
