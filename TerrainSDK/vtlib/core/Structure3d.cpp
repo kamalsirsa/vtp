@@ -5,10 +5,10 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include <fstream>
-
-#include "xmlhelper/easyxml.hpp"
 #include "vtlib/vtlib.h"
+
+#include <fstream>
+#include "xmlhelper/easyxml.hpp"
 #include "vtdata/vtlog.h"
 
 #include "Structure3d.h"
