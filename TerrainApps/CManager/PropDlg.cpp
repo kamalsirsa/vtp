@@ -30,6 +30,7 @@
 // WDR: event table for PropDlg
 
 BEGIN_EVENT_TABLE(PropDlg,AutoPanel)
+	EVT_INIT_DIALOG(PropDlg::OnInitDialog)
 	EVT_TEXT( ID_ITEM, PropDlg::OnTextItem )
 	EVT_CHOICE( ID_TYPECHOICE, PropDlg::OnChoiceType )
 	EVT_BUTTON( ID_ADDTAG, PropDlg::OnAddTag )
@@ -43,7 +44,14 @@ PropDlg::PropDlg( wxWindow *parent, wxWindowID id,
 {
 	m_bUpdating = false;
 	m_pCurrentItem = NULL;
+
 	PropDialogFunc( this, TRUE ); 
+
+	m_pTypeChoice = GetTypeChoice();
+	m_pTagList = GetTaglist();
+
+	AddValidator(ID_ITEM, &m_strItem);
+	AddValidator(ID_TYPECHOICE, &m_strType);
 }
 
 // WDR: handler implementations for PropDlg
@@ -103,9 +111,6 @@ void PropDlg::OnTagEdit( wxCommandEvent &event )
 
 void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	m_pTypeChoice = GetTypeChoice();
-	m_pTagList = GetTaglist();
-
 	char buf[80];
 	FILE *fp = fopen("itemtypes.txt", "rb");
 	if (fp)
@@ -127,9 +132,6 @@ void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pTagList->SetColumnWidth(0, 100);
 	m_pTagList->InsertColumn(1, _T("Value"));
 	m_pTagList->SetColumnWidth(1, 120);
-
-	AddValidator(ID_ITEM, &m_strItem);
-	AddValidator(ID_TYPECHOICE, &m_strType);
 }
 
 void PropDlg::OnChoiceType( wxCommandEvent &event )

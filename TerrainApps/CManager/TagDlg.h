@@ -1,6 +1,9 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:	TagDlg.h
-/////////////////////////////////////////////////////////////////////////////
+//
+// Name:     TagDlg.h
+//
+// Copyright (c) 2002-2004 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef __TagDlg_H__
 #define __TagDlg_H__
@@ -10,6 +13,7 @@
 #endif
 
 #include "cmanager_wdr.h"
+#include "vtui/AutoDialog.h"
 #include "vtui/wxString2.h"
 
 // WDR: class declarations
@@ -18,7 +22,7 @@
 // TagDlg
 //----------------------------------------------------------------------------
 
-class TagDlg: public wxDialog
+class TagDlg: public AutoDialog
 {
 public:
 	// constructors and destructors
@@ -28,6 +32,9 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for TagDlg
+	wxChoice *GetTagName() { return (wxChoice *) FindWindow(ID_TAGNAME); }
+	wxTextCtrl *GetTagText() { return (wxTextCtrl *) FindWindow(ID_TAGTEXT); }
+
 	wxString2 m_strName;
 	wxString2 m_strValue;
 	

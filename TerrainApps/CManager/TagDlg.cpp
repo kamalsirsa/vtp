@@ -1,6 +1,9 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:	TagDlg.cpp
-/////////////////////////////////////////////////////////////////////////////
+//
+// Name:     TagDlg.cpp
+//
+// Copyright (c) 2002-2004 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifdef __GNUG__
 	#pragma implementation "TagDlg.cpp"
@@ -8,10 +11,6 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-	#pragma hdrstop
-#endif
 
 #include "TagDlg.h"
 #include <wx/valgen.h>
@@ -24,45 +23,37 @@
 
 // WDR: event table for TagDlg
 
-BEGIN_EVENT_TABLE(TagDlg,wxDialog)
+BEGIN_EVENT_TABLE(TagDlg,AutoDialog)
 EVT_INIT_DIALOG (TagDlg::OnInitDialog)
 END_EVENT_TABLE()
 
 TagDlg::TagDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	AutoDialog( parent, id, title, position, size, style )
 {
 	TagDialogFunc( this, TRUE ); 
-}
 
-void TagDlg::OnInitDialog(wxInitDialogEvent& event)
-{
-	wxChoice *pName;
-	wxWindow *pWin;
-	wxGenericValidator *gv;
-
-	pName = (wxChoice *) FindWindow(ID_TAGNAME);
-	gv = new wxGenericValidator(&m_strName);
-	pName->SetValidator(*gv);
-
-	pName->Append(_T("country"));
-	pName->Append(_T("creator"));
-	pName->Append(_T("language"));
-	pName->Append(_T("manufacturer"));
-	pName->Append(_T("model-name"));
-	pName->Append(_T("model-year"));
-	pName->Append(_T("url"));
-	pName->Append(_T("wire_info"));
-
-	pWin = FindWindow(ID_TAGTEXT);
-	gv = new wxGenericValidator(&m_strValue);
-	pWin->SetValidator(*gv);
-
-	wxDialog::OnInitDialog(event);
+	AddValidator(ID_TAGNAME, &m_strName);
+	AddValidator(ID_TAGTEXT, &m_strValue);
 }
 
 // WDR: handler implementations for TagDlg
 
+void TagDlg::OnInitDialog(wxInitDialogEvent& event)
+{
+	GetTagName()->Clear();
+	GetTagName()->Append(_T("country"));
+	GetTagName()->Append(_T("creator"));
+	GetTagName()->Append(_T("language"));
+	GetTagName()->Append(_T("manufacturer"));
+	GetTagName()->Append(_T("model-name"));
+	GetTagName()->Append(_T("model-year"));
+	GetTagName()->Append(_T("url"));
+	GetTagName()->Append(_T("wire_info"));
 
+	GetTagText()->Clear();
+
+	wxDialog::OnInitDialog(event);
+}
 
 

@@ -41,6 +41,11 @@ ModelDlg::ModelDlg( wxWindow *parent, wxWindowID id,
 	m_bUpdating = false;
 	m_pCurrentModel = NULL;
 	ModelDialogFunc( this, TRUE ); 
+
+	AddValidator(ID_FILENAME, &m_strFilename);
+	AddNumValidator(ID_DISTANCE, &m_fDistance);
+	AddNumValidator(ID_SCALE, &m_fScale, 5);
+	AddValidator(ID_STATUS, &m_strStatus);
 }
 
 // WDR: handler implementations for ModelDlg
@@ -112,13 +117,5 @@ void ModelDlg::UpdateFromControls()
 		m_pCurrentModel->m_distance = m_fDistance;
 		m_pCurrentModel->m_scale = m_fScale;
 	}
-}
-
-void ModelDlg::OnInitDialog(wxInitDialogEvent& event)
-{
-	AddValidator(ID_FILENAME, &m_strFilename);
-	AddNumValidator(ID_DISTANCE, &m_fDistance);
-	AddNumValidator(ID_SCALE, &m_fScale, 5);
-	AddValidator(ID_STATUS, &m_strStatus);
 }
 

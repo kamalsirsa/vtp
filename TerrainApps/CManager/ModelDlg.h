@@ -49,7 +49,6 @@ private:
 	void OnTextScale( wxCommandEvent &event );
 	void OnTextVisible( wxCommandEvent &event );
 	void OnTextFilename( wxCommandEvent &event );
-	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
 	DECLARE_EVENT_TABLE()
