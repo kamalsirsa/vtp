@@ -87,6 +87,9 @@ void latlon_to_xyz(double lat, double lon, DPoint3 &p)
 }
 
 
+/**
+ * Determine which part of which icosahedral face a point is on.
+ */
 void DymaxIcosa::FindFace(const DPoint3 &p, int &tri, int &lcd)
 {
 	// Determine which triangle and LCD triangle the point is in.
@@ -127,6 +130,10 @@ void DymaxIcosa::FindFace(const DPoint3 &p, int &tri, int &lcd)
 	if ( (h_dist3 <= h_dist2) && (h_dist2 <= h_dist1) ) {lcd = 4; }
 }
 
+/**
+ * Given a point and a face number, determine the u,v,w coordinates of
+ * the point in the reference frame of the face triangle.
+ */
 void DymaxIcosa::FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw)
 {
 #if 0
@@ -159,7 +166,11 @@ void DymaxIcosa::FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw)
 	m_face[tri].trans.Transform(p, uvw);
 }
 
-void DymaxIcosa::latlon_to_surface(double lat, double lon, DPoint3 &p_out)
+/**
+ * Given a geographic coordinate (lon, lat), find the corresponding
+ * point on the surface of the icosahedron.
+ */
+void DymaxIcosa::GeoToFaceUV(double lon, double lat, DPoint3 &p_out)
 {
 	DPoint3 p, uvw;
 	int tri, lcd;
@@ -171,10 +182,14 @@ void DymaxIcosa::latlon_to_surface(double lat, double lon, DPoint3 &p_out)
 	p_out = m_face[tri].base +
 		(m_face[tri].vec_a * uvw.x) +
 		(m_face[tri].vec_b * uvw.y);
-	p_out *= 1.01;
 }
 
-void DymaxIcosa::faceuv_to_latlon(int tri, DPoint3 &uvw, double &lat, double &lon)
+/** 
+ * Given information about a point in the referenced frame of an icosahedral
+ * face (tri, uvw), find the corresponding surface location in geographic
+ * coordinate (lon, lat)
+ */
+void DymaxIcosa::FaceUVToGeo(int tri, DPoint3 &uvw, double &lon, double &lat)
 {
 	DPoint3 p_out = m_face[tri].base +
 				(m_face[tri].vec_a * m_edge_length * uvw.x) +
@@ -190,6 +205,10 @@ void DymaxIcosa::faceuv_to_latlon(int tri, DPoint3 &uvw, double &lat, double &lo
 		lon -= PI2d;
 }
 
+/**
+ * Initializes the object with the values of the icosahedron and
+ * precomputes information for the faces.
+ */
 void DymaxIcosa::InitIcosa()
 {
 	double v_x[13], v_y[13], v_z[13];

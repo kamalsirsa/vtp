@@ -47,9 +47,10 @@ public:
 	void FindFace(const DPoint3 &p, int &tri, int &lcd);
 	void FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw);
 
-	void latlon_to_surface(double lat, double lon, DPoint3 &p_out);
-	void faceuv_to_latlon(int tri, DPoint3 &uvw, double &lat, double &lon);
+	void GeoToFaceUV(double lon, double lat, DPoint3 &p_out);
+	void FaceUVToGeo(int tri, DPoint3 &uvw, double &lon, double &lat);
 
+protected:
 	// icosahedron data
 	DPoint3 m_verts[13];
 	icoface m_face[21];
