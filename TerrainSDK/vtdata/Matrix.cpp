@@ -370,7 +370,126 @@ void DMatrix4::Invert(const DMatrix4 &src)
 
 
 //////////////////////////////////////////////////////////////
+// FMatrix3
+
+void FMatrix3::SetRow(int row, float f0, float f1, float f2)
+{
+	// matrices are stored as [column][row]
+	data[0][row] = f0;
+	data[1][row] = f1;
+	data[2][row] = f2;
+}
+
+void FMatrix3::Identity()
+{
+	data[0][0] = 1.0f;
+	data[0][1] = 0.0f;
+	data[0][2] = 0.0f;
+	data[1][0] = 0.0f;
+	data[1][1] = 1.0f;
+	data[1][2] = 0.0f;
+	data[2][0] = 0.0f;
+	data[2][1] = 0.0f;
+	data[2][2] = 1.0f;
+}
+
+bool FMatrix3::IsIdentity() const
+{
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			if (i == j)
+			{
+				if (data[i][j] != 1.0f) return false;
+			}
+			else
+			{
+				if (data[i][j] != 0.0f) return false;
+			}
+		}
+	}
+	return true;
+}
+
+void FMatrix3::AxisAngle(const FPoint3 &vec, double theta)
+{
+	double cost = cos(theta), sint = sin(theta);
+
+	double a2, b2, c2, abm, acm, bcm;
+	double mcos, asin, bsin, csin;
+	mcos = 1.0f - cost;
+	a2 = vec.x * vec.x;
+	b2 = vec.y * vec.y;
+	c2 = vec.z * vec.z;
+	abm = vec.x * vec.y * mcos;
+	acm = vec.x * vec.z * mcos;
+	bcm = vec.y * vec.z * mcos;
+	asin = vec.x * sint;
+	bsin = vec.y * sint;
+	csin = vec.z * sint;
+	data[0][0] = (float) (a2 * mcos + cost);
+	data[0][1] = (float) (abm - csin);
+	data[0][2] = (float) (acm + bsin);
+	data[1][0] = (float) (abm + csin);
+	data[1][1] = (float) (b2 * mcos + cost);
+	data[1][2] = (float) (bcm - asin);
+	data[2][0] = (float) (acm - bsin);
+	data[2][1] = (float) (bcm + asin);
+	data[2][2] = (float) (c2 * mcos + cost);
+}
+
+void FMatrix3::SetFromVectors(const FPoint3 &forward, const FPoint3 &up)
+{
+	FPoint3 f = forward;
+	f.Normalize();
+    FPoint3 side = f.Cross(up);
+	side.Normalize();
+
+    SetRow(0,	side.x,		side.y,		side.z);
+    SetRow(1,	up.x,		up.y,		up.z);
+    SetRow(2,	-forward.x,	-forward.y,	-forward.z);
+}
+
+void FMatrix3::SetFromMatrix4(const FMatrix4 &mat)
+{
+	SetRow(0, mat(0,0), mat(1,0), mat(2,0));
+	SetRow(1, mat(0,1), mat(1,1), mat(2,1));
+	SetRow(2, mat(0,2), mat(1,2), mat(2,2));
+}
+
+
+//////////////////////////////////////////////////////////////
 // FMatrix4
+
+void FMatrix4::SetRow(int row, float f0, float f1, float f2, float f3)
+{
+	// our matrices are stored as [column][row]
+	data[0][row] = f0;
+	data[1][row] = f1;
+	data[2][row] = f2;
+	data[3][row] = f3;
+}
+
+void FMatrix4::Identity()
+{
+	data[0][0] = 1.0f;
+	data[0][1] = 0.0f;
+	data[0][2] = 0.0f;
+	data[0][3] = 0.0f;
+	data[1][0] = 0.0f;
+	data[1][1] = 1.0f;
+	data[1][2] = 0.0f;
+	data[1][3] = 0.0f;
+	data[2][0] = 0.0f;
+	data[2][1] = 0.0f;
+	data[2][2] = 1.0f;
+	data[2][3] = 0.0f;
+	data[3][0] = 0.0f;
+	data[3][1] = 0.0f;
+	data[3][2] = 0.0f;
+	data[3][3] = 1.0f;
+}
 
 bool FMatrix4::IsIdentity() const
 {
@@ -416,6 +535,29 @@ void FMatrix4::AxisAngle(const FPoint3 &vec, double theta)
 	data[2][0] = (float) (acm - bsin);
 	data[2][1] = (float) (bcm + asin);
 	data[2][2] = (float) (c2 * mcos + cost);
+}
+
+void FMatrix4::SetFromVectors(const FPoint3 &pos, const FPoint3 &forward, const FPoint3 &up)
+{
+	FPoint3 f = forward;
+	f.Normalize();
+    FPoint3 side = f.Cross(up);
+	side.Normalize();
+
+    SetRow(0,	side.x,		side.y,		side.z,		0.0f);
+    SetRow(1,	up.x,		up.y,		up.z,		0.0f);
+    SetRow(2,	-forward.x,	-forward.y,	-forward.z,	0.0f);
+    SetRow(3,	0.0f,		0.0f,		0.0f,		1.0f);
+
+	Translate(pos);
+}
+
+void FMatrix4::SetFromMatrix3(const class FMatrix3 &mat)
+{
+	SetRow(0, mat(0,0), mat(1,0), mat(2,0), 0);
+	SetRow(1, mat(0,1), mat(1,1), mat(2,1), 0);
+	SetRow(2, mat(0,2), mat(1,2), mat(2,2), 0);
+	SetRow(3, 0, 0, 0, 1);
 }
 
 static float Dot3f(const float *d1, const float *d2)
@@ -695,26 +837,6 @@ static void Up_triangle_Inverse_Xform(const float src[4][4], float dst[4][4])
 		dst[3][2] = 0.0f;
 		dst[3][3] = o33;
 	}
-}
-
-void FMatrix4::Identity()
-{
-	data[0][0] = 1.0f;
-	data[0][1] = 0.0f;
-	data[0][2] = 0.0f;
-	data[0][3] = 0.0f;
-	data[1][0] = 0.0f;
-	data[1][1] = 1.0f;
-	data[1][2] = 0.0f;
-	data[1][3] = 0.0f;
-	data[2][0] = 0.0f;
-	data[2][1] = 0.0f;
-	data[2][2] = 1.0f;
-	data[2][3] = 0.0f;
-	data[3][0] = 0.0f;
-	data[3][1] = 0.0f;
-	data[3][2] = 0.0f;
-	data[3][3] = 1.0f;
 }
 
 void FMatrix4::Invert(const FMatrix4 &src)
