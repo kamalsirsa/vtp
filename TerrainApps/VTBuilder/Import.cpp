@@ -15,7 +15,6 @@
 #include "vtdata/DLG.h"
 #include "vtdata/LULC.h"
 #include "vtdata/Unarchive.h"
-#include "vtdata/boost/directory.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 
@@ -119,8 +118,6 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 
 	if (bGZip || bZip)
 	{
-		using namespace boost::filesystem;
-
 		// try to uncompress
 		wxString2 prepend_path;
 		prepend_path = GetTempFolderName(fname_in.mb_str());
@@ -148,11 +145,11 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 		else if (result == 1)
 		{
 			// the archive contained a single file
-			for (dir_it it((std::string) (prepend_path.mb_str())); it != dir_it(); ++it)
+			for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
 			{
-				if (get<is_directory>(it))
+				if (it.is_directory())
 					continue;
-				std::string name1 = *it;
+				std::string name1 = it.filename();
 				fname = prepend_path;
 				wxString2 tmp = name1.c_str();
 				fname += tmp;
@@ -175,9 +172,9 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 
 			// look for the catalog file
 			bool found = false;
-			for (dir_it it((std::string) (prepend_path.mb_str())); it != dir_it(); ++it)
+			for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
 			{
-				std::string name1 = *it;
+				std::string name1 = it.filename();
 				wxString2 fname2 = name1.c_str();
 				if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0 ||
 				    fname2.Right(4).CmpNoCase(_T(".dem")) == 0)
