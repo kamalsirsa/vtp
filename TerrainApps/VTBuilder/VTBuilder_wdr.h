@@ -155,10 +155,12 @@ wxSizer *VegFieldsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_s
 #define ID_TYPE_CENTER 10092
 #define ID_TYPE_FOOTPRINT 10093
 #define ID_FLIP 10094
-#define ID_TYPE_LINEAR 10095
-#define ID_TYPE_INSTANCE 10096
-#define ID_CHOICE_FILE_FIELD 10097
-#define ID_INSIDE_AREA 10098
+#define ID_CHOICE_HEIGHT_FIELD 10095
+#define ID_CHOICE_HEIGHT_TYPE 10096
+#define ID_TYPE_LINEAR 10097
+#define ID_TYPE_INSTANCE 10098
+#define ID_CHOICE_FILE_FIELD 10099
+#define ID_INSIDE_AREA 10100
 wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
