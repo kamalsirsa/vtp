@@ -1008,7 +1008,11 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 
 		// Modify height of fence
 		if (iHeightIndex != -1)
-			pFence->SetHeight((float)pFeature->GetFieldAsDouble(iHeightIndex));
+		{
+			float f = (float)pFeature->GetFieldAsDouble(iHeightIndex);
+			pFence->GetParams().m_fPostHeight = f;
+			pFence->GetParams().m_fConnectTop = f;
+		}
 
 		// Modify elevation of fence
 		fOriginalElevation = -1E9;
