@@ -233,7 +233,7 @@ vtString vtApp::GetIniFileForTerrain(const vtString &name)
 	return vtString("");
 }
 
-void EditTerrainParameters(wxWindow *parent, const char *filename) 
+int EditTerrainParameters(wxWindow *parent, const char *filename) 
 {
 	TParamsDlg dlg(parent, -1, _T("Terrain Creation Parameters"), wxDefaultPosition);
 	dlg.SetDataPaths(g_Options.m_DataPaths);
@@ -253,6 +253,9 @@ void EditTerrainParameters(wxWindow *parent, const char *filename)
 			str.Printf(_T("Couldn't save to file %hs.\n")
 				_T("Please make sure the file is not read-only."), filename);
 			wxMessageBox(str);
+			result = wxID_CANCEL;
 		}
 	}
+	return result;
 }
+

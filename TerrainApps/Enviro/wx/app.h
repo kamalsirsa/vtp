@@ -27,5 +27,5 @@ public:
 };
 
 // helpers
-void EditTerrainParameters(wxWindow *parent, const char *filename);
+int EditTerrainParameters(wxWindow *parent, const char *filename);
 
