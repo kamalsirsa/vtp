@@ -184,6 +184,9 @@ vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows)
 	// keep a count of how many vertices we've added
 	int vcount = 0, vstart;
 
+#if 0	// This code would need to be re-written to use a separate mesh for
+		// the shadow.  However, it's probably not worth it as a polygon
+		// plant shadow is at best a poor visual effect.
 	// do shadow first, so it will be drawn first
 	if (bShadows && m_shadow_radius > 0.0f)
 	{
@@ -202,6 +205,7 @@ vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows)
 
 		pTreeMesh->AddFan(vcount, vcount+1, vcount+2, vcount+3, vcount+4, vcount+5);
 	}
+#endif
 
 	// the do the rest of the billboard geometry: two squares
 	vstart = vcount;
