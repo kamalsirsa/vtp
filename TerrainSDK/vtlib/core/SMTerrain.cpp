@@ -395,30 +395,10 @@ MathType SMTerrain::ComputeTriangleVariance(int num, int v0, int v1, int va, int
 		if (child_var > variance) variance = child_var;
 	}
 
-#if 0
-	if (variance < minvar)	// check range of variance
-		minvar = variance;
-	else if (variance > maxvar)
-		maxvar = variance;
-#endif
-
-#if 0
-	stat_total++;
-	if (variance < 256)
-		stat_256++;
-#endif
-
-#if 0
-	variance /= 2;
-	if (variance > 255)
-		variance = 255;
-#endif
-
-	// store in the implicit tree
-#if 1
+	// store in the variance implicit tree
+#if USE_FP8
 	m_pVariance[num] = (VarianceType) EncodeFP8(variance);
 #else
-//	m_pVariance[num] = variance * variance;		// store variance squared?
 	m_pVariance[num] = (VarianceType) variance;
 #endif
 
@@ -567,9 +547,6 @@ void SMTerrain::AdjustQualityConstant()
 	if (m_iPolygonTarget * 3 > m_iTriPoolSize)
 		AllocatePool();
 
-	// how far are we from the desired triangle count?
-//	int diff = m_iDrawnTriangles - m_iPolygonTarget;
-
 	// The number of split triangles in the triangle pool will be roughly
 	// 2x the number of drawn polygons, and provides a more robust metric
 	// than using the polygon count itself.
@@ -584,12 +561,6 @@ void SMTerrain::AdjustQualityConstant()
 	m_fQualityConstant *= adjust;
 	if (m_fQualityConstant < QUALITYCONSTANT_MIN)
 		m_fQualityConstant = QUALITYCONSTANT_MIN;
-
-#if 0
-	vtString str;
-	str.Format("QC %f adjust %f\n", m_fQualityConstant, adjust);
-	OutputDebugString(str);
-#endif
 }
 
 
@@ -702,17 +673,8 @@ void SMTerrain::SplitIfNeeded(int num, BinTri *tri,
 
 	if (!bEntirelyInFrustum)
 	{
-#if 0
-		FPoint3 p1(MAKE_XYZ(v0));
-		FPoint3 p2(MAKE_XYZ(v1));
-		FPoint3 p3(MAKE_XYZ(va));
-		float fTolerance = m_HypoLength[level] : 0.0f;
-		// test the triangle against the view volume
-		int ret = IsVisible(p1, p2, p3, fTolerance);
-#else
 		FPoint3 p1(MAKE_XYZ(vc));
 		int ret = IsVisible(p1, m_HypoLength[level]/2.0f);
-#endif
 		if (ret == VT_AllVisible)
 		{
 			bEntirelyInFrustum = true;
@@ -764,8 +726,13 @@ void SMTerrain::SplitIfNeeded(int num, BinTri *tri,
 #if STORE_DISTANCE
 		tri->m_distance = distance;
 #endif
-//		if ((float)m_pVariance[num] / m_fQualityConstant > distance - m_HypoLength[level])
-		if ((float)DecodeFP8(m_pVariance[num]) / m_fQualityConstant > distance - m_HypoLength[level])
+
+#if USE_FP8
+		float variance = DecodeFP8(m_pVariance[num]);
+#else
+		float variance = m_pVariance[num];
+#endif
+		if (variance / m_fQualityConstant > distance - m_HypoLength[level])
 		{
 			Split(tri);
 		}
@@ -816,34 +783,6 @@ void SMTerrain::Split2(BinTri *tri)
 	tri->RightChild->RightNeighbor = tri->LeftChild;
 	tri->LeftChild->BottomNeighbor = tri->LeftNeighbor;
 
-#if 0
-	// Original McNally implementation
-	if (tri->LeftNeighbor != NULL)
-	{
-		if (tri->LeftNeighbor->BottomNeighbor == tri)
-			tri->LeftNeighbor->BottomNeighbor = tri->LeftChild;
-		else
-		{
-			if (tri->LeftNeighbor->LeftNeighbor == tri)
-				tri->LeftNeighbor->LeftNeighbor = tri->LeftChild;
-			else
-				tri->LeftNeighbor->RightNeighbor = tri->LeftChild;
-		}
-	}
-	tri->RightChild->BottomNeighbor = tri->RightNeighbor;
-	if (tri->RightNeighbor != NULL)
-	{
-		if (tri->RightNeighbor->BottomNeighbor == tri)
-			tri->RightNeighbor->BottomNeighbor = tri->RightChild;
-		else
-		{
-			if (tri->RightNeighbor->RightNeighbor == tri)
-				tri->RightNeighbor->RightNeighbor = tri->RightChild;
-			else
-				tri->RightNeighbor->LeftNeighbor = tri->RightChild;
-		}
-	}
-#else
 	// Simplified implementation by Andreas Ogren (omits 2 ifs)
 	if (tri->LeftNeighbor != NULL)
 	{
@@ -860,7 +799,6 @@ void SMTerrain::Split2(BinTri *tri)
 		else
 			tri->RightNeighbor->LeftNeighbor = tri->RightChild;
 	}
-#endif
 
 	tri->LeftChild->LeftChild = NULL;
 	tri->LeftChild->RightChild = NULL;
@@ -885,8 +823,6 @@ void SMTerrain::DoRender()
 {
 	// Prepare the render state for our OpenGL usage
 	PreRender();
-
-//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Render the triangles
 	RenderSurface();
@@ -937,7 +873,7 @@ void SMTerrain::flush_buffer(int type)
 	#define Begin(x)
 	#define End()
 #else		// send each vertex individually
-	#define send_vertex(index) glVertex3f((index%m_iDim), m_pData[index]/4, (index / m_iDim))
+	#define send_vertex(index) glVertex3f((index%m_iDim), m_pData[index]/4.0f, (index / m_iDim))
 	#define Begin(x) glBegin(x)
 	#define End() glEnd()
 #endif
@@ -1024,8 +960,6 @@ void SMTerrain::render_triangle_as_fan(BinTri *pTri, int v0, int v1, int va,
 	m_iDrawnTriangles++;
 }
 
-static float fade_material[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
 void SMTerrain::render_triangle_single(BinTri *pTri, int v0, int v1, int va)
 {
 	// if there are children, descend
@@ -1037,12 +971,6 @@ void SMTerrain::render_triangle_single(BinTri *pTri, int v0, int v1, int va)
 		return;
 	}
 	// at this point, we know this is a leaf node
-
-#if 0
-	// Potential optimization: don't draw triangle under sea level
-	if (m_pData[v0] < 0 && m_pData[v1] < 0 && m_pData[va] < 0)
-		return;
-#endif
 
 	// non-fan logic
 #if STORE_FRUSTUM
@@ -1059,20 +987,14 @@ void SMTerrain::render_triangle_single(BinTri *pTri, int v0, int v1, int va)
 	{
 		if (pTri->m_distance > 8.0f) return;
 		glColor4f(1.0f, 1.0f, 1.0f, 0.5f - pTri->m_distance / 8.0f);
-//		fade_material[3] = 0.5f - pTri->m_distance / 16.0f;
-//		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, fade_material);
 	}
 #endif
 	Begin(GL_TRIANGLES);
-#if 1
+
 	send_vertex(v0);
 	send_vertex(v1);
 	send_vertex(va);
-#else
-	glVertex3f(LOCX(v0), LOCY(v0)+.0005f, LOCZ(v0));
-	glVertex3f(LOCX(v1), LOCY(v1)+.0005f, LOCZ(v1));
-	glVertex3f(LOCX(va), LOCY(va)+.0005f, LOCZ(va));
-#endif
+
 	End();
 #if USE_VERTEX_BUFFER
 	if (verts_in_buffer == VERTEX_BUFFER_SIZE)
@@ -1112,27 +1034,12 @@ void SMTerrain::RenderBlock(BlockPtr block, bool bFans)
 
 bool SMTerrain::BlockIsVisible(BlockPtr block)
 {
-#if 0
-	// test the 2 root triangles against the view volume
-	FPoint3 p1, p2, p3;
-	p1.Set(MAKE_XYZ(block->v0[0]));
-	p2.Set(MAKE_XYZ(block->v1[0]));
-	p3.Set(MAKE_XYZ(block->va[0]));
-	int ret0 = IsVisible(p1, p2, p3);
-	p1.Set(MAKE_XYZ(block->v0[1]));
-	p2.Set(MAKE_XYZ(block->v1[1]));
-	p3.Set(MAKE_XYZ(block->va[1]));
-	int ret1 = IsVisible(p1, p2, p3);
-
-	return (ret0 > 0 || ret1 > 0);
-#else
 	// just test one of the triangles, using the point-radius test
 	int vc = (block->v0[0] + block->v1[0]) >> 1;
 	FPoint3 p1(MAKE_XYZ(vc));
 	int ret = IsVisible(p1, m_HypoLength[m_iBlockLevel]/2.0f);
 
 	return (ret > 0);
-#endif
 }
 
 
@@ -1201,11 +1108,8 @@ void SMTerrain::RenderSurface()
 				hack_detail_pass = true;
 				glPolygonOffset(-1.0f, -1.0f);
 				glEnable(GL_POLYGON_OFFSET_FILL);
-//				glBlendFunc(GL_ONE, GL_ONE);
-//				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 				RenderBlock(block, false);	// NOT as fans
 				glDisable(GL_POLYGON_OFFSET_FILL);
-//				glPolygonOffset(0.0f, 0.0f);
 			}
 		}
 	}
