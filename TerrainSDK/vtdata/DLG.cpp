@@ -398,6 +398,7 @@ DLGType vtDLGFile::GuessFileType()
 	case 17: return DLG_ROAD;
 	case 18: return DLG_RAIL;
 	case 19: return DLG_MTF;
+	case 20: return DLG_MANMADE;
 	}
 	return DLG_UNKNOWN;
 }

@@ -30,6 +30,7 @@ enum DLGType
 	DLG_ROAD,
 	DLG_RAIL,
 	DLG_MTF,
+	DLG_MANMADE,
 	DLG_UNKNOWN
 };
 
