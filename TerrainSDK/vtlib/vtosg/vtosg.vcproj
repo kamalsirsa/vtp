@@ -239,6 +239,9 @@
 			Name="Core Source"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath="..\core\AnimPath.cpp">
+			</File>
+			<File
 				RelativePath="..\core\AttribMap.cpp">
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1569,6 +1572,9 @@
 		<Filter
 			Name="Core Headers"
 			Filter="h;hpp;hxx;hm;inl">
+			<File
+				RelativePath="..\core\AnimPath.h">
+			</File>
 			<File
 				RelativePath="..\core\AttribMap.h">
 			</File>
