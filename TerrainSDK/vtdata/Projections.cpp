@@ -56,10 +56,10 @@ void  vtProjection::SetDatum(DATUM datum)
 	{
 	case NAD27:		dnode->GetChild(0)->SetValue("North_American_Datum_1927"); break;
 	case NAD83:		dnode->GetChild(0)->SetValue("North_American_Datum_1983"); break;
-	case WGS_72:	dnode->GetChild(0)->SetValue("WGS_1984"); break;
+	case WGS_72:	dnode->GetChild(0)->SetValue("WGS_1972"); break;
 	case OLD_HAWAIIAN_MEAN:	dnode->GetChild(0)->SetValue("Old_Hawaiian"); break;
 	default:
-	case WGS_84:	dnode->GetChild(0)->SetValue("WGS_1972"); break;
+	case WGS_84:	dnode->GetChild(0)->SetValue("WGS_1984"); break;
 	}
 }
 
