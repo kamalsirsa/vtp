@@ -18,6 +18,10 @@
 #include <vector>
 #include <list>
 
+#ifdef _MSC_VER
+#pragma warning(disable: 4786)	// prevent common warning about templates
+#endif
+
 #ifdef EPS
 #include <fstream>
 #endif
