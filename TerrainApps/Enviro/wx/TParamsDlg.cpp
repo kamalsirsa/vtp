@@ -649,6 +649,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.bmp");
 		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.jpg");
 		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.jpeg");
+		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.png");
 		sel = m_pTextureFileSingle->FindString(m_strTextureSingle);
 		if (sel != -1)
 			m_pTextureFileSingle->SetSelection(sel);
