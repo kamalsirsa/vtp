@@ -10,23 +10,19 @@
 #include "SkyDome.h"
 
 // minimum and maximum ambient light values
-#define MIN_AMB		0.0f
-#define MAX_AMB		1.0f
-#define AMB_RANGE	(MAX_AMB-MIN_AMB)
+const float MIN_AMB = 0.0f;
+const float MAX_AMB = 1.0f;
+const float AMB_RANGE = MAX_AMB-MIN_AMB;
 
 // maximum directional light intensity
-#define MAX_INT		1.0f
+const float MAX_INT = 1.0f;
 
 // only show stars up to this magnitude
-#define MAX_MAGNITUDE	5.8f
-
-#define SQR(x)	x * x
-#define TWO_PI (PI * 2.0f)
-#define QUARTER_PI	(PI * 0.25f)
+const float MAX_MAGNITUDE = 5.8f;
 
 // Radians <-> Degrees Macros, single angle
-#define RAD_TO_DEG(x) (x * (180.0f/PIf))
-#define DEG_TO_RAD(x) (x * (PIf/180.0f))
+inline float RAD_TO_DEG(float x){return (x * (180.0f/PIf));}
+inline float DEG_TO_RAD(float x){return (x * (PIf/180.0f));}
 
 // Coordinate change macros for a point class
 // Here x = rho, y = theta, z = phi
@@ -34,16 +30,16 @@
 #define theta	y
 #define phi		z
 
-#define PT_CART_TO_SPHERE(A, B) {\
-	B.rho = sqrtf(SQR(A.x) + SQR(A.y) + SQR(A.z));\
-	B.theta = atan2f(-A.z, A.x);\
-	B.phi = atan2f(A.y, sqrt(SQR(A.x) + SQR(A.z)));\
+inline void PT_CART_TO_SPHERE(const FPoint3& A, FPoint3& B) {
+	B.rho = A.Length();
+	B.theta = atan2f(-A.z, A.x);
+	B.phi = atan2f(A.y, sqrtf(A.x*A.x + A.z*A.z));
 }
 
-#define PT_SPHERE_TO_CART(A, B) {\
-	B.x = A.rho * cosf(A.phi) * sinf(A.theta);\
-	B.y = A.rho * cosf(A.phi) * cosf(A.theta);\
-	B.z = -A.rho * sinf(A.phi);\
+inline void PT_SPHERE_TO_CART(const FPoint3& A, FPoint3& B) {
+	B.x = A.rho * cosf(A.phi) * sinf(A.theta);
+	B.y = A.rho * cosf(A.phi) * cosf(A.theta);
+	B.z = -A.rho * sinf(A.phi);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -477,7 +473,7 @@ void vtDayDome::ConvertVertices()
 	}
 }
 
-#define NITE_GLO 0.15f
+const float NITE_GLO = 0.15f;
 
 //
 //

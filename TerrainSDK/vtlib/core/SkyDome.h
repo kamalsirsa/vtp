@@ -11,7 +11,10 @@
 #include <time.h>
 
 /// Convert a time (hours, minutes, seconds) to a single value (seconds)
-#define TIME_TO_INT(hr, min, sec) ((hr * 60 + min) * 60 + sec)
+inline const int TIME_TO_INT(const double hr, const double min, const double sec)
+{
+	return (int)((hr * 60 + min) * 60 + sec);
+}
 
 struct Star
 {
