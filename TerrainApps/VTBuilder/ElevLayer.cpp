@@ -170,9 +170,11 @@ bool vtElevLayer::OnLoad()
 
 		m_pGrid = new vtElevationGrid();
 		success = m_pGrid->LoadFromBT(fname.mb_str(), progress_callback);
-		m_pGrid->GetDimensions(m_iColumns, m_iRows);
-
-		m_pGrid->SetupConversion(1.0f);
+		if (success)
+		{
+			m_pGrid->GetDimensions(m_iColumns, m_iRows);
+			m_pGrid->SetupConversion(1.0f);
+		}
 	}
 	else if (!fname.Right(4).CmpNoCase(_T(".tin")) ||
 			 !fname.Right(4).CmpNoCase(_T(".itf")))
@@ -180,7 +182,6 @@ bool vtElevLayer::OnLoad()
 		m_pTin = new vtTin2d();
 		success = m_pTin->Read(fname.mb_str());
 	}
-
 
 	CloseProgressDialog();
 	return success;
