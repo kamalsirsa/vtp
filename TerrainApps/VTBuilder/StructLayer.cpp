@@ -21,6 +21,7 @@
 //#include "ScaledView.h"
 #include "vtui/BuildingDlg.h"
 #include "Helper.h"
+#include "ImportStructDlg.h"
 
 wxPen orangePen;
 wxPen yellowPen;
@@ -746,7 +747,9 @@ void vtStructureLayer::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 bool vtStructureLayer::AddElementsFromSHP(const char *filename,
 										  vtProjection &proj, DRECT rect)
 {
-	wxString choices[3];
+	ImportStructDlg dlg(NULL, -1, "Import Structures");
+
+/*	wxString choices[3];
 	choices[0] = "Buildings (parametric by center or footprint)";
 	choices[1] = "Linear Structures (fences)";
 	choices[2] = "Instances (external model references)";
@@ -778,10 +781,14 @@ bool vtStructureLayer::AddElementsFromSHP(const char *filename,
 		if (res == wxYES)
 			bFlip = true;
 	}
+*/
+	vtStructureType type;
+	if (dlg.m_iType == 0) type = ST_BUILDING;
+	if (dlg.m_iType == 1) type = ST_BUILDING;
+	if (dlg.m_iType == 2) type = ST_LINEAR;
+	if (dlg.m_iType == 3) type = ST_INSTANCE;
 
-//	OpenProgressDialog("SHP File Import");
-	bool success = ReadSHP(filename, type, rect, bFlip, progress_callback);
-//	CloseProgressDialog();
+	bool success = ReadSHP(filename, type, rect, dlg.m_bFlip, progress_callback);
 	if (!success)
 		return false;
 
