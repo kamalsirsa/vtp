@@ -169,7 +169,12 @@ wxString vtLayer::GetSaveFileDialogFilter()
 bool vtLayer::AskForSaveFilename()
 {
 	wxString filter = GetSaveFileDialogFilter();
-	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), GetLayerFilename(),
+	wxString2 name = GetLayerFilename();
+#if WIN32
+	// The dumb Microsoft file dialog can have trouble with forward slashes.
+	name = name.ToBackslash();
+#endif
+	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), name,
 		filter, wxSAVE | wxOVERWRITE_PROMPT);
 
 	VTLOG("Asking user for file name\n");
@@ -177,7 +182,7 @@ bool vtLayer::AskForSaveFilename()
 	if (!bResult)
 		return false;
 
-	wxString2 name = saveFile.GetPath();
+	name = saveFile.GetPath();
 	VTLOG("Got filename: '%s'\n", name.mb_str());
 
 	// Add file extension if user didn't specify it
