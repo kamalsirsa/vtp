@@ -20,14 +20,14 @@
 
 #define DEFAULT_POLYGON_TARGET	10000
 #define ADAPTION_SPEED		.00003f
-#define QUALITYCONSTANT_MIN	1.5f
+#define QUALITYCONSTANT_MIN	0.002f
 
 #define ASSUME_LOWEST_LEVEL	1	// Saves memory and increases strip length
 
 #if INTEGER_HEIGHT
-#define PACK_SCALE	4	// use .25 meter spacing
+#define PACK_SCALE	4.0f	// use .25 meter spacing
 #else
-#define PACK_SCALE 1.0f
+#define PACK_SCALE	1.0f
 #endif
 
 #if USE_VERTEX_BUFFER
@@ -244,7 +244,7 @@ bool SMTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 			m_pData[offset(i,j)] = (HeightType)(PACK_SCALE * elev);
 		}
 	}
-	m_fZScale = INTEGER_HEIGHT ? (fZScale / PACK_SCALE) : fZScale;
+	m_fZScale = fZScale / PACK_SCALE;
 
 	// find indices of corner vertices
 	m_sw = offset(0, 0);
@@ -873,7 +873,7 @@ void SMTerrain::flush_buffer(int type)
 	#define Begin(x)
 	#define End()
 #else		// send each vertex individually
-	#define send_vertex(index) glVertex3f((index%m_iDim), m_pData[index]/4.0f, (index / m_iDim))
+	#define send_vertex(index) glVertex3f((index%m_iDim), m_pData[index], (index / m_iDim))
 	#define Begin(x) glBegin(x)
 	#define End() glEnd()
 #endif
@@ -1074,6 +1074,9 @@ void SMTerrain::RenderSurface()
 {
 	fan_count = 0;	// for statistics
 
+	glPushMatrix();
+	glScalef(1, 1/PACK_SCALE, 1);
+
 #if 0
 	// If we had no blocks, it would be this simple:
 	// Start with the two top triangles
@@ -1121,6 +1124,7 @@ void SMTerrain::RenderSurface()
 	}
 
 	DisableTexGen();
+	glPopMatrix();
 }
 
 
