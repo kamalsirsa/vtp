@@ -30,9 +30,11 @@ public:
 	// triangulate a contour/polygon, places results in STL vector
 	// as series of triangles.
 	static bool Process(const FLine2 &contour, FLine2 &result);
+	static bool Process(const FLine3 &contour, FLine3 &result);
 
 	// compute area of a contour/polygon
 	static float Area(const FLine2 &contour);
+	static float Area(const FLine3 &contour);
 
 	// decide if point Px/Py is inside triangle defined by
 	// (Ax,Ay) (Bx,By) (Cx,Cy)
@@ -43,6 +45,7 @@ public:
 
 private:
 	static bool Snip(const FLine2 &contour,int u,int v,int w,int n,int *V);
+	static bool Snip(const FLine3 &contour,int u,int v,int w,int n,int *V);
 };
 
 class Triangulate_d
