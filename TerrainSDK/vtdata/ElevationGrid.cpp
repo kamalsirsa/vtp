@@ -480,21 +480,21 @@ void vtElevationGrid::SetFValue(int i, int j, float value)
  * \param i, j Column and row location in the grid.
  * \return The value in (integer) meters.
  */
-int vtElevationGrid::GetValue(int i, int j) const
+short vtElevationGrid::GetValue(int i, int j) const
 {
 	if (m_bFloatMode)
 	{
 		float value = m_pFData[i*m_iRows+j];
 		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
-			return (int) value;
+			return (short) value;
 		else
-			return (int) (value * m_fVMeters);
+			return (short) (value * m_fVMeters);
 	}
 	short svalue = m_pData[i*m_iRows+j];
 	if (m_fVMeters == 1.0f || svalue == INVALID_ELEVATION)
 		return svalue;
 	else
-		return (int) ((float)svalue * m_fVMeters);
+		return (short) ((float)svalue * m_fVMeters);
 }
 
 /** Get an elevation value from the grid.
