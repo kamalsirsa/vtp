@@ -251,6 +251,7 @@ void BuildingDlg::OnStoryHeight( wxCommandEvent &event )
         return;
     TransferDataFromWindow();
     m_pLevel->m_fStoryHeight = m_fStoryHeight;
+	m_pBuilding->DetermineLocalFootprints();
     Modified();
 }
 
