@@ -40,6 +40,7 @@ public:
 	void Create(int iTriangleCount, const vtStringArray &paths,
 		const vtString &strImagePrefix, Style style = GEODESIC);
 	vtTransform *GetTop() { return m_top; }
+	vtGroup *GetSurface() { return m_SurfaceGroup; }
 
 	// control globe behavior
 	void SetInflation(float f);
