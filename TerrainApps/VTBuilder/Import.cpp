@@ -564,9 +564,8 @@ void MainFrame::ImportDataFromTIGER(wxString &strDirName)
 		if (!defn)
 			continue;
 
-		const char *layer_name = defn->GetName();
-
-//Debug:
+#if 1
+		//Debug:
 		int field_count1 = defn->GetFieldCount();
 		for (j = 0; j < field_count1; j++)
 		{
@@ -577,85 +576,124 @@ void MainFrame::ImportDataFromTIGER(wxString &strDirName)
 				OGRFieldType ftype = field_def1->GetType();
 			}
 		}
+#endif
 
-		if (!strcmp(layer_name, "CompleteChain"))
+		// ignore all layers other than CompleteChain
+		const char *layer_name = defn->GetName();
+		if (strcmp(layer_name, "CompleteChain"))
+			continue;
+
+		// Get the projection (SpatialReference) from this layer
+		OGRSpatialReference *pSpatialRef = pOGRLayer->GetSpatialRef();
+		if (pSpatialRef)
 		{
-			// Get the projection (SpatialReference) from this layer
-			OGRSpatialReference *pSpatialRef = pOGRLayer->GetSpatialRef();
-			if (pSpatialRef)
+			vtProjection proj;
+			proj.SetSpatialReference(pSpatialRef);
+			pWL->SetProjection(proj);
+			pRL->SetProjection(proj);
+		}
+
+		// Progress Dialog
+		OpenProgressDialog("Importing from TIGER...");
+
+		int index_cfcc = defn->GetFieldIndex("CFCC");
+		int fcount = 0;
+		while( (pFeature = pOGRLayer->GetNextFeature()) != NULL )
+		{
+			UpdateProgressDialog(100 * fcount / feature_count);
+
+			pGeom = pFeature->GetGeometryRef();
+			if (!pGeom) continue;
+
+			if (!pFeature->IsFieldSet(index_cfcc))
+				continue;
+
+			const char *cfcc = pFeature->GetFieldAsString(index_cfcc);
+
+			pLineString = (OGRLineString *) pGeom;
+			int num_points = pLineString->getNumPoints();
+
+			if (!strncmp(cfcc, "A", 1))
 			{
-				vtProjection proj;
-				proj.SetSpatialReference(pSpatialRef);
-				pWL->SetProjection(proj);
-				pRL->SetProjection(proj);
+				// Road: implicit nodes at start and end
+				RoadEdit *r = (RoadEdit *) pRL->NewRoad();
+				bool bReject = pRL->ApplyCFCC((RoadEdit *)r, cfcc);
+				if (bReject)
+				{
+					delete r;
+					continue;
+				}
+				for (j = 0; j < num_points; j++)
+				{
+					r->Append(DPoint2(pLineString->getX(j),
+						pLineString->getY(j)));
+				}
+				Node *n1 = pRL->NewNode();
+				n1->m_p.Set(pLineString->getX(0), pLineString->getY(0));
+
+				Node *n2 = pRL->NewNode();
+				n2->m_p.Set(pLineString->getX(num_points-1), pLineString->getY(num_points-1));
+
+				pRL->AddNode(n1);
+				pRL->AddNode(n2);
+				r->SetNode(0, n1);
+				r->SetNode(1, n2);
+				n1->AddRoad(r);
+				n2->AddRoad(r);
+
+				//set bounding box for the road
+				r->ComputeExtent();
+
+				pRL->AddRoad(r);
 			}
 
-			int index_cfcc = defn->GetFieldIndex("CFCC");
-			int fcount = 0;
-			while( (pFeature = pOGRLayer->GetNextFeature()) != NULL )
+			if (!strncmp(cfcc, "H", 1))
 			{
-				pGeom = pFeature->GetGeometryRef();
-				if (!pGeom) continue;
-
-				if (!pFeature->IsFieldSet(index_cfcc))
-					continue;
-
-				const char *cfcc = pFeature->GetFieldAsString(index_cfcc);
-
-				pLineString = (OGRLineString *) pGeom;
-				int num_points = pLineString->getNumPoints();
-
-				if (!strncmp(cfcc, "A", 1))
+				// Hydrography
+				int num = atoi(cfcc+1);
+				switch (num)
 				{
-					// Road
-					Road *r = pRL->NewRoad();
+				case 1:		// Shoreline of perennial water feature
+				case 2:		// Shoreline of intermittent water feature
+				case 11:	// Perennial stream or river
+				case 12:	// Intermittent stream, river, or wash
+				case 13:	// Braided stream or river
+				case 30:	// Lake or pond
+				case 31:	// Perennial lake or pond
+				case 32:	// Intermittent lake or pond
+				case 40:	// Reservoir
+				case 41:	// Perennial reservoir
+				case 42:	// Intermittent reservoir
+				case 50:	// Bay, estuary, gulf, sound, sea, or ocean
+				case 51:	// Bay, estuary, gulf, or sound
+				case 52:	// Sea or ocean
+					dline = new DLine2();
+					dline->SetSize(num_points);
 					for (j = 0; j < num_points; j++)
 					{
-						r->Append(DPoint2(pLineString->getX(j),
+						dline->SetAt(j, DPoint2(pLineString->getX(j),
 							pLineString->getY(j)));
 					}
-					bool bReject = pRL->ApplyCFCC((RoadEdit *)r, cfcc);
-					if (!bReject)
-						pRL->AddRoad(r);
+					pWL->AddLine(dline);
 				}
-
-				if (!strncmp(cfcc, "H", 1))
-				{
-					// Hydrography
-					int num = atoi(cfcc+1);
-					switch (num)
-					{
-					case 1:		// Shoreline of perennial water feature
-					case 2:		// Shoreline of intermittent water feature
-					case 11:	// Perennial stream or river
-					case 12:	// Intermittent stream, river, or wash
-					case 13:	// Braided stream or river
-					case 30:	// Lake or pond
-					case 31:	// Perennial lake or pond
-					case 32:	// Intermittent lake or pond
-					case 40:	// Reservoir
-					case 41:	// Perennial reservoir
-					case 42:	// Intermittent reservoir
-					case 50:	// Bay, estuary, gulf, sound, sea, or ocean
-					case 51:	// Bay, estuary, gulf, or sound
-					case 52:	// Sea or ocean
-						dline = new DLine2();
-						dline->SetSize(num_points);
-						for (j = 0; j < num_points; j++)
-						{
-							dline->SetAt(j, DPoint2(pLineString->getX(j),
-								pLineString->getY(j)));
-						}
-						pWL->AddLine(dline);
-					}
-				}
-
-				fcount++;
 			}
+
+			fcount++;
 		}
+		CloseProgressDialog();
 	}
 
 	delete pDatasource;
+
+	// Merge nodes
+//	OpenProgressDialog("Removing redundant nodes...");
+//	pRL->MergeRedundantNodes(true, progress_callback);
+
+	// Set visual properties
+	for (NodeEdit *pN = pRL->GetFirstNode(); pN; pN = pN->GetNext())
+	{
+		pN->DetermineVisualFromRoads();
+	}
 
 	bool success;
 	success = AddLayerWithCheck(pWL, true);
