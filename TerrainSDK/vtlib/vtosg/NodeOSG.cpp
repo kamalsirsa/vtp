@@ -1018,7 +1018,7 @@ int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
 
 
 ///////////////////////////////////////////////////////////////////////
-// Sprite: TODO?
+// vtSprite.  TODO: clean up the code, it's very messy.
 
 vtSprite::vtSprite()
 {
@@ -1039,9 +1039,13 @@ vtSprite::vtSprite()
 	modelview_abs->setMatrix(osg::Matrix::identity());
 	modelview_abs->addChild(m_geode.get());
 
-	// We can set this to pixels (0,width,0,height) or normalized (0,1,0,1)
+	// We can set the projection to pixels (0,width,0,height) or
+	//	normalized (0,1,0,1)
+	vtScene *pScene = vtGetScene();
+	IPoint2 winsize = pScene->GetWindowSize();
+
 	m_projection = new osg::Projection;
-	m_projection->setMatrix(osg::Matrix::ortho2D(0,1,0,1));
+	m_projection->setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
 	m_projection->addChild(modelview_abs);
 
 	SetOsgNode(m_projection.get());
@@ -1083,8 +1087,8 @@ void vtSprite::SetImage(vtImage *pImage)
 {
 	m_pMesh = new vtMesh(GL_QUADS, VT_TexCoords, 4);
 	m_pMesh->AddVertexUV(FPoint3(0,0,0), FPoint2(0,0));
-	m_pMesh->AddVertexUV(FPoint3(1,0,0), FPoint2(1,0));
-	m_pMesh->AddVertexUV(FPoint3(1,1,0), FPoint2(1,1));
+	m_pMesh->AddVertexUV(FPoint3(0.5,0,0), FPoint2(1,0));
+	m_pMesh->AddVertexUV(FPoint3(0.5,1,0), FPoint2(1,1));
 	m_pMesh->AddVertexUV(FPoint3(0,1,0), FPoint2(0,1));
 	m_pMesh->AddQuad(0, 1, 2, 3);
 
@@ -1110,14 +1114,31 @@ void vtSprite::SetImage(vtImage *pImage)
 	AddMesh(m_pMesh);
 }
 
-void vtSprite::SetWindowRect(float l, float t, float r, float b)
+void vtSprite::SetPosition(bool bPixels, float l, float t, float r, float b)
 {
-	if (m_pMesh)
+	if (!m_pMesh)
+		return;
+
+	vtScene *pScene = vtGetScene();
+	IPoint2 size = pScene->GetWindowSize();
+
+	if (!bPixels)
 	{
-		m_pMesh->SetVtxPos(0, FPoint3(l, 1-b, 0));
-		m_pMesh->SetVtxPos(1, FPoint3(r, 1-b, 0));
-		m_pMesh->SetVtxPos(2, FPoint3(r, 1-t, 0));
-		m_pMesh->SetVtxPos(3, FPoint3(l, 1-t, 0));
+		l *= size.x;
+		r *= size.x;
+		t *= size.y;
+		b *= size.y;
 	}
+	m_pMesh->SetVtxPos(0, FPoint3(l, size.y-1 - b, 0));
+	m_pMesh->SetVtxPos(1, FPoint3(r, size.y-1 - b, 0));
+	m_pMesh->SetVtxPos(2, FPoint3(r, size.y-1 - t, 0));
+	m_pMesh->SetVtxPos(3, FPoint3(l, size.y-1 - t, 0));
+
+	m_pMesh->ReOptimize();
+}
+
+void vtSprite::SetWindowSize(int x, int y)
+{
+	m_projection->setMatrix(osg::Matrix::ortho2D(0,x,0,y));
 }
 

@@ -443,7 +443,8 @@ public:
 
 	void SetText(const char *szText);
 	void SetImage(vtImage *pImage);
-	void SetWindowRect(float l, float t, float r, float b);
+	void SetPosition(bool bPixels, float l, float t, float r, float b);
+	void SetWindowSize(int x, int y);
 
 	void AddMesh(vtMesh *pMesh);
 	void AddTextMesh(vtTextMesh *pTextMesh);
