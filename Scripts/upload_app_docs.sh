@@ -8,4 +8,5 @@ lftp -c "open vterrain.org; \
 		 lcd $TERRAINAPPS; \
 		 mirror -R --verbose --continue --no-perms --exclude CVS BExtractor/Docs BExtractor; \
 		 mirror -R --verbose --continue --no-perms --exclude CVS Enviro/Docs Enviro; \
-		 mirror -R --verbose --continue --no-perms --exclude CVS VTBuilder/Docs VTBuilder"
+		 mirror -R --verbose --continue --no-perms --exclude CVS VTBuilder/Docs VTBuilder; \
+		 mirror -R --verbose --continue --no-perms --exclude CVS CManager/Docs CManager"
