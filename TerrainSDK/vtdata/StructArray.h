@@ -31,7 +31,7 @@ public:
 	void DeleteSelected();
 
 	bool ReadSHP(const char* pathname, vtStructureType type,
-		const DRECT &rect, void progress_callback(int) = NULL);
+		const DRECT &rect, bool bFlip, void progress_callback(int) = NULL);
 	bool ReadBCF(const char* pathname);		// read a .bcf file
 	bool ReadBCF_Old(FILE *fp);				// support obsolete format
 	bool ReadXML(const char* pathname);
@@ -68,5 +68,8 @@ public:
 	vtProjection m_proj;
 protected:
 };
+
+// Helper
+int GetSHPType(const char *filename);
 
 #endif

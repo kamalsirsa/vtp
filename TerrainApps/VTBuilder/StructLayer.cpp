@@ -439,8 +439,19 @@ bool vtStructureLayer::AddElementsFromSHP(const char *filename,
 			rect.Empty();
 	}
 
+	int nShapeType = GetSHPType(filename);
+
+	bool bFlip = false;
+	if (type == ST_BUILDING && nShapeType == SHPT_POLYGON)
+	{
+		int res = wxMessageBox("Would you like to flip the direction of "
+			"the footprint polygons?", "SHP File Import", wxYES_NO);
+		if (res == wxYES)
+			bFlip = true;
+	}
+
 //	OpenProgressDialog("SHP File Import");
-	bool success = ReadSHP(filename, type, rect, progress_callback);
+	bool success = ReadSHP(filename, type, rect, bFlip, progress_callback);
 //	CloseProgressDialog();
 	if (!success)
 		return false;

@@ -242,7 +242,7 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
  * \param type The type of structure to expect (Buildings, Fences, or Instances)
  */
 bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
-							   const DRECT &rect, void progress_callback(int))
+	   const DRECT &rect, bool bFlip, void progress_callback(int))
 {
 	SHPHandle hSHP = SHPOpen(pathname, "rb");
 	if (hSHP == NULL)
@@ -252,7 +252,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 	double 	adfMinBound[4], adfMaxBound[4];
 	DPoint2 point;
 	DLine2	line;
-	int		i, j;
+	int		i, j, k;
 	int		field_stories = -1;
 	int		field_filename = -1;
 	int		field_itemname = -1;
@@ -331,7 +331,13 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 				DLine2 foot;
 				foot.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
-					foot.SetAt(j, DPoint2(psShape->padfX[j], psShape->padfY[j]));
+				{
+					if (bFlip)
+						k = num_points - 1 - j;
+					else
+						k = j;
+					foot.SetAt(j, DPoint2(psShape->padfX[k], psShape->padfY[k]));
+				}
 				bld->SetFootprint(foot);
 				bld->SetCenterFromPoly();
 			}
@@ -1113,5 +1119,23 @@ bool vtStructureArray::ReadXML(const char* pathname)
 		return false;
 	}
 	return true;
+}
+
+
+/////////////////////
+// Helper
+
+int GetSHPType(const char *filename)
+{
+	SHPHandle hSHP = SHPOpen(filename, "rb");
+	if (hSHP == NULL)
+		return SHPT_NULL;
+
+	int		nEntities, nShapeType;
+	double 	adfMinBound[4], adfMaxBound[4];
+
+	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
+	SHPClose(hSHP);
+	return nShapeType;
 }
 
