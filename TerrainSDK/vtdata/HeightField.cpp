@@ -189,6 +189,8 @@ void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
 vtHeightField::vtHeightField()
 {
 	m_EarthExtents.SetRect(0, 0, 0, 0);
+	m_fMinHeight = INVALID_ELEVATION;
+	m_fMaxHeight = INVALID_ELEVATION;
 }
 
 void vtHeightField::Initialize(const DRECT &extents, float fMinHeight,
