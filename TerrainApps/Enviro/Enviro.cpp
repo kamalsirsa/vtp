@@ -23,7 +23,7 @@
 #include "Options.h"
 #include "Hawaii.h"
 #include "Nevada.h"
-#include "TransitTerrain.h"
+#include "SpecificTerrain.h"
 
 #define ORTHO_HEIGHT		40000	// 40 km in the air
 #define INITIAL_SPACE_DIST	3.1f
@@ -152,6 +152,8 @@ void Enviro::LoadTerrainDescriptions()
 				pTerr = new NevadaTerrain();
 			else if (name == "TransitTerrain.ini")
 				pTerr = new TransitTerrain();
+			else if (name == "Romania.ini")
+				pTerr = new Romania();
 			else
 				pTerr = new vtTerrain();
 
@@ -1010,12 +1012,7 @@ void Enviro::SetupScene2()
 	vtGetScene()->AddEngine(m_pFlatFlyer);
 	m_pFlatFlyer->SetEnabled(false);
 
-	if (g_Options.m_bQuakeNavigation)
-		m_nav = NT_Quake;
-	else if (g_Options.m_bGravity)
-		m_nav = NT_Gravity;
-	else
-		m_nav = NT_Normal;
+	m_nav = NT_Normal;
 
 	// create picker object and picker engine
 	float size = 1.0;
@@ -1139,6 +1136,8 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	m_pTerrainScene->SetTerrain(pTerrain);
 
 	TParams &param = pTerrain->GetParams();
+
+	SetNavType((enum NavType) param.m_iNavStyle);	// TODO: TEST THIS
 
 	EnableFlyerEngine(true);
 
