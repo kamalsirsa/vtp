@@ -23,6 +23,9 @@
 #include "vtui/BuildingDlg.h"
 #include "Helper.h"
 #include "ImportStructDlg.h"
+#ifdef ENVIRON
+#include "LevelSelectDlg.h"
+#endif
 
 wxPen orangePen;
 wxPen yellowPen;
@@ -184,6 +187,10 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 		pView->screen(dl.GetAt(0), g_screenbuf[j++]);
 
 		pDC->DrawLines(j, g_screenbuf);
+#ifdef ENVIRON
+		for (j = 0; j < sides; j++)
+			pDC->DrawCircle(g_screenbuf[j], 3);
+#endif
 	}
 }
 
@@ -366,6 +373,12 @@ void vtStructureLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	case LB_BldEdit:
 		OnLeftDownEditBuilding(pView, ui);
 		break;
+	case LB_BldAddPoints:
+		OnLeftDownBldAddPoints(pView, ui);
+		break;
+	case LB_BldDeletePoints:
+		OnLeftDownBldDeletePoints(pView, ui);
+		break;
 	case LB_EditLinear:
 		OnLeftDownEditLinear(pView, ui);
 		// TODO - find nearest point on nearest linear
@@ -477,6 +490,53 @@ void vtStructureLayer::OnLeftDownEditBuilding(BuilderView *pView, UIContext &ui)
 
 		// make a copy of the building, to edit and display while dragging
 		ui.m_EditBuilding = *ui.m_pCurBuilding;
+	}
+}
+
+void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
+{
+}
+
+void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &ui)
+{
+	double dEpsilon = pView->odx(6);  // 6 pixels as world coord
+	int iBuilding, iCorner, iLevel;
+	double dDist;
+	vtBuilding *pBuilding;
+	DRECT Extent;
+	wxRect Redraw;
+
+
+	if (FindClosestBuildingCorner(ui.m_DownLocation, dEpsilon, iBuilding, iCorner, dDist))
+	{
+		if (NULL != (pBuilding = GetAt(iBuilding)->GetBuilding()))
+		{
+#ifdef ENVIRON
+			// Find out the level to work on
+			CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
+
+			LevelSelectionDialog.SetBuilding(pBuilding);
+
+			if (LevelSelectionDialog.ShowModal()!= wxID_OK)
+				return;
+			
+			iLevel = LevelSelectionDialog.GetLevel();
+
+			if (-1 == iLevel)
+			{
+				// Remove in all levels
+			}
+			else
+			{
+				// Remove in specified level
+			}
+			// Force redraw
+			pBuilding->GetExtents(Extent);
+			Redraw = pView->WorldToWindow(Extent);
+			Redraw.Inflate(3);
+			pView->Refresh(TRUE, &Redraw);
+#endif
+		}
 	}
 }
 

@@ -41,6 +41,8 @@ public:
 	void OnMouseMove(BuilderView *pView, UIContext &ui);
 
 	void OnLeftDownEditBuilding(BuilderView *pView, UIContext &ui);
+	void OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui);
+	void OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &ui);
 	void OnLeftDownEditLinear(BuilderView *pView, UIContext &ui);
 	void UpdateMove(UIContext &ui);
 	void UpdateRotate(UIContext &ui);

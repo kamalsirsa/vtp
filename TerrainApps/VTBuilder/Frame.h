@@ -17,6 +17,12 @@
 #include "StatusBar.h"
 #include "Layer.h"
 
+#ifdef ENVIRON
+  #define APPNAME "EnvironBuilder"
+#else
+  #define APPNAME "VTBuilder"
+#endif
+
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)     \
     toolBar_main->AddTool(id, bmp, wxNullBitmap, tog, -1, -1, (wxObject *)0, tooltip, tooltip)
@@ -176,6 +182,8 @@ public:
 	void OnFeaturePick(wxCommandEvent& event);
 	void OnFeatureTable(wxCommandEvent& event);
 	void OnBuildingEdit(wxCommandEvent& event);
+	void OnBuildingAddPoints(wxCommandEvent& event);
+	void OnBuildingDeletePoints(wxCommandEvent& event);
 	void OnStructureAddLinear(wxCommandEvent& event);
 	void OnStructureEditLinear(wxCommandEvent& event);
 	void OnStructureAddFoundation(wxCommandEvent& event);
@@ -183,6 +191,8 @@ public:
 	void OnUpdateFeaturePick(wxUpdateUIEvent& event);
 	void OnUpdateFeatureTable(wxUpdateUIEvent& event);
 	void OnUpdateBuildingEdit(wxUpdateUIEvent& event);
+	void OnUpdateBuildingAddPoints(wxUpdateUIEvent& event);
+	void OnUpdateBuildingDeletePoints(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddLinear(wxUpdateUIEvent& event);
 	void OnUpdateStructureEditLinear(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddFoundation(wxUpdateUIEvent& event);

@@ -154,6 +154,8 @@ EVT_MENU(ID_FEATURE_SELECT,			MainFrame::OnFeatureSelect)
 EVT_MENU(ID_FEATURE_PICK,			MainFrame::OnFeaturePick)
 EVT_MENU(ID_FEATURE_TABLE,			MainFrame::OnFeatureTable)
 EVT_MENU(ID_STRUCTURE_EDIT_BLD,		MainFrame::OnBuildingEdit)
+EVT_MENU(ID_STRUCTURE_ADD_POINTS,	MainFrame::OnBuildingAddPoints)
+EVT_MENU(ID_STRUCTURE_DELETE_POINTS,	MainFrame::OnBuildingDeletePoints)
 EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
 EVT_MENU(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnStructureEditLinear)
 EVT_MENU(ID_STRUCTURE_ADD_FOUNDATION, MainFrame::OnStructureAddFoundation)
@@ -162,6 +164,8 @@ EVT_UPDATE_UI(ID_FEATURE_SELECT,	MainFrame::OnUpdateFeatureSelect)
 EVT_UPDATE_UI(ID_FEATURE_PICK,		MainFrame::OnUpdateFeaturePick)
 EVT_UPDATE_UI(ID_FEATURE_TABLE,		MainFrame::OnUpdateFeatureTable)
 EVT_UPDATE_UI(ID_STRUCTURE_EDIT_BLD,	MainFrame::OnUpdateBuildingEdit)
+EVT_UPDATE_UI(ID_STRUCTURE_ADD_POINTS,	MainFrame::OnUpdateBuildingAddPoints)
+EVT_UPDATE_UI(ID_STRUCTURE_DELETE_POINTS,	MainFrame::OnUpdateBuildingDeletePoints)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnUpdateStructureAddLinear)
 EVT_UPDATE_UI(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnUpdateStructureEditLinear)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_FOUNDATION,	MainFrame::OnUpdateStructureAddFoundation)
@@ -343,6 +347,8 @@ void MainFrame::CreateMenus()
 	bldMenu = new wxMenu;
 	bldMenu->AppendCheckItem(ID_FEATURE_SELECT, _T("Select Features"));
 	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_BLD, _T("Edit Buildings"));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_POINTS, _T("Add points to building footprints"), _T(""));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_DELETE_POINTS, _T("Delete points from building footprints"), _T(""));
 	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_LINEAR, _T("Add Linear Features"));
 	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_LINEAR, _T("Edit Linear Features"));
 	bldMenu->AppendSeparator();
@@ -389,7 +395,7 @@ void MainFrame::CreateMenus()
 
 	// Help
 	helpMenu = new wxMenu;
-	helpMenu->Append(wxID_HELP, _T("&About"), _T("About VTBuilder"));
+	helpMenu->Append(wxID_HELP, _T("&About"), "About " APPNAME);
 	m_pMenuBar->Append(helpMenu, _T("&Help"));
 	menu_num++;
 
@@ -426,11 +432,12 @@ void MainFrame::OnProjectNew(wxCommandEvent &event)
 	SetProjection(p);
 }
 
-#define PROJECT_FILTER _T("VTBuilder Project Files (*.vtb)|*.vtb|")
+#define PROJECT_FILTER _T(APPNAME "Project Files (*.vtb)|*.vtb|")
 
 void MainFrame::OnProjectOpen(wxCommandEvent &event)
 {
-	wxFileDialog loadFile(NULL, _T("Load Project"), _T(""), _T(""), PROJECT_FILTER, wxOPEN);
+	wxFileDialog loadFile(NULL, _T("Load Project"), _T(""), _T(""),
+		PROJECT_FILTER, wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -439,8 +446,8 @@ void MainFrame::OnProjectOpen(wxCommandEvent &event)
 
 void MainFrame::OnProjectSave(wxCommandEvent &event)
 {
-	wxFileDialog saveFile(NULL, _T("Save Project"), _T(""), _T(""), PROJECT_FILTER,
-		wxSAVE | wxOVERWRITE_PROMPT );
+	wxFileDialog saveFile(NULL, _T("Save Project"), _T(""), _T(""),
+		PROJECT_FILTER, wxSAVE | wxOVERWRITE_PROMPT );
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -2057,9 +2064,30 @@ void MainFrame::OnBuildingEdit(wxCommandEvent &event)
 	m_pView->SetMode(LB_BldEdit);
 }
 
+
 void MainFrame::OnUpdateBuildingEdit(wxUpdateUIEvent& event)
 {
 	event.Check(m_pView->GetMode() == LB_BldEdit);
+}
+
+void MainFrame::OnBuildingAddPoints(wxCommandEvent &event)
+{
+	m_pView->SetMode(LB_BldAddPoints);
+}
+
+void MainFrame::OnUpdateBuildingAddPoints(wxUpdateUIEvent& event)
+{
+	event.Check(m_pView->GetMode() == LB_BldAddPoints);
+}
+
+void MainFrame::OnBuildingDeletePoints(wxCommandEvent &event)
+{
+	m_pView->SetMode(LB_BldDeletePoints);
+}
+
+void MainFrame::OnUpdateBuildingDeletePoints(wxUpdateUIEvent& event)
+{
+	event.Check(m_pView->GetMode() == LB_BldDeletePoints);
 }
 
 void MainFrame::OnStructureAddLinear(wxCommandEvent &event)
@@ -2227,6 +2255,6 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += _T("Send feedback to: ben@vterrain.org\n");
 	str += _T("Build date: ");
 	str += _(__DATE__);
-	wxMessageBox(str, _T("About VTBuilder"));
+	wxMessageBox(str, _T("About " APPNAME));
 #endif
 }
