@@ -52,7 +52,6 @@ public:
 	void SetTerrain(vtTerrain *pTerrain);
 	void EnableFlyerEngine(bool bEnable);
 	void SetCurrentNavigator(vtTerrainFlyer *pE);
-	const char *GetStatusText();
 	void SetMode(MouseMode mode);
 
 	// go to space or a terrain
@@ -68,10 +67,11 @@ public:
 	bool GetEarthShape() { return m_bGlobeFlat; }
 	int AddGlobePoints(const char *fname);
 	void SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2);
+	vtTerrain *FindTerrainOnEarth(const DPoint2 &p);
 
 	vtString GetMessage() { return m_strMessage; }
 	void SetMessage(const char *msg, float time = 0.0f);
-	void FormatCoordString(vtString &str, const DPoint3 &coord, bool bUTM);
+	void FormatCoordString(vtString &str, const DPoint3 &coord, enum LinearUnits units);
 	void DescribeCoordinates(vtString &str);
 	void DescribeCLOD(vtString &str);
 
