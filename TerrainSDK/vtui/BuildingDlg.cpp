@@ -261,6 +261,7 @@ void BuildingDlg::OnSpinStories( wxCommandEvent &event )
 		return;
 	TransferDataFromWindow();
 	m_pLevel->m_iStories = m_iStories;
+	m_pBuilding->DetermineLocalFootprints();
 	RefreshLevelsBox();
 	HighlightSelectedLevel();
 	Modified();
