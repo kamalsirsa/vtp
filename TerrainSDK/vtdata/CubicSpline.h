@@ -27,7 +27,7 @@ public:
 	int AddPoint(const DPoint3 &vec);
 	bool Generate();
 	bool Interpolate(double par, DPoint3 *vec,
-					DPoint3 *dvec = NULL, DPoint3 *ddvec = NULL);
+					DPoint3 *dvec = NULL, DPoint3 *ddvec = NULL) const;
 	/** Return number of control points that define this curve. */
 	int NumPoints() const { return m_iPoints; }
 

@@ -213,7 +213,7 @@ bool CubicSpline::Generate()
  */
 bool CubicSpline::Interpolate(double par, DPoint3 *vec,
 							  DPoint3 *dvec /*= NULL*/,
-							  DPoint3 *ddvec /*= NULL*/)
+							  DPoint3 *ddvec /*= NULL*/) const
 {
 	// check parameter value f
 	int ncoeff = (int)::floor(par);
