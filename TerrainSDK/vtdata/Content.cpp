@@ -615,7 +615,10 @@ vtContentManager::~vtContentManager()
 
 void vtContentManager::Empty()
 {
-	for (unsigned int i = 0; i < m_items.GetSize(); i++)
+	int items = m_items.GetSize();
+	if (items)
+		VTLOG("vtContentManager::Empty, %d items to delete\n", items);
+	for (unsigned int i = 0; i < items; i++)
 	{
 		delete m_items.GetAt(i);
 	}
