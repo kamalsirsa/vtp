@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I "..\..\TerrainSDK" /I "\APIs" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "__WXMSW__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D VTLIB_OSG=1 /Yu"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O1 /I "..\..\TerrainSDK" /I "\APIs" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "__WXMSW__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D VTLIB_OSG=1 /Yu"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
