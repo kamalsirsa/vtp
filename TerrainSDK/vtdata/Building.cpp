@@ -1117,13 +1117,17 @@ void vtBuilding::DeleteLevel(int iLev)
 void vtBuilding::SetRectangle(const DPoint2 &center, float fWidth,
 							  float fDepth, float fRotation)
 {
+	vtLevel *pLev;
+
 	// this function requires at least one level to exist
 	if (m_Levels.GetSize() == 0)
 	{
-		vtLevel *pLev = new vtLevel;
+		pLev = new vtLevel;
 		pLev->m_iStories = 1;
 		m_Levels.Append(pLev);
 	}
+	else
+		pLev = m_Levels[0];
 
 	// if rotation is unset, default to none
 	if (fRotation == -1.0f)
@@ -1146,8 +1150,7 @@ void vtBuilding::SetRectangle(const DPoint2 &center, float fWidth,
 	dl.Append(center + corner[2]);
 	dl.Append(center + corner[3]);
 
-	vtLevel *lev = m_Levels[0];
-	lev->SetFootprint(dl);
+	pLev->SetFootprint(dl);
 }
 
 /**
@@ -1258,13 +1261,13 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 		fprintf(fp, "\t\t\t\t\t\t\t<gml:outerBoundaryIs>\n");
 		fprintf(fp, "\t\t\t\t\t\t\t\t<gml:LinearRing>\n");
 		fprintf(fp, "\t\t\t\t\t\t\t\t\t<gml:coordinates>");
-		for (int i = 0; i < points; i++)
+		for (j = 0; j < points; j++)
 		{
-			DPoint2 p = foot.GetAt(i);
+			DPoint2 p = foot.GetAt(j);
 			fprintf(fp, coord_format, p.x);
 			fprintf(fp, ",");
 			fprintf(fp, coord_format, p.y);
-			if (i != points-1)
+			if (j != points-1)
 				fprintf(fp, " ");
 		}
 		fprintf(fp, "</gml:coordinates>\n");
