@@ -143,7 +143,7 @@ public:
 	bool IsLoop() { return (m_pNode[0] == m_pNode[1]); }
 
 	// accessors for flag properties
-	void SetFlag(int flag, bool value);
+	virtual void SetFlag(int flag, bool value);
 	int GetFlag(int flag);
 
 	// Height (unused; these methods may be redesigned or removed)
