@@ -68,7 +68,7 @@ void Countries::ParseRawCountry(int which)
 {
 	Country *country = m_countries[which];
 
-	printf("Parsing %s...", country->m_full);
+	printf("Parsing %s...", (const char *) country->m_full);
 
 	char fc;	// feature classification, P = populated palce
 	char pc;	// Populated Place Classification
@@ -239,7 +239,7 @@ void Countries::ReadGCF(const char *fname, void progress_callback(int))
 		m_countries.Append(country);
 
 		ReadString(fp, country->m_full);
-		printf("Reading %s...\n", country->m_full);
+		printf("Reading %s...\n", (const char *) country->m_full);
 
 		fread(&num_places, sizeof(int), 1, fp);
 		country->m_places.SetMaxSize(num_places);
