@@ -3,7 +3,7 @@
 //
 // Module for Double-You-Double-You-Double-You support (WWW)
 //
-// Copyright (c) 2003-2004 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -64,6 +64,14 @@ public:
 };
 
 void AddCookie(const char *name, const char *value);
+
+#else
+// provide dummies
+class ReqContext
+{
+public:
+	bool GetURL(const char *url, vtString &str) { return false; }
+};
 
 #endif // SUPPORT_HTTP
 
