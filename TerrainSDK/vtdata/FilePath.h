@@ -76,6 +76,6 @@ const char *StartOfFilename(const char *szFullPath);
 bool PathIsAbsolute(const char *szPath);
 vtString get_line_from_stream(std::ifstream &input);
 void RemoveFileExtensions(vtString &fname);
-vtString GetExtension(const vtString &fname);
+vtString GetExtension(const vtString &fname, bool bFull = true);
 
 #endif // FILEPATHH

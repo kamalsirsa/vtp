@@ -352,7 +352,7 @@ void RemoveFileExtensions(vtString &fname)
 /**
  * Get the full file extension(s) from a filename.
  */
-vtString GetExtension(const vtString &fname)
+vtString GetExtension(const vtString &fname, bool bFull)
 {
 	int chop = -1;
 	for (int i = fname.GetLength()-1; i >= 0; i--)
@@ -365,7 +365,11 @@ vtString GetExtension(const vtString &fname)
 
 		// If we hit a period which indicates an extension, note it.
 		if (ch == '.')
+		{
 			chop = i;
+			if (!bFull)
+				break;
+		}
 	}
 	if (chop == -1)
 		return vtString("");
