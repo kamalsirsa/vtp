@@ -266,7 +266,7 @@ class DLine2 : public Array<DPoint2>
 public:
 	DLine2() {}
 	// copy constructor
-	DLine2(DLine2 &ref) { *this = ref; }
+	DLine2(DLine2 &ref) : Array<DPoint2>() { *this = ref; }
 
 	// assignment
 	DLine2 &operator=(const class DLine2 &v);
@@ -281,7 +281,7 @@ class FLine2 : public Array<FPoint2>
 public:
 	FLine2() {}
 	// copy constructor
-	FLine2(FLine2 &ref) { *this = ref; }
+	FLine2(FLine2 &ref) : Array<FPoint2>() { *this = ref; }
 
 	// assignment
 	FLine2 &operator=(const class FLine2 &v);
@@ -347,7 +347,7 @@ class DLine3 : public Array<DPoint3>
 public:
 	DLine3() {}
 	// copy constructor
-	DLine3(DLine3 &ref) { *this = ref; }
+	DLine3(DLine3 &ref) : Array<DPoint3>() { *this = ref; }
 
 	// assignment
 	DLine3 &operator=(const class DLine3 &v);
@@ -361,7 +361,7 @@ class FLine3 : public Array<FPoint3>
 public:
 	FLine3() {}
 	// copy constructor
-	FLine3(FLine3 &ref) { *this = ref; }
+	FLine3(FLine3 &ref) : Array<FPoint3>() { *this = ref; }
 
 	// assignment
 	FLine3 &operator=(const class FLine3 &v);
