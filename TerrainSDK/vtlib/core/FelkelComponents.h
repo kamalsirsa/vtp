@@ -123,12 +123,12 @@ public:
 	C3DPoint Intersection(const CRidgeLine &a);
 	C3DPoint IntersectionAnywhere (const CRidgeLine& a) const;
 	bool Colinear(const CRidgeLine &a) const;
-	inline bool PointOnRidgeLine (const C3DPoint &p) const 
+	inline bool PointOnRidgeLine (const C3DPoint &p) const
 	{
 		return (p == m_Origin || CRidgeLine(m_Origin, p, -1).m_Angle == m_Angle) ? true : false;
 	}
 	inline bool FacingTowards (const CRidgeLine &a) const
-	{ 
+	{
 		return (a.PointOnRidgeLine(m_Origin) && PointOnRidgeLine(a.m_Origin) && !(m_Origin == a.m_Origin)) ? true : false;
 	}
 	CNumber Dist(const C3DPoint &p) const;
@@ -156,14 +156,14 @@ public:
 	CVertex *Highest (void) { return m_higher ? m_higher -> Highest () : this; }
 	bool AtContour (void) const { return m_leftVertex == this && m_rightVertex == this; }
 	bool operator == (const CVertex &v) const { return m_point == v.m_point; }
-	bool operator < (const CVertex &) const { assert (false); return false; } 
+	bool operator < (const CVertex &) const { assert (false); return false; }
 	C3DPoint CoordinatesOfAnyIntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	C3DPoint IntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	CNumber NearestIntersection (CVertexList &vl, CVertex **left, CVertex **right, C3DPoint &p);
 	bool InvalidIntersection(CVertexList &vl, const CIntersection &is);
 	// data
-	C3DPoint m_point;                      
-	CRidgeLine m_axis;  // the axis (ridgeline) for this vertex                       
+	C3DPoint m_point;
+	CRidgeLine m_axis;  // the axis (ridgeline) for this vertex
 	CRidgeLine m_leftLine, m_rightLine; // vectors for the original left and right edge contour lines
 	CVertex *m_leftVertex, *m_rightVertex; // Current contour chain (List of active vertices)
 	CVertex *m_nextVertex, *m_prevVertex; // Overall vertex list
@@ -198,7 +198,7 @@ public:
 	}
 };
 
-class CSegment  
+class CSegment
 {
 public:
 	CSegment (const C3DPoint &p = C3DPoint(), const C3DPoint &q = C3DPoint()) : m_a(p), m_b(q) { };

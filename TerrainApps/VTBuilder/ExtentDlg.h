@@ -1,7 +1,7 @@
 //
-// Name:        ExtentDlg.h
+// Name: ExtentDlg.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,7 +9,7 @@
 #define __ExtentDlg_H__
 
 #ifdef __GNUG__
-    #pragma interface "ExtentDlg.cpp"
+	#pragma interface "ExtentDlg.cpp"
 #endif
 
 #include "VTBuilder_wdr.h"
@@ -26,15 +26,15 @@
 class ExtentDlg: public AutoDialog
 {
 public:
-    // constructors and destructors
-    ExtentDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
-    
-    // WDR: method declarations for ExtentDlg
+	// constructors and destructors
+	ExtentDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = wxDEFAULT_DIALOG_STYLE );
+	
+	// WDR: method declarations for ExtentDlg
 	void SetArea(DRECT area, bool bMeters);
-    
+	
 	wxString2	m_strAll;
 	wxString2	m_strEast;
 	wxString2	m_strNorth;
@@ -46,21 +46,22 @@ public:
 	bool m_bSetting;
 
 private:
-    // WDR: member variable declarations for ExtentDlg
-    
+	// WDR: member variable declarations for ExtentDlg
+	
 private:
-    // WDR: handler declarations for ExtentDlg
-    void OnExtentAll( wxCommandEvent &event );
-    void OnExtentS( wxCommandEvent &event );
-    void OnExtentE( wxCommandEvent &event );
-    void OnExtentW( wxCommandEvent &event );
-    void OnExtentN( wxCommandEvent &event );
+	// WDR: handler declarations for ExtentDlg
+	void OnExtentAll( wxCommandEvent &event );
+	void OnExtentS( wxCommandEvent &event );
+	void OnExtentE( wxCommandEvent &event );
+	void OnExtentW( wxCommandEvent &event );
+	void OnExtentN( wxCommandEvent &event );
 
 	void FormatStrings(int which);
 	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
-#endif
+#endif	// __ExtentDlg_H__
+

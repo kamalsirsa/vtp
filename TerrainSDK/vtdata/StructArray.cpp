@@ -1225,7 +1225,7 @@ vtBuilding *GetClosestDefault(vtBuilding *pBld)
 	int i, num = g_DefaultStructures.GetSize();
 	for (i = 0; i < num; i++)
 	{
-		vtStructure *pStr = g_DefaultStructures[i]; 
+		vtStructure *pStr = g_DefaultStructures[i];
 		vtBuilding *pDefBld = pStr->GetBuilding();
 		if (pDefBld)
 			return pDefBld;
@@ -1239,7 +1239,7 @@ vtFence *GetClosestDefault(vtFence *pFence)
 	int i, num = g_DefaultStructures.GetSize();
 	for (i = 0; i < num; i++)
 	{
-		vtStructure *pStr = g_DefaultStructures[i]; 
+		vtStructure *pStr = g_DefaultStructures[i];
 		vtFence *pDefFence = pStr->GetFence();
 		if (pDefFence)
 			return pDefFence;
@@ -1253,7 +1253,7 @@ vtStructInstance *GetClosestDefault(vtStructInstance *pInstance)
 	int i, num = g_DefaultStructures.GetSize();
 	for (i = 0; i < num; i++)
 	{
-		vtStructure *pStr = g_DefaultStructures[i]; 
+		vtStructure *pStr = g_DefaultStructures[i];
 		vtStructInstance *pDefInstance = pStr->GetInstance();
 		if (pDefInstance)
 			return pDefInstance;
@@ -1279,7 +1279,7 @@ bool SetupDefaultStructures(const char *fname)
 	// Alter the code here to set different hard coded
 	// defaults for use in other operations
 	// First set any structure tags needed
-	// 
+	//
 	// NONE
 	//
 	// Now create the required number of levels

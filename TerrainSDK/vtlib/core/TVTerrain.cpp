@@ -403,29 +403,29 @@ int TVTerrain::triInFOV(TriIndex *t)
 
 int TVTerrain::inROD(Coord2d p1, Coord2d p2, Coord2d p3)
 {
-  int r;
-  int txmax = MAX(p1[0], MAX(p2[0], p3[0]));
-  int txmin = MIN(p1[0], MIN(p2[0], p3[0]));
-  int tymax = MAX(p1[1], MAX(p2[1], p3[1]));
-  int tymin = MIN(p1[1], MIN(p2[1], p3[1]));
+	int r;
+	int txmax = MAX(p1[0], MAX(p2[0], p3[0]));
+	int txmin = MIN(p1[0], MIN(p2[0], p3[0]));
+	int tymax = MAX(p1[1], MAX(p2[1], p3[1]));
+	int tymin = MIN(p1[1], MIN(p2[1], p3[1]));
 
-  if (txmax > m_iColumns - 1) {
-    if (txmin >= m_iColumns - 1) {
-      r = 0;
-    } else {
-      r = PARTINROD;
-    }
-  } else if (tymax > m_iRows - 1) {
-    if (tymin >= m_iRows - 1) {
-      r = 0;
-    } else {
-      r = PARTINROD;
-    }
-  } else {
-    r = ALLINROD;
-  }
+	if (txmax > m_iColumns - 1) {
+		if (txmin >= m_iColumns - 1) {
+			r = 0;
+		} else {
+			r = PARTINROD;
+		}
+	} else if (tymax > m_iRows - 1) {
+		if (tymin >= m_iRows - 1) {
+			r = 0;
+		} else {
+			r = PARTINROD;
+		}
+	} else {
+		r = ALLINROD;
+	}
 
-  return r;
+	return r;
 }
 
 /*  midpoint(p1, p2, m) -- set m to midpoint of segment between p1 and p2  */
@@ -440,97 +440,99 @@ void midpoint(Coord2d p1, Coord2d p2, Coord2d m)
 void TVTerrain::makeDFS(vtElevationGrid *pGrid, TriIndex *t,
 						Coord2d p1, Coord2d p2, Coord2d p3)
 {
-  TriIndex lt,rt;
-  Coord2d mid;
-  int r;
+	TriIndex lt,rt;
+	Coord2d mid;
+	int r;
 
-  r = inROD(p1, p2, p3);
-  if (t->s) {
-    m_info[t->s] = r;
-    if (ISLEAF(t)) {
-      m_err[t->s] = 0;
-    } else {
-      if (r == 0) {
-	m_err[t->s] = 0;
-      } else if (r == PARTINROD) {
-	m_err[t->s] = MAXERR;
-      } else {
-	m_err[t->s] = calcErr(pGrid, p1, p2, p3);
-      }
-      midpoint(p1, p2, mid);
-      leftChild(t,&lt);
-      rightChild(t,&rt);
-      makeDFS(pGrid, &lt, p3, p1, mid);
-      makeDFS(pGrid, &rt, p2, p3, mid);
-    }
-  }
+	r = inROD(p1, p2, p3);
+	if (t->s) {
+		m_info[t->s] = r;
+		if (ISLEAF(t)) {
+			m_err[t->s] = 0;
+		} else {
+			if (r == 0) {
+				m_err[t->s] = 0;
+			} else if (r == PARTINROD) {
+				m_err[t->s] = MAXERR;
+			} else {
+				m_err[t->s] = calcErr(pGrid, p1, p2, p3);
+			}
+			midpoint(p1, p2, mid);
+			leftChild(t,&lt);
+			rightChild(t,&rt);
+			makeDFS(pGrid, &lt, p3, p1, mid);
+			makeDFS(pGrid, &rt, p2, p3, mid);
+		}
+	}
 }
 
 void TVTerrain::parent(TriIndex *t, TriIndex *p)
 {
-  p->depth = t->depth-1;
-  if (t->depth&1) {
-    p->orient = porient1[((t->x&1)<<2)|(t->orient&3)];
-    p->x = t->x>>1;
-    p->y = t->y>>1;
-    p->s = S0(p);
-  } else {
-    p->orient = porient0[(((t->x^t->y)&1)<<2)|(t->orient&3)];
-    p->x = t->x;
-    p->y = t->y;
-    p->s = S1(p);
-  }
+	p->depth = t->depth-1;
+	if (t->depth&1) {
+		p->orient = porient1[((t->x&1)<<2)|(t->orient&3)];
+		p->x = t->x>>1;
+		p->y = t->y>>1;
+		p->s = S0(p);
+	} else {
+		p->orient = porient0[(((t->x^t->y)&1)<<2)|(t->orient&3)];
+		p->x = t->x;
+		p->y = t->y;
+		p->s = S1(p);
+	}
 }
 
 void TVTerrain::bro1(TriIndex *t, TriIndex *b1)
 {
-  b1->depth = t->depth;
-  b1->x = t->x + b1xinc[t->orient];
-  b1->y = t->y + b1yinc[t->orient];
-  b1->orient = b1orient[t->orient];
-  if (b1->x > xmax[t->depth] || b1->y > ymax[t->depth] ||
-      b1->x < 0 || b1->y < 0)
-    b1->s = 0;			/* set b1 to be OUTOFBOUNDS */
-  else {
-    if (t->depth&1)
-      b1->s = S1(b1);
-    else
-      b1->s = S0(b1);
-  }
+	b1->depth = t->depth;
+	b1->x = t->x + b1xinc[t->orient];
+	b1->y = t->y + b1yinc[t->orient];
+	b1->orient = b1orient[t->orient];
+	if (b1->x > xmax[t->depth] || b1->y > ymax[t->depth] ||
+		b1->x < 0 || b1->y < 0)
+	{
+		b1->s = 0;			/* set b1 to be OUTOFBOUNDS */
+	}
+	else {
+		if (t->depth&1)
+			b1->s = S1(b1);
+		else
+			b1->s = S0(b1);
+	}
 }
 
 void TVTerrain::bro2(TriIndex *t, TriIndex *b2)
 {
-  b2->depth = t->depth;
-  b2->x = t->x + b2xinc[t->orient];
-  b2->y = t->y + b2yinc[t->orient];
-  b2->orient = b2orient[t->orient];
-  if (b2->x > xmax[t->depth] || b2->y > ymax[t->depth] ||
-      b2->x < 0 || b2->y < 0)
-    b2->s = 0;			/* set b2 to be OUTOFBOUNDS */
-  else {
-    if (t->depth&1)
-      b2->s = S1(b2);
-    else
-      b2->s = S0(b2);
-  }
+	b2->depth = t->depth;
+	b2->x = t->x + b2xinc[t->orient];
+	b2->y = t->y + b2yinc[t->orient];
+	b2->orient = b2orient[t->orient];
+	if (b2->x > xmax[t->depth] || b2->y > ymax[t->depth] ||
+		b2->x < 0 || b2->y < 0)
+		b2->s = 0;			/* set b2 to be OUTOFBOUNDS */
+	else {
+		if (t->depth&1)
+			b2->s = S1(b2);
+		else
+			b2->s = S0(b2);
+	}
 }
 
 void TVTerrain::bro3(TriIndex *t, TriIndex *b3)
 {
-  b3->x = t->x+b3xinc[t->orient];
-  b3->y = t->y+b3yinc[t->orient];
-  b3->orient = b3orient[t->orient];
-  b3->depth = t->depth;
-  if (b3->x > xmax[t->depth] || b3->y > ymax[t->depth] ||
-      b3->x < 0 || b3->y < 0)
-    b3->s = 0;			/* set b3 to be OUTOFBOUNDS */
-  else {
-    if (t->depth&1)
-      b3->s = S1(b3);
-    else
-      b3->s = S0(b3);
-  }
+	b3->x = t->x+b3xinc[t->orient];
+	b3->y = t->y+b3yinc[t->orient];
+	b3->orient = b3orient[t->orient];
+	b3->depth = t->depth;
+	if (b3->x > xmax[t->depth] || b3->y > ymax[t->depth] ||
+		b3->x < 0 || b3->y < 0)
+		b3->s = 0;			/* set b3 to be OUTOFBOUNDS */
+	else {
+		if (t->depth&1)
+			b3->s = S1(b3);
+		else
+			b3->s = S0(b3);
+	}
 }
 
 
@@ -580,51 +582,49 @@ static int hierDepth;
    physical address space */
 int TVTerrain::init_ntriabove(int depth)
 {
-  int d,xm,ym;
+	int d,xm,ym;
 
-  /* initialize special Tri's */
-  rootL.x=0; rootL.y=0; rootL.depth=1; rootL.orient=NW; rootL.s=1;
-  rootR.x=0; rootR.y=0; rootR.depth=1; rootR.orient=SE; rootR.s=2;
+	/* initialize special Tri's */
+	rootL.x=0; rootL.y=0; rootL.depth=1; rootL.orient=NW; rootL.s=1;
+	rootR.x=0; rootR.y=0; rootR.depth=1; rootR.orient=SE; rootR.s=2;
 
-  xm = m_iColumns-2;	/* count squares (starting at (0,0)) */
-  ym = m_iRows-2;
-  d = hierDepth = depth;
-  while (d >= 1) {
-    xmax[d] = xm;
-    ymax[d] = ym;
-    xm >>= 1;
-    ym >>= 1;
-    d--;
-    xmax[d] = xm;
-    ymax[d] = ym;
-    d--;
-  }
+	xm = m_iColumns-2;	/* count squares (starting at (0,0)) */
+	ym = m_iRows-2;
+	d = hierDepth = depth;
+	while (d >= 1) {
+		xmax[d] = xm;
+		ymax[d] = ym;
+		xm >>= 1;
+		ym >>= 1;
+		d--;
+		xmax[d] = xm;
+		ymax[d] = ym;
+		d--;
+	}
 
-  ntriabove[0] = 0;
-  ntriabove[1] = 1;
-  d = 1;
-  while(d <= depth) {
+	ntriabove[0] = 0;
+	ntriabove[1] = 1;
+	d = 1;
+	while(d <= depth) {
 
-    /* odd depth: NW,SW,NE,SE triangles */
-    ntriabove[d+1]=2*(xmax[d]+1)*(ymax[d]+1)+ntriabove[d];
-    d++;
+		/* odd depth: NW,SW,NE,SE triangles */
+		ntriabove[d+1]=2*(xmax[d]+1)*(ymax[d]+1)+ntriabove[d];
+		d++;
 
-    if (d>depth) break;
+		if (d>depth) break;
 
-    /* even depth: N,S,E,W triangles */
-    ntriabove[d+1] = 4*(xmax[d]+1)*(ymax[d]+1)+ntriabove[d];
-    d++;
-  }
-  return(ntriabove[depth+1]+1);/* loop went far enough to calc. this */
+		/* even depth: N,S,E,W triangles */
+		ntriabove[d+1] = 4*(xmax[d]+1)*(ymax[d]+1)+ntriabove[d];
+		d++;
+	}
+	return(ntriabove[depth+1]+1);/* loop went far enough to calc. this */
 }
-
 
 
 void TVTerrain::getVerts(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 {
   Coord2d swt,net;
   int d;
-
 
   d = (hierDepth-t->depth+1)>>1;
   swt[0] = t->x << d;

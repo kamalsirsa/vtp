@@ -16,7 +16,7 @@
 #include "FelkelComponents.h"
 #include "FelkelIntersection.h"
 
-class CStraightSkeleton  
+class CStraightSkeleton
 {
 public:
 	CStraightSkeleton();

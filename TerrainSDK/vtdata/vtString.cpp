@@ -1,7 +1,7 @@
 //
 // vtString.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -928,21 +928,21 @@ static size_t encode_utf16(unsigned int input, wchar_t *output)
 
 static size_t decode_utf16(const wchar_t *input, unsigned int &output)
 {
-    if ((*input<0xd800) || (*input>0xdfff))
-    {
-        output = *input;
-        return 1;
-    }
-    else if ((input[1]<0xdc00) || (input[1]>=0xdfff))
-    {
-        output = *input;
-        return (size_t)-1;
-    }
-    else
-    {
-        output = ((input[0] - 0xd7c0) << 10) + (input[1] - 0xdc00);
-        return 2;
-    }
+	if ((*input<0xd800) || (*input>0xdfff))
+	{
+		output = *input;
+		return 1;
+	}
+	else if ((input[1]<0xdc00) || (input[1]>=0xdfff))
+	{
+		output = *input;
+		return (size_t)-1;
+	}
+	else
+	{
+		output = ((input[0] - 0xd7c0) << 10) + (input[1] - 0xdc00);
+		return 2;
+	}
 }
 
 static unsigned int utf8_max[]=
@@ -1020,42 +1020,41 @@ size_t wstring2::from_utf8(const char *psz)
 const char *wstring2::to_utf8() const
 {
 	char *buf = s_buffer;
-    size_t len = 0;
+	size_t len = 0;
 	size_t n = MAX_WSTRING2_SIZE;
 	const wchar_t *psz = c_str();
 
-    while (*psz && ((!buf) || (len < n)))
-    {
-        unsigned int cc;
+	while (*psz && ((!buf) || (len < n)))
+	{
+		unsigned int cc;
 #ifdef WC_UTF16
-        size_t pa = decode_utf16(psz, cc);
-        psz += (pa == (size_t)-1) ? 1 : pa;
+		size_t pa = decode_utf16(psz, cc);
+		psz += (pa == (size_t)-1) ? 1 : pa;
 #else
-        cc=(*psz++) & 0x7fffffff;
+		cc=(*psz++) & 0x7fffffff;
 #endif
-        unsigned cnt;
-        for (cnt = 0; cc > utf8_max[cnt]; cnt++) {}
-        if (!cnt)
-        {
-            // plain ASCII char
-            if (buf)
-                *buf++ = (char) cc;
-            len++;
-        }
+		unsigned cnt;
+		for (cnt = 0; cc > utf8_max[cnt]; cnt++) {}
+		if (!cnt)
+		{
+			// plain ASCII char
+			if (buf)
+				*buf++ = (char) cc;
+			len++;
+		}
+		else
+		{
+			len += cnt + 1;
+			if (buf)
+			{
+				*buf++ = (char) ((-128 >> cnt) | ((cc >> (cnt * 6)) & (0x3f >> cnt)));
+				while (cnt--)
+					*buf++ = (char) (0x80 | ((cc >> (cnt * 6)) & 0x3f));
+			}
+		}
+	}
 
-        else
-        {
-            len += cnt + 1;
-            if (buf)
-            {
-                *buf++ = (char) ((-128 >> cnt) | ((cc >> (cnt * 6)) & (0x3f >> cnt)));
-                while (cnt--)
-                    *buf++ = (char) (0x80 | ((cc >> (cnt * 6)) & 0x3f));
-            }
-        }
-    }
-
-    if (buf && (len<n)) *buf = 0;
+	if (buf && (len<n)) *buf = 0;
 	return s_buffer;
 }
 

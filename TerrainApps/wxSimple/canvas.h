@@ -1,7 +1,7 @@
 //
-// Name:        canvas.h
+// Name: canvas.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -40,4 +40,5 @@ protected:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif
+#endif	// CANVASH
+

@@ -28,7 +28,7 @@ extern "C" {
 #include "gdal_priv.h"
 
 // OGR
-#include <ogrsf_frmts.h> 
+#include <ogrsf_frmts.h>
 
 //	Header structure for a GTOPO30 DEM header file
 typedef struct
@@ -1744,7 +1744,7 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 
 	if (NULL == (pSpatialRef = pLayer->GetSpatialRef()))
 		goto Exit;
- 
+
 	pLayer->GetExtent(&Extent);
 
 	// Get number of features. In this case the total number of cells

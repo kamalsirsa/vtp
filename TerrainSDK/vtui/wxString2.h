@@ -45,7 +45,7 @@ public:
 	wxString2& operator=(const wxString &str);
 	wxString2& operator=(const vtString &vtstr);
 
-    // implicit conversion to vtString
+	// implicit conversion to vtString
 	operator vtString() const;
 
 	// implicit conversion to C string

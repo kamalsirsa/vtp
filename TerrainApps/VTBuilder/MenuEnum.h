@@ -96,6 +96,6 @@ enum
 
 	ID_HIGHEST_MENU_ENUM,
 
-    LayerTree_Ctrl = 1000
+	LayerTree_Ctrl = 1000
 };
 

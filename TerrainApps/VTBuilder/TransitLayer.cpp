@@ -131,28 +131,28 @@ void vtTransitLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(TransitPen);
 
-    for (int i = 1; i <= g_sim.NumSegments(); i++)
-    {
-        const CSegment *ps = &g_sim.NthSegment(i);
-        drawSeg(pDC, pView, ps->m_x1, ps->m_y1, ps->m_x2, ps->m_y2);
+	for (int i = 1; i <= g_sim.NumSegments(); i++)
+	{
+		const CSegment *ps = &g_sim.NthSegment(i);
+		drawSeg(pDC, pView, ps->m_x1, ps->m_y1, ps->m_x2, ps->m_y2);
 
-        double switchpos = ps->m_fBranchPos / ps->m_fLength;
+		double switchpos = ps->m_fBranchPos / ps->m_fLength;
 
-        double xswitch = ps->m_x1 * (1-switchpos) + ps->m_x2 * switchpos;
-        double yswitch = ps->m_y1 * (1-switchpos) + ps->m_y2 * switchpos;
+		double xswitch = ps->m_x1 * (1-switchpos) + ps->m_x2 * switchpos;
+		double yswitch = ps->m_y1 * (1-switchpos) + ps->m_y2 * switchpos;
 
-        if (ps->m_segMerge)
-            drawSeg(pDC, pView, ps->m_xm, ps->m_ym, xswitch, yswitch);
+		if (ps->m_segMerge)
+			drawSeg(pDC, pView, ps->m_xm, ps->m_ym, xswitch, yswitch);
 
-        if (ps->m_segNextBranch)
-            drawSeg(pDC, pView, xswitch, yswitch, ps->m_xb, ps->m_yb);
+		if (ps->m_segNextBranch)
+			drawSeg(pDC, pView, xswitch, yswitch, ps->m_xb, ps->m_yb);
 	}
 }
 
 void vtTransitLayer::drawSeg(wxDC* pDC, vtScaledView *pView, double x1, double y1, double x2, double y2)
 {
-    // convert coordinates, then draw
-    pDC->DrawLine(pView->sx(x1), pView->sy(y1), pView->sx(x2), pView->sy(y2));
+	// convert coordinates, then draw
+	pDC->DrawLine(pView->sx(x1), pView->sy(y1), pView->sx(x2), pView->sy(y2));
 }
 
 
@@ -165,7 +165,7 @@ bool vtTransitLayer::GetExtent(DRECT &rect)
 	rect.SetRect(1E9, -1E9, -1E9, 1E9);
 	for (int i = 1; i <= size; i++)
 	{
-        const CSegment *ps = &g_sim.NthSegment(i);
+		const CSegment *ps = &g_sim.NthSegment(i);
 		rect.GrowToContainPoint(DPoint2(ps->m_x1, ps->m_y1));
 		rect.GrowToContainPoint(DPoint2(ps->m_x2, ps->m_y2));
 	}
@@ -209,16 +209,16 @@ int gDebugLevel = 1;
 
 void DebugOut(int level, LPCTSTR pFormat, ...)
 {
-    if (level > gDebugLevel)
-        return;
+	if (level > gDebugLevel)
+		return;
 
-    va_list va;
-    va_start(va, pFormat);
+	va_list va;
+	va_start(va, pFormat);
 
-    char ach[255];
-    _vsntprintf(ach, 255, pFormat, va);
+	char ach[255];
+	_vsntprintf(ach, 255, pFormat, va);
 
-    OutputDebugString(ach);
+	OutputDebugString(ach);
 }
 #endif
 

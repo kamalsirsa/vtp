@@ -295,14 +295,14 @@ CNumber CNumber::NormalizedAngle()
 //
 // Constructor
 //
-CVertex :: CVertex (const C3DPoint &p, CVertex &left, CVertex &right) 
+CVertex::CVertex(const C3DPoint &p, CVertex &left, CVertex &right)
 : m_point (p), m_done (false), m_higher (NULL), m_ID (-1), m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL),
 m_advancingSkeletonLine (NULL)
 {
 	CNumber slope;
 
 	// This constructor links the new vertex in the current active contour
-	m_leftLine = left.m_leftLine; 
+	m_leftLine = left.m_leftLine;
 	m_rightLine = right.m_rightLine;
 	m_leftVertex = &left;
 	m_rightVertex = &right;
@@ -317,7 +317,7 @@ m_advancingSkeletonLine (NULL)
 #endif
 	C3DPoint i = m_leftLine.Intersection (m_rightLine);
 	if (i.m_x == CN_INFINITY)
-	{                                                               
+	{
 #ifdef FELKELDEBUG
 		assert (i.m_z == CN_INFINITY);
 #endif
@@ -334,12 +334,12 @@ m_advancingSkeletonLine (NULL)
 				// Lines are parallel
 				m_axis = CRidgeLine(m_point, m_leftLine.m_Angle, 0);
 		}
-		else 
+		else
 		{
 			// Reflex intersection
 			slope = atan(height / m_point.DistXZ(i));
 			m_axis = CRidgeLine(m_point, i, slope, true);
-			m_axis.m_Angle = m_axis.m_Angle + CN_PI; 
+			m_axis.m_Angle = m_axis.m_Angle + CN_PI;
 			m_axis.m_Angle.NormalizeAngle();
 		}
 	}
@@ -419,9 +419,9 @@ C3DPoint CVertex::IntersectionOfTypeB (const CVertex &left, const CVertex &right
 //	assert (pl == C2DPoint(CN_INFINITY, CN_INFINITY) || pr == C2DPoint(CN_INFINITY, CN_INFINITY) || pl == pr);
 #endif
 
-	C3DPoint poi = CoordinatesOfAnyIntersectionOfTypeB(left, right); 
+	C3DPoint poi = CoordinatesOfAnyIntersectionOfTypeB(left, right);
 	CNumber al = left.m_axis.m_Angle - left.m_rightLine.m_Angle;
-	CNumber ar = right.m_axis.m_Angle - right.m_leftLine.m_Angle; 
+	CNumber ar = right.m_axis.m_Angle - right.m_leftLine.m_Angle;
 
 	CNumber alp = CRidgeLine(left.m_point, poi).m_Angle - left.m_rightLine.m_Angle;
 	CNumber arp = CRidgeLine(right.m_point, poi).m_Angle - right.m_leftLine.m_Angle;

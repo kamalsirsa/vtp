@@ -1,7 +1,7 @@
 //
 // A custom status bar
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,7 +20,7 @@ public:
 	MyStatusBar(wxWindow *parent);
 	virtual ~MyStatusBar();
 
-    // event handlers
+	// event handlers
 	void OnSize(wxSizeEvent& event);
 	void SetTexts(MainFrame *frame);
 
@@ -45,4 +45,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif
+#endif	// STATUSBARH
+

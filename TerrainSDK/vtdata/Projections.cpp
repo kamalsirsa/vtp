@@ -928,7 +928,7 @@ static void WKTMassageDatum(vtString &strDatum )
 
 //
 // A limited implementation of reversing the effect of WKTMassageDatum
-// 
+//
 static void MassageDatumFromWKT(vtString &strDatum )
 {
 	int i;

@@ -344,7 +344,7 @@ bool vtDIB::ReadJPEG(const char *fname)
 	jpeg_create_decompress(&cinfo);
 
 	input_file = fopen(fname, "rb");
-    if (input_file == NULL)
+	if (input_file == NULL)
 		return false;
 
 	/* Specify data source for decompression */
@@ -752,10 +752,10 @@ bool vtDIB::WritePNG(const char *fname)
 	png_write_image(png_ptr, row_pointers);
 
    /* You can write optional chunks like tEXt, zTXt, and tIME at the end
-    * as well.  Shouldn't be necessary in 1.1.0 and up as all the public
-    * chunks are supported and you can use png_set_unknown_chunks() to
-    * register unknown chunks into the info structure to be written out.
-    */
+	* as well.  Shouldn't be necessary in 1.1.0 and up as all the public
+	* chunks are supported and you can use png_set_unknown_chunks() to
+	* register unknown chunks into the info structure to be written out.
+	*/
 
 	/* It is REQUIRED to call this to finish writing the rest of the file */
 	png_write_end(png_ptr, info_ptr);

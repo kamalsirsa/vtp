@@ -1,7 +1,7 @@
 //
 // Frame.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -24,10 +24,10 @@
 #endif
 
 // some shortcuts
-#define ADD_TOOL(id, bmp, tooltip, tog)     \
-    toolBar_main->AddTool(id, bmp, wxNullBitmap, tog, -1, -1, (wxObject *)0, tooltip, tooltip)
-#define INSERT_TOOL(place, id, bmp, tooltip, tog)     \
-    toolBar_main->InsertTool(place, id, bmp, wxNullBitmap, tog, (wxObject *)0, tooltip, tooltip)
+#define ADD_TOOL(id, bmp, tooltip, tog) \
+	toolBar_main->AddTool(id, bmp, wxNullBitmap, tog, -1, -1, (wxObject *)0, tooltip, tooltip)
+#define INSERT_TOOL(place, id, bmp, tooltip, tog) \
+	toolBar_main->InsertTool(place, id, bmp, wxNullBitmap, tog, (wxObject *)0, tooltip, tooltip)
 
 class MyTreeCtrl;
 class MySplitterWindow;
@@ -53,7 +53,7 @@ class LinearStructureDlg2d;
 class MainFrame: public wxFrame
 {
 public:
-	MainFrame(wxFrame* frame, const wxString& title,
+	MainFrame(wxFrame *frame, const wxString& title,
 		const wxPoint& pos, const wxSize& size);
 	virtual ~MainFrame();
 
@@ -350,18 +350,18 @@ protected:
 	vtLayerPtr	m_pActiveLayer;
 
 	// UI members
-	wxMenu*    fileMenu;
-	wxMenu*    editMenu;
-	wxMenu*    layerMenu;
-	wxMenu*    viewMenu;
-	wxMenu*    elevMenu;
-	wxMenu*    vegMenu;
-	wxMenu*    bldMenu;
-	wxMenu*    roadMenu;
-	wxMenu*	   utilityMenu;
-	wxMenu*    rawMenu;
-	wxMenu*    areaMenu;
-	wxMenu*    helpMenu;
+	wxMenu *fileMenu;
+	wxMenu *editMenu;
+	wxMenu *layerMenu;
+	wxMenu *viewMenu;
+	wxMenu *elevMenu;
+	wxMenu *vegMenu;
+	wxMenu *bldMenu;
+	wxMenu *roadMenu;
+	wxMenu *utilityMenu;
+	wxMenu *rawMenu;
+	wxMenu *areaMenu;
+	wxMenu *helpMenu;
 	wxMenuBar *m_pMenuBar;
 	wxToolBar *toolBar_main;
 	wxToolBar *toolBar_road;
@@ -384,11 +384,12 @@ protected:
 class DnDFile : public wxFileDropTarget
 {
 public:
-    virtual bool OnDropFiles(wxCoord x, wxCoord y,
-                             const wxArrayString& filenames);
+	virtual bool OnDropFiles(wxCoord x, wxCoord y,
+							 const wxArrayString& filenames);
 };
 
 extern MainFrame *GetMainFrame();
 wxString GetImportFilterString(LayerType ltype);
 
-#endif
+#endif	// VTBUILDERFRAMEH
+

@@ -128,7 +128,7 @@ void BuildingDlg::OnEditHeights( wxCommandEvent &event )
     CHeightDialog HeightDialog(this, -1, _T("Baseline Editor"));
 
 	HeightDialog.Setup(m_pBuilding, m_pHeightField);
-    
+
     HeightDialog.ShowModal();
 }
 
@@ -641,7 +641,6 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
     Modified();
 }
 
-
 void BuildingDlg::OnEdges( wxCommandEvent &event )
 {
     m_bEdges = !m_bEdges;
@@ -662,6 +661,21 @@ void BuildingDlg::OnEdges( wxCommandEvent &event )
     TransferDataToWindow();
     m_bSetting = false;
 }
+
+void BuildingDlg::SetEdgeFacade()
+{
+    if (m_bEdges && (NULL != m_pEdge))
+    {
+        // Store current facade
+        TransferDataFromWindow();
+        if (0 != m_pEdge->m_Facade.Compare(m_strFacade.mb_str()))
+        {
+            m_pEdge->m_Facade = m_strFacade.mb_str();
+            Modified();
+        }
+    }
+}
+
 
 #include <vtdata/Vocab.h>
 
@@ -721,19 +735,5 @@ void BuildingDlg::OnCharHook( wxKeyEvent &event )
 
     if (par.Matches(sen4))
         CopyCurrentLevel();
-}
-
-void BuildingDlg::SetEdgeFacade()
-{
-    if (m_bEdges && (NULL != m_pEdge))
-    {
-        // Store current facade
-        TransferDataFromWindow();
-        if (0 != m_pEdge->m_Facade.Compare(m_strFacade.mb_str()))
-        {
-            m_pEdge->m_Facade = m_strFacade.mb_str();
-            Modified();
-        }
-    }
 }
 

@@ -11,7 +11,7 @@ class vtTrackball;
 class vtApp: public wxApp
 {
 public:
-    bool OnInit(void);
+	bool OnInit(void);
 
 	vtTrackball	*m_pTrackball;
 };

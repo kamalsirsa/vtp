@@ -48,7 +48,7 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 
 	CVertex *leftPointer, *rightPointer;
 	C3DPoint p;
-	CNumber d3 = CN_INFINITY; 
+	CNumber d3 = CN_INFINITY;
 	CNumber av = v.m_leftLine.m_Angle - v.m_rightLine.m_Angle;
 
 	av.NormalizeAngle();
@@ -117,7 +117,7 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 	d3 = m_leftVertex->NearestIntersection(vl, &leftPointer, &rightPointer, p);
 	if (d3 == CN_INFINITY)
 		return;
-							   
+
 	if (p != m_poi)
 		return;
 

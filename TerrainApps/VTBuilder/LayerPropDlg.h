@@ -1,7 +1,7 @@
 //
-// Name:        LayerPropDlg.h
+// Name: LayerPropDlg.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,7 +9,7 @@
 #define __LayerPropDlg_H__
 
 #ifdef __GNUG__
-    #pragma interface "LayerPropDlg.cpp"
+	#pragma interface "LayerPropDlg.cpp"
 #endif
 
 #include "VTBuilder_wdr.h"
@@ -24,28 +24,26 @@
 class LayerPropDlg: public AutoDialog
 {
 public:
-    // constructors and destructors
-    LayerPropDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
-    
-    // WDR: method declarations for LayerPropDlg
+	// constructors and destructors
+	LayerPropDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = wxDEFAULT_DIALOG_STYLE );
+	
+	// WDR: method declarations for LayerPropDlg
 	double m_fLeft, m_fTop, m_fRight, m_fBottom;
 	wxString m_strText;
 
 private:
-    // WDR: member variable declarations for LayerPropDlg
-    
+	// WDR: member variable declarations for LayerPropDlg
+	
 private:
-    // WDR: handler declarations for LayerPropDlg
+	// WDR: handler declarations for LayerPropDlg
 	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
+#endif	// __LayerPropDlg_H__
 
-
-
-#endif

@@ -41,7 +41,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 
 		Contour::iterator first = points.begin();
 		if (first == points.end())
-			break; 
+			break;
 
 		Contour::iterator next = first;
 
@@ -159,7 +159,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 #endif
 		if (i.m_type == CIntersection::CONVEX)
 			if (i.m_leftVertex->m_prevVertex->m_prevVertex == i.m_rightVertex || i.m_rightVertex->m_nextVertex->m_nextVertex == i.m_leftVertex)
-				i.ApplyLast3(m_skeleton, m_vl); 
+				i.ApplyLast3(m_skeleton, m_vl);
 			else
 				i.ApplyConvexIntersection(m_skeleton, m_vl, m_iq);
 		if (i.m_type == CIntersection :: NONCONVEX)

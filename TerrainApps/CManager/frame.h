@@ -151,8 +151,8 @@ public:
 class DnDFile : public wxFileDropTarget
 {
 public:
-    virtual bool OnDropFiles(wxCoord x, wxCoord y,
-                             const wxArrayString& filenames);
+	virtual bool OnDropFiles(wxCoord x, wxCoord y,
+		const wxArrayString &filenames);
 };
 
 // Helper

@@ -1,7 +1,7 @@
 //
-// Name:		TParamsDlg.h
+// Name: TParamsDlg.h
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -130,8 +130,6 @@ public:
 	wxTextCtrl* GetOceanPlaneOffset()  { return (wxTextCtrl*) FindWindow( ID_OCEANPLANEOFFSET ); }
 	wxComboBox* GetLabelFile()  { return (wxComboBox*) FindWindow( ID_LABEL_FILE ); }
 
-	//  CButton m_PreLight;
-//  CButton m_TriStrips;
 	bool	m_bReady;
 	bool	m_bSetting;
 
@@ -161,7 +159,7 @@ private:
 	void OnTextureSingle( wxCommandEvent &event );
 	void OnTextureDerived( wxCommandEvent &event );
 	void OnTextureTiled( wxCommandEvent &event );
-    void OnCheckBox( wxCommandEvent &event );
+	void OnCheckBox( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

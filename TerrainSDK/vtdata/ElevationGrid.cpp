@@ -259,7 +259,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 /**
  * Scale all the valid elevation values in the grid by a given factor.
  *
- * \param fScale	The desired scale, e.g. 1.0 produces no change in scale. 
+ * \param fScale	The desired scale, e.g. 1.0 produces no change in scale.
  * \param bDirect	If true, scale the stored height values directly.
  *		Otherwise, only the height scale (vertical meters per unit) is scaled.
  */
