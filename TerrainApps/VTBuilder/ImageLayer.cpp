@@ -484,10 +484,10 @@ bool vtImageLayer::LoadFromGDAL()
 				if (dlg.ShowModal() == wxID_OK)
 					m_Extents = dlg.m_area;
 				else
-					throw "Import Cancelled.";;
+					throw "Import Cancelled.";
 			}
 			if (res == wxCANCEL)
-				throw "Import Cancelled.";;
+				throw "Import Cancelled.";
 		}
 
 #if ROGER
@@ -606,7 +606,10 @@ bool vtImageLayer::LoadFromGDAL()
 		iRasterCount = pDataset->GetRasterCount();
 
 		if (iRasterCount != 1 && iRasterCount != 3)
-			throw "Does not have 1 or 3 bands.";
+		{
+			message.Format("Image has %d bands (not 1 or 3).", iRasterCount);
+			throw (const char *)message;
+		}
 
 		if (iRasterCount == 1)
 		{
@@ -707,7 +710,11 @@ bool vtImageLayer::LoadFromGDAL()
 			for (int iy = 0; iy < m_iYSize; iy++ )
 			{
 				ReadScanline(iy, 0);
-				progress_callback(iy * 99 / m_iYSize);
+				if (UpdateProgressDialog(iy * 99 / m_iYSize))
+				{
+					// cancel
+					throw "Cancelled";
+				}
 				for(int iX = 0; iX < m_iXSize; iX++ )
 				{
 					RGBi rgb = m_row[0].m_data[iX];
