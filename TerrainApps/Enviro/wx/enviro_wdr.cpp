@@ -141,7 +141,7 @@ wxSizer *TerrainDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item1 = new wxBoxSizer( wxVERTICAL );
 
     wxString *strs2 = (wxString*) NULL;
-    wxListBox *item2 = new wxListBox( parent, ID_TLIST, wxDefaultPosition, wxSize(80,100), 0, strs2, 0 );
+    wxListBox *item2 = new wxListBox( parent, ID_TLIST, wxDefaultPosition, wxSize(80,100), 0, strs2, wxLB_SINGLE|wxLB_SORT );
     item1->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item3 = new wxBoxSizer( wxHORIZONTAL );
@@ -637,7 +637,7 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item3->Add( item4, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT, 5 );
 
     wxString *strs5 = (wxString*) NULL;
-    wxComboBox *item5 = new wxComboBox( parent, ID_FILENAME, "", wxDefaultPosition, wxSize(200,-1), 0, strs5, wxCB_DROPDOWN );
+    wxComboBox *item5 = new wxComboBox( parent, ID_FILENAME, "", wxDefaultPosition, wxSize(200,-1), 0, strs5, wxCB_DROPDOWN|wxCB_SORT );
     item3->Add( item5, 0, wxALIGN_CENTRE|wxALL, 0 );
 
     item1->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -743,7 +743,7 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item34->Add( item35, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT, 5 );
 
     wxString *strs36 = (wxString*) NULL;
-    wxComboBox *item36 = new wxComboBox( parent, ID_FILENAME_TIN, "", wxDefaultPosition, wxSize(210,-1), 0, strs36, wxCB_DROPDOWN );
+    wxComboBox *item36 = new wxComboBox( parent, ID_FILENAME_TIN, "", wxDefaultPosition, wxSize(210,-1), 0, strs36, wxCB_DROPDOWN|wxCB_SORT );
     item34->Add( item36, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     item32->Add( item34, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
@@ -793,7 +793,7 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item4->Add( item5, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxString *strs6 = (wxString*) NULL;
-    wxComboBox *item6 = new wxComboBox( parent, ID_TFILESINGLE, "", wxDefaultPosition, wxSize(150,-1), 0, strs6, wxCB_DROPDOWN );
+    wxComboBox *item6 = new wxComboBox( parent, ID_TFILESINGLE, "", wxDefaultPosition, wxSize(150,-1), 0, strs6, wxCB_DROPDOWN|wxCB_SORT );
     item4->Add( item6, 0, wxALIGN_CENTRE|wxALL, 0 );
 
     item1->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -894,7 +894,7 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item5->Add( item6, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxString *strs7 = (wxString*) NULL;
-    wxComboBox *item7 = new wxComboBox( parent, ID_TREEFILE, "", wxDefaultPosition, wxSize(140,-1), 0, strs7, wxCB_DROPDOWN );
+    wxComboBox *item7 = new wxComboBox( parent, ID_TREEFILE, "", wxDefaultPosition, wxSize(140,-1), 0, strs7, wxCB_DROPDOWN|wxCB_SORT );
     item5->Add( item7, 1, wxALIGN_CENTRE|wxALL, 5 );
 
     item3->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
@@ -926,7 +926,7 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item15->Add( item16, 0, wxALIGN_CENTRE|wxALL, 0 );
 
     wxString *strs17 = (wxString*) NULL;
-    wxComboBox *item17 = new wxComboBox( parent, ID_ROADFILE, "", wxDefaultPosition, wxSize(140,-1), 0, strs17, wxCB_DROPDOWN );
+    wxComboBox *item17 = new wxComboBox( parent, ID_ROADFILE, "", wxDefaultPosition, wxSize(140,-1), 0, strs17, wxCB_DROPDOWN|wxCB_SORT );
     item15->Add( item17, 1, wxALIGN_CENTRE|wxALL, 5 );
 
     item13->Add( item15, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -997,7 +997,7 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item36->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 0 );
 
     wxString *strs37 = (wxString*) NULL;
-    wxComboBox *item37 = new wxComboBox( parent, ID_BUILDINGFILE, "", wxDefaultPosition, wxSize(140,-1), 0, strs37, wxCB_DROPDOWN );
+    wxComboBox *item37 = new wxComboBox( parent, ID_BUILDINGFILE, "", wxDefaultPosition, wxSize(140,-1), 0, strs37, wxCB_DROPDOWN|wxCB_SORT );
     item36->Add( item37, 1, wxALIGN_CENTRE|wxALL, 0 );
 
     item34->Add( item36, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -1121,7 +1121,7 @@ wxSizer *TParams4Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item12->Add( item13, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxString *strs14 = (wxString*) NULL;
-    wxComboBox *item14 = new wxComboBox( parent, ID_LOCFILE, "", wxDefaultPosition, wxSize(120,-1), 0, strs14, wxCB_DROPDOWN );
+    wxComboBox *item14 = new wxComboBox( parent, ID_LOCFILE, "", wxDefaultPosition, wxSize(120,-1), 0, strs14, wxCB_DROPDOWN|wxCB_SORT );
     item12->Add( item14, 0, wxALIGN_CENTRE|wxRIGHT|wxBOTTOM, 5 );
 
     item2->Add( item12, 0, wxALIGN_CENTRE|wxALL, 0 );
@@ -1190,34 +1190,35 @@ wxBitmap MyBitmapsFunc( size_t index )
     if (index == 0)
     {
         /* XPM */
-        static char *xpm_data[] = {
+        static const char *xpm_data[] = {
         /* columns rows colors chars-per-pixel */
         "32 18 6 1",
+        "  c None",
         "a c Black",
-        "b c #0000FF",
+        "b c #FF0000",
         "c c #00FF00",
-        "d c #FF0000",
-        "e c #FF00FF",
-        "f c #FFFF00",
+        "d c #FFFF00",
+        "e c #0000FF",
+        "f c #FF00FF",
         /* pixels */
-        "dcbeaaaaaaaebcdaaaaaaaaaaaafffff",
-        "adcbeaaaaaaaebcdaaaaaaaaaaaaffff",
-        "aadcbeaaaaaaaebcdaaaaaaaaaaaafff",
-        "aaadcbeaaaaaaaebcdaaaaaaaaaaaaff",
-        "aaaadcbeaaaaaaaebcdaaaaaaaaaaaaf",
-        "aaaaadcbeaaaaaaaebcdaaaaaaaaaaaa",
-        "aaaaaadcbeaaaaaaaebcdaaaaaaaaaaa",
-        "aaaaaaadcbeaaaaaaaebcdaaaaaaaaaa",
-        "aaaaaaaadcbeaaaaaaaebcdaaaaaaaaa",
-        "aaaaaaaaadcbeaaaaaaaebcdaaaaaaaa",
-        "aaaaaaaaaadcbeaaaaaaaebcdaaaaaaa",
-        "aaaaaaaaaaadcbeaaaaaaaebcdaaaaaa",
-        "aaaaaaaaaaaadcbeaaaaaaaebcdaaaaa",
-        "faaaaaaaaaaaadcbeaaaaaaaebcdaaaa",
-        "ffaaaaaaaaaaaadcbeaaaaaaaebcdaaa",
-        "fffaaaaaaaaaaaadcbeaaaaaaaebcdaa",
-        "ffffaaaaaaaaaaaadcbeaaaaaaaebcda",
-        "fffffaaaaaaaaaaaadcbeaaaaaaaebcd"
+        "bcefaaaaaaafecbaaaaaaaaaaaaddddd",
+        "abcefaaaaaaafecbaaaaaaaaaaaadddd",
+        "aabcefaaaaaaafecbaaaaaaaaaaaaddd",
+        "aaabcefaaaaaaafecbaaaaaaaaaaaadd",
+        "aaaabcefaaaaaaafecbaaaaaaaaaaaad",
+        "aaaaabcefaaaaaaafecbaaaaaaaaaaaa",
+        "aaaaaabcefaaaaaaafecbaaaaaaaaaaa",
+        "aaaaaaabcefaaaaaaafecbaaaaaaaaaa",
+        "aaaaaaaabcefaaaaaaafecbaaaaaaaaa",
+        "aaaaaaaaabcefaaaaaaafecbaaaaaaaa",
+        "aaaaaaaaaabcefaaaaaaafecbaaaaaaa",
+        "aaaaaaaaaaabcefaaaaaaafecbaaaaaa",
+        "aaaaaaaaaaaabcefaaaaaaafecbaaaaa",
+        "daaaaaaaaaaaabcefaaaaaaafecbaaaa",
+        "ddaaaaaaaaaaaabcefaaaaaaafecbaaa",
+        "dddaaaaaaaaaaaabcefaaaaaaafecbaa",
+        "ddddaaaaaaaaaaaabcefaaaaaaafecba",
+        "dddddaaaaaaaaaaaabcefaaaaaaafecb"
         };
         wxBitmap bitmap( xpm_data );
         return bitmap;
