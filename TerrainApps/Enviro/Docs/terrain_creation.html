@@ -19,7 +19,7 @@
     <td bgcolor="#D2C8B5">The BT file to use for elevation.</td>
   </tr>
   <tr>
-    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="5">Terrain LOD</th>
+    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="4">Terrain LOD</th>
     <td width="180" valign="top" bgcolor="#B7CCB8">Method</td>
     <td bgcolor="#B7CCB8">Choose from several implementations of published Continuous
       LOD algorithms.</td>
@@ -40,16 +40,6 @@
     rendering speed significantly, and also may also introduce some limitations.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Detail texture</td>
-    <td bgcolor="#B7CCB8">For some terrain types, will attempt to put a second,
-      high-frequency detail texture over the whole terrain, faded by distance so
-      that it is only visible close to the viewer.&nbsp; Currently this can only
-      be a single texture, although eventually it should be multiple textures
-      based on type of ground cover (dirt, rock, grass, etc.)<br>
-      Note that the current McNally implementation may produce artifacts if both
-      Strips/fans and Detail texture are enabled.</td>
-  </tr>
-  <tr>
     <th width="170" valign="top" bgcolor="#D2C8B5">Elevation TIN</th>
     <td width="180" valign="top" bgcolor="#D2C8B5">TIN Filename</td>
     <td bgcolor="#D2C8B5">The TIN file to use for elevation, instead of an 
@@ -67,7 +57,7 @@
 
 <table border="1" cellspacing="0" cellpadding="2">
   <tr>
-    <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="9">Texture</th>
+    <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="10">Texture</th>
     <td width="180" valign="top" bgcolor="#D2C8B5">No texture</td>
     <td bgcolor="#D2C8B5">Your texture will be white and featureless.</td>
   </tr>
@@ -119,6 +109,15 @@
     <td bgcolor="#D2C8B5">If true, then the terrain shading will use a 
     ray-casting approach, so that the terrain casts shadows onto itself.&nbsp; 
     If false, then simpler (dot-product) shading is used.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Detail texture</td>
+    <td bgcolor="#D2C8B5"><i>Currently only works with the McNally CLOD option.<br>
+    </i>Will attempt to put a second,
+      high-frequency detail texture over the whole terrain, faded by distance so
+      that it is only visible close to the viewer.&nbsp; Currently this can only
+      be a single texture, although eventually it should be multiple textures
+      based on type of ground cover (dirt, rock, grass, etc.)</td>
   </tr>
 </table>
 
