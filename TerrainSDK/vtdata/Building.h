@@ -14,6 +14,7 @@
 #include "MathTypes.h"
 #include "LocalConversion.h"
 #include "Structure.h"
+#include "ogrsf_frmts.h"
 
 class vtHeightField;
 
@@ -128,7 +129,6 @@ public:
 	// assignment operator
 	vtLevel &operator=(const vtLevel &v);
 
-	DLine2 &GetFootprint() { return m_Footprint; }
 	int GetNumEdges() { return m_Edges.GetSize(); }
 	vtEdge *GetEdge(int i) { return m_Edges[i]; }
 	float GetEdgeLength(int i);
@@ -136,7 +136,6 @@ public:
 	bool GetOverallEdgeColor(RGBi &color);
 	RoofType GuessRoofType();
 	void FlipFootprintDirection();
-	const FLine3 &GetLocalFootprint() { return m_LocalFootprint; }
 
 	bool HasSlopedEdges();
 	bool IsHorizontal();
@@ -154,19 +153,24 @@ public:
 
 	Array<vtEdge *> m_Edges;
 
-protected:
-	void SetWalls(int n);
 	void SetFootprint(const DLine2 &dl);
+	void SetFootprint(const OGRPolygon *poly);
+	DLine2 &GetFootprint() { return m_Footprint; }
 
 	void DetermineLocalFootprint(float fHeight);
+	const FLine3 &GetLocalFootprint() { return m_LocalFootprint; }
+
+private:
+	void SetWalls(int n);
 	void GetEdgePlane(int i, FPlane &plane);
 	bool DetermineHeightFromSlopes();
-
-protected:
 	void DeleteEdges();
 
 	// footprint of the stories in this level
 	DLine2		m_Footprint;
+
+	// alternate storage of earth-CS footprint, in development
+	OGRPolygon	m_Foot;
 
 	// footprint in the local CS of this building
 	FLine3		m_LocalFootprint;

@@ -174,6 +174,7 @@ vtLevel::vtLevel()
 
 vtLevel::~vtLevel()
 {
+	m_Foot.empty();
 	DeleteEdges();
 }
 
@@ -211,6 +212,24 @@ void vtLevel::SetFootprint(const DLine2 &dl)
 
 	if (curr != prev)
 		SetWalls(curr);
+
+	// keep OGR poly in synch
+	int size = dl.GetSize();
+	m_Foot.empty();
+	OGRLinearRing *pNewRing = new OGRLinearRing();
+
+	// for now, assume that there are no internal features
+	pNewRing->setNumPoints(size);
+	for (int i = 0; i < size; i++)
+	{
+		pNewRing->setPoint(i, dl[i].x, dl[i].y);
+	}
+	m_Foot.addRingDirectly(pNewRing);
+}
+
+void vtLevel::SetFootprint(const OGRPolygon *poly)
+{
+	// TODO
 }
 
 void vtLevel::SetEdgeMaterial(BldMaterial bm)
