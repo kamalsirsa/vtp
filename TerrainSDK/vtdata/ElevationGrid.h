@@ -116,13 +116,16 @@ public:
 	void SetScale(float sc) { m_fVMeters = sc; }
 	float GetScale() const { return m_fVMeters; }
 
+	// Implement vtHeightField methods
+	void GetChecksum(unsigned char **ppChecksum) const;
+	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const;
+
 	// methods that deal with world coordinates
 	void SetupConversion(float fVerticalExag);
 	void GetWorldLocation(int i, int j, FPoint3 &loc) const;
 	float GetWorldValue(int i, int j) const;
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		FPoint3 *vNormal = NULL) const;
-	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const;
 	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 							   float light_adj, void progress_callback(int) = NULL);
 

@@ -929,6 +929,11 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	return true;
 }
 
+void vtElevationGrid::GetChecksum(unsigned char **ppChecksum) const
+{
+	// TODO
+}
+
 bool vtElevationGrid::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const
 {
 	DPoint2 spacing = GetSpacing();
