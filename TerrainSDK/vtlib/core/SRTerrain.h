@@ -1,8 +1,8 @@
 //
 // SRTerrain class : a subclass of vtDynTerrainGeom which exposes
-//  Stephan Roettger's CLOD algorithm.
+//  Stefan Roettger's CLOD algorithm.
 //
-// utilizes: Roettger's MINI library implementation, version 1.7
+// utilizes: Roettger's MINI library implementation
 // http://wwwvis.informatik.uni-stuttgart.de/~roettger
 //
 // Copyright (c) 2002 Virtual Terrain Project
@@ -14,12 +14,8 @@
 
 #include "DynTerrain.h"
 
-#define ENABLE_SRTERRAIN 1
-
-#if ENABLE_SRTERRAIN
 #include "mini.h"
 #include "ministub.hpp"
-#endif
 
 /*!
 	The SRTerrain class implements Stefan Roettger's algorithm for
@@ -51,9 +47,7 @@ protected:
 	void RenderPass();
 
 private:
-#if ENABLE_SRTERRAIN
 	ministub *m_pMini;
-#endif
 
 	IPoint2 m_window_size;
 	FPoint3 m_eyepos_ogl;
