@@ -485,7 +485,7 @@ void Enviro::FormatCoordString(vtString &str, const DPoint3 &coord, LinearUnits 
 		char ns = coord.y > 0.0f ? 'N' : 'S';
 
 		if (seconds)
-			str.Format("%3d:%02d:%02d %c, %3d:%02d:%02d %c", deg1, min1, sec1, ew, deg2, min2, ns);
+			str.Format("%3d:%02d:%02d %c, %3d:%02d:%02d %c", deg1, min1, sec1, ew, deg2, min2, sec2, ns);
 		else
 			str.Format("%3d:%02d %c, %3d:%02d %c", deg1, min1, ew, deg2, min2, ns);
 	}
