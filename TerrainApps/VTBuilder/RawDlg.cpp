@@ -16,6 +16,10 @@
     #pragma hdrstop
 #endif
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "RawDlg.h"
 
 // WDR: class implementations
