@@ -62,6 +62,10 @@ void vtApp::Args(int argc, wxChar **argv)
 //
 bool vtApp::OnInit()
 {
+#if WIN32 && defined(_MSC_VER) && DEBUG
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+#endif
+
 	g_Options.Read("Enviro.ini");
 
 	g_App.Startup();	// starts log
