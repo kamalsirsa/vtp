@@ -9,13 +9,10 @@
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
 #include "wx/image.h"
+#include "wx/progdlg.h"
 
 #ifdef UNIX
 #include <unistd.h>
-#endif
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
 #endif
 
 #include "vtlib/vtlib.h"
@@ -28,6 +25,7 @@
 #include "vtlib/core/Globe.h"
 #include "vtlib/core/Contours.h"
 #include "vtdata/vtLog.h"
+#include "vtui/Helper.h"	// for progress dialog
 
 #include "frame.h"
 #include "StatusBar.h"
@@ -1410,7 +1408,11 @@ void vtFrame::OnTerrainReshade(wxCommandEvent& event)
 	if (!pTerr)
 		return;
 
-	pTerr->recreate_textures(vtGetTS()->GetSunLight());
+	EnableContinuousRendering(false);
+	OpenProgressDialog(_T("Recalculating Shading"), false);
+	pTerr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
+	CloseProgressDialog();
+	EnableContinuousRendering(true);
 }
 
 
