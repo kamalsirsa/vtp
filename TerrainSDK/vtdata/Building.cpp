@@ -617,8 +617,6 @@ void vtBuilding::DeleteStories()
 
 vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 {
-	m_EarthPos = v.m_EarthPos;
-
 	DeleteStories();
 
 	for (int i = 0; i < v.m_Levels.GetSize(); i++)
@@ -688,7 +686,7 @@ void vtBuilding::SetCircle(const DPoint2 &center, float fRad)
 	{
 		double angle = i * PI2d / 20;
 		DPoint2 vec(cos(angle) * fRad, sin(angle) * fRad);
-		fp.Append(m_EarthPos + vec);
+		fp.Append(center + vec);
 	}
 }
 
@@ -883,8 +881,6 @@ bool vtBuilding::GetBaseLevelCenter(DPoint2 &p) const
 void vtBuilding::Offset(const DPoint2 &p)
 {
 	int i;
-
-	m_EarthPos += p;
 
 	for (i = 0; i < m_Levels.GetSize(); i++)
 	{
@@ -1208,7 +1204,9 @@ void vtBuilding::AddDefaultDetails()
 
 void vtBuilding::DetermineLocalFootprints()
 {
-	s_Conv.SetOrigin(m_EarthPos);
+	DPoint2 center;
+	GetBaseLevelCenter(center);
+	s_Conv.SetOrigin(center);
 
 	int i;
 	int levs = m_Levels.GetSize();

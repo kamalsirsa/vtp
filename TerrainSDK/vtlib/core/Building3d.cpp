@@ -272,7 +272,9 @@ void vtBuilding3d::DetermineWorldFootprints(vtHeightField3d *pHeightField)
 
 	// Find the center of the building in world coordinates (the origin of
 	// the building's local coordinate system)
-	pHeightField->ConvertEarthToSurfacePoint(m_EarthPos, m_center);
+	DPoint2 center;
+	GetBaseLevelCenter(center);
+	pHeightField->ConvertEarthToSurfacePoint(center, m_center);
 	m_center.y = base_level;
 
 	// The final footprints are expressed relative to the origin of the

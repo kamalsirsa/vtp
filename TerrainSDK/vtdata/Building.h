@@ -235,9 +235,6 @@ protected:
 	// information about each story
 	Array<vtLevel *> m_Levels;
 
-	// fields that affect placement
-	DPoint2		m_EarthPos;			// location of building center
-
 	// Offset that the building should be moved up or down relative to its
 	// default position on the ground (lowest corner of its base footprint)
 	float		m_fElevationOffset;
