@@ -1995,7 +1995,7 @@ bool vtElevationGrid::SaveToSTM(const char *szFileName, void progress_callback(i
 	{
 		if (progress_callback != NULL)
 			progress_callback(j * 100 / m_iRows);
-		for (int i = 0; i < m_iRows; i++)
+		for (int i = 0; i < m_iColumns; i++)
 		{
 			/* This byte swap is only necessary for PC and Alpha machines */
 			short val = GetValue(i, j);
@@ -2007,6 +2007,51 @@ bool vtElevationGrid::SaveToSTM(const char *szFileName, void progress_callback(i
 	}
 	delete [] data;
 	fclose(outf);
+	return true;
+}
+
+/**
+ * Write elevation to the MSI Planet (Marconi) format.
+ *
+ * \returns \c true if the file was successfully opened and read.
+ */
+bool vtElevationGrid::SaveToPlanet(const char *szFileName, void progress_callback(int))
+{
+	DPoint2 spacing = GetSpacing();
+
+    // create name of binary file and write it to disk
+    vtString fname = szFileName;
+	RemoveFileExtensions(fname);
+    FILE *outfile = fopen(fname+".dat", "wb");
+	if (!outfile)
+		return false;
+
+	short* pixels = new short[m_iColumns * m_iRows];
+	int idx = 0;
+	for (int j = 0; j < m_iRows; j++)
+	{
+		for (int i = 0; i < m_iColumns; i++)
+		{
+			pixels[idx++] = GetValue(i, m_iRows-1-j);
+		}
+	}
+	fwrite(pixels, sizeof(short) * m_iColumns, m_iRows, outfile);
+	delete [] pixels;
+    fclose(outfile);
+
+    // create index file
+    outfile = fopen(fname+".txt", "wb");
+	if (!outfile)
+		return false;
+
+	vtString fname2 = StartOfFilename(fname);
+
+    fprintf(outfile, "%s %g %g %g %g %g\n",
+        (const char *) (fname2+".dat"),
+        m_EarthExtents.left,   m_EarthExtents.left + m_iColumns * spacing.x, 
+        m_EarthExtents.bottom, m_EarthExtents.bottom + m_iRows * spacing.y,
+        spacing.x);		// must spacing be even in both directions?
+    fclose(outfile);
 	return true;
 }
 
