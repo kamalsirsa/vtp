@@ -160,7 +160,7 @@ bool vtDIB::Create24From8bit(const vtDIB &from)
 		return false;
 
 	RGBi rgb;
-	int i, j;
+	unsigned int i, j;
 	for (i = 0; i < m_iWidth; i++)
 	{
 		for (j = 0; j < m_iHeight; j++)
@@ -378,7 +378,8 @@ bool vtDIB::ReadJPEG(const char *fname)
 		bitdepth = 8;
 	else
 		bitdepth = 24;
-	Create(cinfo.image_width, cinfo.image_height, bitdepth, bitdepth == 8);
+	if (!Create(cinfo.image_width, cinfo.image_height, bitdepth, bitdepth == 8))
+		return false;
 
 	/* Start decompressor */
 	jpeg_start_decompress(&cinfo);
@@ -390,22 +391,20 @@ bool vtDIB::ReadJPEG(const char *fname)
 	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)
 		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
-	int cur_output_row = 0;
 	unsigned int col;
 
 	/* Process data */
 	while (cinfo.output_scanline < cinfo.output_height)
 	{
+		JSAMPROW inptr = buffer[0];
+		byte *adr = ((byte *)m_Data) + (m_iHeight-1-cinfo.output_scanline)*m_iByteWidth;
+
 		num_scanlines = jpeg_read_scanlines(&cinfo, buffer,
 						buffer_height);
 
 		/* Transfer data.  Note destination values must be in BGR order
-		* (even though Microsoft's own documents say the opposite).
-		*/
-		JSAMPROW inptr = buffer[0];
-		byte *adr = ((byte *)m_Data) + (m_iHeight-cur_output_row-1)*m_iByteWidth;
-//		byte *adr = ((byte *)m_Data) + (cur_output_row)*m_iByteWidth;
-
+		 * (even though Microsoft's own documents say the opposite).
+		 */
 		if (bitdepth == 8)
 		{
 			for (col = 0; col < cinfo.output_width; col++)
@@ -421,7 +420,6 @@ bool vtDIB::ReadJPEG(const char *fname)
 				adr += 3;
 			}
 		}
-		cur_output_row++;
 	}
 
 	jpeg_finish_decompress(&cinfo);
@@ -430,6 +428,87 @@ bool vtDIB::ReadJPEG(const char *fname)
 	/* Close files, if we opened them */
 	if (input_file != stdin)
 		fclose(input_file);
+
+	return true;
+}
+
+/**
+ * Write a JPEG file.
+ *
+ * \param fname The output filename.
+ * \param quality JPEG quality in the range of 0..100.
+ */
+bool vtDIB::WriteJPEG(const char *fname, int quality)
+{
+	struct jpeg_compress_struct cinfo;
+	struct jpeg_error_mgr jerr;
+	FILE * outfile;
+
+	/* Initialize the JPEG decompression object with default error handling. */
+	cinfo.err = jpeg_std_error(&jerr);
+	jpeg_create_compress(&cinfo);
+
+	outfile = fopen(fname, "wb");
+	if (outfile == NULL)
+		return false;
+
+	/* Specify data source for decompression */
+	jpeg_stdio_dest(&cinfo, outfile);
+
+	// set parameters for compression
+	cinfo.image_width = m_iWidth; 	/* image width and height, in pixels */
+	cinfo.image_height = m_iHeight;
+	cinfo.input_components = m_iByteCount;	/* # of color components per pixel */
+	if (m_iByteCount == 1)
+		cinfo.in_color_space = JCS_GRAYSCALE;
+	else
+		cinfo.in_color_space = JCS_RGB; 	/* colorspace of input image */
+
+	// Now use the library's routine to set default compression parameters.
+	jpeg_set_defaults(&cinfo);
+
+	jpeg_set_quality(&cinfo, quality, TRUE /* limit to baseline-JPEG values */);
+
+	/* Start compressor */
+	jpeg_start_compress(&cinfo, TRUE);
+
+	int row_stride = cinfo.image_width * cinfo.input_components;
+
+	unsigned int col;
+	JSAMPROW row_buffer = new JSAMPLE[row_stride];
+
+	/* Process data */
+	while (cinfo.next_scanline < cinfo.image_height)
+	{
+		// Transfer data.  Note source values are in BGR order.
+		JSAMPROW outptr = row_buffer;
+		JSAMPROW adr = ((JSAMPROW)m_Data) + (m_iHeight-1-cinfo.next_scanline)*m_iByteWidth;
+		if (m_iBitCount == 8)
+		{
+			for (col = 0; col < m_iWidth; col++)
+				*outptr++ = *adr++;
+		}
+		else
+		{
+			for (col = 0; col < m_iWidth; col++)
+			{
+				*outptr++ = adr[2];
+				*outptr++ = adr[1];
+				*outptr++ = adr[0];
+				adr += 3;
+			}
+		}
+		jpeg_write_scanlines(&cinfo, &row_buffer, 1);
+	}
+
+	delete row_buffer;
+
+	jpeg_finish_compress(&cinfo);
+
+	/* After finish_compress, we can close the output file. */
+	fclose(outfile);
+
+	jpeg_destroy_compress(&cinfo);
 
 	return true;
 }
@@ -970,7 +1049,7 @@ void vtDIB::SetPixel1(int x, int y, bool value)
 
 void vtDIB::SetColor(const RGBi &rgb)
 {
-	int i, j;
+	unsigned int i, j;
 	for (i = 0; i < m_iWidth; i++)
 		for (j = 0; j < m_iHeight; j++)
 		{

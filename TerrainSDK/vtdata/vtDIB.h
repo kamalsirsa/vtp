@@ -45,6 +45,7 @@ public:
 	bool WriteBMP(const char *fname);
 	bool ReadPNG(const char *fname);
 	bool ReadJPEG(const char *fname);
+	bool WriteJPEG(const char *fname, int quality);
 	bool WritePNG(const char *fname);
 
 	unsigned int GetPixel24(int x, int y) const;
@@ -64,9 +65,9 @@ public:
 
 	void SetColor(const RGBi &rgb);
 
-	int GetWidth() const { return m_iWidth; }
-	int GetHeight() const { return m_iHeight; }
-	int GetDepth() const { return m_iBitCount; }
+	unsigned int GetWidth() const { return m_iWidth; }
+	unsigned int GetHeight() const { return m_iHeight; }
+	unsigned int GetDepth() const { return m_iBitCount; }
 
 	void *GetHandle() const { return m_pDIB; }
 	BITMAPINFOHEADER *GetDIBHeader() const { return m_Hdr; }
@@ -88,9 +89,10 @@ private:
 	void	*m_Data;
 
 	void	*m_pDIB;
-	int		m_iWidth, m_iHeight, m_iBitCount, m_iByteCount;
-	int		m_iByteWidth;
-	int		m_iPaletteSize;
+	unsigned int	m_iWidth, m_iHeight, m_iBitCount, m_iByteCount;
+	unsigned int	m_iByteWidth;
+	unsigned int	m_iPaletteSize;
 };
 
 #endif
+
