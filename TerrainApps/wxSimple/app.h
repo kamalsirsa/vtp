@@ -13,6 +13,7 @@ public:
 	bool CreateScene();
 	int OnExit();
 
+	class vtFrame *m_frame;
 	vtTerrainScene *m_pTerrainScene;
 };
 

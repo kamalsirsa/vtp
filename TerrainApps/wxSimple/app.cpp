@@ -26,6 +26,7 @@
 
 #include "app.h"
 #include "frame.h"
+#include "canvas.h"
 
 IMPLEMENT_APP(vtApp);
 
@@ -36,8 +37,7 @@ bool vtApp::OnInit(void)
 {
 	// Create the main frame window
 	wxString title = "Simple vtlib example";
-	vtFrame *frame = new vtFrame(NULL, title,
-			wxPoint(50, 50), wxSize(800, 600));
+	m_frame = new vtFrame(NULL, title, wxPoint(50, 50), wxSize(800, 600));
 
 	return CreateScene();
 }
@@ -80,7 +80,9 @@ bool vtApp::CreateScene()
 	int iError;
 	if (!pTerr->CreateScene(false, iError))
 	{
-		wxMessageBox("Terrain creation failed.");
+		m_frame->m_canvas->m_bRunning = false;
+		wxMessageBox("Couldn't create the terrain.  Perhaps the elevation\n"
+			"data file isn't in the expected location?");
 		return false;
 	}
 	m_pTerrainScene->Finish(paths);
