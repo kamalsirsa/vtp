@@ -10,7 +10,6 @@ class NevadaTerrain : public PTerrain
 {
 public:
 	NevadaTerrain();
-	~NevadaTerrain();
 
 	void CreateCustomCulture(bool bDoSound);
 

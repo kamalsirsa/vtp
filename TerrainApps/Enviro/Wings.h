@@ -10,7 +10,6 @@ class Butterfly : public vtTransform
 public:
 	Butterfly(vtTerrain *terrain, float radius, float speed, 
 			  float height, FPoint3 center, float size_exag);
-	~Butterfly() {};
 
 	static vtMaterialArray *m_pApps;
 	vtMovGeom *m_pWing1, *m_pWing2;

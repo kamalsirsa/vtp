@@ -39,10 +39,6 @@ NevadaTerrain::NevadaTerrain() : PTerrain()
 {
 }
 
-NevadaTerrain::~NevadaTerrain()
-{
-}
-
 //
 // Nevada culture
 //
