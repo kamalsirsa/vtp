@@ -39,7 +39,7 @@ char *vtLayer::LayerFileExtension[LAYER_TYPES] =
 {
 	".shp",
 	".bt",
-	".bmp",
+	".tif",
 	".rmf",
 	".vtst",
 	".hyd",

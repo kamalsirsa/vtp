@@ -687,6 +687,7 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	AddType(filter, FSTRING_UTL);	// utility towers
 	AddType(filter, FSTRING_VTST);	// structures
 	AddType(filter, FSTRING_VF);	// vegetation files
+	AddType(filter, FSTRING_TIF);	// image files
 #endif
 	AddType(filter, FSTRING_SHP);	// raw files
 

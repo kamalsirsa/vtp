@@ -26,11 +26,12 @@
 #include "BuilderView.h"
 // Layers
 #include "ElevLayer.h"
-#include "VegLayer.h"
+#include "ImageLayer.h"
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "StructLayer.h"
 #include "UtilityLayer.h"
+#include "VegLayer.h"
 // Dialogs
 #include "ResampleDlg.h"
 #include "FeatInfoDlg.h"
@@ -490,6 +491,12 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		vtRawLayer *pRL = new vtRawLayer();
 		if (pRL->Load(fname))
 			pLayer = pRL;
+ 	}
+	if (ext.CmpNoCase("tif") == 0)
+	{
+		vtImageLayer *pIL = new vtImageLayer();
+		if (pIL->Load(fname))
+			pLayer = pIL;
 	}
 	if (pLayer)
 	{
