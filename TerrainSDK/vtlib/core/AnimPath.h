@@ -8,6 +8,7 @@
 //
 
 #include "vtlib/core/Engine.h"
+#include "vtdata/CubicSpline.h"
 
 /**
  * This class describes a single location, including both a position and
@@ -39,6 +40,7 @@ struct ControlPoint
 	FPoint3 m_Position;
 	FQuat m_fRotation;
 	FPoint3 m_Scale;
+	int m_iIndex;
 };
 
 /**
@@ -50,11 +52,14 @@ struct ControlPoint
 class vtAnimPath
 {
 public:
-	vtAnimPath(): m_LoopMode(LOOP) {}
+	vtAnimPath():
+		m_bLoop(true),
+		m_InterpMode(LINEAR) {}
 
 	vtAnimPath(const vtAnimPath &ap):
 		m_TimeControlPointMap(ap.m_TimeControlPointMap),
-		m_LoopMode(ap.m_LoopMode) {}
+		m_bLoop(ap.m_bLoop),
+		m_InterpMode(ap.m_InterpMode) {}
 
 	virtual ~vtAnimPath() {}
 
@@ -74,6 +79,8 @@ public:
 	// Add a control point to this path
 	void Insert(double time, const ControlPoint &controlPoint);
 
+	void ProcessPoints();
+
 	double GetFirstTime() const
 	{
 		if (m_TimeControlPointMap.empty())
@@ -88,15 +95,17 @@ public:
 	}
 	double GetPeriod() const { return GetLastTime()-GetFirstTime();}
 
-	enum LoopMode
+	enum InterpMode
 	{
-		SWING,
-		LOOP,
-		NO_LOOPING
+		LINEAR,
+		CUBIC_SPLINE
 	};
 
-	void SetLoopMode(LoopMode lm) { m_LoopMode = lm; }
-	LoopMode GetLoopMode() const { return m_LoopMode; }
+	void SetLoop(bool bLoop) { m_bLoop = bLoop; }
+	bool GetLoop() const { return m_bLoop; }
+
+	void SetInterpMode(InterpMode mode) { m_InterpMode = mode; }
+	InterpMode GetInterpMode() const { return m_InterpMode; }
 
 	typedef std::map<double,ControlPoint> TimeControlPointMap;
 
@@ -110,8 +119,9 @@ public:
 
 protected:
 	TimeControlPointMap m_TimeControlPointMap;
-	LoopMode            m_LoopMode;
-
+	bool	            m_bLoop;
+	InterpMode			m_InterpMode;
+	CubicSpline			m_Spline;
 };
 
 /**

@@ -38,31 +38,39 @@ void vtAnimPath::Insert(double time,const ControlPoint &controlPoint)
 	m_TimeControlPointMap[time] = controlPoint;
 }
 
-bool vtAnimPath::GetInterpolatedControlPoint(double time,ControlPoint &controlPoint) const
+void vtAnimPath::ProcessPoints()
 {
-	if (m_TimeControlPointMap.empty()) return false;
+	m_Spline.Cleanup();
 
-	switch(m_LoopMode)
+	TimeControlPointMap::iterator it = m_TimeControlPointMap.begin();
+	int i = 0;
+	while (it != m_TimeControlPointMap.end())
 	{
-		case(SWING):
-		{
-			double modulated_time = (time - GetFirstTime())/(GetPeriod()*2.0);
-			double fraction_part = modulated_time - floor(modulated_time);
-			if (fraction_part>0.5) fraction_part = 1.0-fraction_part;
+		it->second.m_iIndex = i;
+		m_Spline.AddPoint(it->second.m_Position);
 
-			time = GetFirstTime()+(fraction_part*2.0) * GetPeriod();
-			break;
-		}
-		case(LOOP):
-		{
-			double modulated_time = (time - GetFirstTime())/GetPeriod();
-			double fraction_part = modulated_time - floor(modulated_time);
-			time = GetFirstTime()+fraction_part * GetPeriod();
-			break;
-		}
-		case(NO_LOOPING):
-			// no need to modulate the time.
-			break;
+		it++;
+		i++;
+	}
+
+	// one more in case they want to loop
+//	it = m_TimeControlPointMap.begin();
+//	m_Spline.AddPoint(it->second.m_Position);
+
+	// now create smooth curve, in case it's needed later
+	m_Spline.Generate();
+}
+
+bool vtAnimPath::GetInterpolatedControlPoint(double time, ControlPoint &controlPoint) const
+{
+	if (m_TimeControlPointMap.empty())
+		return false;
+
+	if (m_bLoop)
+	{
+		double modulated_time = (time - GetFirstTime())/GetPeriod();
+		double fraction_part = modulated_time - floor(modulated_time);
+		time = GetFirstTime()+fraction_part * GetPeriod();
 	}
 
 	TimeControlPointMap::const_iterator second = m_TimeControlPointMap.lower_bound(time);
@@ -70,7 +78,7 @@ bool vtAnimPath::GetInterpolatedControlPoint(double time,ControlPoint &controlPo
 	{
 		controlPoint = second->second;
 	}
-	else if (second!=m_TimeControlPointMap.end())
+	else if (second != m_TimeControlPointMap.end())
 	{
 		TimeControlPointMap::const_iterator first = second;
 		--first;
@@ -84,9 +92,20 @@ bool vtAnimPath::GetInterpolatedControlPoint(double time,ControlPoint &controlPo
 			controlPoint = first->second;
 		else
 		{
-			controlPoint.Interpolate((time - first->first)/delta_time,
-							first->second,
-							second->second);
+			double elapsed = time - first->first;
+			double ratio = elapsed/delta_time;
+
+			controlPoint.Interpolate(ratio, first->second, second->second);
+			if (m_InterpMode == CUBIC_SPLINE)
+			{
+				// Don't use that linear position.
+				// Find the position on the spline.
+				int num = first->second.m_iIndex;
+
+				DPoint3 dpos;
+				m_Spline.Interpolate(num + ratio, &dpos);
+				controlPoint.m_Position = dpos;
+			}
 		}
 	}
 	else // (second==_timeControlPointMap.end())
