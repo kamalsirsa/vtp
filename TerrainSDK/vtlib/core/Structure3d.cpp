@@ -99,8 +99,10 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	}
 
 	// if previously created, destroy to re-create
+	bool bRecreating = false;
 	if (m_pModel)
 	{
+		bRecreating = true;
 		m_pContainer->RemoveChild(m_pModel);
 		m_pModel->Release();
 		m_pModel = NULL;
@@ -113,7 +115,11 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		vtString fullpath = FindFileOnPaths(vtGetDataPath(), filename);
 		if (fullpath != "")
 		{
-			m_pModel = vtNode::LoadModel(fullpath);
+			// If they are re-creating this object, it's probably because
+			//  the object has changed on disk, so force a reload
+			bool bForce = bRecreating;
+
+			m_pModel = vtNode::LoadModel(fullpath, !bForce);
 			if (m_pModel)
 				SetValueString("filename", fullpath);
 		}
