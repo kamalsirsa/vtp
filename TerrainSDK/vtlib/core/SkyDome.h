@@ -94,6 +94,7 @@ public:
 	bool	SetTexture(const char *filename);
 
 protected:
+	void	UpdateSunLight();
 	void	ApplyDomeColors();
 	void	ConvertVertices();
 

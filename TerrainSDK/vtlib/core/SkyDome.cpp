@@ -238,8 +238,10 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		// Z translation, to face us at the topographic north (horizon)
 		FMatrix4 trans;
 		trans.Identity();
-		trans.AxisAngle(FPoint3(0,0,1), PID2f);
 		trans.Translate(FPoint3(0.0f, 0.90f, 0.0f));
+		SunMesh->TransformVertices(trans);
+		trans.Identity();
+		trans.AxisAngle(FPoint3(1,0,0), -PID2f);
 		SunMesh->TransformVertices(trans);
 
 		// The sun is attached to the celestial sphere which rotates
@@ -283,7 +285,7 @@ void vtSkyDome::SetTime(const vtTime &time, bool bFullRefresh)
 	// TEST with fake time and place
 	m_time.SetDate(2000, 3, 21);	// roughly vernal equinox
 	m_time.SetTimeOfDay(12, 0, 0);	// high noon
-	geo.Set(0, 45);	 // On the prime meridian, just west of Bordeaux France
+	geo.Set(15, 45);	 // On the prime meridian, just west of Bordeaux France
 #endif
 
 	// Determine the Sun's location in the celestial sphere
@@ -319,60 +321,29 @@ void vtSkyDome::SetTime(const vtTime &time, bool bFullRefresh)
 	float dec = (float) spa.delta;
 
 	// Put red marker where SPA tells us the ra-dec sun should go
-	PlaceMarker(m_pRedMarker, 90 - dec, ra);
+	m_pRedMarker->Identity();
+	m_pRedMarker->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(90 - dec));
+	m_pRedMarker->RotateParent(FPoint3(0,0,1), DEG_TO_RAD(-ra));
 
-#if 0
 	// Set the correct transformation of the celestial sphere for the
-	//  location on earth and current time.  This existing code is at
-	//  best an approximation (if it worked, which it doesn't.)  It would
-	//  be far better to get the rotation of the celestial sphere
-	//  relative to the earth, from SPA, and use that, but i can't
-	//  figure out what values to use.
+	//  location on earth and current time.
 	m_pCelestial->Identity();
 
 	float latitude_in_radians = (float) (geo.y / 180.0f * PIf);
 	m_pCelestial->RotateLocal(FPoint3(1,0,0), latitude_in_radians);
 
-	// The celestial sphere rotates once per day
-	int iTimeOfDay = m_time.GetSecondOfDay();
-	int iNoon = 12 * 60 * 60;
-	int iMaxTimeOfDay = 24 * 60 * 60;
-	float day_fraction = (float) (iTimeOfDay-iNoon)/iMaxTimeOfDay;
+	float gst = (float) spa.nu;	// GST = Greenwich Sidereal Time, degrees
+	float lst = gst + geo.x;	// LST = Local Sideral Time
 
-	// The celestial sphere also rotates once per year
-	// Vernal equinox is roughly March 21, day 80 of the year.
-	int iDaysSinceVernalEquinox = m_time.m_tm.tm_yday - 80;
-	if (iDaysSinceVernalEquinox < 0)
-		iDaysSinceVernalEquinox += 365;
-	float year_fraction = (float) iDaysSinceVernalEquinox/365;
-
-	float dec_of_sphere = (day_fraction + year_fraction) * PIf * 2.0f;
-
+//	VTLOG("YMD %d %d %d, HMS %02d:%02d:%02d, RA/DEC %.0f %.0f, GST %.0f, LST %.0f\n",
+//		year, month, day, hour, minute, second, ra, dec, gst, lst);
+	float dec_of_sphere = DEG_TO_RAD(lst);
 	m_pCelestial->RotateLocal(FPoint3(0,0,1), dec_of_sphere);
-#endif
 
-#if 1
-	// Instead of using the celestial sphere, just punt and put the sun billboard
-	//  directly at the alt-azi location.
-	PlaceMarker(m_pSunGeom, m_fSunAlt, m_fSunAzi);
-#endif
-
-#if 0
-	// Enable this optional hack if you want simple, bright noon daylight
-	float ambient = MAX_AMB;
-	vtGetScene()->SetAmbient(RGBf(ambient, ambient, ambient));
-	RGBf white(1.0f, 1.0f, 1.0f);
-	if (m_pSunLight != NULL)
-	{
-		float angle = 2.0f * PIf * day_fraction;
-		m_pSunLight->Identity();
-		m_pSunLight->Rotate2(FPoint3(0,1,0), -PIf/2.0f);
-		m_pSunLight->Rotate2(FPoint3(0,0,1), angle + PIf/2.0f);
-
-		m_pSunLight->m_pLight->SetColor(white);
-		m_pSunLight->m_pLight->SetAmbient(RGBf(ambient, ambient, ambient));
-	}
-#endif
+	// Place the sun geometry on the celestial sphere
+	m_pSunGeom->Identity();
+	m_pSunGeom->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(90 - dec));
+	m_pSunGeom->RotateParent(FPoint3(0,0,1), DEG_TO_RAD(-ra));
 
 	// Determine if the stardome is active according to time of day
 	if (m_pStarDome)
@@ -383,81 +354,88 @@ void vtSkyDome::SetTime(const vtTime &time, bool bFullRefresh)
 			m_pStarDome->SetEnabled(false);
 	}
 
-#if 1
 	// set the direction and intensity of the sunlight
 	if (m_pSunLight != NULL)
-	{
-		// Point the actual sun light, such that is it coming from the sun
-		//  that we draw in the sky.
-		m_pSunLight->Identity();
+		UpdateSunLight();
 
-		// First rotate by 180 degrees because OpenGL lights default to
-		//  facing 'north', but alt-azi here assumes the default position is
-		//  _from_ the north at the horizon, facing us.
-		m_pSunLight->Rotate2(FPoint3(1,0,0), PID2f);
-		m_pSunLight->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(m_fSunAlt));
-		m_pSunLight->RotateParent(FPoint3(0,1,0), DEG_TO_RAD(-m_fSunAzi));
-
-		float ambient = 0.0f;
-
-		// set intensity of ambient light based on time of day
-		if (m_fSunAlt < -5)
-		{
-			// night
-			ambient = MIN_AMB;
-		}
-		else if (m_fSunAlt >= -5 && m_fSunAlt <= 5)
-		{
-			// dawn / dusk
-			ambient = MIN_AMB + AMB_RANGE * (m_fSunAlt + 5) / (10);
-		}
-		else if (m_fSunAlt >= 5)
-		{
-			// day
-			ambient = MAX_AMB;
-		}
-
-		vtGetScene()->SetAmbient(RGBf(ambient, ambient, ambient));
-
-		float intensity = 0.0f;
-
-		RGBf white(1.0f, 1.0f, 1.0f);
-		RGBf yellow(1.0f, 0.6f, 0.4f);
-		RGBf color;
-		float fraction;
-
-		// set intensity of sunlight based on whether it is over the horizon
-		if (m_fSunAlt < -2)
-		{
-			// night
-			color = yellow;
-			intensity = 0.0f;
-		}
-		else if (m_fSunAlt >= -2 && m_fSunAlt < 2)
-		{
-			// dawn
-			fraction = (m_fSunAlt + 2) / 4;
-			color = yellow + ((white - yellow) * fraction);
-			intensity = MAX_INT * fraction;
-		}
-		else if (m_fSunAlt >= 2)
-		{
-			// day
-			color = white;
-			intensity = MAX_INT;
-		}
-
-		// Don't actually color the sun, because we use a sun texture now.
-		// if (m_pSunMat) m_pSunMat->vtMaterialBase::SetDiffuse1(color);
-
-		color *= intensity;
-		m_pSunLight->m_pLight->SetColor(color);
-		m_pSunLight->m_pLight->SetAmbient(RGBf(ambient, ambient, ambient));
-	}
-#endif
 	ApplyDomeColors();
 }
 
+
+void vtSkyDome::UpdateSunLight()
+{
+	// Point the actual sun light, such that is it coming from the sun
+	//  that we draw in the sky.
+	m_pSunLight->Identity();
+
+	// First rotate by 180 degrees because OpenGL lights default to
+	//  facing 'north', but alt-azi here assumes the default position is
+	//  _from_ the north at the horizon, facing us.
+	m_pSunLight->Rotate2(FPoint3(1,0,0), PId);
+	m_pSunLight->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(-m_fSunAlt));
+	m_pSunLight->RotateLocal(FPoint3(0,1,0), DEG_TO_RAD(m_fSunAzi));
+
+//	FPoint3 dir = m_pSunLight->GetDirection();
+//	VTLOG("  Light dir: %.3f %.3f %.3f\n", dir.x, dir.y, dir.z);
+
+	float ambient = 0.0f;
+
+	// set intensity of ambient light based on time of day
+	if (m_fSunAlt < -5)
+	{
+		// night
+		ambient = MIN_AMB;
+	}
+	else if (m_fSunAlt >= -5 && m_fSunAlt <= 5)
+	{
+		// dawn / dusk
+		ambient = MIN_AMB + AMB_RANGE * (m_fSunAlt + 5) / (10);
+	}
+	else if (m_fSunAlt >= 5)
+	{
+		// day
+		ambient = MAX_AMB;
+	}
+
+	vtGetScene()->SetAmbient(RGBf(ambient, ambient, ambient));
+
+	float intensity = 0.0f;
+
+	RGBf white(1.0f, 1.0f, 1.0f);
+	RGBf yellow(1.0f, 0.6f, 0.4f);
+	RGBf color;
+	float fraction;
+
+	// set intensity of sunlight based on whether it is over the horizon
+	if (m_fSunAlt < -2)
+	{
+		// night
+		color = yellow;
+		intensity = 0.0f;
+	}
+	else if (m_fSunAlt >= -2 && m_fSunAlt < 2)
+	{
+		// dawn / dusk
+		fraction = (m_fSunAlt + 2) / 4;
+		color = yellow + ((white - yellow) * fraction);
+		intensity = MAX_INT * fraction;
+	}
+	else if (m_fSunAlt >= 2)
+	{
+		// day
+		color = white;
+		intensity = MAX_INT;
+	}
+
+	color *= intensity;
+	m_pSunLight->m_pLight->SetColor(color);
+	m_pSunLight->m_pLight->SetAmbient(RGBf(ambient, ambient, ambient));
+
+	// Don't actually color the sun geometry, because we use a sun texture now.
+	// if (m_pSunMat) m_pSunMat->vtMaterialBase::SetDiffuse1(color);
+}
+
+	
 //
 //
 void vtSkyDome::ConvertVertices()
