@@ -543,6 +543,67 @@ int vtRawLayer::DoBoxSelect(const DRECT &rect)
 	return selected;
 }
 
+int vtRawLayer::SelectByCondition(int iField, int iCondition,
+								  const char *szValue)
+{
+	int i, ival, itest;
+	double dval, dtest;
+	int entities = NumEntities();
+	bool result;
+	int con = iCondition;
+	vtString *sp;
+
+	Field *field = m_fields[iField];
+	switch (field->m_type)
+	{
+	case FTString:
+		for (i = 0; i < entities; i++)
+		{
+			sp = field->m_string[i];
+			if (con == 0) result = (sp->Compare(szValue) == 0);
+			if (con == 1) result = (sp->Compare(szValue) > 0);
+			if (con == 2) result = (sp->Compare(szValue) < 0);
+			if (con == 3) result = (sp->Compare(szValue) >= 0);
+			if (con == 4) result = (sp->Compare(szValue) <= 0);
+			if (con == 5) result = (sp->Compare(szValue) != 0);
+			if (result)
+				Select(i);
+		}
+		break;
+	case FTInteger:
+		ival = atoi(szValue);
+		for (i = 0; i < entities; i++)
+		{
+			itest = field->m_int[i];
+			if (con == 0) result = (itest == ival);
+			if (con == 1) result = (itest > ival);
+			if (con == 2) result = (itest < ival);
+			if (con == 3) result = (itest >= ival);
+			if (con == 4) result = (itest <= ival);
+			if (con == 5) result = (itest != ival);
+			if (result)
+				Select(i);
+		}
+		break;
+	case FTDouble:
+		dval = atof(szValue);
+		for (i = 0; i < entities; i++)
+		{
+			dtest = field->m_double[i];
+			if (con == 0) result = (dtest == dval);
+			if (con == 1) result = (dtest > dval);
+			if (con == 2) result = (dtest < dval);
+			if (con == 3) result = (dtest >= dval);
+			if (con == 4) result = (dtest <= dval);
+			if (con == 5) result = (dtest != dval);
+			if (result)
+				Select(i);
+		}
+		break;
+	}
+	return 0;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Data Fields
@@ -609,43 +670,6 @@ void vtRawLayer::GetValueAsString(int iRecord, int iField, vtString &str)
 		str.Format("%lf", field->m_double[iRecord]);
 		break;
 	}
-}
-
-int vtRawLayer::SelectByCondition(int iField, int iCondition,
-								  const char *szValue)
-{
-	int i, ival;
-	double dval;
-	int entities = NumEntities();
-
-	Field *field = m_fields[iField];
-	switch (field->m_type)
-	{
-	case FTString:
-		for (i = 0; i < entities; i++)
-		{
-			if (! field->m_string[i]->Compare(szValue))
-				Select(i);
-		}
-		break;
-	case FTInteger:
-		ival = atoi(szValue);
-		for (i = 0; i < entities; i++)
-		{
-			if (field->m_int[i] == ival)
-				Select(i);
-		}
-		break;
-	case FTDouble:
-		dval = atof(szValue);
-		for (i = 0; i < entities; i++)
-		{
-			if (field->m_double[i] == dval)
-				Select(i);
-		}
-		break;
-	}
-	return 0;
 }
 
 /////////////////////////////////////////////////
