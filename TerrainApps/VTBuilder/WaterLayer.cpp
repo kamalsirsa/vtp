@@ -44,17 +44,24 @@ bool vtWaterLayer::OnLoad()
 bool vtWaterLayer::ConvertProjection(vtProjection &proj_new)
 {
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation(&m_proj, &proj_new);
+//	OCT *trans = OGRCreateCoordinateTransformation(&m_proj, &proj_new);
+	// TEMP until Datums fixed
+	OCT *trans = CreateConversionIgnoringDatum(&m_proj, &proj_new);
 	if (!trans)
 		return false;		// inconvertible projections
 
 	int i, c, size, num_lines = m_Lines.GetSize();
 
+	DPoint2 p;
 	for (i = 0; i < num_lines; i++)
 	{
 		size = m_Lines[i]->GetSize();
 		for (c = 0; c < size; c++)
-			trans->Transform(1, &(m_Lines[i]->GetAt(c).x), &(m_Lines[i]->GetAt(c).y));
+		{
+			p = m_Lines[i]->GetAt(c);
+			trans->Transform(1, &p.x, &p.y);
+			m_Lines[i]->SetAt(c, p);
+		}
 	}
 	delete trans;
 	return true;
@@ -162,6 +169,10 @@ void vtWaterLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 	SHPClose(hSHP);
 }
 
+void vtWaterLayer::AddLine(DLine2 *pDLine)
+{
+	m_Lines.Append(pDLine);
+}
 
 bool vtWaterLayer::AppendDataFrom(vtLayer *pL)
 {
@@ -182,6 +193,11 @@ bool vtWaterLayer::AppendDataFrom(vtLayer *pL)
 void vtWaterLayer::GetProjection(vtProjection &proj)
 {
 	proj = m_proj;
+}
+
+void vtWaterLayer::SetProjection(vtProjection &proj)
+{
+	m_proj = proj;
 }
 
 void vtWaterLayer::Offset(const DPoint2 &p)
