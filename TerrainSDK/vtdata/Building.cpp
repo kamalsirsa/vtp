@@ -648,13 +648,13 @@ float vtBuilding::CalculateBaseElevation(vtHeightField *pHeightField)
 	DLine2 &Footprint = m_Levels[0]->GetFootprint();
 	int iSize = Footprint.GetSize();
 	float fLowest = 1E9f;
-	FPoint3 Point;
 
+	float fAltitude;
 	for (int i = 0; i < iSize; i++)
 	{
-		pHeightField->ConvertEarthToSurfacePoint(Footprint[i], Point);
-		if (Point.y < fLowest)
-			fLowest = Point.y;
+		pHeightField->FindAltitudeAtPoint2(Footprint[i], fAltitude);
+		if (fAltitude < fLowest)
+			fLowest = fAltitude;
 	}
 	return fLowest + m_fElevationOffset;
 }
