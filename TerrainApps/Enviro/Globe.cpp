@@ -148,15 +148,7 @@ void IcoGlobe::set_face_verts1(vtMesh *mesh, int face, float f)
 //
 void IcoGlobe::set_face_verts2(vtMesh *mesh, int face, float f)
 {
-	int pair;
-	for (pair = 0; pair < 10; pair++)
-	{
-		int f1 = icos_face_pairs[pair][0];
-		int f2 = icos_face_pairs[pair][1];
-
-		refresh_face_positions(m_mesh[f1], f1, f);
-		refresh_face_positions(m_mesh[f2], f2, f);
-	}
+	refresh_face_positions(m_mesh[face], face, f);
 }
 
 void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
