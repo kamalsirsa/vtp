@@ -11,6 +11,21 @@
 #define PROJECTIONSH
 
 //
+// Earth's diameter: 12756 km
+// approximate circumference: 40074 km
+// each degree of latitude: 111.3 km
+//
+#define EARTH_RADIUS		6378000.0f		// in meters
+#define METERS_PER_LATITUDE	111317.1f
+
+/**
+ * Determine an approximate conversion from degrees of longitude to meters,
+ * given a latitude in degrees.
+ */
+double EstimateDegreesToMeters(double latitude);
+
+
+//
 // Enumeration of the Datum types
 //
 // This list of Datums was originally from the USGS "ProjectionLib" library

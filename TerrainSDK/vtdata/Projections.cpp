@@ -9,7 +9,7 @@
 
 #include "Projections.h"
 #include "StatePlane.h"
-
+#include "MathTypes.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // Implementation of class vtProjection
@@ -320,5 +320,21 @@ const char *datumToString(DATUM d)
     default:
         return "Unknown Datum";
     }
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Helper functions
+
+/**
+ * Determine an approximate conversion from degrees of longitude to meters,
+ * given a latitude in degrees.
+ */
+double EstimateDegreesToMeters(double latitude)
+{
+	// estimate meters per degree of longitude, using the terrain origin
+	double r0 = EARTH_RADIUS * cos(latitude / 180.0 * PI);
+	double circ = 2.0 * r0 * PI;
+	return circ / 360.0f;
 }
 
