@@ -1419,6 +1419,11 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		utf8 = str3.to_utf8();
 		VTLOG("Twice converted: %s\n", utf8);
 #endif
+#if 1
+		vtRoadLayer *pR = (vtRoadLayer *)GetMainFrame()->FindLayerOfType(LT_ROAD);
+		vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
+		pR->CarveRoadway(pE);
+#endif
 	}
 	else
 		event.Skip();
