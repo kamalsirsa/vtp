@@ -53,6 +53,7 @@ Enviro::Enviro() : vtTerrainScene()
 	m_fFoldDir = 0.0f;
 	m_pIcoGlobe = NULL;
 	m_pSpaceAxes = NULL;
+	m_pEarthLines = NULL;
 
 	m_bTopDown = false;
 	m_pTopDownCamera = NULL;

@@ -382,7 +382,8 @@ void Enviro::SetEarthLines(double lon, double lat)
 
 void Enviro::ShowEarthLines(bool bShow)
 {
-	m_pEarthLines->SetEnabled(bShow);
+	if (m_pEarthLines)
+		m_pEarthLines->SetEnabled(bShow);
 }
 
 void Enviro::SetSpaceAxes(bool bShow)
