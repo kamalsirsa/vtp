@@ -1237,6 +1237,21 @@ Field *vtFeatures::GetField(const char *name)
 	return NULL;
 }
 
+/**
+ * Return the index of the field with the given name, or -1 if no field
+ * with that name was found.
+ */
+int vtFeatures::GetFieldIndex(const char *name) const
+{
+	unsigned int i, num = m_fields.GetSize();
+	for (i = 0; i < num; i++)
+	{
+		if (!m_fields[i]->m_name.CompareNoCase(name))
+			return i;
+	}
+	return -1;
+}
+
 int vtFeatures::AddField(const char *name, DBFFieldType ftype, int string_length)
 {
 	Field *f = new Field(name, ftype);
