@@ -80,6 +80,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 
 	EVT_CHECKBOX( ID_PLANTS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_CHECK_STRUCTURE_SHADOWS, TParamsDlg::OnCheckBox )
 
 	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClick )
 
@@ -383,6 +384,8 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_HIGHWAYS)->Enable(m_bRoads);
 	FindWindow(ID_PAVED)->Enable(m_bRoads);
 	FindWindow(ID_DIRT)->Enable(m_bRoads);
+
+	FindWindow(ID_CHOICE_SHADOW_REZ)->Enable(m_bStructureShadows);
 
 	GetOceanPlaneOffset()->Enable(m_bOceanPlane);
 	GetDepressOceanOffset()->Enable(m_bDepressOcean);
