@@ -6,6 +6,7 @@
 //
 
 #include "vtTime.h"
+#include "vtLog.h"
 
 ///////////////////////////////////////////////////////
 
@@ -13,21 +14,27 @@ time_t vtTime::s_DifferenceFromGMT = (time_t) -1;
 
 vtTime::vtTime()
 {
+	// default to "current" time
+	GetSystemTime();
+
 	if (s_DifferenceFromGMT == (time_t) -1)
 	{
+		VTLOG("vtTime: Calculating offset from local timezone to GMT.\n");
 		// Determine the offset between local (meaning the timezome of the
 		//  computer which is running this software) and Greenwich Mean time,
 		//  and use it to compensate for the fact mktime always tries to
 		//  factor in the "local time zone".
-		time_t dummy = 20000;
 		struct tm tm_gm, tm_local;
-		tm_gm = *gmtime(&dummy);
-		tm_local = *localtime(&dummy);
-		s_DifferenceFromGMT = mktime(&tm_local) - mktime(&tm_gm);
-	}
+		tm_gm = *gmtime(&m_time);
+		tm_local = *localtime(&m_time);
 
-	// default to "current" time
-	GetSystemTime();
+		VTLOG(" Local: %s", asctime(&tm_local));
+		VTLOG("   GMT: %s", asctime(&tm_gm));
+
+		s_DifferenceFromGMT = mktime(&tm_local) - mktime(&tm_gm);
+
+		VTLOG(" Diff: %d seconds\n", s_DifferenceFromGMT);
+	}
 }
 
 void vtTime::_UpdateTM()
