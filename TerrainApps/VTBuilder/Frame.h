@@ -51,6 +51,7 @@ class DistanceDlg;
 class LinearStructureDlg;
 class LinearStructureDlg2d;
 class InstanceDlg;
+class RenderDlg;
 
 class MainFrame: public wxFrame
 {
@@ -328,6 +329,7 @@ public:
 	// Elevation
 	void SampleCurrentTerrains(vtElevLayer *pTarget);
 	float GetHeightFromTerrain(DPoint2 &p);
+	void ExportBitmap(RenderDlg &dlg);
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);
