@@ -57,7 +57,7 @@ void App::videosettings(bool same_video_mode, bool fullscreen)
 		std::cerr << "Video query failed: " << SDL_GetError( ) << std::endl;
 		exit( -1 );
 	}
-
+/*
 	int num_modes;
 	SDL_Rect ** modes = SDL_ListModes(NULL, SDL_FULLSCREEN);
 	if ( (modes != NULL) && (modes != (SDL_Rect **)-1) )
@@ -86,6 +86,9 @@ void App::videosettings(bool same_video_mode, bool fullscreen)
 		std::cerr << "Video list modes failed: " << SDL_GetError( ) << std::endl; 
 		exit( -1 );
 	}
+*/
+	width = 800;
+	height = 600;
 
 	std::cerr << width << " " << height << std::endl;
 	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
@@ -126,31 +129,6 @@ bool App::CreateScene()
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
 	pScene->Init();
-
-#if 0
-	vtLight *pLight = new vtLight();
-	pLight->Release();
-
-	vtCamera *pCamera = new vtCamera();
-	pCamera->Release();
-
-	vtGeom *pGeom = new vtGeom();
-	pGeom->Release();
-
-	vtLOD *pLOD = new vtLOD();
-	pLOD->Release();
-
-	vtSprite *pSprite = new vtSprite();
-	pSprite->Release();
-
-	vtTransform *trans = new vtTransform();
-	vtGroup *parent1 = new vtGroup();
-	vtGroup *parent2 = new vtGroup();
-	parent1->AddChild(trans);
-	parent2->AddChild(trans);
-	parent1->Release();
-	parent2->Release();
-#endif
 
 	// Look up the camera
 	m_pCamera = pScene->GetCamera();
@@ -194,47 +172,7 @@ bool App::CreateScene()
 	pScene->AddEngine(pFlyer);
 
 #if 0
-	// Test code - you can ignore it.
-	vtMaterialArray *pMats = new vtMaterialArray();
-	pMats->AddRGBMaterial1(RGBf(1, 1, 0), false, false); // yellow
-	vtGeom *ball = CreateSphereGeom(pMats, 0, VT_Normals, 100, 16);
-	pMats->Release();
-	vtTransform *trans1 = new vtTransform();
-	vtTransform *trans2 = new vtTransform();
-	pTopGroup->AddChild(trans1);
-	pTopGroup->AddChild(trans2);
-	trans1->AddChild(ball);
-	trans2->AddChild(ball);
-#endif
-
-#if 0
-	vtTransform *E = new vtTransform();
-	E->Release();
-
-	vtNode *D = vtNode::LoadModel("testblk2.3DS");
-	vtGroup *C = new vtGroup();
-	vtGroup *A = new vtGroup();
-	vtGroup *B = new vtGroup();
-
-	A->AddChild(C);
-	B->AddChild(C);
-	C->AddChild(D);
-
-	A->Release();
-	B->Release();
-#endif
-
-#if 0
-	// create a new Instance object
-	vtStructureArray3d *structs = pTerr->GetStructures();
-	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
-	inst->SetValueString("filename", "testblk2.3DS");
-	inst->m_p.Set(569770, 4754215);
-
-	int index = structs->Append(inst);
-	bool success = pTerr->CreateStructure(structs, index);
-	if (success)
-		printf("  succeeded.\n");
+#include "Tests.cpp"
 #endif
 
 	return true;
