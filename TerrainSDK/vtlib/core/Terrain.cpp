@@ -200,16 +200,6 @@ void vtTerrain::create_textures()
 		emmisive = TERRAIN_EMISSIVE;
 	}
 
-	if (eTex == TE_NONE)	// none
-	{
-		// no texture: create plain white material
-		m_pTerrApps1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-									 RGBf(0.2f, 0.2f, 0.2f),
-									 true, !m_Params.m_bPreLit);
-		m_pTerrApps2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-									 RGBf(0.2f, 0.2f, 0.2f),
-									 true, !m_Params.m_bPreLit);
-	}
 	if (eTex == TE_SINGLE || eTex == TE_TILED)	// load texture
 	{
 		vtString texture_fname = "GeoSpecific/";
@@ -219,7 +209,11 @@ void vtTerrain::create_textures()
 			texture_fname += m_Params.m_strTextureFilename;
 		vtString texture_path = FindFileOnPaths(m_DataPaths, texture_fname);
 
-		if (texture_path != "")
+		if (texture_path == "")
+		{
+			// failed to find texture
+		}
+		else
 		{
 			// Load a DIB of the whole, large texture
 			m_pDIB = new vtDIB(texture_path);
@@ -265,7 +259,7 @@ void vtTerrain::create_textures()
 		m_pImage = new vtImage(m_pDIB,
 			(m_pDIB->GetDepth() > 8 && m_Params.m_b16bit) ? GL_RGB5 : -1);
 	}
-	if (eTex == TE_TILED)
+	if (eTex == TE_TILED && m_pDIB)
 	{
 		m_pDIB->LeaveInternalDIB(false);
 
@@ -278,6 +272,17 @@ void vtTerrain::create_textures()
 			CreateChoppedAppearances2(m_pTerrApps2,
 							 iTiles, m_Params.m_iTilesize, ambient, diffuse,
 							 emmisive);
+	}
+	if (eTex == TE_NONE || m_pDIB == NULL)	// none or failed to find texture
+	{
+		// no texture: create plain white material
+		m_pTerrApps1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+									 RGBf(0.2f, 0.2f, 0.2f),
+									 true, !m_Params.m_bPreLit);
+		m_pTerrApps2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+									 RGBf(0.2f, 0.2f, 0.2f),
+									 true, !m_Params.m_bPreLit);
+		return;
 	}
 	// We're not going to use it for tree planting, we're done with the DIB
 	if (m_pDIB != NULL)
