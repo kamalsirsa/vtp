@@ -664,7 +664,8 @@ public:
 	float	bottom;
 };
 
-/////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////
 // Matrix classes
 
 class DMatrix3;
@@ -718,7 +719,6 @@ public:
 
 	void  Set(int col, int row, float v) { data[col][row] = v; }
 	float Get(int col, int row) const { return data[col][row]; }
-	float operator()(int col, int row) const { return data[col][row]; }
 	void SetRow(int row, float f0, float f1, float f2);
 
 	void Identity();
@@ -728,6 +728,10 @@ public:
 
 	void Transform(const FPoint3 &src, FPoint3 &dst) const;
 	void SetFromMatrix4(const class FMatrix4 &mat);
+
+	// operators
+	float operator()(int col, int row) const { return data[col][row]; }
+	FMatrix3 &operator=(const class FMatrix4 &mat);
 
 protected:
 	float data[3][3];
@@ -746,7 +750,6 @@ public:
 
 	void  Set(int col, int row, float v) { data[col][row] = v; }
 	float Get(int col, int row) const { return data[col][row]; }
-	float operator()(int col, int row) const { return data[col][row]; }
 	void SetRow(int row, float f0, float f1, float f2, float f3);
 
 	void  SetData(FMatrix4Data data_in) { memcpy(data, data_in, 64); }
@@ -760,7 +763,8 @@ public:
 	void Invert(const FMatrix4 &src);
 	FPoint3 GetTrans() const;
 	void SetTrans(FPoint3 pos);
-	void SetFromVectors(const FPoint3 &pos, const FPoint3 &forward, const FPoint3 &up);
+	void SetFromVectors(const FPoint3 &pos, const FPoint3 &forward,
+		const FPoint3 &up);
 	void SetFromMatrix3(const class FMatrix3 &mat);
 
 	void PreMult(const FMatrix4 &mat);
@@ -770,13 +774,33 @@ public:
 	void Transform(const FPoint3 &src, FPoint3 &dst) const;
 	void TransformVector(const FPoint3 &tmp, FPoint3 &dst) const;
 
+	// operators
+	float operator()(int col, int row) const { return data[col][row]; }
+	FMatrix4 &operator=(const class FMatrix3 &mat);
+
 protected:
 	float data[4][4];
 };
 
-/////////////////////////////////////////////////////////////
+inline FMatrix3 &FMatrix3::operator=(const class FMatrix4 &mat)
+{
+	SetFromMatrix4(mat);
+	return (*this);
+}
+inline FMatrix4 &FMatrix4::operator=(const class FMatrix3 &mat)
+{
+	SetFromMatrix3(mat);
+	return (*this);
+}
+
+///////////////////////////////////////////////////////////////////////
 // Quaternion class
 
+/**
+ * Single-precision quaternion class.  Quaternions are very useful for
+ * efficiently representing an orientations/rotation and operations
+ * such as interpolating between orientations.
+ */
 class FQuat
 {
 public:
@@ -785,6 +809,7 @@ public:
 	FQuat(const FQuat &q) { x = q.x; y = q.y; z = q.z; w = q.w; }
 	FQuat(const FPoint3 &axis, float angle) { AxisAngle(axis, angle); }
 
+	void Init() { x = 0; y = 0; z = 0; w = 1; }
 	void Set(float qx, float qy, float qz, float qw) { x = qx; y = qy; z = qz; w = qw; }
 	void SetFromMatrix(const FMatrix3 &matrix);
 	void SetFromVectors(const FPoint3 &forward, const FPoint3 &up);
@@ -809,6 +834,36 @@ public:
 
 	float x, y, z, w;
 };
+
+
+///////////////////////////////////////////////////////////////////////
+// PQ class (Position + Quaternion)
+
+/**
+ * Single-precision class that combines a position and orientation.
+ */
+class FPQ
+{
+public:
+	FPQ() {}
+	void FromMatrix(const FMatrix4 &matrix);
+	void ToMatrix(FMatrix4 &matrix);
+	void Interpolate(const FPQ &from, const FPQ &to, float f);
+
+	// operators
+	FPQ &operator=(const class FMatrix4 &matrix)
+	{
+		FromMatrix(matrix);
+		return (*this);
+	}
+
+	FPoint3 p;
+	FQuat q;
+};
+
+
+///////////////////////////////////////////////////////////////////////
+// Color classes
 
 /**
  * An RGB class for handling color operations.
@@ -959,16 +1014,8 @@ inline RGBf &RGBf::operator=(const class RGBAf &v)
 	return *this;
 }
 
-enum SelectionType
-{
-	ST_NORMAL,
-	ST_ADD,
-	ST_SUBTRACT,
-	ST_TOGGLE
-};
 
-
-//
+///////////////////////////////////////////////////////////////////////
 // handy helper functions
 //
 float random_offset(float x);

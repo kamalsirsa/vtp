@@ -284,22 +284,14 @@ void FQuat::GetMatrix(FMatrix3 &mat) const
 	mat.Set(0, 0, 1.0f - (yy + zz));
 	mat.Set(0, 1, xy - wz);
 	mat.Set(0, 2, xz + wy);
-	mat.Set(0, 3, 0.0f);
 
 	mat.Set(1, 0, xy + wz);
 	mat.Set(1, 1, 1.0f - (xx + zz));
 	mat.Set(1, 2, yz - wx);
-	mat.Set(1, 3, 0.0f);
 
 	mat.Set(2, 0, xz - wy);
 	mat.Set(2, 1, yz + wx);
 	mat.Set(2, 2, 1.0f - (xx + yy));
-	mat.Set(2, 3, 0.0f);
-
-	mat.Set(3, 0, 0);
-	mat.Set(3, 1, 0);
-	mat.Set(3, 2, 0);
-	mat.Set(3, 3, 1);
 }
 
 /**
@@ -383,6 +375,32 @@ FQuat &FQuat::operator/=(const FQuat &q)
 	(*this) = (*this) * q.Inverse();
 	return (*this);
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+// FPQ
+
+void FPQ::FromMatrix(const FMatrix4 &matrix)
+{
+	FMatrix3 m3 = matrix;
+	q.SetFromMatrix(m3);
+	p = matrix.GetTrans();
+}
+
+void FPQ::ToMatrix(FMatrix4 &matrix)
+{
+	FMatrix3 m3;
+	q.GetMatrix(m3);
+	matrix.SetFromMatrix3(m3);
+	matrix.SetTrans(p);
+}
+
+void FPQ::Interpolate(const FPQ &from, const FPQ &to, float f)
+{
+	p = from.p + (to.p - from.p) * f;
+	q.Slerp(from.q, to.q, f);
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // RGBi
