@@ -348,7 +348,8 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 	if (nodemode)
 	{
 		selected = SelectNodes(box, true);
-		wxString str = wxString::Format("Selected %d nodes", selected);
+		wxString str = wxString::Format("Selected %d node%s", selected,
+			selected == 1 ? "" : "s");
 		if (selected) SetMessageText(str);
 		return (selected != 0);
 	}
@@ -359,7 +360,8 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 		else
 			selected = SelectRoads(box, true);
 
-		wxString str = wxString::Format("Selected %d roads", selected);
+		wxString str = wxString::Format("Selected %d road%s", selected,
+			selected == 1 ? "" : "s");
 		if (selected) SetMessageText(str);
 		return (selected != 0);
 	}
