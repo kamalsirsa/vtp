@@ -13,12 +13,15 @@
 #include <fstream>
 using namespace std;
 
+#include "config_vtdata.h"
 #include "ElevationGrid.h"
 #include "ByteOrder.h"
 
+#if SUPPORT_NETCDF
 extern "C" {
 #include "netcdf.h"
 }
+#endif
 
 // GDAL
 #include "gdal_priv.h"
