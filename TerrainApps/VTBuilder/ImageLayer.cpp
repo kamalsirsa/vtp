@@ -21,6 +21,20 @@ vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 {
 	m_pImage = NULL;
 	m_pBitmap = NULL;
+	m_bInMemory = false;
+}
+
+vtImageLayer::vtImageLayer(const DRECT &area, int xsize, int ysize,
+						   const vtProjection &proj) : vtLayer(LT_IMAGE)
+{
+	m_Extents = area;
+	m_iXSize = xsize;
+	m_iYSize = ysize;
+	m_proj = proj;
+
+	// yes, we could use some error-checking here
+	m_pImage = new wxImage(m_iXSize, m_iYSize);
+	m_pBitmap = new wxBitmap(m_pImage);
 }
 
 vtImageLayer::~vtImageLayer()
@@ -37,10 +51,15 @@ bool vtImageLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
+/**
+ * The standard extents of an image are the min and max of its data points,
+ * but the area covered by the image is actually half a pixel larger in
+ * each direction.
+ */
 bool vtImageLayer::GetAreaExtent(DRECT &rect)
 {
-	DPoint2 pixel_size(m_Extents.Width() / (m_pImage->GetWidth() - 1),
-		m_Extents.Height() / (m_pImage->GetHeight() - 1));
+	DPoint2 pixel_size(m_Extents.Width() / (m_iXSize - 1),
+		m_Extents.Height() / (m_iYSize - 1));
 
 	rect.left =   m_Extents.left - (pixel_size.x / 2.0f);
 	rect.top =    m_Extents.top + (pixel_size.y / 2.0f);
@@ -51,44 +70,51 @@ bool vtImageLayer::GetAreaExtent(DRECT &rect)
 
 void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
-	if (NULL == m_pImage)
-		return;
-	if (!m_pImage->Ok())
-		return;
+	bool bDrawImage = true;
+	if (m_pImage == NULL)
+		bDrawImage = false;
+	else if (!m_pImage->Ok())
+		bDrawImage = false;
 
 	DRECT area;
 	GetAreaExtent(area);
 
 	wxRect screenrect = pView->WorldToCanvas(area);
 	wxRect destRect = screenrect;
-	wxRect srcRect(0, 0, m_pImage->GetWidth(), m_pImage->GetHeight());
+	wxRect srcRect(0, 0, m_iXSize, m_iYSize);
 
-/*	wxPen yellow(wxColor(255,255,0), 1, wxSOLID);
-	pDC->SetLogicalFunction(wxCOPY);
-	pDC->SetPen(yellow);
-	pDC->DrawRectangle(screenrect.x, screenrect.y, screenrect.width, screenrect.height); */
-
+	if (bDrawImage)
+	{
 #if WIN32
-	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
+		::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
 
-	wxDC2 *pDC2 = (wxDC2 *) pDC;
-	pDC2->StretchBlit(*m_pBitmap, destRect.x, destRect.y,
-		destRect.width, destRect.height);
+		wxDC2 *pDC2 = (wxDC2 *) pDC;
+		pDC2->StretchBlit(*m_pBitmap, destRect.x, destRect.y,
+			destRect.width, destRect.height);
 #else
-	// scale and draw the bitmap
-	// must use SetUserScale since StretchBlt is not available
-	double ratio_x = (double) srcRect.GetWidth() / destRect.GetWidth();
-	double ratio_y = (double) srcRect.GetHeight() / destRect.GetHeight();
+		// scale and draw the bitmap
+		// must use SetUserScale since StretchBlt is not available
+		double ratio_x = (double) srcRect.GetWidth() / destRect.GetWidth();
+		double ratio_y = (double) srcRect.GetHeight() / destRect.GetHeight();
 
-	double scale_x = 1.0/ratio_x;
-	double scale_y = 1.0/ratio_y;
-	pDC->SetUserScale(scale_x, scale_y);
-	pDC->DrawBitmap(*m_pBitmap, (int) (destRect.x/scale_x),
-		(int) (destRect.y/scale_y), false);
+		double scale_x = 1.0/ratio_x;
+		double scale_y = 1.0/ratio_y;
+		pDC->SetUserScale(scale_x, scale_y);
+		pDC->DrawBitmap(*m_pBitmap, (int) (destRect.x/scale_x),
+			(int) (destRect.y/scale_y), false);
 
-	// restore
-	pDC->SetUserScale(1.0, 1.0);
+		// restore
+		pDC->SetUserScale(1.0, 1.0);
 #endif
+	}
+	else
+	{
+		wxPen yellow(wxColor(255,255,0), 1, wxSOLID);
+		pDC->SetLogicalFunction(wxCOPY);
+		pDC->SetPen(yellow);
+
+		DrawRectangle(pDC, screenrect);
+	}
 }
 
 bool vtImageLayer::ConvertProjection(vtProjection &proj)
@@ -113,12 +139,12 @@ bool vtImageLayer::AppendDataFrom(vtLayer *pL)
 
 void vtImageLayer::GetProjection(vtProjection &proj)
 {
-	proj = m_Proj;
+	proj = m_proj;
 }
 
 void vtImageLayer::SetProjection(const vtProjection &proj)
 {
-	m_Proj = proj;
+	m_proj = proj;
 }
 
 DPoint2 vtImageLayer::GetSpacing()
@@ -126,11 +152,99 @@ DPoint2 vtImageLayer::GetSpacing()
 	if (!m_pImage)
 		return DPoint2(0,0);
 
-	return DPoint2(m_Extents.Width() / (m_pImage->GetWidth() - 1),
-		m_Extents.Height() / (m_pImage->GetHeight() - 1));
+	return DPoint2(m_Extents.Width() / (m_iXSize - 1),
+		m_Extents.Height() / (m_iYSize - 1));
 }
 
-#include "vtdata/vtDIB.h"
+bool vtImageLayer::GetFilteredColor(double x, double y, RGBi &rgb)
+{
+	// TODO: support out-of-memory image here
+	if (!m_pImage)
+		return false;
+
+	DPoint2 spacing = GetSpacing();
+	DPoint2 half = spacing/2;
+
+	// TODO: test against actual full area of this image
+	double u = (x - m_Extents.left + half.x) / m_Extents.Width();
+	int ix = u * m_iXSize;
+	if (ix < 0 || ix >= m_iXSize)
+		return false;
+
+	double v = (y - m_Extents.bottom + half.y) / m_Extents.Height();
+	int iy = v * m_iYSize;
+	if (iy < 0 || iy >= m_iYSize)
+		return false;
+
+	// TODO: real filtering (interpolation)
+	// for now, just grab closest pixel
+	rgb.r = m_pImage->GetRed(ix, iy);
+	rgb.g = m_pImage->GetGreen(ix, iy);
+	rgb.b = m_pImage->GetBlue(ix, iy);
+	return true;
+}
+
+bool vtImageLayer::SaveToFile(const char *fname)
+{
+	if (!m_pImage)
+		return false;
+
+	// Save with GDAL
+	GDALDriverManager *pManager = GetGDALDriverManager();
+	if (!pManager)
+		return false;
+
+	// JPEG: Error 6: GDALDriver::Create() ... no create method implemented for this format.
+//	GDALDriver *pDriver = pManager->GetDriverByName("JPEG");
+	GDALDriver *pDriver = pManager->GetDriverByName("GTiff");
+	if (!pDriver)
+		return false;
+
+	char ** papszParmList = NULL;
+	DPoint2 spacing = GetSpacing();
+
+	GDALDataset *pDataset;
+	pDataset = pDriver->Create(fname, m_iXSize, m_iYSize, 3, GDT_Byte, papszParmList );
+	if (!pDataset)
+		return false;
+
+	double adfGeoTransform[6] = { m_Extents.left, spacing.x, 0, m_Extents.top, 0, -spacing.y };
+	pDataset->SetGeoTransform(adfGeoTransform);
+
+	GByte *raster = new GByte[m_iXSize*m_iYSize];
+
+	char *pszSRS_WKT = NULL;
+	m_proj.exportToWkt( &pszSRS_WKT );
+	pDataset->SetProjection(pszSRS_WKT);
+	CPLFree( pszSRS_WKT );
+
+	GDALRasterBand *pBand;
+	int i, x, y;
+	for (i = 1; i <= 3; i++)
+	{
+		pBand = pDataset->GetRasterBand(i);
+
+		for (x = 0; x < m_iXSize; x++)
+		{
+			for (y = 0; y < m_iYSize; y++)
+			{
+				if (i == 1)
+					raster[y*m_iXSize + x] = m_pImage->GetRed(x, y);
+				if (i == 2)
+					raster[y*m_iXSize + x] = m_pImage->GetGreen(x, y);
+				if (i == 3)
+					raster[y*m_iXSize + x] = m_pImage->GetBlue(x, y);
+			}
+		}
+		pBand->RasterIO( GF_Write, 0, 0, m_iXSize, m_iYSize, 
+			raster, m_iXSize, m_iYSize, GDT_Byte, 0, 0 );
+	}
+	delete raster;
+	GDALClose(pDataset);
+
+	return true;
+}
+
 
 bool vtImageLayer::LoadFromGDAL()
 {
@@ -138,14 +252,13 @@ bool vtImageLayer::LoadFromGDAL()
 	OGRErr err;
 	const char *pProjectionString;
 	double affineTransform[6];
-	vtProjection SpatialReference;
 	double linearConversionFactor;
 	GDALRasterBand *pBand;
 	GDALColorTable *pTable;
 	GDALColorEntry Ent;
 	int i;
 	int iRasterCount;
-	bool bRet = true;
+	bool bRet = true, bBitmap = true;
 	unsigned char *pData;
 	int xBlockSize, yBlockSize;
 	int nxBlocks, nyBlocks;
@@ -160,63 +273,66 @@ bool vtImageLayer::LoadFromGDAL()
 	GDALRasterBand *pGreen = NULL;
 	GDALRasterBand *pBlue = NULL;
 	int x, y;
-	int iPixelHeight;
-	int iPixelWidth;
 
 	try
 	{
-		GDALAllRegister();
-
 		pDataset = (GDALDataset *) GDALOpen(m_strFilename.mb_str(), GA_ReadOnly);
 		if(pDataset == NULL )
 			throw "Couldn't open that file.";
 
-		iPixelWidth = pDataset->GetRasterXSize();
-		iPixelHeight = pDataset->GetRasterYSize();
+		m_iXSize = pDataset->GetRasterXSize();
+		m_iYSize = pDataset->GetRasterYSize();
 
 		if (NULL == (pProjectionString = pDataset->GetProjectionRef()))
 		{
 			// check for existence of .prj file
-			bool bSuccess = SpatialReference.ReadProjFile(m_strFilename.mb_str());
+			bool bSuccess = m_proj.ReadProjFile(m_strFilename.mb_str());
 
 			if (!bSuccess)
 				throw "Unknown coordinate system.";
 		}
-
-		err = SpatialReference.importFromWkt((char**)&pProjectionString);
-		if (err != OGRERR_NONE)
+		else
 		{
-			// check for existence of .prj file
-			bool bSuccess = SpatialReference.ReadProjFile(m_strFilename.mb_str());
+			err = m_proj.importFromWkt((char**)&pProjectionString);
+			if (err != OGRERR_NONE)
+			{
+				// check for existence of .prj file
+				bool bSuccess = m_proj.ReadProjFile(m_strFilename.mb_str());
 
-			if (!bSuccess)
-				throw "Unknown coordinate system.";
+				if (!bSuccess)
+					throw "Unknown coordinate system.";
+			}
 		}
 
 		if (CE_None != pDataset->GetGeoTransform(affineTransform))
 			throw "Dataset does not contain a valid affine transform.";
 
-		if (SpatialReference.IsGeographic())
+		if (m_proj.IsGeographic())
 		{
 			m_Extents.left = affineTransform[0];
-			m_Extents.right = m_Extents.left + affineTransform[1] * (iPixelWidth-1);
+			m_Extents.right = m_Extents.left + affineTransform[1] * (m_iXSize-1);
 			m_Extents.top = affineTransform[3];
-			m_Extents.bottom = m_Extents.top + affineTransform[5] * (iPixelHeight-1);
+			m_Extents.bottom = m_Extents.top + affineTransform[5] * (m_iYSize-1);
 		}
 		else
 		{
-			linearConversionFactor = SpatialReference.GetLinearUnits();
+			linearConversionFactor = m_proj.GetLinearUnits();
 
 			// Compute extent using the top left and bottom right image co-ordinates
-			m_Extents.left = (affineTransform[0] /*+ affineTransform[1] * 0*/ + affineTransform[2] * iPixelHeight) * linearConversionFactor;
-			m_Extents.right = (affineTransform[0] + affineTransform[1] * iPixelWidth /*+ affineTransform[2] * 0*/) * linearConversionFactor;
-			m_Extents.top = (affineTransform[3] /*+ affineTransform[4] * 0*/ + affineTransform[5] * iPixelHeight) * linearConversionFactor;
-			m_Extents.bottom = (affineTransform[3] + affineTransform[4] * iPixelWidth /*+ affineTransform[5] * 0*/) * linearConversionFactor;
+			m_Extents.left = (affineTransform[0] /*+ affineTransform[1] * 0*/ + affineTransform[2] * m_iYSize) * linearConversionFactor;
+			m_Extents.right = (affineTransform[0] + affineTransform[1] * m_iXSize /*+ affineTransform[2] * 0*/) * linearConversionFactor;
+			m_Extents.top = (affineTransform[3] /*+ affineTransform[4] * 0*/ + affineTransform[5] * m_iYSize) * linearConversionFactor;
+			m_Extents.bottom = (affineTransform[3] + affineTransform[4] * m_iXSize /*+ affineTransform[5] * 0*/) * linearConversionFactor;
 		}
-		m_Proj.SetSpatialReference(&SpatialReference);
+
+		if (m_iXSize * m_iYSize > (3000 * 3000))
+		{
+			// don't try to load giant image
+			throw "Deferring load of large image";
+		}
 
 		// Set up bitmap
-		if (NULL == (m_pImage = new wxImage(iPixelWidth, iPixelHeight)))
+		if (NULL == (m_pImage = new wxImage(m_iXSize, m_iYSize)))
 			throw "Couldn't create image.";
 		
 		pData = m_pImage->GetData();
@@ -237,8 +353,8 @@ bool vtImageLayer::LoadFromGDAL()
 			pBand->FlushBlock(0, 0);
 
 			pBand->GetBlockSize(&xBlockSize, &yBlockSize);
-			nxBlocks = (iPixelWidth + xBlockSize - 1) / xBlockSize;
-			nyBlocks = (iPixelHeight + yBlockSize - 1) / yBlockSize;
+			nxBlocks = (m_iXSize + xBlockSize - 1) / xBlockSize;
+			nyBlocks = (m_iYSize + yBlockSize - 1) / yBlockSize;
 			if (NULL == (pScanline = new char[xBlockSize * yBlockSize]))
 				throw "Couldnt allocate scan line.";
 			// Read the data
@@ -254,13 +370,13 @@ bool vtImageLayer::LoadFromGDAL()
 
 					// Compute the portion of the block that is valid
 					// for partial edge blocks.
-					if ((ixBlock+1) * xBlockSize > iPixelWidth)
-						nxValid = iPixelWidth - ixBlock * xBlockSize;
+					if ((ixBlock+1) * xBlockSize > m_iXSize)
+						nxValid = m_iXSize - ixBlock * xBlockSize;
 					else
 						nxValid = xBlockSize;
 
-					if( (iyBlock+1) * yBlockSize > iPixelHeight)
-						nyValid = iPixelHeight - iyBlock * yBlockSize;
+					if( (iyBlock+1) * yBlockSize > m_iYSize)
+						nyValid = m_iYSize - iyBlock * yBlockSize;
 					else
 						nyValid = yBlockSize;
 
@@ -304,8 +420,8 @@ bool vtImageLayer::LoadFromGDAL()
 				throw "Couldn't find bands for Red, Green, Blue.";
 
 			pRed->GetBlockSize(&xBlockSize, &yBlockSize);
-			nxBlocks = (iPixelWidth + xBlockSize - 1) / xBlockSize;
-			nyBlocks = (iPixelHeight + yBlockSize - 1) / yBlockSize;
+			nxBlocks = (m_iXSize + xBlockSize - 1) / xBlockSize;
+			nyBlocks = (m_iYSize + yBlockSize - 1) / yBlockSize;
 			pRed->FlushBlock(0, 0);
 			pGreen->FlushBlock(0, 0);
 			pBlue->FlushBlock(0, 0);
@@ -330,13 +446,13 @@ bool vtImageLayer::LoadFromGDAL()
 
 					// Compute the portion of the block that is valid
 					// for partial edge blocks.
-					if ((ixBlock+1) * xBlockSize > iPixelWidth)
-						nxValid = iPixelWidth - ixBlock * xBlockSize;
+					if ((ixBlock+1) * xBlockSize > m_iXSize)
+						nxValid = m_iXSize - ixBlock * xBlockSize;
 					else
 						nxValid = xBlockSize;
 
-					if( (iyBlock+1) * yBlockSize > iPixelHeight)
-						nyValid = iPixelHeight - iyBlock * yBlockSize;
+					if( (iyBlock+1) * yBlockSize > m_iYSize)
+						nyValid = m_iYSize - iyBlock * yBlockSize;
 					else
 						nyValid = yBlockSize;
 
@@ -363,7 +479,10 @@ bool vtImageLayer::LoadFromGDAL()
 	{
 		wxString2 str = msg;
 		wxMessageBox(str);
-		bRet = false;
+		if (!str.CmpNoCase(_T("Deferring load of large image")))
+			bBitmap = false;
+		else
+			bRet = false;
 	}
 
 	if (NULL != pDataset)
@@ -377,18 +496,20 @@ bool vtImageLayer::LoadFromGDAL()
 	if (NULL != pBlueline)
 		delete pBlueline;
 
-	if (bRet == true)
+	if (bRet == true && bBitmap == true)
 	{
-		m_pBitmap = new wxBitmap(m_pImage->ConvertToBitmap());
+		m_pBitmap = new wxBitmap(m_pImage);
 		if (!m_pBitmap || (m_pBitmap && !m_pBitmap->Ok()))
 		{
 			wxString str;
-			str.Printf(_T("Couldn't create bitmap of size %d x %d"), iPixelWidth, iPixelHeight);
+			str.Printf(_T("Couldn't create bitmap of size %d x %d"), m_iXSize, m_iYSize);
 			wxMessageBox(str);
 			bRet = false;
 			delete m_pBitmap;
 			m_pBitmap = NULL;
 		}
+		else
+			m_bInMemory = true;
 	}
 	if (bRet == false)
 	{
