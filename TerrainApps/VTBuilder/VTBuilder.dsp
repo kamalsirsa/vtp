@@ -228,6 +228,10 @@ SOURCE=.\BuildingDlg.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DistanceDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DistribVegDlg.h
 # End Source File
 # Begin Source File
@@ -559,6 +563,10 @@ SOURCE=.\AutoDialog.cpp
 # Begin Source File
 
 SOURCE=.\BuildingDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DistanceDlg.cpp
 # End Source File
 # Begin Source File
 
