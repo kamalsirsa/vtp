@@ -809,6 +809,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 			}
 		}
 	}
+	GuessIntersectionTypes();
 }
 
 #if 0
