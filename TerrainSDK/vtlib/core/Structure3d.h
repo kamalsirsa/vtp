@@ -39,20 +39,20 @@ class vtMaterialDescriptorArray3d : public vtMaterialDescriptorArray
 public:
 	vtMaterialDescriptorArray3d();
 
-	vtMaterial *MakeMaterial(RGBf &color, bool culling);
+	vtMaterial *MakeMaterial(vtMaterialDescriptor *desc, const RGBf &color);
 	int FindMatIndex(const vtString & Material, const RGBf &inputColor);
 	vtMaterialDescriptor * FindMaterialDescriptor(const vtString& MaterialName, const RGBf &color);
 	void InitializeMaterials();
 	void CreateMaterials();
 	void ReleaseMaterials();
+	vtMaterialArray *GetMatArray() { return m_pMaterials; }
 
-public:
+protected:
 	// There is a single array of materials, shared by all buildings.
 	// This is done to save memory.  For a list of 16000+ buildings, this can
 	//  save about 200MB of RAM.
 	vtMaterialArray *m_pMaterials;
 
-protected:
 	bool m_bMaterialsCreated;
 
 	void CreateSelfColoredMaterial(vtMaterialDescriptor *descriptor);
@@ -63,7 +63,6 @@ protected:
 	// indices of internal materials
 	int m_hightlight1;
 	int m_hightlight2;
-	vtMaterialDescriptor *m_pWindowWall;
 };
 
 
@@ -106,7 +105,7 @@ protected:
 	}
 	vtMaterialArray *GetSharedMaterialArray() const
 	{
-		return s_MaterialDescriptors.m_pMaterials;
+		return s_MaterialDescriptors.GetMatArray();
 	}
 	vtTransform	*m_pContainer;	// The transform which is used to position the object
 
