@@ -66,6 +66,13 @@ void AddType(wxString &str, const wxString &filter)
 	str = output;
 }
 
+wxString2 GetLayerTypeName(const LayerType &ltype)
+{
+	if (ltype == LT_UNKNOWN)
+		return wxString2(_("Unknown"));
+	else
+		return vtLayer::LayerTypeNames[ltype];
+}
 
 //////////////////////////////////////////////////////////
 

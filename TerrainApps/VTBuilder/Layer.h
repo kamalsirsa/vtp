@@ -177,6 +177,7 @@ public:
 // Helpers
 
 void AddType(wxString &str, const wxString &filter);
+wxString2 GetLayerTypeName(const LayerType &lype);
 
 #endif
 
