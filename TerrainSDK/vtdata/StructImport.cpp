@@ -409,7 +409,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 		StructImportOptions &opt, void progress_callback(int))
 {
-	if (opt.m_strLayerName != "")
+	if (opt.m_strLayerName == "")
 		AddElementsFromOGR_SDTS(pDatasource, progress_callback);
 	else
 		AddElementsFromOGR_RAW(pDatasource, opt, progress_callback);
