@@ -378,6 +378,9 @@ void PlantListVisitor::data(const char *s, int length)
 
 bool vtSpeciesList::ReadXML(const char* pathname)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	PlantListVisitor visitor(this);
 	try
 	{
@@ -654,6 +657,9 @@ bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 
 bool vtPlantInstanceArray::ReadVF(const char *fname)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	FILE *fp = fopen(fname, "rb");
 	if (!fp)
 		return false;
