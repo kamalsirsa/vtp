@@ -637,7 +637,7 @@ void IcoGlobe::AddTerrainRectangles()
 			mesh->AddVertex(p);
 		}
 
-		mesh->AddQuadStrip(5, 0);
+		mesh->AddStrip2(5, 0);
 		m_geom->AddMesh(mesh, m_red);
 	}
 }
