@@ -13,6 +13,7 @@
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
+#include "wx/image.h"
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
@@ -88,6 +89,10 @@ bool vtApp::OnInit()
 
 int vtApp::OnExit()
 {
+#ifdef VTLIB_PSM
+	PSWorld3D::Get()->Stop();
+	PSGetScene()->SetWindow(NULL);
+#endif
 	g_App.Shutdown();
 	return wxApp::OnExit();
 }
