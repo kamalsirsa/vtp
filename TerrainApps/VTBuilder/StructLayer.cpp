@@ -749,46 +749,18 @@ bool vtStructureLayer::AddElementsFromSHP(const char *filename,
 {
 	ImportStructDlg dlg(NULL, -1, "Import Structures");
 
-/*	wxString choices[3];
-	choices[0] = "Buildings (parametric by center or footprint)";
-	choices[1] = "Linear Structures (fences)";
-	choices[2] = "Instances (external model references)";
-
-	wxSingleChoiceDialog dialog(NULL, "Please indicate the type of structures in this SHP file:",
-		"SHP File Import",
-		3, (const wxString *)choices);
-	if (dialog.ShowModal() != wxID_OK)
+	dlg.SetFileName(filename);
+	if (dlg.ShowModal() != wxID_OK)
 		return false;
-	vtStructureType type = (vtStructureType) dialog.GetSelection();
 
-	bool bRestrict = false;
-	if (!rect.IsEmpty())
-	{
-		int res = wxMessageBox("Would you like to restrict the imported "
-			"features\nto exclude those outside your Area tool?",
-			"SHP File Import", wxYES_NO);
-		if (res == wxNO)
-			rect.Empty();
-	}
+	if (dlg.m_iType == 0) dlg.m_opt.type = ST_BUILDING;
+	if (dlg.m_iType == 1) dlg.m_opt.type = ST_BUILDING;
+	if (dlg.m_iType == 2) dlg.m_opt.type = ST_LINEAR;
+	if (dlg.m_iType == 3) dlg.m_opt.type = ST_INSTANCE;
 
-	int nShapeType = GetSHPType(filename);
+	dlg.m_opt.rect = rect;
 
-	bool bFlip = false;
-	if (type == ST_BUILDING && nShapeType == SHPT_POLYGON)
-	{
-		int res = wxMessageBox("Would you like to flip the direction of "
-			"the footprint polygons?", "SHP File Import", wxYES_NO);
-		if (res == wxYES)
-			bFlip = true;
-	}
-*/
-	vtStructureType type;
-	if (dlg.m_iType == 0) type = ST_BUILDING;
-	if (dlg.m_iType == 1) type = ST_BUILDING;
-	if (dlg.m_iType == 2) type = ST_LINEAR;
-	if (dlg.m_iType == 3) type = ST_INSTANCE;
-
-	bool success = ReadSHP(filename, type, rect, dlg.m_bFlip, progress_callback);
+	bool success = ReadSHP(filename, dlg.m_opt, progress_callback);
 	if (!success)
 		return false;
 
