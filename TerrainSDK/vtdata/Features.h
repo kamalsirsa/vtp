@@ -37,7 +37,8 @@ public:
 	void GetValue(int record, double &value);
 	void CopyValue(int FromRecord, int ToRecord);
 	void GetValueAsString(int iRecord, vtString &str);
-	void SetValueFromString(int iRecord, vtString &str);
+	void SetValueFromString(int iRecord, const vtString &str);
+	void SetValueFromString(int iRecord, const char *str);
 
 	DBFFieldType m_type;
 	int m_width, m_decimals;	// these are for remembering SHP limitations
@@ -70,6 +71,7 @@ public:
 	~vtFeatures();
 
 	// File IO
+	bool LoadFrom(const char *filename);
 	bool SaveToSHP(const char *filename);
 	bool LoadFromSHP(const char *filename);
 	bool LoadWithOGR(const char *filename, void progress_callback(int) = NULL);
@@ -134,7 +136,8 @@ public:
 	void SetValue(int record, int field, int value);
 	void SetValue(int record, int field, double value);
 	void GetValueAsString(int record, int field, vtString &str);
-	void SetValueFromString(int iRecord, int iField, vtString &str);
+	void SetValueFromString(int iRecord, int iField, const vtString &str);
+	void SetValueFromString(int iRecord, int iField, const char *str);
 
 	vtProjection &GetAtProjection() { return m_proj; }
 

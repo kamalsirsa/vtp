@@ -55,6 +55,16 @@ vtFeatures::~vtFeatures()
 //
 // File IO
 //
+bool vtFeatures::LoadFrom(const char *filename)
+{
+	vtString fname = filename;
+	vtString ext = fname.Left(3);
+	if (!ext.CompareNoCase("shp"))
+		return LoadFromSHP(filename);
+	else
+		return LoadWithOGR(filename);
+}
+
 bool vtFeatures::SaveToSHP(const char *filename)
 {
 	SHPHandle hSHP = SHPCreate(filename, m_nSHPType);
@@ -1187,7 +1197,13 @@ void vtFeatures::GetValueAsString(int iRecord, int iField, vtString &str)
 	field->GetValueAsString(iRecord, str);
 }
 
-void vtFeatures::SetValueFromString(int iRecord, int iField, vtString &str)
+void vtFeatures::SetValueFromString(int iRecord, int iField, const vtString &str)
+{
+	Field *field = m_fields[iField];
+	field->SetValueFromString(iRecord, str);
+}
+
+void vtFeatures::SetValueFromString(int iRecord, int iField, const char *str)
 {
 	Field *field = m_fields[iField];
 	field->SetValueFromString(iRecord, str);
@@ -1281,7 +1297,13 @@ void Field::GetValueAsString(int iRecord, vtString &str)
 	}
 }
 
-void Field::SetValueFromString(int iRecord, vtString &str)
+void Field::SetValueFromString(int iRecord, const vtString &str)
+{
+	const char *cstr = str;
+	SetValueFromString(iRecord, cstr);
+}
+
+void Field::SetValueFromString(int iRecord, const char *str)
 {
 	int i;
 	double d;
@@ -1295,14 +1317,14 @@ void Field::SetValueFromString(int iRecord, vtString &str)
 			m_string.Append(new vtString(str));
 		break;
 	case FTInteger:
-		i = atoi((const char *) str);
+		i = atoi(str);
 		if (iRecord < m_int.GetSize())
 			m_int[iRecord] = i;
 		else
 			m_int.Append(i);
 		break;
 	case FTDouble:
-		d = atof((const char *) str);
+		d = atof(str);
 		if (iRecord < m_double.GetSize())
 			m_double[iRecord] = d;
 		else
