@@ -104,6 +104,7 @@ public:
 
 	// OSG-specific Implementation
 	osg::Group *GetOsgGroup() { return m_pGroup.get(); }
+	const osg::Group *GetOsgGroup() const { return m_pGroup.get(); }
 
 protected:
 	void SetOsgGroup(osg::Group *g);
