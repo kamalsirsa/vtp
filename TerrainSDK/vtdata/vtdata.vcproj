@@ -1015,6 +1015,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SPA.cpp">
+			</File>
+			<File
 				RelativePath="StructArray.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -1614,6 +1617,9 @@
 			</File>
 			<File
 				RelativePath="Selectable.h">
+			</File>
+			<File
+				RelativePath=".\SPA.h">
 			</File>
 			<File
 				RelativePath="StatePlane.h">
