@@ -1,8 +1,8 @@
 //
-// Name:	 app.cpp
-// Purpose:  Example GLUT/vtlib application.
+// Name:	 sdlSimple/app.cpp
+// Purpose:  Example SDL/vtlib application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,10 +27,13 @@ public:
 	int main();
 	void process_mouse_button(const SDL_Event &event);
 	void process_mouse_motion(const SDL_Event &event);
-	void process_event(const SDL_Event &event);
-	void process_events();
-};
+	bool process_event(const SDL_Event &event);
+	bool process_events();
 
+public:
+	vtTerrainScene *m_ts;
+	vtCamera *m_pCamera;
+};
 
 //
 // Initialize the SDL display.  This code originated from another project,
@@ -130,14 +133,14 @@ bool App::CreateScene()
 	vtTerrain::SetDataPath(paths);
 
 	// Look up the camera
-	vtCamera *pCamera = pScene->GetCamera();
-	pCamera->SetHither(10);
-	pCamera->SetYon(100000);
+	m_pCamera = pScene->GetCamera();
+	m_pCamera->SetHither(10);
+	m_pCamera->SetYon(100000);
 
 	// Create a new terrain scene.  This will contain all the terrain
 	// that are created.
-	vtTerrainScene *ts = new vtTerrainScene();
-	vtGroup *pTopGroup = ts->BeginTerrainScene();
+	m_ts = new vtTerrainScene();
+	vtGroup *pTopGroup = m_ts->BeginTerrainScene();
 
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
@@ -147,19 +150,19 @@ bool App::CreateScene()
 	pTerr->SetParamFile("Data/Simple.ini");
 
 	// Add the terrain to the scene, and contruct it
-	ts->AppendTerrain(pTerr);
-	if (!ts->BuildTerrain(pTerr))
+	m_ts->AppendTerrain(pTerr);
+	if (!m_ts->BuildTerrain(pTerr))
 	{
 		printf("Terrain creation failed.");
 		return false;
 	}
-	ts->SetCurrentTerrain(pTerr);
+	m_ts->SetCurrentTerrain(pTerr);
 
 	// Create a navigation engine to move around on the terrain
 	// Flight speed is 400 m/frame
 	// Height over terrain is 100 m
 	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(400, 100, true);
-	pFlyer->SetTarget(pCamera);
+	pFlyer->SetTarget(m_pCamera);
 	pFlyer->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pFlyer);
 
@@ -208,21 +211,21 @@ void App::process_mouse_motion(const SDL_Event &sdle)
 	vtGetScene()->OnMouse(event);
 }
 
-void App::process_event(const SDL_Event &event)
+bool App::process_event(const SDL_Event &event)
 {
 	int key;
 
 	switch( event.type )
 	{
 		case SDL_QUIT:
-			exit(0);
+			return true;;
 		case SDL_KEYDOWN:
 			break;
 		case SDL_KEYUP:
 			// turn SDL key event into a VT mouse event
 			key = event.key.keysym.sym;
 			if ( key == 27 /* ESC */ || key == 'q' || key == 'Q' )
-				exit(0);
+				return true;
 			vtGetScene()->OnKey(key, 0);
 			break;
 		case SDL_MOUSEMOTION:
@@ -237,14 +240,19 @@ void App::process_event(const SDL_Event &event)
 			vtGetScene()->SetWindowSize(event.resize.w, event.resize.h);
 			break;
 	}
+	return false;
 }
 
-void App::process_events()
+bool App::process_events()
 {
 	SDL_Event event;
 
 	while ( SDL_PollEvent( &event ) )
-		process_event(event);
+	{
+		if (process_event(event))
+			return true;
+	}
+	return false;
 }
 
 void App::run()
@@ -252,7 +260,8 @@ void App::run()
 	while ( true )
 	{
 		display();			// draw scene
-		process_events();	// handle user events
+		if (process_events())	// handle user events
+			return;
 	}
 }
 
@@ -278,11 +287,21 @@ int App::main()
 	printf("Running..\n");
 	run();
 
+	printf("Cleaning up..\n");
+	m_ts->CleanupScene();
+	m_pCamera->Release();
+	delete m_ts;
+
 	return 0;
 }
 
 int main(int, char ** )
 {
+#if WIN32 && defined(_MSC_VER) && DEBUG
+	// sometimes, MSVC seems to need to be told to show unfreed memory on exit
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
 	App app;
 	return app.main();
 }
