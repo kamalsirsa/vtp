@@ -640,14 +640,22 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	// create the new layer
 	vtLayerPtr pLayer = vtLayer::CreateNewLayer(ltype);
 
-	// ask user for a projection
-	Projection2Dlg dlg(NULL, -1, _T("Please indicate projection"));
-	dlg.SetProjection(m_proj);
-
-	if (dlg.ShowModal() == wxID_CANCEL)
-		return NULL;
+	// Does SHP already have a projection?
 	vtProjection proj;
-	dlg.GetProjection(proj);
+	if (proj.ReadProjFile(strFileName.mb_str()))
+	{
+		// OK, we'll use it
+	}
+	else
+	{
+		// ask user for a projection
+		Projection2Dlg dlg(NULL, -1, _T("Please indicate projection"));
+		dlg.SetProjection(m_proj);
+
+		if (dlg.ShowModal() == wxID_CANCEL)
+			return NULL;
+		dlg.GetProjection(proj);
+	}
 
 	// read SHP data into the layer
 	if (ltype == LT_ROAD)
