@@ -228,22 +228,6 @@ public:
 };
 
 
-class vtBillBoard : public vtNode
-{
-public:
-	vtBillBoard() : vtNode()
-	{
-		m_pBillboard = new sglBillboard();
-		SetSglNode(m_pBillboard);
-	}
-	void SetAxis(FPoint3 &axis)
-	{
-//		SetAxis(v2d(axis));
-	}
-
-	sglBillboard  *m_pBillboard;
-};
-
 class vtSprite : public vtGroup
 {
 public:

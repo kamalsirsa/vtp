@@ -263,22 +263,6 @@ public:
 };
 
 
-class vtBillBoard : public vtTransform
-{
-public:
-	vtBillBoard() : vtTransform()
-	{
-		m_pCutout = new ssgCutout(FALSE);
-		m_pBranch->addKid(m_pCutout);
-	}
-	void SetAxis(FPoint3 &axis)
-	{
-//		SetAxis(v2d(axis));
-	}
-
-	ssgCutout *m_pCutout;
-};
-
 class vtSprite : public vtTransform
 {
 public:
