@@ -29,18 +29,20 @@ public:
 
 	void SetSpeed(float fSpeed);
 	float GetSpeed();
+	void SetAlwaysMove(bool bMove);
 
 	void Eval();
 
 protected:
 	float	m_fSpeed;	// max units per frame of movement
 	bool	m_bPreventRoll;
+	bool	m_bAlwaysMove;
 };
 
 /**
  * This engine extends vtFlyer with the ability to do terrain following.
  *
- * You can set minimum height above the ground
+ * You can set minimum height above the ground.
  */
 class vtTerrainFlyer : public vtFlyer
 {

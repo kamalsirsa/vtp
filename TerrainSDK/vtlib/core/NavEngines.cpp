@@ -17,6 +17,7 @@ vtFlyer::vtFlyer(float fSpeed, bool bPreventRoll) : vtLastMouse()
 {
 	m_fSpeed = fSpeed;
 	m_bPreventRoll = bPreventRoll;
+	m_bAlwaysMove = false;
 }
 
 void vtFlyer::SetSpeed(float fSpeed)
@@ -29,11 +30,13 @@ float vtFlyer::GetSpeed()
 	return m_fSpeed;
 }
 
+void vtFlyer::SetAlwaysMove(bool bMove)
+{
+	m_bAlwaysMove = bMove;
+}
+
 void vtFlyer::Eval()
 {
-	if (!(m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT))
-		return;
-
 	vtTransform *pTarget = (vtTransform*) GetTarget();
 	if (!pTarget)
 		return;
@@ -44,7 +47,8 @@ void vtFlyer::Eval()
 	float	my = (float) m_pos.y / WinSize.y;
 
 	//	Left button: forward-backward, yaw
-	if ((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT))
+	if (m_bAlwaysMove ||
+		((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT)))
 	{
 		float trans = (my - 0.5f) * m_fSpeed;
 		float rotate = -(mx - 0.5f) / 15.0f;
