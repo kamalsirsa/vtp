@@ -17,5 +17,6 @@ public:
 
 	class vtFrame *m_frame;
 	vtTerrainScene *m_pTerrainScene;
+	vtCamera *m_pCamera;
 };
 
