@@ -19,6 +19,13 @@
 
 class vtLocationSaver;
 
+#define PF_LOOP		1
+#define PF_INTERP	2
+#define PF_CONTIN	4
+#define PF_POSONLY	8
+#define PF_SPEED	16
+#define PF_ALL		(PF_LOOP|PF_INTERP|PF_CONTIN|PF_POSONLY|PF_SPEED)
+
 // WDR: class declarations
 
 //----------------------------------------------------------------------------
@@ -87,7 +94,7 @@ public:
 	void ValuesToSliders();
 	void AppendAnimPath(vtAnimPath *anim, const char *name);
 
-	void SetValues();
+	void SetValues(int which = PF_ALL);
 	void GetValues();
 	void TransferToWindow();
 

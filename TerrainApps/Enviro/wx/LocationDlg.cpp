@@ -248,19 +248,24 @@ void LocationDlg::ValuesToSliders()
 	m_iSpeed =  (int) ((log10f(m_fSpeed) - SPEED_MIN) / SPEED_RANGE * 100);
 }
 
-void LocationDlg::SetValues()
+void LocationDlg::SetValues(int which)
 {
 	if (m_iAnim == -1)
 		return;
 
 	vtAnimPath *anim = GetAnim(m_iAnim);
-	anim->SetLoop(m_bLoop);
-	anim->SetInterpMode(m_bSmooth ? vtAnimPath::CUBIC_SPLINE : vtAnimPath::LINEAR);
+	if (which & PF_LOOP)
+		anim->SetLoop(m_bLoop);
+	if (which & PF_INTERP)
+		anim->SetInterpMode(m_bSmooth ? vtAnimPath::CUBIC_SPLINE : vtAnimPath::LINEAR);
 	vtAnimPathEngine *engine = GetEngine(m_iAnim);
-	engine->SetContinuous(m_bContinuous);
-	engine->SetPosOnly(m_bPosOnly);
+	if (which & PF_CONTIN)
+		engine->SetContinuous(m_bContinuous);
+	if (which & PF_POSONLY)
+		engine->SetPosOnly(m_bPosOnly);
 //  engine->SetEnabled(m_bActive);
-	engine->SetSpeed(m_fSpeed);
+	if (which & PF_SPEED)
+		engine->SetSpeed(m_fSpeed);
 }
 
 void LocationDlg::GetValues()
@@ -317,7 +322,7 @@ void LocationDlg::OnText( wxCommandEvent &event )
 		return;
 	TransferDataFromWindow();
 	ValuesToSliders();
-	SetValues();
+	SetValues(PF_SPEED);
 	TransferToWindow();
 }
 
@@ -327,7 +332,7 @@ void LocationDlg::OnSpeedSlider( wxCommandEvent &event )
 		return;
 	TransferDataFromWindow();
 	SlidersToValues();
-	SetValues();
+	SetValues(PF_SPEED);
 	TransferToWindow();
 }
 
@@ -344,7 +349,7 @@ void LocationDlg::OnCheckbox( wxCommandEvent &event )
 	if (m_bSetting)
 		return;
 	TransferDataFromWindow();
-	SetValues();
+	SetValues(PF_ALL);
 	RefreshAnimsText();
 }
 
@@ -415,21 +420,25 @@ void LocationDlg::OnPlay( wxCommandEvent &event )
 
 void LocationDlg::OnLoadAnim( wxCommandEvent &event )
 {
+	wxString2 filter = _("Polyline Data Sources");
+	filter += _T(" (*.shp,*.dxf,*.igc)|*.shp;*.dxf;*.igc|");
 	wxFileDialog loadFile(NULL, _("Load Animation Path"), _T(""), _T(""),
-		_("Polyline Data Sources (*.shp)|*.shp|"), wxOPEN);
+		filter, wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
 
-	vtFeatureSetLineString3D lines;
-
 	wxString2 str = loadFile.GetPath();
 	const char *filename = str.mb_str();
-	if (!lines.LoadFromSHP(filename))
+
+	vtFeatureLoader loader;
+	vtFeatureSet *pSet = loader.LoadFrom(filename);
+	if (!pSet)
 		return;
 
 	vtAnimPath *anim = new vtAnimPath;
-	anim->CreateFromLineString(m_pSaver->GetAtProjection(), lines);
+	if (!anim->CreateFromLineString(m_pSaver->GetAtProjection(), pSet))
+		return;
 
 	AppendAnimPath(anim, filename);
 	RefreshAnims();
