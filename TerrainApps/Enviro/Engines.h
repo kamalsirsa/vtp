@@ -14,18 +14,9 @@ class LinkGeom;
 class vtRoute;
 class vtHeightField;
 
+///////////////////////////////////////////////////
+
 enum AirportCodes {ITO, KOA, MUE, UPP};
-
-
-///////////////////////////////////////////////////
-
-class BgColorEngine : public vtEngine
-{
-public:
-	void Eval();
-};
-
-///////////////////////////////////////////////////
 
 class PlaneEngine : public vtEngine
 {
