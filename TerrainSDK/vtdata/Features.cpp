@@ -144,7 +144,7 @@ bool vtFeatures::SaveToSHP(const char *filename) const
 					DBFWriteDoubleAttribute(db, i, j, field->m_double[i]);
 					break;
 				case FTString:
-					DBFWriteStringAttribute(db, i, j, (const char *) *(field->m_string[i]));
+					DBFWriteStringAttribute(db, i, j, (const char *) field->m_string[i]);
 					break;
 				}
 			}
@@ -473,7 +473,7 @@ bool vtFeatures::LoadFromGML(const char *filename)
 				field->m_double.Append(pFeature->GetFieldAsDouble(j));
 				break;
 			case FTString:
-				field->m_string.Append(new vtString(pFeature->GetFieldAsString(j)));
+				field->m_string.push_back(vtString(pFeature->GetFieldAsString(j)));
 				break;
 			}
 		}
@@ -975,7 +975,6 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 	double dval, dtest;
 	int entities = NumEntities(), selected = 0;
 	int con = iCondition;
-	vtString *sp;
 	bool result;
 
 	if (iField < 0)
@@ -1018,13 +1017,13 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 	case FTString:
 		for (i = 0; i < entities; i++)
 		{
-			sp = field->m_string[i];
-			if (con == 0) result = (sp->Compare(szValue) == 0);
-			if (con == 1) result = (sp->Compare(szValue) > 0);
-			if (con == 2) result = (sp->Compare(szValue) < 0);
-			if (con == 3) result = (sp->Compare(szValue) >= 0);
-			if (con == 4) result = (sp->Compare(szValue) <= 0);
-			if (con == 5) result = (sp->Compare(szValue) != 0);
+			const vtString &sp = field->m_string[i];
+			if (con == 0) result = (sp.Compare(szValue) == 0);
+			if (con == 1) result = (sp.Compare(szValue) > 0);
+			if (con == 2) result = (sp.Compare(szValue) < 0);
+			if (con == 3) result = (sp.Compare(szValue) >= 0);
+			if (con == 4) result = (sp.Compare(szValue) <= 0);
+			if (con == 5) result = (sp.Compare(szValue) != 0);
 			if (result)
 			{
 				Select(i);
@@ -1303,26 +1302,20 @@ Field::Field(const char *name, DBFFieldType ftype)
 
 Field::~Field()
 {
-	// string memory must be freed manually
-	if (m_type == FTString)
-	{
-		int size = m_string.GetSize();
-		for (int i = 0; i < size; i++)
-		{
-			vtString *string = m_string.GetAt(i);
-			delete string;
-		}
-	}
 }
 
 int Field::AddRecord()
 {
+	int index = 0;
 	switch (m_type)
 	{
-	case FTLogical: return	m_bool.Append(false); break;
-	case FTInteger: return	m_int.Append(0); break;
-	case FTDouble: return m_double.Append(0.0); break;
-	case FTString: return m_string.Append(new vtString); break;
+	case FTLogical: return	m_bool.Append(false);	break;
+	case FTInteger: return	m_int.Append(0);		break;
+	case FTDouble:	return	m_double.Append(0.0);	break;
+	case FTString:
+		index = m_string.size();
+		m_string.push_back(vtString(""));
+		return index;
 	}
 	return -1;
 }
@@ -1331,7 +1324,7 @@ void Field::SetValue(int record, const char *value)
 {
 	if (m_type != FTString)
 		return;
-	*(m_string[record]) = value;
+	m_string[record] = value;
 }
 
 void Field::SetValue(int record, int value)
@@ -1362,7 +1355,7 @@ void Field::GetValue(int record, vtString &string)
 {
 	if (m_type != FTString)
 		return;
-	string = *(m_string[record]);
+	string = m_string[record];
 }
 
 void Field::GetValue(int record, int &value)
@@ -1401,7 +1394,7 @@ void Field::CopyValue(int FromRecord, int ToRecord)
 	// when dealing with strings, copy by value not reference, to
 	// avoid memory tracking issues
 	if (m_type == FTString)
-		*m_string[ToRecord] = *m_string[FromRecord];
+		m_string[ToRecord] = m_string[FromRecord];
 }
 
 void Field::GetValueAsString(int iRecord, vtString &str)
@@ -1409,7 +1402,7 @@ void Field::GetValueAsString(int iRecord, vtString &str)
 	switch (m_type)
 	{
 	case FTString:
-		str = *(m_string[iRecord]);
+		str = m_string[iRecord];
 		break;
 	case FTInteger:
 		str.Format("%d", m_int[iRecord]);
@@ -1434,10 +1427,10 @@ void Field::SetValueFromString(int iRecord, const char *str)
 	switch (m_type)
 	{
 	case FTString:
-		if (iRecord < m_string.GetSize())
-			*(m_string[iRecord]) = str;
+		if (iRecord < (int) m_string.size())
+			m_string[iRecord] = str;
 		else
-			m_string.Append(new vtString(str));
+			m_string.push_back(vtString(str));
 		break;
 	case FTInteger:
 		i = atoi(str);

@@ -59,7 +59,7 @@ public:
 
 	Array<int> m_int;
 	Array<double> m_double;
-	Array<vtString*> m_string;
+	vtStringArray m_string;
 	Array<bool> m_bool;
 };
 

@@ -31,7 +31,7 @@ class MatchToken : public InputToken
 {
 public:
 	bool m_bRequired;
-	Array<vtString *> alternates;
+	vtStringArray alternates;
 };
 
 typedef Array<InputToken *> SentenceIn;

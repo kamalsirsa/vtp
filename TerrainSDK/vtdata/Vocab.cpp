@@ -381,9 +381,9 @@ void TestParser::Apply()
  */
 bool TestParser::Matches(SentenceMatch &pattern)
 {
-	int i, j;
+	unsigned int i, j;
 	int pos = 0;	// position in the array of input tokens
-	int pat_toks = pattern.GetSize();
+	unsigned int pat_toks = pattern.GetSize();
 
 	// rather than iterate through the words of the input, interate
 	// through the words of the pattern
@@ -411,8 +411,8 @@ bool TestParser::Matches(SentenceMatch &pattern)
 			match = (mtok->str == itok->str);
 
 			// try alternates strings as well
-			for (j = 0; j < mtok->alternates.GetSize(); j++)
-				match = match || (*mtok->alternates[j] == itok->str);
+			for (j = 0; j < mtok->alternates.size(); j++)
+				match = match || (mtok->alternates[j] == itok->str);
 		}
 		else
 		{
@@ -449,11 +449,11 @@ MatchToken *SentenceMatch::AddLiteral(bool required, const char *str1,
 	Append(mtok);
 
 	if (str2 != NULL)
-		mtok->alternates.Append(new vtString(str2));
+		mtok->alternates.push_back(vtString(str2));
 	if (str3 != NULL)
-		mtok->alternates.Append(new vtString(str3));
+		mtok->alternates.push_back(vtString(str3));
 	if (str4 != NULL)
-		mtok->alternates.Append(new vtString(str4));
+		mtok->alternates.push_back(vtString(str4));
 
 	return mtok;
 }
