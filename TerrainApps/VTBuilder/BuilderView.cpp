@@ -848,31 +848,43 @@ void BuilderView::AreaStretch()
 void BuilderView::DeselectAll()
 {
 	vtRoadLayer *pRL = GetMainFrame()->GetActiveRoadLayer();
-	if (!pRL)
-		return;
-
-	DRECT* world_bounds;
-	wxRect bound;
-	int n;
-
-	// caller is responsible for deleting the array returned from DeselectAll
-	world_bounds = pRL->DeSelectAll(n);
-	if (n > 100)
+	if (pRL)
 	{
-		// too many deleted for quick refresh
+		DRECT* world_bounds;
+		wxRect bound;
+		int n;
+
+		// caller is responsible for deleting the array returned from DeselectAll
+		world_bounds = pRL->DeSelectAll(n);
+		if (n > 100)
+		{
+			// too many deleted for quick refresh
+			Refresh(TRUE);
+		}
+		else
+		{
+			n = n -1;
+			while (n >=0) {
+				bound = WorldToWindow(world_bounds[n]);
+				IncreaseRect(bound, BOUNDADJUST);
+				Refresh(TRUE, &bound);
+				n--;
+			}
+		}
+		delete world_bounds;
+	}
+	vtStructureLayer *pSL = GetMainFrame()->GetActiveStructureLayer();
+	if (pSL)
+	{
+		pSL->DeselectAll();
 		Refresh(TRUE);
 	}
-	else
+	vtRawLayer *pRawL = GetMainFrame()->GetActiveRawLayer();
+	if (pRawL)
 	{
-		n = n -1;
-		while (n >=0) {
-			bound = WorldToWindow(world_bounds[n]);
-			IncreaseRect(bound, BOUNDADJUST);
-			Refresh(TRUE, &bound);
-			n--;
-		}
+		pRawL->DeselectAll();
+		Refresh(TRUE);
 	}
-	delete world_bounds;
 }
 
 void BuilderView::DeleteSelected(vtRoadLayer *pRL)
