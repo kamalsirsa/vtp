@@ -258,7 +258,7 @@ void ContentVisitor::startElement (const char * name, const XMLAttributes &atts)
 	{
 		if (string(name) == (string)"item")
 		{
-			vtItem *pItem = new vtItem();
+			vtItem *pItem = m_pMan->NewItem();
 			// Get the name.
 			attval = atts.getValue("name");
 			if (attval != NULL) {
@@ -392,6 +392,9 @@ vtItem *vtContentManager::FindItemByType(const char *type, const char *subtype)
 /**
  * Read content items from an XML file.
  *
+ * There is no return value because if there is an error, an
+ * xh_io_exception will be thrown.
+ *
  * \param filename A string containing the file path.
  */
 void vtContentManager::ReadXML(const char *filename)
@@ -405,6 +408,9 @@ void vtContentManager::ReadXML(const char *filename)
 
 /**
  * Write content items to an XML file.
+ *
+ * There is no return value because if there is an error, an
+ * xh_io_exception will be thrown.
  *
  * \param filename A string containing the file path.
  */
