@@ -81,7 +81,7 @@ public:
 	vtEngine *GetChild(unsigned int i) { return m_Children[i]; }
 	unsigned int NumChildren() { return m_Children.GetSize(); }
 
-	void AddChildrenToList(Array<vtEngine*> &list);
+	void AddChildrenToList(Array<vtEngine*> &list, bool bEnabledOnly);
 
 protected:
 	Array<vtTarget*> m_Targets;
@@ -95,10 +95,10 @@ protected:
 class vtEngineArray : public Array<vtEngine*>
 {
 public:
-	vtEngineArray(vtEngine *pTop)
+	vtEngineArray(vtEngine *pTop, bool bEnabledOnly = true)
 	{
 		if (pTop)
-			pTop->AddChildrenToList(*this);
+			pTop->AddChildrenToList(*this, bEnabledOnly);
 	}
 };
 

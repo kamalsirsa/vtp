@@ -27,11 +27,13 @@ void vtEngine::RemoveChild(vtEngine *pEngine)
 	}
 }
 
-void vtEngine::AddChildrenToList(Array<vtEngine*> &list)
+void vtEngine::AddChildrenToList(Array<vtEngine*> &list, bool bEnabledOnly)
 {
+	if (bEnabledOnly && !GetEnabled())
+		return;
 	list.Append(this);
 	for (unsigned int i = 0; i < NumChildren(); i++)
-		GetChild(i)->AddChildrenToList(list);
+		GetChild(i)->AddChildrenToList(list, bEnabledOnly);
 }
 
 void vtEngine::OnMouse(vtMouseEvent &event)
