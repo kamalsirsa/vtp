@@ -145,11 +145,13 @@ void Enviro::StartupArgument(int i, const char *str)
 
 void Enviro::LoadTerrainDescriptions()
 {
-	VTLOG("LoadTerrainDescriptions...");
+	VTLOG("LoadTerrainDescriptions...\n");
 
-	vtTerrain *pTerr;
 	for (unsigned int i = 0; i < g_Options.m_DataPaths.size(); i++)
 	{
+		int count = 0;
+		VTLOG("  On path '%s':", (const char *) g_Options.m_DataPaths[i]);
+
 		vtString directory = g_Options.m_DataPaths[i] + "Terrains";
 		for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
 		{
@@ -164,6 +166,7 @@ void Enviro::LoadTerrainDescriptions()
 				continue;
 
 			// Some terrain .ini files want to use a different Terrain class
+			vtTerrain *pTerr;
 			if (name == "Hawai`i.ini" || name == "Honoka`a.ini" || name == "Kealakekua.ini" )
 				pTerr = new IslandTerrain();
 			else if (name == "Nevada.ini")
@@ -177,7 +180,9 @@ void Enviro::LoadTerrainDescriptions()
 
 			if (pTerr->SetParamFile(directory + "/" + name))
 				m_pTerrainScene->AppendTerrain(pTerr);
+			count++;
 		}
+		VTLOG(" %d terrains.\n", count);
 	}
 	VTLOG("Done.\n");
 }
@@ -1945,4 +1950,3 @@ vtTerrainScene *GetTerrainScene()
 {
 	return g_App.m_pTerrainScene;
 }
-
