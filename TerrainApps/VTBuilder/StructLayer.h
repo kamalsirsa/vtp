@@ -39,8 +39,9 @@ public:
 
 	void DrawBuilding(wxDC* pDC, vtScaledView *pView, vtBuilding *bld);
 
-	//inverts selection values on all roads and nodes.
+	// inverts selection values on all roads and nodes.
 	void InvertSelection();
+	int DoBoxSelect(const DRECT &rect);
 
 protected:
 	int m_size;	// size in pixels of the small crosshair at building center

@@ -380,6 +380,21 @@ void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &pr
 	m_proj = proj;	// Set projection
 }
 
+int vtStructureLayer::DoBoxSelect(const DRECT &rect)
+{
+	int selected = 0;
+	for (int i = 0; i < GetSize(); i++)
+	{
+		vtStructure *str = GetAt(i);
+		bool bSelect = str->IsContainedBy(rect);
+		str->Select(bSelect);
+		if (bSelect)
+			selected++;
+	}
+	return selected;
+}
+
+
 #if 0
 void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 {
