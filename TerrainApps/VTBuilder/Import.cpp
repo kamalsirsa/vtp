@@ -409,6 +409,10 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 		{
 			pLayer = ImportFromBCF(strFileName);
 		}
+		else if (!strExt.CmpNoCase(_T("jpg")))
+		{
+			pLayer = ImportImage(strFileName);
+		}
 		else
 		{
 			// Many other Elevation formats are supported
