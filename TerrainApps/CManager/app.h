@@ -6,7 +6,7 @@
 //
 
 class vtTrackball;
-class vtRoot;
+class vtGroup;
 
 // Define a new application type
 class vtApp: public wxApp
@@ -16,6 +16,6 @@ public:
 	int OnExit(void);
 
 	vtTrackball	*m_pTrackball;
-	vtRoot *m_pRoot;
+	vtGroup *m_pRoot;
 };
 

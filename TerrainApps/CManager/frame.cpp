@@ -759,7 +759,7 @@ ItemGroup *vtFrame::GetItemGroup(vtItem *item)
 		ig->CreateNodes();
 
 		vtScene *pScene = vtGetScene();
-		vtRoot *pRoot = pScene->GetRoot();
+		vtGroup *pRoot = pScene->GetRoot();
 		pRoot->AddChild(ig->GetTop());
 	}
 	return ig;

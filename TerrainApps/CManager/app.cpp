@@ -60,7 +60,7 @@ bool vtApp::OnInit(void)
 	vtCamera *pCamera = pScene->GetCamera();
 	pCamera->SetName2("Default Camera");
 
-	m_pRoot = new vtRoot();
+	m_pRoot = new vtGroup();
 	pScene->SetRoot(m_pRoot);
 
 #if VTLIB_SGL

@@ -66,7 +66,7 @@ bool vtApp::CreateScene()
 	// Create a new terrain scene.  This will contain all the terrain
 	// that are created.
 	m_pTerrainScene = new vtTerrainScene();
-	vtRoot *pTopGroup = m_pTerrainScene->BeginTerrainScene(false);
+	vtGroup *pTopGroup = m_pTerrainScene->BeginTerrainScene(false);
 
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
