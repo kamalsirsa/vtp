@@ -9,7 +9,6 @@
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/DynTerrain.h"
-#include "vtlib/core/TerrainSurface.h"
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/TimeEngines.h"
 
@@ -31,10 +30,8 @@ BEGIN_MESSAGE_MAP(EnviroView, CView)
 	ON_WM_CREATE()
 	ON_COMMAND(ID_ENVIRO_TIMEON, OnEnviroTimeon)
 	ON_UPDATE_COMMAND_UI(ID_ENVIRO_TIMEON, OnUpdateEnviroTimeon)
-	ON_COMMAND(ID_ENVIRO_REGULARTERRAIN, OnEnviroRegularterrain)
 	ON_COMMAND(ID_ENVIRO_LODTERRAIN, OnEnviroLodterrain)
 	ON_UPDATE_COMMAND_UI(ID_ENVIRO_LODTERRAIN, OnUpdateEnviroLodterrain)
-	ON_UPDATE_COMMAND_UI(ID_ENVIRO_REGULARTERRAIN, OnUpdateEnviroRegularterrain)
 	ON_COMMAND(ID_ENVIRO_CULLEVERYFRAME, OnEnviroCulleveryframe)
 	ON_UPDATE_COMMAND_UI(ID_ENVIRO_CULLEVERYFRAME, OnUpdateEnviroCulleveryframe)
 	ON_COMMAND(ID_ENVIRO_CULLONCE, OnEnviroCullonce)
@@ -134,29 +131,6 @@ void EnviroView::OnEnviroTimeon()
 void EnviroView::OnUpdateEnviroTimeon(CCmdUI* pCmdUI) 
 {
 	pCmdUI->SetCheck(m_bTimeOn);
-}
-
-void EnviroView::OnEnviroRegularterrain() 
-{
-	vtTerrain *t = GetCurrentTerrain();
-	if (!t) return;
-	bool on = t->GetFeatureVisible(TFT_REGULAR);
-
-	t->SetFeatureVisible(TFT_REGULAR, !on);
-}
-
-void EnviroView::OnUpdateEnviroRegularterrain(CCmdUI* pCmdUI) 
-{
-	vtTerrain *t = GetCurrentTerrain();
-	if (!t)
-	{
-		pCmdUI->Enable(false);
-		return;
-	}
-	bool on = t->GetFeatureVisible(TFT_REGULAR);
-
-	pCmdUI->Enable(true);
-	pCmdUI->SetCheck(on);
 }
 
 void EnviroView::OnEnviroLodterrain() 

@@ -26,9 +26,6 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	//{{AFX_DATA_INIT(CCreateDlg)
 	m_strFilename = _T("");
 	m_fVerticalExag = 1.0f;
-	m_bRegular = FALSE;
-	m_iSubsample = 4;
-	m_bDynamic = TRUE;
 	m_fPixelError = 2.0f;
 	m_bTimeOn = FALSE;
 	m_bSky = TRUE;
@@ -48,7 +45,6 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_strTreeFile = _T("");
 	m_iTreeDistance = 10;
 	m_iFogDistance = 10;
-	m_bVertexColors = FALSE;
 	m_bOverlay = FALSE;
 	m_bOceanPlane = FALSE;
 	m_bLabels = FALSE;
@@ -117,10 +113,6 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_CBString(pDX, IDC_FILENAME, m_strFilename);
 	DDX_Text(pDX, IDC_VERTEXAG, m_fVerticalExag);
 	DDV_MinMaxFloat(pDX, m_fVerticalExag, 0.1f, 5.f);
-	DDX_Check(pDX, IDC_REGULAR, m_bRegular);
-	DDX_Text(pDX, IDC_SUBSAMPLE, m_iSubsample);
-	DDV_MinMaxUInt(pDX, m_iSubsample, 1, 100);
-	DDX_Check(pDX, IDC_DYNAMIC, m_bDynamic);
 	DDX_Text(pDX, IDC_PIXELERROR, m_fPixelError);
 	DDX_Check(pDX, IDC_TIMEOFDAY, m_bTimeOn);
 	DDX_Check(pDX, IDC_SKY, m_bSky);
@@ -143,7 +135,6 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_TREEDISTANCE, m_iTreeDistance);
 	DDV_MinMaxUInt(pDX, m_iTreeDistance, 1, 500);
 	DDX_Text(pDX, IDC_FOGDISTANCE, m_iFogDistance);
-	DDX_Check(pDX, IDC_VERTEXCOLORS, m_bVertexColors);
 	DDX_Check(pDX, IDC_OVERLAY, m_bOverlay);
 	DDX_Check(pDX, IDC_OCEANPLANE, m_bOceanPlane);
 	DDX_Check(pDX, IDC_LABELS, m_bLabels);
@@ -179,10 +170,8 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CCreateDlg, CDialog)
 	//{{AFX_MSG_MAP(CCreateDlg)
-	ON_EN_CHANGE(IDC_SUBSAMPLE, OnChangeSubsample)
 	ON_EN_CHANGE(IDC_TILESIZE, OnChangeTilesize)
 	ON_EN_CHANGE(IDC_TFILEBASE, OnChangeTfilebase)
-	ON_BN_CLICKED(IDC_REGULAR, OnChangeMem)
 	ON_CBN_EDITCHANGE(IDC_FILENAME, OnEditchangeFilename)
 	ON_CBN_SELCHANGE(IDC_FILENAME, OnSelchangeFilename)
 	ON_CBN_SELCHANGE(IDC_TFILESINGLE, OnSelchangeTfilesingle)
@@ -280,10 +269,6 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_iMinHeight = Params.m_iMinHeight;
 	m_fNavSpeed = Params.m_fNavSpeed;
 
-	m_bRegular = Params.m_bRegular;
-	m_iSubsample = Params.m_iSubsample;
-
-	m_bDynamic = Params.m_bDynamic;
 	m_iLodMethod = Params.m_eLodMethod;
 	m_fPixelError = Params.m_fPixelError;
 	m_bTriStrips = Params.m_bTriStrips;
@@ -327,7 +312,6 @@ void CCreateDlg::SetParams(TParams &Params)
 
 	m_bSky = Params.m_bSky;
 	m_bOceanPlane = Params.m_bOceanPlane;
-	m_bVertexColors = Params.m_bVertexColors;
 	m_bOverlay = Params.m_bOverlay;
 	m_bLabels = Params.m_bLabels;
 
@@ -336,7 +320,6 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_fPreLightFactor = Params.m_fPreLightFactor;
 
 	m_bAirports = Params.m_bAirports;
-
 }
 
 void CCreateDlg::GetParams(TParams &Params)
@@ -348,10 +331,6 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_iMinHeight = m_iMinHeight;
 	Params.m_fNavSpeed = m_fNavSpeed;
 
-	Params.m_bRegular = m_bRegular;
-	Params.m_iSubsample = m_iSubsample;
-
-	Params.m_bDynamic = m_bDynamic;
 	Params.m_eLodMethod = (enum LodMethodEnum) m_iLodMethod;
 	Params.m_fPixelError = m_fPixelError;
 	Params.m_bTriStrips = m_bTriStrips;
@@ -397,7 +376,6 @@ void CCreateDlg::GetParams(TParams &Params)
 
 	Params.m_bSky = m_bSky;
 	Params.m_bOceanPlane = m_bOceanPlane;
-	Params.m_bVertexColors = m_bVertexColors;
 	Params.m_bOverlay = m_bOverlay;
 	Params.m_bLabels = m_bLabels;
 
@@ -408,16 +386,6 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_bAirports = m_bAirports;
 }
 
-
-void CCreateDlg::OnChangeSubsample() 
-{
-	UpdateData(TRUE);
-
-	if (m_iSubsample < 1) m_iSubsample = 1;
-
-	UpdateData(FALSE);
-	OnChangeMem();
-}
 
 void CCreateDlg::UpdateTiledTextureFilename()
 {
@@ -445,37 +413,24 @@ void CCreateDlg::UpdateMem()
 {
 	int k = 0;
 
-	if (m_bRegular || m_bDynamic)
-	{
-		k += (m_iTerrainSize * m_iTerrainSize * m_iTerrainDepth) / 1024;	// for ElevationGrid and LocalGrid
-	}
+	k += (m_iTerrainSize * m_iTerrainSize * m_iTerrainDepth) / 1024;	// for ElevationGrid and LocalGrid
 
-	if (m_bRegular)
+	k += (m_iTerrainSize * 8) / 1024;		 // Lookup tables
+	switch (m_iLodMethod)
 	{
-		k += 2048;	// misc overhead
-		k += (25 * (m_iTerrainSize / m_iSubsample) * (m_iTerrainSize / m_iSubsample)) / 1024;
-//		k += (35 * 1024 / m_iSubsample);
+		case LM_ROETTGER:
+//			k += SRTerrain::MemoryRequired(m_iTerrainSize);
+			break;
+		case LM_TOPOVISTA:
+			k += TVTerrain::MemoryRequired(m_iTerrainSize);
+			break;
+		case LM_MCNALLY:
+			k += SMTerrain::MemoryRequired(m_iTerrainSize);
+			break;
 	}
-
-	if (m_bDynamic)
-	{
-		k += (m_iTerrainSize * 8) / 1024;		 // Lookup tables
-		switch (m_iLodMethod)
-		{
-			case LM_ROETTGER:
-//				k += SRTerrain::MemoryRequired(m_iTerrainSize);
-				break;
-			case LM_TOPOVISTA:
-				k += TVTerrain::MemoryRequired(m_iTerrainSize);
-				break;
-			case LM_MCNALLY:
-				k += SMTerrain::MemoryRequired(m_iTerrainSize);
-				break;
-		}
-		if (!m_bPreLit)
-			k += (m_iTerrainSize * m_iTerrainSize * 12) / 1024;	// Normal vectors array
-		k += (m_iTerrainSize * 4);	// Kludge factor
-	}
+	if (!m_bPreLit)
+		k += (m_iTerrainSize * m_iTerrainSize * 12) / 1024;	// Normal vectors array
+	k += (m_iTerrainSize * 4);	// Kludge factor
 
 	switch (m_iTexture)
 	{

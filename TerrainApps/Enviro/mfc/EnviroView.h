@@ -64,10 +64,8 @@ protected:
 	//{{AFX_MSG(EnviroView)
 	afx_msg void OnEnviroTimeon();
 	afx_msg void OnUpdateEnviroTimeon(CCmdUI* pCmdUI);
-	afx_msg void OnEnviroRegularterrain();
 	afx_msg void OnEnviroLodterrain();
 	afx_msg void OnUpdateEnviroLodterrain(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateEnviroRegularterrain(CCmdUI* pCmdUI);
 	afx_msg void OnEnviroCulleveryframe();
 	afx_msg void OnUpdateEnviroCulleveryframe(CCmdUI* pCmdUI);
 	afx_msg void OnEnviroCullonce();

@@ -15,7 +15,6 @@
 #define IDD_TERRAIN                     133
 #define IDD_PLANTDLG                    134
 #define IDD_FENCEDLG                    135
-#define IDC_SUBSAMPLE                   1000
 #define IDC_VERTEXAG                    1001
 #define IDC_FILENAME                    1002
 #define CG_IDC_PROGDLG_PROGRESS         1003
@@ -45,7 +44,6 @@
 #define IDC_TIMEOFDAY                   1024
 #define IDC_INITTIME                    1025
 #define IDC_PIXELERROR                  1026
-#define IDC_REGULAR                     1027
 #define IDC_DYNAMIC                     1028
 #define IDC_FOGDISTANCE                 1029
 #define IDC_MOTIONSCRIPT                1030

@@ -38,9 +38,6 @@ public:
 	CComboBox	m_cbLODFilename;
 	CString	m_strFilename;
 	float	m_fVerticalExag;
-	BOOL	m_bRegular;
-	UINT	m_iSubsample;
-	BOOL	m_bDynamic;
 	float	m_fPixelError;
 	BOOL	m_bTimeOn;
 	BOOL	m_bSky;
@@ -60,7 +57,6 @@ public:
 	CString	m_strTreeFile;
 	UINT	m_iTreeDistance;
 	int		m_iFogDistance;
-	BOOL	m_bVertexColors;
 	BOOL	m_bOverlay;
 	BOOL	m_bOceanPlane;
 	BOOL	m_bLabels;
@@ -116,7 +112,6 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CCreateDlg)
 	virtual BOOL OnInitDialog();
-	afx_msg void OnChangeSubsample();
 	afx_msg void OnChangeTilesize();
 	afx_msg void OnChangeTfilebase();
 	afx_msg void OnChangeMem();

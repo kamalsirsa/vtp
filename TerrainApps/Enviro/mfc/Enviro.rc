@@ -145,8 +145,7 @@ BEGIN
     POPUP "&Terrain"
     BEGIN
         MENUITEM "Time On\tCtrl+T",             ID_ENVIRO_TIMEON
-        MENUITEM "Regular Terrain\tF2",         ID_ENVIRO_REGULARTERRAIN
-        MENUITEM "Dynamic LOD Terrain\tF3",     ID_ENVIRO_LODTERRAIN
+        MENUITEM "LOD Terrain Surface\tF3",     ID_ENVIRO_LODTERRAIN
         MENUITEM "Cull every frame\tCtrl+C",    ID_ENVIRO_CULLEVERYFRAME
         MENUITEM "Cull once\tCtrl+K",           ID_ENVIRO_CULLONCE
         MENUITEM SEPARATOR
@@ -223,142 +222,131 @@ BEGIN
     LTEXT           "",CG_IDC_PROGDLG_STATUS,13,7,158,8
 END
 
-IDD_TPARAMS DIALOG DISCARDABLE  0, 0, 445, 329
+IDD_TPARAMS DIALOG DISCARDABLE  0, 0, 428, 318
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Terrain Construction Parameters"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,368,13,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,368,33,50,14
-    GROUPBOX        "",IDC_STATIC,10,43,119,52
-    CONTROL         "Regular terrain",IDC_REGULAR,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,41,62,12
-    RTEXT           "Subsample ratio",IDC_STATIC,21,55,50,10
-    EDITTEXT        IDC_SUBSAMPLE,78,53,37,12,ES_AUTOHSCROLL
-    GROUPBOX        "",IDC_STATIC,137,27,120,69
-    CONTROL         "Dynamic LOD terrain",IDC_DYNAMIC,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,142,26,78,12
-    RTEXT           "Pixel error bound",IDC_STATIC,142,56,56,10
-    EDITTEXT        IDC_PIXELERROR,204,54,37,12,ES_AUTOHSCROLL
-    GROUPBOX        "Texture",IDC_STATIC,10,161,203,151
-    COMBOBOX        IDC_FILENAME,92,8,102,132,CBS_DROPDOWN | WS_VSCROLL | 
+    DEFPUSHBUTTON   "OK",IDOK,355,13,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,355,33,50,14
+    RTEXT           "Pixel error bound",IDC_STATIC,60,52,56,10
+    EDITTEXT        IDC_PIXELERROR,122,50,37,12,ES_AUTOHSCROLL
+    GROUPBOX        "Texture",IDC_STATIC,10,155,203,151
+    COMBOBOX        IDC_FILENAME,92,17,102,132,CBS_DROPDOWN | WS_VSCROLL | 
                     WS_TABSTOP
-    RTEXT           "Terrain Filename: ",IDC_STATIC,27,11,63,10
-    GROUPBOX        "",IDC_STATIC,20,201,184,60
-    RTEXT           "Tile size:",IDC_STATIC,38,215,40,10
-    EDITTEXT        IDC_TILESIZE,84,214,40,12,ES_AUTOHSCROLL
-    RTEXT           "Filename:",IDC_STATIC,30,247,47,10
-    EDITTEXT        IDC_TFILENAME,84,245,108,12,ES_AUTOHSCROLL | ES_READONLY
+    RTEXT           "Terrain Filename: ",IDC_STATIC,27,20,63,10
+    GROUPBOX        "",IDC_STATIC,20,195,184,60
+    RTEXT           "Tile size:",IDC_STATIC,38,208,40,10
+    EDITTEXT        IDC_TILESIZE,84,207,40,12,ES_AUTOHSCROLL
+    RTEXT           "Filename:",IDC_STATIC,30,240,47,10
+    EDITTEXT        IDC_TFILENAME,84,238,108,12,ES_AUTOHSCROLL | ES_READONLY
     CONTROL         "Mipmap terrain",IDC_MIPMAP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,21,278,63,10
+                    WS_TABSTOP,21,271,63,10
     CONTROL         "Request 16-bit",IDC_16BIT,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,21,288,62,10
+                    WS_TABSTOP,21,281,62,10
     CONTROL         "Texture-map roads",IDC_TEXROADS,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,239,206,73,10
     CONTROL         "Sky dome",IDC_SKY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    271,33,46,10
+                    252,33,46,10
     CONTROL         "No texture",IDC_NONE,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,25,174,49,10
+                    WS_GROUP,25,168,49,10
     CONTROL         "Single texture:",IDC_SINGLE,"Button",BS_AUTORADIOBUTTON,
-                    25,187,58,10
+                    25,181,58,10
     CONTROL         "4x4 Tiled texture",IDC_TILED,"Button",
-                    BS_AUTORADIOBUTTON,25,200,66,10
+                    BS_AUTORADIOBUTTON,25,194,66,10
     CONTROL         "Derive texture from elevation",IDC_DERIVED,"Button",
-                    BS_AUTORADIOBUTTON,25,264,178,10
+                    BS_AUTORADIOBUTTON,25,257,178,10
     CONTROL         "Fog",IDC_FOG,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
-                    WS_TABSTOP,271,85,28,10
-    RTEXT           "Filename Base:",IDC_STATIC,28,231,50,10
-    EDITTEXT        IDC_TFILEBASE,84,229,76,12,ES_AUTOHSCROLL
-    RTEXT           "Vertical exaggeration: ",IDC_STATIC,20,27,70,10
-    EDITTEXT        IDC_VERTEXAG,92,25,31,12,ES_AUTOHSCROLL
-    GROUPBOX        "",IDC_STATIC,221,149,209,82
+                    WS_TABSTOP,252,85,28,10
+    RTEXT           "Filename Base:",IDC_STATIC,28,224,50,10
+    EDITTEXT        IDC_TFILEBASE,84,222,76,12,ES_AUTOHSCROLL
+    RTEXT           "Vertical exaggeration: ",IDC_STATIC,22,90,70,10
+    EDITTEXT        IDC_VERTEXAG,94,88,31,12,ES_AUTOHSCROLL
+    GROUPBOX        "",IDC_STATIC,221,149,196,82
     RTEXT           "Height above ground: ",IDC_STATIC,227,179,75,10
     EDITTEXT        IDC_ROADHEIGHT,303,177,28,12,ES_AUTOHSCROLL
     CONTROL         "Roads",IDC_ROADS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    229,148,34,10
+                    227,148,34,10
     EDITTEXT        IDC_TREEDISTANCE,303,125,29,12,ES_AUTOHSCROLL
     LTEXT           "km",IDC_STATIC,335,127,18,10
-    GROUPBOX        "",IDC_STATIC,221,99,209,45
+    GROUPBOX        "",IDC_STATIC,221,99,196,45
     CONTROL         "Trees",IDC_TREES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    233,98,31,10
+                    227,98,31,10
     RTEXT           "Visibility distance:",IDC_STATIC,237,128,61,10
     CONTROL         "Time Goes By",IDC_TIMEOFDAY,"Button",BS_AUTOCHECKBOX | 
-                    WS_DISABLED | WS_TABSTOP,271,59,62,10
-    LTEXT           "Time of Day:",IDC_STATIC,333,59,43,10,WS_DISABLED
-    LTEXT           "Visibility Distance:",IDC_STATIC,315,85,59,10
-    EDITTEXT        IDC_FOGDISTANCE,376,83,33,12,ES_AUTOHSCROLL
-    LTEXT           "km",IDC_STATIC,411,86,13,10
-    CONTROL         "Apply vertex colors",IDC_VERTEXCOLORS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,21,81,95,8
+                    WS_TABSTOP,252,59,62,10
+    LTEXT           "Time of Day:",IDC_STATIC,317,59,43,10,WS_DISABLED
+    LTEXT           "Visibility Distance:",IDC_STATIC,297,85,59,10
+    EDITTEXT        IDC_FOGDISTANCE,358,83,33,12,ES_AUTOHSCROLL
+    LTEXT           "km",IDC_STATIC,393,85,13,10
     CONTROL         "Create 2D Overlay",IDC_OVERLAY,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,271,8,74,10
+                    WS_TABSTOP,252,8,74,10
     CONTROL         "Ocean plane",IDC_OCEANPLANE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,271,46,58,10
+                    WS_TABSTOP,252,46,58,10
     CONTROL         "Floating Labels",IDC_LABELS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,271,20,60,10
-    RTEXT           "Minimum height above ground:",IDC_STATIC,17,111,100,10
-    EDITTEXT        IDC_MINHEIGHT,123,109,32,12,ES_AUTOHSCROLL
+                    WS_TABSTOP,252,20,60,10
+    RTEXT           "Minimum height above ground:",IDC_STATIC,17,121,100,10
+    EDITTEXT        IDC_MINHEIGHT,123,119,32,12,ES_AUTOHSCROLL
     RTEXT           "Include:",IDC_STATIC,356,177,32,10
-    CONTROL         "Buildings:",IDC_BUILDINGS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,227,238,43,10
+    CONTROL         "Structures:",IDC_BUILDINGS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,227,238,50,10
     CONTROL         "Vehicles",IDC_VEHICLES,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,227,257,43,10
     LTEXT           "Size exag:",IDC_STATIC,273,257,37,9
     EDITTEXT        IDC_VEHICLESIZE,311,255,28,12,ES_AUTOHSCROLL
     LTEXT           "Speed exag:",IDC_STATIC,344,257,42,9
-    COMBOBOX        IDC_TFILESINGLE,88,185,115,116,CBS_DROPDOWN | CBS_SORT | 
+    COMBOBOX        IDC_TFILESINGLE,88,179,115,116,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     LTEXT           "Estimated Memory Required:",IDC_STATIC,225,290,91,9
     EDITTEXT        IDC_MEMREQUIRED,320,288,92,12,ES_CENTER | ES_AUTOHSCROLL | 
                     ES_READONLY
     CONTROL         "Use Triangle Strips/Fans",IDC_TRISTRIPS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,146,70,94,9
+                    BS_AUTOCHECKBOX | WS_TABSTOP,64,66,94,9
     CONTROL         "Detail Texture",IDC_DETAILTEXTURE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,146,82,84,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,64,78,84,8
     CONTROL         "Precompute lighting",IDC_PRELIGHT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,97,277,84,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,97,270,84,10
     CONTROL         "Highways",IDC_HWY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     363,187,44,10
     CONTROL         "Paved",IDC_PAVED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     363,198,35,10
     CONTROL         "Dirt",IDC_DIRT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     363,209,28,10
-    COMBOBOX        IDC_MOTIONSCRIPT,102,138,86,106,CBS_DROPDOWN | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_TREEFILE,269,108,86,106,CBS_DROPDOWN | CBS_SORT | 
+    COMBOBOX        IDC_TREEFILE,269,108,140,106,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     RTEXT           "Source file:",IDC_STATIC,227,110,38,10
-    COMBOBOX        IDC_ROADFILE,269,159,125,106,CBS_DROPDOWN | CBS_SORT | 
+    COMBOBOX        IDC_ROADFILE,269,159,140,106,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     RTEXT           " Source file:",IDC_STATIC,227,163,38,10
     CONTROL         "DateTimePicker1",IDC_INITTIME,"SysDateTimePick32",
                     DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 
-                    0x8,376,57,59,13
-    COMBOBOX        IDC_BUILDINGFILE,275,235,110,106,CBS_DROPDOWN | CBS_SORT | 
+                    0x8,360,57,59,13
+    COMBOBOX        IDC_BUILDINGFILE,278,235,131,106,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     EDITTEXT        IDC_ROADDISTANCE,303,191,28,12,ES_AUTOHSCROLL
     LTEXT           "km",IDC_STATIC,334,193,18,10
     RTEXT           "Visibility distance:",IDC_STATIC,237,193,61,10
-    GROUPBOX        "Navigation",IDC_STATIC,10,99,203,58
-    LTEXT           "meters",IDC_STATIC,157,111,22,10
-    RTEXT           "Navigation Speed:",IDC_STATIC,34,124,83,10
-    EDITTEXT        IDC_NAVSPEED,123,123,32,12,ES_AUTOHSCROLL
-    LTEXT           "Lighting Factor",IDC_STATIC,109,288,50,9
-    EDITTEXT        IDC_LIGHT_FACTOR,161,287,34,12,ES_AUTOHSCROLL
+    GROUPBOX        "Navigation",IDC_STATIC,10,109,203,41
+    LTEXT           "meters",IDC_STATIC,157,121,22,10
+    RTEXT           "Navigation Speed:",IDC_STATIC,34,134,83,10
+    EDITTEXT        IDC_NAVSPEED,123,133,32,12,ES_AUTOHSCROLL
+    LTEXT           "Lighting Factor",IDC_STATIC,109,281,50,9
+    EDITTEXT        IDC_LIGHT_FACTOR,161,280,34,12,ES_AUTOHSCROLL
     LTEXT           "meters",IDC_STATIC,334,180,21,10
     LTEXT           "Number of Cars:",IDC_STATIC,255,272,53,9
     EDITTEXT        IDC_CARNUMBER,311,270,29,12,ES_AUTOHSCROLL
     CONTROL         "Road culture (stoplights, etc.)",IDC_ROADCULTURE,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,239,217,113,10
-    RTEXT           "Method: ",IDC_STATIC,143,40,30,10
-    COMBOBOX        IDC_LODMETHOD,174,38,79,59,CBS_DROPDOWNLIST | WS_VSCROLL | 
+    RTEXT           "LOD Method: ",IDC_STATIC,47,36,44,10
+    COMBOBOX        IDC_LODMETHOD,92,34,79,59,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
     EDITTEXT        IDC_VEHICLESPEED,387,255,28,12,ES_AUTOHSCROLL
     CONTROL         "Pre-lit",IDC_PRELIT,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,97,298,45,10
+                    WS_TABSTOP,97,291,45,10
     CONTROL         "Airports",IDC_AIRPORTS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,271,72,43,10
-    LTEXT           "meters/frame",IDC_STATIC,157,125,47,10
+                    WS_TABSTOP,252,72,43,10
+    LTEXT           "meters/frame",IDC_STATIC,157,135,47,10
+    GROUPBOX        "Elevation",IDC_STATIC,10,7,203,98
 END
 
 IDD_STATDLG DIALOG DISCARDABLE  0, 0, 295, 95
@@ -526,9 +514,9 @@ BEGIN
     IDD_TPARAMS, DIALOG
     BEGIN
         LEFTMARGIN, 10
-        RIGHTMARGIN, 436
+        RIGHTMARGIN, 419
         TOPMARGIN, 7
-        BOTTOMMARGIN, 318
+        BOTTOMMARGIN, 307
     END
 
     IDD_STATDLG, DIALOG
