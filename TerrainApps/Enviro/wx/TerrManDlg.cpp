@@ -67,7 +67,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 	int i, num = paths.size();
 	wxString2 wstr, wstr2;
 
-	m_Root = m_pTree->AddRoot(_T("Terrain Data Paths"));
+	m_Root = m_pTree->AddRoot(_("Terrain Data Paths"));
 
 	for (i = 0; i < num; i++)
 	{
@@ -167,8 +167,8 @@ void TerrainManagerDlg::OnCopy( wxCommandEvent &event )
 	TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
 	wxString2 file = data->m_strIniFile;
 
-	wxString2 msg = "Please enter the name for the terrain copy.";
-	wxString2 str = wxGetTextFromUser(msg, _T("Add Copy of Terrain"), file);
+	wxString2 msg = _("Please enter the name for the terrain copy.");
+	wxString2 str = wxGetTextFromUser(msg, _("Add Copy of Terrain"), file);
 	if (str == _T(""))
 		return;
 

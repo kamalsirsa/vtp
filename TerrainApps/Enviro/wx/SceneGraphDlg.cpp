@@ -1,7 +1,7 @@
 //
 // Name:		SceneGraphDlg.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -145,7 +145,7 @@ void SceneGraphDlg::RefreshTreeContents()
 	if (pRoot) AddNodeItemsRecursively(wxTreeItemId(), pRoot, 0);
 
 	wxTreeItemId hRoot = m_pTree->GetRootItem();
-	wxTreeItemId hEngRoot = m_pTree->AppendItem(hRoot, _T("Engines"), 7, 7);
+	wxTreeItemId hEngRoot = m_pTree->AppendItem(hRoot, _("Engines"), 7, 7);
 
 	// Fill in the tree with engines
 	int num = scene->GetNumEngines();
@@ -167,12 +167,12 @@ void SceneGraphDlg::RefreshTreeContents()
 				str += _T("\"");
 			}
 			else
-				str += _T("(non-node)");
+				str += _("(non-node)");
 		}
 		if (targets > 1)
 		{
 			wxString2 plus;
-			plus.Printf(_T(" (%d targets total)"), targets);
+			plus.Printf(_(" (%d targets total)"), targets);
 			str += plus;
 		}
 		wxTreeItemId hEng = m_pTree->AppendItem(hEngRoot, str, 1, 1);
@@ -223,7 +223,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	else
 	{
 		// must be something else
-		str = _T("Other");
+		str = _("Other");
 		nImage = 8;
 	}
 	if (pNode->GetName2())
@@ -271,11 +271,11 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 				case GL_QUAD_STRIP: mtype = "QuadStrip"; break;
 				case GL_POLYGON: mtype = "Polygon"; break;
 				}
-				str.Printf(_T("Mesh %d, %hs, %d verts, %d prims"), i, mtype, iNumVert, iNumPrim);
+				str.Printf(_("Mesh %d, %hs, %d verts, %d prims"), i, mtype, iNumVert, iNumPrim);
 				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
 			}
 			else
-				hGeomItem = m_pTree->AppendItem(hNewItem, _T("Text Mesh"), 6, 6);
+				hGeomItem = m_pTree->AppendItem(hNewItem, _("Text Mesh"), 6, 6);
 		}
 	}
 
@@ -288,7 +288,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		int num_children = pGroup->GetNumChildren();
 		if (num_children > 200)
 		{
-			str.Printf(_T("(%d children)"), num_children);
+			str.Printf(_("(%d children)"), num_children);
 			hSubItem = m_pTree->AppendItem(hNewItem, str, 8, 8);
 		}
 		else
@@ -299,7 +299,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 				if (pChild)
 					AddNodeItemsRecursively(hNewItem, pChild, depth+1);
 				else
-					hSubItem = m_pTree->AppendItem(hNewItem, _T("(internal node)"), 8, 8);
+					hSubItem = m_pTree->AppendItem(hNewItem, _("(internal node)"), 8, 8);
 			}
 		}
 	}

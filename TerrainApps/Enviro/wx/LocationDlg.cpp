@@ -1,7 +1,7 @@
 //
 // Name:		LocationDlg.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,10 +22,10 @@
 #include "canvas.h"
 #include "LocationDlg.h"
 
-void BlockingMessageBox(const char *msg)
+void BlockingMessageBox(const wxString &msg)
 {
 	EnableContinuousRendering(false);
-	wxMessageBox(wxString::FromAscii(msg));
+	wxMessageBox(msg);
 	EnableContinuousRendering(true);
 }
 
@@ -120,14 +120,14 @@ void LocationDlg::OnListDblClick( wxCommandEvent &event )
 	{
 		bool success = m_pSaver->RecallFrom(num);
 		if (!success)
-			BlockingMessageBox("Couldn't recall point, probably a coordinate system transformation problem.");
+			BlockingMessageBox(_("Couldn't recall point, probably a coordinate system transformation problem."));
 	}
 }
 
 void LocationDlg::OnLoad( wxCommandEvent &event )
 {
-	wxFileDialog loadFile(NULL, _T("Load Locations"), _T(""), _T(""),
-		_T("Location Files (*.loc)|*.loc|"), wxOPEN);
+	wxFileDialog loadFile(NULL, _("Load Locations"), _T(""), _T(""),
+		_("Location Files (*.loc)|*.loc|"), wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -138,8 +138,8 @@ void LocationDlg::OnLoad( wxCommandEvent &event )
 
 void LocationDlg::OnSave( wxCommandEvent &event )
 {
-	wxFileDialog saveFile(NULL, _T("Save Locations"), _T(""), _T(""),
-		_T("Location Files (*.loc)|*.loc|"), wxSAVE);
+	wxFileDialog saveFile(NULL, _("Save Locations"), _T(""), _T(""),
+		_("Location Files (*.loc)|*.loc|"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -154,9 +154,9 @@ void LocationDlg::OnStoreAs( wxCommandEvent &event )
 	int num = m_pSaver->GetNumLocations();
 
 	wxString str;
-	str.Printf(_T("Location %d"), num+1);
-	wxTextEntryDialog dlg(NULL, _T("Type a name for the new location:"),
-		_T("Location Name"), str);
+	str.Printf(_("Location %d"), num+1);
+	wxTextEntryDialog dlg(NULL, _("Type a name for the new location:"),
+		_("Location Name"), str);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -169,7 +169,7 @@ void LocationDlg::OnStoreAs( wxCommandEvent &event )
 		RefreshButtons();
 	}
 	else
-		BlockingMessageBox("Couldn't store point, probably a coordinate system transformation problem.");
+		BlockingMessageBox(_("Couldn't store point, probably a coordinate system transformation problem."));
 }
 
 void LocationDlg::OnStore( wxCommandEvent &event )
@@ -179,7 +179,7 @@ void LocationDlg::OnStore( wxCommandEvent &event )
 	{
 		bool success = m_pSaver->StoreTo(num);
 		if (!success)
-			BlockingMessageBox("Couldn't store point, probably a coordinate system transformation problem.");
+			BlockingMessageBox(_("Couldn't store point, probably a coordinate system transformation problem."));
 	}
 }
 
@@ -190,7 +190,7 @@ void LocationDlg::OnRecall( wxCommandEvent &event )
 	{
 		bool success = m_pSaver->RecallFrom(num);
 		if (!success)
-			BlockingMessageBox("Couldn't recall point, probably a coordinate system transformation problem.");
+			BlockingMessageBox(_("Couldn't recall point, probably a coordinate system transformation problem."));
 	}
 }
 

@@ -262,7 +262,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	m_pSceneGraphDlg = new SceneGraphDlg(this, -1, _T("Scene Graph"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pSceneGraphDlg->SetSize(250, 350);
+	m_pSceneGraphDlg->SetSize(450, 600);
 
 	m_pPlantDlg = new PlantDlg(this, -1, _("Plants"));
 	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
@@ -361,10 +361,10 @@ void vtFrame::CreateMenus()
 	// S Faster
 
 	m_pViewMenu = new wxMenu;
-	m_pViewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("Wireframe\tCtrl+W"));
-	m_pViewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _T("Fullscreen\tCtrl+F"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _("Wireframe\tCtrl+W"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _("Fullscreen\tCtrl+F"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _("Top-Down Camera\tCtrl+T"));
-	m_pViewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _T("Framerate Chart\tCtrl+Z"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _("Framerate Chart\tCtrl+Z"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SETTINGS, _("Camera - View Settings\tCtrl+S"));
 	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _("Store/Recall Locations"));
@@ -402,8 +402,8 @@ void vtFrame::CreateMenus()
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_ROADS, _("Show Roads\tF8"));
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOG, _("Show Fog\tF9"));
 	m_pTerrainMenu->AppendSeparator();
-	m_pTerrainMenu->Append(ID_TERRAIN_INCREASE, _T("Increase Detail (+)"));
-	m_pTerrainMenu->Append(ID_TERRAIN_DECREASE, _T("Decrease Detail (-)"));
+	m_pTerrainMenu->Append(ID_TERRAIN_INCREASE, _("Increase Detail (+)"));
+	m_pTerrainMenu->Append(ID_TERRAIN_DECREASE, _("Decrease Detail (-)"));
 	m_pTerrainMenu->AppendSeparator();
 	m_pTerrainMenu->Append(ID_TERRAIN_SAVEVEG, _("Save Vegetation As..."));
 	m_pTerrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _("Save Built Structures As..."));
@@ -917,7 +917,7 @@ void vtFrame::Snapshot(bool bNumbered)
 			_T("PNG Files (*.png)|*.png|")
 			_T("TIF Files (*.tif)|*.tif|");
 		EnableContinuousRendering(false);
-		wxFileDialog saveFile(NULL, _T("Save View Snapshot"), _T(""), _T(""),
+		wxFileDialog saveFile(NULL, _("Save View Snapshot"), _T(""), _T(""),
 			filter, wxSAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);

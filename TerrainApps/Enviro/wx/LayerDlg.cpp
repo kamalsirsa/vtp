@@ -133,7 +133,7 @@ void LayerDlg::RefreshTreeTerrain()
 	if (!terr)
 		return;
 
-	wxTreeItemId hRoot = m_pTree->AddRoot(_T("Layers"));
+	wxTreeItemId hRoot = m_pTree->AddRoot(_("Layers"));
 
 	unsigned int i, j;
 	StructureSet &set = terr->GetStructureSet();
@@ -156,9 +156,9 @@ void LayerDlg::RefreshTreeTerrain()
 			for (j = 0; j < sa->GetSize(); j++)
 			{
 				if (sa->GetBuilding(j))
-					hItem = m_pTree->AppendItem(hLayer, _T("Building"), -1, -1);
+					hItem = m_pTree->AppendItem(hLayer, _("Building"), -1, -1);
 				if (sa->GetFence(j))
-					hItem = m_pTree->AppendItem(hLayer, _T("Fence"), -1, -1);
+					hItem = m_pTree->AppendItem(hLayer, _("Fence"), -1, -1);
 				if (vtStructInstance *inst = sa->GetInstance(j))
 				{
 					vtString vs = inst->GetValueString("filename");

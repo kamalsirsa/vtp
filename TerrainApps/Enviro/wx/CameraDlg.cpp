@@ -200,9 +200,9 @@ void CameraDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_FAR, &m_fFar);
 	AddNumValidator(ID_SPEED, &m_fSpeed);
 
-	GetSpeedUnits()->Append(_T("Meters/sec"));
-	GetSpeedUnits()->Append(_T("Km/hour"));
-	GetSpeedUnits()->Append(_T("Miles/hour"));
+	GetSpeedUnits()->Append(_("Meters/sec"));
+	GetSpeedUnits()->Append(_("Km/hour"));
+	GetSpeedUnits()->Append(_("Miles/hour"));
 	AddValidator(ID_SPEED_UNITS, &m_iSpeedUnits);
 	AddValidator(ID_ACCEL, &m_bAccel);
 

@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -543,11 +543,11 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pLodMethod->SetSelection(m_iLodMethod);
 
 	m_pNavStyle->Clear();
-	m_pNavStyle->Append(_T("Normal Terrain Flyer"));
-	m_pNavStyle->Append(_T("Terrain Flyer with Velocity"));
-	m_pNavStyle->Append(_T("Grab-Pivot"));
-	m_pNavStyle->Append(_T("Quake-Style Walk"));
-	m_pNavStyle->Append(_T("Panoramic Flyer"));
+	m_pNavStyle->Append(_("Normal Terrain Flyer"));
+	m_pNavStyle->Append(_("Terrain Flyer with Velocity"));
+	m_pNavStyle->Append(_("Grab-Pivot"));
+	m_pNavStyle->Append(_("Quake-Style Walk"));
+	m_pNavStyle->Append(_("Panoramic Flyer"));
 
 	RefreshLabelFields();
 	RefreshLocationFields();
@@ -669,7 +669,7 @@ bool TParamsDlg::TransferDataToWindow()
 	int i, num = m_strStructFiles.GetSize();
 	for (i = 0; i < num; i++)
 		m_pStructFiles->Append(*m_strStructFiles[i]);
-	m_pStructFiles->Append(_T("(double-click to add files)"));
+	m_pStructFiles->Append(_("(double-click to add files)"));
 
 	bool result = wxDialog::TransferDataToWindow();
 	m_bSetting = false;
@@ -781,7 +781,7 @@ void TParamsDlg::OnListDblClick( wxCommandEvent &event )
 	int num = strings.Count();
 
 	// int num = m_pLocList->GetSelection();  // no care
-	wxString result = wxGetSingleChoice(_T("one of the following to add:"), _T("Choose a structure file"),
+	wxString result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a structure file"),
 		strings, this);
 
 	if (result.Cmp(_T("")))	// user selected something
