@@ -8,7 +8,6 @@
 #ifndef VTOSG_SCENEH
 #define VTOSG_SCENEH
 
-#include "../core/FrameTimer.h"
 #include <osg/Timer>
 
 /**
