@@ -117,9 +117,10 @@ public:
 	virtual void TranslateLocal(const FPoint3 &pos) = 0;
 
 	// rotation
-	virtual void Rotate2(const FPoint3 &axis, float angle) = 0;
-	virtual void RotateLocal(const FPoint3 &axis, float angle) = 0;
-	virtual void RotateParent(const FPoint3 &axis, float angle) = 0;
+	virtual void Rotate2(const FPoint3 &axis, double angle) = 0;
+	virtual void RotateLocal(const FPoint3 &axis, double angle) = 0;
+	virtual void RotateParent(const FPoint3 &axis, double angle) = 0;
+	virtual FPoint3 GetDirection() const = 0;
 
 	// other
 	virtual void Scale3(float x, float y, float z) = 0;
