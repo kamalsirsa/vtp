@@ -218,15 +218,12 @@ void vtBuilding3d::DetermineWorldFootprints(vtHeightField *pHeightField)
 	}
 	if ((ymax - ymin) > 1.0f)	// it's on a slope
 	{
-		// do something about it - like deform the ground or build
-		//  some posts on which to set the building
+		// Could do something about it - like deform the ground or build
+		//  some posts on which to set the building?
 	}
-	float base_level;
-	if (m_bElevated)
-		base_level = ymax;
-	else
-		// embed the building in the ground
-		base_level = ymin;
+	// Embed the building in the ground such that the lowest corner of its
+	// lowest level is at ground level.
+	float base_level = ymin;
 
 	// Find the center of the building in world coordinates (the origin of
 	// the building's local coordinate system)

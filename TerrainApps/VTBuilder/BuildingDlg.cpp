@@ -113,17 +113,6 @@ void BuildingDlg::OnColor1( wxCommandEvent &event )
 void BuildingDlg::OnOK( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-
-//  int c;
-//  RGBi color;
-//  color.Set(m_Color.Red(), m_Color.Green(), m_Color.Blue());
-//  m_pBuilding->SetColor((BldColor) c, color[c]);
-
-//  m_pBuilding->SetStories(m_iStories);
-//  m_pBuilding->SetRoofType((enum RoofType) m_iRoofType);
-//  m_pBuilding->m_bMoulding = m_bTrim;
-	m_pBuilding->m_bElevated = m_bElevated;
-
 	wxDialog::OnOK(event);
 }
 
@@ -145,14 +134,10 @@ void BuildingDlg::OnInitDialog(wxInitDialogEvent& event)
 		m_pLevelListBox->Append(str);
 	}
 
-	m_bElevated = m_pBuilding->m_bElevated;
-
-//  AddNumValidator(ID_STORIES, &m_iStories);
 	AddValidator(ID_STORIES, &m_iStories);
 	AddNumValidator(ID_STORY_HEIGHT, &m_fStoryHeight);
 	AddValidator(ID_MATERIAL, &m_strMaterial);
 	AddValidator(ID_EDGE_SLOPES, &m_strEdgeSlopes);
-//  AddValidator(ID_ELEVATED, &m_bElevated);
 
 	m_pLevelListBox->SetSelection(0);
 	SetLevel(0);

@@ -50,7 +50,6 @@ private:
 	wxString	m_strMaterial;
 	wxString	m_strEdgeSlopes;
 	wxColour	m_Color;
-	bool		m_bElevated;
 
 	wxStaticBitmap  *m_pColorBitmapControl;
 	wxListBox	  *m_pLevelListBox;
