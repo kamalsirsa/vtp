@@ -15,6 +15,11 @@ struct AttribTableEntry {
 	int attrib;
 };
 
+/**
+ * This class implements a bitmap which has its colors mapped onto
+ * specific integer attributes.  For example, Red pixels can mean
+ * attribute value 1, Orange can mean 2, and so forth.
+ */
 class AttribMap : public vtDIB
 {
 public:
@@ -29,5 +34,5 @@ public:
 	AttribTableEntry *m_AttribTable;
 };
 
-#endif
+#endif	// ATTRIBMAPH
 
