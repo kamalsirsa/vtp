@@ -458,6 +458,13 @@ void FQuat::SetFromVectors(const FPoint3 &forward, const FPoint3 &up)
 	SetFromMatrix(m3);
 }
 
+void FQuat::SetFromVector(const FPoint3 &direction)
+{
+	FMatrix3 m3;
+	m3.MakeOrientation(direction);
+	SetFromMatrix(m3);
+}
+
 /**
  * Get the equivalent matrix for this quaternion.
  */

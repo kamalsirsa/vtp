@@ -885,7 +885,7 @@ public:
 	void Transform(const FPoint3 &src, FPoint3 &dst) const;
 	void SetFromMatrix4(const FMatrix4 &mat);
 
-	void MakeOrientation(const FPoint3 &vector, bool bPitch);
+	void MakeOrientation(const FPoint3 &vector, bool bPitch = true);
 	void PreMult(const FMatrix3 &mat);
 	void PostMult(const FMatrix3 &mat);
 
@@ -974,6 +974,7 @@ public:
 	void Set(float qx, float qy, float qz, float qw) { x = qx; y = qy; z = qz; w = qw; }
 	void SetFromMatrix(const FMatrix3 &matrix);
 	void SetFromVectors(const FPoint3 &forward, const FPoint3 &up);
+	void SetFromVector(const FPoint3 &direction);
 	void AxisAngle(const FPoint3 &axis, float angle);
 	void GetMatrix(FMatrix3 &matrix) const;
 
