@@ -205,7 +205,10 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	// test dynamic creation of a complicated building
 	if (1)
 	{
-		vtBuilding3d *bld = new vtBuilding3d();
+		vtStructureArray3d *pSA = new vtStructureArray3d();
+		pSA->m_proj = m_proj;
+
+		vtBuilding3d *bld = (vtBuilding3d *) pSA->NewBuilding();
 
 		DPoint2 c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12;
 		c2 = c1 + DPoint2(10.9728, 0.0);
@@ -228,13 +231,12 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		dl.Append(c3);
 		dl.Append(c4);
 		dl.Append(c5);
-		pLev = new vtLevel();
-		pLev->SetFootprint(dl);
+		pLev = bld->CreateLevel(dl);
 		pLev->m_fStoryHeight = 2.4385f;
 		pLev->m_iStories = 1;
-		pLev->m_Color.Set(128, 128, 128);
 
 		pEdge = pLev->m_Edges[0];
+		pLev->SetEdgeColor(RGBi(128, 128, 128));
 		pEdge->m_Features.Empty();
 		pEdge->AddFeature(WFC_GAP);
 
@@ -258,8 +260,6 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		pEdge->AddFeature(WFC_WALL, -1, 0, 0.5);
 		pEdge->m_Material = BMAT_CEMENT;
 
-		bld->AddLevel(pLev);
-
 		// main floor level
 		dl.Empty();
 		dl.Append(c7);
@@ -268,11 +268,10 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		dl.Append(c6);
 		dl.Append(c9);
 		dl.Append(c8);
-		pLev = new vtLevel();
-		pLev->SetFootprint(dl);
+		pLev = bld->CreateLevel(dl);
 		pLev->m_fStoryHeight = 2.4385f;
 		pLev->m_iStories = 1;
-		pLev->SetWallMaterial(BMAT_WOOD);
+		pLev->SetEdgeMaterial(BMAT_WOOD);
 
 		pEdge = pLev->m_Edges[0];
 		pEdge->m_Features.Empty();
@@ -323,8 +322,6 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		pEdge->AddFeature(WFC_DOOR, -4);
 		pEdge->AddFeature(WFC_WALL, -8);
 
-		bld->AddLevel(pLev);
-
 		//////////////////////////////
 		// first roof level
 		dl.Empty();
@@ -332,15 +329,13 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		dl.Append(c3);
 		dl.Append(c4);
 		dl.Append(c6);
-		pLev = new vtLevel();
-		pLev->SetFootprint(dl);
-		pLev->m_fStoryHeight = 0.9144f;	// 3 ft
+		pLev = bld->CreateLevel(dl);
 		pLev->m_iStories = 1;
-		pLev->SetWallMaterial(BMAT_PLAIN);
-		pLev->m_Color.Set(90, 75, 75);
+		pLev->SetEdgeMaterial(BMAT_PLAIN);
+		pLev->SetEdgeColor(RGBi(90, 75, 75));
 		pLev->SetRoofType(ROOF_HIP, 14);
+		pLev->m_fStoryHeight = 0.9144f;	// 3 ft
 		pLev->SetEaveLength(1.0f);
-		bld->AddLevel(pLev);
 
 		//////////////////////////////
 		// second roof level
@@ -349,14 +344,12 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		dl.Append(c10);
 		dl.Append(c11);
 		dl.Append(c12);
-		pLev = new vtLevel();
-		pLev->SetFootprint(dl);
-		pLev->m_fStoryHeight = 1.6256f;	// 5 1/3 ft
+		pLev = bld->CreateLevel(dl);
 		pLev->m_iStories = 1;
-		pLev->SetWallMaterial(BMAT_PLAIN);
-		pLev->m_Color.Set(220, 220, 220);
+		pLev->SetEdgeMaterial(BMAT_PLAIN);
+		pLev->SetEdgeColor(RGBi(220, 220, 220));
 		pLev->SetRoofType(ROOF_GABLE, 33);
-		bld->AddLevel(pLev);
+		pLev->m_fStoryHeight = 1.6256f;	// 5 1/3 ft
 
 		/////////////////////////////////////////
 		bld->SetCenterFromPoly();
