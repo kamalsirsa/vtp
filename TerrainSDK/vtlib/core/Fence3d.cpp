@@ -122,12 +122,18 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	unsigned int i, j;
 	unsigned int numfencepts = m_pFencePts.GetSize();
 
-	DLine2 posts;
+	FLine3 posts3d;
 	FLine3 p3;
 
-	DPoint2 diff, dp;
+	FPoint3 diff, fp;
 	FPoint3 PostSize(m_Params.m_fPostWidth, m_Params.m_fPostHeight,
 		m_Params.m_fPostDepth);
+
+	// first, project the posts from earth to world
+	posts3d.SetSize(numfencepts);
+	for (i = 0; i < numfencepts; i++)
+		// true = include culture
+		pHeightField->ConvertEarthToSurfacePoint(m_pFencePts[i], posts3d[i], true);
 
 	if (m_Params.m_PostType != "none")
 	{
@@ -137,52 +143,46 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 		{
 			if (i == numfencepts-1)
 			{
-				posts.Append(m_pFencePts[i]);
+				p3.Append(posts3d[i]);
 				continue;
 			}
 			// get start and end group points for this section
-			DPoint2 epos1 = m_pFencePts[i];
-			DPoint2 epos2 = m_pFencePts[i+1];
+			FPoint3 wpos1 = posts3d[i];
+			FPoint3 wpos2 = posts3d[i+1];
 
-			diff = epos2 - epos1;
-			double distance = diff.Length();
+			// look at world distance (approximate meters, _not_ earth
+			//  coordinates, which might be in e.g. feet or degrees)
+			diff = wpos2 - wpos1;
+			float distance = sqrt(diff.x*diff.x+diff.z*diff.z);
 			unsigned int segments = (unsigned int) (distance / m_Params.m_fPostSpacing);
 			if (segments < 1) segments = 1;
-			DPoint2 diff_per_segment = diff / segments;
+			FPoint3 diff_per_segment = diff / segments;
 
 			for (j = 0; j < segments; j++)
 			{
-				dp = epos1 + (diff_per_segment * j);
-				posts.Append(dp);
-			}
-		}
+				fp = wpos1 + (diff_per_segment * j);
 
-		// convert post positions to world-coordinate ground locations
-		FPoint3 pout;
-		p3.SetSize(posts.GetSize());
-		for (i = 0; i < posts.GetSize(); i++)
-		{
-			pHeightField->ConvertEarthToSurfacePoint(posts[i], pout);
-
-			if (i > 0 && i < posts.GetSize()-1)
-			{
-				// randomly offset by up to 4% of fence spacing, for "realism"
-				pout.x += random_offset(0.04f * m_Params.m_fPostSpacing);
-				pout.z += random_offset(0.04f * m_Params.m_fPostSpacing);
+				if (i > 0 && i < numfencepts-1)
+				{
+					// randomly offset by up to 4% of fence spacing, for "realism"
+					fp.x += random_offset(0.04f * m_Params.m_fPostSpacing);
+					fp.z += random_offset(0.04f * m_Params.m_fPostSpacing);
+				}
+				// false: true elevation, true: include culture
+				pHeightField->FindAltitudeAtPoint(fp, fp.y, false, true);
+				p3.Append(fp);
 			}
-			p3[i] = pout;
 		}
 		// generate the posts
 		vtMaterialDescriptor *desc = FindDescriptor(m_Params.m_PostType);
-		for (i = 0; i < posts.GetSize(); i++)
+		for (i = 0; i < p3.GetSize(); i++)
 			AddFencepost(p3[i], desc);
 	}
 	else
 	{
-		// no posts, just project earth to world
 		p3.SetSize(numfencepts);
 		for (i = 0; i < numfencepts; i++)
-			pHeightField->ConvertEarthToSurfacePoint(m_pFencePts[i], p3[i]);
+			p3[i] = posts3d[i];
 	}
 
 	// if not enough points, nothing connections to create
