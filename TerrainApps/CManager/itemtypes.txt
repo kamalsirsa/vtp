@@ -64,19 +64,21 @@ silo
 solar panels
 storage tank
 streetlight
+stoplight
 tent
 telephone booth
 tombstone
 tower
+water tower
+steel lattice tower
+transformer, power station
 utility pole
 wall
-water tower
 well
 wellhead
 windmill
 windmotor, wind turbine, wind generator
 amphibious vehicle
-air
 airplane
 Boeing 747
 DC-10
@@ -90,6 +92,7 @@ paraglider
 rocket
 land
 bicycle
+bus
 car, automobile
 convertible
 hatchback
