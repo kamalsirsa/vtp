@@ -30,17 +30,15 @@ public:
 	void Offset(const DPoint2 &p);
 
 	void AddElementsFromSHP(const char *filename, vtProjection &proj);
-//	void AddElementsFromSHPPoints(SHPHandle hSHP, int nElem);
-//	void AddElementsFromSHPPolygons(const char *filename,
-//									SHPHandle hSHP, int nElem);
 
 	vtStructure *FindBuilding(DPoint2 &point, double epsilon);
 	bool EditBuildingProperties();
 
 	void DrawBuilding(wxDC* pDC, vtScaledView *pView, vtBuilding *bld);
 
-	// inverts selection values on all roads and nodes.
+	// inverts selection values on all structures.
 	void InvertSelection();
+	void DeselectAll();
 	int DoBoxSelect(const DRECT &rect);
 
 protected:

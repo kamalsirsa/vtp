@@ -357,6 +357,16 @@ void vtStructureLayer::InvertSelection()
 	}
 }
 
+void vtStructureLayer::DeselectAll()
+{
+	int i, size = GetSize();
+	for (i = 0; i < size; i++)
+	{
+		vtStructure *str = GetAt(i);
+		str->Select(false);
+	}
+}
+
 void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 {
 	wxString choices[3];
@@ -367,7 +377,6 @@ void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &pr
 	wxSingleChoiceDialog dialog(NULL, "These are your choices",
 		"Please indicate the type of structures in this SHP file:",
 		3, (const wxString *)choices);
-//	dialog.SetSelection(0);
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 
@@ -395,115 +404,3 @@ int vtStructureLayer::DoBoxSelect(const DRECT &rect)
 }
 
 
-#if 0
-void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
-{
-	//Open the SHP File & Get Info from SHP:
-	SHPHandle hSHP = SHPOpen(filename, "rb");
-	if (hSHP == NULL)
-		return;
-
-	//  Get number of polys (m_iNumPolys) and type of data (nShapeType)
-	int		nElem;
-	int		nShapeType;
-    double	adfMinBound[4], adfMaxBound[4];
-	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
-
-	//  Check Shape Type, Building outlines should be Poly data
-	if (nShapeType == SHPT_POINT)
-		AddElementsFromSHPPoints(hSHP, nElem);
-	else if (nShapeType == SHPT_POLYGON)
-		AddElementsFromSHPPolygons(filename, hSHP, nElem);
-
-	m_proj = proj;	// Set projection
-
-	SHPClose(hSHP);
-}
-
-void vtStructureLayer::AddElementsFromSHPPoints(SHPHandle hSHP, int nElem)
-{
-	// Initialize arrays
-	SetMaxSize(nElem);
-
-	// Read Points from SHP
-	int i;
-	SHPObject *psShape;
-	for (i = 0; i < nElem; i++)
-	{
-		// Get the i-th Point in the SHP file
-		psShape = SHPReadObject(hSHP, i);
-
-		vtBuilding *new_bld = new vtBuilding();
-		new_bld->SetShape(SHAPE_RECTANGLE);
-		new_bld->SetLocation(DPoint2(psShape->padfX[0], psShape->padfY[0]));
-		new_bld->SetStories(1);
-		AddBuilding(new_bld);
-
-		SHPDestroyObject(psShape);
-	}
-}
-
-void vtStructureLayer::AddElementsFromSHPPolygons(const char *filename,
-												 SHPHandle hSHP, int nElem)
-{
-	// Open DBF File & Get DBF Info:
-	DBFHandle db = DBFOpen(filename, "rb");
-	if (db == NULL)
-		return;
-
-	// Check for field with number of stories
-	int stories_field = FindDBField(db, "Stories");
-
-	// Initialize arrays
-	SetMaxSize(nElem);
-
-	// Read Polys from SHP
-	int i;
-	SHPObject *psShape;
-	for (i = 0; i < nElem; i++)
-	{
-		// Get the i-th Poly in the SHP file
-		psShape = SHPReadObject(hSHP, i);
-
-		// Store each SHP Poly as Building Footprint
-
-		// The SHP appears to repeat the first point as the last, so ignore
-		// the last point.
-		int num_points = psShape->nVertices-1;
-
-		vtBuilding *new_bld = new vtBuilding();
-		new_bld->SetShape(SHAPE_POLY);
-
-		DLine2 foot;
-		foot.SetSize(num_points);
-
-		int j, k;
-		for (j = 0; j < num_points; j++)
-		{
-			// The SHP polygons appear to be clockwise - but the vtBuilding
-			//  convention is counter-clockwise, so reverse the order.
-			k = num_points-1-j;
-
-			foot.SetAt(j, DPoint2(psShape->padfX[k], psShape->padfY[k]));
-		}
-		new_bld->SetFootprint(foot);
-		new_bld->SetCenterFromPoly();
-
-		int num_stories = 1;
-		if (stories_field != -1)
-		{
-			// attempt to get number of stories from the DBF
-			num_stories = DBFReadIntegerAttribute(db, i, stories_field);
-			if (num_stories < 1)
-				num_stories = 1;
-		}
-		new_bld->SetStories(num_stories);
-
-		AddBuilding(new_bld);
-
-		SHPDestroyObject(psShape);
-	}
-	DBFClose(db);
-}
-
-#endif
