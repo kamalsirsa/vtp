@@ -113,8 +113,17 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	wxString2 prepend_path;
 	prepend_path = GetTempFolderName(fname_in.mb_str());
 
+	bool bGZip = false;
+	bool bZip = false;
+
 	if (ext.CmpNoCase(_T("gz")) == 0 || ext.CmpNoCase(_T("tgz")) == 0 ||
 		ext.CmpNoCase(_T("tar")) == 0)
+		bGZip = true;
+
+	if (ext.CmpNoCase(_T("zip")) == 0)
+		bZip = true;
+
+	if (bGZip || bZip)
 	{
 		// try to uncompress
 		int result;
@@ -128,13 +137,15 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 
 		vtString str1 = fname_in.mb_str();
 		vtString str2 = prepend_path.mb_str();
-		result = ExpandTGZ(str1, str2);
+
+		if (bGZip)
+			result = ExpandTGZ(str1, str2);
+		if (bZip)
+			result = ExpandZip(str1, str2);
+
 		if (result < 1)
 		{
 			DisplayAndLog("Couldn't expand archive.");
-			prepend_path = GetTempFolderName(fname_in.mb_str());
-			vtDestroyDir(prepend_path.mb_str());
-			return;
 		}
 		else if (result == 1)
 		{
@@ -149,6 +160,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 				fname += tmp;
 				break;
 			}
+			ImportDataFromFile(ltype, fname, bRefresh);
 		}
 		else if (result > 1)
 		{
@@ -169,7 +181,8 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 			{
 				std::string name1 = *it;
 				wxString2 fname2 = name1.c_str();
-				if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
+				if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0 ||
+				    fname2.Right(4).CmpNoCase(_T(".dem")) == 0)
 				{
 					fname = prepend_path;
 					fname += fname2;
@@ -177,23 +190,20 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 					break;
 				}
 			}
-			if (!found)
-			{
+			if (found)
+				ImportDataFromFile(ltype, fname, bRefresh);
+			else
 				DisplayAndLog("Don't know what to do with contents of archive.");
-				return;
-			}
 		}
 
-		bExpandedArchive = true;
-	}
-
-	ImportDataFromFile(ltype, fname, bRefresh);
-
-	if (bExpandedArchive)
-	{
 		// clean up after ourselves
 		prepend_path = GetTempFolderName(fname_in.mb_str());
 		vtDestroyDir(prepend_path.mb_str());
+	}
+	else
+	{
+		// simple case
+		ImportDataFromFile(ltype, fname, bRefresh);
 	}
 }
 
