@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Where to Put Your Data</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<h2><i><font face="Verdana">Enviro</font></i></h2>
+
+<h3>Where to Put Your Data</h3>
+
+  <blockquote>
+    <p>Put your data in the following directories: </p>
+      <table border="1" cellspacing="0" cellpadding="4" bgcolor="#C2C7D6" style="border-collapse: collapse" bordercolor="#111111">
+        <tr>
+          <td width="50%"><b>Data</b></td>
+          <td width="50%"><b>Location</b></td>
+        </tr>
+        <tr>
+          <td width="50%">elevation data (BT and PRJ files)</td>
+          <td width="50%"><code>Data/Elevation</code></td>
+        </tr>
+        <tr>
+          <td width="50%">geospecific images (BMP or JPG files)</td>
+          <td width="50%"><code>Data/GeoSpecific</code></td>
+        </tr>
+        <tr>
+          <td width="50%">road data (RMF files)</td>
+          <td width="50%"><code>Data/RoadData</code></td>
+        </tr>
+        <tr>
+          <td width="50%">built structure data (VTST files)</td>
+          <td width="50%"><code>Data/BuildingData</code></td>
+        </tr>
+      </table>
+    <p>Don't forget that in order to use the continuous LOD rendering,
+      elevation files must be square-power-of-2-plus-1 in size.&nbsp; For
+      example: </p>
+      <table border="1" cellspacing="0" cellpadding="4" bgcolor="#C2C7D6" style="border-collapse: collapse" bordercolor="#111111">
+        <tr>
+          <td>513 x 513</td>
+        </tr>
+        <tr>
+          <td>1025 x 1025</td>
+        </tr>
+        <tr>
+          <td>2049 x 2049</td>
+        </tr>
+        <tr>
+          <td>4097 x 4097</td>
+        </tr>
+        <tr>
+          <td>8193 x 8193</td>
+        </tr>
+      </table>
+    <p>In the Startup Dialog, use the &quot;Generic Terrain&quot; setting,
+      press &quot;Edit Properties&quot;, and select your data in
+      the Parameters dialog</p>
+    <p>For textures, see the page on </p>
+    <h4>Creating Your Own Terrain Settings</h4>
+    <p>If you want to make your terrain show up as a new terrain in the Enviro 
+    startup dialog, then you can create your own .ini files in the Terrain 
+    folder on the data path.&nbsp; One easy way to do this is to copy one of the 
+    existing .ini files (for example, Generic.ini) and edit it, either as a text 
+    file or with Enviro, to contain the settings you want.&nbsp; The first line 
+    in the file (&quot;Name&quot;) is the name that will appear in Enviro.</p>
+</blockquote>
+
+</body>
+
+</html>

@@ -1,0 +1,34 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Notes for Developers</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+  <h2><i><font face="Verdana">Enviro</font></i></h2>
+
+  <h3>Notes for Developers</h3>
+
+  <blockquote>
+    <p>If you want to fully customize the terrain, such as adding your own
+      custom objects and behaviors to the scene:</p>
+      <ol>
+        <li>create a sub-class of <code>vtTerrain</code>, using one of the
+          existing subclasses (like <code>TransitTerrain</code>) as an example</li>
+        <li>in <code>Enviro.cpp,</code> add a line to the function <code>LoadTerrainDescriptions()</code>,
+          so that your .ini file will be constructed with your terrain class</li>
+        <li>Override the <code>CreateCustomCulture() </code>method and put in 
+        any terrain-specific implementation that you want.&nbsp; You can create 
+        geometry, load and place models, attach engines; anything is possible!</li>
+      </ol>
+    <p>&nbsp;</p>
+</blockquote>
+
+</body>
+
+</html>

@@ -1,0 +1,34 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Data in a Different Location</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+  <h2><i><font face="Verdana">Enviro</font></i></h2>
+
+  <h3>The Data Path</h3>
+
+<ul>
+  <li>If you want to put your Data directory in another location, edit
+    your<code> Enviro.ini </code>file and change the
+    first line to contain the path to the data.&nbsp; The path can be relative
+    or absolute, and should leave on a trailing slash.&nbsp; For example, the
+    default path is:<br>
+    <code>&nbsp;&nbsp;&nbsp; DataPath ../Data/</code><br>
+    You could change it to paths such as these, depending on your platform:<br>
+    <code>&nbsp;&nbsp;&nbsp; DataPath ../../Data/<br>
+    &nbsp;&nbsp;&nbsp; DataPath C:\MyData\<br>
+    &nbsp;&nbsp;&nbsp; DataPath /home/me/mydata/<br>
+    </code></li>
+  <li>If you have data in multiple places, you can simply put more than one
+    &quot;<code>DataPath</code>&quot; line into the <code>Enviro.ini</code>
+    file, and all the data on all the paths will be available to Enviro.</li>
+</ul>
+  
+</body>
+
+</html>
