@@ -60,7 +60,7 @@ double getdegree(const char *buf)
 //	  a 32-bit integer, coded as 10 ASCII characters
 //	  a string
 // Contains 6 requried subfiles:
-// 
+//
 // Frame of reference given by 6 control point in lat-lon fomat,
 //  all other coordinates are 16-bit integers
 

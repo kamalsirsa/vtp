@@ -79,14 +79,14 @@ PRIVATE BOOL PromptUsernameAndPassword (HTRequest * request, HTAlertOpcode op,
 }
 
 PRIVATE int term_handler (HTRequest * request, HTResponse * response,
-				   void * param, int status) 
+				   void * param, int status)
 {
 	/* Check for status */
 	HTPrint("Load resulted in status %d\n", status);
 	
 	/* we're not handling other requests */
 	HTEventList_stopLoop ();
- 
+
 	/* stop here */
 	return HT_ERROR;
 }
@@ -168,7 +168,7 @@ ReqContext::~ReqContext()
 char *ReqContext::GetURL(const char *url)
 {
 	HTChunk * chunk = NULL;
- 
+
 	char *absolute_url = HTParse(url, cwd, PARSE_ALL);
 	anchor = HTAnchor_findAddress(absolute_url);
 	chunk = HTLoadAnchorToChunk(anchor, request);

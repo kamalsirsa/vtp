@@ -28,14 +28,14 @@ const ENCODING *NS(encodings)[] = {
 
 static
 int NS(initScanProlog)(const ENCODING *enc, const char *ptr, const char *end,
-		       const char **nextTokPtr)
+			   const char **nextTokPtr)
 {
   return initScan(NS(encodings), (const INIT_ENCODING *)enc, XML_PROLOG_STATE, ptr, end, nextTokPtr);
 }
 
 static
 int NS(initScanContent)(const ENCODING *enc, const char *ptr, const char *end,
-		       const char **nextTokPtr)
+			   const char **nextTokPtr)
 {
   return initScan(NS(encodings), (const INIT_ENCODING *)enc, XML_CONTENT_STATE, ptr, end, nextTokPtr);
 }
@@ -44,7 +44,7 @@ int NS(XmlInitEncoding)(INIT_ENCODING *p, const ENCODING **encPtr, const char *n
 {
   int i = getEncodingIndex(name);
   if (i == UNKNOWN_ENC)
-    return 0;
+	return 0;
   INIT_ENC_INDEX(p) = (char)i;
   p->initEnc.scanners[XML_PROLOG_STATE] = NS(initScanProlog);
   p->initEnc.scanners[XML_CONTENT_STATE] = NS(initScanContent);
@@ -63,13 +63,13 @@ const ENCODING *NS(findEncoding)(const ENCODING *enc, const char *ptr, const cha
   int i;
   XmlUtf8Convert(enc, &ptr, end, &p, p + ENCODING_MAX - 1);
   if (ptr != end)
-    return 0;
+	return 0;
   *p = 0;
   if (streqci(buf, "UTF-16") && enc->minBytesPerChar == 2)
-    return enc;
+	return enc;
   i = getEncodingIndex(buf);
   if (i == UNKNOWN_ENC)
-    return 0;
+	return 0;
   return NS(encodings)[i];
 }
 

@@ -598,7 +598,7 @@ int PREFIX(scanAtts)(const ENCODING *enc, const char *ptr, const char *end,
 	hadColon = 0;
 #endif
 	for (;;) {
-	  
+
 	  ptr += MINBPC(enc);
 	  if (ptr == end)
 		return XML_TOK_PARTIAL;
@@ -1382,7 +1382,7 @@ int PREFIX(isPublicId)(const ENCODING *enc, const char *ptr, const char *end,
 }
 
 /* This must only be called for a well-formed start-tag or empty element tag.
-Returns the number of attributes.  Pointers to the first attsMax attributes 
+Returns the number of attributes.  Pointers to the first attsMax attributes
 are stored in atts. */
 
 static

@@ -339,7 +339,7 @@ void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum)
 /**
  * Get the projection as a text description.  If the projection is Geographic
  * or UTM, then a "simple" type string will be returned.  For all other
- * projection types, 
+ * projection types, a WKT string is returned.
  *
  * \param type A string buffer to contain the type of description.
  * This buffer should be at least 7 characters long to contain either the
@@ -435,7 +435,7 @@ bool vtProjection::SetTextDescription(const char *type, const char *value)
 
 /**
  * Read the projection from a .prj file.
- * 
+ *
  * If the filename does not have the file extension ".prj", this
  * method will look for a file which has the same name with a
  * ".prj" extension.
@@ -477,7 +477,7 @@ bool vtProjection::ReadProjFile(const char *filename)
 
 /**
  * Write the projection to a .prj file.
- * 
+ *
  * \return true if successful.
  */
 bool vtProjection::WriteProjFile(const char *filename)

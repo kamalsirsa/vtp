@@ -23,7 +23,7 @@
 #define STORE_FRUSTUM		0
 
 // Store the distance to each triangle during the culling pass, so that it
-// can used later for such things as doing an alpha-fade of a detail texture. 
+// can used later for such things as doing an alpha-fade of a detail texture.
 #define STORE_DISTANCE		1
 
 // Use quick (macro, no assert) triangle stack, may give performance increase

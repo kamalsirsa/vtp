@@ -78,7 +78,7 @@ public:
 	void RecallFrom(int num);
 
 	// Store information necessary to convert from global earth CS
-	// to the 
+	// to the local CS
 	vtLocalConversion	m_conv;
 	vtProjection		m_proj;
 	vtTransformBase		*m_pTransform;

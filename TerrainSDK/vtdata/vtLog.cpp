@@ -30,17 +30,17 @@ void vtLog::_Log(const char *str)
 		fflush(m_log);
 	}
 #ifdef _MSC_VER
-    OutputDebugString(str);
+	OutputDebugString(str);
 #endif
 }
 
 void vtLog::Printf(const char *pFormat, ...)
 {
-    va_list va;
-    va_start(va, pFormat);
+	va_list va;
+	va_start(va, pFormat);
 
-    char ach[1024];
-    vsprintf(ach, pFormat, va);
+	char ach[1024];
+	vsprintf(ach, pFormat, va);
 
 	_Log(ach);
 }

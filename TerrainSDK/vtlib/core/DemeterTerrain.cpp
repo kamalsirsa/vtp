@@ -69,32 +69,32 @@ bool DemeterTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 			m_pData[offset(i,j)] = pGrid->GetFValue(i, j);
 	}
 
-    try
-    {
+	try
+	{
 		// Chosen based on the expected number of triangles that will be
 		// visible on-screen at any one time (the terrain mesh will typically
 		// have far more triangles than are seen at one time, especially with
 		// dynamic tessellation)
-        const int MAX_NUM_VISIBLE_TRIANGLES = 50000;
-        m_pTerrain = new Terrain();
-        const int width = m_iColumns;
-        const int height = m_iRows;
+		const int MAX_NUM_VISIBLE_TRIANGLES = 50000;
+		m_pTerrain = new Terrain();
+		const int width = m_iColumns;
+		const int height = m_iRows;
 
 		m_pTerrain->SetAllElevations(m_pData,width,height,20.0f);
 
 		m_pDrawable = new DemeterDrawable();
 		m_pDrawable->SetTerrain(m_pTerrain);
 	}
-    catch (DemeterException* pEx)
-    {
-        cout << pEx->GetErrorMessage() << endl;
-        exit(0);
-    }
-    catch (...)
-    {
-        // "VIEWER: Unexpected exception while creating terrain"
-        return false;
-    }
+	catch (DemeterException* pEx)
+	{
+		cout << pEx->GetErrorMessage() << endl;
+		exit(0);
+	}
+	catch (...)
+	{
+		// "VIEWER: Unexpected exception while creating terrain"
+		return false;
+	}
 
 	m_fZScale = fZScale;
 	m_iDrawnTriangles = -1;
@@ -136,7 +136,7 @@ void DemeterTerrain::DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size,
 
 void DemeterTerrain::DoRender()
 {
-    float threshold = 6.0f; // The "detail level" of the terrain - higher
+	float threshold = 6.0f; // The "detail level" of the terrain - higher
 	// values will render faster but yield less visual quality
 
 	m_pTerrain->SetMaximumVisibleBlockSize(64);

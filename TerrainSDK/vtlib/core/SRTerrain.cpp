@@ -91,7 +91,7 @@ float getelevation_vtp2(int i, int j, int size)
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-bool SRTerrain::Init(vtElevationGrid *pGrid, float fZScale, 
+bool SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 					 float fOceanDepth, int &iError)
 {
 	// Initializes necessary field of the parent class

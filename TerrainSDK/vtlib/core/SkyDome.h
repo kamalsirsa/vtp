@@ -152,7 +152,7 @@ private:
 
 
 /**
- * A SkyDome is comprised of a vtDayDome and a vtStarDome.  It contains and 
+ * A SkyDome is comprised of a vtDayDome and a vtStarDome.  It contains and
  * controls the two domes appropriately.  It also supplies a real Light (vtLight)
  * which simulates the actual color, direction and intensity of sunlight.
  */

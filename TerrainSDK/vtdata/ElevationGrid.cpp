@@ -660,7 +660,7 @@ float vtElevationGrid::GetFilteredValue2(double x, double y) const
 {
 	float fData;
 
-	// simple case, within the 
+	// simple case, within the
 	if (ContainsEarthPoint(x, y))
 	{
 		fData = GetFilteredValue(x, y);
@@ -803,7 +803,7 @@ void vtElevationGrid::_Copy(const vtElevationGrid &Other)
 
 	strncpy(m_szOriginalDEMName, Other.m_szOriginalDEMName, sizeof(m_szOriginalDEMName));
 
-	if( m_bFloatMode ) 
+	if( m_bFloatMode )
 	{
 		m_pData = NULL;
 
@@ -817,8 +817,8 @@ void vtElevationGrid::_Copy(const vtElevationGrid &Other)
 		}
 		else
 			m_pFData = NULL;
-	} 
-	else 
+	}
+	else
 	{
 		m_pFData = NULL;
 

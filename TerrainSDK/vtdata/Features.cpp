@@ -70,7 +70,7 @@ bool vtFeatures::SaveToSHP(const char *filename)
 		{
 			// Save to SHP
 			obj = SHPCreateSimpleObject(m_nSHPType, 1,
-				&m_Point2[i].x, &m_Point2[i].y, NULL); 
+				&m_Point2[i].x, &m_Point2[i].y, NULL);
 			SHPWriteObject(hSHP, -1, obj);
 			SHPDestroyObject(obj);
 		}
@@ -82,7 +82,7 @@ bool vtFeatures::SaveToSHP(const char *filename)
 		{
 			// Save to SHP
 			obj = SHPCreateSimpleObject(m_nSHPType, 1,
-				&m_Point3[i].x, &m_Point3[i].y, &m_Point3[i].z); 
+				&m_Point3[i].x, &m_Point3[i].y, &m_Point3[i].z);
 			SHPWriteObject(hSHP, -1, obj);
 			SHPDestroyObject(obj);
 		}

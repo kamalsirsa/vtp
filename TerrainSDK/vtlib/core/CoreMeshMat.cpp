@@ -863,7 +863,7 @@ int vtMaterialArrayBase::AddTextureMaterial(vtImage *pImage,
 /**
  * Create and add a simple textured material.  This method takes a a filename
  * of the texture image to use.
- * 
+ *
  * See AddTextureMaterial() for a description of the parameters, which
  * lets you control many other aspects of the material.
  *

@@ -26,7 +26,7 @@ public:
 	vtTransform*	m_pTower;	// The station may have a tower placed on it
 	vtString m_sStructName;
 
-	// The points at which the wires attach, 
+	// The points at which the wires attach
 	FPoint3 m_fpWireAtt1[7];
 	FPoint3 m_fpWireAtt2[7];
 
@@ -73,7 +73,7 @@ public:
 	vtGeom *GetGeom() { return m_pWireGeom; }
 
 	// Station set readers.
-	vtUtilNode *GetAt(int iter) 
+	vtUtilNode *GetAt(int iter)
 	{
 		return (iter < m_Nodes.GetSize() ? m_Nodes[iter] : m_Nodes[0]);
 	}
@@ -103,7 +103,7 @@ protected:
 	bool m_bDirty;
 };
 
-/** 
+/**
  * vtRouteMap is a container for a set of vtRoute objects.
  */
 class vtRouteMap : public Array<vtRoute *>

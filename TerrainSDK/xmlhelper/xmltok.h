@@ -41,11 +41,11 @@ extern "C" {
 
 /* The following token may be returned by XmlContentTok */
 #define XML_TOK_TRAILING_RSQB -5 /* ] or ]] at the end of the scan; might be start of
-                                    illegal ]]> sequence */
+									illegal ]]> sequence */
 /* The following tokens may be returned by both XmlPrologTok and XmlContentTok */
-#define XML_TOK_NONE -4    /* The string to be scanned is empty */
+#define XML_TOK_NONE -4	/* The string to be scanned is empty */
 #define XML_TOK_TRAILING_CR -3 /* A CR at the end of the scan;
-                                  might be part of CRLF sequence */ 
+								  might be part of CRLF sequence */
 #define XML_TOK_PARTIAL_CHAR -2 /* only part of a multibyte sequence */
 #define XML_TOK_PARTIAL -1 /* only part of a token */
 #define XML_TOK_INVALID 0
@@ -62,13 +62,13 @@ extern "C" {
 #define XML_TOK_DATA_NEWLINE 7
 #define XML_TOK_CDATA_SECT_OPEN 8
 #define XML_TOK_ENTITY_REF 9
-#define XML_TOK_CHAR_REF 10     /* numeric character reference */
+#define XML_TOK_CHAR_REF 10	 /* numeric character reference */
 
 /* The following tokens may be returned by both XmlPrologTok and XmlContentTok */
-#define XML_TOK_PI 11      /* processing instruction */
+#define XML_TOK_PI 11	  /* processing instruction */
 #define XML_TOK_XML_DECL 12 /* XML decl or text decl */
 #define XML_TOK_COMMENT 13
-#define XML_TOK_BOM 14     /* Byte order mark */
+#define XML_TOK_BOM 14	 /* Byte order mark */
 
 /* The following tokens are returned only by XmlPrologTok */
 #define XML_TOK_PROLOG_S 15
@@ -140,21 +140,21 @@ typedef struct encoding ENCODING;
 
 struct encoding {
   int (*scanners[XML_N_STATES])(const ENCODING *,
-			        const char *,
-			        const char *,
-			        const char **);
+					const char *,
+					const char *,
+					const char **);
   int (*literalScanners[XML_N_LITERAL_TYPES])(const ENCODING *,
-					      const char *,
-					      const char *,
-					      const char **);
+						  const char *,
+						  const char *,
+						  const char **);
   int (*sameName)(const ENCODING *,
-	          const char *, const char *);
+			  const char *, const char *);
   int (*nameMatchesAscii)(const ENCODING *,
 			  const char *, const char *);
   int (*nameLength)(const ENCODING *, const char *);
   const char *(*skipS)(const ENCODING *, const char *);
   int (*getAtts)(const ENCODING *enc, const char *ptr,
-	         int attsMax, ATTRIBUTE *atts);
+			 int attsMax, ATTRIBUTE *atts);
   int (*charRefNumber)(const ENCODING *enc, const char *ptr);
   int (*predefinedEntityName)(const ENCODING *, const char *, const char *);
   void (*updatePosition)(const ENCODING *,
@@ -162,17 +162,17 @@ struct encoding {
 			 const char *end,
 			 POSITION *);
   int (*isPublicId)(const ENCODING *enc, const char *ptr, const char *end,
-		    const char **badPtr);
+			const char **badPtr);
   void (*utf8Convert)(const ENCODING *enc,
-		      const char **fromP,
-		      const char *fromLim,
-		      char **toP,
-		      const char *toLim);
+			  const char **fromP,
+			  const char *fromLim,
+			  char **toP,
+			  const char *toLim);
   void (*utf16Convert)(const ENCODING *enc,
-		       const char **fromP,
-		       const char *fromLim,
-		       unsigned short **toP,
-		       const unsigned short *toLim);
+			   const char **fromP,
+			   const char *fromLim,
+			   unsigned short **toP,
+			   const unsigned short *toLim);
   int minBytesPerChar;
   char isUtf8;
   char isUtf16;
@@ -212,7 +212,7 @@ literals, comments and processing instructions.
    XmlTok(enc, XML_CDATA_SECTION_STATE, ptr, end, nextTokPtr)
 
 /* This is used for performing a 2nd-level tokenization on
-the content of a literal that has already been returned by XmlTok. */ 
+the content of a literal that has already been returned by XmlTok. */
 
 #define XmlLiteralTok(enc, literalType, ptr, end, nextTokPtr) \
   (((enc)->literalScanners[literalType])(enc, ptr, end, nextTokPtr))
@@ -261,14 +261,14 @@ typedef struct {
 } INIT_ENCODING;
 
 int XMLTOKAPI XmlParseXmlDecl(int isGeneralTextEntity,
-			      const ENCODING *enc,
-			      const char *ptr,
-	  		      const char *end,
-			      const char **badPtr,
-			      const char **versionPtr,
-			      const char **encodingNamePtr,
-			      const ENCODING **namedEncodingPtr,
-			      int *standalonePtr);
+				  const ENCODING *enc,
+				  const char *ptr,
+	  			  const char *end,
+				  const char **badPtr,
+				  const char **versionPtr,
+				  const char **encodingNamePtr,
+				  const ENCODING **namedEncodingPtr,
+				  int *standalonePtr);
 
 int XMLTOKAPI XmlInitEncoding(INIT_ENCODING *, const ENCODING **, const char *name);
 const ENCODING XMLTOKAPI *XmlGetUtf8InternalEncoding();
@@ -279,27 +279,27 @@ int XMLTOKAPI XmlUtf16Encode(int charNumber, unsigned short *buf);
 int XMLTOKAPI XmlSizeOfUnknownEncoding();
 ENCODING XMLTOKAPI *
 XmlInitUnknownEncoding(void *mem,
-		       int *table,
-		       int (*conv)(void *userData, const char *p),
-		       void *userData);
+			   int *table,
+			   int (*conv)(void *userData, const char *p),
+			   void *userData);
 
 int XMLTOKAPI XmlParseXmlDeclNS(int isGeneralTextEntity,
-			        const ENCODING *enc,
-			        const char *ptr,
-	  		        const char *end,
-			        const char **badPtr,
-			        const char **versionPtr,
-			        const char **encodingNamePtr,
-			        const ENCODING **namedEncodingPtr,
-			        int *standalonePtr);
+					const ENCODING *enc,
+					const char *ptr,
+	  				const char *end,
+					const char **badPtr,
+					const char **versionPtr,
+					const char **encodingNamePtr,
+					const ENCODING **namedEncodingPtr,
+					int *standalonePtr);
 int XMLTOKAPI XmlInitEncodingNS(INIT_ENCODING *, const ENCODING **, const char *name);
 const ENCODING XMLTOKAPI *XmlGetUtf8InternalEncodingNS();
 const ENCODING XMLTOKAPI *XmlGetUtf16InternalEncodingNS();
 ENCODING XMLTOKAPI *
 XmlInitUnknownEncodingNS(void *mem,
-		         int *table,
-		         int (*conv)(void *userData, const char *p),
-		         void *userData);
+				 int *table,
+				 int (*conv)(void *userData, const char *p),
+				 void *userData);
 #ifdef __cplusplus
 }
 #endif

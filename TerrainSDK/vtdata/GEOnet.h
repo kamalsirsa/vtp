@@ -40,7 +40,7 @@ public:
  * each populated place.
  *
  * The GCF (75 MB) can be then loaded and used for rough geocoding of
- * international addresses 
+ * international addresses
  */
 class Countries
 {

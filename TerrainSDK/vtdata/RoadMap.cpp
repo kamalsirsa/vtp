@@ -1077,7 +1077,7 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	FWrite(&numLinks, intSize);  // number of roads
 	FWrite("Nodes:",7);	
 	//write nodes
-	while (curNode) 
+	while (curNode)
 	{
 		FWrite(&(curNode->m_id), intSize);		// id
 		FWrite(&curNode->m_p.x, doubleSize);		// coordinate

@@ -87,7 +87,7 @@ bool vtCreateDir(const char *dirname)
 	char *buffer = strdup(dirname);
 	char *p;
 	int  len = strlen(buffer);
-  
+
 	if (len <= 0) {
 		free(buffer);
 		return false;

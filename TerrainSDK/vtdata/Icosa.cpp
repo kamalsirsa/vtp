@@ -148,7 +148,7 @@ void DymaxIcosa::FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw)
 	// V0 = -(Pn * R0 + D)
 	double V0 = -m_face[tri].d;
 
-	// t = V0 / Vd 
+	// t = V0 / Vd
 	double t = V0 / Vd;
 
 	// intersection point Pi = [Xi Yi Zi] = [X0 + Xd * t, Y0 + Yd * t, Z0 + Zd * t]
@@ -184,7 +184,7 @@ void DymaxIcosa::GeoToFaceUV(double lon, double lat, DPoint3 &p_out)
 		(m_face[tri].vec_b * uvw.y);
 }
 
-/** 
+/**
  * Given information about a point in the referenced frame of an icosahedral
  * face (tri, uvw), find the corresponding surface location in geographic
  * coordinate (lon, lat)
