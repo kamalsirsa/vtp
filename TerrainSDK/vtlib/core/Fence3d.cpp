@@ -134,25 +134,21 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 	// convert post positions to world-coordinate ground locations
 	nposts = posts.GetSize();
 
+	FPoint3 pout;
 	FLine3 p3;
 	p3.SetSize(nposts);
 	for (i = 0; i < nposts; i++)
 	{
-		float x, z;
 		dp = posts[i];
-		g_Conv.ConvertFromEarth(dp, x, z);
+		pHeightField->ConvertEarthToSurfacePoint(dp.x, dp.y, pout);
 
 		if (i > 0 && i < nposts-1)
 		{
 			// randomly offset by up to 4% of fence spacing, for "realism"
-			x += random_offset(0.04f * fCurrentSpacing);
-			z += random_offset(0.04f * fCurrentSpacing);
+			pout.x += random_offset(0.04f * fCurrentSpacing);
+			pout.z += random_offset(0.04f * fCurrentSpacing);
 		}
-
-		// plant the fencepost on the terrain
-		p3[i].x = x;
-		p3[i].z = z;
-		pHeightField->FindAltitudeAtPoint(p3[i], p3[i].y);
+		p3[i] = pout;
 	}
 
 	if (m_FenceType == FT_WIRE)
