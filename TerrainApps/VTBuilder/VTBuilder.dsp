@@ -56,7 +56,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 gdi32.lib wxdll.lib netcdfs.lib vtdata.lib ProjectionLib.lib gctpc.lib Shapelib.lib io.lib container.lib builder.lib ws2_32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /libpath:"\TerrainSDK\vtdata\Release" /libpath:"\wx2\lib" /libpath:"\TerrainSDK\NetCDF" /libpath:"\TerrainSDK\ProjectionLib\Release" /libpath:"\TerrainSDK\gctpc\Release" /libpath:"\TerrainSDK\shapelib\Release" /libpath:"\TerrainSDK\sdtsxx\builder\Release" /libpath:"\TerrainSDK\sdtsxx\container\Release" /libpath:"\TerrainSDK\sdtsxx\io\Release"
-# ADD LINK32 wxmsw240.lib gdal_i.lib user32.lib gdi32.lib ws2_32.lib netcdf.lib libpng.lib zlib.lib jpeg.lib ZipArchive.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrtd.lib"
+# ADD LINK32 wxmsw24.lib gdal_i.lib user32.lib gdi32.lib ws2_32.lib netcdf.lib libpng.lib zlib.lib jpeg.lib ZipArchive.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrtd.lib"
 # SUBTRACT LINK32 /debug
 
 !ELSEIF  "$(CFG)" == "VTBuilder - Win32 Debug"
@@ -84,7 +84,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wx22_1d.lib netcdfs.lib vtdatad.lib ProjectionLib.lib gctpc.lib gdi32.lib Shapelib.lib io.lib container.lib builder.lib ws2_32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcmt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcpd.lib" /pdbtype:sept /libpath:"\TerrainSDK\vtdata\Debug" /libpath:"\APIs\wx2\lib" /libpath:"\TerrainSDK\NetCDF" /libpath:"\TerrainSDK\ProjectionLib\Debug" /libpath:"\TerrainSDK\gctpc\Debug" /libpath:"\TerrainSDK\shapelib\Debug" /libpath:"\TerrainSDK\sdtsxx\builder\Debug" /libpath:"\TerrainSDK\sdtsxx\container\Debug" /libpath:"\TerrainSDK\sdtsxx\io\Debug"
-# ADD LINK32 wxmsw240d.lib gdal_id.lib user32.lib gdi32.lib ws2_32.lib netcdf.lib libpng.lib jpeg.lib ZipArchive.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"nafxcwd.lib" /pdbtype:sept
+# ADD LINK32 wxmsw24d.lib gdal_id.lib user32.lib gdi32.lib ws2_32.lib netcdf.lib libpng.lib jpeg.lib ZipArchive.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"nafxcwd.lib" /pdbtype:sept
 
 !ELSEIF  "$(CFG)" == "VTBuilder - Win32 Debug Unicode"
 
@@ -111,7 +111,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxmsw240d.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
-# ADD LINK32 wxmsw240ud.lib gdal_id.lib user32.lib gdi32.lib ws2_32.lib netcdf.lib libpng.lib zlib.lib jpeg.lib ZipArchive_u.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /out:"Debug_Unicode/VTBuilder_u.exe" /pdbtype:sept
+# ADD LINK32 wxmsw24ud.lib gdal_id.lib user32.lib gdi32.lib ws2_32.lib netcdf.lib libpng.lib zlib.lib jpeg.lib ZipArchive_u.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /out:"Debug_Unicode/VTBuilder_u.exe" /pdbtype:sept
 
 !ELSEIF  "$(CFG)" == "VTBuilder - Win32 Release Unicode"
 
@@ -139,7 +139,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 wxmsw240.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
 # SUBTRACT BASE LINK32 /debug
-# ADD LINK32 wxmsw240u.lib gdal_i.lib user32.lib gdi32.lib ws2_32.lib netcdf.lib libpng.lib zlib.lib jpeg.lib ZipArchive_u.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /out:"Release_Unicode/VTBuilder_u.exe"
+# ADD LINK32 wxmsw24u.lib gdal_i.lib user32.lib gdi32.lib ws2_32.lib netcdf.lib libpng.lib zlib.lib jpeg.lib ZipArchive_u.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /out:"Release_Unicode/VTBuilder_u.exe"
 # SUBTRACT LINK32 /debug
 
 !ENDIF 
