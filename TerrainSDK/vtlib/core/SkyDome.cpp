@@ -400,11 +400,6 @@ void vtDayDome::Destroy()
 {
 	if (SphVertices) delete[] SphVertices;
 	delete m_pSunImage;
-	if (m_pMats)
-	{
-		delete m_pMats;
-		m_pMats = NULL;
-	}
 	vtTransform::Destroy();
 }
 
@@ -772,11 +767,6 @@ void vtStarDome::Destroy()
 	if (Starfield)
 		delete[] Starfield;
 	delete m_pMoonImage;
-	if (m_pMats)
-	{
-		delete m_pMats;
-		m_pMats = NULL;
-	}
 	vtTransform::Destroy();
 }
 
