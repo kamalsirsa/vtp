@@ -28,7 +28,9 @@ public:
 
 	void GetCurrentTime();
 	void SetSpeed(float factor);
-	void SetTime(int hr, int min, int sec);
+	float GetSpeed() { return m_fSpeed; }
+	void SetLocalTime(int hr, int min, int sec);
+	void SetGMT(int hr, int min, int sec);
 //	void SetTime(time_t time);
 	void GetTime(int &hr, int &min, int &sec);
 	time_t GetTime();
