@@ -1,9 +1,9 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:		RenderDlg.cpp
-// Author:	  XX
-// Created:	 XX/XX/XX
-// Copyright:   XX
-/////////////////////////////////////////////////////////////////////////////
+//
+// Name: RenderDlg.cpp
+//
+// Copyright (c) 2004 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifdef __GNUG__
 	#pragma implementation "RenderDlg.cpp"
@@ -33,6 +33,8 @@
 BEGIN_EVENT_TABLE(RenderDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, RenderDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, RenderDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_GEOTIFF, RenderDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_JPEG, RenderDlg::OnRadio )
 	EVT_BUTTON( ID_DOTDOTDOT, RenderDlg::OnDotdotdot )
 	EVT_CHECKBOX( ID_CONSTRAIN, RenderDlg::OnConstrain )
 	EVT_CHECKBOX( ID_TILING, RenderDlg::OnConstrain )

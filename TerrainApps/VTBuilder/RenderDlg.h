@@ -1,9 +1,9 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:		RenderDlg.h
-// Author:	  XX
-// Created:	 XX/XX/XX
-// Copyright:   XX
-/////////////////////////////////////////////////////////////////////////////
+//
+// Name: RenderDlg.h
+//
+// Copyright (c) 2004 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef __RenderDlg_H__
 #define __RenderDlg_H__
