@@ -219,3 +219,18 @@ void vtScaledView::GetCanvasPosition(const wxMouseEvent &event, wxPoint &pos)
 	CalcUnscrolledPosition(p.x, p.y, &pos.x, &pos.y);
 }
 
+void vtScaledView::DrawDLine(wxDC *pDC, const DLine2 &dline, bool bClose)
+{
+	int i, size = dline.GetSize();
+
+	for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
+		screen(dline.GetAt(i), g_screenbuf[i]);
+	if (bClose)
+	{
+		screen(dline.GetAt(0), g_screenbuf[i]);
+		i++;
+	}
+
+	pDC->DrawLines(i, g_screenbuf);
+}
+

@@ -65,6 +65,8 @@ public:
 	double odx(int x) { return x/m_fScale; }
 	double ody(int y) { return -y/m_fScale; }
 
+	void DrawDLine(wxDC *pDC, const DLine2 &line, bool bClose);
+
 protected:
 	void UpdateRanges();
 
