@@ -218,7 +218,7 @@ protected:
  * other Transform target) and move it around a center point based on
  * mouse input.
  */
-class vtTrackball : public vtEngine
+class vtTrackball : public vtLastMouse
 {
 public:
 	vtTrackball(float fRadius);
@@ -228,24 +228,31 @@ public:
 	void SetZoomScale(float s);
 	void SetRotateButton(int button, int modifier);
 	void SetZoomButton(int button, int modifier);
+	void SetTranslateButton(int button, int modifier);
 	void SetDirection(float fTheta, float fPhi);
 
 	void OnMouse(vtMouseEvent &event);
 	void Eval();
 
 protected:
-	bool _IsRotate(vtMouseEvent &event);
-	bool _IsZoom(vtMouseEvent &event);
+	bool _IsRotate();
+	bool _IsZoom();
+	bool _IsTranslate();
 
-	FPoint3	m_Pos, m_Start;
+	FPoint3	m_Pos, m_Start, m_Trans;
 	bool	m_bRotate;
 	bool	m_bZoom;
+	bool	m_bTrans;
+
 	IPoint2	m_MouseStart;
 	float	m_fZoomScale;
+
 	int		m_rotate_button;
 	int		m_rotate_modifier;
 	int		m_zoom_button;
 	int		m_zoom_modifier;
+	int		m_trans_button;
+	int		m_trans_modifier;
 };
 
 /*@}*/	// Group nav

@@ -598,7 +598,8 @@ void QuakeFlyer::OnKey(int key, int flags)
 
 vtTrackball::vtTrackball(float fRadius)
 {
-	m_Pos.Set(0.0f, 0.0f, fRadius);
+	m_Pos.Set(0, 0, fRadius);
+	m_Trans.Set(0, 0, 0);
 	m_bRotate = false;
 	m_bZoom = false;
 	m_fZoomScale = 1.0f;
@@ -608,6 +609,9 @@ vtTrackball::vtTrackball(float fRadius)
 	m_rotate_modifier = 0;
 	m_zoom_button = VT_MIDDLE;
 	m_zoom_modifier = VT_SHIFT;
+	// default to no translation
+	m_trans_button = -1;
+	m_zoom_modifier = -1;
 }
 
 void vtTrackball::SetRadius(float fRadius)
@@ -637,41 +641,68 @@ void vtTrackball::SetZoomButton(int button, int modifier)
 	m_zoom_modifier = modifier;
 }
 
-bool vtTrackball::_IsRotate(vtMouseEvent &event)
+void vtTrackball::SetTranslateButton(int button, int modifier)
 {
-	if (event.button != m_rotate_button) return false;
+	m_trans_button = button;
+	m_trans_modifier = modifier;
+}
+
+bool vtTrackball::_IsRotate()
+{
+	if (m_buttons != m_rotate_button) return false;
 	if (m_rotate_modifier != 0 &&
-		!(event.flags & m_rotate_modifier)) return false;
-	if (m_rotate_modifier == 0 && event.flags != 0) return false;
+		!(m_flags & m_rotate_modifier)) return false;
+	if (m_rotate_modifier == 0 && m_flags != 0) return false;
 	return true;
 }
 
-bool vtTrackball::_IsZoom(vtMouseEvent &event)
+bool vtTrackball::_IsZoom()
 {
-	if (event.button != m_zoom_button) return false;
+	if (m_buttons != m_zoom_button) return false;
 	if (m_zoom_modifier != 0 &&
-		!(event.flags & m_zoom_modifier)) return false;
-	if (m_zoom_modifier == 0 && event.flags != 0) return false;
+		!(m_flags & m_zoom_modifier)) return false;
+	if (m_zoom_modifier == 0 && m_flags != 0) return false;
+	return true;
+}
+
+bool vtTrackball::_IsTranslate()
+{
+	if (m_buttons != m_trans_button) return false;
+	if (m_trans_modifier != 0 &&
+		!(m_flags & m_trans_modifier)) return false;
+	if (m_trans_modifier == 0 && m_flags != 0) return false;
 	return true;
 }
 
 void vtTrackball::OnMouse(vtMouseEvent &event)
 {
-	if (event.type == VT_DOWN)
+	vtLastMouse::OnMouse(event);
+
+	if (!m_bRotate && _IsRotate())
 	{
-		if (!m_bRotate && _IsRotate(event))
-		{
-			m_Start = m_Pos;
-			m_MouseStart = event.pos;
-			m_bRotate = true;
-		}
-		if (!m_bZoom && _IsZoom(event))
-		{
-			m_Start = m_Pos;
-			m_MouseStart = event.pos;
-			m_bZoom = true;
-		}
+		m_Start = m_Pos;
+		m_MouseStart = event.pos;
+		m_bRotate = true;
 	}
+	if (!m_bZoom && _IsZoom())
+	{
+		m_Start = m_Pos;
+		m_MouseStart = event.pos;
+		m_bZoom = true;
+	}
+	if (!m_bTrans && _IsTranslate())
+	{
+		m_Start = m_Trans;
+		m_MouseStart = event.pos;
+		m_bTrans = true;
+	}
+	if (m_bRotate && !_IsRotate())
+		m_bRotate = false;
+	if (m_bZoom && !_IsZoom())
+		m_bZoom = false;
+	if (m_bTrans && !_IsTranslate())
+		m_bTrans = false;
+
 	if (event.type == VT_MOVE)
 	{
 		if (m_bZoom)
@@ -681,9 +712,12 @@ void vtTrackball::OnMouse(vtMouseEvent &event)
 			m_Pos.x = m_Start.x + (event.pos.x - m_MouseStart.x) / 200.0f;
 			m_Pos.y = m_Start.y + (event.pos.y - m_MouseStart.y) / 200.0f;
 		}
+		if (m_bTrans)
+		{
+			m_Trans.x = m_Start.x - (event.pos.x - m_MouseStart.x) / 100.0f;
+			m_Trans.y = m_Start.y + (event.pos.y - m_MouseStart.y) / 100.0f;
+		}
 	}
-	if (event.type == VT_UP)
-		m_bRotate = m_bZoom = false;
 }
 
 void vtTrackball::SetDirection(float fTheta, float fPhi)
@@ -702,5 +736,7 @@ void vtTrackball::Eval()
 	pTarget->Translate1(FPoint3(0.0, 0.0, m_Pos.z));
 	pTarget->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -m_Pos.y);
 	pTarget->Rotate2(FPoint3(0.0f, 1.0f, 0.0f), -m_Pos.x);
+
+	pTarget->TranslateLocal(m_Trans);
 }
 
