@@ -782,11 +782,9 @@ bool vtPlantInstanceArray::ReadSHP(const char *fname)
 	if (hSHP == NULL)
 		return false;
 
-	int		i, nEntities, nShapeType;
-	double 	adfMinBound[4], adfMaxBound[4];
-	DPoint2 point;
+	int i, nEntities, nShapeType;
 
-	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
 	if (nShapeType != SHPT_POINT)
 		return false;
 

@@ -1335,10 +1335,9 @@ int GetSHPType(const char *filename)
 	if (hSHP == NULL)
 		return SHPT_NULL;
 
-	int		nEntities, nShapeType;
-	double 	adfMinBound[4], adfMaxBound[4];
+	int nEntities, nShapeType;
 
-	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
 	SHPClose(hSHP);
 	return nShapeType;
 }

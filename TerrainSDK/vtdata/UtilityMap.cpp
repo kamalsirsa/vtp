@@ -22,14 +22,13 @@ bool vtUtilityMap::ImportPolesFromSHP(const char *fname)
 {
 	SHPHandle hSHP;
 	int		nEntities, nShapeType;
-	double 	adfMinBound[4], adfMaxBound[4];
 	DPoint2 point;
 
 	hSHP = SHPOpen(fname, "rb");
 	if (!hSHP)
 		return false;
 
-	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
 	if (nShapeType != SHPT_POINT)
 		return false;
 
@@ -68,14 +67,13 @@ bool vtUtilityMap::ImportLinesFromSHP(const char *fname)
 {
 	SHPHandle hSHP;
 	int		nEntities, nShapeType;
-	double 	adfMinBound[4], adfMaxBound[4];
 	int		i, j, verts;
 
 	hSHP = SHPOpen(fname, "rb");
 	if (!hSHP)
 		return false;
 
-	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
 	if (nShapeType != SHPT_ARC)
 		return false;
 

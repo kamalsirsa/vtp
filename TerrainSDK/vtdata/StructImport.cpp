@@ -205,7 +205,6 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 		return false;
 
 	int		nEntities, nShapeType;
-	double 	adfMinBound[4], adfMaxBound[4];
 	DPoint2 point;
 	DLine2	line;
 	int		i, j, k;
@@ -215,7 +214,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	int		field_scale = -1;
 	int		field_rotation = -1;
 
-	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
 
 	// Open DBF File & Get DBF Info:
 	DBFHandle db = DBFOpen(pathname, "rb");
