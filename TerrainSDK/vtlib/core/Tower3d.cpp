@@ -18,9 +18,7 @@ vtTower3d::vtTower3d()
 	m_pContainer = NULL;
 	m_pTowerGeom = NULL;
 	m_pTowerHighlight = NULL;
-
 }
-
 
 
 vtTower3d &vtTower3d::operator =(const vtTower3d &v)

@@ -486,10 +486,8 @@ bool vtTowerLayer::AddNewTower(const DPoint2 &p)
 	new_tower->SetShape(TSHAPE_POLY);
 	AddTower(new_tower);
 
-		TowerDLG dlg(NULL, -1, "Tansmission Tower Properties", wxDefaultPosition);
-		dlg.Setup(new_tower);
+	TowerDLG dlg(NULL, -1, "Tansmission Tower Properties", wxDefaultPosition);
+	dlg.Setup(new_tower);
 	return (dlg.ShowModal() == wxID_OK);
-
-
 }
 
