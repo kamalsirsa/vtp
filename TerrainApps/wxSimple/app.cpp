@@ -29,7 +29,7 @@
 
 bool CreateScene();
 
-IMPLEMENT_APP(vtApp)
+IMPLEMENT_APP(vtApp);
 
 //
 // Initialize the app object
@@ -39,11 +39,9 @@ bool vtApp::OnInit(void)
 	// Create the main frame window
 	wxString title = "Simple vtlib example";
 	vtFrame *frame = new vtFrame(NULL, title,
-		wxPoint(50, 50), wxSize(800, 600));
+			wxPoint(50, 50), wxSize(800, 600));
 
-	// Get a handle to the vtScene - one is already created for you
-	vtScene *pScene = vtGetScene();
-	return pScene->Init();
+	return CreateScene();
 }
 
 //
@@ -51,7 +49,11 @@ bool vtApp::OnInit(void)
 //
 bool CreateScene()
 {
+	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
+
+	if (!pScene->Init())
+		return false;
 
 	// Set the global data path
 	StringArray paths;
@@ -96,5 +98,3 @@ bool CreateScene()
 
 	return true;
 }
-
-

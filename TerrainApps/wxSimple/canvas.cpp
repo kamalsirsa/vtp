@@ -77,14 +77,16 @@ extern bool CreateScene();
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
 	vtScene *pScene = vtGetScene();
-#ifdef WIN32
+
 	if (!pScene->HasWinInfo())
 	{
+#ifdef WIN32
 		HWND handle = (HWND) GetHandle();
 		pScene->SetWinInfo(handle, m_glContext);
-		CreateScene();
-	}
+#else
+		pScene->SetWinInfo(NULL, NULL);
 #endif
+	}
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
@@ -133,6 +135,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 static void Reshape(int width, int height)
 {
+	printf("Reshape: %d, %d\n", width, height);
 	glViewport(0, 0, (GLint)width, (GLint)height);
 }
 
