@@ -91,7 +91,7 @@ void LocationDlg::RefreshList()
 	{
 		vtLocation *loc = m_pSaver->GetLocation(i);
 
-		str.Printf(_T("%d. %s"), i+1, loc->m_strName.c_str());
+		str.Printf(_T("%d. %ls"), i+1, loc->m_strName.c_str());
 		m_pLocList->Append(str);
 	}
 }
