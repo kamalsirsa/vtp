@@ -1,9 +1,61 @@
+//
+// FilePath.cpp
+//
+// Copyright (c) 2002-2003 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef FILEPATHH
 #define FILEPATHH
 
 #include "vtString.h"
 #include "Array.h"
+
+#if WIN32
+  #include <io.h>
+#else
+  #include <sys/stat.h>
+  #include <dirent.h>
+  #include <unistd.h>
+  #include <pwd.h>
+  #include <grp.h>
+#endif
+
+/**
+ * A portable class for reading directory contents.
+ */
+class dir_iter
+{
+public:
+	dir_iter();
+	dir_iter(std::string const &dirname);
+	~dir_iter();
+
+	/// Returns true if the current object is a directory.
+	bool is_directory();
+
+	/// Get the filename fo the current object.
+	std::string filename();
+
+	// Iterate the object to the next file/directory.
+	void operator++();
+
+	// Test for inequality useful to test when iteration is finished.
+	bool operator!=(const dir_iter &it);
+
+private:
+	std::string        m_directory;
+	int                m_refcount;
+#ifdef WIN32
+	struct _finddata_t m_data;
+	long               m_handle;
+#else
+	DIR         *m_handle;
+	std::string m_current;
+	struct stat m_stat;
+	bool        m_stat_p;
+#endif
+};
 
 vtString FindFileOnPaths(const vtStringArray &paths, const char *filename);
 bool vtCreateDir(const char *dirname);
