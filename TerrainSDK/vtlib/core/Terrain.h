@@ -97,6 +97,7 @@ public:
 	void SetLocalGrid(vtElevationGrid *pGrid, bool bPreserve);
 	void SetTin(vtTin3d *pTin);
 	vtTin3d *GetTin() { return m_pTin; }
+	bool LoadHeaderIntoGrid(vtElevationGrid &grid);
 
 	// You can use these methods to build a terrain step by step,
 	// or simply use the method vtTerrainScene::BuildTerrain.
@@ -143,8 +144,6 @@ public:
 	// set global projection based on this terrain
 	void SetGlobalProjection();
 
-	bool LoadHeaderIntoGrid(vtElevationGrid &grid);
-
 	// fences
 	bool AddFence(vtFence3d *f);
 	void AddFencepoint(vtFence3d *f, const DPoint2 &epos);
@@ -182,6 +181,9 @@ public:
 	bool AddNodeToStructGrid(vtGeom *pGeom);
 	void RemoveNodeFromStructGrid(vtNode *pNode);
 	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
+
+	// roads
+	vtRoadMap3d *GetRoadMap() { return m_pRoadMap; }
 
 	// Terrain-specific content
 	vtContentManager3d m_Content;
