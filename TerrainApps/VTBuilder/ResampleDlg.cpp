@@ -112,6 +112,7 @@ void ResampleDlg::OnDotDotDot( wxCommandEvent &event )
 {
 	wxString filter;
 	filter += FSTRING_BT;
+	filter += _T("|");
 	filter += FSTRING_BTGZ;
 
 	// ask the user for a filename
