@@ -35,6 +35,7 @@ public:
 	void OnChar(wxKeyEvent& event);
 	void OnMouseEvent(wxMouseEvent& event);
 	void OnClose(wxCloseEvent& event);
+	void OnIdle(wxIdleEvent& event);
 
 	bool m_bPainting;
 	bool m_bRunning;

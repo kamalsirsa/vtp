@@ -36,12 +36,14 @@ BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
 	EVT_CHAR(vtGLCanvas::OnChar)
 	EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
 	EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
+	EVT_IDLE(vtGLCanvas::OnIdle)
 END_EVENT_TABLE()
 
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 	const wxSize& size, long style, const wxString& name, int* gl_attrib) :
   wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
+	VTLOG(" constructing Canvas\n");
 	parent->Show(TRUE);
 	SetCurrent();
 
@@ -52,6 +54,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 
 vtGLCanvas::~vtGLCanvas(void)
 {
+	VTLOG(" destructing Canvas\n");
 }
 
 void vtGLCanvas::QueueRefresh(bool eraseBackground)
@@ -133,9 +136,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 			Sleep((int)(diff * 1000));
 
 #ifdef WIN32
-		// Call Refresh again for continuous rendering,
-		if (m_bRunning)
-			Refresh(FALSE);
+		// We use refresh-on-idle on WIN32
 #else
 		// Queue another refresh for continuous rendering.
 		//   (Yield first so we don't starve out keyboard & mouse events.)
@@ -158,10 +159,6 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 		m_bPainting = false;
 	}
-
-	// Must allow some idle processing to occur - or the toolbars will not
-	// update, and the close box will not respond!
-	wxGetApp().ProcessIdle();
 }
 
 static void Reshape(int width, int height)
@@ -195,11 +192,25 @@ void vtGLCanvas::OnChar(wxKeyEvent& event)
 	long key = event.KeyCode();
 
 	// pass the char to the frame for it to do "accelerator" shortcuts
-	vtFrame *frame = (vtFrame*) GetParent();
+	vtFrame *frame = GetMainFrame();
 	frame->OnChar(event);
 
+	int flags = 0;
+
+	if (event.ControlDown())
+		flags |= VT_CONTROL;
+
+	if (event.ShiftDown())
+		flags |= VT_SHIFT;
+
+	if (event.AltDown())
+		flags |= VT_ALT;
+
 	// pass the char to the vtlib Scene
-	vtGetScene()->OnKey(key, 0);
+	vtGetScene()->OnKey(key, flags);
+
+	// Allow wxWindows to pass the event along to other code
+	event.Skip();
 }
 
 void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
@@ -273,5 +284,12 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
 {
 	// Do nothing, to avoid flashing.
+}
+
+void vtGLCanvas::OnIdle(wxIdleEvent &event)
+{
+	// We use the "Refresh on Idle" approach to continuous rendering.
+	if (m_bRunning)
+		Refresh(FALSE);
 }
 
