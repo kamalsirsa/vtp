@@ -55,6 +55,8 @@ public:
 	void UpdateColorControl();
 	void UpdateFeatures();
 	void SetupControls();
+	void DeleteCurrentLevel();
+	void CopyCurrentLevel();
 
 	// allow the dialog to control rendering (in case its being used w/3d)
 	virtual void EnableRendering(bool bEnable) {}
@@ -108,6 +110,7 @@ protected:
 	void OnEdge( wxCommandEvent &event );
 	void OnSetEdgeSlopes( wxCommandEvent &event );
 	void OnSetMaterial( wxCommandEvent &event );
+	void OnCharHook( wxKeyEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

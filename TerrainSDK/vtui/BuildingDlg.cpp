@@ -51,6 +51,7 @@ BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
 	EVT_BUTTON( ID_FEAT_WINDOW, BuildingDlg::OnFeatWindow )
 	EVT_BUTTON( ID_FEAT_DOOR, BuildingDlg::OnFeatDoor )
 	EVT_CLOSE(BuildingDlg::OnCloseWindow)
+	EVT_CHAR_HOOK(BuildingDlg::OnCharHook)
 END_EVENT_TABLE()
 
 BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -194,7 +195,7 @@ void BuildingDlg::OnLevelDown( wxCommandEvent &event )
 	}
 }
 
-void BuildingDlg::OnLevelCopy( wxCommandEvent &event )
+void BuildingDlg::CopyCurrentLevel()
 {
 	vtLevel *pNewLevel = new vtLevel(*m_pLevel);
 	m_pBuilding->InsertLevel(m_iLevel, pNewLevel);
@@ -204,7 +205,12 @@ void BuildingDlg::OnLevelCopy( wxCommandEvent &event )
 	Modified();
 }
 
-void BuildingDlg::OnLevelDelete( wxCommandEvent &event )
+void BuildingDlg::OnLevelCopy( wxCommandEvent &event )
+{
+	CopyCurrentLevel();
+}
+
+void BuildingDlg::DeleteCurrentLevel()
 {
 	m_pBuilding->DeleteLevel(m_iLevel);
 	if (m_iLevel == m_pBuilding->GetNumLevels())
@@ -213,6 +219,11 @@ void BuildingDlg::OnLevelDelete( wxCommandEvent &event )
 	SetLevel(m_iLevel);
 	HighlightSelectedLevel();
 	Modified();
+}
+
+void BuildingDlg::OnLevelDelete( wxCommandEvent &event )
+{
+	DeleteCurrentLevel();
 }
 
 void BuildingDlg::OnStoryHeight( wxCommandEvent &event )
@@ -479,7 +490,7 @@ void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 	choices[1] = "Shed";
 	choices[2] = "Gable";
 	choices[3] = "Hip";
-	choices[4] = "Vertical (all edges 180°)";
+	choices[4] = "Vertical (all edges 90°)";
 
 	wxSingleChoiceDialog dialog(this, "Choice",
 		"Please indicate edge slopes", 5, (const wxString *)choices);
@@ -619,4 +630,65 @@ void BuildingDlg::OnEdges( wxCommandEvent &event )
 	TransferDataToWindow();
 	m_bSetting = false;
 }
+
+#include <vtdata/Vocab.h>
+
+void BuildingDlg::OnCharHook( wxKeyEvent &event )
+{
+	int foo = event.GetKeyCode();
+	if (foo != WXK_F2)
+	{
+		event.Skip();
+		return;
+	}
+
+	// Test text input
+	wxString str = wxGetTextFromUser("Test Message", "Test Caption", "", this);
+	TestParser par;
+	par.ParseInput((const char *) str);
+
+	MatchToken *tok;
+
+	// Pattern sentence: "Select floor/level <number>"
+	SentenceMatch sen1;
+	sen1.AddLiteral(true, "select");
+	sen1.AddLiteral(true, "floor", "level");
+	tok = sen1.AddToken(true, NUMBER);
+
+	if (par.Matches(sen1))
+	{
+		SetLevel( (int) tok->number);
+		HighlightSelectedLevel();
+	}
+
+	// Pattern sentence: "Select [the] <counter> floor/level"
+	SentenceMatch sen2;
+	sen2.AddLiteral(true, "select");
+	sen2.AddLiteral(false, "the");
+	tok = sen2.AddToken(true, COUNTER);
+	sen2.AddLiteral(true, "floor", "level");
+
+	if (par.Matches(sen2))
+	{
+		SetLevel( tok->counter);
+		HighlightSelectedLevel();
+	}
+
+	// Pattern sentence: "Delete/remove [it]"
+	SentenceMatch sen3;
+	sen3.AddLiteral(true, "delete", "remove");
+	sen3.AddLiteral(false, "it");
+
+	if (par.Matches(sen3))
+		DeleteCurrentLevel();
+
+	// Pattern sentence: "Copy/duplicate [it]"
+	SentenceMatch sen4;
+	sen4.AddLiteral(true, "copy", "duplicate");
+	sen4.AddLiteral(false, "it");
+
+	if (par.Matches(sen4))
+		CopyCurrentLevel();
+}
+
 
