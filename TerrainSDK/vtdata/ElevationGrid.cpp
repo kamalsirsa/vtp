@@ -172,11 +172,6 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 {
 	int i, j;
 
-	// some fields are simple to set
-	m_proj = NewProj;
-	m_bFloatMode = pOld->m_bFloatMode;
-	m_strOriginalDEMName = pOld->GetDEMName();
-
 	// Create conversion object
 	const vtProjection *pSource, *pDest;
 	pSource = &pOld->GetProjection();
@@ -251,20 +246,27 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	if (m_iColumns > 40000 || m_iRows > 40000)
 		return false;
 
+	// Now we're ready to fill in the new elevationgrid.
+	// Some fields are simple to set:
+	m_proj = NewProj;
+	m_bFloatMode = pOld->m_bFloatMode;
+	m_strOriginalDEMName = pOld->GetDEMName();
+
+	// Others are on the parent class:
+	vtHeightFieldGrid3d::Initialize(NewProj.GetUnits(), m_EarthExtents, INVALID_ELEVATION,
+		INVALID_ELEVATION, m_iColumns, m_iRows);
 	_AllocateArray();
 
-	// convert each bit of data from the old array to the new
-	DPoint2 p, step = GetSpacing();
-	float value;
-
-	// projects points backwards, from the target to the source
+	// Convert each bit of data from the old array to the new
+	// Transformation points backwards, from the target to the source
 	trans = CreateCoordTransform(pDest, pSource);
 	if (!trans)
 	{
 		// inconvertible projections
 		return false;
 	}
-
+	DPoint2 p, step = GetSpacing();
+	float value;
 	for (i = 0; i < m_iColumns; i++)
 	{
 		if (progress_callback != NULL) progress_callback(i*100/m_iColumns);
@@ -283,6 +285,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 		}
 	}
 	delete trans;
+	ComputeHeightExtents();
 	return true;
 }
 
