@@ -8,6 +8,7 @@
 #include "vtlib/vtlib.h"
 
 #include "vtdata/vtLog.h"
+#include "vtdata/Features.h"
 
 #include "Terrain.h"
 #include "Light.h"
@@ -980,39 +981,54 @@ void vtTerrain::setup_LodGrid(float fLODDistance)
 
 /////////////////////////
 
-void vtTerrain::create_floating_labels(const char *filename)
+void vtTerrain::create_floating_labels(const char *filename, const char *fontname)
 {
 	// create container group
 	vtGroup *pPlaceNames = new vtGroup();
 	pPlaceNames->SetName2("Place Names");
 	m_pTerrainGroup->AddChild(pPlaceNames);
 
-	FILE *fp = fopen(filename, "r");
-	char string[80];
-	float utm_x, utm_y;
-	int meter_height;
-	FPoint3 p3;
-
-	vtString font_path = FindFileOnPaths(m_DataPaths, "Fonts/Arial.ttf");
+	vtString font_path = FindFileOnPaths(m_DataPaths, fontname);
 	if (font_path == "")
+	{
+		VTLOG("Couldn't read font from file '%s'\n", fontname);
 		return;
+	}
+	VTLOG("Read font from file '%s'\n", fontname);
 
 	vtMaterialArray *pMats = new vtMaterialArray();
 	int index = pMats->AddRGBMaterial1(RGBf(1,1,1), false, false);
 	vtFont *font = new vtFont;
 	bool success = font->LoadFont(font_path);
 
-	while( !feof(fp) )
+	vtFeatures feat;
+	if (!feat.LoadFrom(filename))
 	{
-		int ret = fscanf(fp, "%f %f %d %s\n", &utm_x, &utm_y, &meter_height, string);
-		if (!ret) break;
+		VTLOG("Couldn't read features from file '%s'\n", filename);
+		return;
+	}
+	VTLOG("Read features from file '%s'\n", filename);
 
+	int features = feat.NumEntities();
+	int field_num = 0;
+	DPoint3 p;
+	FPoint3 p3;
+	vtString str;
+	for (int i = 0; i < features; i++)
+	{
 		vtTransform *bb = new vtTransform();
 
 		vtTextMesh *text = new vtTextMesh(font, true);	// center
-		text->SetText(string);
+
+		feat.GetValueAsString(i, field_num, str);
+		feat.GetPoint(i, p);
+		// text might be UTF-8
+		wstring2 wide_string;
+		wide_string.from_utf8(str);
+		text->SetText(wide_string);
+
 		vtGeom *geom = new vtGeom();
-		geom->SetName2(string);
+		geom->SetName2(str);
 		geom->SetMaterials(pMats);
 		geom->AddText(text, index);
 
@@ -1024,12 +1040,12 @@ void vtTerrain::create_floating_labels(const char *filename)
 		float height = 250.0f;
 		bb->Scale3(width/20, height/20, 1.0f);
 
-		m_pHeightField->ConvertEarthToSurfacePoint(utm_x, utm_y, p3);
-		p3.y += (200.0f + meter_height);
+		m_pHeightField->ConvertEarthToSurfacePoint(p.x, p.y, p3);
+		p3.y += (200.0f + p.z);
 		bb->SetTrans(p3);
 		pPlaceNames->AddChild(bb);
 	}
-	fclose(fp);
+	VTLOG("Created %d text labels\n", features);
 }
 
 
@@ -1210,9 +1226,11 @@ bool vtTerrain::CreateStep5(bool bSound, int &iError)
 
 	if (m_Params.m_bLabels)
 	{
-		vtString labels_path = FindFileOnPaths(m_DataPaths, "PointData/places.txt");
+		vtString fname = "PointData/";
+		fname += m_Params.m_strLabelFile;
+		vtString labels_path = FindFileOnPaths(m_DataPaths, fname);
 		if (labels_path != "")
-			create_floating_labels(labels_path);
+			create_floating_labels(labels_path, "Fonts/Arial.ttf");
 	}
 
 	return true;

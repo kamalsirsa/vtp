@@ -145,6 +145,7 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_bVertexColors = Params.m_bVertexColors;
 //  m_bOverlay = Params.m_bOverlay;
 	m_bLabels = Params.m_bLabels;
+	m_strLabelFile = Params.m_strLabelFile;
 
 	m_bOceanPlane = Params.m_bOceanPlane;
 	m_fOceanPlaneLevel = Params.m_fOceanPlaneLevel;
@@ -238,6 +239,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_bVertexColors = m_bVertexColors;
 //  Params.m_bOverlay = m_bOverlay;
 	Params.m_bLabels = m_bLabels;
+	Params.m_strLabelFile = m_strLabelFile.mb_str();
 
 	Params.m_bOceanPlane = m_bOceanPlane;
 	Params.m_fOceanPlaneLevel = m_fOceanPlaneLevel;
@@ -342,6 +344,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pFilenameTin = GetFilenameTin();
 	m_pLocFile = GetLocfile();
 	m_pSkyTexture = GetSkytexture();
+	m_pLabelFile = GetLabelFile();
 
 	m_pNone = GetNone();
 	m_pSingle = GetSingle();
@@ -405,6 +408,13 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		sel = m_pSkyTexture->FindString(m_strSkyTexture);
 		if (sel != -1)
 			m_pSkyTexture->SetSelection(sel);
+
+		// fill in PointData files
+		AddFilenamesToComboBox(m_pLabelFile, *paths[i] + "PointData", "*.shp");
+		sel = m_pTreeFile->FindString(m_strTreeFile);
+		if (sel != -1)
+			m_pTreeFile->SetSelection(sel);
+
 	}
 
 	m_pLodMethod->Clear();
@@ -470,6 +480,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_VERTEXCOLORS, &m_bVertexColors);
 	AddValidator(ID_HORIZON, &m_bHorizon);
 	AddValidator(ID_LABELS, &m_bLabels);
+	AddValidator(ID_LABEL_FILE, &m_strLabelFile);
 	AddNumValidator(ID_MINHEIGHT, &m_iMinHeight);
 	AddValidator(ID_BUILDINGS, &m_bBuildings);
 	AddValidator(ID_BUILDINGFILE, &m_strBuildingFile);

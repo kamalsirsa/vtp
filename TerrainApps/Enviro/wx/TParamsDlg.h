@@ -83,6 +83,7 @@ public:
 
 	bool	m_bHorizon;
 	bool	m_bLabels;
+	wxString2	m_strLabelFile;
 	int		m_iMinHeight;
 	bool	m_bBuildings;
 	wxString2	m_strBuildingFile;
@@ -131,6 +132,7 @@ public:
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
 	wxTextCtrl* GetDepressOceanOffset()  { return (wxTextCtrl*) FindWindow( ID_DEPRESSOCEANOFFSET ); }
 	wxTextCtrl* GetOceanPlaneOffset()  { return (wxTextCtrl*) FindWindow( ID_OCEANPLANEOFFSET ); }
+	wxComboBox* GetLabelFile()  { return (wxComboBox*) FindWindow( ID_LABEL_FILE ); }
 
 	//  CButton m_PreLight;
 //  CButton m_TriStrips;
@@ -153,6 +155,7 @@ private:
 	wxRadioButton* m_pTiled;
 	wxComboBox* m_pLocFile;
 	wxComboBox* m_pSkyTexture;
+	wxComboBox* m_pLabelFile;
 
 private:
 	// WDR: handler declarations for TParamsDlg

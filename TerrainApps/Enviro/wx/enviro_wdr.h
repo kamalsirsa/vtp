@@ -148,20 +148,21 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_DEPRESSOCEAN 10095
 #define ID_DEPRESSOCEANOFFSET 10096
 #define ID_LABELS 10097
-#define ID_SKY 10098
-#define ID_SKYTEXTURE 10099
-#define ID_HORIZON 10100
-#define ID_AIRPORTS 10101
-#define ID_FOG 10102
-#define ID_FOG_DISTANCE 10103
+#define ID_LABEL_FILE 10098
+#define ID_SKY 10099
+#define ID_SKYTEXTURE 10100
+#define ID_HORIZON 10101
+#define ID_AIRPORTS 10102
+#define ID_FOG 10103
+#define ID_FOG_DISTANCE 10104
 wxSizer *TParams3Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_MINHEIGHT 10104
-#define ID_NAVSPEED 10105
-#define ID_LOCFILE 10106
-#define ID_INITTIME 10107
-#define ID_TIMEMOVES 10108
-#define ID_TIMESPEED 10109
+#define ID_MINHEIGHT 10105
+#define ID_NAVSPEED 10106
+#define ID_LOCFILE 10107
+#define ID_INITTIME 10108
+#define ID_TIMEMOVES 10109
+#define ID_TIMESPEED 10110
 wxSizer *TParams4Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

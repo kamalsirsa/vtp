@@ -210,7 +210,7 @@ protected:
 		bool bCenter, float fTransparency);
 	void CreateStructuresFromXML(vtString strFilename);
 	void create_culture(bool bSound);
-	void create_floating_labels(const char *filename);
+	void create_floating_labels(const char *filename, const char *fontname);
 
 	void CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 								int patches, int patch_size);

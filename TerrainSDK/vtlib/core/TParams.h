@@ -3,7 +3,7 @@
 //
 // defines all the construction parameters for a terrain
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,7 +22,6 @@ enum TextureEnum {
 };
 
 enum LodMethodEnum {
-//	LM_LINDSTROMKOLLER,
 	LM_ROETTGER,
 	LM_TOPOVISTA,
 	LM_MCNALLY,
@@ -119,7 +118,9 @@ public:
 	bool		m_bHorizon;
 	bool		m_bVertexColors;
 	bool		m_bOverlay;
+
 	bool		m_bLabels;
+	vtString	m_strLabelFile;
 
 	bool		m_bAirports;
 	vtString	m_strRouteFile;

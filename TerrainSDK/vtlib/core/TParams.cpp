@@ -85,6 +85,7 @@ TParams::TParams()
 	m_bVertexColors = false;
 	m_bOverlay = false;
 	m_bLabels = false;
+	m_strLabelFile = "";
 
 	m_bAirports = false;
 	m_bRouteEnable = false;
@@ -175,6 +176,7 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bVertexColors = rhs.m_bVertexColors;
 	m_bOverlay = rhs.m_bOverlay;
 	m_bLabels = rhs.m_bLabels;
+	m_strLabelFile = rhs.m_strLabelFile;
 
 	m_bPreLight = rhs.m_bPreLight;
 	m_bPreLit = rhs.m_bPreLit;
@@ -297,7 +299,9 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_HORIZON "Horizon"
 #define STR_VERTEXCOLORS "Vertex_Colors"
 #define STR_OVERLAY	"Overlay"
+
 #define STR_LABELS "Labels"
+#define STR_LABELFILE "LabelFile"
 
 #define STR_AIRPORTS "Airports"
 #define STR_ROUTEFILE "Route_File"
@@ -433,6 +437,8 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bHorizon;
 		else if (strcmp(buf, STR_LABELS) == 0)
 			input >> m_bLabels;
+		else if (strcmp(buf, STR_LABELFILE) == 0)
+			m_strLabelFile = get_line_from_stream(input);
 		else if (strcmp(buf, STR_BUILDINGS) == 0)
 			input >> m_bBuildings;
 		else if (strcmp(buf, STR_BUILDINGFILE) == 0)
@@ -639,6 +645,8 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_bOverlay << endl;
 	output << STR_LABELS << "\t\t\t";
 	output << m_bLabels << endl;
+	output << STR_LABELFILE << "\t\t";
+	output << (const char *) m_strLabelFile << endl;
 
 	output << STR_AIRPORTS << "\t\t";
 	output << m_bAirports << endl;
