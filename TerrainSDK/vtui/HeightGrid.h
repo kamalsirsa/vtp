@@ -31,14 +31,14 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = 0 );
-	
+
 	void Setup(CHeightDialog *pParent);
-	
+
 	// WDR: method declarations for CHeightGrid
-	
+
 private:
 	// WDR: member variable declarations for CHeightGrid
-	
+
 private:
 	// WDR: handler declarations for CHeightGrid
 	void OnGridEditorHidden( wxGridEvent &event );

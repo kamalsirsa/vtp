@@ -678,7 +678,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 		return;
 
 	m_strMaterial = pChoices[dialog.GetSelection()];
-	
+
 	delete[] pChoices;
 
 	if (m_bEdges)
