@@ -366,7 +366,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	vtProjection &dproj = (vtProjection &)proj;
 
 	const char *proj_name = dproj.GetProjectionNameShort();
-	if (!strcmp(proj_name, "Geo"))
+	if (!strcmp(proj_name, "Geo") || !strcmp(proj_name, "Unknown"))
 	{
 		// the data is already in latlon so just use WMPoly
 		for (i = 0; i < m_iEntities; i++)
@@ -1104,6 +1104,7 @@ void BuilderView::OnLeftDownAddPoint(const wxMouseEvent &event)
 {
 	vtRawLayer *pRL = GetMainFrame()->GetActiveRawLayer();
 	pRL->AddPoint(m_DownLocation);
+	pRL->SetModified(true);
 	Refresh();
 }
 
@@ -1111,6 +1112,7 @@ void BuilderView::OnLeftDownAddLinear(const wxMouseEvent &event)
 {
 	vtStructureLayer *pSL = GetMainFrame()->GetActiveStructureLayer();
 //	pRL->AddPoint(m_DownLocation); // TODO
+//	pRL->SetModified(true);
 	Refresh();
 }
 
