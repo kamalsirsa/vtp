@@ -59,7 +59,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	m_pGeom = new vtGeom();
 	m_pGeom->SetMaterials(pMats);
 
-	int i, j, remaining;
+	int i, j, k;
 	int verts = NumVerts();
 
 	// Break it up into a series of meshes - this is good for both
@@ -73,11 +73,10 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 
 	// most TINs are larger in the horionztal dimension than the vertical, so
 	// use horizontal extents as the basis of subdivision
-	DRECT rect;
-	float minh, maxh;
-	GetExtents(rect, minh, maxh);
+	DRECT rect = m_EarthExtents;
 	double sizex = rect.Width();
 	double sizey = rect.Height();
+	float height_range = (m_fMaxHeight - m_fMinHeight);
 
 	// make it slightly larger avoid edge condition
 	rect.left -= 0.000001;
@@ -135,7 +134,9 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		else
 			acceptable = true;
 	}
-	int in_bin, tri;
+
+	int in_bin, tri, vidx;
+
 	for (i = 0; i < dsize; i++)
 	{
 		Bin &bref = bins[i];
@@ -148,7 +149,34 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		for (j = 0; j < in_bin; j++)
 		{
 			tri = bref[j];
+			int tribase = tri * 3;
+			int vertbase = j * 3;
+
+			for (k = 0; k < 3; k++)
+			{
+				vidx = m_tri[tribase + k];
+				ep.Set(m_vert[vidx].x, m_vert[vidx].y, m_z[vidx]);
+				m_Conversion.ConvertFromEarth(ep, p[k]);
+			}
+			norm = ComputeNormal(p[0], p[1], p[2]);
+
+			float shade = norm.Dot(light_dir);	// shading 0 (dark) to 1 (light)
+
+			for (k = 0; k < 3; k++)
+			{
+				vidx = m_tri[tribase + k];
+
+				r = (m_z[vidx] - m_fMinHeight) / height_range;
+				pMesh->AddVertex(p[k]);
+				pMesh->SetVtxNormal(vertbase + k, norm);
+
+				color.Set(r, g, b);
+				color *= shade;
+				pMesh->SetVtxColor(vertbase + k, color);
+			}
 		}
+		m_pGeom->AddMesh(pMesh, 0);
+		m_Meshes.Append(pMesh);
 	}
 
 	/*
@@ -201,6 +229,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		remaining -= chunk;
 		base += chunk;
 	}
+		*/
 
 	if (bDropShadowMesh)
 	{
@@ -225,7 +254,6 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		pBaseMesh->AddFan(0, 1, 2, 3);
 		m_pGeom->AddMesh(pBaseMesh, 1);
 	}
-		*/
 	return m_pGeom;
 }
 
