@@ -1,0 +1,243 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Terrain Creation Parameters</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<h2>Enviro - Terrain Creation Parameters</h2>
+
+<table border="1" cellspacing="0" cellpadding="2">
+  <tr>
+    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="2">Elevation</th>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Terrain Filename</td>
+    <td bgcolor="#B7CCB8">The BT file to use for elevation.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Vertical Exaggeration</td>
+    <td bgcolor="#B7CCB8">1.0 draws the terrain with real-world proportions, 1.5
+      to exaggerate by 50%, etc.</td>
+  </tr>
+  <tr>
+    <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="3">Time</th>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Initial Time of Day</td>
+    <td bgcolor="#D2C8B5">Hour, from 0 to 24, for the time of day when Enviro
+      starts the terrain.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Time Moves</td>
+    <td bgcolor="#D2C8B5">If set, then time cause the sun and sunlight to move,
+      day and night to affect the sky dome, and the moon and stars to move at
+      night.&nbsp; Note that currently the lighting on the terrain surface
+      itself is not updated dynamically - it will remain at the initial time.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Faster than real</td>
+    <td bgcolor="#D2C8B5">Watching the sun move across the sky at real-world
+      speed may require too much patience.&nbsp; Try setting this value higher
+      than 1 (e.g. 1000) to see time move rapidly.</td>
+  </tr>
+  <tr>
+    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="3">Brute-force
+      Terrain</th>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Subsample Ratio</td>
+    <td bgcolor="#B7CCB8">The terrain will be decimated by this amount, e.g.
+      Ratio = 8 will only draw every 8th heixel, which is 1/64 of the detail.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Suppress Land</td>
+    <td bgcolor="#B7CCB8">Omits patches that are entirely above sea
+      level.&nbsp;&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Apply vertex colors</td>
+    <td bgcolor="#B7CCB8">Colors the vertices based on elevation.&nbsp; In
+      combination with the above option, this is useful for keeping the
+      framerate high while confirming that vector shoreline data matches
+      elevation.&nbsp;</td>
+  </tr>
+  <tr>
+    <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="5">Dynamic LOD
+      Terrain</th>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Method</td>
+    <td bgcolor="#D2C8B5">Choose from several implementations of published Continuous
+      LOD algorithms.<br>
+      Some caveats:
+      <ol>
+        <li>The TopoVista implementation doesn't support tiled textures.</li>
+        <li>The Lindstrom-Koller implementation only supports tiled textures
+          when &quot;Use strips/fans&quot; is Off (see below).</li>
+      </ol>
+    </td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Pixel Error Bound</td>
+    <td bgcolor="#D2C8B5">Some LOD algorithms (such as Lindstrom-Koller) control
+      detail with a maximum allowed pixel error.&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Triangle Count</td>
+    <td bgcolor="#D2C8B5">Other algorithms (such as McNally) will adaptively
+      adjust detail to meet this indicated triangle count.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Use strips/fans</td>
+    <td bgcolor="#D2C8B5">Allows the LOD algorithm to use triangle strips and
+      fans while rendering.&nbsp; With some algorithms, this may increase
+      rendering speed significantly, and also may have some drawbacks.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Detail texture</td>
+    <td bgcolor="#D2C8B5">For some terrain types, will attempt to put a second,
+      high-frequency detail texture over the whole terrain, faded by distance so
+      that it is only visible close to the viewer.&nbsp; Currently this can only
+      be a single texture, although eventually it should be multiple textures
+      based on type of ground cover (dirt, rock, grass, etc.)<br>
+      Note that the current McNally implementation may produce artifacts if both
+      Strips/fans and Detail texture are enabled.</td>
+  </tr>
+  <tr>
+    <th width="170" valign="top" rowspan="4">&nbsp;</th>
+    <td width="180" valign="top">Sky Dome</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top">Ocean Plane</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top">Artificial Horizon</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top">Airports</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="3">Navigation</th>
+    <td width="180" valign="top" bgcolor="#B7CCB8"><font size="2">Minimum height
+      above ground</font></td>
+    <td bgcolor="#B7CCB8">The camera will be kept this height above the ground
+      at all times.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Navigation speed</td>
+    <td bgcolor="#B7CCB8">This is a factor used to scale the speed of your
+      motion when using the mouse to navigate.&nbsp; You can change it on the
+      fly once the Terrain View is running.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Default locations file</td>
+    <td bgcolor="#B7CCB8">You can load and save any number of Locations to a
+      file.&nbsp; This option lets you associate a specific file with a terrain.</td>
+  </tr>
+  <tr>
+    <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="9">Texture</th>
+    <td width="180" valign="top" bgcolor="#D2C8B5">No texture</td>
+    <td bgcolor="#D2C8B5">Your texture will be white and featureless.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Single texture</td>
+    <td bgcolor="#D2C8B5">The indicated texture will be placed over the
+      terrain.&nbsp; It must be a power of two in dimension, and be within the
+      limit of your 3d hardware's maximum texture size.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Derive texture from elevation</td>
+    <td bgcolor="#D2C8B5">Enviro will create a 1024*1024 texture, and fill it
+      with false colors based on elevation.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">4x4 Tiled Texture</td>
+    <td bgcolor="#D2C8B5">You provide a single large square image file, and Enviro will break
+          it up for you, at runtime, into a set of 16 tiles (4x4).&nbsp; The filename is made up of two parts: the prefix (e.g. &quot;hawaii_&quot;)
+          and the image size (e.g. &quot;4093&quot;). The dialog lets you
+          specify the prefix and tile size, and it computes and appends the image
+      size.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Mipmapping</td>
+    <td bgcolor="#D2C8B5">This will reduce aliasing, at the expense of using
+      more texture RAM.&nbsp; There might also be an impact on rendering speed,
+      depending on your graphics hardware.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Request 16-bit</td>
+    <td bgcolor="#D2C8B5">Normally, textures are processed as 24-bit
+      images.&nbsp; This options tells the 3d hardware that it is OK to use only
+      16-bits, which can save significant texture RAM.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Precompute lighting</td>
+    <td bgcolor="#D2C8B5">At runtime, Enviro will make the terrain texture
+      darker/lighter to simulate the sun's light.&nbsp; This is not necessary if
+      you are using a Geospecific texture which already contains shadows.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Lighting factor</td>
+    <td bgcolor="#D2C8B5">Use this scaling factor to make the precomputed
+      lighting more pronounced or more subtle.&nbsp; 1.0 is the standard value.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Pre-lit</td>
+    <td bgcolor="#D2C8B5">Set this option if the texture contains the lighting
+      (shadows).&nbsp; This option is automatically set when you request
+      Precomputed lighting.</td>
+  </tr>
+  <tr>
+    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="2">Trees</th>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Source file</td>
+    <td bgcolor="#B7CCB8">The name of a VF (Vegetation Format) file which
+      contains the plant instances for this terrain.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Visibility distance</td>
+    <td bgcolor="#B7CCB8">Distance at which trees are visible.</td>
+  </tr>
+  <tr>
+    <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="6">Roads</th>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Source file</td>
+    <td bgcolor="#D2C8B5">The name of a RMF (Road Map Format) file which
+      contains the road information.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Ground offset</td>
+    <td bgcolor="#D2C8B5">All the roads ceterlines will be elevated by this
+      amount above the terrain.&nbsp; This can help to avoid collision or
+      occlusion problems between the road and terrain.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Visibility distance</td>
+    <td bgcolor="#D2C8B5">Distance at which roads are visible</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Texture-map roads</td>
+    <td bgcolor="#D2C8B5">Set this for textures (pavement, roads stripes, etc.)</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Road culture</td>
+    <td bgcolor="#D2C8B5">Set this for culture (such as stop sign and stop
+      lights) automatically generated from the traffic information in the RMF
+      file.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Include...</td>
+    <td bgcolor="#D2C8B5">You can indicate a subset of the roads to create.</td>
+  </tr>
+  <tr>
+    <th width="170" valign="top" bgcolor="#B7CCB8">Buildings</th>
+    <td width="180" valign="top" bgcolor="#B7CCB8">(Source file)</td>
+    <td bgcolor="#B7CCB8">The filename should be a VTST (Built Structures) file,
+      containing the Buildings, Fences etc. for this terrain.</td>
+  </tr>
+</table>
+<ul>
+</ul>
+
+</body>
+
+</html>
