@@ -163,6 +163,8 @@ public:
 
 	bool ReadVF(const char *fname);
 	bool WriteVF(const char *fname);
+	bool FindClosestPlant(const DPoint2 &pos, double error_meters,
+		int &plant, double &distance);
 
 	vtProjection m_proj;
 };
