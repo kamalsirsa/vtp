@@ -175,12 +175,6 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	wxGetApp().ProcessIdle();
 }
 
-static void Reshape(int width, int height)
-{
-	glViewport(0, 0, (GLint)width, (GLint)height);
-}
-
-
 void vtGLCanvas::OnClose(wxCloseEvent& event)
 {
 	m_bRunning = false;
@@ -200,9 +194,10 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 	SetCurrent();
 	int width, height;
 	GetClientSize(& width, & height);
-	Reshape(width, height);
 
 	vtGetScene()->SetWindowSize(width, height);
+
+	wxGLCanvas::OnSize(event);
 }
 
 void vtGLCanvas::OnChar(wxKeyEvent& event)
