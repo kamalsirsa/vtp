@@ -19,6 +19,19 @@
 
 #include <wx/intl.h>
 
+// Euro sign hack of the year
+#if wxUSE_UNICODE
+    #define __WDR_EURO__ wxT("\u20ac")
+#else
+    #if defined(__WXMAC__)
+        #define __WDR_EURO__ wxT("\xdb")
+    #elif defined(__WXMSW__)
+        #define __WDR_EURO__ wxT("\x80")
+    #else
+        #define __WDR_EURO__ wxT("\xa4")
+    #endif
+#endif
+
 // Implement window functions
 
 wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
@@ -124,13 +137,9 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -158,13 +167,9 @@ wxSizer *SceneGraphFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -225,13 +230,9 @@ wxSizer *TParamsFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -277,11 +278,11 @@ wxSizer *PlantDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item11->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxRadioButton *item13 = new wxRadioButton( parent, ID_PLANT_LINEAR, _("Straight line"), wxDefaultPosition, wxDefaultSize, 0 );
-    item13->Enable( FALSE );
+    item13->Enable( false );
     item11->Add( item13, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxRadioButton *item14 = new wxRadioButton( parent, ID_PLANT_CONTINUOUS, _("Continuously"), wxDefaultPosition, wxDefaultSize, 0 );
-    item14->Enable( FALSE );
+    item14->Enable( false );
     item11->Add( item14, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item9->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -319,13 +320,9 @@ wxSizer *PlantDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -333,51 +330,114 @@ wxSizer *PlantDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
 wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxBoxSizer *item1 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxString *strs2 = (wxString*) NULL;
-    wxListBox *item2 = new wxListBox( parent, ID_LOCLIST, wxDefaultPosition, wxDefaultSize, 0, strs2, 0 );
-    item1->Add( item2, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM, 5 );
+    wxBoxSizer *item2 = new wxBoxSizer( wxVERTICAL );
 
-    wxBoxSizer *item3 = new wxBoxSizer( wxHORIZONTAL );
+    wxString *strs3 = (wxString*) NULL;
+    wxListBox *item3 = new wxListBox( parent, ID_LOCLIST, wxDefaultPosition, wxDefaultSize, 0, strs3, 0 );
+    item2->Add( item3, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item4 = new wxButton( parent, ID_SAVE, _("Save"), wxDefaultPosition, wxSize(60,-1), 0 );
-    item3->Add( item4, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item5 = new wxButton( parent, ID_LOAD, _("Load"), wxDefaultPosition, wxSize(60,-1), 0 );
-    item3->Add( item5, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxButton *item5 = new wxButton( parent, ID_SAVE, _("Save"), wxDefaultPosition, wxSize(60,-1), 0 );
+    item4->Add( item5, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxButton *item6 = new wxButton( parent, ID_LOAD, _("Load"), wxDefaultPosition, wxSize(60,-1), 0 );
+    item4->Add( item6, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 0 );
+    item2->Add( item4, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    wxBoxSizer *item6 = new wxBoxSizer( wxVERTICAL );
+    item1->Add( item2, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL, 0 );
 
-    wxButton *item7 = new wxButton( parent, ID_RECALL, _("Recall ->"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item7 = new wxBoxSizer( wxVERTICAL );
 
-    wxButton *item8 = new wxButton( parent, ID_STORE, _("<- Store"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item8 = new wxButton( parent, ID_RECALL, _("Recall ->"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item9 = new wxButton( parent, ID_STOREAS, _("Store As.."), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item9 = new wxButton( parent, ID_STORE, _("<- Store"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item10 = new wxButton( parent, ID_REMOVE, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item10 = new wxButton( parent, ID_STOREAS, _("Store As.."), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item6, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxTOP, 5 );
+    wxButton *item11 = new wxButton( parent, ID_REMOVE, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item1->Add( item7, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxTOP, 5 );
+
+    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxStaticLine *item12 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    item0->Add( item12, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxBoxSizer *item14 = new wxBoxSizer( wxVERTICAL );
+
+    wxString *strs15 = (wxString*) NULL;
+    wxListBox *item15 = new wxListBox( parent, ID_ANIMS, wxDefaultPosition, wxDefaultSize, 0, strs15, wxLB_SINGLE );
+    item14->Add( item15, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item17 = new wxButton( parent, ID_SAVE_ANIM, _("Save"), wxDefaultPosition, wxSize(60,-1), 0 );
+    item17->Enable( false );
+    item16->Add( item17, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxButton *item18 = new wxButton( parent, ID_LOAD_ANIM, _("Load"), wxDefaultPosition, wxSize(60,-1), 0 );
+    item16->Add( item18, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item16->Add( 16, 16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBitmapButton *item19 = new wxBitmapButton( parent, ID_RESET, MyBitmapsFunc( 1 ), wxDefaultPosition, wxDefaultSize );
+    item16->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBitmapButton *item20 = new wxBitmapButton( parent, ID_STOP, MyBitmapsFunc( 2 ), wxDefaultPosition, wxDefaultSize );
+    item16->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBitmapButton *item21 = new wxBitmapButton( parent, ID_PLAY, MyBitmapsFunc( 3 ), wxDefaultPosition, wxDefaultSize );
+    item16->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item14->Add( item16, 0, wxALIGN_CENTER, 5 );
+
+    item13->Add( item14, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL, 5 );
+
+    item0->Add( item13, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("Speed:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item24 = new wxSlider( parent, ID_SPEEDSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(120,-1), wxSL_HORIZONTAL );
+    item22->Add( item24, 1, wxALIGN_CENTER, 5 );
+
+    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_SPEED, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item22->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item26 = new wxStaticText( parent, ID_TEXT, _("m/s"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item22, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxBoxSizer *item27 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxCheckBox *item28 = new wxCheckBox( parent, ID_SMOOTH, _("Smooth"), wxDefaultPosition, wxDefaultSize, 0 );
+    item27->Add( item28, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxCheckBox *item29 = new wxCheckBox( parent, ID_POS_ONLY, _("Position Only"), wxDefaultPosition, wxDefaultSize, 0 );
+    item27->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item27, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -529,13 +589,9 @@ wxSizer *CameraDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -553,13 +609,9 @@ wxSizer *TextDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -582,13 +634,9 @@ wxSizer *UtilDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -675,13 +723,9 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -829,13 +873,9 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -1018,13 +1058,9 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -1158,13 +1194,9 @@ wxSizer *TParams4Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -1213,13 +1245,9 @@ wxSizer *TerrManFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -1308,13 +1336,9 @@ wxSizer *TParams5Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -1390,13 +1414,9 @@ wxSizer *TParams6Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -1449,13 +1469,9 @@ wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -1468,7 +1484,7 @@ wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Year:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Enable( FALSE );
+    item2->Enable( false );
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxSpinCtrl *item3 = new wxSpinCtrl( parent, ID_SPIN_YEAR, wxT("2000"), wxDefaultPosition, wxSize(60,-1), 0, 1970, 2038, 2000 );
@@ -1528,13 +1544,9 @@ wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -1555,30 +1567,115 @@ wxBitmap MyBitmapsFunc( size_t index )
         /* columns rows colors chars-per-pixel */
         "32 18 6 1",
         "a c Black",
-        "b c #FF0000",
-        "c c #00FF00",
-        "d c #FFFF00",
+        "b c #FF00FF",
+        "c c #FFFF00",
+        "d c #FF0000",
         "e c #0000FF",
-        "f c #FF00FF",
+        "f c #00FF00",
         /* pixels */
-        "bcefaaaaaaafecbaaaaaaaaaaaaddddd",
-        "abcefaaaaaaafecbaaaaaaaaaaaadddd",
-        "aabcefaaaaaaafecbaaaaaaaaaaaaddd",
-        "aaabcefaaaaaaafecbaaaaaaaaaaaadd",
-        "aaaabcefaaaaaaafecbaaaaaaaaaaaad",
-        "aaaaabcefaaaaaaafecbaaaaaaaaaaaa",
-        "aaaaaabcefaaaaaaafecbaaaaaaaaaaa",
-        "aaaaaaabcefaaaaaaafecbaaaaaaaaaa",
-        "aaaaaaaabcefaaaaaaafecbaaaaaaaaa",
-        "aaaaaaaaabcefaaaaaaafecbaaaaaaaa",
-        "aaaaaaaaaabcefaaaaaaafecbaaaaaaa",
-        "aaaaaaaaaaabcefaaaaaaafecbaaaaaa",
-        "aaaaaaaaaaaabcefaaaaaaafecbaaaaa",
-        "daaaaaaaaaaaabcefaaaaaaafecbaaaa",
-        "ddaaaaaaaaaaaabcefaaaaaaafecbaaa",
-        "dddaaaaaaaaaaaabcefaaaaaaafecbaa",
-        "ddddaaaaaaaaaaaabcefaaaaaaafecba",
-        "dddddaaaaaaaaaaaabcefaaaaaaafecb"
+        "dfebaaaaaaabefdaaaaaaaaaaaaccccc",
+        "adfebaaaaaaabefdaaaaaaaaaaaacccc",
+        "aadfebaaaaaaabefdaaaaaaaaaaaaccc",
+        "aaadfebaaaaaaabefdaaaaaaaaaaaacc",
+        "aaaadfebaaaaaaabefdaaaaaaaaaaaac",
+        "aaaaadfebaaaaaaabefdaaaaaaaaaaaa",
+        "aaaaaadfebaaaaaaabefdaaaaaaaaaaa",
+        "aaaaaaadfebaaaaaaabefdaaaaaaaaaa",
+        "aaaaaaaadfebaaaaaaabefdaaaaaaaaa",
+        "aaaaaaaaadfebaaaaaaabefdaaaaaaaa",
+        "aaaaaaaaaadfebaaaaaaabefdaaaaaaa",
+        "aaaaaaaaaaadfebaaaaaaabefdaaaaaa",
+        "aaaaaaaaaaaadfebaaaaaaabefdaaaaa",
+        "caaaaaaaaaaaadfebaaaaaaabefdaaaa",
+        "ccaaaaaaaaaaaadfebaaaaaaabefdaaa",
+        "cccaaaaaaaaaaaadfebaaaaaaabefdaa",
+        "ccccaaaaaaaaaaaadfebaaaaaaabefda",
+        "cccccaaaaaaaaaaaadfebaaaaaaabefd"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 1)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "16 15 2 1",
+        "  c None",
+        "a c Black",
+        /* pixels */
+        "                ",
+        "                ",
+        "                ",
+        "    aa     a    ",
+        "    aa    aa    ",
+        "    aa   aaa    ",
+        "    aa  aaaa    ",
+        "    aa aaaaa    ",
+        "    aa  aaaa    ",
+        "    aa   aaa    ",
+        "    aa    aa    ",
+        "    aa     a    ",
+        "                ",
+        "                ",
+        "                "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 2)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "16 15 2 1",
+        "  c None",
+        "a c Black",
+        /* pixels */
+        "                ",
+        "                ",
+        "                ",
+        "    aaaaaaaa    ",
+        "    aaaaaaaa    ",
+        "    aaaaaaaa    ",
+        "    aaaaaaaa    ",
+        "    aaaaaaaa    ",
+        "    aaaaaaaa    ",
+        "    aaaaaaaa    ",
+        "    aaaaaaaa    ",
+        "    aaaaaaaa    ",
+        "                ",
+        "                ",
+        "                "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 3)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "16 15 3 1",
+        "  c None",
+        "a c Black",
+        "b c #808080",
+        /* pixels */
+        "                ",
+        "                ",
+        "                ",
+        "     ab         ",
+        "     aab        ",
+        "     aaab       ",
+        "     aaaab      ",
+        "     aaaaab     ",
+        "     aaaab      ",
+        "     aaab       ",
+        "     aab        ",
+        "     ab         ",
+        "                ",
+        "                ",
+        "                "
         };
         wxBitmap bitmap( xpm_data );
         return bitmap;

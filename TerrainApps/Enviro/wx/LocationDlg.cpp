@@ -37,7 +37,7 @@ void BlockingMessageBox(const wxString &msg)
 
 // WDR: event table for LocationDlg
 
-BEGIN_EVENT_TABLE(LocationDlg,wxDialog)
+BEGIN_EVENT_TABLE(LocationDlg,AutoDialog)
 	EVT_LISTBOX( ID_LOCLIST, LocationDlg::OnLocList )
 	EVT_BUTTON( ID_RECALL, LocationDlg::OnRecall )
 	EVT_BUTTON( ID_STORE, LocationDlg::OnStore )
@@ -46,12 +46,28 @@ BEGIN_EVENT_TABLE(LocationDlg,wxDialog)
 	EVT_BUTTON( ID_LOAD, LocationDlg::OnLoad )
 	EVT_LISTBOX_DCLICK( ID_LOCLIST, LocationDlg::OnListDblClick )
 	EVT_BUTTON( ID_REMOVE, LocationDlg::OnRemove )
+	EVT_BUTTON( ID_SAVE_ANIM, LocationDlg::OnSaveAnim )
+	EVT_BUTTON( ID_LOAD_ANIM, LocationDlg::OnLoadAnim )
+	EVT_BUTTON( ID_PLAY, LocationDlg::OnPlay )
+	EVT_BUTTON( ID_STOP, LocationDlg::OnStop )
+	EVT_LISTBOX( ID_ANIMS, LocationDlg::OnAnim )
+	EVT_CHECKBOX( ID_SMOOTH, LocationDlg::OnCheckbox )
+	EVT_CHECKBOX( ID_POS_ONLY, LocationDlg::OnCheckbox )
+	EVT_BUTTON( ID_RESET, LocationDlg::OnReset )
+	EVT_SLIDER( ID_SPEEDSLIDER, LocationDlg::OnSpeedSlider )
+	EVT_TEXT( ID_SPEED, LocationDlg::OnText )
 END_EVENT_TABLE()
 
 LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	AutoDialog( parent, id, title, position, size, style )
 {
+	m_bSmooth = true;
+	m_bPosOnly = false;
+	m_iAnim = -1;
+	m_fSpeed = 1.0f;
+	m_bSetting = false;
+
 	LocationDialogFunc( this, TRUE );
 	m_pSaver = new vtLocationSaver();
 	m_pStoreAs = GetStoreas();
@@ -59,12 +75,23 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_pRecall = GetRecall();
 	m_pRemove = GetRemove();
 	m_pLocList = GetLoclist();
+
+	AddValidator(ID_SMOOTH, &m_bSmooth);
+	AddValidator(ID_POS_ONLY, &m_bPosOnly);
+	AddNumValidator(ID_SPEED, &m_fSpeed);
+	AddValidator(ID_SPEEDSLIDER, &m_iSpeed);
+
 	RefreshButtons();
+	UpdateEnabling();
 }
 
 LocationDlg::~LocationDlg()
 {
 	delete m_pSaver;
+
+	unsigned int i;
+	for (i = 0; i < m_Anims.GetSize(); i++)
+		delete m_Anims[i];
 }
 
 void LocationDlg::SetTarget(vtTransform *pTarget, const vtProjection &proj,
@@ -102,7 +129,161 @@ void LocationDlg::RefreshList()
 	}
 }
 
+void LocationDlg::RefreshAnims()
+{
+	GetAnims()->Clear();
+
+	wxString str;
+	unsigned int i, num = m_Anims.GetSize();
+	for (i = 0; i < num; i++)
+	{
+		vtAnimPath3d *anim = m_Anims[i];
+
+		str.Printf(_T("%hs"), (const char *) anim->GetFilename());
+		GetAnims()->Append(str);
+	}
+}
+
+void LocationDlg::UpdateEnabling()
+{
+	GetReset()->Enable(m_iAnim != -1);
+	GetPlay()->Enable(m_iAnim != -1);
+	GetStop()->Enable(m_iAnim != -1);
+	GetSmooth()->Enable(m_iAnim != -1);
+}
+
+#define SPEED_MIN   0.0f
+#define SPEED_MAX   4.0f
+#define SPEED_RANGE (SPEED_MAX-(SPEED_MIN)) // 1 to 10000 meters/sec
+
+void LocationDlg::SlidersToValues()
+{
+	m_fSpeed =  powf(10, (SPEED_MIN + m_iSpeed * SPEED_RANGE / 100));
+}
+
+void LocationDlg::ValuesToSliders()
+{
+	m_iSpeed =  (int) ((log10f(m_fSpeed) - SPEED_MIN) / SPEED_RANGE * 100);
+}
+
+void LocationDlg::SetValues()
+{
+	if (m_iAnim == -1)
+		return;
+
+	vtAnimPath3d *anim = m_Anims[m_iAnim];
+	anim->SetInterpMode(m_bSmooth ? vtAnimPath::CUBIC_SPLINE : vtAnimPath::LINEAR);
+	vtAnimPathEngine *engine = m_Engines[m_iAnim];
+	engine->SetPosOnly(m_bPosOnly);
+	engine->SetSpeed(m_fSpeed);
+}
+
+void LocationDlg::GetValues()
+{
+	if (m_iAnim == -1)
+		return;
+
+	vtAnimPath3d *anim = m_Anims[m_iAnim];
+	m_bSmooth = (anim->GetInterpMode() == vtAnimPath::CUBIC_SPLINE);
+
+	vtAnimPathEngine *engine = m_Engines[m_iAnim];
+	m_bPosOnly = engine->GetPosOnly();
+	m_fSpeed = engine->GetSpeed();
+}
+
+void LocationDlg::TransferToWindow()
+{
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+}
+
+
 // WDR: handler implementations for LocationDlg
+
+void LocationDlg::OnText( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+	TransferDataFromWindow();
+	ValuesToSliders();
+	SetValues();
+	TransferToWindow();
+}
+
+void LocationDlg::OnSpeedSlider( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+	TransferDataFromWindow();
+	SlidersToValues();
+	SetValues();
+	TransferToWindow();
+}
+
+void LocationDlg::OnReset( wxCommandEvent &event )
+{
+	vtAnimPathEngine *engine = m_Engines[m_iAnim];
+	engine->Reset();
+}
+
+void LocationDlg::OnCheckbox( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+	TransferDataFromWindow();
+ 	SetValues();
+}
+
+void LocationDlg::OnAnim( wxCommandEvent &event )
+{
+	m_iAnim = GetAnims()->GetSelection();
+
+	UpdateEnabling();
+	GetValues();
+	TransferToWindow();
+}
+
+void LocationDlg::OnStop( wxCommandEvent &event )
+{
+	vtAnimPathEngine *engine = m_Engines[m_iAnim];
+	engine->SetEnabled(false);
+}
+
+void LocationDlg::OnPlay( wxCommandEvent &event )
+{
+	vtAnimPathEngine *engine = m_Engines[m_iAnim];
+	engine->SetEnabled(true);
+}
+
+void LocationDlg::OnLoadAnim( wxCommandEvent &event )
+{
+	wxFileDialog loadFile(NULL, _("Load Animation Path"), _T(""), _T(""),
+		_("Polyline Data Sources (*.shp)|*.shp|"), wxOPEN);
+	bool bResult = (loadFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+
+	vtAnimPath3d *anim = new vtAnimPath3d;
+	if (!anim->LoadFromSHP(loadFile.GetPath().mb_str()))
+	{
+		delete anim;
+		return;
+	}
+	anim->TransformToTerrain(m_pSaver->GetAtProjection());
+	m_Anims.Append(anim);
+	vtAnimPathEngine *engine = new vtAnimPathEngine(anim);
+	engine->SetTarget(m_pSaver->GetTransform());
+	engine->SetEnabled(false);
+	vtGetScene()->AddEngine(engine);
+	m_Engines.Append(engine);
+	RefreshAnims();
+}
+
+void LocationDlg::OnSaveAnim( wxCommandEvent &event )
+{
+	
+}
 
 void LocationDlg::OnRemove( wxCommandEvent &event )
 {
