@@ -138,40 +138,44 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_DIRT 10087
 #define ID_STRUCTFILES 10088
 #define ID_STRUCT_DISTANCE 10089
-#define ID_OCEANPLANE 10090
-#define ID_OCEANPLANEOFFSET 10091
-#define ID_DEPRESSOCEAN 10092
-#define ID_DEPRESSOCEANOFFSET 10093
-#define ID_SKY 10094
-#define ID_SKYTEXTURE 10095
-#define ID_HORIZON 10096
-#define ID_FOG 10097
-#define ID_FOG_DISTANCE 10098
 wxSizer *TParams3Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_NAV_STYLE 10099
-#define ID_MINHEIGHT 10100
-#define ID_NAVSPEED 10101
-#define ID_LOCFILE 10102
-#define ID_INIT_LOCATION 10103
-#define ID_HITHER 10104
-#define ID_INITTIME 10105
-#define ID_TIMEMOVES 10106
-#define ID_TIMESPEED 10107
-#define ID_LABELS 10108
-#define ID_LABEL_FILE 10109
-#define ID_LABEL_FIELD 10110
-#define ID_LABEL_HEIGHT 10111
-#define ID_LABEL_SIZE 10112
+#define ID_NAV_STYLE 10090
+#define ID_MINHEIGHT 10091
+#define ID_NAVSPEED 10092
+#define ID_LOCFILE 10093
+#define ID_INIT_LOCATION 10094
+#define ID_HITHER 10095
+#define ID_INITTIME 10096
+#define ID_TIMEMOVES 10097
+#define ID_TIMESPEED 10098
 wxSizer *TParams4Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TREECTRL 10113
-#define ID_ADD_PATH 10114
-#define ID_ADD_TERRAIN 10115
-#define ID_COPY 10116
-#define ID_DELETE 10117
-#define ID_EDIT_PARAMS 10118
+#define ID_TREECTRL 10099
+#define ID_ADD_PATH 10100
+#define ID_ADD_TERRAIN 10101
+#define ID_COPY 10102
+#define ID_DELETE 10103
+#define ID_EDIT_PARAMS 10104
 wxSizer *TerrManFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_OCEANPLANE 10105
+#define ID_OCEANPLANEOFFSET 10106
+#define ID_DEPRESSOCEAN 10107
+#define ID_DEPRESSOCEANOFFSET 10108
+#define ID_SKY 10109
+#define ID_SKYTEXTURE 10110
+#define ID_HORIZON 10111
+#define ID_FOG 10112
+#define ID_FOG_DISTANCE 10113
+wxSizer *TParams5Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_LABELS 10114
+#define ID_LABEL_FILE 10115
+#define ID_LABEL_FIELD 10116
+#define ID_LABEL_HEIGHT 10117
+#define ID_LABEL_SIZE 10118
+wxSizer *TParams6Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
