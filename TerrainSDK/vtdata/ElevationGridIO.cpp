@@ -916,6 +916,69 @@ bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
 }
 
 
+/** Helper function for LoadFromGRD, loads from a Surfer ascii grid file (GRD)
+ * \par
+ * Projection is always geographic and elevation is floating-point.
+ * \returns \c true if the file was successfully opened and read.
+ */
+bool vtElevationGrid::LoadFromDSAA(const char* szFileName, bool progress_callback(int))
+{
+	FILE *fp = fopen(szFileName, "rt");
+	if (!fp)
+		return false;
+
+	int nx, ny;
+	// read GRD header data
+	double xlo, xhi, ylo, yhi, zlo, zhi;
+
+	char ch[100];
+	fscanf(fp, "%s\n", ch); // DSAA
+	fscanf(fp, "%d%d\n", &nx, &ny);
+	fscanf(fp, "%lf%lf\n", &xlo, &xhi);
+	fscanf(fp, "%lf%lf\n", &ylo, &yhi);
+	fscanf(fp, "%lf%lf\n", &zlo, &zhi);
+
+	// Set the projection (actually we don't know it)
+	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
+
+	// set the corresponding vtElevationGrid info
+	m_bFloatMode = true;
+	m_EarthExtents.left = xlo;
+	m_EarthExtents.top = yhi;
+	m_EarthExtents.right = xhi;
+	m_EarthExtents.bottom = ylo;
+	ComputeCornersFromExtents();
+
+	m_iColumns = nx;
+	m_iRows = ny;
+
+	_AllocateArray();
+
+	int x, y;
+	float z;
+	for (y = 0; y < ny; y++)
+	{
+		if (progress_callback != NULL)
+		{
+			if (progress_callback(y * 100 / ny))
+			{
+				// Cancel
+				fclose(fp);
+				return false;
+			}
+		}
+		for (x = 0; x < nx; x++)
+		{
+			fscanf(fp, "%f", &z);
+			SetFValue(x, y, z);
+		}
+	}
+
+	fclose(fp);
+	return true;
+}
+
+
 /** Loads from a Surfer binary grid file (GRD)
  * \par
  * Projection is always geographic and elevation is floating-point.
@@ -932,29 +995,75 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 	if (!fp)
 	  return false;
 
+	// read GRD header data
+	short nx, ny;
+	double xlo, xhi, ylo, yhi, zlo, zhi;
+
 	// Parse the file
 	char szHeader[5];
 	fread(szHeader, 4, 1, fp);
-	if (strncmp(szHeader, "DSBB", 4))
+	if (!strncmp(szHeader, "DSBB", 4)) //DSBB format
+	{
+		// read GRD header data
+		short nx2, ny2;
+
+		/*  FIXME:  there be byte order issues here.  See below in this routine.  */
+		fread(&nx2, 2, 1, fp);
+		fread(&ny2, 2, 1, fp);
+		nx = nx2;
+		ny = ny2;
+
+		fread(&xlo, 8, 1, fp);
+		fread(&xhi, 8, 1, fp);
+		fread(&ylo, 8, 1, fp);
+		fread(&yhi, 8, 1, fp);
+		fread(&zlo, 8, 1, fp);
+		fread(&zhi, 8, 1, fp);
+	}
+	else if (!strncmp(szHeader, "DSRB", 4)) //DSRB format, Surfer 7
+	{
+		int size = 0L; // size of header
+		fread(&size, 4, 1, fp); //needs to be 4
+		long id = 0L;
+		fread(&id, 4, 1, fp); //needs to be 1
+		char tag[5];
+		fread(&tag, 4, 1, fp); //nedds to be "GRID"
+		fread(&size, 4, 1, fp); // size in bytes of grid section
+
+		fread(&nx, 4, 1, fp);
+		fread(&ny, 4, 1, fp);
+		fread(&xlo, 8, 1, fp);
+		fread(&ylo, 8, 1, fp);
+
+		double xsize;
+		fread(&xsize, 8, 1, fp);
+		xhi = xlo + xsize*nx;
+		double ysize;
+		fread(&ysize, 8, 1, fp);
+		yhi = ylo + ysize*ny;
+
+		fread(&zlo, 8, 1, fp);
+		fread(&zhi, 8, 1, fp);
+
+		double rotation;
+		fread(&rotation, 8, 1, fp);
+		double blankValue;
+		fread(&blankValue, 8, 1, fp);
+		fread(&tag, 4, 1, fp); // should be "DATA"
+		fread(&size, 4, 1, fp); // assert(size/sizeof(double) == nx*ny);
+
+	}
+	else if (!strncmp(szHeader, "DSAA", 4)) //DSAA format
+	{
+		fclose(fp);
+		return LoadFromDSAA(szFileName,progress_callback);
+	}
+	else
 	{
 		// not the right kind of file
 		fclose(fp);
 		return false;
 	}
-
-	// read GRD header data
-	short nx, ny;
-	double xlo, xhi, ylo, yhi, zlo, zhi;
-	/*  FIXME:  there be byte order issues here.  See below in this routine.  */
-	fread(&nx, 2, 1, fp);
-	fread(&ny, 2, 1, fp);
-	fread(&xlo, 8, 1, fp);
-	fread(&xhi, 8, 1, fp);
-	fread(&ylo, 8, 1, fp);
-	fread(&yhi, 8, 1, fp);
-	fread(&zlo, 8, 1, fp);
-	fread(&zhi, 8, 1, fp);
-
 	// Set the projection (actually we don't know it)
 	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
 
