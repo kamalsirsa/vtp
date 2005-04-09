@@ -970,7 +970,10 @@ bool vtElevationGrid::LoadFromDSAA(const char* szFileName, bool progress_callbac
 		for (x = 0; x < nx; x++)
 		{
 			fscanf(fp, "%f", &z);
-			SetFValue(x, y, z);
+			if(z < zlo || z > zhi)
+				SetFValue(x,y,INVALID_ELEVATION);
+			else
+				SetFValue(x, y, z);
 		}
 	}
 
@@ -999,10 +1002,14 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 	short nx, ny;
 	double xlo, xhi, ylo, yhi, zlo, zhi;
 
-	// Parse the file
+	// Parse the file, determine what kind of GRD it is
 	char szHeader[5];
 	fread(szHeader, 4, 1, fp);
-	if (!strncmp(szHeader, "DSBB", 4)) //DSBB format
+	bool bDSBB = !strncmp(szHeader, "DSBB", 4);
+	bool bDSRB = !strncmp(szHeader, "DSRB", 4);
+	bool bDSAA = !strncmp(szHeader, "DSAA", 4);
+
+	if (bDSBB) //DSBB format
 	{
 		// read GRD header data
 		short nx2, ny2;
@@ -1020,7 +1027,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 		fread(&zlo, 8, 1, fp);
 		fread(&zhi, 8, 1, fp);
 	}
-	else if (!strncmp(szHeader, "DSRB", 4)) //DSRB format, Surfer 7
+	else if (bDSRB) //DSRB format, Surfer 7
 	{
 		int size = 0L; // size of header
 		fread(&size, 4, 1, fp); //needs to be 4
@@ -1050,10 +1057,10 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 		double blankValue;
 		fread(&blankValue, 8, 1, fp);
 		fread(&tag, 4, 1, fp); // should be "DATA"
-		fread(&size, 4, 1, fp); // assert(size/sizeof(double) == nx*ny);
-
+		fread(&size, 4, 1, fp);
+		assert(size/sizeof(double) == nx*ny);
 	}
-	else if (!strncmp(szHeader, "DSAA", 4)) //DSAA format
+	else if (bDSAA) //DSAA format
 	{
 		fclose(fp);
 		return LoadFromDSAA(szFileName,progress_callback);
@@ -1064,7 +1071,8 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 		fclose(fp);
 		return false;
 	}
-	// Set the projection (actually we don't know it)
+	// Set the projection.  GRD doesn't tell us projection, so we simply
+	//  default to UTM zone 1.
 	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
 
 	// set the corresponding vtElevationGrid info
@@ -1082,21 +1090,54 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 
 	int x, y;
 	float z;
-	for (y = 0; y < ny; y++)
+	if (bDSRB) //DSRB format
 	{
-		if (progress_callback != NULL)
-		{
-			if (progress_callback(y * 100 / ny))
-			{
-				// Cancel
-				fclose(fp);
-				return false;
-			}
-		}
 		for (x = 0; x < nx; x++)
 		{
-			fread(&z, 4, 1, fp);
-			SetFValue(x, y, z);
+			if (progress_callback != NULL)
+			{
+				if (progress_callback(x * 100 / nx))
+				{
+					// Cancel
+					fclose(fp);
+					return false;
+				}
+			}
+			for (y = 0; y < ny; y++)
+			{
+				double dz;
+				fread(&dz, 8, 1, fp);
+				z = (float)dz;
+
+				if(z < zlo || z > zhi)
+					z = INVALID_ELEVATION;
+
+				SetFValue(x, y, z);
+			}
+		}
+	}
+	else
+	{
+		for (y = 0; y < ny; y++)
+		{
+			if (progress_callback != NULL)
+			{
+				if (progress_callback(y * 100 / ny))
+				{
+					// Cancel
+					fclose(fp);
+					return false;
+				}
+			}
+			for (x = 0; x < nx; x++)
+			{
+				fread(&z, 4, 1, fp);
+
+				if(z < zlo || z > zhi)
+					z = INVALID_ELEVATION;
+
+				SetFValue(x, y, z);
+			}
 		}
 	}
 	fclose(fp);
