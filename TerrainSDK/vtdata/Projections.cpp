@@ -1022,6 +1022,7 @@ OCT *CreateCoordTransform(const vtProjection *pSource,
 	if (bLog)
 	{
 		// display debugging information to the log
+#if 0
 		char *wkt1, *wkt2;
 		OGRErr err = pSource->exportToWkt(&wkt1);
 		err = pTarget->exportToWkt(&wkt2);
@@ -1029,6 +1030,15 @@ OCT *CreateCoordTransform(const vtProjection *pSource,
 		VTLOG("   Converting to: %s\n", wkt2);
 		OGRFree(wkt1);
 		OGRFree(wkt2);
+#else
+		char *proj1, *proj2;
+		OGRErr err = pSource->exportToProj4(&proj1);
+		err = pTarget->exportToProj4(&proj2);
+		VTLOG(" Converting from: %s\n", proj1);
+		VTLOG("   Converting to: %s\n", proj2);
+		OGRFree(proj1);
+		OGRFree(proj2);
+#endif
 	}
 
 	OCT *result = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource,
