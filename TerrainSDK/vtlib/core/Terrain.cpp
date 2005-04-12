@@ -1978,17 +1978,17 @@ bool vtTerrain::CreateStep1()
 		m_pElevGrid->GetDimensions(col, row);
 		VTLOG("\t\tSize: %d x %d.\n", col, row);
 		DRECT rect = m_pElevGrid->GetEarthExtents();
-		VTLOG("\t\tEarth Extents LRTB: %lf %lf %lf %lf\n",
+		VTLOG("\t\tEarth Extents LRTB: %lg %lg %lg %lg\n",
 			rect.left, rect.right, rect.top, rect.bottom);
 
 		float exag = m_Params.GetValueFloat(STR_VERTICALEXAG);
-		VTLOG("\t\tVertical exaggeration: %f\n", exag);
+		VTLOG("\t\tVertical exaggeration: %g\n", exag);
 		m_pElevGrid->SetupConversion(exag);
 
 		g_Conv = m_pElevGrid->m_Conversion;
 
 		FRECT frect = m_pElevGrid->m_WorldExtents;
-		VTLOG("\t\tWorld Extents LRTB: %f %f %f %f\n",
+		VTLOG("\t\tWorld Extents LRTB: %g %g %g %g\n",
 			frect.left, frect.right, frect.top, frect.bottom);
 
 		m_pHeightField = m_pElevGrid;

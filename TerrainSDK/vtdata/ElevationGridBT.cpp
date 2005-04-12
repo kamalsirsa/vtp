@@ -138,7 +138,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	else
 	{
 		// Internal specification: proj_type 0 = Geo, 1 = UTM
-		VTLOG(" (type %d, zone %d, datum %d", proj_type, zone, datum);
+		VTLOG(" (type %d, zone %d, datum %d)", proj_type, zone, datum);
 		m_proj.SetProjectionSimple(proj_type == 1, zone, datum);
 	}
 
