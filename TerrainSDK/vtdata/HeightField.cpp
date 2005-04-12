@@ -537,9 +537,9 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	}
 
 	VTLOG("dib size %d %d, ", w, h);
-	VTLOG("color table with %d values, first color [%d %d %d],\n",
+	VTLOG("table of %d values, first [%d %d %d],\n",
 		cmap->Num(), cmap->m_color[0].r, cmap->m_color[0].g, cmap->m_color[0].b);
-	VTLOG("\tmin %f, max %f, range %f, granularity %d, ",
+	VTLOG("\tmin %g, max %g, range %g, granularity %d, ",
 		fMin, fMax, fRange, iGranularity);
 
 	// Rather than look through the color map for each pixel, pre-build
