@@ -88,12 +88,6 @@ EnviroView::EnviroView()
 	m_bMaintainHeight = false;
 
 	m_bRunning = false;
-
-	// We use a combination of paint-on-idle and a timer to keep the
-	//  rendering continuous.  Idle events drive the painting, and these
-	//  timer events (which we ignore) keep the event queue moving.
-	// Interval of 10ms is 100fps.
-	int timer = SetTimer(1, 10, 0);
 }
 
 EnviroView::~EnviroView()
@@ -600,6 +594,13 @@ int EnviroView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	
 	if (CreateViewGLContext(hDC)==FALSE)
 		return 0;
+
+	// We use a combination of paint-on-idle and a timer to keep the
+	//  rendering continuous.  Idle events drive the painting, and these
+	//  timer events (which we ignore) keep the event queue moving.
+	// Interval of 10ms is 100fps.
+	int timer = SetTimer(1, 10, 0);
+
 	return 1;
 }
 
