@@ -232,6 +232,18 @@ int ExpandTGZ(const char *archive_fname, const char *prepend_path)
 	return files_encountered;
 }
 
+#if SUPPORT_UNZIP
+struct MyZipCallback : public CZipActionCallback
+{
+	virtual bool Callback(int iProgress)
+	{
+		// Return false from the callback function to abort operation.
+		int foo = 1;
+		return true;
+	}
+};
+#endif
+
 /**
  * Unarchives the indicated zipped file.
  * Each directory and file in the archive is created.
@@ -247,7 +259,12 @@ int ExpandZip(const char *archive_fname, const char *prepend_path)
 	int iCount = 0;
 	int i;
 
+	MyZipCallback mycallback;
+
 	CZipArchive zip;
+
+	zip.SetCallback(&mycallback);
+
 	try
 	{
 #ifdef UNICODE
