@@ -642,13 +642,16 @@ float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 			// far corner, no interpolation
 			fData = GetFValue(index_x, index_y);
 		}
-		// right edge - interpolate north-south
-		fDataBL = GetFValue(index_x, index_y);
-		fDataTL = GetFValue(index_x, index_y+1);
-		if (fDataBL == INVALID_ELEVATION || fDataTL == INVALID_ELEVATION)
-			return INVALID_ELEVATION;
-		double diff_y = findex_y - index_y;
-		fData = fDataBL + (fDataTL - fDataBL) * diff_y;
+		else
+		{
+			// right edge - interpolate north-south
+			fDataBL = GetFValue(index_x, index_y);
+			fDataTL = GetFValue(index_x, index_y+1);
+			if (fDataBL == INVALID_ELEVATION || fDataTL == INVALID_ELEVATION)
+				return INVALID_ELEVATION;
+			double diff_y = findex_y - index_y;
+			fData = fDataBL + (fDataTL - fDataBL) * diff_y;
+		}
 	}
 	else if (index_y == m_iRows-1)
 	{
