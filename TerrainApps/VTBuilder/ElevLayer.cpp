@@ -476,9 +476,9 @@ void vtElevLayer::SetupDefaultColors(ColorMap &cmap)
 	cmap.Add(-400* 3, RGBi(43, 90, 142	));
 	cmap.Add(-400* 2, RGBi(81, 121, 172	));
 	cmap.Add(-400* 1, RGBi(108, 156, 195));
-	cmap.Add(-0.01f  , RGBi(182, 228, 255));
+	cmap.Add(-0.01f,  RGBi(182, 228, 255));
 	cmap.Add(0, RGBi(0, 0, 0xee));
-	cmap.Add( 0.01f  , RGBi(40, 224, 40	));
+	cmap.Add( 0.01f,  RGBi(40, 224, 40	));
 	cmap.Add( 450* 1, RGBi(0, 128, 0	));
 	cmap.Add( 450* 2, RGBi(100, 144, 76	));
 	cmap.Add( 450* 3, RGBi(204, 170, 136));
