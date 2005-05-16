@@ -15,6 +15,7 @@
 #include "vtString.h"
 
 class vtDIB;
+class OGRDataSource;
 
 /**
  * The vtElevationGrid class represents a generic grid of elevation data.
@@ -75,6 +76,7 @@ public:
 
 	// Use OGR to read a file
 	bool LoadFromNTF5(const char *szFileName, bool progress_callback(int) = NULL);
+	bool ParseNTF5(OGRDataSource *pDatasource, vtString &msg, bool progress_callback(int));
 
 	// Save
 	bool SaveToGeoTIFF(const char *szFileName) const;

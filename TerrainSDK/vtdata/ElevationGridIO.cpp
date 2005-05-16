@@ -1565,6 +1565,144 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	return true;
 }
 
+bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
+								bool progress_callback(int))
+{
+	OGREnvelope Extent;
+	OGRFeature *pFeature = NULL;
+
+	if (1 != pDatasource->GetLayerCount())
+	{
+		msg = "Layer count isn't 1";
+		return false;
+	}
+	OGRLayer *pLayer = pDatasource->GetLayer(0);
+	if (NULL == pLayer)
+	{
+		msg = "Couldn't get layer";
+		return false;
+	}
+	OGRFeatureDefn *pFeatureDefn = pLayer->GetLayerDefn();
+	if (NULL == pFeatureDefn)
+	{
+		msg = "Couldn't get feature definition";
+		return false;
+	}
+	if (0 != strncmp(pFeatureDefn->GetName(), "DTM_", 4))
+	{
+		msg = "Feature definition doesn't start with 'DTM_'";
+		return false;
+	}
+	if (wkbPoint25D != pFeatureDefn->GetGeomType())
+	{
+		msg = "Feature type isn't Point25D";
+		return false;
+	}
+	if (1 != pFeatureDefn->GetFieldCount())
+	{
+		msg = "Field count isn't 1";
+		return false;
+	}
+	OGRFieldDefn *pFieldDefn = pFeatureDefn->GetFieldDefn(0);
+	if (NULL == pFieldDefn)
+	{
+		msg = "Couldn't get field definition";
+		return false;
+	}
+	if (0 != strcmp(pFieldDefn->GetNameRef(), "HEIGHT"))
+	{
+		msg = "Couldn't get HEIGHT field";
+		return false;
+	}
+	OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
+	if (NULL == pSpatialRef)
+	{
+		msg = "Couldn't get spatial reference";
+		return false;
+	}
+	pLayer->GetExtent(&Extent);
+
+	// Get number of features. In this case the total number of cells
+	// in the elevation matrix
+	int iTotalCells = pLayer->GetFeatureCount();
+
+  	pLayer->ResetReading();
+
+	// Prescan the features to calculate the x and y intervals
+	// this is a horrible kludge
+	int iRowCount = 0;
+	OGRPoint *pPoint;
+	double dX = 0;	// set to avoid compiler warning
+	while ( (pFeature = pLayer->GetNextFeature()) != NULL )
+	{
+		// make sure we delete the feature no matter how the loop exits
+		std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
+
+		if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
+		{
+			msg = "Couldn't get point feature";
+			return false;
+		}
+//		if (wkbPoint25D != pPoint->getGeometryType())
+		if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))	// RJ fix 03.11.21
+		{
+			msg = "Couldn't flatten point feature";
+			return false;
+		}
+		if (0 == iRowCount)
+			dX = pPoint->getX();
+		else if (pPoint->getX() != dX)
+			break;
+
+		iRowCount++;
+	}
+
+	int iColCount = iTotalCells / iRowCount;
+
+	m_iColumns = iColCount;
+	m_iRows = iRowCount;
+	m_proj.SetSpatialReference(pSpatialRef);
+	m_bFloatMode = true;
+	m_EarthExtents.left = Extent.MinX;
+	m_EarthExtents.top = Extent.MaxY;
+	m_EarthExtents.right = Extent.MaxX;
+	m_EarthExtents.bottom = Extent.MinY;
+	ComputeCornersFromExtents();
+
+	_AllocateArray();
+
+  	pLayer->ResetReading();
+
+	int i;
+	for (i = 0; i < iTotalCells; i++)
+	{
+		if (NULL == (pFeature = pLayer->GetNextFeature()))
+		{
+			msg = "Couldn't get next feature";
+			return false;
+		}
+		if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
+		{
+			msg = "Couldn't get point feature";
+			return false;
+		}
+		if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))
+		{
+			msg = "Couldn't flatten point feature";
+			return false;
+		}
+		SetFValue(i / iRowCount, i % iRowCount, (float)pPoint->getZ());
+		delete pFeature;
+		pFeature = NULL;
+		if (progress_callback != NULL)
+			progress_callback(i * 100 / iTotalCells);
+	}
+
+	ComputeHeightExtents();
+	msg.Format("Read %d cells (%d x %d)", iTotalCells, m_iColumns, m_iRows);
+	return true;
+}
+
 /**
  * Loads an elevation grid from an UK
  * Ordnance Survey NTF level 5 file using the OGR library
@@ -1578,129 +1716,20 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 								   bool progress_callback(int))
 {
-	OGREnvelope Extent;
-	bool bRet = false;
-	OGRFeature *pFeature = NULL;
-	OGRDataSource *pDatasource = NULL;
-
 	// let GDAL know we're going to use its OGR format drivers
 	g_GDALWrapper.RequestOGRFormats();
 
-	try
-	{
-		OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(szFileName);
-		if (NULL == pDatasource)
-			throw "No datasource";
+	vtString msg;
+	bool bSuccess = false;
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(szFileName);
+	if (NULL == pDatasource)
+		msg = "No datasource";
+	else
+		bSuccess = ParseNTF5(pDatasource, msg, progress_callback);
 
-		if (1 != pDatasource->GetLayerCount())
-			throw "Layer count isn't 1";
-
-		OGRLayer *pLayer = pDatasource->GetLayer(0);
-		if (NULL == pLayer)
-			throw "Couldn't get layer";
-
-		OGRFeatureDefn *pFeatureDefn = pLayer->GetLayerDefn();
-		if (NULL == pFeatureDefn)
-			throw "Couldn't get feature definition";
-
-		if (0 != strncmp(pFeatureDefn->GetName(), "DTM_", 4))
-			throw "Feature definition doesn't start with 'DTM_'";
-
-		if (wkbPoint25D != pFeatureDefn->GetGeomType())
-			throw "Feature type isn't Point25D";
-
-		if (1 != pFeatureDefn->GetFieldCount())
-			throw "Field count isn't 1";
-
-		OGRFieldDefn *pFieldDefn = pFeatureDefn->GetFieldDefn(0);
-		if (NULL == pFieldDefn)
-			throw "Couldn't get field definition";
-
-		if (0 != strcmp(pFieldDefn->GetNameRef(), "HEIGHT"))
-			throw "Couldn't get HEIGHT field";
-
-		OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
-		if (NULL == pSpatialRef)
-			throw "Couldn't get spatial reference";
-
-		pLayer->GetExtent(&Extent);
-
-		// Get number of features. In this case the total number of cells
-		// in the elevation matrix
-		int iTotalCells = pLayer->GetFeatureCount();
-
-  		pLayer->ResetReading();
-
-		// Prescan the features to calculate the x and y intervals
-		// this is a horrible kludge
-		int iRowCount = 0;
-		OGRPoint *pPoint;
-		double dX = 0;	// set to avoid compiler warning
-		while ( (pFeature = pLayer->GetNextFeature()) != NULL )
-		{
-			// make sure we delete the feature no matter how the loop exits
-			std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
-
-			if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
-				throw "Couldn't get point feature";
-	//		if (wkbPoint25D != pPoint->getGeometryType())
-			if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))	// RJ fix 03.11.21
-				throw "Couldn't flatten point feature";
-			if (0 == iRowCount)
-				dX = pPoint->getX();
-			else if (pPoint->getX() != dX)
-			{
-				delete pFeature;
-				pFeature = NULL;
-				break;
-			}
-			iRowCount++;
-		}
-
-		int iColCount = iTotalCells / iRowCount;
-
-		m_iColumns = iColCount;
-		m_iRows = iRowCount;
-		m_proj.SetSpatialReference(pSpatialRef);
-		m_bFloatMode = true;
-		m_EarthExtents.left = Extent.MinX;
-		m_EarthExtents.top = Extent.MaxY;
-		m_EarthExtents.right = Extent.MaxX;
-		m_EarthExtents.bottom = Extent.MinY;
-		ComputeCornersFromExtents();
-
-		_AllocateArray();
-
-  		pLayer->ResetReading();
-
-		int i;
-		for (i = 0; i < iTotalCells; i++)
-		{
-			if (NULL == (pFeature = pLayer->GetNextFeature()))
-				throw "Couldn't get next feature";
-			if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
-				throw "Couldn't get point feature";
-			if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))
-				throw "Couldn't flatten point feature";
-			SetFValue(i / iRowCount, i % iRowCount, (float)pPoint->getZ());
-			delete pFeature;
-			pFeature = NULL;
-			if (progress_callback != NULL)
-				progress_callback(i * 100 / iTotalCells);
-		}
-
-		ComputeHeightExtents();
-		bRet = true;
-		throw "done";
-	}
-	catch (const char *msg)
-	{
-		VTLOG("LoadFromNTF5 result: %s.\n", msg);
-	}
-	delete pFeature;
+	VTLOG("LoadFromNTF5 result: %s.\n", msg);
 	delete pDatasource;
-
-	return bRet;
+	return bSuccess;
 }
 
 
@@ -2009,6 +2038,8 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	if (!fp)
 		return false;
 
+	VTLOG("XYZ file: %s\n", szFileName);
+
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
@@ -2035,10 +2066,49 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	extents.SetRect(1E9, -1E9, -1E9, 1E9);
 	int count, iNum = 0;
 
-	// Make two passes over the file; the first time, we collect extents
+	// Look at the first two points
 	rewind(fp);
+	DPoint2 testp[2];
+	int i;
+	for (i = 0; fgets(buf, 80, fp) != NULL && i < 2; i++)
+	{
+		VTLOG("Line %d: %s", i, buf);
+		if (bCommas)
+			count = sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
+		else
+			count = sscanf(buf, "%lf %lf %lf", &x, &y, &z);
+		testp[i].Set(x, y);
+	}
+
+	// Compare them and decide whether we are row or column order
+	bool bColumnOrder;
+	DPoint2 diff = testp[1] - testp[0];
+	if (diff.x == 0)
+		bColumnOrder = true;
+	else if (diff.y == 0)
+		bColumnOrder = false;
+	else
+	{
+		VTLOG("Can't determine if file is row-first or column-first.\n");
+		fclose(fp);
+		return false;
+	}
+
+	// Now make two passes over the file; the first time, we collect extents
+	rewind(fp);
+	int prog = 0;
 	while (fgets(buf, 80, fp) != NULL)
 	{
+		if ((iNum%1000) == 0 && progress_callback != NULL)
+		{
+			prog++;
+			if (progress_callback(prog % 100))
+			{
+				fclose(fp);		// Cancel
+				return false;
+			}
+		}
+
 		if (bCommas)
 			count = sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
 		else
@@ -2050,35 +2120,19 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	}
 	ComputeCornersFromExtents();
 
-	// Go back and look at the first two points
-	rewind(fp);
-	DPoint2 testp[2];
-	int i;
-	for (i = 0; fgets(buf, 80, fp) != NULL && i < 2; i++)
-	{
-		if (bCommas)
-			count = sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
-		else
-			count = sscanf(buf, "%lf %lf %lf", &x, &y, &z);
-		testp[i].Set(x, y);
-	}
-
-	// Compare them and decide whether we are row or column order
-	DPoint2 diff = testp[1] - testp[0];
-	if (diff.x == 0)
+	// Depending on order, convert extents to grid dimensions
+	if (bColumnOrder)
 	{
 		// column-first ordering
 		m_iRows = (int) (extents.Height() / fabs(diff.y)) + 1;
 		m_iColumns = iNum / m_iRows;
 	}
-	else if (diff.y == 0)
+	else
 	{
 		// row-first ordering
 		m_iColumns = (int) (extents.Width() / fabs(diff.x)) + 1;
 		m_iRows = iNum / m_iColumns;
 	}
-	else
-		return false;
 
 	// Go back and read all the points
 	SetEarthExtents(extents);
@@ -2093,7 +2147,13 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	while (fgets(buf, 80, fp) != NULL)
 	{
 		if (progress_callback != NULL)
-			progress_callback(i * 100 / iNum);
+		{
+			if (progress_callback(i * 100 / iNum))
+			{
+				fclose(fp);		// Cancel
+				return false;
+			}
+		}
 
 		if (bCommas)
 			sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
