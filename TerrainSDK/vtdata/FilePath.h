@@ -80,6 +80,8 @@ bool PathIsAbsolute(const char *szPath);
 vtString get_line_from_stream(std::ifstream &input);
 void RemoveFileExtensions(vtString &fname, bool bAll = true);
 vtString GetExtension(const vtString &fname, bool bFull = true);
+vtString ChangeFileExtension(const char *input, const char *extension);
+bool FileExists(const char *fname);
 
 // Encapsulation for Zlib's gzip output functions.
 class GZOutput

@@ -387,6 +387,25 @@ vtString GetExtension(const vtString &fname, bool bFull)
 		return fname.Right(fname.GetLength() - chop);
 }
 
+vtString ChangeFileExtension(const char *input, const char *extension)
+{
+	vtString result = input;
+	int index = result.ReverseFind('.');
+	if (index != -1)
+		result = result.Left(index);
+	result += extension;
+	return result;
+}
+
+bool FileExists(const char *fname)
+{
+	FILE *fp = fopen(fname, "r");
+	if (!fp)
+		return false;
+	fclose(fp);
+	return true;
+}
+
 #include <fstream>
 using namespace std;
 //
