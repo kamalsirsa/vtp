@@ -799,10 +799,18 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 
 	if (!strExt.CmpNoCase(_T("dem")))
 	{
-		if (first == '*')
-			success = m_pGrid->LoadFromMicroDEM(strFileName.mb_str(), progress_callback);
+		// If there is a .hdr file in the same place, it is most likely
+		//  a GTOPO30/SRTM30 file
+		vtString hdr_fname = ChangeFileExtension(strFileName.mb_str(), ".hdr");
+		if (FileExists(hdr_fname))
+			success = m_pGrid->LoadFromGTOPO30(hdr_fname, progress_callback);
 		else
-			success = m_pGrid->LoadFromDEM(strFileName.mb_str(), progress_callback);
+		{
+			if (first == '*')
+				success = m_pGrid->LoadFromMicroDEM(strFileName.mb_str(), progress_callback);
+			else
+				success = m_pGrid->LoadFromDEM(strFileName.mb_str(), progress_callback);
+		}
 	}
 	else if (!strExt.CmpNoCase(_T("asc")))
 	{
