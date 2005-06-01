@@ -1,26 +1,25 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata.vcproj", "{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg.vcproj", "{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtui", "..\..\TerrainSDK\vtui\vtui.vcproj", "{1182B805-A4E1-4E20-AED3-C535DC09F2DD}"
 	ProjectSection(ProjectDependencies) = postProject
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008} = {89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro.vcproj", "{13E5F4CD-63ED-454D-A086-1545C79E2552}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1182B805-A4E1-4E20-AED3-C535DC09F2DD} = {1182B805-A4E1-4E20-AED3-C535DC09F2DD}
 		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8} = {CE530C9F-129C-4398-B95A-26A2F1AFB9B8}
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98} = {C2715AAA-C99B-438E-BF57-8357BD21AE98}
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D} = {15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008} = {89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper.vcproj", "{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -32,14 +31,6 @@ Global
 		Release Unicode = Release Unicode
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}.Debug.ActiveCfg = Debug|Win32
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}.Debug.Build.0 = Debug|Win32
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}.Debug Unicode.ActiveCfg = Debug Unicode|Win32
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}.Debug Unicode.Build.0 = Debug Unicode|Win32
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}.Release.ActiveCfg = Release|Win32
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}.Release.Build.0 = Release|Win32
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}.Release Unicode.ActiveCfg = Release Unicode|Win32
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}.Release Unicode.Build.0 = Release Unicode|Win32
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}.Debug.ActiveCfg = Debug|Win32
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}.Debug.Build.0 = Debug|Win32
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}.Debug Unicode.ActiveCfg = Debug Unicode|Win32
@@ -72,6 +63,14 @@ Global
 		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}.Release.Build.0 = Release|Win32
 		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}.Release Unicode.ActiveCfg = Release Unicode|Win32
 		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}.Release Unicode.Build.0 = Release Unicode|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug.ActiveCfg = Debug|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug.Build.0 = Debug|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug Unicode.ActiveCfg = Debug Unicode|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug Unicode.Build.0 = Debug Unicode|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Release.ActiveCfg = Release|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Release.Build.0 = Release|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Release Unicode.ActiveCfg = Release Unicode|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Release Unicode.Build.0 = Release Unicode|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
