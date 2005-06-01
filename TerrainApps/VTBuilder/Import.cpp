@@ -148,10 +148,12 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	vtString str1 = fname_in.mb_str();
 	vtString str2 = prepend_path.mb_str();
 
+	OpenProgressDialog(_("Expanding archive"), false, this);
 	if (bGZip)
 		result = ExpandTGZ(str1, str2);
 	if (bZip)
-		result = ExpandZip(str1, str2);
+		result = ExpandZip(str1, str2, progress_callback);
+	CloseProgressDialog();
 
 	if (result < 1)
 	{
@@ -197,6 +199,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 
 		// look for an SDTS catalog file
 		bool found_cat = false;
+		bool found_hdr = false;
 		wxString2 fname2;
 		for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
 		{
@@ -209,8 +212,16 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 				found_cat = true;
 				break;
 			}
+			if (fname2.Right(4).CmpNoCase(_T(".hdr")) == 0)
+			{
+				ltype = LT_ELEVATION;
+				fname = prepend_path;
+				fname += fname2;
+				found_hdr = true;
+				break;
+			}
 		}
-		if (found_cat)
+		if (found_cat || found_hdr)
 		{
 			pLayer = ImportDataFromFile(ltype, fname, bRefresh);
 			if (pLayer)
