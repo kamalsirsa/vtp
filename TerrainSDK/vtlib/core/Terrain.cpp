@@ -459,7 +459,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 				{
 					vtImage *pImage = new vtImage();
 
-					pImage->Create(iTileSize, iTileSize, 24);
+					pImage->Create(iTileSize, iTileSize, m_pImage->GetDepth());
 					m_Images.SetAt(i*iTiles+j, pImage);
 
 					// If the user has asked for 16-bit textures to be sent down to the
