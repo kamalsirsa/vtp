@@ -232,15 +232,34 @@ int ExpandTGZ(const char *archive_fname, const char *prepend_path)
 	return files_encountered;
 }
 
+typedef bool (*ProgFunc)(int prog);
+
 #if SUPPORT_UNZIP
 struct MyZipCallback : public CZipActionCallback
 {
+	MyZipCallback()
+	{
+		m_progfunc = NULL;
+	}
 	virtual bool Callback(int iProgress)
 	{
 		// Return false from the callback function to abort operation.
-		int foo = 1;
+		float progress = (float)m_uTotalSoFar/m_uTotalToDo;
+		if (m_progfunc != NULL)
+		{
+			bool bCancel = m_progfunc( (int) (progress*99) );
+//			if (bCancel)
+//				return false;
+			// We don't support cancel here, because the ZipArchive
+			//  library has been seen to crash when it tries to throw
+			//  its "aborted" exception.
+		}
 		return true;
 	}
+	virtual void CallbackEnd()
+	{
+	}
+	ProgFunc m_progfunc;
 };
 #endif
 
@@ -252,17 +271,18 @@ struct MyZipCallback : public CZipActionCallback
  *
  * \return -1 on error, otherwise the number of files the archive contained.
  */
-int ExpandZip(const char *archive_fname, const char *prepend_path)
+int ExpandZip(const char *archive_fname, const char *prepend_path,
+			  bool progress_callback(int))
 {
 #if SUPPORT_UNZIP
 	int iVolumeSize = 0;
 	int iCount = 0;
 	int i;
 
-	MyZipCallback mycallback;
-
 	CZipArchive zip;
 
+	MyZipCallback mycallback;
+	mycallback.m_progfunc = progress_callback;
 	zip.SetCallback(&mycallback);
 
 	try
@@ -291,6 +311,8 @@ int ExpandZip(const char *archive_fname, const char *prepend_path)
 		// all failures go here
 		return 0;
 	}
+	if (progress_callback != NULL)
+		progress_callback(100);
 	zip.Close();
 	return iCount;
 #else
