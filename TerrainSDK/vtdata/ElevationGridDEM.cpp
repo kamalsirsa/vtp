@@ -110,7 +110,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 					break;
 				}
 			}
-			if (i == 144)
+			if (i == 158-12)
 			{
 				// Not a DEM file
 				fclose(fp);
