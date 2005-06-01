@@ -83,18 +83,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 
 	bool Success = false;
 
-	if ((!FileExt.CompareNoCase(".bt")) || (!FileExt.CompareNoCase(".bt.gz")))
-	{
-		Success = LoadFromBT(szFileName, progress_callback);
-	}
-	else if (!FileExt.CompareNoCase(".dem"))
-	{
-		if (FirstChar == '*')
-			Success = LoadFromMicroDEM(szFileName, progress_callback);
-		else
-			Success = LoadFromDEM(szFileName, progress_callback);
-	}
-	else if (!FileExt.CompareNoCase(".asc"))
+	if (!FileExt.CompareNoCase(".asc"))
 	{
 		// GDAL's ASC reader has trouble on some machines
 //		Success = LoadWithGDAL(szFileName, progress_callback);
@@ -105,21 +94,27 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 	{
 		Success = LoadWithGDAL(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase(".ter"))
+	else if ((!FileExt.CompareNoCase(".bt")) || (!FileExt.CompareNoCase(".bt.gz")))
 	{
-		Success = LoadFromTerragen(szFileName, progress_callback);
+		Success = LoadFromBT(szFileName, progress_callback);
 	}
 	else if (!FileExt.CompareNoCase(".cdf"))
 	{
 		Success = LoadFromCDF(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase(".hdr"))
+	else if (!FileExt.CompareNoCase(".dem"))
 	{
-		Success = LoadFromGTOPO30(szFileName, progress_callback);
-		if (!Success)
+		// If there is a .hdr file in the same place, it is most likely
+		//  a GTOPO30/SRTM30 file
+		vtString hdr_fname = ChangeFileExtension(szFileName, ".hdr");
+		if (FileExists(hdr_fname))
+			Success = LoadFromGTOPO30(hdr_fname, progress_callback);
+		else
 		{
-			// might be NOAA GLOBE header
-			Success = LoadFromGLOBE(szFileName, progress_callback);
+			if (FirstChar == '*')
+				Success = LoadFromMicroDEM(szFileName, progress_callback);
+			else
+				Success = LoadFromDEM(szFileName, progress_callback);
 		}
 	}
 	else if (!FileExt.CompareNoCase(".dte") ||
@@ -128,10 +123,6 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 			 !FileExt.CompareNoCase(".dt2"))
 	{
 		Success = LoadFromDTED(szFileName, progress_callback);
-	}
-	else if (!FileExt.CompareNoCase(".pgm"))
-	{
-		Success = LoadFromPGM(szFileName, progress_callback);
 	}
 	else if (!FileExt.CompareNoCase(".grd"))
 	{
@@ -147,6 +138,19 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 			Success = LoadWithGDAL(szFileName, progress_callback);
 		}
 	}
+	else if (!FileExt.CompareNoCase(".hdr"))
+	{
+		Success = LoadFromGTOPO30(szFileName, progress_callback);
+		if (!Success)
+		{
+			// might be NOAA GLOBE header
+			Success = LoadFromGLOBE(szFileName, progress_callback);
+		}
+	}
+	else if (!FileExt.CompareNoCase(".hgt"))
+	{
+		Success = LoadFromHGT(szFileName, progress_callback);
+	}
 	else if (!FileExt.CompareNoCase(".catd.ddf") ||
 			 !FileExt.CompareNoCase(".tif") ||
 			 !FileExt.CompareNoCase(".tiff") ||
@@ -155,9 +159,13 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 	{
 		Success = LoadWithGDAL(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase(".hgt"))
+	else if (!FileExt.CompareNoCase(".pgm"))
 	{
-		Success = LoadFromHGT(szFileName, progress_callback);
+		Success = LoadFromPGM(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase(".ter"))
+	{
+		Success = LoadFromTerragen(szFileName, progress_callback);
 	}
 	return Success;
 }
@@ -664,7 +672,7 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 }
 
 
-/** Loads from a GTOPO30 file.
+/** Loads from a GTOPO30 (or SRTM30) file.
  * \par
  * GTOPO30 files are actually composed of at least 2 files, a header with a
  * .hdr extension and data with a .dem extension.  Pass the filename of
@@ -742,12 +750,7 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 	hdrFile.close();
 
 	// make the corresponding filename for the DEM
-	char dem_fname[200];
-	strcpy(dem_fname, szFileName);
-	char *ext = strrchr(dem_fname, '.');
-	if (!ext)
-		return false;
-	strcpy(ext, ".dem");
+	vtString dem_fname = ChangeFileExtension(szFileName, ".dem");
 	FILE *fp = fopen(dem_fname, "rb");
 	if (!fp)
 		return false;
