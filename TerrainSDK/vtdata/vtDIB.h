@@ -107,8 +107,6 @@ public:
 	BITMAPINFOHEADER *GetDIBHeader() const { return m_Hdr; }
 	void *GetDIBData() const { return m_Data; }
 
-	void Lock();
-	void Unlock();
 	void LeaveInternalDIB(bool bLeaveIt);
 
 	bool	m_bLoadedSuccessfully;
@@ -118,7 +116,7 @@ private:
 
 	bool	m_bLeaveIt;
 
-	// When locked, these two fields point to the header and data
+	// The DIB's header and data
 	BITMAPINFOHEADER *m_Hdr;
 	void	*m_Data;
 
