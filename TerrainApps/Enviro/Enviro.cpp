@@ -1743,7 +1743,7 @@ void Enviro::CreateElevationLegend()
 	{
 		vtTextMesh *mesh3 = new vtTextMesh(font, fontsize, false);
 		vtString str;
-		str.Format("%4.1f", fMin + (fMax - fMin) / 6 * i);
+		str.Format("%4.1f", fMin + (fMax - fMin) / (ticks-1) * i);
 		mesh3->SetText(str);
 		FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0);
 		mesh3->SetPosition(p1);
