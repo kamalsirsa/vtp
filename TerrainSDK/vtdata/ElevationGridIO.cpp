@@ -151,7 +151,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 	{
 		Success = LoadFromHGT(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase(".catd.ddf") ||
+	else if (!FileExt.CompareNoCase(".ddf") ||
 			 !FileExt.CompareNoCase(".tif") ||
 			 !FileExt.CompareNoCase(".tiff") ||
 			 !FileExt.CompareNoCase(".png") ||
@@ -1040,8 +1040,8 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 		fread(&tag, 4, 1, fp); //nedds to be "GRID"
 		fread(&size, 4, 1, fp); // size in bytes of grid section
 
+		fread(&ny, 4, 1, fp);	// Yes, the Y coordinate *does* come first!
 		fread(&nx, 4, 1, fp);
-		fread(&ny, 4, 1, fp);
 		fread(&xlo, 8, 1, fp);
 		fread(&ylo, 8, 1, fp);
 
