@@ -1618,10 +1618,8 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	unsigned int i, j, k;
 	DPoint2 p, p2;
 
-	float x_size = (area.right - area.left);
-	float y_size = (area.top - area.bottom);
-	unsigned int x_trees = (unsigned int)(x_size / opt.m_fSampling);
-	unsigned int y_trees = (unsigned int)(y_size / opt.m_fSampling);
+	unsigned int x_trees = (unsigned int)(area.Width() / opt.m_fSampling);
+	unsigned int y_trees = (unsigned int)(area.Height() / opt.m_fSampling);
 
 	int bio_type=0;
 	float density_scale;
