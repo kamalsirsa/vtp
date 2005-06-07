@@ -758,7 +758,7 @@ void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
 		if (i >= (int)m_Tex->size())
 			m_Tex->resize(i + 1);
 
-		m_Tex->insert(m_Tex->begin() + i, s);
+		(*m_Tex)[i] = s;
 	}
 }
 
