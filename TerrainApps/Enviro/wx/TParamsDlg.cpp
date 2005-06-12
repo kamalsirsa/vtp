@@ -236,7 +236,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// listbox controls without having to subclass.
 	m_pStructFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pStructFiles));
 	m_pRawFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pRawFiles));
-	m_pAnimFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pRawFiles));
+	m_pAnimFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pAnimFiles));
 }
 
 TParamsDlg::~TParamsDlg()
