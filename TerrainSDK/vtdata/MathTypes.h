@@ -393,6 +393,7 @@ public:
 	DPoint2 &GetSafePoint(int index) const;
 	void SetSafePoint(int index, const DPoint2 &p);
 	double Length() const;
+	DPoint2 Centroid() const;
 };
 
 /**

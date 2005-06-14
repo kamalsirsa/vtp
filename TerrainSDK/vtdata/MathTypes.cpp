@@ -230,6 +230,27 @@ double DLine2::Length() const
 	return length;
 }
 
+// Centroid (centre of gravity/mass) of the polygon
+DPoint2 DLine2::Centroid() const
+{
+    DPoint2 pt(0,0);
+    double dA = 0.0;
+	unsigned int n = GetSize();
+    for (unsigned int i=0; i<n; ++i)
+    {
+        int j = i + 1;
+        if (j == n) j = 0;
+        double dT = m_Data[i].x * m_Data[j].y - m_Data[j].x * m_Data[i].y;
+        pt.x += (m_Data[i].x + m_Data[j].x) * dT;
+        pt.y += (m_Data[i].y + m_Data[j].y) * dT;
+        dA += dT;
+    }
+    double dN = 3 * dA;
+    pt.x /= dN;
+    pt.y /= dN;
+    return pt;
+}
+
 void DLine2::ReverseOrder()
 {
 	DPoint2 p;
