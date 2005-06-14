@@ -36,8 +36,9 @@ CreateProjectedShadowTextureCullCallback::CreateProjectedShadowTextureCullCallba
 		m_shadowState(new osg::StateSet),
 		m_shadowedState(new osg::StateSet)
 {
-	osg::ref_ptr<osg::Texture::Extensions> pExtensions = new osg::Texture::Extensions;
-	pExtensions->setupGLExtensions();
+	int contextID = 0;
+	osg::ref_ptr<osg::Texture::Extensions> pExtensions = new osg::Texture::Extensions(contextID);
+	pExtensions->setupGLExtensions(contextID);
 	if (pExtensions->isShadowSupported())
 		m_bDepthShadow = true;
 	else

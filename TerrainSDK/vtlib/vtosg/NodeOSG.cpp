@@ -1193,16 +1193,17 @@ OsgDynMesh::OsgDynMesh()
 	setStateSet(new StateSet);
 }
 
-bool OsgDynMesh::computeBound() const
+osg::BoundingBox OsgDynMesh::computeBound() const
 {
 	FBox3 box;
 	m_pDynGeom->DoCalcBoundBox(box);
 
-	v2s(box.min, _bbox._min);
-	v2s(box.max, _bbox._max);
+	// convert it to OSG bounds
+	v2s(box.min, _boundingBox._min);
+	v2s(box.max, _boundingBox._max);
 
-	_bbox_computed=true;
-	return true;
+	_boundingBoxComputed=true;
+	return _boundingBox;
 }
 
 State *hack_global_state = NULL;
