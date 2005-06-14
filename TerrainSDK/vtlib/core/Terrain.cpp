@@ -1602,10 +1602,11 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	// We support text labels for both 2D and 3D points
+	// We support text labels for both 2D and 3D points, and 2D polygons
 	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(&feat);
 	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(&feat);
-	if (!pSetP2 && !pSetP3)
+	const vtFeatureSetPolygon *pSetPG = dynamic_cast<const vtFeatureSetPolygon*>(&feat);
+	if (!pSetP2 && !pSetP3 && !pSetPG)
 		return;
 
 	const char *fontname = "Fonts/Arial.ttf";
@@ -1693,6 +1694,11 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 		{
 			p3 = pSetP3->GetPoint(i);
 			p2.Set(p3.x, p3.y);
+		}
+		else if (pSetPG)
+		{
+			const DPolygon2 &dp = pSetPG->GetPolygon(i);
+			p2 = dp[0].Centroid();
 		}
 
 		if (!m_pHeightField->ConvertEarthToSurfacePoint(p2, fp3))
