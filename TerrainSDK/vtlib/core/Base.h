@@ -407,6 +407,9 @@ protected:
 	vtGroup		*m_pRoot;
 	vtEngine	*m_pRootEngine;
 	bool		*m_piKeyState;
+
+	vtCamera	*m_pDefaultCamera;
+	vtWindow	*m_pDefaultWindow;
 };
 
 /*@}*/	// Group sg

@@ -50,6 +50,8 @@ vtSceneBase::vtSceneBase()
 	m_pRoot = NULL;
 	m_pRootEngine = NULL;
 	m_piKeyState = NULL;
+	m_pDefaultCamera = NULL;
+	m_pDefaultWindow = NULL;
 }
 
 vtSceneBase::~vtSceneBase()

@@ -89,8 +89,10 @@ bool vtScene::Init()
 	std::cout.rdbuf(&g_Trap);
 	std::cerr.rdbuf(&g_Trap);
 
-	SetCamera(new vtCamera());
-	AddWindow(new vtWindow());
+	m_pDefaultCamera = new vtCamera;
+	m_pDefaultWindow = new vtWindow;
+	SetCamera(m_pDefaultCamera);
+	AddWindow(m_pDefaultWindow);
 
 	m_pOsgSceneView = new osgUtil::SceneView();
 	m_pOsgSceneView->setDefaults();
@@ -114,6 +116,7 @@ bool vtScene::Init()
 void vtScene::Shutdown()
 {
 	VTLOG("vtScene::Shutdown\n");
+	delete m_pDefaultWindow;
 	vtNode::ClearOsgModelCache();
 	vtImageCacheClear();
 	osgDB::Registry::instance()->clearObjectCache();
