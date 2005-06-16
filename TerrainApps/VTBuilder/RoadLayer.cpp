@@ -180,12 +180,12 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 	if (!trans)
 		return false;		// inconvertible projections
 
-	LinkEdit *r;
+	LinkEdit *l;
 	NodeEdit *n;
-	for (r = GetFirstLink(); r; r=r->GetNext())
+	for (l = GetFirstLink(); l; l=l->GetNext())
 	{
-		for (unsigned int i = 0; i < r->GetSize(); i++)
-			trans->Transform(1, &(r->GetAt(i).x), &(r->GetAt(i).y));
+		for (unsigned int i = 0; i < l->GetSize(); i++)
+			trans->Transform(1, &(l->GetAt(i).x), &(l->GetAt(i).y));
 	}
 	for (n = GetFirstNode(); n; n=n->GetNext())
 		trans->Transform(1, &(n->m_p.x), &(n->m_p.y));
@@ -193,8 +193,11 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 	delete trans;
 
 	// recompute road extents
-	for (r = GetFirstLink(); r; r=r->GetNext())
-		r->ComputeExtent();
+	for (l = GetFirstLink(); l; l=l->GetNext())
+	{
+		l->ComputeExtent();
+		l->m_bSidesComputed = false;
+	}
 
 	// set the vtRoadMap projection
 	m_proj = proj_new;
