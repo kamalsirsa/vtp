@@ -74,7 +74,7 @@ int RoadMapEdit::MergeRedundantNodes(bool bDegrees, bool progress_callback(int))
 	int removed = 0;
 
 	int nodes = NumNodes();
-	float total = nodes * nodes / 2;
+	float total = (float)nodes * nodes / 2;
 	int count1 = 0, count = 0, count_tick, count_last_tick = 0;
 	float tick_size = (float)total / 100;
 	double tolerance, tolerance_squared;
