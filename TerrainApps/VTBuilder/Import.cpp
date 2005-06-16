@@ -134,16 +134,16 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	}
 
 	// try to uncompress
-	wxString2 prepend_path;
-	prepend_path = GetTempFolderName(fname_in.mb_str());
+	wxString2 path, prepend_path;
+	path = GetTempFolderName(fname_in.mb_str());
 	int result;
-	result = vtCreateDir(prepend_path.mb_str());
+	result = vtCreateDir(path.mb_str());
 	if (result == 0 && errno != EEXIST)
 	{
 		DisplayAndLog("Couldn't create temporary directory to hold contents of archive.");
 		return;
 	}
-	prepend_path += _T("/");
+	prepend_path = path + _T("/");
 
 	vtString str1 = fname_in.mb_str();
 	vtString str2 = prepend_path.mb_str();
@@ -183,6 +183,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	}
 	else if (result > 1)
 	{
+		int layer_count = 0;
 		Array<vtLayer *> LoadedLayers;
 		vtLayer *pLayer;
 
@@ -200,6 +201,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 		// look for an SDTS catalog file
 		bool found_cat = false;
 		bool found_hdr = false;
+		bool found_rt1 = false;
 		wxString2 fname2;
 		for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
 		{
@@ -220,6 +222,11 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 				found_hdr = true;
 				break;
 			}
+			if (fname2.Right(4).CmpNoCase(_T(".rt1")) == 0)
+			{
+				found_rt1 = true;
+				break;
+			}
 		}
 		if (found_cat || found_hdr)
 		{
@@ -228,7 +235,12 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 			{
 				pLayer->SetLayerFilename(fname2);
 				LoadedLayers.Append(pLayer);
+				layer_count++;
 			}
+		}
+		else if (found_rt1)
+		{
+			layer_count = ImportDataFromTIGER(path);
 		}
 		else
 		{
@@ -248,10 +260,11 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 				{
 					pLayer->SetLayerFilename(fname2);
 					LoadedLayers.Append(pLayer);
+					layer_count++;
 				}
 			}
 		}
-		if (LoadedLayers.GetSize() == 0)
+		if (layer_count == 0)
 			DisplayAndLog("Don't know what to do with contents of archive.");
 
 		// set the original imported filename
@@ -1206,31 +1219,22 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString2 &strFileName, LayerTy
 }
 
 
-void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
+//
+//Import from TIGER, returns number of layers imported
+//
+int MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 {
 	g_GDALWrapper.RequestOGRFormats();
 
 	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(strDirName.mb_str());
 	if (!pDatasource)
-		return;
-
-	// create the new layers
-	vtWaterLayer *pWL = new vtWaterLayer;
-	pWL->SetLayerFilename(strDirName + _T("/water"));
-	pWL->SetModified(true);
-
-	vtRoadLayer *pRL = new vtRoadLayer;
-	pRL->SetLayerFilename(strDirName + _T("/roads"));
-	pRL->SetModified(true);
+		return 0;
 
 	int i, j, feature_count;
 	OGRLayer		*pOGRLayer;
 	OGRFeature		*pFeature;
 	OGRGeometry		*pGeom;
-//	OGRPoint		*pPoint;
 	OGRLineString   *pLineString;
-
-//	DLine2			*dline;
 	vtWaterFeature	wfeat;
 
 	// Assume that this data source is a TIGER/Line file
@@ -1238,6 +1242,17 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 	// Iterate through the layers looking for the ones we care about
 	//
 	int num_layers = pDatasource->GetLayerCount();
+	vtString layername = pDatasource->GetName();
+
+	// create the new layers
+	vtWaterLayer *pWL = new vtWaterLayer;
+	pWL->SetLayerFilename(layername + "_water");
+	pWL->SetModified(true);
+
+	vtRoadLayer *pRL = new vtRoadLayer;
+	pRL->SetLayerFilename(layername + "_roads");
+	pRL->SetModified(true);
+
 	for (i = 0; i < num_layers; i++)
 	{
 		pOGRLayer = pDatasource->GetLayer(i);
@@ -1250,7 +1265,9 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 		if (!defn)
 			continue;
 
-#if 0
+#if DEBUG
+		VTLOG("Layer %d/%d, '%s'\n", i, num_layers, defn->GetName());
+
 		// Debug: iterate through the fields
 		int field_count1 = defn->GetFieldCount();
 		for (j = 0; j < field_count1; j++)
@@ -1260,6 +1277,7 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 			{
 				const char *fnameref = field_def1->GetNameRef();
 				OGRFieldType ftype = field_def1->GetType();
+				VTLOG("  field '%s' type %d\n", fnameref, ftype);
 			}
 		}
 #endif
@@ -1394,14 +1412,21 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 		pN->DetermineVisualFromLinks();
 	}
 
+	int layer_count = 0;
 	bool success;
 	success = AddLayerWithCheck(pWL, true);
 	if (!success)
 		delete pWL;
+	else
+		layer_count++;
 
 	success = AddLayerWithCheck(pRL, true);
 	if (!success)
 		delete pRL;
+	else
+		layer_count++;
+
+	return layer_count;
 }
 
 
