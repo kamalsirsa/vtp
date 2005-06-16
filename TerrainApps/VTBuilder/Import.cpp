@@ -308,7 +308,7 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 	msg += strFileName;
 	VTLOG(msg.mb_str());
 	VTLOG("...\n");
-	OpenProgressDialog(msg, true);
+	OpenProgressDialog(msg, true, this);
 
 	// check the file extension
 	wxString strExt = strFileName.AfterLast('.');
