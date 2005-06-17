@@ -470,6 +470,9 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
+	// Even lightweight tasks can runs into trouble with the Locale ./, issue.
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	m_proj.SetGeogCSFromDatum(m_iDatum);
 
 	m_eProj = (ProjType) m_iProj;
