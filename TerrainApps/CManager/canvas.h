@@ -11,6 +11,7 @@
 #if !wxUSE_GLCANVAS
 #error Please set wxUSE_GLCANVAS to 1 in setup.h.
 #endif
+
 #include "wx/glcanvas.h"
 
 class vtGLCanvas;
