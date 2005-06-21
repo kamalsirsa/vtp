@@ -116,6 +116,7 @@ bool vtScene::Init()
 void vtScene::Shutdown()
 {
 	VTLOG("vtScene::Shutdown\n");
+	m_pDefaultCamera->Release();
 	delete m_pDefaultWindow;
 	vtNode::ClearOsgModelCache();
 	vtImageCacheClear();
