@@ -1405,7 +1405,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 #endif
 
 	bool ctrl = event.ControlDown();
-	int code = event.KeyCode();
+	int code = event.GetKeyCode();
 
 	if (code == ' ')
 	{
