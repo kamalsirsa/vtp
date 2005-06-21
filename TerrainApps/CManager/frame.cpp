@@ -553,7 +553,7 @@ void vtFrame::OnItemAddModel(wxCommandEvent& event)
 		_T("Wavefront Files (*.obj)|*.obj|")
 		_T("IVE Files (*.ive)|*.ive|")
 		_T("OSG Files (*.osg)|*.osg|")
-		_T("All Files (*.*)|*.*|"), wxOPEN);
+		_T("All Files (*.*)|*.*"), wxOPEN);
 	loadFile.SetFilterIndex(0);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
