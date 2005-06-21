@@ -1,14 +1,16 @@
-//------------------------------------------------------------------------------
-// For convenient integration into the VTP a few minor changes to this file have been made:
+//--------------------------------------------------------------------------
+// For convenient integration into the VTP a few minor changes to this file
+//  have been made:
 //
 // 1) changed the extension of this file from c to cpp
-// 2) added type casts for "floor" function (a side effet of moving over to cpp)
+// 2) added type casts for "floor" function (a side effet of moving over
+//		to cpp)
 // 3) added topocentric altitude angle
 // 4) Added helper proc at bottom of file
 //
 // You can find the changes I made by searching for "KMB"
 // -Kevin Behilo 1/9/04
-//------------------------------------------------------------------------------
+//--------------------------------------------------------------------------
 
 /////////////////////////////////////////////
 //   Solar Position Algorithm (SPA)
