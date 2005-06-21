@@ -152,12 +152,6 @@ int vtApp::OnExit(void)
 {
 	VTLOG("App OnExit\n");
 
-	vtCamera *pCamera = vtGetScene()->GetCamera();
-	pCamera->Release();
-
-	vtWindow *pWindow = vtGetScene()->GetWindow(0);
-	delete pWindow;
-
 	vtGetScene()->SetRoot(NULL);
 	m_pRoot->Release();
 
