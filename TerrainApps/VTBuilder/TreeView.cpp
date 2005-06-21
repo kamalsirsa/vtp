@@ -186,7 +186,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 
 		wxString str = MakeItemName(lp);
 
-		wxTreeItemId hItem = -1;
+		wxTreeItemId hItem;
 		switch (lp->GetType())
 		{
 			case LT_ELEVATION:
@@ -221,7 +221,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 				hItem = AppendItem(rawId, str, image, imageSel);
 				break;
 		}
-		if (hItem != -1)
+		if (hItem.IsOk())
 		{
 			SetItemData(hItem, new MyTreeItemData(lp));
 
@@ -252,10 +252,11 @@ void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
 
 	wxTreeItemId root = GetRootItem();
 	wxTreeItemId parent, item;
-	long cookie = 0, cookie2 = 1;
 
+	wxTreeItemIdValue cookie;
 	for (parent = GetFirstChild(root, cookie); parent; parent = GetNextChild(root, cookie))
 	{
+		wxTreeItemIdValue cookie2;
 		for (item = GetFirstChild(parent, cookie2); item; item = GetNextChild(parent, cookie2))
 		{
 			MyTreeItemData *data = (MyTreeItemData *)GetItemData(item);

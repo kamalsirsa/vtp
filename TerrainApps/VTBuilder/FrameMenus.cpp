@@ -539,6 +539,8 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 		return;
 	wxString prefix = dlg3.GetValue();
 
+	// TODO! change this code to use vtBitmap instead of wxImage
+#if 0
 	wxImage::AddHandler(new wxPNGHandler);
 
 	wxProgressDialog prog(_("Processing"), _("Loading source bitmap.."), 100);
@@ -607,6 +609,7 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 			return;
 		}
 	}
+#endif
 	DisplayAndLog("Successful.");
 }
 
@@ -1741,7 +1744,7 @@ void MainFrame::OnUpdateViewFull(wxUpdateUIEvent& event)
 			(lp->GetType() == LT_ELEVATION || lp->GetType() == LT_IMAGE));
 }
 
-void MainFrame::OnViewWorldMap(wxUpdateUIEvent& event)
+void MainFrame::OnViewWorldMap(wxCommandEvent& event)
 {
 	m_pView->SetShowMap(!m_pView->GetShowMap());
 	m_pView->Refresh();
@@ -1752,7 +1755,7 @@ void MainFrame::OnUpdateWorldMap(wxUpdateUIEvent& event)
 	event.Check(m_pView->GetShowMap());
 }
 
-void MainFrame::OnViewUTMBounds(wxUpdateUIEvent& event)
+void MainFrame::OnViewUTMBounds(wxCommandEvent& event)
 {
 	m_pView->m_bShowUTMBounds = !m_pView->m_bShowUTMBounds;
 	m_pView->Refresh();
@@ -1763,7 +1766,7 @@ void MainFrame::OnUpdateUTMBounds(wxUpdateUIEvent& event)
 	event.Check(m_pView->m_bShowUTMBounds);
 }
 
-void MainFrame::OnViewOptions(wxUpdateUIEvent& event)
+void MainFrame::OnViewOptions(wxCommandEvent& event)
 {
 	OptionsDlg dlg(this, -1, _("Options"));
 

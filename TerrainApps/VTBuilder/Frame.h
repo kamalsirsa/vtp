@@ -130,9 +130,9 @@ protected:
 	void OnViewZoomAll(wxCommandEvent& event);
 	void OnViewZoomToLayer(wxCommandEvent& event);
 	void OnViewFull(wxCommandEvent& event);
-	void OnViewWorldMap(wxUpdateUIEvent& event);
-	void OnViewUTMBounds(wxUpdateUIEvent& event);
-	void OnViewOptions(wxUpdateUIEvent& event);
+	void OnViewWorldMap(wxCommandEvent& event);
+	void OnViewUTMBounds(wxCommandEvent& event);
+	void OnViewOptions(wxCommandEvent& event);
 
 	void OnUpdateLayerShow(wxUpdateUIEvent& event);
 	void OnUpdateLayerUp(wxUpdateUIEvent& event);

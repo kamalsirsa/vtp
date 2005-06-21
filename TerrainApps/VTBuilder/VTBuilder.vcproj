@@ -246,7 +246,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24d.lib gdal_id.lib ws2_32.lib netcdf.lib libpng13d.lib zlib1d.lib libjpeg.lib ZipArchive.lib"
+				AdditionalDependencies="gdal_id.lib ws2_32.lib netcdf.lib libpng13d.lib zlib1d.lib libjpeg.lib ZipArchive.lib"
 				OutputFile=".\Debug/VTBuilder.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
