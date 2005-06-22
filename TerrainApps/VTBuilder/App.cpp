@@ -66,6 +66,8 @@ bool BuilderApp::OnInit()
 
 	SetupLocale();
 
+	OpenProgressDialog(_("Starting up..."), false, false);
+
 	VTLOG(" Initializing GDAL.");
 	g_GDALWrapper.GuessDataPaths();
 	g_GDALWrapper.RequestGDALFormats();
@@ -146,6 +148,8 @@ bool BuilderApp::OnInit()
 	// Pull in the heap buster
 	g_HeapBusterDummy = -1;
 #endif
+
+	CloseProgressDialog();
 
 	return TRUE;
 }
