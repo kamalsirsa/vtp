@@ -40,6 +40,16 @@ void BuilderApp::Args(int argc, wxChar **argv)
 }
 
 
+class LogCatcher : public wxLog
+{
+	void DoLogString(const wxChar *szString, time_t t)
+	{
+		VTLOG(" wxLog: ");
+		VTLOG(szString);
+		VTLOG("\n");
+	}
+};
+
 bool BuilderApp::OnInit()
 {
 #if WIN32 && defined(_MSC_VER) && DEBUG
@@ -62,11 +72,13 @@ bool BuilderApp::OnInit()
 	LogWindowsVersion();
 #endif
 
+	// Redirect the wxWindows log messages to our own logging stream
+	wxLog *logger = new LogCatcher();
+	wxLog::SetActiveTarget(logger);
+
 	Args(argc, argv);
 
 	SetupLocale();
-
-	OpenProgressDialog(_("Starting up..."), false, false);
 
 	VTLOG(" Initializing GDAL.");
 	g_GDALWrapper.GuessDataPaths();
@@ -148,8 +160,6 @@ bool BuilderApp::OnInit()
 	// Pull in the heap buster
 	g_HeapBusterDummy = -1;
 #endif
-
-	CloseProgressDialog();
 
 	return TRUE;
 }
