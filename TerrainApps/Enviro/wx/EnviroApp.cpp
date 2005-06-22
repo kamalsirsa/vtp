@@ -63,6 +63,7 @@ void EnviroApp::Args(int argc, wxChar **argv)
 }
 
 
+#if 0
 //
 // The following is a test case for a bug which affects wxWindows's ability
 //  to use .mo Locale files which have a character set explicitly stated to
@@ -113,13 +114,14 @@ void TestLocale()
 	MyMsgCatalogFile catfile;
 	catfile.TestHash(true);
 }
+#endif
 
 void EnviroApp::SetupLocale()
 {
 	wxLog::SetVerbose(true);
 //	wxLog::AddTraceMask(_T("i18n"));
 
-	TestLocale();
+//	TestLocale();
 
 	// Locale stuff
 	int lang = wxLANGUAGE_DEFAULT;

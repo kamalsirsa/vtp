@@ -119,10 +119,10 @@ void TerrainManagerDlg::RefreshTreeContents()
 void TerrainManagerDlg::RefreshTreeText()
 {
 	wxTreeItemId i1, i2;
-	long cookie1, cookie2;
 	TParams params;
 	wxString2 wstr, wstr2;
 
+    wxTreeItemIdValue cookie1, cookie2;
 	for (i1 = m_pTree->GetFirstChild(m_Root, cookie1); i1.IsOk(); i1 = m_pTree->GetNextChild(i1, cookie1))
 	{
 		for (i2 = m_pTree->GetFirstChild(i1, cookie2); i2.IsOk(); i2 = m_pTree->GetNextChild(i2, cookie2))
