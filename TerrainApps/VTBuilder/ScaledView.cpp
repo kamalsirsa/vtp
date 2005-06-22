@@ -32,6 +32,8 @@ vtScaledView::vtScaledView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 
 void vtScaledView::ZoomToRect(const DRECT &geo_rect, float margin)
 {
+	VTLOG(" ZoomToRect LRTB(%lg, %lg, %lg, %lg)\n", geo_rect.left, geo_rect.right, geo_rect.top, geo_rect.bottom);
+
 	wxRect client;
 	GetClientSize(&client.width, &client.height);
 
