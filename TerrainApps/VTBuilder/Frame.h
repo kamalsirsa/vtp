@@ -251,6 +251,8 @@ protected:
 
 	// keys (used for shortcuts)
 	void OnChar(wxKeyEvent& event);
+	void OnKeyDown(wxKeyEvent& event);
+	void OnMouseWheel(wxMouseEvent& event);
 
 public:
 	// project

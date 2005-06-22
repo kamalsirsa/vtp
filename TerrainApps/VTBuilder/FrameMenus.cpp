@@ -228,6 +228,8 @@ EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
 EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
 
 EVT_CHAR(MainFrame::OnChar)
+EVT_KEY_DOWN(MainFrame::OnKeyDown)
+EVT_MOUSEWHEEL(MainFrame::OnMouseWheel)
 EVT_CLOSE(MainFrame::OnClose)
 
 END_EVENT_TABLE()

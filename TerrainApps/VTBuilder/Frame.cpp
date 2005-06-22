@@ -1786,6 +1786,15 @@ void MainFrame::OnChar(wxKeyEvent& event)
 	m_pView->OnChar(event);
 }
 
+void MainFrame::OnKeyDown(wxKeyEvent& event)
+{
+	m_pView->OnChar(event);
+}
+
+void MainFrame::OnMouseWheel(wxMouseEvent& event)
+{
+	m_pView->OnMouseWheel(event);
+}
 
 //////////////////////////////
 
