@@ -18,7 +18,7 @@
 
 #include <wx/colordlg.h>
 #include "BuildingDlg.h"
-#include "HeightDlg.h"
+//#include "HeightDlg.h"
 #include "vtui/Helper.h"
 
 // WDR: class implementations
@@ -168,9 +168,9 @@ void BuildingDlg::OnEditHeights( wxCommandEvent &event )
 	if (!m_pHeightField)
 		return;
 
-	CHeightDialog HeightDialog(this, -1, _("Baseline Editor"));
-	HeightDialog.Setup(m_pBuilding, m_pHeightField);
-	HeightDialog.ShowModal();
+	//CHeightDialog HeightDialog(this, -1, _("Baseline Editor"));
+	//HeightDialog.Setup(m_pBuilding, m_pHeightField);
+	//HeightDialog.ShowModal();
 }
 
 void BuildingDlg::OnFacadeEnter( wxCommandEvent &event )
