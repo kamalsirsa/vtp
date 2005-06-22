@@ -298,13 +298,14 @@ void MyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 	if (data)
 		lp = data->m_pLayer;
 
-	vtLayerPtr last = GetMainFrame()->GetActiveLayer();
+	MainFrame *frame = GetMainFrame();
+	vtLayerPtr last = frame->GetActiveLayer();
 	if (lp != last)
-		GetMainFrame()->GetView()->SetActiveLayer(lp);
+		frame->GetView()->SetActiveLayer(lp);
 
 	LayerType last_ltype = last ? last->GetType() : LT_UNKNOWN;
 	if (lp && lp->GetType() != last_ltype)
-		GetMainFrame()->RefreshToolbar();
+		frame->RefreshToolbar();
 }
 
 void MyTreeCtrl::OnBeginDrag(wxTreeEvent& event)
