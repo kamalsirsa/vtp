@@ -1730,7 +1730,7 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 	else
 		bSuccess = ParseNTF5(pDatasource, msg, progress_callback);
 
-	VTLOG("LoadFromNTF5 result: %s.\n", msg);
+	VTLOG("LoadFromNTF5 result: %s.\n", (const char *) msg);
 	delete pDatasource;
 	return bSuccess;
 }
