@@ -41,7 +41,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ipl.lib vfw32.lib gdal_i.lib zlib.lib"
+				AdditionalDependencies="ipl.lib vfw32.lib gdal_i.lib zlib1.lib"
 				OutputFile=".\Release/BExtractor.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -107,7 +107,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="vfw32.lib gdal_id.lib ipl.lib zlib.lib"
+				AdditionalDependencies="vfw32.lib gdal_id.lib ipl.lib zlib1d.lib"
 				OutputFile=".\Debug/BExtractor.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
