@@ -121,6 +121,7 @@ public:
 	// Key handler
 	void OnChar(wxKeyEvent& event);
     void OnKeyDown(wxKeyEvent& event);
+	void OnMouseWheel(wxMouseEvent& event);
 
 	// More public methods
 	void DeselectAll();
@@ -180,7 +181,6 @@ protected:
 
 	void OnMouseMove(wxMouseEvent& event);
 	void OnMouseMoveLButton(const wxPoint &point);
-	void OnMouseWheel(wxMouseEvent& event);
 
 	void OnIdle(wxIdleEvent& event);
 	void OnSize(wxSizeEvent& event);

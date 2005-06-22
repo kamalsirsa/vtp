@@ -1040,6 +1040,10 @@ void BuilderView::OnLeftDown(wxMouseEvent& event)
 	// Dispatch for layer-specific handling
 	if (pL)
 		pL->OnLeftDown(this, m_ui);
+
+	// Allow wxWindows to pass the event along.  This is important because
+	//  otherwise (with wx>2.4) we may not receive keyboard focus.
+	event.Skip();
 }
 
 void BuilderView::OnLeftUp(wxMouseEvent& event)
@@ -1512,7 +1516,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			DBFClose(db2);
 		}
 #endif
-#if 1
+#if 0
 		vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
 		if (pE)
 		{
@@ -1529,6 +1533,35 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			g->ComputeHeightExtents();
 			pE->SetModified(true);
 			pE->ReRender();
+		}
+#endif
+#if 1
+		vtString dir = "E:/Data-Distro/Culture/UtilityStructures";
+		for (dir_iter it((const char *)dir); it != dir_iter(); ++it)
+		{
+			if (it.is_directory())
+				continue;
+			vtString name = it.filename().c_str();
+			if (name.Find(".obj") == -1)
+				continue;
+			FILE *in = fopen(dir + "/" + name, "rb");
+			FILE *out = fopen(dir + "/" + name+"2", "wb");
+			if (!in || !out)
+				continue;
+			char buf[99];
+			double x, y, z;
+			while (fgets(buf, 99, in))
+			{
+				if (buf[0] == 'v')
+				{
+					sscanf(buf, "v %lf %lf %lf", &x, &y, &z);
+					fprintf(out, "v %lf %lf %lf\n", x, z, -y);
+				}
+				else
+					fputs(buf, out);
+			}
+			fclose(out);
+			fclose(in);
 		}
 #endif
 	}
