@@ -1,7 +1,7 @@
 //
-// App.cpp
+// App.cpp - Main application class for VTBuilder
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -171,6 +171,12 @@ void BuilderApp::SetupLocale()
 	const wxLanguageInfo *info = wxLocale::GetLanguageInfo(default_lang);
 	VTLOG("Default language: %d (%s)\n",
 		default_lang, info->Description.mb_str());
+
+	// After wx2.4.2, wxWidgets looks in the application's directory for
+	//  locale catalogs, not the current directory.  Here we force it to
+	//  look in the current directory as well.
+	wxString cwd = wxGetCwd();
+	m_locale.AddCatalogLookupPathPrefix(cwd);
 
 	bool bSuccess=false;
 	if (m_locale_name != "")

@@ -131,6 +131,12 @@ void EnviroApp::SetupLocale()
 	VTLOG("Default language: %d (%s)\n",
 		default_lang, info->Description.mb_str());
 
+	// After wx2.4.2, wxWidgets looks in the application's directory for
+	//  locale catalogs, not the current directory.  Here we force it to
+	//  look in the current directory as well.
+	wxString cwd = wxGetCwd();
+	m_locale.AddCatalogLookupPathPrefix(cwd);
+
 	bool bSuccess=false;
 	if (m_locale_name != "")
 	{
