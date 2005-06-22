@@ -112,8 +112,8 @@ void Enviro::Shutdown()
 	delete m_pPlantList;
 	if (m_pArcMats)
 		m_pArcMats->Release();
-	if (m_pNormalCamera)
-		m_pNormalCamera->Release();
+	//if (m_pNormalCamera)
+	//	m_pNormalCamera->Release();
 	if (m_pTopDownCamera)
 		m_pTopDownCamera->Release();
 //	if (m_pCursorMGeom)
