@@ -540,7 +540,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 {
 	static NavType prev = NT_Normal;
 	vtTerrain *pTerr = GetCurrentTerrain();
-	long key = event.KeyCode();
+	long key = event.GetKeyCode();
 
 	// Keyboard shortcuts ("accelerators")
 	switch (key)

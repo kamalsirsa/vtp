@@ -39,7 +39,7 @@ END_EVENT_TABLE()
 
 void wxListBoxEventHandler::OnChar(wxKeyEvent& event)
 {
-	if (event.KeyCode() == WXK_DELETE)
+	if (event.GetKeyCode() == WXK_DELETE)
 	{
 		int sel = m_pBox->GetSelection();
 		if (sel != -1 && sel < m_pBox->GetCount()-1)

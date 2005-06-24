@@ -190,7 +190,7 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 
 void vtGLCanvas::OnChar(wxKeyEvent& event)
 {
-	long key = event.KeyCode();
+	long key = event.GetKeyCode();
 
 	// pass the char to the frame for it to do "accelerator" shortcuts
 	vtFrame *frame = (vtFrame*) GetParent();
