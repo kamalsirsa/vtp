@@ -169,7 +169,8 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+				ShowIncludes="FALSE"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -201,7 +202,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
 				Culture="2057"
-				AdditionalIncludeDirectories="\APIs\wx2\include"/>
+				AdditionalIncludeDirectories=""/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
