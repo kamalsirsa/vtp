@@ -11,6 +11,8 @@ LIB_NAME = vtui
 
 include $(VTP_ROOT)/Make.defs
 
+# HeightDlg is not built
+OBJS := $(filter-out HeightDlg.o,$(OBJS))
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	-I$(GDAL_INC) \
