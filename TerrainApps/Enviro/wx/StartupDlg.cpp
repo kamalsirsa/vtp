@@ -97,16 +97,16 @@ static void ShowOGLInfo(bool bLog)
 
 	dpy = XOpenDisplay(NULL);
 	if (dpy == NULL)
-		wxFatalError( "could not open display" );
+		wxLogFatalError( "could not open display" );
 
 	if (!glXQueryExtension(dpy, &dummy, &dummy))
-		wxFatalError( "X server has no OpenGL GLX extension" );
+		wxLogFatalError( "X server has no OpenGL GLX extension" );
 
 	vi = glXChooseVisual(dpy, DefaultScreen(dpy), dblBuf);
 	if (vi == NULL)
-		wxFatalError( "no RGB visual with double and depth buffer" );
+		wxLogFatalError( "no RGB visual with double and depth buffer" );
 	if (vi->c_class != TrueColor)
-		wxFatalError( "TrueColor visual required for this program" );
+		wxLogFatalError( "TrueColor visual required for this program" );
 
 	cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen),
 			vi->visual, AllocNone);
@@ -123,7 +123,7 @@ static void ShowOGLInfo(bool bLog)
 
 	cx = glXCreateContext(dpy, vi, None, True);
 	if (cx == NULL)
-		wxFatalError( "could not create rendering context" );
+		wxLogFatalError( "could not create rendering context" );
 
 	glXMakeCurrent(dpy, win, cx);
 #else
