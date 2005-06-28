@@ -41,6 +41,7 @@ public:
 
 	void SetProjection(const vtProjection &proj);
 	void SetPoints(const DPoint2 &p1, const DPoint2 &p2, bool bUpdate);
+	void GetPoints(DPoint2 &p1, DPoint2 &p2);
 	void SetGroundAndVertical(float fGround, float fVertical, bool bUpdate);
 	void UpdateAvailableUnits();
 	void ShowValues();

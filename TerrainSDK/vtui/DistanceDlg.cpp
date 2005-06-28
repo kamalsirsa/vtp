@@ -84,6 +84,12 @@ void DistanceDlg::SetPoints(const DPoint2 &p1, const DPoint2 &p2, bool bUpdate)
 		ShowValues();
 }
 
+void DistanceDlg::GetPoints(DPoint2 &p1, DPoint2 &p2)
+{
+	p1 = m_p1;
+	p2 = m_p2;
+}
+
 void DistanceDlg::SetGroundAndVertical(float fGround, float fVertical, bool bUpdate)
 {
 	m_fGround = fGround;
