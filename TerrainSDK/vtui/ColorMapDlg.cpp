@@ -1,7 +1,10 @@
 //
 // Name: ColorMapDlg.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// This dialog is for defining a set of colors which map onto elevations,
+//  to define how the user wants an elevation dataset to be colored.
+//
+// Copyright (c) 2004-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
