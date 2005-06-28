@@ -401,6 +401,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ProfileDlg.cpp">
+			</File>
+			<File
 				RelativePath="vtui_wdr.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -502,6 +505,9 @@
 			</File>
 			<File
 				RelativePath="LinearStructDlg.h">
+			</File>
+			<File
+				RelativePath=".\ProfileDlg.h">
 			</File>
 			<File
 				RelativePath="vtui_wdr.h">
