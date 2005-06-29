@@ -53,6 +53,7 @@ class LinearStructureDlg;
 class LinearStructureDlg2d;
 class InstanceDlg;
 class RenderDlg;
+class ProfileDlg;
 
 class MainFrame: public wxFrame
 {
@@ -132,6 +133,7 @@ protected:
 	void OnViewFull(wxCommandEvent& event);
 	void OnViewWorldMap(wxCommandEvent& event);
 	void OnViewUTMBounds(wxCommandEvent& event);
+	void OnViewProfile(wxCommandEvent& event);
 	void OnViewOptions(wxCommandEvent& event);
 
 	void OnUpdateLayerShow(wxUpdateUIEvent& event);
@@ -144,6 +146,7 @@ protected:
 	void OnUpdateCrossingSelection(wxUpdateUIEvent& event);
 	void OnUpdateWorldMap(wxUpdateUIEvent& event);
 	void OnUpdateUTMBounds(wxUpdateUIEvent& event);
+	void OnUpdateViewProfile(wxUpdateUIEvent& event);
 
 	void OnSelectLink(wxCommandEvent& event);
 	void OnSelectNode(wxCommandEvent& event);
@@ -339,14 +342,18 @@ public:
 	FeatInfoDlg	*ShowFeatInfoDlg();
 	FeatInfoDlg	*m_pFeatInfoDlg;
 
-	// Distance
+	// Distance and Elevation Profile
 	DistanceDlg	*ShowDistanceDlg();
 	DistanceDlg *m_pDistanceDlg;
+	ProfileDlg	*ShowProfileDlg();
+	ProfileDlg	*m_pProfileDlg;
 
 	// Elevation
 	bool SampleCurrentTerrains(vtElevLayer *pTarget);
 	float GetHeightFromTerrain(DPoint2 &p);
 	void ExportBitmap(RenderDlg &dlg);
+	int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
+	float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p);
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);

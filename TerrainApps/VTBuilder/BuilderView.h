@@ -190,6 +190,8 @@ protected:
 	void InvertRect(wxDC *pDC, const wxPoint &one, const wxPoint &two, bool bDashed = false);
 	void DrawAreaTool(wxDC *pDC, const DRECT &area);
 
+	bool m_bSkipNextDraw;
+	bool m_bSkipNextRefresh;
 	wxSize m_previous_size;
 	DRECT m_world_rect;		// rectangle box drawn by mouse
 

@@ -22,6 +22,8 @@
 #include "vtdata/TripDub.h"
 #include "vtdata/WFSClient.h"
 #include "vtui/Helper.h"
+#include "vtui/DistanceDlg.h"
+#include "vtui/ProfileDlg.h"
 
 #include "Frame.h"
 #include "MenuEnum.h"
@@ -103,6 +105,7 @@ EVT_MENU(ID_VIEW_FULLVIEW,		MainFrame::OnViewFull)
 EVT_MENU(ID_VIEW_SETAREA,		MainFrame::OnViewSetArea)
 EVT_MENU(ID_VIEW_WORLDMAP,		MainFrame::OnViewWorldMap)
 EVT_MENU(ID_VIEW_SHOWUTM,		MainFrame::OnViewUTMBounds)
+EVT_MENU(ID_VIEW_PROFILE,		MainFrame::OnViewProfile)
 EVT_MENU(ID_VIEW_OPTIONS,		MainFrame::OnViewOptions)
 
 EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,	MainFrame::OnUpdateLayerShow)
@@ -115,6 +118,7 @@ EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewFull)
 EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateViewSetArea)
 EVT_UPDATE_UI(ID_VIEW_WORLDMAP,		MainFrame::OnUpdateWorldMap)
 EVT_UPDATE_UI(ID_VIEW_SHOWUTM,		MainFrame::OnUpdateUTMBounds)
+EVT_UPDATE_UI(ID_VIEW_PROFILE,		MainFrame::OnUpdateViewProfile)
 
 EVT_MENU(ID_ROAD_SELECTROAD,	MainFrame::OnSelectLink)
 EVT_MENU(ID_ROAD_SELECTNODE,	MainFrame::OnSelectNode)
@@ -318,6 +322,7 @@ void MainFrame::CreateMenus()
 	viewMenu->AppendCheckItem(ID_VIEW_WORLDMAP, _("&World Map"), _("Show/Hide World Map"));
 	viewMenu->AppendCheckItem(ID_VIEW_SHOWUTM, _("Show &UTM Boundaries"));
 //	viewMenu->AppendCheckItem(ID_VIEW_SHOWGRID, _("Show 7.5\" Grid"), _("Show 7.5\" Grid"), true);
+	viewMenu->AppendCheckItem(ID_VIEW_PROFILE, _("Elevation Profile"));
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_OPTIONS, _("&Options"));
 	m_pMenuBar->Append(viewMenu, _("&View"));
@@ -1763,6 +1768,30 @@ void MainFrame::OnViewUTMBounds(wxCommandEvent& event)
 void MainFrame::OnUpdateUTMBounds(wxUpdateUIEvent& event)
 {
 	event.Check(m_pView->m_bShowUTMBounds);
+}
+
+void MainFrame::OnViewProfile(wxCommandEvent& event)
+{
+	if (m_pProfileDlg && m_pProfileDlg->IsShown())
+		m_pProfileDlg->Hide();
+	else
+	{
+		ProfileDlg *dlg = ShowProfileDlg();
+		// this might be the first time it's displayed, so we need to get
+		//  the point values from the distance tool
+		if (m_pDistanceDlg)
+		{
+			DPoint2 p1, p2;
+			m_pDistanceDlg->GetPoints(p1, p2);
+			dlg->SetPoints(p1, p2);
+		}
+	}
+}
+
+void MainFrame::OnUpdateViewProfile(wxUpdateUIEvent& event)
+{
+	event.Check(m_pProfileDlg && m_pProfileDlg->IsShown());
+	event.Enable(LayersOfType(LT_ELEVATION) > 0);
 }
 
 void MainFrame::OnViewOptions(wxCommandEvent& event)

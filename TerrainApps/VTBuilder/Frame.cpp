@@ -26,7 +26,10 @@
 #include "Helper.h"
 #include "BuilderView.h"
 #include "VegGenOptions.h"
+
 #include "vtui/Helper.h"
+#include "vtui/ProfileDlg.h"
+
 // Layers
 #include "ElevLayer.h"
 #include "ImageLayer.h"
@@ -94,6 +97,7 @@
 #  include "view_zoomall.xpm"
 #  include "view_zoomexact.xpm"
 #  include "view_zoom_layer.xpm"
+#  include "view_profile.xpm"
 
 #	include "VTBuilder.xpm"
 #endif
@@ -106,6 +110,7 @@ DECLARE_APP(BuilderApp)
 #define WID_MAINVIEW	102
 #define WID_FEATINFO	103
 #define WID_DISTANCE	104
+#define WID_PROFILE		105
 
 //////////////////////////////////////////////////////////////////
 
@@ -130,6 +135,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_BioRegionDlg = NULL;
 	m_pFeatInfoDlg = NULL;
 	m_pDistanceDlg = NULL;
+	m_pProfileDlg = NULL;
 	m_pLinearStructureDlg = NULL;
 	m_pInstanceDlg = NULL;
 	m_szIniFilename = APPNAME ".ini";
@@ -435,6 +441,7 @@ void MainFrame::AddMainToolbars()
 	ADD_TOOL(ID_VIEW_PAN, wxBITMAP(view_hand), _("Pan"), true);
 	ADD_TOOL(ID_VIEW_DISTANCE, wxBITMAP(distance), _("Distance"), true);
 	ADD_TOOL(ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Area Tool"), true);
+	ADD_TOOL(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), true);
 }
 
 
@@ -889,7 +896,7 @@ DistanceDlg	*MainFrame::ShowDistanceDlg()
 	{
 		// Create new Distance Dialog
 		m_pDistanceDlg = new DistanceDlg(this, WID_DISTANCE, _("Distance Tool"),
-				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+				wxPoint(200, 200), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pDistanceDlg->SetProjection(m_proj);
 	}
 	m_pDistanceDlg->Show(true);
@@ -997,6 +1004,68 @@ void MainFrame::ResolveInstanceItem(vtStructInstance *inst)
 	}
 }
 
+class BuildingProfileCallback : public ProfileCallback
+{
+public:
+	void Begin()
+	{
+		m_elevs.clear();
+		m_frame->ElevLayerArray(m_elevs);
+	}
+	float GetElevation(const DPoint2 &p)
+	{
+		return m_frame->ElevLayerArrayValue(m_elevs, p);
+	}
+	MainFrame *m_frame;
+	std::vector<vtElevLayer*> m_elevs;
+};
+
+ProfileDlg *MainFrame::ShowProfileDlg()
+{
+	if (!m_pProfileDlg)
+	{
+		// Create new Feature Info Dialog
+		m_pProfileDlg = new ProfileDlg(this, WID_PROFILE, _("Elevation Profile"),
+				wxPoint(120, 80), wxSize(600, 400), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+		BuildingProfileCallback *callback = new BuildingProfileCallback;
+		callback->m_frame = this;
+		m_pProfileDlg->SetCallback(callback);
+	}
+	m_pProfileDlg->Show(true);
+	return m_pProfileDlg;
+}
+
+int MainFrame::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
+{
+	for (int l = 0; l < NumLayers(); l++)
+	{
+		vtLayer *lp = m_Layers.GetAt(l);
+		if (lp->GetType() == LT_ELEVATION)
+			elevs.push_back((vtElevLayer *)lp);
+	}
+	return elevs.size();
+}
+
+float MainFrame::ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs,
+									 const DPoint2 &p)
+{
+	float fData, fBestData = INVALID_ELEVATION;
+	for (unsigned int g = 0; g < elevs.size(); g++)
+	{
+		vtElevLayer *elev = elevs[g];
+
+		vtElevationGrid *grid = elev->m_pGrid;
+		vtTin2d *tin = elev->m_pTin;
+		if (grid)
+			fData = grid->GetFilteredValue2(p);
+		else if (tin)
+			tin->FindAltitudeOnEarth(p, fData);
+
+		if (fData != INVALID_ELEVATION)
+			fBestData = fData;
+	}
+	return fBestData;
+}
 
 //
 // sample all elevation layers into this one
@@ -1010,7 +1079,7 @@ bool MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 	pTarget->GetExtent(area);
 	DPoint2 step = pTarget->m_pGrid->GetSpacing();
 
-	int i, j, l, layers = m_Layers.GetSize();
+	int i, j, layers = m_Layers.GetSize();
 	float fData=0, fBestData;
 	int iColumns, iRows;
 	pTarget->m_pGrid->GetDimensions(iColumns, iRows);
@@ -1018,15 +1087,8 @@ bool MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 	// Create progress dialog for the slow part
 	OpenProgressDialog(_("Merging and Resampling Elevation Layers"), true);
 
-	int num_elev = LayersOfType(LT_ELEVATION);
-	vtElevLayer **elevs = new vtElevLayer *[num_elev];
-	int g, num_elevs = 0;
-	for (l = 0; l < layers; l++)
-	{
-		vtLayer *lp = m_Layers.GetAt(l);
-		if (lp->GetType() == LT_ELEVATION)
-			elevs[num_elevs++] = (vtElevLayer *)lp;
-	}
+	std::vector<vtElevLayer*> elevs;
+	ElevLayerArray(elevs);
 
 	// iterate through the vertices of the new terrain
 	DPoint2 p;
@@ -1042,33 +1104,17 @@ bool MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 				return false;
 			}
 		}
-
 		p.x = area.left + (i * step.x);
 		for (j = 0; j < iRows; j++)
 		{
 			p.y = area.bottom + (j * step.y);
 
 			// find some data for this point
-			fBestData = INVALID_ELEVATION;
-			for (g = 0; g < num_elevs; g++)
-			{
-				vtElevLayer *elev = elevs[g];
-
-				vtElevationGrid *grid = elev->m_pGrid;
-				vtTin2d *tin = elev->m_pTin;
-				if (grid)
-					fData = grid->GetFilteredValue2(p);
-				else if (tin)
-					tin->FindAltitudeOnEarth(p, fData);
-
-				if (fData != INVALID_ELEVATION)
-					fBestData = fData;
-			}
+			fBestData = ElevLayerArrayValue(elevs, p);
 			pTarget->m_pGrid->SetFValue(i, j, fBestData);
 		}
 	}
 	CloseProgressDialog();
-	delete [] elevs;
 
 	clock_t tm2 = clock();
 	float time = ((float)tm2 - tm1)/CLOCKS_PER_SEC;

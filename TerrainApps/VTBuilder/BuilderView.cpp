@@ -29,6 +29,7 @@
 #include "UtilityLayer.h"
 // Dialogs
 #include "vtui/DistanceDlg.h"
+#include "vtui/ProfileDlg.h"
 
 #include "cpl_error.h"
 #include <float.h>
@@ -62,6 +63,9 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 		vtScaledView(parent, id, pos, size, 0, name )
 {
 	VTLOG(" Constructing BuilderView\n");
+
+	m_bSkipNextDraw = false;
+	m_bSkipNextRefresh = false;
 
 	m_bCrossSelect = false;
 	m_bShowMap = true;
@@ -107,6 +111,12 @@ BuilderView::~BuilderView()
 
 void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 {
+	if (m_bSkipNextDraw)
+	{
+		m_bSkipNextDraw = false;
+		return;
+	}
+
 	MainFrame *pFrame = GetMainFrame();
 	if (pFrame->DrawDisabled())
 		return;
@@ -1122,7 +1132,11 @@ void BuilderView::OnDragDistance()
 	object(m_ui.m_LastPoint, p2);
 
 	DistanceDlg *pDlg = GetMainFrame()->ShowDistanceDlg();
-	pDlg->SetPoints(p1, p2, true);
+	if (pDlg)
+		pDlg->SetPoints(p1, p2, true);
+	ProfileDlg *pDlg2 = GetMainFrame()->m_pProfileDlg;
+	if (pDlg2)
+		pDlg2->SetPoints(p1, p2);
 
 	float h1 = GetMainFrame()->GetHeightFromTerrain(p1);
 	float h2 = GetMainFrame()->GetHeightFromTerrain(p2);
@@ -1385,14 +1399,23 @@ void BuilderView::OnIdle(wxIdleEvent& event)
 void BuilderView::OnSize(wxSizeEvent& event)
 {
 	// Attempt to avoid unnecessary redraws on shrinking the window.
-	// Unfortunately this code appears to have no effect, we still
-	//  get the Refresh-Draw event.
-	//
+	// Unfortunately using Skip() alone appears to have no effect,
+	//  we still get the Refresh-Draw event.
 	wxSize size = GetSize();
-	if (size.x <= m_previous_size.x && size.y <= m_previous_size.y)
-		event.Skip();
+	if (size == m_previous_size)
+		event.Skip(true);	// allow event to be handled normally
+	else if (size.x <= m_previous_size.x && size.y <= m_previous_size.y)
+	{
+		// "prevent additional event handlers from being called and control
+		// will be returned to the sender of the event immediately after the
+		// current handler has finished."
+		event.Skip(false);
+
+		// Since that doesn't work, we use our own logic
+		m_bSkipNextRefresh = true;
+	}
 	else
-		vtScaledView::OnSize(event);
+		event.Skip(true);	// allow event to be handled normally
 	m_previous_size = size;
 }
 
@@ -1593,5 +1616,14 @@ void BuilderView::OnKeyDown(wxKeyEvent& event)
 
 void BuilderView::OnEraseBackground( wxEraseEvent& event )
 {
-	event.Skip();
+	// there are some erase events we don't need, such as when sizing the
+	//  window smaller
+	if (m_bSkipNextRefresh)
+	{
+		event.Skip(false);
+		m_bSkipNextDraw = true;
+	}
+	else
+		event.Skip(true);
+	m_bSkipNextRefresh = false;
 }
