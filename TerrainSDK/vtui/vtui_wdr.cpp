@@ -16,7 +16,6 @@
 
 // Include private header
 #include "vtui_wdr.h"
-
 const int ID_TEXT = 10000;
 
 #include <wx/intl.h>
@@ -719,6 +718,51 @@ wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item7->Add( item19, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 
     item0->Add( item7, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
+wxSizer *ProfileDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    item0->Add( 500, 180, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxCheckBox *item2 = new wxCheckBox( parent, ID_LINE_OF_SIGHT, _("Line of Sight"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxFlexGridSizer *item3 = new wxFlexGridSizer( 2, 0, 0 );
+
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("Start height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item5 = new wxTextCtrl( parent, ID_HEIGHT1, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item3->Add( item5, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("End height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item7 = new wxTextCtrl( parent, ID_HEIGHT2, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item3->Add( item7, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    wxStaticLine *item8 = new wxStaticLine( parent, ID_LINE2, wxDefaultPosition, wxSize(-1,20), wxLI_VERTICAL );
+    item1->Add( item8, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+
+    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_TEXTCTRL, wxT(""), wxDefaultPosition, wxSize(80,40), wxTE_MULTILINE );
+    item1->Add( item9, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {

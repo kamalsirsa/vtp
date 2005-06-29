@@ -41,7 +41,12 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	// WDR: method declarations for ProfileDlg
+	wxTextCtrl* GetHeight2()  { return (wxTextCtrl*) FindWindow( ID_HEIGHT2 ); }
+	wxTextCtrl* GetHeight1()  { return (wxTextCtrl*) FindWindow( ID_HEIGHT1 ); }
+	wxTextCtrl* GetText()  { return (wxTextCtrl*) FindWindow( ID_TEXTCTRL ); }
+	void MakePoint(wxPoint &p, int i, float value);
 	void DrawChart(wxDC& dc);
+	void UpdateMessageText();
 	void SetPoints(const DPoint2 &p1, const DPoint2 &p2);
 	void SetCallback(ProfileCallback *callback);
 	void GetValues();
@@ -53,14 +58,35 @@ private:
 	DPoint2 m_p1, m_p2;
 	wxSize m_clientsize;
 	int m_xrange, m_yrange;
-	float m_fMin, m_fMax, m_fRange;
+	float m_fMin, m_fMax, m_fRange, m_fDrawRange;
+	float m_fMinDist, m_fMaxDist, m_fTotalDist;
 	bool m_bHavePoints, m_bHaveValues;
+	bool m_bHaveValidData, m_bHaveInvalid;
+	bool m_bMouseOnLine;
+	float m_fMouse, m_fMouseDist;
+	int m_iMin, m_iMax, m_iMouse;
+	wxPoint m_base;
+	bool m_bHaveSlope;
+	float m_fSlope;
+	bool m_bLeftButton;
+	bool m_bLineOfSight, m_bValidLine;
+	float m_fHeight1, m_fHeight2;
+	float m_fHeightAtStart, m_fHeightAtEnd;
+	bool m_bIntersectsGround;
+	float m_fIntersectHeight;
+	float m_fIntersectDistance;
 
 private:
 	// WDR: handler declarations for ProfileDlg
+	void OnHeight2( wxCommandEvent &event );
+	void OnHeight1( wxCommandEvent &event );
+	void OnLineOfSight( wxCommandEvent &event );
 	void OnPaint(wxPaintEvent &event);
 	void OnDraw(wxDC& dc); // overridden to draw this view
 	void OnSize(wxSizeEvent& event);
+	void OnLeftDown(wxMouseEvent& event);
+	void OnLeftUp(wxMouseEvent& event);
+	void OnMouseMove(wxMouseEvent& event);
 
 private:
 	DECLARE_EVENT_TABLE()
