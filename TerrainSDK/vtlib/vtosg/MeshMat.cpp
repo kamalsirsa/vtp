@@ -137,6 +137,7 @@ bool vtMaterial::GetCulling() const
  */
 void vtMaterial::SetLighting(bool bLighting)
 {
+	int foo = sizeof(vtMaterial);
 	m_pStateSet->setMode(GL_LIGHTING, bLighting ? SA_ON : SA_OFF);
 }
 /**
@@ -168,6 +169,13 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 		m_pAlphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
 		m_pStateSet->setAttributeAndModes(m_pAlphaFunc.get(), SA_ON );
 		m_pStateSet->setRenderingHint(StateSet::TRANSPARENT_BIN);
+#ifdef ENVIRON
+		// RJ says he needed this to make multiple transparent surfaces
+		//  work properly, but the transparent bin should take care of that?
+		ref_ptr<Depth> pDepth  = new Depth;
+		pDepth->setWriteMask(false);
+		m_pStateSet->setAttribute(pDepth.get());
+#endif
 	}
 	else
 	{
