@@ -315,10 +315,37 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 	// restore the previous renderbin.
 	cv.setCurrentRenderBin(previousRenderBin);
 
+	const osg::Viewport& viewport = *cv.getViewport();
+
+#if 1	
+	// Fix for the transparent ground weirdness caused by the texture
+	// resolution being greater than the dimensions of the current viewport
+	int iRes = m_iRez;
+	
+	// Clamp resolution to viewport
+	if (iRes > viewport.width())
+	{
+		iRes = viewport.width();
+		if (iRes > viewport.height())
+			iRes = viewport.height();
+	}
+	// Constrain to nearest power of two
+	int iTemp = 1;
+	while ((iTemp = iTemp << 1) <= iRes);
+	iRes = iTemp / 2;
+
+	// centre the impostor viewport on the centre of the main window
+	// viewport as often the edges of the viewport might be obscured by
+	// other windows, which can cause image/reading writing problems.
+	int center_x = viewport.x()+viewport.width()/2;
+	int center_y = viewport.y()+viewport.height()/2;
+
+	osg::Viewport* new_viewport = new osg::Viewport;
+	new_viewport->setViewport(center_x - iRes/2, center_y - iRes/2, iRes, iRes);
+#else
+	// old pre-fix code
 	int height = m_iRez;
 	int width  = m_iRez;
-
-	const osg::Viewport& viewport = *cv.getViewport();
 
 	// offset the impostor viewport from the center of the main window
 	// viewport as often the edges of the viewport might be obscured by
@@ -328,8 +355,9 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 
 	osg::Viewport* new_viewport = new osg::Viewport;
 	new_viewport->setViewport(center_x-width/2,center_y-height/2,width,height);
-	m_pRtts->setViewport(new_viewport);
+#endif
 
+	m_pRtts->setViewport(new_viewport);
 	m_shadowState->setAttribute(new_viewport);
 
 	// add the render to texture stage to the current stages
