@@ -95,7 +95,7 @@ vtTerrain::~vtTerrain()
 
 	m_AnimContainer.Empty();
 
-	int i, size = m_PointsOfInterest.GetSize();
+	unsigned int i, size = m_PointsOfInterest.GetSize();
 	for (i = 0; i < size; i++)
 	{
 		POIPtr p = m_PointsOfInterest.GetAt(i);
@@ -114,11 +114,13 @@ vtTerrain::~vtTerrain()
 //	delete m_pPlantList;
 
 	if (!m_bPreserveInputGrid)
-	{
 		delete m_pElevGrid;
-	}
+
 	if (m_pImage)
 		m_pImage->Release();
+	for(i = 0; i < m_Images.GetSize(); i++)
+		m_Images[i]->Release();
+
 	delete m_pRoadMap;
 	if (m_pRoadGroup)
 	{
