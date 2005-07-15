@@ -24,10 +24,10 @@
 #endif
 
 // some shortcuts
-#define ADD_TOOL(id, bmp, tooltip, tog) \
-	toolBar_main->AddTool(id, bmp, wxNullBitmap, tog, -1, -1, (wxObject *)0, tooltip, tooltip)
-#define INSERT_TOOL(place, id, bmp, tooltip, tog) \
-	toolBar_main->InsertTool(place, id, bmp, wxNullBitmap, tog, (wxObject *)0, tooltip, tooltip)
+#define ADD_TOOL(id, bmp, label) \
+	toolBar_main->AddTool(id, label, bmp, wxNullBitmap, wxITEM_NORMAL, label, label)
+#define ADD_TOOL2(id, bmp, label, type) \
+	toolBar_main->AddTool(id, label, bmp, wxNullBitmap, type, label, label)
 
 class MyTreeCtrl;
 class MySplitterWindow;

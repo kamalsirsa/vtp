@@ -356,41 +356,41 @@ void MainFrame::RefreshToolbar()
 		break;
 	case LT_RAW:
 		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
-		ADD_TOOL(ID_FEATURE_PICK, wxBITMAP(info), _("Pick Features"), true);
-		ADD_TOOL(ID_FEATURE_TABLE, wxBITMAP(table), _("Table"), true);
-		ADD_TOOL(ID_RAW_ADDPOINTS, wxBITMAP(raw_add_point), _("Add Points with Mouse"), true);
+		ADD_TOOL2(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), wxITEM_CHECK);
+		ADD_TOOL2(ID_FEATURE_PICK, wxBITMAP(info), _("Pick Features"), wxITEM_CHECK);
+		ADD_TOOL2(ID_FEATURE_TABLE, wxBITMAP(table), _("Table"), wxITEM_CHECK);
+		ADD_TOOL2(ID_RAW_ADDPOINTS, wxBITMAP(raw_add_point), _("Add Points with Mouse"), wxITEM_CHECK);
 		break;
 	case LT_ELEVATION:
 		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), true);
-		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
-		ADD_TOOL(ID_AREA_EXPORT_ELEV, wxBITMAP(layer_export), _("Export Elevation"), false);
+		ADD_TOOL2(ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), wxITEM_CHECK);
+		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"));
+		ADD_TOOL(ID_AREA_EXPORT_ELEV, wxBITMAP(layer_export), _("Export Elevation"));
 		break;
 	case LT_IMAGE:
 		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
+		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"));
 		break;
 	case LT_ROAD:
 		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_ROAD_SELECTROAD, wxBITMAP(rd_select_road), _("Select Roads"), true);
-		ADD_TOOL(ID_ROAD_SELECTNODE, wxBITMAP(rd_select_node), _("Select Nodes"), true);
-		ADD_TOOL(ID_ROAD_SELECTWHOLE, wxBITMAP(rd_select_whole), _("Select Whole Roads"), true);
-		ADD_TOOL(ID_ROAD_DIRECTION, wxBITMAP(rd_direction), _("Set Road Direction"), true);
-		ADD_TOOL(ID_ROAD_EDIT, wxBITMAP(rd_edit), _("Edit Road Points"), true);
-		ADD_TOOL(ID_ROAD_SHOWNODES, wxBITMAP(rd_shownodes), _("Show Nodes"), true);
-		ADD_TOOL(ID_EDIT_CROSSINGSELECTION, wxBITMAP(edit_crossing), _("Crossing Selection"), true);
+		ADD_TOOL2(ID_ROAD_SELECTROAD, wxBITMAP(rd_select_road), _("Select Roads"), wxITEM_CHECK);
+		ADD_TOOL2(ID_ROAD_SELECTNODE, wxBITMAP(rd_select_node), _("Select Nodes"), wxITEM_CHECK);
+		ADD_TOOL2(ID_ROAD_SELECTWHOLE, wxBITMAP(rd_select_whole), _("Select Whole Roads"), wxITEM_CHECK);
+		ADD_TOOL2(ID_ROAD_DIRECTION, wxBITMAP(rd_direction), _("Set Road Direction"), wxITEM_CHECK);
+		ADD_TOOL2(ID_ROAD_EDIT, wxBITMAP(rd_edit), _("Edit Road Points"), wxITEM_CHECK);
+		ADD_TOOL2(ID_ROAD_SHOWNODES, wxBITMAP(rd_shownodes), _("Show Nodes"), wxITEM_CHECK);
+		ADD_TOOL2(ID_EDIT_CROSSINGSELECTION, wxBITMAP(edit_crossing), _("Crossing Selection"), wxITEM_CHECK);
 		break;
 	case LT_STRUCTURE:
 		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
-		ADD_TOOL(ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), true);
-		ADD_TOOL(ID_STRUCTURE_ADD_POINTS, wxBITMAP(bld_add_points), _("Add points to building footprints"), true);
-		ADD_TOOL(ID_STRUCTURE_DELETE_POINTS, wxBITMAP(bld_delete_points), _("Delete points from building footprints"), true);
-		ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Structures"), true);
-		ADD_TOOL(ID_STRUCTURE_EDIT_LINEAR, wxBITMAP(str_edit_linear), _("Edit Linear Structures"), true);
-		ADD_TOOL(ID_STRUCTURE_CONSTRAIN, wxBITMAP(bld_corner), _("Constrain Angles"), true);
-		ADD_TOOL(ID_STRUCTURE_ADD_INST, wxBITMAP(instances), _("Add Instances"), true);
+		ADD_TOOL2(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), wxITEM_CHECK);
+		ADD_TOOL2(ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), wxITEM_CHECK);
+		ADD_TOOL2(ID_STRUCTURE_ADD_POINTS, wxBITMAP(bld_add_points), _("Add points to building footprints"), wxITEM_CHECK);
+		ADD_TOOL2(ID_STRUCTURE_DELETE_POINTS, wxBITMAP(bld_delete_points), _("Delete points from building footprints"), wxITEM_CHECK);
+		ADD_TOOL2(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Structures"), wxITEM_CHECK);
+		ADD_TOOL2(ID_STRUCTURE_EDIT_LINEAR, wxBITMAP(str_edit_linear), _("Edit Linear Structures"), wxITEM_CHECK);
+		ADD_TOOL2(ID_STRUCTURE_CONSTRAIN, wxBITMAP(bld_corner), _("Constrain Angles"), wxITEM_CHECK);
+		ADD_TOOL2(ID_STRUCTURE_ADD_INST, wxBITMAP(instances), _("Add Instances"), wxITEM_CHECK);
 		break;
 	case LT_WATER:
 	case LT_VEG:
@@ -398,10 +398,10 @@ void MainFrame::RefreshToolbar()
 		break;
 	case LT_UTILITY:
 		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_TOWER_ADD,wxBITMAP(rd_select_node), _("Add Tower"), true);
+		ADD_TOOL2(ID_TOWER_ADD,wxBITMAP(rd_select_node), _("Add Tower"), wxITEM_CHECK);
 		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_TOWER_SELECT,wxBITMAP(select),_("Select Towers"), true);
-		ADD_TOOL(ID_TOWER_EDIT, wxBITMAP(twr_edit), _("Edit Towers"),true);
+		ADD_TOOL2(ID_TOWER_SELECT,wxBITMAP(select),_("Select Towers"), wxITEM_CHECK);
+		ADD_TOOL2(ID_TOWER_EDIT, wxBITMAP(twr_edit), _("Edit Towers"), wxITEM_CHECK);
 		break;
 	}
 	toolBar_main->Realize();
@@ -418,30 +418,30 @@ void MainFrame::RefreshToolbar()
 
 void MainFrame::AddMainToolbars()
 {
-	ADD_TOOL(ID_FILE_NEW, wxBITMAP(proj_new), _("New Project"), false);
-	ADD_TOOL(ID_FILE_OPEN, wxBITMAP(proj_open), _("Open Project"), false);
-	ADD_TOOL(ID_FILE_SAVE, wxBITMAP(proj_save), _("Save Project"), false);
+	ADD_TOOL(ID_FILE_NEW, wxBITMAP(proj_new), _("New Project"));
+	ADD_TOOL(ID_FILE_OPEN, wxBITMAP(proj_open), _("Open Project"));
+	ADD_TOOL(ID_FILE_SAVE, wxBITMAP(proj_save), _("Save Project"));
 	toolBar_main->AddSeparator();
-	ADD_TOOL(ID_LAYER_NEW, wxBITMAP(layer_new), _("New Layer"), false);
-	ADD_TOOL(ID_LAYER_OPEN, wxBITMAP(layer_open), _("Open Layer"), false);
-	ADD_TOOL(ID_LAYER_SAVE, wxBITMAP(layer_save), _("Save Layer"), false);
-	ADD_TOOL(ID_LAYER_IMPORT, wxBITMAP(layer_import), _("Import Data"), false);
+	ADD_TOOL(ID_LAYER_NEW, wxBITMAP(layer_new), _("New Layer"));
+	ADD_TOOL(ID_LAYER_OPEN, wxBITMAP(layer_open), _("Open Layer"));
+	ADD_TOOL(ID_LAYER_SAVE, wxBITMAP(layer_save), _("Save Layer"));
+	ADD_TOOL(ID_LAYER_IMPORT, wxBITMAP(layer_import), _("Import Data"));
 	toolBar_main->AddSeparator();
-	ADD_TOOL(ID_EDIT_DELETE, wxBITMAP(edit_delete), _("Delete"), false);
-	ADD_TOOL(ID_EDIT_OFFSET, wxBITMAP(edit_offset), _("Offset"), false);
-	ADD_TOOL(ID_VIEW_SHOWLAYER, wxBITMAP(layer_show), _("Layer Visibility"), true);
-	ADD_TOOL(ID_VIEW_LAYER_UP, wxBITMAP(layer_up), _("Layer Up"), false);
+	ADD_TOOL(ID_EDIT_DELETE, wxBITMAP(edit_delete), _("Delete"));
+	ADD_TOOL(ID_EDIT_OFFSET, wxBITMAP(edit_offset), _("Offset"));
+	ADD_TOOL2(ID_VIEW_SHOWLAYER, wxBITMAP(layer_show), _("Layer Visibility"), wxITEM_CHECK);
+	ADD_TOOL(ID_VIEW_LAYER_UP, wxBITMAP(layer_up), _("Layer Up"));
 	toolBar_main->AddSeparator();
-	ADD_TOOL(ID_VIEW_ZOOMIN, wxBITMAP(view_plus), _("Zoom In"), false);
-	ADD_TOOL(ID_VIEW_ZOOMOUT, wxBITMAP(view_minus), _("Zoom Out"), false);
-	ADD_TOOL(ID_VIEW_ZOOMALL, wxBITMAP(view_zoomall), _("Zoom All"), false);
-	ADD_TOOL(ID_VIEW_ZOOM_LAYER, wxBITMAP(view_zoom_layer), _("Zoom To Layer"), false);
+	ADD_TOOL(ID_VIEW_ZOOMIN, wxBITMAP(view_plus), _("Zoom In"));
+	ADD_TOOL(ID_VIEW_ZOOMOUT, wxBITMAP(view_minus), _("Zoom Out"));
+	ADD_TOOL(ID_VIEW_ZOOMALL, wxBITMAP(view_zoomall), _("Zoom All"));
+	ADD_TOOL(ID_VIEW_ZOOM_LAYER, wxBITMAP(view_zoom_layer), _("Zoom To Layer"));
 	toolBar_main->AddSeparator();
-	ADD_TOOL(ID_VIEW_MAGNIFIER, wxBITMAP(view_mag), _("Magnifier"), true);
-	ADD_TOOL(ID_VIEW_PAN, wxBITMAP(view_hand), _("Pan"), true);
-	ADD_TOOL(ID_VIEW_DISTANCE, wxBITMAP(distance), _("Distance"), true);
-	ADD_TOOL(ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Area Tool"), true);
-	ADD_TOOL(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), true);
+	ADD_TOOL2(ID_VIEW_MAGNIFIER, wxBITMAP(view_mag), _("Magnifier"), wxITEM_CHECK);
+	ADD_TOOL2(ID_VIEW_PAN, wxBITMAP(view_hand), _("Pan"), wxITEM_CHECK);
+	ADD_TOOL2(ID_VIEW_DISTANCE, wxBITMAP(distance), _("Distance"), wxITEM_CHECK);
+	ADD_TOOL2(ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Area Tool"), wxITEM_CHECK);
+	ADD_TOOL2(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), wxITEM_CHECK);
 }
 
 
