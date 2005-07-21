@@ -135,7 +135,7 @@ void EnviroGUI::SaveStructures()
 
 	EnableContinuousRendering(false);
 	wxFileDialog saveFile(NULL, _("Save Built Structures Data"), _T(""),
-		_T(""), _("Structure Files (*.vtst)|*.vtst|"), wxSAVE | wxOVERWRITE_PROMPT);
+		_T(""), _("Structure Files (*.vtst)|*.vtst"), wxSAVE | wxOVERWRITE_PROMPT);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	EnableContinuousRendering(true);
 	if (!bResult)

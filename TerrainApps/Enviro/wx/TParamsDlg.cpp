@@ -1029,7 +1029,7 @@ void TParamsDlg::OnOverlay( wxCommandEvent &event )
 	TransferDataFromWindow();
 
 	wxFileDialog loadFile(NULL, _("Overlay Image File"), _T(""), _T(""),
-		_("Image Files (*.png,*.jpg,*.bmp)|*.png;*.jpg;*.bmp|"), wxOPEN);
+		_("Image Files (*.png,*.jpg,*.bmp)|*.png;*.jpg;*.bmp"), wxOPEN);
 	if (m_strOverlayFile != _T(""))
 		loadFile.SetPath(m_strOverlayFile);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);

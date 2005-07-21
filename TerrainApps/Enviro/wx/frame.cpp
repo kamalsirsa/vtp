@@ -1494,7 +1494,7 @@ void vtFrame::OnEarthPoints(wxCommandEvent& event)
 	wxString path = wxGetCwd();
 
 	wxFileDialog loadFile(NULL, _("Load Point Data"), _T(""), _T(""),
-		_("Point Data Sources (*.shp)|*.shp|"), wxOPEN);
+		_("Point Data Sources (*.shp)|*.shp"), wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 	{

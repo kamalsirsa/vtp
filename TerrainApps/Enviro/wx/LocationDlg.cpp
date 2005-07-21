@@ -475,7 +475,7 @@ void LocationDlg::OnSaveAnim( wxCommandEvent &event )
 	vtAnimPath *path = GetAnim(m_iAnim);
 
 	wxFileDialog saveFile(NULL, _("Save AnimPath"), _T(""), _T(""),
-		_("AnimPath Files (*.vtap)|*.vtap|"), wxSAVE);
+		_("AnimPath Files (*.vtap)|*.vtap"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -507,7 +507,7 @@ void LocationDlg::OnListDblClick( wxCommandEvent &event )
 void LocationDlg::OnLoad( wxCommandEvent &event )
 {
 	wxFileDialog loadFile(NULL, _("Load Locations"), _T(""), _T(""),
-		_("Location Files (*.loc)|*.loc|"), wxOPEN);
+		_("Location Files (*.loc)|*.loc"), wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -523,7 +523,7 @@ void LocationDlg::OnLoad( wxCommandEvent &event )
 void LocationDlg::OnSave( wxCommandEvent &event )
 {
 	wxFileDialog saveFile(NULL, _("Save Locations"), _T(""), _T(""),
-		_("Location Files (*.loc)|*.loc|"), wxSAVE);
+		_("Location Files (*.loc)|*.loc"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;

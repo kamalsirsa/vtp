@@ -122,7 +122,7 @@ void ColorMapDlg::UpdateEnabling()
 void ColorMapDlg::OnLoad( wxCommandEvent &event )
 {
 	wxFileDialog loadFile(NULL, _("Load ColorMap"), _T(""), _T(""),
-		_("ColorMap Files (*.cmt)|*.cmt|"), wxOPEN);
+		_("ColorMap Files (*.cmt)|*.cmt"), wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -153,7 +153,7 @@ void ColorMapDlg::OnSaveAs( wxCommandEvent &event )
 	m_cmap.m_bBlend = m_bBlend;
 
 	wxFileDialog saveFile(NULL, _("Save ColorMap"), _T(""), _T(""),
-		_("ColorMap Files (*.cmt)|*.cmt|"), wxSAVE);
+		_("ColorMap Files (*.cmt)|*.cmt"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
