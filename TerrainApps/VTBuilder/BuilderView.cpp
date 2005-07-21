@@ -1558,7 +1558,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			pE->ReRender();
 		}
 #endif
-#if 1
+#if 0
 		vtString dir = "E:/Data-Distro/Culture/UtilityStructures";
 		for (dir_iter it((const char *)dir); it != dir_iter(); ++it)
 		{
@@ -1587,6 +1587,30 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			fclose(in);
 		}
 #endif
+		{
+			// create grid of polygons
+			vtFeatureSetPolygon set;
+			vtProjection proj;
+			proj.SetWellKnownGeogCS("NAD83");
+			proj.SetUTMZone(5);
+			set.SetProjection(proj);
+			DPoint2 base(215500, 2213000), spacing(1000,1000);
+			for (int i = 0; i < 12; i++)
+			{
+				for (int j = 0; j < 6; j++)
+				{
+					DLine2 dline;
+					dline.Append(base + DPoint2(i*spacing.x, j*spacing.y));
+					dline.Append(base + DPoint2((i+1)*spacing.x, j*spacing.y));
+					dline.Append(base + DPoint2((i+1)*spacing.x, (j+1)*spacing.y));
+					dline.Append(base + DPoint2(i*spacing.x, (j+1)*spacing.y));
+					DPolygon2 poly;
+					poly.push_back(dline);
+					set.AddPolygon(poly);
+				}
+			}
+			set.SaveToSHP("C:/Temp/waimea_quads.shp");
+		}
 	}
 	else
 		event.Skip();
