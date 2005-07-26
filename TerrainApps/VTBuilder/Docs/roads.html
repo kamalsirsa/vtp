@@ -3,9 +3,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <title>VTBuilder Roads</title>
+<link rel="stylesheet" href="docs.css">
 </head>
 
-<body bgcolor="#CCCCCC">
+<body>
 
 <h1 align="center">
 VTBuilder<br>
@@ -24,18 +25,83 @@ VTBuilder<br>
   <p>VTBuilder can import road data from these formats:</p>
   <ul>
     <li>USGS DLG-O (Digital Line Graph - Optional format)</li>
-    <li>ESRI Shape files (SHP)</li>
+    <li>USGS DLG-SDTS</li>
+    <li>US Census TIGER</li>
+    <li>ESRI Shape files (SHP) and other GIS vector formats</li>
   </ul>
 </blockquote>
+<h4>Display</h4>
+<blockquote>
+  <p>Roads are displayed with color that indicates their properties:</p>
+  <table border="1" cellpadding="2" style="border-collapse: collapse" bordercolor="#111111">
+    <tr>
+      <td width="80" bgcolor="#DDDDDD"><hr noshade color="#000000"></td>
+      <td><span class="387150922-29062005"><i>Black</i>: Normal (paved) road</span></td>
+    </tr>
+    <tr>
+      <td width="80" bgcolor="#DDDDDD"><hr noshade color="#826446"></td>
+      <td><span class="387150922-29062005"><i>Brown</i>: Unpaved (dirt) road</span></td>
+    </tr>
+    <tr>
+      <td width="80" bgcolor="#DDDDDD"><hr noshade color="#800000" size="4">
+      </td>
+      <td><span class="387150922-29062005"><i>Thick Red:</i> Highway</span></td>
+    </tr>
+    <tr>
+      <td width="80" bgcolor="#DDDDDD"><hr noshade color="#808080"></td>
+      <td><span class="387150922-29062005"><i>Grey</i>: Gravel</span></td>
+    </tr>
+    <tr>
+      <td width="80" bgcolor="#DDDDDD">
+      <hr noshade color="#CCCCCC" style="border: 1px dotted #826446"></td>
+      <td><span class="387150922-29062005"><i>Dotted Brown</i>: Trails</span></td>
+    </tr>
+    <tr>
+      <td width="80" bgcolor="#DDDDDD">
+      <hr noshade color="#DDDDDD" style="border: 1px dashed #111111"></td>
+      <td><span class="387150922-29062005"><i>Dashed Black</i>: Railroad</span></td>
+    </tr>
+  </table>
+  <p>For nodes, the colors are:</p>
+  <table border="1" cellpadding="2" style="border-collapse: collapse" bordercolor="#111111">
+    <tr>
+      <td width="40" bgcolor="#DDDDDD"><hr noshade color="#0080FF"></td>
+      <td><span class="387150922-29062005"><i>Blue:</i> NONE, uncontrolled</span></td>
+    </tr>
+    <tr>
+      <td width="40" bgcolor="#DDDDDD"><hr noshade color="#008000"></td>
+      <td><span class="387150922-29062005"><i>Green</i>: ALL LIGHTS, controlled 
+      intersection with all lights</span></td>
+    </tr>
+    <tr>
+      <td width="40" bgcolor="#DDDDDD"><hr noshade color="#800000"></td>
+      <td><span class="387150922-29062005"><i>Red:</i> ALL STOPS, controlled 
+      intersection with all stop signs</span></td>
+    </tr>
+    <tr>
+      <td width="40" bgcolor="#DDDDDD">
+      <hr noshade color="#CCCCCC" style="border: 1px dotted #008000"></td>
+      <td><span class="387150922-29062005"><i>Dotted Green:</i> LIGHTS, 
+      controlled intersection with at least one traffic light</span></td>
+    </tr>
+    <tr>
+      <td width="40" bgcolor="#DDDDDD">
+      <hr noshade color="#C0C0C0" style="border: 1px dotted #900000"></td>
+      <td><span class="387150922-29062005"><i>Dotted Red:</i> STOP SIGN, 
+      controlled intersection with at least one stop sign</span></td>
+    </tr>
+  </table>
+  <p>Colors are inverted when the road or node is selected.</p>
+</blockquote>
 <h4>
-<a name="Road Menu">Road Menu </a>
-</h4>
+<a name="Road Menu">Road Menu</a></h4>
     <ul>
       <li><b><a name="Select/Modify">Select/Modify</a> Roads </b>
         <ul>
           <li>In this mode, you may select roads in the road map by
             left clicking on them (click again to deselect.)&nbsp; Double
-            clicking will bring up that roads properties in a dialog box.&nbsp; You may also modify multiple roads at once by selecting multiple
+            clicking will bring up that roads properties in a dialog box.&nbsp; You may also modify multiple 
+          roads at once by selecting multiple
             roads and then right clicking anywhere on the road map.</li>
           <li><b>Road properties</b> include:
             <ul type="disc">
@@ -54,13 +120,13 @@ VTBuilder<br>
         <ul>
           <li>In this mode, you may select nodes in the road map by
             left clicking on them (click again to deselect.)&nbsp; Double
-            clicking will bring up that nodes properties in a dialog box.&nbsp;
+            clicking will bring up that node's properties in a dialog box.&nbsp;
             You may also modify multiple nodes at once by selecting multiple
             nodes and then right clicking anywhere on the road map.</li>
           <li><b>Node properties</b> include:
             <ul type="disc">
-              <li>Intersection Type (Signal lights, Stop sign, or
-                uncontrolled/none.)</li>
+              <li>Intersection Type: Signal lights, Stop sign, or Uncontrolled 
+              (None).</li>
               <li>Behavior of each of the road at the intersection
                 point.&nbsp; Each road is associated with a number as seen on
                 the diagram on the right side of the dialog box.
@@ -80,8 +146,7 @@ VTBuilder<br>
           </li>
         </ul>
       </li>
-      <li><b><a name="Select Whole">Select Whole</a> Roads </b>
-        <ul>
+      <li><b><a name="Select Whole">Select Whole</a> Roads</b><ul>
           <li>Click on a road, and VTBuilder will attempt to select all adjacent
             roads that constitute a single conceptual &quot;road&quot;.&nbsp;
             For example, you can use this to select an entire highway at once.</li>
@@ -92,7 +157,7 @@ VTBuilder<br>
           <li>Adjust traffic direction on roads by left clicking on the road.
             <ul>
               <li><font color="#008000"><b>&lt;&gt;</b> </font>- two-way traffic</li>
-              <li><b><font color="#008000">&gt; </font>or<font color="#008000">
+              <li><font color="#008000"><b>&gt; </b> </font><b>or<font color="#008000">
                 &lt; </font>- </b>one-way traffic, in direction of the arrow.</li>
             </ul>
           </li>
@@ -192,21 +257,20 @@ VTBuilder<br>
 <h4><a name="Use of RMF Files">Use of RMF Files</a>
 </h4>
 <blockquote>
-  <p>In order to use the RMF files you have generated, copy them to the VTP
-  Enviro data directory <b>Enviro/Data/RoadData.</b>&nbsp; The next time
+  <p>In order to use the RMF files you have generated, copy them to a folder 
+  named <b>RoadData </b>on any of your data paths<b>.</b>&nbsp; The next time
   you run Enviro, they will appear on the &quot;Roads Filename&quot;
-  drop-down control in the Create Terrain dialog.</p>
+  drop-down control in the  Terrain Parameters dialog.</p>
 </blockquote>
 
-<p>Currently Unimplemented:</p>
+<p><i>Currently Unimplemented:</i></p>
     <ul>
       <li>Merge 2 nodes.
         <ul>
           <li>Merges the 2 selected nodes.</li>
         </ul>
       </li>
-      <li>Path Finder
-        <ul>
+      <li>Path Finder<ul>
           <li>Tool to create a path for a vehicle to follow in the Enviro Program.</li>
           <li>There are 3 steps:
             <ul>
