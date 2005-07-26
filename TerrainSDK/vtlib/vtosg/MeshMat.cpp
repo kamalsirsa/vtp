@@ -137,7 +137,6 @@ bool vtMaterial::GetCulling() const
  */
 void vtMaterial::SetLighting(bool bLighting)
 {
-	int foo = sizeof(vtMaterial);
 	m_pStateSet->setMode(GL_LIGHTING, bLighting ? SA_ON : SA_OFF);
 }
 /**
