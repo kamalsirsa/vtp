@@ -101,11 +101,7 @@ dir_iter::dir_iter()
 dir_iter::dir_iter(std::string const &dirname)
 {
 	m_handle = opendir(dirname.c_str());
-	m_directory = dirname;
 	m_stat_p = false;
-
-	if (m_directory[m_directory.size() - 1] != '/')
-		m_directory += '/';
 	operator++ ();
 }
 

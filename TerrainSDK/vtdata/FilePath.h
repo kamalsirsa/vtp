@@ -50,7 +50,6 @@ public:
 	bool operator!=(const dir_iter &it);
 
 private:
-	std::string        m_directory;
 #ifdef WIN32
 	struct _finddata_t m_data;
 	long               m_handle;
