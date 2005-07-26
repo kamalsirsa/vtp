@@ -345,7 +345,7 @@ void Projection2Dlg::GetProjection(vtProjection &proj)
 void Projection2Dlg::OnProjSave( wxCommandEvent &event )
 {
 	wxFileDialog saveFile(NULL, _("Save Projection to File"), _T(""), _T(""),
-		_("Projection Files (*.prj)|*.prj|"), wxSAVE | wxOVERWRITE_PROMPT);
+		_("Projection Files (*.prj)|*.prj"), wxSAVE | wxOVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString2 strPathName = saveFile.GetPath();
@@ -355,7 +355,7 @@ void Projection2Dlg::OnProjSave( wxCommandEvent &event )
 void Projection2Dlg::OnProjLoad( wxCommandEvent &event )
 {
 	wxFileDialog loadFile(NULL, _("Load Projection from File"), _T(""), _T(""),
-		_("Projection Files (*.prj)|*.prj|"), wxOPEN);
+		_("Projection Files (*.prj)|*.prj"), wxOPEN);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 	wxString2 strPathName = loadFile.GetPath();

@@ -1354,7 +1354,7 @@ void MainFrame::OnLayerImportNTF(wxCommandEvent &event)
 {
 	// Use file dialog to open plant list text file.
 	wxFileDialog loadFile(NULL, _("Import Layers from NTF File"), _T(""), _T(""),
-		_("NTF Files (*.ntf)|*.ntf|"), wxOPEN);
+		_("NTF Files (*.ntf)|*.ntf"), wxOPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -1403,7 +1403,7 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 {
 	wxFileDialog loadFile(NULL, _("Import MapSource File"), _T(""), _T(""),
-		_("MapSource Export Files (*.txt)|*.txt|"), wxOPEN);
+		_("MapSource Export Files (*.txt)|*.txt"), wxOPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -1415,7 +1415,7 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 {
 	wxFileDialog loadFile(NULL, _("Import Point Data"), _T(""), _T(""),
-		_("Tabular Data Files (*.dbf)|*.dbf|"), wxOPEN);
+		_("Tabular Data Files (*.dbf)|*.dbf"), wxOPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -2799,7 +2799,7 @@ void MainFrame::OnVegExportSHP(wxCommandEvent& event)
 
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export vegetation to SHP"), _T(""), _T(""),
-		_("Vegetation Files (*.shp)|*.shp|"), wxSAVE | wxOVERWRITE_PROMPT);
+		_("Vegetation Files (*.shp)|*.shp"), wxSAVE | wxOVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString2 strPathName = saveFile.GetPath();
@@ -2817,7 +2817,7 @@ void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 {
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Save Vegetation File"), _T(""), _T(""),
-		_("Vegetation Files (*.vf)|*.vf|"), wxSAVE | wxOVERWRITE_PROMPT);
+		_("Vegetation Files (*.vf)|*.vf"), wxSAVE | wxOVERWRITE_PROMPT);
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;

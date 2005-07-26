@@ -113,7 +113,7 @@ void EnviroGUI::SaveVegetation()
 
 	EnableContinuousRendering(false);
 	wxFileDialog saveFile(NULL, _("Save Vegetation Data"), _T(""), _T(""),
-		_("Vegetation Files (*.vf)|*.vf|"), wxSAVE);
+		_("Vegetation Files (*.vf)|*.vf"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	EnableContinuousRendering(true);
 	if (!bResult)

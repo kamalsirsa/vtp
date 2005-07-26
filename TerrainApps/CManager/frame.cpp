@@ -418,7 +418,7 @@ void vtFrame::OnOpen(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
 	wxFileDialog loadFile(NULL, _T("Load Content File"), _T(""), _T(""),
-		_T("Content XML Files (*.vtco)|*.vtco|"), wxOPEN);
+		_T("Content XML Files (*.vtco)|*.vtco"), wxOPEN);
 	loadFile.SetFilterIndex(1);
 	if (loadFile.ShowModal() == wxID_OK)
 	{
@@ -433,7 +433,7 @@ void vtFrame::OnSave(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
 	wxFileDialog loadFile(NULL, _T("Save Content File"), _T(""), _T(""),
-		_T("Content XML Files (*.vtco)|*.vtco|"), wxSAVE);
+		_T("Content XML Files (*.vtco)|*.vtco"), wxSAVE);
 	loadFile.SetFilterIndex(1);
 	if (loadFile.ShowModal() == wxID_OK)
 	{

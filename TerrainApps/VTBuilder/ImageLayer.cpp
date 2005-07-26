@@ -516,7 +516,8 @@ bool vtImageLayer::LoadFromGDAL()
 			if (wxYES == wxMessageBox(_T("Image pixels are not square or image is rotated\nDo you want to create a realigned image?"),
 										wxMessageBoxCaptionStr, wxYES_NO|wxCENTRE))
 			{
-				wxFileDialog saveRealigned(NULL, _T("Save realigned image as"), _T(""), _T(""), _T("GeoTiff files (*.tif)|*.tif"), wxSAVE|wxOVERWRITE_PROMPT);
+				wxFileDialog saveRealigned(NULL, _T("Save realigned image as"),
+					_T(""), _T(""), _T("GeoTiff files (*.tif)|*.tif"), wxSAVE|wxOVERWRITE_PROMPT);
 
 				if (wxID_OK == saveRealigned.ShowModal())
 				{
