@@ -94,7 +94,7 @@ bool vtScene::Init()
 	SetCamera(m_pDefaultCamera);
 	AddWindow(m_pDefaultWindow);
 
-	m_pOsgSceneView = new osgUtil::SceneView();
+	m_pOsgSceneView = new osgUtil::SceneView(new osg::DisplaySettings());
 	m_pOsgSceneView->setDefaults();
 
 	// OSG 0.9.0 and newer
