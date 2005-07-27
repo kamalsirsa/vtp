@@ -15,13 +15,6 @@
 #include "wx/dialog.h"
 #include "vtui/AutoDialog.h"
 
-#define WID_PLANTS 200
-#define WID_PSPLITTER 201
-#define WID_PSTABLE 202
-#define WID_PATABLE 203
-#define WID_BIOREGIONS 300
-#define WID_BIOREGIONTREE 301
-
 // WDR: class declarations
 
 //----------------------------------------------------------------------------

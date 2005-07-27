@@ -104,14 +104,6 @@
 
 DECLARE_APP(BuilderApp)
 
-// Window ids
-#define WID_SPLITTER	100
-#define WID_FRAME		101
-#define WID_MAINVIEW	102
-#define WID_FEATINFO	103
-#define WID_DISTANCE	104
-#define WID_PROFILE		105
-
 //////////////////////////////////////////////////////////////////
 
 MainFrame *GetMainFrame()
@@ -124,7 +116,7 @@ MainFrame *GetMainFrame()
 //
 MainFrame::MainFrame(wxFrame* frame, const wxString& title,
 	const wxPoint& pos, const wxSize& size) :
-wxFrame(frame, WID_FRAME, title, pos, size)
+wxFrame(frame, wxID_ANY, title, pos, size)
 {
 	VTLOG("  MainFrame constructor: enter\n");
 
@@ -157,7 +149,7 @@ MainFrame::~MainFrame()
 
 void MainFrame::CreateView()
 {
-	m_pView = new BuilderView(m_splitter, WID_MAINVIEW,
+	m_pView = new BuilderView(m_splitter, wxID_ANY,
 			wxPoint(0, 0), wxSize(200, 400), _T("") );
 }
 
@@ -184,7 +176,7 @@ void MainFrame::SetupUI()
 	SetDropTarget(new DnDFile());
 
 	// splitter
-	m_splitter = new MySplitterWindow(this, WID_SPLITTER);
+	m_splitter = new MySplitterWindow(this, wxID_ANY);
 
 	m_pTree = new MyTreeCtrl(m_splitter, LayerTree_Ctrl,
 			wxPoint(0, 0), wxSize(200, 400),
@@ -881,7 +873,7 @@ FeatInfoDlg	*MainFrame::ShowFeatInfoDlg()
 	if (!m_pFeatInfoDlg)
 	{
 		// Create new Feature Info Dialog
-		m_pFeatInfoDlg = new FeatInfoDlg(this, WID_FEATINFO, _("Feature Info"),
+		m_pFeatInfoDlg = new FeatInfoDlg(this, wxID_ANY, _("Feature Info"),
 				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pFeatInfoDlg->SetView(GetView());
 	}
@@ -895,7 +887,7 @@ DistanceDlg	*MainFrame::ShowDistanceDlg()
 	if (!m_pDistanceDlg)
 	{
 		// Create new Distance Dialog
-		m_pDistanceDlg = new DistanceDlg(this, WID_DISTANCE, _("Distance Tool"),
+		m_pDistanceDlg = new DistanceDlg(this, wxID_ANY, _("Distance Tool"),
 				wxPoint(200, 200), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pDistanceDlg->SetProjection(m_proj);
 	}
@@ -1025,7 +1017,7 @@ ProfileDlg *MainFrame::ShowProfileDlg()
 	if (!m_pProfileDlg)
 	{
 		// Create new Feature Info Dialog
-		m_pProfileDlg = new ProfileDlg(this, WID_PROFILE, _("Elevation Profile"),
+		m_pProfileDlg = new ProfileDlg(this, wxID_ANY, _("Elevation Profile"),
 				wxPoint(120, 80), wxSize(600, 400), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		BuildingProfileCallback *callback = new BuildingProfileCallback;
 		callback->m_frame = this;

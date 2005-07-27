@@ -162,7 +162,7 @@ void BioRegionDlg::RefreshContents()
 	// Create tree control window as child of dialog.
 	int width, height;
 	GetClientSize(&width, &height);
-	m_BTree = new wxTreeCtrl(this, WID_BIOREGIONTREE, wxPoint(10, 10), 
+	m_BTree = new wxTreeCtrl(this, wxID_ANY, wxPoint(10, 10), 
 		wxSize(width - 20, height - 20), wxTR_EDIT_LABELS | wxTR_MULTIPLE);
 
 	// Create root of tree.

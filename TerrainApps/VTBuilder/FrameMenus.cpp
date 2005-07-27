@@ -2701,7 +2701,7 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 	if (!m_SpeciesListDlg)
 	{
 		// Create new Plant List Dialog
-		m_SpeciesListDlg = new SpeciesListDlg(this, WID_PLANTS, _("Plants List"), 
+		m_SpeciesListDlg = new SpeciesListDlg(this, wxID_ANY, _("Plants List"), 
 				wxPoint(140, 100), wxSize(950, 400), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	}
 
@@ -2732,7 +2732,7 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 	if (!m_BioRegionDlg)
 	{
 		// Create new Bioregion Dialog
-		m_BioRegionDlg = new BioRegionDlg(this, WID_BIOREGIONS, _("BioRegions List"), 
+		m_BioRegionDlg = new BioRegionDlg(this, wxID_ANY, _("BioRegions List"), 
 				wxPoint(120, 80), wxSize(300, 500), wxSYSTEM_MENU | wxCAPTION);
 	}
 
