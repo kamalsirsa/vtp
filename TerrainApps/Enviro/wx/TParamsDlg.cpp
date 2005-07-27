@@ -103,7 +103,7 @@ END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	AutoDialog( parent, id, title, position, size, style | wxRESIZE_BORDER )
 {
 	VTLOG("TParamsDlg: Constructing.\n");
 
