@@ -1424,7 +1424,7 @@ void BuilderView::OnSize(wxSizeEvent& event)
 	wxSize size = GetSize();
 	if (size == m_previous_size)
 		event.Skip(true);	// allow event to be handled normally
-	else if (size.x <= m_previous_size.x && size.y <= m_previous_size.y)
+	else if (size.x <= m_previous_size.x && size.y <= m_previous_size.y && m_bGotFirstIdle)
 	{
 		// "prevent additional event handlers from being called and control
 		// will be returned to the sender of the event immediately after the
