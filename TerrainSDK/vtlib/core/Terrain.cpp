@@ -119,7 +119,10 @@ vtTerrain::~vtTerrain()
 	if (m_pImage)
 		m_pImage->Release();
 	for(i = 0; i < m_Images.GetSize(); i++)
-		m_Images[i]->Release();
+	{
+		if (m_Images[i] != m_pImage)
+			m_Images[i]->Release();
+	}
 
 	delete m_pRoadMap;
 	if (m_pRoadGroup)
