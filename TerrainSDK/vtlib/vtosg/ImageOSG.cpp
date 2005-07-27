@@ -92,7 +92,10 @@ vtImage *vtImageRead(const char *fname, bool bAllowCache)
 			return image;
 		}
 		else
+		{
+			image->Release();
 			return NULL;
+		}
 	}
 	else
 	{
