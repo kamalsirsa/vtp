@@ -154,8 +154,6 @@ bool BuilderApp::OnInit()
 //	vtString fname = "E:/Locations-Hawai'i/Hawai`i Island Data/SDTS-DLG/waipahu_HI/transportation/852867.RR.sdts.tar.gz";
 //	frame->ImportDataFromArchive(LT_ROAD, fname, true);
 
-	frame->ZoomAll();
-
 #if HEAPBUSTER
 	// Pull in the heap buster
 	g_HeapBusterDummy = -1;
