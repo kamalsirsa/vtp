@@ -66,6 +66,7 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 
 	m_bSkipNextDraw = false;
 	m_bSkipNextRefresh = false;
+	m_bGotFirstIdle = false;
 
 	m_bCrossSelect = false;
 	m_bShowMap = true;
@@ -111,6 +112,17 @@ BuilderView::~BuilderView()
 
 void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 {
+	static bool bFirstDraw = true;
+	if (bFirstDraw)
+	{
+		bFirstDraw = false;
+		VTLOG("First View OnDraw\n");
+	}
+
+	// no point in drawing until the Idle events have made it to the splitter
+	if (!m_bGotFirstIdle)
+		return;
+
 	if (m_bSkipNextDraw)
 	{
 		m_bSkipNextDraw = false;
@@ -1374,6 +1386,14 @@ void BuilderView::OnMouseWheel(wxMouseEvent& event)
 
 void BuilderView::OnIdle(wxIdleEvent& event)
 {
+	if (!m_bGotFirstIdle)
+	{
+		m_bGotFirstIdle = true;
+		VTLOG("First View Idle\n");
+		GetMainFrame()->ZoomAll();
+		Refresh();
+	}
+
 	MainFrame *pFrame = GetMainFrame();
 	int i, iLayers = pFrame->NumLayers();
 

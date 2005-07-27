@@ -194,6 +194,7 @@ protected:
 	bool m_bSkipNextRefresh;
 	wxSize m_previous_size;
 	DRECT m_world_rect;		// rectangle box drawn by mouse
+	bool m_bGotFirstIdle;
 
 	// Mouse in window coords
 	wxPoint m_DownClient;
