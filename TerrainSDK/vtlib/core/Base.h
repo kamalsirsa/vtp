@@ -69,7 +69,6 @@ public:
 	virtual void	GetBoundSphere(FSphere &sphere, bool bGlobal = false) = 0;
 
 	virtual vtGroup* GetParent(int iParent = 0) = 0;
-	virtual int		GetTriCount() = 0;
 
 	enum FogType { FM_LINEAR, FM_EXP, FM_EXP2 };
 
