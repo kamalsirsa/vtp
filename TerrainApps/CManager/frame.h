@@ -78,6 +78,7 @@ protected:
 	void OnItemDelete(wxCommandEvent& event);
 	void OnItemAddModel(wxCommandEvent& event);
 	void OnItemRemoveModel(wxCommandEvent& event);
+	void OnItemModelProps(wxCommandEvent& event);
 	void OnItemSaveSOG(wxCommandEvent& event);
 	void OnItemSaveOSG(wxCommandEvent& event);
 	void OnSceneGraph(wxCommandEvent& event);

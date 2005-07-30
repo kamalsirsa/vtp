@@ -37,15 +37,6 @@
 
 DECLARE_APP(vtApp)
 
-// Window ids
-#define WID_SPLITTER	100
-#define WID_FRAME		101
-#define WID_MAINVIEW	102
-#define WID_SCENEGRAPH	103
-#define WID_PROPDLG		104
-#define WID_MODELDLG	105
-#define WID_SPLITTER2	106
-
 //
 // Blank window class to use in bottom half of splitter2
 //
@@ -101,6 +92,8 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_ITEM_ADDMODEL, vtFrame::OnUpdateItemAddModel)
 	EVT_MENU(ID_ITEM_REMOVEMODEL, vtFrame::OnItemRemoveModel)
 	EVT_UPDATE_UI(ID_ITEM_REMOVEMODEL, vtFrame::OnUpdateItemRemoveModel)
+	EVT_MENU(ID_ITEM_MODELPROPS, vtFrame::OnItemModelProps)
+	EVT_UPDATE_UI(ID_ITEM_MODELPROPS, vtFrame::OnUpdateItemRemoveModel)
 	EVT_MENU(ID_ITEM_SAVESOG, vtFrame::OnItemSaveSOG)
 	EVT_MENU(ID_ITEM_SAVEOSG, vtFrame::OnItemSaveOSG)
 
@@ -124,7 +117,7 @@ vtFrame *GetMainFrame()
 // My frame constructor
 vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	const wxSize& size, long style) :
-	wxFrame(parent, WID_FRAME, title, pos, size, style)
+	wxFrame(parent, wxID_ANY, title, pos, size, style)
 {
 	m_bCloseOnIdle = false;
 
@@ -156,9 +149,9 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	VTLOG(" creating component windows\n");
 	// splitters
-	m_splitter = new wxSplitterWindow(this, WID_SPLITTER, wxDefaultPosition,
+	m_splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition,
 		wxDefaultSize, wxSP_3D /*| wxSP_LIVE_UPDATE*/);
-	m_splitter2 = new Splitter2(m_splitter, WID_SPLITTER2, wxDefaultPosition,
+	m_splitter2 = new Splitter2(m_splitter, wxID_ANY, wxDefaultPosition,
 		wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
 	m_blank = new Blank(m_splitter2); // (wxWindowID) -1, _T("blank"), wxDefaultPosition);
 
@@ -175,19 +168,19 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	// Make a vtGLCanvas
 	VTLOG(" creating canvas\n");
-	m_canvas = new vtGLCanvas(m_splitter, WID_MAINVIEW, wxPoint(0, 0), wxSize(-1, -1),
+	m_canvas = new vtGLCanvas(m_splitter, wxID_ANY, wxPoint(0, 0), wxSize(-1, -1),
 		0, _T("vtGLCanvas"), gl_attrib);
 
 	VTLOG(" creating scenegraphdialog\n");
-	m_pSceneGraphDlg = new SceneGraphDlg(this, WID_SCENEGRAPH, _T("Scene Graph"),
+	m_pSceneGraphDlg = new SceneGraphDlg(this, wxID_ANY, _T("Scene Graph"),
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(250, 350);
 	m_canvas->SetCurrent();
 
-	m_pPropDlg = new PropDlg(m_splitter2, WID_PROPDLG,
+	m_pPropDlg = new PropDlg(m_splitter2, wxID_ANY,
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
 
-	m_pModelDlg = new ModelDlg(m_splitter2, WID_MODELDLG,
+	m_pModelDlg = new ModelDlg(m_splitter2, wxID_ANY,
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
 	m_pModelDlg->Show(FALSE);
 	m_pModelDlg->InitDialog();
@@ -317,6 +310,7 @@ void vtFrame::CreateMenus()
 	itemMenu->AppendSeparator();
 	itemMenu->Append(ID_ITEM_ADDMODEL, _T("Add Model"));
 	itemMenu->Append(ID_ITEM_REMOVEMODEL, _T("Remove Model"));
+	itemMenu->Append(ID_ITEM_MODELPROPS, _T("Model Properties"));
 	itemMenu->AppendSeparator();
 	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"));
 #if VTLIB_OSG
@@ -346,16 +340,17 @@ void vtFrame::CreateToolbar()
 	m_pToolbar->SetMargins(2, 2);
 	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
 
-	ADD_TOOL(wxID_OPEN, wxBITMAP(contents_open), _("Open Contents File"), false);
+	ADD_TOOL(wxID_OPEN, MyBitmapsFunc(ID_BM_CONTENTS_OPEN), _("Open Contents File"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_ITEM_NEW, wxBITMAP(item_new), _("New Item"), false);
-	ADD_TOOL(ID_ITEM_DEL, wxBITMAP(item_rem), _("Delete Item"), false);
+	ADD_TOOL(ID_ITEM_NEW, MyBitmapsFunc(ID_BM_ITEM_NEW), _("New Item"), false);
+	ADD_TOOL(ID_ITEM_DEL, MyBitmapsFunc(ID_BM_ITEM_REMOVE), _("Delete Item"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_ITEM_ADDMODEL, wxBITMAP(item_addmodel), _("Add Model"), false);
-	ADD_TOOL(ID_ITEM_REMOVEMODEL, wxBITMAP(item_remmodel), _("Remove Model"), false);
+	ADD_TOOL(ID_ITEM_ADDMODEL, MyBitmapsFunc(ID_BM_MODEL_ADD), _("Add Model"), false);
+	ADD_TOOL(ID_ITEM_REMOVEMODEL, MyBitmapsFunc(ID_BM_MODEL_REMOVE), _("Remove Model"), false);
+	ADD_TOOL(ID_ITEM_MODELPROPS, MyBitmapsFunc(ID_BM_PROPERTIES), _("Model Properties"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_VIEW_ORIGIN, wxBITMAP(show_axes), _("Show Axes"), true);
-	ADD_TOOL(ID_VIEW_RULERS, wxBITMAP(show_rulers), _("Show Rulers"), true);
+	ADD_TOOL(ID_VIEW_ORIGIN, MyBitmapsFunc(ID_BM_AXES), _("Show Axes"), true);
+	ADD_TOOL(ID_VIEW_RULERS, MyBitmapsFunc(ID_BM_RULERS), _("Show Rulers"), true);
 
 	m_pToolbar->Realize();
 }
@@ -584,6 +579,53 @@ void vtFrame::OnItemRemoveModel(wxCommandEvent& event)
 	vtNode *node = m_nodemap[previous];
 	node->Release();
 	m_nodemap.erase(previous);
+}
+
+void vtFrame::OnItemModelProps(wxCommandEvent& event)
+{
+	vtModel *mod = m_pCurrentModel;
+	vtNode *node = m_nodemap[mod];
+	if (!node)
+		return;
+	FBox3 box;
+	node->GetBoundBox(box);
+	wxString str, s;
+	s.Printf("Extents:\n  %f %f (width %f)\n  %f %f (height %f)\n  %f %f (depth %f)\n",
+		box.min.x, box.max.x, box.max.x - box.min.x,
+		box.min.y, box.max.y, box.max.y - box.min.y,
+		box.min.z, box.max.z, box.max.z - box.min.z);
+	str += s;
+
+	vtPrimInfo info;
+	node->GetPrimCounts(info);
+	s.Printf("\nPrimitives:\n");
+	str += s;
+	s.Printf("  Vertices: %d\n", info.MemVertices);
+	str += s;
+	s.Printf("  Vertices Drawn: %d\n", info.Vertices);
+	if (info.Vertices != info.MemVertices) str += s;
+	s.Printf("  Primitives: %d\n", info.Primitives);
+	str += s;
+	s.Printf("  Points: %d\n", info.Points);
+	if (info.Points) str += s;
+	s.Printf("  TriStrips: %d\n", info.TriStrips);
+	if (info.TriStrips) str += s;
+	s.Printf("  TriFans: %d\n", info.TriFans);
+	if (info.TriFans) str += s;
+	s.Printf("  Triangles: %d\n", info.Triangles);
+	if (info.Triangles) str += s;
+	s.Printf("  Quads: %d\n", info.Quads);
+	if (info.Quads) str += s;
+	s.Printf("  QuadStrips: %d\n", info.QuadStrips);
+	if (info.QuadStrips) str += s;
+	s.Printf("  Polygons: %d\n", info.Polygons);
+	if (info.Polygons) str += s;
+	s.Printf("  LineStrips: %d\n", info.LineStrips);
+	if (info.LineStrips) str += s;
+	s.Printf("  LineSegments: %d\n", info.LineSegments);
+	if (info.LineSegments) str += s;
+
+	wxMessageBox(str, "Model Properties");
 }
 
 void vtFrame::OnUpdateItemRemoveModel(wxUpdateUIEvent& event)

@@ -3,7 +3,7 @@
 // Do not modify this file, all changes will be lost!
 //------------------------------------------------------------------------------
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma implementation "cmanager_wdr.h"
 #endif
 
@@ -323,6 +323,299 @@ wxBitmap MyBitmapsFunc( size_t index )
         "a                        a",
         "a                        a",
         "baaaaaaaaaaaaaaaaaaaaaaaab"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if ((index == 1) ||
+        (index == ID_BM_AXES))
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 6 1",
+        "  c None",
+        "a c Black",
+        "b c #FF0000",
+        "c c #0000FF",
+        "d c #C0C0C0",
+        "f c #00FF00",
+        /* pixels */
+        "                    ",
+        "         ff         ",
+        "         ffa        ",
+        "         ffa   cc   ",
+        "         ffa  cca   ",
+        "         ffa cca    ",
+        "         ffacca     ",
+        "         ffcca      ",
+        "         fcca       ",
+        " bbbbbbbbccbbbbbbbb ",
+        " bbbbbbbbcabbbbbbbba",
+        "  aaaaaccafaaaaaaaaa",
+        "      ccaffa        ",
+        "     cca ffa        ",
+        "    cca  ffa        ",
+        "   cca   ffa        ",
+        "   ca    ffa        ",
+        "         ffa        ",
+        "         ffa        ",
+        "         daa        "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if ((index == 2) ||
+        (index == ID_BM_CONTENTS_OPEN))
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 5 1",
+        "  c None",
+        "a c Black",
+        "b c #BFBF00",
+        "c c #FFFFFF",
+        "d c #FFFF00",
+        /* pixels */
+        "                    ",
+        "                    ",
+        "                    ",
+        "            aaa     ",
+        "           a   a a  ",
+        "                aa  ",
+        "    aaa        aaa  ",
+        "   adcdaaaaaaa      ",
+        "   acdcdcdcdca      ",
+        "   adcdcdcdcda      ",
+        "   acdcdaaaaaaaaaa  ",
+        "   adcdabbbbbbbbba  ",
+        "   accabbbbbbbbba   ",
+        "   adabbbbbbbbba    ",
+        "   aabbbbbbbbba     ",
+        "   aaaaaaaaaaa      ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if ((index == 3) ||
+        (index == ID_BM_MODEL_ADD))
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 4 1",
+        "  c None",
+        "a c Black",
+        "b c #BFBF00",
+        "c c #FFFF00",
+        /* pixels */
+        "                    ",
+        "                    ",
+        " aaa        aaa     ",
+        "a c aaaaa  a   a    ",
+        "ac c  c a       a   ",
+        "a c cc ca       a   ",
+        "ac caaaaaaaaa a a a ",
+        "a cabbbbbbba   aaa  ",
+        "a abbbbbbba     a   ",
+        "aabbbbbbba          ",
+        "aaaaaaaaa           ",
+        "          aa    aa  ",
+        "          aa    aa  ",
+        "          aaa  aaa  ",
+        "          aaaaaaaa  ",
+        "          aa aa aa  ",
+        "          aa aa aa  ",
+        "          aa    aa  ",
+        "          aa    aa  ",
+        "                    "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if ((index == 4) ||
+        (index == ID_BM_ITEM_NEW))
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 5 1",
+        "  c None",
+        "a c Black",
+        "b c #FFFFFF",
+        "c c #808080",
+        "d c #FFFF00",
+        /* pixels */
+        "                    ",
+        "                    ",
+        "   dc  d  c         ",
+        "   cdc b cd         ",
+        "    cdcdcd          ",
+        "    dcdbdccc        ",
+        "   cccbdcbb         ",
+        "     bdbdc          ",
+        "    cdcdcd          ",
+        "   cdc b cc aaaa    ",
+        "    c  d    aaaa    ",
+        "             aa     ",
+        "             aa     ",
+        "             aa     ",
+        "             aa     ",
+        "             aa     ",
+        "            aaaa    ",
+        "            aaaa    ",
+        "                    ",
+        "                    "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if ((index == 5) ||
+        (index == ID_BM_ITEM_REMOVE))
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 4 1",
+        "  c None",
+        "a c Black",
+        "b c #FFFFFF",
+        "c c #FF0000",
+        /* pixels */
+        "                    ",
+        "                    ",
+        "cb        ccb       ",
+        "cccb     ccb        ",
+        "ccccb   ccb         ",
+        "  cccb cb           ",
+        "   cccccb           ",
+        "    cccb            ",
+        "   cccccb           ",
+        "  cccb ccb  aaaa    ",
+        " cccb   ccb aaaa    ",
+        "cccb     cb  aa     ",
+        "cccb      cb aa     ",
+        " cb       cb aa     ",
+        "           cbaa     ",
+        "             aa     ",
+        "            aaaa    ",
+        "            aaaa    ",
+        "                    ",
+        "                    "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if ((index == 6) ||
+        (index == ID_BM_MODEL_REMOVE))
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 5 1",
+        "  c None",
+        "a c Black",
+        "b c #FFFFFF",
+        "c c #808080",
+        "d c #FF0000",
+        /* pixels */
+        "                    ",
+        "                    ",
+        "db        ddb       ",
+        "dddb     ddb        ",
+        "ddddb   ddb         ",
+        "  dddb db           ",
+        "   dddddb           ",
+        "    dddb            ",
+        "   dddddb  aa    aa ",
+        "  dddb ddb aa    aa ",
+        " dddb   ddbaaa  aaa ",
+        "dddb     dbaaaaaaaa ",
+        "dddb      dca aa aa ",
+        " db        aa aa aa ",
+        "           dc    aa ",
+        "           aa    aa ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if ((index == 7) ||
+        (index == ID_BM_RULERS))
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 3 1",
+        "  c None",
+        "a c #FFFFFF",
+        "b c #808080",
+        /* pixels */
+        "                    ",
+        "   a                ",
+        "   ab               ",
+        " aaaaa              ",
+        "  babbb             ",
+        "   ab               ",
+        "   ab               ",
+        " aaaaa              ",
+        "  babbb             ",
+        "   ab               ",
+        "   ab               ",
+        " aaaaa              ",
+        "  babbb             ",
+        "   ab  a   a   a    ",
+        "   ab  ab  ab  ab   ",
+        " aaaaaaaaaaaaaaaaaa ",
+        "  babbbabbbabbbabbbb",
+        "   ab  ab  ab  ab   ",
+        "   ab   b   b   b   ",
+        "    b               "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if ((index == 8) ||
+        (index == ID_BM_PROPERTIES))
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 5 1",
+        "  c None",
+        "a c #FFFFFF",
+        "b c #D3D3D3",
+        "c c #4D4D4D",
+        "d c #4D4DA6",
+        /* pixels */
+        "                    ",
+        "                    ",
+        "         cccccc dd  ",
+        "        cbbbbbbcdd  ",
+        "       cbcbbbbbbdd  ",
+        "  cccccbcbcbbbbbdd  ",
+        "  caacbcbcbcbbbcdd  ",
+        "  cacbcacbcbccc dd  ",
+        "  caccaaacbcac   d  ",
+        "  caaaaaaacaac      ",
+        "  caaaaaaaaaac      ",
+        "  caccacccccac      ",
+        "  caaaaaaaaaac      ",
+        "  caccacccccac      ",
+        "  caaaaaaaaaac      ",
+        "  cccccccccccc      ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    "
         };
         wxBitmap bitmap( xpm_data );
         return bitmap;

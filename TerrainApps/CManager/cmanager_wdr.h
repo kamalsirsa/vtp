@@ -6,11 +6,11 @@
 #ifndef __WDR_cmanager_H__
 #define __WDR_cmanager_H__
 
-#if defined(__GNUG__) && !defined(__APPLE__)
+#if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma interface "cmanager_wdr.h"
 #endif
 
-// Include wxWindows' headers
+// Include wxWidgets' headers
 
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -29,37 +29,37 @@
 
 // Declare window functions
 
-#define ID_SCENETREE 10000
-#define ID_ENABLED 10001
-#define ID_ZOOMTO 10002
-#define ID_REFRESH 10003
+const int ID_SCENETREE = 10000;
+const int ID_ENABLED = 10001;
+const int ID_ZOOMTO = 10002;
+const int ID_REFRESH = 10003;
 wxSizer *SceneGraphFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TEXT 10004
-#define ID_ITEM 10005
-#define ID_TYPECHOICE 10006
-#define ID_ADDTAG 10007
-#define ID_REMOVETAG 10008
-#define ID_EDITTAG 10009
-#define ID_TAGLIST 10010
+const int ID_TEXT = 10004;
+const int ID_ITEM = 10005;
+const int ID_TYPECHOICE = 10006;
+const int ID_ADDTAG = 10007;
+const int ID_REMOVETAG = 10008;
+const int ID_EDITTAG = 10009;
+const int ID_TAGLIST = 10010;
 wxSizer *PropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_FILENAME 10011
-#define ID_DISTANCE 10012
-#define ID_SCALE 10013
-#define ID_STATUS 10014
+const int ID_FILENAME = 10011;
+const int ID_DISTANCE = 10012;
+const int ID_SCALE = 10013;
+const int ID_STATUS = 10014;
 wxSizer *ModelDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TAGNAME 10015
-#define ID_TAGTEXT 10016
+const int ID_TAGNAME = 10015;
+const int ID_TAGTEXT = 10016;
 wxSizer *TagDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LIGHT 10017
-#define ID_AMBIENT 10018
-#define ID_DIFFUSE 10019
-#define ID_DIRX 10020
-#define ID_DIRY 10021
-#define ID_DIRZ 10022
+const int ID_LIGHT = 10017;
+const int ID_AMBIENT = 10018;
+const int ID_DIFFUSE = 10019;
+const int ID_DIRX = 10020;
+const int ID_DIRY = 10021;
+const int ID_DIRZ = 10022;
 wxSizer *LightDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
@@ -68,6 +68,14 @@ wxSizer *LightDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer
 
 // Declare bitmap functions
 
+const int ID_BM_AXES = 10023;
+const int ID_BM_CONTENTS_OPEN = 10024;
+const int ID_BM_MODEL_ADD = 10025;
+const int ID_BM_ITEM_NEW = 10026;
+const int ID_BM_ITEM_REMOVE = 10027;
+const int ID_BM_MODEL_REMOVE = 10028;
+const int ID_BM_RULERS = 10029;
+const int ID_BM_PROPERTIES = 10030;
 wxBitmap MyBitmapsFunc( size_t index );
 
 #endif
