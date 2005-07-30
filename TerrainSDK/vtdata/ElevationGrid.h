@@ -87,6 +87,7 @@ public:
 	bool SaveToPlanet(const char *szDirName, bool progress_callback(int) = NULL);
 	bool SaveToASC(const char *szFileName, bool progress_callback(int) = NULL) const;
 	bool SaveToVRML(const char *szFileName, bool progress_callback(int) = NULL) const;
+	bool SaveToRAWINF(const char *szFileName, bool progress_callback(int) = NULL) const;
 
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);

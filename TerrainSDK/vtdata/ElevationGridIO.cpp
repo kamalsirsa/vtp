@@ -2562,3 +2562,65 @@ bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(
 	return true;
 }
 
+/**
+ * Write elevation to a .raw file along with an .inf file which describes
+ * the data for the purpose of exporting to MS Flight Simulator 2004 via
+ * their MSFS SDK 'resample' utility.
+ *
+ * \param szFileName Should end in ".raw"
+ * \returns \c true if the file was successfully written.
+ */
+bool vtElevationGrid::SaveToRAWINF(const char *szFileName, bool progress_callback(int)) const
+{
+	// First, write the raw data
+	FILE *fp = fopen(szFileName, "wb");
+	if (!fp)
+		return false;
+	unsigned int i, j;
+	for (j = 0; j < m_iRows; j++)
+	{
+		if (progress_callback != NULL)
+			progress_callback(j * 100 / m_iRows);
+		for (i = 0; i < m_iColumns; i++)
+		{
+			float val = GetFValue(i, m_iRows-1-j);
+			short s = (short) val;
+			fwrite(&s, 1, sizeof(short), fp);
+		}
+	}
+	fclose(fp);
+
+	vtString fname = szFileName;
+	RemoveFileExtensions(fname);
+	const char *fullname = fname;
+	const char *name = StartOfFilename(fullname);
+	int pathlen = (name - fullname);
+	vtString path = fname.Left(pathlen);
+
+	vtString inf_fname = ChangeFileExtension(szFileName, ".inf");
+	fp = fopen(inf_fname, "wb");
+	if (!fp)
+		return false;
+
+	fprintf(fp, "[Destination]\n");
+	fprintf(fp, "  LOD = Auto\n");
+	fprintf(fp, "  DestDir = \".\"\n");
+	fprintf(fp, "  DestBaseFileName = \"%s\"\n", name);
+	fprintf(fp, "  UseSourceDimensions = 1\n");
+	fprintf(fp, "[Source]\n");
+	fprintf(fp, "  Type              = ElevS16LSB\n");
+	fprintf(fp, "  SourceDir         = \"%s\"\n", (const char *) path);
+	fprintf(fp, "  SourceFile        = \"%s.raw\"\n", name);
+	// The latitude of the northwest corner of the bounding area.
+	fprintf(fp, "  Lat               = %lf\n", m_EarthExtents.top);
+	// The longitude of the northwest corner of the bounding area.
+	fprintf(fp, "  Lon               = %lf\n", m_EarthExtents.left);
+	fprintf(fp, "  NumOfCellsPerLine = %d\n", m_iColumns);
+	fprintf(fp, "  NumOfLines        = %d\n", m_iRows);
+	fprintf(fp, "  CellXdimensionDeg = %.16lf\n", m_EarthExtents.Width() / m_iColumns);
+	fprintf(fp, "  CellYdimensionDeg = %.16lf\n", m_EarthExtents.Height() / m_iRows);
+	fprintf(fp, "  ScaleinMeters     = 1.0\n");
+	fclose(fp);
+
+	return true;
+}
