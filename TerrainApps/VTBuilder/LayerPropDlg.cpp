@@ -29,7 +29,7 @@ LayerPropDlg::LayerPropDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	LayerPropDialogFunc( this, TRUE ); 
+	LayerPropDialogFunc( this, TRUE );
 
 	AddNumValidator(ID_LEFT, &m_fLeft);
 	AddNumValidator(ID_TOP, &m_fTop);

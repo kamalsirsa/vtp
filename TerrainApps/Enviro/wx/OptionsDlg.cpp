@@ -36,7 +36,7 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function OptionsDialogFunc for OptionsDlg
-	OptionsDialogFunc( this, TRUE ); 
+	OptionsDialogFunc( this, TRUE );
 
 	AddValidator(ID_FULLSCREEN, &m_bFullscreen);
 	AddNumValidator(ID_WINX, &m_WinPos.x);

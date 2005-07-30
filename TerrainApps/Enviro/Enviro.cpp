@@ -865,7 +865,7 @@ void Enviro::SetMessage(const vtString &msg, float fTime)
 		m_pMessageSprite->SetEnabled(true);
 		m_pMessageSprite->SetText(msg);
 		int len = msg.GetLength();
-		m_pMessageSprite->SetWindowRect(0.5f - (len * 0.01f), 0.45f, 
+		m_pMessageSprite->SetWindowRect(0.5f - (len * 0.01f), 0.45f,
 										0.5f + (len * 0.01f), 0.55f);
 	}
 #endif
@@ -1197,7 +1197,7 @@ void Enviro::OnMouseRightDown(vtMouseEvent &event)
 {
 }
 
-void Enviro::OnMouseRightUp(vtMouseEvent &event) 
+void Enviro::OnMouseRightUp(vtMouseEvent &event)
 {
 	if (m_state == AS_Terrain)
 	{

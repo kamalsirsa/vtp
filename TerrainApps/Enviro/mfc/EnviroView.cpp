@@ -123,18 +123,18 @@ void EnviroView::OnDraw(CDC* pDC)
 	ASSERT_VALID(pDoc);
 }
 
-void EnviroView::OnEnviroTimeon() 
+void EnviroView::OnEnviroTimeon()
 {
 	m_bTimeOn = !m_bTimeOn;
 	vtGetTS()->GetTimeEngine()->SetEnabled(m_bTimeOn);
 }
 
-void EnviroView::OnUpdateEnviroTimeon(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroTimeon(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck(m_bTimeOn);
 }
 
-void EnviroView::OnEnviroLodterrain() 
+void EnviroView::OnEnviroLodterrain()
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (!t || !t->GetDynTerrain()) return;
@@ -143,7 +143,7 @@ void EnviroView::OnEnviroLodterrain()
 	t->GetDynTerrain()->SetEnabled(!on);
 }
 
-void EnviroView::OnUpdateEnviroLodterrain(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroLodterrain(CCmdUI* pCmdUI)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (!t || !t->GetDynTerrain())
@@ -157,29 +157,29 @@ void EnviroView::OnUpdateEnviroLodterrain(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(on);
 }
 
-void EnviroView::OnEnviroCulleveryframe() 
+void EnviroView::OnEnviroCulleveryframe()
 {
 	m_bCulleveryframe = !m_bCulleveryframe;
 	GetCurrentTerrain()->GetDynTerrain()->SetCull(m_bCulleveryframe);
 }
 
-void EnviroView::OnUpdateEnviroCulleveryframe(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroCulleveryframe(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 	pCmdUI->SetCheck(m_bCulleveryframe);
 }
 
-void EnviroView::OnEnviroCullonce() 
+void EnviroView::OnEnviroCullonce()
 {
 	GetCurrentTerrain()->GetDynTerrain()->CullOnce();
 }
 
-void EnviroView::OnUpdateEnviroCullonce(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroCullonce(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 }
 
-void EnviroView::OnEnviroIncrease() 
+void EnviroView::OnEnviroIncrease()
 {
 	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 	if (pTerr)
@@ -189,7 +189,7 @@ void EnviroView::OnEnviroIncrease()
 	}
 }
 
-void EnviroView::OnEnviroDecrease() 
+void EnviroView::OnEnviroDecrease()
 {
 	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 	if (pTerr)
@@ -199,12 +199,12 @@ void EnviroView::OnEnviroDecrease()
 	}
 }
 
-void EnviroView::OnEnviroDriveroads() 
+void EnviroView::OnEnviroDriveroads()
 {
 	m_bDriveRoads = !m_bDriveRoads;
 }
 
-void EnviroView::OnUpdateEnviroDriveroads(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroDriveroads(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 	pCmdUI->SetCheck(m_bDriveRoads);
@@ -213,13 +213,13 @@ void EnviroView::OnUpdateEnviroDriveroads(CCmdUI* pCmdUI)
 	pCmdUI->Enable(FALSE);
 }
 
-void EnviroView::OnEnviroShowroads() 
+void EnviroView::OnEnviroShowroads()
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_ROADS, !t->GetFeatureVisible(TFT_ROADS));
 }
 
-void EnviroView::OnUpdateEnviroShowroads(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroShowroads(CCmdUI* pCmdUI)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
@@ -230,13 +230,13 @@ void EnviroView::OnUpdateEnviroShowroads(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(on);
 }
 
-void EnviroView::OnEnviroShowocean() 
+void EnviroView::OnEnviroShowocean()
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_OCEAN, !t->GetFeatureVisible(TFT_OCEAN));
 }
 
-void EnviroView::OnUpdateEnviroShowocean(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroShowocean(CCmdUI* pCmdUI)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
@@ -247,7 +247,7 @@ void EnviroView::OnUpdateEnviroShowocean(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(on);
 }
 
-void EnviroView::OnEnviroShowsky() 
+void EnviroView::OnEnviroShowsky()
 {
 	vtSkyDome *sky = vtGetTS()->GetSkyDome();
 	if (!sky) return;
@@ -255,7 +255,7 @@ void EnviroView::OnEnviroShowsky()
 	sky->SetEnabled(!on);
 }
 
-void EnviroView::OnUpdateEnviroShowsky(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroShowsky(CCmdUI* pCmdUI)
 {
 	vtSkyDome *sky = vtGetTS()->GetSkyDome();
 	if (!sky) return;
@@ -263,25 +263,25 @@ void EnviroView::OnUpdateEnviroShowsky(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(on);
 }
 
-void EnviroView::OnEnviroShowfog() 
+void EnviroView::OnEnviroShowfog()
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (t) t->SetFog(!t->GetFog());
 }
 
-void EnviroView::OnUpdateEnviroShowfog(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroShowfog(CCmdUI* pCmdUI)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	pCmdUI->SetCheck(t && t->GetFog());
 }
 
-void EnviroView::OnEnviroShowtrees() 
+void EnviroView::OnEnviroShowtrees()
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_VEGETATION, !t->GetFeatureVisible(TFT_VEGETATION));
 }
 
-void EnviroView::OnUpdateEnviroShowtrees(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroShowtrees(CCmdUI* pCmdUI)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
@@ -292,26 +292,26 @@ void EnviroView::OnUpdateEnviroShowtrees(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(on);
 }
 
-void EnviroView::OnEnviroTopdownview() 
+void EnviroView::OnEnviroTopdownview()
 {
 	m_bTopDown = !m_bTopDown;
 	g_App.SetTopDown(m_bTopDown);
 }
 
-void EnviroView::OnUpdateEnviroTopdownview(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateEnviroTopdownview(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 	pCmdUI->SetCheck(m_bTopDown);
 }
 
 
-void EnviroView::OnShowdetailtexture() 
+void EnviroView::OnShowdetailtexture()
 {
 	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 	pTerr->EnableDetail(!pTerr->GetDetail());
 }
 
-void EnviroView::OnUpdateShowdetailtexture(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateShowdetailtexture(CCmdUI* pCmdUI)
 {
 	bool bHasIt = (GetCurrentTerrain() && GetCurrentTerrain()->GetDynTerrain() != NULL);
 
@@ -325,7 +325,7 @@ void EnviroView::OnUpdateShowdetailtexture(CCmdUI* pCmdUI)
 		pCmdUI->Enable(false);
 }
 
-void EnviroView::OnMouseMove(UINT nFlags, CPoint point) 
+void EnviroView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	if ((g_App.m_mode == MM_NAVIGATE || g_App.m_mode == MM_FENCES) &&
 		(g_App.m_pTerrainPicker != NULL))
@@ -352,77 +352,77 @@ void EnviroView::OnMouseMove(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);	// inform vtlib
 }
 
-void EnviroView::OnViewFlyfaster() 
+void EnviroView::OnViewFlyfaster()
 {
 	float speed = g_App.GetFlightSpeed();
 	g_App.SetFlightSpeed(speed * 1.8f);
 }
 
-void EnviroView::OnViewFlyslower() 
+void EnviroView::OnViewFlyslower()
 {
 	float speed = g_App.GetFlightSpeed();
 	g_App.SetFlightSpeed(speed / 1.8f);
 }
 
-void EnviroView::OnViewMaintainheight() 
+void EnviroView::OnViewMaintainheight()
 {
 	g_App.SetMaintain(!g_App.GetMaintain());
 }
 
-void EnviroView::OnUpdateViewMaintainheight(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateViewMaintainheight(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 	pCmdUI->SetCheck(g_App.GetMaintain());
 }
 
-void EnviroView::OnToolsNavigateOriginalnavengin() 
+void EnviroView::OnToolsNavigateOriginalnavengin()
 {
 	g_App.m_nav = NT_Normal;
 	g_App.EnableFlyerEngine(true);
 }
 
-void EnviroView::OnUpdateToolsNavigateOriginalnavengin(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateToolsNavigateOriginalnavengin(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 	pCmdUI->SetCheck(g_App.m_nav == NT_Normal);
 }
 
-void EnviroView::OnToolsNavigateQuakenavengine() 
+void EnviroView::OnToolsNavigateQuakenavengine()
 {
 //	g_App.m_nav = NT_Quake;
 	g_App.EnableFlyerEngine(true);
 }
 
-void EnviroView::OnUpdateToolsNavigateQuakenavengine(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateToolsNavigateQuakenavengine(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 //	pCmdUI->SetCheck(g_App.m_nav == NT_Quake);
 }
 
-void EnviroView::OnToolsNavigateVelocitygravity() 
+void EnviroView::OnToolsNavigateVelocitygravity()
 {
 	g_App.m_nav = NT_Velo;
 	g_App.EnableFlyerEngine(true);
 }
 
-void EnviroView::OnUpdateToolsNavigateVelocitygravity(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateToolsNavigateVelocitygravity(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 	pCmdUI->SetCheck(g_App.m_nav == NT_Velo);
 }
 
 
-void EnviroView::OnUpdateViewFlyfaster(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateViewFlyfaster(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 }
 
-void EnviroView::OnUpdateViewFlyslower(CCmdUI* pCmdUI) 
+void EnviroView::OnUpdateViewFlyslower(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 }
 
-void EnviroView::OnLButtonDown(UINT nFlags, CPoint point) 
+void EnviroView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// turn MFC mouse event into a VT mouse event
 	vtMouseEvent event;
@@ -435,7 +435,7 @@ void EnviroView::OnLButtonDown(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);	// inform vtlib
 }
 
-void EnviroView::OnLButtonUp(UINT nFlags, CPoint point) 
+void EnviroView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// turn MFC mouse event into a VT mouse event
 	vtMouseEvent event;
@@ -448,7 +448,7 @@ void EnviroView::OnLButtonUp(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);	// inform vtlib
 }
 
-void EnviroView::OnRButtonDown(UINT nFlags, CPoint point) 
+void EnviroView::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	// turn MFC mouse event into a VT mouse event
 	vtMouseEvent event;
@@ -461,7 +461,7 @@ void EnviroView::OnRButtonDown(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);	// inform vtlib
 }
 
-void EnviroView::OnRButtonUp(UINT nFlags, CPoint point) 
+void EnviroView::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	// turn MFC mouse event into a VT mouse event
 	vtMouseEvent event;
@@ -474,7 +474,7 @@ void EnviroView::OnRButtonUp(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);	// inform vtlib
 }
 
-void EnviroView::OnMButtonDown(UINT nFlags, CPoint point) 
+void EnviroView::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	// turn MFC mouse event into a VT mouse event
 	vtMouseEvent event;
@@ -487,7 +487,7 @@ void EnviroView::OnMButtonDown(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);	// inform vtlib
 }
 
-void EnviroView::OnMButtonUp(UINT nFlags, CPoint point) 
+void EnviroView::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	// turn MFC mouse event into a VT mouse event
 	vtMouseEvent event;
@@ -570,7 +570,7 @@ BOOL EnviroView::CreateViewGLContext(HDC hDC)
 }
 
 
-void EnviroView::OnDestroy() 
+void EnviroView::OnDestroy()
 {
 	if (wglGetCurrentContext() != NULL)
 		wglMakeCurrent(NULL,NULL);	
@@ -582,7 +582,7 @@ void EnviroView::OnDestroy()
 	CView::OnDestroy();
 }
 
-int EnviroView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int EnviroView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -604,12 +604,12 @@ int EnviroView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 1;
 }
 
-void EnviroView::OnSize(UINT nType, int cx, int cy) 
+void EnviroView::OnSize(UINT nType, int cx, int cy)
 {
 	vtGetScene()->SetWindowSize(cx, cy);
 }
 
-void EnviroView::OnPaint() 
+void EnviroView::OnPaint()
 {
 	if (1)
 	{

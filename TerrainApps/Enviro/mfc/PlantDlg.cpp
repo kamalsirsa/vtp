@@ -45,7 +45,7 @@ void CPlantDlg::DoDataExchange(CDataExchange* pDX)
 	//}}AFX_DATA_MAP
 }
 
-void CPlantDlg::SetPlantList(vtSpeciesList3d *plants) 
+void CPlantDlg::SetPlantList(vtSpeciesList3d *plants)
 {
 	m_pPlantList = plants;
 
@@ -71,7 +71,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CPlantDlg message handlers
 
-BOOL CPlantDlg::OnInitDialog() 
+BOOL CPlantDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -97,7 +97,7 @@ void CPlantDlg::SetPlantOptions(PlantingOptions &opt)
 	UpdateData(FALSE);
 }
 
-void CPlantDlg::OnSelchangeSpecies() 
+void CPlantDlg::OnSelchangeSpecies()
 {
 	UpdateData(TRUE);
 	SizeToSizer();
@@ -107,12 +107,12 @@ void CPlantDlg::OnSelchangeSpecies()
 	g_App.SetPlantOptions(m_opt);
 }
 
-void CPlantDlg::OnChangeSizeedit() 
+void CPlantDlg::OnChangeSizeedit()
 {
 	OnSelchangeSpecies();
 }
 
-void CPlantDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CPlantDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	UpdateData(TRUE);
 	SizerToSize();
@@ -146,7 +146,7 @@ void CPlantDlg::SizeToSizer()
 }
 
 
-void CPlantDlg::OnChangeSpacingedit() 
+void CPlantDlg::OnChangeSpacingedit()
 {
 	UpdateData(TRUE);
 	m_opt.m_fSpacing = m_fSpacing;

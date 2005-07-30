@@ -21,7 +21,7 @@
 
 
 //helper
-float fmin(float a, float b, float c, float d) 
+float fmin(float a, float b, float c, float d)
 {
 	if (a < b && a < c && a < d)
 		return a;

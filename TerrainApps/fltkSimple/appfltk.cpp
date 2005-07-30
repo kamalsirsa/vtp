@@ -288,7 +288,7 @@ int main(int, char ** )
 
 	// Note: with FLTK you can create more instances of the same
 	// VTPWindow class. SDL and GLUT allow to have only one active
-	// window with OpenGL context, while FLTK can have more in which 
+	// window with OpenGL context, while FLTK can have more in which
 	// each window will have its own callbacks.
 
 	// go into the FLTK mainloop

@@ -64,7 +64,7 @@ static void ShowOGLInfo(bool bLog)
 		0, 0, 0, 0		  // reserved, layer masks ignored
 	};
 
-	// get the best available match of pixel format for the device context 
+	// get the best available match of pixel format for the device context
 	VTLOG("ChoosePixelFormat, ");
 	int iPixelFormat = ChoosePixelFormat(hdc, &pfd);
 

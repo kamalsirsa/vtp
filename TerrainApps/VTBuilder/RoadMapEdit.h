@@ -58,7 +58,7 @@ public:
 
 	void DetermineVisualFromLinks();
 
-	//use to find shortest path 
+	//use to find shortest path
 	int m_iPathIndex;	//index to the array of the priorty queue.  (yeah, not exactly pretty.)
 	NodeEdit *m_pPrevPathNode;	//prev node in the shortest path
 	LinkEdit *m_pPrevPathLink;	//road to take to the prev node.

@@ -102,7 +102,7 @@ bool RoadMapEdit::attribute_filter_roads(DLGLine *pLine, int &lanes,
 			road_type = pLine->m_attr[j].m_iMinorAttr;
 			break;
 		}
-		if (pLine->m_attr[j].m_iMajorAttr == 180 && 
+		if (pLine->m_attr[j].m_iMajorAttr == 180 &&
 			(pLine->m_attr[j].m_iMinorAttr == 201 ||
 			 pLine->m_attr[j].m_iMinorAttr == 202)
 			) {
@@ -365,7 +365,7 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 		pR->m_iLanes = 2;
 		break;
 	case 4:
-		// Local, Neighborhood, and Rural Road 
+		// Local, Neighborhood, and Rural Road
 		pR->m_iLanes = 2;
 		break;
 	case 5:
@@ -373,7 +373,7 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 		pR->m_iLanes = 1;
 		pR->m_Surface = SURFT_2TRACK;
 		break;
-	// Road with Special Characteristics 
+	// Road with Special Characteristics
 	case 6:
 		if (code2 == 1)
 		{
@@ -400,9 +400,9 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 			bReject = true;
 		}
 		break;
-	// 
+	//
 	case 7:
-		// Road as Other Thoroughfare 
+		// Road as Other Thoroughfare
 		if (code2 == 1)
 		{
 			// Walkway or trail for pedestrians, usually unnamed
@@ -559,7 +559,7 @@ bool RoadMapEdit::extract_road_attributes(const char *strEntity, int &lanes,
 	{
 		road_type = iMinorAttr;
 	}
-	if (iMajorAttr == 180 && 
+	if (iMajorAttr == 180 &&
 		(iMinorAttr == 201 || iMinorAttr == 202))
 	{
 		road_type = -iMinorAttr;
@@ -589,7 +589,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 	LinkEdit *pR;
 	NodeEditPtr *pNodeLookup = NULL;
 
-	// 
+	//
 	// Check if this data source is a USGS SDTS DLG
 	//
 	// Iterate through the layers looking for the ones we care about

@@ -381,7 +381,7 @@ void PlantDlg::ModeToRadio()
 	if (m_opt.m_iMode == 2) GetPlantContinuous()->SetValue(true);
 }
 
-void PlantDlg::OnInitDialog(wxInitDialogEvent& event)   
+void PlantDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	HeightToSlider();
 	ModeToRadio();

@@ -642,14 +642,6 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			sa->ConstructStructure(bld);
 		}
 #endif
-#if 0
-		if (pTerr)
-		{
-			// Show 
-			vtGetTS()->GetSkyDome()->SetStarAltitude(90);
-			vtGetTS()->GetSkyDome()->RefreshCelestialObjects();
-		}
-#endif
 #if SUPPORT_QUIKGRID
 		if (pTerr)
 		{

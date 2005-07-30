@@ -45,7 +45,7 @@ MapServerDlg::MapServerDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	m_iXSize = 1024;
 	m_iYSize = 1024;
 
-	MapServerDialogFunc( this, TRUE ); 
+	MapServerDialogFunc( this, TRUE );
 
 	AddNumValidator(ID_WIDTH, &m_iXSize);
 	AddNumValidator(ID_HEIGHT, &m_iYSize);

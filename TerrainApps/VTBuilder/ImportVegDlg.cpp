@@ -32,7 +32,7 @@ ImportVegDlg::ImportVegDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	const wxPoint &position, const wxSize& size, long style ) :
 	wxDialog( parent, id, title, position, size, style )
 {
-	ImportVegFunc( this ); 
+	ImportVegFunc( this );
 	m_pcbField = GetField();
 	m_pDensity = GetDensity();
 	m_pBiotype1 = GetBiotype1();

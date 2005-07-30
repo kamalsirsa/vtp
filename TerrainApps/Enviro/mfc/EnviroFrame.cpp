@@ -150,13 +150,12 @@ void EnviroFrame::UpdateStatusBar()
 /////////////////////////////////////////////////////////////////////////////
 // EnviroFrame message handlers
 
-
-void EnviroFrame::OnFlytoSpace() 
+void EnviroFrame::OnFlytoSpace()
 {
 	g_App.FlyToSpace();
 }
 
-void EnviroFrame::OnFlytoTerrain() 
+void EnviroFrame::OnFlytoTerrain()
 {
 	CChooseDlg dlg;
 	dlg.m_strTName = "none";
@@ -168,40 +167,40 @@ void EnviroFrame::OnFlytoTerrain()
 }
 
 
-void EnviroFrame::OnUpdateFlytoSpace(CCmdUI* pCmdUI) 
+void EnviroFrame::OnUpdateFlytoSpace(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 }
 
-void EnviroFrame::OnUpdateFlytoTerrain(CCmdUI* pCmdUI) 
+void EnviroFrame::OnUpdateFlytoTerrain(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain || g_App.m_state == AS_Orbit);
 }
 
-void EnviroFrame::OnSpaceShowtime() 
+void EnviroFrame::OnSpaceShowtime()
 {
 	// TODO: Add your command handler code here
 	g_App.SetEarthShading(!g_App.GetEarthShading());
 }
 
-void EnviroFrame::OnUpdateSpaceShowtime(CCmdUI* pCmdUI) 
+void EnviroFrame::OnUpdateSpaceShowtime(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Orbit);
 	pCmdUI->SetCheck(g_App.GetEarthShading());
 }
 
-void EnviroFrame::OnEarthFlatunfold() 
+void EnviroFrame::OnEarthFlatunfold()
 {
 	g_App.SetEarthShape(!g_App.GetEarthShape());
 }
 
-void EnviroFrame::OnUpdateEarthFlatunfold(CCmdUI* pCmdUI) 
+void EnviroFrame::OnUpdateEarthFlatunfold(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Orbit);
 	pCmdUI->SetCheck(g_App.GetEarthShape());
 }
 
-void EnviroFrame::OnEarthAddpointdata() 
+void EnviroFrame::OnEarthAddpointdata()
 {
 	char path[256];
 	// save
@@ -228,7 +227,7 @@ void EnviroFrame::OnEarthAddpointdata()
 	SetCurrentDirectory(path);
 }
 
-void EnviroFrame::OnUpdateEarthAddpointdata(CCmdUI* pCmdUI) 
+void EnviroFrame::OnUpdateEarthAddpointdata(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Orbit);
 }
@@ -251,62 +250,62 @@ void EnviroFrame::SetMode(MouseMode mode)
 	g_App.SetMode(mode);
 }
 
-void EnviroFrame::OnToolsTrees() 
+void EnviroFrame::OnToolsTrees()
 {
 	SetMode(MM_PLANTS);
 	g_App.EnableFlyerEngine(false);
 }
 
-void EnviroFrame::OnUpdateToolsTrees(CCmdUI* pCmdUI) 
+void EnviroFrame::OnUpdateToolsTrees(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 	pCmdUI->SetCheck(g_App.m_mode == MM_PLANTS);
 }
 
-void EnviroFrame::OnToolsFences() 
+void EnviroFrame::OnToolsFences()
 {
 	SetMode(MM_FENCES);
 	g_App.EnableFlyerEngine(false);
 }
 
-void EnviroFrame::OnUpdateToolsFences(CCmdUI* pCmdUI) 
+void EnviroFrame::OnUpdateToolsFences(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 	pCmdUI->SetCheck(g_App.m_mode == MM_FENCES);
 }
 
-void EnviroFrame::OnToolsNavigate() 
+void EnviroFrame::OnToolsNavigate()
 {
 	SetMode(MM_NAVIGATE);
 	g_App.EnableFlyerEngine(true);
 }
 
-void EnviroFrame::OnUpdateToolsNavigate(CCmdUI* pCmdUI) 
+void EnviroFrame::OnUpdateToolsNavigate(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
 	pCmdUI->SetCheck(g_App.m_mode == MM_NAVIGATE);
 }
 
-void EnviroFrame::OnToolsMove() 
+void EnviroFrame::OnToolsMove()
 {
 	SetMode(MM_MOVE);
 	g_App.EnableFlyerEngine(false);
 }
 
-void EnviroFrame::OnUpdateToolsMove(CCmdUI* pCmdUI) 
+void EnviroFrame::OnUpdateToolsMove(CCmdUI* pCmdUI)
 {
 	// not yet implemented
 	pCmdUI->Enable(FALSE);
 	pCmdUI->SetCheck(g_App.m_mode == MM_MOVE);
 }
 
-void EnviroFrame::OnToolsSelect() 
+void EnviroFrame::OnToolsSelect()
 {
 	SetMode(MM_SELECT);
 	g_App.EnableFlyerEngine(false);
 }
 
-void EnviroFrame::OnUpdateToolsSelect(CCmdUI* pCmdUI) 
+void EnviroFrame::OnUpdateToolsSelect(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck(g_App.m_mode == MM_SELECT);
 }

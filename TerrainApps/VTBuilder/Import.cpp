@@ -907,7 +907,7 @@ void MainFrame::ImportFromMapSource(const char *fname)
 	fscanf(fp, "Grid %s\n", buf);
 	if (!strcmp(buf, "UTM"))
 		bUTM = true;
-	fgets(buf, 200, fp); // assume "Datum   WGS 84" 
+	fgets(buf, 200, fp); // assume "Datum   WGS 84"
 
 	vtProjection proj;
 

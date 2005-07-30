@@ -17,7 +17,7 @@
 #include "../Enviro.h"	// for GetTerrainScene
 
 #ifdef _MSC_VER
-#pragma warning( disable : 4800 ) 
+#pragma warning( disable : 4800 )
 #endif
 
 CStartupDlg g_StartDlg;
@@ -106,9 +106,9 @@ void AddFilesToComboBox(CComboBox *box, CString wildcard)
 {
 	VTLOG(" AddFilenamesToComboBox '%s':", (const char *) wildcard);
 
-	CFileFind finder; 
+	CFileFind finder;
 	int entries = 0, matches = 0;
-	BOOL bWorking = finder.FindFile(wildcard); 
+	BOOL bWorking = finder.FindFile(wildcard);
 
 	while (bWorking)
 	{
@@ -127,7 +127,7 @@ void AddFilesToComboBox(CComboBox *box, CString wildcard)
 /////////////////////////////////////////////////////////////////////////////
 // CStartupDlg message handlers
 
-BOOL CStartupDlg::OnInitDialog() 
+BOOL CStartupDlg::OnInitDialog()
 {
 	vtTerrain *pTerr = vtGetTS()->FindTerrainByName(m_strTName);
 	if (pTerr)
@@ -158,32 +158,32 @@ void ShowOGLInfo(HDC hdc)
 {
 	PIXELFORMATDESCRIPTOR pfd =
 	{
-		sizeof(PIXELFORMATDESCRIPTOR),	// size of this pfd 
-		1,						// version number 
-		PFD_DRAW_TO_WINDOW |	// support window 
-		PFD_SUPPORT_OPENGL |	// support OpenGL 
-		PFD_DOUBLEBUFFER,		// double buffered 
-		PFD_TYPE_RGBA,			// RGBA type 
-		24,						// 24-bit color depth 
-		0, 0, 0, 0, 0, 0,		// color bits ignored 
-		0, 0, 0,				// no alpha buffer 
-		0, 0, 0, 0,				// accum bits ignored 
-		32, 0, 0,				// 32-bit z-buffer 
+		sizeof(PIXELFORMATDESCRIPTOR),	// size of this pfd
+		1,						// version number
+		PFD_DRAW_TO_WINDOW |	// support window
+		PFD_SUPPORT_OPENGL |	// support OpenGL
+		PFD_DOUBLEBUFFER,		// double buffered
+		PFD_TYPE_RGBA,			// RGBA type
+		24,						// 24-bit color depth
+		0, 0, 0, 0, 0, 0,		// color bits ignored
+		0, 0, 0,				// no alpha buffer
+		0, 0, 0, 0,				// accum bits ignored
+		32, 0, 0,				// 32-bit z-buffer
 		PFD_MAIN_PLANE,			// main layer
-		0,						// reserved 
+		0,						// reserved
 		0, 0, 0					// layer masks ignored
 	};
 	int  iPixelFormat;
-	// get the best available match of pixel format for the device context  
+	// get the best available match of pixel format for the device context 
 	iPixelFormat = ChoosePixelFormat(hdc, &pfd);
-	// make that the pixel format of the device context 
+	// make that the pixel format of the device context
 	SetPixelFormat(hdc, iPixelFormat, &pfd);
 
 	HGLRC device = wglCreateContext(hdc);
 	if (device == NULL)
 	{
 		DWORD lasterror = GetLastError();
-		// 2000 The pixel format is invalid.  ERROR_INVALID_PIXEL_FORMAT 
+		// 2000 The pixel format is invalid.  ERROR_INVALID_PIXEL_FORMAT
 	}
 	wglMakeCurrent(hdc, device);
 	GLint value;
@@ -202,7 +202,7 @@ void ShowOGLInfo(HDC hdc)
 }
 
 
-void CStartupDlg::OnOpenglInfo() 
+void CStartupDlg::OnOpenglInfo()
 {
 	// check the OpenGL max texture size
 	HWND hwnd = GetSafeHwnd();
@@ -211,7 +211,7 @@ void CStartupDlg::OnOpenglInfo()
 	ShowOGLInfo(hdc);
 }
 
-void CStartupDlg::OnTSelect() 
+void CStartupDlg::OnTSelect()
 {
 	UpdateData(TRUE);
 	CChooseDlg dlg;
@@ -222,7 +222,7 @@ void CStartupDlg::OnTSelect()
 }
 
 
-void CStartupDlg::OnChangeLaunch() 
+void CStartupDlg::OnChangeLaunch()
 {
 	UpdateData(TRUE);
 	UpdateState();
@@ -236,7 +236,7 @@ void CStartupDlg::UpdateState()
 	m_cbTSelect.EnableWindow(m_iLaunch == 1);
 }
 
-void CStartupDlg::OnEditProp() 
+void CStartupDlg::OnEditProp()
 {
 	vtTerrain *pTerr = vtGetTS()->FindTerrainByName(m_strTName);
 	if (!pTerr)

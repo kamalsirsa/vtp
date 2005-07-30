@@ -42,7 +42,7 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function StyleDialogFunc for StyleDlg
-	StyleDialogFunc( this, TRUE ); 
+	StyleDialogFunc( this, TRUE );
 
 	m_bGeometry = true;
 	m_GeomColor.Set(255,255,255);

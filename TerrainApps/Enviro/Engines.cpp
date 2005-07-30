@@ -302,7 +302,7 @@ void TerrainPicker::FindGroundPoint()
 	m_GroundPoint = result;
 
 	// Find corresponding earth coordinates
-	g_Conv.ConvertToEarth(m_GroundPoint, m_EarthPos); 
+	g_Conv.ConvertToEarth(m_GroundPoint, m_EarthPos);
 }
 
 void TerrainPicker::Eval()

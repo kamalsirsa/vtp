@@ -39,7 +39,7 @@ ExtentDlg::ExtentDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bSetting = false;
 	m_bDMS = false;
 
-	ExtentDialogFunc( this, TRUE ); 
+	ExtentDialogFunc( this, TRUE );
 
 	AddValidator(ID_EXTENT_ALL, &m_strAll);
 	AddValidator(ID_EXTENT_E, &m_strEast);
@@ -118,7 +118,7 @@ void ExtentDlg::FormatStrings(int which)
 
 // WDR: handler implementations for ExtentDlg
 
-void ExtentDlg::OnInitDialog(wxInitDialogEvent& event) 
+void ExtentDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	GetDMS()->Enable(m_bDegrees);
 
@@ -170,7 +170,7 @@ void ExtentDlg::OnExtentW( wxCommandEvent &event )
 
 	TransferDataFromWindow();
 	m_area.left = GetValueFrom(m_strWest);
-	FormatStrings(2);   
+	FormatStrings(2);
 }
 
 void ExtentDlg::OnExtentN( wxCommandEvent &event )

@@ -46,7 +46,7 @@ FeatInfoDlg::FeatInfoDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_pLayer = NULL;
 	m_pFeatures = NULL;
 
-	FeatInfoDialogFunc( this, TRUE ); 
+	FeatInfoDialogFunc( this, TRUE );
 
 	AddValidator(ID_CHOICE_SHOW, &m_iShow);
 	AddValidator(ID_CHOICE_VERTICAL, &m_iVUnits);

@@ -39,7 +39,7 @@ LightDlg::LightDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function LightDialogFunc for LightDlg
-	LightDialogFunc( this, TRUE ); 
+	LightDialogFunc( this, TRUE );
 
 	AddNumValidator(ID_DIRX, &m_dir.x);
 	AddNumValidator(ID_DIRY, &m_dir.y);

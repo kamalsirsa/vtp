@@ -65,7 +65,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CCameraDlg message handlers
 
-BOOL CCameraDlg::OnInitDialog() 
+BOOL CCameraDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
@@ -108,7 +108,7 @@ void CCameraDlg::GetFlightspeed()
 	m_fFlightSpeed = g_App.GetFlightSpeed();
 }
 
-void CCameraDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CCameraDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	CSliderCtrl *pSlider = (CSliderCtrl *)pScrollBar;
 
@@ -171,7 +171,7 @@ void CCameraDlg::SliderMoved(CSliderCtrl *pSlider, int nPos)
 	}
 }
 
-void CCameraDlg::OnChangeHither() 
+void CCameraDlg::OnChangeHither()
 {
 	vtCamera *pCam = vtGetScene()->GetCamera();
 
@@ -189,7 +189,7 @@ void CCameraDlg::OnChangeHither()
 	UpdateSliders();
 }
 
-void CCameraDlg::OnChangeYon() 
+void CCameraDlg::OnChangeYon()
 {
 	vtCamera *pCam = vtGetScene()->GetCamera();
 
@@ -207,7 +207,7 @@ void CCameraDlg::OnChangeYon()
 	UpdateSliders();
 }
 
-void CCameraDlg::OnChangeVangle() 
+void CCameraDlg::OnChangeVangle()
 {
 	vtCamera *pCam = vtGetScene()->GetCamera();
 
@@ -236,7 +236,7 @@ void CCameraDlg::UpdateSliders()
 
 /////////////////
 
-void CCameraDlg::OnChangeFspeed() 
+void CCameraDlg::OnChangeFspeed()
 {
 	UpdateData(TRUE);
 

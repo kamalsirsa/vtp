@@ -410,7 +410,7 @@ bool vtRoadLayer::EditNodeProperties(const DPoint2 &point, float epsilon,
 		bound.SetRect(p.x-epsilon, p.y+epsilon, p.x+epsilon, p.y-epsilon);
 		return node->EditProperties(this);
 	}
-	return false; 
+	return false;
 }
 
 bool vtRoadLayer::EditLinkProperties(const DPoint2 &point, float error,
@@ -443,7 +443,7 @@ bool vtRoadLayer::EditLinkProperties(const DPoint2 &point, float error,
 		return bestRSoFar->EditProperties(this);
 	}
 
-	return false; 
+	return false;
 }
 
 bool vtRoadLayer::EditNodesProperties()

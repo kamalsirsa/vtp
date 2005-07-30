@@ -77,7 +77,7 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 
 	vtStructure3d *str3d = data->m_sa->GetStructure3d(data->m_item);
 	vtStructure *str = data->m_sa->GetAt(data->m_item);
-	vtStructureType typ = str->GetType(); 
+	vtStructureType typ = str->GetType();
 
 	if (bContainer && typ != ST_LINEAR)
 		return str3d->GetContainer();
@@ -345,7 +345,7 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 			vtStructure3d *str3d = sa->GetStructure3d(j);
 			if (str3d) {
 				pThing = str3d->GetContained();
-				if (pThing) 
+				if (pThing)
 					vtGetScene()->ShadowVisibleNode(pThing, bVis);
 			}
 		}

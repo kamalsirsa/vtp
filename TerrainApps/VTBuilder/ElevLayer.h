@@ -68,7 +68,7 @@ public:
 
 //////////////////////////////////////////////////////////
 
-class vtElevLayer : public vtLayer 
+class vtElevLayer : public vtLayer
 {
 public:
 	vtElevLayer();

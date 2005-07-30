@@ -54,7 +54,7 @@ Projection2Dlg::Projection2Dlg( wxWindow *parent, wxWindowID id, const wxString 
 
 	m_GeoRefPoint.Set(0,0);
 
-	ProjectionDialog2Func( this, TRUE ); 
+	ProjectionDialog2Func( this, TRUE );
 
 	m_pParamCtrl = GetProjparam();
 	m_pZoneCtrl = GetZonechoice();

@@ -185,7 +185,7 @@ void IslandTerrain::create_state_park()
 		{
 			FPoint3 position(center + FPoint3(sinf(yaw)*radius, cosf(yaw)*radius,0.0f));
 			FQuat rotation(FQuat(FPoint3(0.0,1.0,0.0), roll) * FQuat(FPoint3(0.0,0.0,1.0), -(yaw+osg::inDegrees(90.0f))));
-	        
+
 			path->Insert(time,ControlPoint(position,rotation,scale1));
 
 			yaw += yaw_delta;

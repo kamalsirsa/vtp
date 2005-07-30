@@ -13,7 +13,7 @@
 #include "wx/wxprec.h"
 
 #ifdef _MSC_VER
-#pragma warning( disable : 4786 ) 
+#pragma warning( disable : 4786 )
 #endif
 
 #include "vtlib/vtlib.h"
@@ -42,7 +42,7 @@ ModelDlg::ModelDlg( wxWindow *parent, wxWindowID id,
 {
 	m_bUpdating = false;
 	m_pCurrentModel = NULL;
-	ModelDialogFunc( this, TRUE ); 
+	ModelDialogFunc( this, TRUE );
 
 	AddValidator(ID_FILENAME, &m_strFilename);
 	AddNumValidator(ID_DISTANCE, &m_fDistance);

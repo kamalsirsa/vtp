@@ -35,7 +35,7 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	OptionsDialogFunc( this, TRUE ); 
+	OptionsDialogFunc( this, TRUE );
 
 	GetElevUnit()->Append(_("Meters"));
 	GetElevUnit()->Append(_("Feet (International)"));

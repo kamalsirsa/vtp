@@ -1306,7 +1306,7 @@ void BuilderView::OnRightUp(wxMouseEvent& event)
 		OnRightUpStructure((vtStructureLayer *)pL);
 }
 
-void BuilderView::OnRightUpStructure(vtStructureLayer *pSL) 
+void BuilderView::OnRightUpStructure(vtStructureLayer *pSL)
 {
 	pSL->EditBuildingProperties();
 }

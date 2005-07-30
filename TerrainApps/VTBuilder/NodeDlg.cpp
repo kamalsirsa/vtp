@@ -120,7 +120,7 @@ void NodeDlgView::OnDraw(wxDC &dc)
 			box.width = (radius << 1);
 			dc.DrawEllipse(box.x, box.y, box.width, box.height);
 			break;
-		} 
+		}
 
 		//draw text labels
 		vec.x = (int)(center.x + vector.x*40);
@@ -149,7 +149,7 @@ NodeDlg::NodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	NodePropDialogFunc( this, TRUE ); 
+	NodePropDialogFunc( this, TRUE );
 
 	GetIntType()->Append(_("Unknown"));
 	GetIntType()->Append(_("Uncontrolled"));

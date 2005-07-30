@@ -32,7 +32,7 @@ ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString 
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function ImportPointDialogFunc for ImportPointDlg
-	ImportPointDialogFunc( this, TRUE ); 
+	ImportPointDialogFunc( this, TRUE );
 
 	m_iEasting = 0;
 	m_iNorthing = 0;;

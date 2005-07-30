@@ -45,7 +45,7 @@ TimeDlg::TimeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function TimeDialogFunc for TimeDlg
-	m_pTop = TimeDialogFunc( this, TRUE ); 
+	m_pTop = TimeDialogFunc( this, TRUE );
 
 	m_bGoing = false;
 	m_iSpeed = 0;

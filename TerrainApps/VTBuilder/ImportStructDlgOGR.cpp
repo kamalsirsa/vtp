@@ -40,7 +40,7 @@ ImportStructDlgOGR::ImportStructDlgOGR( wxWindow *parent, wxWindowID id, const w
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	ImportStructFuncOGR( this, TRUE ); 
+	ImportStructFuncOGR( this, TRUE );
 
 	m_opt.m_HeightType = StructImportOptions::METERS;
 	m_opt.m_ElevationType = StructImportOptions::ETMETERS;

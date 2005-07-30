@@ -31,7 +31,7 @@ GeocodeDlg::GeocodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function GeocodeDialogFunc for GeocodeDlg
-	GeocodeDialogFunc( this, TRUE ); 
+	GeocodeDialogFunc( this, TRUE );
 
 	AddValidator(ID_CHECK_USE1, &m_bGeocodeUS);
 	AddValidator(ID_CHECK_USE2, &m_bGazetteer);

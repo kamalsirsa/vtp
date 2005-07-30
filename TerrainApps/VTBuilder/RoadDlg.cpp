@@ -34,7 +34,7 @@ RoadDlg::RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	RoadPropDialogFunc( this, TRUE ); 
+	RoadPropDialogFunc( this, TRUE );
 
 	GetSurfType()->Append(_("None"));
 	GetSurfType()->Append(_("Gravel"));

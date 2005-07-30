@@ -28,7 +28,7 @@ struct Scanline
 
 //////////////////////////////////////////////////////////
 
-class vtImageLayer : public vtLayer 
+class vtImageLayer : public vtLayer
 {
 public:
 	vtImageLayer();

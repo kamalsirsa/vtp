@@ -1606,7 +1606,7 @@ void MainFrame::ExportImage()
  * All options are given in the VegGenOptions object passed in.
  *
  */
-void MainFrame::GenerateVegetation(const char *vf_file, DRECT area, 
+void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	VegGenOptions &opt)
 {
 	OpenProgressDialog(_("Generating Vegetation"), true);
@@ -1647,7 +1647,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	VTLOG("GenerateVegetation: %.3f seconds.\n", time);
 }
 
-void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area, 
+void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	VegGenOptions &opt)
 {
 	// Avoid trouble with '.' and ',' in Europe

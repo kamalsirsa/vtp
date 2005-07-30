@@ -47,7 +47,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CChooseDlg message handlers
 
-BOOL CChooseDlg::OnInitDialog() 
+BOOL CChooseDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -66,12 +66,12 @@ BOOL CChooseDlg::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CChooseDlg::OnOK() 
+void CChooseDlg::OnOK()
 {
 	CDialog::OnOK();
 }
 
-void CChooseDlg::OnSelchangeTlist() 
+void CChooseDlg::OnSelchangeTlist()
 {
 	int sel = m_lbList.GetCurSel();
 	if (sel != LB_ERR)
@@ -85,7 +85,7 @@ void CChooseDlg::UpdateEdit()
 	m_cbOK.EnableWindow(sel != LB_ERR);
 }
 
-void CChooseDlg::OnDblclkTlist() 
+void CChooseDlg::OnDblclkTlist()
 {
 	OnSelchangeTlist();
 	OnOK();

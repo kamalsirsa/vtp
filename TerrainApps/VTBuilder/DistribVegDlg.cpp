@@ -41,7 +41,7 @@ DistribVegDlg::DistribVegDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	DistribVegFunc( this, TRUE ); 
+	DistribVegFunc( this, TRUE );
 
 	m_iChoiceSpecies = 0;
 	m_iChoiceBiotype = 0;

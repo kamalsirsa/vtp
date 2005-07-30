@@ -374,7 +374,7 @@ bool vtImageLayer::SaveToFile(const char *fname) const
 				if (i == 3) raster[y*m_iXSize + x] = rgb.b;
 			}
 		}
-		pBand->RasterIO( GF_Write, 0, 0, m_iXSize, m_iYSize, 
+		pBand->RasterIO( GF_Write, 0, 0, m_iXSize, m_iYSize,
 			raster, m_iXSize, m_iYSize, GDT_Byte, 0, 0 );
 	}
 	delete raster;
@@ -560,7 +560,7 @@ bool vtImageLayer::LoadFromGDAL()
 
 					pCT = pDataset->GetRasterBand(1)->GetColorTable();
 					if (pCT != NULL)
-						pDstDataset->GetRasterBand(1)->SetColorTable(pCT); 
+						pDstDataset->GetRasterBand(1)->SetColorTable(pCT);
 
 					if (NULL == (psWarpOptions = GDALCreateWarpOptions()))
 						throw "Unable to create WarpOptions";
@@ -572,18 +572,18 @@ bool vtImageLayer::LoadFromGDAL()
 
 					// Assume a non cancellable progress dialog is already open
 					// more work needed to clean up after cancel
-					psWarpOptions->pfnProgress = WarpProgress;   
+					psWarpOptions->pfnProgress = WarpProgress;  
 
 					if (NULL == (psWarpOptions->pTransformerArg = GDALCreateGenImgProjTransformer( (GDALDatasetH)pDataset,
-																					pWkt, 
+																					pWkt,
 																					(GDALDatasetH)pDstDataset,
-																					pWkt, 
+																					pWkt,
 																					FALSE, 0.0, 1 )))
 						throw "Unable to create GenImgProTransformer";
 
 					psWarpOptions->pfnTransformer = GDALGenImgProjTransform;
 
-					// Initialize and execute the warp operation. 
+					// Initialize and execute the warp operation.
 
 					oOperation.Initialize(psWarpOptions);
 					

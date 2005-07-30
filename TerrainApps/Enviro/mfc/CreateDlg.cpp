@@ -14,7 +14,7 @@
 #include ".\createdlg.h"
 
 #ifdef _MSC_VER
-#pragma warning( disable : 4800 ) 
+#pragma warning( disable : 4800 )
 #endif
 
 #define NTILES 4
@@ -185,8 +185,8 @@ END_MESSAGE_MAP()
 void AddFilenamesToComboBox(CComboBox *box, const char *pattern)
 {
 	CString wildcard = pattern;
-	CFileFind finder; 
-	BOOL bWorking = finder.FindFile(wildcard); 
+	CFileFind finder;
+	BOOL bWorking = finder.FindFile(wildcard);
 	while (bWorking)
 	{
 		bWorking = finder.FindNextFile();
@@ -378,7 +378,7 @@ void CCreateDlg::UpdateTiledTextureFilename()
 	UpdateData(FALSE);
 }
 
-void CCreateDlg::OnChangeTilesize() 
+void CCreateDlg::OnChangeTilesize()
 {
 	UpdateData(TRUE);
 	UpdateTiledTextureFilename();
@@ -386,14 +386,14 @@ void CCreateDlg::OnChangeTilesize()
 }
 
 
-void CCreateDlg::OnChangeTfilebase() 
+void CCreateDlg::OnChangeTfilebase()
 {
 	UpdateData(TRUE);
 	UpdateTiledTextureFilename();
 }
 
 
-void CCreateDlg::OnChangeMem() 
+void CCreateDlg::OnChangeMem()
 {
 	UpdateData(TRUE);	// retrieve data
 
@@ -480,14 +480,14 @@ ErrExit:
 	return;
 }
 
-void CCreateDlg::OnEditchangeFilename() 
+void CCreateDlg::OnEditchangeFilename()
 {
 //	UpdateData(TRUE);
 //	DetermineTerrainSizeFromBT();
 //	OnChangeMem();
 }
 
-void CCreateDlg::OnSelchangeFilename() 
+void CCreateDlg::OnSelchangeFilename()
 {
 	// always do this first
 	UpdateData(TRUE);
@@ -501,7 +501,7 @@ void CCreateDlg::OnSelchangeFilename()
 	}
 }
 
-void CCreateDlg::OnSelchangeTfilesingle() 
+void CCreateDlg::OnSelchangeTfilesingle()
 {
 	// always do this first
 	UpdateData(TRUE);
@@ -522,7 +522,7 @@ void CCreateDlg::UpdateTimeEnable()
 		m_bTimeOn = false;
 }
 
-void CCreateDlg::OnPrelight() 
+void CCreateDlg::OnPrelight()
 {
 	// always do this first
 	UpdateData(TRUE);
@@ -536,17 +536,17 @@ void CCreateDlg::OnPrelight()
 	UpdateData(FALSE);
 }
 
-void CCreateDlg::OnSelchangeLodmethod() 
+void CCreateDlg::OnSelchangeLodmethod()
 {
 	OnChangeMem();
 }
 
-void CCreateDlg::OnEnviroShowtrees() 
+void CCreateDlg::OnEnviroShowtrees()
 {
 	m_bPlants = !m_bPlants;
 }
 
-void CCreateDlg::OnPrelit() 
+void CCreateDlg::OnPrelit()
 {
 	// always do this first
 	UpdateData(TRUE);

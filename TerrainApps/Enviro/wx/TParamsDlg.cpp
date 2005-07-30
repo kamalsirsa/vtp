@@ -624,7 +624,7 @@ void TParamsDlg::OnTileSize( wxCommandEvent &event )
 	UpdateTiledTextureFilename();
 }
 
-void TParamsDlg::OnInitDialog(wxInitDialogEvent& event) 
+void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	VTLOG("TParamsDlg::OnInitDialog\n");
 

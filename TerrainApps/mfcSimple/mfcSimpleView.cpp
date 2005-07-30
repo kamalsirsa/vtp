@@ -88,7 +88,7 @@ CSimpleDoc* CSimpleView::GetDocument() // non-debug version is inline
 }
 #endif //_DEBUG
 
-void CSimpleView::OnDraw(CDC* pDC) 
+void CSimpleView::OnDraw(CDC* pDC)
 {
 	CSimpleDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -164,7 +164,7 @@ BOOL CSimpleView::CreateViewGLContext(HDC hDC)
 }
 
 
-void CSimpleView::OnDestroy() 
+void CSimpleView::OnDestroy()
 {
 	CleanupScene();
 
@@ -178,7 +178,7 @@ void CSimpleView::OnDestroy()
 	CView::OnDestroy();
 }
 
-int CSimpleView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int CSimpleView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -193,20 +193,20 @@ int CSimpleView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return CreateScene();
 }
 
-void CSimpleView::OnSize(UINT nType, int cx, int cy) 
+void CSimpleView::OnSize(UINT nType, int cx, int cy)
 {
 	CView::OnSize(nType, cx, cy);
 	glViewport(0,0,cx, cy);
 	vtGetScene()->SetWindowSize(cx, cy);
 }
 
-void CSimpleView::OnPaint() 
+void CSimpleView::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 
 	// Render the scene
 	vtGetScene()->DoUpdate();
-	//this would occur, for example, after your call to glClear() and before calling SwapBuffers() 
+	//this would occur, for example, after your call to glClear() and before calling SwapBuffers()
 	SwapBuffers(dc.m_ps.hdc);
 	InvalidateRect(NULL,FALSE);	//for Continuous Rendering
 }
@@ -302,7 +302,7 @@ int MFCFlagsToVT(int nFlags)
 //
 // turn MFC mouse events into VT mouse events
 //
-void CSimpleView::OnMouseMove(UINT nFlags, CPoint point) 
+void CSimpleView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	vtMouseEvent event;
 
@@ -314,7 +314,7 @@ void CSimpleView::OnMouseMove(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);
 }
 
-void CSimpleView::OnLButtonUp(UINT nFlags, CPoint point) 
+void CSimpleView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	vtMouseEvent event;
 
@@ -326,7 +326,7 @@ void CSimpleView::OnLButtonUp(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);
 }
 
-void CSimpleView::OnLButtonDown(UINT nFlags, CPoint point) 
+void CSimpleView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	vtMouseEvent event;
 
@@ -338,7 +338,7 @@ void CSimpleView::OnLButtonDown(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);
 }
 
-void CSimpleView::OnRButtonDown(UINT nFlags, CPoint point) 
+void CSimpleView::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	vtMouseEvent event;
 
@@ -350,7 +350,7 @@ void CSimpleView::OnRButtonDown(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);
 }
 
-void CSimpleView::OnRButtonUp(UINT nFlags, CPoint point) 
+void CSimpleView::OnRButtonUp(UINT nFlags, CPoint point)
 {
 	vtMouseEvent event;
 
@@ -362,7 +362,7 @@ void CSimpleView::OnRButtonUp(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);
 }
 
-void CSimpleView::OnMButtonDown(UINT nFlags, CPoint point) 
+void CSimpleView::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	vtMouseEvent event;
 
@@ -374,7 +374,7 @@ void CSimpleView::OnMButtonDown(UINT nFlags, CPoint point)
 	vtGetScene()->OnMouse(event);
 }
 
-void CSimpleView::OnMButtonUp(UINT nFlags, CPoint point) 
+void CSimpleView::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	vtMouseEvent event;
 

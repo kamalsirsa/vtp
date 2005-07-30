@@ -15,7 +15,7 @@
 #include "vtlib/vtlib.h"
 
 #ifdef _MSC_VER
-#pragma warning( disable : 4786 ) 
+#pragma warning( disable : 4786 )
 #endif
 
 #include "PropDlg.h"
@@ -47,7 +47,7 @@ PropDlg::PropDlg( wxWindow *parent, wxWindowID id,
 	m_bUpdating = false;
 	m_pCurrentItem = NULL;
 
-	PropDialogFunc( this, TRUE ); 
+	PropDialogFunc( this, TRUE );
 
 	m_pTypeChoice = GetTypeChoice();
 	m_pTagList = GetTaglist();

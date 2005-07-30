@@ -211,7 +211,7 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 	proj_new.SetProjectionSimple(0, -1, EPSG_DATUM_WGS84);
 	SetProjection(proj_new);
 
-	// figure out the number of polygons in file 
+	// figure out the number of polygons in file
 	unsigned int size = 0;
 	for (unsigned int sec = 0; sec < pLULC->NumSections(); sec++)
 	{

@@ -199,13 +199,13 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 
 bool LinkEdit::WithinExtent(const DRECT &target)
 {
-	return (target.left < m_extent.right && target.right > m_extent.left && 
+	return (target.left < m_extent.right && target.right > m_extent.left &&
 		target.top > m_extent.bottom && target.bottom < m_extent.top);
 }
 
 bool LinkEdit::WithinExtent(const DPoint2 &p)
 {
-	return (p.x > m_extent.left && p.x < m_extent.right && 
+	return (p.x > m_extent.left && p.x < m_extent.right &&
 			p.y > m_extent.bottom && p.y < m_extent.top);
 }
 
@@ -235,7 +235,7 @@ bool LinkEdit::InBounds(const DRECT &bound)
 bool LinkEdit::PartiallyInBounds(const DRECT &bound)
 {
 	//eliminate easy cases.
-	if (m_extent.top < bound.bottom || 
+	if (m_extent.top < bound.bottom ||
 			m_extent.bottom > bound.top ||
 			m_extent.right < bound.left ||
 			m_extent.left > bound.right) {
@@ -247,7 +247,7 @@ bool LinkEdit::PartiallyInBounds(const DRECT &bound)
 	{
 		DPoint2 point = GetAt(i);
 		if (point.x > bound.left && point.x < bound.right &&
-				point.y > bound.bottom && point.y < bound.top) 
+				point.y > bound.bottom && point.y < bound.top)
 		{
 			return true;
 		}
@@ -258,7 +258,7 @@ bool LinkEdit::PartiallyInBounds(const DRECT &bound)
 
 
 bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
-	bool bShowWidth) 
+	bool bShowWidth)
 {
 	// base road color on type of road
 	pDC->SetLogicalFunction(wxCOPY);
@@ -423,7 +423,7 @@ RoadMapEdit::RoadMapEdit() : vtRoadMap()
 	}
 }
 
-RoadMapEdit::~RoadMapEdit() 
+RoadMapEdit::~RoadMapEdit()
 {
 }
 
@@ -667,7 +667,7 @@ bool RoadMapEdit::SelectAndExtendLink(DPoint2 point, float error, DRECT &bound)
 					if (road == originalLink) {
 						bestLinkIndex = -1;
 					}
-				} 
+				}
 			}
 			if (bestLinkIndex == -1) {
 				//wxLogMessage("Stop!\n");

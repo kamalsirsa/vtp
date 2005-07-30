@@ -31,7 +31,7 @@ TagDlg::TagDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	TagDialogFunc( this, TRUE ); 
+	TagDialogFunc( this, TRUE );
 
 	AddValidator(ID_TAGNAME, &m_strName);
 	AddValidator(ID_TAGTEXT, &m_strValue);
