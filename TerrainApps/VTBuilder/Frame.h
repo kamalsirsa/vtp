@@ -415,6 +415,7 @@ public:
 	void ExportSTM();
 	void ExportPlanet();
 	void ExportVRML();
+	void ExportRAWINF();
 
 	// area tool
 	void ExportElevation();

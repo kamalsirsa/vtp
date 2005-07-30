@@ -2237,7 +2237,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	if (!GetActiveElevLayer())
 		return;
 
-	wxString choices[7];
+	wxString choices[8];
 	choices[0] = _T("ArcInfo ASCII Grid");
 	choices[1] = _T("GeoTIFF");
 	choices[2] = _T("TerraGen");
@@ -2245,9 +2245,10 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	choices[4] = _T("STM");
 	choices[5] = _T("MSI Planet");
 	choices[6] = _T("VRML ElevationGrid");
+	choices[7] = _T("RAW/INF for MS Flight Simulator");
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
-		_("Export to file format:"), 7, choices);
+		_("Export to file format:"), 8, choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -2260,21 +2261,8 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	case 4: ExportSTM(); break;
 	case 5: ExportPlanet(); break;
 	case 6: ExportVRML(); break;
+	case 7: ExportRAWINF(); break;
 	}
-}
-
-vtString GetExportFilename(const wxString &format_filter)
-{
-	wxString2 filter = _("All Files|*.*");
-	AddType(filter, format_filter);
-
-	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
-	saveFile.SetFilterIndex(1);
-	if (saveFile.ShowModal() != wxID_OK)
-		return vtString("");
-	wxString2 result = saveFile.GetPath();
-	return result.vt_str();
 }
 
 void MainFrame::ExportASC()
@@ -2295,7 +2283,7 @@ void MainFrame::ExportASC()
 			return;
 	}
 
-	vtString fname = GetExportFilename(FSTRING_ASC);
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_ASC);
 	if (fname == "")
 		return;
 	bool success = grid->SaveToASC(fname);
@@ -2307,7 +2295,7 @@ void MainFrame::ExportASC()
 
 void MainFrame::ExportTerragen()
 {
-	vtString fname = GetExportFilename(FSTRING_TER);
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TER);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->m_pGrid->SaveToTerragen(fname);
@@ -2319,7 +2307,7 @@ void MainFrame::ExportTerragen()
 
 void MainFrame::ExportGeoTIFF()
 {
-	vtString fname = GetExportFilename(FSTRING_TIF);
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TIF);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->m_pGrid->SaveToGeoTIFF(fname);
@@ -2331,7 +2319,7 @@ void MainFrame::ExportGeoTIFF()
 
 void MainFrame::ExportBMP()
 {
-	vtString fname = GetExportFilename(FSTRING_BMP);
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_BMP);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->m_pGrid->SaveToBMP(fname);
@@ -2343,7 +2331,7 @@ void MainFrame::ExportBMP()
 
 void MainFrame::ExportSTM()
 {
-	vtString fname = GetExportFilename(FSTRING_STM);
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_STM);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->m_pGrid->SaveToSTM(fname);
@@ -2379,10 +2367,22 @@ void MainFrame::ExportPlanet()
 
 void MainFrame::ExportVRML()
 {
-	vtString fname = GetExportFilename(FSTRING_WRL);
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_WRL);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->m_pGrid->SaveToVRML(fname);
+	if (success)
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+	else
+		DisplayAndLog("Error writing file.");
+}
+
+void MainFrame::ExportRAWINF()
+{
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_RAW);
+	if (fname == "")
+		return;
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToRAWINF(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
