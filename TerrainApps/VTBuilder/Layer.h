@@ -124,6 +124,7 @@ public:
 	virtual wxString2 GetLayerFilename() { return m_wsFilename; }
 	virtual void SetLayerFilename(const wxString2 &fname);
 	virtual bool AskForSaveFilename();
+	vtString GetExportFilename(const wxString &format_filter);
 
 	// UI event handlers which can be implemented if desired
 	virtual void OnLeftDown(BuilderView *pView, UIContext &ui) {}

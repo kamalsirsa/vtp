@@ -194,6 +194,25 @@ bool vtLayer::AskForSaveFilename()
 	return true;
 }
 
+vtString vtLayer::GetExportFilename(const wxString &format_filter)
+{
+	wxString2 filter = _("All Files|*.*");
+	AddType(filter, format_filter);
+
+	wxString2 defaultFile = GetLayerFilename();
+	vtString str = defaultFile.mb_str();
+	RemoveFileExtensions(str);
+	defaultFile = str;
+
+	// ask the user for a filename
+	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), defaultFile , filter, wxSAVE);
+	saveFile.SetFilterIndex(1);
+	if (saveFile.ShowModal() != wxID_OK)
+		return vtString("");
+	wxString2 result = saveFile.GetPath();
+	return result.vt_str();
+}
+
 wxString vtLayer::GetFileExtension()
 {
 	return (wxString) LayerFileExtension[GetType()];
