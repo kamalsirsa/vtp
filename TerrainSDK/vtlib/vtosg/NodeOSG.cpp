@@ -85,12 +85,73 @@ const char *vtNode::GetName2() const
 		return NULL;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// class ExtentsVisitor
+//
+// description: visit all nodes and compute bounding box extents
+//
+class ExtentsVisitor : public osg::NodeVisitor
+{
+public:
+	// constructor
+	ExtentsVisitor():NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
+	// destructor
+	~ExtentsVisitor() {}
+
+	virtual void apply(osg::Geode &node)
+	{
+		// update bounding box
+		osg::BoundingBox bb;
+		for (unsigned int i = 0; i < node.getNumDrawables(); ++i)
+		{
+			// expand overall bounding box
+			bb.expandBy(node.getDrawable(i)->getBound());
+		}
+
+		// transform corners by current matrix
+		osg::BoundingBox xbb;
+		for (unsigned int i = 0; i < 8; ++i)
+		{
+			osg::Vec3 xv = bb.corner(i) * m_TransformMatrix;
+			xbb.expandBy(xv);
+		}
+
+		// update overall bounding box size
+		m_BoundingBox.expandBy(xbb);
+
+		// continue traversing the graph
+		traverse(node);
+	}
+	// handle geode drawable extents to expand the box
+	virtual void apply(osg::MatrixTransform &node)
+	{
+		m_TransformMatrix *= node.getMatrix();
+		// continue traversing the graph
+		traverse(node);
+	}
+	// handle transform to expand bounding box
+	// return bounding box
+	osg::BoundingBox &GetBound() { return m_BoundingBox; }
+
+protected:
+	osg::BoundingBox m_BoundingBox;	// bound box
+	osg::Matrix m_TransformMatrix;	// current transform matrix
+};
+
+
+/**
+ * Calculates the bounding box of the geometry contained in and under
+ * this node in the scene graph.  Note that unlike bounding sphere which
+ * is cached, this value is calculated every time.
+ *
+ * \param box Will receive the bounding box.
+ */
 void vtNode::GetBoundBox(FBox3 &box)
 {
-	// TODO if needed
-//	FBox3 b;
-//	m_pTransform->GetBound(&b);
-//	box = s2v(b);
+	ExtentsVisitor ev; 
+	m_pNode->accept(ev); 
+	osg::BoundingBox extents = ev.GetBound();
+	s2v(extents, box);
 }
 
 void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
@@ -98,10 +159,99 @@ void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
 	BoundingSphere bs = m_pNode->getBound();
 	s2v(bs, sphere);
 
-	// Note that this isn't 100% complete; we should be
-	//  transforming the radius as well, with scale.
 	if (bGlobal)
+	{
+		// Note that this isn't 100% complete; we should be
+		//  transforming the radius as well, with scale.
 		LocalToWorld(sphere.center);
+	}
+}
+
+class PolygonCountVisitor : public osg::NodeVisitor
+{
+public:
+	int numVertices, numFaces, numObjects;
+	PolygonCountVisitor() :
+		osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN)
+	{
+		reset();
+		memset(&info, 0, sizeof(info));
+	}
+	virtual void reset() { numVertices=numFaces=numObjects=0; }
+	virtual void apply(osg::Geode& geode);
+	vtPrimInfo info;
+};
+
+void PolygonCountVisitor::apply(osg::Geode& geode)
+{
+	numObjects++;
+	for (unsigned int i=0; i<geode.getNumDrawables(); ++i)
+	{
+		osg::Geometry* geometry = geode.getDrawable(i)->asGeometry();
+		if (!geometry) continue;
+		for (unsigned int j=0; j<geometry->getPrimitiveSetList().size(); ++j)
+		{
+			osg::PrimitiveSet *pset = geometry->getPrimitiveSet(j);
+			osg::DrawArrayLengths *dal = dynamic_cast<osg::DrawArrayLengths*>(pset);
+			//osg::DrawArray *da = dynamic_cast<osg::DrawArray*>(pset);
+
+			int numIndices = pset->getNumIndices();
+			int numPrimitives = pset->getNumPrimitives();
+
+			info.Vertices += numIndices;
+			info.Primitives += numPrimitives;
+
+			// This code isn't completely finished as it doesn't iterate down
+			//  into each variable-length indexed primitives to count each
+			//  component line or triangle, but it does get most useful info.
+			GLenum mode = pset->getMode();
+			switch (mode)
+			{
+			case GL_POINTS:			info.Points += numPrimitives;	 break;
+			case GL_LINES:			info.LineSegments += numPrimitives; break;
+			case GL_TRIANGLES:		info.Triangles += numPrimitives; break;
+			case GL_QUADS:			info.Quads += numPrimitives;
+									info.Triangles += numPrimitives*2; break;
+			case GL_POLYGON:		info.Polygons += numPrimitives;
+									//info.Triangles += ...;
+									break;
+			case GL_LINE_STRIP:		info.LineStrips += numPrimitives;
+									//info.LineSegments += ...;
+									break;
+			case GL_TRIANGLE_STRIP:	info.TriStrips += numPrimitives;
+									//info.Triangles += ...;
+									break;
+			case GL_TRIANGLE_FAN:	info.TriFans += numPrimitives;
+									//info.Triangles += ...;
+									break;
+			case GL_QUAD_STRIP:		info.QuadStrips += numPrimitives;
+									//info.Quads += ...;
+									//info.Triangles += ...;
+									break;
+			}
+			// This kind of thing is incomplete because pset can be something
+			//  called 'osg::DrawElementsUShort'
+			if (mode == GL_TRIANGLE_STRIP && dal != NULL)
+			{
+			    for (VectorSizei::const_iterator itr=dal->begin();
+					itr!=dal->end();
+					++itr)
+				{
+					int iIndicesInThisStrip = *itr;
+					info.Triangles += (iIndicesInThisStrip-1);
+				}
+			}
+		}
+		info.MemVertices += geometry->getVertexArray()->getNumElements();
+	}
+	traverse(geode);
+}
+
+void vtNode::GetPrimCounts(vtPrimInfo &info)
+{
+	PolygonCountVisitor pv;
+	m_pNode->accept(pv);
+	info = pv.info;
 }
 
 void vtNode::LocalToWorld(FPoint3 &point)
@@ -313,7 +463,7 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 				// perhaps it doesn't like deleting the object WE allocated.
 		}
 
-	    if (bAllowCache)
+		if (bAllowCache)
 			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() | (osgDB::ReaderWriter::Options::CACHE_NODES))));
 		else
 			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() & ~(osgDB::ReaderWriter::Options::CACHE_NODES))));
@@ -328,6 +478,7 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 #if _DEBUG
 		VTLOG("]");
 #endif
+
 		if (!node)
 			return NULL;
 	}

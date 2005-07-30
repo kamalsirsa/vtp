@@ -18,6 +18,23 @@
 /** \addtogroup sg */
 /*@{*/
 
+struct vtPrimInfo
+{
+	int Vertices;	// number of vertices drawn
+	int Primitives;
+	int MemVertices;	// number of vertices stored in memory
+
+	int Points;
+	int TriStrips;
+	int TriFans;
+	int Triangles;
+	int Quads;
+	int QuadStrips;
+	int Polygons;
+	int LineStrips;
+	int LineSegments;
+};
+
 /**
  * Represents a Node in the vtlib Scene Graph.
  */
@@ -42,12 +59,13 @@ public:
 	/** Get the Bounding Sphere of the node, in world coordinates */
 	void GetBoundSphere(FSphere &sphere, bool bGlobal = false);
 
+	/** Get information about the number of display primitives */
+	void GetPrimCounts(vtPrimInfo &info);
+
 	/** Transform a point from a node's local coordinates to world coordinates */
 	void vtNode::LocalToWorld(FPoint3 &point);
 
 	vtGroup *GetParent(int iParent = 0);
-
-	int GetTriCount() { return 0; }
 
 	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
 
