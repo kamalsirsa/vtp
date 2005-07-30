@@ -443,7 +443,7 @@ void vtFrame::LoadContentsFile(const wxString2 &fname)
 {
 	VTLOG("LoadContentsFile '%s'\n", fname.mb_str());
 	FreeContents();
-	try 
+	try
 	{
 		m_Man.ReadXML(fname.mb_str());
 	}
@@ -477,7 +477,7 @@ void vtFrame::FreeContents()
 void vtFrame::SaveContentsFile(const wxString2 &fname)
 {
 	VTLOG("SaveContentsFile '%s'\n", fname.mb_str());
-	try 
+	try
 	{
 		m_Man.WriteXML(fname.mb_str());
 	}
@@ -674,7 +674,6 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 	//{
 	//}
 	int foo = 1;
-                   
 #endif
 }
 

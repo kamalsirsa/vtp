@@ -2207,7 +2207,7 @@ void BExtractorView::OnUpdateConstrain(CCmdUI* pCmdUI)
 }
 
 
-void BExtractorView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) 
+void BExtractorView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView)
 {
 	// update status bar
 	if (bActivate == TRUE)

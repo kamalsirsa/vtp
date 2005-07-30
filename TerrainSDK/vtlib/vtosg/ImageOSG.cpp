@@ -315,7 +315,7 @@ void vtImage::Set16Bit(bool bFlag)
 {
 	if (bFlag)
 	{
-		// use a 16-bit internal 
+		// use a 16-bit internal
 		if (_pixelFormat == GL_RGB)
 			_internalTextureFormat = GL_RGB5;
 		if (_pixelFormat == GL_RGBA)

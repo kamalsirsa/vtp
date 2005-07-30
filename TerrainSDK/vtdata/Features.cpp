@@ -840,7 +840,7 @@ void ParseQuotedCSV(const char *buf, vtStringArray &strings)
 		{
 			if (*c == '"')
 			{
-				// might be end of string, might be an escaped quote 
+				// might be end of string, might be an escaped quote
 				if (*(c+1) == '"')
 				{
 					newstring += '"';

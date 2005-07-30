@@ -12,7 +12,7 @@
 
 class vtWindow;
 
-/** \defgroup eng Engines and Events 
+/** \defgroup eng Engines and Events
  * These classes are used for per-frame simulation and user interaction.
  * See the <a href="group__nav.html">Navigation</a> module for engines
  * which are specifically for navigation.

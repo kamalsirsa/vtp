@@ -148,8 +148,8 @@ protected:
  */
 void vtNode::GetBoundBox(FBox3 &box)
 {
-	ExtentsVisitor ev; 
-	m_pNode->accept(ev); 
+	ExtentsVisitor ev;
+	m_pNode->accept(ev);
 	osg::BoundingBox extents = ev.GetBound();
 	s2v(extents, box);
 }

@@ -2818,7 +2818,7 @@ void vtTerrain::RemoveNode(vtNode *pNode)
 	m_pTerrainGroup->RemoveChild(pNode);
 }
 
-/** 
+/**
  * Removes a node from the terrain's structure LOD grid.
  *
  * \sa RemoveNode

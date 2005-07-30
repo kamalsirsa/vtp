@@ -66,7 +66,7 @@ void vtGLCanvas::QueueRefresh(bool eraseBackground)
 	//   (processes) the underlying events immediately via ProcessEvent
 	//   (read, recursive call).  See the wxPostEvent docs and Refresh code
 	//   for more details.
-	if ( eraseBackground ) 
+	if (eraseBackground)
 	{
 		wxEraseEvent eevent( GetId() );
 		eevent.SetEventObject( this );
