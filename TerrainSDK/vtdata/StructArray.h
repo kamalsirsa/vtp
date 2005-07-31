@@ -67,6 +67,7 @@ public:
 	vtString GetFilename() { return m_strFilename; }
 
 	int GetFirstSelected();
+	int GetNextSelected();
 	void DeleteSelected();
 	virtual void DestroyStructure(int i) {}
 
@@ -142,6 +143,7 @@ protected:
 	vtBuilding *m_pEditBuilding;
 	int m_iEditLevel;
 	int m_iEditEdge;
+	int m_iLastSelected;
 };
 
 extern vtStructureArray g_DefaultStructures;

@@ -20,6 +20,7 @@
 #include "StructArray.h"
 #include "Building.h"
 #include "Fence.h"
+#include "zlib.h"
 #include "vtLog.h"
 #include "FilePath.h"
 #include "PolyChecker.h"
@@ -33,6 +34,7 @@ vtStructureArray::vtStructureArray()
 {
 	m_strFilename = "Untitled.vtst";
 	m_pEditBuilding = NULL;
+	m_iLastSelected = -1;
 }
 
 
@@ -456,9 +458,26 @@ int vtStructureArray::GetFirstSelected()
 {
 	for (unsigned int i = 0; i < GetSize(); i++)
 		if (GetAt(i)->IsSelected())
+		{
+			m_iLastSelected = i;
 			return i;
+		}
 	return -1;
 }
+
+int vtStructureArray::GetNextSelected()
+{
+	if (-1 == m_iLastSelected)
+		return -1;
+	for (unsigned int i = m_iLastSelected + 1; i < GetSize(); i++)
+		if (GetAt(i)->IsSelected())
+		{
+			m_iLastSelected = i;
+			return i;
+		}
+	return -1;
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -1306,26 +1325,26 @@ bool vtStructureArray::ReadXML(const char *pathname)
 
 	// check to see if it's old or new format
 	bool bOldFormat = false;
-	FILE *fp = fopen(pathname, "r");
+	gzFile fp = gzopen(pathname, "r");
 	if (!fp) return false;
 
 	m_strFilename = pathname;
 
-	fseek(fp, 24, SEEK_SET);
+	gzseek(fp, 24, SEEK_SET);
 	char buf[10];
-	fread(buf, 10, 1, fp);
+	gzread(fp, buf, 10);
 	if (!strncmp(buf, "structures", 10))
 		bOldFormat = true;
 	else
 	{
 		// RFJ quick hack for extra carriage returns
-		fseek(fp, 26, SEEK_SET);
-		fread(buf, 10, 1, fp);
+		gzseek(fp, 26, SEEK_SET);
+		gzread(fp, buf, 10);
 		if (!strncmp(buf, "structures", 10))
 			bOldFormat = true;
 	}
 
-	fclose(fp);
+	gzclose(fp);
 
 	bool success = false;
 	if (bOldFormat)
