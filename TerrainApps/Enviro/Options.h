@@ -1,7 +1,7 @@
 //
 // Options.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -36,6 +36,7 @@ public:
 	bool	m_bTextureCompression;
 	bool	m_bDisableModelMipmaps;
 
+	bool	m_bDirectPicking;
 	float	m_fSelectionCutoff;
 	float	m_fMaxPickableInstanceRadius;
 	float	m_fCursorThickness;

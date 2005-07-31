@@ -1,7 +1,7 @@
 //
 // Options.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,6 +34,7 @@ EnviroOptions g_Options;
 #define STR_CONTENT_FILE "ContentFile"
 #define STR_CATENARY_FACTOR "CatenaryFactor"
 #define STR_MAX_INST_RADIUS "MaxPickableInstanceRadius"
+#define STR_DIRECT_PICKING "DirectPicking"
 
 EnviroOptions::EnviroOptions()
 {
@@ -48,6 +49,7 @@ EnviroOptions::EnviroOptions()
 	m_bDisableModelMipmaps = false;
 	m_bTextureCompression = true;
 
+	m_bDirectPicking = false;
 	m_fSelectionCutoff = 10.0f;
 	m_fMaxPickableInstanceRadius = 200.0f;
 	m_fCursorThickness = 0.025f;
@@ -115,6 +117,8 @@ bool EnviroOptions::Read(const char *szFilename)
 			input >> m_bShadows;
 		else if (strcmp(buf, STR_ONLY_AVAILABLE_SPECIES) == 0)
 			input >> m_bOnlyAvailableSpecies;
+		else if (strcmp(buf, STR_DIRECT_PICKING) == 0)
+			input >> m_bDirectPicking;
 		else if (strcmp(buf, STR_SELECTIONCUTOFF) == 0)
 			input >> m_fSelectionCutoff;
 		else if (strcmp(buf, STR_DISABLE_MODEL_MIPMAPS) == 0)
@@ -191,6 +195,8 @@ bool EnviroOptions::Write()
 	output << m_bShadows << endl;
 	output << STR_ONLY_AVAILABLE_SPECIES << "\t";
 	output << m_bOnlyAvailableSpecies << endl;
+	output << STR_DIRECT_PICKING << "\t";
+	output << m_bDirectPicking << endl;
 	output << STR_SELECTIONCUTOFF << "\t";
 	output << m_fSelectionCutoff << endl;
 	output << STR_DISABLE_MODEL_MIPMAPS << "\t";
