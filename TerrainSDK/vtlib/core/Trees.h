@@ -165,6 +165,8 @@ public:
 
 	void UpdateTransform(unsigned int i);
 
+	bool FindPlantFromNode(vtNode* pNode, int &iOffset);
+
 protected:
 	Array<vtPlantInstance3d*>	m_Instances3d;
 	vtHeightField3d		*m_pHeightField;

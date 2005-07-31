@@ -735,3 +735,27 @@ void vtPlantInstanceArray3d::DeletePlant(unsigned int i)
 	delete inst3d;
 }
 
+bool vtPlantInstanceArray3d::FindPlantFromNode(vtNode* pNode, int &iOffset)
+{
+	bool bFound = false;
+	unsigned int i, j;
+
+	for (i = 0; (i < m_Instances3d.GetSize()) & !bFound; i++)
+	{
+		vtTransform *pTransform = GetPlantNode(i);
+		for (j = 0; (j < pTransform->GetNumChildren()) && !bFound; j++)
+		{
+			vtNode *pPlantNode = pTransform->GetChild(j);
+			if (pPlantNode != GetInstance3d(i)->m_pHighlight)
+			{
+				if (pPlantNode == pNode)
+				{
+					bFound = true;
+					iOffset = i;
+				}
+			}
+		}
+	}
+	return bFound;
+}
+
