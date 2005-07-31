@@ -9,6 +9,7 @@
 #include "vtlib/core/Fence3d.h"
 #include "vtlib/core/Globe.h"
 #include "vtlib/core/SkyDome.h"
+#include "vtlib/core/Building3d.h"
 #include "vtdata/vtLog.h"
 
 #include "Enviro.h"
@@ -922,6 +923,9 @@ void Enviro::SetMode(MouseMode mode)
 			EnableFlyerEngine(true);
 			break;
 		case MM_SELECT:
+			m_pCursorMGeom->SetEnabled(!g_Options.m_bDirectPicking);
+			EnableFlyerEngine(false);
+			break;
 		case MM_FENCES:
 		case MM_ROUTES:
 		case MM_PLANTS:
@@ -1029,7 +1033,7 @@ void Enviro::OnMouse(vtMouseEvent &event)
 
 void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 {
-	if (!m_bOnTerrain)
+	if (m_mode != MM_SELECT && !m_bOnTerrain)
 		return;
 
 	vtTerrain *pTerr = GetCurrentTerrain();
@@ -1080,18 +1084,126 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	}
 }
 
-void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
+void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *pActiveStructures = pTerr->GetStructures();
 
+	if (!(event.flags & VT_CONTROL) && (pActiveStructures != NULL))
+	{
+		pActiveStructures->VisualDeselectAll();
+		m_bSelectedStruct = false;
+	}
+
+	vtPlantInstanceArray3d &Plants = pTerr->GetPlantInstances();
+	Plants.VisualDeselectAll();
+	m_bSelectedPlant = false;
+
+	vtRouteMap &Routes = pTerr->GetRouteMap();
+	m_bSelectedUtil = false;
+
+	// Get ray intersection with near and far planes
+	FPoint3 Near, Dir;
+	vtGetScene()->CameraRay(event.pos, Near, Dir);
+
+	// Dir is unit-length direction vector, so scale it up to the
+	//  distance we want to test.
+	Dir *= 10000.0f;	// 10km should be enough for visible objects
+
+	vtHitList HitList;
+	int iNumHits = vtIntersect(pTerr->GetTopGroup(), Near, Near+Dir, HitList);
+	if (iNumHits == 0)
+		return;
+
+	// Check for structures
+	int iSet, iOffset;
+	if (pTerr->GetStructureSet().FindStructureFromNode(HitList.front().node, iSet, iOffset))
+	{
+		vtStructureArray3d *pSelectedStructures = pTerr->GetStructureSet().GetAt(iSet);
+		vtBuilding3d *pBuilding = pSelectedStructures->GetBuilding(iOffset);
+		vtStructInstance3d *pInstance = pSelectedStructures->GetInstance(iOffset);
+		vtFence3d *pFence = pSelectedStructures->GetFence(iOffset);
+
+		if (NULL != pBuilding)
+		{
+			// Found a procedural building
+			pBuilding->ToggleSelect();
+			if (pBuilding->IsSelected())
+			{
+				pBuilding->ShowBounds(true);
+				m_bDragging = true;
+			}
+			else
+				pBuilding->ShowBounds(false);
+		}
+		else if (NULL != pInstance)
+		{
+			// Found a structure instance
+			pInstance->ToggleSelect();
+			if (pInstance->IsSelected())
+			{
+				pInstance->ShowBounds(true);
+				if ((event.flags & VT_SHIFT) != 0)
+				{
+					m_StartRotation = pInstance->GetRotation();
+					m_bRotating = true;
+				}
+				else
+					m_bDragging = true;
+			}
+			else
+				pInstance->ShowBounds(false);
+		}
+		else if (NULL != pFence)
+		{
+			// Found a linear structure
+			pFence->ToggleSelect();
+			if (pFence->IsSelected())
+				pFence->ShowBounds(true);
+			else
+				pFence->ShowBounds(false);
+		}
+		if (pTerr->GetStructureIndex() != iSet)
+		{
+			// Switching to a different structure set
+			pActiveStructures->VisualDeselectAll();
+			pTerr->SetStructureIndex(iSet);
+			ShowLayerView();
+			RefreshLayerView();
+		}
+		// This is inefficient it would be better to maintain a live count if possible
+		if (pTerr->GetStructures()->NumSelected())
+			m_bSelectedStruct = true;
+		else
+			m_bSelectedStruct = false;
+	}
+	// Check for plants
+	else if (Plants.FindPlantFromNode(HitList.front().node, iOffset))
+	{
+		Plants.VisualSelect(iOffset);
+		m_bDragging = true;
+		m_bSelectedPlant = true;
+	}
+	// Check for routes
+	else if (Routes.FindRouteFromNode(HitList.front().node, iOffset))
+	{
+		m_bDragging = true;
+		m_bSelectedUtil = true;
+		m_pSelRoute = Routes.GetAt(iOffset);
+	}
+}
+
+void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
+{
 	// See if camera ray intersects a structure?  NO, it's simpler and
 	//  easier for the user to just test whether the ground cursor is
 	//  near a structure's origin.
 	DPoint2 gpos(m_EarthPos.x, m_EarthPos.y);
 
 	double dist1, dist2, dist3;
+	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structures = pTerr->GetStructures();
-	if (structures != NULL)
+	if (!(event.flags & VT_CONTROL) && structures != NULL)
 		structures->VisualDeselectAll();
 
 	// SelectionCutoff is in meters, but the picking functions work in
@@ -1180,6 +1292,14 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 	}
 	else
 		VTLOG(" nothing.\n");
+}
+
+void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
+{
+	if (g_Options.m_bDirectPicking)
+		OnMouseSelectRayPick(event);
+	else
+		OnMouseSelectCursorPick(event);
 
 	m_EarthPosDown = m_EarthPosLast = m_EarthPos;
 	m_MouseDown = event.pos;
@@ -1238,16 +1358,19 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 		if (m_bSelectedStruct)
 		{
 			vtStructureArray3d *structures = pTerr->GetStructures();
+
 			if (m_bDragging)
 				structures->OffsetSelectedStructures(ground_delta);
 			else if (m_bRotating)
 			{
-				int sel = structures->GetFirstSelected();
-				vtStructInstance *inst = structures->GetAt(sel)->GetInstance();
-				vtStructInstance3d *str3d = structures->GetInstance(sel);
+				for (int sel = structures->GetFirstSelected(); sel != -1; sel = structures->GetNextSelected())
+				{
+					vtStructInstance *inst = structures->GetAt(sel)->GetInstance();
+					vtStructInstance3d *str3d = structures->GetInstance(sel);
 
-				inst->SetRotation(m_StartRotation + (event.pos.x - m_MouseDown.x) / 100.0f);
-				str3d->UpdateTransform(pTerr->GetHeightField());
+					inst->SetRotation(m_StartRotation + (event.pos.x - m_MouseDown.x) / 100.0f);
+					str3d->UpdateTransform(pTerr->GetHeightField());
+				}
 			}
 		}
 		if (m_bDragging)
@@ -1497,6 +1620,11 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 
 void Enviro::PlantInstance()
 {
+#if 0	// test code
+	#include "CreateWedge.cpp"
+	return;
+#endif
+
 	VTLOG("Plant Instance: ");
 	vtTagArray *tags = GetInstanceFromGUI();
 	if (!tags)
