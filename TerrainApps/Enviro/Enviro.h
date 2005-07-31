@@ -141,6 +141,8 @@ public:
 	void OnMouseRightUp(vtMouseEvent &event);
 	void OnMouseMove(vtMouseEvent &event);
 	void OnMouseMoveTerrain(vtMouseEvent &event);
+	void OnMouseSelectRayPick(vtMouseEvent &event);
+	void OnMouseSelectCursorPick(vtMouseEvent &event);
 
 	// fence methods
 	void start_new_fence();
