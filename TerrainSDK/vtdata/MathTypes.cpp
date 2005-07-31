@@ -233,22 +233,22 @@ double DLine2::Length() const
 // Centroid (centre of gravity/mass) of the polygon
 DPoint2 DLine2::Centroid() const
 {
-    DPoint2 pt(0,0);
-    double dA = 0.0;
+	DPoint2 pt(0,0);
+	double dA = 0.0;
 	unsigned int n = GetSize();
-    for (unsigned int i=0; i<n; ++i)
-    {
-        int j = i + 1;
-        if (j == n) j = 0;
-        double dT = m_Data[i].x * m_Data[j].y - m_Data[j].x * m_Data[i].y;
-        pt.x += (m_Data[i].x + m_Data[j].x) * dT;
-        pt.y += (m_Data[i].y + m_Data[j].y) * dT;
-        dA += dT;
-    }
-    double dN = 3 * dA;
-    pt.x /= dN;
-    pt.y /= dN;
-    return pt;
+	for (unsigned int i=0; i<n; ++i)
+	{
+		int j = i + 1;
+		if (j == n) j = 0;
+		double dT = m_Data[i].x * m_Data[j].y - m_Data[j].x * m_Data[i].y;
+		pt.x += (m_Data[i].x + m_Data[j].x) * dT;
+		pt.y += (m_Data[i].y + m_Data[j].y) * dT;
+		dA += dT;
+	}
+	double dN = 3 * dA;
+	pt.x /= dN;
+	pt.y /= dN;
+	return pt;
 }
 
 void DLine2::ReverseOrder()
@@ -1187,9 +1187,9 @@ double DistancePointToLine(const DPoint2 &p1, const DPoint2 &p2, const DPoint2 &
 void vtLogMatrix(const FMatrix4 &mat)
 {
 	VTLOG("Mat: %f %f %f %f\n"
-		  "     %f %f %f %f\n"
-		  "     %f %f %f %f\n"
-		  "     %f %f %f %f\n",
+		  "	 %f %f %f %f\n"
+		  "	 %f %f %f %f\n"
+		  "	 %f %f %f %f\n",
 		  mat(0,0), mat(1,0), mat(2,0), mat(3,0),
 		  mat(0,1), mat(1,1), mat(2,1), mat(3,1),
 		  mat(0,2), mat(1,2), mat(2,2), mat(3,2),
@@ -1199,8 +1199,8 @@ void vtLogMatrix(const FMatrix4 &mat)
 void vtLogMatrix(const FMatrix3 &mat)
 {
 	VTLOG("Mat: %f %f %f\n"
-		  "     %f %f %f\n"
-		  "     %f %f %f\n",
+		  "	 %f %f %f\n"
+		  "	 %f %f %f\n",
 		  mat(0,0), mat(1,0), mat(2,0),
 		  mat(0,1), mat(1,1), mat(2,1),
 		  mat(0,2), mat(1,2), mat(2,2));
