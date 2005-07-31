@@ -101,6 +101,7 @@ public:
 	bool FindClosestUtilNode(const DPoint2 &point, double error,
 					   vtRoute* &route, vtUtilNode* &node, double &closest);
 	void BuildGeometry(vtHeightField3d *pHeightField);
+	bool FindRouteFromNode(vtNode* pNode, int &iOffset);
 };
 
 #endif //ROUTEH

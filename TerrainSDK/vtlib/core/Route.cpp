@@ -365,4 +365,17 @@ void vtRouteMap::BuildGeometry(vtHeightField3d *pHeightField)
 	}
 }
 
+bool vtRouteMap::FindRouteFromNode(vtNode* pNode, int &iOffset)
+{
+	bool bFound = false;
+	unsigned int i;
+
+	for (i = 0; (i < GetSize()) & !bFound; i++)
+		if (pNode == GetAt(i)->GetGeom())
+		{
+			iOffset = i;
+			bFound = true;
+		}
+	return bFound;
+}
 
