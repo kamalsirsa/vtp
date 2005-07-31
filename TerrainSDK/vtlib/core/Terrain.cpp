@@ -2828,3 +2828,48 @@ void vtTerrain::RemoveNodeFromStructGrid(vtNode *pNode)
 	if (m_pStructGrid)
 		m_pStructGrid->RemoveNodeFromGrid(pNode);
 }
+
+void vtTerrain::ActivateScenario(int iScenario)
+{
+	ScenarioParams &ScenarioParams = m_Params.m_Scenarios[iScenario];
+	vtStringArray &ActiveLayers = ScenarioParams.GetActiveLayers();
+	int iNumStructArrays = m_StructureSet.GetSize();
+	int iNumActiveLayers = ActiveLayers.size();
+
+	for (int i = 0; i < iNumStructArrays; i++)
+	{
+		vtStructureArray3d *pStructureArray = m_StructureSet[i];
+		vtString Name = StartOfFilename(pStructureArray->GetFilename());
+		RemoveFileExtensions(Name);
+		pStructureArray->SetEnabled(false);
+		for (int j = 0; j < iNumActiveLayers; j++)
+			if (Name == ActiveLayers[j])
+				pStructureArray->SetEnabled(true);
+	}
+}
+
+bool StructureSet::FindStructureFromNode(vtNode* pNode, int &iSet, int &iOffset)
+{
+	iSet = -1;
+	iOffset = -1;
+	int iNumArrays = GetSize();
+	bool bFound = false;
+
+	for (int i = 0; (i < iNumArrays) && !bFound; i++)
+	{
+		vtStructureArray3d *pStructureArray = GetAt(i);
+		int iNumStructures = pStructureArray->GetSize();
+		for (int j = 0; (j < iNumStructures) && !bFound; j++)
+		{
+			vtStructure3d *pStructure3d = pStructureArray->GetStructure3d(j);
+			if ((pNode == pStructure3d->GetContainer()) || (pNode == pStructure3d->GetContained()) || (pNode == pStructure3d->GetGeom()))
+			{
+				iSet = i;
+				iOffset = j;
+				bFound = true;
+			}
+		}
+	}
+	return bFound;
+}
+

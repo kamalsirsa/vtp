@@ -34,7 +34,12 @@ class vtTin3d;
 class vtFeatureSet;
 class SimpleBillboardEngine;
 
-typedef Array<vtStructureArray3d *> StructureSet;
+class StructureSet : public Array<vtStructureArray3d *>
+{
+public:
+	bool FindStructureFromNode(vtNode* pNode, int &iSet, int &iOffset);
+};
+
 
 /**
  * Defines a Point of Interest, which is a rectangular area of the terrain
@@ -264,6 +269,9 @@ public:
 
 	// Overlay
 	vtGroup *GetOverlay() { return m_pOverlay; }
+
+	// Scenarios
+	void ActivateScenario(int iScenario);
 
 	/********************** Public Data ******************/
 
