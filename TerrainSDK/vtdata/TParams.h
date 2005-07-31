@@ -35,6 +35,27 @@ enum LodMethodEnum {
 #define TERR_LTYPE_STRUCTURE	"Structure"
 #define TERR_LTYPE_ABSTRACT		"Abstract"
 
+////////////////////////////////////////////////////////////////////////
+// Class to encapulsate a scenarios parameters.
+
+class ScenarioParams : public vtTagArray
+{
+public:
+	ScenarioParams();
+
+	// copy constructor and assignment operator
+	ScenarioParams(const ScenarioParams& paramsSrc);
+	ScenarioParams &ScenarioParams::operator = (const ScenarioParams &rhs);
+
+	// override to catch active layers list
+	void WriteOverridesToXML(FILE *fp) const;
+
+	vtStringArray& GetActiveLayers() { return m_ActiveLayers; }
+
+protected:
+	vtStringArray m_ActiveLayers;
+};
+
 class TParams : public vtTagArray
 {
 public:
@@ -68,12 +89,12 @@ public:
 	// this must be a public member (currently..)
 	std::vector<vtTagArray> m_Layers;
 	vtStringArray m_AnimPaths;
+	std::vector<ScenarioParams> m_Scenarios;
 
 private:
 	bool LoadFromIniFile(const char *fname);
 	void ConvertOldTimeValue();
 };
-
 
 ////////////////////////////////////////////////////////////////////////
 // Visitor class for XML parsing of TParams files.
@@ -81,7 +102,7 @@ private:
 class TParamsVisitor : public TagVisitor
 {
 public:
-	TParamsVisitor(TParams *pParams) : TagVisitor(pParams), m_pParams(pParams) {}
+	TParamsVisitor(TParams *pParams) : TagVisitor(pParams), m_pParams(pParams), m_bInLayer(false), m_bInScenario(false) {}
 	void startElement(const char *name, const XMLAttributes &atts);
 	void endElement (const char *name);
 
@@ -89,6 +110,9 @@ protected:
 	TParams *m_pParams;
 	vtTagArray m_layer;
 	bool m_bViz;
+	ScenarioParams m_Scenario;
+	bool m_bInLayer;
+	bool m_bInScenario;
 };
 
 
@@ -183,6 +207,8 @@ protected:
 
 #define STR_DIST_TOOL_HEIGHT "Distance_Tool_Height"
 #define STR_HUD_OVERLAY "HUD_Overlay"
+
+#define STR_SCENARIO_NAME "Scenario_Name"
 
 #endif	// TPARAMSH
 

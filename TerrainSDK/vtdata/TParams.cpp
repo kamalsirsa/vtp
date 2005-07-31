@@ -28,6 +28,45 @@ using namespace std;
 // default (currently fixed) number of tiles
 #define NTILES	4
 
+ScenarioParams::ScenarioParams()
+{
+	AddTag(STR_SCENARIO_NAME, "");
+}
+
+//
+// copy constructor
+//
+ScenarioParams::ScenarioParams(const ScenarioParams &paramsSrc)
+{
+	*this = paramsSrc;
+}
+
+//
+// assignment operator
+//
+ScenarioParams &ScenarioParams::operator = (const ScenarioParams &rhs)
+{
+	// copy parent class first
+	*((vtTagArray*)this) = rhs;
+
+	// copy the elements of this class
+	m_ActiveLayers = rhs.m_ActiveLayers;
+
+	return *this;
+}
+
+void ScenarioParams::WriteOverridesToXML(FILE *fp) const
+{
+	unsigned int i;
+	for (i = 0; i < m_ActiveLayers.size(); i++)
+	{
+		const vtString &str = m_ActiveLayers[i];
+		fprintf(fp, "\t\t<ActiveLayer>");
+		fprintf(fp, (const char*) str);
+		fprintf(fp, "</ActiveLayer>\n");
+	}
+}
+
 TParams::TParams() : vtTagArray()
 {
 	// Define tags and provide default values
@@ -139,10 +178,10 @@ TParams &TParams::operator = (const TParams &rhs)
 	// copy the elements of this class
 	m_Layers = rhs.m_Layers;
 	m_AnimPaths = rhs.m_AnimPaths;
+	m_Scenarios = rhs.m_Scenarios;
 
 	return *this;
 }
-
 
 bool TParams::LoadFrom(const char *fname)
 {
@@ -403,7 +442,15 @@ void TParamsVisitor::startElement(const char *name, const XMLAttributes &atts)
 	}
 	else if (m_level == 2 && !strcmp(name, "Layer"))
 	{
+		m_bInLayer = true;
 		m_layer.Clear();
+	}
+	else if (m_level == 2 && !strcmp(name, "Scenario"))
+	{
+		ScenarioParams EmptyScenario;
+
+		m_Scenario = EmptyScenario;
+		m_bInScenario = true;
 	}
 }
 
@@ -423,16 +470,32 @@ void TParamsVisitor::endElement(const char *name)
 	{
 		m_pParams->m_Layers.push_back(m_layer);
 		m_level--;
+		m_bInLayer = false;
 	}
 	else if (m_level == 2 && !strcmp(name, "AnimPath"))
 	{
 		m_pParams->m_AnimPaths.push_back(m_data.c_str());
 		m_level--;
 	}
-	else if (m_level == 3)
+	else if (m_level == 2 && !strcmp(name, "Scenario"))
+	{
+		m_pParams->m_Scenarios.push_back(m_Scenario);
+		m_level--;
+		m_bInScenario = false;
+	}
+	else if ((m_level == 3) && m_bInLayer)
 	{
 		// Layer properties
 		m_layer.SetValueString(name, m_data.c_str(), true);
+		m_level--;
+	}
+	else if ((m_level == 3) && m_bInScenario)
+	{
+		// Scenario properties
+		if (!strcmp(name, "ActiveLayer"))
+			m_Scenario.GetActiveLayers().push_back(m_data.c_str());
+		else
+			m_Scenario.SetValueString(name, m_data.c_str(), true);
 		m_level--;
 	}
 	else
@@ -513,6 +576,13 @@ void TParams::WriteOverridesToXML(FILE *fp) const
 		fprintf(fp, "\t<AnimPath>");
 		fprintf(fp, (const char*) str);
 		fprintf(fp, "</AnimPath>\n");
+	}
+	for (i = 0; i < m_Scenarios.size(); i++)
+	{
+		const ScenarioParams &Scenario = m_Scenarios[i];
+		fprintf(fp, "\t<Scenario>\n");
+		Scenario.WriteToXMLBody(fp, 2);
+		fprintf(fp, "\t</Scenario>\n");
 	}
 }
 
