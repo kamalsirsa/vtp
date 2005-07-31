@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -51,6 +51,7 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 //	AddValidator(ID_SHADOWS, &m_bShadows);
 	AddValidator(ID_DISABLE_MIPMAPS, &m_bDisableMipmaps);
 
+	AddValidator(ID_DIRECT_PICKING, &m_bDirectPicking);
 	AddNumValidator(ID_SELECTION_CUTOFF, &m_fSelectionCutoff, 2);
 	AddNumValidator(ID_SELECTION_RADIUS, &m_fMaxPickableInstanceRadius, 2);
 
@@ -74,6 +75,7 @@ void OptionsDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_bTextureCompression = opt.m_bTextureCompression;
 	m_bDisableMipmaps = opt.m_bDisableModelMipmaps;
 
+	m_bDirectPicking = opt.m_bDirectPicking;
 	m_fSelectionCutoff = opt.m_fSelectionCutoff;
 	m_fMaxPickableInstanceRadius = opt.m_fMaxPickableInstanceRadius;
 
@@ -96,6 +98,7 @@ void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
 	opt.m_bTextureCompression = m_bTextureCompression;
 	opt.m_bDisableModelMipmaps = m_bDisableMipmaps;
 
+	opt.m_bDirectPicking = m_bDirectPicking;
 	opt.m_fSelectionCutoff = m_fSelectionCutoff;
 	opt.m_fMaxPickableInstanceRadius = m_fMaxPickableInstanceRadius;
 

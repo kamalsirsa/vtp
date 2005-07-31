@@ -49,6 +49,7 @@ private:
 	bool	m_bTextureCompression;
 	bool	m_bDisableMipmaps;
 
+	bool	m_bDirectPicking;
 	float	m_fSelectionCutoff;
 	float	m_fMaxPickableInstanceRadius;
 
