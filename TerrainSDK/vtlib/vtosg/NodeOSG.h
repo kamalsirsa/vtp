@@ -521,7 +521,12 @@ protected:
 };
 
 /* Intersection method */
-struct vtHit { vtNode *node; /*const char *name;*/ FPoint3 point; };
+struct vtHit {
+	bool operator < (const vtHit &i) const { return distance < i.distance; }
+	vtNode *node;
+	FPoint3 point;
+	float distance;
+};
 typedef std::vector<vtHit> vtHitList;
 int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 				vtHitList &hitlist, bool bLocalCoords = false);

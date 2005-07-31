@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1698,6 +1698,8 @@ void vtImageSprite::SetPosition(float l, float t, float r, float b)
  * \param bLocalCoords Pass true to get your results in local coordinates
  *		(in the frame of the object which was hit).  Otherwise, result points
  *		are in world coordinates.
+ *
+ * \return The number of intersection hits (size of the hitlist array).
  */
 int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 				vtHitList &hitlist, bool bLocalCoords)
@@ -1770,8 +1772,10 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 		{
 			hit.point = s2v(hitr->getWorldIntersectPoint());
 		}
+		hit.distance = (s2v(hitr->getWorldIntersectPoint()) - start).Length();
 		hitlist.push_back(hit);
 	}
+	std::sort(hitlist.begin(), hitlist.end());
 	return hitlist.size();
 }
 
