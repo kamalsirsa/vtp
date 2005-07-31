@@ -166,7 +166,15 @@ public:
 	wxString2 m_strInitTime;
 //  wxString2   m_strMemRequired;
 
+// Scenarios
+	std::vector<ScenarioParams> m_Scenarios;
+
 	// WDR: method declarations for TParamsDlg
+	wxButton* GetMovedownScenario()  { return (wxButton*) FindWindow( ID_MOVEDOWN_SCENARIO ); }
+	wxButton* GetMoveupScenario()  { return (wxButton*) FindWindow( ID_MOVEUP_SCENARIO ); }
+	wxButton* GetEditScenario()  { return (wxButton*) FindWindow( ID_EDIT_SCENARIO ); }
+	wxButton* GetDeleteScenario()  { return (wxButton*) FindWindow( ID_DELETE_SCENARIO ); }
+	wxListBox* GetScenarioList()  { return (wxListBox*) FindWindow( ID_SCENARIO_LIST ); }
 	wxListBox* GetAnimPaths()  { return (wxListBox*) FindWindow( ID_ANIM_PATHS ); }
 	wxComboBox* GetDTName()  { return (wxComboBox*) FindWindow( ID_DT_NAME ); }
 	wxChoice* GetColorMap()  { return (wxChoice*) FindWindow( ID_CHOICE_COLORS ); }
@@ -225,6 +233,7 @@ private:
 	wxListBoxEventHandler *m_pBoxHandler;
 	wxChoice* m_pShadowRez;
 	wxChoice* m_pColorMap;
+	wxListBox* m_pScenarioList;
 
 private:
 	// WDR: handler declarations for TParamsDlg
@@ -245,6 +254,12 @@ private:
 	void OnChoiceInitLocation( wxCommandEvent &event );
 	void OnSetInitTime( wxCommandEvent &event );
 	void OnStyle( wxCommandEvent &event );
+	void OnScenarioListEvent( wxCommandEvent &event );
+	void OnNewScenario( wxCommandEvent &event );
+	void OnDeleteScenario( wxCommandEvent &event );
+	void OnEditScenario( wxCommandEvent &event );
+	void OnMoveUpScenario( wxCommandEvent &event );
+	void OnMoveDownSceanario( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

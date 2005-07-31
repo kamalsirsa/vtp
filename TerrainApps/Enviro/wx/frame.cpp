@@ -47,6 +47,7 @@
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
 #include "TimeDlg.h"
+#include "ScenarioSelectDialog.h"
 
 #include "../Engines.h"
 #include "../Options.h"
@@ -137,6 +138,7 @@ EVT_MENU(ID_VIEW_SNAPSHOT,			vtFrame::OnViewSnapshot)
 EVT_MENU(ID_VIEW_SNAP_AGAIN,		vtFrame::OnViewSnapAgain)
 EVT_MENU(ID_VIEW_STATUSBAR,			vtFrame::OnViewStatusBar)
 EVT_UPDATE_UI(ID_VIEW_STATUSBAR,	vtFrame::OnUpdateViewStatusBar)
+EVT_MENU(ID_VIEW_SCENARIOS,			vtFrame::OnViewScenarios)
 
 EVT_MENU(ID_VIEW_SLOWER,		vtFrame::OnViewSlower)
 EVT_UPDATE_UI(ID_VIEW_SLOWER,	vtFrame::OnUpdateViewSlower)
@@ -282,6 +284,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pDistanceDlg = new DistanceDlg(this, -1, _("Distance"));
 	m_pTimeDlg = new TimeDlg(this, -1, _("Time"));
+	m_pScenarioSelectDialog = new CScenarioSelectDialog(this, -1, _("Scenarios"));
 
 	m_canvas->SetCurrent();
 }
@@ -296,6 +299,7 @@ vtFrame::~vtFrame()
 	delete m_pUtilDlg;
 	delete m_pCameraDlg;
 	delete m_pLocationDlg;
+	delete m_pInstanceDlg;
 	delete m_pLayerDlg;
 
 	delete m_pStatusBar;
@@ -382,6 +386,7 @@ void vtFrame::CreateMenus()
 	m_pViewMenu->Append(ID_VIEW_SNAP_AGAIN, _("Save Numbered Snapshot\tCtrl+N"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->AppendCheckItem(ID_VIEW_STATUSBAR, _("&Status Bar"));
+	m_pViewMenu->Append(ID_VIEW_SCENARIOS, _("Scenarios"));
 	m_pMenuBar->Append(m_pViewMenu, _("&View"));
 
 	m_pNavMenu = new wxMenu;
@@ -786,16 +791,16 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 #else
 	str += _T("Based on the Virtual Terrain Project 3D Runtime Environment.\n");
 #endif
- 	str += _T("\nThis version built with the ");
- #if VTLIB_DSM
+ 	str += _T("\nThis version was built with the ");
+#if VTLIB_DSM
  	str += _T("DSM");
- #elif VTLIB_OSG
+#elif VTLIB_OSG
  	str += _T("OSG");
- #elif VTLIB_SGL
+#elif VTLIB_SGL
  	str += _T("SGL");
- #elif VTLIB_SSG
+#elif VTLIB_SSG
  	str += _T("SSG");
- #endif
+#endif
  	str += _T(" Library.\n\n");
 	str += _T("Build date: ");
 	str += _T(__DATE__);
@@ -1058,6 +1063,10 @@ void vtFrame::OnUpdateViewStatusBar(wxUpdateUIEvent& event)
 	event.Check(GetStatusBar()->IsShown());
 }
 
+void vtFrame::OnViewScenarios(wxCommandEvent& event)
+{
+	m_pScenarioSelectDialog->Show(true);
+}
 
 ///////////////////// Tools menu //////////////////////////
 
@@ -1537,6 +1546,7 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		// Also switch the time dialog to the time engine of the terrain,
 		//  not the globe.
 		SetTimeEngine(vtGetTS()->GetTimeEngine());
+		m_pScenarioSelectDialog->SetTerrain(pTerrain);
 	}
 	else
 	{
@@ -1589,9 +1599,14 @@ void vtFrame::ShowPopupMenu(const IPoint2 &pos)
 	vtStructureArray3d *sa = pTerr->GetStructures();
 
 	wxMenu *popmenu = new wxMenu;
-	popmenu->Append(ID_POPUP_PROPERTIES, _("Properties"));
+	wxMenuItem *item;
+	item = popmenu->Append(ID_POPUP_PROPERTIES, _("Properties"));
 	if (sa)
 	{
+		// Can't display properties for more than one structure
+		if (sa->NumSelected() > 1)
+			item->Enable(false);
+
 		int sel = sa->GetFirstSelected();
 		if (sel != -1)
 		{
@@ -1630,7 +1645,7 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 			}
 			if (fen)
 			{
-				// TODO
+				// TODO? Enable editing of fence properties
 				m_pFenceDlg->Show(true);
 			}
 			return;
@@ -1652,7 +1667,7 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 		}
 		if (found != -1)
 		{
-			// TODO: show properties for this plant
+			// Show properties for this plant
 			PlantingOptions &opt = g_App.GetPlantOptions();
 
 			float size;

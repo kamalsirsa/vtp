@@ -244,25 +244,47 @@ const int ID_WIN_YSIZE = 10175;
 const int ID_SIZE_INSIDE = 10176;
 const int ID_TEXTURE_COMPRESSION = 10177;
 const int ID_DISABLE_MIPMAPS = 10178;
-const int ID_SELECTION_CUTOFF = 10179;
-const int ID_SELECTION_RADIUS = 10180;
-const int ID_PLANTSIZE = 10181;
-const int ID_ONLY_AVAILABLE_SPECIES = 10182;
-const int ID_CHOICE_CONTENT = 10183;
+const int ID_DIRECT_PICKING = 10179;
+const int ID_SELECTION_CUTOFF = 10180;
+const int ID_SELECTION_RADIUS = 10181;
+const int ID_PLANTSIZE = 10182;
+const int ID_ONLY_AVAILABLE_SPECIES = 10183;
+const int ID_CHOICE_CONTENT = 10184;
 wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_FEATURE_TYPE = 10184;
-const int ID_GEOMETRY = 10185;
-const int ID_GEOM_COLOR = 10186;
-const int ID_GEOM_HEIGHT = 10187;
-const int ID_TESSELLATE = 10188;
-const int ID_TEXT_LABELS = 10189;
-const int ID_LABEL_COLOR = 10190;
-const int ID_TEXT_FIELD = 10191;
-const int ID_COLOR_FIELD = 10192;
-const int ID_LABEL_HEIGHT = 10193;
-const int ID_LABEL_SIZE = 10194;
+const int ID_FEATURE_TYPE = 10185;
+const int ID_GEOMETRY = 10186;
+const int ID_GEOM_COLOR = 10187;
+const int ID_GEOM_HEIGHT = 10188;
+const int ID_TESSELLATE = 10189;
+const int ID_TEXT_LABELS = 10190;
+const int ID_LABEL_COLOR = 10191;
+const int ID_TEXT_FIELD = 10192;
+const int ID_COLOR_FIELD = 10193;
+const int ID_LABEL_HEIGHT = 10194;
+const int ID_LABEL_SIZE = 10195;
 wxSizer *StyleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+const int ID_SCENARIO_LIST = 10196;
+const int ID_NEW_SCENARIO = 10197;
+const int ID_DELETE_SCENARIO = 10198;
+const int ID_EDIT_SCENARIO = 10199;
+const int ID_MOVEUP_SCENARIO = 10200;
+const int ID_MOVEDOWN_SCENARIO = 10201;
+wxSizer *ScenariosPaneFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+const int ID_SCENARIO_VISIBLE_LAYERS = 10202;
+const int ID_SCENARIO_ADD_VISIBLE_LAYER = 10203;
+const int ID_SCENARIO_REMOVE_VISIBLE_LAYER = 10204;
+const int ID_SCENARIO_AVAILABLE_LAYERS = 10205;
+wxSizer *ScenarioVisibleLayersPane( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+const int ID_SCENARIO_NAME = 10206;
+wxSizer *ScenarioParamsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+const int ID_SCENARIO_PREVIOUS = 10207;
+const int ID_SCENARIO_NEXT = 10208;
+wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 

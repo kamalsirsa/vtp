@@ -25,6 +25,7 @@ class DistanceDlg;
 class TimeDlg;
 class vtTerrain;
 class TimeDlg;
+class CScenarioSelectDialog;
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
@@ -75,6 +76,7 @@ public:
 	void OnViewSnapshot(wxCommandEvent& event);
 	void OnViewSnapAgain(wxCommandEvent& event);
 	void OnViewStatusBar(wxCommandEvent& event);
+	void OnViewScenarios(wxCommandEvent& event);
 
 	void OnUpdateViewMaintain(wxUpdateUIEvent& event);
 	void OnUpdateViewWireframe(wxUpdateUIEvent& event);
@@ -205,6 +207,7 @@ public:
 	InstanceDlg			*m_pInstanceDlg;
 	DistanceDlg			*m_pDistanceDlg;
 	TimeDlg				*m_pTimeDlg;
+	CScenarioSelectDialog *m_pScenarioSelectDialog;
 	MouseMode			m_ToggledMode;
 
 protected:

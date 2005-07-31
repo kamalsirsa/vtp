@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -29,6 +29,7 @@
 #include "TimeDlg.h"
 #include "StyleDlg.h"
 
+#include "ScenarioParamsDialog.h"
 #define NTILES 4
 
 //---------------------------------------------------------------------------
@@ -99,6 +100,12 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_BUTTON( ID_SET_INIT_TIME, TParamsDlg::OnSetInitTime )
 	EVT_BUTTON( ID_STYLE, TParamsDlg::OnStyle )
 	EVT_BUTTON( ID_OVERLAY_DOTDOTDOT, TParamsDlg::OnOverlay )
+	EVT_BUTTON( ID_NEW_SCENARIO, TParamsDlg::OnNewScenario )
+	EVT_BUTTON( ID_DELETE_SCENARIO, TParamsDlg::OnDeleteScenario )
+	EVT_BUTTON( ID_EDIT_SCENARIO, TParamsDlg::OnEditScenario )
+	EVT_BUTTON( ID_MOVEUP_SCENARIO, TParamsDlg::OnMoveUpScenario )
+	EVT_BUTTON( ID_MOVEDOWN_SCENARIO, TParamsDlg::OnMoveDownSceanario )
+	EVT_LISTBOX( ID_SCENARIO_LIST, TParamsDlg::OnScenarioListEvent )
 END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -141,6 +148,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pTiled = GetTiled();
 	m_pColorMap = GetColorMap();
 
+	m_pScenarioList = GetScenarioList();
 	m_iOverlayX = 0;
 	m_iOverlayY = 0;
 
@@ -356,6 +364,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	// Safety check
 	if (m_iTriCount < 500 || m_iTriCount > 100000)
 		m_iTriCount = 10000;
+	m_Scenarios = Params.m_Scenarios;
 }
 
 //
@@ -465,6 +474,9 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueString(STR_ROUTEFILE, m_strRouteFile.to_utf8());
 
 	Params.SetOverlay(m_strOverlayFile.vt_str(), m_iOverlayX, m_iOverlayY);
+
+	Params.m_Scenarios = m_Scenarios;
+
 }
 
 void TParamsDlg::UpdateTiledTextureFilename()
@@ -528,6 +540,27 @@ void TParamsDlg::UpdateEnableState()
 	GetSkytexture()->Enable(m_bSky);
 	GetSkytexture()->Enable(m_bSky);
 	GetFogDistance()->Enable(m_bFog);
+	int iSelected = m_pScenarioList->GetSelection();
+	if (iSelected != wxNOT_FOUND)
+	{
+		GetEditScenario()->Enable(true);
+		GetDeleteScenario()->Enable(true);
+		if (iSelected != (m_pScenarioList->GetCount() - 1))
+			GetMovedownScenario()->Enable(true);
+		else
+			GetMovedownScenario()->Enable(false);
+	   if (iSelected != 0)
+			GetMoveupScenario()->Enable(true);
+		else
+ 			GetMoveupScenario()->Enable(false);
+	}
+	else
+	{
+		GetEditScenario()->Enable(false);
+		GetDeleteScenario()->Enable(false);
+		GetMoveupScenario()->Enable(false);
+		GetMovedownScenario()->Enable(false);
+	}
 }
 
 void TParamsDlg::RefreshLocationFields()
@@ -785,6 +818,10 @@ bool TParamsDlg::TransferDataToWindow()
 	for (i = 0; i < m_AnimPaths.size(); i++)
 		m_pAnimFiles->Append(wxString2(m_AnimPaths[i]));
 	m_pAnimFiles->Append(_("(double-click to add files)"));
+
+	m_pScenarioList->Clear();
+	for (i = 0; i < m_Scenarios.size(); i++)
+		m_pScenarioList->Append(m_Scenarios[i].GetValueString(STR_SCENARIO_NAME));
 
 	bool result = wxDialog::TransferDataToWindow();
 	m_bSetting = false;
@@ -1048,4 +1085,93 @@ void TParamsDlg::UpdateTimeString()
 
 	// asctime has a weird habit of putting a LF at the end
 	m_strInitTime.Trim();
+}
+
+void TParamsDlg::OnNewScenario( wxCommandEvent &event )
+{
+	wxString ScenarioName = wxGetTextFromUser(_("Enter Scenario Name"), _("New Scenario"));
+
+	if (!ScenarioName.IsEmpty())
+	{
+		ScenarioParams Scenario;
+
+		Scenario.SetValueString(STR_SCENARIO_NAME, vtString(ScenarioName), true);
+		m_Scenarios.push_back(Scenario);
+		m_pScenarioList->SetSelection(m_pScenarioList->Append(ScenarioName));
+		UpdateEnableState();
+	}
+}
+
+void TParamsDlg::OnDeleteScenario( wxCommandEvent &event )
+{
+	int iSelected = m_pScenarioList->GetSelection();
+
+	if (iSelected != wxNOT_FOUND)
+	{
+		m_pScenarioList->Delete(iSelected);
+		m_Scenarios.erase(m_Scenarios.begin() + iSelected);
+		UpdateEnableState();
+	}
+}
+
+void TParamsDlg::OnEditScenario( wxCommandEvent &event )
+{
+	CScenarioParamsDialog ScenarioParamsDialog(this, -1, _("Scenario Parameters"));
+	int iSelected = m_pScenarioList->GetSelection();
+	
+	if (iSelected != wxNOT_FOUND)
+	{
+		ScenarioParamsDialog.SetAvailableLayers(m_Layers);
+		ScenarioParamsDialog.SetParams(m_Scenarios[iSelected]);
+
+		if (wxID_OK == ScenarioParamsDialog.ShowModal())
+			if (ScenarioParamsDialog.IsModified())
+			{
+				m_Scenarios[iSelected] = ScenarioParamsDialog.GetParams();
+				m_pScenarioList->SetString(iSelected, m_Scenarios[iSelected].GetValueString(STR_SCENARIO_NAME));
+			}
+	}
+}
+
+void TParamsDlg::OnMoveUpScenario( wxCommandEvent &event )
+{
+	int iSelected = m_pScenarioList->GetSelection();
+
+	if ((iSelected != wxNOT_FOUND) && (iSelected != 0))
+	{
+		ScenarioParams TempParams = m_Scenarios[iSelected];
+		wxString TempString = m_pScenarioList->GetString(iSelected);
+		m_pScenarioList->Delete(iSelected);
+// Bug in wxWindows
+//		m_pScenarioList->SetSelection(m_pScenarioList->Insert(TempString, iSelected - 1));
+		m_pScenarioList->Insert(TempString, iSelected - 1);
+		m_pScenarioList->SetSelection(iSelected - 1);
+		m_Scenarios.erase(m_Scenarios.begin() + iSelected);
+		m_Scenarios.insert(m_Scenarios.begin() + iSelected - 1,TempParams);
+		UpdateEnableState();
+	}
+}
+
+void TParamsDlg::OnMoveDownSceanario( wxCommandEvent &event )
+{
+	int iSelected = m_pScenarioList->GetSelection();
+
+	if ((iSelected != wxNOT_FOUND) && (iSelected != (m_pScenarioList->GetCount() - 1)))
+	{
+		ScenarioParams TempParams = m_Scenarios[iSelected];
+		wxString TempString = m_pScenarioList->GetString(iSelected);
+		m_pScenarioList->Delete(iSelected);
+// Bug in wxWindows
+//		m_pScenarioList->SetSelection(m_pScenarioList->Insert(TempString, iSelected + 1));
+		m_pScenarioList->Insert(TempString, iSelected + 1);
+		m_pScenarioList->SetSelection(iSelected + 1);
+		m_Scenarios.erase(m_Scenarios.begin() + iSelected);
+		m_Scenarios.insert(m_Scenarios.begin() + iSelected + 1,TempParams);
+		UpdateEnableState();
+	}
+}
+
+void TParamsDlg::OnScenarioListEvent( wxCommandEvent &event )
+{
+	UpdateEnableState();
 }
