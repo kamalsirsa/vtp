@@ -2,7 +2,7 @@
 // EnviroGUI.cpp
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003-2004 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
