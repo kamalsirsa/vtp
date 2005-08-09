@@ -336,6 +336,7 @@ BOOL BExtractorDoc::OnOpenDocument(LPCTSTR szPathName)
 
 BOOL BExtractorDoc::OnSaveDocument(LPCTSTR szPathName)
 {
+	VTLOG("OnSaveDocument(%s)\n", szPathName);
 	return m_Buildings.WriteXML(szPathName);
 }
 
