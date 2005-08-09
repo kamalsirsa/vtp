@@ -861,18 +861,18 @@ double rts_alpha_delta_prime(double *ad, double n)
 
 double rts_sun_altitude(double latitude, double delta_prime, double h_prime)
 {
-	double latitude_rad    = deg2rad(latitude);
-	double delta_prime_rad = deg2rad(delta_prime);
+	double latitude_rad		= deg2rad(latitude);
+	double delta_prime_rad	= deg2rad(delta_prime);
 
 	return rad2deg(asin(sin(latitude_rad)*sin(delta_prime_rad) +
-	                    cos(latitude_rad)*cos(delta_prime_rad)*cos(deg2rad(h_prime))));
+						cos(latitude_rad)*cos(delta_prime_rad)*cos(deg2rad(h_prime))));
 }
 
 double sun_rise_and_set(double *m_rts,   double *h_rts,   double *delta_prime, double latitude,
-                        double *h_prime, double h0_prime, int sun)
+						double *h_prime, double h0_prime, int sun)
 {
 	return m_rts[sun] + (h_rts[sun] - h0_prime) /
-	      (360.0*cos(deg2rad(delta_prime[sun]))*cos(deg2rad(latitude))*sin(deg2rad(h_prime[sun])));
+		  (360.0*cos(deg2rad(delta_prime[sun]))*cos(deg2rad(latitude))*sin(deg2rad(h_prime[sun])));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -913,10 +913,10 @@ void calculate_geocentric_sun_right_ascension_and_declination(spa_data *spa)
 	spa->epsilon0 = ecliptic_mean_obliquity(spa->jme);
 	spa->epsilon  = ecliptic_true_obliquity(spa->del_epsilon, spa->epsilon0);
 
-	spa->del_tau   = aberration_correction(spa->r);
-	spa->lamda     = apparent_sun_longitude(spa->theta, spa->del_psi, spa->del_tau);
-	spa->nu0       = greenwich_mean_sidereal_time (spa->jd, spa->jc);
-	spa->nu		   = greenwich_sidereal_time (spa->nu0, spa->del_psi, spa->epsilon);
+	spa->del_tau	= aberration_correction(spa->r);
+	spa->lamda		= apparent_sun_longitude(spa->theta, spa->del_psi, spa->del_tau);
+	spa->nu0		= greenwich_mean_sidereal_time (spa->jd, spa->jc);
+	spa->nu			= greenwich_sidereal_time (spa->nu0, spa->del_psi, spa->epsilon);
 
 	spa->alpha = geocentric_sun_right_ascension(spa->lamda, spa->epsilon, spa->beta);
 	spa->delta = geocentric_sun_declination(spa->beta, spa->epsilon, spa->lamda);
@@ -937,15 +937,15 @@ void calculate_eot_and_sun_rise_transit_set(spa_data *spa)
 	int i;
 
 
-	m        = sun_mean_longitude(spa->jme);
+	m		 = sun_mean_longitude(spa->jme);
 	spa->eot = eot(m, spa->alpha, spa->del_psi, spa->epsilon);
 
-	sun_rts.hour     = 0;
-	sun_rts.minute   = 0;
-	sun_rts.second   = 0;
+	sun_rts.hour	 = 0;
+	sun_rts.minute	 = 0;
+	sun_rts.second	 = 0;
 	sun_rts.timezone = 0;
 	sun_rts.jd = julian_day (sun_rts.year, sun_rts.month,  sun_rts.day,
-	                         sun_rts.hour, sun_rts.minute, sun_rts.second, sun_rts.timezone);
+							 sun_rts.hour, sun_rts.minute, sun_rts.second, sun_rts.timezone);
 
 	calculate_geocentric_sun_right_ascension_and_declination(&sun_rts);
 	nu = sun_rts.nu;
@@ -968,30 +968,30 @@ void calculate_eot_and_sun_rise_transit_set(spa_data *spa)
 
 		for (i = 0; i < SUN_COUNT; i++) {
 
-			nu_rts[i]      = nu + 360.985647*m_rts[i];
+			nu_rts[i]		= nu + 360.985647*m_rts[i];
 	
-			n              = m_rts[i] + spa->delta_t/86400.0;
-			alpha_prime[i] = rts_alpha_delta_prime(alpha, n);
-			delta_prime[i] = rts_alpha_delta_prime(delta, n);
+			n				= m_rts[i] + spa->delta_t/86400.0;
+			alpha_prime[i]	= rts_alpha_delta_prime(alpha, n);
+			delta_prime[i]	= rts_alpha_delta_prime(delta, n);
 	
-			h_prime[i]     = limit_degrees180pm(nu_rts[i] + spa->longitude - alpha_prime[i]);
+			h_prime[i]		= limit_degrees180pm(nu_rts[i] + spa->longitude - alpha_prime[i]);
 		
-			h_rts[i]       = rts_sun_altitude(spa->latitude, delta_prime[i], h_prime[i]);
+			h_rts[i]		= rts_sun_altitude(spa->latitude, delta_prime[i], h_prime[i]);
 		}
 	
 		spa->suntransit = dayfrac_to_local_hr(m_rts[SUN_TRANSIT] - h_prime[SUN_TRANSIT] / 360.0,
-		                                      spa->timezone);
+											  spa->timezone);
 	
 		spa->sunrise = dayfrac_to_local_hr(sun_rise_and_set(m_rts, h_rts, delta_prime,
-		                  spa->latitude, h_prime, h0_prime, SUN_RISE), spa->timezone);
+						  spa->latitude, h_prime, h0_prime, SUN_RISE), spa->timezone);
 
 		spa->sunset  = dayfrac_to_local_hr(sun_rise_and_set(m_rts, h_rts, delta_prime,
-		                  spa->latitude, h_prime, h0_prime, SUN_SET),  spa->timezone);
+						  spa->latitude, h_prime, h0_prime, SUN_SET),  spa->timezone);
 	
 	} else {
-		spa->suntransit = -99999;
-		spa->sunrise    = -99999;
-		spa->sunset     = -99999;
+		spa->suntransit	= -99999;
+		spa->sunrise	= -99999;
+		spa->sunset		= -99999;
 	}
 }
 
@@ -1002,7 +1002,7 @@ void calculate_eot_and_sun_rise_transit_set(spa_data *spa)
 void spa_calculate(spa_data *spa)
 {
 	spa->jd = julian_day (spa->year, spa->month,  spa->day,
-	                      spa->hour, spa->minute, spa->second, spa->timezone);
+						  spa->hour, spa->minute, spa->second, spa->timezone);
 
 	calculate_geocentric_sun_right_ascension_and_declination(spa);
 
@@ -1010,21 +1010,21 @@ void spa_calculate(spa_data *spa)
 	spa->xi = sun_equatorial_horizontal_parallax(spa->r);
 
 	sun_right_ascension_parallax_and_topocentric_dec(spa->latitude, spa->elevation, spa->xi, spa->h,
-	                                            spa->delta, &(spa->del_alpha), &(spa->delta_prime));
+									spa->delta, &(spa->del_alpha), &(spa->delta_prime));
 
 	spa->alpha_prime = topocentric_sun_right_ascension(spa->alpha, spa->del_alpha);
-	spa->h_prime     = topocentric_local_hour_angle(spa->h, spa->del_alpha);
-	spa->e0          = topocentric_elevation_angle(spa->latitude, spa->delta_prime, spa->h_prime);
-	spa->del_e       = atmospheric_refraction_correction(spa->pressure, spa->temperature, spa->e0);
-	spa->e           = topocentric_elevation_angle_corrected(spa->e0, spa->del_e);
+	spa->h_prime	 = topocentric_local_hour_angle(spa->h, spa->del_alpha);
+	spa->e0			 = topocentric_elevation_angle(spa->latitude, spa->delta_prime, spa->h_prime);
+	spa->del_e		 = atmospheric_refraction_correction(spa->pressure, spa->temperature, spa->e0);
+	spa->e			 = topocentric_elevation_angle_corrected(spa->e0, spa->del_e);
 
-	spa->zenith      = topocentric_zenith_angle(spa->e);
-	spa->azimuth180  = topocentric_azimuth_angle_neg180_180(spa->h_prime, spa->latitude,
-	                                                                      spa->delta_prime);
-	spa->azimuth     = topocentric_azimuth_angle_zero_360(spa->azimuth180);
-	spa->incidence   = surface_incidence_angle(spa->zenith, spa->azimuth180, spa->azm_rotation,
-	                                                                         spa->slope);
-	spa->altitude    = 90.0 - spa->incidence;   //**KMB
+	spa->zenith		 = topocentric_zenith_angle(spa->e);
+	spa->azimuth180	 = topocentric_azimuth_angle_neg180_180(spa->h_prime, spa->latitude,
+															spa->delta_prime);
+	spa->azimuth	 = topocentric_azimuth_angle_zero_360(spa->azimuth180);
+	spa->incidence	 = surface_incidence_angle(spa->zenith, spa->azimuth180, spa->azm_rotation,
+											   spa->slope);
+	spa->altitude	 = 90.0 - spa->incidence;   //**KMB
 
 	calculate_eot_and_sun_rise_transit_set(spa);
 }

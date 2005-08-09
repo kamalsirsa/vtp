@@ -64,7 +64,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CFenceDlg message handlers
 
-BOOL CFenceDlg::OnInitDialog() 
+BOOL CFenceDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -92,7 +92,7 @@ BOOL CFenceDlg::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
 
-void CFenceDlg::OnSelchangeFencetype() 
+void CFenceDlg::OnSelchangeFencetype()
 {
 	UpdateData(TRUE);
 	vtLinearStyle style = (vtLinearStyle) m_cbType.GetItemData(m_iType);
@@ -113,7 +113,7 @@ void CFenceDlg::ValuesToSliders()
 }
 
 
-void CFenceDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CFenceDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	UpdateData(TRUE);
 	SlidersToValues();
@@ -122,13 +122,13 @@ void CFenceDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 }
 
 
-void CFenceDlg::OnChangeHeightedit() 
+void CFenceDlg::OnChangeHeightedit()
 {
 	UpdateData(TRUE);
 	g_App.SetFenceOptions(m_linearparams);
 }
 
-void CFenceDlg::OnChangeSpacingedit() 
+void CFenceDlg::OnChangeSpacingedit()
 {
 	UpdateData(TRUE);
 	g_App.SetFenceOptions(m_linearparams);

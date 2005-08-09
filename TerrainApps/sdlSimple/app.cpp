@@ -82,11 +82,11 @@ void App::videosettings(bool same_video_mode, bool fullscreen)
 					break;
 				}
 			}
-		} 
+		}
 	}
 	else
 	{
-		std::cerr << "Video list modes failed: " << SDL_GetError( ) << std::endl; 
+		std::cerr << "Video list modes failed: " << SDL_GetError( ) << std::endl;
 		exit( -1 );
 	}
 */
@@ -114,7 +114,7 @@ void App::videosettings(bool same_video_mode, bool fullscreen)
 
 	if( SDL_SetVideoMode( width, height, 16, flags ) == 0 )
 	{
-		std::cerr << "Video mode set failed: " << SDL_GetError( ) << std::endl; 
+		std::cerr << "Video mode set failed: " << SDL_GetError( ) << std::endl;
 		exit( -1 );
 	}
 	// Tell the SDL output size to vtlib

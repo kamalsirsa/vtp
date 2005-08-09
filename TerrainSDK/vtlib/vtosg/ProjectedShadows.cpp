@@ -371,16 +371,16 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 
 void CreateProjectedShadowTextureCullCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 {
-    osgUtil::CullVisitor* cullVisitor = dynamic_cast<osgUtil::CullVisitor*>(nv);
-    if (cullVisitor && (m_texture.valid() && m_shadower.valid()))
-    {
-        doPreRender(*node,*cullVisitor);
-    }
-    else
-    {
-        // must traverse the shadower
-        traverse(node,nv);
-    }
+	osgUtil::CullVisitor* cullVisitor = dynamic_cast<osgUtil::CullVisitor*>(nv);
+	if (cullVisitor && (m_texture.valid() && m_shadower.valid()))
+	{
+		doPreRender(*node,*cullVisitor);
+	}
+	else
+	{
+		// must traverse the shadower
+		traverse(node,nv);
+	}
 }
 
 void CreateProjectedShadowTextureCullCallback::SetLightPosition(const osg::Vec3& position)

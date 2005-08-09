@@ -91,17 +91,17 @@ protected:
 	bool m_bDepthShadow;
 	float m_fShadowDarkness;
 
-	osg::ref_ptr<osg::Node>      m_shadower;
-	osg::Vec3                    m_position;
-	osg::Vec4                    m_ambientLightColor;
-	unsigned int                 m_unit;
-	unsigned int				 m_iRez;
-	osg::ref_ptr<osg::StateSet>  m_shadowState;
-	osg::ref_ptr<osg::StateSet>  m_shadowedState;
-	osg::Matrix m_VPOSTransform;
+	osg::ref_ptr<osg::Node>		m_shadower;
+	osg::Vec3					m_position;
+	osg::Vec4					m_ambientLightColor;
+	unsigned int				m_unit;
+	unsigned int				m_iRez;
+	osg::ref_ptr<osg::StateSet>	m_shadowState;
+	osg::ref_ptr<osg::StateSet>	m_shadowedState;
+	osg::Matrix					m_VPOSTransform;
 #ifdef _DEBUG
-	osg::ref_ptr<MyTexture2D> m_texture;
-	osg::ref_ptr<MyRenderStage> m_pRtts;
+	osg::ref_ptr<MyTexture2D>	m_texture;
+	osg::ref_ptr<MyRenderStage>	m_pRtts;
 #else
 	osg::ref_ptr<osgUtil::RenderToTextureStage> m_pRtts;
 	osg::ref_ptr<osg::Texture2D> m_texture;
