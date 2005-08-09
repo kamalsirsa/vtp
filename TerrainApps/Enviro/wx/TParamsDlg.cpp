@@ -819,9 +819,13 @@ bool TParamsDlg::TransferDataToWindow()
 		m_pAnimFiles->Append(wxString2(m_AnimPaths[i]));
 	m_pAnimFiles->Append(_("(double-click to add files)"));
 
+	wxString2 str;
 	m_pScenarioList->Clear();
 	for (i = 0; i < m_Scenarios.size(); i++)
-		m_pScenarioList->Append(m_Scenarios[i].GetValueString(STR_SCENARIO_NAME));
+	{
+		str.from_utf8(m_Scenarios[i].GetValueString(STR_SCENARIO_NAME));
+		m_pScenarioList->Append(str);
+	}
 
 	bool result = wxDialog::TransferDataToWindow();
 	m_bSetting = false;
@@ -1089,13 +1093,13 @@ void TParamsDlg::UpdateTimeString()
 
 void TParamsDlg::OnNewScenario( wxCommandEvent &event )
 {
-	wxString ScenarioName = wxGetTextFromUser(_("Enter Scenario Name"), _("New Scenario"));
+	wxString2 ScenarioName = wxGetTextFromUser(_("Enter Scenario Name"), _("New Scenario"));
 
 	if (!ScenarioName.IsEmpty())
 	{
 		ScenarioParams Scenario;
 
-		Scenario.SetValueString(STR_SCENARIO_NAME, vtString(ScenarioName), true);
+		Scenario.SetValueString(STR_SCENARIO_NAME, ScenarioName.to_utf8(), true);
 		m_Scenarios.push_back(Scenario);
 		m_pScenarioList->SetSelection(m_pScenarioList->Append(ScenarioName));
 		UpdateEnableState();
@@ -1125,11 +1129,15 @@ void TParamsDlg::OnEditScenario( wxCommandEvent &event )
 		ScenarioParamsDialog.SetParams(m_Scenarios[iSelected]);
 
 		if (wxID_OK == ScenarioParamsDialog.ShowModal())
+		{
 			if (ScenarioParamsDialog.IsModified())
 			{
+				wxString2 str;
+				str.from_utf8(m_Scenarios[iSelected].GetValueString(STR_SCENARIO_NAME));
 				m_Scenarios[iSelected] = ScenarioParamsDialog.GetParams();
-				m_pScenarioList->SetString(iSelected, m_Scenarios[iSelected].GetValueString(STR_SCENARIO_NAME));
+				m_pScenarioList->SetString(iSelected, str);
 			}
+		}
 	}
 }
 
