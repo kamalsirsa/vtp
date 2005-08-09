@@ -30,6 +30,31 @@ void BlockingMessageBox(const wxString &msg)
 	EnableContinuousRendering(true);
 }
 
+//---------------------------------------------------------------------------
+
+/**
+ * AnimListBoxEventHandler is a roudabout way of catching events on our
+ * listboxes, to implement the "Delete" key operation on them.
+ */
+class AnimListBoxEventHandler: public wxEvtHandler
+{
+public:
+	AnimListBoxEventHandler(LocationDlg *dlg) { m_pDlg = dlg; }
+	void OnChar(wxKeyEvent& event)
+	{
+		if (event.GetKeyCode() == WXK_DELETE)
+			m_pDlg->DeleteAnim();
+		event.Skip();
+	}
+private:
+	LocationDlg *m_pDlg;
+	DECLARE_EVENT_TABLE()
+};
+BEGIN_EVENT_TABLE(AnimListBoxEventHandler, wxEvtHandler)
+	EVT_CHAR(AnimListBoxEventHandler::OnChar)
+END_EVENT_TABLE()
+
+
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
@@ -105,6 +130,10 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	AddValidator(ID_RECORD_LINEAR, &m_bRecordLinear);
 	AddValidator(ID_RECORD_INTERVAL, &m_bRecordInterval);
 
+	// It's somewhat roundabout, but this lets us capture events on the
+	// listbox controls without having to subclass.
+	GetAnims()->PushEventHandler(new AnimListBoxEventHandler(this));
+
 	RefreshButtons();
 	UpdateEnabling();
 }
@@ -176,6 +205,17 @@ void LocationDlg::RefreshAnimsText()
 			eng->GetTime(), (float) anim->GetLastTime(), anim->GetNumPoints());
 		GetAnims()->SetString(i, str);
 	}
+}
+
+void LocationDlg::DeleteAnim()
+{
+	int num = GetAnims()->GetSelection();
+	if (num == -1)
+		return;
+	m_pAnimPaths->RemoveAt(num);
+	m_iAnim = -1;
+	RefreshAnims();
+	UpdateEnabling();
 }
 
 void LocationDlg::UpdateSlider()

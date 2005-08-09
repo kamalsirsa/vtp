@@ -63,6 +63,7 @@ public:
 	wxButton* GetRemove()  { return (wxButton*) FindWindow( ID_REMOVE ); }
 
 	void Update();
+	void DeleteItem(wxListBox *pBox);
 
 	void RefreshList();
 	void SetLocSaver(vtLocationSaver *saver);
@@ -72,6 +73,7 @@ public:
 
 	void RefreshAnims();
 	void RefreshAnimsText();
+	void DeleteAnim();
 	void UpdateSlider();
 	void UpdateEnabling();
 	void SlidersToValues();
