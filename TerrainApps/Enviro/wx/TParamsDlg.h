@@ -16,26 +16,6 @@
 
 // WDR: class declarations
 
-/**
- * wxListBoxEventHandler is a roudabout way of catching events on our
- * listboxes, to implement the "Delete" key operation on them.
- */
-class wxListBoxEventHandler: public wxEvtHandler
-{
-public:
-	wxListBoxEventHandler(class TParamsDlg *dlg, wxListBox *pBox)
-	{
-		m_pDlg = dlg;
-		m_pBox = pBox;
-	}
-	void OnChar(wxKeyEvent& event);
-
-private:
-	class TParamsDlg *m_pDlg;
-	wxListBox *m_pBox;
-	DECLARE_EVENT_TABLE()
-};
-
 //----------------------------------------------------------------------------
 // TParamsDlg
 //----------------------------------------------------------------------------
@@ -230,7 +210,6 @@ private:
 	wxComboBox* m_pLocFile;
 	wxComboBox* m_pSkyTexture;
 	wxChoice* m_pLocField;
-	wxListBoxEventHandler *m_pBoxHandler;
 	wxChoice* m_pShadowRez;
 	wxChoice* m_pColorMap;
 	wxListBox* m_pScenarioList;

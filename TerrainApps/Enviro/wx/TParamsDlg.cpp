@@ -34,23 +34,42 @@
 
 //---------------------------------------------------------------------------
 
+/**
+ * wxListBoxEventHandler is a roudabout way of catching events on our
+ * listboxes, to implement the "Delete" key operation on them.
+ */
+class wxListBoxEventHandler: public wxEvtHandler
+{
+public:
+	wxListBoxEventHandler(TParamsDlg *dlg, wxListBox *pBox)
+	{
+		m_pDlg = dlg;
+		m_pBox = pBox;
+	}
+	void OnChar(wxKeyEvent& event)
+	{
+		if (event.GetKeyCode() == WXK_DELETE)
+		{
+			int sel = m_pBox->GetSelection();
+			if (sel != -1 && sel < m_pBox->GetCount()-1)
+			{
+				m_pDlg->DeleteItem(m_pBox);
+				m_pDlg->TransferDataToWindow();
+			}
+		}
+		event.Skip();
+	}
+
+private:
+	TParamsDlg *m_pDlg;
+	wxListBox *m_pBox;
+	DECLARE_EVENT_TABLE()
+};
+
 BEGIN_EVENT_TABLE(wxListBoxEventHandler, wxEvtHandler)
 	EVT_CHAR(wxListBoxEventHandler::OnChar)
 END_EVENT_TABLE()
 
-void wxListBoxEventHandler::OnChar(wxKeyEvent& event)
-{
-	if (event.GetKeyCode() == WXK_DELETE)
-	{
-		int sel = m_pBox->GetSelection();
-		if (sel != -1 && sel < m_pBox->GetCount()-1)
-		{
-			m_pDlg->DeleteItem(m_pBox);
-			m_pDlg->TransferDataToWindow();
-		}
-	}
-	event.Skip();
-}
 
 // WDR: class implementations
 
