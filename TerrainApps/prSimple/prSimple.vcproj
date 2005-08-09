@@ -33,7 +33,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgText.lib osgUtild.lib osgProducerd.lib Producerd.lib OpenThreadsWin32d.lib netcdf.lib libpng13d.lib zlib1d.lib gdal_id.lib jpeg.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgText.lib osgUtild.lib osgProducerd.lib Producerd.lib OpenThreadsWin32d.lib netcdf.lib libpng13d.lib zlib1d.lib gdal_id.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile="$(OutDir)/prSimple.exe"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
@@ -82,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgText.lib osgUtil.lib osgProducer.lib Producer.lib OpenThreadsWin32.lib netcdf.lib libpng13.lib zlib1.lib gdal_i.lib jpeg.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgText.lib osgUtil.lib osgProducer.lib Producer.lib OpenThreadsWin32.lib netcdf.lib libpng13.lib zlib1.lib gdal_i.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile="$(OutDir)/prSimple.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
