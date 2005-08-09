@@ -131,6 +131,14 @@ update-es:
 	msgmerge --no-fuzzy-matching es/Enviro.po Enviro.pot -o es/Enviro.pox
 
 #----------
+publish-fr:
+	cp fr/Enviro.pox fr/Enviro.po
+	msgfmt fr/Enviro.po -o fr/Enviro.mo
+
+update-fr:
+	msgmerge --no-fuzzy-matching fr/Enviro.po Enviro.pot -o fr/Enviro.pox
+
+#----------
 publish-hu:
 	cp hu/Enviro.pox hu/Enviro.po
 	msgfmt hu/Enviro.po -o hu/Enviro.mo

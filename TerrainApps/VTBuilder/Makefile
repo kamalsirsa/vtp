@@ -94,3 +94,10 @@ publish-zh:
 update-zh:
 	msgmerge --no-fuzzy-matching zh/VTBuilder.po VTBuilder.pot -o zh/VTBuilder.pox
 
+publish-fr:
+	cp fr/VTBuilder.pox fr/VTBuilder.po
+	msgfmt fr/VTBuilder.po -o fr/VTBuilder.mo
+
+update-fr:
+	msgmerge --no-fuzzy-matching fr/VTBuilder.po VTBuilder.pot -o fr/VTBuilder.pox
+
