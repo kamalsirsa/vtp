@@ -1263,6 +1263,8 @@ void StructVisitorGML::data(const char *s, int length)
 
 bool vtStructureArray::WriteXML(const char* filename, bool bGZip) const
 {
+	VTLOG("WriteXML(%s)\n", filename);
+
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
