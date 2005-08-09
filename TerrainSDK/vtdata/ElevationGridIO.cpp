@@ -2482,23 +2482,23 @@ bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(
 	fprintf(fp, "\n");
 	fprintf(fp, "Group\n");
 	fprintf(fp, "{\n");
-	fprintf(fp, "	children\n");
-	fprintf(fp, "	[\n");
-	fprintf(fp, "		Shape\n");
-	fprintf(fp, "		{\n");
-	fprintf(fp, "			appearance Appearance\n");
-	fprintf(fp, "			{\n");
-	fprintf(fp, "				material Material { diffuseColor 0.800 0.800 0.800 }\n");
-	fprintf(fp, "			}\n");
-	fprintf(fp, "			geometry ElevationGrid\n");
-	fprintf(fp, "			{\n");
-	fprintf(fp, "				xDimension %d\n", m_iColumns);
-	fprintf(fp, "				xSpacing %f\n", m_fXStep);
-	fprintf(fp, "				zDimension %d\n", m_iRows);
-	fprintf(fp, "				zSpacing %f\n", m_fZStep);
-	fprintf(fp, "				solid FALSE\n");
-	fprintf(fp, "				height\n");
-	fprintf(fp, "				[\n");
+	fprintf(fp, "\tchildren\n");
+	fprintf(fp, "\t[\n");
+	fprintf(fp, "\t\tShape\n");
+	fprintf(fp, "\t\t{\n");
+	fprintf(fp, "\t\t\tappearance Appearance\n");
+	fprintf(fp, "\t\t\t{\n");
+	fprintf(fp, "\t\t\t\tmaterial Material { diffuseColor 0.800 0.800 0.800 }\n");
+	fprintf(fp, "\t\t\t}\n");
+	fprintf(fp, "\t\t\tgeometry ElevationGrid\n");
+	fprintf(fp, "\t\t\t{\n");
+	fprintf(fp, "\t\t\t	xDimension %d\n", m_iColumns);
+	fprintf(fp, "\t\t\t\txSpacing %f\n", m_fXStep);
+	fprintf(fp, "\t\t\t\tzDimension %d\n", m_iRows);
+	fprintf(fp, "\t\t\t\tzSpacing %f\n", m_fZStep);
+	fprintf(fp, "\t\t\t\tsolid FALSE\n");
+	fprintf(fp, "\t\t\t\theight\n");
+	fprintf(fp, "\t\t\t\t[\n");
 
 	// what does VRML use for NODATA - presuming it even supports it?
 	float nodata = INVALID_ELEVATION;
@@ -2551,10 +2551,10 @@ bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(
 		fprintf(fp, "\n");
 	}
 
-	fprintf(fp, "				] # height\n");
-	fprintf(fp, "			} # geometry ElevationGrid\n");
-	fprintf(fp, "		} # ElevationGrid Shape\n");
-	fprintf(fp, "	] # children\n");
+	fprintf(fp, "\t\t\t\t] # height\n");
+	fprintf(fp, "\t\t\t} # geometry ElevationGrid\n");
+	fprintf(fp, "\t\t} # ElevationGrid Shape\n");
+	fprintf(fp, "\t] # children\n");
 	fprintf(fp, "} # Group\n");
 
 	fclose(fp);
