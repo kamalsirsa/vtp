@@ -814,14 +814,11 @@ void vtMesh::ReOptimize()
 void vtMesh::SetLineWidth(float fWidth)
 {
 	osg::LineWidth *lws = new osg::LineWidth;
-	osg::StateSet *ss = new osg::StateSet;
+	osg::StateSet *ss = m_pGeometry->getOrCreateStateSet();
 
 	lws->setWidth(fWidth);
-	ss->setAttribute(lws);
-//	ss->setAttributeAndModes(lws,
-//		osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
-	m_pGeometry->setStateSet(ss);
-	m_pGeometry->setUseDisplayList(false);
+	ss->setAttributeAndModes(lws,
+		osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
 }
 
 /**

@@ -1205,8 +1205,14 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 	vtMaterial *pMat = GetMaterial(iMatIdx);
 	if (pMat)
 	{
+		// Beware: the mesh may already have its own stateset
 		StateSet *pState = pMat->m_pStateSet.get();
-		pMesh->m_pGeometry->setStateSet(pState);
+        StateSet *pStateMesh = pMesh->m_pGeometry->getStateSet();
+
+        if (pStateMesh)
+            pStateMesh->merge(*pState);
+        else
+			pMesh->m_pGeometry->setStateSet(pState);
 
 		// Try to provide color for un-lit meshes
 		if (!pMat->GetLighting())
