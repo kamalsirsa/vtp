@@ -179,6 +179,14 @@ update-sv:
 	msgmerge --no-fuzzy-matching sv/Enviro.po Enviro.pot -o sv/Enviro.pox
 
 #----------
+publish-tr:
+	cp tr/Enviro.pox tr/Enviro.po
+	msgfmt tr/Enviro.po -o tr/Enviro.mo
+
+update-tr:
+	msgmerge --no-fuzzy-matching tr/Enviro.po Enviro.pot -o tr/Enviro.pox
+
+#----------
 publish-uk:
 	cp en_GB/Enviro.pox en_GB/Enviro.po
 	msgfmt en_GB/Enviro.po -o en_GB/Enviro.mo
