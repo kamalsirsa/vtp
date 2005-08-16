@@ -71,9 +71,9 @@ public:
 	/// get the local ControlPoint frame for a point in time.
 	virtual bool GetInterpolatedControlPoint(double time, ControlPoint &controlPoint) const;
 
-	// Add a control point to this path
+	// Edit control points on this path
 	void Insert(double time, const ControlPoint &controlPoint);
-
+	void RemovePoint(int index);
 	unsigned int GetNumPoints() { return m_TimeControlPointMap.size(); }
 	void SetTimeFromLinearDistance();
 	void ProcessPoints();

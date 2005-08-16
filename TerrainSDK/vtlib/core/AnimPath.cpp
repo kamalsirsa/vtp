@@ -85,6 +85,23 @@ void vtAnimPath::Insert(double time,const ControlPoint &controlPoint)
 	m_TimeControlPointMap[time] = controlPoint;
 }
 
+void vtAnimPath::RemovePoint(int index)
+{
+	std::map<double,ControlPoint> :: iterator iter;
+	int count = 0;
+	for (iter = m_TimeControlPointMap.begin();
+		iter != m_TimeControlPointMap.end();
+		iter++)
+	{
+		if (count == index)
+		{
+			m_TimeControlPointMap.erase(iter);
+			return;
+		}
+		count++;
+	}
+}
+
 double vtAnimPath::GetFirstTime() const
 {
 	if (m_TimeControlPointMap.empty())
