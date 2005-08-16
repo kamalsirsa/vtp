@@ -15,12 +15,12 @@
 
 class vtLocationSaver;
 
-#define PF_LOOP		1
-#define PF_INTERP	2
-#define PF_CONTIN	4
-#define PF_POSONLY	8
+#define PF_LOOP	 1
+#define PF_INTERP   2
+#define PF_CONTIN   4
+#define PF_POSONLY  8
 #define PF_SPEED	16
-#define PF_ALL		(PF_LOOP|PF_INTERP|PF_CONTIN|PF_POSONLY|PF_SPEED)
+#define PF_ALL	  (PF_LOOP|PF_INTERP|PF_CONTIN|PF_POSONLY|PF_SPEED)
 
 // WDR: class declarations
 
@@ -54,7 +54,7 @@ public:
 	wxButton* GetStop()  { return (wxButton*) FindWindow( ID_STOP ); }
 	wxButton* GetRecord1()  { return (wxButton*) FindWindow( ID_RECORD1 ); }
 	wxButton* GetPlay()  { return (wxButton*) FindWindow( ID_PLAY ); }
-	wxListBox* GetAnims()  { return (wxListBox*) FindWindow( ID_ANIMS ); }
+	wxTreeCtrl* GetAnimTree()  { return (wxTreeCtrl*) FindWindow( ID_ANIMTREE ); }
 
 	wxButton* GetStoreas()  { return (wxButton*) FindWindow( ID_STOREAS ); }
 	wxButton* GetStore()  { return (wxButton*) FindWindow( ID_STORE ); }
@@ -73,7 +73,6 @@ public:
 
 	void RefreshAnims();
 	void RefreshAnimsText();
-	void DeleteAnim();
 	void UpdateSlider();
 	void UpdateEnabling();
 	void SlidersToValues();
@@ -109,9 +108,12 @@ private:
 	bool m_bRecordInterval;
 
 	wxListBox* m_pLocList;
+	wxTreeItemId m_root, m_current;
 
 private:
 	// WDR: handler declarations for LocationDlg
+	void OnTreeKeyDown( wxTreeEvent &event );
+	void OnTreeSelChanged( wxTreeEvent &event );
 	void OnAnimPosSlider( wxCommandEvent &event );
 	void OnActive( wxCommandEvent &event );
 	void OnRadio( wxCommandEvent &event );
@@ -119,7 +121,6 @@ private:
 	void OnSpeedSlider( wxCommandEvent &event );
 	void OnReset( wxCommandEvent &event );
 	void OnCheckbox( wxCommandEvent &event );
-	void OnAnim( wxCommandEvent &event );
 	void OnStop( wxCommandEvent &event );
 	void OnRecord1( wxCommandEvent &event );
 	void OnPlay( wxCommandEvent &event );

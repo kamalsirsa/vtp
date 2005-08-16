@@ -366,8 +366,7 @@ wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item14 = new wxBoxSizer( wxVERTICAL );
 
-    wxString *strs15 = (wxString*) NULL;
-    wxListBox *item15 = new wxListBox( parent, ID_ANIMS, wxDefaultPosition, wxDefaultSize, 0, strs15, wxLB_SINGLE );
+    wxTreeCtrl *item15 = new wxTreeCtrl( parent, ID_ANIMTREE, wxDefaultPosition, wxSize(120,-1), wxTR_HAS_BUTTONS|wxSUNKEN_BORDER|wxTR_HIDE_ROOT );
     item14->Add( item15, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
@@ -404,7 +403,7 @@ wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item24 = new wxBoxSizer( wxHORIZONTAL );
 
     wxSlider *item25 = new wxSlider( parent, ID_ANIM_POS, 0, 0, 1000, wxDefaultPosition, wxSize(-1,24), wxSL_HORIZONTAL );
-    item24->Add( item25, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item24->Add( item25, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     wxCheckBox *item26 = new wxCheckBox( parent, ID_ACTIVE, _("Active"), wxDefaultPosition, wxDefaultSize, 0 );
     item24->Add( item26, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );

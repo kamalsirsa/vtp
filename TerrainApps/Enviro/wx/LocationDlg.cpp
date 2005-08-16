@@ -30,31 +30,6 @@ void BlockingMessageBox(const wxString &msg)
 	EnableContinuousRendering(true);
 }
 
-//---------------------------------------------------------------------------
-
-/**
- * AnimListBoxEventHandler is a roudabout way of catching events on our
- * listboxes, to implement the "Delete" key operation on them.
- */
-class AnimListBoxEventHandler: public wxEvtHandler
-{
-public:
-	AnimListBoxEventHandler(LocationDlg *dlg) { m_pDlg = dlg; }
-	void OnChar(wxKeyEvent& event)
-	{
-		if (event.GetKeyCode() == WXK_DELETE)
-			m_pDlg->DeleteAnim();
-		event.Skip();
-	}
-private:
-	LocationDlg *m_pDlg;
-	DECLARE_EVENT_TABLE()
-};
-BEGIN_EVENT_TABLE(AnimListBoxEventHandler, wxEvtHandler)
-	EVT_CHAR(AnimListBoxEventHandler::OnChar)
-END_EVENT_TABLE()
-
-
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
@@ -79,7 +54,6 @@ BEGIN_EVENT_TABLE(LocationDlg,AutoDialog)
 	EVT_BUTTON( ID_PLAY, LocationDlg::OnPlay )
 	EVT_BUTTON( ID_RECORD1, LocationDlg::OnRecord1 )
 	EVT_BUTTON( ID_STOP, LocationDlg::OnStop )
-	EVT_LISTBOX( ID_ANIMS, LocationDlg::OnAnim )
 	EVT_CHECKBOX( ID_LOOP, LocationDlg::OnCheckbox )
 	EVT_CHECKBOX( ID_CONTINUOUS, LocationDlg::OnCheckbox )
 	EVT_CHECKBOX( ID_SMOOTH, LocationDlg::OnCheckbox )
@@ -91,6 +65,8 @@ BEGIN_EVENT_TABLE(LocationDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_RECORD_INTERVAL, LocationDlg::OnRadio )
 	EVT_CHECKBOX( ID_ACTIVE, LocationDlg::OnActive )
 	EVT_SLIDER( ID_ANIM_POS, LocationDlg::OnAnimPosSlider )
+	EVT_TREE_SEL_CHANGED( ID_ANIMTREE, LocationDlg::OnTreeSelChanged )
+    EVT_TREE_KEY_DOWN( ID_ANIMTREE, LocationDlg::OnTreeKeyDown )
 END_EVENT_TABLE()
 
 LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -129,10 +105,6 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 	AddValidator(ID_RECORD_LINEAR, &m_bRecordLinear);
 	AddValidator(ID_RECORD_INTERVAL, &m_bRecordInterval);
-
-	// It's somewhat roundabout, but this lets us capture events on the
-	// listbox controls without having to subclass.
-	GetAnims()->PushEventHandler(new AnimListBoxEventHandler(this));
 
 	RefreshButtons();
 	UpdateEnabling();
@@ -183,10 +155,29 @@ void LocationDlg::RefreshList()
 
 void LocationDlg::RefreshAnims()
 {
-	GetAnims()->Clear();
+	wxString2 str;
 	unsigned int i, num = m_pAnimPaths->GetSize();
+
+	GetAnimTree()->DeleteAllItems();
+	m_root = GetAnimTree()->AddRoot(_T("Root"));
 	for (i = 0; i < num; i++)
-		GetAnims()->Append(_T("anim"));
+	{
+		wxTreeItemId id = GetAnimTree()->AppendItem(m_root, _T("anim"));
+
+		vtAnimPath *anim = GetAnim(i);
+		vtAnimPath::TimeControlPointMap &tcm = anim->GetTimeControlPointMap();
+		vtAnimPath::TimeControlPointMap::iterator iter;
+
+//		for (j = 0; j < anim->GetNumPoints(); j++)
+		int count = 0;
+		for (iter = tcm.begin(); iter != tcm.end(); iter++)
+		{
+			anim->GetFirstTime();
+			str.Printf(_T("%d: time %lf"), count, iter->first);
+			GetAnimTree()->AppendItem(id, str);
+			count++;
+		}
+	}
 
 	RefreshAnimsText();
 }
@@ -194,6 +185,9 @@ void LocationDlg::RefreshAnims()
 void LocationDlg::RefreshAnimsText()
 {
 	wxString str;
+	wxTreeItemIdValue cookie;
+	wxTreeItemId id;
+
 	unsigned int i, num = m_pAnimPaths->GetSize();
 	for (i = 0; i < num; i++)
 	{
@@ -201,21 +195,15 @@ void LocationDlg::RefreshAnimsText()
 		vtAnimPath *anim = GetAnim(i);
 		vtAnimPathEngine *eng = GetEngine(i);
 
+		if (id.IsOk())
+			id = GetAnimTree()->GetNextChild(m_root, cookie);
+		else
+			id = GetAnimTree()->GetFirstChild(m_root, cookie);
+
 		str.Printf(_T("%hs (%.1f/%.1f, %d)"), (const char *) entry->m_Name,
 			eng->GetTime(), (float) anim->GetLastTime(), anim->GetNumPoints());
-		GetAnims()->SetString(i, str);
+		GetAnimTree()->SetItemText(id, str);
 	}
-}
-
-void LocationDlg::DeleteAnim()
-{
-	int num = GetAnims()->GetSelection();
-	if (num == -1)
-		return;
-	m_pAnimPaths->RemoveAt(num);
-	m_iAnim = -1;
-	RefreshAnims();
-	UpdateEnabling();
 }
 
 void LocationDlg::UpdateSlider()
@@ -336,6 +324,84 @@ void LocationDlg::TransferToWindow()
 
 // WDR: handler implementations for LocationDlg
 
+void LocationDlg::OnTreeKeyDown( wxTreeEvent &event )
+{
+	if (event.GetKeyCode() != WXK_DELETE)
+	{
+		event.Skip();
+		return;
+	}
+	wxTreeItemId selid = m_current;
+	wxTreeItemId parent = GetAnimTree()->GetItemParent(selid);
+	if (parent == m_root)
+	{
+		// delete anim
+		m_pAnimPaths->RemoveAt(m_iAnim);
+		m_iAnim = -1;
+		RefreshAnims();
+		UpdateEnabling();
+	}
+	else
+	{
+		// delete point
+		wxTreeItemIdValue cookie;
+		wxTreeItemId id;
+		int count = 0;
+		for (id = GetAnimTree()->GetFirstChild(parent, cookie);
+			id.IsOk();
+			id = GetAnimTree()->GetNextChild(parent, cookie))
+		{
+			if (id == selid)
+				break;
+			count++;
+		}
+
+		vtAnimPath *anim = GetAnim(m_iAnim);
+		anim->RemovePoint(count);
+
+		GetAnimTree()->Delete(m_current);
+	}
+}
+
+void LocationDlg::OnTreeSelChanged( wxTreeEvent &event )
+{
+	int previous = m_iAnim;
+
+	m_current = event.GetItem();
+	wxTreeItemId selid = m_current;
+	if (selid.IsOk())
+	{
+		// If they click on a subitem (point), look at its parent
+		wxTreeItemId parent = GetAnimTree()->GetItemParent(selid);
+		if (parent != m_root)
+			selid = parent;
+
+		// Look through the tree to find the index
+		wxTreeItemIdValue cookie;
+		wxTreeItemId id;
+		int count = 0;
+		for (id = GetAnimTree()->GetFirstChild(m_root, cookie);
+			id.IsOk();
+			id = GetAnimTree()->GetNextChild(m_root, cookie))
+		{
+			if (id == selid)
+				m_iAnim = count;
+			count++;
+		}
+	}
+	else
+		m_iAnim = -1;
+
+	if (previous != m_iAnim)
+	{
+		UpdateEnabling();
+		GetValues();
+		UpdateSlider();
+		ValuesToSliders();
+		TransferToWindow();
+	}
+}
+
 void LocationDlg::OnAnimPosSlider( wxCommandEvent &event )
 {
 	if (m_iAnim == -1)
@@ -398,17 +464,6 @@ void LocationDlg::OnCheckbox( wxCommandEvent &event )
 	RefreshAnimsText();
 }
 
-void LocationDlg::OnAnim( wxCommandEvent &event )
-{
-	m_iAnim = GetAnims()->GetSelection();
-
-	UpdateEnabling();
-	GetValues();
-	UpdateSlider();
-	ValuesToSliders();
-	TransferToWindow();
-}
-
 void LocationDlg::OnStop( wxCommandEvent &event )
 {
 	vtAnimPathEngine *engine = GetEngine(m_iAnim);
@@ -453,8 +508,12 @@ void LocationDlg::OnRecord1( wxCommandEvent &event )
 	path->Insert(fTime, cp);
 	path->ProcessPoints();
 
+	wxString str;
+	str.Printf(_T("%d: time %lf"), path->GetNumPoints()-1, fTime);
+	GetAnimTree()->AppendItem(m_current, str);
+
 	RefreshAnimsText();
-	UpdateEnabling();	// Smooth might be allowed now
+	UpdateEnabling();   // Smooth might be allowed now
 }
 
 void LocationDlg::OnPlay( wxCommandEvent &event )
