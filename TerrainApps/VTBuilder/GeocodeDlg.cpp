@@ -9,7 +9,7 @@
 #include "wx/wxprec.h"
 
 #include "GeocodeDlg.h"
-#include "Vtdata/config_vtdata.h"
+#include "vtdata/config_vtdata.h"
 
 // WDR: class implementations
 
