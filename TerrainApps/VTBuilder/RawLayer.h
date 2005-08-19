@@ -2,7 +2,7 @@
 // A raw data layer, suitable for storing and displaying the type of
 // generic spatial data contained in a Shapefile.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,7 +25,7 @@ public:
 
 	// implementation of vtLayer methods
 	bool GetExtent(DRECT &rect);
-	void DrawLayer(wxDC* pDC, class vtScaledView *pView);
+	void DrawLayer(wxDC* pDC, vtScaledView *pView);
 	bool TransformCoords(vtProjection &proj);
 	bool OnSave();
 	bool OnLoad();
