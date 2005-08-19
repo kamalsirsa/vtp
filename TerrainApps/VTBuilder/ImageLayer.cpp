@@ -1,7 +1,7 @@
 //
 // ImageLayer.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,6 +25,7 @@
 #include "ImageLayer.h"
 #include "Helper.h"
 #include "Frame.h"
+#include "vtBitmap.h"
 
 #include "ExtentDlg.h"
 #include "Projection2Dlg.h"

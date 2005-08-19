@@ -30,6 +30,7 @@
 #include "BuilderView.h"
 #include "TreeView.h"
 #include "Helper.h"
+#include "vtBitmap.h"
 // Layers
 #include "ElevLayer.h"
 #include "ImageLayer.h"
