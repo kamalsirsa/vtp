@@ -1,7 +1,7 @@
 //
 // Status bar implementation
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,9 +15,11 @@
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/vtLog.h"
 
+#include "Frame.h"
 #include "StatusBar.h"
 #include "BuilderView.h"
 #include "vtui/Helper.h"	// for FormatCoord
+
 
 MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 {
