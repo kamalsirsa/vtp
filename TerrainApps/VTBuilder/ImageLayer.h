@@ -1,7 +1,7 @@
 //
 // ImageLayer.h
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,8 +10,8 @@
 
 #include "wx/image.h"
 #include "Layer.h"
-#include "vtBitmap.h"
 
+class vtBitmap;
 class GDALDataset;
 class GDALRasterBand;
 class GDALColorTable;
@@ -39,7 +39,7 @@ public:
 	// overrides for vtLayer methods
 	bool GetExtent(DRECT &rect);
 	bool GetAreaExtent(DRECT &rect);
-	void DrawLayer(wxDC* pDC, class vtScaledView *pView);
+	void DrawLayer(wxDC* pDC, vtScaledView *pView);
 	bool TransformCoords(vtProjection &proj);
 	bool OnSave();
 	bool OnLoad();
