@@ -1,7 +1,7 @@
 //
 // wxString2.cpp
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,10 +31,12 @@ wxString2::wxString2(const wchar_t *psz)
 }
 #endif
 
+#if !wxUSE_STD_STRING	// If wxUSE_STD_STRING, then wxString is already capable
 wxString2::wxString2(const std::string &in)
 {
 	*this = in.c_str();
 }
+#endif
 
 wxString2::wxString2(const vtString &vtstr)
 {
