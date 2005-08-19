@@ -1,14 +1,12 @@
 //
 // A custom status bar
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef STATUSBARH
 #define STATUSBARH
-
-#include "Frame.h"
 
 #include <wx/statusbr.h>
 
