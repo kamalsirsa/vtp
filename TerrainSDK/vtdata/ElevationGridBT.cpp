@@ -1,10 +1,10 @@
 //
-// vtElevationGridDEM.cpp
+// vtElevationGridBT.cpp
 //
 // This modules contains the implementations of the BT file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project.
+// Copyright (c) 2001-2005 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -53,6 +53,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	// Default to internal projection
 	short external = 0;
 
+	DRECT extents;
 	short svalue, proj_type, zone, datum;
 	int ivalue;
 	float ftmp;
@@ -73,15 +74,15 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 
 		// coordinate extents left-right
 		GZFRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
-		m_EarthExtents.left = ftmp;
+		extents.left = ftmp;
 		GZFRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
-		m_EarthExtents.right = ftmp;
+		extents.right = ftmp;
 
 		// coordinate extents bottom-top
 		GZFRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
-		m_EarthExtents.bottom = ftmp;
+		extents.bottom = ftmp;
 		GZFRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
-		m_EarthExtents.top = ftmp;
+		extents.top = ftmp;
 
 		// is the data floating point or integers?
 		GZFRead(&m_bFloatMode, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
@@ -109,10 +110,10 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 		GZFRead(&datum, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// coordinate extents
-		GZFRead(&m_EarthExtents.left, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
-		GZFRead(&m_EarthExtents.right, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
-		GZFRead(&m_EarthExtents.bottom, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
-		GZFRead(&m_EarthExtents.top, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&extents.left, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&extents.right, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&extents.bottom, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&extents.top, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
 
 		// External projection flag
 		GZFRead(&external, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
@@ -125,6 +126,8 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 		return false;	// unsupported version
 
 	gzclose(fp);
+
+	SetEarthExtents(extents);
 
 	VTLOG(", float %d, CRS external %d", m_bFloatMode, external);
 
