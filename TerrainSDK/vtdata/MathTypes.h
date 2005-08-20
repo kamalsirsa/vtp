@@ -1284,6 +1284,7 @@ protected:
 float random_offset(float x);
 float random(float x);
 int vt_log2(int n);
+float vt_log2f(float n);
 bool CrossingsTest(const DPoint2 *pgon, int numverts, const DPoint2 &point);
 bool CrossingsTest(const DPoint3 *pgon, int numverts, const DPoint2 &point);
 bool PointInTriangle(const FPoint2 &p, const FPoint2 &p1, const FPoint2 &p2,

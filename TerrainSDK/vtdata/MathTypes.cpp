@@ -915,6 +915,14 @@ int vt_log2(int n)
 	return i;
 }
 
+/**
+ * Compute base-2 logarithm of an float.
+ */
+const float LN_2 = 0.693147180559945f;
+float vt_log2f(float n)
+{
+	return logf(n) / LN_2;
+}
 
 
 /*
