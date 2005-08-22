@@ -296,6 +296,12 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ChunkLOD.cpp">
+			</File>
+			<File
+				RelativePath=".\ChunkUtil.cpp">
+			</File>
+			<File
 				RelativePath="Content.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -1561,6 +1567,12 @@
 			</File>
 			<File
 				RelativePath="ByteOrder.h">
+			</File>
+			<File
+				RelativePath=".\ChunkLOD.h">
+			</File>
+			<File
+				RelativePath=".\ChunkUtil.h">
 			</File>
 			<File
 				RelativePath="config_vtdata.h">
