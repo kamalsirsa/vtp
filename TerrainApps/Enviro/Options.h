@@ -26,8 +26,10 @@ public:
 
 	bool	m_bStartInNeutral;
 
-	// window location and size
+	// display options, window location and size
 	bool	m_bFullscreen;
+	bool	m_bStereo;
+	int		m_iStereoMode;
 	IPoint2	m_WinPos, m_WinSize;
 	bool	m_bLocationInside;
 

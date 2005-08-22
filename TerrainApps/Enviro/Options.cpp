@@ -20,6 +20,8 @@ EnviroOptions g_Options;
 #define STR_EARTHIMAGE "EarthImage"
 #define STR_INITTERRAIN "InitialTerrain"
 #define STR_FULLSCREEN "FullScreen"
+#define STR_STEREO "Stereo"
+#define STR_STEREO_MODE "StereoMode"
 #define STR_WINLOC "WindowLocation"
 #define STR_LOCINSIDE "LocationIsInside"
 #define STR_HTMLPANE "HTMLPane"
@@ -42,6 +44,8 @@ EnviroOptions::EnviroOptions()
 
 	m_bStartInNeutral = false;
 	m_bFullscreen = false;
+	m_bStereo = false;
+	m_iStereoMode = 0;
 	m_WinPos.Set(50, 50);
 	m_WinSize.Set(800, 600);
 	m_bLocationInside = false;
@@ -101,6 +105,10 @@ bool EnviroOptions::Read(const char *szFilename)
 			m_strInitTerrain = get_line_from_stream(input);
 		else if (strcmp(buf, STR_FULLSCREEN) == 0)
 			input >> m_bFullscreen;
+		else if (strcmp(buf, STR_STEREO) == 0)
+			input >> m_bStereo;
+		else if (strcmp(buf, STR_STEREO_MODE) == 0)
+			input >> m_iStereoMode;
 		else if (strcmp(buf, STR_WINLOC) == 0)
 			input >> m_WinPos.x >> m_WinPos.y >> m_WinSize.x >> m_WinSize.y;
 		else if (strcmp(buf, STR_LOCINSIDE) == 0)
@@ -166,46 +174,50 @@ bool EnviroOptions::Write()
 	// write to file
 	for (unsigned int i = 0; i < m_DataPaths.size(); i++)
 	{
-		output << STR_DATAPATH << "\t\t";
+		output << STR_DATAPATH << "\t";
 		output << (const char *)(m_DataPaths[i]) << endl;
 	}
-	output << STR_EARTHVIEW << "\t\t";
+	output << STR_EARTHVIEW << "\t\t\t";
 	output << m_bEarthView << endl;
-	output << STR_EARTHIMAGE << "\t\t";
+	output << STR_EARTHIMAGE << "\t\t\t";
 	output << (const char *)m_strEarthImage << endl;
-	output << STR_INITTERRAIN << "\t";
+	output << STR_INITTERRAIN << "\t\t";
 	output << (const char *)m_strInitTerrain << endl;
 
-	output << STR_FULLSCREEN << "\t\t";
+	output << STR_FULLSCREEN << "\t\t\t";
 	output << m_bFullscreen << endl;
+	output << STR_STEREO << "\t\t\t\t";
+	output << m_bStereo << endl;
+	output << STR_STEREO_MODE << "\t\t\t";
+	output << m_iStereoMode << endl;
 	output << STR_WINLOC << "\t\t";
 	output << m_WinPos.x << " " << m_WinPos.y << " " << m_WinSize.x << " " << m_WinSize.y << endl;
-	output << STR_LOCINSIDE << "\t\t";
+	output << STR_LOCINSIDE << "\t";
 	output << m_bLocationInside << endl;
-	output << STR_HTMLPANE << "\t\t";
+	output << STR_HTMLPANE << "\t\t\t";
 	output << m_bHtmlpane << endl;
-	output << STR_FLOATBAR << "\t";
+	output << STR_FLOATBAR << "\t\t";
 	output << m_bFloatingToolbar << endl;
 
 	output << STR_TEXTURE_COMPRESSION << "\t";
 	output << m_bTextureCompression << endl;
-	output << STR_PLANTSIZE << "\t\t";
+	output << STR_PLANTSIZE << "\t\t\t";
 	output << m_fPlantScale << endl;
-	output << STR_PLANTSHADOWS << "\t";
+	output << STR_PLANTSHADOWS << "\t\t";
 	output << m_bShadows << endl;
 	output << STR_ONLY_AVAILABLE_SPECIES << "\t";
 	output << m_bOnlyAvailableSpecies << endl;
-	output << STR_DIRECT_PICKING << "\t";
+	output << STR_DIRECT_PICKING << "\t\t";
 	output << m_bDirectPicking << endl;
-	output << STR_SELECTIONCUTOFF << "\t";
+	output << STR_SELECTIONCUTOFF << "\t\t";
 	output << m_fSelectionCutoff << endl;
 	output << STR_DISABLE_MODEL_MIPMAPS << "\t";
 	output << m_bDisableModelMipmaps << endl;
-	output << STR_CURSOR_THICKNESS << "\t";
+	output << STR_CURSOR_THICKNESS << "\t\t";
 	output << m_fCursorThickness << endl;
-	output << STR_CATENARY_FACTOR << "\t";
+	output << STR_CATENARY_FACTOR << "\t\t";
 	output << m_fCatenaryFactor << endl;
-	output << STR_CONTENT_FILE << "\t\t";
+	output << STR_CONTENT_FILE << "\t\t\t";
 	output << (const char *)m_strContentFile << endl;
 	output << STR_MAX_INST_RADIUS << "\t";
 	output << m_fMaxPickableInstanceRadius << endl;

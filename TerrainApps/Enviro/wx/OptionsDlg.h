@@ -33,36 +33,50 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for OptionsDlg
+	wxTextCtrl* GetSelectionRadius()  { return (wxTextCtrl*) FindWindow( ID_SELECTION_RADIUS ); }
+	wxTextCtrl* GetSelectionCutoff()  { return (wxTextCtrl*) FindWindow( ID_SELECTION_CUTOFF ); }
+	wxRadioButton* GetStereo2()  { return (wxRadioButton*) FindWindow( ID_STEREO2 ); }
+	wxRadioButton* GetStereo1()  { return (wxRadioButton*) FindWindow( ID_STEREO1 ); }
+	wxCheckBox* GetSizeInside()  { return (wxCheckBox*) FindWindow( ID_SIZE_INSIDE ); }
+	wxTextCtrl* GetWinYsize()  { return (wxTextCtrl*) FindWindow( ID_WIN_YSIZE ); }
+	wxTextCtrl* GetWinXsize()  { return (wxTextCtrl*) FindWindow( ID_WIN_XSIZE ); }
+	wxTextCtrl* GetWiny()  { return (wxTextCtrl*) FindWindow( ID_WINY ); }
+	wxTextCtrl* GetWinx()  { return (wxTextCtrl*) FindWindow( ID_WINX ); }
 	wxChoice* GetContent()  { return (wxChoice*) FindWindow( ID_CHOICE_CONTENT ); }
 
 	void GetOptionsFrom(EnviroOptions &opt);
 	void PutOptionsTo(EnviroOptions &opt);
+	void UpdateEnabling();
 
 private:
 	// WDR: member variable declarations for OptionsDlg
 	bool	m_bFullscreen;
-	IPoint2	m_WinPos, m_WinSize;
+	bool	m_bStereo;
+	int		m_iStereoMode;
+	IPoint2 m_WinPos, m_WinSize;
 	bool	m_bLocationInside;
 
-//	bool	m_bHtmlpane;
-//	bool	m_bFloatingToolbar;
+//  bool	m_bHtmlpane;
+//  bool	m_bFloatingToolbar;
 	bool	m_bTextureCompression;
 	bool	m_bDisableMipmaps;
 
 	bool	m_bDirectPicking;
-	float	m_fSelectionCutoff;
-	float	m_fMaxPickableInstanceRadius;
+	float   m_fSelectionCutoff;
+	float   m_fMaxPickableInstanceRadius;
 
-	float	m_fPlantScale;
-//	bool	m_bShadows;
+	float   m_fPlantScale;
+//  bool	m_bShadows;
 	bool	m_bOnlyAvailableSpecies;
 
-	int			m_iContentFile;
-	wxString2	m_strContentFile;
+	int	  m_iContentFile;
+	wxString2   m_strContentFile;
 
 private:
 	// WDR: handler declarations for OptionsDlg
+	void OnCheck( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
+	void OnOK( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

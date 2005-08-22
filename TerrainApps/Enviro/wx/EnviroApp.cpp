@@ -285,7 +285,7 @@ bool EnviroApp::OnInit()
 		VTLOG("  Couldn't find it.\n");
 
 	// Initialize the VTP scene
-	vtGetScene()->Init();
+	vtGetScene()->Init(g_Options.m_bStereo, g_Options.m_iStereoMode);
 
 	//
 	// Create the main frame window
