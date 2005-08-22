@@ -254,8 +254,13 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	PositionStatusBar();
 
 	// We definitely want full color and a 24-bit Z-buffer!
-	int gl_attrib[7] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
-		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0	};
+	int gl_attrib[8] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
+		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0, 0 };
+	if (g_Options.m_bStereo && g_Options.m_iStereoMode == 1)
+	{
+		gl_attrib[6] = WX_GL_STEREO;
+		gl_attrib[7] = 0;
+	}
 
 	VTLOG("Frame window: creating view canvas.\n");
 	m_canvas = new vtGLCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
