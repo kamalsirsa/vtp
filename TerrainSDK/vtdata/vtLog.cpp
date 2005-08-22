@@ -1,7 +1,7 @@
 //
 // Log - simple message logging to a file.
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,7 +20,7 @@
 
 vtLog g_Log;
 
-void cpl_error_handler(CPLErr eErrClass, int err_no, const char *msg)
+void CPL_STDCALL cpl_error_handler(CPLErr eErrClass, int err_no, const char *msg)
 {
 	if (eErrClass == CE_Debug)
 		g_Log._Log("CPL Debug: ");
