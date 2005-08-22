@@ -83,7 +83,15 @@ int vtGetMaxTextureSize()
 	return tmax;
 }
 
-bool vtScene::Init()
+/**
+ * Initialize the vtlib library, including the display and scene graph.
+ * You should call this function only once, before any other vtlib calls.
+ *
+ * \param bStereo True for a stereo display output.
+ * \param iStereoMode Currently for vtosg, supported values are 0 for
+ *		Anaglyphic (red-blue) and 1 for Quad-buffer (shutter glasses).
+ */
+bool vtScene::Init(bool bStereo, int iStereoMode)
 {
 	// Redirect cout messages (where OSG sends its messages) to our own log
 	std::cout.rdbuf(&g_Trap);
@@ -94,7 +102,22 @@ bool vtScene::Init()
 	SetCamera(m_pDefaultCamera);
 	AddWindow(m_pDefaultWindow);
 
-	m_pOsgSceneView = new osgUtil::SceneView(new osg::DisplaySettings());
+	// OSG's display setting include stereo
+	osg::DisplaySettings* displaySettings = new osg::DisplaySettings;
+	if (bStereo)
+	{
+		displaySettings->setStereo(true);
+		//? displaySettings->setScreenDistance(2);
+		osg::DisplaySettings::StereoMode mode;
+		if (iStereoMode == 0) mode = osg::DisplaySettings::ANAGLYPHIC;
+		if (iStereoMode == 1) mode = osg::DisplaySettings::QUAD_BUFFER;
+		displaySettings->setStereoMode(mode);
+	}
+	// Allow the user to also use OSG's environment variables to
+	//  override/extend the settings.
+	displaySettings->readEnvironmentalVariables();
+
+	m_pOsgSceneView = new osgUtil::SceneView(displaySettings);
 	m_pOsgSceneView->setDefaults();
 
 	// OSG 0.9.0 and newer

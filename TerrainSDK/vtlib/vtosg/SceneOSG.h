@@ -42,7 +42,7 @@ public:
 	bool GetGlobalWireframe();
 
 	/// Call this method once before calling any other vtlib methods.
-	bool Init();
+	bool Init(bool bStereo = false, int iStereoMode = 0);
 
 	/// Call this method after all other vtlib methods, to free memory.
 	void Shutdown();
