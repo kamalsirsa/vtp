@@ -590,7 +590,7 @@ void vtFrame::OnItemModelProps(wxCommandEvent& event)
 	FBox3 box;
 	node->GetBoundBox(box);
 	wxString str, s;
-	s.Printf("Extents:\n  %f %f (width %f)\n  %f %f (height %f)\n  %f %f (depth %f)\n",
+	s.Printf(_T("Extents:\n  %f %f (width %f)\n  %f %f (height %f)\n  %f %f (depth %f)\n"),
 		box.min.x, box.max.x, box.max.x - box.min.x,
 		box.min.y, box.max.y, box.max.y - box.min.y,
 		box.min.z, box.max.z, box.max.z - box.min.z);
@@ -598,34 +598,34 @@ void vtFrame::OnItemModelProps(wxCommandEvent& event)
 
 	vtPrimInfo info;
 	node->GetPrimCounts(info);
-	s.Printf("\nPrimitives:\n");
+	s.Printf(_T("\nPrimitives:\n"));
 	str += s;
-	s.Printf("  Vertices: %d\n", info.MemVertices);
+	s.Printf(_T("  Vertices: %d\n"), info.MemVertices);
 	str += s;
-	s.Printf("  Vertices Drawn: %d\n", info.Vertices);
+	s.Printf(_T("  Vertices Drawn: %d\n"), info.Vertices);
 	if (info.Vertices != info.MemVertices) str += s;
-	s.Printf("  Primitives: %d\n", info.Primitives);
+	s.Printf(_T("  Primitives: %d\n"), info.Primitives);
 	str += s;
-	s.Printf("  Points: %d\n", info.Points);
+	s.Printf(_T("  Points: %d\n"), info.Points);
 	if (info.Points) str += s;
-	s.Printf("  TriStrips: %d\n", info.TriStrips);
+	s.Printf(_T("  TriStrips: %d\n"), info.TriStrips);
 	if (info.TriStrips) str += s;
-	s.Printf("  TriFans: %d\n", info.TriFans);
+	s.Printf(_T("  TriFans: %d\n"), info.TriFans);
 	if (info.TriFans) str += s;
-	s.Printf("  Triangles: %d\n", info.Triangles);
+	s.Printf(_T("  Triangles: %d\n"), info.Triangles);
 	if (info.Triangles) str += s;
-	s.Printf("  Quads: %d\n", info.Quads);
+	s.Printf(_T("  Quads: %d\n"), info.Quads);
 	if (info.Quads) str += s;
-	s.Printf("  QuadStrips: %d\n", info.QuadStrips);
+	s.Printf(_T("  QuadStrips: %d\n"), info.QuadStrips);
 	if (info.QuadStrips) str += s;
-	s.Printf("  Polygons: %d\n", info.Polygons);
+	s.Printf(_T("  Polygons: %d\n"), info.Polygons);
 	if (info.Polygons) str += s;
-	s.Printf("  LineStrips: %d\n", info.LineStrips);
+	s.Printf(_T("  LineStrips: %d\n"), info.LineStrips);
 	if (info.LineStrips) str += s;
-	s.Printf("  LineSegments: %d\n", info.LineSegments);
+	s.Printf(_T("  LineSegments: %d\n"), info.LineSegments);
 	if (info.LineSegments) str += s;
 
-	wxMessageBox(str, "Model Properties");
+	wxMessageBox(str, _T("Model Properties"));
 }
 
 void vtFrame::OnUpdateItemRemoveModel(wxUpdateUIEvent& event)
