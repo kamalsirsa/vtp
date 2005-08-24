@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.cpp
 //
-// Copyright (c) 2003-2004 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,7 @@
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/Globe.h"
 #include "vtui/wxString2.h"
+#include "vtdata/vtLog.h"
 #include "EnviroGUI.h"  // for GetCurrentTerrain
 
 #include "LayerDlg.h"
@@ -37,7 +38,6 @@ BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 	EVT_CHECKBOX( ID_LAYER_VISIBLE, LayerDlg::OnVisible )
 	EVT_CHECKBOX( ID_SHADOW_VISIBLE, LayerDlg::OnShadowVisible )
 	EVT_BUTTON( ID_LAYER_ZOOM_TO, LayerDlg::OnZoomTo )
-	EVT_BUTTON( ID_LAYER_ACTIVE, LayerDlg::OnLayerActivate )
 	EVT_BUTTON( ID_LAYER_SAVE, LayerDlg::OnLayerSave )
 	EVT_BUTTON( ID_LAYER_CREATE, LayerDlg::OnLayerCreate )
 	EVT_BUTTON( ID_LAYER_REMOVE, LayerDlg::OnLayerRemove )
@@ -147,7 +147,7 @@ void LayerDlg::RefreshTreeTerrain()
 	if (!terr)
 		return;
 
-	wxTreeItemId hRoot = m_pTree->AddRoot(_("Layers"));
+	m_root = m_pTree->AddRoot(_("Layers"));
 
 	unsigned int i, j;
 	StructureSet &set = terr->GetStructureSet();
@@ -159,7 +159,7 @@ void LayerDlg::RefreshTreeTerrain()
 		sa = set[i];
 
 		str = sa->GetFilename();
-		wxTreeItemId hLayer = m_pTree->AppendItem(hRoot, str, -1, -1);
+		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, -1, -1);
 		if (sa == terr->GetStructures())
 			m_pTree->SetItemBold(hLayer, true);
 		m_pTree->SetItemData(hLayer, new LayerItemData(sa, i, -1));
@@ -204,22 +204,48 @@ void LayerDlg::RefreshTreeTerrain()
 			if (bld)
 			{
 				str.Printf(_("Buildings: %d"), bld);
-				m_pTree->AppendItem(hLayer, str, -1, -1);
+				hItem = m_pTree->AppendItem(hLayer, str, -1, -1);
+				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, -1));
 			}
 			if (fen)
 			{
 				str.Printf(_("Fences: %d"), fen);
-				m_pTree->AppendItem(hLayer, str, -1, -1);
+				hItem = m_pTree->AppendItem(hLayer, str, -1, -1);
+				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, -1));
 			}
 			if (inst)
 			{
 				str.Printf(_("Instances: %d"), inst);
-				m_pTree->AppendItem(hLayer, str, -1, -1);
+				hItem = m_pTree->AppendItem(hLayer, str, -1, -1);
+				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, -1));
 			}
 		}
 		m_pTree->Expand(hLayer);
 	}
-	m_pTree->Expand(hRoot);
+	m_pTree->Expand(m_root);
+}
+
+void LayerDlg::RefreshTreeStateTerrain()
+{
+	vtTerrain *terr = GetCurrentTerrain();
+	if (!terr)
+		return;
+
+	StructureSet &set = terr->GetStructureSet();
+
+	wxTreeItemIdValue cookie;
+	wxTreeItemId id;
+	int count = 0;
+	for (id = m_pTree->GetFirstChild(m_root, cookie);
+		id.IsOk();
+		id = m_pTree->GetNextChild(m_root, cookie))
+	{
+		if (set[count] == terr->GetStructures())
+			m_pTree->SetItemBold(id, true);
+		else
+			m_pTree->SetItemBold(id, false);
+		count++;
+	}
 }
 
 void LayerDlg::RefreshTreeSpace()
@@ -293,19 +319,6 @@ void LayerDlg::OnLayerSave( wxCommandEvent &event )
 {
 	g_App.SaveStructures();
 	RefreshTreeContents();
-}
-
-void LayerDlg::OnLayerActivate( wxCommandEvent &event )
-{
-	LayerItemData *data = GetLayerDataFromItem(m_item);
-	if (!data)
-		return;
-
-	if (data->m_sa != NULL)
-	{
-		GetCurrentTerrain()->SetStructureIndex(data->m_index);
-		RefreshTreeContents();
-	}
 }
 
 void LayerDlg::OnZoomTo( wxCommandEvent &event )
@@ -386,6 +399,20 @@ void LayerDlg::OnShowAll( wxCommandEvent &event )
 void LayerDlg::OnSelChanged( wxTreeEvent &event )
 {
 	m_item = event.GetItem();
+
+	LayerItemData *data = GetLayerDataFromItem(m_item);
+	VTLOG("OnSelChanged, item %d, data %d\n", m_item.m_pItem, data);
+	if (data && data->m_sa != NULL)
+	{
+		int newindex = data->m_index;
+		int oldindex = GetCurrentTerrain()->GetStructureIndex();
+		if (newindex != oldindex)
+		{
+			GetCurrentTerrain()->SetStructureIndex(newindex);
+			RefreshTreeStateTerrain();
+		}
+	}
+
 	UpdateEnabling();
 }
 
@@ -409,7 +436,6 @@ void LayerDlg::UpdateEnabling()
 		}
 	}
 
-	GetLayerActivate()->Enable(sa != NULL);
 	GetLayerRemove()->Enable(sa != NULL);
 	GetLayerSave()->Enable(sa != NULL);
 }

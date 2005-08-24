@@ -31,7 +31,6 @@ public:
 };
 
 
-
 //----------------------------------------------------------------------------
 // LayerDlg
 //----------------------------------------------------------------------------
@@ -49,7 +48,6 @@ public:
 	wxButton* GetLayerRemove()  { return (wxButton*) FindWindow( ID_LAYER_REMOVE ); }
 	wxButton* GetLayerCreate()  { return (wxButton*) FindWindow( ID_LAYER_CREATE ); }
 	wxButton* GetLayerSave()  { return (wxButton*) FindWindow( ID_LAYER_SAVE ); }
-	wxButton* GetLayerActivate()  { return (wxButton*) FindWindow( ID_LAYER_ACTIVE ); }
 	wxButton* GetZoomTo()  { return (wxButton*) FindWindow( ID_LAYER_ZOOM_TO ); }
 	wxCheckBox* GetVisible()  { return (wxCheckBox*) FindWindow( ID_LAYER_VISIBLE ); }
 	wxCheckBox* GetShadow()  { return (wxCheckBox*) FindWindow( ID_SHADOW_VISIBLE ); }
@@ -57,6 +55,7 @@ public:
 	wxTreeCtrl *GetTree()  { return (wxTreeCtrl*) FindWindow( ID_LAYER_TREE ); }
 	void RefreshTreeContents();
 	void RefreshTreeTerrain();
+	void RefreshTreeStateTerrain();
 	void RefreshTreeSpace();
 
 	void SetShowAll(bool bTrue);
@@ -65,19 +64,20 @@ public:
 private:
 	// WDR: member variable declarations for LayerDlg
 	wxTreeCtrl *m_pTree;
+	wxTreeItemId m_root;
 	wxTreeItemId m_item;
 	bool	m_bShowAll;
 
 private:
-	vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer = false);
-	vtStructureArray3d *LayerDlg::GetStructureArray3dFromItem(wxTreeItemId item);
-	LayerItemData *LayerDlg::GetLayerDataFromItem(wxTreeItemId item);
+	vtNode *GetNodeFromItem(wxTreeItemId item, bool bContainer = false);
+	vtStructureArray3d *GetStructureArray3dFromItem(wxTreeItemId item);
+	LayerItemData *GetLayerDataFromItem(wxTreeItemId item);
 	void ToggleVisible(bool bVis, wxTreeItemId id);
+
 	// WDR: handler declarations for LayerDlg
 	void OnLayerRemove( wxCommandEvent &event );
 	void OnLayerCreate( wxCommandEvent &event );
 	void OnLayerSave( wxCommandEvent &event );
-	void OnLayerActivate( wxCommandEvent &event );
 	void OnZoomTo( wxCommandEvent &event );
 	void OnVisible( wxCommandEvent &event );
 	void OnShadowVisible( wxCommandEvent &event );
@@ -89,7 +89,4 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-
-
-
-#endif
+#endif	// __LayerDlg_H__
