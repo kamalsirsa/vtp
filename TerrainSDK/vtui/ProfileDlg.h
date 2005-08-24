@@ -50,11 +50,15 @@ public:
 	void SetPoints(const DPoint2 &p1, const DPoint2 &p2);
 	void SetCallback(ProfileCallback *callback);
 	void GetValues();
+	void Analyze();
+	void ComputeLineOfSight();
+	void ComputeVisibility();
 
 private:
 	// WDR: member variable declarations for ProfileDlg
 	ProfileCallback *m_callback;
 	std::vector<float> m_values;
+	std::vector<bool> m_visible;
 	DPoint2 m_p1, m_p2;
 	wxSize m_clientsize;
 	int m_xrange, m_yrange;
@@ -69,18 +73,21 @@ private:
 	bool m_bHaveSlope;
 	float m_fSlope;
 	bool m_bLeftButton;
-	bool m_bLineOfSight, m_bValidLine;
+	bool m_bLineOfSight, m_bVisibility;
+	bool m_bValidStart, m_bValidLine;
 	float m_fHeight1, m_fHeight2;
 	float m_fHeightAtStart, m_fHeightAtEnd;
 	bool m_bIntersectsGround;
 	float m_fIntersectHeight;
 	float m_fIntersectDistance;
+	int m_iIntersectIndex;
 
 private:
 	// WDR: handler declarations for ProfileDlg
 	void OnHeight2( wxCommandEvent &event );
 	void OnHeight1( wxCommandEvent &event );
 	void OnLineOfSight( wxCommandEvent &event );
+	void OnVisibility( wxCommandEvent &event );
 	void OnPaint(wxPaintEvent &event);
 	void OnDraw(wxDC& dc); // overridden to draw this view
 	void OnSize(wxSizeEvent& event);

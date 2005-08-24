@@ -26,12 +26,13 @@
 // WDR: event table for ProfileDlg
 
 BEGIN_EVENT_TABLE(ProfileDlg, AutoDialog)
-EVT_PAINT(ProfileDlg::OnPaint)
-EVT_SIZE(ProfileDlg::OnSize)
-EVT_LEFT_DOWN(ProfileDlg::OnLeftDown)
-EVT_LEFT_UP(ProfileDlg::OnLeftUp)
-EVT_MOTION(ProfileDlg::OnMouseMove)
+	EVT_PAINT(ProfileDlg::OnPaint)
+	EVT_SIZE(ProfileDlg::OnSize)
+	EVT_LEFT_DOWN(ProfileDlg::OnLeftDown)
+	EVT_LEFT_UP(ProfileDlg::OnLeftUp)
+	EVT_MOTION(ProfileDlg::OnMouseMove)
 	EVT_CHECKBOX( ID_LINE_OF_SIGHT, ProfileDlg::OnLineOfSight )
+	EVT_CHECKBOX( ID_VISIBILITY, ProfileDlg::OnVisibility )
 	EVT_TEXT( ID_HEIGHT1, ProfileDlg::OnHeight1 )
 	EVT_TEXT( ID_HEIGHT2, ProfileDlg::OnHeight2 )
 END_EVENT_TABLE()
@@ -48,8 +49,10 @@ ProfileDlg::ProfileDlg( wxWindow *parent, wxWindowID id,
 	m_bMouseOnLine = false;
 	m_bLeftButton = false;
 	m_bLineOfSight = false;
+	m_bVisibility = false;
 	m_fHeight1 = 1;
 	m_fHeight2 = 1;
+	m_xrange = 0;
 
 	// WDR: dialog function ColorMapDialogFunc for ProfileDlg
 	ProfileDialogFunc( this, TRUE );
@@ -84,11 +87,13 @@ void ProfileDlg::GetValues()
 
 	m_clientsize = GetClientSize();
 
+	// compute how large an area we have to draw the chart
 	m_xrange = m_clientsize.x - MARGIN_LEFT - 10;
 	if (m_xrange < 2) m_xrange = 2;
 	m_yrange = m_clientsize.y - MARGIN_BOTTOM - 10;
 	if (m_yrange < 2) m_yrange = 2;
 
+	// fill array with elevation values, collect extents
 	m_fTotalDist = (m_p2 - m_p1).Length();
 	m_fMin = 1E9;
 	m_fMax = -1E9;
@@ -97,7 +102,8 @@ void ProfileDlg::GetValues()
 	DPoint2 p;
 	m_bHaveValidData = false;
 	m_bHaveInvalid = false;
-	for (int i = 0; i < m_xrange; i++)
+	int i;
+	for (i = 0; i < m_xrange; i++)
 	{
 		double ratio = (double)i / (m_xrange-1);
 		p = m_p1 + (m_p2 - m_p1) * ratio;
@@ -127,6 +133,92 @@ void ProfileDlg::GetValues()
 	m_fRange = m_fMax - m_fMin;
 	m_bHaveValues = true;
 	m_bMouseOnLine = false;
+
+	Analyze();
+}
+
+void ProfileDlg::Analyze()
+{
+	m_bValidStart = false;
+	m_bValidLine = false;
+	m_bIntersectsGround = false;
+
+	if (!m_bHaveValues)
+		return;
+
+	// Some analysis is shared between the line of sight and the visibility
+	m_fHeightAtStart = m_values[0];
+	if (m_fHeightAtStart != INVALID_ELEVATION)
+	{
+		m_fHeightAtStart += m_fHeight1;
+		m_bValidStart = true;
+	}
+
+	if (m_bLineOfSight)
+		ComputeLineOfSight();
+
+	if (m_bVisibility && m_bValidStart)
+		ComputeVisibility();
+}
+
+void ProfileDlg::ComputeLineOfSight()
+{
+	// compute height at end of line-of-sight, and the height
+	//  range to draw
+	m_fDrawRange = m_fRange;
+	if (m_bValidStart)
+	{
+		m_fHeightAtEnd = m_values[m_xrange - 1];
+		if (m_fHeightAtEnd != INVALID_ELEVATION)
+		{
+			m_bValidLine = true;
+			m_fHeightAtEnd += m_fHeight2;
+		}
+	}
+	if (!m_bValidLine)
+		return;
+
+	// Cast line from beginning to end
+	float diff = m_fHeightAtEnd - m_fHeightAtStart;
+	for (int i = 0; i < m_xrange; i++)
+	{
+		float fLineHeight = m_fHeightAtStart + diff * i / m_xrange;
+		if (fLineHeight < m_values[i])
+		{
+			// line of sight intersects the ground
+			m_bIntersectsGround = true;
+			m_fIntersectHeight = m_values[i];
+			m_fIntersectDistance = (float)i / (m_xrange-1) * m_fTotalDist;
+			m_iIntersectIndex = i;
+			break;
+		}
+	}
+}
+
+void ProfileDlg::ComputeVisibility()
+{
+	// prepare visibility array
+	int i, j;
+	float diff;
+	m_visible.resize(m_xrange);
+
+	// compute visibility at each point on the line
+	m_visible[0] = true;
+	for (j = 1; j < m_xrange; j++)
+	{
+		diff = m_values[j] - m_fHeightAtStart;
+		bool vis = true;
+		for (i = 0; i < j; i++)
+		{
+			float fLineHeight = m_fHeightAtStart + diff * i / j;
+			if (fLineHeight < m_values[i])
+			{
+				vis = false;
+				break;
+			}
+		}
+		m_visible[j] = vis;
+	}
 }
 
 void ProfileDlg::MakePoint(wxPoint &p, int i, float value)
@@ -146,35 +238,23 @@ void ProfileDlg::DrawChart(wxDC& dc)
 	if (!m_bHaveValues)
 		GetValues();
 
+	float DrawMax = m_fMax;
+	if (m_bValidStart) DrawMax = std::max(m_fMax, m_fHeightAtStart);
+	if (m_bValidLine) DrawMax = std::max(DrawMax, m_fHeightAtEnd);
+	m_fDrawRange = DrawMax - m_fMin;
+
 	wxPen pen1(*wxMEDIUM_GREY_PEN);
 	pen1.SetWidth(2);
 	wxPen pen2(*wxLIGHT_GREY_PEN);
 	pen2.SetStyle(wxDOT);
-	wxPen pen3(wxColour(0,128,0));  // dark green
+	wxPen pen3(wxColour(0,128,0));	// dark green
+	wxPen pen4(wxColour(128,0,0));	// dark red
 
 	wxFont font(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 	dc.SetFont(font);
 
 	m_base.x = MARGIN_LEFT;
 	m_base.y = m_clientsize.y - MARGIN_BOTTOM;
-
-	m_fDrawRange = m_fRange;
-	m_bValidLine = false;
-	if (m_bLineOfSight)
-	{
-		m_fHeightAtStart = m_values[0];
-		m_fHeightAtEnd = m_values[m_xrange - 1];
-		if (m_fHeightAtStart != INVALID_ELEVATION && m_fHeightAtEnd != INVALID_ELEVATION)
-		{
-			m_bValidLine = true;
-			m_fHeightAtStart += m_fHeight1;
-			m_fHeightAtEnd += m_fHeight2;
-			float DrawMax;
-			DrawMax = std::max(m_fMax, m_fHeightAtStart);
-			DrawMax = std::max(DrawMax, m_fHeightAtEnd);
-			m_fDrawRange = DrawMax - m_fMin;
-		}
-	}
 
 	dc.SetPen(pen1);
 	dc.DrawLine(m_base.x, m_base.y, m_base.x + m_xrange, m_base.y);
@@ -218,12 +298,6 @@ void ProfileDlg::DrawChart(wxDC& dc)
 	{
 		x = m_base.x + (i * m_xrange / (numticks-1));
 
-//  if (i > 0)
-//  {
-//	dc.SetPen(pen2);
-//	dc.DrawLine(x, m_base.y, x, m_base.y - m_yrange);
-//  }
-
 		dc.SetPen(pen1);
 		dc.DrawLine(x, m_base.y - 5, x, m_base.y + 5);
 
@@ -233,32 +307,57 @@ void ProfileDlg::DrawChart(wxDC& dc)
 	}
 
 	// Draw surface line
-	dc.SetPen(pen3);
 	wxPoint p1, p2;
-	if (m_bHaveInvalid)
+	if (m_bVisibility && m_bValidStart)
 	{
-		// slow way, one datapoint at a time
-		for (i = 0; i < m_xrange-1; i++)
+		bool vis = true;
+		dc.SetPen(pen3);
+		for (i = 0; i < m_xrange; i++)
 		{
+			if (m_visible[i] != vis)
+			{
+				vis = m_visible[i];
+				if (vis) dc.SetPen(pen3);
+				else dc.SetPen(pen4);
+			}
 			float v1 = m_values[i];
-			float v2 = m_values[i+1];
-			if (v1 == INVALID_ELEVATION || v2 == INVALID_ELEVATION)
+			if (v1 == INVALID_ELEVATION)
 				continue;
+
 			MakePoint(p1, i, v1);
-			MakePoint(p2, i+1, v2);
+			p2 = p1;
+			p2.y = m_base.y;
 			dc.DrawLine(p1, p2);
 		}
 	}
 	else
 	{
-		// faster way, pass an array
-		wxPoint *pts = new wxPoint[m_xrange];
-		for (i = 0; i < m_xrange; i++)
+		dc.SetPen(pen3);
+		if (m_bHaveInvalid)
 		{
-			MakePoint(pts[i], i, m_values[i]);
+			// slow way, one datapoint at a time
+			for (i = 0; i < m_xrange-1; i++)
+			{
+				float v1 = m_values[i];
+				float v2 = m_values[i+1];
+				if (v1 == INVALID_ELEVATION || v2 == INVALID_ELEVATION)
+					continue;
+				MakePoint(p1, i, v1);
+				MakePoint(p2, i+1, v2);
+				dc.DrawLine(p1, p2);
+			}
 		}
-		dc.DrawLines(m_xrange, pts);
-		delete [] pts;
+		else
+		{
+			// faster way, pass an array
+			wxPoint *pts = new wxPoint[m_xrange];
+			for (i = 0; i < m_xrange; i++)
+			{
+				MakePoint(pts[i], i, m_values[i]);
+			}
+			dc.DrawLines(m_xrange, pts);
+			delete [] pts;
+		}
 	}
 
 	if (m_bValidLine)
@@ -270,50 +369,48 @@ void ProfileDlg::DrawChart(wxDC& dc)
 		dc.DrawLine(p1, p2);
 	}
 
+	// Draw origin of line of sight
+	if ((m_bLineOfSight || m_bVisibility) && m_bValidStart)
+	{
+		// it's hard to see a yellow dot without a bit of outline
+		wxPen lightgrey(*wxLIGHT_GREY_PEN);
+		dc.SetPen(lightgrey);
+
+		wxBrush yellow(wxColour(255,255,0));
+		dc.SetBrush(yellow);
+		MakePoint(p1, 0, m_fHeightAtStart);
+		dc.DrawCircle(p1, 5);
+	}
+
 	// Draw min/max/mouse markers
 	wxPen nopen;
 	nopen.SetStyle(wxTRANSPARENT);
 	dc.SetPen(nopen);
 
-	wxBrush brush1(wxColour(0,0,255));
+	wxBrush brush1(wxColour(0,0,255));	// blue: minimum
 	dc.SetBrush(brush1);
 	MakePoint(p1, m_iMin, m_fMin);
 	dc.DrawCircle(p1, 5);
 
-	wxBrush brush2(wxColour(255,0,0));
+	wxBrush brush2(wxColour(255,0,0));	// red: maximum
 	dc.SetBrush(brush2);
 	MakePoint(p1, m_iMax, m_fMax);
 	dc.DrawCircle(p1, 5);
 
 	if (m_bMouseOnLine)
 	{
-		wxBrush brush3(wxColour(0,255,0));
+		wxBrush brush3(wxColour(0,255,0));	// green: mouse
 		dc.SetBrush(brush3);
 		MakePoint(p1, m_iMouse, m_fMouse);
 		dc.DrawCircle(p1, 5);
 	}
 
-	m_bIntersectsGround = false;
-	if (m_bValidLine)
+	if (m_bIntersectsGround)
 	{
-		float diff = m_fHeightAtEnd - m_fHeightAtStart;
-		for (i = 0; i < m_xrange; i++)
-		{
-			float fLineHeight = m_fHeightAtStart + diff * i / m_xrange;
-			if (fLineHeight < m_values[i])
-			{
-				// line of sight intersects the ground
-				m_bIntersectsGround = true;
-				m_fIntersectHeight = m_values[i];
-				m_fIntersectDistance = (float)i / (m_xrange-1) * m_fTotalDist;
-
-				wxBrush brush3(wxColour(255,128,0));
-				dc.SetBrush(brush3);
-				MakePoint(p1, i, m_values[i]);
-				dc.DrawCircle(p1, 5);
-				break;
-			}
-		}
+		wxBrush brush3(wxColour(255,128,0));	// orange: intersection
+		dc.SetBrush(brush3);
+		MakePoint(p1, m_iIntersectIndex, m_values[m_iIntersectIndex]);
+		dc.DrawCircle(p1, 5);
 	}
 
 	// Also update message text
@@ -324,8 +421,11 @@ void ProfileDlg::UpdateMessageText()
 {
 	wxString str, str2;
 
-	str.Printf(_("Minimum: %.2f m at distance %.1f\nMaximum: %.2f m at distance %.1f"),
-		m_fMin, m_fMinDist, m_fMax, m_fMaxDist);
+	str2.Printf(_("Minimum: %.2f m at distance %.1f"), m_fMin, m_fMinDist);
+	str += str2;
+	str += _T("\n");
+	str2.Printf(_("Maximum: %.2f m at distance %.1f"), m_fMax, m_fMaxDist);
+	str += str2;
 
 	if (m_bMouseOnLine)
 	{
@@ -355,12 +455,14 @@ void ProfileDlg::UpdateMessageText()
 void ProfileDlg::OnHeight2( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
+	Analyze();
 	Refresh();
 }
 
 void ProfileDlg::OnHeight1( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
+	Analyze();
 	Refresh();
 }
 
@@ -442,8 +544,19 @@ void ProfileDlg::OnMouseMove(wxMouseEvent& event)
 void ProfileDlg::OnLineOfSight( wxCommandEvent &event )
 {
 	m_bLineOfSight = event.IsChecked();
+	Analyze();
 	Refresh();
-	GetHeight1()->Enable(m_bLineOfSight);
+	GetHeight1()->Enable(m_bLineOfSight || m_bVisibility);
 	GetHeight2()->Enable(m_bLineOfSight);
 }
+
+void ProfileDlg::OnVisibility( wxCommandEvent &event )
+{
+	m_bVisibility = event.IsChecked();
+	Analyze();
+	Refresh();
+	GetHeight1()->Enable(m_bLineOfSight || m_bVisibility);
+	GetHeight2()->Enable(m_bLineOfSight);
+}
+
 
