@@ -26,6 +26,7 @@
 #define FSTRING_BMP		_T("Bitmap (*.bmp)|*.bmp")
 #define FSTRING_BIL		_T("ArcInfo BIL grid (*.bil)|*.bil")
 #define FSTRING_CDF		_T("CDF Files (*.cdf, *.grd)|*.cdf;*.grd")
+#define FSTRING_CHU		_T("ChunkLOD Files (*.chu)|*.chu")
 #define FSTRING_DEM		_T("DEM Files (*.dem)|*.dem")
 #define FSTRING_DLG		_T("USGS DLG Files (*.dlg, *.opt)|*.dlg;*.opt")
 #define FSTRING_DOQ		_T("USGS DOQ Files (*.jpg, *.doq, *.coq)|*.doq;*.coq;*.jpg")
