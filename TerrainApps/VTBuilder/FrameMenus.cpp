@@ -14,12 +14,13 @@
 #include <wx/choicdlg.h>
 
 #include "vtdata/config_vtdata.h"
+#include "vtdata/ChunkLOD.h"
 #include "vtdata/ElevationGrid.h"
-#include "vtdata/Icosa.h"
 #include "vtdata/GEOnet.h"
+#include "vtdata/Icosa.h"
+#include "vtdata/TripDub.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
-#include "vtdata/TripDub.h"
 #include "vtdata/WFSClient.h"
 #include "vtui/Helper.h"
 #include "vtui/DistanceDlg.h"
@@ -41,6 +42,7 @@
 #include "VegLayer.h"
 #include "WaterLayer.h"
 // Dialogs
+#include "ChunkDlg.h"
 #include "DistribVegDlg.h"
 #include "ExtentDlg.h"
 #include "FeatInfoDlg.h"
@@ -2238,7 +2240,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	if (!GetActiveElevLayer())
 		return;
 
-	wxString choices[8];
+	wxString choices[9];
 	choices[0] = _T("ArcInfo ASCII Grid");
 	choices[1] = _T("GeoTIFF");
 	choices[2] = _T("TerraGen");
@@ -2247,9 +2249,10 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	choices[5] = _T("MSI Planet");
 	choices[6] = _T("VRML ElevationGrid");
 	choices[7] = _T("RAW/INF for MS Flight Simulator");
+	choices[8] = _T("ChunkLOD (.chu)");
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
-		_("Export to file format:"), 8, choices);
+		_("Export to file format:"), 9, choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -2263,6 +2266,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	case 5: ExportPlanet(); break;
 	case 6: ExportVRML(); break;
 	case 7: ExportRAWINF(); break;
+	case 8: ExportChunkLOD(); break;
 	}
 }
 
@@ -2388,6 +2392,85 @@ void MainFrame::ExportRAWINF()
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
 		DisplayAndLog("Error writing file.");
+}
+
+void MainFrame::ExportChunkLOD()
+{
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_CHU);
+	if (fname == "")
+		return;
+
+	ChunkDlg dlg(this, -1, _("Export ChunkLOD"));
+	dlg.m_iDepth = 6;
+	dlg.m_fMaxError = 1.0f;
+	if (dlg.ShowModal() == wxID_CANCEL)
+		return;
+
+	FILE *out = fopen(fname, "wb");
+	if (out == 0) {
+		DisplayAndLog("Error: can't open %s for output.", fname);
+		return;
+	}
+
+	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
+	const int CHUNKLOD_MAX_HEIGHT = 10000.0f;
+	float vertical_scale = CHUNKLOD_MAX_HEIGHT / 32767.0f;
+	float input_vertical_scale = 1.0f;
+
+	OpenProgressDialog(_T("Writing ChunkLOD"), false, this);
+
+	// Process the data.
+	HeightfieldChunker hc;
+	bool success = hc.ProcessGrid(grid, out, dlg.m_iDepth, dlg.m_fMaxError,
+		vertical_scale, input_vertical_scale, progress_callback);
+	fseek(out, 0, SEEK_END);
+	g_chunkstats.output_size = ftell(out);
+	fclose(out);
+
+	CloseProgressDialog();
+
+	if (success)
+	{
+		vtString msg, str;
+		msg.Format("Successfully wrote file '%s'\n", (const char *) fname);
+
+		float verts_per_chunk = g_chunkstats.output_vertices / (float) g_chunkstats.output_chunks;
+
+		str.Format(" Average verts/chunk: %.0f\n", verts_per_chunk);
+		msg += str;
+		str.Format(" Output filesize: %dk\n", (int) (g_chunkstats.output_size / 1024.0f));
+		msg += str;
+		str.Format(" Bytes/input vert: %.2f\n", g_chunkstats.output_size / (float) g_chunkstats.input_vertices);
+		msg += str;
+		str.Format(" Bytes/output vert: %.2f\n", g_chunkstats.output_size / (float) g_chunkstats.output_vertices);
+		msg += str;
+
+		if (verts_per_chunk < 500)
+		{
+			str.Format("NOTE: verts/chunk is low; for higher poly throughput\nconsider setting depth to %d and reprocessing.\n",
+				dlg.m_iDepth - 1);
+			msg += "\n";
+			msg += str;
+		} else if (verts_per_chunk > 5000)
+		{
+			str.Format("NOTE: verts/chunk is high; for smoother framerate\nconsider setting depth to %d and reprocessing.\n",
+				dlg.m_iDepth + 1);
+			msg += "\n";
+			msg += str;
+		}
+		DisplayAndLog(msg);
+	}
+	else
+	{
+		// TODO: Politely delete the incomplete file?
+		if (g_chunkstats.output_most_vertices_per_chunk > (1<<16))
+		{
+			DisplayAndLog("Error: chunk contains > 64K vertices.  Try processing again, but use\n"\
+				"a deeper chunk tree, for fewer vertices per chunk.");
+		}
+		else
+			DisplayAndLog("Error writing file.");
+	}
 }
 
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
