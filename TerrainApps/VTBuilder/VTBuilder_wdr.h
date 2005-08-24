@@ -263,6 +263,10 @@ const int ID_FILE_GNS = 10176;
 const int ID_GET_FILE_GNS = 10177;
 wxSizer *GeocodeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+const int ID_DEPTH = 10178;
+const int ID_MAXERROR = 10179;
+wxSizer *ChunkDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
