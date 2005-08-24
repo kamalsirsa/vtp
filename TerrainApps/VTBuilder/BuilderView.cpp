@@ -1,7 +1,7 @@
 //
 // BuilderView.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -35,6 +35,9 @@
 #include <float.h>
 
 #define BOUNDADJUST 5
+
+#include "App.h"
+DECLARE_APP(BuilderApp)
 
 ////////////////////////////////////////////////////////////////
 
@@ -388,11 +391,6 @@ bool BuilderView::ImportWorldMap()
 	return true;
 }
 
-void myErrorHandler(CPLErr err, int i, const char*str)
-{
-	VTLOG(str);
-}
-
 void BuilderView::SetWMProj(const vtProjection &proj)
 {
 	unsigned int i, j;
@@ -439,10 +437,8 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	OGRFree(str4);
 #endif
 
-	CPLPushErrorHandler(myErrorHandler);
 	// Create conversion object
 	OCT *trans = CreateCoordTransform(&Source, &proj);
-	CPLPopErrorHandler();
 
 	if (!trans)
 	{
@@ -1392,6 +1388,7 @@ void BuilderView::OnIdle(wxIdleEvent& event)
 		VTLOG("First View Idle\n");
 		GetMainFrame()->ZoomAll();
 		Refresh();
+		// wxGetApp().Exit();	// handy for testing memleaks
 	}
 
 	MainFrame *pFrame = GetMainFrame();
