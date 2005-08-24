@@ -98,6 +98,7 @@
 #  include "view_zoomexact.xpm"
 #  include "view_zoom_layer.xpm"
 #  include "view_profile.xpm"
+#  include "view_options.xpm"
 
 #	include "VTBuilder.xpm"
 #endif
@@ -413,6 +414,7 @@ void MainFrame::AddMainToolbars()
 	ADD_TOOL(ID_FILE_NEW, wxBITMAP(proj_new), _("New Project"));
 	ADD_TOOL(ID_FILE_OPEN, wxBITMAP(proj_open), _("Open Project"));
 	ADD_TOOL(ID_FILE_SAVE, wxBITMAP(proj_save), _("Save Project"));
+	ADD_TOOL(ID_VIEW_OPTIONS, wxBITMAP(view_options), _("View Options"));
 	toolBar_main->AddSeparator();
 	ADD_TOOL(ID_LAYER_NEW, wxBITMAP(layer_new), _("New Layer"));
 	ADD_TOOL(ID_LAYER_OPEN, wxBITMAP(layer_open), _("Open Layer"));

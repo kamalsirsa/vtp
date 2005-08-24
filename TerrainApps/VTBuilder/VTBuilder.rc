@@ -23,6 +23,7 @@ view_zoomall	BITMAP "bitmaps/view_zoomall.bmp"
 view_zoom_Layer	BITMAP "bitmaps/view_zoom_Layer.bmp"
 view_zoomexact	BITMAP "bitmaps/view_zoomexact.bmp"
 view_profile	BITMAP "bitmaps/view_profile.bmp"
+view_options	BITMAP "bitmaps/view_options.bmp"
 distance		BITMAP "bitmaps/distance.bmp"
 
 rd_select_road	BITMAP "bitmaps/rd_select_road.bmp"
