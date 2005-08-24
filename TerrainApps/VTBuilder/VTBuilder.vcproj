@@ -1232,6 +1232,9 @@
 				RelativePath="BuilderView.h">
 			</File>
 			<File
+				RelativePath=".\ChunkDlg.h">
+			</File>
+			<File
 				RelativePath="DistribVegDlg.h">
 			</File>
 			<File
@@ -1561,6 +1564,9 @@
 		<Filter
 			Name="Source - Dialogs"
 			Filter="">
+			<File
+				RelativePath=".\ChunkDlg.cpp">
+			</File>
 			<File
 				RelativePath="DistribVegDlg.cpp">
 				<FileConfiguration
