@@ -88,6 +88,7 @@ public:
 	bool SaveToASC(const char *szFileName, bool progress_callback(int) = NULL) const;
 	bool SaveToVRML(const char *szFileName, bool progress_callback(int) = NULL) const;
 	bool SaveToRAWINF(const char *szFileName, bool progress_callback(int) = NULL) const;
+	bool SaveToPNG16(const char *fname);
 
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);

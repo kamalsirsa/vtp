@@ -27,6 +27,9 @@ extern "C" {
 }
 #endif
 
+// Headers for PNG support, which uses the library "libpng"
+#include "png.h"
+
 // GDAL
 #include "gdal_priv.h"
 
@@ -2624,3 +2627,105 @@ bool vtElevationGrid::SaveToRAWINF(const char *szFileName, bool progress_callbac
 
 	return true;
 }
+
+/**
+ * Write elevation a 16-bit greyscale PNG file.
+ */
+bool vtElevationGrid::SaveToPNG16(const char *fname)
+{
+	FILE *fp;
+	png_structp png_ptr;
+	png_infop info_ptr;
+
+	/* open the file */
+	fp = fopen(fname, "wb");
+	if (fp == NULL)
+		return false;
+
+	/* Create and initialize the png_struct with the desired error handler
+	 * functions.  We also check that the library version is compatible with
+	 * the one used at compile time, in case we are using dynamically linked
+	 * libraries.  REQUIRED.
+	 */
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
+		NULL, NULL, NULL);
+
+	if (png_ptr == NULL)
+	{
+		fclose(fp);
+		return false;
+	}
+
+	/* Allocate/initialize the image information data.  REQUIRED */
+	info_ptr = png_create_info_struct(png_ptr);
+	if (info_ptr == NULL)
+	{
+		fclose(fp);
+		png_destroy_write_struct(&png_ptr,  png_infopp_NULL);
+		return false;
+	}
+
+	/* Set error handling.  REQUIRED if you aren't supplying your own
+	 * error handling functions in the png_create_write_struct() call.
+	 */
+	if (setjmp(png_jmpbuf(png_ptr)))
+	{
+		/* If we get here, we had a problem writing the file */
+		fclose(fp);
+		png_destroy_write_struct(&png_ptr, &info_ptr);
+		return false;
+	}
+
+	/* set up the output control if you are using standard C streams */
+	png_init_io(png_ptr, fp);
+
+	/* Set the image information here. REQUIRED */
+	int color_type = PNG_COLOR_TYPE_GRAY;
+	int png_bit_depth = 16;
+
+	png_set_IHDR(png_ptr, info_ptr, m_iColumns, m_iRows, png_bit_depth, color_type,
+		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+	/* Write the file header information.  REQUIRED */
+	png_write_info(png_ptr, info_ptr);
+
+	/* Write the image. */
+	png_uint_32 k, height = m_iRows, width = m_iColumns;
+	png_byte *image = (png_byte *)malloc(height * width * 2);
+	png_bytep *row_pointers = (png_bytep *)malloc(height * sizeof(png_bytep *));
+	for (k = 0; k < height; k++)
+		row_pointers[k] = image + k*width*2;
+
+	short val;
+	byte *adr = (byte *) &val;
+	unsigned int row, col;
+	for (row = 0; row < height; row++)
+	{
+		png_bytep pngptr = row_pointers[row];
+		for (col = 0; col < width; col++)
+		{
+			val = GetValue(col, height-1-row);
+			*pngptr++ = adr[0];
+			*pngptr++ = adr[1];
+		}
+	}
+
+	/* write out the entire image data in one call */
+	png_write_image(png_ptr, row_pointers);
+
+	/* It is REQUIRED to call this to finish writing the rest of the file */
+	png_write_end(png_ptr, info_ptr);
+
+	free(image);
+	free(row_pointers);
+
+	/* clean up after the write, and free any memory allocated */
+	png_destroy_write_struct(&png_ptr, &info_ptr);
+
+	/* close the file */
+	fclose(fp);
+
+	/* that's it */
+	return true;
+}
+
