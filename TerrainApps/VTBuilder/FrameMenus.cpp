@@ -2240,7 +2240,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	if (!GetActiveElevLayer())
 		return;
 
-	wxString choices[9];
+	wxString choices[10];
 	choices[0] = _T("ArcInfo ASCII Grid");
 	choices[1] = _T("GeoTIFF");
 	choices[2] = _T("TerraGen");
@@ -2250,9 +2250,10 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	choices[6] = _T("VRML ElevationGrid");
 	choices[7] = _T("RAW/INF for MS Flight Simulator");
 	choices[8] = _T("ChunkLOD (.chu)");
+	choices[9] = _T("PNG (16-bit greyscale)");
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
-		_("Export to file format:"), 9, choices);
+		_("Export to file format:"), 10, choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -2267,6 +2268,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	case 6: ExportVRML(); break;
 	case 7: ExportRAWINF(); break;
 	case 8: ExportChunkLOD(); break;
+	case 9: ExportPNG16(); break;
 	}
 }
 
@@ -2471,6 +2473,18 @@ void MainFrame::ExportChunkLOD()
 		else
 			DisplayAndLog("Error writing file.");
 	}
+}
+
+void MainFrame::ExportPNG16()
+{
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_PNG);
+	if (fname == "")
+		return;
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToPNG16(fname);
+	if (success)
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+	else
+		DisplayAndLog("Error writing file.");
 }
 
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)

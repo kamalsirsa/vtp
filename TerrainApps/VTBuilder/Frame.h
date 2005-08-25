@@ -417,6 +417,7 @@ public:
 	void ExportVRML();
 	void ExportRAWINF();
 	void ExportChunkLOD();
+	void ExportPNG16();
 
 	// area tool
 	void ExportElevation();
