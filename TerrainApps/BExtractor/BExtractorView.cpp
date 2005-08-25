@@ -375,7 +375,7 @@ void BExtractorView::DrawRoadNodes(CDC *pDC)
 {
 
 	BExtractorDoc* pDoc = GetDocument();
-	Node *pNode;
+	TNode *pNode;
 
 	COLORREF color;
 	color = m_roadColor;
@@ -388,7 +388,7 @@ void BExtractorView::DrawRoadNodes(CDC *pDC)
 	}
 }
 
-void BExtractorView::DrawRoadNode(CDC *pDC, Node *pNode)
+void BExtractorView::DrawRoadNode(CDC *pDC, TNode *pNode)
 {
 	CPoint origin;
 
@@ -401,9 +401,8 @@ void BExtractorView::DrawRoadNode(CDC *pDC, Node *pNode)
 
 void BExtractorView::DrawRoads(CDC *pDC)
 {
-
 	BExtractorDoc* pDoc = GetDocument();
-	Link *pLink;
+	TLink *pLink;
 
 	COLORREF color;
 	color = m_roadColor;
@@ -416,11 +415,11 @@ void BExtractorView::DrawRoads(CDC *pDC)
 	}
 }
 
-void BExtractorView::DrawRoad(CDC *pDC, Link *pLink)
+void BExtractorView::DrawRoad(CDC *pDC, TLink *pLink)
 {
 	CPoint point;
 	int i, size;
-	Node *pNode;
+	TNode *pNode;
 
 	if (NULL != (pNode = pLink->GetNode(0)))
 	{
@@ -440,7 +439,7 @@ void BExtractorView::DrawRoad(CDC *pDC, Link *pLink)
 	}
 }
 
-bool BExtractorView::FindNearestRoadNode(CPoint &point, Node **pNearestNode)
+bool BExtractorView::FindNearestRoadNode(CPoint &point, TNode **pNearestNode)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	DPoint2 geoPoint;
@@ -737,7 +736,7 @@ void BExtractorView::OnLButtonDownEditShape(UINT nFlags, CPoint point)
 void BExtractorView::OnLButtonDownEditRoad(UINT nFlags, CPoint point)
 {
 	BExtractorDoc* pDoc = GetDocument();
-	Node *pNode;
+	TNode *pNode;
 	DPoint2 geoPoint;
 	CPoint nodePoint = point;
 	CRect myRect;
@@ -1051,7 +1050,7 @@ void BExtractorView::OnLButtonUpEditRoadNodes(CPoint point)
 			return;
 
 		// create and new road node
-		Node *pNode = pDoc->m_Links.NewNode();
+		TNode *pNode = pDoc->m_Links.NewNode();
 		pDoc->m_Links.AddNode(pNode);
 		pNode->m_p = imagepoint;
 
@@ -1517,9 +1516,9 @@ void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
 
 	BExtractorDoc* doc = GetDocument();
 	DRECT drect(start.x, start.y, end.x, end.y);
-	Node *pNode;
-	Node *pNext;
-	Node *pPreviousNode = NULL;
+	TNode *pNode;
+	TNode *pNext;
+	TNode *pPreviousNode = NULL;
 	CRect screen_rect;
 	int size = UTM_sdx(15.0f);
 	CPoint screenPoint;
@@ -1538,7 +1537,7 @@ void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
 			numRoads = pNode->m_iLinks;
 			for (int i = 0; i < numRoads; i++)
 			{
-				Link *pLink = pNode->GetLink(0);
+				TLink *pLink = pNode->GetLink(0);
 				pNode->DetachLink(pLink);
 				if (pLink->GetNode(0) == pNode)
 					pLink->GetNode(1)->DetachLink(pLink);

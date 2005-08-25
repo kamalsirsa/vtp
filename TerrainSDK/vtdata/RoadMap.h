@@ -57,37 +57,41 @@ enum LightStatus {
 #define LANE_WIDTH			3.3f
 #define PARKING_WIDTH		LANE_WIDTH
 
+// Nodes and Links refer to each other, so use forward declarations
+class TNode;
+class TLink;
+
 /**
- * A 'Node' is a place where 2 or more roads meet.
+ * A Transporation Node is a place where 2 or more roads (links) meet.
  */
-class Node
+class TNode
 {
 public:
-	Node();
-	virtual ~Node();
+	TNode();
+	virtual ~TNode();
 
 	// comparison
-	bool operator==(Node &ref);
+	bool operator==(TNode &ref);
 
 	//copies internal variables from given node.
-	void Copy(Node* node);
+	void Copy(TNode* node);
 
-	class Link *GetLink(int n);
+	TLink *GetLink(int n);
 	int FindLink(int roadID);			//returns internal number of road with given ID.  -1 if not found.
-	void AddLink(class Link *pR);		//adds a road to the node
-	void DetachLink(class Link *pR);	//detaches the road from the node.
+	void AddLink(TLink *pR);		//adds a road to the node
+	void DetachLink(TLink *pR);	//detaches the road from the node.
 	void DetermineLinkAngles();			//resulting angles > 0
 	void SortLinksByAngle();			//sorts the internal roads by angle.
-	DPoint2 find_adjacent_roadpoint2d(Link *pR);  //returns the 2nd point on the road from the node.
+	DPoint2 find_adjacent_roadpoint2d(TLink *pR);  //returns the 2nd point on the road from the node.
 
 	//sets intersection type for node.  returns false if road not found
-	bool SetIntersectType(Link *road, IntersectionType type);
+	bool SetIntersectType(TLink *road, IntersectionType type);
 	bool SetIntersectType(int roadNum, IntersectionType type);  //roadNum is internal index within the node
-	IntersectionType GetIntersectType(Link *road);	//returns the intersection type of given road
+	IntersectionType GetIntersectType(TLink *road);	//returns the intersection type of given road
 	IntersectionType GetIntersectType(int roadNum); //returns the intersection type of given road index (not ID)
-	LightStatus GetLightStatus(Link *road);			//returns the light status of given road
+	LightStatus GetLightStatus(TLink *road);			//returns the light status of given road
 	LightStatus GetLightStatus(int roadNum);		//returns the light status of given road index (not ID)
-	bool SetLightStatus(Link *road, LightStatus light); //sets the light status of given road
+	bool SetLightStatus(TLink *road, LightStatus light); //sets the light status of given road
 	bool SetLightStatus(int roadNum, LightStatus light); //sets the light status of given road index (not ID)
 
 	bool HasLights();
@@ -103,36 +107,36 @@ public:
 	// angle of each road, not initialized till SortLinksByAngle is called
 	float *m_fLinkAngle;
 
-	Node *m_pNext;
+	TNode *m_pNext;
 protected:
 	IntersectionType *m_IntersectTypes;	//intersection types of the roads at this node.
 	LightStatus *m_Lights;  //lights of the roads at this node.
-	class Link **m_r;  //array of roads that intersect this node.
+	TLink **m_r;  //array of roads that intersect this node.
 
 private:
 	// Don't let unsuspecting users stumble into assuming that object
 	// copy semantics will work.  Declare them private and never
 	// define them,
-	Node( const Node & );
-	Node &operator=( const Node & );
+	TNode( const TNode & );
+	TNode &operator=( const TNode & );
 };
 
 
 /**
- * A 'Link' a series of points, connecting one node to another.
+ * A Transportation Link a series of points, connecting one node to another.
  */
-class Link : public DLine2
+class TLink : public DLine2
 {
 public:
-	Link();
-	Link(Link &ref);
-	virtual ~Link();
+	TLink();
+	TLink(TLink &ref);
+	virtual ~TLink();
 
 	// comparison
-	bool operator==(Link &ref);
+	bool operator==(TLink &ref);
 
-	void SetNode(int n, Node *pNode) { m_pNode[n] = pNode; }
-	Node *GetNode(int n) { return m_pNode[n]; }
+	void SetNode(int n, TNode *pNode) { m_pNode[n] = pNode; }
+	TNode *GetNode(int n) { return m_pNode[n]; }
 
 	// closest distance from point to the road
 	double GetLinearCoordinates(const DPoint2 &p, double &a, double &b,
@@ -154,17 +158,17 @@ public:
 	unsigned short m_iLanes; // number of lanes
 	SurfaceType m_Surface;
 	short	m_iHwy;			// highway number: -1 for normal roads
-	Link	*m_pNext;		// the next Link, if roads are maintained in link list form
+	TLink	*m_pNext;		// the next Link, if roads are maintained in link list form
 	short	m_iFlags;		// a flag to be used to holding any addition info.
 	int		m_id;			// only used during file reading
 
 protected:
-	Node	*m_pNode[2];	// "from" and "to" nodes
+	TNode	*m_pNode[2];	// "from" and "to" nodes
 	float	m_fHeight[2];
 };
 
-typedef Link *LinkPtr;
-typedef Node *NodePtr;
+typedef TLink *LinkPtr;
+typedef TNode *TNodePtr;
 
 #define shortSize 4
 #define intSize 4
@@ -187,32 +191,32 @@ public:
 	int		NumLinks() const;	// returns number of roads in the road map
 	int		NumNodes() const;	// returns number of nodes in the road map
 
-	Link	*GetFirstLink() { return m_pFirstLink; }
-	Node	*GetFirstNode() { return m_pFirstNode; }
+	TLink	*GetFirstLink() { return m_pFirstLink; }
+	TNode	*GetFirstNode() { return m_pFirstNode; }
 
-	virtual Node *NewNode() { return new Node; }
-	virtual Link *NewLink() { return new Link; }
+	virtual TNode *NewNode() { return new TNode; }
+	virtual TLink *NewLink() { return new TLink; }
 
-	void	AddNode(Node *pNode)
+	void	AddNode(TNode *pNode)
 	{
 		pNode->m_pNext = m_pFirstNode;
 		m_pFirstNode = pNode;
 	}
-	void	AddLink(Link *pLink)
+	void	AddLink(TLink *pLink)
 	{
 		pLink->m_pNext = m_pFirstLink;
 		m_pFirstLink = pLink;
 	}
 
-	Node *FindNodeByID(int id);
-	Node *FindNodeAtPoint(const DPoint2 &point, double epsilon);
+	TNode *FindNodeByID(int id);
+	TNode *FindNodeAtPoint(const DPoint2 &point, double epsilon);
 
 	// cleaning function: remove unused nodes, return the number removed
 	int RemoveUnusedNodes();
 
 	// Other clean up functions
-	void RemoveNode(Node *pNode);
-	void RemoveLink(Link *pLink);
+	void RemoveNode(TNode *pNode);
+	void RemoveLink(TLink *pLink);
 
 	bool ReadRMF(const char *filename, bool bHwy, bool bPaved, bool bDirt);
 	bool WriteRMF(const char *filename);
@@ -223,8 +227,8 @@ protected:
 	DRECT	m_extents;			// the extent of the roads in the RoadMap
 	bool	m_bValidExtents;	// true when extents are computed
 
-	Link	*m_pFirstLink;
-	Node	*m_pFirstNode;
+	TLink	*m_pFirstLink;
+	TNode	*m_pFirstNode;
 
 	vtProjection	m_proj;
 };

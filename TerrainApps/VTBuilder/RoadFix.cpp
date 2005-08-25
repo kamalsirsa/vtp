@@ -38,7 +38,7 @@ void NodeEdit::EnforceLinkEndpoints()
 	//for the roads that now end in pN2, move it's end point as well.
 	for (int k = 0; k < m_iLinks; k++)
 	{
-		Link *r = GetLink(k);
+		TLink *r = GetLink(k);
 		if (r->GetNode(0) == this)
 			r->SetAt(0, m_p);
 		else if (r->GetNode(1) == this)
@@ -186,10 +186,10 @@ int RoadMapEdit::RemoveDegenerateLinks()
 */
 int RoadMapEdit::RemoveUnnecessaryNodes()
 {
-	Link* aLink;
-	Link* bLink;
-	Node *curNode = m_pFirstNode;
-	Node *prevNode = NULL;
+	TLink *aLink;
+	TLink *bLink;
+	TNode *curNode = m_pFirstNode;
+	TNode *prevNode = NULL;
 	int count = 0;
 	int total = NumNodes();
 	while (curNode != NULL)
@@ -299,7 +299,7 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 					}
 				}
 
-				Node* tmpNode;
+				TNode *tmpNode;
 				//replace roads at endpoints with new road
 				if (aLink->GetNode(0) == curNode) {
 					index = 1;
@@ -330,8 +330,8 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 				m_pFirstLink = newLink;
 
 				//remove old roads...
-				Link* curLink = m_pFirstLink->m_pNext;
-				Link* prevLink = m_pFirstLink;
+				TLink* curLink = m_pFirstLink->m_pNext;
+				TLink* prevLink = m_pFirstLink;
 				while (curLink) {
 					if (curLink == bLink) {
 						prevLink->m_pNext = curLink->m_pNext;

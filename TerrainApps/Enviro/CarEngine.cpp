@@ -72,7 +72,7 @@ CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_spe
 //setup engine to drive on roads, starting from node n.
 //ignores pos.  takes position from given node.
 CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed,
-					 float wRadius, Node *n, int lane, float roadheight)
+					 float wRadius, TNode *n, int lane, float roadheight)
 {
 	SharedConstructor(pos, grid, target_speed, wRadius);
 	m_pCurNode = n;
@@ -87,7 +87,8 @@ CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_spe
 }
 
 //shared constructor
-void CarEngine::SharedConstructor(const FPoint3 &pos, vtHeightField3d * grid, float target_speed, float wRadius){
+void CarEngine::SharedConstructor(const FPoint3 &pos, vtHeightField3d * grid,
+								  float target_speed, float wRadius){
 	m_vCurPos = pos;
 
 	m_pHeightField = grid;
@@ -442,7 +443,7 @@ void CarEngine::PickFirstRoad()
 		//pick road based on path.
 		int roadID = m_iRoads[m_iNextRoad];
 		for (i = 0; i < m_pCurNode->m_iLinks; i++) {
-			Link *r = m_pCurNode->GetLink(i);
+			TLink *r = m_pCurNode->GetLink(i);
 			if (r->m_id == roadID) {
 				//found road.
 				//determine next road to follow.
@@ -464,7 +465,7 @@ void CarEngine::PickFirstRoad()
 		//road following.
 		//make sure car can go in the direction of the road.
 		for (i = 0; i < m_pCurNode->m_iLinks; i++) {
-			Link *r = m_pCurNode->GetLink(i);
+			TLink *r = m_pCurNode->GetLink(i);
 			if ((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pCurNode)
 				||
 				(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pCurNode)) {
@@ -547,7 +548,7 @@ void CarEngine::PickNextRoad() {
 		//pick road based on path.
 		int roadID = m_iRoads[m_iNextRoad];
 		for (i = 0; i < m_pNextNode->m_iLinks; i++) {
-			Link *r = m_pNextNode->GetLink(i);
+			TLink *r = m_pNextNode->GetLink(i);
 			if (r->m_id == roadID) {
 				//found road.
 				//determine next road to follow.
@@ -576,7 +577,7 @@ void CarEngine::PickNextRoad() {
 				// special logic: follow the highway
 				for (i = 0; i < m_pNextNode->m_iLinks; i++)
 				{
-					Link *r = m_pNextNode->GetLink(i);
+					TLink *r = m_pNextNode->GetLink(i);
 					if ((r != m_pCurRoad && r->m_iHwy > 0)
 						&&
 						((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pNextNode)
@@ -609,7 +610,7 @@ void CarEngine::PickNextRoad() {
 				{
 					//wrap around
 					temp_i = (r_index + i)% m_pNextNode->m_iLinks;
-					Link *r = m_pNextNode->GetLink(temp_i);
+					TLink *r = m_pNextNode->GetLink(temp_i);
 					if ((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pNextNode)
 						||
 						(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pNextNode))

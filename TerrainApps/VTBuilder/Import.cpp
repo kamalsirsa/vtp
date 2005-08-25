@@ -1335,10 +1335,10 @@ int MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 					r->Append(DPoint2(pLineString->getX(j),
 						pLineString->getY(j)));
 				}
-				Node *n1 = pRL->NewNode();
+				TNode *n1 = pRL->NewNode();
 				n1->m_p.Set(pLineString->getX(0), pLineString->getY(0));
 
-				Node *n2 = pRL->NewNode();
+				TNode *n2 = pRL->NewNode();
 				n2->m_p.Set(pLineString->getX(num_points-1), pLineString->getY(num_points-1));
 
 				pRL->AddNode(n1);

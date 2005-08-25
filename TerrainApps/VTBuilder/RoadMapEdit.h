@@ -30,7 +30,7 @@ enum VisualIntersectionType {
 };
 
 
-class NodeEdit : public Node, public Selectable
+class NodeEdit : public TNode, public Selectable
 {
 public:
 	NodeEdit();
@@ -67,7 +67,7 @@ protected:
 	VisualIntersectionType m_iVisual;  //what to display the node as
 };
 
-class LinkEdit : public Link, public Selectable
+class LinkEdit : public TLink, public Selectable
 {
 public:
 	LinkEdit();

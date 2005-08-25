@@ -3,7 +3,7 @@
 //
 // Engines used by Enviro
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -208,7 +208,7 @@ void RoadFollowEngine::PickRoad(LinkGeom *last_link)
 			// special logic: follow the highway
 			for (i = 0; i < node->m_iLinks; i++)
 			{
-				if (node->GetRoad(i) != last_link && node->GetRoad(i)->m_iHwy > 0)
+				if (node->GetLink(i) != last_link && node->GetLink(i)->m_iHwy > 0)
 					break;
 			}
 			// if no highway, do normal logic
@@ -217,7 +217,7 @@ void RoadFollowEngine::PickRoad(LinkGeom *last_link)
 		{
 			for (i = 0; i < node->m_iLinks; i++)
 			{
-				if (node->GetRoad(i) == last_link)
+				if (node->GetLink(i) == last_link)
 				{
 					i++;
 					i %= node->m_iLinks;
@@ -226,7 +226,7 @@ void RoadFollowEngine::PickRoad(LinkGeom *last_link)
 			}
 		}
 	}
-	m_pCurrentRoad = node->GetRoad(i);
+	m_pCurrentRoad = node->GetLink(i);
 	if (m_pCurrentRoad)
 	{
 		m_pCurrentRoadLength = m_pCurrentRoad->Length();

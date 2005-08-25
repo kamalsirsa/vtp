@@ -100,19 +100,19 @@ bool vtRoadLayer::AppendDataFrom(vtLayer *pL)
 	vtRoadLayer *pFrom = (vtRoadLayer *)pL;
 
 	// add nodes to our list
-	Node *n = pFrom->GetFirstNode();
+	TNode *n = pFrom->GetFirstNode();
 	while (n)
 	{
-		Node *next = n->m_pNext;
+		TNode *next = n->m_pNext;
 		n->m_pNext = m_pFirstNode;
 		m_pFirstNode = n;
 		n = next;
 	}
 	// add roads to our list
-	Link *r = pFrom->GetFirstLink();
+	TLink *r = pFrom->GetFirstLink();
 	while (r)
 	{
-		Link *next = r->m_pNext;
+		TLink *next = r->m_pNext;
 		r->m_pNext = m_pFirstLink;
 		m_pFirstLink = r;
 		r = next;
@@ -231,7 +231,7 @@ void vtRoadLayer::Offset(const DPoint2 &p)
 		}
 		link->m_bSidesComputed = false;
 	}
-	for (Node *n = GetFirstNode(); n; n=n->m_pNext)
+	for (TNode *n = GetFirstNode(); n; n=n->m_pNext)
 		n->m_p += p;
 
 	// recompute road extents

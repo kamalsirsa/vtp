@@ -73,7 +73,7 @@ FPoint3 CreateRoadVector(FPoint3 p1, FPoint3 p2, float w)
 	return v;
 }
 
-FPoint3 CreateUnitRoadVector(FPoint3 p1, FPoint3 p2)
+FPoint3 CreateUnitLinkVector(FPoint3 p1, FPoint3 p2)
 {
 	FPoint3 v = p2 - p1;
 	v.y = 0;
@@ -94,17 +94,17 @@ NodeGeom::~NodeGeom()
 {
 }
 
-FPoint3 NodeGeom::GetRoadVector(int i)
+FPoint3 NodeGeom::GetLinkVector(int i)
 {
-	LinkGeom *pR = GetRoad(i);
+	LinkGeom *pR = GetLink(i);
 	FPoint3 pn1 = find_adjacent_roadpoint(pR, this);
 	return CreateRoadVector(m_p3, pn1, pR->m_fWidth);
 }
 
-FPoint3 NodeGeom::GetUnitRoadVector(int i)
+FPoint3 NodeGeom::GetUnitLinkVector(int i)
 {
-	FPoint3 pn1 = find_adjacent_roadpoint(GetRoad(i), this);
-	return CreateUnitRoadVector(m_p3, pn1);
+	FPoint3 pn1 = find_adjacent_roadpoint(GetLink(i), this);
+	return CreateUnitLinkVector(m_p3, pn1);
 }
 
 
@@ -131,7 +131,7 @@ void NodeGeom::BuildIntersection()
 		m_v.SetSize(2);
 
 		// get info about the road
-		LinkGeom *r = GetRoad(0);
+		LinkGeom *r = GetLink(0);
 		w = r->m_fWidth;
 
 		pn1 = find_adjacent_roadpoint(r, this);
@@ -149,12 +149,12 @@ void NodeGeom::BuildIntersection()
 		m_v.SetSize(2);
 
 		// get info about the roads
-		w = (GetRoad(0)->m_fWidth + GetRoad(1)->m_fWidth) / 2.0f;
+		w = (GetLink(0)->m_fWidth + GetLink(1)->m_fWidth) / 2.0f;
 		if (m_id == 8311) {
 			; // (bogus case - put a breakpoint here to debug)
 		}
-		pn0 = find_adjacent_roadpoint(GetRoad(0), this);
-		pn1 = find_adjacent_roadpoint(GetRoad(1), this);
+		pn0 = find_adjacent_roadpoint(GetLink(0), this);
+		pn1 = find_adjacent_roadpoint(GetLink(1), this);
 
 		v = CreateRoadVector(pn0, pn1, w);
 
@@ -181,14 +181,14 @@ void NodeGeom::BuildIntersection()
 			float a_prev = angle_diff(m_fLinkAngle[i], m_fLinkAngle[i_prev]);
 
 			// get info about the roads
-			Link *pR = GetRoad(i);
-			Link *pR_next = GetRoad(i_next);
-			//Link *pR_prev = GetRoad(i_prev);
+			TLink *pR = GetLink(i);
+			TLink *pR_next = GetLink(i_next);
+			//Link *pR_prev = GetLink(i_prev);
 			w = pR->m_fWidth;
 			float w_next = pR_next->m_fWidth;
 
 			// find corner between this road and next
-			v = GetUnitRoadVector(i);
+			v = GetUnitLinkVector(i);
 
 			float w_avg;
 			w_avg = (w + w_next) / 2.0f;
@@ -218,7 +218,7 @@ void NodeGeom::BuildIntersection()
 // Given a node and a road, return the two points that the road
 // will need in order to hook up with the node.
 //
-void NodeGeom::FindVerticesForRoad(Link *pR, FPoint3 &p0, FPoint3 &p1)
+void NodeGeom::FindVerticesForRoad(TLink *pR, FPoint3 &p0, FPoint3 &p1)
 {
 	if (m_iLinks == 1)
 	{
@@ -973,7 +973,7 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 			}
 			if (!shape) continue;
 
-			Road *road = pN->GetRoad(r);
+			Road *road = pN->GetLink(r);
 			FPoint3 unit = pN->GetUnitRoadVector(r);
 			FPoint3 perp(unit.z, unit.y, -unit.x);
 			FPoint3 offset;
@@ -1105,10 +1105,10 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 	for (pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
 	{
 		bool all_same_height = true;
-		height = pN->GetRoad(0)->GetHeightAt(pN);
+		height = pN->GetLink(0)->GetHeightAt(pN);
 		for (int r = 1; r < pN->m_iLinks; r++)
 		{
-			if (pN->GetRoad(r)->GetHeightAt(pN) != height)
+			if (pN->GetLink(r)->GetHeightAt(pN) != height)
 			{
 				all_same_height = false;
 				break;
@@ -1119,7 +1119,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 			pNew = new NodeGeom();
 			for (r = 1; r < pN->m_iLinks; r++)
 			{
-				LinkGeom *pR = pN->GetRoad(r);
+				LinkGeom *pR = pN->GetLink(r);
 				if (pR->GetHeightAt(pN) != height)
 				{
 					pN->DetachRoad(pR);
@@ -1135,7 +1135,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 #if 0
 		if (pN->m_iLinks > 0)
 		{
-			height = pN->GetRoad(0)->GetHeightAt(pN);
+			height = pN->GetLink(0)->GetHeightAt(pN);
 			pN->m_p3.y += height;
 		}
 #endif

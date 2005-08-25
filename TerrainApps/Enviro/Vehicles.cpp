@@ -234,7 +234,7 @@ void VehicleManager::create_ground_vehicles(vtTerrain *pTerrain, float fSize, fl
 			pTerrain->PlantModelAtPoint(car, n->m_p);
 
 			float fSpeed = 60.0f;
-			Node *pNode = n;
+			TNode *pNode = n;
 
 			CarEngine *pE1;
 			if (pNode == NULL)

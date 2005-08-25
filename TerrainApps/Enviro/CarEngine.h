@@ -35,7 +35,7 @@ public:
 	//drives in a circle.
 	CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius, FPoint3 center);
 	//drives from the given node.  ignores pos value.  takes position from given node.
-	CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius, Node *n, int lane=1, float roadheight=0);
+	CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius, TNode *n, int lane=1, float roadheight=0);
 
 	/*	finds and sets the tire variables in the model.  assumes that the tires are under a group name ending
 		in "tires" and the 4 tires are the children of the group.  the 4 tire names should end with their
@@ -115,10 +115,10 @@ private:
 	bool m_bFirstTime;
 
 	//road following
-	Node* m_pCurNode;	//the last node the we visited.
-	Node* m_pNextNode;	//the next node we're going to visit
-	Link* m_pCurRoad;	//current road we're driving on (from m_pCurNode to m_pNextNode)
-	Link* m_pNextRoad;	//the next road to drive on (after NextNode)
+	TNode* m_pCurNode;	//the last node the we visited.
+	TNode* m_pNextNode;	//the next node we're going to visit
+	TLink* m_pCurRoad;	//current road we're driving on (from m_pCurNode to m_pNextNode)
+	TLink* m_pNextRoad;	//the next road to drive on (after NextNode)
 	bool m_bForwards;	//true if we are driving  from node 0-1 on current road
 	int m_iLane;  //lane to drive on
 	IntersectionType m_iNextIntersect;	//intersection type of next node.

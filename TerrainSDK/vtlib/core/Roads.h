@@ -27,18 +27,18 @@
  * A Node is a place where 2 or more links meet.  NodeGeom extents Node
  * with 3D geometry.
  */
-class NodeGeom : public Node
+class NodeGeom : public TNode
 {
 public:
 	NodeGeom();
 	virtual ~NodeGeom();
 
-	class LinkGeom *GetRoad(int n) { return (class LinkGeom *)m_r[n]; }
+	class LinkGeom *GetLink(int n) { return (class LinkGeom *)m_r[n]; }
 	void BuildIntersection();
-	void FindVerticesForRoad(Link *pR, FPoint3 &p0, FPoint3 &p1);
+	void FindVerticesForRoad(TLink *pR, FPoint3 &p0, FPoint3 &p1);
 	vtMesh *GenerateGeometry();
-	FPoint3 GetRoadVector(int i);
-	FPoint3 GetUnitRoadVector(int i);
+	FPoint3 GetLinkVector(int i);
+	FPoint3 GetUnitLinkVector(int i);
 
 	int m_iVerts;
 	FLine3 m_v;		// vertices of the polygon
@@ -119,7 +119,7 @@ enum RoadVTIndices
  * A link is series of points, connecting one node to another.  LinkGeom
  * extents Link with 3D geometry.
  */
-class LinkGeom : public Link
+class LinkGeom : public TLink
 {
 public:
 	LinkGeom();
@@ -164,8 +164,8 @@ public:
 	// overrides for virtual methods
 	LinkGeom	*GetFirstLink() { return (LinkGeom *) m_pFirstLink; }
 	NodeGeom	*GetFirstNode() { return (NodeGeom *) m_pFirstNode; }
-	Node		*NewNode() { return new NodeGeom; }
-	Link		*NewLink() { return new LinkGeom; }
+	TNode		*NewNode() { return new NodeGeom; }
+	TLink		*NewLink() { return new LinkGeom; }
 
 	void DrapeOnTerrain(vtHeightField3d *pHeightField);
 	void BuildIntersections();

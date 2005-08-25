@@ -31,8 +31,8 @@ enum LBMode {
 
 class BExtractorDoc;
 class CBImage;
-class Node;
-class Link;
+class TNode;
+class TLink;
 
 class BExtractorView : public CView
 {
@@ -53,10 +53,10 @@ public:
 	void DrawBuildings(CDC *pDC);
 	void DrawBuilding(CDC *pDC, vtBuilding *bld);
 	void DrawRoadNodes(CDC *pDC);
-	void DrawRoadNode(CDC *pDC, Node *pNode);
+	void DrawRoadNode(CDC *pDC, TNode *pNode);
 	void DrawRoads(CDC *pDC);
-	void DrawRoad(CDC *pDC, Link *pLink);
-	bool FindNearestRoadNode(CPoint &point, Node **pNearestNode);
+	void DrawRoad(CDC *pDC, TLink *pLink);
+	bool FindNearestRoadNode(CPoint &point, TNode **pNearestNode);
 	bool ReadINIFile();
 	bool WriteINIFile();
 	bool SelectionOnPicture(DPoint2 point);
@@ -109,7 +109,7 @@ protected:
 	COLORREF m_roadColor;
 
 	// Current road when plotting roads
-	Link *m_pCurrentRoad;
+	TLink *m_pCurrentRoad;
 
 	// Directory path at startup, used to locate the .ini file
 	char m_directory[MAX_PATH];

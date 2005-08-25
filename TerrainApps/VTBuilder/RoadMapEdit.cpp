@@ -31,7 +31,7 @@ static bool g_bInitializedPens = false;
 #define RP_DIRECTION 9
 #define RP_CROSSES	10
 
-NodeEdit::NodeEdit() : Node()
+NodeEdit::NodeEdit() : TNode()
 {
 	m_bSelect = false;
 	m_iPathIndex = 0;
@@ -45,7 +45,7 @@ NodeEdit::NodeEdit() : Node()
 //
 bool NodeEdit::operator==(NodeEdit &ref)
 {
-	if (! ((*((Node *)this)) == ref))
+	if (! ((*((TNode *)this)) == ref))
 		return false;
 
 	return (m_iVisual == ref.m_iVisual);
@@ -53,7 +53,7 @@ bool NodeEdit::operator==(NodeEdit &ref)
 
 void NodeEdit::Copy(NodeEdit* node)
 {
-	Node::Copy(node);
+	TNode::Copy(node);
 	m_bSelect = node->m_bSelect;
 	m_iVisual = node->m_iVisual;
 }
@@ -102,7 +102,7 @@ void NodeEdit::Translate(DPoint2 offset)
 	// also move the endpoint of all the roads that end here
 	for (int i = 0; i < m_iLinks; i++)
 	{
-		Link *pR = m_r[i];
+		TLink *pR = m_r[i];
 		if (pR->GetNode(0) == this)
 			pR->SetAt(0, m_p);
 		else
@@ -137,7 +137,7 @@ void NodeEdit::DetermineVisualFromLinks()
 
 ///////////////////////////////////////////////////////////////////
 
-LinkEdit::LinkEdit() : Link(), Selectable()
+LinkEdit::LinkEdit() : TLink(), Selectable()
 {
 	m_extent.SetRect(0,0,0,0);
 	m_iPriority = 3;
@@ -151,7 +151,7 @@ LinkEdit::LinkEdit() : Link(), Selectable()
 //
 bool LinkEdit::operator==(LinkEdit &ref)
 {
-	if (! ((*((Link *)this)) == ref))
+	if (! ((*((TLink *)this)) == ref))
 		return false;
 
 	return (m_iPriority == ref.m_iPriority &&
@@ -356,7 +356,7 @@ bool LinkEdit::EditProperties(vtRoadLayer *pLayer)
 void LinkEdit::SetFlag(int flag, bool value)
 {
 	int before = m_iFlags & (RF_SIDEWALK | RF_PARKING | RF_MARGIN);
-	Link::SetFlag(flag, value);
+	TLink::SetFlag(flag, value);
 	int after = m_iFlags & (RF_SIDEWALK | RF_PARKING | RF_MARGIN);
 	if (before != after)
 		m_bSidesComputed = false;
@@ -524,7 +524,7 @@ DRECT *RoadMapEdit::DeleteSelected(int &nDeleted)
 	LinkEdit *prevLink = NULL;
 	LinkEdit *tmpLink;
 	LinkEdit *curLink = GetFirstLink();
-	Node *tmpNode;
+	TNode *tmpNode;
 	int n = 0;
 
 	while (curLink)
@@ -848,7 +848,7 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 	bool lights = false;
 	IntersectionType type = IT_NONE;
 
-	while (Link *pR = pN->GetLink(0))
+	while (TLink *pR = pN->GetLink(0))
 	{
 		if (pR->GetNode(0) == pN)
 		{
@@ -891,10 +891,10 @@ LinkEdit *RoadMapEdit::AddRoadSegment(OGRLineString *pLineString)
 	{
 		r->Append(DPoint2(pLineString->getX(j),	pLineString->getY(j)));
 	}
-	Node *n1 = NewNode();
+	TNode *n1 = NewNode();
 	n1->m_p.Set(pLineString->getX(0), pLineString->getY(0));
 
-	Node *n2 = NewNode();
+	TNode *n2 = NewNode();
 	n2->m_p.Set(pLineString->getX(num_points-1), pLineString->getY(num_points-1));
 
 	AddNode(n1);
