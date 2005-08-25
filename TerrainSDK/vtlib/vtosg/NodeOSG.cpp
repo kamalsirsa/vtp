@@ -27,6 +27,11 @@ using namespace osg;
 // vtNode
 //
 
+/**
+ * Releases a node.  Use this method instead of C++'s delete operator when
+ * you are done with a node.  Internally, the node is reference counted so
+ * it is not deleted until all references to it are removed.
+ */
 void vtNode::Release()
 {
 	// shouldn't happen but... safety check anyway
@@ -60,11 +65,19 @@ void vtNode::SetOsgNode(Node *n)
 	}
 }
 
+/**
+ * Set the enabled state of this node.  When the node is not enabled, it
+ * is not rendered.  If it is a group node, all of the nodes children are
+ * also not rendered.
+ */
 void vtNode::SetEnabled(bool bOn)
 {
 	m_pNode->setNodeMask(bOn ? 0xffffffff : 0);
 }
 
+/**
+ * Return the enabled state of a node.
+ */
 bool vtNode::GetEnabled() const
 {
 	int mask = m_pNode->getNodeMask();
@@ -247,6 +260,18 @@ void PolygonCountVisitor::apply(osg::Geode& geode)
 	traverse(geode);
 }
 
+/**
+ * This method walks through a node (and all its children), collecting
+ * information about all the geometric primitives.  The result is placed
+ * in an object of type vtPrimInfo.  This includes information such as
+ * number of vertices, number of triangles, and so forth.  Note that this
+ * can be a time-consuming operation if your geometry is large or complex.
+ * The results are not cached, so this method should be called only when
+ * needed.
+ *
+ * \param info A vtPrimInfo object which will receive all the information
+ *	about this node and its children.
+ */
 void vtNode::GetPrimCounts(vtPrimInfo &info)
 {
 	PolygonCountVisitor pv;
@@ -254,6 +279,14 @@ void vtNode::GetPrimCounts(vtPrimInfo &info)
 	info = pv.info;
 }
 
+/**
+ * Transform a 3D point from a node's local frame of reference to world
+ * coordinates.  This is done by walking the scene graph upwards, applying
+ * all transforms that are encountered.
+ *
+ * \param point A reference to the input point is modified in-place with
+ *	world coordinate result.
+ */
 void vtNode::LocalToWorld(FPoint3 &point)
 {
 #if 0
@@ -293,6 +326,13 @@ void vtNode::LocalToWorld(FPoint3 &point)
 #endif
 }
 
+/**
+ * Return the parent of this node in the scene graph.  If the node is not
+ * in the scene graph, NULL is returned.
+ *
+ * \param iParent If the node has multiple parents, you can specify which
+ *	one you want.
+ */
 vtGroup *vtNode::GetParent(int iParent)
 {
 	int num = m_pNode->getNumParents();
@@ -423,6 +463,25 @@ public:
 static std::map<vtString, ref_ptr<Node> > m_ModelCache;
 bool vtNode::s_bDisableMipmaps = false;
 
+/**
+ * Load a 3D model from a file.
+ *
+ * The underlying scenegraph (e.g. OSG) is used to load the model, which is
+ * returned as a vtNode.  You can then use this node normally, for example
+ * add it to your scenegraph with vtGroup::AddChild(), or to your terrain's
+ * subgraph with vtTerrain::AddNode().
+ *
+ * \param filename The filename to load from.
+ * \param bAllowCache Default is true, to allow vtosg to cache models.
+ *	This means that if you load from the same filename more than once, you
+ *  will get the same model again instantly.  If you don't want this, for
+ *	example if the model has changed on disk and you want to force loading,
+ *	pass false.
+ * \param bDisableMipmaps Pass true to turn off mipmapping in the texture maps
+ *	in the loaded model.  Default is false (enable mipmapping).
+ *
+ * \return A node pointer if successful, or NULL if the load failed.
+ */
 vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
 {
 	// Some of OSG's file readers, such as the Wavefront OBJ reader, have
@@ -716,7 +775,7 @@ vtNode *FindNodeByName(vtNode *node, const char *name)
 	return NULL;
 }
 
-const vtNodeBase *vtGroup::FindDescendantByName(const char *name) const
+const vtNode *vtGroup::FindDescendantByName(const char *name) const
 {
 	return FindNodeByName((vtNode *)this, name);
 }

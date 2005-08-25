@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,25 +18,39 @@
 /** \addtogroup sg */
 /*@{*/
 
+/** Contains information about the primitives in a set of geometry */
 struct vtPrimInfo
 {
-	int Vertices;	// number of vertices drawn
+	/// Number of vertices which the geometry will draw.
+	int Vertices;
+	/// Total number of primitives of all types.
 	int Primitives;
-	int MemVertices;	// number of vertices stored in memory
+	/// Number of vertices stored in memory, which may appear more than once in indexed primitives.
+	int MemVertices;
 
+	/// Number of Point primitives.
 	int Points;
+	/// Number of Triangle Strip primitives.
 	int TriStrips;
+	/// Number of Triangle Fan primitives.
 	int TriFans;
+	/// Number of total Triangles in all the primitives.
 	int Triangles;
+	/// Number of Quad primitives.
 	int Quads;
+	/// Number of Quad Strip primitives.
 	int QuadStrips;
+	/// Number of Polygon primitives.
 	int Polygons;
+	/// Number of Line Strip primitives.
 	int LineStrips;
+	/// Number of Line Segments in all the primitives.
 	int LineSegments;
 };
 
 /**
- * Represents a Node in the vtlib Scene Graph.
+ * Represents a node in the vtlib scenegraph.  The scenegraph is simply
+ * a tree of nodes, with a root node at the top.
  */
 class vtNode : public vtNodeBase, protected osg::Referenced
 {
@@ -53,17 +67,17 @@ public:
 	/** Get the name of the node. */
 	const char *GetName2() const;
 
-	/** Get the Bounding Box of the node, in world coordinates */
+	/// Get the Bounding Box of the node, in world coordinates
 	void GetBoundBox(FBox3 &box);
 
-	/** Get the Bounding Sphere of the node, in world coordinates */
+	/** Get the Bounding Sphere of the node */
 	void GetBoundSphere(FSphere &sphere, bool bGlobal = false);
 
-	/** Get information about the number of display primitives */
+	/// Get information about the number of display primitives
 	void GetPrimCounts(vtPrimInfo &info);
 
-	/** Transform a point from a node's local coordinates to world coordinates */
-	void vtNode::LocalToWorld(FPoint3 &point);
+	/// Transform a point from a node's local coordinates to world coordinates
+	void LocalToWorld(FPoint3 &point);
 
 	vtGroup *GetParent(int iParent = 0);
 
@@ -75,6 +89,7 @@ public:
 	const osg::Node *GetOsgNode() const { return m_pNode.get(); }
 	void DecorateNativeGraph();
 
+	/// Load a 3D model file
 	static vtNode *LoadModel(const char *filename, bool bAllowCache = true, bool bDisableMipmaps = false);
 	static void ClearOsgModelCache();
 	static bool s_bDisableMipmaps;	// set to disable ALL mipmaps
@@ -132,7 +147,7 @@ public:
 
 	/** Looks for a descendent node with a given name.  If not found, NULL
 	 is returned. */
-	const vtNodeBase *FindDescendantByName(const char *name) const;
+	const vtNode *FindDescendantByName(const char *name) const;
 
 	/** Return true if the given node is a child of this group. */
 	bool ContainsChild(vtNode *pNode) const;
