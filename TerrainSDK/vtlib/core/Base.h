@@ -89,7 +89,7 @@ public:
 	virtual vtNode*		GetChild(int num) const = 0;
 	virtual unsigned int GetNumChildren() const = 0;
 	virtual bool		ContainsChild(vtNode *pNode) const = 0;
-	virtual const vtNodeBase*	FindDescendantByName(const char *name) const = 0;
+	virtual const vtNode*	FindDescendantByName(const char *name) const = 0;
 };
 
 /** Abstract base class for a scene graph node that can move. */
