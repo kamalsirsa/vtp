@@ -590,11 +590,17 @@ void vtMeshBase::CreateConicalSurface(const FPoint3 &tip, double radial_angle,
 
 /**
  * Adds an rectangular surface to this mesh.
+ * The rectangle will lie in the first two axes given, facing toward the
+ * third.  Axes can be specified by number.  For example, to produce a
+ * rectangle in the XZ plane facing along the Y axis, you would pass 0, 2, 1.
  *
- * \param iXQuads The number of quads in the X direction.
- * \param iZQuads The number of quads in the Z direction.
- * \param base The lower-left-hand origin of the rectangle's position/
- * \param size The size of the rectangle (only X and Z are used).
+ * \param iQuads1 The number of quads along the first axis.
+ * \param iQuads2 The number of quads along the second axis.
+ * \param Axis1 The first axis (X=0, Y=1, Z=2)
+ * \param Axis2 The second axis (X=0, Y=1, Z=2)
+ * \param Axis3 The third axis (X=0, Y=1, Z=2)
+ * \param min1 The lower-left-hand corner of the rectangle's position
+ * \param max1 The size of the rectangle (only X and Z are used).
  * \param fTiling UV tiling.  Set to 1 for UV coordinate of O..1.
  */
 void vtMeshBase::CreateRectangle(int iQuads1, int iQuads2,
