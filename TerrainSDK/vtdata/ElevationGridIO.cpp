@@ -2571,6 +2571,8 @@ bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(
  * their MSFS SDK 'resample' utility.
  *
  * \param szFileName Should end in ".raw"
+ * \param progress_callback If supplied, this function will be called back
+ *		with a value of 0 to 100 as the operation progresses.
  * \returns \c true if the file was successfully written.
  */
 bool vtElevationGrid::SaveToRAWINF(const char *szFileName, bool progress_callback(int)) const

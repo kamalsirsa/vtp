@@ -362,6 +362,12 @@ inline DPoint2 &DPoint2::operator=(const class FPoint2 &v)
 	return *this;
 }
 
+// Forward declarations for the line classes
+class DLine2;
+class FLine2;
+class DLine3;
+class FLine3;
+
 /**
  * A series of 2D points.  This is useful for representing either a series of
  * points, line segments or a simple closed polygon.  Double-precision.
@@ -375,13 +381,13 @@ public:
 	DLine2(const DLine2 &ref) : Array<DPoint2>() { *this = ref; }
 
 	// assignment
-	DLine2 &operator=(const class DLine2 &v);
-	DLine2 &operator=(const class FLine2 &v);
+	DLine2 &operator=(const DLine2 &v);
+	DLine2 &operator=(const FLine2 &v);
 
 	/// Add a given offset to all points
 	void Add(const DPoint2 &p);
 
-	void From3D(const class DLine3 &input);
+	void From3D(const DLine3 &input);
 	void InsertPointAfter(int iInsertAfter, const DPoint2 &Point);
 	void RemovePoint(int i);
 	bool ContainsPoint(const DPoint2 &p) const;
@@ -409,11 +415,11 @@ public:
 	FLine2(const FLine2 &ref) : Array<FPoint2>() { *this = ref; }
 
 	// assignment
-	FLine2 &operator=(const class FLine2 &v);
-	FLine2 &operator=(const class DLine2 &v);
+	FLine2 &operator=(const FLine2 &v);
+	FLine2 &operator=(const DLine2 &v);
 };
 
-inline DLine2 &DLine2::operator=(const class DLine2 &v)
+inline DLine2 &DLine2::operator=(const DLine2 &v)
 {
 	int size = v.GetSize();
 	SetSize(size);
@@ -423,7 +429,7 @@ inline DLine2 &DLine2::operator=(const class DLine2 &v)
 	return *this;
 }
 
-inline DLine2 &DLine2::operator=(const class FLine2 &v)
+inline DLine2 &DLine2::operator=(const FLine2 &v)
 {
 	int size = v.GetSize();
 	SetSize(size);
@@ -439,7 +445,7 @@ inline DLine2 &DLine2::operator=(const class FLine2 &v)
 	return *this;
 }
 
-inline FLine2 &FLine2::operator=(const class FLine2 &v)
+inline FLine2 &FLine2::operator=(const FLine2 &v)
 {
 	int size = v.GetSize();
 	SetSize(size);
@@ -449,7 +455,7 @@ inline FLine2 &FLine2::operator=(const class FLine2 &v)
 	return *this;
 }
 
-inline FLine2 &FLine2::operator=(const class DLine2 &v)
+inline FLine2 &FLine2::operator=(const DLine2 &v)
 {
 	int size = v.GetSize();
 	SetSize(size);
@@ -479,8 +485,8 @@ public:
 	DLine3(const DLine3 &ref) : Array<DPoint3>() { *this = ref; }
 
 	// assignment
-	DLine3 &operator=(const class DLine3 &v);
-//	DLine3 &operator=(const class FLine3 &v);
+	DLine3 &operator=(const DLine3 &v);
+//	DLine3 &operator=(const FLine3 &v);
 
 	void Add(const DPoint2 &p);
 	void NearestPoint2D(const DPoint2 &Point, int &iIndex, double &dist) const;
@@ -500,11 +506,11 @@ public:
 	FLine3(const FLine3 &ref) : Array<FPoint3>() { *this = ref; }
 
 	// assignment
-	FLine3 &operator=(const class FLine3 &v);
-//	FLine3 &operator=(const class DLine3 &v);
+	FLine3 &operator=(const FLine3 &v);
+//	FLine3 &operator=(const DLine3 &v);
 };
 
-inline DLine3 &DLine3::operator=(const class DLine3 &v)
+inline DLine3 &DLine3::operator=(const DLine3 &v)
 {
 	int size = v.GetSize();
 	SetSize(size);
@@ -514,7 +520,7 @@ inline DLine3 &DLine3::operator=(const class DLine3 &v)
 	return *this;
 }
 
-inline FLine3 &FLine3::operator=(const class FLine3 &v)
+inline FLine3 &FLine3::operator=(const FLine3 &v)
 {
 	int size = v.GetSize();
 	SetSize(size);
