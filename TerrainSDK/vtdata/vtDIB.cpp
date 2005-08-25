@@ -846,40 +846,12 @@ bool vtDIB::WritePNG(const char *fname)
 	*/
 //	png_set_gAMA(png_ptr, info_ptr, gamma);
 
-	/* Optionally write comments into the image
-	text_ptr[0].key = "Title";
-	text_ptr[0].text = "Mona Lisa";
-	text_ptr[0].compression = PNG_TEXT_COMPRESSION_NONE;
-	text_ptr[1].key = "Author";
-	text_ptr[1].text = "Leonardo DaVinci";
-	text_ptr[1].compression = PNG_TEXT_COMPRESSION_NONE;
-	text_ptr[2].key = "Description";
-	text_ptr[2].text = "<long text>";
-	text_ptr[2].compression = PNG_TEXT_COMPRESSION_zTXt;
-#ifdef PNG_iTXt_SUPPORTED
-	text_ptr[0].lang = NULL;
-	text_ptr[1].lang = NULL;
-	text_ptr[2].lang = NULL;
-#endif
-	png_set_text(png_ptr, info_ptr, text_ptr, 3); */
-
 	/* other optional chunks like cHRM, bKGD, tRNS, tIME, oFFs, pHYs, */
 	/* note that if sRGB is present the gAMA and cHRM chunks must be ignored
 	 * on read and must be written in accordance with the sRGB profile */
 
 	/* Write the file header information.  REQUIRED */
 	png_write_info(png_ptr, info_ptr);
-
-	/* If you want, you can write the info in two steps, in case you need to
-	* write your private chunk ahead of PLTE:
-	*
-	*   png_write_info_before_PLTE(write_ptr, write_info_ptr);
-	*   write_my_chunk();
-	*   png_write_info(png_ptr, info_ptr);
-	*
-	* However, given the level of known- and unknown-chunk support in 1.1.0
-	* and up, this should no longer be necessary.
-	*/
 
 	/* The easiest way to write the image (you may have a different memory
 	 * layout, however, so choose what fits your needs best).  You need to
