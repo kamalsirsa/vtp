@@ -1,7 +1,7 @@
 //
 // Contours.h
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,11 @@
 
 #include "Terrain.h"
 class SurfaceGrid;
+
+/** \defgroup utility
+ * Utility classes.
+ */
+/*@{*/
 
 /**
  * This class provides the ability to easily construct contour lines
@@ -66,6 +71,8 @@ protected:
 	vtGeom *m_pGeom;
 	vtMeshFactory *m_pMF;
 };
+
+/*@}*/  // utility
 
 #endif // SUPPORT_QUIKGRID
 #endif // CONTOURSH

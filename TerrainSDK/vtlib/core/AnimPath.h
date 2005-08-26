@@ -14,6 +14,9 @@
 #include "vtdata/CubicSpline.h"
 #include "vtdata/Features.h"
 
+/** \addtogroup nav */
+/*@{*/
+
 /**
  * This class describes a single location, including both a position and
  * orientation, in world coordinates, which is used to define a path.
@@ -226,6 +229,8 @@ protected:
 };
 
 #endif	// DOXYGEN_SHOULD_SKIP_THIS
+
+/*@}*/  // nav
 
 #endif // ANIMPATHH
 

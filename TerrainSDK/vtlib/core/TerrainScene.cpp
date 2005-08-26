@@ -1,7 +1,7 @@
 //
 // vtTerrainScene - Container class for all of the terrains loaded
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,12 @@
 #include "Terrain.h"
 #include "TimeEngines.h"
 
+/** \defgroup terrain Terrain
+ * These classes are the terrain objects, which act as containers for
+ * elevation, imagery, culture, and all other visual components of
+ * a part of the earth.
+ */
+/*@{*/
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -483,4 +489,6 @@ vtContentManager3d &vtGetContent()
 {
 	return vtTerrainScene::s_pTerrainScene->m_Content;
 }
+
+/*@}*/  // terrain
 

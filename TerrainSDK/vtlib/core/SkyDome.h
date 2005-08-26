@@ -10,6 +10,9 @@
 
 #include <vtdata/vtTime.h>
 
+/** \addtogroup terrain */
+/*@{*/
+
 /**
  * A StarDome is a sphere of stars, based on real star data, implemented as
  * Points.  The intended use is to make it large and far away from the camera,
@@ -141,6 +144,8 @@ protected:
 
 // Helper: creates a movable cross-hair for pointing out something on the sky
 vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color);
+
+/*@}*/  // terrain
 
 #endif	// VTLIB_SKYDOMEH
 

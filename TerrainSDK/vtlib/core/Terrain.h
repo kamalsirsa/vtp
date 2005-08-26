@@ -34,6 +34,9 @@ class vtTin3d;
 class vtFeatureSet;
 class SimpleBillboardEngine;
 
+/** \addtogroup terrain */
+/*@{*/
+
 class StructureSet : public Array<vtStructureArray3d *>
 {
 public:
@@ -402,5 +405,7 @@ protected:
 
 	vtProjection	m_proj;
 };
+
+/*@}*/	// Group terrain
 
 #endif	// TERRAINH

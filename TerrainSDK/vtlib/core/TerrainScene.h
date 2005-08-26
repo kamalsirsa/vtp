@@ -41,6 +41,9 @@ public:
 	int m_iNumWires;
 };
 
+/** \addtogroup terrain */
+/*@{*/
+
 /**
  * vtTerrainScene provides a container for all of your vtTerrain objects.
  *
@@ -131,6 +134,8 @@ protected:
 vtTerrainScene *vtGetTS();
 const vtStringArray &vtGetDataPath();
 vtContentManager3d &vtGetContent();
+
+/*@}*/	// Group terrain
 
 #endif	// TERRAINSCENEH
 

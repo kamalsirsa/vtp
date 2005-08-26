@@ -18,6 +18,8 @@ class vtTerrainScene;
 
 typedef Array<vtFeatureSet*> vtFeaturesSet;
 
+/** \addtogroup terrain */
+/*@{*/
 
 /**
  * IcoGlobe is an icosahedral globe.  To use it:
@@ -150,6 +152,8 @@ vtMovGeom *CreateSimpleEarth(const vtString &strDataPath);
 void geo_to_xyz(double radius, const DPoint2 &geo, FPoint3 &p);
 void geo_to_xyz(double radius, const DPoint2 &geo, DPoint3 &p);
 void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo);
+
+/*@}*/	// Group terrain
 
 #endif	// GLOBEH
 

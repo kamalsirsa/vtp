@@ -18,6 +18,8 @@
 	#define LocNameString std::string
 #endif
 
+/** \addtogroup nav */
+/*@{*/
 
 /**
  * A location is represented as a earth-coordinate point, an elevation,
@@ -104,5 +106,7 @@ protected:
 
 	Array<vtLocation*> m_loc;
 };
+
+/*@}*/  // nav
 
 #endif	// LOCATION_H

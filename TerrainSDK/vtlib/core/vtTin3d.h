@@ -1,7 +1,7 @@
 //
 // vtTin3d.h
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,11 @@
 
 #include "vtdata/vtTin.h"
 #include "vtdata/HeightField.h"
+
+/** \defgroup tin TINs
+ * These classes are used Triangulated Irregular Networks (TINs).
+ */
+/*@{*/
 
 /**
  * This class extends vtTin with the ability to call vtlib to create 3d
@@ -39,5 +44,7 @@ protected:
 	vtGeom		*m_pGeom;
 	vtGeom		*m_pDropGeom;
 };
+
+/*@}*/	// Group tin
 
 #endif // TIN3DH

@@ -11,6 +11,9 @@
 #include "Engine.h"
 #include "vtdata/vtTime.h"
 
+/** \addtogroup eng */
+/*@{*/
+
 /**
  * A TimeTarget is a kind of vtTarget which expects to be told what time
  * it is.
@@ -51,6 +54,8 @@ protected:
 
 	vtTime m_time;
 };
+
+/*@}*/	// Group eng
 
 #endif	// TIMEENGINESH
 
