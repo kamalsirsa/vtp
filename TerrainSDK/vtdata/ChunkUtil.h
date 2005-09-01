@@ -1,10 +1,9 @@
 //
-// ChunkUtil.cpp: support routines for the ChunkLOD code
+// ChunkUtil.h: support routines for the ChunkLOD code
 //
 
 #include <stdlib.h>
 #include <assert.h>
-#include <xutility>
 #include <new>	// for placement new
 
 #include "vtdata/MathTypes.h"
@@ -341,7 +340,6 @@ private:
 	array< array<entry> >	m_table;
 };
 
-#include <assert.h>
 
 template<class data_type>
 class mmap_array {
