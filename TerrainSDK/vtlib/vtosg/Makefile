@@ -2,12 +2,8 @@
 # GNU Makefile:  TerrainSDK/vtlib/vtosg
 #
 
-#------------------------------------------------------------------------------
-# You shouldn't need to tweak below this line
-#------------------------------------------------------------------------------
-
 VTP_ROOT = $(shell cd ../../..; pwd)
-LIB_NAME = vtosg
+LIB_NAME = libvtosg
 
 include $(VTP_ROOT)/Make.defs
 

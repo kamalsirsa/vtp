@@ -2,12 +2,8 @@
 # GNU Makefile:  TerrainSDK/vtdata
 #
 
-#------------------------------------------------------------------------------
-# You shouldn't need to tweak below this line
-#------------------------------------------------------------------------------
-
 VTP_ROOT = $(shell cd ../..; pwd)
-LIB_NAME = vtdata
+LIB_NAME = libvtdata
 
 include $(VTP_ROOT)/Make.defs
 

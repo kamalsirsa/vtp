@@ -2,12 +2,8 @@
 # GNU Makefile:  TerrainSDK/vtui
 #
 
-#------------------------------------------------------------------------------
-# You shouldn't need to tweak below this line
-#------------------------------------------------------------------------------
-
 VTP_ROOT = $(shell cd ../..; pwd)
-LIB_NAME = vtui
+LIB_NAME = libvtui
 
 include $(VTP_ROOT)/Make.defs
 

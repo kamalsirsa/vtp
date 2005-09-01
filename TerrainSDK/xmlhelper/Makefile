@@ -2,17 +2,12 @@
 # GNU Makefile:  TerrainSDK/xmlhelper
 #
 
-#------------------------------------------------------------------------------
-# You shouldn't need to tweak below this line
-#------------------------------------------------------------------------------
-
 VTP_ROOT = $(shell cd ../..; pwd)
-LIB_NAME = xmlhelper
+LIB_NAME = libxmlhelper
 
 include $(VTP_ROOT)/Make.defs
 
 IFLAGS =
-
 
 
 ifeq ($(OS), Darwin)
