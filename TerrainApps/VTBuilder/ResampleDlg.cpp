@@ -1,7 +1,7 @@
 //
 // Name: ResampleDlg.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include "ResampleDlg.h"
+#include "TileDlg.h"
 #include "Layer.h"
 
 // WDR: class implementations
@@ -36,7 +37,9 @@ BEGIN_EVENT_TABLE(ResampleDlg, AutoDialog)
 	EVT_RADIOBUTTON( ID_SHORTS, ResampleDlg::OnShorts )
 	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, ResampleDlg::OnRadioOutput )
 	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, ResampleDlg::OnRadioOutput )
+	EVT_RADIOBUTTON( ID_RADIO_TO_TILES, ResampleDlg::OnRadioOutput )
 	EVT_BUTTON( ID_DOTDOTDOT, ResampleDlg::OnDotDotDot )
+	EVT_BUTTON( ID_TILE_OPTIONS, ResampleDlg::OnTileOptions )
 END_EVENT_TABLE()
 
 ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -46,10 +49,24 @@ ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	ResampleDialogFunc( this, TRUE );
 	m_bSetting = false;
 
+	m_bNewLayer = true;
+	m_bToFile = false;
+	m_bToTiles = false;
+
+	m_tileopts.cols = 4;
+	m_tileopts.rows = 4;
+	m_tileopts.lod0size = 256;
+	m_tileopts.numlods = 3;
+
+	FormatTilingString();
+
 	// output options
 	AddValidator(ID_RADIO_CREATE_NEW, &m_bNewLayer);
 	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
+	AddValidator(ID_RADIO_TO_TILES, &m_bToTiles);
+
 	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
+	AddValidator(ID_TEXT_TILE_INFO, &m_strTileInfo);
 
 	// sampling
 	spacing1 = AddNumValidator(ID_SPACINGX, &m_fSpacingX);
@@ -99,14 +116,43 @@ void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
 
 void ResampleDlg::RecomputeSize()
 {
-	if (m_bConstraint)  // powers of 2 + 1
+	if (m_bToTiles)
+	{
+		m_iSizeX = m_tileopts.cols * m_tileopts.lod0size + 1;
+		m_iSizeY = m_tileopts.rows * m_tileopts.lod0size + 1;
+	}
+	else if (m_bConstraint)  // powers of 2 + 1
 		m_iSizeX = m_iSizeY = (1 << m_power) + 1;
 
 	m_fSpacingX = m_fAreaX / (m_iSizeX - 1);
 	m_fSpacingY = m_fAreaY / (m_iSizeY - 1);
 }
 
+void ResampleDlg::FormatTilingString()
+{
+	m_strTileInfo.Printf("%d x %d @ %d", m_tileopts.cols,
+		m_tileopts.rows, m_tileopts.lod0size);
+}
+
 // WDR: handler implementations for ResampleDlg
+
+void ResampleDlg::OnTileOptions( wxCommandEvent &event )
+{
+	TileDlg dlg(this, -1, "Tiling Options");
+
+	dlg.m_fEstX = m_fEstX;
+	dlg.m_fEstY = m_fEstY;
+	dlg.SetArea(m_area);
+	dlg.SetTilingOptions(m_tileopts);
+
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		dlg.GetTilingOptions(m_tileopts);
+		FormatTilingString();
+		RecomputeSize();
+		TransferDataToWindow();
+	}
+}
 
 void ResampleDlg::OnDotDotDot( wxCommandEvent &event )
 {
@@ -149,6 +195,10 @@ void ResampleDlg::OnRadioOutput( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	EnableBasedOnConstraint();
+	RecomputeSize();
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
 }
 
 void ResampleDlg::OnShorts( wxCommandEvent &event )
@@ -224,16 +274,22 @@ void ResampleDlg::OnConstrain( wxCommandEvent &event )
 
 void ResampleDlg::EnableBasedOnConstraint()
 {
-	GetSmaller()->Enable(m_bConstraint);
-	GetBigger()->Enable(m_bConstraint);
-	GetSizeX()->SetEditable(!m_bConstraint);
-	GetSizeY()->SetEditable(!m_bConstraint);
-	GetSpacingX()->SetEditable(!m_bConstraint);
-	GetSpacingY()->SetEditable(!m_bConstraint);
-	GetVUnits()->Enable(!m_bFloats);
-
-	GetDotDotDot()->Enable(m_bToFile);
 	GetTextToFile()->Enable(m_bToFile);
+	GetDotDotDot()->Enable(m_bToFile);
+
+	GetTextTileInfo()->Enable(m_bToTiles);
+	GetTileOptions()->Enable(m_bToTiles);
+
+	GetConstrain()->Enable(!m_bToTiles);
+	GetSmaller()->Enable(m_bConstraint && !m_bToTiles);
+	GetBigger()->Enable(m_bConstraint && !m_bToTiles);
+
+	GetSizeX()->SetEditable(!m_bConstraint && !m_bToTiles);
+	GetSizeY()->SetEditable(!m_bConstraint && !m_bToTiles);
+	GetSpacingX()->SetEditable(!m_bConstraint && !m_bToTiles);
+	GetSpacingY()->SetEditable(!m_bConstraint && !m_bToTiles);
+
+	GetVUnits()->Enable(!m_bFloats);
 }
 
 void ResampleDlg::OnBigger( wxCommandEvent &event )

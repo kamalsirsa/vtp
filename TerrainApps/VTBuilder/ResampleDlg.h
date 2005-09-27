@@ -1,7 +1,7 @@
 //
 // Name: ResampleDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,7 @@
 #include "vtui/AutoDialog.h"
 #include "vtui/wxString2.h"
 #include "vtdata/MathTypes.h"
+#include "TileDlg.h"
 
 // WDR: class declarations
 
@@ -30,7 +31,9 @@ public:
 
 	// WDR: method declarations for ResampleDlg
 	wxButton* GetDotDotDot()  { return (wxButton*) FindWindow( ID_DOTDOTDOT ); }
+	wxButton* GetTileOptions()  { return (wxButton*) FindWindow( ID_TILE_OPTIONS ); }
 	wxTextCtrl* GetTextToFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_FILE ); }
+	wxTextCtrl* GetTextTileInfo()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TILE_INFO ); }
 	wxRadioButton* GetRadioToFile()  { return (wxRadioButton*) FindWindow( ID_RADIO_TO_FILE ); }
 	wxRadioButton* GetRadioCreateNew()  { return (wxRadioButton*) FindWindow( ID_RADIO_CREATE_NEW ); }
 	wxRadioButton* GetShorts()  { return (wxRadioButton*) FindWindow( ID_SHORTS ); }
@@ -41,12 +44,16 @@ public:
 	wxTextCtrl* GetSizeX()  { return (wxTextCtrl*) FindWindow( ID_SIZEX ); }
 	wxButton* GetBigger()  { return (wxButton*) FindWindow( ID_BIGGER ); }
 	wxButton* GetSmaller()  { return (wxButton*) FindWindow( ID_SMALLER ); }
+	wxCheckBox* GetConstrain()  { return (wxCheckBox*) FindWindow( ID_CONSTRAIN ); }
 	void RecomputeSize();
+	void FormatTilingString();
 	void EnableBasedOnConstraint();
 
 	bool m_bNewLayer;
 	bool m_bToFile;
+	bool m_bToTiles;
 	wxString2 m_strToFile;
+	wxString2 m_strTileInfo;
 
 	double  m_fSpacingX;
 	double  m_fSpacingY;
@@ -66,12 +73,15 @@ public:
 	int	 m_power;
 	bool	m_bSetting;
 
+	TilingOptions	m_tileopts;
+
 private:
 	// WDR: member variable declarations for ResampleDlg
 	wxNumericValidator *spacing1, *spacing2;
 	
 private:
 	// WDR: handler declarations for ResampleDlg
+	void OnTileOptions( wxCommandEvent &event );
 	void OnDotDotDot( wxCommandEvent &event );
 	void OnRadioOutput( wxCommandEvent &event );
 	void OnShorts( wxCommandEvent &event );
