@@ -1337,6 +1337,9 @@
 				RelativePath="StructLayer.h">
 			</File>
 			<File
+				RelativePath=".\TileDlg.h">
+			</File>
+			<File
 				RelativePath="TransitLayer.h">
 			</File>
 			<File
@@ -2207,6 +2210,9 @@
 						PreprocessorDefinitions=""
 						BrowseInformation="1"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\TileDlg.cpp">
 			</File>
 			<File
 				RelativePath=".\TSDlg.cpp">
