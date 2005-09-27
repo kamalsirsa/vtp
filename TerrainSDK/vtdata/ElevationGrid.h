@@ -17,6 +17,14 @@
 class vtDIB;
 class OGRDataSource;
 
+struct TilingOptions
+{
+	int cols, rows;
+	int lod0size;
+	int numlods;
+	vtString dir;
+};
+
 /**
  * The vtElevationGrid class represents a generic grid of elevation data.
  * It supports reading and writing the data from many file formats, testing

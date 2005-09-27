@@ -52,6 +52,7 @@ RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bConstraint = false;
 	m_bTiling = false;
 	m_bToFile = false;
+	m_bJPEG = false;
 
 	m_iSizeX = 256;
 	m_iSizeY = 256;

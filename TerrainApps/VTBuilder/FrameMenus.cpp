@@ -148,6 +148,7 @@ EVT_MENU(ID_ELEV_SETUNKNOWN,		MainFrame::OnElevSetUnknown)
 EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
 EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
 EVT_MENU(ID_ELEV_EXPORT,			MainFrame::OnElevExport)
+EVT_MENU(ID_ELEV_EXPORT_TILES,		MainFrame::OnElevExportTiles)
 EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
 
@@ -371,6 +372,7 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_SETUNKNOWN, _("&Set Unknown Areas"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_EXPORT, _("E&xport To..."));
+	elevMenu->Append(ID_ELEV_EXPORT_TILES, _("Export to Tiles..."));
 	elevMenu->Append(ID_ELEV_BITMAP, _("Re&nder to Bitmap..."));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, _("&Merge shared TIN vertices"));
@@ -2487,6 +2489,11 @@ void MainFrame::ExportPNG16()
 		DisplayAndLog("Error writing file.");
 }
 
+void MainFrame::OnElevExportTiles(wxCommandEvent& event)
+{
+	// TODO
+}
+
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 {
 	int cols, rows;
@@ -2567,12 +2574,13 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 
 	if (dlg.m_bToFile)
 	{
+		UpdateProgressDialog(1, _("Writing file"));
 		wxString2 fname = dlg.m_strToFile;
 		bool success;
 		if (dlg.m_bJPEG)
-			success = dib.WriteJPEG(fname.mb_str(), 99);
+			success = dib.WriteJPEG(fname.mb_str(), 99, progress_callback);
 		else
-			success = dib.WriteTIF(fname.mb_str(), &area, &proj);
+			success = dib.WriteTIF(fname.mb_str(), &area, &proj, progress_callback);
 		if (success)
 			DisplayAndLog("Successfully wrote to file '%s'", fname.mb_str());
 		else
@@ -2583,16 +2591,6 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 		AddLayerWithCheck(pOutput);
 	}
 #if 0
-	int percent, last = -1;
-	percent = i * 100 / w;
-	if (percent != last)
-	{
-		wxString str;
-		str.Printf(_T("%d%%"), percent);
-		UpdateProgressDialog(percent, str);
-		last = percent;
-	}
-
 	// TEST - try coloring from water polygons
 	int layers = m_Layers.GetSize();
 	for (int l = 0; l < layers; l++)
@@ -2601,9 +2599,6 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 		if (lp->GetType() == LT_WATER)
 			((vtWaterLayer*)lp)->PaintDibWithWater(&dib);
 	}
-
-	UpdateProgressDialog(100, _("Writing bitmap to file."));
-	bool success = dib.WriteBMP(fname.mb_str());
 #endif
 }
 

@@ -1167,6 +1167,7 @@ GDALWrapper::~GDALWrapper()
 	// but not GDAL.
 	OSRCleanup();
 	CPLFinderClean();
+//	CPLCleanupTLS();
 
 	if (m_bOGRFormatsRegistered)
 	{

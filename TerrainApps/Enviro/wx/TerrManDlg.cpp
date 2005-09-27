@@ -65,7 +65,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 	m_pTree->DeleteAllItems();
 
 	vtStringArray &paths = m_DataPaths;
-	int i, num = paths.size();
+	unsigned int i, num = paths.size();
 	wxString2 wstr, wstr2;
 
 	m_Root = m_pTree->AddRoot(_("Terrain Data Paths"));

@@ -147,9 +147,9 @@ BEGIN
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM "View Full-Color Image\tTab",  ID_VIEW_VIEWFULLCOLORIMAGE
         MENUITEM SEPARATOR
-        MENUITEM "&Pan\tCtrl H",                ID_HAND
-        MENUITEM "Zoom In\t+",                  ID_ZOOM_IN
-        MENUITEM "Zoom Out\t-",                 ID_ZOOM_OUT
+        MENUITEM "&Pan\tH",                     ID_HAND
+        MENUITEM "Zoom In\t+/Z",                ID_ZOOM_IN
+        MENUITEM "Zoom Out\t-/Shift+Z",         ID_ZOOM_OUT
         MENUITEM "View &Full Resolution Image\tCtrl+F", ID_FULLRES
         MENUITEM SEPARATOR
         MENUITEM "Change Building Color",       ID_COLORCHANGE
@@ -157,7 +157,7 @@ BEGIN
     END
     POPUP "Modes"
     BEGIN
-        MENUITEM "&Add/Remove Buildings",       ID_MODES_ADDREMOVE
+        MENUITEM "&Add/Remove Buildings\tA",    ID_MODES_ADDREMOVE
         MENUITEM "Add by Footprint\tF",         ID_MODES_FOOTPRINT
         MENUITEM "Add by Rectangle\tR",         ID_MODES_RECTANGLE
         MENUITEM "Add by Circle\tC",            ID_MODES_CIRCLE
@@ -181,37 +181,39 @@ END
 
 IDR_MAINFRAME ACCELERATORS 
 BEGIN
-    "+",            ID_ZOOM_IN,             ASCII,  NOINVERT
-    "-",            ID_ZOOM_OUT,            ASCII,  NOINVERT
-    "A",            ID_MODES_ADDREMOVE,     VIRTKEY, NOINVERT
-    "A",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
-    "C",            ID_MODES_CIRCLE,        VIRTKEY, NOINVERT
-    "E",            ID_FUNCTIONS_CONVOLVE,  VIRTKEY, CONTROL, NOINVERT
-    "F",            ID_MODES_FOOTPRINT,     VIRTKEY, NOINVERT
-    "F",            ID_FULLRES,             VIRTKEY, CONTROL, NOINVERT
-    "F",            ID_RMF_SAVE_AS,         VIRTKEY, CONTROL, NOINVERT
-    "H",            ID_HAND,                VIRTKEY, CONTROL, NOINVERT
-    "I",            ID_IMPORTIMAGE,         VIRTKEY, CONTROL, NOINVERT
     "L",            ID_CLEARSCREEN,         VIRTKEY, CONTROL, NOINVERT
-    "M",            ID_MODES_MOVERESIZE,    VIRTKEY, NOINVERT
-    "M",            ID_RMF_SAVE,            VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_CONSTRAIN,           VIRTKEY, NOINVERT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
-    "R",            ID_MODES_RECTANGLE,     VIRTKEY, NOINVERT
-    "R",            ID_RMF_OPEN,            VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_CONSTRAIN,           VIRTKEY, NOINVERT
-    "V",            ID_VIEW_CURRENT,        VIRTKEY, CONTROL, NOINVERT
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
-    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    "A",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_FULLRES,             VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_FUNCTIONS_CONVOLVE,  VIRTKEY, CONTROL, NOINVERT
+    "H",            ID_HAND,                VIRTKEY, NOINVERT
+    "I",            ID_IMPORTIMAGE,         VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_MODES_ADDREMOVE,     VIRTKEY, NOINVERT
+    "C",            ID_MODES_CIRCLE,        VIRTKEY, NOINVERT
+    "F",            ID_MODES_FOOTPRINT,     VIRTKEY, NOINVERT
+    "M",            ID_MODES_MOVERESIZE,    VIRTKEY, NOINVERT
+    "R",            ID_MODES_RECTANGLE,     VIRTKEY, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
-    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
-    VK_TAB,         ID_VIEW_VIEWFULLCOLORIMAGE, VIRTKEY, NOINVERT
-    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_RMF_OPEN,            VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_RMF_SAVE,            VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_RMF_SAVE_AS,         VIRTKEY, CONTROL, NOINVERT
     "Z",            ID_UNDO,                VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_VIEW_CURRENT,        VIRTKEY, CONTROL, NOINVERT
+    VK_TAB,         ID_VIEW_VIEWFULLCOLORIMAGE, VIRTKEY, NOINVERT
+    "+",            ID_ZOOM_IN,             ASCII,  NOINVERT
+    "Z",            ID_ZOOM_IN,             VIRTKEY, NOINVERT
+    "-",            ID_ZOOM_OUT,            ASCII,  NOINVERT
+    "Z",            ID_ZOOM_OUT,            VIRTKEY, SHIFT, NOINVERT
 END
 
 

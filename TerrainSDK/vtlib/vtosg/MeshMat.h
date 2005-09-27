@@ -147,8 +147,8 @@ public:
 	void SetVtxNormal(int, const FPoint3&);
 	FPoint3 GetVtxNormal(int i) const;
 
-	void SetVtxColor(int, const RGBf&);
-	RGBf GetVtxColor(int i) const;
+	void SetVtxColor(int, const RGBAf&);
+	RGBAf GetVtxColor(int i) const;
 
 	void SetVtxTexCoord(int, const FPoint2&);
 	FPoint2 GetVtxTexCoord(int i) const;

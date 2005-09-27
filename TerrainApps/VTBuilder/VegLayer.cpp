@@ -436,7 +436,7 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 			pnWidth, pnDecimals);
 		if (opt.iInterpretSpeciesField == 0 || opt.iInterpretSpeciesField == 3)
 		{
-			if (fieldtype != FTInteger)
+			if ((fieldtype != FTInteger) && (fieldtype != FTDouble))
 			{
 				DisplayAndLog("Can't import field '%hs' as an integer, it is type %d.",
 					pszFieldName, fieldtype);

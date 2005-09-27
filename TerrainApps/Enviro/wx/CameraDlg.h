@@ -30,6 +30,8 @@ public:
 	// WDR: method declarations for CameraDlg
 	wxStaticText* GetFovText()  { return (wxStaticText*) FindWindow( ID_FOV_TEXT ); }
 	wxCheckBox* GetAccel()  { return (wxCheckBox*) FindWindow( ID_ACCEL ); }
+	wxSlider* GetEyeSepSlider()  { return (wxSlider*) FindWindow( ID_EYE_SEPSLIDER ); }
+	wxTextCtrl* GetEyeSep()  { return (wxTextCtrl*) FindWindow( ID_EYE_SEP ); }
 	wxSlider* GetFovSlider()  { return (wxSlider*) FindWindow( ID_FOVSLIDER ); }
 	wxTextCtrl* GetFov()  { return (wxTextCtrl*) FindWindow( ID_FOV ); }
 	wxChoice* GetSpeedUnits()  { return (wxChoice*) FindWindow( ID_SPEED_UNITS ); }
@@ -49,6 +51,7 @@ private:
 	int m_iFov;
 	int m_iNear;
 	int m_iFar;
+	int m_iEyeSep;
 	int m_iSpeed;
 	int m_iDistVeg;
 	int m_iDistStruct;
@@ -60,6 +63,7 @@ private:
 	float m_fFov;
 	float m_fNear;
 	float m_fFar;
+	float m_fEyeSep;
 	float m_fSpeed;
 	float m_fDistVeg;
 	float m_fDistStruct;
@@ -75,6 +79,7 @@ private:
 	void OnSpeedUnits( wxCommandEvent &event );
 	void OnSpeedSlider( wxCommandEvent &event );
 	void OnFarSlider( wxCommandEvent &event );
+	void OnEyeSepSlider( wxCommandEvent &event );
 	void OnNearSlider( wxCommandEvent &event );
 	void OnFovSlider( wxCommandEvent &event );
 

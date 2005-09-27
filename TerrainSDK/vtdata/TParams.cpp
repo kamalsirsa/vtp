@@ -3,7 +3,7 @@
 //
 // Defines all the construction parameters for a terrain.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -83,12 +83,11 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_ACCEL, "false");
 	AddTag(STR_ALLOW_ROLL, "false");
 
+	AddTag(STR_SURFACE_TYPE, "0");	// 0 = single grid
 	AddTag(STR_LODMETHOD, "0");
 	AddTag(STR_PIXELERROR, "2.0");
 	AddTag(STR_TRICOUNT, "10000");
 	AddTag(STR_TRISTRIPS, "true");
-
-	AddTag(STR_TIN, "false");
 
 	AddTag(STR_TIMEON, "false");
 	AddTag(STR_INITTIME, "104 2 21 10 0 0");	// 2004, spring, 10am
@@ -253,7 +252,8 @@ bool TParams::LoadFromIniFile(const char *filename)
 			SetValueString(buf, get_line_from_stream(input));
 
 		// LOD
-		else if (strcmp(buf, STR_LODMETHOD) == 0 ||
+		else if (strcmp(buf, STR_SURFACE_TYPE) == 0 ||
+				 strcmp(buf, STR_LODMETHOD) == 0 ||
 				 strcmp(buf, STR_PIXELERROR) == 0 ||
 				 strcmp(buf, STR_TRICOUNT) == 0 ||
 				 strcmp(buf, STR_TRISTRIPS) == 0)
@@ -368,12 +368,18 @@ bool TParams::LoadFromIniFile(const char *filename)
 	input.close();
 
 	//
-	// Do some value cleanup
+	// Clean up some obsolete keywords and values
 	//
 	int iVegDistance = GetValueInt(STR_VEGDISTANCE);
 	if (iVegDistance > 0 && iVegDistance < 20)	// surely an old km value
 		SetValueInt(STR_VEGDISTANCE, iVegDistance * 1000);
 	ConvertOldTimeValue();
+
+	// Is_TIN is obsolete, use Surface_Type=1 instead
+	bool bOldTin = GetValueBool(STR_TIN);
+	if (bOldTin)
+		SetValueInt(STR_SURFACE_TYPE, 1, true);
+	RemoveTag(STR_TIN);
 
 	SetValueRGBi(STR_FOGCOLOR, fog_color);
 

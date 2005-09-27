@@ -1,7 +1,7 @@
 //
 // vtBitmap.cpp
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,13 @@
 #include "vtdata/vtLog.h"
 #include "vtBitmap.h"
 
+// Headers for JPEG support, which uses the library "libjpeg"
+extern "C" {
+#ifdef WIN32
+#define XMD_H	// hack to workaround conflict between windows.h and jpeglib.h
+#endif
+#include "jpeglib.h"
+}
 
 vtBitmap::vtBitmap()
 {
@@ -190,3 +197,91 @@ void vtBitmap::ContentsChanged()
 	m_pBitmap = new wxBitmap(m_pImage);
 #endif
 }
+
+
+/**
+ * Write a JPEG file.
+ *
+ * \param fname		The output filename.
+ * \param quality	JPEG quality in the range of 0..100.
+ */
+bool vtBitmap::WriteJPEG(const char *fname, int quality)
+{
+#if USE_DIBSECTIONS
+	struct jpeg_compress_struct cinfo;
+	struct jpeg_error_mgr jerr;
+	FILE * outfile;
+
+	// Initialize the JPEG decompression object with default error handling.
+	cinfo.err = jpeg_std_error(&jerr);
+	jpeg_create_compress(&cinfo);
+
+	outfile = fopen(fname, "wb");
+	if (outfile == NULL)
+		return false;
+
+	// Specify data source for decompression 
+	jpeg_stdio_dest(&cinfo, outfile);
+
+	// set parameters for compression
+	cinfo.image_width = m_pBitmap->GetWidth(); 	// image width and height, in pixels
+	cinfo.image_height = m_pBitmap->GetHeight();
+	cinfo.input_components = m_pBitmap->GetDepth()/8;	// # of color components per pixel
+	if (m_pBitmap->GetDepth()/8 == 1)
+		cinfo.in_color_space = JCS_GRAYSCALE;
+	else
+		cinfo.in_color_space = JCS_RGB; 	// colorspace of input image
+
+	// Now use the library's routine to set default compression parameters.
+	jpeg_set_defaults(&cinfo);
+
+	jpeg_set_quality(&cinfo, quality, TRUE); // limit to baseline-JPEG values
+
+	// Start compressor
+	jpeg_start_compress(&cinfo, TRUE);
+
+	int row_stride = cinfo.image_width * cinfo.input_components;
+
+	int col;
+	JSAMPROW row_buffer = new JSAMPLE[row_stride];
+
+	// Process data
+	while (cinfo.next_scanline < cinfo.image_height)
+	{
+		// Transfer data.  Note source values are in BGR order.
+		JSAMPROW outptr = row_buffer;
+		JSAMPROW adr = ((JSAMPROW)m_pScanline) + cinfo.next_scanline*m_iScanlineWidth;
+		if (m_pBitmap->GetDepth() == 8)
+		{
+			for (col = 0; col < m_pBitmap->GetWidth(); col++)
+				*outptr++ = *adr++;
+		}
+		else
+		{
+			for (col = 0; col < m_pBitmap->GetWidth(); col++)
+			{
+				*outptr++ = adr[2];
+				*outptr++ = adr[1];
+				*outptr++ = adr[0];
+				adr += 3;
+			}
+		}
+		jpeg_write_scanlines(&cinfo, &row_buffer, 1);
+	}
+
+	delete row_buffer;
+
+	jpeg_finish_compress(&cinfo);
+
+	// After finish_compress, we can close the output file.
+	fclose(outfile);
+
+	jpeg_destroy_compress(&cinfo);
+
+#else
+	return m_pImage->SaveFile(fname);
+#endif
+
+	return true;
+}
+

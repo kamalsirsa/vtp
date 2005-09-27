@@ -4,7 +4,7 @@
 // This modules contains the implementations of the file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project.
+// Copyright (c) 2001-2005 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -1190,28 +1190,110 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 	}
 
 	// read PGM ASCII or binary file
+	bool have_header = false;
+	int coord_sys = 0;
+	int coord_zone = 0;
+	int coord_datum = 0;
+	int missing_value = INVALID_ELEVATION;
+	DRECT ext;
+	double x, y;
 	while ((fscanf(fp, "%s", sbuf) != EOF) && sbuf[0] == '#')
 	{
 		// comment
 		fscanf(fp,"%[^\n]", sbuf);  // read comment beyond '#'
 		fscanf(fp,"%[\n]", dummy);  // read newline
+		char *buf = sbuf+1;	// skip leading space after '#'
+		if (!strncmp(buf, "DEM", 3))
+		{
+			have_header= true;
+		}
+		else if (!strncmp(buf, "description", 11))
+		{
+			//do nothing
+		}
+		else if (!strncmp(buf, "coordinate system", 17))
+		{
+			if (!strcmp(buf+18, "LL")) coord_sys=0;
+			else if (!strcmp(buf+18,"UTM")) coord_sys=1;
+		}
+		else if (!strncmp(buf, "coordinate zone", 15))
+		{
+			coord_zone = atoi(buf+16);
+		}
+		else if (!strncmp(buf, "coordinate datum", 16))
+		{
+			coord_datum = atoi(buf+17);
+		}
+		else if (!strncmp(buf, "SW corner", 9))
+		{
+			sscanf(buf+10, "%lf/%lf", &x, &y);
+			ext.left = x;
+			ext.bottom = y;
+		}
+		else if (!strncmp(buf, "NE corner", 9))
+		{
+			sscanf(buf+10, "%lf/%lf", &x, &y);
+			ext.right = x;
+			ext.top = y;
+		}
+		else if (!strncmp(buf, "missing value", 13))
+		{
+			missing_value = atoi(buf+14);
+		}
 	}
 
-	int xsize = atoi(sbuf);		// store xsize of array
-	fscanf(fp,"%s",sbuf);		// read ysize of array
-	int ysize = atoi(sbuf);
-	fscanf(fp,"%s\n",sbuf);		// read maxval of array
-	int maxval = atoi(sbuf);
-
-	// Set the projection (actually we don't know it)
-	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
+	int xsize, ysize, maxval;
+	xsize = atoi(sbuf);		// store xsize of array
+	fscanf(fp,"%d\n",&ysize);		// read ysize of array
+	fscanf(fp,"%d",&maxval);		// read maxval of array
+	// Be careful here with the last LF!
+	// Simply calling fscanf(fp,"\n") sometimes eats 2 characters.
+	int cr = fgetc(fp);
 
 	// set the corresponding vtElevationGrid info
-	m_bFloatMode = true;
-	m_EarthExtents.left = 0;
-	m_EarthExtents.top = ysize;
-	m_EarthExtents.right = xsize;
-	m_EarthExtents.bottom = 0;
+	m_bFloatMode = false;
+	if (have_header)
+	{
+		int datum = EPSG_DATUM_WGS84;
+		switch (coord_datum)
+		{
+		case 1: datum = EPSG_DATUM_NAD27; break;
+		case 2: datum = EPSG_DATUM_WGS72; break;
+		case 3: datum = EPSG_DATUM_WGS84; break;
+		case 4: datum = EPSG_DATUM_NAD83; break;
+
+		case 5: /*Sphere (with radius 6370997 meters)*/ break;
+		case 6: /*Clarke1880 (Clarke spheroid of 1880)*/ break;
+		case 7: /*International1909 (Geodetic Reference System of 1909)*/ break;
+		case 8: /*International1967 (Geodetic Reference System of 1967)*/; break;
+
+		case 9: /*WGS60*/ break;
+		case 10: /*WGS66*/; break;
+		case 11: /*Bessel1841*/ break;
+		case 12: /*Krassovsky*/ break;
+		}
+		if (coord_sys == 0)	// LL
+		{
+			m_proj.SetProjectionSimple(false, 0, datum);
+			ext.left /= 3600;	// arc-seconds to degrees
+			ext.right /= 3600;
+			ext.top /= 3600;
+			ext.bottom /= 3600;
+		}
+		else if (coord_sys == 1)	// UTM
+			m_proj.SetProjectionSimple(true, coord_zone, datum);
+	}
+	else
+	{
+		// Set the projection (actually we don't know it)
+		m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
+
+		ext.left = 0;
+		ext.top = ysize-1;
+		ext.right = xsize-1;
+		ext.bottom = 0;
+	}
+	SetEarthExtents(ext);
 	ComputeCornersFromExtents();
 
 	m_iColumns = xsize;
@@ -1219,13 +1301,19 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 
 	_AllocateArray();
 
-	unsigned char oneb;		// one byte from file
-	short twob;				// two bytes from file
-	double a;
-	char *junk;					// unconverted part of a number
 	if (bBinary)
 	{
 		// read PGM binary
+		int offset_start = ftell(fp);
+		fseek(fp, 0, SEEK_END);
+		int offset_end = ftell(fp);
+		fseek(fp, offset_start, SEEK_SET);	// go back again
+
+		int data_length = offset_end - offset_start;
+		int data_size = data_length / (xsize*ysize);
+
+		unsigned char oneb;		// one byte from file
+		short twob;				// two bytes from file
 		for (int j = 0; j < ysize; j++)
 		{
 			if (progress_callback != NULL) progress_callback(j * 100 / ysize);
@@ -1233,7 +1321,10 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 			{
 				if (maxval == 32767)
 				{
-					fread(&twob, sizeof(short), 2, fp);
+					fread(&twob, sizeof(short), 1, fp);
+					twob = SwapShort(twob);
+					if (twob == missing_value)
+						twob = INVALID_ELEVATION;
 					SetFValue(i, ysize-1-j, twob);
 				}
 				else
@@ -1247,6 +1338,8 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 	else
 	{
 		// read PGM ASCII
+		double a;
+		char *junk;			// unconverted part of a number
 		for (int j = 0; j < ysize; j++)
 		{
 			if (progress_callback != NULL) progress_callback(j * 100 / ysize);
@@ -1668,7 +1761,10 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 	m_iColumns = iColCount;
 	m_iRows = iRowCount;
 	m_proj.SetSpatialReference(pSpatialRef);
-	m_bFloatMode = true;
+
+	// One online reference says of NTF elevation:
+	// "Height values are rounded to the nearest metre", hence integers.
+	m_bFloatMode = false;
 	m_EarthExtents.left = Extent.MinX;
 	m_EarthExtents.top = Extent.MaxY;
 	m_EarthExtents.right = Extent.MaxX;
@@ -1697,7 +1793,7 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 			msg = "Couldn't flatten point feature";
 			return false;
 		}
-		SetFValue(i / iRowCount, i % iRowCount, (float)pPoint->getZ());
+		SetValue(i / iRowCount, i % iRowCount, (short)pPoint->getZ());
 		delete pFeature;
 		pFeature = NULL;
 		if (progress_callback != NULL)

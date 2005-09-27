@@ -676,6 +676,23 @@ void vtNode::DecorateNativeGraph()
 	DecorateVisit(m_pNode.get());
 }
 
+vtNode *vtNativeNode::FindParentVTNode()
+{
+	osg::Node *node = GetOsgNode();
+	while (node)
+	{
+		node = node->getParent(0);
+		osg::Referenced *ref = node->getUserData();
+		if (ref)
+		{
+			vtNode *vnode = dynamic_cast<vtNode *>(ref);
+			if (vnode)
+				return vnode;
+		}
+	}
+	return NULL;
+}
+
 ///////////////////////////////////////////////////////////////////////
 // vtGroup
 //
@@ -986,6 +1003,13 @@ vtLight::vtLight()
 	// A lightsource creates a light, which we can get with getLight().
 	m_pLightSource = new osg::LightSource;
 	SetOsgNode(m_pLightSource);
+
+	// However, because lighting is also a 'state', we need to inform
+	// the whole scene graph that we have another light.
+	osgUtil::SceneView *sv = vtGetScene()->getSceneView();
+	osg::StateSet *ss = sv->getGlobalStateSet();
+	osg::Light *light = m_pLightSource->getLight();
+	ss->setAssociatedModes(light, osg::StateAttribute::ON);
 }
 
 vtNodeBase *vtLight::Clone()

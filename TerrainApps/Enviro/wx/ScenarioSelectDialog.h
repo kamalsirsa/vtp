@@ -10,7 +10,7 @@
 
 #include "enviro_wdr.h"
 #include "vtlib/vtlib.h"
-#include "vtlib/core/terrain.h"
+#include "vtlib/core/Terrain.h"
 
 // WDR: class declarations
 

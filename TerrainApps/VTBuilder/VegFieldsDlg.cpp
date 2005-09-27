@@ -129,7 +129,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 			pszFieldName, pnWidth, pnDecimals );
 		str = pszFieldName;
 
-		if (fieldtype == FTString || fieldtype == FTInteger)
+		if (fieldtype == FTString || fieldtype == FTInteger || fieldtype == FTDouble)
 			GetSpeciesField()->Append(str, clientdata);
 
 		if (fieldtype == FTInteger || fieldtype == FTDouble)

@@ -32,7 +32,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdal_id.lib ws2_32.lib netcdf.lib libpng.lib jpeg.lib ZipArchive.lib"
+				AdditionalDependencies="gdal_id.lib ws2_32.lib netcdf.lib libpng13.lib libjpeg.lib ZipArchive.lib zlib1.lib"
 				OutputFile="$(OutDir)/VTConvert.exe"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="MSVCRT.lib"

@@ -117,10 +117,14 @@ wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 
 const int ID_LINE_OF_SIGHT = 10073;
 const int ID_VISIBILITY = 10074;
-const int ID_HEIGHT1 = 10075;
-const int ID_HEIGHT2 = 10076;
-const int ID_LINE2 = 10077;
-const int ID_TEXTCTRL = 10078;
+const int ID_FRESNEL = 10075;
+const int ID_USE_EFFECTIVE = 10076;
+const int ID_HEIGHT1 = 10077;
+const int ID_HEIGHT2 = 10078;
+const int ID_RF = 10079;
+const int ID_CURVATURE = 10080;
+const int ID_LINE2 = 10081;
+const int ID_STATUS_TEXT = 10082;
 wxSizer *ProfileDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

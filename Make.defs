@@ -33,7 +33,7 @@ endif
 #----------------------------------------------------------------------------
 # General Unix systems will use these values
 #----------------------------------------------------------------------------
-LOCALBASE = /usr
+LOCALBASE = /usr/local
 X11BASE   = /usr/X11R6
 PREFIX    = $(X11BASE)
 X_INC = $(X11BASE)/include
@@ -283,14 +283,14 @@ ifeq ($(OS),Linux)
 
    NETCDF_INC = $(LOCALBASE)/include/netcdf-3
    MINI_INC   = $(LOCALBASE)/include/mini
-   MINI_LIB   = $(LOCALBASE)/lib/libmini.a
+   MINI_LIB   = $(LOCALBASE)/lib/libMini.a
 
    ARCH := $(shell uname -p)
    ifeq ($(ARCH),x86_64)
       COPT      = -O -g -fPIC
       LDIRFLAGS = -L/usr/lib64 $(LDIRS:%=-L%)
       X_LIB     = $(X11BASE)/lib64
-      MINI_LIB = $(LOCALBASE)/lib64/libmini.a
+      MINI_LIB = $(LOCALBASE)/lib64/libMini.a
       NETCDF_LIB = $(LOCALBASE)/lib64/netcdf-3
    else
       COPT      = -O -g

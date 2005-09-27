@@ -556,7 +556,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wx\frame.cpp">
+				RelativePath="wx\EnviroFrame.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -1285,7 +1285,7 @@
 				RelativePath=".\wx\EnviroGUI.h">
 			</File>
 			<File
-				RelativePath="wx\frame.h">
+				RelativePath="wx\EnviroFrame.h">
 			</File>
 			<File
 				RelativePath=".\wx\LayerDlg.h">

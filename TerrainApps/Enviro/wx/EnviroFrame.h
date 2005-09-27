@@ -1,7 +1,7 @@
 //
-// Name: frame.h
+// Name: EnviroFrame.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,12 +31,12 @@ class CScenarioSelectDialog;
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
 	m_pToolbar->AddTool(id, bmp, wxNullBitmap, tog, -1, -1, (wxObject *)0, tooltip, tooltip)
 
-class vtFrame: public wxFrame
+class EnviroFrame: public wxFrame
 {
 public:
-	vtFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size,
+	EnviroFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size,
 		long style = wxDEFAULT_FRAME_STYLE, bool bVerticalToolbar = false, bool bEnableEarth = true);
-	~vtFrame();
+	~EnviroFrame();
 
 	void CreateMenus();
 	void CreateToolbar(bool bVertical);

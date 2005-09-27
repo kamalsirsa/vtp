@@ -94,6 +94,12 @@ public:
 			GetWindow(0)->SetBgColor(color);
 	}
 
+	bool IsStereo() const;;
+	void SetStereoSeparation(float fSep);
+	float GetStereoSeparation() const;
+
+	void ComputeViewMatrix(FMatrix4 &mat);
+
 	// OSG access
 	osgUtil::SceneView *getSceneView() { return m_pOsgSceneView.get(); }
 

@@ -174,6 +174,7 @@ protected:
 	void OnScaleElevation(wxCommandEvent& event);
 	void OnElevExport(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
+	void OnElevExportTiles(wxCommandEvent& event);
 	void OnElevMergeTin(wxCommandEvent& event);
 
 	void OnUpdateElevSelect(wxUpdateUIEvent& event);

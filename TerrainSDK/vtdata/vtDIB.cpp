@@ -515,7 +515,7 @@ bool vtDIB::ReadJPEG(const char *fname)
  * \param fname		The output filename.
  * \param quality	JPEG quality in the range of 0..100.
  */
-bool vtDIB::WriteJPEG(const char *fname, int quality)
+bool vtDIB::WriteJPEG(const char *fname, int quality, bool progress_callback(int))
 {
 	struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
@@ -557,6 +557,9 @@ bool vtDIB::WriteJPEG(const char *fname, int quality)
 	/* Process data */
 	while (cinfo.next_scanline < cinfo.image_height)
 	{
+		if (progress_callback != NULL)
+			progress_callback(cinfo.next_scanline * 100 / cinfo.image_height);
+
 		// Transfer data.  Note source values are in BGR order.
 		JSAMPROW outptr = row_buffer;
 		JSAMPROW adr = ((JSAMPROW)m_Data) + (m_iHeight-1-cinfo.next_scanline)*m_iByteWidth;
@@ -936,7 +939,8 @@ bool vtDIB::WritePNG(const char *fname)
  * Write a TIFF file.  If extents and projection are support, a GeoTIFF file
  * will be written.
  */
-bool vtDIB::WriteTIF(const char *fname, const DRECT *area, const vtProjection *proj)
+bool vtDIB::WriteTIF(const char *fname, const DRECT *area,
+					 const vtProjection *proj, bool progress_callback(int))
 {
 	g_GDALWrapper.RequestGDALFormats();
 
@@ -1002,6 +1006,9 @@ bool vtDIB::WriteTIF(const char *fname, const DRECT *area, const vtProjection *p
 
 			for (x = 0; x < m_iWidth; x++)
 			{
+				if (progress_callback != NULL)
+					progress_callback((i-1)*33 + (x * 33 / m_iWidth));
+
 				for (y = 0; y < m_iHeight; y++)
 				{
 					GetPixel24(x, y, rgb);

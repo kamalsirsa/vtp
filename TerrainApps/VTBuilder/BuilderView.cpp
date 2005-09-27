@@ -1604,6 +1604,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			fclose(in);
 		}
 #endif
+#if 0
 		{
 			// create grid of polygons
 			vtFeatureSetPolygon set;
@@ -1628,6 +1629,13 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			}
 			set.SaveToSHP("C:/Temp/waimea_quads.shp");
 		}
+#endif
+	}
+	else if (code == WXK_F11)
+	{
+		vtImageLayer *pI = (vtImageLayer *)GetMainFrame()->FindLayerOfType(LT_IMAGE);
+		if (pI)
+			pI->WriteGridOfPGMPyramids();
 	}
 	else
 		event.Skip();

@@ -1,13 +1,14 @@
 //
 // ProjectedShadows.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
-#include "vtdata/HeightField.h"
 #include "vtlib/core/LodGrid.h"
+#include "vtdata/HeightField.h"
+#include "vtdata/vtLog.h"
 
 #include <osg/Texture2D>
 #include <osg/Material>
@@ -36,6 +37,7 @@ CreateProjectedShadowTextureCullCallback::CreateProjectedShadowTextureCullCallba
 		m_shadowState(new osg::StateSet),
 		m_shadowedState(new osg::StateSet)
 {
+	VTLOG1("CreateProjectedShadowTextureCullCallback constructor\n");
 	int contextID = 0;
 	osg::ref_ptr<osg::Texture::Extensions> pExtensions = new osg::Texture::Extensions(contextID);
 	pExtensions->setupGLExtensions(contextID);
@@ -85,9 +87,13 @@ CreateProjectedShadowTextureCullCallback::CreateProjectedShadowTextureCullCallba
 	shadow_ignore_nodes = new Array<osg::Node *>;
 }
 
+//
+// This is called each frame?  Or just very often?
+//
 void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node &node,
 														   osgUtil::CullVisitor &cv)
 {
+//	VTLOG1("Shadows doPreRender\n");
 	if (m_bRecomputeShadows)
 		DoRecomputeShadows(node, cv);
 	else if (!m_pRtts.valid())
@@ -121,6 +127,7 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node &node,
 void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& node,
 																  osgUtil::CullVisitor &cv)
 {
+	VTLOG1("DoRecomputeShadows\n");
 	m_bRecomputeShadows = false;
 
 	const osg::BoundingSphere& bsShadowed = node.getBound();
@@ -340,6 +347,7 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 	int center_x = viewport.x()+viewport.width()/2;
 	int center_y = viewport.y()+viewport.height()/2;
 
+	VTLOG(" Creating impostor viewpoint of dimension %d x %d\n", iRes, iRes);
 	osg::Viewport* new_viewport = new osg::Viewport;
 	new_viewport->setViewport(center_x - iRes/2, center_y - iRes/2, iRes, iRes);
 #else

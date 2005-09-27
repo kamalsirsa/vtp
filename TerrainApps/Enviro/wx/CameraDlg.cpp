@@ -41,6 +41,7 @@ BEGIN_EVENT_TABLE(CameraDlg,AutoDialog)
 	EVT_TEXT( ID_FOV, CameraDlg::OnText )
 	EVT_TEXT( ID_NEAR, CameraDlg::OnText )
 	EVT_TEXT( ID_FAR, CameraDlg::OnText )
+	EVT_TEXT( ID_EYE_SEP, CameraDlg::OnText )
 	EVT_TEXT( ID_SPEED, CameraDlg::OnText )
 
 	EVT_TEXT( ID_LOD_VEG, CameraDlg::OnText )
@@ -50,6 +51,7 @@ BEGIN_EVENT_TABLE(CameraDlg,AutoDialog)
 	EVT_SLIDER( ID_FOVSLIDER, CameraDlg::OnFovSlider )
 	EVT_SLIDER( ID_NEARSLIDER, CameraDlg::OnNearSlider )
 	EVT_SLIDER( ID_FARSLIDER, CameraDlg::OnFarSlider )
+	EVT_SLIDER( ID_EYE_SEPSLIDER, CameraDlg::OnEyeSepSlider )
 	EVT_SLIDER( ID_SPEEDSLIDER, CameraDlg::OnSpeedSlider )
 
 	EVT_SLIDER( ID_SLIDER_VEG, CameraDlg::OnSliderVeg )
@@ -74,6 +76,7 @@ CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_FOV, &m_fFov);
 	AddNumValidator(ID_NEAR, &m_fNear);
 	AddNumValidator(ID_FAR, &m_fFar);
+	AddNumValidator(ID_EYE_SEP, &m_fEyeSep);
 	AddNumValidator(ID_SPEED, &m_fSpeed);
 
 	GetSpeedUnits()->Append(_("Meters/sec"));
@@ -89,6 +92,7 @@ CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_FOVSLIDER, &m_iFov);
 	AddValidator(ID_NEARSLIDER, &m_iNear);
 	AddValidator(ID_FARSLIDER, &m_iFar);
+	AddValidator(ID_EYE_SEPSLIDER, &m_iEyeSep);
 	AddValidator(ID_SPEEDSLIDER, &m_iSpeed);
 
 	AddValidator(ID_SLIDER_VEG, &m_iDistVeg);
@@ -110,24 +114,27 @@ CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 #define DIST_MIN	1.0f
 #define DIST_MAX	5.0f
 #define DIST_RANGE	(DIST_MAX-(DIST_MIN)) // 10 to 100000 meters
+#define SEP_MIN		-2.5f
+#define SEP_MAX		-0.5f
+#define SEP_RANGE	(SEP_MAX-(SEP_MIN))
 
-void CameraDlg::SlidersToValues(int w)
+void CameraDlg::SlidersToValues(int id)
 {
-	if (m_bOrtho)
+	if (id == ID_FOV)
 	{
-		if (w == 1) m_fFov = powf(10, (WIDTH_MIN + m_iFov * WIDTH_RANGE / 100));
+		if (m_bOrtho)
+			m_fFov = powf(10, (WIDTH_MIN + m_iFov * WIDTH_RANGE / 100));
+		else
+			m_fFov = FOV_MIN + (m_iFov * FOV_RANGE / 100);
 	}
-	else
-	{
-		if (w == 1) m_fFov = FOV_MIN + (m_iFov * FOV_RANGE / 100);
-	}
-	if (w == 2) m_fNear =   powf(10, (CLIP_MIN + m_iNear * CLIP_RANGE / 100));
-	if (w == 3) m_fFar =	powf(10, (CLIP_MIN + m_iFar * CLIP_RANGE / 100));
-	if (w == 4) m_fSpeed =  powf(10, (SPEED_MIN + m_iSpeed * SPEED_RANGE / 100));
+	if (id == ID_NEAR)	 m_fNear =   powf(10, (CLIP_MIN + m_iNear * CLIP_RANGE / 100));
+	if (id == ID_FAR)	 m_fFar =	 powf(10, (CLIP_MIN + m_iFar * CLIP_RANGE / 100));
+	if (id == ID_EYE_SEP)m_fEyeSep = powf(10, (SEP_MIN + m_iEyeSep * SEP_RANGE / 100));
+	if (id == ID_SPEED)	 m_fSpeed =  powf(10, (SPEED_MIN + m_iSpeed * SPEED_RANGE / 100));
 
-	if (w == 5) m_fDistVeg =	powf(10, (DIST_MIN + m_iDistVeg * DIST_RANGE / 100));
-	if (w == 6) m_fDistStruct = powf(10, (DIST_MIN + m_iDistStruct * DIST_RANGE / 100));
-	if (w == 7) m_fDistRoad =   powf(10, (DIST_MIN + m_iDistRoad * DIST_RANGE / 100));
+	if (id == ID_LOD_VEG)	 m_fDistVeg =	 powf(10, (DIST_MIN + m_iDistVeg * DIST_RANGE / 100));
+	if (id == ID_LOD_STRUCT) m_fDistStruct = powf(10, (DIST_MIN + m_iDistStruct * DIST_RANGE / 100));
+	if (id == ID_LOD_ROAD)	 m_fDistRoad =   powf(10, (DIST_MIN + m_iDistRoad * DIST_RANGE / 100));
 
 	// safety check to prevent user from putting Near > Far
 	if (m_fNear >= m_fFar)
@@ -137,15 +144,13 @@ void CameraDlg::SlidersToValues(int w)
 void CameraDlg::ValuesToSliders()
 {
 	if (m_bOrtho)
-	{
 		m_iFov =	(int) ((log10f(m_fFov) - WIDTH_MIN) / WIDTH_RANGE * 100);
-	}
 	else
-	{
 		m_iFov =	(int) ((m_fFov - FOV_MIN) / FOV_RANGE * 100);
-	}
+
 	m_iNear =   (int) ((log10f(m_fNear) - CLIP_MIN) / CLIP_RANGE * 100);
 	m_iFar =	(int) ((log10f(m_fFar) - CLIP_MIN) / CLIP_RANGE * 100);
+	m_iEyeSep =	(int) ((log10f(m_fEyeSep) - SEP_MIN) / SEP_RANGE * 100);
 	m_iSpeed =  (int) ((log10f(m_fSpeed) - SPEED_MIN) / SPEED_RANGE * 100);
 
 	m_iDistVeg =	(int) ((log10f(m_fDistVeg) - DIST_MIN) / DIST_RANGE * 100);
@@ -155,7 +160,8 @@ void CameraDlg::ValuesToSliders()
 
 void CameraDlg::GetValues()
 {
-	vtCamera *pCam = vtGetScene()->GetCamera();
+	vtScene *scene = vtGetScene();
+	vtCamera *pCam = scene->GetCamera();
 
 	m_bOrtho = pCam->IsOrtho();
 	m_fNear = pCam->GetHither();
@@ -196,6 +202,10 @@ void CameraDlg::GetValues()
 		GetFovText()->SetLabel(_("Horizontal FOV (degrees)"));
 		GetAccel()->Enable(true);
 	}
+	bool bStereo = scene->IsStereo();
+    GetEyeSepSlider()->Enable(bStereo);
+	GetEyeSep()->Enable(bStereo);
+	m_fEyeSep = scene->GetStereoSeparation();
 }
 
 void CameraDlg::SetValues()
@@ -235,6 +245,7 @@ void CameraDlg::SetValues()
 		t->SetLODDistance(TFT_STRUCTURES, m_fDistStruct);
 		t->SetLODDistance(TFT_ROADS, m_fDistRoad);
 	}
+	vtGetScene()->SetStereoSeparation(m_fEyeSep);
 }
 
 void CameraDlg::CameraChanged()
@@ -313,7 +324,7 @@ void CameraDlg::OnFovSlider( wxCommandEvent &event )
 	if (!m_bSet)
 		return;
 	TransferDataFromWindow();
-	SlidersToValues(1);
+	SlidersToValues(ID_FOV);
 	SetValues();
 	TransferToWindow();
 }
@@ -323,7 +334,7 @@ void CameraDlg::OnNearSlider( wxCommandEvent &event )
 	if (!m_bSet)
 		return;
 	TransferDataFromWindow();
-	SlidersToValues(2);
+	SlidersToValues(ID_NEAR);
 	SetValues();
 	TransferToWindow();
 }
@@ -333,7 +344,17 @@ void CameraDlg::OnFarSlider( wxCommandEvent &event )
 	if (!m_bSet)
 		return;
 	TransferDataFromWindow();
-	SlidersToValues(3);
+	SlidersToValues(ID_FAR);
+	SetValues();
+	TransferToWindow();
+}
+
+void CameraDlg::OnEyeSepSlider( wxCommandEvent &event )
+{
+	if (!m_bSet)
+		return;
+	TransferDataFromWindow();
+	SlidersToValues(ID_EYE_SEP);
 	SetValues();
 	TransferToWindow();
 }
@@ -343,7 +364,7 @@ void CameraDlg::OnSpeedSlider( wxCommandEvent &event )
 	if (!m_bSet)
 		return;
 	TransferDataFromWindow();
-	SlidersToValues(4);
+	SlidersToValues(ID_SPEED);
 	SetValues();
 	TransferToWindow();
 }
@@ -353,7 +374,7 @@ void CameraDlg::OnSliderVeg( wxCommandEvent &event )
 	if (!m_bSet)
 		return;
 	TransferDataFromWindow();
-	SlidersToValues(5);
+	SlidersToValues(ID_LOD_VEG);
 	SetValues();
 	TransferToWindow();
 }
@@ -363,7 +384,7 @@ void CameraDlg::OnSliderStruct( wxCommandEvent &event )
 	if (!m_bSet)
 		return;
 	TransferDataFromWindow();
-	SlidersToValues(6);
+	SlidersToValues(ID_LOD_STRUCT);
 	SetValues();
 	TransferToWindow();
 }
@@ -373,7 +394,7 @@ void CameraDlg::OnSliderRoad( wxCommandEvent &event )
 	if (!m_bSet)
 		return;
 	TransferDataFromWindow();
-	SlidersToValues(7);
+	SlidersToValues(ID_LOD_ROAD);
 	SetValues();
 	TransferToWindow();
 }

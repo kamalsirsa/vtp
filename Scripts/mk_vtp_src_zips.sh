@@ -7,10 +7,13 @@ if [ $# -lt 1 ] ; then
   exit
 fi
 
-TARGETDIR=C:/Distrib
+SOURCEDIR=/cygdrive/c
+TARGETDIR=/cygdrive/c/Distrib
 DATE=$1
 DIST_FILE1=${TARGETDIR}/vtp-src-${DATE}.zip
 DIST_FILE2=${TARGETDIR}/vtp-srcdocs-${DATE}.zip
+
+cd $SOURCEDIR
 
 # Create the archive containing the Source
 rm -f $DIST_FILE1
@@ -151,8 +154,8 @@ zip $DIST_FILE1 VTP/TerrainApps/VTConvert/VTConvert.vcproj
 # Create the archive containing the Source Help
 rm -f $DIST_FILE2
 
-zip $DIST_FILE2 VTP/TerrainSDK/vtdata/Doc/html/*
-zip $DIST_FILE2 VTP/TerrainSDK/vtlib/Doc/html/*
+zip $DIST_FILE2 VTP/TerrainSDK/Doc/vtdata/*
+zip $DIST_FILE2 VTP/TerrainSDK/Doc/vtlib/*
 
 echo $DIST_FILE1 ready.
 echo $DIST_FILE2 ready.

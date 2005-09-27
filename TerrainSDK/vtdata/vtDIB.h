@@ -75,10 +75,11 @@ public:
 	bool ReadBMP(const char *fname);
 	bool WriteBMP(const char *fname);
 	bool ReadJPEG(const char *fname);
-	bool WriteJPEG(const char *fname, int quality);
+	bool WriteJPEG(const char *fname, int quality, bool progress_callback(int) = NULL);
 	bool ReadPNG(const char *fname);
 	bool WritePNG(const char *fname);
-	bool WriteTIF(const char *fname, const DRECT *area = NULL, const vtProjection *proj = NULL);
+	bool WriteTIF(const char *fname, const DRECT *area = NULL,
+		const vtProjection *proj = NULL, bool progress_callback(int) = NULL);
 
 	unsigned int GetPixel24(int x, int y) const;
 	void GetPixel24(int x, int y, RGBi &rgb) const;

@@ -18,7 +18,7 @@
 #include "vtlib/core/Terrain.h"
 #include "EnviroGUI.h"
 #include "EnviroApp.h"
-#include "frame.h"
+#include "EnviroFrame.h"
 #include "canvas.h"
 #include "LayerDlg.h"
 #include "vtui/InstanceDlg.h"
@@ -32,9 +32,9 @@ DECLARE_APP(EnviroApp);
 EnviroGUI g_App;
 
 // helper
-vtFrame *GetFrame()
+EnviroFrame *GetFrame()
 {
-	return dynamic_cast<vtFrame *>(wxGetApp().GetTopWindow());
+	return dynamic_cast<EnviroFrame *>(wxGetApp().GetTopWindow());
 }
 
 EnviroGUI::EnviroGUI()

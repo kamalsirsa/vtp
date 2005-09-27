@@ -18,6 +18,7 @@ class vtHeightField;
 class vtElevationGrid;
 class vtDIB;
 class vtBitmap;
+struct TilingOptions;
 
 class vtTin2d : public vtTin
 {
@@ -110,6 +111,7 @@ public:
 	void Resample(int iNewWidth, int iNewHeight);
 	bool FillGaps();
 	void DetermineMeterSpacing();
+	bool WriteGridOfPGMPyramids(const TilingOptions &opts);
 
 	// TIN operations
 	void SetTin(vtTin2d *pTin);

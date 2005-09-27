@@ -207,6 +207,10 @@ protected:
 	void DrawCurrentBuilding(CDC *pDC);
 	void ContrainLocationForPoly();
 
+	void SetMode(LBMode mode);
+	void CancelFootprint();
+	void CancelShape();
+
 // Generated message map functions
 protected:
 	//{{AFX_MSG(BExtractorView)

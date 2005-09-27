@@ -819,21 +819,9 @@ void BExtractorView::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	m_bPanning = false;
 	if (m_mode == LB_Footprint)
-	{
-		// Cancel a polygonal footprint in progress
-		DPoint2 p;
-		s_UTM(point, p);
-		m_poly.Append(p);
-		InvalidatePolyExtent();
-		m_poly.Empty();
-	}
+		CancelFootprint();
 	if (m_mode == LB_Rectangle || m_mode == LB_Circle)
-	{
-		m_bRubber = false;
-		m_iStep = 0;
-		m_fPixelRadius = 0.0f;
-		Invalidate();
-	}
+		CancelShape();
 }
 
 void BExtractorView::OnLButtonUp(UINT nFlags, CPoint point)
@@ -1810,9 +1798,45 @@ void BExtractorView::OnUpdateFunctionsConvolve(CCmdUI* pCmdUI)
 // BExtractorView : MODE handlers
 /////////////////////////////////////////////////////////////////////////////
 
+void BExtractorView::CancelFootprint()
+{
+	// Cancel a polygonal footprint in progress
+	m_bRubber = false;
+	m_poly.Empty();
+	Invalidate();
+}
+
+void BExtractorView::CancelShape()
+{
+	m_bRubber = false;
+	m_iStep = 0;
+	m_fPixelRadius = 0.0f;
+	Invalidate();
+}
+
+void BExtractorView::SetMode(LBMode mode)
+{
+	if (mode != m_mode)
+	{
+		// changing mode
+		if (m_mode == LB_Footprint)
+		{
+			// cancel any pending footprint
+			CancelFootprint();
+		}
+		if (m_mode == LB_Rectangle)
+		{
+			// cancel any pending rectangle
+			m_bRubber = false;
+			m_poly.SetSize(0);
+		}
+	}
+	m_mode = mode;
+}
+
 void BExtractorView::OnAddRemove()
 {
-	m_mode = LB_AddRemove;
+	SetMode(LB_AddRemove);
 }
 
 void BExtractorView::OnUpdateAddRemove(CCmdUI* pCmdUI)
@@ -1824,7 +1848,7 @@ void BExtractorView::OnUpdateAddRemove(CCmdUI* pCmdUI)
 
 void BExtractorView::OnHand()
 {
-	m_mode = LB_Hand;
+	SetMode(LB_Hand);
 }
 
 void BExtractorView::OnUpdateHand(CCmdUI* pCmdUI)
@@ -2031,7 +2055,6 @@ bool BExtractorView::ReadINIFile()
 
 bool BExtractorView::WriteINIFile()
 {
-
 	CString front(m_directory);
 	front += "\\BE.ini";
 	unsigned int tmp;
@@ -2106,7 +2129,7 @@ void BExtractorView::OnUpdateViewViewfullcolorimage(CCmdUI* pCmdUI)
 
 void BExtractorView::OnModesFootprintMode()
 {
-	m_mode = LB_Footprint;
+	SetMode(LB_Footprint);
 }
 
 void BExtractorView::OnUpdateModesFootprintmode(CCmdUI* pCmdUI)
@@ -2118,7 +2141,7 @@ void BExtractorView::OnUpdateModesFootprintmode(CCmdUI* pCmdUI)
 
 void BExtractorView::OnModesRectangle()
 {
-	m_mode = LB_Rectangle;
+	SetMode(LB_Rectangle);
 }
 
 void BExtractorView::OnUpdateModesRectangle(CCmdUI* pCmdUI)
@@ -2130,7 +2153,7 @@ void BExtractorView::OnUpdateModesRectangle(CCmdUI* pCmdUI)
 
 void BExtractorView::OnModesCircle()
 {
-	m_mode = LB_Circle;
+	SetMode(LB_Circle);
 }
 
 void BExtractorView::OnUpdateModesCircle(CCmdUI* pCmdUI)
@@ -2148,7 +2171,7 @@ void BExtractorView::OnUpdateFileSave(CCmdUI* pCmdUI)
 
 void BExtractorView::OnModesMoveresize()
 {
-	m_mode = LB_EditShape;
+	SetMode(LB_EditShape);
 }
 
 void BExtractorView::OnUpdateModesMoveresize(CCmdUI* pCmdUI)
@@ -2161,8 +2184,7 @@ void BExtractorView::OnUpdateModesMoveresize(CCmdUI* pCmdUI)
 
 void BExtractorView::OnModesRoadnode()
 {
-	m_mode = LB_EditRoadNodes;
-
+	SetMode(LB_EditRoadNodes);
 }
 
 void BExtractorView::OnUpdateModesRoadnode(CCmdUI* pCmdUI)
@@ -2185,7 +2207,7 @@ void BExtractorView::OnChangeRoadColor()
 
 void BExtractorView::OnModesRoadEdit()
 {
-	m_mode = LB_EditRoad;
+	SetMode(LB_EditRoad);
 }
 
 void BExtractorView::OnUpdateModesRoadEdit(CCmdUI* pCmdUI)

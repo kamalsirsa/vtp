@@ -27,7 +27,8 @@ typedef float osg_matrix_value;
 
 inline void v2s(const FPoint2 &f, osg::Vec2 &s) { s[0] = f.x; s[1] = f.y; }
 inline void v2s(const FPoint3 &f, osg::Vec3 &s) { s[0] = f.x; s[1] = f.y; s[2] = f.z; }
-inline void v2s(const RGBf &f, osg::Vec4 &s) { s[0] = f.r; s[1] = f.g; s[2] = f.b; s[3] = 1.0f; }
+inline void v2s(const RGBf &f, osg::Vec3 &s) { s[0] = f.r; s[1] = f.g; s[2] = f.b; }
+inline void v2s(const RGBAf &f, osg::Vec4 &s) { s[0] = f.r; s[1] = f.g; s[2] = f.b; s[3] = f.a; }
 
 inline osg::Vec3 v2s(const FPoint3 &f)
 {
@@ -43,9 +44,17 @@ inline osg::Vec4 v2s(const RGBf &f)
 	return s;
 }
 
+inline osg::Vec4 v2s(const RGBAf &f)
+{
+	osg::Vec4 s;
+	s[0] = f.r; s[1] = f.g; s[2] = f.b; s[3] = f.a;
+	return s;
+}
+
 inline void s2v(const osg::Vec3 &s, FPoint3 &f) { f.x = s[0]; f.y = s[1]; f.z = s[2]; }
 inline void s2v(const osg::Vec2 &s, FPoint2 &f) { f.x = s[0]; f.y = s[1]; }
-inline void s2v(const osg::Vec4 &s, RGBf &f) { f.r = s[0]; f.g = s[1]; f.b = s[2]; }
+inline void s2v(const osg::Vec3 &s, RGBf &f) { f.r = s[0]; f.g = s[1]; f.b = s[2]; }
+inline void s2v(const osg::Vec4 &s, RGBAf &f) { f.r = s[0]; f.g = s[1]; f.b = s[2]; f.a = s[3]; }
 
 inline void s2v(const osg::BoundingSphere &bs, FSphere &sph)
 {

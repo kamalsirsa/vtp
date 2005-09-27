@@ -92,14 +92,14 @@ Enviro::~Enviro()
 void Enviro::Startup()
 {
 	g_Log._StartLog("debug.txt");
-	VTLOG("\nEnviro\nBuild:");
+	VTLOG1("\nEnviro\nBuild:");
 #if _DEBUG || DEBUG
-	VTLOG(" Debug");
+	VTLOG1(" Debug");
 #else
-	VTLOG(" Release");
+	VTLOG1(" Release");
 #endif
 #if UNICODE
-	VTLOG(" Unicode");
+	VTLOG1(" Unicode");
 #endif
 	VTLOG("\n\n");
 
@@ -109,7 +109,7 @@ void Enviro::Startup()
 
 void Enviro::Shutdown()
 {
-	VTLOG("Shutdown.\n");
+	VTLOG1("Shutdown.\n");
 	delete m_pPlantList;
 	if (m_pArcMats)
 		m_pArcMats->Release();
@@ -205,7 +205,7 @@ void Enviro::LoadTerrainDescriptions()
 
 void Enviro::StartControlEngine()
 {
-	VTLOG("StartControlEngine\n");
+	VTLOG1("StartControlEngine\n");
 
 	m_pControlEng = new ControlEngine();
 	m_pControlEng->SetName2("Control Engine");
@@ -537,7 +537,7 @@ void Enviro::DoCursorOnTerrain()
 
 void Enviro::SetupScene1()
 {
-	VTLOG("SetupScene1\n");
+	VTLOG1("SetupScene1\n");
 
 	// Set some global properties
 	SetDataPath(g_Options.m_DataPaths);
@@ -555,7 +555,7 @@ void Enviro::SetupScene1()
 
 void Enviro::SetupScene2()
 {
-	VTLOG("SetupScene2\n");
+	VTLOG1("SetupScene2\n");
 
 	m_pNavEngines = new vtEngine();
 	m_pNavEngines->SetName2("Navigation Engines");
@@ -655,7 +655,7 @@ void Enviro::LoadSpeciesList()
 	if (m_bPlantsLoaded)
 		return;
 
-	VTLOG("LoadSpeciesList\n");
+	VTLOG1("LoadSpeciesList\n");
 
 	// First look for species.xml with terrain name prepended, otherwise fall
 	//  back on just "species.xml"
@@ -998,7 +998,8 @@ void Enviro::OnMouse(vtMouseEvent &event)
 	// check for what is under the 3D cursor
 	if (m_state == AS_Orbit)
 		DoCursorOnEarth();
-	else if (m_state == AS_Terrain && m_pCursorMGeom->GetEnabled())
+	else if (m_state == AS_Terrain &&
+		(m_pCursorMGeom->GetEnabled() || g_Options.m_bDirectPicking))
 		DoCursorOnTerrain();
 
 	// give the child classes first chance to take this event
@@ -1086,6 +1087,8 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 
 void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 {
+	VTLOG("Click, raypick at %d %d, ", event.pos.x, event.pos.y);
+
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *pActiveStructures = pTerr->GetStructures();
 
@@ -1113,12 +1116,18 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 	vtHitList HitList;
 	int iNumHits = vtIntersect(pTerr->GetTopGroup(), Near, Near+Dir, HitList);
 	if (iNumHits == 0)
+	{
+		VTLOG("no hits\n");
 		return;
+	}
+	else
+		VTLOG("%d hits\n", iNumHits);
 
 	// Check for structures
 	int iSet, iOffset;
 	if (pTerr->GetStructureSet().FindStructureFromNode(HitList.front().node, iSet, iOffset))
 	{
+		VTLOG("  Found structure ");
 		vtStructureArray3d *pSelectedStructures = pTerr->GetStructureSet().GetAt(iSet);
 		vtBuilding3d *pBuilding = pSelectedStructures->GetBuilding(iOffset);
 		vtStructInstance3d *pInstance = pSelectedStructures->GetInstance(iOffset);
@@ -1127,6 +1136,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		if (NULL != pBuilding)
 		{
 			// Found a procedural building
+			VTLOG("(building)\n");
 			pBuilding->ToggleSelect();
 			if (pBuilding->IsSelected())
 			{
@@ -1139,6 +1149,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		else if (NULL != pInstance)
 		{
 			// Found a structure instance
+			VTLOG("(instance)\n");
 			pInstance->ToggleSelect();
 			if (pInstance->IsSelected())
 			{
@@ -1157,12 +1168,15 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		else if (NULL != pFence)
 		{
 			// Found a linear structure
+			VTLOG("(fence)\n");
 			pFence->ToggleSelect();
 			if (pFence->IsSelected())
 				pFence->ShowBounds(true);
 			else
 				pFence->ShowBounds(false);
 		}
+		else
+			VTLOG("(unknown)\n");
 		if (pTerr->GetStructureIndex() != iSet)
 		{
 			// Switching to a different structure set
@@ -1180,6 +1194,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 	// Check for plants
 	else if (Plants.FindPlantFromNode(HitList.front().node, iOffset))
 	{
+		VTLOG("  Found plant\n");
 		Plants.VisualSelect(iOffset);
 		m_bDragging = true;
 		m_bSelectedPlant = true;
@@ -1187,14 +1202,24 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 	// Check for routes
 	else if (Routes.FindRouteFromNode(HitList.front().node, iOffset))
 	{
+		VTLOG("  Found route\n");
 		m_bDragging = true;
 		m_bSelectedUtil = true;
 		m_pSelRoute = Routes.GetAt(iOffset);
 	}
+	else
+		VTLOG("  Unable to identify node\n");
+
+	if (m_bDragging)
+		VTLOG("Now dragging.\n");
+	if (m_bRotating)
+		VTLOG("Now rotating.\n");
 }
 
 void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 {
+	VTLOG("Click, cursor pick, ");
+
 	// See if camera ray intersects a structure?  NO, it's simpler and
 	//  easier for the user to just test whether the ground cursor is
 	//  near a structure's origin.
@@ -1211,7 +1236,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	DPoint2 eoffset;
 	g_Conv.ConvertVectorToEarth(g_Options.m_fSelectionCutoff, 0, eoffset);
 	double epsilon = eoffset.x;
-	VTLOG("Click, epsilon %lf, ", epsilon);
+	VTLOG("epsilon %lf, ", epsilon);
 
 	// Check Structures
 	int structure;		// index of closest structure
@@ -1274,6 +1299,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 		if (structures_picked != structures)
 		{
 			// active structure set (layer) has changed due to picking
+			structures->VisualDeselectAll();
 			ShowLayerView();
 			RefreshLayerView();
 		}
@@ -1353,6 +1379,8 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 	{
 		DPoint3 delta = m_EarthPos - m_EarthPosLast;
 		DPoint2 ground_delta(delta.x, delta.y);
+
+		//VTLOG("ground_delta %f, %f\n", delta.x, delta.y);
 
 		vtTerrain *pTerr = GetCurrentTerrain();
 		if (m_bSelectedStruct)
@@ -1841,8 +1869,8 @@ void Enviro::CreateElevationLegend()
 		FPoint3 p1(cbar_left,  in_base.y + i, 0);
 		FPoint3 p2(cbar_right, in_base.y +  i, 0);
 		idx = mesh1->AddLine(p1, p2);
-		mesh1->SetVtxColor(idx, table[i]);
-		mesh1->SetVtxColor(idx+1, table[i]);
+		mesh1->SetVtxColor(idx, (RGBf) table[i]);
+		mesh1->SetVtxColor(idx+1, (RGBf) table[i]);
 	}
 	mesh1->AddStrip2((in_size.y + 1)*2, 0);
 	m_pLegendGeom->AddMesh(mesh1, 0);

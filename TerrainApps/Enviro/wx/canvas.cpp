@@ -2,7 +2,7 @@
 // Name:	 canvas.cpp
 // Purpose:	 Implements the canvas class for the wxWindows application.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,7 +20,7 @@
 #include "vtdata/vtLog.h"
 #include "EnviroGUI.h"			// for g_App, GetTerrainScene
 #include "canvas.h"
-#include "frame.h"
+#include "EnviroFrame.h"		// for UpdateStatus and OnChar
 #include "EnviroApp.h"
 
 DECLARE_APP(EnviroApp)
@@ -151,7 +151,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		{
 			last_msg = g_App.GetMessage();
 			last_stat = cur;
-			vtFrame *frame = (vtFrame*) GetParent();
+			EnviroFrame *frame = (EnviroFrame*) GetParent();
 			frame->UpdateStatus();
 		}
 
@@ -193,7 +193,7 @@ void vtGLCanvas::OnChar(wxKeyEvent& event)
 	long key = event.GetKeyCode();
 
 	// pass the char to the frame for it to do "accelerator" shortcuts
-	vtFrame *frame = (vtFrame*) GetParent();
+	EnviroFrame *frame = (EnviroFrame*) GetParent();
 	frame->OnChar(event);
 
 	int flags = 0;

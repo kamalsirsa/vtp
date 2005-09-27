@@ -189,8 +189,8 @@ public:
 	virtual void SetVtxNormal(int, const FPoint3&) = 0;
 	virtual FPoint3 GetVtxNormal(int i) const = 0;
 
-	virtual void SetVtxColor(int, const RGBf&) = 0;
-	virtual RGBf GetVtxColor(int i) const = 0;
+	virtual void SetVtxColor(int, const RGBAf&) = 0;
+	virtual RGBAf GetVtxColor(int i) const = 0;
 
 	virtual void SetVtxTexCoord(int, const FPoint2&) = 0;
 	virtual FPoint2 GetVtxTexCoord(int i) const = 0;

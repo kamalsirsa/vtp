@@ -121,12 +121,13 @@ void vtLog::Printf(const wchar_t *pFormat, ...)
 	va_start(va, pFormat);
 
 	// Use wide characters
-	wchar_t ach[1024];
-#ifdef _MSC_VER
+	wchar_t ach[2048];
+
+#if defined(_MSC_VER) && _MSC_VER < 1300
 	vswprintf(ach, pFormat, va);
 #else
-	// apparently on non-MSVC platforms this takes 4 arguments (safer)
-	vswprintf(ach, 1024, pFormat, va);
+	// on MSVC7.x and non-MSVC platforms this takes 4 arguments (safer)
+	vswprintf(ach, 2048, pFormat, va);
 #endif
 
 	_Log(ach);

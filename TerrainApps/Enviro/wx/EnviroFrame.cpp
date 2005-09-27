@@ -1,5 +1,5 @@
 //
-// Name:	 frame.cpp
+// Name:	 EnviroFrame.cpp
 // Purpose:  The frame class for the wxEnviro application.
 //
 // Copyright (c) 2001-2005 Virtual Terrain Project
@@ -32,7 +32,7 @@
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for progress dialog
 
-#include "frame.h"
+#include "EnviroFrame.h"
 #include "StatusBar.h"
 
 // dialogs
@@ -95,134 +95,134 @@
 
 DECLARE_APP(EnviroApp);
 
-BEGIN_EVENT_TABLE(vtFrame, wxFrame)
-EVT_CHAR(vtFrame::OnChar)
-EVT_MENU(ID_FILE_LAYERS,		vtFrame::OnFileLayers)
-EVT_MENU(wxID_EXIT, vtFrame::OnExit)
-EVT_CLOSE(vtFrame::OnClose)
-EVT_IDLE(vtFrame::OnIdle)
+BEGIN_EVENT_TABLE(EnviroFrame, wxFrame)
+EVT_CHAR(EnviroFrame::OnChar)
+EVT_MENU(ID_FILE_LAYERS,		EnviroFrame::OnFileLayers)
+EVT_MENU(wxID_EXIT, EnviroFrame::OnExit)
+EVT_CLOSE(EnviroFrame::OnClose)
+EVT_IDLE(EnviroFrame::OnIdle)
 
-EVT_MENU(ID_TOOLS_SELECT,			vtFrame::OnToolsSelect)
-EVT_UPDATE_UI(ID_TOOLS_SELECT,		vtFrame::OnUpdateToolsSelect)
-EVT_MENU(ID_TOOLS_FENCES,			vtFrame::OnToolsFences)
-EVT_UPDATE_UI(ID_TOOLS_FENCES,		vtFrame::OnUpdateToolsFences)
-EVT_MENU(ID_TOOLS_ROUTES,			vtFrame::OnToolsRoutes)
-EVT_UPDATE_UI(ID_TOOLS_ROUTES,		vtFrame::OnUpdateToolsRoutes)
-EVT_MENU(ID_TOOLS_PLANTS,			vtFrame::OnToolsPlants)
-EVT_UPDATE_UI(ID_TOOLS_PLANTS,		vtFrame::OnUpdateToolsPlants)
-EVT_MENU(ID_TOOLS_INSTANCES,		vtFrame::OnToolsInstances)
-EVT_UPDATE_UI(ID_TOOLS_INSTANCES,	vtFrame::OnUpdateToolsInstances)
-//EVT_MENU(ID_TOOLS_MOVE,			vtFrame::OnToolsMove)
-//EVT_UPDATE_UI(ID_TOOLS_MOVE,		vtFrame::OnUpdateToolsMove)
-EVT_MENU(ID_TOOLS_NAVIGATE,			vtFrame::OnToolsNavigate)
-EVT_UPDATE_UI(ID_TOOLS_NAVIGATE,	vtFrame::OnUpdateToolsNavigate)
-EVT_MENU(ID_TOOLS_MEASURE,			vtFrame::OnToolsMeasure)
-EVT_UPDATE_UI(ID_TOOLS_MEASURE,		vtFrame::OnUpdateToolsMeasure)
+EVT_MENU(ID_TOOLS_SELECT,			EnviroFrame::OnToolsSelect)
+EVT_UPDATE_UI(ID_TOOLS_SELECT,		EnviroFrame::OnUpdateToolsSelect)
+EVT_MENU(ID_TOOLS_FENCES,			EnviroFrame::OnToolsFences)
+EVT_UPDATE_UI(ID_TOOLS_FENCES,		EnviroFrame::OnUpdateToolsFences)
+EVT_MENU(ID_TOOLS_ROUTES,			EnviroFrame::OnToolsRoutes)
+EVT_UPDATE_UI(ID_TOOLS_ROUTES,		EnviroFrame::OnUpdateToolsRoutes)
+EVT_MENU(ID_TOOLS_PLANTS,			EnviroFrame::OnToolsPlants)
+EVT_UPDATE_UI(ID_TOOLS_PLANTS,		EnviroFrame::OnUpdateToolsPlants)
+EVT_MENU(ID_TOOLS_INSTANCES,		EnviroFrame::OnToolsInstances)
+EVT_UPDATE_UI(ID_TOOLS_INSTANCES,	EnviroFrame::OnUpdateToolsInstances)
+//EVT_MENU(ID_TOOLS_MOVE,			EnviroFrame::OnToolsMove)
+//EVT_UPDATE_UI(ID_TOOLS_MOVE,		EnviroFrame::OnUpdateToolsMove)
+EVT_MENU(ID_TOOLS_NAVIGATE,			EnviroFrame::OnToolsNavigate)
+EVT_UPDATE_UI(ID_TOOLS_NAVIGATE,	EnviroFrame::OnUpdateToolsNavigate)
+EVT_MENU(ID_TOOLS_MEASURE,			EnviroFrame::OnToolsMeasure)
+EVT_UPDATE_UI(ID_TOOLS_MEASURE,		EnviroFrame::OnUpdateToolsMeasure)
 
-EVT_MENU(ID_VIEW_MAINTAIN,			vtFrame::OnViewMaintain)
-EVT_UPDATE_UI(ID_VIEW_MAINTAIN,		vtFrame::OnUpdateViewMaintain)
-EVT_MENU(ID_VIEW_WIREFRAME,			vtFrame::OnViewWireframe)
-EVT_UPDATE_UI(ID_VIEW_WIREFRAME,	vtFrame::OnUpdateViewWireframe)
-EVT_MENU(ID_VIEW_FULLSCREEN,		vtFrame::OnViewFullscreen)
-EVT_UPDATE_UI(ID_VIEW_FULLSCREEN,	vtFrame::OnUpdateViewFullscreen)
-EVT_MENU(ID_VIEW_TOPDOWN,			vtFrame::OnViewTopDown)
-EVT_UPDATE_UI(ID_VIEW_TOPDOWN,		vtFrame::OnUpdateViewTopDown)
-EVT_MENU(ID_VIEW_FRAMERATE,			vtFrame::OnViewFramerate)
-EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	vtFrame::OnUpdateViewFramerate)
-EVT_MENU(ID_VIEW_ELEV_LEGEND,		vtFrame::OnViewElevLegend)
-EVT_UPDATE_UI(ID_VIEW_ELEV_LEGEND,	vtFrame::OnUpdateViewElevLegend)
-EVT_MENU(ID_VIEW_SETTINGS,			vtFrame::OnViewSettings)
-EVT_MENU(ID_VIEW_LOCATIONS,			vtFrame::OnViewLocations)
-EVT_UPDATE_UI(ID_VIEW_LOCATIONS,	vtFrame::OnUpdateViewLocations)
-EVT_MENU(ID_VIEW_SNAPSHOT,			vtFrame::OnViewSnapshot)
-EVT_MENU(ID_VIEW_SNAP_AGAIN,		vtFrame::OnViewSnapAgain)
-EVT_MENU(ID_VIEW_STATUSBAR,			vtFrame::OnViewStatusBar)
-EVT_UPDATE_UI(ID_VIEW_STATUSBAR,	vtFrame::OnUpdateViewStatusBar)
-EVT_MENU(ID_VIEW_SCENARIOS,			vtFrame::OnViewScenarios)
+EVT_MENU(ID_VIEW_MAINTAIN,			EnviroFrame::OnViewMaintain)
+EVT_UPDATE_UI(ID_VIEW_MAINTAIN,		EnviroFrame::OnUpdateViewMaintain)
+EVT_MENU(ID_VIEW_WIREFRAME,			EnviroFrame::OnViewWireframe)
+EVT_UPDATE_UI(ID_VIEW_WIREFRAME,	EnviroFrame::OnUpdateViewWireframe)
+EVT_MENU(ID_VIEW_FULLSCREEN,		EnviroFrame::OnViewFullscreen)
+EVT_UPDATE_UI(ID_VIEW_FULLSCREEN,	EnviroFrame::OnUpdateViewFullscreen)
+EVT_MENU(ID_VIEW_TOPDOWN,			EnviroFrame::OnViewTopDown)
+EVT_UPDATE_UI(ID_VIEW_TOPDOWN,		EnviroFrame::OnUpdateViewTopDown)
+EVT_MENU(ID_VIEW_FRAMERATE,			EnviroFrame::OnViewFramerate)
+EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	EnviroFrame::OnUpdateViewFramerate)
+EVT_MENU(ID_VIEW_ELEV_LEGEND,		EnviroFrame::OnViewElevLegend)
+EVT_UPDATE_UI(ID_VIEW_ELEV_LEGEND,	EnviroFrame::OnUpdateViewElevLegend)
+EVT_MENU(ID_VIEW_SETTINGS,			EnviroFrame::OnViewSettings)
+EVT_MENU(ID_VIEW_LOCATIONS,			EnviroFrame::OnViewLocations)
+EVT_UPDATE_UI(ID_VIEW_LOCATIONS,	EnviroFrame::OnUpdateViewLocations)
+EVT_MENU(ID_VIEW_SNAPSHOT,			EnviroFrame::OnViewSnapshot)
+EVT_MENU(ID_VIEW_SNAP_AGAIN,		EnviroFrame::OnViewSnapAgain)
+EVT_MENU(ID_VIEW_STATUSBAR,			EnviroFrame::OnViewStatusBar)
+EVT_UPDATE_UI(ID_VIEW_STATUSBAR,	EnviroFrame::OnUpdateViewStatusBar)
+EVT_MENU(ID_VIEW_SCENARIOS,			EnviroFrame::OnViewScenarios)
 
-EVT_MENU(ID_VIEW_SLOWER,		vtFrame::OnViewSlower)
-EVT_UPDATE_UI(ID_VIEW_SLOWER,	vtFrame::OnUpdateViewSlower)
-EVT_MENU(ID_VIEW_FASTER,		vtFrame::OnViewFaster)
-EVT_UPDATE_UI(ID_VIEW_FASTER,	vtFrame::OnUpdateViewFaster)
-EVT_MENU(ID_NAV_NORMAL,			vtFrame::OnNavNormal)
-EVT_UPDATE_UI(ID_NAV_NORMAL,	vtFrame::OnUpdateNavNormal)
-EVT_MENU(ID_NAV_VELO,			vtFrame::OnNavVelo)
-EVT_UPDATE_UI(ID_NAV_VELO,		vtFrame::OnUpdateNavVelo)
-EVT_MENU(ID_NAV_GRAB_PIVOT,		vtFrame::OnNavGrabPivot)
-EVT_UPDATE_UI(ID_NAV_GRAB_PIVOT,vtFrame::OnUpdateNavGrabPivot)
-EVT_MENU(ID_NAV_PANO,			vtFrame::OnNavPano)
-EVT_UPDATE_UI(ID_NAV_PANO,		vtFrame::OnUpdateNavPano)
+EVT_MENU(ID_VIEW_SLOWER,		EnviroFrame::OnViewSlower)
+EVT_UPDATE_UI(ID_VIEW_SLOWER,	EnviroFrame::OnUpdateViewSlower)
+EVT_MENU(ID_VIEW_FASTER,		EnviroFrame::OnViewFaster)
+EVT_UPDATE_UI(ID_VIEW_FASTER,	EnviroFrame::OnUpdateViewFaster)
+EVT_MENU(ID_NAV_NORMAL,			EnviroFrame::OnNavNormal)
+EVT_UPDATE_UI(ID_NAV_NORMAL,	EnviroFrame::OnUpdateNavNormal)
+EVT_MENU(ID_NAV_VELO,			EnviroFrame::OnNavVelo)
+EVT_UPDATE_UI(ID_NAV_VELO,		EnviroFrame::OnUpdateNavVelo)
+EVT_MENU(ID_NAV_GRAB_PIVOT,		EnviroFrame::OnNavGrabPivot)
+EVT_UPDATE_UI(ID_NAV_GRAB_PIVOT,EnviroFrame::OnUpdateNavGrabPivot)
+EVT_MENU(ID_NAV_PANO,			EnviroFrame::OnNavPano)
+EVT_UPDATE_UI(ID_NAV_PANO,		EnviroFrame::OnUpdateNavPano)
 
-EVT_MENU(ID_SCENE_SCENEGRAPH,	vtFrame::OnSceneGraph)
-EVT_MENU(ID_SCENE_TERRAIN,		vtFrame::OnSceneTerrain)
-EVT_UPDATE_UI(ID_SCENE_TERRAIN,	vtFrame::OnUpdateSceneTerrain)
-EVT_MENU(ID_SCENE_SPACE,		vtFrame::OnSceneSpace)
-EVT_UPDATE_UI(ID_SCENE_SPACE,	vtFrame::OnUpdateSceneSpace)
+EVT_MENU(ID_SCENE_SCENEGRAPH,	EnviroFrame::OnSceneGraph)
+EVT_MENU(ID_SCENE_TERRAIN,		EnviroFrame::OnSceneTerrain)
+EVT_UPDATE_UI(ID_SCENE_TERRAIN,	EnviroFrame::OnUpdateSceneTerrain)
+EVT_MENU(ID_SCENE_SPACE,		EnviroFrame::OnSceneSpace)
+EVT_UPDATE_UI(ID_SCENE_SPACE,	EnviroFrame::OnUpdateSceneSpace)
 #if VTLIB_OSG
-EVT_MENU(ID_SCENE_SAVE,			vtFrame::OnSceneSave)
+EVT_MENU(ID_SCENE_SAVE,			EnviroFrame::OnSceneSave)
 #endif
-EVT_MENU(ID_TIME_DIALOG,		vtFrame::OnTimeDialog)
-EVT_MENU(ID_TIME_STOP,			vtFrame::OnTimeStop)
-EVT_MENU(ID_TIME_FASTER,		vtFrame::OnTimeFaster)
+EVT_MENU(ID_TIME_DIALOG,		EnviroFrame::OnTimeDialog)
+EVT_MENU(ID_TIME_STOP,			EnviroFrame::OnTimeStop)
+EVT_MENU(ID_TIME_FASTER,		EnviroFrame::OnTimeFaster)
 
-EVT_UPDATE_UI(ID_TIME_DIALOG,	vtFrame::OnUpdateInOrbitOrTerrain)
-EVT_UPDATE_UI(ID_TIME_STOP,		vtFrame::OnUpdateInOrbitOrTerrain)
-EVT_UPDATE_UI(ID_TIME_FASTER,	vtFrame::OnUpdateInOrbitOrTerrain)
+EVT_UPDATE_UI(ID_TIME_DIALOG,	EnviroFrame::OnUpdateInOrbitOrTerrain)
+EVT_UPDATE_UI(ID_TIME_STOP,		EnviroFrame::OnUpdateInOrbitOrTerrain)
+EVT_UPDATE_UI(ID_TIME_FASTER,	EnviroFrame::OnUpdateInOrbitOrTerrain)
 
-EVT_MENU(ID_TERRAIN_DYNAMIC,	vtFrame::OnDynamic)
-EVT_MENU(ID_TERRAIN_CULLEVERY,	vtFrame::OnCullEvery)
-EVT_MENU(ID_TERRAIN_CULLONCE,	vtFrame::OnCullOnce)
-EVT_MENU(ID_TERRAIN_SKY,		vtFrame::OnSky)
-EVT_MENU(ID_TERRAIN_OCEAN,		vtFrame::OnOcean)
-EVT_MENU(ID_TERRAIN_PLANTS,		vtFrame::OnPlants)
-EVT_MENU(ID_TERRAIN_STRUCTURES,	vtFrame::OnStructures)
-EVT_MENU(ID_TERRAIN_ROADS,		vtFrame::OnRoads)
-EVT_MENU(ID_TERRAIN_FOG,		vtFrame::OnFog)
-EVT_MENU(ID_TERRAIN_INCREASE,	vtFrame::OnIncrease)
-EVT_MENU(ID_TERRAIN_DECREASE,	vtFrame::OnDecrease)
-EVT_MENU(ID_TERRAIN_SAVEVEG,	vtFrame::OnSaveVeg)
-EVT_MENU(ID_TERRAIN_SAVESTRUCT,	vtFrame::OnSaveStruct)
-EVT_MENU(ID_TERRAIN_FOUNDATIONS, vtFrame::OnToggleFoundations)
-EVT_MENU(ID_TERRAIN_RESHADE,	vtFrame::OnTerrainReshade)
+EVT_MENU(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnDynamic)
+EVT_MENU(ID_TERRAIN_CULLEVERY,	EnviroFrame::OnCullEvery)
+EVT_MENU(ID_TERRAIN_CULLONCE,	EnviroFrame::OnCullOnce)
+EVT_MENU(ID_TERRAIN_SKY,		EnviroFrame::OnSky)
+EVT_MENU(ID_TERRAIN_OCEAN,		EnviroFrame::OnOcean)
+EVT_MENU(ID_TERRAIN_PLANTS,		EnviroFrame::OnPlants)
+EVT_MENU(ID_TERRAIN_STRUCTURES,	EnviroFrame::OnStructures)
+EVT_MENU(ID_TERRAIN_ROADS,		EnviroFrame::OnRoads)
+EVT_MENU(ID_TERRAIN_FOG,		EnviroFrame::OnFog)
+EVT_MENU(ID_TERRAIN_INCREASE,	EnviroFrame::OnIncrease)
+EVT_MENU(ID_TERRAIN_DECREASE,	EnviroFrame::OnDecrease)
+EVT_MENU(ID_TERRAIN_SAVEVEG,	EnviroFrame::OnSaveVeg)
+EVT_MENU(ID_TERRAIN_SAVESTRUCT,	EnviroFrame::OnSaveStruct)
+EVT_MENU(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnToggleFoundations)
+EVT_MENU(ID_TERRAIN_RESHADE,	EnviroFrame::OnTerrainReshade)
 
-EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	vtFrame::OnUpdateDynamic)
-EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, vtFrame::OnUpdateCullEvery)
-EVT_UPDATE_UI(ID_TERRAIN_SKY,		vtFrame::OnUpdateSky)
-EVT_UPDATE_UI(ID_TERRAIN_OCEAN,		vtFrame::OnUpdateOcean)
-EVT_UPDATE_UI(ID_TERRAIN_PLANTS,	vtFrame::OnUpdatePlants)
-EVT_UPDATE_UI(ID_TERRAIN_STRUCTURES, vtFrame::OnUpdateStructures)
-EVT_UPDATE_UI(ID_TERRAIN_ROADS,		vtFrame::OnUpdateRoads)
-EVT_UPDATE_UI(ID_TERRAIN_FOG,		vtFrame::OnUpdateFog)
-EVT_UPDATE_UI(ID_TERRAIN_FOUNDATIONS, vtFrame::OnUpdateFoundations)
+EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnUpdateDynamic)
+EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, EnviroFrame::OnUpdateCullEvery)
+EVT_UPDATE_UI(ID_TERRAIN_SKY,		EnviroFrame::OnUpdateSky)
+EVT_UPDATE_UI(ID_TERRAIN_OCEAN,		EnviroFrame::OnUpdateOcean)
+EVT_UPDATE_UI(ID_TERRAIN_PLANTS,	EnviroFrame::OnUpdatePlants)
+EVT_UPDATE_UI(ID_TERRAIN_STRUCTURES, EnviroFrame::OnUpdateStructures)
+EVT_UPDATE_UI(ID_TERRAIN_ROADS,		EnviroFrame::OnUpdateRoads)
+EVT_UPDATE_UI(ID_TERRAIN_FOG,		EnviroFrame::OnUpdateFog)
+EVT_UPDATE_UI(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnUpdateFoundations)
 
-EVT_MENU(ID_EARTH_SHOWSHADING,	vtFrame::OnEarthShowShading)
-EVT_MENU(ID_EARTH_SHOWAXES,		vtFrame::OnEarthShowAxes)
-EVT_MENU(ID_EARTH_TILT,			vtFrame::OnEarthTilt)
-EVT_MENU(ID_EARTH_FLATTEN,		vtFrame::OnEarthFlatten)
-EVT_MENU(ID_EARTH_UNFOLD,		vtFrame::OnEarthUnfold)
-EVT_MENU(ID_EARTH_POINTS,		vtFrame::OnEarthPoints)
+EVT_MENU(ID_EARTH_SHOWSHADING,	EnviroFrame::OnEarthShowShading)
+EVT_MENU(ID_EARTH_SHOWAXES,		EnviroFrame::OnEarthShowAxes)
+EVT_MENU(ID_EARTH_TILT,			EnviroFrame::OnEarthTilt)
+EVT_MENU(ID_EARTH_FLATTEN,		EnviroFrame::OnEarthFlatten)
+EVT_MENU(ID_EARTH_UNFOLD,		EnviroFrame::OnEarthUnfold)
+EVT_MENU(ID_EARTH_POINTS,		EnviroFrame::OnEarthPoints)
 
-EVT_UPDATE_UI(ID_EARTH_SHOWSHADING, vtFrame::OnUpdateEarthShowShading)
-EVT_UPDATE_UI(ID_EARTH_SHOWAXES, vtFrame::OnUpdateEarthShowAxes)
-EVT_UPDATE_UI(ID_EARTH_TILT,	vtFrame::OnUpdateEarthTilt)
-EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateEarthFlatten)
-EVT_UPDATE_UI(ID_EARTH_UNFOLD,	vtFrame::OnUpdateEarthUnfold)
-EVT_UPDATE_UI(ID_EARTH_POINTS,	vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_EARTH_SHOWSHADING, EnviroFrame::OnUpdateEarthShowShading)
+EVT_UPDATE_UI(ID_EARTH_SHOWAXES, EnviroFrame::OnUpdateEarthShowAxes)
+EVT_UPDATE_UI(ID_EARTH_TILT,	EnviroFrame::OnUpdateEarthTilt)
+EVT_UPDATE_UI(ID_EARTH_FLATTEN, EnviroFrame::OnUpdateEarthFlatten)
+EVT_UPDATE_UI(ID_EARTH_UNFOLD,	EnviroFrame::OnUpdateEarthUnfold)
+EVT_UPDATE_UI(ID_EARTH_POINTS,	EnviroFrame::OnUpdateInOrbit)
 
-EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
+EVT_MENU(ID_HELP_ABOUT, EnviroFrame::OnHelpAbout)
 
 // Popup
-EVT_MENU(ID_POPUP_PROPERTIES, vtFrame::OnPopupProperties)
-EVT_MENU(ID_POPUP_FLIP, vtFrame::OnPopupFlip)
-EVT_MENU(ID_POPUP_RELOAD, vtFrame::OnPopupReload)
-EVT_MENU(ID_POPUP_DELETE, vtFrame::OnPopupDelete)
+EVT_MENU(ID_POPUP_PROPERTIES, EnviroFrame::OnPopupProperties)
+EVT_MENU(ID_POPUP_FLIP, EnviroFrame::OnPopupFlip)
+EVT_MENU(ID_POPUP_RELOAD, EnviroFrame::OnPopupReload)
+EVT_MENU(ID_POPUP_DELETE, EnviroFrame::OnPopupDelete)
 END_EVENT_TABLE()
 
 
 //
 // Frame constructor
 //
-vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
+EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	const wxSize& size, long style, bool bVerticalToolbar, bool bEnableEarth):
 		wxFrame(parent, -1, title, pos, size, style)
 {
@@ -294,7 +294,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_canvas->SetCurrent();
 }
 
-vtFrame::~vtFrame()
+EnviroFrame::~EnviroFrame()
 {
 	VTLOG("Deleting Frame\n");
 	delete m_canvas;
@@ -314,7 +314,7 @@ vtFrame::~vtFrame()
 }
 
 
-void vtFrame::CreateMenus()
+void EnviroFrame::CreateMenus()
 {
 	// Make menu bar
 	m_pMenuBar = new wxMenuBar;
@@ -454,7 +454,7 @@ void vtFrame::CreateMenus()
 	SetMenuBar(m_pMenuBar);
 }
 
-void vtFrame::CreateToolbar(bool bVertical)
+void EnviroFrame::CreateToolbar(bool bVertical)
 {
 	SetToolBar(NULL);
 
@@ -520,7 +520,7 @@ void vtFrame::CreateToolbar(bool bVertical)
 //	m_pToolbar->Refresh();
 }
 
-void vtFrame::Setup3DScene()
+void EnviroFrame::Setup3DScene()
 {
 }
 
@@ -528,7 +528,7 @@ void vtFrame::Setup3DScene()
 // Utility methods
 //
 
-void vtFrame::SetMode(MouseMode mode)
+void EnviroFrame::SetMode(MouseMode mode)
 {
 	// Show/hide the modeless dialogs as appropriate
 	m_pFenceDlg->Show(mode == MM_FENCES);
@@ -551,7 +551,7 @@ void vtFrame::SetMode(MouseMode mode)
 
 vtTransform *contourtrans = NULL;
 
-void vtFrame::OnChar(wxKeyEvent& event)
+void EnviroFrame::OnChar(wxKeyEvent& event)
 {
 	static NavType prev = NT_Normal;
 	vtTerrain *pTerr = GetCurrentTerrain();
@@ -683,7 +683,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 	}
 }
 
-void vtFrame::ToggleNavigate()
+void EnviroFrame::ToggleNavigate()
 {
 	MouseMode current = g_App.m_mode;
 	if (current == MM_NAVIGATE && m_ToggledMode != MM_NAVIGATE)
@@ -695,7 +695,7 @@ void vtFrame::ToggleNavigate()
 	}
 }
 
-void vtFrame::ChangeFlightSpeed(float factor)
+void EnviroFrame::ChangeFlightSpeed(float factor)
 {
 	float speed = g_App.GetFlightSpeed();
 	g_App.SetFlightSpeed(speed * factor);
@@ -708,7 +708,7 @@ void vtFrame::ChangeFlightSpeed(float factor)
 	m_pCameraDlg->Refresh();
 }
 
-void vtFrame::ChangeTerrainDetail(bool bIncrease)
+void EnviroFrame::ChangeTerrainDetail(bool bIncrease)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (!t) return;
@@ -727,7 +727,7 @@ void vtFrame::ChangeTerrainDetail(bool bIncrease)
 	}
 }
 
-void vtFrame::SetFullScreen(bool bFull)
+void EnviroFrame::SetFullScreen(bool bFull)
 {
 	m_bFullscreen = bFull;
 #ifdef __WXMSW__
@@ -751,7 +751,7 @@ void vtFrame::SetFullScreen(bool bFull)
 // Intercept menu commands
 //
 
-void vtFrame::OnExit(wxCommandEvent& event)
+void EnviroFrame::OnExit(wxCommandEvent& event)
 {
 	VTLOG("Got Exit event, shutting down.\n");
 	if (m_canvas)
@@ -763,7 +763,7 @@ void vtFrame::OnExit(wxCommandEvent& event)
 	Destroy();
 }
 
-void vtFrame::OnClose(wxCloseEvent &event)
+void EnviroFrame::OnClose(wxCloseEvent &event)
 {
 	VTLOG("Got Close event, shutting down.\n");
 	if (m_canvas)
@@ -775,7 +775,7 @@ void vtFrame::OnClose(wxCloseEvent &event)
 	event.Skip();
 }
 
-void vtFrame::OnIdle(wxIdleEvent& event)
+void EnviroFrame::OnIdle(wxIdleEvent& event)
 {
 	// Check if we were requested to close on the next Idle event.
 	if (m_bCloseOnIdle)
@@ -784,7 +784,7 @@ void vtFrame::OnIdle(wxIdleEvent& event)
 		event.Skip();
 }
 
-void vtFrame::OnHelpAbout(wxCommandEvent& event)
+void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	EnableContinuousRendering(false);
 
@@ -817,7 +817,7 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 
 //////////////////// File menu //////////////////////////
 
-void vtFrame::OnFileLayers(wxCommandEvent& event)
+void EnviroFrame::OnFileLayers(wxCommandEvent& event)
 {
 	m_pLayerDlg->Show(true);
 }
@@ -825,150 +825,150 @@ void vtFrame::OnFileLayers(wxCommandEvent& event)
 
 //////////////////// View menu //////////////////////////
 
-void vtFrame::OnViewMaintain(wxCommandEvent& event)
+void EnviroFrame::OnViewMaintain(wxCommandEvent& event)
 {
 	g_App.SetMaintain(!g_App.GetMaintain());
 }
 
-void vtFrame::OnUpdateViewMaintain(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateViewMaintain(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.GetMaintain());
 }
 
-void vtFrame::OnNavNormal(wxCommandEvent& event)
+void EnviroFrame::OnNavNormal(wxCommandEvent& event)
 {
 	g_App.SetNavType(NT_Normal);
 }
 
-void vtFrame::OnUpdateNavNormal(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateNavNormal(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_nav == NT_Normal);
 }
 
-void vtFrame::OnNavVelo(wxCommandEvent& event)
+void EnviroFrame::OnNavVelo(wxCommandEvent& event)
 {
 	g_App.SetNavType(NT_Velo);
 }
 
-void vtFrame::OnUpdateNavVelo(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateNavVelo(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_nav == NT_Velo);
 }
 
-void vtFrame::OnNavGrabPivot(wxCommandEvent& event)
+void EnviroFrame::OnNavGrabPivot(wxCommandEvent& event)
 {
 	g_App.SetNavType(NT_Grab);
 }
 
-void vtFrame::OnUpdateNavGrabPivot(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateNavGrabPivot(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_nav == NT_Grab);
 }
 
-void vtFrame::OnNavPano(wxCommandEvent& event)
+void EnviroFrame::OnNavPano(wxCommandEvent& event)
 {
 	g_App.SetNavType(NT_Pano);
 }
 
-void vtFrame::OnUpdateNavPano(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateNavPano(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_nav == NT_Pano);
 }
 
-void vtFrame::OnViewWireframe(wxCommandEvent& event)
+void EnviroFrame::OnViewWireframe(wxCommandEvent& event)
 {
 	vtGetScene()->SetGlobalWireframe(!vtGetScene()->GetGlobalWireframe());
 }
 
-void vtFrame::OnUpdateViewWireframe(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateViewWireframe(wxUpdateUIEvent& event)
 {
 	event.Check(vtGetScene()->GetGlobalWireframe());
 }
 
-void vtFrame::OnViewFullscreen(wxCommandEvent& event)
+void EnviroFrame::OnViewFullscreen(wxCommandEvent& event)
 {
 	SetFullScreen(!m_bFullscreen);
 }
 
-void vtFrame::OnUpdateViewFullscreen(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateViewFullscreen(wxUpdateUIEvent& event)
 {
 	event.Check(m_bFullscreen);
 }
 
-void vtFrame::OnViewTopDown(wxCommandEvent& event)
+void EnviroFrame::OnViewTopDown(wxCommandEvent& event)
 {
 	m_bTopDown = !m_bTopDown;
 	g_App.SetTopDown(m_bTopDown);
 }
 
-void vtFrame::OnUpdateViewTopDown(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateViewTopDown(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(m_bTopDown);
 }
 
-void vtFrame::OnViewFramerate(wxCommandEvent& event)
+void EnviroFrame::OnViewFramerate(wxCommandEvent& event)
 {
 	m_canvas->m_bShowFrameRateChart = !m_canvas->m_bShowFrameRateChart;
 }
 
-void vtFrame::OnUpdateViewFramerate(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateViewFramerate(wxUpdateUIEvent& event)
 {
 	event.Check(m_canvas && m_canvas->m_bShowFrameRateChart);
 }
 
-void vtFrame::OnViewElevLegend(wxCommandEvent& event)
+void EnviroFrame::OnViewElevLegend(wxCommandEvent& event)
 {
 	g_App.ShowElevationLegend(!g_App.GetShowElevationLegend());
 }
 
-void vtFrame::OnUpdateViewElevLegend(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateViewElevLegend(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.GetShowElevationLegend());
 }
 
-void vtFrame::OnViewSlower(wxCommandEvent& event)
+void EnviroFrame::OnViewSlower(wxCommandEvent& event)
 {
 	ChangeFlightSpeed(1.0f / 1.8f);
 }
 
-void vtFrame::OnUpdateViewSlower(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateViewSlower(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain && g_App.m_mode == MM_NAVIGATE);
 }
 
-void vtFrame::OnViewFaster(wxCommandEvent& event)
+void EnviroFrame::OnViewFaster(wxCommandEvent& event)
 {
 	ChangeFlightSpeed(1.8f);
 }
 
-void vtFrame::OnUpdateViewFaster(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateViewFaster(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain && g_App.m_mode == MM_NAVIGATE);
 }
 
-void vtFrame::OnViewSettings(wxCommandEvent& event)
+void EnviroFrame::OnViewSettings(wxCommandEvent& event)
 {
 	m_pCameraDlg->Show(true);
 }
 
-void vtFrame::OnViewLocations(wxCommandEvent& event)
+void EnviroFrame::OnViewLocations(wxCommandEvent& event)
 {
 	m_pLocationDlg->Show(true);
 }
 
-void vtFrame::OnUpdateViewLocations(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateViewLocations(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 }
 
-void vtFrame::Snapshot(bool bNumbered)
+void EnviroFrame::Snapshot(bool bNumbered)
 {
 	vtScene *scene = vtGetScene();
 	IPoint2 size = scene->GetWindowSize();
@@ -1047,118 +1047,118 @@ void vtFrame::Snapshot(bool bNumbered)
 	}
 }
 
-void vtFrame::OnViewSnapshot(wxCommandEvent& event)
+void EnviroFrame::OnViewSnapshot(wxCommandEvent& event)
 {
 	Snapshot(false); // do ask for explicit filename always
 }
 
-void vtFrame::OnViewSnapAgain(wxCommandEvent& event)
+void EnviroFrame::OnViewSnapAgain(wxCommandEvent& event)
 {
 	Snapshot(true); // number, and don't ask for filename if we already have one
 }
 
-void vtFrame::OnViewStatusBar(wxCommandEvent& event)
+void EnviroFrame::OnViewStatusBar(wxCommandEvent& event)
 {
 	GetStatusBar()->Show(!GetStatusBar()->IsShown());
 	SendSizeEvent();
 }
 
-void vtFrame::OnUpdateViewStatusBar(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateViewStatusBar(wxUpdateUIEvent& event)
 {
 	event.Check(GetStatusBar()->IsShown());
 }
 
-void vtFrame::OnViewScenarios(wxCommandEvent& event)
+void EnviroFrame::OnViewScenarios(wxCommandEvent& event)
 {
 	m_pScenarioSelectDialog->Show(true);
 }
 
 ///////////////////// Tools menu //////////////////////////
 
-void vtFrame::OnToolsSelect(wxCommandEvent& event)
+void EnviroFrame::OnToolsSelect(wxCommandEvent& event)
 {
 	SetMode(MM_SELECT);
 }
 
-void vtFrame::OnUpdateToolsSelect(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateToolsSelect(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain || g_App.m_state == AS_Orbit);
 	event.Check(g_App.m_mode == MM_SELECT);
 }
 
-void vtFrame::OnToolsFences(wxCommandEvent& event)
+void EnviroFrame::OnToolsFences(wxCommandEvent& event)
 {
 	SetMode(MM_FENCES);
 }
 
-void vtFrame::OnUpdateToolsFences(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateToolsFences(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_FENCES);
 }
 
-void vtFrame::OnToolsRoutes(wxCommandEvent& event)
+void EnviroFrame::OnToolsRoutes(wxCommandEvent& event)
 {
 	SetMode(MM_ROUTES);
 }
 
-void vtFrame::OnUpdateToolsRoutes(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateToolsRoutes(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_ROUTES);
 }
 
-void vtFrame::OnToolsPlants(wxCommandEvent& event)
+void EnviroFrame::OnToolsPlants(wxCommandEvent& event)
 {
 	SetMode(MM_PLANTS);
 }
 
-void vtFrame::OnUpdateToolsPlants(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateToolsPlants(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_PLANTS);
 }
 
-void vtFrame::OnToolsInstances(wxCommandEvent& event)
+void EnviroFrame::OnToolsInstances(wxCommandEvent& event)
 {
 	SetMode(MM_INSTANCES);
 }
 
-void vtFrame::OnUpdateToolsInstances(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateToolsInstances(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_INSTANCES);
 }
 
-void vtFrame::OnToolsMove(wxCommandEvent& event)
+void EnviroFrame::OnToolsMove(wxCommandEvent& event)
 {
 	SetMode(MM_MOVE);
 }
 
-void vtFrame::OnUpdateToolsMove(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateToolsMove(wxUpdateUIEvent& event)
 {
 	// not yet implemented
 	event.Enable(false);
 	event.Check(g_App.m_mode == MM_MOVE);
 }
 
-void vtFrame::OnToolsNavigate(wxCommandEvent& event)
+void EnviroFrame::OnToolsNavigate(wxCommandEvent& event)
 {
 	SetMode(MM_NAVIGATE);
 }
 
-void vtFrame::OnUpdateToolsNavigate(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateToolsNavigate(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_NAVIGATE);
 }
 
-void vtFrame::OnToolsMeasure(wxCommandEvent& event)
+void EnviroFrame::OnToolsMeasure(wxCommandEvent& event)
 {
 	SetMode(MM_MEASURE);
 }
 
-void vtFrame::OnUpdateToolsMeasure(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateToolsMeasure(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain || g_App.m_state == AS_Orbit);
 	event.Check(g_App.m_mode == MM_MEASURE);
@@ -1166,36 +1166,36 @@ void vtFrame::OnUpdateToolsMeasure(wxUpdateUIEvent& event)
 
 /////////////////////// Scene menu ///////////////////////////
 
-void vtFrame::OnSceneGraph(wxCommandEvent& event)
+void EnviroFrame::OnSceneGraph(wxCommandEvent& event)
 {
 	m_pSceneGraphDlg->Show(true);
 }
 
-void vtFrame::OnSceneTerrain(wxCommandEvent& event)
+void EnviroFrame::OnSceneTerrain(wxCommandEvent& event)
 {
 	wxString2 str;
 	if (wxGetApp().AskForTerrainName(this, str))
 		g_App.SwitchToTerrain(str.to_utf8());
 }
 
-void vtFrame::OnUpdateSceneTerrain(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateSceneTerrain(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain ||
 		g_App.m_state == AS_Orbit ||
 		g_App.m_state == AS_Neutral);
 }
 
-void vtFrame::OnSceneSpace(wxCommandEvent& event)
+void EnviroFrame::OnSceneSpace(wxCommandEvent& event)
 {
 	g_App.FlyToSpace();
 }
 
-void vtFrame::OnUpdateSceneSpace(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateSceneSpace(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 }
 
-void vtFrame::OnSceneSave(wxCommandEvent& event)
+void EnviroFrame::OnSceneSave(wxCommandEvent& event)
 {
 #if VTLIB_OSG
 	vtGroup *pRoot = vtGetTS()->GetTop();
@@ -1203,17 +1203,17 @@ void vtFrame::OnSceneSave(wxCommandEvent& event)
 #endif
 }
 
-void vtFrame::OnTimeDialog(wxCommandEvent& event)
+void EnviroFrame::OnTimeDialog(wxCommandEvent& event)
 {
 	m_pTimeDlg->Show(true);
 }
 
-void vtFrame::OnTimeStop(wxCommandEvent& event)
+void EnviroFrame::OnTimeStop(wxCommandEvent& event)
 {
 	g_App.SetSpeed(0.0f);
 }
 
-void vtFrame::OnTimeFaster(wxCommandEvent& event)
+void EnviroFrame::OnTimeFaster(wxCommandEvent& event)
 {
 	float x = g_App.GetSpeed();
 	if (x == 0.0f)
@@ -1224,7 +1224,7 @@ void vtFrame::OnTimeFaster(wxCommandEvent& event)
 
 /////////////////////// Terrain menu ///////////////////////////
 
-void vtFrame::OnDynamic(wxCommandEvent& event)
+void EnviroFrame::OnDynamic(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (!t) return;
@@ -1233,7 +1233,7 @@ void vtFrame::OnDynamic(wxCommandEvent& event)
 	t->SetFeatureVisible(TFT_TERRAINSURFACE, !on);
 }
 
-void vtFrame::OnUpdateDynamic(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateDynamic(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (!t) return;
@@ -1243,7 +1243,7 @@ void vtFrame::OnUpdateDynamic(wxUpdateUIEvent& event)
 	event.Check(on);
 }
 
-void vtFrame::OnCullEvery(wxCommandEvent& event)
+void EnviroFrame::OnCullEvery(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (!t) return;
@@ -1252,14 +1252,14 @@ void vtFrame::OnCullEvery(wxCommandEvent& event)
 	t->GetDynTerrain()->SetCull(m_bCulleveryframe);
 }
 
-void vtFrame::OnUpdateCullEvery(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateCullEvery(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	event.Enable(t && t->GetDynTerrain());
 	event.Check(m_bCulleveryframe);
 }
 
-void vtFrame::OnCullOnce(wxCommandEvent& event)
+void EnviroFrame::OnCullOnce(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (!t) return;
@@ -1269,7 +1269,7 @@ void vtFrame::OnCullOnce(wxCommandEvent& event)
 	pTerr->CullOnce();
 }
 
-void vtFrame::OnSky(wxCommandEvent& event)
+void EnviroFrame::OnSky(wxCommandEvent& event)
 {
 	vtSkyDome *sky = vtGetTS()->GetSkyDome();
 	if (!sky) return;
@@ -1277,7 +1277,7 @@ void vtFrame::OnSky(wxCommandEvent& event)
 	sky->SetEnabled(!on);
 }
 
-void vtFrame::OnUpdateSky(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateSky(wxUpdateUIEvent& event)
 {
 	vtSkyDome *sky = vtGetTS()->GetSkyDome();
 	if (!sky) return;
@@ -1285,13 +1285,13 @@ void vtFrame::OnUpdateSky(wxUpdateUIEvent& event)
 	event.Check(on);
 }
 
-void vtFrame::OnOcean(wxCommandEvent& event)
+void EnviroFrame::OnOcean(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_OCEAN, !t->GetFeatureVisible(TFT_OCEAN));
 }
 
-void vtFrame::OnUpdateOcean(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateOcean(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
@@ -1301,13 +1301,13 @@ void vtFrame::OnUpdateOcean(wxUpdateUIEvent& event)
 	event.Check(on);
 }
 
-void vtFrame::OnPlants(wxCommandEvent& event)
+void EnviroFrame::OnPlants(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_VEGETATION, !t->GetFeatureVisible(TFT_VEGETATION));
 }
 
-void vtFrame::OnUpdatePlants(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdatePlants(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
@@ -1317,13 +1317,13 @@ void vtFrame::OnUpdatePlants(wxUpdateUIEvent& event)
 	event.Check(on);
 }
 
-void vtFrame::OnStructures(wxCommandEvent& event)
+void EnviroFrame::OnStructures(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_STRUCTURES, !t->GetFeatureVisible(TFT_STRUCTURES));
 }
 
-void vtFrame::OnUpdateStructures(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateStructures(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
@@ -1333,19 +1333,19 @@ void vtFrame::OnUpdateStructures(wxUpdateUIEvent& event)
 	event.Check(on);
 }
 
-void vtFrame::OnRoads(wxCommandEvent& event)
+void EnviroFrame::OnRoads(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_ROADS, !t->GetFeatureVisible(TFT_ROADS));
 }
 
-void vtFrame::OnFog(wxCommandEvent& event)
+void EnviroFrame::OnFog(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (t) t->SetFog(!t->GetFog());
 }
 
-void vtFrame::OnUpdateRoads(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateRoads(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
@@ -1355,28 +1355,28 @@ void vtFrame::OnUpdateRoads(wxUpdateUIEvent& event)
 	event.Check(on);
 }
 
-void vtFrame::OnUpdateFog(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateFog(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	event.Check(t && t->GetFog());
 }
 
-void vtFrame::OnIncrease(wxCommandEvent& event)
+void EnviroFrame::OnIncrease(wxCommandEvent& event)
 {
 	ChangeTerrainDetail(true);
 }
 
-void vtFrame::OnDecrease(wxCommandEvent& event)
+void EnviroFrame::OnDecrease(wxCommandEvent& event)
 {
 	ChangeTerrainDetail(false);
 }
 
-void vtFrame::OnSaveVeg(wxCommandEvent& event)
+void EnviroFrame::OnSaveVeg(wxCommandEvent& event)
 {
 	g_App.SaveVegetation();
 }
 
-void vtFrame::OnSaveStruct(wxCommandEvent& event)
+void EnviroFrame::OnSaveStruct(wxCommandEvent& event)
 {
 	g_App.SaveStructures();
 
@@ -1386,7 +1386,7 @@ void vtFrame::OnSaveStruct(wxCommandEvent& event)
 
 static bool s_bBuilt = false;
 
-void vtFrame::OnToggleFoundations(wxCommandEvent& event)
+void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 {
 	s_bBuilt = !s_bBuilt;
 
@@ -1406,14 +1406,14 @@ void vtFrame::OnToggleFoundations(wxCommandEvent& event)
 		sa->ConstructStructure(i);
 }
 
-void vtFrame::OnUpdateFoundations(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateFoundations(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	event.Enable(t && t->GetStructures() && t->GetStructures()->GetSize() > 0);
 	event.Check(s_bBuilt);
 }
 
-void vtFrame::OnTerrainReshade(wxCommandEvent& event)
+void EnviroFrame::OnTerrainReshade(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	if (!pTerr)
@@ -1429,72 +1429,72 @@ void vtFrame::OnTerrainReshade(wxCommandEvent& event)
 
 ////////////////// Earth Menu //////////////////////
 
-void vtFrame::OnEarthShowShading(wxCommandEvent& event)
+void EnviroFrame::OnEarthShowShading(wxCommandEvent& event)
 {
 	g_App.SetEarthShading(!g_App.GetEarthShading());
 }
 
-void vtFrame::OnUpdateEarthShowShading(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateEarthShowShading(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit);
 	event.Check(g_App.GetEarthShading());
 }
 
-void vtFrame::OnEarthShowAxes(wxCommandEvent& event)
+void EnviroFrame::OnEarthShowAxes(wxCommandEvent& event)
 {
 	g_App.SetSpaceAxes(!g_App.GetSpaceAxes());
 }
 
-void vtFrame::OnUpdateEarthShowAxes(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateEarthShowAxes(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit || g_App.m_state == AS_Terrain);
 	event.Check(g_App.GetSpaceAxes());
 }
 
-void vtFrame::OnEarthTilt(wxCommandEvent& event)
+void EnviroFrame::OnEarthTilt(wxCommandEvent& event)
 {
 	g_App.SetEarthTilt(!g_App.GetEarthTilt());
 }
 
-void vtFrame::OnUpdateEarthTilt(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateEarthTilt(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit);
 	event.Check(g_App.GetEarthTilt());
 }
 
-void vtFrame::OnUpdateEarthFlatten(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateEarthFlatten(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit);
 	event.Check(g_App.GetEarthShape());
 }
 
-void vtFrame::OnUpdateEarthUnfold(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateEarthUnfold(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit);
 	event.Check(g_App.GetEarthUnfold());
 }
 
-void vtFrame::OnUpdateInOrbit(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateInOrbit(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit);
 }
 
-void vtFrame::OnUpdateInOrbitOrTerrain(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateInOrbitOrTerrain(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit || g_App.m_state == AS_Terrain);
 }
 
-void vtFrame::OnEarthFlatten(wxCommandEvent& event)
+void EnviroFrame::OnEarthFlatten(wxCommandEvent& event)
 {
 	g_App.SetEarthShape(!g_App.GetEarthShape());
 }
 
-void vtFrame::OnEarthUnfold(wxCommandEvent& event)
+void EnviroFrame::OnEarthUnfold(wxCommandEvent& event)
 {
 	g_App.SetEarthUnfold(!g_App.GetEarthUnfold());
 }
 
-void vtFrame::OnEarthPoints(wxCommandEvent& event)
+void EnviroFrame::OnEarthPoints(wxCommandEvent& event)
 {
 	// save current directory
 	wxString path = wxGetCwd();
@@ -1527,7 +1527,7 @@ void vtFrame::OnEarthPoints(wxCommandEvent& event)
 //
 // Called when the GUI needs to be informed of a new terrain
 //
-void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
+void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 {
 	if (pTerrain)
 	{
@@ -1564,26 +1564,26 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 //
 // Called when the Earth View has been constructed
 //
-void vtFrame::SetTimeEngine(TimeEngine *pEngine)
+void EnviroFrame::SetTimeEngine(TimeEngine *pEngine)
 {
 	m_pTimeDlg->SetTimeEngine(pEngine);
 	// poke it once to let the time dialog know
 	pEngine->SetTime(pEngine->GetTime());
 }
 
-void vtFrame::EarthPosUpdated(const DPoint3 &pos)
+void EnviroFrame::EarthPosUpdated(const DPoint3 &pos)
 {
 	m_pInstanceDlg->SetLocation(DPoint2(pos.x, pos.y));
 }
 
-void vtFrame::CameraChanged()
+void EnviroFrame::CameraChanged()
 {
 	// we are dealing with a new camera, so update with its values
 	if (m_pCameraDlg && m_pCameraDlg->IsShown())
 		m_pCameraDlg->CameraChanged();
 }
 
-void vtFrame::UpdateStatus()
+void EnviroFrame::UpdateStatus()
 {
 	if (m_pStatusBar)
 		m_pStatusBar->UpdateText();
@@ -1598,7 +1598,7 @@ void vtFrame::UpdateStatus()
 
 ///////////////////////////////////////////////////////////////////
 
-void vtFrame::ShowPopupMenu(const IPoint2 &pos)
+void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructures();
@@ -1629,7 +1629,7 @@ void vtFrame::ShowPopupMenu(const IPoint2 &pos)
 	delete popmenu;
 }
 
-void vtFrame::OnPopupProperties(wxCommandEvent& event)
+void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructures();
@@ -1688,7 +1688,7 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 	}
 }
 
-void vtFrame::OnPopupFlip(wxCommandEvent& event)
+void EnviroFrame::OnPopupFlip(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structures = pTerr->GetStructures();
@@ -1710,7 +1710,7 @@ void vtFrame::OnPopupFlip(wxCommandEvent& event)
 	}
 }
 
-void vtFrame::OnPopupReload(wxCommandEvent& event)
+void EnviroFrame::OnPopupReload(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structures = pTerr->GetStructures();
@@ -1731,7 +1731,7 @@ void vtFrame::OnPopupReload(wxCommandEvent& event)
 	}
 }
 
-void vtFrame::OnPopupDelete(wxCommandEvent& event)
+void EnviroFrame::OnPopupDelete(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	pTerr->DeleteSelectedStructures();

@@ -24,7 +24,7 @@
 #include "xmlhelper/easyxml.hpp"
 
 #include "EnviroApp.h"
-#include "frame.h"
+#include "EnviroFrame.h"
 #include "StartupDlg.h"
 #include "TParamsDlg.h"
 
@@ -32,7 +32,7 @@
 #ifdef FRAME_NAME
   #include FRAME_INCLUDE
 #else
-  #define FRAME_NAME vtFrame
+  #define FRAME_NAME EnviroFrame
   #define LoadAppCatalog(locale)
 #endif
 
@@ -191,9 +191,9 @@ class LogCatcher : public wxLog
 {
 	void DoLogString(const wxChar *szString, time_t t)
 	{
-		VTLOG(" wxLog: ");
-		VTLOG(szString);
-		VTLOG("\n");
+		VTLOG1(" wxLog: ");
+		VTLOG1(szString);
+		VTLOG1("\n");
 	}
 };
 
@@ -214,12 +214,12 @@ bool EnviroApp::OnInit()
 	VTLOG("Specific application name: %s\n", STRING_APPNAME);
 	VTLOG("Application framework: wxWindows v" wxVERSION_NUM_DOT_STRING "\n");
 #if WIN32
-	VTLOG(" Running on: ");
+	VTLOG1(" Running on: ");
 	LogWindowsVersion();
 #endif
-	VTLOG("Build date: ");
-	VTLOG(__DATE__);
-	VTLOG("\n\n");
+	VTLOG1("Build date: ");
+	VTLOG1(__DATE__);
+	VTLOG1("\n\n");
 
 	// Redirect the wxWindows log messages to our own logging stream
 	wxLog *logger = new LogCatcher();
@@ -303,7 +303,7 @@ bool EnviroApp::OnInit()
 	VTLOG("Creating the frame window.\n");
 	wxPoint pos(g_Options.m_WinPos.x, g_Options.m_WinPos.y);
 	wxSize size(g_Options.m_WinSize.x, g_Options.m_WinSize.y);
-	vtFrame *frame = new FRAME_NAME(NULL, title, pos, size);
+	EnviroFrame *frame = new FRAME_NAME(NULL, title, pos, size);
 
 	// process some idle messages... let frame open a bit
 	bool go = true;

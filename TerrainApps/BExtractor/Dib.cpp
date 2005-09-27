@@ -295,6 +295,9 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
 
 			for (iyBlock = 0; iyBlock < nyBlocks; iyBlock++)
 			{
+				if (progress_callback != NULL)
+					progress_callback(iyBlock * 100 / nyBlocks);
+
 				y = iyBlock * yBlockSize;
 				for (ixBlock = 0; ixBlock < nxBlocks; ixBlock++)
 				{

@@ -291,8 +291,11 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName,
 								   bool bRefresh, bool bWarn)
 {
-	VTLOG("ImportDataFromFile '%s', type '%s'\n", strFileName.mb_str(),
-		GetLayerTypeName(ltype).mb_str());
+	VTLOG1("ImportDataFromFile '");
+	VTLOG1(strFileName);
+	VTLOG1("', type '");
+	VTLOG1(GetLayerTypeName(ltype));
+	VTLOG1("'\n");
 
 	// check to see if the file is readable
 	FILE *fp = fopen(strFileName.mb_str(), "rb");
@@ -438,6 +441,10 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 		{
 			pLayer = ImportImage(strFileName);
 		}
+		else if (!strExt.CmpNoCase(_T("ppm")))
+		{
+			pLayer = ImportImage(strFileName);
+		}
 		else
 		{
 			// Many other Elevation formats are supported
@@ -563,10 +570,11 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_HGT);
 		break;
 	case LT_IMAGE:
-		// doq, tif
+		// bmp, doq, img, ppm, tif
 		AddType(filter, FSTRING_BMP);
 		AddType(filter, FSTRING_DOQ);
 		AddType(filter, FSTRING_IMG);
+		AddType(filter, FSTRING_PPM);
 		AddType(filter, FSTRING_TIF);
 		break;
 	case LT_ROAD:
@@ -815,8 +823,6 @@ vtLayerPtr MainFrame::ImportFromDXF(const wxString2 &strFileName, LayerType ltyp
 
 vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName, bool bWarn)
 {
-	wxString strExt = strFileName.AfterLast('.');
-
 	vtElevLayer *pElev = new vtElevLayer();
 
 	bool success = pElev->ImportFromFile(strFileName, progress_callback);
@@ -836,8 +842,7 @@ vtLayerPtr MainFrame::ImportImage(const wxString2 &strFileName)
 {
 	vtImageLayer *pLayer = new vtImageLayer();
 
-	pLayer->SetLayerFilename(strFileName);
-	bool success = pLayer->OnLoad();
+	bool success = pLayer->ImportFromFile(strFileName);
 
 	if (success)
 		return pLayer;

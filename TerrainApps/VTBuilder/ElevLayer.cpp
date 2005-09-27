@@ -124,6 +124,10 @@ vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
 	bool bFloats, float fScale, const vtProjection &proj) : vtLayer(LT_ELEVATION)
 {
 	SetupDefaults();
+
+	VTLOG(" Constructing vtElevLayer of size %d x %d, floats %d\n",
+		iColumns, iRows, bFloats);
+
 	m_pGrid = new vtElevationGrid(area, iColumns, iRows, bFloats, proj);
 	m_pGrid->SetScale(fScale);
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
@@ -847,7 +851,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	{
 		success = m_pGrid->LoadFromDTED(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase(_T("pgm")))
+	else if (!strExt.Left(3).CmpNoCase(_T("pgm")))
 	{
 		success = m_pGrid->LoadFromPGM(strFileName.mb_str(), progress_callback);
 	}
@@ -1112,7 +1116,7 @@ bool vtElevLayer::AskForSaveFilename()
 	if (!bResult)
 		return false;
 
-	vtString fname = saveFile.GetPath().mb_str();
+	vtString fname = (const char *) saveFile.GetPath().mb_str();
 	VTLOG("Got filename: '%s'\n", (const char *) fname);
 
 	if (m_pGrid)
@@ -1143,4 +1147,99 @@ FPoint3 LightDirection(float angle, float direction)
 	light_dir.z = (-cos(theta)*cos(phi));
 	light_dir.y = -sin(phi);
 	return light_dir;
+}
+
+#include "vtdata/ByteOrder.h"
+
+bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
+{
+	// grid size
+	int base_tilesize = opts.lod0size;
+
+	int gridcols, gridrows;
+	m_pGrid->GetDimensions(gridcols, gridrows);
+
+	DRECT area = m_pGrid->GetEarthExtents();
+	DPoint2 tile_dim(area.Width()/opts.cols, area.Height()/opts.rows);
+	DPoint2 cell_size = tile_dim / base_tilesize;
+
+	const vtProjection &proj = m_pGrid->GetProjection();
+	vtString units = GetLinearUnitName(proj.GetUnits());
+	units.MakeLower();
+	int zone = proj.GetUTMZone();
+	vtString crs;
+	if (proj.IsGeographic())
+		crs = "LL";
+	else if (zone != 0)
+		crs = "UTM";
+
+	int i, j, lod;
+	for (j = 0; j < opts.rows; j++)
+	{
+		for (i = 0; i < opts.cols; i++)
+		{
+			DRECT tile_area;
+			tile_area.left = area.left + tile_dim.x * i;
+			tile_area.right = area.left + tile_dim.x * (i+1);
+			tile_area.bottom = area.bottom + tile_dim.y * j;
+			tile_area.top = area.bottom + tile_dim.y * (j+1);
+
+			int col = i;
+			int row = opts.rows-1-j;
+
+			for (lod = 0; lod < opts.numlods; lod++)
+			{
+				int tilesize = base_tilesize >> lod;
+
+				vtString fname = opts.dir, str;
+				if (fname.Right(1) != "/" && fname.Right(1) != "\\")
+					fname += '/';
+				if (lod == 0)
+					str.Format("tile.%d-%d.pgm", col, row);
+				else
+					str.Format("tile.%d-%d.pgm%d", col, row, lod);
+				fname += str;
+
+				// make a message for the progress dialog
+				wxString msg;
+				msg.Printf("Writing tile '%hs', size %dx%d",
+					(const char *)fname, tilesize, tilesize);
+				UpdateProgressDialog((i+1)*(j+1)*99/(opts.rows*opts.cols), msg);
+
+				FILE *fp = fopen(fname, "wb");
+				if (!fp)
+					return false;
+				fprintf(fp, "P5\n");
+				fprintf(fp, "# DEM\n");
+				fprintf(fp, "# description=resampled with VTBuilder\n");
+				fprintf(fp, "# coordinate system=%s\n", (const char *)crs);
+				fprintf(fp, "# coordinate zone=%d\n", zone);
+				fprintf(fp, "# coordinate datum=0\n");
+				fprintf(fp, "# SW corner=%lf/%lf %s\n", tile_area.left, tile_area.bottom, (const char *)units);
+				fprintf(fp, "# NW corner=%lf/%lf %s\n", tile_area.left, tile_area.top, (const char *)units);
+				fprintf(fp, "# NE corner=%lf/%lf %s\n", tile_area.right, tile_area.top, (const char *)units);
+				fprintf(fp, "# SE corner=%lf/%lf %s\n", tile_area.right, tile_area.bottom, (const char *)units);
+				fprintf(fp, "# cell size=%lf/%lf %s\n", cell_size.x*(1<<lod), cell_size.y*(1<<lod), (const char *)units);
+				fprintf(fp, "# vertical scaling=1 meters\n");
+				fprintf(fp, "# missing value=%d\n", INVALID_ELEVATION);
+				fprintf(fp, "%d %d\n", tilesize+1, tilesize+1);
+				fprintf(fp, "32767\n");
+
+				int x, y;
+				for (y = 0; y <= base_tilesize; y += (1<<lod))
+				{
+					for (x = 0; x <= base_tilesize; x += (1<<lod))
+					{
+						int samplex = (i*base_tilesize)+x;
+						int sampley = (j*base_tilesize)+(base_tilesize-y);
+						short value = m_pGrid->GetValue(samplex, sampley);
+						value = SwapShort(value);
+						fwrite(&value, 2, 1, fp);
+					}
+				}
+				fclose(fp);
+			}
+		}
+	}
+	return true;
 }

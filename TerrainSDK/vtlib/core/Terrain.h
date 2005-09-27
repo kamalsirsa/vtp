@@ -290,6 +290,7 @@ protected:
 	// internal creation functions
 	bool CreateFromTIN();
 	bool CreateFromGrid();
+	bool CreateFromTiles();
 	void _CreateCulture();
 	void _CreateVegetation();
 	void _CreateStructures();
@@ -326,6 +327,9 @@ protected:
 
 	// triangulated irregular network (TIN)
 	vtTin3d		*m_pTin;
+
+	// tiled geometry
+	vtTiledGeom	*m_pTiledGeom;
 
 	// construction parameters used to create this terrain
 	TParams		m_Params;

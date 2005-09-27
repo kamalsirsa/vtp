@@ -529,11 +529,11 @@ void BuildingDlg::UpdateColorControl()
 bool BuildingDlg::AskForTypeAndSlope(bool bAll, RoofType &eType, int &iSlope)
 {
 	wxString choices[5];
-	choices[0] = _("Flat (all edges 0)");
+	choices[0] = _("Flat (all edges 0°)");
 	choices[1] = _("Shed");
 	choices[2] = _("Gable");
 	choices[3] = _("Hip");
-	choices[4] = _("Vertical (all edges 90)");
+	choices[4] = _("Vertical (all edges 90°)");
 	int num = 5;
 	if (!bAll)
 		num = 4;

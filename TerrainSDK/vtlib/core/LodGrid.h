@@ -10,7 +10,7 @@
 
 class vtGeom;
 class vtTransform;
-class vtHeightField;
+class vtHeightField3d;
 
 /** \addtogroup sg */
 /*@{*/

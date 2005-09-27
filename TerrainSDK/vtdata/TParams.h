@@ -3,7 +3,7 @@
 //
 // defines all the construction parameters for a terrain
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -132,12 +132,13 @@ protected:
 #define STR_ACCEL "Accel"
 #define STR_ALLOW_ROLL "Allow_Roll"
 
+#define STR_SURFACE_TYPE "Surface_Type"	// 0=grid, 1=TIN, 2=tiled grid
 #define STR_LODMETHOD "LOD_Method"
 #define STR_PIXELERROR "Pixel_Error"
 #define STR_TRICOUNT "Tri_Count"
 #define STR_TRISTRIPS "Tristrips"
 
-#define STR_TIN "Is_TIN"
+#define STR_TIN "Is_TIN"	// obsolete, use STR_SURFACE_TYPE=1 instead
 
 #define STR_TIMEON "Time_On"
 #define STR_INITTIME "Init_Time"

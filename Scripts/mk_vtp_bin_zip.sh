@@ -3,13 +3,16 @@
 if [ $# -lt 1 ] ; then
   echo "Usage: mk_vtp_bin_zip.sh date"
   echo
-  echo "Example: mk_vtp_bin_zip.sh 021029"
+  echo "Example: mk_vtp_bin_zip.sh 041029"
   exit
 fi
 
-TARGETDIR=C:/Distrib
+SOURCEDIR=/cygdrive/c
+TARGETDIR=/cygdrive/c/Distrib
 DATE=$1
 DIST_FILE3=${TARGETDIR}/vtp-apps-bin-${DATE}.zip
+
+cd $SOURCEDIR
 
 # Create the archive containing the App Binaries
 rm -f $DIST_FILE3
@@ -41,12 +44,15 @@ mv VTP/TerrainApps/Enviro/Enviro_dev.ini VTP/TerrainApps/Enviro/Enviro.ini
 # Enviro locale files
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/af/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/de/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/en_GB/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/es/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/fr/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/hu/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/it/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/pt/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/ro/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/sv/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/tr/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/zh/Enviro.mo
 
 cp VTP/TerrainApps/VTBuilder/Release_Unicode/VTBuilder_u.exe VTP/TerrainApps/VTBuilder
@@ -57,6 +63,7 @@ zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/Docs/*
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/Docs/images/*
 
 # VTBuilder locale files
+zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/fr/VTBuilder.mo
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/zh/VTBuilder.mo
 
 # VTConvert

@@ -10,6 +10,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/HeightField.h"
+#include "vtdata/vtLog.h"
 #include "DynTerrain.h"
 
 vtDynTerrainGeom::vtDynTerrainGeom() : vtDynGeom(), vtHeightFieldGrid3d()
@@ -387,3 +388,459 @@ void vtDynTerrainGeom::PostRender() const
 #endif
 }
 
+
+///////////////////////////////////////////////////////////////////////
+
+#include "pnmbase.h"
+
+// preloader statistics
+static float kbytes1=0.0f,kbytes2=0.0f;
+static double secs=0.0;
+
+void request_callback(unsigned char *mapfile,unsigned char *texfile,
+					  unsigned char *fogfile,void *data,
+					  void **hfield,void **texture,void **fogmap)
+   {
+   int bytes;
+
+   if ((*hfield=readfile((char *)mapfile,&bytes))!=NULL) kbytes1+=bytes/1024.0f;
+   if ((*texture=readfile((char *)texfile,&bytes))!=NULL) kbytes1+=bytes/1024.0f;
+
+   if (fogfile==NULL) *fogmap=NULL;
+   else if ((*fogmap=readfile((char *)fogfile,&bytes))!=NULL) kbytes1+=bytes/1024.0f;
+   }
+
+int COL,ROW;
+void *HFIELD=NULL,*TEXTURE=NULL,*FOGMAP=NULL;
+int HLOD,TLOD;
+
+void preload_callback(int col,int row,unsigned char *mapfile,int hlod,
+					  unsigned char *texfile,int tlod,unsigned char *fogfile,
+					  void *data)
+   {
+   int bytes;
+
+   if (HFIELD!=NULL || TEXTURE!=NULL || FOGMAP!=NULL) return;
+
+   COL=col;
+   ROW=row;
+
+   if ((HFIELD=readfile((char *)mapfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
+   if ((TEXTURE=readfile((char *)texfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
+
+   if (fogfile==NULL) FOGMAP=NULL;
+   else if ((FOGMAP=readfile((char *)fogfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
+
+   HLOD=hlod;
+   TLOD=tlod;
+   }
+
+void deliver_callback(int *col,int *row,void **hfield,int *hlod,void **texture,
+					  int *tlod,void **fogmap,void *data)
+   {
+   *col=COL;
+   *row=ROW;
+
+   *hfield=HFIELD;
+   *texture=TEXTURE;
+   *fogmap=FOGMAP;
+
+   *hlod=HLOD;
+   *tlod=TLOD;
+
+   HFIELD=TEXTURE=FOGMAP=NULL;
+   }
+
+vtTiledGeom::vtTiledGeom()
+{
+}
+
+bool vtTiledGeom::ReadTileList(const char *fname)
+{
+	// for now, hardcode instead of reading from file
+	cols = 9;
+	rows = 10;
+	coldim = 15360;		// 512 * 30m
+	rowdim = 15360;		// 512 * 30m
+	center.x = coldim * cols / 2.0f;
+	center.y = 0;
+	center.z = -rowdim * rows / 2.0f;
+
+	exaggeration=2.0f; // exaggeration=200%
+	exaggertrees=2.0f; // exaggeration=200%
+
+	// global resolution
+	res=5.0E6f;
+	minres=100.0f;
+
+	hfields = new ucharptr[cols*rows];
+	textures = new ucharptr[cols*rows];
+	int i, j;
+	for (i = 0; i < cols; i++)
+	{
+		for (j = 0; j < rows; j++)
+		{
+			hfields[i+cols*j] = new byte[80];
+			sprintf((char *) hfields[i+cols*j], "C:/TEMP/HawaiiTiles/tile.%d-%d.pgm", i, j);
+			textures[i+cols*j] = new byte[80];
+			sprintf((char *) textures[i+cols*j], "C:/TEMP/HawaiiTextureTiles/tile.%d-%d.ppm", i, j);
+		}
+	}
+
+//	SetupMiniTile();
+	SetupMiniLoad();
+
+	// Inform VTP objects of heightfield attributes
+	m_proj.SetWellKnownGeogCS("WGS84");
+	m_proj.SetUTMZone(5);
+	DRECT earthextents;
+	earthextents.left  = 176136;
+	earthextents.right = 314376;
+	earthextents.bottom= 2092670;
+	earthextents.top   = 2246270;
+	Initialize(LU_METERS, earthextents, 0, 4000);
+
+	return true;
+}
+
+void vtTiledGeom::SetupMiniLoad()
+{
+#if 0
+	VTLOG("Calling miniload::load(%d,%d,..)\n", cols, rows);
+	m_pMiniLoad->load(cols,rows, // number of columns and rows
+			basepath1,basepath2,NULL, // directory for tiles, textures and fogmaps
+			exaggeration,1.0f, // vertical exaggeration and global scale
+			0.1f*exaggertrees,1.5f, // fog parameters
+			minres, // absolute minimum of global resolution
+			outparams, // geometric output parameters
+			arcsec); // one arcsec in meters
+#else
+	VTLOG("Calling miniload constructor(%d,%d,..)\n", cols, rows);
+	m_pMiniLoad = new miniload(hfields, textures,
+		cols, rows,
+		coldim, rowdim,
+		1.0f, center.x, center.y, center.z);
+#endif
+	m_pMiniTile = m_pMiniLoad->getminitile();
+
+#if 1
+	// use tile caching with vertex arrays
+	cache.setcallbacks(m_pMiniTile, // the minitile object to be cached
+						cols,rows, // number of tile columns and rows
+						coldim,rowdim, // overall extent
+						center.x,center.y,center.z); // origin with negative Z
+#endif
+	const float farp = 400000;	// 400 km
+
+	// Set (pre)loader parameters
+
+	//pfarp: controls the radius of the preloading area
+	//	- should be greater than the distance to the far plane farp
+	float pfarp = 1.25f*farp;
+
+	//prange: controls the enabling distance of the first texture LOD
+	//	- a value of zero disables the use of the texture pyramid
+	//	- the range can be calculated easily from a given screen space
+	//		error threshold using the miniload::calcrange method
+//	float prange = farp/10.0f;
+	//int texdim = 512, winheight = 600, fovy = m_fFOVY;
+	//float prange = m_pMiniLoad->calcrange(texdim,winheight,fovy);
+	float prange = 20000;
+
+	//pbasesize: controls the maximum texture size that is paged in
+	//	- should be set to the size of the largest texture tile
+	//	- should not exceed the maximum size supported by the hardware
+	int pbasesize = 512;
+
+	//psafety: controls the safety of paging
+	//	- a value of s=0 disables the use of the pyramids
+	//	- a value of s>0 means that the next larger level is loaded
+	//		after a measured safety of less than s levels is reached
+	//		and the next larger level is preloaded after a difference
+	//		of less than s+1 levels
+	//	- the safety for texture paging is limited to one level
+	//	recommended: 1
+	int psafety = 1;
+
+	//plazyness: controls the lazyness of paging
+	//	- a value of l>=0 means that the next smaller level is loaded
+	//	  after a measured difference of more than s+l levels is reached
+	//	  and the next smaller level is preloaded after a difference
+	//	  of more than s+l-1 levels
+	//	- for maximum memory utilization set l to 0
+	//	- for minimum data traffic set l to the maximum available LOD
+	//	  recommended: 2
+	int plazyness = 0;
+
+	//pupdate: the number of frames per update
+	//	- the value determines the number of frames after a complete
+	//		update of the preloaded area and the LOD pyramid is finished
+	//	- should be greater than the frame rate
+	int pupdate = 1000;
+
+	//expire: the number of frames for expiration
+	//	- the value controls the number of frames after invisible tiles
+	//		are removed from the tile cache
+	//	- should be much larger than the frame rate
+	int pexpire = 100000;
+
+	m_pMiniLoad->setloader(request_callback,
+		NULL,	// data
+		NULL/*preload_callback*/,
+		deliver_callback,
+		pfarp, prange, pbasesize,
+		psafety, plazyness, pupdate, pexpire);
+
+	// define resolution reduction of invisible tiles
+	m_pMiniTile->setreduction(2.0f,3.0f);
+}
+
+void vtTiledGeom::SetupMiniTile()
+{
+	// load resampled tiles
+	m_pMiniTile = new minitile(hfields, textures,
+		cols,rows, // number of columns and rows
+		coldim, rowdim,
+		1.0f,	// don't scale, data is in meters
+		center.x, center.y, center.z);
+
+	// use tile caching with vertex arrays
+	//cache.setcallbacks(m_pMiniTile, // the minitile object to be cached
+	//					cols,rows, // number of tile columns and rows
+	//					coldim,rowdim, // overall extent
+	//					center.x,center.y,center.z); // origin with negative Z
+}
+
+void vtTiledGeom::DoRender()
+{
+	float ex = m_eyepos_ogl.x;
+	float ey = m_eyepos_ogl.y;
+	float ez = m_eyepos_ogl.z;
+
+	float ux = eye_up.x;
+	float uy = eye_up.y;
+	float uz = eye_up.z;
+
+	float dx = eye_forward.x;
+	float dy = eye_forward.y;
+	float dz = eye_forward.z;
+
+	// Convert the eye location to the unusual coordinate scheme of libMini.
+//	ex -= (cols/2)*m_fXStep;
+//	ez += (rows/2)*m_fZStep;
+
+	const int fpu=0;
+
+#if 1
+	// update vertex arrays
+	m_pMiniLoad->draw(res,
+				ex,ey,ez,
+				dx,dy,dz,
+				ux, uy, uz,
+				m_fFOVY,m_fAspect,
+				m_fNear,m_fFar,
+				1.0f,
+				fpu);
+
+	// render vertex arrays
+	int vtx=cache.rendercache();
+#elif 1
+	m_pMiniTile->draw(res,
+		ex, ey, ez,
+		dx, dy, dz,
+		ux, uy, uz,
+		m_fFOVY, m_fAspect,
+		m_fNear, m_fFar,
+		1.0f,
+		fpu);
+#else
+	glBegin(GL_QUADS);
+	glVertex3f(0, 0, 0);
+	glVertex3f(130000, 0, 0);
+	glVertex3f(130000, 0, -150000);
+	glVertex3f(0, 0, -150000);
+	glEnd();
+#endif
+}
+
+void vtTiledGeom::DoCalcBoundBox(FBox3 &box)
+{
+#if 0
+	FPoint3 center(m_pMiniLoad->CENTERX,
+		m_pMiniLoad->CENTERY,
+		m_pMiniLoad->CENTERZ);
+	FPoint3 size(m_pMiniLoad->COLS * m_pMiniLoad->COLDIM,
+		0,
+		m_pMiniLoad->ROWS*m_pMiniLoad->ROWDIM);
+	box.min = center - size/2;
+	box.max = center + size/2;
+#else
+	// TEMP OVERRIDE for testing
+	box.min.Set(0, 0, -150000);
+	box.max.Set(130000, 0, 0);
+#endif
+}
+
+void vtTiledGeom::DoCull(const vtCamera *pCam)
+{
+	// Grab necessary values from the VTP Scene framework, store for later
+	m_eyepos_ogl = pCam->GetTrans();
+	m_window_size = vtGetScene()->GetWindowSize();
+	m_fAspect = (float)m_window_size.x / m_window_size.y;
+	m_fNear = pCam->GetHither();
+	m_fFar = pCam->GetYon();
+
+	// Get up vector and direction vector from camera matrix
+	FMatrix4 mat;
+	pCam->GetTransform1(mat);
+	FPoint3 up(0.0f, 1.0f, 0.0f);
+	mat.TransformVector(up, eye_up);
+
+	FPoint3 forward(0.0f, 0.0f, -1.0f);
+	mat.TransformVector(forward, eye_forward);
+
+	if (pCam->IsOrtho())
+	{
+		// libMini supports orthographic viewing as of libMini 5.0.
+		// A negative FOV value indicates to the library that the FOV is
+		//  actually the orthographic height of the camera.
+		m_fFOVY = pCam->GetWidth() / m_fAspect;
+		m_fFOVY = -m_fFOVY;
+	}
+	else
+	{
+		float fov = pCam->GetFOV();
+		float fov_y2 = atan(tan (fov/2) / m_fAspect);
+		m_fFOVY = fov_y2 * 2.0f * 180 / PIf;
+	}
+}
+
+bool vtTiledGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
+									  bool bTrue) const
+{
+	// TODO: support other arguments
+	float x, z;
+	g_Conv.ConvertFromEarth(p, x, z);
+
+	fAltitude = m_pMiniTile->getheight(x, z);
+
+#if 0
+	int col = (int)(x / coldim);
+	int row = (int)(-z / rowdim);
+
+	// safety check
+	if (col < 0 || col >= cols || row < 0 || row >= rows)
+	{
+		fAltitude = 0.0f;
+		return false;
+	}
+
+	// Now determine height on the tile; find offset within the tile
+	//double ox=coldim*(bi-(COLS-1)/2.0f)+CENTERX;
+	//double oz=rowdim*(bj-(ROWS-1)/2.0f)+CENTERZ;
+
+	float alt0, alt1, alt2, alt3;
+	alt0 = GetElevation(iX, iY, bTrue);
+	alt1 = GetElevation(iX+1, iY, bTrue);
+	alt2 = GetElevation(iX+1, iY+1, bTrue);
+	alt3 = GetElevation(iX, iY+1, bTrue);
+
+	// find fractional amount (0..1 across quad)
+	double fX = (p.x - (m_EarthExtents.left + iX * spacing.x)) / spacing.x;
+	double fY = (p.y - (m_EarthExtents.bottom + iY * spacing.y)) / spacing.y;
+
+	// which of the two triangles in the quad is it?
+	if (fX + fY < 1)
+		fAltitude = (float) (alt0 + fX * (alt1 - alt0) + fY * (alt3 - alt0));
+	else
+		fAltitude = (float) (alt2 + (1.0-fX) * (alt3 - alt2) + (1.0-fY) * (alt1 - alt2));
+
+#endif
+	return true;
+}
+
+bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
+	bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
+{
+	// TODO: support other arguments
+	fAltitude = m_pMiniTile->getheight(p3.x, p3.z);
+	return true;
+}
+
+bool vtTiledGeom::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
+	FPoint3 &result) const
+{
+	float alt;
+	bool bOn = FindAltitudeAtPoint(point, alt);
+
+	// special case: straight up or down
+	float mag2 = sqrt(dir.x*dir.x+dir.z*dir.z);
+	if (fabs(mag2) < .000001)
+	{
+		result = point;
+		result.y = alt;
+		if (!bOn)
+			return false;
+		if (dir.y > 0)	// points up
+			return (point.y < alt);
+		else
+			return (point.y > alt);
+	}
+
+	if (bOn && point.y < alt)
+		return false;	// already firmly underground
+
+	// adjust magnitude of dir until 2D component has a good magnitude
+	// TODO: better estimate than 0,0 tile!
+	int size = m_pMiniTile->getsize(0,0);
+	float fXStep = m_pMiniTile->getcoldim() / size;
+	float fZStep = m_pMiniTile->getrowdim() / size;
+	float smallest = std::min(fXStep, fZStep);
+	float adjust = smallest / mag2;
+	FPoint3 dir2 = dir * adjust;
+
+	bool found_above = false;
+	FPoint3 p = point, lastp = point;
+	while (true)
+	{
+		// are we out of bounds and moving away?
+		if (p.x < m_WorldExtents.left && dir2.x < 0)
+			return false;
+		if (p.x > m_WorldExtents.right && dir2.x > 0)
+			return false;
+		if (p.z < m_WorldExtents.top && dir2.z < 0)
+			return false;
+		if (p.z > m_WorldExtents.bottom && dir2.z > 0)
+			return false;
+
+		bOn = FindAltitudeAtPoint(p, alt);
+		if (bOn)
+		{
+			if (p.y > alt)
+				found_above = true;
+			else
+				break;
+		}
+		lastp = p;
+		p += dir2;
+	}
+	if (!found_above)
+		return false;
+
+	// now, do a binary search to refine the result
+	FPoint3 p0 = lastp, p1 = p, p2;
+	for (int i = 0; i < 10; i++)
+	{
+		p2 = (p0 + p1) / 2.0f;
+		int above = PointIsAboveTerrain(p2);
+		if (above == 1)	// above
+			p0 = p2;
+		else if (above == 0)	// below
+			p1 = p2;
+	}
+	p2 = (p0 + p1) / 2.0f;
+	// make sure it's precisely on the ground
+	FindAltitudeAtPoint(p2, p2.y);
+	result = p2;
+	return true;
+}

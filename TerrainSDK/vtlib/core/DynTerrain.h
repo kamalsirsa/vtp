@@ -111,6 +111,61 @@ protected:
 	~vtDynTerrainGeom();
 };
 
+#include "mini.h"
+#include "miniload.hpp"
+#include "minicache.hpp"
+
+typedef unsigned char *ucharptr;
+
+class vtTiledGeom : public vtDynGeom, public vtHeightField3d
+{
+public:
+	vtTiledGeom();
+
+	bool ReadTileList(const char *fname);
+	void SetupMiniLoad();
+	void SetupMiniTile();
+
+	// overrides for vtDynGeom
+	void DoRender();
+	void DoCalcBoundBox(FBox3 &box);
+	void DoCull(const vtCamera *pCam);
+
+	// overrides for vtHeightField
+	bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
+
+	// overrides for vtHeightField3d
+	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
+		bool bTrue = false, bool bIncludeCulture = false,
+		FPoint3 *vNormal = NULL) const;
+	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
+		FPoint3 &result) const;
+
+	int cols, rows;
+	float coldim, rowdim;
+	ucharptr *hfields, *textures;
+	float exaggeration;
+	float exaggertrees;
+	float res;
+	float minres;
+
+	IPoint2 m_window_size;
+	FPoint3 m_eyepos_ogl;
+	float m_fFOVY;
+	float m_fAspect;
+	float m_fNear, m_fFar;
+	FPoint3 eye_up, eye_forward;
+	FPoint3 center;
+
+	// the terrain and its cache
+	class miniload *m_pMiniLoad;
+	class minitile *m_pMiniTile;
+	class minicache cache;
+
+	// CRS of this tileset
+	vtProjection m_proj;
+};
+
 /*@}*/	// Group dynterr
 
 #endif	// DYNTERRAINH

@@ -33,6 +33,7 @@ private:
 
 extern vtLog g_Log;
 #define VTLOG	g_Log.Printf
+#define VTLOG1	g_Log._Log		// for simple strings, takes 1 argument
 
 #endif // VTLOG_H
 

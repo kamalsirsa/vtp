@@ -149,7 +149,7 @@ void DistanceDlg::ShowValues()
 		delete trans;
 	}
 	// find geodesic distance
-	double geodesic_meters = m_proj.GeodesicDistance(geo1, geo2);
+	double geodesic_meters = vtProjection::GeodesicDistance(geo1, geo2);
 
 	LinearUnits lu = m_proj.GetUnits();
 

@@ -88,12 +88,15 @@ clobber :
 #
 
 I18N_SOURCES = \
-	wx/app.cpp \
-	wx/frame.cpp \
+	wx/EnviroApp.cpp \
+	wx/EnviroFrame.cpp \
+	wx/EnviroGUI.cpp \
 	wx/*Dlg.cpp \
-	wx/Enviro_wdr.cpp \
+	wx/*Dialog.cpp \
+	wx/enviro_wdr.cpp \
 	../../TerrainSDK/vtui/vtui_wdr.cpp \
-	../../TerrainSDK/vtui/BuildingDlg.cpp
+	../../TerrainSDK/vtui/BuildingDlg.cpp \
+	../../TerrainSDK/vtui/LinearStructDlg.cpp
 
 update-pot:
 	xgettext --from-code=iso-8859-1 -k_ -o Enviro.pot $(I18N_SOURCES)

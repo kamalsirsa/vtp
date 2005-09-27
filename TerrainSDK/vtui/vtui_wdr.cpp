@@ -16,6 +16,7 @@
 
 // Include private header
 #include "vtui_wdr.h"
+
 const int ID_TEXT = 10000;
 
 #include <wx/intl.h>
@@ -740,34 +741,65 @@ wxSizer *ProfileDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item2 = new wxBoxSizer( wxVERTICAL );
 
     wxCheckBox *item3 = new wxCheckBox( parent, ID_LINE_OF_SIGHT, _("Line of Sight"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+    item2->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxCheckBox *item4 = new wxCheckBox( parent, ID_VISIBILITY, _("Visibility"), wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
+    wxCheckBox *item5 = new wxCheckBox( parent, ID_FRESNEL, _("Show Fresnel zones"), wxDefaultPosition, wxDefaultSize, 0 );
+    item2->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxCheckBox *item6 = new wxCheckBox( parent, ID_USE_EFFECTIVE, _("Use effective radius of earth"), wxDefaultPosition, wxDefaultSize, 0 );
+    item2->Add( item6, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
     item1->Add( item2, 0, wxALIGN_CENTER, 5 );
 
-    wxFlexGridSizer *item5 = new wxFlexGridSizer( 2, 0, 0 );
+    wxFlexGridSizer *item7 = new wxFlexGridSizer( 2, 0, 0 );
 
-    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("Start height:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("Start height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item8, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item7 = new wxTextCtrl( parent, ID_HEIGHT1, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item5->Add( item7, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_HEIGHT1, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item7->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("End height:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("End height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item10, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_HEIGHT2, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item5->Add( item9, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_HEIGHT2, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item7->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item1->Add( item5, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("Radio Frequency:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item12, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticLine *item10 = new wxStaticLine( parent, ID_LINE2, wxDefaultPosition, wxSize(-1,20), wxLI_VERTICAL );
-    item1->Add( item10, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_TEXTCTRL, wxT(""), wxDefaultPosition, wxSize(80,40), wxTE_MULTILINE );
-    item1->Add( item11, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxTextCtrl *item14 = new wxTextCtrl( parent, ID_RF, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item13->Add( item14, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("MHz"), wxDefaultPosition, wxDefaultSize, 0 );
+    item13->Add( item15, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    item7->Add( item13, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("Apply curvature to:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString strs17[] = 
+    {
+        _("None"), 
+        _("Terrain"), 
+        _("Line of Sight")
+    };
+    wxChoice *item17 = new wxChoice( parent, ID_CURVATURE, wxDefaultPosition, wxDefaultSize, 3, strs17, 0 );
+    item7->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item1->Add( item7, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    wxStaticLine *item18 = new wxStaticLine( parent, ID_LINE2, wxDefaultPosition, wxSize(-1,20), wxLI_VERTICAL );
+    item1->Add( item18, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+
+    wxTextCtrl *item19 = new wxTextCtrl( parent, ID_STATUS_TEXT, wxT(""), wxDefaultPosition, wxSize(210,-1), wxTE_MULTILINE );
+    item1->Add( item19, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 

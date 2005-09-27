@@ -1020,10 +1020,11 @@ ProfileDlg *MainFrame::ShowProfileDlg()
 	{
 		// Create new Feature Info Dialog
 		m_pProfileDlg = new ProfileDlg(this, wxID_ANY, _("Elevation Profile"),
-				wxPoint(120, 80), wxSize(600, 400), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+				wxPoint(120, 80), wxSize(730, 500), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		BuildingProfileCallback *callback = new BuildingProfileCallback;
 		callback->m_frame = this;
 		m_pProfileDlg->SetCallback(callback);
+		m_pProfileDlg->SetProjection(m_proj);
 	}
 	m_pProfileDlg->Show(true);
 	return m_pProfileDlg;
@@ -1066,6 +1067,7 @@ float MainFrame::ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs,
 //
 bool MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 {
+	VTLOG1(" SampleCurrentTerrains\n");
 	// measure time
 	clock_t tm1 = clock();
 
@@ -1112,7 +1114,7 @@ bool MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 
 	clock_t tm2 = clock();
 	float time = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
-	VTLOG("SampleCurrentTerrains: %.3f seconds.\n", time);
+	VTLOG(" SampleCurrentTerrains: %.3f seconds.\n", time);
 
 	return true;
 }
@@ -1204,11 +1206,17 @@ void MainFrame::SetProjection(const vtProjection &p)
 	VTLOG("Setting main projection to: %s, %s\n", type, value);
 
 	m_proj = p;
+
+	// inform the world map view
 	GetView()->SetWMProj(p);
+
+	// inform the dialogs that care, if they're open
 	if (m_pDistanceDlg)
 		m_pDistanceDlg->SetProjection(m_proj);
 	if (m_pInstanceDlg)
 		m_pInstanceDlg->SetProjection(m_proj);
+	if (m_pProfileDlg)
+		m_pProfileDlg->SetProjection(m_proj);
 }
 
 void MainFrame::OnSelectionChanged()
@@ -1466,27 +1474,37 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 
 void MainFrame::ExportElevation()
 {
+	VTLOG1("ExportElevation\n");
+
 	// If any of the input terrain are floats, then recommend to the user
 	// that the output should be float as well.
 	bool floatmode = false;
 
 	// sample spacing in meters/heixel or degrees/heixel
 	DPoint2 spacing(0, 0);
+	int count = 0, floating = 0;
 	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
 		if (l->GetType() == LT_ELEVATION)
 		{
+			count++;
 			vtElevLayer *el = (vtElevLayer *)l;
 			if (el->IsGrid())
 			{
 				vtElevationGrid *grid = el->m_pGrid;
 				if (grid->IsFloatMode() || grid->GetScale() != 1.0f)
+				{
 					floatmode = true;
+					floating++;
+				}
 				spacing = grid->GetSpacing();
 			}
 		}
 	}
+	VTLOG(" Layers: %d, Elevation layers: %d, %d are floating point\n",
+		NumLayers(), count, floating);
+
 	if (spacing == DPoint2(0, 0))
 	{
 		DisplayAndLog("Sorry, you must have some elevation grid layers\n"
@@ -1508,7 +1526,7 @@ void MainFrame::ExportElevation()
 	vtElevLayer *pOutput = new vtElevLayer(dlg.m_area, dlg.m_iSizeX,
 			dlg.m_iSizeY, dlg.m_bFloats, dlg.m_fVUnits, m_proj);
 
-	// fill in the value for pBig by merging samples from all other terrain
+	// fill in the value for pOutput by merging samples from all other terrain
 	if (!SampleCurrentTerrains(pOutput))
 	{
 		delete pOutput;
@@ -1521,12 +1539,15 @@ void MainFrame::ExportElevation()
 		return;
 	}
 
-	if (dlg.m_bToFile)
+	if (dlg.m_bNewLayer)
+		AddLayerWithCheck(pOutput);
+	else if (dlg.m_bToFile)
 	{
 		OpenProgressDialog(_T("Writing file"), true);
 		wxString2 fname = dlg.m_strToFile;
 		bool gzip = (fname.Right(3).CmpNoCase(_T(".gz")) == 0);
-		bool success = pOutput->m_pGrid->SaveToBT(fname.mb_str(), NULL, gzip);
+		bool success = pOutput->m_pGrid->SaveToBT(fname.mb_str(),
+			progress_callback, gzip);
 		delete pOutput;
 		CloseProgressDialog();
 		if (success)
@@ -1534,8 +1555,17 @@ void MainFrame::ExportElevation()
 		else
 			DisplayAndLog("Did not successfully write file '%s'", fname.mb_str());
 	}
-	else
-		AddLayerWithCheck(pOutput);
+	else if (dlg.m_bToTiles)
+	{
+		OpenProgressDialog(_T("Writing tiles"), true);
+		bool success = pOutput->WriteGridOfPGMPyramids(dlg.m_tileopts);
+		delete pOutput;
+		CloseProgressDialog();
+		if (success)
+			DisplayAndLog("Successfully wrote to '%s'", (const char *) dlg.m_tileopts.dir);
+		else
+			DisplayAndLog("Could not successfully write to '%s'", (const char *) dlg.m_tileopts.dir);
+	}
 }
 
 
@@ -1572,6 +1602,7 @@ void MainFrame::ExportImage()
 
 	wxString filter = _("All Files|*.*");
 	AddType(filter, FSTRING_TIF);
+	AddType(filter, FSTRING_JPEG);
 
 	// ask the user for a filename
 	wxFileDialog saveFile(NULL, _("Export Image"), _T(""), _T(""), filter, wxSAVE);

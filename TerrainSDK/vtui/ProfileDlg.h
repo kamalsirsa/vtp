@@ -41,25 +41,40 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	// WDR: method declarations for ProfileDlg
+	wxTextCtrl* GetRF()  { return (wxTextCtrl*) FindWindow( ID_RF ); }
+	wxChoice* GetCurvature()  { return (wxChoice*) FindWindow( ID_CURVATURE ); }
+	wxCheckBox* GetFresnel()  { return (wxCheckBox*) FindWindow( ID_FRESNEL ); }
+	wxCheckBox* GetEffective()  { return (wxCheckBox*) FindWindow( ID_USE_EFFECTIVE ); }
 	wxTextCtrl* GetHeight2()  { return (wxTextCtrl*) FindWindow( ID_HEIGHT2 ); }
 	wxTextCtrl* GetHeight1()  { return (wxTextCtrl*) FindWindow( ID_HEIGHT1 ); }
-	wxTextCtrl* GetText()  { return (wxTextCtrl*) FindWindow( ID_TEXTCTRL ); }
+	wxTextCtrl* GetText()  { return (wxTextCtrl*) FindWindow( ID_STATUS_TEXT ); }
+	wxCheckBox* GetLineOfSight()  { return (wxCheckBox*) FindWindow( ID_LINE_OF_SIGHT ); }
+	wxCheckBox* GetVisibility()  { return (wxCheckBox*) FindWindow( ID_VISIBILITY ); }
 	void MakePoint(wxPoint &p, int i, float value);
 	void DrawChart(wxDC& dc);
 	void UpdateMessageText();
+	void UpdateEnabling();
+	void SetProjection(const vtProjection &proj);
 	void SetPoints(const DPoint2 &p1, const DPoint2 &p2);
 	void SetCallback(ProfileCallback *callback);
 	void GetValues();
 	void Analyze();
 	void ComputeLineOfSight();
 	void ComputeVisibility();
+	float ComputeFresnelRadius(float dist, float freq, int zone);
+	void ComputeFirstFresnel();
+	void ComputeGeoidSurface();
+	float ApplyGeoid(float h, int i, char t);
+	void ComputeSignalLoss(float dist, float freq);
 
 private:
 	// WDR: member variable declarations for ProfileDlg
 	ProfileCallback *m_callback;
 	std::vector<float> m_values;
 	std::vector<bool> m_visible;
+	vtProjection    m_proj;
 	DPoint2 m_p1, m_p2;
+	DPoint2 m_geo1, m_geo2;		// same points in geographic CS
 	wxSize m_clientsize;
 	int m_xrange, m_yrange;
 	float m_fMin, m_fMax, m_fRange, m_fDrawRange;
@@ -73,17 +88,40 @@ private:
 	bool m_bHaveSlope;
 	float m_fSlope;
 	bool m_bLeftButton;
-	bool m_bLineOfSight, m_bVisibility;
 	bool m_bValidStart, m_bValidLine;
-	float m_fHeight1, m_fHeight2;
 	float m_fHeightAtStart, m_fHeightAtEnd;
 	bool m_bIntersectsGround;
 	float m_fIntersectHeight;
 	float m_fIntersectDistance;
 	int m_iIntersectIndex;
+	
+	float m_fGeodesicDistance;
+	bool  m_bHaveFresnel;
+	bool  m_bHaveLOS;
+	bool  m_bHaveGeoidSurface;
+	std::vector<float> m_FirstFresnel;
+	std::vector<float> m_LineOfSight;
+	std::vector<float> m_GeoidSurface;
+	std::vector<bool> m_rvisible;
+	float m_fGeoidCurvature;
+	float m_fMouseFresnel;
+	float m_fMouseLOS;
+
+	// these values are exposed directly in the GUI
+	float m_fHeight1, m_fHeight2;
+	float m_fRadioFrequency;
+	int m_iCurvature;	// 0=none, 1=terrain, 2=line of sight
+
+	// these values are retreived as needed from the GUI
+	bool m_bLineOfSight, m_bVisibility;
+	bool m_bUseFresnel, m_bUseEffectiveRadius;
 
 private:
 	// WDR: handler declarations for ProfileDlg
+	void OnCurvature( wxCommandEvent &event );
+	void OnRF( wxCommandEvent &event );
+	void OnUseEffective( wxCommandEvent &event );
+	void OnFresnel( wxCommandEvent &event );
 	void OnHeight2( wxCommandEvent &event );
 	void OnHeight1( wxCommandEvent &event );
 	void OnLineOfSight( wxCommandEvent &event );

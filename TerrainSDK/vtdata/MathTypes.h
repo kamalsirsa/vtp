@@ -1006,6 +1006,21 @@ public:
 	void Transform(const FPoint3 &src, FPoint3 &dst) const;
 	void TransformVector(const FPoint3 &tmp, FPoint3 &dst) const;
 
+	inline FPoint3 PreMult(const FPoint3 &v) const
+	{
+		double d = 1.0 / (data[3][0]*v.x + data[3][1]*v.y + data[3][2]*v.z + data[3][3]);
+		return FPoint3( (float)((data[0][0]*v.x + data[0][1]*v.y + data[0][2]*v.z + data[0][3])*d),
+						(float)((data[1][0]*v.x + data[1][1]*v.y + data[1][2]*v.z + data[1][3])*d),
+						(float)((data[2][0]*v.x + data[2][1]*v.y + data[2][2]*v.z + data[2][3])*d));
+	}
+	inline FPoint3 PostMult(const FPoint3 &v) const
+	{
+		double d = 1.0 / (data[0][3]*v.x + data[1][3]*v.y + data[2][3]*v.z + data[3][3]);
+		return FPoint3( (float)((data[0][0]*v.x + data[1][0]*v.y + data[2][0]*v.z + data[3][0])*d),
+						(float)((data[0][1]*v.x + data[1][1]*v.y + data[2][1]*v.z + data[3][1])*d),
+						(float)((data[0][2]*v.x + data[1][2]*v.y + data[2][2]*v.z + data[3][2])*d));
+	}
+
 	// operators
 	float operator()(int col, int row) const { return data[col][row]; }
 	FMatrix4 &operator=(const FMatrix3 &mat);

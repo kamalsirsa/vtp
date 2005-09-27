@@ -118,15 +118,27 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 	displaySettings->readEnvironmentalVariables();
 
 	m_pOsgSceneView = new osgUtil::SceneView(displaySettings);
-	m_pOsgSceneView->setDefaults();
+
+	// From the OSG mailing list: You must specify the lighting mode in
+	// setDefaults() and override the default options. If you call
+	// setDefaults() with the default options, a headlight is added to the
+	// global state set of the SceneView.  With the default options applied,
+	// I have tried subsequently calling setLightingMode(NO_SCENE_LIGHT)
+	// and setLight(NULL), but I still get a headlight.
+	m_pOsgSceneView->setDefaults(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
 
 	// OSG 0.9.0 and newer
 	m_pOsgSceneView->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 
+	// we are emphatic about this: no sceneview light!
 	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
 
 	// OSG 0.9.2 and newer: turn off "small feature culling"
 	m_pOsgSceneView->setCullingMode( m_pOsgSceneView->getCullingMode() & ~osg::CullStack::SMALL_FEATURE_CULLING);
+
+	// enable lighting by default.
+	osg::StateSet *ss = m_pOsgSceneView->getGlobalStateSet();
+	ss->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 
 	m_bInitialized = true;
 
@@ -233,6 +245,31 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	m_pOsgSceneView->draw();
 }
 
+/**
+ * Compute the full current view transform as a matrix, which includes
+ * the projection of the camera and the transform to window coordinates.
+ *
+ * This transform is the one used to convert XYZ points in world coodinates
+ * into XY window coordinates.
+ *
+ * By inverting this matrix, you can "un-project" window coordinates back
+ * into the world.
+ *
+ * \param mat This matrix will receive the current view transform.
+ */
+void vtScene::ComputeViewMatrix(FMatrix4 &mat)
+{
+	osg::Matrix _viewMatrix = m_pOsgSceneView->getViewMatrix();
+	osg::Matrix _projectionMatrix = m_pOsgSceneView->getProjectionMatrix();
+	osg::Matrix matrix( _viewMatrix * _projectionMatrix);
+        
+	osg::Viewport *_viewport = m_pOsgSceneView->getViewport();
+    if (_viewport != NULL)
+        matrix.postMult(_viewport->computeWindowMatrix());
+
+	ConvertMatrix4(&matrix, &mat);
+}
+
 void vtScene::DoUpdate()
 {
 	UpdateBegin();
@@ -251,6 +288,24 @@ void vtScene::SetRoot(vtGroup *pRoot)
 	m_pRoot = pRoot;
 }
 
+bool vtScene::IsStereo() const
+{
+	const osg::DisplaySettings* displaySettings = m_pOsgSceneView->getDisplaySettings();
+	return displaySettings->getStereo();
+}
+
+void vtScene::SetStereoSeparation(float fSep)
+{
+	osg::DisplaySettings* displaySettings = m_pOsgSceneView->getDisplaySettings();
+	displaySettings->setEyeSeparation(fSep);
+}
+
+float vtScene::GetStereoSeparation() const
+{
+	const osg::DisplaySettings* displaySettings = m_pOsgSceneView->getDisplaySettings();
+	return displaySettings->getEyeSeparation();
+}
+
 /**
  * Convert window coordinates (in pixels) to a ray from the camera
  * in world coordinates.  Pixel coordinates are measured from the
@@ -265,7 +320,7 @@ bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow
 
 	// call the handy OSG function
 	IPoint2 winsize = pWindow->GetSize();
-	m_pOsgSceneView->projectWindowXYIntoObject(win.x, winsize.y-win.y, near_point, far_point);
+	m_pOsgSceneView->projectWindowXYIntoObject(win.x, winsize.y-1-win.y, near_point, far_point);
 
 	diff = far_point - near_point;
 	diff.normalize();
