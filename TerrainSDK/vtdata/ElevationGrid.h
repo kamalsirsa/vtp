@@ -22,7 +22,7 @@ struct TilingOptions
 	int cols, rows;
 	int lod0size;
 	int numlods;
-	vtString dir;
+	vtString fname;
 };
 
 /**
