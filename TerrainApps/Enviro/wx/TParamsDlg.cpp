@@ -183,7 +183,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_USE_TIN, &m_bTin);
 
 	// nav
-	AddNumValidator(ID_MINHEIGHT, &m_iMinHeight);
+	AddNumValidator(ID_MINHEIGHT, &m_fMinHeight);
 	AddValidator(ID_NAV_STYLE, &m_iNavStyle);
 	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
 	AddValidator(ID_LOCFILE, &m_strLocFile);
@@ -293,7 +293,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bTin =			Params.GetValueBool(STR_TIN);
 
 	/// navigation
-	m_iMinHeight =		Params.GetValueInt(STR_MINHEIGHT);
+	m_fMinHeight =		Params.GetValueFloat(STR_MINHEIGHT);
 	m_iNavStyle =		Params.GetValueInt(STR_NAVSTYLE);
 	m_fNavSpeed =		Params.GetValueFloat(STR_NAVSPEED);
 	m_strLocFile.from_utf8(Params.GetValueString(STR_LOCFILE));
@@ -406,7 +406,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_TIN, m_bTin);
 
 	// navigation
-	Params.SetValueInt(STR_MINHEIGHT, m_iMinHeight);
+	Params.SetValueFloat(STR_MINHEIGHT, m_fMinHeight);
 	Params.SetValueInt(STR_NAVSTYLE, m_iNavStyle);
 	Params.SetValueFloat(STR_NAVSPEED, m_fNavSpeed);
 	Params.SetValueString(STR_LOCFILE, m_strLocFile.to_utf8());

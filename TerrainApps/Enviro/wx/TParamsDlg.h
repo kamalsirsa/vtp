@@ -57,8 +57,8 @@ public:
 	bool	m_bTin;
 
 	// navigation
-	int	 m_iMinHeight;
-	int	 m_iNavStyle;
+	float	m_fMinHeight;
+	int		m_iNavStyle;
 	float   m_fNavSpeed;
 	wxString2   m_strLocFile;
 	int	 m_iInitLocation;

@@ -417,7 +417,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		pHF->GetCenter(middle);
 		pHF->FindAltitudeAtPoint(middle, middle.y);
-		middle.y += pTerr->GetParams().GetValueInt(STR_MINHEIGHT);
+		middle.y += pTerr->GetParams().GetValueFloat(STR_MINHEIGHT);
 		mat.Identity();
 		mat.SetTrans(middle);
 		pTerr->SetCamLocation(mat);
@@ -800,7 +800,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	m_pPanoFlyer->SetHeightField(pHF);
 	// also the height constraint engine
 	m_pHeightEngine->SetHeightField(pHF);
-	m_pHeightEngine->SetMinGroundOffset(param.GetValueInt(STR_MINHEIGHT));
+	m_pHeightEngine->SetMinGroundOffset(param.GetValueFloat(STR_MINHEIGHT));
 
 	bool bAllowRoll = param.GetValueBool(STR_ALLOW_ROLL);
 	m_pTFlyer->SetDOF(vtFlyer::DOF_ROLL, bAllowRoll);
