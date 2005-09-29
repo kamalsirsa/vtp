@@ -54,6 +54,7 @@
 #include "Projection2Dlg.h"
 #include "RenderDlg.h"
 #include "SelectDlg.h"
+#include "TileDlg.h"
 #include "TSDlg.h"
 #include "VegDlg.h"
 
@@ -2491,7 +2492,35 @@ void MainFrame::ExportPNG16()
 
 void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 {
-	// TODO
+	vtElevLayer *pEL = GetActiveElevLayer();
+	vtElevationGrid *grid = pEL->m_pGrid;
+	bool floatmode = (grid->IsFloatMode() || grid->GetScale() != 1.0f);
+	DPoint2 spacing = grid->GetSpacing();
+	DRECT area = grid->GetEarthExtents();
+
+	TilingOptions tileopts;
+	tileopts.cols = 4;
+	tileopts.rows = 4;
+	tileopts.lod0size = 256;
+	tileopts.numlods = 3;
+
+	TileDlg dlg(this, -1, "Tiling Options");
+	dlg.m_fEstX = spacing.x;
+	dlg.m_fEstY = spacing.y;
+	dlg.SetArea(area);
+	dlg.SetTilingOptions(tileopts);
+
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+	dlg.GetTilingOptions(tileopts);
+
+	OpenProgressDialog(_T("Writing tiles"), true);
+	bool success = pEL->WriteGridOfPGMPyramids(tileopts);
+	CloseProgressDialog();
+	if (success)
+		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
+	else
+		DisplayAndLog("Could not successfully write to '%s'", (const char *) tileopts.fname);
 }
 
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
