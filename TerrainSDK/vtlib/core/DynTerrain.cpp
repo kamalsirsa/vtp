@@ -503,6 +503,8 @@ bool vtTiledGeom::ReadTileList(const char *fname)
 	return true;
 }
 
+#define USE_VERTEX_CACHE	1
+
 void vtTiledGeom::SetupMiniLoad()
 {
 #if 0
@@ -523,7 +525,7 @@ void vtTiledGeom::SetupMiniLoad()
 #endif
 	m_pMiniTile = m_pMiniLoad->getminitile();
 
-#if 1
+#if USE_VERTEX_CACHE
 	// use tile caching with vertex arrays
 	cache.setcallbacks(m_pMiniTile, // the minitile object to be cached
 						cols,rows, // number of tile columns and rows
@@ -547,49 +549,63 @@ void vtTiledGeom::SetupMiniLoad()
 	//float prange = m_pMiniLoad->calcrange(texdim,winheight,fovy);
 	float prange = 20000;
 
-	//pbasesize: controls the maximum texture size that is paged in
-	//	- should be set to the size of the largest texture tile
-	//	- should not exceed the maximum size supported by the hardware
+	//pbasesize: specifies the maximum texture size that is paged in
+	//	- a value of zero means that texture size is not limited
+	//	- for non-zero values LOD 0 is redefined to be the level
+	//		with the specified base texture size so that larger
+	//		textures have negative LOD and are not paged in
+	//	- the dimension of a texel from LOD 0 can be fed into
+	//		the calcrange method in order to control texture paging
+	//		by using a screen space error instead of an enabling range
+	//	- the base size should be set to the size of the largest
+	//		texture tile so that the maximum texture detail is shown
+	//	- but the base size should not exceed the maximum texture
+	//		size supported by the hardware
 	int pbasesize = 512;
 
-	//psafety: controls the safety of paging
-	//	- a value of s=0 disables the use of the pyramids
-	//	- a value of s>0 means that the next larger level is loaded
-	//		after a measured safety of less than s levels is reached
-	//		and the next larger level is preloaded after a difference
-	//		of less than s+1 levels
-	//	- the safety for texture paging is limited to one level
+	//paging: enables/disables paging from the LOD pyramid
+	//	- a value of zero means that only LOD 0 is used
+	//	- for a value of one the next larger level is paged in
+	//		after a LOD difference of one level is reached
+	//	- for a value of s>=1 the next larger level is preloaded
+	//		after a LOD difference of s-1 levels is reached
 	//	recommended: 1
-	int psafety = 1;
+	int paging = 1;
 
 	//plazyness: controls the lazyness of paging
-	//	- a value of l>=0 means that the next smaller level is loaded
-	//	  after a measured difference of more than s+l levels is reached
-	//	  and the next smaller level is preloaded after a difference
-	//	  of more than s+l-1 levels
+	//	- a value of zero means that the LODs are updated instantly
+	//	- for a value of l>=0 the next smaller level is paged in
+	//		after a LOD difference of l+1 levels is reached
+	//	- for a value of l>=1 the next smaller level is preloaded
+	//		after a LOD difference of l levels is reached
 	//	- for maximum memory utilization set l to 0
-	//	- for minimum data traffic set l to the maximum available LOD
-	//	  recommended: 2
+	//	- to reduce data traffic increase l
+	//	  recommended: 1
 	int plazyness = 0;
 
-	//pupdate: the number of frames per update
-	//	- the value determines the number of frames after a complete
-	//		update of the preloaded area and the LOD pyramid is finished
-	//	- should be greater than the frame rate
+	//pupdate: update time
+	//	- determines the number of frames after which a complete
+	//		update of the tiles (both visible and preloaded) is finished
+	//	- should be not much smaller than the frame rate
+	//	- then for each frame only a small fraction of the tiles is
+	//		updated in order to limit the update latencies
+	//	- a value of zero means that one tile is updated per frame
 	int pupdate = 1000;
 
-	//expire: the number of frames for expiration
-	//	- the value controls the number of frames after invisible tiles
+	//expire: expiration time
+	//	- determines the number of frames after which invisible tiles
 	//		are removed from the tile cache
 	//	- should be much larger than the frame rate
+	//	- a value of zero disables expiration
 	int pexpire = 100000;
 
 	m_pMiniLoad->setloader(request_callback,
 		NULL,	// data
 		NULL/*preload_callback*/,
 		deliver_callback,
+		paging,
 		pfarp, prange, pbasesize,
-		psafety, plazyness, pupdate, pexpire);
+		plazyness, pupdate, pexpire);
 
 	// define resolution reduction of invisible tiles
 	m_pMiniTile->setreduction(2.0f,3.0f);
@@ -642,8 +658,10 @@ void vtTiledGeom::DoRender()
 				1.0f,
 				fpu);
 
+  #if USE_VERTEX_CACHE
 	// render vertex arrays
 	int vtx=cache.rendercache();
+  #endif
 #elif 1
 	m_pMiniTile->draw(res,
 		ex, ey, ez,
@@ -722,7 +740,10 @@ bool vtTiledGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 	float x, z;
 	g_Conv.ConvertFromEarth(p, x, z);
 
-	fAltitude = m_pMiniTile->getheight(x, z);
+	float alt = m_pMiniTile->getheight(x, z);
+	if (alt == -FLT_MAX)
+		return false;
+	fAltitude = alt;
 
 #if 0
 	int col = (int)(x / coldim);
@@ -763,7 +784,13 @@ bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 	bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
 {
 	// TODO: support other arguments
-	fAltitude = m_pMiniTile->getheight(p3.x, p3.z);
+	float alt = m_pMiniTile->getheight(p3.x, p3.z);
+
+	// This is what libMini does if the point isn't on the terrain
+	if (alt == -FLT_MAX)
+		return false;
+
+	fAltitude = alt;
 	return true;
 }
 
