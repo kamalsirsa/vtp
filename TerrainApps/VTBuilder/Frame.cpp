@@ -1562,9 +1562,9 @@ void MainFrame::ExportElevation()
 		delete pOutput;
 		CloseProgressDialog();
 		if (success)
-			DisplayAndLog("Successfully wrote to '%s'", (const char *) dlg.m_tileopts.dir);
+			DisplayAndLog("Successfully wrote to '%s'", (const char *) dlg.m_tileopts.fname);
 		else
-			DisplayAndLog("Could not successfully write to '%s'", (const char *) dlg.m_tileopts.dir);
+			DisplayAndLog("Could not successfully write to '%s'", (const char *) dlg.m_tileopts.fname);
 	}
 }
 

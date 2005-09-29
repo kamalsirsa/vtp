@@ -9,6 +9,7 @@
 #include "wx/wxprec.h"
 
 #include "TileDlg.h"
+#include "Layer.h"	// for FSTRING_INI
 
 // WDR: class implementations
 
@@ -37,7 +38,7 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	m_bSetting = false;
 
-	AddValidator(ID_TEXT_TO_FOLDER, &m_strToFolder);
+	AddValidator(ID_TEXT_TO_FOLDER, &m_strToFile);
 	AddNumValidator(ID_COLUMNS, &m_iColumns);
 	AddNumValidator(ID_ROWS, &m_iRows);
 	AddValidator(ID_CHOICE_LOD0_SIZE, &m_iLODChoice);
@@ -63,7 +64,7 @@ void TileDlg::SetTilingOptions(TilingOptions &opt)
 	m_iRows = opt.rows;
 	m_iLOD0Size = opt.lod0size;
 	m_iNumLODs = opt.numlods;
-	m_strToFolder = opt.dir;
+	m_strToFile = opt.fname;
 
 	m_iLODChoice = vt_log2(m_iLOD0Size)-6;
 
@@ -76,7 +77,7 @@ void TileDlg::GetTilingOptions(TilingOptions &opt) const
 	opt.rows = m_iRows;
 	opt.lod0size = m_iLOD0Size;
 	opt.numlods = m_iNumLODs;
-	opt.dir = m_strToFolder.mb_str();
+	opt.fname = m_strToFile.mb_str();
 }
 
 void TileDlg::SetArea(const DRECT &area)
@@ -127,11 +128,23 @@ void TileDlg::OnSize( wxCommandEvent &event )
 void TileDlg::OnDotDotDot( wxCommandEvent &event )
 {
 	// ask the user for a directory
-	wxDirDialog getDir(NULL, _("Write Tiles to Directory"));
-	bool bResult = (getDir.ShowModal() == wxID_OK);
+	//wxDirDialog getDir(NULL, _("Write Tiles to Directory"));
+	//bool bResult = (getDir.ShowModal() == wxID_OK);
+	//if (!bResult)
+	//	return;
+	//m_strToFile = getDir.GetPath();
+	// ask the user for a filename
+	wxString filter;
+	filter += FSTRING_INI;
+	wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxSAVE);
+	//saveFile.SetFilterIndex(0);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
-	m_strToFolder = getDir.GetPath();
+
+	// update controls
+	m_strToFile = saveFile.GetPath();
+
 	TransferDataToWindow();
 }
 

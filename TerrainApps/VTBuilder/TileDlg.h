@@ -41,7 +41,7 @@ public:
 
 private:
 	// WDR: member variable declarations for TileDlg
-	wxString2 m_strToFolder;
+	wxString2 m_strToFile;
 	int m_iColumns;
 	int m_iRows;
 	int m_iLODChoice;
