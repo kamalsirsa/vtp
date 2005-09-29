@@ -1172,6 +1172,40 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 		crs = "LL";
 	else if (zone != 0)
 		crs = "UTM";
+	else
+		crs = "Other";
+
+	// Try to create directory to hold the tiles
+	vtString dirname = opts.fname;
+	RemoveFileExtensions(dirname);
+	if (!vtCreateDir(dirname))
+		return false;
+
+	// Write .ini file
+	FILE *fp = fopen(opts.fname, "wb");
+	if (!fp)
+	{
+		vtDestroyDir(dirname);
+		return false;
+	}
+	fprintf(fp, "[TilesetDescription]\n");
+	fprintf(fp, "Columns=%d\n", opts.cols);
+	fprintf(fp, "Rows=%d\n", opts.rows);
+	fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
+	fprintf(fp, "Extent_Left=%.16lg\n", area.left);
+	fprintf(fp, "Extent_Right=%.16lg\n", area.right);
+	fprintf(fp, "Extent_Bottom=%.16lg\n", area.bottom);
+	fprintf(fp, "Extent_Top=%.16lg\n", area.top);
+	// write CRS, but pretty it up a bit
+	OGRSpatialReference *poSimpleClone = proj.Clone();
+	poSimpleClone->GetRoot()->StripNodes( "AXIS" );
+	poSimpleClone->GetRoot()->StripNodes( "AUTHORITY" );
+	char *wkt;
+	poSimpleClone->exportToWkt(&wkt);
+	fprintf(fp, "CRS=%s\n", wkt);
+	delete poSimpleClone;
+	OGRFree(wkt);
+	fclose(fp);
 
 	int i, j, lod;
 	for (j = 0; j < opts.rows; j++)
@@ -1191,8 +1225,8 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 			{
 				int tilesize = base_tilesize >> lod;
 
-				vtString fname = opts.dir, str;
-				if (fname.Right(1) != "/" && fname.Right(1) != "\\")
+				vtString fname = dirname, str;
+//				if (fname.Right(1) != "/" && fname.Right(1) != "\\")
 					fname += '/';
 				if (lod == 0)
 					str.Format("tile.%d-%d.pgm", col, row);
