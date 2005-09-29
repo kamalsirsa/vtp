@@ -38,6 +38,7 @@
 #define FSTRING_HTML	_T("HTML Files (*.html)|*.html")
 #define FSTRING_IGC		_T("IGC Files (*.igc)|*.igc")
 #define FSTRING_IMG		_T("IMG Files (*.img)|*.img")
+#define FSTRING_INI		_T("INI Files (*.ini)|*.ini")
 #define FSTRING_JPEG	_T("JPEG Files (*.jpg, *.jpeg)|*.jpg;*.jpeg")
 #define FSTRING_LULC	_T("LULC Files (*.gir)|*.gir")
 #define FSTRING_MEM		_T("Japanese DEM Files (*.mem)|*.mem")
