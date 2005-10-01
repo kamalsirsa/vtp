@@ -9,6 +9,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtdata/FilePath.h"
 #include "vtdata/HeightField.h"
 #include "vtdata/vtLog.h"
 #include "DynTerrain.h"
@@ -451,23 +452,104 @@ void deliver_callback(int *col,int *row,void **hfield,int *hlod,void **texture,
    HFIELD=TEXTURE=FOGMAP=NULL;
    }
 
-vtTiledGeom::vtTiledGeom()
+void mini_error_handler(char *file,int line,int fatal)
 {
+	VTLOG("libMini error: file '%s', line %d, fatal %d\n", file, line, fatal);
 }
 
-bool vtTiledGeom::ReadTileList(const char *fname)
+vtTiledGeom::vtTiledGeom()
 {
+	m_pMiniLoad = NULL;
+}
+
+vtTiledGeom::~vtTiledGeom()
+{
+	delete m_pMiniLoad;
+}
+
+class TiledDatasetDescription
+{
+public:
+	bool Read(const char *ini_fname);
+
+	int cols, rows;
+	int lod0size;
+	DRECT earthextents;
+	vtProjection proj;
+};
+
+bool TiledDatasetDescription::Read(const char *dataset_fname)
+{
+	FILE *fp = fopen(dataset_fname, "rb");
+	if (!fp) return false;
+	fscanf(fp, "[TilesetDescription]\n");
+	fscanf(fp, "Columns=%d\n", &cols);
+	fscanf(fp, "Rows=%d\n", &rows);
+	fscanf(fp, "LOD0_Size=%d\n", &lod0size);
+	fscanf(fp, "Extent_Left=%lf\n", &earthextents.left);
+	fscanf(fp, "Extent_Right=%lf\n", &earthextents.right);
+	fscanf(fp, "Extent_Bottom=%lf\n", &earthextents.bottom);
+	fscanf(fp, "Extent_Top=%lf\n", &earthextents.top);
+	// read CRS from WKT
+	char wkt[4096];
+//	fscanf(fp, "CRS=%s\n", wkt);
+	fgets(wkt, 4096, fp);
+	char *wktp = wkt + 4;	// skip "CRS="
+	proj.importFromWkt(&wktp);
+	fclose(fp);
+	return true;
+}
+
+bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *dataset_fname_image)
+{
+#if 0
 	// for now, hardcode instead of reading from file
 	cols = 9;
 	rows = 10;
 	coldim = 15360;		// 512 * 30m
 	rowdim = 15360;		// 512 * 30m
+#endif
+
+	TiledDatasetDescription elev, image;
+
+	if (!elev.Read(dataset_fname_elev))
+		return false;
+	if (!image.Read(dataset_fname_image))
+		return false;
+
+	// We assume that the projection and extents of the two datasets are the same,
+	//  so simply take them from the elevation dataset.
+
+	cols = elev.cols;
+	rows = elev.rows;
+	coldim = elev.earthextents.Width() / cols;	// TODO: watchout, earth vs. world?
+	rowdim = elev.earthextents.Height() / rows;
+	lod0size = elev.lod0size;
+	m_proj = elev.proj;
 	center.x = coldim * cols / 2.0f;
 	center.y = 0;
 	center.z = -rowdim * rows / 2.0f;
 
+	// Set up earth->world heightfield properties
+	Initialize(m_proj.GetUnits(), elev.earthextents, 0, 4000);	// TODO min/maxheight?
+
+	// folder names are same as the .ini files, without the .ini
+	vtString folder_elev = dataset_fname_elev;
+	RemoveFileExtensions(folder_elev);
+	vtString folder_image = dataset_fname_image;
+	RemoveFileExtensions(folder_image);
+
+#if 0
+	// Inform VTP objects of heightfield attributes
+	m_proj.SetWellKnownGeogCS("WGS84");
+	m_proj.SetUTMZone(5);
+	earthextents.left  = 176136;
+	earthextents.right = 314376;
+	earthextents.bottom= 2092670;
+	earthextents.top   = 2246270;
+#endif
+
 	exaggeration=2.0f; // exaggeration=200%
-	exaggertrees=2.0f; // exaggeration=200%
 
 	// global resolution
 	res=5.0E6f;
@@ -475,30 +557,44 @@ bool vtTiledGeom::ReadTileList(const char *fname)
 
 	hfields = new ucharptr[cols*rows];
 	textures = new ucharptr[cols*rows];
+	vtString str, str2;
 	int i, j;
 	for (i = 0; i < cols; i++)
 	{
 		for (j = 0; j < rows; j++)
 		{
-			hfields[i+cols*j] = new byte[80];
-			sprintf((char *) hfields[i+cols*j], "C:/TEMP/HawaiiTiles/tile.%d-%d.pgm", i, j);
-			textures[i+cols*j] = new byte[80];
-			sprintf((char *) textures[i+cols*j], "C:/TEMP/HawaiiTextureTiles/tile.%d-%d.ppm", i, j);
+			str2.Format("/tile.%d-%d", i, j);
+
+			str = folder_elev;
+			str += str2;
+			str += ".pgm";
+
+			hfields[i+cols*j] = new byte[str.GetLength()+1];
+			strcpy((char *) hfields[i+cols*j], (const char *) str);
+
+			str = folder_image;
+			str += str2;
+			str += ".ppm";
+
+			textures[i+cols*j] = new byte[str.GetLength()+1];
+			strcpy((char *) textures[i+cols*j], (const char *) str);
 		}
 	}
 
-//	SetupMiniTile();
+	setminierrorhandler(mini_error_handler);
+
 	SetupMiniLoad();
 
-	// Inform VTP objects of heightfield attributes
-	m_proj.SetWellKnownGeogCS("WGS84");
-	m_proj.SetUTMZone(5);
-	DRECT earthextents;
-	earthextents.left  = 176136;
-	earthextents.right = 314376;
-	earthextents.bottom= 2092670;
-	earthextents.top   = 2246270;
-	Initialize(LU_METERS, earthextents, 0, 4000);
+	// The miniload constructor has copied all the strings we passed to it,
+	//  so we should delete the original copy of them
+	for (i = 0; i < cols; i++)
+	{
+		for (j = 0; j < rows; j++)
+		{
+			delete [] hfields[i+cols*j];
+			delete [] textures[i+cols*j];
+		}
+	}
 
 	return true;
 }
@@ -507,22 +603,11 @@ bool vtTiledGeom::ReadTileList(const char *fname)
 
 void vtTiledGeom::SetupMiniLoad()
 {
-#if 0
-	VTLOG("Calling miniload::load(%d,%d,..)\n", cols, rows);
-	m_pMiniLoad->load(cols,rows, // number of columns and rows
-			basepath1,basepath2,NULL, // directory for tiles, textures and fogmaps
-			exaggeration,1.0f, // vertical exaggeration and global scale
-			0.1f*exaggertrees,1.5f, // fog parameters
-			minres, // absolute minimum of global resolution
-			outparams, // geometric output parameters
-			arcsec); // one arcsec in meters
-#else
 	VTLOG("Calling miniload constructor(%d,%d,..)\n", cols, rows);
 	m_pMiniLoad = new miniload(hfields, textures,
 		cols, rows,
 		coldim, rowdim,
 		1.0f, center.x, center.y, center.z);
-#endif
 	m_pMiniTile = m_pMiniLoad->getminitile();
 
 #if USE_VERTEX_CACHE
@@ -532,9 +617,9 @@ void vtTiledGeom::SetupMiniLoad()
 						coldim,rowdim, // overall extent
 						center.x,center.y,center.z); // origin with negative Z
 #endif
-	const float farp = 400000;	// 400 km
 
 	// Set (pre)loader parameters
+	const float farp = 400000;	// 400 km
 
 	//pfarp: controls the radius of the preloading area
 	//	- should be greater than the distance to the far plane farp
@@ -609,22 +694,6 @@ void vtTiledGeom::SetupMiniLoad()
 
 	// define resolution reduction of invisible tiles
 	m_pMiniTile->setreduction(2.0f,3.0f);
-}
-
-void vtTiledGeom::SetupMiniTile()
-{
-	// load resampled tiles
-	m_pMiniTile = new minitile(hfields, textures,
-		cols,rows, // number of columns and rows
-		coldim, rowdim,
-		1.0f,	// don't scale, data is in meters
-		center.x, center.y, center.z);
-
-	// use tile caching with vertex arrays
-	//cache.setcallbacks(m_pMiniTile, // the minitile object to be cached
-	//					cols,rows, // number of tile columns and rows
-	//					coldim,rowdim, // overall extent
-	//					center.x,center.y,center.z); // origin with negative Z
 }
 
 void vtTiledGeom::DoRender()

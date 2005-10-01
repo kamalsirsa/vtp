@@ -121,10 +121,10 @@ class vtTiledGeom : public vtDynGeom, public vtHeightField3d
 {
 public:
 	vtTiledGeom();
+	~vtTiledGeom();
 
-	bool ReadTileList(const char *fname);
+	bool ReadTileList(const char *dataset_fname_elev, const char *dataset_fname_image);
 	void SetupMiniLoad();
-	void SetupMiniTile();
 
 	// overrides for vtDynGeom
 	void DoRender();
@@ -143,9 +143,9 @@ public:
 
 	int cols, rows;
 	float coldim, rowdim;
+	int lod0size;
 	ucharptr *hfields, *textures;
 	float exaggeration;
-	float exaggertrees;
 	float res;
 	float minres;
 
