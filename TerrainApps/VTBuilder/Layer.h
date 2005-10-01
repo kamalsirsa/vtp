@@ -159,7 +159,7 @@ protected:
 typedef vtLayer *vtLayerPtr;
 
 
-///
+//
 // Name: LayerArray
 // An array of layer objects.
 //
@@ -181,6 +181,15 @@ public:
 	int m_MarkerShape;	// 0 = circle, 1 = crosshair, this should be an enum
 	int m_MarkerSize;	// in pixels
 };
+
+struct TilingOptions
+{
+	int cols, rows;
+	int lod0size;
+	int numlods;
+	vtString fname;
+};
+
 
 ////////////////////
 // Helpers
