@@ -185,6 +185,7 @@ protected:
 	void OnUpdateIsGrid(wxUpdateUIEvent& event);
 
 	void OnImageExportTiles(wxCommandEvent& event);
+	void OnUpdateImageExportTiles(wxUpdateUIEvent& event);
 
 	void OnTowerSelect(wxCommandEvent& event);
 	void OnTowerEdit(wxCommandEvent& event);

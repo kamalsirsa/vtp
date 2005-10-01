@@ -162,7 +162,8 @@ EVT_UPDATE_UI(ID_ELEV_EXPORT,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 
-EVT_MENU(ID_IMAGE_EXPORT_TILES,	MainFrame::OnImageExportTiles)
+EVT_MENU(ID_IMAGE_EXPORT_TILES,		MainFrame::OnImageExportTiles)
+EVT_UPDATE_UI(ID_IMAGE_EXPORT_TILES,MainFrame::OnUpdateImageExportTiles)
 
 EVT_MENU(ID_TOWER_ADD,				MainFrame::OnTowerAdd)
 EVT_MENU(ID_TOWER_SELECT,			MainFrame::OnTowerSelect)
@@ -2689,6 +2690,12 @@ void MainFrame::OnImageExportTiles(wxCommandEvent& event)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
 	else
 		DisplayAndLog("Could not successfully write to '%s'", (const char *) tileopts.fname);
+}
+
+void MainFrame::OnUpdateImageExportTiles(wxUpdateUIEvent& event)
+{
+	vtImageLayer *pIL = GetActiveImageLayer();
+	event.Enable(pIL != NULL);
 }
 
 
