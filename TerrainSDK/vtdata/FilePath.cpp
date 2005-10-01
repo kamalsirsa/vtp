@@ -197,7 +197,7 @@ vtString FindFileOnPaths(const vtStringArray &paths, const char *filename)
  * Recursive make directory.
  * Aborts if there is an ENOENT error somewhere in the middle.
  *
- * \return true if OK, falso on error
+ * \return true if OK, false on error
  */
 bool vtCreateDir(const char *dirname)
 {
@@ -234,7 +234,7 @@ bool vtCreateDir(const char *dirname)
 			return false;
 		}
 		if (hold == 0)
-		break;
+			break;
 		*p++ = hold;
 	}
 	free(buffer);
