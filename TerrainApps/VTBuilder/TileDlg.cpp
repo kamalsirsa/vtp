@@ -58,6 +58,32 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_CURY, &m_fCurY);
 }
 
+void TileDlg::SetElevation(bool bElev)
+{
+	// Elevation is handled as grid corners, not center, so grid size are differnt
+	m_bElev = bElev;
+
+	GetChoiceLod0Size()->Clear();
+	if (m_bElev)
+	{
+		GetChoiceLod0Size()->Append(_T("64 + 1"));
+		GetChoiceLod0Size()->Append(_T("128 + 1"));
+		GetChoiceLod0Size()->Append(_T("256 + 1"));
+		GetChoiceLod0Size()->Append(_T("512 + 1"));
+		GetChoiceLod0Size()->Append(_T("1024 + 1"));
+		GetChoiceLod0Size()->Append(_T("2048 + 1"));
+	}
+	else
+	{
+		GetChoiceLod0Size()->Append(_T("64"));
+		GetChoiceLod0Size()->Append(_T("128"));
+		GetChoiceLod0Size()->Append(_T("256"));
+		GetChoiceLod0Size()->Append(_T("512"));
+		GetChoiceLod0Size()->Append(_T("1024"));
+		GetChoiceLod0Size()->Append(_T("2048"));
+	}
+}
+
 void TileDlg::SetTilingOptions(TilingOptions &opt)
 {
 	m_iColumns = opt.cols;
@@ -90,14 +116,29 @@ void TileDlg::SetArea(const DRECT &area)
 
 void TileDlg::UpdateInfo()
 {
-	m_iTotalX = m_iLOD0Size * m_iColumns + 1;
-	m_iTotalY = m_iLOD0Size * m_iRows + 1;
+	m_iTotalX = m_iLOD0Size * m_iColumns;
+	m_iTotalY = m_iLOD0Size * m_iRows;
+	if (m_bElev)
+	{
+		// Elevation is handled as grid corners, imagery is handled as
+		//  centers, so grid sizes are differnt
+		m_iTotalX ++;
+		m_iTotalY ++;
+	}
 
 	m_fAreaX = m_area.Width();
 	m_fAreaY = m_area.Height();
 
-	m_fCurX = m_fAreaX / (m_iTotalX - 1);
-	m_fCurY = m_fAreaY / (m_iTotalY - 1);
+	if (m_bElev)
+	{
+		m_fCurX = m_fAreaX / (m_iTotalX - 1);
+		m_fCurY = m_fAreaY / (m_iTotalY - 1);
+	}
+	else
+	{
+		m_fCurX = m_fAreaX / m_iTotalX;
+		m_fCurY = m_fAreaY / m_iTotalY;
+	}
 
 	m_bSetting = true;
 	TransferDataToWindow();

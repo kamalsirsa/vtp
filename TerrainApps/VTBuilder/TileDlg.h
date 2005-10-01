@@ -12,6 +12,7 @@
 #include "vtdata/ElevationGrid.h"
 #include "vtui/AutoDialog.h"
 #include "vtui/wxString2.h"
+#include "Layer.h"
 
 // WDR: class declarations
 
@@ -35,6 +36,7 @@ public:
 	void GetTilingOptions(TilingOptions &opt) const;
 	void SetArea(const DRECT &area);
 	void UpdateInfo();
+	void SetElevation(bool bElev);
 
 	double m_fEstX;
 	double m_fEstY;
@@ -47,6 +49,7 @@ private:
 	int m_iLODChoice;
 	int m_iLOD0Size;
 	int m_iNumLODs;
+	bool m_bElev;
 
 	int m_iTotalX;
 	int m_iTotalY;
