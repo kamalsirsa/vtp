@@ -292,34 +292,38 @@ DPoint2 vtImageLayer::GetSpacing() const
 		m_Extents.Height() / (m_iYSize));
 }
 
-bool vtImageLayer::GetFilteredColor(double x, double y, RGBi &rgb)
+bool vtImageLayer::GetFilteredColor(const DPoint2 &p, RGBi &rgb)
 {
 	// could speed this up by keeping these values around
 	DPoint2 spacing = GetSpacing();
 
-	double u = (x - m_Extents.left) / spacing.x;
+	double u = (p.x - m_Extents.left) / spacing.x;
 	int ix = (int) u;
 	if (ix < 0 || ix >= m_iXSize)
 		return false;
 
-	double v = (m_Extents.top - y) / spacing.y;
+	double v = (m_Extents.top - p.y) / spacing.y;
 	int iy = (int) v;
 	if (iy < 0 || iy >= m_iYSize)
 		return false;
+	GetFilteredColor(ix, iy, rgb);
+	return true;
+}
 
-	if (!m_pBitmap)
-	{
-		// support for out-of-memory image here
-		RGBi *data = GetScanlineFromBuffer(iy);
-		rgb = data[ix];
-	}
-	else
+void vtImageLayer::GetFilteredColor(int x, int y, RGBi &rgb)
+{
+	if (m_pBitmap)
 	{
 		// TODO: real filtering (interpolation)
 		// for now, just grab closest pixel
-		m_pBitmap->GetPixel24(ix, iy, rgb);
+		m_pBitmap->GetPixel24(x, y, rgb);
 	}
-	return true;
+	else
+	{
+		// support for out-of-memory image here
+		RGBi *data = GetScanlineFromBuffer(y);
+		rgb = data[x];
+	}
 }
 
 bool vtImageLayer::ImportFromFile(const wxString2 &strFileName, bool progress_callback(int am))
@@ -901,6 +905,8 @@ bool vtImageLayer::LoadFromGDAL()
 			if (result == wxYES)
 				bDefer = true;
 		}
+		// TEMP
+		bDefer = true;
 
 		if (!bDefer)
 		{
@@ -1008,6 +1014,8 @@ RGBi *vtImageLayer::GetScanlineFromBuffer(int y)
 
 void vtImageLayer::ReadScanline(int iYRequest, int bufrow)
 {
+	VTLOG("readscanline %d\n", iYRequest);
+
 	CPLErr Err;
 	GDALColorEntry Ent;
 	int ixBlock;
@@ -1371,11 +1379,27 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 	OGRFree(wkt);
 	fclose(fp);
 
+	if (!m_pBitmap)
+	{
+		// If we're dealing with an out-of-core imge, consider how many rows
+		//  we need to cache to avoid reading the file more than once during
+		//  the generation of the tiles
+		int need_cache_rows = (m_iYSize + (opts.rows-1)) / opts.rows;
+		int need_cache_bytes = need_cache_rows * m_iXSize * 3;
+		// add a little bit for rounding up
+		need_cache_bytes = need_cache_bytes * 11 / 10;
+
+		// there's little point in shrinking the cache, so check existing size
+		int existing = GDALGetCacheMax();
+		if (need_cache_bytes > existing)
+			GDALSetCacheMax(need_cache_bytes);
+	}
+
 	int i, j, lod;
 	int total = opts.rows * opts.cols * opts.numlods, done = 0;
-	for (i = 0; i < opts.cols; i++)
+	for (j = opts.rows-1; j >= 0; j--)
 	{
-		for (j = 0; j < opts.rows; j++)
+		for (i = 0; i < opts.cols; i++)
 		{
 			DRECT tile_area;
 			tile_area.left = area.left + tile_dim.x * i;
@@ -1386,7 +1410,7 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 			int col = i;
 			int row = opts.rows-1-j;
 
-			for (lod = 0; lod < 4; lod++)
+			for (lod = 0; lod < opts.numlods; lod++)
 			{
 				int tilesize = base_tilesize >> lod;
 
@@ -1421,18 +1445,18 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 				fprintf(fp, "%d %d\n", tilesize, tilesize);
 				fprintf(fp, "255\n");
 
+				DPoint2 p;
 				int x, y;
 				RGBi rgb;
-				unsigned char r, g, b;
-				for (y = 0; y < base_tilesize; y += (1<<lod))
+				unsigned char rgb_bytes[3];
+				for (y = base_tilesize; y >= 0; y -= (1<<lod))
 				{
+					p.y = area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
 					for (x = 0; x < base_tilesize; x += (1<<lod))
 					{
-						// NOTE: this is lousy nearest-neighbor sampling, for testing
-						int samplex = (i*base_tilesize)+x;
-						int sampley = (j*base_tilesize)+base_tilesize-1-y;
-						m_pBitmap->GetPixel24(samplex, m_iYSize-1-sampley, rgb);
+						p.x = area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
 
+						GetFilteredColor(p, rgb);
 #if 1
 						// For testing, add stripes to indicate LOD
 						if (lod == 3 && x == y) rgb.Set(255,0,0);
@@ -1446,13 +1470,10 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 
 						if (lod == 0 && (y%8)==0) rgb.Set(90,0,90);
 #endif
-
-						r = rgb.r;
-						g = rgb.g;
-						b = rgb.b;
-						fwrite(&r, 1, 1, fp);
-						fwrite(&g, 1, 1, fp);
-						fwrite(&b, 1, 1, fp);
+						rgb_bytes[0] = rgb.r;
+						rgb_bytes[1] = rgb.g;
+						rgb_bytes[2] = rgb.b;
+						fwrite(rgb_bytes, 3, 1, fp);
 					}
 				}
 				fclose(fp);

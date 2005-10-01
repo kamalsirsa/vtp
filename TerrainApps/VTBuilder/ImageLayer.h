@@ -60,7 +60,9 @@ public:
 		xsize = m_iXSize;
 		ysize = m_iYSize;
 	}
-	bool GetFilteredColor(double x, double y, RGBi &rgb);
+	bool GetFilteredColor(const DPoint2 &p, RGBi &rgb);
+	void GetFilteredColor(int x, int y, RGBi &rgb);
+
 	bool ImportFromFile(const wxString2 &strFileName, bool progress_callback(int) = NULL);
 	bool ReadPPM(const char *fname, bool progress_callback(int) = NULL);
 	bool SaveToFile(const char *fname) const;

@@ -1261,14 +1261,16 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 				fprintf(fp, "%d %d\n", tilesize+1, tilesize+1);
 				fprintf(fp, "32767\n");
 
+				DPoint2 p;
 				int x, y;
-				for (y = 0; y <= base_tilesize; y += (1<<lod))
+				for (y = base_tilesize; y >= 0; y -= (1<<lod))
 				{
+					p.y = area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
 					for (x = 0; x <= base_tilesize; x += (1<<lod))
 					{
-						int samplex = (i*base_tilesize)+x;
-						int sampley = (j*base_tilesize)+(base_tilesize-y);
-						short value = m_pGrid->GetValue(samplex, sampley);
+						p.x = area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
+
+						short value = m_pGrid->GetFilteredValue(p);
 						value = SwapShort(value);
 						fwrite(&value, 2, 1, fp);
 					}
