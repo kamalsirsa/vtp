@@ -142,6 +142,7 @@ void ResampleDlg::OnTileOptions( wxCommandEvent &event )
 
 	dlg.m_fEstX = m_fEstX;
 	dlg.m_fEstY = m_fEstY;
+	dlg.SetElevation(true);
 	dlg.SetArea(m_area);
 	dlg.SetTilingOptions(m_tileopts);
 
