@@ -2513,7 +2513,7 @@ void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 	tileopts.lod0size = 256;
 	tileopts.numlods = 3;
 
-	TileDlg dlg(this, -1, "Tiling Options");
+	TileDlg dlg(this, -1, _("Tiling Options"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(true);
@@ -2671,7 +2671,7 @@ void MainFrame::OnImageExportTiles(wxCommandEvent& event)
 	tileopts.lod0size = 256;
 	tileopts.numlods = 3;
 
-	TileDlg dlg(this, -1, "Tiling Options");
+	TileDlg dlg(this, -1, _("Tiling Options"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(false);

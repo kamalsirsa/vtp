@@ -1400,7 +1400,7 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 
 				// make a message for the progress dialog
 				wxString msg;
-				msg.Printf("Writing tile '%hs', size %dx%d",
+				msg.Printf(_("Writing tile '%hs', size %dx%d"),
 					(const char *)fname, tilesize, tilesize);
 				UpdateProgressDialog(done*99/total, msg);
 

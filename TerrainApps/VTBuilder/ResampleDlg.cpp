@@ -130,7 +130,7 @@ void ResampleDlg::RecomputeSize()
 
 void ResampleDlg::FormatTilingString()
 {
-	m_strTileInfo.Printf("%d x %d @ %d", m_tileopts.cols,
+	m_strTileInfo.Printf(_T("%d x %d @ %d"), m_tileopts.cols,
 		m_tileopts.rows, m_tileopts.lod0size);
 }
 
@@ -138,7 +138,7 @@ void ResampleDlg::FormatTilingString()
 
 void ResampleDlg::OnTileOptions( wxCommandEvent &event )
 {
-	TileDlg dlg(this, -1, "Tiling Options");
+	TileDlg dlg(this, -1, _("Tiling Options"));
 
 	dlg.m_fEstX = m_fEstX;
 	dlg.m_fEstY = m_fEstY;
