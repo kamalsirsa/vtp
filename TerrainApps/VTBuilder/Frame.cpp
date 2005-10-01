@@ -1129,7 +1129,6 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 	pTarget->GetExtent(area);
 	DPoint2 step = pTarget->GetSpacing();
 
-	double x, y;
 	int i, j, l, layers = m_Layers.GetSize();
 	int iColumns, iRows;
 	pTarget->GetDimensions(iColumns, iRows);
@@ -1147,6 +1146,7 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 	}
 
 	// iterate through the pixels of the new image
+	DPoint2 p;
 	RGBi rgb;
 	bool bHit;
 	for (j = 0; j < iRows; j++)
@@ -1157,19 +1157,17 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 			CloseProgressDialog();
 			return false;
 		}
-		y = area.bottom + (j * step.y);
+		p.y = area.bottom + (j * step.y);
 
 		for (i = 0; i < iColumns; i++)
 		{
-			x = area.left + (i * step.x);
+			p.x = area.left + (i * step.x);
 
 			// find some data for this point
 			rgb.Set(0,0,0);
 			for (g = 0; g < num_image; g++)
 			{
-				vtImageLayer *image = images[g];
-
-				bHit = image->GetFilteredColor(x, y, rgb);
+				bHit = images[g]->GetFilteredColor(p, rgb);
 				if (bHit)
 					break;
 			}
