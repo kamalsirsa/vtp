@@ -184,6 +184,8 @@ protected:
 	void OnUpdateElevMergeTin(wxUpdateUIEvent& event);
 	void OnUpdateIsGrid(wxUpdateUIEvent& event);
 
+	void OnImageExportTiles(wxCommandEvent& event);
+
 	void OnTowerSelect(wxCommandEvent& event);
 	void OnTowerEdit(wxCommandEvent& event);
 	void OnTowerAdd(wxCommandEvent& event);
@@ -445,6 +447,7 @@ protected:
 	wxMenu *layerMenu;
 	wxMenu *viewMenu;
 	wxMenu *elevMenu;
+	wxMenu *imgMenu;
 	wxMenu *vegMenu;
 	wxMenu *bldMenu;
 	wxMenu *roadMenu;

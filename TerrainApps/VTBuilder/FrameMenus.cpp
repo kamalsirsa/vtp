@@ -162,6 +162,8 @@ EVT_UPDATE_UI(ID_ELEV_EXPORT,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 
+EVT_MENU(ID_IMAGE_EXPORT_TILES,	MainFrame::OnImageExportTiles)
+
 EVT_MENU(ID_TOWER_ADD,				MainFrame::OnTowerAdd)
 EVT_MENU(ID_TOWER_SELECT,			MainFrame::OnTowerSelect)
 EVT_MENU(ID_TOWER_EDIT,				MainFrame::OnTowerEdit)
@@ -382,6 +384,13 @@ void MainFrame::CreateMenus()
 	menu_num++;
 
 #ifndef ELEVATION_ONLY
+	// Imagery
+	imgMenu = new wxMenu;
+	imgMenu->Append(ID_IMAGE_EXPORT_TILES, _("Export to Tiles..."));
+	m_pMenuBar->Append(imgMenu, _("Imagery"));
+	m_iLayerMenu[LT_IMAGE] = menu_num;
+	menu_num++;
+
 	// Vegetation
 	vegMenu = new wxMenu;
 	vegMenu->Append(ID_VEG_PLANTS, _("Species List"), _("View/Edit list of available plant species"));
@@ -2507,6 +2516,7 @@ void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 	TileDlg dlg(this, -1, "Tiling Options");
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
+	dlg.SetElevation(true);
 	dlg.SetArea(area);
 	dlg.SetTilingOptions(tileopts);
 
@@ -2641,6 +2651,44 @@ void MainFrame::OnUpdateElevMergeTin(wxUpdateUIEvent& event)
 {
 	vtElevLayer *pEL = GetActiveElevLayer();
 	event.Enable(pEL && !pEL->IsGrid());
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Area Menu
+//
+
+void MainFrame::OnImageExportTiles(wxCommandEvent& event)
+{
+	vtImageLayer *pIL = GetActiveImageLayer();
+	DRECT area;
+	pIL->GetExtent(area);
+	DPoint2 spacing = pIL->GetSpacing();
+
+	TilingOptions tileopts;
+	tileopts.cols = 4;
+	tileopts.rows = 4;
+	tileopts.lod0size = 256;
+	tileopts.numlods = 3;
+
+	TileDlg dlg(this, -1, "Tiling Options");
+	dlg.m_fEstX = spacing.x;
+	dlg.m_fEstY = spacing.y;
+	dlg.SetElevation(false);
+	dlg.SetArea(area);
+	dlg.SetTilingOptions(tileopts);
+
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+	dlg.GetTilingOptions(tileopts);
+
+	OpenProgressDialog(_T("Writing tiles"), true);
+	bool success = pIL->WriteGridOfPGMPyramids(tileopts);
+	CloseProgressDialog();
+	if (success)
+		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
+	else
+		DisplayAndLog("Could not successfully write to '%s'", (const char *) tileopts.fname);
 }
 
 
