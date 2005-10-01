@@ -51,10 +51,13 @@ public:
 	wxString2   m_strTerrainName;
 
 	// elevation
+	bool	m_bGrid;
+	bool	m_bTin;
+	bool	m_bTileset;
 	wxString2   m_strFilename;
 	wxString2   m_strFilenameTin;
+	wxString2   m_strFilenameTileset;
 	float   m_fVerticalExag;
-	bool	m_bTin;
 
 	// navigation
 	float	m_fMinHeight;
@@ -83,6 +86,7 @@ public:
 	wxString2   m_strTextureSingle;
 	wxString2   m_strTextureBase;
 	wxString2   m_strTextureFilename;
+	wxString2   m_strTextureTileset;
 	bool	m_bJPEG;
 	bool	m_bMipmap;
 	bool	m_b16bit;
@@ -165,18 +169,22 @@ public:
 	wxChoice* GetNavStyle()  { return (wxChoice*) FindWindow( ID_NAV_STYLE ); }
 	wxRadioButton* GetUseGrid()  { return (wxRadioButton*) FindWindow( ID_USE_GRID ); }
 	wxRadioButton* GetUseTin()  { return (wxRadioButton*) FindWindow( ID_USE_TIN ); }
+	wxRadioButton* GetUseTileset()  { return (wxRadioButton*) FindWindow( ID_USE_TILESET ); }
 	wxComboBox* GetLocfile()  { return (wxComboBox*) FindWindow( ID_LOCFILE ); }
-	wxRadioButton* GetTiled()  { return (wxRadioButton*) FindWindow( ID_TILED ); }
+	wxRadioButton* GetTileset()  { return (wxRadioButton*) FindWindow( ID_TILESET ); }
+	wxRadioButton* GetTiled()  { return (wxRadioButton*) FindWindow( ID_TILED_4BY4 ); }
 	wxRadioButton* GetDerived()  { return (wxRadioButton*) FindWindow( ID_DERIVED ); }
 	wxRadioButton* GetSingle()  { return (wxRadioButton*) FindWindow( ID_SINGLE ); }
 	wxRadioButton* GetNone()  { return (wxRadioButton*) FindWindow( ID_NONE ); }
 	wxTextCtrl* GetLightFactor()  { return (wxTextCtrl*) FindWindow( ID_LIGHT_FACTOR ); }
 	wxComboBox* GetRoadfile()  { return (wxComboBox*) FindWindow( ID_ROADFILE ); }
 	wxComboBox* GetTreefile()  { return (wxComboBox*) FindWindow( ID_TREEFILE ); }
-	wxComboBox* GetTfilesingle()  { return (wxComboBox*) FindWindow( ID_TFILESINGLE ); }
+	wxComboBox* GetTfileSingle()  { return (wxComboBox*) FindWindow( ID_TFILE_SINGLE ); }
+	wxComboBox* GetTfileTileset()  { return (wxComboBox*) FindWindow( ID_TFILE_TILESET ); }
 	wxChoice* GetLodmethod()  { return (wxChoice*) FindWindow( ID_LODMETHOD ); }
 	wxComboBox* GetFilename()  { return (wxComboBox*) FindWindow( ID_FILENAME ); }
 	wxComboBox* GetFilenameTin()  { return (wxComboBox*) FindWindow( ID_FILENAME_TIN ); }
+	wxComboBox* GetFilenameTileset()  { return (wxComboBox*) FindWindow( ID_FILENAME_TILES ); }
 	wxComboBox* GetSkytexture()  { return (wxComboBox*) FindWindow( ID_SKYTEXTURE ); }
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
 	wxTextCtrl* GetDepressOceanOffset()  { return (wxTextCtrl*) FindWindow( ID_DEPRESSOCEANOFFSET ); }
@@ -191,6 +199,9 @@ public:
 
 private:
 	// WDR: member variable declarations for TParamsDlg
+	wxComboBox* m_pFilename;
+	wxComboBox* m_pFilenameTin;
+	wxComboBox* m_pFilenameTileset;
 	wxListBox* m_pAnimFiles;
 	wxListBox* m_pRawFiles;
 	wxComboBox* m_pDTName;
@@ -200,13 +211,13 @@ private:
 	wxComboBox* m_pRoadFile;
 	wxComboBox* m_pTreeFile;
 	wxComboBox* m_pTextureFileSingle;
+	wxComboBox* m_pTextureFileTileset;
 	wxChoice* m_pLodMethod;
-	wxComboBox* m_pFilename;
-	wxComboBox* m_pFilenameTin;
 	wxRadioButton* m_pNone;
 	wxRadioButton* m_pSingle;
 	wxRadioButton* m_pDerived;
 	wxRadioButton* m_pTiled;
+	wxRadioButton* m_pTileset;
 	wxComboBox* m_pLocFile;
 	wxComboBox* m_pSkyTexture;
 	wxChoice* m_pLocField;
@@ -224,6 +235,7 @@ private:
 	void OnTextureSingle( wxCommandEvent &event );
 	void OnTextureDerived( wxCommandEvent &event );
 	void OnTextureTiled( wxCommandEvent &event );
+	void OnTextureTileset( wxCommandEvent &event );
 	void OnEditColors( wxCommandEvent &event );
 	void OnCheckBox( wxCommandEvent &event );
 	void OnListDblClickStructure( wxCommandEvent &event );
