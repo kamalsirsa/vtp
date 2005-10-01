@@ -1,7 +1,7 @@
 //
 // Name: TerrManDlg.cpp
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,8 +25,7 @@ class TMTreeItemData : public wxTreeItemData
 {
 public:
 	vtString m_strDir;
-	vtString m_strIniFile;
-	vtString m_strIniPath;
+	vtString m_strXmlFile;
 	vtString m_strName;
 };
 
@@ -88,8 +87,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 
 			// only look terrain parameters files
 			vtString ext = GetExtension(name, false);
-			if (ext.CompareNoCase(".ini") != 0 &&
-				ext.CompareNoCase(".xml") != 0)
+			if (ext.CompareNoCase(".xml") != 0)
 				continue;
 
 			TParams params;
@@ -107,7 +105,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 			wxTreeItemId hItem = m_pTree->AppendItem(hPath, wstr);
 			TMTreeItemData *data = new TMTreeItemData;
 			data->m_strDir = directory;
-			data->m_strIniFile = name;
+			data->m_strXmlFile = name;
 			data->m_strName = params.GetValueString(STR_NAME);
 			m_pTree->SetItemData(hItem, data);
 		}
@@ -128,11 +126,11 @@ void TerrainManagerDlg::RefreshTreeText()
 		for (i2 = m_pTree->GetFirstChild(i1, cookie2); i2.IsOk(); i2 = m_pTree->GetNextChild(i2, cookie2))
 		{
 			TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(i2);
-			wxString2 path = data->m_strDir + "/" + data->m_strIniFile;
+			wxString2 path = data->m_strDir + "/" + data->m_strXmlFile;
 			if (params.LoadFrom(path.mb_str()))
 			{
 				data->m_strName = params.GetValueString(STR_NAME);
-				wstr = data->m_strIniFile;
+				wstr = data->m_strXmlFile;
 				wstr += _T(" (");
 				wstr2.from_utf8(params.GetValueString(STR_NAME));
 				wstr += wstr2;
@@ -154,7 +152,7 @@ wxString TerrainManagerDlg::GetCurrentTerrainPath()
 	wxString2 path = GetCurrentPath();
 	TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
 	path += "Terrains/";
-	path += data->m_strIniFile;
+	path += data->m_strXmlFile;
 	return path;
 }
 
@@ -166,7 +164,7 @@ void TerrainManagerDlg::OnCopy( wxCommandEvent &event )
 		return;
 
 	TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
-	wxString2 file = data->m_strIniFile;
+	wxString2 file = data->m_strXmlFile;
 
 	wxString2 msg = _("Please enter the name for the terrain copy.");
 	wxString2 str = wxGetTextFromUser(msg, _("Add Copy of Terrain"), file);
@@ -193,9 +191,9 @@ void TerrainManagerDlg::OnEditParams( wxCommandEvent &event )
 	{
 		// They might have changed an .ini to .xml
 		TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
-		vtString str = data->m_strIniFile;
+		vtString str = data->m_strXmlFile;
 		if (GetExtension(str, false) == ".ini")
-			data->m_strIniFile = str.Left(str.GetLength()-4)+".xml";
+			data->m_strXmlFile = str.Left(str.GetLength()-4)+".xml";
 
 		// They might have changed the terrain name
 		RefreshTreeText();
@@ -226,7 +224,7 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 		path += "Terrains/";
 
 		TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
-		path += data->m_strIniFile;
+		path += data->m_strXmlFile;
 		vtDeleteFile(path.mb_str());
 	}
 	RefreshTreeContents();
