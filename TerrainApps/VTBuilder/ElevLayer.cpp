@@ -1,7 +1,7 @@
 //
 // ElevLayer.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -517,7 +517,7 @@ void vtElevLayer::RenderBitmap()
 	if (m_iImageWidth == 0 || m_iImageHeight == 0)
 		return;
 
-	UpdateProgressDialog(0, _("Generating colors..."));
+	UpdateProgressDialog(0, _("Generating colors from elevation..."));
 	DetermineMeterSpacing();
 
 	clock_t tm1 = clock();
@@ -545,6 +545,8 @@ void vtElevLayer::RenderBitmap()
 
 	if (m_draw.m_bShading)
 	{
+		UpdateProgressDialog(0, _("Shading colors..."));
+
 		// Quick and simple sunlight vector
 		FPoint3 light_dir = LightDirection(m_draw.m_iCastAngle, m_draw.m_iCastDirection);
 
@@ -1208,6 +1210,7 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 	fclose(fp);
 
 	int i, j, lod;
+	int total = opts.rows * opts.cols * opts.numlods, done = 0;
 	for (j = 0; j < opts.rows; j++)
 	{
 		for (i = 0; i < opts.cols; i++)
@@ -1226,8 +1229,7 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 				int tilesize = base_tilesize >> lod;
 
 				vtString fname = dirname, str;
-//				if (fname.Right(1) != "/" && fname.Right(1) != "\\")
-					fname += '/';
+				fname += '/';
 				if (lod == 0)
 					str.Format("tile.%d-%d.pgm", col, row);
 				else
@@ -1238,7 +1240,7 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 				wxString msg;
 				msg.Printf("Writing tile '%hs', size %dx%d",
 					(const char *)fname, tilesize, tilesize);
-				UpdateProgressDialog((i+1)*(j+1)*99/(opts.rows*opts.cols), msg);
+				UpdateProgressDialog(done*99/total, msg);
 
 				FILE *fp = fopen(fname, "wb");
 				if (!fp)
@@ -1272,6 +1274,8 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 					}
 				}
 				fclose(fp);
+
+				done++;
 			}
 		}
 	}
