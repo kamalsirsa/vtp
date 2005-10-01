@@ -892,7 +892,7 @@ bool vtImageLayer::LoadFromGDAL()
 
 		// don't try to load giant image?
 		wxString2 msg;
-		if (m_iXSize * m_iYSize > (6000 * 6000))
+		if (m_iXSize * m_iYSize > (4096 * 4096))
 		{
 			msg.Printf(_("Image is very large (%d x %d).\n"), m_iXSize, m_iYSize);
 			msg += _("Would you like to create the layer using out-of-memory access to the image?"),
@@ -1316,23 +1316,66 @@ bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 #endif
 }
 
-void vtImageLayer::WriteGridOfPGMPyramids()
+bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 {
-	// grid size
-	int cols = 9, rows = 10;
-	int base_tilesize = 512;
+	// largest tile size
+	int base_tilesize = opts.lod0size;
 
 	int gridcols = m_iXSize;
 	int gridrows = m_iYSize;
 
 	DRECT area = m_Extents;
-	DPoint2 tile_dim(area.Width()/cols, area.Height()/rows);
+	DPoint2 tile_dim(area.Width()/opts.cols, area.Height()/opts.rows);
 	DPoint2 cell_size = tile_dim / base_tilesize;
 
-	int i, j, lod;
-	for (i = 0; i < cols; i++)
+	vtString units = GetLinearUnitName(m_proj.GetUnits());
+	units.MakeLower();
+	int zone = m_proj.GetUTMZone();
+	vtString crs;
+	if (m_proj.IsGeographic())
+		crs = "LL";
+	else if (zone != 0)
+		crs = "UTM";
+	else
+		crs = "Other";
+
+	// Try to create directory to hold the tiles
+	vtString dirname = opts.fname;
+	RemoveFileExtensions(dirname);
+	if (!vtCreateDir(dirname))
+		return false;
+
+	// Write .ini file
+	FILE *fp = fopen(opts.fname, "wb");
+	if (!fp)
 	{
-		for (j = 0; j < rows; j++)
+		vtDestroyDir(dirname);
+		return false;
+	}
+	fprintf(fp, "[TilesetDescription]\n");
+	fprintf(fp, "Columns=%d\n", opts.cols);
+	fprintf(fp, "Rows=%d\n", opts.rows);
+	fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
+	fprintf(fp, "Extent_Left=%.16lg\n", area.left);
+	fprintf(fp, "Extent_Right=%.16lg\n", area.right);
+	fprintf(fp, "Extent_Bottom=%.16lg\n", area.bottom);
+	fprintf(fp, "Extent_Top=%.16lg\n", area.top);
+	// write CRS, but pretty it up a bit
+	OGRSpatialReference *poSimpleClone = m_proj.Clone();
+	poSimpleClone->GetRoot()->StripNodes( "AXIS" );
+	poSimpleClone->GetRoot()->StripNodes( "AUTHORITY" );
+	char *wkt;
+	poSimpleClone->exportToWkt(&wkt);
+	fprintf(fp, "CRS=%s\n", wkt);
+	delete poSimpleClone;
+	OGRFree(wkt);
+	fclose(fp);
+
+	int i, j, lod;
+	int total = opts.rows * opts.cols * opts.numlods, done = 0;
+	for (i = 0; i < opts.cols; i++)
+	{
+		for (j = 0; j < opts.rows; j++)
 		{
 			DRECT tile_area;
 			tile_area.left = area.left + tile_dim.x * i;
@@ -1341,17 +1384,25 @@ void vtImageLayer::WriteGridOfPGMPyramids()
 			tile_area.top = area.bottom + tile_dim.y * (j+1);
 
 			int col = i;
-			int row = rows-1-j;
+			int row = opts.rows-1-j;
 
 			for (lod = 0; lod < 4; lod++)
 			{
 				int tilesize = base_tilesize >> lod;
 
-				vtString fname;
+				vtString fname = dirname, str;
+				fname += '/';
 				if (lod == 0)
-					fname.Format("C:/temp/HawaiiTextureTiles/tile.%d-%d.ppm", col, row);
+					str.Format("tile.%d-%d.ppm", col, row);
 				else
-					fname.Format("C:/temp/HawaiiTextureTiles/tile.%d-%d.ppm%d", col, row, lod);
+					str.Format("tile.%d-%d.ppm%d", col, row, lod);
+				fname += str;
+
+				// make a message for the progress dialog
+				wxString msg;
+				msg.Printf("Writing tile '%hs', size %dx%d",
+					(const char *)fname, tilesize, tilesize);
+				UpdateProgressDialog(done*99/total, msg);
 
 				FILE *fp = fopen(fname, "wb");
 				fprintf(fp, "P6\n");
@@ -1382,6 +1433,7 @@ void vtImageLayer::WriteGridOfPGMPyramids()
 						int sampley = (j*base_tilesize)+base_tilesize-1-y;
 						m_pBitmap->GetPixel24(samplex, m_iYSize-1-sampley, rgb);
 
+#if 1
 						// For testing, add stripes to indicate LOD
 						if (lod == 3 && x == y) rgb.Set(255,0,0);
 
@@ -1393,6 +1445,7 @@ void vtImageLayer::WriteGridOfPGMPyramids()
 						if (lod == 1 && (x%16)==0) rgb.Set(0,0,90);
 
 						if (lod == 0 && (y%8)==0) rgb.Set(90,0,90);
+#endif
 
 						r = rgb.r;
 						g = rgb.g;
@@ -1403,7 +1456,10 @@ void vtImageLayer::WriteGridOfPGMPyramids()
 					}
 				}
 				fclose(fp);
+
+				done++;
 			}
 		}
 	}
+	return true;
 }

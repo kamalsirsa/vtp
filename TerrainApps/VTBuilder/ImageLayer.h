@@ -68,7 +68,7 @@ public:
 
 	bool ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 		int iMetersPerPixel, int iUTMZone, const char *filename);
-	void WriteGridOfPGMPyramids();
+	bool WriteGridOfPGMPyramids(const TilingOptions &opts);
 
 protected:
 	void SetDefaults();
