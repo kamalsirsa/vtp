@@ -363,7 +363,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		vtString texname;
 		if (eTex == TE_SINGLE)
 		{
-			texname = m_Params.GetValueString(STR_TEXTURESINGLE, true);
+			texname = m_Params.GetValueString(STR_TEXTUREFILE, true);
 			VTLOG("  Single Texture: '%s'\n", (const char *) texname);
 		}
 		else
@@ -1945,13 +1945,14 @@ bool vtTerrain::CreateStep1()
 		g_Conv = m_pElevGrid->m_Conversion;
 		return true;
 	}
+	vtString fname;
 	vtString elev_file = m_Params.GetValueString(STR_ELEVFILE, true);
-	vtString fname = "Elevation/";
+	fname = "Elevation/";
 	fname += elev_file;
 	VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
 
-	vtString fullpath = FindFileOnPaths(vtGetDataPath(), fname);
-	if (fullpath == "")
+	vtString elev_path = FindFileOnPaths(vtGetDataPath(), fname);
+	if (elev_path == "")
 	{
 		VTLOG("\t\tNot found.\n");
 
@@ -1961,13 +1962,13 @@ bool vtTerrain::CreateStep1()
 		return false;
 	}
 
-	VTLOG("\tFound: %s\n", (const char *) fullpath);
+	VTLOG("\tFound elevation at: %s\n", (const char *) elev_path);
 	int surface_type = m_Params.GetValueInt(STR_SURFACE_TYPE);
 	if (surface_type == 0)
 	{
 		// Elevation input is a single grid; load it
 		m_pElevGrid = new vtElevationGrid();
-		bool status = m_pElevGrid->LoadFromBT(fullpath);
+		bool status = m_pElevGrid->LoadFromBT(elev_path);
 		if (status == false)
 		{
 			_SetErrorMessage("Grid load failed.");
@@ -2011,7 +2012,7 @@ bool vtTerrain::CreateStep1()
 		{
 			// if they did not provide us with a TIN, try to load it
 			m_pTin = new vtTin3d;
-			bool status = m_pTin->Read(fullpath);
+			bool status = m_pTin->Read(elev_path);
 
 			if (status == false)
 			{
@@ -2028,10 +2029,28 @@ bool vtTerrain::CreateStep1()
 	}
 	else if (surface_type == 2)
 	{
+		vtString tex_file = m_Params.GetValueString(STR_TEXTUREFILE, true);
+		fname = "GeoSpecific/";
+		fname += tex_file;
+		VTLOG("\tLooking for texture file: %s\n", (const char *) fname);
+
+		vtString tex_path = FindFileOnPaths(vtGetDataPath(), fname);
+		if (tex_path == "")
+		{
+			VTLOG("\t\tNot found.\n");
+
+			vtString msg;
+			msg.Format("Couldn't find texture '%s'", (const char *) tex_path);
+			_SetErrorMessage(msg);
+			return false;
+		}
+
 		// Elevation input is a set of tiles, which will be loaded later as needed
 		m_pTiledGeom = new vtTiledGeom;
 		m_pTiledGeom->SetName2("Tiled Geometry Container");
-		bool status = m_pTiledGeom->ReadTileList(fullpath);
+
+		bool status = m_pTiledGeom->ReadTileList(elev_path, tex_path);
+
 		if (status == false)
 		{
 			_SetErrorMessage("Tile list load failed.");
