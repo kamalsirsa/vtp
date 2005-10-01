@@ -1631,12 +1631,6 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		}
 #endif
 	}
-	else if (code == WXK_F11)
-	{
-		vtImageLayer *pI = (vtImageLayer *)GetMainFrame()->FindLayerOfType(LT_IMAGE);
-		if (pI)
-			pI->WriteGridOfPGMPyramids();
-	}
 	else
 		event.Skip();
 }
