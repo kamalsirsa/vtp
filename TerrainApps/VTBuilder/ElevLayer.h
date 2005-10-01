@@ -18,7 +18,6 @@ class vtHeightField;
 class vtElevationGrid;
 class vtDIB;
 class vtBitmap;
-struct TilingOptions;
 
 class vtTin2d : public vtTin
 {
