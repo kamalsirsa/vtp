@@ -94,9 +94,8 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_TIMESPEED, "1");
 
 	AddTag(STR_TEXTURE, "0");
-	AddTag(STR_NTILES, "4");
 	AddTag(STR_TILESIZE, "512");
-	AddTag(STR_TEXTURESINGLE, "true");
+	AddTag(STR_TEXTUREFILE, "");
 	AddTag(STR_TEXTUREBASE, "");
 	AddTag(STR_TEXTUREFORMAT, "1");
 	AddTag(STR_MIPMAP, "false");
@@ -184,206 +183,7 @@ TParams &TParams::operator = (const TParams &rhs)
 
 bool TParams::LoadFrom(const char *fname)
 {
-	vtString ext = GetExtension(fname, false);
-
-	bool success = false;
-
-	// support old ini file format
-	if (ext.CompareNoCase(".ini") == 0)
-	{
-		success = LoadFromIniFile(fname);
-
-		// Automatically save to the new format for them?
-		// vtString name = fname;
-		// WriteToXML(name.Left(name.GetLength()-4)+".xml", STR_TPARAMS_FORMAT_NAME);
-	}
-	else if (ext.CompareNoCase(".xml") == 0)
-		success = LoadFromXML(fname);
-
-	return success;
-}
-
-bool TParams::LoadFromIniFile(const char *filename)
-{
-	VTLOG("\tReading TParams from '%s'\n", filename);
-
-	ifstream input(filename, ios::in | ios::binary);
-	if (!input.is_open())
-		return false;
-
-	// read from file
-	char buf[80];
-
-	RGBi fog_color(-1,-1,-1);
-	int linenum = 0;
-	while (!input.eof())
-	{
-		linenum++;
-
-		if (input.peek() == '\n')
-			input.ignore();
-		input >> buf;
-
-		// data value should been separated by a tab or space
-		int next = input.peek();
-		if (next != '\t' && next != ' ')
-			continue;
-		while (input.peek() == '\t' || input.peek() == ' ')
-			input.ignore();
-
-		if (strcmp(buf, STR_NAME) == 0)
-			SetValueString(STR_NAME, get_line_from_stream(input));
-
-		// elevation
-		else if (strcmp(buf, STR_ELEVFILE) == 0 ||
-				 strcmp(buf, STR_VERTICALEXAG) == 0 ||
-				 strcmp(buf, STR_SUPPRESS) == 0 ||
-				 strcmp(buf, STR_TIN) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		// navigation
-		else if (strcmp(buf, STR_MINHEIGHT) == 0 ||
-				 strcmp(buf, STR_NAVSTYLE) == 0 ||
-				 strcmp(buf, STR_NAVSPEED) == 0 ||
-				 strcmp(buf, STR_LOCFILE) == 0 ||
-				 strcmp(buf, STR_INITLOCATION) == 0 ||
-				 strcmp(buf, STR_HITHER) == 0 ||
-				 strcmp(buf, STR_ACCEL) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		// LOD
-		else if (strcmp(buf, STR_SURFACE_TYPE) == 0 ||
-				 strcmp(buf, STR_LODMETHOD) == 0 ||
-				 strcmp(buf, STR_PIXELERROR) == 0 ||
-				 strcmp(buf, STR_TRICOUNT) == 0 ||
-				 strcmp(buf, STR_TRISTRIPS) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		// time
-		else if (strcmp(buf, STR_TIMEON) == 0 ||
-				 strcmp(buf, STR_INITTIME) == 0 ||
-				 strcmp(buf, STR_TIMESPEED) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		// texture
-		else if (strcmp(buf, STR_TEXTURE) == 0 ||
-				 strcmp(buf, STR_NTILES) == 0 ||
-				 strcmp(buf, STR_TILESIZE) == 0 ||
-				 strcmp(buf, STR_TEXTURESINGLE) == 0 ||
-				 strcmp(buf, STR_TEXTUREBASE) == 0 ||
-				 strcmp(buf, STR_TEXTUREFORMAT) == 0 ||
-				 strcmp(buf, STR_MIPMAP) == 0 ||
-				 strcmp(buf, STR_PRELIGHT) == 0 ||
-				 strcmp(buf, STR_PRELIGHTFACTOR) == 0 ||
-				 strcmp(buf, STR_CAST_SHADOWS) == 0 ||
-				 strcmp(buf, STR_COLOR_MAP) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-		else if (strcmp(buf, STR_16BIT) == 0)
-			SetValueString(STR_REQUEST16BIT, get_line_from_stream(input));
-
-		// detail texture
-		else if (strcmp(buf, STR_DETAILTEXTURE) == 0 ||
-				 strcmp(buf, STR_DTEXTURE_NAME) == 0 ||
-				 strcmp(buf, STR_DTEXTURE_SCALE) == 0 ||
-				 strcmp(buf, STR_DTEXTURE_DISTANCE) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		// culture
-		else if (strcmp(buf, STR_ROADS) == 0 ||
-				 strcmp(buf, STR_ROADFILE) == 0 ||
-				 strcmp(buf, STR_HWY) == 0 ||
-				 strcmp(buf, STR_PAVED) == 0 ||
-				 strcmp(buf, STR_DIRT) == 0 ||
-				 strcmp(buf, STR_ROADHEIGHT) == 0 ||
-				 strcmp(buf, STR_ROADDISTANCE) == 0 ||
-				 strcmp(buf, STR_TEXROADS) == 0 ||
-				 strcmp(buf, STR_ROADCULTURE) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		else if (strcmp(buf, STR_TREES) == 0 ||
-				 strcmp(buf, STR_TREEFILE) == 0 ||
-				 strcmp(buf, STR_VEGDISTANCE) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		else if (strcmp(buf, STR_FOG) == 0 ||
-				 strcmp(buf, STR_FOGDISTANCE) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-		else if (strcmp(buf, STR_FOGCOLORR) == 0)
-			fog_color.r = (short) atoi(get_line_from_stream(input));
-		else if (strcmp(buf, STR_FOGCOLORG) == 0)
-			fog_color.g = (short) atoi(get_line_from_stream(input));
-		else if (strcmp(buf, STR_FOGCOLORB) == 0)
-			fog_color.b = (short) atoi(get_line_from_stream(input));
-
-		else if (strcmp(buf, STR_BUILDINGFILE) == 0 || strcmp(buf, STR_STRUCTFILE) == 0)
-		{
-			vtString strFile(get_line_from_stream(input));
-			if (strFile != "")
-			{
-				vtTagArray lay;
-				lay.SetValueString("Type", "Structure");
-				lay.SetValueString("Filename", strFile);
-				lay.SetValueBool("Visible", true);
-				m_Layers.push_back(lay);
-			}
-		}
-		else if (strcmp(buf, STR_STRUCTDIST) == 0 ||
-				 strcmp(buf, STR_STRUCT_SHADOWS) == 0 ||
-				 strcmp(buf, STR_SHADOW_REZ) == 0 ||
-				 strcmp(buf, STR_CONTENT_FILE) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		// sky and ocean
-		else if (strcmp(buf, STR_SKY) == 0 ||
-				 strcmp(buf, STR_SKYTEXTURE) == 0 ||
-				 strcmp(buf, STR_OCEANPLANE) == 0 ||
-				 strcmp(buf, STR_OCEANPLANELEVEL) == 0 ||
-				 strcmp(buf, STR_DEPRESSOCEAN) == 0 ||
-				 strcmp(buf, STR_DEPRESSOCEANLEVEL) == 0 ||
-				 strcmp(buf, STR_HORIZON) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		// vehicles
-		else if (strcmp(buf, STR_VEHICLES) == 0 ||
-				 strcmp(buf, STR_VEHICLESIZE) == 0 ||
-				 strcmp(buf, STR_VEHICLESPEED) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		// utilities
-		else if (strcmp(buf, STR_TOWERS) == 0 ||
-				 strcmp(buf,STR_TOWERFILE) == 0 ||
-				 strcmp(buf, STR_ROUTEFILE) == 0 ||
-				 strcmp(buf, STR_ROUTEENABLE) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-		else if (buf[0] == ';' || buf[0] == 0)
-		{
-			// ignore comments and empty lines
-		}
-		else
-		{
-			VTLOG("\t Ignoring line %d from INI file: '%s'\n", linenum, buf);
-			get_line_from_stream(input);
-		}
-	}
-	input.close();
-
-	//
-	// Clean up some obsolete keywords and values
-	//
-	int iVegDistance = GetValueInt(STR_VEGDISTANCE);
-	if (iVegDistance > 0 && iVegDistance < 20)	// surely an old km value
-		SetValueInt(STR_VEGDISTANCE, iVegDistance * 1000);
-	ConvertOldTimeValue();
-
-	// Is_TIN is obsolete, use Surface_Type=1 instead
-	bool bOldTin = GetValueBool(STR_TIN);
-	if (bOldTin)
-		SetValueInt(STR_SURFACE_TYPE, 1, true);
-	RemoveTag(STR_TIN);
-
-	SetValueRGBi(STR_FOGCOLOR, fog_color);
-
-	return true;
+	return LoadFromXML(fname);
 }
 
 void TParams::ConvertOldTimeValue()
@@ -432,6 +232,30 @@ bool TParams::LoadFromXML(const char *fname)
 	RemoveTag("Label_Height");
 	RemoveTag("Label_Size");
 	RemoveTag("Overlay");
+	RemoveTag("Num_Tiles");
+
+	// Is_TIN is obsolete, use Surface_Type=1 instead
+	bool bOldTin = GetValueBool("Is_TIN");
+	if (bOldTin)
+		SetValueInt(STR_SURFACE_TYPE, 1, true);
+	RemoveTag("Is_TIN");
+
+	// Filename is obsolete, use Elevation_Filename instead
+	vtTag *tag;
+	tag = FindTag("Filename");
+	if (tag)
+	{
+		SetValueString(STR_ELEVFILE, tag->value);
+		RemoveTag("Filename");
+	}
+
+	// Single_Texture is obsolete, use Texture_Filename instead
+	tag = FindTag("Single_Texture");
+	if (tag)
+	{
+		SetValueString(STR_TEXTUREFILE, tag->value);
+		RemoveTag("Single_Texture");
+	}
 
 	return true;
 }

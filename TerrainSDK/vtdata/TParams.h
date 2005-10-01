@@ -19,7 +19,8 @@ enum TextureEnum {
 	TE_NONE,
 	TE_SINGLE,
 	TE_TILED,
-	TE_DERIVED
+	TE_DERIVED,
+	TE_TILESET
 };
 
 enum LodMethodEnum {
@@ -92,7 +93,6 @@ public:
 	std::vector<ScenarioParams> m_Scenarios;
 
 private:
-	bool LoadFromIniFile(const char *fname);
 	void ConvertOldTimeValue();
 };
 
@@ -119,7 +119,7 @@ protected:
 #define STR_TPARAMS_FORMAT_NAME "Terrain_Parameters"
 
 #define STR_NAME "Name"
-#define STR_ELEVFILE "Filename"
+#define STR_ELEVFILE "Elevation_Filename"
 #define STR_VERTICALEXAG "Vertical_Exag"
 #define STR_SUPPRESS "Suppress_Surface"
 
@@ -138,18 +138,15 @@ protected:
 #define STR_TRICOUNT "Tri_Count"
 #define STR_TRISTRIPS "Tristrips"
 
-#define STR_TIN "Is_TIN"	// obsolete, use STR_SURFACE_TYPE=1 instead
-
 #define STR_TIMEON "Time_On"
 #define STR_INITTIME "Init_Time"
 #define STR_TIMESPEED "Time_Speed"
 
-#define STR_TEXTURE "Texture"
-#define STR_NTILES "Num_Tiles"
+#define STR_TEXTURE "Texture"	// 0=none, 1=single, 2=tile4x4, 3=derived, 4=tileset
 #define STR_TILESIZE "Tile_Size"
-#define STR_TEXTURESINGLE "Single_Texture"
+#define STR_TEXTUREFILE "Texture_Filename"
 #define STR_TEXTUREBASE "Base_Texture"
-#define STR_TEXTUREFORMAT "Texture_Format"
+#define STR_TEXTUREFORMAT "Texture_Format"	// 0=bmp, 1=jpg
 #define STR_MIPMAP "MIP_Map"
 #define STR_REQUEST16BIT "Request_16_Bit"
 #define STR_PRELIGHT "Pre-Light"
