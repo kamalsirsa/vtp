@@ -984,18 +984,61 @@ void vtTerrain::SetGlobalProjection()
 		g_Conv = m_pHeightField->m_Conversion;
 }
 
-bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
+/**
+ * For this terrain, look at its elevation source, and determine the extents
+ * of that data, in geographic coords.  This is done without actually doing
+ * a full load of the data, to quickly describe the terrain's location on
+ * the earth.
+ */
+bool vtTerrain::GetGeoExtentsFromMetadata()
 {
 	vtString name = "Elevation/";
 	name += m_Params.GetValueString(STR_ELEVFILE, true);
-	vtString grid_fname = FindFileOnPaths(vtGetDataPath(), name);
-	if (grid_fname == "")
+	vtString fname = FindFileOnPaths(vtGetDataPath(), name);
+	if (fname == "")
 	{
 		VTLOG("\t'%s' not found on data paths.", (const char *)name);
 		return false;
 	}
-	else
-		return grid.LoadBTHeader(grid_fname);
+	bool success;
+	int type = m_Params.GetValueInt(STR_SURFACE_TYPE);
+	if (type == 0)	// grid
+	{
+		vtElevationGrid grid;
+		success = grid.LoadBTHeader(fname);
+		if (!success)
+		{
+			VTLOG("\tCouldn't load BT header.\n");
+			return false;
+		}
+		success = grid.GetCorners(m_Corners_geo, true);	// true=Geo
+		if (!success)
+		{
+			VTLOG("\tCouldn't get terrain corners.\n");
+			return false;
+		}
+	}
+	else if (type == 1)	// tin
+	{
+		return false;	// TODO
+	}
+	else if (type == 2)	// tileset
+	{
+		TiledDatasetDescription set;
+		success = set.Read(fname);
+		if (!success)
+		{
+			VTLOG("\tCouldn't load Tileset description.\n");
+			return false;
+		}
+		success = set.GetCorners(m_Corners_geo, true);	// true=Geo
+		if (!success)
+		{
+			VTLOG("\tCouldn't get terrain corners.\n");
+			return false;
+		}
+	}
+	return true;
 }
 
 

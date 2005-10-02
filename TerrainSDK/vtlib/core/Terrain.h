@@ -107,7 +107,7 @@ public:
 	void SetLocalGrid(vtElevationGrid *pGrid, bool bPreserve);
 	void SetTin(vtTin3d *pTin);
 	vtTin3d *GetTin() { return m_pTin; }
-	bool LoadHeaderIntoGrid(vtElevationGrid &grid);
+	bool GetGeoExtentsFromMetadata();
 
 	/// pass true to draw the underside of the terrain as well
 	void SetBothSides(bool bFlag) { m_bBothSides = bFlag; }
