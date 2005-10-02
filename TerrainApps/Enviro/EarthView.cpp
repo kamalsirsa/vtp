@@ -432,35 +432,20 @@ void Enviro::LookUpTerrainLocations()
 		vtTerrain *pTerr = GetTerrain(i);
 		VTLOG("\tlooking up: %s\n", (const char *) pTerr->GetName());
 
-		vtElevationGrid grid;
-		bool success = pTerr->LoadHeaderIntoGrid(grid);
-
-		if (!success)
+		bool success = pTerr->GetGeoExtentsFromMetadata();
+		if (success)
 		{
-			VTLOG("\t\tFailed to load header info.\n");
+			DPoint2 nw, se;
+			nw = pTerr->m_Corners_geo[1];
+			se = pTerr->m_Corners_geo[3];
+			VTLOG("\t\t(%.2lf,%.2lf) - (%.2lf,%.2lf)\n", nw.x, nw.y, se.x, se.y);
+			VTLOG("\t\tGot terrain corners\n");
+		}
+		else
+		{
+			VTLOG("\t\tCouldn't determine terrain corners.\n");
 			continue;
 		}
-		char msg1[2000], msg2[2000];
-		success = grid.GetProjection().GetTextDescription(msg1, msg2);
-		if (!success)
-		{
-			VTLOG("\t\tCouldn't get projection description.\n");
-			continue;
-		}
-		VTLOG("\t\tprojection: type %s, value %s\n", msg1, msg2);
-
-		DPoint2 sw, nw, ne, se;
-		VTLOG("\t\tGetting terrain corners\n");
-		success = grid.GetCorners(pTerr->m_Corners_geo, true);
-		if (!success)
-		{
-			VTLOG("\t\tCouldn't get terrain corners.\n");
-			continue;
-		}
-		nw = pTerr->m_Corners_geo[1];
-		se = pTerr->m_Corners_geo[3];
-		VTLOG("\t\t(%.2lf,%.2lf) - (%.2lf,%.2lf)\n", nw.x, nw.y, se.x, se.y);
-		VTLOG("\t\tGot terrain corners\n");
 	}
 	VTLOG("\tLookUpTerrainLocations: done\n");
 }
