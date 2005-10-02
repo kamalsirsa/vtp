@@ -1387,7 +1387,7 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 		int need_cache_rows = (m_iYSize + (opts.rows-1)) / opts.rows;
 		int need_cache_bytes = need_cache_rows * m_iXSize * 3;
 		// add a little bit for rounding up
-		need_cache_bytes = need_cache_bytes * 11 / 10;
+		need_cache_bytes += (need_cache_bytes / 10);
 
 		// there's little point in shrinking the cache, so check existing size
 		int existing = GDALGetCacheMax();
