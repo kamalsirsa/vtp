@@ -686,7 +686,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
 
 	RGBi rgb;
 
-	for (j = 0; j < h-1; j++)
+	for (j = 0; j < h; j++)
 	{
 		if (progress_callback != NULL)
 		{
