@@ -1138,6 +1138,7 @@ static void MassageDatumFromWKT(vtString &strDatum )
 
 // GDAL
 #include "gdal_priv.h"
+#include "cpl_multiproc.h"	// for CPLCleanupTLS
 
 // OGR
 #include <ogrsf_frmts.h>
@@ -1167,7 +1168,7 @@ GDALWrapper::~GDALWrapper()
 	// but not GDAL.
 	OSRCleanup();
 	CPLFinderClean();
-//	CPLCleanupTLS();
+	CPLCleanupTLS();
 
 	if (m_bOGRFormatsRegistered)
 	{
