@@ -379,7 +379,7 @@ void EnviroApp::RefreshTerrainList()
 
 			// only look for terrain parameters files
 			vtString ext = GetExtension(name, false);
-			if (ext != ".ini" && ext != ".xml")
+			if (ext != ".xml")
 				continue;
 
 			TParams params;
