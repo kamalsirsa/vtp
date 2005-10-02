@@ -1197,6 +1197,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 	int missing_value = INVALID_ELEVATION;
 	DRECT ext;
 	double x, y;
+	bool bArcSeconds = false;
 	while ((fscanf(fp, "%s", sbuf) != EOF) && sbuf[0] == '#')
 	{
 		// comment
@@ -1226,9 +1227,13 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 		}
 		else if (!strncmp(buf, "SW corner", 9))
 		{
-			sscanf(buf+10, "%lf/%lf", &x, &y);
+			char units[99];
+			sscanf(buf+10, "%lf/%lf %s", &x, &y, units);
 			ext.left = x;
 			ext.bottom = y;
+			// check units, might be arcseconds or degrees
+			if (!strcmp(units, "arc-seconds"))
+				bArcSeconds = true;
 		}
 		else if (!strncmp(buf, "NE corner", 9))
 		{
@@ -1275,10 +1280,13 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 		if (coord_sys == 0)	// LL
 		{
 			m_proj.SetProjectionSimple(false, 0, datum);
-			ext.left /= 3600;	// arc-seconds to degrees
-			ext.right /= 3600;
-			ext.top /= 3600;
-			ext.bottom /= 3600;
+			if (bArcSeconds)
+			{
+				ext.left /= 3600;	// arc-seconds to degrees
+				ext.right /= 3600;
+				ext.top /= 3600;
+				ext.bottom /= 3600;
+			}
 		}
 		else if (coord_sys == 1)	// UTM
 			m_proj.SetProjectionSimple(true, coord_zone, datum);
