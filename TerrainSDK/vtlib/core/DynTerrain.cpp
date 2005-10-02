@@ -467,16 +467,9 @@ vtTiledGeom::~vtTiledGeom()
 	delete m_pMiniLoad;
 }
 
-class TiledDatasetDescription
-{
-public:
-	bool Read(const char *ini_fname);
 
-	int cols, rows;
-	int lod0size;
-	DRECT earthextents;
-	vtProjection proj;
-};
+///////////////////////////////////////////////////////////////////////
+// class TiledDatasetDescription implementation
 
 bool TiledDatasetDescription::Read(const char *dataset_fname)
 {
@@ -500,6 +493,48 @@ bool TiledDatasetDescription::Read(const char *dataset_fname)
 	return true;
 }
 
+bool TiledDatasetDescription::GetCorners(DLine2 &line, bool bGeo) const
+{
+	line.SetSize(4);
+	line[0].x = earthextents.left;
+	line[0].y = earthextents.bottom;
+	line[1].x = earthextents.left;
+	line[1].y = earthextents.top;
+	line[2].x = earthextents.right;
+	line[2].y = earthextents.top;
+	line[3].x = earthextents.right;
+	line[3].y = earthextents.bottom;
+
+	if (bGeo && !proj.IsGeographic())
+	{
+		// must convert from whatever we are, to geo
+		vtProjection Dest;
+		Dest.SetWellKnownGeogCS("WGS84");
+
+		// This is safe (won't fail on tricky Datum conversions) but might
+		//  be slightly inaccurate
+		OCT *trans = CreateConversionIgnoringDatum(&proj, &Dest);
+
+		if (!trans)
+		{
+			// inconvertible projections
+			return false;
+		}
+		for (int i = 0; i < 4; i++)
+		{
+			DPoint2 p = line[i];
+			trans->Transform(1, &p.x, &p.y);
+			line.SetAt(i, p);
+		}
+		delete trans;
+	}
+	return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// class vtTiledGeom implementation
+
 bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *dataset_fname_image)
 {
 #if 0
@@ -520,18 +555,20 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 	// We assume that the projection and extents of the two datasets are the same,
 	//  so simply take them from the elevation dataset.
 
+	// Set up earth->world heightfield properties
+	m_proj = elev.proj;
+	Initialize(m_proj.GetUnits(), elev.earthextents, 0, 4000);	// TODO min/maxheight?
+
 	cols = elev.cols;
 	rows = elev.rows;
-	coldim = elev.earthextents.Width() / cols;	// TODO: watchout, earth vs. world?
-	rowdim = elev.earthextents.Height() / rows;
+	//coldim = elev.earthextents.Width() / cols;	// TODO: watchout, earth vs. world?
+	//rowdim = elev.earthextents.Height() / rows;
+	coldim = m_WorldExtents.Width() / cols;
+	rowdim = -m_WorldExtents.Height() / rows;
 	lod0size = elev.lod0size;
-	m_proj = elev.proj;
 	center.x = coldim * cols / 2.0f;
 	center.y = 0;
 	center.z = -rowdim * rows / 2.0f;
-
-	// Set up earth->world heightfield properties
-	Initialize(m_proj.GetUnits(), elev.earthextents, 0, 4000);	// TODO min/maxheight?
 
 	// folder names are same as the .ini files, without the .ini
 	vtString folder_elev = dataset_fname_elev;
@@ -710,13 +747,8 @@ void vtTiledGeom::DoRender()
 	float dy = eye_forward.y;
 	float dz = eye_forward.z;
 
-	// Convert the eye location to the unusual coordinate scheme of libMini.
-//	ex -= (cols/2)*m_fXStep;
-//	ez += (rows/2)*m_fZStep;
-
 	const int fpu=0;
 
-#if 1
 	// update vertex arrays
 	m_pMiniLoad->draw(res,
 				ex,ey,ez,
@@ -731,28 +763,10 @@ void vtTiledGeom::DoRender()
 	// render vertex arrays
 	int vtx=cache.rendercache();
   #endif
-#elif 1
-	m_pMiniTile->draw(res,
-		ex, ey, ez,
-		dx, dy, dz,
-		ux, uy, uz,
-		m_fFOVY, m_fAspect,
-		m_fNear, m_fFar,
-		1.0f,
-		fpu);
-#else
-	glBegin(GL_QUADS);
-	glVertex3f(0, 0, 0);
-	glVertex3f(130000, 0, 0);
-	glVertex3f(130000, 0, -150000);
-	glVertex3f(0, 0, -150000);
-	glEnd();
-#endif
 }
 
 void vtTiledGeom::DoCalcBoundBox(FBox3 &box)
 {
-#if 0
 	FPoint3 center(m_pMiniLoad->CENTERX,
 		m_pMiniLoad->CENTERY,
 		m_pMiniLoad->CENTERZ);
@@ -760,12 +774,7 @@ void vtTiledGeom::DoCalcBoundBox(FBox3 &box)
 		0,
 		m_pMiniLoad->ROWS*m_pMiniLoad->ROWDIM);
 	box.min = center - size/2;
-	box.max = center + size/2;
-#else
-	// TEMP OVERRIDE for testing
-	box.min.Set(0, 0, -150000);
-	box.max.Set(130000, 0, 0);
-#endif
+	box.max = center + size/2;	// TODO? use height extents, if they are known?
 }
 
 void vtTiledGeom::DoCull(const vtCamera *pCam)
@@ -805,57 +814,26 @@ void vtTiledGeom::DoCull(const vtCamera *pCam)
 bool vtTiledGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 									  bool bTrue) const
 {
-	// TODO: support other arguments
+	// TODO: support other arguments?
 	float x, z;
 	g_Conv.ConvertFromEarth(p, x, z);
-
 	float alt = m_pMiniTile->getheight(x, z);
+
+	// This is what libMini returns if the point isn't on the terrain
 	if (alt == -FLT_MAX)
 		return false;
+
 	fAltitude = alt;
-
-#if 0
-	int col = (int)(x / coldim);
-	int row = (int)(-z / rowdim);
-
-	// safety check
-	if (col < 0 || col >= cols || row < 0 || row >= rows)
-	{
-		fAltitude = 0.0f;
-		return false;
-	}
-
-	// Now determine height on the tile; find offset within the tile
-	//double ox=coldim*(bi-(COLS-1)/2.0f)+CENTERX;
-	//double oz=rowdim*(bj-(ROWS-1)/2.0f)+CENTERZ;
-
-	float alt0, alt1, alt2, alt3;
-	alt0 = GetElevation(iX, iY, bTrue);
-	alt1 = GetElevation(iX+1, iY, bTrue);
-	alt2 = GetElevation(iX+1, iY+1, bTrue);
-	alt3 = GetElevation(iX, iY+1, bTrue);
-
-	// find fractional amount (0..1 across quad)
-	double fX = (p.x - (m_EarthExtents.left + iX * spacing.x)) / spacing.x;
-	double fY = (p.y - (m_EarthExtents.bottom + iY * spacing.y)) / spacing.y;
-
-	// which of the two triangles in the quad is it?
-	if (fX + fY < 1)
-		fAltitude = (float) (alt0 + fX * (alt1 - alt0) + fY * (alt3 - alt0));
-	else
-		fAltitude = (float) (alt2 + (1.0-fX) * (alt3 - alt2) + (1.0-fY) * (alt1 - alt2));
-
-#endif
 	return true;
 }
 
 bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 	bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
 {
-	// TODO: support other arguments
+	// TODO: support other arguments?
 	float alt = m_pMiniTile->getheight(p3.x, p3.z);
 
-	// This is what libMini does if the point isn't on the terrain
+	// This is what libMini returns if the point isn't on the terrain
 	if (alt == -FLT_MAX)
 		return false;
 
@@ -889,6 +867,8 @@ bool vtTiledGeom::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 	// adjust magnitude of dir until 2D component has a good magnitude
 	// TODO: better estimate than 0,0 tile!
 	int size = m_pMiniTile->getsize(0,0);
+	if (size == 0)	// there might be no tile loaded there
+		return false;
 	float fXStep = m_pMiniTile->getcoldim() / size;
 	float fZStep = m_pMiniTile->getrowdim() / size;
 	float smallest = std::min(fXStep, fZStep);

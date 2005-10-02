@@ -111,6 +111,20 @@ protected:
 	~vtDynTerrainGeom();
 };
 
+
+class TiledDatasetDescription
+{
+public:
+	bool Read(const char *ini_fname);
+	bool GetCorners(DLine2 &line, bool bGeo) const;
+
+	int cols, rows;
+	int lod0size;
+	DRECT earthextents;
+	vtProjection proj;
+};
+
+
 #include "mini.h"
 #include "miniload.hpp"
 #include "minicache.hpp"
