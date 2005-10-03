@@ -165,13 +165,12 @@ void Enviro::LoadTerrainDescriptions()
 			std::string name1 = it.filename();
 			vtString name = name1.c_str();
 
-			// only look ".ini" and ".xml" files
+			// Only look for ".xml" files which describe a terrain
 			vtString ext = GetExtension(name, false);
-			if (ext.CompareNoCase(".ini") != 0 &&
-				ext.CompareNoCase(".xml") != 0)
+			if (ext.CompareNoCase(".xml") != 0)
 				continue;
 
-			// Some terrain .ini files want to use a different Terrain class
+			// Some terrain .xml files want to use a different Terrain class
 			int dot = name.Find('.');
 			vtString before_dot;
 			if (dot == -1)
