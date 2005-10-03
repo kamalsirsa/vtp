@@ -1143,6 +1143,19 @@ static void MassageDatumFromWKT(vtString &strDatum )
 // OGR
 #include <ogrsf_frmts.h>
 
+// sends all GDAL/OGR/PROJ.4 messages to the VTP log output
+void CPL_STDCALL cpl_error_handler(CPLErr eErrClass, int err_no, const char *msg)
+{
+	if (eErrClass == CE_Debug)
+		g_Log._Log("CPL Debug: ");
+	else if (eErrClass == CE_Warning)
+		g_Log.Printf("CPL Warning %d: ", err_no);
+	else
+		g_Log.Printf("CPL Error %d: ", err_no);
+	g_Log._Log(msg);
+	g_Log._Log("\n");
+}
+
 // A singleton for this class
 GDALWrapper g_GDALWrapper;
 
@@ -1150,10 +1163,16 @@ GDALWrapper::GDALWrapper()
 {
 	m_bGDALFormatsRegistered = false;
 	m_bOGRFormatsRegistered = false;
+
+	// send all GDAL/OGR/PROJ.4 messages to the VTP log output
+	CPLPushErrorHandler(cpl_error_handler);
 }
 
 GDALWrapper::~GDALWrapper()
 {
+	// this must be called before CPLCleanupTLS
+	CPLPopErrorHandler();
+
 	// Destroying the regsitered format drivers only needs to be done
 	// once at exit.
 	if (m_bGDALFormatsRegistered)

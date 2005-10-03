@@ -20,18 +20,6 @@
 
 vtLog g_Log;
 
-void CPL_STDCALL cpl_error_handler(CPLErr eErrClass, int err_no, const char *msg)
-{
-	if (eErrClass == CE_Debug)
-		g_Log._Log("CPL Debug: ");
-	else if (eErrClass == CE_Warning)
-		g_Log.Printf("CPL Warning %d: ", err_no);
-	else
-		g_Log.Printf("CPL Error %d: ", err_no);
-	g_Log._Log(msg);
-	g_Log._Log("\n");
-}
-
 vtLog::vtLog()
 {
 	m_log = NULL;
@@ -41,7 +29,6 @@ vtLog::~vtLog()
 {
 	if (m_log)
 	{
-		CPLPopErrorHandler();
 		fclose(m_log);
 		m_log = NULL;
 	}
@@ -50,7 +37,6 @@ vtLog::~vtLog()
 void vtLog::_StartLog(const char *fname)
 {
 	m_log = fopen(fname, "wb");
-	CPLPushErrorHandler(cpl_error_handler);
 }
 
 void vtLog::_Log(const char *msg)
