@@ -273,7 +273,7 @@ void CCreateDlg::SetParams(TParams &Params)
 
 	m_iTexture =		Params.GetTextureEnum();
 	m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
-	m_strTextureSingle = Params.GetValueString(STR_TEXTURESINGLE);
+	m_strTextureSingle = Params.GetValueString(STR_TEXTUREFILE);
 	m_strTextureBase =	Params.GetValueString(STR_TEXTUREBASE);
 	m_strTextureFilename = Params.CookTextureFilename();
 	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
@@ -334,7 +334,7 @@ void CCreateDlg::GetParams(TParams &Params)
 
 	Params.SetTextureEnum((enum TextureEnum)m_iTexture);
 	Params.SetValueInt(STR_TILESIZE, m_iTilesize);
-	Params.SetValueString(STR_TEXTURESINGLE, (const char *) m_strTextureSingle);
+	Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle);
 	Params.SetValueString(STR_TEXTUREBASE, (const char *) m_strTextureBase);
 	Params.SetValueBool(STR_MIPMAP, m_bMipmap);
 	Params.SetValueBool(STR_REQUEST16BIT, m_b16bit);
