@@ -44,7 +44,7 @@
 				OutputFile=".\Release-mfc/mfcEnviro.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				IgnoreDefaultLibraryNames="libc.lib,libcd.lib,libcmt.lib"
+				IgnoreDefaultLibraryNames="libc.lib,libcd.lib,libcmt.lib,msvcrtd.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Release-mfc/mfcEnviro.pdb"
 				SubSystem="2"
@@ -153,10 +153,10 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe">
 			<File
-				RelativePath="mfc\res\Enviro.ico">
+				RelativePath="res\Enviro.ico">
 			</File>
 			<File
-				RelativePath="res\Enviro.ico">
+				RelativePath="mfc\res\Enviro.ico">
 			</File>
 			<File
 				RelativePath="mfc\Enviro.rc">
@@ -185,10 +185,10 @@
 				RelativePath="res\EnviroDoc.ico">
 			</File>
 			<File
-				RelativePath="mfc\res\Toolbar.bmp">
+				RelativePath="res\Toolbar.bmp">
 			</File>
 			<File
-				RelativePath="res\Toolbar.bmp">
+				RelativePath="mfc\res\Toolbar.bmp">
 			</File>
 			<File
 				RelativePath="res\treeimag.bmp">
