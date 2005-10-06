@@ -160,9 +160,6 @@ protected:
 	void BeginArea();
 	void DoArea(wxPoint delta);
 
-	// Line handlers
-	void BeginLine();
-
 	// Mouse handlers
 	void OnLeftDown(wxMouseEvent& event);	
 	void OnLeftUp(wxMouseEvent& event);

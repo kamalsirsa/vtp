@@ -715,9 +715,6 @@ void BuilderView::DrawDistanceTool(wxDC *pDC)
 	pDC->DrawLine(p1.x, p1.y, p2.x, p2.y);
 }
 
-void BuilderView::BeginLine()
-{
-}
 
 ////////////////////////////////////////////////////////////
 // Elevation
@@ -1071,10 +1068,6 @@ void BuilderView::OnLeftDown(wxMouseEvent& event)
 
 		case LB_Box:
 			BeginArea();
-			break;
-
-		case LB_Dist:
-			BeginLine();
 			break;
 	}
 	// Dispatch for layer-specific handling
