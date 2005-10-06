@@ -104,23 +104,6 @@ bool vtImageLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-/**
- * The standard extents of an image are the min and max of its data points,
- * but the area covered by the image is actually half a pixel larger in
- * each direction.
- */
-bool vtImageLayer::GetAreaExtent(DRECT &rect)
-{
-	DPoint2 pixel_size(m_Extents.Width() / (m_iXSize - 1),
-		m_Extents.Height() / (m_iYSize - 1));
-
-	rect.left =   m_Extents.left - (pixel_size.x / 2.0f);
-	rect.top =	  m_Extents.top + (pixel_size.y / 2.0f);
-	rect.right =  m_Extents.right + (pixel_size.x / 2.0f);
-	rect.bottom = m_Extents.bottom - (pixel_size.y / 2.0f);
-	return true;
-}
-
 #ifdef ENVIRON
 void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView, UIContext &ui)
 #else
@@ -131,10 +114,7 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (m_pBitmap == NULL)
 		bDrawImage = false;
 
-	DRECT area;
-	GetAreaExtent(area);
-
-	wxRect screenrect = pView->WorldToCanvas(area);
+	wxRect screenrect = pView->WorldToCanvas(m_Extents);
 	wxRect destRect = screenrect;
 	wxRect srcRect(0, 0, m_iXSize, m_iYSize);
 
@@ -202,7 +182,7 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			destRect.height -= diff;
 			srcRect.height -= diff_source;
 		}
-		
+
 #if WIN32
 		// Using StretchBlit is much faster and has less scaling/roundoff
 		//  problems than using the wx method DrawBitmap
@@ -690,7 +670,7 @@ bool vtImageLayer::LoadFromGDAL()
 			wxString2 msg = _("File lacks geographic location (extents).  ");
 			msg += _("Would you like to specify extents?\n");
 			VTLOG(msg.mb_str());
-			int res = wxMessageBox(msg, _("Image Import"), wxYES | wxCANCEL);
+			int res = wxMessageBox(msg, _("Image Import"), wxYES_NO | wxCANCEL);
 			if (res == wxYES)
 			{
 				VTLOG("Yes.\n");
@@ -706,6 +686,10 @@ bool vtImageLayer::LoadFromGDAL()
 					m_Extents = dlg.m_area;
 				else
 					throw "Import Cancelled.";
+			}
+			if (res == wxNO)
+			{
+				throw "Sorry, we need extents in order to make use of an image.";
 			}
 			if (res == wxCANCEL)
 				throw "Import Cancelled.";
@@ -787,7 +771,7 @@ bool vtImageLayer::LoadFromGDAL()
 					// Initialize and execute the warp operation.
 
 					oOperation.Initialize(psWarpOptions);
-					
+
 					if (CE_None != oOperation.ChunkAndWarpImage( 0, 0, pDstDataset->GetRasterXSize(), pDstDataset->GetRasterYSize()))
 						throw "Warp operation failed";
 
@@ -905,8 +889,6 @@ bool vtImageLayer::LoadFromGDAL()
 			if (result == wxYES)
 				bDefer = true;
 		}
-		// TEMP
-		bDefer = true;
 
 		if (!bDefer)
 		{
@@ -1014,7 +996,7 @@ RGBi *vtImageLayer::GetScanlineFromBuffer(int y)
 
 void vtImageLayer::ReadScanline(int iYRequest, int bufrow)
 {
-	VTLOG("readscanline %d\n", iYRequest);
+//	VTLOG("readscanline %d\n", iYRequest);
 
 	CPLErr Err;
 	GDALColorEntry Ent;
