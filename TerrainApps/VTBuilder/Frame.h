@@ -349,12 +349,13 @@ public:
 	// Distance and Elevation Profile
 	DistanceDlg	*ShowDistanceDlg();
 	DistanceDlg *m_pDistanceDlg;
+	void UpdateDistance(const DPoint2 &p1, const DPoint2 &p2);
 	ProfileDlg	*ShowProfileDlg();
 	ProfileDlg	*m_pProfileDlg;
 
 	// Elevation
 	bool SampleCurrentTerrains(vtElevLayer *pTarget);
-	float GetHeightFromTerrain(DPoint2 &p);
+	float GetHeightFromTerrain(const DPoint2 &p);
 	void ExportBitmap(RenderDlg &dlg);
 	int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
 	float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p);

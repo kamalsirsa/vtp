@@ -911,6 +911,27 @@ DistanceDlg	*MainFrame::ShowDistanceDlg()
 	return m_pDistanceDlg;
 }
 
+void MainFrame::UpdateDistance(const DPoint2 &p1, const DPoint2 &p2)
+{
+	DistanceDlg *pDlg = ShowDistanceDlg();
+	if (pDlg)
+	{
+		pDlg->SetPoints(p1, p2, true);
+		float h1 = GetHeightFromTerrain(p1);
+		float h2 = GetHeightFromTerrain(p2);
+		float diff = FLT_MIN;
+		if (h1 != INVALID_ELEVATION && h2 != INVALID_ELEVATION)
+			diff = h2 - h1;
+		if (pDlg)
+			pDlg->SetGroundAndVertical(FLT_MIN, diff, false);
+	}
+
+	ProfileDlg *pDlg2 = m_pProfileDlg;
+	if (pDlg2)
+		pDlg2->SetPoints(p1, p2);
+}
+
+
 class LinearStructureDlg2d: public LinearStructureDlg
 {
 public:
@@ -1194,7 +1215,7 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 }
 
 
-float MainFrame::GetHeightFromTerrain(DPoint2 &p)
+float MainFrame::GetHeightFromTerrain(const DPoint2 &p)
 {
 	float height = INVALID_ELEVATION;
 
