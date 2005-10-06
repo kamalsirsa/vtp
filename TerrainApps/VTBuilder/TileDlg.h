@@ -28,7 +28,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for TileDlg
 	wxChoice* GetChoiceLod0Size()  { return (wxChoice*) FindWindow( ID_CHOICE_LOD0_SIZE ); }
 
