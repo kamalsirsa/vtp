@@ -37,6 +37,7 @@ class SimpleBillboardEngine;
 /** \addtogroup terrain */
 /*@{*/
 
+/** The set of all structure arrays which are on a terrain. */
 class StructureSet : public Array<vtStructureArray3d *>
 {
 public:

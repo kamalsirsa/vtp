@@ -35,6 +35,8 @@ extern "C" {
 #  define PACKED
 #endif
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 typedef struct tagBITMAPFILEHEADER {
 	word	bfType;
 	dword   bfSize;
@@ -67,6 +69,8 @@ typedef struct tagRGBQUAD {
 	byte	rgbRed;
 	byte	rgbReserved;
 } PACKED RGBQUAD;
+
+#endif	// DOXYGEN_SHOULD_SKIP_THIS
 
 /* constants for the biCompression field */
 #define BI_RGB			0L
@@ -514,6 +518,10 @@ bool vtDIB::ReadJPEG(const char *fname)
  *
  * \param fname		The output filename.
  * \param quality	JPEG quality in the range of 0..100.
+ * \param progress_callback	If supplied, this will be called back with progress
+ *		indication in the range of 1 to 100.
+ *
+ * \return True if successful.
  */
 bool vtDIB::WriteJPEG(const char *fname, int quality, bool progress_callback(int))
 {
@@ -595,6 +603,8 @@ bool vtDIB::WriteJPEG(const char *fname, int quality, bool progress_callback(int
 
 /**
  * Read a PNG file. A DIB of the necessary size and depth is allocated.
+ *
+ * \return True if successful.
  */
 bool vtDIB::ReadPNG(const char *fname)
 {
@@ -743,6 +753,8 @@ bool vtDIB::ReadPNG(const char *fname)
 
 /**
  * Write a PNG file.
+ *
+ * \return True if successful.
  */
 bool vtDIB::WritePNG(const char *fname)
 {
@@ -938,6 +950,16 @@ bool vtDIB::WritePNG(const char *fname)
 /**
  * Write a TIFF file.  If extents and projection are support, a GeoTIFF file
  * will be written.
+ *
+ * \param fname		The output filename.
+ * \param area		The extents if the image.  Can be NULL if the image is
+ *		not georeferenced.
+ * \param proj		The CRS if the image.  Can be NULL if the image is
+ *		not georeferenced.
+ * \param progress_callback	If supplied, this will be called back with progress
+ *		indication in the range of 1 to 100.
+ *
+ * \return True if successful.
  */
 bool vtDIB::WriteTIF(const char *fname, const DRECT *area,
 					 const vtProjection *proj, bool progress_callback(int))
@@ -1045,6 +1067,8 @@ void vtDIB::LeaveInternalDIB(bool bLeaveIt)
 
 /**
  * Get a 24-bit RGB value from a 24-bit bitmap.
+ *
+ * \return R,G,B as the three lowest bytes in an unsigned int.
  */
 unsigned int vtDIB::GetPixel24(int x, int y) const
 {
@@ -1058,6 +1082,9 @@ unsigned int vtDIB::GetPixel24(int x, int y) const
 		   (*(byte *)(adr+2));
 }
 
+/**
+ * Get a 24-bit RGB value from a 24-bit bitmap, place it in the rgb parameter.
+ */
 void vtDIB::GetPixel24(int x, int y, RGBi &rgb) const
 {
 	if (m_iBitCount == 8)
@@ -1198,6 +1225,9 @@ void vtDIB::SetPixel1(int x, int y, bool value)
 		(*adr) &= ~(1 << bit_offset);
 }
 
+/**
+ * Sets the entire bitmap to a single color.
+ */
 void vtDIB::SetColor(const RGBi &rgb)
 {
 	unsigned int i, j;
@@ -1208,6 +1238,9 @@ void vtDIB::SetColor(const RGBi &rgb)
 		}
 }
 
+/**
+ * Invert the bitmap colors.
+ */
 void vtDIB::Invert()
 {
 	unsigned int i, j;
@@ -1234,8 +1267,9 @@ void vtDIB::Invert()
 	}
 }
 
-/*
- * A slow, completely unoptimized copy from this bitmap to another.
+/**
+ * Copy from this bitmap to another.  Currently, this is implemented with
+ * a slow, completely unoptimized approach of one pixel at a time.
  */
 void vtDIB::Blit(vtDIB &target, int x, int y)
 {

@@ -1088,7 +1088,9 @@ public:
 // PQ class (Position + Quaternion)
 
 /**
- * Single-precision class that combines a position and orientation.
+ * Single-precision class that combines a position and orientation.  This
+ *  is a way to represent the location of a 3D object, as an alternative to
+ *  using a matrix (FMatrix4).
  */
 class FPQ
 {

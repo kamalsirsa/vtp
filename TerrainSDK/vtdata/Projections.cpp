@@ -646,16 +646,16 @@ void vtProjection::LogDescription() const
 	LinearUnits lu = GetUnits();
 
 	VTLOG("Units: %s\n", GetLinearUnitName(lu));
-	VTLOG("WTK: ");
+	VTLOG1("WTK: ");
 
 	char *wkt;
 	OGRErr err = exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
-		VTLOG("Error\n");
+		VTLOG1("Error\n");
 	else
 	{
-		g_Log._Log(wkt);
-		g_Log._Log("\n");
+		VTLOG1(wkt);
+		VTLOG1("\n");
 		OGRFree(wkt);
 	}
 }
@@ -1147,13 +1147,13 @@ static void MassageDatumFromWKT(vtString &strDatum )
 void CPL_STDCALL cpl_error_handler(CPLErr eErrClass, int err_no, const char *msg)
 {
 	if (eErrClass == CE_Debug)
-		g_Log._Log("CPL Debug: ");
+		VTLOG1("CPL Debug: ");
 	else if (eErrClass == CE_Warning)
-		g_Log.Printf("CPL Warning %d: ", err_no);
+		VTLOG("CPL Warning %d: ", err_no);
 	else
-		g_Log.Printf("CPL Error %d: ", err_no);
-	g_Log._Log(msg);
-	g_Log._Log("\n");
+		VTLOG("CPL Error %d: ", err_no);
+	VTLOG1(msg);
+	VTLOG1("\n");
 }
 
 // A singleton for this class

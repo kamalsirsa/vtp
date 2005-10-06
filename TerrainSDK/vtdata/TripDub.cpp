@@ -47,11 +47,14 @@
 #define DEFAULT_TIMEOUT	90		// timeout in secs
 #define MILLIES			1000
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct MyCookie
 {
 	vtString name;
 	vtString value;
 };
+#endif
+
 std::vector<MyCookie> g_cookies;
 static int s_last_status = 0;
 static HTAnchor *new_anchor = NULL;
@@ -79,7 +82,7 @@ PRIVATE int printer (const char * fmt, va_list pArgs)
 {
 	char buf[20000];
 	int ret = vsprintf(buf, fmt, pArgs);
-	g_Log._Log(buf);
+	VTLOG1(buf);
 	return ret;
 }
 
@@ -87,7 +90,7 @@ PRIVATE int tracer (const char * fmt, va_list pArgs)
 {
 	char buf[20000];
 	int ret = vsprintf(buf, fmt, pArgs);
-	g_Log._Log(buf);
+	VTLOG1(buf);
 	return ret;
 }
 

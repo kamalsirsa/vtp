@@ -404,6 +404,12 @@ void request_callback(unsigned char *mapfile,unsigned char *texfile,
    {
    int bytes;
 
+#if 1
+   vtString str1 = StartOfFilename((char *)mapfile);
+   vtString str2 = StartOfFilename((char *)texfile);
+   VTLOG("request_callback(%s, %s)\n", (const char *)str1, (const char *)str2);
+#endif
+
    if ((*hfield=readfile((char *)mapfile,&bytes))!=NULL) kbytes1+=bytes/1024.0f;
    if ((*texture=readfile((char *)texfile,&bytes))!=NULL) kbytes1+=bytes/1024.0f;
 
@@ -468,6 +474,7 @@ vtTiledGeom::~vtTiledGeom()
 }
 
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 ///////////////////////////////////////////////////////////////////////
 // class TiledDatasetDescription implementation
 
@@ -530,6 +537,8 @@ bool TiledDatasetDescription::GetCorners(DLine2 &line, bool bGeo) const
 	}
 	return true;
 }
+
+#endif	// DOXYGEN_SHOULD_SKIP_THIS
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -632,6 +641,8 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 			delete [] textures[i+cols*j];
 		}
 	}
+	delete [] hfields;
+	delete [] textures;
 
 	return true;
 }
@@ -719,7 +730,8 @@ void vtTiledGeom::SetupMiniLoad()
 	//		are removed from the tile cache
 	//	- should be much larger than the frame rate
 	//	- a value of zero disables expiration
-	int pexpire = 100000;
+//	int pexpire = 100000;
+	int pexpire = 0;
 
 	m_pMiniLoad->setloader(request_callback,
 		NULL,	// data

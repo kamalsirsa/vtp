@@ -8,6 +8,8 @@
 
 #include "vtdata/MathTypes.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS	// the whole file
+
 inline int	iclamp(int i, int Min, int Max) {
 	assert( Min <= Max );
 	return std::max(Min, std::min(i, Max));
@@ -387,4 +389,6 @@ private:
 	int	m_height;
 	bool	m_writeable;
 };
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS - the whole file
 

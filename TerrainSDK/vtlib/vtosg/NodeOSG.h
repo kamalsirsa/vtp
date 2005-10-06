@@ -108,6 +108,10 @@ protected:
 	virtual ~vtNode() {}
 };
 
+/**
+ * This class represents a node which is native to the underlying scene graph
+ * libraries, e.g. OSG.
+ */
 class vtNativeNode : public vtNode
 {
 public:
@@ -537,6 +541,12 @@ protected:
 };
 
 /* Intersection method */
+/**
+ * This class describes a single point at which vtIntersect has determined
+ * a line has intersected some geometry.  At this point, vtHit tells
+ * you the node that was hit, the 3D point of intersection, and the
+ * distance from the start of the line.
+ */
 struct vtHit {
 	bool operator < (const vtHit &i) const { return distance < i.distance; }
 	vtNode *node;

@@ -111,7 +111,7 @@ protected:
 	~vtDynTerrainGeom();
 };
 
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class TiledDatasetDescription
 {
 public:
@@ -123,7 +123,7 @@ public:
 	DRECT earthextents;
 	vtProjection proj;
 };
-
+#endif
 
 #include "mini.h"
 #include "miniload.hpp"
@@ -131,6 +131,12 @@ public:
 
 typedef unsigned char *ucharptr;
 
+/**
+ * This class represents a textured terrain heightfield, which is drawn using
+ * the terrain paging capabilities of the libMini.  It is rendered directly
+ * using OpenGL, instead of going through whichever scene graph vtlib is
+ * built on.
+ */
 class vtTiledGeom : public vtDynGeom, public vtHeightField3d
 {
 public:
@@ -138,7 +144,6 @@ public:
 	~vtTiledGeom();
 
 	bool ReadTileList(const char *dataset_fname_elev, const char *dataset_fname_image);
-	void SetupMiniLoad();
 
 	// overrides for vtDynGeom
 	void DoRender();
@@ -178,6 +183,9 @@ public:
 
 	// CRS of this tileset
 	vtProjection m_proj;
+
+protected:
+	void SetupMiniLoad();
 };
 
 /*@}*/	// Group dynterr

@@ -24,6 +24,9 @@ struct chunkstats {
 	}
 };
 
+/**
+ * Functionality for dealing with ChunkLOD files.
+ */
 class HeightfieldChunker
 {
 public:

@@ -36,6 +36,7 @@ static int	lowest_one(int x)
 	return i;
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 struct heightfield {
 	int	m_size;
@@ -215,7 +216,7 @@ struct heightfield {
 		return true;
 	}
 };
-
+#endif	// DOXYGEN_SHOULD_SKIP_THIS
 
 void	update(heightfield& hf, float base_max_error, int ax, int az, int rx, int rz, int lx, int lz);
 void	propagate_activation_level(heightfield& hf, int cx, int cz, int level, int target_level);

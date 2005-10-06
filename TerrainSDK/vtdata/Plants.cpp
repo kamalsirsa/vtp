@@ -583,13 +583,14 @@ unsigned int vtPlantInstanceArray::InstancesOfSpecies(short species_id)
 	}
 }*/
 
-struct PlantInstance10 {
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+struct vtPlantInstance10 {
 	float x, y;
 	float size;
 	short species_id;
 };
 
-struct PlantInstance11 {
+struct vtPlantInstance11 {
 	DPoint2 m_p;
 	float size;
 	short species_id;
@@ -600,6 +601,7 @@ struct vtPlantInstance20 {
 	float size;
 	short species_id;
 };
+#endif
 
 bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 {
@@ -631,8 +633,8 @@ bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 
 	if (version == 1.0f)
 	{
-		PlantInstance10 *pOld = new PlantInstance10[size];
-		fread(pOld, sizeof(PlantInstance10), size, fp);
+		vtPlantInstance10 *pOld = new vtPlantInstance10[size];
+		fread(pOld, sizeof(vtPlantInstance10), size, fp);
 		vtPlantInstance20 pi;
 		for (i = 0; i < size; i++)
 			AddPlant(DPoint2(pOld[i].x, pOld[i].y), pOld[i].size, pOld[i].species_id);
@@ -641,8 +643,8 @@ bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 	}
 	else if (version == 1.1f)
 	{
-		PlantInstance11 *pTemp = new PlantInstance11[size];
-		fread(pTemp, sizeof(PlantInstance11), size, fp);
+		vtPlantInstance11 *pTemp = new vtPlantInstance11[size];
+		fread(pTemp, sizeof(vtPlantInstance11), size, fp);
 
 		for (i = 0; i < size; i++)
 			AddPlant(pTemp[i].m_p, pTemp[i].size, pTemp[i].species_id);

@@ -176,7 +176,13 @@ typedef TNode *TNodePtr;
 #define doubleSize 8
 
 /**
- * vtRoadMap contains a sets of Nodes and Roads.
+ * vtRoadMap contains a sets of nodes (TNode) and links (TLink) which define
+ * a transportation network.
+ *
+ * It can be loaded and saved from RMF files, an ad-hoc Road Map Format which
+ * is overdue to be replaced by some clean, extensible standard for
+ * transportation networks.  Unforunately, such a standard does not yet
+ * exist.
  */
 class vtRoadMap
 {
@@ -233,4 +239,5 @@ protected:
 	vtProjection	m_proj;
 };
 
-#endif
+#endif	// ROADMAPH
+

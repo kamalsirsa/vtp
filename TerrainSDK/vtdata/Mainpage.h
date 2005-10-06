@@ -9,7 +9,14 @@ and distributed under a completely free <a href="../license.txt">open source lic
 \section hier Classes
 <table border="1" cellpadding="7" cellspacing="0" bgcolor="#DBDBDB">
   <tr>
-    <td valign="top">Built Structures
+    <td valign="top">
+      <p>Coordinate Systems</p>
+      <ul>
+        <li>vtProjection</li>
+        <li>vtLocalConversion</li>
+        <li>DymaxIcosa</li>
+      </ul>
+	  <p>Built Structures</p>
       <ul>
         <li>vtStructure</li>
         <li>vtStructInstance</li>
@@ -31,8 +38,8 @@ and distributed under a completely free <a href="../license.txt">open source lic
       </ul>
       <p>Roads / Transportation</p>
       <ul>
-        <li>Node</li>
-        <li>Link</li>
+        <li>TNode</li>
+        <li>TLink</li>
         <li>vtRoadMap</li>
       </ul>
       <p>Vector/Polygonal Data Formats</p>
@@ -57,6 +64,8 @@ and distributed under a completely free <a href="../license.txt">open source lic
         <li>RGBf</li>
         <li>RGBAf</li>
         <li>CubicSpline</li>
+        <li>FQuat</li>
+        <li>FPQ</li>
       </ul>
       <p>Math: Array Types</p>
       <ul>
@@ -70,11 +79,14 @@ and distributed under a completely free <a href="../license.txt">open source lic
         <li>vtString</li>
         <li>vtTime</li>
         <li>Triangulate_f / Triangulate_d</li>
-        <li>DymaxIcosa</li>
-		<li>Countries</li>
 		<li>dir_iter</li>
 		<li>LocaleWrap</li>
 		<li>ColorMap</li>
+ 		<li>HeightfieldChunker</li>
+      </ul>
+      <p>Logging</p>
+      <ul>
+        <li>vtLog</li>
       </ul>
     </td>
     <td valign="top">
@@ -98,18 +110,18 @@ and distributed under a completely free <a href="../license.txt">open source lic
         <li>vtBitmapBase</li>
         <li>vtDIB</li>
       </ul>
-      Projections
-      <ul>
-        <li>vtProjection</li>
-        <li>vtLocalConversion</li>
-      </ul>
-      <p>Raw Features</p>
+      <p>Abstract Features</p>
       <ul>
         <li>vtFeatureSet</li>
         <li>vtFeatureSetPoint2D</li>
         <li>vtFeatureSetPoint3D</li>
         <li>vtFeatureSetLineString</li>
         <li>vtFeatureSetPolygon</li>
+      </ul>
+      <p>Geocoding</p>
+      <ul>
+        <li>Gazetteer</li>
+        <li>Countries</li>
       </ul>
     </td>
   </tr>

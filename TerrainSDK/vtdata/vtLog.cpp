@@ -34,12 +34,12 @@ vtLog::~vtLog()
 	}
 }
 
-void vtLog::_StartLog(const char *fname)
+void vtLog::StartLog(const char *fname)
 {
 	m_log = fopen(fname, "wb");
 }
 
-void vtLog::_Log(const char *msg)
+void vtLog::Log(const char *msg)
 {
 	if (m_log)
 	{
@@ -53,7 +53,7 @@ void vtLog::_Log(const char *msg)
 	fputs(msg, stdout);
 }
 
-void vtLog::_Log(char ch)
+void vtLog::Log(char ch)
 {
 	if (m_log)
 	{
@@ -78,13 +78,13 @@ void vtLog::Printf(const char *pFormat, ...)
 	char ach[2048];
 	vsprintf(ach, pFormat, va);
 
-	_Log(ach);
+	Log(ach);
 }
 
 
 #if SUPPORT_WSTRING
 
-void vtLog::_Log(const wchar_t *msg)
+void vtLog::Log(const wchar_t *msg)
 {
 	if (m_log)
 	{
@@ -116,7 +116,7 @@ void vtLog::Printf(const wchar_t *pFormat, ...)
 	vswprintf(ach, 2048, pFormat, va);
 #endif
 
-	_Log(ach);
+	Log(ach);
 }
 
 #endif // SUPPORT_WSTRING
