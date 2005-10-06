@@ -282,6 +282,20 @@ void MainFrame::CheckForGDALAndWarn()
 			" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4\n"
 			" data files.  Without these files, many operations won't work.");
 	}
+
+	// confirm ability to transform cooridates
+	// (Test that the PROJ .so/.dll is found and functional)
+	vtProjection proj1, proj2;
+	proj1.SetUTM(1);
+	proj2.SetUTM(2);
+	OCT *trans = CreateCoordTransform(&proj1, &proj2);
+	if (trans)
+		delete trans;
+	else
+	{
+		DisplayAndLog("Unable to transform coordinates.  This may be because the shared\n"
+			"library for PROJ.4 is not found.  Without this, many operations won't work.");
+	}
 }
 
 void MainFrame::OnClose(wxCloseEvent &event)
