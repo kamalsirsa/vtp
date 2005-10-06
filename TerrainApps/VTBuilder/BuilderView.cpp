@@ -753,13 +753,13 @@ void BuilderView::HighlightTerrain(wxDC* pDC, vtElevLayer *t)
 	pDC->SetLogicalFunction(wxINVERT);
 
 	DRECT rect;
-	t->GetExtent(rect);
+	t->GetAreaExtent(rect);
 	wxRect sr = WorldToCanvas(rect);
 	int sx = sr.width / 3;
 	int sy = sr.height / 3;
 	int left = sr.x, right = sr.x+sr.width,
 	top = sr.y, bottom = sr.y+sr.height;
-	int d=3,e=6;
+	int d=2,e=4;
 
 	//
 	pDC->DrawLine(left - e, top - d,

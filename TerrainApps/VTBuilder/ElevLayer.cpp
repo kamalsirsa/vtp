@@ -260,6 +260,22 @@ void vtElevLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	}
 }
 
+bool vtElevLayer::GetAreaExtent(DRECT &rect)
+{
+	if (m_pGrid)
+	{
+		rect = m_pGrid->GetAreaExtents();
+		return true;
+	}
+	else if (m_pTin)
+	{
+		// for a TIN, area extents are the same as normal extents
+		rect = m_pTin->GetEarthExtents();
+		return true;
+	}
+	return false;
+}
+
 void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 {
 	if (!m_pGrid)
@@ -882,7 +898,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 			!strExt.Left(3).CmpNoCase(_T("png")) ||
 			!strExt.Left(3).CmpNoCase(_T("img")) ||
 			!strExt.CmpNoCase(_T("adf")))
-	{	
+	{
 		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("raw")))
