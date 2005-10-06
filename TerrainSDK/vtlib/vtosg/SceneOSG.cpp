@@ -38,7 +38,7 @@ public:
 	inline virtual int_type overflow(int_type c = std::streambuf::traits_type::eof())
 	{
 		if (c == std::streambuf::traits_type::eof()) return std::streambuf::traits_type::not_eof(c);
-		g_Log._Log((char) c);
+		VTLOG1((char) c);
 		return c;
 	}
 } g_Trap;
