@@ -104,7 +104,7 @@ public:
 	// heightfield operations
 	vtHeightField *GetHeightField();
 	void Offset(const DPoint2 &p);
-	float GetElevation(DPoint2 &p);
+	float GetElevation(const DPoint2 &p);
 	bool ImportFromFile(const wxString2 &strFileName, bool progress_callback(int) = NULL);
 
 	// grid operations

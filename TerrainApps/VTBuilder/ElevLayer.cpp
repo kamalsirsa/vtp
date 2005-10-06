@@ -749,7 +749,7 @@ vtHeightField *vtElevLayer::GetHeightField()
 	return NULL;
 }
 
-float vtElevLayer::GetElevation(DPoint2 &p)
+float vtElevLayer::GetElevation(const DPoint2 &p)
 {
 	if (m_pGrid)
 		return m_pGrid->GetFilteredValue(p);
