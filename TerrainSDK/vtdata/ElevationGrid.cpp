@@ -792,6 +792,13 @@ float vtElevationGrid::GetFilteredValue2(const DPoint2 &p) const
 	return fData;
 }
 
+/**
+ * The standard extents of an elevation grid are the min and max of its data
+ * points.  However, because each point in the grid is a spot elevation that
+ * implies the elevation of the ground around itself, the area over which the
+ * elevation could be understood to describe is actually half a heixel larger
+ * in each direction.  This method returns that larger area.
+ */
 DRECT vtElevationGrid::GetAreaExtents() const
 {
 	return DRECT(m_EarthExtents.left - (m_dXStep / 2.0f),
