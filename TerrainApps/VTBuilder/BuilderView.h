@@ -189,12 +189,14 @@ protected:
 	void InvertRect(wxDC *pDC, const wxRect &r, bool bDashed = false);
 	void InvertRect(wxDC *pDC, const wxPoint &one, const wxPoint &two, bool bDashed = false);
 	void DrawAreaTool(wxDC *pDC, const DRECT &area);
+	void DrawDistanceTool(wxDC *pDC);
 
+	bool m_bGotFirstIdle;
 	bool m_bSkipNextDraw;
 	bool m_bSkipNextRefresh;
 	wxSize m_previous_size;
 	DRECT m_world_rect;		// rectangle box drawn by mouse
-	bool m_bGotFirstIdle;
+	DPoint2 m_distance_p1, m_distance_p2;
 
 	// Mouse in window coords
 	wxPoint m_DownClient;

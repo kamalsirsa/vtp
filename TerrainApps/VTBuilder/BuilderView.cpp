@@ -89,6 +89,9 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	m_ui.m_pCurBuilding = NULL;
 	m_ui.m_pCurLinear = NULL;
 
+	m_distance_p1.Set(0,0);
+	m_distance_p2.Set(0,0);
+
 	// Cursors are a little messy, since support is not even across platforms
 #if __WXMSW__
 	m_pCursorPan = new wxCursor(_T("cursors/panhand.cur"), wxBITMAP_TYPE_CUR);
@@ -176,6 +179,7 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 		DrawUTMBounds(&dc);
 
 	DrawAreaTool(&dc, pFrame->m_area);
+	DrawDistanceTool(&dc);
 }
 
 void BuilderView::DrawDymaxionOutline(wxDC *pDC)
@@ -677,20 +681,38 @@ void BuilderView::DoBox(wxPoint point)
 
 void BuilderView::DrawAreaTool(wxDC *pDC, const DRECT &area)
 {
-	if (!area.IsEmpty())
-	{
-		int d = 3;
-		wxRect r = WorldToCanvas(area);
+	if (area.IsEmpty())
+		return;
 
-		// dashed-line rectangle
-		InvertRect(pDC, r, true);
+	int d = 3;
+	wxRect r = WorldToCanvas(area);
 
-		// four small rectangles, for the handles at each corner
-		InvertRect(pDC, wxPoint(r.x-d, r.y-d), wxPoint(r.x+d, r.y+d));
-		InvertRect(pDC, wxPoint(r.x+r.width-d, r.y-d), wxPoint(r.x+r.width+d, r.y+d));
-		InvertRect(pDC, wxPoint(r.x-d, r.y+r.height-d), wxPoint(r.x+d, r.y+r.height+d));
-		InvertRect(pDC, wxPoint(r.x+r.width-d, r.y+r.height-d), wxPoint(r.x+r.width+d, r.y+r.height+d));
-	}
+	// dashed-line rectangle
+	InvertRect(pDC, r, true);
+
+	// four small rectangles, for the handles at each corner
+	InvertRect(pDC, wxPoint(r.x-d, r.y-d), wxPoint(r.x+d, r.y+d));
+	InvertRect(pDC, wxPoint(r.x+r.width-d, r.y-d), wxPoint(r.x+r.width+d, r.y+d));
+	InvertRect(pDC, wxPoint(r.x-d, r.y+r.height-d), wxPoint(r.x+d, r.y+r.height+d));
+	InvertRect(pDC, wxPoint(r.x+r.width-d, r.y+r.height-d), wxPoint(r.x+r.width+d, r.y+r.height+d));
+}
+
+void BuilderView::DrawDistanceTool(wxDC *pDC)
+{
+	wxPoint p1, p2;
+	screen(m_distance_p1, p1);
+	screen(m_distance_p2, p2);
+
+	pDC->SetPen(wxPen(*wxBLACK_PEN));
+	pDC->SetLogicalFunction(wxINVERT);
+
+	// draw small crosshairs
+	pDC->DrawLine(p1.x-4, p1.y, p1.x+4+1, p1.y);
+	pDC->DrawLine(p1.x, p1.y-4, p1.x, p1.y+4+1);
+	pDC->DrawLine(p2.x-4, p2.y, p2.x+4+1, p2.y);
+	pDC->DrawLine(p2.x, p2.y-4, p2.x, p2.y+4+1);
+	// and the line itself
+	pDC->DrawLine(p1.x, p1.y, p2.x, p2.y);
 }
 
 void BuilderView::BeginLine()
@@ -797,26 +819,26 @@ void BuilderView::SetCorrectCursor()
 {
 	switch (m_ui.mode)
 	{
-		case LB_None:	// none
-		case LB_Link:	// select/edit roads
-		case LB_Node:	// select/edit nodes
-		case LB_Move:	// move selected nodes
-				SetCursor(wxCURSOR_ARROW); break;
-		case LB_Pan:	// pan the view
-				SetCursor(*m_pCursorPan); break;
-		case LB_Dist:	// measure distance
-				SetCursor(wxCURSOR_CROSS); break;
-		case LB_Mag:	// zoom into rectangle
-				SetCursor(wxCURSOR_MAGNIFIER); break;
-		case LB_TowerAdd:
-			SetCursor(wxCURSOR_CROSS);break; // add a tower to the location
-		case LB_Dir:		// show/change road direction
-		case LB_LinkEdit:	// edit road points
-		case LB_LinkExtend: //extend a road selection
-		case LB_TSelect:
-		case LB_Box:
-		default:
-			SetCursor(wxCURSOR_ARROW); break;
+	case LB_None:	// none
+	case LB_Link:	// select/edit roads
+	case LB_Node:	// select/edit nodes
+	case LB_Move:	// move selected nodes
+		SetCursor(wxCURSOR_ARROW); break;
+	case LB_Pan:	// pan the view
+		SetCursor(*m_pCursorPan); break;
+	case LB_Dist:	// measure distance
+		SetCursor(wxCURSOR_CROSS); break;
+	case LB_Mag:	// zoom into rectangle
+		SetCursor(wxCURSOR_MAGNIFIER); break;
+	case LB_TowerAdd:
+		SetCursor(wxCURSOR_CROSS);break; // add a tower to the location
+	case LB_Dir:		// show/change road direction
+	case LB_LinkEdit:	// edit road points
+	case LB_LinkExtend: //extend a road selection
+	case LB_TSelect:
+	case LB_Box:
+	default:
+		SetCursor(wxCURSOR_ARROW); break;
 	}
 }
 
@@ -1135,23 +1157,10 @@ void BuilderView::OnLButtonDragRelease(wxMouseEvent& event)
 
 void BuilderView::OnDragDistance()
 {
-	DPoint2 p1, p2;
-	object(m_ui.m_DownPoint, p1);
-	object(m_ui.m_LastPoint, p2);
+	object(m_ui.m_DownPoint, m_distance_p1);
+	object(m_ui.m_LastPoint, m_distance_p2);
 
-	DistanceDlg *pDlg = GetMainFrame()->ShowDistanceDlg();
-	if (pDlg)
-		pDlg->SetPoints(p1, p2, true);
-	ProfileDlg *pDlg2 = GetMainFrame()->m_pProfileDlg;
-	if (pDlg2)
-		pDlg2->SetPoints(p1, p2);
-
-	float h1 = GetMainFrame()->GetHeightFromTerrain(p1);
-	float h2 = GetMainFrame()->GetHeightFromTerrain(p2);
-	float diff = FLT_MIN;
-	if (h1 != INVALID_ELEVATION && h2 != INVALID_ELEVATION)
-		diff = h2 - h1;
-	pDlg->SetGroundAndVertical(FLT_MIN, diff, false);
+	GetMainFrame()->UpdateDistance(m_distance_p1, m_distance_p2);
 }
 
 void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
@@ -1341,14 +1350,10 @@ void BuilderView::OnMouseMove(wxMouseEvent& event)
 		{
 			wxClientDC dc(this);
 			PrepareDC(dc);
-			wxPen pen(*wxBLACK_PEN);
-			dc.SetPen(pen);
-			dc.SetLogicalFunction(wxINVERT);
 
-			dc.DrawLine(m_ui.m_DownPoint, m_ui.m_LastPoint);
-			dc.DrawLine(m_ui.m_DownPoint, m_ui.m_CurPoint);
-
-			OnDragDistance();
+			DrawDistanceTool(&dc);	// erase
+			OnDragDistance();		// update
+			DrawDistanceTool(&dc);	// redraw
 		}
 		else if (m_ui.mode == LB_BldEdit && m_ui.m_bRubber)
 		{
