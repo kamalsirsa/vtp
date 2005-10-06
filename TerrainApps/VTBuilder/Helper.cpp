@@ -80,7 +80,7 @@ void DisplayAndLog(const char *pFormat, ...)
 	wxMessageBox(msg);
 
 	strcat(ach, "\n");
-	g_Log._Log(ach);
+	VTLOG1(ach);
 }
 
 #if SUPPORT_WSTRING
@@ -110,8 +110,8 @@ void DisplayAndLog(const wchar_t *pFormat, ...)
 	wxString2 msg = ach;
 	wxMessageBox(msg);
 
-	g_Log._Log(ach);
-	g_Log._Log("\n");
+	VTLOG1(ach);
+	VTLOG1("\n");
 }
 #endif // SUPPORT_WSTRING
 

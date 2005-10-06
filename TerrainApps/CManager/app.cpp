@@ -52,7 +52,7 @@ bool vtApp::OnInit(void)
 
 	Args(argc, argv);
 
-	g_Log._StartLog("debug.txt");
+	VTSTARTLOG("debug.txt");
 	VTLOG("CManager\n");
 
 	VTLOG("Setup scene\n");

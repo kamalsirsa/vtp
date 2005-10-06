@@ -1308,8 +1308,8 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	wxString2 msg = _("Saving layer to file as ") + lp->GetLayerFilename();
 	SetStatusText(msg);
 
-	g_Log._Log(msg.mb_str());
-	g_Log._Log("\n");
+	VTLOG1(msg.mb_str());
+	VTLOG1("\n");
 
 	bool success = lp->Save();
 	if (success)
@@ -1324,8 +1324,8 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	}
 	SetStatusText(msg);
 
-	g_Log._Log(msg.mb_str());
-	g_Log._Log("\n");
+	VTLOG1(msg.mb_str());
+	VTLOG1("\n");
 }
 
 void MainFrame::OnUpdateLayerSaveAs(wxUpdateUIEvent& event)
@@ -3296,7 +3296,7 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 		SetStatusText(msg);
 
 		msg += _T("\n");
-		g_Log._Log(msg.mb_str());
+		VTLOG1(msg.mb_str());
 
 		m_pView->Refresh(false);
 		OnSelectionChanged();

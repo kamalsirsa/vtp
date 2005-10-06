@@ -214,7 +214,7 @@ bool VTPWindow::CreateScene()
 	pScene->Init();
 
 	// Log messages to make troubleshooting easier
-	g_Log._StartLog("debug.txt");
+	VTSTARTLOG("debug.txt");
 	VTLOG("glutSimple\n");
 
 	// Look up the camera

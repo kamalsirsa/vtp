@@ -91,7 +91,7 @@ Enviro::~Enviro()
 
 void Enviro::Startup()
 {
-	g_Log._StartLog("debug.txt");
+	VTSTARTLOG("debug.txt");
 	VTLOG1("\nEnviro\nBuild:");
 #if _DEBUG || DEBUG
 	VTLOG1(" Debug");

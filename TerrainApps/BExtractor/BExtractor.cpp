@@ -54,7 +54,7 @@ CBExtractorApp theApp;
 
 BOOL CBExtractorApp::InitInstance()
 {
-	g_Log._StartLog("debug.txt");
+	VTSTARTLOG("debug.txt");
 	VTLOG("BExtractor\nBuild:");
 #if _DEBUG
 	VTLOG(" Debug");
