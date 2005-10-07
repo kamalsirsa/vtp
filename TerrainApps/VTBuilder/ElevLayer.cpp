@@ -13,7 +13,7 @@
 
 #include "Frame.h"
 #include "ElevLayer.h"
-#include "ScaledView.h"
+#include "BuilderView.h"	// For grid marks
 #include "Helper.h"
 #include "RawDlg.h"
 #include "vtBitmap.h"
@@ -1169,7 +1169,7 @@ FPoint3 LightDirection(float angle, float direction)
 
 #include "vtdata/ByteOrder.h"
 
-bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
+bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView)
 {
 	// grid size
 	int base_tilesize = opts.lod0size;
@@ -1257,6 +1257,10 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 				msg.Printf(_("Writing tile '%hs', size %dx%d"),
 					(const char *)fname, tilesize, tilesize);
 				UpdateProgressDialog(done*99/total, msg);
+
+				// also draw our progress in the main view
+				if (pView)
+					pView->ShowGridMarks(area, opts.cols, opts.rows, col, row);
 
 				FILE *fp = fopen(fname, "wb");
 				if (!fp)

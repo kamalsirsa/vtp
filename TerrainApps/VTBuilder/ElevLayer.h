@@ -1,7 +1,7 @@
 //
 // ElevLayer.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,6 +18,7 @@ class vtHeightField;
 class vtElevationGrid;
 class vtDIB;
 class vtBitmap;
+class BuilderView;
 
 class vtTin2d : public vtTin
 {
@@ -111,7 +112,7 @@ public:
 	void Resample(int iNewWidth, int iNewHeight);
 	bool FillGaps();
 	void DetermineMeterSpacing();
-	bool WriteGridOfPGMPyramids(const TilingOptions &opts);
+	bool WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView);
 
 	// TIN operations
 	void SetTin(vtTin2d *pTin);

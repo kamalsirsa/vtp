@@ -80,6 +80,7 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	m_bBoxing = false;
 	m_iDragSide = 0;
 	m_bMouseCaptured = false;
+	m_bShowGridMarks = false;
 
 	m_ui.m_bRubber = false;
 	m_ui.mode = LB_None;
@@ -179,6 +180,10 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 		DrawUTMBounds(&dc);
 
 	DrawAreaTool(&dc, pFrame->m_area);
+
+	if (m_bShowGridMarks)
+		DrawGridMarks(dc);	// erase
+
 	DrawDistanceTool(&dc);
 }
 
@@ -902,6 +907,64 @@ void BuilderView::InvertAreaTool(const DRECT &rect)
 	wxClientDC dc(this);
 	PrepareDC(dc);
 	DrawAreaTool(&dc, rect);
+}
+
+void BuilderView::ShowGridMarks(const DRECT &area, int cols, int rows,
+								int active_col, int active_row)
+{
+	wxClientDC dc(this);
+	PrepareDC(dc);
+
+	if (m_bShowGridMarks)
+		DrawGridMarks(dc);	// erase
+	m_GridArea = area;
+	m_iGridCols = cols;
+	m_iGridRows = rows;
+	m_iActiveCol = active_col;
+	m_iActiveRow = active_row;
+	m_bShowGridMarks = true;
+	DrawGridMarks(dc);		// draw
+}
+
+void BuilderView::HideGridMarks()
+{
+	if (m_bShowGridMarks)
+	{
+		wxClientDC dc(this);
+		PrepareDC(dc);
+		DrawGridMarks(dc);	// erase
+	}
+	m_bShowGridMarks = false;
+}
+
+void BuilderView::DrawGridMarks(wxDC &dc)
+{
+	dc.SetPen(wxPen(*wxBLACK_PEN));
+	dc.SetBrush(wxBrush(*wxBLACK_BRUSH));
+	dc.SetLogicalFunction(wxINVERT);
+
+	DPoint2 p;
+	int *wx = new int[m_iGridCols+1];
+	int *wy = new int[m_iGridRows+1];
+
+	for (int x = 0; x <= m_iGridCols; x++)
+		wx[x] = sx(m_GridArea.left + (m_GridArea.Width()/m_iGridCols) * x);
+	for (int y = 0; y <= m_iGridRows; y++)
+		wy[y] = sy(m_GridArea.bottom + (m_GridArea.Height()/m_iGridRows) * y);
+
+	for (int x = 0; x <= m_iGridCols; x++)
+		dc.DrawLine(wx[x], wy[0], wx[x], wy[m_iGridRows]);
+
+	for (int y = 0; y <= m_iGridRows; y++)
+		dc.DrawLine(wx[0], wy[y], wx[m_iGridCols], wy[y]);
+
+	if (m_iActiveCol != -1)
+	{
+		dc.DrawRectangle(wx[m_iActiveCol], wy[m_iActiveRow+1],
+			wx[1]-wx[0], wy[0]-wy[1]);
+	}
+	delete [] wx;
+	delete [] wy;
 }
 
 void BuilderView::DeselectAll()

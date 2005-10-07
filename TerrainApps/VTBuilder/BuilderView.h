@@ -132,6 +132,8 @@ public:
 	void SetShowMap(bool bShow);
 	bool GetShowMap() { return m_bShowMap; }
 	void InvertAreaTool(const DRECT &rect);
+	void ShowGridMarks(const DRECT &area, int cols, int rows, int active_col, int active_row);
+	void HideGridMarks();
 
 	bool	m_bCrossSelect;
 	bool	m_bShowUTMBounds;
@@ -220,6 +222,12 @@ protected:
 
 	bool ImportWorldMap();
 	void DrawWorldMap(wxDC* pDC);
+
+	// Grid marks
+	bool m_bShowGridMarks;
+	DRECT m_GridArea;
+	int m_iGridCols, m_iGridRows, m_iActiveCol, m_iActiveRow;
+	void DrawGridMarks(wxDC &dc);
 
 	UIContext m_ui;
 
