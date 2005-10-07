@@ -14,6 +14,8 @@
 #include "vtui/wxString2.h"
 #include "Layer.h"
 
+class BuilderView;
+
 // WDR: class declarations
 
 //----------------------------------------------------------------------------
@@ -37,6 +39,7 @@ public:
 	void SetArea(const DRECT &area);
 	void UpdateInfo();
 	void SetElevation(bool bElev);
+	void SetView(BuilderView *pView) { m_pView = pView; }
 
 	double m_fEstX;
 	double m_fEstY;
@@ -60,6 +63,7 @@ private:
 
 	DRECT m_area;
 	bool m_bSetting;
+	BuilderView *m_pView;
 
 private:
 	// WDR: handler declarations for TileDlg

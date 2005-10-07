@@ -10,6 +10,7 @@
 
 #include "TileDlg.h"
 #include "Layer.h"	// for FSTRING_INI
+#include "BuilderView.h"
 
 // WDR: class implementations
 
@@ -37,6 +38,7 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_fEstY = -1;
 
 	m_bSetting = false;
+	m_pView = NULL;
 
 	AddValidator(ID_TEXT_TO_FOLDER, &m_strToFile);
 	AddNumValidator(ID_COLUMNS, &m_iColumns);
@@ -66,21 +68,25 @@ void TileDlg::SetElevation(bool bElev)
 	GetChoiceLod0Size()->Clear();
 	if (m_bElev)
 	{
+		GetChoiceLod0Size()->Append(_T("32 + 1"));
 		GetChoiceLod0Size()->Append(_T("64 + 1"));
 		GetChoiceLod0Size()->Append(_T("128 + 1"));
 		GetChoiceLod0Size()->Append(_T("256 + 1"));
 		GetChoiceLod0Size()->Append(_T("512 + 1"));
 		GetChoiceLod0Size()->Append(_T("1024 + 1"));
 		GetChoiceLod0Size()->Append(_T("2048 + 1"));
+		GetChoiceLod0Size()->Append(_T("4096 + 1"));
 	}
 	else
 	{
+		GetChoiceLod0Size()->Append(_T("32"));
 		GetChoiceLod0Size()->Append(_T("64"));
 		GetChoiceLod0Size()->Append(_T("128"));
 		GetChoiceLod0Size()->Append(_T("256"));
 		GetChoiceLod0Size()->Append(_T("512"));
 		GetChoiceLod0Size()->Append(_T("1024"));
 		GetChoiceLod0Size()->Append(_T("2048"));
+		GetChoiceLod0Size()->Append(_T("4096"));
 	}
 }
 
@@ -92,7 +98,7 @@ void TileDlg::SetTilingOptions(TilingOptions &opt)
 	m_iNumLODs = opt.numlods;
 	m_strToFile = opt.fname;
 
-	m_iLODChoice = vt_log2(m_iLOD0Size)-6;
+	m_iLODChoice = vt_log2(m_iLOD0Size)-5;
 
 	UpdateInfo();
 }
@@ -153,7 +159,7 @@ void TileDlg::OnLODSize( wxCommandEvent &event )
 		return;
 
 	TransferDataFromWindow();
-	m_iLOD0Size = 1 << (m_iLODChoice + 6);
+	m_iLOD0Size = 1 << (m_iLODChoice + 5);
 	UpdateInfo();
 }
 
@@ -164,6 +170,9 @@ void TileDlg::OnSize( wxCommandEvent &event )
 
 	TransferDataFromWindow();
 	UpdateInfo();
+
+	if (m_pView)
+		m_pView->ShowGridMarks(m_area, m_iColumns, m_iRows, -1, -1);
 }
 
 void TileDlg::OnDotDotDot( wxCommandEvent &event )
