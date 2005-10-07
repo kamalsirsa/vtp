@@ -226,6 +226,7 @@ EVT_MENU(ID_AREA_ZOOM_LAYER,		MainFrame::OnAreaZoomLayer)
 EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
 EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
 EVT_MENU(ID_AREA_EXPORT_IMAGE,		MainFrame::OnAreaExportImage)
+EVT_MENU(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnAreaOptimizedElevTileset)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
 EVT_MENU(ID_AREA_REQUEST_LAYER,		MainFrame::OnAreaRequestLayer)
 EVT_MENU(ID_AREA_REQUEST_WMS,		MainFrame::OnAreaRequestWMS)
@@ -234,6 +235,7 @@ EVT_MENU(ID_AREA_REQUEST_TSERVE,	MainFrame::OnAreaRequestTServe)
 EVT_UPDATE_UI(ID_AREA_ZOOM_ALL,		MainFrame::OnUpdateAreaZoomAll)
 EVT_UPDATE_UI(ID_AREA_ZOOM_LAYER,	MainFrame::OnUpdateAreaZoomLayer)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
+EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnUpdateAreaExportElev)
 EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE,	MainFrame::OnUpdateAreaExportImage)
 EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
 
@@ -463,6 +465,9 @@ void MainFrame::CreateMenus()
 	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _("Request Image from Terraserver"));
 #endif // SUPPORT_HTTP
 #endif
+	areaMenu->AppendSeparator();
+	areaMenu->Append(ID_AREA_EXPORT_ELEV_SPARSE, _("Optimized Resample Elevation to Tileset"),
+		_("Sample all elevation data within the Area Tool to produce a sparse, optimized elevation tileset."));
 	m_pMenuBar->Append(areaMenu, _("&Area Tool"));
 	menu_num++;
 
@@ -1490,6 +1495,36 @@ void MainFrame::OnLayerProperties(wxCommandEvent &event)
 void MainFrame::OnAreaExportElev(wxCommandEvent &event)
 {
 	ExportElevation();
+}
+
+void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
+{
+	TilingOptions tileopts;
+	tileopts.cols = 4;
+	tileopts.rows = 4;
+	tileopts.lod0size = 256;
+	tileopts.numlods = 3;
+
+	TileDlg dlg(this, -1, _("Tiling Options"));
+	dlg.m_fEstX = -1;
+	dlg.m_fEstY = -1;
+	dlg.SetElevation(true);
+	dlg.SetArea(m_area);
+	dlg.SetTilingOptions(tileopts);
+	dlg.SetView(GetView());
+
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+	dlg.GetTilingOptions(tileopts);
+
+	OpenProgressDialog(_T("Writing tiles"), true);
+	bool success = SampleElevationToPGMPyramids(tileopts);
+	GetView()->HideGridMarks();
+	CloseProgressDialog();
+	if (success)
+		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
+	else
+		DisplayAndLog("Could not successfully write to '%s'", (const char *) tileopts.fname);
 }
 
 void MainFrame::OnUpdateAreaExportElev(wxUpdateUIEvent& event)
@@ -2520,13 +2555,15 @@ void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 	dlg.SetElevation(true);
 	dlg.SetArea(area);
 	dlg.SetTilingOptions(tileopts);
+	dlg.SetView(GetView());
 
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 	dlg.GetTilingOptions(tileopts);
 
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = pEL->WriteGridOfPGMPyramids(tileopts);
+	bool success = pEL->WriteGridOfPGMPyramids(tileopts, GetView());
+	GetView()->HideGridMarks();
 	CloseProgressDialog();
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
@@ -2678,6 +2715,7 @@ void MainFrame::OnImageExportTiles(wxCommandEvent& event)
 	dlg.SetElevation(false);
 	dlg.SetArea(area);
 	dlg.SetTilingOptions(tileopts);
+	dlg.SetView(GetView());
 
 	if (dlg.ShowModal() != wxID_OK)
 		return;
