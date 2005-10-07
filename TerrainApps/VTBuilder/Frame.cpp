@@ -1097,6 +1097,19 @@ float MainFrame::ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs,
 	return fBestData;
 }
 
+float MainFrame::GridLayerArrayValue(std::vector<vtElevationGrid*> &grids,
+									 const DPoint2 &p)
+{
+	float fData, fBestData = INVALID_ELEVATION;
+	for (unsigned int g = 0; g < grids.size(); g++)
+	{
+		fData = grids[g]->GetFilteredValue2(p);
+		if (fData != INVALID_ELEVATION)
+			fBestData = fData;
+	}
+	return fBestData;
+}
+
 //
 // sample all elevation layers into this one
 //
@@ -1591,7 +1604,8 @@ void MainFrame::ExportElevation()
 	else if (dlg.m_bToTiles)
 	{
 		OpenProgressDialog(_T("Writing tiles"), true);
-		bool success = pOutput->WriteGridOfPGMPyramids(dlg.m_tileopts);
+		bool success = pOutput->WriteGridOfPGMPyramids(dlg.m_tileopts, GetView());
+		GetView()->HideGridMarks();
 		delete pOutput;
 		CloseProgressDialog();
 		if (success)
@@ -1601,6 +1615,244 @@ void MainFrame::ExportElevation()
 	}
 }
 
+#include "vtdata/ByteOrder.h"
+
+bool MainFrame::SampleElevationToPGMPyramids(const TilingOptions &opts)
+{
+	VTLOG1("SampleElevationToPGMPyramids\n");
+
+	// If any of the input terrain are floats, then recommend to the user
+	// that the output should be float as well.
+	bool floatmode = false;
+
+	// sample spacing in meters/heixel or degrees/heixel
+	DPoint2 spacing(0, 0);
+	int count = 0, floating = 0;
+	for (unsigned int lay = 0; lay < m_Layers.GetSize(); lay++)
+	{
+		vtLayer *l = m_Layers.GetAt(lay);
+		if (l->GetType() == LT_ELEVATION)
+		{
+			count++;
+			vtElevLayer *el = (vtElevLayer *)l;
+			if (el->IsGrid())
+			{
+				vtElevationGrid *grid = el->m_pGrid;
+				if (grid->IsFloatMode() || grid->GetScale() != 1.0f)
+				{
+					floatmode = true;
+					floating++;
+				}
+				spacing = grid->GetSpacing();
+			}
+		}
+	}
+	VTLOG(" Layers: %d, Elevation layers: %d, %d are floating point\n",
+		NumLayers(), count, floating);
+
+	if (spacing == DPoint2(0, 0))
+	{
+		DisplayAndLog("Sorry, you must have some elevation grid layers\n"
+					  "to perform a sampling operation on them.");
+		return false;
+	}
+
+	// grid size
+	//int base_tilesize = opts.lod0size;
+
+	DPoint2 tile_dim(m_area.Width()/opts.cols, m_area.Height()/opts.rows);
+
+	vtString units = GetLinearUnitName(m_proj.GetUnits());
+	units.MakeLower();
+	int zone = m_proj.GetUTMZone();
+	vtString crs;
+	if (m_proj.IsGeographic())
+		crs = "LL";
+	else if (zone != 0)
+		crs = "UTM";
+	else
+	{
+		crs = "EPSG";
+//		zone = m_proj.ExportToEPSG();	// How to get an EPSG code?
+	}
+
+	// Try to create directory to hold the tiles
+	vtString dirname = opts.fname;
+	RemoveFileExtensions(dirname);
+	if (!vtCreateDir(dirname))
+		return false;
+
+	// Write .ini file
+	FILE *fp = fopen(opts.fname, "wb");
+	if (!fp)
+	{
+		vtDestroyDir(dirname);
+		return false;
+	}
+	fprintf(fp, "[TilesetDescription]\n");
+	fprintf(fp, "Columns=%d\n", opts.cols);
+	fprintf(fp, "Rows=%d\n", opts.rows);
+	fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
+	fprintf(fp, "Extent_Left=%.16lg\n", m_area.left);
+	fprintf(fp, "Extent_Right=%.16lg\n", m_area.right);
+	fprintf(fp, "Extent_Bottom=%.16lg\n", m_area.bottom);
+	fprintf(fp, "Extent_Top=%.16lg\n", m_area.top);
+	// write CRS, but pretty it up a bit
+	OGRSpatialReference *poSimpleClone = m_proj.Clone();
+	poSimpleClone->GetRoot()->StripNodes( "AXIS" );
+	poSimpleClone->GetRoot()->StripNodes( "AUTHORITY" );
+	char *wkt;
+	poSimpleClone->exportToWkt(&wkt);
+	fprintf(fp, "CRS=%s\n", wkt);
+	delete poSimpleClone;
+	OGRFree(wkt);
+	fclose(fp);
+
+	std::vector<vtElevLayer*> elevs;
+	int elev_layers = ElevLayerArray(elevs);
+
+	int i, j, e, lod;
+	int total = opts.rows * opts.cols * opts.numlods, done = 0;
+	for (j = 0; j < opts.rows; j++)
+	{
+		for (i = 0; i < opts.cols; i++)
+		{
+			// draw our progress in the main view
+			GetView()->ShowGridMarks(m_area, opts.cols, opts.rows, i, j);
+
+			DRECT tile_area;
+			tile_area.left =	m_area.left + tile_dim.x * i;
+			tile_area.right =	m_area.left + tile_dim.x * (i+1);
+			tile_area.bottom =	m_area.bottom + tile_dim.y * j;
+			tile_area.top =		m_area.bottom + tile_dim.y * (j+1);
+
+			// Look through the elevation layers to find those which this
+			//  tile can sample from.  Determine the highest resolution
+			//  available for this tile.
+			std::vector<vtElevationGrid*> grids;
+			DPoint2 best_spacing(1E9, 1E9);
+			for (e = 0; e < elev_layers; e++)
+			{
+				DRECT layer_extent;
+				elevs[e]->GetExtent(layer_extent);
+				if (tile_area.OverlapsRect(layer_extent))
+				{
+					// TODO: extend support here to sampling from TINs
+					vtElevationGrid *grid = elevs[e]->m_pGrid;
+					if (!grid)
+						continue;
+
+					grids.push_back(grid);
+					DPoint2 spacing = grid->GetSpacing();
+					if (spacing.x < best_spacing.x ||
+						spacing.y < best_spacing.y)
+						best_spacing = spacing;
+				}
+			}
+
+			// increment progress count whether we omit tile or not
+			done++;
+
+			// if there is no data, omit this tile
+			if (grids.size() == 0)
+				continue;
+
+			// estimate what tile resolution is appropriate
+			int base_tilesize = 2;
+			while (tile_area.Width() / base_tilesize > best_spacing.x &&
+				   tile_area.Height() / base_tilesize > best_spacing.y)
+			   base_tilesize = base_tilesize * 2;
+
+			// Now sample the grids we found
+			vtElevationGrid lod_zero(tile_area, base_tilesize+1, base_tilesize+1,
+				false /*floating*/, m_proj);
+
+			bool bAllInvalid = true;
+			bool bAllZero = true;
+			DPoint2 p;
+			int x, y;
+			for (y = base_tilesize; y >= 0; y--)
+			{
+				p.y = m_area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
+				for (x = 0; x <= base_tilesize; x++)
+				{
+					p.x = m_area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
+
+					short value = (short) GridLayerArrayValue(grids, p);
+					lod_zero.SetValue(x, y, value);
+
+					if (value != INVALID_ELEVATION)
+						bAllInvalid = false;
+					if (value != 0)
+						bAllZero = false;
+				}
+			}
+
+			// If there is no real data there, omit this tile
+			if (bAllInvalid)
+				continue;
+			if (bAllZero)
+				continue;
+
+			int col = i;
+			int row = opts.rows-1-j;
+
+			for (lod = 0; lod < opts.numlods; lod++)
+			{
+				int tilesize = base_tilesize >> lod;
+				DPoint2 cell_size = tile_dim / tilesize;
+
+				vtString fname = dirname, str;
+				fname += '/';
+				if (lod == 0)
+					str.Format("tile.%d-%d.pgm", col, row);
+				else
+					str.Format("tile.%d-%d.pgm%d", col, row, lod);
+				fname += str;
+
+				// make a message for the progress dialog
+				wxString msg;
+				msg.Printf(_("Writing tile '%hs', size %dx%d"),
+					(const char *)fname, tilesize, tilesize);
+				UpdateProgressDialog(done*99/total, msg);
+
+				FILE *fp = fopen(fname, "wb");
+				if (!fp)
+					return false;
+				fprintf(fp, "P5\n");
+				fprintf(fp, "# DEM\n");
+				fprintf(fp, "# description=resampled with VTBuilder\n");
+				fprintf(fp, "# coordinate system=%s\n", (const char *)crs);
+				fprintf(fp, "# coordinate zone=%d\n", zone);
+				fprintf(fp, "# coordinate datum=0\n");
+				fprintf(fp, "# SW corner=%lf/%lf %s\n", tile_area.left, tile_area.bottom, (const char *)units);
+				fprintf(fp, "# NW corner=%lf/%lf %s\n", tile_area.left, tile_area.top, (const char *)units);
+				fprintf(fp, "# NE corner=%lf/%lf %s\n", tile_area.right, tile_area.top, (const char *)units);
+				fprintf(fp, "# SE corner=%lf/%lf %s\n", tile_area.right, tile_area.bottom, (const char *)units);
+				fprintf(fp, "# cell size=%lf/%lf %s\n", cell_size.x*(1<<lod), cell_size.y*(1<<lod), (const char *)units);
+				fprintf(fp, "# vertical scaling=1 meters\n");
+				fprintf(fp, "# missing value=%d\n", INVALID_ELEVATION);
+				fprintf(fp, "%d %d\n", tilesize+1, tilesize+1);
+				fprintf(fp, "32767\n");
+
+				for (y = base_tilesize; y >= 0; y -= (1<<lod))
+				{
+					p.y = m_area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
+					for (x = 0; x <= base_tilesize; x += (1<<lod))
+					{
+						p.x = m_area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
+
+						short value = lod_zero.GetFilteredValue(p);
+						value = SwapShort(value);
+						fwrite(&value, 2, 1, fp);
+					}
+				}
+				fclose(fp);
+			}
+		}
+	}
+	return true;
+}
 
 //////////////////////////////////////////////////////////
 // Image ops

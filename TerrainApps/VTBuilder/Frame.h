@@ -43,6 +43,7 @@ class vtUtilityLayer;
 class BuilderView;
 class vtFeatureSet;
 class VegGenOptions;
+class vtElevationGrid;
 
 // dialogs
 class SpeciesListDlg;
@@ -242,6 +243,7 @@ protected:
 	void OnAreaZoomLayer(wxCommandEvent& event);
 	void OnAreaTypeIn(wxCommandEvent& event);
 	void OnAreaExportElev(wxCommandEvent& event);
+	void OnAreaOptimizedElevTileset(wxCommandEvent& event);
 	void OnAreaExportImage(wxCommandEvent& event);
 	void OnAreaGenerateVeg(wxCommandEvent& event);
 	void OnAreaRequestLayer(wxCommandEvent& event);
@@ -359,6 +361,7 @@ public:
 	void ExportBitmap(RenderDlg &dlg);
 	int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
 	float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p);
+	float GridLayerArrayValue(std::vector<vtElevationGrid*> &grids, const DPoint2 &p);
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);
@@ -426,6 +429,7 @@ public:
 
 	// area tool
 	void ExportElevation();
+	bool SampleElevationToPGMPyramids(const TilingOptions &opts);
 	void ExportImage();
 
 	// Application Data
