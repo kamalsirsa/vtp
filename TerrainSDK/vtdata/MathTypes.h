@@ -770,6 +770,16 @@ public:
 		return (r2.left >= left && r2.right <= right &&
 				r2.bottom >= bottom && r2.top <= top);
 	}
+	bool OverlapsRect(const DRECT &r2) const
+	{
+		if (   left > r2.right ||
+			r2.left >    right ||
+			   bottom > r2.top ||
+			r2.bottom >    top)
+			 return false;
+        else
+			return true;
+	}
 	void Grow(double x, double y)
 	{
 		left -= x;
