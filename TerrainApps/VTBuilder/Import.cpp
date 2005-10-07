@@ -441,7 +441,7 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 		{
 			pLayer = ImportImage(strFileName);
 		}
-		else if (!strExt.CmpNoCase(_T("ppm")))
+		else if (!strExt.Left(3).CmpNoCase(_T("ppm")))
 		{
 			pLayer = ImportImage(strFileName);
 		}

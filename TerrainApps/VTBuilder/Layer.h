@@ -47,7 +47,7 @@
 #define FSTRING_Planet	_T("Planet Files (*.txt)|*.txt")
 #define FSTRING_PGM		_T("PGM Files (*.pgm*)|*.pgm*")
 #define FSTRING_PNG		_T("PNG Files (*.png)|*.png")
-#define FSTRING_PPM		_T("PPM Files (*.ppm)|*.ppm")
+#define FSTRING_PPM		_T("PPM Files (*.ppm*)|*.ppm*")
 #define FSTRING_RAW		_T("Raw raster files (*.raw)|*.raw")
 #define FSTRING_S57		_T("S-57 Files (*.000)|*.000")
 #define FSTRING_SDTS	_T("SDTS Files (*catd.ddf)|*catd.ddf")
