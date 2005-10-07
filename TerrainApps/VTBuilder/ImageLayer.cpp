@@ -313,7 +313,7 @@ bool vtImageLayer::ImportFromFile(const wxString2 &strFileName, bool progress_ca
 	wxString strExt = strFileName.AfterLast('.');
 
 	bool success;
-	if (!strExt.CmpNoCase(_T("ppm")))
+	if (!strExt.Left(3).CmpNoCase(_T("ppm")))
 	{
 		m_pBitmap = new vtBitmap;
 		success = ReadPPM(strFileName.mb_str());
