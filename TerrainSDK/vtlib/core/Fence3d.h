@@ -50,4 +50,6 @@ protected:
 
 typedef class vtFence *vtFencePtr;
 
+/*@}*/	// Group struct
+
 #endif	// FENCE3DH

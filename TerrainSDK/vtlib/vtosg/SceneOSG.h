@@ -22,10 +22,10 @@ class CreateProjectedShadowTextureCullCallback;
  * pipeline functionality of vtlib.
  *
  * A Scene currently encapsulates:
- *	- A scene graph
- *	- A set of engines (vtEngine)
- *  - A window
- *  - A current camera (vtCamera)
+	- A scene graph
+	- A set of engines (vtEngine)
+	- A window
+	- A current camera (vtCamera)
  */
 class vtScene : public vtSceneBase
 {

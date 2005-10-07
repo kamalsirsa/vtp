@@ -23,9 +23,9 @@
 /**
  *  This engine flies the viewpoint around using the mouse position.
  *
- *	- Left button: forward-backward, yaw.
- *  - Right button: up-down, left-right.
- *  - Both buttons: pitch, roll.
+	- Left button: forward-backward, yaw.
+	- Right button: up-down, left-right.
+	- Both buttons: pitch, roll.
  *
  *  Mouse position is considered relative to the center of the window.
  */
@@ -67,8 +67,8 @@ protected:
  * This engine extends vtFlyer for navigation of an orthographic
  * camera (usually, top-down).
  *
- *	- Left button: forward-backward (implemented as zoom), yaw
- *  - Right button: up-down, left-right
+	- Left button: forward-backward (implemented as zoom), yaw
+	- Right button: up-down, left-right
  *
  *  Position is considered relative to the center of the window.
  */
@@ -109,9 +109,9 @@ protected:
  *  Movement is only done when left mouse button is pressed.
  *  Right mouse button is a holdover from vtFlyer.
  *
- *	- No buttons: pitch, yaw
- *  - Left button: forward
- *  - Right button: up/dn, left/right
+	- No buttons: pitch, yaw
+	- Left button: forward
+	- Right button: up/dn, left/right
  *
  *  Position is considered relative to the center of the window.
  */
@@ -259,8 +259,8 @@ protected:
  *
  * You can set which combinations of mouse buttons and modifier keys
  * will rotate, zoom and translate the target.  The default is:
- *	- Middle button: Rotate.
- *  - Middle button with shift key: Zoom.
+	- Middle button: Rotate.
+	- Middle button with shift key: Zoom.
  */
 class vtTrackball : public vtLastMouse
 {

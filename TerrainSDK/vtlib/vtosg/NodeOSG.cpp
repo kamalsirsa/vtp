@@ -53,7 +53,7 @@ void vtNode::Release()
 	}
 }
 
-void vtNode::SetOsgNode(Node *n)
+void vtNode::SetOsgNode(osg::Node *n)
 {
 	// set refptr to the OSG node, which bumps its refcount
 	m_pNode = n;
@@ -706,7 +706,7 @@ vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 	}
 }
 
-void vtGroup::SetOsgGroup(Group *g)
+void vtGroup::SetOsgGroup(osg::Group *g)
 {
 	m_pGroup = g;
 	SetOsgNode(g);

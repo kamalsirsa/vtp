@@ -17,8 +17,8 @@ using std::set;
  * Constructor.  Pass in the filename to parse.
  */
 DxfParser::DxfParser(const vtString &sFileName,
-					   vector<DxfEntity> &entities,
-					   vector<vtString> &layers) :
+					   std::vector<DxfEntity> &entities,
+					   std::vector<vtString> &layers) :
 	m_entities(entities),
 	m_layers(layers)
 {
@@ -376,7 +376,7 @@ void DxfParser::ReadPolyline()
 		throw "Unable to find end of polyline entity.";
 }
 
-void DxfParser::ReadVertex(vector<DPoint3> & points)
+void DxfParser::ReadVertex(std::vector<DPoint3> & points)
 {
 	DxfCodeValue pair;
 
