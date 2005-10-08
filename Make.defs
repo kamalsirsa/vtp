@@ -187,6 +187,11 @@ ifeq ($(OS),Darwin)
    GLU_LIB  = -framework OpenGL -framework Carbon
    EXTRA_LIBS = -lXi
    LDIRFLAGS = $(LDIRS:%=-L%)
+
+   # remove the "lib" string from the LIB_NAME
+   NEW_LIB_NAME := $(subst lib, ,$(LIB_NAME))
+   LIB_NAME := $(strip $(NEW_LIB_NAME))
+
    LIB_EXT = dylib
    FRAMEWORKS = $(VTP_ROOT)/OSX/Frameworks
    FRAMEWORK =  $(FRAMEWORKS)/$(LIB_NAME).framework

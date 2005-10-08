@@ -28,7 +28,7 @@ LDIRS  = $(OSG_LIB)                     \
 	 $(X_LIB)                       \
 	 $(EXTRA_LDIRS)
 
-SWITCHES := $(SWITCHES) -DUNIX -DVTLIB_OSG=1
+SWITCHES := $(SWITCHES) -DUNIX -DVTLIB_OSG=1 -D__USE_OSX_AGL_IMPLEMENTATION__
 CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS)
 CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS)
 LDFLAGS  = $(LDIRFLAGS) $(EXTRA_LDFLAGS)
@@ -64,7 +64,6 @@ $(EXEC) : $(OBJS)
 
 $(OSX_APP) : $(OBJS) $(OSX_APPS)/$(EXEC).app
 	$(LD) -o $(OSX_APP) $(OBJS) $(LDFLAGS) $(LIBS)
-	cp $(WX_DIR)/lib/libwx_mac-2.4.0.rsrc $(OSX_APPS)/$(EXEC).app/Contents/Resources/$(EXEC).rsrc
 
 clean :
 	rm -rf $(OBJS) $(EXEC).core core ii_files

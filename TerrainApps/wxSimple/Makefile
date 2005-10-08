@@ -68,7 +68,6 @@ $(EXEC) : $(OBJS)
 
 $(OSX_APP) : $(OBJS) $(OSX_APPS)/$(EXEC).app
 	$(LD) -o $(OSX_APP) $(OBJS) $(LDFLAGS) $(LIBS)
-	cp $(WX_DIR)/lib/libwx_mac-2.4.0.rsrc $(OSX_APPS)/$(EXEC).app/Contents/Resources/$(EXEC).rsrc
 
 clean :
 	rm -rf $(OBJS) $(EXEC).core core ii_files
