@@ -1187,7 +1187,9 @@ GDALWrapper::~GDALWrapper()
 	// but not GDAL.
 	OSRCleanup();
 	CPLFinderClean();
-	CPLCleanupTLS();
+#if GDAL_VERSION_NUM >= 1310
+	CPLCleanupTLS();	// this function was added in GDAL 1.3.1
+#endif
 
 	if (m_bOGRFormatsRegistered)
 	{
