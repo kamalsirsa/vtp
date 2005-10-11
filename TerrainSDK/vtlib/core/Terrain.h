@@ -24,6 +24,7 @@
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
 class vtTerrainGeom;
+class vtTiledGeom;
 class vtTextureCoverage;
 class vtFence3d;
 class vtRoadMap3d;

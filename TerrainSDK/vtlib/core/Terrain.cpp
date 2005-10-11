@@ -29,11 +29,13 @@
 #include "BryanTerrain.h"
 #include "SRTerrain.h"
 #include "DemeterTerrain.h"
+#include "TiledGeom.h"
 // add your own LOD method header here!
 
-#define LARGEST_BLOCK_SIZE	16
 
-// use a grid of LOD cells of size LOD_GRIDSIZE x LOD_GRIDSIZE
+// The Terrain uses two LOD grids (class vtLodGrid, a sparse grid of LOD cells)
+//  of size LOD_GRIDSIZE x LOD_GRIDSIZE to group structures and vegetation.
+//  This allows them to be culled more efficiently.
 #define LOD_GRIDSIZE		192
 
 
@@ -691,11 +693,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 
 	LodMethodEnum method = m_Params.GetLodMethod();
 	VTLOG(" LOD method %d\n", method);
-//	if (m_Params.m_eLodMethod == LM_LINDSTROMKOLLER)
-//	{
-//		m_pDynGeom = new LKTerrain();
-//		m_pDynGeom->SetName2("LK Geom");
-//	}
+
 	if (method == LM_TOPOVISTA)
 	{
 		m_pDynGeom = new TVTerrain();
@@ -731,7 +729,9 @@ bool vtTerrain::_CreateDynamicTerrain()
 		m_pDynGeom->SetName2("Roettger Geom");
 	}
 	// else if (method == LM_YOURMETHOD)
+	// {
 	//	add your own LOD method here!
+	// }
 	if (!m_pDynGeom)
 	{
 		_SetErrorMessage("Unknown LOD method.");
