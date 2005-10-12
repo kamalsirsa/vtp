@@ -8,148 +8,20 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
-#include "pnmbase.h"
 #include "TiledGeom.h"
-//#include "miniOGLP.h"
 
-///////////////////////////////////////////////////////////////////////
+#include "mini.h"
+#include "miniload.hpp"
+#include "minicache.hpp"
+#include "pnmbase.h"
 
-// preloader statistics
-static float kbytes1=0.0f,kbytes2=0.0f;
-static double secs=0.0;
+// Set this to use the 'minicache' OpenGL primitive cache.
+//  Actually, we depend on it for adaptive resolution, so leave it at 1.
+#define USE_VERTEX_CACHE	1
 
-int request_callback(unsigned char *mapfile,unsigned char *texfile,
-					  unsigned char *fogfile,void *data,
-					  void **hfield,void **texture,void **fogmap)
-{
-	int bytes;
-	int ret = 0;
-
-#if 1
-	vtString str1, str2;
-	if (mapfile)
-		str1 = StartOfFilename((char *)mapfile);
-	else
-		str1 = "NULL";
-	if (texfile)
-		str2 = StartOfFilename((char *)texfile);
-	else
-		str2 = "NULL";
-	VTLOG("request_callback(%s, %s", (const char *)str1, (const char *)str2);
-	if (hfield != NULL)
-		VTLOG1(", hfield");
-	if (texture != NULL)
-		VTLOG1(", texture");
-	VTLOG1(")\n");
-#endif
-
-	if (mapfile == NULL)
-	{
-		if (hfield != NULL)
-			*hfield = NULL;
-	}
-	else if (hfield == NULL)
-	{
-		// just checking for file existence
-		FILE *fp = fopen((char *)mapfile, "rb");
-		if (fp)
-		{
-			ret = 1;
-			fclose(fp);
-		}
-	}
-	else
-	{
-		// actually need to load the whole file
-		if ((*hfield=readfile((char *)mapfile,&bytes))!=NULL)
-			kbytes1+=bytes/1024.0f;
-	}
-
-	if (texfile == NULL)
-	{
-		if (texture != NULL)
-			*texture = NULL;
-	}
-	else if (texture == NULL)
-	{
-		// just checking for file existence
-		FILE *fp = fopen((char *)texfile, "rb");
-		if (fp)
-		{
-			ret = 1;
-			fclose(fp);
-		}
-	}
-	else
-	{
-		// actually need to load the whole file
-		if ((*texture=readfile((char *)texfile,&bytes))!=NULL)
-			kbytes1+=bytes/1024.0f;
-	}
-
-	//if (fogfile==NULL)
-	//	*fogmap=NULL;
-	//else if ((*fogmap=readfile((char *)fogfile,&bytes))!=NULL)
-	//	kbytes1+=bytes/1024.0f;
-
-	return ret;
-}
-
-int COL,ROW;
-void *HFIELD=NULL,*TEXTURE=NULL,*FOGMAP=NULL;
-int HLOD,TLOD;
-
-void preload_callback(int col,int row,unsigned char *mapfile,int hlod,
-					  unsigned char *texfile,int tlod,unsigned char *fogfile,
-					  void *data)
-   {
-   int bytes;
-
-   if (HFIELD!=NULL || TEXTURE!=NULL || FOGMAP!=NULL) return;
-
-   COL=col;
-   ROW=row;
-
-   if ((HFIELD=readfile((char *)mapfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
-   if ((TEXTURE=readfile((char *)texfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
-
-   if (fogfile==NULL) FOGMAP=NULL;
-   else if ((FOGMAP=readfile((char *)fogfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
-
-   HLOD=hlod;
-   TLOD=tlod;
-   }
-
-void deliver_callback(int *col,int *row,void **hfield,int *hlod,void **texture,
-					  int *tlod,void **fogmap,void *data)
-   {
-   *col=COL;
-   *row=ROW;
-
-   *hfield=HFIELD;
-   *texture=TEXTURE;
-   *fogmap=FOGMAP;
-
-   *hlod=HLOD;
-   *tlod=TLOD;
-
-   HFIELD=TEXTURE=FOGMAP=NULL;
-   }
-
-void mini_error_handler(char *file,int line,int fatal)
-{
-	VTLOG("libMini error: file '%s', line %d, fatal %d\n", file, line, fatal);
-}
-
-vtTiledGeom::vtTiledGeom()
-{
-	m_pMiniLoad = NULL;
-}
-
-vtTiledGeom::~vtTiledGeom()
-{
-	delete m_pMiniLoad;
-}
+/////////////
+// singleton; TODO: get rid of this to allow multiple instances
+static vtTiledGeom *s_pTiledGeom = NULL;
 
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -220,7 +92,158 @@ bool TiledDatasetDescription::GetCorners(DLine2 &line, bool bGeo) const
 
 
 ///////////////////////////////////////////////////////////////////////
+
+int request_callback(unsigned char *mapfile,unsigned char *texfile,
+					  unsigned char *fogfile,void *data,
+					  void **hfield,void **texture,void **fogmap)
+{
+	int ret = 0;
+
+#if 1
+	vtString str1, str2;
+	if (mapfile)
+		str1 = StartOfFilename((char *)mapfile);
+	else
+		str1 = "NULL";
+	if (texfile)
+		str2 = StartOfFilename((char *)texfile);
+	else
+		str2 = "NULL";
+	VTLOG("request_callback(%s, %s", (const char *)str1, (const char *)str2);
+	if (hfield != NULL)
+		VTLOG1(", hfield");
+	if (texture != NULL)
+		VTLOG1(", texture");
+	VTLOG1(")\n");
+#endif
+
+	if (mapfile == NULL)
+	{
+		if (hfield != NULL)
+			*hfield = NULL;
+	}
+	else if (hfield == NULL)
+	{
+		// just checking for file existence
+		FILE *fp = fopen((char *)mapfile, "rb");
+		if (fp)
+		{
+			ret = 1;
+			fclose(fp);
+		}
+	}
+	else
+	{
+		// actually need to load the whole file
+		*hfield = s_pTiledGeom->FetchAndCacheTile((char *)mapfile);
+	}
+
+	if (texfile == NULL)
+	{
+		if (texture != NULL)
+			*texture = NULL;
+	}
+	else if (texture == NULL)
+	{
+		// just checking for file existence
+		FILE *fp = fopen((char *)texfile, "rb");
+		if (fp)
+		{
+			ret = 1;
+			fclose(fp);
+		}
+	}
+	else
+	{
+		// actually need to load the whole file
+		*texture = s_pTiledGeom->FetchAndCacheTile((char *)texfile);
+	}
+
+	//if (fogfile==NULL)
+	//	*fogmap=NULL;
+	//else if ((*fogmap=readfile((char *)fogfile,&bytes))!=NULL)
+	//	kbytes1+=bytes/1024.0f;
+
+	return ret;
+}
+
+// preloader statistics
+static float kbytes2=0.0f;
+
+int COL,ROW;
+void *HFIELD=NULL,*TEXTURE=NULL,*FOGMAP=NULL;
+int HLOD,TLOD;
+
+void preload_callback(int col,int row,unsigned char *mapfile,int hlod,
+					  unsigned char *texfile,int tlod,unsigned char *fogfile,
+					  void *data)
+   {
+   int bytes;
+
+   if (HFIELD!=NULL || TEXTURE!=NULL || FOGMAP!=NULL) return;
+
+   COL=col;
+   ROW=row;
+
+   if ((HFIELD=readfile((char *)mapfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
+   if ((TEXTURE=readfile((char *)texfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
+
+   if (fogfile==NULL) FOGMAP=NULL;
+   else if ((FOGMAP=readfile((char *)fogfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
+
+   HLOD=hlod;
+   TLOD=tlod;
+   }
+
+void deliver_callback(int *col,int *row,void **hfield,int *hlod,void **texture,
+					  int *tlod,void **fogmap,void *data)
+   {
+   *col=COL;
+   *row=ROW;
+
+   *hfield=HFIELD;
+   *texture=TEXTURE;
+   *fogmap=FOGMAP;
+
+   *hlod=HLOD;
+   *tlod=TLOD;
+
+   HFIELD=TEXTURE=FOGMAP=NULL;
+   }
+
+void mini_error_handler(char *file,int line,int fatal)
+{
+	VTLOG("libMini error: file '%s', line %d, fatal %d\n", file, line, fatal);
+}
+
+
+///////////////////////////////////////////////////////////////////////
 // class vtTiledGeom implementation
+
+vtTiledGeom::vtTiledGeom()
+{
+	s_pTiledGeom = this;
+
+	m_pMiniLoad = NULL;
+	m_pMiniTile = NULL;
+	m_pMiniCache = NULL;
+
+	// This maxiumum scale is a reasonable tradeoff between the exaggeration
+	//  that the user is likely to need, and numerical precision issues.
+	m_fMaximumScale = 10.0f;
+	m_fHeightScale = 1.0f;
+	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
+
+	// defaults
+	SetVertexTarget(20000);
+}
+
+vtTiledGeom::~vtTiledGeom()
+{
+	EmptyCache();
+	delete m_pMiniCache;
+	delete m_pMiniLoad;
+}
 
 bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *dataset_fname_image)
 {
@@ -254,12 +277,6 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 	RemoveFileExtensions(folder_elev);
 	vtString folder_image = dataset_fname_image;
 	RemoveFileExtensions(folder_image);
-
-	exaggeration=2.0f; // exaggeration=200%
-
-	// global resolution
-	res=5.0E6f;
-	minres=100.0f;
 
 	hfields = new ucharptr[cols*rows];
 	textures = new ucharptr[cols*rows];
@@ -309,7 +326,24 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 	return true;
 }
 
-#define USE_VERTEX_CACHE	1
+void vtTiledGeom::SetVerticalExag(float fExag)
+{
+	m_fHeightScale = fExag;
+
+	// safety check
+	if (m_fHeightScale > m_fMaximumScale)
+		m_fHeightScale = m_fMaximumScale;
+
+	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
+}
+
+void vtTiledGeom::SetVertexTarget(int iVertices)
+{
+	m_iVertexTarget = iVertices;
+	m_fResolution = m_iVertexTarget * 10;
+	m_fHResolution = 2 * m_fResolution;
+	m_fLResolution = 0;
+}
 
 void vtTiledGeom::SetupMiniLoad()
 {
@@ -317,12 +351,13 @@ void vtTiledGeom::SetupMiniLoad()
 	m_pMiniLoad = new miniload(hfields, textures,
 		cols, rows,
 		coldim, rowdim,
-		1.0f, center.x, center.y, center.z);
+		m_fMaximumScale, center.x, center.y, center.z);
 	m_pMiniTile = m_pMiniLoad->getminitile();
 
 #if USE_VERTEX_CACHE
-	// use tile caching with vertex arrays
-	cache.setcallbacks(m_pMiniTile, // the minitile object to be cached
+	// use primitive caching with vertex arrays
+	m_pMiniCache = new minicache;
+	m_pMiniCache->setcallbacks(m_pMiniTile, // the minitile object to be cached
 						cols,rows, // number of tile columns and rows
 						coldim,rowdim, // overall extent
 						center.x,center.y,center.z); // origin with negative Z
@@ -376,7 +411,7 @@ void vtTiledGeom::SetupMiniLoad()
 	//	- for maximum memory utilization set l to 0
 	//	- to reduce data traffic increase l
 	//	  recommended: 1
-	int plazyness = 0;
+	int plazyness = 1;
 
 	//pupdate: update time
 	//	- determines the number of frames after which a complete
@@ -407,36 +442,136 @@ void vtTiledGeom::SetupMiniLoad()
 	m_pMiniTile->setreduction(2.0f,3.0f);
 }
 
+static int in_cache = 0;
+
+unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
+{
+	std::string name = fname;
+	TileCache::iterator it = m_Cache.find(name);
+	if (it == m_Cache.end())
+	{
+		// not found in cache; load it
+#if 1
+		vtString str = StartOfFilename((char *)fname);
+		VTLOG1(" disk load: ");
+		VTLOG1(str);
+		VTLOG1("\n");
+#endif
+		int bytes;
+		unsigned char *data = readfile(fname, &bytes);
+		if (!data)
+			return NULL;
+
+		// and add it to the cache
+		CacheEntry entry;
+		entry.data = data;
+		entry.size = bytes;
+		m_Cache[name] = entry;
+		in_cache++;
+
+		// don't return the original, return a copy
+		unsigned char *data2 = (unsigned char *) malloc(bytes);
+		memcpy(data2, data, bytes);
+		return data2;
+	}
+	else
+	{
+#if 1
+		vtString str = StartOfFilename((char *)fname);
+		VTLOG1("from cache: ");
+		VTLOG1(str);
+		VTLOG1("\n");
+#endif
+		// found in cache
+		CacheEntry entry = it->second;
+//		unsigned char *cached = it->second;
+//		return  cached;
+
+		// don't return the original, return a copy
+		unsigned char *data2 = (unsigned char *) malloc(entry.size);
+		memcpy(data2, entry.data, entry.size);
+		return data2;
+	}
+	return NULL;
+}
+
+void vtTiledGeom::EmptyCache()
+{
+	int count = 0;
+	for (TileCache::iterator it = m_Cache.begin(); it != m_Cache.end(); it++)
+	{
+		free(it->second.data);
+		count++;
+	}
+	m_Cache.clear();
+}
+
 void vtTiledGeom::DoRender()
 {
-	float ex = m_eyepos_ogl.x;
-	float ey = m_eyepos_ogl.y;
-	float ez = m_eyepos_ogl.z;
-
-	float ux = eye_up.x;
-	float uy = eye_up.y;
-	float uz = eye_up.z;
-
-	float dx = eye_forward.x;
-	float dy = eye_forward.y;
-	float dz = eye_forward.z;
-
-	const int fpu=0;
+	// One update every 5 frames is a good approximation
+	const int fpu=5;
 
 	// update vertex arrays
-	m_pMiniLoad->draw(res,
-				ex,ey,ez,
-				dx,dy,dz,
-				ux, uy, uz,
-				m_fFOVY,m_fAspect,
-				m_fNear,m_fFar,
-				1.0f,
+	m_pMiniLoad->draw(m_fResolution,
+				m_eyepos_ogl.x, m_eyepos_ogl.y, m_eyepos_ogl.z,
+				eye_forward.x, eye_forward.y, eye_forward.z,
+				eye_up.x, eye_up.y, eye_up.z,
+				m_fFOVY, m_fAspect,
+				m_fNear, m_fFar,
+				m_fDrawScale,
 				fpu);
 
-  #if USE_VERTEX_CACHE
+#if USE_VERTEX_CACHE
 	// render vertex arrays
-	int vtx=cache.rendercache();
-  #endif
+	static int last_vtx = 0;
+	int vtx=m_pMiniCache->rendercache();
+#endif
+
+	// When vertex count changes, we know a full update occurred
+	if (vtx != last_vtx)
+	{
+		// adaptively adjust resolution threshold up or down to attain
+		// the desired polygon (vertex) count target
+		int diff = vtx - m_iVertexTarget;
+		int iRange = m_iVertexTarget / 10;		// ensure within 10%
+
+		// If we aren't within the triangle count range adjust the input resolution
+		// like a binary search
+		if (diff < -iRange || diff > iRange)
+		{
+	//		VTLOG("diff %d, ", diff);
+			if (diff < -iRange)
+			{
+				m_fLResolution = m_fResolution;
+				
+				// if the high end isn't high enough, double it
+				if (m_fLResolution + 5 >= m_fHResolution)
+				{
+					VTLOG1("increase HRes, ");
+					m_fHResolution *= 10;
+				}
+			}
+			else
+			{
+				m_fHResolution = m_fResolution;
+				if (m_fLResolution + 5 >= m_fHResolution)
+				{
+					VTLOG1("decrease LRes, ");
+					m_fLResolution = 0;
+				}
+			}
+
+			m_fResolution = m_fLResolution + (m_fHResolution - m_fLResolution) / 2;
+			VTLOG("rez: [%.1f, %.1f, %.1f] (%d/%d)\n", m_fLResolution, m_fResolution, m_fHResolution, vtx, m_iVertexTarget);
+
+			// keep the error within reasonable bounds
+			if (m_fResolution < 5.0f)
+				m_fResolution = 5.0f;
+			if (m_fResolution > 4E7)
+				m_fResolution = 4E7;
+		}
+	}
+	last_vtx = vtx;
 }
 
 void vtTiledGeom::DoCalcBoundBox(FBox3 &box)
@@ -497,7 +632,13 @@ bool vtTiledGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 	if (alt == -FLT_MAX)
 		return false;
 
-	fAltitude = alt;
+	if (bTrue)
+		// convert stored value to true value
+		fAltitude = alt / m_fMaximumScale;
+	else
+		// convert stored value to drawn value
+		fAltitude = alt * m_fDrawScale;
+
 	return true;
 }
 
@@ -511,7 +652,13 @@ bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 	if (alt == -FLT_MAX)
 		return false;
 
-	fAltitude = alt;
+	if (bTrue)
+		// convert stored value to true value
+		fAltitude = alt / m_fMaximumScale;
+	else
+		// convert stored value to drawn value
+		fAltitude = alt * m_fDrawScale;
+
 	return true;
 }
 

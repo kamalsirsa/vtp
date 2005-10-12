@@ -27,16 +27,15 @@ public:
 };
 #endif
 
-#include "mini.h"
-#include "miniload.hpp"
-#include "minicache.hpp"
-
+// Simple cache of tiles loaded from disk
 typedef unsigned char *ucharptr;
+struct CacheEntry { unsigned char *data; int size; };
+typedef std::map<std::string, CacheEntry> TileCache;
 
 /**
- * This class represents a textured terrain heightfield, which is drawn using
- * the terrain paging capabilities of the libMini.  It is rendered directly
- * using OpenGL, instead of going through whichever scene graph vtlib is
+ * This class represents a tiled textured terrain heightfield, which is drawn
+ * using the tiled paging capabilities of Roettger's libMini.  It is rendered
+ * directly using OpenGL, instead of going through whichever scene graph vtlib is
  * built on.
  */
 class vtTiledGeom : public vtDynGeom, public vtHeightField3d
@@ -46,6 +45,10 @@ public:
 	~vtTiledGeom();
 
 	bool ReadTileList(const char *dataset_fname_elev, const char *dataset_fname_image);
+	void SetVerticalExag(float fExag);
+	float GetVerticalExag() { return m_fDrawScale; }
+	void SetVertexTarget(int iVertices);
+	int GetVertexTarget() { return m_iVertexTarget; }
 
 	// overrides for vtDynGeom
 	void DoRender();
@@ -62,13 +65,14 @@ public:
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const;
 
+	// Tile cache methods
+	unsigned char *FetchAndCacheTile(const char *fname);
+	void EmptyCache();
+
 	int cols, rows;
 	float coldim, rowdim;
 	int lod0size;
 	ucharptr *hfields, *textures;
-	float exaggeration;
-	float res;
-	float minres;
 
 	IPoint2 m_window_size;
 	FPoint3 m_eyepos_ogl;
@@ -78,13 +82,27 @@ public:
 	FPoint3 eye_up, eye_forward;
 	FPoint3 center;
 
-	// the terrain and its cache
+	// vertical scale (exaggeration)
+	float m_fMaximumScale;
+	float m_fHeightScale;
+	float m_fDrawScale;
+
+	// detail level and vertex target
+	float m_fResolution;
+	float m_fHResolution;
+	float m_fLResolution;
+	int m_iVertexTarget;
+
+	// the libMini objects
 	class miniload *m_pMiniLoad;
 	class minitile *m_pMiniTile;
-	class minicache cache;
+	class minicache *m_pMiniCache;	// This is cache of OpenGL primitives to be rendered
 
 	// CRS of this tileset
 	vtProjection m_proj;
+
+	// Tile cache in host RAM, to reduce loading from disk
+	TileCache m_Cache;
 
 protected:
 	void SetupMiniLoad();
