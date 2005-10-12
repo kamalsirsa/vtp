@@ -752,7 +752,6 @@ bool vtTerrain::_CreateDynamicTerrain()
 		return false;
 	}
 
-	m_pDynGeom->SetPixelError(m_Params.GetValueFloat(STR_PIXELERROR));
 	m_pDynGeom->SetPolygonCount(m_Params.GetValueInt(STR_TRICOUNT));
 	m_pDynGeom->SetMaterials(m_pTerrMats);
 
@@ -2097,6 +2096,7 @@ bool vtTerrain::CreateStep1()
 		m_pTiledGeom = new vtTiledGeom;
 		m_pTiledGeom->SetName2("Tiled Geometry Container");
 		m_pTiledGeom->SetVerticalExag(m_fVerticalExag);
+		m_pTiledGeom->SetVertexTarget(m_Params.GetValueInt(STR_VERTCOUNT));
 
 		bool status = m_pTiledGeom->ReadTileList(elev_path, tex_path);
 

@@ -122,13 +122,13 @@ wxSizer *UtilDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer 
 const int ID_USE_GRID = 10074;
 const int ID_FILENAME = 10075;
 const int ID_LODMETHOD = 10076;
-const int ID_TRICOUNT = 10077;
-const int ID_PIXELERROR = 10078;
-const int ID_TRISTRIPS = 10079;
-const int ID_USE_TIN = 10080;
-const int ID_FILENAME_TIN = 10081;
-const int ID_USE_TILESET = 10082;
-const int ID_FILENAME_TILES = 10083;
+const int ID_TRI_COUNT = 10077;
+const int ID_TRISTRIPS = 10078;
+const int ID_USE_TIN = 10079;
+const int ID_FILENAME_TIN = 10080;
+const int ID_USE_TILESET = 10081;
+const int ID_FILENAME_TILES = 10082;
+const int ID_VTX_COUNT = 10083;
 const int ID_VERTEXAG = 10084;
 wxSizer *TParams1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 

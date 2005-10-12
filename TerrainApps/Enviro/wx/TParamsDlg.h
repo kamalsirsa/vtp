@@ -71,9 +71,9 @@ public:
 
 	// LOD
 	int	 m_iLodMethod;
-	float   m_fPixelError;
 	int	 m_iTriCount;
 	bool	m_bTriStrips;
+	int	 m_iVertCount;
 
 	// time
 	bool	m_bTimeOn;

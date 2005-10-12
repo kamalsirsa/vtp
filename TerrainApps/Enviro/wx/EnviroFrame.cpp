@@ -25,6 +25,7 @@
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/DynTerrain.h"
+#include "vtlib/core/TiledGeom.h"
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/Globe.h"
@@ -710,20 +711,23 @@ void EnviroFrame::ChangeFlightSpeed(float factor)
 
 void EnviroFrame::ChangeTerrainDetail(bool bIncrease)
 {
-	vtTerrain *t = GetCurrentTerrain();
-	if (!t) return;
-	vtDynTerrainGeom *pTerr = t->GetDynTerrain();
+	vtTerrain *pTerr = GetCurrentTerrain();
 	if (!pTerr) return;
-
-	if (bIncrease)
+	vtDynTerrainGeom *pDyn = pTerr->GetDynTerrain();
+	if (pDyn)
 	{
-		pTerr->SetPixelError(pTerr->GetPixelError()*1.1f);
-		pTerr->SetPolygonCount(pTerr->GetPolygonCount()+1000);
+		if (bIncrease)
+			pDyn->SetPolygonCount(pDyn->GetPolygonCount()+1000);
+		else
+			pDyn->SetPolygonCount(pDyn->GetPolygonCount()-1000);
 	}
-	else
+	vtTiledGeom *pTiled = pTerr->GetTiledGeom();
+	if (pTiled)
 	{
-		pTerr->SetPixelError(pTerr->GetPixelError()/1.1f);
-		pTerr->SetPolygonCount(pTerr->GetPolygonCount()-1000);
+		if (bIncrease)
+			pTiled->SetVertexTarget(pTiled->GetVertexTarget()+1000);
+		else
+			pTiled->SetVertexTarget(pTiled->GetVertexTarget()-1000);
 	}
 }
 

@@ -200,9 +200,9 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	// LOD
 	AddValidator(ID_LODMETHOD, &m_iLodMethod);
-	AddNumValidator(ID_PIXELERROR, &m_fPixelError, 2);
-	AddNumValidator(ID_TRICOUNT, &m_iTriCount);
+	AddNumValidator(ID_TRI_COUNT, &m_iTriCount);
 	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
+	AddNumValidator(ID_VTX_COUNT, &m_iVertCount);
 
 	// time
 	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
@@ -318,9 +318,9 @@ void TParamsDlg::SetParams(const TParams &Params)
 
 	// LOD
 	m_iLodMethod =		Params.GetLodMethod();
-	m_fPixelError =		Params.GetValueFloat(STR_PIXELERROR);
 	m_iTriCount =		Params.GetValueInt(STR_TRICOUNT);
 	m_bTriStrips =		Params.GetValueBool(STR_TRISTRIPS);
+	m_iVertCount =		Params.GetValueInt(STR_VERTCOUNT);
 
 	// time
 	m_bTimeOn =		 Params.GetValueBool(STR_TIMEON);
@@ -454,9 +454,9 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	// LOD
 	Params.SetLodMethod((enum LodMethodEnum) m_iLodMethod);
-	Params.SetValueFloat(STR_PIXELERROR, m_fPixelError);
 	Params.SetValueInt(STR_TRICOUNT, m_iTriCount);
 	Params.SetValueBool(STR_TRISTRIPS, m_bTriStrips);
+	Params.SetValueInt(STR_VERTCOUNT, m_iVertCount);
 
 	// time
 	Params.SetValueBool(STR_TIMEON, m_bTimeOn);
@@ -565,10 +565,10 @@ void TParamsDlg::UpdateEnableState()
 	GetFilenameTileset()->Enable(m_bTileset);
 
 	FindWindow(ID_LODMETHOD)->Enable(m_bGrid);
-	FindWindow(ID_PIXELERROR)->Enable(m_bGrid && m_iLodMethod == LM_TOPOVISTA);
-	FindWindow(ID_TRICOUNT)->Enable(m_bGrid && m_iLodMethod != LM_TOPOVISTA);
+	FindWindow(ID_TRI_COUNT)->Enable(m_bGrid && m_iLodMethod != LM_TOPOVISTA);
 	FindWindow(ID_TRISTRIPS)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY);
 	FindWindow(ID_DETAILTEXTURE)->Enable(m_bGrid);
+	FindWindow(ID_VTX_COUNT)->Enable(m_bTileset);
 
 	FindWindow(ID_NONE)->Enable(!m_bTileset);
 	FindWindow(ID_SINGLE)->Enable(!m_bTileset);

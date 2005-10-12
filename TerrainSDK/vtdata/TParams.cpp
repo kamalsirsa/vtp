@@ -85,9 +85,9 @@ TParams::TParams() : vtTagArray()
 
 	AddTag(STR_SURFACE_TYPE, "0");	// 0 = single grid
 	AddTag(STR_LODMETHOD, "0");
-	AddTag(STR_PIXELERROR, "2.0");
 	AddTag(STR_TRICOUNT, "10000");
 	AddTag(STR_TRISTRIPS, "true");
+	AddTag(STR_VERTCOUNT, "20000");
 
 	AddTag(STR_TIMEON, "false");
 	AddTag(STR_INITTIME, "104 2 21 10 0 0");	// 2004, spring, 10am
@@ -233,6 +233,7 @@ bool TParams::LoadFromXML(const char *fname)
 	RemoveTag("Label_Size");
 	RemoveTag("Overlay");
 	RemoveTag("Num_Tiles");
+	RemoveTag("Pixel_Error");
 
 	// Is_TIN is obsolete, use Surface_Type=1 instead
 	bool bOldTin = GetValueBool("Is_TIN");
