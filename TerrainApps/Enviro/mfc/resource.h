@@ -44,7 +44,6 @@
 #define IDC_SIZEEXAG                    1023
 #define IDC_TIMEOFDAY                   1024
 #define IDC_INITTIME                    1025
-#define IDC_PIXELERROR                  1026
 #define IDC_DYNAMIC                     1028
 #define IDC_FOGDISTANCE                 1029
 #define IDC_MOTIONSCRIPT                1030

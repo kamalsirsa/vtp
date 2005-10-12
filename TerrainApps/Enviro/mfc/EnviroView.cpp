@@ -183,20 +183,14 @@ void EnviroView::OnEnviroIncrease()
 {
 	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 	if (pTerr)
-	{
-		pTerr->SetPixelError(pTerr->GetPixelError()+0.1f);
 		pTerr->SetPolygonCount(pTerr->GetPolygonCount()+1000);
-	}
 }
 
 void EnviroView::OnEnviroDecrease()
 {
 	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 	if (pTerr)
-	{
-		pTerr->SetPixelError(pTerr->GetPixelError()-0.1f);
 		pTerr->SetPolygonCount(pTerr->GetPolygonCount()-1000);
-	}
 }
 
 void EnviroView::OnEnviroDriveroads()

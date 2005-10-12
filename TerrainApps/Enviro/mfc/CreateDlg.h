@@ -39,7 +39,6 @@ public:
 	CComboBox	m_cbLODFilename;
 	CString	m_strFilename;
 	float	m_fVerticalExag;
-	float	m_fPixelError;
 	BOOL	m_bTimeOn;
 	BOOL	m_bSky;
 	BOOL	m_bFog;

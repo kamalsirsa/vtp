@@ -28,7 +28,6 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	//{{AFX_DATA_INIT(CCreateDlg)
 	m_strFilename = _T("");
 	m_fVerticalExag = 1.0f;
-	m_fPixelError = 2.0f;
 	m_bTimeOn = FALSE;
 	m_bSky = TRUE;
 	m_bFog = FALSE;
@@ -109,7 +108,6 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_CBString(pDX, IDC_FILENAME, m_strFilename);
 	DDX_Text(pDX, IDC_VERTEXAG, m_fVerticalExag);
 	DDV_MinMaxFloat(pDX, m_fVerticalExag, 0.1f, 5.f);
-	DDX_Text(pDX, IDC_PIXELERROR, m_fPixelError);
 	DDX_Check(pDX, IDC_TIMEOFDAY, m_bTimeOn);
 	DDX_Check(pDX, IDC_SKY, m_bSky);
 	DDX_Check(pDX, IDC_FOG, m_bFog);
@@ -263,7 +261,6 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_fNavSpeed =		Params.GetValueFloat(STR_NAVSPEED);
 
 	m_iLodMethod =		Params.GetLodMethod();
-	m_fPixelError =		Params.GetValueFloat(STR_PIXELERROR);
 	m_bTriStrips =		Params.GetValueBool(STR_TRISTRIPS);
 	m_bDetailTexture =	Params.GetValueBool(STR_DETAILTEXTURE);
 
@@ -322,7 +319,6 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.SetValueFloat(STR_NAVSPEED, m_fNavSpeed);
 
 	Params.SetLodMethod((enum LodMethodEnum) m_iLodMethod);
-	Params.SetValueFloat(STR_PIXELERROR, m_fPixelError);
 	Params.SetValueBool(STR_TRISTRIPS, m_bTriStrips);
 	Params.SetValueBool(STR_DETAILTEXTURE, m_bDetailTexture);
 
