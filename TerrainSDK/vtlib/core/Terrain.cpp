@@ -741,7 +741,6 @@ bool vtTerrain::_CreateDynamicTerrain()
 	m_pDynGeom->SetOptions(m_Params.GetValueBool(STR_TRISTRIPS),
 		texture_patches, m_Params.GetValueInt(STR_TILESIZE));
 
-	m_fVerticalExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
 	DTErr result = m_pDynGeom->Init(m_pElevGrid, m_fVerticalExag);
 	if (result != DTErr_OK)
 	{
@@ -2129,9 +2128,14 @@ bool vtTerrain::CreateStep2(vtTransform *pSunLight)
  */
 bool vtTerrain::CreateStep3()
 {
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// if we aren't going to produce the terrain surface, nothing to do
 	if (m_Params.GetValueBool(STR_SUPPRESS))
 		return true;
+
+	m_fVerticalExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
 
 	if (m_Params.GetValueInt(STR_SURFACE_TYPE) == 0)	// single grid
 		return CreateFromGrid();
