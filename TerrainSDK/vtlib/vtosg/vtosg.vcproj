@@ -1367,6 +1367,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\TiledGeom.cpp">
+			</File>
+			<File
 				RelativePath="..\core\TimeEngines.cpp">
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1667,6 +1670,9 @@
 			</File>
 			<File
 				RelativePath="..\core\TerrainScene.h">
+			</File>
+			<File
+				RelativePath="..\core\TiledGeom.h">
 			</File>
 			<File
 				RelativePath="..\core\TimeEngines.h">
