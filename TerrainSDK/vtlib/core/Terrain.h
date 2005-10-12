@@ -226,6 +226,7 @@ public:
 
 	// query
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
+	vtTiledGeom *GetTiledGeom() { return m_pTiledGeom; }
 	vtGroup *GetTopGroup() { return m_pTerrainGroup; }
 	vtHeightField3d *GetHeightField();
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
