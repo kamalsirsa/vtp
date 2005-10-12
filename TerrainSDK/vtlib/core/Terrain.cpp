@@ -785,6 +785,10 @@ void vtTerrain::SetVerticalExag(float fExag)
 
 		m_pDynGeom->SetVerticalExag(m_fVerticalExag);
 	}
+	else if (m_pTiledGeom != NULL)
+	{
+		m_pTiledGeom->SetVerticalExag(m_fVerticalExag);
+	}
 }
 
 void vtTerrain::_CreateErrorMessage(DTErr error, vtElevationGrid *pGrid)
@@ -1977,6 +1981,8 @@ bool vtTerrain::CreateStep1()
 	vtGetScene()->AddEngine(m_pEngineGroup);
 	m_AnimContainer.SetEngineContainer(m_pEngineGroup);
 
+	m_fVerticalExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
+
 	if (m_pInputGrid)
 	{
 		m_pElevGrid = m_pInputGrid;
@@ -2090,6 +2096,7 @@ bool vtTerrain::CreateStep1()
 		// Elevation input is a set of tiles, which will be loaded later as needed
 		m_pTiledGeom = new vtTiledGeom;
 		m_pTiledGeom->SetName2("Tiled Geometry Container");
+		m_pTiledGeom->SetVerticalExag(m_fVerticalExag);
 
 		bool status = m_pTiledGeom->ReadTileList(elev_path, tex_path);
 
@@ -2128,14 +2135,9 @@ bool vtTerrain::CreateStep2(vtTransform *pSunLight)
  */
 bool vtTerrain::CreateStep3()
 {
-	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
 	// if we aren't going to produce the terrain surface, nothing to do
 	if (m_Params.GetValueBool(STR_SUPPRESS))
 		return true;
-
-	m_fVerticalExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
 
 	if (m_Params.GetValueInt(STR_SURFACE_TYPE) == 0)	// single grid
 		return CreateFromGrid();
