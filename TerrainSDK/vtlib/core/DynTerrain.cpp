@@ -13,8 +13,7 @@
 
 vtDynTerrainGeom::vtDynTerrainGeom() : vtDynGeom(), vtHeightFieldGrid3d()
 {
-	m_fPixelError = 2.0f;
-	m_iPolygonTarget = 10000;
+	m_iPolygonTarget = 20000;
 
 	m_bCulleveryframe = true;
 	m_bCullonce = false;
@@ -226,16 +225,6 @@ void vtDynTerrainGeom::SetCull(bool bOnOff)
 void vtDynTerrainGeom::CullOnce()
 {
 	m_bCullonce = true;
-}
-
-void vtDynTerrainGeom::SetPixelError(float fPixelError)
-{
-	m_fPixelError = fPixelError;
-}
-
-float vtDynTerrainGeom::GetPixelError()
-{
-	return m_fPixelError;
 }
 
 void vtDynTerrainGeom::SetPolygonCount(int iPolygonCount)

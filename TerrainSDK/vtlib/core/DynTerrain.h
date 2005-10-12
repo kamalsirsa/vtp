@@ -44,8 +44,6 @@ public:
 	void SetOptions(bool bUseTriStrips, int iBlockArrayDim, int iTextureSize);
 	virtual void SetVerticalExag(float fExag) {}
 
-	void SetPixelError(float fPixelError);
-	float GetPixelError();
 	virtual void SetPolygonCount(int iPolygonCount);
 	int GetPolygonCount();
 
@@ -87,9 +85,7 @@ protected:
 	// tables for quick conversion from x,y index to output X,Z coordinates
 	float	*m_fXLookup, *m_fZLookup;
 
-	// these determine the global level of detail
-	// (implementation classes can choose which to obey)
-	float	m_fPixelError;
+	// this determines the overall level of detail
 	int		m_iPolygonTarget;
 
 	// statistics

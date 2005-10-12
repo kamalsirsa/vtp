@@ -1735,15 +1735,10 @@ void Enviro::DescribeCLOD(vtString &str)
 	// McNally CLOD algo uses a triangle count target, all other current
 	// implementations use a floating point factor relating to error/detail
 	//
-	if (t->GetParams().GetLodMethod() == LM_MCNALLY ||
-		t->GetParams().GetLodMethod() == LM_ROETTGER)
+	LodMethodEnum method = t->GetParams().GetLodMethod();
+	if (method == LM_MCNALLY || method == LM_ROETTGER)
 	{
 		str.Format("CLOD: target %d, drawn %d ", dtg->GetPolygonCount(),
-			dtg->GetNumDrawnTriangles());
-	}
-	else
-	{
-		str.Format("CLOD detail: %.1f, drawn %d", dtg->GetPixelError(),
 			dtg->GetNumDrawnTriangles());
 	}
 }
