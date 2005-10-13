@@ -452,10 +452,10 @@ void MainFrame::CreateMenus()
 	areaMenu->Append(ID_AREA_TYPEIN, _("Numeric Values"),
 		_("Set the Area Tool rectangle by text entry of coordinates."));
 	areaMenu->AppendSeparator();
-	areaMenu->Append(ID_AREA_EXPORT_ELEV, _("&Merge && Resample Elevation"),
+	areaMenu->Append(ID_AREA_EXPORT_ELEV, _("Merge && Resample &Elevation"),
 		_("Sample all elevation data within the Area Tool to produce a single, new elevation."));
 #ifndef ELEVATION_ONLY
-	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _("Extract && Export Image"),
+	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _("Merge && Resample &Imagery"),
 		_("Sample imagery within the Area Tool to produce a single, new image."));
 	areaMenu->Append(ID_AREA_GENERATE_VEG, _("Generate Vegetation"),
 		_("Generate Vegetation File (*.vf) containg plant distribution."));
@@ -2557,8 +2557,11 @@ void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 	dlg.SetTilingOptions(tileopts);
 	dlg.SetView(GetView());
 
-	if (dlg.ShowModal() != wxID_OK)
+	int ret = dlg.ShowModal();
+	GetView()->HideGridMarks();
+	if (ret == wxID_CANCEL)
 		return;
+
 	dlg.GetTilingOptions(tileopts);
 
 	OpenProgressDialog(_T("Writing tiles"), true);
@@ -2717,12 +2720,15 @@ void MainFrame::OnImageExportTiles(wxCommandEvent& event)
 	dlg.SetTilingOptions(tileopts);
 	dlg.SetView(GetView());
 
-	if (dlg.ShowModal() != wxID_OK)
+	int ret = dlg.ShowModal();
+	GetView()->HideGridMarks();
+	if (ret == wxID_CANCEL)
 		return;
+
 	dlg.GetTilingOptions(tileopts);
 
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = pIL->WriteGridOfPGMPyramids(tileopts);
+	bool success = pIL->WriteGridOfPGMPyramids(tileopts, GetView());
 	CloseProgressDialog();
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);

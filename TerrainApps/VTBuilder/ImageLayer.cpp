@@ -21,7 +21,7 @@
 #include "vtui/Helper.h"
 #include "ogr_spatialref.h"
 #include "gdal_priv.h"
-#include "ScaledView.h"
+#include "BuilderView.h"	// For grid marks
 #include "ImageLayer.h"
 #include "Helper.h"
 #include "Frame.h"
@@ -1306,7 +1306,7 @@ bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 #endif
 }
 
-bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
+bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView)
 {
 	// largest tile size
 	int base_tilesize = opts.lod0size;
@@ -1409,6 +1409,10 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts)
 				msg.Printf(_("Writing tile '%hs', size %dx%d"),
 					(const char *)fname, tilesize, tilesize);
 				UpdateProgressDialog(done*99/total, msg);
+
+				// also draw our progress in the main view
+				if (pView)
+					pView->ShowGridMarks(area, opts.cols, opts.rows, col, row);
 
 				FILE *fp = fopen(fname, "wb");
 				fprintf(fp, "P6\n");

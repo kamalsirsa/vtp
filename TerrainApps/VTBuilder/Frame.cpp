@@ -415,6 +415,7 @@ void MainFrame::RefreshToolbar()
 
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_ELEVATION], lt == LT_ELEVATION);
 #ifndef ELEVATION_ONLY
+	m_pMenuBar->EnableTop(m_iLayerMenu[LT_IMAGE], lt == LT_IMAGE);
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_ROAD], lt == LT_ROAD);
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_UTILITY], lt == LT_UTILITY);
 //	m_pMenuBar->EnableTop(m_iLayerMenu[LT_VEG], lt == LT_VEG);
@@ -1564,8 +1565,11 @@ void MainFrame::ExportElevation()
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
 	dlg.m_bFloats = floatmode;
+	dlg.SetView(GetView());
 
-	if (dlg.ShowModal() == wxID_CANCEL)
+	int ret = dlg.ShowModal();
+	GetView()->HideGridMarks();
+	if (ret == wxID_CANCEL)
 		return;
 
 	// Make new terrain
@@ -1611,7 +1615,7 @@ void MainFrame::ExportElevation()
 		if (success)
 			DisplayAndLog("Successfully wrote to '%s'", (const char *) dlg.m_tileopts.fname);
 		else
-			DisplayAndLog("Could not successfully write to '%s'", (const char *) dlg.m_tileopts.fname);
+			DisplayAndLog("Did not successfully write to '%s'", (const char *) dlg.m_tileopts.fname);
 	}
 }
 
@@ -1881,38 +1885,51 @@ void MainFrame::ExportImage()
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
+	dlg.SetView(GetView());
 
-	if (dlg.ShowModal() == wxID_CANCEL)
+	int ret = dlg.ShowModal();
+	GetView()->HideGridMarks();
+	if (ret == wxID_CANCEL)
 		return;
-
-	wxString filter = _("All Files|*.*");
-	AddType(filter, FSTRING_TIF);
-	AddType(filter, FSTRING_JPEG);
-
-	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Export Image"), _T(""), _T(""), filter, wxSAVE);
-	saveFile.SetFilterIndex(1);
-	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	if (!bResult)
-		return;
-	wxString2 strPathName = saveFile.GetPath();
 
 	// Make new image
 	vtImageLayer *pOutput = new vtImageLayer(dlg.m_area, dlg.m_iSizeX,
 			dlg.m_iSizeY, m_proj);
-	pOutput->SetLayerFilename(strPathName);
 
 	// fill in the value for pBig by merging samples from all other terrain
 	bool success = SampleCurrentImages(pOutput);
-	if (success)
+	if (!success)
 	{
-		success = pOutput->SaveToFile(strPathName.mb_str());
-		if (success)
-			DisplayAndLog("Successfully wrote image file '%s'", strPathName.mb_str());
-		else
-			DisplayAndLog(("Couldn't write image file."));
+		delete pOutput;
+		return;
 	}
-	delete pOutput;
+
+	if (dlg.m_bNewLayer)
+		AddLayerWithCheck(pOutput);
+	else if (dlg.m_bToFile)
+	{
+		OpenProgressDialog(_T("Writing file"), true);
+		const char *fname = dlg.m_strToFile.mb_str();
+		success = pOutput->SaveToFile(fname);
+		delete pOutput;
+		CloseProgressDialog();
+		if (success)
+			DisplayAndLog("Successfully wrote image file '%s'", fname);
+		else
+			DisplayAndLog(("Did not successfully write file '%s'."), fname);
+	}
+	else if (dlg.m_bToTiles)
+	{
+		OpenProgressDialog(_T("Writing tiles"), true);
+		bool success = pOutput->WriteGridOfPGMPyramids(dlg.m_tileopts, GetView());
+		GetView()->HideGridMarks();
+		delete pOutput;
+		CloseProgressDialog();
+		if (success)
+			DisplayAndLog("Successfully wrote to '%s'", (const char *) dlg.m_tileopts.fname);
+		else
+			DisplayAndLog("Did not successfully write to '%s'", (const char *) dlg.m_tileopts.fname);
+	}
 }
 
 

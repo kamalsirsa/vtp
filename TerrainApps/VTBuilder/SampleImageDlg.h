@@ -10,7 +10,11 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 #include "vtdata/MathTypes.h"
+#include "TileDlg.h"
+
+class BuilderView;
 
 // WDR: class declarations
 
@@ -28,15 +32,31 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for SampleImageDlg
+	wxButton* GetDotDotDot()  { return (wxButton*) FindWindow( ID_DOTDOTDOT ); }
+	wxButton* GetTileOptions()  { return (wxButton*) FindWindow( ID_TILE_OPTIONS ); }
+	wxTextCtrl* GetTextToFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_FILE ); }
+	wxTextCtrl* GetTextTileInfo()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TILE_INFO ); }
+	wxRadioButton* GetRadioToFile()  { return (wxRadioButton*) FindWindow( ID_RADIO_TO_FILE ); }
+	wxRadioButton* GetRadioCreateNew()  { return (wxRadioButton*) FindWindow( ID_RADIO_CREATE_NEW ); }
 	wxTextCtrl* GetSpacingY()  { return (wxTextCtrl*) FindWindow( ID_SPACINGY ); }
 	wxTextCtrl* GetSpacingX()  { return (wxTextCtrl*) FindWindow( ID_SPACINGX ); }
 	wxTextCtrl* GetSizeY()  { return (wxTextCtrl*) FindWindow( ID_SIZEY ); }
 	wxTextCtrl* GetSizeX()  { return (wxTextCtrl*) FindWindow( ID_SIZEX ); }
 	wxButton* GetBigger()  { return (wxButton*) FindWindow( ID_BIGGER ); }
 	wxButton* GetSmaller()  { return (wxButton*) FindWindow( ID_SMALLER ); }
-	wxCheckBox* GetTiling()  { return (wxCheckBox*) FindWindow( ID_TILING ); }
+	wxCheckBox* GetConstrain()  { return (wxCheckBox*) FindWindow( ID_CONSTRAIN ); }
+	wxCheckBox* Get4x4Tiling()  { return (wxCheckBox*) FindWindow( ID_TILING ); }
+
+	void SetView(BuilderView *pView) { m_pView = pView; }
 	void RecomputeSize();
+	void FormatTilingString();
 	void EnableBasedOnConstraint();
+
+	bool m_bNewLayer;
+	bool m_bToFile;
+	bool m_bToTiles;
+	wxString2 m_strToFile;
+	wxString2 m_strTileInfo;
 
 	double  m_fSpacingX;
 	double  m_fSpacingY;
@@ -54,11 +74,17 @@ public:
 	int		m_power;
 	bool	m_bSetting;
 
+	TilingOptions	m_tileopts;
+
 private:
 	// WDR: member variable declarations for SampleImageDlg
-	
+	BuilderView *m_pView;
+
 private:
 	// WDR: handler declarations for SampleImageDlg
+	void OnRadioOutput( wxCommandEvent &event );
+	void OnTileOptions( wxCommandEvent &event );
+	void OnDotDotDot( wxCommandEvent &event );
 	void OnSpacingXY( wxCommandEvent &event );
 	void OnSizeXY( wxCommandEvent &event );
 	void OnConstrain( wxCommandEvent &event );

@@ -14,6 +14,8 @@
 #include "vtdata/MathTypes.h"
 #include "TileDlg.h"
 
+class BuilderView;
+
 // WDR: class declarations
 
 //----------------------------------------------------------------------------
@@ -45,6 +47,8 @@ public:
 	wxButton* GetBigger()  { return (wxButton*) FindWindow( ID_BIGGER ); }
 	wxButton* GetSmaller()  { return (wxButton*) FindWindow( ID_SMALLER ); }
 	wxCheckBox* GetConstrain()  { return (wxCheckBox*) FindWindow( ID_CONSTRAIN ); }
+
+	void SetView(BuilderView *pView) { m_pView = pView; }
 	void RecomputeSize();
 	void FormatTilingString();
 	void EnableBasedOnConstraint();
@@ -78,6 +82,7 @@ public:
 private:
 	// WDR: member variable declarations for ResampleDlg
 	wxNumericValidator *spacing1, *spacing2;
+	BuilderView *m_pView;
 	
 private:
 	// WDR: handler declarations for ResampleDlg

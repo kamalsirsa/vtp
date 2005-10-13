@@ -15,6 +15,7 @@ class vtBitmap;
 class GDALDataset;
 class GDALRasterBand;
 class GDALColorTable;
+class BuilderView;
 
 // The following mechanism is for a small buffer, consisting of a small
 //  number of scanlines, to cache the results of accessing large image
@@ -69,7 +70,7 @@ public:
 
 	bool ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 		int iMetersPerPixel, int iUTMZone, const char *filename);
-	bool WriteGridOfPGMPyramids(const TilingOptions &opts);
+	bool WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView);
 
 protected:
 	void SetDefaults();

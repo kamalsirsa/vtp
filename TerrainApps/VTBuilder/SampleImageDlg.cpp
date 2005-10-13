@@ -1,7 +1,7 @@
 //
 // Name: SampleImageDlg.cpp
 //
-// Copyright (c) 2003-2004 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,8 @@
 #endif
 
 #include "SampleImageDlg.h"
+#include "TileDlg.h"
+#include "BuilderView.h"
 
 // WDR: class implementations
 
@@ -32,6 +34,11 @@ BEGIN_EVENT_TABLE(SampleImageDlg, AutoDialog)
 	EVT_TEXT( ID_SIZEY, SampleImageDlg::OnSizeXY )
 	EVT_TEXT( ID_SPACINGX, SampleImageDlg::OnSpacingXY )
 	EVT_TEXT( ID_SPACINGY, SampleImageDlg::OnSpacingXY )
+	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, SampleImageDlg::OnRadioOutput )
+	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, SampleImageDlg::OnRadioOutput )
+	EVT_RADIOBUTTON( ID_RADIO_TO_TILES, SampleImageDlg::OnRadioOutput )
+	EVT_BUTTON( ID_DOTDOTDOT, SampleImageDlg::OnDotDotDot )
+	EVT_BUTTON( ID_TILE_OPTIONS, SampleImageDlg::OnTileOptions )
 END_EVENT_TABLE()
 
 SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -44,6 +51,25 @@ SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString 
 	m_bSetting = false;
 
 	SampleImageDialogFunc( this, TRUE ); 
+
+	m_bNewLayer = true;
+	m_bToFile = false;
+	m_bToTiles = false;
+
+	m_tileopts.cols = 4;
+	m_tileopts.rows = 4;
+	m_tileopts.lod0size = 256;
+	m_tileopts.numlods = 3;
+
+	FormatTilingString();
+
+	// output options
+	AddValidator(ID_RADIO_CREATE_NEW, &m_bNewLayer);
+	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
+	AddValidator(ID_RADIO_TO_TILES, &m_bToTiles);
+
+	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
+	AddValidator(ID_TEXT_TILE_INFO, &m_strTileInfo);
 
 	// sampling
 	AddNumValidator(ID_SPACINGX, &m_fSpacingX);
@@ -83,7 +109,12 @@ void SampleImageDlg::OnInitDialog(wxInitDialogEvent& event)
 
 void SampleImageDlg::RecomputeSize()
 {
-	if (m_bConstraint)  // powers of 2 + 1
+	if (m_bToTiles)
+	{
+		m_iSizeX = m_tileopts.cols * m_tileopts.lod0size + 1;
+		m_iSizeY = m_tileopts.rows * m_tileopts.lod0size + 1;
+	}
+	else if (m_bConstraint)  // powers of 2 + 1
 		m_iSizeX = m_iSizeY = (1 << m_power);
 
 	if (m_bConstraint && m_bTiling)
@@ -94,6 +125,13 @@ void SampleImageDlg::RecomputeSize()
 	m_fSpacingX = m_fAreaX / m_iSizeX;
 	m_fSpacingY = m_fAreaY / m_iSizeY;
 }
+
+void SampleImageDlg::FormatTilingString()
+{
+	m_strTileInfo.Printf(_T("%d x %d @ %d"), m_tileopts.cols,
+		m_tileopts.rows, m_tileopts.lod0size);
+}
+
 
 // WDR: handler implementations for SampleImageDlg
 
@@ -148,13 +186,21 @@ void SampleImageDlg::OnConstrain( wxCommandEvent &event )
 
 void SampleImageDlg::EnableBasedOnConstraint()
 {
-	GetSmaller()->Enable(m_bConstraint);
-	GetBigger()->Enable(m_bConstraint);
-	GetTiling()->Enable(m_bConstraint);
-	GetSizeX()->SetEditable(!m_bConstraint);
-	GetSizeY()->SetEditable(!m_bConstraint);
-	GetSpacingX()->SetEditable(!m_bConstraint);
-	GetSpacingY()->SetEditable(!m_bConstraint);
+	GetTextToFile()->Enable(m_bToFile);
+	GetDotDotDot()->Enable(m_bToFile);
+
+	GetTextTileInfo()->Enable(m_bToTiles);
+	GetTileOptions()->Enable(m_bToTiles);
+
+	GetConstrain()->Enable(!m_bToTiles);
+	Get4x4Tiling()->Enable(m_bConstraint);
+	GetSmaller()->Enable(m_bConstraint && !m_bToTiles);
+	GetBigger()->Enable(m_bConstraint && !m_bToTiles);
+
+	GetSizeX()->SetEditable(!m_bConstraint && !m_bToTiles);
+	GetSizeY()->SetEditable(!m_bConstraint && !m_bToTiles);
+	GetSpacingX()->SetEditable(!m_bConstraint && !m_bToTiles);
+	GetSpacingY()->SetEditable(!m_bConstraint && !m_bToTiles);
 }
 
 void SampleImageDlg::OnBigger( wxCommandEvent &event )
@@ -177,5 +223,76 @@ void SampleImageDlg::OnSmaller( wxCommandEvent &event )
 	m_bSetting = false;
 }
 
+void SampleImageDlg::OnRadioOutput( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	EnableBasedOnConstraint();
+	RecomputeSize();
+
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+
+	if (m_bToTiles && m_pView)
+		m_pView->ShowGridMarks(m_area, m_tileopts.cols, m_tileopts.rows, -1, -1);
+	else
+		m_pView->HideGridMarks();
+}
+
+void SampleImageDlg::OnTileOptions( wxCommandEvent &event )
+{
+	TileDlg dlg(this, -1, _("Tiling Options"));
+
+	dlg.m_fEstX = m_fEstX;
+	dlg.m_fEstY = m_fEstY;
+	dlg.SetElevation(false);
+	dlg.SetArea(m_area);
+	dlg.SetTilingOptions(m_tileopts);
+	dlg.SetView(m_pView);
+
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		dlg.GetTilingOptions(m_tileopts);
+		FormatTilingString();
+		RecomputeSize();
+		TransferDataToWindow();
+	}
+}
+
+void SampleImageDlg::OnDotDotDot( wxCommandEvent &event )
+{
+	wxString filter = _("All Files|*.*");
+	AddType(filter, FSTRING_TIF);
+	AddType(filter, FSTRING_JPEG);
+
+	// ask the user for a filename
+	wxFileDialog saveFile(NULL, _("Save Imagery"), _T(""), _T(""), filter, wxSAVE);
+	saveFile.SetFilterIndex(0);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+
+	wxString2 name = saveFile.GetPath();
+
+	// work around incorrect extension(s) that wxFileDialog added
+	bool bPreferGZip = (saveFile.GetFilterIndex() == 1);
+
+	if (!name.Right(3).CmpNoCase(_T(".gz")))
+		name = name.Left(name.Len()-3);
+	if (!name.Right(3).CmpNoCase(_T(".bt")))
+		name = name.Left(name.Len()-3);
+
+	if (bPreferGZip)
+		name += _T(".bt.gz");
+	else
+		name += _T(".bt");
+
+	m_strToFile = name;
+
+	// update controls
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+}
 
 

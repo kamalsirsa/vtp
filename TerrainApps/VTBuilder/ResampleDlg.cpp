@@ -145,6 +145,7 @@ void ResampleDlg::OnTileOptions( wxCommandEvent &event )
 	dlg.SetElevation(true);
 	dlg.SetArea(m_area);
 	dlg.SetTilingOptions(m_tileopts);
+	dlg.SetView(m_pView);
 
 	if (dlg.ShowModal() == wxID_OK)
 	{
