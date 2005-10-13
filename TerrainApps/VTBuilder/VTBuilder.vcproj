@@ -39,7 +39,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdal_id.lib ws2_32.lib netcdf.lib libpng13d.lib zlib1d.lib libjpeg.lib ZipArchive_u.lib"
+				AdditionalDependencies="gdal_id.lib ws2_32.lib netcdf.lib libpng13d.lib zlib1d.lib libjpeg.lib ZipArchive.lib"
 				OutputFile="Debug_Unicode/VTBuilder_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -109,7 +109,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdal_i.lib ws2_32.lib netcdf.lib libpng13.lib zlib1.lib libjpeg.lib ZipArchive_u.lib"
+				AdditionalDependencies="gdal_i.lib ws2_32.lib netcdf.lib libpng13.lib zlib1.lib libjpeg.lib ZipArchive.lib"
 				OutputFile="Release_Unicode/VTBuilder_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

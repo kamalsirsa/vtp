@@ -12,60 +12,6 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Debug Unicode|Win32"
-			OutputDirectory=".\Debug_Unicode"
-			IntermediateDirectory=".\Debug_Unicode"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="1">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..,..\.."
-				PreprocessorDefinitions="_DEBUG;WIN32;_MBCS;_LIB;VTLIB_OSG=1;UNICODE"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="3"
-				PrecompiledHeaderThrough="vtlib/vtlib.h"
-				PrecompiledHeaderFile=".\Debug_Unicode/vtosg.pch"
-				AssemblerListingLocation=".\Debug_Unicode/"
-				ObjectFile=".\Debug_Unicode/"
-				ProgramDataBaseFileName=".\Debug_Unicode/"
-				BrowseInformation="1"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="Debug_Unicode\vtosgud.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
@@ -99,62 +45,6 @@
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile=".\Release\vtosg.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
-			Name="Release Unicode|Win32"
-			OutputDirectory=".\Release_Unicode"
-			IntermediateDirectory=".\Release_Unicode"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="1">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..,..\.."
-				PreprocessorDefinitions="NDEBUG;WIN32;_MBCS;_LIB;VTLIB_OSG=1;UNICODE"
-				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="3"
-				PrecompiledHeaderThrough="vtlib/vtlib.h"
-				PrecompiledHeaderFile=".\Release_Unicode/vtosg.pch"
-				AssemblerListingLocation=".\Release_Unicode/"
-				ObjectFile=".\Release_Unicode/"
-				ProgramDataBaseFileName=".\Release_Unicode/"
-				BrowseInformation="1"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="Release_Unicode\vtosgu.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -244,26 +134,7 @@
 			<File
 				RelativePath="..\core\AttribMap.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -285,26 +156,7 @@
 			<File
 				RelativePath="..\core\BryanTerrain.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -326,26 +178,7 @@
 			<File
 				RelativePath="..\core\Building3d.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -367,26 +200,7 @@
 			<File
 				RelativePath="..\core\Content3d.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -411,26 +225,7 @@
 			<File
 				RelativePath="..\core\CoreMeshMat.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -452,26 +247,7 @@
 			<File
 				RelativePath="..\core\CoreScene.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -493,26 +269,7 @@
 			<File
 				RelativePath="..\core\CustomTerrain.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -534,26 +291,7 @@
 			<File
 				RelativePath="..\core\DemeterTerrain.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -575,26 +313,7 @@
 			<File
 				RelativePath="..\core\DynTerrain.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -616,26 +335,7 @@
 			<File
 				RelativePath="..\core\Engine.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -657,28 +357,7 @@
 			<File
 				RelativePath="..\core\FelkelComponents.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
@@ -702,28 +381,7 @@
 			<File
 				RelativePath="..\core\FelkelIntersection.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
@@ -747,28 +405,7 @@
 			<File
 				RelativePath="..\core\FelkelStraightSkeleton.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="0"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
@@ -792,26 +429,7 @@
 			<File
 				RelativePath="..\core\Fence3d.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -836,26 +454,7 @@
 			<File
 				RelativePath="..\core\Globe.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -877,26 +476,7 @@
 			<File
 				RelativePath="..\core\IntersectionEngine.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -918,26 +498,7 @@
 			<File
 				RelativePath="..\core\Location.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -959,26 +520,7 @@
 			<File
 				RelativePath="..\core\LodGrid.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1000,26 +542,7 @@
 			<File
 				RelativePath="..\core\NavEngines.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1041,26 +564,7 @@
 			<File
 				RelativePath="..\core\Roads.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1082,26 +586,7 @@
 			<File
 				RelativePath="..\core\Route.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1123,26 +608,7 @@
 			<File
 				RelativePath="..\core\SkyDome.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1164,26 +630,7 @@
 			<File
 				RelativePath="..\core\SMTerrain.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1205,26 +652,7 @@
 			<File
 				RelativePath="..\core\SRTerrain.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1246,26 +674,7 @@
 			<File
 				RelativePath="..\core\Structure3d.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1287,26 +696,7 @@
 			<File
 				RelativePath="..\core\Terrain.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1328,26 +718,7 @@
 			<File
 				RelativePath="..\core\TerrainScene.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1372,26 +743,7 @@
 			<File
 				RelativePath="..\core\TimeEngines.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1413,26 +765,7 @@
 			<File
 				RelativePath="..\core\Trees.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1454,26 +787,7 @@
 			<File
 				RelativePath="..\core\TVTerrain.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1495,26 +809,7 @@
 			<File
 				RelativePath="..\core\vtSOG.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1536,26 +831,7 @@
 			<File
 				RelativePath="..\core\vtTin3d.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1699,26 +975,7 @@
 			<File
 				RelativePath="ImageOSG.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1740,26 +997,7 @@
 			<File
 				RelativePath="MeshMat.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1781,26 +1019,7 @@
 			<File
 				RelativePath="NodeOSG.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1825,26 +1044,7 @@
 			<File
 				RelativePath="SceneOSG.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -1892,19 +1092,7 @@
 			<File
 				RelativePath="..\pre.cpp">
 				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"/>
