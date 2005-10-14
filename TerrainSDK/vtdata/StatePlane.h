@@ -6,7 +6,6 @@
 StatePlaneInfo g_StatePlaneInfo[] = {
 { "ALABAMA EAST", 1, 101 },
 { "ALABAMA WEST", 1, 102 },
-{ "ALASKA ZONE NO. 10", 2, 5010 },
 { "AMERICAN SAMOA", 0, 5300 },
 { "ARIZONA EAST", 1, 201 },
 { "ARIZONA CENTRAL", 1, 202 },
