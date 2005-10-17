@@ -74,6 +74,7 @@ public:
 	int	 m_iTriCount;
 	bool	m_bTriStrips;
 	int	 m_iVertCount;
+	int	 m_iTileCacheSize;
 
 	// time
 	bool	m_bTimeOn;

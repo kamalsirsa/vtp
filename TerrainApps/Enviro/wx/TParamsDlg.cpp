@@ -203,6 +203,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_TRI_COUNT, &m_iTriCount);
 	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
 	AddNumValidator(ID_VTX_COUNT, &m_iVertCount);
+	AddNumValidator(ID_TILE_CACHE_SIZE, &m_iTileCacheSize);
 
 	// time
 	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
@@ -321,6 +322,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_iTriCount =		Params.GetValueInt(STR_TRICOUNT);
 	m_bTriStrips =		Params.GetValueBool(STR_TRISTRIPS);
 	m_iVertCount =		Params.GetValueInt(STR_VERTCOUNT);
+	m_iTileCacheSize =	Params.GetValueInt(STR_TILE_CACHE_SIZE);
 
 	// time
 	m_bTimeOn =		 Params.GetValueBool(STR_TIMEON);
@@ -457,6 +459,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueInt(STR_TRICOUNT, m_iTriCount);
 	Params.SetValueBool(STR_TRISTRIPS, m_bTriStrips);
 	Params.SetValueInt(STR_VERTCOUNT, m_iVertCount);
+	Params.SetValueInt(STR_TILE_CACHE_SIZE, m_iTileCacheSize);
 
 	// time
 	Params.SetValueBool(STR_TIMEON, m_bTimeOn);

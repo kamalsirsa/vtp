@@ -772,22 +772,28 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxTextCtrl *item25 = new wxTextCtrl( parent, ID_VTX_COUNT, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
     item23->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
 
+    wxStaticText *item26 = new wxStaticText( parent, ID_TEXT, _("RAM cache size (MB):"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item27 = new wxTextCtrl( parent, ID_TILE_CACHE_SIZE, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    item23->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
+
     item18->Add( item23, 0, wxALIGN_CENTER, 5 );
 
     item0->Add( item18, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 10 );
 
-    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item28 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Vertical Exaggeration:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item29 = new wxStaticText( parent, ID_TEXT, _("Vertical Exaggeration:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item28->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_VERTEXAG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item26->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item30 = new wxTextCtrl( parent, ID_VERTEXAG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item28->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item29 = new wxStaticText( parent, ID_TEXT, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
-    item26->Add( item29, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxStaticText *item31 = new wxStaticText( parent, ID_TEXT, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
+    item28->Add( item31, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    item0->Add( item26, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item0->Add( item28, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     if (set_sizer)
     {
