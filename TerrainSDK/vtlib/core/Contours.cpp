@@ -68,6 +68,8 @@ vtTransform *ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float 
 	// Make a note of this terrain and its attributes
 	m_pTerrain = pTerr;
 	m_pHF = pTerr->GetHeightFieldGrid3d();
+	if (!m_pHF)
+		return NULL;
 	m_ext = m_pHF->GetEarthExtents();
 	m_spacing = m_pHF->GetSpacing();
 	m_fHeight = fHeight;
