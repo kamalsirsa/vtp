@@ -8,7 +8,7 @@
 /**
 \mainpage vtlib library documentation
 
-\section overview Overview
+\section Overview Overview
 The <b>vtlib</b> library is built on top of the <a href="../vtdata.html">vtdata</a> library which
 handles many kinds of geospatial data.  It extends <b>vtdata</b> with the
 ability to create 3D geometry of the data for interactive visualization.
