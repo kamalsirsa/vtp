@@ -625,7 +625,7 @@ bool vtTiledGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 {
 	// TODO: support other arguments?
 	float x, z;
-	g_Conv.ConvertFromEarth(p, x, z);
+	m_Conversion.ConvertFromEarth(p, x, z);
 	float alt = m_pMiniTile->getheight(x, z);
 
 	// This is what libMini returns if the point isn't on the terrain
@@ -740,4 +740,17 @@ bool vtTiledGeom::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 	FindAltitudeAtPoint(p2, p2.y);
 	result = p2;
 	return true;
+}
+
+FPoint2 vtTiledGeom::GetWorldSpacingAtPoint(const DPoint2 &p)
+{
+	float x, z;
+	m_Conversion.ConvertFromEarth(p, x, z);
+
+	// calling 'getheight' will also select the current tile into the
+	//  mini global state
+	int size;
+	float dimx, dimz;
+	m_pMiniTile->gettileinfo(x, z, size, dimx, dimz);
+	return FPoint2(dimx, dimz);
 }

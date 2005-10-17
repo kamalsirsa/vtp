@@ -49,6 +49,7 @@ public:
 	float GetVerticalExag() { return m_fDrawScale; }
 	void SetVertexTarget(int iVertices);
 	int GetVertexTarget() { return m_iVertexTarget; }
+	FPoint2 GetWorldSpacingAtPoint(const DPoint2 &p);
 
 	// overrides for vtDynGeom
 	void DoRender();
@@ -69,18 +70,20 @@ public:
 	unsigned char *FetchAndCacheTile(const char *fname);
 	void EmptyCache();
 
+	// Values used to initialize miniload
 	int cols, rows;
 	float coldim, rowdim;
 	int lod0size;
+	FPoint3 center;
 	ucharptr *hfields, *textures;
 
+	// Values used to render each frame
 	IPoint2 m_window_size;
 	FPoint3 m_eyepos_ogl;
 	float m_fFOVY;
 	float m_fAspect;
 	float m_fNear, m_fFar;
 	FPoint3 eye_up, eye_forward;
-	FPoint3 center;
 
 	// vertical scale (exaggeration)
 	float m_fMaximumScale;
