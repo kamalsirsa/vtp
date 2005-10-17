@@ -17,6 +17,23 @@
  * The vtMeshFactory class makes it easy to create meshes with a lot
  * of vertices.  You simply provide vertices, and it will create as
  * many meshes as necessary to contain them all.
+ *
+ * \par Example:
+	This example produces a line strip with 10000 vertices.  The factory
+	is told to limit the number of vertices in a single primitive to 3000,
+	so it will automatically produce four meshes with 3000, 3000, 3000, and
+	1000 vertices each.  The meshes are automatically added to the indicated
+	geometry node.
+	\code
+	{
+		vtGeom *pLineGeom = new vtGeom;
+		vtMeshFactory mf(pLineGeom, vtMesh::LINE_STRIP, 0, 3000, 1);
+		mf.PrimStart();
+		for (int i = 0; i < 10000; i++)
+			mf.AddVertex(FPoint3(i,i,i));
+		mf.PrimEnd();
+	}
+	\endcode
  */
 class vtMeshFactory
 {

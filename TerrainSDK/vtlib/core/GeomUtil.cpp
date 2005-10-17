@@ -246,6 +246,19 @@ vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 
 //////////////////////////////////////////////////////////////
 
+/**
+ * Constructor.
+ *
+ * \param pGeom		The geometry node which will receive the mesh object(s)
+ *		that this factory will produce.
+ * \param ePrimType	The type of mesh to produce.
+ * \param iVertType	The vertex attributes for the meshes to produce.
+ * \param iMaxVertsPerMesh	The largest number of vertices to allow in a single
+ *		mesh.  When this number is exceeded, the current mesh will be finished
+ *		and another mesh begun.
+ * \param iMatIndex	The material index of the mesh when it is added to the
+ *		geometry node.
+ */
 vtMeshFactory::vtMeshFactory(vtGeom *pGeom, vtMeshBase::PrimType ePrimType,
 							 int iVertType, int iMaxVertsPerMesh, int iMatIndex)
 {
@@ -262,6 +275,12 @@ vtMeshFactory::vtMeshFactory(vtGeom *pGeom, vtMeshBase::PrimType ePrimType,
 	m_bSimple = false;
 }
 
+/**
+ * Alternate, simpler constructor.
+ *
+ * \param pMesh The mesh which will receive all the vertices that this factory
+ *		produces.
+ */
 vtMeshFactory::vtMeshFactory(vtMesh *pMesh)
 {
 	m_pGeom = NULL;
@@ -279,6 +298,7 @@ void vtMeshFactory::NewMesh()
 	m_pMesh->Release();	// pass ownership to geometry
 }
 
+/** Tell the factory to start a primitive. */
 void vtMeshFactory::PrimStart()
 {
 	if (!m_pMesh)
@@ -287,6 +307,7 @@ void vtMeshFactory::PrimStart()
 	m_iPrimVerts = 0;
 }
 
+/** Tell the factory to add a vertex to the current primitive. */
 void vtMeshFactory::AddVertex(const FPoint3 &p)
 {
 	if (!m_bSimple)
@@ -308,6 +329,7 @@ void vtMeshFactory::AddVertex(const FPoint3 &p)
 	m_iPrimVerts++;
 }
 
+/** Tell the factory to end a primitive. */
 void vtMeshFactory::PrimEnd()
 {
 	m_pMesh->AddStrip2(m_iPrimVerts, m_iPrimStart);
