@@ -88,6 +88,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_TRICOUNT, "10000");
 	AddTag(STR_TRISTRIPS, "true");
 	AddTag(STR_VERTCOUNT, "20000");
+	AddTag(STR_TILE_CACHE_SIZE, "80");	// 80 MB
 
 	AddTag(STR_TIMEON, "false");
 	AddTag(STR_INITTIME, "104 2 21 10 0 0");	// 2004, spring, 10am

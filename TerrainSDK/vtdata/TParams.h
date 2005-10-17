@@ -137,6 +137,7 @@ protected:
 #define STR_TRICOUNT "Tri_Count"
 #define STR_TRISTRIPS "Tristrips"
 #define STR_VERTCOUNT "Vert_Count"
+#define STR_TILE_CACHE_SIZE "Tile_Cache_Size"	// in MB
 
 #define STR_TIMEON "Time_On"
 #define STR_INITTIME "Init_Time"
