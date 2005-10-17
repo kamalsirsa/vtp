@@ -2098,6 +2098,10 @@ bool vtTerrain::CreateStep1()
 		m_pTiledGeom->SetVerticalExag(m_fVerticalExag);
 		m_pTiledGeom->SetVertexTarget(m_Params.GetValueInt(STR_VERTCOUNT));
 
+		// tile cache size is in MB for the user, but bytes for the class
+		int tile_cache_mb = m_Params.GetValueInt(STR_TILE_CACHE_SIZE);
+		m_pTiledGeom->SetTileCacheSize(tile_cache_mb * 1024 * 1024);
+
 		bool status = m_pTiledGeom->ReadTileList(elev_path, tex_path);
 
 		if (status == false)

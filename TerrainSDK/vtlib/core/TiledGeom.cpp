@@ -235,7 +235,11 @@ vtTiledGeom::vtTiledGeom()
 	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
 
 	// defaults
-	SetVertexTarget(20000);
+	SetVertexTarget(30000);
+
+	m_iFrame = 0;
+	m_iCacheSize = 0;
+	m_iMaxCacheSize = 60 * 1024 * 1024;	// 40 MB cache max
 }
 
 vtTiledGeom::~vtTiledGeom()
@@ -442,8 +446,6 @@ void vtTiledGeom::SetupMiniLoad()
 	m_pMiniTile->setreduction(2.0f,3.0f);
 }
 
-static int in_cache = 0;
-
 unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 {
 	std::string name = fname;
@@ -462,13 +464,41 @@ unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 		if (!data)
 			return NULL;
 
-		// and add it to the cache
+		// max cache size of 0 disables caching
+		if (m_iMaxCacheSize == 0)
+			return data;
+
+		// Add it to the cache
+		// First, make room for it
+		while (m_iCacheSize > m_iMaxCacheSize)
+		{
+			// look for oldest (LRU) tile
+			TileCache::iterator oldest;
+			int oldest_frame = 1<<30;
+			for (it = m_Cache.begin(); it != m_Cache.end(); it++)
+			{
+				if (it->second.framestamp < oldest_frame)
+				{
+					oldest_frame = it->second.framestamp;
+					oldest = it;
+				}
+			}
+			// remove it from the cache
+			CacheEntry &entry = oldest->second;
+			m_iCacheSize -= entry.size;
+			m_Cache.erase(oldest);
+		}
+		// add new entry to the cache
 		CacheEntry entry;
 		entry.data = data;
 		entry.size = bytes;
+		entry.framestamp = m_iFrame;
 		m_Cache[name] = entry;
-		in_cache++;
+		m_iCacheSize += bytes;
 
+#if 1
+		VTLOG(" cache size (K): %d\n", m_iCacheSize / 1024);
+#endif
 		// don't return the original, return a copy
 		unsigned char *data2 = (unsigned char *) malloc(bytes);
 		memcpy(data2, data, bytes);
@@ -483,7 +513,7 @@ unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 		VTLOG1("\n");
 #endif
 		// found in cache
-		CacheEntry entry = it->second;
+		CacheEntry &entry = it->second;
 //		unsigned char *cached = it->second;
 //		return  cached;
 
@@ -508,6 +538,9 @@ void vtTiledGeom::EmptyCache()
 
 void vtTiledGeom::DoRender()
 {
+	// count frames
+	m_iFrame++;
+
 	// One update every 5 frames is a good approximation
 	const int fpu=5;
 

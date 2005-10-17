@@ -29,7 +29,7 @@ public:
 
 // Simple cache of tiles loaded from disk
 typedef unsigned char *ucharptr;
-struct CacheEntry { unsigned char *data; int size; };
+struct CacheEntry { unsigned char *data; int size; int framestamp; };
 typedef std::map<std::string, CacheEntry> TileCache;
 
 /**
@@ -49,6 +49,9 @@ public:
 	float GetVerticalExag() { return m_fDrawScale; }
 	void SetVertexTarget(int iVertices);
 	int GetVertexTarget() { return m_iVertexTarget; }
+	void SetTileCacheSize(int iBytes) { m_iMaxCacheSize = iBytes; }
+	int GetTileCacheSize() { return m_iMaxCacheSize; }
+	int GetTileCacheUsed() { return m_iCacheSize; }
 	FPoint2 GetWorldSpacingAtPoint(const DPoint2 &p);
 
 	// overrides for vtDynGeom
@@ -70,6 +73,10 @@ public:
 	unsigned char *FetchAndCacheTile(const char *fname);
 	void EmptyCache();
 
+	// CRS of this tileset
+	vtProjection m_proj;
+
+protected:
 	// Values used to initialize miniload
 	int cols, rows;
 	float coldim, rowdim;
@@ -101,13 +108,12 @@ public:
 	class minitile *m_pMiniTile;
 	class minicache *m_pMiniCache;	// This is cache of OpenGL primitives to be rendered
 
-	// CRS of this tileset
-	vtProjection m_proj;
-
 	// Tile cache in host RAM, to reduce loading from disk
 	TileCache m_Cache;
+	int	m_iCacheSize;		// In bytes
+	int	m_iMaxCacheSize;	// In bytes
+	int m_iFrame;
 
-protected:
 	void SetupMiniLoad();
 };
 
