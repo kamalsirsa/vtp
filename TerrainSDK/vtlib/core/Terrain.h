@@ -244,7 +244,7 @@ public:
 
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
-		float fOffset, bool bInterp, bool bCurve = false, bool bTrue = false);
+		float fOffset, bool bInterp = true, bool bCurve = false, bool bTrue = false);
 	void CreateStyledFeatures(const vtFeatureSet &feat,  const vtTagArray &style);
 	void CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray &style);
 	void CreateFeatureLabels(const vtFeatureSet &feat,   const vtTagArray &style);

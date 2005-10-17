@@ -2670,8 +2670,38 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 }
 
 
+/**
+ * Create geometry on the terrain for a 2D line by draping the point onto
+ * the terrain surface.
+ *
+ * \param pMF	A vtMeshFactory which will produces the mesh geometry.
+ * \param line	The 2D line to drape, in Earth coordinates.
+ * \param fOffset	An offset to elevate each point in the resulting geometry,
+ *		useful for keeping it visibly above the ground.
+ * \param bInterp	True to interpolate between the vertices of the input
+ *		line. This is generally desirable when the ground is much more finely
+ *		spaced than the input line.
+ * \param bCurve	True to interpret the vertices of the input line as
+ *		control points of a curve.  The created geometry will consist of
+ *		a draped line which passes through the control points.
+ * \param bTrue		True to use the true elevation of the terrain, ignoring
+ *		whatever scale factor is being used to exaggerate elevation for
+ *		display.
+ * \return The approximate length of the resulting 3D line mesh.
+ *
+ * \par Example:
+	\code
+	DLine2 line = ...;
+	vtTerrain *pTerr = ...;
+	vtGeom *pLineGeom = new vtGeom;
+	pTerr->AddNode(pLineGeom);
+	vtMeshFactory mf(pLineGeom, vtMesh::LINE_STRIP, 0, 30000, 1);
+	float length = pTerr->AddSurfaceLineToMesh(&mf, dline, 10, true);
+	\endcode
+ */
 float vtTerrain::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
-									 float fOffset, bool bInterp, bool bCurve, bool bTrue)
+									 float fOffset, bool bInterp, bool bCurve,
+									 bool bTrue)
 {
 	unsigned int i, j;
 	FPoint3 v1, v2, v;
@@ -2694,6 +2724,14 @@ float vtTerrain::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
 			m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.left, ext.bottom, p1.x, p1.y);
 			m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.right, ext.top, p2.x, p2.y);
 			fSpacing = (p2 - p1).Length() / 1000.0f;
+		}
+		else if (m_pTiledGeom)
+		{
+			// There is no ideal way to drape a line on a tileset of tiles
+			//  with varying resolution.  For now, just use the highest (LOD0)
+			//  grid density at the starting point.
+			FPoint2 spacing = m_pTiledGeom->GetWorldSpacingAtPoint(line[0]);
+			fSpacing = std::min(spacing.x, spacing.y);
 		}
 	}
 
