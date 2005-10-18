@@ -147,7 +147,7 @@ protected:
 
 	// Elevation
 	void CheckForTerrainSelect(const DPoint2 &loc);
-	void HighlightTerrain(wxDC* pDC, vtElevLayer *t);
+	void HighlightArea(wxDC* pDC, const DRECT &rect);
 
 	// Pan handlers
 	void BeginPan();

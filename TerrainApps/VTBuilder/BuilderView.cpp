@@ -173,8 +173,13 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 		if (lp->GetVisible())
 			lp->DrawLayer(&dc, this);
 	}
-	if (pFrame->GetActiveElevLayer())
-		HighlightTerrain(&dc, pFrame->GetActiveElevLayer());
+	vtLayer *curr = pFrame->GetActiveLayer();
+	if (curr && (curr->GetType() == LT_ELEVATION || curr->GetType() == LT_IMAGE))
+	{
+		DRECT rect;
+		curr->GetAreaExtent(rect);
+		HighlightArea(&dc, rect);
+	}
 
 	if (m_bShowUTMBounds)
 		DrawUTMBounds(&dc);
@@ -754,30 +759,42 @@ void BuilderView::CheckForTerrainSelect(const DPoint2 &loc)
 void BuilderView::SetActiveLayer(vtLayerPtr lp)
 {
 	MainFrame *pFrame = GetMainFrame();
-	vtElevLayer *last = pFrame->GetActiveElevLayer();
-	if (lp != last)
+
+	vtLayer *last = pFrame->GetActiveLayer();
+
+	LayerType prev_type = last ? last->GetType() : LT_UNKNOWN;
+	LayerType curr_type = lp ? lp->GetType() : LT_UNKNOWN;
+	bool bNeedErase = (prev_type == LT_ELEVATION || prev_type == LT_IMAGE);
+	bool bNeedRedraw = (curr_type == LT_ELEVATION || curr_type == LT_IMAGE);
+
+	if (lp != last && (bNeedErase || bNeedRedraw))
 	{
 		wxClientDC DC(this), *pDC = &DC;
 		PrepareDC(DC);
+		DRECT rect;
 
-		if (last)
-			HighlightTerrain(pDC, last);
+		if (bNeedErase)
+		{
+			last->GetAreaExtent(rect);
+			HighlightArea(pDC, rect);
+		}
 
 		pFrame->SetActiveLayer(lp, true);
 
-		if (pFrame->GetActiveElevLayer())
-			HighlightTerrain(pDC, pFrame->GetActiveElevLayer());
+		if (bNeedRedraw)
+		{
+			lp->GetAreaExtent(rect);
+			HighlightArea(pDC, rect);
+		}
 	}
 }
 
-void BuilderView::HighlightTerrain(wxDC* pDC, vtElevLayer *t)
+void BuilderView::HighlightArea(wxDC* pDC, const DRECT &rect)
 {
 	wxPen bgPen(wxColor(255,255,255), 3, wxSOLID);
 	pDC->SetPen(bgPen);
 	pDC->SetLogicalFunction(wxINVERT);
 
-	DRECT rect;
-	t->GetAreaExtent(rect);
 	wxRect sr = WorldToCanvas(rect);
 	int sx = sr.width / 3;
 	int sy = sr.height / 3;
