@@ -1,7 +1,7 @@
 //
 // Frame.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -176,6 +176,7 @@ protected:
 	void OnElevExport(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
 	void OnElevExportTiles(wxCommandEvent& event);
+	void OnElevPasteNew(wxCommandEvent& event);
 	void OnElevMergeTin(wxCommandEvent& event);
 
 	void OnUpdateElevSelect(wxUpdateUIEvent& event);
@@ -414,6 +415,7 @@ public:
 	void ImportDataFromNTF(const wxString2 &strFileName);
 	void ImportDataFromS57(const wxString2 &strDirName);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
+	void ElevPasteNew();
 
 	// Elevation Export
 	void ExportASC();

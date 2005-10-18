@@ -150,6 +150,7 @@ EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
 EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
 EVT_MENU(ID_ELEV_EXPORT,			MainFrame::OnElevExport)
 EVT_MENU(ID_ELEV_EXPORT_TILES,		MainFrame::OnElevExportTiles)
+EVT_MENU(ID_ELEV_PASTE_NEW,			MainFrame::OnElevPasteNew)
 EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
 
@@ -266,6 +267,7 @@ void MainFrame::CreateMenus()
 	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, _("Create Dymaxion Textures"));
 	specialMenu->Append(ID_SPECIAL_PROCESS_BILLBOARD, _("Process Billboard Texture"));
 	specialMenu->Append(ID_SPECIAL_GEOCODE, _("Geocode"));
+	specialMenu->Append(ID_ELEV_PASTE_NEW, _("New Elevation Layer from Clipboard"));
 	fileMenu->Append(0, _("Special"), specialMenu);
 #endif
 	fileMenu->AppendSeparator();
@@ -2572,6 +2574,144 @@ void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
 	else
 		DisplayAndLog("Could not successfully write to '%s'", (const char *) tileopts.fname);
+}
+
+#if WIN32
+#include "lev_tag.h"
+static bool VerifyHFclip(BYTE* pMem, size_t size)
+{
+	// Verify the signature and endianness of received 
+	// hf clipping.
+
+	// The first two bytes must be 'hf'.
+	// THe next two must be an int16 that equals 0x3031.
+
+	if(size < sizeof(leveller::TAG))
+		return false;
+
+	if(::memcmp(pMem, "hf", 2) != 0)
+		return false;
+
+	unsigned __int16 endian = 
+		*((unsigned __int16*)(pMem+2));
+	return endian == 0x3031;
+}
+
+#endif
+
+void MainFrame::ElevPasteNew()
+{
+#if WIN32
+	UINT eFormat = ::RegisterClipboardFormat("daylon_elev");
+	if(eFormat == 0)
+	{
+		wxMessageBox("Can't register clipboard format");
+		return;
+	}
+	// Get handle to clipboard data.
+	HANDLE hMem = ::GetClipboardData(eFormat);
+	if (hMem == NULL)
+		return;
+	void* pMem = (void*)::GlobalLock(hMem);
+	if (pMem == NULL)
+		return;
+	size_t nbytes = ::GlobalSize(hMem);
+
+	leveller::CRootTag clip;
+
+	BYTE* pData = ((BYTE*)pMem) /*+ sizeof(kPublicHFclipID)*/;
+	clip.SetStorage(pData, nbytes /*- 
+				sizeof(kPublicHFclipID)*/);
+	if(!VerifyHFclip((BYTE*)pMem, nbytes))
+		return;
+
+	clip.Open("r");
+	const int width = clip.ReadUINT32("body/heixels/extents/width", 0);
+	const int breadth = clip.ReadUINT32("body/heixels/extents/breadth", 0);
+	// See what format the elevations are in.
+	// Lev 2.5, and DEMEdit support floating-point for now.
+	const int bpp = clip.ReadUINT32("body/heixels/format/depth", 0);
+	const bool bFP = (0 != clip.ReadUINT32("body/heixels/format/fp", 0));
+
+	// Get any coordsys info. Ignore geometries other 
+	// than code 1 (planetary body, Earth). Ignore projection
+	// formats other than WKT.
+
+	vtProjection proj;
+	DRECT area;
+	float fElevScale = 1.0;
+
+	const int geomcode =
+		clip.ReadUINT32("body/coordsys/geometry", 0);
+	const int projFmt = 
+		clip.ReadUINT32("body/coordsys/projection/format", 0);
+	if (geomcode == 1 && projFmt == 0)
+	{
+		void* pv = NULL;
+		size_t n =
+			clip.Read("body/coordsys/projection/data", &pv);
+
+		if (n != 0)
+		{
+			char* psz = new char[n + 1];
+			memcpy(psz, pv, n);
+			psz[n] = 0;
+			//m_georef_info.set_projection(psz);
+			char *wkt = psz;
+			proj.importFromWkt(&wkt);
+			delete psz;
+		}
+
+		// Read extents
+		double d0 = clip.ReadDouble("body/coordsys/pixelmapping/transform/origin/x", 0.0);
+		double d3 = clip.ReadDouble("body/coordsys/pixelmapping/transform/origin/z", 0.0);
+		double d1 = clip.ReadDouble("body/coordsys/pixelmapping/transform/scale/x", 1.0);
+		double d5 = clip.ReadDouble("body/coordsys/pixelmapping/transform/scale/z", 1.0);
+		area.left = d0;
+		area.right = d0 + (width-1) * d1;
+		area.top = d3;
+		area.bottom = d3 + (breadth-1) * d5;
+
+		// Read vertical units and scale
+		UINT units = clip.ReadUINT32("body/coordsys/altitude/units", 9001);
+		fElevScale = clip.ReadDouble("body/coordsys/altitude/scale", 1.0);
+		double offset = clip.ReadDouble("body/coordsys/altitude/offset", 0.0);
+		switch (units)
+		{
+		case 9001: break;	// meter
+		case 9002: fElevScale *= 0.3048f; break;	// foot
+		case 9003: fElevScale *= (1200.0f/3937.0f); break; // U.S. survey foot
+		}
+	}
+
+	// Create new layer
+	vtElevLayer *pEL = new vtElevLayer(area, width, breadth, bFP, 1.0f, proj);
+
+	// Copy the elevations.
+	// Require packed pixel storage.
+	float* pElevs;
+	size_t n = clip.Read("body/heixels/data", (void**)&pElevs);
+	int i = 0;
+	for (int z = 0; z < breadth; z++)
+	{
+		for(int x = 0; x < width; x++, i++)
+			pEL->m_pGrid->SetFValue(x, breadth-1-z, pElevs[i] * fElevScale);
+	}
+	pEL->m_pGrid->ComputeHeightExtents();
+	GetMainFrame()->AddLayerWithCheck(pEL);
+
+	::GlobalUnlock(hMem);
+#endif	// WIN32
+}
+
+void MainFrame::OnElevPasteNew(wxCommandEvent& event)
+{
+#if WIN32
+	int opened = ::OpenClipboard((HWND) (GetMainFrame()->GetHandle()));
+	if (opened)
+		ElevPasteNew();
+	::CloseClipboard();
+#endif	// WIN32
 }
 
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
