@@ -264,6 +264,15 @@ bool vtImageLayer::SetExtent(const DRECT &rect)
 void vtImageLayer::GetPropertyText(wxString &str)
 {
 	str.Printf(_("Dimensions %d by %d pixels"), m_iXSize, m_iYSize);
+	str += _T("\n");
+
+	bool bGeo = (m_proj.IsGeographic() != 0);
+	str += _("Spacing: ");
+	DPoint2 spacing(m_Extents.Width() / m_iXSize, m_Extents.Height() / m_iYSize);
+	str += FormatCoord(bGeo, spacing.x);
+	str += _T(" x ");
+	str += FormatCoord(bGeo, spacing.y);
+	str += _T("\n");
 }
 
 DPoint2 vtImageLayer::GetSpacing() const
@@ -279,11 +288,15 @@ bool vtImageLayer::GetFilteredColor(const DPoint2 &p, RGBi &rgb)
 
 	double u = (p.x - m_Extents.left) / spacing.x;
 	int ix = (int) u;
+	if (u == (double) m_iXSize)		// check for exact far edge
+		ix = m_iXSize-1;
 	if (ix < 0 || ix >= m_iXSize)
 		return false;
 
 	double v = (m_Extents.top - p.y) / spacing.y;
 	int iy = (int) v;
+	if (v == (double) m_iYSize)		// check for exact far edge
+		iy = m_iYSize-1;
 	if (iy < 0 || iy >= m_iYSize)
 		return false;
 	GetFilteredColor(ix, iy, rgb);
@@ -1329,19 +1342,20 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 	else
 		crs = "Other";
 
+	// Write .ini file
+	FILE *fp = fopen(opts.fname, "wb");
+	if (!fp)
+		return false;
+
 	// Try to create directory to hold the tiles
 	vtString dirname = opts.fname;
 	RemoveFileExtensions(dirname);
 	if (!vtCreateDir(dirname))
-		return false;
-
-	// Write .ini file
-	FILE *fp = fopen(opts.fname, "wb");
-	if (!fp)
 	{
-		vtDestroyDir(dirname);
+		fclose(fp);
 		return false;
 	}
+
 	fprintf(fp, "[TilesetDescription]\n");
 	fprintf(fp, "Columns=%d\n", opts.cols);
 	fprintf(fp, "Rows=%d\n", opts.rows);
@@ -1396,6 +1410,14 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 			{
 				int tilesize = base_tilesize >> lod;
 
+				// safety check: don't create LODs which are too small
+				if (tilesize < 2)
+					continue;
+
+				// Images are written as PixelIsPoint, and each LOD has
+				// its own sample spacing
+				DPoint2 spacing = tile_dim / (tilesize-1);
+
 				vtString fname = dirname, str;
 				fname += '/';
 				if (lod == 0)
@@ -1435,12 +1457,12 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 				int x, y;
 				RGBi rgb;
 				unsigned char rgb_bytes[3];
-				for (y = base_tilesize; y >= 0; y -= (1<<lod))
+				for (y = tilesize-1; y >= 0; y--)
 				{
-					p.y = area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
-					for (x = 0; x < base_tilesize; x += (1<<lod))
+					p.y = tile_area.bottom + y * spacing.y;
+					for (x = 0; x < tilesize; x++)
 					{
-						p.x = area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
+						p.x = tile_area.left + x * spacing.x;
 
 						GetFilteredColor(p, rgb);
 #if 1
@@ -1468,5 +1490,7 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 			}
 		}
 	}
+	if (pView)
+		pView->HideGridMarks();
 	return true;
 }
