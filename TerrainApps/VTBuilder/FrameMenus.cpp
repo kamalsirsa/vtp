@@ -2577,35 +2577,35 @@ void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 }
 
 #if WIN32
-#include "lev_tag.h"
+#include "vtdata/LevellerTag.h"
 static bool VerifyHFclip(BYTE* pMem, size_t size)
 {
-	// Verify the signature and endianness of received 
-	// hf clipping.
-
-	// The first two bytes must be 'hf'.
-	// THe next two must be an int16 that equals 0x3031.
-
+	// Verify the signature and endianness of received hf clipping.
 	if(size < sizeof(leveller::TAG))
 		return false;
 
+	// The first two bytes must be 'hf'.
 	if(::memcmp(pMem, "hf", 2) != 0)
 		return false;
 
-	unsigned __int16 endian = 
-		*((unsigned __int16*)(pMem+2));
+	// THe next two must be an int16 that equals 0x3031.
+	unsigned __int16 endian = *((unsigned __int16*)(pMem+2));
 	return endian == 0x3031;
 }
 
 #endif
 
+//
+// Create a new elevation layer by pasting data from the clipboard, using the
+//  Daylone Leveller clipboard format for heightfields.
+//
 void MainFrame::ElevPasteNew()
 {
 #if WIN32
-	UINT eFormat = ::RegisterClipboardFormat("daylon_elev");
+	UINT eFormat = ::RegisterClipboardFormat(_T("daylon_elev"));
 	if(eFormat == 0)
 	{
-		wxMessageBox("Can't register clipboard format");
+		wxMessageBox(_("Can't register clipboard format"));
 		return;
 	}
 	// Get handle to clipboard data.
@@ -2707,10 +2707,12 @@ void MainFrame::ElevPasteNew()
 void MainFrame::OnElevPasteNew(wxCommandEvent& event)
 {
 #if WIN32
-	int opened = ::OpenClipboard((HWND) (GetMainFrame()->GetHandle()));
+	int opened = ::OpenClipboard((HWND)GetHandle());
 	if (opened)
+	{
 		ElevPasteNew();
-	::CloseClipboard();
+		::CloseClipboard();
+	}
 #endif	// WIN32
 }
 
