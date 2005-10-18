@@ -46,6 +46,8 @@ bld_corner		BITMAP "bitmaps/bld_corner.bmp"
 str_add_linear	BITMAP "bitmaps/str_add_linear.bmp"
 str_edit_linear	BITMAP "bitmaps/str_edit_linear.bmp"
 instances		BITMAP "bitmaps/instances.bmp"
+elev_resample	BITMAP "bitmaps/elev_resample.bmp"
+image_resample	BITMAP "bitmaps/image_resample.bmp"
 
 twr_edit		BITMAP "bitmaps/twr_edit.bmp"
 

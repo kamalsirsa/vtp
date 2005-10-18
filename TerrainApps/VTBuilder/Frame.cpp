@@ -57,7 +57,9 @@
 #  include "edit_delete.xpm"
 #  include "edit_offset.xpm"
 #  include "elev_box.xpm"
+#  include "elev_resample.xpm"
 
+#  include "image_resample.xpm"
 #  include "info.xpm"
 #  include "instances.xpm"
 
@@ -68,8 +70,6 @@
 #  include "layer_save.xpm"
 #  include "layer_show.xpm"
 #  include "layer_up.xpm"
-
-#  include "loadimage.xpm"
 
 #  include "proj_new.xpm"
 #  include "proj_open.xpm"
@@ -372,7 +372,6 @@ void MainFrame::RefreshToolbar()
 		toolBar_main->AddSeparator();
 		ADD_TOOL2(ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), wxITEM_CHECK);
 		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"));
-		ADD_TOOL(ID_AREA_EXPORT_ELEV, wxBITMAP(layer_export), _("Export Elevation"));
 		break;
 	case LT_IMAGE:
 		toolBar_main->AddSeparator();
@@ -451,6 +450,9 @@ void MainFrame::AddMainToolbars()
 	ADD_TOOL2(ID_VIEW_DISTANCE, wxBITMAP(distance), _("Distance"), wxITEM_CHECK);
 	ADD_TOOL2(ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Area Tool"), wxITEM_CHECK);
 	ADD_TOOL2(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), wxITEM_CHECK);
+	toolBar_main->AddSeparator();
+	ADD_TOOL(ID_AREA_EXPORT_ELEV, wxBITMAP(elev_resample), _("Merge/Resample Elevation"));
+	ADD_TOOL(ID_AREA_EXPORT_IMAGE, wxBITMAP(image_resample), _("Merge/Resample Imagery"));
 }
 
 
@@ -1601,9 +1603,9 @@ void MainFrame::ExportElevation()
 		delete pOutput;
 		CloseProgressDialog();
 		if (success)
-			DisplayAndLog("Successfully wrote to file '%s'", fname.mb_str());
+			DisplayAndLog("Successfully wrote to '%s'", fname.mb_str());
 		else
-			DisplayAndLog("Did not successfully write file '%s'", fname.mb_str());
+			DisplayAndLog("Did not successfully write to '%s'", fname.mb_str());
 	}
 	else if (dlg.m_bToTiles)
 	{
@@ -1914,9 +1916,9 @@ void MainFrame::ExportImage()
 		delete pOutput;
 		CloseProgressDialog();
 		if (success)
-			DisplayAndLog("Successfully wrote image file '%s'", fname);
+			DisplayAndLog("Successfully wrote to '%s'", fname);
 		else
-			DisplayAndLog(("Did not successfully write file '%s'."), fname);
+			DisplayAndLog(("Did not successfully write to '%s'."), fname);
 	}
 	else if (dlg.m_bToTiles)
 	{
