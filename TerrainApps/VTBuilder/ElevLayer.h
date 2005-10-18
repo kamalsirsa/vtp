@@ -91,8 +91,8 @@ public:
 	void GetPropertyText(wxString &str);
 	wxString GetFileExtension();
 	bool AskForSaveFilename();
-
 	bool GetAreaExtent(DRECT &rect);
+
 	void DrawLayerBitmap(wxDC* pDC, vtScaledView *pView);
 	void DrawLayerOutline(wxDC* pDC, vtScaledView *pView);
 	bool AppendDataFrom(vtLayer *pL);
