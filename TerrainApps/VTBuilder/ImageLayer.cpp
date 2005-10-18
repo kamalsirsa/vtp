@@ -261,18 +261,21 @@ bool vtImageLayer::SetExtent(const DRECT &rect)
 	return true;
 }
 
-void vtImageLayer::GetPropertyText(wxString &str)
+void vtImageLayer::GetPropertyText(wxString &strIn)
 {
-	str.Printf(_("Dimensions %d by %d pixels"), m_iXSize, m_iYSize);
-	str += _T("\n");
+	wxString2 str;
+
+	strIn.Printf(_("Dimensions %d by %d pixels"), m_iXSize, m_iYSize);
+	strIn += _T("\n");
 
 	bool bGeo = (m_proj.IsGeographic() != 0);
-	str += _("Spacing: ");
+	strIn += _("Spacing: ");
 	DPoint2 spacing(m_Extents.Width() / m_iXSize, m_Extents.Height() / m_iYSize);
 	str += FormatCoord(bGeo, spacing.x);
 	str += _T(" x ");
 	str += FormatCoord(bGeo, spacing.y);
 	str += _T("\n");
+	strIn += str;
 }
 
 DPoint2 vtImageLayer::GetSpacing() const
