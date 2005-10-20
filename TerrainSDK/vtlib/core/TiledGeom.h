@@ -102,6 +102,7 @@ protected:
 	float m_fHResolution;
 	float m_fLResolution;
 	int m_iVertexTarget;
+	bool m_bNeedResolutionAdjust;
 
 	// the libMini objects
 	class miniload *m_pMiniLoad;

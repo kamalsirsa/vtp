@@ -97,18 +97,12 @@ int request_callback(unsigned char *mapfile,unsigned char *texfile,
 					  unsigned char *fogfile,void *data,
 					  void **hfield,void **texture,void **fogmap)
 {
-	int ret = 0;
-
-#if 1
-	vtString str1, str2;
+#if 0
+	vtString str1 = "NULL", str2 = "NULL";
 	if (mapfile)
 		str1 = StartOfFilename((char *)mapfile);
-	else
-		str1 = "NULL";
 	if (texfile)
 		str2 = StartOfFilename((char *)texfile);
-	else
-		str2 = "NULL";
 	VTLOG("request_callback(%s, %s", (const char *)str1, (const char *)str2);
 	if (hfield != NULL)
 		VTLOG1(", hfield");
@@ -117,54 +111,30 @@ int request_callback(unsigned char *mapfile,unsigned char *texfile,
 	VTLOG1(")\n");
 #endif
 
-	if (mapfile == NULL)
+	if (hfield!=NULL && texture!=NULL && fogmap!=NULL)
 	{
-		if (hfield != NULL)
-			*hfield = NULL;
-	}
-	else if (hfield == NULL)
-	{
-		// just checking for file existence
-		FILE *fp = fopen((char *)mapfile, "rb");
-		if (fp)
-		{
-			ret = 1;
-			fclose(fp);
-		}
+		// we need to load (or get from cache) one or both: hfield and texture
+		if (mapfile==NULL)
+			*hfield=NULL;
+		else
+			*hfield = s_pTiledGeom->FetchAndCacheTile((char *)mapfile);;
+
+		if (texfile==NULL)
+			*texture=NULL;
+		else
+			*texture = s_pTiledGeom->FetchAndCacheTile((char *)texfile);
 	}
 	else
 	{
-		// actually need to load the whole file
-		*hfield = s_pTiledGeom->FetchAndCacheTile((char *)mapfile);
-	}
-
-	if (texfile == NULL)
-	{
-		if (texture != NULL)
-			*texture = NULL;
-	}
-	else if (texture == NULL)
-	{
 		// just checking for file existence
-		FILE *fp = fopen((char *)texfile, "rb");
-		if (fp)
-		{
-			ret = 1;
-			fclose(fp);
-		}
-	}
-	else
-	{
-		// actually need to load the whole file
-		*texture = s_pTiledGeom->FetchAndCacheTile((char *)texfile);
-	}
+		int present=1;
 
-	//if (fogfile==NULL)
-	//	*fogmap=NULL;
-	//else if ((*fogmap=readfile((char *)fogfile,&bytes))!=NULL)
-	//	kbytes1+=bytes/1024.0f;
+		if (mapfile!=NULL) present&=checkfile((char *)mapfile);
+		if (texfile!=NULL) present&=checkfile((char *)texfile);
 
-	return ret;
+		return(present);
+	}
+	return 1;
 }
 
 // preloader statistics
@@ -236,6 +206,10 @@ vtTiledGeom::vtTiledGeom()
 
 	// defaults
 	SetVertexTarget(30000);
+	m_fResolution = m_iVertexTarget * 10;
+	m_fHResolution = 2 * m_fResolution;
+	m_fLResolution = 0;
+	m_bNeedResolutionAdjust = false;
 
 	m_iFrame = 0;
 	m_iCacheSize = 0;
@@ -344,9 +318,7 @@ void vtTiledGeom::SetVerticalExag(float fExag)
 void vtTiledGeom::SetVertexTarget(int iVertices)
 {
 	m_iVertexTarget = iVertices;
-	m_fResolution = m_iVertexTarget * 10;
-	m_fHResolution = 2 * m_fResolution;
-	m_fLResolution = 0;
+	m_bNeedResolutionAdjust = true;
 }
 
 void vtTiledGeom::SetupMiniLoad()
@@ -542,7 +514,16 @@ void vtTiledGeom::DoRender()
 	m_iFrame++;
 
 	// One update every 5 frames is a good approximation
-	const int fpu=5;
+	int fpu=3;
+	// unless we've just changed resolution target
+	static float last_res = 0;
+	if (m_fResolution != last_res)
+	{
+		last_res = m_fResolution;
+//		fpu = 0;
+	}
+	// TEMP TEST
+//	fpu = 0;
 
 	// update vertex arrays
 	m_pMiniLoad->draw(m_fResolution,
@@ -557,12 +538,16 @@ void vtTiledGeom::DoRender()
 #if USE_VERTEX_CACHE
 	// render vertex arrays
 	static int last_vtx = 0;
-	int vtx=m_pMiniCache->rendercache();
+	// int vtx=m_pMiniCache->rendercache();
+	int vtx = m_pMiniCache->rendercache();
+//	int vtx = m_pMiniCache->getvtxcnt();
 #endif
 
 	// When vertex count changes, we know a full update occurred
-	if (vtx != last_vtx)
+	if (vtx != last_vtx || m_bNeedResolutionAdjust)
 	{
+		m_bNeedResolutionAdjust = false;
+
 		// adaptively adjust resolution threshold up or down to attain
 		// the desired polygon (vertex) count target
 		int diff = vtx - m_iVertexTarget;
@@ -572,7 +557,7 @@ void vtTiledGeom::DoRender()
 		// like a binary search
 		if (diff < -iRange || diff > iRange)
 		{
-	//		VTLOG("diff %d, ", diff);
+			VTLOG("(%d/%d) diff %d, ", vtx, m_iVertexTarget, diff);
 			if (diff < -iRange)
 			{
 				m_fLResolution = m_fResolution;
@@ -581,7 +566,7 @@ void vtTiledGeom::DoRender()
 				if (m_fLResolution + 5 >= m_fHResolution)
 				{
 					VTLOG1("increase HRes, ");
-					m_fHResolution *= 10;
+					m_fHResolution *= 2;
 				}
 			}
 			else
@@ -590,12 +575,13 @@ void vtTiledGeom::DoRender()
 				if (m_fLResolution + 5 >= m_fHResolution)
 				{
 					VTLOG1("decrease LRes, ");
-					m_fLResolution = 0;
+					m_fLResolution = m_fLResolution/2;
 				}
 			}
 
 			m_fResolution = m_fLResolution + (m_fHResolution - m_fLResolution) / 2;
-			VTLOG("rez: [%.1f, %.1f, %.1f] (%d/%d)\n", m_fLResolution, m_fResolution, m_fHResolution, vtx, m_iVertexTarget);
+			VTLOG("rez: [%.1f, %.1f, %.1f]\n",
+				m_fLResolution, m_fResolution, m_fHResolution);
 
 			// keep the error within reasonable bounds
 			if (m_fResolution < 5.0f)
@@ -780,10 +766,7 @@ FPoint2 vtTiledGeom::GetWorldSpacingAtPoint(const DPoint2 &p)
 	float x, z;
 	m_Conversion.ConvertFromEarth(p, x, z);
 
-	// calling 'getheight' will also select the current tile into the
-	//  mini global state
-	int size;
 	float dimx, dimz;
-	m_pMiniTile->gettileinfo(x, z, size, dimx, dimz);
+	m_pMiniLoad->getdim(x, z, &dimx, &dimz);
 	return FPoint2(dimx, dimz);
 }
