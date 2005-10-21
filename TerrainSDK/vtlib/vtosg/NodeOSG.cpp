@@ -1098,21 +1098,33 @@ void vtCamera::CopyFrom(const vtCamera *rhs)
 	vtTransform::CopyFrom(rhs);
 }
 
+/**
+ * Set the hither (near) clipping plane distance.
+ */
 void vtCamera::SetHither(float f)
 {
 	m_fHither = f;
 }
 
+/**
+ * Get the hither (near) clipping plane distance.
+ */
 float vtCamera::GetHither() const
 {
 	return m_fHither;
 }
 
+/**
+ * Set the yon (far) clipping plane distance.
+ */
 void vtCamera::SetYon(float f)
 {
 	m_fYon = f;
 }
 
+/**
+ * Get the yon (far) clipping plane distance.
+ */
 float vtCamera::GetYon() const
 {
 	return m_fYon;
@@ -1134,6 +1146,9 @@ float vtCamera::GetFOV() const
 	return m_fFOV;
 }
 
+/**
+ * Return the camera's vertical field of view (FOV) in radians.
+ */
 float vtCamera::GetVertFOV() const
 {
 	IPoint2 size = vtGetScene()->GetWindowSize();
@@ -1144,6 +1159,11 @@ float vtCamera::GetVertFOV() const
 	return atan(b) * 2;
 }
 
+/**
+ * Zoom (move) the camera to a sphere, generall the bounding sphere of
+ *  something you want to look at.  The camera will be pointing directly
+ *  down the -Z axis at the center of the sphere.
+ */
 void vtCamera::ZoomToSphere(const FSphere &sphere)
 {
 	Identity();
@@ -1151,21 +1171,35 @@ void vtCamera::ZoomToSphere(const FSphere &sphere)
 	Translate1(FPoint3(0.0f, 0.0f, sphere.radius));
 }
 
+/**
+ * Set this camera to use an orthographic view.  An orthographic view has
+ *  no FOV angle, so Set/GetFOV have no affect.  Instead, use Get/SetWidth
+ *  to control the width of the orthogonal view.
+ */
 void vtCamera::SetOrtho(bool bOrtho)
 {
 	m_bOrtho = bOrtho;
 }
 
+/**
+ * Return true if the camera is orthographic.
+ */
 bool vtCamera::IsOrtho() const
 {
 	return m_bOrtho;
 }
 
+/**
+ * Set the view width of an orthographic camera.
+ */
 void vtCamera::SetWidth(float fWidth)
 {
 	m_fWidth = fWidth;
 }
 
+/**
+ * Get the view width of an orthographic camera.
+ */
 float vtCamera::GetWidth() const
 {
 	return m_fWidth;

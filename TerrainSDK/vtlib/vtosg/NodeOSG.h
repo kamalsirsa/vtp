@@ -461,6 +461,11 @@ protected:
  * of a point from which the scene is rendered.  It can either be a
  * perspective or orthographic camera, and it very easy to control
  * since it inherits all the methods of a transform (vtTransform).
+ *
+ * Although the camera is a node, this is purely for convenience.  You
+ * do not have to place the camera node in your scene graph.  You may,
+ * however, tell your scene (vtScene) which camera to use.  The scene
+ * produces a default camera which is used unless you tell it otherwise.
  */
 class vtCamera : public vtTransform
 {
