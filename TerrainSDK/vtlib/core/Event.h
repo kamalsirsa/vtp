@@ -8,6 +8,8 @@
 #ifndef VTLIB_EVENTH
 #define VTLIB_EVENTH
 
+#include "vtdata/MathTypes.h"
+
 /** \addtogroup eng */
 /*@{*/
 
