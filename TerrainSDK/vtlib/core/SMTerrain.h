@@ -121,7 +121,7 @@ typedef Block *BlockPtr;
 	 -# Create a new SMTerrain object
 	 -# Initialize it with a LocalGrid to provide height values
 	 -# add it to your scene graph
-	 -# set the desired level detail with SetPolygonCount()
+	 -# set the desired level detail with SetPolygonTarget()
 	 -# for a detail texture, call SetDetailMaterial()
 	 -# let the scene graph API render the terrain for you each frame
 	 \par
@@ -144,6 +144,8 @@ public:
 	float GetElevation(int iX, int iZ, bool bTrue = false) const;
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue = false) const;
 	void SetVerticalExag(float fExag);
+
+	float GetQualityConstant() const { return m_fQualityConstant; }
 
 protected:
 	// initialization
