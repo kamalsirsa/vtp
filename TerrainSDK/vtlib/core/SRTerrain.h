@@ -36,13 +36,17 @@ public:
 	float GetElevation(int iX, int iZ, bool bTrue = false) const;
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue = false) const;
 	void SetVerticalExag(float fExag);
-	void SetPolygonCount(int iPolygonCount);
+	void SetPolygonTarget(int iCount);
 
 	void LoadSingleMaterial();
 	void LoadBlockMaterial(int a, int b);
 
 	int		m_iBlockSize;
-	
+
+	float m_fResolution;
+	float m_fHResolution;
+	float m_fLResolution;
+
 protected:
 	// rendering
 	void RenderSurface();
@@ -61,9 +65,6 @@ private:
 	float m_fNear, m_fFar;
 	FPoint3 eye_up, eye_forward;
 
-	float m_fResolution;
-	float m_fHResolution;
-	float m_fLResolution;
 	float m_fHeightScale;
 	float m_fMaximumScale;
 	float m_fDrawScale;

@@ -752,7 +752,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 		return false;
 	}
 
-	m_pDynGeom->SetPolygonCount(m_Params.GetValueInt(STR_TRICOUNT));
+	m_pDynGeom->SetPolygonTarget(m_Params.GetValueInt(STR_TRICOUNT));
 	m_pDynGeom->SetMaterials(m_pTerrMats);
 
 	// build heirarchy (add terrain to scene graph)
