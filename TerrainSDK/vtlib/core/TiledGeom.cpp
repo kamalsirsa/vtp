@@ -214,6 +214,8 @@ vtTiledGeom::vtTiledGeom()
 	m_iFrame = 0;
 	m_iCacheSize = 0;
 	m_iMaxCacheSize = 60 * 1024 * 1024;	// 40 MB cache max
+	m_iTileLoads = 0;
+	m_iCacheHits = 0;
 }
 
 vtTiledGeom::~vtTiledGeom()
@@ -431,6 +433,7 @@ unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 		VTLOG1(str);
 		VTLOG1("\n");
 #endif
+		m_iTileLoads++;
 		int bytes;
 		unsigned char *data = readfile(fname, &bytes);
 		if (!data)
@@ -457,6 +460,7 @@ unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 			}
 			// remove it from the cache
 			CacheEntry &entry = oldest->second;
+			free(entry.data);
 			m_iCacheSize -= entry.size;
 			m_Cache.erase(oldest);
 		}
@@ -485,9 +489,8 @@ unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 		VTLOG1("\n");
 #endif
 		// found in cache
+		m_iCacheHits++;
 		CacheEntry &entry = it->second;
-//		unsigned char *cached = it->second;
-//		return  cached;
 
 		// don't return the original, return a copy
 		unsigned char *data2 = (unsigned char *) malloc(entry.size);
@@ -513,17 +516,8 @@ void vtTiledGeom::DoRender()
 	// count frames
 	m_iFrame++;
 
-	// One update every 5 frames is a good approximation
-	int fpu=3;
-	// unless we've just changed resolution target
-	static float last_res = 0;
-	if (m_fResolution != last_res)
-	{
-		last_res = m_fResolution;
-//		fpu = 0;
-	}
-	// TEMP TEST
-//	fpu = 0;
+	// One update every 3 frames is a good approximation
+	int fpu=0;
 
 	// update vertex arrays
 	m_pMiniLoad->draw(m_fResolution,
@@ -539,25 +533,25 @@ void vtTiledGeom::DoRender()
 	// render vertex arrays
 	static int last_vtx = 0;
 	// int vtx=m_pMiniCache->rendercache();
-	int vtx = m_pMiniCache->rendercache();
-//	int vtx = m_pMiniCache->getvtxcnt();
+	m_iVertexCount = m_pMiniCache->rendercache();
+//	m_iVertexCount = m_pMiniCache->getvtxcnt();
 #endif
 
 	// When vertex count changes, we know a full update occurred
-	if (vtx != last_vtx || m_bNeedResolutionAdjust)
+	if (m_iVertexCount != last_vtx || m_bNeedResolutionAdjust)
 	{
 		m_bNeedResolutionAdjust = false;
 
 		// adaptively adjust resolution threshold up or down to attain
 		// the desired polygon (vertex) count target
-		int diff = vtx - m_iVertexTarget;
+		int diff = m_iVertexCount - m_iVertexTarget;
 		int iRange = m_iVertexTarget / 10;		// ensure within 10%
 
-		// If we aren't within the triangle count range adjust the input resolution
-		// like a binary search
+		// If we aren't within the triangle count range adjust the input
+		//  resolution, like a binary search
 		if (diff < -iRange || diff > iRange)
 		{
-			VTLOG("(%d/%d) diff %d, ", vtx, m_iVertexTarget, diff);
+			//VTLOG("(%d/%d) diff %d, ", m_iVertexCount, m_iVertexTarget, diff);
 			if (diff < -iRange)
 			{
 				m_fLResolution = m_fResolution;
@@ -565,7 +559,7 @@ void vtTiledGeom::DoRender()
 				// if the high end isn't high enough, double it
 				if (m_fLResolution + 5 >= m_fHResolution)
 				{
-					VTLOG1("increase HRes, ");
+					//VTLOG1("increase HRes, ");
 					m_fHResolution *= 2;
 				}
 			}
@@ -574,23 +568,25 @@ void vtTiledGeom::DoRender()
 				m_fHResolution = m_fResolution;
 				if (m_fLResolution + 5 >= m_fHResolution)
 				{
-					VTLOG1("decrease LRes, ");
+					//VTLOG1("decrease LRes, ");
 					m_fLResolution = m_fLResolution/2;
 				}
 			}
 
 			m_fResolution = m_fLResolution + (m_fHResolution - m_fLResolution) / 2;
-			VTLOG("rez: [%.1f, %.1f, %.1f]\n",
-				m_fLResolution, m_fResolution, m_fHResolution);
+			//VTLOG("rez: [%.1f, %.1f, %.1f]\n",
+			//	m_fLResolution, m_fResolution, m_fHResolution);
 
-			// keep the error within reasonable bounds
-			if (m_fResolution < 5.0f)
-				m_fResolution = 5.0f;
+			// keep the resolution within reasonable bounds
+			if (m_fResolution < 10.0f)
+				m_fResolution = 10.0f;
 			if (m_fResolution > 4E7)
 				m_fResolution = 4E7;
+
+			m_bNeedResolutionAdjust = true;
 		}
 	}
-	last_vtx = vtx;
+	last_vtx = m_iVertexCount;
 }
 
 void vtTiledGeom::DoCalcBoundBox(FBox3 &box)
