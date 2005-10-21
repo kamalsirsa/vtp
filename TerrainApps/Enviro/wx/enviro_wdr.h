@@ -295,6 +295,14 @@ const int ID_SCENARIO_PREVIOUS = 10216;
 const int ID_SCENARIO_NEXT = 10217;
 wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+const int ID_PANEL1 = 10218;
+const int ID_TARGET = 10219;
+const int ID_CURRENT = 10220;
+const int ID_CACHE_USED = 10221;
+const int ID_TILE_LOADS = 10222;
+const int ID_TILE_HITS = 10223;
+wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

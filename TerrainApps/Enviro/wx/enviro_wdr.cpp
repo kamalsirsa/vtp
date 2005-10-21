@@ -2140,6 +2140,73 @@ wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit, bool set_siz
     return item0;
 }
 
+wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("Detail levels chart") );
+    wxStaticBoxSizer *item1 = new wxStaticBoxSizer( item2, wxVERTICAL );
+
+    wxPanel *item3 = new wxPanel( parent, ID_PANEL1, wxDefaultPosition, wxSize(300,40), 0 );
+    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("Target Count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSpinCtrl *item6 = new wxSpinCtrl( parent, ID_TARGET, wxT("1000"), wxDefaultPosition, wxSize(100,-1), 0, 1000, 90000, 1000 );
+    item4->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Current"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item8 = new wxTextCtrl( parent, ID_CURRENT, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item4->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item4, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Tile RAM cache used"), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_CACHE_USED, wxT(""), wxDefaultPosition, wxSize(100,-1), 0 );
+    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("K"), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item9, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("Disk loads"), wxDefaultPosition, wxDefaultSize, 0 );
+    item13->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_TILE_LOADS, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
+    item13->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("Cache hits"), wxDefaultPosition, wxDefaultSize, 0 );
+    item13->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_TILE_HITS, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
+    item13->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item13, 0, wxALIGN_CENTER, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions
