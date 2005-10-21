@@ -12,20 +12,22 @@
 #include "vtui/wxString2.h"
 #include "vtlib/core/Event.h"
 
-class SceneGraphDlg;
-class PlantDlg;
-class LinearStructureDlg3d;
-class CameraDlg;
-class LocationDlg;
+// forward declare dialogs
 class BuildingDlg3d;
-class UtilDlg;
-class LayerDlg;
-class InstanceDlg;
+class CameraDlg;
 class DistanceDlg;
-class TimeDlg;
-class vtTerrain;
-class TimeDlg;
+class InstanceDlg;
+class LODDlg;
+class LinearStructureDlg3d;
+class LocationDlg;
+class LayerDlg;
+class PlantDlg;
 class CScenarioSelectDialog;
+class SceneGraphDlg;
+class TimeDlg;
+class TimeEngine;
+class UtilDlg;
+class vtTerrain;
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
@@ -57,6 +59,7 @@ public:
 	virtual void Setup3DScene();
 	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
 	virtual void FrameArgument(int i, const char *str) { }
+	void UpdateLODInfo();
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);
@@ -140,6 +143,7 @@ public:
 	void OnFog(wxCommandEvent& event);
 	void OnIncrease(wxCommandEvent& event);
 	void OnDecrease(wxCommandEvent& event);
+	void OnLOD(wxCommandEvent& event);
 	void OnSaveVeg(wxCommandEvent& event);
 	void OnSaveStruct(wxCommandEvent& event);
 	void OnToggleFoundations(wxCommandEvent& event);
@@ -153,6 +157,7 @@ public:
 	void OnUpdateStructures(wxUpdateUIEvent& event);
 	void OnUpdateRoads(wxUpdateUIEvent& event);
 	void OnUpdateFog(wxUpdateUIEvent& event);
+	void OnUpdateLOD(wxUpdateUIEvent& event);
 	void OnUpdateSaveVeg(wxUpdateUIEvent& event);
 	void OnUpdateSaveStruct(wxUpdateUIEvent& event);
 	void OnUpdateFoundations(wxUpdateUIEvent& event);
@@ -208,6 +213,7 @@ public:
 	DistanceDlg			*m_pDistanceDlg;
 	TimeDlg				*m_pTimeDlg;
 	CScenarioSelectDialog *m_pScenarioSelectDialog;
+	LODDlg				*m_pLODDlg;
 	MouseMode			m_ToggledMode;
 
 protected:

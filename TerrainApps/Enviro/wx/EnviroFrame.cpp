@@ -21,15 +21,17 @@
 #endif
 
 #include "vtlib/vtlib.h"
+#include "vtlib/core/Building3d.h"
+#include "vtlib/core/Contours.h"
+#include "vtlib/core/DynTerrain.h"
+#include "vtlib/core/Globe.h"
+#include "vtlib/core/NavEngines.h"
+#include "vtlib/core/SMTerrain.h"
+#include "vtlib/core/SRTerrain.h"
+#include "vtlib/core/SkyDome.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
-#include "vtlib/core/NavEngines.h"
-#include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/TiledGeom.h"
-#include "vtlib/core/SkyDome.h"
-#include "vtlib/core/Building3d.h"
-#include "vtlib/core/Globe.h"
-#include "vtlib/core/Contours.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for progress dialog
 
@@ -37,18 +39,19 @@
 #include "StatusBar.h"
 
 // dialogs
-#include "SceneGraphDlg.h"
-#include "PlantDlg.h"
-#include "LinearStructDlg3d.h"
-#include "UtilDlg.h"
-#include "CameraDlg.h"
-#include "LocationDlg.h"
 #include "BuildingDlg3d.h"
+#include "CameraDlg.h"
 #include "LayerDlg.h"
+#include "LinearStructDlg3d.h"
+#include "LocationDlg.h"
+#include "LODDlg.h"
+#include "PlantDlg.h"
+#include "ScenarioSelectDialog.h"
+#include "SceneGraphDlg.h"
+#include "TimeDlg.h"
+#include "UtilDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
-#include "TimeDlg.h"
-#include "ScenarioSelectDialog.h"
 
 #include "../Engines.h"
 #include "../Options.h"
@@ -181,6 +184,7 @@ EVT_MENU(ID_TERRAIN_ROADS,		EnviroFrame::OnRoads)
 EVT_MENU(ID_TERRAIN_FOG,		EnviroFrame::OnFog)
 EVT_MENU(ID_TERRAIN_INCREASE,	EnviroFrame::OnIncrease)
 EVT_MENU(ID_TERRAIN_DECREASE,	EnviroFrame::OnDecrease)
+EVT_MENU(ID_TERRAIN_LOD,		EnviroFrame::OnLOD)
 EVT_MENU(ID_TERRAIN_SAVEVEG,	EnviroFrame::OnSaveVeg)
 EVT_MENU(ID_TERRAIN_SAVESTRUCT,	EnviroFrame::OnSaveStruct)
 EVT_MENU(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnToggleFoundations)
@@ -194,6 +198,9 @@ EVT_UPDATE_UI(ID_TERRAIN_PLANTS,	EnviroFrame::OnUpdatePlants)
 EVT_UPDATE_UI(ID_TERRAIN_STRUCTURES, EnviroFrame::OnUpdateStructures)
 EVT_UPDATE_UI(ID_TERRAIN_ROADS,		EnviroFrame::OnUpdateRoads)
 EVT_UPDATE_UI(ID_TERRAIN_FOG,		EnviroFrame::OnUpdateFog)
+EVT_UPDATE_UI(ID_TERRAIN_INCREASE,	EnviroFrame::OnUpdateLOD)
+EVT_UPDATE_UI(ID_TERRAIN_DECREASE,	EnviroFrame::OnUpdateLOD)
+EVT_UPDATE_UI(ID_TERRAIN_LOD,		EnviroFrame::OnUpdateLOD)
 EVT_UPDATE_UI(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnUpdateFoundations)
 
 EVT_MENU(ID_EARTH_SHOWSHADING,	EnviroFrame::OnEarthShowShading)
@@ -270,26 +277,27 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	// Show the frame
 	Show(true);
 
-	m_pSceneGraphDlg = new SceneGraphDlg(this, -1, _("Scene Graph"),
-			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pSceneGraphDlg->SetSize(450, 600);
+	m_pBuildingDlg = new BuildingDlg3d(this, -1, _("Building Properties"));
+	m_pCameraDlg = new CameraDlg(this, -1, _("Camera-View"));
+	m_pDistanceDlg = new DistanceDlg(this, -1, _("Distance"));
+	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
+	m_pInstanceDlg = new InstanceDlg(this, -1, _("Instances"), wxDefaultPosition,
+		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	m_pLODDlg = new LODDlg(this, -1, _("Terrain LOD Info"));
 
 	m_pPlantDlg = new PlantDlg(this, -1, _("Plants"));
 	m_pPlantDlg->ShowOnlyAvailableSpecies(g_Options.m_bOnlyAvailableSpecies);
 
-	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
-	m_pUtilDlg = new UtilDlg(this, -1, _("Routes"));
-	m_pCameraDlg = new CameraDlg(this, -1, _("Camera-View"));
 	m_pLocationDlg = new LocationDlg(this, -1, _("Locations"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pBuildingDlg = new BuildingDlg3d(this, -1, _("Building Properties"));
 	m_pLayerDlg = new LayerDlg(this, -1, _("Layers"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pLayerDlg->SetSize(600, 250);
-	m_pInstanceDlg = new InstanceDlg(this, -1, _("Instances"), wxDefaultPosition,
-		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pDistanceDlg = new DistanceDlg(this, -1, _("Distance"));
+	m_pSceneGraphDlg = new SceneGraphDlg(this, -1, _("Scene Graph"),
+			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	m_pSceneGraphDlg->SetSize(450, 600);
 	m_pTimeDlg = new TimeDlg(this, -1, _("Time"));
+	m_pUtilDlg = new UtilDlg(this, -1, _("Routes"));
 	m_pScenarioSelectDialog = new CScenarioSelectDialog(this, -1, _("Scenarios"));
 
 	m_canvas->SetCurrent();
@@ -350,6 +358,7 @@ void EnviroFrame::CreateMenus()
 	// Ctrl+L Store/Recall Locations
 	// Ctrl+N Save Numbered Snapshot
 	// Ctrl+P Load Point Data
+	// Ctrl+Q Terrain LOD Info
 	// Ctrl+S Camera - View Settings
 	// Ctrl+T Top-Down
 	// Ctrl+U Unfold
@@ -424,6 +433,7 @@ void EnviroFrame::CreateMenus()
 	m_pTerrainMenu->AppendSeparator();
 	m_pTerrainMenu->Append(ID_TERRAIN_INCREASE, _("Increase Detail (+)"));
 	m_pTerrainMenu->Append(ID_TERRAIN_DECREASE, _("Decrease Detail (-)"));
+	m_pTerrainMenu->Append(ID_TERRAIN_LOD, _("Level of Detail Info\tCtrl+Q"));
 	m_pTerrainMenu->AppendSeparator();
 	m_pTerrainMenu->Append(ID_TERRAIN_SAVEVEG, _("Save Vegetation As..."));
 	m_pTerrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _("Save Built Structures As..."));
@@ -717,9 +727,9 @@ void EnviroFrame::ChangeTerrainDetail(bool bIncrease)
 	if (pDyn)
 	{
 		if (bIncrease)
-			pDyn->SetPolygonCount(pDyn->GetPolygonCount()+1000);
+			pDyn->SetPolygonTarget(pDyn->GetPolygonTarget()+1000);
 		else
-			pDyn->SetPolygonCount(pDyn->GetPolygonCount()-1000);
+			pDyn->SetPolygonTarget(pDyn->GetPolygonTarget()-1000);
 	}
 	vtTiledGeom *pTiled = pTerr->GetTiledGeom();
 	if (pTiled)
@@ -1375,6 +1385,18 @@ void EnviroFrame::OnDecrease(wxCommandEvent& event)
 	ChangeTerrainDetail(false);
 }
 
+void EnviroFrame::OnLOD(wxCommandEvent& event)
+{
+	m_pLODDlg->Show();
+}
+
+void EnviroFrame::OnUpdateLOD(wxUpdateUIEvent& event)
+{
+	vtTerrain *t = GetCurrentTerrain();
+	event.Enable(t &&
+		(t->GetDynTerrain() != NULL || t->GetTiledGeom() != NULL));
+}
+
 void EnviroFrame::OnSaveVeg(wxCommandEvent& event)
 {
 	g_App.SaveVegetation();
@@ -1599,6 +1621,45 @@ void EnviroFrame::UpdateStatus()
 		m_pLocationDlg->Update();
 }
 
+void EnviroFrame::UpdateLODInfo()
+{
+	if (!m_pLODDlg)
+		return;
+	vtTerrain *terr = g_App.GetCurrentTerrain();
+	if (!terr)
+		return;
+	vtTiledGeom *geom = terr->GetTiledGeom();
+	if (geom)
+	{
+		m_pLODDlg->Refresh(log(geom->m_fLResolution)*17,
+			log(geom->m_fResolution)*17,
+			log(geom->m_fHResolution)*17,
+			geom->m_iVertexTarget, geom->m_iVertexCount,
+			geom->m_iMaxCacheSize, geom->m_iCacheSize,
+			geom->m_iTileLoads, geom->m_iCacheHits);
+	}
+	vtDynTerrainGeom *dyn = terr->GetDynTerrain();
+	if (dyn)
+	{
+		SRTerrain *sr = dynamic_cast<SRTerrain*>(dyn);
+		if (sr)
+		{
+			m_pLODDlg->Refresh(log(sr->m_fLResolution)*17,
+				log(sr->m_fResolution)*17,
+				log(sr->m_fHResolution)*17,
+				sr->GetPolygonTarget(), sr->GetNumDrawnTriangles(),
+				-1, -1, -1, -1);
+		}
+		SMTerrain *sm = dynamic_cast<SMTerrain*>(dyn);
+		if (sm)
+		{
+			m_pLODDlg->Refresh(-1,
+				log((sm->GetQualityConstant()-0.002f)*10000)*40, -1,
+				sm->GetPolygonTarget(), sm->GetNumDrawnTriangles(),
+				-1, -1, -1, -1);
+		}
+	}
+}
 
 ///////////////////////////////////////////////////////////////////
 
