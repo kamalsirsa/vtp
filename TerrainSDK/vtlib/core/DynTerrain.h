@@ -44,8 +44,8 @@ public:
 	void SetOptions(bool bUseTriStrips, int iBlockArrayDim, int iTextureSize);
 	virtual void SetVerticalExag(float fExag) {}
 
-	virtual void SetPolygonCount(int iPolygonCount);
-	int GetPolygonCount();
+	virtual void SetPolygonTarget(int iPolygonCount);
+	int GetPolygonTarget();
 
 	int GetNumDrawnTriangles();
 

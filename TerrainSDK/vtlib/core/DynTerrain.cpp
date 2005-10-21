@@ -227,12 +227,16 @@ void vtDynTerrainGeom::CullOnce()
 	m_bCullonce = true;
 }
 
-void vtDynTerrainGeom::SetPolygonCount(int iPolygonCount)
+void vtDynTerrainGeom::SetPolygonTarget(int iCount)
 {
-	m_iPolygonTarget = iPolygonCount;
+	m_iPolygonTarget = iCount;
+
+	// safety check
+	if (m_iPolygonTarget < 1000)
+		m_iPolygonTarget = 1000;
 }
 
-int vtDynTerrainGeom::GetPolygonCount()
+int vtDynTerrainGeom::GetPolygonTarget()
 {
 	return m_iPolygonTarget;
 }

@@ -1738,7 +1738,7 @@ void Enviro::DescribeCLOD(vtString &str)
 	LodMethodEnum method = t->GetParams().GetLodMethod();
 	if (method == LM_MCNALLY || method == LM_ROETTGER)
 	{
-		str.Format("CLOD: target %d, drawn %d ", dtg->GetPolygonCount(),
+		str.Format("CLOD: target %d, drawn %d ", dtg->GetPolygonTarget(),
 			dtg->GetNumDrawnTriangles());
 	}
 }
