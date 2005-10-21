@@ -143,6 +143,8 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		QueueRefresh(FALSE);
 #endif
 
+		EnviroFrame *frame = (EnviroFrame*) GetParent();
+
 		// update the status bar every 1/10 of a second
 		static float last_stat = 0.0f;
 		static vtString last_msg;
@@ -151,9 +153,10 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		{
 			last_msg = g_App.GetMessage();
 			last_stat = cur;
-			EnviroFrame *frame = (EnviroFrame*) GetParent();
 			frame->UpdateStatus();
 		}
+
+		frame->UpdateLODInfo();
 
 		m_bPainting = false;
 #endif // VTLIB_PSM
