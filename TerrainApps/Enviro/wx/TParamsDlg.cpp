@@ -572,6 +572,7 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_TRISTRIPS)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY);
 	FindWindow(ID_DETAILTEXTURE)->Enable(m_bGrid);
 	FindWindow(ID_VTX_COUNT)->Enable(m_bTileset);
+	FindWindow(ID_TILE_CACHE_SIZE)->Enable(m_bTileset);
 
 	FindWindow(ID_NONE)->Enable(!m_bTileset);
 	FindWindow(ID_SINGLE)->Enable(!m_bTileset);
