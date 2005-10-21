@@ -76,6 +76,22 @@ public:
 	// CRS of this tileset
 	vtProjection m_proj;
 
+	// detail level and vertex target
+	float m_fResolution;
+	float m_fHResolution;
+	float m_fLResolution;
+	int m_iVertexTarget;
+	int m_iVertexCount;
+	bool m_bNeedResolutionAdjust;
+
+	// Tile cache in host RAM, to reduce loading from disk
+	TileCache m_Cache;
+	int	m_iCacheSize;		// In bytes
+	int	m_iMaxCacheSize;	// In bytes
+	int m_iFrame;
+	int m_iTileLoads;
+	int m_iCacheHits;
+
 protected:
 	// Values used to initialize miniload
 	int cols, rows;
@@ -97,23 +113,10 @@ protected:
 	float m_fHeightScale;
 	float m_fDrawScale;
 
-	// detail level and vertex target
-	float m_fResolution;
-	float m_fHResolution;
-	float m_fLResolution;
-	int m_iVertexTarget;
-	bool m_bNeedResolutionAdjust;
-
 	// the libMini objects
 	class miniload *m_pMiniLoad;
 	class minitile *m_pMiniTile;
 	class minicache *m_pMiniCache;	// This is cache of OpenGL primitives to be rendered
-
-	// Tile cache in host RAM, to reduce loading from disk
-	TileCache m_Cache;
-	int	m_iCacheSize;		// In bytes
-	int	m_iMaxCacheSize;	// In bytes
-	int m_iFrame;
 
 	void SetupMiniLoad();
 };
