@@ -371,26 +371,26 @@ void SRTerrain::RenderPass()
 			m_fLResolution = m_fResolution;
 			
 			// if the high end isn't high enough, double it
-			if (m_fLResolution + 5 >= m_fHResolution)
+			if (m_fLResolution + 25 >= m_fHResolution)
 			{
 //				VTLOG("increase HRes, ");
-				m_fHResolution *= 10;
+				m_fHResolution *= 4;
 			}
 		}
 		else
 		{
 			m_fHResolution = m_fResolution;
-			if (m_fLResolution + 5 >= m_fHResolution)
+			if (m_fLResolution + 25 >= m_fHResolution)
 			{
 //				VTLOG("decrease LRes, ");
-				m_fLResolution = 0;
+				m_fLResolution /= 4;
 			}
 		}
 
 		m_fResolution = m_fLResolution + (m_fHResolution - m_fLResolution) / 2;
 //		VTLOG("rez: [%.1f, %.1f, %.1f] (%d/%d)\n", m_fLResolution, m_fResolution, m_fHResolution, m_iDrawnTriangles, m_iPolygonTarget);
 
-		// keep the error within reasonable bounds
+		// keep the resolution within reasonable bounds
 		if (m_fResolution < 5.0f)
 			m_fResolution = 5.0f;
 		if (m_fResolution > 4E7)
@@ -433,12 +433,12 @@ void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
 		  height,
 		  m_fZLookup[j]);
 }
-void SRTerrain::SetPolygonCount(int iPolygonCount)
+void SRTerrain::SetPolygonTarget(int iPolygonCount)
 {
-	vtDynTerrainGeom::SetPolygonCount(iPolygonCount);
-	m_fResolution = iPolygonCount * 5;
-	m_fHResolution = 2 * m_fResolution;
-	m_fLResolution = 0;
+	vtDynTerrainGeom::SetPolygonTarget(iPolygonCount);
+	//m_fResolution = iPolygonCount * 5;
+	//m_fHResolution = m_fResolution * 1.2f;
+	//m_fLResolution = m_fResolution / 1.2f;
 }
 
 #endif	// VTLIB_NI
