@@ -79,23 +79,23 @@ typedef struct
 {
 	char	szName[MAX_TAGNAMELEN + 1];
 
-	unsigned __int32	valueSize;
-	unsigned __int32	reserved;
+	unsigned int	valueSize;
+	unsigned int	reserved;
 
 	// To make seeking more efficient, one can,
 	// after writing all the tags, work through them,
 	// compute each one's full compound size, and
 	// store them here.
-	unsigned __int32	tagSize;
-	unsigned __int32	reserved2;
+	unsigned int	tagSize;
+	unsigned int	reserved2;
 
-	__int16	relationFlags;
-	__int16 valueKind;
+	short	relationFlags;
+	short valueKind;
 } TAGHEADER; // 36 bytes
 
 typedef union
 {
-	__int32			n;
+	int			n;
 	double			d;
 	unsigned char	c[1];
 } TAGVALUE; // 8 bytes
@@ -157,7 +157,7 @@ public:
 			size_t datasize = 0);
 
 		void Write(const char* pszName,
-			unsigned __int32 value,
+			unsigned int value,
 			int bHasSibling);
 
 		void Write(const char* pszName,
@@ -176,7 +176,7 @@ public:
 		// Read() is the generic tag reader.
 		// Full pathspecs must always be given.
 		size_t Read(const char*, void**);
-		unsigned __int32 ReadUINT32(const char*, unsigned __int32 _default);
+		unsigned int ReadUINT32(const char*, unsigned int _default);
 		double ReadDouble(const char*, double _default);
 
 #ifdef _DEBUG

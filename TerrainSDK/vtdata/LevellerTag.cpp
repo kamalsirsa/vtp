@@ -112,8 +112,8 @@ void CRootTag::Close(void)
 	m_openMode = kClosed;
 }
 
-unsigned __int32 CRootTag::ReadUINT32(const char *pszPath,
-									  unsigned __int32 _default)
+unsigned int CRootTag::ReadUINT32(const char *pszPath,
+									  unsigned int _default)
 {
 	void *pv;
 	size_t size = this->Read(pszPath, &pv);
@@ -124,7 +124,7 @@ unsigned __int32 CRootTag::ReadUINT32(const char *pszPath,
 	if(size != this->GetValSize(VALKIND_UINT32))
 		TAG_THROW;
 
-	return *((unsigned __int32*)pv);
+	return *((unsigned int*)pv);
 }
 
 
@@ -311,7 +311,7 @@ void CRootTag::Write(const char *pszName, int relationFlags,
 
 	for(const char *psz = pszName; *psz != 0; psz++)
 	{
-		if(*psz < ' ' || *psz > 0x7F)
+		if(*psz < ' ')
 		{
 			myassert(false);
 			throw 0;
@@ -376,7 +376,7 @@ void *CRootTag::WriteBinary
 
 	for(const char *psz = pszName; *psz != 0; psz++)
 	{
-		if(*psz < ' ' || *psz > 0x7F)
+		if(*psz < ' ')
 		{
 			myassert(false);
 			throw 0;
@@ -398,7 +398,7 @@ void *CRootTag::WriteBinary
 
 
 void CRootTag::Write(const char *pszName,
-			unsigned __int32 value,
+			unsigned int value,
 			int bHasSibling)
 {
 	this->Write(
@@ -524,19 +524,19 @@ char *CRootTag::ValueString(const TAG& tag, char *psz)
 			break;
 
 		case VALKIND_INT16:
-			sprintf(psz, "%d", (int)*((__int16*)&tag.value));
+			sprintf(psz, "%d", (int)*((short*)&tag.value));
 			break;
 
 		case VALKIND_UINT16:
-			sprintf(psz, "%d", (int)*((unsigned __int16*)&tag.value));
+			sprintf(psz, "%d", (int)*((unsigned short*)&tag.value));
 			break;
 
 		case VALKIND_INT32:
-			sprintf(psz, "%d", (int)*((signed __int32*)&tag.value));
+			sprintf(psz, "%d", (int)*((signed int*)&tag.value));
 			break;
 
 		case VALKIND_UINT32:
-			sprintf(psz, "%u", (unsigned int)*((unsigned __int32*)&tag.value));
+			sprintf(psz, "%u", (unsigned int)*((unsigned int*)&tag.value));
 			break;
 
 		case VALKIND_FLOAT:
