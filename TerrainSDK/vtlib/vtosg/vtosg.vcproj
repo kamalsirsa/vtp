@@ -763,6 +763,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\TParams.cpp">
+			</File>
+			<File
 				RelativePath="..\core\Trees.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -952,6 +955,9 @@
 			</File>
 			<File
 				RelativePath="..\core\TimeEngines.h">
+			</File>
+			<File
+				RelativePath="..\core\TParams.h">
 			</File>
 			<File
 				RelativePath="..\core\Trees.h">

@@ -629,26 +629,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="TParams.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="Triangulate.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -949,9 +929,6 @@
 			</File>
 			<File
 				RelativePath="Structure.h">
-			</File>
-			<File
-				RelativePath="TParams.h">
 			</File>
 			<File
 				RelativePath="Triangulate.h">
