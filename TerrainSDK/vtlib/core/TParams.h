@@ -10,8 +10,8 @@
 #ifndef TPARAMSH
 #define TPARAMSH
 
-#include "MathTypes.h"
-#include "Content.h"
+#include "vtdata/MathTypes.h"
+#include "vtdata/Content.h"
 
 typedef unsigned int unint;
 
