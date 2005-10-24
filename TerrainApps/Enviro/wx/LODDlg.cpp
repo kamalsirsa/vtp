@@ -90,7 +90,7 @@ void LODDlg::Refresh(float res0, float res, float res1, int target,
 
 void LODDlg::DrawChart(float res0, float res, float res1, int target, int count)
 {
-	int ires = res;
+	int ires = (int) res;
 	int imax = target * 2;
 	int itarget = target * 300 / imax;
 	int icount = count * 300 / imax;
@@ -105,8 +105,8 @@ void LODDlg::DrawChart(float res0, float res, float res1, int target, int count)
 
 	if (res0 != -1)
 	{
-		int ires0 = res0;
-		int ires1 = res1;
+		int ires0 = (int) res0;
+		int ires1 = (int) res1;
 
 		wxPen pen1(wxColour(255,0,0), 1, wxSOLID);
 		dc.SetPen(pen1);
