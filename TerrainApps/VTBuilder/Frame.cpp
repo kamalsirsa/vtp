@@ -17,6 +17,7 @@
 #include "vtdata/vtLog.h"
 #include "xmlhelper/exception.hpp"
 #include <fstream>
+#include <float.h>	// for FLT_MIN
 
 #include "Frame.h"
 #include "SplitterWin.h"
@@ -1848,7 +1849,7 @@ bool MainFrame::SampleElevationToPGMPyramids(const TilingOptions &opts)
 					{
 						p.x = m_area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
 
-						short value = lod_zero.GetFilteredValue(p);
+						short value = (short) lod_zero.GetFilteredValue(p);
 						value = SwapShort(value);
 						fwrite(&value, 2, 1, fp);
 					}
