@@ -2460,12 +2460,12 @@ void MainFrame::ExportChunkLOD()
 
 	FILE *out = fopen(fname, "wb");
 	if (out == 0) {
-		DisplayAndLog("Error: can't open %s for output.", fname);
+		DisplayAndLog("Error: can't open %s for output.", (const char *) fname);
 		return;
 	}
 
 	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
-	const int CHUNKLOD_MAX_HEIGHT = 10000.0f;
+	const int CHUNKLOD_MAX_HEIGHT = 10000;
 	float vertical_scale = CHUNKLOD_MAX_HEIGHT / 32767.0f;
 	float input_vertical_scale = 1.0f;
 

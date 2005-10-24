@@ -337,8 +337,8 @@ void vtScene::WorldToScreen(const FPoint3 &point, IPoint2 &result)
 	v2s(point, object);
 	Vec3 window;
 	m_pOsgSceneView->projectObjectIntoWindow(object, window);
-	result.x = window.x();
-	result.y = window.y();
+	result.x = (int) window.x();
+	result.y = (int) window.y();
 }
 
 
