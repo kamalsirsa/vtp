@@ -290,7 +290,7 @@ ifeq ($(OS),Linux)
    MINI_INC   = $(LOCALBASE)/include/mini
    MINI_LIB   = $(LOCALBASE)/lib/libMini.a
 
-   ARCH := $(shell uname -p)
+   ARCH := $(shell uname -m)
    ifeq ($(ARCH),x86_64)
       COPT      = -O -g -fPIC
       LDIRFLAGS = -L/usr/lib64 $(LDIRS:%=-L%)
