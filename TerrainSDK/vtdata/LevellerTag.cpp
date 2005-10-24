@@ -507,46 +507,45 @@ char *CRootTag::ValueString(const TAG& tag, char *psz)
 
 	switch(tag.header.valueKind)
 	{
-		case VALKIND_NONE:
-			psz[0] = 0;
-			break;
+	case VALKIND_NONE:
+		psz[0] = 0;
+		break;
 
-		case VALKIND_BINARY:
-			strcpy(psz, "(bytestream)");
-			break;
+	case VALKIND_BINARY:
+		strcpy(psz, "(bytestream)");
+		break;
 
-		case VALKIND_CHAR:
-			sprintf(psz, "%d", (int)(char)tag.value.c[0]);
-			break;
+	case VALKIND_CHAR:
+		sprintf(psz, "%d", (int)(char)tag.value.c[0]);
+		break;
 
-		case VALKIND_BYTE:
-			sprintf(psz, "%d", (int)tag.value.c[0]);
-			break;
+	case VALKIND_BYTE:
+		sprintf(psz, "%d", (int)tag.value.c[0]);
+		break;
 
-		case VALKIND_INT16:
-			sprintf(psz, "%d", (int)*((short*)&tag.value));
-			break;
+	case VALKIND_INT16:
+		sprintf(psz, "%d", (int)*((__int16*)&tag.value));
+		break;
 
-		case VALKIND_UINT16:
-			sprintf(psz, "%d", (int)*((unsigned short*)&tag.value));
-			break;
+	case VALKIND_UINT16:
+		sprintf(psz, "%d", (int)*((unsigned __int16*)&tag.value));
+		break;
 
-		case VALKIND_INT32:
-			sprintf(psz, "%d", (int)*((signed int*)&tag.value));
-			break;
+	case VALKIND_INT32:
+		sprintf(psz, "%d", (int)*((signed __int32*)&tag.value));
+		break;
 
-		case VALKIND_UINT32:
-			sprintf(psz, "%u", (unsigned int)*((unsigned int*)&tag.value));
-			break;
+	case VALKIND_UINT32:
+		sprintf(psz, "%u", (unsigned int)*((unsigned __int32*)&tag.value));
+		break;
 
-		case VALKIND_FLOAT:
-			sprintf(psz, "%f", *((float*)&tag.value));
-			break;
+	case VALKIND_FLOAT:
+		sprintf(psz, "%f", *((float*)&tag.value));
+		break;
 
-		case VALKIND_DOUBLE:
-			sprintf(psz, "%f", *((double*)&tag.value));
-			break;
-
+	case VALKIND_DOUBLE:
+		sprintf(psz, "%f", *((double*)&tag.value));
+		break;
 	}
 	return psz;
 }
