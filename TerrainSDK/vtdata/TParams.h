@@ -57,6 +57,12 @@ protected:
 	vtStringArray m_ActiveLayers;
 };
 
+/**
+ * Terrain Parameters.  These are all the values which describe how a terrain
+ *  will be created.
+ *
+ * This class would normally belong in vtlib, not vtdata, but.. [TODO]
+ */
 class TParams : public vtTagArray
 {
 public:
