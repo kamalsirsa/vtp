@@ -10,6 +10,9 @@
 
 #include "vtdata/HeightField.h"
 
+#define TILEDGEOM_RESOLUTION_MIN 8000.0f
+#define TILEDGEOM_RESOLUTION_MAX 8000000.0f
+
 /** \addtogroup dynterr */
 /*@{*/
 
@@ -82,7 +85,6 @@ public:
 	float m_fLResolution;
 	int m_iVertexTarget;
 	int m_iVertexCount;
-	bool m_bNeedResolutionAdjust;
 
 	// Tile cache in host RAM, to reduce loading from disk
 	TileCache m_Cache;
@@ -96,7 +98,7 @@ protected:
 	// Values used to initialize miniload
 	int cols, rows;
 	float coldim, rowdim;
-	int lod0size;
+	int image_lod0size;
 	FPoint3 center;
 	ucharptr *hfields, *textures;
 
@@ -107,6 +109,7 @@ protected:
 	float m_fAspect;
 	float m_fNear, m_fFar;
 	FPoint3 eye_up, eye_forward;
+	bool m_bNeedResolutionAdjust;
 
 	// vertical scale (exaggeration)
 	float m_fMaximumScale;
