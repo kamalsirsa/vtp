@@ -41,7 +41,11 @@ public:
 	int m_iNumWires;
 };
 
-/** \addtogroup terrain */
+/** \defgroup terrain Terrain
+ * These classes are the terrain objects, which act as containers for
+ * elevation, imagery, culture, and all other visual components of
+ * a part of the earth.
+ */
 /*@{*/
 
 /**

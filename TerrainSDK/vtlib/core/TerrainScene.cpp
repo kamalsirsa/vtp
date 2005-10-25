@@ -12,19 +12,11 @@
 #include "SkyDome.h"
 #include "Terrain.h"
 #include "TimeEngines.h"
-
-/** \defgroup terrain Terrain
- * These classes are the terrain objects, which act as containers for
- * elevation, imagery, culture, and all other visual components of
- * a part of the earth.
- */
-/*@{*/
+#include "LodGrid.h"
 
 ///////////////////////////////////////////////////////////////////////
 
 // All terrains share a static data path and content manager
-//vtStringArray vtGetDataPath();
-//vtContentManager3d vtGetContent;
 vtTerrainScene *vtTerrainScene::s_pTerrainScene;
 
 ///////////////////////////////////////////////////////////////////////
@@ -489,6 +481,4 @@ vtContentManager3d &vtGetContent()
 {
 	return vtTerrainScene::s_pTerrainScene->m_Content;
 }
-
-/*@}*/  // terrain
 
