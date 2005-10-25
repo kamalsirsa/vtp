@@ -97,6 +97,12 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 	std::cout.rdbuf(&g_Trap);
 	std::cerr.rdbuf(&g_Trap);
 
+#if 0
+	// If you encounter trouble in OSG that you want to debug, enable this
+	//  to get a LOT of diagnostic messages from OSG.
+	osg::setNotifyLevel(osg::INFO);
+#endif
+
 	m_pDefaultCamera = new vtCamera;
 	m_pDefaultWindow = new vtWindow;
 	SetCamera(m_pDefaultCamera);
