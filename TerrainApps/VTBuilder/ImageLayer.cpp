@@ -1473,9 +1473,9 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 						if (lod == 3 && x == y) rgb.Set(255,0,0);
 
 						if (lod == 2 && (
-							x == base_tilesize-y ||
-							x == y+base_tilesize/2 ||
-							x == y-base_tilesize/2)) rgb.Set(0,255,0);
+							x == tilesize-y ||
+							x == y+tilesize/2 ||
+							x == y-tilesize/2)) rgb.Set(0,255,0);
 
 						if (lod == 1 && (x%16)==0) rgb.Set(0,0,90);
 
