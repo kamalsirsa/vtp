@@ -459,10 +459,10 @@ void EnviroFrame::CreateMenus()
 	}
 
 	wxMenu *helpMenu = new wxMenu;
-	wxString about = _("About");
-	about += _T(" ");
-	about += WSTRING_APPORG;
-	about += _T("...");
+	wxString2 about = _("About");
+	about += " ";
+	about += STRING_APPORG;
+	about += "...";
 	helpMenu->Append(ID_HELP_ABOUT, about);
 	m_pMenuBar->Append(helpMenu, _("&Help"));
 
@@ -806,7 +806,7 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	EnableContinuousRendering(false);
 
- 	wxString2 str = WSTRING_APPORG _T("\n\n");
+ 	wxString2 str = STRING_APPORG "\n\n";
 #ifdef ENVIRO_NATIVE
 	str += _T("The runtime environment for the Virtual Terrain Project.\n\n");
  	str += _T("Please read the HTML documentation and license.\n\n");
@@ -828,7 +828,9 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 	str += _T("Build date: ");
 	str += __DATE__;
 
-	wxMessageBox(str, _T("About ") WSTRING_APPORG);
+	wxString2 str2 = "About ";
+	str2 += STRING_APPORG;
+	wxMessageBox(str, str2);
 
 	EnableContinuousRendering(true);
 }
