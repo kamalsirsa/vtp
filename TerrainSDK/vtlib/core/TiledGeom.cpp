@@ -137,50 +137,6 @@ int request_callback(unsigned char *mapfile,unsigned char *texfile,
 	return 1;
 }
 
-// preloader statistics
-static float kbytes2=0.0f;
-
-int COL,ROW;
-void *HFIELD=NULL,*TEXTURE=NULL,*FOGMAP=NULL;
-int HLOD,TLOD;
-
-void preload_callback(int col,int row,unsigned char *mapfile,int hlod,
-					  unsigned char *texfile,int tlod,unsigned char *fogfile,
-					  void *data)
-   {
-   int bytes;
-
-   if (HFIELD!=NULL || TEXTURE!=NULL || FOGMAP!=NULL) return;
-
-   COL=col;
-   ROW=row;
-
-   if ((HFIELD=readfile((char *)mapfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
-   if ((TEXTURE=readfile((char *)texfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
-
-   if (fogfile==NULL) FOGMAP=NULL;
-   else if ((FOGMAP=readfile((char *)fogfile,&bytes))!=NULL) kbytes2+=bytes/1024.0f;
-
-   HLOD=hlod;
-   TLOD=tlod;
-   }
-
-void deliver_callback(int *col,int *row,void **hfield,int *hlod,void **texture,
-					  int *tlod,void **fogmap,void *data)
-   {
-   *col=COL;
-   *row=ROW;
-
-   *hfield=HFIELD;
-   *texture=TEXTURE;
-   *fogmap=FOGMAP;
-
-   *hlod=HLOD;
-   *tlod=TLOD;
-
-   HFIELD=TEXTURE=FOGMAP=NULL;
-   }
-
 void mini_error_handler(char *file,int line,int fatal)
 {
 	VTLOG("libMini error: file '%s', line %d, fatal %d\n", file, line, fatal);
@@ -206,9 +162,9 @@ vtTiledGeom::vtTiledGeom()
 
 	// defaults
 	SetVertexTarget(30000);
-	m_fResolution = m_iVertexTarget * 10;
+	m_fResolution = TILEDGEOM_RESOLUTION_MIN+1;
 	m_fHResolution = 2 * m_fResolution;
-	m_fLResolution = 0;
+	m_fLResolution = TILEDGEOM_RESOLUTION_MIN;
 	m_bNeedResolutionAdjust = false;
 
 	m_iFrame = 0;
@@ -247,7 +203,7 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 	//rowdim = elev.earthextents.Height() / rows;
 	coldim = m_WorldExtents.Width() / cols;
 	rowdim = -m_WorldExtents.Height() / rows;
-	lod0size = elev.lod0size;
+	image_lod0size = image.lod0size;
 	center.x = coldim * cols / 2.0f;
 	center.y = 0;
 	center.z = -rowdim * rows / 2.0f;
@@ -342,20 +298,19 @@ void vtTiledGeom::SetupMiniLoad()
 #endif
 
 	// Set (pre)loader parameters
-	const float farp = 400000;	// 400 km
+	const float farp = 200000;	// 100 km
 
 	//pfarp: controls the radius of the preloading area
 	//	- should be greater than the distance to the far plane farp
 	float pfarp = 1.25f*farp;
+//	float pfarp = farp;
 
 	//prange: controls the enabling distance of the first texture LOD
 	//	- a value of zero disables the use of the texture pyramid
 	//	- the range can be calculated easily from a given screen space
 	//		error threshold using the miniload::calcrange method
-//	float prange = farp/10.0f;
-	//int texdim = 512, winheight = 600, fovy = m_fFOVY;
-	//float prange = m_pMiniLoad->calcrange(texdim,winheight,fovy);
-	float prange = 5000;
+//	float prange = m_pMiniLoad->calcrange(texdim,winheight,fovy);
+	float prange = sqrt(coldim*coldim+rowdim*rowdim)/2;
 
 	//pbasesize: specifies the maximum texture size that is paged in
 	//	- a value of zero means that texture size is not limited
@@ -369,7 +324,7 @@ void vtTiledGeom::SetupMiniLoad()
 	//		texture tile so that the maximum texture detail is shown
 	//	- but the base size should not exceed the maximum texture
 	//		size supported by the hardware
-	int pbasesize = 2048;
+	int pbasesize = image_lod0size;
 
 	//paging: enables/disables paging from the LOD pyramid
 	//	- a value of zero means that only LOD 0 is used
@@ -389,7 +344,7 @@ void vtTiledGeom::SetupMiniLoad()
 	//	- for maximum memory utilization set l to 0
 	//	- to reduce data traffic increase l
 	//	  recommended: 1
-	int plazyness = 1;
+	int plazyness = 0;
 
 	//pupdate: update time
 	//	- determines the number of frames after which a complete
@@ -405,19 +360,29 @@ void vtTiledGeom::SetupMiniLoad()
 	//		are removed from the tile cache
 	//	- should be much larger than the frame rate
 	//	- a value of zero disables expiration
-//	int pexpire = 100000;
 	int pexpire = 0;
 
 	m_pMiniLoad->setloader(request_callback,
 		NULL,	// data
-		NULL/*preload_callback*/,
-		deliver_callback,
+		NULL,/*preload_callback*/
+		NULL,/*deliver_callback*/
 		paging,
 		pfarp, prange, pbasesize,
 		plazyness, pupdate, pexpire);
 
 	// define resolution reduction of invisible tiles
 	m_pMiniTile->setreduction(2.0f,3.0f);
+
+	// Stefan says: The lazyness is always >= 0.5 for textures to avoid
+	// the following: Suppose you move 1m forward and the LOD is increased.
+	// If you move back again 1m then the LOD would be changed (decreased)
+	// again. If you then go another 1m forward you would need to reload
+	// the same LOD again, but you only moved one meter. This is definitely
+	// a behavior which we have to avoid. So there is a minimum lazyness
+	// of 0.5 for textures and 1.0 for DEMs.
+	// However, lazyness >= 0.5 may be just too conservative.
+	// Minimum texture lazyness is configurable:
+	m_pMiniLoad->configure_minlazy(0.25);
 }
 
 unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
@@ -516,8 +481,14 @@ void vtTiledGeom::DoRender()
 	// count frames
 	m_iFrame++;
 
-	// One update every 3 frames is a good approximation
-	int fpu=0;
+	// One update every 5 frames is a good approximation
+	int fpu=5;
+	static float last_res = 0;
+	if (last_res != m_fResolution)
+		fpu=1;
+	last_res = m_fResolution;
+
+	m_pMiniLoad->setrelscale(m_fDrawScale);
 
 	// update vertex arrays
 	m_pMiniLoad->draw(m_fResolution,
@@ -526,7 +497,6 @@ void vtTiledGeom::DoRender()
 				eye_up.x, eye_up.y, eye_up.z,
 				m_fFOVY, m_fAspect,
 				m_fNear, m_fFar,
-				m_fDrawScale,
 				fpu);
 
 #if USE_VERTEX_CACHE
@@ -578,10 +548,10 @@ void vtTiledGeom::DoRender()
 			//	m_fLResolution, m_fResolution, m_fHResolution);
 
 			// keep the resolution within reasonable bounds
-			if (m_fResolution < 10.0f)
-				m_fResolution = 10.0f;
-			if (m_fResolution > 4E7)
-				m_fResolution = 4E7;
+			if (m_fResolution < TILEDGEOM_RESOLUTION_MIN)
+				m_fResolution = TILEDGEOM_RESOLUTION_MIN;
+			if (m_fResolution > TILEDGEOM_RESOLUTION_MAX)
+				m_fResolution = TILEDGEOM_RESOLUTION_MAX;
 
 			m_bNeedResolutionAdjust = true;
 		}
@@ -592,10 +562,10 @@ void vtTiledGeom::DoRender()
 void vtTiledGeom::DoCalcBoundBox(FBox3 &box)
 {
 	FPoint3 center(m_pMiniLoad->CENTERX,
-		m_pMiniLoad->CENTERY,
+		0,	// We don't know, so use +/-8000 meters
 		m_pMiniLoad->CENTERZ);
 	FPoint3 size(m_pMiniLoad->COLS * m_pMiniLoad->COLDIM,
-		0,
+		16000,
 		m_pMiniLoad->ROWS*m_pMiniLoad->ROWDIM);
 	box.min = center - size/2;
 	box.max = center + size/2;	// TODO? use height extents, if they are known?
