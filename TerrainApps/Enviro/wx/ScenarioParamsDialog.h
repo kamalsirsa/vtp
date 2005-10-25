@@ -10,7 +10,7 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtdata/TParams.h"
+#include "vtlib/core/TParams.h"
 
 // WDR: class declarations
 
