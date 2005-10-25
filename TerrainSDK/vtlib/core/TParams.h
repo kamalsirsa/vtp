@@ -13,6 +13,9 @@
 #include "vtdata/MathTypes.h"
 #include "vtdata/Content.h"
 
+/** \addtogroup terrain */
+/*@{*/
+
 typedef unsigned int unint;
 
 enum TextureEnum {
@@ -37,7 +40,7 @@ enum LodMethodEnum {
 #define TERR_LTYPE_ABSTRACT		"Abstract"
 
 ////////////////////////////////////////////////////////////////////////
-// Class to encapulsate a scenarios parameters.
+// Class to encapsulate a scenarios parameters.
 
 class ScenarioParams : public vtTagArray
 {
@@ -61,8 +64,200 @@ protected:
  * Terrain Parameters.  These are all the values which describe how a terrain
  *  will be created.
  *
- * This class would normally belong in vtlib, not vtdata, but.. [TODO]
- */
+ * This class inherits from vtTagArray, a simple collection of tags with
+ *  values, which provides the methods to set and get values.  A standard
+ *  set of tags which TParams stores is listed below.  Related user
+ *  documentation for these parameters as they are displayed in the Enviro
+ *  user interface is at http://vterrain.org/Doc/Enviro/terrain_creation.html
+ *
+ * \par Example of working with parameters:
+ \code
+ TParams params;
+ int height = params.GetValueInt("Min_Height");
+ params.SetValueInt("Min_Height", 100);
+ \endcode
+ *
+ * \par The standard terrain parameter tags:
+ *
+<table border="1" cellpadding="4" cellspacing="0" bordercolor="#111111" style="border-collapse: collapse; vertical-align:top">
+<tr>
+	<th>Tag</th>
+	<th>Type</th>
+	<th>Default</th>
+	<th>Description</th>
+</tr>
+<tr>
+	<td>Name</td>
+	<td>String</td>
+	<td></td>
+	<td>The name of the terrain.  Example: "Big Island of Hawai'i".</td>
+</tr>
+<tr>
+	<td>Elevation_Filename</td>
+	<td>String</td>
+	<td></td>
+	<td>Filename for source of elevation data.</td>
+</tr>
+<tr>
+	<td>Vertical_Exag</td>
+	<td>Float</td>
+	<td>1.0</td>
+	<td>Vertical exaggeration, 1.0 to draw the terrain surface at its true elevation.</td>
+</tr>
+<tr>
+	<td>Suppress_Surface</td>
+	<td>Bool</td>
+	<td>false</td>
+	<td>True to not draw the terrain surface at all.  It will be loaded, and used
+	for purposes such as planting objects, but not drawn.</td>
+</tr>
+<tr>
+	<td>Min_Height</td>
+	<td>Float</td>
+	<td>20</td>
+	<td>For navigation, minimum height above the ground in meters.</td>
+</tr>
+<tr>
+	<td>Nav_Style</td>
+	<td>Int</td>
+	<td>0</td>
+	<td>For navigation, tells the viewer what stlye to use: 0=Normal, 1=Velocity, 2=Grab-Pivot</td>
+</tr>
+<tr>
+	<td>Nav_Speed</td>
+	<td>Float</td>
+	<td>100</td>
+	<td>For navigation, peak speed in meters per second.</td>
+</tr>
+<tr>
+	<td>Locations_File</td>
+	<td>String</td>
+	<td></td>
+	<td>File which contains the stored camera locations for this terrain.</td>
+</tr>
+<tr>
+	<td>Init_Location</td>
+	<td>String</td>
+	<td></td>
+	<td>Name of the location at which the camera should start when the terrain
+	is first visited.</td>
+</tr>
+<tr>
+	<td>Hither_Distance</td>
+	<td>String</td>
+	<td>5</td>
+	<td>The hither ("near") clipping plan distance, in meters.</td>
+</tr>
+<tr>
+	<td>Accel</td>
+	<td>Bool</td>
+	<td>false</td>
+	<td>True means to accelerate navigation by the camera's height above the
+	terrain surface.</td>
+</tr>
+<tr>
+	<td>Allow_Roll</td>
+	<td>Bool</td>
+	<td>false</td>
+	<td>True to allow the camera to roll (in addition to pitch and yaw).</td>
+</tr>
+<tr>
+	<td>Surface_Type</td>
+	<td>Int</td>
+	<td>0</td>
+	<td>The type of input elevation data. 0=single grid, 1=TIN, 2=Tileset</td>
+</tr>
+<tr>
+	<td>LOD_Method</td>
+	<td>Int</td>
+	<td>0</td>
+	<td>The type of CLOD to use for single elevation grids (Surface_Type=0).
+		See LodMethodEnum for values.</td>
+</tr>
+<tr>
+	<td>Tri_Count</td>
+	<td>Int</td>
+	<td>10000</td>
+	<td>The number of triangles for the CLOD algorithm to target.</td>
+</tr>
+<tr>
+	<td>Tristrips</td>
+	<td>Bool</td>
+	<td>true</td>
+	<td>For the McNally CLOD, True to use triangle strips.</td>
+</tr>
+<tr>
+	<td>Vert_Count</td>
+	<td>Int</td>
+	<td>20000</td>
+	<td>For tiled terrain (Surface_Type=2), the number of vertices for the
+	algorithm to target.</td>
+</tr>
+<tr>
+	<td>Tile_Cache_Size</td>
+	<td>Int</td>
+	<td>80</td>
+	<td>For tiled terrain (Surface_Type=2), the size of the tile cache to
+	keep in host RAM, in MB.</td>
+</tr>
+</table>
+
+Remaining to be documented in the table: 
+
+Time_On
+Init_Time
+Time_Speed
+Texture	// 0=none, 1=single, 2=tile4x4, 3=derived, 4=tileset
+Tile_Size
+Texture_Filename
+Base_Texture
+Texture_Format	// 0=bmp, 1=jpg
+MIP_Map
+Request_16_Bit
+Pre-Light
+PreLight_Factor
+Cast_Shadows
+Color_Map
+Detail_Texture
+DTexture_Name
+DTexture_Scale
+DTexture_Distance
+Roads
+Road_File
+Highway
+Paved
+Dirt
+Road_Height
+Road_Distance
+Road_Texture
+Road_Culture
+Trees
+Tree_File
+Tree_Distance
+Fog
+Fog_Distance
+Fog_Color
+Structure_File
+Structure_Distance
+Structure_Shadows
+Shadow_Resolution
+Shadow_Darkness
+Content_File
+Vehicles
+Vehicle_Size
+Vehicle_Speed
+Sky
+Sky_Texture
+Ocean_Plane
+Ocean_Plane_Level
+Depress_Ocean
+Depress_Ocean_Level
+Horizon
+Background_Color
+Distance_Tool_Height
+HUD_Overlay
+Scenario_Name
+	*/
 class TParams : public vtTagArray
 {
 public:
@@ -214,6 +409,8 @@ protected:
 #define STR_HUD_OVERLAY "HUD_Overlay"
 
 #define STR_SCENARIO_NAME "Scenario_Name"
+
+/*@}*/	// Group terrain
 
 #endif	// TPARAMSH
 
