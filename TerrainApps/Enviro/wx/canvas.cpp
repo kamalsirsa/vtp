@@ -1,6 +1,6 @@
 //
 // Name:	 canvas.cpp
-// Purpose:	 Implements the canvas class for the wxWindows application.
+// Purpose: Implements the canvas class for the Enviro wxWidgets application.
 //
 // Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -46,9 +46,29 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
 		wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
-	VTLOG("Constructing vtGLCanvas\n");
-	parent->Show(TRUE);
+	VTLOG("vtGLCanvas constructor\n");
+	VTLOG("  parent %lx, id %d, pos %d %d, size %d %d, style %0x\n",
+		parent, id, pos.x, pos.y, size.x, size.y, style);
+
+	VTLOG("vtGLCanvas: calling Show on parent\n");
+	parent->Show();
+
+	// Documentation says about SetCurrent:
+	// "Note that this function may only be called after the window has been shown."
+	VTLOG("vtGLCanvas: calling SetCurrent\n");
 	SetCurrent();
+
+        wxGLContext *context = GetContext();
+        if (context)
+		VTLOG("OpenGL context: %lx\n", context);
+	else
+        {
+                VTLOG("No OpenGL context, quitting app.\n");
+                exit(0);
+        }
+
+        VTLOG("OpenGL version: ");
+        VTLOG1((const char *) glGetString(GL_VERSION));
 
 	m_bPainting = false;
 	m_bRunning = true;
@@ -60,6 +80,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	m_iConsecutiveMousemoves = 0;
 
 	s_canvas = this;
+	VTLOG("vtGLCanvas, leaving constructor\n");
 }
 
 vtGLCanvas::~vtGLCanvas(void)
@@ -80,69 +101,49 @@ void EnableContinuousRendering(bool bTrue)
 		s_canvas->Refresh(FALSE);
 }
 
-void vtGLCanvas::QueueRefresh(bool eraseBackground)
-	// A Refresh routine we can call from inside OnPaint.
-	//   (queues the events rather than dispatching them immediately).
-{
-	// With wxGTK, you can't do a Refresh() in OnPaint because it doesn't
-	//   queue (post) a Refresh event for later.  Rather it dispatches
-	//   (processes) the underlying events immediately via ProcessEvent
-	//   (read, recursive call).  See the wxPostEvent docs and Refresh code
-	//   for more details.
-	if (eraseBackground)
-	{
-		wxEraseEvent eevent( GetId() );
-		eevent.SetEventObject( this );
-		wxPostEvent( GetEventHandler(), eevent );
-	}
-
-	wxPaintEvent event( GetId() );
-	event.SetEventObject( this );
-	wxPostEvent( GetEventHandler(), event );
-}
-
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
-	vtScene *pScene = vtGetScene();
+	static bool bFirstPaint = true;
+	if (bFirstPaint) VTLOG("vtGLCanvas: first OnPaint\n");
+
+	// Safety check
+	if (!s_canvas)
+	{
+		VTLOG("OnPaint: Canvas not yet constructed, returning\n");
+		return;
+	}
 
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
 		// This is a dummy, to avoid an endless succession of paint messages.
 		// OnPaint handlers must always create a wxPaintDC.
+		if (bFirstPaint) VTLOG("vtGLCanvas: creating a wxPaintDC on the stack\n");
 		wxPaintDC dc(this);
 
-#ifdef __WXMSW__
 		// Safety check
-		if (!GetContext()) return;
-#endif
+		if (!GetContext())
+		{
+			VTLOG("OnPaint: No context yet, exiting OnPaint\n");
+			return;
+		}
+
 		// Avoid reentrance
 		if (m_bPainting) return;
 
-#if !VTLIB_PSM
 		m_bPainting = true;
 
 		// Render the Scene Graph
+		if (bFirstPaint) VTLOG("vtGLCanvas: DoUpdate\n");
 		vtGetScene()->DoUpdate();
 
 		if (m_bShowFrameRateChart)
 			vtGetScene()->DrawFrameRateChart();
 
+		if (bFirstPaint) VTLOG("vtGLCanvas: SwapBuffers\n");
 		SwapBuffers();
 
-#ifdef WIN32
-		// We use refresh-on-idle on WIN32
-#else
-		// Queue another refresh for continuous rendering.
-		//   (Yield first so we don't starve out keyboard & mouse events.)
-		//
-		// FIXME: We may want to use a frame timer instead of immediate-
-		//   redraw so we don't eat so much CPU on machines that can
-		//   easily handle the frame rate.
-		wxYield();
-		QueueRefresh(FALSE);
-#endif
-
+		if (bFirstPaint) VTLOG("vtGLCanvas: update status bar\n");
 		EnviroFrame *frame = (EnviroFrame*) GetParent();
 
 		// update the status bar every 1/10 of a second
@@ -159,11 +160,13 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		frame->UpdateLODInfo();
 
 		m_bPainting = false;
-#endif // VTLIB_PSM
 	}
 
 	// Reset the number of mousemoves we've gotten since last redraw
 	m_iConsecutiveMousemoves = 0;
+
+	if (bFirstPaint)
+		bFirstPaint = false;
 }
 
 void vtGLCanvas::OnClose(wxCloseEvent& event)
