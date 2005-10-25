@@ -1,8 +1,8 @@
 //
 // Name:	 canvas.cpp
-// Purpose:	 Implements the canvas class for a wxWindows application.
+// Purpose: Implements the canvas class for the wxSimple application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -32,6 +32,7 @@ EVT_PAINT(vtGLCanvas::OnPaint)
 EVT_CHAR(vtGLCanvas::OnChar)
 EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
 EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
+EVT_IDLE(vtGLCanvas::OnIdle)
 END_EVENT_TABLE()
 
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
@@ -43,35 +44,11 @@ wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 
 	m_bPainting = false;
 	m_bRunning = true;
-	QueueRefresh(FALSE);
 }
 
 
 vtGLCanvas::~vtGLCanvas(void)
 {
-}
-
-void vtGLCanvas::QueueRefresh(bool eraseBackground)
-	// A Refresh routine we can call from inside OnPaint.
-	//   (queues the events rather than dispatching them immediately).
-{
-#if !WIN32
-	// With wxGTK, you can't do a Refresh() in OnPaint because it doesn't
-	//   queue (post) a Refresh event for later.  Rather it dispatches
-	//   (processes) the underlying events immediately via ProcessEvent
-	//   (read, recursive call).  See the wxPostEvent docs and Refresh code
-	//   for more details.
-	if (eraseBackground)
-	{
-		wxEraseEvent eevent( GetId() );
-		eevent.SetEventObject( this );
-		wxPostEvent( GetEventHandler(), eevent );
-	}
-
-	wxPaintEvent event( GetId() );
-	event.SetEventObject( this );
-	wxPostEvent( GetEventHandler(), event );
-#endif
 }
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
@@ -96,12 +73,11 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 		if (m_bPainting || !m_bRunning) { bInside = false; return; }
 
-#if !VTLIB_PSM
 		m_bPainting = true;
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Render the SSG scene
+		// Updated and render the scene
 		vtGetScene()->DoUpdate();
 
 		SwapBuffers();
@@ -111,18 +87,10 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		if (m_bRunning)
 			Refresh(FALSE);
 #else
-		// Queue another refresh for continuous rendering.
-		//   (Yield first so we don't starve out keyboard & mouse events.)
-		//
-		// FIXME: We may want to use a frame timer instead of immediate-
-		//   redraw so we don't eat so much CPU on machines that can
-		//   easily handle the frame rate.
-		wxYield();
-		QueueRefresh(FALSE);
+		// We use refresh-on-idle on Linux
 #endif
 
 		m_bPainting = false;
-#endif // VTLIB_PSM
 	}
 
 	// Must allow some idle processing to occur - or the toolbars will not
@@ -233,4 +201,11 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
 {
 	// Do nothing, to avoid flashing.
+}
+
+void vtGLCanvas::OnIdle(wxIdleEvent &event)
+{
+	// We use the "Refresh on Idle" approach to continuous rendering.
+	if (m_bRunning)
+		Refresh(FALSE);
 }
