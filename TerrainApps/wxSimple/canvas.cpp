@@ -13,9 +13,10 @@
 #include "wx/wx.h"
 #endif
 
-// Header for the vtlib library
+// Headers for the VTP libraries
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Event.h"
+#include "vtdata/vtLog.h"
 
 #include "canvas.h"
 #include "frame.h"
@@ -39,8 +40,20 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
 wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
+	VTLOG("vtGLCanvas constructor\n");
+
 	parent->Show(TRUE);
 	SetCurrent();
+
+        wxGLContext *context = GetContext();
+        if (context)
+                VTLOG("OpenGL context: %lx\n", context);
+	else
+        {
+                VTLOG("No OpenGL context.\n");
+                return;
+        }
+	VTLOG("OpenGL version: %s\n", (const char *) glGetString(GL_VERSION));
 
 	m_bPainting = false;
 	m_bRunning = true;
@@ -59,17 +72,15 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		return;
 	bInside = true;
 
-	vtScene *pScene = vtGetScene();
-
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
 		// This is a dummy, to avoid an endless succession of paint messages.
 		// OnPaint handlers must always create a wxPaintDC.
 		wxPaintDC dc(this);
-#ifdef __WXMSW__
-		if (!GetContext()) return;
-#endif
+
+		if (!GetContext())
+			return;
 
 		if (m_bPainting || !m_bRunning) { bInside = false; return; }
 
@@ -82,13 +93,8 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 		SwapBuffers();
 
-#ifdef WIN32
-		// Call Refresh again for continuous rendering,
-		if (m_bRunning)
-			Refresh(FALSE);
-#else
-		// We use refresh-on-idle on Linux
-#endif
+		// We use refresh-on-idle, so we don't explicitly send ourselves
+		//  another Paint message here.
 
 		m_bPainting = false;
 	}
