@@ -47,8 +47,6 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 		wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
 	VTLOG("vtGLCanvas constructor\n");
-	VTLOG("  parent %lx, id %d, pos %d %d, size %d %d, style %0x\n",
-		parent, id, pos.x, pos.y, size.x, size.y, style);
 
 	VTLOG("vtGLCanvas: calling Show on parent\n");
 	parent->Show();
@@ -58,17 +56,17 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	VTLOG("vtGLCanvas: calling SetCurrent\n");
 	SetCurrent();
 
-        wxGLContext *context = GetContext();
-        if (context)
+	wxGLContext *context = GetContext();
+	if (context)
 		VTLOG("OpenGL context: %lx\n", context);
 	else
-        {
-                VTLOG("No OpenGL context, quitting app.\n");
-                exit(0);
-        }
+	{
+		VTLOG("No OpenGL context, quitting app.\n");
+	    exit(0);
+	}
 
-        VTLOG("OpenGL version: ");
-        VTLOG1((const char *) glGetString(GL_VERSION));
+	VTLOG("OpenGL version: ");
+	VTLOG1((const char *) glGetString(GL_VERSION));
 
 	m_bPainting = false;
 	m_bRunning = true;
