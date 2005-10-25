@@ -104,13 +104,6 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	static bool bFirstPaint = true;
 	if (bFirstPaint) VTLOG("vtGLCanvas: first OnPaint\n");
 
-	// Safety check
-	if (!s_canvas)
-	{
-		VTLOG("OnPaint: Canvas not yet constructed, returning\n");
-		return;
-	}
-
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
@@ -119,10 +112,15 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		if (bFirstPaint) VTLOG("vtGLCanvas: creating a wxPaintDC on the stack\n");
 		wxPaintDC dc(this);
 
-		// Safety check
+		// Safety checks
+		if (!s_canvas)
+		{
+			VTLOG("OnPaint: Canvas not yet constructed, returning\n");
+			return;
+		}
 		if (!GetContext())
 		{
-			VTLOG("OnPaint: No context yet, exiting OnPaint\n");
+			VTLOG("OnPaint: No context yet, returning\n");
 			return;
 		}
 
