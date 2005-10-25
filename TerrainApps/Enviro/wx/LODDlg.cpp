@@ -108,7 +108,7 @@ void LODDlg::DrawChart(float res0, float res, float res1, int target, int count)
 		int ires0 = (int) res0;
 		int ires1 = (int) res1;
 
-		wxPen pen1(wxColour(255,0,0), 1, wxSOLID);
+		wxPen pen1(wxColour(255,0,0), 1, wxSOLID);	// red
 		dc.SetPen(pen1);
 
 		dc.DrawLine(ires0-10, 0, ires0, 10);
@@ -118,20 +118,25 @@ void LODDlg::DrawChart(float res0, float res, float res1, int target, int count)
 		dc.DrawLine(ires1, 10, ires1+10, 20);
 	}
 
-	wxPen pen2(wxColour(0,0,255), 3, wxSOLID);
+	wxPen pen2(wxColour(0,0,255), 3, wxSOLID);	// blue
 	dc.SetPen(pen2);
 
 	dc.DrawLine(ires, 0, ires, 20);
 
-	wxPen pen3(wxColour(0,128,0), 1, wxSOLID);
+	wxPen pen3(wxColour(0,128,0), 1, wxSOLID);	// green
 	dc.SetPen(pen3);
 
-	dc.DrawLine(irange1, 20, irange1, 40);
+	dc.DrawLine(irange1-10, 20, irange1, 30);
+	dc.DrawLine(irange1, 30, irange1-10, 40);
+
 	dc.DrawLine(itarget, 20, itarget, 40);
-	dc.DrawLine(irange2, 20, irange2, 40);
+
+	dc.DrawLine(irange2+10, 20, irange2, 30);
+	dc.DrawLine(irange2, 30, irange2+10, 40);
+
 	dc.DrawLine(irange1, 30, irange2, 30);
 
-	wxPen pen4(wxColour(255,0,255), 3, wxSOLID);
+	wxPen pen4(wxColour(255,0,255), 3, wxSOLID);	// purple
 	dc.SetPen(pen4);
 
 	dc.DrawLine(icount, 20, icount, 40);
