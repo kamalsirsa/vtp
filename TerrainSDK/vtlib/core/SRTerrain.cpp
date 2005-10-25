@@ -186,6 +186,7 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
 				getelevation_vtp1);
 	}
+	m_pMini->setrelscale(m_fDrawScale);
 
 	m_iDrawnTriangles = -1;
 	m_iBlockSize = m_iColumns / 4;
@@ -202,6 +203,7 @@ void SRTerrain::SetVerticalExag(float fExag)
 		m_fHeightScale = m_fMaximumScale;
 
 	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
+	m_pMini->setrelscale(m_fDrawScale);
 }
 
 
@@ -342,8 +344,6 @@ void SRTerrain::RenderPass()
 	ex -= (m_iColumns/2)*m_fXStep;
 	ez += (m_iRows/2)*m_fZStep;
 
-	m_pMini->setrelscale(m_fDrawScale);
-
 	m_pMini->draw(m_fResolution,
 				ex, ey, ez,
 				dx, dy, dz,
@@ -413,10 +413,10 @@ float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 
 	if (bTrue)
 		// convert stored value to true value
-		return height / m_fMaximumScale;
+		return height / m_fDrawScale / m_fMaximumScale;
 	else
 		// convert stored value to drawn value
-		return height * m_fDrawScale;
+		return height;
 }
 
 void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
@@ -425,10 +425,7 @@ void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
 
 	if (bTrue)
 		// convert stored value to true value
-		height /= m_fMaximumScale;
-	else
-		// convert stored value to drawn value
-		height *= m_fDrawScale;
+		height = height / m_fDrawScale / m_fMaximumScale;
 
 	p.Set(m_fXLookup[i],
 		  height,

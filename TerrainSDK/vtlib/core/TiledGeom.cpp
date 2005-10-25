@@ -271,6 +271,8 @@ void vtTiledGeom::SetVerticalExag(float fExag)
 		m_fHeightScale = m_fMaximumScale;
 
 	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
+	if (m_pMiniLoad)
+		m_pMiniLoad->setrelscale(m_fDrawScale);
 }
 
 void vtTiledGeom::SetVertexTarget(int iVertices)
@@ -286,6 +288,7 @@ void vtTiledGeom::SetupMiniLoad()
 		cols, rows,
 		coldim, rowdim,
 		m_fMaximumScale, center.x, center.y, center.z);
+	m_pMiniLoad->setrelscale(m_fDrawScale);
 	m_pMiniTile = m_pMiniLoad->getminitile();
 
 #if USE_VERTEX_CACHE
@@ -488,8 +491,6 @@ void vtTiledGeom::DoRender()
 		fpu=1;
 	last_res = m_fResolution;
 
-	m_pMiniLoad->setrelscale(m_fDrawScale);
-
 	// update vertex arrays
 	m_pMiniLoad->draw(m_fResolution,
 				m_eyepos_ogl.x, m_eyepos_ogl.y, m_eyepos_ogl.z,
@@ -611,7 +612,7 @@ bool vtTiledGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 	// TODO: support other arguments?
 	float x, z;
 	m_Conversion.ConvertFromEarth(p, x, z);
-	float alt = m_pMiniTile->getheight(x, z);
+	float alt = m_pMiniLoad->getheight(x, z);
 
 	// This is what libMini returns if the point isn't on the terrain
 	if (alt == -FLT_MAX)
@@ -619,10 +620,10 @@ bool vtTiledGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 
 	if (bTrue)
 		// convert stored value to true value
-		fAltitude = alt / m_fMaximumScale;
+		fAltitude = alt / m_fDrawScale / m_fMaximumScale;
 	else
 		// convert stored value to drawn value
-		fAltitude = alt * m_fDrawScale;
+		fAltitude = alt;
 
 	return true;
 }
@@ -631,7 +632,7 @@ bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 	bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
 {
 	// TODO: support other arguments?
-	float alt = m_pMiniTile->getheight(p3.x, p3.z);
+	float alt = m_pMiniLoad->getheight(p3.x, p3.z);
 
 	// This is what libMini returns if the point isn't on the terrain
 	if (alt == -FLT_MAX)
@@ -639,10 +640,10 @@ bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 
 	if (bTrue)
 		// convert stored value to true value
-		fAltitude = alt / m_fMaximumScale;
+		fAltitude = alt / m_fDrawScale / m_fMaximumScale;
 	else
 		// convert stored value to drawn value
-		fAltitude = alt * m_fDrawScale;
+		fAltitude = alt;
 
 	return true;
 }
