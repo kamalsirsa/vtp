@@ -45,7 +45,7 @@ static void ShowOGLInfo(bool bLog, HDC hdc)
 static void ShowOGLInfo(bool bLog)
 #endif
 {
-	VTLOG("Opening an OpenGL context: ");
+	VTLOG("Opening an OpenGL context:\n");
 #if defined(WIN32)
 	PIXELFORMATDESCRIPTOR pfd =
 	{
@@ -97,16 +97,16 @@ static void ShowOGLInfo(bool bLog)
 
 	dpy = XOpenDisplay(NULL);
 	if (dpy == NULL)
-		wxLogFatalError( "could not open display" );
+		wxLogFatalError( _T("could not open display") );
 
 	if (!glXQueryExtension(dpy, &dummy, &dummy))
-		wxLogFatalError( "X server has no OpenGL GLX extension" );
+		wxLogFatalError( _T("X server has no OpenGL GLX extension") );
 
 	vi = glXChooseVisual(dpy, DefaultScreen(dpy), dblBuf);
 	if (vi == NULL)
-		wxLogFatalError( "no RGB visual with double and depth buffer" );
+		wxLogFatalError( _T("no RGB visual with double and depth buffer") );
 	if (vi->c_class != TrueColor)
-		wxLogFatalError( "TrueColor visual required for this program" );
+		wxLogFatalError( _T("TrueColor visual required for this program") );
 
 	cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen),
 			vi->visual, AllocNone);
@@ -123,7 +123,7 @@ static void ShowOGLInfo(bool bLog)
 
 	cx = glXCreateContext(dpy, vi, None, True);
 	if (cx == NULL)
-		wxLogFatalError( "could not create rendering context" );
+		wxLogFatalError( _T("could not create rendering context") );
 
 	glXMakeCurrent(dpy, win, cx);
 #else
@@ -245,7 +245,8 @@ void StartupDlg::RefreshTerrainChoices()
 
 	for (unsigned int i = 0; i < app.terrain_files.size(); i++)
 	{
-		ws.from_utf8(app.terrain_names[i]);
+		vtString &name = app.terrain_names[i];
+		ws.from_utf8(name);
 		GetTname()->Append(ws);
 	}
 }
