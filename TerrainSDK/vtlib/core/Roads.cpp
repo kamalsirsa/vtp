@@ -8,8 +8,8 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/Light.h"
 #include "vtdata/vtLog.h"
+#include "Light.h"
 #include "Roads.h"
 
 #define ROAD_HEIGHT			(vtRoadMap3d::s_fHeight)	// height about the ground

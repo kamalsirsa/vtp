@@ -1,7 +1,7 @@
 //
 // Roads.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,7 +19,7 @@
 #include "vtdata/FilePath.h"
 #include "vtdata/RoadMap.h"
 #include "vtdata/HeightField.h"
-#include "vtlib/core/LodGrid.h"
+#include "LodGrid.h"
 
 #define ROAD_CLUSTER	16
 

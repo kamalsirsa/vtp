@@ -11,8 +11,8 @@
 #include "vtdata/Icosa.h"
 #include "vtdata/Features.h"
 #include "vtdata/FilePath.h"
-#include "vtlib/core/TimeEngines.h"
-#include "vtlib/core/GeomUtil.h"
+#include "TimeEngines.h"
+#include "GeomUtil.h"
 
 class vtTerrainScene;
 

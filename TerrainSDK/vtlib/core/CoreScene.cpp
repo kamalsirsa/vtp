@@ -28,7 +28,7 @@ is also <a href="../vtlib.html">available online</a>.
 */
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/Engine.h"
+#include "Engine.h"
 
 vtWindow::vtWindow()
 {

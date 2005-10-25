@@ -6,8 +6,8 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/vtTin3d.h"
 #include "vtdata/vtLog.h"
+#include "vtTin3d.h"
 #include "NavEngines.h"
 #include "Event.h"
 

@@ -6,9 +6,9 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/Engine.h"
-#include "vtlib/core/Terrain.h"
-#include "vtlib/core/TerrainScene.h"
+#include "Engine.h"
+#include "Terrain.h"
+#include "TerrainScene.h"
 
 #include "vtdata/shapelib/shapefil.h"
 

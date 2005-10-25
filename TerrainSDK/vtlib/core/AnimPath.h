@@ -10,7 +10,7 @@
 #ifndef ANIMPATHH
 #define ANIMPATHH
 
-#include "vtlib/core/Engine.h"
+#include "Engine.h"
 #include "vtdata/CubicSpline.h"
 #include "vtdata/Features.h"
 
