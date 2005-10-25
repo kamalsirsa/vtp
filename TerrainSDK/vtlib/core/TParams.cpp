@@ -17,14 +17,6 @@
 #include <fstream>
 using namespace std;
 
-//---------------------------------------------------------------------------
-// Some string for backward compatibility with older (.ini) files
-#define STR_BUILDINGFILE "Building_File"
-#define STR_FOGCOLORR "Fog_Color_R"
-#define STR_FOGCOLORG "Fog_Color_G"
-#define STR_FOGCOLORB "Fog_Color_B"
-#define STR_16BIT "16_Bit"
-
 // default (currently fixed) number of tiles
 #define NTILES	4
 
@@ -83,7 +75,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_ACCEL, "false");
 	AddTag(STR_ALLOW_ROLL, "false");
 
-	AddTag(STR_SURFACE_TYPE, "0");	// 0 = single grid
+	AddTag(STR_SURFACE_TYPE, "0");	// 0=grid, 1=TIN, 2=tiled grid
 	AddTag(STR_LODMETHOD, "0");
 	AddTag(STR_TRICOUNT, "10000");
 	AddTag(STR_TRISTRIPS, "true");
