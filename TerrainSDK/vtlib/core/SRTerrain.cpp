@@ -342,13 +342,14 @@ void SRTerrain::RenderPass()
 	ex -= (m_iColumns/2)*m_fXStep;
 	ez += (m_iRows/2)*m_fZStep;
 
+	m_pMini->setrelscale(m_fDrawScale);
+
 	m_pMini->draw(m_fResolution,
 				ex, ey, ez,
 				dx, dy, dz,
 				ux, uy, uz,
 				fov, m_fAspect,
-				m_fNear, m_fFar,
-				m_fDrawScale);
+				m_fNear, m_fFar);
 
 	if (myfancnt>0) glEnd();
 
