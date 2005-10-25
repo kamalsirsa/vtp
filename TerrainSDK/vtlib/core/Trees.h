@@ -15,12 +15,9 @@
  */
 /*@{*/
 
-#include "vtdata/Selectable.h"
 #include "vtdata/Plants.h"
-#include "vtdata/LULC.h"
-#include "vtdata/FilePath.h"
-#include "vtdata/HeightField.h"
-#include "vtlib/core/LodGrid.h"
+
+class vtHeightField3d;
 
 #if SUPPORT_XFROG
 // Greenworks Xfrog:  See http://www.xfrog.com for details.  Not currently
