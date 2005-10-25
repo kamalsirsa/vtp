@@ -1578,6 +1578,11 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		//  not the globe.
 		SetTimeEngine(vtGetTS()->GetTimeEngine());
 		m_pScenarioSelectDialog->SetTerrain(pTerrain);
+
+		// While the paging is in early testing, always display the LOD
+		//  dialog for vtTiledGeom
+		if (pTerrain->GetParams().GetValueInt(STR_SURFACE_TYPE) == 2)
+			m_pLODDlg->Show(true);
 	}
 	else
 	{
@@ -1631,9 +1636,15 @@ void EnviroFrame::UpdateLODInfo()
 	vtTiledGeom *geom = terr->GetTiledGeom();
 	if (geom)
 	{
-		m_pLODDlg->Refresh(log(geom->m_fLResolution)*17,
-			log(geom->m_fResolution)*17,
-			log(geom->m_fHResolution)*17,
+		float fmin = log(TILEDGEOM_RESOLUTION_MIN);
+		float fmax = log(TILEDGEOM_RESOLUTION_MAX);
+		float scale = 300 / (fmax -fmin);
+		float log0 = log(geom->m_fLResolution);
+		float log1 = log(geom->m_fResolution);
+		float log2 = log(geom->m_fHResolution);
+		m_pLODDlg->Refresh((log0-fmin) * scale,
+			(log1-fmin) * scale,
+			(log2-fmin) * scale,
 			geom->m_iVertexTarget, geom->m_iVertexCount,
 			geom->m_iMaxCacheSize, geom->m_iCacheSize,
 			geom->m_iTileLoads, geom->m_iCacheHits);
