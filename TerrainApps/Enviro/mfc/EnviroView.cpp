@@ -183,14 +183,14 @@ void EnviroView::OnEnviroIncrease()
 {
 	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 	if (pTerr)
-		pTerr->SetPolygonCount(pTerr->GetPolygonCount()+1000);
+		pTerr->SetPolygonTarget(pTerr->GetPolygonTarget()+1000);
 }
 
 void EnviroView::OnEnviroDecrease()
 {
 	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 	if (pTerr)
-		pTerr->SetPolygonCount(pTerr->GetPolygonCount()-1000);
+		pTerr->SetPolygonTarget(pTerr->GetPolygonTarget()-1000);
 }
 
 void EnviroView::OnEnviroDriveroads()
