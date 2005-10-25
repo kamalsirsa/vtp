@@ -262,8 +262,8 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	PositionStatusBar();
 
 	// We definitely want full color and a 24-bit Z-buffer!
-	int gl_attrib[8] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
-		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0, 0 };
+	int gl_attrib[7] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
+		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0 };
 	if (g_Options.m_bStereo && g_Options.m_iStereoMode == 1)
 	{
 		gl_attrib[6] = WX_GL_STEREO;
@@ -275,8 +275,10 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 			_T("vtGLCanvas"), gl_attrib);
 
 	// Show the frame
+	VTLOG("Showing the main frame\n");
 	Show(true);
 
+	VTLOG("Constructing dialogs\n");
 	m_pBuildingDlg = new BuildingDlg3d(this, -1, _("Building Properties"));
 	m_pCameraDlg = new CameraDlg(this, -1, _("Camera-View"));
 	m_pDistanceDlg = new DistanceDlg(this, -1, _("Distance"));
@@ -300,7 +302,8 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pUtilDlg = new UtilDlg(this, -1, _("Routes"));
 	m_pScenarioSelectDialog = new CScenarioSelectDialog(this, -1, _("Scenarios"));
 
-	m_canvas->SetCurrent();
+	if (m_canvas)
+		m_canvas->SetCurrent();
 }
 
 EnviroFrame::~EnviroFrame()
