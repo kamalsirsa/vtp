@@ -237,7 +237,8 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_bCloseOnIdle = false;
 
 	// Give it an icon
-	SetIcon(wxIcon(_T(ICON_NAME)));
+	wxString2 str = ICON_NAME;
+	SetIcon(wxIcon(str));
 
 	m_bCulleveryframe = true;
 	m_bAlwaysMove = false;
@@ -805,7 +806,7 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	EnableContinuousRendering(false);
 
- 	wxString str = WSTRING_APPORG _T("\n\n");
+ 	wxString2 str = WSTRING_APPORG _T("\n\n");
 #ifdef ENVIRO_NATIVE
 	str += _T("The runtime environment for the Virtual Terrain Project.\n\n");
  	str += _T("Please read the HTML documentation and license.\n\n");
@@ -825,7 +826,8 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 #endif
  	str += _T(" Library.\n\n");
 	str += _T("Build date: ");
-	str += _T(__DATE__);
+	str += __DATE__;
+
 	wxMessageBox(str, _T("About ") WSTRING_APPORG);
 
 	EnableContinuousRendering(true);

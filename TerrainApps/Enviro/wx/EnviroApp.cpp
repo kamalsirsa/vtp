@@ -129,7 +129,7 @@ void EnviroApp::SetupLocale()
 
 	const wxLanguageInfo *info = wxLocale::GetLanguageInfo(default_lang);
 	VTLOG("Default language: %d (%s)\n",
-		default_lang, info->Description.mb_str());
+		default_lang, (const char *) info->Description.mb_str());
 
 	// After wx2.4.2, wxWidgets looks in the application's directory for
 	//  locale catalogs, not the current directory.  Here we force it to
@@ -150,8 +150,10 @@ void EnviroApp::SetupLocale()
 		else
 		{
 			info = m_locale.GetLanguageInfo(lang);
-			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n", lang,
-				info->CanonicalName.mb_str(), info->Description.mb_str());
+			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n",
+				lang,
+				(const char *) info->CanonicalName.mb_str(),
+				(const char *) info->Description.mb_str());
 			bSuccess = m_locale.Init(lang, wxLOCALE_CONV_ENCODING);
 		}
 	}
@@ -251,7 +253,7 @@ bool EnviroApp::OnInit()
 		RefreshTerrainList();
 
 		VTLOG("Opening the Startup dialog.\n");
-		wxString appname = _T(STRING_APPNAME);
+		wxString2 appname = STRING_APPNAME;
 		appname += _(" Startup");
 		StartupDlg StartDlg(NULL, -1, appname, wxDefaultPosition);
 		StartDlg.GetOptionsFrom(g_Options);
@@ -290,15 +292,15 @@ bool EnviroApp::OnInit()
 	//
 	// Create the main frame window
 	//
-	wxString title = WSTRING_APPORG;
+	wxString2 title = STRING_APPORG;
 #if VTLIB_PSM
-	title += _T(" PSM");
+	title += " PSM";
 #elif VTLIB_OSG
-	title += _T(" OSG");
+	title += " OSG";
 #elif VTLIB_SGL
-	title += _T(" SGL");
+	title += " SGL";
 #elif VTLIB_SSG
-	title += _T(" SSG");
+	title += " SSG";
 #endif
 	VTLOG("Creating the frame window.\n");
 	wxPoint pos(g_Options.m_WinPos.x, g_Options.m_WinPos.y);
