@@ -12,13 +12,8 @@
 #include "wx/wx.h"
 #endif
 
-#ifdef __BORLANDC__
-	#pragma hdrstop
-#endif
-
 #include <wx/colordlg.h>
 #include "BuildingDlg.h"
-//#include "HeightDlg.h"
 #include "vtui/Helper.h"
 
 // WDR: class implementations
