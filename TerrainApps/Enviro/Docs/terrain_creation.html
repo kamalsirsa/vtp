@@ -19,14 +19,10 @@
     <td bgcolor="#D2C8B5">The BT file to use for elevation.</td>
   </tr>
   <tr>
-    <th valign="top" bgcolor="#B7CCB8" rowspan="4" nowrap>Terrain LOD</th>
+    <th valign="top" bgcolor="#B7CCB8" rowspan="3" nowrap>Terrain LOD</th>
     <td valign="top" bgcolor="#B7CCB8" nowrap>Method</td>
     <td bgcolor="#B7CCB8">Choose from several implementations of published Continuous
       LOD algorithms.</td>
-  </tr>
-  <tr>
-    <td valign="top" bgcolor="#B7CCB8" nowrap>Pixel Error Bound</td>
-    <td bgcolor="#B7CCB8"><i>(not currently used)</i></td>
   </tr>
   <tr>
     <td valign="top" bgcolor="#B7CCB8" nowrap>Triangle Count</td>
@@ -46,9 +42,27 @@
     elevation grid.</td>
   </tr>
   <tr>
-    <th valign="top" bgcolor="#B7CCB8" nowrap>&nbsp;</th>
-    <td valign="top" bgcolor="#B7CCB8" nowrap>Vertical Exaggeration</td>
-    <td bgcolor="#B7CCB8">A value of 1.0 draws the terrain with real-world proportions.&nbsp; 
+    <th valign="top" bgcolor="#B7CCB8" nowrap rowspan="3">Grid Tiles</th>
+    <td valign="top" bgcolor="#B7CCB8" nowrap>Tileset Filename</td>
+    <td bgcolor="#B7CCB8">The .ini file which describes a set of elevation grid 
+    tiles.</td>
+  </tr>
+  <tr>
+    <td valign="top" bgcolor="#B7CCB8" nowrap>Vertex count target</td>
+    <td bgcolor="#B7CCB8">Rendering will adaptively
+      adjust detail to approach this indicated vertex count.</td>
+  </tr>
+  <tr>
+    <td valign="top" bgcolor="#B7CCB8" nowrap>RAM cache size</td>
+    <td bgcolor="#B7CCB8">When tiles are loaded from disk, they are stored in a 
+    cache in RAM.&nbsp; As the camera moves around, tiles which are not needed 
+    remain in this cache, which avoids loading them from disk again while the 
+    program is running.</td>
+  </tr>
+  <tr>
+    <th valign="top" bgcolor="#D2C8B5" nowrap>&nbsp;</th>
+    <td valign="top" bgcolor="#D2C8B5" nowrap>Vertical Exaggeration</td>
+    <td bgcolor="#D2C8B5">A value of 1.0 draws the terrain with real-world proportions.&nbsp; 
     A value of 1.5 exaggerates height by 50%, and so forth.</td>
   </tr>
 </table>
@@ -57,9 +71,9 @@
 
 <table border="1" cellspacing="0" cellpadding="3">
   <tr>
-    <th valign="top" bgcolor="#D2C8B5" rowspan="10" nowrap>Texture</th>
+    <th valign="top" bgcolor="#D2C8B5" rowspan="11" nowrap>Texture</th>
     <td valign="top" bgcolor="#D2C8B5" nowrap>No texture</td>
-    <td bgcolor="#D2C8B5">Your texture will be white and featureless.</td>
+    <td bgcolor="#D2C8B5">Your terrain will be white and plain.</td>
   </tr>
   <tr>
     <td valign="top" bgcolor="#D2C8B5" nowrap>Single texture</td>
@@ -81,6 +95,10 @@
     and the format (either BMP or JPG). The dialog lets you
           specify the prefix and tile size, and it computes and appends the image
       size.</td>
+  </tr>
+  <tr>
+    <td valign="top" bgcolor="#D2C8B5" nowrap>Tileset Filename</td>
+    <td bgcolor="#D2C8B5">The .ini file which describes a set of texture tiles.</td>
   </tr>
   <tr>
     <td valign="top" bgcolor="#D2C8B5" nowrap>Mipmapping</td>
@@ -351,6 +369,21 @@ boundaries, GPS tracks, etc.</p>
     <td bgcolor="#B7CCB8">Watching the sun move across the sky at real-world
       speed may require too much patience.&nbsp; Try setting this value higher
       than 1 (e.g. 1000) to see time move rapidly.</td>
+  </tr>
+  </table>
+
+<h2>Scenarios</h2>
+
+<table border="1" cellspacing="0" cellpadding="3">
+  <tr>
+    <th valign="top" bgcolor="#D2C8B5" rowspan="6" nowrap>(List of Scenarios)</th>
+    <td valign="top" bgcolor="#D2C8B5" nowrap>&nbsp;</td>
+    <td bgcolor="#D2C8B5">A scenario is a set of visible layers.&nbsp; You can 
+    use the self-explanatory buttons (New, Delete, Edit, Move Up, Move Down) to 
+    create a set of Scenarios.&nbsp; At runtime, you can switch between these 
+    scenarios to show different sets of visible layers.<br>
+    For example, you could create two scenarios called &quot;Existing&quot; and &quot;Proposed&quot; 
+    and switch between them easily.</td>
   </tr>
   </table>
 

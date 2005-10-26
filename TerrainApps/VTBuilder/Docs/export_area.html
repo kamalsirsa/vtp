@@ -22,8 +22,12 @@ other layers, such as elevation, imagery, and vegetation.
 <ul>
   <li><b>Area Tool</b><ul>
       <li>Set to Extents<ul>
-          <li>Resized the area tool to surround all of the currently loaded 
+          <li>Resizes the area tool to surround all of the currently loaded 
           layers.</li>
+        </ul>
+      </li>
+      <li>Set to Layer Extents<ul>
+          <li>Resizes the area tool to surround the currently selected layer.</li>
         </ul>
       </li>
       <li>Numeric Values
@@ -38,9 +42,9 @@ other layers, such as elevation, imagery, and vegetation.
           below)</li>
         </ul>
       </li>
-      <li>Extract and Export Image<ul>
-      <li>Allows you to merge, resample and export your Image layers, just like 
-      Elevation layers.</li>
+      <li>Merge &amp; Resample Imagery<ul>
+      <li>Displays the <b>Merge and Resample Imagery</b> dialog (see 
+          below)</li>
     </ul>
       </li>
       <li>Generate  Vegetation
@@ -67,6 +71,8 @@ other layers, such as elevation, imagery, and vegetation.
 
 <h3><b>Merge and Resample Elevation Dialog</b></h3>
 <blockquote>
+  <p>You can choose where the output will go: To a new layer (in memory), To a 
+  file, or To a tileset (folder of tiles).</p>
   <p>This dialog displays:</p>
   <ul>
     <li>The size of the <b>Save Area</b>, in either meters or degrees</li>
@@ -83,7 +89,31 @@ other layers, such as elevation, imagery, and vegetation.
   <p>Note that there is a helpful &quot;<b>Powers of 2 + 1</b>&quot; constraint
   you can use to limit the output to sizes which are supported by Terrain LOD,
   which is highly desirable at visualization runtime.</p>
-  <p>For effective visualization, it is recommended that you pick a output size
+  <p>For effective visualization, unless your output is a tileset, it is recommended that you pick a output size
+  that is at least as large as your input data, but within the limits of your
+  computer's RAM.</p>
+</blockquote>
+
+<h3><b>Merge and Resample Imagery Dialog</b></h3>
+<blockquote>
+  <p>You can choose where the output will go: To a new layer (in memory), To a 
+  file, or To a tileset (folder of tiles).</p>
+  <p>This dialog displays:</p>
+  <ul>
+    <li>The size of the <b>Save Area</b>, in either meters or degrees</li>
+    <li>An estimated <b>Sample factor</b>, which is a guess based on looking at
+      the X spacing of the first imagery layer.</li>
+    <li>The projected <b>Size at that density</b>, which shows you the size of a grid
+      that would result from sampling the area at the indicated sample
+      factor.&nbsp; Assuming that your input layers are of the same density
+      (spacing), this indicates the approximate grid size of the indicated area.</li>
+  </ul>
+  <p>You can change the sample factor to see the projected size change.&nbsp;
+  Once you have a good idea of what output size you want, specify it in the
+  &quot;<b>X size</b>&quot; and &quot;<b>Y size</b>&quot; fields.</p>
+  <p>Note that there is a helpful &quot;<b>Powers of 2</b>&quot; constraint
+  you can use to limit the output to sizes which are supported by the visualization runtime.</p>
+  <p>For effective visualization, unless your output is a tileset, it is recommended that you pick a output size
   that is at least as large as your input data, but within the limits of your
   computer's RAM. </p>
 </blockquote>
