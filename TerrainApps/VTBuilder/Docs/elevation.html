@@ -129,10 +129,24 @@ VTBuilder<br>
             are filled in by interpolating the surrounding known areas.</li>
         </ul>
           </li>
+      <li><b>Set Unknown Areas</b><ul>
+          <li>For the currently selected layer, sets all unknown areas to the 
+          value you provide.</li>
+        </ul>
+          </li>
       <li><b>Export To...</b><ul>
               <li>Writes the current elevation grid layer to one of the 
               following file formats: ArcInfo ASCII Grid, GeoTIFF, TerraGen, BMP 
               (scaled to 8-bit), STM, or MSI Planet.</li>
+            </ul>
+          </li>
+      <li><b>Export to Tiles...</b><ul>
+              <li>Writes the current elevation grid layer to a set of tiles.&nbsp; 
+              The <b>Tiling Options </b>dialog will be shown.&nbsp; The output 
+              file should be an .ini file on you data path.&nbsp; For example, 
+              if you save to <code>/Data/Elevation/Foo.ini</code>, then that 
+              file will contain a description of the tileset, and all the tiles 
+              will be placed in a directory called <code>/Data/Elevation/Foo</code></li>
             </ul>
           </li>
       <li><b>Render to Bitmap...</b><ul>
