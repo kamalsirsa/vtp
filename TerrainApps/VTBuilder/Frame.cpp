@@ -284,8 +284,12 @@ void MainFrame::CheckForGDALAndWarn()
 			" data files.  Without these files, many operations won't work.");
 	}
 
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// confirm ability to transform cooridates
 	// (Test that the PROJ .so/.dll is found and functional)
+	VTLOG1("Testing ability to create coordinate transforms.\n");
 	vtProjection proj1, proj2;
 	proj1.SetUTM(1);
 	proj2.SetUTM(2);
@@ -984,6 +988,7 @@ InstanceDlg *MainFrame::ShowInstanceDlg(bool bShow)
 
 void MainFrame::LookForContentFiles()
 {
+	VTLOG1("Searching data paths for content files (.vtco)\n");
 	for (unsigned int i = 0; i < m_datapaths.size(); i++)
 	{
 		vtStringArray array;
@@ -1012,6 +1017,7 @@ void MainFrame::LookForContentFiles()
 				m_contents.push_back(mng);
 		}
 	}
+	VTLOG(" found %d files on %d paths\n", m_contents.size(), m_datapaths.size());
 }
 
 void MainFrame::FreeContentFiles()
