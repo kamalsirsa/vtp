@@ -267,6 +267,7 @@ bool vtMaterialDescriptorArray::Load(const char *szFileName)
 		VTLOG("vtMaterialDescriptorArray::Load xml error %s\n", e.getMessage().c_str());
 		return false;
 	}
+	VTLOG(" successfully loaded %d material descriptions.\n", GetSize());
 	return true;
 }
 
