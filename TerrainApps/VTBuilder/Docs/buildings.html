@@ -10,9 +10,7 @@
 
 <h1 align="center">
 VTBuilder<br>
-<a href="index.html"><font size="3">back to index</font></a><font size="3">
-</font>
-</h1>
+<a href="index.html"><font size="3">back to index</font></a></h1>
 
 <h3>Structure Layers</h3>
 <blockquote>
@@ -102,7 +100,7 @@ VTBuilder<br>
           </li>
         </ul>
 
-<h3>Importing Structures from Shapefiles</h3>
+<h3>Importing Structures from Raw GIS Data</h3>
 <blockquote>
   <p>This is the easiest way to populate your terrain with a lot of structures 
   if you already have GIS data for their locations.</p>
@@ -119,21 +117,28 @@ VTBuilder<br>
   <li>Optionally, you can restrict the import to only use features that lie 
   within your Area tool.&nbsp; This is useful if you have a massive GIS data 
   source and only care about a specific area.</li>
-  <li>If you are importing building footprints, you have the option of reversing 
-  the order of their points (clockwise vs. counter-clockwise).&nbsp;&nbsp; The 
-  VTP convention is counter-clockwise.&nbsp; If you find that your buildings 
-  look inside-out in 3D, or your know that your data source defines then 
-  clockwise, then say Yes.</li>
 </ol>
 <blockquote>
   <p>The data will then import, so you can review it and save to VTST.</p>
   <p><b>Attributes: </b>&nbsp;Building footprints will be created with the 
   default attributes of 1 story, flat red roof.&nbsp; If there is a SHP field 
   called &quot;stories&quot;, it will be used for the number of stories.&nbsp; There are 
-  plans to extend this functionality soon to allow any of the fields to be 
+  plans to eventually extend this functionality to allow any of the fields to be 
   mapped onto any attribute.</p>
   <p>Remember that when you are ready to use VTST data with Enviro, you should 
   put it in the &quot;BuildingData&quot; folder on your Data path.</p>
+  <p>If you want to apply a default appearance to all the buildings you import, 
+  you can use the <i>Default Structures</i> feature.</p>
+</blockquote>
+
+  <h3>Default Structures</h3>
+<blockquote>
+  <p>To tell VTBuilder about defaults for structures, create a VTST file with 
+  one or more structures (Buildings) which have the desired appearance.&nbsp; 
+  Name this file <code>DefaultStructures.vtst </code>and put it in a &quot;BuildingData&quot; folder on your Data path.&nbsp; 
+  Then, whenever VTBuilder imports structures from raw GIS data, it will look at 
+  the defaults and copy visual appearance (materials, story heights, roof types, 
+  etc.) to each newly imported structure.</p>
 </blockquote>
 
 </body>
