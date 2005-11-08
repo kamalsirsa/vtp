@@ -1189,6 +1189,7 @@ GDALWrapper::~GDALWrapper()
 	CPLFinderClean();
 #if GDAL_VERSION_NUM >= 1310
 	CPLCleanupTLS();	// this function was added in GDAL 1.3.1
+	VSICleanupFileManager();
 #endif
 
 	if (m_bOGRFormatsRegistered)
