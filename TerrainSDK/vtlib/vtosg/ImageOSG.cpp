@@ -186,7 +186,18 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 		reg->setOptions(opts);
 
 		// Call OSG to attempt image load.
-		osg::ref_ptr<osg::Image> pOsgImage = osgDB::readImageFile(fname);
+		osg::ref_ptr<osg::Image> pOsgImage;
+		try
+		{
+			pOsgImage = osgDB::readImageFile(fname);
+		}
+		catch (...)
+		{
+			// Don't do anything because the (!pOsgImage.valid() below will
+			//  test to see if the pointer is any good. However, we need the
+			//  catch or else if osgdb throws an exception, it will be passed
+			/// all the way to the app.
+		}
 
 		if (!pOsgImage.valid())
 			return false;
