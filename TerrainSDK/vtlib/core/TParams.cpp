@@ -97,6 +97,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_PRELIGHTFACTOR, "1.0");
 	AddTag(STR_CAST_SHADOWS, "false");
 	AddTag(STR_COLOR_MAP, "");
+	AddTag(STR_TEXTURE_RETAIN, "true");
 
 	AddTag(STR_DETAILTEXTURE, "false");
 	AddTag(STR_DTEXTURE_NAME, "");

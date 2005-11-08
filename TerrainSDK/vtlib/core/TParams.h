@@ -218,6 +218,7 @@ Pre-Light
 PreLight_Factor
 Cast_Shadows
 Color_Map
+Texture_Retain
 Detail_Texture
 DTexture_Name
 DTexture_Scale
@@ -355,6 +356,7 @@ protected:
 #define STR_PRELIGHTFACTOR "PreLight_Factor"
 #define STR_CAST_SHADOWS "Cast_Shadows"
 #define STR_COLOR_MAP "Color_Map"
+#define STR_TEXTURE_RETAIN "Texture_Retain"
 
 #define STR_DETAILTEXTURE "Detail_Texture"
 #define STR_DTEXTURE_NAME "DTexture_Name"
