@@ -895,7 +895,7 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item27 = new wxCheckBox( parent, ID_16BIT, _("Request 16-bit"), wxDefaultPosition, wxDefaultSize, 0 );
     item25->Add( item27, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item24->Add( item25, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+    item24->Add( item25, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
 
     wxBoxSizer *item28 = new wxBoxSizer( wxVERTICAL );
 
@@ -917,44 +917,51 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item24->Add( item28, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 0 );
 
-    item1->Add( item24, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item1->Add( item24, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxBoxSizer *item34 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxCheckBox *item35 = new wxCheckBox( parent, ID_RETAIN, _("Retain loaded texture in memory for faster re-lighting"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item1->Add( item34, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 
     item0->Add( item1, 2, wxALL, 10 );
 
-    wxStaticBox *item35 = new wxStaticBox( parent, -1, _("Detail Texture") );
-    wxStaticBoxSizer *item34 = new wxStaticBoxSizer( item35, wxVERTICAL );
+    wxStaticBox *item37 = new wxStaticBox( parent, -1, _("Detail Texture") );
+    wxStaticBoxSizer *item36 = new wxStaticBoxSizer( item37, wxVERTICAL );
 
-    wxCheckBox *item36 = new wxCheckBox( parent, ID_DETAILTEXTURE, _("Show detail texture"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item36, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item38 = new wxCheckBox( parent, ID_DETAILTEXTURE, _("Show detail texture"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item38, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxString *strs37 = (wxString*) NULL;
-    wxComboBox *item37 = new wxComboBox( parent, ID_DT_NAME, wxT(""), wxDefaultPosition, wxSize(100,-1), 0, strs37, wxCB_DROPDOWN );
-    item34->Add( item37, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxString *strs39 = (wxString*) NULL;
+    wxComboBox *item39 = new wxComboBox( parent, ID_DT_NAME, wxT(""), wxDefaultPosition, wxSize(100,-1), 0, strs39, wxCB_DROPDOWN );
+    item36->Add( item39, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item38 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item40 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item39 = new wxStaticText( parent, ID_TEXT, _("Scale"), wxDefaultPosition, wxDefaultSize, 0 );
-    item38->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item41 = new wxStaticText( parent, ID_TEXT, _("Scale"), wxDefaultPosition, wxDefaultSize, 0 );
+    item40->Add( item41, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item40 = new wxTextCtrl( parent, ID_DT_SCALE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item38->Add( item40, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
+    wxTextCtrl *item42 = new wxTextCtrl( parent, ID_DT_SCALE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item40->Add( item42, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    item34->Add( item38, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item36->Add( item40, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxStaticText *item41 = new wxStaticText( parent, ID_TEXT, _("(meter size of detail texture)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item41, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item43 = new wxStaticText( parent, ID_TEXT, _("(meter size of detail texture)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item42 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item44 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item43 = new wxStaticText( parent, ID_TEXT, _("Distance"), wxDefaultPosition, wxDefaultSize, 0 );
-    item42->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item45 = new wxStaticText( parent, ID_TEXT, _("Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+    item44->Add( item45, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item44 = new wxTextCtrl( parent, ID_DT_DISTANCE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item42->Add( item44, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item46 = new wxTextCtrl( parent, ID_DT_DISTANCE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item44->Add( item46, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item34->Add( item42, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    item36->Add( item44, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    item0->Add( item34, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+    item0->Add( item36, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     if (set_sizer)
     {

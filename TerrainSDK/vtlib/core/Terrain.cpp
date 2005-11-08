@@ -48,8 +48,10 @@ vtTerrain::vtTerrain()
 
 	m_pTerrainGroup = (vtGroup*) NULL;
 	m_pImage = NULL;
+	m_pImageSource = NULL;
 	m_pTerrMats = NULL;
 	m_bBothSides = false;
+	m_bTextureInitialized = false;
 
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
@@ -121,11 +123,9 @@ vtTerrain::~vtTerrain()
 
 	if (m_pImage)
 		m_pImage->Release();
-	for(i = 0; i < m_Images.GetSize(); i++)
-	{
-		if (m_Images[i] != m_pImage)
-			m_Images[i]->Release();
-	}
+	if (m_pImageSource != m_pImage)
+		m_pImageSource->Release();
+	m_ImageTiles.Release();
 
 	delete m_pRoadMap;
 	if (m_pRoadGroup)
@@ -356,11 +356,26 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	diffuse = 1.0f;
 	ambient = emmisive = 0.0f;
 
-	bool bFirstTime = (m_pImage == NULL);
-	if (bFirstTime)
-		m_pImage = new vtImage();
+	int iTileSize = m_Params.GetValueInt(STR_TILESIZE);
+	bool bRetain = m_Params.GetValueBool(STR_TEXTURE_RETAIN);
 
-	if (eTex == TE_SINGLE || eTex == TE_TILED)	// load texture
+	bool bFirstTime = !m_bTextureInitialized;
+	if (bFirstTime)
+	{
+		if (eTex == TE_SINGLE)
+			m_pImage = new vtImage;
+		if (bRetain)
+			m_pImageSource = new vtImage;
+		else
+			m_pImageSource = m_pImage;
+	}
+	// TODO: simplify this logic; it shouldn't need to be so complex.
+	bool bLoad = (bFirstTime || !bRetain);
+	bool bLoadSingle = bLoad && (eTex == TE_SINGLE || (eTex == TE_TILED && bRetain));
+	bool bLoadTiles = bLoad && (eTex == TE_TILED && !bRetain);
+
+	vtString texture_path;
+	if (bLoadSingle || bLoadTiles)	// look for texture
 	{
 		vtString texname;
 		if (eTex == TE_SINGLE)
@@ -378,33 +393,86 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		texture_fname += texname;
 
 		VTLOG("  Looking for: %s\n", (const char *) texture_fname);
-		vtString texture_path = FindFileOnPaths(vtGetDataPath(), texture_fname);
+		texture_path = FindFileOnPaths(vtGetDataPath(), texture_fname);
 		if (texture_path == "")
 		{
 			// failed to find texture
 			VTLOG("  Failed to find texture.\n");
 			eTex = TE_NONE;
+			bLoadSingle = bLoadTiles = false;
+		}
+		else
+			VTLOG("  Found texture, path is: %s\n", (const char *) texture_path);
+	}
+	if (bLoadSingle)	// load texture
+	{
+		// Load a DIB of the whole, large texture
+		clock_t r1 = clock();
+		bool result = m_pImageSource->Read(texture_path, false);
+		if (result)
+		{
+			int depth = m_pImageSource->GetDepth();
+			VTLOG("  Load texture: depth %d, %.3f seconds.\n", depth, (float)(clock() - r1) / CLOCKS_PER_SEC);
 		}
 		else
 		{
-			VTLOG("  Found texture, path is: %s\n", (const char *) texture_path);
-			// Load a DIB of the whole, large texture
-			clock_t r1 = clock();
-			bool result = m_pImage->Read(texture_path, false);
-			if (result)
-				VTLOG("  Load texture: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
-			else
+			VTLOG("  Failed to load texture.\n");
+			m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+										RGBf(0.2f, 0.2f, 0.2f),
+										true, false);
+			eTex = TE_NONE;
+			_SetErrorMessage("Failed to load texture.");
+		}
+		// TODO? check that image size is correct, and warn if not.
+	}
+	if (eTex == TE_TILED && bFirstTime)
+	{
+		int w, h, depth;
+		vtImageInfo(texture_path, w, h, depth);
+		m_ImageTiles.Create(iTileSize, depth);
+
+		// If the user has asked for 16-bit textures to be sent down to the
+		//  card (internal memory format), then tell this vtImage
+		bool b16bit = m_Params.GetValueBool(STR_REQUEST16BIT);
+		int i, j;
+		for (i = 0; i < iTiles; i++)
+			for (j = 0; j < iTiles; j++)
+				m_ImageTiles.m_Tiles[i][j]->Set16Bit(b16bit);
+	}
+	if (bLoadTiles)
+	{
+		// alternate loading: load straight into tiled images
+		clock_t r1 = clock();
+		bool result = m_ImageTiles.Load(texture_path);
+		if (result)
+			VTLOG("  Load texture: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
+		else
+		{
+			VTLOG("  Failed to load texture.\n");
+			m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+										RGBf(0.2f, 0.2f, 0.2f),
+										true, false);
+			eTex = TE_NONE;
+			_SetErrorMessage("Failed to load texture.");
+		}
+	}
+	if (bRetain)
+	{
+		// We need to copy from the retained image to the displayed image
+		if (eTex == TE_SINGLE)
+		{
+			if (bFirstTime)
 			{
-				VTLOG("  Failed to load texture.\n");
-				m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-											RGBf(0.2f, 0.2f, 0.2f),
-											true, false);
-				eTex = TE_NONE;
+				int w = m_pImageSource->GetWidth();
+				int h = m_pImageSource->GetHeight();
+				int d = m_pImageSource->GetDepth();
+				m_pImage->Create(w, h, d);
 			}
-			if (eTex == TE_SINGLE)
-			{
-				// TODO? check that DIB size is power of two, and warn if not.
-			}
+			m_pImageSource->BlitTo(*m_pImage, 0, 0);
+		}
+		else if (eTex == TE_TILED)
+		{
+			m_pImageSource->BlitTo(m_ImageTiles, 0, 0);
 		}
 	}
 
@@ -430,7 +498,10 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		m_pImage->Create(tsize, tsize, 24, false);
 	}
 
-	if (eTex == TE_NONE || m_pImage == NULL)	// none or failed to find texture
+	// If we get this far, we can consider the texture initialized
+	m_bTextureInitialized = true;
+
+	if (eTex == TE_NONE)	// none or failed to find texture
 	{
 		// no texture: create plain white material
 		m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
@@ -447,14 +518,17 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	if (m_Params.GetValueBool(STR_PRELIGHT))
 	{
 		// apply pre-lighting (darkening)
-		_ApplyPreLight(pHFGrid, m_pImage, light_dir, progress_callback);
+		vtBitmapBase *target;
+		if (eTex == TE_TILED)
+			target = &m_ImageTiles;
+		else
+			target = m_pImage;
+		_ApplyPreLight(pHFGrid, target, light_dir, progress_callback);
 	}
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
 		// single texture
-		if (bFirstTime)
-			m_Images.Append(m_pImage);
-		else
+		if (!bFirstTime)
 			m_pImage->Modified();
 
 		// If the user has asked for 16-bit textures to be sent down to the
@@ -463,35 +537,24 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	}
 	if (eTex == TE_TILED)
 	{
-		int iTileSize = m_Params.GetValueInt(STR_TILESIZE);
-		if (bFirstTime)
-		{
-			int i, j;
-			for (i = 0; i < iTiles; i++)
-			{
-				for (j = 0; j < iTiles; j++)
-				{
-					vtImage *pImage = new vtImage();
-
-					pImage->Create(iTileSize, iTileSize, m_pImage->GetDepth());
-					m_Images.SetAt(i*iTiles+j, pImage);
-
-					// If the user has asked for 16-bit textures to be sent down to the
-					//  card (internal memory format), then tell this vtImage
-					m_pImage->Set16Bit(m_Params.GetValueBool(STR_REQUEST16BIT));
-				}
-			}
-		}
-		_CreateChoppedTextures(iTiles, iTileSize, progress_callback);
 		if (bFirstTime)
 			_CreateTiledMaterials(m_pTerrMats, iTiles, iTileSize, ambient,
 				diffuse, emmisive);
+		else
+		{
+			// we don't need to re-create the materials, but we do have to
+			//  let the scenegraph know the texture contents have changed.
+			int r, c;
+			for (r = 0; r < 4; r++)
+				for (c = 0; c < 4; c++)
+					m_ImageTiles.m_Tiles[r][c]->Modified();
+		}
 	}
 	if (bFirstTime)
 	{
 		if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 		{
-			vtImage *pImage = m_Images[0];
+			vtImage *pImage = m_pImage;
 			bool bTransp = (pImage->GetDepth() == 32);
 			m_pTerrMats->AddTextureMaterial(pImage,
 				!m_bBothSides,		// culling
@@ -2501,62 +2564,6 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const
 	return hit;
 }
 
-void vtTerrain::_CreateChoppedTextures(int patches, int patch_size,
-									   bool progress_callback(int))
-{
-	clock_t r1 = clock();
-
-	int iTiles = 4;		// fixed for now
-	int size = patch_size;
-	bool mono = (m_pImage->GetDepth() == 8);
-
-	bool b16bit;
-	if (!mono && m_Params.GetValueBool(STR_REQUEST16BIT))
-		b16bit = true;
-	else
-		b16bit = false;
-
-	int x_off, y_off, x, y, i, j;
-
-	for (i = 0; i < patches; i++)
-	{
-		x_off = i * (size - 1);
-		for (j = 0; j < patches; j++)
-		{
-			if (progress_callback != NULL)
-				progress_callback(((i*patches)+j)*100 / (patches*patches));
-
-			y_off = j * (size - 1);
-
-			vtImage *target = m_Images[i*iTiles+j];
-
-			unsigned long pixel;
-			RGBi rgb;
-			if (mono)
-			{
-				for (x = 0; x < size; x++)
-					for (y = 0; y < size; y++)
-					{
-						pixel = m_pImage->GetPixel8(x_off + x, y_off + y);
-						target->SetPixel8(x, y, pixel);
-					}
-			}
-			else
-			{
-				for (x = 0; x < size; x++)
-					for (y = 0; y < size; y++)
-					{
-						m_pImage->GetPixel24(x_off + x, y_off + y, rgb);
-						target->SetPixel24(x, y, rgb);
-					}
-			}
-			target->Modified();
-		}
-	}
-	VTLOG("  Chop texture: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
-}
-
-
 /*
  * Creates an array of materials for the dynamic LOD terrain geometry.
  */
@@ -2570,7 +2577,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 	{
 		for (j = 0; j < patches; j++)
 		{
-			vtImage *image = m_Images.GetAt(i*patches+j);
+			vtImage *image = m_ImageTiles.m_Tiles[i][j];
 			pMat1->AddTextureMaterial(image,
 				!m_bBothSides, 	// culling
 				false,		// lighting
@@ -2587,7 +2594,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 }
 
 
-void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *dib,
+void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bitmap,
 							  const FPoint3 &light_dir, bool progress_callback(int))
 {
 	VTLOG("  Prelighting texture: ");
@@ -2600,12 +2607,12 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *dib
 	if (m_Params.GetValueBool(STR_CAST_SHADOWS))
 	{
 		// A more accurate shading, still a little experimental
-		pElevGrid->ShadowCastDib(dib, light_dir, shade_factor, progress_callback);
+		pElevGrid->ShadowCastDib(bitmap, light_dir, shade_factor, progress_callback);
 	}
 	else if (bQuick)
-		pElevGrid->ShadeQuick(dib, shade_factor, bTrue, progress_callback);
+		pElevGrid->ShadeQuick(bitmap, shade_factor, bTrue, progress_callback);
 	else
-		pElevGrid->ShadeDibFromElevation(dib, light_dir, shade_factor, bTrue, progress_callback);
+		pElevGrid->ShadeDibFromElevation(bitmap, light_dir, shade_factor, bTrue, progress_callback);
 
 	clock_t c2 = clock();
 

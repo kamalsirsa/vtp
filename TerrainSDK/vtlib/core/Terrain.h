@@ -309,7 +309,6 @@ protected:
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
 
-	void _CreateChoppedTextures(int patches, int patch_size, bool progress_callback(int) = NULL);
 	void _CreateTiledMaterials(vtMaterialArray *pMat1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
@@ -380,9 +379,11 @@ protected:
 	vtRouteMap		m_Routes;
 
 	// ground texture
+	vtImage			*m_pImageSource;
 	vtImage			*m_pImage;
-	Array<vtImage*>	m_Images;
+	vtOverlappedTiledImage	m_ImageTiles;
 	ColorMap		*m_pTextureColors;
+	bool			m_bTextureInitialized;
 
 	FSphere			m_bound_sphere;	// bounding sphere of terrain
 									// (without surrounding ocean)

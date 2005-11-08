@@ -223,6 +223,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_CAST_SHADOWS, &m_bCastShadows);
 	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
 	AddValidator(ID_CHOICE_COLORS, &m_strColorMap);
+	AddValidator(ID_RETAIN, &m_bTextureRetain);
 
 	// detail texture
 	AddValidator(ID_DETAILTEXTURE, &m_bDetailTexture);
@@ -355,6 +356,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bPreLight =		Params.GetValueBool(STR_PRELIGHT);
 	m_fPreLightFactor = Params.GetValueFloat(STR_PRELIGHTFACTOR);
 	m_bCastShadows =	Params.GetValueBool(STR_CAST_SHADOWS);
+	m_bTextureRetain =	Params.GetValueBool(STR_TEXTURE_RETAIN);
 
 	// detail texture
 	m_bDetailTexture =  Params.GetValueBool(STR_DETAILTEXTURE);
@@ -491,6 +493,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_PRELIGHT, m_bPreLight);
 	Params.SetValueFloat(STR_PRELIGHTFACTOR, m_fPreLightFactor);
 	Params.SetValueBool(STR_CAST_SHADOWS, m_bCastShadows);
+	Params.SetValueBool(STR_TEXTURE_RETAIN, m_bTextureRetain);
 
 	// detail texture
 	Params.SetValueBool(STR_DETAILTEXTURE, m_bDetailTexture);
@@ -594,6 +597,7 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_PRELIGHT)->Enable(m_iTexture != TE_NONE && !m_bTileset);
 	FindWindow(ID_LIGHT_FACTOR)->Enable(m_iTexture != TE_NONE && !m_bTileset);
 	FindWindow(ID_CAST_SHADOWS)->Enable(m_iTexture != TE_NONE && !m_bTileset);
+	FindWindow(ID_RETAIN)->Enable(m_iTexture != TE_NONE && !m_bTileset);
 
 	FindWindow(ID_DETAILTEXTURE)->Enable(m_iLodMethod == LM_MCNALLY);
 	FindWindow(ID_DT_NAME)->Enable(m_iLodMethod == LM_MCNALLY && m_bDetailTexture);

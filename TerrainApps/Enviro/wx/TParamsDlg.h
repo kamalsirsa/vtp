@@ -95,6 +95,7 @@ public:
 	float   m_fPreLightFactor;
 	bool	m_bCastShadows;
 	wxString2   m_strColorMap;
+	bool	m_bTextureRetain;
 
 	// detail texture
 	bool	m_bDetailTexture;
