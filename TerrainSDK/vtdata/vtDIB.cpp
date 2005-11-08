@@ -23,64 +23,6 @@ extern "C" {
 #include "gdal_priv.h"
 #include "Projections.h"
 
-#ifndef _WINGDI_
-
-#ifdef _MSC_VER
-#include <pshpack2.h>
-#endif
-
-#ifdef __GNUC__
-#  define PACKED __attribute__((packed))
-#else
-#  define PACKED
-#endif
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-typedef struct tagBITMAPFILEHEADER {
-	word	bfType;
-	dword   bfSize;
-	word	bfReserved1;
-	word	bfReserved2;
-	dword   bfOffBits;
-} PACKED BITMAPFILEHEADER;
-
-#ifdef _MSC_VER
-#include <poppack.h>
-#endif
-
-typedef struct tagBITMAPINFOHEADER{
-	dword	biSize;
-	long	biWidth;
-	long	biHeight;
-	word	biPlanes;
-	word	biBitCount;
-	dword	biCompression;
-	dword	biSizeImage;
-	long	biXPelsPerMeter;
-	long	biYPelsPerMeter;
-	dword	biClrUsed;
-	dword	biClrImportant;
-} PACKED BITMAPINFOHEADER;
-
-typedef struct tagRGBQUAD {
-	byte	rgbBlue;
-	byte	rgbGreen;
-	byte	rgbRed;
-	byte	rgbReserved;
-} PACKED RGBQUAD;
-
-#endif	// DOXYGEN_SHOULD_SKIP_THIS
-
-/* constants for the biCompression field */
-#define BI_RGB			0L
-#define BI_RLE8			1L
-#define BI_RLE4			2L
-#define BI_BITFIELDS	3L
-
-#endif // #ifndef _WINGDI_
-
-
 ///////////////////////////////////////////////////////////////////////
 // Base class vtBitmapBase
 //
@@ -150,9 +92,164 @@ void vtBitmapBase::BlitTo(vtBitmapBase &target, int x, int y)
 	}
 }
 
+
+///////////////////////////////////////////////////////////////////////
+// Tiled class vtOverlappedTiledBitmap
+//
+unsigned char vtOverlappedTiledBitmap::GetPixel8(int x, int y) const
+{
+	int c = x / m_iSpacing;
+	int i = x % m_iSpacing;
+	int r = y / m_iSpacing;
+	int j = y % m_iSpacing;
+	return GetTile(c, r)->GetPixel8(i, j);
+}
+void vtOverlappedTiledBitmap::GetPixel24(int x, int y, RGBi &rgb) const
+{
+	int c = x / m_iSpacing;
+	if (c == 4) c = 3;
+	int i = x - (c * m_iSpacing);
+	int r = y / m_iSpacing;
+	if (r == 4) r = 3;
+	int j = y - (r * m_iSpacing);
+
+	GetTile(c, r)->GetPixel24(i, j, rgb);
+}
+void vtOverlappedTiledBitmap::GetPixel32(int x, int y, RGBAi &rgba) const
+{
+	int c = x / m_iSpacing;
+	int i = x % m_iSpacing;
+	int r = y / m_iSpacing;
+	int j = y % m_iSpacing;
+	GetTile(c, r)->GetPixel32(i, j, rgba);
+}
+
+void vtOverlappedTiledBitmap::SetPixel8(int x, int y, unsigned char color)
+{
+	// The array of images has edges which are shared.
+	// When an internal edge of one image is modified, the matching edge
+	// must also be modified, or there will be discontinuities on the seams.
+	// This means one call to SetPixel might modify more than one destination
+	// pixel: in fact, up to four pixels in the case of a tile corner.
+	int c = x / m_iSpacing;
+	int i = x % m_iSpacing;
+	int r = y / m_iSpacing;
+	int j = y % m_iSpacing;
+	GetTile(c, r)->SetPixel8(i, j, color);
+
+	if (c > 0 && i == 0)
+		GetTile(c-1, r)->SetPixel8(m_iSpacing, j, color);
+	if (r > 0 && j == 0)
+		GetTile(c, r-1)->SetPixel8(i, m_iSpacing, color);
+	if (c > 0 && i == 0 && r > 0 && j == 0)
+		GetTile(c-1, r-1)->SetPixel8(m_iSpacing, m_iSpacing, color);
+}
+void vtOverlappedTiledBitmap::SetPixel24(int x, int y, const RGBi &rgb)
+{
+	int c = x / m_iSpacing;
+	if (c == 4) c = 3;
+	int i = x - (c * m_iSpacing);
+	int r = y / m_iSpacing;
+	if (r == 4) r = 3;
+	int j = y - (r * m_iSpacing);
+
+	GetTile(c, r)->SetPixel24(i, j, rgb);
+
+	if (c > 0 && i == 0)
+		GetTile(c-1, r)->SetPixel24(m_iSpacing, j, rgb);
+	if (r > 0 && j == 0)
+		GetTile(c, r-1)->SetPixel24(i, m_iSpacing, rgb);
+	if (c > 0 && i == 0 && r > 0 && j == 0)
+		GetTile(c-1, r-1)->SetPixel24(m_iSpacing, m_iSpacing, rgb);
+}
+void vtOverlappedTiledBitmap::SetPixel32(int x, int y, const RGBAi &rgba)
+{
+	int c = x / m_iSpacing;
+	int i = x % m_iSpacing;
+	int r = y / m_iSpacing;
+	int j = y % m_iSpacing;
+	GetTile(c, r)->SetPixel32(i, j, rgba);
+
+	if (c > 0 && i == 0)
+		GetTile(c-1, r)->SetPixel32(m_iSpacing, j, rgba);
+	if (r > 0 && j == 0)
+		GetTile(c, r-1)->SetPixel32(i, m_iSpacing, rgba);
+	if (c > 0 && i == 0 && r > 0 && j == 0)
+		GetTile(c-1, r-1)->SetPixel32(m_iSpacing, m_iSpacing, rgba);
+}
+unsigned int vtOverlappedTiledBitmap::GetWidth() const
+{
+	return m_iTilesize*4-3;
+}
+unsigned int vtOverlappedTiledBitmap::GetHeight() const
+{
+	return m_iTilesize*4-3;
+}
+unsigned int vtOverlappedTiledBitmap::GetDepth() const
+{
+	return GetTile(0, 0)->GetDepth();
+}
+
 ///////////////////////////////////////////////////////////////////////
 // Class vtDIB
 //
+
+#ifndef _WINGDI_
+
+#ifdef _MSC_VER
+#include <pshpack2.h>
+#endif
+
+#ifdef __GNUC__
+#  define PACKED __attribute__((packed))
+#else
+#  define PACKED
+#endif
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
+typedef struct tagBITMAPFILEHEADER {
+	word	bfType;
+	dword   bfSize;
+	word	bfReserved1;
+	word	bfReserved2;
+	dword   bfOffBits;
+} PACKED BITMAPFILEHEADER;
+
+#ifdef _MSC_VER
+#include <poppack.h>
+#endif
+
+typedef struct tagBITMAPINFOHEADER{
+	dword	biSize;
+	long	biWidth;
+	long	biHeight;
+	word	biPlanes;
+	word	biBitCount;
+	dword	biCompression;
+	dword	biSizeImage;
+	long	biXPelsPerMeter;
+	long	biYPelsPerMeter;
+	dword	biClrUsed;
+	dword	biClrImportant;
+} PACKED BITMAPINFOHEADER;
+
+typedef struct tagRGBQUAD {
+	byte	rgbBlue;
+	byte	rgbGreen;
+	byte	rgbRed;
+	byte	rgbReserved;
+} PACKED RGBQUAD;
+
+#endif	// DOXYGEN_SHOULD_SKIP_THIS
+
+/* constants for the biCompression field */
+#define BI_RGB			0L
+#define BI_RLE8			1L
+#define BI_RLE4			2L
+#define BI_BITFIELDS	3L
+
+#endif // #ifndef _WINGDI_
 
 /**
  * Create a new empty DIB wrapper.

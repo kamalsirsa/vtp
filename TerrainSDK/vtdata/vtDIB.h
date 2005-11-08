@@ -39,6 +39,31 @@ public:
 	void BlitTo(vtBitmapBase &target, int x, int y);
 };
 
+/**
+ * This virtual bitmap encapsulates a grid of 4x4 bitmap tiles.
+ * After it is created, it can be treated just like any other bitmap.
+ */
+class vtOverlappedTiledBitmap : public vtBitmapBase
+{
+public:
+	unsigned char GetPixel8(int x, int y) const;
+	void GetPixel24(int x, int y, RGBi &rgb) const;
+	void GetPixel32(int x, int y, RGBAi &rgba) const;
+
+	void SetPixel8(int x, int y, unsigned char color);
+	void SetPixel24(int x, int y, const RGBi &rgb);
+	void SetPixel32(int x, int y, const RGBAi &rgba);
+
+	unsigned int GetWidth() const;
+	unsigned int GetHeight() const;
+	unsigned int GetDepth() const;
+
+	virtual vtBitmapBase *GetTile(int i, int j) = 0;
+	virtual const vtBitmapBase *GetTile(int i, int j) const = 0;
+
+	int m_iTilesize, m_iSpacing;	// space = size - 1
+};
+
 // for non-Win32 systems (or code which doesn't include the Win32 headers),
 // define some Microsoft types used by the DIB code
 #ifdef _WINGDI_
