@@ -61,6 +61,21 @@ protected:
 	int m_iRowSize;		// in bytes
 };
 
+class vtOverlappedTiledImage : public vtOverlappedTiledBitmap
+{
+public:
+	vtOverlappedTiledImage();
+	bool Create(int iTileSize, int iBitDepth);
+	void Release();
+	bool Load(const char *filename, bool progress_callback(int) = NULL);
+
+	vtBitmapBase *GetTile(int i, int j) { return m_Tiles[i][j]; }
+	const vtBitmapBase *GetTile(int i, int j) const { return m_Tiles[i][j]; }
+
+	vtImage *m_Tiles[4][4];
+};
+
+bool vtImageInfo(const char *filename, int &width, int &height, int &depth);
 vtImage *vtImageRead(const char *fname, bool bAllowCache = true);
 void vtImageCacheClear();
 

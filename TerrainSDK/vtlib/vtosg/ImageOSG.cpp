@@ -8,6 +8,8 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/vtString.h"
 #include <osgDB/ReadFile>
+#include "gdal_priv.h"
+#include "vtdata/Projections.h"
 
 //
 // Set any of these definitions to use OSG's own support for the various
@@ -107,6 +109,8 @@ vtImage *vtImageRead(const char *fname, bool bAllowCache)
 	}
 }
 
+osg::ref_ptr<osgDB::ReaderWriter::Options> s_options;
+
 bool vtImage::Read(const char *fname, bool bAllowCache)
 {
 	m_b16bit = false;
@@ -164,8 +168,8 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 		opts = reg->getOptions();
 		if (!opts)
 		{
-			opts = new OPTS;
-			opts->ref();	// workaround!
+			s_options = new OPTS;
+			opts = s_options.get();
 		}
 		int before = (int) opts->getObjectCacheHint();
 		if (bAllowCache)
@@ -548,3 +552,153 @@ bool vtImage::_ReadPNG(const char *filename)
 
 #endif	// USE_OSG_FOR_PNG
 
+
+///////////////////////////////////////////////////////////////////////
+// class vtOverlappedTiledImage
+
+vtOverlappedTiledImage::vtOverlappedTiledImage()
+{
+	m_iTilesize = 0;
+	m_iSpacing = 0;
+	int r, c;
+	for (r = 0; r < 4; r++)
+		for (c = 0; c < 4; c++)
+			m_Tiles[r][c] = NULL;
+}
+
+bool vtOverlappedTiledImage::Create(int iTilesize, int iBitDepth)
+{
+	// store the tile size
+	m_iTilesize = iTilesize;
+	m_iSpacing = iTilesize-1;
+
+	// create the 4x4 grid of image tiles
+	int r, c;
+	for (r = 0; r < 4; r++)
+		for (c = 0; c < 4; c++)
+		{
+			vtImage *image = new vtImage;
+			if (!image->Create(iTilesize, iTilesize, iBitDepth))
+				return false;
+			m_Tiles[r][c] = image;
+		}
+	return true;
+}
+
+void vtOverlappedTiledImage::Release()
+{
+	int r, c;
+	for (r = 0; r < 4; r++)
+		for (c = 0; c < 4; c++)
+		{
+			if (m_Tiles[r][c] != NULL)
+				m_Tiles[r][c]->Release();
+		}
+}
+
+bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(int))
+{
+	g_GDALWrapper.RequestGDALFormats();
+
+	GDALDataset *poDataset = (GDALDataset *) GDALOpen(filename, GA_ReadOnly);
+	if (!poDataset)
+		return false;
+
+	bool mono = (poDataset->GetRasterCount() == 1);
+
+	GDALRasterBand *poBand1;
+	GDALRasterBand *poBand2;
+	GDALRasterBand *poBand3;
+	float *lineBuf1;
+	float *lineBuf2;
+	float *lineBuf3;
+	int xsize = poDataset->GetRasterXSize();
+	int ysize = poDataset->GetRasterYSize();
+
+	if (mono)
+		poBand1 = poDataset->GetRasterBand(1);
+	else
+	{
+		poBand1 = poDataset->GetRasterBand(1);
+		poBand2 = poDataset->GetRasterBand(2);
+		poBand3 = poDataset->GetRasterBand(3);
+	}
+	lineBuf1 = (float *) CPLMalloc(sizeof(float)*xsize);
+	lineBuf2 = (float *) CPLMalloc(sizeof(float)*xsize);
+	lineBuf3 = (float *) CPLMalloc(sizeof(float)*xsize);
+
+	int x_off, y_off, x, y, i, j;
+
+	for (i = 0; i < 4; i++)
+	{
+		x_off = i * m_iSpacing;
+		for (j = 0; j < 4; j++)
+		{
+			if (progress_callback != NULL)
+				progress_callback(((i*4)+j)*100 / (4*4));
+
+			y_off = j * m_iSpacing;
+
+			vtImage *target = m_Tiles[j][i];
+
+			RGBi rgb;
+			if (mono)
+			{
+				for (x = 0; x < m_iTilesize; x++)
+				{
+					poBand1->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
+						lineBuf1, xsize, 1, GDT_Float32, 0, 0);
+					for (y = 0; y < m_iTilesize; y++)
+					{
+						float *targetBandVec1 = lineBuf1 + y_off + y;
+						target->SetPixel8(x, y, *targetBandVec1);
+					}
+				}
+			}
+			else
+			{
+				for (x = 0; x < m_iTilesize; x++)
+				{
+					poBand1->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
+						lineBuf1,xsize,1,GDT_Float32,0,0);
+					poBand2->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
+						lineBuf2,xsize,1,GDT_Float32,0,0);
+					poBand3->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
+						lineBuf3,xsize,1,GDT_Float32,0,0);
+					
+					for (y = 0; y < m_iTilesize; y++)
+					{
+						float *targetBandVec1 = lineBuf1 + y_off + y;
+						float *targetBandVec2 = lineBuf2 + y_off + y;
+						float *targetBandVec3 = lineBuf3 + y_off + y;
+						rgb.Set(*targetBandVec1,*targetBandVec2,*targetBandVec3);
+						target->SetPixel24(y, x, rgb);
+						
+					}
+				}
+			}
+		}
+	}
+	CPLFree( lineBuf1 );
+	CPLFree( lineBuf2 );
+	CPLFree( lineBuf3 );
+	GDALClose(poDataset);
+	return true;
+}
+
+
+bool vtImageInfo(const char *filename, int &width, int &height, int &depth)
+{
+	g_GDALWrapper.RequestGDALFormats();
+
+	// open the input image and find out the image depth using gdal
+	GDALDataset *poDataset;
+	poDataset = (GDALDataset *) GDALOpen(filename, GA_ReadOnly);
+	if (!poDataset)
+		return false;
+	width = poDataset->GetRasterXSize();
+	height = poDataset->GetRasterYSize();
+	depth = poDataset->GetRasterCount()*8;
+	GDALClose(poDataset);
+	return true;
+}
