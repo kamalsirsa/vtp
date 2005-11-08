@@ -620,9 +620,9 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 	GDALRasterBand *poBand1;
 	GDALRasterBand *poBand2;
 	GDALRasterBand *poBand3;
-	float *lineBuf1;
-	float *lineBuf2;
-	float *lineBuf3;
+	unsigned char *lineBuf1;
+	unsigned char *lineBuf2;
+	unsigned char *lineBuf3;
 	int xsize = poDataset->GetRasterXSize();
 	int ysize = poDataset->GetRasterYSize();
 
@@ -634,9 +634,9 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 		poBand2 = poDataset->GetRasterBand(2);
 		poBand3 = poDataset->GetRasterBand(3);
 	}
-	lineBuf1 = (float *) CPLMalloc(sizeof(float)*xsize);
-	lineBuf2 = (float *) CPLMalloc(sizeof(float)*xsize);
-	lineBuf3 = (float *) CPLMalloc(sizeof(float)*xsize);
+	lineBuf1 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
+	lineBuf2 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
+	lineBuf3 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
 
 	int x_off, y_off, x, y, i, j;
 
@@ -658,10 +658,10 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 				for (x = 0; x < m_iTilesize; x++)
 				{
 					poBand1->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
-						lineBuf1, xsize, 1, GDT_Float32, 0, 0);
+						lineBuf1, xsize, 1, GDT_Byte, 0, 0);
 					for (y = 0; y < m_iTilesize; y++)
 					{
-						float *targetBandVec1 = lineBuf1 + y_off + y;
+						unsigned char *targetBandVec1 = lineBuf1 + y_off + y;
 						target->SetPixel8(x, y, *targetBandVec1);
 					}
 				}
@@ -671,17 +671,17 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 				for (x = 0; x < m_iTilesize; x++)
 				{
 					poBand1->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
-						lineBuf1,xsize,1,GDT_Float32,0,0);
+						lineBuf1,xsize,1,GDT_Byte,0,0);
 					poBand2->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
-						lineBuf2,xsize,1,GDT_Float32,0,0);
+						lineBuf2,xsize,1,GDT_Byte,0,0);
 					poBand3->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
-						lineBuf3,xsize,1,GDT_Float32,0,0);
+						lineBuf3,xsize,1,GDT_Byte,0,0);
 					
 					for (y = 0; y < m_iTilesize; y++)
 					{
-						float *targetBandVec1 = lineBuf1 + y_off + y;
-						float *targetBandVec2 = lineBuf2 + y_off + y;
-						float *targetBandVec3 = lineBuf3 + y_off + y;
+						unsigned char *targetBandVec1 = lineBuf1 + y_off + y;
+						unsigned char *targetBandVec2 = lineBuf2 + y_off + y;
+						unsigned char *targetBandVec3 = lineBuf3 + y_off + y;
 						rgb.Set(*targetBandVec1,*targetBandVec2,*targetBandVec3);
 						target->SetPixel24(y, x, rgb);
 						
