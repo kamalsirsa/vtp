@@ -2174,6 +2174,7 @@ void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
 	DPoint2 p;
 	int i, j;
 
+	int count = 0;
 	for (i = 0; i < iColumns; i++)
 	{
 		for (j = 0; j < iRows; j++)
@@ -2188,12 +2189,21 @@ void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
 
 			val = grid->GetFValue(i, j);
 			if (val >= zmin && val <= zmax)
+			{
 				grid->SetFValue(i, j, INVALID_ELEVATION);
+				count++;
+			}
 		}
 	}
-	t->ReRender();
-
-	m_pView->Refresh();
+	if (count)
+	{
+		wxString str;
+		str.Printf(_("Set %d heixels to unknown"), count);
+		wxMessageBox(str);
+		t->SetModified(true);
+		t->ReRender();
+		m_pView->Refresh();
+	}
 }
 
 void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
@@ -3096,7 +3106,7 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 	{
 		// Create new Bioregion Dialog
 		m_BioRegionDlg = new BioRegionDlg(this, wxID_ANY, _("BioRegions List"),
-				wxPoint(120, 80), wxSize(300, 500), wxSYSTEM_MENU | wxCAPTION);
+				wxPoint(120, 80), wxSize(300, 500), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	}
 
 	// Display bioregion data, calling OnInitDialog.
