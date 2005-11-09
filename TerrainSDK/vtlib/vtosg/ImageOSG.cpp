@@ -620,9 +620,6 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 	GDALRasterBand *poBand1;
 	GDALRasterBand *poBand2;
 	GDALRasterBand *poBand3;
-	unsigned char *lineBuf1;
-	unsigned char *lineBuf2;
-	unsigned char *lineBuf3;
 	int xsize = poDataset->GetRasterXSize();
 	int ysize = poDataset->GetRasterYSize();
 
@@ -634,9 +631,9 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 		poBand2 = poDataset->GetRasterBand(2);
 		poBand3 = poDataset->GetRasterBand(3);
 	}
-	lineBuf1 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
-	lineBuf2 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
-	lineBuf3 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
+	unsigned char *lineBuf1 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
+	unsigned char *lineBuf2 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
+	unsigned char *lineBuf3 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
 
 	int x_off, y_off, x, y, i, j;
 
@@ -684,7 +681,6 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 						unsigned char *targetBandVec3 = lineBuf3 + y_off + y;
 						rgb.Set(*targetBandVec1,*targetBandVec2,*targetBandVec3);
 						target->SetPixel24(y, x, rgb);
-						
 					}
 				}
 			}
