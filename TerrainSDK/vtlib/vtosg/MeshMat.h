@@ -201,6 +201,7 @@ class vtFont
 {
 public:
 	vtFont();
+	~vtFont();
 	bool LoadFont(const char *filename);
 
 	// Implementation

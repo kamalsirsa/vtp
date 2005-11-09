@@ -899,6 +899,11 @@ vtFont::vtFont()
 {
 }
 
+vtFont::~vtFont()
+{
+	// no need to free m_pOsgFont, it is a ref_ptr
+}
+
 bool vtFont::LoadFont(const char *filename)
 {
 	// OSG 0.9.3
