@@ -362,7 +362,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	bool bFirstTime = !m_bTextureInitialized;
 	if (bFirstTime)
 	{
-		if (eTex == TE_SINGLE)
+		if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 			m_pImage = new vtImage;
 		if (bRetain)
 			m_pImageSource = new vtImage;
@@ -456,10 +456,42 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 			_SetErrorMessage("Failed to load texture.");
 		}
 	}
+
+	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
+
+	if (eTex == TE_DERIVED)
+	{
+		if (bFirstTime)
+		{
+			// Derive color from elevation.
+			// Determine the correct size for the derived texture: ideally
+			// as large as the input grid, but not larger than the hardware
+			// texture size limit.
+			int tmax = vtGetMaxTextureSize();
+
+			int cols, rows;
+			pHFGrid->GetDimensions(cols, rows);
+
+			int tsize = cols-1;
+			if ((tmax > 0) && (tsize > tmax))
+				tsize = tmax;
+			VTLOG("\t grid width is %d, texture max is %d, creating artificial texture of dimension %d\n",
+				cols, tmax, tsize);
+
+			m_pImageSource->Create(tsize, tsize, 24, false);
+		}
+		if (bFirstTime || !bRetain)
+		{
+			// This method is virtual to allow subclasses to customize the Dib,
+			//  before we turn it into an vtImage
+			PaintDib();
+		}
+	}
+
 	if (bRetain)
 	{
 		// We need to copy from the retained image to the displayed image
-		if (eTex == TE_SINGLE)
+		if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 		{
 			if (bFirstTime)
 			{
@@ -476,28 +508,6 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		}
 	}
 
-	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
-
-	if (eTex == TE_DERIVED && bFirstTime)
-	{
-		// Derive color from elevation.
-		// Determine the correct size for the derived texture: ideally
-		// as large as the input grid, but not larger than the hardware
-		// texture size limit.
-		int tmax = vtGetMaxTextureSize();
-
-		int cols, rows;
-		pHFGrid->GetDimensions(cols, rows);
-
-		int tsize = cols-1;
-		if ((tmax > 0) && (tsize > tmax))
-			tsize = tmax;
-		VTLOG("\t grid width is %d, texture max is %d, creating artificial texture of dimension %d\n",
-			cols, tmax, tsize);
-
-		m_pImage->Create(tsize, tsize, 24, false);
-	}
-
 	// If we get this far, we can consider the texture initialized
 	m_bTextureInitialized = true;
 
@@ -508,12 +518,6 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 									RGBf(0.2f, 0.2f, 0.2f),
 									true, false);
 		return;
-	}
-	if (eTex == TE_DERIVED)
-	{
-		// This method is virtual to allow subclasses to customize the Dib,
-		//  before we turn it into an vtImage
-		PaintDib();
 	}
 	if (m_Params.GetValueBool(STR_PRELIGHT))
 	{
@@ -653,7 +657,7 @@ void vtTerrain::PaintDib()
 		}
 	}
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
-	pHFGrid->ColorDibFromElevation(m_pImage, m_pTextureColors, 4000);
+	pHFGrid->ColorDibFromElevation(m_pImageSource, m_pTextureColors, 4000);
 }
 
 /**
@@ -1883,6 +1887,7 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 		if (!bColorSet)
 			text->SetColor(RGBf(label_color));
 		geom->AddTextMesh(text, common_material_index);
+		text->Release();	// pass ownership to geometry
 #endif
 
 		// Add to a billboarding transform so that the labels turn
