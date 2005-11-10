@@ -117,7 +117,7 @@ bool vtSpeciesList::WriteXML(const char *fname) const
 	}
 
 	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n");
-	fprintf(fp, "<species-file file-format-version=\"1.0\">\n");
+	fprintf(fp, "<species-file file-format-version=\"1.1\">\n");
 
 	for (unsigned int i = 0; i < NumSpecies(); i++)
 	{
