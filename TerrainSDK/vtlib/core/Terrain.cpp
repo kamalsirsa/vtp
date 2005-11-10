@@ -279,6 +279,9 @@ void vtTerrain::SetTin(vtTin3d *pTin)
 
 void vtTerrain::_CreateRoads()
 {
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	vtString road_fname = "RoadData/";
 	road_fname += m_Params.GetValueString(STR_ROADFILE, true);
 	vtString road_path = FindFileOnPaths(vtGetDataPath(), road_fname);
@@ -581,6 +584,9 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 //
 void vtTerrain::_CreateDetailTexture()
 {
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	vtString fname = m_Params.GetValueString(STR_DTEXTURE_NAME, true);
 	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 	if (path == "")
@@ -749,9 +755,6 @@ void vtTerrain::RecreateTextures(vtTransform *pSunLight, bool progress_callback(
 
 bool vtTerrain::_CreateDynamicTerrain()
 {
-	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
 	int texture_patches;
 	if (m_Params.GetTextureEnum() == TE_TILED)
 		texture_patches = 4;	// tiled, which is always 4x4
@@ -970,6 +973,9 @@ void vtTerrain::SaveRoute()
 void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 										  bool bCenter, float fTransparency)
 {
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	int VtxType;
 
 	vtMaterialArray *pMat_Ocean = new vtMaterialArray();
@@ -1655,6 +1661,9 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const vtTagArray 
 
 void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray &style)
 {
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// We support geometry for 2D and 3D polylines
 	const vtFeatureSetLineString   *pSetLS2 = dynamic_cast<const vtFeatureSetLineString*>(&feat);
 	const vtFeatureSetLineString3D *pSetLS3 = dynamic_cast<const vtFeatureSetLineString3D*>(&feat);
@@ -2602,6 +2611,9 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bitmap,
 							  const FPoint3 &light_dir, bool progress_callback(int))
 {
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	VTLOG("  Prelighting texture: ");
 
 	clock_t c1 = clock();
