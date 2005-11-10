@@ -366,10 +366,26 @@ bool DPolygon2::ContainsPoint(const DPoint2 &p) const
 
 	if (size() > 1)
 	{
+#if 0
+		// Option 1 - although this _should_ work, in practice, it fails
 		DLine2 all_vertices;
 		GetAsDLine2(all_vertices);
 
 		return all_vertices.ContainsPoint(p);
+#endif
+		// Option 2
+		bool outer_ring = at(0).ContainsPoint(p);
+		if (!outer_ring)
+			return false;
+		for (int i = 1; i < size(); i++)
+		{
+			// It seems that we would have to reverse the order of the inner
+			//  ring vertices, but in practice, it works fine without doing so.
+			bool inner_ring = at(i).ContainsPoint(p);
+			if (inner_ring)
+				return false;
+		}
+		return true;
 	}
 	else
 		return at(0).ContainsPoint(p);
