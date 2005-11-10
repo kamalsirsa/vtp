@@ -1634,6 +1634,9 @@ bool MainFrame::SampleElevationToPGMPyramids(const TilingOptions &opts)
 {
 	VTLOG1("SampleElevationToPGMPyramids\n");
 
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// If any of the input terrain are floats, then recommend to the user
 	// that the output should be float as well.
 	bool floatmode = false;

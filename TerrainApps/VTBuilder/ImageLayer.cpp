@@ -1324,6 +1324,9 @@ bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 
 bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// largest tile size
 	int base_tilesize = opts.lod0size;
 
