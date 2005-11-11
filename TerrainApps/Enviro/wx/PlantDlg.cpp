@@ -21,6 +21,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Trees.h"
 #include "vtui/wxString2.h"
+#include "vtdata/vtLog.h"
 #include "EnviroGUI.h"
 
 // WDR: class implementations
@@ -50,6 +51,7 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
+	VTLOG1("PlantDlg constructing\n");
 	PlantDialogFunc( this, TRUE );
 
 	m_pHeightSlider = GetHeightSlider();
@@ -72,8 +74,17 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_PLANT_VARIANCE_SLIDER, &m_iVarianceSlider);
 }
 
+PlantDlg::~PlantDlg()
+{
+}
+
 void PlantDlg::SetPlantList(vtSpeciesList3d *plants)	
 {
+	VTLOG1("PlantDlg SetPlantList: ");
+	if (plants)
+		VTLOG("%d plants\n", plants->NumSpecies());
+	else
+		VTLOG1("no plant list\n");
 	if (m_pPlantList == plants)
 		return;
 	m_pPlantList = plants;
@@ -83,15 +94,18 @@ void PlantDlg::SetPlantList(vtSpeciesList3d *plants)
 
 void PlantDlg::SetPlantOptions(PlantingOptions &opt)
 {
+	VTLOG1("PlantDlg SetPlantOptions\n");
 	m_opt = opt;
 
 	if (m_opt.m_iSpecies == -1)
 	{
-		// select first plant
+		// select first plant, if there is one
 		m_iSpeciesChoice = 0;
 		SpeciesIndexToSpeciesId();
 		UpdateHeightFromSpecies();
 	}
+	if (m_opt.m_iSpecies == -1)
+		return;
 
 	// safety check
 	if (m_opt.m_fHeight < 0)
@@ -131,6 +145,8 @@ void PlantDlg::UpdatePlantSizes()
 
 void PlantDlg::UpdatePlantNames()
 {
+	VTLOG1("PlantDlg UpdatePlantNames\n");
+
 	// if we are changing, and the control is already populated, try to keep
 	//  the same plant selected, to avoid UI disruption
 	vtPlantSpecies *previous = NULL;
@@ -224,12 +240,19 @@ void PlantDlg::SpeciesIdToSpeciesIndex()
 void PlantDlg::SpeciesIndexToSpeciesId()
 {
 	// convert displayed species index to a real species id
-	vtPlantSpecies *ps = (vtPlantSpecies *) m_pSpecies->GetClientData(m_iSpeciesChoice);
-	m_opt.m_iSpecies = m_pPlantList->FindSpeciesId(ps);
+	int count = m_pSpecies->GetCount();
+	if (m_iSpeciesChoice < count)
+	{
+		vtPlantSpecies *ps = (vtPlantSpecies *) m_pSpecies->GetClientData(m_iSpeciesChoice);
+		m_opt.m_iSpecies = m_pPlantList->FindSpeciesId(ps);
+	}
 }
 
 void PlantDlg::UpdateHeightFromSpecies()
 {
+	if (m_opt.m_iSpecies == -1)
+		return;
+
 	// show a reasonable value for the height
 	m_opt.m_fHeight = m_PreferredSizes[m_opt.m_iSpecies];
 	HeightToSlider();
@@ -333,6 +356,9 @@ void PlantDlg::OnHeightSlider( wxCommandEvent &event )
 
 	if (!m_pPlantList) return;
 
+	if (m_opt.m_iSpecies == -1)
+		return;
+
 	m_iHeightSlider = m_pHeightSlider->GetValue();
 	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
 	if (pSpecies)
@@ -353,6 +379,9 @@ void PlantDlg::OnHeightEdit( wxCommandEvent &event )
 	if (m_bSetting)
 		return;
 
+	if (m_opt.m_iSpecies == -1)
+		return;
+
 	TransferDataFromWindow();
 	m_PreferredSizes[m_opt.m_iSpecies] = m_opt.m_fHeight;
 	HeightToSlider();
@@ -362,6 +391,9 @@ void PlantDlg::OnHeightEdit( wxCommandEvent &event )
 void PlantDlg::HeightToSlider()
 {
 	if (!m_pPlantList) return;
+
+	if (m_opt.m_iSpecies == -1)
+		return;
 
 	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
 	if (pSpecies)
