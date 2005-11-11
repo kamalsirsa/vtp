@@ -556,6 +556,7 @@ void EnviroFrame::SetMode(MouseMode mode)
 	// Show/hide plant dialog
 	if (mode == MM_PLANTS)
 	{
+		VTLOG1("Calling Plant dialog\n");
 		m_pPlantDlg->SetPlantList(g_App.GetPlantList());
 		m_pPlantDlg->SetPlantOptions(g_App.GetPlantOptions());
 		m_pPlantDlg->Show(true);

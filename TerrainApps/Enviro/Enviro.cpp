@@ -693,7 +693,9 @@ void Enviro::SetCurrentNavigator(vtTerrainFlyer *pE)
 		m_pCurrentFlyer->SetEnabled(false);
 	}
 	m_pCurrentFlyer = pE;
-	if (m_pCurrentFlyer != NULL)
+	if (m_pCurrentFlyer == NULL)
+		VTLOG1("No navigator now enabled.\n");
+	else
 	{
 		const char *name = m_pCurrentFlyer->GetName2();
 		VTLOG(" Enabling '%s'\n", name);
@@ -722,7 +724,10 @@ void Enviro::EnableFlyerEngine(bool bEnable)
 		SetCurrentNavigator(NULL);
 
 	if (m_bTopDown)
+	{
+		VTLOG("Enable OrthoFlyer: %d\n", bEnable);
 		m_pOrthoFlyer->SetEnabled(bEnable);
+	}
 }
 
 void Enviro::SetNavType(NavType nav)
