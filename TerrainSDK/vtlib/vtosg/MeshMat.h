@@ -61,6 +61,7 @@ public:
 	void SetTexture(vtImage *pImage);
 	bool SetTexture2(const char *szFilename);
 	vtImage	*GetTexture() const;
+	void ModifiedTexture();
 
 	void SetClamp(bool bClamp);
 	bool GetClamp() const;

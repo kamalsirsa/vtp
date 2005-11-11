@@ -298,6 +298,23 @@ vtImage	*vtMaterial::GetTexture() const
 	return const_cast<vtImage*>(m_pImage);
 }
 
+/**
+ * Call this method to tell vtlib that you have modified the contents of a
+ *  texture so it needs to be sent again to the graphics card.
+ */
+void vtMaterial::ModifiedTexture()
+{
+	if (!m_pTexture)
+		return;
+
+	// Two steps: first we tell the Texture it's changed, then we tell the
+	//  Image it's changed.
+	m_pTexture->dirtyTextureObject();
+
+	// OSG calls a modified image 'dirty'
+	m_pTexture->getImage()->dirty();
+}
+
 
 /**
  * Set the texture clamping property for this material.

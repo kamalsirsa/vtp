@@ -42,7 +42,6 @@ public:
 	unsigned int GetHeight() const;
 	unsigned int GetDepth() const;
 
-	void Modified();
 	void Set16Bit(bool bFlag);
 
 protected:

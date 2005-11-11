@@ -313,16 +313,6 @@ unsigned int vtImage::GetDepth() const
 }
 
 /**
- * Call this method to tell vtlib that you have modified the contents of a
- *  texture so it needs to be sent again to the graphics card.
- */
-void vtImage::Modified()
-{
-	// OSG calls a modified texture 'dirty'
-	dirty();
-}
-
-/**
  * Call this method to tell vtlib that you want it to use a 16-bit texture
  * (internal memory format) to be sent to the graphics card.
  */
