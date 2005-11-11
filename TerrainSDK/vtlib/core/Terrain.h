@@ -309,9 +309,8 @@ protected:
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
 
-	void _CreateTiledMaterials(vtMaterialArray *pMat1,
-							 int patches, int patch_size, float ambient,
-							 float diffuse, float emmisive);
+	void _CreateSingleMaterial(float ambient, float diffuse, float emmisive);
+	void _CreateTiledMaterials(int patches, float ambient, float diffuse, float emmisive);
 	void _ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtBitmapBase *dib,
 		const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	void _ComputeCenterLocation();

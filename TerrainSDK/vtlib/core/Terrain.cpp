@@ -428,6 +428,12 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		}
 		// TODO? check that image size is correct, and warn if not.
 	}
+	if ((eTex == TE_SINGLE || eTex == TE_DERIVED) && bFirstTime)
+	{
+		// If the user has asked for 16-bit textures to be sent down to the
+		//  card (internal memory format), then tell this vtImage
+		m_pImage->Set16Bit(m_Params.GetValueBool(STR_REQUEST16BIT));
+	}
 	if (eTex == TE_TILED && bFirstTime)
 	{
 		int w, h, depth;
@@ -535,45 +541,25 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
 		// single texture
-		if (!bFirstTime)
-			m_pImage->Modified();
-
-		// If the user has asked for 16-bit textures to be sent down to the
-		//  card (internal memory format), then tell this vtImage
-		m_pImage->Set16Bit(m_Params.GetValueBool(STR_REQUEST16BIT));
+		if (bFirstTime)
+			_CreateSingleMaterial(ambient, diffuse, emmisive);
+		else
+		{
+			VTLOG("Marking texture image as modified.\n");
+			vtMaterial *mat = m_pTerrMats->GetAt(0);
+			mat->ModifiedTexture();
+		}
 	}
 	if (eTex == TE_TILED)
 	{
 		if (bFirstTime)
-			_CreateTiledMaterials(m_pTerrMats, iTiles, iTileSize, ambient,
-				diffuse, emmisive);
+			_CreateTiledMaterials(iTiles, ambient, diffuse, emmisive);
 		else
 		{
 			// we don't need to re-create the materials, but we do have to
 			//  let the scenegraph know the texture contents have changed.
-			int r, c;
-			for (r = 0; r < 4; r++)
-				for (c = 0; c < 4; c++)
-					m_ImageTiles.m_Tiles[r][c]->Modified();
-		}
-	}
-	if (bFirstTime)
-	{
-		if (eTex == TE_SINGLE || eTex == TE_DERIVED)
-		{
-			vtImage *pImage = m_pImage;
-			bool bTransp = (pImage->GetDepth() == 32);
-			m_pTerrMats->AddTextureMaterial(pImage,
-				!m_bBothSides,		// culling
-				false,		// lighting
-				bTransp,	// transparency blending
-				false,		// additive
-				ambient, diffuse,
-				1.0f,		// alpha
-				emmisive,
-				true,		// texgen
-				false,		// clamp
-				m_Params.GetValueBool(STR_MIPMAP));
+			for (unsigned int i = 0; i < m_pTerrMats->GetSize(); i++)
+				m_pTerrMats->GetAt(i)->ModifiedTexture();
 		}
 	}
 	VTLOG("  Total CreateTextures: %.3f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
@@ -2581,18 +2567,31 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const
 /*
  * Creates an array of materials for the dynamic LOD terrain geometry.
  */
-void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
-							 int patches, int patch_size, float ambient,
-							 float diffuse, float emmisive)
+void vtTerrain::_CreateSingleMaterial(float ambient, float diffuse, float emmisive)
 {
-	int i, j;
+	bool bTransp = (m_pImage->GetDepth() == 32);
+	m_pTerrMats->AddTextureMaterial(m_pImage,
+		!m_bBothSides,		// culling
+		false,		// lighting
+		bTransp,	// transparency blending
+		false,		// additive
+		ambient, diffuse,
+		1.0f,		// alpha
+		emmisive,
+		true,		// texgen
+		false,		// clamp
+		m_Params.GetValueBool(STR_MIPMAP));
+}
 
-	for (i = 0; i < patches; i++)
+void vtTerrain::_CreateTiledMaterials(int patches, float ambient,
+									  float diffuse, float emmisive)
+{
+	for (int i = 0; i < patches; i++)
 	{
-		for (j = 0; j < patches; j++)
+		for (int j = 0; j < patches; j++)
 		{
 			vtImage *image = m_ImageTiles.m_Tiles[i][j];
-			pMat1->AddTextureMaterial(image,
+			m_pTerrMats->AddTextureMaterial(image,
 				!m_bBothSides, 	// culling
 				false,		// lighting
 				false,		// transparency
