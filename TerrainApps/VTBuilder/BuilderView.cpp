@@ -1708,6 +1708,20 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			set.SaveToSHP("C:/Temp/waimea_quads.shp");
 		}
 #endif
+#if 0
+		DLine2 dline;
+		dline.Append(DPoint2(0,0));
+		dline.Append(DPoint2(1,0));
+		dline.Append(DPoint2(1,1));
+		dline.Append(DPoint2(0,1));
+		vtStructureArray str;
+		vtBuilding *bld = str.NewBuilding();
+		bld->SetFootprint(0, dline);
+		bld->SetStories(2);
+		bld->SetRoofType(RT_HIP);
+		bld->SetColor(BLD_BASIC, RGBi(255,0,0))
+		bld->SetColor(BLD_ROOF, RGBi(255,255,255))
+#endif
 	}
 	else
 		event.Skip();
