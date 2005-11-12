@@ -229,21 +229,22 @@ bool CreateScene()
 	pCamera->SetHither(10);
 	pCamera->SetYon(100000);
 
-	// Create a new terrain scene.  This will contain all the terrain
-	// that are created.
-	ts = new vtTerrainScene();
-	vtGroup *pTopGroup = ts->BeginTerrainScene();
+	// The  terrain scene will contain all the terrains that are created.
+	ts = new vtTerrainScene;
 
 	// Set the global data path
 	vtStringArray paths;
 	paths.push_back(vtString("Data/"));
 	ts->SetDataPath(paths);
 
+	// Begin creating the scene, including the sun and sky
+	vtGroup *pTopGroup = ts->BeginTerrainScene();
+
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
 
 	// Create a new vtTerrain, read its paramters from a file
-	vtTerrain *pTerr = new vtTerrain();
+	vtTerrain *pTerr = new vtTerrain;
 	pTerr->SetParamFile("Data/Simple.xml");
 
 	// Add the terrain to the scene, and contruct it
@@ -258,13 +259,14 @@ bool CreateScene()
 
 	// Create a navigation engine to move around on the terrain
 	// Get flight speed from terrain parameters
-	// Height over terrain is 100 m
 	float fSpeed = pTerr->GetParams().GetValueFloat(STR_NAVSPEED);
 
 	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(fSpeed);
 	pFlyer->SetTarget(pCamera);
 	pFlyer->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pFlyer);
+
+	// Minimum height over terrain is 100 m
 	vtHeightConstrain *pConstrain = new vtHeightConstrain(100);
 	pConstrain->SetTarget(pCamera);
 	pConstrain->SetHeightField(pTerr->GetHeightField());
