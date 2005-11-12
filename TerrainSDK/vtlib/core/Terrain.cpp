@@ -687,7 +687,7 @@ void vtTerrain::SetTextureColors(ColorMap *colors)
  *
  * \par Example:
 	\code
-	vtTerrain *pTerr = new vtTerrain();
+	vtTerrain *pTerr = new vtTerrain;
 	pTerr->SetTextureColors(100, 4);
 	\endcode
  *

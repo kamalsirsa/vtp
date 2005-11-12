@@ -185,15 +185,15 @@ void Enviro::LoadTerrainDescriptions()
 			//  vtTerrain.
 			vtTerrain *pTerr;
 			if (before_dot == "Hawai`i" || before_dot == "Hawai'i" || before_dot == "Hawaii" || before_dot == "Honoka`a" || before_dot == "Kealakekua" )
-				pTerr = new IslandTerrain();
+				pTerr = new IslandTerrain;
 			else if (before_dot == "Nevada")
-				pTerr = new NevadaTerrain();
+				pTerr = new NevadaTerrain;
 			else if (before_dot == "TransitTerrain")
-				pTerr = new TransitTerrain();
+				pTerr = new TransitTerrain;
 			else if (before_dot == "Romania")
-				pTerr = new Romania();
+				pTerr = new Romania;
 			else
-				pTerr = new vtTerrain();
+				pTerr = new vtTerrain;
 
 			if (pTerr->SetParamFile(directory + "/" + name))
 				AppendTerrain(pTerr);
