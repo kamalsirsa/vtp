@@ -643,3 +643,180 @@ void GrabFlyer::Eval()
 	}
 }
 
+
+////////////////////////////////////////////////////////////////////////
+//
+
+MapOverviewEngine::MapOverviewEngine()
+{
+	// boolean to avoid double mouse action clicked and released
+	m_bDown = true;
+	anglePrec = 0.0;
+	MapRatio = 0.0;
+	ratioMapTerrain = 0.0;
+	MapWidth = 300;
+	MapMargin = 10;
+	m_pMapView = NULL;
+
+	m_pMapGroup = new vtGroup();
+	m_pMapGroup->SetName2("MapOverview group");
+
+	vtGetScene()->GetHUD()->AddChild(m_pMapGroup);
+	CreateMapView();
+}
+
+MapOverviewEngine::~MapOverviewEngine()
+{
+	if (m_pMapView)
+		delete m_pMapView;
+}
+
+void MapOverviewEngine::Eval()
+{
+	RefreshMapView();
+}
+
+void MapOverviewEngine::OnMouse(vtMouseEvent &event)
+{
+	if (!m_pMapGroup->GetEnabled())
+		return;
+
+	IPoint2 position = IPoint2(event.pos.x,vtGetScene()->GetWindowSize().y - event.pos.y);
+	if( event.button == VT_MIDDLE 
+		&& m_bDown
+		&& position.x < (MapWidth + MapMargin) 
+		&& position.y < ((float)MapWidth / MapRatio + (float)MapMargin)
+		&& position.x > MapMargin
+		&& position.y > MapMargin)
+	{
+		vtCamera *cam = vtGetScene()->GetCamera();
+		FPoint3 PreviousPosition = cam->GetTrans();
+
+		FPoint3 NewPos((position.x - MapMargin) / ratioMapTerrain, 0,
+			-(position.y - MapMargin) / ratioMapTerrain);
+		cam->SetTrans(NewPos);
+	
+		// Set camera direction towards previous point
+		cam->SetDirection(FPoint3((PreviousPosition.x - NewPos.x), 0,
+									PreviousPosition.z - NewPos.z));
+	}	
+	if(event.button == VT_MIDDLE)
+		m_bDown = !m_bDown;
+}
+
+void MapOverviewEngine::CreateMapView()
+{
+	// Create the image-sprite
+	m_pMapView = new vtImageSprite;
+
+	CreateArrow();
+
+	// Set terrain-related aspects
+	SetTerrain(GetCurrentTerrain());
+	m_pMapGroup->AddChild(m_pMapView->GetNode());
+}
+
+void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
+{
+	vtImage *image = pTerr->GetTextureImage();
+	if (!image)
+		return;
+
+	if (m_pMapView->GetNode())
+		m_pMapView->SetImage(image);	// already created
+	else
+	{
+		m_pMapView->Create(image);
+		m_pMapView->GetNode()->SetName2("Map Overview Image Sprite");
+	}
+
+	FPoint2 terrainSize(pTerr->GetHeightField()->m_WorldExtents.Width(),
+						pTerr->GetHeightField()->m_WorldExtents.Height());
+	MapRatio = abs( terrainSize.x / terrainSize.y);
+
+	ratioMapTerrain = (float)MapWidth / (float)terrainSize.x;
+	m_pMapView->SetPosition(MapMargin,
+							MapMargin - terrainSize.y * ratioMapTerrain,
+							MapMargin + MapWidth,
+							MapMargin);
+	RefreshMapView();
+}
+
+void MapOverviewEngine::CreateArrow()
+{
+	// Create the "arrow"
+	m_pArrow = new vtTransform();
+	vtGeom * arrowGeom = new vtGeom();
+
+	vtMaterialArray *pMats = new vtMaterialArray();
+	pMats->AddRGBMaterial1(RGBf(1, 0, 0), false, false); // red
+	pMats->AddRGBMaterial1(RGBf(0, 0, 0), false, false); // black
+	arrowGeom->SetMaterials(pMats);
+	pMats->Release();
+
+	int ind[7];
+	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 7);
+			
+	ind[0] = mesh->AddVertex( 0.0, 0.0, 0.0);
+	ind[1] = mesh->AddVertex( 0.0, 5.0, 0.0);
+	ind[2] = mesh->AddVertex( 0.0,-5.0, 0.0);
+	ind[3] = mesh->AddVertex(-4.5,-4.0, 0.0);
+	ind[6] = mesh->AddVertex(-4.5, 4.0, 0.0);
+	ind[4] = mesh->AddVertex( 5.0, 7.5, 0.0);
+	ind[5] = mesh->AddVertex( 5.0,-7.5, 0.0);
+
+	mesh->AddLine(ind[1],ind[2]);
+	mesh->AddLine(ind[1],ind[6]);		
+	mesh->AddLine(ind[2],ind[3]);
+	mesh->AddLine(ind[3],ind[6]);
+	mesh->AddLine(ind[1],ind[4]);
+	mesh->AddLine(ind[2],ind[5]);
+	
+	m_pArrow->AddChild(arrowGeom);
+
+	// the second argument is the indice of the RGB color added into the material array
+	arrowGeom->AddMesh(mesh, 1);
+	mesh->Release();
+
+	mesh = new vtMesh(vtMesh::QUADS, 0, 4);
+
+	ind[0] = mesh->AddVertex(-4.3, 3.8, 0.0);
+	ind[1] = mesh->AddVertex(-4.3,-3.8, 0.0);
+	ind[2] = mesh->AddVertex( 0.0, 4.8, 0.0);
+	ind[3] = mesh->AddVertex( 0.0,-4.8, 0.0);
+
+	mesh->AddQuad(ind[2],ind[3],ind[1],ind[0]);
+
+	arrowGeom->AddMesh(mesh,0);
+	mesh->Release();
+
+	m_pMapGroup->AddChild(m_pArrow);
+}
+
+void MapOverviewEngine::RefreshMapView()
+{
+	// 3dimension vector is useless ... but needed in SetTrans()
+	FPoint3 camPos = vtGetScene()->GetCamera()->GetTrans();
+
+	FPoint2 camDir;
+	camDir.x =  vtGetScene()->GetCamera()->GetDirection().x;
+	camDir.y =  vtGetScene()->GetCamera()->GetDirection().z;
+
+	//arrow position
+	FPoint3 ArrowPos;
+	ArrowPos.x = ( camPos.x) * ratioMapTerrain + MapMargin;
+	ArrowPos.y = (-camPos.z) * ratioMapTerrain + MapMargin;
+	ArrowPos.z = 0.0f;
+	m_pArrow->SetTrans(ArrowPos);
+
+	float angle = acosf(camDir.Dot(FPoint2(1,0)));
+
+	if(abs(anglePrec - angle) > 0.0001)
+	{
+		camDir.y > 0 ? angle = abs(angle) : angle = - abs(angle);
+		//arrow orientation
+		m_pArrow->RotateLocal(FPoint3(0,0,1),-(angle - anglePrec));
+		anglePrec = angle;
+	}
+}
+
