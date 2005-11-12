@@ -1736,6 +1736,11 @@ vtImageSprite::vtImageSprite()
 	m_pMesh = NULL;
 }
 
+vtImageSprite::~vtImageSprite()
+{
+	// Do not explicitly free geometry, if it was added to the scene.
+}
+
 /**
  * Create a vtImageSprite.
  *
@@ -1748,7 +1753,18 @@ bool vtImageSprite::Create(const char *szTextureName, bool bBlending)
 	vtImage *pImage = vtImageRead(szTextureName);
 	if (!pImage)
 		return false;
+	return Create(pImage, bBlending);
+}
 
+/**
+ * Create a vtImageSprite.
+ *
+ * \param pImage A texture image.
+ * \param bBlending Set to true for alpha-blending, which produces smooth
+ *		edges on transparent textures.
+ */
+bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
+{
 	m_Size.x = pImage->GetWidth();
 	m_Size.y = pImage->GetHeight();
 
@@ -1759,7 +1775,6 @@ bool vtImageSprite::Create(const char *szTextureName, bool bBlending)
 	m_pMats->Release();
 
 	m_pMats->AddTextureMaterial(pImage, false, false, bBlending);
-	pImage->Release();
 
 	// default position of the mesh is just 0,0-1,1
 	m_pMesh = new vtMesh(vtMesh::QUADS, VT_TexCoords, 4);
@@ -1771,13 +1786,6 @@ bool vtImageSprite::Create(const char *szTextureName, bool bBlending)
 	m_pGeom->AddMesh(m_pMesh, 0);
 	m_pMesh->Release();
 	return true;
-}
-
-void vtImageSprite::Release()
-{
-	if (m_pGeom)
-		m_pGeom->Release();
-	m_pGeom = NULL;
 }
 
 /**
@@ -1799,6 +1807,18 @@ void vtImageSprite::SetPosition(float l, float t, float r, float b)
 	m_pMesh->SetVtxPos(2, FPoint3(r, t, 0));
 	m_pMesh->SetVtxPos(3, FPoint3(l, t, 0));
 	m_pMesh->ReOptimize();
+}
+
+/**
+ * Set (replace) the image on a sprite that has already been created.
+ */
+void vtImageSprite::SetImage(vtImage *pImage)
+{
+	// Sprite must already be created
+	if (!m_pMats)
+		return;
+	vtMaterial *mat = m_pMats->GetAt(0);
+	mat->SetTexture(pImage);
 }
 
 
