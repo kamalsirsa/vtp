@@ -45,14 +45,14 @@ wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 	parent->Show(TRUE);
 	SetCurrent();
 
-        wxGLContext *context = GetContext();
-        if (context)
-                VTLOG("OpenGL context: %lx\n", context);
+	wxGLContext *context = GetContext();
+	if (context)
+		VTLOG("OpenGL context: %lx\n", context);
 	else
-        {
-                VTLOG("No OpenGL context.\n");
-                return;
-        }
+	{
+		VTLOG("No OpenGL context.\n");
+		return;
+	}
 	VTLOG("OpenGL version: %s\n", (const char *) glGetString(GL_VERSION));
 
 	m_bPainting = false;
@@ -79,10 +79,11 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		// OnPaint handlers must always create a wxPaintDC.
 		wxPaintDC dc(this);
 
-		if (!GetContext())
+		if (!GetContext() || m_bPainting || !m_bRunning)
+		{
+			bInside = false;
 			return;
-
-		if (m_bPainting || !m_bRunning) { bInside = false; return; }
+		}
 
 		m_bPainting = true;
 
