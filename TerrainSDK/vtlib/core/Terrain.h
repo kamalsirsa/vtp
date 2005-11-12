@@ -284,8 +284,9 @@ public:
 	// polygon containing geo corners of terrain area
 	DLine2		m_Corners_geo;
 
-	// Experimental!
+	// Texture
 	void RecreateTextures(vtTransform *pSunLight, bool progress_callback(int) = NULL);
+	vtImage *GetTextureImage();
 
 protected:
 	/********************** Protected Methods ******************/

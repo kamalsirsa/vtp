@@ -729,11 +729,21 @@ void vtTerrain::SetTextureContours(float fInterval, float fSize)
 
 
 /**
- * Experimental only!!!
+ * Re-create the ground texture.  This is useful if you ahve changed the
+ * time of day, and want to see the lighting/shading of the terrain updated.
  */
 void vtTerrain::RecreateTextures(vtTransform *pSunLight, bool progress_callback(int))
 {
 	_CreateTextures(pSunLight->GetDirection(), progress_callback);
+}
+
+/**
+ * Get the image (vtImage) of the ground texture, if there is one.  If the
+ * texture is more complicated (multi or tiled) then NULL is returned.
+ */
+vtImage *vtTerrain::GetTextureImage()
+{
+	return m_pImage;
 }
 
 
