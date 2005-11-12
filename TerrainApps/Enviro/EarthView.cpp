@@ -44,7 +44,7 @@ void Enviro::FlyToSpace()
 	}
 
 	// turn off terrain, if any
-	SetCurrentTerrain(NULL);
+	SetTerrain(NULL);
 	EnableFlyerEngine(false);
 
 	m_state = AS_MovingOut;
