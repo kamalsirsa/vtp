@@ -333,6 +333,9 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		int data_len;
 		for (i = 0; i < iProfiles; i++)
 		{
+			if (progress_callback != NULL)
+				progress_callback(i*49/iProfiles);
+
 			if (bFixedLength)
 				fseek(fp, iDataStartOffset + (record * 1024), 0);
 
@@ -394,7 +397,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	// safety check
-	if (m_iRows > 5000)
+	if (m_iRows > 10000)
 		return false;
 
 	_AllocateArray();
@@ -405,7 +408,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	for (i = 0; i < iProfiles; i++)
 	{
 		if (progress_callback != NULL)
-			progress_callback(i*100/m_iColumns);
+			progress_callback(50+i*49/iProfiles);
 
 		// We cannot use IConvert here, because there *might* be a spurious LF
 		// after the number - seen in some rare files.
