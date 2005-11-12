@@ -31,6 +31,7 @@ class vtFence3d;
 class GlobePicker;
 class GrabFlyer;
 class FlatFlyer;
+class MapOverviewEngine;
 
 // Plants
 class vtSpeciesList3d;
@@ -61,6 +62,8 @@ public:
 
 	void ShowElevationLegend(bool bShow);
 	bool GetShowElevationLegend();
+	void ShowMapOverview(bool bShow);
+	bool GetShowMapOverview();
 
 	// navigation and camera
 	void SetFlightSpeed(float speed);
@@ -211,6 +214,7 @@ protected:
 	void SetupScene1();
 	void SetupScene2();
 	virtual void SetupScene3() {}
+	// other implementation methods
 	void DoCursorOnEarth();
 	void DoCursorOnTerrain();
 	void MakeGlobe();
@@ -223,6 +227,7 @@ protected:
 	void FreeArcMesh();
 	void SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2);
 	void CreateElevationLegend();
+	void CreateMapOverview();
 
 	// plants
 	vtSpeciesList3d	*m_pPlantList;
@@ -280,6 +285,9 @@ protected:
 
 	vtGeom		*m_pLegendGeom;
 	bool		m_bCreatedLegend;
+
+	// mapoverviewengine
+	MapOverviewEngine *m_pMapOverview;
 };
 
 // global helper functions

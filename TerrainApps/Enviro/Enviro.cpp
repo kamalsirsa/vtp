@@ -83,6 +83,8 @@ Enviro::Enviro() : vtTerrainScene()
 
 	m_pLegendGeom = NULL;
 	m_bCreatedLegend = false;
+
+	m_pMapOverview = NULL;
 }
 
 Enviro::~Enviro()
@@ -755,7 +757,8 @@ bool Enviro::GetMaintain()
 
 void Enviro::SetTerrain(vtTerrain *pTerrain)
 {
-	VTLOG("Enviro::SetTerrain '%s'\n", (const char *) pTerrain->GetName());
+	VTLOG("Enviro::SetTerrain '%s'\n",
+		pTerrain ? (const char *) pTerrain->GetName() : "none");
 
 	if (m_pCurrentTerrain)
 	{
@@ -764,15 +767,18 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 			m_pHUD->RemoveChild(pOverlay);
 	}
 
+	// Inform the container that this new terrain is current
+	SetCurrentTerrain(pTerrain);
+
 	// safety check
 	if (!pTerrain)
+	{
+		ShowMapOverview(false);
 		return;
+	}
 	vtHeightField3d *pHF = pTerrain->GetHeightField();
 	if (!pHF)
 		return;
-
-	// Inform the container that this new terrain is current
-	SetCurrentTerrain(pTerrain);
 
 	// Inform the UI that this new terrain is current
 	TParams &param = pTerrain->GetParams();
@@ -843,6 +849,10 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 
 	// Inform the GUI that the terrain has changed
 	SetTerrainToGUI(pTerrain);
+
+	// Inform the map overview
+	if (m_pMapOverview)
+		m_pMapOverview->SetTerrain(pTerrain);
 }
 
 
@@ -1806,6 +1816,33 @@ vtString Enviro::GetStatusString(int which)
 		}
 	}
 	return str;
+}
+
+// Handle the map overview option
+void Enviro::ShowMapOverview(bool bShow)
+{
+	if (bShow && !m_pMapOverview)
+		CreateMapOverview();
+	if (m_pMapOverview)
+		m_pMapOverview->ShowMapOverview(bShow);
+}
+
+bool Enviro::GetShowMapOverview()
+{
+	if (m_pMapOverview)
+		return m_pMapOverview->GetShowMapOverview();
+	return false;
+}
+
+void Enviro::CreateMapOverview()
+{
+	// setup the mapoverview engine
+	if (!m_pMapOverview)
+	{
+		m_pMapOverview = new MapOverviewEngine;
+		m_pMapOverview->SetName2("Map overview engine");
+		vtGetScene()->AddEngine(m_pMapOverview);
+	}
 }
 
 void Enviro::ShowElevationLegend(bool bShow)
