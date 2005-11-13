@@ -941,6 +941,7 @@ void Enviro::SetMode(MouseMode mode)
 			EnableFlyerEngine(false);
 			break;
 		case MM_FENCES:
+		case MM_BUILDINGS:
 		case MM_ROUTES:
 		case MM_PLANTS:
 		case MM_INSTANCES:
@@ -1063,6 +1064,9 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		}
 		pTerr->AddFencepoint(m_pCurFence, DPoint2(m_EarthPos.x, m_EarthPos.y));
 	}
+	if (m_mode == MM_BUILDINGS)
+		OnMouseLeftDownBuildings();
+
 	if (m_mode == MM_ROUTES)
 	{
 		if (!m_bActiveRoute)
@@ -1096,6 +1100,42 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		DPoint2 g1(m_EarthPosDown.x, m_EarthPosDown.y);
 		SetTerrainMeasure(g1, g1);
 		ShowDistance(g1, g1, 0, 0);
+	}
+}
+
+void Enviro::OnMouseLeftDownBuildings()
+{
+	SetupArcMesh();
+	DPoint2 g1(m_EarthPos.x, m_EarthPos.y);
+
+	// Create a marker pole for this corner of the new building
+	int matidx = 2;
+	float fHeight = 10.0f;
+	float fRadius = 0.2f;
+	vtGeom *geom = CreateCylinderGeom(m_pArcMats, matidx, VT_Normals, fHeight,
+		fRadius, 10, true, false, false, 1);
+	vtTransform *trans = new vtTransform;
+	trans->AddChild(geom);
+	m_Markers.push_back(trans);
+	vtTerrain *pTerr = GetCurrentTerrain();
+	pTerr->PlantModelAtPoint(trans, g1);
+	pTerr->AddNode(trans);
+
+	if (m_bLineDrawing)
+	{
+		// continue existing line
+		m_NewLine.Append(g1);
+
+		vtTerrain *pTerr = GetCurrentTerrain();
+		vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 1);
+		pTerr->AddSurfaceLineToMesh(&mf, m_NewLine, m_fDistToolHeight, true);
+	}
+	else
+	{
+		// start new line
+		m_bLineDrawing = true;
+		m_NewLine.Empty();
+		m_NewLine.Append(g1);
 	}
 }
 
@@ -1355,6 +1395,38 @@ void Enviro::OnMouseLeftUp(vtMouseEvent &event)
 
 void Enviro::OnMouseRightDown(vtMouseEvent &event)
 {
+	if (false == m_bLineDrawing)
+		return;
+
+	m_bLineDrawing = false;
+	if (m_mode == MM_BUILDINGS)
+	{
+		// Close and create new building in the current structure array
+		vtTerrain *pTerr = GetCurrentTerrain();
+		vtStructureArray3d *pbuildingarray = pTerr->GetStructures(); 
+		vtBuilding3d *pbuilding = (vtBuilding3d*) pbuildingarray->AddNewBuilding();
+		pbuilding->SetFootprint(0, m_NewLine);
+
+		// Hide the temporary markers which showed the vertices
+		SetupArcMesh();
+		for (unsigned int i = 0; i < m_Markers.size(); i++)
+		{
+			pTerr->RemoveNode(m_Markers[i]);
+			m_Markers[i]->Release();
+		}
+		m_Markers.clear();
+
+		// Describe the appearance of the new building
+		pbuilding->SetStories(2);
+		pbuilding->SetRoofType(ROOF_HIP);
+		pbuilding->SetColor(BLD_BASIC, RGBi(255,0,0)); 
+		pbuilding->SetColor(BLD_ROOF, RGBi(255,255,255));
+
+		// Construct it and add it to the terrain
+		pbuilding->CreateNode(pTerr);
+		pTerr->AddNodeToStructGrid(pbuilding->GetContainer());
+		RefreshLayerView();
+	}
 }
 
 void Enviro::OnMouseRightUp(vtMouseEvent &event)
@@ -1462,6 +1534,7 @@ void Enviro::SetupArcMesh()
 		m_pArcMats = new vtMaterialArray();
 		m_pArcMats->AddRGBMaterial1(RGBf(1, 1, 0), false, false); // yellow
 		m_pArcMats->AddRGBMaterial1(RGBf(1, 0, 0), false, false); // red
+		m_pArcMats->AddRGBMaterial1(RGBf(1, 0.5f, 0), true, true); // orange lit
 	}
 	// create geometry container, if needed
 	if (!m_pArc)

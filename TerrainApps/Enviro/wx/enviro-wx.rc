@@ -3,6 +3,7 @@ enviro ICON "icons/Enviro.ico"
 #include "wx/msw/wx.rc"
 
 axes	    BITMAP "bitmap/axes.bmp"
+building    BITMAP "bitmap/building.bmp"
 camera		BITMAP "bitmap/camera.bmp"
 distance	BITMAP "bitmap/distance.bmp"
 faster	    BITMAP "bitmap/faster.bmp"

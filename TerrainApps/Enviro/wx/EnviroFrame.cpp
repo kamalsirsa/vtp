@@ -64,6 +64,7 @@
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "axes.xpm"
+#  include "building.xpm"
 #  include "camera.xpm"
 #  include "distance.xpm"
 #  include "faster.xpm"
@@ -101,8 +102,8 @@ DECLARE_APP(EnviroApp);
 
 BEGIN_EVENT_TABLE(EnviroFrame, wxFrame)
 EVT_CHAR(EnviroFrame::OnChar)
-EVT_MENU(ID_FILE_LAYERS,		EnviroFrame::OnFileLayers)
-EVT_MENU(wxID_EXIT, EnviroFrame::OnExit)
+EVT_MENU(ID_FILE_LAYERS,			EnviroFrame::OnFileLayers)
+EVT_MENU(wxID_EXIT,					EnviroFrame::OnExit)
 EVT_CLOSE(EnviroFrame::OnClose)
 EVT_IDLE(EnviroFrame::OnIdle)
 
@@ -110,6 +111,8 @@ EVT_MENU(ID_TOOLS_SELECT,			EnviroFrame::OnToolsSelect)
 EVT_UPDATE_UI(ID_TOOLS_SELECT,		EnviroFrame::OnUpdateToolsSelect)
 EVT_MENU(ID_TOOLS_FENCES,			EnviroFrame::OnToolsFences)
 EVT_UPDATE_UI(ID_TOOLS_FENCES,		EnviroFrame::OnUpdateToolsFences)
+EVT_MENU(ID_TOOLS_BUILDINGS,		EnviroFrame::OnToolsBuildings)
+EVT_UPDATE_UI(ID_TOOLS_BUILDINGS,	EnviroFrame::OnUpdateToolsBuildings)
 EVT_MENU(ID_TOOLS_ROUTES,			EnviroFrame::OnToolsRoutes)
 EVT_UPDATE_UI(ID_TOOLS_ROUTES,		EnviroFrame::OnUpdateToolsRoutes)
 EVT_MENU(ID_TOOLS_PLANTS,			EnviroFrame::OnToolsPlants)
@@ -344,6 +347,7 @@ void EnviroFrame::CreateMenus()
 	m_pToolsMenu = new wxMenu;
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _("Select"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _("Fences"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_BUILDINGS, _("Buildings"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _("Routes"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_PLANTS, _("Plants"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _("Instances"));
@@ -492,6 +496,7 @@ void EnviroFrame::CreateToolbar(bool bVertical)
 
 	ADD_TOOL(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
 	ADD_TOOL(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
+	ADD_TOOL(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
 	ADD_TOOL(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
 	ADD_TOOL(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
 //	ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);	// not yet
@@ -1136,6 +1141,17 @@ void EnviroFrame::OnUpdateToolsFences(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_FENCES);
+}
+
+void EnviroFrame::OnToolsBuildings(wxCommandEvent& event)
+{
+	SetMode(MM_BUILDINGS);
+}
+
+void EnviroFrame::OnUpdateToolsBuildings(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_mode == MM_BUILDINGS);
 }
 
 void EnviroFrame::OnToolsRoutes(wxCommandEvent& event)

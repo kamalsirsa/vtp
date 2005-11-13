@@ -137,6 +137,7 @@ public:
 	// event handlers
 	void OnMouse(vtMouseEvent &event);
 	void OnMouseLeftDownTerrain(vtMouseEvent &event);
+	void OnMouseLeftDownBuildings();
 	void OnMouseLeftDownTerrainSelect(vtMouseEvent &event);
 	void OnMouseLeftDownOrbit(vtMouseEvent &event);
 	void OnMouseLeftUp(vtMouseEvent &event);
@@ -239,6 +240,9 @@ protected:
 	bool		m_bActiveFence, m_bFenceClosed;
 	vtFence3d	*m_pCurFence;
 	vtLinearParams m_FenceParams;
+	DLine2		m_NewLine;		// Line for building footprint
+	bool		m_bLineDrawing;	//is Drawing
+	std::vector<vtTransform*> m_Markers;
 
 	// route members
 	bool		m_bActiveRoute;

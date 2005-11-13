@@ -110,6 +110,8 @@ public:
 	void OnUpdateToolsSelect(wxUpdateUIEvent& event);
 	void OnToolsFences(wxCommandEvent& event);
 	void OnUpdateToolsFences(wxUpdateUIEvent& event);
+	void OnToolsBuildings(wxCommandEvent& event);
+	void OnUpdateToolsBuildings(wxUpdateUIEvent& event);
 	void OnToolsRoutes(wxCommandEvent& event);
 	void OnUpdateToolsRoutes(wxUpdateUIEvent& event);
 	void OnToolsPlants(wxCommandEvent& event);
