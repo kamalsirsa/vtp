@@ -1419,8 +1419,8 @@ void Enviro::OnMouseRightDown(vtMouseEvent &event)
 		// Describe the appearance of the new building
 		pbuilding->SetStories(2);
 		pbuilding->SetRoofType(ROOF_HIP);
-		pbuilding->SetColor(BLD_BASIC, RGBi(255,0,0)); 
-		pbuilding->SetColor(BLD_ROOF, RGBi(255,255,255));
+		pbuilding->SetColor(BLD_BASIC, RGBi(255,255,255));
+		pbuilding->SetColor(BLD_ROOF, RGBi(230,200,170));
 
 		// Construct it and add it to the terrain
 		pbuilding->CreateNode(pTerr);
