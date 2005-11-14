@@ -377,7 +377,7 @@ bool DPolygon2::ContainsPoint(const DPoint2 &p) const
 		bool outer_ring = at(0).ContainsPoint(p);
 		if (!outer_ring)
 			return false;
-		for (int i = 1; i < size(); i++)
+		for (unsigned int i = 1; i < size(); i++)
 		{
 			// It seems that we would have to reverse the order of the inner
 			//  ring vertices, but in practice, it works fine without doing so.
@@ -735,7 +735,7 @@ FPlane::FPlane(const FPoint3& Point, const FPoint3& Normal)
 	w = - x * Normal.x - y * Normal.y - z * Normal.z;
 }
 
-/** Construct from two 3D points and an angle from the
+/** Construct a plane from two 3D points and an angle from the
 	 intersection with the 2D (x,z) co-ordinate plane.
 	N.B. The y co-ordinates must be the same.
 	This produces a plane that is clockwise oriented in XZ.
@@ -757,7 +757,8 @@ FPlane::FPlane(const FPoint3& PointA, const FPoint3& PointB, const float Theta)
 	*this = FPlane(PointA, PointB, PointC);
 }
 
-const FPlane::IntersectionType  FPlane::Intersection(const FPlane& Plane, FPoint3& Origin, FPoint3& Direction, float fEpsilon) const
+const FPlane::IntersectionType FPlane::Intersection(const FPlane &Plane,
+		FPoint3 &Origin, FPoint3 &Direction, float fEpsilon) const
 {
 	double a = x;
 	double b = y;
@@ -767,10 +768,7 @@ const FPlane::IntersectionType  FPlane::Intersection(const FPlane& Plane, FPoint
 	double q = Plane.y;
 	double r = Plane.z;
 	double s = Plane.w;
-
 	double Determinant;
-	FPoint3 p1;
-	FPoint3 p2;
 	
 	Determinant = a * q - p * b;
 	if (fabs(Determinant - 0.0) > fEpsilon)
