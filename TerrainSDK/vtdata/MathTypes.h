@@ -400,6 +400,14 @@ public:
 	void SetSafePoint(int index, const DPoint2 &p);
 	double Length() const;
 	DPoint2 Centroid() const;
+	double Area() const
+	{
+		int n = (int) GetSize();
+		double A = 0.0;
+		for (int p=n-1,q=0; q<n; p=q++)
+			A += GetAt(p).x*GetAt(q).y - GetAt(q).x*GetAt(p).y;
+		return A*0.5;
+	}
 };
 
 /**
@@ -417,6 +425,15 @@ public:
 	// assignment
 	FLine2 &operator=(const FLine2 &v);
 	FLine2 &operator=(const DLine2 &v);
+
+	float Area() const
+	{
+		int n = (int) GetSize();
+		float A = 0.0f;
+		for (int p=n-1,q=0; q<n; p=q++)
+			A += GetAt(p).x*GetAt(q).y - GetAt(q).x*GetAt(p).y;
+		return A*0.5f;
+	}
 };
 
 inline DLine2 &DLine2::operator=(const DLine2 &v)
