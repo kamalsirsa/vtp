@@ -246,11 +246,9 @@ void PolygonCountVisitor::apply(osg::Geode& geode)
 			//  called 'osg::DrawElementsUShort'
 			if (mode == GL_TRIANGLE_STRIP && dal != NULL)
 			{
-			    for (VectorSizei::const_iterator itr=dal->begin();
-					itr!=dal->end();
-					++itr)
+				for (osg::DrawArrayLengths::const_iterator itr=dal->begin(); itr!=dal->end(); ++itr)
 				{
-					int iIndicesInThisStrip = *itr;
+					int iIndicesInThisStrip = static_cast<int>(*itr);
 					info.Triangles += (iIndicesInThisStrip-1);
 				}
 			}
