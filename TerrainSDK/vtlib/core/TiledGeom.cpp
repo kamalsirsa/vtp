@@ -19,6 +19,8 @@
 //  Actually, we depend on it for adaptive resolution, so leave it at 1.
 #define USE_VERTEX_CACHE	1
 
+#define WE_OWN_BUFFERS		0
+
 /////////////
 // singleton; TODO: get rid of this to allow multiple instances
 static vtTiledGeom *s_pTiledGeom = NULL;
@@ -386,6 +388,10 @@ void vtTiledGeom::SetupMiniLoad()
 	// However, lazyness >= 0.5 may be just too conservative.
 	// Minimum texture lazyness is configurable:
 	m_pMiniLoad->configure_minlazy(0.25);
+
+    // Tell the library not to free the buffers we pass to it, so that our
+	// cache can own them and pass them again when needed, without copying.
+	m_pMiniLoad->configure_dontfree(WE_OWN_BUFFERS);
 }
 
 unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
@@ -443,10 +449,16 @@ unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 #if 1
 		VTLOG(" cache size (K): %d\n", m_iCacheSize / 1024);
 #endif
+
+#if WE_OWN_BUFFERS
+		// return the original
+		return data;
+#else
 		// don't return the original, return a copy
 		unsigned char *data2 = (unsigned char *) malloc(bytes);
 		memcpy(data2, data, bytes);
 		return data2;
+#endif
 	}
 	else
 	{
@@ -460,10 +472,15 @@ unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 		m_iCacheHits++;
 		CacheEntry &entry = it->second;
 
+#if WE_OWN_BUFFERS
+		// return the original
+		return entry.data;
+#else
 		// don't return the original, return a copy
 		unsigned char *data2 = (unsigned char *) malloc(entry.size);
 		memcpy(data2, entry.data, entry.size);
 		return data2;
+#endif
 	}
 	return NULL;
 }
@@ -481,6 +498,8 @@ void vtTiledGeom::EmptyCache()
 
 void vtTiledGeom::DoRender()
 {
+	clock_t c1 = clock();
+
 	// count frames
 	m_iFrame++;
 
@@ -507,6 +526,13 @@ void vtTiledGeom::DoRender()
 	m_iVertexCount = m_pMiniCache->rendercache();
 //	m_iVertexCount = m_pMiniCache->getvtxcnt();
 #endif
+
+	static first = true;
+	if (first)
+	{
+		VTLOG("  First Render: %.3f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
+		first = false;
+	}
 
 	// When vertex count changes, we know a full update occurred
 	if (m_iVertexCount != last_vtx || m_bNeedResolutionAdjust)
