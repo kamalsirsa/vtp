@@ -38,8 +38,9 @@ class vtDynTerrainGeom : public vtDynGeom, public vtHeightFieldGrid3d
 public:
 	vtDynTerrainGeom();
 
+	// Each subclass must implement this initialization method
 	virtual DTErr Init(const vtElevationGrid *pGrid, float fZScale) = 0;
-	virtual void Init2();
+	virtual void Init2() {}
 	DTErr BasicInit(const vtElevationGrid *pGrid);
 	void SetOptions(bool bUseTriStrips, int iBlockArrayDim, int iTextureSize);
 	virtual void SetVerticalExag(float fExag) {}

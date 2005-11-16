@@ -1,7 +1,7 @@
 //
 // SMTerrain class : Dynamically rendering terrain
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -102,6 +102,7 @@ typedef Block *BlockPtr;
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /*!
+	\par
 	The SMTerrain class implements Seumas McNally's algorithm for regular-grid
 	terrain LOD.  It was implemented directly from correspondence from the
 	<a href="http://www.gamedev.net/community/memorial/seumas/">dearly missed</a>
@@ -124,7 +125,6 @@ typedef Block *BlockPtr;
 	 -# set the desired level detail with SetPolygonTarget()
 	 -# for a detail texture, call SetDetailMaterial()
 	 -# let the scene graph API render the terrain for you each frame
-	 \par
 	<h4>Performance Issues</h4>
 	 - Use of triangle fans can be toggled at runtime, via the m_bUseTriStrips
 	   member.  In testing, this has shown around a 15% speed increase.

@@ -96,6 +96,7 @@ typedef struct {	/* triangle index */
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 /*!
+	\par
 	The TVTerrain class implements the
 	<a href="http://www.cs.arizona.edu/topovista/">TopoVista</a>
 	algorithm for regular-grid terrain LOD.
@@ -107,7 +108,7 @@ typedef struct {	/* triangle index */
 	The VTP implementation consists of an adaptation of the author's own
 	source code, made to work in the vtDynTerrainGeom framework.
 	\par
-	The algorithm is very promising, but needs a lot of work:
+	The algorithm is promising, but needs a lot of work:
 	 - Doesn't currently address lighting or texturing
 	 - Doesn't utilize triangle strips
 	 - Uses a very simple error metric based only on ground (2D) distance

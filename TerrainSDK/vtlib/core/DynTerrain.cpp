@@ -29,10 +29,13 @@ vtDynTerrainGeom::~vtDynTerrainGeom()
 	delete m_fZLookup;
 }
 
-void vtDynTerrainGeom::Init2()
-{
-}
-
+/**
+ * Sets up the vtDynTerrainGeom object.
+ * The units, extents, height range, grid dimensions and other
+ * properties are copied from the supplied elevation grid.
+ *
+ * This is generally called from the Init() method of a subclass.
+ */
 DTErr vtDynTerrainGeom::BasicInit(const vtElevationGrid *pGrid)
 {
 	// initialize the HeightFieldGrid3D
@@ -66,6 +69,13 @@ DTErr vtDynTerrainGeom::BasicInit(const vtElevationGrid *pGrid)
 }
 
 
+/**
+ * Set the  options for this vtDynTerrainGeom:
+ * \param bUseTriStrips True to enable triangle strips; this is only observed
+ *		by SMTerrain.
+ * \param iTPatchDim The number of texture patches, e.g. 4 indicated a 4x4 grid of patches.
+ * \param iTPatchSize The size of each texture, e.g. 1024.
+ */
 void vtDynTerrainGeom::SetOptions(bool bUseTriStrips, int iTPatchDim, int iTPatchSize)
 {
 	m_bUseTriStrips = bUseTriStrips;
@@ -227,6 +237,10 @@ void vtDynTerrainGeom::CullOnce()
 	m_bCullonce = true;
 }
 
+/**
+ * Set the polygon target, which is the number of polygons (generally
+ * triangles) which the CLOD algorithm will try to maintain.
+ */
 void vtDynTerrainGeom::SetPolygonTarget(int iCount)
 {
 	m_iPolygonTarget = iCount;
@@ -236,6 +250,10 @@ void vtDynTerrainGeom::SetPolygonTarget(int iCount)
 		m_iPolygonTarget = 1000;
 }
 
+/**
+ * Get the polygon target, which is the number of polygons (generally
+ * triangles) which the CLOD algorithm will try to maintain.
+ */
 int vtDynTerrainGeom::GetPolygonTarget()
 {
 	return m_iPolygonTarget;
@@ -254,6 +272,10 @@ void vtDynTerrainGeom::EnableDetail(bool bOn)
 	m_bDetailTexture = (m_pDetailMat != NULL && bOn);
 }
 
+/**
+ * Return the number of triangles that were rendered by this dynamic terrain
+ * last frame.
+ */
 int vtDynTerrainGeom::GetNumDrawnTriangles()
 {
 	return m_iDrawnTriangles;
