@@ -11,7 +11,6 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-#include "wx/image.h"
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Route.h"
