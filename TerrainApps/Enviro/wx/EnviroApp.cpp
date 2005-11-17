@@ -8,7 +8,6 @@
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
-#include "wx/image.h"
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
@@ -222,6 +221,14 @@ bool EnviroApp::OnInit()
 	VTLOG1("Build date: ");
 	VTLOG1(__DATE__);
 	VTLOG1("\n\n");
+
+	VTLOG("Datapaths:\n");
+	int i, n = g_Options.m_DataPaths.size();
+	if (n == 0)
+		VTLOG("   none.\n");
+	for (i = 0; i < n; i++)
+		VTLOG("   %s\n", (const char *) g_Options.m_DataPaths[i]);
+	VTLOG1("\n");
 
 	// Redirect the wxWindows log messages to our own logging stream
 	wxLog *logger = new LogCatcher();
