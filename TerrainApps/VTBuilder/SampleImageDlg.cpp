@@ -272,22 +272,7 @@ void SampleImageDlg::OnDotDotDot( wxCommandEvent &event )
 	if (!bResult)
 		return;
 
-	wxString2 name = saveFile.GetPath();
-
-	// work around incorrect extension(s) that wxFileDialog added
-	bool bPreferGZip = (saveFile.GetFilterIndex() == 1);
-
-	if (!name.Right(3).CmpNoCase(_T(".gz")))
-		name = name.Left(name.Len()-3);
-	if (!name.Right(3).CmpNoCase(_T(".bt")))
-		name = name.Left(name.Len()-3);
-
-	if (bPreferGZip)
-		name += _T(".bt.gz");
-	else
-		name += _T(".bt");
-
-	m_strToFile = name;
+	m_strToFile = saveFile.GetPath();
 
 	// update controls
 	m_bSetting = true;
