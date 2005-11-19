@@ -510,7 +510,23 @@ bool vtImageLayer::SaveToFile(const char *fname) const
 	vtString sExt = GetExtension(fname, false); //get extension type
 	if (sExt.CompareNoCase(".jpg") == 0)
 	{
-		return m_pBitmap->WriteJPEG(fname, 90);
+		if (m_pBitmap->WriteJPEG(fname, 90))
+		{
+			// Also write JPEG world file
+			vtString sJGWFile = ChangeFileExtension(fname, ".jgw");
+			DPoint2 spacing = GetSpacing();
+
+			FILE *fout = fopen(sJGWFile, "w");
+			if (fout)
+			{
+				fprintf(fout, "%lf\n%lf\n%lf\n%lf\n%.2lf\n%.2lf\n",
+					spacing.x, 0.0, 0.0, -1*spacing.y, m_Extents.left, m_Extents.top);
+				fclose(fout);
+			}
+			return true;
+		}
+		else
+			return false;
 	}
 
 	// Save with GDAL
