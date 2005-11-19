@@ -2458,6 +2458,22 @@ void MainFrame::ExportRAWINF()
 
 void MainFrame::ExportChunkLOD()
 {
+	// Check dimensions; must be 2^n+1 for .chu
+	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
+	int x, y;
+	grid->GetDimensions(x, y);
+	bool good = false;
+	for (int i = 3; i < 20; i++)
+		if (x == ((1<<i)+1) && y == ((1<<i)+1))
+			good = true;
+	if (!good)
+	{
+		DisplayAndLog("The elevation grid has dimensions %d x %d.  They must be\n"
+					  "a power of 2 plus 1 for .chu, e.g. 1025x1025.", x, y);
+		return;
+	}
+
+	// Ask for filename
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_CHU);
 	if (fname == "")
 		return;
@@ -2474,7 +2490,6 @@ void MainFrame::ExportChunkLOD()
 		return;
 	}
 
-	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
 	const int CHUNKLOD_MAX_HEIGHT = 10000;
 	float vertical_scale = CHUNKLOD_MAX_HEIGHT / 32767.0f;
 	float input_vertical_scale = 1.0f;
