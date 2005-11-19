@@ -1068,7 +1068,7 @@ bool vtTerrain::GetGeoExtentsFromMetadata()
 	vtString fname = FindFileOnPaths(vtGetDataPath(), name);
 	if (fname == "")
 	{
-		VTLOG("\t'%s' not found on data paths.", (const char *)name);
+		VTLOG("\t'%s' not found on data paths.\n", (const char *)name);
 		return false;
 	}
 	bool success;

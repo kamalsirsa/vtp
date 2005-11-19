@@ -430,7 +430,7 @@ void Enviro::LookUpTerrainLocations()
 	for (unsigned int i = 0; i < NumTerrains(); i++)
 	{
 		vtTerrain *pTerr = GetTerrain(i);
-		VTLOG("\tlooking up: %s\n", (const char *) pTerr->GetName());
+		VTLOG("looking up: %s\n  ", (const char *) pTerr->GetName());
 
 		bool success = pTerr->GetGeoExtentsFromMetadata();
 		if (success)
@@ -439,7 +439,6 @@ void Enviro::LookUpTerrainLocations()
 			nw = pTerr->m_Corners_geo[1];
 			se = pTerr->m_Corners_geo[3];
 			VTLOG("\t\t(%.2lf,%.2lf) - (%.2lf,%.2lf)\n", nw.x, nw.y, se.x, se.y);
-			VTLOG("\t\tGot terrain corners\n");
 		}
 		else
 		{
