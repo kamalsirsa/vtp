@@ -68,30 +68,51 @@ void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 
 	m_style = style;
 
-	CreateMaterials(paths, strImagePrefix);
 	EstimateTesselation(iTriangleCount);
 
 	// Estimate number of meshes, and number of vertices per mesh
-	int numvtx=0;
+	int numvtx_per_mesh = 0;
+	vtMesh::PrimType prim_type;
 	if (m_style == GEODESIC)
 	{
-		numvtx = (m_freq + 1) * (m_freq + 2) / 2;
+		prim_type = vtMesh::TRIANGLE_STRIP;
 		m_meshes = 20;
+		numvtx_per_mesh = (m_freq + 1) * (m_freq + 2) / 2;
+
+		// 1 material per face pair
+		m_globe_mat.resize(10);
+	}
+	else if (style == INDEPENDENT_GEODESIC)
+	{
+		prim_type = vtMesh::TRIANGLES;
+
+		m_meshes = 20 * m_freq * m_freq;
+		m_subfreq = 1;	// 1 for now
+		numvtx_per_mesh = (m_subfreq + 1) * (m_subfreq + 2) / 2;
+
+		// 1 material per mesh pair
+		m_globe_mat.resize(10 * m_freq * m_freq);
 	}
 	else if (style == RIGHT_TRIANGLE || style == DYMAX_UNFOLD)
 	{
-		numvtx = 1 + 2 * ((int) pow((double)3, m_depth+1));
+		prim_type = vtMesh::TRIANGLE_STRIP;
+
 		m_meshes = (style == RIGHT_TRIANGLE) ? 20 : 22;
+		numvtx_per_mesh = 1 + 2 * ((int) pow((double)3, m_depth+1));
+
+		// 1 material per face pair
+		m_globe_mat.resize(10);
 	}
 
 	for (int i = 0; i < m_meshes; i++)
 	{
-		m_mesh[i] = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
-		if (strImagePrefix == "")
-			m_mesh[i]->AllowOptimize(true);
-		else
-			m_mesh[i]->AllowOptimize(false);
+		int vertex_type = VT_Normals | VT_TexCoords;
+		vtMesh *mesh = new vtMesh(prim_type, vertex_type, numvtx_per_mesh);
+		mesh->AllowOptimize(strImagePrefix == "");
+		m_mesh.push_back(mesh);
 	}
+
+	CreateMaterials(paths, strImagePrefix);
 
 	m_top = new vtTransform;
 	m_top->SetName2("GlobeXForm");
@@ -103,6 +124,8 @@ void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 
 	if (style == DYMAX_UNFOLD)
 		CreateUnfoldableDymax();
+	else if (style == INDEPENDENT_GEODESIC)
+		CreateIndependentGeodesicSphere();
 	else
 		CreateNormalSphere();
 }
@@ -743,7 +766,7 @@ int GetMaterialForFace(int face, bool &which)
 void IcoGlobe::EstimateTesselation(int iTriangleCount)
 {
 	int per_face = iTriangleCount / 20;
-	if (m_style == GEODESIC)
+	if (m_style == GEODESIC || m_style == INDEPENDENT_GEODESIC)
 	{
 		// Frequency for a traditional geodesic tiling gives (frequency ^ 2)
 		// triangles.  Find what frequency most closely matches the desired
@@ -796,7 +819,7 @@ void IcoGlobe::set_face_verts1(vtMesh *mesh, int face, float f)
 		{
 			p0 = v0 + (vec0 * i) + (vec1 * j);
 
-			// do interpolation between icosa face and sphere
+			// do interpolation between icosa face (f=0) and sphere (f=1)
 			len = p0.Length();
 			p0 = p0 / len * (f * mag + (1 - f) * len);
 
@@ -863,9 +886,9 @@ void IcoGlobe::set_face_verts2(vtMesh *mesh, int mface, float f)
 		m_mesh[mface]->SetNormalsFromPrimitives();
 }
 
+// \param second True for the second triangle in a face pair; affects UV coords.
 void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 {
-	float f = 1.0f;
 	int i, j;
 
 	DPoint3 v0 = m_verts[icosa_face_v[face][0]];
@@ -874,7 +897,6 @@ void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 	DPoint3 vec0 = (v1 - v0)/m_freq, vec1 = (v2 - v0)/m_freq;
 	DPoint3 p0;
 	FPoint3 vp0;
-	double len, mag = 1.0;
 
 	// two passes
 	// first pass: create the vertices
@@ -885,10 +907,6 @@ void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 		for (i = 0; i <= (m_freq-j); i++)
 		{
 			p0 = v0 + (vec0 * i) + (vec1 * j);
-
-			// do interpolation between icosa face and sphere
-			len = p0.Length();
-			p0 = p0 / len * (f * mag + (1 - f) * len);
 
 			// convert doubles -> floats
 			vp0 = p0;
@@ -914,17 +932,19 @@ void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 		}
 	}
 	// Next pass: the strips
-	int row_start = 0, count = 0;
-	unsigned short *indices = new unsigned short[m_freq * 2 + 2];
+	int row_start = 0;
+	unsigned short *indices = new unsigned short[m_freq * 2 + 1];
 
+	// Here we create the tristrips moving right to left, because that
+	//  gives us the desired right-handed order of the strip vertices.
 	for (j = 0; j < m_freq; j++)
 	{
+		int count = 0;
 		int row_len = (m_freq-j) + 1;
 
-		// Number of vertices in this strip:
-		// int size = row_len * 2 - 1;
+		// Number of vertices in this strip: row_len * 2 - 1;
 
-		indices[count++] = vtx_base + row_start + row_len-1;
+		indices[count++] = vtx_base + row_start + row_len - 1;
 		for (i = row_len-2; i >= 0; i--)
 		{
 			indices[count++] = vtx_base + row_start + i + row_len;
@@ -1069,9 +1089,10 @@ void IcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
 }
 
 
-void IcoGlobe::CreateMaterials(const vtStringArray &paths, const vtString &strImagePrefix)
+void IcoGlobe::CreateMaterials(const vtStringArray &paths,
+							   const vtString &strImagePrefix)
 {
-	m_mats = new vtMaterialArray();
+	m_mats = new vtMaterialArray;
 	bool bCulling = true;
 	bool bLighting = false;
 
@@ -1084,6 +1105,24 @@ void IcoGlobe::CreateMaterials(const vtStringArray &paths, const vtString &strIm
 	vtMaterial *mat = m_mats->GetAt(m_white);
 	mat->SetTransparent(true, true);
 
+	if (m_style == INDEPENDENT_GEODESIC)
+	{
+		int mat = m_mats->GetSize();
+		for (int pair = 0; pair < 10; pair++)
+		{
+			for (int j = 0; j < m_freq; j++)
+			for (int i = 0; i < m_freq; i++)
+			{
+				// TEMP for testing: pretty colors
+				float r = (pair+1) * (1.0f / 10);
+				float g = (j+1) * (1.0f / m_freq);
+				float b = (i+1) * (1.0f / m_freq);
+				m_globe_mat[mat++] = m_mats->AddRGBMaterial1(RGBf(r, g, b),
+						bCulling, bLighting);
+			}
+		}
+		return;
+	}
 	vtString base;
 	vtString fname;
 	vtString fullpath;
@@ -1264,9 +1303,9 @@ void IcoGlobe::CreateUnfoldableDymax()
 #endif
 
 	// Show axis of rotation (north and south poles)
-	vtMaterialArray *pMats = new vtMaterialArray();
+	vtMaterialArray *pMats = new vtMaterialArray;
 	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
-	m_pAxisGeom = new vtGeom();
+	m_pAxisGeom = new vtGeom;
 	m_pAxisGeom->SetName2("AxisGeom");
 	m_pAxisGeom->SetMaterials(pMats);
 	m_pAxisGeom->SetEnabled(false);
@@ -1309,7 +1348,7 @@ void IcoGlobe::CreateNormalSphere()
 	}
 
 	// Create a geom to contain the meshes
-	m_GlobeGeom = new vtGeom();
+	m_GlobeGeom = new vtGeom;
 	m_GlobeGeom->SetName2("GlobeGeom");
 	m_GlobeGeom->SetMaterials(m_mats);
 	m_top->AddChild(m_GlobeGeom);
@@ -1325,6 +1364,148 @@ void IcoGlobe::CreateNormalSphere()
 	}
 }
 
+void IcoGlobe::create_independent_face(int face, bool second)
+{
+	int i, j;
+
+	DPoint3 v0 = m_verts[icosa_face_v[face][0]];
+	DPoint3 v1 = m_verts[icosa_face_v[face][1]];
+	DPoint3 v2 = m_verts[icosa_face_v[face][2]];
+	DPoint3 vec0 = (v1 - v0)/m_freq, vec1 = (v2 - v0)/m_freq;
+	DPoint3 p0;
+	FPoint3 vp0;
+
+	int verts_per_face = (m_freq+1) * (m_freq+2) / 2;
+	FPoint3 *verts = new FPoint3[verts_per_face];
+
+	// first pass: determine vertex locations
+	int idx = 0;
+	int vtx_base = 0;
+	for (j = 0; j <= m_freq; j++)
+	{
+		for (i = 0; i <= (m_freq-j); i++)
+		{
+			p0 = v0 + (vec0 * i) + (vec1 * j);
+
+			// make spherical
+			p0.Normalize();
+
+			verts[idx] = p0;
+			idx += 1;
+		}
+	}
+
+	FPoint2 uv[2][3];
+	uv[0][0].Set(0, 0);
+	uv[0][1].Set(1, 0);
+	uv[0][2].Set(0, 1);
+	uv[1][0].Set(1, 1);
+	uv[1][1].Set(0, 1);
+	uv[1][2].Set(1, 0);
+
+	// second pass: set the vertices of the meshes
+	int row_start = 0;
+	idx = 0;
+	int mesh_num = face * m_freq * m_freq;
+	vtMesh *mesh;
+	for (j = 0; j < m_freq; j++)
+	{
+		int row_len = (m_freq-j) + 1;
+		for (i = 0; i < (m_freq-j); i++)
+		{
+			mesh = m_mesh[mesh_num];
+
+			mesh->SetVtxPos(0, verts[row_start + i]);
+			mesh->SetVtxPos(1, verts[row_start + i + 1]);
+			mesh->SetVtxPos(2, verts[row_start + i + row_len]);
+
+			mesh->SetVtxNormal(0, verts[row_start + i]);
+			mesh->SetVtxNormal(1, verts[row_start + i + 1]);
+			mesh->SetVtxNormal(2, verts[row_start + i + row_len]);
+
+			for (int k = 0; k < 3; k++)
+				mesh->SetVtxTexCoord(k, second ? uv[1][k] : uv[0][k]);
+
+			mesh->AddTri(0, 1, 2);
+
+			mesh_num++;
+
+			if (i < (m_freq-j-1))
+			{
+				mesh = m_mesh[mesh_num];
+
+				mesh->SetVtxPos(0, verts[row_start + i + row_len + 1]);
+				mesh->SetVtxPos(1, verts[row_start + i + row_len]);
+				mesh->SetVtxPos(2, verts[row_start + i + 1]);
+
+				mesh->SetVtxNormal(0, verts[row_start + i + row_len + 1]);
+				mesh->SetVtxNormal(1, verts[row_start + i + row_len]);
+				mesh->SetVtxNormal(2, verts[row_start + i + 1]);
+
+				for (int k = 0; k < 3; k++)
+					mesh->SetVtxTexCoord(k, second ? uv[0][k] : uv[1][k]);
+
+				mesh->AddTri(0, 1, 2);
+
+				mesh_num++;
+			}
+		}
+		row_start += row_len;
+	}
+	delete [] verts;
+}
+
+void IcoGlobe::CreateIndependentGeodesicSphere()
+{
+	// Create a geom to contain the meshes
+	m_GlobeGeom = new vtGeom();
+	m_GlobeGeom->SetName2("GlobeGeom");
+	m_GlobeGeom->SetMaterials(m_mats);
+	m_top->AddChild(m_GlobeGeom);
+
+	// fill in the vertices and triangles of the meshes
+	for (int pair = 0; pair < 10; pair++)
+	{
+		int f1 = icosa_face_pairs[pair][0];
+		int f2 = icosa_face_pairs[pair][1];
+
+		create_independent_face(f1, false);
+		create_independent_face(f2, true);
+
+		// There are freq*freq materials for every *pair* of faces, each which
+		//  applies to two meshes.
+		add_face_independent_meshes(pair, f1, false);
+		add_face_independent_meshes(pair, f2, true);
+	}
+}
+
+void IcoGlobe::add_face_independent_meshes(int pair, int face, bool second)
+{
+	int mat_base = pair * m_freq * m_freq;
+	int mesh_base = face * m_freq * m_freq;
+
+	int mesh = 0;
+	for (int j = 0; j < m_freq; j++)
+	{
+		for (int i = 0; i < (m_freq-j); i++)
+		{
+			int mat = j * m_freq + i;
+			if (second)
+				mat = (m_freq-1-j) * m_freq + (m_freq-1-i);
+
+			m_GlobeGeom->AddMesh(m_mesh[mesh_base + mesh], m_globe_mat[mat_base + mat]);
+			m_mesh[mesh_base + mesh]->Release();
+			mesh++;
+
+			if (i < (m_freq-j-1))
+			{
+				m_GlobeGeom->AddMesh(m_mesh[mesh_base + mesh], m_globe_mat[mat_base + mat]);
+				m_mesh[mesh_base + mesh]->Release();
+				mesh++;
+			}
+		}
+	}
+}
 
 //
 // Sphere Helpers

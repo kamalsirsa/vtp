@@ -34,7 +34,7 @@ class IcoGlobe : public DymaxIcosa, public TimeTarget
 public:
 	enum Style
 	{
-		GEODESIC, RIGHT_TRIANGLE, DYMAX_UNFOLD
+		GEODESIC, INDEPENDENT_GEODESIC, RIGHT_TRIANGLE, DYMAX_UNFOLD
 	};
 
 	// construction
@@ -90,12 +90,16 @@ protected:
 	void BuildSphericalPolygons(vtFeatureSet *feat, float fSize);
 	void BuildFlatFeatures(vtFeatureSet *feat, float fSize);
 	void BuildFlatPoint(vtFeatureSet *feat, int i, float fSize);
+
 	void CreateMaterials(const vtStringArray &paths, const vtString &strImagePrefix);
+
 	void FindLocalOrigin(int mface);
 	void SetMeshConnect(int mface);
+
 	void EstimateTesselation(int iTriangleCount);
 	void CreateUnfoldableDymax();
 	void CreateNormalSphere();
+	void CreateIndependentGeodesicSphere();
 
 	// these methods create a mesh for each face composed of strips
 	void add_face1(vtMesh *mesh, int face, bool second);
@@ -108,6 +112,10 @@ protected:
 								   bool flip, int depth);
 	void refresh_face_positions(vtMesh *mesh, int mface, float f);
 
+	// these methods create several meshes per face
+	void create_independent_face(int face, bool second);
+	void add_face_independent_meshes(int pair, int face, bool second);
+
 	IcoGlobe::Style m_style;
 
 	// Common to all globe styles
@@ -115,12 +123,12 @@ protected:
 	vtGroup		*m_SurfaceGroup;
 	vtGeom		*m_pAxisGeom;
 	vtMaterialArray	*m_mats;
-	int			m_globe_mat[10];
+	std::vector<int> m_globe_mat;
 	int			m_red;
 	int			m_yellow;
 	int			m_white;
-	vtMesh		*m_mesh[22];
-	int			m_meshes;	// either 20 or 22
+	std::vector<vtMesh*> m_mesh;
+	int			m_meshes;	// 20 or 22 for normal or unfoldable globe
 	bool		m_bUnfolded;
 	bool		m_bTilt;
 	FQuat		m_Rotation;
@@ -133,6 +141,7 @@ protected:
 	// for GEODESIC
 	vtGeom	*m_GlobeGeom;
 	int		m_freq;		// tesselation frequency
+	int		m_subfreq;	// tesselation subfrequency
 
 	// for RIGHT_TRIANGLE
 	int		m_vert;
