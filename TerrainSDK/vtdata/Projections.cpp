@@ -1005,6 +1005,29 @@ int DymaxOCT::TransformEx(int nCount, double *x, double *y, double *z, int *pabS
 	return iConverted != 0;
 }
 
+// display debugging information to the log
+void LogConvertingProjections(const vtProjection *pSource,
+							  const vtProjection *pTarget)
+{
+#if 0
+	char *wkt1, *wkt2;
+	OGRErr err = pSource->exportToWkt(&wkt1);
+	err = pTarget->exportToWkt(&wkt2);
+	VTLOG(" Converting from: %s\n", wkt1);
+	VTLOG("   Converting to: %s\n", wkt2);
+	OGRFree(wkt1);
+	OGRFree(wkt2);
+#else
+	char *proj1, *proj2;
+	OGRErr err = pSource->exportToProj4(&proj1);
+	err = pTarget->exportToProj4(&proj2);
+	VTLOG(" Converting from: %s\n", proj1);
+	VTLOG("   Converting to: %s\n", proj2);
+	OGRFree(proj1);
+	OGRFree(proj2);
+#endif
+}
+
 /**
  * Use this function instead of OGRCreateCoordinateTransformation to create
  * a transformation between two vtProjections.  Not only does it get around
@@ -1020,32 +1043,18 @@ OCT *CreateCoordTransform(const vtProjection *pSource,
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	if (bLog)
-	{
-		// display debugging information to the log
-#if 0
-		char *wkt1, *wkt2;
-		OGRErr err = pSource->exportToWkt(&wkt1);
-		err = pTarget->exportToWkt(&wkt2);
-		VTLOG(" Converting from: %s\n", wkt1);
-		VTLOG("   Converting to: %s\n", wkt2);
-		OGRFree(wkt1);
-		OGRFree(wkt2);
-#else
-		char *proj1, *proj2;
-		OGRErr err = pSource->exportToProj4(&proj1);
-		err = pTarget->exportToProj4(&proj2);
-		VTLOG(" Converting from: %s\n", proj1);
-		VTLOG("   Converting to: %s\n", proj2);
-		OGRFree(proj1);
-		OGRFree(proj2);
-#endif
-	}
+		LogConvertingProjections(pSource, pTarget);
 
 	OCT *result = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource,
 		(OGRSpatialReference *)pTarget);
 	if (bLog)
-	{
 		VTLOG(" Conversion: %s\n", result ? "succeeded" : "failed");
+
+	if (!result && !bLog)
+	{
+		// Even if the caller didn't ask for logging, log failures.
+		VTLOG("Could not convert:\n");
+		LogConvertingProjections(pSource, pTarget);
 	}
 
 	if (!pSource->IsDymaxion() && pTarget->IsDymaxion())
