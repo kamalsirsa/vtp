@@ -96,12 +96,13 @@ public:
 	bool Create(int width, int height, int bitdepth, bool create_palette = false);
 	bool Create24From8bit(const vtDIB &from);
 
-	bool Read(const char *fname);
-	bool ReadBMP(const char *fname);
+	bool Read(const char *fname, bool progress_callback(int) = NULL);
+	bool ReadBMP(const char *fname, bool progress_callback(int) = NULL);
+	bool ReadJPEG(const char *fname, bool progress_callback(int) = NULL);
+	bool ReadPNG(const char *fname, bool progress_callback(int) = NULL);
+
 	bool WriteBMP(const char *fname);
-	bool ReadJPEG(const char *fname);
 	bool WriteJPEG(const char *fname, int quality, bool progress_callback(int) = NULL);
-	bool ReadPNG(const char *fname);
 	bool WritePNG(const char *fname);
 	bool WriteTIF(const char *fname, const DRECT *area = NULL,
 		const vtProjection *proj = NULL, bool progress_callback(int) = NULL);

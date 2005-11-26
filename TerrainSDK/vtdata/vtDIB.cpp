@@ -355,7 +355,7 @@ bool vtDIB::Create24From8bit(const vtDIB &from)
  * Read a image file into the DIB.  This method will check to see if the
  * file is a BMP or JPEG and call the appropriate reader.
  */
-bool vtDIB::Read(const char *fname)
+bool vtDIB::Read(const char *fname, bool progress_callback(int))
 {
 	FILE *fp = fopen(fname, "rb");
 	if (!fp)
@@ -365,11 +365,11 @@ bool vtDIB::Read(const char *fname)
 		return false;
 	fclose(fp);
 	if (buf[0] == 0x42 && buf[1] == 0x4d)
-		return ReadBMP(fname);
+		return ReadBMP(fname, progress_callback);
 	else if (buf[0] == 0xFF && buf[1] == 0xD8)
-		return ReadJPEG(fname);
+		return ReadJPEG(fname, progress_callback);
 	else if (buf[0] == 0x89 && buf[1] == 0x50)
-		return ReadPNG(fname);
+		return ReadPNG(fname, progress_callback);
 	return false;
 }
 
@@ -377,7 +377,7 @@ bool vtDIB::Read(const char *fname)
 /**
  * Read a MSWindows-style .bmp file into the DIB.
  */
-bool vtDIB::ReadBMP(const char *fname)
+bool vtDIB::ReadBMP(const char *fname, bool progress_callback(int))
 {
 	BITMAPFILEHEADER	bitmapHdr;
 	int MemorySize;
@@ -454,7 +454,22 @@ bool vtDIB::ReadBMP(const char *fname)
 
 	fseek(fp, bitmapHdr.bfOffBits, SEEK_SET);
 
-	fread(((char *)m_Hdr) + m_Hdr->biSize + m_iPaletteSize, m_Hdr->biSizeImage, 1, fp);
+	if (progress_callback != NULL)
+	{
+		char *target = ((char *)m_Hdr) + m_Hdr->biSize + m_iPaletteSize;
+		// Read it a row at a time;
+		int row_length = m_Hdr->biSizeImage / m_Hdr->biHeight;
+		for (int r = 0; r < m_Hdr->biHeight; r++)
+		{
+			fread(target + (row_length*r), row_length, 1, fp);
+			progress_callback(r * 100 / m_Hdr->biHeight);
+		}
+	}
+	else
+	{
+		// Read it in one big chunk
+		fread(((char *)m_Hdr) + m_Hdr->biSize + m_iPaletteSize, m_Hdr->biSizeImage, 1, fp);
+	}
 
 	// loaded OK
 	m_iWidth = m_Hdr->biWidth;
@@ -530,7 +545,7 @@ bool vtDIB::WriteBMP(const char *fname)
 /**
  * Read a JPEG file. A DIB of the necessary size and depth is allocated.
  */
-bool vtDIB::ReadJPEG(const char *fname)
+bool vtDIB::ReadJPEG(const char *fname, bool progress_callback(int))
 {
 	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;
@@ -574,6 +589,9 @@ bool vtDIB::ReadJPEG(const char *fname)
 	/* Process data */
 	while (cinfo.output_scanline < cinfo.output_height)
 	{
+		if (progress_callback != NULL)
+			progress_callback(cinfo.output_scanline * 100 / cinfo.output_height);
+
 		JSAMPROW inptr = buffer[0];
 		byte *adr = ((byte *)m_Data) + (m_iHeight-1-cinfo.output_scanline)*m_iByteWidth;
 
@@ -703,7 +721,7 @@ bool vtDIB::WriteJPEG(const char *fname, int quality, bool progress_callback(int
  *
  * \return True if successful.
  */
-bool vtDIB::ReadPNG(const char *fname)
+bool vtDIB::ReadPNG(const char *fname, bool progress_callback(int))
 {
 	FILE *fp = NULL;
 
@@ -810,6 +828,9 @@ bool vtDIB::ReadPNG(const char *fname)
 	unsigned int row, col;
 	for (row = 0; row < height; row++)
 	{
+		if (progress_callback != NULL)
+			progress_callback(row * 100 / height);
+
 		byte *adr = ((byte *)m_Data) + row*m_iByteWidth;
 		png_bytep inptr = m_pPngData + row*png_stride;
 		if (iBitCount == 8)
