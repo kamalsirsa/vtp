@@ -272,8 +272,9 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 #endif
 }
 
-/** Loads from a 3TX ascii grid file.
- * Projection is Geo WGS84.
+/**
+ * Loads from a 3TX ascii grid file.
+ * Projection is Geo WGS84, extents are always 1 degree in size.
  *
  * \returns \c true if the file was successfully opened and read.
  */
@@ -1467,6 +1468,35 @@ bool vtElevationGrid::SaveToTerragen(const char *szFileName) const
 		}
 	}
 	fclose(fp);
+	return true;
+}
+
+
+bool vtElevationGrid::SaveTo3TX(const char *szFileName, bool progress_callback(int))
+{
+	if (m_iColumns != 1201 || m_iRows != 1201)
+		return false;
+
+	FILE *fp = fopen(szFileName, "wb");
+	if (!fp)
+		return false;
+
+	// SW origin in integer degrees
+	DRECT ext = GetEarthExtents();
+	fprintf(fp, "%d %d\n", (int) ext.bottom, (int) ext.left);
+
+	// elevationdata one per line in column-first order from the SW
+	short val;
+	for (int i = 0; i < 1201; i++)
+	{
+		if (progress_callback != NULL)
+			progress_callback(i * 100 / 1201);
+		for (int j = 0; j < 1201; j++)
+		{
+			val = GetValue(i, j);
+			fprintf(fp, "%d\n", val);
+		}
+	}
 	return true;
 }
 

@@ -80,6 +80,7 @@ public:
 	bool ParseNTF5(OGRDataSource *pDatasource, vtString &msg, bool progress_callback(int));
 
 	// Save
+	bool SaveTo3TX(const char *szFileName, bool progress_callback(int) = NULL);
 	bool SaveToGeoTIFF(const char *szFileName) const;
 	bool SaveToBMP(const char *szFileName) const;
 	bool SaveToTerragen(const char *szFileName) const;
