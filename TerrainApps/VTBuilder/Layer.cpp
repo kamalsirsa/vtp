@@ -243,32 +243,32 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 	switch (ltype)
 	{
 	case LT_RAW:
-		pLayer = new vtRawLayer();
+		pLayer = new vtRawLayer;
 		break;
 	case LT_ELEVATION:
-		pLayer = new vtElevLayer();
+		pLayer = new vtElevLayer;
 		break;
 	case LT_IMAGE:
-		pLayer = new vtImageLayer();
+		pLayer = new vtImageLayer;
 		break;
 	case LT_ROAD:
-		pLayer = new vtRoadLayer();
+		pLayer = new vtRoadLayer;
 		break;
 	case LT_STRUCTURE:
-		pLayer = new vtStructureLayer();
+		pLayer = new vtStructureLayer;
 		break;
 	case LT_UTILITY:
-		pLayer = new vtUtilityLayer();
+		pLayer = new vtUtilityLayer;
 		break;
 	case LT_WATER:
-		pLayer = new vtWaterLayer();
+		pLayer = new vtWaterLayer;
 		break;
 	case LT_VEG:
-		pLayer = new vtVegLayer();
+		pLayer = new vtVegLayer;
 		break;
 #if SUPPORT_TRANSIT
 	case LT_TRANSIT:
-		pLayer = new vtTransitLayer();
+		pLayer = new vtTransitLayer;
 		break;
 #endif
 	}
