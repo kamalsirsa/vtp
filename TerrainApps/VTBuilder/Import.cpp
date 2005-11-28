@@ -117,16 +117,23 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 
 	// check if it's an archive
 	bool bGZip = false;
+	bool bTGZip = false;
 	bool bZip = false;
 
-	if (ext.CmpNoCase(_T("gz")) == 0 || ext.CmpNoCase(_T("tgz")) == 0 ||
-		ext.CmpNoCase(_T("tar")) == 0)
+	if (ext.CmpNoCase(_T("gz")) == 0)
+	{
+		// We could expand .gz files into a temporary folder, but it would be
+		//  inefficient as many of the file readers used gzopen etc. hence
+		//  they already support gzipped input efficiently.
 		bGZip = true;
+	}
+	if (ext.CmpNoCase(_T("tgz")) == 0 || ext.CmpNoCase(_T("tar")) == 0)
+		bTGZip = true;
 
 	if (ext.CmpNoCase(_T("zip")) == 0)
 		bZip = true;
 
-	if (!bGZip && !bZip)
+	if (!bTGZip && !bZip)
 	{
 		// simple case
 		ImportDataFromFile(ltype, fname, bRefresh);
@@ -149,7 +156,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	vtString str2 = prepend_path.mb_str();
 
 	OpenProgressDialog(_("Expanding archive"), false, this);
-	if (bGZip)
+	if (bTGZip)
 		result = ExpandTGZ(str1, str2);
 	if (bZip)
 		result = ExpandZip(str1, str2, progress_callback);
@@ -537,7 +544,7 @@ wxString GetImportFilterString(LayerType ltype)
 	switch (ltype)
 	{
 	case LT_RAW:
-		// shp
+		// abstract GIS data
 		AddType(filter, FSTRING_DXF);
 		AddType(filter, FSTRING_IGC);
 		AddType(filter, FSTRING_MI);
@@ -546,6 +553,7 @@ wxString GetImportFilterString(LayerType ltype)
 		break;
 	case LT_ELEVATION:
 		// dem, etc.
+		AddType(filter, FSTRING_3TX);
 		AddType(filter, FSTRING_ADF);
 		AddType(filter, FSTRING_ASC);
 		AddType(filter, FSTRING_BIL);
@@ -554,20 +562,20 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_DTED);
 		AddType(filter, FSTRING_DXF);
 		AddType(filter, FSTRING_GTOPO);
+		AddType(filter, FSTRING_HGT);
 		AddType(filter, FSTRING_IMG);
 		AddType(filter, FSTRING_MEM);
 		AddType(filter, FSTRING_NTF);
-		AddType(filter, FSTRING_PNG);
 		AddType(filter, FSTRING_PGM);
+		AddType(filter, FSTRING_PNG);
 		AddType(filter, FSTRING_RAW);
 		AddType(filter, FSTRING_SDTS);
 		AddType(filter, FSTRING_Surfer);
 		AddType(filter, FSTRING_TER);
 		AddType(filter, FSTRING_TIF);
 		AddType(filter, FSTRING_TXT);
-		AddType(filter, FSTRING_COMP);
 		AddType(filter, FSTRING_XYZ);
-		AddType(filter, FSTRING_HGT);
+		AddType(filter, FSTRING_COMP);
 		break;
 	case LT_IMAGE:
 		// bmp, doq, img, ppm, tif
@@ -582,8 +590,8 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_DLG);
 		AddType(filter, FSTRING_SHP);
 		AddType(filter, FSTRING_SDTS);
-		AddType(filter, FSTRING_COMP);
 		AddType(filter, FSTRING_MI);
+		AddType(filter, FSTRING_COMP);
 		break;
 	case LT_STRUCTURE:
 		// dlg, shp, bcf, sdts-dlg

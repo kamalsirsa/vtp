@@ -800,6 +800,13 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 
 	wxString strExt = strFileName.AfterLast('.');
 
+	if (!strExt.CmpNoCase(_T("gz")))
+	{
+		// ignore .gz, look at extension under it
+		wxString dropped = strFileName.Left(strFileName.Len()-3);
+		strExt = dropped.AfterLast('.');
+	}
+
 	// The first character in the file is useful for telling which format
 	// the file really is.
 	FILE *fp = fopen(strFileName.mb_str(), "rb");
@@ -810,16 +817,20 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 
 	if (!strExt.CmpNoCase(_T("dxf")))
 	{
-		m_pTin = new vtTin2d();
+		m_pTin = new vtTin2d;
 		success = m_pTin->ReadDXF(strFileName.mb_str(), progress_callback);
 	}
 	else
 	{
 		if (m_pGrid == NULL)
-			m_pGrid = new vtElevationGrid();
+			m_pGrid = new vtElevationGrid;
 	}
 
-	if (!strExt.CmpNoCase(_T("dem")))
+	if (!strExt.CmpNoCase(_T("3tx")))
+	{
+		success = m_pGrid->LoadFrom3TX(strFileName.mb_str(), progress_callback);
+	}
+	else if (!strExt.CmpNoCase(_T("dem")))
 	{
 		// If there is a .hdr file in the same place, it is most likely
 		//  a GTOPO30/SRTM30 file

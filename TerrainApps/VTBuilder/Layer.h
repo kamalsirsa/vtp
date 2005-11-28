@@ -21,6 +21,7 @@
 #define FSTRING_BCF		_T("BCF Files (*.bcf)|*.bcf")
 #define FSTRING_TIN		_T("TIN Files (*.itf)|*.itf")
 
+#define FSTRING_3TX		_T("3TX Files (*.3tx)|*.3tx")
 #define FSTRING_ADF		_T("Arc Data Files (*.adf)|*.adf")
 #define FSTRING_ASC		_T("ArcInfo ASCII grid (*.asc)|*.asc")
 #define FSTRING_BMP		_T("Bitmap (*.bmp)|*.bmp")
