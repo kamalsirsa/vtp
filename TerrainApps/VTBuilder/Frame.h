@@ -428,9 +428,10 @@ public:
 	void ExportRAWINF();
 	void ExportChunkLOD();
 	void ExportPNG16();
+	void Export3TX();
 
 	// area tool
-	void ExportElevation();
+	void MergeResampleElevation();
 	bool SampleElevationToPGMPyramids(const TilingOptions &opts);
 	void ExportImage();
 

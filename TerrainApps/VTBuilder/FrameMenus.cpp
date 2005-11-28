@@ -1499,7 +1499,7 @@ void MainFrame::OnLayerProperties(wxCommandEvent &event)
 
 void MainFrame::OnAreaExportElev(wxCommandEvent &event)
 {
-	ExportElevation();
+	MergeResampleElevation();
 }
 
 void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
@@ -2303,7 +2303,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	if (!GetActiveElevLayer())
 		return;
 
-	wxString choices[10];
+	wxString choices[11];
 	choices[0] = _T("ArcInfo ASCII Grid");
 	choices[1] = _T("GeoTIFF");
 	choices[2] = _T("TerraGen");
@@ -2314,9 +2314,10 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	choices[7] = _T("RAW/INF for MS Flight Simulator");
 	choices[8] = _T("ChunkLOD (.chu)");
 	choices[9] = _T("PNG (16-bit greyscale)");
+	choices[10] = _T("3TX");
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
-		_("Export to file format:"), 10, choices);
+		_("Export to file format:"), 11, choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -2332,6 +2333,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	case 7: ExportRAWINF(); break;
 	case 8: ExportChunkLOD(); break;
 	case 9: ExportPNG16(); break;
+	case 10: Export3TX(); break;
 	}
 }
 
@@ -2559,6 +2561,26 @@ void MainFrame::ExportPNG16()
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->m_pGrid->SaveToPNG16(fname);
+	if (success)
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+	else
+		DisplayAndLog("Error writing file.");
+}
+
+void MainFrame::Export3TX()
+{
+	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
+	int col, row;
+	grid->GetDimensions(col, row);
+	if (col != 1201 || row != 1201)
+	{
+		DisplayAndLog("3TX expects grid dimensions of 1201 x 1201");
+		return;
+	}
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_3TX);
+	if (fname == "")
+		return;
+	bool success = grid->SaveTo3TX(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else

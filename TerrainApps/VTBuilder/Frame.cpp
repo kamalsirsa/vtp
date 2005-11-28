@@ -1528,9 +1528,9 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 //////////////////////////
 // Elevation ops
 
-void MainFrame::ExportElevation()
+void MainFrame::MergeResampleElevation()
 {
-	VTLOG1("ExportElevation\n");
+	VTLOG1("MergeResampleElevation\n");
 
 	// If any of the input terrain are floats, then recommend to the user
 	// that the output should be float as well.
