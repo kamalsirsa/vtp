@@ -272,6 +272,46 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 #endif
 }
 
+/** Loads from a 3TX ascii grid file.
+ * Projection is Geo WGS84.
+ *
+ * \returns \c true if the file was successfully opened and read.
+ */
+bool vtElevationGrid::LoadFrom3TX(const char *szFileName,
+								  bool progress_callback(int))
+{
+	FILE *fp = fopen(szFileName, "rb");
+	if (!fp)
+		return false;
+
+	// SW origin in integer degrees
+	int lon, lat;
+	fscanf(fp, "%d %d\n", &lat, &lon);
+	DRECT ext(lon, lat+1, lon+1, lat);
+	SetEarthExtents(ext);
+
+	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
+
+	m_iColumns = 1201;
+	m_iRows = 1201;
+	m_bFloatMode = false;
+	_AllocateArray();
+
+	// elevationdata one per line in column-first order from the SW
+	short val;
+	for (int i = 0; i < 1201; i++)
+	{
+		if (progress_callback != NULL)
+			progress_callback(i * 100 / 1201);
+		for (int j = 0; j < 1201; j++)
+		{
+			fscanf(fp, "%d\n", &val);
+			SetValue(i, j, val);
+		}
+	}
+	return true;
+}
+
 
 /** Loads from a Arc/Info compatible ASCII grid file.
  * Projection is read from a corresponding .prj file.
@@ -2292,10 +2332,6 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
  */
 bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback(int))
 {
-	FILE *fp = fopen(szFileName, "rb");
-	if (!fp)
-		return false;
-
 	// extract extents from the filename
 	const char *fname = StartOfFilename(szFileName);
 	if (!fname)
@@ -2313,10 +2349,15 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback
 	else if (ew != 'E')
 		return false;
 
-	fseek(fp, 0, SEEK_END);
-	bool b1arcsec = (ftell(fp) > 3000000);
-	fseek(fp, 0, SEEK_SET);
+	// Check file size to guess if it is 1 arcsec
+	FILE *ffp = fopen(szFileName, "rb");
+	if (!ffp)
+		return false;
+	fseek(ffp, 0, SEEK_END);
+	bool b1arcsec = (ftell(ffp) > 3000000);
+	fclose(ffp);
 
+	gzFile fp = gzopen(szFileName, "rb");
 	m_EarthExtents.SetRect(lon, lat+1, lon+1, lat);
 	ComputeCornersFromExtents();
 
@@ -2340,7 +2381,7 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback
 		if (progress_callback != NULL)
 			progress_callback(j * 100 / m_iRows);
 
-		fread(buf, 2, m_iColumns, fp);
+		gzread(fp, buf, m_iColumns * sizeof(short));
 		for (i = 0; i < m_iColumns; i++)
 		{
 			value = SWAP_2(buf[i]);
@@ -2348,7 +2389,7 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback
 		}
 	}
 	delete [] buf;
-	fclose(fp);
+	gzclose(fp);
 	return true;
 }
 

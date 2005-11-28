@@ -52,8 +52,9 @@ public:
 	bool LoadFromFile( const char *szFileName, bool progress_callback(int) = NULL );
 
 	// Load from a specific kind of file
-	bool LoadFromDEM(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFrom3TX(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromASC(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromDEM(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromTerragen(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromCDF(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromDTED(const char *szFileName, bool progress_callback(int) = NULL);
