@@ -279,20 +279,23 @@ void MyTreeCtrl::name(wxTreeEvent& event)	\
 }
 
 TREE_EVENT_HANDLER(OnBeginRDrag)
-	TREE_EVENT_HANDLER(OnDeleteItem)
-	TREE_EVENT_HANDLER(OnGetInfo)
-	TREE_EVENT_HANDLER(OnSetInfo)
-	TREE_EVENT_HANDLER(OnItemExpanded)
-	TREE_EVENT_HANDLER(OnItemExpanding)
-	TREE_EVENT_HANDLER(OnItemCollapsed)
-	TREE_EVENT_HANDLER(OnSelChanging)
-	TREE_EVENT_HANDLER(OnTreeKeyDown)
+TREE_EVENT_HANDLER(OnDeleteItem)
+TREE_EVENT_HANDLER(OnGetInfo)
+TREE_EVENT_HANDLER(OnSetInfo)
+TREE_EVENT_HANDLER(OnItemExpanded)
+TREE_EVENT_HANDLER(OnItemExpanding)
+TREE_EVENT_HANDLER(OnItemCollapsed)
+TREE_EVENT_HANDLER(OnSelChanging)
+TREE_EVENT_HANDLER(OnTreeKeyDown)
 
 #undef TREE_EVENT_HANDLER
 
 void MyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
 	wxTreeItemId item = event.GetItem();
+	if (!item.IsOk())
+		return;
+
 	MyTreeItemData *data = (MyTreeItemData *)GetItemData(item);
 	vtLayerPtr lp = NULL;
 	if (data)
