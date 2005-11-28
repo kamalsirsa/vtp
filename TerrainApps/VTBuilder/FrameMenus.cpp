@@ -569,8 +569,7 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 		return;
 	wxString prefix = dlg3.GetValue();
 
-	// TODO! change this code to use vtBitmap instead of wxImage
-//	wxImage::AddHandler(new wxPNGHandler);
+	// TODO? change this code to use vtBitmap instead of vtDIB?
 
 	wxProgressDialog prog(_("Processing"), _("Loading source bitmap.."), 100);
 	prog.Show(TRUE);
@@ -579,9 +578,13 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 	int input_x, input_y;
 	vtDIB img;
 	wxString2 path = dlg.GetPath();
-	if (!img.Read(path.mb_str()))
+
+	OpenProgressDialog(_T("Reading file"), false, this);
+	bool success = img.Read(path.mb_str(), progress_callback);
+	CloseProgressDialog();
+	if (!success)
 	{
-		DisplayAndLog("File open failed");
+		DisplayAndLog("File read failed");
 		return;
 	}
 	input_x = img.GetWidth();
@@ -589,11 +592,11 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 
 	DymaxIcosa ico;
 
-	vtDIB out[10];
 	RGBi rgb;
 	for (i = 0; i < 10; i++)
 	{
-		out[i].Create(output_size, output_size, 24);
+		vtDIB out;
+		out.Create(output_size, output_size, 24);
 
 		wxString msg;
 		msg.Printf(_("Creating tile %d ..."), i+1);
@@ -623,13 +626,13 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 				int source_y = (int) (lat / PId * input_y);
 
 				img.GetPixel24(source_x, source_y, rgb);
-				out[i].SetPixel24(x, output_size-1-y, rgb);
+				out.SetPixel24(x, output_size-1-y, rgb);
 			}
 		}
 		vtString name;
 		name.Format("%s_%02d%02d.png", prefix.c_str(),
 			icosa_face_pairs[i][0]+1, icosa_face_pairs[i][1]+1);
-		bool success = out[i].WritePNG(name);
+		success = out.WritePNG(name);
 		if (!success)
 		{
 			DisplayAndLog("Failed to write file %s.", (const char *) name);
