@@ -38,6 +38,13 @@
 //
 #define SUPPORT_UNZIP	1
 
+// Use the bzip2 library, which adds support for reading from .bz2 files
+//
+// The library is free (BSD-style license) and available from:
+// http://www.bzip.org/
+//
+#define SUPPORT_BZIP2	1
+
 // Set to 1 if your C++ compiler supports wide strings (std::wstring)
 //
 // Apparently, there is some environment on the Macintosh without this.
