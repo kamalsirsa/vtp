@@ -18,6 +18,9 @@
 #else
 # include <direct.h>
 # include <io.h>
+ #ifdef _MSC_VER	// MSVC also has sys/stat
+ # include <sys/stat.h>
+ #endif
 #endif
 
 #if WIN32
@@ -29,11 +32,19 @@
 #	define unlink(fname)		_unlink(fname)
 #	define access(path,mode)	_access(path,mode)
 #	define vsnprintf			_vsnprintf
+#   define stat					_stat
 #  else
 #	define mkdir(dirname,mode) _mkdir(dirname)
 #  endif
 #else
 #  include <utime.h>
+#endif
+
+#if SUPPORT_BZIP2
+  #include "bzlib.h"
+  #ifdef _MSC_VER
+	#pragma comment( lib, "bzip2.lib" )
+  #endif
 #endif
 
 /**
@@ -402,6 +413,21 @@ bool FileExists(const char *fname)
 	return true;
 }
 
+int GetFileSize(const char *fname)
+{
+	struct stat buf;
+	int result;
+
+	/* Get data associated with "crt_stat.c": */
+	result = stat(fname, &buf );
+
+	/* Check if statistics are valid: */
+	if (result != 0)
+		return 0;
+	return buf.st_size;
+}
+
+
 #include <fstream>
 using namespace std;
 //
@@ -491,5 +517,100 @@ void gfclose(GZOutput &out)
 		gzclose(out.gfp);
 	else
 		fclose(out.fp);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// VTCompress class
+
+VTCompress::VTCompress()
+{
+	fp = NULL;
+	gfp = NULL;
+#if SUPPORT_BZIP2
+	bfp = NULL;
+#endif
+}
+
+VTCompress::~VTCompress()
+{
+	close();
+}
+
+bool VTCompress::open(const char *fname)
+{
+	fp = fopen(fname, "rb");
+	if (!fp)
+	{
+		fp = NULL;
+		return false;
+	}
+	unsigned char buf[3];
+	if (fread(buf, 3, 1, fp) != 1)
+	{
+		fp = NULL;
+		fclose(fp);
+		return false;
+	}
+	// Gzip signature: 1f8b 08
+	if (buf[0] == 0x1f && buf[1] == 0x8b && buf[2] == 0x08)
+	{
+		fclose(fp);
+		fp = NULL;
+		gfp = gzopen(fname, "rb");
+		if (gfp == NULL)
+			return false;
+	}
+#if SUPPORT_BZIP2
+	// BZip2 signature: 5a42 31 ("BZh")
+	else if (buf[0] == 'B' && buf[1] == 'Z' && buf[2] == 'h')
+	{
+		fclose(fp);
+		fp = NULL;
+		bfp = BZ2_bzopen(fname, "rb");
+		if (bfp == NULL)
+			return false;
+	}
+#endif
+	else
+	{
+		// plain stdio file IO; nothing to do but rewind to the beginning
+		rewind(fp);
+	}
+	return true;
+}
+
+size_t VTCompress::read(void *buf, size_t size)
+{
+	if (gfp)
+		return gzread(gfp, buf, size);
+#if SUPPORT_BZIP2
+	else if (bfp)
+		return BZ2_bzread(bfp, buf, size);
+#endif
+	else if (fp)
+		return fread(buf, size, 1, fp);
+	return 0;
+}
+
+void VTCompress::close()
+{
+	if (gfp)
+	{
+		gzclose(gfp);
+		gfp = NULL;
+	}
+#if SUPPORT_BZIP2
+	else if (bfp)
+	{
+		BZ2_bzclose(bfp);
+		bfp = NULL;
+	}
+#endif
+	else if (fp)
+	{
+		fclose(fp);
+		fp = NULL;
+	}
 }
 

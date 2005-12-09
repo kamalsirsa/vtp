@@ -13,6 +13,13 @@
 #include "Array.h"
 
 #include "zlib.h"
+
+#if SUPPORT_BZIP2
+  #ifndef _BZLIB_H
+	typedef void BZFILE;
+  #endif
+#endif
+
 #include <fstream>
 
 #if WIN32
@@ -82,6 +89,7 @@ void RemoveFileExtensions(vtString &fname, bool bAll = true);
 vtString GetExtension(const vtString &fname, bool bFull = true);
 vtString ChangeFileExtension(const char *input, const char *extension);
 bool FileExists(const char *fname);
+int GetFileSize(const char *fname);
 
 // Encapsulation for Zlib's gzip output functions.
 class GZOutput
@@ -95,6 +103,28 @@ public:
 bool gfopen(GZOutput &out, const char *fname);
 int gfprintf(GZOutput &out, const char *pFormat, ...);
 void gfclose(GZOutput &out);
+
+// These functions encapsulate reading from a file which may be compressed
+//  with gzip, compressed with bzip2, or not compressed.  They automatically
+//  recognize the compression so the caller doesn't have to check.
+class VTCompress
+{
+public:
+	VTCompress();
+	~VTCompress();
+
+	bool open(const char *fname);
+	size_t read(void *buf, size_t size);
+	void close();
+
+protected:
+	FILE *fp;
+	gzFile gfp;
+#if SUPPORT_BZIP2
+	BZFILE *bfp;
+#endif
+};
+
 
 #endif // FILEPATHH
 
