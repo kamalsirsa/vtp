@@ -101,7 +101,8 @@ protected:
 struct StatePlaneInfo
 {
 	char *name;
-	int number;
+	bool bNAD27;
+	bool bNAD83;
 	int usgs_code;
 };
 
