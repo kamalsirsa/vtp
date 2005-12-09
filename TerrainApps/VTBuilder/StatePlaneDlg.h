@@ -29,7 +29,10 @@ public:
 	
 	// WDR: method declarations for StatePlaneDlg
 	wxListBox* GetStatePlanes()  { return (wxListBox*) FindWindow( ID_STATEPLANES ); }
-	
+	wxRadioButton* GetNad27()  { return (wxRadioButton*) FindWindow( ID_NAD27 ); }
+	wxRadioButton* GetNad83()  { return (wxRadioButton*) FindWindow( ID_NAD83 ); }
+	wxRadioButton* GetFeetUs()  { return (wxRadioButton*) FindWindow( ID_RADIO_FEET_US ); }
+
 public:
 	// WDR: member variable declarations for StatePlaneDlg
 	int m_iStatePlane;

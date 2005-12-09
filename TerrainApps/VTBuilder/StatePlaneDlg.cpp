@@ -1,7 +1,7 @@
 //
 // Name: StatePlaneDlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -104,8 +104,20 @@ void StatePlaneDlg::OnNad27( wxCommandEvent &event )
 void StatePlaneDlg::OnListBox( wxCommandEvent &event )
 {
 	m_iStatePlane = event.GetInt();
+
+	// Disable some combinations of zone and datum
+	StatePlaneInfo *plane_info = GetStatePlaneTable();
+
+	bool b27 = plane_info[m_iStatePlane].bNAD27;
+	bool b83 = plane_info[m_iStatePlane].bNAD83;
+	GetNad27()->Enable(b27);
+	GetNad83()->Enable(b83);
+	if (!b27)
+		GetNad83()->SetValue(true);
+	if (!b83)
+	{
+		GetNad27()->SetValue(true);
+		GetFeetUs()->SetValue(true);	// NAD27 is always U.S. Survey feet
+	}
 }
-
-
-
 
