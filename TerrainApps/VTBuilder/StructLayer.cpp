@@ -233,7 +233,20 @@ bool vtStructureLayer::OnLoad()
 	if (GetExtension(fname, true).CompareNoCase(".vtst.gz") == 0)
 		m_bPreferGZip = true;
 
-	bool success = ReadXML(fname);
+	// check file size, show progressm dialog for big files
+	int size = GetFileSize(fname);
+	bool bShowProgress = (size > 1024*1024);	// 1 MB
+	if (m_bPreferGZip)
+		bShowProgress = (size > 1024*50);	// 50 KB
+
+	if (bShowProgress)
+		OpenProgressDialog(_T("Loading Structures"), false);
+
+	bool success = ReadXML(fname, progress_callback);
+
+	if (bShowProgress)
+		CloseProgressDialog();
+
 	if (!success)
 		return false;
 
@@ -346,6 +359,10 @@ void vtStructureLayer::GetPropertyText(wxString &strIn)
 	wxString2 str;
 
 	int i, size = GetSize();
+
+	strIn += _("Filename: ");
+	strIn += GetLayerFilename();
+	strIn += _T("\n");
 
 	str.Printf(_("Number of structures: %d\n"), size);
 	strIn += str;
