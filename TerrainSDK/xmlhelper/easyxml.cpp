@@ -179,7 +179,8 @@ static void processing_instruction (void * userData,
 // Implementation of XMLReader.
 ////////////////////////////////////////////////////////////////////////
 
-void readXML (istream &input, XMLVisitor &visitor, const string &path)
+void readXML (istream &input, XMLVisitor &visitor, const string &path,
+			  bool progress_callback(int))
 {
 	XML_Parser parser = XML_ParserCreate(0);
 	XML_SetUserData(parser, &visitor);
@@ -189,6 +190,7 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path)
 
 	visitor.startXML();
 
+	int progress = 0;
 	char buf[16384];
 	while (!input.eof())
 	{
@@ -214,6 +216,13 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path)
 					xh_location(path, line, col),
 					"XML Parser");
 		}
+		if (progress_callback != NULL)
+		{
+			progress++;
+			if (progress == 400)
+				progress = 0;
+			progress_callback(progress/4);
+		}
 	}
 
 	// Verify end of document.
@@ -229,7 +238,8 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path)
 	XML_ParserFree(parser);
 }
 
-void readXML (const string &path, XMLVisitor &visitor)
+void readXML (const string &path, XMLVisitor &visitor,
+			  bool progress_callback(int))
 {
 	gzFile fp = gzopen(path.c_str(), "rb");
 
@@ -238,7 +248,7 @@ void readXML (const string &path, XMLVisitor &visitor)
 					"XML Parser");
 	try
 	{
-		readCompressedXML(fp, visitor, path);
+		readCompressedXML(fp, visitor, path, progress_callback);
 	}
 	catch (xh_io_exception &e)
 	{
@@ -254,7 +264,8 @@ void readXML (const string &path, XMLVisitor &visitor)
 	gzclose(fp);
 }
 
-void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path)
+void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
+						bool progress_callback(int))
 {
 	XML_Parser parser = XML_ParserCreate(0);
 	XML_SetUserData(parser, &visitor);
@@ -264,6 +275,7 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path)
 
 	visitor.startXML();
 
+	int progress = 0;
 	char buf[16384];
 	while (!gzeof(fp))
 	{
@@ -279,6 +291,13 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path)
 				throw xh_io_exception(message,
 						xh_location(path, line, col),
 						"XML Parser");
+			}
+			if (progress_callback != NULL)
+			{
+				progress++;
+				if (progress == 400)
+					progress = 0;
+				progress_callback(progress/4);
 			}
 		}
 		else if (iCount < 0)

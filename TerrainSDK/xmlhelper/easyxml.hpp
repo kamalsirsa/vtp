@@ -352,9 +352,11 @@ public:
  * @see XMLVisitor
  */
 extern void readXML(istream &input, XMLVisitor &visitor,
-					const string &path="");
+					const string &path="",
+					bool progress_callback(int) = NULL);
 extern void readCompressedXML(gzFile fp, XMLVisitor &visitor,
-							  const string& path="");
+							  const string& path="",
+							  bool progress_callback(int) = NULL);
 
 
 /**
@@ -375,7 +377,8 @@ extern void readCompressedXML(gzFile fp, XMLVisitor &visitor,
  * is a problem reading the file.
  * @see XMLVisitor
  */
-extern void readXML (const string &path, XMLVisitor &visitor);
+extern void readXML (const string &path, XMLVisitor &visitor,
+					 bool progress_callback(int) = NULL);
 
 
 #endif // __EASYXML_HPP
