@@ -47,17 +47,7 @@ vtElevationGrid::vtElevationGrid()
 vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
 	bool bFloat, const vtProjection &proj)
 {
-	vtHeightFieldGrid3d::Initialize(proj.GetUnits(), area, INVALID_ELEVATION,
-		INVALID_ELEVATION, iColumns, iRows);
-
-	m_bFloatMode = bFloat;
-	_AllocateArray();
-
-	ComputeCornersFromExtents();
-
-	m_proj = proj;
-	m_fVMeters = 1.0f;
-	m_fVerticalScale = 1.0f;
+	Create(area, iColumns, iRows, bFloat, proj);
 }
 
 /**
@@ -146,6 +136,33 @@ vtElevationGrid::~vtElevationGrid()
 	m_pFData = NULL;
 }
 
+
+/**
+ * Create a grid of given size.
+ *
+ * \param area the coordinate extents of the grid (rectangular area)
+ * \param iColumns number of columns in the grid (east-west)
+ * \param iRows number of rows (north-south)
+ * \param bFloat data size: \c true to use floating-point, \c false for shorts.
+ * \param proj the geographical projection to use.
+ *
+ * The grid will initially have no data in it (all values are INVALID_ELEVATION).
+ */
+void vtElevationGrid::Create(const DRECT &area, int iColumns, int iRows,
+	bool bFloat, const vtProjection &proj)
+{
+	vtHeightFieldGrid3d::Initialize(proj.GetUnits(), area, INVALID_ELEVATION,
+		INVALID_ELEVATION, iColumns, iRows);
+
+	m_bFloatMode = bFloat;
+	_AllocateArray();
+
+	ComputeCornersFromExtents();
+
+	m_proj = proj;
+	m_fVMeters = 1.0f;
+	m_fVerticalScale = 1.0f;
+}
 
 // helper
 double MetersPerLongitude(double latitude)
