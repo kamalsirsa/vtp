@@ -839,7 +839,8 @@ DPoint2 MainFrame::EstimateGeoDataCenter()
 		vtProjection geo;
 		CreateSimilarGeographicProjection(m_proj, geo);
 		OCT *trans = CreateConversionIgnoringDatum(&m_proj, &geo);
-		trans->Transform(1, &pos.x, &pos.y);
+		if (trans)
+			trans->Transform(1, &pos.x, &pos.y);
 		delete trans;
 	}
 	return pos;
