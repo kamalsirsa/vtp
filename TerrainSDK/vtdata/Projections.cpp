@@ -298,6 +298,8 @@ const char *vtProjection::GetProjectionNameShort() const
 		return "Albers";
 	if (!strncmp(proj_string, "Lambert_Conformal_Conic", 23))
 		return "LCC";
+	if (!strcmp(proj_string, SRS_PT_HOTINE_OBLIQUE_MERCATOR))
+		return "HOM";
 	if (!strcmp(proj_string, SRS_PT_SINUSOIDAL))
 		return "Sinus";
 	if (!strcmp(proj_string, SRS_PT_STEREOGRAPHIC))
