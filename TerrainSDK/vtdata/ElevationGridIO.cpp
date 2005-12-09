@@ -416,10 +416,16 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 	// get file identifier
 	fread(buf, 8, 1, fp);
 	if (strncmp(buf, "TERRAGEN", 8))
+	{
+		fclose(fp);
 		return false;
+	}
 	fread(buf, 8, 1, fp);
 	if (strncmp(buf, "TERRAIN ", 8))
+	{
+		fclose(fp);
 		return false;
+	}
 
 	if (progress_callback != NULL) progress_callback(0);
 
@@ -1483,7 +1489,7 @@ bool vtElevationGrid::SaveTo3TX(const char *szFileName, bool progress_callback(i
 
 	// SW origin in integer degrees
 	DRECT ext = GetEarthExtents();
-	fprintf(fp, "%d %d\n", (int) ext.bottom, (int) ext.left);
+	fprintf(fp, "%d %d\r\n", (int) ext.bottom, (int) ext.left);
 
 	// elevationdata one per line in column-first order from the SW
 	short val;
@@ -1494,7 +1500,7 @@ bool vtElevationGrid::SaveTo3TX(const char *szFileName, bool progress_callback(i
 		for (int j = 0; j < 1201; j++)
 		{
 			val = GetValue(i, j);
-			fprintf(fp, "%d\n", val);
+			fprintf(fp, "%d\r\n", val);
 		}
 	}
 	return true;
@@ -2249,6 +2255,7 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	// Look at the first two points
 	rewind(fp);
 	DPoint2 testp[2];
+	bool bInteger = true;
 	int i;
 	for (i = 0; fgets(buf, 80, fp) != NULL && i < 2; i++)
 	{
@@ -2258,6 +2265,10 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 		else
 			count = sscanf(buf, "%lf %lf %lf", &x, &y, &z);
 		testp[i].Set(x, y);
+
+		// Try to guess if the data is integer or floating point
+		if ((int)z != z)
+			bInteger = false;
 	}
 
 	// Compare them and decide whether we are row or column order
@@ -2298,27 +2309,28 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 		extents.GrowToContainPoint(DPoint2(x, y));
 		iNum++;
 	}
-	ComputeCornersFromExtents();
 
 	// Depending on order, convert extents to grid dimensions
+	int iColumns, iRows;
 	if (bColumnOrder)
 	{
 		// column-first ordering
-		m_iRows = (int) (extents.Height() / fabs(diff.y)) + 1;
-		m_iColumns = iNum / m_iRows;
+		iRows = (int) (extents.Height() / fabs(diff.y)) + 1;
+		iColumns = iNum / iRows;
 	}
 	else
 	{
 		// row-first ordering
-		m_iColumns = (int) (extents.Width() / fabs(diff.x)) + 1;
-		m_iRows = iNum / m_iColumns;
+		iColumns = (int) (extents.Width() / fabs(diff.x)) + 1;
+		iRows = iNum / iColumns;
 	}
 
-	// Go back and read all the points
-	SetEarthExtents(extents);
+	// Create the grid, then go back and read all the points
+	vtProjection unknown;
+	Create(extents, iColumns, iRows, !bInteger, unknown);
+
 	DPoint2 base(extents.left, extents.bottom);
 	DPoint2 spacing = GetSpacing();
-	_AllocateArray();
 
 	rewind(fp);
 	DPoint2 p;
@@ -2326,7 +2338,7 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	i = 0;
 	while (fgets(buf, 80, fp) != NULL)
 	{
-		if (progress_callback != NULL)
+		if (progress_callback != NULL && ((i%100)==0))
 		{
 			if (progress_callback(i * 100 / iNum))
 			{
@@ -2387,7 +2399,10 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback
 	bool b1arcsec = (ftell(ffp) > 3000000);
 	fclose(ffp);
 
-	gzFile fp = gzopen(szFileName, "rb");
+	VTCompress reader;
+
+	if (!reader.open(szFileName))
+		return false;
 	m_EarthExtents.SetRect(lon, lat+1, lon+1, lat);
 	ComputeCornersFromExtents();
 
@@ -2411,7 +2426,7 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback
 		if (progress_callback != NULL)
 			progress_callback(j * 100 / m_iRows);
 
-		gzread(fp, buf, m_iColumns * sizeof(short));
+		reader.read(buf, m_iColumns * sizeof(short));
 		for (i = 0; i < m_iColumns; i++)
 		{
 			value = SWAP_2(buf[i]);
@@ -2419,7 +2434,7 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback
 		}
 	}
 	delete [] buf;
-	gzclose(fp);
+	reader.close();
 	return true;
 }
 
