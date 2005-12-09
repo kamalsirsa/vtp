@@ -90,7 +90,7 @@ public:
 
 	bool ReadBCF(const char *pathname);		// read a .bcf file
 	bool ReadBCF_Old(FILE *fp);				// support obsolete format
-	bool ReadXML(const char *pathname);
+	bool ReadXML(const char *pathname, bool progress_callback(int) = NULL);
 
 	bool WriteSHP(const char *pathname);
 	bool WriteXML(const char *pathname, bool bGZip = false) const;

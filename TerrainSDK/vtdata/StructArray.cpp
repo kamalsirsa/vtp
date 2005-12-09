@@ -893,7 +893,8 @@ RGBi ParseHexColor(const char *str)
 class StructVisitorGML : public XMLVisitor
 {
 public:
-	StructVisitorGML(vtStructureArray *sa) : m_state(0), m_pSA(sa) {}
+	StructVisitorGML(vtStructureArray *sa) :
+	  m_state(0), m_pSA(sa) {}
 	void startXML() { m_state = 0; }
 	void endXML() { m_state = 0; }
 	void startElement(const char *name, const XMLAttributes &atts);
@@ -968,6 +969,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		attval = atts.getValue("Absolute");
 		if (attval)
 			m_pStructure->SetAbsolute(*attval == 't');
+
 		return;
 	}
 
@@ -1318,7 +1320,7 @@ bool vtStructureArray::WriteXML(const char* filename, bool bGZip) const
 	return true;
 }
 
-bool vtStructureArray::ReadXML(const char *pathname)
+bool vtStructureArray::ReadXML(const char *pathname, bool progress_callback(int))
 {
 	// The locale might be set to something European that interprets '.' as ','
 	//  and vice versa, which would break our usage of sscanf/atof terribly.
@@ -1354,7 +1356,7 @@ bool vtStructureArray::ReadXML(const char *pathname)
 		StructureVisitor visitor(this);
 		try
 		{
-			readXML(pathname, visitor);
+			readXML(pathname, visitor, progress_callback);
 			success = true;
 		}
 		catch (xh_exception &ex)
@@ -1370,7 +1372,7 @@ bool vtStructureArray::ReadXML(const char *pathname)
 		StructVisitorGML visitor(this);
 		try
 		{
-			readXML(pathname, visitor);
+			readXML(pathname, visitor, progress_callback);
 			success = true;
 		}
 		catch (xh_exception &ex)
