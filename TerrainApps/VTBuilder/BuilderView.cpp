@@ -767,25 +767,32 @@ void BuilderView::SetActiveLayer(vtLayerPtr lp)
 	bool bNeedErase = (prev_type == LT_ELEVATION || prev_type == LT_IMAGE);
 	bool bNeedRedraw = (curr_type == LT_ELEVATION || curr_type == LT_IMAGE);
 
-	if (lp != last && (bNeedErase || bNeedRedraw))
+	if (lp != last)
 	{
-		wxClientDC DC(this), *pDC = &DC;
-		PrepareDC(DC);
-		DRECT rect;
-
-		if (bNeedErase)
+		if (bNeedErase || bNeedRedraw)
 		{
-			last->GetAreaExtent(rect);
-			HighlightArea(pDC, rect);
-		}
+			// Erase previous highlight, change layer, then draw highlight
+			wxClientDC DC(this), *pDC = &DC;
+			PrepareDC(DC);
+			DRECT rect;
 
-		pFrame->SetActiveLayer(lp, true);
+			if (bNeedErase)
+			{
+				last->GetAreaExtent(rect);
+				HighlightArea(pDC, rect);
+			}
 
-		if (bNeedRedraw)
-		{
-			lp->GetAreaExtent(rect);
-			HighlightArea(pDC, rect);
+			pFrame->SetActiveLayer(lp, true);
+
+			if (bNeedRedraw)
+			{
+				lp->GetAreaExtent(rect);
+				HighlightArea(pDC, rect);
+			}
 		}
+		else
+			// Simply change the current layer
+			pFrame->SetActiveLayer(lp, false);
 	}
 }
 
