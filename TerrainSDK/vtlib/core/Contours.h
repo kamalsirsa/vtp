@@ -13,8 +13,7 @@
 #include "Terrain.h"
 class SurfaceGrid;
 
-/** \defgroup utility
- * Utility classes.
+/** \defgroup utility Utility classes
  */
 /*@{*/
 
