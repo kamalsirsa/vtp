@@ -120,11 +120,11 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	bool bTGZip = false;
 	bool bZip = false;
 
-	if (ext.CmpNoCase(_T("gz")) == 0)
+	if (ext.CmpNoCase(_T("gz")) == 0 || ext.CmpNoCase(_T("bz2")) == 0)
 	{
-		// We could expand .gz files into a temporary folder, but it would be
-		//  inefficient as many of the file readers used gzopen etc. hence
-		//  they already support gzipped input efficiently.
+		// We could expand .gz and .bz2 files into a temporary folder, but it
+		//  would be inefficient as many of the file readers used gzopen etc.
+		//  hence they already support gzipped input efficiently.
 		bGZip = true;
 	}
 	if (ext.CmpNoCase(_T("tgz")) == 0 || ext.CmpNoCase(_T("tar")) == 0)
