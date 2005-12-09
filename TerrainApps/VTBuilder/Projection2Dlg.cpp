@@ -68,6 +68,7 @@ Projection2Dlg::Projection2Dlg( wxWindow *parent, wxWindowID id, const wxString 
 
 	m_pProjCtrl->Append(_("Albers Equal Area Conic"));
 	m_pProjCtrl->Append(_("Geographic"));
+	m_pProjCtrl->Append(_("Hotine Oblique Mercator"));
 	m_pProjCtrl->Append(_("Lambert Azimuthal Equal-Area"));
 	m_pProjCtrl->Append(_("Lambert Conformal Conic"));
 	m_pProjCtrl->Append(_("New Zealand Map Grid"));
@@ -168,6 +169,7 @@ void Projection2Dlg::UpdateControlStatus()
 		}
 		break;
 	case PT_ALBERS:
+	case PT_HOM:
 	case PT_LCC:
 	case PT_LAEA:
 	case PT_NZMG:
@@ -293,6 +295,12 @@ void Projection2Dlg::SetUIFromProjection()
 
 		else if (!strcmp(proj_string, SRS_PT_ALBERS_CONIC_EQUAL_AREA))
 			SetProjectionUI(PT_ALBERS);
+
+		else if (!strcmp(proj_string, SRS_PT_HOTINE_OBLIQUE_MERCATOR))
+			SetProjectionUI(PT_HOM);
+
+		else if (!strcmp(proj_string, SRS_PT_LAMBERT_CONFORMAL_CONIC_1SP))
+			SetProjectionUI(PT_LCC);
 
 		else if (!strcmp(proj_string, SRS_PT_LAMBERT_CONFORMAL_CONIC_2SP))
 			SetProjectionUI(PT_LCC);
@@ -494,6 +502,13 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 	case PT_ALBERS:
 		// Put in some default values
 		m_proj.SetACEA( 60.0, 68.0, 59.0, -132.5, 500000, 500000 );
+		break;
+	case PT_HOM:
+		// Put in some default values; these are for Alaska Zone 1
+		m_proj.SetHOM( 57, -133.66666666666666,
+                        323.13010236111114, 323.13010236111114,
+                        0.9999,
+                        5000000, -5000000 );
 		break;
 	case PT_LAEA:
 		// Put in some default values

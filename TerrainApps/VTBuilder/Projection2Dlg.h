@@ -16,6 +16,7 @@ enum ProjType
 {
 	PT_ALBERS,
 	PT_GEO,
+	PT_HOM,		// Hotine Oblique Mercator
 	PT_LAEA,	// Lambert Azimuthal Equal-Area
 	PT_LCC,		// Lambert Conformal Conic
 	PT_NZMG,
