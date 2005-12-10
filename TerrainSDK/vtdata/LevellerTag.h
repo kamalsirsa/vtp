@@ -20,15 +20,6 @@
 
 	Note: One-byte structure member alignment used.
 
-	Revision history:
-
-	rcg		aug 15/02	Created.
-	rcg		aug 16/02	Tweaked API during cliptest run.
-						Added scalar array support.
-	rcg		aug 17/02	Added CRootTag::WriteBinary().
-	rcg		jul 20/05	Moved to leveller namespace.
-	bwd		oct 18/05	Removed Microsoft refs
-
 	Tags are data storage entities that exist in a hierarchical relationship
 	within a root "tag", which is just an area of memory manipulated by the
 	CRootTag class.
@@ -47,12 +38,25 @@
 	reference code for clipboard usage elsewhere in the Leveller SDK.
 */
 
-#define MAX_TAGNAMELEN	15
-
 #pragma pack(push, 1)
 
-namespace leveller
-{
+namespace daylon {
+
+typedef unsigned char	uint8, uchar, byte;
+typedef char			int8;
+typedef short			int16;
+typedef unsigned short	uint16, word;
+typedef int				int32;
+typedef unsigned int	uint32, dword;
+typedef float			float32;
+typedef double			float64;
+
+typedef void* (*_MALLOCFUNC)(size_t);
+typedef void (*_FREEFUNC)(void*);
+typedef void* (*_MEMCOPYFUNC)(void*, const void*, size_t);
+
+
+const size_t MAX_TAGNAMELEN = 15;
 
 enum
 {
@@ -75,35 +79,36 @@ enum
 	TAGRELATION_SIBLING	= 2
 };
 
+
 typedef struct
 {
 	char	szName[MAX_TAGNAMELEN + 1];
 
-	unsigned int	valueSize;
-	unsigned int	reserved;
+	daylon::uint32	valueSize;
+	daylon::uint32	reserved;
 
-	// To make seeking more efficient, one can,
-	// after writing all the tags, work through them,
-	// compute each one's full compound size, and
+	// To make seeking more efficient, one can, 
+	// after writing all the tags, work through them, 
+	// compute each one's full compound size, and 
 	// store them here.
-	unsigned int	tagSize;
-	unsigned int	reserved2;
+	daylon::uint32	tagSize;
+	daylon::uint32	reserved2;
 
-	short	relationFlags;
-	short valueKind;
+	daylon::int16	relationFlags;
+	daylon::int16	valueKind;
 } TAGHEADER; // 36 bytes
 
 typedef union
 {
-	int			n;
-	double			d;
-	unsigned char	c[1];
+	daylon::int32			n;
+	daylon::float64			d;
+	daylon::byte			c[1];
 } TAGVALUE; // 8 bytes
 
 // A tag takes sizeof(TAGHEADER) + header.valueSize bytes.
-// If a tag is storing a scalar type and header.valueSize
-// is greater than the scalar's size, it means an array
-// of scalar values is being stored, the number of which
+// If a tag is storing a scalar type and header.valueSize 
+// is greater than the scalar's size, it means an array 
+// of scalar values is being stored, the number of which 
 // is valueSize / sizeof(scalar).
 typedef struct
 {
@@ -113,71 +118,77 @@ typedef struct
 
 #pragma pack(pop)
 
+
 class CRootTag
 {
-	// Implements a C++ interface to a
-	// virtual root tag. Call CalcNormalStorage
-	// to compute the storage for all the normal tags
-	// of each type you need,
+	// Implements a C++ interface to a 
+	// virtual root tag. Call CalcNormalStorage 
+	// to compute the storage for all the normal tags 
+	// of each type you need, 
 	// and CalcBinaryTagStorage for each binary tag.
-	// Sum the results together, allocate a block
+	// Sum the results together, allocate a block 
 	// that size, and call SetStorage.
 	// Call Open to read or write tags.
-	// If you're writing a root tag, call Write
+	// If you're writing a root tag, call Write 
 	// to append each tag. If you're reading, call ReadTag.
-
-public:
-	CRootTag() : m_pRoot(NULL), m_mark(0), m_size(0),
-		m_openMode(0) {}
+	
+	public:
+		CRootTag() : m_pRoot(NULL), m_mark(0), m_size(0), 
+					m_openMode(0) {}
 		virtual ~CRootTag() {}
 
 		size_t GetValSize(int) const;
 		size_t CalcNormalStorage(size_t numTags, int kind, size_t arraySize = 1) const;
 		size_t CalcBinaryTagStorage(size_t binSize) const;
 
-		void SetStorage(void* p, size_t n)
-		{ m_pRoot = (unsigned char*)p;
-		m_mark = 0; m_size = n; m_openMode = 0; }
-
+		void SetStorage(void* p, size_t n) 
+			{ m_pRoot = (unsigned char*)p; 
+			m_mark = 0; m_size = n; m_openMode = 0; }
+	
 		void Open(const char* pszMode);
 		void Close(void);
 
 		// WriteParent() lets you write a parent tag.
-		void WriteParent(const char* pszName, int bHasSibling)
-		{ this->Write(pszName,
-		TAGRELATION_CHILD |
-		(bHasSibling ? TAGRELATION_SIBLING : 0));
-		}
+		void WriteParent(const char* pszName, bool bHasSibling)
+			{ this->Write(pszName, 
+						TAGRELATION_CHILD |
+						(bHasSibling ? TAGRELATION_SIBLING : 0));
+			}
 
 		// Write() is the general-purpose tag appender.
 		void Write(
 			const char* pszName, int relationFlags,
-			int valueKind = VALKIND_NONE,
-			void* pvData = NULL,
-			size_t datasize = 0);
+			 int valueKind = VALKIND_NONE, 
+			 const void* pvData = NULL, 
+			 size_t datasize = 0);
 
-		void Write(const char* pszName,
-			unsigned int value,
-			int bHasSibling);
+		void Write(const char* pszName, 
+					daylon::uint32 value,
+					bool bHasSibling);
 
-		void Write(const char* pszName,
-			double value,
-			int bHasSibling);
+		void Write(const char* pszName, 
+					double value,
+					bool bHasSibling);
 
 
-		// WriteBinary() must be used if you are dynamically
-		// generating the tag's value, or if you want to
-		// save memory and create the value data inside
+		// WriteBinary() must be used if you are dynamically 
+		// generating the tag's value, or if you want to 
+		// save memory and create the value data inside 
 		// the tag's memory area.
 		void* WriteBinary(
-			const char* pszName, int bHasSibling,
-			size_t datasize);
+			const char* pszName, bool bHasSibling,
+			 size_t datasize);
 
 		// Read() is the generic tag reader.
 		// Full pathspecs must always be given.
 		size_t Read(const char*, void**);
-		unsigned int ReadUINT32(const char*, unsigned int _default);
+		daylon::uint32 ReadUINT32(const char*, daylon::uint32 _default);
 		double ReadDouble(const char*, double _default);
+
+		size_t MemSize(void) const 
+			{ return sizeof(*this) + m_size; }
+		void CopyFrom(const CRootTag&, _MALLOCFUNC, _MEMCOPYFUNC);
+		void Destroy(_FREEFUNC);
 
 #ifdef _DEBUG
 		void Dump(void);
@@ -186,19 +197,19 @@ public:
 		static char* CRootTag::ValueString(const TAG&, char*);
 #endif
 
-private:
-	unsigned char*	m_pRoot;
-	size_t			m_mark;
-	size_t			m_size;
-	int				m_openMode;
+	private:
+		unsigned char*	m_pRoot;
+		size_t			m_mark;
+		size_t			m_size;
+		int				m_openMode;
 
-	void WasEndReached(void);
-	int SkipTag(void);
-	size_t ReadTag(const char*, void**);
-	size_t ArraySize(const TAG&) const;
+		void WasEndReached(void);
+		int SkipTag(void);
+		size_t ReadTag(const char*, void**);
+		size_t ArraySize(const TAG&) const;
 
 }; // CRootTag
 
-} // namespace leveller
+} // namespace daylon
 
 #endif // __LEVELLER_TAG_H__
