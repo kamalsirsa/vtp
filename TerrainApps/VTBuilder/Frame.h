@@ -176,6 +176,7 @@ protected:
 	void OnElevExport(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
 	void OnElevExportTiles(wxCommandEvent& event);
+	void OnElevCopy(wxCommandEvent& event);
 	void OnElevPasteNew(wxCommandEvent& event);
 	void OnElevMergeTin(wxCommandEvent& event);
 
@@ -415,6 +416,7 @@ public:
 	void ImportDataFromNTF(const wxString2 &strFileName);
 	void ImportDataFromS57(const wxString2 &strDirName);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
+	void ElevCopy();
 	void ElevPasteNew();
 
 	// Elevation Export

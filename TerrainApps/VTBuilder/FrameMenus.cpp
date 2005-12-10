@@ -26,6 +26,8 @@
 #include "vtui/DistanceDlg.h"
 #include "vtui/ProfileDlg.h"
 
+#include "gdal_priv.h"
+
 #include "Frame.h"
 #include "MenuEnum.h"
 #include "BuilderView.h"
@@ -150,6 +152,7 @@ EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
 EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
 EVT_MENU(ID_ELEV_EXPORT,			MainFrame::OnElevExport)
 EVT_MENU(ID_ELEV_EXPORT_TILES,		MainFrame::OnElevExportTiles)
+EVT_MENU(ID_ELEV_COPY,				MainFrame::OnElevCopy)
 EVT_MENU(ID_ELEV_PASTE_NEW,			MainFrame::OnElevPasteNew)
 EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
@@ -160,6 +163,7 @@ EVT_UPDATE_UI(ID_ELEV_SETUNKNOWN,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateScaleElevation)
 EVT_UPDATE_UI(ID_ELEV_EXPORT,		MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_COPY,			MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 
@@ -267,6 +271,7 @@ void MainFrame::CreateMenus()
 	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, _("Create Dymaxion Textures"));
 	specialMenu->Append(ID_SPECIAL_PROCESS_BILLBOARD, _("Process Billboard Texture"));
 	specialMenu->Append(ID_SPECIAL_GEOCODE, _("Geocode"));
+	specialMenu->Append(ID_ELEV_COPY, _("Copy Elevation Layer to Clipboard"));
 	specialMenu->Append(ID_ELEV_PASTE_NEW, _("New Elevation Layer from Clipboard"));
 	fileMenu->Append(0, _("Special"), specialMenu);
 #endif
@@ -2631,11 +2636,11 @@ void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 static bool VerifyHFclip(BYTE* pMem, size_t size)
 {
 	// Verify the signature and endianness of received hf clipping.
-	if(size < sizeof(leveller::TAG))
+	if (size < sizeof(daylon::TAG))
 		return false;
 
 	// The first two bytes must be 'hf'.
-	if(::memcmp(pMem, "hf", 2) != 0)
+	if (::memcmp(pMem, "hf", 2) != 0)
 		return false;
 
 	// THe next two must be an int16 that equals 0x3031.
@@ -2649,11 +2654,259 @@ static bool VerifyHFclip(BYTE* pMem, size_t size)
 // Create a new elevation layer by pasting data from the clipboard, using the
 //  Daylone Leveller clipboard format for heightfields.
 //
+void MainFrame::ElevCopy()
+{
+#if WIN32
+	UINT eFormat = ::RegisterClipboardFormat(_T("daylon_elev"));
+	if (eFormat == 0)
+	{
+		wxMessageBox(_("Can't register clipboard format"));
+		return;
+	}
+
+	vtElevLayer *pEL = GetActiveElevLayer();
+	if (!pEL)
+		return;
+	vtElevationGrid *grid = pEL->m_pGrid;
+
+	int cw, cb;
+	grid->GetDimensions(cw, cb);
+
+	/* We're going to make the following tags:
+
+		hf01 : nil
+
+		header
+			version: ui32(0)
+
+		body
+			heixels
+				extents
+					width	ui32
+					breadth	ui32
+
+				format
+					depth		ui32(32)
+					fp			ui32(1)
+
+				data		b()
+
+			coordsys
+			    geometry    ui32    (0=flat, 1=earth)
+				projection
+					format	ui32	(0=wkt if geometry=earth)
+					data	b()		(the proj. string)
+				pixelmapping			(raster-to-proj mapping)
+					transform				(affine matrix)
+						origin
+							x	d
+							z	d
+						scale
+							x	d
+							z	d
+				altitude			(assumes raw elevs are zero-based)
+					units	ui32	(EPSG measure code; 9001=m, 9002=ft, 9003=sft, etc.)				
+					scale	d		(raw-to-units scaling)
+					offset	d		(raw-to-units base)
+			[
+			alpha
+				format
+					depth	ui32
+
+				data		b()
+			]
+
+		  5-7 parent tags  +7 (12-14)
+		    1 nil tag		
+		  5-6 ui32 tags		+3 (8-9)
+		    0 double tags   +6
+		  1-2 binary tags   +1 (2-3)
+
+	*/
+	size_t nParentTags = 5+7;
+	size_t nIntTags = 5+3;
+	size_t nDblTags = 0+6;
+
+	// Determine alpha tags needed.
+	bool bAlpha = false;
+	for (int i = 0; i < cw; i++)
+	{
+		for (int j = 0; j < cb; j++)
+		{
+			if (grid->GetValue(i, j) == INVALID_ELEVATION)
+			{
+				bAlpha = true;
+				break;
+			}
+		}
+	}
+
+	if (bAlpha)
+	{
+		// There were void pixels.
+		nParentTags++;	// "body/alpha"
+		nParentTags++;	// "body/alpha/format"
+		nIntTags++;		// "body/alpha/format/depth"
+	}
+
+	size_t clipSize = 0;
+
+	daylon::CRootTag clip;
+
+	clipSize += clip.CalcNormalStorage(1, daylon::VALKIND_NONE);
+
+	clipSize += clip.CalcNormalStorage(nParentTags, daylon::VALKIND_NONE);
+	clipSize += clip.CalcNormalStorage(nIntTags, daylon::VALKIND_UINT32);
+	clipSize += clip.CalcNormalStorage(nDblTags, daylon::VALKIND_DOUBLE);
+	// HF data.
+	clipSize += clip.CalcBinaryTagStorage(cw * cb * sizeof(float));
+
+	// Void data.
+	if (bAlpha)
+		clipSize += clip.CalcBinaryTagStorage(cw * cb * sizeof(unsigned char));
+
+	// Projection string.
+	char *wkt = NULL;
+	m_proj.exportToWkt( &wkt );
+	grid->GetProjection().exportToWkt(&wkt);
+	vtString wkt_str = wkt;
+	CPLFree(wkt);
+	clipSize += clip.CalcBinaryTagStorage(wkt_str.GetLength());
+
+	// Allocate.
+	HGLOBAL hMem = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, clipSize);
+	BYTE* pMem = (BYTE*)::GlobalLock(hMem);
+
+	// Write data to clipboard.
+	try
+	{
+		clip.SetStorage(pMem, clipSize);
+
+		clip.Open("w");
+
+		// Write ID and endianness.
+		// This works because tag names are at the
+		// top of the TAG structure, hence they
+		// start the entire memory block.
+		unsigned __int16 endian = 0x3031; //'01'
+		char szEnd[] = { 'h', 'f', ' ', ' ', 0 };
+		::memcpy(szEnd+2, &endian, sizeof(endian));
+		clip.Write(szEnd, daylon::TAGRELATION_SIBLING);
+
+		clip.WriteParent("header", true);
+		clip.Write("version", (unsigned __int32)0, false);
+
+		clip.WriteParent("body", false);
+		clip.WriteParent("heixels", true);
+		clip.WriteParent("extents", true);
+		clip.Write("width", (daylon::uint32) cw, true);
+		clip.Write("breadth", (daylon::uint32) cb, false);
+
+		clip.WriteParent("format", true);
+		clip.Write("depth", (unsigned __int32)(sizeof(float)*8), true);
+		clip.Write("fp", (unsigned __int32)1, false);
+		//clip.Dump();
+
+		float* phv = (float*)
+			clip.WriteBinary("data", false,
+			cw * cb * sizeof(float));
+
+		// Transfer selected heightfield pixels to clipboard.
+		int x, z;
+		for(z = 0; z < cb; z++)
+		{
+			for(x = 0; x < cw; x++)
+			{
+				*phv = grid->GetFValue(x, cb-1-z);
+				phv++;
+			}
+		}
+
+		// Tack on coordsys tag.
+		clip.WriteParent("coordsys", bAlpha);
+			clip.Write("geometry", (unsigned __int32)1, true);
+			clip.WriteParent("projection", true);
+				clip.Write("format", (unsigned __int32)0, true);
+				unsigned char* pstrproj =
+					(unsigned char*)clip.WriteBinary(
+						"data", false,
+					wkt_str.GetLength());
+				::memcpy(pstrproj, (LPCTSTR)wkt_str, wkt_str.GetLength());
+
+			DRECT &ext = grid->GetEarthExtents();
+			double xp = ext.left;
+			double yp = ext.top;
+			double xscale = ext.Width() / (cw - 1);
+			double zscale = -ext.Height() / (cb - 1);
+			clip.WriteParent("pixelmapping", true);
+				clip.WriteParent("transform", false);
+					clip.WriteParent("origin", true);
+						clip.Write("x", xp, true);
+						clip.Write("z", yp, false);
+					clip.WriteParent("scale", false);
+						clip.Write("x", xscale, true);
+						clip.Write("z", zscale, false);
+
+			double fElevScale = grid->GetScale();
+			double fOffset = 0.0f;
+			clip.WriteParent("altitude", false);
+				clip.Write("units", (daylon::uint32) 9001, true);
+				clip.Write("scale", fElevScale, true);
+				clip.Write("offset", fOffset, false);
+
+		// Transfer any mask pixels to clipboard.
+		if (bAlpha)
+		{
+			clip.WriteParent("alpha", false);
+
+			clip.WriteParent("format", true);
+			clip.Write("depth", (unsigned __int32)(sizeof(unsigned char)*8), false);
+
+			unsigned char* pa = (unsigned char*)
+				clip.WriteBinary("data", false,
+					cw * cb * sizeof(unsigned char));
+
+			for(z = 0; z < cb; z++)
+			{
+				for(x = 0; x < cw; x++)
+				{
+					*pa++ = (grid->GetValue(x, cb-1-z)==INVALID_ELEVATION ? 0 : 255);
+				}
+			}
+		}
+	}
+	catch(...)
+	{
+		wxMessageBox(_T("Cannot place data on clipboard"));
+	}
+	clip.Close();
+#ifdef _DEBUG
+	VTLOG1("Copying grid to clipboard: ");
+	clip.Dump();
+#endif
+
+  	::GlobalUnlock(hMem);
+
+	if (::SetClipboardData(eFormat, hMem) == NULL)
+	{
+		DWORD err = ::GetLastError();
+		VTLOG("Cannot put data on clipboard. Error %d", (int)err);
+	}
+	// Undo our allocation
+	::GlobalFree(hMem);
+
+#endif	// WIN32
+}
+
+//
+// Create a new elevation layer by pasting data from the clipboard, using the
+//  Daylone Leveller clipboard format for heightfields.
+//
 void MainFrame::ElevPasteNew()
 {
 #if WIN32
 	UINT eFormat = ::RegisterClipboardFormat(_T("daylon_elev"));
-	if(eFormat == 0)
+	if (eFormat == 0)
 	{
 		wxMessageBox(_("Can't register clipboard format"));
 		return;
@@ -2667,12 +2920,12 @@ void MainFrame::ElevPasteNew()
 		return;
 	size_t nbytes = ::GlobalSize(hMem);
 
-	leveller::CRootTag clip;
+	daylon::CRootTag clip;
 
 	BYTE* pData = ((BYTE*)pMem) /*+ sizeof(kPublicHFclipID)*/;
 	clip.SetStorage(pData, nbytes /*- 
 				sizeof(kPublicHFclipID)*/);
-	if(!VerifyHFclip((BYTE*)pMem, nbytes))
+	if (!VerifyHFclip((BYTE*)pMem, nbytes))
 		return;
 
 	clip.Open("r");
@@ -2751,6 +3004,25 @@ void MainFrame::ElevPasteNew()
 	GetMainFrame()->AddLayerWithCheck(pEL);
 
 	::GlobalUnlock(hMem);
+#endif	// WIN32
+}
+
+void MainFrame::OnElevCopy(wxCommandEvent& event)
+{
+#if WIN32
+	int opened = ::OpenClipboard((HWND)GetHandle());
+	if (opened)
+	{
+		if (!::EmptyClipboard())
+		{
+			::CloseClipboard();
+			wxMessageBox(_T("Cannot empty clipboard."));
+			return;
+		}
+
+		ElevCopy();
+		::CloseClipboard();
+	}
 #endif	// WIN32
 }
 
