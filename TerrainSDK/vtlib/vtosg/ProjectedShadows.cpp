@@ -177,7 +177,7 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 #ifdef _DEBUG
 		m_pRtts = new MyRenderStage;
 #else
-		m_pRtts = new osgUtil::RenderToTextureStage;
+		m_pRtts = new osgUtil::RenderStage;
 #endif
 	}
 	else
@@ -202,7 +202,8 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 	}
 
 	// set up to charge the same RenderStageLighting is the parent previous stage.
-	m_pRtts->setRenderStageLighting(previous_stage->getRenderStageLighting());
+//	m_pRtts->setRenderStageLighting(previous_stage->getRenderStageLighting());
+	m_pRtts->setPositionalStateContainer(previous_stage->getPositionalStateContainer());
 
 	// record the render bin, to be restored after creation
 	// of the render to text
@@ -372,7 +373,7 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 	// dependancy list.
 	cv.getCurrentRenderBin()->getStage()->addToDependencyList(m_pRtts.get());
 
-	// if one exists attach texture to the RenderToTextureStage.
+	// if one exists attach texture to the RenderStage.
 	if (m_texture.valid())
 		m_pRtts->setTexture(m_texture.get());
 }

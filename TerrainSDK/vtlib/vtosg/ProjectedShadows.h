@@ -13,7 +13,7 @@
 #include <osg/Node>
 #include <osg/Vec3>
 #include <osg/TexGen>
-#include <osgUtil/RenderToTextureStage>
+#include <osgUtil/RenderStage>
 #ifdef ENVIRON_OCCLUDER_SAVE_SHADOW_IMAGE
 #include <osgDB/WriteFile>
 #endif
@@ -37,23 +37,23 @@ struct MyDrawCallback : public osg::Drawable::DrawCallback
 	}
 };
 
-class MyRenderStage : public osgUtil::RenderToTextureStage
+class MyRenderStage : public osgUtil::RenderStage
 {
 public:
 	MyRenderStage()
 	{
 		m_bWriteImage = true;
-		osgUtil::RenderToTextureStage::setImage(new osg::Image);
+		osgUtil::RenderStage::setImage(new osg::Image);
 	}
 
 	virtual void draw(osg::State& state, osgUtil::RenderLeaf*& previous)
 	{
-		RenderToTextureStage::draw(state, previous);
+		RenderStage::draw(state, previous);
 		if (m_bWriteImage)
 		{
 			m_bWriteImage = false;
-			osgDB::writeImageFile(*osgUtil::RenderToTextureStage::getImage(), "c:\\testtexture.rgb");
-			osgUtil::RenderToTextureStage::setImage(NULL);		
+			osgDB::writeImageFile(*osgUtil::RenderStage::getImage(), "c:\\testtexture.rgb");
+			osgUtil::RenderStage::setImage(NULL);		
 		}
 	}
 protected:
@@ -103,7 +103,7 @@ protected:
 	osg::ref_ptr<MyTexture2D>	m_texture;
 	osg::ref_ptr<MyRenderStage>	m_pRtts;
 #else
-	osg::ref_ptr<osgUtil::RenderToTextureStage> m_pRtts;
+	osg::ref_ptr<osgUtil::RenderStage> m_pRtts;
 	osg::ref_ptr<osg::Texture2D> m_texture;
 #endif
 	osg::ref_ptr<osg::Material>  m_material;
