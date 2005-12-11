@@ -1102,12 +1102,11 @@ void IcoGlobe::CreateMaterials(const vtStringArray &paths,
 					 false, false, false);
 	m_white = m_mats->AddRGBMaterial1(RGBf(0.2f, 0.2f, 0.2f),
 					 true, true, true, 1);
-	vtMaterial *mat = m_mats->GetAt(m_white);
-	mat->SetTransparent(true, true);
+	m_mats->GetAt(m_white)->SetTransparent(true, true);
 
 	if (m_style == INDEPENDENT_GEODESIC)
 	{
-		int mat = m_mats->GetSize();
+		int mat = 0;
 		for (int pair = 0; pair < 10; pair++)
 		{
 			for (int j = 0; j < m_freq; j++)
@@ -1118,7 +1117,7 @@ void IcoGlobe::CreateMaterials(const vtStringArray &paths,
 				float g = (j+1) * (1.0f / m_freq);
 				float b = (i+1) * (1.0f / m_freq);
 				m_globe_mat[mat++] = m_mats->AddRGBMaterial1(RGBf(r, g, b),
-						bCulling, bLighting);
+						true, true);
 			}
 		}
 		return;
