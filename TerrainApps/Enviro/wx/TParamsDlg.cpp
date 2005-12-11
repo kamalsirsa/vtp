@@ -744,6 +744,10 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	VTLOG("TParamsDlg::OnInitDialog\n");
 
+	bool bShowProgress = (m_datapaths.size() > 1);
+	if (bShowProgress)
+		OpenProgressDialog(_T("Looking for files on data paths"), false, this);
+
 	m_bReady = false;
 	m_bSetting = true;
 
@@ -754,6 +758,9 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	for (i = 0; i < paths.size(); i++)
 	{
+		if (bShowProgress)
+			UpdateProgressDialog(i * 100 / paths.size(), wxString2(paths[i]));
+
 		// fill the "Grid filename" control with available files
 		AddFilenamesToComboBox(m_pFilename, paths[i] + "Elevation", "*.bt*");
 		sel = m_pFilename->FindString(m_strFilename);
@@ -879,6 +886,9 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	wxWindow::OnInitDialog(event);
 
 	UpdateEnableState();
+
+	if (bShowProgress)
+		CloseProgressDialog();
 
 	m_bReady = true;
 }
@@ -1074,6 +1084,7 @@ void TParamsDlg::OnListDblClickStructure( wxCommandEvent &event )
 
 	if (result.Cmp(_T(""))) // user selected something
 	{
+		TransferDataFromWindow();
 		vtTagArray lay;
 		lay.SetValueString("Type", TERR_LTYPE_STRUCTURE, true);
 		lay.SetValueString("Filename", result.vt_str(), true);
