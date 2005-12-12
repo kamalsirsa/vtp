@@ -22,7 +22,7 @@
 	#include <windows.h>	// PLIB and PSM require the full windows.h
 	#undef min
 	#undef max
-#endif
+  #endif
   #if !VTLIB_PSM && !VTLIB_NI
 	// these definitions let us include gl.h without the entire Windows headers
 	#include "core/winglue.h"
