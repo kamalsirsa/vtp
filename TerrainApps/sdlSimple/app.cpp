@@ -138,15 +138,15 @@ bool App::CreateScene()
 	m_pCamera->SetYon(100000);
 
 	// The  terrain scene will contain all the terrains that are created.
-	vtTerrainScene *ts = new vtTerrainScene;
+	m_ts = new vtTerrainScene;
 
 	// Set the global data path
 	vtStringArray paths;
 	paths.push_back(vtString("Data/"));
-	ts->SetDataPath(paths);
+	m_ts->SetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
-	vtGroup *pTopGroup = ts->BeginTerrainScene();
+	vtGroup *pTopGroup = m_ts->BeginTerrainScene();
 
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
@@ -159,7 +159,7 @@ bool App::CreateScene()
 	m_ts->AppendTerrain(pTerr);
 	if (!m_ts->BuildTerrain(pTerr))
 	{
-		printf("Terrain creation failed.");
+		printf("Terrain creation failed.\n");
 		return false;
 	}
 	m_ts->SetCurrentTerrain(pTerr);
@@ -321,8 +321,6 @@ int App::main()
 	vtGetScene()->SetRoot(NULL);
 	if (m_ts)
 		m_ts->CleanupScene();
-	if (m_pCamera)
-		m_pCamera->Release();
 	delete m_ts;
 	vtGetScene()->Shutdown();
 
