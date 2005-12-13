@@ -57,7 +57,8 @@ bool BuilderApp::OnInit()
 #endif
 
 	VTSTARTLOG("debug.txt");
-	VTLOG(APPNAME "\nBuild:");
+	VTLOG1(APPNAME);
+	VTLOG1("\nBuild:");
 #if DEBUG
 	VTLOG(" Debug");
 #else
@@ -104,7 +105,7 @@ bool BuilderApp::OnInit()
 	delete frametest;
 
 	VTLOG(" Creating Main Frame Window,");
-	wxString2 title = _T(APPNAME);
+	wxString2 title = APPNAME;
 	VTLOG(" title '%s'\n", title.mb_str());
 	MainFrame* frame = new MainFrame((wxFrame *) NULL, title,
 							   wxPoint(50, 50), wxSize(900, 500));
@@ -177,8 +178,8 @@ void BuilderApp::SetupLocale()
 	int default_lang = m_locale.GetSystemLanguage();
 
 	const wxLanguageInfo *info = wxLocale::GetLanguageInfo(default_lang);
-	VTLOG("Default language: %d (%s)\n",
-		default_lang, info->Description.mb_str());
+	const char *langdesc = info->Description.mb_str();
+	VTLOG("Default language: %d (%s)\n", default_lang, langdesc);
 
 	// After wx2.4.2, wxWidgets looks in the application's directory for
 	//  locale catalogs, not the current directory.  Here we force it to
@@ -199,8 +200,10 @@ void BuilderApp::SetupLocale()
 		else
 		{
 			info = m_locale.GetLanguageInfo(lang);
+			const char *canonical = info->CanonicalName.mb_str();
+			const char *descript = info->Description.mb_str();
 			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n", lang,
-				info->CanonicalName.mb_str(), info->Description.mb_str());
+				canonical, descript);
 			bSuccess = m_locale.Init(lang, wxLOCALE_CONV_ENCODING);
 		}
 	}
