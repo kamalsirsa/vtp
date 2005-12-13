@@ -79,7 +79,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..,..\.."
-				PreprocessorDefinitions="_DEBUG;WIN32;_LIB;VTLIB_OSG=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_LIB;VTLIB_OSG=1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"

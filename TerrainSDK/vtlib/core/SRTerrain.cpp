@@ -33,7 +33,7 @@ using namespace mini;
 // Set the following "1" to "0" before each code release, because non-core
 //	developers don't need to debug into the libMini library, so they won't
 //  need the *d version.
-#if _DEBUG && 0
+#if VTDEBUG && 0
 #pragma message( "Adding link with libMinid.lib" )
 #pragma comment( lib, "libMinid.lib" )
 #else

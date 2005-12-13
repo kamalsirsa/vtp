@@ -21,7 +21,7 @@
 
 CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 {
-#ifdef _DEBUG
+#if VTDEBUG
 	if (!(v.m_prevVertex == NULL || v.m_leftLine.FacingTowards (v.m_prevVertex -> m_rightLine)))
 		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 	if (!(v.m_nextVertex == NULL || v.m_rightLine.FacingTowards (v.m_nextVertex -> m_leftLine)))
@@ -31,7 +31,7 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 	CVertex &l = *v.m_prevVertex;
 	CVertex &r = *v.m_nextVertex;
 
-#ifdef _DEBUG
+#if VTDEBUG
 	if (!(v.m_leftLine.m_Angle == v.m_leftVertex -> m_leftLine.m_Angle))
 		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 	if (!(v.m_rightLine.m_Angle == v.m_rightVertex -> m_rightLine.m_Angle))
@@ -122,7 +122,7 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 	VTLOG("ApplyNonconvexIntersection\n");
 #endif
 
-#ifdef _DEBUG
+#if VTDEBUG
 	// Left and right vertices must always be the same point
 	if (!(m_leftVertex == m_rightVertex))
 		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
@@ -154,7 +154,7 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 	CVertex v1 (p, *rightPointer, *m_rightVertex);
 	CVertex v2 (p, *m_leftVertex, *leftPointer);
 
-#ifdef _DEBUG
+#if VTDEBUG
 	if (!(v1.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
 		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 	if (!(v2.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
@@ -278,7 +278,7 @@ void CIntersection::ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl
 #endif
 	// create new vertex and link into current contour
 	CVertex vtx (m_poi, *m_leftVertex, *m_rightVertex);
-#ifdef _DEBUG
+#if VTDEBUG
 	if(!(vtx.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
 		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
@@ -348,7 +348,7 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 #ifdef FELKELDEBUG
 	VTLOG("ApplyLast3\n");
 #endif
-#ifdef _DEBUG
+#if VTDEBUG
 	if (!(m_leftVertex->m_nextVertex == m_rightVertex))
 		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 	if (!(m_rightVertex->m_prevVertex == m_leftVertex))
@@ -372,7 +372,7 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 	C3DPoint is3 = v3.m_axis.FacingTowards(v1.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v3.m_axis.Intersection(v1.m_axis);
 
 	C3DPoint is = m_poi;
-#ifdef _DEBUG
+#if VTDEBUG
 	if (!(is == is1 || is1 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
 		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 	if (!(is == is2 || is2 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))

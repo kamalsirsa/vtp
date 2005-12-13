@@ -528,11 +528,11 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		reg->setOptions(opts);
 
 		// Now actually request the node from OSG
-#if _DEBUG
+#if VTDEBUG
 		VTLOG("[");
 #endif
 		node = osgDB::readNodeFile((const char *)fname);
-#if _DEBUG
+#if VTDEBUG
 		VTLOG("]");
 #endif
 

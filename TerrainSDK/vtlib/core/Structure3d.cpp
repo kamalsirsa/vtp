@@ -129,7 +129,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		//  the object has changed on disk, so force a reload
 		bool bForce = bRecreating;
 
-#if _DEBUG
+#if VTDEBUG
 		VTLOG("Loading Model from '%s'\n", (const char *)fullpath);
 #endif
 		m_pModel = vtNode::LoadModel(fullpath, !bForce);

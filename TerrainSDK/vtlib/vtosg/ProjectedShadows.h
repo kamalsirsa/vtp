@@ -18,7 +18,7 @@
 #include <osgDB/WriteFile>
 #endif
 
-#ifdef _DEBUG
+#if VTDEBUG
 
 class MyTexture2D : public osg::Texture2D
 {
@@ -99,7 +99,7 @@ protected:
 	osg::ref_ptr<osg::StateSet>	m_shadowState;
 	osg::ref_ptr<osg::StateSet>	m_shadowedState;
 	osg::Matrix					m_VPOSTransform;
-#ifdef _DEBUG
+#if VTDEBUG
 	osg::ref_ptr<MyTexture2D>	m_texture;
 	osg::ref_ptr<MyRenderStage>	m_pRtts;
 #else

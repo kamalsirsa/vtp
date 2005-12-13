@@ -313,7 +313,7 @@ m_advancingSkeletonLine (NULL)
 
 	// Create the associated ridgeline for this vertex
 	CNumber height = m_leftLine.Dist(m_point) * fabs(tan(m_leftLine.m_Slope));
-#ifdef _DEBUG
+#if VTDEBUG
 	{
 		CNumber n2 = m_rightLine.Dist(m_point) * fabs(tan(m_rightLine.m_Slope));
 		if (height != n2)
@@ -323,14 +323,14 @@ m_advancingSkeletonLine (NULL)
 	C3DPoint i = m_leftLine.Intersection (m_rightLine);
 	if (i.m_x == CN_INFINITY)
 	{
-#ifdef _DEBUG
+#if VTDEBUG
 		if (i.m_z != CN_INFINITY)
 			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
 		i = m_leftLine.IntersectionAnywhere (m_rightLine);
 		if (i.m_x == CN_INFINITY)
 		{
-#ifdef _DEBUG
+#if VTDEBUG
 			if (i.m_z != CN_INFINITY)
 				VTLOG("%s %d Assert failed i.m_z %e\n", __FILE__, __LINE__, i.m_z);
 #endif
@@ -372,7 +372,7 @@ C3DPoint CVertex::CoordinatesOfAnyIntersectionOfTypeB (const CVertex &left, cons
 	}
 
 	poi = left.m_rightLine.IntersectionAnywhere(m_axis);
-#ifdef _DEBUG
+#if VTDEBUG
 	if (poi.m_y != 0.0)
 		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 	if (left.m_rightLine.m_IsRidgeLine)
@@ -387,7 +387,7 @@ C3DPoint CVertex::CoordinatesOfAnyIntersectionOfTypeB (const CVertex &left, cons
 	// Calculate heights
 	poi.m_y = m_leftLine.Dist(poi) * fabs(tan(m_leftLine.m_Slope));
 
-#ifdef _DEBUG
+#if VTDEBUG
 	{
 		if (poi.m_y < 10000.0)
 		{
@@ -411,7 +411,7 @@ C3DPoint CVertex::CoordinatesOfAnyIntersectionOfTypeB (const CVertex &left, cons
 
 C3DPoint CVertex::IntersectionOfTypeB (const CVertex &left, const CVertex &right)
 {
-#ifdef _DEBUG
+#if VTDEBUG
 	if (m_prevVertex != NULL && !m_leftLine.FacingTowards(m_prevVertex->m_rightLine))
 		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 	if (m_nextVertex != NULL && !m_rightLine.FacingTowards(m_nextVertex->m_leftLine))
@@ -434,7 +434,7 @@ C3DPoint CVertex::IntersectionOfTypeB (const CVertex &left, const CVertex &right
 	C3DPoint p;
 	if (pl != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)) p = pl;
 	if (pr != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)) p = pr;
-#ifdef _DEBUG
+#if VTDEBUG
 	if (p == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY))
 		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 	if (!(pl == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) || pr == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) || pl == pr))
@@ -449,7 +449,7 @@ C3DPoint CVertex::IntersectionOfTypeB (const CVertex &left, const CVertex &right
 	CNumber arp = CRidgeLine(right.m_point, poi).m_Angle - right.m_leftLine.m_Angle;
 
 	al.NormalizeAngle(); ar.NormalizeAngle(); alp.NormalizeAngle(); arp.NormalizeAngle();
-#ifdef _DEBUG
+#if VTDEBUG
 	if (!(al <= 0.0))
 		VTLOG("%s %d Assert failed al %e\n", __FILE__, __LINE__, al);
 	if (!(ar >= 0.0 || ar == -CN_PI))
@@ -476,7 +476,7 @@ CNumber CVertex::NearestIntersection (CVertexList &vl, CVertex **left, CVertex *
 		if ((*i).m_done) continue;
 		if ((*i).m_nextVertex == NULL || (*i).m_prevVertex == NULL) continue;
 		if (&*i == this || (*i).m_nextVertex == this) continue;
-#ifdef _DEBUG
+#if VTDEBUG
 		if (!((*i).m_rightVertex != NULL))
 			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 		if (!((*i).m_leftVertex != NULL))
@@ -528,7 +528,7 @@ bool CVertex::InvalidIntersection (CVertexList &vl, const CIntersection &is)
 
 		CNumber di = (*i).m_leftLine.Dist(poi) * fabs(tan((*i).m_leftLine.m_Slope));
 		CNumber dix = (*i).m_rightLine.Dist(poi) * fabs(tan((*i).m_rightLine.m_Slope));
-#ifdef _DEBUG
+#if VTDEBUG
 		if (!(di == dix))
 			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif

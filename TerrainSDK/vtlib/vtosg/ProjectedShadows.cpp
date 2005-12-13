@@ -50,7 +50,7 @@ CreateProjectedShadowTextureCullCallback::CreateProjectedShadowTextureCullCallba
 	//	their soft edges.
 	m_bDepthShadow = false;
 
-#ifdef _DEBUG
+#if VTDEBUG
 	m_texture = new MyTexture2D;
 #else
 	m_texture = new osg::Texture2D;
@@ -174,7 +174,7 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 	// create the render to texture stage.
 	if (!m_pRtts.valid())
 	{
-#ifdef _DEBUG
+#if VTDEBUG
 		m_pRtts = new MyRenderStage;
 #else
 		m_pRtts = new osgUtil::RenderStage;

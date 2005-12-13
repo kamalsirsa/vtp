@@ -193,7 +193,7 @@ public:
 	iterator next (const iterator &i) { iterator tmp (i); tmp ++; if (tmp == end ()) tmp = begin (); return tmp; }
 	void push_back (const CVertex& x)
 	{
-#ifdef _DEBUG
+#if VTDEBUG
 		if (!(x.m_prevVertex == NULL || x.m_leftLine.FacingTowards (x.m_prevVertex -> m_rightLine)))
 			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 		if (!(x.m_nextVertex == NULL || x.m_rightLine.FacingTowards (x.m_nextVertex -> m_leftLine)))

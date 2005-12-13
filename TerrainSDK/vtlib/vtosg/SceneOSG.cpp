@@ -522,7 +522,7 @@ void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode,
 		m_pShadowVisitor->SetInitialLightPosition(v2s(-(pLight->GetDirection()) * 10000));
 		pTransform->GetOsgNode()->setCullCallback(m_pShadowVisitor.get());
 		m_pShadowVisitor->SetEnabled(true);
-#ifdef _DEBUG
+#if VTDEBUG
 	{
 		osg::Group *pGroup = (osg::Group*)pTransform->GetOsgNode();
 		osg::Geode *pGeode = (osg::Geode*)pGroup->getChild(0);
@@ -535,7 +535,7 @@ void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode,
 void vtScene::UnsetShadowedNode(vtTransform *pTransform)
 {
 	pTransform->GetOsgNode()->setCullCallback(NULL);
-#ifdef _DEBUG
+#if VTDEBUG
 	{
 		osg::Group *pGroup = (osg::Group*)pTransform->GetOsgNode();
 		osg::Geode *pGeode = (osg::Geode*)pGroup->getChild(0);

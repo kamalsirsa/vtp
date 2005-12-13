@@ -153,7 +153,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 			continue;
 		}
 
-#ifdef _DEBUG
+#if VTDEBUG
 		if (!(i.m_leftVertex->m_prevVertex != i.m_rightVertex))
 			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 		if (!(i.m_rightVertex->m_nextVertex != i.m_leftVertex))
@@ -295,7 +295,7 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 				if (bPrevReversed)
 				{
 					// Joining lower to higher
-#ifdef _DEBUG
+#if VTDEBUG
 					if (!((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_higher.m_left)))
 						VTLOG("%s %d Assert failed prev lower left %x next higher left %x\n", __FILE__, __LINE__, pPrevEdge->m_lower.m_left, pNextEdge->m_higher.m_left);
 #else
@@ -308,7 +308,7 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 				else
 				{
 					// Joing higher to higher
-#ifdef _DEBUG
+#if VTDEBUG
 					if (!((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_higher.m_left)))
 						VTLOG("%s %d Assert failed prev higher right %x next higher left %x\n", __FILE__, __LINE__, pPrevEdge->m_higher.m_right, pNextEdge->m_higher.m_left);
 #else
@@ -324,7 +324,7 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 				if (bPrevReversed)
 				{
 					// Joining lower to lower
-#ifdef _DEBUG
+#if VTDEBUG
 					if (!((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_lower.m_right)))
 						VTLOG("%s %d Assert failed prev lower left %x next lower right %x\n", __FILE__, __LINE__, pPrevEdge->m_lower.m_left, pNextEdge->m_lower.m_right);
 #else
@@ -337,7 +337,7 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 				else
 				{
 					// Joining higher to lower
-#ifdef _DEBUG
+#if VTDEBUG
 					if (!((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_lower.m_right)))
 						VTLOG("%s %d Assert failed prev higher right %x next lower right %x\n", __FILE__, __LINE__, pPrevEdge->m_higher.m_right, pNextEdge->m_lower.m_right);
 #else
