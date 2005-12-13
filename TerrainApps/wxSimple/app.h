@@ -6,6 +6,7 @@
 //
 
 class vtTerrainScene;
+class vtFrame;
 
 // Define a new application type
 class vtApp: public wxApp
@@ -15,8 +16,7 @@ public:
 	bool CreateScene();
 	int OnExit();
 
-	class vtFrame *m_frame;
+	vtFrame *m_pFrame;
 	vtTerrainScene *m_pTerrainScene;
-	vtCamera *m_pCamera;
 };
 

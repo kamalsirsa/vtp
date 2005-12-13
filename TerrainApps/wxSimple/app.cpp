@@ -30,10 +30,12 @@ IMPLEMENT_APP(vtApp);
 //
 bool vtApp::OnInit(void)
 {
+	m_pTerrainScene = NULL;
+
 	vtGetScene()->Init();
 
 	// Create the main frame window
-	m_frame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));
+	m_pFrame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));
 
 	return CreateScene();
 }
@@ -47,20 +49,20 @@ bool vtApp::CreateScene()
 	vtScene *pScene = vtGetScene();
 
 	// Look up the camera
-	m_pCamera = pScene->GetCamera();
-	m_pCamera->SetHither(10);
-	m_pCamera->SetYon(100000);
+	vtCamera *pCamera = pScene->GetCamera();
+	pCamera->SetHither(10);
+	pCamera->SetYon(100000);
 
 	// The  terrain scene will contain all the terrains that are created.
-	vtTerrainScene *ts = new vtTerrainScene;
+	m_pTerrainScene = new vtTerrainScene;
 
 	// Set the global data path
 	vtStringArray paths;
 	paths.push_back(vtString("Data/"));
-	ts->SetDataPath(paths);
+	m_pTerrainScene->SetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
-	vtGroup *pTopGroup = ts->BeginTerrainScene();
+	vtGroup *pTopGroup = m_pTerrainScene->BeginTerrainScene();
 
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
@@ -73,7 +75,7 @@ bool vtApp::CreateScene()
 	m_pTerrainScene->AppendTerrain(pTerr);
 	if (!m_pTerrainScene->BuildTerrain(pTerr))
 	{
-		m_frame->m_canvas->m_bRunning = false;
+		m_pFrame->m_canvas->m_bRunning = false;
 		wxMessageBox(_T("Couldn't create the terrain.  Perhaps the elevation data file isn't in the expected location?"));
 		return false;
 	}
@@ -84,13 +86,13 @@ bool vtApp::CreateScene()
 	float fSpeed = pTerr->GetParams().GetValueFloat(STR_NAVSPEED);
 
 	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(fSpeed);
-	pFlyer->SetTarget(m_pCamera);
+	pFlyer->SetTarget(pCamera);
 	pFlyer->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pFlyer);
 
 	// Minimum height over terrain is 100 m
 	vtHeightConstrain *pConstrain = new vtHeightConstrain(100);
-	pConstrain->SetTarget(m_pCamera);
+	pConstrain->SetTarget(pCamera);
 	pConstrain->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pConstrain);
 
@@ -102,8 +104,6 @@ int vtApp::OnExit()
 {
 	if (m_pTerrainScene)
 	{
-		m_pCamera->Release();
-
 		// Clean up the scene
 		vtGetScene()->SetRoot(NULL);
 		m_pTerrainScene->CleanupScene();
