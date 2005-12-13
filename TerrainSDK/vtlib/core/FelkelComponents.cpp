@@ -332,7 +332,7 @@ m_advancingSkeletonLine (NULL)
 		{
 #if VTDEBUG
 			if (i.m_z != CN_INFINITY)
-				VTLOG("%s %d Assert failed i.m_z %e\n", __FILE__, __LINE__, i.m_z);
+				VTLOG("%s %d Assert failed i.m_z %e\n", __FILE__, __LINE__, (double) i.m_z);
 #endif
 			if (m_leftLine.PointOnRidgeLine(m_rightLine.m_Origin) || m_leftLine.Opaque().PointOnRidgeLine(m_rightLine.m_Origin))
 				// Lines are coincident
@@ -396,13 +396,13 @@ C3DPoint CVertex::CoordinatesOfAnyIntersectionOfTypeB (const CVertex &left, cons
 			CNumber db2 = left.m_rightLine.Dist(poi) * fabs(tan(left.m_rightLine.m_Slope));
 			CNumber db3 = left.m_nextVertex->m_leftLine.Dist(poi) * fabs(tan(left.m_nextVertex->m_leftLine.m_Slope));
 			if (!SIMILAR(poi.m_y, db0))
-				VTLOG("%s %d Assert failed poi.m_y %e db0 %e\n", __FILE__, __LINE__, poi.m_y, db0);
+				VTLOG("%s %d Assert failed poi.m_y %e db0 %e\n", __FILE__, __LINE__, (double) poi.m_y, (double) db0);
 			if (!SIMILAR(poi.m_y, db1))
-				VTLOG("%s %d Assert failed poi.m_y %e db1 %e\n", __FILE__, __LINE__, poi.m_y, db1);
+				VTLOG("%s %d Assert failed poi.m_y %e db1 %e\n", __FILE__, __LINE__, (double) poi.m_y, (double) db1);
 			if (!SIMILAR(poi.m_y, db2))
-				VTLOG("%s %d Assert failed poi.m_y %e db2 %e\n", __FILE__, __LINE__, poi.m_y, db2);
+				VTLOG("%s %d Assert failed poi.m_y %e db2 %e\n", __FILE__, __LINE__, (double) poi.m_y, (double) db2);
 			if (!SIMILAR(poi.m_y, db3))
-				VTLOG("%s %d Assert failed poi.m_y %e db3 %e\n", __FILE__, __LINE__, poi.m_y, db3);
+				VTLOG("%s %d Assert failed poi.m_y %e db3 %e\n", __FILE__, __LINE__, (double) poi.m_y, (double) db3);
 		}
 	}
 #endif
@@ -451,9 +451,9 @@ C3DPoint CVertex::IntersectionOfTypeB (const CVertex &left, const CVertex &right
 	al.NormalizeAngle(); ar.NormalizeAngle(); alp.NormalizeAngle(); arp.NormalizeAngle();
 #if VTDEBUG
 	if (!(al <= 0.0))
-		VTLOG("%s %d Assert failed al %e\n", __FILE__, __LINE__, al);
+		VTLOG("%s %d Assert failed al %e\n", __FILE__, __LINE__, (double) al);
 	if (!(ar >= 0.0 || ar == -CN_PI))
-		VTLOG("%s %d Assert failed ar %e\n", __FILE__, __LINE__, ar);
+		VTLOG("%s %d Assert failed ar %e\n", __FILE__, __LINE__, (double) ar);
 #endif
 
 	if ((alp > 0.0 || alp < al) && !ANGLE_SIMILAR(alp, CNumber(0)) && !ANGLE_SIMILAR(alp, al))
