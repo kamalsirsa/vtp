@@ -47,7 +47,7 @@ EnviroApp theApp;
 
 BOOL EnviroApp::InitInstance()
 {
-#if WIN32 && defined(_MSC_VER) && DEBUG
+#if WIN32 && defined(_MSC_VER) && _DEBUG
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 
