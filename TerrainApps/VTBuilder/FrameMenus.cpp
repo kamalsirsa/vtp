@@ -2831,7 +2831,7 @@ void MainFrame::ElevCopy()
 					(unsigned char*)clip.WriteBinary(
 						"data", false,
 					wkt_str.GetLength());
-				::memcpy(pstrproj, (LPCTSTR)wkt_str, wkt_str.GetLength());
+				::memcpy(pstrproj, (const char *)wkt_str, wkt_str.GetLength());
 
 			DRECT &ext = grid->GetEarthExtents();
 			double xp = ext.left;
