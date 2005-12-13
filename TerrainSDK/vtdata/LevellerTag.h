@@ -190,7 +190,7 @@ class CRootTag
 		void CopyFrom(const CRootTag&, _MALLOCFUNC, _MEMCOPYFUNC);
 		void Destroy(_FREEFUNC);
 
-#ifdef _DEBUG
+#if VTDEBUG
 		void Dump(void);
 		void DumpTag(const char*);
 		static const char* TypeString(int);

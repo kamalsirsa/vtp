@@ -475,7 +475,7 @@ void daylon::CRootTag::Destroy(_FREEFUNC fnFree)
 }
 
 
-#ifdef _DEBUG
+#if VTDEBUG
 
 // Utility routines for verifying clip tree.
 

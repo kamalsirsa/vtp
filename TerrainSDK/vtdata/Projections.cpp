@@ -926,7 +926,7 @@ OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pT
 		enode2->GetChild(2)->SetValue(enode1->GetChild(2)->GetValue());
 	}
 
-#if DEBUG
+#if VTDEBUG
 	bool bLog = true;
 #else
 	bool bLog = false;

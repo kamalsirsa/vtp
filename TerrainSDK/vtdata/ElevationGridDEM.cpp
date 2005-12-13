@@ -11,7 +11,7 @@
 #include "ElevationGrid.h"
 #include "vtLog.h"
 
-#ifdef DEBUG
+#if VTDEBUG
 #define DEBUG_DEM true
 #else
 #define DEBUG_DEM false
