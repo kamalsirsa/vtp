@@ -481,7 +481,7 @@ void MainFrame::CreateMenus()
 	// Help
 	helpMenu = new wxMenu;
 	wxString2 msg = _("About ");
-	msg += _T(APPNAME);
+	msg += APPNAME;
 	helpMenu->Append(wxID_HELP, _("&About"), msg);
 	m_pMenuBar->Append(helpMenu, _("&Help"));
 	menu_num++;
@@ -515,7 +515,7 @@ void MainFrame::OnProjectNew(wxCommandEvent &event)
 
 wxString2 GetProjectFilter()
 {
-	wxString2 str = _T(APPNAME);
+	wxString2 str = APPNAME;
 	str += _T(" ");
 	str += _("Project Files (*.vtb)|*.vtb");
 	return str;
@@ -3875,8 +3875,8 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 		FSTRING_PNG, wxSAVE);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
-	vtString fullname = loadFile.GetPath().mb_str();
-	vtString filename = loadFile.GetFilename().mb_str();
+	vtString fullname = (const char *) loadFile.GetPath().mb_str();
+	vtString filename = (const char *) loadFile.GetFilename().mb_str();
 
 	dib.WritePNG(fullname);
 
@@ -3885,7 +3885,7 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 		FSTRING_HTML, wxSAVE);
 	if (loadFile2.ShowModal() != wxID_OK)
 		return;
-	vtString htmlname = loadFile2.GetPath().mb_str();
+	vtString htmlname = (const char *) loadFile2.GetPath().mb_str();
 
 	FILE *fp = fopen(htmlname, "wb");
 	if (!fp)
@@ -3960,15 +3960,15 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += _(__DATE__);
 	wxMessageBox(str, _T("About ElevTool"));
 #else
-	wxString str = _("Virtual Terrain Builder\nPowerful, easy to use, free!\n");
+	wxString2 str = _("Virtual Terrain Builder\nPowerful, easy to use, free!\n");
 	str += _T("\n");
 	str += _("Please read the HTML documentation and license.\n");
 	str += _T("\n");
 	str += _("Send feedback to: ben@vterrain.org\n");
 	str += _("Build date: ");
-	str += _T(__DATE__);
-	wxString str2 = _("About ");
-	str2 += _T(APPNAME);
+	str += __DATE__;
+	wxString2 str2 = _("About ");
+	str2 += APPNAME;
 	wxMessageBox(str, str2);
 #endif
 }
