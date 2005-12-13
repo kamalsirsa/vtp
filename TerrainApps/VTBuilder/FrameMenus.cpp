@@ -2880,7 +2880,7 @@ void MainFrame::ElevCopy()
 		wxMessageBox(_T("Cannot place data on clipboard"));
 	}
 	clip.Close();
-#ifdef _DEBUG
+#if VTDEBUG
 	VTLOG1("Copying grid to clipboard: ");
 	clip.Dump();
 #endif

@@ -90,7 +90,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\TerrainSDK,\APIs"
-				PreprocessorDefinitions="WIN32=1;DEBUG=1;_DEBUG;_WINDOWS"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"

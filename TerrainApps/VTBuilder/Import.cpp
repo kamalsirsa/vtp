@@ -1278,7 +1278,7 @@ int MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 		if (!defn)
 			continue;
 
-#if DEBUG
+#if VTDEBUG
 		VTLOG("Layer %d/%d, '%s'\n", i, num_layers, defn->GetName());
 
 		// Debug: iterate through the fields

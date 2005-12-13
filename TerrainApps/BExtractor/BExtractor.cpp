@@ -56,7 +56,7 @@ BOOL CBExtractorApp::InitInstance()
 {
 	VTSTARTLOG("debug.txt");
 	VTLOG("BExtractor\nBuild:");
-#if _DEBUG
+#if VTDEBUG
 	VTLOG(" Debug");
 #else
 	VTLOG(" Release");

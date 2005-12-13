@@ -16,7 +16,7 @@ void print_help()
 	printf("VTConvert, a command-line tool for converting geodata.\n");
 	printf("Currently, it just converts elevation data, from any format, to the BT format.\n");
 	printf(" Build: ");
-#if DEBUG
+#if VTDEBUG
 	printf("Debug");
 #else
 	printf("Release");

@@ -59,7 +59,7 @@ bool BuilderApp::OnInit()
 	VTSTARTLOG("debug.txt");
 	VTLOG1(APPNAME);
 	VTLOG1("\nBuild:");
-#if DEBUG
+#if VTDEBUG
 	VTLOG(" Debug");
 #else
 	VTLOG(" Release");

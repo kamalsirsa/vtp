@@ -425,7 +425,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	vtProjection Source;
 	CreateSimilarGeographicProjection(proj, Source);
 
-#if DEBUG
+#if VTDEBUG
 	// Check projection text
 	char *str1, *str2;
 	Source.exportToWkt(&str1);
@@ -1529,7 +1529,7 @@ void BuilderView::OnSize(wxSizeEvent& event)
 
 void BuilderView::OnChar(wxKeyEvent& event)
 {
-#if DEBUG
+#if VTDEBUG
 	VTLOG("Char %d (%c) ctrl:%d\n", event.GetKeyCode(), event.GetKeyCode(), event.ControlDown());
 #endif
 
@@ -1738,7 +1738,7 @@ void BuilderView::OnKeyDown(wxKeyEvent& event)
 {
 	int code = event.GetKeyCode();
 	bool ctrl = event.ControlDown();
-#if DEBUG
+#if VTDEBUG
 //	VTLOG("KeyDown %d (%c) ctrl:%d\n", code, event.GetKeyCode(), ctrl);
 #endif
 
