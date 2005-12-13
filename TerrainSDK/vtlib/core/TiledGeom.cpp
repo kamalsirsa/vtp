@@ -14,12 +14,14 @@
 #include "miniload.hpp"
 #include "minicache.hpp"
 #include "pnmbase.h"
+#include "miniOGL.h"
 
 // Set this to use the 'minicache' OpenGL primitive cache.
 //  Actually, we depend on it for adaptive resolution, so leave it at 1.
 #define USE_VERTEX_CACHE	1
 
-#define WE_OWN_BUFFERS		0
+#define ENABLE_TILE_CACHE	1
+#define WE_OWN_BUFFERS		ENABLE_TILE_CACHE
 
 /////////////
 // singleton; TODO: get rid of this to allow multiple instances
@@ -95,9 +97,9 @@ bool TiledDatasetDescription::GetCorners(DLine2 &line, bool bGeo) const
 
 ///////////////////////////////////////////////////////////////////////
 
-int request_callback(unsigned char *mapfile,unsigned char *texfile,
-					  unsigned char *fogfile,void *data,
-					  void **hfield,void **texture,void **fogmap)
+void request_callback(unsigned char *mapfile, unsigned char *texfile,
+					  unsigned char *fogfile, void *data,
+					  databuf *hfield, databuf *texture, databuf *fogmap)
 {
 #if 0
 	vtString str1 = "NULL", str2 = "NULL";
@@ -113,30 +115,17 @@ int request_callback(unsigned char *mapfile,unsigned char *texfile,
 	VTLOG1(")\n");
 #endif
 
-	if (hfield!=NULL && texture!=NULL && fogmap!=NULL)
-	{
-		// we need to load (or get from cache) one or both: hfield and texture
-		if (mapfile==NULL)
-			*hfield=NULL;
-		else
-			*hfield = s_pTiledGeom->FetchAndCacheTile((char *)mapfile);;
+	// FetchTile
+	// FetchAndCacheTile
+	// we need to load (or get from cache) one or both: hfield and texture
+	if (mapfile!=NULL)
+		*hfield = s_pTiledGeom->FetchAndCacheTile((char *)mapfile);;
 
-		if (texfile==NULL)
-			*texture=NULL;
-		else
-			*texture = s_pTiledGeom->FetchAndCacheTile((char *)texfile);
-	}
-	else
-	{
-		// just checking for file existence
-		int present=1;
+	if (texfile!=NULL)
+		*texture = s_pTiledGeom->FetchAndCacheTile((char *)texfile);
 
-		if (mapfile!=NULL) present&=checkfile((char *)mapfile);
-		if (texfile!=NULL) present&=checkfile((char *)texfile);
-
-		return(present);
-	}
-	return 1;
+	if (fogfile!=NULL)
+		*fogmap = s_pTiledGeom->FetchAndCacheTile((char *)fogfile);
 }
 
 void mini_error_handler(char *file,int line,int fatal)
@@ -358,7 +347,7 @@ void vtTiledGeom::SetupMiniLoad()
 	//	- then for each frame only a small fraction of the tiles is
 	//		updated in order to limit the update latencies
 	//	- a value of zero means that one tile is updated per frame
-	int pupdate = 1000;
+	int pupdate = 300;
 
 	//expire: expiration time
 	//	- determines the number of frames after which invisible tiles
@@ -367,10 +356,11 @@ void vtTiledGeom::SetupMiniLoad()
 	//	- a value of zero disables expiration
 	int pexpire = 0;
 
-	m_pMiniLoad->setloader(request_callback,
+	m_pMiniLoad->setloader(NULL,	// 'file exists' callback
+		request_callback,
 		NULL,	// data
-		NULL,/*preload_callback*/
-		NULL,/*deliver_callback*/
+		NULL,	// preload_callback
+		NULL,	// deliver_callback
 		paging,
 		pfarp, prange, pbasesize,
 		plazyness, pupdate, pexpire);
@@ -392,10 +382,18 @@ void vtTiledGeom::SetupMiniLoad()
     // Tell the library not to free the buffers we pass to it, so that our
 	// cache can own them and pass them again when needed, without copying.
 	m_pMiniLoad->configure_dontfree(WE_OWN_BUFFERS);
+
+	miniOGL::configure_compression(0);
 }
 
-unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
+databuf vtTiledGeom::FetchAndCacheTile(const char *fname)
 {
+#if !ENABLE_TILE_CACHE
+	m_iMaxCacheSize = 0;	// disable it
+#endif
+	databuf result;
+	result.comment = NULL;
+
 	std::string name = fname;
 	TileCache::iterator it = m_Cache.find(name);
 	if (it == m_Cache.end())
@@ -408,14 +406,52 @@ unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 		VTLOG1("\n");
 #endif
 		m_iTileLoads++;
-		int bytes;
-		unsigned char *data = readfile(fname, &bytes);
-		if (!data)
-			return NULL;
+
+		// Convert PNM to data buffer
+		int width, height, components, pnmtype;
+		unsigned char *pnmdata = readPNMimage((unsigned char *)fname, &width, &height,
+			&components, &pnmtype, 0, NULL, NULL);
+		if (!pnmdata)
+		{
+			result.data = NULL;
+			return result;
+		}
+
+		result.xsize = width;
+		result.ysize = height;
+		result.components = components;
+
+		// convert internal data to desired form
+		if (pnmtype == 5)	// elevation, 1 or 2 bytes
+		{
+			int k;
+			result.length = width*height*sizeof(short);
+			short *hfield=(short *)malloc(result.length);
+			if (components==2)
+			{
+				result.type = 1;	// short
+				for (k=0; k<width*height; k++)
+				{
+					int v=256*pnmdata[2*k]+pnmdata[2*k+1];
+					if (v<32768) hfield[k]=v;
+					else hfield[k]=v-65536;
+				}
+			}
+			result.data = hfield;
+
+			// We're done with the pnm data
+			free(pnmdata);
+		}
+		else if (pnmtype == 6)	// texture, 3 byte RGB
+		{
+			result.type = 0;	// bytes
+			result.length = width * height * components;
+			result.data = pnmdata;
+		}
 
 		// max cache size of 0 disables caching
 		if (m_iMaxCacheSize == 0)
-			return data;
+			return result;
 
 		// Add it to the cache
 		// First, make room for it
@@ -434,31 +470,24 @@ unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 			}
 			// remove it from the cache
 			CacheEntry &entry = oldest->second;
-			free(entry.data);
-			m_iCacheSize -= entry.size;
+			m_iCacheSize -= entry.buf->length;
+			free(entry.buf->data);
+			delete entry.buf;
 			m_Cache.erase(oldest);
 		}
 		// add new entry to the cache
 		CacheEntry entry;
-		entry.data = data;
-		entry.size = bytes;
+		entry.buf = new databuf;
+		*entry.buf = result;
 		entry.framestamp = m_iFrame;
 		m_Cache[name] = entry;
-		m_iCacheSize += bytes;
+		m_iCacheSize += entry.buf->length;
 
 #if 1
 		VTLOG(" cache size (K): %d\n", m_iCacheSize / 1024);
 #endif
-
-#if WE_OWN_BUFFERS
 		// return the original
-		return data;
-#else
-		// don't return the original, return a copy
-		unsigned char *data2 = (unsigned char *) malloc(bytes);
-		memcpy(data2, data, bytes);
-		return data2;
-#endif
+		return result;
 	}
 	else
 	{
@@ -472,17 +501,10 @@ unsigned char *vtTiledGeom::FetchAndCacheTile(const char *fname)
 		m_iCacheHits++;
 		CacheEntry &entry = it->second;
 
-#if WE_OWN_BUFFERS
 		// return the original
-		return entry.data;
-#else
-		// don't return the original, return a copy
-		unsigned char *data2 = (unsigned char *) malloc(entry.size);
-		memcpy(data2, entry.data, entry.size);
-		return data2;
-#endif
+		return *entry.buf;
 	}
-	return NULL;
+	return result;		// just suppress compiler warning, it won't get there
 }
 
 void vtTiledGeom::EmptyCache()
@@ -490,7 +512,8 @@ void vtTiledGeom::EmptyCache()
 	int count = 0;
 	for (TileCache::iterator it = m_Cache.begin(); it != m_Cache.end(); it++)
 	{
-		free(it->second.data);
+		free(it->second.buf->data);
+		delete it->second.buf;
 		count++;
 	}
 	m_Cache.clear();

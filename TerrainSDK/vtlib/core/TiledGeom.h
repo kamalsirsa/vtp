@@ -32,7 +32,8 @@ public:
 
 // Simple cache of tiles loaded from disk
 typedef unsigned char *ucharptr;
-struct CacheEntry { unsigned char *data; int size; int framestamp; };
+class databuf;
+struct CacheEntry { databuf *buf; int framestamp; };
 typedef std::map<std::string, CacheEntry> TileCache;
 
 /**
@@ -73,7 +74,7 @@ public:
 		FPoint3 &result) const;
 
 	// Tile cache methods
-	unsigned char *FetchAndCacheTile(const char *fname);
+	databuf FetchAndCacheTile(const char *fname);
 	void EmptyCache();
 
 	// CRS of this tileset
