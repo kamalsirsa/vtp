@@ -57,8 +57,8 @@ OBJS   = $(CSRC:%.c=%.o) $(CXXSRC:%.cpp=%.o)
 LIB_EXT = so
 
 SWITCHES = -DUNIX
-CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS)
-CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS)
+CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS) -finput-charset=ISO-8859-1
+CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS) -finput-charset=ISO-8859-1
 LIB = $(LIB_NAME).$(LIB_EXT)
 #----------------------------------------------------------------------------
 #                                DIRECTORIES
@@ -96,7 +96,7 @@ VTUI_INST_DIR = $(VTUI_DIR)
 VTOSG_INST_DIR  = $(VTOSG_DIR)
 XMLHELPER_INST_DIR = $(XMLHELPER_DIR)
 
-WX_DIR		 = /usr
+WX_DIR		 = /usr/local
 
 -include $(HOME)/.vtp-user.defs
 
@@ -284,7 +284,7 @@ ifeq ($(OS),Linux)
 
    GLUT_LIB = -lglut
    GLU_LIB  = -lGLU
-   EXTRA_LIBS = -lXi -lquikgrid
+   EXTRA_LIBS = -lXi
 
    NETCDF_INC = $(LOCALBASE)/include/netcdf-3
    MINI_INC   = $(LOCALBASE)/include/mini
