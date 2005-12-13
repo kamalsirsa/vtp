@@ -404,7 +404,9 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_BgColor.Set(col.r, col.g, col.b);
 
 	m_bRouteEnable =	Params.GetValueBool(STR_ROUTEENABLE);
-	m_strRouteFile.from_utf8(Params.GetValueString(STR_ROUTEFILE));
+	const char *routefile = Params.GetValueString(STR_ROUTEFILE);
+	if (routefile)
+		m_strRouteFile.from_utf8(routefile);
 
 	vtString fname;
 	if (Params.GetOverlay(fname, m_iOverlayX, m_iOverlayY))
@@ -414,6 +416,8 @@ void TParamsDlg::SetParams(const TParams &Params)
 	if (m_iTriCount < 500 || m_iTriCount > 100000)
 		m_iTriCount = 10000;
 	m_Scenarios = Params.m_Scenarios;
+
+	VTLOG("   Finished SetParams\n");
 }
 
 //
