@@ -1794,7 +1794,7 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 	vtFont *font = new vtFont;
 	bool success = font->LoadFont(font_path);
 	if (success)
-		VTLOG("Read font from file '%s'\n", fontname);
+		VTLOG("Successfully read font from '%s'\n", (const char *)font_path);
 	else
 	{
 		VTLOG("Couldn't read font from file '%s', not creating labels.\n", fontname);
@@ -1820,6 +1820,8 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 	FPoint3 fp3;
 	vtString str;
 	RGBAf rgba;
+
+	VTLOG("Creating %d text labels\n", features);
 	for (i = 0; i < features; i++)
 	{
 		// Get the earth location of the label
@@ -1848,6 +1850,7 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 			fp3.y += label_elevation;
 
 		// Create the vtTextMesh
+		VTLOG(" Constructing TextMesh %d\n", i);
 		vtTextMesh *text = new vtTextMesh(font, label_size, true);	// center
 
 		feat.GetValueAsString(i, text_field_index, str);
