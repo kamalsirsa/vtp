@@ -14,7 +14,7 @@
   #pragma warning(disable: 4100)
 #endif
 
-#if WIN32 && defined(_MSC_VER) && DEBUG
+#if WIN32 && defined(_MSC_VER) && _DEBUG
   #define CRTDBG_MAP_ALLOC
   #include <crtdbg.h>
 #endif
