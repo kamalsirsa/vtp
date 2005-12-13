@@ -1605,6 +1605,13 @@ void vtTerrain::_CreateAbstractLayers()
 		if (ltype != TERR_LTYPE_ABSTRACT)
 			continue;
 
+		VTLOG(" Layer %d: Abstract\n", i);
+		for (unsigned int j = 0; j < lay.NumTags(); j++)
+		{
+			const vtTag *tag = lay.GetTag(j);
+			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
+		}
+
 		vtString fname = lay.GetValueString("Filename", true);
 		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 		if (path == "")
@@ -1737,6 +1744,8 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
+	VTLOG("CreateFeatureLabels\n");
+
 	// We support text labels for both 2D and 3D points, and 2D polygons
 	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(&feat);
 	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(&feat);
@@ -1850,7 +1859,8 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 			fp3.y += label_elevation;
 
 		// Create the vtTextMesh
-		VTLOG(" Constructing TextMesh %d\n", i);
+		if (features < 40)
+			VTLOG(" Constructing TextMesh %d\n", i);
 		vtTextMesh *text = new vtTextMesh(font, label_size, true);	// center
 
 		feat.GetValueAsString(i, text_field_index, str);
