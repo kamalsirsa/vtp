@@ -14,6 +14,7 @@
 #include "wx/image.h"
 
 #include "vtdata/vtLog.h"
+#include "vtui/wxString2.h"
 #include "vtBitmap.h"
 
 // Headers for JPEG support, which uses the library "libjpeg"
@@ -279,7 +280,7 @@ bool vtBitmap::WriteJPEG(const char *fname, int quality)
 	jpeg_destroy_compress(&cinfo);
 
 #else
-	return m_pImage->SaveFile(fname);
+	return m_pImage->SaveFile(wxString2(fname));
 #endif
 
 	return true;
