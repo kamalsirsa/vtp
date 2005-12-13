@@ -732,7 +732,7 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 
 	FPoint2 terrainSize(pTerr->GetHeightField()->m_WorldExtents.Width(),
 						pTerr->GetHeightField()->m_WorldExtents.Height());
-	MapRatio = abs( terrainSize.x / terrainSize.y);
+	MapRatio = fabs(terrainSize.x / terrainSize.y);
 
 	ratioMapTerrain = (float)MapWidth / (float)terrainSize.x;
 	m_pMapView->SetPosition(MapMargin,
@@ -811,9 +811,9 @@ void MapOverviewEngine::RefreshMapView()
 
 	float angle = acosf(camDir.Dot(FPoint2(1,0)));
 
-	if(abs(anglePrec - angle) > 0.0001)
+	if (fabs(anglePrec - angle) > 0.0001)
 	{
-		camDir.y > 0 ? angle = abs(angle) : angle = - abs(angle);
+		camDir.y > 0 ? angle = fabs(angle) : angle = -fabs(angle);
 		//arrow orientation
 		m_pArrow->RotateLocal(FPoint3(0,0,1),-(angle - anglePrec));
 		anglePrec = angle;
