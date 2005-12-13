@@ -22,6 +22,8 @@
 // Implementation of class vtTagArray
 //
 
+bool vtTagArray::s_bVerbose = false;
+
 void vtTagArray::AddTag(const vtTag &pTag)
 {
 	m_tags.push_back(pTag);
@@ -38,24 +40,51 @@ void vtTagArray::AddTag(const char *name, const char *value)
 vtTag *vtTagArray::FindTag(const char *name)
 {
 	int size = m_tags.size();
+	if (s_bVerbose)
+		VTLOG(" FindTag('%s'), %d tags\n", name, size);
+
 	for (int i = 0; i < size; i++)
 	{
 		vtTag *tag = &m_tags[i];
+
+		if (s_bVerbose)
+			VTLOG("  tag %d: '%s'\n", i, (const char *)tag->name);
+
 		if (!tag->name.CompareNoCase(name))
+		{
+			if (s_bVerbose)
+				VTLOG("  Found tag %d (value '%s')\n", i, (const char*)tag->value);
 			return tag;
+		}
 	}
+	if (s_bVerbose)
+		VTLOG("  Tag not found.\n");
 	return NULL;
 }
 
 const vtTag *vtTagArray::FindTag(const char *name) const
 {
 	int size = m_tags.size();
+
+	if (s_bVerbose)
+		VTLOG(" FindTag('%s'), %d tags\n", name, size);
+
 	for (int i = 0; i < size; i++)
 	{
 		const vtTag *tag = &m_tags[i];
+
+		if (s_bVerbose)
+			VTLOG("  tag %d: '%s'\n", i, (const char *)tag->name);
+
 		if (!tag->name.CompareNoCase(name))
+		{
+			if (s_bVerbose)
+				VTLOG("  Found tag %d (value '%s')\n", i, (const char*)tag->value);
 			return tag;
+		}
 	}
+	if (s_bVerbose)
+		VTLOG("  Tag not found.\n");
 	return NULL;
 }
 
@@ -190,6 +219,8 @@ const char *vtTagArray::GetValueString(const char *szTagName, bool bUTF8ToAnsi, 
 
 bool vtTagArray::GetValueBool(const char *szTagName) const
 {
+	if (s_bVerbose)
+		VTLOG("GetValueBool('%s')\n", szTagName);
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		return (tag->value[0] == 't' || tag->value[0] == '1');
@@ -198,6 +229,8 @@ bool vtTagArray::GetValueBool(const char *szTagName) const
 
 int vtTagArray::GetValueInt(const char *szTagName) const
 {
+	if (s_bVerbose)
+		VTLOG("GetValueInt('%s')\n", szTagName);
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		return atoi((const char *)tag->value);
@@ -206,6 +239,8 @@ int vtTagArray::GetValueInt(const char *szTagName) const
 
 float vtTagArray::GetValueFloat(const char *szTagName) const
 {
+	if (s_bVerbose)
+		VTLOG("GetValueFloat('%s')\n", szTagName);
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		return (float) atof((const char *)tag->value);
@@ -214,6 +249,8 @@ float vtTagArray::GetValueFloat(const char *szTagName) const
 
 double vtTagArray::GetValueDouble(const char *szTagName) const
 {
+	if (s_bVerbose)
+		VTLOG("GetValueDouble('%s')\n", szTagName);
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		return atof((const char *)tag->value);
@@ -222,6 +259,8 @@ double vtTagArray::GetValueDouble(const char *szTagName) const
 
 RGBi vtTagArray::GetValueRGBi(const char *szTagName) const
 {
+	if (s_bVerbose)
+		VTLOG("GetValueRGBi('%s')\n", szTagName);
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 	{
@@ -245,6 +284,8 @@ bool vtTagArray::GetValueString(const char *szTagName, vtString &string) const
 
 bool vtTagArray::GetValueBool(const char *szTagName, bool &bValue) const
 {
+	if (s_bVerbose)
+		VTLOG("GetValueBool('%s')\n", szTagName);
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		bValue = (tag->value[0] == 't' || tag->value[0] == '1');
@@ -253,6 +294,8 @@ bool vtTagArray::GetValueBool(const char *szTagName, bool &bValue) const
 
 bool vtTagArray::GetValueInt(const char *szTagName, int &iValue) const
 {
+	if (s_bVerbose)
+		VTLOG("GetValueInt('%s')\n", szTagName);
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		iValue = atoi((const char *)tag->value);
@@ -261,6 +304,8 @@ bool vtTagArray::GetValueInt(const char *szTagName, int &iValue) const
 
 bool vtTagArray::GetValueFloat(const char *szTagName, float &fValue) const
 {
+	if (s_bVerbose)
+		VTLOG("GetValueFloat('%s')\n", szTagName);
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		fValue = (float) atof((const char *)tag->value);
@@ -269,6 +314,8 @@ bool vtTagArray::GetValueFloat(const char *szTagName, float &fValue) const
 
 bool vtTagArray::GetValueDouble(const char *szTagName, double &dValue) const
 {
+	if (s_bVerbose)
+		VTLOG("GetValueDouble('%s')\n", szTagName);
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		dValue = atof((const char *)tag->value);
@@ -280,8 +327,8 @@ bool vtTagArray::GetValueRGBi(const char *szTagName, RGBi &color) const
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 	{
-		short r, g, b;
-		if (sscanf(tag->value, "%hd %hd %hd", &r, &g, &b) == 3)
+		int r, g, b;
+		if (sscanf(tag->value, "%d %d %d", &r, &g, &b) == 3)
 			color.Set(r, g, b);
 		else
 			return false;
@@ -405,6 +452,22 @@ bool vtTagArray::LoadFromXML(const char *fname)
 	return true;
 }
 
+void vtTagArray::SetVerbose(bool value)
+{
+	VTLOG("vtTagArray::SetVerbose %d\n", value);
+	s_bVerbose = value;
+}
+
+void vtTagArray::LogTags() const
+{
+	unsigned int size = NumTags();
+	VTLOG(" LogTags: %d tags\n", size);
+	for (int i = 0; i < size; i++)
+	{
+		const vtTag *tag = &m_tags[i];
+		VTLOG("  tag %d: '%s'\n", i, (const char *)tag->name);
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////
 // Implementation of class vtItem

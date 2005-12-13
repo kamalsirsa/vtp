@@ -125,8 +125,13 @@ public:
 	}
 	virtual void WriteOverridesToXML(FILE *fp) const {}
 
+	// Debugging info
+	static void SetVerbose(bool value);
+	void LogTags() const;
+
 protected:
 	std::vector<vtTag>	m_tags;
+	static bool s_bVerbose;		// display debugging info
 };
 
 
