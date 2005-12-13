@@ -16,8 +16,9 @@
 #include <iostream>
 
 // the required FLTK headers for this example
-#include <FL/Fl.h>
-#include <FL/Fl_Gl_Window.h>
+// note that fltk seems to use capital H for cpp headers!
+#include <FL/Fl.H>
+#include <FL/Fl_Gl_Window.H>
 #include <FL/gl.h>
 #include <GL/glu.h>
 
