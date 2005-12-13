@@ -1141,6 +1141,7 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 {
 	int num_structs = structures->GetSize();
 	int suceeded = 0;
+	VTLOG("CreateStructures, %d structs\n", num_structs);
 
 	for (int i = 0; i < num_structs; i++)
 	{
