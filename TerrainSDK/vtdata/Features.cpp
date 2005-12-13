@@ -1411,6 +1411,11 @@ void vtFeatureSet::SetValue(unsigned int record, unsigned int field, bool value)
 
 void vtFeatureSet::GetValueAsString(unsigned int iRecord, unsigned int iField, vtString &str) const
 {
+	if (iField < 0 || iField >= m_fields.GetSize())
+	{
+		VTLOG("FeatureSet '%s' has %d fields, no field %d\n", (const char *)m_strFilename, m_fields.GetSize(), iField);
+		return;
+	}
 	Field *field = m_fields[iField];
 	field->GetValueAsString(iRecord, str);
 }
