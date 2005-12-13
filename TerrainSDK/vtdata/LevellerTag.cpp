@@ -403,7 +403,7 @@ void* daylon::CRootTag::WriteBinary
 
 	for(const char* psz = pszName; *psz != 0; psz++)
 	{
-		if(*psz < ' ' || *psz > 0x7F)
+		if(*psz < ' ')
 		{
 			daylon_assert(false);
 			throw 0;
