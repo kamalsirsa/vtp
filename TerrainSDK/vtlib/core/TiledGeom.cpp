@@ -550,7 +550,7 @@ void vtTiledGeom::DoRender()
 //	m_iVertexCount = m_pMiniCache->getvtxcnt();
 #endif
 
-	static first = true;
+	static bool first = true;
 	if (first)
 	{
 		VTLOG("  First Render: %.3f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
