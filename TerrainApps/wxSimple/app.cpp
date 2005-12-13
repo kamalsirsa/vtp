@@ -74,8 +74,7 @@ bool vtApp::CreateScene()
 	if (!m_pTerrainScene->BuildTerrain(pTerr))
 	{
 		m_frame->m_canvas->m_bRunning = false;
-		wxMessageBox("Couldn't create the terrain.  Perhaps the elevation\n"
-			"data file isn't in the expected location?");
+		wxMessageBox(_T("Couldn't create the terrain.  Perhaps the elevation data file isn't in the expected location?"));
 		return false;
 	}
 	m_pTerrainScene->SetCurrentTerrain(pTerr);

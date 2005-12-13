@@ -37,7 +37,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	// Make a vtGLCanvas
 	m_canvas = new vtGLCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
-		"vtGLCanvas", gl_attrib);
+		_T("vtGLCanvas"), gl_attrib);
 
 	// Show the frame
 	Show(TRUE);
