@@ -11,10 +11,6 @@
 
 #include "vtlib/vtlib.h"
 
-#ifdef _DEBUG
-#include <crtdbg.h>
-#endif
-
 #define DO_VIEW_CULLING		1
 
 #include "TVTerrain.h"
