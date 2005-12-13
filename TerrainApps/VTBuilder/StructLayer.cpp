@@ -1160,7 +1160,7 @@ bool vtStructureLayer::AskForSaveFilename()
 	if (!bResult)
 		return false;
 
-	vtString fname = saveFile.GetPath().mb_str();
+	vtString fname = (const char *) saveFile.GetPath().mb_str();
 	m_bPreferGZip = (saveFile.GetFilterIndex() == 1);
 
 	// work around incorrect extension(s) that wxFileDialog added

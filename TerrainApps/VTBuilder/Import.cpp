@@ -213,7 +213,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 		for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
 		{
 			if (it.is_directory()) continue;
-			fname2 = it.filename();
+			fname2 = it.filename().c_str();
 			if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
 			{
 				fname = prepend_path;
@@ -255,7 +255,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 			for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
 			{
 				if (it.is_directory()) continue;
-				fname2 = it.filename();
+				fname2 = it.filename().c_str();
 
 				fname = prepend_path;
 				fname += fname2;
