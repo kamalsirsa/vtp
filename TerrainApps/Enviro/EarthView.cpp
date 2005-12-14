@@ -176,6 +176,7 @@ void Enviro::MakeGlobe()
 //		IcoGlobe::GEODESIC);
 //		IcoGlobe::RIGHT_TRIANGLE);
 		IcoGlobe::DYMAX_UNFOLD);
+//		IcoGlobe::INDEPENDENT_GEODESIC);
 	m_pGlobeContainer->AddChild(m_pIcoGlobe->GetTop());
 	m_pGlobeTime->AddTarget((TimeTarget *)m_pIcoGlobe);
 
