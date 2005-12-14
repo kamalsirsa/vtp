@@ -698,9 +698,19 @@ void TParamsDlg::UpdateColorMapChoice()
 void TParamsDlg::DeleteItem(wxListBox *pBox)
 {
 	wxString2 fname1 = pBox->GetStringSelection();
+
+	// might be a layer
 	int idx = FindLayerByFilename(fname1);
 	if (idx != -1)
 		m_Layers.erase(m_Layers.begin()+idx);
+
+	// or an animpath
+	for (unsigned int i = 0; i < m_AnimPaths.size(); i++)
+		if (!fname1.Cmp(m_AnimPaths[i]))
+		{
+			m_AnimPaths.erase(m_AnimPaths.begin()+i);
+			break;
+		}
 }
 
 int TParamsDlg::FindLayerByFilename(const wxString2 &fname)
