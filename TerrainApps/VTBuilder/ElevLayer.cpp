@@ -1311,7 +1311,8 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView 
 					{
 						p.x = area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
 
-						short value = m_pGrid->GetFilteredValue(p);
+						// PNM only support short integers, not floats
+						short value = (short) m_pGrid->GetFilteredValue(p);
 						value = SwapShort(value);
 						fwrite(&value, 2, 1, fp);
 					}
