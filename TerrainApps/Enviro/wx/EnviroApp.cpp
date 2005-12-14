@@ -62,65 +62,10 @@ void EnviroApp::Args(int argc, wxChar **argv)
 }
 
 
-#if 0
-//
-// The following is a test case for a bug which affects wxWindows's ability
-//  to use .mo Locale files which have a character set explicitly stated to
-//  be "iso-8859-1".  In theory it should work fine, but on some machines
-//  it causes the wxMessagesHash class to fail.
-//
-WX_DECLARE_EXPORTED_STRING_HASH_MAP(wxString, wxMessagesHash);
-class MyMsgCatalogFile
-{
-public:
-	// fills the hash with string-translation pairs
-	void TestHash(bool convertEncoding)
-	{
-		VTLOG("(Hash/conversion test: ");
-		wxCSConv *csConv = new wxCSConv(_T("iso-8859-1"));
-
-		// This first test should always work
-		wxString key = wxString("Key1", *wxConvCurrent);
-		m_messages[key] = _T("Value1");
-
-		const wxChar *result = GetString(_T("Key1"));
-		VTLOG(result == NULL? "test1: bad, " : "test1: good, ");
-
-		// This second test fails on some machines, illustrating the bug
-		wxString key2 = wxString("Key2", *csConv);
-		m_messages[key2] = _T("Value2");
-
-		const wxChar *result2 = GetString(_T("Key2"));
-		VTLOG(result2 == NULL? "test2: bad.)\n" : "test2: good.)\n");
-
-		delete csConv;
-	}
-	const wxChar *GetString(const wxChar *sz) const
-	{
-		wxMessagesHash::const_iterator i = m_messages.find(sz);
-		if ( i != m_messages.end() )
-		{
-			return i->second.c_str();
-		}
-		else
-			return NULL;
-	}
-	wxMessagesHash m_messages;
-};
-
-void TestLocale()
-{
-	MyMsgCatalogFile catfile;
-	catfile.TestHash(true);
-}
-#endif
-
 void EnviroApp::SetupLocale()
 {
 	wxLog::SetVerbose(true);
 //	wxLog::AddTraceMask(_T("i18n"));
-
-//	TestLocale();
 
 	// Locale stuff
 	int lang = wxLANGUAGE_DEFAULT;
@@ -263,6 +208,7 @@ bool EnviroApp::OnInit()
 		wxString2 appname = STRING_APPNAME;
 		appname += _(" Startup");
 		StartupDlg StartDlg(NULL, -1, appname, wxDefaultPosition);
+
 		StartDlg.GetOptionsFrom(g_Options);
 		StartDlg.CenterOnParent();
 		int result = StartDlg.ShowModal();
@@ -375,8 +321,14 @@ void EnviroApp::RefreshTerrainList()
 	terrain_paths.clear();
 	terrain_names.clear();
 
+	bool bShowProgess = paths.size() > 1;
+	if (bShowProgess)
+		OpenProgressDialog(_("Scanning data paths for terrains"), false, NULL);
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
+		if (bShowProgess)
+			UpdateProgressDialog(i * 100 / paths.size());
+
 		vtString directory = paths[i] + "Terrains";
 		for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
 		{
@@ -402,6 +354,8 @@ void EnviroApp::RefreshTerrainList()
 		}
 	}
 	VTLOG("RefreshTerrainList done.\n");
+	if (bShowProgess)
+		CloseProgressDialog();
 }
 
 //
