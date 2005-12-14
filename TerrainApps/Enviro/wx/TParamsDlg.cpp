@@ -706,7 +706,7 @@ void TParamsDlg::DeleteItem(wxListBox *pBox)
 
 	// or an animpath
 	for (unsigned int i = 0; i < m_AnimPaths.size(); i++)
-		if (!fname1.Cmp(m_AnimPaths[i]))
+		if (!fname1.vt_str().Compare(m_AnimPaths[i]))
 		{
 			m_AnimPaths.erase(m_AnimPaths.begin()+i);
 			break;
