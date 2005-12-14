@@ -215,6 +215,7 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 				break;
 			}
 		}
+		m_pTree->Delete(m_Selected);
 	}
 	if (m_iSelect == 2)
 	{
@@ -226,8 +227,9 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 		TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
 		path += data->m_strXmlFile;
 		vtDeleteFile(path.mb_str());
+
+		m_pTree->Delete(m_Selected);
 	}
-	RefreshTreeContents();
 }
 
 void TerrainManagerDlg::OnAddTerrain( wxCommandEvent &event )
@@ -281,6 +283,10 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 	}
 
 	m_DataPaths.push_back(vtString(str.mb_str()));
+
+	// Also inform global data paths
+	g_Options.m_DataPaths = m_DataPaths;
+
 	RefreshTreeContents();
 }
 
