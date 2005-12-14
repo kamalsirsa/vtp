@@ -48,14 +48,16 @@ void keyboard(unsigned char key, int x, int y)
 	vtGetScene()->OnKey(key, 0);
 }
 
-/* Mouse buttons. */
-#define GLUT_LEFT_BUTTON		0
-#define GLUT_MIDDLE_BUTTON		1
-#define GLUT_RIGHT_BUTTON		2
+#ifndef GLUT_LEFT_BUTTON
+ /* Mouse buttons. */
+ #define GLUT_LEFT_BUTTON		0
+ #define GLUT_MIDDLE_BUTTON		1
+ #define GLUT_RIGHT_BUTTON		2
 
-/* Mouse button  state. */
-#define GLUT_DOWN			0
-#define GLUT_UP				1
+ /* Mouse button  state. */
+ #define GLUT_DOWN			0
+ #define GLUT_UP				1
+#endif
 
 int last_button_state;
 
