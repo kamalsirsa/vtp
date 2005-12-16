@@ -86,15 +86,18 @@ void vtLog::Printf(const char *pFormat, ...)
 
 void vtLog::Log(const wchar_t *msg)
 {
+	wstring2 str = msg;
+	const char *ebstr = str.eb_str();
 	if (m_log)
 	{
 		// it is not so useful to write wide characters to the file, which
 		// otherwise contains 8-bit text, so convert back first
 //		fputws(msg, m_log);
-		wstring2 str = msg;
-		fputs(str.eb_str(), m_log);
+		fputs(ebstr, m_log);
 		fflush(m_log);
 	}
+	// also send to the console, for those console-mode developers!
+	fputs(ebstr, stdout);
 
 #ifdef _MSC_VER
 	OutputDebugStringW(msg);
