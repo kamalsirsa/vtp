@@ -32,10 +32,10 @@ void BuilderApp::Args(int argc, wxChar **argv)
 {
 	for (int i = 0; i < argc; i++)
 	{
-		wxString2 str = argv[i];
-		const char *cstr = str.mb_str();
-		if (!strncmp(cstr, "-locale=", 8))
-			m_locale_name = cstr+8;
+		wxString str = argv[i];
+		wxCharBuffer cbuf = str.mb_str();
+		if (!strncmp(cbuf, "-locale=", 8))
+			m_locale_name = cbuf+8;
 	}
 }
 
@@ -44,9 +44,9 @@ class LogCatcher : public wxLog
 {
 	void DoLogString(const wxChar *szString, time_t t)
 	{
-		VTLOG(" wxLog: ");
-		VTLOG(szString);
-		VTLOG("\n");
+		VTLOG1(" wxLog: ");
+		VTLOG1(szString);
+		VTLOG1("\n");
 	}
 };
 
@@ -178,8 +178,7 @@ void BuilderApp::SetupLocale()
 	int default_lang = m_locale.GetSystemLanguage();
 
 	const wxLanguageInfo *info = wxLocale::GetLanguageInfo(default_lang);
-	const char *langdesc = info->Description.mb_str();
-	VTLOG("Default language: %d (%s)\n", default_lang, langdesc);
+	VTLOG("Default language: %d (%s)\n", default_lang, (const char *) info->Description.mb_str());
 
 	// After wx2.4.2, wxWidgets looks in the application's directory for
 	//  locale catalogs, not the current directory.  Here we force it to
@@ -200,10 +199,8 @@ void BuilderApp::SetupLocale()
 		else
 		{
 			info = m_locale.GetLanguageInfo(lang);
-			const char *canonical = info->CanonicalName.mb_str();
-			const char *descript = info->Description.mb_str();
 			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n", lang,
-				canonical, descript);
+				(const char *) info->CanonicalName.mb_str(), (const char *) info->Description.mb_str());
 			bSuccess = m_locale.Init(lang, wxLOCALE_CONV_ENCODING);
 		}
 	}
