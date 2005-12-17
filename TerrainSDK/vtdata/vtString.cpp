@@ -318,6 +318,11 @@ const vtString& vtString::operator+=(char ch)
 	return *this;
 }
 
+void vtString::Concat(pcchar buffer, size_t length)
+{
+	ConcatInPlace(length, buffer);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // less common string expressions
 

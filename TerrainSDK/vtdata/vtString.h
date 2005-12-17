@@ -103,6 +103,8 @@ public:
 	const vtString& operator+=(const vtString& string);
 	// concatenate a single character
 	const vtString& operator+=(char ch);
+	// concatenate from a buffer with length
+	void Concat(pcchar buffer, size_t length);
 
 	friend vtString operator+(const vtString& string1, const vtString& string2);
 	friend vtString operator+(const vtString& string, char ch);
