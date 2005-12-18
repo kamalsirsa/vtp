@@ -161,23 +161,26 @@ bool GetLayersFromWFS(const char *szServerURL, OGCLayerArray &layers)
 //
 // for now, handle WMS in this module as well
 //
-bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers, vtString &msg)
+bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers,
+					  vtString &msg, bool (*progress_callback)(int))
 {
 	vtString url = szServerURL;
 	url += "?REQUEST=GetCapabilities";
 
 	ReqContext cl;
+	cl.SetProgressCallback(progress_callback);
+
 	vtString str;
 	if (!cl.GetURL(url, str))
 	{
 		// there was an error
-		msg = str;
+		msg = cl.GetErrorMsg();
 		return false;
 	}
 
-#if 0
+#if 1
 	// write to file for debugging
-	char *temp_fname = "C:/temp/layers_temp.xml";
+	char *temp_fname = "C:/temp/wms.xml";
 	FILE *fp = fopen(temp_fname, "wb");
 	if (!fp)
 		return false;

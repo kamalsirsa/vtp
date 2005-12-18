@@ -62,8 +62,8 @@ bool ReqContext::DoQuery(vtBytes &data, int redirects)
 #include "curl/curl.h"
 
 #ifdef _MSC_VER
-// We will now need to link with the LibCurl library.  This can
-// be done automatically with MSVC as follows:
+// We will need to link with the LibCurl library.  This can be done
+// automatically with MSVC as follows:
 #pragma comment(lib, "libcurl.lib")
 #endif
 
@@ -85,6 +85,35 @@ size_t write_as_bytes( void *ptr, size_t size, size_t nmemb, void *stream)
 	return length;
 }
 
+int tripdub_progress(void *clientp,
+					double dltotal, double dlnow,
+					double ultotal, double ulnow)
+{
+	ReqContext *context = (ReqContext *)clientp;
+
+	VTLOG("%lf %lf %lf %lf\n", dltotal, dlnow, ultotal, ulnow);
+
+	if (context->m_progress_callback != NULL)
+	{
+		// If dltotal was valid, we could to this:
+//		context->m_progress_callback((int) (dlnow * 100 / dltotal));
+
+		// However, dltotal is always 0.0, so instead we can do only
+		//  relative progress:
+		static int prog = 0;
+		if (dlnow == 0.0)
+			prog = 0;
+		prog += 10;
+		if (prog == 100)
+			prog = 10;
+		context->m_progress_callback(prog);
+	}
+
+	// return a non-zero value from this callback to cancel
+	return 0;
+}
+
+
 bool ReqContext::s_bFirst = true;
 
 ReqContext::ReqContext()
@@ -101,6 +130,8 @@ ReqContext::ReqContext()
 	//  of giving us the HTML page from the server, e.g. "The page cannot
 	//  be found..."
 	result = curl_easy_setopt(m_curl, CURLOPT_FAILONERROR, 1);
+
+	m_progress_callback = NULL;
 }
 
 ReqContext::~ReqContext()
@@ -108,36 +139,48 @@ ReqContext::~ReqContext()
 	curl_easy_cleanup(m_curl); 
 }
 
-bool ReqContext::GetURL(const char *url, vtString &str)
+void ReqContext::SetProgressCallback(bool progress_callback(int) = NULL)
 {
-	m_pDataString = &str;
+	m_progress_callback = progress_callback;
+}
 
+bool ReqContext::Fetch(const char *url)
+{
 	CURLcode result;
 	char errorbuf[CURL_ERROR_SIZE];
 	result = curl_easy_setopt(m_curl, CURLOPT_URL, url);
-	result = curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, write_as_string);
 	result = curl_easy_setopt(m_curl, CURLOPT_ERRORBUFFER, errorbuf);
-	result = curl_easy_perform(m_curl);
 
+	// setup progress indication
+	result = curl_easy_setopt(m_curl, CURLOPT_NOPROGRESS, false);
+	result = curl_easy_setopt(m_curl, CURLOPT_PROGRESSFUNCTION, tripdub_progress);
+	result = curl_easy_setopt(m_curl, CURLOPT_PROGRESSDATA, this);
+
+	result = curl_easy_perform(m_curl);
 	if (result == 0)	// 0 means everything was ok
+	{
+		m_strErrorMsg = "";
 		return true;
+	}
 	else
 	{
-		str = errorbuf;
+		m_strErrorMsg = errorbuf;
 		return false;
 	}
+}
+
+bool ReqContext::GetURL(const char *url, vtString &str)
+{
+	m_pDataString = &str;
+	curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, write_as_string);
+	return Fetch(url);
 }
 
 bool ReqContext::GetURL(const char *url, vtBytes &data)
 {
 	m_pDataBytes = &data;
-
-	CURLcode result;
-	result = curl_easy_setopt(m_curl, CURLOPT_URL, url);
-	result = curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, write_as_bytes);
-	result = curl_easy_perform(m_curl);
-
-	return (result == 0);	// 0 means everything was ok
+	curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, write_as_bytes);
+	return Fetch(url);
 }
 
 bool ReqContext::DoQuery(vtBytes &data, int redirects)

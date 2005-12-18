@@ -56,17 +56,25 @@ public:
 	bool GetURL(const char *url, vtString &str);
 	bool GetURL(const char *url, vtBytes &data);
 	bool DoQuery(vtBytes &data, int redirects = 0);
+	void SetProgressCallback(bool progress_callback(int));
+	vtString &GetErrorMsg() { return m_strErrorMsg; }
 
 	/// Set level of logging output: 0 (none) 1 (some) 2 (lots)
 	void SetVerbosity(int i) { m_iVerbosity = i; }
 
-	CURL *m_curl;
 	vtString *m_pDataString;
 	vtBytes *m_pDataBytes;
+	bool (*m_progress_callback)(int);
 
-	static bool s_bFirst;
-	int m_iVerbosity;
+protected:
+	bool Fetch(const char *url);
 	void InitializeLibrary();
+
+	CURL *m_curl;
+
+	int m_iVerbosity;
+	vtString m_strErrorMsg;
+	static bool s_bFirst;
 };
 
 void AddCookie(const char *name, const char *value);
