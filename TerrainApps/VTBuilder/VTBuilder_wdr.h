@@ -216,69 +216,72 @@ const int ID_TILING = 10147;
 wxSizer *SampleImageDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 const int ID_BASE_URL = 10148;
-const int ID_CHOICE_LAYERS = 10149;
-const int ID_QUERY_LAYERS = 10150;
-const int ID_CHOICE_FORMAT = 10151;
-const int ID_QUERY = 10152;
+const int ID_QUERY_LAYERS = 10149;
+const int ID_LIST_LAYERS = 10150;
+const int ID_LAYER_DESC = 10151;
+const int ID_LIST_STYLES = 10152;
+const int ID_STYLE_DESC = 10153;
+const int ID_CHOICE_FORMAT = 10154;
+const int ID_QUERY = 10155;
 wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SPLITTER1 = 10153;
+const int ID_SPLITTER1 = 10156;
 wxSizer *SpeciesListFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LISTCTRL_SPECIES = 10154;
+const int ID_LISTCTRL_SPECIES = 10157;
 wxSizer *Species1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LISTCTRL_APPEARANCES = 10155;
+const int ID_LISTCTRL_APPEARANCES = 10158;
 wxSizer *Species2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_THEME = 10156;
-const int ID_MPP = 10157;
+const int ID_THEME = 10159;
+const int ID_MPP = 10160;
 wxSizer *TSDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_GEOTIFF = 10158;
-const int ID_JPEG = 10159;
-const int ID_CHOICE_COLORS = 10160;
-const int ID_EDIT_COLORS = 10161;
-const int ID_SHADING = 10162;
+const int ID_GEOTIFF = 10161;
+const int ID_JPEG = 10162;
+const int ID_CHOICE_COLORS = 10163;
+const int ID_EDIT_COLORS = 10164;
+const int ID_SHADING = 10165;
 wxSizer *RenderBitmapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LINK_FIELD = 10163;
+const int ID_LINK_FIELD = 10166;
 wxSizer *ImageMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_EASTING = 10164;
-const int ID_NORTHING = 10165;
-const int ID_SET_CRS = 10166;
-const int ID_FORMAT_DECIMAL = 10167;
-const int ID_FORMAT_DMS = 10168;
-const int ID_LONGITUDE_WEST = 10169;
+const int ID_EASTING = 10167;
+const int ID_NORTHING = 10168;
+const int ID_SET_CRS = 10169;
+const int ID_FORMAT_DECIMAL = 10170;
+const int ID_FORMAT_DMS = 10171;
+const int ID_LONGITUDE_WEST = 10172;
 wxSizer *ImportPointDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_FILE_DATA = 10170;
-const int ID_GET_FILE_DATA = 10171;
-const int ID_CHECK_USE1 = 10172;
-const int ID_CHECK_USE2 = 10173;
-const int ID_FILE_GAZ = 10174;
-const int ID_GET_FILE_GAZ = 10175;
-const int ID_FILE_ZIP = 10176;
-const int ID_GET_FILE_ZIP = 10177;
-const int ID_CHECK_USE3 = 10178;
-const int ID_FILE_GNS = 10179;
-const int ID_GET_FILE_GNS = 10180;
+const int ID_FILE_DATA = 10173;
+const int ID_GET_FILE_DATA = 10174;
+const int ID_CHECK_USE1 = 10175;
+const int ID_CHECK_USE2 = 10176;
+const int ID_FILE_GAZ = 10177;
+const int ID_GET_FILE_GAZ = 10178;
+const int ID_FILE_ZIP = 10179;
+const int ID_GET_FILE_ZIP = 10180;
+const int ID_CHECK_USE3 = 10181;
+const int ID_FILE_GNS = 10182;
+const int ID_GET_FILE_GNS = 10183;
 wxSizer *GeocodeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_DEPTH = 10181;
-const int ID_MAXERROR = 10182;
+const int ID_DEPTH = 10184;
+const int ID_MAXERROR = 10185;
 wxSizer *ChunkDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TEXT_TO_FOLDER = 10183;
-const int ID_COLUMNS = 10184;
-const int ID_ROWS = 10185;
-const int ID_CHOICE_LOD0_SIZE = 10186;
-const int ID_SPIN_NUM_LODS = 10187;
-const int ID_TOTALX = 10188;
-const int ID_TOTALY = 10189;
-const int ID_CURX = 10190;
-const int ID_CURY = 10191;
+const int ID_TEXT_TO_FOLDER = 10186;
+const int ID_COLUMNS = 10187;
+const int ID_ROWS = 10188;
+const int ID_CHOICE_LOD0_SIZE = 10189;
+const int ID_SPIN_NUM_LODS = 10190;
+const int ID_TOTALX = 10191;
+const int ID_TOTALY = 10192;
+const int ID_CURX = 10193;
+const int ID_CURY = 10194;
 wxSizer *TileDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
