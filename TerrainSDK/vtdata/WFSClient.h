@@ -3,7 +3,7 @@
 //
 // Web Feature Server Client
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,11 +12,20 @@
 
 #include "Content.h"
 
-typedef std::vector<vtTagArray *> WFSLayerArray;
-bool GetLayersFromWFS(const char *szServerURL, WFSLayerArray &layers);
+typedef std::vector<vtTagArray *> OGCLayerArray;
+
+struct OGCServer
+{
+	vtString m_url;
+	OGCLayerArray m_layers;
+};
+
+typedef std::vector<OGCServer> OGCServerArray;
+
+bool GetLayersFromWFS(const char *szServerURL, OGCLayerArray &layers);
 
 // for now, handle WMS here as well
-bool GetLayersFromWMS(const char *szServerURL, WFSLayerArray &layers);
+bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers, vtString &msg);
 
 #endif // VTDATA_WFSCLIENT_H
 
