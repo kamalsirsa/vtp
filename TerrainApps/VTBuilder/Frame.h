@@ -11,7 +11,7 @@
 #include "wx/dnd.h"
 
 #include "vtdata/Projections.h"
-#include "vtdata/Plants.h	"	// for vtSpeciesList
+#include "vtdata/Plants.h"		// for vtSpeciesList
 #include "vtdata/Fence.h"		// for LinStructOptions
 #include "vtdata/WFSClient.h"	// for OGCServerArray
 
