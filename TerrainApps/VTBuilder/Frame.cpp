@@ -478,7 +478,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	vtLayer *pLayer = NULL;
 	if (ext.CmpNoCase(_T("rmf")) == 0)
 	{
-		vtRoadLayer *pRL = new vtRoadLayer();
+		vtRoadLayer *pRL = new vtRoadLayer;
 		if (pRL->Load(fname))
 			pLayer = pRL;
 		else
@@ -489,7 +489,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		ext.CmpNoCase(_T("itf")) == 0 ||
 		fname.Right(6).CmpNoCase(_T(".bt.gz")) == 0)
 	{
-		vtElevLayer *pEL = new vtElevLayer();
+		vtElevLayer *pEL = new vtElevLayer;
 		if (pEL->Load(fname))
 			pLayer = pEL;
 		else
@@ -498,7 +498,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 #if SUPPORT_TRANSIT
 	if (ext.CmpNoCase(_T("xml")) == 0)
 	{
-		vtTransitLayer *pTL = new vtTransitLayer();
+		vtTransitLayer *pTL = new vtTransitLayer;
 		if (pTL->Load(fname))
 			pLayer = pTL;
 	}
@@ -506,7 +506,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	if (ext.CmpNoCase(_T("vtst")) == 0 ||
 		fname.Right(8).CmpNoCase(_T(".vtst.gz")) == 0)
 	{
-		vtStructureLayer *pSL = new vtStructureLayer();
+		vtStructureLayer *pSL = new vtStructureLayer;
 		if (pSL->Load(fname))
 			pLayer = pSL;
 		else
@@ -514,7 +514,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	}
 	if (ext.CmpNoCase(_T("vf")) == 0)
 	{
-		vtVegLayer *pVL = new vtVegLayer();
+		vtVegLayer *pVL = new vtVegLayer;
 		if (pVL->Load(fname))
 			pLayer = pVL;
 		else
@@ -522,7 +522,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	}
 	if (ext.CmpNoCase(_T("utl")) == 0)
 	{
-		vtUtilityLayer *pTR = new vtUtilityLayer();
+		vtUtilityLayer *pTR = new vtUtilityLayer;
 		if(pTR->Load(fname))
 			pLayer = pTR;
 		else
@@ -533,7 +533,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		ext.CmpNoCase(_T("xml")) == 0 ||
 		ext.CmpNoCase(_T("igc")) == 0)
 	{
-		vtRawLayer *pRL = new vtRawLayer();
+		vtRawLayer *pRL = new vtRawLayer;
 		if (pRL->Load(fname))
 			pLayer = pRL;
 		else
@@ -542,7 +542,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	if (ext.CmpNoCase(_T("tif")) == 0 ||
 		ext.CmpNoCase(_T("img")) == 0)
 	{
-		vtImageLayer *pIL = new vtImageLayer();
+		vtImageLayer *pIL = new vtImageLayer;
 		if (pIL->Load(fname))
 			pLayer = pIL;
 		else

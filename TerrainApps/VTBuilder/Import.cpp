@@ -432,7 +432,7 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 		else if (!strExt.CmpNoCase(_T("shp")) ||
 				 !strExt.CmpNoCase(_T("igc")))
 		{
-			pLayer = new vtRawLayer();
+			pLayer = new vtRawLayer;
 			pLayer->SetLayerFilename(strFileName);
 			if (!pLayer->OnLoad())
 			{
@@ -802,7 +802,7 @@ vtLayerPtr MainFrame::ImportFromDXF(const wxString2 &strFileName, LayerType ltyp
 {
 	if (ltype == LT_ELEVATION)
 	{
-		vtElevLayer *pEL = new vtElevLayer();
+		vtElevLayer *pEL = new vtElevLayer;
 		if (pEL->ImportFromFile(strFileName))
 			return pEL;
 		else
@@ -822,7 +822,7 @@ vtLayerPtr MainFrame::ImportFromDXF(const wxString2 &strFileName, LayerType ltyp
 			delete pSet;
 			return NULL;
 		}
-		vtRawLayer *pRL = new vtRawLayer();
+		vtRawLayer *pRL = new vtRawLayer;
 		pRL->SetFeatureSet(pSet);
 		return pRL;
 	}
@@ -831,7 +831,7 @@ vtLayerPtr MainFrame::ImportFromDXF(const wxString2 &strFileName, LayerType ltyp
 
 vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName, bool bWarn)
 {
-	vtElevLayer *pElev = new vtElevLayer();
+	vtElevLayer *pElev = new vtElevLayer;
 
 	bool success = pElev->ImportFromFile(strFileName, progress_callback);
 
@@ -848,7 +848,7 @@ vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName, bool bWarn)
 
 vtLayerPtr MainFrame::ImportImage(const wxString2 &strFileName)
 {
-	vtImageLayer *pLayer = new vtImageLayer();
+	vtImageLayer *pLayer = new vtImageLayer;
 
 	bool success = pLayer->ImportFromFile(strFileName);
 
@@ -895,7 +895,7 @@ vtLayerPtr MainFrame::ImportFromLULC(const wxString2 &strFileName, LayerType lty
 
 vtStructureLayer *MainFrame::ImportFromBCF(const wxString2 &strFileName)
 {
-	vtStructureLayer *pSL = new vtStructureLayer();
+	vtStructureLayer *pSL = new vtStructureLayer;
 	if (pSL->ReadBCF(strFileName.mb_str()))
 		return pSL;
 	else
@@ -933,7 +933,7 @@ void MainFrame::ImportFromMapSource(const char *fname)
 	{
 		if (!strncmp(buf, "Track\t", 6))
 		{
-			pRL = new vtRawLayer();
+			pRL = new vtRawLayer;
 			pRL->SetGeomType(wkbPoint);
 			layers.Append(pRL);
 			bGotSRS = false;
@@ -1127,7 +1127,7 @@ void MainFrame::ImportDataPointsFromTable(const char *fname)
 	pSet->SetFilename(fname);
 	pSet->LoadDataFromDBF(fname);
 
-	vtRawLayer *pRaw = new vtRawLayer();
+	vtRawLayer *pRaw = new vtRawLayer;
 	pRaw->SetFeatureSet(pSet);
 	AddLayerWithCheck(pRaw);
 }
@@ -1135,7 +1135,7 @@ void MainFrame::ImportDataPointsFromTable(const char *fname)
 vtLayerPtr MainFrame::ImportRawFromOGR(const wxString2 &strFileName)
 {
 	// create the new layer
-	vtRawLayer *pRL = new vtRawLayer();
+	vtRawLayer *pRL = new vtRawLayer;
 	bool success = pRL->LoadWithOGR(strFileName.mb_str(), progress_callback);
 
 	if (success)
@@ -1490,7 +1490,7 @@ void MainFrame::ImportDataFromNTF(const wxString2 &strFileName)
 		}
 #if 0
 		// Simply create a raw layer from each OGR layer
-		vtRawLayer *pRL = new vtRawLayer();
+		vtRawLayer *pRL = new vtRawLayer;
 		if (pRL->CreateFromOGRLayer(pOGRLayer))
 		{
 			wxString2 layname = strFileName;
