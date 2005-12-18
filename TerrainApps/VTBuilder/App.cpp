@@ -35,7 +35,7 @@ void BuilderApp::Args(int argc, wxChar **argv)
 		wxString str = argv[i];
 		wxCharBuffer cbuf = str.mb_str();
 		if (!strncmp(cbuf, "-locale=", 8))
-			m_locale_name = cbuf+8;
+			m_locale_name = (const char *)cbuf + 8;
 	}
 }
 
