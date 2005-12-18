@@ -1687,7 +1687,7 @@ wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxComboBox *item2 = new wxComboBox( parent, ID_BASE_URL, wxT(""), wxDefaultPosition, wxSize(400,-1), 0, strs2, wxCB_DROPDOWN );
     item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item3 = new wxButton( parent, ID_QUERY_LAYERS, _("Query Layers.."), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton *item3 = new wxButton( parent, ID_QUERY_LAYERS, _("Query Layers"), wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxFlexGridSizer *item4 = new wxFlexGridSizer( 2, 0, 0 );
@@ -1742,56 +1742,52 @@ wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxTextCtrl *item18 = new wxTextCtrl( parent, ID_HEIGHT, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
     item14->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
+    wxStaticText *item19 = new wxStaticText( parent, ID_TEXT, _("Format"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs20 = (wxString*) NULL;
+    wxChoice *item20 = new wxChoice( parent, ID_CHOICE_FORMAT, wxDefaultPosition, wxSize(100,-1), 0, strs20, 0 );
+    item14->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+
     item0->Add( item14, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxFlexGridSizer *item19 = new wxFlexGridSizer( 2, 0, 0 );
+    wxStaticText *item21 = new wxStaticText( parent, ID_TEXT, _("Query URL:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item21, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Format"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item22 = new wxTextCtrl( parent, ID_QUERY, wxT(""), wxDefaultPosition, wxSize(-1,60), wxTE_MULTILINE );
+    item0->Add( item22, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxString *strs21 = (wxString*) NULL;
-    wxChoice *item21 = new wxChoice( parent, ID_CHOICE_FORMAT, wxDefaultPosition, wxSize(100,-1), 0, strs21, 0 );
-    item19->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticBox *item24 = new wxStaticBox( parent, -1, _("Output") );
+    wxStaticBoxSizer *item23 = new wxStaticBoxSizer( item24, wxVERTICAL );
 
-    item0->Add( item19, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxRadioButton *item25 = new wxRadioButton( parent, ID_RADIO_CREATE_NEW, _("Create new layer"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item23->Add( item25, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item22 = new wxStaticText( parent, ID_TEXT, _("Query URL:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item22, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item23 = new wxTextCtrl( parent, ID_QUERY, wxT(""), wxDefaultPosition, wxSize(-1,60), wxTE_MULTILINE );
-    item0->Add( item23, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item27 = new wxRadioButton( parent, ID_RADIO_TO_FILE, _("To file"), wxDefaultPosition, wxDefaultSize, 0 );
+    item26->Add( item27, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticBox *item25 = new wxStaticBox( parent, -1, _("Output") );
-    wxStaticBoxSizer *item24 = new wxStaticBoxSizer( item25, wxVERTICAL );
+    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_TEXT_TO_FILE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item26->Add( item28, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    wxRadioButton *item26 = new wxRadioButton( parent, ID_RADIO_CREATE_NEW, _("Create new layer"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    item24->Add( item26, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxButton *item29 = new wxButton( parent, ID_DOTDOTDOT, _("..."), wxDefaultPosition, wxSize(24,-1), 0 );
+    item29->SetFont( wxFont( 11, wxROMAN, wxNORMAL, wxBOLD ) );
+    item26->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item27 = new wxBoxSizer( wxHORIZONTAL );
+    item23->Add( item26, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxRadioButton *item28 = new wxRadioButton( parent, ID_RADIO_TO_FILE, _("To file"), wxDefaultPosition, wxDefaultSize, 0 );
-    item27->Add( item28, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item23, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item29 = new wxTextCtrl( parent, ID_TEXT_TO_FILE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item27->Add( item29, 1, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item30 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item30 = new wxButton( parent, ID_DOTDOTDOT, _("..."), wxDefaultPosition, wxSize(24,-1), 0 );
-    item30->SetFont( wxFont( 11, wxROMAN, wxNORMAL, wxBOLD ) );
-    item27->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item31 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item24->Add( item27, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxButton *item32 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item24, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    wxBoxSizer *item31 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxButton *item32 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item31->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxButton *item33 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item31->Add( item33, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item0->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {
