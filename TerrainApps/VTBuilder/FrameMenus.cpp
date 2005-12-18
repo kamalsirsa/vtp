@@ -3292,21 +3292,16 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 {
 	if (m_wms_servers.empty())
 	{
-		// supply some hardcoded servers
+		// supply some hardcoded well-known servers
 		OGCServer s;
 		s.m_url = "http://wmt.jpl.nasa.gov/wms.cgi";
 		m_wms_servers.push_back(s);
 		s.m_url = "http://globe.digitalearth.gov/viz-bin/wmt.cgi";
 		m_wms_servers.push_back(s);
-		s.m_url = "http://grid.cr.usgs.gov/cgi-bin/mapserver/elsalvador";
-		m_wms_servers.push_back(s);
-		s.m_url = "http://www.cubewerx.com/demo/cubeserv/cubeserv.cgi";
-		m_wms_servers.push_back(s);
-		s.m_url = "http://demo.cubewerx.com/demo/cubexplor/cubexplor.cgi";
-		m_wms_servers.push_back(s);
 	}
 
 #if SUPPORT_HTTP
+	// Ask the user for what server and layer they want
 	MapServerDlg dlg(this, -1, _T("WMS Request"));
 
 	dlg.m_area = m_area;
@@ -3316,17 +3311,38 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		return;
 	wxString2 query = dlg.m_query;
 
-	// TODO here: actually bring down the WMS data
-/*	bool success;
-	success = GetLayersFromWMS(query);
+	// Bring down the WMS data
+	if (dlg.m_bNewLayer)
+	{
+		// Enforce PNG, that's all we support so far
+		dlg.m_iFormat = 1;	// png
+		dlg.UpdateURL();
 
-	vtImageLayer *pIL = new vtImageLayer();
-	success = pRL->ReadFeaturesFromWFS(server, "rail");
-	if (success)
-		AddLayerWithCheck(pRL);
-	else
-		delete pRL;
-*/
+		OpenProgressDialog(_("Reading data"), false, this);
+		ReqContext rc;
+		rc.SetProgressCallback(progress_callback);
+		vtBytes data;
+		bool success = rc.GetURL(dlg.m_query.mb_str(), data);
+		CloseProgressDialog();
+
+		if (!success)
+		{
+			wxString2 str = rc.GetErrorMsg();
+			wxMessageBox(str);
+			return;
+		}
+		// Now data contains the PNG file in memory, so parse it.
+		vtImageLayer *pIL = new vtImageLayer;
+		success = pIL->ReadPNGFromMemory(data.Get(), data.Len());
+		if (success)
+		{
+			pIL->SetExtent(m_area);
+			pIL->SetProjection(m_proj);
+			AddLayerWithCheck(pIL);
+		}
+		else
+			delete pIL;
+	}
 #endif
 }
 
