@@ -55,7 +55,7 @@ vtFeatureSet *vtFeatureLoader::ReadFeaturesFromWFS(const char *szServerURL, cons
 class LayerListVisitor : public XMLVisitor
 {
 public:
-	LayerListVisitor(WFSLayerArray &pLayers) : m_Layers(pLayers)
+	LayerListVisitor(OGCLayerArray &pLayers) : m_Layers(pLayers)
 	{
 	}
 
@@ -71,8 +71,8 @@ private:
 	string _data;
 	int _level;
 
-	WFSLayerArray &m_Layers;
-	WFSLayerArray m_Stack;
+	OGCLayerArray &m_Layers;
+	OGCLayerArray m_Stack;
 	vtTagArray *m_pCurrent;
 };
 
@@ -82,7 +82,6 @@ void LayerListVisitor::startElement (const char * name, const XMLAttributes &att
 	{
 		_level++;
 		m_pCurrent = new vtTagArray;
-		m_Layers.push_back(m_pCurrent);
 		m_Stack.push_back(m_pCurrent);
 	}
 	_data = "";
@@ -93,7 +92,17 @@ void LayerListVisitor::endElement(const char *name)
 	if (string(name) == "Layer")
 	{
 		_level--;
+
+		vtTagArray *newlayer = m_Stack[m_Stack.size()-1];
+
+		// only add layers that have a "Name"
+		if (newlayer->FindTag("Name"))
+			m_Layers.push_back(newlayer);
+		else
+			delete newlayer;
+
 		m_Stack.pop_back();
+
 		int num = m_Stack.size();
 		if (num)
 			m_pCurrent = m_Stack[num-1];
@@ -115,7 +124,7 @@ void LayerListVisitor::data(const char *s, int length)
 //
 //
 //
-bool GetLayersFromWFS(const char *szServerURL, WFSLayerArray &layers)
+bool GetLayersFromWFS(const char *szServerURL, OGCLayerArray &layers)
 {
 	vtString url = szServerURL;
 	url += "GetCapabilities?version=0.0.14";
@@ -147,37 +156,45 @@ bool GetLayersFromWFS(const char *szServerURL, WFSLayerArray &layers)
 }
 
 
+#include <strstream>
+
 //
 // for now, handle WMS in this module as well
 //
-bool GetLayersFromWMS(const char *szServerURL, WFSLayerArray &layers)
+bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers, vtString &msg)
 {
-//	char *temp_fname = "C:/temp/elsalvador.xml";
-
 	vtString url = szServerURL;
-	url += "?REQUEST=GetCapabilities&version=1.1.1&SERVICE=WMS";
+	url += "?REQUEST=GetCapabilities";
 
 	ReqContext cl;
 	vtString str;
-	cl.GetURL(url, str);
-	if (str == "")
+	if (!cl.GetURL(url, str))
+	{
+		// there was an error
+		msg = str;
 		return false;
+	}
 
+#if 0
+	// write to file for debugging
 	char *temp_fname = "C:/temp/layers_temp.xml";
 	FILE *fp = fopen(temp_fname, "wb");
 	if (!fp)
 		return false;
 	fwrite((const char *)str, 1, str.GetLength(), fp);
 	fclose(fp);
+#endif
 
+	std::istrstream buf((const char *)str);
 	LayerListVisitor visitor(layers);
 	try
 	{
-		readXML(temp_fname, visitor);
+		readXML(buf, visitor);
 	}
-	catch (xh_exception &)
+	catch (xh_exception &ex)
 	{
 		// TODO: would be good to pass back the error message.
+		msg = ex.getFormattedMessage().c_str();
 		return false;
 	}
 	return true;
