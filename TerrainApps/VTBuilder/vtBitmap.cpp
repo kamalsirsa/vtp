@@ -12,6 +12,7 @@
 #include "wx/wx.h"
 #endif
 #include "wx/image.h"
+#include "wx/mstream.h"
 
 #include "vtdata/vtLog.h"
 #include "vtui/wxString2.h"
@@ -199,6 +200,26 @@ void vtBitmap::ContentsChanged()
 #endif
 }
 
+
+bool vtBitmap::ReadPNGFromMemory(unsigned char *buf, int len)
+{
+#if USE_DIBSECTIONS
+	return false;
+#else
+	m_pImage = new wxImage;
+
+	wxInitAllImageHandlers();
+
+	wxMemoryInputStream stream((char *)buf, len);
+	if (m_pImage->LoadFile(stream, wxBITMAP_TYPE_PNG))
+	{
+		ContentsChanged();	// copy image to bitmap
+		return true;
+	}
+	else
+		return false;
+#endif
+}
 
 /**
  * Write a JPEG file.

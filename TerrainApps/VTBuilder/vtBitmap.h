@@ -42,6 +42,7 @@ public:
 
 	void ContentsChanged();
 
+	bool ReadPNGFromMemory(unsigned char *buf, int len);
 	bool WriteJPEG(const char *fname, int quality);
 
 	wxBitmap	*m_pBitmap;

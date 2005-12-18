@@ -46,7 +46,7 @@ vtImageLayer::vtImageLayer(const DRECT &area, int xsize, int ysize,
 	m_proj = proj;
 
 	// yes, we could use some error-checking here
-	m_pBitmap = new vtBitmap();
+	m_pBitmap = new vtBitmap;
 #ifdef ENVIRON
 	if (!m_pBitmap->Allocate(m_iXSize, m_iYSize))
 		throw VTERR_ALLOCATE;
@@ -593,6 +593,22 @@ bool vtImageLayer::SaveToFile(const char *fname) const
 	return true;
 }
 
+bool vtImageLayer::ReadPNGFromMemory(unsigned char *buf, int len)
+{
+	m_pBitmap = new vtBitmap;
+	if (m_pBitmap->ReadPNGFromMemory(buf, len))
+	{
+		m_iXSize = m_pBitmap->GetWidth();
+		m_iYSize = m_pBitmap->GetHeight();
+		return true;
+	}
+	else
+	{
+		delete m_pBitmap;
+		m_pBitmap = NULL;
+		return false;
+	}
+}
 
 #if ROGER
 static int WarpProgress(double dfComplete, const char *pszMessage, void *pProgressArg)
@@ -924,7 +940,7 @@ bool vtImageLayer::LoadFromGDAL()
 
 		if (!bDefer)
 		{
-			m_pBitmap = new vtBitmap();
+			m_pBitmap = new vtBitmap;
 			if (!m_pBitmap->Allocate(m_iXSize, m_iYSize))
 			{
 				delete m_pBitmap;
@@ -939,10 +955,7 @@ bool vtImageLayer::LoadFromGDAL()
 				else
 					throw "Couldn't allocate bitmap";
 			}
-		}
 
-		if (!bDefer)
-		{
 			// Read the data
 			VTLOG("Reading the image data (%d x %d pixels)\n", m_iXSize, m_iYSize);
 			for (int iy = 0; iy < m_iYSize; iy++ )
@@ -1321,7 +1334,7 @@ bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 
 	m_iXSize = (TerrainEastingE - TerrainEastingW) / MetersPerPixel;
 	m_iYSize = (TerrainNorthingN - TerrainNorthingS) / MetersPerPixel;
-	m_pBitmap = new vtBitmap();
+	m_pBitmap = new vtBitmap;
 	m_pBitmap->Allocate(m_iXSize, m_iYSize);
 
 	vtDIB dib;
