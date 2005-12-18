@@ -18,6 +18,9 @@
 #include "vtui/wxString2.h"
 #include "vtBitmap.h"
 
+// Headers for PNG support, which uses the library "libpng"
+#include "png.h"
+
 // Headers for JPEG support, which uses the library "libjpeg"
 extern "C" {
 #ifdef WIN32
@@ -200,16 +203,128 @@ void vtBitmap::ContentsChanged()
 #endif
 }
 
+// The following small class and function provide the ability for libpng to
+//  read a PNG file from memory.
+class membuf
+{
+public:
+	membuf(byte *data) { m_data = data; m_offset = 0; }
+	byte *m_data;
+	int m_offset;
+};
+
+void user_read_data(png_structp png_ptr,
+        png_bytep data, png_size_t length)
+{
+	membuf *buf = (membuf *) png_get_io_ptr(png_ptr);
+	memcpy(data, buf->m_data+buf->m_offset, length);
+	buf->m_offset += length;
+}
 
 bool vtBitmap::ReadPNGFromMemory(unsigned char *buf, int len)
 {
 #if USE_DIBSECTIONS
-	return false;
+	png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png)
+	{
+		// We compiled against the headers of one version of libpng, but
+		// linked against the libraries from another version.
+		return false;
+	}
+	png_infop info = png_create_info_struct(png);
+	png_infop endinfo = png_create_info_struct(png);
+
+	if (!png_check_sig(buf, 8))
+	{
+		png_destroy_read_struct(&png, &info, &endinfo);
+		return false;
+	}
+	png_set_sig_bytes(png, 8);
+
+	// Tell libpng we want to use our own read function (to read from a memory
+	//  buffer instead of FILE io)
+	membuf buffer(buf+8);
+	png_set_read_fn(png, &buffer, user_read_data);
+
+	png_read_info(png, info);
+
+	png_uint_32 width, height;
+	int depth, color;
+	png_get_IHDR(png, info, &width, &height, &depth, &color, NULL, NULL, NULL);
+
+	if (color == PNG_COLOR_TYPE_GRAY || color == PNG_COLOR_TYPE_GRAY_ALPHA)
+		png_set_gray_to_rgb(png);
+
+	// Do strip alpha
+	if (color&PNG_COLOR_MASK_ALPHA)
+	{
+		png_set_strip_alpha(png);
+		color &= ~PNG_COLOR_MASK_ALPHA;
+	}
+
+	// Always expand paletted images
+//	if (!(PalettedTextures && mipmap >= 0 && trans == PNG_SOLID))
+		if (color == PNG_COLOR_TYPE_PALETTE)
+			png_set_expand(png);
+
+	png_read_update_info(png, info);
+
+	unsigned char *m_pPngData = (png_bytep) malloc(png_get_rowbytes(png, info)*height);
+	png_bytep *row_p = (png_bytep *) malloc(sizeof(png_bytep)*height);
+
+	png_uint_32 i;
+	bool StandardOrientation = false;
+	for (i = 0; i < height; i++) {
+		if (StandardOrientation)
+			row_p[height - 1 - i] = &m_pPngData[png_get_rowbytes(png, info)*i];
+		else
+			row_p[i] = &m_pPngData[png_get_rowbytes(png, info)*i];
+	}
+
+	png_read_image(png, row_p);
+	free(row_p);
+
+	int iBitCount;
+	switch (color)
+	{
+		case PNG_COLOR_TYPE_GRAY:
+		case PNG_COLOR_TYPE_RGB:
+		case PNG_COLOR_TYPE_PALETTE:
+			iBitCount = 24;
+			break;
+
+		case PNG_COLOR_TYPE_GRAY_ALPHA:
+		case PNG_COLOR_TYPE_RGB_ALPHA:
+			iBitCount = 32;
+			break;
+
+		default:
+			return false;
+	}
+
+	Allocate24(width, height);
+
+	int png_stride = png_get_rowbytes(png, info);
+	unsigned int row, col;
+	for (row = 0; row < height; row++)
+	{
+		byte *adr = m_pScanline + (row * m_iScanlineWidth);
+		png_bytep inptr = m_pPngData + row*png_stride;
+
+		memcpy(adr, inptr, png_stride);
+	}
+
+	png_read_end(png, endinfo);
+	png_destroy_read_struct(&png, &info, &endinfo);
+	free(m_pPngData);
+	return true;
 #else
 	m_pImage = new wxImage;
 
+	// This is necessary for wx to know how to load a PNG file
 	wxInitAllImageHandlers();
 
+	// Create a memory stream from our existing memory buffer
 	wxMemoryInputStream stream((char *)buf, len);
 	if (m_pImage->LoadFile(stream, wxBITMAP_TYPE_PNG))
 	{
