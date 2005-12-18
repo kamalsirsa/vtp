@@ -11,8 +11,9 @@
 #include "wx/dnd.h"
 
 #include "vtdata/Projections.h"
-#include "vtdata/Plants.h"	// for vtSpeciesList
-#include "vtdata/Fence.h"	// for LinStructOptions
+#include "vtdata/Plants.h	"	// for vtSpeciesList
+#include "vtdata/Fence.h"		// for LinStructOptions
+#include "vtdata/WFSClient.h"	// for OGCServerArray
 
 #include "StatusBar.h"
 #include "Layer.h"
@@ -436,6 +437,10 @@ public:
 	void MergeResampleElevation();
 	bool SampleElevationToPGMPyramids(const TilingOptions &opts);
 	void ExportImage();
+
+	// Web Access
+	OGCServerArray m_wms_servers;
+	OGCServerArray m_wfs_servers;
 
 	// Application Data
 	DRECT		m_area;

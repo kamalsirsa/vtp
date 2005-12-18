@@ -3262,7 +3262,7 @@ void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
 	wxString2 value = dlg.GetValue();
 	const char *server = value.mb_str();
 
-	WFSLayerArray layers;
+	OGCLayerArray layers;
 	success = GetLayersFromWFS(server, layers);
 
 	int numlayers = layers.size();
@@ -3290,15 +3290,33 @@ void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
 
 void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 {
+	if (m_wms_servers.empty())
+	{
+		// supply some hardcoded servers
+		OGCServer s;
+		s.m_url = "http://wmt.jpl.nasa.gov/wms.cgi";
+		m_wms_servers.push_back(s);
+		s.m_url = "http://globe.digitalearth.gov/viz-bin/wmt.cgi";
+		m_wms_servers.push_back(s);
+		s.m_url = "http://grid.cr.usgs.gov/cgi-bin/mapserver/elsalvador";
+		m_wms_servers.push_back(s);
+		s.m_url = "http://www.cubewerx.com/demo/cubeserv/cubeserv.cgi";
+		m_wms_servers.push_back(s);
+		s.m_url = "http://demo.cubewerx.com/demo/cubexplor/cubexplor.cgi";
+		m_wms_servers.push_back(s);
+	}
+
 #if SUPPORT_HTTP
 	MapServerDlg dlg(this, -1, _T("WMS Request"));
 
 	dlg.m_area = m_area;
+	dlg.SetServerArray(m_wms_servers);
 
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 	wxString2 query = dlg.m_query;
 
+	// TODO here: actually bring down the WMS data
 /*	bool success;
 	success = GetLayersFromWMS(query);
 
