@@ -55,6 +55,7 @@ protected:
 	wxChoice* GetZonechoice()  { return (wxChoice*) FindWindow( ID_ZONE ); }
 	wxChoice* GetDatumchoice()  { return (wxChoice*) FindWindow( ID_DATUM ); }
 	wxChoice* GetProjchoice()  { return (wxChoice*) FindWindow( ID_PROJ ); }
+	wxTextCtrl* GetEllipsoid()  { return (wxTextCtrl*) FindWindow( ID_ELLIPSOID ); }
 
 	void SetUIFromProjection();
 	void SetProjectionUI(ProjType type);
@@ -63,6 +64,7 @@ protected:
 	void AskStatePlane();
 	void RefreshDatums();
 	void UpdateDatumStatus();
+	void UpdateEllipsoid();
 
 private:
 	// WDR: member variable declarations for ProjectionDlg

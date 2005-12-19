@@ -188,6 +188,7 @@ void ProjectionDlg::UpdateControlStatus()
 	}
 	m_iDatum = m_proj.GetDatum();
 	UpdateDatumStatus();
+	UpdateEllipsoid();
 
 	// Do horizontal units ("linear units")
 	m_pHorizCtrl->Clear();
@@ -232,6 +233,19 @@ void ProjectionDlg::UpdateDatumStatus()
 	}
 	wxString2 str = DatumToString(m_iDatum);
 	m_pDatumCtrl->SetStringSelection(str);
+
+	UpdateEllipsoid();
+}
+
+void ProjectionDlg::UpdateEllipsoid()
+{
+	wxString2 str;
+	const char *ellip = m_proj.GetAttrValue("SPHEROID");
+	if (ellip)
+		str = ellip;
+	else
+		str = "";
+	GetEllipsoid()->SetValue(str);
 }
 
 void ProjectionDlg::DisplayProjectionSpecificParams()
@@ -391,6 +405,7 @@ void ProjectionDlg::OnDatum( wxCommandEvent &event )
 		wxMessageBox(_("Couldn't set that Datum.  Perhaps the EPSG\n tables could not be located.  Check that your\n GEOTIFF_CSV environment variable is set."));
 		SetUIFromProjection();
 	}
+	UpdateEllipsoid();
 }
 
 void ProjectionDlg::OnItemRightClick( wxListEvent &event )

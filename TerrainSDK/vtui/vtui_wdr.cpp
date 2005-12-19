@@ -10,14 +10,14 @@
 // For compilers that support precompilation
 #include "wx/wxprec.h"
 
+const int ID_TEXT = 10000;
+
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
 
 // Include private header
 #include "vtui_wdr.h"
-
-const int ID_TEXT = 10000;
 
 #include <wx/intl.h>
 
@@ -843,7 +843,7 @@ wxSizer *ProjectionDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("Ellipsoid:"), wxDefaultPosition, wxDefaultSize, 0 );
     item7->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_TEXTCTRL, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
+    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_ELLIPSOID, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
     item7->Add( item9, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item7, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
