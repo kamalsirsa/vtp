@@ -328,7 +328,7 @@ void Projection2Dlg::SetUIFromProjection()
 		//  about Oblique Stereographic, which is what i believe is meant.
 		else if (!strcmp(proj_string, "Double_Stereographic"))
 		{
-		    OGR_SRSNode *node = m_proj.GetAttrNode("PROJECTION");
+			OGR_SRSNode *node = m_proj.GetAttrNode("PROJECTION");
 			node = node->GetChild(0);
 			node->SetValue(SRS_PT_OBLIQUE_STEREOGRAPHIC);
 			SetProjectionUI(PT_OS);
@@ -506,9 +506,8 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 	case PT_HOM:
 		// Put in some default values; these are for Alaska Zone 1
 		m_proj.SetHOM( 57, -133.66666666666666,
-                        323.13010236111114, 323.13010236111114,
-                        0.9999,
-                        5000000, -5000000 );
+			323.13010236111114, 323.13010236111114,
+			0.9999, 5000000, -5000000 );
 		break;
 	case PT_LAEA:
 		// Put in some default values

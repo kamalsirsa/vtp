@@ -120,7 +120,7 @@ public:
 
 	// Key handler
 	void OnChar(wxKeyEvent& event);
-    void OnKeyDown(wxKeyEvent& event);
+	void OnKeyDown(wxKeyEvent& event);
 	void OnMouseWheel(wxMouseEvent& event);
 
 	// More public methods

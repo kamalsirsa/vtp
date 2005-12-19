@@ -589,7 +589,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 
 			bool keep = false;
 			wxString msg;
-			msg.Printf(_("The data already loaded is in:\n     %hs\n but the layer you are attempting to add:\n     %s\n is using:\n     %hs\n Would you like to attempt to convert it now to the existing projection?"),
+			msg.Printf(_("The data already loaded is in:\n   %hs\n but the layer you are attempting to add:\n   %s\n is using:\n   %hs\n Would you like to attempt to convert it now to the existing projection?"),
 				str1,
 				pLayer->GetLayerFilename().c_str(),
 				str2);

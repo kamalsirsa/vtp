@@ -214,7 +214,7 @@ public:
 };
 
 void user_read_data(png_structp png_ptr,
-        png_bytep data, png_size_t length)
+					png_bytep data, png_size_t length)
 {
 	membuf *buf = (membuf *) png_get_io_ptr(png_ptr);
 	memcpy(data, buf->m_data+buf->m_offset, length);
