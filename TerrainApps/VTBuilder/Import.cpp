@@ -22,6 +22,7 @@
 
 #include "Frame.h"
 #include "Helper.h"
+#include "FileFilters.h"
 // Layers
 #include "StructLayer.h"
 #include "WaterLayer.h"
