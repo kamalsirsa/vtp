@@ -22,6 +22,10 @@ int GuessZoneFromGeo(const DPoint2 &pos);
 
 /////
 
+void AddType(wxString &str, const wxString &filter);
+
+/////
+
 // Display a message to the user, and also send it to the log file.
 void DisplayAndLog(const char *pFormat, ...);
 #if SUPPORT_WSTRING

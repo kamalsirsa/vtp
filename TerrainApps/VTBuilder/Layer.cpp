@@ -13,6 +13,9 @@
 
 #include "vtdata/vtLog.h"
 #include "Frame.h"
+#include "Helper.h"
+
+// Layer headers
 #include "WaterLayer.h"
 #include "ElevLayer.h"
 #include "ImageLayer.h"
@@ -37,37 +40,6 @@ wxChar *vtLayer::LayerFileExtension[LAYER_TYPES] =
 	_T(".utl")
 };
 
-
-void AddType(wxString &str, const wxString &filter)
-{
-	// Chop up the input string.  Expected form is "str1|str2|str3"
-	wxString str1 = str.BeforeFirst('|');
-
-	wxString str2 = str.AfterFirst('|');
-	str2 = str2.BeforeFirst('|');
-
-	wxString str3 = str.AfterFirst('|');
-	str3 = str3.AfterFirst('|');
-
-	// Chop up the filter string.  str4 is the wildcard part.
-	wxString str4 = filter.AfterFirst('|');
-
-	// Now rebuild the string, with the filter added
-	wxString output = str1 + _T("|");
-	output += str2;
-	if (str2.Len() > 1)
-		output += _T(";");
-	output += str4;
-	output += _T("|");
-	if (str3.Len() > 1)
-	{
-		output += str3;
-		output += _T("|");
-	}
-	output += filter;
-
-	str = output;
-}
 
 wxString2 GetLayerTypeName(const LayerType &ltype)
 {
