@@ -11,19 +11,20 @@
 #include "wx/wx.h"
 #endif
 
-#include "Frame.h"
-#include "ElevLayer.h"
-#include "BuilderView.h"	// For grid marks
-#include "Helper.h"
-#include "RawDlg.h"
-#include "vtBitmap.h"
-#include "vtui/Helper.h"	// for FormatCoord
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
+#include "vtui/Helper.h"	// for FormatCoord
 
+#include "BuilderView.h"	// For grid marks
+#include "ElevLayer.h"
 #include "ExtentDlg.h"
+#include "FileFilters.h"
+#include "Frame.h"
+#include "Helper.h"
+#include "RawDlg.h"
+#include "vtBitmap.h"
 
 ////////////////////////////////////////////////////////////////////
 
