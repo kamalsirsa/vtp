@@ -15,10 +15,13 @@
 class OGCLayerArray : public std::vector<vtTagArray *>
 {
 public:
+	OGCLayerArray() { m_iSelected = -1; }
 	~OGCLayerArray() {
 		for (unsigned int i = 0; i < size(); i++)
 			delete at(i);
 	}
+	// remember which layer the user last expressed interest in
+	int m_iSelected;
 };
 
 struct OGCServer
@@ -27,7 +30,13 @@ struct OGCServer
 	OGCLayerArray m_layers;
 };
 
-typedef std::vector<OGCServer> OGCServerArray;
+class OGCServerArray : public std::vector<OGCServer>
+{
+public:
+	OGCServerArray() { m_iSelected = -1; }
+	// remember which server the user last expressed interest in
+	int m_iSelected;
+};
 
 bool GetLayersFromWFS(const char *szServerURL, OGCLayerArray &layers);
 
