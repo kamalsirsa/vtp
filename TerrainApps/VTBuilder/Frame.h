@@ -249,7 +249,7 @@ protected:
 	void OnAreaOptimizedElevTileset(wxCommandEvent& event);
 	void OnAreaExportImage(wxCommandEvent& event);
 	void OnAreaGenerateVeg(wxCommandEvent& event);
-	void OnAreaRequestLayer(wxCommandEvent& event);
+	void OnAreaRequestWFS(wxCommandEvent& event);
 	void OnAreaRequestWMS(wxCommandEvent& event);
 	void OnAreaRequestTServe(wxCommandEvent& event);
 
@@ -258,6 +258,7 @@ protected:
 	void OnUpdateAreaExportElev(wxUpdateUIEvent& event);
 	void OnUpdateAreaExportImage(wxUpdateUIEvent& event);
 	void OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event);
+	void OnUpdateAreaRequestWMS(wxUpdateUIEvent& event);
 
 	void OnHelpAbout(wxCommandEvent& event);
 

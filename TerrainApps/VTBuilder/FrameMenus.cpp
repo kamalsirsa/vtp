@@ -34,6 +34,7 @@
 #include "TreeView.h"
 #include "Helper.h"
 #include "vtBitmap.h"
+#include "FileFilters.h"
 // Layers
 #include "ElevLayer.h"
 #include "ImageLayer.h"
@@ -233,7 +234,7 @@ EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
 EVT_MENU(ID_AREA_EXPORT_IMAGE,		MainFrame::OnAreaExportImage)
 EVT_MENU(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnAreaOptimizedElevTileset)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
-EVT_MENU(ID_AREA_REQUEST_LAYER,		MainFrame::OnAreaRequestLayer)
+EVT_MENU(ID_AREA_REQUEST_WFS,		MainFrame::OnAreaRequestWFS)
 EVT_MENU(ID_AREA_REQUEST_WMS,		MainFrame::OnAreaRequestWMS)
 EVT_MENU(ID_AREA_REQUEST_TSERVE,	MainFrame::OnAreaRequestTServe)
 
@@ -243,6 +244,8 @@ EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnUpdateAreaExportElev)
 EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE,	MainFrame::OnUpdateAreaExportImage)
 EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
+EVT_UPDATE_UI(ID_AREA_REQUEST_WFS,	MainFrame::OnUpdateAreaRequestWMS)
+EVT_UPDATE_UI(ID_AREA_REQUEST_WMS,	MainFrame::OnUpdateAreaRequestWMS)
 
 EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
 
@@ -467,7 +470,7 @@ void MainFrame::CreateMenus()
 	areaMenu->Append(ID_AREA_GENERATE_VEG, _("Generate Vegetation"),
 		_("Generate Vegetation File (*.vf) containg plant distribution."));
 #if SUPPORT_HTTP
-	areaMenu->Append(ID_AREA_REQUEST_LAYER, _("Request Layer from WFS"));
+	areaMenu->Append(ID_AREA_REQUEST_WFS, _("Request Layer from WFS"));
 	areaMenu->Append(ID_AREA_REQUEST_WMS, _("Request Image from WMS"));
 	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _("Request Image from Terraserver"));
 #endif // SUPPORT_HTTP
@@ -3250,7 +3253,7 @@ void MainFrame::OnAreaTypeIn(wxCommandEvent &event)
 	}
 }
 
-void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
+void MainFrame::OnAreaRequestWFS(wxCommandEvent& event)
 {
 #if SUPPORT_HTTP
 	bool success;
@@ -3309,28 +3312,47 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 
 	if (dlg.ShowModal() != wxID_OK)
 		return;
-	wxString2 query = dlg.m_query;
 
-	// Bring down the WMS data
+	// Prepare to receive the WMS data
 	if (dlg.m_bNewLayer)
 	{
 		// Enforce PNG, that's all we support so far
 		dlg.m_iFormat = 1;	// png
 		dlg.UpdateURL();
-
-		OpenProgressDialog(_("Reading data"), false, this);
-		ReqContext rc;
-		rc.SetProgressCallback(progress_callback);
-		vtBytes data;
-		bool success = rc.GetURL(dlg.m_query.mb_str(), data);
-		CloseProgressDialog();
-
-		if (!success)
+	}
+	FILE *fp;
+	if (dlg.m_bToFile)
+	{
+		// Very simple: just write the buffer to disk
+		fp = fopen(dlg.m_strToFile.mb_str(), "wb");
+		if (!fp)
 		{
-			wxString2 str = rc.GetErrorMsg();
+			wxString2 str = _("Could not open file");
+			str += _T(" '");
+			str += dlg.m_strToFile;
+			str += _T("'");
 			wxMessageBox(str);
 			return;
 		}
+	}
+
+	// Bring down the WMS data
+	OpenProgressDialog(_("Requesting data"), false, this);
+	ReqContext rc;
+	rc.SetProgressCallback(progress_callback);
+	vtBytes data;
+	bool success = rc.GetURL(dlg.m_strQueryURL.mb_str(), data);
+	CloseProgressDialog();
+
+	if (!success)
+	{
+		wxString2 str = rc.GetErrorMsg();
+		wxMessageBox(str);
+		return;
+	}
+
+	if (dlg.m_bNewLayer)
+	{
 		// Now data contains the PNG file in memory, so parse it.
 		vtImageLayer *pIL = new vtImageLayer;
 		success = pIL->ReadPNGFromMemory(data.Get(), data.Len());
@@ -3343,7 +3365,17 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		else
 			delete pIL;
 	}
+	if (dlg.m_bToFile)
+	{
+		fwrite(data.Get(), data.Len(), 1, fp);
+		fclose(fp);
+	}
 #endif
+}
+
+void MainFrame::OnUpdateAreaRequestWMS(wxUpdateUIEvent& event)
+{
+	event.Enable(!m_area.IsEmpty() && SUPPORT_HTTP);
 }
 
 void MainFrame::OnAreaRequestTServe(wxCommandEvent& event)
