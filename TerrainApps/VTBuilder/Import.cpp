@@ -19,6 +19,7 @@
 #include "vtdata/vtLog.h"
 #include "vtdata/Building.h"
 #include "vtui/Helper.h"
+#include "vtui/ProjectionDlg.h"
 
 #include "Frame.h"
 #include "Helper.h"
@@ -35,7 +36,6 @@
 // Dialogs
 #include "ImportVegDlg.h"
 #include "VegFieldsDlg.h"
-#include "Projection2Dlg.h"
 #include "ImportStructDlgOGR.h"
 #include "ImportPointDlg.h"
 
@@ -715,7 +715,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	else
 	{
 		// ask user for a projection
-		Projection2Dlg dlg(NULL, -1, _("Please indicate projection"));
+		ProjectionDlg dlg(NULL, -1, _("Please indicate projection"));
 		dlg.SetProjection(m_proj);
 
 		if (dlg.ShowModal() == wxID_CANCEL)
@@ -1214,7 +1214,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString2 &strFileName, LayerTy
 		if (OGRERR_NONE != Projection.Validate())
 		{
 			// Get a projection
-			Projection2Dlg dlg(GetMainFrame(), -1, _("Please indicate projection"));
+			ProjectionDlg dlg(GetMainFrame(), -1, _("Please indicate projection"));
 			dlg.SetProjection(m_proj);
 
 			if (dlg.ShowModal() == wxID_CANCEL)

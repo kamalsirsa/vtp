@@ -404,6 +404,12 @@
 				RelativePath=".\ProfileDlg.cpp">
 			</File>
 			<File
+				RelativePath=".\ProjectionDlg.cpp">
+			</File>
+			<File
+				RelativePath=".\StatePlaneDlg.cpp">
+			</File>
+			<File
 				RelativePath="vtui_wdr.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -508,6 +514,12 @@
 			</File>
 			<File
 				RelativePath=".\ProfileDlg.h">
+			</File>
+			<File
+				RelativePath=".\ProjectionDlg.h">
+			</File>
+			<File
+				RelativePath=".\StatePlaneDlg.h">
 			</File>
 			<File
 				RelativePath="vtui_wdr.h">

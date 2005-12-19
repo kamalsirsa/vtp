@@ -30,6 +30,7 @@
 // Dialogs
 #include "vtui/DistanceDlg.h"
 #include "vtui/ProfileDlg.h"
+#include "vtui/Helper.h"	// for GuessZoneFromGeo
 
 #include "cpl_error.h"
 #include <float.h>

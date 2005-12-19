@@ -43,10 +43,10 @@
 #include "ResampleDlg.h"
 #include "SampleImageDlg.h"
 #include "FeatInfoDlg.h"
-#include "Projection2Dlg.h"
 #include "vtui/DistanceDlg.h"
-#include "vtui/LinearStructDlg.h"
 #include "vtui/InstanceDlg.h"
+#include "vtui/LinearStructDlg.h"
+#include "vtui/ProjectionDlg.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "bld_add_points.xpm"
@@ -2251,7 +2251,7 @@ bool MainFrame::ConfirmValidCRS(vtProjection *pProj)
 		int res = wxMessageBox(msg, _("Coordinate Reference System"), wxYES_NO | wxCANCEL);
 		if (res == wxYES)
 		{
-			Projection2Dlg dlg(NULL, -1, _("Please indicate projection"));
+			ProjectionDlg dlg(NULL, -1, _("Please indicate projection"));
 			dlg.SetProjection(m_proj);
 
 			if (dlg.ShowModal() == wxID_CANCEL)

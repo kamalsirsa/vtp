@@ -13,7 +13,7 @@
 #endif
 
 #include "RawDlg.h"
-#include "Projection2Dlg.h"
+#include "vtui/ProjectionDlg.h"
 #include "ExtentDlg.h"
 
 // WDR: class implementations
@@ -75,7 +75,7 @@ void RawDlg::OnExtents( wxCommandEvent &event )
 
 void RawDlg::OnCRS( wxCommandEvent &event )
 {
-	Projection2Dlg dlg(NULL, -1, _("Please indicate CRS"));
+	ProjectionDlg dlg(NULL, -1, _("Please indicate CRS"));
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_OK)

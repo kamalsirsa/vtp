@@ -19,6 +19,8 @@
 #include "gdalwarper.h"
 #endif
 #include "vtui/Helper.h"
+#include "vtui/ProjectionDlg.h"
+
 #include "ogr_spatialref.h"
 #include "gdal_priv.h"
 #include "BuilderView.h"	// For grid marks
@@ -28,7 +30,6 @@
 #include "vtBitmap.h"
 
 #include "ExtentDlg.h"
-#include "Projection2Dlg.h"
 
 
 vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)

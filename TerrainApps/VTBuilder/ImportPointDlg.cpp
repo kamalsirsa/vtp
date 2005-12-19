@@ -13,7 +13,7 @@
 #endif
 
 #include "ImportPointDlg.h"
-#include "Projection2Dlg.h"
+#include "vtui/ProjectionDlg.h"
 
 // WDR: class implementations
 
@@ -71,7 +71,7 @@ void ImportPointDlg::RefreshProjString()
 
 void ImportPointDlg::OnSetCRS( wxCommandEvent &event )
 {
-	Projection2Dlg dlg(this, -1, _("Please indicate CRS"));
+	ProjectionDlg dlg(this, -1, _("Please indicate CRS"));
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_OK)

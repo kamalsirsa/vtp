@@ -127,6 +127,27 @@ const int ID_LINE2 = 10081;
 const int ID_STATUS_TEXT = 10082;
 wxSizer *ProfileDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+const int ID_PROJ = 10083;
+const int ID_SHOW_ALL_DATUMS = 10084;
+const int ID_DATUM = 10085;
+const int ID_TEXTCTRL = 10086;
+const int ID_HORUNITS = 10087;
+const int ID_ZONE = 10088;
+const int ID_PROJPARAM = 10089;
+const int ID_STATEPLANE = 10090;
+const int ID_PROJ_LOAD = 10091;
+const int ID_PROJ_SAVE = 10092;
+const int ID_LINE = 10093;
+wxSizer *ProjectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+const int ID_STATEPLANES = 10094;
+const int ID_NAD27 = 10095;
+const int ID_NAD83 = 10096;
+const int ID_RADIO_METERS = 10097;
+const int ID_RADIO_FEET = 10098;
+const int ID_RADIO_FEET_US = 10099;
+wxSizer *StatePlaneDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

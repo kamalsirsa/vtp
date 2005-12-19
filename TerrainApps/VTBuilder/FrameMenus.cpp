@@ -25,6 +25,7 @@
 #include "vtui/Helper.h"
 #include "vtui/DistanceDlg.h"
 #include "vtui/ProfileDlg.h"
+#include "vtui/ProjectionDlg.h"
 
 #include "gdal_priv.h"
 
@@ -54,7 +55,6 @@
 #include "LayerPropDlg.h"
 #include "MapServerDlg.h"
 #include "OptionsDlg.h"
-#include "Projection2Dlg.h"
 #include "RenderDlg.h"
 #include "SelectDlg.h"
 #include "TileDlg.h"
@@ -1409,7 +1409,7 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 //	dlg.m_strCaption = _T("Shapefiles do not contain projection information.  ")
 //		_T("Please indicate the projection of this file:");
 	// ask user for a projection
-	Projection2Dlg dlg(NULL, -1, _("Indicate Projection"));
+	ProjectionDlg dlg(NULL, -1, _("Indicate Projection"));
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
@@ -1558,7 +1558,7 @@ void MainFrame::OnUpdateAreaExportImage(wxUpdateUIEvent& event)
 void MainFrame::OnLayerConvert(wxCommandEvent &event)
 {
 	// ask for what projection to convert to
-	Projection2Dlg dlg(NULL, 200, _("Convert to what projection?"));
+	ProjectionDlg dlg(NULL, 200, _("Convert to what projection?"));
 	dlg.SetProjection(m_proj);
 
 	// might switch to utm, help provide a good guess for UTM zone
@@ -1599,7 +1599,7 @@ void MainFrame::OnLayerSetProjection(wxCommandEvent &event)
 	// Allow the user to directly specify the projection for all loaded
 	// layers (override it, without reprojecting the layer's data)
 	// ask for what projection to convert to
-	Projection2Dlg dlg(NULL, -1, _("Set to what projection?"));
+	ProjectionDlg dlg(NULL, -1, _("Set to what projection?"));
 	dlg.SetProjection(m_proj);
 
 	// might switch to utm, help provide a good guess for UTM zone
