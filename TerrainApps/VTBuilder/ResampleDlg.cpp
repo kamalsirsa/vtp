@@ -14,7 +14,7 @@
 
 #include "ResampleDlg.h"
 #include "TileDlg.h"
-#include "Layer.h"
+#include "FileFilters.h"
 
 // WDR: class implementations
 

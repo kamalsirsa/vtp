@@ -9,7 +9,7 @@
 #include "wx/wxprec.h"
 
 #include "TileDlg.h"
-#include "Layer.h"	// for FSTRING_INI
+#include "FileFilters.h"	// for FSTRING_INI
 #include "BuilderView.h"
 
 // WDR: class implementations

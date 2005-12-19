@@ -13,7 +13,7 @@
 #endif
 
 #include "RenderDlg.h"
-#include "Layer.h"
+#include "FileFilters.h"
 #include "vtdata/FilePath.h"
 #include "vtui/Helper.h"
 #include "vtui/ColorMapDlg.h"

@@ -13,7 +13,7 @@
 #endif
 
 #include "TSDlg.h"
-#include "Layer.h"	// for FSTRING_JPEG
+#include "FileFilters.h"	// for FSTRING_JPEG
 
 // WDR: class implementations
 
