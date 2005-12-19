@@ -450,3 +450,13 @@ bool UpdateProgressDialog(int amount, const wxString& newmsg)
 }
 
 
+//////////////////////////////////////
+
+int GuessZoneFromGeo(const DPoint2 &pos)
+{
+	int zone = (int) (((pos.x + 180.0) / 6.0) + 1.0);
+	if (pos.y < 0)
+		zone = -zone;
+	return zone;
+}
+

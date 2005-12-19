@@ -18,10 +18,6 @@ void DrawRectangle(wxDC* pDC, const wxRect &rect);
 
 /////
 
-int GuessZoneFromGeo(const DPoint2 &pos);
-
-/////
-
 void AddType(wxString &str, const wxString &filter);
 
 /////

@@ -34,3 +34,6 @@ void ResumeProgressDialog();
 
 /////
 
+int GuessZoneFromGeo(const DPoint2 &pos);
+
+

@@ -55,16 +55,6 @@ void DrawRectangle(wxDC* pDC, const wxRect &rect)
 
 //////////////////////////////////////
 
-int GuessZoneFromGeo(const DPoint2 &pos)
-{
-	int zone = (int) (((pos.x + 180.0) / 6.0) + 1.0);
-	if (pos.y < 0)
-		zone = -zone;
-	return zone;
-}
-
-//////////////////////////////////////
-
 void AddType(wxString &str, const wxString &filter)
 {
 	// Chop up the input string.  Expected form is "str1|str2|str3"
