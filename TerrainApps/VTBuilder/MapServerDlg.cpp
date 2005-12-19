@@ -209,7 +209,7 @@ void MapServerDlg::OnInitDialog(wxInitDialogEvent& event)
 	int numservers = m_pServers->size();
 	for (int i = 0; i < numservers; i++)
 	{
-		wxString str = m_pServers->at(i).m_url;
+		wxString2 str = m_pServers->at(i).m_url;
 		GetBaseUrl()->Append(str);
 	}
 	// If no selection, pick the first server
