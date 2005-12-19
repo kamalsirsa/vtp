@@ -311,7 +311,14 @@ bool vtBitmap::ReadPNGFromMemory(unsigned char *buf, int len)
 		byte *adr = m_pScanline + (row * m_iScanlineWidth);
 		png_bytep inptr = m_pPngData + row*png_stride;
 
-		memcpy(adr, inptr, png_stride);
+		// we can't just memcpy, because we must flip RGB -> BGR
+		for (col = 0; col < width; col++)
+		{
+			adr[2] = *inptr++;
+			adr[1] = *inptr++;
+			adr[0] = *inptr++;
+			adr += 3;
+		}
 	}
 
 	png_read_end(png, endinfo);
