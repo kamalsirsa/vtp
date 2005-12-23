@@ -865,6 +865,13 @@ const char *DatumToStringShort(int d)
 
 Array<EPSGDatum> g_EPSGDatums;
 
+int compare_datum(const void *aa, const void *bb)
+{
+	EPSGDatum *a = (EPSGDatum *)aa;
+	EPSGDatum *b = (EPSGDatum *)bb;
+	return strcmp(a->szName, b->szName);
+}
+
 /**
  * Setup the global array of EPSG Datums, accessible as g_EPSGDatums.
  */
@@ -884,6 +891,8 @@ void SetupEPSGDatums()
 		dat.szShortName = epsg_datums[i].shortname;
 		g_EPSGDatums.Append(dat);
 	}
+	// sort them
+	qsort(g_EPSGDatums.GetData(), count, sizeof(EPSGDatum), compare_datum);
 }
 
 void CleanupEPSGDatums()
