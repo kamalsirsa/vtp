@@ -119,7 +119,8 @@ void ProjectionDlg::RefreshDatums()
 			if (!g_EPSGDatums[i].bCommon)
 				continue;
 		}
-		m_pDatumCtrl->Append(str, (void *) (code+CHOICE_OFFSET));
+		void *clientData = (void *) (code+CHOICE_OFFSET);
+		m_pDatumCtrl->Append(str, clientData);
 	}
 }
 
