@@ -479,11 +479,11 @@ void DxfParser::ReadLWPolyline()
 			DPoint3 pt;
 			pt.x = strtod(pair.m_sValue, NULL);
 			entity.m_points.push_back(pt);
-			++iCurrIndex;
 		}
 		else if (pair.m_iCode == 20)
 		{
 			entity.m_points[iCurrIndex].y = strtod(pair.m_sValue, NULL);
+			++iCurrIndex;
 		}
 		else if (pair.m_iCode == 38)
 		{
