@@ -881,6 +881,19 @@ void vtElevationGrid::SetCorners(const DLine2 &line)
 		m_Corners[i] = line[i];
 }
 
+/**
+ * Set up the terrain's coordinate systems, including the conversion from Earth
+ * coordinates to the World coordinates of the terrain itself.  You should call
+ * this method after loading or creating a vtElevationGrid, before using methods
+ * on it such as FindAltitudeOnEarth or GetSpacing.
+ *
+ * For explanation of vtlib/vtdata world coordinates, please see
+ * http://vterrain.org/Doc/coords.html
+ *
+ * \param fVerticalExag The vertical exaggeration of the terrain, which is how
+ *	many times higher it should appear than it really is.  Pass 1.0 for no
+ *	exaggeration.
+ */
 void vtElevationGrid::SetupConversion(float fVerticalExag)
 {
 	if (m_fMinHeight == INVALID_ELEVATION ||
