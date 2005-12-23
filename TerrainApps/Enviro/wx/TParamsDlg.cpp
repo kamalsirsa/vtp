@@ -1093,15 +1093,15 @@ void TParamsDlg::OnListDblClickStructure( wxCommandEvent &event )
 	for (i = 0; i < m_datapaths.size(); i++)
 		AddFilenamesToArray(strings, m_datapaths[i] + "BuildingData", "*.vtst*");
 
-	wxString2 result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a structure file"),
-		strings, this);
+	wxString2 result = wxGetSingleChoice(_("One of the following to add:"),
+		_("Choose a structure file"), strings, this);
 
 	if (result.Cmp(_T(""))) // user selected something
 	{
 		TransferDataFromWindow();
 		vtTagArray lay;
 		lay.SetValueString("Type", TERR_LTYPE_STRUCTURE, true);
-		lay.SetValueString("Filename", result.vt_str(), true);
+		lay.SetValueString("Filename", result.to_utf8(), true);
 		m_Layers.push_back(lay);
 		TransferDataToWindow();
 	}
