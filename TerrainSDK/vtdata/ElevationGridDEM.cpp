@@ -57,6 +57,10 @@ int IConvert(FILE *fp, int length)
  * Loads elevation from a USGS DEM file.
  *
  * Some non-standard variations of the DEM format are supported.
+ *
+ * You should call SetupConversion() after loading if you will be doing
+ * heightfield operations on this grid.
+ *
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromDEM(const char *szFileName,
