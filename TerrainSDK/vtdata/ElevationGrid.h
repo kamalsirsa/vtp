@@ -112,8 +112,8 @@ public:
 	/** Returns the geographic extents of the *area* covered by grid. */
 	DRECT GetAreaExtents() const;
 
-	/** Get the data size of the grid: \c true if floating point (4-byte),
-	 * \c false if integer (2-byte).
+	/** Get the data size of the grid heixels (height elements): \c true if
+	 * floating point (4-byte), \c false if integer (2-byte).
 	 */
 	bool  IsFloatMode()	const { return m_bFloatMode; }
 
@@ -144,7 +144,7 @@ public:
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const;
 
 	// methods that deal with world coordinates
-	void SetupConversion(float fVerticalExag);
+	void SetupConversion(float fVerticalExag = 1.0f);
 	float GetWorldValue(int i, int j, bool bTrue = false) const;
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		bool bTrue = false, bool bIncludeCulture = false,
