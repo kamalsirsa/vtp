@@ -172,28 +172,58 @@ void LinkEdit::ComputeExtent()
 void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 {
 	// also refresh the parallel left and right road edges
-	DPoint2 p, p2, vec, norm, p3;
+	DPoint2 p, vec, norm;
 	m_fWidth = EstimateWidth();
 	double half_width = (m_fWidth / 2);
+
 	int i, size = GetSize();
 	m_Left.SetSize(size);
 	m_Right.SetSize(size);
+
+	DPoint2 prev, offset;
+
 	for (i = 0; i < size; i++)
 	{
+		prev = norm;
+
 		p = GetAt(i);
 		if (i < size-1)
 		{
-			p2 = GetAt(i+1);
-			vec = p2 - p;
+			vec = GetAt(i+1) - p;
 			norm.x = -vec.y;
 			norm.y = vec.x;
 			norm.Normalize();
 		}
-		p3 = (norm * half_width);	// offset in meters
-		p3.x /= ToMeters.x;			// convert (potentially) to degrees
-		p3.y /= ToMeters.y;
-		m_Left.SetAt(i, p + p3);
-		m_Right.SetAt(i, p - p3);
+		if (i == 0)		// first point
+			offset = norm * half_width;
+		else if (i > 0 && i < size-1)
+		{
+			// vector which bisects this point is the combination of both normals
+			DPoint2 bisect = (norm + prev).Normalize();
+
+			// compute angle between the vectors
+			double dot = prev.Dot(-norm);
+			if (dot <= -1.0 || dot >= 1.0)
+			{
+				// simple degenerate case: colinear lines
+				offset = bisect * half_width;
+			}
+			else
+			{
+				double angle = acos(dot);
+
+				// factor to widen this corner is proportional to the angle
+				double wider = 1.0 / cos((PId - angle) / 2);
+				offset = bisect * half_width * wider;
+			}
+		}
+		else if (i == size-1)	// last point
+			offset = prev * half_width;
+
+		offset.x /= ToMeters.x;			// convert (potentially) to degrees
+		offset.y /= ToMeters.y;
+		m_Left.SetAt(i, p + offset);
+		m_Right.SetAt(i, p - offset);
 	}
 }
 
