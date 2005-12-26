@@ -223,16 +223,41 @@ void vtRoadLayer::SetProjection(const vtProjection &proj)
 
 void vtRoadLayer::Offset(const DPoint2 &p)
 {
+	bool bSelLinks = (NumSelectedLinks() > 0);
+	bool bSelNodes = (NumSelectedNodes() > 0);
+	bool bSelected = bSelLinks || bSelNodes;
 	for (LinkEdit *link = GetFirstLink(); link; link=link->GetNext())
 	{
 		for (unsigned int i = 0; i < link->GetSize(); i++)
 		{
+			if (bSelected && !link->IsSelected())
+				continue;
 			link->GetAt(i) += p;
 		}
 		link->m_bSidesComputed = false;
+		if (bSelLinks && !bSelNodes)
+		{
+			link->GetNode(0)->m_p += p;
+			link->GetNode(1)->m_p += p;
+		}
 	}
-	for (TNode *n = GetFirstNode(); n; n=n->m_pNext)
-		n->m_p += p;
+	for (NodeEdit *node = GetFirstNode(); node; node=node->GetNext())
+	{
+		if (bSelected && !node->IsSelected())
+			continue;
+		node->m_p += p;
+		if (!bSelLinks && bSelNodes)
+		{
+			for (int i = 0; i < node->m_iLinks; i++)
+			{
+				TLink *l1 = node->GetLink(i);
+				if (l1->GetNode(0) == node)
+					l1->SetAt(0, node->m_p);
+				else
+					l1->SetAt(l1->GetSize()-1, node->m_p);
+			}
+		}
+	}
 
 	// recompute road extents
 	for (LinkEdit *r2 = GetFirstLink(); r2; r2=r2->GetNext())
