@@ -172,24 +172,22 @@ void LinkEdit::ComputeExtent()
 void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 {
 	// also refresh the parallel left and right road edges
-	DPoint2 p, vec, norm;
 	m_fWidth = EstimateWidth();
 	double half_width = (m_fWidth / 2);
 
-	int i, size = GetSize();
-	m_Left.SetSize(size);
-	m_Right.SetSize(size);
+	unsigned int size = GetSize();
+	m_WidthOffset.SetSize(size);
 
-	DPoint2 prev, offset;
+	DPoint2 norm, prev, offset;
 
-	for (i = 0; i < size; i++)
+	for (unsigned int i = 0; i < size; i++)
 	{
 		prev = norm;
 
-		p = GetAt(i);
+		DPoint2 p = GetAt(i);
 		if (i < size-1)
 		{
-			vec = GetAt(i+1) - p;
+			DPoint2 vec = GetAt(i+1) - p;
 			norm.x = -vec.y;
 			norm.y = vec.x;
 			norm.Normalize();
@@ -205,7 +203,7 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 			double dot = prev.Dot(-norm);
 			if (dot <= -1.0 || dot >= 1.0)
 			{
-				// simple degenerate case: colinear lines
+				// simple degenerate case: colinear segments
 				offset = bisect * half_width;
 			}
 			else
@@ -213,7 +211,7 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 				double angle = acos(dot);
 
 				// factor to widen this corner is proportional to the angle
-				double wider = 1.0 / cos((PId - angle) / 2);
+				double wider = 1.0 / sin(angle / 2);
 				offset = bisect * half_width * wider;
 			}
 		}
@@ -222,8 +220,7 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 
 		offset.x /= ToMeters.x;			// convert (potentially) to degrees
 		offset.y /= ToMeters.y;
-		m_Left.SetAt(i, p + offset);
-		m_Right.SetAt(i, p - offset);
+		m_WidthOffset[i] = offset;
 	}
 }
 
@@ -299,10 +296,7 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 
 	int c, size = GetSize();
 	if (bShowWidth)
-	{
-		pView->DrawLine(pDC, m_Left, false);
-		pView->DrawLine(pDC, m_Right, false);
-	}
+		pView->DrawDoubleLine(pDC, *this, m_WidthOffset);
 	else
 		pView->DrawLine(pDC, *this, false);
 
@@ -310,7 +304,8 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	{
 		pDC->SetLogicalFunction(wxINVERT);
 		pDC->SetPen(RoadPen[RP_SELECTION]);
-		pDC->DrawLines(GetSize(), g_screenbuf);
+		pView->DrawLine(pDC, *this, false);
+//		pDC->DrawLines(GetSize(), g_screenbuf);
 	}
 	if (bShowDirection)
 	{
