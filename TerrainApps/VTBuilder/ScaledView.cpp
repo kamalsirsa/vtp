@@ -221,13 +221,28 @@ void vtScaledView::DrawLine(wxDC *pDC, const DLine2 &dline, bool bClose)
 		return;
 
 	for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
-		screen(dline.GetAt(i), g_screenbuf[i]);
+		screen(dline[i], g_screenbuf[i]);
 	if (bClose)
 	{
-		screen(dline.GetAt(0), g_screenbuf[i]);
+		screen(dline[0], g_screenbuf[i]);
 		i++;
 	}
 
+	pDC->DrawLines(i, g_screenbuf);
+}
+
+void vtScaledView::DrawDoubleLine(wxDC *pDC, const DLine2 &line, const DLine2 &width)
+{
+	unsigned int i, size = line.GetSize();
+	if (size < 2)
+		return;
+
+	for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
+		screen(line[i] + width[i], g_screenbuf[i]);
+	pDC->DrawLines(i, g_screenbuf);
+
+	for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
+		screen(line[i] - width[i], g_screenbuf[i]);
 	pDC->DrawLines(i, g_screenbuf);
 }
 

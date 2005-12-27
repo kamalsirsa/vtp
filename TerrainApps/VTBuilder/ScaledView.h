@@ -65,6 +65,7 @@ public:
 	double ody(int y) { return -y/m_fScale; }
 
 	void DrawLine(wxDC *pDC, const DLine2 &line, bool bClose);
+	void DrawDoubleLine(wxDC *pDC, const DLine2 &line, const DLine2 &width);
 	void DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill);
 
 protected:
