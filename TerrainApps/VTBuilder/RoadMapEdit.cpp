@@ -201,9 +201,9 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 
 			// compute angle between the vectors
 			double dot = prev.Dot(-norm);
-			if (dot <= -1.0 || dot >= 1.0)
+			if (dot <= -0.97 || dot >= 0.97)
 			{
-				// simple degenerate case: colinear segments
+				// simple case: close enough to colinear
 				offset = bisect * half_width;
 			}
 			else
@@ -305,7 +305,6 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 		pDC->SetLogicalFunction(wxINVERT);
 		pDC->SetPen(RoadPen[RP_SELECTION]);
 		pView->DrawLine(pDC, *this, false);
-//		pDC->DrawLines(GetSize(), g_screenbuf);
 	}
 	if (bShowDirection)
 	{
