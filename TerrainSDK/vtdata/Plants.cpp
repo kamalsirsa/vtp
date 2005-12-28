@@ -343,7 +343,7 @@ void PlantListVisitor::data(const char *s, int length)
 	m_data.append(string(s, length));
 }
 
-bool vtSpeciesList::ReadXML(const char* pathname)
+bool vtSpeciesList::ReadXML(const char *pathname, vtString &msg)
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -353,9 +353,10 @@ bool vtSpeciesList::ReadXML(const char* pathname)
 	{
 		readXML(pathname, visitor);
 	}
-	catch (xh_exception &)
+	catch (xh_exception &ex)
 	{
 		// TODO: would be good to pass back the error message.
+		msg = ex.getFormattedMessage().c_str();
 		return false;
 	}
 	return true;
