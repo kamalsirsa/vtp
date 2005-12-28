@@ -7,6 +7,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtString.h"
+#include "vtdata/vtLog.h"
 #include <osgDB/ReadFile>
 #include "gdal_priv.h"
 #include "vtdata/Projections.h"
@@ -113,6 +114,7 @@ osg::ref_ptr<osgDB::ReaderWriter::Options> s_options;
 
 bool vtImage::Read(const char *fname, bool bAllowCache)
 {
+	VTLOG(" vtImage::Read(%s)\n", fname);
 	m_b16bit = false;
 	m_strFilename = fname;
 
@@ -168,6 +170,7 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 		opts = reg->getOptions();
 		if (!opts)
 		{
+			VTLOG("  creating osgDB::ReaderWriter::Options\n");
 			s_options = new OPTS;
 			opts = s_options.get();
 		}
@@ -183,12 +186,14 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 				~(OPTS::CACHE_IMAGES)));
 		}
 		int after = (int) opts->getObjectCacheHint();
+		VTLOG("  calling SetOptions,");
 		reg->setOptions(opts);
 
 		// Call OSG to attempt image load.
 		osg::ref_ptr<osg::Image> pOsgImage;
 		try
 		{
+			VTLOG("  readImageFile,");
 			pOsgImage = osgDB::readImageFile(fname);
 		}
 		catch (...)
@@ -200,7 +205,10 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 		}
 
 		if (!pOsgImage.valid())
+		{
+			VTLOG("  failed.\n");
 			return false;
+		}
 
 		// beware - NO_DELETE means that OSG has given us the same image again
 		//  so don't try to steal it again
@@ -219,19 +227,12 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 			_pixelFormat = pOsgImage->getPixelFormat();
 			_dataType = pOsgImage->getDataType();
 			_packing = pOsgImage->getPacking();
-// OSG 0.9.8-2 has a tag:
-//			_modifiedTag = pOsgImage->getModifiedTag();
 // OSG 0.9.8-3 (Feb. 12) has a count:
 			_modifiedCount = pOsgImage->getModifiedCount();
 			for (unsigned int k = 0; k < pOsgImage->getNumMipmapLevels()-1; k++)
 				_mipmapData.push_back(pOsgImage->getMipmapData(k) - pOsgImage->data());
 			if (pOsgImage->data())
 			{
-				// Steal the data by copying
-//				int size = pOsgImage->getTotalSizeInBytesIncludingMipmaps();
-//				setData(new unsigned char [size],USE_NEW_DELETE);
-//				memcpy(_data,pOsgImage->data(),size);
-
 				// Steal the data by grabbing the pointer
 				pOsgImage->setAllocationMode(osg::Image::NO_DELETE);
 				setData(pOsgImage->data(), mode);
@@ -239,7 +240,8 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 		}
 		m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
 	}
-	return (_data != NULL);
+	VTLOG("  succeeded.\n");
+	return true;
 }
 
 void vtImage::Release()
