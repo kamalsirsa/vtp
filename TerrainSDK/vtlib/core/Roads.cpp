@@ -337,8 +337,6 @@ vtMesh *NodeGeom::GenerateGeometry()
 
 RoadBuildInfo::RoadBuildInfo(int iCoords)
 {
-	left.SetSize(iCoords);
-	right.SetSize(iCoords);
 	center.SetSize(iCoords);
 	crossvector.SetSize(iCoords);
 	fvLength.SetSize(iCoords);
@@ -359,20 +357,27 @@ LinkGeom::~LinkGeom()
 
 void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 {
-	FPoint3 v, pn0, pn1, pn2;
+	FPoint3 pn0, pn1, pn2;
 	float length = 0.0f;
 
 	//  for each point in the road, determine coordinates
 	for (unsigned int j = 0; j < GetSize(); j++)
 	{
+		FPoint3 right, left;
+
 		if (j > 0)
 		{
-			// increment length
-			v.x = m_centerline[j].x - m_centerline[j-1].x;
-			v.z = m_centerline[j].z - m_centerline[j-1].z;
-			length += v.Length();
+			// increment 2D length along road
+			FPoint2 v2;
+			v2.x = m_centerline[j].x - m_centerline[j-1].x;
+			v2.y = m_centerline[j].z - m_centerline[j-1].z;
+			length += v2.Length();
 		}
 		bi.fvLength[j] = length;
+
+		// At sharp corners, we must widen the road to keep each segment the
+		//  desired width.
+		float wider = 1.0f;
 
 		// we will add 2 vertices to the road mesh
 		FPoint3 p0, p1;
@@ -380,29 +385,52 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 		{
 			// add 2 vertices at this point, copied from the start node
 			NodeGeom *pN = GetNode(0);
-			pN->FindVerticesForRoad(this, bi.right[j], bi.left[j]);
+			pN->FindVerticesForRoad(this, right, left);
 		}
 		if (j > 0 && j < GetSize()-1)
 		{
+			// add 2 vertices at this point, directed at the previous and next points
 			pn0 = m_centerline[j-1];
 			pn1 = m_centerline[j];
 			pn2 = m_centerline[j+1];
 
-			// add 2 vertices at this point, directed at the previous and next points
-			v = CreateRoadVector(pn0, pn2, m_fWidth);
+			// Look at vectors to previous and next points
+			FPoint3 v0 = (pn1-pn0).Normalize();
+			FPoint3 v1 = (pn2-pn1).Normalize();
 
-			bi.right[j].Set(pn1.x + v.z, pn1.y + ROAD_HEIGHT, pn1.z - v.x);
-			bi.left[j].Set(pn1.x - v.z, pn1.y + ROAD_HEIGHT, pn1.z + v.x);
+			// we flip axes to turn the road vector 90 degrees (normal to road)
+			FPoint3 bisector(v0.z + v1.z, 0, -(v0.x + v1.x));
+			bisector.Normalize();
+
+			float dot = v0.Dot(-v1);
+			if (dot <= -0.97 || dot >= 0.97)
+			{
+				// close enough to colinear, no need to widen
+			}
+			else
+			{
+				// factor to widen this corner is proportional to the angle
+                float angle = acos(dot);
+				wider = 1.0 / sin(angle / 2);
+				bisector *= wider;
+			}
+
+			// and elevate the road above the terrain
+			FPoint3 up(0, ROAD_HEIGHT, 0);
+
+			left = pn1 - bisector + up;
+			right = pn1 + bisector + up;
 		}
 		if (j == GetSize()-1)
 		{
 			// add 2 vertices at this point, copied from the end node
 			NodeGeom *pN = GetNode(1);
-			pN->FindVerticesForRoad(this, bi.left[j], bi.right[j]);
+			pN->FindVerticesForRoad(this, left, right);
 		}
-		bi.crossvector[j] = bi.right[j] - bi.left[j];
-		bi.center[j] = bi.left[j] + (bi.crossvector[j] * 0.5f);
+		bi.crossvector[j] = right - left;
+		bi.center[j] = left + (bi.crossvector[j] * 0.5f);
 		bi.crossvector[j].Normalize();
+		bi.crossvector[j] *= wider;
 	}
 }
 

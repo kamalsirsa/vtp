@@ -50,11 +50,10 @@ public:
 // Holds information about a roadway, used internally by vtRoadMap3d during
 // road construction.
 //
-class RoadBuildInfo {
+class RoadBuildInfo
+{
 public:
 	RoadBuildInfo(int iCoords);
-	FLine3 left;
-	FLine3 right;
 	FLine3 center;
 	FLine3 crossvector;
 	Array<float> fvLength;
