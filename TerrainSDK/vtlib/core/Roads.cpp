@@ -114,8 +114,9 @@ int one = 0, two = 0, many = 0;
 void NodeGeom::BuildIntersection()
 {
 	FPoint3 v, v_next, v_prev;
-	FPoint3 pn0, pn1, upvector(0.0f, 1.0f, 0.0f);
+	FPoint3 pn0, pn1;
 	float w;				// road width
+	int i;
 
 	SortLinksByAngle();
 
@@ -150,9 +151,7 @@ void NodeGeom::BuildIntersection()
 
 		// get info about the roads
 		w = (GetLink(0)->m_fWidth + GetLink(1)->m_fWidth) / 2.0f;
-		if (m_id == 8311) {
-			; // (bogus case - put a breakpoint here to debug)
-		}
+
 		pn0 = find_adjacent_roadpoint(GetLink(0), this);
 		pn1 = find_adjacent_roadpoint(GetLink(1), this);
 
@@ -169,45 +168,85 @@ void NodeGeom::BuildIntersection()
 		m_iVerts = 2 * m_iLinks;
 		m_v.SetSize(m_iVerts);
 
-		// for each road
-		for (int i = 0; i < m_iLinks; i++)
+		// For each pairs of links, find the places where the road edges
+		//  intersect as they approach this node.
+
+		// The following is an array of float triples, used as follows:
+		//  x = minimum distance which avoids intersection with next link
+		//  y = minimum distance which avoids intersection with previous link
+		//  z = greater of x or y.
+		FLine3 distance_to_intersection(m_iLinks);
+
+		// Go through the links once, colling the minimum distances
+		for (i = 0; i < m_iLinks; i++)
 		{
 			// indices of the next and previous roads
 			int i_next = (i == m_iLinks-1) ? 0 : i+1;
-			int i_prev = (i == 0) ? m_iLinks-1 : i-1;
 
-			// angle between this road and the next and previous roads
-			float a_next = angle_diff(m_fLinkAngle[i_next], m_fLinkAngle[i]);
-			float a_prev = angle_diff(m_fLinkAngle[i], m_fLinkAngle[i_prev]);
-
-			// get info about the roads
 			TLink *pR = GetLink(i);
 			TLink *pR_next = GetLink(i_next);
-			//Link *pR_prev = GetLink(i_prev);
-			w = pR->m_fWidth;
-			float w_next = pR_next->m_fWidth;
 
-			// find corner between this road and next
+			float width1 = pR->m_fWidth;
+			float width2 = pR_next->m_fWidth;
+
+			FPoint3 linkv1 = GetUnitLinkVector(i);
+			FPoint3 linkv2 = GetUnitLinkVector(i_next);
+
+			// Use 2D vectors for the following math
+			FPoint2 v1(linkv1.x, linkv1.z);
+			FPoint2 v2(linkv2.x, linkv2.z);
+
+			FPoint2 norm1(linkv1.z, -linkv1.x);
+			FPoint2 norm2(linkv2.z, -linkv2.x);
+			norm1.Normalize();
+			norm2.Normalize();
+
+			// Compute two vectors: left road edge of this link, right road
+			//  edge of the following link, compute where they intersect, in
+			//  terms of the ua and ub factors, which are the distance along
+			//  each input vector to the intersection point.
+			FPoint2 center(m_p3.x, m_p3.z);
+			FPoint2 p1 = center + norm1 * (width1/2);
+			FPoint2 p2 = center - norm2 * (width2/2);
+
+			float denom = v2.y*v1.x - v2.x*v1.y;
+			if (fabs(denom) < 0.01)
+			{
+				// too parallel, pick a safety value
+				distance_to_intersection[i].x = 1.0f;
+				distance_to_intersection[i_next].y = 1.0f;
+			}
+			else
+			{
+				float ua = (v2.x*(p1.y - p2.y) - v2.y*(p1.x - p2.x)) / denom;
+				float ub = (v1.x*(p1.y - p2.y) - v1.y*(p1.x - p2.x)) / denom;
+
+				distance_to_intersection[i].x = ua;
+				distance_to_intersection[i_next].y = ub;
+			}
+		}
+		// Go through the links again, picking the largest minimum
+		for (i = 0; i < m_iLinks; i++)
+		{
+			distance_to_intersection[i].z = std::max(distance_to_intersection[i].x,
+				distance_to_intersection[i].y);
+		}
+		// Now we can finally set the two points where this link meets the
+		//  intersection without overlapping with the other links
+		for (i = 0; i < m_iLinks; i++)
+		{
+			TLink *pR = GetLink(i);
 			v = GetUnitLinkVector(i);
 
-			float w_avg;
-			w_avg = (w + w_next) / 2.0f;
-			float offset_next = w_avg / tanf(a_next / 2.0f);
-			float offset_prev = w_avg / tanf(a_prev / 2.0f);
-			float offset_largest = MAX(offset_next, offset_prev);
-			offset_largest += 2.0f;
+			FPoint3 norm(v.z, 0, -v.x);
+			norm.Normalize();
+			norm *= (pR->m_fWidth / 2);
 
-			// Safety check to avoid links with very close angles giving huge values
-//			assert(offset_largest < 100);
-			if (offset_largest > w_avg*4)
-				offset_largest = w_avg*4;
+			FPoint3 up(0, ROAD_HEIGHT, 0);
 
-			pn0 = m_p3;
-			pn0 += (v * (offset_largest / 2.0f));
-			v *= (w/2.0f);
-
-			m_v[i * 2 + 0].Set(pn0.x + v.z, pn0.y + ROAD_HEIGHT, pn0.z - v.x);
-			m_v[i * 2 + 1].Set(pn0.x - v.z, pn0.y + ROAD_HEIGHT, pn0.z + v.x);
+			float dist = distance_to_intersection[i].z;
+			m_v[i * 2 + 0] = m_p3 + norm + (v * dist) + up;
+			m_v[i * 2 + 1] = m_p3 - norm + (v * dist) + up;
 		}
 		many++;
 	}
@@ -260,74 +299,41 @@ vtMesh *NodeGeom::GenerateGeometry()
 	if (m_iLinks < 3)
 		return NULL;
 
-#if 1
-	// Intersections currently look terrible, and are buggy.
-	// Turn them off completely until we can implement decent ones.
-	return NULL;
-#else
-
 	int j;
 	FPoint3 p, upvector(0.0f, 1.0f, 0.0f);
 
-	vtMesh *pMesh = new vtMesh(GL_TRIANGLES, VT_TexCoords | VT_Normals, (m_iLinks*2+1)*2);
+	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_TexCoords | VT_Normals, m_iLinks*2 + 1);
 	int verts = 0;
 
-	// find the center of the junction
-#if 0
-	p.Set(0.0f, 0.0f, 0.0f);
-	for (j = 0; j < m_iLinks*2; j++)
-		p += m_v[j];
-	p *= (1.0f / ((float)m_iLinks*2));
-#else
+	// find the approximate center of the junction
 	p = m_p3;
 	p.y += ROAD_HEIGHT;
-#endif
 
-	for (int times = 0; times < 2; times++)
+	pMesh->SetVtxPUV(verts, p, 0.5, 0.5f);
+	pMesh->SetVtxNormal(verts, upvector);
+	verts++;
+
+	for (j = 0; j < m_iLinks; j++)
 	{
-		pMesh->SetVtxPUV(verts, p, 0.5, 0.5f);
+		pMesh->SetVtxPUV(verts, m_v[j*2+1], 0.0, 1.0f);
+		pMesh->SetVtxPUV(verts+1, m_v[j*2], 1.0, 1.0f);
 		pMesh->SetVtxNormal(verts, upvector);
-		verts++;
-
-		for (j = 0; j < m_iLinks; j++)
-		{
-			if (times)
-			{
-				pMesh->SetVtxPUV(verts, m_v[j*2+1], 0.0, 0.0f);
-				pMesh->SetVtxPUV(verts+1, m_v[j*2], 0.0, 1.0f);
-			}
-			else
-			{
-				pMesh->SetVtxPUV(verts, m_v[j*2+1], 0.0, 1.0f);
-				pMesh->SetVtxPUV(verts+1, m_v[j*2], 1.0, 1.0f);
-			}
-			pMesh->SetVtxNormal(verts, upvector);
-			pMesh->SetVtxNormal(verts+1, upvector);
-			verts += 2;
-		}
+		pMesh->SetVtxNormal(verts+1, upvector);
+		verts += 2;
 	}
-
-	int iNVerts = m_iLinks*2+1;
-	int iInCircle = m_iLinks*2;
 
 	// create triangles
-	int idx[3];
+	verts = 0;
+	int idx[100];
+	idx[verts++] = 0;
 	for (j = 0; j < m_iLinks; j++)
 	{
-		idx[0] = 0;
-		idx[1] = (j*2+1);
-		idx[2] = (j*2+2);
-		pMesh->AddTri(idx[0], idx[1], idx[2]);
+		idx[verts++] = (j*2+1);
+		idx[verts++] = (j*2+2);
 	}
-	for (j = 0; j < m_iLinks; j++)
-	{
-		idx[0] = iNVerts + 0;
-		idx[1] = iNVerts + (j*2+1) + 1;
-		idx[2] = iNVerts + ((j*2+2) % iInCircle) + 1;
-		pMesh->AddTri(idx[0], idx[1], idx[2]);
-	}
+	idx[verts++] = 1;	// close it
+	pMesh->AddFan(idx, verts);
 	return pMesh;
-#endif
 }
 
 
@@ -363,7 +369,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 	//  for each point in the road, determine coordinates
 	for (unsigned int j = 0; j < GetSize(); j++)
 	{
-		FPoint3 right, left;
+		FPoint3 left, right;
 
 		if (j > 0)
 		{
@@ -386,6 +392,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 			// add 2 vertices at this point, copied from the start node
 			NodeGeom *pN = GetNode(0);
 			pN->FindVerticesForRoad(this, right, left);
+			wider = (right-left).Length() / m_fWidth;
 		}
 		if (j > 0 && j < GetSize()-1)
 		{
@@ -426,6 +433,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 			// add 2 vertices at this point, copied from the end node
 			NodeGeom *pN = GetNode(1);
 			pN->FindVerticesForRoad(this, left, right);
+			wider = (right-left).Length() / m_fWidth;
 		}
 		bi.crossvector[j] = right - left;
 		bi.center[j] = left + (bi.crossvector[j] * 0.5f);
@@ -833,8 +841,13 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 	if (do_texture)
 	{
 		vtString path;
+
 		path = FindFileOnPaths(paths, "GeoTypical/roadside_32.png");
 		m_mi_roadside = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
+
+		path = FindFileOnPaths(paths, "GeoTypical/pavement_256.jpg");
+		m_mi_pavement = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
+
 #if 0
 		// 1
 		m_pMats->AddTextureMaterial2("GeoTypical/margin_32.jpg",
@@ -925,7 +938,7 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 	m_mi_red = m_pMats->AddRGBMaterial(RGBf(1.0f, 0.0f, 0.0f), RGBf(0.2f, 0.0f, 0.0f),
 		true, true, false, 0.4f);	// red-translucent
 
-	m_pGroup = new vtGroup();
+	m_pGroup = new vtGroup;
 	m_pGroup->SetName2("Roads");
 
 	// wrap with an array of simple LOD nodes
@@ -949,7 +962,6 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 	for (LinkGeom *pR = GetFirstLink(); pR; pR=(LinkGeom *)pR->m_pNext)
 	{
 		pR->GenerateGeometry(this);
-//		if (pMesh) AddMeshToGrid(pMesh, 0);	// TODO: correct matidx
 		count++;
 	}
 	count = 0;
@@ -957,7 +969,7 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 	{
 		pMesh = pN->GenerateGeometry();
 		if (pMesh)
-			AddMeshToGrid(pMesh, 0);	// TODO: correct matidx
+			AddMeshToGrid(pMesh, m_mi_pavement);	// TODO: correct matidx
 		count++;
 	}
 

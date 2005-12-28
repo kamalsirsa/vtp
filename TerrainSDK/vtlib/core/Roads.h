@@ -111,6 +111,7 @@ enum RoadVTIndices
 	VTI_4WD,
 	VTI_TRAIL,
 	VTI_STONE,
+	VTI_PAVEMENT,
 	VTI_TOTAL
 };
 
@@ -186,6 +187,7 @@ public:
 
 	// material indices
 	int		m_mi_roadside;
+	int		m_mi_pavement;
 	int		m_mi_roads;
 	int		m_mi_4wd;
 	int		m_mi_trail;
