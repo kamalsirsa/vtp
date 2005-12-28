@@ -111,7 +111,6 @@ enum RoadVTIndices
 	VTI_4WD,
 	VTI_TRAIL,
 	VTI_STONE,
-	VTI_PAVEMENT,
 	VTI_TOTAL
 };
 
