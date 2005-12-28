@@ -310,6 +310,8 @@ public:
 	bool operator==(const DPoint2 &v) const { return (x == v.x && y == v.y); }
 	bool operator!=(const DPoint2 &v) const { return (x != v.x || y != v.y); }
 
+	DPoint2 operator-(void) { return DPoint2(-x,-y); }
+
 	double x, y;
 };
 
