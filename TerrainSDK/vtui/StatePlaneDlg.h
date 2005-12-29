@@ -54,7 +54,4 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-
-
-
-#endif
+#endif	// __StatePlaneDlg_H__
