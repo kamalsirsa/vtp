@@ -353,7 +353,7 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 #if WIN32
 	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
 
-	if (!m_bHasMask && 0)
+	if (!m_bHasMask)
 	{
 		// Using StretchBlit is much faster and has less scaling/roundoff
 		//  problems than using the wx method DrawBitmap.  However, GDI
@@ -372,6 +372,8 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 		double scale_x = 1.0/ratio_x;
 		double scale_y = 1.0/ratio_y;
 		pDC->SetUserScale(scale_x, scale_y);
+
+		//  On Windows, this does a BitBlt (or MaskBlt if there is a mask)
 		pDC->DrawBitmap(*m_pBitmap->m_pBitmap, (int) (destRect.x/scale_x),
 			(int) (destRect.y/scale_y), m_bHasMask);
 
