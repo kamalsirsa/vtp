@@ -10,14 +10,14 @@
 // For compilers that support precompilation
 #include "wx/wxprec.h"
 
-const int ID_TEXT = 10000;
-
 #ifdef __BORLANDC__
     #pragma hdrstop
 #endif
 
 // Include private header
 #include "vtui_wdr.h"
+
+const int ID_TEXT = 10000;
 
 #include <wx/intl.h>
 
@@ -881,7 +881,7 @@ wxSizer *ProjectionDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item17, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    wxStaticLine *item20 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    wxStaticLine *item20 = new wxStaticLine( parent, ID_LINE2, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
     item0->Add( item20, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );

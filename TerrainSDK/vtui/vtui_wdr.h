@@ -137,15 +137,14 @@ const int ID_PROJPARAM = 10089;
 const int ID_STATEPLANE = 10090;
 const int ID_PROJ_LOAD = 10091;
 const int ID_PROJ_SAVE = 10092;
-const int ID_LINE = 10093;
 wxSizer *ProjectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_STATEPLANES = 10094;
-const int ID_NAD27 = 10095;
-const int ID_NAD83 = 10096;
-const int ID_RADIO_METERS = 10097;
-const int ID_RADIO_FEET = 10098;
-const int ID_RADIO_FEET_US = 10099;
+const int ID_STATEPLANES = 10093;
+const int ID_NAD27 = 10094;
+const int ID_NAD83 = 10095;
+const int ID_RADIO_METERS = 10096;
+const int ID_RADIO_FEET = 10097;
+const int ID_RADIO_FEET_US = 10098;
 wxSizer *StatePlaneDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
