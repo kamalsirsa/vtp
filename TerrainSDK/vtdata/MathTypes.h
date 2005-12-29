@@ -97,6 +97,7 @@ public:
 	float Length() const { return sqrtf(x*x+y*y+z*z); }
 	float LengthSquared() const { return x*x+y*y+z*z; }
 	FPoint3 &Normalize() { float s = 1.0f/Length(); x*=s; y*=s; z*=s; return (*this); }
+	FPoint3 &SetLength(float len) { float s = len/Length(); x*=s; y*=s; z*=s; return (*this); }
 	void Set(float fx, float fy, float fz) { x=fx; y=fy; z=fz; }
 	float Dot(const FPoint3 &rhs) const
 	{
@@ -168,6 +169,7 @@ public:
 		x*=s; y*=s; z*=s;
 		return (*this);
 	}
+	DPoint3 &SetLength(double len) { double s = len/Length(); x*=s; y*=s; z*=s; return (*this); }
 	void Set(double fx, double fy, double fz) { x=fx; y=fy; z=fz; }
 	double Dot(const DPoint3 &rhs) const
 	{
@@ -227,6 +229,7 @@ public:
 	float Length() const { return sqrtf(x*x+y*y); }
 	float LengthSquared() const { return x*x+y*y; }
 	FPoint2 &Normalize() { float s = 1.0f/Length(); x*=s; y*=s; return (*this); }
+	FPoint2 &SetLength(float len) { float s = len/Length(); x*=s; y*=s; return (*this); }
 	void Set(float fx, float fy) { x=fx; y=fy; }
 	float Dot(const FPoint2 &rhs) const
 	{
@@ -271,6 +274,7 @@ public:
 	double Length() const { return sqrt(x*x+y*y); }
 	double LengthSquared() const { return (x*x+y*y); }
 	DPoint2 &Normalize() { double s = 1.0f/Length(); x*=s; y*=s; return (*this); }
+	DPoint2 &SetLength(double len) { double s = len/Length(); x*=s; y*=s; return (*this); }
 	void Set(double fx, double fy) { x=fx; y=fy; }
 	double Dot(const DPoint2 &rhs) const
 	{
