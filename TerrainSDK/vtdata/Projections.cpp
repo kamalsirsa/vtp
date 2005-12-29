@@ -1186,6 +1186,9 @@ GDALWrapper::GDALWrapper()
 
 	// send all GDAL/OGR/PROJ.4 messages to the VTP log output
 	CPLPushErrorHandler(cpl_error_handler);
+
+	// tell it to send all debugging messages
+	CPLSetConfigOption("CPL_DEBUG", "ON");
 }
 
 GDALWrapper::~GDALWrapper()
