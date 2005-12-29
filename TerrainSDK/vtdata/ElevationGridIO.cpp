@@ -1180,20 +1180,20 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 
 	int x, y;
 	float z;
-	if (bDSRB) //DSRB format
+	for (y = 0; y < ny; y++)
 	{
+		if (progress_callback != NULL)
+		{
+			if (progress_callback(y * 100 / ny))
+			{
+				// Cancel
+				fclose(fp);
+				return false;
+			}
+		}
 		for (x = 0; x < nx; x++)
 		{
-			if (progress_callback != NULL)
-			{
-				if (progress_callback(x * 100 / nx))
-				{
-					// Cancel
-					fclose(fp);
-					return false;
-				}
-			}
-			for (y = 0; y < ny; y++)
+			if (bDSRB) //DSRB format
 			{
 				double dz;
 				fread(&dz, 8, 1, fp);
@@ -1204,22 +1204,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 
 				SetFValue(x, y, z);
 			}
-		}
-	}
-	else
-	{
-		for (y = 0; y < ny; y++)
-		{
-			if (progress_callback != NULL)
-			{
-				if (progress_callback(y * 100 / ny))
-				{
-					// Cancel
-					fclose(fp);
-					return false;
-				}
-			}
-			for (x = 0; x < nx; x++)
+			else
 			{
 				fread(&z, 4, 1, fp);
 
