@@ -382,8 +382,10 @@ void ProjectionDlg::OnProjLoad( wxCommandEvent &event )
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 	wxString2 strPathName = loadFile.GetPath();
-	m_proj.ReadProjFile(strPathName.mb_str());
-	SetUIFromProjection();
+	if (m_proj.ReadProjFile(strPathName.mb_str()))
+        SetUIFromProjection();
+	else
+		wxMessageBox(_("Couldn't load projection from that file.\n"));
 }
 
 void ProjectionDlg::OnDatum( wxCommandEvent &event )
