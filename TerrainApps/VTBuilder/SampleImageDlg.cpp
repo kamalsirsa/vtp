@@ -147,7 +147,8 @@ void SampleImageDlg::OnSpacingXY( wxCommandEvent &event )
 	m_iSizeY = (int) (m_fAreaY / m_fSpacingY);
 
 	m_bSetting = true;
-	TransferDataToWindow();
+	GetSizeX()->GetValidator()->TransferToWindow();
+	GetSizeY()->GetValidator()->TransferToWindow();
 	m_bSetting = false;
 }
 
