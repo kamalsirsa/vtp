@@ -1,7 +1,7 @@
 //
 // BuilderView.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1120,7 +1120,7 @@ void BuilderView::OnLeftDown(wxMouseEvent& event)
 	m_ui.m_CurPoint = m_ui.m_DownPoint;
 	m_ui.m_LastPoint = m_ui.m_DownPoint;
 
-	// "points" are in window pixels, "locations" are in current projection
+	// "points" are in window pixels, "locations" are in the current CRS
 	object(m_ui.m_DownPoint, m_ui.m_DownLocation);
 
 	// Remember modifier key state
@@ -1379,6 +1379,17 @@ void BuilderView::OnRightUp(wxMouseEvent& event)
 	{
 		ReleaseMouse();
 		m_bMouseCaptured = false;
+	}
+
+	if (m_ui.mode == LB_Dist)
+	{
+		wxMenu *popmenu = new wxMenu;
+		wxMenuItem *item;
+		item = popmenu->Append(ID_DISTANCE_CLEAR, _("Clear Distance Tool"));
+		wxPoint point = event.GetPosition();
+		PopupMenu(popmenu, point);
+		delete popmenu;
+		return;
 	}
 
 	vtLayer *pL = GetMainFrame()->GetActiveLayer();

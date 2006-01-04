@@ -1,7 +1,7 @@
 //
 //  The menus functions of the main Frame window of the VTBuilder application.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -248,6 +248,9 @@ EVT_UPDATE_UI(ID_AREA_REQUEST_WFS,	MainFrame::OnUpdateAreaRequestWMS)
 EVT_UPDATE_UI(ID_AREA_REQUEST_WMS,	MainFrame::OnUpdateAreaRequestWMS)
 
 EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
+
+// Popup menu items
+EVT_MENU(ID_DISTANCE_CLEAR,			MainFrame::OnDistanceClear)
 
 EVT_CHAR(MainFrame::OnChar)
 EVT_KEY_DOWN(MainFrame::OnKeyDown)
@@ -4039,3 +4042,13 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 #endif
 }
 
+
+////////////////////
+// Popup menu items
+
+void MainFrame::OnDistanceClear(wxCommandEvent &event)
+{
+	UpdateDistance(DPoint2(0,0), DPoint2(0,0));
+	GetView()->SetDistancePoints(DPoint2(0,0), DPoint2(0,0));
+	GetView()->Refresh();
+}

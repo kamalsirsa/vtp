@@ -114,6 +114,9 @@ enum
 	ID_STRUCTURE_CONSTRAIN,
 	ID_STRUCTURE_ADD_INST,
 
+	// Popup menu items
+	ID_DISTANCE_CLEAR,
+
 	ID_HIGHEST_MENU_ENUM,
 
 	LayerTree_Ctrl = 1000

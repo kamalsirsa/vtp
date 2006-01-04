@@ -1,7 +1,7 @@
 //
 // BuilderView.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -134,6 +134,8 @@ public:
 	void InvertAreaTool(const DRECT &rect);
 	void ShowGridMarks(const DRECT &area, int cols, int rows, int active_col, int active_row);
 	void HideGridMarks();
+	void SetDistancePoints(const DPoint2 &p1, const DPoint2 &p2)
+	{ m_distance_p1 = p1; m_distance_p2 = p2; }
 
 	bool	m_bCrossSelect;
 	bool	m_bShowUTMBounds;
