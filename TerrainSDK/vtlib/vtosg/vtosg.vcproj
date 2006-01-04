@@ -1045,9 +1045,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\ProjectedShadows.cpp">
-			</File>
-			<File
 				RelativePath="SceneOSG.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1069,6 +1066,9 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\StructureShadowsOSG.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="OSG Headers"
@@ -1086,10 +1086,10 @@
 				RelativePath="NodeOSG.h">
 			</File>
 			<File
-				RelativePath=".\ProjectedShadows.h">
+				RelativePath="SceneOSG.h">
 			</File>
 			<File
-				RelativePath="SceneOSG.h">
+				RelativePath=".\StructureShadowsOSG.h">
 			</File>
 		</Filter>
 		<Filter

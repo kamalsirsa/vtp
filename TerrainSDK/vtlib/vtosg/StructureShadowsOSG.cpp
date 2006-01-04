@@ -1,0 +1,505 @@
+//
+// StructureShadowsOSG.cpp
+//
+// Copyright (c) 2005-2006 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
+
+#include "vtlib/vtlib.h"
+#include "vtdata/HeightField.h"
+#include "vtlib/core/LodGrid.h"
+#include "vtdata/vtLog.h"
+
+#include "StructureShadowsOSG.h"
+#include <osg/CullFace>
+#include <osgDB/WriteFile>
+#include <osg/GLExtensions>
+#include <osg/FragmentProgram>
+#include <osg/PolygonOffset>
+
+#define SHADOW_UPDATE_ANGLE 5.0f
+
+// These must match
+#define MAIN_SCENE_TEXTURE_UNIT 0
+#define MAIN_SCENE_TEXTURE_UNIT_STR "0"
+#define TERRAIN_SHADOW_TEXTURE_UNIT 1
+#define TERRAIN_SHADOW_TEXTURE_UNIT_STR "1"
+
+#define SA_OVERRIDE	osg::StateAttribute::OVERRIDE
+#define SA_OFF		osg::StateAttribute::OFF
+#define SA_ON		osg::StateAttribute::ON
+
+osg::TexGenNode *CStructureShadowsOSG::m_pStructureTexGenNode = NULL;
+
+CStructureShadowsOSG::CStructureShadowsOSG(bool bDepthShadow, bool bStructureOnStructureShadows)
+{
+	static const unsigned int ContextID = 0;
+
+	// Check if depth shadows supported
+//	osg::ref_ptr<osg::FragmentProgram::Extensions> pFragmentExtensions = osg::FragmentProgram::getExtensions(ContextID, true);
+	osg::ref_ptr<osg::Texture::Extensions> pTextureExtensions = osg::Texture::getExtensions(ContextID, true);
+//	if (bDepthShadow && pTextureExtensions->isShadowSupported() && pFragmentExtensions->isFragmentProgramSupported())
+	if (bDepthShadow && pTextureExtensions->isShadowSupported())
+		m_bDepthShadow = true;
+	else
+		m_bDepthShadow = false;
+	if (m_bDepthShadow && bStructureOnStructureShadows)
+		m_bStructureOnStructureShadows = true;
+	else
+		m_bStructureOnStructureShadows = false;
+	m_fShadowDarkness = 0.8f;
+}
+
+CStructureShadowsOSG::~CStructureShadowsOSG()
+{
+	m_pShadowed = NULL;
+	m_pTexture = NULL;
+	m_pMaterial = NULL;
+	m_pSceneView = NULL;
+	m_pAmbientBias = NULL;
+	if (m_pCameraNode.valid())
+	{
+		m_pCameraNode->removeChild(0, m_pCameraNode->getNumChildren());
+		m_pCameraNode = NULL;
+	}
+	if (m_pTop.valid())
+	{
+		if (m_pTerrainTexGenNode.valid())
+		{
+			m_pTop->removeChild(m_pTerrainTexGenNode.get());
+			m_pTerrainTexGenNode = NULL;
+		}
+		m_pTop = NULL;
+	}
+}
+
+bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node *pStructures, osg::Node* pShadowed, const int iResolution)
+{
+	m_pSceneView = pSceneView;
+	m_iTargetResolution = m_iCurrentResolution = iResolution;
+	m_pTexture = new osg::Texture2D();
+	if (!m_pTexture.valid())
+		return false;
+	// Texture size and viewport are place holders at the moment
+	// if I am using the real frame buffer I will need to clamp
+	// it to the actual current window size
+	m_pTexture->setTextureSize(m_iCurrentResolution, m_iCurrentResolution);
+	m_pTexture->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::LINEAR);
+	m_pTexture->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::LINEAR);
+	if (m_bDepthShadow)
+	{
+		m_pTexture->setInternalFormat(GL_DEPTH_COMPONENT);
+		m_pTexture->setShadowComparison(true);
+		m_pTexture->setShadowTextureMode(osg::Texture::LUMINANCE);
+		m_pTexture->setShadowAmbient(1.0f - m_fShadowDarkness);
+	}
+	else
+	{
+		m_pTexture->setInternalFormat(GL_RGB);
+		m_pTexture->setWrap(osg::Texture2D::WRAP_S, osg::Texture2D::CLAMP_TO_BORDER);
+		m_pTexture->setWrap(osg::Texture2D::WRAP_T, osg::Texture2D::CLAMP_TO_BORDER);
+		m_pTexture->setBorderColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	}
+
+	m_pCameraNode = new osg::CameraNode;
+	if (!m_pCameraNode.valid())
+	{
+		m_pTexture = NULL;
+		return false;
+	}
+
+	m_pCameraNode->setClearColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	m_pCameraNode->setViewport(0, 0, m_iCurrentResolution, m_iCurrentResolution);
+	m_pCameraNode->setRenderOrder(osg::CameraNode::PRE_RENDER);
+	m_pCameraNode->setRenderTargetImplementation(osg::CameraNode::FRAME_BUFFER_OBJECT);
+	if (m_bDepthShadow)
+	{
+		osg::ref_ptr<osg::Group> pGroup = new osg::Group;
+		if (!pGroup.valid())
+		{
+			m_pTexture = NULL;
+			m_pCameraNode = NULL;
+			return false;
+		}
+		pGroup->addChild(pStructures);
+		pGroup->addChild(pShadowed);
+//		m_pCameraNode->setClearMask(GL_DEPTH_BUFFER_BIT);
+		m_pCameraNode->attach(osg::CameraNode::DEPTH_BUFFER, m_pTexture.get());
+		m_pCameraNode->setComputeNearFarMode(osg::CameraNode::DO_NOT_COMPUTE_NEAR_FAR);
+		m_pCameraNode->addChild(pGroup.get());
+	}
+	else
+	{
+		m_pCameraNode->attach(osg::CameraNode::COLOR_BUFFER, m_pTexture.get());
+		m_pCameraNode->addChild(pStructures);
+	}
+
+	osg::StateSet *pCameraStateSet = m_pCameraNode->getOrCreateStateSet();;
+	if (NULL == pCameraStateSet)
+	{
+		m_pTexture = NULL;
+		m_pCameraNode = NULL;
+		return false;
+	}
+
+	// Kill any textures
+	pCameraStateSet->setTextureMode(MAIN_SCENE_TEXTURE_UNIT, GL_TEXTURE_2D, SA_OVERRIDE | SA_OFF);
+
+	// Avoid the shadows cast by the front faces of the buildings.
+	osg::ref_ptr<osg::CullFace> pCullFace = new osg::CullFace;
+	if (!pCullFace.valid())
+	{
+		m_pTexture = NULL;
+		m_pCameraNode = NULL;
+		m_pMaterial = NULL;
+		return false;
+	}
+	pCullFace->setMode(osg::CullFace::FRONT);
+	pCameraStateSet->setAttribute(pCullFace.get(), SA_ON|SA_OVERRIDE);
+	pCameraStateSet->setMode(GL_CULL_FACE, SA_ON|SA_OVERRIDE);
+	if (m_bDepthShadow)
+	{
+		pCameraStateSet->setMode(GL_LIGHTING, SA_OFF);
+		// Polygon offset
+		osg::ref_ptr<osg::PolygonOffset> pPolygonOffset = new osg::PolygonOffset;
+		if (!pPolygonOffset.valid())
+		{
+			m_pTexture = NULL;
+			m_pCameraNode = NULL;
+			return false;
+		}
+		pPolygonOffset->setFactor(0.0f);
+		pPolygonOffset->setUnits(1.0f);
+		pCameraStateSet->setAttribute(pPolygonOffset.get(), SA_ON | SA_OVERRIDE);
+		pCameraStateSet->setMode(GL_POLYGON_OFFSET_FILL, SA_ON | SA_OVERRIDE);
+	}
+	else
+	{
+		m_pMaterial = new osg::Material;
+		if (!m_pMaterial.valid())
+		{
+			m_pTexture = NULL;
+			m_pCameraNode = NULL;
+			return false;
+		}
+		m_pMaterial->setAmbient(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		m_pMaterial->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f, 0.0f, 0.0f, m_fShadowDarkness));
+		m_pMaterial->setEmission(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		m_pMaterial->setShininess(osg::Material::FRONT_AND_BACK,0.0f);
+		pCameraStateSet->setAttribute(m_pMaterial.get(), SA_OVERRIDE);
+		// This blend function lets us vary the darkness of the shadow with the
+		//  alpha component of the diffuse color of the material.
+		osg::ref_ptr<osg::BlendFunc> pBlendFunc = new osg::BlendFunc;
+		if (!pBlendFunc.valid())
+		{
+			m_pTexture = NULL;
+			m_pCameraNode = NULL;
+			m_pMaterial = NULL;
+			return false;
+		}
+		pCameraStateSet->setAttributeAndModes(pBlendFunc.get(), SA_ON|SA_OVERRIDE);
+		// Kill any textures
+		pCameraStateSet->setTextureMode(MAIN_SCENE_TEXTURE_UNIT, GL_TEXTURE_2D, SA_OVERRIDE | SA_OFF);
+	}
+
+	m_pShadowed = pShadowed;
+
+	// Set up texgen node
+	m_pTerrainTexGenNode = new osg::TexGenNode;
+	if (!m_pTerrainTexGenNode.valid())
+	{
+		m_pTexture = NULL;
+		m_pCameraNode = NULL;
+		m_pMaterial = NULL;
+		return false;
+	}
+	m_pTerrainTexGenNode->setTextureUnit(TERRAIN_SHADOW_TEXTURE_UNIT);
+	m_pTop = dynamic_cast<osg::Group*>(m_pSceneView->getSceneData());
+	m_pTop->addChild(m_pTerrainTexGenNode.get());
+
+	// Decorate the shadowed node
+	osg::StateSet *pShadowedStateSet = m_pShadowed->getOrCreateStateSet();
+	pShadowedStateSet->setTextureAttributeAndModes(TERRAIN_SHADOW_TEXTURE_UNIT, m_pTexture.get(), SA_OVERRIDE|SA_ON);
+	pShadowedStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_S, SA_OVERRIDE|SA_ON);
+	pShadowedStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_T, SA_OVERRIDE|SA_ON);
+	pShadowedStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_R, SA_OVERRIDE|SA_ON);
+	pShadowedStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_Q, SA_OVERRIDE|SA_ON);
+
+	if (m_bDepthShadow)
+	{
+/*		static char FragmentShaderSource[] = 
+			"uniform sampler2D MainSceneTexture; \n"
+			"uniform sampler2DShadow ShadowTexture; \n"
+			"uniform float ShadowDarkness; \n"
+			"\n"
+			"void main(void) \n"
+			"{ \n"
+			"	vec4 colour = texture2D( MainSceneTexture, gl_TexCoord[" MAIN_SCENE_TEXTURE_UNIT_STR "].xy ); \n"
+			"   vec4 shadow = shadow2DProj( ShadowTexture, gl_TexCoord[" TERRAIN_SHADOW_TEXTURE_UNIT_STR "] ); \n"
+				// Check if a shadow is to be applied
+			"   if (shadow.r == 1.0) \n"
+				   // texture2D seems to return vec4(0,0,0,0) when there is no texture assigned.
+				   // this will not normally be the case for terrain shadows
+				   // but may well occur with shadows on buildings. I am not sure If I can rely on this
+				   // it may well be GPU implementation dependent.
+			"      if (colour.a) \n"
+			"	      gl_FragColor = gl_Color * colour; \n"
+			"      else \n"
+			"	      gl_FragColor = gl_Color; \n"
+			"   else \n"
+			"   { \n"
+			"      if (colour.a) \n"
+			"      { \n"
+			"         colour = gl_Color * colour; \n"
+			"	      gl_FragColor = colour * (1 - ShadowDarkness + shadow * ShadowDarkness); \n"
+			"      } \n"
+			"      else \n"
+			"	      gl_FragColor = gl_Color * (1 - ShadowDarkness + shadow * ShadowDarkness); \n"
+			"   } \n"
+			"} \n";
+
+		osg::ref_ptr<osg::Program> pProgram = new osg::Program;
+		if (!pProgram.valid())
+		{
+			m_pTexture = NULL;
+			m_pCameraNode = NULL;
+			return false;
+		}
+		osg::ref_ptr<osg::Shader> pFragmentShader = new osg::Shader(osg::Shader::FRAGMENT, FragmentShaderSource);
+		if (!pFragmentShader.valid())
+		{
+			m_pTexture = NULL;
+			m_pCameraNode = NULL;
+			return false;
+		}
+		osg::ref_ptr<osg::Uniform> pShadowTexture = new osg::Uniform("ShadowTexture", TERRAIN_SHADOW_TEXTURE_UNIT);
+		if (!pShadowTexture.valid())
+		{
+			m_pTexture = NULL;
+			m_pCameraNode = NULL;
+			return false;
+		}
+		osg::ref_ptr<osg::Uniform> pMainTexture = new osg::Uniform("MainSceneTexture", MAIN_SCENE_TEXTURE_UNIT);
+		if (!pMainTexture.valid())
+		{
+			m_pTexture = NULL;
+			m_pCameraNode = NULL;
+			return false;
+		}
+		m_pAmbientBias = new osg::Uniform("ShadowDarkness", m_fShadowDarkness);
+		if (!m_pAmbientBias.valid())
+		{
+			m_pTexture = NULL;
+			m_pCameraNode = NULL;
+			return false;
+		}
+		pProgram->addShader(pFragmentShader.get());
+		pShadowedStateSet->setAttribute(pProgram.get());
+		pShadowedStateSet->addUniform(pMainTexture.get());
+		pShadowedStateSet->addUniform(pShadowTexture.get());
+		pShadowedStateSet->addUniform(m_pAmbientBias.get());*/
+
+		// Structure on structure shadows
+		if (m_bStructureOnStructureShadows)
+		{
+			osg::StateSet *pStructuresStateSet = pStructures->getOrCreateStateSet();
+			pStructuresStateSet->setTextureAttributeAndModes(TERRAIN_SHADOW_TEXTURE_UNIT, m_pTexture.get(), SA_OVERRIDE|SA_ON);
+			pStructuresStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_S, SA_OVERRIDE|SA_ON);
+			pStructuresStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_T, SA_OVERRIDE|SA_ON);
+			pStructuresStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_R, SA_OVERRIDE|SA_ON);
+			pStructuresStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_Q, SA_OVERRIDE|SA_ON);
+
+/*			pStructuresStateSet->setAttribute(pProgram.get());
+			pStructuresStateSet->addUniform(pMainTexture.get());
+			pStructuresStateSet->addUniform(pShadowTexture.get());
+			pStructuresStateSet->addUniform(m_pAmbientBias.get());*/
+		}
+	}
+
+#ifdef _DEBUG
+	{
+		if (!m_bDepthShadow)
+		{
+			osg::Geode* pGeode = new osg::Geode;
+			osg::Geometry* pGeom = osg::createTexturedQuadGeometry(osg::Vec3(0,0,0), osg::Vec3(100.0,0.0,0.0), osg::Vec3(0.0,100.0,0.0));
+			pGeom->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_pTexture.get(), osg::StateAttribute::ON);
+			pGeom->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+			pGeode->addDrawable(pGeom);
+			osg::CameraNode* pCamera = new osg::CameraNode;
+			pCamera->setProjectionMatrix(osg::Matrix::ortho2D(0,100,0,100));
+			pCamera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+			pCamera->setViewMatrix(osg::Matrix::identity());
+			pCamera->setViewport(50,50,100,100);
+			pCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
+			pCamera->setRenderOrder(osg::CameraNode::POST_RENDER);
+			pCamera->addChild(pGeode);
+			if (m_pTop.valid())
+				m_pTop->addChild(pCamera);
+		}
+	}       
+#endif
+    osg::FBOExtensions* fbo_ext = osg::FBOExtensions::instance(0);
+    if ((fbo_ext && fbo_ext->isSupported()) || osg::isGLExtensionSupported(0, "ARB_render_texture"))
+		m_bUsingLiveFrameBuffer = false;
+	else
+		m_bUsingLiveFrameBuffer = true;
+	return true;
+}
+
+void CStructureShadowsOSG::SetSunPosition(const osg::Vec3 &SunPosition, bool bForceRecompute)
+{
+	osg::Vec3 NewSunPosition = SunPosition;
+
+	NewSunPosition.normalize();
+
+	if ((acos(m_SunPosition * NewSunPosition) > PIf * SHADOW_UPDATE_ANGLE / 180.0f) || bForceRecompute)
+	{
+		const osg::Viewport *pCurrentMainViewport = m_pSceneView->getViewport();
+		m_SunPosition = SunPosition;
+
+		// Constrain the texture size to the current viewport
+		// this may be one frame behind
+		// I may not need to do this when we are using a FBO or a pBuffer
+		if (m_bUsingLiveFrameBuffer)
+		{
+			int iNewResolution = m_iTargetResolution;
+			if (iNewResolution > pCurrentMainViewport->width())
+				iNewResolution = pCurrentMainViewport->width();
+			if (iNewResolution > pCurrentMainViewport->height())
+				iNewResolution = pCurrentMainViewport->height();
+			int iTemp = 1;
+			while ((iTemp = iTemp << 1) <= iNewResolution);
+			iNewResolution  = iTemp / 2;
+			if (iNewResolution != m_iCurrentResolution)
+			{
+				m_iCurrentResolution = iNewResolution;
+				m_pTexture->setTextureSize(m_iCurrentResolution, m_iCurrentResolution);
+				m_pTexture->dirtyTextureObject();
+				// Probably should centre this on the original viewport
+				m_pCameraNode->setViewport(0, 0, m_iCurrentResolution, m_iCurrentResolution);
+			}
+		}
+
+		// Recompute the shadow texture
+		osg::BoundingSphere ShadowerBounds = m_pCameraNode->getChild(0)->getBound();
+		osg::BoundingSphere ShadowedBounds = m_pShadowed->getBound();
+		VTLOG("CStructureShadowsOSG::SetSunPosition - Shadower(centre %f %f %f radius %f) Shadowed(centre %f %f %f radius %f)\n",
+							ShadowerBounds.center().x(), ShadowerBounds.center().y(), ShadowerBounds.center().z(),
+							ShadowerBounds.radius(),
+							ShadowedBounds.center().x(), ShadowedBounds.center().x(), ShadowedBounds.center().x(),
+							ShadowedBounds.radius());
+		// Set camera position
+		if (m_bDepthShadow)
+		{
+			osg::BoundingSphere Bounds = ShadowerBounds;
+			Bounds.expandBy(ShadowedBounds);
+			NewSunPosition = NewSunPosition * (Bounds.radius() + 1);
+			NewSunPosition = NewSunPosition + Bounds.center();
+		}
+		else
+		{
+			NewSunPosition = NewSunPosition * (ShadowerBounds.radius() + 1);
+			NewSunPosition = NewSunPosition + ShadowerBounds.center();
+		}
+		float CentreDistanceShadower = (NewSunPosition - ShadowerBounds.center()).length();
+		float CentreDistanceShadowed = (NewSunPosition - ShadowedBounds.center()).length();
+
+		// Set up near and far planes of projection
+		float CameraNearPlane;
+		float CameraFarPlane;
+
+		if (m_bDepthShadow)
+		{
+			// Set ortho near to front of shadower
+			CameraNearPlane = CentreDistanceShadower - ShadowerBounds.radius();
+			// Set ortho far to rear of shadower
+			CameraFarPlane  = CentreDistanceShadower + ShadowerBounds.radius();
+		}
+		else
+		{
+			// Set ortho near to front of shadower
+			CameraNearPlane = CentreDistanceShadower - ShadowerBounds.radius();
+			// Set ortho far to rear of shadowed
+			CameraFarPlane  = CentreDistanceShadowed + ShadowedBounds.radius();
+		}
+		// Assert a minimum near far ratio
+		float MinNearFarRatio = 0.001f;
+		if (CameraNearPlane  < CameraFarPlane * MinNearFarRatio)
+			CameraNearPlane = CameraFarPlane * MinNearFarRatio;
+
+		// Set up sides of projection
+		float OrthoTop = ShadowerBounds.radius();
+		float OrthoRight = OrthoTop; // Square projection canvas
+
+		m_pCameraNode->setReferenceFrame(osg::CameraNode::ABSOLUTE_RF);
+		m_pCameraNode->setProjectionMatrixAsOrtho(-OrthoRight, OrthoRight, -OrthoTop, OrthoTop, CameraNearPlane, CameraFarPlane);
+		m_pCameraNode->setViewMatrixAsLookAt(NewSunPosition, ShadowerBounds.center(), osg::Vec3(0.0f, 0.1f, 0.0f));
+
+		//Set up texgen - I hope that the camera View matrix does not contain any modelling transforms
+		osg::Matrix ViewProjectionTranslate = m_pCameraNode->getViewMatrix() *
+												m_pCameraNode->getProjectionMatrix() *
+												osg::Matrix::translate(1.0f,1.0f,1.0f) *
+												osg::Matrix::scale(0.5f,0.5f,0.5f);
+		m_pTerrainTexGenNode->getTexGen()->setMode(osg::TexGen::EYE_LINEAR);
+		m_pTerrainTexGenNode->getTexGen()->setPlanesFromMatrix(ViewProjectionTranslate);
+
+		vtLodGrid *pGrid = dynamic_cast<vtLodGrid*>(m_pCameraNode->getChild(0)->getUserData());
+		float fOldDistance;
+
+		// No shadows after sunset
+		osg::Node::NodeMask NodeMask;
+		osg::Node *pNode;
+		if (m_SunPosition.y() < 0.0f)
+		{
+			pNode = m_pCameraNode->getChild(0);
+			NodeMask = pNode->getNodeMask();
+			pNode->setNodeMask(0);
+		}
+		if (NULL != pGrid)
+		{
+			fOldDistance = pGrid->GetDistance();
+			pGrid->SetDistance(1E9);
+		}
+		std::vector<osg::Node::NodeMask> Nodemasks;
+		std::list<osg::Node*>::iterator iTr1;
+		std::vector<osg::Node::NodeMask>::iterator iTr2;
+		for (iTr1 = m_ExcludeFromShadower.begin(); iTr1 != m_ExcludeFromShadower.end(); iTr1++)
+		{
+			Nodemasks.push_back((*iTr1)->getNodeMask());
+			(*iTr1)->setNodeMask(0);
+		}
+		m_pSceneView->getCamera()->addChild(m_pCameraNode.get());
+		m_pSceneView->cull();
+		m_pSceneView->draw();
+		m_pSceneView->getCamera()->removeChild(m_pCameraNode.get());
+		for (iTr1 = m_ExcludeFromShadower.begin(), iTr2 = Nodemasks.begin(); iTr1 != m_ExcludeFromShadower.end(); iTr1++, iTr2++)
+			(*iTr1)->setNodeMask(*iTr2);
+		if (NULL != pGrid)
+			pGrid->SetDistance(fOldDistance);
+		if (m_SunPosition.y() < 0.0f)
+			pNode->setNodeMask(NodeMask);
+	}
+}
+
+void CStructureShadowsOSG::SetShadowDarkness(float fDarkness)
+{
+	m_fShadowDarkness = fDarkness;
+	if (m_pMaterial.valid())
+		m_pMaterial->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f, 0.0f, 0.0f, m_fShadowDarkness));
+	if (m_pAmbientBias.valid())
+		m_pAmbientBias->set(osg::Vec2(0.0f, m_fShadowDarkness));
+	if (m_bDepthShadow)
+		m_pTexture->setShadowAmbient(1.0f - m_fShadowDarkness);
+}
+
+void CStructureShadowsOSG::ExcludeFromShadower(osg::Node *pNode, bool bExclude)
+{
+	m_ExcludeFromShadower.remove(pNode);
+	if (bExclude)
+		m_ExcludeFromShadower.push_back(pNode);
+	SetSunPosition(m_SunPosition, true);
+}
+
+
+
+
