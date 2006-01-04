@@ -11,7 +11,7 @@
 #include <osgUtil/SceneView>
 #include <osg/Timer>
 
-class CreateProjectedShadowTextureCullCallback;
+class CStructureShadowsOSG;
 
 /** \addtogroup sg */
 /*@{*/
@@ -81,7 +81,6 @@ public:
 	void UnsetShadowedNode(vtTransform *pTransform);
 	void UpdateShadowLightDirection(vtTransform *pLight);
 	void SetShadowDarkness(float fDarkness);
-	osg::ref_ptr<CreateProjectedShadowTextureCullCallback> m_pShadowVisitor;
 	void ShadowVisibleNode(vtNode *node, bool bVis);
 
 	void SetHUD(vtHUD *hud) { m_pHUD = hud; }
@@ -121,6 +120,7 @@ protected:
 	bool	m_bWinInfo;
 	bool	m_bInitialized;
 	bool	m_bWireframe;
+	osg::ref_ptr<CStructureShadowsOSG> m_pStructureShadowsOSG;
 	vtHUD	*m_pHUD;
 };
 

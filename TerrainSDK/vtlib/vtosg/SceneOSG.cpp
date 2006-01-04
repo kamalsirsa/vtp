@@ -3,12 +3,12 @@
 //
 // Implementation of vtScene for the OSG library
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
-#include "ProjectedShadows.h"
+#include "StructureShadowsOSG.h"
 
 #include <osg/LightSource>
 #include <osg/PolygonMode>
@@ -289,6 +289,10 @@ void vtScene::SetRoot(vtGroup *pRoot)
 		m_pOsgSceneRoot = pRoot->GetOsgGroup();
 	else
 		m_pOsgSceneRoot = NULL;
+
+	// Clear out any shadow stuff
+	m_pStructureShadowsOSG = NULL;
+
 	if (m_pOsgSceneView != NULL)
 		m_pOsgSceneView->setSceneData(m_pOsgSceneRoot.get());
 	m_pRoot = pRoot;
@@ -500,61 +504,36 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 
 void vtScene::ShadowVisibleNode(vtNode *node, bool bVis)
 {
-	if (!bVis) {
-		m_pShadowVisitor->shadow_ignore_nodes->Append(node->GetOsgNode());
-	}
-	else {
-		int i = m_pShadowVisitor->shadow_ignore_nodes->Find(node->GetOsgNode());
-		if (i != -1) {
-			m_pShadowVisitor->shadow_ignore_nodes->RemoveAt(i);
-		}
-	}
-	m_pShadowVisitor->RecomputeShadows();
+	if (m_pStructureShadowsOSG.valid())
+		if (bVis)
+			m_pStructureShadowsOSG->ExcludeFromShadower(node->GetOsgNode(), false);
+		else
+			m_pStructureShadowsOSG->ExcludeFromShadower(node->GetOsgNode(), true);
 }
 
 void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode,
 							  vtTransform *pTransform, int iRez)
 {
-	if (!m_pShadowVisitor.valid())
-		m_pShadowVisitor = new CreateProjectedShadowTextureCullCallback(pShadowNode->GetOsgNode(), iRez);
-	else
-		m_pShadowVisitor->SetShadower(pShadowNode->GetOsgNode());
-		m_pShadowVisitor->SetInitialLightPosition(v2s(-(pLight->GetDirection()) * 10000));
-		pTransform->GetOsgNode()->setCullCallback(m_pShadowVisitor.get());
-		m_pShadowVisitor->SetEnabled(true);
-#if VTDEBUG
-	{
-		osg::Group *pGroup = (osg::Group*)pTransform->GetOsgNode();
-		osg::Geode *pGeode = (osg::Geode*)pGroup->getChild(0);
-		osg::Drawable* pDrawable = pGeode->getDrawable(0);
-		pDrawable->setDrawCallback(new MyDrawCallback);
-	}
-#endif
+	m_pStructureShadowsOSG = new CStructureShadowsOSG;
+	m_pStructureShadowsOSG->Initialise(m_pOsgSceneView.get(), pShadowNode->GetOsgNode(), pTransform->GetOsgNode(), iRez);
+	m_pStructureShadowsOSG->SetSunPosition(v2s(-pLight->GetDirection()), true);
 }
 
 void vtScene::UnsetShadowedNode(vtTransform *pTransform)
 {
-	pTransform->GetOsgNode()->setCullCallback(NULL);
-#if VTDEBUG
-	{
-		osg::Group *pGroup = (osg::Group*)pTransform->GetOsgNode();
-		osg::Geode *pGeode = (osg::Geode*)pGroup->getChild(0);
-		osg::Drawable* pDrawable = pGeode->getDrawable(0);
-		pDrawable->setDrawCallback(NULL);
-	}
-#endif
+	m_pStructureShadowsOSG = NULL;
 }
 
 void vtScene::UpdateShadowLightDirection(vtTransform *pLight)
 {
-	if (m_pShadowVisitor.valid())
-		m_pShadowVisitor->SetLightPosition(v2s(-(pLight->GetDirection()) * 10000));
+	if (m_pStructureShadowsOSG.valid())
+		m_pStructureShadowsOSG->SetSunPosition(v2s(-pLight->GetDirection()));
 }
 
 void vtScene::SetShadowDarkness(float fDarkness)
 {
-	if (m_pShadowVisitor.valid())
-		m_pShadowVisitor->SetShadowDarkness(fDarkness);
+	if (m_pStructureShadowsOSG.valid())
+		m_pStructureShadowsOSG->SetShadowDarkness(fDarkness);
 }
 
 ////////////////////////////////////////
