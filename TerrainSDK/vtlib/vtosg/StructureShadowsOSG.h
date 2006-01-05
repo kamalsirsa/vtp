@@ -10,6 +10,7 @@
 
 #include <osg/Vec3>
 #include <osg/TexGenNode>
+#include <osg/PolygonOffset>
 
 class CStructureShadowsOSG : public osg::Referenced
 {
@@ -17,9 +18,10 @@ public:
 	CStructureShadowsOSG(bool bDepthShadow = false, bool bStructureOnStructureShadows = false);
 	~CStructureShadowsOSG();
 
-	void SetSunPosition(const osg::Vec3 &SunPosition, bool bForceRecompute = false);
-	bool Initialise(osgUtil::SceneView* pSceneView, osg::Node *pStructures, osg::Node* pShadowed, const int iResolution);
+	void SetSunPosition(const osg::Vec3 &sunPosition, bool bForceRecompute = false);
+	bool Initialise(osgUtil::SceneView *pSceneView, osg::Node *pStructures, osg::Node *pShadowed, const int iResolution);
 	void SetShadowDarkness(float fDarkness);
+	void SetPolygonOffset(float fFactor, float fUnits);
 	void ExcludeFromShadower(osg::Node *pNode, bool bExclude);
 
 	// Strip out any modelling transforms from the model view matrix
@@ -51,6 +53,7 @@ protected:
 	osg::ref_ptr<osg::TexGenNode> m_pTerrainTexGenNode;
 	osg::ref_ptr<osg::Group> m_pTop;
 	osg::ref_ptr<osg::Uniform> m_pAmbientBias;
+	osg::ref_ptr<osg::PolygonOffset> m_pPolygonOffset;
 	float m_fShadowDarkness;
 	bool m_bDepthShadow;
 	bool m_bStructureOnStructureShadows;
@@ -60,6 +63,8 @@ protected:
 	int m_iCurrentResolution;
 	bool m_bUsingLiveFrameBuffer;
 	std::list<osg::Node*> m_ExcludeFromShadower;
+	float m_fPolygonOffsetFactor;
+	float m_fPolygonOffsetUnits;
 };
 
 #endif // STRUCTURESHADOWSOSG_H
