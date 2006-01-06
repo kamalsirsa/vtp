@@ -90,7 +90,6 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_TILESIZE, "512");
 	AddTag(STR_TEXTUREFILE, "");
 	AddTag(STR_TEXTUREBASE, "");
-	AddTag(STR_TEXTUREFORMAT, "1");
 	AddTag(STR_MIPMAP, "false");
 	AddTag(STR_REQUEST16BIT, "true");
 	AddTag(STR_PRELIGHT, "true");
@@ -219,6 +218,22 @@ bool TParams::LoadFromXML(const char *fname)
 	// Convert old time values to new values
 	ConvertOldTimeValue();
 
+	// If pre-STR_TEXTURE4BY4, contruct it from the other params
+	if (!FindTag(STR_TEXTURE4BY4))
+	{
+		vtString str = GetValueString(STR_TEXTUREBASE, true);
+		vtString str2;
+		str2.Format("%d", NTILES * (GetValueInt(STR_TILESIZE)-1) + 1);
+		str += str2;
+
+		if (GetValueBool("Texture_Format") == 1)
+			str += ".jpg";
+		else
+			str += ".bmp";
+		SetValueString(STR_TEXTURE4BY4, str, true);
+		RemoveTag("Texture_Format");
+	}
+
 	// Remove some obsolete stuff
 	RemoveTag("Labels");
 	RemoveTag("LabelFile");
@@ -345,20 +360,6 @@ void TParams::SetTextureEnum(TextureEnum tex)
 TextureEnum TParams::GetTextureEnum() const
 {
 	return (TextureEnum) GetValueInt(STR_TEXTURE);
-}
-
-vtString TParams::CookTextureFilename() const
-{
-	vtString str = GetValueString(STR_TEXTUREBASE, true);
-	vtString str2;
-	str2.Format("%d", NTILES * (GetValueInt(STR_TILESIZE)-1) + 1);
-	str += str2;
-
-	if (GetValueBool(STR_TEXTUREFORMAT) == 1)
-		str += ".jpg";
-	else
-		str += ".bmp";
-	return str;
 }
 
 void TParams::SetOverlay(const vtString &fname, int x, int y)
