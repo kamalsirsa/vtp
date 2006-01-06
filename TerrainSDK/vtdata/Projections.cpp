@@ -1210,6 +1210,7 @@ GDALWrapper::~GDALWrapper()
 	// but not GDAL.
 	OSRCleanup();
 	CPLFinderClean();
+	CPLFreeConfig();
 #if GDAL_VERSION_NUM >= 1310
 	CPLCleanupTLS();	// this function was added in GDAL 1.3.1
 	VSICleanupFileManager();
