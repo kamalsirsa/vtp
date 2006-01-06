@@ -98,7 +98,7 @@ int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 /**
  * This function is used to find all files in a given directory,
  * and if they match a wildcard, add them to a combo box.
-*/
+ */
 int AddFilenamesToChoice(wxChoice *choice, const char *directory,
 	const char *wildcard, int omit_chars)
 {
@@ -129,6 +129,10 @@ int AddFilenamesToChoice(wxChoice *choice, const char *directory,
 	return matches;
 }
 
+/**
+ * Read a directory and add all the filenames which match a given wildcard
+ * to a string array.
+ */
 int AddFilenamesToStringArray(vtStringArray &array, const char *directory,
 	const char *wildcard, int omit_chars)
 {
