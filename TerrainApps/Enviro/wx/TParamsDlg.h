@@ -38,6 +38,7 @@ public:
 	void SetParams(const TParams &Params);
 	void GetParams(TParams &Params);
 	void SetDataPaths(const vtStringArray &paths) { m_datapaths = paths; }
+	void UpdateFilenameBases();
 	void UpdateTiledTextureFilename();
 	void UpdateEnableState();
 	void RefreshLocationFields();
@@ -86,9 +87,9 @@ public:
 	int	 m_iTilesize;
 	wxString2   m_strTextureSingle;
 	wxString2   m_strTextureBase;
+	wxString2   m_strTexture4x4;
 	wxString2   m_strTextureFilename;
 	wxString2   m_strTextureTileset;
-	bool	m_bJPEG;
 	bool	m_bMipmap;
 	bool	m_b16bit;
 	bool	m_bPreLight;
@@ -156,6 +157,8 @@ public:
 	std::vector<ScenarioParams> m_Scenarios;
 
 	// WDR: method declarations for TParamsDlg
+	wxChoice* GetTilesize()  { return (wxChoice*) FindWindow( ID_CHOICE_TILESIZE ); }
+	wxChoice* GetTFileBase()  { return (wxChoice*) FindWindow( ID_TFILE_BASE ); }
 	wxButton* GetMovedownScenario()  { return (wxButton*) FindWindow( ID_MOVEDOWN_SCENARIO ); }
 	wxButton* GetMoveupScenario()  { return (wxButton*) FindWindow( ID_MOVEUP_SCENARIO ); }
 	wxButton* GetEditScenario()  { return (wxButton*) FindWindow( ID_EDIT_SCENARIO ); }
@@ -198,6 +201,8 @@ public:
 	bool	m_bReady;
 	bool	m_bSetting;
 	vtStringArray m_datapaths;
+	vtStringArray m_TextureFiles;
+	int		m_iTilesizeIndex;
 
 private:
 	// WDR: member variable declarations for TParamsDlg
@@ -229,6 +234,7 @@ private:
 
 private:
 	// WDR: handler declarations for TParamsDlg
+	void OnComboTFileSingle( wxCommandEvent &event );
 	void OnOverlay( wxCommandEvent &event );
 	void OnBgColor( wxCommandEvent &event );
 	void OnTextureFileBase( wxCommandEvent &event );

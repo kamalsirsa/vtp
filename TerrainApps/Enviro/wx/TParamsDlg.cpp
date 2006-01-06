@@ -86,8 +86,8 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_USE_TILESET, TParamsDlg::OnCheckBox )
 	EVT_CHOICE( ID_LODMETHOD, TParamsDlg::OnCheckBox )
 		
-	EVT_TEXT( ID_TILESIZE, TParamsDlg::OnTileSize )
-	EVT_TEXT( ID_TFILE_BASE, TParamsDlg::OnTextureFileBase )
+	EVT_CHOICE( ID_CHOICE_TILESIZE, TParamsDlg::OnTileSize )
+	EVT_CHOICE( ID_TFILE_BASE, TParamsDlg::OnTextureFileBase )
 
 	EVT_RADIOBUTTON( ID_NONE, TParamsDlg::OnTextureNone )
 	EVT_RADIOBUTTON( ID_SINGLE, TParamsDlg::OnTextureSingle )
@@ -95,8 +95,8 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_TILED_4BY4, TParamsDlg::OnTextureTiled )
 	EVT_RADIOBUTTON( ID_TILESET, TParamsDlg::OnTextureTileset )
 
+	EVT_COMBOBOX( ID_TFILE_SINGLE, TParamsDlg::OnComboTFileSingle )
 	EVT_BUTTON( ID_EDIT_COLORS, TParamsDlg::OnEditColors )
-	EVT_CHECKBOX( ID_JPEG, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_DETAILTEXTURE, TParamsDlg::OnCheckBox )
 
 	EVT_CHECKBOX( ID_PLANTS, TParamsDlg::OnCheckBox )
@@ -174,6 +174,17 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iOverlayX = 0;
 	m_iOverlayY = 0;
 
+	m_pTextureFileSingle->Clear();
+	GetTilesize()->Clear();
+	GetTilesize()->Append(_T("256"));
+	GetTilesize()->Append(_T("512"));
+	GetTilesize()->Append(_T("1024"));
+	GetTilesize()->Append(_T("2048"));
+	GetTilesize()->Append(_T("4096"));
+	GetTilesize()->SetSelection(2);
+	m_iTilesizeIndex = 2;
+	m_iTilesize = 1024;
+
 	// Create Validators To Attach C++ Members To WX Controls
 
 	// overall name
@@ -211,10 +222,9 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	// texture
 	AddValidator(ID_TFILE_SINGLE, &m_strTextureSingle);
-	AddNumValidator(ID_TILESIZE, &m_iTilesize);
+	AddValidator(ID_CHOICE_TILESIZE, &m_iTilesizeIndex);
 	AddValidator(ID_TFILE_BASE, &m_strTextureBase);
-	AddValidator(ID_JPEG, &m_bJPEG);
-	AddValidator(ID_TFILENAME, &m_strTextureFilename);
+	AddValidator(ID_TFILENAME, &m_strTexture4x4);
 	AddValidator(ID_TFILE_TILESET, &m_strTextureTileset);
 	AddValidator(ID_MIPMAP, &m_bMipmap);
 	AddValidator(ID_16BIT, &m_b16bit);
@@ -325,31 +335,29 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_iTileCacheSize =	Params.GetValueInt(STR_TILE_CACHE_SIZE);
 
 	// time
-	m_bTimeOn =		 Params.GetValueBool(STR_TIMEON);
+	m_bTimeOn =			Params.GetValueBool(STR_TIMEON);
 	m_InitTime.SetFromString(Params.GetValueString(STR_INITTIME));
-	m_fTimeSpeed =	  Params.GetValueFloat(STR_TIMESPEED);
+	m_fTimeSpeed =		Params.GetValueFloat(STR_TIMESPEED);
 
 	// texture
 	m_iTexture =		Params.GetTextureEnum();
-	if (m_iTexture == 1)	// single
-	{
+
+	// single
+	if (m_iTexture != TE_TILESET)
 		m_strTextureSingle.from_utf8(Params.GetValueString(STR_TEXTUREFILE));
-	}
-	else if (m_iTexture == 2)	// tile4x4
-	{
-		m_strTextureBase.from_utf8(Params.GetValueString(STR_TEXTUREBASE));
-		m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
-		m_bJPEG =		   (Params.GetValueBool(STR_TEXTUREFORMAT) == 1);
-		m_strTextureFilename.from_utf8(Params.CookTextureFilename());
-	}
-	else if (m_iTexture == 3)	// derived
-	{
-		m_strColorMap.from_utf8(Params.GetValueString(STR_COLOR_MAP));
-	}
-	else if (m_iTexture == 4)	// tileset
-	{
+
+	// tile4x4
+	m_strTextureBase.from_utf8(Params.GetValueString(STR_TEXTUREBASE));
+	m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
+	m_strTexture4x4.from_utf8(Params.GetValueString(STR_TEXTURE4BY4));
+
+	// derived
+	m_strColorMap.from_utf8(Params.GetValueString(STR_COLOR_MAP));
+
+	// tileset
+	if (m_iTexture == TE_TILESET)
 		m_strTextureTileset.from_utf8(Params.GetValueString(STR_TEXTUREFILE));
-	}
+
 	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
 	m_b16bit =			Params.GetValueBool(STR_REQUEST16BIT);
 	m_bPreLight =		Params.GetValueBool(STR_PRELIGHT);
@@ -473,24 +481,23 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	// texture
 	Params.SetTextureEnum((enum TextureEnum)m_iTexture);
-	if (m_iTexture == 1)	// single
-	{
+
+	// single
+	if (m_iTexture != TE_TILESET)
 		Params.SetValueString(STR_TEXTUREFILE, m_strTextureSingle.to_utf8());
-	}
-	else if (m_iTexture == 2)	// tile4x4
-	{
-		Params.SetValueInt(STR_TILESIZE, m_iTilesize);
-		Params.SetValueString(STR_TEXTUREBASE, m_strTextureBase.to_utf8());
-		Params.SetValueInt(STR_TEXTUREFORMAT, (int) m_bJPEG);
-	}
-	else if (m_iTexture == 3)	// derived
-	{
-		Params.SetValueString(STR_COLOR_MAP, m_strColorMap.to_utf8());
-	}
-	else if (m_iTexture == 4)	// tileset
-	{
+
+	// tile4x4
+	Params.SetValueInt(STR_TILESIZE, m_iTilesize);
+	Params.SetValueString(STR_TEXTUREBASE, m_strTextureBase.to_utf8());
+	Params.SetValueString(STR_TEXTURE4BY4, m_strTexture4x4.to_utf8());
+
+	// derived
+	Params.SetValueString(STR_COLOR_MAP, m_strColorMap.to_utf8());
+
+	// tileset
+	if (m_iTexture == TE_TILESET)
 		Params.SetValueString(STR_TEXTUREFILE, m_strTextureTileset.to_utf8());
-	}
+
 	Params.SetValueBool(STR_MIPMAP, m_bMipmap);
 	Params.SetValueBool(STR_REQUEST16BIT, m_b16bit);
 	Params.SetValueBool(STR_PRELIGHT, m_bPreLight);
@@ -556,14 +563,61 @@ void TParamsDlg::GetParams(TParams &Params)
 
 }
 
+void TParamsDlg::UpdateFilenameBases()
+{
+	int totalsize = NTILES * (m_iTilesize-1) + 1;
+
+	vtString filter;
+	filter.Format("*%d.*", totalsize);
+	vtString number;
+	number.Format("%d", totalsize);
+
+	GetTFileBase()->Clear();
+	for (unsigned int i = 0; i < m_TextureFiles.size(); i++)
+	{
+		// fill the "single texture filename" control with available bitmap files
+		if (m_TextureFiles[i].Matches(filter))
+		{
+			vtString s = m_TextureFiles[i];
+			int offset = s.Find(number);
+			if (offset != -1)
+				s = s.Left(offset);
+			wxString2 str = s;
+			GetTFileBase()->Append(str);
+		}
+	}
+	if (GetTFileBase()->GetCount() == 0)
+		GetTFileBase()->Append(_("<none>"));
+
+	int sel = GetTFileBase()->FindString(m_strTextureBase);
+	if (sel != -1)
+		GetTFileBase()->SetSelection(sel);
+	else
+	{
+		GetTFileBase()->SetSelection(0);
+		m_strTextureBase = GetTFileBase()->GetString(0);
+	}
+}
+
 void TParamsDlg::UpdateTiledTextureFilename()
 {
-	m_strTextureFilename.Printf(_T("%s%d"), m_strTextureBase.c_str(),
-		NTILES * (m_iTilesize-1) + 1);
-	if (m_bJPEG)
-		m_strTextureFilename += _T(".jpg");
-	else
-		m_strTextureFilename += _T(".bmp");
+	int totalsize = NTILES * (m_iTilesize-1) + 1;
+
+	vtString filter;
+	filter.Format("%s%d.*", (const char *)m_strTextureBase, totalsize);
+
+	bool bFound = false;
+	m_strTexture4x4 = _("<none>");
+	for (unsigned int i = 0; i < m_TextureFiles.size(); i++)
+	{
+		// fill the "single texture filename" control with available bitmap files
+		if (m_TextureFiles[i].Matches(filter))
+		{
+			m_strTexture4x4 = m_TextureFiles[i];
+			bFound = true;
+			break;
+		}
+	}
 	TransferDataToWindow();
 }
 
@@ -589,9 +643,8 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_TFILE_SINGLE)->Enable(m_iTexture == TE_SINGLE);
 	FindWindow(ID_CHOICE_COLORS)->Enable(m_iTexture == TE_DERIVED);
 	FindWindow(ID_EDIT_COLORS)->Enable(m_iTexture == TE_DERIVED);
-	FindWindow(ID_TILESIZE)->Enable(m_iTexture == TE_TILED);
+	FindWindow(ID_CHOICE_TILESIZE)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILE_BASE)->Enable(m_iTexture == TE_TILED);
-	FindWindow(ID_JPEG)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILENAME)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILE_TILESET)->Enable(m_iTexture == TE_TILESET);
 
@@ -751,6 +804,8 @@ void TParamsDlg::OnTileSize( wxCommandEvent &event )
 {
 	if (m_bSetting || !m_bReady) return;
 	TransferDataFromWindow();
+	m_iTilesize = 1 << (m_iTilesizeIndex + 8);
+	UpdateFilenameBases();
 	UpdateTiledTextureFilename();
 }
 
@@ -774,6 +829,11 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	{
 		if (bShowProgress)
 			UpdateProgressDialog(i * 100 / paths.size(), wxString2(paths[i]));
+
+		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.bmp");
+		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.jpg");
+		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.jpeg");
+		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.png");
 
 		// fill the "Grid filename" control with available files
 		AddFilenamesToComboBox(m_pFilename, paths[i] + "Elevation", "*.bt*");
@@ -851,6 +911,8 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 			m_pSkyTexture->SetSelection(sel);
 	}
 	UpdateColorMapChoice();
+
+	UpdateFilenameBases();
 
 	m_pLodMethod->Clear();
 	m_pLodMethod->Append(_T("Roettger"));
@@ -1020,6 +1082,13 @@ void TParamsDlg::OnTextureTileset( wxCommandEvent &event )
 		return;
 	TransferDataFromWindow();
 	UpdateEnableState();
+}
+
+void TParamsDlg::OnComboTFileSingle( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+	TransferDataFromWindow();
 }
 
 void TParamsDlg::OnEditColors( wxCommandEvent &event )
