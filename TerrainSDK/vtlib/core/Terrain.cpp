@@ -388,7 +388,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		}
 		else
 		{
-			texname = m_Params.CookTextureFilename();
+			texname = m_Params.GetValueString(STR_TEXTURE4BY4, true);
 			VTLOG("  Tiled Texture: '%s'\n", (const char *) texname);
 		}
 
