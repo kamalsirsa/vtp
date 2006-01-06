@@ -174,7 +174,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iOverlayX = 0;
 	m_iOverlayY = 0;
 
-	m_pTextureFileSingle->Clear();
 	GetTilesize()->Clear();
 	GetTilesize()->Append(_T("256"));
 	GetTilesize()->Append(_T("512"));
@@ -830,10 +829,12 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (bShowProgress)
 			UpdateProgressDialog(i * 100 / paths.size(), wxString2(paths[i]));
 
+		// Gather all possible texture image filenames
 		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.bmp");
 		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.jpg");
 		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.jpeg");
 		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.png");
+		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.tif");
 
 		// fill the "Grid filename" control with available files
 		AddFilenamesToComboBox(m_pFilename, paths[i] + "Elevation", "*.bt*");
@@ -854,18 +855,9 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (sel != -1)
 			m_pFilenameTileset->SetSelection(sel);
 
-		// fill the "single texture filename" control with available bitmap files
-		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.bmp");
-		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.jpg");
-		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.jpeg");
-		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.png");
-		sel = m_pTextureFileSingle->FindString(m_strTextureTileset);
-		if (sel != -1)
-			m_pTextureFileSingle->SetSelection(sel);
-
 		// fill the "texture Tileset filename" control with available files
 		AddFilenamesToComboBox(m_pTextureFileTileset, paths[i] + "GeoSpecific", "*.ini");
-		sel = m_pTextureFileTileset->FindString(m_strFilenameTileset);
+		sel = m_pTextureFileTileset->FindString(m_strTextureTileset);
 		if (sel != -1)
 			m_pTextureFileTileset->SetSelection(sel);
 
@@ -910,9 +902,19 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (sel != -1)
 			m_pSkyTexture->SetSelection(sel);
 	}
-	UpdateColorMapChoice();
 
-	UpdateFilenameBases();
+	// fill the "single texture filename" control with available image files
+	m_pTextureFileSingle->Clear();
+	for (i = 0; i < m_TextureFiles.size(); i++)
+	{
+		wxString2 str = m_TextureFiles[i];
+        m_pTextureFileSingle->Append(str);
+	}
+	sel = m_pTextureFileSingle->FindString(m_strTextureSingle);
+	if (sel != -1)
+		m_pTextureFileSingle->SetSelection(sel);
+
+	UpdateColorMapChoice();
 
 	m_pLodMethod->Clear();
 	m_pLodMethod->Append(_T("Roettger"));
@@ -945,6 +947,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 //  DetermineSizeFromBMP();
 
 //  OnChangeMem();
+	UpdateFilenameBases();
 	UpdateTiledTextureFilename();
 
 	GetUseGrid()->SetValue(m_bGrid);

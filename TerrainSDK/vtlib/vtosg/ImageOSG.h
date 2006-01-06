@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -47,6 +47,7 @@ public:
 protected:
 	void _CreateFromDIB(vtDIB *pDIB);
 	bool _ReadPNG(const char *filename);
+	bool _ReadTIF(const char *filename, bool progress_callback(int) = NULL);
 
 protected:
 	// Destructor is protected so that people will use Release() instead,

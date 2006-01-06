@@ -1,7 +1,7 @@
 //
 // ImageOSG.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,6 +19,7 @@
 #define USE_OSG_FOR_PNG		1
 #define USE_OSG_FOR_BMP		1
 #define USE_OSG_FOR_JPG		1
+#define USE_OSG_FOR_TIF		0
 
 // Simple cache
 typedef std::map< vtString, osg::ref_ptr<vtImage> > ImageCache;
@@ -88,7 +89,7 @@ vtImage *vtImageRead(const char *fname, bool bAllowCache)
 	if (iter == s_ImageCache.end())
 	{
 		// not found.  must try loading;
-		image = new vtImage();
+		image = new vtImage;
 		if (image->Read(fname, bAllowCache))
 		{
 			s_ImageCache[fname] = image; // store in cache
@@ -159,6 +160,14 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 	else
 #endif
 
+#if !USE_OSG_FOR_TIF
+	if (!stricmp(fname + strlen(fname) - 3, "tif") ||
+		!stricmp(fname + strlen(fname) - 4, "tiff"))
+	{
+		_ReadTIF(fname);
+	}
+	else
+#endif
 	// try to load with OSG (osgPlugins libraries)
 	{
 		// important for efficiency: use OSG's cache
@@ -554,6 +563,253 @@ bool vtImage::_ReadPNG(const char *filename)
 }
 
 #endif	// USE_OSG_FOR_PNG
+
+
+//////////////////////////
+
+#if USE_OSG_FOR_TIF
+
+bool vtImage::_ReadTIF(const char *filename)
+{
+	return false;
+}
+
+#else
+
+bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
+{
+	// Use GDAL to read a TIF file (or any other format that GDAL is
+	//  configured to read) into this OSG image.
+	bool bRet = true;
+	vtString message;
+
+	g_GDALWrapper.RequestGDALFormats();
+
+	GDALDataset *pDataset = NULL;
+	GDALRasterBand *pBand;
+	GDALRasterBand *pRed;
+	GDALRasterBand *pGreen;
+	GDALRasterBand *pBlue;
+	GDALColorTable *pTable;
+	unsigned char *pScanline = NULL;
+	unsigned char *pRedline = NULL;
+	unsigned char *pGreenline = NULL;
+	unsigned char *pBlueline = NULL;
+
+	CPLErr Err;
+	bool bColorPalette = false;
+	int iXSize, iYSize;
+	int nxBlocks, nyBlocks;
+	int xBlockSize, yBlockSize;
+
+	try
+	{
+		pDataset = (GDALDataset *) GDALOpen(filename, GA_ReadOnly);
+		if(pDataset == NULL )
+			throw "Couldn't open that file.";
+
+		iXSize = pDataset->GetRasterXSize();
+		iYSize = pDataset->GetRasterYSize();
+
+		// Raster count should be 3 for colour images (assume RGB)
+		int iRasterCount = pDataset->GetRasterCount();
+
+		if (iRasterCount != 1 && iRasterCount != 3)
+		{
+			message.Format("Image has %d bands (not 1 or 3).", iRasterCount);
+			throw (const char *)message;
+		}
+
+		if (iRasterCount == 1)
+		{
+			pBand = pDataset->GetRasterBand(1);
+			// Check data type - it's either integer or float
+			if (GDT_Byte != pBand->GetRasterDataType())
+				throw "Raster is not of type byte.";
+			GDALColorInterp ci = pBand->GetColorInterpretation();
+
+			if (ci == GCI_PaletteIndex)
+			{
+				if (NULL == (pTable = pBand->GetColorTable()))
+					throw "Couldn't get color table.";
+				bColorPalette = true;
+			}
+			else if (ci == GCI_GrayIndex)
+			{
+				// we will assume 0-255 is black to white
+			}
+			else
+				throw "Unsupported color interpretation.";
+
+			pBand->GetBlockSize(&xBlockSize, &yBlockSize);
+			nxBlocks = (iXSize + xBlockSize - 1) / xBlockSize;
+			nyBlocks = (iYSize + yBlockSize - 1) / yBlockSize;
+			if (NULL == (pScanline = new unsigned char[xBlockSize * yBlockSize]))
+				throw "Couldnt allocate scan line.";
+		}
+
+		if (iRasterCount == 3)
+		{
+			for (int i = 1; i <= 3; i++)
+			{
+				pBand = pDataset->GetRasterBand(i);
+				// Check data type - it's either integer or float
+				if (GDT_Byte != pBand->GetRasterDataType())
+					throw "Three rasters, but not of type byte.";
+				switch (pBand->GetColorInterpretation())
+				{
+				case GCI_RedBand:
+					pRed = pBand;
+					break;
+				case GCI_GreenBand:
+					pGreen = pBand;
+					break;
+				case GCI_BlueBand:
+					pBlue = pBand;
+					break;
+				}
+			}
+			if ((NULL == pRed) || (NULL == pGreen) || (NULL == pBlue))
+				throw "Couldn't find bands for Red, Green, Blue.";
+
+			pRed->GetBlockSize(&xBlockSize, &yBlockSize);
+			nxBlocks = (iXSize + xBlockSize - 1) / xBlockSize;
+			nyBlocks = (iYSize + yBlockSize - 1) / yBlockSize;
+
+			pRedline = new unsigned char[xBlockSize * yBlockSize];
+			pGreenline = new unsigned char[xBlockSize * yBlockSize];
+			pBlueline = new unsigned char[xBlockSize * yBlockSize];
+		}
+
+		// Allocate the image buffer
+		if (iRasterCount == 3 || bColorPalette)
+			Create(iXSize, iYSize, 24);
+		else if (iRasterCount == 1)
+			Create(iXSize, iYSize, 8);
+
+		// Read the data
+		VTLOG("Reading the image data (%d x %d pixels)\n", iXSize, iYSize);
+
+		int x, y;
+		int ixBlock, iyBlock;
+		int nxValid, nyValid;
+		int iY, iX;
+		RGBi rgb;
+		if (iRasterCount == 1)
+		{
+			GDALColorEntry Ent;
+			for (iyBlock = 0; iyBlock < nyBlocks; iyBlock++)
+			{
+				if (progress_callback != NULL)
+					progress_callback(iyBlock * 100 / nyBlocks);
+
+				y = iyBlock * yBlockSize;
+				for (ixBlock = 0; ixBlock < nxBlocks; ixBlock++)
+				{
+					x = ixBlock * xBlockSize;
+					Err = pBand->ReadBlock(ixBlock, iyBlock, pScanline);
+					if (Err != CE_None)
+						throw "Problem reading the image data.";
+
+					// Compute the portion of the block that is valid
+					// for partial edge blocks.
+					if ((ixBlock+1) * xBlockSize > iXSize)
+						nxValid = iXSize - ixBlock * xBlockSize;
+					else
+						nxValid = xBlockSize;
+
+					if( (iyBlock+1) * yBlockSize > iYSize)
+						nyValid = iYSize - iyBlock * yBlockSize;
+					else
+						nyValid = yBlockSize;
+
+					for( iY = 0; iY < nyValid; iY++ )
+					{
+						for( iX = 0; iX < nxValid; iX++ )
+						{
+							if (bColorPalette)
+							{
+								pTable->GetColorEntryAsRGB(pScanline[iY * xBlockSize + iX], &Ent);
+								rgb.r = (unsigned char) Ent.c1;
+								rgb.g = (unsigned char) Ent.c2;
+								rgb.b = (unsigned char) Ent.c3;
+								SetPixel24(x + iX, y + iY, rgb);
+							}
+							else
+								SetPixel8(x + iX, y + iY, pScanline[iY * xBlockSize + iX]);
+						}
+					}
+				}
+			}
+		}
+		if (iRasterCount == 3)
+		{
+			for (iyBlock = 0; iyBlock < nyBlocks; iyBlock++)
+			{
+				if (progress_callback != NULL)
+					progress_callback(iyBlock * 100 / nyBlocks);
+
+				y = iyBlock * yBlockSize;
+				for (ixBlock = 0; ixBlock < nxBlocks; ixBlock++)
+				{
+					x = ixBlock * xBlockSize;
+					Err = pRed->ReadBlock(ixBlock, iyBlock, pRedline);
+					if (Err != CE_None)
+						throw "Cannot read data.";
+					Err = pGreen->ReadBlock(ixBlock, iyBlock, pGreenline);
+					if (Err != CE_None)
+						throw "Cannot read data.";
+					Err = pBlue->ReadBlock(ixBlock, iyBlock, pBlueline);
+					if (Err != CE_None)
+						throw "Cannot read data.";
+
+					// Compute the portion of the block that is valid
+					// for partial edge blocks.
+					if ((ixBlock+1) * xBlockSize > iXSize)
+						nxValid = iXSize - ixBlock * xBlockSize;
+					else
+						nxValid = xBlockSize;
+
+					if( (iyBlock+1) * yBlockSize > iYSize)
+						nyValid = iYSize - iyBlock * yBlockSize;
+					else
+						nyValid = yBlockSize;
+
+					for (int iY = 0; iY < nyValid; iY++)
+					{
+						for (int iX = 0; iX < nxValid; iX++)
+						{
+							rgb.r = pRedline[iY * xBlockSize + iX];
+							rgb.g = pGreenline[iY * xBlockSize + iX];
+							rgb.b = pBlueline[iY * xBlockSize + iX];
+							SetPixel24(x + iX, y + iY, rgb);
+						}
+					}
+				}
+			}
+		}
+	}
+	catch (const char *msg)
+	{
+		VTLOG(msg);
+		bRet = false;
+	}
+
+	if (NULL != pDataset)
+		GDALClose(pDataset);
+	if (NULL != pScanline)
+		delete pScanline;
+	if (NULL != pRedline)
+		delete pRedline;
+	if (NULL != pGreenline)
+		delete pGreenline;
+	if (NULL != pBlueline)
+		delete pBlueline;
+
+	return bRet;
+}
+
+#endif	// USE_OSG_FOR_TIF
 
 
 ///////////////////////////////////////////////////////////////////////
