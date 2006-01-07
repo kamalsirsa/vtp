@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,10 +19,10 @@
 #include <wx/colordlg.h>
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Location.h"
-#include "vtdata/FilePath.h"		// for FindFileOnPaths()
+#include "vtdata/FilePath.h"		// for FindFileOnPaths
 #include "vtdata/vtLog.h"
 #include "vtui/ColorMapDlg.h"
-#include "vtui/Helper.h"
+#include "vtui/Helper.h"			// for AddFilenamesToChoice
 
 #include "TParamsDlg.h"
 #include "TimeDlg.h"
@@ -348,6 +348,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	// tile4x4
 	m_strTextureBase.from_utf8(Params.GetValueString(STR_TEXTUREBASE));
 	m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
+	m_iTilesizeIndex = vt_log2(m_iTilesize)-8;
 	m_strTexture4x4.from_utf8(Params.GetValueString(STR_TEXTURE4BY4));
 
 	// derived
@@ -559,7 +560,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetOverlay(m_strOverlayFile.vt_str(), m_iOverlayX, m_iOverlayY);
 
 	Params.m_Scenarios = m_Scenarios;
-
 }
 
 void TParamsDlg::UpdateFilenameBases()
