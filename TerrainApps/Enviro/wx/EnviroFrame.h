@@ -152,6 +152,7 @@ public:
 	void OnSaveStruct(wxCommandEvent& event);
 	void OnToggleFoundations(wxCommandEvent& event);
 	void OnTerrainReshade(wxCommandEvent& event);
+	void OnTerrainChangeTexture(wxCommandEvent& event);
 
 	void OnUpdateDynamic(wxUpdateUIEvent& event);
 	void OnUpdateCullEvery(wxUpdateUIEvent& event);

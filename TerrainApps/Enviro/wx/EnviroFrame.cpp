@@ -48,6 +48,7 @@
 #include "PlantDlg.h"
 #include "ScenarioSelectDialog.h"
 #include "SceneGraphDlg.h"
+#include "TextureDlg.h"
 #include "TimeDlg.h"
 #include "UtilDlg.h"
 #include "vtui/InstanceDlg.h"
@@ -194,6 +195,7 @@ EVT_MENU(ID_TERRAIN_SAVEVEG,	EnviroFrame::OnSaveVeg)
 EVT_MENU(ID_TERRAIN_SAVESTRUCT,	EnviroFrame::OnSaveStruct)
 EVT_MENU(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnToggleFoundations)
 EVT_MENU(ID_TERRAIN_RESHADE,	EnviroFrame::OnTerrainReshade)
+EVT_MENU(ID_TERRAIN_CHANGE_TEXTURE,	EnviroFrame::OnTerrainChangeTexture)
 
 EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, EnviroFrame::OnUpdateCullEvery)
@@ -451,6 +453,7 @@ void EnviroFrame::CreateMenus()
 	m_pTerrainMenu->AppendSeparator();
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _("Toggle Artificial Foundations"));
 	m_pTerrainMenu->Append(ID_TERRAIN_RESHADE, _("&Recalculate Shading\tCtrl+R"));
+	m_pTerrainMenu->Append(ID_TERRAIN_CHANGE_TEXTURE, _("&Change Texture"));
 	m_pMenuBar->Append(m_pTerrainMenu, _("Te&rrain"));
 
 	if (m_bEnableEarth)
@@ -1489,9 +1492,32 @@ void EnviroFrame::OnTerrainReshade(wxCommandEvent& event)
 		return;
 
 	EnableContinuousRendering(false);
-	OpenProgressDialog(_T("Recalculating Shading"), false);
+	OpenProgressDialog(_("Recalculating Shading"), false);
 	pTerr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
 	CloseProgressDialog();
+	EnableContinuousRendering(true);
+}
+
+void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return;
+
+	EnableContinuousRendering(false);
+
+	TextureDlg dlg(this, -1, _("Change Texture"));
+	dlg.SetDataPaths(g_Options.m_DataPaths);
+	dlg.SetParams(pTerr->GetParams());
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		dlg.GetParams(pTerr->GetParams());
+
+		OpenProgressDialog(_("Changing Texture"), false);
+		pTerr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
+		CloseProgressDialog();
+	}
+
 	EnableContinuousRendering(true);
 }
 
