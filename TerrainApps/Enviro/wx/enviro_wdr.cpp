@@ -836,8 +836,11 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item8->Add( 20, 10, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs9 = (wxString*) NULL;
-    wxChoice *item9 = new wxChoice( parent, ID_CHOICE_COLORS, wxDefaultPosition, wxSize(180,-1), 0, strs9, 0 );
+    wxString strs9[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item9 = new wxChoice( parent, ID_CHOICE_COLORS, wxDefaultPosition, wxSize(180,-1), 1, strs9, 0 );
     item8->Add( item9, 1, wxALIGN_CENTER|wxALL, 5 );
 
     wxButton *item10 = new wxButton( parent, ID_EDIT_COLORS, _("Edit Colors..."), wxDefaultPosition, wxDefaultSize, 0 );
@@ -2224,8 +2227,84 @@ wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
 wxSizer *TextureDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxStaticBox *item1 = new wxStaticBox( parent, -1, _("Text") );
-    wxStaticBoxSizer *item0 = new wxStaticBoxSizer( item1, wxVERTICAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item2 = new wxRadioButton( parent, ID_SINGLE, _("Single texture "), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString strs3[] = 
+    {
+        _("Item")
+    };
+    wxComboBox *item3 = new wxComboBox( parent, ID_TFILE_SINGLE, wxT(""), wxDefaultPosition, wxDefaultSize, 1, strs3, wxCB_DROPDOWN|wxCB_SORT );
+    item1->Add( item3, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxRadioButton *item4 = new wxRadioButton( parent, ID_DERIVED, _("Derive texture from elevation"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxBoxSizer *item5 = new wxBoxSizer( wxHORIZONTAL );
+
+    item5->Add( 20, 10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString strs6[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item6 = new wxChoice( parent, ID_CHOICE_COLORS, wxDefaultPosition, wxSize(180,-1), 1, strs6, 0 );
+    item5->Add( item6, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item7 = new wxButton( parent, ID_EDIT_COLORS, _("Edit Colors..."), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxRadioButton *item8 = new wxRadioButton( parent, ID_TILED_4BY4, _("4x4 Tiled texture"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxFlexGridSizer *item9 = new wxFlexGridSizer( 2, 0, 0 );
+    item9->AddGrowableCol( 1 );
+
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Tile size: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxString strs11[] = 
+    {
+        _("ChoiceItem")
+    };
+    wxChoice *item11 = new wxChoice( parent, ID_CHOICE_TILESIZE, wxDefaultPosition, wxSize(100,-1), 1, strs11, 0 );
+    item9->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("Filename base: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item12, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxString strs13[] = 
+    {
+        _("ChoiceItem")
+    };
+    wxChoice *item13 = new wxChoice( parent, ID_TFILE_BASE, wxDefaultPosition, wxSize(100,-1), 1, strs13, 0 );
+    item9->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxBOTTOM, 5 );
+
+    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("Filename: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item14, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_TFILENAME, wxT(""), wxDefaultPosition, wxSize(220,-1), 0 );
+    item9->Add( item15, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxBOTTOM, 5 );
+
+    item0->Add( item9, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item17 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item16->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item18 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item16->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item16, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     if (set_sizer)
     {

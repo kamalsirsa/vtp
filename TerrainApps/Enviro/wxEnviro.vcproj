@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="wxEnviro"
 	ProjectGUID="{EB511FDC-A380-4724-9A95-7FEAC5561FEA}"
+	RootNamespace="wxEnviro"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -1130,6 +1131,41 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\TextureDlg.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\wx\TimeDlg.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -1363,6 +1399,9 @@
 			</File>
 			<File
 				RelativePath=".\wx\TerrManDlg.h">
+			</File>
+			<File
+				RelativePath=".\wx\TextureDlg.h">
 			</File>
 			<File
 				RelativePath=".\wx\TimeDlg.h">
