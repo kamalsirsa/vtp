@@ -162,7 +162,7 @@ void TextureDlg::UpdateTiledTextureFilename()
 	int totalsize = NTILES * (m_iTilesize-1) + 1;
 
 	vtString filter;
-	filter.Format("%s%d.*", (const char *)m_strTextureBase, totalsize);
+	filter.Format(_T("%s%d.*"), (const char *)m_strTextureBase, totalsize);
 
 	bool bFound = false;
 	m_strTexture4x4 = _("<none>");
