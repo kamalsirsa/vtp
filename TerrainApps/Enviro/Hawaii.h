@@ -33,7 +33,7 @@ public:
 	void CreateCustomCulture();
 
 	// override for texture tests
-	void PaintDib();
+	void PaintDib(bool progress_callback(int) = NULL);
 
 	vtGeom *make_test_cone();
 	vtGeom *make_red_cube();

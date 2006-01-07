@@ -411,7 +411,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	{
 		// Load a DIB of the whole, large texture
 		clock_t r1 = clock();
-		bool result = m_pImageSource->Read(texture_path, false);
+		bool result = m_pImageSource->Read(texture_path, false, progress_callback);
 		if (result)
 		{
 			int depth = m_pImageSource->GetDepth();
@@ -452,7 +452,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	{
 		// alternate loading: load straight into tiled images
 		clock_t r1 = clock();
-		bool result = m_ImageTiles.Load(texture_path);
+		bool result = m_ImageTiles.Load(texture_path, progress_callback);
 		if (result)
 			VTLOG("  Load texture: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
 		else
@@ -493,7 +493,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		{
 			// This method is virtual to allow subclasses to customize the Dib,
 			//  before we turn it into an vtImage
-			PaintDib();
+			PaintDib(progress_callback);
 		}
 	}
 
@@ -615,7 +615,7 @@ void vtTerrain::_CreateDetailTexture()
 // This is the default implementation for PaintDib.  It colors from elevation.
 // Developer might override it.
 //
-void vtTerrain::PaintDib()
+void vtTerrain::PaintDib(bool progress_callback(int))
 {
 	if (!m_pTextureColors)
 	{

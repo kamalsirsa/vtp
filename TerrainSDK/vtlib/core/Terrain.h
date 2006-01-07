@@ -132,7 +132,7 @@ public:
 
 	/** Override this method to customize the Dib, before it is turned into
 	 * a vtImage.  The default implementation colors from elevation. */
-	virtual void PaintDib();
+	virtual void PaintDib(bool progress_callback(int) = NULL);
 
 	/// Return true if the terrain has been created.
 	bool IsCreated();

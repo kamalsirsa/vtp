@@ -46,7 +46,7 @@ IslandTerrain::~IslandTerrain()
 {
 }
 
-void IslandTerrain::PaintDib()
+void IslandTerrain::PaintDib(bool progress_callback(int))
 {
 	if (g_bLineOfSightTest)
 	{
@@ -74,7 +74,7 @@ void IslandTerrain::PaintDib()
 		}
 	}
 	else
-		vtTerrain::PaintDib();
+		vtTerrain::PaintDib(progress_callback);
 }
 
 void IslandTerrain::CreateCustomCulture()
