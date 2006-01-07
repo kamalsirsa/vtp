@@ -113,7 +113,7 @@ vtImage *vtImageRead(const char *fname, bool bAllowCache)
 
 osg::ref_ptr<osgDB::ReaderWriter::Options> s_options;
 
-bool vtImage::Read(const char *fname, bool bAllowCache)
+bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(int))
 {
 	VTLOG(" vtImage::Read(%s)\n", fname);
 	m_b16bit = false;
@@ -164,7 +164,7 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 	if (!stricmp(fname + strlen(fname) - 3, "tif") ||
 		!stricmp(fname + strlen(fname) - 4, "tiff"))
 	{
-		_ReadTIF(fname);
+		_ReadTIF(fname, progress_callback);
 	}
 	else
 #endif

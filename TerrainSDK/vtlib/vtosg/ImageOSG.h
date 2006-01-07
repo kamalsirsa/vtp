@@ -23,7 +23,7 @@ public:
 	void Release();
 
 	bool Create(int width, int height, int bitdepth, bool create_palette = false);
-	bool Read(const char *fname, bool bAllowCache = true);
+	bool Read(const char *fname, bool bAllowCache = true, bool progress_callback(int) = NULL);
 	bool HasData() { return _data != NULL; }
 
 	/// Return the name of the file, if any, from which the image was loaded.
