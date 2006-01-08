@@ -199,6 +199,7 @@ EVT_MENU(ID_TERRAIN_CHANGE_TEXTURE,	EnviroFrame::OnTerrainChangeTexture)
 
 EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, EnviroFrame::OnUpdateCullEvery)
+EVT_UPDATE_UI(ID_TERRAIN_CULLONCE,	EnviroFrame::OnUpdateIsTerrainView)
 EVT_UPDATE_UI(ID_TERRAIN_SKY,		EnviroFrame::OnUpdateSky)
 EVT_UPDATE_UI(ID_TERRAIN_OCEAN,		EnviroFrame::OnUpdateOcean)
 EVT_UPDATE_UI(ID_TERRAIN_PLANTS,	EnviroFrame::OnUpdatePlants)
@@ -208,7 +209,11 @@ EVT_UPDATE_UI(ID_TERRAIN_FOG,		EnviroFrame::OnUpdateFog)
 EVT_UPDATE_UI(ID_TERRAIN_INCREASE,	EnviroFrame::OnUpdateLOD)
 EVT_UPDATE_UI(ID_TERRAIN_DECREASE,	EnviroFrame::OnUpdateLOD)
 EVT_UPDATE_UI(ID_TERRAIN_LOD,		EnviroFrame::OnUpdateLOD)
+EVT_UPDATE_UI(ID_TERRAIN_SAVEVEG,	EnviroFrame::OnUpdateIsTerrainView)
+EVT_UPDATE_UI(ID_TERRAIN_SAVESTRUCT, EnviroFrame::OnUpdateIsTerrainView)
 EVT_UPDATE_UI(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnUpdateFoundations)
+EVT_UPDATE_UI(ID_TERRAIN_RESHADE,	EnviroFrame::OnUpdateIsTerrainView)
+EVT_UPDATE_UI(ID_TERRAIN_CHANGE_TEXTURE, EnviroFrame::OnUpdateIsTerrainView)
 
 EVT_MENU(ID_EARTH_SHOWSHADING,	EnviroFrame::OnEarthShowShading)
 EVT_MENU(ID_EARTH_SHOWAXES,		EnviroFrame::OnEarthShowAxes)
@@ -1296,11 +1301,8 @@ void EnviroFrame::OnDynamic(wxCommandEvent& event)
 void EnviroFrame::OnUpdateDynamic(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t) return;
-	bool on = t->GetFeatureVisible(TFT_TERRAINSURFACE);
-
-	event.Enable(true);
-	event.Check(on);
+	event.Check(t && t->GetFeatureVisible(TFT_TERRAINSURFACE));
+	event.Enable(t != NULL);
 }
 
 void EnviroFrame::OnCullEvery(wxCommandEvent& event)
@@ -1343,6 +1345,7 @@ void EnviroFrame::OnUpdateSky(wxUpdateUIEvent& event)
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	event.Check(on);
+	event.Enable(GetCurrentTerrain() != NULL);
 }
 
 void EnviroFrame::OnOcean(wxCommandEvent& event)
@@ -1419,6 +1422,7 @@ void EnviroFrame::OnUpdateFog(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	event.Check(t && t->GetFog());
+	event.Enable(t != NULL);
 }
 
 void EnviroFrame::OnIncrease(wxCommandEvent& event)
@@ -1519,6 +1523,12 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 	}
 
 	EnableContinuousRendering(true);
+}
+
+void EnviroFrame::OnUpdateIsTerrainView(wxUpdateUIEvent& event)
+{
+	vtTerrain *t = GetCurrentTerrain();
+	event.Enable(t && t->GetDynTerrain());
 }
 
 
