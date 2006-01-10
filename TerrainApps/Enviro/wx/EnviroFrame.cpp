@@ -983,7 +983,15 @@ void EnviroFrame::OnViewMapOverView(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdateViewMapOverView(wxUpdateUIEvent& event)
 {
-	event.Enable(g_App.m_state == AS_Terrain);
+	// Only supported in Terrain View for certain texture types
+	bool bEnable = false;
+	vtTerrain *curr = GetCurrentTerrain();
+	if (curr)
+	{
+		TextureEnum eTex = curr->GetParams().GetTextureEnum();
+		bEnable = (eTex == TE_SINGLE || eTex == TE_TILED);
+	}
+	event.Enable(bEnable);
 	event.Check(g_App.GetShowMapOverview());
 }
 
@@ -1500,6 +1508,10 @@ void EnviroFrame::OnTerrainReshade(wxCommandEvent& event)
 	pTerr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
 	CloseProgressDialog();
 	EnableContinuousRendering(true);
+
+	// Also update the overview, if there is one.
+	if (g_App.GetShowMapOverview())
+		g_App.TextureHasChanged();
 }
 
 void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
@@ -1520,6 +1532,10 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 		OpenProgressDialog(_("Changing Texture"), false);
 		pTerr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
 		CloseProgressDialog();
+
+		// Also update the overview, if there is one.
+		if (g_App.GetShowMapOverview())
+			g_App.TextureHasChanged();
 	}
 
 	EnableContinuousRendering(true);
