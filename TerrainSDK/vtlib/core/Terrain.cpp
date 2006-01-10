@@ -289,7 +289,7 @@ void vtTerrain::_CreateRoads()
 		return;
 
 	VTLOG("Creating Roads: ");
-	m_pRoadMap = new vtRoadMap3d();
+	m_pRoadMap = new vtRoadMap3d;
 
 	VTLOG("  Reading from file '%s'\n", (const char *) road_path);
 	bool success = m_pRoadMap->ReadRMF(road_path,
@@ -353,7 +353,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	TextureEnum eTex = m_Params.GetTextureEnum();
 
 	if (!m_pTerrMats)
-		m_pTerrMats = new vtMaterialArray();
+		m_pTerrMats = new vtMaterialArray;
 
 	float ambient, diffuse, emmisive;
 	diffuse = 1.0f;
@@ -586,7 +586,7 @@ void vtTerrain::_CreateDetailTexture()
 	if (!dib.Read(path))
 		return;
 
-	m_pDetailMats = new vtMaterialArray();
+	m_pDetailMats = new vtMaterialArray;
 	vtImage *pDetailTexture = new vtImage(&dib);
 
 	int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
@@ -822,7 +822,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 	m_pDynGeom->SetMaterials(m_pTerrMats);
 
 	// build heirarchy (add terrain to scene graph)
-	m_pDynGeomScale = new vtTransform();
+	m_pDynGeomScale = new vtTransform;
 	m_pDynGeomScale->SetName2("Dynamic Geometry Container");
 
 	FPoint2 spacing = m_pElevGrid->GetWorldSpacing();
@@ -974,7 +974,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 
 	int VtxType;
 
-	vtMaterialArray *pMat_Ocean = new vtMaterialArray();
+	vtMaterialArray *pMat_Ocean = new vtMaterialArray;
 
 	if (bWater)
 	{
@@ -1001,7 +1001,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 		VtxType = VT_Normals;
 	}
 
-	vtGeom *pGeom = new vtGeom();
+	vtGeom *pGeom = new vtGeom;
 	pGeom->SetMaterials(pMat_Ocean);
 	pMat_Ocean->Release();
 
@@ -1324,7 +1324,7 @@ vtTransform *vtTerrain::LoadModel(const char *filename, bool bAllowCache)
 
 	if (node)
 	{
-		vtTransform *trans = new vtTransform();
+		vtTransform *trans = new vtTransform;
 		trans->AddChild(node);
 		return trans;
 	}
@@ -1419,7 +1419,7 @@ void vtTerrain::_CreateCulture()
 	int x, y;
 	if (m_Params.GetOverlay(fname, x, y))
 	{
-		vtImageSprite *pSprite = new vtImageSprite();
+		vtImageSprite *pSprite = new vtImageSprite;
 		if (pSprite->Create(fname, true))	// blending true
 		{
 			m_pOverlay = new vtGroup;
@@ -1676,18 +1676,18 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 		return;
 
 	// create container group
-	vtGroup *pAbstractGroup = new vtGroup();
+	vtGroup *pAbstractGroup = new vtGroup;
 	pAbstractGroup->SetName2("Abstract Layer");
 	m_pTerrainGroup->AddChild(pAbstractGroup);
 
 	// Create materials.
-	vtMaterialArray *pMats = new vtMaterialArray();
+	vtMaterialArray *pMats = new vtMaterialArray;
 
 	// common color
 	RGBi color = style.GetValueRGBi("GeomColor");
 	int index = pMats->AddRGBMaterial1(color, false, false);
 
-	vtGeom *geom = new vtGeom();
+	vtGeom *geom = new vtGeom;
 	geom->SetMaterials(pMats);
 	pMats->Release();
 
@@ -1757,12 +1757,12 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 	const char *fontname = "Fonts/Arial.ttf";
 
 	// create container group
-	vtGroup *pAbstractGroup = new vtGroup();
+	vtGroup *pAbstractGroup = new vtGroup;
 	pAbstractGroup->SetName2("Abstract Layer");
 	m_pTerrainGroup->AddChild(pAbstractGroup);
 
 	// Create materials.
-	vtMaterialArray *pLabelMats = new vtMaterialArray();
+	vtMaterialArray *pLabelMats = new vtMaterialArray;
 
 	unsigned int features = feat.GetNumEntities();
 	if (features == 0)
@@ -1876,7 +1876,7 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 #endif
 
 		// Create the vtGeom object to contain the vtTextMesh
-		vtGeom *geom = new vtGeom();
+		vtGeom *geom = new vtGeom;
 		geom->SetName2(str);
 		geom->SetMaterials(pLabelMats);
 
@@ -1911,7 +1911,7 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 
 		// Add to a billboarding transform so that the labels turn
 		// toward the viewer
-		vtTransform *bb = new vtTransform();
+		vtTransform *bb = new vtTransform;
 		bb->AddChild(geom);
 		m_pBBEngine->AddTarget(bb);
 
@@ -2101,7 +2101,7 @@ bool vtTerrain::CreateStep1()
 	if (surface_type == 0)
 	{
 		// Elevation input is a single grid; load it
-		m_pElevGrid = new vtElevationGrid();
+		m_pElevGrid = new vtElevationGrid;
 		bool status = m_pElevGrid->LoadFromBT(elev_path);
 		if (status == false)
 		{
@@ -2362,7 +2362,7 @@ bool vtTerrain::CreateStep5()
 		engine->SetEnabled(false);
 		AddEngine(engine);
 
-		vtAnimEntry *entry = new vtAnimEntry();
+		vtAnimEntry *entry = new vtAnimEntry;
 		entry->m_pAnim = anim;
 		entry->m_pEngine = engine;
 		entry->m_Name = fname1;
@@ -2663,7 +2663,7 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bit
 void vtTerrain::AddPointOfInterest(double left, double bottom, double right,
 					   double top, const char *name, const char *url)
 {
-	POIPtr p = new vtPointOfInterest();
+	POIPtr p = new vtPointOfInterest;
 	p->m_rect.SetRect(left, top, right, bottom);
 	p->m_name = name;
 	p->m_url = url;
@@ -2700,9 +2700,9 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 		return;
 	}
 
-	poi->m_pGeom = new vtGeom();
+	poi->m_pGeom = new vtGeom;
 	poi->m_pGeom->SetName2("POI Geom");
-	vtMaterialArray *pMat = new vtMaterialArray();
+	vtMaterialArray *pMat = new vtMaterialArray;
 	pMat->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false, false); // red
 	poi->m_pGeom->SetMaterials(pMat);
 	pMat->Release();
