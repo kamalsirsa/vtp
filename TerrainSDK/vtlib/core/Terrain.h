@@ -287,6 +287,7 @@ public:
 	// Texture
 	void RecreateTextures(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 	vtImage *GetTextureImage();
+	vtOverlappedTiledImage	*GetOverlappedImage() { return &m_ImageTiles; }
 
 protected:
 	/********************** Protected Methods ******************/
