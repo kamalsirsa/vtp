@@ -654,11 +654,12 @@ MapOverviewEngine::MapOverviewEngine()
 	anglePrec = 0.0;
 	MapRatio = 0.0;
 	ratioMapTerrain = 0.0;
-	MapWidth = 300;
+	MapWidth = 256;
 	MapMargin = 10;
 	m_pMapView = NULL;
+	m_pOwnedImage = NULL;
 
-	m_pMapGroup = new vtGroup();
+	m_pMapGroup = new vtGroup;
 	m_pMapGroup->SetName2("MapOverview group");
 
 	vtGetScene()->GetHUD()->AddChild(m_pMapGroup);
@@ -667,6 +668,8 @@ MapOverviewEngine::MapOverviewEngine()
 
 MapOverviewEngine::~MapOverviewEngine()
 {
+	if (m_pOwnedImage)
+		m_pOwnedImage->Release();
 	if (m_pMapView)
 		delete m_pMapView;
 }
@@ -718,9 +721,41 @@ void MapOverviewEngine::CreateMapView()
 
 void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 {
-	vtImage *image = pTerr->GetTextureImage();
-	if (!image)
-		return;
+	vtImage *image;
+
+	// We only support overviews for 'single' or '4x4 tiled' textures
+	TextureEnum eTex = pTerr->GetParams().GetTextureEnum();
+	if (eTex == TE_SINGLE)
+	{
+		image = pTerr->GetTextureImage();
+		if (!image)
+			return;
+	}
+	else if (eTex == TE_TILED)
+	{
+		if (m_pOwnedImage)
+			m_pOwnedImage->Release();
+
+		vtOverlappedTiledImage	*olap = pTerr->GetOverlappedImage();
+		int xsize = olap->GetWidth();
+		int ysize = olap->GetHeight();
+
+		image = new vtImage;
+		image->Create(256, 256, 24);
+
+		for (int i = 0; i < 256; i++)
+		{
+			for (int j = 0; j < 256; j++)
+			{
+				RGBi rgb;
+				olap->GetPixel24(i * xsize / 256, j * ysize / 256, rgb);
+				image->SetPixel24(i, j, rgb);
+			}
+		}
+		m_pOwnedImage = image;
+	}
+	else
+		return;		// not supported
 
 	if (m_pMapView->GetNode())
 		m_pMapView->SetImage(image);	// already created
@@ -745,10 +780,10 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 void MapOverviewEngine::CreateArrow()
 {
 	// Create the "arrow"
-	m_pArrow = new vtTransform();
-	vtGeom * arrowGeom = new vtGeom();
+	m_pArrow = new vtTransform;
+	vtGeom * arrowGeom = new vtGeom;
 
-	vtMaterialArray *pMats = new vtMaterialArray();
+	vtMaterialArray *pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(RGBf(1, 0, 0), false, false); // red
 	pMats->AddRGBMaterial1(RGBf(0, 0, 0), false, false); // black
 	arrowGeom->SetMaterials(pMats);

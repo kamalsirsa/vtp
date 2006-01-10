@@ -184,6 +184,7 @@ protected:
 	vtGroup			*m_pMapGroup;
 	vtImageSprite	*m_pMapView;
 	vtTransform		*m_pArrow;
+	vtImage			*m_pOwnedImage;
 
 	float	anglePrec;
 	int		MapWidth;
