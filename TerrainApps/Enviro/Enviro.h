@@ -64,6 +64,7 @@ public:
 	bool GetShowElevationLegend();
 	void ShowMapOverview(bool bShow);
 	bool GetShowMapOverview();
+	void TextureHasChanged();
 
 	// navigation and camera
 	void SetFlightSpeed(float speed);

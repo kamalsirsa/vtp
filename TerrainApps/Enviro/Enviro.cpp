@@ -1918,6 +1918,15 @@ void Enviro::CreateMapOverview()
 	}
 }
 
+void Enviro::TextureHasChanged()
+{
+	// Texture has changed, so update the overview
+	if (m_pMapOverview && m_pMapOverview->GetShowMapOverview())
+	{
+		m_pMapOverview->SetTerrain(GetCurrentTerrain());
+	}
+}
+
 void Enviro::ShowElevationLegend(bool bShow)
 {
 	if (bShow && !m_bCreatedLegend)
