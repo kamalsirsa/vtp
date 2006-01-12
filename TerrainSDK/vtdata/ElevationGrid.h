@@ -17,6 +17,15 @@
 class vtDIB;
 class OGRDataSource;
 
+enum vtElevGridError {
+	EGE_FILE_OPEN,			/// Could not open file.
+	EGE_NOT_FORMAT,			/// Not the correct file format.
+	EGE_UNSUPPORTED_VERSION,/// File is an unsupported version.
+	EGE_READ_CRS,			/// Could not read the CRS.
+	EGE_READ_DATA,			/// Could not read the file data.
+	EGE_CANCELLED			/// User cancelled the file read.
+};
+
 /**
  * The vtElevationGrid class represents a generic grid of elevation data.
  * It supports reading and writing the data from many file formats, testing
@@ -71,8 +80,9 @@ public:
 	bool LoadFromMicroDEM(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromXYZ(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromHGT(const char *szFileName, bool progress_callback(int) = NULL);
-	bool LoadFromBT(const char *szFileName, bool progress_callback(int) = NULL);
-	bool LoadBTHeader(const char *szFileName);
+	bool LoadFromBT(const char *szFileName, bool progress_callback(int) = NULL,
+		vtElevGridError *err = NULL);
+	bool LoadBTHeader(const char *szFileName, vtElevGridError *err = NULL);
 
 	// Use GDAL to read a file
 	bool LoadWithGDAL(const char *szFileName, bool progress_callback(int) = NULL);

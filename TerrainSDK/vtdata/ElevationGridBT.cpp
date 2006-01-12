@@ -21,14 +21,17 @@
  * has been compressed with gzip.
  * \returns \c true if the header was successfully parsed.
  */
-bool vtElevationGrid::LoadBTHeader(const char *szFileName)
+bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevGridError *err)
 {
 	// The gz functions (gzopen etc.) behave exactly like the stdlib
 	//  functions (fopen etc.) in the case where the input file is not in
 	//  gzip format, so we can simply use them without worry.
 	gzFile fp = gzopen(szFileName, "rb");
 	if (!fp)
+	{
+		if (err) *err = EGE_FILE_OPEN;
 		return false;		// Cannot Open File
+	}
 
 	char buf[11];
 	gzread(fp, buf, 10);
@@ -37,6 +40,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	if (strncmp(buf, "binterr", 7))
 	{
 		gzclose(fp);
+		if (err) *err = EGE_NOT_FORMAT;
 		return false;		// Not a current BT file
 	}
 
@@ -123,7 +127,11 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 			GZFRead(&m_fVMeters, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 	}
 	else
-		return false;	// unsupported version
+	{
+		// unsupported version
+		if (err) *err = EGE_UNSUPPORTED_VERSION;
+		return false;
+	}
 
 	gzclose(fp);
 
@@ -136,7 +144,10 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	{
 		// Read external projection (.prj) file
 		if (!m_proj.ReadProjFile(szFileName))
+		{
+			if (err) *err = EGE_READ_CRS;
 			return false;
+		}
 	}
 	else
 	{
@@ -159,15 +170,19 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
  * has been compressed with gzip.
  * \returns \c true if the file was successfully opened and read.
  */
-bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(int))
+bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(int),
+								 vtElevGridError *err)
 {
 	// First load the header
-	if (!LoadBTHeader(szFileName))
+	if (!LoadBTHeader(szFileName, err))
 		return false;
 
 	gzFile fp = gzopen(szFileName, "rb");
 	if (!fp)
+	{
+		if (err) *err = EGE_FILE_OPEN;
 		return false;		// Cannot Open File
+	}
 
 	// elevation data always starts at offset 256
 	gzseek(fp, 256, SEEK_SET);
@@ -207,11 +222,19 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(
 				if (progress_callback(i * 100 / m_iColumns))
 				{
 					// Cancel
+					if (err) *err = EGE_CANCELLED;
 					gzclose(fp);
 					return false;
 				}
 			}
-			GZFRead(m_pFData + (i*m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
+			int nitems = GZFRead(m_pFData + (i*m_iRows), DT_FLOAT, m_iRows,
+				fp, BO_LITTLE_ENDIAN);
+			if (nitems != m_iRows)
+			{
+				if (err) *err = EGE_READ_DATA;
+				gzclose(fp);
+				return false;
+			}
 		}
 	}
 	else
@@ -223,11 +246,19 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(
 				if (progress_callback(i * 100 / m_iColumns))
 				{
 					// Cancel
+					if (err) *err = EGE_CANCELLED;
 					gzclose(fp);
 					return false;
 				}
 			}
-			GZFRead(m_pData + (i*m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
+			int nitems = GZFRead(m_pData + (i*m_iRows), DT_SHORT, m_iRows,
+				fp, BO_LITTLE_ENDIAN);
+			if (nitems != m_iRows)
+			{
+				if (err) *err = EGE_READ_DATA;
+				gzclose(fp);
+				return false;
+			}
 		}
 	}
 #endif
