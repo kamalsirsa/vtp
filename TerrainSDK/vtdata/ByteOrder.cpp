@@ -109,14 +109,14 @@ size_t FRead( void *ptr, DataType type, size_t nitems, FILE *stream,
  * \param stream the stdio stream open for read
  * \param file_order the byte ordering of data read from the file
  * \param desired_order the desired byte ordering
- * \return fread() return value (num items read, or negative for error)
+ * \return fread() return value (Number of items read, or negative for error)
  *
  */
 size_t GZFRead( void *ptr, DataType type, size_t nitems, gzFile gzstream,
 			  ByteOrder file_order, ByteOrder desired_order )
 {
 	int tsize  = GetDataTypeSize( type );
-	size_t ret = gzread(gzstream, ptr, tsize * nitems);
+	size_t ret = gzread(gzstream, ptr, tsize * nitems) / tsize;
 
 	if ( (int)ret >= 0 )
 		SwapMemBytes( ptr, type, ret/tsize, file_order, desired_order );
@@ -132,7 +132,7 @@ size_t GZFRead( void *ptr, DataType type, size_t nitems, gzFile gzstream,
  * \param stream the stdio stream open for writing
  * \param file_order the byte ordering of data written to the file
  * \param data_order the byte ordering of data in the buffer
- * \return fwrite() return value (num items read, or negative for error)
+ * \return fwrite() return value (Number of items read, or negative for error)
  *
  */
 size_t FWrite( void *ptr, DataType type, size_t nitems, FILE *stream,
