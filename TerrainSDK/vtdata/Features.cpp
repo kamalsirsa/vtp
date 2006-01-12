@@ -1,14 +1,12 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "Features.h"
-#include "xmlhelper/easyxml.hpp"
 #include "vtLog.h"
-#include "DLG.h"
 #include "DxfParser.h"
 
 //
