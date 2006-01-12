@@ -171,8 +171,22 @@ bool vtElevLayer::OnLoad()
 		if (!fname.Right(6).CmpNoCase(_T(".bt.gz")))
 			m_bPreferGZip = true;
 
-		m_pGrid = new vtElevationGrid();
-		success = m_pGrid->LoadFromBT(fname.mb_str(), progress_callback);
+		m_pGrid = new vtElevationGrid;
+
+		vtElevGridError err;
+		success = m_pGrid->LoadFromBT(fname.mb_str(), progress_callback, &err);
+		if (!success && err == EGE_READ_CRS)
+		{
+			// Missing prj file
+			wxString2 str = _("CRS file");
+			str += " (";
+			vtString name = fname.mb_str();
+			RemoveFileExtensions(name);
+			str += name;
+			str += ".prj) ";
+			str += _("is missing or unreadable.\n");
+			wxMessageBox(str);
+		}
 		if (success)
 		{
 			m_pGrid->GetDimensions(m_iColumns, m_iRows);
@@ -182,7 +196,7 @@ bool vtElevLayer::OnLoad()
 	else if (!fname.Right(4).CmpNoCase(_T(".tin")) ||
 			 !fname.Right(4).CmpNoCase(_T(".itf")))
 	{
-		m_pTin = new vtTin2d();
+		m_pTin = new vtTin2d;
 		success = m_pTin->Read(fname.mb_str());
 	}
 
@@ -213,7 +227,7 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 		else
 		{
 			// actually re-project the grid elements
-			vtElevationGrid *grid_new = new vtElevationGrid();
+			vtElevationGrid *grid_new = new vtElevationGrid;
 
 			success = grid_new->ConvertProjection(m_pGrid, proj_new, progress_callback);
 
@@ -469,7 +483,7 @@ void vtElevLayer::SetupBitmap(wxDC* pDC)
 		m_iImageHeight = m_iRows / div;
 	}
 
-	m_pBitmap = new vtBitmap();
+	m_pBitmap = new vtBitmap;
 	if (!m_pBitmap->Allocate(m_iImageWidth, m_iImageHeight))
 	{
 		DisplayAndLog(_("Couldn't create bitmap, probably too large."));
