@@ -1373,7 +1373,12 @@ int vtFeatureSet::AddField(const char *name, FieldType ftype, int string_length)
 		f->m_width = 1;
 		f->m_decimals = 0;
 	}
-	return m_fields.Append(f);
+	int field_index = m_fields.Append(f);
+
+	// The new field should match the number of records
+	f->SetNumRecords(GetNumEntities());
+
+	return field_index;
 }
 
 int vtFeatureSet::AddRecord()
