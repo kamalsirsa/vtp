@@ -55,19 +55,19 @@ void vtRawLayer::SetGeomType(OGRwkbGeometryType type)
 		switch (type)
 		{
 		case wkbPoint:
-			m_pSet = new vtFeatureSetPoint2D();
+			m_pSet = new vtFeatureSetPoint2D;
 			break;
 		case wkbPoint25D:
-			m_pSet = new vtFeatureSetPoint3D();
+			m_pSet = new vtFeatureSetPoint3D;
 			break;
 		case wkbLineString:
-			m_pSet = new vtFeatureSetLineString();
+			m_pSet = new vtFeatureSetLineString;
 			break;
 		case wkbLineString25D:
-			m_pSet = new vtFeatureSetLineString3D();
+			m_pSet = new vtFeatureSetLineString3D;
 			break;
 		case wkbPolygon:
-			m_pSet = new vtFeatureSetPolygon();
+			m_pSet = new vtFeatureSetPolygon;
 			break;
 		}
 	}
@@ -571,7 +571,7 @@ void VisitorGU::data(const char *s, int length)
 
 void vtRawLayer::ReadGeoURL()
 {
-	vtFeatureSetPoint2D *pPointSet = new vtFeatureSetPoint2D();
+	vtFeatureSetPoint2D *pPointSet = new vtFeatureSetPoint2D;
 	pPointSet->AddField("Name", FT_String, 80);
 	pPointSet->AddField("URL", FT_String, 80);
 
@@ -586,6 +586,114 @@ void vtRawLayer::ReadGeoURL()
 	}
 	m_pSet = pPointSet;
 }
+
+
+////////////////////////////////////////////////////////////////////////
+// Visitor class, for parsing of a raw XML file into a Raw Layer.
+////////////////////////////////////////////////////////////////////////
+
+class VisitorRawXML : public XMLVisitor
+{
+public:
+	VisitorRawXML(vtFeatureSetPoint2D *fs) : m_state(0), m_rec(-1), m_pSet(fs) {}
+	void startElement(const char *name, const XMLAttributes &atts);
+	void endElement(const char *name);
+	void data(const char *s, int length);
+
+private:
+	string m_data;
+	int m_state;
+	int m_rec;
+
+	vtFeatureSetPoint2D *m_pSet;
+};
+
+void VisitorRawXML::startElement(const char *name, const XMLAttributes &atts)
+{
+	// clear data at the start of each element
+	m_data = "";
+
+	m_state++;
+	// State 1 - Container
+	// State 2 - Item
+	if (m_state == 2)
+	{
+		// Add record
+		m_rec = m_pSet->AddPoint(DPoint2(0,0));
+	}
+}
+
+void VisitorRawXML::endElement(const char *name)
+{
+	// State 3 - Field
+	if (m_state == 3)
+	{
+		vtString fieldname = name;	// field name
+		double val;
+		if (fieldname == "X" || fieldname == "Y")
+		{
+			// strip commas from number like "152,744.69"
+			vtString str = m_data.c_str();
+			int j = 0;
+			for (int i = 0; i <= str.GetLength(); i++)
+			{
+				if (i != j) str.SetAt(j, str[i]);
+				if (str[i] != ',') j++;
+			}
+			val = atof(str);
+		}
+		if (fieldname == "X")
+		{
+			DPoint2 p;
+			m_pSet->GetPoint(m_rec, p);
+			p.x = val;
+			m_pSet->SetPoint(m_rec, p);
+		}
+		else if (fieldname == "Y")
+		{
+			DPoint2 p;
+			m_pSet->GetPoint(m_rec, p);
+			p.y = val;
+			m_pSet->SetPoint(m_rec, p);
+		}
+		else
+		{
+			int field = m_pSet->GetFieldIndex(name);
+			if (field == -1)
+				field = m_pSet->AddField(name, FT_String);
+
+			m_pSet->SetValue(m_rec, field, m_data.c_str());
+		}
+	}
+	m_state--;
+}
+
+void VisitorRawXML::data(const char *s, int length)
+{
+	m_data.append(string(s, length));
+}
+
+bool vtRawLayer::ImportFromXML(const char *fname)
+{
+	vtFeatureSetPoint2D *pPointSet = new vtFeatureSetPoint2D;
+//	pPointSet->AddField("..", FT_String, 80);
+
+	VisitorRawXML visitor(pPointSet);
+	try
+	{
+		readXML(fname, visitor);
+	}
+	catch (xh_exception &)
+	{
+		delete pPointSet;
+		return false;
+	}
+	m_pSet = pPointSet;
+	return true;
+}
+
+
+///////////////////////////////////////////
 
 void vtRawLayer::CreateIndex(int iSize)
 {

@@ -66,6 +66,7 @@ public:
 	}
 
 	void ReadGeoURL();
+	bool ImportFromXML(const char *fname);
 
 	// speed optimization
 	void CreateIndex(int iSize);
