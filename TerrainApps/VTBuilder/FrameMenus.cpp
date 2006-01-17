@@ -87,6 +87,7 @@ EVT_MENU(ID_LAYER_IMPORTNTF,	MainFrame::OnLayerImportNTF)
 EVT_MENU(ID_LAYER_IMPORTUTIL,	MainFrame::OnLayerImportUtil)
 EVT_MENU(ID_LAYER_IMPORT_MS,	MainFrame::OnLayerImportMapSource)
 EVT_MENU(ID_LAYER_IMPORT_POINT,	MainFrame::OnLayerImportPoint)
+EVT_MENU(ID_LAYER_IMPORT_XML,	MainFrame::OnLayerImportXML)
 EVT_MENU(ID_LAYER_PROPS,		MainFrame::OnLayerProperties)
 EVT_MENU(ID_LAYER_CONVERTPROJ,	MainFrame::OnLayerConvert)
 EVT_MENU(ID_LAYER_SETPROJ,		MainFrame::OnLayerSetProjection)
@@ -313,6 +314,7 @@ void MainFrame::CreateMenus()
 	layerMenu->Append(ID_LAYER_IMPORTUTIL, _("Import Utilites From SHP"), _("Import Utilites From SHP"));
 	layerMenu->Append(ID_LAYER_IMPORT_MS, _("Import From MapSource File"));
 	layerMenu->Append(ID_LAYER_IMPORT_POINT, _("Import Point Data From Table"));
+	layerMenu->Append(ID_LAYER_IMPORT_XML, _("Import Point Data From XML"));
 #endif
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_PROPS, _("Layer Properties"), _("Layer Properties"));
@@ -814,13 +816,13 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 	if (dlg2.ShowModal() == wxID_CANCEL)
 		return;
 	str = dlg2.GetPath();
-	const char *fname_in = str.mb_str();
+	vtString fname_in = str.mb_str();
 
 	wxFileDialog dlg3(this, _T("Choose output texture file"), _T(""), _T(""), _T("*.png"), wxSAVE);
 	if (dlg3.ShowModal() == wxID_CANCEL)
 		return;
 	str = dlg3.GetPath();
-	const char *fname_out = str.mb_str();
+	vtString fname_out = str.mb_str();
 
 	OpenProgressDialog(_T("Processing"));
 
@@ -1459,6 +1461,28 @@ void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 
 	wxString2 str = loadFile.GetPath();
 	ImportDataPointsFromTable(str.mb_str());
+}
+
+void MainFrame::OnLayerImportXML(wxCommandEvent &event)
+{
+	wxFileDialog loadFile(NULL, _("Import XML Data"), _T(""), _T(""),
+		_("XML files (*.xml)|*.xml"), wxOPEN);
+
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+
+	wxString2 str = loadFile.GetPath();
+	vtRawLayer *pRL = new vtRawLayer;
+	if (pRL->ImportFromXML(str.mb_str()))
+	{
+		pRL->SetLayerFilename(str);
+		pRL->SetModified(true);
+
+		if (!AddLayerWithCheck(pRL, true))
+			delete pRL;
+	}
+	else
+		delete pRL;
 }
 
 void MainFrame::OnLayerProperties(wxCommandEvent &event)

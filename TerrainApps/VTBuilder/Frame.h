@@ -109,6 +109,7 @@ protected:
 	void OnLayerImportUtil(wxCommandEvent& event);
 	void OnLayerImportMapSource(wxCommandEvent& event);
 	void OnLayerImportPoint(wxCommandEvent& event);
+	void OnLayerImportXML(wxCommandEvent& event);
 	void OnLayerProperties(wxCommandEvent& event);
 	void OnLayerConvert(wxCommandEvent& event);
 	void OnLayerSetProjection(wxCommandEvent& event);
