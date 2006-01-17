@@ -227,9 +227,9 @@ class PlantListVisitor : public XMLVisitor
 {
 public:
 	PlantListVisitor(vtSpeciesList *pl) :
-		m_state(0), m_pPL(pl) {}
+		m_state(0), m_pPL(pl) { m_pSpecies = NULL; }
 
-	virtual ~PlantListVisitor () {}
+	virtual ~PlantListVisitor () { delete m_pSpecies; }
 
 	void startXML() { m_state = 0; }
 	void startElement(const char * name, const XMLAttributes &atts);
@@ -272,7 +272,7 @@ void PlantListVisitor::startElement(const char * name, const XMLAttributes &atts
 	{
 		if (string(name) == (string)"species")
 		{
-			m_pSpecies = new vtPlantSpecies();
+			m_pSpecies = new vtPlantSpecies;
 
 			// Get name and max_height
 			attval = atts.getValue("name");
