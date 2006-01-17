@@ -1892,6 +1892,15 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 	int i;
 	for (i = 0; i < iTotalCells; i++)
 	{
+		if (progress_callback != NULL)
+		{
+			if (progress_callback(i * 100 / iTotalCells))
+			{
+				// Cancel
+				return false;
+			}
+		}
+
 		if (NULL == (pFeature = pLayer->GetNextFeature()))
 		{
 			msg = "Couldn't get next feature";
@@ -1910,8 +1919,6 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 		SetValue(i / iRowCount, i % iRowCount, (short)pPoint->getZ());
 		delete pFeature;
 		pFeature = NULL;
-		if (progress_callback != NULL)
-			progress_callback(i * 100 / iTotalCells);
 	}
 
 	ComputeHeightExtents();
