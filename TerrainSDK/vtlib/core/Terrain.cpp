@@ -535,7 +535,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 									true, false);
 		return;
 	}
-	if (m_Params.GetValueBool(STR_PRELIGHT))
+	if (m_Params.GetValueBool(STR_PRELIGHT) && pHFGrid)
 	{
 		// apply pre-lighting (darkening)
 		vtBitmapBase *target;
@@ -2269,7 +2269,10 @@ bool vtTerrain::CreateStep2(vtTransform *pSunLight)
 	if (m_Params.GetValueBool(STR_SUPPRESS))
 		return true;
 
-	if (m_Params.GetValueInt(STR_SURFACE_TYPE) == 0)	// single grid
+	int type = m_Params.GetValueInt(STR_SURFACE_TYPE);
+	int tex = m_Params.GetValueInt(STR_TEXTURE);
+	if (type == 0 ||	// single grid
+		(type == 1 && tex == 1))	// TIN, single texture
 		_CreateTextures(pSunLight->GetDirection());
 	return true;
 }
@@ -2297,7 +2300,11 @@ bool vtTerrain::CreateFromTIN()
 	bool bDropShadow = true;
 
 	// build heirarchy (add terrain to scene graph)
-	m_pTerrainGroup->AddChild(m_pTin->CreateGeometry(bDropShadow));
+	int tex = m_Params.GetValueInt(STR_TEXTURE);
+	if (tex == 1)
+		m_pTin->SetTextureMaterials(m_pTerrMats);
+	vtGeom *geom = m_pTin->CreateGeometry(bDropShadow);
+	m_pTerrainGroup->AddChild(geom);
 
 	return true;
 }
