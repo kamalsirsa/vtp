@@ -649,10 +649,10 @@ void TParamsDlg::UpdateEnableState()
 
 	FindWindow(ID_MIPMAP)->Enable(m_iTexture != TE_NONE && !m_bTileset);
 	FindWindow(ID_16BIT)->Enable(m_iTexture != TE_NONE && !m_bTileset);
-	FindWindow(ID_PRELIGHT)->Enable(m_iTexture != TE_NONE && !m_bTileset);
-	FindWindow(ID_LIGHT_FACTOR)->Enable(m_iTexture != TE_NONE && !m_bTileset);
-	FindWindow(ID_CAST_SHADOWS)->Enable(m_iTexture != TE_NONE && !m_bTileset);
-	FindWindow(ID_RETAIN)->Enable(m_iTexture != TE_NONE && !m_bTileset);
+	FindWindow(ID_PRELIGHT)->Enable(m_iTexture != TE_NONE && m_bGrid);
+	FindWindow(ID_LIGHT_FACTOR)->Enable(m_iTexture != TE_NONE && m_bGrid);
+	FindWindow(ID_CAST_SHADOWS)->Enable(m_iTexture != TE_NONE && m_bGrid);
+	FindWindow(ID_RETAIN)->Enable(m_iTexture != TE_NONE && m_bGrid);
 
 	FindWindow(ID_DETAILTEXTURE)->Enable(m_iLodMethod == LM_MCNALLY);
 	FindWindow(ID_DT_NAME)->Enable(m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
