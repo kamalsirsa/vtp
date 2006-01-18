@@ -29,6 +29,7 @@ public:
 	bool Read(const char *fname);
 
 	vtGeom *CreateGeometry(bool bDropShadowMesh);
+	void SetTextureMaterials(vtMaterialArray *pMats);
 
 	// implement HeightField3d virtual methods
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
@@ -41,6 +42,7 @@ public:
 
 protected:
 	Array<vtMesh*> m_Meshes;
+	vtMaterialArray *m_pMats;
 	vtGeom		*m_pGeom;
 	vtGeom		*m_pDropGeom;
 };

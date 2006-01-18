@@ -13,6 +13,7 @@
 
 vtTin3d::vtTin3d()
 {
+	m_pMats = NULL;
 	m_pGeom = NULL;
 	m_pDropGeom = NULL;
 }
@@ -39,21 +40,33 @@ FPoint3 ComputeNormal(const FPoint3 &p1, const FPoint3 &p2, const FPoint3 &p3)
 	return cross;
 }
 
+void vtTin3d::SetTextureMaterials(vtMaterialArray *pMats)
+{
+	m_pMats = pMats;
+}
 
 #define MAX_CHUNK_VERTS	30000
 
 vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 {
-	// set up materials
-	vtMaterialArray *pMats = new vtMaterialArray();
-	bool lighting = false;
-	pMats->AddRGBMaterial1(RGBf(1, 1, 1), false, lighting, false);
-	pMats->AddRGBMaterial1(RGBf(0.5f, 0.5f, 0.5f), false, false, false);
-	pMats->AddRGBMaterial1(RGBf(0, 0, 0), false, false, false);
+	bool bTextured = (m_pMats != NULL);
 
-	m_pGeom = new vtGeom();
-	m_pGeom->SetMaterials(pMats);
-	pMats->Release();	// Pass ownership to geometry
+	if (!m_pMats)
+	{
+		// set up materials
+		m_pMats = new vtMaterialArray;
+		bool lighting = false;
+		m_pMats->AddRGBMaterial1(RGBf(1, 1, 1), false, lighting, false);
+		m_pMats->AddRGBMaterial1(RGBf(0.5f, 0.5f, 0.5f), false, false, false);
+		m_pMats->AddRGBMaterial1(RGBf(0, 0, 0), false, false, false);
+	}
+
+	m_pGeom = new vtGeom;
+	m_pGeom->SetMaterials(m_pMats);
+
+	// If textured, ownership of the textures is with the terrain
+	if (!bTextured)
+		m_pMats->Release();	// Pass ownership to geometry
 
 	// Break it up into a series of meshes - this is good for both
 	// culling and memory management
@@ -64,7 +77,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	RGBf color;
 	float r, g=1.0f, b=0.5f;
 
-	// most TINs are larger in the horionztal dimension than the vertical, so
+	// most TINs are larger in the horizontal dimension than the vertical, so
 	// use horizontal extents as the basis of subdivision
 	DRECT rect = m_EarthExtents;
 	double sizex = rect.Width();
@@ -138,7 +151,12 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		if (!in_bin)
 			continue;
 
-		vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLES, VT_Normals|VT_Colors, in_bin * 3);
+		int vert_type;
+		if (bTextured)
+			vert_type = VT_TexCoords;
+		else
+			vert_type = VT_Normals|VT_Colors;
+		vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLES, vert_type, in_bin * 3);
 
 		for (j = 0; j < in_bin; j++)
 		{
@@ -164,11 +182,20 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 
 				r = (m_z[vidx] - m_fMinHeight) / height_range;
 				int vert_index = pMesh->AddVertex(p[k]);
-				pMesh->SetVtxNormal(vert_index, norm);
+				if (bTextured)
+				{
+					FPoint2 uv((m_vert[vidx].x - m_EarthExtents.left) / sizex,
+						(m_vert[vidx].y - m_EarthExtents.bottom) / sizey);
+					pMesh->SetVtxTexCoord(vert_index, uv);
+				}
+				else
+				{
+					pMesh->SetVtxNormal(vert_index, norm);
 
-				color.Set(r, g, b);
-				color *= shade;
-				pMesh->SetVtxColor(vert_index, color);
+					color.Set(r, g, b);
+					color *= shade;
+					pMesh->SetVtxColor(vert_index, color);
+				}
 			}
 			pMesh->AddTri(vert_base, vert_base+1, vert_base+2);
 		}
