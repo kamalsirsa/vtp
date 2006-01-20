@@ -1320,13 +1320,19 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 	vtMaterial *pMat = GetMaterial(iMatIdx);
 	if (pMat)
 	{
-		// Beware: the mesh may already have its own stateset
 		StateSet *pState = pMat->m_pStateSet.get();
-        StateSet *pStateMesh = pMesh->m_pGeometry->getStateSet();
 
-        if (pStateMesh)
-            pStateMesh->merge(*pState);
-        else
+#if 0
+		// Beware: the mesh may already have its own stateset?
+		//  In what case would this arise?  The user might be calling this
+		//   method on a mesh which already has a material.  In that case,
+		//	 we want to cleanly switch to the new material, not merge into
+		//	 the old one.
+		StateSet *pStateMesh = pMesh->m_pGeometry->getStateSet();
+		if (pStateMesh)
+			pStateMesh->merge(*pState);
+		else
+#endif
 			pMesh->m_pGeometry->setStateSet(pState);
 
 		// Try to provide color for un-lit meshes
