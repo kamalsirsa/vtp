@@ -15,9 +15,9 @@
 #include <osgDB/WriteFile>
 #include <osg/GLExtensions>
 #include <osg/FragmentProgram>
-#include <osg/PolygonOffset>
 
-#define USE_SHADOW_HUD 1
+#define USE_SHADOW_HUD		0
+#define USE_FRAGMENT_SHADER	0
 
 #define SHADOW_UPDATE_ANGLE 5.0f
 
@@ -36,15 +36,17 @@ osg::TexGenNode *CStructureShadowsOSG::m_pStructureTexGenNode = NULL;
 CStructureShadowsOSG::CStructureShadowsOSG(bool bDepthShadow, bool bStructureOnStructureShadows)
 {
 	static const unsigned int ContextID = 0;
-
-	bDepthShadow = true;
-	bStructureOnStructureShadows = true;
+//	bDepthShadow = true;
+//	bStructureOnStructureShadows = true;
 
 	// Check if depth shadows supported
-//	osg::ref_ptr<osg::FragmentProgram::Extensions> pFragmentExtensions = osg::FragmentProgram::getExtensions(ContextID, true);
+#if USE_FRAGMENT_SHADER
+	osg::ref_ptr<osg::FragmentProgram::Extensions> pFragmentExtensions = osg::FragmentProgram::getExtensions(ContextID, true);
+	if (bDepthShadow && pTextureExtensions->isShadowSupported() && pFragmentExtensions->isFragmentProgramSupported())
+#else
 	osg::ref_ptr<osg::Texture::Extensions> pTextureExtensions = osg::Texture::getExtensions(ContextID, true);
-//	if (bDepthShadow && pTextureExtensions->isShadowSupported() && pFragmentExtensions->isFragmentProgramSupported())
 	if (bDepthShadow && pTextureExtensions->isShadowSupported())
+#endif
 		m_bDepthShadow = true;
 	else
 		m_bDepthShadow = false;
@@ -85,15 +87,17 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node 
 {
 	m_pSceneView = pSceneView;
 	m_iTargetResolution = m_iCurrentResolution = iResolution;
-	m_pTexture = new osg::Texture2D();
+	m_pTexture = new osg::Texture2D;
 	if (!m_pTexture.valid())
 		return false;
+
 	// Texture size and viewport are place holders at the moment
 	// if I am using the real frame buffer I will need to clamp
 	// it to the actual current window size
 	m_pTexture->setTextureSize(m_iCurrentResolution, m_iCurrentResolution);
 	m_pTexture->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::LINEAR);
 	m_pTexture->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::LINEAR);
+
 	if (m_bDepthShadow)
 	{
 		m_pTexture->setInternalFormat(GL_DEPTH_COMPONENT);
@@ -120,6 +124,7 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node 
 	m_pCameraNode->setViewport(0, 0, m_iCurrentResolution, m_iCurrentResolution);
 	m_pCameraNode->setRenderOrder(osg::CameraNode::PRE_RENDER);
 	m_pCameraNode->setRenderTargetImplementation(osg::CameraNode::FRAME_BUFFER_OBJECT);
+	m_pCameraNode->setComputeNearFarMode(osg::CameraNode::DO_NOT_COMPUTE_NEAR_FAR);
 	if (m_bDepthShadow)
 	{
 		osg::ref_ptr<osg::Group> pGroup = new osg::Group;
@@ -131,9 +136,8 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node 
 		}
 		pGroup->addChild(pStructures);
 		pGroup->addChild(pShadowed);
-//		m_pCameraNode->setClearMask(GL_DEPTH_BUFFER_BIT);
+		m_pCameraNode->setClearMask(GL_DEPTH_BUFFER_BIT);
 		m_pCameraNode->attach(osg::CameraNode::DEPTH_BUFFER, m_pTexture.get());
-		m_pCameraNode->setComputeNearFarMode(osg::CameraNode::DO_NOT_COMPUTE_NEAR_FAR);
 		m_pCameraNode->addChild(pGroup.get());
 	}
 	else
@@ -206,8 +210,6 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node 
 			return false;
 		}
 		pCameraStateSet->setAttributeAndModes(pBlendFunc.get(), SA_ON|SA_OVERRIDE);
-		// Kill any textures
-		pCameraStateSet->setTextureMode(MAIN_SCENE_TEXTURE_UNIT, GL_TEXTURE_2D, SA_OVERRIDE | SA_OFF);
 	}
 
 	m_pShadowed = pShadowed;
@@ -236,7 +238,8 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node 
 
 	if (m_bDepthShadow)
 	{
-/*		static char FragmentShaderSource[] = 
+#if USE_FRAGMENT_SHADER
+		static char FragmentShaderSource[] = 
 			"uniform sampler2D MainSceneTexture; \n"
 			"uniform sampler2DShadow ShadowTexture; \n"
 			"uniform float ShadowDarkness; \n"
@@ -306,8 +309,8 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node 
 		pShadowedStateSet->setAttribute(pProgram.get());
 		pShadowedStateSet->addUniform(pMainTexture.get());
 		pShadowedStateSet->addUniform(pShadowTexture.get());
-		pShadowedStateSet->addUniform(m_pAmbientBias.get());*/
-
+		pShadowedStateSet->addUniform(m_pAmbientBias.get());
+#endif
 		// Structure on structure shadows
 		if (m_bStructureOnStructureShadows)
 		{
@@ -318,10 +321,12 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node 
 			pStructuresStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_R, SA_OVERRIDE|SA_ON);
 			pStructuresStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_Q, SA_OVERRIDE|SA_ON);
 
-/*			pStructuresStateSet->setAttribute(pProgram.get());
+#if USE_FRAGMENT_SHADER
+			pStructuresStateSet->setAttribute(pProgram.get());
 			pStructuresStateSet->addUniform(pMainTexture.get());
 			pStructuresStateSet->addUniform(pShadowTexture.get());
-			pStructuresStateSet->addUniform(m_pAmbientBias.get());*/
+			pStructuresStateSet->addUniform(m_pAmbientBias.get());
+#endif
 		}
 	}
 
@@ -355,10 +360,9 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node 
 	return true;
 }
 
-void CStructureShadowsOSG::SetSunPosition(const osg::Vec3 &sunPosition,
+void CStructureShadowsOSG::SetSunPosition(osg::Vec3 SunPosition,
 										  bool bForceRecompute)
 {
-	osg::Vec3 SunPosition = sunPosition;
 	SunPosition.normalize();
 
 	if ((acos(m_SunPosition * SunPosition) > PIf * SHADOW_UPDATE_ANGLE / 180.0f) || bForceRecompute)
@@ -391,7 +395,11 @@ void CStructureShadowsOSG::SetSunPosition(const osg::Vec3 &sunPosition,
 
 		// Recompute the shadow texture
 		osg::BoundingSphere ShadowerBounds = m_pCameraNode->getChild(0)->getBound();
-		osg::BoundingSphere ShadowedBounds = m_pShadowed->getBound();
+		osg::BoundingSphere ShadowedBounds;
+		if (m_bDepthShadow)
+			ShadowedBounds = ShadowerBounds;
+		else
+			ShadowedBounds = m_pShadowed->getBound();
 		VTLOG("CStructureShadowsOSG::SetSunPosition - Shadower(centre %f %f %f radius %f) Shadowed(centre %f %f %f radius %f)\n",
 							ShadowerBounds.center().x(), ShadowerBounds.center().y(), ShadowerBounds.center().z(),
 							ShadowerBounds.radius(),
@@ -412,6 +420,9 @@ void CStructureShadowsOSG::SetSunPosition(const osg::Vec3 &sunPosition,
 		}
 		float CentreDistanceShadower = (SunPosition - ShadowerBounds.center()).length();
 		float CentreDistanceShadowed = (SunPosition - ShadowedBounds.center()).length();
+		VTLOG("CStructureShadowsOSG::SetSunPosition - CentreDistanceShadower %f CentreDistanceShadowed %f\n",
+							CentreDistanceShadower,
+							CentreDistanceShadowed);
 
 		// Set up near and far planes of projection
 		float CameraNearPlane;
@@ -431,10 +442,16 @@ void CStructureShadowsOSG::SetSunPosition(const osg::Vec3 &sunPosition,
 			// Set ortho far to rear of shadowed
 			CameraFarPlane  = CentreDistanceShadowed + ShadowedBounds.radius();
 		}
+		VTLOG("CStructureShadowsOSG::SetSunPosition - CameraNearPlane %f CameraFarPlane %f\n",
+							CameraNearPlane,
+							CameraFarPlane);
 		// Assert a minimum near far ratio
 		float MinNearFarRatio = 0.001f;
 		if (CameraNearPlane  < CameraFarPlane * MinNearFarRatio)
 			CameraNearPlane = CameraFarPlane * MinNearFarRatio;
+		VTLOG("CStructureShadowsOSG::SetSunPosition - CameraNearPlane %f CameraFarPlane %f\n",
+							CameraNearPlane,
+							CameraFarPlane);
 
 		// Set up sides of projection
 		float OrthoTop = ShadowerBounds.radius();
@@ -452,8 +469,21 @@ void CStructureShadowsOSG::SetSunPosition(const osg::Vec3 &sunPosition,
 		m_pTerrainTexGenNode->getTexGen()->setMode(osg::TexGen::EYE_LINEAR);
 		m_pTerrainTexGenNode->getTexGen()->setPlanesFromMatrix(ViewProjectionTranslate);
 
-		vtLodGrid *pGrid = dynamic_cast<vtLodGrid*>(m_pCameraNode->getChild(0)->getUserData());
+		vtLodGrid *pGrid = NULL;
+		if (m_bDepthShadow)
+		{
+			osg::Group *pGroup = dynamic_cast<osg::Group*>(m_pCameraNode->getChild(0));
+			if (NULL != pGroup)
+				pGrid = dynamic_cast<vtLodGrid*>(pGroup->getChild(0)->getUserData());
+		}
+		else
+			pGrid = dynamic_cast<vtLodGrid*>(m_pCameraNode->getChild(0)->getUserData());
 		float fOldDistance;
+		if (NULL != pGrid)
+		{
+			fOldDistance = pGrid->GetDistance();
+			pGrid->SetDistance(1E9);
+		}
 
 		// No shadows after sunset
 		osg::Node::NodeMask NodeMask;
@@ -464,11 +494,6 @@ void CStructureShadowsOSG::SetSunPosition(const osg::Vec3 &sunPosition,
 			NodeMask = pNode->getNodeMask();
 			pNode->setNodeMask(0);
 		}
-		if (NULL != pGrid)
-		{
-			fOldDistance = pGrid->GetDistance();
-			pGrid->SetDistance(1E9);
-		}
 		std::vector<osg::Node::NodeMask> Nodemasks;
 		std::list<osg::Node*>::iterator iTr1;
 		std::vector<osg::Node::NodeMask>::iterator iTr2;
@@ -478,8 +503,16 @@ void CStructureShadowsOSG::SetSunPosition(const osg::Vec3 &sunPosition,
 			(*iTr1)->setNodeMask(0);
 		}
 		m_pSceneView->getCamera()->addChild(m_pCameraNode.get());
+
+		// Kill the traversal of the main scene
+		osg::Node::NodeMask MainSceneNodemask = m_pSceneView->getSceneData()->getNodeMask();
+		m_pSceneView->getSceneData()->setNodeMask(0);
+
 		m_pSceneView->cull();
 		m_pSceneView->draw();
+
+		m_pSceneView->getSceneData()->setNodeMask(MainSceneNodemask);
+
 		m_pSceneView->getCamera()->removeChild(m_pCameraNode.get());
 		for (iTr1 = m_ExcludeFromShadower.begin(), iTr2 = Nodemasks.begin(); iTr1 != m_ExcludeFromShadower.end(); iTr1++, iTr2++)
 			(*iTr1)->setNodeMask(*iTr2);
