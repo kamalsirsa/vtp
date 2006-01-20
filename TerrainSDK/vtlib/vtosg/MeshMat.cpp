@@ -32,13 +32,14 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 
 vtMaterial::~vtMaterial()
 {
-	// do these manually, although it's not really required
+	// do these dereferences manually, although it's not really required
 	m_pMaterial = NULL;
 	m_pTexture = NULL;
 	m_pStateSet = NULL;
 	m_pBlendFunc = NULL;
+	m_pAlphaFunc = NULL;
 
-	// more dereferencing
+	// remove convenience pointer: this is not a dereference
 	m_pImage = NULL;
 }
 
@@ -244,7 +245,7 @@ bool vtMaterial::GetWireframe() const
 void vtMaterial::SetTexture(vtImage *pImage)
 {
 	if (!m_pTexture)
-		m_pTexture = new Texture2D();
+		m_pTexture = new Texture2D;
 
 	// this stores a reference so that it won't get deleted without this material's permission
 	m_pTexture->setImage(pImage);
