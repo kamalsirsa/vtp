@@ -282,7 +282,10 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 	if (!pTerrain)
 	{
 		if (m_pSkyDome)
+		{
+			m_pSkyDome->SetTexture(NULL);
 			m_pSkyDome->SetEnabled(false);
+		}
 		if (m_pTimeEngine)
 			m_pTimeEngine->SetEnabled(false);
 		return;
@@ -348,7 +351,7 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 
 void vtTerrainScene::_UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 {
-	TParams &param = m_pCurrentTerrain->GetParams();
+	TParams &param = pTerrain->GetParams();
 
 	// move the sky to fit the new current terrain
 	// use 5x larger than terrain's maximum dimension
