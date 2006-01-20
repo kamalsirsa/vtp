@@ -76,7 +76,7 @@ public:
 };
 
 bool vtImageInfo(const char *filename, int &width, int &height, int &depth);
-vtImage *vtImageRead(const char *fname, bool bAllowCache = true);
+vtImage *vtImageRead(const char *fname, bool bAllowCache = true, bool progress_callback(int) = NULL);
 void vtImageCacheClear();
 
 #endif	// VTOSG_IMAGEH
