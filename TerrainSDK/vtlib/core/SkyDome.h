@@ -127,6 +127,7 @@ protected:
 
 	vtMaterialArray *m_pMats;
 	vtMaterial		*m_pMat;
+	vtMaterial		*m_pTextureMat;
 	vtMesh			*m_pDomeMesh;
 
 	vtMovGeom		*m_pSunGeom;

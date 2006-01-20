@@ -100,6 +100,7 @@ vtSkyDome::vtSkyDome()
 
 	m_pMats = NULL;
 	m_pMat = NULL;
+	m_pTextureMat = NULL;
 	m_pDomeGeom = NULL;
 	m_pDomeMesh = NULL;
 	m_pSunGeom = NULL;
@@ -130,23 +131,24 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	SetName2("SkyDome");
 
 	VTLOG("   Creating Dome Nodes\n");
-	m_pCelestial = new vtTransform();
+	m_pCelestial = new vtTransform;
 	m_pCelestial->SetName2("Celestial Sphere");
 	AddChild(m_pCelestial);
 
-	m_pDomeGeom = new vtGeom();
+	m_pDomeGeom = new vtGeom;
 	m_pDomeGeom->SetName2("SkyDomeGeom");
 	AddChild(m_pDomeGeom);		// dome geometry does not rotate
 
-	// Only a single material is needed for the dome, since vertex colors are
-	// used to change the color of the sky.
 	VTLOG("   Creating Dome Materials\n");
-	m_pMats = new vtMaterialArray();
-	m_pMat = new vtMaterial();
+	m_pMats = new vtMaterialArray;
+	m_pDomeGeom->SetMaterials(m_pMats);
+
+	// Only a single material is needed for the untextured dome, since vertex
+	//  colors are used to change the color of the sky.
+	m_pMat = new vtMaterial;
 	m_pMat->SetLighting(false);
 	m_pMat->SetCulling(false);
 	m_pMats->Append(m_pMat);
-	m_pDomeGeom->SetMaterials(m_pMats);
 
 	// Create the geometry of the dome itself
 	VTLOG("   Creating Dome Mesh\n");
@@ -508,9 +510,30 @@ void vtSkyDome::SetInterpCutoff(float cutoff)
 //
 bool vtSkyDome::SetTexture(const char *filename)
 {
-	VTLOG("   SkyDome: Set Texture to '%s'.. ", filename);
+	if (filename)
+		VTLOG("   SkyDome: Set Texture to '%s'.. ", filename);
+	else
+		VTLOG("   SkyDome: Removing Texture.. ");
 
-	vtImage *pImage = new vtImage(filename);
+	if (m_pTextureMat)
+	{
+		// Already textured; remove previous material
+		m_pMats->RemoveMaterial(m_pTextureMat);
+		delete m_pTextureMat;
+		m_pTextureMat = NULL;
+	}
+
+	if (!filename)
+	{
+		// Go back to vertex-coloured dome
+		int index = m_pMats->Find(m_pMat);
+		m_pDomeGeom->SetMeshMatIndex(m_pDomeMesh, index);
+		m_pDomeMesh->ReOptimize();
+		m_bHasTexture = false;
+		return true;
+	}
+
+	vtImage *pImage = vtImageRead(filename);
 	if (!pImage->HasData())
 	{
 		VTLOG("failed.\n");
@@ -524,6 +547,8 @@ bool vtSkyDome::SetTexture(const char *filename)
 	// create and apply the texture material
 	int index = m_pMats->AddTextureMaterial(pImage, false, false);
 	pImage->Release();	// pass ownership to the Material
+
+	m_pTextureMat = m_pMats->GetAt(index);
 
 	// set the UV values to cylindrically project the texture onto the hemisphere
 	int i, j;
