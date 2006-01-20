@@ -27,7 +27,19 @@ ImageCache s_ImageCache;
 
 void vtImageCacheClear()
 {
+	VTLOG("Clearing image cache, contents:\n");
+	for (ImageCache::iterator iter = s_ImageCache.begin();
+		iter != s_ImageCache.end(); iter++)
+	{
+		vtString str = iter->first;
+		vtImage *im = iter->second.get();
+		VTLOG("  Image '%s', refcount %d\n", (const char *) str,
+			im->referenceCount());
+	}
 	s_ImageCache.clear();
+
+	// We must also clear the OSG cache, otherwise things can get out of synch
+	osgDB::Registry::instance()->clearObjectCache();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -80,7 +92,7 @@ bool vtImage::Create(int width, int height, int bitdepth, bool create_palette)
 	return true;
 }
 
-vtImage *vtImageRead(const char *fname, bool bAllowCache)
+vtImage *vtImageRead(const char *fname, bool bAllowCache, bool progress_callback(int))
 {
 	ImageCache::iterator iter;
 	vtImage *image;
@@ -90,7 +102,7 @@ vtImage *vtImageRead(const char *fname, bool bAllowCache)
 	{
 		// not found.  must try loading;
 		image = new vtImage;
-		if (image->Read(fname, bAllowCache))
+		if (image->Read(fname, bAllowCache, progress_callback))
 		{
 			s_ImageCache[fname] = image; // store in cache
 			return image;
