@@ -909,14 +909,32 @@ int vtString::Replace(char chOld, char chNew)
 	return nCount;
 }
 
-#if 0
 // remove occurrences of chRemove
 int vtString::Remove(char chRemove)
 {
-	int nCount = 0;
+	CopyBeforeWrite();
+
+	char *pstrSource = m_pchData;
+	char *pstrDest = m_pchData;
+	char *pstrEnd = m_pchData + GetData()->nDataLength;
+
+	while (pstrSource < pstrEnd)
+	{
+		if (*pstrSource != chRemove)
+		{
+			*pstrDest = *pstrSource;
+			pstrDest++;
+		}
+		pstrSource++;
+	}
+	*pstrDest = '\0';
+	int nCount = pstrSource - pstrDest;
+	GetData()->nDataLength -= nCount;
+
 	return nCount;
 }
 
+#if 0
 // insert character at zero-based index; concatenates
 // if index is past end of string
 int vtString::Insert(int nIndex, char ch)
