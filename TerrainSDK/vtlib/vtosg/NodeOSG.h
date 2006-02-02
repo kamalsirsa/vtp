@@ -316,7 +316,7 @@ public:
 	void AddTextMesh(vtTextMesh *pMesh, int iMatIdx);
 
 	/** Return the number of contained meshes. */
-	int GetNumMeshes() const;
+	unsigned int GetNumMeshes() const;
 
 	/** Return a contained vtMesh by index. */
 	vtMesh *GetMesh(int i) const;

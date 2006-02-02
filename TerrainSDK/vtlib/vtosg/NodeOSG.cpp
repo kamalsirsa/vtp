@@ -1227,7 +1227,7 @@ void vtGeom::CopyFrom(const vtGeom *rhs)
 	//  geometry that we are copying from.
 	SetMaterials(rhs->GetMaterials());
 	int idx;
-	for (int i = 0; i < rhs->GetNumMeshes(); i++)
+	for (unsigned int i = 0; i < rhs->GetNumMeshes(); i++)
 	{
 		vtMesh *mesh = rhs->GetMesh(i);
 		if (mesh)
@@ -1369,7 +1369,7 @@ void vtGeom::RemoveMesh(vtMesh *pMesh)
 	}
 }
 
-int vtGeom::GetNumMeshes() const
+unsigned int vtGeom::GetNumMeshes() const
 {
 	return m_pGeode->getNumDrawables();
 }
