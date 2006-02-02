@@ -145,7 +145,7 @@ void OutputSOG::WriteMultiGeometry(FILE *fp, const vtGroup *pParent)
 //
 void OutputSOG::WriteGeometry(FILE *fp, const vtGeom *pGeom, short id)
 {
-	int i;
+	short i;
 
 	// 4 components: name, id, parentid, meshes
 	short components = 4;
