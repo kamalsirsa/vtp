@@ -831,6 +831,9 @@ void vtMesh::ReOptimize()
 	m_pGeometry->dirtyDisplayList();
 }
 
+/**
+ * Set the line width, in pixels, for this mesh's geometry.
+ */
 void vtMesh::SetLineWidth(float fWidth)
 {
 	osg::LineWidth *lws = new osg::LineWidth;
