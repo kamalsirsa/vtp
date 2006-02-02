@@ -1741,6 +1741,9 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		bld->SetColor(BLD_BASIC, RGBi(255,0,0))
 		bld->SetColor(BLD_ROOF, RGBi(255,255,255))
 #endif
+#if 0
+#include "G:/Work/Cormorant Telematic Systems/VTBuilder_VRML_Output.cpp"
+#endif
 	}
 	else
 		event.Skip();
