@@ -34,6 +34,19 @@
 
 /**
  * A portable class for reading directory contents.
+ *
+ * Example of use:
+\code
+	for (dir_iter it("C:/temp"); it != dir_iter(); ++it)
+	{
+		if (it.is_hidden())
+			continue;
+		if (it.is_directory())
+			printf("Directory: '%s'\n", it.filename().c_str());
+		else
+			printf("File: '%s'\n", it.filename().c_str());
+	}
+\endcode
  */
 class dir_iter
 {
