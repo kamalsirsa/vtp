@@ -35,6 +35,7 @@ public:
 
 private:
 	// WDR: method declarations for StyleDlg
+	wxTextCtrl* GetLineWidth()  { return (wxTextCtrl*) FindWindow( ID_LINE_WIDTH ); }
 	wxTextCtrl* GetGeomHeight()  { return (wxTextCtrl*) FindWindow( ID_GEOM_HEIGHT ); }
 	wxCheckBox* GetTessellate()  { return (wxCheckBox*) FindWindow( ID_TESSELLATE ); }
 	wxTextCtrl* GetLabelSize()  { return (wxTextCtrl*) FindWindow( ID_LABEL_SIZE ); }
@@ -57,6 +58,7 @@ private:
 	bool m_bGeometry;
 	RGBi m_GeomColor;
 	float m_fGeomHeight;
+	float m_fLineWidth;
 	bool m_bTessellate;
 
 	bool m_bTextLabels;

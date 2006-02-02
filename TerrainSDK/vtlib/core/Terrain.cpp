@@ -1649,7 +1649,7 @@ void vtTerrain::_CreateAbstractLayers()
 }
 
 
-// Helper for CreateStyledFeatures
+// Helper for the CreateFeature methods
 bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgba)
 {
 	vtString str;
@@ -1695,6 +1695,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const vtTagArray 
 		Supported tags include:
 		- GeomColor: RGB value to be used for all features.  Default is white.
 		- GeomHeight: Height above ground, for draped geometry.
+		- LineWidth: Width of line geometry, in pixels.
 		- Tessellate: Boolean, indicates whether to tesselate each line segment
 			to allow for smoother draping on uneven terrain.  Default is false.
  */
@@ -1772,6 +1773,18 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 			}
 		}
 	}
+
+	// If the user specified a line width, apply it now
+	float fWidth;
+	if (style.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
+	{
+		for (unsigned int j = 0; j < geom->GetNumMeshes(); j++)
+		{
+			vtMesh *mesh = geom->GetMesh(j);
+			mesh->SetLineWidth(fWidth);
+		}
+	}
+
 	pAbstractGroup->AddChild(geom);
 }
 
