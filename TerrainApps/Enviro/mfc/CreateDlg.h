@@ -46,7 +46,7 @@ public:
 	UINT	m_iTilesize;
 	CString	m_strTextureSingle;
 	CString	m_strTextureBase;
-	CString	m_strTextureFilename;
+	CString	m_strTexture4x4;
 	BOOL	m_bMipmap;
 	BOOL	m_b16bit;
 	BOOL	m_bRoads;

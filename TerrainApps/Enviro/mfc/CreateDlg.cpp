@@ -35,7 +35,7 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_iTilesize = 512;
 	m_strTextureSingle = _T("");
 	m_strTextureBase = _T("");
-	m_strTextureFilename = _T("");
+	m_strTexture4x4 = _T("");
 	m_bMipmap = FALSE;
 	m_b16bit = TRUE;
 	m_bRoads = FALSE;
@@ -116,7 +116,7 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxUInt(pDX, m_iTilesize, 0, 4096);
 	DDX_Text(pDX, IDC_TFILESINGLE, m_strTextureSingle);
 	DDX_Text(pDX, IDC_TFILEBASE, m_strTextureBase);
-	DDX_Text(pDX, IDC_TFILENAME, m_strTextureFilename);
+	DDX_Text(pDX, IDC_TFILENAME, m_strTexture4x4);
 	DDX_Check(pDX, IDC_MIPMAP, m_bMipmap);
 	DDX_Check(pDX, IDC_16BIT, m_b16bit);
 	DDX_Check(pDX, IDC_ROADS, m_bRoads);
@@ -268,11 +268,18 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_tTime =			Params.GetValueInt(STR_INITTIME)
 		- m_iTimeDiff;	// beware local/gmtime difference
 
+	// texture
 	m_iTexture =		Params.GetTextureEnum();
-	m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
-	m_strTextureSingle = Params.GetValueString(STR_TEXTUREFILE);
+
+	// single
+	if (m_iTexture != TE_TILESET)
+		m_strTextureSingle = Params.GetValueString(STR_TEXTUREFILE);
+
+	// tile4x4
 	m_strTextureBase =	Params.GetValueString(STR_TEXTUREBASE);
-	m_strTextureFilename = Params.CookTextureFilename();
+	m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
+	m_strTexture4x4 =	Params.GetValueString(STR_TEXTURE4BY4);
+
 	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
 	m_b16bit =			Params.GetValueBool(STR_REQUEST16BIT);
 	m_bPreLight =		Params.GetValueBool(STR_PRELIGHT);
@@ -328,10 +335,18 @@ void CCreateDlg::GetParams(TParams &Params)
 	time += m_iTimeDiff;	// beware local/gmtime difference
 	Params.SetValueInt(STR_INITTIME, time);
 
+	// texture
 	Params.SetTextureEnum((enum TextureEnum)m_iTexture);
-	Params.SetValueInt(STR_TILESIZE, m_iTilesize);
+
+	// single
+	if (m_iTexture != TE_TILESET)
 	Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle);
+
+	// tile4x4
+	Params.SetValueInt(STR_TILESIZE, m_iTilesize);
 	Params.SetValueString(STR_TEXTUREBASE, (const char *) m_strTextureBase);
+	Params.SetValueString(STR_TEXTURE4BY4, (const char *) m_strTexture4x4);
+
 	Params.SetValueBool(STR_MIPMAP, m_bMipmap);
 	Params.SetValueBool(STR_REQUEST16BIT, m_b16bit);
 	Params.SetValueBool(STR_PRELIGHT, m_bPreLight);
@@ -369,7 +384,7 @@ void CCreateDlg::GetParams(TParams &Params)
 
 void CCreateDlg::UpdateTiledTextureFilename()
 {
-	m_strTextureFilename.Format("%s%d.bmp", m_strTextureBase,
+	m_strTexture4x4.Format("%s%d.bmp", m_strTextureBase,
 		NTILES * (m_iTilesize-1) + 1);
 	UpdateData(FALSE);
 }
