@@ -67,8 +67,11 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item9->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs10 = (wxString*) NULL;
-    wxChoice *item10 = new wxChoice( parent, ID_TNAME, wxDefaultPosition, wxSize(190,-1), 0, strs10, 0 );
+    wxString strs10[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item10 = new wxChoice( parent, ID_TNAME, wxDefaultPosition, wxSize(190,-1), 1, strs10, 0 );
     item9->Add( item10, 1, wxALIGN_CENTER|wxALL, 5 );
 
     wxButton *item11 = new wxButton( parent, ID_EDITPROP, _("Edit Properties"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -713,8 +716,11 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Terrain LOD Method:"), wxDefaultPosition, wxDefaultSize, 0 );
     item6->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs8 = (wxString*) NULL;
-    wxChoice *item8 = new wxChoice( parent, ID_LODMETHOD, wxDefaultPosition, wxSize(120,-1), 0, strs8, 0 );
+    wxString strs8[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item8 = new wxChoice( parent, ID_LODMETHOD, wxDefaultPosition, wxSize(120,-1), 1, strs8, 0 );
     item6->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item1->Add( item6, 0, wxALIGN_CENTER, 5 );
@@ -1193,8 +1199,11 @@ wxSizer *TParams4Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("Style:"), wxDefaultPosition, wxDefaultSize, 0 );
     item3->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs5 = (wxString*) NULL;
-    wxChoice *item5 = new wxChoice( parent, ID_NAV_STYLE, wxDefaultPosition, wxSize(100,-1), 0, strs5, 0 );
+    wxString strs5[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item5 = new wxChoice( parent, ID_NAV_STYLE, wxDefaultPosition, wxSize(100,-1), 1, strs5, 0 );
     item3->Add( item5, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item1->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
@@ -1248,8 +1257,11 @@ wxSizer *TParams4Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Initial Camera Location"), wxDefaultPosition, wxDefaultSize, 0 );
     item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs21 = (wxString*) NULL;
-    wxChoice *item21 = new wxChoice( parent, ID_INIT_LOCATION, wxDefaultPosition, wxSize(140,-1), 0, strs21, 0 );
+    wxString strs21[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item21 = new wxChoice( parent, ID_INIT_LOCATION, wxDefaultPosition, wxSize(140,-1), 1, strs21, 0 );
     item19->Add( item21, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     item1->Add( item19, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
