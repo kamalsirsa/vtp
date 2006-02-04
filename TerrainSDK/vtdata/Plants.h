@@ -130,7 +130,7 @@ public:
 	vtSpeciesList();
 	virtual ~vtSpeciesList();
 
-	bool ReadXML(const char *fname, vtString &msg = vtString(""));
+	bool ReadXML(const char *fname, vtString *msg = NULL);
 	bool WriteXML(const char *fname) const;
 
 	unsigned int NumSpecies() const { return m_Species.GetSize();  }
