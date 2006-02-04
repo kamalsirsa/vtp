@@ -233,6 +233,7 @@ void StartupDlg::UpdateState()
 	m_psImage->Enable(m_bStartEarth);
 	m_pImage->Enable(m_bStartEarth);
 	GetTname()->Enable(m_bStartTerrain);
+	GetEditprop()->Enable(m_bStartTerrain);
 }
 
 void StartupDlg::RefreshTerrainChoices()
