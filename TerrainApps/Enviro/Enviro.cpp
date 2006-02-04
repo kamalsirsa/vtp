@@ -665,8 +665,15 @@ void Enviro::LoadSpeciesList()
 	if (species_path == "")
 		species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
 
+	if (species_path == "")
+	{
+		VTLOG1(" not found.\n");
+		return;
+	}
+
 	vtSpeciesList pl;
-	if (species_path != "" && pl.ReadXML(species_path))
+	vtString errmsg;
+	if (pl.ReadXML(species_path, &errmsg))
 	{
 		VTLOG(" Using species file: '%s'\n", (const char *) species_path);
 		m_pPlantList = new vtSpeciesList3d();
@@ -680,9 +687,15 @@ void Enviro::LoadSpeciesList()
 //			m_pPlantList->CreatePlantSurfaces();
 		int available = m_pPlantList->CheckAvailability();
 		VTLOG(" %d plant appearances available.\n", available);
-	}
 
-	m_bPlantsLoaded = true;
+		m_bPlantsLoaded = true;
+	}
+	else
+	{
+		VTLOG1("Error loading species: ");
+		VTLOG1(errmsg);
+		VTLOG1("\n");
+	}
 }
 
 void Enviro::SetCurrentNavigator(vtTerrainFlyer *pE)
