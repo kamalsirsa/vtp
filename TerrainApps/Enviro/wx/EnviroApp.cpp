@@ -313,9 +313,9 @@ int EnviroApp::OnExit()
 //
 void EnviroApp::RefreshTerrainList()
 {
-	VTLOG("RefreshTerrainList:\n");
-
 	vtStringArray &paths = g_Options.m_DataPaths;
+
+	VTLOG("RefreshTerrainList, %d paths:\n", paths.size());
 
 	terrain_files.clear();
 	terrain_paths.clear();
