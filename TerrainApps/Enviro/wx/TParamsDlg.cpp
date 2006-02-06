@@ -1098,6 +1098,12 @@ void TParamsDlg::OnEditColors( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
+	if (m_strColorMap.IsEmpty())
+	{
+		wxMessageBox(_("Please select a filename."));
+		return;
+	}
+
 	// Look on data paths, to give a complete path to the dialog
 	vtString name = "GeoTypical/";
 	name += m_strColorMap.mb_str();
