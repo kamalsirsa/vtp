@@ -179,20 +179,16 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 
 	if (sun_texture && *sun_texture)
 	{
-		int idx = -1;
-
 		VTLOG("   Loading Sun Image\n");
-		m_pSunImage = new vtImage(sun_texture);
-		if (m_pSunImage->HasData())
-		{
-			idx = m_pMats->AddTextureMaterial(m_pSunImage,
+		m_pSunImage = new vtImage;
+		if (!m_pSunImage->Read(sun_texture))
+			return;		// could not load texture, cannot have sun
+
+		int idx = m_pMats->AddTextureMaterial(m_pSunImage,
 							 false, false,	// culling, lighting
 							 true, true,	// transp, additive
 							 1.0f,			// diffuse
 							 1.0f, 1.0f);	// alpha, emmisive
-		}
-		if (idx == -1)
-			return;		// could not load texture, cannot have sun
 
 		// Create sun
 		m_pSunMat = m_pMats->GetAt(idx);
