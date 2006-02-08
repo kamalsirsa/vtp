@@ -1,7 +1,7 @@
 //
 // FelkelComponents.cpp
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -12,6 +12,7 @@
 
 #include "FelkelComponents.h"
 #include "FelkelIntersection.h"
+#include "vtdata/vtLog.h"
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -31,85 +32,143 @@ CRidgeLine::CRidgeLine(const C3DPoint &p, const C3DPoint &q, const CNumber &Slop
 CRidgeLine CRidgeLine::AngleAxis (const C3DPoint &b, const C3DPoint &a, const CNumber &sa, const C3DPoint &c, const CNumber &sc)
 {
 	CNumber theta; // rotation from ba to bc
-	CNumber theta1; // rotation from bx to ridgeline
-	CNumber theta2; // slope of roof panel from edge ba
+	CNumber theta1; // rotation from x-axis to ridgeline
+	CNumber theta2; // slope of ridge line
 	CRidgeLine ba (b, a, -1);
 	CRidgeLine bc (b, c, -1);
 	CNumber d1;
 	CNumber d2;
+	CNumber baAngle = ba.m_Angle;
+	CNumber bcAngle = bc.m_Angle;
 	// Clamp tans to first quadrant
-	CNumber tsa = fabs(tan(sa));
-	CNumber tsc = fabs(tan(sc));
+	CNumber tsa = abs(tan(sa));
+	CNumber tsc = abs(tan(sc));
 
+	// Calculate the angle from ba to bc
+	theta = bcAngle - baAngle;
 
-	theta = bc.m_Angle - ba.m_Angle;
+	theta1 = atan2(sin(theta), (cos(theta) + tsa/tsc));
 
+	theta2 = atan(sin(theta1) * tsa);
 
-	theta1 = atan(sin(theta)/(cos(theta) + tsa/tsc));
+	if (theta2 < 0.0)
+	{
+		theta1 += CN_PI;
+		theta2 = -theta2;
+	}
+
 	theta1 += ba.m_Angle;
-
-	theta2 = theta1 - ba.m_Angle;
-	theta2 = atan(sin(theta2) * tsa);
-
-
 	theta1.NormalizeAngle();
 
-	if (ba.m_Angle > bc.m_Angle)
-		ba.m_Angle -= 2*CN_PI;
-	d1 = bc.m_Angle - ba.m_Angle;
-
-	if (theta1 > bc.m_Angle)
-		theta1 -= 2*CN_PI;
-	d2 = bc.m_Angle - theta1;
-
-	if (d2 > d1)
-		theta1 += CN_PI;
-
-
+#ifdef FELKELDEBUG
+	VTLOG("Angleaxis - aa %e sa %e ac %e sc %e theta %e theta1 %e theta2 %e\n",
+		ba.m_Angle, sa, bc.m_Angle, sc, theta, theta1, theta2);
+#endif
+	// Create ridegline (origin, angle , slope, isRidgeline)
 	return CRidgeLine (b, theta1, theta2, true);
 }
 
 C3DPoint CRidgeLine::Intersection(const CRidgeLine &a)
 {
+
 	if (m_Origin == a.m_Origin)
 		return m_Origin;
 	if (PointOnRidgeLine(a.m_Origin) && a.PointOnRidgeLine(m_Origin))
 	{
 		if (m_IsRidgeLine && a.m_IsRidgeLine)
 		{
+#ifdef FELKELDEBUG
+			VTLOG("COLLINEAR RIDGELINES ");
+#endif
 			if (m_Origin.m_y == a.m_Origin.m_y)
 			{
+#ifdef FELKELDEBUG
+			VTLOG("(SAME HEIGHT)\n");
+#endif
+#ifdef FOR_INTEGRATION
+				if (m_Slope == a.m_Slope)
+				{
+					return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / 2.0f,
+							0,
+							m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / 2.0f);
+				}
+				if (m_Slope == 0.0)
+				{
+					return C3DPoint(a.m_Origin);
+				}
+				if (a.m_Slope == 0.0)
+				{
+					return C3DPoint(m_Origin);
+				}
+#endif
 				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
 						0,
 						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 			}
 			else
 			{
-				CNumber Offset;
-				C3DPoint OffsetPoint;
+//				CNumber Offset;
+//				C3DPoint OffsetPoint;
+#ifdef FELKELDEBUG
+			VTLOG("(DIFFERENT HEIGHTS)\n");
+#endif
 
 				if (m_Origin.m_y < a.m_Origin.m_y)
 				{
-					Offset = (a.m_Origin.m_y - m_Origin.m_y)/fabs(tan(m_Slope));
-					OffsetPoint.m_x = Offset * cos(m_Angle) + m_Origin.m_x;
-					OffsetPoint.m_z = Offset * sin(m_Angle) + m_Origin.m_z;
-					return C3DPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
-							0,
-							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
+					CNumber OverallDistance = C3DPoint(a.m_Origin - m_Origin).LengthXZ();
+					CNumber Height = a.m_Origin.m_y - m_Origin.m_y;
+					CNumber TanA = tan(m_Slope);
+					CNumber TanB = tan(a.m_Slope);
+					CNumber Distance = (OverallDistance * TanA - Height) / (TanA + TanB);
+					C3DPoint NewPoint;
+
+					NewPoint = a.m_Origin + C3DPoint(cos(a.m_Angle) * Distance, 0.0, sin(a.m_Angle) * Distance);
+
+//					Offset = (a.m_Origin.m_y - m_Origin.m_y)/fabs(tan(m_Slope));
+//					OffsetPoint.m_x = Offset * cos(m_Angle) + m_Origin.m_x;
+//					OffsetPoint.m_z = Offset * sin(m_Angle) + m_Origin.m_z;
+//					C3DPoint OldPoint (m_Origin.m_x + Offset + (a.m_Origin.m_x - OffsetPoint.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
+//							0,
+//							m_Origin.m_z + Offset + (a.m_Origin.m_z - OffsetPoint.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
+
+					return NewPoint;
 				}
 				else
 				{
-					Offset = (m_Origin.m_y - a.m_Origin.m_y)/fabs(tan(a.m_Slope));
-					OffsetPoint.m_x = Offset * cos(a.m_Angle) + a.m_Origin.m_x;
-					OffsetPoint.m_z = Offset * sin(a.m_Angle) + a.m_Origin.m_z;
-					return C3DPoint (m_Origin.m_x + (OffsetPoint.m_x - m_Origin.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
-							0,
-							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
+					CNumber OverallDistance = C3DPoint(a.m_Origin - m_Origin).LengthXZ();
+					CNumber Height = m_Origin.m_y - a.m_Origin.m_y;
+					CNumber TanA = tan(a.m_Slope);
+					CNumber TanB = tan(m_Slope);
+					CNumber Distance = (OverallDistance * TanA - Height) / (TanA + TanB);
+					C3DPoint NewPoint;
+
+					NewPoint = m_Origin + C3DPoint(cos(m_Angle) * Distance, 0.0, sin(m_Angle) * Distance);
+
+//					Offset = (m_Origin.m_y - a.m_Origin.m_y)/fabs(tan(a.m_Slope));
+//					OffsetPoint.m_x = Offset * cos(a.m_Angle) + a.m_Origin.m_x;
+//					OffsetPoint.m_z = Offset * sin(a.m_Angle) + a.m_Origin.m_z;
+//					C3DPoint OldPoint (m_Origin.m_x + (OffsetPoint.m_x - m_Origin.m_x) / (1 + tan(m_Slope)/tan(a.m_Slope)),
+//							0,
+//							m_Origin.m_z + (OffsetPoint.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
+
+					return NewPoint;
 				}
 			}
 		}
 		else
-			return C3DPoint ((m_Origin.m_x + a.m_Origin.m_x)/2, 0, (m_Origin.m_z + a.m_Origin.m_z)/2);
+		{
+			CNumber OverallDistance = C3DPoint(a.m_Origin - m_Origin).LengthXZ();
+			CNumber TanA = tan(m_Slope);
+			CNumber TanB = tan(a.m_Slope);
+			C3DPoint NewPoint;
+			CNumber Distance = (OverallDistance * TanA) / (TanA + TanB);
+
+			NewPoint = m_Origin + C3DPoint(cos(m_Angle) * Distance, 0.0, sin(m_Angle) * Distance);
+
+			C3DPoint OldPoint ((m_Origin.m_x + a.m_Origin.m_x)/2, 0, (m_Origin.m_z + a.m_Origin.m_z)/2);
+
+			return NewPoint;
+		}
 	}
 	if (PointOnRidgeLine (a.m_Origin))
 		return a.m_Origin;
@@ -144,6 +203,7 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 	{
 		if (m_IsRidgeLine && a.m_IsRidgeLine)
 		{
+			assert(false);
 			if (m_Origin.m_y == a.m_Origin.m_y)
 			{
 				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
@@ -192,6 +252,7 @@ C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 	{
 		if (m_IsRidgeLine && a.m_IsRidgeLine)
 		{
+			assert(false);
 			if (m_Origin.m_y == a.m_Origin.m_y)
 			{
 				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
@@ -305,21 +366,23 @@ m_advancingSkeletonLine (NULL)
 {
 	CNumber slope;
 
-	// This constructor links the new vertex in the current active contour
 	m_leftLine = left.m_leftLine;
 	m_rightLine = right.m_rightLine;
 	m_leftVertex = &left;
 	m_rightVertex = &right;
 
+#if 1
+	m_axis = CRidgeLine::AngleAxis(m_point,
+		m_point + C3DPoint(cos(m_leftLine.m_Angle), m_point.m_y, sin(m_leftLine.m_Angle)), m_leftLine.m_Slope,
+		m_point + C3DPoint(cos(m_rightLine.m_Angle), m_point.m_y, sin(m_rightLine.m_Angle)), m_rightLine.m_Slope);
+#else
+	// This lot assumes the slopes are equal !!!!!!!!!!
+	// This needs fixing !!!!!!!!!!
+	assert(m_leftLine.m_Slope == m_rightLine.m_Slope);
+
 	// Create the associated ridgeline for this vertex
-	CNumber height = m_leftLine.Dist(m_point) * fabs(tan(m_leftLine.m_Slope));
-#if VTDEBUG
-	{
-		CNumber n2 = m_rightLine.Dist(m_point) * fabs(tan(m_rightLine.m_Slope));
-		if (height != n2)
-			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
-	}
-#endif
+	CNumber height = m_point.m_y;
+	
 	C3DPoint i = m_leftLine.Intersection (m_rightLine);
 	if (i.m_x == CN_INFINITY)
 	{
@@ -332,7 +395,7 @@ m_advancingSkeletonLine (NULL)
 		{
 #if VTDEBUG
 			if (i.m_z != CN_INFINITY)
-				VTLOG("%s %d Assert failed i.m_z %e\n", __FILE__, __LINE__, (double) i.m_z);
+				VTLOG("%s %d Assert failed i.m_z %e\n", __FILE__, __LINE__, i.m_z);
 #endif
 			if (m_leftLine.PointOnRidgeLine(m_rightLine.m_Origin) || m_leftLine.Opaque().PointOnRidgeLine(m_rightLine.m_Origin))
 				// Lines are coincident
@@ -344,7 +407,8 @@ m_advancingSkeletonLine (NULL)
 		else
 		{
 			// Reflex intersection
-			slope = atan(height / m_point.DistXZ(i));
+			CNumber Height2 = tan(m_leftLine.m_Slope) * m_leftLine.Dist(i);
+			slope = - atan((Height2 - height) / m_point.DistXZ(i));
 			m_axis = CRidgeLine(m_point, i, slope, true);
 			m_axis.m_Angle = m_axis.m_Angle + CN_PI;
 			m_axis.m_Angle.NormalizeAngle();
@@ -352,9 +416,11 @@ m_advancingSkeletonLine (NULL)
 	}
 	else
 	{
-		slope = atan(height / m_point.DistXZ(i));
+		CNumber Height2 = tan(m_leftLine.m_Slope) * m_leftLine.Dist(i);
+		slope = atan((Height2 - height) / m_point.DistXZ(i));
 		m_axis = CRidgeLine(m_point, i, slope, true);
 	}
+#endif
 }
 
 C3DPoint CVertex::CoordinatesOfAnyIntersectionOfTypeB (const CVertex &left, const CVertex &right)
@@ -396,13 +462,13 @@ C3DPoint CVertex::CoordinatesOfAnyIntersectionOfTypeB (const CVertex &left, cons
 			CNumber db2 = left.m_rightLine.Dist(poi) * fabs(tan(left.m_rightLine.m_Slope));
 			CNumber db3 = left.m_nextVertex->m_leftLine.Dist(poi) * fabs(tan(left.m_nextVertex->m_leftLine.m_Slope));
 			if (!SIMILAR(poi.m_y, db0))
-				VTLOG("%s %d Assert failed poi.m_y %e db0 %e\n", __FILE__, __LINE__, (double) poi.m_y, (double) db0);
+				VTLOG("%s %d Assert failed poi.m_y %e db0 %e\n", __FILE__, __LINE__, poi.m_y, db0);
 			if (!SIMILAR(poi.m_y, db1))
-				VTLOG("%s %d Assert failed poi.m_y %e db1 %e\n", __FILE__, __LINE__, (double) poi.m_y, (double) db1);
+				VTLOG("%s %d Assert failed poi.m_y %e db1 %e\n", __FILE__, __LINE__, poi.m_y, db1);
 			if (!SIMILAR(poi.m_y, db2))
-				VTLOG("%s %d Assert failed poi.m_y %e db2 %e\n", __FILE__, __LINE__, (double) poi.m_y, (double) db2);
+				VTLOG("%s %d Assert failed poi.m_y %e db2 %e\n", __FILE__, __LINE__, poi.m_y, db2);
 			if (!SIMILAR(poi.m_y, db3))
-				VTLOG("%s %d Assert failed poi.m_y %e db3 %e\n", __FILE__, __LINE__, (double) poi.m_y, (double) db3);
+				VTLOG("%s %d Assert failed poi.m_y %e db3 %e\n", __FILE__, __LINE__, poi.m_y, db3);
 		}
 	}
 #endif
@@ -451,9 +517,9 @@ C3DPoint CVertex::IntersectionOfTypeB (const CVertex &left, const CVertex &right
 	al.NormalizeAngle(); ar.NormalizeAngle(); alp.NormalizeAngle(); arp.NormalizeAngle();
 #if VTDEBUG
 	if (!(al <= 0.0))
-		VTLOG("%s %d Assert failed al %e\n", __FILE__, __LINE__, (double) al);
+		VTLOG("%s %d Assert failed al %e\n", __FILE__, __LINE__, al);
 	if (!(ar >= 0.0 || ar == -CN_PI))
-		VTLOG("%s %d Assert failed ar %e\n", __FILE__, __LINE__, (double) ar);
+		VTLOG("%s %d Assert failed ar %e\n", __FILE__, __LINE__, ar);
 #endif
 
 	if ((alp > 0.0 || alp < al) && !ANGLE_SIMILAR(alp, CNumber(0)) && !ANGLE_SIMILAR(alp, al))
@@ -487,7 +553,11 @@ CNumber CVertex::NearestIntersection (CVertexList &vl, CVertex **left, CVertex *
 		CNumber d = poi.DistXZ(m_point);
 		if (d < minDist) { minDist = d; minI = i; }
 	}
-	if (minDist == CN_INFINITY) return CN_INFINITY;
+	if (minDist == CN_INFINITY)
+	{
+		p = C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY);
+		return CN_INFINITY;
+	}
 
 	i = minI;
 	C3DPoint poi = CoordinatesOfAnyIntersectionOfTypeB((*i), *(*i).m_nextVertex);
@@ -539,5 +609,23 @@ bool CVertex::InvalidIntersection (CVertexList &vl, const CIntersection &is)
 	}
 	return false;
 }
+
+bool CVertex::VertexInCurrentContour(CVertex& Vertex)
+{
+	CVertex* ActiveVertex = m_nextVertex;
+
+	if (NULL == ActiveVertex)
+		return false;
+
+	while (ActiveVertex->m_ID != m_ID)
+	{
+		if (Vertex.m_ID == ActiveVertex->m_ID)
+			return true;
+//		ActiveVertex = ActiveVertex->m_rightVertex->m_ID == ActiveVertex->m_ID ? ActiveVertex->m_nextVertex : ActiveVertex->m_rightVertex;
+		ActiveVertex = ActiveVertex->m_nextVertex;
+	}
+	return false;
+}
+
 
 #endif	// DOXYGEN_SHOULD_SKIP_THIS

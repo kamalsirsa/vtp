@@ -1,7 +1,7 @@
 //
 // StraightSkeleton.h: interface for the CStraightSkeleton class.
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -43,10 +43,7 @@ public:
 	int m_NumberOfBoundaryVertices;
 	int m_NumberOfBoundaryEdges;
 private:
-	bool IsClockwise(Contour& points);
-	bool FixSkeleton(Contour& points);
-	CSkeletonLine* FindNextRightEdge(CSkeletonLine* pEdge, bool *bReversed);
-	CNumber CalculateNormal(const CSkeletonLine& Edge, const C3DPoint& Point);
+	void FixSkeleton(); // Clean up the unlinked skeleton lines caused by non-convex intersections
 };
 
 #endif // STRAIGHTSKELETONH

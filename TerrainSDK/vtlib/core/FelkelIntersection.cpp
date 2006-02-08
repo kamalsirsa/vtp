@@ -1,7 +1,7 @@
 //
 // FelkelIntersection.cpp: implementation of the CIntersection class.
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -44,10 +44,35 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 	CNumber ar = v.m_axis.m_Angle - r.m_axis.m_Angle;
 	ar.NormalizeAngle();
 
+#ifdef FELKELDEBUG
+	VTLOG("New Intersection i1\n");
+#endif
 	C3DPoint i1 = v.m_axis.FacingTowards(l.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(l.m_axis);
 	i1.m_y = v.m_leftLine.Dist(i1) * fabs(tan(v.m_leftLine.m_Slope));
+#ifdef FELKELDEBUG
+	VTLOG("New Intersection i1\nm_Origin(x %e y %e z %e) m_Angle %e m_Slope %e\na.m_Origin(x %e y %e z %e) a.m_Angle %e a.m_Slope %e\n",
+		v.m_axis.m_Origin.m_x, v.m_axis.m_Origin.m_y, v.m_axis.m_Origin.m_z, v.m_axis.m_Angle, v.m_axis.m_Slope,
+		l.m_axis.m_Origin.m_x, l.m_axis.m_Origin.m_y, l.m_axis.m_Origin.m_z, l.m_axis.m_Angle, l.m_axis.m_Slope);
+#endif
+#ifdef FELKELDEBUG
+	VTLOG("New Intersection i2\n");
+#endif
 	C3DPoint i2 = v.m_axis.FacingTowards (r.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(r.m_axis);
 	i2.m_y = v.m_rightLine.Dist(i2) * fabs(tan(v.m_rightLine.m_Slope));
+#ifdef FELKELDEBUG
+	VTLOG("m_Origin(x %e y %e z %e) m_Angle %e m_Slope %e\na.m_Origin(x %e y %e z %e) a.m_Angle %e a.m_Slope %e\n",
+		v.m_axis.m_Origin.m_x, v.m_axis.m_Origin.m_y, v.m_axis.m_Origin.m_z, v.m_axis.m_Angle, v.m_axis.m_Slope,
+		r.m_axis.m_Origin.m_x, r.m_axis.m_Origin.m_y, r.m_axis.m_Origin.m_z, r.m_axis.m_Angle, r.m_axis.m_Slope);
+#endif
+
+#if VTDEBUG
+	CNumber Oldi1y = i1.m_y;
+	CNumber Oldi2y = i2.m_y;
+#endif
+	// I need to check why this code is here !!!!!!!!!
+	// I must of put it here bu I cannot remember why
+	// Getting a slope of exactly PI/2 must be rare
+	// but could arise from many different edge slopes and vertex angles
 	if (SIMILAR(v.m_axis.m_Slope, CN_PI/2))
 	{
 		i1.m_y = C3DPoint(i1 - l.m_point).LengthXZ() * fabs(tan(l.m_axis.m_Slope)) + l.m_point.m_y;
@@ -58,9 +83,12 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 		i1.m_y = C3DPoint(i1 - v.m_point).LengthXZ() * fabs(tan(v.m_axis.m_Slope)) + v.m_point.m_y;
 		i2.m_y = C3DPoint(i2 - v.m_point).LengthXZ() * fabs(tan(v.m_axis.m_Slope)) + v.m_point.m_y;
 	}
+//	assert ((Oldi1y == i1.m_y) && (Oldi2y == i2.m_y));
 
 	CNumber d1 = v.m_point.DistXZ(i1);
 	CNumber d2 = v.m_point.DistXZ(i2);
+//	CNumber d1 = i1.m_y;
+//	CNumber d2 = i2.m_y;
 
 
 	CVertex *leftPointer, *rightPointer;
@@ -71,8 +99,15 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 	av.NormalizeAngle();
 	if ((av >= 0.0 || av == - CN_PI) && (v.m_leftLine.Intersection(v.m_rightLine) == v.m_point || v.m_leftLine.Intersection(v.m_rightLine) == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
 		d3 = v.NearestIntersection(vl, &leftPointer, &rightPointer, p);
+//	d3 = p.m_y;
 
 #ifdef FELKELDEBUG
+	VTLOG("New Intersection i1\nm_Origin(x %e y %e z %e) m_Angle %e m_Slope %e\na.m_Origin(x %e y %e z %e) a.m_Angle %e a.m_Slope %e\n",
+		v.m_axis.m_Origin.m_x, v.m_axis.m_Origin.m_y, v.m_axis.m_Origin.m_z, v.m_axis.m_Angle, v.m_axis.m_Slope,
+		l.m_axis.m_Origin.m_x, l.m_axis.m_Origin.m_y, l.m_axis.m_Origin.m_z, l.m_axis.m_Angle, l.m_axis.m_Slope);
+	VTLOG("New Intersection i2\nm_Origin(x %e y %e z %e) m_Angle %e m_Slope %e\na.m_Origin(x %e y %e z %e) a.m_Angle %e a.m_Slope %e\n",
+		v.m_axis.m_Origin.m_x, v.m_axis.m_Origin.m_y, v.m_axis.m_Origin.m_z, v.m_axis.m_Angle, v.m_axis.m_Slope,
+		r.m_axis.m_Origin.m_x, r.m_axis.m_Origin.m_y, r.m_axis.m_Origin.m_z, r.m_axis.m_Angle, r.m_axis.m_Slope);
 	VTLOG("New Intersection\n al %e ar %e\ni1.x %e i1.y %e i1.z %e\ni2.x %e i2.y %e i2.z %e\np.m_x %e p.m_y %e p.m_z %e\nd1 %e d2 %e d3 %e\n",
 		al, ar, i1.m_x, i1.m_y, i1.m_z, i2.m_x, i2.m_y, i2.m_z, p.m_x, p.m_y, p.m_z, d1, d2, d3);
 #endif
@@ -140,6 +175,12 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 		return;
 
 	if (p != m_poi)
+		return;
+
+	if (!m_leftVertex->VertexInCurrentContour(*leftPointer))
+		return;
+
+	if (!m_rightVertex->VertexInCurrentContour(*rightPointer))
 		return;
 
 #ifdef FELKELDEBUG
@@ -348,16 +389,6 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 #ifdef FELKELDEBUG
 	VTLOG("ApplyLast3\n");
 #endif
-#if VTDEBUG
-	if (!(m_leftVertex->m_nextVertex == m_rightVertex))
-		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
-	if (!(m_rightVertex->m_prevVertex == m_leftVertex))
-		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
-	if (!(m_leftVertex->m_prevVertex->m_prevVertex == m_rightVertex))
-		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
-	if (!(m_rightVertex->m_nextVertex->m_nextVertex == m_leftVertex))
-		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
-#endif
 
 	CVertex &v1 = *m_leftVertex;
 	CVertex &v2 = *m_rightVertex;
@@ -367,19 +398,8 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 	v2.m_done = true;
 	v3.m_done = true;
 
-	C3DPoint is1 = v1.m_axis.FacingTowards(v2.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v1.m_axis.Intersection(v2.m_axis);
-	C3DPoint is2 = v2.m_axis.FacingTowards(v3.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v2.m_axis.Intersection(v3.m_axis);
-	C3DPoint is3 = v3.m_axis.FacingTowards(v1.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v3.m_axis.Intersection(v1.m_axis);
 
 	C3DPoint is = m_poi;
-#if VTDEBUG
-	if (!(is == is1 || is1 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
-		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
-	if (!(is == is2 || is2 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
-		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
-	if (!(is == is3 || is3 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
-		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
-#endif
 
 	CVertex v(is);
 

@@ -1,7 +1,7 @@
 //
 // FelkelIntersection.h: interface for the CIntersection class.
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -37,13 +37,13 @@ public:
 	CNumber m_height;
 	enum Type { CONVEX, NONCONVEX } m_type;
 
-	bool operator < (const CIntersection &i) const
-	{
-		return m_height < i.m_height;
-	}
 	bool operator > (const CIntersection &i) const
 	{
-		return m_height > i.m_height;
+		// Do exact comparison for intersection queue
+		// Using CNumber will also test for != which is implemented as !SIMILAR
+		double d1 = m_height;
+		double d2 = i.m_height;
+		return d1 > d2;
 	}
 	bool operator == (const CIntersection &i) const
 	{

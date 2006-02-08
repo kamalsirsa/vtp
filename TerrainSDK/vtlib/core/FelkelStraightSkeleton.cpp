@@ -1,7 +1,7 @@
 //
 // FelkelStraightSkeleton.cpp: implementation of the CStraightSkeleton class.
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -11,6 +11,7 @@
 //
 
 #include "FelkelStraightSkeleton.h"
+#include <strstream>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -28,148 +29,178 @@ CStraightSkeleton::~CStraightSkeleton()
 
 CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 {
-	while (m_iq.size ())
-		m_iq.pop ();
-	m_vl.erase(m_vl.begin(), m_vl.end());
-	m_skeleton.erase(m_skeleton.begin(), m_skeleton.end());
-	m_boundaryedges.erase(m_boundaryedges.begin(), m_boundaryedges.end());
-
-	for (size_t ci = 0; ci < contours.size(); ci++)
+	try
 	{
-		Contour &points = contours[ci];
+		while (m_iq.size ())
+			m_iq.pop ();
+		m_vl.erase(m_vl.begin(), m_vl.end());
+		m_skeleton.erase(m_skeleton.begin(), m_skeleton.end());
+		m_boundaryedges.erase(m_boundaryedges.begin(), m_boundaryedges.end());
 
-		Contour::iterator first = points.begin();
-		if (first == points.end())
-			break;
-
-		Contour::iterator next = first;
-
-		while (++next != points.end ())
+		for (size_t ci = 0; ci < contours.size(); ci++)
 		{
-			if (*first == *next)
-				points.erase (next);
-			else
-				first = next;
-			next = first;
-		}
+			Contour &points = contours[ci];
 
-		int s = points.size();
-		CVertexList::iterator start = m_vl.end();
-		CVertexList::iterator from = start;
-		CVertexList::iterator to = start;
+			Contour::iterator first = points.begin();
+			if (first == points.end())
+				break;
 
-		for (int f = 0; f <= s; f++)
-		{
-			if (0 == f)
+			Contour::iterator next = first;
+
+			while (++next != points.end ())
 			{
-				m_vl.push_back(CVertex(points[0].m_Point, points[s - 1].m_Point, points[s - 1].m_Slope, points[1].m_Point, points[0].m_Slope));
-				to = m_vl.end();
-				to--;
-				start = to;
+				if (*first == *next)
+					points.erase (next);
+				else
+					first = next;
+				next = first;
 			}
-			else if (f == s)
+
+			int s = points.size();
+			CVertexList::iterator start = m_vl.end();
+			CVertexList::iterator from = start;
+			CVertexList::iterator to = start;
+
+			for (int f = 0; f <= s; f++)
 			{
-				from = to;
-				to = start;
-				m_boundaryedges.push_front(CSkeletonLine(*from, *to));
+				if (0 == f)
+				{
+					m_vl.push_back(CVertex(points[0].m_Point, points[s - 1].m_Point, points[s - 1].m_Slope, points[1].m_Point, points[0].m_Slope));
+					to = m_vl.end();
+					to--;
+					start = to;
+				}
+				else if (f == s)
+				{
+					from = to;
+					to = start;
+					m_boundaryedges.push_front(CSkeletonLine(*from, *to));
+				}
+				else
+				{
+					from = to;
+					m_vl.push_back(CVertex(points[f].m_Point, points[f - 1].m_Point, points[f - 1].m_Slope, points[(f + 1) % s].m_Point, points[f].m_Slope));
+					to = m_vl.end();
+					to--;
+					m_boundaryedges.push_front(CSkeletonLine(*from, *to));
+				}
+			}
+		}
+
+		m_NumberOfBoundaryVertices = m_vl.size();
+		m_NumberOfBoundaryEdges = m_boundaryedges.size();
+
+		if (m_vl.size() < 3)
+		{
+			std::ostrstream* pMessage = new ostrstream;
+			*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Eave Polygon too small" << endl;
+			throw pMessage;
+		}
+
+		CVertexList::iterator i;
+
+		size_t vn = 0, cn = 0;
+
+		CVertexList::iterator contourBegin;
+
+		for (i = m_vl.begin (); i != m_vl.end (); i++)
+		{
+			(*i).m_prevVertex = &*m_vl.prev(i);
+			(*i).m_nextVertex = &*m_vl.next(i);
+			(*i).m_leftVertex = &*i;
+			(*i).m_rightVertex = &*i;
+			if (vn == 0)
+				contourBegin = i;
+			if (vn == contours [cn].size () - 1)
+			{
+				(*i).m_nextVertex = &*contourBegin;
+				(*contourBegin).m_prevVertex = &*i;
+				vn = 0;
+				cn ++;
 			}
 			else
+				vn ++;
+		}
+
+
+#ifdef FELKELDEBUG
+		VTLOG("Building initial intersection queue\n");
+#endif
+		for (i = m_vl.begin(); i != m_vl.end (); i++)
+		{
+			if (!(*i).m_done)
 			{
-				from = to;
-				m_vl.push_back(CVertex(points[f].m_Point, points[f - 1].m_Point, points[f - 1].m_Slope, points[(f + 1) % s].m_Point, points[f].m_Slope));
-				to = m_vl.end();
-				to--;
-				m_boundaryedges.push_front(CSkeletonLine(*from, *to));
+				CIntersection is(m_vl, *i);
+				if (is.m_height != CN_INFINITY)
+					m_iq.push(is);
 			}
 		}
-	}
-
-	m_NumberOfBoundaryVertices = m_vl.size();
-	m_NumberOfBoundaryEdges = m_boundaryedges.size();
-
-	if (m_vl.size() < 3)
-		return m_skeleton;
-
-	CVertexList::iterator i;
-
-	size_t vn = 0, cn = 0;
-
-	CVertexList::iterator contourBegin;
-
-	for (i = m_vl.begin (); i != m_vl.end (); i++)
-	{
-		(*i).m_prevVertex = &*m_vl.prev(i);
-		(*i).m_nextVertex = &*m_vl.next(i);
-		(*i).m_leftVertex = &*i;
-		(*i).m_rightVertex = &*i;
-		if (vn == 0)
-			contourBegin = i;
-		if (vn == contours [cn].size () - 1)
-		{
-			(*i).m_nextVertex = &*contourBegin;
-			(*contourBegin).m_prevVertex = &*i;
-			vn = 0;
-			cn ++;
-		}
-		else
-			vn ++;
-	}
-
 
 #ifdef FELKELDEBUG
-	VTLOG("Building initial intersection queue\n");
+		VTLOG("Processing intersection queue\n");
 #endif
-	for (i = m_vl.begin(); i != m_vl.end (); i++)
-	{
-		if (!(*i).m_done)
+		while (m_iq.size ())
 		{
-			CIntersection is(m_vl, *i);
-			if (is.m_height != CN_INFINITY)
-				m_iq.push(is);
-		}
-	}
+			CIntersection i = m_iq.top ();
+
+			m_iq.pop ();
 
 #ifdef FELKELDEBUG
-	VTLOG("Processing intersection queue\n");
+			VTLOG("Processing %d %d left done %d right done %d\n",
+				i.m_leftVertex->m_ID, i.m_rightVertex->m_ID, i.m_leftVertex->m_done, i.m_rightVertex->m_done);
 #endif
-	while (m_iq.size ())
-	{
-		CIntersection i = m_iq.top ();
-
-		m_iq.pop ();
+#ifdef FOR_INTEGRATION
+			if ((NULL == i.m_leftVertex) || (NULL == i.m_rightVertex))
+			{
+				std::ostrstream* pMessage = new ostrstream;
+				*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Invalid intersection queue entry" << endl;
+				throw pMessage;
+			}
+#endif
+			if (i.m_leftVertex->m_done && i.m_rightVertex->m_done)
+				continue;
+			if (i.m_leftVertex->m_done || i.m_rightVertex->m_done)
+			{
+				if (!i.m_leftVertex->m_done)
+					m_iq.push(CIntersection (m_vl, *i.m_leftVertex));
+				if (!i.m_rightVertex->m_done)
+					m_iq.push(CIntersection (m_vl, *i.m_rightVertex));
+				continue;
+			}
 
 #ifdef FELKELDEBUG
-		VTLOG("Processing %d %d left done %d right done %d\n",
-			i.m_leftVertex->m_ID, i.m_rightVertex->m_ID, i.m_leftVertex->m_done, i.m_rightVertex->m_done);
+			if (!(i.m_leftVertex->m_prevVertex != i.m_rightVertex))
+				VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+			if (!(i.m_rightVertex->m_nextVertex != i.m_leftVertex))
+				VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
-		if (i.m_leftVertex->m_done && i.m_rightVertex->m_done)
-			continue;
-		if (i.m_leftVertex->m_done || i.m_rightVertex->m_done)
-		{
-			if (!i.m_leftVertex->m_done)
-				m_iq.push(CIntersection (m_vl, *i.m_leftVertex));
-			if (!i.m_rightVertex->m_done)
-				m_iq.push(CIntersection (m_vl, *i.m_rightVertex));
-			continue;
+			if (i.m_type == CIntersection::CONVEX)
+				if (i.m_leftVertex->m_prevVertex->m_prevVertex == i.m_rightVertex || i.m_rightVertex->m_nextVertex->m_nextVertex == i.m_leftVertex)
+					i.ApplyLast3(m_skeleton, m_vl);
+				else
+					i.ApplyConvexIntersection(m_skeleton, m_vl, m_iq);
+			if (i.m_type == CIntersection :: NONCONVEX)
+				i.ApplyNonconvexIntersection(m_skeleton, m_vl, m_iq);
 		}
 
-#if VTDEBUG
-		if (!(i.m_leftVertex->m_prevVertex != i.m_rightVertex))
-			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
-		if (!(i.m_rightVertex->m_nextVertex != i.m_leftVertex))
-			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
-#endif
-		if (i.m_type == CIntersection::CONVEX)
-			if (i.m_leftVertex->m_prevVertex->m_prevVertex == i.m_rightVertex || i.m_rightVertex->m_nextVertex->m_nextVertex == i.m_leftVertex)
-				i.ApplyLast3(m_skeleton, m_vl);
-			else
-				i.ApplyConvexIntersection(m_skeleton, m_vl, m_iq);
-		if (i.m_type == CIntersection :: NONCONVEX)
-			i.ApplyNonconvexIntersection(m_skeleton, m_vl, m_iq);
-	}
 #ifdef FELKELDEBUG
-	Dump();
+		Dump();
 #endif
+
+		FixSkeleton();
+
+#ifdef FELKELDEBUG
+		Dump();
+#endif
+	}
+	catch (std::ostrstream* pMessage)
+	{
+		m_skeleton.erase(m_skeleton.begin(), m_skeleton.end());
+		*pMessage << '\0';
+		VTLOG(pMessage->str());
+		delete pMessage;
+	}
+
 	return m_skeleton;
 }
 
@@ -184,274 +215,162 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(Contour &points)
 
 CSkeleton CStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contours)
 {
-	int iCount = 0;
+	// Save current skeleton
+	int iOldSize = m_skeleton.size();
+	int i;
+	CSkeleton::iterator si;
 
-	// Add boundary edges to the skeleton
-	m_skeleton.splice(m_skeleton.begin(), m_boundaryedges);
-
-	// Merge duplicate points
-	CVertexList::iterator v1 = m_vl.begin();
-
-	for (int i = 0; v1 != m_vl.end(); i++)
-	{
-		if (i >= m_NumberOfBoundaryVertices)
-		{
-			CVertexList::iterator v2 = v1;
-			v2++;
-			while(v2 != m_vl.end())
-			{
-				if (*v1 == *v2)
-				{
-					for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
-					{
-						if ((*s1).m_lower.VertexID() == (*v2).m_ID)
-							(*s1).m_lower.m_vertex = &(*v1);
-						if ((*s1).m_higher.VertexID() == (*v2).m_ID)
-							(*s1).m_higher.m_vertex = &(*v1);
-					}
-					// dup vertex
-					CVertexList::iterator temp = v2;
-					v2--;
-					m_vl.erase(temp);
-				}
-				v2++;
-			}
-		}
-		v1++;
-	}
-
-	// Remove zero length edges
-	for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
-	{
-		if ((*s1).m_lower.VertexID() == (*s1).m_higher.VertexID())
-		{
-			if (s1 == m_skeleton.begin())
-			{
-				m_skeleton.erase(s1);
-				s1 = m_skeleton.begin();
-			}
-			else
-			{
-				CSkeleton::iterator temp = s1;
-				s1--;
-				m_skeleton.erase(temp);
-			}
-		}
-		else
-		{
-			// Remove wing information
-			(*s1).m_lower.m_left = NULL;
-			(*s1).m_lower.m_right = NULL;
-			(*s1).m_higher.m_left = NULL;
-			(*s1).m_higher.m_right = NULL;
-			(*s1).m_ID = iCount;
-			iCount++;
-		}
-	}
-
-#ifdef FELKELDEBUG
-	Dump();
-#endif
+	// Will this work for holes !!!!!!!
+	// for time being I will assert
+	assert(contours.size() == 1);
 
 	for (size_t ci = 0; ci < contours.size(); ci++)
-		if (!FixSkeleton(contours[ci]))
-			return CSkeleton();
+	{
+		// Will this work for holes !!!!!!!
+		// for time being I will assert
+		Contour& points = contours[ci];
+		for (size_t pi = 0; pi < points.size(); pi++)
+		{
+			C3DPoint& LowerPoint = points[pi].m_Point;
+			C3DPoint& HigherPoint = points[(pi+1)%points.size()].m_Point;
 
+
+			// Find a matching empty lower left
+			for (i = 0, si = m_skeleton.begin(); i < iOldSize; i++, si++)
+			{
+				CSkeletonLine& Line = *si;
+				if ((Line.m_lower.m_vertex->m_point == LowerPoint) && (Line.m_lower.LeftID() == -1))
+					break;
+			}
+			if (i == iOldSize)
+			{
+				VTLOG("CompleteWingedEdgeStructure - Failed to find matching empty lower left\n"); 
+				return CSkeleton();
+			}
+			CSkeletonLine& OldLowerLeft = *si;
+
+			// Find a matching empty lower right
+			for (i = 0, si = m_skeleton.begin(); i < iOldSize; i++, si++)
+			{
+				CSkeletonLine& Line = *si;
+				if ((Line.m_lower.m_vertex->m_point == HigherPoint) && (Line.m_lower.RightID() == -1))
+					break;
+			}
+			if (i == iOldSize)
+			{
+				VTLOG("CompleteWingedEdgeStructure - Failed to find matching empty lower right\n"); 
+				return CSkeleton();
+			}
+			CSkeletonLine& OldLowerRight = *si;
+
+			m_skeleton.push_back(CSkeletonLine(*OldLowerLeft.m_lower.m_vertex, *OldLowerRight.m_lower.m_vertex));
+
+			CSkeletonLine& NewEdge = m_skeleton.back();
+
+			NewEdge.m_lower.m_right = &OldLowerLeft;
+			OldLowerLeft.m_lower.m_left = &NewEdge;
+			NewEdge.m_higher.m_left = &OldLowerRight;
+			OldLowerRight.m_lower.m_right = &NewEdge;
+		}
+	}
 #ifdef FELKELDEBUG
 	Dump();
 #endif
-
 	return m_skeleton;
 }
 
-bool CStraightSkeleton::FixSkeleton(Contour& points)
+void CStraightSkeleton::FixSkeleton()
 {
-	CSkeletonLine* pNextEdge;
-	CSkeletonLine* pPrevEdge;
-	bool bPrevReversed;
-
-	for (size_t pi = 0; pi < points.size(); pi++)
+	// Search the skeleton list for consecutive pairs of incorrectly linked lines
+	CSkeleton::iterator s1 = m_skeleton.begin();
+	for (unsigned int i = 0; i < m_skeleton.size() - 2; i++, s1++)
 	{
-		bool bReversed = false;
-		C3DPoint& p1 = points[pi].m_Point;
-		C3DPoint& p2 = points[(pi+1)%points.size()].m_Point;
+		CSkeletonLine& Lower = *s1++;
+		CSkeletonLine& Higher1 = *s1++;
+		CSkeletonLine& Higher2 = *s1;
 
-		CSkeleton::iterator s1;
-		for (s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
-			if (((*s1).m_lower.m_vertex->m_point == p1) && ((*s1).m_higher.m_vertex->m_point == p2))
-				break;
-		pNextEdge = &(*s1);
-		// Circumnavigate the right face
-		do
+		if ((Higher1.m_higher.RightID() == -1) &&
+			(Higher1.m_lower.LeftID() == -1) &&
+			(Higher2.m_higher.LeftID() == -1) &&
+			(Higher2.m_lower.RightID() == -1) &&
+			(Higher1.m_higher.VertexID() == Higher2.m_lower.VertexID()) &&
+			(Higher1.m_lower.VertexID() == Higher2.m_higher.VertexID())) // I don't think I cam make this test much tighter !!!
 		{
-			bPrevReversed = bReversed;
-			// Find next boundary edge
-			pPrevEdge = pNextEdge;
-
-			pNextEdge = FindNextRightEdge(pPrevEdge, &bReversed);
-			// Join up the edges if needed
-			if (bReversed)
+			CSkeletonLine* pLeft = Lower.m_higher.m_left;
+			CSkeletonLine* pRight = Lower.m_higher.m_right;
+			const CVertex* pVertex = Lower.m_higher.m_vertex;
+			if ((NULL == pLeft) || (NULL == pRight) || (NULL == pVertex))
 			{
-				if (bPrevReversed)
+				std::ostrstream* pMessage = new ostrstream;
+				*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Problem fixing skeleton" << endl;
+				throw pMessage;
+			}
+			// Fix up the left side
+			if ((pLeft->m_lower.VertexID() == pVertex->m_ID) || (pLeft->m_lower.VertexID() == pVertex->m_ID + 1))
+			{
+				// Fix up lower end
+				pLeft->m_lower.m_vertex = pVertex;
+				pLeft->m_lower.m_left = pRight;
+				if (pLeft->m_lower.RightID() != Lower.m_ID)
 				{
-					// Joining lower to higher
-#if VTDEBUG
-					if (!((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_higher.m_left)))
-						VTLOG("%s %d Assert failed prev lower left %x next higher left %x\n", __FILE__, __LINE__, pPrevEdge->m_lower.m_left, pNextEdge->m_higher.m_left);
-#else
-					if ((NULL != pPrevEdge->m_lower.m_left) || (NULL != pNextEdge->m_higher.m_left))
-						return false;
-#endif
-					pPrevEdge->m_lower.m_left = pNextEdge;
-					pNextEdge->m_higher.m_left = pPrevEdge;
+					std::ostrstream* pMessage = new ostrstream;
+					*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Left Lower Right ID != Lower ID" << endl;
+					throw pMessage;
 				}
-				else
+			}
+			else if ((pLeft->m_higher.VertexID() == pVertex->m_ID) || (pLeft->m_higher.VertexID() == pVertex->m_ID + 1))
+			{
+				// Fix up upper end
+				pLeft->m_higher.m_vertex = pVertex;
+				pLeft->m_higher.m_left = pRight;
+				if (pLeft->m_higher.RightID() != Lower.m_ID)
 				{
-					// Joing higher to higher
-#if VTDEBUG
-					if (!((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_higher.m_left)))
-						VTLOG("%s %d Assert failed prev higher right %x next higher left %x\n", __FILE__, __LINE__, pPrevEdge->m_higher.m_right, pNextEdge->m_higher.m_left);
-#else
-					if ((NULL != pPrevEdge->m_higher.m_right) || (NULL != pNextEdge->m_higher.m_left))
-						return false;
-#endif
-					pPrevEdge->m_higher.m_right = pNextEdge;
-					pNextEdge->m_higher.m_left = pPrevEdge;
+					std::ostrstream* pMessage = new ostrstream;
+					*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Left Higher Right ID != Lower ID" << endl;
+					throw pMessage;
 				}
 			}
 			else
 			{
-				if (bPrevReversed)
-				{
-					// Joining lower to lower
-#if VTDEBUG
-					if (!((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_lower.m_right)))
-						VTLOG("%s %d Assert failed prev lower left %x next lower right %x\n", __FILE__, __LINE__, pPrevEdge->m_lower.m_left, pNextEdge->m_lower.m_right);
-#else
-					if ((NULL != pPrevEdge->m_lower.m_left) || (NULL != pNextEdge->m_lower.m_right))
-						return false;
-#endif
-					pPrevEdge->m_lower.m_left = pNextEdge;
-					pNextEdge->m_lower.m_right = pPrevEdge;
-				}
-				else
-				{
-					// Joining higher to lower
-#if VTDEBUG
-					if (!((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_lower.m_right)))
-						VTLOG("%s %d Assert failed prev higher right %x next lower right %x\n", __FILE__, __LINE__, pPrevEdge->m_higher.m_right, pNextEdge->m_lower.m_right);
-#else
-					if ((NULL != pPrevEdge->m_higher.m_right) || (NULL != pNextEdge->m_lower.m_right))
-						return false;
-#endif
-					pPrevEdge->m_higher.m_right = pNextEdge;
-					pNextEdge->m_lower.m_right = pPrevEdge;
-				}
+				std::ostrstream* pMessage = new ostrstream;
+				*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Problem fixing left side" << endl;
+				throw pMessage;
 			}
-		}
-		while (bReversed ? p2 != pNextEdge->m_lower.m_vertex->m_point : p2 != pNextEdge->m_higher.m_vertex->m_point);
-	}
-	return true;
-}
-
-CSkeletonLine *CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *bReversed)
-{
-	CSkeletonLine *pNextEdge=NULL;
-	C3DPoint OldPoint;
-	CRidgeLine OldEdge;
-	CRidgeLine NewEdge;
-	CNumber Angle;
-	CNumber LowestAngle = CN_INFINITY;
-	bool bBoundaryEdge = pEdge->m_ID < m_NumberOfBoundaryEdges;
-
-	if(*bReversed)
-	{
-		OldPoint = pEdge->m_lower.m_vertex->m_point;
-		OldEdge = CRidgeLine(pEdge->m_higher.m_vertex->m_point, OldPoint);
-	}
-	else
-	{
-		OldPoint = pEdge->m_higher.m_vertex->m_point;
-		OldEdge = CRidgeLine(pEdge->m_lower.m_vertex->m_point, OldPoint);
-	}
-
-	for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
-	{
-		if ((*s1).m_ID != pEdge->m_ID)
-		{
-			if ((((*s1).m_lower.m_vertex->m_point == OldPoint) || ((*s1).m_higher.m_vertex->m_point == OldPoint)) &&
-				// If current edge is a boundary edge then skip any candidates that are also boundaries
-				!(bBoundaryEdge && (*s1).m_ID < m_NumberOfBoundaryEdges))
+			// Fix up the right side
+			if ((pRight->m_lower.VertexID() == pVertex->m_ID) || (pRight->m_lower.VertexID() == pVertex->m_ID + 1))
 			{
-				// Current edge is not a boundary edge then skip any candidates were I am
-				// considering the higher vertex of the boundary edge
-				if (!bBoundaryEdge &&
-						(*s1).m_ID < m_NumberOfBoundaryEdges &&
-						(OldPoint == (*s1).m_higher.m_vertex->m_point))
-					continue;
-
-				bool bTemp;
-
-				if ((*s1).m_lower.m_vertex->m_point == OldPoint)
+				// Fix up lower end
+				pRight->m_lower.m_vertex = pVertex;
+				pRight->m_lower.m_right = pLeft;
+				if (pRight->m_lower.LeftID() != Lower.m_ID)
 				{
-					// matched the lower vertex of an edge
-					NewEdge = CRidgeLine(OldPoint, (*s1).m_higher.m_vertex->m_point);
-					bTemp = false;
-				}
-				else
-				{
-					NewEdge = CRidgeLine(OldPoint, (*s1).m_lower.m_vertex->m_point);
-					bTemp = true;
-				}
-				Angle = CNumber(NewEdge.m_Angle - OldEdge.m_Angle).NormalizedAngle() + CN_PI;
-				if (Angle < LowestAngle)
-				{
-					LowestAngle = Angle;
-					pNextEdge = &(*s1);
-					*bReversed = bTemp;
+					std::ostrstream* pMessage = new ostrstream;
+					*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Right Lower Left ID != Lower ID" << endl;
+					throw pMessage;
 				}
 			}
+			else if ((pRight->m_higher.VertexID() == pVertex->m_ID) || (pRight->m_higher.VertexID() == pVertex->m_ID + 1))
+			{
+				// Fix up upper end
+				pRight->m_higher.m_vertex = pVertex;
+				pRight->m_higher.m_right = pLeft;
+				if (pRight->m_higher.LeftID() != Lower.m_ID)
+				{
+					std::ostrstream* pMessage = new ostrstream;
+					*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Right Higher Left ID != Lower ID" << endl;
+					throw pMessage;
+				}
+			}
+			else
+			{
+				std::ostrstream* pMessage = new ostrstream;
+				*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "FixSkeleton - Problem fixing right side" << endl;
+				throw pMessage;
+			}
 		}
-	}
-	return pNextEdge;
-}
-
-// Thought I might need this but I dont at the moment :-)
-bool CStraightSkeleton::IsClockwise(Contour& points)
-{
-	// Cannot remember if this works for all Jordan
-	double Area = 0;
-
-	for (size_t pi = 0; pi < points.size(); pi++)
-	{
-		C3DPoint& p1 = points[pi].m_Point;
-		C3DPoint& p2 = points[(pi+1)%points.size()].m_Point;
-
-		Area += (p2.m_x - p1.m_x) * (p2.m_z + p1.m_z);
-	}
-
-	if (Area > 0)
-		return true;
-	else
-		return false;
-}
-
-CNumber CStraightSkeleton::CalculateNormal(const CSkeletonLine& Edge, const C3DPoint& Point)
-{
-	C3DPoint p1 = Edge.m_lower.m_vertex->m_point;
-	C3DPoint p2 = Edge.m_higher.m_vertex->m_point;
-	C3DPoint p3 = Point;
-	C3DPoint pIntersection;
-	CNumber SegmentLength = (p2 - p1).LengthXZ();
-	CNumber U;
-
-	U = (((p3.m_x - p1.m_x) * (p2.m_x - p1.m_x)) + ((p3.m_z - p1.m_z) * (p2.m_z - p1.m_z))) /
-		(SegmentLength * SegmentLength);
-
-	pIntersection.m_x = p1.m_x + U * (p2.m_x - p1.m_x);
-	pIntersection.m_z = p1.m_z + U * (p2.m_z - p1.m_z);
-
-	return (pIntersection - p3).LengthXZ();
+		s1--;
+		s1--;
+	}	
 }
 
 #ifdef FELKELDEBUG

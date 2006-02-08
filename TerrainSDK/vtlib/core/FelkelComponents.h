@@ -1,7 +1,7 @@
 //
 // FelkelComponents.h
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -21,6 +21,11 @@
 #include <list>
 
 #include "vtdata/vtLog.h"
+#include "vtdata/MathTypes.h"
+
+// forward declarations for CEdge constructor
+class vtString;
+class vtMaterial;
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4786)	// prevent common warning about templates
@@ -91,9 +96,34 @@ class C3DPoint
 public:
 	C3DPoint (void) : m_x(0), m_y(0), m_z(0) { }
 	C3DPoint (CNumber X, CNumber Y, CNumber Z) : m_x (X), m_y (Y), m_z(Z) { }
-	bool operator == (const C3DPoint &p) const { return m_x == p.m_x && m_z == p.m_z; }
-	bool operator != (const C3DPoint &p) const { return m_x != p.m_x || m_z != p.m_z; }
+	bool operator == (const C3DPoint &p) const
+	{
+		if (m_x == p.m_x && m_z == p.m_z && m_y == p.m_y)
+			return true;
+		else
+		{
+#ifdef FELKELDEBUG
+			if (m_x == p.m_x && m_z == p.m_z)
+				VTLOG("C3DPoint - 2D equality not maintained y1 %e y2 %e\n", m_y, p.m_y);
+#endif
+			return false;
+		}
+	}
+	bool operator != (const C3DPoint &p) const
+	{
+		if (m_x != p.m_x || m_z != p.m_z || m_y != p.m_y)
+		{
+#ifdef FELKELDEBUG
+			if (m_x == p.m_x && m_z == p.m_z)
+				VTLOG("C3DPoint - 2D inequality not maintained y1 %e y2 %e\n", m_y, p.m_y);
+#endif
+			return true;
+		}
+		else
+			return false;
+	}
 	C3DPoint operator - (const C3DPoint &p) const {return C3DPoint(m_x - p.m_x, m_y, m_z - p.m_z);}
+	C3DPoint operator + (const C3DPoint &p) const {return C3DPoint(m_x + p.m_x, m_y, m_z + p.m_z);}
 	C3DPoint operator * (const CNumber &n) const { return C3DPoint (n*m_x, m_y, n*m_z); }
 	bool IsInfiniteXZ (void) { return *this == C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY) ? true : false; }
 	CNumber DistXZ(const C3DPoint &p) const {return sqrt ((m_x-p.m_x)*(m_x-p.m_x) + (m_z - p.m_z)*(m_z - p.m_z));}
@@ -107,10 +137,14 @@ public:
 class CEdge
 {
 public:
-	CEdge (CNumber X, CNumber Y, CNumber Z, CNumber Slope) : m_Point(X, Y, Z), m_Slope(Slope) {};
+	CEdge (CNumber X, CNumber Y, CNumber Z, CNumber Slope,
+		const vtString *pMaterial, RGBi Color) :
+		m_Point(X, Y, Z), m_Slope(Slope), m_pMaterial(pMaterial), m_Color(Color) {};
 	bool operator == (const CEdge &p) const { return m_Point == p.m_Point; }
 	C3DPoint m_Point;
 	CNumber m_Slope;
+	const vtString *m_pMaterial;
+	RGBi m_Color;
 };
 
 typedef vector <CEdge> Contour;
@@ -124,7 +158,7 @@ public:
 	{
 		m_Angle.NormalizeAngle();
 	};
-	CRidgeLine Opaque(void) const { return CRidgeLine (m_Origin, m_Angle + CN_PI, m_Slope); }
+	CRidgeLine Opaque(void) const { return CRidgeLine (m_Origin, m_Angle + CN_PI, m_Slope, m_IsRidgeLine); }
 	static CRidgeLine AngleAxis (const C3DPoint &b, const C3DPoint &a, const CNumber &sa, const C3DPoint &c, const CNumber &sc);
 	C3DPoint Intersection(const CRidgeLine &a);
 	C3DPoint IntersectionAnywhere (const CRidgeLine& a) const;
@@ -139,7 +173,13 @@ public:
 		if (m_IsRidgeLine != a.m_IsRidgeLine)
 			VTLOG("%s %d m_IsRidgeLine %d\n", __FILE__, __LINE__, m_IsRidgeLine);
 		if (m_IsRidgeLine)
-			return (a.PointOnRidgeLine(m_Origin) && PointOnRidgeLine(a.m_Origin) && !(m_Origin == a.m_Origin) && SIMILAR(m_Slope, 0.0) && SIMILAR(m_Slope, 0.0)) ? true : false;
+		{
+			if (a.PointOnRidgeLine(m_Origin) && PointOnRidgeLine(a.m_Origin) && !(m_Origin == a.m_Origin) && SIMILAR(m_Slope, 0.0) && SIMILAR(m_Slope, 0.0))
+			{
+				VTLOG("Forcing return false\n");
+			}
+			return false;
+		}
 		else
 			return (a.PointOnRidgeLine(m_Origin) && PointOnRidgeLine(a.m_Origin) && !(m_Origin == a.m_Origin)) ? true : false;
 	}
@@ -173,6 +213,7 @@ public:
 	C3DPoint IntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	CNumber NearestIntersection (CVertexList &vl, CVertex **left, CVertex **right, C3DPoint &p);
 	bool InvalidIntersection(CVertexList &vl, const CIntersection &is);
+	bool VertexInCurrentContour(CVertex& Vertex);
 	// data
 	C3DPoint m_point;
 	CRidgeLine m_axis;  // the axis (ridgeline) for this vertex
@@ -182,7 +223,11 @@ public:
 	CVertex *m_higher; // chain to next higher point in the skeleton (set when intersection is applied)
 	bool m_done;
 	int m_ID;
-	CSkeletonLine *m_leftSkeletonLine, *m_rightSkeletonLine, *m_advancingSkeletonLine;
+
+	// The following two fields are used to fill in the skeleton line structure when an intersection has been computed
+	CSkeletonLine *m_leftSkeletonLine;
+	CSkeletonLine *m_rightSkeletonLine;
+	CSkeletonLine *m_advancingSkeletonLine; // This field is filled in when an intersection is computed but is not used
 };
 
 class CVertexList : public list <CVertex>
@@ -202,13 +247,31 @@ public:
 		((CVertex &)x).m_ID = size ();	// automatic ID generation
 		list <CVertex> :: push_back (x);
 #ifdef FELKELDEBUG
-		VTLOG("Vertex %d x %f y %f z %f angle %f\n left %d right %d prev %d next %d added to list\n",
-			((CVertex &)x).m_ID, ((CVertex &)x).m_point.m_x, ((CVertex &)x).m_point.m_y, ((CVertex &)x).m_point.m_z, ((CVertex &)x).m_axis.m_Angle,
+		VTLOG("Vertex %d x %f y %f z %f ridge angle %f ridge slope %f\n left %d right %d prev %d next %d added to list\n",
+			((CVertex &)x).m_ID,
+			((CVertex &)x).m_point.m_x, ((CVertex &)x).m_point.m_y, ((CVertex &)x).m_point.m_z,
+			((CVertex &)x).m_axis.m_Angle, ((CVertex &)x).m_axis.m_Slope,
 			(((CVertex &)x).m_leftVertex == NULL) ? -999 : ((CVertex &)x).m_leftVertex->m_ID,
 			(((CVertex &)x).m_rightVertex == NULL) ? -999 : ((CVertex &)x).m_rightVertex->m_ID,
 			(((CVertex &)x).m_prevVertex == NULL) ? -999 : ((CVertex &)x).m_prevVertex->m_ID,
 			(((CVertex &)x).m_nextVertex == NULL) ? -999 : ((CVertex &)x).m_nextVertex->m_ID);
 #endif
+	}
+	void Dump ()
+	{
+		VTLOG("Dumping Vertex list\n");
+		for (iterator i = begin(); i != end(); i++)
+		{
+			VTLOG("Vertex %d x %e y %e z %e ridge angle %e ridge slope %e left %d right %d prev %d next\n",
+				(*i).m_ID,
+				(*i).m_point.m_x, (*i).m_point.m_y, (*i).m_point.m_z,
+				(*i).m_axis.m_Angle, (*i).m_axis.m_Slope,
+				((*i).m_leftVertex == NULL) ? -999 : (*i).m_leftVertex->m_ID,
+				((*i).m_rightVertex == NULL) ? -999 : (*i).m_rightVertex->m_ID,
+				((*i).m_prevVertex == NULL) ? -999 : (*i).m_prevVertex->m_ID,
+				((*i).m_nextVertex == NULL) ? -999 : (*i).m_nextVertex->m_ID);
+		}
+		VTLOG("Vertex list dump complete\n");
 	}
 };
 
