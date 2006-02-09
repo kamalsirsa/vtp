@@ -1501,7 +1501,7 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 						p.x = tile_area.left + x * spacing.x;
 
 						GetFilteredColor(p, rgb);
-#if 1
+#if 0
 						// For testing, add stripes to indicate LOD
 						if (lod == 3 && x == y) rgb.Set(255,0,0);
 
