@@ -78,10 +78,9 @@ VTBuilder<br>
     - Numeric Values</b></li>
   <li>Use the command &quot;<b>Area Tool - <a href="export_area.html"> Merge and 
   Resample Elevation</a></b>&quot; to
-    create a BT file.&nbsp; There may also be a PRJ file created with the same
+    create a BT file.&nbsp; There will also be a PRJ file created with the same
     name as the BT file, which contains a full description of the projection.
-    For example:
-    <div align="center">
+    For example:<div align="center">
       <center>
       <table border="1" cellspacing="0">
         <tr>
@@ -136,14 +135,27 @@ VTBuilder<br>
           </li>
       <li><b>Export To...</b><ul>
               <li>Writes the current elevation grid layer to one of the 
-              following file formats: ArcInfo ASCII Grid, GeoTIFF, TerraGen, BMP 
-              (scaled to 8-bit), STM, or MSI Planet.</li>
+              following file formats:<ul>
+              <li>ArcInfo ASCII Grid</li>
+              <li>GeoTIFF</li>
+              <li>TerraGen</li>
+              <li>BMP 
+              (scaled to 8-bit)</li>
+              <li>STM</li>
+              <li>MSI Planet</li>
+              <li>VRML ElevationGrid</li>
+              <li>RAW/INF (for Microsoft Flight Simulator)</li>
+              <li>ChunkLOD (.chu)</li>
+              <li>PNG (16-bit greyscale)</li>
+              <li>3TX</li>
+            </ul>
+              </li>
             </ul>
           </li>
       <li><b>Export to Tiles...</b><ul>
               <li>Writes the current elevation grid layer to a set of tiles.&nbsp; 
               The <b>Tiling Options </b>dialog will be shown.&nbsp; The output 
-              file should be an .ini file on you data path.&nbsp; For example, 
+              file should be an .ini file on your data path.&nbsp; For example, 
               if you save to <code>/Data/Elevation/Foo.ini</code>, then that 
               file will contain a description of the tileset, and all the tiles 
               will be placed in a directory called <code>/Data/Elevation/Foo</code></li>

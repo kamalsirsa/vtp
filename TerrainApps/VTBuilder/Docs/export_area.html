@@ -65,8 +65,10 @@ other layers, such as elevation, imagery, and vegetation.
 
 <h3>Toolbar:</h3>
 <ul>
-  <li>The Area Tool (<img border="0" src="images/tb_area.png" align="top" width="39" height="37">) 
-  can be used to set the desired area directly with the mouse.</li>
+  <li>The Area Tool (<img border="0" src="images/tb_area.png" align="bottom" width="39" height="37">) 
+  can be used to set the desired area directly with the mouse.&nbsp; Click on 
+  any edge of the area tool to move that edge, or click inside to move the whole 
+  area without resizing.</li>
 </ul>
 
 <h3><b>Merge and Resample Elevation Dialog</b></h3>
@@ -83,15 +85,36 @@ other layers, such as elevation, imagery, and vegetation.
       factor.&nbsp; Assuming that your input layers are of the same density
       (spacing), this indicates the approximate grid size of the indicated area.</li>
   </ul>
+  <h4>Output to a new layer or to a file:</h4>
+  <blockquote>
   <p>You can change the sample factor to see the projected size change.&nbsp;
   Once you have a good idea of what output size you want, specify it in the
   &quot;<b>X size</b>&quot; and &quot;<b>Y size</b>&quot; fields.</p>
   <p>Note that there is a helpful &quot;<b>Powers of 2 + 1</b>&quot; constraint
   you can use to limit the output to sizes which are supported by Terrain LOD,
   which is highly desirable at visualization runtime.</p>
-  <p>For effective visualization, unless your output is a tileset, it is recommended that you pick a output size
+  <p>For effective visualization it is recommended that you pick a output size
   that is at least as large as your input data, but within the limits of your
   computer's RAM.</p>
+  </blockquote>
+  <h4>Output to a folder of tiles (Tileset):</h4>
+  <blockquote>
+  <p>This option has no limit on the size of the data.&nbsp; Press <i>Tile 
+  Options</i> for the <b>Tiling Options</b> dialog.&nbsp; Give the output a 
+  filename, and set the number of rows and columns of the tile grid along with 
+  the tile size (LOD0 Size) which gives the highest resolution of each tile.&nbsp; 
+  The <b>Information</b> display helps you see whether your tiling is a good 
+  approximation of the input data your are resampling.&nbsp; For smoother 
+  visualization, is it good to keep the tile grid size large and the LOD0 Size 
+  small (512 or less) so that there are shorter pauses as each tile is paged.&nbsp; 
+  Alternately, if smoothness isn't a concern, you can decrease the tile grid 
+  size, and increase the LOD0 Size, which will result in a drastically smaller 
+  number of files on your disk.</p>
+  <p>See <a href="../Enviro/tilesets.html">Enviro: Tilesets</a> for a 
+  description of how tilesets are handled at runtime.&nbsp; If you are using a 
+  tileset for your elevation, you must have a tileset of the same grid size for 
+  the imagery.</p>
+  </blockquote>
 </blockquote>
 
 <h3><b>Merge and Resample Imagery Dialog</b></h3>
@@ -108,14 +131,35 @@ other layers, such as elevation, imagery, and vegetation.
       factor.&nbsp; Assuming that your input layers are of the same density
       (spacing), this indicates the approximate grid size of the indicated area.</li>
   </ul>
+  <h4>Output to a new layer or to a file:</h4>
+  <blockquote>
   <p>You can change the sample factor to see the projected size change.&nbsp;
   Once you have a good idea of what output size you want, specify it in the
   &quot;<b>X size</b>&quot; and &quot;<b>Y size</b>&quot; fields.</p>
   <p>Note that there is a helpful &quot;<b>Powers of 2</b>&quot; constraint
   you can use to limit the output to sizes which are supported by the visualization runtime.</p>
-  <p>For effective visualization, unless your output is a tileset, it is recommended that you pick a output size
+  <p>For effective visualization it is recommended that you pick a output size
   that is at least as large as your input data, but within the limits of your
-  computer's RAM. </p>
+  computer's RAM.</p>
+  </blockquote>
+  <h4>Output to a folder of tiles (Tileset):</h4>
+  <blockquote>
+  <p>This option has no limit on the size of the data.&nbsp; Press <i>Tile 
+  Options</i> for the <b>Tiling Options</b> dialog.&nbsp; Give the output a 
+  filename, and set the number of rows and columns of the tile grid along with 
+  the tile size (LOD0 Size) which gives the highest resolution of each tile.&nbsp; 
+  The <b>Information</b> display helps you see whether your tiling is a good 
+  approximation of the input data your are resampling.&nbsp; For smoother 
+  visualization, is it good to keep the tile grid size large and the LOD0 Size 
+  small (512 or less) so that there are shorter pauses as each tile is paged.&nbsp; 
+  Alternately, if smoothness isn't a concern, you can decrease the tile grid 
+  size, and increase the LOD0 Size, which will result in a drastically smaller 
+  number of files on your disk.</p>
+  <p>See <a href="../Enviro/tilesets.html">Enviro: Tilesets</a> for a 
+  description of how tilesets are handled at runtime.&nbsp; If you are using a 
+  tileset for your imagery, you must have a tileset of the same grid size for 
+  the elevation.</p>
+  </blockquote>
 </blockquote>
 
 </body>
