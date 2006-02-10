@@ -1,7 +1,7 @@
 //
 // RoadMap.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,8 +10,8 @@
 
 #include "DLG.h"
 
-#define RMFVERSION_STRING "RMFFile1.9"
-#define RMFVERSION_CURRENT 1.9
+#define RMFVERSION_STRING "RMFFile2.0"
+#define RMFVERSION_CURRENT 2.0
 #define RMFVERSION_SUPPORTED 1.7	// oldest supported version
 
 enum SurfaceType {
@@ -161,6 +161,11 @@ public:
 	TLink	*m_pNext;		// the next Link, if roads are maintained in link list form
 	short	m_iFlags;		// a flag to be used to holding any addition info.
 	int		m_id;			// only used during file reading
+	float	m_fSidewalkWidth;
+	float	m_fCurbHeight;
+	float	m_fMarginWidth;
+	float	m_fLaneWidth;
+	float	m_fParkingWidth;
 
 protected:
 	TNode	*m_pNode[2];	// "from" and "to" nodes

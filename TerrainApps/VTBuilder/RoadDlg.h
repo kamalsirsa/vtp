@@ -1,7 +1,7 @@
 //
 // Name: RoadDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -36,6 +36,11 @@ public:
 	void ApplyState(LinkEdit *pRoad);
 
 	// WDR: method declarations for RoadDlg
+	wxTextCtrl* GetMarginWidth()  { return (wxTextCtrl*) FindWindow( ID_MARGIN_WIDTH ); }
+    wxTextCtrl* GetParkingWidth()  { return (wxTextCtrl*) FindWindow( ID_PARKING_WIDTH ); }
+    wxTextCtrl* GetCurbHeight()  { return (wxTextCtrl*) FindWindow( ID_CURB_HEIGHT ); }
+    wxTextCtrl* GetSidewalkWidth()  { return (wxTextCtrl*) FindWindow( ID_SIDEWALK_WIDTH ); }
+    wxTextCtrl* GetLaneWidth()  { return (wxTextCtrl*) FindWindow( ID_LANE_WIDTH ); }
 	wxListBox* GetSurfType()  { return (wxListBox*) FindWindow( ID_SURFTYPE ); }
 	wxChoice* GetMargin()  { return (wxChoice*) FindWindow( ID_MARGIN ); }
 	wxChoice* GetParking()  { return (wxChoice*) FindWindow( ID_PARKING ); }
@@ -55,6 +60,11 @@ private:
 	int m_iParking;
 	int m_iMargin;
 	int m_iSurf;
+	float	m_fSidewalkWidth;
+	float	m_fCurbHeight;
+	float	m_fMarginWidth;
+	float	m_fLaneWidth;
+	float	m_fParkingWidth;
 
 private:
 	// WDR: handler declarations for RoadDlg
@@ -65,7 +75,4 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-
-
-
-#endif
+#endif	// __RoadDlg_H__

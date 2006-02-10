@@ -1,7 +1,7 @@
 //
 // RoadMap.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -419,6 +419,11 @@ TLink::TLink()
 	m_fHeight[1] = 0;
 	m_pNode[0] = NULL;
 	m_pNode[1] = NULL;
+	m_fSidewalkWidth = SIDEWALK_WIDTH;
+	m_fCurbHeight = CURB_HEIGHT;
+	m_fMarginWidth = MARGIN_WIDTH;
+	m_fLaneWidth = LANE_WIDTH;
+	m_fParkingWidth = PARKING_WIDTH;
 }
 
 //
@@ -557,13 +562,13 @@ float TLink::Length()
 
 float TLink::EstimateWidth(bool bIncludeSidewalk)
 {
-	float width = m_iLanes * LANE_WIDTH;
+	float width = m_iLanes * m_fLaneWidth;
 	if (GetFlag(RF_PARKING))
-		width += (PARKING_WIDTH * 2);
+		width += (m_fParkingWidth * 2);
 	if (GetFlag(RF_MARGIN))
-		width += (MARGIN_WIDTH * 2);
+		width += (m_fMarginWidth * 2);
 	if (bIncludeSidewalk && GetFlag(RF_SIDEWALK))
-		width += (SIDEWALK_WIDTH * 2);
+		width += (m_fSidewalkWidth * 2);
 	return width;
 }
 
@@ -1161,6 +1166,11 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		FWrite(&(curLink->m_iLanes), shortSize);	//number of lanes
 		FWrite(&(curLink->m_Surface), shortSize);	//surface type
 		FWrite(&(curLink->m_iFlags), shortSize);	//FLAG
+		FWrite(&(curLink->m_fSidewalkWidth), floatSize);	// sidewalk width
+		FWrite(&(curLink->m_fCurbHeight), floatSize);	// curb height
+		FWrite(&(curLink->m_fMarginWidth), floatSize);	// margin width
+		FWrite(&(curLink->m_fLaneWidth), floatSize);	// lane width width
+		FWrite(&(curLink->m_fParkingWidth), floatSize);	// parking width
 
 		int size = curLink->GetSize();
 		FWrite(&size, intSize);//number of coordinates making the road
