@@ -11,13 +11,13 @@ TARGETDIR=/cygdrive/c/Distrib
 DATE=$1
 DIST_FILE1=${TARGETDIR}/vtp-plantlib-${DATE}.zip
 
-# Create the archive containing the App Binaries
+# Create the archive containing the Plant Library
 rm -f $DIST_FILE1
 
-cd /cygdrive/e/Data-Common
+cd /cygdrive/g/Data-Common
 zip $DIST_FILE1 PlantModels/*
 
-cd /cygdrive/e/Data-ECL
+cd /cygdrive/g/Data-ECL
 zip $DIST_FILE1 PlantModels/*
 
 echo $DIST_FILE1 ready.
