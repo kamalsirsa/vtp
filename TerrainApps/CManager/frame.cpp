@@ -541,13 +541,14 @@ void vtFrame::OnItemDelete(wxCommandEvent& event)
 void vtFrame::OnItemAddModel(wxCommandEvent& event)
 {
 	wxFileDialog loadFile(NULL, _T("Load 3d Model"), _T(""), _T(""),
-		_T("All 3D Models (*.3ds, *.flt, *.lwo, *.obj, *.ive, *.osg)|*.3ds;*.flt;*.lwo;*.obj;*.ive;*.osg|")
+		_T("All 3D Models (*.3ds, *.flt, *.lwo, *.obj, *.ive, *.osg, *.wrl)|*.3ds;*.flt;*.lwo;*.obj;*.ive;*.osg;*.wrl|")
 		_T("3D Studio Files (*.3ds)|*.3ds|")
 		_T("OpenFlight Files (*.flt)|*.flt|")
 		_T("LightWave Files (*.lwo)|*.lwo|")
 		_T("Wavefront Files (*.obj)|*.obj|")
 		_T("IVE Files (*.ive)|*.ive|")
 		_T("OSG Files (*.osg)|*.osg|")
+		_T("VRML Files (*.wrl)|*.wrl|")
 		_T("All Files (*.*)|*.*"), wxOPEN);
 	loadFile.SetFilterIndex(0);
 	if (loadFile.ShowModal() != wxID_OK)
