@@ -58,7 +58,6 @@ zip $DIST_FILE1 VTP/TerrainApps/CManager/CManager-OSG.sln
 zip $DIST_FILE1 VTP/TerrainApps/CManager/CManager.rc
 zip $DIST_FILE1 VTP/TerrainApps/CManager/itemtypes.txt
 zip $DIST_FILE1 VTP/TerrainApps/CManager/cmanager.wdr
-zip $DIST_FILE1 VTP/TerrainApps/CManager/bitmaps/*
 zip $DIST_FILE1 VTP/TerrainApps/CManager/icons/*
 
 # deal specially with Enviro.ini
