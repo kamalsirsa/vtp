@@ -238,19 +238,19 @@ vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 	switch (nShapeType)
 	{
 	case SHPT_POINT:
-		pSet = new vtFeatureSetPoint2D();
+		pSet = new vtFeatureSetPoint2D;
 		break;
 	case SHPT_POINTZ:
-		pSet = new vtFeatureSetPoint3D();
+		pSet = new vtFeatureSetPoint3D;
 		break;
 	case SHPT_ARC:
-		pSet = new vtFeatureSetLineString();
+		pSet = new vtFeatureSetLineString;
 		break;
 	case SHPT_ARCZ:
-		pSet = new vtFeatureSetLineString3D();
+		pSet = new vtFeatureSetLineString3D;
 		break;
 	case SHPT_POLYGON:
-		pSet = new vtFeatureSetPolygon();
+		pSet = new vtFeatureSetPolygon;
 		break;
 	default:
 		SHPClose(hSHP);
@@ -288,9 +288,9 @@ vtFeatureSet *vtFeatureLoader::LoadFromDXF(const char *filename, bool progress_c
 	vtFeatureSetLineString *pSetP2;
 	const DxfEntity &ent = entities[0];
 	if (ent.m_iType == DET_Polyline)
-		pSetP2 = new vtFeatureSetLineString();
+		pSetP2 = new vtFeatureSetLineString;
 //	else if (ent.m_iType == DET_Polygon)	// TODO? Other types.
-//		pSetP2 = new vtFeatureSetPolygon();
+//		pSetP2 = new vtFeatureSetPolygon;
 	else
 		return false;
 
@@ -350,7 +350,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 		return false;
 
 	//  IGC is lat-lon with altitude
-	vtFeatureSetLineString3D *pSet = new vtFeatureSetLineString3D();
+	vtFeatureSetLineString3D *pSet = new vtFeatureSetLineString3D;
 
 	// Geographic WGS-84 can be assumed
 	vtProjection proj;
@@ -420,19 +420,19 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(OGRLayer *pLayer,
 	switch (geom_type)
 	{
 	case wkbPoint:
-		pSet = new vtFeatureSetPoint2D();
+		pSet = new vtFeatureSetPoint2D;
 		break;
 	case wkbPoint25D:
-		pSet = new vtFeatureSetPoint3D();
+		pSet = new vtFeatureSetPoint3D;
 		break;
 	case wkbLineString:
-		pSet = new vtFeatureSetLineString();
+		pSet = new vtFeatureSetLineString;
 		break;
 	case wkbLineString25D:
-		pSet = new vtFeatureSetLineString3D();
+		pSet = new vtFeatureSetLineString3D;
 		break;
 	case wkbPolygon:
-		pSet = new vtFeatureSetPolygon();
+		pSet = new vtFeatureSetPolygon;
 		break;
 	default:
 		return NULL;
@@ -799,23 +799,22 @@ void vtFeatureSet::ParseDBFRecords(DBFHandle db, bool progress_callback(int))
 		if (progress_callback && ((i%16)==0))
 			progress_callback(i*100/iRecords);
 		unsigned int iField;
-		int rec = AddRecord();
 		for (iField = 0; iField < GetNumFields(); iField++)
 		{
 			Field *field = m_fields[iField];
 			switch (field->m_type)
 			{
 			case FT_String:
-				SetValue(rec, iField, DBFReadStringAttribute(db, rec, iField));
+				SetValue(i, iField, DBFReadStringAttribute(db, i, iField));
 				break;
 			case FT_Integer:
-				SetValue(rec, iField, DBFReadIntegerAttribute(db, rec, iField));
+				SetValue(i, iField, DBFReadIntegerAttribute(db, i, iField));
 				break;
 			case FT_Double:
-				SetValue(rec, iField, DBFReadDoubleAttribute(db, rec, iField));
+				SetValue(i, iField, DBFReadDoubleAttribute(db, i, iField));
 				break;
 			case FT_Boolean:
-				SetValue(rec, iField, DBFReadLogicalAttribute(db, rec, iField));
+				SetValue(i, iField, DBFReadLogicalAttribute(db, i, iField));
 				break;
 			case FT_Short:
 			case FT_Float:
