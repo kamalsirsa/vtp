@@ -965,6 +965,14 @@ bool vtRoadMap::ReadRMF(const char *filename,
 			fread(&ftmp, floatSize, 1, fp);		//height of road at node 1
 		}
 
+		if (version >= 2.0)
+		{
+			fread(&(tmpLink->m_fSidewalkWidth), floatSize, 1, fp);	// sidewalk width
+			fread(&(tmpLink->m_fCurbHeight), floatSize, 1, fp);		// curb height
+			fread(&(tmpLink->m_fMarginWidth), floatSize, 1, fp);	// margin width
+			fread(&(tmpLink->m_fLaneWidth), floatSize, 1, fp);		// lane width
+			fread(&(tmpLink->m_fParkingWidth), floatSize, 1, fp);	// parking width
+		}
 		int size;
 		fread(&size, intSize, 1, fp);	// number of coordinates making the road
 		tmpLink->SetSize(size);
