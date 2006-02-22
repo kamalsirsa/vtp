@@ -1081,7 +1081,7 @@ int MainFrame::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
 	for (int l = 0; l < NumLayers(); l++)
 	{
 		vtLayer *lp = m_Layers.GetAt(l);
-		if (lp->GetType() == LT_ELEVATION)
+		if (lp->GetType() == LT_ELEVATION && lp->GetVisible())
 			elevs.push_back((vtElevLayer *)lp);
 	}
 	return elevs.size();
@@ -1247,7 +1247,7 @@ float MainFrame::GetHeightFromTerrain(const DPoint2 &p)
 	for (int i = 0; i < layers; i++)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
-		if (l->GetType() != LT_ELEVATION) continue;
+		if (l->GetType() != LT_ELEVATION || !l->GetVisible()) continue;
 		vtElevLayer *pEL = (vtElevLayer *)l;
 		height = pEL->GetElevation(p);
 		if (height != INVALID_ELEVATION)
