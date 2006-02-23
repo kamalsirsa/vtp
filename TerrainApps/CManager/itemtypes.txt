@@ -35,19 +35,22 @@ restaurant
 service station
 shed
 shopping center
+store
 warehouse
 yurt
 crane
+dam
 fence
 gate
 gantry crane
 gasoline pump
-hangar
 haystack
-lighthouse
+lamp post
 mailbox
 parking meter
 picnic table
+pier
+pipeline
 post
 pylon
 radio telescope
@@ -62,6 +65,7 @@ route marker
 elevation sign
 silo
 solar panels
+stadium
 storage tank
 streetlight
 stoplight
@@ -72,6 +76,7 @@ tower
 water tower
 steel lattice tower
 transformer, power station
+tunnel
 utility pole
 wall
 well
