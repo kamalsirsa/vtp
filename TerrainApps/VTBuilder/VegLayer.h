@@ -1,7 +1,7 @@
 //
 // VegLayer.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -63,9 +63,10 @@ public:
 	// Exporting data
 	bool ExportToSHP(const char *fname);
 
-protected:
 	vtPlantInstanceArray *GetPIA() { return (vtPlantInstanceArray *) m_pSet; }
 	vtFeatureSetPolygon *GetPS() { return (vtFeatureSetPolygon *) m_pSet; }
+
+protected:
 	VegLayerType m_VLType;
 
 	int	m_field_density;
