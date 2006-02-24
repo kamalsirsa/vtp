@@ -81,7 +81,10 @@ bool vtBitmap::Allocate24(int iXSize, int iYSize)
 	};
 	ScanlineFormat.bmiHeader.biWidth = iXSize;
 	ScanlineFormat.bmiHeader.biHeight = -iYSize;
-	ScanlineFormat.bmiHeader.biSizeImage = iXSize * iYSize;
+
+	// Reportedly, biSizeImage need not be specified.
+	//  In fact, setting this field to other than 0 can produce crashes.
+	ScanlineFormat.bmiHeader.biSizeImage = 0;
 
 	m_iScanlineWidth = (((iXSize)*(24) + 31) / 32 * 4);
 
