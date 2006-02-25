@@ -328,6 +328,16 @@ const char *StartOfFilename(const char *szFullPath)
 }
 
 /**
+ * Given a full path containing a filename, return a string containing
+ * just the path portion of the string.
+ */
+vtString ExtractPath(const char *szFullPath)
+{
+	const char *fname = StartOfFilename(szFullPath);
+	return vtString(szFullPath).Left(fname - szFullPath);
+}
+
+/**
  * Return whether a path is absolute or relative.
  */
 bool PathIsAbsolute(const char *szPath)
