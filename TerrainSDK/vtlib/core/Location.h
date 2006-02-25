@@ -74,6 +74,8 @@ public:
 
 	bool Read(const vtString &fname);
 	bool Write(const vtString &fname = "");
+	const vtString &GetFilename() { return m_strFilename; }
+
 	void Remove(int num);
 	int GetNumLocations() { return m_loc.GetSize(); }
 	vtLocation *GetLocation(int num) const { return m_loc[num]; }

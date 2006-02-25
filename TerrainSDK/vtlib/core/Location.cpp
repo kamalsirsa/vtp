@@ -46,7 +46,10 @@ bool vtLocationSaver::Write(const vtString &fname_in)
 
 	vtString fname;
 	if (fname_in != "")
+	{
+		m_strFilename = fname_in;
 		fname = fname_in;
+	}
 	else
 		fname = m_strFilename;
 
@@ -185,6 +188,7 @@ bool vtLocationSaver::Read(const vtString &fname)
 		VTLOG("XML parsing error: %s\n", exp.getFormattedMessage().c_str());
 		return false;
 	}
+	m_strFilename = fname;
 	return true;
 }
 
