@@ -66,6 +66,11 @@ public:
 	void OnClose(wxCloseEvent &event);
 	void OnIdle(wxIdleEvent& event);
 
+#ifdef __WXMSW__
+	// Catch special events, or calls an appropriate default window procedure
+    virtual WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
+#endif
+
 	void OnFileLayers(wxCommandEvent& event);
 
 	void OnViewMaintain(wxCommandEvent& event);

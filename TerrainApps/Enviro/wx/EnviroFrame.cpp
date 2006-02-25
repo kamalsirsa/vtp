@@ -819,6 +819,34 @@ void EnviroFrame::OnIdle(wxIdleEvent& event)
 		event.Skip();
 }
 
+#ifdef __WXMSW__
+// Catch special events, or calls an appropriate default window procedure
+WXLRESULT EnviroFrame::MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
+{
+	if (nMsg == WM_ENTERMENULOOP)
+	{
+		//VTLOG1("WM_ENTERMENULOOP\n");
+		EnableContinuousRendering(false);
+	}
+	else if (nMsg == WM_EXITMENULOOP)
+	{
+		//VTLOG1("WM_EXITMENULOOP\n");
+		EnableContinuousRendering(true);
+	}
+	else if (nMsg == WM_ENTERSIZEMOVE)
+	{
+		//VTLOG1("WM_ENTERSIZEMOVE\n");
+		EnableContinuousRendering(false);
+	}
+	else if (nMsg == WM_EXITSIZEMOVE)
+	{
+		//VTLOG1("WM_EXITSIZEMOVE\n");
+		EnableContinuousRendering(true);
+	}
+	return wxFrame::MSWWindowProc(nMsg, wParam, lParam);
+}
+#endif
+
 void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	EnableContinuousRendering(false);
