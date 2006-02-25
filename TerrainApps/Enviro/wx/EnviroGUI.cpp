@@ -128,26 +128,34 @@ void EnviroGUI::SaveVegetation()
 	pia.WriteVF(str.mb_str());
 }
 
-void EnviroGUI::SaveStructures()
+void EnviroGUI::SaveStructures(bool bAskFilename)
 {
-	// save current directory
-	wxString path = wxGetCwd();
-
-	EnableContinuousRendering(false);
-	wxFileDialog saveFile(NULL, _("Save Built Structures Data"), _T(""),
-		_T(""), _("Structure Files (*.vtst)|*.vtst"), wxSAVE | wxOVERWRITE_PROMPT);
-	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	EnableContinuousRendering(true);
-	if (!bResult)
-	{
-		wxSetWorkingDirectory(path);	// restore
-		return;
-	}
-	wxString2 str = saveFile.GetPath();
-
 	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
-	sa->SetFilename(str.mb_str());
-	sa->WriteXML(str.mb_str());
+	vtString fname = sa->GetFilename();
+	if (bAskFilename)
+	{
+		// save current directory
+		wxString path = wxGetCwd();
+
+		wxString2 default_file = StartOfFilename(fname);
+		wxString2 default_dir = ExtractPath(fname);
+
+		EnableContinuousRendering(false);
+		wxFileDialog saveFile(NULL, _("Save Built Structures Data"),
+			default_dir, default_file, _("Structure Files (*.vtst)|*.vtst"),
+			wxSAVE | wxOVERWRITE_PROMPT);
+		bool bResult = (saveFile.ShowModal() == wxID_OK);
+		EnableContinuousRendering(true);
+		if (!bResult)
+		{
+			wxSetWorkingDirectory(path);	// restore
+			return;
+		}
+		wxString2 str = saveFile.GetPath();
+
+		sa->SetFilename(str.mb_str());
+	}
+	sa->WriteXML(fname);
 }
 
 bool EnviroGUI::IsAcceptable(vtTerrain *pTerr)

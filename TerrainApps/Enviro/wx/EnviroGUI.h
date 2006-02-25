@@ -33,7 +33,7 @@ public:
 
 	// The following are useful methods
 	void SaveVegetation();
-	void SaveStructures();
+	void SaveStructures(bool bAskFilename);
 };
 
 // global singleton
