@@ -620,7 +620,18 @@ void LocationDlg::OnLoad( wxCommandEvent &event )
 
 void LocationDlg::OnSave( wxCommandEvent &event )
 {
-	wxFileDialog saveFile(NULL, _("Save Locations"), _T(""), _T(""),
+	wxString2 default_file, default_dir;
+
+	// If the locations were previously saved/loaded from a file, use that
+	//  file as the default in the Save dialog.
+	vtString previous = m_pSaver->GetFilename();
+	if (previous != "")
+	{
+		default_file = StartOfFilename(previous);
+		default_dir = ExtractPath(previous);
+	}
+
+	wxFileDialog saveFile(NULL, _("Save Locations"), default_dir, default_file,
 		_("Location Files (*.loc)|*.loc"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
