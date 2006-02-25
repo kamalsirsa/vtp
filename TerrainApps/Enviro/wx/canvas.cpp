@@ -46,14 +46,14 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
 		wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
-	VTLOG("vtGLCanvas constructor\n");
+	VTLOG1("vtGLCanvas constructor\n");
 
-	VTLOG("vtGLCanvas: calling Show on parent\n");
+	VTLOG1("vtGLCanvas: calling Show on parent\n");
 	parent->Show();
 
 	// Documentation says about SetCurrent:
 	// "Note that this function may only be called after the window has been shown."
-	VTLOG("vtGLCanvas: calling SetCurrent\n");
+	VTLOG1("vtGLCanvas: calling SetCurrent\n");
 	SetCurrent();
 
 	wxGLContext *context = GetContext();
@@ -61,12 +61,13 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 		VTLOG("OpenGL context: %lx\n", context);
 	else
 	{
-		VTLOG("No OpenGL context, quitting app.\n");
+		VTLOG1("No OpenGL context, quitting app.\n");
 	    exit(0);
 	}
 
-	VTLOG("OpenGL version: ");
+	VTLOG1("OpenGL version: ");
 	VTLOG1((const char *) glGetString(GL_VERSION));
+	VTLOG1("\n");
 
 	m_bPainting = false;
 	m_bRunning = true;
@@ -78,12 +79,12 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	m_iConsecutiveMousemoves = 0;
 
 	s_canvas = this;
-	VTLOG("vtGLCanvas, leaving constructor\n");
+	VTLOG1("vtGLCanvas, leaving constructor\n");
 }
 
 vtGLCanvas::~vtGLCanvas(void)
 {
-	VTLOG("Deleting Canvas\n");
+	VTLOG1("Deleting Canvas\n");
 }
 
 
@@ -97,30 +98,32 @@ void EnableContinuousRendering(bool bTrue)
 	s_canvas->m_bRunning = bTrue;
 	if (bNeedRefresh)
 		s_canvas->Refresh(FALSE);
+
+	vtGetScene()->TimerRunning(bTrue);
 }
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
 	static bool bFirstPaint = true;
-	if (bFirstPaint) VTLOG("vtGLCanvas: first OnPaint\n");
+	if (bFirstPaint) VTLOG1("vtGLCanvas: first OnPaint\n");
 
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
 		// This is a dummy, to avoid an endless succession of paint messages.
 		// OnPaint handlers must always create a wxPaintDC.
-		if (bFirstPaint) VTLOG("vtGLCanvas: creating a wxPaintDC on the stack\n");
+		if (bFirstPaint) VTLOG1("vtGLCanvas: creating a wxPaintDC on the stack\n");
 		wxPaintDC dc(this);
 
 		// Safety checks
 		if (!s_canvas)
 		{
-			VTLOG("OnPaint: Canvas not yet constructed, returning\n");
+			VTLOG1("OnPaint: Canvas not yet constructed, returning\n");
 			return;
 		}
 		if (!GetContext())
 		{
-			VTLOG("OnPaint: No context yet, returning\n");
+			VTLOG1("OnPaint: No context yet, returning\n");
 			return;
 		}
 
@@ -130,16 +133,16 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		m_bPainting = true;
 
 		// Render the Scene Graph
-		if (bFirstPaint) VTLOG("vtGLCanvas: DoUpdate\n");
+		if (bFirstPaint) VTLOG1("vtGLCanvas: DoUpdate\n");
 		vtGetScene()->DoUpdate();
 
 		if (m_bShowFrameRateChart)
 			vtGetScene()->DrawFrameRateChart();
 
-		if (bFirstPaint) VTLOG("vtGLCanvas: SwapBuffers\n");
+		if (bFirstPaint) VTLOG1("vtGLCanvas: SwapBuffers\n");
 		SwapBuffers();
 
-		if (bFirstPaint) VTLOG("vtGLCanvas: update status bar\n");
+		if (bFirstPaint) VTLOG1("vtGLCanvas: update status bar\n");
 		EnviroFrame *frame = (EnviroFrame*) GetParent();
 
 		// update the status bar every 1/10 of a second
