@@ -164,10 +164,35 @@ void vtScene::Shutdown()
 	osgDB::Registry::instance()->clearObjectCache();
 }
 
+void vtScene::TimerRunning(bool bRun)
+{
+	if (!bRun)
+	{
+		// stop timer, count how much running time has already elapsed
+		m_fAccumulatedFrameTime = _timer.delta_s(_lastRunningTick,_timer.tick());
+		//VTLOG("partial frame: %lf seconds\n", m_fAccumulatedFrameTime);
+	}
+	else
+		// start again
+		_lastRunningTick = _timer.tick();
+}
+
 void vtScene::UpdateBegin()
 {
 	_lastFrameTick = _frameTick;
 	_frameTick = _timer.tick();
+
+	// finish counting the split frame's elapsed time
+	if (_lastRunningTick != _lastFrameTick)
+	{
+		m_fAccumulatedFrameTime += _timer.delta_s(_lastRunningTick,_frameTick);
+		//VTLOG("   full frame: %lf seconds\n", m_fAccumulatedFrameTime);
+		m_fLastFrameTime = m_fAccumulatedFrameTime;
+	}
+	else
+		m_fLastFrameTime = _timer.delta_s(_lastFrameTick,_frameTick);
+
+	_lastRunningTick = _frameTick;
 }
 
 void vtScene::UpdateEngines()

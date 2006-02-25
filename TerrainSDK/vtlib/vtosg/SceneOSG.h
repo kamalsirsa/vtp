@@ -47,6 +47,7 @@ public:
 	/// Call this method after all other vtlib methods, to free memory.
 	void Shutdown();
 
+	void TimerRunning(bool bRun);
 	void UpdateBegin();
 	void UpdateEngines();
 	void UpdateWindow(vtWindow *window);
@@ -57,17 +58,19 @@ public:
 	/// Return the instantaneous framerate in frames per seconds estimated.
 	float GetFrameRate()
 	{
-		return 1.0 / _timer.delta_s(_lastFrameTick,_frameTick);
+		return 1.0 / m_fLastFrameTime;
 	}
 	void DrawFrameRateChart();
 
+	/// Time in seconds since the scene began.
 	float GetTime()
 	{
 		return _timer.delta_s(_initialTick,_frameTick);
 	}
+	/// Time in seconds between the start of the previous frame and the current frame.
 	float GetFrameTime()
 	{
-		return _timer.delta_s(_lastFrameTick,_frameTick);
+		return m_fLastFrameTime;
 	}
 
 	// View methods
@@ -115,7 +118,9 @@ protected:
 	osg::Timer   _timer;
 	osg::Timer_t _initialTick;
 	osg::Timer_t _lastFrameTick;
+	osg::Timer_t _lastRunningTick;
 	osg::Timer_t _frameTick;
+	double	m_fAccumulatedFrameTime, m_fLastFrameTime;
 
 	bool	m_bWinInfo;
 	bool	m_bInitialized;
