@@ -47,6 +47,7 @@ public:
 	// WDR: method declarations for LayerDlg
 	wxButton* GetLayerRemove()  { return (wxButton*) FindWindow( ID_LAYER_REMOVE ); }
 	wxButton* GetLayerCreate()  { return (wxButton*) FindWindow( ID_LAYER_CREATE ); }
+	wxButton* GetLayerSaveAs()  { return (wxButton*) FindWindow( ID_LAYER_SAVE_AS ); }
 	wxButton* GetLayerSave()  { return (wxButton*) FindWindow( ID_LAYER_SAVE ); }
 	wxButton* GetZoomTo()  { return (wxButton*) FindWindow( ID_LAYER_ZOOM_TO ); }
 	wxCheckBox* GetVisible()  { return (wxCheckBox*) FindWindow( ID_LAYER_VISIBLE ); }
@@ -78,6 +79,7 @@ private:
 	void OnLayerRemove( wxCommandEvent &event );
 	void OnLayerCreate( wxCommandEvent &event );
 	void OnLayerSave( wxCommandEvent &event );
+	void OnLayerSaveAs( wxCommandEvent &event );
 	void OnZoomTo( wxCommandEvent &event );
 	void OnVisible( wxCommandEvent &event );
 	void OnShadowVisible( wxCommandEvent &event );

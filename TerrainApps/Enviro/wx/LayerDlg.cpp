@@ -39,6 +39,7 @@ BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 	EVT_CHECKBOX( ID_SHADOW_VISIBLE, LayerDlg::OnShadowVisible )
 	EVT_BUTTON( ID_LAYER_ZOOM_TO, LayerDlg::OnZoomTo )
 	EVT_BUTTON( ID_LAYER_SAVE, LayerDlg::OnLayerSave )
+	EVT_BUTTON( ID_LAYER_SAVE_AS, LayerDlg::OnLayerSaveAs )
 	EVT_BUTTON( ID_LAYER_CREATE, LayerDlg::OnLayerCreate )
 	EVT_BUTTON( ID_LAYER_REMOVE, LayerDlg::OnLayerRemove )
 END_EVENT_TABLE()
@@ -317,7 +318,13 @@ void LayerDlg::OnLayerCreate( wxCommandEvent &event )
 
 void LayerDlg::OnLayerSave( wxCommandEvent &event )
 {
-	g_App.SaveStructures();
+	g_App.SaveStructures(false);	// don't ask for filename
+	RefreshTreeContents();
+}
+
+void LayerDlg::OnLayerSaveAs( wxCommandEvent &event )
+{
+	g_App.SaveStructures(true);		// ask for filename
 	RefreshTreeContents();
 }
 
@@ -438,5 +445,6 @@ void LayerDlg::UpdateEnabling()
 
 	GetLayerRemove()->Enable(sa != NULL);
 	GetLayerSave()->Enable(sa != NULL);
+	GetLayerSaveAs()->Enable(sa != NULL);
 }
 
