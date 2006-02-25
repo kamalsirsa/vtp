@@ -1490,7 +1490,7 @@ void EnviroFrame::OnSaveVeg(wxCommandEvent& event)
 
 void EnviroFrame::OnSaveStruct(wxCommandEvent& event)
 {
-	g_App.SaveStructures();
+	g_App.SaveStructures(true);
 
 	// update the displayed filename
 	m_pLayerDlg->RefreshTreeContents();
