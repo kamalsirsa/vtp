@@ -203,7 +203,7 @@ ifeq ($(OS),Darwin)
    FRAMEWORK_EXE = $(FRAMEWORK)/$(LIB_NAME)
 
    # flags 
-   COMMON_OPTS = -compatibility_version 1.2 -current_version 1.2.1 -L$(GDAL_LIB) -lgdal -L/sw/lib -lnetcdf -lpng -ljpeg -lz -F$(FRAMEWORKS)
+   COMMON_OPTS = -compatibility_version 1.2 -current_version 1.2.1 -L$(GDAL_LIB) -lgdal -L/sw/lib -lnetcdf -lpng -ljpeg -lcurl -lbz2 -lz -F$(FRAMEWORKS)
 
    #
    # Enumerates the build flags required to use each lib/framework
