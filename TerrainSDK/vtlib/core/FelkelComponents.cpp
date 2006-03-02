@@ -41,8 +41,8 @@ CRidgeLine CRidgeLine::AngleAxis (const C3DPoint &b, const C3DPoint &a, const CN
 	CNumber baAngle = ba.m_Angle;
 	CNumber bcAngle = bc.m_Angle;
 	// Clamp tans to first quadrant
-	CNumber tsa = abs(tan(sa));
-	CNumber tsc = abs(tan(sc));
+	CNumber tsa = fabs(tan(sa));
+	CNumber tsc = fabs(tan(sc));
 
 	// Calculate the angle from ba to bc
 	theta = bcAngle - baAngle;
