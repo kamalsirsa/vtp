@@ -116,10 +116,12 @@ size_t GZFRead( void *ptr, DataType type, size_t nitems, gzFile gzstream,
 			  ByteOrder file_order, ByteOrder desired_order )
 {
 	int tsize  = GetDataTypeSize( type );
+
+	// returned value is the number of "items" read
 	size_t ret = gzread(gzstream, ptr, tsize * nitems) / tsize;
 
 	if ( (int)ret >= 0 )
-		SwapMemBytes( ptr, type, ret/tsize, file_order, desired_order );
+		SwapMemBytes( ptr, type, ret, file_order, desired_order );
 	return ret;
 }
 
