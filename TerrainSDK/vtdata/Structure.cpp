@@ -26,8 +26,8 @@ vtStructInstance::vtStructInstance() : vtStructure()
 }
 
 /**
- * Asignment operator, which makes an explicit copy the entire building
- * including each level.
+ * Asignment operator, which makes an explicit copy of the structure's
+ *  description tags.
  */
 vtStructInstance &vtStructInstance::operator=(const vtStructInstance &v)
 {
