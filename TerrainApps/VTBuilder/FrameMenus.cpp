@@ -2139,6 +2139,13 @@ void MainFrame::OnRoadGuess(wxCommandEvent &event)
 
 void MainFrame::OnRoadFlatten(wxCommandEvent &event)
 {
+	if (m_proj.IsGeographic())
+	{
+		wxMessageBox(_("Sorry, but precise grid operations require a non-geographic coordinate\n system (meters as horizontal units, not degrees.)"),
+			_("Info"), wxOK);
+		return;
+	}
+
 	float margin = 2.0;
 	wxString2 str;
 	str.Printf(_("%g"), margin);
