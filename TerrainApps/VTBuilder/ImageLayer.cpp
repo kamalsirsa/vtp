@@ -1352,6 +1352,22 @@ bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 #endif
 }
 
+// Helper
+int GetBitDepthUsingGDAL(const char *fname)
+{
+	GDALDataset *pDataset = (GDALDataset *) GDALOpen(fname, GA_ReadOnly);
+	if (pDataset == NULL )
+		return -1;
+
+	// Raster count should be 3 for colour images (assume RGB)
+	int iRasterCount = pDataset->GetRasterCount();
+	GDALRasterBand *pBand = pDataset->GetRasterBand(1);
+	GDALDataType eType = pBand->GetRasterDataType();
+	int bits = iRasterCount * GDALGetDataTypeSize(eType);
+	GDALClose(pDataset);
+	return bits;
+}
+
 bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView)
 {
 	// Avoid trouble with '.' and ',' in Europe

@@ -1,7 +1,7 @@
 //
 // ImageLayer.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -73,7 +73,6 @@ public:
 		int iMetersPerPixel, int iUTMZone, const char *filename);
 	bool WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView);
 
-
 protected:
 	void SetDefaults();
 	bool LoadFromGDAL();
@@ -108,4 +107,7 @@ protected:
 	RGBi *GetScanlineFromBuffer(int y);
 };
 
-#endif
+// Helper
+int GetBitDepthUsingGDAL(const char *fname);
+
+#endif	// IMAGELAYER_H

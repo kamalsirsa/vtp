@@ -539,14 +539,29 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		else
 			delete pRL;
  	}
-	if (ext.CmpNoCase(_T("tif")) == 0 ||
-		ext.CmpNoCase(_T("img")) == 0)
+	if (ext.CmpNoCase(_T("img")) == 0)
 	{
 		vtImageLayer *pIL = new vtImageLayer;
 		if (pIL->Load(fname))
 			pLayer = pIL;
 		else
 			delete pIL;
+	}
+	if (ext.CmpNoCase(_T("tif")) == 0)
+	{
+		// If it's a 8-bit or 24-bit TIF, then it's likely to be an image.
+		// If it's a 16-bit TIF, then it's likely to be elevation.
+		int depth = GetBitDepthUsingGDAL(fname_in.mb_str());
+		if (depth == 8 || depth == 24 || depth == 32)
+		{
+			vtImageLayer *pIL = new vtImageLayer;
+			if (pIL->Load(fname))
+				pLayer = pIL;
+			else
+				delete pIL;
+		}
+		else if (depth == 16)
+			ltype = LT_ELEVATION;
 	}
 	if (pLayer)
 	{
