@@ -356,6 +356,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	if (m_iInitStep == 3)
 	{
 		pTerr->SetPlantList(m_pPlantList);
+		pTerr->CreateStep0();
 		if (!pTerr->CreateStep1())
 		{
 			m_state = AS_Error;
