@@ -790,7 +790,8 @@ int vtMaterialArrayBase::AddTextureMaterial2(const char *fname,
 		return -1;
 
 	int index = AddTextureMaterial(pImage, bCulling, bLighting,
-		bTransp, bAdditive, fAmbient, fDiffuse, fAlpha, fEmissive, bTexGen, bClamp);
+		bTransp, bAdditive, fAmbient, fDiffuse, fAlpha, fEmissive, bTexGen,
+		bClamp, bMipMap);
 	pImage->Release();	// pass ownership to the material
 	return index;
 }
