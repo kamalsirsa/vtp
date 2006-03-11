@@ -1,7 +1,7 @@
 //
 // vtTin.h
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,7 @@
 #include "MathTypes.h"
 #include "Projections.h"
 #include "HeightField.h"
+#include "vtString.h"
 
 // a type useful for the Merge algorithm
 typedef Array<int> Bin;
@@ -34,11 +35,13 @@ public:
 	unsigned int NumTris() const { return m_tri.GetSize()/3; }
 
 	void AddVert(const DPoint2 &p, float z);
-	void AddTri(int i1, int i2, int i3);
+	void AddTri(int i1, int i2, int i3, int surface_type = -1);
 
 	bool Read(const char *fname);
 	bool Write(const char *fname) const;
 	bool ReadDXF(const char *fname, bool progress_callback(int) = NULL);
+
+	unsigned int AddSurfaceType(const vtString &surface_texture);
 
 	bool ComputeExtents();
 	void Offset(const DPoint2 &p);
@@ -71,7 +74,11 @@ protected:
 	Array<float> m_z;
 	Array<int>	 m_tri;
 
-	// used only during MergeSharedVerts
+	// Surface Types
+	Array<int>	 m_surfidx;
+	vtStringArray	m_surftypes;
+
+	// These members are used only during MergeSharedVerts
 	int *m_bReplace;
 	Bin *m_vertbin;
 	Bin *m_tribin;
