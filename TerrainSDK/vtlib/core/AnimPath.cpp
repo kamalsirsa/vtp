@@ -3,7 +3,7 @@
 //
 // Implementation animation path capabilities.
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -291,83 +291,9 @@ float vtAnimPath::GetTotalTime()
 }
 
 
-void vtAnimPathEngine::SetEnabled(bool bOn)
-{
-	bool bWas = m_bEnabled;
-	vtEnabledBase::SetEnabled(bOn);
-	if (!bWas && bOn)
-	{
-		// turning this engine on
-		m_fLastTime = vtGetTime();
-	}
-}
-
-void vtAnimPathEngine::Eval()
-{
-	if (m_pAnimationPath == NULL)
-		return;
-
-	float fNow = vtGetTime();
-	if (m_fLastTime==DBL_MAX)
-		m_fLastTime = fNow;
-
-	float fElapsed = fNow - m_fLastTime;
-	m_fTime += fElapsed * m_fSpeed;
-
-	if (m_fTime > m_pAnimationPath->GetLastTime())
-	{
-		if (m_bContinuous)
-		{
-			// wrap around
-			m_fTime -= m_pAnimationPath->GetPeriod();
-		}
-		else
-		{
-			// stop at the end
-			m_fTime = m_pAnimationPath->GetLastTime();
-			SetEnabled(false);
-		}
-	}
-
-	UpdateTargets();
-
-	m_fLastTime = fNow;
-}
-
-void vtAnimPathEngine::UpdateTargets()
-{
-	for (unsigned int i = 0; i < NumTargets(); i++)
-	{
-		vtTarget *target = GetTarget(i);
-		vtTransform *tr = dynamic_cast<vtTransform*>(target);
-		if (!tr)
-			continue;
-
-		ControlPoint cp;
-		if (m_pAnimationPath->GetInterpolatedControlPoint(m_fTime, cp))
-		{
-			FMatrix4 matrix;
-			cp.GetMatrix(matrix, m_bPosOnly);
-			if (m_bPosOnly)
-			{
-				// Only copy position
-				FPoint3 pos = matrix.GetTrans();
-				tr->SetTrans(pos);
-			}
-			else
-				tr->SetTransform1(matrix);
-		}
-	}
-}
-
-void vtAnimPathEngine::Reset()
-{
-	m_fTime = 0;
-}
-
-
-///////////////////////////////////////////////////////////////////////
-
+/**
+ * Write the animation path to a .vtap file, a simple XML file format.
+ */
 bool vtAnimPath::Write(const char *fname)
 {
 	// Avoid trouble with '.' and ',' in Europe
@@ -477,6 +403,9 @@ void AnimPathVisitor::startElement(const char *name, const XMLAttributes &atts)
 
 /////////////////////////////////////////////
 
+/**
+ * Read the animation path from a .vtap file, a simple XML file format.
+ */
 bool vtAnimPath::Read(const char *fname)
 {
 	// Avoid trouble with '.' and ',' in Europe
@@ -632,4 +561,87 @@ void vtAnimContainer::AppendEntry(vtAnimEntry *pEntry)
 }
 
 #endif	// DOXYGEN_SHOULD_SKIP_THIS
+
+
+///////////////////////////////////////////////////////////////////////
+// class implementation for vtAnimPathEngine
+
+void vtAnimPathEngine::SetEnabled(bool bOn)
+{
+	bool bWas = m_bEnabled;
+	vtEnabledBase::SetEnabled(bOn);
+	if (!bWas && bOn)
+	{
+		// turning this engine on
+		m_fLastTime = vtGetTime();
+	}
+}
+
+void vtAnimPathEngine::Eval()
+{
+	if (m_pAnimationPath == NULL)
+		return;
+
+	float fNow = vtGetTime();
+	if (m_fLastTime==DBL_MAX)
+		m_fLastTime = fNow;
+
+	float fElapsed = fNow - m_fLastTime;
+	m_fTime += fElapsed * m_fSpeed;
+
+	if (m_fTime > m_pAnimationPath->GetLastTime())
+	{
+		if (m_bContinuous)
+		{
+			// wrap around
+			m_fTime -= m_pAnimationPath->GetPeriod();
+		}
+		else
+		{
+			// stop at the end
+			m_fTime = m_pAnimationPath->GetLastTime();
+			SetEnabled(false);
+		}
+	}
+
+	UpdateTargets();
+
+	m_fLastTime = fNow;
+}
+
+void vtAnimPathEngine::UpdateTargets()
+{
+	for (unsigned int i = 0; i < NumTargets(); i++)
+	{
+		vtTarget *target = GetTarget(i);
+		vtTransform *tr = dynamic_cast<vtTransform*>(target);
+		if (!tr)
+			continue;
+
+		ControlPoint cp;
+		if (m_pAnimationPath->GetInterpolatedControlPoint(m_fTime, cp))
+		{
+			FMatrix4 matrix;
+			cp.GetMatrix(matrix, m_bPosOnly);
+			if (m_bPosOnly)
+			{
+				// Only copy position
+				FPoint3 pos = matrix.GetTrans();
+				tr->SetTrans(pos);
+			}
+			else
+				tr->SetTransform1(matrix);
+		}
+	}
+}
+
+/**
+ * Set the engine back to the beginning of its path (time = 0).  This will
+ * affect the targets the next time Eval() or UpdateTargets() is called.
+ */
+void vtAnimPathEngine::Reset()
+{
+	m_fTime = 0;
+}
+
 
