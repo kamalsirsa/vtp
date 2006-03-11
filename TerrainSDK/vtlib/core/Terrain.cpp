@@ -1,7 +1,7 @@
 //
 // Terrain.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -43,10 +43,12 @@
 
 vtTerrain::vtTerrain()
 {
+	m_bIsCreated = false;
+
 	m_ocean_color.Set(40.0f/255, 75.0f/255, 124.0f/255);	// unshaded color
 	m_fog_color.Set(1.0f, 1.0f, 1.0f);
 
-	m_pTerrainGroup = (vtGroup*) NULL;
+	m_pTerrainGroup = NULL;
 	m_pImage = NULL;
 	m_pImageSource = NULL;
 	m_pTerrMats = NULL;
@@ -1127,9 +1129,9 @@ bool vtTerrain::GetGeoExtentsFromMetadata()
  * Attempt to load structures from a VTST file.  If successful, the structures
  * will be added to the Terrain's set of structure arrays.
  */
-vtStructureArray3d *vtTerrain::CreateStructuresFromXML(const vtString &strFilename)
+vtStructureArray3d *vtTerrain::LoadStructuresFromXML(const vtString &strFilename)
 {
-	VTLOG("CreateStructuresFromXML '%s'\n", (const char *) strFilename);
+	VTLOG("LoadStructuresFromXML '%s'\n", (const char *) strFilename);
 	vtStructureArray3d *structures = NewStructureArray();
 	if (!structures->ReadXML(strFilename))
 	{
@@ -1139,8 +1141,6 @@ vtStructureArray3d *vtTerrain::CreateStructuresFromXML(const vtString &strFilena
 		m_iStructSet = m_StructureSet.GetSize() - 1;
 		return NULL;
 	}
-
-	CreateStructures(structures);
 	return structures;
 }
 
@@ -1474,9 +1474,9 @@ void vtTerrain::_CreateVegetation()
 	// of the terrain.
 	m_PIA.SetProjection(GetProjection());
 
+	clock_t r1 = clock();	// start timing
 	if (m_Params.GetValueBool(STR_TREES))
 	{
-		clock_t r1 = clock();	// start timing
 
 		vtString fname = m_Params.GetValueString(STR_TREEFILE, true);
 
@@ -1501,29 +1501,28 @@ void vtTerrain::_CreateVegetation()
 			else
 				success = m_PIA.ReadVF(plants_path);
 			if (success)
-			{
-				// Create the 3d plants
-				VTLOG("\tLoaded plants file.  Creating Plant geometry..\n");
-				int created = m_PIA.CreatePlantNodes();
-				VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetNumEntities());
-				if (m_PIA.NumOffTerrain())
-					VTLOG("\t%d were off the terrain.\n", m_PIA.NumOffTerrain());
-
-				int i, size = m_PIA.GetNumEntities();
-				for (i = 0; i < size; i++)
-				{
-					vtTransform *pTrans = m_PIA.GetPlantNode(i);
-
-					// add tree to scene graph
-					if (pTrans)
-						AddNodeToVegGrid(pTrans);
-				}
-			}
+				VTLOG("\tLoaded plants file.\n");
 			else
 				VTLOG("\tCouldn't load VF file.\n");
 		}
-		VTLOG(" Vegetation: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
 	}
+	VTLOG1("  Creating Plant geometry..\n");
+	// Create the 3d plants
+	int created = m_PIA.CreatePlantNodes();
+	VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetNumEntities());
+	if (m_PIA.NumOffTerrain())
+		VTLOG("\t%d were off the terrain.\n", m_PIA.NumOffTerrain());
+
+	int i, size = m_PIA.GetNumEntities();
+	for (i = 0; i < size; i++)
+	{
+		vtTransform *pTrans = m_PIA.GetPlantNode(i);
+
+		// add tree to scene graph
+		if (pTrans)
+			AddNodeToVegGrid(pTrans);
+	}
+	VTLOG(" Vegetation: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
 }
 
 //
@@ -1554,7 +1553,6 @@ void vtTerrain::_CreateStructures()
 	// create built structures
 	vtStructure3d::InitializeMaterialArrays();
 
-	int created = 0;
 	unsigned int i, num = m_Params.m_Layers.size();
 	for (i = 0; i < num; i++)
 	{
@@ -1576,17 +1574,22 @@ void vtTerrain::_CreateStructures()
 		else
 		{
 			VTLOG("\tFound: %s\n", (const char *) building_path);
-			vtStructureArray3d *sa = CreateStructuresFromXML(building_path);
+			vtStructureArray3d *sa = LoadStructuresFromXML(building_path);
 			if (sa)
 			{
-				created++;
-
 				// If the user wants it to start hidden, hide it
 				bool bVisible;
 				if (lay.GetValueBool("visible", bVisible))
 					sa->SetEnabled(bVisible);
 			}
 		}
+	}
+	int created = 0;
+	for (i = 0; i < m_StructureSet.GetSize(); i++)
+	{
+		vtStructureArray3d *structures = m_StructureSet[i];
+		CreateStructures(structures);
+		created++;
 	}
 	if (created == 0)
 	{
@@ -1603,6 +1606,7 @@ void vtTerrain::_CreateStructures()
 
 void vtTerrain::_CreateAbstractLayers()
 {
+	// Go through the layers in the parameters, and try to load them
 	unsigned int i, num = m_Params.m_Layers.size();
 	for (i = 0; i < num; i++)
 	{
@@ -1630,7 +1634,7 @@ void vtTerrain::_CreateAbstractLayers()
 		if (path == "")
 		{
 			VTLOG("Couldn't find features file '%s'\n", (const char *) fname);
-			return;
+			continue;
 		}
 
 		vtFeatureLoader loader;
@@ -1638,13 +1642,21 @@ void vtTerrain::_CreateAbstractLayers()
 		if (!feat)
 		{
 			VTLOG("Couldn't read features from file '%s'\n", (const char *) path);
-			return;
+			continue;
 		}
 		VTLOG("Read features from file '%s'\n", (const char *) path);
 
-		CreateStyledFeatures(*feat, lay);
+		// Copy all the other attributes to the new featureset
+		feat->GetProperties() = lay;
 
-		delete feat;
+		m_AbstractLayers.Append(feat);
+	}
+
+	// Now for each layer that we have, create the geometry
+	for (i = 0; i < m_AbstractLayers.GetSize(); i++)
+	{
+		vtFeatureSet *feat = m_AbstractLayers[i];
+		CreateStyledFeatures(*feat, feat->GetProperties());
 	}
 }
 
@@ -2108,15 +2120,11 @@ void vtTerrain::_ComputeCenterLocation()
 }
 
 
-/**
- * First step in terrain creation: load elevation.
- * You can use these methods to build a terrain step by step, or simply
- * use the method vtTerrainScene::BuildTerrain, which calls them all.
- */
-bool vtTerrain::CreateStep1()
+void vtTerrain::CreateStep0()
 {
-	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	// Only do this method once
+	if (m_pTerrainGroup)
+		return;
 
 	// create terrain group - this holds all surfaces for the terrain
 	m_pTerrainGroup = new vtGroup;
@@ -2132,9 +2140,21 @@ bool vtTerrain::CreateStep1()
 	m_pEngineGroup->SetName2(name);
 	vtGetScene()->AddEngine(m_pEngineGroup);
 	m_AnimContainer.SetEngineContainer(m_pEngineGroup);
+}
+
+/**
+ * First step in terrain creation: load elevation.
+ * You can use these methods to build a terrain step by step, or simply
+ * use the method vtTerrainScene::BuildTerrain, which calls them all.
+ */
+bool vtTerrain::CreateStep1()
+{
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	m_fVerticalExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
 
+	// User may have have supplied a grid directly, via SetLocalGrid
 	if (m_pInputGrid)
 	{
 		m_pElevGrid = m_pInputGrid;
@@ -2143,8 +2163,20 @@ bool vtTerrain::CreateStep1()
 		m_proj = m_pElevGrid->GetProjection();
 		// set global projection based on this terrain
 		g_Conv = m_pElevGrid->m_Conversion;
+		m_bIsCreated = true;
 		return true;
 	}
+	// User may have supplied a TIN directly, via SetTin
+	if (m_pTin)
+	{
+		m_pHeightField = m_pTin;
+		m_proj = m_pTin->m_proj;
+		// set global projection based on this terrain
+		g_Conv = m_pTin->m_Conversion;
+		m_bIsCreated = true;
+		return true;
+	}
+
 	vtString fname;
 	vtString elev_file = m_Params.GetValueString(STR_ELEVFILE, true);
 	fname = "Elevation/";
@@ -2270,6 +2302,7 @@ bool vtTerrain::CreateStep1()
 	m_proj.GetTextDescription(type, value);
 	VTLOG(" Projection of the terrain: %s, '%s'\n", type, value);
 
+	m_bIsCreated = true;
 	return true;
 }
 
@@ -2448,7 +2481,7 @@ bool vtTerrain::CreateStep5()
 
 bool vtTerrain::IsCreated()
 {
-	return m_pTerrainGroup != NULL;
+	return m_bIsCreated;
 }
 
 void vtTerrain::Enable(bool bVisible)
@@ -3007,6 +3040,10 @@ void vtTerrain::DeleteSelectedPlants()
 	}
 }
 
+/**
+ * Set the list of plant species that this terrain should use.  Using this
+ * method allows a set of species to be shared between many terrains.
+ */
 void vtTerrain::SetPlantList(vtSpeciesList3d *pPlantList)
 {
 	m_pPlantList = pPlantList;

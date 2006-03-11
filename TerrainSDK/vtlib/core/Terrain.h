@@ -1,7 +1,7 @@
 //
 // Terrain.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -73,18 +73,34 @@ enum TFType
 	TFT_ROADS
 };
 
+// Container for the abstract layers
+typedef Array<vtFeatureSet*> vtAbstractLayers;
 
 /**
  * The vtTerrain class represents a terrain, which is a part of the surface
  *  of the earth.
  *
- * It is described by a set of parameters such as elevation, vegetation,
- * and time of day.  These terrain parameters are contained in the class TParams.
+ * It is generally described by a set of parameters such as elevation,
+ * vegetation, and time of day.  These terrain parameters are contained
+ * in the class TParams.
  *
  * To create a new terrain, first construct a vtTerrain and set its
- * parameters with SetParams() or SetParamFile().  You can then build the
- * terrain using the CreateStep methods, or add it to a vtTerrainScene
- * and use vtTerrainScene::BuildTerrain.
+ * parameters with SetParams() or SetParamFile().  
+ * You can also set many properties of the terrain directly, which is useful
+ * if you want to set them from memory instead of from disk.  These include:
+	- Elevation grid: use SetLocalGrid().
+	- Elevation TIN: use SetTin().
+	- Structures: use NewStructureArray(), then fill the array with your structures.
+	- Vegetation: call SetPlantList(), then GetPlantInstances().
+	- Abstract layers: use GetAbstractLayers(), then append any layers you have.
+	  Each layer is a subclass of vtFeatureSet.  The features will be created
+	  according to the properties you have set with vtFeatureSet::SetProperties().
+	  The properties you can set are documented with the class TParams.
+	- Animation paths: use GetAnimContainer(), then add your own animpaths.
+ *
+ * You can then build the terrain using the CreateStep methods, or add it
+ * to a vtTerrainScene and use vtTerrainScene::BuildTerrain.
+ *
  */
 class vtTerrain : public CultureExtension
 {
@@ -116,6 +132,7 @@ public:
 
 	// You can use these methods to build a terrain step by step,
 	// or simply use the method vtTerrainScene::BuildTerrain.
+	void CreateStep0();
 	bool CreateStep1();
 	bool CreateStep2(vtTransform *pSunLight);
 	bool CreateStep3();
@@ -176,6 +193,7 @@ public:
 	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
 	void DeleteSelectedPlants();
 	void SetPlantList(vtSpeciesList3d *pPlantList);
+	/// Get the plant array for this terrain.  You can modify it directly.
 	vtPlantInstanceArray3d &GetPlantInstances() { return m_PIA; }
 	bool AddNodeToVegGrid(vtTransform *pTrans);
 
@@ -185,7 +203,7 @@ public:
 	int GetStructureIndex();
 	void SetStructureIndex(int index);
 	vtStructureArray3d *NewStructureArray();
-	vtStructureArray3d *CreateStructuresFromXML(const vtString &strFilename);
+	vtStructureArray3d *LoadStructuresFromXML(const vtString &strFilename);
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
 	void DeleteSelectedStructures();
@@ -196,6 +214,10 @@ public:
 	bool AddNodeToStructGrid(vtGeom *pGeom);
 	void RemoveNodeFromStructGrid(vtNode *pNode);
 	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
+
+	// abstract layers
+	/// Get the set of abstract layers for this terrain.  You can modify them.
+	vtAbstractLayers &GetAbstractLayers() { return m_AbstractLayers; }
 
 	// roads
 	vtRoadMap3d *GetRoadMap() { return m_pRoadMap; }
@@ -256,7 +278,7 @@ public:
 	void Visited(bool bVisited) { m_bVisited = bVisited; }
 	bool IsVisited() { return m_bVisited; }
 
-	// Access the animation paths associated with this terrain
+	/// Access the animation paths associated with this terrain
 	vtAnimContainer *GetAnimContainer() { return &m_AnimContainer; }
 
 	// Sky and Fog
@@ -366,6 +388,9 @@ protected:
 	vtMaterialArray *m_pDetailMats;
 	bool			m_bBothSides;
 
+	// abstract layers
+	vtAbstractLayers m_AbstractLayers;
+
 	// roads
 	vtGroup			*m_pRoadGroup;
 	vtRoadMap3d		*m_pRoadMap;
@@ -413,6 +438,7 @@ protected:
 	vtGroup		*m_pOverlay;
 
 	vtProjection	m_proj;
+	bool			m_bIsCreated;
 };
 
 /*@}*/	// Group terrain
