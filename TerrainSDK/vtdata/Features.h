@@ -1,7 +1,7 @@
 //
 // Features.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -197,6 +197,9 @@ public:
 	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 	vtProjection &GetAtProjection() { return m_proj; }
 
+	void SetProperties(vtTagArray &props) { m_Properties = props; }
+	vtTagArray &GetProperties() { return m_Properties; }
+
 protected:
 	// these must be implemented for each type of geometry
 	virtual bool IsInsideRect(int iElem, const DRECT &rect) = 0;
@@ -209,13 +212,20 @@ protected:
 	void ParseDBFRecords(DBFHandle db, bool progress_callback(int)=0);
 
 	OGRwkbGeometryType		m_eGeomType;
-	std::vector<unsigned char> m_Flags;
-	Array<Field*> m_fields;
 
+	// The size of the flags array will match the number of elements, and
+	//  contains bit-flags such as FF_SELECTED.
+	std::vector<unsigned char> m_Flags;
+
+	Array<Field*> m_fields;
 	vtProjection	m_proj;
 
 	// remember the filename these feature were loaded from or saved to
 	vtString	m_strFilename;
+
+	// A set of properties that can provide additional information, such as
+	//  style information for visual display.
+	vtTagArray	m_Properties;
 };
 
 /**
