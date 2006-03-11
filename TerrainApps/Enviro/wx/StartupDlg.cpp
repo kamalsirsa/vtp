@@ -16,11 +16,11 @@
 #  include "wx/wx.h"
 #endif
 
-#if defined(UNIX)
-#  include <X11/Xlib.h>
-#  include <X11/Xutil.h>
-#  include <GL/glx.h>
-#endif
+//#if defined(UNIX)
+//#  include <X11/Xlib.h>
+//#  include <X11/Xutil.h>
+//#  include <GL/glx.h>
+//#endif
 
 #include "vtlib/vtlib.h"	// mostly for gl.h
 
@@ -35,9 +35,12 @@
 
 DECLARE_APP(EnviroApp);
 
+#include "wx/glcanvas.h"
+
 //
 // Helper: find the largest texture size supported by OpenGL
 //
+/*
 #ifdef WIN32
 static void ShowOGLInfo(bool bLog, HDC hdc)
 #else
@@ -172,6 +175,53 @@ static void ShowOGLInfo(bool bLog)
 	XCloseDisplay(dpy);
 #endif
 }
+*/
+
+static void ShowOGLInfo2(bool bLog)
+{
+	wxFrame *frame = new wxFrame();
+	frame->Create(NULL, -1, _T("Test"));
+	wxGLCanvas *canvas = new wxGLCanvas(frame);
+	frame->Show();
+
+	GLint value;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &value);
+	GLenum error = glGetError();
+	if (error == GL_INVALID_OPERATION)
+		value = 0;
+
+	if (bLog)
+	{
+		VTLOG("\tOpenGL Version: %hs\n\tVendor: %hs\n\tRenderer: %hs\n"
+			"\tMaximum Texture Dimension: %d\n",
+			glGetString(GL_VERSION), glGetString(GL_VENDOR),
+			glGetString(GL_RENDERER), value);
+	}
+	else
+	{
+		wxString2 msg;
+
+		wxString2 str;
+		str.Printf(_T("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n"),
+			glGetString(GL_VERSION), glGetString(GL_VENDOR),
+			glGetString(GL_RENDERER));
+		msg += str;
+		str.Printf(_("Maximum Texture Dimension: %d\n"), value);
+		msg += str;
+		msg += _T("Extensions: ");
+		msg += glGetString(GL_EXTENSIONS);
+
+		wxDialog dlg(NULL, -1, _("OpenGL Info"), wxDefaultPosition);
+		TextDialogFunc(&dlg, true);
+		wxTextCtrl* pText = (wxTextCtrl*) dlg.FindWindow( ID_TEXT );
+		pText->SetValue(msg);
+
+		dlg.ShowModal();
+	}
+
+	frame->Close();
+	delete frame;
+}
 
 // WDR: class implementations
 
@@ -259,13 +309,14 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	VTLOG("StartupDlg Init.\n");
 
 	// log OpenGL info, including max texture size
-#ifdef WIN32
-	wxClientDC wdc(this);
-	HDC hdc = (HDC) wdc.GetHDC();
-	ShowOGLInfo(true, hdc);
-#else
-	ShowOGLInfo(true);
-#endif
+//#ifdef WIN32
+//	wxClientDC wdc(this);
+//	HDC hdc = (HDC) wdc.GetHDC();
+//	ShowOGLInfo(true, hdc);
+//#else
+//	ShowOGLInfo(true);
+//#endif
+	ShowOGLInfo2(true);
 
 	// Populate Earth Image files choices
 	vtStringArray &paths = g_Options.m_DataPaths;
@@ -355,13 +406,14 @@ void StartupDlg::OnEarthView( wxCommandEvent &event )
 void StartupDlg::OnOpenGLInfo( wxCommandEvent &event )
 {
 	// display OpenGL info, including max texture size
-#ifdef WIN32
-	wxClientDC wdc(this);
-	HDC hdc = (HDC) wdc.GetHDC();
-	ShowOGLInfo(false, hdc);
-#else
-	ShowOGLInfo(false);
-#endif
+//#ifdef WIN32
+//	wxClientDC wdc(this);
+//	HDC hdc = (HDC) wdc.GetHDC();
+//	ShowOGLInfo(false, hdc);
+//#else
+//	ShowOGLInfo(false);
+//#endif
+	ShowOGLInfo2(false);
 }
 
 void StartupDlg::OnOptions( wxCommandEvent &event )
