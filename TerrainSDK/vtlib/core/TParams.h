@@ -26,13 +26,17 @@ enum TextureEnum {
 	TE_TILESET
 };
 
+/**
+ * Enumeration for CLOD methods which vtlib knows about.  To extend vtlib
+ * with your own CLOD algorithm class, add a value here.
+ */
 enum LodMethodEnum {
-	LM_ROETTGER,
-	LM_TOPOVISTA,
-	LM_MCNALLY,
-	LM_DEMETER,
-	LM_CUSTOM,
-	LM_BRYANQUAD
+	LM_ROETTGER,	///< SRTerrain
+	LM_TOPOVISTA,	///< TVTerrain
+	LM_MCNALLY,		///< SMTerrain
+	LM_DEMETER,		///< DemeterTerrain
+	LM_CUSTOM,		///< CustomTerrain
+	LM_BRYANQUAD	///< BryanTerrain
 };
 
 // TParam Layer Types
@@ -172,7 +176,7 @@ protected:
 	<td>Int</td>
 	<td>0</td>
 	<td>The type of CLOD to use for single elevation grids (Surface_Type=0).
-		See LodMethodEnum for values.</td>
+		See #LodMethodEnum for values.</td>
 </tr>
 <tr>
 	<td>Tri_Count</td>
@@ -200,23 +204,99 @@ protected:
 	<td>For tiled terrain (Surface_Type=2), the size of the tile cache to
 	keep in host RAM, in MB.</td>
 </tr>
+<tr>
+	<td>Time_On</td>
+	<td>Bool</td>
+	<td>false</td>
+	<td>Try for the time-of-day engine to be on.</td>
+</tr>
+<tr>
+	<td>Init_Time</td>
+	<td>String</td>
+	<td>104 2 21 10 0 0</td>
+	<td>Initial time for the time-of-day engine.  The values are: year (+1900),
+		month (0-based), day, hour, minute, second.  The default is 2004,
+		March 21, 10am.</td>
+</tr>
+<tr>
+	<td>Time_Speed</td>
+	<td>Float</td>
+	<td>1.0</td>
+	<td>Speed of the time-of-day engine.  A value of 1 matched reality.  A value
+		of 10 means that time moves 10 times faster than reality.</td>
+</tr>
+<tr>
+	<td>Texture</td>
+	<td>Int</td>
+	<td>0</td>
+	<td>Enumeration for source of ground texture. 0=none, 1=single, 2=4x4tile,
+		3=derived from elevation, 4=tileset</td>
+</tr>
+<tr>
+	<td>Tile_Size</td>
+	<td>Int</td>
+	<td>512</td>
+	<td>For the 4x4tile texturing only, the size in texels of each tile.</td>
+</tr>
+<tr>
+	<td>Texture_Filename</td>
+	<td>String</td>
+	<td></td>
+	<td>For the single texture or tileset, the filename to load from.</td>
+</tr>
+<tr>
+	<td>Base_Texture</td>
+	<td>String</td>
+	<td></td>
+	<td>For the 4x4tile texturing, the base of the filename to load from.</td>
+</tr>
+<tr>
+	<td>Texture_4by4</td>
+	<td>String</td>
+	<td></td>
+	<td>For the 4x4tile texturing, the full filename to load from.</td>
+</tr>
+<tr>
+	<td>MIP_Map</td>
+	<td>Bool</td>
+	<td>false</td>
+	<td>Turn on mipmapping for the ground texture.</td>
+</tr>
+<tr>
+	<td>Request_16_Bit</td>
+	<td>Bool</td>
+	<td>true</td>
+	<td>Tells OpenGL to store the textures on the graphics card with 16-bit
+		depth, which can save some graphics memory at a small cost in quality.</td>
+</tr>
+<tr>
+	<td>Pre-Light</td>
+	<td>Bool</td>
+	<td>true</td>
+	<td>Shades the texture (darking based on the location of the sunlight).
+		This shading directly affects the texels of the ground texture, often
+		called "baked-in" lighting.</td>
+</tr>
+<tr>
+	<td>PreLight_Factor</td>
+	<td>Float</td>
+	<td>1.0</td>
+	<td>The intensity of the pre-light shading.  1.0 gives full shading,
+		lower values give a more subtle effect.</td>
+</tr>
+<tr>
+	<td>Cast_Shadows</td>
+	<td>Bool</td>
+	<td>false</td>
+	<td>In addition to the normal (dot-product) shading of the texture based
+		on the elevation surface, also cast shadows from the terrain onto
+		itself.  This can take up to a few seconds.  The time taken is
+		proportional to the number of texels in shadow.</td>
+</tr>
 </table>
 
 Remaining to be documented in the table: 
 
-Time_On
-Init_Time
-Time_Speed
-Texture	// 0=none, 1=single, 2=tile4x4, 3=derived, 4=tileset
-Tile_Size
-Texture_Filename
-Base_Texture
-Texture_Format	// 0=bmp, 1=jpg
-MIP_Map
-Request_16_Bit
-Pre-Light
-PreLight_Factor
-Cast_Shadows
 Color_Map
 Texture_Retain
 Detail_Texture
@@ -258,7 +338,32 @@ Background_Color
 Distance_Tool_Height
 HUD_Overlay
 Scenario_Name
-	*/
+
+ * <h3>Abstract Layers</h3>
+ * A terrain can have any number of abstract layers, which are (generally) loaded
+ * from GIS files on disk, then created in 3D as geometry or floating text labels.
+ * Each layer has a number of properties which indicates how the features should
+ * appear.  All properties are optional.  The properties are:
+	- "Filename": If the layer should be loaded from disk, this is the filename
+		to load from.  It can be a relative path anywhere on the VTP data paths,
+		or an absolute path.
+	- "Geometry": true to show geometry (such as 3D lines) for the features.
+	 - "GeomColor": The color of each geometry (R,G,B as float 0..1)
+	 - "GeomHeight": The height in meters of each geometry above the ground.
+	 - "Tessellate": true to tesslate the geometry of each feature before draping
+		it on the ground.  This can produce a smoother result.
+	 - "LineWidth": Pixel width of the 3D lines to create.  Default it 1.
+	- "Labels": true to show floating text labels for the features.
+	 - "LabelColor": The color of each label (R,G,B as float 0..1)
+	 - "TextFieldIndex": The 0-based index of the field which contains the text you
+		want to use for the label.  For example, if you have several fields called
+		"ID", "Name", and "Address", and you want to show "Name", use the value 1.
+	 - "ColorFieldIndex": Similarly, if you want the color of each label to be
+		based on a field, this is the index of that field.
+	 - "Elevation": Height in meters above the ground.  This is the distance from
+		the ground surface to the lower edge of the text label.
+	 - "LabelSize": Size (vertical extent) of the text labels.
+ */
 class TParams : public vtTagArray
 {
 public:
