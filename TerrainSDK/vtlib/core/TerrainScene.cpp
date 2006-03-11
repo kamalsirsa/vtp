@@ -220,6 +220,8 @@ void vtTerrainScene::AppendTerrain(vtTerrain *pTerrain)
  */
 vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 {
+	pTerrain->CreateStep0();
+
 	if (!pTerrain->CreateStep1())
 		return NULL;
 
