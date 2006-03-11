@@ -68,7 +68,7 @@ void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color)
 int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	const char *wildcard, int omit_chars)
 {
-//  VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
+//	VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
 
 	int entries = 0, matches = 0;
 
@@ -91,7 +91,7 @@ int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 			matches++;
 		}
 	}
-//  VTLOG(" %d entries, %d matches\n", entries, matches);
+//	VTLOG(" %d entries, %d matches\n", entries, matches);
 	return matches;
 }
 
