@@ -1477,7 +1477,6 @@ void vtTerrain::_CreateVegetation()
 	clock_t r1 = clock();	// start timing
 	if (m_Params.GetValueBool(STR_TREES))
 	{
-
 		vtString fname = m_Params.GetValueString(STR_TREEFILE, true);
 
 		// Read the VF file
@@ -1501,7 +1500,10 @@ void vtTerrain::_CreateVegetation()
 			else
 				success = m_PIA.ReadVF(plants_path);
 			if (success)
+			{
 				VTLOG("\tLoaded plants file.\n");
+				m_PIA.SetFilename(fname);
+			}
 			else
 				VTLOG("\tCouldn't load VF file.\n");
 		}
