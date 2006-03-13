@@ -193,6 +193,7 @@ public:
 	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
 	void DeleteSelectedPlants();
 	void SetPlantList(vtSpeciesList3d *pPlantList);
+	vtSpeciesList3d *GetPlantList() { return m_pPlantList; }
 	/// Get the plant array for this terrain.  You can modify it directly.
 	vtPlantInstanceArray3d &GetPlantInstances() { return m_PIA; }
 	bool AddNodeToVegGrid(vtTransform *pTrans);
