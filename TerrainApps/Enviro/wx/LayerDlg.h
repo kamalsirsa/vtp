@@ -43,6 +43,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
+	~LayerDlg();
 	
 	// WDR: method declarations for LayerDlg
 	wxButton* GetLayerRemove()  { return (wxButton*) FindWindow( ID_LAYER_REMOVE ); }
@@ -67,6 +68,7 @@ private:
 	wxTreeCtrl *m_pTree;
 	wxTreeItemId m_root;
 	wxTreeItemId m_item;
+	wxImageList *m_imageListNormal;
 	bool	m_bShowAll;
 
 private:
@@ -74,6 +76,7 @@ private:
 	vtStructureArray3d *GetStructureArray3dFromItem(wxTreeItemId item);
 	LayerItemData *GetLayerDataFromItem(wxTreeItemId item);
 	void ToggleVisible(bool bVis, wxTreeItemId id);
+	void CreateImageList(int size = 16);
 
 	// WDR: handler declarations for LayerDlg
 	void OnLayerRemove( wxCommandEvent &event );

@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.cpp
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,6 +20,24 @@
 #include "EnviroGUI.h"  // for GetCurrentTerrain
 
 #include "LayerDlg.h"
+
+#if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
+#  include "building.xpm"
+#  include "road.xpm"
+#  include "veg1.xpm"
+#  include "raw.xpm"
+#  include "fence.xpm"
+#  include "instance.xpm"
+#  include "icon8.xpm"
+#endif
+
+#define ICON_BUILDING	0
+#define ICON_ROAD		1
+#define ICON_VEG1		2
+#define ICON_RAW		3
+#define ICON_FENCE		4
+#define ICON_INSTANCE	5
+#define ICON_TOP		6
 
 /////////////////////////////
 
@@ -48,12 +66,53 @@ LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	wxDialog( parent, id, title, position, size, style )
 {
-	m_pTree = NULL;
-	m_bShowAll = false;
-
 	// WDR: dialog function LayerDialogFunc for LayerDlg
 	LayerDialogFunc( this, TRUE );
+
+	m_pTree = GetTree();
+	m_bShowAll = false;
+	m_imageListNormal = NULL;
+
+	CreateImageList(16);
 }
+
+LayerDlg::~LayerDlg()
+{
+	delete m_imageListNormal;
+}
+
+void LayerDlg::CreateImageList(int size)
+{
+	delete m_imageListNormal;
+
+	if ( size == -1 )
+	{
+		m_imageListNormal = NULL;
+		return;
+	}
+	// Make an image list containing small icons
+	m_imageListNormal = new wxImageList(size, size, TRUE);
+
+	wxIcon icons[7];
+	icons[0] = wxICON(building);
+	icons[1] = wxICON(road);
+	icons[2] = wxICON(veg1);
+	icons[3] = wxICON(raw);
+	icons[4] = wxICON(fence);
+	icons[5] = wxICON(instance);
+	icons[6] = wxICON(icon8);
+
+	int sizeOrig = icons[0].GetWidth();
+	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )
+	{
+		if ( size == sizeOrig )
+			m_imageListNormal->Add(icons[i]);
+		else
+			m_imageListNormal->Add(wxBitmap(wxBitmap(icons[i]).ConvertToImage().Rescale(size, size)));
+	}
+	m_pTree->SetImageList(m_imageListNormal);
+}
+
 
 void LayerDlg::SetShowAll(bool bTrue)
 {
@@ -109,8 +168,6 @@ LayerItemData *LayerDlg::GetLayerDataFromItem(wxTreeItemId item)
 
 void LayerDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	m_pTree = GetTree();
-
 	RefreshTreeContents();
 	m_item = m_pTree->GetSelection();
 	UpdateEnabling();
@@ -148,19 +205,19 @@ void LayerDlg::RefreshTreeTerrain()
 	if (!terr)
 		return;
 
-	m_root = m_pTree->AddRoot(_("Layers"));
+	m_root = m_pTree->AddRoot(_("Layers"), ICON_TOP, ICON_TOP);
 
+	wxString2 str;
+	vtString vs;
 	unsigned int i, j;
 	StructureSet &set = terr->GetStructureSet();
 	vtStructureArray3d *sa;
 	for (i = 0; i < set.GetSize(); i++)
 	{
-		wxString2 str;
-
 		sa = set[i];
 
 		str = sa->GetFilename();
-		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, -1, -1);
+		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_BUILDING, ICON_BUILDING);
 		if (sa == terr->GetStructures())
 			m_pTree->SetItemBold(hLayer, true);
 		m_pTree->SetItemData(hLayer, new LayerItemData(sa, i, -1));
@@ -171,12 +228,12 @@ void LayerDlg::RefreshTreeTerrain()
 			for (j = 0; j < sa->GetSize(); j++)
 			{
 				if (sa->GetBuilding(j))
-					hItem = m_pTree->AppendItem(hLayer, _("Building"), -1, -1);
+					hItem = m_pTree->AppendItem(hLayer, _("Building"), ICON_BUILDING, ICON_BUILDING);
 				if (sa->GetFence(j))
-					hItem = m_pTree->AppendItem(hLayer, _("Fence"), -1, -1);
+					hItem = m_pTree->AppendItem(hLayer, _("Fence"), ICON_FENCE, ICON_FENCE);
 				if (vtStructInstance *inst = sa->GetInstance(j))
 				{
-					vtString vs = inst->GetValueString("filename", true, true);
+					vs = inst->GetValueString("filename", true, true);
 					if (vs != "")
 					{
 						str = "File ";
@@ -188,7 +245,7 @@ void LayerDlg::RefreshTreeTerrain()
 						str = "Item ";
 						str += vs;
 					}
-					hItem = m_pTree->AppendItem(hLayer, str, -1, -1);
+					hItem = m_pTree->AppendItem(hLayer, str, ICON_INSTANCE, ICON_INSTANCE);
 				}
 				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, j));
 			}
@@ -205,24 +262,66 @@ void LayerDlg::RefreshTreeTerrain()
 			if (bld)
 			{
 				str.Printf(_("Buildings: %d"), bld);
-				hItem = m_pTree->AppendItem(hLayer, str, -1, -1);
+				hItem = m_pTree->AppendItem(hLayer, str, ICON_BUILDING, ICON_BUILDING);
 				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, -1));
 			}
 			if (fen)
 			{
 				str.Printf(_("Fences: %d"), fen);
-				hItem = m_pTree->AppendItem(hLayer, str, -1, -1);
+				hItem = m_pTree->AppendItem(hLayer, str, ICON_FENCE, ICON_FENCE);
 				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, -1));
 			}
 			if (inst)
 			{
 				str.Printf(_("Instances: %d"), inst);
-				hItem = m_pTree->AppendItem(hLayer, str, -1, -1);
+				hItem = m_pTree->AppendItem(hLayer, str, ICON_INSTANCE, ICON_INSTANCE);
 				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, -1));
 			}
 		}
 		m_pTree->Expand(hLayer);
 	}
+
+	// Now, abstract layers
+	vtAbstractLayers &raw = terr->GetAbstractLayers();
+	for (i = 0; i < raw.GetSize(); i++)
+	{
+		vtFeatureSet *set = raw[i];
+
+		vs = set->GetFilename();
+		str.from_utf8(vs);
+
+		str += _(" (Type: ");
+		str += OGRGeometryTypeToName(set->GetGeomType());
+
+		str += _(", Features: ");
+		vs.Format("%d", set->GetNumEntities());
+		str += vs;
+		str += _T(")");
+
+		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_RAW, ICON_RAW);
+		//if (sa == terr->GetStructures())
+		//	m_pTree->SetItemBold(hLayer, true);
+		//m_pTree->SetItemData(hLayer, new LayerItemData(sa, i, -1));
+	}
+
+	// Vegetation
+	if (terr->GetPlantList())
+	{
+		vtPlantInstanceArray3d &pia = terr->GetPlantInstances();
+		if (pia.GetNumEntities() > 0)
+		{
+			vs = pia.GetFilename();
+			str.from_utf8(vs);
+
+			str += _(" (Plants: ");
+			vs.Format("%d", pia.GetNumEntities());
+			str += vs;
+			str += _T(")");
+
+			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_VEG1, ICON_VEG1);
+		}
+	}
+
 	m_pTree->Expand(m_root);
 }
 

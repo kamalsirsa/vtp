@@ -42,3 +42,11 @@ icon7   ICON "icons/mesh.ico"
 icon8   ICON "icons/top.ico"
 icon9   ICON "icons/unknown.ico"
 icon10  ICON "icons/xform.ico"
+
+building  ICON "icons/building.ico"
+road	  ICON "icons/road.ico"
+veg1	  ICON "icons/veg1.ico"
+raw		  ICON "icons/raw.ico"
+fence	  ICON "icons/fence.ico"
+instance  ICON "icons/instance.ico"
+
