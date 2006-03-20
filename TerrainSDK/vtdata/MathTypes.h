@@ -622,6 +622,11 @@ class FBox3
 {
 public:
 	FBox3() {}
+	FBox3(float x1, float y1, float z1, float x2, float y2, float z2)
+	{
+		min.Set(x1, y1, z1);
+		max.Set(x2, y2, z2);
+	}
 	FBox3(const FPoint3 &min1, const FPoint3 &max1) { min = min1; max = max1; }
 
 	void InsideOut()
