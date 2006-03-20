@@ -120,15 +120,15 @@ void vtTerrainScene::_CreateSky()
 {
 	// create the sun
 	VTLOG(" Creating Main Light\n");
-	vtLight *pLight = new vtLight();
+	vtLight *pLight = new vtLight;
 	pLight->SetName2("Main Light");
-	m_pSunLight = new vtTransform();
+	m_pSunLight = new vtTransform;
 	m_pSunLight->AddChild(pLight);
 	m_pSunLight->SetName2("SunLight");
 	m_pTop->AddChild(m_pSunLight);
 
 	VTLOG(" Creating SkyDome\n");
-	m_pAtmosphereGroup = new vtGroup();
+	m_pAtmosphereGroup = new vtGroup;
 	m_pAtmosphereGroup->SetName2("Atmosphere Group");
 	m_pTop->AddChild(m_pAtmosphereGroup);
 
@@ -142,14 +142,14 @@ void vtTerrainScene::_CreateSky()
 	VTLOG("   Moon: '%s'\n", (const char *) moon);
 
 	// create a day-night dome
-	m_pSkyDome = new vtSkyDome();
+	m_pSkyDome = new vtSkyDome;
 	m_pSkyDome->Create(bsc, 3, 1.0f, sun, moon);	// initially unit radius
 	m_pSkyDome->SetDayColors(horizon_color, azimuth_color);
 	m_pSkyDome->SetName2("The Sky");
 	m_pSkyDome->SetSunLight(GetSunLight());
 	m_pAtmosphereGroup->AddChild(m_pSkyDome);
 
-	m_pSkyTrack = new vtSkyTrackEngine();
+	m_pSkyTrack = new vtSkyTrackEngine;
 	m_pSkyTrack->SetName2("Sky-Camera-Following");
 	m_pSkyTrack->m_pCamera = vtGetScene()->GetCamera();
 	m_pSkyTrack->SetTarget(m_pSkyDome);
@@ -194,7 +194,7 @@ vtGroup *vtTerrainScene::BeginTerrainScene()
 	VTLOG("BeginTerrainScene:\n");
 	_CreateEngines();
 
-	m_pTop = new vtGroup();
+	m_pTop = new vtGroup;
 	m_pTop->SetName2("All Terrain");
 
 	// create sky group - this holds all celestial objects
