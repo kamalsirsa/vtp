@@ -18,12 +18,12 @@
 
 // OpenGL headers
 #if WIN32
-  #if VTLIB_PLIB || VTLIB_NI
-	#include <windows.h>	// PLIB and PSM require the full windows.h
+  // Some scene graph libraries will need the full windows.h header on Win32
+  #if VTLIB_PLIB || VTLIB_NI || VTLIB_OPENSG
+	#include <windows.h>
 	#undef min
 	#undef max
-  #endif
-  #if !VTLIB_PSM && !VTLIB_NI
+  #else
 	// these definitions let us include gl.h without the entire Windows headers
 	#include "core/winglue.h"
   #endif
@@ -102,6 +102,19 @@
 	#include "vtosg/MeshMat.h"
 	#include "vtosg/NodeOSG.h"
 	#include "vtosg/SceneOSG.h"
+#endif // OSG
+
+///////////////////////////////// OPENSG //////////////////////////////
+#if VTLIB_OPENSG
+    #ifdef _MSC_VER
+      #pragma warning(disable: 4511) // turn off warning about copy constructors
+      #pragma warning(disable: 4512) // turn off warning about assignment operators
+    #endif
+    #include "vtopensg/ImageOSG.h"
+    #include "vtopensg/MathOSG.h"
+    #include "vtopensg/MeshMat.h"
+    #include "vtopensg/NodeOSG.h"
+    #include "vtopensg/SceneOSG.h"
 #endif // OSG
 
 ///////////////////////////////// NI //////////////////////////////
