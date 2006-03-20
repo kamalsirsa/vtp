@@ -215,7 +215,7 @@ vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, (steps+1)*4);
 
 	FPoint3 p, diff = max1 - min1, step = diff / (float)steps;
-	p.y = diff.y;
+	p.y = min1.y;
 	int i, idx = 0;
 	for (i = 0; i < steps+1; i++)
 	{
