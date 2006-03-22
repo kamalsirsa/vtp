@@ -1,7 +1,7 @@
 //
 // Name:		LocationDlg.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -510,7 +510,12 @@ void LocationDlg::OnRecord1( wxCommandEvent &event )
 
 	wxString str;
 	str.Printf(_T("%d: time %lf"), path->GetNumPoints()-1, fTime);
-	GetAnimTree()->AppendItem(m_current, str);
+
+	// Find the current animation
+	wxTreeItemId CurrentAnimation = GetAnimTree()->GetItemParent(m_current);
+	if (CurrentAnimation == m_root)
+		CurrentAnimation = m_current;
+	GetAnimTree()->AppendItem(CurrentAnimation, str);
 
 	RefreshAnimsText();
 	UpdateEnabling();   // Smooth might be allowed now
