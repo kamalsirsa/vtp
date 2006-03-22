@@ -417,9 +417,20 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		FPoint3 middle;
 		FMatrix4 mat;
 
+		VTLOG1(" Placing the camera at the center of the terrain:\n");
+		VTLOG(" World extents: LRTB %f %f %f %f\n",
+			pHF->m_WorldExtents.left,
+			pHF->m_WorldExtents.right,
+			pHF->m_WorldExtents.top,
+			pHF->m_WorldExtents.bottom);
 		pHF->GetCenter(middle);
+		VTLOG(" Center: %f %f %f\n", middle.x, middle.y, middle.z);
 		pHF->FindAltitudeAtPoint(middle, middle.y);
-		middle.y += pTerr->GetParams().GetValueFloat(STR_MINHEIGHT);
+		VTLOG(" Altitude at that point: %f\n", middle.y);
+		float minheight = pTerr->GetParams().GetValueFloat(STR_MINHEIGHT);
+		middle.y += minheight;
+		VTLOG(" plus minimum height (%f) is %f\n", minheight, middle.y);
+
 		mat.Identity();
 		mat.SetTrans(middle);
 		pTerr->SetCamLocation(mat);

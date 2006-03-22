@@ -1685,7 +1685,10 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 
 		// Only do this the first time:
 		if (!pTerrain->IsVisited())
+		{
+			VTLOG1("First visit to this terrain, looking up stored viewpoint.\n");
 			m_pLocationDlg->RecallFrom(pTerrain->GetParams().GetValueString(STR_INITLOCATION));
+		}
 		pTerrain->Visited(true);
 
 		m_pInstanceDlg->SetProjection(pTerrain->GetProjection());

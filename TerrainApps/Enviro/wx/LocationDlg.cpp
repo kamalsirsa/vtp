@@ -18,6 +18,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtui/wxString2.h"
+#include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
 #include "canvas.h"
 #include "LocationDlg.h"
@@ -705,8 +706,11 @@ void LocationDlg::RecallFrom(const vtString &locname)
 	int num = m_pSaver->FindLocation(locname);
 	if (num != -1)
 	{
+		VTLOG(" Recalling location %d (%s)\n", num, (const char *)locname);
 		m_pSaver->RecallFrom(num);
 		m_pLocList->SetSelection(num);
 	}
+	else
+		VTLOG(" There is no location '%s'\n", (const char *)locname);
 }
 
