@@ -2,7 +2,7 @@
 // Name:	 frame.cpp
 // Purpose:  The frame class for the wxWindows application.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtdata/vtLog.h"
+#include "vtui/Helper.h"	// for ProgressDialog
 
 #include "xmlhelper/easyxml.hpp"
 
@@ -96,6 +97,7 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_ITEM_MODELPROPS, vtFrame::OnUpdateItemRemoveModel)
 	EVT_MENU(ID_ITEM_SAVESOG, vtFrame::OnItemSaveSOG)
 	EVT_MENU(ID_ITEM_SAVEOSG, vtFrame::OnItemSaveOSG)
+	EVT_MENU(ID_ITEM_SAVEIVE, vtFrame::OnItemSaveIVE)
 
 	EVT_MENU(ID_VIEW_ORIGIN, vtFrame::OnViewOrigin)
 	EVT_UPDATE_UI(ID_VIEW_ORIGIN, vtFrame::OnUpdateViewOrigin)
@@ -315,6 +317,7 @@ void vtFrame::CreateMenus()
 	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"));
 #if VTLIB_OSG
 	itemMenu->Append(ID_ITEM_SAVEOSG, _T("Save Model as OSG"));
+	itemMenu->Append(ID_ITEM_SAVEIVE, _T("Save Model as IVE"));
 #endif
 
 	wxMenu *viewMenu = new wxMenu;
@@ -636,6 +639,27 @@ void vtFrame::OnUpdateItemRemoveModel(wxUpdateUIEvent& event)
 
 #include "vtlib/core/vtSOG.h"
 
+vtString GetSaveName(const char *format, const char *wildcard)
+{
+	wxString2 msg, filter;
+
+	msg = _("Save ");
+	msg += format;
+	filter = format;
+	filter += _(" Files (");
+	filter += wildcard;
+	filter += ")|";
+	filter += wildcard;
+
+	wxFileDialog saveFile(NULL, msg, _T(""), _T(""), filter, wxSAVE);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return vtString("");
+
+	wxString2 str = saveFile.GetPath();
+	return str.vt_str();
+}
+
 void vtFrame::OnItemSaveSOG(wxCommandEvent& event)
 {
 	vtTransform *trans = m_nodemap[m_pCurrentModel];
@@ -645,11 +669,17 @@ void vtFrame::OnItemSaveSOG(wxCommandEvent& event)
 	if (!geom)
 		return;
 
+	vtString fname = GetSaveName("SOG", "*.sog");
+	if (fname == "")
+		return;
+
+	OpenProgressDialog(_T("Writing file"), false, this);
 	OutputSOG osog;
-	FILE *fp = fopen("output.sog", "wb");
+	FILE *fp = fopen(fname, "wb");
 	osog.WriteHeader(fp);
 	osog.WriteSingleGeometry(fp, geom);
 	fclose(fp);
+	CloseProgressDialog();
 }
 
 void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
@@ -661,20 +691,50 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 	if (!node)
 		return;
 
+	vtString fname = GetSaveName("OSG", "*.osg");
+	if (fname == "")
+		return;
+
 #if VTLIB_OSG
+	OpenProgressDialog(_T("Writing file"), false, this);
 	osg::Node *onode = node->GetOsgNode();
 	osgDB::ReaderWriter::WriteResult result;
-	result = osgDB::Registry::instance()->writeNode(*onode, "model.osg");
-	//if (result == osgDB::ReaderWriter::WriteResult::FILE_NOT_HANDLED)
-	//{
-	//}
-	//else if (result == osgDB::ReaderWriter::WriteResult::FILE_SAVED)
-	//{
-	//}
-	//else if (result == osgDB::ReaderWriter::WriteResult::ERROR_IN_WRITING_FILE)
-	//{
-	//}
-	int foo = 1;
+	result = osgDB::Registry::instance()->writeNode(*onode, (const char *)fname);
+	CloseProgressDialog();
+	if (result.notHandled())
+		wxMessageBox(_("File type not handled.\n"));
+	else if (result.success())
+		wxMessageBox(_("File saved.\n"));
+	else if (result.error())
+		wxMessageBox(_("Error in writing file.\n"));
+#endif
+}
+
+void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
+{
+	vtTransform *trans = m_nodemap[m_pCurrentModel];
+	if (!trans)
+		return;
+	vtNode *node = dynamic_cast<vtNode*>(trans->GetChild(0));
+	if (!node)
+		return;
+
+	vtString fname = GetSaveName("IVE", "*.ive");
+	if (fname == "")
+		return;
+
+#if VTLIB_OSG
+	OpenProgressDialog(_T("Writing file"), false, this);
+	osg::Node *onode = node->GetOsgNode();
+	osgDB::ReaderWriter::WriteResult result;
+	CloseProgressDialog();
+	result = osgDB::Registry::instance()->writeNode(*onode, (const char *)fname);
+	if (result.notHandled())
+		wxMessageBox(_("File type not handled.\n"));
+	else if (result.success())
+		wxMessageBox(_("File saved.\n"));
+	else if (result.error())
+		wxMessageBox(_("Error in writing file.\n"));
 #endif
 }
 

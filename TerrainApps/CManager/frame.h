@@ -81,6 +81,7 @@ protected:
 	void OnItemModelProps(wxCommandEvent& event);
 	void OnItemSaveSOG(wxCommandEvent& event);
 	void OnItemSaveOSG(wxCommandEvent& event);
+	void OnItemSaveIVE(wxCommandEvent& event);
 	void OnSceneGraph(wxCommandEvent& event);
 	void OnViewOrigin(wxCommandEvent& event);
 	void OnUpdateViewOrigin(wxUpdateUIEvent& event);
