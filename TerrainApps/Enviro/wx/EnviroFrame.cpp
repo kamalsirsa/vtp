@@ -1704,11 +1704,6 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		//  not the globe.
 		SetTimeEngine(vtGetTS()->GetTimeEngine());
 		m_pScenarioSelectDialog->SetTerrain(pTerrain);
-
-		// While the paging is in early testing, always display the LOD
-		//  dialog for vtTiledGeom
-		if (pTerrain->GetParams().GetValueInt(STR_SURFACE_TYPE) == 2)
-			m_pLODDlg->Show(true);
 	}
 	else
 	{
