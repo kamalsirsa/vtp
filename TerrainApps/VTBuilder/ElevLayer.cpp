@@ -1,7 +1,7 @@
 //
 // ElevLayer.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
+#include "vtdata/MiniDatabuf.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for FormatCoord
@@ -1202,8 +1203,6 @@ FPoint3 LightDirection(float angle, float direction)
 	return light_dir;
 }
 
-#include "vtdata/ByteOrder.h"
-
 bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView)
 {
 	// Avoid trouble with '.' and ',' in Europe
@@ -1285,9 +1284,9 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView 
 				vtString fname = dirname, str;
 				fname += '/';
 				if (lod == 0)
-					str.Format("tile.%d-%d.pgm", col, row);
+					str.Format("tile.%d-%d.db", col, row);
 				else
-					str.Format("tile.%d-%d.pgm%d", col, row, lod);
+					str.Format("tile.%d-%d.db%d", col, row, lod);
 				fname += str;
 
 				// make a message for the progress dialog
@@ -1300,12 +1299,8 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView 
 				if (pView)
 					pView->ShowGridMarks(area, opts.cols, opts.rows, col, row);
 
-				FILE *fp = fopen(fname, "wb");
-				if (!fp)
-					return false;
-				fprintf(fp, "P5\n");
-				fprintf(fp, "# DEM\n");
-				fprintf(fp, "# description=resampled with VTBuilder\n");
+#if 0
+				// Left here for reference
 				fprintf(fp, "# coordinate system=%s\n", (const char *)crs);
 				fprintf(fp, "# coordinate zone=%d\n", zone);
 				fprintf(fp, "# coordinate datum=0\n");
@@ -1317,7 +1312,13 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView 
 				fprintf(fp, "# vertical scaling=1 meters\n");
 				fprintf(fp, "# missing value=%d\n", INVALID_ELEVATION);
 				fprintf(fp, "%d %d\n", tilesize+1, tilesize+1);
-				fprintf(fp, "32767\n");
+#endif
+				bool bFloat = m_pGrid->IsFloatMode();
+
+				MiniDatabuf buf;
+				buf.alloc(tilesize+1, tilesize+1, 1, 1, bFloat ? 2 : 1);
+				float *fdata = (float *) buf.data;
+				short *sdata = (short *) buf.data;
 
 				DPoint2 p;
 				int x, y;
@@ -1328,13 +1329,19 @@ bool vtElevLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView 
 					{
 						p.x = area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
 
-						// PNM only support short integers, not floats
-						short value = (short) m_pGrid->GetFilteredValue(p);
-						value = SwapShort(value);
-						fwrite(&value, 2, 1, fp);
+						if (bFloat)
+						{
+							*fdata = m_pGrid->GetFilteredValue(p);
+							fdata++;
+						}
+						else
+						{
+							*sdata = (short) m_pGrid->GetFilteredValue(p);
+							sdata++;
+						}
 					}
 				}
-				fclose(fp);
+				buf.savedata(fname);
 
 				done++;
 			}
