@@ -1,7 +1,7 @@
 //
 // ImageLayer.cpp
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,13 +11,16 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/MiniDatabuf.h"
 #include "vtdata/vtLog.h"
+
 #ifdef ENVIRON
 #include "vtdata/vtError.h"
 #endif
 #if ROGER
 #include "gdalwarper.h"
 #endif
+
 #include "vtui/Helper.h"
 #include "vtui/ProjectionDlg.h"
 
@@ -1368,8 +1371,24 @@ int GetBitDepthUsingGDAL(const char *fname)
 	return bits;
 }
 
+#define COMPRESSED_TEXTURES 1
+#if COMPRESSED_TEXTURES
+	#include "GL/gl.h"
+	#include "GL/glext.h"
+	#include "wx/glcanvas.h"
+	#ifdef _MSC_VER
+		#pragma message( "Adding link with opengl32.lib" )
+		#pragma comment( lib, "opengl32.lib" )
+	#endif
+#endif
+
 bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView)
 {
+	wxFrame *frame = new wxFrame;
+	frame->Create(NULL, -1, _T("Texture Compression OpenGL Context"));
+	wxGLCanvas *canvas = new wxGLCanvas(frame);
+	frame->Show();
+
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
@@ -1470,6 +1489,7 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 				// its own sample spacing
 				DPoint2 spacing = tile_dim / (tilesize-1);
 
+#if 0	// Write PPM
 				vtString fname = dirname, str;
 				fname += '/';
 				if (lod == 0)
@@ -1517,7 +1537,7 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 						p.x = tile_area.left + x * spacing.x;
 
 						GetFilteredColor(p, rgb);
-#if 0
+#if 0 // LOD Stripes
 						// For testing, add stripes to indicate LOD
 						if (lod == 3 && x == y) rgb.Set(255,0,0);
 
@@ -1537,6 +1557,105 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 					}
 				}
 				fclose(fp);
+#else // DB, not PPM
+				// Write DB file (libMini's databuf format)
+				vtString fname = dirname, str;
+				fname += '/';
+				if (lod == 0)
+					str.Format("tile.%d-%d.db", col, row);
+				else
+					str.Format("tile.%d-%d.db%d", col, row, lod);
+				fname += str;
+
+				// make a message for the progress dialog
+				wxString msg;
+				msg.Printf(_("Writing tile '%hs', size %dx%d"),
+					(const char *)fname, tilesize, tilesize);
+				UpdateProgressDialog(done*99/total, msg);
+
+				// also draw our progress in the main view
+				if (pView)
+					pView->ShowGridMarks(area, opts.cols, opts.rows, col, row);
+
+				// First, fill a buffer with the uncompressed texels
+				unsigned char *rgb_bytes = (unsigned char *) malloc(tilesize * tilesize * 3);
+				int cb = 0;	// count bytes
+
+				DPoint2 p;
+				int x, y;
+				RGBi rgb;
+
+				for (y = tilesize-1; y >= 0; y--)
+				{
+					p.y = tile_area.bottom + y * spacing.y;
+					for (x = 0; x < tilesize; x++)
+					{
+						p.x = tile_area.left + x * spacing.x;
+
+						GetFilteredColor(p, rgb);
+						rgb_bytes[cb++] = rgb.r;
+						rgb_bytes[cb++] = rgb.g;
+						rgb_bytes[cb++] = rgb.b;
+					}
+				}
+				int iUncompressedSize = cb;
+
+				MiniDatabuf output_buf;
+				output_buf.xsize = tilesize;
+				output_buf.ysize = tilesize;
+				output_buf.zsize = 1;
+				output_buf.tsteps = 1;
+
+#if COMPRESSED_TEXTURES
+				// Next, compress them to a DXT output file
+				GLenum target = GL_TEXTURE_2D;
+				int level = 0;
+				GLint internalformat = GL_COMPRESSED_RGB_ARB;
+				int border = 0;
+				GLenum format = GL_RGB;
+				GLenum type = GL_UNSIGNED_BYTE;
+				GLvoid *pixels = rgb_bytes;
+
+				glTexImage2D(target, level, internalformat,
+					tilesize, tilesize, border, format, type, pixels);
+
+				// Check to see if the compression operation succeeded
+				int iParam;
+				glGetTexLevelParameteriv(target, level, GL_TEXTURE_COMPRESSED_ARB, &iParam);
+
+				int iInternalFormat;
+				glGetTexLevelParameteriv(target, level, GL_TEXTURE_INTERNAL_FORMAT, &iInternalFormat);
+
+				int iSize;
+				glGetTexLevelParameteriv(target, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &iSize);
+
+				output_buf.type = 5;	// compressed RGB
+				output_buf.bytes = iSize;
+				output_buf.data = malloc(iSize);
+
+#ifdef _WIN32
+				PFNGLGETCOMPRESSEDTEXIMAGEARBPROC
+					glGetCompressedTexImageARB=(PFNGLGETCOMPRESSEDTEXIMAGEARBPROC)
+						wglGetProcAddress("glGetCompressedTexImageARB");
+#endif
+				// Get compressed image into our buffer
+				glGetCompressedTexImageARB(target, level, output_buf.data);
+
+				output_buf.savedata(fname);
+
+				free(output_buf.data);
+				output_buf.data = NULL;
+#else // Uncompressed
+				// Output to a plain RGB .db file
+				output_buf.type = 3;	// RGB
+				output_buf.bytes = iUncompressedSize;
+				output_buf.data = rgb_bytes;
+				output_buf.savedata(fname);
+				output_buf.data = NULL;
+#endif
+				// Free the uncompressed image
+				free(rgb_bytes);
+#endif // DB, not PPM
 
 				done++;
 			}
@@ -1544,5 +1663,9 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 	}
 	if (pView)
 		pView->HideGridMarks();
+
+	frame->Close();
+	delete frame;
+
 	return true;
 }
