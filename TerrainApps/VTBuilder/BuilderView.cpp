@@ -1499,7 +1499,7 @@ void BuilderView::OnIdle(wxIdleEvent& event)
 		if (lp->GetType() == LT_ELEVATION)
 		{
 			vtElevLayer *pEL = (vtElevLayer *)lp;
-			if (pEL->NeedsDraw())
+			if (pEL->m_draw.m_bShowElevation && pEL->NeedsDraw())
 			{
 				pEL->RenderBitmap();
 				bDrew = true;
@@ -1743,6 +1743,9 @@ void BuilderView::OnChar(wxKeyEvent& event)
 #endif
 #if 0
 #include "G:/Work/Cormorant Telematic Systems/VTBuilder_VRML_Output.cpp"
+#endif
+#if 0
+		GetMainFrame()->ImportDataFromSCC("G:/Work/Atlas Computers - Shane/3d-test.txt");
 #endif
 	}
 	else
