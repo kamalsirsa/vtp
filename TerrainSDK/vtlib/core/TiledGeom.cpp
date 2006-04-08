@@ -1,7 +1,7 @@
 //
 // vtTiledGeom: Renders tiled heightfields using Roettger's libMini library
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,8 +20,10 @@
 //  Actually, we depend on it for adaptive resolution, so leave it at 1.
 #define USE_VERTEX_CACHE	1
 
-#define ENABLE_TILE_CACHE	1
+#define ENABLE_TILE_CACHE	0
 #define WE_OWN_BUFFERS		ENABLE_TILE_CACHE
+
+#define LOG_TILE_LOADS		0
 
 /////////////
 // singleton; TODO: get rid of this to allow multiple instances
@@ -97,7 +99,7 @@ bool TiledDatasetDescription::GetCorners(DLine2 &line, bool bGeo) const
 
 ///////////////////////////////////////////////////////////////////////
 
-void request_callback(unsigned char *mapfile, unsigned char *texfile,
+int request_callback(unsigned char *mapfile, unsigned char *texfile,
 					  unsigned char *fogfile, void *data,
 					  databuf *hfield, databuf *texture, databuf *fogmap)
 {
@@ -115,17 +117,30 @@ void request_callback(unsigned char *mapfile, unsigned char *texfile,
 	VTLOG1(")\n");
 #endif
 
+	if (!hfield && !texture && !fogmap)
+	{
+		// just checking for file existence
+		int present=1;
+
+		if (mapfile!=NULL) present&=checkfile((char *)mapfile);
+		if (texfile!=NULL) present&=checkfile((char *)texfile);
+
+		return(present);
+	}
+
 	// FetchTile
 	// FetchAndCacheTile
 	// we need to load (or get from cache) one or both: hfield and texture
 	if (mapfile!=NULL)
-		*hfield = s_pTiledGeom->FetchAndCacheTile((char *)mapfile);;
+		*hfield = s_pTiledGeom->FetchAndCacheTile((char *)mapfile);
 
 	if (texfile!=NULL)
 		*texture = s_pTiledGeom->FetchAndCacheTile((char *)texfile);
 
 	if (fogfile!=NULL)
 		*fogmap = s_pTiledGeom->FetchAndCacheTile((char *)fogfile);
+
+	return 1;
 }
 
 void mini_error_handler(char *file,int line,int fatal)
@@ -217,17 +232,17 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 
 			str = folder_elev;
 			str += str2;
-			str += ".pgm";
+			str += ".db";
 
 			hfields[i+cols*j] = new byte[str.GetLength()+1];
-			strcpy((char *) hfields[i+cols*j], (const char *) str);
+			strcpy((char *) hfields[i+cols*j], str);
 
 			str = folder_image;
 			str += str2;
-			str += ".ppm";
+			str += ".db";
 
 			textures[i+cols*j] = new byte[str.GetLength()+1];
-			strcpy((char *) textures[i+cols*j], (const char *) str);
+			strcpy((char *) textures[i+cols*j], str);
 		}
 	}
 
@@ -356,7 +371,7 @@ void vtTiledGeom::SetupMiniLoad()
 	//	- a value of zero disables expiration
 	int pexpire = 0;
 
-	m_pMiniLoad->setloader(NULL,	// 'file exists' callback
+	m_pMiniLoad->setloader(
 		request_callback,
 		NULL,	// data
 		NULL,	// preload_callback
@@ -392,14 +407,13 @@ databuf vtTiledGeom::FetchAndCacheTile(const char *fname)
 	m_iMaxCacheSize = 0;	// disable it
 #endif
 	databuf result;
-	result.comment = NULL;
 
 	std::string name = fname;
 	TileCache::iterator it = m_Cache.find(name);
 	if (it == m_Cache.end())
 	{
 		// not found in cache; load it
-#if 1
+#if LOG_TILE_LOADS
 		vtString str = StartOfFilename((char *)fname);
 		VTLOG1(" disk load: ");
 		VTLOG1(str);
@@ -407,46 +421,16 @@ databuf vtTiledGeom::FetchAndCacheTile(const char *fname)
 #endif
 		m_iTileLoads++;
 
-		// Convert PNM to data buffer
-		int width, height, components, pnmtype;
-		unsigned char *pnmdata = readPNMimage((unsigned char *)fname, &width, &height,
-			&components, &pnmtype, 0, NULL, NULL);
-		if (!pnmdata)
+		vtString strfname = fname;
+		if (strfname.Find(".db") != -1)
 		{
-			result.data = NULL;
-			return result;
+			// Load data buffer directly
+			result.loaddata(fname);
 		}
-
-		result.xsize = width;
-		result.ysize = height;
-		result.components = components;
-
-		// convert internal data to desired form
-		if (pnmtype == 5)	// elevation, 1 or 2 bytes
+		else if (strfname.Find(".ppm") != -1 || strfname.Find(".pgm") )
 		{
-			int k;
-			result.length = width*height*sizeof(short);
-			short *hfield=(short *)malloc(result.length);
-			if (components==2)
-			{
-				result.type = 1;	// short
-				for (k=0; k<width*height; k++)
-				{
-					int v=256*pnmdata[2*k]+pnmdata[2*k+1];
-					if (v<32768) hfield[k]=v;
-					else hfield[k]=v-65536;
-				}
-			}
-			result.data = hfield;
-
-			// We're done with the pnm data
-			free(pnmdata);
-		}
-		else if (pnmtype == 6)	// texture, 3 byte RGB
-		{
-			result.type = 0;	// bytes
-			result.length = width * height * components;
-			result.data = pnmdata;
+			// Load from PGM / PPM
+			result.loadPNMdata(fname);
 		}
 
 		// max cache size of 0 disables caching
@@ -470,7 +454,7 @@ databuf vtTiledGeom::FetchAndCacheTile(const char *fname)
 			}
 			// remove it from the cache
 			CacheEntry &entry = oldest->second;
-			m_iCacheSize -= entry.buf->length;
+			m_iCacheSize -= entry.buf->bytes;
 			free(entry.buf->data);
 			delete entry.buf;
 			m_Cache.erase(oldest);
@@ -481,9 +465,9 @@ databuf vtTiledGeom::FetchAndCacheTile(const char *fname)
 		*entry.buf = result;
 		entry.framestamp = m_iFrame;
 		m_Cache[name] = entry;
-		m_iCacheSize += entry.buf->length;
+		m_iCacheSize += entry.buf->bytes;
 
-#if 1
+#if LOG_TILE_LOADS
 		VTLOG(" cache size (K): %d\n", m_iCacheSize / 1024);
 #endif
 		// return the original
@@ -491,7 +475,7 @@ databuf vtTiledGeom::FetchAndCacheTile(const char *fname)
 	}
 	else
 	{
-#if 1
+#if LOG_TILE_LOADS
 		vtString str = StartOfFilename((char *)fname);
 		VTLOG1("from cache: ");
 		VTLOG1(str);
