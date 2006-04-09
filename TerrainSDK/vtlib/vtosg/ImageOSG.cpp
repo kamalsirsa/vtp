@@ -635,9 +635,14 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 		if (iRasterCount == 1)
 		{
 			pBand = pDataset->GetRasterBand(1);
-			// Check data type - it's either integer or float
-			if (GDT_Byte != pBand->GetRasterDataType())
-				throw "Raster is not of type byte.";
+
+			// Check the band's data type
+			GDALDataType dtype = pBand->GetRasterDataType();
+			if (dtype != GDT_Byte)
+			{
+				message.Format("Band is of type %s, but we support type Byte.", GDALGetDataTypeName(dtype));
+				throw (const char *)message;
+			}
 			GDALColorInterp ci = pBand->GetColorInterpretation();
 
 			if (ci == GCI_PaletteIndex)
@@ -665,9 +670,14 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 			for (int i = 1; i <= 3; i++)
 			{
 				pBand = pDataset->GetRasterBand(i);
-				// Check data type - it's either integer or float
-				if (GDT_Byte != pBand->GetRasterDataType())
-					throw "Three rasters, but not of type byte.";
+
+				// Check the band's data type
+				GDALDataType dtype = pBand->GetRasterDataType();
+				if (dtype != GDT_Byte)
+				{
+					message.Format("Band is of type %s, but we support type Byte.", GDALGetDataTypeName(dtype));
+					throw (const char *)message;
+				}
 				switch (pBand->GetColorInterpretation())
 				{
 				case GCI_RedBand:
@@ -803,7 +813,9 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 	}
 	catch (const char *msg)
 	{
-		VTLOG(msg);
+		VTLOG1("Problem: ");
+		VTLOG1(msg);
+		VTLOG1("\n");
 		bRet = false;
 	}
 
