@@ -1371,8 +1371,7 @@ int GetBitDepthUsingGDAL(const char *fname)
 	return bits;
 }
 
-#define COMPRESSED_TEXTURES 1
-#if COMPRESSED_TEXTURES
+#if USE_OPENGL
 	#include "GL/gl.h"
 	#include "GL/glext.h"
 	#include "wx/glcanvas.h"
@@ -1489,75 +1488,6 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 				// its own sample spacing
 				DPoint2 spacing = tile_dim / (tilesize-1);
 
-#if 0	// Write PPM
-				vtString fname = dirname, str;
-				fname += '/';
-				if (lod == 0)
-					str.Format("tile.%d-%d.ppm", col, row);
-				else
-					str.Format("tile.%d-%d.ppm%d", col, row, lod);
-				fname += str;
-
-				// make a message for the progress dialog
-				wxString msg;
-				msg.Printf(_("Writing tile '%hs', size %dx%d"),
-					(const char *)fname, tilesize, tilesize);
-				UpdateProgressDialog(done*99/total, msg);
-
-				// also draw our progress in the main view
-				if (pView)
-					pView->ShowGridMarks(area, opts.cols, opts.rows, col, row);
-
-				FILE *fp = fopen(fname, "wb");
-				fprintf(fp, "P6\n");
-				fprintf(fp, "# DEM\n");
-				fprintf(fp, "# description=resampled with VTBuilder\n");
-				fprintf(fp, "# coordinate system=UTM\n");
-				fprintf(fp, "# coordinate zone=5\n");
-				fprintf(fp, "# coordinate datum=0\n");
-				fprintf(fp, "# SW corner=%lf/%lf meters\n", tile_area.left, tile_area.bottom);
-				fprintf(fp, "# NW corner=%lf/%lf meters\n", tile_area.left, tile_area.top);
-				fprintf(fp, "# NE corner=%lf/%lf meters\n", tile_area.right, tile_area.top);
-				fprintf(fp, "# SE corner=%lf/%lf meters\n", tile_area.right, tile_area.bottom);
-				fprintf(fp, "# cell size=%lf/%lf meters\n", cell_size.x*(1<<lod), cell_size.y*(1<<lod));
-				fprintf(fp, "# vertical scaling=1 meters\n");
-				fprintf(fp, "# missing value=-9999\n");
-				fprintf(fp, "%d %d\n", tilesize, tilesize);
-				fprintf(fp, "255\n");
-
-				DPoint2 p;
-				int x, y;
-				RGBi rgb;
-				unsigned char rgb_bytes[3];
-				for (y = tilesize-1; y >= 0; y--)
-				{
-					p.y = tile_area.bottom + y * spacing.y;
-					for (x = 0; x < tilesize; x++)
-					{
-						p.x = tile_area.left + x * spacing.x;
-
-						GetFilteredColor(p, rgb);
-#if 0 // LOD Stripes
-						// For testing, add stripes to indicate LOD
-						if (lod == 3 && x == y) rgb.Set(255,0,0);
-
-						if (lod == 2 && (
-							x == tilesize-y ||
-							x == y+tilesize/2 ||
-							x == y-tilesize/2)) rgb.Set(0,255,0);
-
-						if (lod == 1 && (x%16)==0) rgb.Set(0,0,90);
-
-						if (lod == 0 && (y%8)==0) rgb.Set(90,0,90);
-#endif
-						rgb_bytes[0] = rgb.r;
-						rgb_bytes[1] = rgb.g;
-						rgb_bytes[2] = rgb.b;
-						fwrite(rgb_bytes, 3, 1, fp);
-					}
-				}
-				fclose(fp);
-#else // DB, not PPM
 				// Write DB file (libMini's databuf format)
 				vtString fname = dirname, str;
 				fname += '/';
@@ -1593,6 +1523,19 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 						p.x = tile_area.left + x * spacing.x;
 
 						GetFilteredColor(p, rgb);
+#if 0 // LOD Stripes
+						// For testing, add stripes to indicate LOD
+						if (lod == 3 && x == y) rgb.Set(255,0,0);
+
+						if (lod == 2 && (
+							x == tilesize-y ||
+							x == y+tilesize/2 ||
+							x == y-tilesize/2)) rgb.Set(0,255,0);
+
+						if (lod == 1 && (x%16)==0) rgb.Set(0,0,90);
+
+						if (lod == 0 && (y%8)==0) rgb.Set(90,0,90);
+#endif
 						rgb_bytes[cb++] = rgb.r;
 						rgb_bytes[cb++] = rgb.g;
 						rgb_bytes[cb++] = rgb.b;
@@ -1606,8 +1549,8 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 				output_buf.zsize = 1;
 				output_buf.tsteps = 1;
 
-#if COMPRESSED_TEXTURES
-				// Next, compress them to a DXT output file
+#if USE_OPENGL
+				// Next, compress them to a DXT1 output file
 				GLenum target = GL_TEXTURE_2D;
 				int level = 0;
 				GLint internalformat = GL_COMPRESSED_RGB_ARB;
@@ -1655,7 +1598,6 @@ bool vtImageLayer::WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView
 #endif
 				// Free the uncompressed image
 				free(rgb_bytes);
-#endif // DB, not PPM
 
 				done++;
 			}
