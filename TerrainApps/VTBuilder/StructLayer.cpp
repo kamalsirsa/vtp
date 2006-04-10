@@ -1120,11 +1120,6 @@ bool vtStructureLayer::AddElementsFromSHP(const wxString2 &filename,
 	if (dlg.ShowModal() != wxID_OK)
 		return false;
 
-	if (dlg.m_iType == 0) dlg.m_opt.type = ST_BUILDING;
-	if (dlg.m_iType == 1) dlg.m_opt.type = ST_BUILDING;
-	if (dlg.m_iType == 2) dlg.m_opt.type = ST_LINEAR;
-	if (dlg.m_iType == 3) dlg.m_opt.type = ST_INSTANCE;
-
 	dlg.m_opt.rect = rect;
 
 	bool success = ReadSHP(filename.mb_str(), dlg.m_opt, progress_callback);
