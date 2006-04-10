@@ -1186,76 +1186,117 @@ wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item2 = new wxBoxSizer( wxVERTICAL );
 
-    wxRadioButton *item3 = new wxRadioButton( parent, ID_TYPE_CENTER, _("Buildings (parametric by center)"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    wxRadioButton *item3 = new wxRadioButton( parent, ID_TYPE_LINEAR, _("Linear (fences or walls)"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
     item2->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item4 = new wxRadioButton( parent, ID_TYPE_FOOTPRINT, _("Buildings (parametric by footprint, polygon or closed polyline)"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxRadioButton *item4 = new wxRadioButton( parent, ID_TYPE_INSTANCE, _("Instances (external model references)"), wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item5 = new wxBoxSizer( wxHORIZONTAL );
 
-    item5->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 0 );
+    item5->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
 
-    wxCheckBox *item6 = new wxCheckBox( parent, ID_FLIP, _("Flip footprint direction (clockwise to counter-clockwise)"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("Filename field:"), wxDefaultPosition, wxDefaultSize, 0 );
     item5->Add( item6, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item2->Add( item5, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxString *strs7 = (wxString*) NULL;
+    wxChoice *item7 = new wxChoice( parent, ID_CHOICE_FILE_FIELD, wxDefaultPosition, wxSize(100,-1), 0, strs7, 0 );
+    item5->Add( item7, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxBoxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
+    item2->Add( item5, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    item7->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
+    wxRadioButton *item8 = new wxRadioButton( parent, ID_TYPE_CENTER, _("Buildings (parametric by center)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item2->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("Height field:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item7->Add( item8, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxRadioButton *item9 = new wxRadioButton( parent, ID_TYPE_FOOTPRINT, _("Buildings (parametric by footprint, polygon or closed polyline)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item2->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxString *strs9 = (wxString*) NULL;
-    wxChoice *item9 = new wxChoice( parent, ID_CHOICE_HEIGHT_FIELD, wxDefaultPosition, wxSize(100,-1), 0, strs9, 0 );
-    item7->Add( item9, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxString strs10[] = 
+    item10->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
+
+    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("Height field:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs12 = (wxString*) NULL;
+    wxChoice *item12 = new wxChoice( parent, ID_CHOICE_HEIGHT_FIELD, wxDefaultPosition, wxSize(100,-1), 0, strs12, 0 );
+    item10->Add( item12, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxString strs13[] = 
     {
         _("Stories"), 
         _("Meters"), 
         _("Feet")
     };
-    wxChoice *item10 = new wxChoice( parent, ID_CHOICE_HEIGHT_TYPE, wxDefaultPosition, wxSize(80,-1), 3, strs10, 0 );
-    item7->Add( item10, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxChoice *item13 = new wxChoice( parent, ID_CHOICE_HEIGHT_TYPE, wxDefaultPosition, wxSize(80,-1), 3, strs13, 0 );
+    item10->Add( item13, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item2->Add( item7, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    item2->Add( item10, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxRadioButton *item11 = new wxRadioButton( parent, ID_TYPE_LINEAR, _("Linear (fences or walls)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxRadioButton *item12 = new wxRadioButton( parent, ID_TYPE_INSTANCE, _("Instances (external model references)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item14->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
 
-    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("Roof type:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item13->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
+    item2->Add( item14, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("Filename field:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item13->Add( item14, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxString *strs15 = (wxString*) NULL;
-    wxChoice *item15 = new wxChoice( parent, ID_CHOICE_FILE_FIELD, wxDefaultPosition, wxSize(100,-1), 0, strs15, 0 );
-    item13->Add( item15, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item16->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
 
-    item2->Add( item13, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxRadioButton *item17 = new wxRadioButton( parent, ID_RADIO_ROOF_DEFAULT, _("Default"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item16->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item2->Add( item16, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item18 = new wxBoxSizer( wxHORIZONTAL );
+
+    item18->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
+
+    wxRadioButton *item19 = new wxRadioButton( parent, ID_RADIO_ROOF_SINGLE, _("Single type:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString strs20[] = 
+    {
+        _("Flat"), 
+        _("Shed"), 
+        _("Gable"), 
+        _("Hip")
+    };
+    wxChoice *item20 = new wxChoice( parent, ID_CHOICE_ROOF_TYPE, wxDefaultPosition, wxSize(100,-1), 4, strs20, 0 );
+    item18->Add( item20, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item2->Add( item18, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
+
+    item21->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
+
+    wxRadioButton *item22 = new wxRadioButton( parent, ID_RADIO_ROOF_FIELD, _("Field:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs23 = (wxString*) NULL;
+    wxChoice *item23 = new wxChoice( parent, ID_CHOICE_ROOF_FIELD, wxDefaultPosition, wxSize(100,-1), 0, strs23, 0 );
+    item21->Add( item23, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item2->Add( item21, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
     item0->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxCheckBox *item16 = new wxCheckBox( parent, ID_INSIDE_AREA, _("Only import features inside the Area Tool extents"), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 10 );
+    wxCheckBox *item24 = new wxCheckBox( parent, ID_INSIDE_AREA, _("Only import features inside the Area Tool extents"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item24, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item17 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item25 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item18 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item26 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item25->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item19 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item27 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item25->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {
