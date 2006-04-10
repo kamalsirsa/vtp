@@ -212,6 +212,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	DLine2	line;
 	int		i, j;
 	int		field_height = -1;
+	int		field_roof = -1;
 	int		field_filename = -1;
 	int		field_itemname = -1;
 	int		field_scale = -1;
@@ -232,9 +233,13 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			nShapeType != SHPT_ARC &&
 			nShapeType != SHPT_POLYGONZ)
 			return false;
-		// Check for field with number of stories
 		if (db != NULL)
-			field_height = FindDBField(db, (const char *)opt.m_strFieldNameHeight);
+		{
+			// Check for field with number of stories
+			field_height = FindDBField(db, opt.m_strFieldNameHeight);
+			// Check for field with number of stories
+			field_roof = FindDBField(db, opt.m_strFieldNameRoof);
+		}
 	}
 	if (opt.type == ST_INSTANCE)
 	{
@@ -361,9 +366,27 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			// if DBF didn't have height info, get it from default building
 			bool bDoHeight = (field_height == -1);
 
+			// Apply materials, edge slopes and other things from the default
+			//  building, if there is one.
 			vtBuilding *pDefBld = GetClosestDefault(bld);
 			if (pDefBld)
 				bld->CopyFromDefault(pDefBld, bDoHeight);
+
+			// Now deal with roof type, which the user might have specified.
+			if (field_roof != -1)
+			{
+				vtString type = DBFReadStringAttribute(db, i, field_roof);
+				if (!type.CompareNoCase("flat") || !type.CompareNoCase("plat"))
+					bld->SetRoofType(ROOF_FLAT);
+				if (!type.CompareNoCase("shed") || !type.CompareNoCase("hangar"))
+					bld->SetRoofType(ROOF_SHED);
+				if (!type.CompareNoCase("gable") || !type.CompareNoCase("pignon"))
+					bld->SetRoofType(ROOF_GABLE);
+				if (!type.CompareNoCase("hip") || !type.CompareNoCase("arete"))
+					bld->SetRoofType(ROOF_HIP);
+			}
+			else if (opt.m_eRoofType != ROOF_UNKNOWN)
+				bld->SetRoofType(opt.m_eRoofType);
 
 			Append(bld);
 		}

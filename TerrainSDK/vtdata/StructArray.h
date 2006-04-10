@@ -1,7 +1,7 @@
 //
 // StructArray.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,7 @@
 
 #include "MathTypes.h"
 #include "Projections.h"
-#include "Structure.h"
+#include "Building.h"
 #include "HeightField.h"
 #include <stdio.h>
 
@@ -23,19 +23,26 @@ public:
 	vtStructureType type;
 	DRECT			rect;
 	bool			bInsideOnly;
-	bool			bFlip;
 	bool			bBuildFoundations;
 	bool			bUse25DForElevation;
 
+	/// If there are several layers in the input, this is the name of the layer to use
 	vtString		m_strLayerName;
 
+	// If height is read from a field, name of that field.
 	vtString		m_strFieldNameHeight;
 	enum HeightType { STORIES, METERS, FEET } m_HeightType;
 
 	vtString		m_strFieldNameElevation;
 	enum ElevationType { ETMETERS, ETFEET } m_ElevationType;
 
+	/// If StructureInstance filename is taken from a field, name of that field
 	vtString		m_strFieldNameFile;
+
+	/// If Building Roof Type is taken from a field, name of that field
+	vtString		m_strFieldNameRoof;
+	/// If Building Roof Type is fixed, this is the type
+	RoofType		m_eRoofType;
 
 	vtHeightField	*pHeightField;
 };

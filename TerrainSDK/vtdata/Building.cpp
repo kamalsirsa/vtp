@@ -5,7 +5,7 @@
 // This is can be a single building, or any single artificial structure
 // such as a wall or fence.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1508,8 +1508,16 @@ void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
 		}
 		pLevel->SetEdgeColor(pFromLevel->GetEdge(0)->m_Color);
 		pLevel->SetEdgeMaterial(*pFromLevel->GetEdge(0)->m_pMaterial);
-		for (int j = 0; j < pLevel->NumEdges(); j++)
-			pLevel->GetEdge(j)->m_iSlope = pFromLevel->GetEdge(0)->m_iSlope;
+		int slope = pFromLevel->GetEdge(0)->m_iSlope;
+		if (slope == 0)
+			pLevel->SetRoofType(ROOF_FLAT, slope);
+		else if (slope > 0 && slope < 90)
+			pLevel->SetRoofType(ROOF_HIP, slope);
+		else
+		{
+			for (int j = 0; j < pLevel->NumEdges(); j++)
+				pLevel->GetEdge(j)->m_iSlope = pFromLevel->GetEdge(0)->m_iSlope;
+		}
 	}
 }
 
