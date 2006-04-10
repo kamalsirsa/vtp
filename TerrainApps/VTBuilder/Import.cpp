@@ -1696,3 +1696,242 @@ void MainFrame::ImportDataFromS57(const wxString2 &strDirName)
 }
 
 
+//
+//Import from SCC Viewer Export Format
+//
+int MainFrame::ImportDataFromSCC(const char *filename)
+{
+	FILE *fp = fopen(filename, "rb");
+	if (!fp)
+		return 0;
+
+	vtString shortname = StartOfFilename(filename);
+	RemoveFileExtensions(shortname);
+
+	vtProjection proj;
+	proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+	proj.SetUTM(1);
+
+	// create the new layers
+	vtElevLayer *pEL = new vtElevLayer;
+	pEL->SetLayerFilename(shortname + "_tin");
+	pEL->SetModified(true);
+
+	vtStructureLayer *pSL = new vtStructureLayer;
+	pSL->SetLayerFilename(shortname + "_structures");
+	pSL->SetModified(true);
+	pSL->SetProjection(proj);
+
+	vtVegLayer *pVL = new vtVegLayer;
+	pVL->SetModified(true);
+	pVL->SetVegType(VLT_Instances);
+	pVL->SetLayerFilename(shortname + "_vegetation");
+	pVL->SetProjection(proj);
+	vtPlantInstanceArray *pia = pVL->GetPIA();
+	pia->SetPlantList(&m_PlantList);
+	int id = m_PlantList.GetSpeciesIdByCommonName("Ponderosa Pine");
+	vtPlantSpecies *ps = m_PlantList.GetSpecies(id);
+
+	// Progress Dialog
+	OpenProgressDialog(_("Importing from SCC..."));
+
+	vtTin2d *tin = new vtTin2d;
+
+	int state = 0;
+	int num_mesh, num_tri, color, v, vtx = 0, mesh = 0;
+	char buf[400];
+	vtString object_type;
+	float height;
+	vtFence *linear;
+
+	while (fgets(buf, 400, fp) != NULL)
+	{
+		if (state == 0)	// start of file: number of TIN meshes
+		{
+			sscanf(buf, "%d", &num_mesh);
+			state = 1;
+		}
+		else if (state == 1)	// header line of mesh
+		{
+			// Each mesh starts with a header giving the mesh name, number of
+			//  triangles in the mesh, mesh color, and mesh texture name
+			const char *word = strtok(buf, ",");
+			vtString name = word;
+			word = strtok(NULL, ",");
+			sscanf(word, "%d", &num_tri);
+			word = strtok(NULL, ",");
+			sscanf(word, "%d", &color);
+			word = strtok(NULL, ",");
+			state = 2;
+			v = 0;
+		}
+		else if (state == 2)	// vertex of a TIN
+		{
+			// A vertex comprises of X,Y,Z ordinates, and X, Y, and Z vertex
+			//  normals.
+			DPoint2 p;
+			float z;
+			sscanf(buf, "%lf,%lf,%f", &p.x, &p.y, &z);
+			tin->AddVert(p, z);
+			if ((vtx%3)==2)
+				tin->AddTri(vtx-2, vtx-1, vtx);
+			vtx++;
+			v++;
+
+			UpdateProgressDialog(100 * v / (num_tri*3));
+
+			if (v == num_tri*3)	// last vtx of this mesh
+			{
+				state = 1;
+				mesh++;
+				if (mesh == num_mesh)
+					state = 4;
+			}
+		}
+		else if (state == 4)	// CONTOUR etc.
+		{
+			if (!strncmp(buf, "CONTOUR", 7))
+			{
+				state = 5;
+			}
+			else if (!strncmp(buf, "OBJECTS", 7))
+			{
+				// The header line contains the objects layer name, the object
+				//  name, the color, and the objects type description.
+				const char *word = strtok(buf, ",");
+				// first: OBJECTS
+
+				word = strtok(NULL, ",");
+				vtString layer_name = word;
+
+				word = strtok(NULL, ",");
+				vtString object_name = word;
+
+				word = strtok(NULL, ",");
+				sscanf(word, "%d", &color);
+
+				word = strtok(NULL, ",");
+				object_type = word;
+
+				state = 6;
+			}
+			else if (!strncmp(buf, "OBJLINE", 7))
+			{
+				// the objects layer name, the object name, the color, the
+				// objects size in X, Y and Z, and the objects type description.
+				const char *word = strtok(buf, ",");
+				// first: OBJLINE
+
+				word = strtok(NULL, ",");
+				vtString layer_name = word;
+
+				word = strtok(NULL, ",");
+				vtString object_name = word;
+
+				word = strtok(NULL, ",");
+				sscanf(word, "%d", &color);
+
+				FPoint2 size;
+				word = strtok(NULL, ",");
+				sscanf(word, "%f", &size.x);
+				word = strtok(NULL, ",");
+				sscanf(word, "%f", &size.y);
+				word = strtok(NULL, ",");
+				sscanf(word, "%f", &height);
+
+				word = strtok(NULL, ",");
+				object_type = word;
+
+				// Begin a new linear structure
+				linear = pSL->AddNewFence();
+				if (object_type.Left(5) == "Fence")
+					linear->ApplyStyle(FS_WOOD_POSTS_WIRE);
+				else if (object_type.Left(5) == "Hedge")
+					linear->ApplyStyle(FS_PRIVET);
+				else
+					// unknown type; use a railing as a placeholder
+					linear->ApplyStyle(FS_RAILING_ROW);
+
+				// Apply height and spacing
+				vtLinearParams &params = linear->GetParams();
+				params.m_fPostHeight = height;
+				params.m_fPostSpacing = size.y;
+
+				state = 7;
+			}
+		}
+		else if (state == 5)	// CONTOUR
+		{
+			if (!strncmp(buf, "ENDCONTOUR", 10))
+				state = 4;
+		}
+		else if (state == 6)	// OBJECTS
+		{
+			if (!strncmp(buf, "ENDOBJECTS", 10))
+				state = 4;
+			else
+			{
+				// X,Y,Z insertion point, followed by the objects size in X, Y
+				//  and Z, and object orientation in X,Y, and Z axes.
+				DPoint2 p;
+				float z;
+				FPoint3 size;
+				sscanf(buf, "%lf,%lf,%f,%f,%f,%f", &p.x, &p.y, &z,
+					&size.x, &size.y, &size.z);
+
+				if (object_type.Left(4) == "Tree")
+				{
+					pia->AddPlant(p, size.z, ps);
+				}
+			}
+		}
+		else if (state == 7)	// OBJLINE
+		{
+			if (!strncmp(buf, "ENDOBJLINE", 10))
+			{
+				// Close linear structure
+				state = 4;
+			}
+			else
+			{
+				// Add X,Y,Z point to linear structure
+				DPoint2 p;
+				float z;
+				sscanf(buf, "%lf,%lf,%f", &p.x, &p.y, &z);
+				if (linear)
+					linear->AddPoint(p);
+			}
+		}
+	}
+	fclose(fp);
+	CloseProgressDialog();
+
+	tin->ComputeExtents();
+	tin->CleanupClockwisdom();
+	pEL->SetTin(tin);
+	pEL->SetProjection(proj);
+
+	int layer_count = 0;
+	bool success;
+	success = AddLayerWithCheck(pEL);
+	if (!success)
+		delete pEL;
+	else
+		layer_count++;
+
+	success = AddLayerWithCheck(pSL);
+	if (!success)
+		delete pSL;
+	else
+		layer_count++;
+
+	success = AddLayerWithCheck(pVL);
+	if (!success)
+		delete pVL;
+	else
+		layer_count++;
+
+	return layer_count;
+}
+
+

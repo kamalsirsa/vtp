@@ -419,6 +419,7 @@ public:
 	void ImportFromMapSource(const char *fname);
 	void ImportDataPointsFromTable(const char *fname);
 	int ImportDataFromTIGER(const wxString2 &strDirName);
+	int ImportDataFromSCC(const char *filename);
 	void ImportDataFromNTF(const wxString2 &strFileName);
 	void ImportDataFromS57(const wxString2 &strDirName);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
