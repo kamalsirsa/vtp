@@ -16,6 +16,7 @@ class GDALDataset;
 class GDALRasterBand;
 class GDALColorTable;
 class BuilderView;
+class ImageGLCanvas;
 
 // The following mechanism is for a small buffer, consisting of a small
 //  number of scanlines, to cache the results of accessing large image
@@ -71,7 +72,9 @@ public:
 
 	bool ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 		int iMetersPerPixel, int iUTMZone, const char *filename);
-	bool WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView);
+	bool WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pView);
+	bool WriteTile(const TilingOptions &opts, BuilderView *pView, vtString &dirname,
+		DRECT &tile_area, DPoint2 &tile_dim, int col, int row, int lod);
 
 protected:
 	void SetDefaults();
@@ -105,6 +108,12 @@ protected:
 
 	void ReadScanline(int y, int bufrow);
 	RGBi *GetScanlineFromBuffer(int y);
+
+	// Used during writing of tilesets
+	int m_iTotal, m_iCompleted;
+#if USE_OPENGL
+	ImageGLCanvas *m_pCanvas;
+#endif
 };
 
 // Helper
