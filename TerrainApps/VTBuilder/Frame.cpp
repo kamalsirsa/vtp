@@ -1633,7 +1633,7 @@ void MainFrame::MergeResampleElevation()
 	else if (dlg.m_bToTiles)
 	{
 		OpenProgressDialog(_T("Writing tiles"), true);
-		bool success = pOutput->WriteGridOfPGMPyramids(dlg.m_tileopts, GetView());
+		bool success = pOutput->WriteGridOfTilePyramids(dlg.m_tileopts, GetView());
 		GetView()->HideGridMarks();
 		delete pOutput;
 		CloseProgressDialog();
@@ -1949,7 +1949,7 @@ void MainFrame::ExportImage()
 	else if (dlg.m_bToTiles)
 	{
 		OpenProgressDialog(_T("Writing tiles"), true);
-		bool success = pOutput->WriteGridOfPGMPyramids(dlg.m_tileopts, GetView());
+		bool success = pOutput->WriteGridOfTilePyramids(dlg.m_tileopts, GetView());
 		GetView()->HideGridMarks();
 		delete pOutput;
 		CloseProgressDialog();

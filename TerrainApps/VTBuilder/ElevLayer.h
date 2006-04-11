@@ -112,7 +112,7 @@ public:
 	void Resample(int iNewWidth, int iNewHeight);
 	bool FillGaps();
 	void DetermineMeterSpacing();
-	bool WriteGridOfPGMPyramids(const TilingOptions &opts, BuilderView *pView);
+	bool WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pView);
 
 	// TIN operations
 	void SetTin(vtTin2d *pTin);

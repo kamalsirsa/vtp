@@ -2660,13 +2660,13 @@ void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 	dlg.GetTilingOptions(tileopts);
 
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = pEL->WriteGridOfPGMPyramids(tileopts, GetView());
+	bool success = pEL->WriteGridOfTilePyramids(tileopts, GetView());
 	GetView()->HideGridMarks();
 	CloseProgressDialog();
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
 	else
-		DisplayAndLog("Could not successfully write to '%s'", (const char *) tileopts.fname);
+		DisplayAndLog("Did not successfully write to '%s'", (const char *) tileopts.fname);
 }
 
 #if WIN32
@@ -3230,12 +3230,12 @@ void MainFrame::OnImageExportTiles(wxCommandEvent& event)
 	dlg.GetTilingOptions(tileopts);
 
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = pIL->WriteGridOfPGMPyramids(tileopts, GetView());
+	bool success = pIL->WriteGridOfTilePyramids(tileopts, GetView());
 	CloseProgressDialog();
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
 	else
-		DisplayAndLog("Could not successfully write to '%s'", (const char *) tileopts.fname);
+		DisplayAndLog("Did not successfully write to '%s'", (const char *) tileopts.fname);
 }
 
 void MainFrame::OnUpdateImageExportTiles(wxUpdateUIEvent& event)
