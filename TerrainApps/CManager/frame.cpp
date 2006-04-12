@@ -103,6 +103,8 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_VIEW_ORIGIN, vtFrame::OnUpdateViewOrigin)
 	EVT_MENU(ID_VIEW_RULERS, vtFrame::OnViewRulers)
 	EVT_UPDATE_UI(ID_VIEW_RULERS, vtFrame::OnUpdateViewRulers)
+	EVT_MENU(ID_VIEW_WIREFRAME, vtFrame::OnViewWireframe)
+	EVT_UPDATE_UI(ID_VIEW_WIREFRAME, vtFrame::OnUpdateViewWireframe)
 	EVT_MENU(ID_VIEW_LIGHTS, vtFrame::OnViewLights)
 
 	EVT_UPDATE_UI(ID_ITEM_SAVESOG, vtFrame::OnUpdateItemSaveSOG)
@@ -139,6 +141,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	m_bShowOrigin = true;
 	m_bShowRulers = false;
+	m_bWireframe = false;
 
 	CreateMenus();
 	CreateToolbar();
@@ -323,6 +326,7 @@ void vtFrame::CreateMenus()
 	wxMenu *viewMenu = new wxMenu;
 	viewMenu->AppendCheckItem(ID_VIEW_ORIGIN, _T("Show Local Origin"));
 	viewMenu->AppendCheckItem(ID_VIEW_RULERS, _T("Show Rulers"));
+	viewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("&Wireframe\tCtrl+W"));
 	viewMenu->AppendCheckItem(ID_VIEW_LIGHTS, _T("Lights"));
 
 	wxMenu *helpMenu = new wxMenu;
@@ -354,6 +358,7 @@ void vtFrame::CreateToolbar()
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_VIEW_ORIGIN, MyBitmapsFunc(ID_BM_AXES), _("Show Axes"), true);
 	ADD_TOOL(ID_VIEW_RULERS, MyBitmapsFunc(ID_BM_RULERS), _("Show Rulers"), true);
+	ADD_TOOL(ID_VIEW_WIREFRAME, MyBitmapsFunc(ID_BM_WIRE), _("Wireframe"), true);
 
 	m_pToolbar->Realize();
 }
@@ -789,6 +794,17 @@ void vtFrame::OnViewRulers(wxCommandEvent& event)
 void vtFrame::OnUpdateViewRulers(wxUpdateUIEvent& event)
 {
 	event.Check(m_bShowRulers);
+}
+
+void vtFrame::OnViewWireframe(wxCommandEvent& event)
+{
+	m_bWireframe = !m_bWireframe;
+	vtGetScene()->SetGlobalWireframe(m_bWireframe);
+}
+
+void vtFrame::OnUpdateViewWireframe(wxUpdateUIEvent& event)
+{
+	event.Check(m_bWireframe);
 }
 
 void vtFrame::OnViewLights(wxCommandEvent& event)

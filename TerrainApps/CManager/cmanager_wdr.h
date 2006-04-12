@@ -76,6 +76,7 @@ const int ID_BM_ITEM_REMOVE = 10027;
 const int ID_BM_MODEL_REMOVE = 10028;
 const int ID_BM_RULERS = 10029;
 const int ID_BM_PROPERTIES = 10030;
+const int ID_BM_WIRE = 10031;
 wxBitmap MyBitmapsFunc( size_t index );
 
 #endif

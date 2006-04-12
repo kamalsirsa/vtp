@@ -620,6 +620,40 @@ wxBitmap MyBitmapsFunc( size_t index )
         wxBitmap bitmap( xpm_data );
         return bitmap;
     }
+    if ((index == 9) ||
+        (index == ID_BM_WIRE))
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 2 1",
+        "  c None",
+        "a c Black",
+        /* pixels */
+        "                    ",
+        "                    ",
+        "        aaaaaaaaaaa ",
+        "      aa a      aaa ",
+        "    aa   a    aa  a ",
+        "  aa     a  aa    a ",
+        " aaaaaaaaaaa      a ",
+        " a      aaaaaaaaaaa ",
+        " a    aa a a    aaa ",
+        " a  aa   a a  aa  a ",
+        " aaa     a aaa    a ",
+        " aaaaaaaaaaa      a ",
+        " a      aaaaaaaaaaa ",
+        " a    aa   a    aa  ",
+        " a  aa     a  aa    ",
+        " aaa       aaa      ",
+        " aaaaaaaaaaa        ",
+        "                    ",
+        "                    ",
+        "                    "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
     return wxNullBitmap;
 }
 

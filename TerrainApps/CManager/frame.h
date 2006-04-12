@@ -87,6 +87,8 @@ protected:
 	void OnUpdateViewOrigin(wxUpdateUIEvent& event);
 	void OnViewRulers(wxCommandEvent& event);
 	void OnUpdateViewRulers(wxUpdateUIEvent& event);
+	void OnViewWireframe(wxCommandEvent& event);
+	void OnUpdateViewWireframe(wxUpdateUIEvent& event);
 	void OnViewLights(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
 
@@ -160,6 +162,7 @@ public:
 
 	bool m_bShowOrigin;
 	bool m_bShowRulers;
+	bool m_bWireframe;
 
 	bool m_bCloseOnIdle;
 
