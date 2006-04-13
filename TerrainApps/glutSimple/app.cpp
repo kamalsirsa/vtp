@@ -100,8 +100,6 @@ void motion(int x, int y)
 */
 void redraw()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	vtGetScene()->DoUpdate();
 
 	glutPostRedisplay();
@@ -193,6 +191,29 @@ bool CreateScene()
 	pConstrain->SetTarget(pCamera);
 	pConstrain->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pConstrain);
+
+#if 1
+	vtHeightFieldGrid3d *grid = pTerr->GetHeightFieldGrid3d();
+	FRECT ext = grid->m_WorldExtents;
+	float minh, maxh;
+	grid->GetHeightExtents(minh, maxh);
+	FBox3 box(0,				   minh, ext.top,
+		ext.right, minh, ext.bottom);
+
+	vtMaterialArray *pMats = new vtMaterialArray;
+	pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true, false, true);
+	pMats->AddRGBMaterial1(RGBf(0.0f, 1.0f, 0.0f), true, false, true);
+	pMats->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), true, false, true);
+	vtGeom *pGeom = CreateLineGridGeom(pMats, 0,
+						   box.min, box.max, 32);
+	vtMesh *mesh1 = new vtMesh(vtMesh::LINES, 0, 6);
+	mesh1->AddLine(FPoint3(0,0,0), FPoint3(0,maxh,0));
+	pGeom->AddMesh(mesh1, 1);
+	vtMesh *mesh2 = new vtMesh(vtMesh::LINES, 0, 6);
+	mesh2->AddLine(FPoint3(-1000,0,0), FPoint3(1000,0,0));
+	pGeom->AddMesh(mesh2, 2);
+	pTopGroup->AddChild(pGeom);
+#endif
 
 	return true;
 }
