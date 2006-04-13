@@ -92,9 +92,11 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_MENU(ID_ITEM_ADDMODEL, vtFrame::OnItemAddModel)
 	EVT_UPDATE_UI(ID_ITEM_ADDMODEL, vtFrame::OnUpdateItemAddModel)
 	EVT_MENU(ID_ITEM_REMOVEMODEL, vtFrame::OnItemRemoveModel)
-	EVT_UPDATE_UI(ID_ITEM_REMOVEMODEL, vtFrame::OnUpdateItemRemoveModel)
+	EVT_UPDATE_UI(ID_ITEM_REMOVEMODEL, vtFrame::OnUpdateItemModelExists)
 	EVT_MENU(ID_ITEM_MODELPROPS, vtFrame::OnItemModelProps)
-	EVT_UPDATE_UI(ID_ITEM_MODELPROPS, vtFrame::OnUpdateItemRemoveModel)
+	EVT_UPDATE_UI(ID_ITEM_MODELPROPS, vtFrame::OnUpdateItemModelExists)
+	EVT_MENU(ID_ITEM_ROTMODEL, vtFrame::OnItemRotModel)
+	EVT_UPDATE_UI(ID_ITEM_ROTMODEL, vtFrame::OnUpdateItemModelExists)
 	EVT_MENU(ID_ITEM_SAVESOG, vtFrame::OnItemSaveSOG)
 	EVT_MENU(ID_ITEM_SAVEOSG, vtFrame::OnItemSaveOSG)
 	EVT_MENU(ID_ITEM_SAVEIVE, vtFrame::OnItemSaveIVE)
@@ -317,6 +319,8 @@ void vtFrame::CreateMenus()
 	itemMenu->Append(ID_ITEM_REMOVEMODEL, _T("Remove Model"));
 	itemMenu->Append(ID_ITEM_MODELPROPS, _T("Model Properties"));
 	itemMenu->AppendSeparator();
+	itemMenu->Append(ID_ITEM_ROTMODEL, _T("Rotate Model Around X Axis"));
+	itemMenu->AppendSeparator();
 	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"));
 #if VTLIB_OSG
 	itemMenu->Append(ID_ITEM_SAVEOSG, _T("Save Model as OSG"));
@@ -327,7 +331,7 @@ void vtFrame::CreateMenus()
 	viewMenu->AppendCheckItem(ID_VIEW_ORIGIN, _T("Show Local Origin"));
 	viewMenu->AppendCheckItem(ID_VIEW_RULERS, _T("Show Rulers"));
 	viewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("&Wireframe\tCtrl+W"));
-	viewMenu->AppendCheckItem(ID_VIEW_LIGHTS, _T("Lights"));
+	viewMenu->Append(ID_VIEW_LIGHTS, _T("Lights"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(ID_HELP_ABOUT, _T("About VTP Content Manager..."));
@@ -637,9 +641,22 @@ void vtFrame::OnItemModelProps(wxCommandEvent& event)
 	wxMessageBox(str, _T("Model Properties"));
 }
 
-void vtFrame::OnUpdateItemRemoveModel(wxUpdateUIEvent& event)
+void vtFrame::OnUpdateItemModelExists(wxUpdateUIEvent& event)
 {
 	event.Enable(m_pCurrentItem && m_pCurrentModel);
+}
+
+void vtFrame::OnItemRotModel(wxCommandEvent& event)
+{
+	vtModel *mod = m_pCurrentModel;
+	vtNode *node = m_nodemap[mod];
+	// this node is actually the scaling transform; we want its child
+	vtTransform *transform = dynamic_cast<vtTransform*>(node);
+	if (!transform)
+		return;
+	vtNode *node2 = transform->GetChild(0);
+
+	node2->ApplyVertexRotation(FPoint3(1,0,0), -PID2f);
 }
 
 #include "vtlib/core/vtSOG.h"
@@ -702,9 +719,18 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 
 #if VTLIB_OSG
 	OpenProgressDialog(_T("Writing file"), false, this);
+
+	// OSG/IVE has a different axis convention that VTLIB does (Z up, not Y up)
+	//  So we must rotate before saving, then rotate back again
+	node->ApplyVertexRotation(FPoint3(1,0,0), PID2f);
+
 	osg::Node *onode = node->GetOsgNode();
 	osgDB::ReaderWriter::WriteResult result;
 	result = osgDB::Registry::instance()->writeNode(*onode, (const char *)fname);
+
+	// Rotate back again
+	node->ApplyVertexRotation(FPoint3(1,0,0), -PID2f);
+
 	CloseProgressDialog();
 	if (result.notHandled())
 		wxMessageBox(_("File type not handled.\n"));
@@ -730,10 +756,19 @@ void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
 
 #if VTLIB_OSG
 	OpenProgressDialog(_T("Writing file"), false, this);
+
+	// OSG/IVE has a different axis convention that VTLIB does (Z up, not Y up)
+	//  So we must rotate before saving, then rotate back again
+	node->ApplyVertexRotation(FPoint3(1,0,0), PID2f);
+
 	osg::Node *onode = node->GetOsgNode();
 	osgDB::ReaderWriter::WriteResult result;
 	CloseProgressDialog();
 	result = osgDB::Registry::instance()->writeNode(*onode, (const char *)fname);
+
+	// Rotate back again
+	node->ApplyVertexRotation(FPoint3(1,0,0), -PID2f);
+
 	if (result.notHandled())
 		wxMessageBox(_("File type not handled.\n"));
 	else if (result.success())
@@ -910,12 +945,20 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	VTLOG("AttemptLoad '%s'\n", (const char *) model->m_filename);
 	model->m_attempted_load = true;
 
+	OpenProgressDialog(_T("Reading file"), false, this);
+
+	wxString2 str;
+	str = (const char *) model->m_filename;
+	UpdateProgressDialog(1, str);
+
 	vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
+	UpdateProgressDialog(5, str);
 	vtNode *pNode = vtNode::LoadModel(fullpath);
+
+	CloseProgressDialog();
 
 	if (!pNode)
 	{
-		wxString2 str;
 		str.Printf(_T("Sorry, couldn't load model from %hs"), (const char *) model->m_filename);
 		VTLOG(str.mb_str());
 		DisplayMessageBox(str);
