@@ -1062,8 +1062,11 @@ void EnviroFrame::Snapshot(bool bNumbered)
 {
 	vtScene *scene = vtGetScene();
 	IPoint2 size = scene->GetWindowSize();
-	osg::ref_ptr<osg::Image> pImage = new osg::Image;
-	pImage->readPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE);
+
+	vtImage *pImage = new vtImage;
+	pImage->Create(size.x, size.y, 24);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
 
 	wxString2 use_name;
 	if (!bNumbered || (bNumbered && m_strSnapshotFilename == _T("")))
@@ -1096,6 +1099,7 @@ void EnviroFrame::Snapshot(bool bNumbered)
 	}
 	if (bNumbered)
 	{
+		// Append the number of the snapshot to the filename
 		wxString start, number, extension;
 		start = m_strSnapshotFilename.BeforeLast(_T('.'));
 		extension = m_strSnapshotFilename.AfterLast(_T('.'));
@@ -1111,7 +1115,7 @@ void EnviroFrame::Snapshot(bool bNumbered)
 	short r, g, b;
 	for (y = 0; y < size.y; y++)
 	{
-		data = pImage->data(0, y);
+		data = pImage->GetRowData(y);
 		for (x = 0; x < size.x; x++)
 		{
 			r = *data++;
@@ -1135,6 +1139,7 @@ void EnviroFrame::Snapshot(bool bNumbered)
 		dib.WriteTIF(use_name.mb_str());
 		break;
 	}
+	pImage->Release();
 }
 
 void EnviroFrame::OnViewSnapshot(wxCommandEvent& event)
