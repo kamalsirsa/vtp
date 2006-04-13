@@ -79,6 +79,7 @@ protected:
 	void OnItemAddModel(wxCommandEvent& event);
 	void OnItemRemoveModel(wxCommandEvent& event);
 	void OnItemModelProps(wxCommandEvent& event);
+	void OnItemRotModel(wxCommandEvent& event);
 	void OnItemSaveSOG(wxCommandEvent& event);
 	void OnItemSaveOSG(wxCommandEvent& event);
 	void OnItemSaveIVE(wxCommandEvent& event);
@@ -93,7 +94,7 @@ protected:
 	void OnHelpAbout(wxCommandEvent& event);
 
 	void OnUpdateItemAddModel(wxUpdateUIEvent& event);
-	void OnUpdateItemRemoveModel(wxUpdateUIEvent& event);
+	void OnUpdateItemModelExists(wxUpdateUIEvent& event);
 	void OnUpdateItemSaveSOG(wxUpdateUIEvent& event);
 
 	void LoadContentsFile(const wxString2 &fname);
