@@ -822,6 +822,13 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	unsigned int i;
 	int sel;
 
+	// Clear drop-down controls before putting values into them
+	m_pFilename->Clear();
+	m_pFilenameTin->Clear();
+	m_pFilenameTileset->Clear();
+	m_pTextureFileSingle->Clear();
+	m_pTextureFileTileset->Clear();
+
 	vtStringArray &paths = m_datapaths;
 
 	for (i = 0; i < paths.size(); i++)
@@ -904,7 +911,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 
 	// fill the "single texture filename" control with available image files
-	m_pTextureFileSingle->Clear();
 	for (i = 0; i < m_TextureFiles.size(); i++)
 	{
 		wxString2 str = m_TextureFiles[i];
