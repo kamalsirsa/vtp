@@ -188,13 +188,9 @@ bool App::CreateScene()
 
 void App::display()
 {
-#if !VTLIB_PSM
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	vtGetScene()->DoUpdate();
 
 	SDL_GL_SwapBuffers();
-#endif
 }
 
 int App::process_modifiers()
