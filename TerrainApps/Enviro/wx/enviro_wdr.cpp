@@ -705,8 +705,11 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxRadioButton *item4 = new wxRadioButton( parent, ID_USE_GRID, _("Grid Filename: "), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
     item3->Add( item4, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxString *strs5 = (wxString*) NULL;
-    wxComboBox *item5 = new wxComboBox( parent, ID_FILENAME, wxT(""), wxDefaultPosition, wxSize(180,-1), 0, strs5, wxCB_DROPDOWN|wxCB_SORT );
+    wxString strs5[] = 
+    {
+        _("Item")
+    };
+    wxComboBox *item5 = new wxComboBox( parent, ID_FILENAME, wxT(""), wxDefaultPosition, wxSize(180,-1), 1, strs5, wxCB_DROPDOWN|wxCB_SORT );
     item3->Add( item5, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item1->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
@@ -748,8 +751,11 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxRadioButton *item16 = new wxRadioButton( parent, ID_USE_TIN, _("TIN Filename:"), wxDefaultPosition, wxDefaultSize, 0 );
     item15->Add( item16, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxString *strs17 = (wxString*) NULL;
-    wxComboBox *item17 = new wxComboBox( parent, ID_FILENAME_TIN, wxT(""), wxDefaultPosition, wxSize(180,-1), 0, strs17, wxCB_DROPDOWN|wxCB_SORT );
+    wxString strs17[] = 
+    {
+        _("Item")
+    };
+    wxComboBox *item17 = new wxComboBox( parent, ID_FILENAME_TIN, wxT(""), wxDefaultPosition, wxSize(180,-1), 1, strs17, wxCB_DROPDOWN|wxCB_SORT );
     item15->Add( item17, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item13->Add( item15, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
@@ -764,8 +770,11 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxRadioButton *item21 = new wxRadioButton( parent, ID_USE_TILESET, _("Tileset .ini file:"), wxDefaultPosition, wxDefaultSize, 0 );
     item20->Add( item21, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxString *strs22 = (wxString*) NULL;
-    wxComboBox *item22 = new wxComboBox( parent, ID_FILENAME_TILES, wxT(""), wxDefaultPosition, wxSize(180,-1), 0, strs22, wxCB_DROPDOWN|wxCB_SORT );
+    wxString strs22[] = 
+    {
+        _("Item")
+    };
+    wxComboBox *item22 = new wxComboBox( parent, ID_FILENAME_TILES, wxT(""), wxDefaultPosition, wxSize(180,-1), 1, strs22, wxCB_DROPDOWN|wxCB_SORT );
     item20->Add( item22, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item18->Add( item20, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
