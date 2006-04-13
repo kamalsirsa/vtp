@@ -88,6 +88,7 @@ public:
 	osg::Node *GetOsgNode() { return m_pNode.get(); }
 	const osg::Node *GetOsgNode() const { return m_pNode.get(); }
 	void DecorateNativeGraph();
+	void ApplyVertexRotation(const FPoint3 &axis, float angle);
 
 	/// Load a 3D model file
 	static vtNode *LoadModel(const char *filename, bool bAllowCache = true, bool bDisableMipmaps = false);
