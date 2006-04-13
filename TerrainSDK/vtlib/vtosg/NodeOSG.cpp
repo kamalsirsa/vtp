@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -564,6 +564,8 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		AlphaVisitor visitor_a;
 		node->accept(visitor_a);
 
+		// If the user wants to, we can disable mipmaps at this point, using
+		//  another visitor.
 		if (bDisableMipmaps || s_bDisableMipmaps)
 		{
 			MipmapVisitor visitor;
@@ -627,6 +629,46 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 #endif
 
 	return pGroup;
+}
+
+//
+// Given a node with an imported model, rotate the vertices of that model
+//  by a given axis/angle.
+//
+void vtNode::ApplyVertexRotation(const FPoint3 &axis, float angle)
+{
+	vtGroup *vtgroup = dynamic_cast<vtGroup*>(this);
+	if (!vtgroup)
+		return;
+	osg::Group *container_group = vtgroup->GetOsgGroup();
+	osg::Node *unique_node = container_group->getChild(0);
+	if (!unique_node)
+		return;
+	osg::Group *unique_group = dynamic_cast<osg::Group*>(unique_node);
+	osg::Node *node = unique_group->getChild(0);
+
+	osg::MatrixTransform *transform = new osg::MatrixTransform;
+	transform->setMatrix(osg::Matrix::rotate(angle, v2s(axis)));
+	// it's not going to change, so tell OSG that it can be optimized
+	transform->setDataVariance(osg::Object::STATIC);
+
+	node->ref();	// avoid losing this node
+	unique_group->removeChild(node);
+	unique_group->addChild(transform);
+	transform->addChild(node);
+	node->unref();
+
+	// Now do some OSG voodoo, which should spread the transform downward
+	//  through the loaded model, and delete the transform.
+	//
+	// NOTE: OSG 1.0 seems to have a bug (limitation): Optimizer doesn't
+	//  inform the display lists that they have changed.  So, this doesn't
+	//  produce a visual update for objects which have already been rendered.
+	// It is a one-line fix in Optimizer.cpp (CollectLowestTransformsVisitor::doTransform)
+	// I wrote the OSG list with the fix on 2006.04.12.
+	//
+	osgUtil::Optimizer optimizer;
+	optimizer.optimize(unique_group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
 }
 
 void vtNode::ClearOsgModelCache()
@@ -1490,6 +1532,15 @@ void OsgDynMesh::drawImplementation(State& state) const
 {
 	hack_global_state = &state;
 
+	// Our dyamic mesh might use Vertex Arrays, and this can conflict with
+	//  other objects in the OSG scene graph which are also using Vertex
+	//  Arrays.  To avoid this, we disable the OSG arrays before the
+	//  dyamic geometry draws itself.
+	// NOTE: I would guess we should be pushing/popping the state here,
+	//  but i don't understand how to use osg::State that way, and just
+	//  disabling the arrays seems to make things work!
+	state.disableAllVertexArrays();
+
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCam = pScene->GetCamera();
 
@@ -1498,14 +1549,6 @@ void OsgDynMesh::drawImplementation(State& state) const
 
 	m_pDynGeom->DoCull(pCam);
 	m_pDynGeom->DoRender();
-
-#if 0
-	glBegin(GL_TRIANGLES);
-	glVertex3f(0.0f, 0.0f, 0.0f);
-	glVertex3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(1.0f, 1.0f, 0.0f);
-	glEnd();
-#endif
 }
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
