@@ -24,6 +24,8 @@ public:
 
 	bool Create(int width, int height, int bitdepth, bool create_palette = false);
 	bool Read(const char *fname, bool bAllowCache = true, bool progress_callback(int) = NULL);
+	bool WritePNG(const char *fname, bool progress_callback(int) = NULL);
+	bool WriteJPEG(const char *fname, int quality = 99, bool progress_callback(int) = NULL);
 	bool HasData() { return _data != NULL; }
 
 	/// Return the name of the file, if any, from which the image was loaded.
@@ -42,6 +44,8 @@ public:
 	unsigned int GetHeight() const;
 	unsigned int GetDepth() const;
 
+	unsigned char *GetData() { return data(); }
+	unsigned char *GetRowData(int row) { return data(0, row); }
 	void Set16Bit(bool bFlag);
 
 protected:

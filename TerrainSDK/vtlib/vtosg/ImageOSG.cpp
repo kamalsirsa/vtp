@@ -9,6 +9,7 @@
 #include "vtdata/vtString.h"
 #include "vtdata/vtLog.h"
 #include <osgDB/ReadFile>
+#include <osgDB/WriteFile>
 #include "gdal_priv.h"
 #include "vtdata/Projections.h"
 
@@ -263,6 +264,45 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 	}
 	VTLOG("  succeeded.\n");
 	return true;
+}
+
+bool vtImage::WritePNG(const char *fname, bool progress_callback(int))
+{
+#if USE_OSG_FOR_PNG
+	return osgDB::writeImageFile(*this, fname);
+#else
+	// TODO: native libpng code here
+	return false;
+#endif
+}
+
+/**
+ * Write this image to a JPEG file.  Quality setting is the same as libjpeg,
+ * in the range of 0..100.  99 is a typically useful quality setting.
+ */
+bool vtImage::WriteJPEG(const char *fname, int quality, bool progress_callback(int))
+{
+#if USE_OSG_FOR_JPG
+	osgDB::Registry *reg = osgDB::Registry::instance();
+	osgDB::ReaderWriter::Options *opts = reg->getOptions();
+	if (!opts)
+	{
+		opts = new osgDB::ReaderWriter::Options;
+		opts->ref();	// workaround!  otherwise OSG might crash when
+			// closing its DLL, as the options get deleted twice (?) or
+			// perhaps it doesn't like deleting the object WE allocated.
+	}
+	reg->setOptions(opts);
+
+	vtString str;
+	str.Format("JPEG_QUALITY %d", quality);
+	opts->setOptionString((const char *)str);
+
+	return osgDB::writeImageFile(*this, fname);
+#else
+	// TODO: native libjpeg code here
+	return false;
+#endif
 }
 
 void vtImage::Release()
