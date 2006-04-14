@@ -1389,12 +1389,16 @@ public:
 	  const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxT(""),
 	  int* gl_attrib = NULL) : wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 	{
-		m_iTex = -1;
+		m_iTex = 9999;
+
+		// These two lines are needed for wxGTK (and possibly other platforms, but not wxMSW)
+		parent->Show(TRUE);
+		SetCurrent();
 	}
 	void OnPaint(wxPaintEvent& event)
 	{
 		wxPaintDC dc(this);
-		if (m_iTex == -1)
+		if (m_iTex == 9999)
 			return;
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1438,6 +1442,55 @@ BEGIN_EVENT_TABLE(ImageGLCanvas, wxGLCanvas)
 EVT_PAINT(ImageGLCanvas::OnPaint)
 EVT_SIZE(ImageGLCanvas::OnSize)
 END_EVENT_TABLE()
+
+#if !WIN32
+#include <dlfcn.h>
+#endif
+
+void* getGLExtensionFuncPtr(const char *funcName)
+{
+#if defined(WIN32)
+    return (void*)wglGetProcAddress(funcName);
+
+#elif defined(__APPLE__)
+    std::string temp( "_" );
+    temp += funcName;    // Mac OS X prepends an underscore on function names
+    if ( NSIsSymbolNameDefined( temp.c_str() ) )
+    {
+        NSSymbol symbol = NSLookupAndBindSymbol( temp.c_str() );
+        return NSAddressOfSymbol( symbol );
+    } else
+        return NULL;
+
+#elif defined (__sun) 
+     static void *handle = dlopen((const char *)0L, RTLD_LAZY);
+     return dlsym(handle, funcName);
+    
+#elif defined (__sgi)
+     static void *handle = dlopen((const char *)0L, RTLD_LAZY);
+     return dlsym(handle, funcName);
+
+#elif defined (__FreeBSD__)
+    return dlsym( RTLD_DEFAULT, funcName );
+
+#elif defined (__linux__)
+    typedef void (*__GLXextFuncPtr)(void);
+    typedef __GLXextFuncPtr (*GetProcAddressARBProc)(const char*);
+    static GetProcAddressARBProc s_glXGetProcAddressARB = (GetProcAddressARBProc)dlsym(0, "glXGetProcAddressARB");
+    if (s_glXGetProcAddressARB)
+    {
+        return (void*) (s_glXGetProcAddressARB)(funcName);
+    }
+    else
+    {
+        return dlsym(0, funcName);
+    }
+
+#else // all other unixes
+    return dlsym(0, funcName);
+
+#endif
+}
 #endif
 
 bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pView)
@@ -1447,7 +1500,6 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 	frame->Create(pView, -1, _T("Texture Compression OpenGL Context"),
 		wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
 	m_pCanvas = new ImageGLCanvas(frame);
-	frame->Show();
 #endif
 
 	// Avoid trouble with '.' and ',' in Europe
@@ -1666,27 +1718,25 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 	// Check to see if the compression operation succeeded
 	int iParam;
 	glGetTexLevelParameteriv(target, level, GL_TEXTURE_COMPRESSED_ARB, &iParam);
+//VTLOG("GL_TEXTURE_COMPRESSED_ARB: %d\n", iParam);
 
 	int iInternalFormat;
 	glGetTexLevelParameteriv(target, level, GL_TEXTURE_INTERNAL_FORMAT, &iInternalFormat);
+//VTLOG("GL_TEXTURE_INTERNAL_FORMAT: %d\n", iInternalFormat);
 
 	int iSize;
 	glGetTexLevelParameteriv(target, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &iSize);
+//VTLOG("GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB: %d\n", iSize);
 
 	output_buf.type = 5;	// compressed RGB
 	output_buf.bytes = iSize;
 	output_buf.data = malloc(iSize);
 
-#ifdef _WIN32
-	PFNGLGETCOMPRESSEDTEXIMAGEARBPROC
-		glGetCompressedTexImageARB=(PFNGLGETCOMPRESSEDTEXIMAGEARBPROC)
-			wglGetProcAddress("glGetCompressedTexImageARB");
-#endif
-	// Get compressed image into our buffer
-	glGetCompressedTexImageARB(target, level, output_buf.data);
+	PFNGLGETCOMPRESSEDTEXIMAGEARBPROC gctia = (PFNGLGETCOMPRESSEDTEXIMAGEARBPROC)
+		getGLExtensionFuncPtr("glGetCompressedTexImageARB");
+	gctia(target, level, output_buf.data);
 
 	output_buf.savedata(fname);
-
 	free(output_buf.data);
 	output_buf.data = NULL;
 
@@ -1707,4 +1757,6 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 
 	return true;
 }
+
+
 	
