@@ -264,8 +264,8 @@ public:
 		{
 			VTLOG("Vertex %d x %e y %e z %e ridge angle %e ridge slope %e left %d right %d prev %d next\n",
 				(*i).m_ID,
-				(*i).m_point.m_x, (*i).m_point.m_y, (*i).m_point.m_z,
-				(*i).m_axis.m_Angle, (*i).m_axis.m_Slope,
+				(double) (*i).m_point.m_x, (double) (*i).m_point.m_y, (double) (*i).m_point.m_z,
+				(double) (*i).m_axis.m_Angle, (double) (*i).m_axis.m_Slope,
 				((*i).m_leftVertex == NULL) ? -999 : (*i).m_leftVertex->m_ID,
 				((*i).m_rightVertex == NULL) ? -999 : (*i).m_rightVertex->m_ID,
 				((*i).m_prevVertex == NULL) ? -999 : (*i).m_prevVertex->m_ID,
