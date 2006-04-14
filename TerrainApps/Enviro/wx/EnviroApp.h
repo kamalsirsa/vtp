@@ -1,7 +1,7 @@
 //
 // Name: EnviroApp.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -45,7 +45,7 @@ int EditTerrainParameters(wxWindow *parent, const char *filename);
 #endif
 
 #ifndef ICON_NAME
-#define ICON_NAME "enviro"
+#define ICON_NAME "Enviro"
 #endif
 
 #define STRING_APPORG STRING_ORGNAME " " STRING_APPNAME
