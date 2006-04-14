@@ -11,7 +11,7 @@
 //
 
 #include "FelkelStraightSkeleton.h"
-#include <strstream>
+#include "vtdata/vtString.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -92,9 +92,9 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 
 		if (m_vl.size() < 3)
 		{
-			std::ostrstream* pMessage = new ostrstream;
-			*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Eave Polygon too small" << endl;
-			throw pMessage;
+			vtString *str = new vtString;
+			str->Format("%s (%d): Eave Polygon too small\n", __FILE__, __LINE__);
+			throw str;
 		}
 
 		CVertexList::iterator i;
@@ -152,9 +152,9 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 #ifdef FOR_INTEGRATION
 			if ((NULL == i.m_leftVertex) || (NULL == i.m_rightVertex))
 			{
-				std::ostrstream* pMessage = new ostrstream;
-				*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Invalid intersection queue entry" << endl;
-				throw pMessage;
+				vtString *str = new vtString;
+				str->Format("%s (%d): Invalid intersection queue entry\n", __FILE__, __LINE__);
+				throw str;
 			}
 #endif
 			if (i.m_leftVertex->m_done && i.m_rightVertex->m_done)
@@ -193,12 +193,11 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 		Dump();
 #endif
 	}
-	catch (std::ostrstream* pMessage)
+	catch (vtString *str)
 	{
 		m_skeleton.erase(m_skeleton.begin(), m_skeleton.end());
-		*pMessage << '\0';
-		VTLOG(pMessage->str());
-		delete pMessage;
+		VTLOG(*str);
+		delete str;
 	}
 
 	return m_skeleton;
@@ -301,9 +300,9 @@ void CStraightSkeleton::FixSkeleton()
 			const CVertex* pVertex = Lower.m_higher.m_vertex;
 			if ((NULL == pLeft) || (NULL == pRight) || (NULL == pVertex))
 			{
-				std::ostrstream* pMessage = new ostrstream;
-				*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Problem fixing skeleton" << endl;
-				throw pMessage;
+				vtString *str = new vtString;
+				str->Format("%s (%d): Problem fixing skeleton\n", __FILE__, __LINE__);
+				throw str;
 			}
 			// Fix up the left side
 			if ((pLeft->m_lower.VertexID() == pVertex->m_ID) || (pLeft->m_lower.VertexID() == pVertex->m_ID + 1))
@@ -313,9 +312,9 @@ void CStraightSkeleton::FixSkeleton()
 				pLeft->m_lower.m_left = pRight;
 				if (pLeft->m_lower.RightID() != Lower.m_ID)
 				{
-					std::ostrstream* pMessage = new ostrstream;
-					*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Left Lower Right ID != Lower ID" << endl;
-					throw pMessage;
+					vtString *str = new vtString;
+					str->Format("%s (%d): Left Lower Right ID != Lower ID\n", __FILE__, __LINE__);
+					throw str;
 				}
 			}
 			else if ((pLeft->m_higher.VertexID() == pVertex->m_ID) || (pLeft->m_higher.VertexID() == pVertex->m_ID + 1))
@@ -325,16 +324,16 @@ void CStraightSkeleton::FixSkeleton()
 				pLeft->m_higher.m_left = pRight;
 				if (pLeft->m_higher.RightID() != Lower.m_ID)
 				{
-					std::ostrstream* pMessage = new ostrstream;
-					*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Left Higher Right ID != Lower ID" << endl;
-					throw pMessage;
+					vtString *str = new vtString;
+					str->Format("%s (%d): Left Higher Right ID != Lower ID\n", __FILE__, __LINE__);
+					throw str;
 				}
 			}
 			else
 			{
-				std::ostrstream* pMessage = new ostrstream;
-				*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Problem fixing left side" << endl;
-				throw pMessage;
+				vtString *str = new vtString;
+				str->Format("%s (%d): Problem fixing left side\n", __FILE__, __LINE__);
+				throw str;
 			}
 			// Fix up the right side
 			if ((pRight->m_lower.VertexID() == pVertex->m_ID) || (pRight->m_lower.VertexID() == pVertex->m_ID + 1))
@@ -344,9 +343,9 @@ void CStraightSkeleton::FixSkeleton()
 				pRight->m_lower.m_right = pLeft;
 				if (pRight->m_lower.LeftID() != Lower.m_ID)
 				{
-					std::ostrstream* pMessage = new ostrstream;
-					*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Right Lower Left ID != Lower ID" << endl;
-					throw pMessage;
+					vtString *str = new vtString;
+					str->Format("%s (%d): Right Lower Left ID != Lower ID\n", __FILE__, __LINE__);
+					throw str;
 				}
 			}
 			else if ((pRight->m_higher.VertexID() == pVertex->m_ID) || (pRight->m_higher.VertexID() == pVertex->m_ID + 1))
@@ -356,16 +355,16 @@ void CStraightSkeleton::FixSkeleton()
 				pRight->m_higher.m_right = pLeft;
 				if (pRight->m_higher.LeftID() != Lower.m_ID)
 				{
-					std::ostrstream* pMessage = new ostrstream;
-					*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "Right Higher Left ID != Lower ID" << endl;
-					throw pMessage;
+					vtString *str = new vtString;
+					str->Format("%s (%d): Right Higher Left ID != Lower ID\n", __FILE__, __LINE__);
+					throw str;
 				}
 			}
 			else
 			{
-				std::ostrstream* pMessage = new ostrstream;
-				*pMessage <<  __FILE__ << "(" << __LINE__ << ") " << "FixSkeleton - Problem fixing right side" << endl;
-				throw pMessage;
+				vtString *str = new vtString;
+				str->Format("%s (%d): FixSkeleton - Problem fixing right side\n", __FILE__, __LINE__);
+				throw str;
 			}
 		}
 		s1--;
