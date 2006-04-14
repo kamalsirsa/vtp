@@ -20,11 +20,10 @@ LDIRS  = \
 	  $(SHAPE_LIB)                   \
 	  $(GDAL_LIB)                    \
 	  $(PNG_LIB)                     \
-	  $(NETCDF_LIB)                  \
 	  $(X_LIB)                       \
 	  $(EXTRA_LDIRS)
 
-SWITCHES := $(SWITCHES) -DUNIX
+SWITCHES := $(SWITCHES) -DUNIX -DUSE_OPENGL=1
 CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS)
 CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS)
 LDFLAGS  = $(LDIRFLAGS) \
@@ -33,6 +32,7 @@ LDFLAGS  = $(LDIRFLAGS) \
 CXXSRC = $(filter-out pre.cpp, $(wildcard *.cpp))
 OBJS   = $(CXXSRC:%.cpp=%.o)
 LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) \
+	 $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
 	-lgdal -lm
 
 # Support of Mac OS X
@@ -43,7 +43,7 @@ LIBS   += -F$(FRAMEWORKS) \
 	  -losg -losgDB -losgGA -losgText -losgUtil -lOpenThreads \
 	  -framework vtdata -framework vtui \
 	  -framework xmlhelper \
-	  -L$(FINK_LIB) -lnetcdf \
+	  -L$(FINK_LIB) \
 	  -lz
 
 all : $(OSX_APP)
@@ -51,8 +51,7 @@ all : $(OSX_APP)
 else
 # Support for all other Unix platforms
 LIBS   +=  -lGL -lX11 $(EXTRA_LIBS)   \
-	  -lxmlhelper -lvtdata -lvtui \
-	  -lnetcdf                  
+	  -lxmlhelper -lvtdata -lvtui                 
 
 LDIRS  += \
 	  $(VTDATA_INST_DIR)             \
