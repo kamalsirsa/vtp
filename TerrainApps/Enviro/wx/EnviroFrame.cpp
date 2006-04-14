@@ -64,6 +64,7 @@
 #include "StatusBar.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
+#  include "Enviro_32x32.xpm"
 #  include "axes.xpm"
 #  include "building.xpm"
 #  include "camera.xpm"
