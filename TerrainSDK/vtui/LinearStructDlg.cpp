@@ -1,7 +1,7 @@
 //
 // Name: LinearStructDlg.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -91,10 +91,12 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	GetStyle()->Append(_("Railing (EU)"));
 	GetStyle()->Append(_("(custom)"));
 
+	GetPostType()->Clear();
 	GetPostType()->Append(_("none"));
 	GetPostType()->Append(_("wood"));
 	GetPostType()->Append(_("steel"));
 
+	GetConnType()->Clear();
 	GetConnType()->Append(_("none"));
 	GetConnType()->Append(_("wire"));
 	GetConnType()->Append(_("chain-link"));

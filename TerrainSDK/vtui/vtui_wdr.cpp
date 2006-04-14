@@ -17,8 +17,6 @@
 // Include private header
 #include "vtui_wdr.h"
 
-const int ID_TEXT = 10000;
-
 #include <wx/intl.h>
 
 // Euro sign hack of the year
@@ -369,8 +367,11 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
     wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Defined Style:"), wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs3 = (wxString*) NULL;
-    wxChoice *item3 = new wxChoice( parent, ID_LINEAR_STRUCTURE_STYLE, wxDefaultPosition, wxSize(160,-1), 0, strs3, 0 );
+    wxString strs3[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item3 = new wxChoice( parent, ID_LINEAR_STRUCTURE_STYLE, wxDefaultPosition, wxSize(160,-1), 1, strs3, 0 );
     item1->Add( item3, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -383,8 +384,11 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
     wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
     item6->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs8 = (wxString*) NULL;
-    wxChoice *item8 = new wxChoice( parent, ID_POST_TYPE, wxDefaultPosition, wxSize(100,-1), 0, strs8, 0 );
+    wxString strs8[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item8 = new wxChoice( parent, ID_POST_TYPE, wxDefaultPosition, wxSize(100,-1), 1, strs8, 0 );
     item6->Add( item8, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item4->Add( item6, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -438,8 +442,11 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
     wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
     item23->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs25 = (wxString*) NULL;
-    wxChoice *item25 = new wxChoice( parent, ID_CONN_TYPE, wxDefaultPosition, wxSize(100,-1), 0, strs25, 0 );
+    wxString strs25[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item25 = new wxChoice( parent, ID_CONN_TYPE, wxDefaultPosition, wxSize(100,-1), 1, strs25, 0 );
     item23->Add( item25, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item21->Add( item23, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -509,8 +516,11 @@ wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, _("File:"), wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs4 = (wxString*) NULL;
-    wxChoice *item4 = new wxChoice( parent, ID_CHOICE_FILE, wxDefaultPosition, wxSize(200,-1), 0, strs4, 0 );
+    wxString strs4[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item4 = new wxChoice( parent, ID_CHOICE_FILE, wxDefaultPosition, wxSize(200,-1), 1, strs4, 0 );
     item2->Add( item4, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
@@ -522,8 +532,11 @@ wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
     item5->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs7 = (wxString*) NULL;
-    wxChoice *item7 = new wxChoice( parent, ID_CHOICE_TYPE, wxDefaultPosition, wxSize(200,-1), 0, strs7, 0 );
+    wxString strs7[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item7 = new wxChoice( parent, ID_CHOICE_TYPE, wxDefaultPosition, wxSize(200,-1), 1, strs7, 0 );
     item5->Add( item7, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
@@ -535,8 +548,11 @@ wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Item:"), wxDefaultPosition, wxDefaultSize, 0 );
     item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs10 = (wxString*) NULL;
-    wxChoice *item10 = new wxChoice( parent, ID_CHOICE_ITEM, wxDefaultPosition, wxSize(220,-1), 0, strs10, 0 );
+    wxString strs10[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item10 = new wxChoice( parent, ID_CHOICE_ITEM, wxDefaultPosition, wxSize(220,-1), 1, strs10, 0 );
     item8->Add( item10, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item8, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );

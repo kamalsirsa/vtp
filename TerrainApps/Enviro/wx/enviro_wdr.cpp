@@ -677,8 +677,11 @@ wxSizer *UtilDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Structure Type:"), wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs3 = (wxString*) NULL;
-    wxChoice *item3 = new wxChoice( parent, ID_STRUCTTYPE, wxDefaultPosition, wxSize(250,-1), 0, strs3, 0 );
+    wxString strs3[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item3 = new wxChoice( parent, ID_STRUCTTYPE, wxDefaultPosition, wxSize(250,-1), 1, strs3, 0 );
     item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -1801,8 +1804,11 @@ wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item39 = new wxStaticText( parent, ID_TEXT, _("Global content file:"), wxDefaultPosition, wxDefaultSize, 0 );
     item38->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs40 = (wxString*) NULL;
-    wxChoice *item40 = new wxChoice( parent, ID_CHOICE_CONTENT, wxDefaultPosition, wxSize(200,-1), 0, strs40, 0 );
+    wxString strs40[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item40 = new wxChoice( parent, ID_CHOICE_CONTENT, wxDefaultPosition, wxSize(200,-1), 1, strs40, 0 );
     item38->Add( item40, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item1->Add( item38, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );

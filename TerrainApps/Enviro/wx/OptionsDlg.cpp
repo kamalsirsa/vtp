@@ -151,6 +151,7 @@ void OptionsDlg::OnCheck( wxCommandEvent &event )
 void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	// Populate Content files choices
+	GetContent()->Clear();
 	vtStringArray &paths = g_Options.m_DataPaths;
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
