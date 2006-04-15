@@ -1418,10 +1418,10 @@ public:
 		glBindTexture(GL_TEXTURE_2D, m_iTex);
 		glColor3f(0.0f, 0.0f, 1.0f);
 		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0);	glVertex3f(-128, -128, 0);
-		glTexCoord2f(1, 0);	glVertex3f( 128, -128, 0);
-		glTexCoord2f(1, 1);	glVertex3f( 128,  128, 0);
-		glTexCoord2f(0, 1);	glVertex3f(-128,  128, 0);
+		glTexCoord2f(0, 1);	glVertex3f(-128, -128, 0);
+		glTexCoord2f(1, 1);	glVertex3f( 128, -128, 0);
+		glTexCoord2f(1, 0);	glVertex3f( 128,  128, 0);
+		glTexCoord2f(0, 0);	glVertex3f(-128,  128, 0);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 
@@ -1655,7 +1655,7 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 
 	// also draw our progress in the main view
 	if (pView)
-		pView->ShowGridMarks(m_Extents, opts.cols, opts.rows, col, row);
+		pView->ShowGridMarks(m_Extents, opts.cols, opts.rows, col, opts.rows-1-row);
 
 	// First, fill a buffer with the uncompressed texels
 	unsigned char *rgb_bytes = (unsigned char *) malloc(tilesize * tilesize * 3);
