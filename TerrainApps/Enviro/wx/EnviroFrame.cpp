@@ -2,7 +2,7 @@
 // Name:	 EnviroFrame.cpp
 // Purpose:  The frame class for the wxEnviro application.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -865,6 +865,8 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
  	str += _T("DSM");
 #elif VTLIB_OSG
  	str += _T("OSG");
+#elif VTLIB_OPENSG
+ 	str += _T("OpenSG");
 #elif VTLIB_SGL
  	str += _T("SGL");
 #elif VTLIB_SSG
