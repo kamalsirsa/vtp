@@ -13,7 +13,6 @@
 #include "mini.h"
 #include "miniload.hpp"
 #include "minicache.hpp"
-#include "pnmbase.h"
 #include "miniOGL.h"
 
 // Set this to use the 'minicache' OpenGL primitive cache.
@@ -96,6 +95,16 @@ bool TiledDatasetDescription::GetCorners(DLine2 &line, bool bGeo) const
 
 #endif	// DOXYGEN_SHOULD_SKIP_THIS
 
+// check a file
+int file_exists(const char *filename)
+   {
+   FILE *file;
+
+   if ((file=fopen(filename,"rb"))==NULL) return(0);
+   fclose(file);
+
+   return(1);
+   }
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -122,14 +131,15 @@ int request_callback(unsigned char *mapfile, unsigned char *texfile,
 		// just checking for file existence
 		int present=1;
 
-		if (mapfile!=NULL) present&=checkfile((char *)mapfile);
-		if (texfile!=NULL) present&=checkfile((char *)texfile);
+		if (mapfile!=NULL) present&=file_exists((char *)mapfile);
+		if (texfile!=NULL) present&=file_exists((char *)texfile);
 
 		return(present);
 	}
 
-	// FetchTile
-	// FetchAndCacheTile
+	// libMini's databuf::read depends on American punctuation
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// we need to load (or get from cache) one or both: hfield and texture
 	if (mapfile!=NULL)
 		*hfield = s_pTiledGeom->FetchAndCacheTile((char *)mapfile);
