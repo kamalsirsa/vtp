@@ -547,7 +547,7 @@ void EnviroFrame::CreateToolbar(bool bVertical)
 	}
 
 //	m_pToolbar->SetRows(32);
-	m_pToolbar->Realize();
+//	m_pToolbar->Realize();
 //	SendSizeEvent();
 //	m_pToolbar->Refresh();
 }

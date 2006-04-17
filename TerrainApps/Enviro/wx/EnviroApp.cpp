@@ -262,6 +262,12 @@ bool EnviroApp::OnInit()
 	wxSize size(g_Options.m_WinSize.x, g_Options.m_WinSize.y);
 	EnviroFrame *frame = new FRAME_NAME(NULL, title, pos, size);
 
+	// Now we can realize the toolbar
+	frame->m_pToolbar->Realize();
+
+	// Allow the frame to do something after it's created
+	frame->PostConstruction();
+
 	// process some idle messages... let frame open a bit
 	bool go = true;
 	while (go)
