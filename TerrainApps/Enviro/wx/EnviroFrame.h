@@ -59,6 +59,7 @@ public:
 	virtual void Setup3DScene();
 	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
 	virtual void FrameArgument(int i, const char *str) { }
+	virtual void PostConstruction() { }
 	void UpdateLODInfo();
 
 	// command handlers
