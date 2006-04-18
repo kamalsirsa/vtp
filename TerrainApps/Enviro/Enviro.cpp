@@ -281,6 +281,8 @@ bool Enviro::SwitchToTerrain(const char *name)
 {
 	VTLOG("SwitchToTerrain (%s)\n", name);
 	vtTerrain *pTerr = FindTerrainByName(name);
+	if (!pTerr)
+		return false;
 
 	if (!IsAcceptable(pTerr))
 		return false;
@@ -346,7 +348,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		str.Format("Creating Terrain '%s'", (const char*) pTerr->GetName());
 		SetMessage(str);
 	}
-	if (m_iInitStep == 2)
+	else if (m_iInitStep == 2)
 	{
 		if (pTerr->IsCreated())
 			m_iInitStep = 8;	// already made, skip ahead
@@ -365,7 +367,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		}
 		SetMessage("Loading/Chopping/Prelighting Textures");
 	}
-	if (m_iInitStep == 4)
+	else if (m_iInitStep == 4)
 	{
 		// Tell the skydome where on the planet we are
 		DPoint2 geo = pTerr->GetCenterGeoLocation();
@@ -382,7 +384,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		}
 		SetMessage("Building Terrain");
 	}
-	if (m_iInitStep == 5)
+	else if (m_iInitStep == 5)
 	{
 		if (!pTerr->CreateStep3())
 		{
@@ -392,7 +394,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		}
 		SetMessage("Building CLOD");
 	}
-	if (m_iInitStep == 6)
+	else if (m_iInitStep == 6)
 	{
 		if (!pTerr->CreateStep4())
 		{
@@ -402,7 +404,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		}
 		SetMessage("Creating Culture");
 	}
-	if (m_iInitStep == 7)
+	else if (m_iInitStep == 7)
 	{
 		if (!pTerr->CreateStep5())
 		{
@@ -435,20 +437,20 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		mat.SetTrans(middle);
 		pTerr->SetCamLocation(mat);
 	}
-	if (m_iInitStep == 8)
+	else if (m_iInitStep == 8)
 	{
 		SetMessage("Setting hither/yon");
 		vtCamera *pCam = vtGetScene()->GetCamera();
 		pCam->SetHither(pTerr->GetParams().GetValueFloat(STR_HITHER));
 		pCam->SetYon(500000.0f);
 	}
-	if (m_iInitStep == 9)
+	else if (m_iInitStep == 9)
 	{
 		VTLOG("Setting Camera Location\n");
 		m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
 		SetMessage("Switching to Terrain");
 	}
-	if (m_iInitStep == 10)
+	else if (m_iInitStep == 10)
 	{
 		// make first terrain active
 		SetTerrain(pTerr);
@@ -461,7 +463,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		m_pTerrainPicker->SetEnabled(true);
 		SetMode(MM_NAVIGATE);
 	}
-	if (m_iInitStep == 11)
+	else if (m_iInitStep == 11)
 	{
 		m_state = AS_Terrain;
 		vtString str;
