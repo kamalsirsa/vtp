@@ -1,5 +1,5 @@
 //
-// Name:	 app.cpp
+// Name:	 EnviroApp.cpp
 // Purpose:  The application class for our wxWindows application.
 //
 // Copyright (c) 2001-2006 Virtual Terrain Project
