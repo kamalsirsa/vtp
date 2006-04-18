@@ -194,20 +194,3 @@ publish-uk:
 	cp en_GB/Enviro.pox en_GB/Enviro.po
 	msgfmt en_GB/Enviro.po -o en_GB/Enviro.mo
 
-#
-# Internationalization steps for Infra (iso-8859-1)
-#
-
-I18N_SOURCES_INFRA = \
-	wx/Infra/InfraFrame.cpp \
-	wx/Infra/InfraDlg.cpp \
-	wx/Infra/Infra_wdr.cpp
-
-publish-infra:
-	cp sv/Infra.pox sv/Infra.po
-	msgfmt sv/Infra.po -o sv/Infra.mo
-
-update-infra:
-	xgettext -k_ -o Infra.pot $(I18N_SOURCES_INFRA)
-	msgmerge --no-fuzzy-matching sv/Infra.po Infra.pot -o sv/Infra.pox
-
