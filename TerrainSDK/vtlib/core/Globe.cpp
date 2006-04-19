@@ -270,7 +270,7 @@ void IcoGlobe::ShowAxis(bool bShow)
 ///////////////////////////////////////////////////////////////////////
 // Surface feature methods
 
-int IcoGlobe::AddGlobePoints(const char *fname, float fSize)
+int IcoGlobe::AddGlobeFeatures(const char *fname, float fSize)
 {
 	vtFeatureLoader loader;
 
