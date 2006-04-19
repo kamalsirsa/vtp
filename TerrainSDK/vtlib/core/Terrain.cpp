@@ -1228,7 +1228,7 @@ vtStructureArray3d *vtTerrain::NewStructureArray()
 /**
  * Delete all the selected structures in the terrain's active structure array.
  */
-void vtTerrain::DeleteSelectedStructures()
+int vtTerrain::DeleteSelectedStructures()
 {
 	vtStructureArray3d *structures = GetStructures();
 
@@ -1244,7 +1244,7 @@ void vtTerrain::DeleteSelectedStructures()
 	}
 
 	// then do a normal delete-selected
-	structures->DeleteSelected();
+	return structures->DeleteSelected();
 }
 
 void vtTerrain::DeleteStructureSet(unsigned int index)
@@ -1502,7 +1502,7 @@ void vtTerrain::_CreateVegetation()
 			if (success)
 			{
 				VTLOG("\tLoaded plants file.\n");
-				m_PIA.SetFilename(fname);
+				m_PIA.SetFilename(plants_path);
 			}
 			else
 				VTLOG("\tCouldn't load VF file.\n");
@@ -3021,8 +3021,10 @@ bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 /**
  * Delete all the selected plants in the terrain's plant array.
  */
-void vtTerrain::DeleteSelectedPlants()
+int vtTerrain::DeleteSelectedPlants()
 {
+	int num_deleted = 0;
+
 	// first remove them from the terrain
 	for (unsigned int i = 0; i < m_PIA.GetNumEntities(); i++)
 	{
@@ -3036,10 +3038,12 @@ void vtTerrain::DeleteSelectedPlants()
 				{
 					pParent->RemoveChild(pTrans);
 					m_PIA.DeletePlant(i);
+					num_deleted ++;
 				}
 			}
 		}
 	}
+	return num_deleted;
 }
 
 /**

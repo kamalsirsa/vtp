@@ -191,7 +191,7 @@ public:
 
 	// plants
 	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
-	void DeleteSelectedPlants();
+	int DeleteSelectedPlants();
 	void SetPlantList(vtSpeciesList3d *pPlantList);
 	vtSpeciesList3d *GetPlantList() { return m_pPlantList; }
 	/// Get the plant array for this terrain.  You can modify it directly.
@@ -207,7 +207,7 @@ public:
 	vtStructureArray3d *LoadStructuresFromXML(const vtString &strFilename);
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
-	void DeleteSelectedStructures();
+	int DeleteSelectedStructures();
 	void DeleteStructureSet(unsigned int index);
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
 							  int &structure, double &closest, float fMaxInstRadius);
