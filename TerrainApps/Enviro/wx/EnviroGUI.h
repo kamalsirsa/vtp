@@ -20,6 +20,7 @@ public:
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain);
 	virtual void ShowLayerView();
 	virtual void RefreshLayerView();
+	virtual void UpdateLayerView();
 	virtual void CameraChanged();
 	virtual void EarthPosUpdated();
 	virtual void ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
@@ -32,7 +33,7 @@ public:
 	virtual void ShowMessage(const vtString &str);
 
 	// The following are useful methods
-	void SaveVegetation();
+	void SaveVegetation(bool bAskFilename);
 	void SaveStructures(bool bAskFilename);
 };
 

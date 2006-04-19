@@ -61,6 +61,12 @@ void EnviroGUI::RefreshLayerView()
 	dlg->RefreshTreeContents();
 }
 
+void EnviroGUI::UpdateLayerView()
+{
+	LayerDlg *dlg = GetFrame()->m_pLayerDlg;
+	dlg->UpdateTreeTerrain();
+}
+
 void EnviroGUI::ShowLayerView()
 {
 	LayerDlg *dlg = GetFrame()->m_pLayerDlg;
@@ -106,26 +112,36 @@ void EnviroGUI::SetTimeEngineToGUI(class TimeEngine *pEngine)
 
 //////////////////////////////////////////////////////////////////////
 
-void EnviroGUI::SaveVegetation()
+void EnviroGUI::SaveVegetation(bool bAskFilename)
 {
-	// save current directory
-	wxString path = wxGetCwd();
-
-	EnableContinuousRendering(false);
-	wxFileDialog saveFile(NULL, _("Save Vegetation Data"), _T(""), _T(""),
-		_("Vegetation Files (*.vf)|*.vf"), wxSAVE);
-	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	EnableContinuousRendering(true);
-	if (!bResult)
-	{
-		wxSetWorkingDirectory(path);	// restore
-		return;
-	}
-	wxString2 str = saveFile.GetPath();
-
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtPlantInstanceArray &pia = pTerr->GetPlantInstances();
-	pia.WriteVF(str.mb_str());
+
+	vtString fname = pia.GetFilename();
+
+	if (bAskFilename)
+	{
+		// save current directory
+		wxString path = wxGetCwd();
+
+		wxString2 default_file = StartOfFilename(fname);
+		wxString2 default_dir = ExtractPath(fname);
+
+		EnableContinuousRendering(false);
+		wxFileDialog saveFile(NULL, _("Save Vegetation Data"), default_dir,
+			default_file, _("Vegetation Files (*.vf)|*.vf"), wxSAVE);
+		bool bResult = (saveFile.ShowModal() == wxID_OK);
+		EnableContinuousRendering(true);
+		if (!bResult)
+		{
+			wxSetWorkingDirectory(path);	// restore
+			return;
+		}
+		wxString2 str = saveFile.GetPath();
+		fname = str.mb_str();
+		pia.SetFilename(fname);
+	}
+	pia.WriteVF(fname);
 }
 
 void EnviroGUI::SaveStructures(bool bAskFilename)
@@ -152,8 +168,8 @@ void EnviroGUI::SaveStructures(bool bAskFilename)
 			return;
 		}
 		wxString2 str = saveFile.GetPath();
-
-		sa->SetFilename(str.mb_str());
+		fname = str.mb_str();
+		sa->SetFilename(fname);
 	}
 	sa->WriteXML(fname);
 }
