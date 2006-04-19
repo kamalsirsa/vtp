@@ -1264,7 +1264,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 			pActiveStructures->VisualDeselectAll();
 			pTerr->SetStructureIndex(iSet);
 			ShowLayerView();
-			RefreshLayerView();
+			UpdateLayerView();
 		}
 		// This is inefficient it would be better to maintain a live count if possible
 		if (pTerr->GetStructures()->NumSelected())
@@ -1382,7 +1382,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 			// active structure set (layer) has changed due to picking
 			structures->VisualDeselectAll();
 			ShowLayerView();
-			RefreshLayerView();
+			UpdateLayerView();
 		}
 	}
 	else if (click_plant)
@@ -1754,6 +1754,8 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 	if (!pTerr->AddPlant(epos, m_PlantOpt.m_iSpecies, height))
 		return false;
 
+	// If there is a GUI, let it update to show one more plant
+	UpdateLayerView();
 	return true;
 }
 
