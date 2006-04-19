@@ -765,11 +765,12 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 			species_id = local_ids[local_species_id];
 			if (species_id == -1)
 				unknown++;
-			AddPlant(pos, size, species_id);
+			else
+				AddPlant(pos, size, species_id);
 		}
 	}
 	if (unknown > 0)
-		VTLOG("Warning: %d/%d instances are unknown species.\n", unknown, numinstances);
+		VTLOG("Warning: %d/%d instances were ignored because of unknown species.\n", unknown, numinstances);
 
 	fclose(fp);
 	return true;
