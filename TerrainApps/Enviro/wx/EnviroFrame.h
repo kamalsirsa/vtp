@@ -173,6 +173,7 @@ public:
 	void OnUpdateSaveStruct(wxUpdateUIEvent& event);
 	void OnUpdateFoundations(wxUpdateUIEvent& event);
 	void OnUpdateIsTerrainView(wxUpdateUIEvent& event);
+	void OnUpdateIsDynTerrain(wxUpdateUIEvent& event);
 
 	void OnEarthShowShading(wxCommandEvent& event);
 	void OnEarthShowAxes(wxCommandEvent& event);

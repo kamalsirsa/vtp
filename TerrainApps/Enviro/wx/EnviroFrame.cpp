@@ -200,7 +200,7 @@ EVT_MENU(ID_TERRAIN_CHANGE_TEXTURE,	EnviroFrame::OnTerrainChangeTexture)
 
 EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, EnviroFrame::OnUpdateCullEvery)
-EVT_UPDATE_UI(ID_TERRAIN_CULLONCE,	EnviroFrame::OnUpdateIsTerrainView)
+EVT_UPDATE_UI(ID_TERRAIN_CULLONCE,	EnviroFrame::OnUpdateIsDynTerrain)
 EVT_UPDATE_UI(ID_TERRAIN_SKY,		EnviroFrame::OnUpdateSky)
 EVT_UPDATE_UI(ID_TERRAIN_OCEAN,		EnviroFrame::OnUpdateOcean)
 EVT_UPDATE_UI(ID_TERRAIN_PLANTS,	EnviroFrame::OnUpdatePlants)
@@ -213,8 +213,8 @@ EVT_UPDATE_UI(ID_TERRAIN_LOD,		EnviroFrame::OnUpdateLOD)
 EVT_UPDATE_UI(ID_TERRAIN_SAVEVEG,	EnviroFrame::OnUpdateIsTerrainView)
 EVT_UPDATE_UI(ID_TERRAIN_SAVESTRUCT, EnviroFrame::OnUpdateIsTerrainView)
 EVT_UPDATE_UI(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnUpdateFoundations)
-EVT_UPDATE_UI(ID_TERRAIN_RESHADE,	EnviroFrame::OnUpdateIsTerrainView)
-EVT_UPDATE_UI(ID_TERRAIN_CHANGE_TEXTURE, EnviroFrame::OnUpdateIsTerrainView)
+EVT_UPDATE_UI(ID_TERRAIN_RESHADE,	EnviroFrame::OnUpdateIsDynTerrain)
+EVT_UPDATE_UI(ID_TERRAIN_CHANGE_TEXTURE, EnviroFrame::OnUpdateIsDynTerrain)
 
 EVT_MENU(ID_EARTH_SHOWSHADING,	EnviroFrame::OnEarthShowShading)
 EVT_MENU(ID_EARTH_SHOWAXES,		EnviroFrame::OnEarthShowAxes)
@@ -1493,7 +1493,7 @@ void EnviroFrame::OnUpdateLOD(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnSaveVeg(wxCommandEvent& event)
 {
-	g_App.SaveVegetation();
+	g_App.SaveVegetation(false);
 }
 
 void EnviroFrame::OnSaveStruct(wxCommandEvent& event)
@@ -1580,9 +1580,14 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 void EnviroFrame::OnUpdateIsTerrainView(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	event.Enable(t && t->GetDynTerrain());
+	event.Enable(t && g_App.m_state == AS_Terrain);
 }
 
+void EnviroFrame::OnUpdateIsDynTerrain(wxUpdateUIEvent& event)
+{
+	vtTerrain *t = GetCurrentTerrain();
+	event.Enable(t && t->GetDynTerrain());
+}
 
 ////////////////// Earth Menu //////////////////////
 
@@ -1656,8 +1661,8 @@ void EnviroFrame::OnEarthPoints(wxCommandEvent& event)
 	// save current directory
 	wxString path = wxGetCwd();
 
-	wxFileDialog loadFile(NULL, _("Load Point Data"), _T(""), _T(""),
-		_("Point Data Sources (*.shp)|*.shp"), wxOPEN);
+	wxFileDialog loadFile(NULL, _("Abstract Data"), _T(""), _T(""),
+		_("GIS Data Sources (*.shp)|*.shp"), wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 	{
@@ -1668,9 +1673,9 @@ void EnviroFrame::OnEarthPoints(wxCommandEvent& event)
 
 	wxString2 str = loadFile.GetPath();
 
-	int ret = g_App.AddGlobePoints(str.mb_str());
+	int ret = g_App.AddGlobeAbstractLayer(str.mb_str());
 	if (ret == -1)
-		wxMessageBox(_("Couldn't Open"));
+		wxMessageBox(_("Couldn't open"));
 	if (ret == -2)
 		wxMessageBox(_("That file isn't point data."));
 
@@ -1939,10 +1944,13 @@ void EnviroFrame::OnPopupReload(wxCommandEvent& event)
 void EnviroFrame::OnPopupDelete(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	pTerr->DeleteSelectedStructures();
-	pTerr->DeleteSelectedPlants();
+	int structs = pTerr->DeleteSelectedStructures();
+	int plants = pTerr->DeleteSelectedPlants();
 
 	// layer dialog needs to reflect the change
-	m_pLayerDlg->RefreshTreeContents();
+	if (plants != 0 && structs == 0)
+		m_pLayerDlg->UpdateTreeTerrain();		// we only need to update
+	else if (structs != 0)
+		m_pLayerDlg->RefreshTreeContents();		// we need full refresh
 }
 
