@@ -83,7 +83,6 @@ public:
 	void SetSpeed(float x);
 	float GetSpeed();
 	vtString GetStatusString(int which);
-//	void GetStatusText(vtString &str);
 
 	// go to space or a terrain
 	void FlyToSpace();
@@ -102,7 +101,7 @@ public:
 	bool GetEarthUnfold() { return m_bGlobeUnfolded; }
 	void SetSpaceAxes(bool bShow);
 	bool GetSpaceAxes();
-	int AddGlobePoints(const char *fname);
+	int AddGlobeAbstractLayer(const char *fname);
 	void UpdateEarthArc();
 	void SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2);
 	void SetEarthLines(double lon, double lat);
@@ -198,6 +197,7 @@ public:
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain) {}
 	virtual void ShowLayerView() {}
 	virtual void RefreshLayerView() {}
+	virtual void UpdateLayerView() {}
 	virtual void CameraChanged() {}
 	virtual void EarthPosUpdated() {}
 	virtual void ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
