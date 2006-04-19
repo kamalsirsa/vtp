@@ -18,6 +18,7 @@
 #include "vtui/wxString2.h"
 #include "vtdata/vtLog.h"
 #include "EnviroGUI.h"  // for GetCurrentTerrain
+#include "canvas.h"		// for EnableContinuousRendering
 
 #include "LayerDlg.h"
 
@@ -196,6 +197,20 @@ void LayerDlg::RefreshTreeContents()
 	}
 }
 
+// Helper
+wxString2 MakeVegLayerString(vtPlantInstanceArray3d &pia)
+{
+	wxString2 str;
+
+	str.from_utf8(pia.GetFilename());
+	str += _(" (Plants: ");
+	vtString vs;
+	vs.Format("%d", pia.GetNumEntities());
+	str += vs;
+	str += _T(")");
+	return str;
+}
+
 void LayerDlg::RefreshTreeTerrain()
 {
 	g_pLayerSizer1->Show(g_pLayerSizer2, true);
@@ -301,31 +316,26 @@ void LayerDlg::RefreshTreeTerrain()
 		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_RAW, ICON_RAW);
 		//if (sa == terr->GetStructures())
 		//	m_pTree->SetItemBold(hLayer, true);
-		//m_pTree->SetItemData(hLayer, new LayerItemData(sa, i, -1));
+		m_pTree->SetItemData(hLayer, new LayerItemData(set));
 	}
 
 	// Vegetation
 	if (terr->GetPlantList())
 	{
 		vtPlantInstanceArray3d &pia = terr->GetPlantInstances();
-		if (pia.GetNumEntities() > 0)
-		{
-			vs = pia.GetFilename();
-			str.from_utf8(vs);
+		wxString2 str = MakeVegLayerString(pia);
 
-			str += _(" (Plants: ");
-			vs.Format("%d", pia.GetNumEntities());
-			str += vs;
-			str += _T(")");
-
-			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_VEG1, ICON_VEG1);
-		}
+		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_VEG1, ICON_VEG1);
+		m_pTree->SetItemData(hLayer, new LayerItemData(LT_VEG));
 	}
 
 	m_pTree->Expand(m_root);
 }
 
-void LayerDlg::RefreshTreeStateTerrain()
+//
+// Refresh only the state (text) of the items: don't destroy or create any.
+// 
+void LayerDlg::UpdateTreeTerrain()
 {
 	vtTerrain *terr = GetCurrentTerrain();
 	if (!terr)
@@ -340,10 +350,23 @@ void LayerDlg::RefreshTreeStateTerrain()
 		id.IsOk();
 		id = m_pTree->GetNextChild(m_root, cookie))
 	{
-		if (set[count] == terr->GetStructures())
-			m_pTree->SetItemBold(id, true);
-		else
-			m_pTree->SetItemBold(id, false);
+		LayerItemData *data = GetLayerDataFromItem(id);
+
+		if (data)
+		{
+			// Hightlight the active structure layer in Bold
+			if (data->m_sa && data->m_sa == terr->GetStructures() && data->m_item == -1)
+				m_pTree->SetItemBold(id, true);
+			else
+				m_pTree->SetItemBold(id, false);
+
+			// Refresh the vegetation count
+			if (data->m_type == LT_VEG)
+			{
+				vtPlantInstanceArray3d &pia = terr->GetPlantInstances();
+				m_pTree->SetItemText(id, MakeVegLayerString(pia));
+			}
+		}
 		count++;
 	}
 }
@@ -415,15 +438,64 @@ void LayerDlg::OnLayerCreate( wxCommandEvent &event )
 	RefreshTreeContents();
 }
 
+//Helper
+void SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
+{
+	vtString fname = set->GetFilename();
+
+	if (bAskFilename)
+	{
+		// save current directory
+		wxString path = wxGetCwd();
+
+		wxString2 default_file = StartOfFilename(fname);
+		wxString2 default_dir = ExtractPath(fname);
+
+		EnableContinuousRendering(false);
+		wxFileDialog saveFile(NULL, _("Save Abstract Data"), default_dir,
+			default_file, _("GIS Files (*.shp)|*.shp"), wxSAVE);
+		bool bResult = (saveFile.ShowModal() == wxID_OK);
+		EnableContinuousRendering(true);
+		if (!bResult)
+		{
+			wxSetWorkingDirectory(path);	// restore
+			return;
+		}
+		wxString2 str = saveFile.GetPath();
+		fname = str.mb_str();
+		set->SetFilename(fname);
+	}
+	set->SaveToSHP(fname);
+}
+
 void LayerDlg::OnLayerSave( wxCommandEvent &event )
 {
-	g_App.SaveStructures(false);	// don't ask for filename
-	RefreshTreeContents();
+	LayerItemData *data = GetLayerDataFromItem(m_item);
+
+	if (data->m_type == LT_STRUCTURE)
+		g_App.SaveStructures(false);	// don't ask for filename
+
+	if (data->m_type == LT_VEG)
+		g_App.SaveVegetation(false);	// don't ask for filename
+
+	if (data->m_type == LT_ABSTRACT)
+		SaveAbstractLayer(data->m_fset, false);	// don't ask for filename
 }
 
 void LayerDlg::OnLayerSaveAs( wxCommandEvent &event )
 {
-	g_App.SaveStructures(true);		// ask for filename
+	LayerItemData *data = GetLayerDataFromItem(m_item);
+
+	if (data->m_type == LT_STRUCTURE)
+		g_App.SaveStructures(true);		// ask for filename
+
+	if (data->m_type == LT_VEG)
+		g_App.SaveVegetation(true);	// ask for filename
+
+	if (data->m_type == LT_ABSTRACT)
+		SaveAbstractLayer(data->m_fset, true);	// ask for filename
+
+	// The filename may have changed
 	RefreshTreeContents();
 }
 
@@ -515,7 +587,7 @@ void LayerDlg::OnSelChanged( wxTreeEvent &event )
 		if (newindex != oldindex)
 		{
 			GetCurrentTerrain()->SetStructureIndex(newindex);
-			RefreshTreeStateTerrain();
+			UpdateTreeTerrain();
 		}
 	}
 
@@ -525,12 +597,19 @@ void LayerDlg::OnSelChanged( wxTreeEvent &event )
 void LayerDlg::UpdateEnabling()
 {
 	vtNode *pThing = GetNodeFromItem(m_item);
-	vtStructureArray3d *sa = GetStructureArray3dFromItem(m_item);
 	LayerItemData *data = GetLayerDataFromItem(m_item);
+	vtStructureArray3d *sa = GetStructureArray3dFromItem(m_item);
 
 	GetZoomTo()->Enable(pThing != NULL);
 	GetVisible()->Enable((pThing != NULL) || (sa != NULL));
-	GetShadow()->Enable((pThing != NULL) || (sa != NULL));
+
+	bool bShadows = false;
+#if VTLIB_OSG
+	vtTerrain *terr = GetCurrentTerrain();
+	bShadows = (terr && terr->GetParams().GetValueBool(STR_STRUCT_SHADOWS) &&
+		((pThing != NULL) || (sa != NULL)));
+#endif
+	GetShadow()->Enable(bShadows);
 
 	if (pThing)
 		GetVisible()->SetValue(pThing->GetEnabled());
@@ -542,8 +621,24 @@ void LayerDlg::UpdateEnabling()
 		}
 	}
 
-	GetLayerRemove()->Enable(sa != NULL);
-	GetLayerSave()->Enable(sa != NULL);
-	GetLayerSaveAs()->Enable(sa != NULL);
+	bool bRemovable = false, bSaveable = false;
+	if (data != NULL)
+	{
+		// We can save a structure layer if it is selected
+		if (data->m_type == LT_STRUCTURE && sa)
+			bRemovable = bSaveable = true;
+		
+		// We can save always save or remove an abstract layer
+		if (data->m_type == LT_ABSTRACT)
+			bRemovable = bSaveable = true;
+
+		// We can save (but not remove) a vegetation layer
+		if (data->m_type == LT_VEG)
+			bSaveable = true;
+	}
+
+	GetLayerRemove()->Enable(bRemovable);
+	GetLayerSave()->Enable(bSaveable);
+	GetLayerSaveAs()->Enable(bSaveable);
 }
 

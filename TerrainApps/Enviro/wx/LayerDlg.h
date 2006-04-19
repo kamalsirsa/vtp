@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.h
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,17 +13,56 @@
 
 class vtNodeBase;
 
+enum LayerType
+{
+	LT_UNKNOWN = -1,
+	LT_ABSTRACT,
+	LT_ROAD,
+	LT_STRUCTURE,
+	LT_VEG,
+//	LT_ELEVATION,	// these aren't layer type in enviro.. yet :)
+//	LT_IMAGE,
+//	LT_WATER,
+//	LT_TRANSIT,
+//	LT_UTILITY,
+	LAYER_TYPES
+};
+
 // WDR: class declarations
 class LayerItemData : public wxTreeItemData
 {
 public:
 	LayerItemData(vtStructureArray3d *sa, int index, int item)
 	{
+		Defaults();
+		m_type = LT_STRUCTURE;
 		m_sa = sa;
 		m_index = index;
 		m_item = item;
 	}
+	LayerItemData(vtFeatureSet *set)
+	{
+		Defaults();
+		m_type = LT_ABSTRACT;
+		m_fset = set;
+	}
+	LayerItemData(LayerType type)
+	{
+		Defaults();
+		m_type = type;
+	}
+	void LayerItemData::Defaults()
+	{
+		m_sa = NULL;
+		m_fset = NULL;
+		m_index = -1;
+		m_item = -1;
+		last_visible = false;
+		shadow_last_visible = false;
+	}
+	LayerType m_type;
 	vtStructureArray3d *m_sa;
+	vtFeatureSet *m_fset;
 	int m_index;
 	int m_item;
 	bool last_visible;
@@ -57,7 +96,7 @@ public:
 	wxTreeCtrl *GetTree()  { return (wxTreeCtrl*) FindWindow( ID_LAYER_TREE ); }
 	void RefreshTreeContents();
 	void RefreshTreeTerrain();
-	void RefreshTreeStateTerrain();
+	void UpdateTreeTerrain();
 	void RefreshTreeSpace();
 
 	void SetShowAll(bool bTrue);
