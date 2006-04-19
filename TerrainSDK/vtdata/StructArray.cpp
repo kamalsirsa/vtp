@@ -115,6 +115,8 @@ bool vtStructureArray::WriteSHP(const char* pathname)
 /** Find the building corner closest to the given point, if it is within
  * 'epsilon' distance.  The building index, corner index, and distance from
  * the given point are all returned by reference.
+ *
+ * \return True if a building was found.
  */
 bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 			double epsilon, int &building, int &corner, double &closest)
@@ -154,6 +156,8 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 /** Find the building center closest to the given point, if it is within
  * 'epsilon' distance.  The building index, and distance from the given
  * point are returned by reference.
+ *
+ * \return True if a building was found.
  */
 bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
 				double epsilon, int &building, double &closest)
@@ -224,6 +228,8 @@ bool vtStructureArray::FindClosestLinearCorner(const DPoint2 &point, double epsi
  * Find the structure which is closest to the given point, if it is within
  * 'epsilon' distance.  The structure index and distance are returned by
  * reference.
+ *
+ * \return True if a building was found.
  */
 bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon,
 					   int &structure, double &closest, float fMaxInstRadius, bool bSkipBuildings)
@@ -276,6 +282,8 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
  * Find the building which is closest to the given point, if it is within
  * 'epsilon' distance.  The structure index and distance are returned by
  * reference.
+ *
+ * \return True if a building was found.
  */
 bool vtStructureArray::FindClosestBuilding(const DPoint2 &point,
 						double epsilon, int &structure, double &closest)
@@ -434,8 +442,13 @@ void vtStructureArray::DeselectAll()
 		GetAt(i)->Select(false);
 }
 
-void vtStructureArray::DeleteSelected()
+/**
+ * Delete any structures which are selected.
+ * \return the number that were deleted.
+ */
+int vtStructureArray::DeleteSelected()
 {
+	int num_deleted = 0;
 	for (unsigned int i = 0; i < GetSize();)
 	{
 		vtStructure *str = GetAt(i);
@@ -444,10 +457,12 @@ void vtStructureArray::DeleteSelected()
 			DestroyStructure(i);
 			delete str;
 			RemoveAt(i);
+			num_deleted++;
 		}
 		else
 			i++;
 	}
+	return num_deleted;
 }
 
 /**

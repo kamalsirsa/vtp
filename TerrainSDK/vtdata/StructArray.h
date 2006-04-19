@@ -75,7 +75,7 @@ public:
 
 	int GetFirstSelected();
 	int GetNextSelected();
-	void DeleteSelected();
+	int DeleteSelected();
 	virtual void DestroyStructure(int i) {}
 
 	bool ReadSHP(const char *pathname, StructImportOptions &opt,
