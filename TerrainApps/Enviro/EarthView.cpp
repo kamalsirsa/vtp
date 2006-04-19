@@ -450,11 +450,11 @@ void Enviro::LookUpTerrainLocations()
 	VTLOG("\tLookUpTerrainLocations: done\n");
 }
 
-int Enviro::AddGlobePoints(const char *fname)
+int Enviro::AddGlobeAbstractLayer(const char *fname)
 {
-//	int num_added = m_pIcoGlobe->AddGlobePoints(fname, 0.0015f);	// this size works OK for the VTP recipients
-	int num_added = m_pIcoGlobe->AddGlobePoints(fname, 0.003f);
-//	int num_added = m_pIcoGlobe->AddGlobePoints(fname, 0.0005f);	// better for GeoURL
+//	int num_added = m_pIcoGlobe->AddGlobeFeatures(fname, 0.0015f);	// this size works OK for the VTP recipients
+	int num_added = m_pIcoGlobe->AddGlobeFeatures(fname, 0.003f);
+//	int num_added = m_pIcoGlobe->AddGlobeFeatures(fname, 0.0005f);	// better for GeoURL
 	if (num_added != -1)
 		RefreshLayerView();
 	return num_added;
