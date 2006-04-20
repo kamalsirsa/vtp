@@ -707,10 +707,8 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	Modified();
 }
 
-void BuildingDlg::OnEdges( wxCommandEvent &event )
+void BuildingDlg::AdjustDialogForEdges()
 {
-	TransferDataFromWindow();
-	m_bEdges = !m_bEdges;
 	if (m_bEdges)
 	{
 		DestroyChildren();
@@ -721,8 +719,18 @@ void BuildingDlg::OnEdges( wxCommandEvent &event )
 		SetEdgeFacade();
 		DestroyChildren();
 		BuildingDialogFunc( this, TRUE );
-		m_pSA->SetEditedEdge(NULL, 0, 0);
+		if (m_pSA)
+			m_pSA->SetEditedEdge(NULL, 0, 0);
 	}
+}
+
+void BuildingDlg::OnEdges( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	m_bEdges = !m_bEdges;
+
+	AdjustDialogForEdges();
+
 	SetupValidators();
 	m_bSetting = true;
 	TransferDataToWindow();

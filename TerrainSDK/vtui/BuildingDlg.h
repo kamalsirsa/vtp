@@ -58,6 +58,7 @@ public:
 	void SetEdgeFacade();
 	void SetupValidators();
 	bool AskForTypeAndSlope(bool bAll, RoofType &eType, int &iSlope);
+	void AdjustDialogForEdges();
 
 	// allow the dialog to control rendering (in case its being used w/3d)
 	virtual void EnableRendering(bool bEnable) {}
