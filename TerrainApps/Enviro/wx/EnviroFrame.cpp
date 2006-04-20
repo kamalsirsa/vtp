@@ -53,6 +53,7 @@
 #include "UtilDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
+#include "vtui/ProfileDlg.h"
 
 #include "../Engines.h"
 #include "../Options.h"
@@ -94,6 +95,7 @@
 #  include "time.xpm"
 #  include "tree.xpm"
 #  include "unfold.xpm"
+#  include "view_profile.xpm"
 #endif
 
 #if VTLIB_OSG
@@ -150,6 +152,8 @@ EVT_MENU(ID_VIEW_SNAP_AGAIN,		EnviroFrame::OnViewSnapAgain)
 EVT_MENU(ID_VIEW_STATUSBAR,			EnviroFrame::OnViewStatusBar)
 EVT_UPDATE_UI(ID_VIEW_STATUSBAR,	EnviroFrame::OnUpdateViewStatusBar)
 EVT_MENU(ID_VIEW_SCENARIOS,			EnviroFrame::OnViewScenarios)
+EVT_MENU(ID_VIEW_PROFILE,			EnviroFrame::OnViewProfile)
+EVT_UPDATE_UI(ID_VIEW_PROFILE,		EnviroFrame::OnUpdateViewProfile)
 
 EVT_MENU(ID_VIEW_SLOWER,		EnviroFrame::OnViewSlower)
 EVT_UPDATE_UI(ID_VIEW_SLOWER,	EnviroFrame::OnUpdateViewSlower)
@@ -192,8 +196,6 @@ EVT_MENU(ID_TERRAIN_FOG,		EnviroFrame::OnFog)
 EVT_MENU(ID_TERRAIN_INCREASE,	EnviroFrame::OnIncrease)
 EVT_MENU(ID_TERRAIN_DECREASE,	EnviroFrame::OnDecrease)
 EVT_MENU(ID_TERRAIN_LOD,		EnviroFrame::OnLOD)
-EVT_MENU(ID_TERRAIN_SAVEVEG,	EnviroFrame::OnSaveVeg)
-EVT_MENU(ID_TERRAIN_SAVESTRUCT,	EnviroFrame::OnSaveStruct)
 EVT_MENU(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnToggleFoundations)
 EVT_MENU(ID_TERRAIN_RESHADE,	EnviroFrame::OnTerrainReshade)
 EVT_MENU(ID_TERRAIN_CHANGE_TEXTURE,	EnviroFrame::OnTerrainChangeTexture)
@@ -210,8 +212,6 @@ EVT_UPDATE_UI(ID_TERRAIN_FOG,		EnviroFrame::OnUpdateFog)
 EVT_UPDATE_UI(ID_TERRAIN_INCREASE,	EnviroFrame::OnUpdateLOD)
 EVT_UPDATE_UI(ID_TERRAIN_DECREASE,	EnviroFrame::OnUpdateLOD)
 EVT_UPDATE_UI(ID_TERRAIN_LOD,		EnviroFrame::OnUpdateLOD)
-EVT_UPDATE_UI(ID_TERRAIN_SAVEVEG,	EnviroFrame::OnUpdateIsTerrainView)
-EVT_UPDATE_UI(ID_TERRAIN_SAVESTRUCT, EnviroFrame::OnUpdateIsTerrainView)
 EVT_UPDATE_UI(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnUpdateFoundations)
 EVT_UPDATE_UI(ID_TERRAIN_RESHADE,	EnviroFrame::OnUpdateIsDynTerrain)
 EVT_UPDATE_UI(ID_TERRAIN_CHANGE_TEXTURE, EnviroFrame::OnUpdateIsDynTerrain)
@@ -315,6 +315,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pTimeDlg = new TimeDlg(this, -1, _("Time"));
 	m_pUtilDlg = new UtilDlg(this, -1, _("Routes"));
 	m_pScenarioSelectDialog = new CScenarioSelectDialog(this, -1, _("Scenarios"));
+	m_pProfileDlg = NULL;
 
 	if (m_canvas)
 		m_canvas->SetCurrent();
@@ -454,9 +455,6 @@ void EnviroFrame::CreateMenus()
 	m_pTerrainMenu->Append(ID_TERRAIN_DECREASE, _("Decrease Detail (-)"));
 	m_pTerrainMenu->Append(ID_TERRAIN_LOD, _("Level of Detail Info\tCtrl+Q"));
 	m_pTerrainMenu->AppendSeparator();
-	m_pTerrainMenu->Append(ID_TERRAIN_SAVEVEG, _("Save Vegetation As..."));
-	m_pTerrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _("Save Built Structures As..."));
-	m_pTerrainMenu->AppendSeparator();
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _("Toggle Artificial Foundations"));
 	m_pTerrainMenu->Append(ID_TERRAIN_RESHADE, _("&Recalculate Shading\tCtrl+R"));
 	m_pTerrainMenu->Append(ID_TERRAIN_CHANGE_TEXTURE, _("&Change Texture"));
@@ -512,6 +510,7 @@ void EnviroFrame::CreateToolbar(bool bVertical)
 	ADD_TOOL(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
 	ADD_TOOL(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
 	ADD_TOOL(ID_TOOLS_MEASURE, wxBITMAP(distance), _("Measure Distance"), true);
+	ADD_TOOL(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), true);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_VIEW_MAINTAIN, wxBITMAP(maintain), _("Maintain Height"), true);
 	ADD_TOOL(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
@@ -1171,6 +1170,30 @@ void EnviroFrame::OnViewScenarios(wxCommandEvent& event)
 	m_pScenarioSelectDialog->Show(true);
 }
 
+void EnviroFrame::OnViewProfile(wxCommandEvent& event)
+{
+	if (m_pProfileDlg && m_pProfileDlg->IsShown())
+		m_pProfileDlg->Hide();
+	else
+	{
+		ProfileDlg *dlg = ShowProfileDlg();
+		// this might be the first time it's displayed, so we need to get
+		//  the point values from the distance tool
+		if (m_pDistanceDlg)
+		{
+			DPoint2 p1, p2;
+			m_pDistanceDlg->GetPoints(p1, p2);
+			dlg->SetPoints(p1, p2);
+		}
+	}
+}
+
+void EnviroFrame::OnUpdateViewProfile(wxUpdateUIEvent& event)
+{
+	event.Check(m_pProfileDlg && m_pProfileDlg->IsShown());
+	event.Enable(g_App.m_state == AS_Terrain);
+}
+
 ///////////////////// Tools menu //////////////////////////
 
 void EnviroFrame::OnToolsSelect(wxCommandEvent& event)
@@ -1491,19 +1514,6 @@ void EnviroFrame::OnUpdateLOD(wxUpdateUIEvent& event)
 		(t->GetDynTerrain() != NULL || t->GetTiledGeom() != NULL));
 }
 
-void EnviroFrame::OnSaveVeg(wxCommandEvent& event)
-{
-	g_App.SaveVegetation(false);
-}
-
-void EnviroFrame::OnSaveStruct(wxCommandEvent& event)
-{
-	g_App.SaveStructures(true);
-
-	// update the displayed filename
-	m_pLayerDlg->RefreshTreeContents();
-}
-
 static bool s_bBuilt = false;
 
 void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
@@ -1804,6 +1814,41 @@ void EnviroFrame::UpdateLODInfo()
 				-1, -1, -1, -1);
 		}
 	}
+}
+
+///////////////////////////////////////////////////////////////////
+
+class EnviroProfileCallback : public ProfileCallback
+{
+public:
+	float GetElevation(const DPoint2 &p)
+	{
+		vtTerrain *terr = GetCurrentTerrain();
+		if (terr)
+		{
+			float alt;
+			terr->GetHeightField()->FindAltitudeOnEarth(p, alt, true);
+			return alt;
+		}
+		return INVALID_ELEVATION;
+	}
+};
+
+ProfileDlg *EnviroFrame::ShowProfileDlg()
+{
+	if (!m_pProfileDlg)
+	{
+		// Create new Feature Info Dialog
+		m_pProfileDlg = new ProfileDlg(this, wxID_ANY, _("Elevation Profile"),
+				wxPoint(120, 80), wxSize(730, 500), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+
+		EnviroProfileCallback *callback = new EnviroProfileCallback;
+		m_pProfileDlg->SetCallback(callback);
+
+		m_pProfileDlg->SetProjection(GetCurrentTerrain()->GetProjection());
+	}
+	m_pProfileDlg->Show(true);
+	return m_pProfileDlg;
 }
 
 ///////////////////////////////////////////////////////////////////

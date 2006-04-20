@@ -27,6 +27,7 @@ class SceneGraphDlg;
 class TimeDlg;
 class TimeEngine;
 class UtilDlg;
+class ProfileDlg;
 class vtTerrain;
 
 // some shortcuts
@@ -48,6 +49,7 @@ public:
 	void ChangeFlightSpeed(float factor);
 	void ChangeTerrainDetail(bool bIncrease);
 	void SetFullScreen(bool bFull);
+	ProfileDlg *ShowProfileDlg();
 	void ShowPopupMenu(const IPoint2 &pos);
 	void SetTimeEngine(TimeEngine *pEngine);
 	void Snapshot(bool bNumbered);
@@ -87,6 +89,7 @@ public:
 	void OnViewSnapAgain(wxCommandEvent& event);
 	void OnViewStatusBar(wxCommandEvent& event);
 	void OnViewScenarios(wxCommandEvent& event);
+	void OnViewProfile(wxCommandEvent& event);
 
 	void OnUpdateViewMaintain(wxUpdateUIEvent& event);
 	void OnUpdateViewWireframe(wxUpdateUIEvent& event);
@@ -97,6 +100,7 @@ public:
 	void OnUpdateViewMapOverView(wxUpdateUIEvent& event);
 	void OnUpdateViewLocations(wxUpdateUIEvent& event);
 	void OnUpdateViewStatusBar(wxUpdateUIEvent& event);
+	void OnUpdateViewProfile(wxUpdateUIEvent& event);
 
 	void OnViewSlower(wxCommandEvent& event);
 	void OnViewFaster(wxCommandEvent& event);
@@ -154,8 +158,6 @@ public:
 	void OnIncrease(wxCommandEvent& event);
 	void OnDecrease(wxCommandEvent& event);
 	void OnLOD(wxCommandEvent& event);
-	void OnSaveVeg(wxCommandEvent& event);
-	void OnSaveStruct(wxCommandEvent& event);
 	void OnToggleFoundations(wxCommandEvent& event);
 	void OnTerrainReshade(wxCommandEvent& event);
 	void OnTerrainChangeTexture(wxCommandEvent& event);
@@ -227,6 +229,7 @@ public:
 	TimeDlg				*m_pTimeDlg;
 	CScenarioSelectDialog *m_pScenarioSelectDialog;
 	LODDlg				*m_pLODDlg;
+	ProfileDlg			*m_pProfileDlg;
 	MouseMode			m_ToggledMode;
 
 protected:

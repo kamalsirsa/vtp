@@ -23,6 +23,7 @@
 #include "LayerDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
+#include "vtui/ProfileDlg.h"
 
 DECLARE_APP(EnviroApp);
 
@@ -88,6 +89,9 @@ void EnviroGUI::ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
 {
 	GetFrame()->m_pDistanceDlg->SetPoints(p1, p2, false);
 	GetFrame()->m_pDistanceDlg->SetGroundAndVertical(fGround, fVertical, true);
+
+	if (GetFrame()->m_pProfileDlg)
+		GetFrame()->m_pProfileDlg->SetPoints(p1, p2);
 }
 
 vtTagArray *EnviroGUI::GetInstanceFromGUI()

@@ -32,6 +32,7 @@ time	    BITMAP "bitmap/time.bmp"
 tilt	    BITMAP "bitmap/tilt.bmp"
 tree		BITMAP "bitmap/tree.bmp"
 unfold	    BITMAP "bitmap/unfold.bmp"
+view_profile BITMAP "bitmap/view_profile.bmp"
 
 icon1   ICON "icons/camera.ico"
 icon2   ICON "icons/engine.ico"
