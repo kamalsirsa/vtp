@@ -258,7 +258,7 @@ wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit, bool set_size
     item14->Add( item23, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxString *strs24 = (wxString*) NULL;
-    wxListBox *item24 = new wxListBox( parent, ID_EDGE, wxDefaultPosition, wxSize(60,-1), 0, strs24, wxLB_SINGLE );
+    wxListBox *item24 = new wxListBox( parent, ID_EDGE, wxDefaultPosition, wxSize(60,60), 0, strs24, wxLB_SINGLE );
     item14->Add( item24, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item1->Add( item14, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
