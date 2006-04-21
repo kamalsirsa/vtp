@@ -814,7 +814,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	bool bShowProgress = (m_datapaths.size() > 1);
 	if (bShowProgress)
-		OpenProgressDialog(_T("Looking for files on data paths"), false, this);
+		OpenProgressDialog(_("Looking for files on data paths"), false, this);
 
 	m_bReady = false;
 	m_bSetting = true;
