@@ -552,7 +552,7 @@ void Enviro::DoCursorOnEarth()
 vtTerrain *Enviro::FindTerrainOnEarth(const DPoint2 &p)
 {
 	vtTerrain *t, *smallest = NULL;
-	float diag, smallest_diag = 1E7;
+	double diag, smallest_diag = 1E7;
 
 	for (unsigned int i = 0; i < NumTerrains(); i++)
 	{

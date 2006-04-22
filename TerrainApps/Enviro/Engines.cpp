@@ -462,16 +462,16 @@ void FlatFlyer::Eval()
 	if (m_bDrag)
 	{
 		// Consider XZ plane of ray from initial eye to ground
-		float dx = -(m_pos.x - m_startpos.x) * 0.0015;
-		float dy = (m_pos.y - m_startpos.y) * 0.0015;
+		float dx = -(m_pos.x - m_startpos.x) * 0.0015f;
+		float dy = (m_pos.y - m_startpos.y) * 0.0015f;
 
-		pos.x += (dx * (pos.z-0.8));
-		pos.y += (dy * (pos.z-0.8));
+		pos.x += (dx * (pos.z-0.8f));
+		pos.y += (dy * (pos.z-0.8f));
 		pTarget->SetTrans(pos);
 	}
 	if (m_bZoom)
 	{
-		float dz = -(m_pos.y - m_startpos.y) * 0.02;
+		float dz = -(m_pos.y - m_startpos.y) * 0.02f;
 		pos.z += dz;
 
 		pTarget->SetTrans(pos);
@@ -609,8 +609,8 @@ void GrabFlyer::Eval()
 		FPoint3 ray2(-ray.z, 0.0f, ray.x);
 
 		// Consider XZ plane of ray from initial eye to ground
-		float dx = -(m_pos.x - m_startpos.x) * 0.02 * m_fHeight;
-		float dz = (m_pos.y - m_startpos.y) * 0.02 * m_fHeight;
+		float dx = -(m_pos.x - m_startpos.x) * 0.02f * m_fHeight;
+		float dz = (m_pos.y - m_startpos.y) * 0.02f * m_fHeight;
 
 		pos += (ray1 * dz);
 		pos += (ray2 * dx);
@@ -628,7 +628,7 @@ void GrabFlyer::Eval()
 		FPoint3 pos = pTarget->GetTrans();
 		FPoint3 ray = m_start_wp - pos;
 
-		float dz = -(m_pos.y - m_startpos.y) * 0.02;
+		float dz = -(m_pos.y - m_startpos.y) * 0.02f;
 		pos += (ray * dz);
 
 		float fAltitude;
