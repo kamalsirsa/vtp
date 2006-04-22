@@ -673,7 +673,7 @@ void Enviro::UpdateEarthArc()
 	DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
 	DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
 	SetDisplayedArc(epos1, epos2);
-	ShowDistance(epos1, epos2, FLT_MIN, FLT_MIN);
+	ShowDistance(epos1, epos2, DBL_MIN, DBL_MIN);
 }
 
 void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)

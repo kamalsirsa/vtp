@@ -24,7 +24,7 @@ public:
 	virtual void CameraChanged();
 	virtual void EarthPosUpdated();
 	virtual void ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
-		float fGround, float fVertical);
+		double fGround, double fVertical);
 	virtual vtTagArray *GetInstanceFromGUI();
 	virtual bool OnMouseEvent(vtMouseEvent &event);
 	virtual void SetupScene3();

@@ -85,7 +85,7 @@ void EnviroGUI::EarthPosUpdated()
 }
 
 void EnviroGUI::ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
-							 float fGround, float fVertical)
+							 double fGround, double fVertical)
 {
 	GetFrame()->m_pDistanceDlg->SetPoints(p1, p2, false);
 	GetFrame()->m_pDistanceDlg->SetGroundAndVertical(fGround, fVertical, true);
