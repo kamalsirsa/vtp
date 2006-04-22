@@ -574,7 +574,7 @@ void FQuat::GetMatrix(FMatrix3 &mat) const
  * Spherical Linear Interpolation.
  * As f goes from 0 to 1, the quaternion goes from "from" to "to".
  */
-void FQuat::Slerp(const FQuat &from, const FQuat &to, float f)
+void FQuat::Slerp(const FQuat &from, const FQuat &to, double f)
 {
 	/// Reference: Shoemake at SIGGRAPH 89, See also:
 	/// http://www.gamasutra.com/features/19980703/quaternions_01.htm

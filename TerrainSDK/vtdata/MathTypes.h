@@ -131,6 +131,7 @@ public:
 	FPoint3 operator +(const FPoint3 &v) const { return FPoint3(x+v.x, y+v.y, z+v.z); }
 	FPoint3 operator -(const FPoint3 &v) const { return FPoint3(x-v.x, y-v.y, z-v.z); }
 	FPoint3 operator *(float s) const { return FPoint3(x*s, y*s, z*s); }
+	FPoint3 operator *(double s) const { return FPoint3((float)(x*s), (float)(y*s), (float)(z*s)); }
 	FPoint3 operator /(float s) const { return FPoint3(x/s, y/s, z/s); }
 	FPoint3 operator -() { return FPoint3(-x, -y, -z); }
 	bool operator==(const FPoint3 &v2)
@@ -1102,7 +1103,7 @@ public:
 	void AxisAngle(const FPoint3 &axis, float angle);
 	void GetMatrix(FMatrix3 &matrix) const;
 
-	void Slerp(const FQuat &from, const FQuat &to, float f);
+	void Slerp(const FQuat &from, const FQuat &to, double f);
 	float LengthSquared() const { return x*x + y*y + z*z + w*w; }
 	const FQuat Inverse() const
 	{
