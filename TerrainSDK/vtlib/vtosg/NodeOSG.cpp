@@ -849,10 +849,10 @@ void vtGroup::RemoveChild(vtNode *pChild)
 		m_pGroup->removeChild(pChild->GetOsgNode());
 }
 
-vtNode *vtGroup::GetChild(int num) const
+vtNode *vtGroup::GetChild(unsigned int num) const
 {
-	int children = m_pGroup->getNumChildren();
-	if (num >= 0 && num < children)
+	unsigned int children = m_pGroup->getNumChildren();
+	if (num < children)
 	{
 		Node *pChild = (Node *) m_pGroup->getChild(num);
 		return (vtNode *) (pChild->getUserData());

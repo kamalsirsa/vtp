@@ -146,7 +146,7 @@ public:
 	void RemoveChild(vtNode *pChild);
 
 	/** Return a child node, by index. */
-	vtNode *GetChild(int num) const;
+	vtNode *GetChild(unsigned int num) const;
 
 	/** Return the number of child nodes */
 	unsigned int GetNumChildren() const;
