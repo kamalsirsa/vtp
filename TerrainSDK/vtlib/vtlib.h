@@ -1,7 +1,7 @@
 //
 // Main header for VT library, for all platforms
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -107,8 +107,9 @@
 ///////////////////////////////// OPENSG //////////////////////////////
 #if VTLIB_OPENSG
     #ifdef _MSC_VER
-      #pragma warning(disable: 4511) // turn off warning about copy constructors
-      #pragma warning(disable: 4512) // turn off warning about assignment operators
+      #pragma warning(disable: 4251) // turn off warning about std::map dll-interface
+      #pragma warning(disable: 4275) // turn off warning about subclass dll-interface
+      #pragma warning(disable: 4231) // turn off warning about nonstandard 'extern'
     #endif
     #include "vtopensg/ImageOSG.h"
     #include "vtopensg/MathOSG.h"
