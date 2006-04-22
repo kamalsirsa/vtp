@@ -1869,7 +1869,7 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 #if VTLIB_OPENSG
 	const char *fontname = "Fonts/Arial.txf";
 #else
-	const char *fontname = "Fonts/Arial.ttf"
+	const char *fontname = "Fonts/Arial.ttf";
 #endif
 	vtString font_path = FindFileOnPaths(vtGetDataPath(), fontname);
 	if (font_path == "")
