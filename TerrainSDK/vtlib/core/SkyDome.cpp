@@ -236,10 +236,10 @@ void vtSkyDome::CreateMarkers()
 	int yellow = m_pMats->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
 	FPoint3 p;
 	vtMesh *tics = new vtMesh(vtMesh::LINES, 0, (36+1)*2*2);
-	for (double t = 0; t < PId; t += (PId / 36))	// 5 degree increment
+	for (float t = 0; t < PId; t += (PId / 36))	// 5 degree increment
 	{
-		float sint = sin(t) * 0.95;
-		float cost = cos(t) * 0.95;
+		float sint = sinf(t) * 0.95f;
+		float cost = cosf(t) * 0.95f;
 		tics->AddLine(FPoint3(-0.05, sint, cost), FPoint3(0.05, sint, cost));
 		tics->AddLine(FPoint3(cost, sint, -0.05), FPoint3(cost, sint, 0.05));
 	}
@@ -318,13 +318,13 @@ void vtSkyDome::RefreshCelestialObjects()
 	//  integral number of hours offset from universal time.  We would have to
 	//  either ask the user for this, or guess it using a complicated political
 	//  map of time zones in the world.
-	float timezone = (geo.x / 15.0);
+	float timezone = (float)geo.x / 15;
 
 	// sealevel for now
 	float elevation = 0;
 
 	spa_data spa;
-	SetCommonValues(spa, geo.x, geo.y,
+	SetCommonValues(spa, (float) geo.x, (float) geo.y,
 			   year, month, day, hour, minute, second,
 			   timezone, elevation);
 
@@ -343,8 +343,8 @@ void vtSkyDome::RefreshCelestialObjects()
 	float latitude_in_radians = (float) (geo.y / 180.0f * PIf);
 	m_pCelestial->RotateLocal(FPoint3(1,0,0), latitude_in_radians);
 
-	float gst = (float) spa.nu;	// GST = Greenwich Sidereal Time, degrees
-	float lst = gst + geo.x;	// LST = Local Sideral Time
+	float gst = (float) spa.nu;		// GST = Greenwich Sidereal Time, degrees
+	float lst = gst + (float) geo.x;// LST = Local Sideral Time
 
 //	VTLOG("YMD %d %d %d, HMS %02d:%02d:%02d, RA/DEC %.0f %.0f, GST %.0f, LST %.0f\n",
 //		year, month, day, hour, minute, second, ra, dec, gst, lst);

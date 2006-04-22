@@ -155,11 +155,11 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 			float distance = sqrt(diff.x*diff.x+diff.z*diff.z);
 			unsigned int segments = (unsigned int) (distance / m_Params.m_fPostSpacing);
 			if (segments < 1) segments = 1;
-			FPoint3 diff_per_segment = diff / segments;
+			FPoint3 diff_per_segment = diff / (float) segments;
 
 			for (j = 0; j < segments; j++)
 			{
-				fp = wpos1 + (diff_per_segment * j);
+				fp = wpos1 + (diff_per_segment * (float)j);
 
 				if (i > 0 && i < numfencepts-1)
 				{
