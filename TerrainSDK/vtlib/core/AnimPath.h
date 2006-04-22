@@ -35,7 +35,7 @@ struct ControlPoint
 		m_Position(position),
 		m_Rotation(rotation) {}
 
-	void Interpolate(float ratio,const ControlPoint &first, const ControlPoint &second);
+	void Interpolate(double ratio,const ControlPoint &first, const ControlPoint &second);
 	void GetMatrix(FMatrix4 &matrix, bool bPosOnly) const;
 
 	FPoint3 m_Position;
@@ -139,7 +139,7 @@ protected:
 	InterpMode		m_InterpMode;
 	CubicSpline		m_Spline;
 	bool			m_bLoop;
-	float			m_fLoopSegmentTime;
+	double			m_fLoopSegmentTime;
 	ControlPoint	m_LoopControlPoint;
 
 	// For dealing with global projection
@@ -168,7 +168,7 @@ class vtAnimPathEngine : public vtEngine
 public:
 	vtAnimPathEngine():
 		m_pAnimationPath(NULL),
-		m_fLastTime(DBL_MAX),
+		m_fLastTime(FLT_MAX),
 		m_fTime(0.0f),
 		m_bContinuous(false),
 		m_bPosOnly(false),
@@ -176,7 +176,7 @@ public:
 
 	vtAnimPathEngine(vtAnimPath *ap):
 		m_pAnimationPath(ap),
-		m_fLastTime(DBL_MAX),
+		m_fLastTime(FLT_MAX),
 		m_fTime(0.0f),
 		m_bContinuous(false),
 		m_bPosOnly(false),
@@ -230,8 +230,8 @@ public:
 public:
 	vtAnimPath *m_pAnimationPath;
 	bool	m_bContinuous;
-	double	m_fLastTime;
-	double	m_fTime;
+	float	m_fLastTime;
+	float	m_fTime;
 	bool	m_bPosOnly;
 	float	m_fSpeed;
 };

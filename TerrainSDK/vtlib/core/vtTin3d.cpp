@@ -94,7 +94,8 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	// Break it up into a series of meshes - this is good for both
 	// culling and memory management
 
-	FPoint3 ep, wp;		// earth point, world point
+	DPoint3 ep;		// earth point
+	FPoint3 wp;		// world point
 	FPoint3 p[3], norm;
 	FPoint3 light_dir(1, 1, 0);
 	RGBf color;
@@ -449,7 +450,7 @@ bool intersect_triangle(const FPoint3 &orig, const FPoint3 &dir,
 
 	/* calculate t, scale parameters, ray intersects triangle */
 	t = edge2.Dot(qvec);
-	inv_det = 1.0 / det;
+	inv_det = 1.0f / det;
 	t *= inv_det;
 	u *= inv_det;
 	v *= inv_det;

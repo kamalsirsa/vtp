@@ -13,9 +13,9 @@
 #include "vtdata/vtLog.h"
 
 
-void ControlPoint::Interpolate(float ratio, const ControlPoint &first, const ControlPoint &second)
+void ControlPoint::Interpolate(double ratio, const ControlPoint &first, const ControlPoint &second)
 {
-	float one_minus_ratio = 1.0f - ratio;
+	double one_minus_ratio = 1.0 - ratio;
 	m_Position = first.m_Position*one_minus_ratio + second.m_Position*ratio;
 	m_Rotation.Slerp(first.m_Rotation, second.m_Rotation, ratio);
 }
@@ -175,10 +175,9 @@ void vtAnimPath::ProcessPoints()
 		TimeControlPointMap::const_reverse_iterator it2 = m_TimeControlPointMap.rbegin();
 
 		// consider first two points
-		float time_diff, pos_diff;
-		time_diff = (it1->first - it0->first);
-		pos_diff = (it1->second.m_Position - it0->second.m_Position).Length();
-		float speed = pos_diff / time_diff;
+		double time_diff = (it1->first - it0->first);
+		float pos_diff = (it1->second.m_Position - it0->second.m_Position).Length();
+		double speed = pos_diff / time_diff;
 
 		// then do the same for the last two
 		pos_diff = (it0->second.m_Position - it2->second.m_Position).Length();
@@ -494,7 +493,7 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 
 			// Transform 2: earth CRS to world CRS
 			g_Conv.convert_earth_to_local_xz(current.x, current.y, pos.x, pos.z);
-			pos.y = current.z;
+			pos.y = (float) current.z;
 
 			fline.Append(pos);
 			previous = current;
@@ -594,12 +593,12 @@ void vtAnimPathEngine::Eval()
 		if (m_bContinuous)
 		{
 			// wrap around
-			m_fTime -= m_pAnimationPath->GetPeriod();
+			m_fTime -= (float) m_pAnimationPath->GetPeriod();
 		}
 		else
 		{
 			// stop at the end
-			m_fTime = m_pAnimationPath->GetLastTime();
+			m_fTime = (float) m_pAnimationPath->GetLastTime();
 			SetEnabled(false);
 		}
 	}
