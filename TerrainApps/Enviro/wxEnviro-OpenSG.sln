@@ -1,0 +1,68 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro-OpenSG.vcproj", "{EB511FDC-A380-4724-9A95-7FEAC5561FEA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1045CA3D-3526-482B-B4BA-ACBF57404E9B} = {1045CA3D-3526-482B-B4BA-ACBF57404E9B}
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6} = {F35AD44A-5921-4C7F-842F-0B3138825EA6}
+		{7C827991-8AEF-4B89-A980-DC2BDFC93955} = {7C827991-8AEF-4B89-A980-DC2BDFC93955}
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98} = {C2715AAA-C99B-438E-BF57-8357BD21AE98}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtui", "..\..\TerrainSDK\vtui\vtui.vcproj", "{7C827991-8AEF-4B89-A980-DC2BDFC93955}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtopensg", "..\..\TerrainSDK\vtlib\vtopensg\vtopensg.vcproj", "{1045CA3D-3526-482B-B4BA-ACBF57404E9B}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glutSimple-OpenSG", "..\glutSimple\glutSimple-OpenSG.vcproj", "{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1045CA3D-3526-482B-B4BA-ACBF57404E9B} = {1045CA3D-3526-482B-B4BA-ACBF57404E9B}
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6} = {F35AD44A-5921-4C7F-842F-0B3138825EA6}
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98} = {C2715AAA-C99B-438E-BF57-8357BD21AE98}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug Unicode = Debug Unicode
+		Release Unicode = Release Unicode
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Debug Unicode.ActiveCfg = Debug Unicode|Win32
+		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Debug Unicode.Build.0 = Debug Unicode|Win32
+		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Release Unicode.ActiveCfg = Release Unicode|Win32
+		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Release Unicode.Build.0 = Release Unicode|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug Unicode.ActiveCfg = Debug|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug Unicode.Build.0 = Debug|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Release Unicode.ActiveCfg = Release|Win32
+		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Release Unicode.Build.0 = Release|Win32
+		{7C827991-8AEF-4B89-A980-DC2BDFC93955}.Debug Unicode.ActiveCfg = Debug Unicode|Win32
+		{7C827991-8AEF-4B89-A980-DC2BDFC93955}.Debug Unicode.Build.0 = Debug Unicode|Win32
+		{7C827991-8AEF-4B89-A980-DC2BDFC93955}.Release Unicode.ActiveCfg = Release Unicode|Win32
+		{7C827991-8AEF-4B89-A980-DC2BDFC93955}.Release Unicode.Build.0 = Release Unicode|Win32
+		{1045CA3D-3526-482B-B4BA-ACBF57404E9B}.Debug Unicode.ActiveCfg = Debug|Win32
+		{1045CA3D-3526-482B-B4BA-ACBF57404E9B}.Debug Unicode.Build.0 = Debug|Win32
+		{1045CA3D-3526-482B-B4BA-ACBF57404E9B}.Release Unicode.ActiveCfg = Release|Win32
+		{1045CA3D-3526-482B-B4BA-ACBF57404E9B}.Release Unicode.Build.0 = Release|Win32
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Debug Unicode.ActiveCfg = Debug|Win32
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Debug Unicode.Build.0 = Debug|Win32
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Release Unicode.ActiveCfg = Release|Win32
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Release Unicode.Build.0 = Release|Win32
+		{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}.Debug Unicode.ActiveCfg = Debug|Win32
+		{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}.Debug Unicode.Build.0 = Debug|Win32
+		{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}.Release Unicode.ActiveCfg = Release|Win32
+		{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}.Release Unicode.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
