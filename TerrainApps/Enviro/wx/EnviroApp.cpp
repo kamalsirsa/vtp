@@ -239,9 +239,6 @@ bool EnviroApp::OnInit()
 	else
 		VTLOG("  Couldn't find it.\n");
 
-	// Initialize the VTP scene
-	vtGetScene()->Init(g_Options.m_bStereo, g_Options.m_iStereoMode);
-
 	//
 	// Create the main frame window
 	//
@@ -272,6 +269,9 @@ bool EnviroApp::OnInit()
 	bool go = true;
 	while (go)
 		go = ProcessIdle();
+
+	// Initialize the VTP scene
+	vtGetScene()->Init(g_Options.m_bStereo, g_Options.m_iStereoMode);
 
 	if (g_Options.m_bLocationInside)
 	{
