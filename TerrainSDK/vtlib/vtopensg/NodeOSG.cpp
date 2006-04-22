@@ -665,7 +665,7 @@ void vtTransform::Rotate2(const FPoint3 &axis, double angle)
 {
 	osg::Matrix4f mat = m_pTransform->getMatrix();
 
-	osg::Quaternion q(osg::Vec3f( axis.x, axis.y, axis.z), angle );
+	osg::Quaternion q(osg::Vec3f( axis.x, axis.y, axis.z), (float) angle );
 	osg::Matrix4f rot;  rot.setRotate(q);
 	mat.multLeft(rot);
 
@@ -678,7 +678,7 @@ void vtTransform::RotateLocal(const FPoint3 &axis, double angle)
 {
 	osg::Matrix4f mat = m_pTransform->getMatrix();
 
-	osg::Quaternion q(osg::Vec3f( axis.x, axis.y, axis.z), angle );
+	osg::Quaternion q(osg::Vec3f( axis.x, axis.y, axis.z), (float) angle );
 	osg::Matrix4f rot;  rot.setRotate(q);
 	mat.mult(rot);
 
@@ -703,7 +703,7 @@ void vtTransform::RotateParent(const FPoint3 &axis, double angle)
 	mat[3][2] = 0;
 
 	// rotate
-	osg::Quaternion q (osg::Vec3f( axis.x, axis.y, axis.z), angle);
+	osg::Quaternion q (osg::Vec3f( axis.x, axis.y, axis.z), (float) angle);
 	osg::Matrix4f rot; rot.setRotate(q);
 	mat.multLeft(rot);
 
