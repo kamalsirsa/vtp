@@ -302,7 +302,7 @@ void vtRoute::_DrawCat(FPoint3 pt0, FPoint3 pt1, double catenary,
 		ptCur.z += step.z;
 		dist = sqrt(ptCur.x*ptCur.x + ptCur.z*ptCur.z);
 
-		ptCur.y = (dist / (2*catenary)) * (dist - (2*parabolicConst));
+		ptCur.y = (float) ((dist / (2*catenary)) * (dist - (2*parabolicConst)));
 
 		ptNew = pt0 + ptCur;
 		pHeightField->FindAltitudeAtPoint(ptNew, ground);

@@ -251,10 +251,10 @@ bool vtLocationSaver::StoreTo(unsigned int num, const LocNameString &name)
 	}
 
 	loc->m_pos1.Set(epos1.x, epos1.y);
-	loc->m_fElevation1 = epos1.z;
+	loc->m_fElevation1 = (float) epos1.z;
 
 	loc->m_pos2.Set(epos2.x, epos2.y);
-	loc->m_fElevation2 = epos2.z;
+	loc->m_fElevation2 = (float) epos2.z;
 
 	if (!name.empty())
 		loc->m_strName = name;

@@ -1423,7 +1423,7 @@ void vtTerrain::_CreateCulture()
 		{
 			m_pOverlay = new vtGroup;
 			IPoint2 size = pSprite->GetSize();
-			pSprite->SetPosition(x, y+size.y, x+size.x, y);
+			pSprite->SetPosition((float) x, (float) y+size.y, (float) x+size.x, (float) y);
 			m_pOverlay->AddChild(pSprite->GetNode());
 		}
 	}
@@ -1866,7 +1866,11 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 #endif
 
 	// Find and load the font.
-	const char *fontname = "Fonts/Arial.ttf";
+#if VTLIB_OPENSG
+	const char *fontname = "Fonts/Arial.txf";
+#else
+	const char *fontname = "Fonts/Arial.ttf"
+#endif
 	vtString font_path = FindFileOnPaths(vtGetDataPath(), fontname);
 	if (font_path == "")
 	{
@@ -2001,7 +2005,7 @@ void vtTerrain::SetFog(bool fog)
 	m_bFog = fog;
 	if (m_bFog)
 	{
-		float dist = m_Params.GetValueInt(STR_FOGDISTANCE) * 1000;
+		float dist = (float) m_Params.GetValueInt(STR_FOGDISTANCE) * 1000;
 
 		if (m_fog_color.r != -1)
 			m_pTerrainGroup->SetFog(true, 0, dist, m_fog_color);

@@ -84,7 +84,7 @@ void apply_dead_zone(float amount, float &val)
 		val += amount;
 		if (val > 0) val = 0;
 	}
-	val *= (1.0 / (1.0 - amount));
+	val *= (1.0f / (1.0f - amount));
 }
 
 #define DEAD_ZONE_SIZE 0.07f

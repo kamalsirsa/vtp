@@ -130,14 +130,14 @@ void vtFlyer::DoKeyNavigation()
 		//  With control key: translate up-down, left-right
 		if ((up || down) && m_bDOF[DOF_Y])
 		{
-			float updown = 0.2 * m_fSpeed * fMult * elapsed;
+			float updown = 0.2f * m_fSpeed * fMult * elapsed;
 			if (down)
 				updown = -updown;
 			pTarget->TranslateLocal(FPoint3(0, updown, 0.0f));
 		}
 		if ((right || left) && m_bDOF[DOF_X])
 		{
-			float leftright = 0.2 * m_fSpeed * fMult * elapsed;
+			float leftright = 0.2f * m_fSpeed * fMult * elapsed;
 			if (left)
 				leftright = -leftright;
 			pTarget->TranslateLocal(FPoint3(leftright, 0, 0.0f));
@@ -147,7 +147,7 @@ void vtFlyer::DoKeyNavigation()
 	{
 		if ((up || down) && m_bDOF[DOF_Z])
 		{
-			float trans = 0.2 * m_fSpeed * fMult * elapsed;
+			float trans = 0.2f * m_fSpeed * fMult * elapsed;
 			if (up)
 				trans = -trans;
 
@@ -156,7 +156,7 @@ void vtFlyer::DoKeyNavigation()
 
 		if ((right || left) && m_bDOF[DOF_YAW])
 		{
-			float rotate = 0.4 * fMult * elapsed;
+			float rotate = 0.4f * fMult * elapsed;
 			if (right)
 				rotate = -rotate;
 
@@ -172,7 +172,7 @@ void vtFlyer::DoKeyNavigation()
 	bool pdown = sc->GetKeyState(VTK_PAGEDOWN);
 	if ((pup || pdown) && m_bDOF[DOF_PITCH])
 	{
-		float updown = 0.2 * fMult * elapsed;
+		float updown = 0.2f * fMult * elapsed;
 		if (pdown)
 			updown = -updown;
 		pTarget->RotateLocal(FPoint3(1.0f, 0.0f, 0.0f), updown);
@@ -203,7 +203,7 @@ void vtOrthoFlyer::Eval()
 		float trans = my * elapsed;
 		float rotate = -mx * elapsed;
 
-		pCamera->SetWidth(pCamera->GetWidth() * (1.0 + trans));
+		pCamera->SetWidth(pCamera->GetWidth() * (1.0f + trans));
 		pCamera->RotateLocal(FPoint3(0.0f, 0.0f, 1.0f), rotate);
 	}
 
@@ -245,7 +245,7 @@ void vtTerrainFlyer::Eval()
 			float fAboveGround = pos.y - fGroundAltitude;
 
 			// Linear scaling
-			SetMultiplier(1.0 + (fAboveGround / 100));
+			SetMultiplier(1.0f + (fAboveGround / 100));
 
 			// Exponential scaling - didn't like it as well
 		 //	SetMultiplier(pow(2.0, (double) (m_fAboveGround / 1000)));
@@ -289,7 +289,7 @@ void vtPanoFlyer::Eval()
 	if ((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT))
 	{
 		// speed up
-		m_Velocity += (m_fSpeed * elapsed * .25);
+		m_Velocity += (m_fSpeed * elapsed * .25f);
 
 		if (m_Velocity > m_fSpeed) m_Velocity = m_fSpeed; // clamp at m_fSpeed
 
@@ -302,7 +302,7 @@ void vtPanoFlyer::Eval()
 		// slow down
 		if (m_Velocity > 0.0)
 		{
-			m_Velocity -= (m_fSpeed * elapsed * .05);
+			m_Velocity -= (m_fSpeed * elapsed * .05f);
 			if (m_Velocity < 0) m_Velocity = 0.0f; // clamp at 0
 		}
 	}

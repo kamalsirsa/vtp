@@ -219,7 +219,7 @@ void IcoGlobe::SetLighting(bool bLight)
  */
 void IcoGlobe::SetTime(const vtTime &time)
 {
-	float second_of_day = time.GetSecondOfDay();
+	float second_of_day = (float) time.GetSecondOfDay();
 	float fraction_of_day = second_of_day / (24 * 60 * 60);
 	float rotation = fraction_of_day * PI2f;
 
@@ -423,7 +423,7 @@ void IcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
 		{
 			// scale just the height of the cylinder
 			double area = PIf * spheres[i].radius * spheres[i].radius;
-			mgeom->Scale3(0.002f, area*1000, 0.002f);
+			mgeom->Scale3(0.002f, (float)area*1000, 0.002f);
 		}
 		m_SurfaceGroup->AddChild(mgeom);
 	}
