@@ -1750,7 +1750,7 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 
 	float height = m_PlantOpt.m_fHeight;
 	float variance = m_PlantOpt.m_iVariance / 100.0f;
-	height *= (1.0 + random(variance*2) - variance);
+	height *= (1.0f + random(variance*2) - variance);
 	if (!pTerr->AddPlant(epos, m_PlantOpt.m_iSpecies, height))
 		return false;
 
@@ -2003,7 +2003,7 @@ void Enviro::CreateElevationLegend()
 
 	// Solid rectangle behind it
 	vtMesh *mesh4 = new vtMesh(vtMesh::QUADS, 0, 4);
-	mesh4->AddRectangleXY(base.x, base.y, size.x, size.y, -1);
+	mesh4->AddRectangleXY(base.x, base.y, size.x, size.y, -1.0f);
 	m_pLegendGeom->AddMesh(mesh4, 1);
 	mesh4->Release();
 

@@ -360,7 +360,7 @@ void GlobePicker::Eval()
 		{
 			pTarget->Identity();
 			pTarget->SetTrans(m_GroundPoint);
-			pTarget->PointTowards(m_GroundPoint * 2);
+			pTarget->PointTowards(m_GroundPoint * 2.0f);
 			pTarget->Scale3(m_fTargetScale, m_fTargetScale, m_fTargetScale);
 		}
 
