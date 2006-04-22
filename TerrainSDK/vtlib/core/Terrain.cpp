@@ -26,7 +26,6 @@
 #include "TVTerrain.h"
 #include "SMTerrain.h"
 #include "CustomTerrain.h"
-#include "BryanTerrain.h"
 #include "SRTerrain.h"
 #include "DemeterTerrain.h"
 #include "TiledGeom.h"
@@ -790,13 +789,6 @@ bool vtTerrain::_CreateDynamicTerrain()
 	{
 		m_pDynGeom = new CustomTerrain();
 		m_pDynGeom->SetName2("CustomTerrain Geom");
-	}
-	else if (method == LM_BRYANQUAD)
-	{
-#if 0	// disabled until its working
-		m_pDynGeom = new BryanTerrain();
-		m_pDynGeom->SetName2("BryanQuad Geom");
-#endif
 	}
 	else if (method == LM_ROETTGER)
 	{

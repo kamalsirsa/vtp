@@ -35,8 +35,7 @@ enum LodMethodEnum {
 	LM_TOPOVISTA,	///< TVTerrain
 	LM_MCNALLY,		///< SMTerrain
 	LM_DEMETER,		///< DemeterTerrain
-	LM_CUSTOM,		///< CustomTerrain
-	LM_BRYANQUAD	///< BryanTerrain
+	LM_CUSTOM		///< CustomTerrain
 };
 
 // TParam Layer Types
