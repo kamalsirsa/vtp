@@ -838,7 +838,7 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 					DebugZ = pEdge->m_higher.m_vertex->m_point.m_z;
 #endif
 					if (pEdge->m_higher.m_vertex->m_point.m_z > (double)fMaxHeight)
-						fMaxHeight = pEdge->m_higher.m_vertex->m_point.m_z;
+						fMaxHeight = (float) pEdge->m_higher.m_vertex->m_point.m_z;
 					RoofSection3D.Append(FPoint3(pEdge->m_higher.m_vertex->m_point.m_x, pEdge->m_higher.m_vertex->m_point.m_y + EaveY, pEdge->m_higher.m_vertex->m_point.m_z));
 					pNextEdge = pEdge->m_higher.m_right;
 //					if (pEdge->m_higher.m_vertex->m_point != pNextEdge->m_higher.m_vertex->m_point)
@@ -855,7 +855,7 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 					DebugZ = pEdge->m_lower.m_vertex->m_point.m_z;
 #endif
 					if (pEdge->m_lower.m_vertex->m_point.m_z > (double)fMaxHeight)
-						fMaxHeight = pEdge->m_lower.m_vertex->m_point.m_z;
+						fMaxHeight = (float) pEdge->m_lower.m_vertex->m_point.m_z;
 					RoofSection3D.Append(FPoint3(pEdge->m_lower.m_vertex->m_point.m_x, pEdge->m_lower.m_vertex->m_point.m_y + EaveY, pEdge->m_lower.m_vertex->m_point.m_z));
 					pNextEdge = pEdge->m_lower.m_right;
 //					if (pEdge->m_lower.m_vertex->m_point != pNextEdge->m_higher.m_vertex->m_point)
