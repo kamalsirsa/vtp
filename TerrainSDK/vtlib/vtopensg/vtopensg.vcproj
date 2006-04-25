@@ -1042,6 +1042,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SceneViewOSG.cpp">
+			</File>
+			<File
 				RelativePath=".\vtOsgDynMesh.cpp">
 			</File>
 			<File
@@ -1065,6 +1068,9 @@
 			</File>
 			<File
 				RelativePath="SceneOSG.h">
+			</File>
+			<File
+				RelativePath=".\SceneViewOSG.h">
 			</File>
 			<File
 				RelativePath=".\vtOsgDynMesh.h">
