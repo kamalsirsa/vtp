@@ -35,6 +35,7 @@ public:
 	unsigned int NumTris() const { return m_tri.GetSize()/3; }
 
 	void AddVert(const DPoint2 &p, float z);
+	void AddVert(const DPoint2 &p, float z, FPoint3 &normal);
 	void AddTri(int i1, int i2, int i3, int surface_type = -1);
 
 	bool Read(const char *fname);
@@ -60,6 +61,7 @@ public:
 	void CleanupClockwisdom();
 	double GetTriMaxEdgeLength(int iTri) const;
 	void MergeSharedVerts(bool progress_callback(int) = NULL);
+	bool HasVertexNormals() { return m_vert_normal.GetSize() != 0; }
 
 	vtProjection	m_proj;
 
@@ -73,6 +75,7 @@ protected:
 	DLine2		 m_vert;
 	Array<float> m_z;
 	Array<int>	 m_tri;
+	FLine3		 m_vert_normal;
 
 	// Surface Types
 	Array<int>	 m_surfidx;

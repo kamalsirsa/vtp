@@ -54,6 +54,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	unsigned int iSurfTypes = m_surftypes.size();
 	bool bUseSurfaceTypes = (m_surfidx.GetSize() > 0 && iSurfTypes > 0);
 	bool bTextured = bGeoSpecific || bUseSurfaceTypes;
+	bool bExplicitNormals = HasVertexNormals();
 
 	int texture_base = 3;
 	if (!bGeoSpecific)
@@ -75,11 +76,14 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		{
 			for (unsigned int i = 0; i < iSurfTypes; i++)
 			{
+				bool bLighting = bExplicitNormals;
+				float fAmbient = 0.3f;
+
 				vtString relpath = "GeoTypical/";
 				relpath += m_surftypes[i];
 				vtString path = FindFileOnPaths(vtGetDataPath(), relpath);
-				m_pMats->AddTextureMaterial2(path, false, false, false, false,
-					0.0f, 1.0f, 1.0f, 0.0f, false, false, true);
+				m_pMats->AddTextureMaterial2(path, false, bLighting, false, false,
+					fAmbient, 1.0f, 1.0f, 0.0f, false, false, true);
 			}
 		}
 	}
@@ -179,7 +183,12 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 
 		int vert_type;
 		if (bTextured)
-			vert_type = VT_TexCoords;
+		{
+			if (bExplicitNormals)
+				vert_type = VT_Normals|VT_TexCoords;
+			else
+				vert_type = VT_TexCoords;
+		}
 		else
 			vert_type = VT_Normals|VT_Colors;
 
@@ -227,6 +236,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 			{
 				vidx = m_tri[tribase + k];
 
+				// This is where we actually add the vertex
 				int vert_index = pMesh->AddVertex(p[k]);
 				if (bTextured)
 				{
@@ -238,6 +248,9 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 						uv.Set((m_vert[vidx].x - m_EarthExtents.left) / 6,
 							   (m_vert[vidx].y - m_EarthExtents.bottom) / 6);
 					pMesh->SetVtxTexCoord(vert_index, uv);
+
+					if (bExplicitNormals)
+						pMesh->SetVtxNormal(vert_index, m_vert_normal[vidx]);
 				}
 				else
 				{

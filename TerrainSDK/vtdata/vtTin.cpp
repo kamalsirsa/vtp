@@ -18,6 +18,14 @@ void vtTin::AddVert(const DPoint2 &p, float z)
 	m_z.Append(z);
 }
 
+// Add vertex with vertex normal
+void vtTin::AddVert(const DPoint2 &p, float z, FPoint3 &normal)
+{
+	m_vert.Append(p);
+	m_z.Append(z);
+	m_vert_normal.Append(normal);
+}
+
 void vtTin::AddTri(int i1, int i2, int i3, int surface_type)
 {
 	m_tri.Append(i1);
