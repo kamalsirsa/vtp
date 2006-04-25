@@ -11,12 +11,8 @@
 	#include <OpenSG/OSGGeometry.h>
 	#include <OpenSG/OSGSimpleTexturedMaterial.h>
 	#include <OpenSG/OSGScreenAlignedText.h>
-	#include <OpenSG/OSGFontStyleFactory.h>
 	#include <OpenSG/OSGTXFFont.h>
-	#include <OpenSG/OSGTXFFontStyle.h>
-	#include <OpenSG/OSGTTFontStyle.h>
 	#include <OpenSG/OSGText.h>
-	#include <OpenSG/OSGSharedFontStyle.h>
 	#include <OpenSG/OSGSharedFontStyleWrapper.h>
 	#include <OpenSG/OSGTransform.h>
 
@@ -33,7 +29,8 @@ class vtImage;
  * Much of the functionality of vtMaterial is inherited from its base class,
  * vtMaterialBase.
  */
-class vtMaterial : public vtMaterialBase {
+class vtMaterial : public vtMaterialBase
+{
 public:
 	vtMaterial();
 	~vtMaterial();
@@ -76,16 +73,19 @@ public:
 	osg::StatePtr GetState() const;
 
 	void Apply();
-	void UnApply();
 
 	// global option
 	static bool s_bTextureCompression;
+
+	// remember the last applied material, for UnApply
+	static vtMaterial *s_pCurrentMaterial;
+	static void UnApply();
 
 	// remember this for convenience
 	vtImage *m_pImage;
 
 	// the VT material object includes texture
-	osg::RefPtr<osg::SimpleTexturedMaterialPtr> m_pMaterial; 
+	osg::RefPtr<OSG::SimpleTexturedMaterialPtr> m_pMaterial; 
 };
 
 /**

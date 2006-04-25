@@ -164,6 +164,9 @@ Action::ResultE vtOsgDynMesh::drawPrimitives(DrawActionBase * action)
 		vtgeom->DoCull(pCam);
 		vtgeom->DoRender();
 
+		// unapply any remaining material (OpenSG needs to do this manually)
+		vtMaterial::UnApply();
+
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 

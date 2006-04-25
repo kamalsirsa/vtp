@@ -82,44 +82,21 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 {
 	osg::osgInit(0,NULL);
 
-	osg::PassiveWindowPtr gwin = osg::PassiveWindow::create();
-
-	/*
-	   cameraDecorator = ShearedStereoCameraDecorator::create();
-		beginEditCP(cameraDecorator);
-		cameraDecorator->setLeftEye(false);
-		cameraDecorator->setEyeSeparation(6);
-		cameraDecorator->setDecoratee(some_camera);
-		cameraDecorator->setZeroParallaxDistance(200);
-		rightViewport = OSG::Viewport::create();
-		beginEditCP(rightViewport);
-			rightViewport->setCamera    ( cameraDecorator );
-			rightViewport->setBackground( some_background );
-			rightViewport->setRoot      ( root );
-			rightViewport->setSize      ( .5,0,1,1 );
-		endEditCP(rightViewport);
-		endEditCP(cameraDecorator);
-	*/
-
-	gwin->init();
-	m_pOsgWindow = gwin;
-
-	m_pOsgSceneView = new osg::SimpleSceneManager;
-
-	m_pOsgSceneView->setWindow(m_pOsgWindow);
-
-	m_pOsgSceneView->setHeadlight(false);
-	m_pOsgSceneView->setStatistics(false);
-	m_pOsgSceneView->useOpenSGLogo();
-
-	m_Background = osg::SolidBackground::create();
+	m_pSceneViewOSG = new SceneViewOSG( bStereo, iStereoMode );
 
 	m_pDefaultCamera = new vtCamera;
 	m_pDefaultWindow = new vtWindow;
 	SetCamera(m_pDefaultCamera);
 	AddWindow(m_pDefaultWindow);
 
-	m_pOsgSceneView->getCamera()->setBeacon( m_pCamera->GetOsgNode() );
+	//not in sceneviewosg... crashes ?
+	//no stereo or passive stereo  have only ONE camera
+	if (!bStereo || GetSceneView()->GetStereoMode() == 2) 
+		GetSceneView()->GetCamera()->setBeacon( m_pCamera->GetOsgNode() );
+	else {
+		GetSceneView()->GetLeftCamera()->setBeacon( m_pCamera->GetOsgNode() );
+		GetSceneView()->GetRightCamera()->setBeacon( m_pCamera->GetOsgNode() );
+	}
 
 	/*m_pShadowMapViewport = osg::ShadowMapViewport::create();
 	// Shadow viewport
@@ -142,6 +119,7 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 	m_pOsgWindow->addPort(m_pShadowMapViewport);
 	endEditCP(m_pOsgWindow);*/
 
+
 	_initialTick = clock();
 	_frameTick = _initialTick;
 
@@ -157,17 +135,16 @@ void vtScene::Shutdown()
 	delete m_pDefaultWindow;
 	vtNode::ClearOsgModelCache();
 	vtImageCacheClear();
+	delete m_pSceneViewOSG;
 }
 
 void vtScene::TimerRunning(bool bRun)
 {
-	if (!bRun)
-	{
+	if ( !bRun ) {
 		// stop timer, count how much running time has already elapsed
 		m_fAccumulatedFrameTime = (float)(_lastRunningTick - clock() ) / CLOCKS_PER_SEC;
 		//VTLOG("partial frame: %lf seconds\n", m_fAccumulatedFrameTime);
-	}
-	else 
+	} else
 		// start again
 		_lastRunningTick =  clock();
 }
@@ -178,13 +155,11 @@ void vtScene::UpdateBegin()
 	_frameTick = clock();
 
 	// finish counting the split frame's elapsed time
-	if (_lastRunningTick != _lastFrameTick)
-	{
+	if ( _lastRunningTick != _lastFrameTick ) {
 		m_fAccumulatedFrameTime += (float)(_lastRunningTick - _frameTick) / CLOCKS_PER_SEC;
 		//VTLOG("   full frame: %lf seconds\n", m_fAccumulatedFrameTime);
 		m_fLastFrameTime = m_fAccumulatedFrameTime;
-	}
-	else
+	} else
 		m_fLastFrameTime = (float)(_lastFrameTick - _frameTick) / CLOCKS_PER_SEC;
 
 	_lastRunningTick = _frameTick;
@@ -193,27 +168,20 @@ void vtScene::UpdateBegin()
 
 void vtScene::UpdateEngines()
 {
-	if( !m_bInitialized ) return;
+	if ( !m_bInitialized ) return;
 	DoEngines();
 }
 
 void vtScene::UpdateWindow(vtWindow *pWindow)
 {
-	if( !m_bInitialized )
+	if ( !m_bInitialized )
 		return;
 
-	// window background color
-	osg::Color3f color2;
-	v2s(pWindow->GetBgColor(), color2);
-	m_Background->setColor(color2);
+	osg::Color3f color3;
+	v2s(pWindow->GetBgColor(), color3);
+	GetSceneView()->SetBackgroundColor( color3 );   
 
-	osg::WindowPtr window = m_pOsgSceneView->getWindow();
-	osg::ViewportPtr &vport = window->getPort(0);
-	vport->setBackground(m_Background);
-
-	if( !m_bInitialized ) return;
-
-	if( m_pCamera->IsOrtho() ) { //no ortho for now
+	if ( m_pCamera->IsOrtho() ) { //no ortho for now
 		//we need to have a ortho cam in order to do this in opensg
 		// Arguments are left, right, bottom, top, zNear, zFar
 		//float w2 = m_pCamera->GetWidth() /2;
@@ -223,10 +191,10 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	} else {
 		// window size
 		IPoint2 winsize = pWindow->GetSize();
-		if( winsize.x == 0 || winsize.y == 0 )
+		if ( winsize.x == 0 || winsize.y == 0 )
 			VTLOG("Warning: winsize %d %d\n", winsize.x, winsize.y);
 		float winaspect;
-		if( winsize.x == 0 || winsize.y == 0 )
+		if ( winsize.x == 0 || winsize.y == 0 )
 			winaspect = 1.0f;
 		else
 			winaspect = (float) winsize.y / winsize.x;
@@ -243,19 +211,18 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 		float aspect = 1.0f;
 		// Not: aspect = (float) winsize.y / winsize.x;
 
-		osg::PerspectiveCameraPtr cam = m_pOsgSceneView->getCamera();
-		beginEditCP(cam);
-		cam->setAspect(aspect);
-		cam->setFov(fov_y);
-		cam->setNear(m_pCamera->GetHither());
-		cam->setFar(m_pCamera->GetYon());
-		cam->setBeacon(m_pCamera->GetOsgNode());
-		endEditCP(cam);
+		GetSceneView()->UpdateCamera(
+									aspect, 
+									fov_y, 
+									m_pCamera->GetHither(), 
+									m_pCamera->GetYon(), 
+									m_pCamera->GetOsgNode()
+									);
 	}
 
 	CalcCullPlanes();
 
-	m_pOsgSceneView->redraw();
+	GetSceneView()->Redraw();
 }
 
 /**
@@ -273,9 +240,9 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 void vtScene::ComputeViewMatrix(FMatrix4 &mat)
 {
 	osg::Matrix result;
-	GetSceneView()->getCamera()->getViewing( result, 
-											 GetSceneView()->getWindow()->getWidth(), 
-											 GetSceneView()->getWindow()->getHeight() 
+	GetSceneView()->GetCamera()->getViewing( result, 
+											 GetSceneView()->GetWindow()->getWidth(), 
+											 GetSceneView()->GetWindow()->getHeight() 
 										   );
 
 	ConvertMatrix4( &result, &mat );
@@ -291,15 +258,15 @@ void vtScene::DoUpdate()
 //sets the GLOBAL scene root for SimpleSceneManager
 void vtScene::SetRoot(vtGroup *pRoot)
 {
-	if( pRoot ) {
+	if ( pRoot ) {
 		beginEditCP(m_pOsgSceneRoot);
 		m_pOsgSceneRoot = pRoot->GetOsgNode();      
 		endEditCP(m_pOsgSceneRoot); 
 	} else
 		m_pOsgSceneRoot	= osg::NullFC;
 
-	if( GetSceneView() != NULL ) {
-		GetSceneView()->setRoot(m_pOsgSceneRoot);
+	if ( GetSceneView() != NULL ) {
+		GetSceneView()->SetRoot(m_pOsgSceneRoot);
 		//m_pShadowMapViewport->setRoot(m_pOsgSceneRoot);
 	}
 
@@ -309,9 +276,7 @@ void vtScene::SetRoot(vtGroup *pRoot)
 
 bool vtScene::IsStereo() const
 {
-	/*const osg::DisplaySettings* displaySettings = m_pOsgSceneView->getDisplaySettings();
-	return displaySettings->getStereo();*/
-	return false;
+	return GetSceneView()->IsStereo();
 }
 
 void vtScene::SetStereoSeparation(float fSep)
@@ -337,7 +302,7 @@ float vtScene::GetStereoSeparation() const
 bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow *pWindow)
 {
 	//we don't actually need the window since it is managed by the SimpleSceneManager
-	osg::Line  l = GetSceneView()->calcViewRay(win.x, win.y);
+	osg::Line  l = GetSceneView()->CalcViewRay(win.x, win.y);
 
 	s2v(l.getPosition(), pos);
 	s2v(l.getDirection(), dir);
@@ -352,14 +317,13 @@ void vtScene::WorldToScreen(const FPoint3 &point, IPoint2 &result)
 {
 	osg::Matrix to_screen;
 	//TODO don't use index but cast to correct type of viewport, e.g. no shadowmapviewport...
-	GetSceneView()->getCamera()->getWorldToScreen   ( to_screen, 
-													  *GetSceneView()->getWindow()->getPort(0) );
-
+	GetSceneView()->GetCamera()->getWorldToScreen(to_screen, 
+												  *GetSceneView()->GetViewport());
 	osg::Pnt3f p; 
 	v2s(point, p);
 	to_screen.multMatrixPnt( p );
-	result.x = p.x();
-	result.y = p.y();
+	result.x = (int) p.x();
+	result.y = (int) p.y();
 }
 
 
@@ -446,8 +410,8 @@ void vtScene::CalcCullPlanes()
 	const Polytope::PlaneList &planes = tope.getPlaneList();
 
 	int i = 0;
-	for( Polytope::PlaneList::const_iterator itr=planes.begin();
-	   itr!=planes.end(); ++itr ) {
+	for ( Polytope::PlaneList::const_iterator itr=planes.begin();
+		itr!=planes.end(); ++itr ) {
 		// make a copy of the clipping plane
 		Plane plane = *itr;
 
@@ -474,13 +438,13 @@ void vtScene::DrawFrameRateChart()
 	glColor3f(1.0f, 1.0f, 0.0f);
 
 	glBegin(GL_LINE_STRIP);
-	for( int i = 1; i <= 100; i++ ) {
+	for ( int i = 1; i <= 100; i++ ) {
 		glVertex3f(-1.0 + i/200.0f, -1.0f + fps[(s+i)%100]/200.0f, 0.0f);
 	}
 	glEnd();
 
 	s++;
-	if( s == 100 ) s = 0;
+	if ( s == 100 )	s = 0;
 }
 
 void vtScene::SetGlobalWireframe(bool bWire)
@@ -493,7 +457,7 @@ void vtScene::SetGlobalWireframe(bool bWire)
 	// the attribute themselves.
 	StateSet *global_state = m_pOsgSceneView->getGlobalStateSet();
 	PolygonMode *npm = new PolygonMode();
-	if( m_bWireframe )
+	if ( m_bWireframe )
 		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
 	else
 		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::FILL);
@@ -508,11 +472,11 @@ bool vtScene::GetGlobalWireframe()
 
 void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 {
-	if( !m_bInitialized ) return;
+	if ( !m_bInitialized ) return;
 
-	m_pOsgSceneView->resize(w, h);
+	GetSceneView()->GetWindow()->resize(w, h);
 
-	if( m_pHUD )
+	if ( m_pHUD )
 		m_pHUD->SetWindowSize(w, h);
 
 	vtSceneBase::SetWindowSize(w, h, pWindow);

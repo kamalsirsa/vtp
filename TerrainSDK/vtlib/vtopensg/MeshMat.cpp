@@ -13,12 +13,21 @@
 #include <OpenSG/OSGDynamicVolume.h>
 #include <OpenSG/OSGPolygonChunk.h>
 #include <OpenSG/OSGLineChunk.h>
+#include <OpenSG/OSGFresnelMaterial.h>
+#include <OpenSG/OSGPhongMaterial.h>
+#include <OpenSG/OSGPathHandler.h>
+#include <OpenSG/OSGFontStyleFactory.h>
+#include <OpenSG/OSGFontStyle.h>
+#include <OpenSG/OSGSharedFontStyle.h>
 
 #include <string>
 
-///////////////////////////////////
-
+// Static members
+vtMaterial *vtMaterial::s_pCurrentMaterial = NULL;
 bool vtMaterial::s_bTextureCompression = false;
+
+
+///////////////////////////////////
 
 vtMaterial::vtMaterial() : vtMaterialBase()
 {
@@ -30,21 +39,19 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 	// Not sure why this is required (should be the default!)
 	m_pStateSet->setMode(GL_DEPTH_TEST, SA_ON);
 #endif //EXCEPT */
+
 	m_pMaterial = osg::SimpleTexturedMaterial::create();
+	
+	//if i turn this on buildings are correct, if out, the streets are correct..
+	//theres an alpha channel in the road/tree textures
+	beginEditCP(m_pMaterial);
+    m_pMaterial->setEnvMode      (GL_MODULATE); 
+	endEditCP(m_pMaterial);
+
 }
 
 vtMaterial::~vtMaterial()
 {
-/*#if EXCEPT
-	// do these manually, although it's not really required
-	m_pMaterial = NULL;
-	m_pTexture = NULL;
-	m_pStateSet = NULL;
-	m_pBlendFunc = NULL;
-
-	// more dereferencing
-	m_pImage = NULL;
-#endif //EXCEPT */
 	osg::subRefCP(m_pMaterial);
 }
 
@@ -65,9 +72,11 @@ void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 	if (a < 1.0f)
 		m_pStateSet->setMode(GL_BLEND, SA_ON);
 #endif*/
+	
+
 	beginEditCP(m_pMaterial);
 	m_pMaterial->setDiffuse(osg::Color3f(r,g,b));
-	m_pMaterial->setTransparency(1.f-a);
+	if (a>0.01f) m_pMaterial->setTransparency(1-a);
 	endEditCP(m_pMaterial);
 }
 /**
@@ -77,7 +86,7 @@ RGBAf vtMaterial::GetDiffuse() const
 {
 	osg::Real32 a = m_pMaterial->getTransparency();
 	osg::Color3f rgb = m_pMaterial->getDiffuse();
-	return RGBAf(rgb.red(), rgb.green(), rgb.blue(), 1);
+	return RGBAf(rgb.red(), rgb.green(), rgb.blue(), 1-a);
 }
 
 /**
@@ -139,7 +148,7 @@ RGBf vtMaterial::GetEmission() const
  */
 void vtMaterial::SetCulling(bool bCulling)
 {
-	/*int slot(0);
+	int slot(0);
 	osg::StateChunkPtr statechunk = m_pMaterial->find( osg::PolygonChunk::getClassType(), slot);
 	osg::PolygonChunkPtr pchunk = osg::PolygonChunkPtr::dcast( statechunk );
 
@@ -153,7 +162,7 @@ void vtMaterial::SetCulling(bool bCulling)
 
 	beginEditCP(pchunk);
 	pchunk->setCullFace(bCulling ? GL_CULL_FACE : GL_FRONT_AND_BACK);
-	endEditCP(pchunk);*/
+	endEditCP(pchunk);
 }
 /**
  * Get the backface culling property of this material.
@@ -200,20 +209,18 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 	int slot(0);
 	osg::StateChunkPtr statechunk = m_pMaterial->find( osg::BlendChunk::getClassType(), slot);
 	osg::BlendChunkPtr bchunk = osg::BlendChunkPtr::dcast( statechunk );
+	if (!bchunk && bOn) {
+			bchunk = osg::BlendChunk::create();
+			m_pMaterial->addChunk(bchunk, slot);
+	}
 
-	if( bOn ) {
-		bchunk = osg::BlendChunk::create();
-		m_pMaterial->addChunk(bchunk, slot);
+	if( bOn) {
 		beginEditCP(bchunk);
 		bchunk->setAlphaFunc(GL_GEQUAL);
 		//TODO bchunk-> how to set the reference value ??
 		endEditCP(bchunk);
 	} else {
-		/*beginEditCP(bchunk);
-		bchunk->setAlphaFunc(GL_NEVER); //TODO is this ok ?
-		endEditCP(bchunk);*/
-
-		//simply remove blend chunk is GL_NONE sufficient?
+		//simply remove blend chunk ...
 		if( bchunk ) m_pMaterial->subChunk(bchunk, slot);
 	}
 
@@ -287,6 +294,7 @@ bool vtMaterial::GetWireframe() const
  */
 void vtMaterial::SetTexture(vtImage *pImage)
 {
+
 	beginEditCP(m_pMaterial);
 	m_pMaterial->setImage(pImage->GetImage());
 	endEditCP(m_pMaterial);
@@ -399,6 +407,7 @@ bool vtMaterial::GetClamp() const
 		return tex->getWrapS() == GL_CLAMP; 
 	}
 	return false;
+
 }
 
 /**
@@ -406,9 +415,8 @@ bool vtMaterial::GetClamp() const
  */
 void vtMaterial::SetMipMap(bool bMipMap)
 {
-	if( m_pMaterial->getImage() == osg::NullFC ) {
+	if( m_pMaterial->getImage() == osg::NullFC )
 		return;
-	}
 
 	if( bMipMap ) {
 		beginEditCP(m_pMaterial);
@@ -429,30 +437,30 @@ bool vtMaterial::GetMipMap() const
 	if( m_pMaterial->getImage() == osg::NullFC ) {
 		return false;
 	}
-
 	return m_pMaterial->getMinFilter() == GL_LINEAR_MIPMAP_LINEAR;
-
 }
 
 void vtMaterial::Apply()
 {
-	if( m_pMaterial->getImage() != osg::NullFC ) {
+	// remove any previously applied material
+	UnApply();
 
-		osg::StatePtr state = m_pMaterial->getState();
-		state->activate( vtGetScene()->GetSceneView()->getAction() );
+	osg::StatePtr state = m_pMaterial->getState();
+	state->activate(vtGetScene()->GetSceneView()->GetAction());
 
-	} else {
-
-	}
+	// remember it for UnApply later
+	s_pCurrentMaterial = this;
 }
 
 void vtMaterial::UnApply()
 {
-	//we don't need this one
-	/*osg::StatePtr state = m_pMaterial->getState();
-	state->deactivate( vtGetScene()->GetSceneView()->getAction() );*/
+	if (s_pCurrentMaterial)
+	{
+		osg::StatePtr state = s_pCurrentMaterial->m_pMaterial->getState();
+		state->deactivate(vtGetScene()->GetSceneView()->GetAction());
+		s_pCurrentMaterial = NULL;
+	}
 }
-
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -524,79 +532,6 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 vtMesh::vtMesh(enum PrimType ePrimType, int VertType, int NumVertices) :
 vtMeshBase(ePrimType, VertType, NumVertices)
 {
-	/*
-#if EXCEPT
-	ref();		// artficially set refcount to 1
-
-	m_pGeometry = new Geometry();
-
-	// set backpointer so we can find ourselves later
-	// also increases our own refcount
-	m_pGeometry->setUserData(this);
-
-	m_Vert = new Vec3Array;
-	m_Vert->reserve(NumVertices);
-	m_pGeometry->setVertexArray(m_Vert.get());
-
-	m_Index = new UIntArray;
-	m_Index->reserve(NumVertices);
-	m_pGeometry->setVertexIndices(m_Index.get());
-
-	if (VertType & VT_Normals)
-	{
-		m_Norm = new Vec3Array;
-		m_Norm->reserve(NumVertices);
-		m_pGeometry->setNormalArray(m_Norm.get());
-		m_pGeometry->setNormalIndices(m_Index.get());
-		m_pGeometry->setNormalBinding(Geometry::BIND_PER_VERTEX);
-	}
-	if (VertType & VT_Colors)
-	{
-		m_Color = new Vec4Array;
-		m_Color->reserve(NumVertices);
-		m_pGeometry->setColorArray(m_Color.get());
-		m_pGeometry->setColorIndices(m_Index.get());
-		m_pGeometry->setColorBinding(Geometry::BIND_PER_VERTEX);
-	}
-	if (VertType & VT_TexCoords)
-	{
-		m_Tex = new Vec2Array;
-		m_Tex->reserve(NumVertices);
-		m_pGeometry->setTexCoordArray(0, m_Tex.get());
-		m_pGeometry->setTexCoordIndices(0, m_Index.get());
-	}
-
-	switch (ePrimType)
-	{
-	case POINTS:
-		m_pPrimSet = new DrawArrays(PrimitiveSet::POINTS, 0, NumVertices);
-		break;
-	case LINES:
-		m_pPrimSet = new DrawArrays(PrimitiveSet::LINES, 0, NumVertices);
-		break;
-	case TRIANGLES:
-		m_pPrimSet = new DrawArrays(PrimitiveSet::TRIANGLES, 0, NumVertices);
-		break;
-	case QUADS:
-		m_pPrimSet = new DrawArrays(PrimitiveSet::QUADS, 0, NumVertices);
-		break;
-	case LINE_STRIP:
-		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::LINE_STRIP);
-		break;
-	case TRIANGLE_STRIP:
-		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::TRIANGLE_STRIP);
-		break;
-	case TRIANGLE_FAN:
-		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::TRIANGLE_FAN);
-		break;
-	case POLYGON:
-		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::POLYGON);
-		break;
-	}
-	m_pGeometry->addPrimitiveSet(m_pPrimSet.get());
-#endif //EXCEPT */
-
-
 	m_pGeometryNode = osg::makeCoredNode<osg::Geometry>(&m_pGeometryCore);
 	osg::setName(m_pGeometryNode,"vtMesh-Geometry");
 
@@ -672,9 +607,9 @@ vtMeshBase(ePrimType, VertType, NumVertices)
 		//do index not for polys..
 		if (ePrimType!=POLYGON) m_pGeometryCore->setIndices (m_Index);
 
-		if (!(VertType & VT_Colors)) {
-			//m_pGeometryCore->setMaterial( osg::SimpleTexturedMaterial::create() );
-		}
+		/*if (!(VertType & VT_Colors)) {
+			m_pGeometryCore->setMaterial( osg::SimpleTexturedMaterial::create() );
+		}*/
 	}
     endEditCP  (m_pGeometryCore, osg::Geometry::TypesFieldMask     |
 				osg::Geometry::LengthsFieldMask   |
@@ -728,10 +663,12 @@ void vtMesh::Release()
 void vtMesh::GetBoundBox(FBox3 &box) const
 {
 	osg::DynamicVolume vol;
-	vol = m_pGeometryNode->getVolume(false); //no update
+	vol = m_pGeometryNode->getVolume(true); //no update
 	vol.morphToType(osg::DynamicVolume::BOX_VOLUME);
-	osg::Pnt3f min, max;
+	osg::Pnt3f min, max,cen;
 	vol.getBounds(min, max);
+//	vol.getCenter( cen );
+
 	box.max = s2v ( max.subZero() );
 	box.min = s2v ( min.subZero() ); 
 }
@@ -790,43 +727,43 @@ void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
 
 	int len = 2;
 
-	beginEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
+	beginEditCP( m_Index );
 	m_Index->push_back(p0);
 	m_Index->push_back(p1);
-	endEditCP( m_Index/*, osg::GeoIndices::GeoPropDataFieldMask*/ );
+	endEditCP( m_Index );
 
 	if( p2 != -1 ) {
-		beginEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
+		beginEditCP( m_Index );
 		m_Index->push_back(p2); 
-		endEditCP( m_Index/*, osg::GeoIndices::GeoPropDataFieldMask*/ );
+		endEditCP( m_Index );
 		len = 3; 
 	}
 	if( p3 != -1 ) {
-		beginEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
+		beginEditCP( m_Index );
 		m_Index->push_back(p3); 
-		endEditCP( m_Index/*, osg::GeoIndices::GeoPropDataFieldMask*/ );
+		endEditCP( m_Index );
 		len = 4; 
 	}
 	if( p4 != -1 ) {
-		beginEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
+		beginEditCP( m_Index );
 		m_Index->push_back(p4); 
-		endEditCP( m_Index/*, osg::GeoIndices::GeoPropDataFieldMask*/ );
+		endEditCP( m_Index );
 		len = 5; 
 	}
 	if( p5 != -1 ) {
-		beginEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
+		beginEditCP( m_Index );
 		m_Index->push_back(p5);
-		endEditCP( m_Index/*, osg::GeoIndices::GeoPropDataFieldMask*/ );
+		endEditCP( m_Index );
 		len = 6; 
 	}
 
 	//create new primitive
 	beginEditCP(m_Length);
-	m_Length->addValue(len);
+	m_Length->push_back(len);
 	endEditCP(m_Length);
 
 	beginEditCP(m_pPrimSet);
-	m_pPrimSet->addValue(m_pPrimSet->getValue(0));
+	m_pPrimSet->push_back(m_pPrimSet->getValue(0));
 	endEditCP(m_pPrimSet);
 }
 
@@ -864,6 +801,7 @@ void vtMesh::AddFan(int *idx, int iNVerts)
 		endEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
 	}
 
+	
 	//add new primitive length
 	beginEditCP(m_Length);
 	m_Length->addValue(iNVerts);
@@ -1240,6 +1178,7 @@ void vtMesh::ReOptimize()
 void vtMesh::SetLineWidth(float fWidth)
 {
 	osg::SimpleTexturedMaterialPtr mat = osg::SimpleTexturedMaterialPtr::dcast( m_pGeometryCore->getMaterial() );
+
 	if( !mat ) return;
 
 	int slot(0);
@@ -1360,8 +1299,8 @@ bool vtFont::LoadFont(const char *filename)
 	paths.push_backPath(".");
 	//need to have freetype1 for ttf support..
 	m_pFontStyle = osg::FontStyleFactory::the().create( paths, filename, 1.f );
-	m_pFontStyle->setXRes(32);
-	m_pFontStyle->setYRes(32);
+	m_pFontStyle->setXRes(16);
+	m_pFontStyle->setYRes(16);
 	return m_pFontStyle != 0;
 }
 
@@ -1377,39 +1316,11 @@ bool vtFont::LoadFont(const char *filename)
  */
 vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
 {
-#if EXCEPT
-	ref();		// artficially set refcount to 1
-
-	// OSG 0.9.3
-//	m_pOsgText = new osgText::Text(font->m_pOsgFont.get());
-
-	// OSG 0.9.4
-	m_pOsgText = new osgText::Text;
-	m_pOsgText->setFont(font->m_pOsgFont.get());
-
-	// set backpointer so we can find ourselves later
-	m_pOsgText->setUserData(this);
-
-	// Set the Font reference width and height resolution in texels.
-	m_pOsgText->setFontResolution(32,32);
-
-	// Set the rendered character size in object coordinates.
-	m_pOsgText->setCharacterSize(fSize);
-
-	if( bCenter )
-		m_pOsgText->setAlignment(osgText::Text::CENTER_BOTTOM);
-
-	// We'd like to turn off lighting for the text, but we can't, because
-	//  the OSG Text object fiddles with its own StateSet.  Instead, we do
-	//  it in vtGeom::AddTextMesh().
-#endif
-
 	//this is not ok, since we can only have an instance of one font at a unique size
 	//but creating copies of the fontstyle here would be even worse...
 	//for markers though one size should be fine.
 	//font resolution is now in vtFont
-	//TODO figure out the relation between osg and opensg fontsize
-	font->GetFontStyle()->setSize( fSize / 50 );
+	font->GetFontStyle()->setSize( fSize );
 
 	m_pSharedFontStyle = osg::SharedFontStyle::create(); 
 	m_pSharedFontStyle->setContainedFontStyle( font->GetFontStyle() );

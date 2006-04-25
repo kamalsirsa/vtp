@@ -147,7 +147,6 @@ void vtNode::GetBoundBox(FBox3 &box)
 	vol.getBounds(min, max);
 	box.max = s2v ( max.subZero() );
 	box.min = s2v ( min.subZero() ); 
-
 }
 
 void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
@@ -352,7 +351,7 @@ void DecorateVisit(osg::NodePtr node)
 			// needs decorating.  it is a group?
 			if( group ) {
 				vgroup = new vtGroup(true);
-				vgroup->SetOsgNode(node); //mw: note that this needs to be the group node and not the group core!
+				vgroup->SetOsgNode(node); 
 				vnode = vgroup;
 			} else {
 				// decorate as plain native node
@@ -1141,10 +1140,26 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 	pMesh->SetMatIndex(iMatIdx);
 #endif //EXCEPT
 
-	//just experimental, use statesets later on
 	vtMaterial *pMat = GetMaterial(iMatIdx);
 
 	if( pMat ) {
+
+			osg::GeometryPtr geo = pMesh->m_pGeometryCore;
+			beginEditCP(geo);
+			geo->setMaterial( pMat->m_pMaterial );
+			endEditCP(geo);
+		
+			return; 
+
+	/*	osg::GeometryPtr geo = pMesh->m_pGeometryCore;
+		if ( geo->getMaterial() != OSG::NullFC )
+		{
+			beginEditCP(geo);
+			geo->setMaterial( pMat->m_pMaterial );
+			endEditCP(geo);
+		} 
+
+		//if (pMat->GetLighting()) {
 		// Beware: the mesh may already have its own stateset
 		osg::StatePtr pState = pMat->GetState();
 		//osg::StatePtr pStateMesh = pMesh->m_pGeometryCore->getMaterial()->getState();
@@ -1159,29 +1174,33 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 			geo->setMaterial( pMat->m_pMaterial );
 			endEditCP(geo);
 
-		}else {
+		} else { //this gives correct buildings
 			osg::GeometryPtr geo = pMesh->m_pGeometryCore;
 			beginEditCP(geo);
 			geo->setMaterial( pMat->m_pMaterial );
 			endEditCP(geo);
 		}
-
-		if( pMat->GetLighting() ) { 
+		//} pmat-getlighting
+		
+		if( !pMat->GetLighting() ) { 
 			//no vertex colors
 			osg::GeometryPtr geo = pMesh->m_pGeometryCore;
 			// colors set ?
 			if( !geo->getColors() ) {
+
 				osg::SimpleTexturedMaterialPtr sm =  pMat->m_pMaterial;
 				osg::SimpleTexturedMaterialPtr mesh_sm = osg::SimpleTexturedMaterialPtr::dcast(geo->getMaterial());
+
 				//assert it is not null, you never know
 				if (sm != osg::NullFC && mesh_sm != osg::NullFC) {
 					osg::Color3f diffuse = sm->getDiffuse();
-					beginEditCP(mesh_sm);
+                    beginEditCP(mesh_sm);
+					//mesh_sm->setLit(false);
 					mesh_sm->setDiffuse(diffuse);
 					endEditCP(mesh_sm);
 				}
 			}
-		}
+		}*/
 	} //pmat
 	pMesh->SetMatIndex(iMatIdx);
 
@@ -1349,14 +1368,17 @@ vtDynGeom::vtDynGeom() : vtGeom()
 	}
 	endEditCP(m_pDynMesh); */
 
-	osg::SimpleTexturedMaterialPtr stm = osg::SimpleTexturedMaterial::create();
-	beginEditCP(stm);
-	stm->setColorMaterial(GL_NONE);
-	endEditCP(stm);
+	//osg::SimpleTexturedMaterialPtr stm = osg::SimpleTexturedMaterial::create();
 
-	beginEditCP(m_pDynMesh);
-	m_pDynMesh->setMaterial( stm );
-	endEditCP(m_pDynMesh);
+	/*GL_NONE, GL_EMISSION, GL_AMBIENT, GL_DIFFUSE,
+        GL_SPECULAR and  GL_AMBIENT_AND_DIFFUSE*/
+	/*beginEditCP(stm);
+	stm->setColorMaterial(GL_MODULATE);
+	endEditCP(stm);*/
+
+	//beginEditCP(m_pDynMesh);
+	//m_pDynMesh->setMaterial( stm );
+	//endEditCP(m_pDynMesh);
 
 	beginEditCP(m_pNode);
 	m_pNode->addChild(m_pDynNode);

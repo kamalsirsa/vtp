@@ -6,19 +6,21 @@
 //
 
 #ifndef VTOSG_SCENEH
-	#define VTOSG_SCENEH
+#define VTOSG_SCENEH
+
 
 // A little helper to simplify scene management and interaction
-	#include <OpenSG/OSGSimpleSceneManager.h>
+#include <OpenSG/OSGSimpleSceneManager.h>
 
-	#include <time.h>
+#include <time.h>
 
-	#include <OpenSG/OSGNode.h>
-	#include <OpenSG/OSGGroup.h>
-	#include <OpenSG/OSGRefPtr.h>
-	#include <OpenSG/OSGSolidBackground.h>
-	#include <OpenSG/OSGShadowMapViewport.h>
+#include <OpenSG/OSGNode.h>
+#include <OpenSG/OSGGroup.h>
+#include <OpenSG/OSGRefPtr.h>
+#include <OpenSG/OSGSolidBackground.h>
+#include <OpenSG/OSGShadowMapViewport.h>
 
+#include "SceneViewOSG.h"
 
 //EXCEPT class CreateProjectedShadowTextureCullCallback;
 
@@ -36,7 +38,10 @@
 	- A window
 	- A current camera (vtCamera)
  */
-class vtScene : public vtSceneBase {
+class vtScene : public vtSceneBase
+{
+	friend class SceneViewOSG;
+
 public:
 	vtScene();
 	~vtScene();
@@ -104,10 +109,9 @@ public:
 
 	// For backward compatibility
 	void SetBgColor(const RGBf &color) {
-		if( GetWindow(0) )
+		if ( GetWindow(0) )
 			GetWindow(0)->SetBgColor(color);
 	};
-
 
 	bool IsStereo() const;
 	void SetStereoSeparation(float fSep);
@@ -115,16 +119,11 @@ public:
 	void ComputeViewMatrix(FMatrix4 &mat);
 
 	// OpenSG access
-	osg::SimpleSceneManager *GetSceneView() { return m_pOsgSceneView;}
-	void SetSceneView(osg::SimpleSceneManager *mgr) { 
-		m_pOsgSceneView = mgr;
-	}
+	SceneViewOSG *GetSceneView() const {return m_pSceneViewOSG;};
 
 protected:
 	// OpenSG-specific implementation
-	osg::SimpleSceneManager *m_pOsgSceneView;
-	osg::WindowPtr m_pOsgWindow;
-
+	SceneViewOSG *m_pSceneViewOSG;
 
 	// for culling
 	void CalcCullPlanes();
@@ -150,8 +149,6 @@ protected:
 	bool    m_bInitialized;
 	bool    m_bWireframe;
 	vtHUD   *m_pHUD;
-
-	osg::SolidBackgroundPtr m_Background;
 };
 
 // global

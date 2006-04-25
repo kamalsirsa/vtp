@@ -14,6 +14,8 @@
 
 #include <OpenSG/OSGPathHandler.h>
 #include <OpenSG/OSGImageFileHandler.h>
+#include <OpenSG/OSGJPGImageFileType.h>
+#include <OpenSG/OSGPNGImageFileType.h>
 
 #include <list>
 
@@ -68,27 +70,24 @@ bool vtImage::Create(int width, int height, int bitdepth, bool create_palette)
 
 	osg::UInt8 *image(0);// = new osg::UInt8[width*height*bitdepth/8];
 	beginEditCP(m_Image);
-	m_Image->set (
-				 pixelFormat,//UInt32 pixelFormat,
-				 width,//Int32 width, 
-				 height,//Int32 height=1, 
-				 1,//Int32 depth=1, 
-				 1,//,//Int32 mipmapCount=1, 
-				 1,//Int32 frameCount=1, 
-				 0.f,//Time frameDelay=0.0, 
-				 image,	//,//const UInt8 *data=0, 
-				 dataType, 
-				 true,//bool allocMem=true, 
-				 1//Int32 sideCount=1)
-				 );
+	m_Image->set(
+				pixelFormat,//UInt32 pixelFormat,
+				width,//Int32 width, 
+				height,//Int32 height=1, 
+				1,//Int32 depth=1, 
+				1,//,//Int32 mipmapCount=1, 
+				1,//Int32 frameCount=1, 
+				0.f,//Time frameDelay=0.0, 
+				image,	//,//const UInt8 *data=0, 
+				dataType, 
+				true,//bool allocMem=true, 
+				1//Int32 sideCount=1)
+				);
 	endEditCP(m_Image);
 
 	//TODO check this one
 	m_iRowSize = width * (bitdepth / 8);
 
-	//its ok
-	//std::cout << m_Image->getWidth() << std::endl;
-	//std::cout << m_Image->getHeight() << std::endl;
 	return true;
 }
 
@@ -119,9 +118,6 @@ vtImage *vtImageRead(const char *fname, bool bAllowCache)
 	return NULL;
 }
 
-
-
-
 bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(int))
 {
 	m_b16bit = false;
@@ -132,17 +128,8 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 	if( m_Image == osg::NullFC ) m_Image = osg::Image::create();
 
 	if( m_Image != osg::NullFC ) {
-
-		//TODO vtGetDataPath() ?
-		/*std::string file ("C:/vtp/TerrainApps/glutOSGSimple/" );
-		file += fname;
-		beginEditCP(m_Image);
-		m_Image->read( file.c_str() );
-		endEditCP(m_Image);*/
-
 		osg::PathHandler paths;
 		paths.push_backPath(".");
-		//paths.push_backPath("C:/vtp/TerrainApps/glutOSGSimple");
 		osg::ImagePtr img; img = osg::Image::create();
 		osg::ImageFileHandler::the().setPathHandler(&paths);
 		osg::ImageFileHandler::the().read( img, fname, 0 );
@@ -161,11 +148,13 @@ bool vtImage::WritePNG(const char *fname, bool progress_callback(int) )
 	typedef std::list< const osg::Char8 * > suffixList_t;
 	suffixList_t suffixList;
 	osg::ImageFileHandler::the().getSuffixList (suffixList, osg::ImageFileType::OSG_WRITE_SUPPORTED);
+	//png should have been added during registration of the png's suffixlist
 	suffixList_t::const_iterator it = std::find( suffixList.begin(), suffixList.end(), "png" );
-	if (it != suffixList.end() ) 
-		return osg::ImageFileHandler::the().write(m_Image, fname, "png");
+	if (it != suffixList.end() ) {
+		return OSG::PNGImageFileType::the().write( m_Image, fname );
+	}
 	else {
-		//png not supported
+		//jpeg not supported
 		return false;
 	}
 }
@@ -175,9 +164,12 @@ bool vtImage::WriteJPEG(const char *fname, int quality, bool progress_callback(i
 	typedef std::list< const osg::Char8 * > suffixList_t;
 	suffixList_t suffixList;
 	osg::ImageFileHandler::the().getSuffixList (suffixList, osg::ImageFileType::OSG_WRITE_SUPPORTED);
-	suffixList_t::const_iterator it = std::find( suffixList.begin(), suffixList.end(), "jpeg" );
-	if (it != suffixList.end() ) 
-		return osg::ImageFileHandler::the().write(m_Image, fname, "jpeg");
+	//jpg should have been added during registration of the jpg's suffixlist
+	suffixList_t::const_iterator it = std::find( suffixList.begin(), suffixList.end(), "jpg" );
+	if (it != suffixList.end() ) {
+		OSG::JPGImageFileType::the().setQuality( quality );
+		return OSG::JPGImageFileType::the().write( m_Image, fname );
+	}
 	else {
 		//jpeg not supported
 		return false;
@@ -255,13 +247,11 @@ unsigned int vtImage::GetHeight() const
 //mw depth==bitdepth.. opensg can handle 3d images...
 unsigned int vtImage::GetDepth() const
 {
-	//return m_Image->getDepth(); this would give the size of the third img dim.. wrong...
-
 	/*OSG_INVALID_PF = 0, OSG_I_PF = GL_INTENSITY, OSG_L_PF = GL_LUMINANCE, OSG_LA_PF = GL_LUMINANCE_ALPHA, 
 	  OSG_BGR_PF = 0, OSG_BGRA_PF = 0, OSG_RGB_DXT1 = GL_COMPRESSED_RGB_S3TC_DXT1_EXT, OSG_RGBA_DXT1 = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, 
 	  OSG_RGBA_DXT3 = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, OSG_RGBA_DXT5 = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, OSG_RGB_PF = GL_RGB, OSG_RGBA_PF = GL_RGBA */
 
-	unsigned int depth(0);
+	/*unsigned int depth(0);
 	osg::Int32 pixelformat = m_Image->getPixelFormat();
 	switch( pixelformat ) {
 		case osg::Image::OSG_RGBA_PF: 
@@ -274,10 +264,10 @@ unsigned int vtImage::GetDepth() const
 			depth=8;
 			break;
 		default: ;
-	};
-
-	if( depth==0 ) return 24; //TODO assume 24 bit for testing 
-	//assert(depth != 0); //unknown pixelformat, add the according one from above...
+	};*/
+	unsigned int depth(0);
+	depth = m_Image->getBpp()*( m_Image->getDataType() == osg::Image::OSG_UINT8_IMAGEDATA ? 8 : 16 );
+	assert(depth != 0); 
 	return depth;
 }
 
@@ -287,7 +277,6 @@ unsigned int vtImage::GetDepth() const
  */
 void vtImage::Set16Bit(bool bFlag)
 {
-
 	if( bFlag ) {
 		// use a 16-bit internal
 		if( m_Image->getPixelFormat() == GL_RGB ) {
