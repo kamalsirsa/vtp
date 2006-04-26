@@ -440,8 +440,9 @@ public:
 	void Export3TX();
 
 	// area tool
+	void ScanElevationLayers(int &count, int &floating, DPoint2 &spacing);
 	void MergeResampleElevation();
-	bool SampleElevationToTilePyramids(const TilingOptions &opts);
+	bool SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat);
 	void ExportImage();
 
 	// Web Access
