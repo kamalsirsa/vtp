@@ -131,8 +131,28 @@ int request_callback(unsigned char *mapfile, unsigned char *texfile,
 		// just checking for file existence
 		int present=1;
 
-		if (mapfile!=NULL) present&=file_exists((char *)mapfile);
-		if (texfile!=NULL) present&=file_exists((char *)texfile);
+		if (mapfile!=NULL)
+		{
+#if LOG_TILE_LOADS
+			VTLOG1(" exist check: ");
+			VTLOG1((char *)mapfile);
+#endif
+			present&=file_exists((char *)mapfile);
+		}
+		if (texfile!=NULL)
+		{
+#if LOG_TILE_LOADS
+			VTLOG1(" exist check: ");
+			VTLOG1((char *)texfile);
+#endif
+			present&=file_exists((char *)texfile);
+		}
+#if LOG_TILE_LOADS
+		if (present)
+			VTLOG1(" YES\n");
+		else
+			VTLOG1(" NO\n");
+#endif
 
 		return(present);
 	}
@@ -257,8 +277,6 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 	}
 
 	setminierrorhandler(mini_error_handler);
-
-	//miniOGL::glext_tc = FALSE;
 
 	SetupMiniLoad();
 
