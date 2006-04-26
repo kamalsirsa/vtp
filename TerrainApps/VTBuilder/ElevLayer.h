@@ -122,7 +122,7 @@ public:
 	// drawing
 	void SetupBitmap(wxDC* pDC);
 	void RenderBitmap();
-	void SetupDefaultColors(ColorMap &cmap);
+	static void SetupDefaultColors(ColorMap &cmap);
 
 	static ElevDrawOptions m_draw;
 
