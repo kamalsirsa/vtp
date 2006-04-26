@@ -1559,7 +1559,7 @@ void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
 	dlg.GetTilingOptions(tileopts);
 
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = SampleElevationToPGMPyramids(tileopts);
+	bool success = SampleElevationToTilePyramids(tileopts);
 	GetView()->HideGridMarks();
 	CloseProgressDialog();
 	if (success)

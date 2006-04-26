@@ -441,7 +441,7 @@ public:
 
 	// area tool
 	void MergeResampleElevation();
-	bool SampleElevationToPGMPyramids(const TilingOptions &opts);
+	bool SampleElevationToTilePyramids(const TilingOptions &opts);
 	void ExportImage();
 
 	// Web Access
