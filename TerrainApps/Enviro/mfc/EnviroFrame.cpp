@@ -217,7 +217,7 @@ void EnviroFrame::OnEarthAddpointdata()
 	}
 	CString str = openDialog.GetPathName();
 
-	int ret = g_App.AddGlobePoints(str);
+	int ret = g_App.AddGlobeAbstractLayer(str);
 	if (ret == -1)
 		::AfxMessageBox("Couldn't Open");
 	if (ret == -2)
