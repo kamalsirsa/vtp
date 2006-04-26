@@ -2013,8 +2013,8 @@ void Enviro::CreateElevationLegend()
 	vtMesh *mesh1 = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
 	for (i = 0; i < in_size.y + 1; i++)
 	{
-		FPoint3 p1(cbar_left,  in_base.y + i, 0);
-		FPoint3 p2(cbar_right, in_base.y +  i, 0);
+		FPoint3 p1(cbar_left,  in_base.y + i, 0.0f);
+		FPoint3 p2(cbar_right, in_base.y + i, 0.0f);
 		idx = mesh1->AddLine(p1, p2);
 		mesh1->SetVtxColor(idx, (RGBf) table[i]);
 		mesh1->SetVtxColor(idx+1, (RGBf) table[i]);
@@ -2027,8 +2027,8 @@ void Enviro::CreateElevationLegend()
 	vtMesh *mesh2 = new vtMesh(vtMesh::LINES, 0, ticks*2);
 	for (i = 0; i < ticks; i++)
 	{
-		FPoint3 p1(cbar_left-border.x*2, in_base.y + i*vert_space, 0);
-		FPoint3 p2(cbar_left,			 in_base.y + i*vert_space, 0);
+		FPoint3 p1(cbar_left-border.x*2, in_base.y + i*vert_space, 0.0f);
+		FPoint3 p2(cbar_left,			 in_base.y + i*vert_space, 0.0f);
 		mesh2->AddLine(p1, p2);
 	}
 	m_pLegendGeom->AddMesh(mesh2, 0);
@@ -2048,7 +2048,7 @@ void Enviro::CreateElevationLegend()
 		vtString str;
 		str.Format("%4.1f", fMin + (fMax - fMin) / (ticks-1) * i);
 		mesh3->SetText(str);
-		FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0);
+		FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0.0f);
 		mesh3->SetPosition(p1);
 
 		m_pLegendGeom->AddTextMesh(mesh3, 0);
