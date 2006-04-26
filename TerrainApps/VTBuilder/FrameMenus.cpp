@@ -1546,20 +1546,45 @@ void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
 	tileopts.lod0size = 256;
 	tileopts.numlods = 3;
 
+	int count, floating;
+	DPoint2 spacing;
+	ScanElevationLayers(count, floating, spacing);
+
+	if (count == 0)
+	{
+		DisplayAndLog("Sorry, you must have some elevation grid layers\n"
+					  "to perform a sampling operation on them.");
+		return;
+	}
+
 	TileDlg dlg(this, -1, _("Tiling Options"));
-	dlg.m_fEstX = -1;
-	dlg.m_fEstY = -1;
+	dlg.m_fEstX = spacing.x;
+	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(true);
 	dlg.SetArea(m_area);
 	dlg.SetTilingOptions(tileopts);
 	dlg.SetView(GetView());
 
 	if (dlg.ShowModal() != wxID_OK)
+	{
+		GetView()->HideGridMarks();
 		return;
+	}
 	dlg.GetTilingOptions(tileopts);
 
+	// If some of the input grids have floating-point elevation values, ask
+	//  the user if they want their resampled output to be floating-point.
+	bool bFloat = false;
+	if (floating > 0)
+	{
+		int result = wxMessageBox(_("Sample floating-point elevation values?"),
+				_("Question"), wxYES_NO | wxICON_QUESTION, this);
+		if (result == wxYES)
+			bFloat = true;
+	}
+	
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = SampleElevationToTilePyramids(tileopts);
+	bool success = SampleElevationToTilePyramids(tileopts, bFloat);
 	GetView()->HideGridMarks();
 	CloseProgressDialog();
 	if (success)
