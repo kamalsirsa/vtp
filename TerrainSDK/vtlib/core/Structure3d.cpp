@@ -51,8 +51,9 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 	if (m_fRotation != 0.0f)
 		m_pContainer->Rotate2(FPoint3(0,1,0), m_fRotation);
 
+	bool bIncludeCulture = true;
 	FPoint3 point;
-	pHeightField->ConvertEarthToSurfacePoint(m_p, point);
+	pHeightField->ConvertEarthToSurfacePoint(m_p, point, bIncludeCulture);
 	if (m_bAbsolute)
 		// Absolute means elevation is relative to sealevel
 		point.y = m_fElevationOffset;
