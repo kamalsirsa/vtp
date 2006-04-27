@@ -88,8 +88,6 @@ public:
 
 	// ref-counted copy from another vtString
 	const vtString& operator=(const vtString& stringSrc);
-	// set string content to single character
-	const vtString& operator=(char ch);
 	// copy string content from ANSI string (converts to char)
 	const vtString& operator=(pcchar lpsz);
 	// copy string content from unsigned chars
@@ -275,8 +273,6 @@ inline vtString::vtString(const unsigned char* lpsz)
 	{ Init(); *this = (pcchar)lpsz; }
 inline const vtString& vtString::operator=(const unsigned char* lpsz)
 	{ *this = (pcchar)lpsz; return *this; }
-inline const vtString& vtString::operator=(char ch)
-	{ *this = (char)ch; return *this; }
 
 inline int vtString::GetLength() const
 	{ return GetData()->nDataLength; }
