@@ -341,6 +341,9 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 
 void Enviro::SetupTerrain(vtTerrain *pTerr)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	VTLOG("SetupTerrain step %d\n", m_iInitStep);
 	if (m_iInitStep == 1)
 	{
