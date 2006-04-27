@@ -692,6 +692,13 @@ bool vtTiledGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 	bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
 {
+	// Look on culture first
+	if (bIncludeCulture && m_pCulture != NULL)
+	{
+		if (m_pCulture->FindAltitudeOnCulture(p3, fAltitude))
+			return true;
+	}
+
 	// TODO: support other arguments?
 	float alt = m_pMiniLoad->getheight(p3.x, p3.z);
 
