@@ -2659,10 +2659,13 @@ vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()
 bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const
 {
 	// beware - OSG can be picking about the length of this segment.  It
-	//  might be a numerical precision issue.  If we use 1E9,-1E9 then it
-	//  fails to find some objects.
-	FPoint3 start(p3.x, 1E5, p3.z);
-	FPoint3 end(p3.x, -1E5, p3.z);
+	//  is a numerical precision issue.  If we use 1E9,-1E9 then it fails
+	//  to find some objects.  Instead, search just in the range of elevation
+	//  for this terrain, plus a margin to include potential culture.
+	float minh, maxh;
+	m_pHeightField->GetHeightExtents(minh, maxh);
+	FPoint3 start(p3.x, maxh + 1000, p3.z);
+	FPoint3 end(p3.x, minh - 1000, p3.z);
 
 	bool hit = false;
 	vtHitList hlist;
@@ -2671,20 +2674,10 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const
 	{
 		vtString name = hlist[i].node->GetName2();
 
-		bool bIsRoad = (name.Find("road") != -1) || (name.Find("gmodell") != -1);
-		if (bIsRoad || name == "building-geom")
+		if (name == "road" || name == "building-geom")
 		{
-			FPoint3 point = hlist[i].point;
-#if 0
-			// NO longer needed.  vtIntersect now returns world coords.
-			if (name != "road")
-			{
-				// things that aren't roads might have a transform to worry about
-				hlist[i].node->LocalToWorld(point);
-			}
-#endif
 			// take first match encountered
-			fAltitude =  point.y;
+			fAltitude =  hlist[i].point.y;
 			hit = true;
 			break;
 		}
