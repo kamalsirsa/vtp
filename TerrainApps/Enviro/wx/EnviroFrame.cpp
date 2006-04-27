@@ -260,6 +260,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_ToggledMode = MM_SELECT;
 	m_bEnableEarth = bEnableEarth;
 	m_bEarthLines = false;
+	m_bUseCultureInProfile = false;
 
 	m_pStatusBar = NULL;
 	m_pToolbar = NULL;
@@ -1821,17 +1822,20 @@ void EnviroFrame::UpdateLODInfo()
 class EnviroProfileCallback : public ProfileCallback
 {
 public:
+	EnviroProfileCallback(bool bUseCulture) { m_bUseCulture = bUseCulture; }
 	float GetElevation(const DPoint2 &p)
 	{
 		vtTerrain *terr = GetCurrentTerrain();
 		if (terr)
 		{
-			float alt;
-			terr->GetHeightField()->FindAltitudeOnEarth(p, alt, true);
-			return alt;
+			FPoint3 w;
+			terr->GetHeightField()->m_Conversion.ConvertFromEarth(p, w.x, w.z);
+			terr->GetHeightField()->FindAltitudeAtPoint(w, w.y, true, m_bUseCulture);
+			return w.y;
 		}
 		return INVALID_ELEVATION;
 	}
+	bool m_bUseCulture;
 };
 
 ProfileDlg *EnviroFrame::ShowProfileDlg()
@@ -1842,7 +1846,7 @@ ProfileDlg *EnviroFrame::ShowProfileDlg()
 		m_pProfileDlg = new ProfileDlg(this, wxID_ANY, _("Elevation Profile"),
 				wxPoint(120, 80), wxSize(730, 500), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 
-		EnviroProfileCallback *callback = new EnviroProfileCallback;
+		EnviroProfileCallback *callback = new EnviroProfileCallback(m_bUseCultureInProfile);
 		m_pProfileDlg->SetCallback(callback);
 
 		m_pProfileDlg->SetProjection(GetCurrentTerrain()->GetProjection());

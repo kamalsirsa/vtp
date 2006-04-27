@@ -239,6 +239,7 @@ protected:
 	bool m_bTopDown;
 	bool m_bEnableEarth;
 	bool m_bEarthLines;
+	bool m_bUseCultureInProfile;
 
 	// snapshot members
 	wxString2 m_strSnapshotFilename;
