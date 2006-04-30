@@ -324,9 +324,13 @@ void MapServerDlg::UpdateURL()
 			// TODO
 		}
 	}
-	url += "&SRS=EPSG:4326";	// 4326 = WGS84
-
+	int epsg = m_proj.GuessEPSGCode();
+	if (epsg == -1)
+		epsg = 4326;		// 4326 = WGS84
 	vtString str;
+	str.Format("&SRS=EPSG:%d", epsg);
+	url += str;
+
 	str.Format("&BBOX=%lf,%lf,%lf,%lf", m_area.left, m_area.bottom, m_area.right, m_area.top);
 	url += str;
 

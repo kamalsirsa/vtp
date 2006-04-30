@@ -13,6 +13,7 @@
 #include "vtui/wxString2.h"
 #include "vtdata/MathTypes.h"
 #include "vtdata/WFSClient.h"
+#include "vtdata/Projections.h"
 
 // WDR: class declarations
 
@@ -60,6 +61,7 @@ public:
 	int m_iFormat;	// 0 = JPEG, 1 = PNG, 2 = GeoTIFF
 	wxString2 m_strToFile;
 	OGCServerArray *m_pServers;
+	vtProjection m_proj;
 
 private:
 	// WDR: member variable declarations for MapServerDlg.cpp
