@@ -186,6 +186,12 @@ vtTerrain::~vtTerrain()
 
 	if (m_pDetailMats)
 		m_pDetailMats->Release();
+
+	size = m_AbstractLayers.GetSize();
+	for (i = 0; i < size; i++)
+	{
+		delete m_AbstractLayers[i];
+	}
 }
 
 
