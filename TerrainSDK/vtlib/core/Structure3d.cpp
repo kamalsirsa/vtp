@@ -580,6 +580,7 @@ vtMaterialDescriptor *vtMaterialDescriptorArray3d::FindMaterialDescriptor(const 
 
 void vtMaterialDescriptorArray3d::ReleaseMaterials()
 {
+	VTLOG(" vtMaterialDescriptorArray3d::ReleaseMaterials (%lx)\n", m_pMaterials);
 	if (m_pMaterials)
 	{
 		m_pMaterials->Release();
@@ -613,6 +614,7 @@ void vtStructure3d::InitializeMaterialArrays()
 
 void vtStructure3d::ReleaseSharedMaterials()
 {
+	VTLOG1("ReleaseSharedMaterials\n");
 	s_MaterialDescriptors.ReleaseMaterials();
 	vtFence3d::s_FenceMats.ReleaseMaterials();
 }
