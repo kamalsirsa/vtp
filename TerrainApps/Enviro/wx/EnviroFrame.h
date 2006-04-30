@@ -193,6 +193,8 @@ public:
 	void OnUpdateInOrbitOrTerrain(wxUpdateUIEvent& event);
 
 	virtual void OnHelpAbout(wxCommandEvent& event);
+	virtual void OnHelpDocLocal(wxCommandEvent& event);
+	virtual void OnHelpDocOnline(wxCommandEvent& event);
 
 	void OnPopupProperties(wxCommandEvent& event);
 	void OnPopupFlip(wxCommandEvent& event);

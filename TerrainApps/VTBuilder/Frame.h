@@ -262,6 +262,8 @@ protected:
 	void OnUpdateAreaRequestWMS(wxUpdateUIEvent& event);
 
 	void OnHelpAbout(wxCommandEvent& event);
+	void OnHelpDocLocal(wxCommandEvent& event);
+	void OnHelpDocOnline(wxCommandEvent& event);
 
 	// Popup menu items
 	void OnDistanceClear(wxCommandEvent& event);

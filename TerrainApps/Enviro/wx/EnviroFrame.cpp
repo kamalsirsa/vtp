@@ -231,6 +231,8 @@ EVT_UPDATE_UI(ID_EARTH_UNFOLD,	EnviroFrame::OnUpdateEarthUnfold)
 EVT_UPDATE_UI(ID_EARTH_POINTS,	EnviroFrame::OnUpdateInOrbit)
 
 EVT_MENU(ID_HELP_ABOUT, EnviroFrame::OnHelpAbout)
+EVT_MENU(ID_HELP_DOC_LOCAL, EnviroFrame::OnHelpDocLocal)
+EVT_MENU(ID_HELP_DOC_ONLINE, EnviroFrame::OnHelpDocOnline)
 
 // Popup
 EVT_MENU(ID_POPUP_PROPERTIES, EnviroFrame::OnPopupProperties)
@@ -479,6 +481,8 @@ void EnviroFrame::CreateMenus()
 	about += STRING_APPORG;
 	about += "...";
 	helpMenu->Append(ID_HELP_ABOUT, about);
+	helpMenu->Append(ID_HELP_DOC_LOCAL, _("Documentation (local)"));
+	helpMenu->Append(ID_HELP_DOC_ONLINE, _("Documentation (online)"));
 	m_pMenuBar->Append(helpMenu, _("&Help"));
 
 	SetMenuBar(m_pMenuBar);
@@ -848,42 +852,6 @@ WXLRESULT EnviroFrame::MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lPar
 }
 #endif
 
-void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
-{
-	EnableContinuousRendering(false);
-
- 	wxString2 str = STRING_APPORG "\n\n";
-#ifdef ENVIRO_NATIVE
-	str += _T("The runtime environment for the Virtual Terrain Project.\n\n");
- 	str += _T("Please read the HTML documentation and license.\n\n");
- 	str += _T("Send feedback to: ben@vterrain.org\n");
-#else
-	str += _T("Based on the Virtual Terrain Project 3D Runtime Environment.\n");
-#endif
- 	str += _T("\nThis version was built with the ");
-#if VTLIB_DSM
- 	str += _T("DSM");
-#elif VTLIB_OSG
- 	str += _T("OSG");
-#elif VTLIB_OPENSG
- 	str += _T("OpenSG");
-#elif VTLIB_SGL
- 	str += _T("SGL");
-#elif VTLIB_SSG
- 	str += _T("SSG");
-#endif
- 	str += _T(" Library.\n\n");
-	str += _T("Build date: ");
-	str += __DATE__;
-
-	wxString2 str2 = "About ";
-	str2 += STRING_APPORG;
-	wxMessageBox(str, str2);
-
-	EnableContinuousRendering(true);
-}
-
-
 //////////////////// File menu //////////////////////////
 
 void EnviroFrame::OnFileLayers(wxCommandEvent& event)
@@ -1195,6 +1163,7 @@ void EnviroFrame::OnUpdateViewProfile(wxUpdateUIEvent& event)
 	event.Enable(g_App.m_state == AS_Terrain);
 }
 
+
 ///////////////////// Tools menu //////////////////////////
 
 void EnviroFrame::OnToolsSelect(wxCommandEvent& event)
@@ -1297,6 +1266,7 @@ void EnviroFrame::OnUpdateToolsMeasure(wxUpdateUIEvent& event)
 	event.Check(g_App.m_mode == MM_MEASURE);
 }
 
+
 /////////////////////// Scene menu ///////////////////////////
 
 void EnviroFrame::OnSceneGraph(wxCommandEvent& event)
@@ -1354,6 +1324,7 @@ void EnviroFrame::OnTimeFaster(wxCommandEvent& event)
 	else
 		g_App.SetSpeed(x*1.5f);
 }
+
 
 /////////////////////// Terrain menu ///////////////////////////
 
@@ -1600,6 +1571,7 @@ void EnviroFrame::OnUpdateIsDynTerrain(wxUpdateUIEvent& event)
 	event.Enable(t && t->GetDynTerrain());
 }
 
+
 ////////////////// Earth Menu //////////////////////
 
 void EnviroFrame::OnEarthShowShading(wxCommandEvent& event)
@@ -1693,6 +1665,70 @@ void EnviroFrame::OnEarthPoints(wxCommandEvent& event)
 	// restore
 	wxSetWorkingDirectory(path);
 }
+
+
+//////////////////// Help menu //////////////////////////
+
+void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
+{
+	EnableContinuousRendering(false);
+
+ 	wxString2 str = STRING_APPORG "\n\n";
+#ifdef ENVIRO_NATIVE
+	str += _T("The runtime environment for the Virtual Terrain Project.\n\n");
+ 	str += _T("Please read the HTML documentation and license.\n\n");
+ 	str += _T("Send feedback to: ben@vterrain.org\n");
+#else
+	str += _T("Based on the Virtual Terrain Project 3D Runtime Environment.\n");
+#endif
+ 	str += _T("\nThis version was built with the ");
+#if VTLIB_DSM
+ 	str += _T("DSM");
+#elif VTLIB_OSG
+ 	str += _T("OSG");
+#elif VTLIB_OPENSG
+ 	str += _T("OpenSG");
+#elif VTLIB_SGL
+ 	str += _T("SGL");
+#elif VTLIB_SSG
+ 	str += _T("SSG");
+#endif
+ 	str += _T(" Library.\n\n");
+	str += _T("Build date: ");
+	str += __DATE__;
+
+	wxString2 str2 = "About ";
+	str2 += STRING_APPORG;
+	wxMessageBox(str, str2);
+
+	EnableContinuousRendering(true);
+}
+
+void EnviroFrame::OnHelpDocLocal(wxCommandEvent &event)
+{
+	// Launch default web browser with documentation pages
+	wxString2 wxcwd = wxGetCwd();
+	vtString cwd = wxcwd.mb_str();
+
+	vtStringArray paths;
+	paths.push_back(cwd + "/../Docs/Enviro/");
+	paths.push_back(cwd + "/Docs/");
+	vtString result = FindFileOnPaths(paths, "index.html");
+	if (result != "")
+	{
+		result = "file:///" + result;
+		wxLaunchDefaultBrowser(wxString2(result));
+		return;
+	}
+	wxMessageBox(_("Couldn't find local documentation files"));
+}
+
+void EnviroFrame::OnHelpDocOnline(wxCommandEvent &event)
+{
+	// Launch default web browser with documentation pages
+	wxLaunchDefaultBrowser(_T("http://vterrain.org/Doc/Enviro/"));
+}
+
 
 
 //////////////////////////////////////////////////////

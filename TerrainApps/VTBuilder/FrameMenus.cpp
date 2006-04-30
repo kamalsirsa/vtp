@@ -250,6 +250,8 @@ EVT_UPDATE_UI(ID_AREA_REQUEST_WFS,	MainFrame::OnUpdateAreaRequestWMS)
 EVT_UPDATE_UI(ID_AREA_REQUEST_WMS,	MainFrame::OnUpdateAreaRequestWMS)
 
 EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
+EVT_MENU(ID_HELP_DOC_LOCAL,		MainFrame::OnHelpDocLocal)
+EVT_MENU(ID_HELP_DOC_ONLINE,	MainFrame::OnHelpDocOnline)
 
 // Popup menu items
 EVT_MENU(ID_DISTANCE_CLEAR,			MainFrame::OnDistanceClear)
@@ -492,6 +494,8 @@ void MainFrame::CreateMenus()
 	wxString2 msg = _("About ");
 	msg += APPNAME;
 	helpMenu->Append(wxID_HELP, _("&About"), msg);
+	helpMenu->Append(ID_HELP_DOC_LOCAL, _("Documentation (local)"), msg);
+	helpMenu->Append(ID_HELP_DOC_ONLINE, _("Documentation (on the web)"), msg);
 	m_pMenuBar->Append(helpMenu, _("&Help"));
 	menu_num++;
 
@@ -3368,6 +3372,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 	MapServerDlg dlg(this, -1, _T("WMS Request"));
 
 	dlg.m_area = m_area;
+	dlg.m_proj = m_proj;
 	dlg.SetServerArray(m_wms_servers);
 
 	if (dlg.ShowModal() != wxID_OK)
@@ -3406,7 +3411,19 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 
 	if (!success)
 	{
-		wxString2 str = rc.GetErrorMsg();
+		wxString2 str = rc.GetErrorMsg();	// the HTTP request failed
+		wxMessageBox(str);
+		return;
+	}
+	if (data.Len() > 5 && !strncmp((char *)data.Get(), "<?xml", 5))
+	{
+		// We got an XML-formatted response, not the image we were expecting.
+		// The XML probably contains diagnostic error msg.
+		// So show it to the user.
+		wxString2 str;
+		unsigned char ch = 0;
+		data.Append(&ch, 1);
+		str = data.Get();
 		wxMessageBox(str);
 		return;
 	}
@@ -4099,6 +4116,30 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 #endif
 }
 
+void MainFrame::OnHelpDocLocal(wxCommandEvent &event)
+{
+	// Launch default web browser with documentation pages
+	wxString2 wxcwd = wxGetCwd();
+	vtString cwd = wxcwd.mb_str();
+
+	vtStringArray paths;
+	paths.push_back(cwd + "/../Docs/VTBuilder/");
+	paths.push_back(cwd + "/Docs/");
+	vtString result = FindFileOnPaths(paths, "index.html");
+	if (result != "")
+	{
+		result = "file:///" + result;
+		wxLaunchDefaultBrowser(wxString2(result));
+		return;
+	}
+	wxMessageBox(_("Couldn't find local documentation files"));
+}
+
+void MainFrame::OnHelpDocOnline(wxCommandEvent &event)
+{
+	// Launch default web browser with documentation pages
+	wxLaunchDefaultBrowser(_T("http://vterrain.org/Doc/VTBuilder/"));
+}
 
 ////////////////////
 // Popup menu items
