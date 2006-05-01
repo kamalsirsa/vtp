@@ -1181,7 +1181,10 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 			bSuccess = AddNodeToStructGrid(pGeom);
 	}
 	if (!bSuccess)
+	{
 		VTLOG("\tWarning: Structure %d apparently not within bounds of terrain grid.\n", index);
+		structures->DestroyStructure(index);
+	}
 
 	return bSuccess;
 }
