@@ -575,7 +575,7 @@ void Enviro::SetupScene2()
 {
 	VTLOG1("SetupScene2\n");
 
-	m_pNavEngines = new vtEngine();
+	m_pNavEngines = new vtEngine;
 	m_pNavEngines->SetName2("Navigation Engines");
 	vtGetScene()->GetRootEngine()->AddChild(m_pNavEngines);
 
@@ -640,7 +640,7 @@ void Enviro::SetupScene2()
 	if (m_pTopDownCamera == NULL)
 	{
 		VTLOG("Creating Top-Down Camera\n");
-		m_pTopDownCamera = new vtCamera();
+		m_pTopDownCamera = new vtCamera;
 		m_pTopDownCamera->SetOrtho(true);
 		m_pTopDownCamera->SetName2("Top-Down Camera");
 		m_pOrthoFlyer->SetTarget(m_pTopDownCamera);
@@ -661,7 +661,7 @@ void Enviro::SetupScene2()
 	vtGetScene()->GetRootEngine()->AddChild(m_pHeightEngine);
 
 	// This HUD group will contain geometry such as the legend
-	m_pHUD = new vtHUD();
+	m_pHUD = new vtHUD;
 	m_pRoot->AddChild(m_pHUD);
 }
 
@@ -693,7 +693,7 @@ void Enviro::LoadSpeciesList()
 	if (pl.ReadXML(species_path, &errmsg))
 	{
 		VTLOG(" Using species file: '%s'\n", (const char *) species_path);
-		m_pPlantList = new vtSpeciesList3d();
+		m_pPlantList = new vtSpeciesList3d;
 		*m_pPlantList = pl;
 
 		// global options
@@ -899,7 +899,7 @@ void Enviro::SetMessage(const vtString &msg, float fTime)
 #if 0
 	if (m_pMessageSprite == NULL)
 	{
-		m_pMessageSprite = new vtSprite();
+		m_pMessageSprite = new vtSprite;
 		m_pMessageSprite->SetName2("MessageSprite");
 		m_pRoot->AddChild(m_pMessageSprite);
 	}
@@ -1561,7 +1561,7 @@ void Enviro::SetupArcMesh()
 {
 	if (!m_pArcMats)
 	{
-		m_pArcMats = new vtMaterialArray();
+		m_pArcMats = new vtMaterialArray;
 		m_pArcMats->AddRGBMaterial1(RGBf(1, 1, 0), false, false); // yellow
 		m_pArcMats->AddRGBMaterial1(RGBf(1, 0, 0), false, false); // red
 		m_pArcMats->AddRGBMaterial1(RGBf(1, 0.5f, 0), true, true); // orange lit
@@ -1569,7 +1569,7 @@ void Enviro::SetupArcMesh()
 	// create geometry container, if needed
 	if (!m_pArc)
 	{
-		m_pArc = new vtGeom();
+		m_pArc = new vtGeom;
 		if (m_state == AS_Orbit)
 			m_pIcoGlobe->GetTop()->AddChild(m_pArc);
 		else if (m_state == AS_Terrain)
@@ -1620,7 +1620,7 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 
 void Enviro::start_new_fence()
 {
-	vtFence3d *fence = new vtFence3d();
+	vtFence3d *fence = new vtFence3d;
 	fence->SetParams(m_FenceParams);
 	if (GetCurrentTerrain()->AddFence(fence))
 	{
@@ -1996,11 +1996,11 @@ void Enviro::CreateElevationLegend()
 	const int cbar_right = in_base.x + in_size.x;
 
 	int i, idx;
-	vtMaterialArray *pMats = new vtMaterialArray();
+	vtMaterialArray *pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(RGBf(1, 1, 1), false, false); // white
 	pMats->AddRGBMaterial1(RGBf(.2, .2, .2), false, false); // dark grey
 
-	m_pLegendGeom = new vtGeom();
+	m_pLegendGeom = new vtGeom;
 	m_pLegendGeom->SetMaterials(pMats);
 	pMats->Release();
 
@@ -2041,7 +2041,7 @@ void Enviro::CreateElevationLegend()
 	GetCurrentTerrain()->GetHeightField()->GetHeightExtents(fMin, fMax);
 
 	// Text labels
-	vtFont *font = new vtFont();
+	vtFont *font = new vtFont;
 	vtString font_path = FindFileOnPaths(vtGetDataPath(), "Fonts/Arial.ttf");
 	if (font_path != "")
 		font->LoadFont(font_path);

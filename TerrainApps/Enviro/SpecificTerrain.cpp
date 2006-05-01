@@ -85,11 +85,11 @@ vtGeom *TransitTerrain::MakeBlockGeom(FPoint3 size)
 //	mesh->TranslateVertices(half);	// place minimum corner at origin
 
 	// create a single Material
-	vtMaterialArray *looks = new vtMaterialArray();
+	vtMaterialArray *looks = new vtMaterialArray;
 	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f));
 
 	// create a Geometry and add the mesh and material
-	vtGeom *thebox = new vtGeom();
+	vtGeom *thebox = new vtGeom;
 	thebox->SetMaterials(looks);
 	looks->Release();
 	thebox->AddMesh(mesh, 0);

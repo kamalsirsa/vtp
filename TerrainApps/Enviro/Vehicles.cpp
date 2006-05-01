@@ -50,7 +50,7 @@ void ConvertPurpleToColor(vtGroupBase *pModel, RGBf replace)
 		}
 		if (has_purple)
 		{
-			vtMaterialArray *pMats2 = new vtMaterialArray();
+			vtMaterialArray *pMats2 = new vtMaterialArray;
 			pMats2->CopyFrom(pMats);
 			pShape->SetMaterials(pMats2);
 			pMats2->Release();
@@ -61,7 +61,7 @@ void ConvertPurpleToColor(vtGroupBase *pModel, RGBf replace)
 				color = pMat->GetDiffuse();
 				if (color.r == 1.0f && color.g == 0.0f && color.b == 1.0f)
 				{
-					vtMaterial *pMat2 = new vtMaterial();
+					vtMaterial *pMat2 = new vtMaterial;
 					pMat2->Copy(pMat);
 					pMats2->SetAt(i, pMat2);
 					pMat2->SetDiffuse2(replace);
@@ -273,7 +273,7 @@ VehicleType::~VehicleType()
 
 Vehicle::Vehicle()
 {
-	m_pLOD = new vtLOD();
+	m_pLOD = new vtLOD;
 	AddChild(m_pLOD);
 }
 
@@ -298,7 +298,7 @@ void VehicleType::AttemptModelLoad()
 		vtString fname = m_strFilename[i];
 		if (vtNode *pMod = vtNode::LoadModel(fname))
 		{
-			vtTransform *trans = new vtTransform();
+			vtTransform *trans = new vtTransform;
 			trans->AddChild(pMod);
 
 			float scale = m_fScale[i];

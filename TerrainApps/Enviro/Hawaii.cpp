@@ -121,7 +121,7 @@ void IslandTerrain::CreateCustomCulture()
 	{
 		vtGeom *thebox = make_red_cube();
 		vtGeom *thecone = make_test_cone();
-		vtTransform *container = new vtTransform();
+		vtTransform *container = new vtTransform;
 		container->SetName2("Test Shape");
 		container->AddChild(thebox);
 		container->AddChild(thecone);
@@ -237,7 +237,7 @@ void IslandTerrain::create_state_park()
 	if (node)
 	{
 		// plant it
-		vtTransform *xform = new vtTransform();
+		vtTransform *xform = new vtTransform;
 		xform->AddChild(node);
 		PlantModelAtPoint(xform, park_location);
 		m_pLodGrid->AppendToGrid(xform);
@@ -247,7 +247,7 @@ void IslandTerrain::create_state_park()
 
 vtGeom *IslandTerrain::make_test_cone()
 {
-	vtMaterialArray *looks = new vtMaterialArray();
+	vtMaterialArray *looks = new vtMaterialArray;
 	looks->AddRGBMaterial1(RGBf(1.0f, 0.5f, 0.0f), false);	// orange
 
 	////////////
@@ -263,7 +263,7 @@ vtGeom *IslandTerrain::make_test_cone()
 
 	pMesh->CreateConicalSurface(tip, cone_radius, theta1, theta2, r1, r2, res);
 
-	vtGeom *pGeom = new vtGeom();
+	vtGeom *pGeom = new vtGeom;
 	pGeom->SetMaterials(looks);
 	looks->Release();	// pass ownership
 	pGeom->AddMesh(pMesh, 0);
@@ -274,7 +274,7 @@ vtGeom *IslandTerrain::make_test_cone()
 
 vtGeom *IslandTerrain::make_red_cube()
 {
-	vtGeom *thebox = new vtGeom();
+	vtGeom *thebox = new vtGeom;
 	float ws = 100.0f;	// meters
 
 	//code to make it a Shape
@@ -283,7 +283,7 @@ vtGeom *IslandTerrain::make_red_cube()
 	FPoint3 half = size / 2;	// Block() will double the size
 	mesh->CreateBlock(half);
 
-	vtMaterialArray *looks = new vtMaterialArray();
+	vtMaterialArray *looks = new vtMaterialArray;
 	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true);
 	thebox->SetMaterials(looks);
 	looks->Release();	// pass ownership
