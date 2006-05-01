@@ -407,7 +407,7 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 		}
 	}
 
-	m_pMaterials = new vtMaterialArray();
+	m_pMaterials = new vtMaterialArray;
 	m_pMaterials->SetMaxSize(500);
 
 	// Create internal materials (only needed by vtlib, not vtdata)
