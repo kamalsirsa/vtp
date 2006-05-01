@@ -239,6 +239,7 @@ EVT_MENU(ID_POPUP_PROPERTIES, EnviroFrame::OnPopupProperties)
 EVT_MENU(ID_POPUP_FLIP, EnviroFrame::OnPopupFlip)
 EVT_MENU(ID_POPUP_RELOAD, EnviroFrame::OnPopupReload)
 EVT_MENU(ID_POPUP_DELETE, EnviroFrame::OnPopupDelete)
+EVT_MENU(ID_POPUP_URL, EnviroFrame::OnPopupURL)
 END_EVENT_TABLE()
 
 
@@ -1914,11 +1915,20 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 		int sel = sa->GetFirstSelected();
 		if (sel != -1)
 		{
-			vtStructureType type = sa->GetAt(sel)->GetType();
+			vtStructure *struc = sa->GetAt(sel);
+			vtStructureType type = struc->GetType();
 			if (type == ST_BUILDING)
 				popmenu->Append(ID_POPUP_FLIP, _("Flip Footprint Direction"));
 			if (type == ST_INSTANCE)
 				popmenu->Append(ID_POPUP_RELOAD, _("Reload from Disk"));
+
+			// It might have a URL, also
+			vtTag *tag = struc->FindTag("url");
+			if (tag)
+			{
+				popmenu->AppendSeparator();
+				popmenu->Append(ID_POPUP_URL, _("URL"));
+			}
 		}
 	}
 	popmenu->AppendSeparator();
@@ -2041,5 +2051,12 @@ void EnviroFrame::OnPopupDelete(wxCommandEvent& event)
 		m_pLayerDlg->UpdateTreeTerrain();		// we only need to update
 	else if (structs != 0)
 		m_pLayerDlg->RefreshTreeContents();		// we need full refresh
+}
+
+void EnviroFrame::OnPopupURL(wxCommandEvent& event)
+{
+	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
+	vtStructure *struc = sa->GetAt(sa->GetFirstSelected());
+	wxLaunchDefaultBrowser(wxString2(struc->GetValueString("url")));
 }
 
