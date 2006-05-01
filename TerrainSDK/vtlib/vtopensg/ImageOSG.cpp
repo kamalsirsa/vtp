@@ -182,9 +182,9 @@ void vtImage::Release()
 }
 
 unsigned char * vtImage::GetRowData(int row) const 
-{ 
-	unsigned char *data = m_Image->getData() + 0 + (m_Image->getHeight()-1-row)*m_iRowSize;
-	return data; 
+{
+	unsigned char *data = m_Image->getData() + row*m_iRowSize;
+	return data;
 }
 
 unsigned char vtImage::GetPixel8(int x, int y) const
