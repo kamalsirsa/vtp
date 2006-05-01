@@ -822,6 +822,10 @@ void EnviroFrame::OnIdle(wxIdleEvent& event)
 		Close();
 	else
 		event.Skip();
+
+	// Test: exit after first terrain loaded
+//	if (g_App.m_state == AS_Terrain)
+//		Close();
 }
 
 #ifdef __WXMSW__
