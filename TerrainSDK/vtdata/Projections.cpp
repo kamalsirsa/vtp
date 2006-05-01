@@ -662,6 +662,32 @@ void vtProjection::LogDescription() const
 	}
 }
 
+int vtProjection::GuessEPSGCode() const
+{
+	int iCoordSystem = -1;
+	int iDatum = GetDatum();
+	if (IsGeographic())
+	{
+		iCoordSystem = iDatum - 2000;
+	}
+	else
+	{
+		int zone = GetUTMZone();
+		if (zone > 0)
+		{
+			// It's UTM North
+			if (iDatum == 6326)
+				iCoordSystem = 32600 + zone;
+		}
+		if (zone < 0)
+		{
+			// It's UTM South
+			if (iDatum == 6326)
+				iCoordSystem = 32700 + (-zone);
+		}
+	}
+	return iCoordSystem;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Helper functions

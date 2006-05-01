@@ -71,6 +71,7 @@ public:
 	OGRErr	SetDatum(int iDatum);
 	int		GetDatum() const;
 	LinearUnits	GetUnits() const;
+	int		GuessEPSGCode() const;
 
 	OGRErr	SetGeogCSFromDatum(int iDatum);
 
