@@ -12,10 +12,8 @@
 #include "wx/wx.h"
 #endif
 
-//EXTENDED MODIF: init
 #include <wx/colordlg.h>
 #include "vtui/Helper.h"
-//EXTENDED MODIF: end
 
 #include "ImportStructDlg.h"
 #include "StructLayer.h"
@@ -48,13 +46,11 @@ BEGIN_EVENT_TABLE(ImportStructDlg, AutoDialog)
 	EVT_CHOICE( ID_CHOICE_ROOF_TYPE, ImportStructDlg::OnChoiceRoofType )
 	EVT_CHOICE( ID_CHOICE_ROOF_FIELD, ImportStructDlg::OnChoiceRoofField )
 
-	//EXTENDED MODIF: init
 	EVT_BUTTON( ID_SET_COLOR1, ImportStructDlg::OnColorBuilding )
 	EVT_BUTTON( ID_SET_COLOR2, ImportStructDlg::OnColorRoof )
 
 	EVT_SPINCTRL( ID_SLOPECNTR, ImportStructDlg::OnSpinRoofDegrees )
 	EVT_TEXT( ID_SLOPECNTR, ImportStructDlg::OnTextRoofDegrees )
-	//EXTENDED MODIF: end
 END_EVENT_TABLE()
 
 ImportStructDlg::ImportStructDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -165,7 +161,6 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 		m_iType = 0;
 	}
 
-	//EXTENDED MODIF: init
 	m_opt.m_RoofColor = RGBi( 188, 135, 121 );
 	m_opt.m_BuildingColor = RGBi( 255, 224, 178 );
 
@@ -174,8 +169,6 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	FillWithColor(m_pColorBitmapRoof, m_opt.m_RoofColor);
 	FillWithColor(m_pColorBitmapBuilding, m_opt.m_BuildingColor);
-	//EXTENDED MODIF: end
-
 
 	UpdateEnables();
 
@@ -255,8 +248,8 @@ void ImportStructDlg::UpdateEnables()
 
 	GetColorRoof()->Enable(m_opt.type == ST_BUILDING && m_opt.m_bFixedColor);
 	GetColorBuilding()->Enable(m_opt.type == ST_BUILDING && m_opt.m_bFixedColor);
-	GetEdgeDeg()->Enable(m_opt.type == ST_BUILDING && m_opt.m_bFixedColor &&
-		m_iRoofMode == 1 && m_iRoofType != 0);
+	GetEdgeDeg()->Enable(m_opt.type == ST_BUILDING && m_iRoofMode == 1 &&
+		m_iRoofType != 0);	// any sloped (non-flat) roof type
 }
 
 void ImportStructDlg::OnTextRoofDegrees( wxCommandEvent &event )

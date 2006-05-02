@@ -77,7 +77,6 @@ private:
 	void OnRadio( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
-	//EXTENDED MODIF: init
 	wxStaticBitmap  *m_pColorBitmapRoof;
 	wxStaticBitmap  *m_pColorBitmapBuilding;
 	wxColour m_ColorR;
@@ -88,7 +87,6 @@ private:
 	void OnSpinRoofDegrees( wxSpinEvent &event );
 	void OnColorRoof( wxCommandEvent &event );
 	void OnColorBuilding( wxCommandEvent &event );
-	//EXTENDED MODIF: end
 
 private:
 	DECLARE_EVENT_TABLE()
