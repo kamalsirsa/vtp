@@ -182,95 +182,103 @@ const int ID_TYPE_CENTER = 10123;
 const int ID_TYPE_FOOTPRINT = 10124;
 const int ID_CHOICE_HEIGHT_FIELD = 10125;
 const int ID_CHOICE_HEIGHT_TYPE = 10126;
-const int ID_RADIO_ROOF_DEFAULT = 10127;
-const int ID_RADIO_ROOF_SINGLE = 10128;
-const int ID_CHOICE_ROOF_TYPE = 10129;
-const int ID_RADIO_ROOF_FIELD = 10130;
-const int ID_CHOICE_ROOF_FIELD = 10131;
-const int ID_INSIDE_AREA = 10132;
+const int ID_RADIO_COLOR_DEFAULT = 10127;
+const int ID_RADIO_COLOR_FIXED = 10128;
+const int ID_COLOR3 = 10129;
+const int ID_SET_COLOR1 = 10130;
+const int ID_COLOR4 = 10131;
+const int ID_SET_COLOR2 = 10132;
+const int ID_RADIO_ROOF_DEFAULT = 10133;
+const int ID_RADIO_ROOF_SINGLE = 10134;
+const int ID_CHOICE_ROOF_TYPE = 10135;
+const int ID_SLOPECNTR = 10136;
+const int ID_RADIO_ROOF_FIELD = 10137;
+const int ID_CHOICE_ROOF_FIELD = 10138;
+const int ID_DEFAULTS_FILE = 10139;
+const int ID_INSIDE_AREA = 10140;
 wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LAYERNAME = 10133;
-const int ID_ELEVATION_FIELDNAME = 10134;
-const int ID_ELEVATION_UNITS = 10135;
-const int ID_TYPE_BUILDING = 10136;
-const int ID_BUILD_FOUNDATIONS = 10137;
-const int ID_USE_25D = 10138;
+const int ID_LAYERNAME = 10141;
+const int ID_ELEVATION_FIELDNAME = 10142;
+const int ID_ELEVATION_UNITS = 10143;
+const int ID_TYPE_BUILDING = 10144;
+const int ID_BUILD_FOUNDATIONS = 10145;
+const int ID_USE_25D = 10146;
 wxSizer *ImportStructFuncOGR( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LEVEL_CHOICE = 10139;
+const int ID_LEVEL_CHOICE = 10147;
 wxSizer *LevelSelectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TILING = 10140;
+const int ID_TILING = 10148;
 wxSizer *SampleImageDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_BASE_URL = 10141;
-const int ID_QUERY_LAYERS = 10142;
-const int ID_LIST_LAYERS = 10143;
-const int ID_LAYER_DESC = 10144;
-const int ID_LIST_STYLES = 10145;
-const int ID_STYLE_DESC = 10146;
-const int ID_CHOICE_FORMAT = 10147;
-const int ID_QUERY = 10148;
+const int ID_BASE_URL = 10149;
+const int ID_QUERY_LAYERS = 10150;
+const int ID_LIST_LAYERS = 10151;
+const int ID_LAYER_DESC = 10152;
+const int ID_LIST_STYLES = 10153;
+const int ID_STYLE_DESC = 10154;
+const int ID_CHOICE_FORMAT = 10155;
+const int ID_QUERY = 10156;
 wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SPLITTER1 = 10149;
+const int ID_SPLITTER1 = 10157;
 wxSizer *SpeciesListFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LISTCTRL_SPECIES = 10150;
+const int ID_LISTCTRL_SPECIES = 10158;
 wxSizer *Species1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LISTCTRL_APPEARANCES = 10151;
+const int ID_LISTCTRL_APPEARANCES = 10159;
 wxSizer *Species2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_THEME = 10152;
-const int ID_MPP = 10153;
+const int ID_THEME = 10160;
+const int ID_MPP = 10161;
 wxSizer *TSDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_GEOTIFF = 10154;
-const int ID_JPEG = 10155;
-const int ID_CHOICE_COLORS = 10156;
-const int ID_EDIT_COLORS = 10157;
-const int ID_SHADING = 10158;
+const int ID_GEOTIFF = 10162;
+const int ID_JPEG = 10163;
+const int ID_CHOICE_COLORS = 10164;
+const int ID_EDIT_COLORS = 10165;
+const int ID_SHADING = 10166;
 wxSizer *RenderBitmapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LINK_FIELD = 10159;
+const int ID_LINK_FIELD = 10167;
 wxSizer *ImageMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_EASTING = 10160;
-const int ID_NORTHING = 10161;
-const int ID_SET_CRS = 10162;
-const int ID_FORMAT_DECIMAL = 10163;
-const int ID_FORMAT_DMS = 10164;
-const int ID_LONGITUDE_WEST = 10165;
+const int ID_EASTING = 10168;
+const int ID_NORTHING = 10169;
+const int ID_SET_CRS = 10170;
+const int ID_FORMAT_DECIMAL = 10171;
+const int ID_FORMAT_DMS = 10172;
+const int ID_LONGITUDE_WEST = 10173;
 wxSizer *ImportPointDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_FILE_DATA = 10166;
-const int ID_GET_FILE_DATA = 10167;
-const int ID_CHECK_USE1 = 10168;
-const int ID_CHECK_USE2 = 10169;
-const int ID_FILE_GAZ = 10170;
-const int ID_GET_FILE_GAZ = 10171;
-const int ID_FILE_ZIP = 10172;
-const int ID_GET_FILE_ZIP = 10173;
-const int ID_CHECK_USE3 = 10174;
-const int ID_FILE_GNS = 10175;
-const int ID_GET_FILE_GNS = 10176;
+const int ID_FILE_DATA = 10174;
+const int ID_GET_FILE_DATA = 10175;
+const int ID_CHECK_USE1 = 10176;
+const int ID_CHECK_USE2 = 10177;
+const int ID_FILE_GAZ = 10178;
+const int ID_GET_FILE_GAZ = 10179;
+const int ID_FILE_ZIP = 10180;
+const int ID_GET_FILE_ZIP = 10181;
+const int ID_CHECK_USE3 = 10182;
+const int ID_FILE_GNS = 10183;
+const int ID_GET_FILE_GNS = 10184;
 wxSizer *GeocodeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_DEPTH = 10177;
-const int ID_MAXERROR = 10178;
+const int ID_DEPTH = 10185;
+const int ID_MAXERROR = 10186;
 wxSizer *ChunkDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TEXT_TO_FOLDER = 10179;
-const int ID_COLUMNS = 10180;
-const int ID_ROWS = 10181;
-const int ID_CHOICE_LOD0_SIZE = 10182;
-const int ID_SPIN_NUM_LODS = 10183;
-const int ID_TOTALX = 10184;
-const int ID_TOTALY = 10185;
-const int ID_CURX = 10186;
-const int ID_CURY = 10187;
+const int ID_TEXT_TO_FOLDER = 10187;
+const int ID_COLUMNS = 10188;
+const int ID_ROWS = 10189;
+const int ID_CHOICE_LOD0_SIZE = 10190;
+const int ID_SPIN_NUM_LODS = 10191;
+const int ID_TOTALX = 10192;
+const int ID_TOTALY = 10193;
+const int ID_CURX = 10194;
+const int ID_CURY = 10195;
 wxSizer *TileDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
