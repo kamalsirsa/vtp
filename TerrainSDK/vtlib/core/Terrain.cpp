@@ -1015,12 +1015,20 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	FRECT world_extents = m_pHeightField->m_WorldExtents;
 	FPoint2 world_size(world_extents.Width(), world_extents.Height());
 
-	for (int i = -5; i < 6; i++)
+	// You can adjust these factors:
+	const int STEPS = 5;
+	const int TILING = 1;
+
+	FPoint2 tile_size = world_size / TILING;
+	for (int i = -STEPS*TILING; i < (STEPS+1)*TILING; i++)
 	{
-		for (int j = -5; j < 6; j++)
+		for (int j = -(STEPS)*TILING; j < (STEPS+1)*TILING; j++)
 		{
 			// skip center tile
-			if (i == 0 && j == 0) {
+			if (i >= 0 && i < TILING &&
+				j >= 0 && j < TILING)
+			{
+				// we are in the middle
 				if (!bCenter) continue;
 			}
 			else {
@@ -1028,11 +1036,11 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 			}
 
 			FPoint2 base;
-			base.x = world_extents.left + (i * world_size.x);
-			base.y = world_extents.bottom - (j * world_size.y);
+			base.x = world_extents.left + (i * tile_size.x);
+			base.y = world_extents.top - ((j+1) * tile_size.y);
 
 			vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VtxType, 4);
-			mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+world_size, 5.0f);
+			mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size, 5.0f);
 
 			pGeom->AddMesh(mesh, 0);	// actually add
 			mesh->Release();	// pass ownership to the Geometry
@@ -2788,8 +2796,6 @@ vtPointOfInterest *vtTerrain::FindPointOfInterest(DPoint2 utm)
 	}
 	return NULL;
 }
-
-#define STEPS 40
 
 void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 {
