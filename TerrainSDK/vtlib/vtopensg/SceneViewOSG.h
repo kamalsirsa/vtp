@@ -10,8 +10,6 @@
 #ifndef _SCENEVIEWOSG_
 #define _SCENEVIEWOSG_
 
-#pragma warning(disable:4251)
-
 //OpenSG includes
 #include <OpenSG/OSGPerspectiveCamera.h>
 #include <OpenSG/OSGSimpleSceneManager.h>
