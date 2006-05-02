@@ -31,7 +31,7 @@ public:
 
 	// If height is read from a field, name of that field.
 	vtString		m_strFieldNameHeight;
-	enum HeightType { STORIES, METERS, FEET } m_HeightType;
+	//enum HeightType { STORIES, METERS, FEET } m_HeightType; //EXTENDED MODIF: commented
 
 	vtString		m_strFieldNameElevation;
 	enum ElevationType { ETMETERS, ETFEET } m_ElevationType;
@@ -43,8 +43,16 @@ public:
 	vtString		m_strFieldNameRoof;
 	/// If Building Roof Type is fixed, this is the type
 	RoofType		m_eRoofType;
+	int				m_iSlope;			// default: -1
 
 	vtHeightField	*pHeightField;
+
+	bool	m_bFixedColor;
+	RGBi	m_BuildingColor;	// default: -1 -1 -1
+	RGBi	m_RoofColor;		// default: -1 -1 -1
+
+	enum HeightType { STORIES, METERS, FEET, METERSNOSTORIES, FEETNOSTORIES } m_HeightType;
+	//EXTENDED MODIF: end
 };
 
 // Well known import schemas

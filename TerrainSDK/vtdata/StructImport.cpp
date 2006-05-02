@@ -361,6 +361,15 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 					bld->SetStories((int) stories);
 					bld->GetLevel(0)->m_fStoryHeight = (float) (height / stories);
 					break;
+				case StructImportOptions::FEETNOSTORIES:
+					height = height * 0.3048;
+				case StructImportOptions::METERSNOSTORIES:
+					stories = (int) (height / 3.2);
+					if (stories < 1)
+						stories = 1;
+					bld->SetStories(1);
+					bld->GetLevel(0)->m_fStoryHeight = (float) (height);
+					break;
 				}
 			}
 			// if DBF didn't have height info, get it from default building
@@ -372,6 +381,13 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			if (pDefBld)
 				bld->CopyFromDefault(pDefBld, bDoHeight);
 
+			// Apply explicit colors, if they were specified.
+			if (opt.m_bFixedColor)
+			{
+				bld->SetColor(BLD_BASIC, opt.m_BuildingColor);
+				bld->SetColor(BLD_ROOF, opt.m_RoofColor);
+			}
+
 			// Now deal with roof type, which the user might have specified.
 			if (field_roof != -1)
 			{
@@ -379,14 +395,15 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 				if (!type.CompareNoCase("flat") || !type.CompareNoCase("plat"))
 					bld->SetRoofType(ROOF_FLAT);
 				if (!type.CompareNoCase("shed") || !type.CompareNoCase("hangar"))
-					bld->SetRoofType(ROOF_SHED);
+					bld->SetRoofType(ROOF_SHED, opt.m_iSlope);
 				if (!type.CompareNoCase("gable") || !type.CompareNoCase("pignon"))
-					bld->SetRoofType(ROOF_GABLE);
+					bld->SetRoofType(ROOF_GABLE, opt.m_iSlope);
 				if (!type.CompareNoCase("hip") || !type.CompareNoCase("arete"))
-					bld->SetRoofType(ROOF_HIP);
+					bld->SetRoofType(ROOF_HIP, opt.m_iSlope);
 			}
+			// Apply explicit roof type, if specified.
 			else if (opt.m_eRoofType != ROOF_UNKNOWN)
-				bld->SetRoofType(opt.m_eRoofType);
+				bld->SetRoofType(opt.m_eRoofType, opt.m_iSlope);
 
 			Append(bld);
 		}
