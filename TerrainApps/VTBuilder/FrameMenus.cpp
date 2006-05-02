@@ -3386,13 +3386,14 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		dlg.UpdateURL();
 	}
 	FILE *fp;
+	wxString2 str;
 	if (dlg.m_bToFile)
 	{
 		// Very simple: just write the buffer to disk
 		fp = fopen(dlg.m_strToFile.mb_str(), "wb");
 		if (!fp)
 		{
-			wxString2 str = _("Could not open file");
+			str = _("Could not open file");
 			str += _T(" '");
 			str += dlg.m_strToFile;
 			str += _T("'");
@@ -3411,7 +3412,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 
 	if (!success)
 	{
-		wxString2 str = rc.GetErrorMsg();	// the HTTP request failed
+		str = rc.GetErrorMsg();	// the HTTP request failed
 		wxMessageBox(str);
 		return;
 	}
@@ -3420,10 +3421,9 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		// We got an XML-formatted response, not the image we were expecting.
 		// The XML probably contains diagnostic error msg.
 		// So show it to the user.
-		wxString2 str;
 		unsigned char ch = 0;
 		data.Append(&ch, 1);
-		str = data.Get();
+		str = (char*) data.Get();
 		wxMessageBox(str);
 		return;
 	}
