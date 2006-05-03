@@ -250,11 +250,17 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	const wxSize& size, long style, bool bVerticalToolbar, bool bEnableEarth):
 		wxFrame(parent, -1, title, pos, size, style)
 {
+	VTLOG1("Frame constructor.\n");
 	m_bCloseOnIdle = false;
 
+#if WIN32
 	// Give it an icon
+	// Not sure why this doesn't work for Enviro on wxGTK, but it gives a
+	//  error, so it's disabled here.  Works on Windows, works with VTBuilder.
 	wxString2 str = ICON_NAME;
+	VTLOG(" Setting icon: '%s'\n", ICON_NAME);
 	SetIcon(wxIcon(str));
+#endif
 
 	m_bCulleveryframe = true;
 	m_bAlwaysMove = false;
@@ -268,7 +274,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pStatusBar = NULL;
 	m_pToolbar = NULL;
 
-	VTLOG("Frame window: creating menus and toolbars.\n");
+	VTLOG1("Frame window: creating menus and toolbars.\n");
 	CreateMenus();
 	CreateToolbar(bVerticalToolbar);	// argument: vertical
 
