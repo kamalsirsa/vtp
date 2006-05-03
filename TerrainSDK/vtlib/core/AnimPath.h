@@ -49,8 +49,8 @@ struct ControlPoint
  * in conjunction with the vtAnimPathEngine class, which can move any
  * transform (such as scene graph object or camera) along the path.
  *
- * When this object is serialized to an XML file, the points are projected
- * to earth coordinates in GCS(WGS84) so that it is interoperable and
+ * When this object is serialized to an XML file, the points are transformed
+ * to earth coordinates in GCS(WGS84) so that the result is interoperable and
  * terrain-independent.
  */
 class vtAnimPath
