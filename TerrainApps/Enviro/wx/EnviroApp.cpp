@@ -24,6 +24,7 @@
 
 #include "EnviroApp.h"
 #include "EnviroFrame.h"
+#include "canvas.h"
 #include "StartupDlg.h"
 #include "TParamsDlg.h"
 
@@ -254,12 +255,13 @@ bool EnviroApp::OnInit()
 #elif VTLIB_SSG
 	title += " SSG";
 #endif
-	VTLOG("Creating the frame window.\n");
+	VTLOG1("Creating the frame window.\n");
 	wxPoint pos(g_Options.m_WinPos.x, g_Options.m_WinPos.y);
 	wxSize size(g_Options.m_WinSize.x, g_Options.m_WinSize.y);
 	EnviroFrame *frame = new FRAME_NAME(NULL, title, pos, size);
 
 	// Now we can realize the toolbar
+	VTLOG1("Realize toolbar.\n");
 	frame->m_pToolbar->Realize();
 
 	// Allow the frame to do something after it's created
@@ -272,6 +274,12 @@ bool EnviroApp::OnInit()
 
 	// Initialize the VTP scene
 	vtGetScene()->Init(g_Options.m_bStereo, g_Options.m_iStereoMode);
+
+	// Make sure the scene knows the size of the canvas
+	//  (on wxGTK, the first size events arrive too early before the Scene exists)
+	int width, height;
+	frame->m_canvas->GetClientSize(& width, & height);
+	vtGetScene()->SetWindowSize(width, height);
 
 	if (g_Options.m_bLocationInside)
 	{
