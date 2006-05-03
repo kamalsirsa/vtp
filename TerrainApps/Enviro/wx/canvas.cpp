@@ -175,6 +175,12 @@ void vtGLCanvas::OnClose(wxCloseEvent& event)
 
 void vtGLCanvas::OnSize(wxSizeEvent& event)
 {
+	static bool count = 0;
+	if (count < 3)
+	{
+		VTLOG("Canvas  OnSize: %d %d\n", event.GetSize().x, event.GetSize().y);
+		count++;
+	}
   // Presumably this is a wxMSWism.
   // For wxGTK & wxMotif, all canvas resize events occur before the context
   //   is set.  So ignore this context check and grab the window width/height
