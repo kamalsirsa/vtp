@@ -225,7 +225,7 @@ public:
 							  double r1, double r2, int res = 40);
 	void CreateRectangle(int iQuads1, int iQuads2,
 		int Axis1, int Axis2, int Axis3,
-		const FPoint2 &min1, const FPoint2 &max1, float fTiling);
+		const FPoint2 &min1, const FPoint2 &max1, float fLevel, float fTiling);
 
 protected:
 	enum PrimType m_ePrimType;

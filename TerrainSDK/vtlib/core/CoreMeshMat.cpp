@@ -600,12 +600,13 @@ void vtMeshBase::CreateConicalSurface(const FPoint3 &tip, double radial_angle,
  * \param Axis2 The second axis (X=0, Y=1, Z=2)
  * \param Axis3 The third axis (X=0, Y=1, Z=2)
  * \param min1 The lower-left-hand corner of the rectangle's position
- * \param max1 The size of the rectangle (only X and Z are used).
+ * \param max1 The size of the rectangle.
+ * \param fLevel The value of the rectangle on the third axis.
  * \param fTiling UV tiling.  Set to 1 for UV coordinate of O..1.
  */
 void vtMeshBase::CreateRectangle(int iQuads1, int iQuads2,
 		int Axis1, int Axis2, int Axis3,
-		const FPoint2 &min1, const FPoint2 &max1, float fTiling)
+		const FPoint2 &min1, const FPoint2 &max1, float fLevel, float fTiling)
 {
 	int iVerts1 = iQuads1 + 1;
 	int iVerts2 = iQuads2 + 1;
@@ -613,7 +614,7 @@ void vtMeshBase::CreateRectangle(int iQuads1, int iQuads2,
 	FPoint2 size = max1 - min1;
 	FPoint3 pos, normal;
 
-	pos[Axis3] = 0;
+	pos[Axis3] = fLevel;
 	normal[Axis1] = 0;
 	normal[Axis2] = 0;
 	normal[Axis3] = 1;
