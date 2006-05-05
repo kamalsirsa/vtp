@@ -34,6 +34,7 @@ void vtLinearParams::Blank()
 
 void vtLinearParams::ApplyStyle(vtLinearStyle style)
 {
+	m_PostExtension = "";
 	switch (style)
 	{
 	case FS_WOOD_POSTS_WIRE:
@@ -69,6 +70,20 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		m_fPostHeight = 2.0f;
 		m_fPostWidth = 0.05f;
 		m_fPostDepth = 0.05f;
+		//
+		m_ConnectType = "chain-link";
+		m_fConnectTop = m_fPostHeight;
+		m_fConnectBottom = 0.0f;
+		m_fConnectWidth = 0.0f;
+		break;
+	case FS_SECURITY:
+		//
+		m_PostType = "steel";
+		m_fPostSpacing = 3.0f;
+		m_fPostHeight = 2.0f;
+		m_fPostWidth = 0.05f;
+		m_fPostDepth = 0.05f;
+		m_PostExtension = "right";
 		//
 		m_ConnectType = "chain-link";
 		m_fConnectTop = m_fPostHeight;

@@ -17,6 +17,7 @@ enum vtLinearStyle
 	FS_WOOD_POSTS_WIRE,
 	FS_METAL_POSTS_WIRE,
 	FS_CHAINLINK,
+	FS_SECURITY,
 	FS_DRYSTONE,
 	FS_STONE,
 	FS_PRIVET,
@@ -43,6 +44,7 @@ public:
 	float	m_fPostSpacing;
 	float	m_fPostWidth;
 	float	m_fPostDepth;
+	vtString	m_PostExtension;	// single, left, right, double
 
 	// Connect
 	vtString	m_ConnectType;	// wire, chain-link, privet, drystone, none
