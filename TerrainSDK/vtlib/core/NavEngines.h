@@ -1,7 +1,9 @@
 //
 // NavEngines.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Navigation Engines, generally for moving the camera with mouse input.
+//
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -226,15 +228,23 @@ public:
 	/// Set the heightfield on which to do the terrain following.
 	void SetHeightField(vtHeightField3d *pHF) { m_pHF = pHF; }
 
-	/// Set the height above the terrain to maintain
+	/// Set the height above the terrain to allow.
 	void SetMinGroundOffset(float fMeters) { m_fMinGroundOffset = fMeters; }
 
-	/// Set the height above the terrain to maintain
+	/// Get the height above the terrain to allow.
 	float GetMinGroundOffset() { return m_fMinGroundOffset; }
+
+	/// Set whether to use the height of culture for terrain following. Default is false.
+	void SetUseCulture(bool set) { m_bUseCulture = set; }
+
+	/// Get whether to use the height of culture for terrain following.
+	bool GetUseCulture() { return m_bUseCulture; }
 
 	/// If true, the current height above the terrain is maintained.  Default is false.
 	void SetMaintain(bool bMaintain) { m_bMaintain = bMaintain; }
 	bool GetMaintain() { return m_bMaintain; }
+
+	/// Set the height which should be maintained.
 	void SetMaintainHeight(float fHeight) { m_fMaintainHeight = fHeight; }
 
 	bool IsVerticallyMobile();
@@ -246,6 +256,7 @@ protected:
 	float	m_fMaintainHeight;
 	vtHeightField3d *m_pHF;
 	float m_fMinGroundOffset;
+	bool	m_bUseCulture;
 	bool	m_bOnGround;
 };
 

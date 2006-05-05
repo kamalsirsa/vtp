@@ -1,7 +1,9 @@
 //
 // NavEngines.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Navigation Engines, generally for moving the camera with mouse input.
+//
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -660,6 +662,7 @@ vtHeightConstrain::vtHeightConstrain(float fMinHeight)
 	m_fMinGroundOffset = fMinHeight;
 	m_bMaintain = false;
 	m_fMaintainHeight = 0;
+	m_bUseCulture = false;
 	m_bOnGround = false;
 }
 
@@ -677,8 +680,10 @@ void vtHeightConstrain::Eval()
 
 	FPoint3 pos = pTarget->GetTrans();
 
+	bool bTrue = false;		// use displayed elevation, not true elevation
 	float fGroundAltitude;
-	bool bOverTerrain = m_pHF->FindAltitudeAtPoint(pos, fGroundAltitude);
+	bool bOverTerrain = m_pHF->FindAltitudeAtPoint(pos, fGroundAltitude,
+		bTrue, m_bUseCulture);
 
 	m_bOnGround = false;
 	if (bOverTerrain)
