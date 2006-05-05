@@ -175,7 +175,7 @@ void vtGLCanvas::OnClose(wxCloseEvent& event)
 
 void vtGLCanvas::OnSize(wxSizeEvent& event)
 {
-	static bool count = 0;
+	static int count = 0;
 	if (count < 3)
 	{
 		VTLOG("Canvas  OnSize: %d %d\n", event.GetSize().x, event.GetSize().y);
