@@ -67,6 +67,7 @@ typedef class vtPointOfInterest *POIPtr;
 enum TFType
 {
 	TFT_TERRAINSURFACE,
+	TFT_HORIZON,
 	TFT_OCEAN,
 	TFT_VEGETATION,
 	TFT_STRUCTURES,
@@ -331,7 +332,7 @@ protected:
 	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
 	void _SetErrorMessage(const vtString &msg);
-	void create_artificial_horizon(bool bWater, bool bHorizon,
+	void CreateArtificialHorizon(float fAltitude, bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
 
 	void _CreateSingleMaterial(float ambient, float diffuse, float emmisive);
@@ -374,7 +375,8 @@ protected:
 	vtLocationSaver	m_LocSaver;
 	vtAnimContainer m_AnimContainer;
 
-	// ocean and fog
+	// horizon, ocean and fog
+	vtMovGeom		*m_pHorizonGeom;
 	vtMovGeom		*m_pOceanGeom;
 	bool			m_bFog;
 	RGBf			m_fog_color;

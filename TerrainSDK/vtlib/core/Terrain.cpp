@@ -62,6 +62,7 @@ vtTerrain::vtTerrain()
 	m_pTextureColors = NULL;
 	m_pDetailMats = NULL;
 
+	m_pHorizonGeom = NULL;
 	m_pOceanGeom = NULL;
 	m_pRoadGroup = NULL;
 
@@ -140,6 +141,11 @@ vtTerrain::~vtTerrain()
 	{
 		m_pTerrainGroup->RemoveChild(m_pRoadGroup);
 		m_pRoadGroup->Release();
+	}
+	if (m_pHorizonGeom)
+	{
+		m_pTerrainGroup->RemoveChild(m_pHorizonGeom);
+		m_pHorizonGeom->Release();
 	}
 	if (m_pOceanGeom)
 	{
@@ -973,7 +979,7 @@ void vtTerrain::SaveRoute()
  *		extents).
  * \param fTransparency : a value from 0 (tranparent) to 1 (opaque)
  */
-void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
+void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHorizon,
 										  bool bCenter, float fTransparency)
 {
 	// for GetValueFloat below
@@ -981,36 +987,27 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 
 	int VtxType;
 
-	vtMaterialArray *pMat_Ocean = new vtMaterialArray;
+	vtMaterialArray *pHorizonMaterials = new vtMaterialArray;
 
-	if (bWater)
-	{
-		// create ocean material: texture waves
-		vtString fname = FindFileOnPaths(vtGetDataPath(), "GeoTypical/ocean1_256.jpg");
-		pMat_Ocean->AddTextureMaterial2(fname,
-			false, false,		// culling, lighting
-			false,				// the texture itself has no alpha
-			false,				// additive
-			TERRAIN_AMBIENT,	// ambient
-			1.0f,				// diffuse
-			fTransparency,		// alpha
-			TERRAIN_EMISSIVE,	// emissive
-			false,				// texgen
-			false,				// clamp
-			false);				// don't mipmap: allowing texture aliasing to
-								// occur, it actually looks more water-like
-		VtxType = VT_Normals | VT_TexCoords;
-	}
-	else
-	{
-		pMat_Ocean->AddRGBMaterial1(RGBf(1.0f, 0.8f, 0.6f),	// tan ground
-			false, true, false);		// cull, light, wire
+	// Ocean material: texture waves
+	vtString fname = FindFileOnPaths(vtGetDataPath(), "GeoTypical/ocean1_256.jpg");
+	pHorizonMaterials->AddTextureMaterial2(fname,
+		false, false,		// culling, lighting
+		false,				// the texture itself has no alpha
+		false,				// additive
+		TERRAIN_AMBIENT,	// ambient
+		1.0f,				// diffuse
+		fTransparency,		// alpha
+		TERRAIN_EMISSIVE,	// emissive
+		false,				// texgen
+		false,				// clamp
+		false);				// don't mipmap: allowing texture aliasing to
+							// occur, it actually looks more water-like
 		VtxType = VT_Normals;
-	}
 
-	vtGeom *pGeom = new vtGeom;
-	pGeom->SetMaterials(pMat_Ocean);
-	pMat_Ocean->Release();
+	// Ground plane (horizon) material
+	pHorizonMaterials->AddRGBMaterial1(RGBf(1.0f, 0.8f, 0.6f),
+		false, true, false);		// cull, light, wire
 
 	FRECT world_extents = m_pHeightField->m_WorldExtents;
 	FPoint2 world_size(world_extents.Width(), world_extents.Height());
@@ -1019,45 +1016,78 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	const int STEPS = 5;
 	const int TILING = 1;
 
-	FPoint2 tile_size = world_size / TILING;
-	for (int i = -STEPS*TILING; i < (STEPS+1)*TILING; i++)
+	if (bWater)
 	{
-		for (int j = -(STEPS)*TILING; j < (STEPS+1)*TILING; j++)
+		vtGeom *pOceanGeom = new vtGeom;
+		pOceanGeom->SetMaterials(pHorizonMaterials);
+
+		float fOceanPlaneLevel = m_Params.GetValueFloat(STR_OCEANPLANELEVEL);
+
+		FPoint2 tile_size = world_size / TILING;
+		for (int i = -STEPS*TILING; i < (STEPS+1)*TILING; i++)
 		{
-			// skip center tile
-			if (i >= 0 && i < TILING &&
-				j >= 0 && j < TILING)
+			for (int j = -(STEPS)*TILING; j < (STEPS+1)*TILING; j++)
 			{
-				// we are in the middle
-				if (!bCenter) continue;
+				// skip center tile
+				if (i >= 0 && i < TILING &&
+					j >= 0 && j < TILING)
+				{
+					// we are in the middle
+					if (!bCenter) continue;
+				}
+				else {
+					if (!bHorizon) continue;
+				}
+
+				FPoint2 base;
+				base.x = world_extents.left + (i * tile_size.x);
+				base.y = world_extents.top - ((j+1) * tile_size.y);
+
+				vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, 4);
+				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
+					fOceanPlaneLevel, 5.0f);
+
+				pOceanGeom->AddMesh(mesh, 0);	// 0 = ocean material
+				mesh->Release();	// pass ownership to the Geometry
 			}
-			else {
-				if (!bHorizon) continue;
-			}
-
-			FPoint2 base;
-			base.x = world_extents.left + (i * tile_size.x);
-			base.y = world_extents.top - ((j+1) * tile_size.y);
-
-			vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VtxType, 4);
-			mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size, 5.0f);
-
-			pGeom->AddMesh(mesh, 0);	// actually add
-			mesh->Release();	// pass ownership to the Geometry
 		}
+		m_pOceanGeom = new vtMovGeom(pOceanGeom);
+		m_pOceanGeom->SetName2("Ocean plane");
+		m_pTerrainGroup->AddChild(m_pOceanGeom);
 	}
+	if (bHorizon)
+	{
+		vtGeom *pHorizonGeom = new vtGeom;
+		pHorizonGeom->SetMaterials(pHorizonMaterials);
 
-	pGeom->SetName2("Horizon Plane");
+		FPoint2 tile_size = world_size;
+		for (int i = -STEPS; i < (STEPS+1); i++)
+		{
+			for (int j = -(STEPS); j < (STEPS+1); j++)
+			{
+				// skip center tile
+				if (i == 0 && j == 0)
+					// we are in the middle
+					continue;
 
-	m_pOceanGeom = new vtMovGeom(pGeom);
-	m_pOceanGeom->SetName2("Horizon");
+				FPoint2 base;
+				base.x = world_extents.left + (i * tile_size.x);
+				base.y = world_extents.top - ((j+1) * tile_size.y);
 
-	// offset the ocean/horizon plane, to reduce z-buffer collision with near-sea-level
-	// areas of land near the ocean
-	FPoint3 down(0.0f, m_Params.GetValueFloat(STR_OCEANPLANELEVEL), 0.0f);
-	m_pOceanGeom->Translate1(down);
+				vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals, 4);
+				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
+					fAltitude, 5.0f);
 
-	m_pTerrainGroup->AddChild(m_pOceanGeom);
+				pHorizonGeom->AddMesh(mesh, 1);	// 1 = land material
+				mesh->Release();	// pass ownership to the Geometry
+			}
+		}
+		m_pHorizonGeom = new vtMovGeom(pHorizonGeom);
+		m_pHorizonGeom->SetName2("Horizon plane");
+		m_pTerrainGroup->AddChild(m_pHorizonGeom);
+	}
+	// pass ownership
+	pHorizonMaterials->Release();
 }
 
 
@@ -2440,10 +2470,15 @@ bool vtTerrain::CreateStep5()
 	bool bWater = m_Params.GetValueBool(STR_OCEANPLANE);
 	bool bHorizon = m_Params.GetValueBool(STR_HORIZON);
 
+	float minh, maxh;
+	m_pHeightField->GetHeightExtents(minh, maxh);
+	if (minh == INVALID_ELEVATION)
+		minh = 0.0f;
+
 	if (bWater || bHorizon)
 	{
 		bool bCenter = bWater;
-		create_artificial_horizon(bWater, bHorizon, bCenter, 0.5f);
+		CreateArtificialHorizon(minh, bWater, bHorizon, bCenter, 0.5f);
 	}
 
 	_CreateAbstractLayers();
@@ -2563,6 +2598,10 @@ void vtTerrain::SetFeatureVisible(TFType ftype, bool bOn)
 		if (m_pDynGeom)
 			m_pDynGeom->SetEnabled(bOn);
 		break;
+	case TFT_HORIZON:
+		if (m_pHorizonGeom)
+			m_pHorizonGeom->SetEnabled(bOn);
+		break;
 	case TFT_OCEAN:
 		if (m_pOceanGeom)
 			m_pOceanGeom->SetEnabled(bOn);
@@ -2589,6 +2628,10 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 	case TFT_TERRAINSURFACE:
 		if (m_pDynGeom)
 			return m_pDynGeom->GetEnabled();
+		break;
+	case TFT_HORIZON:
+		if (m_pHorizonGeom)
+			return m_pHorizonGeom->GetEnabled();
 		break;
 	case TFT_OCEAN:
 		if (m_pOceanGeom)
