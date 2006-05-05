@@ -150,6 +150,7 @@ public:
 	void OnCullEvery(wxCommandEvent& event);
 	void OnCullOnce(wxCommandEvent& event);
 	void OnSky(wxCommandEvent& event);
+	void OnHorizon(wxCommandEvent& event);
 	void OnOcean(wxCommandEvent& event);
 	void OnPlants(wxCommandEvent& event);
 	void OnStructures(wxCommandEvent& event);
@@ -165,6 +166,7 @@ public:
 	void OnUpdateDynamic(wxUpdateUIEvent& event);
 	void OnUpdateCullEvery(wxUpdateUIEvent& event);
 	void OnUpdateSky(wxUpdateUIEvent& event);
+	void OnUpdateHorizon(wxUpdateUIEvent& event);
 	void OnUpdateOcean(wxUpdateUIEvent& event);
 	void OnUpdatePlants(wxUpdateUIEvent& event);
 	void OnUpdateStructures(wxUpdateUIEvent& event);
