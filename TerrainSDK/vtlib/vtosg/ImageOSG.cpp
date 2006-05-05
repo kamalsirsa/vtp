@@ -943,9 +943,25 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 		poBand2 = poDataset->GetRasterBand(2);
 		poBand3 = poDataset->GetRasterBand(3);
 	}
+
 	unsigned char *lineBuf1 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
 	unsigned char *lineBuf2 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
 	unsigned char *lineBuf3 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
+
+	// To avoid thrashing GDAL's cache, we need one row of tiles to fit
+	int need_cache_bytes;
+	if (mono)
+		need_cache_bytes = m_iTilesize * xsize;
+	else
+		need_cache_bytes = m_iTilesize * xsize * 3;
+
+	// add a little bit for rounding up
+	need_cache_bytes += (need_cache_bytes / 20);
+
+	// there's little point in shrinking the cache, so check existing size
+	int existing = GDALGetCacheMax();
+	if (need_cache_bytes > existing)
+		GDALSetCacheMax(need_cache_bytes);
 
 	int x_off, y_off, x, y, i, j;
 
