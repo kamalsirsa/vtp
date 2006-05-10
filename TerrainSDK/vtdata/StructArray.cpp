@@ -1109,6 +1109,10 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 				m_pFence->GetParams().m_fPostWidth = postsize.x;
 				m_pFence->GetParams().m_fPostDepth = postsize.z;
 			}
+
+			const char *exten = atts.getValue("Extension");
+			if (exten)
+				m_pFence->GetParams().m_PostExtension = exten;
 		}
 		else if (!strcmp(name, "Connect"))
 		{
