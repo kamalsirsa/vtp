@@ -3,7 +3,7 @@
 //
 // Implemented vtFence;
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,7 +34,7 @@ void vtLinearParams::Blank()
 
 void vtLinearParams::ApplyStyle(vtLinearStyle style)
 {
-	m_PostExtension = "";
+	m_PostExtension = "none";
 	switch (style)
 	{
 	case FS_WOOD_POSTS_WIRE:
@@ -83,7 +83,7 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		m_fPostHeight = 2.0f;
 		m_fPostWidth = 0.05f;
 		m_fPostDepth = 0.05f;
-		m_PostExtension = "right";
+		m_PostExtension = "double";
 		//
 		m_ConnectType = "chain-link";
 		m_fConnectTop = m_fPostHeight;
@@ -153,6 +153,12 @@ void vtLinearParams::WriteXML(GZOutput &out) const
 	{
 		gfprintf(out, "\t\t<Posts Type=\"%s\" Spacing=\"%.2f\" Height=\"%.2f\" Size=\"%.2f,%.2f\"",
 			(const char *)m_PostType, m_fPostSpacing, m_fPostHeight, m_fPostWidth, m_fPostDepth);
+		if (m_PostExtension != "none")
+		{
+			gfprintf(out, " Extension=\"");
+			gfprintf(out, (const char *) m_PostExtension);
+			gfprintf(out, "\"");
+		}
 		gfprintf(out, " />\n");
 	}
 	if (m_ConnectType != "none")
