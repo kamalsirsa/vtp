@@ -834,7 +834,7 @@ void TVTerrain::DoRender()
 	vtMaterial *pMat = GetMaterial(0);
 	if (pMat)
 	{
-		pMat->Apply();
+		ApplyMaterial(pMat);
 		SetupTexGen(1.0f);
 	}
 

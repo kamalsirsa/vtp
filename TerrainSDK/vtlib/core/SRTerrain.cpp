@@ -33,7 +33,7 @@ using namespace mini;
 // Set the following "1" to "0" before each code release, because non-core
 //	developers don't need to debug into the libMini library, so they won't
 //  need the *d version.
-#if VTDEBUG && 0
+#if VTDEBUG && 1
 #pragma message( "Adding link with libMinid.lib" )
 #pragma comment( lib, "libMinid.lib" )
 #else
@@ -268,7 +268,7 @@ void SRTerrain::LoadSingleMaterial()
 	vtMaterial *pMat = GetMaterial(0);
 	if (pMat)
 	{
-		pMat->Apply();
+		ApplyMaterial(pMat);
 		SetupTexGen(1.0f);
 	}
 }
@@ -285,7 +285,7 @@ void SRTerrain::LoadBlockMaterial(int a, int b)
 	vtMaterial *pMat = GetMaterial(matidx);
 	if (pMat)
 	{
-		pMat->Apply();
+		ApplyMaterial(pMat);
 		SetupBlockTexGen(a, b);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
@@ -307,7 +307,7 @@ void SRTerrain::RenderSurface()
 	if (m_bDetailTexture)
 	{
 		// once again, with the detail texture material
-		m_pDetailMat->Apply();
+		ApplyMaterial(m_pDetailMat);
 
 		// the uv tiling is different (usually highly repetitive)
 		SetupTexGen(m_fDetailTiling);

@@ -1,7 +1,7 @@
 //
 // Base.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -211,6 +211,8 @@ public:
 	void CreateEllipsoid(FPoint3 size, int res, bool hemi = false);
 	void CreateBlock(const FPoint3& size);
 	void CreateOptimizedBlock(const FPoint3& size);
+	void CreatePrism(const FPoint3 &base, const FPoint3 &vector_up,
+					 const FPoint2 &size1, const FPoint2 &size2);
 	void CreateRectangularMesh(int xsize, int ysize);
 	void CreateCylinder(float height, float radius, int res,
 		bool bTop = true, bool bBottom = true, bool bCentered = true,
@@ -277,8 +279,6 @@ public:
 
 	virtual void SetTransparent(bool bOn, bool bAdd = false) = 0;
 	virtual bool GetTransparent() const = 0;
-
-	virtual void Apply() = 0;
 
 	void SetName(const vtString &name) { m_Name = name; }
 	const vtString &GetName() const { return m_Name; }

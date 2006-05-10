@@ -116,7 +116,7 @@ void CustomTerrain::LoadSingleMaterial()
 	vtMaterial *pMat = GetMaterial(0);
 	if (pMat)
 	{
-		pMat->Apply();
+		ApplyMaterial(pMat);
 		SetupTexGen(1.0f);
 	}
 }
@@ -131,7 +131,7 @@ void CustomTerrain::RenderSurface()
 	if (m_bDetailTexture)
 	{
 		// once again, with the detail texture material
-		m_pDetailMat->Apply();
+		ApplyMaterial(m_pDetailMat);
 
 		// the uv tiling is different (usually highly repetitive)
 		SetupTexGen(m_fDetailTiling);

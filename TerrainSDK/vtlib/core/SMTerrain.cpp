@@ -1037,7 +1037,7 @@ void SMTerrain::LoadSingleMaterial()
 	vtMaterial *pMat = GetMaterial(0);
 	if (pMat)
 	{
-		pMat->Apply();
+		ApplyMaterial(pMat);
 		SetupTexGen(1.0f);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
@@ -1052,7 +1052,7 @@ void SMTerrain::LoadBlockMaterial(int a, int b)
 	vtMaterial *pMat = GetMaterial(matidx);
 	if (pMat)
 	{
-		pMat->Apply();
+		ApplyMaterial(pMat);
 		SetupBlockTexGen(a, b);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
@@ -1095,7 +1095,7 @@ void SMTerrain::RenderSurface()
 			if (m_bDetailTexture)
 			{
 				// once again, with the detail texture
-				m_pDetailMat->Apply();
+				ApplyMaterial(m_pDetailMat);
 				SetupTexGen(m_fDetailTiling);
 				hack_detail_pass = true;
 				glPolygonOffset(-1.0f, -1.0f);
