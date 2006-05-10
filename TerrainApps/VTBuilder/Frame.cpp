@@ -1842,7 +1842,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				dib.Create(base_tilesize, base_tilesize, 24);
 				ColorMap cmap;
 				vtElevLayer::SetupDefaultColors(cmap);
-				FPoint3 light_dir(-.9f, -.1f, 0.0f);
+				FPoint3 light_dir(-.85f, -.15f, 0.0f);
 				light_dir.Normalize();
 				base_lod.ComputeHeightExtents();
 				base_lod.ColorDibFromElevation(&dib, &cmap, 4000);
