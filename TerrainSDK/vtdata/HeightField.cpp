@@ -602,7 +602,7 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 	RGBi rgb;
 
 	// iterate over the texels
-	for (j = 0; j < h-1; j++)
+	for (j = 0; j < h; j++)
 	{
 		if (progress_callback != NULL)
 		{
@@ -611,39 +611,44 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 		}
 		// find corresponding location in terrain
 		y = (int) (j * yFactor);
-		for (i = 0; i < w-1; i++)
+		for (i = 0; i < w; i++)
 		{
 			x = (int) (i * xFactor);
 
 			float shade;
-			if (x < gw-1 && y < gh-1)
-			{
-				// compute surface normal
-				GetWorldLocation(x, y, p1, bTrue);
-				GetWorldLocation(x+1, y, p2, bTrue);
-				GetWorldLocation(x, y+1, p3, bTrue);
-				v1 = p2 - p1;
-				v2 = p3 - p1;
+
+			// If we are right on the edge, we cannot shade precisely because
+			//  the adjacent values are not known.  So, we pull back by 1 grid
+			//  point to avoid having a significant seam in the lighting.
+			int offx = 0, offy = 0;
+			if (x == gw-1)
+				offx = -1;
+			if (y == gh-1)
+				offy = -1;
+
+			// compute surface normal
+			GetWorldLocation(offx+x,   offy+y,   p1, bTrue);
+			GetWorldLocation(offx+x+1, offy+y,   p2, bTrue);
+			GetWorldLocation(offx+x,   offy+y+1, p3, bTrue);
+			v1 = p2 - p1;
+			v2 = p3 - p1;
 #if 1
-				v1.y *= light_factor;
-				v2.y *= light_factor;
+			v1.y *= light_factor;
+			v2.y *= light_factor;
 #endif
-				v3 = v1.Cross(v2);
-				v3.Normalize();
+			v3 = v1.Cross(v2);
+			v3.Normalize();
 
-				shade = v3.Dot(light_direction); // shading 0 (dark) to 1 (light)
+			shade = v3.Dot(light_direction); // shading 0 (dark) to 1 (light)
 
-				// boost with ambient light
-				shade += 0.4f;
+			// boost with ambient light
+			shade += 0.4f;
 
-				// clip - don't drop below ambient, or overbrighten
-				if (shade < 0.4f)
-					shade = 0.4f;
-				else if (shade > 1.1f)
-					shade = 1.1f;
-			}
-			else
-				shade = 1.0f;
+			// clip - don't drop below ambient, or overbrighten
+			if (shade < 0.4f)
+				shade = 0.4f;
+			else if (shade > 1.1f)
+				shade = 1.1f;
 
 #if 0
 			// Push the value of 'shade' toward 1.0 by the light_factor factor.
