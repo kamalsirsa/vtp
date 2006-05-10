@@ -23,11 +23,11 @@
 //
 #define SUPPORT_NETCDF	1
 
-// Use the Libwww library, which adds cross-platform support for HTTP
+// Use the Curl library, which adds cross-platform support for HTTP
 // operations such as reading from WFS (Web Feature Servers).
 //
-// The Libwww library is available from:
-//		http://www.w3.org/Library/
+// The Curl library is available from:
+//		http://curl.haxx.se/libcurl/
 //
 #define SUPPORT_HTTP	1
 
