@@ -3,7 +3,7 @@
 //
 // Creates fence geometry, drapes on a terrain
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,7 +15,7 @@
 
 // statics
 vtMaterialDescriptorArray3d vtFence3d::s_FenceMats;
-int vtFence3d::s_mi_wire;
+int vtFence3d::s_mi_wire, vtFence3d::s_mi_metal;
 
 
 vtFence3d::vtFence3d() : vtFence()
@@ -39,17 +39,21 @@ void vtFence3d::CreateMaterials()
 	s_FenceMats.Append(new vtMaterialDescriptor("wood",
 		"Culture/fencepost_64.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
 
-	// create wirefence post textured material (0)
+	// steel post textured material
 	s_FenceMats.Append(new vtMaterialDescriptor("steel",
 		"Culture/chainpost32.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
 
 	// Materials for Connections
 
-	// manually add wire material
+	// wire material
 	s_mi_wire = s_FenceMats.GetMatArray()->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
-		RGBf(0.5f, 0.5f, 0.5f),	// ambient
+		RGBf(0.4f, 0.4f, 0.4f),	// ambient
 		false, true, false,		// culling, lighting, wireframe
 		0.6f);					// alpha
+
+	// metal material (grey)
+	s_mi_metal = s_FenceMats.GetMatArray()->AddRGBMaterial(RGBf(0.4f, 0.4f, 0.4f), // diffuse
+		RGBf(0.3f, 0.3f, 0.3f));	// ambient
 
 	// chainlink material: twosided, ambient, and alpha-blended
 	s_FenceMats.Append(new vtMaterialDescriptor("chain-link",
@@ -179,13 +183,92 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	}
 	else
 	{
+		// no post spacing to consider, so just use the input vertices
 		p3.SetSize(numfencepts);
 		for (i = 0; i < numfencepts; i++)
 			p3[i] = posts3d[i];
 	}
 
-	// if not enough points, nothing connections to create
 	unsigned int npoints = p3.GetSize();
+
+	bool bLeft = false, bRight = false, bWires = (npoints > 1);
+	if (m_Params.m_PostExtension != "none")
+	{
+		if (m_Params.m_PostExtension == "left")
+			bLeft = true;
+		if (m_Params.m_PostExtension == "right")
+			bRight = true;
+		if (m_Params.m_PostExtension == "double")
+			bLeft = bRight = true;
+	}
+	if (bLeft || bRight)
+	{
+		// create extension prism(s)
+		vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_Normals, 20);
+
+		FPoint2 size(m_Params.m_fPostWidth, m_Params.m_fPostWidth);
+		FPoint2 size1 = size * 0.9f;
+		FPoint2 size2 = size * 0.5f;
+		FPoint3 sideways, upward;
+
+		float wire_height[3] = { 0.3f, 0.6f, 0.9f };
+
+		vtMesh *pWiresLeft, *pWiresRight;
+		if (bLeft && bWires)
+			pWiresLeft = new vtMesh(vtMesh::LINE_STRIP, 0, npoints*3);
+		if (bRight && bWires)
+			pWiresRight = new vtMesh(vtMesh::LINE_STRIP, 0, npoints*3);
+
+		for (i = 0; i < npoints; i++)
+		{
+			FPoint3 base = p3[i] + FPoint3(0.0f, PostSize.y, 0.0f);
+			if (i < npoints-1)
+			{
+				// determine side-pointing normal
+				sideways = SidewaysVector(p3[i], p3[i+1]);
+			}
+			if (bLeft && bWires)
+			{
+				upward = -sideways + FPoint3(0,1,0);
+				upward.SetLength(0.35);	// roughly 1 foot is standard
+				pMesh->CreatePrism(base,
+					upward, size1, size2);
+
+				for (j = 0; j < 3; j++)
+					pWiresLeft->SetVtxPos(j*npoints + i, base + upward * wire_height[j]);
+			}
+			if (bRight && bWires)
+			{
+				upward = sideways + FPoint3(0,1,0);
+				upward.SetLength(0.35);	// roughly 1 foot is standard
+				pMesh->CreatePrism(base, upward, size1, size2);
+
+				for (j = 0; j < 3; j++)
+					pWiresRight->SetVtxPos(j*npoints + i, base + upward * wire_height[j]);
+			}
+		}
+		m_pFenceGeom->AddMesh(pMesh, s_mi_metal);
+		pMesh->Release();	// pass ownership
+
+		if (bLeft && bWires)
+		{
+			pWiresLeft->AddStrip2(npoints, 0);
+			pWiresLeft->AddStrip2(npoints, npoints);
+			pWiresLeft->AddStrip2(npoints, npoints*2);
+			m_pFenceGeom->AddMesh(pWiresLeft, s_mi_wire);
+			pWiresLeft->Release();	// pass ownership
+		}
+		if (bRight && bWires)
+		{
+			pWiresRight->AddStrip2(npoints, 0);
+			pWiresRight->AddStrip2(npoints, npoints);
+			pWiresRight->AddStrip2(npoints, npoints*2);
+			m_pFenceGeom->AddMesh(pWiresRight, s_mi_wire);
+			pWiresRight->Release();	// pass ownership
+		}
+	}
+
+	// if not enough points, nothing connections to create
 	if (npoints < 2)
 		return;
 

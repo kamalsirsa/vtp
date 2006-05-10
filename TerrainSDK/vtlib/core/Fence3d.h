@@ -1,7 +1,7 @@
 //
 // Fence3d.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -42,7 +42,8 @@ protected:
 	vtMaterialDescriptor *FindDescriptor(const vtString &type);
 
 	static void CreateMaterials();
-	static int s_mi_wire;
+	static int s_mi_wire;		// s_mi = static material index
+	static int s_mi_metal;
 
 	vtGeom		*m_pFenceGeom;
 	bool		m_bBuilt;
