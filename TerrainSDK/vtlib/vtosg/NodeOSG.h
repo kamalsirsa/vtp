@@ -378,6 +378,7 @@ public:
 	virtual void drawImplementation(osg::State& state) const;
 
 	class vtDynGeom		*m_pDynGeom;
+	osg::State			*m_pDrawState;
 
 protected:
 	virtual ~OsgDynMesh() {}
@@ -422,6 +423,8 @@ public:
 
 	// Tests a single point, returns true if in view
 	bool IsVisible(const FPoint3 &point) const;
+
+	void ApplyMaterial(vtMaterial *mat);
 
 	// vt methods (must be overriden)
 	virtual void DoRender() = 0;

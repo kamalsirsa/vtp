@@ -372,18 +372,6 @@ bool vtMaterial::GetMipMap() const
 	return (m == Texture::LINEAR_MIPMAP_LINEAR);
 }
 
-extern State *hack_global_state;
-
-void vtMaterial::Apply()
-{
-	if (hack_global_state)
-	{
-		hack_global_state->apply(m_pStateSet.get());
-		// Dynamic terrain assumes texture unit 0
-		hack_global_state->setActiveTextureUnit(0);
-	}
-}
-
 
 /////////////////////////////////////////////////////////////////////////////
 // vtMaterialArray

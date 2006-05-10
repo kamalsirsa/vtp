@@ -1526,11 +1526,10 @@ osg::BoundingBox OsgDynMesh::computeBound() const
 	return _boundingBox;
 }
 
-State *hack_global_state = NULL;
-
 void OsgDynMesh::drawImplementation(State& state) const
 {
-	hack_global_state = &state;
+	OsgDynMesh *cthis = const_cast<OsgDynMesh*>(this);
+	cthis->m_pDrawState = (&state);
 
 	// Our dyamic mesh might use Vertex Arrays, and this can conflict with
 	//  other objects in the OSG scene graph which are also using Vertex
@@ -1685,6 +1684,15 @@ int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
 		return VT_Visible;
 }
 
+void vtDynGeom::ApplyMaterial(vtMaterial *mat)
+{
+	if (m_pDynMesh && m_pDynMesh->m_pDrawState)
+	{
+		m_pDynMesh->m_pDrawState->apply(mat->m_pStateSet.get());
+		// Dynamic terrain assumes texture unit 0
+		m_pDynMesh->m_pDrawState->setActiveTextureUnit(0);
+	}
+}
 
 ///////////////////////////////////////////////////////////
 // vtHUD

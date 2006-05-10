@@ -69,8 +69,6 @@ public:
 	void SetMipMap(bool bMipMap);
 	bool GetMipMap() const;
 
-	void Apply();
-
 	// global option
 	static bool s_bTextureCompression;
 
