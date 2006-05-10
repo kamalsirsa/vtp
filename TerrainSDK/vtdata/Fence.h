@@ -1,7 +1,7 @@
 //
 // Fences.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -44,7 +44,7 @@ public:
 	float	m_fPostSpacing;
 	float	m_fPostWidth;
 	float	m_fPostDepth;
-	vtString	m_PostExtension;	// single, left, right, double
+	vtString	m_PostExtension;	// left, right, double, none
 
 	// Connect
 	vtString	m_ConnectType;	// wire, chain-link, privet, drystone, none
