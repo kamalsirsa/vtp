@@ -108,7 +108,8 @@ int file_exists(const char *filename)
 
 ///////////////////////////////////////////////////////////////////////
 
-int request_callback(unsigned char *mapfile, unsigned char *texfile,
+int request_callback(int col,int row,unsigned char *mapfile,int hlod,
+					 unsigned char *texfile,int tlod,
 					  unsigned char *fogfile, void *data,
 					  databuf *hfield, databuf *texture, databuf *fogmap)
 {
