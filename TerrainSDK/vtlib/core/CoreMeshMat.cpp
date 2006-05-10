@@ -4,7 +4,7 @@
 // Mesh and Material classes and methods which are a core part of the vtlib
 // library.
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,6 +20,18 @@ static FPoint3 c[8] =
 	FPoint3(-1.0, 1.0, -1.0),	/* 5 */
 	FPoint3(1.0, 1.0, -1.0),	/* 6 */
 	FPoint3(1.0, -1.0, -1.0),	/* 7 */
+};
+
+static FPoint3 c2[8] =
+{
+	FPoint3(-0.5, 0, 0.5)	,	/* 0 */
+	FPoint3(-0.5, 1.0, 0.5),	/* 1 */
+	FPoint3(0.5, 1.0, 0.5),		/* 2 */
+	FPoint3(0.5, 0, 0.5),		/* 3 */
+	FPoint3(-0.5, 0, -0.5),		/* 4 */
+	FPoint3(-0.5, 1.0, -0.5),	/* 5 */
+	FPoint3(0.5, 1.0, -0.5),	/* 6 */
+	FPoint3(0.5, 0, -0.5),		/* 7 */
 };
 
 static FPoint3 n[6] =
@@ -240,8 +252,6 @@ void vtMeshBase::CreateBlock(const FPoint3& size)
 }
 
 /**
- * OptimizedBlock
- *
  *	Adds a 3D block to a vtMesh as a series of 5 triangle fan primitives.
  *  The bottom face is omitted, the base is placed at y=0, and texture
  *  coordinates are provided such that texture bitmaps appear right-side-up
@@ -261,6 +271,50 @@ void vtMeshBase::CreateOptimizedBlock(const FPoint3& size)
 	}
 
 	int vidx = 0;
+	for (i = 0; i < 5; i++)
+	{
+		int start = vidx;
+		for (j = 0; j < 4; j++)
+		{
+			AddVertex(vtx[v_list[i][j]]);
+			if (GetVtxType() & VT_Normals)		/* compute normals */
+				SetVtxNormal(vidx, -n[i]);
+			if (GetVtxType() & VT_TexCoords)	/* compute tex coords */
+				SetVtxTexCoord(vidx, t[j]);
+			vidx++;
+		}
+		AddFan(start, start+1, start+2, start+3);
+	}
+}
+
+/**
+ *	Adds a 3D block to a vtMesh as a series of 5 triangle fan primitives.
+ *  The bottom face is omitted, the base is placed at \param base, and texture
+ *  coordinates are provided such that texture bitmaps appear right-side-up
+ *  on the side faces.
+ */
+void vtMeshBase::CreatePrism(const FPoint3 &base, const FPoint3 &vector_up,
+							 const FPoint2 &size1, const FPoint2 &size2)
+{
+	int i, j;
+	FPoint3 	vtx[8];		/* individual vertex values */
+
+	for (i = 0; i < 8; i++)
+	{
+		vtx[i].y = base.y + c2[i].y * (vector_up.y);
+		if (c2[i].y == 0)	// bottom
+		{
+			vtx[i].x = base.x + size1.x * c2[i].x;
+			vtx[i].z = base.z + size1.y * c2[i].z;
+		}
+		else
+		{
+			vtx[i].x = base.x + vector_up.x + size2.x * c2[i].x;
+			vtx[i].z = base.z + vector_up.z + size2.y * c2[i].z;
+		}
+	}
+
+	int vidx = GetNumVertices();
 	for (i = 0; i < 5; i++)
 	{
 		int start = vidx;
