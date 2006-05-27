@@ -1,7 +1,7 @@
 //
 // Name:		ProjectionDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -24,6 +24,7 @@ enum ProjType
 	PT_PS,
 	PT_SINUS,
 	PT_STEREO,
+	PT_MERC,
 	PT_TM,
 	PT_UTM,
 	PT_DYMAX

@@ -1,7 +1,7 @@
 //
 // Name:		ProjectionDlg.cpp
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -76,6 +76,7 @@ ProjectionDlg::ProjectionDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	m_pProjCtrl->Append(_("Polar Stereographic"));
 	m_pProjCtrl->Append(_("Sinusoidal"));
 	m_pProjCtrl->Append(_("Stereographic"));
+	m_pProjCtrl->Append(_("Mercator"));
 	m_pProjCtrl->Append(_("Transverse Mercator"));
 	m_pProjCtrl->Append(_("UTM"));
 	m_pProjCtrl->Append(_("Dymaxion"));
@@ -174,6 +175,7 @@ void ProjectionDlg::UpdateControlStatus()
 	case PT_LCC:
 	case PT_LAEA:
 	case PT_NZMG:
+	case PT_MERC:
 	case PT_TM:
 	case PT_SINUS:
 	case PT_STEREO:
@@ -310,6 +312,9 @@ void ProjectionDlg::SetUIFromProjection()
 
 		else if (!strcmp(proj_string, SRS_PT_ALBERS_CONIC_EQUAL_AREA))
 			SetProjectionUI(PT_ALBERS);
+
+		else if (!strcmp(proj_string, SRS_PT_MERCATOR_1SP))
+			SetProjectionUI(PT_MERC);
 
 		else if (!strcmp(proj_string, SRS_PT_HOTINE_OBLIQUE_MERCATOR))
 			SetProjectionUI(PT_HOM);
@@ -538,6 +543,10 @@ void ProjectionDlg::OnProjChoice( wxCommandEvent &event )
 	case PT_NZMG:
 		// Put in some default values
 		m_proj.SetNZMG( 41, 173, 2510000, 6023150 );
+		break;
+	case PT_MERC:
+		// Put in some default values
+		m_proj.SetMercator(0.0, 0.0, 1.0, 0, 0);
 		break;
 	case PT_TM:
 		// Put in some default values
