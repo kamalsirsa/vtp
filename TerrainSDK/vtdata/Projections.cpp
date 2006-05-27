@@ -1,7 +1,7 @@
 //
 // Projections.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Parts of the code are derived from public-domain USGS software.
@@ -283,6 +283,8 @@ const char *vtProjection::GetProjectionNameShort() const
 	const char *proj_string = GetAttrValue("PROJECTION");
 	if (!proj_string)
 		return "Unknown";
+	if (!strcmp(proj_string, SRS_PT_MERCATOR_1SP))
+		return "Mercator";
 	if (!strcmp(proj_string, SRS_PT_TRANSVERSE_MERCATOR))
 	{
 		if (GetUTMZone() != 0)
