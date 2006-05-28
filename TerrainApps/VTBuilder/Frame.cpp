@@ -1665,6 +1665,9 @@ void MainFrame::MergeResampleElevation()
 	}
 }
 
+#if USE_OPENGL
+	#include "wx/glcanvas.h"
+#endif
 
 bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat)
 {
@@ -1747,6 +1750,16 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 	// Free CRS
 	OGRFree(wkt);
+
+#if USE_OPENGL
+	wxFrame *frame = new wxFrame;
+	if (opts.bCreateDerivedImages)
+	{
+		frame->Create(this, -1, _T("Texture Compression OpenGL Context"),
+			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
+		wxGLCanvas *pCanvas = new wxGLCanvas(frame);
+	}
+#endif
 
 	// Form an array of pointers to the existing elevation layers
 	std::vector<vtElevLayer*> elevs;
@@ -1843,6 +1856,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 						bAllZero = false;
 				}
 			}
+
 			// Create a matching derived texture tileset
 			if (opts.bCreateDerivedImages)
 			{
@@ -1876,8 +1890,15 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 					int tilesize = base_tilesize >> k;
 
 					MiniDatabuf output_buf;
-					output_buf.alloc(tilesize, tilesize, 1, 1, 3);
-					char *dst = (char *) output_buf.data;
+					output_buf.xsize = tilesize;
+					output_buf.ysize = tilesize;
+					output_buf.zsize = 1;
+					output_buf.tsteps = 1;
+
+					int iUncompressedSize = tilesize * tilesize * 3;
+					unsigned char *rgb_bytes = (unsigned char *) malloc(iUncompressedSize);
+//					output_buf.alloc(tilesize, tilesize, 1, 1, 3);
+					unsigned char *dst = rgb_bytes;
 					RGBi rgb;
 					for (int ro = 0; ro < base_tilesize; ro += (1<<k))
 						for (int co = 0; co < base_tilesize; co += (1<<k))
@@ -1887,7 +1908,25 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 							*dst++ = rgb.g;
 							*dst++ = rgb.b;
 						}
+#if USE_OPENGL
+					// Compressed
+					unsigned int iTex;
+					DoTextureCompress(rgb_bytes, output_buf, iTex);
+
 					output_buf.savedata(fname);
+					free(output_buf.data);
+					output_buf.data = NULL;
+#else
+					// Uncompressed
+					// Output to a plain RGB .db file
+					output_buf.type = 3;	// RGB
+					output_buf.bytes = iUncompressedSize;
+					output_buf.data = rgb_bytes;
+					output_buf.savedata(fname);
+					output_buf.data = NULL;
+#endif
+					// Free the uncompressed image
+					free(rgb_bytes);
 
 					// Don't bother making tiny tiles
 					if (tilesize == 64)
@@ -1954,6 +1993,12 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			}
 		}
 	}
+
+#if USE_OPENGL
+	frame->Close();
+	delete frame;
+#endif
+
 	return true;
 }
 
