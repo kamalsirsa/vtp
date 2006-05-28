@@ -10,6 +10,7 @@
 
 #include "vtdata/Projections.h"
 #include "vtdata/MathTypes.h"
+#include "vtdata/Minidatabuf.h"
 
 /////
 
@@ -47,6 +48,11 @@ public:
 		wxCoord src_width, wxCoord src_height);
 };
 #endif	// WIN32
+
+/////////////////
+
+void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
+					   unsigned int &iTex);
 
 #endif	// HELPERH
 
