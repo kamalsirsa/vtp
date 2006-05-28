@@ -1301,6 +1301,9 @@
 				RelativePath=".\RenderDlg.h">
 			</File>
 			<File
+				RelativePath=".\RenderOptionsDlg.h">
+			</File>
+			<File
 				RelativePath="ResampleDlg.h">
 			</File>
 			<File
@@ -1982,6 +1985,9 @@
 			</File>
 			<File
 				RelativePath=".\RenderDlg.cpp">
+			</File>
+			<File
+				RelativePath=".\RenderOptionsDlg.cpp">
 			</File>
 			<File
 				RelativePath="ResampleDlg.cpp">
