@@ -1,7 +1,7 @@
 //
 // Name:		LinearStructDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -51,6 +51,7 @@ public:
 	wxSlider* GetPostHeightSlider()  { return (wxSlider*) FindWindow( ID_POST_HEIGHT_SLIDER ); }
 	wxSlider* GetPostSpacingSlider()  { return (wxSlider*) FindWindow( ID_POST_SPACING_SLIDER ); }
 
+	wxChoice* GetExtension()  { return (wxChoice*) FindWindow( ID_CHOICE_EXTENSION ); }
 	wxChoice* GetConnType()  { return (wxChoice*) FindWindow( ID_CONN_TYPE ); }
 	wxChoice* GetPostType()  { return (wxChoice*) FindWindow( ID_POST_TYPE ); }
 	wxChoice* GetStyle()  { return (wxChoice*) FindWindow( ID_LINEAR_STRUCTURE_STYLE ); }
@@ -74,6 +75,7 @@ private:
 	void OnTextEdit( wxCommandEvent &event );
 	void OnConnType( wxCommandEvent &event );
 	void OnPostType( wxCommandEvent &event );
+	void OnExtension( wxCommandEvent &event );
 	void OnSlider( wxCommandEvent &event );
 	void OnStyle( wxCommandEvent &event );
 

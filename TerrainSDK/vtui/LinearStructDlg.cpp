@@ -49,6 +49,7 @@ BEGIN_EVENT_TABLE(LinearStructureDlg, AutoDialog)
 	EVT_SLIDER( ID_CONN_BOTTOM_SLIDER, LinearStructureDlg::OnSlider )
 	EVT_CHOICE( ID_POST_TYPE, LinearStructureDlg::OnPostType )
 	EVT_CHOICE( ID_CONN_TYPE, LinearStructureDlg::OnConnType )
+	EVT_CHOICE( ID_CHOICE_EXTENSION, LinearStructureDlg::OnExtension )
 END_EVENT_TABLE()
 
 LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -73,7 +74,6 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	AddNumValidator(ID_POST_HEIGHT_EDIT, &m_param.m_fPostHeight, 2);
 	AddNumValidator(ID_POST_SPACING_EDIT, &m_param.m_fPostSpacing, 2);
 	AddNumValidator(ID_POST_SIZE_EDIT, &m_param.m_fPostWidth, 2);
-//	AddNumValidator(ID_POST_SIZE_EDIT, &m_param.m_fPostDepth, 2);
 	AddNumValidator(ID_CONN_WIDTH_EDIT, &m_param.m_fConnectWidth, 2);
 	AddNumValidator(ID_CONN_TOP_EDIT, &m_param.m_fConnectTop, 2);
 	AddNumValidator(ID_CONN_BOTTOM_EDIT, &m_param.m_fConnectBottom, 2);
@@ -83,6 +83,7 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	GetStyle()->Append(_("Wooden posts, wire"));
 	GetStyle()->Append(_("Metal posts, wire"));
 	GetStyle()->Append(_("Metal poles, chain-link"));
+	GetStyle()->Append(_("Security fence"));
 	GetStyle()->Append(_("Dry-stone wall"));
 	GetStyle()->Append(_("Stone wall"));
 	GetStyle()->Append(_("Privet hedge"));
@@ -115,6 +116,16 @@ void LinearStructureDlg::UpdateTypes()
 	GetPostType()->SetStringSelection(ws);
 	ws = m_param.m_ConnectType;
 	GetConnType()->SetStringSelection(ws);
+
+	vtString str = m_param.m_PostExtension;
+	if (str == "none")
+		GetExtension()->SetSelection(0);
+	if (str == "left")
+		GetExtension()->SetSelection(1);
+	if (str == "right")
+		GetExtension()->SetSelection(2);
+	if (str == "double")
+		GetExtension()->SetSelection(3);
 }
 
 void LinearStructureDlg::UpdateEnabling()
@@ -169,6 +180,27 @@ void LinearStructureDlg::OnPostType( wxCommandEvent &event )
 	wxString2 ws = GetPostType()->GetStringSelection();
 	m_param.m_PostType = ws.vt_str();
 	UpdateEnabling();
+
+	m_iStyle = FS_TOTAL;	// custom
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+	OnSetOptions(m_param);
+}
+
+void LinearStructureDlg::OnExtension( wxCommandEvent &event )
+{
+	if (m_bSetting) return;
+
+	int val = GetExtension()->GetSelection();
+	if (val == 0)
+		m_param.m_PostExtension = "none";
+	if (val == 1)
+		m_param.m_PostExtension = "left";
+	if (val == 2)
+		m_param.m_PostExtension = "right";
+	if (val == 3)
+		m_param.m_PostExtension = "double";
 
 	m_iStyle = FS_TOTAL;	// custom
 	m_bSetting = true;
