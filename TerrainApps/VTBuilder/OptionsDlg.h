@@ -10,7 +10,7 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "ElevLayer.h"
+#include "Layer.h"	// for ElevDrawOptions
 
 // WDR: class declarations
 
