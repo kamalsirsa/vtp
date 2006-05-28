@@ -581,6 +581,17 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 }
 
 
+/**
+ * Perform simple shading of a bitmap, based on this grid's elevation values.
+ * Lighting is computing using the dot product of the surface normal with
+ * the light direction.  This is often called "dot-product lighting".
+ *
+ * \param pBM	The bitmap to shade.
+ * \param light_dir	Direction vector of the light.
+ * \param light_factor Value from 0 (no shading) to 1 (full shading)
+ * \param bTrue	If true, use the real elevation values, ignoring vertical exaggeration.
+ * \param progress_callback	If supplied, will be called with values from 0 to 100.
+ */
 void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 	float light_factor, bool bTrue, bool progress_callback(int))
 {
