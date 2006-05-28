@@ -15,7 +15,7 @@
 #include "RenderDlg.h"
 #include "FileFilters.h"
 #include "vtdata/FilePath.h"
-#include "vtui/Helper.h"
+#include "vtui/Helper.h"		// for AddFilenamesToChoice
 #include "vtui/ColorMapDlg.h"
 
 // WDR: class implementations
@@ -248,9 +248,4 @@ void RenderDlg::OnBigger( wxCommandEvent &event )
 	TransferDataToWindow();
 	m_bSetting = false;
 }
-
-
-
-
-
 
