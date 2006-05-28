@@ -434,65 +434,82 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
 
     item4->Add( item17, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
+    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item22 = new wxStaticText( parent, ID_TEXT, _("Extension:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString strs23[] = 
+    {
+        _("None"), 
+        _("Left"), 
+        _("Right"), 
+        _("Double")
+    };
+    wxChoice *item23 = new wxChoice( parent, ID_CHOICE_EXTENSION, wxDefaultPosition, wxSize(100,-1), 4, strs23, 0 );
+    item21->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item4->Add( item21, 0, wxALIGN_CENTER|wxALL, 0 );
+
     item0->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticBox *item22 = new wxStaticBox( parent, -1, _("Connection") );
-    wxStaticBoxSizer *item21 = new wxStaticBoxSizer( item22, wxVERTICAL );
-
-    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item23->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxString strs25[] = 
-    {
-        _("Item")
-    };
-    wxChoice *item25 = new wxChoice( parent, ID_CONN_TYPE, wxDefaultPosition, wxSize(100,-1), 1, strs25, 0 );
-    item23->Add( item25, 1, wxALIGN_CENTER|wxALL, 5 );
-
-    item21->Add( item23, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxStaticBox *item25 = new wxStaticBox( parent, -1, _("Connection") );
+    wxStaticBoxSizer *item24 = new wxStaticBoxSizer( item25, wxVERTICAL );
 
     wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Top Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
     item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_CONN_TOP_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item26->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString strs28[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item28 = new wxChoice( parent, ID_CONN_TYPE, wxDefaultPosition, wxSize(100,-1), 1, strs28, 0 );
+    item26->Add( item28, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    wxSlider *item29 = new wxSlider( parent, ID_CONN_TOP_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
-    item26->Add( item29, 0, wxALIGN_CENTER|wxALL, 0 );
+    item24->Add( item26, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    item21->Add( item26, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxBoxSizer *item29 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item30 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item30 = new wxStaticText( parent, ID_TEXT, _("Top Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item29->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item31 = new wxStaticText( parent, ID_TEXT, _("Bottom Height:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item30->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item31 = new wxTextCtrl( parent, ID_CONN_TOP_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item29->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item32 = new wxTextCtrl( parent, ID_CONN_BOTTOM_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item30->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxSlider *item32 = new wxSlider( parent, ID_CONN_TOP_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
+    item29->Add( item32, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    wxSlider *item33 = new wxSlider( parent, ID_CONN_BOTTOM_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
-    item30->Add( item33, 0, wxALIGN_CENTER|wxALL, 0 );
+    item24->Add( item29, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    item21->Add( item30, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxBoxSizer *item33 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item34 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item34 = new wxStaticText( parent, ID_TEXT, _("Bottom Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item33->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item35 = new wxStaticText( parent, ID_TEXT, _("Width:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item35 = new wxTextCtrl( parent, ID_CONN_BOTTOM_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item33->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item36 = new wxTextCtrl( parent, ID_CONN_WIDTH_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item34->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxSlider *item36 = new wxSlider( parent, ID_CONN_BOTTOM_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
+    item33->Add( item36, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    wxSlider *item37 = new wxSlider( parent, ID_CONN_WIDTH_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
-    item34->Add( item37, 0, wxALIGN_CENTER|wxALL, 0 );
+    item24->Add( item33, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    item21->Add( item34, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxBoxSizer *item37 = new wxBoxSizer( wxHORIZONTAL );
 
-    item0->Add( item21, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item38 = new wxStaticText( parent, ID_TEXT, _("Width:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item37->Add( item38, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item39 = new wxTextCtrl( parent, ID_CONN_WIDTH_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item37->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item40 = new wxSlider( parent, ID_CONN_WIDTH_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
+    item37->Add( item40, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    item24->Add( item37, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    item0->Add( item24, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {
