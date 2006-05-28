@@ -128,14 +128,54 @@ public:
 	int m_MarkerSize;	// in pixels
 };
 
+class ElevDrawOptions
+{
+public:
+	ElevDrawOptions()
+	{
+		m_bShowElevation = true;
+		m_bShadingQuick = true;
+		m_bShadingDot = false;
+		m_bCastShadows = false;
+		m_bDoMask = true;
+		m_iCastAngle = 30;
+		m_iCastDirection = 90;
+		m_strColorMapFile = "";
+	}
+	bool operator != (const ElevDrawOptions &val)
+	{
+		return (m_bShowElevation != val.m_bShowElevation ||
+			m_bShadingQuick != val.m_bShadingQuick ||
+			m_bShadingDot != val.m_bShadingDot ||
+			m_bCastShadows != val.m_bCastShadows ||
+			m_bDoMask != val.m_bDoMask ||
+			m_iCastAngle != val.m_iCastAngle ||
+			m_iCastDirection != val.m_iCastDirection ||
+			m_strColorMapFile != val.m_strColorMapFile);
+	}
+	bool m_bShowElevation;
+	bool m_bShadingQuick;
+	bool m_bShadingDot;
+	bool m_bCastShadows;
+	bool m_bDoMask;
+	int m_iCastAngle;
+	int m_iCastDirection;
+	vtString m_strColorMapFile;
+};
+
 struct TilingOptions
 {
 	int cols, rows;
 	int lod0size;
 	int numlods;
 	vtString fname;
-};
 
+	// If this is an elevation tileset, then optionally a corresponding
+	//  derived image tileset can be created.
+	bool bCreateDerivedImages;
+	vtString fname_images;
+	ElevDrawOptions draw;
+};
 
 ////////////////////
 // Helpers
