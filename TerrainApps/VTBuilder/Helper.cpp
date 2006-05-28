@@ -87,6 +87,12 @@ void AddType(wxString &str, const wxString &filter)
 }
 
 //////////////////////////////////////
+vtStringArray &GetDataPaths()
+{
+	return GetMainFrame()->m_datapaths;
+}
+
+//////////////////////////////////////
 
 //
 // Display a message to the user, and also send it to the log file.
