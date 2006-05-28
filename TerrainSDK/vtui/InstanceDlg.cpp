@@ -79,9 +79,12 @@ vtTagArray *InstanceDlg::GetTagArray()
 	// Return a description of the current content item
 	if (m_bContent)
 	{
-		if (!Current())
+		vtContentManager *cman = Current();
+		if (!cman)
 			return NULL;
-		vtItem *item = Current()->GetItem(m_iItem);
+		if (m_iItem >= cman->NumItems())
+			return NULL;
+		vtItem *item = cman->GetItem(m_iItem);
 		if (!item)
 			return NULL;
 		m_dummy.SetValueString("itemname", item->m_name, true);
