@@ -1,7 +1,7 @@
 //
 // Name: ResampleDlg.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,8 @@
 #include "ResampleDlg.h"
 #include "TileDlg.h"
 #include "FileFilters.h"
+#include "RenderOptionsDlg.h"
+#include "Helper.h"	// for GetDataPaths
 
 // WDR: class implementations
 
@@ -40,6 +42,10 @@ BEGIN_EVENT_TABLE(ResampleDlg, AutoDialog)
 	EVT_RADIOBUTTON( ID_RADIO_TO_TILES, ResampleDlg::OnRadioOutput )
 	EVT_BUTTON( ID_DOTDOTDOT, ResampleDlg::OnDotDotDot )
 	EVT_BUTTON( ID_TILE_OPTIONS, ResampleDlg::OnTileOptions )
+	EVT_CHECKBOX( ID_DERIVED_IMAGES, ResampleDlg::OnCheckDerivedImages )
+	EVT_BUTTON( ID_RENDERING_OPTIONS, ResampleDlg::OnRenderingOptions )
+	EVT_TEXT( ID_TEXT_TO_IMAGE_FILE, ResampleDlg::OnTextToImageFile )
+	EVT_BUTTON( ID_DOTDOTDOT2, ResampleDlg::OnDotDotDot2 )
 END_EVENT_TABLE()
 
 ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -57,6 +63,8 @@ ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_tileopts.rows = 4;
 	m_tileopts.lod0size = 256;
 	m_tileopts.numlods = 3;
+	m_tileopts.bCreateDerivedImages = false;
+	m_tileopts.fname_images = "";
 
 	FormatTilingString();
 
@@ -67,6 +75,9 @@ ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
 	AddValidator(ID_TEXT_TILE_INFO, &m_strTileInfo);
+
+	AddValidator(ID_DERIVED_IMAGES, &m_tileopts.bCreateDerivedImages);
+	AddValidator(ID_TEXT_TO_IMAGE_FILE, &m_strToFileImages);
 
 	// sampling
 	spacing1 = AddNumValidator(ID_SPACINGX, &m_fSpacingX);
@@ -136,6 +147,39 @@ void ResampleDlg::FormatTilingString()
 
 // WDR: handler implementations for ResampleDlg
 
+void ResampleDlg::OnDotDotDot2( wxCommandEvent &event )
+{
+	wxString filter;
+	filter += FSTRING_INI;
+	wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxSAVE);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+
+	// update controls
+	m_strToFileImages = saveFile.GetPath();
+	TransferDataToWindow();
+
+	m_tileopts.fname_images = m_strToFileImages.mb_str();
+	EnableBasedOnConstraint();
+}
+
+void ResampleDlg::OnRenderingOptions( wxCommandEvent &event )
+{
+	RenderOptionsDlg dlg(this, -1, _("Rendering options"));
+	dlg.SetOptions(m_tileopts.draw);
+	dlg.m_datapaths = GetDataPaths();
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+	m_tileopts.draw = dlg.m_opt;
+}
+
+void ResampleDlg::OnCheckDerivedImages( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	EnableBasedOnConstraint();
+}
+
 void ResampleDlg::OnTileOptions( wxCommandEvent &event )
 {
 	TileDlg dlg(this, -1, _("Tiling Options"));
@@ -201,6 +245,16 @@ void ResampleDlg::OnRadioOutput( wxCommandEvent &event )
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
+}
+
+void ResampleDlg::OnTextToImageFile( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+
+	TransferDataFromWindow();
+	m_tileopts.fname_images = m_strToFileImages.mb_str();
+	EnableBasedOnConstraint();
 }
 
 void ResampleDlg::OnShorts( wxCommandEvent &event )
@@ -281,6 +335,11 @@ void ResampleDlg::EnableBasedOnConstraint()
 
 	GetTextTileInfo()->Enable(m_bToTiles);
 	GetTileOptions()->Enable(m_bToTiles);
+	GetDerivedImages()->Enable(m_bToTiles);
+
+	GetRenderingOptions()->Enable(m_bToTiles && m_tileopts.bCreateDerivedImages);
+	GetTextToImageFile()->Enable(m_bToTiles && m_tileopts.bCreateDerivedImages);
+	GetDotdotdot2()->Enable(m_bToTiles && m_tileopts.bCreateDerivedImages);
 
 	GetConstrain()->Enable(!m_bToTiles);
 	GetSmaller()->Enable(m_bConstraint && !m_bToTiles);
@@ -292,6 +351,11 @@ void ResampleDlg::EnableBasedOnConstraint()
 	GetSpacingY()->SetEditable(!m_bConstraint && !m_bToTiles);
 
 	GetVUnits()->Enable(!m_bFloats);
+
+	// If they've selected derived images, they must have an output file
+	//  in order to proceed
+	FindWindow(wxID_OK)->Enable(!m_tileopts.bCreateDerivedImages ||
+		m_tileopts.fname_images != "");
 }
 
 void ResampleDlg::OnBigger( wxCommandEvent &event )

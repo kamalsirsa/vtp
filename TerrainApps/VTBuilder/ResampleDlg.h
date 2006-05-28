@@ -1,7 +1,7 @@
 //
 // Name: ResampleDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #include "vtui/wxString2.h"
 #include "vtdata/MathTypes.h"
 #include "TileDlg.h"
+#include "Layer.h"		// for ElevDrawOptions
 
 class BuilderView;
 
@@ -32,6 +33,10 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	// WDR: method declarations for ResampleDlg
+	wxButton* GetDotdotdot2()  { return (wxButton*) FindWindow( ID_DOTDOTDOT2 ); }
+	wxTextCtrl* GetTextToImageFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_IMAGE_FILE ); }
+	wxButton* GetRenderingOptions()  { return (wxButton*) FindWindow( ID_RENDERING_OPTIONS ); }
+	wxCheckBox* GetDerivedImages()  { return (wxCheckBox*) FindWindow( ID_DERIVED_IMAGES ); }
 	wxButton* GetDotDotDot()  { return (wxButton*) FindWindow( ID_DOTDOTDOT ); }
 	wxButton* GetTileOptions()  { return (wxButton*) FindWindow( ID_TILE_OPTIONS ); }
 	wxTextCtrl* GetTextToFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_FILE ); }
@@ -74,10 +79,13 @@ public:
 	float   m_fVUnits;
 
 	DRECT   m_area;
-	int	 m_power;
+	int  m_power;
 	bool	m_bSetting;
 
-	TilingOptions	m_tileopts;
+	// Where to write the derived image tiles, if we will create them.
+	wxString2	m_strToFileImages;
+
+	TilingOptions   m_tileopts;
 
 private:
 	// WDR: member variable declarations for ResampleDlg
@@ -86,6 +94,9 @@ private:
 	
 private:
 	// WDR: handler declarations for ResampleDlg
+	void OnDotDotDot2( wxCommandEvent &event );
+	void OnRenderingOptions( wxCommandEvent &event );
+	void OnCheckDerivedImages( wxCommandEvent &event );
 	void OnTileOptions( wxCommandEvent &event );
 	void OnDotDotDot( wxCommandEvent &event );
 	void OnRadioOutput( wxCommandEvent &event );
@@ -96,6 +107,7 @@ private:
 	void OnConstrain( wxCommandEvent &event );
 	void OnBigger( wxCommandEvent &event );
 	void OnSmaller( wxCommandEvent &event );
+	void OnTextToImageFile( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
