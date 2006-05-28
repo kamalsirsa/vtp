@@ -778,15 +778,20 @@ bool MainFrame::ReadINI()
 
 	if (m_fpIni)
 	{
-		int ShowMap, ShowElev, Shading, DoMask, DoUTM, ShowPaths, DrawWidth, CastShadows;
-		fscanf(m_fpIni, "%d %d %d %d %d %d %d %d", &ShowMap, &ShowElev, &Shading,
-			&DoMask, &DoUTM, &ShowPaths, &DrawWidth, &CastShadows);
+		int ShowMap, ShowElev, ShadeQuick, DoMask, DoUTM, ShowPaths, DrawWidth,
+			CastShadows, ShadeDot=0, Angle=30, Direction=45;
+		fscanf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d", &ShowMap, &ShowElev, &ShadeQuick,
+			&DoMask, &DoUTM, &ShowPaths, &DrawWidth, &CastShadows, &ShadeDot,
+			&Angle, &Direction);
 
 		m_pView->SetShowMap(ShowMap != 0);
 		vtElevLayer::m_draw.m_bShowElevation = (ShowElev != 0);
-		vtElevLayer::m_draw.m_bShading = (Shading != 0);
+		vtElevLayer::m_draw.m_bShadingQuick = (ShadeQuick != 0);
+		vtElevLayer::m_draw.m_bShadingDot = (ShadeDot != 0);
 		vtElevLayer::m_draw.m_bDoMask = (DoMask != 0);
 		vtElevLayer::m_draw.m_bCastShadows = (CastShadows != 0);
+		vtElevLayer::m_draw.m_iCastAngle = Angle;
+		vtElevLayer::m_draw.m_iCastDirection = Direction;
 		m_pView->m_bShowUTMBounds = (DoUTM != 0);
 		m_pTree->SetShowPaths(ShowPaths != 0);
 		vtRoadLayer::SetDrawWidth(DrawWidth != 0);
@@ -802,11 +807,13 @@ bool MainFrame::WriteINI()
 	if (m_fpIni)
 	{
 		rewind(m_fpIni);
-		fprintf(m_fpIni, "%d %d %d %d %d %d %d %d", m_pView->GetShowMap(),
+		fprintf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d", m_pView->GetShowMap(),
 			vtElevLayer::m_draw.m_bShowElevation,
-			vtElevLayer::m_draw.m_bShading, vtElevLayer::m_draw.m_bDoMask,
+			vtElevLayer::m_draw.m_bShadingQuick, vtElevLayer::m_draw.m_bDoMask,
 			m_pView->m_bShowUTMBounds, m_pTree->GetShowPaths(),
-			vtRoadLayer::GetDrawWidth(), vtElevLayer::m_draw.m_bCastShadows);
+			vtRoadLayer::GetDrawWidth(), vtElevLayer::m_draw.m_bCastShadows,
+			vtElevLayer::m_draw.m_bShadingDot, vtElevLayer::m_draw.m_iCastAngle,
+			vtElevLayer::m_draw.m_iCastDirection);
 		fclose(m_fpIni);
 		m_fpIni = NULL;
 		return true;
@@ -1832,10 +1839,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			{
 				vtString fname = dirname, str;
 				fname += "_image/";
-				//if (start_lod == 0)
-					str.Format("tile.%d-%d.db", col, row);
-				//else
-				//	str.Format("tile.%d-%d.db%d", col, row, start_lod);
+				str.Format("tile.%d-%d.db", col, row);
 				fname += str;
 
 				vtDIB dib;
