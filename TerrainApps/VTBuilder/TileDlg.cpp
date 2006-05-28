@@ -24,6 +24,7 @@ BEGIN_EVENT_TABLE(TileDlg,AutoDialog)
 	EVT_BUTTON( ID_DOTDOTDOT, TileDlg::OnDotDotDot )
 	EVT_TEXT( ID_COLUMNS, TileDlg::OnSize )
 	EVT_TEXT( ID_ROWS, TileDlg::OnSize )
+	EVT_TEXT( ID_TEXT_TO_FOLDER, TileDlg::OnFilename )
 	EVT_CHOICE( ID_CHOICE_LOD0_SIZE, TileDlg::OnLODSize )
 END_EVENT_TABLE()
 
@@ -36,6 +37,8 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	m_fEstX = -1;
 	m_fEstY = -1;
+	m_iColumns = 1;
+	m_iRows = 1;
 
 	m_bSetting = false;
 	m_pView = NULL;
@@ -58,6 +61,8 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddNumValidator(ID_CURX, &m_fCurX);
 	AddNumValidator(ID_CURY, &m_fCurY);
+
+	UpdateEnables();
 }
 
 void TileDlg::SetElevation(bool bElev)
@@ -117,7 +122,6 @@ void TileDlg::SetArea(const DRECT &area)
 	m_area = area;
 
 	UpdateInfo();
-	TransferDataToWindow();
 }
 
 void TileDlg::UpdateInfo()
@@ -151,7 +155,21 @@ void TileDlg::UpdateInfo()
 	m_bSetting = false;
 }
 
+void TileDlg::UpdateEnables()
+{
+	FindWindow(wxID_OK)->Enable(m_strToFile != _T(""));
+}
+
 // WDR: handler implementations for TileDlg
+
+void TileDlg::OnFilename( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+
+	TransferDataFromWindow();
+	UpdateEnables();
+}
 
 void TileDlg::OnLODSize( wxCommandEvent &event )
 {
@@ -177,17 +195,10 @@ void TileDlg::OnSize( wxCommandEvent &event )
 
 void TileDlg::OnDotDotDot( wxCommandEvent &event )
 {
-	// ask the user for a directory
-	//wxDirDialog getDir(NULL, _("Write Tiles to Directory"));
-	//bool bResult = (getDir.ShowModal() == wxID_OK);
-	//if (!bResult)
-	//	return;
-	//m_strToFile = getDir.GetPath();
 	// ask the user for a filename
 	wxString filter;
 	filter += FSTRING_INI;
 	wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxSAVE);
-	//saveFile.SetFilterIndex(0);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -196,5 +207,6 @@ void TileDlg::OnDotDotDot( wxCommandEvent &event )
 	m_strToFile = saveFile.GetPath();
 
 	TransferDataToWindow();
+	UpdateEnables();
 }
 

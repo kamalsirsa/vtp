@@ -40,6 +40,7 @@ public:
 	void UpdateInfo();
 	void SetElevation(bool bElev);
 	void SetView(BuilderView *pView) { m_pView = pView; }
+	void UpdateEnables();
 
 	double m_fEstX;
 	double m_fEstY;
@@ -67,6 +68,7 @@ private:
 
 private:
 	// WDR: handler declarations for TileDlg
+	void OnFilename( wxCommandEvent &event );
 	void OnLODSize( wxCommandEvent &event );
 	void OnSize( wxCommandEvent &event );
 	void OnDotDotDot( wxCommandEvent &event );
