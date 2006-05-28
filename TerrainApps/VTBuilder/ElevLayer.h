@@ -38,37 +38,6 @@ public:
 
 //////////////////////////////////////////////////////////
 
-class ElevDrawOptions
-{
-public:
-	ElevDrawOptions()
-	{
-		m_bShowElevation = true;
-		m_bShading = true;
-		m_bCastShadows = false;
-		m_bDoMask = true;
-		m_iCastAngle = 30;
-		m_iCastDirection = 90;
-	}
-	bool operator != (const ElevDrawOptions &val)
-	{
-		return (m_bShowElevation != val.m_bShowElevation ||
-			m_bShading != val.m_bShading ||
-			m_bCastShadows != val.m_bCastShadows ||
-			m_bDoMask != val.m_bDoMask ||
-			m_iCastAngle != val.m_iCastAngle ||
-			m_iCastDirection != val.m_iCastDirection);
-	}
-	bool m_bShowElevation;
-	bool m_bShading;
-	bool m_bCastShadows;
-	bool m_bDoMask;
-	int m_iCastAngle;
-	int m_iCastDirection;
-};
-
-//////////////////////////////////////////////////////////
-
 class vtElevLayer : public vtLayer
 {
 public:
