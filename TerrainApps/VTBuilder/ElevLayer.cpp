@@ -1351,7 +1351,7 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 				}
 			}
 
-			// For testing, create a matching texture tileset
+			// Create a matching derived texture tileset
 			if (opts.bCreateDerivedImages)
 			{
 				vtString fname = dirname_image, str;
@@ -1368,14 +1368,12 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 					base_lod.ShadeQuick(&dib, SHADING_BIAS, true);
 				else if (opts.draw.m_bShadingDot)
 				{
-					FPoint3 light_dir(-.85f, -.15f, 0.0f);
-					light_dir.Normalize();
+					FPoint3 light_dir = LightDirection(opts.draw.m_iCastAngle,
+						opts.draw.m_iCastDirection);
+
 					// Don't cast shadows for tileset; they won't cast
 					//  correctly from one tile to the next.
-					//if (opts.draw.m_bCastShadows)
-					//	base_lod.ShadowCastDib(&dib, light_dir, 1.0f);
-					//else
-						base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f, true);
+					base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f, true);
 				}
 
 				// write uncompressed image
