@@ -1588,6 +1588,34 @@ void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
 			bFloat = true;
 	}
 	
+	// Also write derived image tiles?
+	int res = wxMessageBox(_("Also write derived image tiles?"), _("Tiled output"), wxYES_NO | wxCANCEL);
+	if (res == wxCANCEL)
+		return;
+	if (res == wxYES)
+	{
+		// Ask them where to write the image tiles
+		tileopts.bCreateDerivedImages = true;
+		wxString filter = FSTRING_INI;
+		wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxSAVE);
+		bool bResult = (saveFile.ShowModal() == wxID_OK);
+		if (!bResult)
+			return;
+		wxString2 str = saveFile.GetPath();
+		tileopts.fname_images = str.mb_str();
+
+		// Ask them how to render the image tiles
+		RenderOptionsDlg dlg(this, -1, _("Rendering options"));
+		dlg.SetOptions(tileopts.draw);
+		dlg.m_datapaths = m_datapaths;
+		if (dlg.ShowModal() != wxID_OK)
+			return;
+		dlg.m_opt.m_strColorMapFile = dlg.m_strColorMap.mb_str();
+		tileopts.draw = dlg.m_opt;
+	}
+	else
+		tileopts.bCreateDerivedImages = false;
+
 	OpenProgressDialog(_T("Writing tiles"), true);
 	bool success = SampleElevationToTilePyramids(tileopts, bFloat);
 	GetView()->HideGridMarks();

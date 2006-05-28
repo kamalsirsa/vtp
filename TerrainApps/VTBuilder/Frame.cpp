@@ -1666,8 +1666,6 @@ void MainFrame::MergeResampleElevation()
 }
 
 
-#define WRITE_ARTIFICIAL_IMAGES	0
-
 bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat)
 {
 	VTLOG1("SampleElevationToTilePyramids\n");
@@ -1707,38 +1705,49 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 	poSimpleClone->exportToWkt(&wkt);
 	fprintf(fp, "CRS=%s\n", wkt);
 	delete poSimpleClone;
-	OGRFree(wkt);
 	fclose(fp);
 
-#if WRITE_ARTIFICIAL_IMAGES
-	if (!vtCreateDir(dirname+"_image"))
-		return false;
-
-	// Write .ini file
-	fp = fopen(opts.fname.Left(opts.fname.GetLength()-4) + "_image.ini", "wb");
-	if (!fp)
+	ColorMap cmap;
+	vtElevLayer::SetupDefaultColors(cmap);	// defaults
+	vtString dirname_image = opts.fname_images;
+	RemoveFileExtensions(dirname_image);
+	if (opts.bCreateDerivedImages)
 	{
-		vtDestroyDir(dirname);
-		return false;
+		if (!vtCreateDir(dirname_image))
+			return false;
+
+		// Write .ini file
+		fp = fopen(opts.fname_images, "wb");
+		if (!fp)
+		{
+			vtDestroyDir(dirname_image);
+			return false;
+		}
+		fprintf(fp, "[TilesetDescription]\n");
+		fprintf(fp, "Columns=%d\n", opts.cols);
+		fprintf(fp, "Rows=%d\n", opts.rows);
+		fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
+		fprintf(fp, "Extent_Left=%.16lg\n", m_area.left);
+		fprintf(fp, "Extent_Right=%.16lg\n", m_area.right);
+		fprintf(fp, "Extent_Bottom=%.16lg\n", m_area.bottom);
+		fprintf(fp, "Extent_Top=%.16lg\n", m_area.top);
+		fprintf(fp, "CRS=%s\n", wkt);
+		fclose(fp);
+
+		vtString cmap_fname = opts.draw.m_strColorMapFile;
+		vtString cmap_path = FindFileOnPaths(GetMainFrame()->m_datapaths, "GeoTypical/" + cmap_fname);
+		if (cmap_path == "")
+			DisplayAndLog("Couldn't find color map.");
+		else
+		{
+			if (!cmap.Load(cmap_path))
+				DisplayAndLog("Couldn't load color map.");
+		}
 	}
-	fprintf(fp, "[TilesetDescription]\n");
-	fprintf(fp, "Columns=%d\n", opts.cols);
-	fprintf(fp, "Rows=%d\n", opts.rows);
-	fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
-	fprintf(fp, "Extent_Left=%.16lg\n", m_area.left);
-	fprintf(fp, "Extent_Right=%.16lg\n", m_area.right);
-	fprintf(fp, "Extent_Bottom=%.16lg\n", m_area.bottom);
-	fprintf(fp, "Extent_Top=%.16lg\n", m_area.top);
-	// write CRS, but pretty it up a bit
-	poSimpleClone = m_proj.Clone();
-	poSimpleClone->GetRoot()->StripNodes( "AXIS" );
-	poSimpleClone->GetRoot()->StripNodes( "AUTHORITY" );
-	poSimpleClone->exportToWkt(&wkt);
-	fprintf(fp, "CRS=%s\n", wkt);
-	delete poSimpleClone;
+
+	// Free CRS
 	OGRFree(wkt);
-	fclose(fp);
-#endif
+
 	// Form an array of pointers to the existing elevation layers
 	std::vector<vtElevLayer*> elevs;
 	int elev_layers = ElevLayerArray(elevs);
@@ -1834,39 +1843,58 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 						bAllZero = false;
 				}
 			}
-#if WRITE_ARTIFICIAL_IMAGES
-			// For testing, create a matching texture tileset
+			// Create a matching derived texture tileset
+			if (opts.bCreateDerivedImages)
 			{
-				vtString fname = dirname, str;
-				fname += "_image/";
-				str.Format("tile.%d-%d.db", col, row);
-				fname += str;
-
 				vtDIB dib;
 				dib.Create(base_tilesize, base_tilesize, 24);
-				ColorMap cmap;
-				vtElevLayer::SetupDefaultColors(cmap);
-				FPoint3 light_dir(-.85f, -.15f, 0.0f);
-				light_dir.Normalize();
 				base_lod.ComputeHeightExtents();
 				base_lod.ColorDibFromElevation(&dib, &cmap, 4000);
-				base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f, true);
 
-				MiniDatabuf output_buf;
-				output_buf.alloc(base_tilesize, base_tilesize, 1, 1, 3);
-				char *dst = (char *) output_buf.data;
-				RGBi rgb;
-				for (int ro = 0; ro < base_tilesize; ro++)
-					for (int co = 0; co < base_tilesize; co++)
-					{
-						dib.GetPixel24(co, ro, rgb);
-						*dst++ = rgb.r;
-						*dst++ = rgb.g;
-						*dst++ = rgb.b;
-					}
-				output_buf.savedata(fname);
+				if (opts.draw.m_bShadingQuick)
+					base_lod.ShadeQuick(&dib, SHADING_BIAS, true);
+				else if (opts.draw.m_bShadingDot)
+				{
+					FPoint3 light_dir = LightDirection(opts.draw.m_iCastAngle,
+						opts.draw.m_iCastDirection);
+
+					// Don't cast shadows for tileset; they won't cast
+					//  correctly from one tile to the next.
+					base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f, true);
+				}
+
+				for (int k = 0; k < 3; k++)
+				{
+					vtString fname = dirname_image, str;
+					fname += '/';
+					if (k == 0)
+						str.Format("tile.%d-%d.db", col, row);
+					else
+						str.Format("tile.%d-%d.db%d", col, row, k);
+					fname += str;
+
+					int tilesize = base_tilesize >> k;
+
+					MiniDatabuf output_buf;
+					output_buf.alloc(tilesize, tilesize, 1, 1, 3);
+					char *dst = (char *) output_buf.data;
+					RGBi rgb;
+					for (int ro = 0; ro < base_tilesize; ro += (1<<k))
+						for (int co = 0; co < base_tilesize; co += (1<<k))
+						{
+							dib.GetPixel24(co, ro, rgb);
+							*dst++ = rgb.r;
+							*dst++ = rgb.g;
+							*dst++ = rgb.b;
+						}
+					output_buf.savedata(fname);
+
+					// Don't bother making tiny tiles
+					if (tilesize == 64)
+						break;
+				}
 			}
-#endif
+
 			// If there is no real data there, omit this tile
 			if (bAllInvalid)
 				continue;
