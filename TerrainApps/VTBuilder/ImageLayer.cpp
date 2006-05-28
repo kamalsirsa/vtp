@@ -1375,10 +1375,7 @@ int GetBitDepthUsingGDAL(const char *fname)
 	#include "GL/gl.h"
 	#include "GL/glext.h"
 	#include "wx/glcanvas.h"
-	#ifdef _MSC_VER
-		#pragma message( "Adding link with opengl32.lib" )
-		#pragma comment( lib, "opengl32.lib" )
-	#endif
+
 // We need to open an OpenGL context in order to do the texture compression,
 //  so we may as well draw something into it, since it requires little extra
 //  work, and provides interesting visual feedback to the user.
@@ -1443,55 +1440,7 @@ EVT_PAINT(ImageGLCanvas::OnPaint)
 EVT_SIZE(ImageGLCanvas::OnSize)
 END_EVENT_TABLE()
 
-#if !WIN32
-#include <dlfcn.h>
-#endif
-
-void* getGLExtensionFuncPtr(const char *funcName)
-{
-#if defined(WIN32)
-    return (void*)wglGetProcAddress(funcName);
-
-#elif defined(__APPLE__)
-    std::string temp( "_" );
-    temp += funcName;    // Mac OS X prepends an underscore on function names
-    if ( NSIsSymbolNameDefined( temp.c_str() ) )
-    {
-        NSSymbol symbol = NSLookupAndBindSymbol( temp.c_str() );
-        return NSAddressOfSymbol( symbol );
-    } else
-        return NULL;
-
-#elif defined (__sun) 
-     static void *handle = dlopen((const char *)0L, RTLD_LAZY);
-     return dlsym(handle, funcName);
-    
-#elif defined (__sgi)
-     static void *handle = dlopen((const char *)0L, RTLD_LAZY);
-     return dlsym(handle, funcName);
-
-#elif defined (__FreeBSD__)
-    return dlsym( RTLD_DEFAULT, funcName );
-
-#elif defined (__linux__)
-    typedef void (*__GLXextFuncPtr)(void);
-    typedef __GLXextFuncPtr (*GetProcAddressARBProc)(const char*);
-    static GetProcAddressARBProc s_glXGetProcAddressARB = (GetProcAddressARBProc)dlsym(0, "glXGetProcAddressARB");
-    if (s_glXGetProcAddressARB)
-    {
-        return (void*) (s_glXGetProcAddressARB)(funcName);
-    }
-    else
-    {
-        return dlsym(0, funcName);
-    }
-
-#else // all other unixes
-    return dlsym(0, funcName);
-
-#endif
-}
-#endif
+#endif // USE_OPENGL
 
 bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pView)
 {
@@ -1700,41 +1649,8 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 	output_buf.tsteps = 1;
 
 #if USE_OPENGL
-	// Next, compress them to a DXT1 output file
-	GLenum target = GL_TEXTURE_2D;
-	int level = 0;
-	GLint internalformat = GL_COMPRESSED_RGB_ARB;
-	int border = 0;
-	GLenum format = GL_RGB;
-	GLenum type = GL_UNSIGNED_BYTE;
-	GLvoid *pixels = rgb_bytes;
-
-	glGenTextures(1, &m_pCanvas->m_iTex);
-	glBindTexture(GL_TEXTURE_2D, m_pCanvas->m_iTex);
-
-	glTexImage2D(target, level, internalformat,
-		tilesize, tilesize, border, format, type, pixels);
-
-	// Check to see if the compression operation succeeded
-	int iParam;
-	glGetTexLevelParameteriv(target, level, GL_TEXTURE_COMPRESSED_ARB, &iParam);
-//VTLOG("GL_TEXTURE_COMPRESSED_ARB: %d\n", iParam);
-
-	int iInternalFormat;
-	glGetTexLevelParameteriv(target, level, GL_TEXTURE_INTERNAL_FORMAT, &iInternalFormat);
-//VTLOG("GL_TEXTURE_INTERNAL_FORMAT: %d\n", iInternalFormat);
-
-	int iSize;
-	glGetTexLevelParameteriv(target, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &iSize);
-//VTLOG("GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB: %d\n", iSize);
-
-	output_buf.type = 5;	// compressed RGB
-	output_buf.bytes = iSize;
-	output_buf.data = malloc(iSize);
-
-	PFNGLGETCOMPRESSEDTEXIMAGEARBPROC gctia = (PFNGLGETCOMPRESSEDTEXIMAGEARBPROC)
-		getGLExtensionFuncPtr("glGetCompressedTexImageARB");
-	gctia(target, level, output_buf.data);
+	// Compressed
+	DoTextureCompress(rgb_bytes, output_buf, m_pCanvas->m_iTex);
 
 	output_buf.savedata(fname);
 	free(output_buf.data);
@@ -1742,7 +1658,8 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 
 	if (tilesize == 256)
 		m_pCanvas->Refresh(false);
-#else // Uncompressed
+#else
+	// Uncompressed
 	// Output to a plain RGB .db file
 	output_buf.type = 3;	// RGB
 	output_buf.bytes = iUncompressedSize;
