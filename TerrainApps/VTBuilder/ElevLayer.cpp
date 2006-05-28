@@ -577,18 +577,18 @@ void vtElevLayer::RenderBitmap()
 	bool has_invalid = m_pGrid->ColorDibFromElevation(m_pBitmap, &cmap,
 		8000, progress_callback);
 
-	if (m_draw.m_bShading)
+	UpdateProgressDialog(0, _("Shading colors..."));
+	if (m_draw.m_bShadingQuick)
+		m_pGrid->ShadeQuick(m_pBitmap, SHADING_BIAS, true, progress_callback);
+	else if (m_draw.m_bShadingDot)
 	{
-		UpdateProgressDialog(0, _("Shading colors..."));
-
 		// Quick and simple sunlight vector
 		FPoint3 light_dir = LightDirection(m_draw.m_iCastAngle, m_draw.m_iCastDirection);
 
 		if (m_draw.m_bCastShadows)
-			m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0, progress_callback);
+			m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0f, progress_callback);
 		else
-//			m_pGrid->ShadeDibFromElevation(m_pBitmap, light_dir, 1.0, progress_callback);
-			m_pGrid->ShadeQuick(m_pBitmap, SHADING_BIAS, true, progress_callback);
+			m_pGrid->ShadeDibFromElevation(m_pBitmap, light_dir, 1.0f, true, progress_callback);
 	}
 
 	if (has_invalid && m_draw.m_bDoMask)
@@ -1257,10 +1257,52 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 	poSimpleClone->GetRoot()->StripNodes( "AUTHORITY" );
 	char *wkt;
 	poSimpleClone->exportToWkt(&wkt);
-	fprintf(fp, "CRS=%s\n", wkt);
 	delete poSimpleClone;
-	OGRFree(wkt);
+	fprintf(fp, "CRS=%s\n", wkt);
 	fclose(fp);
+
+	ColorMap cmap;
+	vtElevLayer::SetupDefaultColors(cmap);	// defaults
+	vtString dirname_image = opts.fname_images;
+	RemoveFileExtensions(dirname_image);
+	if (opts.bCreateDerivedImages)
+	{
+		if (!vtCreateDir(dirname_image))
+			return false;
+
+		// Write .ini file
+		fp = fopen(opts.fname_images, "wb");
+		if (!fp)
+		{
+			vtDestroyDir(dirname_image);
+			return false;
+		}
+		fprintf(fp, "[TilesetDescription]\n");
+		fprintf(fp, "Columns=%d\n", opts.cols);
+		fprintf(fp, "Rows=%d\n", opts.rows);
+		fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
+		fprintf(fp, "Extent_Left=%.16lg\n", area.left);
+		fprintf(fp, "Extent_Right=%.16lg\n", area.right);
+		fprintf(fp, "Extent_Bottom=%.16lg\n", area.bottom);
+		fprintf(fp, "Extent_Top=%.16lg\n", area.top);
+		fprintf(fp, "CRS=%s\n", wkt);
+		fclose(fp);
+
+		vtString cmap_fname = opts.draw.m_strColorMapFile;
+		vtString cmap_path = FindFileOnPaths(GetMainFrame()->m_datapaths, "GeoTypical/" + cmap_fname);
+		if (cmap_path == "")
+			DisplayAndLog("Couldn't find color map.");
+		else
+		{
+			if (!cmap.Load(cmap_path))
+				DisplayAndLog("Couldn't load color map.");
+		}
+	}
+
+	// Free CRS
+	OGRFree(wkt);
+
+	bool bFloat = m_pGrid->IsFloatMode();
 
 	int i, j, lod;
 	int total = opts.rows * opts.cols * opts.numlods, done = 0;
@@ -1276,6 +1318,86 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 
 			int col = i;
 			int row = opts.rows-1-j;
+
+			// draw our progress in the main view
+			if (pView)
+				pView->ShowGridMarks(area, opts.cols, opts.rows, col, row);
+
+			// Extract the highest LOD we need
+			vtElevationGrid base_lod(tile_area, base_tilesize+1, base_tilesize+1,
+				bFloat, proj);
+
+			bool bAllValid = true;
+			bool bAllInvalid = true;
+			bool bAllZero = true;
+			DPoint2 p;
+			int x, y;
+			for (y = base_tilesize; y >= 0; y--)
+			{
+				p.y = area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
+				for (x = 0; x <= base_tilesize; x++)
+				{
+					p.x = area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
+
+					float fvalue = m_pGrid->GetFilteredValue(p);
+					base_lod.SetFValue(x, y, fvalue);
+
+					if (fvalue == INVALID_ELEVATION)
+						bAllValid = false;
+					else
+						bAllInvalid = false;
+					if (fvalue != 0)
+						bAllZero = false;
+				}
+			}
+
+			// For testing, create a matching texture tileset
+			if (opts.bCreateDerivedImages)
+			{
+				vtString fname = dirname_image, str;
+				fname += '/';
+				str.Format("tile.%d-%d.db", col, row);
+				fname += str;
+
+				vtDIB dib;
+				dib.Create(base_tilesize, base_tilesize, 24);
+				base_lod.ComputeHeightExtents();
+				base_lod.ColorDibFromElevation(&dib, &cmap, 4096);
+
+				if (opts.draw.m_bShadingQuick)
+					base_lod.ShadeQuick(&dib, SHADING_BIAS, true);
+				else if (opts.draw.m_bShadingDot)
+				{
+					FPoint3 light_dir(-.85f, -.15f, 0.0f);
+					light_dir.Normalize();
+					// Don't cast shadows for tileset; they won't cast
+					//  correctly from one tile to the next.
+					//if (opts.draw.m_bCastShadows)
+					//	base_lod.ShadowCastDib(&dib, light_dir, 1.0f);
+					//else
+						base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f, true);
+				}
+
+				// write uncompressed image
+				MiniDatabuf output_buf;
+				output_buf.alloc(base_tilesize, base_tilesize, 1, 1, 3);
+				char *dst = (char *) output_buf.data;
+				RGBi rgb;
+				for (int ro = 0; ro < base_tilesize; ro++)
+					for (int co = 0; co < base_tilesize; co++)
+					{
+						dib.GetPixel24(co, ro, rgb);
+						*dst++ = rgb.r;
+						*dst++ = rgb.g;
+						*dst++ = rgb.b;
+					}
+				output_buf.savedata(fname);
+			}
+
+			if (!bAllValid)
+			{
+				// TODO? fill gaps here
+			}
 
 			for (lod = 0; lod < opts.numlods; lod++)
 			{
@@ -1295,26 +1417,6 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 					(const char *)fname, tilesize, tilesize);
 				UpdateProgressDialog(done*99/total, msg);
 
-				// also draw our progress in the main view
-				if (pView)
-					pView->ShowGridMarks(area, opts.cols, opts.rows, col, row);
-
-#if 0
-				// Left here for reference
-				fprintf(fp, "# coordinate system=%s\n", (const char *)crs);
-				fprintf(fp, "# coordinate zone=%d\n", zone);
-				fprintf(fp, "# coordinate datum=0\n");
-				fprintf(fp, "# SW corner=%lf/%lf %s\n", tile_area.left, tile_area.bottom, (const char *)units);
-				fprintf(fp, "# NW corner=%lf/%lf %s\n", tile_area.left, tile_area.top, (const char *)units);
-				fprintf(fp, "# NE corner=%lf/%lf %s\n", tile_area.right, tile_area.top, (const char *)units);
-				fprintf(fp, "# SE corner=%lf/%lf %s\n", tile_area.right, tile_area.bottom, (const char *)units);
-				fprintf(fp, "# cell size=%lf/%lf %s\n", cell_size.x*(1<<lod), cell_size.y*(1<<lod), (const char *)units);
-				fprintf(fp, "# vertical scaling=1 meters\n");
-				fprintf(fp, "# missing value=%d\n", INVALID_ELEVATION);
-				fprintf(fp, "%d %d\n", tilesize+1, tilesize+1);
-#endif
-				bool bFloat = m_pGrid->IsFloatMode();
-
 				MiniDatabuf buf;
 				buf.alloc(tilesize+1, tilesize+1, 1, 1, bFloat ? 2 : 1);
 				float *fdata = (float *) buf.data;
@@ -1331,12 +1433,12 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 
 						if (bFloat)
 						{
-							*fdata = m_pGrid->GetFilteredValue(p);
+							*fdata = base_lod.GetFilteredValue(p);
 							fdata++;
 						}
 						else
 						{
-							*sdata = (short) m_pGrid->GetFilteredValue(p);
+							*sdata = (short) base_lod.GetFilteredValue(p);
 							sdata++;
 						}
 					}
