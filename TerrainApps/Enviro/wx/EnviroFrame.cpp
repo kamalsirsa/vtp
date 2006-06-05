@@ -1777,7 +1777,14 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		if (!pTerrain->IsVisited())
 		{
 			VTLOG1("First visit to this terrain, looking up stored viewpoint.\n");
-			m_pLocationDlg->RecallFrom(pTerrain->GetParams().GetValueString(STR_INITLOCATION));
+			if (g_Options.m_strInitLocation != "")
+			{
+				// may have been given on command line
+				m_pLocationDlg->RecallFrom(g_Options.m_strInitLocation);
+				g_Options.m_strInitLocation = "";
+			}
+			else
+				m_pLocationDlg->RecallFrom(pTerrain->GetParams().GetValueString(STR_INITLOCATION));
 		}
 		pTerrain->Visited(true);
 

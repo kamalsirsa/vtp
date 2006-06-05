@@ -235,7 +235,6 @@ protected:
 	vtSpeciesList3d	*m_pPlantList;
 	PlantingOptions m_PlantOpt;
 	bool		m_bPlantsLoaded;
-	bool		m_bDoPlants;
 
 	// fence members
 	bool		m_bActiveFence, m_bFenceClosed;

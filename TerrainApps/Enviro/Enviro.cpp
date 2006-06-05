@@ -34,7 +34,6 @@ Enviro::Enviro() : vtTerrainScene()
 	m_mode = MM_NONE;
 	m_state = AS_Initializing;
 	m_iInitStep = 0;
-	m_bDoPlants = true;
 
 	m_bActiveFence = false;
 	m_pCurFence = NULL;
@@ -136,14 +135,18 @@ void Enviro::StartupArgument(int i, const char *str)
 	if (!strcmp(str, "-p"))
 		pwdemo = 1;
 
-	else if (!strcmp(str, "-no_plants"))
-		m_bDoPlants = false;
-
 	else if (!strcmp(str, "-fullscreen"))
 		g_Options.m_bFullscreen = true;
 
 	else if(!strncmp(str, "-terrain=", 9))
 		g_Options.m_strInitTerrain = str+9;
+
+	else if(!strncmp(str, "-location=", 10))
+	{
+		g_Options.m_strInitLocation = str+10;
+		// trim quotes
+		g_Options.m_strInitLocation.Remove('\"');
+	}
 
 	else if(!strncmp(str, "-neutral", 8))
 		g_Options.m_bStartInNeutral = true;
