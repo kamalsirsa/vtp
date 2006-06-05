@@ -124,7 +124,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	unsigned int tris = NumTris();
 	int bx, by;
 	DPoint2 gp;
-	Array<vtMesh *> pTypeMeshes;
+	vtArray<vtMesh *> pTypeMeshes;
 
 	unsigned int i, j, k;
 	int divs = 4;

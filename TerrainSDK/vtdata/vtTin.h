@@ -14,7 +14,7 @@
 #include "vtString.h"
 
 // a type useful for the Merge algorithm
-typedef Array<int> Bin;
+typedef vtArray<int> Bin;
 
 
 /**
@@ -73,12 +73,12 @@ protected:
 	void _CompareBins(int bin1, int bin2);
 
 	DLine2		 m_vert;
-	Array<float> m_z;
-	Array<int>	 m_tri;
+	vtArray<float> m_z;
+	vtArray<int>	 m_tri;
 	FLine3		 m_vert_normal;
 
 	// Surface Types
-	Array<int>	 m_surfidx;
+	vtArray<int>	 m_surfidx;
 	vtStringArray	m_surftypes;
 
 	// These members are used only during MergeSharedVerts

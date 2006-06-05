@@ -175,7 +175,7 @@ private:
 	bool DetermineHeightFromSlopes();
 	void DeleteEdges();
 
-	Array<vtEdge *> m_Edges;
+	vtArray<vtEdge *> m_Edges;
 
 	// footprint of the stories in this level
 	DLine2		m_Footprint;
@@ -261,7 +261,7 @@ public:
 
 protected:
 	// information about each story
-	Array<vtLevel *> m_Levels;
+	vtArray<vtLevel *> m_Levels;
 
 private:
 	void DeleteLevels();

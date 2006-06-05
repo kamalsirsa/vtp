@@ -41,7 +41,7 @@ public:
 	FPoint3 FindVectorToClosestVertex(const FPoint3 &pos);
 
 protected:
-	Array<vtMesh*> m_Meshes;
+	vtArray<vtMesh*> m_Meshes;
 	vtMaterialArray *m_pMats;
 	vtGeom		*m_pGeom;
 	vtGeom		*m_pDropGeom;

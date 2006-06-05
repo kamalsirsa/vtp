@@ -27,7 +27,7 @@ void vtEngine::RemoveChild(vtEngine *pEngine)
 	}
 }
 
-void vtEngine::AddChildrenToList(Array<vtEngine*> &list, bool bEnabledOnly)
+void vtEngine::AddChildrenToList(vtArray<vtEngine*> &list, bool bEnabledOnly)
 {
 	if (bEnabledOnly && !GetEnabled())
 		return;

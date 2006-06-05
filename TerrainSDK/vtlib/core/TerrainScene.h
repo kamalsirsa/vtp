@@ -129,7 +129,7 @@ protected:
 	vtSkyTrackEngine *m_pSkyTrack;
 
 	// Utility structures, created on demand from global content file
-	Array<vtUtilStruct*>	m_StructObjs;
+	vtArray<vtUtilStruct*>	m_StructObjs;
 
 	vtTransform	*m_pSunLight;
 };

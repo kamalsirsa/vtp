@@ -129,7 +129,7 @@ int vtFeatureSetPoint2D::FindClosestPoint(const DPoint2 &p, double epsilon)
 	return found;
 }
 
-void vtFeatureSetPoint2D::FindAllPointsAtLocation(const DPoint2 &loc, Array<int> &found)
+void vtFeatureSetPoint2D::FindAllPointsAtLocation(const DPoint2 &loc, vtArray<int> &found)
 {
 	int entities = GetNumEntities();
 

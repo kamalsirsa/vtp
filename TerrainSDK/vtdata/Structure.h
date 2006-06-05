@@ -177,7 +177,7 @@ private:
 	int m_iMaterialIndex; // Starting or only index of this material in the shared materials array
 };
 
-class vtMaterialDescriptorArray : public Array<vtMaterialDescriptor*>
+class vtMaterialDescriptorArray : public vtArray<vtMaterialDescriptor*>
 {
 public:
 	virtual ~vtMaterialDescriptorArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }

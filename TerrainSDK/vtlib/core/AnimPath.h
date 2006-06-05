@@ -250,7 +250,7 @@ public:
 	vtString m_Name;
 };
 
-class vtAnimContainer : public Array<vtAnimEntry*>
+class vtAnimContainer : public vtArray<vtAnimEntry*>
 {
 public:
 	vtAnimContainer();

@@ -192,7 +192,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	else if (result > 1)
 	{
 		int layer_count = 0;
-		Array<vtLayer *> LoadedLayers;
+		vtArray<vtLayer *> LoadedLayers;
 		vtLayer *pLayer;
 
 		// probably SDTS
@@ -915,7 +915,7 @@ void MainFrame::ImportFromMapSource(const char *fname)
 	if (!fp)
 		return;
 
-	Array<vtRawLayer *> layers;
+	vtArray<vtRawLayer *> layers;
 	char buf[200];
 	bool bUTM = false;
 	fscanf(fp, "Grid %s\n", buf);
@@ -1085,7 +1085,7 @@ void MainFrame::ImportDataPointsFromTable(const char *fname)
 	int iFields = DBFGetFieldCount(db);
 	wxString2 str;
 	int i;
-	Array<DBFFieldType> m_fieldtypes;
+	vtArray<DBFFieldType> m_fieldtypes;
 	for (i = 0; i < iFields; i++)
 	{
 		DBFFieldType fieldtype = DBFGetFieldInfo(db, i, pszFieldName,

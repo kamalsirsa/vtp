@@ -293,7 +293,7 @@ protected:
  * This is the base class for vtMaterialArray, and provides most of the
  * functionality for that class.
  */
-class vtMaterialArrayBase : public Array<vtMaterial *>
+class vtMaterialArrayBase : public vtArray<vtMaterial *>
 {
 public:
 	~vtMaterialArrayBase();
@@ -401,7 +401,7 @@ public:
 protected:
 	void DoEngines();
 
-	Array<vtWindow*> m_Windows;
+	vtArray<vtWindow*> m_Windows;
 	vtCamera	*m_pCamera;
 	vtGroup		*m_pRoot;
 	vtEngine	*m_pRootEngine;

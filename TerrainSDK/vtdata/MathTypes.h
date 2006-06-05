@@ -379,13 +379,13 @@ class FLine3;
  * A series of 2D points.  This is useful for representing either a series of
  * points, line segments or a simple closed polygon.  Double-precision.
  */
-class DLine2 : public Array<DPoint2>
+class DLine2 : public vtArray<DPoint2>
 {
 public:
 	DLine2() {}
 	DLine2(int size) { SetSize(size); }
 	// copy constructor
-	DLine2(const DLine2 &ref) : Array<DPoint2>() { *this = ref; }
+	DLine2(const DLine2 &ref) : vtArray<DPoint2>() { *this = ref; }
 
 	// assignment
 	DLine2 &operator=(const DLine2 &v);
@@ -421,13 +421,13 @@ public:
  * A series of 2D points.  This is useful for representing either a series of
  * points, line segments or a closed polygon.  Single-precision.
  */
-class FLine2 : public Array<FPoint2>
+class FLine2 : public vtArray<FPoint2>
 {
 public:
 	FLine2() {}
 	FLine2(int size) { SetSize(size); }
 	// copy constructor
-	FLine2(const FLine2 &ref) : Array<FPoint2>() { *this = ref; }
+	FLine2(const FLine2 &ref) : vtArray<FPoint2>() { *this = ref; }
 
 	// assignment
 	FLine2 &operator=(const FLine2 &v);
@@ -501,12 +501,12 @@ inline FLine2 &FLine2::operator=(const DLine2 &v)
  * A series of 3D points.  This is useful for representing either a series of
  * points, line segments or a closed polygon.  Double-precision.
  */
-class DLine3 : public Array<DPoint3>
+class DLine3 : public vtArray<DPoint3>
 {
 public:
 	DLine3() {}
 	// copy constructor
-	DLine3(const DLine3 &ref) : Array<DPoint3>() { *this = ref; }
+	DLine3(const DLine3 &ref) : vtArray<DPoint3>() { *this = ref; }
 
 	// assignment
 	DLine3 &operator=(const DLine3 &v);
@@ -521,13 +521,13 @@ public:
  * A series of 3D points.  This is useful for representing either a series of
  * points, line segments or a closed polygon.  Single-precision.
  */
-class FLine3 : public Array<FPoint3>
+class FLine3 : public vtArray<FPoint3>
 {
 public:
 	FLine3() {}
 	FLine3(int size) { SetSize(size); }
 	// copy constructor
-	FLine3(const FLine3 &ref) : Array<FPoint3>() { *this = ref; }
+	FLine3(const FLine3 &ref) : vtArray<FPoint3>() { *this = ref; }
 
 	// assignment
 	FLine3 &operator=(const FLine3 &v);

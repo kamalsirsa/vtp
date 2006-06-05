@@ -79,7 +79,7 @@ protected:
 
 	vtString	m_szSciName;
 	float		m_fMaxHeight;
-	Array<vtPlantAppearance*> m_Apps;
+	vtArray<vtPlantAppearance*> m_Apps;
 };
 
 
@@ -116,7 +116,7 @@ public:
 	void ResetAmounts();
 	int GetWeightedRandomPlant();
 
-	Array<vtPlantDensity *> m_Densities;
+	vtArray<vtPlantDensity *> m_Densities;
 
 	vtString	m_name;
 };
@@ -151,7 +151,7 @@ public:
 	void Clear() { m_Species.Empty(); }
 
 protected:
-	Array<vtPlantSpecies*> m_Species;
+	vtArray<vtPlantSpecies*> m_Species;
 };
 
 /**
@@ -175,7 +175,7 @@ public:
 	void ResetAmounts();
 	void Clear() { m_Types.Empty(); }
 
-	Array<vtBioType *> m_Types;
+	vtArray<vtBioType *> m_Types;
 };
 
 /**

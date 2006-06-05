@@ -891,7 +891,7 @@ const char *DatumToStringShort(int d)
 
 #include "EPSG_Datums.h"
 
-Array<EPSGDatum> g_EPSGDatums;
+vtArray<EPSGDatum> g_EPSGDatums;
 
 int compare_datum(const void *aa, const void *bb)
 {

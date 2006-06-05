@@ -109,7 +109,7 @@ typedef vtLayer *vtLayerPtr;
 // Name: LayerArray
 // An array of layer objects.
 //
-class LayerArray : public Array<vtLayerPtr>
+class LayerArray : public vtArray<vtLayerPtr>
 {
 public:
 	// don't need explicit destructor here because Empty() is always called

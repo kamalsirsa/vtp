@@ -32,13 +32,13 @@ public:
 	vtString m_strTypeName;
 
 	vtStringArray m_strFilename;
-	Array<float> m_fScale;
-	Array<float> m_fDistance;
+	vtArray<float> m_fScale;
+	vtArray<float> m_fDistance;
 
 	VehicleType *m_pNext;
 
 protected:
-	Array<vtNodeBase*> m_pModels;
+	vtArray<vtNodeBase*> m_pModels;
 
 	bool m_bAttemptedLoaded;
 	void AttemptModelLoad();

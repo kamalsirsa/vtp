@@ -39,7 +39,7 @@ class SimpleBillboardEngine;
 /*@{*/
 
 /** The set of all structure arrays which are on a terrain. */
-class StructureSet : public Array<vtStructureArray3d *>
+class StructureSet : public vtArray<vtStructureArray3d *>
 {
 public:
 	bool FindStructureFromNode(vtNode* pNode, int &iSet, int &iOffset);
@@ -75,7 +75,7 @@ enum TFType
 };
 
 // Container for the abstract layers
-typedef Array<vtFeatureSet*> vtAbstractLayers;
+typedef vtArray<vtFeatureSet*> vtAbstractLayers;
 
 /**
  * The vtTerrain class represents a terrain, which is a part of the surface
@@ -423,7 +423,7 @@ protected:
 	vtEngine		*m_pEngineGroup;
 	SimpleBillboardEngine	*m_pBBEngine;
 
-	Array<POIPtr>	m_PointsOfInterest;
+	vtArray<POIPtr>	m_PointsOfInterest;
 	bool			m_bShowPOI;
 	vtGroup			*m_pPOIGroup;
 

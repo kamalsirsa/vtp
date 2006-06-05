@@ -302,7 +302,7 @@ void IcoGlobe::BuildSphericalFeatures(vtFeatureSet *feat, float fSize)
 void IcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
 {
 	int i, j, size;
-	Array<FSphere> spheres;
+	vtArray<FSphere> spheres;
 
 	size = feat->GetNumEntities();
 	spheres.SetSize(size);

@@ -89,18 +89,18 @@ public:
 	vtEngine *GetChild(unsigned int i) { return m_Children[i]; }
 	unsigned int NumChildren() { return m_Children.GetSize(); }
 
-	void AddChildrenToList(Array<vtEngine*> &list, bool bEnabledOnly);
+	void AddChildrenToList(vtArray<vtEngine*> &list, bool bEnabledOnly);
 
 protected:
-	Array<vtTarget*> m_Targets;
-	Array<vtEngine*> m_Children;
+	vtArray<vtTarget*> m_Targets;
+	vtArray<vtEngine*> m_Children;
 	vtString		 m_strName;
 	vtWindow		*m_pWindow;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-class vtEngineArray : public Array<vtEngine*>
+class vtEngineArray : public vtArray<vtEngine*>
 {
 public:
 	vtEngineArray(vtEngine *pTop, bool bEnabledOnly = true)

@@ -16,7 +16,7 @@
 
 class vtTerrainScene;
 
-typedef Array<vtFeatureSet*> vtFeaturesSet;
+typedef vtArray<vtFeatureSet*> vtFeaturesSet;
 
 /** \addtogroup terrain */
 /*@{*/
@@ -145,7 +145,7 @@ protected:
 
 	// for RIGHT_TRIANGLE
 	int		m_vert;
-	Array<IcoVert>	m_rtv[22];	// right-triangle vertices
+	vtArray<IcoVert>	m_rtv[22];	// right-triangle vertices
 	int		m_depth;	// tesselation depth
 
 	// for DYMAX_UNFOLD

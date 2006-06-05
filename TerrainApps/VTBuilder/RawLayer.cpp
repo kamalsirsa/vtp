@@ -456,7 +456,7 @@ void vtRawLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 		if (iEnt != -1)
 		{
 			DPoint2 &p2 = pSetP2->GetPoint(iEnt);
-			Array<int> found;
+			vtArray<int> found;
 			pSetP2->FindAllPointsAtLocation(p2, found);
 
 			FeatInfoDlg	*fdlg = GetMainFrame()->ShowFeatInfoDlg();

@@ -71,11 +71,11 @@ public:
 	int m_width, m_decimals;	// these are for remembering SHP limitations
 	vtString m_name;
 
-	Array<bool> m_bool;
-	Array<short> m_short;
-	Array<int> m_int;
-	Array<float> m_float;
-	Array<double> m_double;
+	vtArray<bool> m_bool;
+	vtArray<short> m_short;
+	vtArray<int> m_int;
+	vtArray<float> m_float;
+	vtArray<double> m_double;
 	vtStringArray m_string;
 };
 
@@ -217,7 +217,7 @@ protected:
 	//  contains bit-flags such as FF_SELECTED.
 	std::vector<unsigned char> m_Flags;
 
-	Array<Field*> m_fields;
+	vtArray<Field*> m_fields;
 	vtProjection	m_proj;
 
 	// remember the filename these feature were loaded from or saved to
@@ -250,7 +250,7 @@ public:
 	const DPoint2 &GetPoint(unsigned int num) const { return m_Point2[num]; }
 
 	int FindClosestPoint(const DPoint2 &p, double epsilon);
-	void FindAllPointsAtLocation(const DPoint2 &p, Array<int> &found);
+	void FindAllPointsAtLocation(const DPoint2 &p, vtArray<int> &found);
 	void GetPoint(unsigned int num, DPoint2 &p) const;
 
 	// implement necessary virtual methods

@@ -56,8 +56,8 @@ protected:
 	bool ImportLinesFromSHP(const char *fname);
 	vtPole *ClosestPole(const DPoint2 &p);
 
-	Array<vtPole *> m_Poles;
-	Array<vtLine *> m_Lines;
+	vtArray<vtPole *> m_Poles;
+	vtArray<vtLine *> m_Lines;
 
 	vtProjection m_proj;
 };

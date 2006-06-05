@@ -24,7 +24,7 @@ public:
 	short m_ppc; // Populated Place Classification (1 high to 5 low, 6=unknown)
 };
 
-class PlaceArray : public Array<Place *>
+class PlaceArray : public vtArray<Place *>
 {
 public:
 	// this class is used for reference purposes only, it does not own the
@@ -45,7 +45,7 @@ public:
 
 	vtString m_abb;
 	vtString m_full;
-	Array<Place*> m_places;
+	vtArray<Place*> m_places;
 };
 
 /**
@@ -82,7 +82,7 @@ public:
 	bool FindPlaceWithGuess(const char *country, const char *place, DPoint2 &point, bool bUTF8=false);
 
 protected:
-	Array<Country*> m_countries;
+	vtArray<Country*> m_countries;
 	vtString m_path;
 };
 

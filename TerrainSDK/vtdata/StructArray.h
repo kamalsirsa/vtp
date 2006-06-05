@@ -68,7 +68,7 @@ typedef enum
  * with the ReadXML and WriteXML methods.
  *
  */
-class vtStructureArray : public Array<vtStructure*>
+class vtStructureArray : public vtArray<vtStructure*>
 {
 public:
 	vtStructureArray();

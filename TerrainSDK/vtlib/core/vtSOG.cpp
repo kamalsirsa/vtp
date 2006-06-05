@@ -413,7 +413,7 @@ vtMesh *InputSOG::ReadMesh(FILE *fp)
 	FPoint3 p;
 	RGBf rgb;
 	FPoint2 uv;
-	Array<short> Index;
+	vtArray<short> Index;
 
 	Read(fp, token, len);
 	assert(token == FT_MESH);

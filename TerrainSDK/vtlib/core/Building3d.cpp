@@ -801,7 +801,7 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 			FPoint3 VAxis;
 			FPoint3 TextureOrigin;
 			int i, j;
-			Array<int> iaVertices;
+			vtArray<int> iaVertices;
 
 			C3DPoint& p1 = points[pi].m_Point;
 			C3DPoint& p2 = points[(pi+1)%points.size()].m_Point;
@@ -976,7 +976,7 @@ bool vtBuilding3d::Collinear2d(const FPoint3& Previous, const FPoint3& Current, 
 }
 
 int vtBuilding3d::FindVertex(FPoint3 Point, FLine3 &RoofSection3D,
-	Array<int> &iaVertices)
+	vtArray<int> &iaVertices)
 {
 	int iSize = RoofSection3D.GetSize();
 

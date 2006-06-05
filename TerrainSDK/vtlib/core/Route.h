@@ -79,7 +79,7 @@ protected:
 
 	vtGeom		*m_pWireGeom;
 	vtTerrain	*m_pTheTerrain;
-	Array<vtUtilNode*>		m_Nodes;
+	vtArray<vtUtilNode*>		m_Nodes;
 
 	bool m_bBuilt;
 	bool m_bDirty;
@@ -88,7 +88,7 @@ protected:
 /**
  * vtRouteMap is a container for a set of vtRoute objects.
  */
-class vtRouteMap : public Array<vtRoute *>
+class vtRouteMap : public vtArray<vtRoute *>
 {
 public:
 	virtual ~vtRouteMap() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }

@@ -1,7 +1,7 @@
 //
 // Array.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file Array.h */
@@ -34,17 +34,17 @@
  * (int, float..), structs, and pointers.  If you do create a subclass like
  * this:
 \code
-	class MyArray : public Array<MyObject *> {};
+	class MyArray : public vtArray<MyObject *> {};
 \endcode
  * note that you will need to provide not only a DestructItems()
  * implementation, but also a destructor.  This is because the default
- * Array destructor is not smart enough to call your DestructItems()
+ * vtArray destructor is not smart enough to call your DestructItems()
  * method (it will call the base DestructItems() instead, which does
  * nothing).
  *
  * A full working example is:
 \code
-	class MyArray : public Array<MyObject *>
+	class MyArray : public vtArray<MyObject *>
 	{
 		virtual ~MyArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
 		virtual	void DestructItems(unsigned int first, unsigned int last)
@@ -55,12 +55,12 @@
 	};
 \endcode
  */
-template <class E> class Array
+template <class E> class vtArray
 {
 public:
-	Array(unsigned int size = 0);
-	Array(const Array<E>&);
-	virtual ~Array();
+	vtArray(unsigned int size = 0);
+	vtArray(const vtArray<E>&);
+	virtual ~vtArray();
 
 //	Accessors
 	unsigned int	GetSize() const;
@@ -74,13 +74,13 @@ public:
 	bool		SetAt(unsigned int i, E);
 
 //	Other operations
-	Array<E>& operator=(const Array<E>&);
+	vtArray<E>& operator=(const vtArray<E>&);
 	E&			operator[](unsigned int i);
 	const E&	operator[](unsigned int i) const;
 	void		Empty();
 	bool		RemoveAt(unsigned int i, int n = 1);
 	int			Append(const E&);
-	int			Append(const Array<E>&);
+	int			Append(const vtArray<E>&);
 	int			Find(const E&) const;
 
 protected:
@@ -103,15 +103,15 @@ protected:
  *			If zero, little initial space is allocated but the
  *			array will grow dynamically as space is needed.
  *
- * \sa Array::SetMaxSize Array::SetSize
+ * \sa vtArray::SetMaxSize vtArray::SetSize
  *
  * \par Example:
 \code
-	Array<void*> foo;		// empty array of pointers
+	vtArray<void*> foo;		// empty array of pointers
 \endcode
  *
  */
-template <class E> Array<E>::Array(unsigned int size)
+template <class E> vtArray<E>::vtArray(unsigned int size)
 {
 	m_Size = 0;				// empty to start
 	m_MaxSize = 0;			// remember the size
@@ -125,7 +125,7 @@ template <class E> Array<E>::Array(unsigned int size)
  *
  * \param a	An array to copy from.
  */
-template <class E> Array<E>::Array(const Array<E>& a)
+template <class E> vtArray<E>::vtArray(const vtArray<E>& a)
 {
 	if( this == &a )
 		return;
@@ -159,7 +159,7 @@ template <class E> Array<E>::Array(const Array<E>& a)
 	}
 \endcode
  */
-template <class E> inline void Array<E>::DestructItems(unsigned int first, unsigned int last)
+template <class E> inline void vtArray<E>::DestructItems(unsigned int first, unsigned int last)
 {
 	//VTLOG("base DestructItems, %d %d\n", start, nitems);
 }
@@ -168,9 +168,9 @@ template <class E> inline void Array<E>::DestructItems(unsigned int first, unsig
 /**
  *	Destructor for array class.
  */
-template <class E> inline Array<E>::~Array()
+template <class E> inline vtArray<E>::~vtArray()
 {
-	//VTLOG("~Array, size %d, max %d\n", m_Size, m_MaxSize);
+	//VTLOG("~vtArray, size %d, max %d\n", m_Size, m_MaxSize);
 	Empty();
 	free(m_Data);
 	m_Data = NULL;
@@ -188,9 +188,9 @@ template <class E> inline Array<E>::~Array()
  *
  * \return True if array was successfully grown, else false.
  *
- * \sa Array::SetData Array::SetMaxSize
+ * \sa vtArray::SetData vtArray::SetMaxSize
  */
-template <class E> bool Array<E>::Grow(unsigned int growto)
+template <class E> bool vtArray<E>::Grow(unsigned int growto)
 {
 	int	n = growto - m_MaxSize;
 	E*		old_data;
@@ -202,7 +202,7 @@ template <class E> bool Array<E>::Grow(unsigned int growto)
 //			assert(m_Size == 0);
 			m_Data = (E*) malloc(sizeof(E) * growto);
 			if (m_Data == NULL)				// could not enlarge?
-//				ERROR(("Array::Grow: out of memory"), false);
+//				ERROR(("vtArray::Grow: out of memory"), false);
 				return false;
 		}
 		else
@@ -213,7 +213,7 @@ template <class E> bool Array<E>::Grow(unsigned int growto)
 			memcpy(m_Data, old_data, sizeof(E) * m_Size);
 			free(old_data);
 			if (m_Data == NULL)
-//				ERROR(("Array::Grow: out of memory"), false);
+//				ERROR(("vtArray::Grow: out of memory"), false);
 				return false;
 		}
 		m_MaxSize = growto;					// remember new size
@@ -221,7 +221,7 @@ template <class E> bool Array<E>::Grow(unsigned int growto)
 	return true;
 }
 
-template <class E> inline E* Array<E>::GetData() const
+template <class E> inline E* vtArray<E>::GetData() const
 {
 	return m_Data;
 }
@@ -237,19 +237,19 @@ template <class E> inline E* Array<E>::GetData() const
  *
  * \return bool, true if maximum size successfully changed, else false.
  *
- * \sa Array::SetData Array::SetSize Array::GetElemSize Array::Grow
+ * \sa vtArray::SetData vtArray::SetSize vtArray::GetElemSize vtArray::Grow
  */
-template <class E> bool Array<E>::SetMaxSize(unsigned int s)
+template <class E> bool vtArray<E>::SetMaxSize(unsigned int s)
 {
 	if (s > m_MaxSize)			// enlarge array
 		return Grow(s);			// if we can
 	return true;
 }
 
-template <class E> inline unsigned int	Array<E>::GetMaxSize() const
+template <class E> inline unsigned int	vtArray<E>::GetMaxSize() const
 	{ return m_MaxSize; }
 
-template <class E> inline unsigned int	Array<E>::GetElemSize() const
+template <class E> inline unsigned int	vtArray<E>::GetElemSize() const
 	{ return sizeof(E); }
 
 /**
@@ -263,18 +263,18 @@ template <class E> inline unsigned int	Array<E>::GetElemSize() const
  *
  * \return bool	True if size successfully changed, else false.
  *
- * \sa Array::SetData Array::Grow Array::SetMaxSize
+ * \sa vtArray::SetData vtArray::Grow vtArray::SetMaxSize
  *
  * \par Examples:
 \code
-	Array<RGBi> cols(256);	  // room for 256 colors
+	vtArray<RGBi> cols(256);	  // room for 256 colors
 	int ncols = cols.GetSize();	// will be zero
 	ncols = cols.GetMaxSize();	// will be 256
 	cols.SetSize(ncols);		// calls 256 Color4 constructors NOT
 \endcode
  *
  */
-template <class E> bool inline Array<E>::SetSize(unsigned int s)
+template <class E> bool inline vtArray<E>::SetSize(unsigned int s)
 {
 	assert(s >= 0);
 	if (s > m_MaxSize)
@@ -284,7 +284,7 @@ template <class E> bool inline Array<E>::SetSize(unsigned int s)
 	return true;
 }
 
-template <class E> inline unsigned int Array<E>::GetSize() const
+template <class E> inline unsigned int vtArray<E>::GetSize() const
 	{ return m_Size; }
 
 /**
@@ -301,14 +301,14 @@ template <class E> inline unsigned int Array<E>::GetSize() const
  *
  * \par Examples:
 \code
-	Array<RGBi> cols(16);			// room for 16 colors
+	vtArray<RGBi> cols(16);			// room for 16 colors
 	cols.SetAt(0, RGBi(1,1,1));		// first color white
 	cols.SetAt(15, RGBi(1,0,0));	// last color red
 									// makes Colors 1-14, too
 	cols.SetAt(17, RGBi(0,1,1));	// causes array growth
 \endcode
  */
-template <class E> bool Array<E>::SetAt(unsigned int i, E val)
+template <class E> bool vtArray<E>::SetAt(unsigned int i, E val)
 {
 	if (i >= m_MaxSize)			// need to extend array?
 	   {
@@ -334,13 +334,13 @@ template <class E> bool Array<E>::SetAt(unsigned int i, E val)
  *
  * \return element accessed
  */
-template <class E> inline E& Array<E>::GetAt(unsigned int i) const
+template <class E> inline E& vtArray<E>::GetAt(unsigned int i) const
 	{ return m_Data[i]; }
 
-template <class E> inline const E& Array<E>::operator[](unsigned int i) const
+template <class E> inline const E& vtArray<E>::operator[](unsigned int i) const
 	{ return m_Data[i]; }
 
-template <class E> inline E& Array<E>::operator[](unsigned int i)
+template <class E> inline E& vtArray<E>::operator[](unsigned int i)
 	{ return m_Data[i]; }
 
 /**
@@ -355,11 +355,11 @@ template <class E> inline E& Array<E>::operator[](unsigned int i)
  * \return int
  *	index of matching array element or -1 if not found
  *
- * \sa Array::SetAt
+ * \sa vtArray::SetAt
  *
  * \par Examples:
 \code
-	Array<int> foo;		 // define integer array
+	vtArray<int> foo;		 // define integer array
 	foo.Append(5);		 // first element is 5
 	foo.Append(6);		 // second element is 5
 	int t = foo.Find(7);  // returns -1
@@ -367,7 +367,7 @@ template <class E> inline E& Array<E>::operator[](unsigned int i)
 \endcode
  *
  */
-template <class E> int Array<E>::Find(const E& elem) const
+template <class E> int vtArray<E>::Find(const E& elem) const
 {
 	const E* p = m_Data;
 
@@ -388,18 +388,18 @@ template <class E> int Array<E>::Find(const E& elem) const
  * \return void*
  *	-> element added (within array) or NULL if out of memory
  *
- * \sa Array::SetAt Array::SetSize Array::RemoveAt
+ * \sa vtArray::SetAt vtArray::SetSize vtArray::RemoveAt
  *
  * \par Examples:
 \code
-	Array<float>	vals;
+	vtArray<float>	vals;
 	vals.Append(1.0f);	  // first element
 	vals.Append(2.0f);	  // second element
 	vals.SetAt(5, 6.0f);  // sixth element
 	vals.Append(7.0f);	  // seventh element
 \endcode
  */
-template <class E> int inline Array<E>::Append(const E& v)
+template <class E> int inline vtArray<E>::Append(const E& v)
 {
 	int	index = m_Size;
 
@@ -417,11 +417,11 @@ template <class E> int inline Array<E>::Append(const E& v)
  *
  * \return bool True if element was successfully removed, else false.
  *
- * \sa Array::Append Array::SetAt Array::SetSize
+ * \sa vtArray::Append vtArray::SetAt vtArray::SetSize
  *
  * \par Examples:
 \code
-	Array<int16> zot(8); // room for 8 shorts
+	vtArray<int16> zot(8); // room for 8 shorts
 	zot.SetSize(8);		 // now has 8 zeros
 	zot[1] = 1;			 // second element
 	zot[2] = 2;			 // third element
@@ -429,7 +429,7 @@ template <class E> int inline Array<E>::Append(const E& v)
 	zot.RemoveAt(-1);	 // returns false
 \endcode
  */
-template <class E> bool Array<E>::RemoveAt(unsigned int i, int n)
+template <class E> bool vtArray<E>::RemoveAt(unsigned int i, int n)
 {
 	E*	elem;
 	int	shuffle;
@@ -453,18 +453,18 @@ template <class E> bool Array<E>::RemoveAt(unsigned int i, int n)
  *
  * \return index of last element successfully added or -1 on error
  *
- * \sa Array::Append Array::SetAt
+ * \sa vtArray::Append vtArray::SetAt
  *
  * \par Examples:
 \code
 	int	zap[3] = { 1, 2, 3 };
-	Array<int> zip(3, &zap);	// user managed
-	Array<int> zot;				// dynamic
+	vtArray<int> zip(3, &zap);	// user managed
+	vtArray<int> zot;				// dynamic
 	zot.Append(zip);			// adds 1 2 3
 	zot.Append(zip);			// adds 1 2 3 again
 \endcode
  */
-template <class E> int Array<E>::Append(const Array<E>& src)
+template <class E> int vtArray<E>::Append(const vtArray<E>& src)
 {
 	int	n = m_Size + src.m_Size;
 
@@ -481,9 +481,9 @@ template <class E> int Array<E>::Append(const Array<E>& src)
  * Removes the elements in the array but not the array data area.
  * An array is considered empty if it has no elements.
  *
- * \sa Array::SetSize Array::IsEmpty
+ * \sa vtArray::SetSize vtArray::IsEmpty
  */
-template <class E> void Array<E>::Empty()
+template <class E> void vtArray<E>::Empty()
 {
 	//VTLOG("Empty, size %d\n", m_Size);
 	if (m_Size > 0)
@@ -496,9 +496,9 @@ template <class E> void Array<E>::Empty()
  *
  * \return True if array contains no elements, else false.
  *
- * \sa Array::SetSize Array::Empty
+ * \sa vtArray::SetSize vtArray::Empty
  */
-template <class E> inline bool Array<E>::IsEmpty() const
+template <class E> inline bool vtArray<E>::IsEmpty() const
 	{ return m_Size == 0; }
 
 #endif

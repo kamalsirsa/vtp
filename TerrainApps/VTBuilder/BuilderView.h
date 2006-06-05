@@ -52,7 +52,7 @@ enum LBMode {
 };
 
 // A useful class to contain an array of bools
-class BoolArray : public Array<bool> {};
+class BoolArray : public vtArray<bool> {};
 
 struct UIContext
 {

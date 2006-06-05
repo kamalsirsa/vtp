@@ -126,7 +126,7 @@ protected:
 	OCT			*m_pConvertToWGS;
 	OCT			*m_pConvertFromWGS;
 
-	Array<vtLocation*> m_loc;
+	vtArray<vtLocation*> m_loc;
 };
 
 /*@}*/  // nav

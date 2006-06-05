@@ -56,7 +56,7 @@ public:
 	RoadBuildInfo(int iCoords);
 	FLine3 center;
 	FLine3 crossvector;
-	Array<float> fvLength;
+	vtArray<float> fvLength;
 
 	int verts;
 	int vert_index;

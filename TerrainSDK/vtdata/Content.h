@@ -174,7 +174,7 @@ public:
 	FRECT		m_extents;
 
 protected:
-	Array<vtModel*>	m_models;
+	vtArray<vtModel*>	m_models;
 };
 
 /**
@@ -208,7 +208,7 @@ public:
 	vtString GetFilename() { return m_strFilename; }
 
 protected:
-	Array<vtItem*>	m_items;
+	vtArray<vtItem*>	m_items;
 	vtString m_strFilename;
 };
 
