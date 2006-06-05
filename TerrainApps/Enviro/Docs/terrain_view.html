@@ -18,7 +18,7 @@
 <p> From the Startup Dialog, to launch with Terrain:</p>
 
 <ul>
-  <li>Use &quot;Select&quot; to choose from the known terrain.</li>
+  <li>Use the drop-down control to choose from the known terrains.</li>
   <li>Use &quot;Edit Properties&quot; to view or edit the properties of the currently
     chosen terrain (the <b><a href="terrain_creation.html">Terrain  Parameters</a></b> 
     dialog)</li>
@@ -34,13 +34,83 @@ progress.</p>
     the mouse to navigate</a> in Terrain View.</li>
 </ul>
 
-  <h4>Menu Commands for Terrain View:</h4>
+  <h3>Menu Commands for Terrain View</h3>
+
+  <h4>File Menu</h4>
   <ul>
-    <li>Earth - <b>Show Shading</b><ul>
-        <li>Shows</li>
-      </ul>
-    </li>
+    <li><b>Layers</b> - Shows the Layers dialog.</li>
   </ul>
+
+<h4>Tools Menu</h4>
+<ul>
+  <li><b>Select</b> - This mode lets use use the mouse point to move the 3D 
+  cursor on the terrain, selecting objects and moving them by dragging.&nbsp; 
+  You can also right-click for a pop-up menu of actions for the selected 
+  objects.&nbsp; See <a href="culture.html">Working with Culture Objects</a> for 
+  more information.</li>
+  <li><b>Fences</b> - Opens the Linear Structures dialog for creating features 
+  like fences, walls and hedges.&nbsp; Click to add points on the terrain, 
+  right-click to close the feature.</li>
+  <li><b>Buildings</b> - Click on the terrain to create buildings.&nbsp; Each 
+  click defines a corner of the building footprints, right-click finishes 
+  definition.</li>
+  <li><b>Routes</b> - Opens the Routes dialog for creating utility routes, 
+  specifically electrical distribution lines.</li>
+  <li><b>Plants</b> - Opens the Plants dialog for creating plants by clicking on 
+  the terrain.&nbsp; See <a href="culture.html">Working with Culture Objects</a> 
+  for more information.</li>
+  <li><b>Instances</b> - Opens the Instances dialog for creating 3D model 
+  instances by clicking on the terrain.</li>
+  <li><b>Navigate</b> - Use the mouse to fly over the terrain.&nbsp; See <a href="Navigation/index.html">using
+    the mouse to navigate</a>.</li>
+  <li><b>Measure Distances</b> - Opens the Distance dialog.&nbsp; Drag a line on 
+  the terrain to get information about the distance measured several ways.</li>
+</ul>
+<h4>Navigate Menu</h4>
+<ul>
+  <li><b>Fly Slower</b> - Decrease flight speed</li>
+  <li><b>Fly Faster</b> - Increase flight speed</li>
+  <li><b>Maintain height above ground</b> (toggle) - Keeps the camera at a fixed 
+  height above the terrain.</li>
+  <li><b>Navigation Style</b> - Choose from several styles of navigation to find 
+  one you like.&nbsp; There is also a keyboard shortcut 'D' to toggle the 
+  Grab-Pivot navigation.</li>
+</ul>
+<h4>Terrain Menu</h4>
+<ul>
+  <li><b>LOD Terrain Surface </b>(toggle) - Show the terrain surface.</li>
+  <li><b>Cull every frame</b> (toggle) - Continuously calculates the level of 
+  detail needed as the camera moves.&nbsp; You can turn this off to see how the 
+  CLOD algorithm is working.</li>
+  <li><b>Cull once</b> - When Cull Every Frame is turned off, this tells the 
+  CLOD to calculate (cull).</li>
+  <li>
+  <p style="margin-top: 9"><b>Show Sky</b> (toggle) - The Skydome object.</li>
+  <li><b>Show Ocean</b> (toggle) - The Skydome object.</li>
+  <li><b>Show Plants</b> (toggle) - The Skydome object.</li>
+  <li><b>Show Structures</b> (toggle) - The Skydome object.</li>
+  <li><b>Show Roads</b> (toggle) - The Skydome object.</li>
+  <li>
+  <p style="margin-top: 9"><b>Increase Detail</b> - Increases the detail 
+  (triangles or vertices used) of the CLOD terrain surface by 1000.&nbsp; If 
+  your terrain is over-simplified, you should increase detail until it looks 
+  good.</li>
+  <li><b>Decrease Detail</b> - Decreases the detail (triangles or vertices used) 
+  of the CLOD terrain surface by 1000.</li>
+  <li><b>Level of Detail Info</b> - Shows the Terrain LOD Info dialog with 
+  technical information about the CLOD algorithm.</li>
+  <li>
+  <p style="margin-top: 9"><b>Toggle Artificial Foundations</b> - For the 
+  current structure layer, each building which lies on a slope has a cement 
+  &quot;foundation&quot; level added to elevate it such that no point of the base 
+  footprint lies beneath ground level.</li>
+  <li>&nbsp;<b>Recalculate Shading</b> - If your terrain has shading that was 
+  computed at the time the terrain was constructed, then that shading is 
+  recalculated.&nbsp; The current time of day is used.&nbsp; This is useful for 
+  seeing what a terrain looks like at different times of day.</li>
+  <li><b>Change Texture</b> - Opens the Change Texture dialog to let you change 
+  the texture on the terrain.</li>
+</ul>
 
 </blockquote>
 
