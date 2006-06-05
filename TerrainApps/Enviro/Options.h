@@ -23,6 +23,7 @@ public:
 	bool		m_bEarthView;
 	vtString	m_strEarthImage;
 	vtString	m_strInitTerrain;
+	vtString	m_strInitLocation;
 
 	bool	m_bStartInNeutral;
 
