@@ -15,28 +15,63 @@
 
   <blockquote>
     <p>Put your data in the following directories: </p>
-      <table border="1" cellspacing="0" cellpadding="4" bgcolor="#C2C7D6" style="border-collapse: collapse" bordercolor="#111111">
+      <table border="1" cellspacing="0" cellpadding="4" bgcolor="#C2C7D6" style="border-collapse: collapse" bordercolor="#111111" height="249">
         <tr>
-          <td width="50%"><b>Data</b></td>
-          <td width="50%"><b>Location</b></td>
+          <td width="50%" height="19"><b>Data</b></td>
+          <td width="50%" height="19"><b>Location</b></td>
         </tr>
         <tr>
-          <td width="50%">elevation data (BT and PRJ files)</td>
-          <td width="50%"><code>Data/Elevation</code></td>
+          <td width="50%" height="19">elevation data (BT and PRJ files)<br>
+&nbsp;also .ini for elevation tilesets</td>
+          <td width="50%" height="19"><code>Data/Elevation</code></td>
         </tr>
         <tr>
-          <td width="50%">geospecific images (BMP or JPG files)</td>
-          <td width="50%"><code>Data/GeoSpecific</code></td>
+          <td width="50%" height="19">geospecific images (JPG, TIF, BMP files)<br>
+&nbsp;also .ini for imagery tilesets</td>
+          <td width="50%" height="19"><code>Data/GeoSpecific</code></td>
         </tr>
         <tr>
-          <td width="50%">road data (RMF files)</td>
-          <td width="50%"><code>Data/RoadData</code></td>
+          <td width="50%" height="19">road data (RMF files)</td>
+          <td width="50%" height="19"><code>Data/RoadData</code></td>
         </tr>
         <tr>
-          <td width="50%">built structure data (VTST files)</td>
-          <td width="50%"><code>Data/BuildingData</code></td>
+          <td width="50%" height="19">built structure data (VTST files)</td>
+          <td width="50%" height="19"><code>Data/BuildingData</code></td>
+        </tr>
+        <tr>
+          <td width="50%" height="19">vegetation (species.xml and VF files)</td>
+          <td width="50%" height="19"><code>Data/PlantData</code></td>
+        </tr>
+        <tr>
+          <td width="50%" height="19">vegetation billboard images</td>
+          <td width="50%" height="19"><code>Data/PlantModels</code></td>
+        </tr>
+        <tr>
+          <td width="50%" height="19">locations (LOC and VTAP)</td>
+          <td width="50%" height="19"><code>Data/Locations</code></td>
+        </tr>
+        <tr>
+          <td width="50%" height="19">raw (abstract) GIS files</td>
+          <td width="50%" height="19"><code>Data/PointData</code></td>
+        </tr>
+        <tr>
+          <td width="50%" height="19">skydome textures (hemispherical)</td>
+          <td width="50%" height="19"><code>Data/Sky</code></td>
+        </tr>
+        <tr>
+          <td width="50%" height="19">terrain definitions (XML)</td>
+          <td width="50%" height="19"><code>Data/Terrains</code></td>
+        </tr>
+        <tr>
+          <td width="50%" height="17">whole earth images for Earth view</td>
+          <td width="50%" height="17"><code>Data/WholeEarth</code></td>
         </tr>
       </table>
+    <p>There are a few other folders used internally by the VTP software, 
+    including <code>Data/Culture</code> for standard culture models and 
+    textures, <code>Data/Fonts</code> for fonts, <code>Data/GeoTypical</code> 
+    for geotypical textures such as ocean and roads.&nbsp; You won't need to add 
+    to or modify these folders.</p>
     <p>Don't forget that in order to use the continuous LOD rendering,
       elevation files must be square-power-of-2-plus-1 in size.&nbsp; For
       example: </p>
@@ -57,9 +92,6 @@
           <td>8193 x 8193</td>
         </tr>
       </table>
-    <p>In the Startup Dialog, use the &quot;Generic Terrain&quot; setting,
-      press &quot;Edit Properties&quot;, and select your data in
-      the Parameters dialog</p>
     <p>For textures, see the page on <a href="imagery.html">Using Your Own Imagery</a>.</p>
     <h4>Creating Your Own Terrain Settings</h4>
     <p>If you want to make your terrain show up as a new terrain in the Enviro 
