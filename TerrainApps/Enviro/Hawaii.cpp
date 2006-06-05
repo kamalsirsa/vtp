@@ -77,6 +77,13 @@ void IslandTerrain::PaintDib(bool progress_callback(int))
 		vtTerrain::PaintDib(progress_callback);
 }
 
+class SpinEngine: public vtEngine
+{
+	void Eval() {
+		((vtTransform *) GetTarget())->RotateLocal(FPoint3(0,0,1),0.05);
+	}
+};
+
 void IslandTerrain::CreateCustomCulture()
 {
 	// Enable this to test Line Of Sight feature on texture recalculation
@@ -137,6 +144,16 @@ void IslandTerrain::CreateCustomCulture()
 		create_airplanes(1, speed);
 		m_Vehicles.create_ground_vehicles(this, size, speed);
 	}
+
+#if 0
+	vtNode *blade = vtNode::LoadModel("G:/Data-Distro/Culture/picnictable.ive");
+	vtTransform *trans = new vtTransform;
+	trans->AddChild(blade);
+	SpinEngine *eng = new SpinEngine;
+	eng->AddTarget(trans);
+	vtGetScene()->AddEngine(eng);
+	vtGetScene()->GetRoot()->AddChild(trans);
+#endif
 }
 
 
@@ -149,7 +166,7 @@ void IslandTerrain::create_state_park()
 	// Here is an example of how to load a model directly and plant it
 	//	on the terrain.  Because it is not part of a vtStructure, the
 	//	user won't be able to select and operate on it.
-	vtTransform *table = LoadModel("Culture/picnictable.3ds");
+	vtTransform *table = LoadModel("Culture/picnictable.ive");
 	if (table)
 	{
 		// model is at .1 inch per unit
