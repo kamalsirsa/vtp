@@ -24,7 +24,7 @@ and distributed under a completely free <a href="../license.txt">open source lic
         <li>vtEdge</li>
         <li>vtLevel</li>
         <li>vtFence</li>
-        <li>vtStructurevtArray</li>
+        <li>vtStructureArray</li>
       </ul>
       <p>Vegetation</p>
       <ul>
@@ -34,7 +34,7 @@ and distributed under a completely free <a href="../license.txt">open source lic
         <li>vtPlantAppearance</li>
         <li>vtPlantSpecies</li>
         <li>vtSpeciesList</li>
-        <li>vtPlantInstancevtArray</li>
+        <li>vtPlantInstanceArray</li>
       </ul>
       <p>Roads / Transportation</p>
       <ul>
@@ -69,10 +69,11 @@ and distributed under a completely free <a href="../license.txt">open source lic
       </ul>
       <p>Math: Array Types</p>
       <ul>
+        <li>vtArray (template)</li>
         <li>FLine2 / DLine2</li>
         <li>FLine3 / DLine3</li>
         <li>DPolygon2</li>
-        <li>DPolyvtArray</li>
+        <li>DPolyArray</li>
       </ul>
       <p>Miscellaneous</p>
       <ul>
@@ -95,7 +96,7 @@ and distributed under a completely free <a href="../license.txt">open source lic
         <li>vtContentManager</li>
         <li>vtItem</li>
         <li>vtModel</li>
-        <li>vtTagvtArray</li>
+        <li>vtTagArray</li>
       </ul>
       <p>Elevation</p>
       <ul>
