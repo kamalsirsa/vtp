@@ -2,6 +2,8 @@
 
 #include "MiniDatabuf.h"
 #include "vtLog.h"
+#include "Projections.h"
+#include "MathTypes.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -188,3 +190,33 @@ void MiniDatabuf::swapbytes()
          }
       }
    }
+
+bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
+						const DRECT &area, const vtProjection &proj)
+{
+	FILE *fp = fopen(filename, "wb");
+	if (!fp)
+		return false;
+
+	fprintf(fp, "[TilesetDescription]\n");
+	fprintf(fp, "Columns=%d\n", cols);
+	fprintf(fp, "Rows=%d\n", rows);
+	fprintf(fp, "LOD0_Size=%d\n", lod0size);
+	fprintf(fp, "Extent_Left=%.16lg\n", area.left);
+	fprintf(fp, "Extent_Right=%.16lg\n", area.right);
+	fprintf(fp, "Extent_Bottom=%.16lg\n", area.bottom);
+	fprintf(fp, "Extent_Top=%.16lg\n", area.top);
+	// write CRS, but pretty it up a bit
+	OGRSpatialReference *poSimpleClone = proj.Clone();
+	poSimpleClone->GetRoot()->StripNodes( "AXIS" );
+	poSimpleClone->GetRoot()->StripNodes( "AUTHORITY" );
+	char *wkt;
+	poSimpleClone->exportToWkt(&wkt);
+	fprintf(fp, "CRS=%s\n", wkt);
+	OGRFree(wkt);	// Free CRS
+	delete poSimpleClone;
+	fclose(fp);
+
+	return true;
+}
+

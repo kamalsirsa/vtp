@@ -58,4 +58,10 @@ private:
 	void swapbytes();
 };
 
+// Helper to write headers
+class DRECT;
+class vtProjection;
+bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
+						const DRECT &area, const vtProjection &proj);
+
 #endif
