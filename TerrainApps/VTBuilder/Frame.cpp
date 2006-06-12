@@ -1666,7 +1666,7 @@ void MainFrame::MergeResampleElevation()
 }
 
 #if USE_OPENGL
-	#include "wx/glcanvas.h"
+	#include "wx/glcanvas.h"	// needed for writing pre-compressed textures
 #endif
 
 bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat)
@@ -1686,29 +1686,12 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 		return false;
 
 	// Write .ini file
-	FILE *fp = fopen(opts.fname, "wb");
-	if (!fp)
+	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
+		m_area, m_proj))
 	{
 		vtDestroyDir(dirname);
 		return false;
 	}
-	fprintf(fp, "[TilesetDescription]\n");
-	fprintf(fp, "Columns=%d\n", opts.cols);
-	fprintf(fp, "Rows=%d\n", opts.rows);
-	fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
-	fprintf(fp, "Extent_Left=%.16lg\n", m_area.left);
-	fprintf(fp, "Extent_Right=%.16lg\n", m_area.right);
-	fprintf(fp, "Extent_Bottom=%.16lg\n", m_area.bottom);
-	fprintf(fp, "Extent_Top=%.16lg\n", m_area.top);
-	// write CRS, but pretty it up a bit
-	OGRSpatialReference *poSimpleClone = m_proj.Clone();
-	poSimpleClone->GetRoot()->StripNodes( "AXIS" );
-	poSimpleClone->GetRoot()->StripNodes( "AUTHORITY" );
-	char *wkt;
-	poSimpleClone->exportToWkt(&wkt);
-	fprintf(fp, "CRS=%s\n", wkt);
-	delete poSimpleClone;
-	fclose(fp);
 
 	ColorMap cmap;
 	vtElevLayer::SetupDefaultColors(cmap);	// defaults
@@ -1720,22 +1703,12 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			return false;
 
 		// Write .ini file
-		fp = fopen(opts.fname_images, "wb");
-		if (!fp)
+		if (!WriteTilesetHeader(opts.fname_images, opts.cols, opts.rows,
+			opts.lod0size, m_area, m_proj))
 		{
 			vtDestroyDir(dirname_image);
 			return false;
 		}
-		fprintf(fp, "[TilesetDescription]\n");
-		fprintf(fp, "Columns=%d\n", opts.cols);
-		fprintf(fp, "Rows=%d\n", opts.rows);
-		fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
-		fprintf(fp, "Extent_Left=%.16lg\n", m_area.left);
-		fprintf(fp, "Extent_Right=%.16lg\n", m_area.right);
-		fprintf(fp, "Extent_Bottom=%.16lg\n", m_area.bottom);
-		fprintf(fp, "Extent_Top=%.16lg\n", m_area.top);
-		fprintf(fp, "CRS=%s\n", wkt);
-		fclose(fp);
 
 		vtString cmap_fname = opts.draw.m_strColorMapFile;
 		vtString cmap_path = FindFileOnPaths(GetMainFrame()->m_datapaths, "GeoTypical/" + cmap_fname);
@@ -1747,9 +1720,6 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				DisplayAndLog("Couldn't load color map.");
 		}
 	}
-
-	// Free CRS
-	OGRFree(wkt);
 
 #if USE_OPENGL
 	wxFrame *frame = new wxFrame;
@@ -1990,6 +1960,200 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 					}
 				}
 				buf.savedata(fname);
+			}
+		}
+	}
+
+#if USE_OPENGL
+	frame->Close();
+	delete frame;
+#endif
+
+	return true;
+}
+
+bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
+{
+	VTLOG1("SampleImageryToTilePyramids\n");
+
+	// Gather array of existing image layers we will sample from
+	int l, layers = m_Layers.GetSize(), num_image = 0;
+	vtImageLayer **images = new vtImageLayer *[LayersOfType(LT_IMAGE)];
+	for (l = 0; l < layers; l++)
+	{
+		vtLayer *lp = m_Layers.GetAt(l);
+		if (lp->GetType() == LT_IMAGE)
+			images[num_image++] = (vtImageLayer *)lp;
+	}
+
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	// Size of each rectangular tile area
+	DPoint2 tile_dim(m_area.Width()/opts.cols, m_area.Height()/opts.rows);
+
+	// Try to create directory to hold the tiles
+	vtString dirname = opts.fname;
+	RemoveFileExtensions(dirname);
+	if (!vtCreateDir(dirname))
+		return false;
+
+	// Write .ini file
+	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
+		m_area, m_proj))
+	{
+		vtDestroyDir(dirname);
+		return false;
+	}
+
+#if USE_OPENGL
+	wxFrame *frame = new wxFrame;
+	frame->Create(this, -1, _T("Texture Compression OpenGL Context"),
+		wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
+	wxGLCanvas *pCanvas = new wxGLCanvas(frame);
+#endif
+
+	int i, j, im;
+	int total = opts.rows * opts.cols * opts.numlods, done = 0;
+	for (j = 0; j < opts.rows; j++)
+	{
+		for (i = 0; i < opts.cols; i++)
+		{
+			// draw our progress in the main view
+			GetView()->ShowGridMarks(m_area, opts.cols, opts.rows, i, j);
+
+			DRECT tile_area;
+			tile_area.left =	m_area.left + tile_dim.x * i;
+			tile_area.right =	m_area.left + tile_dim.x * (i+1);
+			tile_area.bottom =	m_area.bottom + tile_dim.y * j;
+			tile_area.top =		m_area.bottom + tile_dim.y * (j+1);
+
+			// Look through the elevation layers to find those which this
+			//  tile can sample from.  Determine the highest resolution
+			//  available for this tile.
+			DPoint2 best_spacing(1E9, 1E9);
+			int num_source_images = 0;
+			for (im = 0; im < num_image; im++)
+			{
+				DRECT layer_extent;
+				images[im]->GetExtent(layer_extent);
+				if (tile_area.OverlapsRect(layer_extent))
+				{
+					num_source_images++;
+					DPoint2 spacing = images[im]->GetSpacing();
+					if (spacing.x < best_spacing.x ||
+						spacing.y < best_spacing.y)
+						best_spacing = spacing;
+				}
+			}
+
+			// increment progress count whether we omit tile or not
+			done++;
+
+			// if there is no data, omit this tile
+			if (num_source_images == 0)
+				continue;
+
+			// Estimate what tile resolution is appropriate.
+			//  If we can produce a lower resolution, then we can produce fewer lods.
+			int total_lods = 1;
+			int start_lod = opts.numlods-1;
+			int base_tilesize = opts.lod0size >> start_lod;
+			float width = tile_area.Width(), height = tile_area.Height();
+			while (width / base_tilesize > (best_spacing.x * 1.1) &&	// 10% to avoid roundoff
+				   height / base_tilesize > (best_spacing.y * 1.1) &&
+				   total_lods < opts.numlods)
+			{
+			   base_tilesize <<= 1;
+			   start_lod--;
+			   total_lods++;
+			}
+
+			int col = i;
+			int row = opts.rows-1-j;
+
+			// Now sample the images we found to the highest LOD we need
+			vtImageLayer Target(tile_area, base_tilesize, base_tilesize, m_proj);
+
+			DPoint2 p;
+			int x, y;
+			RGBi pixel, rgb;
+			for (y = base_tilesize-1; y >= 0; y--)
+			{
+				p.y = m_area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
+				for (x = 0; x < base_tilesize; x++)
+				{
+					p.x = m_area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
+
+					// find some data for this point
+					rgb.Set(0,0,0);
+					for (int im = 0; im < num_image; im++)
+						if (images[im]->GetFilteredColor(p, pixel))
+							rgb = pixel;
+
+					Target.SetRGB(x, y, rgb);
+				}
+			}
+
+			for (int k = 0; k < total_lods; k++)
+			{
+				int lod = start_lod + k;
+				int tilesize = base_tilesize >> k;
+
+				vtString fname = dirname, str;
+				fname += '/';
+				if (k == 0)
+					str.Format("tile.%d-%d.db", col, row);
+				else
+					str.Format("tile.%d-%d.db%d", col, row, k);
+				fname += str;
+
+				// make a message for the progress dialog
+				wxString msg;
+				msg.Printf(_("Tile '%hs', size %dx%d"),
+					(const char *)fname, tilesize, tilesize);
+				UpdateProgressDialog(done*99/total, msg);
+
+				unsigned char *rgb_bytes = (unsigned char *) malloc(tilesize * tilesize * 3);
+				int cb = 0;	// count bytes
+
+				for (y = base_tilesize-1; y >= 0; y -= (1<<k))
+				{
+					for (x = 0; x < base_tilesize; x += (1<<k))
+					{
+						Target.GetRGB(x, y, rgb);
+						rgb_bytes[cb++] = rgb.r;
+						rgb_bytes[cb++] = rgb.g;
+						rgb_bytes[cb++] = rgb.b;
+					}
+				}
+				int iUncompressedSize = cb;
+
+				MiniDatabuf output_buf;
+				output_buf.xsize = tilesize;
+				output_buf.ysize = tilesize;
+				output_buf.zsize = 1;
+				output_buf.tsteps = 1;
+
+#if USE_OPENGL
+				// Compressed
+				unsigned int iTex;
+				DoTextureCompress(rgb_bytes, output_buf, iTex);
+
+				output_buf.savedata(fname);
+				free(output_buf.data);
+				output_buf.data = NULL;
+#else
+				// Uncompressed
+				// Output to a plain RGB .db file
+				output_buf.type = 3;	// RGB
+				output_buf.bytes = iUncompressedSize;
+				output_buf.data = rgb_bytes;
+				output_buf.savedata(fname);
+				output_buf.data = NULL;
+#endif
+				// Free the uncompressed image
+				free(rgb_bytes);
 			}
 		}
 	}

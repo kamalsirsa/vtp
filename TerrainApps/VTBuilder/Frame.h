@@ -248,6 +248,7 @@ protected:
 	void OnAreaTypeIn(wxCommandEvent& event);
 	void OnAreaExportElev(wxCommandEvent& event);
 	void OnAreaOptimizedElevTileset(wxCommandEvent& event);
+	void OnAreaOptimizedImageTileset(wxCommandEvent& event);
 	void OnAreaExportImage(wxCommandEvent& event);
 	void OnAreaGenerateVeg(wxCommandEvent& event);
 	void OnAreaRequestWFS(wxCommandEvent& event);
@@ -445,6 +446,7 @@ public:
 	void ScanElevationLayers(int &count, int &floating, DPoint2 &spacing);
 	void MergeResampleElevation();
 	bool SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat);
+	bool SampleImageryToTilePyramids(const TilingOptions &opts);
 	void ExportImage();
 
 	// Web Access
