@@ -79,6 +79,13 @@ void vtImageLayer::SetRGB(int x, int y, unsigned char r, unsigned char g, unsign
 		m_pBitmap->SetPixel24(x, y, r, g, b);
 }
 
+void vtImageLayer::SetRGB(int x, int y, const RGBi &rgb)
+{
+	// this method clearly only works for in-memory images
+	if (m_pBitmap)
+		m_pBitmap->SetPixel24(x, y, rgb);
+}
+
 void vtImageLayer::SetDefaults()
 {
 	m_iXSize = 0;
@@ -306,11 +313,11 @@ bool vtImageLayer::GetFilteredColor(const DPoint2 &p, RGBi &rgb)
 		iy = m_iYSize-1;
 	if (iy < 0 || iy >= m_iYSize)
 		return false;
-	GetFilteredColor(ix, iy, rgb);
+	GetRGB(ix, iy, rgb);
 	return true;
 }
 
-void vtImageLayer::GetFilteredColor(int x, int y, RGBi &rgb)
+void vtImageLayer::GetRGB(int x, int y, RGBi &rgb)
 {
 	if (m_pBitmap)
 	{
@@ -1473,37 +1480,14 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 		crs = "Other";
 
 	// Write .ini file
-	FILE *fp = fopen(opts.fname, "wb");
-	if (!fp)
+	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size, area, m_proj))
 		return false;
 
 	// Try to create directory to hold the tiles
 	vtString dirname = opts.fname;
 	RemoveFileExtensions(dirname);
 	if (!vtCreateDir(dirname))
-	{
-		fclose(fp);
 		return false;
-	}
-
-	fprintf(fp, "[TilesetDescription]\n");
-	fprintf(fp, "Columns=%d\n", opts.cols);
-	fprintf(fp, "Rows=%d\n", opts.rows);
-	fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
-	fprintf(fp, "Extent_Left=%.16lg\n", area.left);
-	fprintf(fp, "Extent_Right=%.16lg\n", area.right);
-	fprintf(fp, "Extent_Bottom=%.16lg\n", area.bottom);
-	fprintf(fp, "Extent_Top=%.16lg\n", area.top);
-	// write CRS, but pretty it up a bit
-	OGRSpatialReference *poSimpleClone = m_proj.Clone();
-	poSimpleClone->GetRoot()->StripNodes( "AXIS" );
-	poSimpleClone->GetRoot()->StripNodes( "AUTHORITY" );
-	char *wkt;
-	poSimpleClone->exportToWkt(&wkt);
-	fprintf(fp, "CRS=%s\n", wkt);
-	delete poSimpleClone;
-	OGRFree(wkt);
-	fclose(fp);
 
 	if (!m_pBitmap)
 	{

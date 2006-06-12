@@ -62,13 +62,14 @@ public:
 		ysize = m_iYSize;
 	}
 	bool GetFilteredColor(const DPoint2 &p, RGBi &rgb);
-	void GetFilteredColor(int x, int y, RGBi &rgb);
+	void GetRGB(int x, int y, RGBi &rgb);
 
 	bool ImportFromFile(const wxString2 &strFileName, bool progress_callback(int) = NULL);
 	bool ReadPPM(const char *fname, bool progress_callback(int) = NULL);
 	bool SaveToFile(const char *fname) const;
 	bool ReadPNGFromMemory(unsigned char *buf, int len);
 	void SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b);
+	void SetRGB(int x, int y, const RGBi &rgb);
 
 	bool ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 		int iMetersPerPixel, int iUTMZone, const char *filename);
