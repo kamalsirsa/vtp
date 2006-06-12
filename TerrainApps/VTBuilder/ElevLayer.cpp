@@ -1237,29 +1237,11 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 		return false;
 
 	// Write .ini file
-	FILE *fp = fopen(opts.fname, "wb");
-	if (!fp)
+	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size, area, proj))
 	{
 		vtDestroyDir(dirname);
 		return false;
 	}
-	fprintf(fp, "[TilesetDescription]\n");
-	fprintf(fp, "Columns=%d\n", opts.cols);
-	fprintf(fp, "Rows=%d\n", opts.rows);
-	fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
-	fprintf(fp, "Extent_Left=%.16lg\n", area.left);
-	fprintf(fp, "Extent_Right=%.16lg\n", area.right);
-	fprintf(fp, "Extent_Bottom=%.16lg\n", area.bottom);
-	fprintf(fp, "Extent_Top=%.16lg\n", area.top);
-	// write CRS, but pretty it up a bit
-	OGRSpatialReference *poSimpleClone = proj.Clone();
-	poSimpleClone->GetRoot()->StripNodes( "AXIS" );
-	poSimpleClone->GetRoot()->StripNodes( "AUTHORITY" );
-	char *wkt;
-	poSimpleClone->exportToWkt(&wkt);
-	delete poSimpleClone;
-	fprintf(fp, "CRS=%s\n", wkt);
-	fclose(fp);
 
 	ColorMap cmap;
 	vtElevLayer::SetupDefaultColors(cmap);	// defaults
@@ -1271,22 +1253,12 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 			return false;
 
 		// Write .ini file
-		fp = fopen(opts.fname_images, "wb");
-		if (!fp)
+		if (!WriteTilesetHeader(opts.fname_images, opts.cols, opts.rows,
+			opts.lod0size, area, proj))
 		{
 			vtDestroyDir(dirname_image);
 			return false;
 		}
-		fprintf(fp, "[TilesetDescription]\n");
-		fprintf(fp, "Columns=%d\n", opts.cols);
-		fprintf(fp, "Rows=%d\n", opts.rows);
-		fprintf(fp, "LOD0_Size=%d\n", opts.lod0size);
-		fprintf(fp, "Extent_Left=%.16lg\n", area.left);
-		fprintf(fp, "Extent_Right=%.16lg\n", area.right);
-		fprintf(fp, "Extent_Bottom=%.16lg\n", area.bottom);
-		fprintf(fp, "Extent_Top=%.16lg\n", area.top);
-		fprintf(fp, "CRS=%s\n", wkt);
-		fclose(fp);
 
 		vtString cmap_fname = opts.draw.m_strColorMapFile;
 		vtString cmap_path = FindFileOnPaths(GetMainFrame()->m_datapaths, "GeoTypical/" + cmap_fname);
@@ -1298,9 +1270,6 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 				DisplayAndLog("Couldn't load color map.");
 		}
 	}
-
-	// Free CRS
-	OGRFree(wkt);
 
 	bool bFloat = m_pGrid->IsFloatMode();
 
