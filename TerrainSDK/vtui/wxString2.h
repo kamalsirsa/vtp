@@ -85,7 +85,7 @@ private:
 /**
  * Also very convenient, an array of wxString2 objects.
  */
-class wxStringArray : public Array<wxString2 *>
+class wxStringArray : public vtArray<wxString2 *>
 {
 public:
 	virtual ~wxStringArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
