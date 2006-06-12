@@ -2539,12 +2539,20 @@ void vtTerrain::Enable(bool bVisible)
 	m_pTerrainGroup->SetEnabled(bVisible);
 }
 
+/**
+ * Return the center of the bounding sphere that encloses the terrain's
+ * dynamic geometry.
+ */
 FPoint3 vtTerrain::GetCenter()
 {
 	GetTerrainBounds();
 	return m_bound_sphere.center;
 }
 
+/**
+ * Return the radius of the bounding sphere that encloses the terrain's
+ * dynamic geometry.
+ */
 float vtTerrain::GetRadius()
 {
 	GetTerrainBounds();
