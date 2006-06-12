@@ -236,6 +236,7 @@ EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
 EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
 EVT_MENU(ID_AREA_EXPORT_IMAGE,		MainFrame::OnAreaExportImage)
 EVT_MENU(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnAreaOptimizedElevTileset)
+EVT_MENU(ID_AREA_EXPORT_IMAGE_OPT,	MainFrame::OnAreaOptimizedImageTileset)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
 EVT_MENU(ID_AREA_REQUEST_WFS,		MainFrame::OnAreaRequestWFS)
 EVT_MENU(ID_AREA_REQUEST_WMS,		MainFrame::OnAreaRequestWMS)
@@ -245,6 +246,7 @@ EVT_UPDATE_UI(ID_AREA_ZOOM_ALL,		MainFrame::OnUpdateAreaZoomAll)
 EVT_UPDATE_UI(ID_AREA_ZOOM_LAYER,	MainFrame::OnUpdateAreaZoomLayer)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnUpdateAreaExportElev)
+EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE_OPT,MainFrame::OnUpdateAreaExportImage)
 EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE,	MainFrame::OnUpdateAreaExportImage)
 EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
 EVT_UPDATE_UI(ID_AREA_REQUEST_WFS,	MainFrame::OnUpdateAreaRequestWMS)
@@ -486,7 +488,9 @@ void MainFrame::CreateMenus()
 #endif
 	areaMenu->AppendSeparator();
 	areaMenu->Append(ID_AREA_EXPORT_ELEV_SPARSE, _("Optimized Resample Elevation to Tileset"),
-		_("Sample all elevation data within the Area Tool to produce a sparse, optimized elevation tileset."));
+		_("Sample all elevation data within the Area Tool efficiently to produce an elevation tileset."));
+	areaMenu->Append(ID_AREA_EXPORT_IMAGE_OPT, _("Optimized Resample Imagery to Tileset"),
+		_("Sample all image data within the Area Tool efficiently to produce an image tileset."));
 	m_pMenuBar->Append(areaMenu, _("&Area Tool"));
 	menu_num++;
 
@@ -1618,6 +1622,51 @@ void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
 
 	OpenProgressDialog(_T("Writing tiles"), true);
 	bool success = SampleElevationToTilePyramids(tileopts, bFloat);
+	GetView()->HideGridMarks();
+	CloseProgressDialog();
+	if (success)
+		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
+	else
+		DisplayAndLog("Could not successfully write to '%s'", (const char *) tileopts.fname);
+}
+
+void MainFrame::OnAreaOptimizedImageTileset(wxCommandEvent &event)
+{
+	TilingOptions tileopts;
+	tileopts.cols = 4;
+	tileopts.rows = 4;
+	tileopts.lod0size = 256;
+	tileopts.numlods = 3;
+
+	DPoint2 spacing(0, 0);
+	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+	{
+		vtLayer *l = m_Layers.GetAt(i);
+		if (l->GetType() == LT_IMAGE)
+		{
+			vtImageLayer *im = (vtImageLayer *)l;
+			spacing = im->GetSpacing();
+		}
+	}
+
+	TileDlg dlg(this, -1, _("Tiling Options"));
+	dlg.m_fEstX = spacing.x;
+	dlg.m_fEstY = spacing.y;
+	dlg.SetElevation(true);
+	dlg.SetArea(m_area);
+	dlg.SetTilingOptions(tileopts);
+	dlg.SetView(GetView());
+
+	if (dlg.ShowModal() != wxID_OK)
+	{
+		GetView()->HideGridMarks();
+		return;
+	}
+	dlg.GetTilingOptions(tileopts);
+	tileopts.bCreateDerivedImages = false;
+
+	OpenProgressDialog(_T("Writing tiles"), true);
+	bool success = SampleImageryToTilePyramids(tileopts);
 	GetView()->HideGridMarks();
 	CloseProgressDialog();
 	if (success)
