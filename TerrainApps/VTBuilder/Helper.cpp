@@ -196,7 +196,6 @@ void wxDC2::StretchBlit(const wxBitmap &bmp,
 
 #include "GL/gl.h"
 #include "GL/glext.h"
-#include "wx/glcanvas.h"
 #ifdef _MSC_VER
 	#pragma message( "Adding link with opengl32.lib" )
 	#pragma comment( lib, "opengl32.lib" )
@@ -251,6 +250,7 @@ void* getGLExtensionFuncPtr(const char *funcName)
 #endif
 }
 
+
 void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
 					   unsigned int &iTex)
 {
@@ -263,7 +263,8 @@ void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
 	GLenum type = GL_UNSIGNED_BYTE;
 	GLvoid *pixels = rgb_bytes;
 
-	glGenTextures(1, &iTex);
+	if (iTex == 9999)	// not yet assigned
+		glGenTextures(1, &iTex);
 	glBindTexture(GL_TEXTURE_2D, iTex);
 
 	glTexImage2D(target, level, internalformat,
@@ -291,6 +292,67 @@ void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
 	gctia(target, level, output_buf.data);
 
 }
+
+//
+// ImageGLCanvas class:
+//  We need to open an OpenGL context in order to do the texture compression,
+//  so we may as well draw something into it, since it requires little extra
+//  work, and provides interesting visual feedback to the user.
+//
+BEGIN_EVENT_TABLE(ImageGLCanvas, wxGLCanvas)
+EVT_PAINT(ImageGLCanvas::OnPaint)
+EVT_SIZE(ImageGLCanvas::OnSize)
+END_EVENT_TABLE()
+
+ImageGLCanvas::ImageGLCanvas(wxWindow *parent, const wxWindowID id, const wxPoint& pos,
+	const wxSize& size, long style, const wxString &name,
+	int* gl_attrib) : wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
+{
+	m_iTex = 9999;
+
+	// These two lines are needed for wxGTK (and possibly other platforms, but not wxMSW)
+	parent->Show(TRUE);
+	SetCurrent();
+}
+
+void ImageGLCanvas::OnPaint(wxPaintEvent& event)
+{
+	wxPaintDC dc(this);
+	if (m_iTex == 9999)
+		return;
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	IPoint2 size;
+	GetClientSize(&size.x, &size.y);
+
+	// Direct pixel coordinates with origin in center of window
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-size.x/2,size.x/2,-size.y/2,size.y/2,0,1);
+
+	// Draw a quad with the current texture
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, m_iTex);
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);	glVertex3f(-128, -128, 0);
+	glTexCoord2f(1, 1);	glVertex3f( 128, -128, 0);
+	glTexCoord2f(1, 0);	glVertex3f( 128,  128, 0);
+	glTexCoord2f(0, 0);	glVertex3f(-128,  128, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+	SwapBuffers();
+}
+
+void ImageGLCanvas::OnSize(wxSizeEvent& event)
+{
+	glViewport(0, 0, event.m_size.x, event.m_size.y);
+}
+
 #endif	// USE_OPENGL
 
 

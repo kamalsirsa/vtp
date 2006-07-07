@@ -51,8 +51,32 @@ public:
 
 /////////////////
 
+#if USE_OPENGL
 void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
 					   unsigned int &iTex);
+#include "wx/glcanvas.h"
 
+//
+// ImageGLCanvas class:
+//  We need to open an OpenGL context in order to do the texture compression,
+//  so we may as well draw something into it, since it requires little extra
+//  work, and provides interesting visual feedback to the user.
+//
+class ImageGLCanvas : public wxGLCanvas
+{
+public:
+	ImageGLCanvas(wxWindow *parent, const wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
+	  const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxT(""),
+	  int* gl_attrib = NULL);
+	void OnPaint(wxPaintEvent& event);
+	void OnSize(wxSizeEvent& event);
+	void OnEraseBackground(wxEraseEvent& event) {}	// Do nothing, to avoid flashing.
+
+	unsigned int m_iTex;
+protected:
+	DECLARE_EVENT_TABLE()
+};
+
+#endif	// USE_OPENGL
 #endif	// HELPERH
 
