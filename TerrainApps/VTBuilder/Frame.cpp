@@ -1723,11 +1723,12 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 #if USE_OPENGL
 	wxFrame *frame = new wxFrame;
+	ImageGLCanvas *pCanvas = NULL;
 	if (opts.bCreateDerivedImages)
 	{
 		frame->Create(this, -1, _T("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
-		wxGLCanvas *pCanvas = new wxGLCanvas(frame);
+		pCanvas = new ImageGLCanvas(frame);
 	}
 #endif
 
@@ -1880,12 +1881,14 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 						}
 #if USE_OPENGL
 					// Compressed
-					unsigned int iTex;
-					DoTextureCompress(rgb_bytes, output_buf, iTex);
+					DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex);
 
 					output_buf.savedata(fname);
 					free(output_buf.data);
 					output_buf.data = NULL;
+
+					if (tilesize == 256)
+						pCanvas->Refresh(false);
 #else
 					// Uncompressed
 					// Output to a plain RGB .db file
@@ -2010,7 +2013,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 	wxFrame *frame = new wxFrame;
 	frame->Create(this, -1, _T("Texture Compression OpenGL Context"),
 		wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
-	wxGLCanvas *pCanvas = new wxGLCanvas(frame);
+	ImageGLCanvas *pCanvas = new ImageGLCanvas(frame);
 #endif
 
 	int i, j, im;
@@ -2137,12 +2140,14 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 
 #if USE_OPENGL
 				// Compressed
-				unsigned int iTex;
-				DoTextureCompress(rgb_bytes, output_buf, iTex);
+				DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex);
 
 				output_buf.savedata(fname);
 				free(output_buf.data);
 				output_buf.data = NULL;
+
+				if (tilesize == 256)
+					pCanvas->Refresh(false);
 #else
 				// Uncompressed
 				// Output to a plain RGB .db file
