@@ -833,7 +833,16 @@ bool vtFeatureSetPolygon::AppendGeometryFrom(vtFeatureSet *pFromSet)
 		return false;
 
 	for (unsigned int i = 0; i < pFrom->GetNumEntities(); i++)
+	{
+		switch (m_eGeomType) {
+		case wkbPolygon:
+		case wkbMultiPolygon:
 		m_Poly.push_back(pFrom->m_Poly[i]);
+			break;
+		default:
+			break;
+		}
+	}
 	return true;
 }
 
