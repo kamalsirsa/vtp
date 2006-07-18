@@ -186,7 +186,10 @@ OGRwkbGeometryType GetTypeFromOGR(const char *filename)
 {
 	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
 	if (!pDatasource)
+	{
+		VTLOG("unknown Datasource!");
 		return wkbUnknown;
+	}
 
 	// Take the contents of the first layer only.
 	OGRLayer *pLayer = pDatasource->GetLayer(0);
@@ -411,7 +414,10 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(OGRLayer *pLayer,
 							 bool progress_callback(int))
 {
 	if (!pLayer)
+	{
+		VTLOG("OGRLayer is NULL in LoadWithOGR(OGRLayer)\n");
 		return NULL;
+	}
 
 	// Get basic information about the layer we're reading
 	OGRwkbGeometryType geom_type = GetTypeFromOGR(pLayer);
@@ -426,12 +432,14 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(OGRLayer *pLayer,
 		pSet = new vtFeatureSetPoint3D;
 		break;
 	case wkbLineString:
+	case wkbMultiLineString:
 		pSet = new vtFeatureSetLineString;
 		break;
 	case wkbLineString25D:
 		pSet = new vtFeatureSetLineString3D;
 		break;
 	case wkbPolygon:
+	case wkbMultiPolygon:
 		pSet = new vtFeatureSetPolygon;
 		break;
 	default:
@@ -454,14 +462,26 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
 
 	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
 	if (!pDatasource)
+	{
+		VTLOG("LoadWithOGR: data source is NULL.\n");
 		return NULL;
+	}
 
 	// Take the contents of the first layer only.
 	OGRLayer *pLayer = pDatasource->GetLayer(0);
+	if (!pLayer)
+	{
+		VTLOG("LoadWithOGR: OGRLayer is NULL.\n");
+	}
+
 	vtFeatureSet *pSet = LoadWithOGR(pLayer, progress_callback);
 	if (pSet)
+	{
 		// We've read the file now, so take it's name
 		pSet->SetFilename(filename);
+	}
+	else
+		VTLOG("LoadWithOGR: FeatureSet is NULL.\n");
 
 	delete pDatasource;
 
@@ -529,6 +549,7 @@ bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 	OGRLinearRing	*pRing;
 	OGRLineString   *pLineString;
 	OGRMultiLineString   *pMulti;
+	OGRMultiPolygon *pMultiPoly;
 
 	vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D *>(this);
 	vtFeatureSetPoint3D *pSetP3 = dynamic_cast<vtFeatureSetPoint3D *>(this);
@@ -682,7 +703,63 @@ bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 			break;
 
 		case wkbMultiPolygon:
-			// possible TODO
+			pMultiPoly = (OGRMultiPolygon *) pGeom;
+			if (pSetPoly)
+			{
+				num_geoms = pMultiPoly->getNumGeometries();
+				for (i=0; i < num_geoms; ++i)
+				{
+					pPolygon = (OGRPolygon *) pMultiPoly->getGeometryRef(i);
+
+					//handle each polygon's exterior ring
+					pRing = pPolygon->getExteriorRing();
+					num_points = pRing->getNumPoints();
+
+					dpoly.resize(0);
+
+					// do exterior ring
+					dline2.SetSize(0);
+					dline2.SetMaxSize(num_points);
+					for (j = 0; j < num_points; j++)
+					{
+						p2.Set(pRing->getX(j), pRing->getY(j));
+
+						// ignore last point if it's the same as the first
+						if (j == 0)
+							first_p2 = p2;
+						if (j == num_points-1 && p2 == first_p2)
+							continue;
+
+						dline2.Append(p2);
+					}
+					dpoly.push_back(dline2);
+
+					//handle the interior rings of each polygon
+					// do interior ring(s)
+					for (i = 0; i < pPolygon->getNumInteriorRings(); i++)
+					{
+						pRing = pPolygon->getInteriorRing(i);
+						num_points = pRing->getNumPoints();
+						dline2.SetSize(0);
+						dline2.SetMaxSize(num_points);
+						for (j = 0; j < num_points; j++)
+						{
+							p2.Set(pRing->getX(j), pRing->getY(j));
+
+							// ignore last point if it's the same as the first
+							if (j == 0)
+								first_p2 = p2;
+							if (j == num_points-1 && p2 == first_p2)
+								continue;
+
+							dline2.Append(p2);
+						}
+						dpoly.push_back(dline2);
+					}
+				
+					pSetPoly->AddPolygon(dpoly);
+				}
+			}
 			break;
 
 		case wkbMultiPoint:
