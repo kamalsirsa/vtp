@@ -204,32 +204,34 @@ bool vtMaterial::GetLighting() const
  */
 void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 {
-	beginEditCP(m_pMaterial);
-	int slot(0);
-	osg::StateChunkPtr statechunk = m_pMaterial->find( osg::BlendChunk::getClassType(), slot);
-	osg::BlendChunkPtr bchunk = osg::BlendChunkPtr::dcast( statechunk );
-	if (!bchunk && bOn) {
-			bchunk = osg::BlendChunk::create();
-			m_pMaterial->addChunk(bchunk, slot);
-	}
+	if ( !m_pMaterial->getLit() ) {
+		beginEditCP(m_pMaterial);
+		int slot(0);
+		osg::StateChunkPtr statechunk = m_pMaterial->find( osg::BlendChunk::getClassType(), slot);
+		osg::BlendChunkPtr bchunk = osg::BlendChunkPtr::dcast( statechunk );
+		if (!bchunk && bOn) {
+				bchunk = osg::BlendChunk::create();
+				m_pMaterial->addChunk(bchunk, slot);
+		}
 
-	if( bOn) {
-		beginEditCP(bchunk);
-		bchunk->setAlphaFunc(GL_GEQUAL);
-		//TODO bchunk-> how to set the reference value ??
-		endEditCP(bchunk);
-	} else {
-		//simply remove blend chunk ...
-		if( bchunk ) m_pMaterial->subChunk(bchunk, slot);
-	}
+		if( bOn) {
+			beginEditCP(bchunk);
+			bchunk->setAlphaFunc(GL_GEQUAL);
+			//TODO bchunk-> how to set the reference value ??
+			endEditCP(bchunk);
+		} else {
+			//simply remove blend chunk ...
+			if( bchunk ) m_pMaterial->subChunk(bchunk, slot);
+		}
 
-	if( bAdd ) {
-		beginEditCP(bchunk);
-		bchunk->setSrcFactor(GL_ONE);
-		bchunk->setDestFactor(GL_ONE_MINUS_SRC_COLOR);
-		endEditCP(bchunk);
+		if( bAdd ) {
+			beginEditCP(bchunk);
+			bchunk->setSrcFactor(GL_ONE);
+			bchunk->setDestFactor(GL_ONE_MINUS_SRC_COLOR);
+			endEditCP(bchunk);
+		}
+		endEditCP(m_pMaterial);
 	}
-	endEditCP(m_pMaterial);
 }
 
 /**
