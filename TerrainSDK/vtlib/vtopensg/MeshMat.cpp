@@ -23,7 +23,6 @@
 #include <string>
 
 // Static members
-vtMaterial *vtMaterial::s_pCurrentMaterial = NULL;
 bool vtMaterial::s_bTextureCompression = false;
 
 
@@ -438,28 +437,6 @@ bool vtMaterial::GetMipMap() const
 		return false;
 	}
 	return m_pMaterial->getMinFilter() == GL_LINEAR_MIPMAP_LINEAR;
-}
-
-void vtMaterial::Apply()
-{
-	// remove any previously applied material
-	UnApply();
-
-	osg::StatePtr state = m_pMaterial->getState();
-	state->activate(vtGetScene()->GetSceneView()->GetAction());
-
-	// remember it for UnApply later
-	s_pCurrentMaterial = this;
-}
-
-void vtMaterial::UnApply()
-{
-	if (s_pCurrentMaterial)
-	{
-		osg::StatePtr state = s_pCurrentMaterial->m_pMaterial->getState();
-		state->deactivate(vtGetScene()->GetSceneView()->GetAction());
-		s_pCurrentMaterial = NULL;
-	}
 }
 
 

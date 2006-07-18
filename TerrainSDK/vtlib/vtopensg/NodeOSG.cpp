@@ -760,7 +760,7 @@ void vtTransform::Scale3(float x, float y, float z)
 	osg::Matrix4f mat = m_pTransform->getMatrix();
 	osg::Matrix4f s;
 	s.setScale( x,y,z );
-	mat.multLeft(s);
+	mat.mult(s);
 	beginEditCP(m_pTransform);
 	m_pTransform->setMatrix( mat );
 	endEditCP(m_pTransform);
@@ -1333,6 +1333,12 @@ void vtLOD::SetCenter(FPoint3 &center)
 }
 
 
+///////////////////////////////////////////////////////////////////////
+// vtDynGeom class
+
+// Static members
+vtMaterial *vtDynGeom::s_pCurrentMaterial = NULL;
+
 vtDynGeom::vtDynGeom() : vtGeom()
 {
 
@@ -1503,6 +1509,27 @@ int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
 		return VT_Visible;
 }
 
+void vtDynGeom::ApplyMaterial(vtMaterial *mat)
+{
+	// remove any previously applied material
+	UnApplyMaterial();
+
+	osg::StatePtr state = mat->m_pMaterial->getState();
+	state->activate(vtGetScene()->GetSceneView()->GetAction());
+
+	// remember it for UnApply later
+	s_pCurrentMaterial = mat;
+}
+
+void vtDynGeom::UnApplyMaterial()
+{
+	if (s_pCurrentMaterial)
+	{
+		osg::StatePtr state = s_pCurrentMaterial->m_pMaterial->getState();
+		state->deactivate(vtGetScene()->GetSceneView()->GetAction());
+		s_pCurrentMaterial = NULL;
+	}
+}
 
 ///////////////////////////////////////////////////////////
 // vtHUD

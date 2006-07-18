@@ -72,14 +72,8 @@ public:
 
 	osg::StatePtr GetState() const;
 
-	void Apply();
-
 	// global option
 	static bool s_bTextureCompression;
-
-	// remember the last applied material, for UnApply
-	static vtMaterial *s_pCurrentMaterial;
-	static void UnApply();
 
 	// remember this for convenience
 	vtImage *m_pImage;

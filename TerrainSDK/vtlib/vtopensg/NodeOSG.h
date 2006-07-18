@@ -390,10 +390,16 @@ public:
 	virtual void DoCalcBoundBox(FBox3 &box) = 0;
 	virtual void DoCull(const vtCamera *pCam) = 0;
 
+	void ApplyMaterial(vtMaterial *mat);
+	static void UnApplyMaterial();
+
 	// A handy shortcut to the current clipping planes
 	FPlane      *m_pPlanes;
 
 protected:
+	// remember the last applied material, for UnApply
+	static vtMaterial *s_pCurrentMaterial;
+
 	osg::vtOsgDynMeshPtr m_pDynMesh; //this is a node CORE
 	osg::NodePtr m_pDynNode;   //node which encapsules the core
 };
