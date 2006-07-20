@@ -1774,7 +1774,29 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 
 	// common color
 	RGBi color = style.GetValueRGBi("GeomColor");
-	int index = pMats->AddRGBMaterial1(color, false, false);
+	int common_material_index = pMats->AddRGBMaterial1(color, false, false);
+
+	// If each feature has its own color, we need to create those materials
+	int color_field_index;
+	RGBAf rgba;
+	if (!style.GetValueInt("ColorFieldIndex", color_field_index))
+		color_field_index = -1;
+	if (color_field_index != -1)
+	{
+		// go through all the features collecting unique colors
+		for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
+		{
+			// if we have a unique color, add it
+			if (GetColorField(feat, i, color_field_index, rgba))
+			{
+				if (pMats->FindByDiffuse(rgba) == -1)
+				{
+					RGBf rgb = (RGBf) rgba;
+					pMats->AddRGBMaterial1(rgb, false, false);
+				}
+			}
+		}
+	}
 
 	vtGeom *geom = new vtGeom;
 	geom->SetMaterials(pMats);
@@ -1788,13 +1810,26 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 	bool bTessellate = style.GetValueBool("Tessellate");
 	bool bCurve = false;
 
+	int material_index;
 	FPoint3 f3;
 	for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
 	{
+		if (color_field_index == -1)
+			material_index = common_material_index;
+		else
+		{
+			if (GetColorField(feat, i, color_field_index, rgba))
+				material_index = pMats->FindByDiffuse(rgba);
+			else
+				material_index = common_material_index;
+		}
+
 		unsigned int size;
 		if (pSetLS2)
 		{
 			const DLine2 &dline = pSetLS2->GetPolyLine(i);
+
+			mf.SetMatIndex(material_index);
 			AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve);
 		}
 		else if (pSetLS3)
