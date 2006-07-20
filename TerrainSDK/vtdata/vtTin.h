@@ -42,7 +42,7 @@ public:
 	bool Write(const char *fname) const;
 	bool ReadDXF(const char *fname, bool progress_callback(int) = NULL);
 
-	unsigned int AddSurfaceType(const vtString &surface_texture);
+	unsigned int AddSurfaceType(const vtString &surface_texture, bool bTiled = false);
 
 	bool ComputeExtents();
 	void Offset(const DPoint2 &p);
@@ -72,14 +72,15 @@ protected:
 	void _UpdateIndicesInInBin(int bin);
 	void _CompareBins(int bin1, int bin2);
 
-	DLine2		 m_vert;
-	vtArray<float> m_z;
-	vtArray<int>	 m_tri;
-	FLine3		 m_vert_normal;
+	DLine2			m_vert;
+	vtArray<float>	m_z;
+	vtArray<int>	m_tri;
+	FLine3			m_vert_normal;
 
 	// Surface Types
-	vtArray<int>	 m_surfidx;
+	vtArray<int>	m_surfidx;
 	vtStringArray	m_surftypes;
+	vtArray<bool>	m_surftype_tiled;
 
 	// These members are used only during MergeSharedVerts
 	int *m_bReplace;

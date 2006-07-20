@@ -78,10 +78,19 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 			{
 				bool bLighting = bExplicitNormals;
 				float fAmbient = 0.3f;
+				vtString path;
 
-				vtString relpath = "GeoTypical/";
-				relpath += m_surftypes[i];
-				vtString path = FindFileOnPaths(vtGetDataPath(), relpath);
+				// Might be absolute path
+				path = FindFileOnPaths(vtGetDataPath(), m_surftypes[i]);
+
+				// Might be relative path
+				if (path == "")
+				{
+					vtString relpath = "GeoTypical/";
+					relpath += m_surftypes[i];
+					path = FindFileOnPaths(vtGetDataPath(), relpath);
+				}
+
 				m_pMats->AddTextureMaterial2(path, false, bLighting, false, false,
 					fAmbient, 1.0f, 1.0f, 0.0f, false, false, true);
 			}
@@ -222,6 +231,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 			if (shade < 0)
 				shade = -shade;
 
+			bool bTiled = true;
 			if (bUseSurfaceTypes)
 			{
 				// We mush pick a mesh based on surface type
@@ -229,6 +239,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 				if (pTypeMeshes[surftype] == NULL)
 					pTypeMeshes[surftype] = new vtMesh(vtMesh::TRIANGLES, vert_type, in_bin * 3);
 				pMesh = pTypeMeshes[surftype];
+				bTiled = m_surftype_tiled[surftype];
 			}
 
 			int vert_base = pMesh->GetNumVertices();
@@ -241,7 +252,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 				if (bTextured)
 				{
 					FPoint2 uv;
-					if (bGeoSpecific)
+					if (bGeoSpecific || !bTiled)
 						uv.Set((m_vert[vidx].x - m_EarthExtents.left) / sizex,
 							   (m_vert[vidx].y - m_EarthExtents.bottom) / sizey);
 					else

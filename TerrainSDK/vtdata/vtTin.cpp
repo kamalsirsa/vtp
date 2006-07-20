@@ -35,9 +35,10 @@ void vtTin::AddTri(int i1, int i2, int i3, int surface_type)
 		m_surfidx.Append(surface_type);
 }
 
-unsigned int vtTin::AddSurfaceType(const vtString &surface_texture)
+unsigned int vtTin::AddSurfaceType(const vtString &surface_texture, bool bTiled)
 {
 	m_surftypes.push_back(surface_texture);
+	m_surftype_tiled.Append(bTiled);
 	return m_surftypes.size()-1;
 }
 
