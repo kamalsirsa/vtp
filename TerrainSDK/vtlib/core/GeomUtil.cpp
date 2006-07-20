@@ -332,11 +332,23 @@ void vtMeshFactory::AddVertex(const FPoint3 &p)
 /** Tell the factory to end a primitive. */
 void vtMeshFactory::PrimEnd()
 {
-	m_pMesh->AddStrip2(m_iPrimVerts, m_iPrimStart);
+	if (m_iPrimVerts > 0)
+		m_pMesh->AddStrip2(m_iPrimVerts, m_iPrimStart);
 	m_iPrimStart = -1;
 	m_iPrimVerts = -1;
 }
 
+void vtMeshFactory::SetMatIndex(int iIdx)
+{
+	if (iIdx != m_iMatIndex)
+	{
+		// Material is changing, we must start a new mesh
+		PrimEnd();
+		m_iMatIndex = iIdx;
+		NewMesh();
+		PrimStart();
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////
 // vtDimension

@@ -46,6 +46,8 @@ public:
 	void AddVertex(const FPoint3 &p);
 	void PrimEnd();
 
+	void SetMatIndex(int iIdx);
+
 protected:
 	void NewMesh();
 
