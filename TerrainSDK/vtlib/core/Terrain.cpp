@@ -684,7 +684,7 @@ void vtTerrain::PaintDib(bool progress_callback(int))
  *
  * \par Example:
 	\code
-	ColorMap *colors = new ColorMap();
+	ColorMap *colors = new ColorMap;
 	colors->m_bRelative = false;
 	colors->Add(100, RGBi(0,255,0));
 	colors->Add(200, RGBi(255,200,150));
@@ -2741,11 +2741,22 @@ float vtTerrain::GetLODDistance(TFType ftype)
 	return 0.0f;
 }
 
+/**
+ * Return the heightfield for this terrain.  It may be a grid, or a TIN.
+ * If you know that your data is a grid, you can use GetHeightFieldGrid3d()
+ * to get that specifically.
+ */
 vtHeightField3d *vtTerrain::GetHeightField()
 {
 	return m_pHeightField;
 }
 
+/**
+ * Return the heightfield grid for this terrain.
+ * During the construction of the terain, this may be a source vtElevationGrid.
+ * Later, at runtime, it is likely to be one of the dynamic geometry (CLOD)
+ * grids.
+ */
 vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()
 {
 	// if we still have the source elevation, use it
