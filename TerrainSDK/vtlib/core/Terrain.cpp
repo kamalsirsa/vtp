@@ -1690,14 +1690,16 @@ void vtTerrain::_CreateAbstractLayers()
 		// Copy all the other attributes to the new featureset
 		feat->GetProperties() = lay;
 
-		m_AbstractLayers.Append(feat);
+		vtAbstractLayer *layer = new vtAbstractLayer;
+		layer->pSet = feat;
+		m_AbstractLayers.Append(layer);
 	}
 
-	// Now for each layer that we have, create the geometry
+	// Now for each layer that we have, create the geometry and labels
 	for (i = 0; i < m_AbstractLayers.GetSize(); i++)
 	{
-		vtFeatureSet *feat = m_AbstractLayers[i];
-		CreateStyledFeatures(*feat, feat->GetProperties());
+		vtAbstractLayer *layer = m_AbstractLayers[i];
+		CreateStyledFeatures(layer, layer->pSet->GetProperties());
 	}
 }
 
@@ -1726,13 +1728,17 @@ bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgb
 			spheres) should be created.
 		- Labels: Boolean, true indicates that text labels should be created.
  */
-void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const vtTagArray &style)
+void vtTerrain::CreateStyledFeatures(vtAbstractLayer *layer, const vtTagArray &style)
 {
+	layer->pContainer = new vtGroup;
+	layer->pContainer->SetName2("Abstract Layer");
+	m_pTerrainGroup->AddChild(layer->pContainer);
+
 	if (style.GetValueBool("Geometry"))
-		CreateFeatureGeometry(feat, style);
+		CreateFeatureGeometry(layer, style);
 
 	if (style.GetValueBool("Labels"))
-		CreateFeatureLabels(feat, style);
+		CreateFeatureLabels(layer, style);
 }
 
 /**
@@ -1752,12 +1758,13 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const vtTagArray 
 		- Tessellate: Boolean, indicates whether to tesselate each line segment
 			to allow for smoother draping on uneven terrain.  Default is false.
  */
-void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray &style)
+void vtTerrain::CreateFeatureGeometry(vtAbstractLayer *layer, const vtTagArray &style)
 {
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// We support geometry for 2D and 3D polylines
+	vtFeatureSet &feat = *(layer->pSet);
 	const vtFeatureSetLineString   *pSetLS2 = dynamic_cast<const vtFeatureSetLineString*>(&feat);
 	const vtFeatureSetLineString3D *pSetLS3 = dynamic_cast<const vtFeatureSetLineString3D*>(&feat);
 	const vtFeatureSetPolygon *pSetPoly = dynamic_cast<const vtFeatureSetPolygon*>(&feat);
@@ -1765,9 +1772,9 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 		return;
 
 	// create container group
-	vtGroup *pAbstractGroup = new vtGroup;
-	pAbstractGroup->SetName2("Abstract Layer");
-	m_pTerrainGroup->AddChild(pAbstractGroup);
+	layer->pGeomGroup = new vtGroup;
+	layer->pGeomGroup->SetName2("Geometry");
+	layer->pContainer->AddChild(layer->pGeomGroup);
 
 	// Create materials.
 	vtMaterialArray *pMats = new vtMaterialArray;
@@ -1873,7 +1880,7 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 		}
 	}
 
-	pAbstractGroup->AddChild(geom);
+	layer->pGeomGroup->AddChild(geom);
 }
 
 /**
@@ -1895,7 +1902,7 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 			created 30 meters above the ground.  Default is 0.
 		- LabelSize: Size (height) of the label in meters.  Default is 18.
  */
-void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &style)
+void vtTerrain::CreateFeatureLabels(vtAbstractLayer *layer, const vtTagArray &style)
 {
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -1903,6 +1910,7 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 	VTLOG("CreateFeatureLabels\n");
 
 	// We support text labels for both 2D and 3D points, and 2D polygons
+	vtFeatureSet &feat = *(layer->pSet);
 	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(&feat);
 	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(&feat);
 	const vtFeatureSetPolygon *pSetPG = dynamic_cast<const vtFeatureSetPolygon*>(&feat);
@@ -1910,9 +1918,9 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 		return;
 
 	// create container group
-	vtGroup *pAbstractGroup = new vtGroup;
-	pAbstractGroup->SetName2("Abstract Layer");
-	m_pTerrainGroup->AddChild(pAbstractGroup);
+	layer->pLabelGroup = new vtGroup;
+	layer->pLabelGroup->SetName2("Labels");
+	layer->pContainer->AddChild(layer->pLabelGroup);
 
 	// Create materials.
 	vtMaterialArray *pLabelMats = new vtMaterialArray;
@@ -2074,12 +2082,25 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 		m_pBBEngine->AddTarget(bb);
 
 		bb->SetTrans(fp3);
-		pAbstractGroup->AddChild(bb);
+		layer->pLabelGroup->AddChild(bb);
 	}
 	delete font;
 	pLabelMats->Release();
 
 	VTLOG("Created %d text labels\n", features);
+}
+
+void vtTerrain::SetAbstractVisible(vtAbstractLayer *layer, bool bVis)
+{
+	if (layer->pContainer != NULL)
+		layer->pContainer->SetEnabled(bVis);
+}
+
+bool vtTerrain::GetAbstractVisible(vtAbstractLayer *layer)
+{
+	if (layer->pContainer != NULL)
+		return layer->pContainer->GetEnabled();
+	return false;
 }
 
 void vtTerrain::SetFog(bool fog)

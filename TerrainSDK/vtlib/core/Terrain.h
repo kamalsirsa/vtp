@@ -74,8 +74,23 @@ enum TFType
 	TFT_ROADS
 };
 
+class vtAbstractLayer
+{
+public:
+	vtAbstractLayer() {
+		pSet = NULL;
+		pContainer = NULL;
+		pGeomGroup = NULL;
+		pLabelGroup = NULL;
+	}
+	vtFeatureSet *pSet;
+	vtGroup *pContainer;
+	vtGroup *pGeomGroup;
+	vtGroup *pLabelGroup;
+};
+
 // Container for the abstract layers
-typedef vtArray<vtFeatureSet*> vtAbstractLayers;
+typedef vtArray<vtAbstractLayer*> vtAbstractLayers;
 
 /**
  * The vtTerrain class represents a terrain, which is a part of the surface
@@ -220,6 +235,8 @@ public:
 	// abstract layers
 	/// Get the set of abstract layers for this terrain.  You can modify them.
 	vtAbstractLayers &GetAbstractLayers() { return m_AbstractLayers; }
+	void SetAbstractVisible(vtAbstractLayer *layer, bool bVis);
+	bool GetAbstractVisible(vtAbstractLayer *layer);
 
 	// roads
 	vtRoadMap3d *GetRoadMap() { return m_pRoadMap; }
@@ -269,9 +286,9 @@ public:
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
 		float fOffset, bool bInterp = true, bool bCurve = false, bool bTrue = false);
-	void CreateStyledFeatures(const vtFeatureSet &feat,  const vtTagArray &style);
-	void CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray &style);
-	void CreateFeatureLabels(const vtFeatureSet &feat,   const vtTagArray &style);
+	void CreateStyledFeatures(vtAbstractLayer *layer,  const vtTagArray &style);
+	void CreateFeatureGeometry(vtAbstractLayer *layer, const vtTagArray &style);
+	void CreateFeatureLabels(vtAbstractLayer *layer,   const vtTagArray &style);
 
 	// Access the viewpoint(s) associated with this terrain
 	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }
