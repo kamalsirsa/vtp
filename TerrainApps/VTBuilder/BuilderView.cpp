@@ -1747,6 +1747,13 @@ void BuilderView::OnChar(wxKeyEvent& event)
 #if 0
 		GetMainFrame()->ImportDataFromSCC("G:/Work/Atlas Computers - Shane/3d-test.txt");
 #endif
+		double left=0.00000000000000000;
+		double top=0.0052590002305805683;
+		double right=0.0070670000277459621;
+		double bottom=0.00000000000000000;
+
+		double ScaleX = vtProjection::GeodesicDistance(DPoint2(left,bottom),DPoint2(right,bottom));
+		double foo = ScaleX;
 	}
 	else
 		event.Skip();
