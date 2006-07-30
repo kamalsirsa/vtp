@@ -133,6 +133,8 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 	LayerItemData *data = (LayerItemData *)m_pTree->GetItemData(item);
 	if (!data)
 		return NULL;
+	if (data->m_type == LT_ABSTRACT)
+		return data->m_layer->pContainer;
 	if (data->m_item == -1)
 		return NULL;
 
@@ -300,7 +302,8 @@ void LayerDlg::RefreshTreeTerrain()
 	vtAbstractLayers &raw = terr->GetAbstractLayers();
 	for (i = 0; i < raw.GetSize(); i++)
 	{
-		vtFeatureSet *set = raw[i];
+		vtAbstractLayer *layer = raw[i];
+		vtFeatureSet *set = layer->pSet;
 
 		vs = set->GetFilename();
 		str.from_utf8(vs);
@@ -316,7 +319,7 @@ void LayerDlg::RefreshTreeTerrain()
 		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_RAW, ICON_RAW);
 		//if (sa == terr->GetStructures())
 		//	m_pTree->SetItemBold(hLayer, true);
-		m_pTree->SetItemData(hLayer, new LayerItemData(set));
+		m_pTree->SetItemData(hLayer, new LayerItemData(layer, set));
 	}
 
 	// Vegetation

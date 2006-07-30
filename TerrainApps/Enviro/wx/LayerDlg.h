@@ -20,7 +20,7 @@ enum LayerType
 	LT_ROAD,
 	LT_STRUCTURE,
 	LT_VEG,
-//	LT_ELEVATION,	// these aren't layer type in enviro.. yet :)
+//	LT_ELEVATION,	// these aren't layer types in enviro.. yet :)
 //	LT_IMAGE,
 //	LT_WATER,
 //	LT_TRANSIT,
@@ -40,10 +40,11 @@ public:
 		m_index = index;
 		m_item = item;
 	}
-	LayerItemData(vtFeatureSet *set)
+	LayerItemData(vtAbstractLayer *layer, vtFeatureSet *set)
 	{
 		Defaults();
 		m_type = LT_ABSTRACT;
+		m_layer = layer;
 		m_fset = set;
 	}
 	LayerItemData(LayerType type)
@@ -54,6 +55,7 @@ public:
 	void LayerItemData::Defaults()
 	{
 		m_sa = NULL;
+		m_layer = NULL;
 		m_fset = NULL;
 		m_index = -1;
 		m_item = -1;
@@ -62,6 +64,7 @@ public:
 	}
 	LayerType m_type;
 	vtStructureArray3d *m_sa;
+	vtAbstractLayer *m_layer;
 	vtFeatureSet *m_fset;
 	int m_index;
 	int m_item;
