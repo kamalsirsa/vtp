@@ -15,6 +15,7 @@
 #include <osgDB/WriteFile>
 #include <osg/GLExtensions>
 #include <osg/FragmentProgram>
+#include <osg/Version>
 
 #define USE_SHADOW_HUD		0
 #define USE_FRAGMENT_SHADER	0
@@ -194,22 +195,11 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node 
 			m_pCameraNode = NULL;
 			return false;
 		}
-		m_pMaterial->setAmbient(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
-		m_pMaterial->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f, 0.0f, 0.0f, m_fShadowDarkness));
-		m_pMaterial->setEmission(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
-		m_pMaterial->setShininess(osg::Material::FRONT_AND_BACK,0.0f);
+		m_pMaterial->setAmbient(FAB, osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		m_pMaterial->setDiffuse(FAB, osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		m_pMaterial->setEmission(FAB, osg::Vec4(1.0f - m_fShadowDarkness, 1.0f - m_fShadowDarkness, 1.0f - m_fShadowDarkness, 1.0f));
+		m_pMaterial->setShininess(FAB, 0.0f);
 		pCameraStateSet->setAttribute(m_pMaterial.get(), SA_OVERRIDE);
-		// This blend function lets us vary the darkness of the shadow with the
-		//  alpha component of the diffuse color of the material.
-		osg::ref_ptr<osg::BlendFunc> pBlendFunc = new osg::BlendFunc;
-		if (!pBlendFunc.valid())
-		{
-			m_pTexture = NULL;
-			m_pCameraNode = NULL;
-			m_pMaterial = NULL;
-			return false;
-		}
-		pCameraStateSet->setAttributeAndModes(pBlendFunc.get(), SA_ON|SA_OVERRIDE);
 	}
 
 	m_pShadowed = pShadowed;
@@ -352,11 +342,17 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node 
 	}
 #endif
 
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR > 0
+	// We are probably OSG 1.1 or newer
+	osg::FBOExtensions* fbo_ext = osg::FBOExtensions::instance(0, true);
+#else
 	osg::FBOExtensions* fbo_ext = osg::FBOExtensions::instance(0);
+#endif
     if ((fbo_ext && fbo_ext->isSupported()) || osg::isGLExtensionSupported(0, "ARB_render_texture"))
 		m_bUsingLiveFrameBuffer = false;
 	else
 		m_bUsingLiveFrameBuffer = true;
+
 	return true;
 }
 
@@ -527,11 +523,14 @@ void CStructureShadowsOSG::SetShadowDarkness(float fDarkness)
 {
 	m_fShadowDarkness = fDarkness;
 	if (m_pMaterial.valid())
-		m_pMaterial->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f, 0.0f, 0.0f, m_fShadowDarkness));
+		m_pMaterial->setEmission(FAB, osg::Vec4(1.0f - m_fShadowDarkness, 1.0f - m_fShadowDarkness, 1.0f - m_fShadowDarkness, 1.0f));
 	if (m_pAmbientBias.valid())
 		m_pAmbientBias->set(osg::Vec2(0.0f, m_fShadowDarkness));
 	if (m_bDepthShadow)
 		m_pTexture->setShadowAmbient(1.0f - m_fShadowDarkness);
+
+	// Force re-render of the shadows for the new shadow darkness
+	SetSunPosition(m_SunPosition, true);
 }
 
 void CStructureShadowsOSG::SetPolygonOffset(float fFactor, float fUnits)
