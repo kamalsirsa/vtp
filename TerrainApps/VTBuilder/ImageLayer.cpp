@@ -967,26 +967,29 @@ bool vtImageLayer::LoadFromGDAL()
 					throw "Couldn't allocate bitmap";
 			}
 
-			// Read the data
-			VTLOG("Reading the image data (%d x %d pixels)\n", m_iXSize, m_iYSize);
-			for (int iy = 0; iy < m_iYSize; iy++ )
+			if (!bDefer)
 			{
-				if (progress_callback != NULL)
-					progress_callback(iy * 100 / m_iYSize);
+				// Read the data
+				VTLOG("Reading the image data (%d x %d pixels)\n", m_iXSize, m_iYSize);
+				for (int iy = 0; iy < m_iYSize; iy++ )
+				{
+					if (progress_callback != NULL)
+						progress_callback(iy * 100 / m_iYSize);
 
-				ReadScanline(iy, 0);
-				if (UpdateProgressDialog(iy * 99 / m_iYSize))
-				{
-					// cancel
-					throw "Cancelled";
+					ReadScanline(iy, 0);
+					if (UpdateProgressDialog(iy * 99 / m_iYSize))
+					{
+						// cancel
+						throw "Cancelled";
+					}
+					for(int iX = 0; iX < m_iXSize; iX++ )
+					{
+						RGBi rgb = m_row[0].m_data[iX];
+						m_pBitmap->SetPixel24(iX, iy, rgb);
+					}
 				}
-				for(int iX = 0; iX < m_iXSize; iX++ )
-				{
-					RGBi rgb = m_row[0].m_data[iX];
-					m_pBitmap->SetPixel24(iX, iy, rgb);
-				}
+				m_pBitmap->ContentsChanged();
 			}
-			m_pBitmap->ContentsChanged();
 		}
 	}
 
