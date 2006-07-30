@@ -17,6 +17,7 @@
 #include <osgDB/ReadFile>
 #include <osgDB/FileNameUtils>
 #include <osgUtil/Optimizer>
+#include <osg/Version>
 
 using namespace osg;
 
@@ -1309,7 +1310,12 @@ void vtGeom::Release()
 					textmesh->Release();
 			}
 		}
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR > 0
+		// We are probably OSG 1.1 or newer
+		m_pGeode->removeDrawables(0, num);
+#else
 		m_pGeode->removeDrawable(0, num);
+#endif
 
 		m_pGeode = NULL;
 		m_pMaterialArray = NULL;		// dereference
@@ -1390,7 +1396,7 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 
 				// This will leave the original color array alllocated in the vtMesh
 				Vec4Array *pColors = new Vec4Array;
-				pColors->push_back(pMat->m_pMaterial->getDiffuse(Material::FRONT_AND_BACK));
+				pColors->push_back(pMat->m_pMaterial->getDiffuse(FAB));
 				pMesh->m_pGeometry->setColorArray(pColors);
 				pMesh->m_pGeometry->setColorBinding(Geometry::BIND_OVERALL);
 			}
