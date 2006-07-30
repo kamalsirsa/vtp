@@ -2379,6 +2379,8 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 			float square_meters = opt.m_fSampling * opt.m_fSampling;
 			float factor = density_scale * square_meters * opt.m_fScarcity;
 
+			// the amount of each species present accumulates until it
+			//  exceeds 1, at which time we produce a plant instance
 			for (k = 0; k < bio->m_Densities.GetSize(); k++)
 			{
 				pd = bio->m_Densities[k];
