@@ -16,7 +16,6 @@ using namespace osg;
 
 bool vtMaterial::s_bTextureCompression = false;
 
-#define FAB		Material::FRONT_AND_BACK
 #define SA_ON	StateAttribute::ON
 #define SA_OFF	StateAttribute::OFF
 
