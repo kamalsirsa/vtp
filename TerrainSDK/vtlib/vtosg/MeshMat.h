@@ -15,6 +15,9 @@
 #include <osg/PrimitiveSet>
 #include <osg/Geometry>
 
+// Shorthand
+#define FAB		osg::Material::FRONT_AND_BACK
+
 class vtImage;
 
 /** \addtogroup sg */
