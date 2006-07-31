@@ -10,7 +10,7 @@
 
 #include "vtdata/Projections.h"
 #include "vtdata/MathTypes.h"
-#include "vtdata/Minidatabuf.h"
+#include "vtdata/MiniDatabuf.h"
 
 /////
 
