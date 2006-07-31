@@ -22,7 +22,7 @@ class vtGLCanvas: public wxGLCanvas
 {
 public:
 	vtGLCanvas(wxWindow *parent, const wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
-	  const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = "vtGLCanvas",
+	  const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = _T("vtGLCanvas"),
 	  int* gl_attrib = NULL);
 	~vtGLCanvas(void);
 
