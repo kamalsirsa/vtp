@@ -51,7 +51,7 @@ all : $(OSX_APP)
 else
 # Support for all other Unix platforms
 LIBS   +=  -lGL -lX11 $(EXTRA_LIBS)   \
-	  -lxmlhelper -lvtdata -lvtui                 
+	  -lxmlhelper -lvtdata -lvtui -lcurl -lbz2
 
 LDIRS  += \
 	  $(VTDATA_INST_DIR)             \

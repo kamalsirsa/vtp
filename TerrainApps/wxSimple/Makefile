@@ -49,9 +49,9 @@ all : $(OSX_APP)
 else
 LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
 	 -lvtosg -lvtdata \
-	 -lgdal -losgDB -losgUtil -losgText -losg -lnetcdf \
+	 -lgdal -losgDB -losgUtil -losgText -losg -lOpenThreads -lnetcdf \
 	 -lxmlhelper $(MINI_LIB) \
-	 $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm
+	 $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lcurl -lbz2 -lm
 
 LDIRS += \
 	 $(XMLHELPER_INST_DIR)          \

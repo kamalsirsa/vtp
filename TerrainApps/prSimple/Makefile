@@ -52,7 +52,7 @@ else
 LIBS   = -lvtosg -lvtdata \
          -lgdal -losgDB -losgUtil -losgText -losg -lProducer -lOpenThreads -lnetcdf \
 		 -lxmlhelper $(MINI_LIB) \
-         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
+         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lcurl -lbz2 -lm 
 
 all : $(EXEC)
 endif

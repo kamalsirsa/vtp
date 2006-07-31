@@ -19,6 +19,10 @@ IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	  -I$(X_INC)
 
 LDIRS  = \
+	  $(VTDATA_INST_DIR)             \
+	  $(VTOSG_INST_DIR)              \
+	  $(VTUI_INST_DIR)               \
+	  $(XMLHELPER_INST_DIR)          \
 	  $(OSG_LIB)                     \
 	  $(SHAPE_LIB)                   \
 	  $(PNG_LIB)                     \
@@ -38,14 +42,14 @@ CXXSRC = $(wildcard *.cpp) \
 OBJS   = $(CXXSRC:%.cpp=%.o)
 LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) \
 	 $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
-	 -lgdal -lGL $(MINI_LIB) \
-	 -losg -losgDB -losgUtil -losgText \
-	 -lm $(EXTRA_LIBS)
+	 -lgdal \
+	 -losg -losgDB -losgUtil -losgText -lOpenThreads \
+	 -lbz2 -lcurl -lm $(EXTRA_LIBS)
 
 # Support of Mac OS X
 ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
-LIBS   += -F$(FRAMEWORKS) \
+LIBS   = -F$(FRAMEWORKS) \
 	  -lobjc -framework Carbon \
 	  -lOpenThreads \
 	  -framework vtdata -framework vtui -framework vtosg \
@@ -58,9 +62,8 @@ all : $(OSX_APP)
 
 else
 # Support for all other Unix platforms
-LIBS   +=  $(GLU_LIB) -lX11 \
-	  -lxmlhelper -lvtdata -lvtui -lvtosg \
-	  -lnetcdf -lmini -lquikgrid                
+LIBS   +=  -lxmlhelper -lvtdata -lvtui -lvtosg $(MINI_LIB) -lGL $(GLU_LIB) -lX11 \
+	  -lnetcdf                
 
 LDIR   +=\
 	  $(VTDATA_INST_DIR)             \
