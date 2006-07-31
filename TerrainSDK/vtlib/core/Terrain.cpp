@@ -32,6 +32,21 @@
 // add your own LOD method header here!
 
 
+vtAbstractLayer::vtAbstractLayer()
+{
+	pSet = NULL;
+	pContainer = NULL;
+	pGeomGroup = NULL;
+	pLabelGroup = NULL;
+}
+vtAbstractLayer::~vtAbstractLayer()
+{
+	delete pSet;
+	if (pGeomGroup) pGeomGroup->Release();
+	if (pLabelGroup) pLabelGroup->Release();
+	if (pContainer) pContainer->Release();
+}
+
 // The Terrain uses two LOD grids (class vtLodGrid, a sparse grid of LOD cells)
 //  of size LOD_GRIDSIZE x LOD_GRIDSIZE to group structures and vegetation.
 //  This allows them to be culled more efficiently.
@@ -106,6 +121,7 @@ vtTerrain::~vtTerrain()
 
 	// some things need to be manually deleted
 	m_Content.ReleaseContents();
+	m_Content.Empty();
 
 	m_AnimContainer.Empty();
 
@@ -182,6 +198,13 @@ vtTerrain::~vtTerrain()
 		m_pTiledGeom->Release();
 	}
 
+	size = m_AbstractLayers.GetSize();
+	for (i = 0; i < size; i++)
+	{
+		delete m_AbstractLayers[i];
+	}
+
+	// This will mop up anything remaining in the terrain's scenegraph
 	if (m_pTerrainGroup != (vtGroup*) NULL)
 		m_pTerrainGroup->Release();
 
@@ -192,12 +215,6 @@ vtTerrain::~vtTerrain()
 
 	if (m_pDetailMats)
 		m_pDetailMats->Release();
-
-	size = m_AbstractLayers.GetSize();
-	for (i = 0; i < size; i++)
-	{
-		delete m_AbstractLayers[i];
-	}
 }
 
 

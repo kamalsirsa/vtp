@@ -77,12 +77,8 @@ enum TFType
 class vtAbstractLayer
 {
 public:
-	vtAbstractLayer() {
-		pSet = NULL;
-		pContainer = NULL;
-		pGeomGroup = NULL;
-		pLabelGroup = NULL;
-	}
+	vtAbstractLayer();
+	~vtAbstractLayer();
 	vtFeatureSet *pSet;
 	vtGroup *pContainer;
 	vtGroup *pGeomGroup;
