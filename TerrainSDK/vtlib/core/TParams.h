@@ -52,7 +52,7 @@ public:
 
 	// copy constructor and assignment operator
 	ScenarioParams(const ScenarioParams& paramsSrc);
-	ScenarioParams &ScenarioParams::operator = (const ScenarioParams &rhs);
+	ScenarioParams &operator = (const ScenarioParams &rhs);
 
 	// override to catch active layers list
 	void WriteOverridesToXML(FILE *fp) const;
@@ -370,7 +370,7 @@ public:
 
 	// copy constructor and assignment operator
 	TParams(const TParams& paramsSrc);
-	TParams &TParams::operator = (const TParams &rhs);
+	TParams &operator = (const TParams &rhs);
 
 	// File IO
 	bool LoadFrom(const char *fname);

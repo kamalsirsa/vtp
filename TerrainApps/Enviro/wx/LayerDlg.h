@@ -52,7 +52,7 @@ public:
 		Defaults();
 		m_type = type;
 	}
-	void LayerItemData::Defaults()
+	void Defaults()
 	{
 		m_sa = NULL;
 		m_layer = NULL;

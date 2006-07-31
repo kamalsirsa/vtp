@@ -117,7 +117,7 @@ class vtNativeNode : public vtNode
 {
 public:
 	vtNativeNode(osg::Node *node) { SetOsgNode(node); }
-	vtNode *vtNativeNode::FindParentVTNode();
+	vtNode *FindParentVTNode();
 
 protected:
 	// Destructor is protected so that people will use Release() instead,
