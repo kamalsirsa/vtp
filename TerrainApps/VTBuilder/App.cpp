@@ -64,7 +64,7 @@ bool BuilderApp::OnInit()
 #else
 	VTLOG(" Release");
 #endif
-#if UNICODE
+#ifdef UNICODE
 	VTLOG(" Unicode");
 #endif
 	VTLOG("\n");
