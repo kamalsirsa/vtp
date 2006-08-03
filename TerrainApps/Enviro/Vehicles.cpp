@@ -108,7 +108,7 @@ void VehicleManager::SetupVehicles()
 	{
 		// the bronco is modeled in centimeters (0.01)
 		VehicleType *bronco = new VehicleType("bronco");
-		bronco->AddModel(fname, 0.01f, 500);
+		bronco->AddModel(fname, 0.3048f, 500);
 		AddVehicleType(bronco);
 	}
 /*
@@ -133,7 +133,7 @@ void VehicleManager::SetupVehicles()
 	{
 		// the bus is modeled in centimeters (0.01)
 		VehicleType *hele_on = new VehicleType("bus");
-		hele_on->AddModel(fname, 0.01f, 800);
+		hele_on->AddModel(fname, 1.00f, 800);
 		AddVehicleType(hele_on);
 	}
 
@@ -190,7 +190,7 @@ void VehicleManager::create_ground_vehicles(vtTerrain *pTerrain, float fSize, fl
 	FPoint3 start_point;
 	int num, col;
 	RGBf color;
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		if (n == NULL) {
 			n = pRoadMap->GetFirstNode();
@@ -304,6 +304,18 @@ void VehicleType::AttemptModelLoad()
 			float scale = m_fScale[i];
 			trans->Scale3(scale, scale, scale);
 			m_pModels.SetAt(i, trans);
+
+			// See if I can find the top of the tyres group
+			vtGroup *pTyres = dynamic_cast<vtGroup*>(trans->FindNativeNode("tires"));
+			vtGroup *pParent = dynamic_cast<vtGroup*>(trans->FindNativeNode("Scene Root"));
+			if ((NULL != pTyres) && (NULL != pParent))
+			{
+				m_pTyres.SetAt(i, pTyres);
+				pParent->RemoveChild(pTyres);
+//				osgDB::writeNodeFile(*pMod->GetOsgNode(), "debugvehicle.osg");
+			}
+			else
+				m_pTyres.SetAt(i, NULL);
 		}
 	}
 }
@@ -329,6 +341,46 @@ Vehicle *VehicleType::CreateVehicle(const RGBf &cColor, float fScale)
 		vtTransform *pNewModel = (Vehicle *)m_pModels.GetAt(i)->Clone();
 		pNewVehicle->AddChild(pNewModel);
 		distances[i+1] = m_fDistance.GetAt(i) * fScale;
+
+		// Add in the tyre infrastructure
+		vtNode* pTyres = m_pTyres.GetAt(i);
+		if (NULL != pTyres)
+		{
+			vtNode *pFrontLeft;
+			vtNode *pFrontRight;
+			vtNode *pRearLeft;
+			vtNode *pRearRight;
+
+			pFrontLeft = pTyres->FindNativeNode("front left");
+			pFrontRight = pTyres->FindNativeNode("front right");
+			pRearLeft = pTyres->FindNativeNode("rear left");
+			pRearRight = pTyres->FindNativeNode("rear right");
+
+			if ((NULL != pFrontLeft) && (NULL != pFrontRight) && (NULL != pRearLeft) && (NULL != pRearRight))
+			{
+				vtGroup* pTyreGroup = new vtGroup;
+				pTyreGroup->SetName2("tires");
+				pNewModel->AddChild(pTyreGroup);
+				vtTransform *pTransform;
+				pTransform = new vtTransform;
+				pTransform->SetName2("front left");
+				pTransform->AddChild(pFrontLeft);
+				pTyreGroup->AddChild(pTransform);
+				pTransform = new vtTransform;
+				pTransform->SetName2("front right");
+				pTransform->AddChild(pFrontRight);
+				pTyreGroup->AddChild(pTransform);
+				pTransform = new vtTransform;
+				pTransform->SetName2("rear left");
+				pTransform->AddChild(pRearLeft);
+				pTyreGroup->AddChild(pTransform);
+				pTransform = new vtTransform;
+				pTransform->SetName2("rear right");
+				pTransform->AddChild(pRearRight);
+				pTyreGroup->AddChild(pTransform);
+//				SetDebugCallbacks(pNewVehicle->GetOsgNode());
+			}
+		}
 	}
 	pNewVehicle->m_pLOD->SetRanges(distances, iModels+1);
 
@@ -343,7 +395,12 @@ void VehicleType::ReleaseModels()
 	for (unsigned int i = 0; i < m_pModels.GetSize(); i++)
 	{
 		m_pModels[i]->Release();
+
+		vtNode *pTyres = m_pTyres[i];
+		if(NULL != pTyres)
+			pTyres->Release();
 	}
 	m_pModels.Empty();
+	m_pTyres.Empty();
 }
 

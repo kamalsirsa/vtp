@@ -39,6 +39,7 @@ public:
 
 protected:
 	vtArray<vtNodeBase*> m_pModels;
+	vtArray<vtGroup*> m_pTyres;
 
 	bool m_bAttemptedLoaded;
 	void AttemptModelLoad();

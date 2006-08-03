@@ -83,7 +83,9 @@ CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_spe
 
 	m_iLane = lane-1;
 	PickFirstRoad ();
-	m_eMode = ROAD;
+//	m_eMode = ROAD;
+	m_eMode = STRAIGHT;
+	m_fSpeed = 0.5f;
 }
 
 //shared constructor
@@ -137,72 +139,75 @@ void CarEngine::Eval()
 		return;
 
 	//find vNext location
-	switch (m_eMode) {
-		case NONE:	//go nowhere.
-			vNext = m_vCurPos;
-			MoveCar(vNext);
-			break;
-		case STRAIGHT:
-			//go straight.  try to match speed.
-			//time is in seconds
-			vNext.x = m_vCurPos.x + fDeltaTime*m_fSpeed*cosf(m_fCurRotation);
-			vNext.z = m_vCurPos.z + fDeltaTime*m_fSpeed*sinf(m_fCurRotation);
-			MoveCar(vNext);
-			break;
-		case CIRCLE:
-			//drive around in a circle, try to match speed.
-			Circle(vNext,t);
-			MoveCar(vNext);
-			break;
-		case PATH:
-		case ROAD:
-			if (!m_pCurRoad) {
-				return;  //safety check
-			}
-			if (!m_bFirstTime)
-			{
-				//iterate simulation over 10ms periods.
-				for (; m_fPrevTime < t; m_fPrevTime +=.01f) {
-					//find where the road is
-					FPoint3 target = GetNextTarget(t);
-					//adjust vehicle speed.
-					AdjustSpeed(.01f);
+	switch (m_eMode)
+	{
+	case NONE:	//go nowhere.
+		vNext = m_vCurPos;
+		MoveCar(vNext);
+		break;
+	case STRAIGHT:
+		//go straight.  try to match speed.
+		//time is in seconds
+		vNext.x = m_vCurPos.x + fDeltaTime*m_fSpeed*cosf(m_fCurRotation);
+		vNext.z = m_vCurPos.z + fDeltaTime*m_fSpeed*sinf(m_fCurRotation);
+		MoveCar(vNext);
+		break;
+	case CIRCLE:
+		//drive around in a circle, try to match speed.
+		Circle(vNext,t);
+		MoveCar(vNext);
+		break;
+	case PATH:
+	case ROAD:
+		if (!m_pCurRoad) {
+			return;  //safety check
+		}
+		if (!m_bFirstTime)
+		{
+			//iterate simulation over 10ms periods.
+			for (; m_fPrevTime < t; m_fPrevTime +=.01f) {
+				//find where the road is
+				FPoint3 target = GetNextTarget(t);
+				//adjust vehicle speed.
+				AdjustSpeed(.01f);
 
-					//if we are not stopped, then move
-					if (!m_bStopped)
-					{
-						//turn appropriately - but there is a limit on how much the car can turn.
-						TurnToward(target, .01f);
-						//move forward based on speed.
-						vNext = m_vCurPos;
-						vNext.x += .01f*m_fSpeed * cosf (m_fCurRotation);
-						vNext.z += .01f*m_fSpeed * sinf (m_fCurRotation);
+				//if we are not stopped, then move
+				if (!m_bStopped)
+				{
+					//turn appropriately - but there is a limit on how much the car can turn.
+					TurnToward(target, .01f);
+					//move forward based on speed.
+					vNext = m_vCurPos;
+					vNext.x += .01f*m_fSpeed * cosf (m_fCurRotation);
+					vNext.z += .01f*m_fSpeed * sinf (m_fCurRotation);
 
-						//FPoint3 oldPos = m_vCurPos;
-						pTarget->SetTrans(vNext);
-						m_vCurPos = vNext;
-						//correct orientation.
-						vNext.y = SetOrientation() + m_fRoadHeight;
-						//apply translation
-						pTarget->SetTrans(vNext);
-						//ism_printf("target: %f, %f, %f\tRotation: %f", target.x, target.y, target.z, m_fCurRotation);
-						//ism_printf("curpos: %f, %f, %f\tnext: %f, %f, %f",oldPos.x,oldPos.y,oldPos.z,vNext.x, vNext.y, vNext.z);
+					VTLOG("curpos: %f, %f, %f\tnext: %f, %f, %f",
+						m_vCurPos.x,m_vCurPos.y,m_vCurPos.z, vNext.x,vNext.y,vNext.z);
+					VTLOG("target: %f, %f, %f\tRotation: %f",
+						target.x, target.y, target.z, m_fCurRotation);
 
-						m_vCurPos = vNext;
-					}
+					//FPoint3 oldPos = m_vCurPos;
+					pTarget->SetTrans(vNext);
+					m_vCurPos = vNext;
+
+					//correct orientation.
+					vNext.y = SetOrientation() + m_fRoadHeight;
+					//apply translation
+					pTarget->SetTrans(vNext);
 				}
-				m_fPrevTime -=.01f;
-				//ism_printf("curpos: %f, %f, %f",m_vCurPos.x, m_vCurPos.y, m_vCurPos.z);
-				break;
-			} else {
-				vNext.x = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord].x;
-				vNext.y = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord].y + m_fRoadHeight;
-				vNext.z = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord].z;
-				pTarget->SetTrans(vNext);
-				m_vCurPos = vNext;
-				m_bFirstTime = false;
-				break;
 			}
+			m_fPrevTime -=.01f;
+			//ism_printf("curpos: %f, %f, %f",m_vCurPos.x, m_vCurPos.y, m_vCurPos.z);
+			break;
+		} else {
+			vNext.x = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord].x;
+			vNext.y = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord].y + m_fRoadHeight;
+			vNext.z = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord].z;
+			pTarget->SetTrans(vNext);
+			m_vCurPos = vNext;
+			m_bFirstTime = false;
+			break;
+		}
 	}
 	// spin the wheels, adjusted for speed.
 	SpinWheels(fDeltaTime*m_fSpeed/m_fWheelRadius);
@@ -221,6 +226,16 @@ void CarEngine::Circle(FPoint3 &vNext, float t)
 //returns height of the car.
 float CarEngine::SetOrientation()
 {
+#if 1
+	vtTransform *pTransform = dynamic_cast<vtTransform*> (GetTarget());
+	if (NULL == pTransform)
+		return 1.0f;
+
+	FPoint3 CurrentPosition = pTransform->GetTrans();
+
+	m_pHeightField->FindAltitudeAtPoint(CurrentPosition, CurrentPosition.y);
+	return CurrentPosition.y;
+#else
 	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
 	if (!car)
 		return 1.0f;
@@ -264,6 +279,7 @@ float CarEngine::SetOrientation()
 
 	// return height of midpoint of all wheels.
 	return (fM.y+rM.y)/2;
+#endif
 }
 
 // assume that the car is ALWAYS going forward.
@@ -402,6 +418,25 @@ bool CarEngine::SetTires()
 */
 vtGroup* CarEngine::FindTires(vtGroup *model)
 {
+	vtGroup *tModel = NULL;
+	if (strend (model->GetName2(), "tires"))
+		return model;
+
+	int numChild = model->GetNumChildren();
+
+	if (numChild < 1)
+		return NULL;
+
+	int i = 0;
+	while (i < numChild)
+	{
+		vtGroup *pGroup = dynamic_cast<vtGroup*>(model->GetChild(i));
+		if ((NULL != pGroup) && (NULL != (tModel = FindTires(pGroup))))
+			break;
+		else
+			i++;
+	}
+	return tModel;
 #if 0
 	vtGroup *tModel;
 	if (strend (model->GetName2(), "tires")) {
@@ -693,7 +728,8 @@ void CarEngine::MoveCar(FPoint3 vNext)
 }
 
 //spin the wheels base on how much we've driven
-void CarEngine::SpinWheels(float dist) {
+void CarEngine::SpinWheels(float dist) 
+{
 	m_pFrontLeft->RotateLocal(XAXIS, dist);
 	m_pFrontRight->RotateLocal(XAXIS, dist);
 	m_pRearLeft->RotateLocal(XAXIS, dist);
@@ -704,7 +740,7 @@ void CarEngine::SpinWheels(float dist) {
 FPoint3 CarEngine::GetNextTarget(float fCurTime)
 {
 	int lane = PickLane();
-//	ism_printf("%i of %i",m_iRCoord, m_pCurRoad->GetSize());
+	VTLOG("%i of %i",m_iRCoord, m_pCurRoad->GetSize());
 	const FLine3 &lanepoints = ((LinkGeom*)m_pCurRoad)->m_Lanes[lane];
 	FPoint3 nextPoint = lanepoints.GetAt(m_iRCoord);
 
@@ -712,7 +748,7 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 	if (m_bStopped) {
 		if (m_iNextIntersect == IT_STOPSIGN) {
 			//have we waited long enough?
-			//ism_printf("stopped at %f.  it's now %f", m_fStopTime, fCurTime);
+			VTLOG("stopped at %f.  it's now %f", m_fStopTime, fCurTime);
 			if (fCurTime - m_fStopTime > 3.0f) //stop for three seconds
 			{
 				m_bStopped = false;
@@ -772,7 +808,7 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 				m_pNextNode->GetLightStatus(m_pCurRoad) == LT_RED)) {
 				m_bStopped = true;
 				m_fStopTime = fCurTime;
-				//ism_printf("Stopped!");
+				VTLOG1("Stopped!");
 				//do NOT pick a new road just yet.
 			} else {
 				PickRoad();
