@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -89,6 +89,7 @@ public:
 	const osg::Node *GetOsgNode() const { return m_pNode.get(); }
 	void DecorateNativeGraph();
 	void ApplyVertexRotation(const FPoint3 &axis, float angle);
+	vtNode *FindNativeNode(const char *pName, bool bDescend = true);
 
 	/// Load a 3D model file
 	static vtNode *LoadModel(const char *filename, bool bAllowCache = true, bool bDisableMipmaps = false);
@@ -563,6 +564,7 @@ struct vtHit {
 	FPoint3 point;
 	float distance;
 };
+
 typedef std::vector<vtHit> vtHitList;
 int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 				vtHitList &hitlist, bool bLocalCoords = false);

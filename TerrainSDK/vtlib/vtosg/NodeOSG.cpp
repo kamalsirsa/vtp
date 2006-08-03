@@ -340,7 +340,14 @@ vtGroup *vtNode::GetParent(int iParent)
 	osg::Group *parent = m_pNode->getParent(iParent);
 	if (!parent)
 		return NULL;
-	return dynamic_cast<vtGroup *>(parent->getUserData());
+
+	vtGroup *pGroup =  dynamic_cast<vtGroup *>(parent->getUserData());
+	if (NULL == pGroup)
+	{
+		pGroup = new vtGroup(true);
+		pGroup->SetOsgGroup(parent);
+	}
+	return pGroup;
 }
 
 RGBf vtNodeBase::s_white(1, 1, 1);
@@ -396,6 +403,69 @@ void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, enum Fo
 	}
 }
 
+class CFindNodeVisitor : public osg::NodeVisitor
+{
+public:
+	CFindNodeVisitor(const char *pName, osg::NodeVisitor::TraversalMode Mode = osg::NodeVisitor::TRAVERSE_ALL_CHILDREN):
+	osg::NodeVisitor(Mode)
+	{
+		m_Name = pName;
+		_nodeMaskOverride = 0xffffffff;
+	}
+
+	virtual void apply(osg::Node& node)
+	{
+		if (node.getName()== m_Name)
+		{
+			m_pNode = &node;
+
+			_traversalMode = TRAVERSE_NONE;
+			return;
+		}
+		traverse(node);
+	}
+
+	osg::ref_ptr<osg::Node> m_pNode;
+	std::string m_Name;
+};
+
+// Find and decorate a native node
+// To allow subsequent graph following from the VT side
+// return osg::Group as vtGroup
+vtNode *vtNode::FindNativeNode(const char *pName, bool bDescend)
+{
+	vtNode *pVTNode = NULL;
+	osg::Group *pGroup = dynamic_cast<osg::Group*>(m_pNode.get());
+	if (NULL == pGroup)
+		return NULL;
+	osg::ref_ptr<osg::Node> pNode;
+	osg::ref_ptr<CFindNodeVisitor> pFNVisitor = new CFindNodeVisitor(pName,
+																	bDescend ?
+																	osg::NodeVisitor::TRAVERSE_ALL_CHILDREN :
+																	osg::NodeVisitor::TRAVERSE_NONE);
+	if (bDescend)
+		pGroup->accept(*pFNVisitor.get());
+	else
+		pGroup->traverse(*pFNVisitor.get());
+	pNode = pFNVisitor->m_pNode.get();
+
+	if (!pNode.valid())
+		return NULL;
+
+	pVTNode = (vtNode*)pNode->getUserData();
+	if (NULL != pVTNode)
+		return pVTNode;
+
+	osg::Group *pOSGGroup = dynamic_cast<osg::Group*>(pNode.get());
+	if (NULL != pOSGGroup)
+	{
+		vtGroup *pVTGroup = new vtGroup(true);
+		pVTGroup->SetOsgGroup(pOSGGroup);
+		return pVTGroup;
+	}
+	else
+		return new vtNativeNode(pNode.get());
+}
 // Walk an OSG scenegraph looking for Texture states, and disable mipmap.
 class MipmapVisitor : public NodeVisitor
 {
