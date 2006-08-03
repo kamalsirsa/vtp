@@ -1087,7 +1087,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	}
 
 	// We don't need the lookup table any more
-	delete pNodeLookup;
+	delete [] pNodeLookup;
 
 	//are we at end of file?
 	fread(buffer,8, 1, fp);
