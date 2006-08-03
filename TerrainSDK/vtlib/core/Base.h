@@ -395,7 +395,10 @@ public:
 		m_Windows.Append(pWindow);
 	}
 	vtWindow *GetWindow(unsigned int i) {
-		return m_Windows[i];
+		if (m_Windows.GetSize() > i)
+			return m_Windows[i];
+		else
+			return NULL;
 	}
 
 protected:
