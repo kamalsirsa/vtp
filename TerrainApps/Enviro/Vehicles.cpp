@@ -328,7 +328,7 @@ Vehicle *VehicleType::CreateVehicle(const RGBf &cColor, float fScale)
 	if (m_pModels.GetSize() == 0)
 		return NULL;
 
-	Vehicle *pNewVehicle = new Vehicle();
+	Vehicle *pNewVehicle = new Vehicle;
 	pNewVehicle->SetName2("VehicleLOD-" + m_strTypeName);
 
 	float distances[10];
@@ -346,15 +346,10 @@ Vehicle *VehicleType::CreateVehicle(const RGBf &cColor, float fScale)
 		vtNode* pTyres = m_pTyres.GetAt(i);
 		if (NULL != pTyres)
 		{
-			vtNode *pFrontLeft;
-			vtNode *pFrontRight;
-			vtNode *pRearLeft;
-			vtNode *pRearRight;
-
-			pFrontLeft = pTyres->FindNativeNode("front left");
-			pFrontRight = pTyres->FindNativeNode("front right");
-			pRearLeft = pTyres->FindNativeNode("rear left");
-			pRearRight = pTyres->FindNativeNode("rear right");
+			vtNode *pFrontLeft = pTyres->FindNativeNode("front left");
+			vtNode *pFrontRight = pTyres->FindNativeNode("front right");
+			vtNode *pRearLeft = pTyres->FindNativeNode("rear left");
+			vtNode *pRearRight = pTyres->FindNativeNode("rear right");
 
 			if ((NULL != pFrontLeft) && (NULL != pFrontRight) && (NULL != pRearLeft) && (NULL != pRearRight))
 			{
