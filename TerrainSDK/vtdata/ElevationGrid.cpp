@@ -443,6 +443,213 @@ void vtElevationGrid::ReplaceValue(float value1, float value2)
 		ComputeHeightExtents();
 }
 
+/**
+ * Fill the gaps (heixels of value INVALID_ELVATION) in this grid, by
+ * interpolating from the valid values.
+ *
+ * This method uses a simple, unoptimized algorithm to move across the grid,
+ * one column at a time, averaging the surrounding pixels to fill each gap.
+ */
+void vtElevationGrid::FillGaps()
+{
+	int i, j, ix, jx, surrounding;
+	int gaps = 1;
+	float value, value2, sum;
+	float *patch_column = new float[m_iRows];
+
+	// For speed, remember which lines already have no gaps, so we don't have
+	// to visit them again.
+	bool *line_gap = new bool[m_iColumns];
+	for (i = 0; i < m_iColumns; i++)
+		line_gap[i] = true;
+
+	while (gaps > 0)
+	{
+		gaps = 0;
+		int lines_with_gaps = 0;
+
+		// iterate through the heixels of the new elevation grid
+		for (i = 0; i < m_iColumns; i++)
+		{
+			if (!line_gap[i])
+				continue;
+			lines_with_gaps++;
+			line_gap[i] = false;
+
+			bool patches = false;
+			for (j = 0; j < m_iRows; j++)
+				patch_column[j] = INVALID_ELEVATION;
+
+			for (j = 0; j < m_iRows; j++)
+			{
+				value = GetFValue(i, j);
+				if (value != INVALID_ELEVATION)
+					continue;
+
+				// else gap
+				gaps++;
+				line_gap[i] = true;
+
+				// look at surrounding pixels
+				sum = 0;
+				surrounding = 0;
+				for (ix = -1; ix <= 1; ix++)
+				{
+					for (jx = -1; jx <= 1; jx++)
+					{
+						value2 = GetFValueSafe(i+ix, j+jx);
+						if (value2 != INVALID_ELEVATION)
+						{
+							sum += value2;
+							surrounding++;
+						}
+					}
+				}
+				if (surrounding != 0)
+				{
+					patch_column[j] = sum / surrounding;
+					patches = true;
+				}
+			}
+			if (patches)
+			{
+				for (j = 0; j < m_iRows; j++)
+				{
+					if (patch_column[j] != INVALID_ELEVATION)
+						SetFValue(i, j, patch_column[j]);
+				}
+			}
+		}
+	}
+	delete [] line_gap;
+	delete [] patch_column;
+
+	// recompute what has likely changed
+	ComputeHeightExtents();
+}
+
+/**
+ * Fill the gaps (heixels of value INVALID_ELVATION) in this grid, by
+ * interpolating from the valid values.
+ *
+ * This method attempts to be a little better than FillGaps by keeping an
+ * entire second grid for the interpolated results on each pass, to avoid
+ * some cases of the results getting "smeared" left to right.  However, this
+ * makes it a little slower on most data.
+ */
+void vtElevationGrid::FillGaps2()
+{
+	int i, j, ix, jx;
+	int gaps = 1;
+	float value, value2, sum, surrounding;
+
+	vtElevationGrid delta(GetAreaExtents(), m_iColumns, m_iRows, true, GetProjection());
+
+	// For speed, remember which lines already have no gaps, so we don't have
+	// to visit them again.
+	std::vector<bool> line_gap, has_delta;
+	line_gap.resize(m_iColumns);
+	has_delta.resize(m_iColumns);
+	for (i = 0; i < m_iColumns; i++)
+	{
+		line_gap[i] = true;
+		has_delta[i] = false;
+	}
+
+	while (gaps > 0)
+	{
+		gaps = 0;
+		int lines_with_gaps = 0;
+
+		// iterate through the heixels of the elevation grid
+		for (i = 0; i < m_iColumns; i++)
+		{
+			// Don't visit lines without a gap
+			if (!line_gap[i])
+				continue;
+
+			// compute average value on this line
+			sum = 0.0f;
+			surrounding = 0;
+			for (j = 0; j < m_iRows; j++)
+			{
+				value = GetFValue(i, j);
+				if (value != INVALID_ELEVATION)
+				{
+					sum += value;
+					surrounding++;
+				}
+			}
+			float average;
+			if (surrounding > 10)
+				average = sum / surrounding;
+			else
+				average = INVALID_ELEVATION;
+
+			lines_with_gaps++;
+			bool gap_on_this_line = false;
+
+			for (j = 0; j < m_iRows; j++)
+			{
+				value = GetFValue(i, j);
+				if (value != INVALID_ELEVATION)
+					continue;
+
+				// else gap
+				gaps++;
+				gap_on_this_line = true;
+
+				// look at surrounding pixels
+				sum = 0;
+				surrounding = 0;
+				for (ix = -1; ix <= 1; ix++)
+				{
+					for (jx = -1; jx <= 1; jx++)
+					{
+						value2 = GetFValueSafe(i+ix, j+jx);
+						if (value2 != INVALID_ELEVATION)
+						{
+							sum += value2;
+							surrounding++;
+						}
+					}
+				}
+
+				// Smoothing of areas without enough surrounding pixels
+				if (surrounding > 0 && surrounding < 4 && average != INVALID_ELEVATION)
+				{
+					sum += (average * 0.2f);
+					surrounding += 0.2f;
+				}
+				if (surrounding != 0)
+				{
+					delta.SetFValue(i, j, sum / surrounding);
+					has_delta[i] = true;
+				}
+				else
+					delta.SetFValue(i, j, value);
+			}
+			if (!gap_on_this_line)
+				line_gap[i] = false;
+		}
+		for (i = 0; i < m_iColumns; i++)
+		{
+			if (has_delta[i])
+			{
+				for (j = 0; j < m_iRows; j++)
+				{
+					if (GetFValue(i, j) == INVALID_ELEVATION)
+						SetFValue(i, j, delta.GetFValue(i, j));
+				}
+				has_delta[i] = false;
+			}
+		}
+	}
+
+	// recompute what has likely changed
+	ComputeHeightExtents();
+}
+
 /** Set an elevation value to the grid.
  * \param i, j Column and row location in the grid.
  * \param value The value in (integer) meters.
