@@ -201,6 +201,7 @@ public:
 	void OnPopupProperties(wxCommandEvent& event);
 	void OnPopupFlip(wxCommandEvent& event);
 	void OnPopupReload(wxCommandEvent& event);
+	void OnPopupStart(wxCommandEvent& event);
 	void OnPopupDelete(wxCommandEvent& event);
 	void OnPopupURL(wxCommandEvent& event);
 

@@ -240,6 +240,7 @@ EVT_MENU(ID_HELP_DOC_ONLINE, EnviroFrame::OnHelpDocOnline)
 EVT_MENU(ID_POPUP_PROPERTIES, EnviroFrame::OnPopupProperties)
 EVT_MENU(ID_POPUP_FLIP, EnviroFrame::OnPopupFlip)
 EVT_MENU(ID_POPUP_RELOAD, EnviroFrame::OnPopupReload)
+EVT_MENU(ID_POPUP_START, EnviroFrame::OnPopupStart)
 EVT_MENU(ID_POPUP_DELETE, EnviroFrame::OnPopupDelete)
 EVT_MENU(ID_POPUP_URL, EnviroFrame::OnPopupURL)
 END_EVENT_TABLE()
@@ -718,6 +719,10 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 	case 2:	// Ctrl-B
 		// toggle logo
 		g_App.ToggleLogo();
+		break;
+
+	case WXK_F11:
+		g_App.CreateTestVehicle();
 		break;
 
 	case WXK_F12:
@@ -1963,6 +1968,12 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 			}
 		}
 	}
+
+	if (g_App.m_Vehicles.GetSelected() != -1)
+	{
+		popmenu->Append(ID_POPUP_START, _("Start Driving"));
+	}
+
 	popmenu->AppendSeparator();
 	popmenu->Append(ID_POPUP_DELETE, _("Delete"));
 
@@ -2070,6 +2081,11 @@ void EnviroFrame::OnPopupReload(wxCommandEvent& event)
 			continue;
 		structures->ConstructStructure(structures->GetStructure3d(i));
 	}
+}
+
+void EnviroFrame::OnPopupStart(wxCommandEvent& event)
+{
+	g_App.m_Vehicles.SetVehicleSpeed(g_App.m_Vehicles.GetSelected(), 1.0f);
 }
 
 void EnviroFrame::OnPopupDelete(wxCommandEvent& event)
