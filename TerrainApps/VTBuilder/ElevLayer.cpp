@@ -641,26 +641,20 @@ bool vtElevLayer::FillGaps()
 
 	wxString msg;
 	msg = _T("Gaps: Counting");
-	bool bShowProgress = true;
+	UpdateProgressDialog(1, msg);
 
 	while (gaps > 0)
 	{
 		gaps = 0;
 		int lines_with_gaps = 0;
 
-		// iterate through the heixels of the new elevation grid
+		// iterate through the heixels of the elevation grid
 		for (i = 0; i < m_iColumns; i++)
 		{
-			if (bShowProgress && ((i % 50) == 0))
-			{
-				if (UpdateProgressDialog(i*100/m_iColumns, msg))
-				{
-					CloseProgressDialog();
-					return false;
-				}
-			}
+			// Don't visit lines without a gap
 			if (!line_gap[i])
 				continue;
+
 			lines_with_gaps++;
 			line_gap[i] = false;
 
@@ -708,11 +702,13 @@ bool vtElevLayer::FillGaps()
 				}
 			}
 		}
-		if (lines_with_gaps < 50)	// too few to bother showing the user
-			bShowProgress = false;
 
 		msg.Printf(_T("Gaps: %d, lines %d"), gaps, lines_with_gaps);
-		UpdateProgressDialog(99, msg);
+		if (UpdateProgressDialog((m_iColumns-lines_with_gaps) * 99 / m_iColumns, msg))
+		{
+			CloseProgressDialog();
+			return false;
+		}
 	}
 	delete line_gap;
 	delete patch_column;
