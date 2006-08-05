@@ -265,15 +265,25 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 			str += str2;
 			str += ".db";
 
-			hfields[i+cols*j] = new byte[str.GetLength()+1];
-			strcpy((char *) hfields[i+cols*j], str);
+			if (file_exists(str))
+			{
+				hfields[i+cols*j] = new byte[str.GetLength()+1];
+				strcpy((char *) hfields[i+cols*j], str);
+			}
+			else
+				hfields[i+cols*j] = NULL;
 
 			str = folder_image;
 			str += str2;
 			str += ".db";
 
-			textures[i+cols*j] = new byte[str.GetLength()+1];
-			strcpy((char *) textures[i+cols*j], str);
+			if (file_exists(str))
+			{
+				textures[i+cols*j] = new byte[str.GetLength()+1];
+				strcpy((char *) textures[i+cols*j], str);
+			}
+			else
+				textures[i+cols*j] = NULL;
 		}
 	}
 
