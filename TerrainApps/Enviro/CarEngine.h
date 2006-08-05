@@ -45,6 +45,9 @@ public:
 
 	void Eval();
 
+	FPoint3 GetCurPos() { return m_vCurPos; }
+	void SetTargetSpeed(float fMeterPerSec);
+
 private:
 	//called to constructor for basic setup
 	void SharedConstructor(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius);
@@ -58,8 +61,8 @@ private:
 	//change rotation about Y axis based on current and next position.  height is average of tire points
 	void SetOrientationAndHeight(FPoint3 &next_pos);
 
-	//find the tire models of the car - to be called be SetTires.
-	vtGroup* FindTires(vtGroup *model);
+	//find the tire models of the car - to be called by SetTires.
+	vtGroup *FindTires(vtGroup *model);
 
 	//pick the first road to follow
 	void PickFirstRoad();

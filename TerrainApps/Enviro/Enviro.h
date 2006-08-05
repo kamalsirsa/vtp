@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,7 @@
 #include "vtlib/core/NavEngines.h"
 #include "EnviroEnum.h"
 #include "PlantingOptions.h"
+#include "Vehicles.h"
 
 #define INITIAL_SPACE_DIST	3.1f
 
@@ -32,6 +33,7 @@ class GlobePicker;
 class GrabFlyer;
 class FlatFlyer;
 class MapOverviewEngine;
+class CarEngine;
 
 // Plants
 class vtSpeciesList3d;
@@ -210,6 +212,9 @@ public:
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;
+	void CreateTestVehicle();
+	VehicleManager m_VehicleManager;
+	VehicleSet m_Vehicles;
 
 protected:
 	// startup methods

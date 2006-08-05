@@ -106,7 +106,7 @@ void VehicleManager::SetupVehicles()
 	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco.ive");
 	if (fname != "")
 	{
-		// the bronco is modeled in centimeters (0.01)
+		// the bronco is modeled in feet (0.3048)
 		VehicleType *bronco = new VehicleType("bronco");
 		bronco->AddModel(fname, 0.3048f, 500);
 		AddVehicleType(bronco);
@@ -131,7 +131,7 @@ void VehicleManager::SetupVehicles()
 	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/hele-on/hele-on.ive");
 	if (fname != "")
 	{
-		// the bus is modeled in centimeters (0.01)
+		// the bus is modeled in meters (1.0)
 		VehicleType *hele_on = new VehicleType("bus");
 		hele_on->AddModel(fname, 1.00f, 800);
 		AddVehicleType(hele_on);
@@ -275,6 +275,34 @@ Vehicle::Vehicle()
 {
 	m_pLOD = new vtLOD;
 	AddChild(m_pLOD);
+	m_pHighlight = NULL;
+}
+
+void Vehicle::ShowBounds(bool bShow)
+{
+	if (bShow)
+	{
+		if (!m_pHighlight)
+		{
+			// the highlight geometry doesn't exist, so create it
+			// get bounding sphere
+			vtNode *contents = GetChild(0);
+			if (contents)
+			{
+				FSphere sphere;
+				contents->GetBoundSphere(sphere);
+
+				m_pHighlight = CreateBoundSphereGeom(sphere);
+				AddChild(m_pHighlight);
+			}
+		}
+		m_pHighlight->SetEnabled(true);
+	}
+	else
+	{
+		if (m_pHighlight)
+			m_pHighlight->SetEnabled(false);
+	}
 }
 
 
@@ -397,5 +425,61 @@ void VehicleType::ReleaseModels()
 	}
 	m_pModels.Empty();
 	m_pTyres.Empty();
+}
+
+
+///////////////////////////////////////////////////////////////////////
+
+VehicleSet::VehicleSet()
+{
+	m_iSelected = -1;
+}
+
+void VehicleSet::AddEngine(CarEngine *e)
+{
+	m_Engines.push_back(e);
+}
+
+int VehicleSet::FindClosestVehicle(const FPoint3 &point, float &closest)
+{
+	closest = 1E9;
+	int vehicle = -1;
+	for (unsigned int i = 0; i < m_Engines.size(); i++)
+	{
+		float dist = (point - m_Engines[i]->GetCurPos()).Length();
+		if (dist < closest)
+		{
+			closest = dist;
+			vehicle = i;
+		}
+	}
+	return vehicle;
+}
+
+void VehicleSet::VisualSelect(int vehicle)
+{
+	Vehicle *car = dynamic_cast<Vehicle*> (m_Engines[vehicle]->GetTarget());
+	if (!car)
+		return;
+	car->ShowBounds(true);
+	m_iSelected = vehicle;
+}
+
+void VehicleSet::VisualDeselectAll()
+{
+	unsigned int size = m_Engines.size();
+	for (unsigned int i = 0; i < size; i++)
+	{
+		Vehicle *car = dynamic_cast<Vehicle*> (m_Engines[i]->GetTarget());
+		if (car)
+			car->ShowBounds(false);
+	}
+	m_iSelected = -1;
+}
+
+void VehicleSet::SetVehicleSpeed(int vehicle, float fMetersPerSec)
+{
+	CarEngine *eng = m_Engines[vehicle];
+	eng->SetTargetSpeed(fMetersPerSec);
 }
 

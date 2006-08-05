@@ -114,12 +114,8 @@ void Enviro::Shutdown()
 	delete m_pPlantList;
 	if (m_pArcMats)
 		m_pArcMats->Release();
-	//if (m_pNormalCamera)
-	//	m_pNormalCamera->Release();
 	if (m_pTopDownCamera)
 		m_pTopDownCamera->Release();
-//	if (m_pCursorMGeom)
-//		m_pCursorMGeom->Release();
 
 	// Clean up the rest of the TerrainScene container
 	vtGetScene()->SetRoot(NULL);
@@ -1357,9 +1353,19 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	bool result3 = routes.FindClosestUtilNode(gpos, epsilon, m_pSelRoute,
 		m_pSelUtilNode, dist3);
 
+	// Check Vehicles
+	float dist4;
+	FPoint3 wpos;
+	g_Conv.ConvertFromEarth(m_EarthPos, wpos);
+	m_Vehicles.VisualDeselectAll();
+	int vehicle = m_Vehicles.FindClosestVehicle(wpos, dist4);
+	if (dist4 > g_Options.m_fSelectionCutoff)
+		vehicle = -1;
+
 	bool click_struct = (result1 && dist1 < dist2 && dist1 < dist3);
 	bool click_plant = (result2 && dist2 < dist1 && dist2 < dist3);
 	bool click_route = (result3 && dist3 < dist1 && dist3 < dist2);
+	bool click_vehicle = (vehicle!=-1 && dist4 < dist1 && dist4 < dist2 && dist4 < dist3);
 
 	if (click_struct)
 	{
@@ -1404,6 +1410,11 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	{
 		m_bDragging = true;
 		m_bSelectedUtil = true;
+	}
+	else if (click_vehicle)
+	{
+		VTLOG(" vehicle is closest.\n");
+		m_Vehicles.VisualSelect(vehicle);
 	}
 	else
 		VTLOG(" nothing.\n");
@@ -1479,7 +1490,8 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 			vtStructureArray3d *sa = t->GetStructures();
 			vtPlantInstanceArray3d &plants = t->GetPlantInstances();
 
-			if (sa->NumSelected() != 0 || plants.NumSelected() != 0)
+			if (sa->NumSelected() != 0 || plants.NumSelected() != 0 ||
+				m_Vehicles.GetSelected() != -1)
 				ShowPopupMenu(event.pos);
 		}
 	}
@@ -2068,6 +2080,40 @@ void Enviro::CreateElevationLegend()
 	m_bCreatedLegend = true;
 }
 
+
+////////////////////////////////////////////////////////////////////////
+#include "CarEngine.h"
+
+void Enviro::CreateTestVehicle()
+{
+	// Create test vehicle
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return;
+
+	DPoint3 epos;
+	bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
+	if (!bOn)
+		return;
+
+	vtTransform *car = m_VehicleManager.CreateVehicle("bronco", RGBf(1,1,1), 1.0f);
+	if (!car)
+		return;
+	pTerr->AddNode(car);
+
+	pTerr->PlantModelAtPoint(car, DPoint2(epos.x, epos.y));
+
+	float speed = 0.0f;		// kmph
+	float wheel_radius = 0.25f;
+	CarEngine *pE1 = new CarEngine(car->GetTrans(), pTerr->GetHeightField(), speed, wheel_radius);
+	pE1->SetName2("drive");
+	pE1->SetTarget(car);
+	if (pE1->SetTires())
+	{
+		pTerr->AddEngine(pE1);
+		m_Vehicles.AddEngine(pE1);
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////
 

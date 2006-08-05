@@ -83,9 +83,7 @@ CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_spe
 
 	m_iLane = lane-1;
 	PickFirstRoad ();
-//	m_eMode = ROAD;
-	m_eMode = STRAIGHT;
-	m_fSpeed = 0.5f;
+	m_eMode = ROAD;
 }
 
 //shared constructor
@@ -95,7 +93,7 @@ void CarEngine::SharedConstructor(const FPoint3 &pos, vtHeightField3d * grid,
 
 	m_pHeightField = grid;
 
-	//convert speed to units/second (from km/h)
+	//convert speed to meters/second (from km/h)
 	m_fTargetSpeed = target_speed *1000/60/60;
 	m_fSpeed = 0;
 
@@ -212,6 +210,12 @@ void CarEngine::Eval()
 	// spin the wheels, adjusted for speed.
 	SpinWheels(fDeltaTime*m_fSpeed/m_fWheelRadius);
 	m_fPrevTime = t;
+}
+
+void CarEngine::SetTargetSpeed(float fMetersPerSec)
+{
+	m_fTargetSpeed = fMetersPerSec;
+	m_fSpeed = fMetersPerSec;
 }
 
 void CarEngine::Circle(FPoint3 &vNext, float t)

@@ -3,18 +3,22 @@
 //
 // Classes for describing and operating on vehicles.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef VEHICLEH
 #define VEHICLEH
 
+class CarEngine;
+
 class Vehicle : public vtTransform
 {
 public:
 	Vehicle();
+	void ShowBounds(bool bShow);
 
+	vtGeom	*m_pHighlight;	// The wireframe highlight
 	float	m_fSize;	// this many times larger than real
 	vtLOD	*m_pLOD;
 };
@@ -61,6 +65,22 @@ public:
 
 	VehicleType *m_pFirstVehicleType;
 	bool m_bAttemptedVehicleLoad;
+};
+
+class VehicleSet
+{
+public:
+	VehicleSet();
+
+	void AddEngine(CarEngine *e);
+	int FindClosestVehicle(const FPoint3 &point, float &closest);
+	void VisualSelect(int vehicle);
+	void VisualDeselectAll();
+	int GetSelected() { return m_iSelected; }
+	void SetVehicleSpeed(int vehicle, float fMetersPerSec);
+
+	std::vector<CarEngine*> m_Engines;
+	int m_iSelected;
 };
 
 #endif	// VEHICLEH
