@@ -596,7 +596,7 @@ bool vtImageLayer::SaveToFile(const char *fname) const
 		pBand->RasterIO( GF_Write, 0, 0, m_iXSize, m_iYSize,
 			raster, m_iXSize, m_iYSize, GDT_Byte, 0, 0 );
 	}
-	delete raster;
+	delete [] raster;
 	GDALClose(pDataset);
 
 	CloseProgressDialog();
