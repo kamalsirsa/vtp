@@ -1828,6 +1828,22 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				}
 			}
 
+			// If there is no real data there, omit this tile
+			if (bAllInvalid)
+				continue;
+
+			// Omit all-zero tiles
+			if (bAllZero)
+				continue;
+
+			if (!bAllValid)
+			{
+				// We don't want any gaps at all in the output tiles, because
+				//  they will cause huge cliffs.
+				UpdateProgressDialog(done*99/total, _("Filling gaps"));
+				base_lod.FillGaps2();
+			}
+
 			// Create a matching derived texture tileset
 			if (opts.bCreateDerivedImages)
 			{
@@ -1905,19 +1921,6 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 					if (tilesize == 64)
 						break;
 				}
-			}
-
-			// If there is no real data there, omit this tile
-			if (bAllInvalid)
-				continue;
-
-			// don't omit all-zero tiles (Yet)
-			//if (bAllZero)
-			//	continue;
-
-			if (!bAllValid)
-			{
-				// TODO? fill gaps here
 			}
 
 			for (int k = 0; k < total_lods; k++)
