@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project.
+// Copyright (c) 2001-2006 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -1149,11 +1149,22 @@ float vtElevationGrid::GetWorldValue(int i, int j, bool bTrue) const
 
 
 /**
- * Quick n' dirty special-case raycast for perfectly regular grid terrain
- * Find altitude (y) and surface normal, given (x,z) local coordinates
+ * Simple elevation test for perfectly regular grid terrain.
+ * Find altitude (y) and (optionally) surface normal, given (x,z) world coordinates.
  *
  * This approach is very straightforward, so it could be significantly
  * sped up if needed.
+ *
+ * \param p A 3D point in world coordinates.  Only the X and Z values are used.
+ * \param fAltitude If the test succeeds, this contains the result by reference.
+ * \param bTrue Pass true to the use the true elevation, false to consider the
+ *		vertical exaggeration in effect.
+ * \param bIncludeCulture True to include testing other objects ("culture") on
+ *		the grid.  False to test the grid only.
+ * \param vNormal If you pass a pointer to a vector, it will be filled in with
+ *		the upwards-pointing surface normal at the given point.
+ *
+ * \return true if the point was inside the elevation grid, false if outside.
  */
 bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
@@ -1241,6 +1252,16 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	return true;
 }
 
+/**
+ * Return the elevation value at a given point in earth coordinates.
+ *
+ * \param p A 2D point in earth coordinates.
+ * \param fAltitude If the test succeeds, this contains the result by reference.
+ * \param bTrue Pass true to the use the true elevation, false to consider the
+ *		vertical exaggeration in effect.
+ *
+ * \return true if the point was inside the elevation grid, false if outside.
+ */
 bool vtElevationGrid::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 										  bool bTrue) const
 {
