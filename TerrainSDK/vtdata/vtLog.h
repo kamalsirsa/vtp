@@ -1,7 +1,7 @@
 //
 // Log - simple message logging to a file.
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file vtLog.h */
@@ -23,7 +23,7 @@
  *
  * To use:
  * - 1. Call VTSTARTLOG with the name of the log file you want.
- * - 2. Use VTLOG just like you would use print, to log messages.
+ * - 2. Use VTLOG just like you would use printf, to log messages.
  *    Alternately you can use VTLOG1 which takes a single string.
  *
  * \par Example:
