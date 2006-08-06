@@ -288,10 +288,10 @@ void vtMeshBase::CreateOptimizedBlock(const FPoint3& size)
 }
 
 /**
- *	Adds a 3D block to a vtMesh as a series of 5 triangle fan primitives.
- *  The bottom face is omitted, the base is placed at \param base, and texture
- *  coordinates are provided such that texture bitmaps appear right-side-up
- *  on the side faces.
+ * Adds a 3D block (extruded rectangle) to a vtMesh as a series of 5 triangle
+ * fan primitives.  The bottom face is omitted, the base is placed at /base/,
+ * the extrusion is along /vector_up/.  Texture coordinates are provided such
+ * that texture bitmaps appear right-side-up on the side faces.
  */
 void vtMeshBase::CreatePrism(const FPoint3 &base, const FPoint3 &vector_up,
 							 const FPoint2 &size1, const FPoint2 &size2)

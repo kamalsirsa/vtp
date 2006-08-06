@@ -17,6 +17,8 @@
 #include <osg/FragmentProgram>
 #include <osg/Version>
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #define USE_SHADOW_HUD		0
 #define USE_FRAGMENT_SHADER	0
 
@@ -550,3 +552,4 @@ void CStructureShadowsOSG::ExcludeFromShadower(osg::Node *pNode, bool bExclude)
 	SetSunPosition(m_SunPosition, true);
 }
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS

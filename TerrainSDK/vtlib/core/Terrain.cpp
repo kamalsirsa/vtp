@@ -989,12 +989,13 @@ void vtTerrain::SaveRoute()
  * is useful for extending the water to the horizon by creating additional
  * ocean plane geometry.
  *
- * \param bWater : true for a watery material, false for a land material
- * \param bHorizon : if true, create tiles extending from the terrain extents
+ * \param fAltitude The height (Y-value) of the horizontal plane.
+ * \param bWater True for a watery material, false for a land material
+ * \param bHorizon If true, create tiles extending from the terrain extents
  *		to the horizon.
- * \param bCenter : if true, create a tile in the center (covering the terrain
+ * \param bCenter If true, create a tile in the center (covering the terrain
  *		extents).
- * \param fTransparency : a value from 0 (tranparent) to 1 (opaque)
+ * \param fTransparency A value from 0 (tranparent) to 1 (opaque)
  */
 void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHorizon,
 										  bool bCenter, float fTransparency)
@@ -1737,7 +1738,7 @@ bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgb
  * Given a featureset and style description, create the geometry and place it
  * on the terrain.
  *
- * \param feat The set of features to create.
+ * \param layer The set of features to create.
  * \param style The style (color, size, etc.) to use in creating the features.
 		See CreateFeatureGeometry() and CreateFeatureLabels() for descriptions
 		of the supported style tags.  Control tags to this method are:
@@ -1762,7 +1763,7 @@ void vtTerrain::CreateStyledFeatures(vtAbstractLayer *layer, const vtTagArray &s
  * Given a featureset and style description, create geometry objects (such as
  * lines or spheres) and place them on the terrain.
  *
- * \param feat The set of features to create.  If the features are 2D or 3D
+ * \param layer The set of features to create.  If the features are 2D or 3D
 		polylines (vtFeatureSetLineString or vtFeatureSetLineString3D) then
 		line geometry will be created.  If 2D, it will be draped on the
 		terrain. Polygon features (vtFeatureSetPolygon) will also be created
@@ -1904,7 +1905,7 @@ void vtTerrain::CreateFeatureGeometry(vtAbstractLayer *layer, const vtTagArray &
  * Given a featureset and style description, create geometry objects (such as
  * lines or spheres) and place them on the terrain.
  *
- * \param feat The set of features to create.  If the features are 2D or 3D
+ * \param layer The set of features to create.  If the features are 2D or 3D
 		points (vtFeatureSetPoint2D or vtFeatureSetPoint3D) then the labels
 		will be placed at those points.  If the features are 2D polygons
 		(vtFeatureSetPolygon) then the point used is the centroid of the

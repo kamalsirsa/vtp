@@ -402,6 +402,7 @@ private:
 ////////////////////////////////////////////////////////////////////////
 // Visitor class for XML parsing of TParams files.
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class TParamsVisitor : public TagVisitor
 {
 public:
@@ -417,6 +418,7 @@ protected:
 	bool m_bInLayer;
 	bool m_bInScenario;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 
 #define STR_TPARAMS_FORMAT_NAME "Terrain_Parameters"

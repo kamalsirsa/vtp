@@ -12,6 +12,8 @@
 #include <osg/TexGenNode>
 #include <osg/PolygonOffset>
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 class CStructureShadowsOSG : public osg::Referenced
 {
 public:
@@ -66,5 +68,7 @@ protected:
 	float m_fPolygonOffsetFactor;
 	float m_fPolygonOffsetUnits;
 };
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 #endif // STRUCTURESHADOWSOSG_H

@@ -74,6 +74,11 @@ enum TFType
 	TFT_ROADS
 };
 
+/**
+ * An abstract layer is a traditional GIS-style set of geometry features with
+ * attributes.  It can be shown on the terrain in a variety of ways.  It is
+ * described with a set of XML-style properties (see TParams).
+ */
 class vtAbstractLayer
 {
 public:
