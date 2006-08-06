@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project.
+// Copyright (c) 2001-2006 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -91,7 +91,6 @@ public:
 
 	// Use OGR to read a file
 	bool LoadFromNTF5(const char *szFileName, bool progress_callback(int) = NULL);
-	bool ParseNTF5(OGRDataSource *pDatasource, vtString &msg, bool progress_callback(int));
 
 	// Save
 	bool SaveTo3TX(const char *szFileName, bool progress_callback(int) = NULL);
@@ -171,6 +170,7 @@ protected:
 
 	void ComputeExtentsFromCorners();
 	void ComputeCornersFromExtents();
+	bool ParseNTF5(OGRDataSource *pDatasource, vtString &msg, bool progress_callback(int));
 
 	DPoint2		m_Corners[4];	// data corners, in the CRS of this terrain
 	vtProjection	m_proj;		// a grid always has some projection
