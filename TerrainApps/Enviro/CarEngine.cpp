@@ -237,7 +237,7 @@ float CarEngine::SetOrientation()
 
 	FPoint3 CurrentPosition = pTransform->GetTrans();
 
-	m_pHeightField->FindAltitudeAtPoint(CurrentPosition, CurrentPosition.y);
+	m_pHeightField->FindAltitudeAtPoint(CurrentPosition, CurrentPosition.y, false, true);
 	return CurrentPosition.y;
 #else
 	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
