@@ -1629,10 +1629,14 @@ void MainFrame::MergeResampleElevation()
 		return;
 	}
 	pOutput->m_pGrid->ComputeHeightExtents();
-	if (!pOutput->FillGaps())
+
+	if (dlg.m_bFillGaps)
 	{
-		delete pOutput;
-		return;
+		if (!pOutput->FillGaps())
+		{
+			delete pOutput;
+			return;
+		}
 	}
 
 	if (dlg.m_bNewLayer)
@@ -2020,7 +2024,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 #endif
 
 	int i, j, im;
-	int total = opts.rows * opts.cols * opts.numlods, done = 0;
+	int total = opts.rows * opts.cols, done = 0;
 	for (j = 0; j < opts.rows; j++)
 	{
 		for (i = 0; i < opts.cols; i++)

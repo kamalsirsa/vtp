@@ -58,6 +58,7 @@ ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_bNewLayer = true;
 	m_bToFile = false;
 	m_bToTiles = false;
+	m_bFillGaps = true;
 
 	m_tileopts.cols = 4;
 	m_tileopts.rows = 4;
@@ -89,6 +90,7 @@ ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	// output grid
 	AddValidator(ID_FLOATS, &m_bFloats);
 	AddNumValidator(ID_VUNITS, &m_fVUnits);
+	AddValidator(ID_FILL_GAPS, &m_bFillGaps);
 
 	// informations
 	AddNumValidator(ID_AREAX, &m_fAreaX);

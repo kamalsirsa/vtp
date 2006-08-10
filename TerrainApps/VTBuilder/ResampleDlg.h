@@ -79,8 +79,7 @@ public:
 	float   m_fVUnits;
 
 	DRECT   m_area;
-	int  m_power;
-	bool	m_bSetting;
+	bool	m_bFillGaps;
 
 	// Where to write the derived image tiles, if we will create them.
 	wxString2	m_strToFileImages;
@@ -91,6 +90,8 @@ private:
 	// WDR: member variable declarations for ResampleDlg
 	wxNumericValidator *spacing1, *spacing2;
 	BuilderView *m_pView;
+	int		m_power;
+	bool	m_bSetting;
 	
 private:
 	// WDR: handler declarations for ResampleDlg
