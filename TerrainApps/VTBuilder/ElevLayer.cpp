@@ -1270,7 +1270,7 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 	bool bFloat = m_pGrid->IsFloatMode();
 
 	int i, j, lod;
-	int total = opts.rows * opts.cols * opts.numlods, done = 0;
+	int total = opts.rows * opts.cols, done = 0;
 	for (j = 0; j < opts.rows; j++)
 	{
 		for (i = 0; i < opts.cols; i++)
@@ -1286,7 +1286,7 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 
 			// draw our progress in the main view
 			if (pView)
-				pView->ShowGridMarks(area, opts.cols, opts.rows, col, row);
+				pView->ShowGridMarks(area, opts.cols, opts.rows, col, opts.rows-1-row);
 
 			// Extract the highest LOD we need
 			vtElevationGrid base_lod(tile_area, base_tilesize+1, base_tilesize+1,
@@ -1314,6 +1314,22 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 					if (fvalue != 0)
 						bAllZero = false;
 				}
+			}
+			// Increment whether we omit or not
+			done++;
+
+			// If there is no real data there, omit this tile
+			if (bAllInvalid)
+				continue;
+
+			// Omit all-zero tiles
+			if (bAllZero)
+				continue;
+
+			if (!bAllValid)
+			{
+				UpdateProgressDialog(done*99/total, _("Filling gaps"));
+				base_lod.FillGaps2();
 			}
 
 			// Create a matching derived texture tileset
@@ -1355,11 +1371,6 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 						*dst++ = rgb.b;
 					}
 				output_buf.savedata(fname);
-			}
-
-			if (!bAllValid)
-			{
-				// TODO? fill gaps here
 			}
 
 			for (lod = 0; lod < opts.numlods; lod++)
@@ -1407,8 +1418,6 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 					}
 				}
 				buf.savedata(fname);
-
-				done++;
 			}
 		}
 	}
