@@ -122,6 +122,7 @@ private:
 	void OnReset( wxCommandEvent &event );
 	void OnCheckbox( wxCommandEvent &event );
 	void OnStop( wxCommandEvent &event );
+	void OnPlayToDisk( wxCommandEvent &event );
 	void OnRecord1( wxCommandEvent &event );
 	void OnPlay( wxCommandEvent &event );
 	void OnLoadAnim( wxCommandEvent &event );

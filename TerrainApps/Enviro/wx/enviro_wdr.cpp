@@ -448,28 +448,31 @@ wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item27->Add( item34, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
 
+    wxButton *item39 = new wxButton( parent, ID_PLAY_TO_DISK, _("Play animation to disk as a series of images"), wxDefaultPosition, wxDefaultSize, 0 );
+    item27->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
+
     item0->Add( item27, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticBox *item40 = new wxStaticBox( parent, -1, _("Recording") );
-    wxStaticBoxSizer *item39 = new wxStaticBoxSizer( item40, wxVERTICAL );
+    wxStaticBox *item41 = new wxStaticBox( parent, -1, _("Recording") );
+    wxStaticBoxSizer *item40 = new wxStaticBoxSizer( item41, wxVERTICAL );
 
-    wxRadioButton *item41 = new wxRadioButton( parent, ID_RECORD_LINEAR, _("Use linear distance"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    item39->Add( item41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item42 = new wxRadioButton( parent, ID_RECORD_LINEAR, _("Use linear distance"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item40->Add( item42, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item42 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item43 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxRadioButton *item43 = new wxRadioButton( parent, ID_RECORD_INTERVAL, _("Time interval"), wxDefaultPosition, wxDefaultSize, 0 );
-    item42->Add( item43, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item44 = new wxRadioButton( parent, ID_RECORD_INTERVAL, _("Time interval"), wxDefaultPosition, wxDefaultSize, 0 );
+    item43->Add( item44, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item44 = new wxTextCtrl( parent, ID_RECORD_SPACING, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item42->Add( item44, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item45 = new wxTextCtrl( parent, ID_RECORD_SPACING, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item43->Add( item45, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item45 = new wxStaticText( parent, ID_TEXT, _("seconds"), wxDefaultPosition, wxDefaultSize, 0 );
-    item42->Add( item45, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item46 = new wxStaticText( parent, ID_TEXT, _("seconds"), wxDefaultPosition, wxDefaultSize, 0 );
+    item43->Add( item46, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item39->Add( item42, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    item40->Add( item43, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    item0->Add( item39, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item40, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {
@@ -2350,6 +2353,53 @@ wxSizer *TextureDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item16->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item16, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
+wxSizer *LayerAnimDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxBoxSizer *item2 = new wxBoxSizer( wxVERTICAL );
+
+    wxSlider *item3 = new wxSlider( parent, ID_ANIM_POS, 0, 0, 1000, wxDefaultPosition, wxSize(-1,24), wxSL_HORIZONTAL );
+    item2->Add( item3, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxBitmapButton *item5 = new wxBitmapButton( parent, ID_RESET, MyBitmapsFunc( 1 ), wxDefaultPosition, wxDefaultSize );
+    item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBitmapButton *item6 = new wxBitmapButton( parent, ID_STOP, MyBitmapsFunc( 2 ), wxDefaultPosition, wxDefaultSize );
+    item4->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBitmapButton *item7 = new wxBitmapButton( parent, ID_PLAY, MyBitmapsFunc( 3 ), wxDefaultPosition, wxDefaultSize );
+    item4->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("Speed:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_SPEED, _("2.0"), wxDefaultPosition, wxSize(80,-1), 0 );
+    item4->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("fps"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item2->Add( item4, 0, wxALIGN_CENTER, 5 );
+
+    item1->Add( item2, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL, 5 );
+
+    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     if (set_sizer)
     {

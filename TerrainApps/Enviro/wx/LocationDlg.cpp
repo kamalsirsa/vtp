@@ -18,6 +18,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtui/wxString2.h"
+#include "vtui/Helper.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
 #include "canvas.h"
@@ -54,6 +55,7 @@ BEGIN_EVENT_TABLE(LocationDlg,AutoDialog)
 	EVT_BUTTON( ID_PLAY, LocationDlg::OnPlay )
 	EVT_BUTTON( ID_RECORD1, LocationDlg::OnRecord1 )
 	EVT_BUTTON( ID_STOP, LocationDlg::OnStop )
+	EVT_BUTTON( ID_PLAY_TO_DISK, LocationDlg::OnPlayToDisk )
 	EVT_CHECKBOX( ID_LOOP, LocationDlg::OnCheckbox )
 	EVT_CHECKBOX( ID_CONTINUOUS, LocationDlg::OnCheckbox )
 	EVT_CHECKBOX( ID_SMOOTH, LocationDlg::OnCheckbox )
@@ -525,6 +527,121 @@ void LocationDlg::OnPlay( wxCommandEvent &event )
 {
 	vtAnimPathEngine *engine = GetEngine(m_iAnim);
 	engine->SetEnabled(true);
+}
+
+class PlayToDiskEngine : public vtEngine
+{
+public:
+	void Eval()
+	{
+		vtScene *scene = vtGetScene();
+		if (step > 0)
+		{
+			wxString msg;
+			msg.Printf(_T("Output %.2f/%.2f"), fStep * step, fTotal);
+			if (UpdateProgressDialog(99 * fStep * step / fTotal, msg) == true)
+			{
+				// user pressed cancel
+				scene->GetRootEngine()->RemoveChild(this);
+				CloseProgressDialog();
+				return;
+			}
+
+			// We must wait a frame until the next render, for the view to update
+			vtString fname;
+			fname.Format("image_%04d.jpg", step-1);
+
+			// Read image from window
+			IPoint2 size = scene->GetWindowSize();
+			vtImage *pImage = new vtImage;
+			pImage->Create(size.x, size.y, 24);
+			glPixelStorei(GL_PACK_ALIGNMENT, 1);
+			glReadPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
+
+			// Write to disk
+			unsigned char *data;
+			vtDIB dib;
+			dib.Create(size.x, size.y, 24);
+			int x, y;
+			short r, g, b;
+			for (y = 0; y < size.y; y++)
+			{
+				data = pImage->GetRowData(y);
+				for (x = 0; x < size.x; x++)
+				{
+					r = *data++;
+					g = *data++;
+					b = *data++;
+					dib.SetPixel24(x, size.y-1-y, RGBi(r, g, b));
+				}
+			}
+			dib.WriteJPEG((const char *)(directory+fname), 98);
+			pImage->Release();
+		}
+		// Show the next frame time
+		engine->SetTime(fStep * step);
+		engine->UpdateTargets();
+
+		// Advance to next frame
+		step++;
+		if (fStep * step > fTotal)
+		{
+			// We're finished
+			scene->GetRootEngine()->RemoveChild(this);
+			CloseProgressDialog();
+			return;
+		}
+	}
+	bool bReady;
+	vtString directory;
+	int step;
+	float fStep, fTotal;
+	vtAnimPathEngine *engine;
+};
+
+void LocationDlg::OnPlayToDisk( wxCommandEvent &event )
+{
+	// Ask for directory to place the images
+	wxDirDialog getDir(NULL, _("Output directory for the images"));
+	bool bResult = (getDir.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+	wxString dir = getDir.GetPath();
+
+	// Make sure there is a trailing slash
+	if (dir.Length() > 1)
+	{
+		char ch = dir.GetChar(dir.Length()-1);
+		if (ch != '/' && ch != '\\')
+			dir += _T("/");
+	}
+
+	// Ask for unit of (animation) time for each frame
+	wxString step = wxGetTextFromUser(_("Animation time step for each frame, in seconds:"),
+		_("Animation"), _T("0.1"), this);
+	if (step == _T(""))
+		return;
+	float fStep = atof(step.mb_str());
+
+	vtAnimPathEngine *engine = GetEngine(m_iAnim);
+	vtAnimPath *path = engine->GetAnimationPath();
+
+	wxString msg;
+	msg.Printf(_("The animation of %.2f seconds will be recorded as %d frames (%.2f/sec)"),
+		path->GetLastTime(), (int) (path->GetLastTime()/fStep), fStep);
+	if (wxMessageBox(msg, _("Animation"), wxOK+wxCANCEL) == wxCANCEL)
+		return;
+
+	OpenProgressDialog(_("Output"), true, this);
+
+	PlayToDiskEngine *eng = new PlayToDiskEngine;
+	eng->bReady = false;
+	eng->directory = dir.mb_str();
+	eng->step = 0;
+	eng->fStep = fStep;
+	eng->fTotal = path->GetLastTime();
+	eng->engine = engine;
+	vtGetScene()->GetRootEngine()->AddChild(eng);
 }
 
 void LocationDlg::OnLoadAnim( wxCommandEvent &event )
