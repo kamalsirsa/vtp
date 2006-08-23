@@ -960,9 +960,6 @@ void vtTerrain::AddRoute(vtRoute *f)
 
 	// Add directly
 	m_pTerrainGroup->AddChild(f->GetGeom());
-
-	// Or add to LOD grid (much more efficient)
-//	AddNodeToLodGrid(f->GetGeom());
 }
 
 void vtTerrain::add_routepoint_earth(vtRoute *route, const DPoint2 &epos,
@@ -2652,13 +2649,18 @@ bool vtTerrain::PointIsInTerrain(const DPoint2 &p)
 	return m_pHeightField->ContainsWorldPoint(x, z);
 }
 
+/**
+ * The base CreateCustomCulture does nothing; this virtual method is meant to
+ * be overridden by your terrain subclass to add its own culture.
+ */
 void vtTerrain::CreateCustomCulture()
 {
-	// The base class does nothing; this method is meant to be overridden
-	//  by your terrain subclass to add its own culture.
 }
 
-
+/**
+ * Add an engine to this terrain's group of engines.
+ * The engine will be enabled only when the terrain is visible.
+ */
 void vtTerrain::AddEngine(vtEngine *pE)
 {
 	// add to this Terrain's engine list
@@ -3142,6 +3144,14 @@ void vtTerrain::HideAllPOI()
 	}
 }
 
+/**
+ * Create a new plant instance at a given location and add it to the terrain.
+ * \param pos The 2D earth position of the new plant.
+ * \param iSpecies Index of the species in the terrain's plant list.
+ *		If you don't know the index, you can find it with
+ *		 vtSpeciesList::GetSpeciesIdByName or vtSpeciesList::GetSpeciesIdByCommonName.
+ * \param fSize Height of the new plant (meters).
+ */
 bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 {
 	int num = m_PIA.AddPlant(pos, fSize, iSpecies);
@@ -3198,10 +3208,10 @@ void vtTerrain::SetPlantList(vtSpeciesList3d *pPlantList)
 
 /**
  * Adds a node to the terrain.
- * The node will be added directly, so it is always in the scene whenever
- * the terrain is visible.
+ * The node will be added directly to this specific terrain, so it will be
+ * hidden whenever the terrain is not active.
  *
- * \sa AddNodeToLodGrid
+ * \sa AddNodeToVegGrid, AddNodeToStructGrid
  */
 void vtTerrain::AddNode(vtNode *pNode)
 {
@@ -3210,11 +3220,10 @@ void vtTerrain::AddNode(vtNode *pNode)
 
 /**
  * Adds a node to the terrain.
- * The node will be added to the LOD Grid of the terrain, so it will be
- * culled when it is far from the viewer.  This is usually desirable when
- * the models are complicated or there are lot of them.
- *
- * There is another form of this method which takes a vtGeom node instead.
+ * The node will be added to the Vegetation LOD Grid of the terrain, so it
+ * will be culled when it is far from the viewer.  This method is used by
+ * the terrain vegetation methods, and you can also use it directly if you
+ * have your own vegetation nodes to add.
  *
  * \sa AddNode
  */
@@ -3227,7 +3236,7 @@ bool vtTerrain::AddNodeToVegGrid(vtTransform *pTrans)
 
 /**
  * Adds a node to the terrain.
- * The node will be added to the LOD Grid of the terrain, so it will be
+ * The node will be added to the Structure LOD Grid of the terrain, so it will be
  * culled when it is far from the viewer.  This is usually desirable when
  * the models are complicated or there are lot of them.
  *
@@ -3244,7 +3253,7 @@ bool vtTerrain::AddNodeToStructGrid(vtTransform *pTrans)
 
 /**
  * Adds a node to the terrain.
- * The node will be added to the LOD Grid of the terrain, so it will be
+ * The node will be added to the Structure LOD Grid of the terrain, so it will be
  * culled when it is far from the viewer.  This is usually desirable when
  * the models are complicated or there are lot of them.
  *
