@@ -56,7 +56,6 @@ public:
 class vtNodeBase : public vtTarget
 {
 public:
-	virtual vtNodeBase*	Clone() = 0;
 	virtual void		Release() = 0;
 
 	virtual void		SetEnabled(bool bOn) = 0;
@@ -77,11 +76,7 @@ public:
 };
 
 /** Virtual Base class for a Group node (scene graph node that can have children). */
-#if VTLIB_PSM
-class vtGroupBase : public vtNodeBase
-#else
 class vtGroupBase
-#endif
 {
 public:
 	virtual void		AddChild(vtNode* pChild) = 0;
@@ -93,11 +88,7 @@ public:
 };
 
 /** Abstract base class for a scene graph node that can move. */
-#if VTLIB_PSM
-class vtTransformBase : public vtGroupBase
-#else
 class vtTransformBase
-#endif
 {
 public:
 	virtual void Identity() = 0;
