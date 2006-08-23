@@ -188,6 +188,14 @@ vtString RemSpaces(const vtString &str)
 	}
 }*/
 
+/**
+ * Find the index of a species by scientific name.
+ * Example:
+	\code
+	short index = pSpeciesList->GetSpeciesIdByName("Cocos nucifera");
+	\endcode
+ * \return The 0-based index, or -1 if not found.
+ */
 short vtSpeciesList::GetSpeciesIdByName(const char *name) const
 {
 	for (unsigned int j = 0; j < NumSpecies(); j++)
@@ -198,6 +206,14 @@ short vtSpeciesList::GetSpeciesIdByName(const char *name) const
 	return -1;
 }
 
+/**
+ * Find the index of a species by common name.
+ * Example:
+	\code
+	short index = pSpeciesList->GetSpeciesIdByName("Coconut Palm");
+	\endcode
+ * \return The 0-based index, or -1 if not found.
+ */
 short vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
 {
 	unsigned int i, j;
