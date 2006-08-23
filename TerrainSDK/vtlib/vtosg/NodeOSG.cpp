@@ -350,6 +350,13 @@ vtGroup *vtNode::GetParent(int iParent)
 	return pGroup;
 }
 
+vtNode *vtNode::Clone(bool bDeep)
+{
+	// We should never get here, because only subclasses of vtNode are
+	//  ever instantiated.
+	return NULL;
+}
+
 RGBf vtNodeBase::s_white(1, 1, 1);
 
 /**
@@ -415,7 +422,7 @@ public:
 
 	virtual void apply(osg::Node& node)
 	{
-		if (node.getName()== m_Name)
+		if (node.getName().find(m_Name) != std::string::npos)
 		{
 			m_pNode = &node;
 
@@ -456,15 +463,26 @@ vtNode *vtNode::FindNativeNode(const char *pName, bool bDescend)
 	if (NULL != pVTNode)
 		return pVTNode;
 
-	osg::Group *pOSGGroup = dynamic_cast<osg::Group*>(pNode.get());
-	if (NULL != pOSGGroup)
+	// Now we know it's an OSG node that's not already wrapped.
+	// Maybe it's a transform.
+	osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform*>(pNode.get());
+	if (mt)
+	{
+		vtTransform *pVTXform = new vtTransform(mt);
+		return pVTXform;
+	}
+
+	// Maybe it's a group.
+	osg::Group *grp = dynamic_cast<osg::Group*>(pNode.get());
+	if (grp)
 	{
 		vtGroup *pVTGroup = new vtGroup(true);
-		pVTGroup->SetOsgGroup(pOSGGroup);
+		pVTGroup->SetOsgGroup(grp);
 		return pVTGroup;
 	}
-	else
-		return new vtNativeNode(pNode.get());
+
+	// Otherwise we have to use the opaque wrapper "Native Node"
+	return new vtNativeNode(pNode.get());
 }
 // Walk an OSG scenegraph looking for Texture states, and disable mipmap.
 class MipmapVisitor : public NodeVisitor
@@ -551,7 +569,8 @@ bool vtNode::s_bDisableMipmaps = false;
  *
  * \return A node pointer if successful, or NULL if the load failed.
  */
-vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
+vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
+						  bool bDisableMipmaps)
 {
 	// Some of OSG's file readers, such as the Wavefront OBJ reader, have
 	//  sensitivity to stdio issues with '.' and ',' in European locales.
@@ -606,7 +625,7 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 #if VTDEBUG
 		VTLOG("]");
 #endif
-
+		// If OSG could not load it, there is nothing more to do
 		if (!node)
 			return NULL;
 	}
@@ -648,27 +667,30 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		//  up, and the VTP uses OpenGL coordinates which has Y up.
 		float fRotation = -PID2f;
 
-		// OSG expects OBJ models to have Y up.  I have seen models with Z up,
-		//  and we used to correct for that here (fRotation = -PIf).
+		// OSG expects OBJ models to have Y up.  I have seen models with Z
+		//  up, and we used to correct for that here (fRotation = -PIf).
 		//  However, over time it has appeared that there are more OBJ out
 		//  there with Y up than with Z up.  So, we now treat all models from
 		//  OSG the same.
 
 		osg::MatrixTransform *transform = new osg::MatrixTransform;
+		transform->setName("corrective 90 degrees");
 		transform->setMatrix(osg::Matrix::rotate(fRotation, Vec3(1,0,0)));
 		transform->addChild(node);
 		// it's not going to change, so tell OSG that it can be optimized
 		transform->setDataVariance(osg::Object::STATIC);
 
-		// Now do some OSG voodoo, which should spread the transform downward
-		//  through the loaded model, and delete the transform.
+		// Now do some OSG voodoo, which should spread ("flatten") the
+		//  transform downward through the loaded model, and delete the transform.
 		osg::Group *group = new osg::Group;
 		group->addChild(transform);
 
 		osgUtil::Optimizer optimizer;
 		optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
-
 		node = group;
+
+		//VTLOG1("--------------\n");
+		//vtLogNativeGraph(node);
 
 #if DEBUG_NODE_LOAD
 	VTLOG("group %lx (rc %d), ", node, node->referenceCount());
@@ -804,6 +826,21 @@ vtNode *vtNativeNode::FindParentVTNode()
 	return NULL;
 }
 
+vtNode *vtNativeNode::Clone(bool bDeep)
+{
+	if (bDeep)
+	{
+		// 'Deep' copies all the nodes, but not the geometry inside them
+		osg::CopyOp deep_op(osg::CopyOp::DEEP_COPY_OBJECTS | osg::CopyOp::DEEP_COPY_NODES);
+		osg::Node *newnode = (osg::Node *) m_pNode->clone(deep_op);
+		return new vtNativeNode(newnode);
+	}
+	else
+		// A shallow copy of a native node is just a second reference
+		return this;
+}
+
+
 ///////////////////////////////////////////////////////////////////////
 // vtGroup
 //
@@ -823,30 +860,52 @@ void vtGroup::SetOsgGroup(osg::Group *g)
 	SetOsgNode(g);
 }
 
-vtNodeBase *vtGroup::Clone()
+vtNode *vtGroup::Clone(bool bDeep)
 {
-	vtGroup *group = new vtGroup;
-	group->CopyFrom(this);
-	return group;
+	vtGroup *newgroup = new vtGroup;
+	newgroup->CloneFrom(this, bDeep);
+	return newgroup;
 }
 
-void vtGroup::CopyFrom(const vtGroup *rhs)
+void vtGroup::CloneFrom(vtGroup *group, bool bDeep)
 {
-	// Deep copy or shallow copy?
-	// Assume shallow copy: duplicate this node and add another reference
-	//  to the existing children.
-	for (unsigned int i = 0; i < rhs->GetNumChildren(); i++)
+	if (bDeep)
 	{
-		vtNode *child = rhs->GetChild(i);
-		if (child)
-			AddChild(child);
-		else
+		osg::CopyOp deep_op(osg::CopyOp::DEEP_COPY_OBJECTS | osg::CopyOp::DEEP_COPY_NODES);
+
+		// Deep copy: Duplicate the entire tree of nodes
+		for (unsigned int i = 0; i < group->GetNumChildren(); i++)
 		{
-			// Might be an internal (native OSG) node - try to cope with that
-			const Group *rhsGroup = rhs->GetOsgGroup();
-			Node *pOsgChild = const_cast<Node *>( rhsGroup->getChild(i) );
-			if (pOsgChild)
-				m_pGroup->addChild(pOsgChild);
+			vtNode *child = group->GetChild(i);
+			if (child)
+				AddChild(child->Clone(bDeep));
+			else
+			{
+				// Might be an internal (native OSG) node - try to cope with that
+				Node *pOsgChild = const_cast<Node *>( group->m_pGroup->getChild(i) );
+				if (pOsgChild)
+				{
+					osg::Node *newnode = (osg::Node *) pOsgChild->clone(deep_op);
+					m_pGroup->addChild(newnode);
+				}
+			}
+		}
+	}
+	else
+	{
+		// Shallow copy: Add another reference to the existing children.
+		for (unsigned int i = 0; i < group->GetNumChildren(); i++)
+		{
+			vtNode *child = group->GetChild(i);
+			if (child)
+				AddChild(child);
+			else
+			{
+				// Might be an internal (native OSG) node - try to cope with that
+				Node *pOsgChild = const_cast<Node *>( group->m_pGroup->getChild(i) );
+				if (pOsgChild)
+					m_pGroup->addChild(pOsgChild);
+			}
 		}
 	}
 }
@@ -892,7 +951,8 @@ vtNode *FindNodeByName(vtNode *node, const char *name)
 	const vtGroupBase *pGroup = dynamic_cast<const vtGroupBase *>(node);
 	if (pGroup)
 	{
-		for (unsigned int i = 0; i < pGroup->GetNumChildren(); i++)
+		unsigned int children = pGroup->GetNumChildren();
+		for (unsigned int i = 0; i < children; i++)
 		{
 			vtNode *pChild = pGroup->GetChild(i);
 			vtNode *pResult = FindNodeByName(pChild, name);
@@ -926,7 +986,15 @@ vtNode *vtGroup::GetChild(unsigned int num) const
 	if (num < children)
 	{
 		Node *pChild = (Node *) m_pGroup->getChild(num);
-		return (vtNode *) (pChild->getUserData());
+		osg::Referenced *ref = pChild->getUserData();
+		if (ref)
+			return dynamic_cast<vtNode*>(ref);
+		else
+		{
+			// We have found an unwrapped node
+			vtNativeNode *native = new vtNativeNode(pChild);
+			return native;
+		}
 	}
 	else
 		return NULL;
@@ -962,21 +1030,27 @@ vtTransform::vtTransform() : vtGroup(true), vtTransformBase()
 	SetOsgGroup(m_pTransform);
 }
 
-vtNodeBase *vtTransform::Clone()
+vtTransform::vtTransform(osg::MatrixTransform *mt) : vtGroup(true), vtTransformBase()
 {
-	vtTransform *trans = new vtTransform();
-	trans->CopyFrom(this);
-	return trans;
+	m_pTransform = mt;
+	SetOsgGroup(m_pTransform);
 }
 
-void vtTransform::CopyFrom(const vtTransform *rhs)
+vtNode *vtTransform::Clone(bool bDeep)
 {
-	// copy the matrix
-	const osg::MatrixTransform *mt = rhs->m_pTransform;
+	vtTransform *newtrans = new vtTransform;
+	newtrans->CloneFrom(this, bDeep);
+	return newtrans;
+}
+
+void vtTransform::CloneFrom(vtTransform *xform, bool bDeep)
+{
+	// copy the transform's matrix
+	const osg::MatrixTransform *mt = xform->m_pTransform;
 	m_pTransform->setMatrix(mt->getMatrix());
 
 	// and the parent members
-	vtGroup::CopyFrom(rhs);
+	vtGroup::CloneFrom(xform, bDeep);
 }
 
 void vtTransform::Release()
@@ -1123,14 +1197,14 @@ vtLight::vtLight()
 	ss->setAssociatedModes(light, osg::StateAttribute::ON);
 }
 
-vtNodeBase *vtLight::Clone()
+vtNode *vtLight::Clone(bool bDeep)
 {
-	vtLight *light = new vtLight();
-	light->CopyFrom(this);
+	vtLight *light = new vtLight;
+	light->CloneFrom(this);
 	return light;
 }
 
-void vtLight::CopyFrom(const vtLight *rhs)
+void vtLight::CloneFrom(const vtLight *rhs)
 {
 	// copy attributes
 	SetDiffuse(rhs->GetDiffuse());
@@ -1192,21 +1266,23 @@ vtCamera::vtCamera() : vtTransform()
 	m_fWidth = 1;
 }
 
-vtNodeBase *vtCamera::Clone()
+vtNode *vtCamera::Clone(bool bDeep)
 {
-	vtCamera *newcam = new vtCamera();
-	newcam->CopyFrom(this);
+	vtCamera *newcam = new vtCamera;
+	newcam->CloneFrom(this, bDeep);
 	return newcam;
 }
 
-void vtCamera::CopyFrom(const vtCamera *rhs)
+void vtCamera::CloneFrom(vtCamera *rhs, bool bDeep)
 {
 	m_fFOV = rhs->m_fFOV;
 	m_fHither = rhs->m_fHither;
 	m_fYon = rhs->m_fYon;
 	m_bOrtho = rhs->m_bOrtho;
 	m_fWidth = rhs->m_fWidth;
-	vtTransform::CopyFrom(rhs);
+
+	// Also parent
+	vtTransform::CloneFrom(rhs, bDeep);
 }
 
 /**
@@ -1327,14 +1403,14 @@ vtGeom::vtGeom() : vtNode()
 	SetOsgNode(m_pGeode);
 }
 
-vtNodeBase *vtGeom::Clone()
+vtNode *vtGeom::Clone(bool bDeep)
 {
-	vtGeom *geom = new vtGeom();
-	geom->CopyFrom(this);
-	return geom;
+	vtGeom *newgeom = new vtGeom;
+	newgeom->CloneFrom(this);
+	return newgeom;
 }
 
-void vtGeom::CopyFrom(const vtGeom *rhs)
+void vtGeom::CloneFrom(const vtGeom *rhs)
 {
 	// Shallow copy: just reference the meshes and materials of the
 	//  geometry that we are copying from.
@@ -1835,14 +1911,14 @@ void vtHUD::Release()
 	vtGroup::Release();
 }
 
-vtNodeBase *vtHUD::Clone()
+vtNode *vtHUD::Clone(bool bDeep)
 {
-	vtHUD *hud = new vtHUD();
-	hud->CopyFrom(this);
+	vtHUD *hud = new vtHUD;
+	hud->CloneFrom(this, bDeep);
 	return hud;
 }
 
-void vtHUD::CopyFrom(const vtHUD *rhs)
+void vtHUD::CloneFrom(vtHUD *rhs, bool bDeep)
 {
 	// TODO
 }
@@ -2053,3 +2129,134 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 	return hitlist.size();
 }
 
+#include <osg/PositionAttitudeTransform>
+#include <osg/AutoTransform>
+#include <osg/TexGenNode>
+#include <osg/Switch>
+#include <osg/Sequence>
+
+#include <osg/OccluderNode>
+#include <osg/CoordinateSystemNode>
+#include <osg/Billboard>
+
+#include <osg/ClipNode>
+
+
+// Diagnostic function to help debugging
+void vtLogNativeGraph(osg::Node *node, int indent)
+{
+	for (int i = 0; i < indent; i++)
+		VTLOG1(" ");
+	if (node)
+	{
+		VTLOG("<%x>", node);
+
+		if (dynamic_cast<osg::PositionAttitudeTransform*>(node))
+			VTLOG1(" (PositionAttitudeTransform)");
+		else if (dynamic_cast<osg::MatrixTransform*>(node))
+			VTLOG1(" (MatrixTransform)");
+		else if (dynamic_cast<osg::AutoTransform*>(node))
+			VTLOG1(" (AutoTransform)");
+		else if (dynamic_cast<osg::Transform*>(node))
+			VTLOG1(" (Transform)");
+
+		else if (dynamic_cast<osg::TexGenNode*>(node))
+			VTLOG1(" (TexGenNode)");
+		else if (dynamic_cast<osg::Switch*>(node))
+			VTLOG1(" (Switch)");
+		else if (dynamic_cast<osg::Sequence*>(node))
+			VTLOG1(" (Sequence)");
+		else if (dynamic_cast<osg::Projection*>(node))
+			VTLOG1(" (Projection)");
+		else if (dynamic_cast<osg::OccluderNode*>(node))
+			VTLOG1(" (OccluderNode)");
+		else if (dynamic_cast<osg::LightSource*>(node))
+			VTLOG1(" (LightSource)");
+
+		else if (dynamic_cast<osg::LOD*>(node))
+			VTLOG1(" (LOD)");
+		else if (dynamic_cast<osg::CoordinateSystemNode*>(node))
+			VTLOG1(" (CoordinateSystemNode)");
+		else if (dynamic_cast<osg::ClipNode*>(node))
+			VTLOG1(" (ClipNode)");
+		else if (dynamic_cast<osg::ClearNode*>(node))
+			VTLOG1(" (ClearNode)");
+		else if (dynamic_cast<osg::Group*>(node))
+			VTLOG1(" (Group)");
+
+		else if (dynamic_cast<osg::Billboard*>(node))
+			VTLOG1(" (Billboard)");
+		else if (dynamic_cast<osg::Geode*>(node))
+			VTLOG1(" (Geode)");
+
+		else
+			VTLOG1(" (non-node!)");
+
+		VTLOG(" '%s'\n", node->getName().c_str());
+	}
+	else
+		VTLOG1("<null>\n");
+
+	osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform*>(node);
+	if (mt)
+	{
+		for (int i = 0; i < indent+1; i++)
+			VTLOG1(" ");
+		osg::Vec3 v = mt->getMatrix().getTrans();
+		VTLOG("[Pos %.2f %.2f %.2f]\n", v.x(), v.y(), v.z());
+	}
+	osg::Group *grp = dynamic_cast<osg::Group*>(node);
+	if (grp)
+	{
+		for (unsigned int i = 0; i < grp->getNumChildren(); i++)
+			vtLogNativeGraph(grp->getChild(i), indent+2);
+	}
+}
+
+// Diagnostic function to help debugging
+void vtLogGraph(vtNode *node, int indent)
+{
+	for (int i = 0; i < indent; i++)
+		VTLOG1(" ");
+	if (node)
+	{
+		VTLOG("<%x>", node);
+		if (dynamic_cast<vtHUD*>(node))
+			VTLOG1(" (vtHUD)");
+
+		else if (dynamic_cast<vtCamera*>(node))
+			VTLOG1(" (vtCamera)");
+		else if (dynamic_cast<vtLOD*>(node))
+			VTLOG1(" (vtLOD)");
+		else if (dynamic_cast<vtDynGeom*>(node))
+			VTLOG1(" (vtDynGeom)");
+		else if (dynamic_cast<vtMovGeom*>(node))
+			VTLOG1(" (vtMovGeom)");
+		else if (dynamic_cast<vtGeom*>(node))
+			VTLOG1(" (vtGeom)");
+		else if (dynamic_cast<vtLight*>(node))
+			VTLOG1(" (vtLight)");
+
+		else if (dynamic_cast<vtTransform*>(node))
+			VTLOG1(" (vtTransform)");
+		else if (dynamic_cast<vtGroup*>(node))
+			VTLOG1(" (vtGroup)");
+		else if (dynamic_cast<vtNativeNode*>(node))
+			VTLOG1(" (vtNativeNode)");
+		else if (dynamic_cast<vtNode*>(node))
+			VTLOG1(" (vtNode)");
+		else
+			VTLOG1(" (non-node!)");
+
+		VTLOG(" '%s'\n", node->GetName2());
+	}
+	else
+		VTLOG1("<null>\n");
+
+	vtGroup *grp = dynamic_cast<vtGroup*>(node);
+	if (grp)
+	{
+		for (unsigned int i = 0; i < grp->GetNumChildren(); i++)
+			vtLogGraph(grp->GetChild(i), indent+2);
+	}
+}

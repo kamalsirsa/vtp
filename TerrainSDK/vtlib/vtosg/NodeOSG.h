@@ -55,7 +55,6 @@ struct vtPrimInfo
 class vtNode : public vtNodeBase, protected osg::Referenced
 {
 public:
-	vtNodeBase *Clone() { return NULL; }
 	virtual void Release();
 
 	// implement vtNodeBase methods
@@ -80,6 +79,7 @@ public:
 	void LocalToWorld(FPoint3 &point);
 
 	vtGroup *GetParent(int iParent = 0);
+	virtual vtNode *Clone(bool bDeep = false);
 
 	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
 
@@ -92,7 +92,8 @@ public:
 	vtNode *FindNativeNode(const char *pName, bool bDescend = true);
 
 	/// Load a 3D model file
-	static vtNode *LoadModel(const char *filename, bool bAllowCache = true, bool bDisableMipmaps = false);
+	static vtNode *LoadModel(const char *filename, bool bAllowCache = true,
+		bool bDisableMipmaps = false);
 	static void ClearOsgModelCache();
 	static bool s_bDisableMipmaps;	// set to disable ALL mipmaps
 
@@ -118,6 +119,7 @@ class vtNativeNode : public vtNode
 {
 public:
 	vtNativeNode(osg::Node *node) { SetOsgNode(node); }
+	virtual vtNode *Clone(bool bDeep = false);
 	vtNode *FindParentVTNode();
 
 protected:
@@ -133,8 +135,8 @@ class vtGroup : public vtNode, public vtGroupBase
 {
 public:
 	vtGroup(bool suppress = false);
-	vtNodeBase *Clone();
-	void CopyFrom(const vtGroup *rhs);
+	virtual vtNode *Clone(bool bDeep = false);
+	void CloneFrom(vtGroup *group, bool bDeep);
 	virtual void Release();
 
 	// implement vtGroupBase methods
@@ -180,8 +182,9 @@ class vtTransform : public vtGroup, public vtTransformBase
 {
 public:
 	vtTransform();
-	vtNodeBase *Clone();
-	void CopyFrom(const vtTransform *rhs);
+	vtTransform(osg::MatrixTransform *mt);
+	virtual vtNode *Clone(bool bDeep = false);
+	void CloneFrom(vtTransform *xform, bool bDeep);
 	void Release();
 
 	// implement vtTransformBase methods
@@ -257,8 +260,8 @@ class vtLight : public vtNode
 {
 public:
 	vtLight();
-	vtNodeBase *Clone();
-	void CopyFrom(const vtLight *rhs);
+	virtual vtNode *Clone(bool bDeep = false);
+	void CloneFrom(const vtLight *rhs);
 	void Release();
 
 	void SetDiffuse(const RGBf &color);
@@ -297,8 +300,8 @@ class vtGeom : public vtNode
 {
 public:
 	vtGeom();
-	vtNodeBase *Clone();
-	void CopyFrom(const vtGeom *rhs);
+	virtual vtNode *Clone(bool bDeep = false);
+	void CloneFrom(const vtGeom *rhs);
 	void Release();
 
 	/** Add a mesh to this geometry.
@@ -476,8 +479,8 @@ class vtCamera : public vtTransform
 {
 public:
 	vtCamera();
-	vtNodeBase*	Clone();
-	void CopyFrom(const vtCamera *rhs);
+	virtual vtNode *Clone(bool bDeep = false);
+	void CloneFrom(vtCamera *rhs, bool bDeep);
 
 	void SetHither(float f);
 	float GetHither() const;
@@ -513,8 +516,8 @@ class vtHUD : public vtGroup
 {
 public:
 	vtHUD(bool bPixelCoords = true);
-	vtNodeBase *Clone();
-	void CopyFrom(const vtHUD *rhs);
+	virtual vtNode *Clone(bool bDeep = false);
+	void CloneFrom(vtHUD *rhs, bool bDeep);
 	void Release();
 
 	void SetWindowSize(int w, int h);
@@ -568,6 +571,8 @@ struct vtHit {
 typedef std::vector<vtHit> vtHitList;
 int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 				vtHitList &hitlist, bool bLocalCoords = false);
+void vtLogGraph(vtNode *node, int indent=0);
+void vtLogNativeGraph(osg::Node *node, int indent=0);
 
 /*@}*/	// Group sg
 
