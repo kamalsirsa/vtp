@@ -582,7 +582,7 @@ void vtAnimPathEngine::Eval()
 		return;
 
 	float fNow = vtGetTime();
-	if (m_fLastTime==DBL_MAX)
+	if (m_fLastTime==FLT_MAX)
 		m_fLastTime = fNow;
 
 	float fElapsed = fNow - m_fLastTime;
