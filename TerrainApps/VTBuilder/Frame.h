@@ -503,12 +503,14 @@ protected:
 	DECLARE_EVENT_TABLE()
 };
 
+#if wxUSE_DRAG_AND_DROP
 class DnDFile : public wxFileDropTarget
 {
 public:
 	virtual bool OnDropFiles(wxCoord x, wxCoord y,
 							 const wxArrayString& filenames);
 };
+#endif
 
 extern MainFrame *GetMainFrame();
 wxString GetImportFilterString(LayerType ltype);

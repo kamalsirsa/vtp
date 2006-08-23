@@ -177,7 +177,9 @@ void MainFrame::SetupUI()
 	CreateMenus();
 	CreateToolbar();
 
-	SetDropTarget(new DnDFile());
+#if wxUSE_DRAG_AND_DROP
+	SetDropTarget(new DnDFile);
+#endif
 
 	// splitter
 	m_splitter = new MySplitterWindow(this, wxID_ANY);
@@ -1538,6 +1540,7 @@ bool MainFrame::LoadBiotypesFile(const char *fname)
 }
 
 
+#if wxUSE_DRAG_AND_DROP
 ///////////////////////////////////////////////////////////////////////
 // Drag-and-drop functionality
 //
@@ -1555,7 +1558,7 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 	}
 	return TRUE;
 }
-
+#endif
 
 //////////////////////////
 // Elevation ops
