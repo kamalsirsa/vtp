@@ -42,7 +42,7 @@ public:
 	VehicleType *m_pNext;
 
 protected:
-	vtArray<vtNodeBase*> m_pModels;
+	vtArray<vtNode*> m_pModels;
 	vtArray<vtGroup*> m_pTyres;
 
 	bool m_bAttemptedLoaded;
@@ -56,7 +56,7 @@ public:
 	~VehicleManager();
 
 	// vehicle stuff
-	void create_ground_vehicles(vtTerrain *pTerrain, float fSize, float fSpeed); // dunno what to do to speed yet
+	void CreateSomeTestVehicles(vtTerrain *pTerrain, float fSize, float fSpeed); // dunno what to do to speed yet
 
 	void SetupVehicles();
 	void ReleaseVehicles();

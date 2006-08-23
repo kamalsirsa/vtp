@@ -142,7 +142,7 @@ void IslandTerrain::CreateCustomCulture()
 		float speed = m_Params.GetValueFloat(STR_VEHICLESPEED);
 
 		create_airplanes(1, speed);
-		m_Vehicles.create_ground_vehicles(this, size, speed);
+		m_Vehicles.CreateSomeTestVehicles(this, size, speed);
 	}
 
 #if 0

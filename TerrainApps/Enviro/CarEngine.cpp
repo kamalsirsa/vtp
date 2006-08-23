@@ -147,7 +147,7 @@ void CarEngine::Eval()
 		//go straight.  try to match speed.
 		//time is in seconds
 		vNext.x = m_vCurPos.x + fDeltaTime*m_fSpeed*cosf(m_fCurRotation);
-		vNext.z = m_vCurPos.z + fDeltaTime*m_fSpeed*sinf(m_fCurRotation);
+		vNext.z = m_vCurPos.z - fDeltaTime*m_fSpeed*sinf(m_fCurRotation);
 		MoveCar(vNext);
 		break;
 	case CIRCLE:
@@ -189,7 +189,7 @@ void CarEngine::Eval()
 					m_vCurPos = vNext;
 
 					//correct orientation.
-					vNext.y = SetOrientation() + m_fRoadHeight;
+					vNext.y = SetPitch() + m_fRoadHeight;
 					//apply translation
 					pTarget->SetTrans(vNext);
 				}
@@ -226,20 +226,12 @@ void CarEngine::Circle(FPoint3 &vNext, float t)
 	vNext.z = m_vCenterPos.z + m_fCircleRadius * sinf(time);
 }
 
-//sets the orientation of the car, based on tire positions
-//returns height of the car.
-float CarEngine::SetOrientation()
+//
+// Determines the pitch of the car, based on tire positions.
+// Returns height of the center of the car.
+//
+float CarEngine::SetPitch()
 {
-#if 1
-	vtTransform *pTransform = dynamic_cast<vtTransform*> (GetTarget());
-	if (NULL == pTransform)
-		return 1.0f;
-
-	FPoint3 CurrentPosition = pTransform->GetTrans();
-
-	m_pHeightField->FindAltitudeAtPoint(CurrentPosition, CurrentPosition.y, false, true);
-	return CurrentPosition.y;
-#else
 	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
 	if (!car)
 		return 1.0f;
@@ -252,10 +244,10 @@ float CarEngine::SetOrientation()
 	m_pRearLeft->GetBoundSphere(rL, true);
 	m_pRearRight->GetBoundSphere(rR, true);
 
-	m_pHeightField->FindAltitudeAtPoint(fL.center, fL.center.y);
-	m_pHeightField->FindAltitudeAtPoint(fR.center, fR.center.y);
-	m_pHeightField->FindAltitudeAtPoint(rL.center, rL.center.y);
-	m_pHeightField->FindAltitudeAtPoint(rR.center, rR.center.y);
+	m_pHeightField->FindAltitudeAtPoint(fL.center, fL.center.y, false, true);
+	m_pHeightField->FindAltitudeAtPoint(fR.center, fR.center.y, false, true);
+	m_pHeightField->FindAltitudeAtPoint(rL.center, rL.center.y, false, true);
+	m_pHeightField->FindAltitudeAtPoint(rR.center, rR.center.y, false, true);
 
 	// find midpoints between the tires.
 	FPoint3 rM, fM;
@@ -264,9 +256,12 @@ float CarEngine::SetOrientation()
 
 	FPoint3 back_side = rR.center - rL.center;
 	FPoint3 left_side = fL.center - rL.center;
+	back_side.Normalize();
+	left_side.Normalize();
 
 	// vNormal the upwards vector
 	FPoint3 vNormal = back_side.Cross(left_side);
+	vNormal.Normalize();
 
 	// new orientation
 	m_vAxis = back_side;
@@ -279,16 +274,14 @@ float CarEngine::SetOrientation()
 	// sin(pitch) = y / xz, so pitch = asin(y/xz);
 	m_fCurPitch = asinf(left_side.y / xz);
 
-	car->Rotate2(m_vAxis, m_fCurPitch);
+	car->RotateLocal(m_vAxis, m_fCurPitch);
 
 	// return height of midpoint of all wheels.
 	return (fM.y+rM.y)/2;
-#endif
 }
 
-// assume that the car is ALWAYS going forward.
 //sets orientation of car.  next_pos is modified to be new location.
-void CarEngine::SetOrientationAndHeight(FPoint3 &next_pos)
+void CarEngine::DetermineYawPitchAndHeight(FPoint3 &next_pos)
 {
 	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
 	if (!car)
@@ -299,35 +292,40 @@ void CarEngine::SetOrientationAndHeight(FPoint3 &next_pos)
 
 	deltax = next_pos.x - m_vCurPos.x;
 	deltaz = next_pos.z - m_vCurPos.z;
-	newangle = atan2f(deltaz,deltax);
+	if (deltax != 0.0f || deltaz != 0.0f)
+	{
+		// it's moving, so we can imply orientation from movement
+		newangle = atan2f(-deltaz,deltax);
 
-	//turn in right direction (about YAXIS only!)
-	angle = m_fCurRotation - newangle;
-	car->Rotate2(YAXIS, angle);
-	m_fCurRotation = newangle;
+		//turn in right direction (about YAXIS only!)
+		angle = m_fCurRotation - newangle;
+ 		car->Rotate2(YAXIS, -angle);
+		m_fCurRotation = newangle;
 
-	//turn the front wheels
-	newangle = 2*angle - m_fWheelSteerRotation;
-	m_fWheelSteerRotation += newangle;
-	//VTLOG("newangle: %f\t wheel: %f\t m_CurRot: %f \n",newangle, m_fWheelSteerRotation, m_fCurRotation);
-	FPoint3 trans;
-	trans = m_pFrontLeft->GetTrans();
-	m_pFrontLeft->Translate1(-trans);
-	m_pFrontLeft->Rotate2(YAXIS, newangle);
-	m_pFrontLeft->Translate1(trans);
-	trans = m_pFrontRight->GetTrans();
-	m_pFrontRight->Translate1(-trans);
-	m_pFrontRight->Rotate2(YAXIS, newangle);
-	m_pFrontRight->Translate1(trans);
+		//turn the front wheels
+		newangle = 2*angle - m_fWheelSteerRotation;
+		m_fWheelSteerRotation += newangle;
+		//VTLOG("newangle: %f\t wheel: %f\t m_CurRot: %f \n",newangle, m_fWheelSteerRotation, m_fCurRotation);
+		FPoint3 trans;
+		trans = m_pFrontLeft->GetTrans();
+		m_pFrontLeft->Translate1(-trans);
+		m_pFrontLeft->Rotate2(YAXIS, newangle);
+		m_pFrontLeft->Translate1(trans);
+		trans = m_pFrontRight->GetTrans();
+		m_pFrontRight->Translate1(-trans);
+		m_pFrontRight->Rotate2(YAXIS, newangle);
+		m_pFrontRight->Translate1(trans);
+	}
+	car->RotateLocal(FPoint3(0,1,0), m_fCurRotation-PID2f);
 
 	//modify the orientation of the car to match the terrain
 	//points of the tires
 	if (m_bFirstTime) {
-		m_pHeightField->FindAltitudeAtPoint(next_pos, next_pos.y);
+		m_pHeightField->FindAltitudeAtPoint(next_pos, next_pos.y, false, true);
 		m_bFirstTime = false;
 	} else {
 		m_vCurPos = next_pos;
-		next_pos.y = SetOrientation();
+		next_pos.y = SetPitch();
 	}
 
 }
@@ -386,83 +384,24 @@ bool CarEngine::SetTires()
 	if (!car)
 		return false;
 
-	vtGroup *tires = FindTires(car);
-	if (tires != NULL)
-	{
-		vtTransform *tModel;
-		const char* tName;
-		int numChild = tires->GetNumChildren();
-		int i = 0;
-		while (i < numChild) {
-			tModel = (vtTransform *) tires->GetChild(i);
-			tName = tModel->GetName2();
-			if (strend (tName, "front left")) {
-				m_pFrontLeft = tModel;
-			} else if (strend  (tName, "front right")) {
-				m_pFrontRight = tModel;
-			} else if (strend (tName, "rear left")) {
-				m_pRearLeft = tModel;
-			} else if (strend  (tName, "rear right")) {
-				m_pRearRight = tModel;
-			} else {
-				VTLOG("Invalid tire in model: %s!\n", car->GetName2());
-			}
-			i++;
-		}
-		return true;
-	} else {
-		VTLOG("Tires not found in model: %s!\n", car->GetName2());
-		return false;
-	}
+	vtTransform *tModel;
+	tModel = (vtTransform *) car->FindNativeNode("front_left_xform");
+	if (tModel)
+		m_pFrontLeft = tModel;
 
-}
+	tModel = (vtTransform *) car->FindNativeNode("front_right_xform");
+	if (tModel)
+		m_pFrontRight = tModel;
 
-/*	find the tire group	done rem_Cursively - might want to change it to an interative version
-	for performance boost with more complex models.
-*/
-vtGroup* CarEngine::FindTires(vtGroup *model)
-{
-	vtGroup *tModel = NULL;
-	if (strend (model->GetName2(), "tires"))
-		return model;
+	tModel = (vtTransform *) car->FindNativeNode("rear_left_xform");
+	if (tModel)
+		m_pRearLeft = tModel;
 
-	int numChild = model->GetNumChildren();
+	tModel = (vtTransform *) car->FindNativeNode("rear_right_xform");
+	if (tModel)
+		m_pRearRight = tModel;
 
-	if (numChild < 1)
-		return NULL;
-
-	int i = 0;
-	while (i < numChild)
-	{
-		vtGroup *pGroup = dynamic_cast<vtGroup*>(model->GetChild(i));
-		if ((NULL != pGroup) && (NULL != (tModel = FindTires(pGroup))))
-			break;
-		else
-			i++;
-	}
-	return tModel;
-#if 0
-	vtGroup *tModel;
-	if (strend (model->GetName2(), "tires")) {
-		return model;
-	}
-
-	int numChild = model->GetNumChildren();
-
-	if (numChild < 1) {
-		return NULL;
-	}
-
-	int i = 0;
-	while (i < numChild) {
-		if (tModel = FindTires((vtGroup *) model->GetChild(i))) {
-			return tModel;
-		} else {
-			i++;
-		}
-	}
-#endif
-	return NULL;
+	return true;
 }
 
 //pick the first road to drive on.
@@ -716,28 +655,28 @@ void CarEngine::MoveCar(FPoint3 vNext)
 	if (!pTarget)
 		return;
 
-	//move the car so that the wheels will be set at new location
+	// Move the car in the XZ plane 
+	pTarget->Identity();
 	pTarget->SetTrans(vNext);
 
-	vNext = pTarget->GetTrans();
+	// Rotate (yaw) body to head toward vNext location, pitch it based on tire
+	//  locations, and determine overall height of vehicle.
+	// Steering of wheels is done in here too.
+	DetermineYawPitchAndHeight(vNext);
 
-	//also now need to move tire coordinates.
-	//Currently, steering of wheels is done in here too.
-	//rotate body to head toward vNext location
-	SetOrientationAndHeight(vNext);
+	// That has given us a new 3D position, so apply it.
+	pTarget->SetTrans(vNext);
 
 	m_vCurPos = vNext;
-	pTarget->SetTrans(vNext);
-
 }
 
 //spin the wheels base on how much we've driven
 void CarEngine::SpinWheels(float dist) 
 {
-	m_pFrontLeft->RotateLocal(XAXIS, dist);
-	m_pFrontRight->RotateLocal(XAXIS, dist);
-	m_pRearLeft->RotateLocal(XAXIS, dist);
-	m_pRearRight->RotateLocal(XAXIS, dist);
+	m_pFrontLeft->RotateLocal(XAXIS, -dist);
+	m_pFrontRight->RotateLocal(XAXIS, -dist);
+	m_pRearLeft->RotateLocal(XAXIS, -dist);
+	m_pRearRight->RotateLocal(XAXIS, -dist);
 }
 
 //get next point to drive toward

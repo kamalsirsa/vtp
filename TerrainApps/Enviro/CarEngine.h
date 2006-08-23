@@ -57,12 +57,9 @@ private:
 
 	//undo orientation of the car (make it level to horizontal plane.)
 	void UndoOrientation();
-	float SetOrientation();  //returns new height for car.
+	float SetPitch();  //returns new height for car.
 	//change rotation about Y axis based on current and next position.  height is average of tire points
-	void SetOrientationAndHeight(FPoint3 &next_pos);
-
-	//find the tire models of the car - to be called by SetTires.
-	vtGroup *FindTires(vtGroup *model);
+	void DetermineYawPitchAndHeight(FPoint3 &next_pos);
 
 	//pick the first road to follow
 	void PickFirstRoad();
@@ -93,14 +90,14 @@ private:
 	//what mode the engine is operating at.
 	CarEngineMode m_eMode;
 
-	FPoint3 m_vCurPos;  //current position
-	float m_fCurRotation; //current rotation
-	float m_fCurPitch;	//rotation about orientation axis
-	FPoint3 m_vAxis; //orientation axis, determined by where wheels are w/ respect to ground.
+	FPoint3 m_vCurPos;		// current position
+	float m_fCurRotation;	// rotation around Y axis(Yaw)
+	float m_fCurPitch;		// rotation around orientation axis (Pitch)
+	FPoint3 m_vAxis;		// orientation axis, determined by where wheels are w/respect to ground
 
-	float m_fSpeed;	//maintained in meters per second (multiplied by world coordinates)
-	float m_fTargetSpeed;  //target speed
-	float m_fPrevTime;	//last time that eval was run on.
+	float m_fSpeed;			// speed in meters per second
+	float m_fTargetSpeed;	// target speed
+	float m_fPrevTime;		// last time that eval was run on.
 
 	//tires
 	vtTransform *m_pFrontLeft;

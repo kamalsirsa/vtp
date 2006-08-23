@@ -1,13 +1,14 @@
 //
 // Vehicles.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Roads.h"
 #include "vtlib/core/TerrainScene.h"
+#include "vtdata/vtLog.h"
 #include "CarEngine.h"
 #include "Engines.h"
 #include "Hawaii.h"
@@ -103,12 +104,12 @@ void VehicleManager::SetupVehicles()
 {
 	vtString fname;
 
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco.ive");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco_step5.osg");
 	if (fname != "")
 	{
 		// the bronco is modeled in feet (0.3048)
 		VehicleType *bronco = new VehicleType("bronco");
-		bronco->AddModel(fname, 0.3048f, 500);
+		bronco->AddModel(fname, 1.0f, 500);
 		AddVehicleType(bronco);
 	}
 /*
@@ -180,7 +181,7 @@ Vehicle *VehicleManager::CreateVehicle(const char *szType, const RGBf &cColor, f
 }
 
 
-void VehicleManager::create_ground_vehicles(vtTerrain *pTerrain, float fSize, float fSpeed)
+void VehicleManager::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSize, float fSpeed)
 {
 	vtRoadMap3d *pRoadMap = pTerrain->GetRoadMap();
 
@@ -290,7 +291,8 @@ void Vehicle::ShowBounds(bool bShow)
 			if (contents)
 			{
 				FSphere sphere;
-				contents->GetBoundSphere(sphere);
+				GetBoundSphere(sphere);
+				sphere.center.Set(0,0,0);
 
 				m_pHighlight = CreateBoundSphereGeom(sphere);
 				AddChild(m_pHighlight);
@@ -326,24 +328,17 @@ void VehicleType::AttemptModelLoad()
 		vtString fname = m_strFilename[i];
 		if (vtNode *pMod = vtNode::LoadModel(fname))
 		{
+			float scale = m_fScale[i];
+
 			vtTransform *trans = new vtTransform;
 			trans->AddChild(pMod);
-
-			float scale = m_fScale[i];
 			trans->Scale3(scale, scale, scale);
-			m_pModels.SetAt(i, trans);
 
-			// See if I can find the top of the tyres group
-			vtGroup *pTyres = dynamic_cast<vtGroup*>(trans->FindNativeNode("tires"));
-			vtGroup *pParent = dynamic_cast<vtGroup*>(trans->FindNativeNode("Scene Root"));
-			if ((NULL != pTyres) && (NULL != pParent))
-			{
-				m_pTyres.SetAt(i, pTyres);
-				pParent->RemoveChild(pTyres);
-//				osgDB::writeNodeFile(*pMod->GetOsgNode(), "debugvehicle.osg");
-			}
-			else
-				m_pTyres.SetAt(i, NULL);
+			vtString str;
+			str.Format("scaling transform (%f)", scale);
+			trans->SetName2(str);
+
+			m_pModels.SetAt(i, trans);
 		}
 	}
 }
@@ -366,43 +361,70 @@ Vehicle *VehicleType::CreateVehicle(const RGBf &cColor, float fScale)
 	unsigned int iModels = m_pModels.GetSize();
 	for (unsigned int i = 0; i < iModels; i++)
 	{
-		vtTransform *pNewModel = (Vehicle *)m_pModels.GetAt(i)->Clone();
+		vtNode *node = (vtNode *) m_pModels.GetAt(i);
+
+		//VTLOG1("-----------------\n");
+		//vtLogGraph(node);
+		//VTLOG1("-----------------\n");
+		//vtLogNativeGraph(node->GetOsgNode());
+
+		vtTransform *pNewModel = (vtTransform *)node->Clone(true);	// Deep copy
+
+		//VTLOG1("-----------------\n");
+		//vtLogNativeGraph(pNewModel->GetOsgNode());
+
 		pNewVehicle->AddChild(pNewModel);
 		distances[i+1] = m_fDistance.GetAt(i) * fScale;
 
-		// Add in the tyre infrastructure
-		vtNode* pTyres = m_pTyres.GetAt(i);
-		if (NULL != pTyres)
-		{
-			vtNode *pFrontLeft = pTyres->FindNativeNode("front left");
-			vtNode *pFrontRight = pTyres->FindNativeNode("front right");
-			vtNode *pRearLeft = pTyres->FindNativeNode("rear left");
-			vtNode *pRearRight = pTyres->FindNativeNode("rear right");
+		vtNode *pFrontLeft = pNewModel->FindNativeNode("front_left");
+		vtNode *pFrontRight = pNewModel->FindNativeNode("front_right");
+		vtNode *pRearLeft = pNewModel->FindNativeNode("rear_left");
+		vtNode *pRearRight = pNewModel->FindNativeNode("rear_right");
 
-			if ((NULL != pFrontLeft) && (NULL != pFrontRight) && (NULL != pRearLeft) && (NULL != pRearRight))
-			{
-				vtGroup* pTyreGroup = new vtGroup;
-				pTyreGroup->SetName2("tires");
-				pNewModel->AddChild(pTyreGroup);
-				vtTransform *pTransform;
-				pTransform = new vtTransform;
-				pTransform->SetName2("front left");
-				pTransform->AddChild(pFrontLeft);
-				pTyreGroup->AddChild(pTransform);
-				pTransform = new vtTransform;
-				pTransform->SetName2("front right");
-				pTransform->AddChild(pFrontRight);
-				pTyreGroup->AddChild(pTransform);
-				pTransform = new vtTransform;
-				pTransform->SetName2("rear left");
-				pTransform->AddChild(pRearLeft);
-				pTyreGroup->AddChild(pTransform);
-				pTransform = new vtTransform;
-				pTransform->SetName2("rear right");
-				pTransform->AddChild(pRearRight);
-				pTyreGroup->AddChild(pTransform);
-//				SetDebugCallbacks(pNewVehicle->GetOsgNode());
-			}
+		if (!pFrontLeft || !pFrontRight || !pRearLeft || !pRearRight)
+		{
+			// Didn't find them.
+			continue;
+		}
+		if (dynamic_cast<vtTransform*>(pFrontLeft))
+		{
+			// They are already transforms, no need to insert any
+			pFrontLeft->SetName2("front_left_xform");
+			pFrontRight->SetName2("front_right_xform");
+			pRearLeft->SetName2("rear_left_xform");
+			pRearRight->SetName2("rear_right_xform");
+		}
+		else
+		{
+			// Stick transform above them (this seems like a bad way to go)
+			vtTransform *pTransform;
+
+			pTransform = new vtTransform;
+			pTransform->SetName2("front_left_xform");
+			pTransform->AddChild(pFrontLeft);
+			pFrontLeft->GetParent()->RemoveChild(pFrontLeft);
+			pNewModel->AddChild(pTransform);
+
+			pTransform = new vtTransform;
+			pTransform->SetName2("front_right_xform");
+			pTransform->AddChild(pFrontRight);
+			pFrontRight->GetParent()->RemoveChild(pFrontRight);
+			pNewModel->AddChild(pTransform);
+
+			pTransform = new vtTransform;
+			pTransform->SetName2("rear_left_xform");
+			pTransform->AddChild(pRearLeft);
+			pRearLeft->GetParent()->RemoveChild(pRearLeft);
+			pNewModel->AddChild(pTransform);
+
+			pTransform = new vtTransform;
+			pTransform->SetName2("rear_right_xform");
+			pTransform->AddChild(pRearRight);
+			pRearRight->GetParent()->RemoveChild(pRearRight);
+			pNewModel->AddChild(pTransform);
+
+			//VTLOG1("-----------------\n");
+			//vtLogNativeGraph(pNewModel->GetOsgNode());
 		}
 	}
 	pNewVehicle->m_pLOD->SetRanges(distances, iModels+1);
@@ -419,9 +441,9 @@ void VehicleType::ReleaseModels()
 	{
 		m_pModels[i]->Release();
 
-		vtNode *pTyres = m_pTyres[i];
-		if(NULL != pTyres)
-			pTyres->Release();
+		//vtNode *pTyres = m_pTyres[i];
+		//if(NULL != pTyres)
+		//	pTyres->Release();
 	}
 	m_pModels.Empty();
 	m_pTyres.Empty();
