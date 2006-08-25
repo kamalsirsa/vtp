@@ -2105,7 +2105,7 @@ void Enviro::CreateTestVehicle()
 
 	float speed = 0.0f;		// kmph
 	float wheel_radius = 0.25f;
-	CarEngine *pE1 = new CarEngine(car->GetTrans(), pTerr->GetHeightField(), speed, wheel_radius);
+	CarEngine *pE1 = new CarEngine(pTerr->GetHeightField(), speed, wheel_radius, car->GetTrans());
 	pE1->SetName2("drive");
 	pE1->SetTarget(car);
 	if (pE1->SetTires())
