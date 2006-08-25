@@ -1908,7 +1908,7 @@ public:
 		{
 			FPoint3 w;
 			terr->GetHeightField()->m_Conversion.ConvertFromEarth(p, w.x, w.z);
-			terr->GetHeightField()->FindAltitudeAtPoint(w, w.y, true, m_bUseCulture);
+			terr->GetHeightField()->FindAltitudeAtPoint(w, w.y, true, m_bUseCulture ? CE_ALL : 0);
 			return w.y;
 		}
 		return INVALID_ELEVATION;
