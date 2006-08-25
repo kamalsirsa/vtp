@@ -273,7 +273,7 @@ public:
 	vtHeightField3d *GetHeightField();
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
 	vtProjection &GetProjection() { return m_proj; }
-	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const;
+	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, int iCultureFlags) const;
 
 	// Points of interest
 	void AddPointOfInterest(double left, double bottom, double right,

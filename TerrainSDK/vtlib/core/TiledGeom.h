@@ -68,7 +68,7 @@ public:
 
 	// overrides for vtHeightField3d
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		bool bTrue = false, bool bIncludeCulture = false,
+		bool bTrue = false, int iCultureFlags = 0,
 		FPoint3 *vNormal = NULL) const;
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const;

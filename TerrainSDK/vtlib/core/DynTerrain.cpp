@@ -4,7 +4,7 @@
 // This is the parent class for terrain which can redefine it's
 // surface at render time.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -117,12 +117,12 @@ bool vtDynTerrainGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, b
 }
 
 bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
-									bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
+						bool bTrue, int iCultureFlags, FPoint3 *vNormal) const
 {
 	// Look on culture first
-	if (bIncludeCulture && m_pCulture != NULL)
+	if (iCultureFlags != 0 && m_pCulture != NULL)
 	{
-		if (m_pCulture->FindAltitudeOnCulture(p, fAltitude))
+		if (m_pCulture->FindAltitudeOnCulture(p, fAltitude, iCultureFlags))
 			return true;
 	}
 

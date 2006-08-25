@@ -683,7 +683,7 @@ void vtHeightConstrain::Eval()
 	bool bTrue = false;		// use displayed elevation, not true elevation
 	float fGroundAltitude;
 	bool bOverTerrain = m_pHF->FindAltitudeAtPoint(pos, fGroundAltitude,
-		bTrue, m_bUseCulture);
+		bTrue, m_bUseCulture ? CE_ALL : 0);
 
 	m_bOnGround = false;
 	if (bOverTerrain)

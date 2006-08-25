@@ -2811,7 +2811,8 @@ vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()
 	return NULL;	// no grid to return, possible because it's a TIN
 }
 
-bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const
+bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
+									  int iCultureFlags) const
 {
 	// beware - OSG can be picking about the length of this segment.  It
 	//  is a numerical precision issue.  If we use 1E9,-1E9 then it fails
@@ -2822,22 +2823,22 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const
 	FPoint3 start(p3.x, maxh + 1000, p3.z);
 	FPoint3 end(p3.x, minh - 1000, p3.z);
 
-	bool hit = false;
 	vtHitList hlist;
-	int num = vtIntersect(m_pTerrainGroup, start, end, hlist);
-	for (int i = 0; i < num; i++)
-	{
-		vtString name = hlist[i].node->GetName2();
 
-		if (name == "road" || name == "building-geom")
-		{
-			// take first match encountered
-			fAltitude =  hlist[i].point.y;
-			hit = true;
-			break;
-		}
+	if (iCultureFlags & CE_STRUCTURES)
+		vtIntersect(m_pStructGrid, start, end, hlist);
+
+	if (iCultureFlags & CE_ROADS)
+		vtIntersect(m_pRoadGroup, start, end, hlist);
+
+	if (hlist.size() > 0)
+	{
+		// take first match encountered
+		vtString name = hlist[0].node->GetName2();
+		fAltitude =  hlist[0].point.y;
+		return true;
 	}
-	return hit;
+	return false;
 }
 
 /*

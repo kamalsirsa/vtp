@@ -171,8 +171,8 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 					fp.x += random_offset(0.04f * m_Params.m_fPostSpacing);
 					fp.z += random_offset(0.04f * m_Params.m_fPostSpacing);
 				}
-				// false: true elevation, true: include culture
-				pHeightField->FindAltitudeAtPoint(fp, fp.y, false, true);
+				// false: true elevation, true: include culture (structures and roads)
+				pHeightField->FindAltitudeAtPoint(fp, fp.y, false, CE_ALL);
 				p3.Append(fp);
 			}
 		}

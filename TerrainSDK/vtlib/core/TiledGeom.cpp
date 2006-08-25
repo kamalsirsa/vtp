@@ -701,12 +701,12 @@ bool vtTiledGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 }
 
 bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-	bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
+	bool bTrue, int iCultureFlags, FPoint3 *vNormal) const
 {
 	// Look on culture first
-	if (bIncludeCulture && m_pCulture != NULL)
+	if (iCultureFlags != 0 && m_pCulture != NULL)
 	{
-		if (m_pCulture->FindAltitudeOnCulture(p3, fAltitude))
+		if (m_pCulture->FindAltitudeOnCulture(p3, fAltitude, iCultureFlags))
 			return true;
 	}
 
