@@ -14,13 +14,16 @@
 using namespace std;
 
 // acceleration in meters per second^2 (for the car.)
-#define ACCELERATION 0.5f
+#define ACCELERATION 4.0f
 #define ACCEL (ACCELERATION*1000/60/60)
 
 static FPoint3 XAXIS = FPoint3(1, 0, 0);
 static FPoint3 YAXIS = FPoint3(0, 1, 0);
 
+
+///////////////////////////////////////////////////////////////////////
 // Helpers
+
 // Difference of 2 angles in radians.  value will be between PI and -PI.
 float angleDifference(float a, float b)
 {
@@ -48,55 +51,58 @@ float Distance2D(const FPoint3 &p, const FPoint3 &q)
 	return sqrt((q.z - p.z)*(q.z - p.z) + (q.x - p.x)*(q.x - p.x));
 }
 
-// Setup engine to drive in a straight line.
-// Target speed in kilometers per hour
-CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius)
+// Calculate angle between two 3D vectors, in XZ plane.
+float Angle(const FPoint3 &center, const FPoint3 &p1, const FPoint3 &p2)
 {
-	SharedConstructor(pos, grid, target_speed, wRadius);
+	FPoint3 v1 = p1-center, v2 = p2-center;
+	if (v1 == v2)
+		return 0.0f;
+
+	//dot product:  a.b = |a||b|cos(THETA)
+	return acosf(v1.Dot(v2)/(v1.Length()*v2.Length()));
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// CarEngine class
+
+//
+// Setup engine to drive freely.
+// Target speed in kilometers per hour
+//
+CarEngine::CarEngine(vtHeightField3d *grid, float target_speed,
+					 float wRadius, const FPoint3 &pos)
+{
+	Init(grid, target_speed, wRadius);
 	m_pCurNode = NULL;
-	m_eMode = STRAIGHT;
+	m_vCurPos = pos;
+	m_eMode = JUST_DRIVE;
 	m_fSpeed = m_fTargetSpeed;
 }
 
-// Setup engine to drive in circles
-// Target speed in kilometers per hour
-CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed,
-					 float wRadius, FPoint3 center)
-{
-	SharedConstructor(pos, grid, target_speed, wRadius);
-	m_vCenterPos = center;
-	m_fCircleRadius = sqrtf(pow(m_vCurPos.x - m_vCenterPos.x,2) + pow(m_vCurPos.z - m_vCenterPos.z,2));
-	m_pCurNode = NULL;
-	m_pCurRoad = NULL;
-	m_eMode = CIRCLE;
-	m_fSpeed = m_fTargetSpeed;
-}
-
+//
 // Setup engine to drive on roads, starting from node n.
-// Ignores pos.  takes position from given node.
-CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed,
-					 float wRadius, TNode *n, int lane, float roadheight)
+// Takes position from given node.
+//
+CarEngine::CarEngine(vtHeightField3d *grid, float target_speed,
+					 float wRadius, TNode *n, int lane)
 {
-	SharedConstructor(pos, grid, target_speed, wRadius);
+	Init(grid, target_speed, wRadius);
 	m_pCurNode = n;
-	m_fRoadHeight = roadheight;
 	m_vCurPos = ((NodeGeom*)n)->m_p3;
-	m_vCurPos.y += m_fRoadHeight;
 
 	m_iLane = lane-1;
-	PickFirstRoad ();
-	m_eMode = ROAD;
+	PickFirstRoad();
+	m_eMode = FOLLOW_ROAD;
 }
 
 // Shared constructor
-void CarEngine::SharedConstructor(const FPoint3 &pos, vtHeightField3d * grid,
-								  float target_speed, float wRadius){
-	m_vCurPos = pos;
-
+void CarEngine::Init(vtHeightField3d *grid, float target_speed, float wRadius)
+{
 	m_pHeightField = grid;
 
 	//convert speed to meters/second (from km/h)
-	m_fTargetSpeed = target_speed *1000/60/60;
+	m_fTargetSpeed = target_speed * 1000/60/60;
 	m_fSpeed = 0;
 
 	m_fWheelSteerRotation = 0;
@@ -115,7 +121,6 @@ void CarEngine::SharedConstructor(const FPoint3 &pos, vtHeightField3d * grid,
 	m_bForwards = true;
 
 	m_iLane = 0;
-	m_fRoadHeight = 0;
 	m_fStopTime = 0.0f;
 	m_bStopped = false;
 
@@ -131,7 +136,6 @@ void CarEngine::Eval()
 {
 	float t = vtGetTime();
 	float fDeltaTime = t - m_fPrevTime;
-	FPoint3 vNext;
 
 	// Don't get too jumpy on low framerate, such as when the program is paused
 	if (fDeltaTime > 1.0f)
@@ -141,67 +145,60 @@ void CarEngine::Eval()
 	if (!pTarget)
 		return;
 
-	//find vNext location
+	//find Next location
+	FPoint3 vNext;
 	switch (m_eMode)
 	{
 	case NONE:	//go nowhere.
 		vNext = m_vCurPos;
 		MoveCarTo(vNext);
 		break;
-	case STRAIGHT:
+	case JUST_DRIVE:
 		//go straight.  try to match speed.
 		vNext.x = m_vCurPos.x + fDeltaTime*m_fSpeed*cosf(m_fCurRotation);
 		vNext.z = m_vCurPos.z - fDeltaTime*m_fSpeed*sinf(m_fCurRotation);
 		MoveCarTo(vNext);
 		break;
-	case CIRCLE:
-		//drive around in a circle, try to match speed.
-		Circle(vNext,t);
-		MoveCarTo(vNext);
-		break;
-	case PATH:
-	case ROAD:
+	case FOLLOW_PATH:
+	case FOLLOW_ROAD:
 		if (!m_pCurRoad) {
 			return;  //safety check
 		}
 		if (m_bFirstTime)
 		{
 			vNext = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord];
-			vNext.y += m_fRoadHeight;
 			pTarget->SetTrans(vNext);
 			m_vCurPos = vNext;
 			m_bFirstTime = false;
+			break;
 		}
-		else
+		//find where the road is
+		FPoint3 target = GetNextTarget(t);
+		//adjust vehicle speed.
+		AdjustSpeed(fDeltaTime);
+
+		//if we are not stopped, then move
+		if (!m_bStopped)
 		{
-			//find where the road is
-			FPoint3 target = GetNextTarget(t);
-			//adjust vehicle speed.
-			AdjustSpeed(fDeltaTime);
+			//turn appropriately - but there is a limit on how much the car can turn.
+			TurnToward(target, fDeltaTime);
 
-			//if we are not stopped, then move
-			if (!m_bStopped)
-			{
-				//turn appropriately - but there is a limit on how much the car can turn.
-				TurnToward(target, fDeltaTime);
+			//move forward based on speed.
+			FPoint3 delta;
+			delta.x = fDeltaTime*m_fSpeed * cosf (m_fCurRotation);
+			delta.y = 0.0f;
+			delta.z = fDeltaTime*m_fSpeed * -sinf (m_fCurRotation);
 
-				//move forward based on speed.
-				FPoint3 delta;
-				delta.x = fDeltaTime*m_fSpeed * cosf (m_fCurRotation);
-				delta.y = 0.0f;
-				delta.z = fDeltaTime*m_fSpeed * -sinf (m_fCurRotation);
+			vNext = m_vCurPos + delta;
 
-				vNext = m_vCurPos + delta;
+			//VTLOG("Rotation: %.3f\tDelta: %.3f %.3f %.3f\n", m_fCurRotation,
+			//	delta.x,delta.y,delta.z);
+			//VTLOG("curpos: %.1f, %.1f, %.1f\tnext: %.1f, %.1f, %.1f\n",
+			//	m_vCurPos.x,m_vCurPos.y,m_vCurPos.z, vNext.x,vNext.y,vNext.z);
+			//VTLOG("target: %.1f, %.1f, %.1f\tdist: %.2f\n",
+			//	target.x, target.y, target.z, Distance2D(m_vCurPos,target));
 
-				//VTLOG("Rotation: %.3f\tDelta: %.3f %.3f %.3f\n", m_fCurRotation,
-				//	delta.x,delta.y,delta.z);
-				//VTLOG("curpos: %.1f, %.1f, %.1f\tnext: %.1f, %.1f, %.1f\n",
-				//	m_vCurPos.x,m_vCurPos.y,m_vCurPos.z, vNext.x,vNext.y,vNext.z);
-				//VTLOG("target: %.1f, %.1f, %.1f\tdist: %.2f\n",
-				//	target.x, target.y, target.z, Distance2D(m_vCurPos,target));
-
-				MoveCarTo(vNext);
-			}
+			MoveCarTo(vNext);
 		}
 		break;
 	}
@@ -214,14 +211,6 @@ void CarEngine::SetTargetSpeed(float fMetersPerSec)
 {
 	m_fTargetSpeed = fMetersPerSec;
 	m_fSpeed = fMetersPerSec;
-}
-
-void CarEngine::Circle(FPoint3 &vNext, float t)
-{
-	//calculate position
-	float time = t * m_fSpeed / m_fCircleRadius;
-	vNext.x = m_vCenterPos.x + m_fCircleRadius * cosf(time);
-	vNext.z = m_vCenterPos.z + m_fCircleRadius * sinf(time);
 }
 
 //
@@ -376,7 +365,8 @@ void CarEngine::PickFirstRoad()
 		m_pNextRoad = NULL;
 		return;
 	}
-	if (m_eMode == PATH) {
+	if (m_eMode == FOLLOW_PATH)
+	{
 		//pick road based on path.
 		int roadID = m_iRoads[m_iNextRoad];
 		for (i = 0; i < m_pCurNode->m_iLinks; i++) {
@@ -398,7 +388,9 @@ void CarEngine::PickFirstRoad()
 				break;
 			}
 		}
-	} else {
+	}
+	else
+	{
 		//road following.
 		//make sure car can go in the direction of the road.
 		for (i = 0; i < m_pCurNode->m_iLinks; i++) {
@@ -416,13 +408,16 @@ void CarEngine::PickFirstRoad()
 	m_bForwards = (m_pCurRoad->GetNode(0) == m_pCurNode);
 
 	//determine what's the next intersect type (so we know whether to slow down or not.)
-	if (m_bForwards) {
+	if (m_bForwards)
+	{
 		m_pNextNode = m_pCurRoad->GetNode(1);
 		m_iNextIntersect = m_pNextNode->GetIntersectType(m_pCurRoad);
 		//reset coord index
 		m_iRCoord = 0;
 		//m_iLane = 0;
-	} else {
+	}
+	else
+	{
 		m_pNextNode = m_pCurRoad->GetNode(0);
 		m_iNextIntersect = m_pNextNode->GetIntersectType(m_pCurRoad);
 		//reset coord index
@@ -479,9 +474,11 @@ void CarEngine::PickRoad()
 }
 
 //picks the next road.
-void CarEngine::PickNextRoad() {
+void CarEngine::PickNextRoad()
+{
 	int i=0;
-	if (m_eMode == PATH) {
+	if (m_eMode == FOLLOW_PATH)
+	{
 		//pick road based on path.
 		int roadID = m_iRoads[m_iNextRoad];
 		for (i = 0; i < m_pNextNode->m_iLinks; i++) {
@@ -503,29 +500,31 @@ void CarEngine::PickNextRoad() {
 				break;
 			}
 		}
-	} else {
+	}
+	else
+	{
 		//select the next road to follow.
 		if (m_pNextNode->m_iLinks != 1)
 		{
 			i = m_pNextNode->m_iLinks;
 			// pick vNext available road
-			if (m_pCurRoad->m_iHwy > 0)
-			{
-				// special logic: follow the highway
-				for (i = 0; i < m_pNextNode->m_iLinks; i++)
-				{
-					TLink *r = m_pNextNode->GetLink(i);
-					if ((r != m_pCurRoad && r->m_iHwy > 0)
-						&&
-						((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pNextNode)
-							||
-						(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pNextNode)))
-					{
-						break;
-					}
-				}
-				// if no highway, do normal logic
-			}
+			//if (m_pCurRoad->m_iHwy > 0)
+			//{
+			//	// special logic: follow the highway
+			//	for (i = 0; i < m_pNextNode->m_iLinks; i++)
+			//	{
+			//		TLink *r = m_pNextNode->GetLink(i);
+			//		if ((r != m_pCurRoad && r->m_iHwy > 0)
+			//			&&
+			//			((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pNextNode)
+			//				||
+			//			(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pNextNode)))
+			//		{
+			//			break;
+			//		}
+			//	}
+			//	// if no highway, do normal logic
+			//}
 			if (i == m_pNextNode->m_iLinks)
 			{
 				//find index for current road
@@ -569,7 +568,6 @@ void CarEngine::PickNextRoad() {
 	transition from the current road to the next road?
 	we only look at the 2D case.
 	*/
-
 	FPoint3 center(((NodeGeom*)m_pNextNode)->m_p3.x,
 					0,
 					((NodeGeom*)m_pNextNode)->m_p3.z);
@@ -600,12 +598,12 @@ void CarEngine::PickNextRoad() {
 }
 
 //a simple lane picking algorithm
-int CarEngine::PickLane() {
-	if (m_bForwards) {
+int CarEngine::PickLane()
+{
+	if (m_bForwards)
 		return m_iLane;
-	} else {
+	else
 		return m_pCurRoad->m_iLanes - m_iLane -1;
-	}
 }
 
 void CarEngine::MoveCarTo(const FPoint3 &pos)
@@ -641,9 +639,9 @@ void CarEngine::SpinWheels(float dist)
 FPoint3 CarEngine::GetNextTarget(float fCurTime)
 {
 	int lane = PickLane();
-#if 0
-	VTLOG("GetNextTarget: %i of %i\n", m_iRCoord, m_pCurRoad->GetSize());
-#endif
+
+	//VTLOG("GetNextTarget: %i of %i\n", m_iRCoord, m_pCurRoad->GetSize());
+
 	const FLine3 &lanepoints = ((LinkGeom*)m_pCurRoad)->m_Lanes[lane];
 	FPoint3 nextPoint = lanepoints.GetAt(m_iRCoord);
 
@@ -677,43 +675,44 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 	}
 
 	int endIndex;
-	if (m_bForwards) {
+	if (m_bForwards)
 		endIndex = m_pCurRoad->GetSize() -1;
-	} else {
+	else
 		endIndex = 0;
-	}
 
 	//if we're getting close, look at the next point to reach.
 	float dist = Distance2D(nextPoint, m_vCurPos);
-	float threshold = 2.5f;
+	float threshold = 2.0f;
 	if (dist < threshold)
 	{
 		VTLOG("Reached target, dist=%f, threshold %f\n", dist, threshold);
 		//assume that we've past target, get next target.
 		bool newroad = false;
-		if (m_bForwards) {
+		if (m_bForwards)
+		{
 			m_iRCoord++;
-			if (m_iRCoord == (int) m_pCurRoad->GetSize()) {
+			if (m_iRCoord == (int) m_pCurRoad->GetSize())
 				newroad = true;
-			}
-		} else {
+		}
+		else
+		{
 			m_iRCoord--;
-			if (m_iRCoord < 0) {
+			if (m_iRCoord < 0)
 				newroad = true;
-			}
 		}
 		if(newroad) {
 			//out of coords, need to look at next road.
 			if (m_iNextIntersect == IT_STOPSIGN ||
 				(m_iNextIntersect == IT_LIGHT &&
-				m_pNextNode->GetLightStatus(m_pCurRoad) == LT_RED)) {
+				m_pNextNode->GetLightStatus(m_pCurRoad) == LT_RED))
+			{
 				m_bStopped = true;
 				m_fStopTime = fCurTime;
 				VTLOG1("Stopped!\n");
 				//do NOT pick a new road just yet.
-			} else {
-				PickRoad();
 			}
+			else
+				PickRoad();
 		}
 		lane = PickLane();
 		nextPoint = ((LinkGeom*)m_pCurRoad)->m_Lanes[lane].GetAt(m_iRCoord);
@@ -754,10 +753,13 @@ void CarEngine::AdjustSpeed(float fDeltaTime)
 		//if the turn up ahead is too steep, slow down
 		if (m_fAngle < ANGLETOLERANCE && distToGo < (m_fSpeed * m_fSpeed) / (ACCEL))
 		{
-			//getting to close.  slow down.
+			//getting close.  slow down.
 			m_fSpeed -= (m_fSpeed*m_fSpeed)/distToGo*fDeltaTime;
 			//VTLOG("dead end");
-		} else if (m_fSpeed < m_fTargetSpeed) {
+		}
+		else if (m_fSpeed < m_fTargetSpeed)
+		{
+			// plenty of room left, so speed up
 			m_fSpeed += ACCEL*fDeltaTime;
 			//VTLOG("vroom!");
 		}
@@ -831,17 +833,5 @@ void CarEngine::AdjustSpeed(float fDeltaTime)
 	//don't actually stop completely.
 	if (m_fSpeed < 0)
 		m_fSpeed = .1f*1000/60/60;
-}
-
-//calculates the angle between two 3D vectors, in XZ plane.
-float CarEngine::Angle(FPoint3 center, FPoint3 curVec, FPoint3 nextVec)
-{
-	curVec -= center;
-	nextVec -= center;
-	if (curVec == nextVec)
-		return 0;
-
-	//dot product:  a.b = |a||b|cos(THETA)
-	return acosf(curVec.Dot(nextVec)/(curVec.Length()*nextVec.Length()));
 }
 

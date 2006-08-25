@@ -234,20 +234,19 @@ void VehicleManager::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSize, fl
 			pTerrain->AddNode(car);
 			pTerrain->PlantModelAtPoint(car, n->m_p);
 
-			float fSpeed = 60.0f;
+			float fSpeed = 88.0f;
 			TNode *pNode = n;
 
 			CarEngine *pE1;
 			if (pNode == NULL)
 			{
-				pE1 = new CarEngine(car->GetTrans(),
-					pTerrain->GetHeightField(), fSpeed, .25f);
+				pE1 = new CarEngine(pTerrain->GetHeightField(), fSpeed, .25f,
+					car->GetTrans());
 			}
 			else
 			{
-				float height = pTerrain->GetParams().GetValueFloat(STR_ROADHEIGHT);
-				pE1 = new CarEngine(car->GetTrans(),
-					pTerrain->GetHeightField(), fSpeed, .25f, pNode, 1, height);
+				pE1 = new CarEngine(pTerrain->GetHeightField(), fSpeed, .25f,
+					pNode, 1);
 			}
 			pE1->SetName2("drive");
 			pE1->SetTarget(car);

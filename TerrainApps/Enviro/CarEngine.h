@@ -13,7 +13,7 @@
 #include "vtlib/core/Roads.h"
 #include "vtlib/core/IntersectionEngine.h"
 
-enum CarEngineMode { NONE, STRAIGHT, CIRCLE, ROAD, PATH };
+enum CarEngineMode { NONE, JUST_DRIVE, FOLLOW_ROAD, FOLLOW_PATH };
 
 class CarEngine : public vtEngine
 {
@@ -22,16 +22,13 @@ public:
 	// grid is the elevation grid
 	// target_speed is the max speed car will drive at
 	// wRadius is the wheel radius
-	// center is center of a circle the vehicle may drive in
 	// node is which node the vehicle should start driving from
 	// lane is which lane to drive on.
 	// road height is how high road is off the ground.
-	//take target_speed in km per hour.  drives in a straight line
-	CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius);
-	//drives in a circle.
-	CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius, FPoint3 center);
-	//drives from the given node.  ignores pos value.  takes position from given node.
-	CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius, TNode *n, int lane=1, float roadheight=0);
+	// target_speed in km per hour.
+	CarEngine(vtHeightField3d *grid, float target_speed, float wRadius, const FPoint3 &pos);
+	//drives from the given node.  takes position from given node.
+	CarEngine(vtHeightField3d *grid, float target_speed, float wRadius, TNode *n, int lane=1);
 
 	/*	finds and sets the tire variables in the model.  assumes that the tires are under a group name ending
 		in "tires" and the 4 tires are the children of the group.  the 4 tire names should end with their
@@ -46,10 +43,7 @@ public:
 
 private:
 	//called to constructor for basic setup
-	void SharedConstructor(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius);
-
-	//find the next destination point when driving in a circle (simple test case.)
-	void Circle(FPoint3 &next_pos, float t);
+	void Init(vtHeightField3d *grid, float target_speed, float wRadius);
 
 	//undo orientation of the car (make it level to horizontal plane.)
 	void UndoOrientation();
@@ -79,9 +73,6 @@ private:
 	//adjusts the speed based traffic rules, etc.
 	void AdjustSpeed(float fDeltaTime);
 
-	//calculates angle in x-z plane.
-	float Angle(FPoint3 center, FPoint3 curVec, FPoint3 nextVec);
-
 	vtHeightField3d *m_pHeightField;
 
 	//what mode the engine is operating at.
@@ -105,7 +96,6 @@ private:
 	float m_fWheelSteerRotation;
 
 	//circle test
-	FPoint3 m_vCenterPos;
 	float m_fCircleRadius;
 
 	//a setup flag - first eval doesn't run right...
@@ -123,7 +113,6 @@ private:
 	float m_bStopped;	//how long we stopped for
 	int m_iRCoord;		//current road coordinate that we are driving to
 	float m_fAngle;		//angle of the next road
-	float m_fRoadHeight;	//height of road (offset for placement.)
 
 	//path following stuff.
 	int m_iStartNode;	//the start node
