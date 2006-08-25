@@ -2,20 +2,16 @@
 // CarEngine.h
 // header file for CarEngine.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
-#ifndef ISLAND_CARENGINESH
-#define ISLAND_CARENGINESH
+#ifndef CARENGINEH
+#define CARENGINEH
 
 #include "vtdata/HeightField.h"
 #include "vtlib/core/Roads.h"
 #include "vtlib/core/IntersectionEngine.h"
-
-static FPoint3 XAXIS = FPoint3(1, 0, 0);
-static FPoint3 YAXIS = FPoint3(0, 1, 0);
-static FPoint3 ZAXIS = FPoint3(0, 0, 1);
 
 enum CarEngineMode { NONE, STRAIGHT, CIRCLE, ROAD, PATH };
 
@@ -58,8 +54,9 @@ private:
 	//undo orientation of the car (make it level to horizontal plane.)
 	void UndoOrientation();
 	float SetPitch();  //returns new height for car.
-	//change rotation about Y axis based on current and next position.  height is average of tire points
-	void DetermineYawPitchAndHeight(FPoint3 &next_pos);
+	//change rotation about Y axis based on current and next position.
+	//height is average of tire points
+	float DetermineYawPitchAndHeight(const FPoint3 &next_pos);
 
 	//pick the first road to follow
 	void PickFirstRoad();
@@ -71,14 +68,14 @@ private:
 	int PickLane();
 
 	//move car to the given vector
-	void MoveCar(FPoint3 vNext);
+	void MoveCarTo(const FPoint3 &pos);
 	//spin all wheels for distance traveled.
 	void SpinWheels(float dist);
 
 	//get next point to drive toward
 	FPoint3 GetNextTarget(float fCurTime);
 	//turn toward coordinates, but there will be a limit on how much of a turn.
-	void TurnToward(FPoint3 target, float time);
+	void TurnToward(const FPoint3 &target, float time);
 	//adjusts the speed based traffic rules, etc.
 	void AdjustSpeed(float fDeltaTime);
 
@@ -125,7 +122,6 @@ private:
 	float m_fStopTime;	//when we stopped
 	float m_bStopped;	//how long we stopped for
 	int m_iRCoord;		//current road coordinate that we are driving to
-	float m_fRDistance;	//distance to next road point to follow.
 	float m_fAngle;		//angle of the next road
 	float m_fRoadHeight;	//height of road (offset for placement.)
 
@@ -138,4 +134,4 @@ private:
 	bool m_bPathReverse;//when we reach end of path, want to reverse traverse it.
 };
 
-#endif
+#endif // CARENGINEH
