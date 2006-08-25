@@ -104,11 +104,11 @@ void VehicleManager::SetupVehicles()
 {
 	vtString fname;
 
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco_step5.osg");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco_lod0.ive");
 	if (fname != "")
 	{
-		// the bronco is modeled in feet (0.3048)
 		VehicleType *bronco = new VehicleType("bronco");
+		// the bronco is modeled in meters (scale 1.0f)
 		bronco->AddModel(fname, 1.0f, 500);
 		AddVehicleType(bronco);
 	}
