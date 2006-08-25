@@ -1159,15 +1159,19 @@ float vtElevationGrid::GetWorldValue(int i, int j, bool bTrue) const
  * \param fAltitude If the test succeeds, this contains the result by reference.
  * \param bTrue Pass true to the use the true elevation, false to consider the
  *		vertical exaggeration in effect.
- * \param bIncludeCulture True to include testing other objects ("culture") on
- *		the grid.  False to test the grid only.
+ * \param iCultureFlags Pass 0 to test only the heightfield itself,
+ *		non-zero to test any culture objects which may be sitting on
+ *		the heightfield.  Values include:
+ *		- CE_STRUCTURES	Test structures on the ground.
+ *		- CE_ROADS Test roads on the ground.
+ *		- CE_ALL Test everything on the ground.
  * \param vNormal If you pass a pointer to a vector, it will be filled in with
  *		the upwards-pointing surface normal at the given point.
  *
  * \return true if the point was inside the elevation grid, false if outside.
  */
 bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
-	bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
+	bool bTrue, int iCultureFlags, FPoint3 *vNormal) const
 {
 	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
 	int iZ = (int)((p.z - m_WorldExtents.bottom) / -m_fZStep);

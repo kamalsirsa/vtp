@@ -1,7 +1,7 @@
 //
 // HeightField.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -236,13 +236,14 @@ int vtHeightField3d::PointIsAboveTerrain(const FPoint3 &p) const
  * Converts a earth coordinate (project or geographic) to a world coordinate
  * on the surface of the heightfield.
  */
-bool vtHeightField3d::ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3, bool bIncludeCulture)
+bool vtHeightField3d::ConvertEarthToSurfacePoint(const DPoint2 &epos,
+									FPoint3 &p3, int iCultureFlags)
 {
 	// convert earth -> XZ
 	m_Conversion.ConvertFromEarth(epos, p3.x, p3.z);
 
 	// look up altitude
-	return FindAltitudeAtPoint(p3, p3.y, false, bIncludeCulture);
+	return FindAltitudeAtPoint(p3, p3.y, false, iCultureFlags);
 }
 
 /**
@@ -975,7 +976,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				{
 					// 3D elevation query to get slope
 					m_Conversion.ConvertFromEarth(pos, p3.x, p3.z);
-					FindAltitudeAtPoint(p3, p3.y, true, false, &normal);
+					FindAltitudeAtPoint(p3, p3.y, true, 0, &normal);
 
 					//*****************************************
 					//*****************************************
@@ -1039,7 +1040,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 			// 3D elevation query to get slope
 			m_Conversion.ConvertFromEarth(pos, p3.x, p3.z);
-			FindAltitudeAtPoint(p3, p3.y, true, false, &normal);
+			FindAltitudeAtPoint(p3, p3.y, true, 0, &normal);
 
 			//*****************************************
 			//*****************************************

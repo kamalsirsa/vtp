@@ -1,3 +1,9 @@
+//
+// vtHeightField.h
+//
+// Copyright (c) 2002-2006 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef HEIGHTFIELDH
 #define HEIGHTFIELDH
@@ -67,10 +73,17 @@ protected:
 };
 
 
+// Culture flags: one bit for each kind of culture one could test for
+// using CultureExtension.
+#define CE_STRUCTURES	1
+#define CE_ROADS		2
+#define CE_ALL			(CE_STRUCTURES|CE_ROADS)
+
 class CultureExtension
 {
 public:
-	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const = 0;
+	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
+		int iCultureFlags) const = 0;
 };
 
 /**
@@ -91,9 +104,25 @@ public:
 	// override heightfield method
 	virtual void SetEarthExtents(const DRECT &ext);
 
-	/// Given a point in world coordinates, determine the elevation
+	/**
+	 * Given a point in world coordinates, determine the elevation at
+	 * that point.
+	 *
+	 * \param p3 The point to test.  Only the X and Z values are used.
+	 * \param fAltitude The resulting elevation at that point, by reference.
+	 * \param bTrue True to test true elevation.  False to test the displayed
+	 *		elevation (possibly exaggerated.)
+	 * \param iCultureFlags Pass 0 to test only the heightfield itself,
+	 *		non-zero to test any culture objects which may be sitting on
+	 *		the heightfield.  Values include:
+	 *		- CE_STRUCTURES	Test structures on the ground.
+	 *		- CE_ROADS Test roads on the ground.
+	 *		- CE_ALL Test everything on the ground.
+	 * \param vNormal If you supply a pointer to a vector, it will be set
+	 *		to the upward-pointing surface normal at the ground point.
+	 */
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		bool bTrue = false, bool bIncludeCulture = false,
+		bool bTrue = false, int iCultureFlags = 0,
 		FPoint3 *vNormal = NULL) const = 0;
 
 	/// Find the intersection point of a ray with the heightfield
@@ -102,7 +131,7 @@ public:
 
 	int PointIsAboveTerrain(const FPoint3 &p) const;
 
-	bool ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3, bool bIncludeCulture = false);
+	bool ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3, int iCultureFlags = 0);
 
 	bool ContainsWorldPoint(float x, float z);
 	void GetCenter(FPoint3 &center);
