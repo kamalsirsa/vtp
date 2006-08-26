@@ -183,6 +183,9 @@ void CarEngine::Eval()
 			//turn appropriately - but there is a limit on how much the car can turn.
 			TurnToward(target, fDeltaTime);
 
+			// slow down on curves
+			m_fSpeed *= (1 - fabs(m_fWheelSteerRotation)/2);
+
 			//move forward based on speed.
 			FPoint3 delta;
 			delta.x = fDeltaTime*m_fSpeed * cosf (m_fCurRotation);
@@ -457,12 +460,15 @@ void CarEngine::PickRoad()
 	m_bForwards = (m_pCurRoad->GetNode(0) == m_pCurNode);
 
 	//determine what's the next intersect type (so we know whether to slow down or not.)
-	if (m_bForwards) {
+	if (m_bForwards)
+	{
 		m_pNextNode = m_pCurRoad->GetNode(1);
 		m_iNextIntersect = m_pNextNode->GetIntersectType(m_pCurRoad);
 		//reset coord index
 		m_iRCoord = 0;
-	} else {
+	}
+	else
+	{
 		m_pNextNode = m_pCurRoad->GetNode(0);
 		m_iNextIntersect = m_pNextNode->GetIntersectType(m_pCurRoad);
 		//reset coord index
@@ -481,9 +487,11 @@ void CarEngine::PickNextRoad()
 	{
 		//pick road based on path.
 		int roadID = m_iRoads[m_iNextRoad];
-		for (i = 0; i < m_pNextNode->m_iLinks; i++) {
+		for (i = 0; i < m_pNextNode->m_iLinks; i++)
+		{
 			TLink *r = m_pNextNode->GetLink(i);
-			if (r->m_id == roadID) {
+			if (r->m_id == roadID)
+			{
 				//found road.
 				//determine next road to follow.
 				if (!m_bPathReverse) {
@@ -507,24 +515,6 @@ void CarEngine::PickNextRoad()
 		if (m_pNextNode->m_iLinks != 1)
 		{
 			i = m_pNextNode->m_iLinks;
-			// pick vNext available road
-			//if (m_pCurRoad->m_iHwy > 0)
-			//{
-			//	// special logic: follow the highway
-			//	for (i = 0; i < m_pNextNode->m_iLinks; i++)
-			//	{
-			//		TLink *r = m_pNextNode->GetLink(i);
-			//		if ((r != m_pCurRoad && r->m_iHwy > 0)
-			//			&&
-			//			((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pNextNode)
-			//				||
-			//			(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pNextNode)))
-			//		{
-			//			break;
-			//		}
-			//	}
-			//	// if no highway, do normal logic
-			//}
 			if (i == m_pNextNode->m_iLinks)
 			{
 				//find index for current road

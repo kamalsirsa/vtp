@@ -104,7 +104,7 @@ void VehicleManager::SetupVehicles()
 {
 	vtString fname;
 
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco_lod0.ive");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco.osg");
 	if (fname != "")
 	{
 		VehicleType *bronco = new VehicleType("bronco");
@@ -112,12 +112,24 @@ void VehicleManager::SetupVehicles()
 		bronco->AddModel(fname, 1.0f, 500);
 		AddVehicleType(bronco);
 	}
-/*
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD01.3ds");
+
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/mosp1/mosp1-v3.osg");
 	if (fname != "")
 	{
-		// the discovery is modeled in centimeters (0.01)
+		VehicleType *bronco = new VehicleType("mosp1");
+		// the bronco is modeled in meters (scale 1.0f)
+		bronco->AddModel(fname, 1.0f, 500);
+		AddVehicleType(bronco);
+	}
+
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/landrover/rover-v3.osg");
+	if (fname != "")
+	{
+		// the discovery is modeled in meters
 		VehicleType *discovery = new VehicleType("discovery");
+		discovery->AddModel(fname, 1.0f, 500);
+		AddVehicleType(discovery);
+/*
 		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD01.3ds");
 		discovery->AddModel(fname, 0.01f, 50);
 		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD02.3ds");
@@ -127,9 +139,10 @@ void VehicleManager::SetupVehicles()
 		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD04.3ds");
 		discovery->AddModel(fname, 0.01f, 500);
 		AddVehicleType(discovery);
-	}
 */
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/hele-on/hele-on.ive");
+	}
+
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/hele-on/hele-on.osg");
 	if (fname != "")
 	{
 		// the bus is modeled in meters (1.0)
@@ -191,12 +204,12 @@ void VehicleManager::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSize, fl
 	FPoint3 start_point;
 	int num, col;
 	RGBf color;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (n == NULL) {
 			n = pRoadMap->GetFirstNode();
 		}
-		num = i % 3;
+		num = i % 4;
 		col = i % 5;
 
 		switch (col) {
@@ -227,6 +240,9 @@ void VehicleManager::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSize, fl
 			break;
 		case 2:
 			car = CreateVehicle("bus", color, fSize);
+			break;
+		case 3:
+			car = CreateVehicle("mosp1", color, fSize);
 			break;
 		}
 		if (car)
