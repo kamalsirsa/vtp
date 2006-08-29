@@ -108,8 +108,7 @@ void VehicleManager::SetupVehicles()
 	if (fname != "")
 	{
 		VehicleType *bronco = new VehicleType("bronco");
-		// the bronco is modeled in meters (scale 1.0f)
-		bronco->AddModel(fname, 1.0f, 500);
+		bronco->AddModel(fname, 1.0f, 500); // modeled in meters (scale 1.0f)
 		AddVehicleType(bronco);
 	}
 
@@ -117,9 +116,16 @@ void VehicleManager::SetupVehicles()
 	if (fname != "")
 	{
 		VehicleType *bronco = new VehicleType("mosp1");
-		// the bronco is modeled in meters (scale 1.0f)
-		bronco->AddModel(fname, 1.0f, 500);
+		bronco->AddModel(fname, 1.0f, 500);	// modeled in meters (scale 1.0f)
 		AddVehicleType(bronco);
+	}
+
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/civic/HondCivic-v3.osg");
+	if (fname != "")
+	{
+		VehicleType *civic = new VehicleType("civic");
+		civic->AddModel(fname, 1.0f, 500);
+		AddVehicleType(civic);
 	}
 
 	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/landrover/rover-v3.osg");
@@ -149,6 +155,14 @@ void VehicleManager::SetupVehicles()
 		VehicleType *hele_on = new VehicleType("bus");
 		hele_on->AddModel(fname, 1.00f, 800);
 		AddVehicleType(hele_on);
+	}
+
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/jazz/jazz-obj-v2.osg");
+	if (fname != "")
+	{
+		VehicleType *jazz = new VehicleType("jazz");
+		jazz->AddModel(fname, 1.00f, 800);
+		AddVehicleType(jazz);
 	}
 
 	// the 747 is modeled in meters (1.0)
@@ -204,12 +218,12 @@ void VehicleManager::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSize, fl
 	FPoint3 start_point;
 	int num, col;
 	RGBf color;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 12; i++)
 	{
 		if (n == NULL) {
 			n = pRoadMap->GetFirstNode();
 		}
-		num = i % 4;
+		num = i % 6;
 		col = i % 5;
 
 		switch (col) {
@@ -243,6 +257,12 @@ void VehicleManager::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSize, fl
 			break;
 		case 3:
 			car = CreateVehicle("mosp1", color, fSize);
+			break;
+		case 4:
+			car = CreateVehicle("civic", color, fSize);
+			break;
+		case 5:
+			car = CreateVehicle("jazz", color, fSize);
 			break;
 		}
 		if (car)
