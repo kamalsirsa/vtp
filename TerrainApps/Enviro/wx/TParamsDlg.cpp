@@ -199,7 +199,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_VERTEXAG, &m_fVerticalExag, 2);
 
 	// nav
-	AddNumValidator(ID_MINHEIGHT, &m_fMinHeight);
+	AddNumValidator(ID_MINHEIGHT, &m_fMinHeight, 2);
 	AddValidator(ID_NAV_STYLE, &m_iNavStyle);
 	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
 	AddValidator(ID_LOCFILE, &m_strLocFile);
