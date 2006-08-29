@@ -474,9 +474,15 @@ void SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 void LayerDlg::OnLayerSave( wxCommandEvent &event )
 {
 	LayerItemData *data = GetLayerDataFromItem(m_item);
+	if (!data)
+		return;
 
-	if (data->m_type == LT_STRUCTURE)
+	if (data->m_type == LT_STRUCTURE && data->m_sa != NULL)
+	{
+		GetCurrentTerrain()->SetStructureIndex(data->m_index);
+		RefreshTreeContents();
 		g_App.SaveStructures(false);	// don't ask for filename
+	}
 
 	if (data->m_type == LT_VEG)
 		g_App.SaveVegetation(false);	// don't ask for filename
