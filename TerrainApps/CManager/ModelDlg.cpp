@@ -34,6 +34,7 @@ BEGIN_EVENT_TABLE(ModelDlg,AutoPanel)
 	EVT_TEXT( ID_FILENAME, ModelDlg::OnTextFilename )
 	EVT_TEXT_ENTER( ID_DISTANCE, ModelDlg::OnTextVisible )
 	EVT_TEXT_ENTER( ID_SCALE, ModelDlg::OnTextScale )
+	EVT_TEXT_ENTER( ID_FILENAME, ModelDlg::OnEnterFilename )
 END_EVENT_TABLE()
 
 ModelDlg::ModelDlg( wxWindow *parent, wxWindowID id,
@@ -51,6 +52,23 @@ ModelDlg::ModelDlg( wxWindow *parent, wxWindowID id,
 }
 
 // WDR: handler implementations for ModelDlg
+
+void ModelDlg::OnEnterFilename( wxCommandEvent &event )
+{
+	if (!m_pCurrentModel)
+		return;
+
+	wxString2 prev = m_strFilename;
+	TransferDataFromWindow();
+
+	// dont do anything unless they've changed the text
+	if (m_strFilename == prev)
+		return;
+
+	// change in Filename should be passed to the manager
+	m_pCurrentModel->m_filename = m_strFilename.mb_str();
+	GetMainFrame()->ModelNameChanged(m_pCurrentModel);
+}
 
 void ModelDlg::OnTextScale( wxCommandEvent &event )
 {
@@ -77,7 +95,7 @@ void ModelDlg::OnTextVisible( wxCommandEvent &event )
 
 void ModelDlg::OnTextFilename( wxCommandEvent &event )
 {
-	UpdateFromControls();
+	//UpdateFromControls();
 }
 
 void ModelDlg::SetCurrentModel(vtModel *model)
@@ -104,7 +122,9 @@ void ModelDlg::SetCurrentModel(vtModel *model)
 void ModelDlg::SetModelStatus(const char *string)
 {
 	m_strStatus = string;
+	m_bUpdating = true;
 	TransferDataToWindow();
+	m_bUpdating = false;
 }
 
 void ModelDlg::UpdateFromControls()

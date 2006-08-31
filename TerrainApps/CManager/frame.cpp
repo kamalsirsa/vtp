@@ -508,6 +508,25 @@ void vtFrame::AddModelFromFile(const wxString2 &fname)
 		SetCurrentItemAndModel(m_pCurrentItem, nm);
 }
 
+void vtFrame::ModelNameChanged(vtModel *model)
+{
+	vtTransform *trans = m_nodemap[model];
+	if (trans)
+	{
+		trans->Release();
+		m_nodemap[model] = NULL;
+	}
+	model->m_attempted_load = false;
+
+	DisplayCurrentModel();
+
+	// update tree view
+	m_pTree->RefreshTreeItems(this);
+
+	// update 3d scene graph
+	UpdateItemGroup(m_pCurrentItem);
+}
+
 int vtFrame::GetModelTriCount(vtModel *model)
 {
 	vtTransform *trans = m_nodemap[model];
@@ -590,7 +609,8 @@ void vtFrame::OnItemRemoveModel(wxCommandEvent& event)
 
 	// free memory
 	vtNode *node = m_nodemap[previous];
-	node->Release();
+	if (node)
+		node->Release();
 	m_nodemap.erase(previous);
 }
 
@@ -1190,7 +1210,10 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 	for ( size_t n = 0; n < nFiles; n++ )
 	{
 		wxString str = filenames[n];
-		GetMainFrame()->AddModelFromFile(str);
+		if (str.Right(4).CmpNoCase(_T("vtco")) == 0)
+			GetMainFrame()->LoadContentsFile(str);
+		else
+			GetMainFrame()->AddModelFromFile(str);
 	}
 	return TRUE;
 }

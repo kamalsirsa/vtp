@@ -97,7 +97,6 @@ protected:
 	void OnUpdateItemModelExists(wxUpdateUIEvent& event);
 	void OnUpdateItemSaveSOG(wxUpdateUIEvent& event);
 
-	void LoadContentsFile(const wxString2 &fname);
 	void SaveContentsFile(const wxString2 &fname);
 	void FreeContents();
 
@@ -122,9 +121,11 @@ public:
 	void RenderingPause();
 	void RenderingResume();
 	void AddModelFromFile(const wxString2 &fname);
+	void ModelNameChanged(vtModel *model);
 	int GetModelTriCount(vtModel *model);
 	void OnChar(wxKeyEvent& event);
 	void UseLight(vtTransform *pLight);
+	void LoadContentsFile(const wxString2 &fname);
 
 public:
 	void		UpdateCurrentModelLOD();

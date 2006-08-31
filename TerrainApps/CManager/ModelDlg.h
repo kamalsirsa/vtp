@@ -45,6 +45,7 @@ private:
 
 private:
 	// WDR: handler declarations for ModelDlg
+	void OnEnterFilename( wxCommandEvent &event );
 	void OnTextScale( wxCommandEvent &event );
 	void OnTextVisible( wxCommandEvent &event );
 	void OnTextFilename( wxCommandEvent &event );
