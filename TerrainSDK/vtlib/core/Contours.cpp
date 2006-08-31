@@ -56,11 +56,9 @@ ContourConverter::~ContourConverter()
  * \param fHeight The height above the terrain to drape the lines.  Generally
  *		you will want to use a small offset value here, to keep the lines from
  *		colliding with the terrain itself.
- * \return A transform object which sits above the contours.  This is useful
- *		in case you later want to stretch or scale the contours, such as
- *		keeping them on the surface of an exaggerated terrain.
+ * \return A geometry node which contains the contours.
  */
-vtTransform *ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
+vtGeom *ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
 {
 	if (!pTerr)
 		return NULL;
@@ -78,12 +76,10 @@ vtTransform *ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float 
 	vtMaterialArray *pMats = new vtMaterialArray();
 	pMats->AddRGBMaterial1(color, false, false, true);
 
-	m_pTrans = new vtTransform;
-	m_pGeom = new vtGeom();
-	m_pGeom->SetName2("Contour Lines");
+	m_pGeom = new vtGeom;
+	m_pGeom->SetName2("Contour Geometry");
 	m_pGeom->SetMaterials(pMats);
 	pMats->Release();		// pass ownership
-	m_pTrans->AddChild(m_pGeom);
 
 	// copy data from our grid to a QuikGrid object
 	int nx, ny;
@@ -104,7 +100,7 @@ vtTransform *ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float 
 	//  pointer to the recipient of the callback.
 	s_cc = this;
 
-	return m_pTrans;
+	return m_pGeom;
 }
 
 
@@ -158,9 +154,9 @@ void ContourConverter::Finish()
 {
 	Flush();
 
-	m_pTerrain->AddNode(m_pTrans);
-	float fExag = m_pTerrain->GetVerticalExag();
-	m_pTrans->Scale3(1, fExag, 1);
+	// Add the geometry to the terrain's scaled features, so that it will scale
+	//  up/down with the terrain's vertical exaggeration.
+	m_pTerrain->GetScaledFeatures()->AddChild(m_pGeom);
 
 	s_cc = NULL;
 }

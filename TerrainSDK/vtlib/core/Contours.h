@@ -48,7 +48,7 @@ public:
 	ContourConverter();
 	~ContourConverter();
 
-	vtTransform *Setup(vtTerrain *pTerr, const RGBf &color, float fHeight);
+	vtGeom *Setup(vtTerrain *pTerr, const RGBf &color, float fHeight);
 	void GenerateContour(float fAlt);
 	void GenerateContours(float fAInterval);
 	void Finish();
@@ -66,7 +66,6 @@ protected:
 	float m_fHeight;
 
 	DLine2	m_line;
-	vtTransform *m_pTrans;
 	vtGeom *m_pGeom;
 	vtMeshFactory *m_pMF;
 };
