@@ -84,6 +84,9 @@ class vtAbstractLayer
 public:
 	vtAbstractLayer();
 	~vtAbstractLayer();
+	/// This is the set of features which the layer contains. Style information
+	///  is associated with it, using vtFeatureSet::SetProperties() and 
+	///  vtFeatureSet::GetProperties().
 	vtFeatureSet *pSet;
 	vtGroup *pContainer;
 	vtGroup *pGeomGroup;
@@ -109,8 +112,8 @@ typedef vtArray<vtAbstractLayer*> vtAbstractLayers;
 	- Elevation TIN: use SetTin().
 	- Structures: use NewStructureArray(), then fill the array with your structures.
 	- Vegetation: call SetPlantList(), then GetPlantInstances().
-	- Abstract layers: use GetAbstractLayers(), then append any layers you have.
-	  Each layer is a subclass of vtFeatureSet.  The features will be created
+	- Abstract layers: use GetAbstractLayers(), then create and append
+	  your vtAbstractLayer objects. The features will be created
 	  according to the properties you have set with vtFeatureSet::SetProperties().
 	  The properties you can set are documented with the class TParams.
 	- Animation paths: use GetAnimContainer(), then add your own animpaths.
@@ -118,6 +121,17 @@ typedef vtArray<vtAbstractLayer*> vtAbstractLayers;
  * You can then build the terrain using the CreateStep methods, or add it
  * to a vtTerrainScene and use vtTerrainScene::BuildTerrain.
  *
+ * <h3>Customizing your Terrain</h3>
+ *
+ * To extend your terrain beyond what is possible with the terrain
+ * parameters, you can create a subclass of vtTerrain and implement the
+ * method CreateCustomCulture().  Here you can create anything you like,
+ * and add it to the terrain.  Generally you should add your nodes with
+ * AddNode(), or AddNodeToStructGrid() if it is a structure that should
+ * be culled in the distance.  You can also add your nodes with
+ * GetScaledFeatures()->AddChild(), if they are 'flat' like GIS features
+ * or contour lines, which should be scaled up/down with the vertical
+ * exaggeration of the terrain.
  */
 class vtTerrain : public CultureExtension
 {
@@ -238,6 +252,10 @@ public:
 	vtAbstractLayers &GetAbstractLayers() { return m_AbstractLayers; }
 	void SetAbstractVisible(vtAbstractLayer *layer, bool bVis);
 	bool GetAbstractVisible(vtAbstractLayer *layer);
+	/// You should add your nodes to this terrain's scaled features if 
+	/// they are 'flat' like GIS features or contour lines, which should
+	/// be scaled up/down with the vertical exaggeration of the terrain.
+	vtTransform *GetScaledFeatures() { return m_pScaledFeatures; }
 
 	// roads
 	vtRoadMap3d *GetRoadMap() { return m_pRoadMap; }
@@ -315,7 +333,7 @@ public:
 	void TranslateFromGMT(vtTime &time);
 	DPoint2 GetCenterGeoLocation();
 
-	// Overlay
+	// Overlay (2D image on HUD)
 	vtGroup *GetOverlay() { return m_pOverlay; }
 
 	// Scenarios
@@ -411,6 +429,7 @@ protected:
 
 	// abstract layers
 	vtAbstractLayers m_AbstractLayers;
+	vtTransform		*m_pScaledFeatures;
 
 	// roads
 	vtGroup			*m_pRoadGroup;

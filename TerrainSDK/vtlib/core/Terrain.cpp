@@ -76,6 +76,7 @@ vtTerrain::vtTerrain()
 	m_pElevGrid = NULL;
 	m_pTextureColors = NULL;
 	m_pDetailMats = NULL;
+	m_pScaledFeatures = NULL;
 
 	m_pHorizonGeom = NULL;
 	m_pOceanGeom = NULL;
@@ -883,6 +884,11 @@ void vtTerrain::SetVerticalExag(float fExag)
 	else if (m_pTiledGeom != NULL)
 	{
 		m_pTiledGeom->SetVerticalExag(m_fVerticalExag);
+	}
+	if (m_pScaledFeatures != NULL)
+	{
+		m_pScaledFeatures->Identity();
+		m_pScaledFeatures->Scale3(1.0f, m_fVerticalExag, 1.0f);
 	}
 }
 
@@ -1747,7 +1753,10 @@ void vtTerrain::CreateStyledFeatures(vtAbstractLayer *layer, const vtTagArray &s
 {
 	layer->pContainer = new vtGroup;
 	layer->pContainer->SetName2("Abstract Layer");
-	m_pTerrainGroup->AddChild(layer->pContainer);
+
+	// Abstract geometry goes into the scale features group, so it will be
+	//  scaled up/down with the vertical exaggeration.
+	m_pScaledFeatures->AddChild(layer->pContainer);
 
 	if (style.GetValueBool("Geometry"))
 		CreateFeatureGeometry(layer, style);
@@ -1879,7 +1888,7 @@ void vtTerrain::CreateFeatureGeometry(vtAbstractLayer *layer, const vtTagArray &
 				DLine2 dline = dpoly[k];
 				dline.Append(dline[0]);
 
-				AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve);
+				AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve, true);
 			}
 		}
 	}
@@ -2535,6 +2544,12 @@ bool vtTerrain::CreateStep5()
 	// must have a heightfield by this point
 	if (!m_pHeightField)
 		return false;
+
+	// Node to put all the scale features under
+	m_pScaledFeatures = new vtTransform;
+	m_pScaledFeatures->SetName2("Scaled Features");
+	m_pScaledFeatures->Scale3(1.0f, m_fVerticalExag, 1.0f);
+	m_pTerrainGroup->AddChild(m_pScaledFeatures);
 
 	_CreateCulture();
 
