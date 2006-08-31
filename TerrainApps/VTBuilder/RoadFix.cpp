@@ -4,7 +4,7 @@
 // contains methods of RoadMapEdit used for fixing and
 //  cleaning the roadmap topology
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -151,30 +151,43 @@ int RoadMapEdit::RemoveDegenerateLinks()
 {
 	int count = 0;
 
-	LinkEdit *prevR = NULL, *nextR;
+	LinkEdit *prevL = NULL, *nextL;
 
-	for (LinkEdit *pR = GetFirstLink(); pR; pR = nextR)
+	for (LinkEdit *pL = GetFirstLink(); pL; pL = nextL)
 	{
-		nextR = pR->GetNext();
-		if (pR->GetNode(0) == pR->GetNode(1) && pR->GetSize() < 3)
+		bool bad = false;
+		nextL = pL->GetNext();
+
+		// Does it start and end at same node?
+		if (pL->GetNode(0) == pL->GetNode(1))
 		{
-			count++;
+			// Does it have enough points to be a valid loop?
+			if (pL->GetSize() < 3)
+				bad = true;
+
+			// Is it exceedingly short?
+			if (pL->Length() < pL->EstimateWidth())
+				bad = true;
+		}
+		if (bad)
+		{
 			// remove it
-			if (prevR)
-				prevR->m_pNext = nextR;
+			if (prevL)
+				prevL->m_pNext = nextL;
 			else
-				m_pFirstLink = nextR;
+				m_pFirstLink = nextL;
 
 			// notify the nodes that the road is gone
-			pR->GetNode(0)->DetachLink(pR);
-			pR->GetNode(1)->DetachLink(pR);
+			pL->GetNode(0)->DetachLink(pL);
+			pL->GetNode(1)->DetachLink(pL);
 
-			delete pR;
+			delete pL;
+			count++;
 		}
 		else
-			prevR = pR;
+			prevL = pL;
 	}
-	VTLOG(" Removed %i degenerate roads.\n", count);
+	VTLOG(" Removed %i degenerate links.\n", count);
 	return count;
 }
 
