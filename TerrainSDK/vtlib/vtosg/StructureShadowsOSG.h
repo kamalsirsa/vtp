@@ -21,7 +21,8 @@ public:
 	~CStructureShadowsOSG();
 
 	void SetSunPosition(osg::Vec3 SunPosition, bool bForceRecompute = false);
-	bool Initialise(osgUtil::SceneView *pSceneView, osg::Node *pStructures, osg::Node *pShadowed, const int iResolution);
+	bool Initialise(osgUtil::SceneView *pSceneView, osg::Node *pStructures,
+		osg::Node *pShadowed, const int iResolution, float fDarkness);
 	void SetShadowDarkness(float fDarkness);
 	void SetPolygonOffset(float fFactor, float fUnits);
 	void ExcludeFromShadower(osg::Node *pNode, bool bExclude);

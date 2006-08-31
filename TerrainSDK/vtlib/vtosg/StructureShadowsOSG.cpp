@@ -86,8 +86,10 @@ CStructureShadowsOSG::~CStructureShadowsOSG()
 	}
 }
 
-bool CStructureShadowsOSG::Initialise(osgUtil::SceneView* pSceneView, osg::Node *pStructures, osg::Node* pShadowed, const int iResolution)
+bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
+	osg::Node *pStructures, osg::Node *pShadowed, const int iResolution, float fDarkness)
 {
+	m_fShadowDarkness = fDarkness;
 	m_pSceneView = pSceneView;
 	m_iTargetResolution = m_iCurrentResolution = iResolution;
 	m_pTexture = new osg::Texture2D;
