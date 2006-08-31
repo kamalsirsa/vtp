@@ -197,7 +197,9 @@ public:
 	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 	vtProjection &GetAtProjection() { return m_proj; }
 
+	/// Set the properties for this set, which includes style.
 	void SetProperties(vtTagArray &props) { m_Properties = props; }
+	/// Get the properties for this set, which includes style.
 	vtTagArray &GetProperties() { return m_Properties; }
 
 protected:
