@@ -38,28 +38,29 @@ wxSizer *SceneGraphFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer 
 const int ID_TEXT = 10004;
 const int ID_ITEM = 10005;
 const int ID_TYPECHOICE = 10006;
-const int ID_ADDTAG = 10007;
-const int ID_REMOVETAG = 10008;
-const int ID_EDITTAG = 10009;
-const int ID_TAGLIST = 10010;
+const int ID_SUBTYPECHOICE = 10007;
+const int ID_ADDTAG = 10008;
+const int ID_REMOVETAG = 10009;
+const int ID_EDITTAG = 10010;
+const int ID_TAGLIST = 10011;
 wxSizer *PropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_FILENAME = 10011;
-const int ID_DISTANCE = 10012;
-const int ID_SCALE = 10013;
-const int ID_STATUS = 10014;
+const int ID_FILENAME = 10012;
+const int ID_DISTANCE = 10013;
+const int ID_SCALE = 10014;
+const int ID_STATUS = 10015;
 wxSizer *ModelDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TAGNAME = 10015;
-const int ID_TAGTEXT = 10016;
+const int ID_TAGNAME = 10016;
+const int ID_TAGTEXT = 10017;
 wxSizer *TagDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LIGHT = 10017;
-const int ID_AMBIENT = 10018;
-const int ID_DIFFUSE = 10019;
-const int ID_DIRX = 10020;
-const int ID_DIRY = 10021;
-const int ID_DIRZ = 10022;
+const int ID_LIGHT = 10018;
+const int ID_AMBIENT = 10019;
+const int ID_DIFFUSE = 10020;
+const int ID_DIRX = 10021;
+const int ID_DIRY = 10022;
+const int ID_DIRZ = 10023;
 wxSizer *LightDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
@@ -68,15 +69,15 @@ wxSizer *LightDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer
 
 // Declare bitmap functions
 
-const int ID_BM_AXES = 10023;
-const int ID_BM_CONTENTS_OPEN = 10024;
-const int ID_BM_MODEL_ADD = 10025;
-const int ID_BM_ITEM_NEW = 10026;
-const int ID_BM_ITEM_REMOVE = 10027;
-const int ID_BM_MODEL_REMOVE = 10028;
-const int ID_BM_RULERS = 10029;
-const int ID_BM_PROPERTIES = 10030;
-const int ID_BM_WIRE = 10031;
+const int ID_BM_AXES = 10024;
+const int ID_BM_CONTENTS_OPEN = 10025;
+const int ID_BM_MODEL_ADD = 10026;
+const int ID_BM_ITEM_NEW = 10027;
+const int ID_BM_ITEM_REMOVE = 10028;
+const int ID_BM_MODEL_REMOVE = 10029;
+const int ID_BM_RULERS = 10030;
+const int ID_BM_PROPERTIES = 10031;
+const int ID_BM_WIRE = 10032;
 wxBitmap MyBitmapsFunc( size_t index );
 
 #endif

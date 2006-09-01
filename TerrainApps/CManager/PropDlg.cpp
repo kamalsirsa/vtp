@@ -1,7 +1,7 @@
 //
 // Name:	PropDlg.cpp
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -35,6 +35,7 @@ BEGIN_EVENT_TABLE(PropDlg,AutoPanel)
 	EVT_INIT_DIALOG(PropDlg::OnInitDialog)
 	EVT_TEXT( ID_ITEM, PropDlg::OnTextItem )
 	EVT_CHOICE( ID_TYPECHOICE, PropDlg::OnChoiceType )
+	EVT_CHOICE( ID_SUBTYPECHOICE, PropDlg::OnChoiceSubtype )
 	EVT_BUTTON( ID_ADDTAG, PropDlg::OnAddTag )
 	EVT_BUTTON( ID_REMOVETAG, PropDlg::OnRemoveTag )
 	EVT_BUTTON( ID_EDITTAG, PropDlg::OnTagEdit )
@@ -50,10 +51,12 @@ PropDlg::PropDlg( wxWindow *parent, wxWindowID id,
 	PropDialogFunc( this, TRUE );
 
 	m_pTypeChoice = GetTypeChoice();
+	m_pSubtypeChoice = GetSubtypeChoice();
 	m_pTagList = GetTaglist();
 
 	AddValidator(ID_ITEM, &m_strItem);
 	AddValidator(ID_TYPECHOICE, &m_strType);
+	AddValidator(ID_SUBTYPECHOICE, &m_strSubtype);
 }
 
 // WDR: handler implementations for PropDlg
@@ -117,16 +120,32 @@ void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 	FILE *fp = fopen("itemtypes.txt", "rb");
 	if (fp)
 	{
+		Pair p;
 		while (fgets(buf, 80, fp))
 		{
+			// string EOL
 			if (buf[strlen(buf)-1] == 10) buf[strlen(buf)-1] = 0;
 			if (buf[strlen(buf)-1] == 13) buf[strlen(buf)-1] = 0;
-			wxString2 str = buf;
-			m_pTypeChoice->Append(str);
+            
+			if (buf[0] == '\t')
+				p.subtype = buf;
+			else
+			{
+				p.type = buf;
+				p.subtype = "";
+			}
+			m_types.push_back(p);
 		}
 		fclose(fp);
 	}
+	m_pTypeChoice->Clear();
+	for (unsigned int i = 0; i < m_types.size(); i++)
+	{
+		if (m_types[i].subtype == "")
+			m_pTypeChoice->Append(wxString2(m_types[i].type));
+	}
 	m_pTypeChoice->SetSelection(0);
+	UpdateSubtypes();
 
 	m_pTagList->ClearAll();
 	m_pTagList->SetSingleStyle(wxLC_REPORT);
@@ -137,6 +156,12 @@ void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 }
 
 void PropDlg::OnChoiceType( wxCommandEvent &event )
+{
+	UpdateFromControls();
+	UpdateSubtypes();
+}
+
+void PropDlg::OnChoiceSubtype( wxCommandEvent &event )
 {
 	UpdateFromControls();
 }
@@ -151,6 +176,24 @@ void PropDlg::OnTextItem( wxCommandEvent &event )
 
 //////////////////////////////////////////////////////////////////////////
 
+void PropDlg::UpdateSubtypes()
+{
+	vtString type = m_pTypeChoice->GetStringSelection().mb_str();
+
+	m_pSubtypeChoice->Clear();
+	for (unsigned int i = 0; i < m_types.size(); i++)
+	{
+		if (m_types[i].type == type)
+			m_pSubtypeChoice->Append(wxString2(m_types[i].subtype));
+	}
+	if (m_pCurrentItem)
+	{
+		const char *subtype = m_pCurrentItem->GetValueString("subtype");
+		if (subtype)
+			m_pSubtypeChoice->SetStringSelection(wxString2(subtype));
+	}
+}
+
 void PropDlg::UpdateTagList()
 {
 	m_pTagList->DeleteAllItems();
@@ -163,6 +206,8 @@ void PropDlg::UpdateTagList()
 	{
 		tag = m_pCurrentItem->GetTag(i);
 		if (!tag->name.Compare("type"))
+			continue;
+		if (!tag->name.Compare("subtype"))
 			continue;
 		item = m_pTagList->InsertItem(i, (wxString2) tag->name);
 		m_pTagList->SetItem(item, 1, (wxString2) tag->value);
@@ -180,6 +225,11 @@ void PropDlg::SetCurrentItem(vtItem *item)
 			m_strType = type;
 		else
 			m_strType = _T("unknown");
+		const char *subtype = item->GetValueString("subtype");
+		if (subtype)
+			m_strSubtype = subtype;
+		else
+			m_strSubtype = _T("");
 	}
 	else
 	{
@@ -195,6 +245,7 @@ void PropDlg::SetCurrentItem(vtItem *item)
 		m_pTypeChoice->SetSelection(sel);
 	else
 		m_pTypeChoice->SetSelection(0);
+	UpdateSubtypes();
 	UpdateTagList();
 	m_bUpdating = false;
 }
@@ -209,6 +260,8 @@ void PropDlg::UpdateFromControls()
 	{
 		m_pCurrentItem->m_name = m_strItem.mb_str();
 		m_pCurrentItem->SetValueString("type", m_strType.mb_str());
+		//if (m_strSubtype != _T(""))
+			m_pCurrentItem->SetValueString("subtype", m_strSubtype.mb_str());
 	}
 }
 

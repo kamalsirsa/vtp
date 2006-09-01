@@ -94,22 +94,33 @@ wxSizer *PropDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Tags:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item9->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Subtype:"), wxDefaultPosition, wxSize(60,-1), 0 );
+    item9->Add( item10, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item11 = new wxButton( parent, ID_ADDTAG, _("&Add"), wxDefaultPosition, wxSize(38,-1), 0 );
-    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs11 = (wxString*) NULL;
+    wxChoice *item11 = new wxChoice( parent, ID_SUBTYPECHOICE, wxDefaultPosition, wxSize(100,-1), 0, strs11, 0 );
+    item9->Add( item11, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item12 = new wxButton( parent, ID_REMOVETAG, _("&Remove"), wxDefaultPosition, wxSize(62,-1), 0 );
-    item9->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+    item1->Add( item9, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxButton *item13 = new wxButton( parent, ID_EDITTAG, _("&Edit"), wxDefaultPosition, wxSize(42,-1), 0 );
-    item9->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
 
-    item1->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("Tags:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item12->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxListCtrl *item14 = new wxListCtrl( parent, ID_TAGLIST, wxDefaultPosition, wxSize(160,120), wxLC_REPORT|wxSUNKEN_BORDER );
-    item1->Add( item14, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxButton *item14 = new wxButton( parent, ID_ADDTAG, _("&Add"), wxDefaultPosition, wxSize(38,-1), 0 );
+    item12->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item15 = new wxButton( parent, ID_REMOVETAG, _("&Remove"), wxDefaultPosition, wxSize(62,-1), 0 );
+    item12->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item16 = new wxButton( parent, ID_EDITTAG, _("&Edit"), wxDefaultPosition, wxSize(42,-1), 0 );
+    item12->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item1->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxListCtrl *item17 = new wxListCtrl( parent, ID_TAGLIST, wxDefaultPosition, wxSize(160,120), wxLC_REPORT|wxSUNKEN_BORDER );
+    item1->Add( item17, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 

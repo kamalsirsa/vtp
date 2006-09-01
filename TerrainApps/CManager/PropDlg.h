@@ -1,7 +1,7 @@
 //
 // Name: PropDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -33,17 +33,23 @@ public:
 	// WDR: method declarations for PropDlg
 	wxListCtrl* GetTaglist()  { return (wxListCtrl*) FindWindow( ID_TAGLIST ); }
 	wxChoice* GetTypeChoice()  { return (wxChoice*) FindWindow( ID_TYPECHOICE ); }
+	wxChoice* GetSubtypeChoice()  { return (wxChoice*) FindWindow( ID_SUBTYPECHOICE ); }
 	void SetCurrentItem(vtItem *item);
 	void UpdateFromControls();
 	void UpdateTagList();
+	void UpdateSubtypes();
 
 private:
 	// WDR: member variable declarations for PropDlg
+	struct Pair { vtString type, subtype; };
+	std::vector<Pair> m_types;
+
 	wxString2	m_strItem;
-	wxString2	m_strType;
+	wxString2	m_strType, m_strSubtype;
 	vtItem	  *m_pCurrentItem;
 	wxListCtrl  *m_pTagList;
 	wxChoice	*m_pTypeChoice;
+	wxChoice	*m_pSubtypeChoice;
 	bool		m_bUpdating;
 
 private:
@@ -52,6 +58,7 @@ private:
 	void OnRemoveTag( wxCommandEvent &event );
 	void OnAddTag( wxCommandEvent &event );
 	void OnChoiceType( wxCommandEvent &event );
+	void OnChoiceSubtype( wxCommandEvent &event );
 	void OnTextItem( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
@@ -59,7 +66,4 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-
-
-
-#endif
+#endif	// __PropDlg_H__
