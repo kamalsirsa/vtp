@@ -2048,11 +2048,14 @@ void vtImageSprite::SetImage(vtImage *pImage)
  * \param bLocalCoords Pass true to get your results in local coordinates
  *		(in the frame of the object which was hit).  Otherwise, result points
  *		are in world coordinates.
+ * \param bNativeNodes Pass true to return the internal (native) scene graph
+ *		node that was hit, when there is no corresponding vtNode.  Pass false
+ *		to always return a vtNode, by looking up the scene graph as needed.
  *
  * \return The number of intersection hits (size of the hitlist array).
  */
 int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
-				vtHitList &hitlist, bool bLocalCoords)
+				vtHitList &hitlist, bool bLocalCoords, bool bNativeNodes)
 {
 	// set up intersect visitor and create the line segment
 	osgUtil::IntersectVisitor visitor;
@@ -2102,14 +2105,30 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 			continue;
 
 		osg::Node *onode = hitr->_geode.get();
-		vtNode *vnode = (vtNode *) (hitr->_geode->getUserData());
-
-		if (vnode == NULL)
+		vtNode *vnode = NULL;
+		if (bNativeNodes)
 		{
-			// a bit radical here - wrap the OSG node in a VTLIB wrapper
-			//  on the fly.  hope it doesn't get confused with refcounts.
-			vtNativeNode *native = new vtNativeNode(onode);
-			vnode = native;
+			vnode = (vtNode *) (hitr->_geode->getUserData());
+			if (vnode == NULL)
+			{
+				// a bit radical here - wrap the OSG node in a VTLIB wrapper
+				//  on the fly.  hope it doesn't get confused with refcounts.
+				vtNativeNode *native = new vtNativeNode(onode);
+				vnode = native;
+			}
+		}
+		else
+		{
+			// Look up along the nodepath for a real vtNode
+			osg::NodePath &NodePath = hitr->getNodePath();
+			for (osg::NodePath::reverse_iterator Ritr = NodePath.rbegin(); Ritr != NodePath.rend(); ++Ritr)
+			{
+				vnode = dynamic_cast<vtNode*>((*Ritr)->getUserData());
+				if (vnode)
+					break;
+			}
+			if (NULL == vnode)
+				continue;
 		}
 		// put it on the list of hit results
 		vtHit hit;

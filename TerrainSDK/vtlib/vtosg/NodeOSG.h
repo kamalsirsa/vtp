@@ -561,7 +561,8 @@ protected:
  * you the node that was hit, the 3D point of intersection, and the
  * distance from the start of the line.
  */
-struct vtHit {
+struct vtHit
+{
 	bool operator < (const vtHit &i) const { return distance < i.distance; }
 	vtNode *node;
 	FPoint3 point;
@@ -570,7 +571,7 @@ struct vtHit {
 
 typedef std::vector<vtHit> vtHitList;
 int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
-				vtHitList &hitlist, bool bLocalCoords = false);
+				vtHitList &hitlist, bool bLocalCoords = false, bool bNativeNodes = true);
 void vtLogGraph(vtNode *node, int indent=0);
 void vtLogNativeGraph(osg::Node *node, int indent=0);
 
