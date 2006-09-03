@@ -1,7 +1,7 @@
 //
 // Name:     TagDlg.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -35,24 +35,30 @@ TagDlg::TagDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddValidator(ID_TAGNAME, &m_strName);
 	AddValidator(ID_TAGTEXT, &m_strValue);
+
+	GetTagName()->Clear();
+
+	char buf[80];
+	FILE *fp = fopen("tags.txt", "rb");
+	if (fp)
+	{
+		while (fgets(buf, 80, fp))
+		{
+			// string EOL
+			if (buf[strlen(buf)-1] == 10) buf[strlen(buf)-1] = 0;
+			if (buf[strlen(buf)-1] == 13) buf[strlen(buf)-1] = 0;
+			GetTagName()->Append(wxString2(buf));
+		}
+		fclose(fp);
+	}
+	GetTagName()->SetSelection(0);
+	GetTagText()->Clear();
 }
 
 // WDR: handler implementations for TagDlg
 
 void TagDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	GetTagName()->Clear();
-	GetTagName()->Append(_T("country"));
-	GetTagName()->Append(_T("creator"));
-	GetTagName()->Append(_T("language"));
-	GetTagName()->Append(_T("manufacturer"));
-	GetTagName()->Append(_T("model-name"));
-	GetTagName()->Append(_T("model-year"));
-	GetTagName()->Append(_T("url"));
-	GetTagName()->Append(_T("wire_info"));
-
-	GetTagText()->Clear();
-
 	wxDialog::OnInitDialog(event);
 }
 
