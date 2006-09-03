@@ -500,9 +500,43 @@ void vtFrame::SaveContentsFile(const wxString2 &fname)
 	}
 }
 
-void vtFrame::AddModelFromFile(const wxString2 &fname)
+/// String comparison which considers '/' and '\' equivalent
+bool SamePath(const vtString &s1, const vtString &s2)
 {
-	VTLOG("AddModelFromFile '%s'\n", fname.mb_str());
+	int n = s1.GetLength();
+	for (int i = 0; i < n; i++)
+	{
+		if (s1[i] != s2[i] &&
+			!(s1[i] == '/' && s2[i] == '\\') &&
+			!(s1[i] == '\\' && s2[i] == '/'))
+			break;
+	}
+	return i == n;
+}
+
+void vtFrame::AddModelFromFile(const wxString2 &fname1)
+{
+	vtString fname = fname1.mb_str();
+	VTLOG("AddModelFromFile '%s'\n", fname);
+
+	// Change backslashes to slashes.
+	for (int j = 0; j < fname.GetLength(); j++)
+	{
+		if (fname.GetAt(j) == '\\')
+			fname.SetAt(j, '/');
+	}
+	// Check if its on the known data path.
+	for (unsigned int i = 0; i < m_DataPaths.size(); i++)
+	{
+		int n = m_DataPaths[i].GetLength();
+		if (SamePath(m_DataPaths[i], fname.Left(n)))
+		{
+			// found it
+			fname = fname.Right(fname.GetLength() - n);
+			break;
+		}
+	}
+
 	vtModel *nm = AddModel(fname);
 	if (nm)
 		SetCurrentItemAndModel(m_pCurrentItem, nm);
