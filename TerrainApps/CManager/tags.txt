@@ -7,3 +7,4 @@ model-year
 url
 wire_info
 num_wheels
+colorable
