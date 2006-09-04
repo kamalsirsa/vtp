@@ -232,7 +232,7 @@ vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 	DPoint2 geo = pTerrain->GetCenterGeoLocation();
 	m_pSkyDome->SetGeoLocation(geo);
 
-	if (!pTerrain->CreateStep2(GetSunLight()))
+	if (!pTerrain->CreateStep2(m_pSunLight))
 		return NULL;
 
 	if (!pTerrain->CreateStep3())
