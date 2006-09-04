@@ -1,7 +1,7 @@
 //
 // Implementation of matrix methods for the basic math classes.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 

@@ -1,7 +1,7 @@
 //
 // Basic data type definitions shared by all the VTP software.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file MathTypes.h */
@@ -1063,6 +1063,8 @@ public:
 	// operators
 	float operator()(int col, int row) const { return data[col][row]; }
 	FMatrix4 &operator=(const FMatrix3 &mat);
+	bool operator==(const FMatrix4 &mat);
+	bool operator!=(const FMatrix4 &mat);
 
 protected:
 	float data[4][4];
@@ -1077,6 +1079,16 @@ inline FMatrix4 &FMatrix4::operator=(const FMatrix3 &mat)
 {
 	SetFromMatrix3(mat);
 	return (*this);
+}
+
+inline bool FMatrix4::operator==(const FMatrix4 &mat)
+{
+	return memcmp(data, mat.data, sizeof(data)) == 0;
+}
+
+inline bool FMatrix4::operator!=(const FMatrix4 &mat)
+{
+	return memcmp(data, mat.data, sizeof(data)) != 0;
 }
 
 ///////////////////////////////////////////////////////////////////////
