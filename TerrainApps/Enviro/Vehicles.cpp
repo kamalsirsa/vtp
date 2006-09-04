@@ -17,66 +17,50 @@
 ///////////////////////////////
 // helpers
 
-void ConvertPurpleToColor(vtGroupBase *pModel, RGBf replace)
+#if VTLIB_OSG
+// Walk an OSG scenegraph looking for geodes with statesets, change the color
+//  of any materials found.
+class RemapDiffuseVisitor : public osg::NodeVisitor
 {
-#if 0
-	RGBf color;
-	int i;
-
-	vtGeom *pShape;
-	vtMaterialArray *pMats;
-	vtMaterial *pMat;
-
-	// TODO
-	// walk down through a part of the scene graph, converting
-	// any geometry encountered
-	if (pModel->m_pModel->IsClass(vtGeom))
+public:
+	RemapDiffuseVisitor() : NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
+	virtual void apply(osg::Geode& geode)
 	{
-		pShape = (vtGeom *)pModel;
-		bool has_purple = false;
-		pMats = pShape->GetMaterials();
-		if (!pMats)
-			return;
-		for (i = 0; i < pMats->GetSize(); i++)
+		for (unsigned i=0; i<geode.getNumDrawables(); ++i)
 		{
-			pMat = pMats->GetAt(i);
+			osg::Geometry *geo = dynamic_cast<osg::Geometry *>(geode.getDrawable(i));
+			if (!geo) continue;
 
-			// is purple?
-			color = pMat->GetDiffuse();
-			if (color.r == 1.0f && color.g == 0.0f && color.b == 1.0f)
+			osg::StateSet *stateset = geo->getStateSet();
+			if (!stateset) continue;
+
+			osg::StateAttribute *state = stateset->getAttribute(osg::StateAttribute::MATERIAL);
+			if (!state) continue;
+
+			osg::Material *mat = dynamic_cast<osg::Material *>(state);
+			if (!mat) continue;
+
+			const osg::Vec4 v4 = mat->getDiffuse(FAB);
+			if (v4.r() == 1.0f && v4.g() == 0.0f && v4.b() == 1.0f)
 			{
-				has_purple = true;
-				break;
+				osg::Material *newmat = (osg::Material *)mat->clone(osg::CopyOp::DEEP_COPY_ALL);
+				newmat->setDiffuse(FAB, osg::Vec4(c.r*2/3,c.g*2/3,c.b*2/3,1));
+				newmat->setAmbient(FAB, osg::Vec4(c.r*1/3,c.g*1/3,c.b*1/3,1));
+				stateset->setAttribute(newmat);
 			}
 		}
-		if (has_purple)
-		{
-			vtMaterialArray *pMats2 = new vtMaterialArray;
-			pMats2->CopyFrom(pMats);
-			pShape->SetMaterials(pMats2);
-			pMats2->Release();
-			for (i = 0; i < pMats2->GetSize(); i++)
-			{
-				pMat = pMats2->GetAt(i);
-				if (!pMat) continue;
-				color = pMat->GetDiffuse();
-				if (color.r == 1.0f && color.g == 0.0f && color.b == 1.0f)
-				{
-					vtMaterial *pMat2 = new vtMaterial;
-					pMat2->Copy(pMat);
-					pMats2->SetAt(i, pMat2);
-					pMat2->SetDiffuse2(replace);
-					pMat2->SetAmbient2(replace*0.6f);
-				}
-			}
-		}
+		osg::NodeVisitor::apply(geode);
 	}
+	RGBf c;
+};
+#endif
 
-	for (i = 0; i < pModel->GetNumChildren(); i++)
-	{
-		vtTransform *pChild = (vtTransform *) pModel->GetChild(i);
-		ConvertPurpleToColor(pChild, replace);
-	}
+void ConvertPurpleToColor(vtGroup *pModel, RGBf replace)
+{
+#if VTLIB_OSG
+	RemapDiffuseVisitor viz;
+	viz.c = replace;
+	pModel->GetOsgGroup()->accept(viz);
 #endif
 }
 
@@ -104,7 +88,7 @@ void VehicleManager::SetupVehicles()
 {
 	vtString fname;
 
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco.osg");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco-v7.ive");
 	if (fname != "")
 	{
 		VehicleType *bronco = new VehicleType("bronco");
@@ -120,7 +104,7 @@ void VehicleManager::SetupVehicles()
 		AddVehicleType(bronco);
 	}
 
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/civic/HondCivic-v3.osg");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/civic/HondaCivic-v4.ive");
 	if (fname != "")
 	{
 		VehicleType *civic = new VehicleType("civic");
@@ -128,7 +112,7 @@ void VehicleManager::SetupVehicles()
 		AddVehicleType(civic);
 	}
 
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/landrover/rover-v3.osg");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/landrover/rover-v4.ive");
 	if (fname != "")
 	{
 		// the discovery is modeled in meters
@@ -148,7 +132,7 @@ void VehicleManager::SetupVehicles()
 */
 	}
 
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/hele-on/hele-on.osg");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/hele-on/hele-on.ive");
 	if (fname != "")
 	{
 		// the bus is modeled in meters (1.0)
@@ -157,7 +141,7 @@ void VehicleManager::SetupVehicles()
 		AddVehicleType(hele_on);
 	}
 
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/jazz/jazz-obj-v2.osg");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/jazz/jazz-v5.ive");
 	if (fname != "")
 	{
 		VehicleType *jazz = new VehicleType("jazz");
@@ -234,30 +218,31 @@ void VehicleManager::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSize, fl
 			color.Set(1.0f, 1.0f, 0.0f);
 			break;
 		case 2:
-			color.Set(0.0f, 0.0f, .5f);
+			color.Set(0.3f, 0.6f, 1.0f);
 			break;
 		case 3:
-			color.Set(1.0f, 0.0f, 0.0f);
+			color.Set(1.0f, 0.5f, 0.5f);
 			break;
 		case 4:
-			color.Set(0.0f, .5f, 0.0f);
+			color.Set(0.5f, 1.0f, 0.5f);
 			break;
 		}
 
 		vtTransform *car=NULL;
-		switch (num) {
+		switch (num)
+		{
 		case 0:
 			car = CreateVehicle("discovery", color, fSize);
 			break;
 		case 1:
 			car = CreateVehicle("bronco", color, fSize);
 			break;
-		case 2:
-			car = CreateVehicle("bus", color, fSize);
-			break;
-		case 3:
-			car = CreateVehicle("mosp1", color, fSize);
-			break;
+		//case 2:
+		//	car = CreateVehicle("bus", color, fSize);
+		//	break;
+		//case 3:
+		//	car = CreateVehicle("mosp1", color, fSize);
+		//	break;
 		case 4:
 			car = CreateVehicle("civic", color, fSize);
 			break;
