@@ -831,7 +831,10 @@ vtNode *vtNativeNode::Clone(bool bDeep)
 	if (bDeep)
 	{
 		// 'Deep' copies all the nodes, but not the geometry inside them
-		osg::CopyOp deep_op(osg::CopyOp::DEEP_COPY_OBJECTS | osg::CopyOp::DEEP_COPY_NODES);
+		osg::CopyOp deep_op(osg::CopyOp::DEEP_COPY_OBJECTS |
+							osg::CopyOp::DEEP_COPY_NODES |
+							osg::CopyOp::DEEP_COPY_DRAWABLES |
+							osg::CopyOp::DEEP_COPY_STATESETS);
 		osg::Node *newnode = (osg::Node *) m_pNode->clone(deep_op);
 		return new vtNativeNode(newnode);
 	}
@@ -1237,6 +1240,16 @@ void vtLight::SetAmbient(const RGBf &color)
 RGBf vtLight::GetAmbient() const
 {
 	return s2v(GetOsgLight()->getAmbient());
+}
+
+void vtLight::SetSpecular(const RGBf &color)
+{
+	GetOsgLight()->setSpecular(v2s(color));
+}
+
+RGBf vtLight::GetSpecular() const
+{
+	return s2v(GetOsgLight()->getSpecular());
 }
 
 void vtLight::SetEnabled(bool bOn)
@@ -2229,6 +2242,23 @@ void vtLogNativeGraph(osg::Node *node, int indent)
 	{
 		for (unsigned int i = 0; i < grp->getNumChildren(); i++)
 			vtLogNativeGraph(grp->getChild(i), indent+2);
+	}
+	osg::Geode *geode = dynamic_cast<osg::Geode*>(node);
+	if (geode)
+	{
+		for (unsigned int i = 0; i < geode->getNumDrawables(); i++)
+		{
+			osg::Geometry *geo = dynamic_cast<osg::Geometry *>(geode->getDrawable(i));
+			if (!geo) continue;
+
+			osg::StateSet *stateset = geo->getStateSet();
+			if (!stateset) continue;
+
+			for (int j = 0; j < indent+3; j++)
+				VTLOG1(" ");
+
+			VTLOG("drawable %d: geometry %x, stateset %x\n", i, geo, stateset);
+		}
 	}
 }
 

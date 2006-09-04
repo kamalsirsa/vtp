@@ -268,6 +268,8 @@ public:
 	RGBf GetDiffuse() const;
 	void SetAmbient(const RGBf &color);
 	RGBf GetAmbient() const;
+	void SetSpecular(const RGBf &color);
+	RGBf GetSpecular() const;
 
 	// provide override to catch this state
 	virtual void SetEnabled(bool bOn);
