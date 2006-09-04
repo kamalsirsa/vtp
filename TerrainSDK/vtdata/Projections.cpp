@@ -120,9 +120,9 @@ void vtProjection::SetUTMZone(int iZone)
 
 	// Northern Hemisphere for positive zone numbers
 	if (iZone > 0)
-		SetUTM( iZone, TRUE);
+		SetUTM( iZone, 1);
 	else
-		SetUTM( -iZone, FALSE);
+		SetUTM( -iZone, 0);
 }
 
 /**

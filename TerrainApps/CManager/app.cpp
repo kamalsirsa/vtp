@@ -144,7 +144,7 @@ bool vtApp::OnInit(void)
 //	node = NULL;
 
 	VTLOG(" end of OnInit\n");
-	return TRUE;
+	return true;
 }
 
 
