@@ -44,7 +44,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint& pos,
   wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
 	VTLOG(" constructing Canvas\n");
-	parent->Show(TRUE);
+	parent->Show(true);
 	SetCurrent();
 
 	m_bPainting = false;
@@ -123,7 +123,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Render the SSG scene
+		// Render the scene
 		vtGetScene()->DoUpdate();
 
 		SwapBuffers();
@@ -145,7 +145,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		//   redraw so we don't eat so much CPU on machines that can
 		//   easily handle the frame rate.
 		wxYield();
-		QueueRefresh(FALSE);
+		QueueRefresh(false);
 #endif
 
 		// update the status bar every 1/10 of a second
@@ -288,8 +288,18 @@ void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
 
 void vtGLCanvas::OnIdle(wxIdleEvent &event)
 {
-	// We use the "Refresh on Idle" approach to continuous rendering.
-	if (m_bRunning)
-		Refresh(FALSE);
+	// Don't use the "Refresh on Idle" approach to continuous rendering.
+	//if (m_bRunning)
+		//Refresh(false);
+
+	// Instead, each Idle, let the engines handle events.
+	//  Only redraw when the camera has changed.
+	vtScene *sc = vtGetScene();
+	FMatrix4 m1, m2;
+	sc->GetCamera()->GetTransform1(m1);
+	vtGetScene()->UpdateEngines();
+	sc->GetCamera()->GetTransform1(m2);
+	if (m1 != m2)
+		Refresh(false);
 }
 

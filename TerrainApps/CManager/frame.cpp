@@ -189,7 +189,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	m_pModelDlg = new ModelDlg(m_splitter2, wxID_ANY,
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
-	m_pModelDlg->Show(FALSE);
+	m_pModelDlg->Show(false);
 	m_pModelDlg->InitDialog();
 
 	m_pLightDlg = new LightDlg(this, -1, _T("Lights"));
@@ -197,16 +197,16 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_splitter->Initialize(m_splitter2);
 
 	////////////////////////
-	m_pTree->Show(TRUE);
-	m_canvas->Show(TRUE);
+	m_pTree->Show(true);
+	m_canvas->Show(true);
 	m_splitter->SplitVertically( m_splitter2, m_canvas, 260);
 
 	m_splitter2->SplitHorizontally( m_pTree, m_blank, 200);
-	m_pPropDlg->Show(TRUE);
+	m_pPropDlg->Show(true);
 	m_pPropDlg->InitDialog();
 
 	// Show the frame
-	Show(TRUE);
+	Show(true);
 
 	// Load the font
 	const char *fontname = "Fonts/Arial.ttf";
@@ -583,7 +583,7 @@ void vtFrame::OnExit(wxCommandEvent& event)
 
 void vtFrame::OnSceneGraph(wxCommandEvent& event)
 {
-	m_pSceneGraphDlg->Show(TRUE);
+	m_pSceneGraphDlg->Show(true);
 }
 
 void vtFrame::OnItemNew(wxCommandEvent& event)
@@ -865,6 +865,7 @@ void vtFrame::OnViewOrigin(wxCommandEvent& event)
 	if (m_bShowOrigin)
 		m_bShowRulers = false;
 	UpdateWidgets();
+	m_canvas->Refresh(false);
 }
 
 void vtFrame::OnUpdateViewOrigin(wxUpdateUIEvent& event)
@@ -878,6 +879,7 @@ void vtFrame::OnViewRulers(wxCommandEvent& event)
 	if (m_bShowRulers)
 		m_bShowOrigin = false;
 	UpdateWidgets();
+	m_canvas->Refresh(false);
 }
 
 void vtFrame::OnUpdateViewRulers(wxUpdateUIEvent& event)
@@ -889,6 +891,7 @@ void vtFrame::OnViewWireframe(wxCommandEvent& event)
 {
 	m_bWireframe = !m_bWireframe;
 	vtGetScene()->SetGlobalWireframe(m_bWireframe);
+	m_canvas->Refresh(false);
 }
 
 void vtFrame::OnUpdateViewWireframe(wxUpdateUIEvent& event)
@@ -898,7 +901,7 @@ void vtFrame::OnUpdateViewWireframe(wxUpdateUIEvent& event)
 
 void vtFrame::OnViewLights(wxCommandEvent& event)
 {
-	m_pLightDlg->Show(TRUE);
+	m_pLightDlg->Show(true);
 }
 
 void vtFrame::OnHelpAbout(wxCommandEvent& event)
@@ -925,7 +928,7 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 	wxMessageBox(str, _T("About CManager"));
 
 	m_canvas->m_bRunning = true;	// start rendering again
-	m_canvas->Refresh(FALSE);
+	m_canvas->Refresh(false);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1249,7 +1252,7 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 		else
 			GetMainFrame()->AddModelFromFile(str);
 	}
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1288,7 +1291,7 @@ void vtFrame::OnSetDataPath(wxCommandEvent& event)
 	}
 
 	m_canvas->m_bRunning = true;
-	m_canvas->Refresh(FALSE);
+	m_canvas->Refresh(false);
 #endif
 }
 
@@ -1297,7 +1300,7 @@ void vtFrame::DisplayMessageBox(const wxString2 &str)
 	m_canvas->m_bRunning = false;
 	wxMessageBox(str);
 	m_canvas->m_bRunning = true;
-	m_canvas->Refresh(FALSE);
+	m_canvas->Refresh(false);
 }
 
 
