@@ -82,13 +82,14 @@ bool vtApp::OnInit(void)
 
 	// make a simple directional light
 	VTLOG(" creating light\n");
-	vtLight *pLight = new vtLight();
+	vtLight *pLight = new vtLight;
 	pLight->SetName2("Light");
 	vtTransform *pMovLight = new vtTransform;
 	pMovLight->AddChild(pLight);
 	pMovLight->SetName2("Movable Light");
 	pLight->SetAmbient(RGBf(1, 1, 1));
 	pLight->SetDiffuse(RGBf(1, 1, 1));
+	pLight->SetSpecular(RGBf(1, 1, 1));
 	pMovLight->SetDirection(FPoint3(-0.2, -0.4, -0.9));
 	m_pRoot->AddChild(pMovLight);
 
