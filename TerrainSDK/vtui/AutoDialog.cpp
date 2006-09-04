@@ -7,7 +7,7 @@
 //
 // wxNumericValidator - A validator capable of transfering numeric values.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -70,17 +70,17 @@ bool wxNumericValidator::Copy(const wxNumericValidator& val)
 	m_pValDouble = val.m_pValDouble;
 	m_iDigits = val.m_iDigits;
 
-	return TRUE;
+	return true;
 }
 
 // Called to transfer data to the window
 bool wxNumericValidator::TransferToWindow()
 {
 	if ( !m_validatorWindow )
-		return FALSE;
+		return false;
 
 	if ( !m_bEnabled )
-		return TRUE;
+		return true;
 
 	wxString str, format;
 	if (m_pValInt)
@@ -112,7 +112,7 @@ bool wxNumericValidator::TransferToWindow()
 		if (pControl)
 		{
 			pControl->SetLabel(str) ;
-			return TRUE;
+			return true;
 		}
 	}
 	else
@@ -122,24 +122,24 @@ bool wxNumericValidator::TransferToWindow()
 		if (pControl)
 		{
 			pControl->SetValue(str) ;
-			return TRUE;
+			return true;
 		}
 	}
 	else
-		return FALSE;
+		return false;
 
 	// unrecognized control, or bad pointer
-	return FALSE;
+	return false;
 }
 
 // Called to transfer data from the window
 bool wxNumericValidator::TransferFromWindow()
 {
 	if ( !m_validatorWindow )
-		return FALSE;
+		return false;
 
 	if ( !m_bEnabled )
-		return TRUE;
+		return true;
 
 	wxString2 str = _T("");
 	// string controls
@@ -156,7 +156,7 @@ bool wxNumericValidator::TransferFromWindow()
 			str = pControl->GetValue() ;
 	}
 	else // unrecognized control, or bad pointer
-		return FALSE;
+		return false;
 
 	if (str != _T(""))
 	{
@@ -167,9 +167,9 @@ bool wxNumericValidator::TransferFromWindow()
 			sscanf(ccs, "%f", m_pValFloat);
 		if (m_pValDouble)
 			sscanf(ccs, "%lf", m_pValDouble);
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 /////////////////////////////////////////////////
