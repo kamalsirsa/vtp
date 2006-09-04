@@ -128,7 +128,7 @@ void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 			if (buf[strlen(buf)-1] == 13) buf[strlen(buf)-1] = 0;
             
 			if (buf[0] == '\t')
-				p.subtype = buf;
+				p.subtype = buf+1;
 			else
 			{
 				p.type = buf;
