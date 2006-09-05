@@ -843,8 +843,8 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 
 bool FindGeoPointInBuffer(const char *buffer, DPoint2 &p)
 {
-	char *lon = strstr(buffer, "<geo:long>");
-	char *lat = strstr(buffer, "<geo:lat>");
+	const char *lon = strstr(buffer, "<geo:long>");
+	const char *lat = strstr(buffer, "<geo:lat>");
 	if (lon && lat)
 	{
 		sscanf(lon+10, "%lf", &p.x);
