@@ -462,7 +462,7 @@ void vtTagArray::LogTags() const
 {
 	unsigned int size = NumTags();
 	VTLOG(" LogTags: %d tags\n", size);
-	for (int i = 0; i < size; i++)
+	for (unsigned int i = 0; i < size; i++)
 	{
 		const vtTag *tag = &m_tags[i];
 		VTLOG("  tag %d: '%s'\n", i, (const char *)tag->name);
