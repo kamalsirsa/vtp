@@ -20,8 +20,8 @@ vtItem3d::vtItem3d()
 
 vtItem3d::~vtItem3d()
 {
-	if (m_pNode)
-		m_pNode->Release();
+	// Don't need to explicitly release the item's node here, because all nodes
+	//  are released when the the manager's group is released.
 	m_pNode = NULL;
 }
 
@@ -169,7 +169,7 @@ vtNode *vtContentManager3d::CreateNodeFromItemname(const char *itemname)
 		}
 
 		// Add to content container: must keep a reference to each item's
-		//  model node so it doesn't get deleted which the manager is alive.
+		//  model node so it doesn't get deleted while the manager is alive.
 		m_pGroup->AddChild(pItem->m_pNode);
 	}
 	return pItem->m_pNode;
