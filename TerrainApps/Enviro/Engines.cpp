@@ -35,10 +35,9 @@ float utm_points_koa[5][2] = {
 	{ 179963, 2179740 }		// E 4
 };
 
-PlaneEngine::PlaneEngine(float fSpeedExag, float fScale, AirportCodes code) : vtEngine()
+PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
 {
 	m_fSpeedExag = fSpeedExag;
-	m_fScale = fScale;
 
 	// set up some initial points
 	float x, y, z;
@@ -80,7 +79,7 @@ PlaneEngine::PlaneEngine(float fSpeedExag, float fScale, AirportCodes code) : vt
 	// touchdown
 	// center of plane is 15m above ground + 2m airport above ground
 	// plus distance from center of plane to base of landing gear
-	double ground_offset = 17.0f + (m_fScale * 13.5f);
+	double ground_offset = 17.0f + 13.5f;
 
 	utm_points[0].z = ground_offset;
 	g_Conv.ConvertFromEarth(utm_points[0], m_hoop_pos[2]);
@@ -168,10 +167,6 @@ void PlaneEngine::Eval()
 	pTarget->Identity();
 	float angle = atan2f(-diff2.z, diff2.x) - PID2f;
 	pTarget->RotateLocal(FPoint3(0,1,0), angle);
-
-	// restore scaling information lost in setting rotation
-	float scale = pTarget->m_fSize;
-	pTarget->Scale3(scale, scale, scale);
 
 	// set the plane to next frame's position
 	pTarget->SetTrans(m_pos);
