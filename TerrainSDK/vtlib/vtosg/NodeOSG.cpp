@@ -45,7 +45,20 @@ void vtNode::Release()
 		m_pFog = NULL;
 
 #if DEBUG_NODE_LOAD
-		VTLOG("Deleting Node: %lx (\"%s\")\n", this, m_pNode->getName().c_str());
+		VTLOG("Deleting vtNode: %lx (\"%s\") (osg %lx, rc %d", this,
+			m_pNode->getName().c_str(), m_pNode, m_pNode->referenceCount());
+		osg::Group *cg = dynamic_cast<osg::Group*>(m_pNode.get());	// container group
+		if (cg)
+		{
+			unsigned int nc = cg->getNumChildren();
+			VTLOG(", children %d", nc);
+			if (nc)
+			{
+				osg::Node *child = cg->getChild(0);
+				VTLOG(", child0 %lx", child);
+			}
+		}
+		VTLOG1(")\n");
 #endif
 		// Tell OSG that we're through with this node.
 		// The following statement calls unref() on m_pNode, which deletes the
@@ -547,7 +560,8 @@ public:
 };
 
 // Our own cache of models loaded from OSG
-static std::map<vtString, ref_ptr<Node> > m_ModelCache;
+typedef std::map< vtString, osg::ref_ptr<Node> > NodeCache;
+NodeCache m_ModelCache;
 bool vtNode::s_bDisableMipmaps = false;
 
 /**
@@ -609,12 +623,8 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 				// closing its DLL, as the options get deleted twice (?) or
 				// perhaps it doesn't like deleting the object WE allocated.
 		}
-
-		if (bAllowCache)
-			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() | (osgDB::ReaderWriter::Options::CACHE_NODES))));
-		else
-			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() & ~(osgDB::ReaderWriter::Options::CACHE_NODES))));
-
+		// Always disable OSG's cache, we don't use it.
+		opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() & ~(osgDB::ReaderWriter::Options::CACHE_NODES))));
 		reg->setOptions(opts);
 
 		// Now actually request the node from OSG
@@ -636,7 +646,7 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 	}
 
 #if DEBUG_NODE_LOAD
-	VTLOG("LoadModel: osg node %lx (rc %d), ", node, node->referenceCount());
+	VTLOG("LoadModel: osg raw node %lx (rc %d), ", node, node->referenceCount());
 #endif
 
 	if (bDoLoad)
@@ -680,21 +690,22 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 		// it's not going to change, so tell OSG that it can be optimized
 		transform->setDataVariance(osg::Object::STATIC);
 
+#if 0
 		// Now do some OSG voodoo, which should spread ("flatten") the
 		//  transform downward through the loaded model, and delete the transform.
+		// In practice, i find that it doesn't actually do any flattening.
 		osg::Group *group = new osg::Group;
 		group->addChild(transform);
 
 		osgUtil::Optimizer optimizer;
 		optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
 		node = group;
+#else
+		node = transform;
+#endif
 
 		//VTLOG1("--------------\n");
 		//vtLogNativeGraph(node);
-
-#if DEBUG_NODE_LOAD
-	VTLOG("group %lx (rc %d), ", node, node->referenceCount());
-#endif
 
 		// Store the node in the cache by filename so we'll know next
 		//  time that we have already have it
@@ -705,23 +716,20 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 	//  at OSG nodes, we can't have multiple VTP nodes sharing a
 	//  single OSG node.  So, we can't simply use the OSG node ptr
 	//  that we get: we must wrap it.
-	osg::Group *container_group = new osg::Group();
+	osg::Group *container_group = new osg::Group;
 	container_group->addChild(node);
 
-#if DEBUG_NODE_LOAD
-	VTLOG("container %lx (rc %d), ", container_group, container_group->referenceCount());
-#endif
-
 	// The final resulting node is the container of that operation
-	vtGroup *pGroup = new vtGroup(true);
-	pGroup->SetOsgGroup(container_group);
-	pGroup->SetName2(fname);
+	vtNativeNode *pNode = new vtNativeNode(container_group);
+	pNode->SetName2(fname);
 
 #if DEBUG_NODE_LOAD
-	VTLOG("VTP node %lx\n", pGroup);
+	VTLOG("node %lx (rc %d),\n ", node, node->referenceCount());
+	VTLOG("container %lx (rc %d, nc %d), ", container_group, container_group->referenceCount(), container_group->getNumChildren());
+	VTLOG("VTP node %lx (rc %d)\n", pNode, pNode->referenceCount());
 #endif
 
-	return pGroup;
+	return pNode;
 }
 
 //
@@ -766,6 +774,17 @@ void vtNode::ApplyVertexRotation(const FPoint3 &axis, float angle)
 
 void vtNode::ClearOsgModelCache()
 {
+#if DEBUG_NODE_LOAD
+	VTLOG1("Clearing OSG Model Cache.  Contents:\n");
+	for (NodeCache::iterator iter = m_ModelCache.begin();
+		iter != m_ModelCache.end(); iter++)
+	{
+		vtString str = iter->first;
+		osg::Node *node = iter->second.get();
+		VTLOG("  Model '%s', node %lx (rc %d, parents %d)\n", (const char *) str,
+			node, node->referenceCount(), node->getNumParents());
+	}
+#endif
 	// Each model in the cache, at exit time, should have a refcount
 	//  of 1.  Deleting the cache will push them to 0 and delete them.
 	m_ModelCache.clear();
@@ -2257,7 +2276,16 @@ void vtLogNativeGraph(osg::Node *node, int indent)
 			for (int j = 0; j < indent+3; j++)
 				VTLOG1(" ");
 
-			VTLOG("drawable %d: geometry %x, stateset %x\n", i, geo, stateset);
+			VTLOG("drawable %d: geometry %x, stateset %x", i, geo, stateset);
+
+			osg::StateAttribute *state = stateset->getAttribute(osg::StateAttribute::MATERIAL);
+			if (state)
+			{
+				osg::Material *mat = dynamic_cast<osg::Material *>(state);
+				if (mat)
+					VTLOG(", mat %x", mat);
+			}
+			VTLOG1("\n");
 		}
 	}
 }
