@@ -42,13 +42,11 @@ public:
 	void create_telescopes();
 	void create_building_manually();
 	void do_test_code();
-	void create_airplanes(float fSize, float fSpeed);
-	void create_airplane(int i, float fSize, float fSpeed);
+	void create_airplanes(float fSpeed);
+	void create_airplane(int i, float fSpeed);
 
 	vtStructureArray3d *m_pSA;
 	vtStructureArray3d *m_pTelescopes;
-
-	VehicleManager m_Vehicles;
 };
 
 #endif // ISLANDH

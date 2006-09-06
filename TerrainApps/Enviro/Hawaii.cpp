@@ -19,6 +19,7 @@
 #include "xmlhelper/easyxml.hpp"
 
 #include "Hawaii.h"
+#include "wx/EnviroGUI.h"
 
 ///////////////////////////////
 bool g_bLineOfSightTest = false;
@@ -136,13 +137,13 @@ void IslandTerrain::CreateCustomCulture()
 		PlantModelAtPoint(container, mauna_loa);
 	}
 
-	if (m_Params.GetValueBool(STR_VEHICLES) && GetRoadMap() != NULL)
+	if (m_Params.GetValueBool(STR_VEHICLES))
 	{
-		float size = m_Params.GetValueFloat(STR_VEHICLESIZE);
 		float speed = m_Params.GetValueFloat(STR_VEHICLESPEED);
 
-		create_airplanes(1, speed);
-		m_Vehicles.CreateSomeTestVehicles(this, size, speed);
+		//create_airplanes(1, speed);
+		if (GetRoadMap() != NULL)
+			g_App.CreateSomeTestVehicles(this, speed);
 	}
 
 #if 0
@@ -628,17 +629,17 @@ void IslandTerrain::do_test_code()
 #endif
 }
 
-void IslandTerrain::create_airplanes(float fScale, float fSpeed)
+void IslandTerrain::create_airplanes(float fSpeed)
 {
 	// make some planes
 	for (int i = 0; i < 6; i++)
-		create_airplane(i, fScale, fSpeed);
+		create_airplane(i, fSpeed);
 }
 
-void IslandTerrain::create_airplane(int i, float fScale, float fSpeed)
+void IslandTerrain::create_airplane(int i, float fSpeed)
 {
 	RGBf red(1.0f, 1.0f, 0.0f);
-	Vehicle *copy = m_Vehicles.CreateVehicle("747", red, fScale);
+	Vehicle *copy = g_App.m_VehicleManager.CreateVehicle("747", red);
 	if (!copy)
 		return;
 
@@ -651,7 +652,7 @@ void IslandTerrain::create_airplane(int i, float fScale, float fSpeed)
 	AirportCodes code;
 	code = KOA;
 
-	PlaneEngine *pEng = new PlaneEngine(fSpeedExag, fScale, code);
+	PlaneEngine *pEng = new PlaneEngine(fSpeedExag, code);
 	pEng->SetName2("Airplane Engine");
 	pEng->SetTarget(copy);
 	pEng->SetHoop(i);
