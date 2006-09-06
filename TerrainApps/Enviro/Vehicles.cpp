@@ -43,10 +43,16 @@ public:
 			const osg::Vec4 v4 = mat->getDiffuse(FAB);
 			if (v4.r() == 1.0f && v4.g() == 0.0f && v4.b() == 1.0f)
 			{
+				//VTLOG("oldmat rc %d, ", mat->referenceCount());
+
 				osg::Material *newmat = (osg::Material *)mat->clone(osg::CopyOp::DEEP_COPY_ALL);
 				newmat->setDiffuse(FAB, osg::Vec4(c.r*2/3,c.g*2/3,c.b*2/3,1));
 				newmat->setAmbient(FAB, osg::Vec4(c.r*1/3,c.g*1/3,c.b*1/3,1));
+
+				//VTLOG("newmat rc %d\n", newmat->referenceCount());
+
 				stateset->setAttribute(newmat);
+				//VTLOG(" -> %d %d\n", mat->referenceCount(), newmat->referenceCount());
 			}
 		}
 		osg::NodeVisitor::apply(geode);
@@ -55,12 +61,12 @@ public:
 };
 #endif
 
-void ConvertPurpleToColor(vtGroup *pModel, RGBf replace)
+void ConvertPurpleToColor(vtNode *pModel, RGBf replace)
 {
 #if VTLIB_OSG
 	RemapDiffuseVisitor viz;
 	viz.c = replace;
-	pModel->GetOsgGroup()->accept(viz);
+	pModel->GetOsgNode()->accept(viz);
 #endif
 }
 
@@ -68,234 +74,100 @@ void ConvertPurpleToColor(vtGroup *pModel, RGBf replace)
 
 VehicleManager::VehicleManager()
 {
-	m_pFirstVehicleType = NULL;
-	m_bAttemptedVehicleLoad = false;
 }
 
 VehicleManager::~VehicleManager()
 {
-	ReleaseVehicles();
 }
 
-void VehicleManager::AddVehicleType(VehicleType *vt)
+Vehicle *VehicleManager::CreateVehicleFromNode(vtNode *node, const RGBf &cColor)
 {
-	vt->m_pNext = m_pFirstVehicleType;
-	m_pFirstVehicleType = vt;
+	Vehicle *pNewVehicle = new Vehicle;
+
+	//VTLOG1("-----------------\n");
+	//vtLogGraph(node);
+	//VTLOG1("-----------------\n");
+	//vtLogNativeGraph(node->GetOsgNode());
+
+	vtGroup *pNewModel = (vtGroup *)node->Clone(true);	// Deep copy
+
+	//VTLOG1("-----------------\n");
+	//vtLogNativeGraph(pNewModel->GetOsgNode());
+
+	pNewVehicle->AddChild(pNewModel);
+
+	vtNode *pFrontLeft = pNewModel->FindNativeNode("front_left");
+	vtNode *pFrontRight = pNewModel->FindNativeNode("front_right");
+	vtNode *pRearLeft = pNewModel->FindNativeNode("rear_left");
+	vtNode *pRearRight = pNewModel->FindNativeNode("rear_right");
+
+	if (!pFrontLeft || !pFrontRight || !pRearLeft || !pRearRight)
+	{
+		// Didn't find them.
+		return NULL;
+	}
+	if (dynamic_cast<vtTransform*>(pFrontLeft))
+	{
+		// They are already transforms, no need to insert any
+		pFrontLeft->SetName2("front_left_xform");
+		pFrontRight->SetName2("front_right_xform");
+		pRearLeft->SetName2("rear_left_xform");
+		pRearRight->SetName2("rear_right_xform");
+	}
+	else
+	{
+		// Stick transform above them (this seems like a bad way to go)
+		vtTransform *pTransform;
+
+		pTransform = new vtTransform;
+		pTransform->SetName2("front_left_xform");
+		pTransform->AddChild(pFrontLeft);
+		pFrontLeft->GetParent()->RemoveChild(pFrontLeft);
+		pNewModel->AddChild(pTransform);
+
+		pTransform = new vtTransform;
+		pTransform->SetName2("front_right_xform");
+		pTransform->AddChild(pFrontRight);
+		pFrontRight->GetParent()->RemoveChild(pFrontRight);
+		pNewModel->AddChild(pTransform);
+
+		pTransform = new vtTransform;
+		pTransform->SetName2("rear_left_xform");
+		pTransform->AddChild(pRearLeft);
+		pRearLeft->GetParent()->RemoveChild(pRearLeft);
+		pNewModel->AddChild(pTransform);
+
+		pTransform = new vtTransform;
+		pTransform->SetName2("rear_right_xform");
+		pTransform->AddChild(pRearRight);
+		pRearRight->GetParent()->RemoveChild(pRearRight);
+		pNewModel->AddChild(pTransform);
+
+		//VTLOG1("-----------------\n");
+		//vtLogNativeGraph(pNewModel->GetOsgNode());
+	}
+	ConvertPurpleToColor(pNewVehicle, cColor);
+
+	return pNewVehicle;
 }
 
 
-void VehicleManager::SetupVehicles()
+Vehicle *VehicleManager::CreateVehicle(const char *szType, const RGBf &cColor)
 {
-	vtString fname;
-
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco-v7.ive");
-	if (fname != "")
-	{
-		VehicleType *bronco = new VehicleType("bronco");
-		bronco->AddModel(fname, 1.0f, 500); // modeled in meters (scale 1.0f)
-		AddVehicleType(bronco);
-	}
-
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/mosp1/mosp1-v3.osg");
-	if (fname != "")
-	{
-		VehicleType *bronco = new VehicleType("mosp1");
-		bronco->AddModel(fname, 1.0f, 500);	// modeled in meters (scale 1.0f)
-		AddVehicleType(bronco);
-	}
-
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/civic/HondaCivic-v4.ive");
-	if (fname != "")
-	{
-		VehicleType *civic = new VehicleType("civic");
-		civic->AddModel(fname, 1.0f, 500);
-		AddVehicleType(civic);
-	}
-
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/landrover/rover-v4.ive");
-	if (fname != "")
-	{
-		// the discovery is modeled in meters
-		VehicleType *discovery = new VehicleType("discovery");
-		discovery->AddModel(fname, 1.0f, 500);
-		AddVehicleType(discovery);
-/*
-		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD01.3ds");
-		discovery->AddModel(fname, 0.01f, 50);
-		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD02.3ds");
-		discovery->AddModel(fname, 0.01f, 100);
-		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD03.3ds");
-		discovery->AddModel(fname, 0.01f, 200);
-		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD04.3ds");
-		discovery->AddModel(fname, 0.01f, 500);
-		AddVehicleType(discovery);
-*/
-	}
-
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/hele-on/hele-on.ive");
-	if (fname != "")
-	{
-		// the bus is modeled in meters (1.0)
-		VehicleType *hele_on = new VehicleType("bus");
-		hele_on->AddModel(fname, 1.00f, 800);
-		AddVehicleType(hele_on);
-	}
-
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/jazz/jazz-v5.ive");
-	if (fname != "")
-	{
-		VehicleType *jazz = new VehicleType("jazz");
-		jazz->AddModel(fname, 1.00f, 800);
-		AddVehicleType(jazz);
-	}
-
-	// the 747 is modeled in meters (1.0)
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod00.ive");
-	if (fname != "")
-	{
-		VehicleType *b747 = new VehicleType("747");
-		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod00.ive");
-		b747->AddModel(fname, 1.0f, 200);
-		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod01.ive");
-		b747->AddModel(fname, 1.0f, 2000);
-		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod02.ive");
-		b747->AddModel(fname, 1.0f, 20000);
-		AddVehicleType(b747);
-	}
-}
-
-void VehicleManager::ReleaseVehicles()
-{
-	VehicleType *vt, *next;
-	for (vt = m_pFirstVehicleType; vt; vt=next)
-	{
-		next = vt->m_pNext;
-		delete vt;
-	}
-}
-
-Vehicle *VehicleManager::CreateVehicle(const char *szType, const RGBf &cColor, float fSize)
-{
-	//if vehicles haven't been created yet...
-	if (!m_bAttemptedVehicleLoad)
-	{
-		SetupVehicles();
-		m_bAttemptedVehicleLoad = true;
-	}
-
-	for (VehicleType *vt = m_pFirstVehicleType; vt; vt=vt->m_pNext)
-	{
-		if (!strcmp(szType, vt->m_strTypeName))
-			return vt->CreateVehicle(cColor, fSize);
-	}
-	return NULL;
+	vtContentManager3d &con = vtGetContent();
+	vtNode *node = con.CreateNodeFromItemname(szType);
+	if (!node)
+		return NULL;
+	Vehicle *v = CreateVehicleFromNode(node, cColor);
+	v->SetName2(vtString("Vehicle-") + szType);
+	return v;
 }
 
 
-void VehicleManager::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSize, float fSpeed)
-{
-	vtRoadMap3d *pRoadMap = pTerrain->GetRoadMap();
-
-	// add some test vehicles
-	NodeGeom *n = NULL;
-	FPoint3 vNormal, center;
-	FPoint3 start_point;
-	int num, col;
-	RGBf color;
-	for (int i = 0; i < 12; i++)
-	{
-		if (n == NULL) {
-			n = pRoadMap->GetFirstNode();
-		}
-		num = i % 6;
-		col = i % 5;
-
-		switch (col) {
-		case 0:
-			color.Set(1.0f, 1.0f, 1.0f);
-			break;
-		case 1:
-			color.Set(1.0f, 1.0f, 0.0f);
-			break;
-		case 2:
-			color.Set(0.3f, 0.6f, 1.0f);
-			break;
-		case 3:
-			color.Set(1.0f, 0.5f, 0.5f);
-			break;
-		case 4:
-			color.Set(0.5f, 1.0f, 0.5f);
-			break;
-		}
-
-		vtTransform *car=NULL;
-		switch (num)
-		{
-		case 0:
-			car = CreateVehicle("discovery", color, fSize);
-			break;
-		case 1:
-			car = CreateVehicle("bronco", color, fSize);
-			break;
-		//case 2:
-		//	car = CreateVehicle("bus", color, fSize);
-		//	break;
-		//case 3:
-		//	car = CreateVehicle("mosp1", color, fSize);
-		//	break;
-		case 4:
-			car = CreateVehicle("civic", color, fSize);
-			break;
-		case 5:
-			car = CreateVehicle("jazz", color, fSize);
-			break;
-		}
-		if (car)
-		{
-			pTerrain->AddNode(car);
-			pTerrain->PlantModelAtPoint(car, n->m_p);
-
-			float fSpeed = 88.0f;
-			TNode *pNode = n;
-
-			CarEngine *pE1;
-			if (pNode == NULL)
-			{
-				pE1 = new CarEngine(pTerrain->GetHeightField(), fSpeed, .25f,
-					car->GetTrans());
-			}
-			else
-			{
-				pE1 = new CarEngine(pTerrain->GetHeightField(), fSpeed, .25f,
-					pNode, 1);
-			}
-			pE1->SetName2("drive");
-			pE1->SetTarget(car);
-			if (pE1->SetTires())
-				pTerrain->AddEngine(pE1);
-			else
-				delete pE1;
-		}
-		n = (NodeGeom*) n->m_pNext;
-	}
-}
-
-VehicleType::VehicleType(const char *szName)
-{
-	m_strTypeName = szName;
-	m_pNext = NULL;
-	m_bAttemptedLoaded = false;
-}
-
-VehicleType::~VehicleType()
-{
-	ReleaseModels();
-}
+///////////////////////////////////////////////////////////////////////
 
 Vehicle::Vehicle()
 {
-	m_pLOD = new vtLOD;
-	AddChild(m_pLOD);
 	m_pHighlight = NULL;
 }
 
@@ -325,148 +197,6 @@ void Vehicle::ShowBounds(bool bShow)
 		if (m_pHighlight)
 			m_pHighlight->SetEnabled(false);
 	}
-}
-
-
-//
-// set filename and swap-out distance (in meters) for each LOD
-//
-void VehicleType::AddModel(const char *filename, float fScale, float fDistance)
-{
-	m_strFilename.push_back(vtString(filename));
-	m_fScale.Append(fScale);
-	m_fDistance.Append(fDistance);
-}
-
-void VehicleType::AttemptModelLoad()
-{
-	m_bAttemptedLoaded = true;
-
-	for (unsigned int i = 0; i < m_strFilename.size(); i++)
-	{
-		// can we read the file?
-		vtString fname = m_strFilename[i];
-		if (vtNode *pMod = vtNode::LoadModel(fname))
-		{
-			float scale = m_fScale[i];
-
-			vtTransform *trans = new vtTransform;
-			trans->AddChild(pMod);
-			trans->Scale3(scale, scale, scale);
-
-			vtString str;
-			str.Format("scaling transform (%f)", scale);
-			trans->SetName2(str);
-
-			m_pModels.SetAt(i, trans);
-		}
-	}
-}
-
-Vehicle *VehicleType::CreateVehicle(const RGBf &cColor, float fScale)
-{
-	// check if it's loaded yet
-	if (!m_bAttemptedLoaded)
-		AttemptModelLoad();
-	if (m_pModels.GetSize() == 0)
-		return NULL;
-
-	Vehicle *pNewVehicle = new Vehicle;
-	pNewVehicle->SetName2("VehicleLOD-" + m_strTypeName);
-
-	float distances[10];
-	// there is no distance at which the object should vanish for being too close
-	distances[0] = 0.0f;
-
-	unsigned int iModels = m_pModels.GetSize();
-	for (unsigned int i = 0; i < iModels; i++)
-	{
-		vtNode *node = (vtNode *) m_pModels.GetAt(i);
-
-		//VTLOG1("-----------------\n");
-		//vtLogGraph(node);
-		//VTLOG1("-----------------\n");
-		//vtLogNativeGraph(node->GetOsgNode());
-
-		vtTransform *pNewModel = (vtTransform *)node->Clone(true);	// Deep copy
-
-		//VTLOG1("-----------------\n");
-		//vtLogNativeGraph(pNewModel->GetOsgNode());
-
-		pNewVehicle->AddChild(pNewModel);
-		distances[i+1] = m_fDistance.GetAt(i) * fScale;
-
-		vtNode *pFrontLeft = pNewModel->FindNativeNode("front_left");
-		vtNode *pFrontRight = pNewModel->FindNativeNode("front_right");
-		vtNode *pRearLeft = pNewModel->FindNativeNode("rear_left");
-		vtNode *pRearRight = pNewModel->FindNativeNode("rear_right");
-
-		if (!pFrontLeft || !pFrontRight || !pRearLeft || !pRearRight)
-		{
-			// Didn't find them.
-			continue;
-		}
-		if (dynamic_cast<vtTransform*>(pFrontLeft))
-		{
-			// They are already transforms, no need to insert any
-			pFrontLeft->SetName2("front_left_xform");
-			pFrontRight->SetName2("front_right_xform");
-			pRearLeft->SetName2("rear_left_xform");
-			pRearRight->SetName2("rear_right_xform");
-		}
-		else
-		{
-			// Stick transform above them (this seems like a bad way to go)
-			vtTransform *pTransform;
-
-			pTransform = new vtTransform;
-			pTransform->SetName2("front_left_xform");
-			pTransform->AddChild(pFrontLeft);
-			pFrontLeft->GetParent()->RemoveChild(pFrontLeft);
-			pNewModel->AddChild(pTransform);
-
-			pTransform = new vtTransform;
-			pTransform->SetName2("front_right_xform");
-			pTransform->AddChild(pFrontRight);
-			pFrontRight->GetParent()->RemoveChild(pFrontRight);
-			pNewModel->AddChild(pTransform);
-
-			pTransform = new vtTransform;
-			pTransform->SetName2("rear_left_xform");
-			pTransform->AddChild(pRearLeft);
-			pRearLeft->GetParent()->RemoveChild(pRearLeft);
-			pNewModel->AddChild(pTransform);
-
-			pTransform = new vtTransform;
-			pTransform->SetName2("rear_right_xform");
-			pTransform->AddChild(pRearRight);
-			pRearRight->GetParent()->RemoveChild(pRearRight);
-			pNewModel->AddChild(pTransform);
-
-			//VTLOG1("-----------------\n");
-			//vtLogNativeGraph(pNewModel->GetOsgNode());
-		}
-	}
-	pNewVehicle->m_pLOD->SetRanges(distances, iModels+1);
-
-	pNewVehicle->m_fSize = fScale;
-	ConvertPurpleToColor(pNewVehicle, cColor);
-
-	return pNewVehicle;
-}
-
-void VehicleType::ReleaseModels()
-{
-	for (unsigned int i = 0; i < m_pModels.GetSize(); i++)
-	{
-		m_pModels[i]->Release();
-
-		//vtNode *pTyres = m_pTyres[i];
-		//if(NULL != pTyres)
-		//	pTyres->Release();
-	}
-	m_pModels.Empty();
-	m_pTyres.Empty();
 }
 
 
