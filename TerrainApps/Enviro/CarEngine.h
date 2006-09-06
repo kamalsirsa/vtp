@@ -34,7 +34,7 @@ public:
 		in "tires" and the 4 tires are the children of the group.  the 4 tire names should end with their
 		location names: "front left" "front right" "rear left" "rear right"
 	*/
-	bool SetTires();
+	bool FindWheelTransforms();
 
 	void Eval();
 

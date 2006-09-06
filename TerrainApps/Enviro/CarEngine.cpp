@@ -329,7 +329,7 @@ float CarEngine::DetermineYawPitchAndHeight(const FPoint3 &next_pos)
 
   RUN BEFORE EVAL!!!!
 	*/
-bool CarEngine::SetTires()
+bool CarEngine::FindWheelTransforms()
 {
 	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
 	if (!car)
@@ -641,7 +641,7 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 		if (m_iNextIntersect == IT_STOPSIGN)
 		{
 			//have we waited long enough?
-			VTLOG(" stopped at %f.  it's now %f\n", m_fStopTime, fCurTime);
+			//VTLOG(" stopped at %f.  it's now %f\n", m_fStopTime, fCurTime);
 			if (fCurTime - m_fStopTime > 3.0f) //stop for three seconds
 			{
 				m_bStopped = false;
