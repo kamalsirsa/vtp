@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -2096,7 +2096,7 @@ void Enviro::CreateTestVehicle()
 	if (!bOn)
 		return;
 
-	vtTransform *car = m_VehicleManager.CreateVehicle("bronco", RGBf(1,1,1), 1.0f);
+	vtTransform *car = m_VehicleManager.CreateVehicle("Bronco", RGBf(1,1,1));
 	if (!car)
 		return;
 	pTerr->AddNode(car);
@@ -2108,12 +2108,83 @@ void Enviro::CreateTestVehicle()
 	CarEngine *pE1 = new CarEngine(pTerr->GetHeightField(), speed, wheel_radius, car->GetTrans());
 	pE1->SetName2("drive");
 	pE1->SetTarget(car);
-	if (pE1->SetTires())
+	if (pE1->FindWheelTransforms())
 	{
 		pTerr->AddEngine(pE1);
 		m_Vehicles.AddEngine(pE1);
 	}
 }
+
+void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSpeed)
+{
+	vtRoadMap3d *pRoadMap = pTerrain->GetRoadMap();
+
+	// How many four-wheel land vehicles are there in the content catalog?
+	vtStringArray vnames;
+	vtContentManager3d &con = vtGetContent();
+	for (unsigned int i = 0; i < con.NumItems(); i++)
+	{
+		vtItem *item = con.GetItem(i);
+		if (vtString("ground vehicle") == item->GetValueString("type") &&
+			4 == item->GetValueInt("num_wheels"))
+		{
+			vnames.push_back(item->m_name);
+		}
+	}
+	unsigned int numv = vnames.size();
+
+	// add some test vehicles
+	NodeGeom *road_node = NULL;
+	for (int i = 0; i < numv*2; i++)	// Create two of each land vehicle type
+	{
+		if (road_node == NULL)
+			road_node = pRoadMap->GetFirstNode();
+
+		RGBf color;
+		switch (i % 8)
+		{
+		case 0: color.Set(1.0f, 1.0f, 1.0f); break;	// white
+		case 1: color.Set(1.0f, 1.0f, 0.0f); break; // yellow
+		case 2: color.Set(0.3f, 0.6f, 1.0f); break; // medium blue
+		case 3: color.Set(1.0f, 0.3f, 0.3f); break; // red
+		case 4: color.Set(0.5f, 1.0f, 0.5f); break; // medium green
+		case 5: color.Set(0.2f, 0.2f, 0.2f); break; // black/dk.grey
+		case 6: color.Set(0.1f, 0.6f, 0.1f); break; // dk.green
+		case 7: color.Set(1.0f, 0.8f, 0.6f); break; // tan
+		}
+
+		int vnum = i % numv;
+		vtTransform *car = m_VehicleManager.CreateVehicle(vnames[vnum], color);
+		if (car)
+		{
+			pTerrain->AddNode(car);
+			pTerrain->PlantModelAtPoint(car, road_node->m_p);
+
+			float fSpeed = 88.0f;
+
+			CarEngine *pE1;
+			if (road_node == NULL)
+			{
+				pE1 = new CarEngine(pTerrain->GetHeightField(), fSpeed, .25f,
+					car->GetTrans());
+			}
+			else
+			{
+				pE1 = new CarEngine(pTerrain->GetHeightField(), fSpeed, .25f,
+					road_node, 1);
+			}
+			pE1->SetName2("drive");
+			pE1->SetTarget(car);
+			if (pE1->FindWheelTransforms())
+				pTerrain->AddEngine(pE1);
+			else
+				delete pE1;
+			m_Vehicles.AddEngine(pE1);
+		}
+		road_node = (NodeGeom*) road_node->m_pNext;
+	}
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 
