@@ -2135,7 +2135,7 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSpeed)
 
 	// add some test vehicles
 	NodeGeom *road_node = NULL;
-	for (int i = 0; i < numv*2; i++)	// Create two of each land vehicle type
+	for (unsigned int i = 0; i < numv*2; i++)	// Create two of each land vehicle type
 	{
 		if (road_node == NULL)
 			road_node = pRoadMap->GetFirstNode();
