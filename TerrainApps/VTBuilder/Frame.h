@@ -217,6 +217,9 @@ protected:
 	void OnStructureAddInstances(wxCommandEvent& event);
 	void OnStructureAddFoundation(wxCommandEvent& event);
 	void OnStructureConstrain(wxCommandEvent& event);
+	void OnStructureSelectUsingPolygons(wxCommandEvent& event);
+	void OnStructureColourSelectedRoofs(wxCommandEvent& event);
+
 	void OnUpdateFeatureSelect(wxUpdateUIEvent& event);
 	void OnUpdateFeaturePick(wxUpdateUIEvent& event);
 	void OnUpdateFeatureTable(wxUpdateUIEvent& event);
@@ -228,6 +231,8 @@ protected:
 	void OnUpdateStructureEditLinear(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddFoundation(wxUpdateUIEvent& event);
 	void OnUpdateStructureConstrain(wxUpdateUIEvent& event);
+	void OnUpdateStructureSelectUsingPolygons(wxUpdateUIEvent& event);
+	void OnUpdateStructureColourSelectedRoofs(wxUpdateUIEvent& event);
 
 	void OnRawSetType(wxCommandEvent& event);
 	void OnRawAddPoints(wxCommandEvent& event);

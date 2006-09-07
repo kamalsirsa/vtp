@@ -12,6 +12,7 @@
 #endif
 #include <wx/progdlg.h>
 #include <wx/choicdlg.h>
+#include <wx/colordlg.h>
 
 #include "vtdata/config_vtdata.h"
 #include "vtdata/ChunkLOD.h"
@@ -201,6 +202,8 @@ EVT_MENU(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnStructureEditLinear)
 EVT_MENU(ID_STRUCTURE_ADD_INST,		MainFrame::OnStructureAddInstances)
 EVT_MENU(ID_STRUCTURE_ADD_FOUNDATION, MainFrame::OnStructureAddFoundation)
 EVT_MENU(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnStructureConstrain)
+EVT_MENU(ID_STRUCTURE_SELECT_USING_POLYGONS, MainFrame::OnStructureSelectUsingPolygons)
+EVT_MENU(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, MainFrame::OnStructureColourSelectedRoofs)
 
 EVT_UPDATE_UI(ID_FEATURE_SELECT,		MainFrame::OnUpdateFeatureSelect)
 EVT_UPDATE_UI(ID_FEATURE_PICK,			MainFrame::OnUpdateFeaturePick)
@@ -213,6 +216,8 @@ EVT_UPDATE_UI(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnUpdateStructureEditLinear)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_INST,	MainFrame::OnUpdateStructureAddInstances)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_FOUNDATION,	MainFrame::OnUpdateStructureAddFoundation)
 EVT_UPDATE_UI(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnUpdateStructureConstrain)
+EVT_UPDATE_UI(ID_STRUCTURE_SELECT_USING_POLYGONS, MainFrame::OnUpdateStructureSelectUsingPolygons)
+EVT_UPDATE_UI(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, MainFrame::OnUpdateStructureColourSelectedRoofs)
 
 EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
 EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
@@ -437,6 +442,9 @@ void MainFrame::CreateMenus()
 	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_INST, _("Add Instances"));
 	bldMenu->AppendSeparator();
 	bldMenu->Append(ID_STRUCTURE_ADD_FOUNDATION, _("Add Foundation Levels to Buildings"), _T(""));
+	bldMenu->Append(ID_STRUCTURE_SELECT_USING_POLYGONS, _("Select Using Polygons"), _("Select buildings using selected raw layer polygons"));
+	bldMenu->Append(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, _("Colour Selected Roofs"), _("Set roof colour on selected buildings"));
+
 	bldMenu->AppendSeparator();
 	bldMenu->AppendCheckItem(ID_STRUCTURE_CONSTRAIN, _("Constrain angles on footprint edit"));
 	m_pMenuBar->Append(bldMenu, _("&Structures"));
@@ -3924,6 +3932,111 @@ void MainFrame::OnStructureConstrain(wxCommandEvent &event)
 void MainFrame::OnUpdateStructureConstrain(wxUpdateUIEvent& event)
 {
 	event.Check(m_pView->m_bConstrain);
+}
+
+void MainFrame::OnStructureSelectUsingPolygons(wxCommandEvent &event)
+{
+	vtStructureLayer *pStructureLayer = GetActiveStructureLayer();
+
+	if (NULL != pStructureLayer)
+	{
+		pStructureLayer->DeselectAll();
+
+		int iNumLayers = m_Layers.GetSize();
+		for (int i = 0; i < iNumLayers; i++)
+		{
+			vtLayer *pLayer = m_Layers.GetAt(i);
+			if (LT_RAW == pLayer->GetType())
+			{
+				vtRawLayer* pRawLayer = dynamic_cast<vtRawLayer*>(pLayer);
+				if ((NULL != pRawLayer) && (wkbPolygon == wkbFlatten(pRawLayer->GetGeomType())))
+				{
+					vtFeatureSetPolygon *pFeatureSetPolygon = dynamic_cast<vtFeatureSetPolygon*>(pRawLayer->GetFeatureSet());
+					if (NULL != pFeatureSetPolygon)
+					{
+						unsigned int iNumEntities = pFeatureSetPolygon->GetNumEntities();
+						unsigned int iIndex;
+						for (iIndex = 0; iIndex < iNumEntities; iIndex++)
+						{
+							if (pFeatureSetPolygon->IsSelected(iIndex))
+							{
+								unsigned int iIndex2;
+								const DPolygon2 Polygon = pFeatureSetPolygon->GetPolygon(iIndex);
+								unsigned int iNumStructures = pStructureLayer->GetSize();
+								for (iIndex2 = 0; iIndex2 < iNumStructures; iIndex2++)
+								{
+									DRECT Extents;
+									if (pStructureLayer->GetAt(iIndex2)->GetExtents(Extents))
+									{
+										DPoint2 Point((Extents.left + Extents.right)/2, (Extents.bottom + Extents.top)/2);
+										if (Polygon.ContainsPoint(Point))
+											pStructureLayer->GetAt(iIndex2)->Select(true);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		m_pView->Refresh();
+	}
+}
+
+void MainFrame::OnUpdateStructureSelectUsingPolygons(wxUpdateUIEvent &event)
+{
+	bool bFoundSelectedPolygons = false;
+	int iNumLayers = m_Layers.GetSize();
+	for (int i = 0; i < iNumLayers; i++)
+	{
+		vtLayer *pLayer = m_Layers.GetAt(i);
+		if (LT_RAW == pLayer->GetType())
+		{
+			vtRawLayer* pRawLayer = dynamic_cast<vtRawLayer*>(pLayer);
+			if ((NULL != pRawLayer) && (wkbPolygon == wkbFlatten(pRawLayer->GetGeomType())))
+			{
+				vtFeatureSet *pFeatureSet = pRawLayer->GetFeatureSet();
+				if ((NULL != pFeatureSet) && (pFeatureSet->NumSelected() > 0))
+				{
+					bFoundSelectedPolygons = true;
+					break;
+				}
+			}
+		}
+	}
+	event.Enable(bFoundSelectedPolygons);
+}
+
+void MainFrame::OnStructureColourSelectedRoofs(wxCommandEvent& event)
+{
+	vtStructureLayer *pLayer = GetActiveStructureLayer();
+	if (NULL != pLayer)
+	{
+		int iNumSelected = pLayer->NumSelected();
+		if (iNumSelected > 0)
+		{
+			wxColour Colour = wxGetColourFromUser(this);
+			if (Colour.Ok())
+			{
+				RGBi RoofColour(Colour.Red(), Colour.Green(), Colour.Blue());
+				for (int i = 0; i < iNumSelected; i++)
+				{
+					vtStructure *pStructure = pLayer->GetAt(i);
+					if (pStructure->IsSelected())
+					{
+						vtBuilding* pBuilding = pStructure->GetBuilding();
+						if (NULL != pBuilding)
+							pBuilding->GetLevel(pBuilding->GetNumLevels() - 1)->SetEdgeColor(RoofColour);
+					}
+				}
+			}
+		}
+	}
+}
+
+void MainFrame::OnUpdateStructureColourSelectedRoofs(wxUpdateUIEvent& event)
+{
+	event.Enable((NULL != GetActiveStructureLayer()) && (GetActiveStructureLayer()->NumSelected() > 0));
 }
 
 
