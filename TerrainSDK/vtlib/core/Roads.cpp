@@ -11,6 +11,7 @@
 #include "vtdata/vtLog.h"
 #include "Light.h"
 #include "Roads.h"
+#include "TerrainScene.h"	// for sign models
 
 #define ROAD_HEIGHT			(vtRoadMap3d::s_fHeight)	// height about the ground
 #define ROADSIDE_WIDTH		2.0f
@@ -985,40 +986,40 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 	if (!pLodGrid)
 		return;
 
-#if 0
-	vtString path;
-	path = FindFileOnPaths(vtGetDataPath(), "Culture/stopsign4.dsm");
-	vtNode *stopsign = vtLoadModel(path);
-	path = FindFileOnPaths(vtGetDataPath(), "Culture/stoplight8rt.dsm");
-	vtNode *stoplight = vtLoadModel(path);
+	vtContentManager3d &con = vtGetContent();
+	vtNode *stopsign = con.CreateNodeFromItemname("American Stopsign");
+	vtNode *stoplight = con.CreateNodeFromItemname("Stoplight (right)");
 
-	if (stopsign && stoplight)
+	if (!stopsign || !stoplight)
 	{
-		float sc = 0.01f;	// cm
-		stopsign->Scale2(sc, sc, sc);
-		stoplight->Scale2(sc, sc, sc);
+		VTLOG("Couldn't find stopsign and stoplight.\n");
+		return;
 	}
 	for (NodeGeom *pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
 	{
 		for (int r = 0; r < pN->m_iLinks; r++)
 		{
-			vtGeom *shape = NULL;
+			vtNode *shape = NULL;
 			if (pN->GetIntersectType(r) == IT_STOPSIGN && stopsign)
 			{
-				shape = (vtGeom *)stopsign->Clone();
+				shape = stopsign->Clone();
 			}
 			if (pN->GetIntersectType(r) == IT_LIGHT && stoplight)
 			{
-				shape = (vtGeom *)stoplight->Clone();
+				shape = stoplight->Clone();
 			}
 			if (!shape) continue;
 
-			Road *road = pN->GetLink(r);
-			FPoint3 unit = pN->GetUnitRoadVector(r);
+			vtTransform *trans = new vtTransform;
+			trans->AddChild(shape);
+
+			LinkGeom *road = pN->GetLink(r);
+			FPoint3 unit = pN->GetUnitLinkVector(r);
 			FPoint3 perp(unit.z, unit.y, -unit.x);
 			FPoint3 offset;
 
-			shape->RotateLocal(FPoint3(0,1,0), pN->m_fRoadAngle[r] + PID2f);
+			// Turn the sign (yaw) to face the oncoming traffic
+			trans->RotateLocal(FPoint3(0,1,0), pN->m_fLinkAngle[r] + PID2f);
 
 			if (pN->GetIntersectType(r) == IT_STOPSIGN)
 			{
@@ -1028,11 +1029,10 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 			{
 				offset = pN->m_p3 - (unit * 6.0f) + (perp * (road->m_fWidth/2.0f));
 			}
-			shape->Translate2(FPoint3(offset.x, offset.y + s_fHeight, offset.z));
-			pLodGrid->AppendToGrid(shape);
+			trans->Translate1(FPoint3(offset.x, offset.y + s_fHeight, offset.z));
+			pLodGrid->AppendToGrid(trans);
 		}
 	}
-#endif
 }
 
 
