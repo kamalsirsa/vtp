@@ -120,7 +120,7 @@ public:
 public:
 	void RenderingPause();
 	void RenderingResume();
-	void AddModelFromFile(const wxString2 &fname);
+	void AddModelFromFile(const wxString &fname);
 	void ModelNameChanged(vtModel *model);
 	int GetModelTriCount(vtModel *model);
 	void OnChar(wxKeyEvent& event);
@@ -138,7 +138,7 @@ public:
 	void		SetCurrentItemAndModel(vtItem *item, vtModel *model);
 	void		SetCurrentItem(vtItem *item);
 	void		SetCurrentModel(vtModel *mod);
-	vtModel		*AddModel(const wxString2 &fname);
+	vtModel		*AddModel(const wxString &fname);
 	vtTransform	*AttemptLoad(vtModel *model);
 	ItemGroup	*GetItemGroup(vtItem *item);
 	void		UpdateItemGroup(vtItem *item);

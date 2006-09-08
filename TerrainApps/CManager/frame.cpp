@@ -514,9 +514,9 @@ bool SamePath(const vtString &s1, const vtString &s2)
 	return i == n;
 }
 
-void vtFrame::AddModelFromFile(const wxString2 &fname1)
+void vtFrame::AddModelFromFile(const wxString &fname1)
 {
-	vtString fname = fname1.mb_str();
+	vtString fname = fname1.mb_str(*wxConvCurrent);
 	VTLOG("AddModelFromFile '%s'\n", fname);
 
 	// Change backslashes to slashes.
@@ -537,7 +537,7 @@ void vtFrame::AddModelFromFile(const wxString2 &fname1)
 		}
 	}
 
-	vtModel *nm = AddModel(fname);
+	vtModel *nm = AddModel(wxString(fname, *wxConvCurrent));
 	if (nm)
 		SetCurrentItemAndModel(m_pCurrentItem, nm);
 }
@@ -942,7 +942,7 @@ void vtFrame::AddNewItem()
 	SetCurrentItemAndModel(pItem, NULL);
 }
 
-vtModel *vtFrame::AddModel(const wxString2 &fname_in)
+vtModel *vtFrame::AddModel(const wxString &fname_in)
 {
 	VTLOG("AddModel %s\n", fname_in.mb_str());
 #if 0
@@ -968,7 +968,7 @@ vtModel *vtFrame::AddModel(const wxString2 &fname_in)
 	}
 #else
 	// data path code is too complicated, just store absolute paths
-	const char *fname = fname_in.mb_str();
+	vtString fname = fname_in.mb_str();
 #endif
 
 	// If there is no item, make a new one.
