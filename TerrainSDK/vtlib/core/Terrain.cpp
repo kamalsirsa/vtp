@@ -1464,6 +1464,10 @@ void vtTerrain::_CreateCulture()
 			VTLOG("  Not found.\n");
 	}
 
+	// Always create a LOD grid for structures, as the user might create some
+	// The LOD distances are in meters
+	_SetupStructGrid((float) m_Params.GetValueInt(STR_STRUCTDIST));
+
 	// create roads
 	if (m_Params.GetValueBool(STR_ROADS))
 		_CreateRoads();
@@ -1609,9 +1613,6 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 
 void vtTerrain::_CreateStructures()
 {
-	// The LOD distances are in meters
-	_SetupStructGrid((float) m_Params.GetValueInt(STR_STRUCTDIST));
-
 	// create built structures
 	vtStructure3d::InitializeMaterialArrays();
 
@@ -2401,6 +2402,7 @@ bool vtTerrain::CreateStep1()
 			_SetErrorMessage(msg);
 			return false;
 		}
+		VTLOG("\tFound texture at: %s\n", (const char *) tex_path);
 
 		// Elevation input is a set of tiles, which will be loaded later as needed
 		m_pTiledGeom = new vtTiledGeom;
@@ -2426,6 +2428,8 @@ bool vtTerrain::CreateStep1()
 	char type[10], value[2048];
 	m_proj.GetTextDescription(type, value);
 	VTLOG(" Projection of the terrain: %s, '%s'\n", type, value);
+	DRECT ext = m_pHeightField->GetEarthExtents();
+	VTLOG(" Earth extents LRTB: %lf %lf %lf %lf\n", ext.left, ext.right, ext.top, ext.bottom);
 
 	m_bIsCreated = true;
 	return true;
