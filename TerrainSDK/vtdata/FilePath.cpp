@@ -1,9 +1,9 @@
 //
 // FilePath.cpp
 //
-// Functions for helping with management of directories and file paths.
+// Functions for helping with management of files, paths and directories.
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -172,6 +172,7 @@ bool dir_iter::operator!=(const dir_iter &it)
  *
  * \param filename A filename, which can optionally contain a partial path
  * as well.  Examples: "foo.txt" or "Stuff/foo.txt"
+ * Note: encoding of this filename is assumed to be UTF-8!
  */
 vtString FindFileOnPaths(const vtStringArray &paths, const char *filename)
 {
@@ -182,7 +183,7 @@ vtString FindFileOnPaths(const vtStringArray &paths, const char *filename)
 
 	// it's possible that the filename is already resolvable without
 	// searching the data paths
-	fp = fopen(filename, "r");
+	fp = vtFileOpen(filename, "r");
 	if (fp != NULL)
 	{
 		fclose(fp);
@@ -193,7 +194,7 @@ vtString FindFileOnPaths(const vtStringArray &paths, const char *filename)
 	{
 		vtString fname = paths[i];
 		fname += filename;
-		fp = fopen((const char *)fname, "r");
+		fp = vtFileOpen((const char *)fname, "r");
 		if (fp != NULL)
 		{
 			fclose(fp);
@@ -623,4 +624,81 @@ void VTCompress::close()
 		fp = NULL;
 	}
 }
+
+///////////////////////////////////////////////////////////////////////
+//
+
+// Open a file using a UTF-8 or wide character filename.
+//
+// A conversion might be needed for file names on the systems where
+//  they're not Unicode (basically anything except Windows)
+//
+// By default, it's UTF-8 under Mac OS X and Libc elsewhere.  Windows
+//  has wfopen which takes wide characters naturally.
+//
+
+FILE *vtFileOpen(const char *fname_utf8, const char *mode)
+{
+#if WIN32
+	// Windows
+	wstring2 fn, mo(mode);
+	fn.from_utf8(fname_utf8);
+	return _wfopen(fn.c_str(), mo.c_str());
+#elif __DARWIN_OSX__
+	// Mac OS X
+	return fopen(fname_utf8, mode);
+#else
+	// some other Unix flavor
+  #if SUPPORT_WSTRING
+	wstring2 fn, mo(mode);
+	fn.from_utf8(fname_utf8);
+	return fopen(fn.mb_str(), mode);
+  #else
+	// hope for the best
+	return fopen(fname_utf8, mode);
+  #endif
+#endif
+}
+
+FILE *vtFileOpen(wchar_t *fname_wide, const char *mode)
+{
+#if WIN32
+	// Windows
+	wstring2 mo(mode);
+	return _wfopen(fname_wide, mo.c_str());
+#elif __DARWIN_OSX__
+	// Mac OS X
+	wstring2 fn(fname_wide);
+	return fopen(fn.to_utf8(), mode);
+#else
+	// some other Unix flavor
+  #if SUPPORT_WSTRING
+	wstring2 fn(fname_wide);
+	return fopen(fn.mb_str(), mode);
+  #else
+	return NULL;	// what to do in this case?
+  #endif
+#endif
+}
+
+#if SUPPORT_WSTRING
+
+FILE *vtFileOpen(const wstring &fname_ws, const char *mode)
+{
+#if WIN32
+	wstring2 mo(mode);
+	return _wfopen(fname_ws.c_str(), mo.c_str());
+	// Windows
+#elif __DARWIN_OSX__
+	// Mac OS X
+	wstring2 fn = fname_ws;
+	return fopen(fn.to_utf8(), mode);
+#else
+	// some other Unix flavor
+	wstring2 fn = fname_ws;
+	return fopen(fn.mb_str(), mode);
+#endif
+}
+
+#endif // SUPPORT_WSTRING
 

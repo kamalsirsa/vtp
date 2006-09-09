@@ -140,5 +140,15 @@ protected:
 };
 
 
+/////////////////////////////////////////////
+// Open a file using a UTF-8 or wide character filename.
+
+FILE *vtFileOpen(const char *fname_utf8, const char *mode);
+FILE *vtFileOpen(wchar_t *fname_wide, const char *mode);
+
+#if SUPPORT_WSTRING
+FILE *vtFileOpen(const std::wstring &fname_ws, const char *mode);
+#endif
+
 #endif // FILEPATHH
 
