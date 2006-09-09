@@ -196,7 +196,7 @@ vtString RemoveAccentsUTF8(const vtString &strInput)
 {
 	wstring2 str;
 	str.from_utf8(strInput);
-	vtString vs(str.eb_str());
+	vtString vs(str.mb_str());
 	return RemoveAccents(vs);
 }
 

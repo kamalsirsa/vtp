@@ -361,7 +361,7 @@ void EscapeStringForXML(const std::wstring &input, std::wstring &output);
  * desired.
  *
  * Unlike the C++ standard "wstring" class, on which it is based, this class
- * can convert to and from UTF8 and classic 8-bit character strings.
+ * can convert to and from UTF8 and default encoded 8-bit character strings.
  *
  * Unlike wxString, this class always uses wide characters, so it does not
  * need to be compiled in two flavors.  It also avoids a dependency on all
@@ -376,7 +376,7 @@ public:
 	wstring2();
 	wstring2(const wchar_t *__s);
 	wstring2(const char *__s);
-	const char *eb_str() const;		// 8-bit string
+	const char *mb_str() const;		// multibyte string in local encoding
 
 	size_t from_utf8(const char *in);
 	const char *to_utf8() const;

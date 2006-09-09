@@ -204,7 +204,7 @@ const char *vtTagArray::GetValueString(const char *szTagName, bool bUTF8ToAnsi, 
 			// The internal string is UTF8, but we want it as Ansi (iso-8859-1)
 			wstring2 wide_string;
 			wide_string.from_utf8(tag->value);
-			return wide_string.eb_str();
+			return wide_string.mb_str();
 		}
 #endif
 		return tag->value;

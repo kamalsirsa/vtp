@@ -1184,7 +1184,7 @@ wstring2::wstring2(const char *__s)
 	delete [] tmp;
 }
 
-const char *wstring2::eb_str() const
+const char *wstring2::mb_str() const
 {
 	const wchar_t *guts = c_str();
 	wcstombs(s_buffer, guts, MAX_WSTRING2_SIZE);
