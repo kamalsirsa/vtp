@@ -558,16 +558,6 @@ bool vtProjection::ReadProjFile(const char *filename)
 	// Now read and parse the file
 	OGRErr eErr;
 	char **papszPrj = CSLLoad( prj_name );
-#if 0
-	if (!strncmp(papszPrj[0], "GEOGCS", 6) ||
-		!strncmp(papszPrj[0], "PROJCS", 6) ||
-		!strncmp(papszPrj[0], "LOCAL_CS", 8))
-	{
-		char  *pszWKT = papszPrj[0];
- 		eErr = importFromWkt(&pszWKT);
-	}
-	else
-#endif
 
 	// Must clear any old info before attempting to import the new info.
 	Clear();
@@ -609,7 +599,7 @@ bool vtProjection::WriteProjFile(const char *filename) const
  * return the geodesic arc distance in meters.  The WGS84 spheroid
  * is used.
  */
-double vtProjection::GeodesicDistance(const DPoint2 &geo1, DPoint2 &geo2,
+double vtProjection::GeodesicDistance(const DPoint2 &geo1,const DPoint2 &geo2,
 	bool bQuick)
 {
 	if (bQuick)

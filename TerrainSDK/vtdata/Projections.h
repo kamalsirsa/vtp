@@ -87,7 +87,7 @@ public:
 	bool ReadProjFile(const char *filename);
 	bool WriteProjFile(const char *filename) const;
 
-	static double GeodesicDistance(const DPoint2 &in, DPoint2 &out, bool bQuick = false);
+	static double GeodesicDistance(const DPoint2 &in, const DPoint2 &out, bool bQuick = false);
 
 	void SetDymaxion(bool bTrue) { m_bDymaxion = bTrue; }
 	bool IsDymaxion() const { return m_bDymaxion; }
