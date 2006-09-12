@@ -72,7 +72,7 @@ public:
 
 private:
 #ifdef WIN32
-	struct _finddata_t m_data;
+	struct _wfinddata_t m_data;
 	long               m_handle;
 #else
 	DIR         *m_handle;
@@ -117,6 +117,12 @@ public:
 bool gfopen(GZOutput &out, const char *fname);
 int gfprintf(GZOutput &out, const char *pFormat, ...);
 void gfclose(GZOutput &out);
+
+// Excapsulation of Zlib's gzip input functions
+// adds support for utf-8 filenames
+
+gzFile vtGZOpen(const char *path, const char *mode);
+
 
 // These functions encapsulate reading from a file which may be compressed
 //  with gzip, compressed with bzip2, or not compressed.  They automatically

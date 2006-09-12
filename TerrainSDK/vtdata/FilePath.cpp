@@ -59,7 +59,10 @@ dir_iter::dir_iter()
 
 dir_iter::dir_iter(std::string const &dirname)
 {
-	m_handle = _findfirst((dirname + "\\*").c_str(), &m_data);
+	wstring2 name;
+	name.from_utf8(dirname.c_str());
+	name += L"\\*";
+	m_handle = _wfindfirst(name.c_str(), &m_data);
 }
 
 dir_iter::~dir_iter()
@@ -80,14 +83,15 @@ bool dir_iter::is_hidden()
 
 std::string dir_iter::filename()
 {
-	return m_data.name;
+	wstring2 name = m_data.name;
+	return name.to_utf8();
 }
 
 void dir_iter::operator++()
 {
 	if (m_handle != -1)
 	{
-		if (_findnext(m_handle, &m_data) == -1)
+		if (_wfindnext(m_handle, &m_data) == -1)
 		{
 			_findclose(m_handle);
 			m_handle = -1;
@@ -625,20 +629,43 @@ void VTCompress::close()
 	}
 }
 
+
+///////////////////////////////////////////////////////////////////////
+// Excapsulation of Zlib's gzip input functions
+// adds support for utf-8 filenames
+//
+gzFile vtGZOpen(const char *path, const char *mode)
+{
+	FILE *fp = vtFileOpen(path, mode);
+	if (!fp)
+		return NULL;
+
+#ifdef _MSC_VER
+	int fd = _fileno(fp);
+#else
+	int fd = fileno(fp);
+#endif
+	return gzdopen(fd, mode);
+}
+
 ///////////////////////////////////////////////////////////////////////
 //
 
-// Open a file using a UTF-8 or wide character filename.
-//
-// A conversion might be needed for file names on the systems where
-//  they're not Unicode (basically anything except Windows)
-//
-// By default, it's UTF-8 under Mac OS X and Libc elsewhere.  Windows
-//  has wfopen which takes wide characters naturally.
-//
-
+/**
+ * Open a file using a UTF-8 encoded filename.
+ *
+ * Parameters are the same as fopen().  The only difference is that
+ * instead of being limited to multi-byte local charset, it is UTF-8
+ * which supports all languages.
+ */
 FILE *vtFileOpen(const char *fname_utf8, const char *mode)
 {
+	// A conversion might be needed for file names on the systems where
+	//  they're not Unicode (basically anything except Windows)
+	//
+	// By default, it's UTF-8 under Mac OS X and Libc elsewhere.  Windows
+	//  has wfopen which takes wide characters naturally.
+
 #if WIN32
 	// Windows
 	wstring2 fn, mo(mode);
@@ -660,6 +687,13 @@ FILE *vtFileOpen(const char *fname_utf8, const char *mode)
 #endif
 }
 
+/**
+ * Open a file using a UTF-8 encoded filename.
+ *
+ * Parameters are the same as fopen().  The only difference is that
+ * instead of being limited to multi-byte local charset, it is Unicode
+ * which supports all languages.
+ */
 FILE *vtFileOpen(wchar_t *fname_wide, const char *mode)
 {
 #if WIN32
@@ -676,13 +710,20 @@ FILE *vtFileOpen(wchar_t *fname_wide, const char *mode)
 	wstring2 fn(fname_wide);
 	return fopen(fn.mb_str(), mode);
   #else
-	return NULL;	// what to do in this case?
+	return NULL;	// Are there Unix platforms without wstring?
   #endif
 #endif
 }
 
 #if SUPPORT_WSTRING
 
+/**
+ * Open a file using a UTF-8 encoded filename.
+ *
+ * Parameters are the same as fopen().  The only difference is that
+ * instead of being limited to multi-byte local charset, it is Unicode
+ * which supports all languages.
+ */
 FILE *vtFileOpen(const wstring &fname_ws, const char *mode)
 {
 #if WIN32
