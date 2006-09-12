@@ -2326,10 +2326,17 @@ bool vtTerrain::CreateStep1()
 	{
 		// Elevation input is a single grid; load it
 		m_pElevGrid = new vtElevationGrid;
-		bool status = m_pElevGrid->LoadFromBT(elev_path);
+
+		vtElevGridError err;
+		bool status = m_pElevGrid->LoadFromBT(elev_path, NULL, &err);
 		if (status == false)
 		{
-			_SetErrorMessage("Grid load failed.");
+			if (err == EGE_READ_CRS)
+				_SetErrorMessage("Grid load failed: couldn't read projection");
+			else if (err == EGE_UNSUPPORTED_VERSION)
+				_SetErrorMessage("Grid load failed: unsupported version");
+			else if (err == EGE_FILE_OPEN)
+				_SetErrorMessage("Grid load failed: couldn't open");
 			return false;
 		}
 		VTLOG("\tGrid load succeeded.\n");
