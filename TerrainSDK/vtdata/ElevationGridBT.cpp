@@ -4,13 +4,14 @@
 // This modules contains the implementations of the BT file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project.
+// Copyright (c) 2001-2006 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
 #include "ElevationGrid.h"
 #include "ByteOrder.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/FilePath.h"
 
 
 /** Loads just the header information from a BT (Binary Terrain) file.
@@ -26,7 +27,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevGridError *err)
 	// The gz functions (gzopen etc.) behave exactly like the stdlib
 	//  functions (fopen etc.) in the case where the input file is not in
 	//  gzip format, so we can simply use them without worry.
-	gzFile fp = gzopen(szFileName, "rb");
+	gzFile fp = vtGZOpen(szFileName, "rb");
 	if (!fp)
 	{
 		if (err) *err = EGE_FILE_OPEN;
@@ -52,7 +53,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevGridError *err)
 
 	// NOTE:  BT format is little-endian
 	GZFRead(&m_iColumns, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
-	GZFRead(&m_iRows,	   DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+	GZFRead(&m_iRows,	 DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 
 	// Default to internal projection
 	short external = 0;
@@ -177,7 +178,7 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(
 	if (!LoadBTHeader(szFileName, err))
 		return false;
 
-	gzFile fp = gzopen(szFileName, "rb");
+	gzFile fp = vtGZOpen(szFileName, "rb");
 	if (!fp)
 	{
 		if (err) *err = EGE_FILE_OPEN;
@@ -301,7 +302,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 	if (bGZip == false)
 	{
 		// Use conventional IO
-		FILE *fp = fopen(szFileName, "wb");
+		FILE *fp = vtFileOpen(szFileName, "wb");
 		if (!fp)
 			return false;
 

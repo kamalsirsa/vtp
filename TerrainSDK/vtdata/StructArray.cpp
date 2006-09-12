@@ -1348,7 +1348,7 @@ bool vtStructureArray::ReadXML(const char *pathname, bool progress_callback(int)
 
 	// check to see if it's old or new format
 	bool bOldFormat = false;
-	gzFile fp = gzopen(pathname, "r");
+	gzFile fp = vtGZOpen(pathname, "r");
 	if (!fp) return false;
 
 	m_strFilename = pathname;
