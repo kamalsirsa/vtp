@@ -17,7 +17,6 @@
 #endif
 
 #include "vtlib/vtlib.h"
-#include "vtui/wxString2.h"
 #include "vtui/Helper.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
@@ -157,7 +156,7 @@ void LocationDlg::RefreshList()
 
 void LocationDlg::RefreshAnims()
 {
-	wxString2 str;
+	wxString str;
 	unsigned int i, num = m_pAnimPaths->GetSize();
 
 	GetAnimTree()->DeleteAllItems();
@@ -186,7 +185,6 @@ void LocationDlg::RefreshAnims()
 
 void LocationDlg::RefreshAnimsText()
 {
-	wxString str;
 	wxTreeItemIdValue cookie;
 	wxTreeItemId id;
 
@@ -202,8 +200,11 @@ void LocationDlg::RefreshAnimsText()
 		else
 			id = GetAnimTree()->GetFirstChild(m_root, cookie);
 
-		str.Printf(_T("%hs (%.1f/%.1f, %d)"), (const char *) entry->m_Name,
-			eng->GetTime(), (float) anim->GetLastTime(), anim->GetNumPoints());
+		wxString str(entry->m_Name, wxConvUTF8);
+		wxString str2;
+		str2.Printf(_T(" (%.1f/%.1f, %d)"), eng->GetTime(),
+			(float) anim->GetLastTime(), anim->GetNumPoints());
+		str += str2;
 		GetAnimTree()->SetItemText(id, str);
 	}
 }
@@ -646,7 +647,7 @@ void LocationDlg::OnPlayToDisk( wxCommandEvent &event )
 
 void LocationDlg::OnLoadAnim( wxCommandEvent &event )
 {
-	wxString2 filter = _("Polyline Data Sources");
+	wxString filter = _("Polyline Data Sources");
 	filter += _T(" (*.vtap,*.shp,*.dxf,*.igc)|*.vtap;*.shp;*.dxf;*.igc");
 	wxFileDialog loadFile(NULL, _("Load Animation Path"), _T(""), _T(""),
 		filter, wxOPEN);
@@ -656,7 +657,7 @@ void LocationDlg::OnLoadAnim( wxCommandEvent &event )
 
 	vtAnimPath *anim;
 	bool bSuccess;
-	wxString2 str = loadFile.GetPath();
+	wxString str = loadFile.GetPath();
 	const char *filename = str.mb_str();
 	if (GetExtension(filename) == ".vtap")
 	{
@@ -701,7 +702,7 @@ void LocationDlg::OnSaveAnim( wxCommandEvent &event )
 	if (!bResult)
 		return;
 
-	wxString2 filepath = saveFile.GetPath();
+	wxString filepath = saveFile.GetPath();
 	path->Write(filepath.mb_str());
 }
 
@@ -733,8 +734,9 @@ void LocationDlg::OnLoad( wxCommandEvent &event )
 	if (!bResult)
 		return;
 
-	wxString2 path = loadFile.GetPath();
-	if (m_pSaver->Read(path.mb_str()))
+	wxString path = loadFile.GetPath();
+	vtString upath = path.mb_str(wxConvUTF8);
+	if (m_pSaver->Read(upath))
 	{
 		RefreshList();
 		RefreshButtons();
@@ -743,15 +745,15 @@ void LocationDlg::OnLoad( wxCommandEvent &event )
 
 void LocationDlg::OnSave( wxCommandEvent &event )
 {
-	wxString2 default_file, default_dir;
+	wxString default_file, default_dir;
 
 	// If the locations were previously saved/loaded from a file, use that
 	//  file as the default in the Save dialog.
 	vtString previous = m_pSaver->GetFilename();
 	if (previous != "")
 	{
-		default_file = StartOfFilename(previous);
-		default_dir = ExtractPath(previous);
+		default_file = wxString(StartOfFilename(previous), wxConvUTF8);
+		default_dir = wxString(ExtractPath(previous), wxConvUTF8);
 	}
 
 	wxFileDialog saveFile(NULL, _("Save Locations"), default_dir, default_file,
@@ -760,8 +762,9 @@ void LocationDlg::OnSave( wxCommandEvent &event )
 	if (!bResult)
 		return;
 
-	wxString2 str = saveFile.GetPath();
-	if (!m_pSaver->Write(str.mb_str()))
+	wxString path = saveFile.GetPath();
+	vtString upath = path.mb_str(wxConvUTF8);
+	if (!m_pSaver->Write(upath))
 		return;  // couldn't write
 }
 

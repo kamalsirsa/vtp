@@ -1,7 +1,7 @@
 //
 // Name: StartupDlg.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -147,9 +147,9 @@ static void ShowOGLInfo(bool bLog)
 	}
 	else
 	{
-		wxString2 msg;
+		wxString msg;
 
-		wxString2 str;
+		wxString str;
 		str.Printf(_T("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n"),
 			glGetString(GL_VERSION), glGetString(GL_VENDOR),
 			glGetString(GL_RENDERER));
@@ -199,9 +199,9 @@ static void ShowOGLInfo2(bool bLog)
 	}
 	else
 	{
-		wxString2 msg;
+		wxString msg;
 
-		wxString2 str;
+		wxString str;
 		str.Printf(_T("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n"),
 			glGetString(GL_VERSION), glGetString(GL_VENDOR),
 			glGetString(GL_RENDERER));
@@ -209,7 +209,8 @@ static void ShowOGLInfo2(bool bLog)
 		str.Printf(_("Maximum Texture Dimension: %d\n"), value);
 		msg += str;
 		msg += _T("Extensions: ");
-		msg += glGetString(GL_EXTENSIONS);
+		const char *ext = (const char *) glGetString(GL_EXTENSIONS);
+		msg += wxString(ext, wxConvUTF8);
 
 		wxDialog dlg(NULL, -1, _("OpenGL Info"), wxDefaultPosition);
 		TextDialogFunc(&dlg, true);
@@ -263,7 +264,7 @@ void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_bStartEarth = opt.m_bEarthView;
 	m_bStartTerrain = !opt.m_bEarthView;
 	m_strEarthImage = wxString::FromAscii((const char *)opt.m_strEarthImage);
-	m_strTName.from_utf8(opt.m_strInitTerrain);
+	m_strTName = wxString(opt.m_strInitTerrain, wxConvUTF8);
 
 	// store a copy of all the options
 	m_opt = opt;
@@ -272,8 +273,8 @@ void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 void StartupDlg::PutOptionsTo(EnviroOptions &opt)
 {
 	m_opt.m_bEarthView = m_bStartEarth;
-	m_opt.m_strEarthImage = m_strEarthImage.mb_str();
-	m_opt.m_strInitTerrain = m_strTName.to_utf8();
+	m_opt.m_strEarthImage = m_strEarthImage.mb_str(wxConvUTF8);
+	m_opt.m_strInitTerrain = m_strTName.mb_str(wxConvUTF8);
 
 	opt = m_opt;
 }
@@ -291,12 +292,11 @@ void StartupDlg::RefreshTerrainChoices()
 	GetTname()->Clear();
 
 	EnviroApp &app = wxGetApp();
-	wxString2 ws;
 
 	for (unsigned int i = 0; i < app.terrain_files.size(); i++)
 	{
 		vtString &name = app.terrain_names[i];
-		ws.from_utf8(name);
+		wxString ws(name, wxConvUTF8);
 		GetTname()->Append(ws);
 	}
 }
@@ -355,7 +355,7 @@ void StartupDlg::OnTerrMan( wxCommandEvent &event )
 	{
 		m_opt.m_DataPaths = dlg.m_DataPaths;
 		g_Options = m_opt;
-		g_Options.Write();
+		g_Options.WriteXML();
 		wxGetApp().RefreshTerrainList();
 		RefreshTerrainChoices();
 		int sel = GetTname()->FindString(m_strTName);
@@ -366,7 +366,7 @@ void StartupDlg::OnTerrMan( wxCommandEvent &event )
 
 void StartupDlg::OnEditProp( wxCommandEvent &event )
 {
-	vtString name_old = m_strTName.to_utf8();
+	vtString name_old = m_strTName.mb_str(wxConvUTF8);
 	vtString path_to_ini = wxGetApp().GetIniFileForTerrain(name_old);
 	if (path_to_ini == "")
 		return;
@@ -380,7 +380,7 @@ void StartupDlg::OnEditProp( wxCommandEvent &event )
 		{
 			vtString name_new = params.GetValueString(STR_NAME);
 			if (name_new != name_old)
-				m_strTName.from_utf8(name_new);
+				m_strTName = wxString(name_new, wxConvUTF8);
 		}
 
 		wxGetApp().RefreshTerrainList();

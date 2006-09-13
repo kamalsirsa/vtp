@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,6 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "../Options.h"
 
 // WDR: class declarations
@@ -70,7 +69,7 @@ private:
 	bool	m_bOnlyAvailableSpecies;
 
 	int	  m_iContentFile;
-	wxString2   m_strContentFile;
+	wxString   m_strContentFile;
 
 private:
 	// WDR: handler declarations for OptionsDlg

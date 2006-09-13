@@ -1,7 +1,7 @@
 //
 // Name: PlantDlg.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,7 +19,6 @@
 #include "PlantDlg.h"
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Trees.h"
-#include "vtui/wxString2.h"
 #include "vtdata/vtLog.h"
 #include "EnviroGUI.h"
 
@@ -159,7 +158,7 @@ void PlantDlg::UpdatePlantNames()
 	if (!m_pPlantList)
 		return;
 
-	wxString2 str;
+	wxString str;
 	for (unsigned int i = 0; i < m_pPlantList->NumSpecies(); i++)
 	{
 		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
@@ -183,11 +182,11 @@ void PlantDlg::UpdatePlantNames()
 
 				if (cname.m_strLang == m_strLang.mb_str())
 				{
-					str.from_utf8(cname.m_strName);
+					str = wxString(cname.m_strName, wxConvUTF8);
 					m_pSpecies->Append(str, plant);
 				}
 
-				str = cname.m_strLang;
+				str = wxString(cname.m_strLang, wxConvUTF8);
 				if (GetLanguage()->FindString(str) == -1)
 				{
 					GetLanguage()->Append(str);
@@ -196,7 +195,7 @@ void PlantDlg::UpdatePlantNames()
 		}
 		else
 		{
-			str = plant->GetSciName();
+			str = wxString(plant->GetSciName(), wxConvUTF8);
 			m_pSpecies->Append(str, plant);
 		}
 	}

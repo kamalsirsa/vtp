@@ -9,7 +9,6 @@
 #define FRAMEH
 
 #include "../EnviroEnum.h"
-#include "vtui/wxString2.h"
 #include "vtlib/core/Event.h"
 
 // forward declare dialogs
@@ -248,7 +247,7 @@ protected:
 	bool m_bUseCultureInProfile;
 
 	// snapshot members
-	wxString2 m_strSnapshotFilename;
+	wxString m_strSnapshotFilename;
 	int		m_iSnapshotNumber;
 	int		m_iFormat;
 

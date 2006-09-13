@@ -1,7 +1,7 @@
 //
 // Name: StyleDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project.
+// Copyright (c) 2004-2006 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "vtdata/Features.h"
 
 class vtTagArray;
@@ -53,7 +52,7 @@ private:
 	vtString m_strFilename, m_strResolved;
 
 	OGRwkbGeometryType m_type;
-	wxString2 m_strFeatureType;
+	wxString m_strFeatureType;
 
 	bool m_bGeometry;
 	RGBi m_GeomColor;

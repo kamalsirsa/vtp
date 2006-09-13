@@ -15,7 +15,6 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/Globe.h"
-#include "vtui/wxString2.h"
 #include "vtdata/vtLog.h"
 #include "EnviroGUI.h"  // for GetCurrentTerrain
 #include "canvas.h"		// for EnableContinuousRendering
@@ -200,16 +199,12 @@ void LayerDlg::RefreshTreeContents()
 }
 
 // Helper
-wxString2 MakeVegLayerString(vtPlantInstanceArray3d &pia)
+wxString MakeVegLayerString(vtPlantInstanceArray3d &pia)
 {
-	wxString2 str;
-
-	str.from_utf8(pia.GetFilename());
-	str += _(" (Plants: ");
-	vtString vs;
-	vs.Format("%d", pia.GetNumEntities());
-	str += vs;
-	str += _T(")");
+	wxString str(pia.GetFilename(), wxConvUTF8);
+	wxString str2;
+	str2.Printf(_T(" (Plants: %d)"), pia.GetNumEntities());
+	str += str2;
 	return str;
 }
 
@@ -224,7 +219,7 @@ void LayerDlg::RefreshTreeTerrain()
 
 	m_root = m_pTree->AddRoot(_("Layers"), ICON_TOP, ICON_TOP);
 
-	wxString2 str;
+	wxString str;
 	vtString vs;
 	unsigned int i, j;
 	StructureSet &set = terr->GetStructureSet();
@@ -233,7 +228,7 @@ void LayerDlg::RefreshTreeTerrain()
 	{
 		sa = set[i];
 
-		str = sa->GetFilename();
+		str = wxString(sa->GetFilename(), wxConvUTF8);
 		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_BUILDING, ICON_BUILDING);
 		if (sa == terr->GetStructures())
 			m_pTree->SetItemBold(hLayer, true);
@@ -250,17 +245,17 @@ void LayerDlg::RefreshTreeTerrain()
 					hItem = m_pTree->AppendItem(hLayer, _("Fence"), ICON_FENCE, ICON_FENCE);
 				if (vtStructInstance *inst = sa->GetInstance(j))
 				{
-					vs = inst->GetValueString("filename", true, true);
+					vs = inst->GetValueString("filename", false, true);
 					if (vs != "")
 					{
-						str = "File ";
-						str += vs;
+						str = _T("File ");
+						str += vs.UTF8ToWideString().c_str();
 					}
 					else
 					{
 						vs = inst->GetValueString("itemname", false, true);
-						str = "Item ";
-						str += vs;
+						str = _T("Item ");
+						str += vs.UTF8ToWideString().c_str();
 					}
 					hItem = m_pTree->AppendItem(hLayer, str, ICON_INSTANCE, ICON_INSTANCE);
 				}
@@ -306,14 +301,14 @@ void LayerDlg::RefreshTreeTerrain()
 		vtFeatureSet *set = layer->pSet;
 
 		vs = set->GetFilename();
-		str.from_utf8(vs);
+		str = wxString(vs, wxConvUTF8);
 
 		str += _(" (Type: ");
-		str += OGRGeometryTypeToName(set->GetGeomType());
+		str += wxString(OGRGeometryTypeToName(set->GetGeomType()), wxConvLibc);
 
 		str += _(", Features: ");
 		vs.Format("%d", set->GetNumEntities());
-		str += vs;
+		str += wxString(vs, wxConvLibc);
 		str += _T(")");
 
 		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_RAW, ICON_RAW);
@@ -326,7 +321,7 @@ void LayerDlg::RefreshTreeTerrain()
 	if (terr->GetPlantList())
 	{
 		vtPlantInstanceArray3d &pia = terr->GetPlantInstances();
-		wxString2 str = MakeVegLayerString(pia);
+		wxString str = MakeVegLayerString(pia);
 
 		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_VEG1, ICON_VEG1);
 		m_pTree->SetItemData(hLayer, new LayerItemData(LT_VEG));
@@ -388,10 +383,9 @@ void LayerDlg::RefreshTreeSpace()
 	vtFeaturesSet &feats = globe->GetFeaturesSet();
 	for (unsigned int i = 0; i < feats.GetSize(); i++)
 	{
-		wxString2 str;
 		vtFeatureSet *feat = feats[i];
 
-		str = feat->GetFilename();
+		wxString str(feat->GetFilename(), wxConvUTF8);
 		wxTreeItemId hItem = m_pTree->AppendItem(hRoot, str, -1, -1);
 
 		OGRwkbGeometryType type = feat->GetGeomType();
@@ -451,8 +445,8 @@ void SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 		// save current directory
 		wxString path = wxGetCwd();
 
-		wxString2 default_file = StartOfFilename(fname);
-		wxString2 default_dir = ExtractPath(fname);
+		wxString default_file(StartOfFilename(fname), wxConvUTF8);
+		wxString default_dir(ExtractPath(fname), wxConvUTF8);
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Abstract Data"), default_dir,
@@ -464,8 +458,8 @@ void SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 			wxSetWorkingDirectory(path);	// restore
 			return;
 		}
-		wxString2 str = saveFile.GetPath();
-		fname = str.mb_str();
+		wxString str = saveFile.GetPath();
+		fname = str.mb_str(wxConvUTF8);
 		set->SetFilename(fname);
 	}
 	set->SaveToSHP(fname);

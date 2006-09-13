@@ -1,7 +1,7 @@
 //
 // Name:		PlantDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "../PlantingOptions.h"
 #include "vtdata/Array.h"
 
@@ -70,7 +69,7 @@ private:
 	int  m_iHeightSlider;
 	int  m_iVarianceSlider;
 	int  m_iSpeciesChoice;
-	wxString2 m_strLang;
+	wxString m_strLang;
 
 	wxSlider		*m_pHeightSlider;
 	wxChoice		*m_pSpecies;

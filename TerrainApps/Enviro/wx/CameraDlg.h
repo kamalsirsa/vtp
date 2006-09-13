@@ -1,7 +1,7 @@
 //
 // Name: CameraDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 
 // WDR: class declarations
 
@@ -46,7 +45,7 @@ public:
 
 private:
 	// WDR: member variable declarations for CameraDlg
-	wxString2 m_camX, m_camY, m_camZ, m_camWidth;
+	wxString m_camX, m_camY, m_camZ, m_camWidth;
 
 	int m_iFov;
 	int m_iNear;

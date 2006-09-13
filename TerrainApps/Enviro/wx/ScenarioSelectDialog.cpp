@@ -1,14 +1,12 @@
 //
 // Name: ScenarioSelectDialog.cpp
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-
-#include "vtui/wxString2.h"
 
 #include "ScenarioSelectDialog.h"
 #include "ScenarioParamsDialog.h"
@@ -23,11 +21,10 @@ bool CScenarioListValidator::TransferToWindow()
 	wxListBox* pListBox = wxDynamicCast(GetWindow(), wxListBox);
 	if (NULL != pListBox)
 	{
-		wxString2 str;
 		pListBox->Clear();
 		for (unsigned int i = 0; i < m_pScenarios->size(); i++)
 		{
-			str.from_utf8((*m_pScenarios)[i].GetValueString(STR_SCENARIO_NAME));
+			wxString str((*m_pScenarios)[i].GetValueString(STR_SCENARIO_NAME), wxConvUTF8);
 			pListBox->Append(str);
 		}
 		return true;
@@ -222,8 +219,7 @@ void CScenarioSelectDialog::OnEditScenario( wxCommandEvent &event )
 		{
 			if (ScenarioParamsDialog.IsModified())
 			{
-				wxString2 str;
-				str.from_utf8(m_Scenarios[iSelected].GetValueString(STR_SCENARIO_NAME));
+				wxString str(m_Scenarios[iSelected].GetValueString(STR_SCENARIO_NAME), wxConvUTF8);
 				m_Scenarios[iSelected] = ScenarioParamsDialog.GetParams();
 				pScenarioList->SetString(iSelected, str);
 				m_bModified = true;
@@ -248,14 +244,15 @@ void CScenarioSelectDialog::OnDeleteScenario( wxCommandEvent &event )
 
 void CScenarioSelectDialog::OnNewScenario( wxCommandEvent &event )
 {
-	wxString2 ScenarioName = wxGetTextFromUser(_("Enter Scenario Name"), _("New Scenario"));
+	wxString ScenarioName = wxGetTextFromUser(_("Enter Scenario Name"), _("New Scenario"));
 	wxListBox *pScenarioList = GetScenarioList();
 
 	if (!ScenarioName.IsEmpty())
 	{
 		ScenarioParams Scenario;
 
-		Scenario.SetValueString(STR_SCENARIO_NAME, ScenarioName.to_utf8(), true);
+		Scenario.SetValueString(STR_SCENARIO_NAME,
+			(const char *) ScenarioName.mb_str(wxConvUTF8), true);
 		m_Scenarios.push_back(Scenario);
 		pScenarioList->SetSelection(pScenarioList->Append(ScenarioName));
 		m_bModified = true;

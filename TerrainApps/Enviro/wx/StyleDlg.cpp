@@ -1,7 +1,7 @@
 //
 // Name:		StyleDlg.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project.
+// Copyright (c) 2004-2006 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,7 +18,6 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtdata/Features.h"
-#include "vtui/wxString2.h"
 #include "vtui/Helper.h"
 
 // WDR: class implementations
@@ -162,7 +161,7 @@ void StyleDlg::RefreshFields()
 	GetColorField()->Append(_("(none)"));
 
 	m_type = GetFeatureGeomType(m_strResolved);
-	m_strFeatureType = OGRGeometryTypeToName(m_type);
+	m_strFeatureType = wxString(OGRGeometryTypeToName(m_type), wxConvUTF8);
 
 	if (m_Fields.LoadFieldInfoFromDBF(m_strResolved))
 	{
@@ -170,7 +169,7 @@ void StyleDlg::RefreshFields()
 		for (i = 0; i < num; i++)
 		{
 			Field *field = m_Fields.GetField(i);
-			wxString2 field_name = field->m_name;
+			wxString field_name(field->m_name, wxConvUTF8);
 			GetTextField()->Append(field_name);
 			GetColorField()->Append(field_name);
 		}

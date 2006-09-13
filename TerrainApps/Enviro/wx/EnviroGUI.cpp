@@ -128,8 +128,8 @@ void EnviroGUI::SaveVegetation(bool bAskFilename)
 		// save current directory
 		wxString path = wxGetCwd();
 
-		wxString2 default_file = StartOfFilename(fname);
-		wxString2 default_dir = ExtractPath(fname);
+		wxString default_file(StartOfFilename(fname), wxConvUTF8);
+		wxString default_dir(ExtractPath(fname), wxConvUTF8);
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Vegetation Data"), default_dir,
@@ -141,8 +141,8 @@ void EnviroGUI::SaveVegetation(bool bAskFilename)
 			wxSetWorkingDirectory(path);	// restore
 			return;
 		}
-		wxString2 str = saveFile.GetPath();
-		fname = str.mb_str();
+		wxString str = saveFile.GetPath();
+		fname = str.mb_str(wxConvUTF8);
 		pia.SetFilename(fname);
 	}
 	pia.WriteVF(fname);
@@ -157,8 +157,8 @@ void EnviroGUI::SaveStructures(bool bAskFilename)
 		// save current directory
 		wxString path = wxGetCwd();
 
-		wxString2 default_file = StartOfFilename(fname);
-		wxString2 default_dir = ExtractPath(fname);
+		wxString default_file(StartOfFilename(fname), wxConvUTF8);
+		wxString default_dir(ExtractPath(fname), wxConvUTF8);
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Built Structures Data"),
@@ -171,8 +171,8 @@ void EnviroGUI::SaveStructures(bool bAskFilename)
 			wxSetWorkingDirectory(path);	// restore
 			return;
 		}
-		wxString2 str = saveFile.GetPath();
-		fname = str.mb_str();
+		wxString str = saveFile.GetPath();
+		fname = str.mb_str(wxConvUTF8);
 		sa->SetFilename(fname);
 	}
 	sa->WriteXML(fname);
@@ -187,7 +187,7 @@ void EnviroGUI::ShowMessage(const vtString &str)
 {
 	EnableContinuousRendering(false);
 
-	wxString2 str2 = str;
+	wxString str2(str, wxConvUTF8);
 	wxMessageBox(str2);
 
 	EnableContinuousRendering(true);

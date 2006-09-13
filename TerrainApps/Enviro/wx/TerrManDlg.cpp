@@ -1,7 +1,7 @@
 //
 // Name: TerrManDlg.cpp
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,6 @@
 
 #include "vtlib/core/TParams.h"
 #include "vtdata/FilePath.h"
-#include "vtui/wxString2.h"
 #include "TerrManDlg.h"
 #include "../Options.h"
 #include "EnviroApp.h"
@@ -65,7 +64,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 
 	vtStringArray &paths = m_DataPaths;
 	size_t i, num = paths.size();
-	wxString2 wstr, wstr2;
+	wxString wstr;
 
 	m_Root = m_pTree->AddRoot(_("Terrain Data Paths"));
 
@@ -73,7 +72,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 	{
 		vtString str = paths[i];
 
-		wstr = str;
+		wstr = wxString(str, wxConvUTF8);
 		wxTreeItemId hPath = m_pTree->AppendItem(m_Root, wstr);
 
 		vtString directory = str + "Terrains";
@@ -93,11 +92,11 @@ void TerrainManagerDlg::RefreshTreeContents()
 			TParams params;
 			bool success = params.LoadFrom(directory + "/" + name);
 
-			wstr = name;
+			wstr = wxString(name, wxConvUTF8);
 			if (success)
 			{
 				wstr += _T(" (");
-				wstr2.from_utf8(params.GetValueString(STR_NAME));
+				wxString wstr2(params.GetValueString(STR_NAME), wxConvUTF8);
 				wstr += wstr2;
 				wstr += _T(")");
 			}
@@ -118,7 +117,6 @@ void TerrainManagerDlg::RefreshTreeText()
 {
 	wxTreeItemId i1, i2;
 	TParams params;
-	wxString2 wstr, wstr2;
 
     wxTreeItemIdValue cookie1, cookie2;
 	for (i1 = m_pTree->GetFirstChild(m_Root, cookie1); i1.IsOk(); i1 = m_pTree->GetNextChild(i1, cookie1))
@@ -126,14 +124,13 @@ void TerrainManagerDlg::RefreshTreeText()
 		for (i2 = m_pTree->GetFirstChild(i1, cookie2); i2.IsOk(); i2 = m_pTree->GetNextChild(i2, cookie2))
 		{
 			TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(i2);
-			wxString2 path = data->m_strDir + "/" + data->m_strXmlFile;
-			if (params.LoadFrom(path.mb_str()))
+			vtString path = data->m_strDir + "/" + data->m_strXmlFile;
+			if (params.LoadFrom(path))
 			{
 				data->m_strName = params.GetValueString(STR_NAME);
-				wstr = data->m_strXmlFile;
+				wxString wstr(data->m_strXmlFile, wxConvUTF8);
 				wstr += _T(" (");
-				wstr2.from_utf8(params.GetValueString(STR_NAME));
-				wstr += wstr2;
+				wstr += wxString(params.GetValueString(STR_NAME), wxConvUTF8);
 				wstr += _T(")");
 				m_pTree->SetItemText(i2, wstr);
 			}
@@ -149,10 +146,10 @@ wxString TerrainManagerDlg::GetCurrentPath()
 
 wxString TerrainManagerDlg::GetCurrentTerrainPath()
 {
-	wxString2 path = GetCurrentPath();
+	wxString path = GetCurrentPath();
 	TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
-	path += "Terrains/";
-	path += data->m_strXmlFile;
+	path += _T("Terrains/");
+	path += wxString(data->m_strXmlFile, wxConvUTF8);
 	return path;
 }
 
@@ -164,20 +161,20 @@ void TerrainManagerDlg::OnCopy( wxCommandEvent &event )
 		return;
 
 	TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
-	wxString2 file = data->m_strXmlFile;
+	wxString file(data->m_strXmlFile, wxConvUTF8);
 
-	wxString2 msg = _("Please enter the name for the terrain copy.");
-	wxString2 str = wxGetTextFromUser(msg, _("Add Copy of Terrain"), file);
+	wxString msg = _("Please enter the name for the terrain copy.");
+	wxString str = wxGetTextFromUser(msg, _("Add Copy of Terrain"), file);
 	if (str == _T(""))
 		return;
 
 	TParams params;
 	params.LoadFrom(GetCurrentTerrainPath().mb_str());
 
-	wxString2 newpath = GetCurrentPath();
-	newpath += "Terrains/";
+	wxString newpath = GetCurrentPath();
+	newpath += _T("Terrains/");
 	newpath += str;
-	params.WriteToXML(newpath.mb_str(), STR_TPARAMS_FORMAT_NAME);
+	params.WriteToXML(newpath.mb_str(wxConvUTF8), STR_TPARAMS_FORMAT_NAME);
 	RefreshTreeContents();
 }
 
@@ -186,7 +183,8 @@ void TerrainManagerDlg::OnEditParams( wxCommandEvent &event )
 	if (m_iSelect != 2)
 		return;
 
-	int res = EditTerrainParameters(this, GetCurrentTerrainPath().mb_str());
+	wxString curpath = GetCurrentTerrainPath();
+	int res = EditTerrainParameters(this, curpath.mb_str(wxConvUTF8));
 	if (res == wxID_OK)
 	{
 		// They might have changed an .ini to .xml
@@ -206,10 +204,11 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 	if (m_iSelect == 1)
 	{
 		// remove path
-		wxString2 path = m_pTree->GetItemText(m_Selected);
+		wxString path = m_pTree->GetItemText(m_Selected);
+		vtString vpath = path.mb_str(wxConvUTF8);
 		for (vtStringArray::iterator it = paths.begin(); it != paths.end(); it++)
 		{
-			if (*it == vtString(path.mb_str()))
+			if (*it == vpath)
 			{
 				paths.erase(it);
 				break;
@@ -221,12 +220,12 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 	{
 		// delete terrain .ini file
 		wxTreeItemId parent = m_pTree->GetItemParent(m_Selected);
-		wxString2 path = m_pTree->GetItemText(parent);
-		path += "Terrains/";
+		vtString path = m_pTree->GetItemText(parent).mb_str(wxConvUTF8);
+		path +="Terrains/";
 
 		TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
 		path += data->m_strXmlFile;
-		vtDeleteFile(path.mb_str());
+		vtDeleteFile(path);
 
 		m_pTree->Delete(m_Selected);
 	}
@@ -234,26 +233,26 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 
 void TerrainManagerDlg::OnAddTerrain( wxCommandEvent &event )
 {
-	wxString2 msg = _("Please enter the name for a new terrain .xml file.");
-	wxString2 str = wxGetTextFromUser(msg, _("Add Terrain"));
+	wxString msg = _("Please enter the name for a new terrain .xml file.");
+	wxString str = wxGetTextFromUser(msg, _("Add Terrain"));
 	if (str == _T(""))
 		return;
 
 	if (str.Right(4).CmpNoCase(_T(".xml")))
-		str += ".xml";
+		str += _T(".xml");
 
-	wxString2 path = m_pTree->GetItemText(m_Selected);
+	vtString path = m_pTree->GetItemText(m_Selected).mb_str(wxConvUTF8);
 	path += "Terrains";
 
 	// Make sure Terrains directory exists
-	vtCreateDir(path.mb_str());
+	vtCreateDir(path);
 
 	path += "/";
-	path += str;
+	path += str.mb_str(wxConvUTF8);
 
 	TParams params;
 	params.SetValueString(STR_NAME, "Untitled");
-	params.WriteToXML(path.mb_str(), STR_TPARAMS_FORMAT_NAME);
+	params.WriteToXML(path, STR_TPARAMS_FORMAT_NAME);
 
 	RefreshTreeContents();
 }
@@ -262,8 +261,8 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 {
 #if 0
 	// This is nice in that it allows you to type a relative path
-	wxString2 msg = _T("Please enter an absolute or relative path.";
-	wxString2 str = wxGetTextFromUser(msg, _T("Add Path"));
+	wxString msg = _T("Please enter an absolute or relative path.";
+	wxString str = wxGetTextFromUser(msg, _T("Add Path"));
 	if (str == _T(""))
 		return;
 #endif
@@ -282,7 +281,8 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 			str += _T("/");
 	}
 
-	m_DataPaths.push_back(vtString(str.mb_str()));
+	vtString path(str.mb_str(wxConvUTF8));
+	m_DataPaths.push_back(path);
 
 	// Also inform global data paths
 	g_Options.m_DataPaths = m_DataPaths;

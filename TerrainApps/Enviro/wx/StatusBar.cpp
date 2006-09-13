@@ -14,7 +14,6 @@
 
 #include "vtdata/vtLog.h"
 #include "vtlib/vtlib.h"
-#include "vtui/wxString2.h"
 
 #include "StatusBar.h"
 
@@ -40,25 +39,25 @@ MyStatusBar::MyStatusBar(wxWindow *parent) :
 void MyStatusBar::UpdateText()
 {
 	vtString str;
-	wxString2 ws;
+	wxString ws;
 
 	str = g_App.GetMessage();
 	if (str != "")
 	{
-		ws.from_utf8(str);
+		ws = wxString(str, wxConvUTF8);
 		SetStatusText(ws, Field_Text);
 	}
 
 	str = g_App.GetStatusString(0);
-	ws = str;
+	ws = wxString(str, wxConvUTF8);
 	SetStatusText(ws, Field_Fps);
 
 	str = g_App.GetStatusString(1);
-	ws = str;
+	ws = wxString(str, wxConvUTF8);
 	SetStatusText(ws, Field_Cursor);
 
 	str = g_App.GetStatusString(2);
-	ws.from_utf8(str);
+	ws = wxString(str, wxConvUTF8);
 	SetStatusText(ws, Field_CursorVal);
 }
 

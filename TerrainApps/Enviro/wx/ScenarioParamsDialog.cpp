@@ -1,7 +1,7 @@
 //
 // Name: ScenarioParamsDialog.cpp
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,7 +9,6 @@
 #include "wx/wxprec.h"
 #include "wx/filename.h"
 
-#include "vtui/wxString2.h"
 #include "ScenarioParamsDialog.h"
 
 // WDR: class implementations
@@ -43,8 +42,8 @@ CScenarioParamsDialog::CScenarioParamsDialog( wxWindow *parent, wxWindowID id, c
 
 void CScenarioParamsDialog::OnScenarioNameText( wxCommandEvent &event )
 {
-	wxString2 str = event.GetString();
-	m_Params.SetValueString(STR_SCENARIO_NAME, str.to_utf8());
+	wxString str = event.GetString();
+	m_Params.SetValueString(STR_SCENARIO_NAME, (const char *) str.mb_str(wxConvUTF8));
 	m_bModified = true;
 }
 
@@ -83,10 +82,10 @@ void CScenarioParamsDialog::OnScenarioAddVisibleLayer( wxCommandEvent &event )
 
 	if (wxNOT_FOUND != (iOffset = pAvailableLayers->GetSelection()))
 	{
-		wxString2 Layer = pAvailableLayers->GetStringSelection();
+		wxString Layer = pAvailableLayers->GetStringSelection();
 		pAvailableLayers->Delete(iOffset);
 		pVisibleLayers->Append(Layer);
-		m_Params.GetActiveLayers().push_back(Layer.to_utf8());
+		m_Params.GetActiveLayers().push_back((const char *) Layer.mb_str(wxConvUTF8));
 		m_bModified = true;
 	}
 	UpdateEnableState();
@@ -99,8 +98,7 @@ void CScenarioParamsDialog::OnInitDialog(wxInitDialogEvent& event)
 	wxListBox *pVisibleLayers = GetScenarioVisibleLayers();
 	vtStringArray TempVisibleLayers = m_Params.GetActiveLayers();
 
-	wxString2 str;
-	str.from_utf8(m_Params.GetValueString(STR_SCENARIO_NAME));
+	wxString str(m_Params.GetValueString(STR_SCENARIO_NAME), wxConvUTF8);
 	pScenarioName->SetValue(str);
 
 	for (unsigned int i = 0; i < m_Layers.size(); i++)
@@ -111,9 +109,9 @@ void CScenarioParamsDialog::OnInitDialog(wxInitDialogEvent& event)
 			continue;
 
 		wxFileName FileName;
-		str.from_utf8(m_Layers[i].GetValueString("Filename"));
+		wxString fname(m_Layers[i].GetValueString("Filename"), wxConvUTF8);
 
-		FileName.Assign(str);
+		FileName.Assign(fname);
 		pAvailableLayers->Append(FileName.GetName());
 	}
 
@@ -122,7 +120,7 @@ void CScenarioParamsDialog::OnInitDialog(wxInitDialogEvent& event)
 	while (iTr != TempVisibleLayers.end())
 	{
 		int iOffset;
-		str.from_utf8((pcchar)(*iTr));
+		str = wxString((pcchar)(*iTr), wxConvUTF8);
 		if (wxNOT_FOUND != (iOffset = pAvailableLayers->FindString(str)))
 		{
 			pVisibleLayers->Append(str);

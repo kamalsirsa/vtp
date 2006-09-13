@@ -260,7 +260,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	// Give it an icon
 	// Not sure why this doesn't work for Enviro on wxGTK, but it gives a
 	//  error, so it's disabled here.  Works on Windows, works with VTBuilder.
-	wxString2 str = ICON_NAME;
+	wxString str(ICON_NAME, wxConvUTF8);
 	VTLOG(" Setting icon: '%s'\n", ICON_NAME);
 	SetIcon(wxIcon(str));
 #endif
@@ -487,10 +487,10 @@ void EnviroFrame::CreateMenus()
 	}
 
 	wxMenu *helpMenu = new wxMenu;
-	wxString2 about = _("About");
-	about += " ";
-	about += STRING_APPORG;
-	about += "...";
+	wxString about = _("About");
+	about += _T(" ");
+	about += wxString(STRING_APPORG, wxConvUTF8);
+	about += _T("...");
 	helpMenu->Append(ID_HELP_ABOUT, about);
 	helpMenu->Append(ID_HELP_DOC_LOCAL, _("Documentation (local)"));
 	helpMenu->Append(ID_HELP_DOC_ONLINE, _("Documentation (online)"));
@@ -1046,7 +1046,7 @@ void EnviroFrame::Snapshot(bool bNumbered)
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
 
-	wxString2 use_name;
+	wxString use_name;
 	if (!bNumbered || (bNumbered && m_strSnapshotFilename == _T("")))
 	{
 		// save current directory
@@ -1105,16 +1105,16 @@ void EnviroFrame::Snapshot(bool bNumbered)
 	switch (m_iFormat)
 	{
 	case 0:
-		dib.WriteJPEG(use_name.mb_str(), 98);
+		dib.WriteJPEG(use_name.mb_str(wxConvUTF8), 98);
 		break;
 	case 1:
-		dib.WriteBMP(use_name.mb_str());
+		dib.WriteBMP(use_name.mb_str(wxConvUTF8));
 		break;
 	case 2:
-		dib.WritePNG(use_name.mb_str());
+		dib.WritePNG(use_name.mb_str(wxConvUTF8));
 		break;
 	case 3:
-		dib.WriteTIF(use_name.mb_str());
+		dib.WriteTIF(use_name.mb_str(wxConvUTF8));
 		break;
 	}
 	pImage->Release();
@@ -1283,9 +1283,9 @@ void EnviroFrame::OnSceneGraph(wxCommandEvent& event)
 
 void EnviroFrame::OnSceneTerrain(wxCommandEvent& event)
 {
-	wxString2 str;
+	wxString str;
 	if (wxGetApp().AskForTerrainName(this, str))
-		g_App.SwitchToTerrain(str.to_utf8());
+		g_App.SwitchToTerrain(str.mb_str(wxConvUTF8));
 }
 
 void EnviroFrame::OnUpdateSceneTerrain(wxUpdateUIEvent& event)
@@ -1677,7 +1677,7 @@ void EnviroFrame::OnEarthPoints(wxCommandEvent& event)
 		return;
 	}
 
-	wxString2 str = loadFile.GetPath();
+	wxString str = loadFile.GetPath();
 
 	int ret = g_App.AddGlobeAbstractLayer(str.mb_str());
 	if (ret == -1)
@@ -1696,7 +1696,7 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	EnableContinuousRendering(false);
 
- 	wxString2 str = STRING_APPORG "\n\n";
+ 	wxString str(STRING_APPORG "\n\n", wxConvUTF8);
 #ifdef ENVIRO_NATIVE
 	str += _T("The runtime environment for the Virtual Terrain Project.\n\n");
  	str += _T("Please read the HTML documentation and license.\n\n");
@@ -1718,10 +1718,10 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 #endif
  	str += _T(" Library.\n\n");
 	str += _T("Build date: ");
-	str += __DATE__;
+	str += wxString(__DATE__, *wxConvCurrent);
 
-	wxString2 str2 = "About ";
-	str2 += STRING_APPORG;
+	wxString str2 = _("About ");
+	str2 += wxString(STRING_APPORG, wxConvUTF8);
 	wxMessageBox(str, str2);
 
 	EnableContinuousRendering(true);
@@ -1730,7 +1730,7 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 void EnviroFrame::OnHelpDocLocal(wxCommandEvent &event)
 {
 	// Launch default web browser with documentation pages
-	wxString2 wxcwd = wxGetCwd();
+	wxString wxcwd = wxGetCwd();
 	vtString cwd = wxcwd.mb_str();
 
 	vtStringArray paths;
@@ -1740,7 +1740,7 @@ void EnviroFrame::OnHelpDocLocal(wxCommandEvent &event)
 	if (result != "")
 	{
 		result = "file:///" + result;
-		wxLaunchDefaultBrowser(wxString2(result));
+		wxLaunchDefaultBrowser(wxString(result, wxConvUTF8));
 		return;
 	}
 	wxMessageBox(_("Couldn't find local documentation files"));
@@ -2093,6 +2093,6 @@ void EnviroFrame::OnPopupURL(wxCommandEvent& event)
 {
 	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
 	vtStructure *struc = sa->GetAt(sa->GetFirstSelected());
-	wxLaunchDefaultBrowser(wxString2(struc->GetValueString("url")));
+	wxLaunchDefaultBrowser(wxString(struc->GetValueString("url"), wxConvUTF8));
 }
 

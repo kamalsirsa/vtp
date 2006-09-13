@@ -48,17 +48,17 @@ void EnviroApp::Args(int argc, wxChar **argv)
 {
 	for (int i = 0; i < argc; i++)
 	{
-		wxString2 str = argv[i];
-		const char *cstr = str.mb_str();
-		if (!strcmp(cstr, "-no_startup_dialog"))
+		wxString str1 = argv[i];
+		vtString str = str1.mb_str();
+		if (str == "-no_startup_dialog")
 			m_bShowStartupDialog = false;
-		else if (!strncmp(cstr, "-terrain=", 9))
+		else if (str.Left(9) == "-terrain=")
 			m_bShowStartupDialog = false;
-		else if (!strncmp(cstr, "-locale=", 8))
-			m_locale_name = cstr+8;
+		else if (str.Left(8) == "-locale=")
+			m_locale_name = (const char *) str + 8;
 
 		// also let the core application check the command line
-		g_App.StartupArgument(i, cstr);
+		g_App.StartupArgument(i, str);
 	}
 }
 
@@ -86,7 +86,7 @@ void EnviroApp::SetupLocale()
 	if (m_locale_name != "")
 	{
 		VTLOG("Looking up language: %s\n", (const char *) m_locale_name);
-		lang = GetLangFromName(wxString2(m_locale_name));
+		lang = GetLangFromName(wxString(m_locale_name, wxConvUTF8));
 		if (lang == wxLANGUAGE_UNKNOWN)
 		{
 			VTLOG(" Unknown, falling back on default language.\n");
@@ -154,7 +154,14 @@ bool EnviroApp::OnInit()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	g_Options.Read(STRING_APPNAME ".ini");
+	if (!g_Options.ReadXML(STRING_APPNAME ".xml"))
+	{
+		// Look for older .ini file
+		g_Options.ReadINI(STRING_APPNAME ".ini");
+
+		// We will always save to xml
+		g_Options.m_strFilename = STRING_APPNAME ".xml";
+	}
 
 	g_App.Startup();	// starts log
 
@@ -206,7 +213,7 @@ bool EnviroApp::OnInit()
 		RefreshTerrainList();
 
 		VTLOG("Opening the Startup dialog.\n");
-		wxString2 appname = STRING_APPNAME;
+		wxString appname(STRING_APPNAME, wxConvUTF8);
 		appname += _(" Startup");
 		StartupDlg StartDlg(NULL, -1, appname, wxDefaultPosition);
 
@@ -217,7 +224,7 @@ bool EnviroApp::OnInit()
 			return FALSE;
 
 		StartDlg.PutOptionsTo(g_Options);
-		g_Options.Write();
+		g_Options.WriteXML();
 	}
 
 	// Now we can create vtTerrain objects for each terrain
@@ -243,17 +250,17 @@ bool EnviroApp::OnInit()
 	//
 	// Create the main frame window
 	//
-	wxString2 title = STRING_APPORG;
+	wxString title(STRING_APPORG, wxConvUTF8);
 #if VTLIB_PSM
-	title += " PSM";
+	title += _T(" PSM");
 #elif VTLIB_OSG
-	title += " OSG";
+	title += _T(" OSG");
 #elif VTLIB_OPENSG
-	title += " OpenSG";
+	title += _T(" OpenSG");
 #elif VTLIB_SGL
-	title += " SGL";
+	title += _T(" SGL");
 #elif VTLIB_SSG
-	title += " SSG";
+	title += _T(" SSG");
 #endif
 	VTLOG1("Creating the frame window.\n");
 	wxPoint pos(g_Options.m_WinPos.x, g_Options.m_WinPos.y);
@@ -295,8 +302,8 @@ bool EnviroApp::OnInit()
 	// Also let the frame see the command-line arguments
 	for (int i = 0; i < argc; i++)
 	{
-		wxString2 str = argv[i];
-		frame->FrameArgument(i, str.mb_str());
+		wxString str = argv[i];
+		frame->FrameArgument(i, str.mb_str(wxConvUTF8));
 	}
 
 	go = true;
@@ -386,8 +393,7 @@ bool EnviroApp::AskForTerrainName(wxWindow *pParent, wxString &strTerrainName)
 	for (unsigned int i = 0; i < ts->NumTerrains(); i++)
 	{
 		vtTerrain *terr = ts->GetTerrain(i);
-		wxString2 wstr;
-		wstr.from_utf8(terr->GetName());
+		wxString wstr(terr->GetName(), wxConvUTF8);
 		choices.push_back(wstr);
 		if (wstr.Cmp(strTerrainName) == 0)
 			first_idx = num;
@@ -448,9 +454,9 @@ int EditTerrainParameters(wxWindow *parent, const char *filename)
 		vtString ext = GetExtension(fname, false);
 		if (ext.CompareNoCase(".ini") == 0)
 		{
-			wxString2 str = _("Upgrading the .ini to a .xml file.\n");
+			wxString str = _("Upgrading the .ini to a .xml file.\n");
 			str += _("Deleting old file: ");
-			str += fname;
+			str += wxString(fname, wxConvUTF8);
 			wxMessageBox(str);
 
 			// Try to get rid of it.  Hope they aren't on read-only FS.

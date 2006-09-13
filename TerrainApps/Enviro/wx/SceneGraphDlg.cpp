@@ -1,7 +1,7 @@
 //
 // Name:		SceneGraphDlg.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,7 +21,6 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Engine.h"
-#include "vtui/wxString2.h"
 #include "SceneGraphDlg.h"
 
 #include <typeinfo>
@@ -285,10 +284,9 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 
 	if (!pEng) return;
 
-	wxString2 str, str2;
-	str.from_utf8(pEng->GetName2());
-	if (str == wxString2(""))
-		str = "unnamed";
+	wxString str(pEng->GetName2(), wxConvUTF8);
+	if (str == _T(""))
+		str = _("unnamed");
 
 	int targets = pEng->NumTargets();
 	vtTarget *target = pEng->GetTarget();
@@ -299,7 +297,7 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 		if (node)
 		{
 			str += _T("\"");
-			str2.from_utf8(node->GetName2());
+			wxString str2(node->GetName2(), wxConvUTF8);
 			str += str2;
 			str += _T("\"");
 		}
@@ -308,7 +306,7 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 	}
 	if (targets > 1)
 	{
-		wxString2 plus;
+		wxString plus;
 		plus.Printf(_(" (%d targets total)"), targets);
 		str += plus;
 	}

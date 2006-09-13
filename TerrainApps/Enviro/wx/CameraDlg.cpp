@@ -262,7 +262,7 @@ void CameraDlg::CheckAndUpdatePos()
 	g_Conv.ConvertToEarth(fpos, m_pos);
 
 	bool bTransfer = false;
-	wxString2 newx, newy, newz;
+	wxString newx, newy, newz;
 	newx.Printf(_T("%.7g"), m_pos.x);
 	newy.Printf(_T("%.7g"), m_pos.y);
 	newz.Printf(_T("%.7g"), m_pos.z);

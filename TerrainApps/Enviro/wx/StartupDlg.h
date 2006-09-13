@@ -1,7 +1,7 @@
 //
 // Name: StartupDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "../Options.h"
 
 class EnviroOptions;
@@ -48,8 +47,8 @@ private:
 
 	bool	m_bStartEarth;
 	bool	m_bStartTerrain;
-	wxString2   m_strTName;
-	wxString2   m_strEarthImage;
+	wxString   m_strTName;
+	wxString   m_strEarthImage;
 	wxStaticText  *m_psImage;
 	wxComboBox  *m_pImage;
 

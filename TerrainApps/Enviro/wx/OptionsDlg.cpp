@@ -90,7 +90,7 @@ void OptionsDlg::GetOptionsFrom(EnviroOptions &opt)
 //  m_bShadows = opt.m_bShadows;
 	m_bOnlyAvailableSpecies = opt.m_bOnlyAvailableSpecies;
 
-	m_strContentFile = opt.m_strContentFile;
+	m_strContentFile = wxString(opt.m_strContentFile, wxConvUTF8);
 }
 
 void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
@@ -115,7 +115,7 @@ void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
 //  opt.m_bShadows = m_bShadows;
 	opt.m_bOnlyAvailableSpecies = m_bOnlyAvailableSpecies;
 
-	opt.m_strContentFile = m_strContentFile.mb_str();
+	opt.m_strContentFile = m_strContentFile.mb_str(wxConvUTF8);
 }
 
 void OptionsDlg::UpdateEnabling()
