@@ -12,7 +12,6 @@
 #include "wx/wx.h"
 #endif
 
-#include "wxString2.h"
 #include "LinearStructDlg.h"
 
 #define VALUE_MIN  0.2f
@@ -111,10 +110,10 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 
 void LinearStructureDlg::UpdateTypes()
 {
-	wxString2 ws;
-	ws = m_param.m_PostType;
+	wxString ws(m_param.m_PostType, wxConvUTF8);
 	GetPostType()->SetStringSelection(ws);
-	ws = m_param.m_ConnectType;
+
+	ws = wxString(m_param.m_ConnectType, wxConvUTF8);
 	GetConnType()->SetStringSelection(ws);
 
 	vtString str = m_param.m_PostExtension;
@@ -162,8 +161,8 @@ void LinearStructureDlg::OnConnType( wxCommandEvent &event )
 {
 	if (m_bSetting) return;
 
-	wxString2 ws = GetConnType()->GetStringSelection();
-	m_param.m_ConnectType = ws.vt_str();
+	wxString ws = GetConnType()->GetStringSelection();
+	m_param.m_ConnectType = ws.mb_str(wxConvUTF8);
 	UpdateEnabling();
 
 	m_iStyle = FS_TOTAL;	// custom
@@ -177,8 +176,8 @@ void LinearStructureDlg::OnPostType( wxCommandEvent &event )
 {
 	if (m_bSetting) return;
 
-	wxString2 ws = GetPostType()->GetStringSelection();
-	m_param.m_PostType = ws.vt_str();
+	wxString ws = GetPostType()->GetStringSelection();
+	m_param.m_PostType = ws.mb_str(wxConvUTF8);
 	UpdateEnabling();
 
 	m_iStyle = FS_TOTAL;	// custom

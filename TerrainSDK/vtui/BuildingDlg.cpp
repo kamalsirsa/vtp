@@ -597,7 +597,7 @@ void BuildingDlg::UpdateSlopes()
 {
 	if (m_bEdges == false)
 	{
-		wxString2 str;
+		wxString str;
 		m_strEdgeSlopes = _T("");
 		int i, edges = m_pLevel->NumEdges();
 		for (i = 0; i < edges; i++)
@@ -666,7 +666,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 			continue;
 
 		const vtString& MaterialName = mat->GetName();
-		wxString2 matname = (const char *) MaterialName;
+		wxString matname(MaterialName, wxConvUTF8);
 
 		// for multiple materials with the same name, only show them once
 		bool bFound = false;
@@ -764,9 +764,9 @@ void BuildingDlg::OnCharHook( wxKeyEvent &event )
 	}
 
 	// Test text input
-	wxString2 str = wxGetTextFromUser(_T("Test Message"), _T("Test Caption"), _T(""), this);
+	wxString str = wxGetTextFromUser(_T("Test Message"), _T("Test Caption"), _T(""), this);
 	TestParser par;
-	par.ParseInput(str.mb_str());
+	par.ParseInput(str.mb_str(wxConvUTF8));
 
 	MatchToken *tok;
 

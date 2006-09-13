@@ -1,7 +1,7 @@
 //
 // Name: DistanceDlg.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,7 +12,6 @@
 #include "wx/wx.h"
 #endif
 
-#include "wxString2.h"
 #include "DistanceDlg.h"
 #include "Helper.h" // for FormatCoord
 #include <float.h>	// for FLT_MIN
@@ -154,13 +153,13 @@ void DistanceDlg::ShowValues()
 	LinearUnits lu = m_proj.GetUnits();
 
 	// Map Offset
-	wxString2 str;
+	wxString str;
 	double scale;
 
 	if (m_iUnits1 == 0) // degrees
 	{
 		str = FormatCoord(true, diff_degrees.x);
-		str += ", ";
+		str += _T(", ");
 		str += FormatCoord(true, diff_degrees.y);
 	}
 	else
@@ -169,7 +168,7 @@ void DistanceDlg::ShowValues()
 			GetMetersPerUnit((LinearUnits)m_iUnits1);
 		DPoint2 diff_show = diff_map * scale;
 		str = FormatCoord(bIsGeo, diff_show.x);
-		str += ", ";
+		str += _T(", ");
 		str += FormatCoord(bIsGeo, diff_show.y);
 	}
 	GetMapOffset()->SetValue(str);

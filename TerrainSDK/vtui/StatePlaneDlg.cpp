@@ -1,7 +1,7 @@
 //
 // Name: StatePlaneDlg.cpp
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,6 @@
 #endif
 
 #include "StatePlaneDlg.h"
-#include "vtui/wxString2.h"
 
 // WDR: class implementations
 
@@ -60,7 +59,7 @@ void StatePlaneDlg::OnInitDialog(wxInitDialogEvent& event)
 	StatePlaneInfo *plane_info = GetStatePlaneTable();
 	for (int i = 0; i < num_planes; i++)
 	{
-		wxString2 str = plane_info[i].name;
+		wxString str(plane_info[i].name, wxConvUTF8);
 		GetStatePlanes()->Append(str, (void *) plane_info[i].usgs_code);
 	}
 

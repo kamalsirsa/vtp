@@ -18,7 +18,6 @@
 #endif
 
 #include "AutoDialog.h"
-#include "wxString2.h"
 
 /////////////////////////////////////////////////
 //
@@ -141,15 +140,15 @@ bool wxNumericValidator::TransferFromWindow()
 	if ( !m_bEnabled )
 		return true;
 
-	wxString2 str = _T("");
 	// string controls
+	wxString str;
 	if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
 	{
 		wxStaticText* pControl = (wxStaticText*) m_validatorWindow;
 		if (pControl)
 			str = pControl->GetLabel() ;
-	} else
-	if (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl)) )
+	}
+	else if (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl)) )
 	{
 		wxTextCtrl* pControl = (wxTextCtrl*) m_validatorWindow;
 		if (pControl)
@@ -160,7 +159,7 @@ bool wxNumericValidator::TransferFromWindow()
 
 	if (str != _T(""))
 	{
-		const char *ccs = str.mb_str();
+		const char *ccs = str.mb_str(*wxConvCurrent);
 		if (m_pValInt)
 			sscanf(ccs, "%d", m_pValInt);
 		if (m_pValFloat)

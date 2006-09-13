@@ -1,7 +1,7 @@
 //
 // InstanceDlg.cpp
 //
-// Copyright (c) 2003-2004 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,6 @@
 #endif
 
 #include "InstanceDlg.h"
-#include "wxString2.h"
 #include "vtdata/Content.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
@@ -58,7 +57,7 @@ void InstanceDlg::UpdateLoc()
 {
 	LinearUnits lu = m_proj.GetUnits();
 
-	wxString2 str;
+	wxString str;
 	if (lu == LU_DEGREES)
 		str.Printf(_T("%lf, %lf"), m_pos.x, m_pos.y);
 	else
@@ -91,8 +90,8 @@ vtTagArray *InstanceDlg::GetTagArray()
 	}
 	else
 	{
-		wxString2 str = GetModelFile()->GetValue();
-		m_dummy.SetValueString("filename", str.mb_str(), true);
+		wxString str = GetModelFile()->GetValue();
+		m_dummy.SetValueString("filename", (const char *) str.mb_str(wxConvUTF8), true);
 	}
 	return &m_dummy;
 }
@@ -117,7 +116,7 @@ void InstanceDlg::UpdateContentItems()
 		if (!mng)
 			return;
 
-		wxString2 str;
+		wxString str;
 		for (unsigned int j = 0; j < mng->NumItems(); j++)
 		{
 			vtItem *item = mng->GetItem(j);
@@ -151,7 +150,7 @@ void InstanceDlg::OnInitDialog(wxInitDialogEvent& event)
 	{
 		vtContentManager *mng = m_contents[i];
 		vtString str = mng->GetFilename();
-		wxString2 ws = str;
+		wxString ws(str, wxConvUTF8);
 		GetChoiceFile()->Append(ws);
 	}
 	GetChoiceFile()->Select(0);

@@ -15,7 +15,6 @@
 #include "ProjectionDlg.h"
 #include "StatePlaneDlg.h"
 #include "Helper.h"			// for GuessZoneFromGeo
-#include "vtui/wxString2.h"
 #include "vtdata/vtLog.h"
 
 //
@@ -109,12 +108,11 @@ void ProjectionDlg::RefreshDatums()
 {
 	m_pDatumCtrl->Clear();
 
-	wxString2 str;
 	m_pDatumCtrl->Append(_("Unknown"), (void *) (-1+CHOICE_OFFSET));
 	for (unsigned int i = 0; i < g_EPSGDatums.GetSize(); i++)
 	{
 		int code = g_EPSGDatums[i].iCode;
-		str = g_EPSGDatums[i].szName;
+		wxString str(g_EPSGDatums[i].szName, wxConvUTF8);
 		if (!m_bShowAllDatums)
 		{
 			if (!g_EPSGDatums[i].bCommon)
@@ -140,7 +138,7 @@ void ProjectionDlg::UpdateControlStatus()
 {
 	int i, pos = 0;
 	int real_zone;
-	wxString2 str;
+	wxString str;
 
 	m_pZoneCtrl->Clear();
 	switch (m_eProj)
@@ -234,7 +232,7 @@ void ProjectionDlg::UpdateDatumStatus()
 		RefreshDatums();
 		TransferDataToWindow();
 	}
-	wxString2 str = DatumToString(m_iDatum);
+	wxString str(DatumToString(m_iDatum), wxConvUTF8);
 	m_pDatumCtrl->SetStringSelection(str);
 
 	UpdateEllipsoid();
@@ -242,12 +240,11 @@ void ProjectionDlg::UpdateDatumStatus()
 
 void ProjectionDlg::UpdateEllipsoid()
 {
-	wxString2 str;
+	wxString str;
 	const char *ellip = m_proj.GetAttrValue("SPHEROID");
 	if (ellip)
-		str = ellip;
-	else
-		str = "";
+		str = wxString(ellip, wxConvUTF8);
+
 	GetEllipsoid()->SetValue(str);
 }
 
@@ -267,7 +264,7 @@ void ProjectionDlg::DisplayProjectionSpecificParams()
 	int children = root->GetChildCount();
 	int i, item = 0;
 
-	wxString2 str;
+	wxString str;
 	for (i = 0; i < children; i++)
 	{
 		node = root->GetChild(i);
@@ -355,7 +352,7 @@ void ProjectionDlg::SetUIFromProjection()
 		}
 		else
 		{
-			wxString2 str = _T("Unknown projection: ");
+			wxString str = _("Unknown projection: ");
 			str += proj_string;
 			wxMessageBox(str);
 		}
@@ -376,8 +373,8 @@ void ProjectionDlg::OnProjSave( wxCommandEvent &event )
 		_("Projection Files (*.prj)|*.prj"), wxSAVE | wxOVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
-	wxString2 strPathName = saveFile.GetPath();
-	m_proj.WriteProjFile(strPathName.mb_str());
+	wxString strPathName = saveFile.GetPath();
+	m_proj.WriteProjFile(strPathName.mb_str(wxConvUTF8));
 }
 
 void ProjectionDlg::OnProjLoad( wxCommandEvent &event )
@@ -386,8 +383,8 @@ void ProjectionDlg::OnProjLoad( wxCommandEvent &event )
 		_("Projection Files (*.prj)|*.prj"), wxOPEN);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
-	wxString2 strPathName = loadFile.GetPath();
-	if (m_proj.ReadProjFile(strPathName.mb_str()))
+	wxString strPathName = loadFile.GetPath();
+	if (m_proj.ReadProjFile(strPathName.mb_str(wxConvUTF8)))
         SetUIFromProjection();
 	else
 		wxMessageBox(_("Couldn't load projection from that file.\n"));
@@ -425,7 +422,7 @@ void ProjectionDlg::OnItemRightClick( wxListEvent &event )
 	const char *value;
 	int children = root->GetChildCount();
 	int i, item = 0;
-	wxString2 str;
+	wxString str;
 
 	for (i = 0; i < children; i++)
 	{
@@ -442,12 +439,12 @@ void ProjectionDlg::OnItemRightClick( wxListEvent &event )
 			str = par1->GetValue();
 			caption += str;
 			str = value;
-			wxString2 result = wxGetTextFromUser(caption, _("Enter new value"),
+			wxString result = wxGetTextFromUser(caption, _("Enter new value"),
 				str, this);
 			if (result != _T(""))
 			{
 //			  double newval = atof((const char *)result);
-				par2->SetValue(result.mb_str());
+				par2->SetValue(result.mb_str(wxConvUTF8));
 				DisplayProjectionSpecificParams();
 				return;
 			}

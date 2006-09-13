@@ -1,7 +1,7 @@
 //
 // Name: ProfileDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,7 +15,6 @@
 #include "vtui_wdr.h"
 #include "AutoDialog.h"
 #include "vtdata/HeightField.h"
-#include "wxString2.h"
 
 class ProfileCallback
 {

@@ -1,7 +1,7 @@
 //
 // Some useful standalone functions for use with wxWindows.
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,6 @@
 #include "wx/image.h"
 #include "wx/progdlg.h"
 
-#include "wxString2.h"
 #include "vtdata/FilePath.h"	// for dir_iter
 #include "vtdata/vtLog.h"
 #include "Helper.h"
@@ -72,7 +71,7 @@ int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 
 	int entries = 0, matches = 0;
 
-	wxString2 wildstr = wildcard;
+	wxString wildstr(wildcard, wxConvUTF8);
 	for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
 	{
 		entries++;
@@ -81,7 +80,7 @@ int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 		if (it.is_hidden() || it.is_directory())
 			continue;
 
-		wxString2 name = name1.c_str();
+		wxString name(name1.c_str(), wxConvUTF8);
 		if (name.Matches(wildstr))
 		{
 			if (omit_chars)
@@ -106,7 +105,7 @@ int AddFilenamesToChoice(wxChoice *choice, const char *directory,
 
 	int entries = 0, matches = 0;
 
-	wxString2 wildstr = wildcard;
+	wxString wildstr(wildcard, wxConvUTF8);
 	for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
 	{
 		entries++;
@@ -115,7 +114,7 @@ int AddFilenamesToChoice(wxChoice *choice, const char *directory,
 		if (it.is_hidden() || it.is_directory())
 			continue;
 
-		wxString2 name = name1.c_str();
+		wxString name(name1.c_str(), wxConvUTF8);
 		if (name.Matches(wildstr))
 		{
 			if (omit_chars)

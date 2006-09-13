@@ -4,7 +4,7 @@
 // This dialog is for defining a set of colors which map onto elevations,
 //  to define how the user wants an elevation dataset to be colored.
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -65,12 +65,12 @@ ColorMapDlg::ColorMapDlg( wxWindow *parent, wxWindowID id,
 void ColorMapDlg::SetFile(const char *fname)
 {
 	GetList()->DeleteAllItems();
-	m_strFile = "";
+	m_strFile = _T("");
 
 	if (!m_cmap.Load(fname))
 		return;
 
-	m_strFile = fname;
+	m_strFile = wxString(fname, wxConvUTF8);
 	m_bRelative = m_cmap.m_bRelative;
 	m_bBlend = m_cmap.m_bBlend;
 
@@ -98,7 +98,7 @@ void ColorMapDlg::UpdateItems()
 	}
 	GetList()->SetImageList(&m_imlist, wxIMAGE_LIST_SMALL);
 
-	wxString2 str;
+	wxString str;
 	for (i = 0; i < num; i++)
 	{
 		str.Printf(_("%.2f meters"), m_cmap.m_elev[i]);
@@ -126,11 +126,11 @@ void ColorMapDlg::OnLoad( wxCommandEvent &event )
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
-	wxString2 str = loadFile.GetPath();
-	vtString fname = str.vt_str();
+	wxString str = loadFile.GetPath();
+	vtString fname = str.mb_str(wxConvUTF8);
 	if (m_cmap.Load(fname))
 	{
-		m_strFile = fname;
+		m_strFile = str;
 		TransferDataToWindow();
 		UpdateItems();
 	}
@@ -142,7 +142,7 @@ void ColorMapDlg::OnSave( wxCommandEvent &event )
 	m_cmap.m_bRelative = m_bRelative;
 	m_cmap.m_bBlend = m_bBlend;
 
-	vtString fname = m_strFile.vt_str();
+	vtString fname = m_strFile.mb_str(wxConvUTF8);
 	m_cmap.Save(fname);
 }
 
@@ -157,11 +157,11 @@ void ColorMapDlg::OnSaveAs( wxCommandEvent &event )
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
-	wxString2 str = saveFile.GetPath();
-	vtString fname = str.vt_str();
+	wxString str = saveFile.GetPath();
+	vtString fname = str.mb_str(wxConvUTF8);
 	if (m_cmap.Save(fname))
 	{
-		m_strFile = fname;
+		m_strFile = str;
 		TransferDataToWindow();
 	}
 }

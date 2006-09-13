@@ -1,7 +1,7 @@
 //
 // Name: ColorMapDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,7 +15,6 @@
 #include "vtui_wdr.h"
 #include "AutoDialog.h"
 #include "vtdata/HeightField.h"
-#include "wxString2.h"
 
 // WDR: class declarations
 
@@ -47,7 +46,7 @@ public:
 private:
 	// WDR: member variable declarations for ColorMapDlg
 	ColorMap	m_cmap;
-	wxString2	m_strFile;
+	wxString	m_strFile;
 	float		m_fHeight;
 	bool		m_bRelative, m_bBlend;
 	long		m_iItem;

@@ -1,7 +1,7 @@
 //
 // Name: BuildingDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "vtui_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "vtdata/Building.h"
 #include "vtdata/StructArray.h"
 
@@ -78,10 +77,10 @@ protected:
 	int  m_iEdge;
 	int  m_iStories;
 	float   m_fStoryHeight;
-	wxString2   m_strMaterial;
-	wxString2   m_strEdgeSlopes;
-	wxString2   m_strFeatures;
-	wxString2   m_strFacade;
+	wxString	m_strMaterial;
+	wxString	m_strEdgeSlopes;
+	wxString	m_strFeatures;
+	wxString	m_strFacade;
 	wxColour	m_Color;
 	static wxColourData s_ColorData;
 	int   m_iEdgeSlope;
