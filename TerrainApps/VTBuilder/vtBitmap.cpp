@@ -1,7 +1,7 @@
 //
 // vtBitmap.cpp
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,7 @@
 #include "wx/mstream.h"
 
 #include "vtdata/vtLog.h"
+#include "vtdata/FilePath.h"
 #include "vtui/wxString2.h"
 #include "vtBitmap.h"
 
@@ -363,7 +364,7 @@ bool vtBitmap::WriteJPEG(const char *fname, int quality)
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_compress(&cinfo);
 
-	outfile = fopen(fname, "wb");
+	outfile = vtFileOpen(fname, "wb");
 	if (outfile == NULL)
 		return false;
 
