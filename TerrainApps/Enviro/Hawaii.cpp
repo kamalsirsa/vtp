@@ -572,7 +572,7 @@ void IslandTerrain::do_test_code()
 	feat.AddField("Text", FTString);
 	feat.GetAtProjection() = m_proj;
 	vtString labels_path = FindFileOnPaths(s_DataPaths, "PointData/places.txt");
-	FILE *fp = fopen(labels_path, "r");
+	FILE *fp = vtFileOpen(labels_path, "r");
 	while( !feof(fp) )
 	{
 		int ret = fscanf(fp, "%f %f %d %s\n", &x, &y, &meter_height, string);
