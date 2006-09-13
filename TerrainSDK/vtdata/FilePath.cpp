@@ -421,7 +421,7 @@ vtString ChangeFileExtension(const char *input, const char *extension)
 
 bool FileExists(const char *fname)
 {
-	FILE *fp = fopen(fname, "r");
+	FILE *fp = vtFileOpen(fname, "r");
 	if (!fp)
 		return false;
 	fclose(fp);
@@ -495,12 +495,12 @@ bool gfopen(GZOutput &out, const char *fname)
 {
 	if (out.bGZip)
 	{
-		out.gfp = gzopen(fname, "wb");
+		out.gfp = vtGZOpen(fname, "wb");
 		return (out.gfp != NULL);
 	}
 	else
 	{
-		out.fp = fopen(fname, "wb");
+		out.fp = vtFileOpen(fname, "wb");
 		return out.fp != NULL;
 	}
 }
@@ -554,7 +554,7 @@ VTCompress::~VTCompress()
 
 bool VTCompress::open(const char *fname)
 {
-	fp = fopen(fname, "rb");
+	fp = vtFileOpen(fname, "rb");
 	if (!fp)
 	{
 		fp = NULL;
@@ -654,7 +654,7 @@ gzFile vtGZOpen(const char *path, const char *mode)
 /**
  * Open a file using a UTF-8 encoded filename.
  *
- * Parameters are the same as fopen().  The only difference is that
+ * Parameters are the same as vtFileOpen().  The only difference is that
  * instead of being limited to multi-byte local charset, it is UTF-8
  * which supports all languages.
  */
@@ -673,7 +673,7 @@ FILE *vtFileOpen(const char *fname_utf8, const char *mode)
 	return _wfopen(fn.c_str(), mo.c_str());
 #elif __DARWIN_OSX__
 	// Mac OS X
-	return fopen(fname_utf8, mode);
+	return vtFileOpen(fname_utf8, mode);
 #else
 	// some other Unix flavor
   #if SUPPORT_WSTRING

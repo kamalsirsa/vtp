@@ -1,7 +1,7 @@
 //
 // FilePath.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file FilePath.h */
@@ -10,7 +10,6 @@
 #define FILEPATHH
 
 #include "vtString.h"
-#include "Array.h"
 
 #include "zlib.h"
 
