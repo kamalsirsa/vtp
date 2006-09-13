@@ -161,9 +161,9 @@ void CarEngine::Eval()
 		break;
 	case FOLLOW_PATH:
 	case FOLLOW_ROAD:
-		if (!m_pCurRoad) {
+		if (!m_pCurRoad)
 			return;  //safety check
-		}
+
 		if (m_bFirstTime)
 		{
 			vNext = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord];
@@ -174,12 +174,13 @@ void CarEngine::Eval()
 		}
 		//find where the road is
 		FPoint3 target = GetNextTarget(t);
-		//adjust vehicle speed.
-		AdjustSpeed(fDeltaTime);
 
 		//if we are not stopped, then move
 		if (!m_bStopped)
 		{
+			//adjust vehicle speed.
+			AdjustSpeed(fDeltaTime);
+
 			//turn appropriately - but there is a limit on how much the car can turn.
 			TurnToward(target, fDeltaTime);
 
@@ -206,7 +207,9 @@ void CarEngine::Eval()
 		break;
 	}
 	// spin the wheels, adjusted for speed.
-	SpinWheels(fDeltaTime*m_fSpeed/m_fWheelRadius);
+	if (!m_bStopped)
+		SpinWheels(fDeltaTime*m_fSpeed/m_fWheelRadius);
+
 	m_fPrevTime = t;
 }
 
@@ -372,17 +375,22 @@ void CarEngine::PickFirstRoad()
 	{
 		//pick road based on path.
 		int roadID = m_iRoads[m_iNextRoad];
-		for (i = 0; i < m_pCurNode->m_iLinks; i++) {
+		for (i = 0; i < m_pCurNode->m_iLinks; i++)
+		{
 			TLink *r = m_pCurNode->GetLink(i);
-			if (r->m_id == roadID) {
+			if (r->m_id == roadID)
+			{
 				//found road.
 				//determine next road to follow.
-				if (!m_bPathReverse) {
+				if (!m_bPathReverse)
+				{
 					if (m_iNextRoad < m_iNumRoads - 1)
 						m_iNextRoad++;
 					else
 						m_bPathReverse = true;
-				} else {
+				}
+				else
+				{
 					if (m_iNextRoad > 1)
 						m_iNextRoad--;
 					else
@@ -396,11 +404,12 @@ void CarEngine::PickFirstRoad()
 	{
 		//road following.
 		//make sure car can go in the direction of the road.
-		for (i = 0; i < m_pCurNode->m_iLinks; i++) {
+		for (i = 0; i < m_pCurNode->m_iLinks; i++)
+		{
 			TLink *r = m_pCurNode->GetLink(i);
-			if ((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pCurNode)
-				||
-				(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pCurNode)) {
+			if ((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pCurNode) ||
+				(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pCurNode))
+			{
 				break;
 			}
 		}
@@ -494,12 +503,15 @@ void CarEngine::PickNextRoad()
 			{
 				//found road.
 				//determine next road to follow.
-				if (!m_bPathReverse) {
+				if (!m_bPathReverse)
+				{
 					if (m_iNextRoad < m_iNumRoads - 1)
 						m_iNextRoad++;
 					else
 						m_bPathReverse = true;
-				} else {
+				}
+				else
+				{
 					if (m_iNextRoad > 1)
 						m_iNextRoad--;
 					else
@@ -654,7 +666,8 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 		if (m_iNextIntersect == IT_LIGHT)
 		{
 			//go only if green
-			if (m_pNextNode->GetLightStatus(m_pCurRoad) == LT_GREEN) {
+			if (m_pNextNode->GetLightStatus(m_pCurRoad) == LT_GREEN)
+			{
 				m_bStopped = false;
 				PickRoad();
 				nextPoint = ((LinkGeom*)m_pCurRoad)->m_Lanes[lane].GetAt(m_iRCoord);
@@ -690,7 +703,8 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 			if (m_iRCoord < 0)
 				newroad = true;
 		}
-		if(newroad) {
+		if (newroad)
+		{
 			//out of coords, need to look at next road.
 			if (m_iNextIntersect == IT_STOPSIGN ||
 				(m_iNextIntersect == IT_LIGHT &&
@@ -699,7 +713,8 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 				m_bStopped = true;
 				m_fStopTime = fCurTime;
 				VTLOG1("Stopped!\n");
-				//do NOT pick a new road just yet.
+				//do NOT pick a new road just yet?
+				return FPoint3(0,0,0);
 			}
 			else
 				PickRoad();
@@ -728,7 +743,8 @@ void CarEngine::TurnToward(const FPoint3 &target, float time)
 
 void CarEngine::AdjustSpeed(float fDeltaTime)
 {
-	if (m_bStopped) {
+	if (m_bStopped)
+	{
 		m_fSpeed = 0;
 		return;
 	}
