@@ -273,12 +273,12 @@ void ProjectionDlg::DisplayProjectionSpecificParams()
 		{
 			par1 = node->GetChild(0);
 			value = par1->GetValue();
-			str = value;
+			str = wxString(value, wxConvUTF8);
 			item = m_pParamCtrl->InsertItem(item, str);
 
 			par2 = node->GetChild(1);
 			value = par2->GetValue();
-			str = value;
+			str = wxString(value, wxConvUTF8);
 			m_pParamCtrl->SetItem(item, 1, str);
 			item++;
 		}
@@ -353,7 +353,7 @@ void ProjectionDlg::SetUIFromProjection()
 		else
 		{
 			wxString str = _("Unknown projection: ");
-			str += proj_string;
+			str += wxString(proj_string, wxConvUTF8);
 			wxMessageBox(str);
 		}
 	}
@@ -436,9 +436,9 @@ void ProjectionDlg::OnItemRightClick( wxListEvent &event )
 		if (item == item_clicked)
 		{
 			wxString caption = _("Value for ");
-			str = par1->GetValue();
+			str = wxString(par1->GetValue(), wxConvUTF8);
 			caption += str;
-			str = value;
+			str = wxString(value, wxConvUTF8);
 			wxString result = wxGetTextFromUser(caption, _("Enter new value"),
 				str, this);
 			if (result != _T(""))

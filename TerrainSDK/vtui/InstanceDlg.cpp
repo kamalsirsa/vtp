@@ -120,7 +120,7 @@ void InstanceDlg::UpdateContentItems()
 		for (unsigned int j = 0; j < mng->NumItems(); j++)
 		{
 			vtItem *item = mng->GetItem(j);
-			str = item->m_name;
+			str = wxString(item->m_name, wxConvUTF8);
 //			str += _T(" (");
 //			str += item->GetValue("filename");
 //			str += _T(")");

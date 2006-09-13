@@ -158,18 +158,18 @@ void DistanceDlg::ShowValues()
 
 	if (m_iUnits1 == 0) // degrees
 	{
-		str = FormatCoord(true, diff_degrees.x);
+		str = wxString(FormatCoord(true, diff_degrees.x), wxConvUTF8);
 		str += _T(", ");
-		str += FormatCoord(true, diff_degrees.y);
+		str += wxString(FormatCoord(true, diff_degrees.y), wxConvUTF8);
 	}
 	else
 	{
 		scale = GetMetersPerUnit(lu) /
 			GetMetersPerUnit((LinearUnits)m_iUnits1);
 		DPoint2 diff_show = diff_map * scale;
-		str = FormatCoord(bIsGeo, diff_show.x);
+		str = wxString(FormatCoord(bIsGeo, diff_show.x), wxConvUTF8);
 		str += _T(", ");
-		str += FormatCoord(bIsGeo, diff_show.y);
+		str += wxString(FormatCoord(bIsGeo, diff_show.y), wxConvUTF8);
 	}
 	GetMapOffset()->SetValue(str);
 
@@ -180,13 +180,13 @@ void DistanceDlg::ShowValues()
 	{
 		scale = GetMetersPerUnit(lu) /
 			GetMetersPerUnit((LinearUnits)(m_iUnits2+1));
-		str = FormatCoord(false, diff_map.Length() * scale);
+		str = wxString(FormatCoord(false, diff_map.Length() * scale), wxConvUTF8);
 	}
 	GetMapDist()->SetValue(str);
 
 	// Geodesic Distance
 	scale = GetScaleFromUnits(m_iUnits3);
-	str = FormatCoord(false, geodesic_meters * scale);
+	str = wxString(FormatCoord(false, geodesic_meters * scale), wxConvUTF8);
 	GetGeodDist()->SetValue(str);
 
 	// Approximate Ground Distance
@@ -196,7 +196,7 @@ void DistanceDlg::ShowValues()
 	if (bShowGround)
 	{
 		scale = GetScaleFromUnits(m_iUnits4);
-		str = FormatCoord(false, m_fGround * scale);
+		str = wxString(FormatCoord(false, m_fGround * scale), wxConvUTF8);
 		GetGroundDist()->SetValue(str);
 	}
 	else
@@ -209,7 +209,7 @@ void DistanceDlg::ShowValues()
 	if (bShowVertical)
 	{
 		scale = GetScaleFromUnits(m_iUnits5);
-		str = FormatCoord(false, m_fVertical * scale);
+		str = wxString(FormatCoord(false, m_fVertical * scale), wxConvUTF8);
 		GetVertical()->SetValue(str);
 	}
 	else

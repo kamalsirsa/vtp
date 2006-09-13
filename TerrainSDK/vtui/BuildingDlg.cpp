@@ -464,13 +464,13 @@ void BuildingDlg::UpdateMaterialControl()
 	// In the case of a whole level, attempt to show the most
 	//  commonly occuring material.
 	if (m_bEdges == false)
-		m_strMaterial = m_pLevel->GetOverallEdgeMaterial();
+		m_strMaterial = wxString(m_pLevel->GetOverallEdgeMaterial(), wxConvUTF8);
 	else
 	{
 		if (m_pEdge->m_pMaterial == NULL)
-			m_strMaterial = "Unknown";
+			m_strMaterial = _("Unknown");
 		else
-			m_strMaterial = *m_pEdge->m_pMaterial;
+			m_strMaterial = wxString(*m_pEdge->m_pMaterial, wxConvUTF8);
 	}
 }
 
@@ -652,7 +652,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	int iInitialSelection = -1;
 	int iNumberofMaterials = GetGlobalMaterials()->GetSize();
 
-	m_strMaterial = m_pLevel->GetOverallEdgeMaterial();
+	m_strMaterial = wxString(m_pLevel->GetOverallEdgeMaterial(), wxConvUTF8);
 
 	wxString *pChoices = new wxString[iNumberofMaterials];
 
