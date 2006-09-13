@@ -11,6 +11,7 @@
 #include "AnimPath.h"
 #include "vtdata/LocalConversion.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/FilePath.h"
 
 
 void ControlPoint::Interpolate(double ratio, const ControlPoint &first, const ControlPoint &second)
@@ -298,7 +299,7 @@ bool vtAnimPath::Write(const char *fname)
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	FILE *fp = fopen(fname, "wb");
+	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp) return false;
 
 	fprintf(fp, "<?xml version=\"1.0\"?>\n");

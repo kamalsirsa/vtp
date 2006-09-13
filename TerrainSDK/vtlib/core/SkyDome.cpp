@@ -2,13 +2,14 @@
 // SkyDome - a simple day/night skydome, should be replaced with a
 // more realistic version at some point.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/SPA.h"
+#include "vtdata/FilePath.h"
 #include "SkyDome.h"
 #include "GeomUtil.h"	// for CreateBoundSphereGeom
 
@@ -531,7 +532,7 @@ bool vtSkyDome::SetTexture(const char *filename)
 	}
 
 	vtImage *pImage = vtImageRead(filename);
-	if (!pImage->HasData())
+	if (!pImage)
 	{
 		VTLOG("failed.\n");
 		return false;
@@ -876,7 +877,7 @@ bool vtStarDome::ReadStarData(const char *starfile)
 	FILE *starfp = NULL;
 	Star *curstar;
 
-	starfp = fopen(starfile, "r");
+	starfp = vtFileOpen(starfile, "r");
 	if (!starfp)
 	{
 		VTLOG("Couldn't open %s\n", starfile);

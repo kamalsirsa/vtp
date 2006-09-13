@@ -109,7 +109,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		m_pModel = NULL;
 	}
 
-	const char *filename = GetValueString("filename", true, true);
+	const char *filename = GetValueString("filename", false, true);
 	if (filename)
 	{
 		// relative path: look on the standards data paths

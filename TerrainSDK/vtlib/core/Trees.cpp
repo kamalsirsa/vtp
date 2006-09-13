@@ -9,7 +9,7 @@
 // vtPlantInstance3d
 // vtPlantInstanceArray3d
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -92,7 +92,7 @@ void vtPlantAppearance3d::CheckAvailability()
 		if (fname == "")
 			return;
 
-		FILE *fp = fopen(fname, "rb");
+		FILE *fp = vtFileOpen(fname, "rb");
 		if (fp != NULL)
 		{
 			m_bAvailable = true;

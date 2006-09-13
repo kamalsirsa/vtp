@@ -221,7 +221,7 @@ bool TParams::LoadFromXML(const char *fname)
 	// If pre-STR_TEXTURE4BY4, contruct it from the other params
 	if (!FindTag(STR_TEXTURE4BY4))
 	{
-		vtString str = GetValueString(STR_TEXTUREBASE, true);
+		vtString str = GetValueString(STR_TEXTUREBASE);
 		vtString str2;
 		str2.Format("%d", NTILES * (GetValueInt(STR_TILESIZE)-1) + 1);
 		str += str2;

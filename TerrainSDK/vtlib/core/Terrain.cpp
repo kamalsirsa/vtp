@@ -321,7 +321,7 @@ void vtTerrain::_CreateRoads()
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	vtString road_fname = "RoadData/";
-	road_fname += m_Params.GetValueString(STR_ROADFILE, true);
+	road_fname += m_Params.GetValueString(STR_ROADFILE);
 	vtString road_path = FindFileOnPaths(vtGetDataPath(), road_fname);
 	if (road_path == "")
 		return;
@@ -421,12 +421,12 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		vtString texname;
 		if (eTex == TE_SINGLE)
 		{
-			texname = m_Params.GetValueString(STR_TEXTUREFILE, true);
+			texname = m_Params.GetValueString(STR_TEXTUREFILE);
 			VTLOG("  Single Texture: '%s'\n", (const char *) texname);
 		}
 		else
 		{
-			texname = m_Params.GetValueString(STR_TEXTURE4BY4, true);
+			texname = m_Params.GetValueString(STR_TEXTURE4BY4);
 			VTLOG("  Tiled Texture: '%s'\n", (const char *) texname);
 		}
 
@@ -611,7 +611,7 @@ void vtTerrain::_CreateDetailTexture()
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	vtString fname = m_Params.GetValueString(STR_DTEXTURE_NAME, true);
+	vtString fname = m_Params.GetValueString(STR_DTEXTURE_NAME);
 	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 	if (path == "")
 	{
@@ -1130,7 +1130,7 @@ void vtTerrain::SetGlobalProjection()
 bool vtTerrain::GetGeoExtentsFromMetadata()
 {
 	vtString name = "Elevation/";
-	name += m_Params.GetValueString(STR_ELEVFILE, true);
+	name += m_Params.GetValueString(STR_ELEVFILE);
 	vtString fname = FindFileOnPaths(vtGetDataPath(), name);
 	if (fname == "")
 	{
@@ -1541,7 +1541,7 @@ void vtTerrain::_CreateVegetation()
 	clock_t r1 = clock();	// start timing
 	if (m_Params.GetValueBool(STR_TREES))
 	{
-		vtString fname = m_Params.GetValueString(STR_TREEFILE, true);
+		vtString fname = m_Params.GetValueString(STR_TREEFILE);
 
 		// Read the VF file
 		vtString plants_fname = "PlantData/";
@@ -1687,7 +1687,7 @@ void vtTerrain::_CreateAbstractLayers()
 			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
 		}
 
-		vtString fname = lay.GetValueString("Filename", true);
+		vtString fname = lay.GetValueString("Filename");
 		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 		if (path == "")
 		{
@@ -2304,7 +2304,7 @@ bool vtTerrain::CreateStep1()
 	}
 
 	vtString fname;
-	vtString elev_file = m_Params.GetValueString(STR_ELEVFILE, true);
+	vtString elev_file = m_Params.GetValueString(STR_ELEVFILE);
 	fname = "Elevation/";
 	fname += elev_file;
 	VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
@@ -2394,7 +2394,7 @@ bool vtTerrain::CreateStep1()
 	}
 	else if (surface_type == 2)
 	{
-		vtString tex_file = m_Params.GetValueString(STR_TEXTUREFILE, true);
+		vtString tex_file = m_Params.GetValueString(STR_TEXTUREFILE);
 		fname = "GeoSpecific/";
 		fname += tex_file;
 		VTLOG("\tLooking for texture file: %s\n", (const char *) fname);
@@ -2585,7 +2585,7 @@ bool vtTerrain::CreateStep5()
 
 	// Read stored locations
 	vtString loc = "Locations/";
-	loc += m_Params.GetValueString(STR_LOCFILE, true);
+	loc += m_Params.GetValueString(STR_LOCFILE);
 	vtString path = FindFileOnPaths(vtGetDataPath(), loc);
 	if (path != "")
 		m_LocSaver.Read(path);

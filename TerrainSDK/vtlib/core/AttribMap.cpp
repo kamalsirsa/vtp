@@ -4,7 +4,7 @@
 // This class gives you the ability to load in a colored bitmap representating
 // a geographical coverage, and query it for attribute given a world coordinate.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -23,6 +23,7 @@ type 1 ff00ff <optional description, ignored>
 */
 
 #include <vtlib/vtlib.h>
+#include "vtdata/FilePath.h"
 #include <stdio.h>
 #include "AttribMap.h"
 
@@ -39,7 +40,7 @@ bool AttribMap::Load(const char *fname_att, const char *fname_bmp)
 	m_AttribTable = NULL;
 
 	// also read attribute description file
-	FILE *fp = fopen(fname_att, "r");
+	FILE *fp = vtFileOpen(fname_att, "r");
 	if (!fp)
 		return false;
 

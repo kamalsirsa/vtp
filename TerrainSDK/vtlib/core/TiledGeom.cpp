@@ -35,7 +35,7 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 
 bool TiledDatasetDescription::Read(const char *dataset_fname)
 {
-	FILE *fp = fopen(dataset_fname, "rb");
+	FILE *fp = vtFileOpen(dataset_fname, "rb");
 	if (!fp) return false;
 	fscanf(fp, "[TilesetDescription]\n");
 	fscanf(fp, "Columns=%d\n", &cols);
@@ -100,7 +100,7 @@ int file_exists(const char *filename)
    {
    FILE *file;
 
-   if ((file=fopen(filename,"rb"))==NULL) return(0);
+   if ((file=vtFileOpen(filename,"rb"))==NULL) return(0);
    fclose(file);
 
    return(1);

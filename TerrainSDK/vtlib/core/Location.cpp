@@ -1,7 +1,7 @@
 //
 // Location classes
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,7 @@
 #include "Location.h"
 #include "xmlhelper/easyxml.hpp"
 #include "vtdata/vtLog.h"
+#include "vtdata/FilePath.h"
 
 ///////////////////////////////
 
@@ -53,7 +54,7 @@ bool vtLocationSaver::Write(const vtString &fname_in)
 	else
 		fname = m_strFilename;
 
-	FILE *fp = fopen(fname, "wb");
+	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp) return false;
 
 	int i, num = m_loc.GetSize();
