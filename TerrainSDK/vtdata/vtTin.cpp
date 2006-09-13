@@ -10,6 +10,7 @@
 #include "vtTin.h"
 #include "vtLog.h"
 #include "DxfParser.h"
+#include "FilePath.h"
 
 
 void vtTin::AddVert(const DPoint2 &p, float z)
@@ -113,7 +114,7 @@ bool vtTin::_ReadTin(FILE *fp)
 bool vtTin::Read(const char *fname)
 {
 	// first read the point from the .tin file
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 
@@ -191,7 +192,7 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
  */
 bool vtTin::Write(const char *fname) const
 {
-	FILE *fp = fopen(fname, "wb");
+	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
 		return false;
 

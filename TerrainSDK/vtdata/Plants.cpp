@@ -1,7 +1,7 @@
 //
 // Plants.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,7 @@
 #include "vtLog.h"
 #include "Plants.h"
 #include "MathTypes.h"
+#include "FilePath.h"
 #include "xmlhelper/easyxml.hpp"
 #include "shapelib/shapefil.h"
 
@@ -109,7 +110,7 @@ bool vtSpeciesList::WriteXML(const char *fname) const
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	FILE *fp = fopen(fname, "wb");
+	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
 	{
 		throw xh_io_exception("Failed to open file", xh_location(fname),
@@ -399,7 +400,7 @@ bool vtBioRegion::Read(const char *fname, const vtSpeciesList &species)
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	FILE *fp = fopen(fname, "r");
+	FILE *fp = vtFileOpen(fname, "r");
 	if (!fp) return false;
 
 	int num = 0;
@@ -434,7 +435,7 @@ bool vtBioRegion::Read(const char *fname, const vtSpeciesList &species)
 bool vtBioRegion::Write(const char *fname) const
 {
 	// TODO: replace with XML format
-/*	FILE *fp = fopen(fname, "wb");
+/*	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp) return false;
 
 	int num = m_Types.GetSize();
@@ -623,7 +624,7 @@ struct vtPlantInstance20 {
 
 bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 {
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 
@@ -688,7 +689,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 
@@ -804,7 +805,7 @@ bool vtPlantInstanceArray::WriteVF(const char *fname) const
 	short species_id;
 	float size;
 
-	FILE *fp = fopen(fname, "wb");
+	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
 		return false;
 

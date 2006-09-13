@@ -1,13 +1,15 @@
 //
 // GEOnet.cpp
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "GEOnet.h"
-#include "vtdata/shapelib/shapefil.h"
-#include "vtdata/vtLog.h"
+#include "shapelib/shapefil.h"
+#include "vtLog.h"
+#include "FilePath.h"
+
 #include <stdio.h>
 
 #if SUPPORT_WSTRING
@@ -372,7 +374,7 @@ Countries::~Countries()
 
 bool Countries::ReadCountryList(const char *fname)
 {
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 
@@ -525,7 +527,7 @@ void Countries::ParseRawCountry(int which, bool bNativeNames)
 	for (i = 0; i < 7; i++)
 		num_important[i] = 0;
 
-	FILE *fp = fopen(m_path + country->m_abb + ".txt", "rb");
+	FILE *fp = vtFileOpen(m_path + country->m_abb + ".txt", "rb");
 	if (!fp)
 	{
 		printf("couldn't open.\n");
@@ -700,7 +702,7 @@ bool Countries::WriteSingleSHP(const char *fname)
 
 void Countries::WriteGCF(const char *fname)
 {
-	FILE *fp = fopen(fname, "wb");
+	FILE *fp = vtFileOpen(fname, "wb");
 
 	int num = m_countries.GetSize();
 	fwrite(&num, sizeof(int), 1, fp);
@@ -726,7 +728,7 @@ void Countries::WriteGCF(const char *fname)
 
 bool Countries::ReadGCF(const char *fname, bool progress_callback(int))
 {
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 
@@ -1294,7 +1296,7 @@ bool Gazetteer::ReadPlaces(const char *fname)
 	if (*fname == 0)
 		return false;
 
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 
@@ -1351,7 +1353,7 @@ bool Gazetteer::ReadZips(const char *fname)
 	if (*fname == 0)
 		return false;
 
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 

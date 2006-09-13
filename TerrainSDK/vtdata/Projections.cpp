@@ -517,20 +517,20 @@ FILE *OpenCorrespondingPrjFile(vtString &filename, const char *mode)
 {
 	// check file extension
 	if (filename.Right(4).CompareNoCase(".prj") == 0)
-		return fopen(filename, mode);
+		return vtFileOpen(filename, mode);
 
 	// doesn't already ends in .prj
 	vtString base = filename;
 	RemoveFileExtensions(base, false);
 	filename = base + ".prj";
-	FILE *fp = fopen(filename, mode);
+	FILE *fp = vtFileOpen(filename, mode);
 
 	if (!fp)
 	{
 		// look backward one more extension, e.g. for .bt.gz
 		RemoveFileExtensions(base, false);
 		filename = base + ".prj";
-		fp = fopen(filename, mode);
+		fp = vtFileOpen(filename, mode);
 	}
 	return fp;
 }
@@ -555,9 +555,12 @@ bool vtProjection::ReadProjFile(const char *filename)
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
+	// GDAL doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = prj_name.UTF8ToLocal();
+
 	// Now read and parse the file
 	OGRErr eErr;
-	char **papszPrj = CSLLoad( prj_name );
+	char **papszPrj = CSLLoad( fname_local );
 
 	// Must clear any old info before attempting to import the new info.
 	Clear();
@@ -599,7 +602,7 @@ bool vtProjection::WriteProjFile(const char *filename) const
  * return the geodesic arc distance in meters.  The WGS84 spheroid
  * is used.
  */
-double vtProjection::GeodesicDistance(const DPoint2 &geo1,const DPoint2 &geo2,
+double vtProjection::GeodesicDistance(const DPoint2 &geo1, const DPoint2 &geo2,
 	bool bQuick)
 {
 	if (bQuick)

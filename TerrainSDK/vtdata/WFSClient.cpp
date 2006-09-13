@@ -3,7 +3,7 @@
 //
 // Web Feature Server Client
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -37,7 +37,7 @@ vtFeatureSet *vtFeatureLoader::ReadFeaturesFromWFS(const char *szServerURL, cons
 		return false;
 
 	char *temp_fname = "C:/temp/gml_temp.gml";
-	FILE *fp = fopen(temp_fname, "wb");
+	FILE *fp = vtFileOpen(temp_fname, "wb");
 	if (!fp)
 		return false;
 
@@ -136,7 +136,7 @@ bool GetLayersFromWFS(const char *szServerURL, OGCLayerArray &layers)
 		return false;
 
 	char *temp_fname = "C:/temp/layers_temp.xml";
-	FILE *fp = fopen(temp_fname, "wb");
+	FILE *fp = vtFileOpen(temp_fname, "wb");
 	if (!fp)
 		return false;
 	fwrite((const char *)str, 1, str.GetLength(), fp);
@@ -181,7 +181,7 @@ bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers,
 #if 1
 	// write to file for debugging
 	char *temp_fname = "C:/temp/wms.xml";
-	FILE *fp = fopen(temp_fname, "wb");
+	FILE *fp = vtFileOpen(temp_fname, "wb");
 	if (!fp)
 		return false;
 	fwrite((const char *)str, 1, str.GetLength(), fp);

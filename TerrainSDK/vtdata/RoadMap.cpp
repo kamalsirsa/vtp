@@ -10,6 +10,7 @@
 #include <assert.h>
 #include "RoadMap.h"
 #include "vtLog.h"
+#include "FilePath.h"
 
 
 //
@@ -795,7 +796,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	char buffer[12];
-	FILE *fp = fopen(filename, "rb");
+	FILE *fp = vtFileOpen(filename, "rb");
 	if (!fp)
 	{
 		// "Error opening file: %s",filename
@@ -1114,7 +1115,7 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	if (numNodes == 0)
 		return false;
 
-	FILE *fp = fopen(filename, "wb");
+	FILE *fp = vtFileOpen(filename, "wb");
 	if (!fp)
 	{
 		// wxString str = wxString::Format("Error opening file: %s", filename);

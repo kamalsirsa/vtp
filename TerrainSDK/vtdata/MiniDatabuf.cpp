@@ -1,9 +1,13 @@
-// (c) VTP and Stefan Roettger
+//
+// Copyright (c) 2006 Virtual Terrain Project and Stefan Roettger
+// Free for all uses, see license.txt for details.
 
 #include "MiniDatabuf.h"
 #include "vtLog.h"
 #include "Projections.h"
 #include "MathTypes.h"
+#include "FilePath.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -109,7 +113,7 @@ void MiniDatabuf::savedata(const char *filename)
 
    if (bytes==0) ERRORMSG();
 
-   if ((file=fopen(filename,"wb"))==NULL) ERRORMSG();
+   if ((file=vtFileOpen(filename,"wb"))==NULL) ERRORMSG();
 
    // save magic identifier
    fprintf(file,"MAGIC=%d\n",MAGIC);
@@ -194,7 +198,7 @@ void MiniDatabuf::swapbytes()
 bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 						const DRECT &area, const vtProjection &proj)
 {
-	FILE *fp = fopen(filename, "wb");
+	FILE *fp = vtFileOpen(filename, "wb");
 	if (!fp)
 		return false;
 

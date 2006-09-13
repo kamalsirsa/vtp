@@ -1,6 +1,9 @@
 /*
  * Unarchive.cpp - Extract files from a gzipped TAR file
  * adapted from some 'libpng' sample code
+//
+// Copyright (c) 2003-2006 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
  */
 
 #include <stdio.h>
@@ -159,7 +162,7 @@ int ExpandTGZ(const char *archive_fname, const char *prepend_path)
 				remaining = getoct(buffer.header.size, 12);
 				if (remaining)
 				{
-					outfile = fopen(fullname,"wb");
+					outfile = vtFileOpen(fullname,"wb");
 					if (outfile == NULL)
 					{
 						/* try creating directory */
@@ -169,7 +172,7 @@ int ExpandTGZ(const char *archive_fname, const char *prepend_path)
 							*p = '\0';
 							vtCreateDir(fullname);
 							*p = '/';
-							outfile = fopen(fullname,"wb");
+							outfile = vtFileOpen(fullname,"wb");
 						}
 					}
 //					fprintf(stderr, "%s %s\n", (outfile) ? "Extracting" : "Couldn't create", fname);

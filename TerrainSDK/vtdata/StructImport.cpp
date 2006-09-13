@@ -1,7 +1,7 @@
 //
 // Import methods for the vtStructureArray class.
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -36,7 +36,7 @@ int FindDBField(DBFHandle db, const char *field_name)
 bool vtStructureArray::ReadBCF(const char* pathname)
 {
 	FILE* fp;
-	if ( (fp = fopen(pathname, "rb")) == NULL )
+	if ( (fp = vtFileOpen(pathname, "rb")) == NULL )
 		return false;
 
 	// Avoid trouble with '.' and ',' in Europe

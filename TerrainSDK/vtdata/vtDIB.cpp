@@ -18,6 +18,7 @@ extern "C" {
 
 #include "vtDIB.h"
 #include "ByteOrder.h"
+#include "FilePath.h"
 
 // GDAL for TIFF support
 #include "gdal_priv.h"
@@ -357,7 +358,7 @@ bool vtDIB::Create24From8bit(const vtDIB &from)
  */
 bool vtDIB::Read(const char *fname, bool progress_callback(int))
 {
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 	unsigned char buf[2];

@@ -2,7 +2,7 @@
 // LULC.cpp
 // read a LULC GIRAS file
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include "LULC.h"
+#include "FilePath.h"
 
 ///////////////////////////////////
 //
@@ -73,7 +74,7 @@ vtLULCFile::vtLULCFile(const char *fname)
 	m_pNext = NULL;
 	m_iError = 0;
 
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 	{
 		m_iError = LULC_ERR_FILE;

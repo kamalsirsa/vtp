@@ -1,13 +1,14 @@
 //
 // Log - simple message logging to a file.
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "cpl_error.h"	// From GDAL/include
 #include "vtString.h"
 #include "vtLog.h"
+#include "FilePath.h"
 #include <stdarg.h>
 
 #ifndef __DARWIN_OSX__
@@ -36,7 +37,7 @@ vtLog::~vtLog()
 
 void vtLog::StartLog(const char *fname)
 {
-	m_log = fopen(fname, "wb");
+	m_log = vtFileOpen(fname, "wb");
 }
 
 void vtLog::Log(const char *msg)

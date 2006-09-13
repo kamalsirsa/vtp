@@ -8,6 +8,7 @@
 #include "HeightField.h"
 #include "vtDIB.h"
 #include "vtLog.h"
+#include "FilePath.h"
 
 //
 // Class implementation: ColorMap
@@ -23,7 +24,7 @@ bool ColorMap::Save(const char *fname)
 	// watch out for %f
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	FILE *fp = fopen(fname, "wb");
+	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
 		return false;
 	fprintf(fp, "colormap1\n");
@@ -45,7 +46,7 @@ bool ColorMap::Load(const char *fname)
 	// watch out for %f
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 
