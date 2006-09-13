@@ -1,7 +1,7 @@
 //
 // vtString.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -209,7 +209,8 @@ public:
 	void UnlockBuffer();
 
 #if SUPPORT_WSTRING
-	wstring2 ConvertFromUTF8();
+	wstring2 UTF8ToWideString();
+	vtString UTF8ToLocal();
 #endif
 
 // Implementation
@@ -347,6 +348,9 @@ void EscapeStringForXML(const std::wstring &input, std::wstring &output);
 #endif
 
 
+#if SUPPORT_WSTRING
+vtString UTF8ToLocal(const char *string_utf8);
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // wstring2

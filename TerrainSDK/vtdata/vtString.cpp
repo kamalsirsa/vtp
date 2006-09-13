@@ -1,7 +1,7 @@
 //
 // vtString.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <wchar.h>
 
 #define InterlockInc(i) (*(i))++
 #define InterlockDec(i) --(*(i))
@@ -1020,14 +1021,58 @@ vtString vtString::FormatForURL() const
 
 #if SUPPORT_WSTRING
 
-wstring2 vtString::ConvertFromUTF8()
+wstring2 vtString::UTF8ToWideString()
 {
 	wstring2 ws;
 	ws.from_utf8(m_pchData);
 	return ws;
 }
 
-#endif
+/**
+ * For a vtString which contains a UTF-8 encoded string, attempt to convert it
+ * to a string in the local (current locale) character set.
+ */
+vtString vtString::UTF8ToLocal()
+{
+	wstring2 ws;
+	ws.from_utf8(m_pchData);
+	int len = ws.length();
+	mbstate_t       mbstate;
+	const wchar_t *cstr = ws.c_str();
+
+	//char *buf = new char[len+1];
+	//int count = wcsrtombs(buf, &cstr, buflen, &mbstate);
+	//vtString vts(buf, count);
+	//delete [] buf;
+	//return vts;
+
+	vtString str;
+	char *target = str.GetBufferSetLength(len);
+	int count = wcsrtombs(target, &cstr, len+1, &mbstate);
+	return str;
+}
+
+vtString UTF8ToLocal(const char *string_utf8)
+{
+	wstring2 ws;
+	ws.from_utf8(string_utf8);
+	int len = ws.length();
+	mbstate_t       mbstate;
+	const wchar_t *cstr = ws.c_str();
+
+	//char *buf = new char[buflen];
+	//int count = wcsrtombs(buf, &cstr, buflen, &mbstate);
+	//vtString vts(buf, count);
+	//delete [] buf;
+	//return vts;
+
+	vtString str;
+	char *target = str.GetBufferSetLength(len);
+	int count = wcsrtombs(target, &cstr, len+1, &mbstate);
+	return str;
+}
+
+#endif	// SUPPORT_WSTRING
 
 
 /////////////////////////////////////////////////////////////////////////////
