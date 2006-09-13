@@ -10,7 +10,6 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "vtlib/core/TParams.h"
 #include "vtdata/vtTime.h"
 
@@ -46,27 +45,27 @@ public:
 	void UpdateColorControl();
 	void UpdateColorMapChoice();
 	void DeleteItem(wxListBox *pBox);
-	int FindLayerByFilename(const wxString2 &fname);
+	int FindLayerByFilename(const vtString &fname);
 
 	// overall name
-	wxString2   m_strTerrainName;
+	wxString   m_strTerrainName;
 
 	// elevation
 	bool	m_bGrid;
 	bool	m_bTin;
 	bool	m_bTileset;
-	wxString2   m_strFilename;
-	wxString2   m_strFilenameTin;
-	wxString2   m_strFilenameTileset;
+	wxString   m_strFilename;
+	wxString   m_strFilenameTin;
+	wxString   m_strFilenameTileset;
 	float   m_fVerticalExag;
 
 	// navigation
 	float	m_fMinHeight;
 	int		m_iNavStyle;
 	float   m_fNavSpeed;
-	wxString2   m_strLocFile;
+	wxString   m_strLocFile;
 	int	 m_iInitLocation;
-	wxString2   m_strInitLocation;
+	wxString   m_strInitLocation;
 	float   m_fHither;
 	bool	m_bAccel;
 
@@ -85,28 +84,28 @@ public:
 	// texture
 	int	 m_iTexture;
 	int	 m_iTilesize;
-	wxString2   m_strTextureSingle;
-	wxString2   m_strTextureBase;
-	wxString2   m_strTexture4x4;
-	wxString2   m_strTextureFilename;
-	wxString2   m_strTextureTileset;
+	wxString   m_strTextureSingle;
+	wxString   m_strTextureBase;
+	wxString   m_strTexture4x4;
+	wxString   m_strTextureFilename;
+	wxString   m_strTextureTileset;
 	bool	m_bMipmap;
 	bool	m_b16bit;
 	bool	m_bPreLight;
 	float   m_fPreLightFactor;
 	bool	m_bCastShadows;
-	wxString2   m_strColorMap;
+	wxString   m_strColorMap;
 	bool	m_bTextureRetain;
 
 	// detail texture
 	bool	m_bDetailTexture;
-	wxString2 m_strDetailName;
+	wxString m_strDetailName;
 	float	m_fDetailScale;
 	float	m_fDetailDistance;
 
 	// culture
 	bool	m_bRoads;
-	wxString2   m_strRoadFile;
+	wxString   m_strRoadFile;
 	bool	m_bHwy;
 	bool	m_bPaved;
 	bool	m_bDirt;
@@ -116,7 +115,7 @@ public:
 	bool	m_bRoadCulture;
 
 	bool	m_bPlants;
-	wxString2   m_strVegFile;
+	wxString   m_strVegFile;
 	int	 m_iVegDistance;
 
 	bool	m_bFog;
@@ -128,10 +127,10 @@ public:
 	bool	m_bStructureShadows;
 	int		m_iStructureRez;
 	float	m_fDarkness;
-	wxString2 m_strContent;
+	wxString m_strContent;
 
 	bool	m_bSky;
-	wxString2   m_strSkyTexture;
+	wxString   m_strSkyTexture;
 	bool	m_bOceanPlane;
 	float   m_fOceanPlaneLevel;
 	bool	m_bDepressOcean;
@@ -144,14 +143,14 @@ public:
 //  float   m_fVehicleSpeed;
 
 	bool	m_bRouteEnable;		// not yet used
-	wxString2 m_strRouteFile;	// not yet used
+	wxString m_strRouteFile;	// not yet used
 
-	wxString2 m_strOverlayFile;
+	wxString m_strOverlayFile;
 	int		m_iOverlayX;
 	int		m_iOverlayY;
 
-	wxString2 m_strInitTime;
-//  wxString2   m_strMemRequired;
+	wxString m_strInitTime;
+//  wxString   m_strMemRequired;
 
 // Scenarios
 	std::vector<ScenarioParams> m_Scenarios;

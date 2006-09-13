@@ -81,16 +81,16 @@ void TextureDlg::SetParams(const TParams &Params)
 
 	// single
 	if (m_iTexture != TE_TILESET)
-		m_strTextureSingle.from_utf8(Params.GetValueString(STR_TEXTUREFILE));
+		m_strTextureSingle = wxString(Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
 
 	// tile4x4
-	m_strTextureBase.from_utf8(Params.GetValueString(STR_TEXTUREBASE));
+	m_strTextureBase = wxString(Params.GetValueString(STR_TEXTUREBASE), wxConvUTF8);
 	m_iTilesize = Params.GetValueInt(STR_TILESIZE);
 	m_iTilesizeIndex = vt_log2(m_iTilesize)-8;
-	m_strTexture4x4.from_utf8(Params.GetValueString(STR_TEXTURE4BY4));
+	m_strTexture4x4 = wxString(Params.GetValueString(STR_TEXTURE4BY4), wxConvUTF8);
 
 	// derived
-	m_strColorMap.from_utf8(Params.GetValueString(STR_COLOR_MAP));
+	m_strColorMap = wxString(Params.GetValueString(STR_COLOR_MAP), wxConvUTF8);
 
 	VTLOG("   Finished SetParams\n");
 }
@@ -108,15 +108,15 @@ void TextureDlg::GetParams(TParams &Params)
 
 	// single
 	if (m_iTexture != TE_TILESET)
-		Params.SetValueString(STR_TEXTUREFILE, m_strTextureSingle.to_utf8());
+		Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle.mb_str(wxConvUTF8));
 
 	// tile4x4
 	Params.SetValueInt(STR_TILESIZE, m_iTilesize);
-	Params.SetValueString(STR_TEXTUREBASE, m_strTextureBase.to_utf8());
-	Params.SetValueString(STR_TEXTURE4BY4, m_strTexture4x4.to_utf8());
+	Params.SetValueString(STR_TEXTUREBASE, (const char *) m_strTextureBase.mb_str(wxConvUTF8));
+	Params.SetValueString(STR_TEXTURE4BY4, (const char *) m_strTexture4x4.mb_str(wxConvUTF8));
 
 	// derived
-	Params.SetValueString(STR_COLOR_MAP, m_strColorMap.to_utf8());
+	Params.SetValueString(STR_COLOR_MAP, (const char *) m_strColorMap.mb_str(wxConvUTF8));
 
 	VTLOG("   Finished GetParams\n");
 }
@@ -140,8 +140,7 @@ void TextureDlg::UpdateFilenameBases()
 			int offset = s.Find(number);
 			if (offset != -1)
 				s = s.Left(offset);
-			wxString2 str = s;
-			GetTfileBase()->Append(str);
+			GetTfileBase()->Append(wxString(s, wxConvUTF8));
 		}
 	}
 	if (GetTfileBase()->GetCount() == 0)
@@ -171,7 +170,7 @@ void TextureDlg::UpdateTiledTextureFilename()
 		// fill the "single texture filename" control with available bitmap files
 		if (m_TextureFiles[i].Matches(filter))
 		{
-			m_strTexture4x4 = m_TextureFiles[i];
+			m_strTexture4x4 = wxString(m_TextureFiles[i], wxConvUTF8);
 			bFound = true;
 			break;
 		}
@@ -277,7 +276,7 @@ void TextureDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (i = 0; i < paths.size(); i++)
 	{
 		if (bShowProgress)
-			UpdateProgressDialog(i * 100 / paths.size(), wxString2(paths[i]));
+			UpdateProgressDialog(i * 100 / paths.size(), wxString(paths[i], wxConvUTF8));
 
 		// Gather all possible texture image filenames
 		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.bmp");
@@ -291,7 +290,7 @@ void TextureDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pTextureFileSingle->Clear();
 	for (i = 0; i < m_TextureFiles.size(); i++)
 	{
-		wxString2 str = m_TextureFiles[i];
+		wxString str(m_TextureFiles[i], wxConvUTF8);
         m_pTextureFileSingle->Append(str);
 	}
 	sel = m_pTextureFileSingle->FindString(m_strTextureSingle);

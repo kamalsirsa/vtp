@@ -10,7 +10,6 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "vtlib/core/TParams.h"
 
 // WDR: class declarations
@@ -55,12 +54,12 @@ private:
 	// texture
 	int	 m_iTexture;
 	int	 m_iTilesize;
-	wxString2   m_strTextureSingle;
-	wxString2   m_strTextureBase;
-	wxString2   m_strTexture4x4;
-	wxString2   m_strTextureFilename;
-	wxString2   m_strTextureTileset;
-	wxString2   m_strColorMap;
+	wxString	m_strTextureSingle;
+	wxString	m_strTextureBase;
+	wxString	m_strTexture4x4;
+	wxString	m_strTextureFilename;
+	wxString	m_strTextureTileset;
+	wxString	m_strColorMap;
 
 	bool	m_bSetting;
 	vtStringArray m_datapaths;

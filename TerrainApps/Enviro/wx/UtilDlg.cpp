@@ -18,7 +18,6 @@
 #include "UtilDlg.h"
 #include "EnviroGUI.h"
 
-#include "vtui/wxString2.h"
 
 // WDR: class implementations
 
@@ -50,8 +49,8 @@ UtilDlg::UtilDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void UtilDlg::OnStructType( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	wxString2 val = m_pChoice->GetStringSelection();
-	g_App.SetRouteOptions(val.mb_str());
+	wxString val = m_pChoice->GetStringSelection();
+	g_App.SetRouteOptions((const char *) val.mb_str(wxConvUTF8));
 	g_App.start_new_fence();
 }
 
@@ -72,7 +71,7 @@ void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 	TransferDataToWindow();
 
-	wxString2 val = m_pChoice->GetStringSelection();
-	g_App.SetRouteOptions(val.mb_str());
+	wxString val = m_pChoice->GetStringSelection();
+	g_App.SetRouteOptions((const char *) val.mb_str(wxConvUTF8));
 }
 

@@ -17,14 +17,16 @@
 #endif
 
 #include <wx/colordlg.h>
+#include <wx/dir.h>
+
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Location.h"
 #include "vtdata/FilePath.h"		// for FindFileOnPaths
 #include "vtdata/vtLog.h"
+#include "TParamsDlg.h"
 #include "vtui/ColorMapDlg.h"
 #include "vtui/Helper.h"			// for AddFilenamesToChoice
 
-#include "TParamsDlg.h"
 #include "TimeDlg.h"
 #include "StyleDlg.h"
 
@@ -302,26 +304,26 @@ void TParamsDlg::SetParams(const TParams &Params)
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// overall name
-	m_strTerrainName.from_utf8(Params.GetValueString(STR_NAME));
+	m_strTerrainName = wxString(Params.GetValueString(STR_NAME), wxConvUTF8);
 
 	// elevation
 	m_bGrid =			Params.GetValueInt(STR_SURFACE_TYPE) == 0;
 	m_bTin =			Params.GetValueInt(STR_SURFACE_TYPE) == 1;
 	m_bTileset =		Params.GetValueInt(STR_SURFACE_TYPE) == 2;
 	if (m_bGrid)
-		m_strFilename.from_utf8(Params.GetValueString(STR_ELEVFILE));
+		m_strFilename = wxString(Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
 	if (m_bTin)
-		m_strFilenameTin.from_utf8(Params.GetValueString(STR_ELEVFILE));
+		m_strFilenameTin = wxString(Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
 	if (m_bTileset)
-		m_strFilenameTileset.from_utf8(Params.GetValueString(STR_ELEVFILE));
+		m_strFilenameTileset = wxString(Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
 	m_fVerticalExag =   Params.GetValueFloat(STR_VERTICALEXAG);
 
 	/// navigation
 	m_fMinHeight =		Params.GetValueFloat(STR_MINHEIGHT);
 	m_iNavStyle =		Params.GetValueInt(STR_NAVSTYLE);
 	m_fNavSpeed =		Params.GetValueFloat(STR_NAVSPEED);
-	m_strLocFile.from_utf8(Params.GetValueString(STR_LOCFILE));
-	m_strInitLocation.from_utf8(Params.GetValueString(STR_INITLOCATION));
+	m_strLocFile = wxString(Params.GetValueString(STR_LOCFILE), wxConvUTF8);
+	m_strInitLocation = wxString(Params.GetValueString(STR_INITLOCATION), wxConvUTF8);
 	m_fHither =			Params.GetValueFloat(STR_HITHER);
 	m_bAccel =			Params.GetValueBool(STR_ACCEL);
 	m_AnimPaths =		Params.m_AnimPaths;
@@ -343,20 +345,20 @@ void TParamsDlg::SetParams(const TParams &Params)
 
 	// single
 	if (m_iTexture != TE_TILESET)
-		m_strTextureSingle.from_utf8(Params.GetValueString(STR_TEXTUREFILE));
+		m_strTextureSingle = wxString(Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
 
 	// tile4x4
-	m_strTextureBase.from_utf8(Params.GetValueString(STR_TEXTUREBASE));
+	m_strTextureBase = wxString(Params.GetValueString(STR_TEXTUREBASE), wxConvUTF8);
 	m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
 	m_iTilesizeIndex = vt_log2(m_iTilesize)-8;
-	m_strTexture4x4.from_utf8(Params.GetValueString(STR_TEXTURE4BY4));
+	m_strTexture4x4 = wxString(Params.GetValueString(STR_TEXTURE4BY4), wxConvUTF8);
 
 	// derived
-	m_strColorMap.from_utf8(Params.GetValueString(STR_COLOR_MAP));
+	m_strColorMap = wxString(Params.GetValueString(STR_COLOR_MAP), wxConvUTF8);
 
 	// tileset
 	if (m_iTexture == TE_TILESET)
-		m_strTextureTileset.from_utf8(Params.GetValueString(STR_TEXTUREFILE));
+		m_strTextureTileset = wxString(Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
 
 	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
 	m_b16bit =			Params.GetValueBool(STR_REQUEST16BIT);
@@ -367,13 +369,13 @@ void TParamsDlg::SetParams(const TParams &Params)
 
 	// detail texture
 	m_bDetailTexture =  Params.GetValueBool(STR_DETAILTEXTURE);
-	m_strDetailName.from_utf8(Params.GetValueString(STR_DTEXTURE_NAME));
+	m_strDetailName = wxString(Params.GetValueString(STR_DTEXTURE_NAME), wxConvUTF8);
 	m_fDetailScale = Params.GetValueFloat(STR_DTEXTURE_SCALE);
 	m_fDetailDistance = Params.GetValueFloat(STR_DTEXTURE_DISTANCE);
 
 	// culture
 	m_bRoads =			Params.GetValueBool(STR_ROADS);
-	m_strRoadFile.from_utf8(Params.GetValueString(STR_ROADFILE));
+	m_strRoadFile = wxString(Params.GetValueString(STR_ROADFILE), wxConvUTF8);
 	m_bHwy =			Params.GetValueBool(STR_HWY);
 	m_bPaved =			Params.GetValueBool(STR_PAVED);
 	m_bDirt =			Params.GetValueBool(STR_DIRT);
@@ -383,7 +385,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bRoadCulture =	Params.GetValueBool(STR_ROADCULTURE);
 
 	m_bPlants =			Params.GetValueBool(STR_TREES);
-	m_strVegFile.from_utf8(Params.GetValueString(STR_TREEFILE));
+	m_strVegFile = wxString(Params.GetValueString(STR_TREEFILE), wxConvUTF8);
 	m_iVegDistance =	Params.GetValueInt(STR_VEGDISTANCE);
 
 	m_bFog =			Params.GetValueBool(STR_FOG);
@@ -395,14 +397,14 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bStructureShadows = Params.GetValueBool(STR_STRUCT_SHADOWS);
 	m_iStructureRez = vt_log2(Params.GetValueInt(STR_SHADOW_REZ))-8;
 	m_fDarkness =		Params.GetValueFloat(STR_SHADOW_DARKNESS);
-	m_strContent =	  Params.GetValueString(STR_CONTENT_FILE);
+	m_strContent = wxString(Params.GetValueString(STR_CONTENT_FILE), wxConvUTF8);
 
 	m_bVehicles =	   Params.GetValueBool(STR_VEHICLES);
 //  m_fVehicleSize =	Params.GetValueFloat(STR_VEHICLESIZE);
 //  m_fVehicleSpeed =   Params.GetValueFloat(STR_VEHICLESPEED);
 
 	m_bSky =			Params.GetValueBool(STR_SKY);
-	m_strSkyTexture.from_utf8(Params.GetValueString(STR_SKYTEXTURE));
+	m_strSkyTexture = wxString(Params.GetValueString(STR_SKYTEXTURE), wxConvUTF8);
 	m_bOceanPlane =	 Params.GetValueBool(STR_OCEANPLANE);
 	m_fOceanPlaneLevel = Params.GetValueFloat(STR_OCEANPLANELEVEL);
 	m_bDepressOcean =   Params.GetValueBool(STR_DEPRESSOCEAN);
@@ -414,11 +416,11 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bRouteEnable =	Params.GetValueBool(STR_ROUTEENABLE);
 	const char *routefile = Params.GetValueString(STR_ROUTEFILE);
 	if (routefile)
-		m_strRouteFile.from_utf8(routefile);
+		m_strRouteFile = wxString(routefile, wxConvUTF8);
 
 	vtString fname;
 	if (Params.GetOverlay(fname, m_iOverlayX, m_iOverlayY))
-		m_strOverlayFile = fname;
+		m_strOverlayFile = wxString(fname, wxConvUTF8);
 
 	// Safety check
 	if (m_iTriCount < 500 || m_iTriCount > 100000)
@@ -437,23 +439,23 @@ void TParamsDlg::GetParams(TParams &Params)
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// overall name
-	Params.SetValueString(STR_NAME, m_strTerrainName.to_utf8());
+	Params.SetValueString(STR_NAME, (const char *) m_strTerrainName.mb_str(wxConvUTF8));
 
 	// elevation
 	if (m_bGrid)
 	{
 		Params.SetValueInt(STR_SURFACE_TYPE, 0);
-		Params.SetValueString(STR_ELEVFILE, m_strFilename.to_utf8());
+		Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilename.mb_str(wxConvUTF8));
 	}
 	if (m_bTin)
 	{
 		Params.SetValueInt(STR_SURFACE_TYPE, 1);
-		Params.SetValueString(STR_ELEVFILE, m_strFilenameTin.to_utf8());
+		Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilenameTin.mb_str(wxConvUTF8));
 	}
 	if (m_bTileset)
 	{
 		Params.SetValueInt(STR_SURFACE_TYPE, 2);
-		Params.SetValueString(STR_ELEVFILE, m_strFilenameTileset.to_utf8());
+		Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilenameTileset.mb_str(wxConvUTF8));
 	}
 	Params.SetValueFloat(STR_VERTICALEXAG, m_fVerticalExag);
 
@@ -461,8 +463,8 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueFloat(STR_MINHEIGHT, m_fMinHeight);
 	Params.SetValueInt(STR_NAVSTYLE, m_iNavStyle);
 	Params.SetValueFloat(STR_NAVSPEED, m_fNavSpeed);
-	Params.SetValueString(STR_LOCFILE, m_strLocFile.to_utf8());
-	Params.SetValueString(STR_INITLOCATION, m_strInitLocation.to_utf8());
+	Params.SetValueString(STR_LOCFILE, (const char *) m_strLocFile.mb_str(wxConvUTF8));
+	Params.SetValueString(STR_INITLOCATION, (const char *) m_strInitLocation.mb_str(wxConvUTF8));
 	Params.SetValueFloat(STR_HITHER, m_fHither);
 	Params.SetValueBool(STR_ACCEL, m_bAccel);
 	Params.m_AnimPaths = m_AnimPaths;
@@ -484,19 +486,19 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	// single
 	if (m_iTexture != TE_TILESET)
-		Params.SetValueString(STR_TEXTUREFILE, m_strTextureSingle.to_utf8());
+		Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle.mb_str(wxConvUTF8));
 
 	// tile4x4
 	Params.SetValueInt(STR_TILESIZE, m_iTilesize);
-	Params.SetValueString(STR_TEXTUREBASE, m_strTextureBase.to_utf8());
-	Params.SetValueString(STR_TEXTURE4BY4, m_strTexture4x4.to_utf8());
+	Params.SetValueString(STR_TEXTUREBASE, (const char *) m_strTextureBase.mb_str(wxConvUTF8));
+	Params.SetValueString(STR_TEXTURE4BY4, (const char *) m_strTexture4x4.mb_str(wxConvUTF8));
 
 	// derived
-	Params.SetValueString(STR_COLOR_MAP, m_strColorMap.to_utf8());
+	Params.SetValueString(STR_COLOR_MAP, (const char *) m_strColorMap.mb_str(wxConvUTF8));
 
 	// tileset
 	if (m_iTexture == TE_TILESET)
-		Params.SetValueString(STR_TEXTUREFILE, m_strTextureTileset.to_utf8());
+		Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureTileset.mb_str(wxConvUTF8));
 
 	Params.SetValueBool(STR_MIPMAP, m_bMipmap);
 	Params.SetValueBool(STR_REQUEST16BIT, m_b16bit);
@@ -507,13 +509,13 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	// detail texture
 	Params.SetValueBool(STR_DETAILTEXTURE, m_bDetailTexture);
-	Params.SetValueString(STR_DTEXTURE_NAME, m_strDetailName.to_utf8());
+	Params.SetValueString(STR_DTEXTURE_NAME, (const char *) m_strDetailName.mb_str(wxConvUTF8));
 	Params.SetValueFloat(STR_DTEXTURE_SCALE, m_fDetailScale);
 	Params.SetValueFloat(STR_DTEXTURE_DISTANCE, m_fDetailDistance);
 
 	// culture
 	Params.SetValueBool(STR_ROADS, m_bRoads);
-	Params.SetValueString(STR_ROADFILE, m_strRoadFile.to_utf8());
+	Params.SetValueString(STR_ROADFILE, (const char *) m_strRoadFile.mb_str(wxConvUTF8));
 	Params.SetValueBool(STR_HWY, m_bHwy);
 	Params.SetValueBool(STR_PAVED, m_bPaved);
 	Params.SetValueBool(STR_DIRT, m_bDirt);
@@ -523,7 +525,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_ROADCULTURE, m_bRoadCulture);
 
 	Params.SetValueBool(STR_TREES, m_bPlants);
-	Params.SetValueString(STR_TREEFILE, m_strVegFile.to_utf8());
+	Params.SetValueString(STR_TREEFILE, (const char *) m_strVegFile.mb_str(wxConvUTF8));
 	Params.SetValueInt(STR_VEGDISTANCE, m_iVegDistance);
 
 	Params.SetValueBool(STR_FOG, m_bFog);
@@ -537,14 +539,14 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_STRUCT_SHADOWS, m_bStructureShadows);
 	Params.SetValueInt(STR_SHADOW_REZ, 1 << (m_iStructureRez+8));
 	Params.SetValueFloat(STR_SHADOW_DARKNESS, m_fDarkness);
-	Params.SetValueString(STR_CONTENT_FILE, m_strContent.to_utf8());
+	Params.SetValueString(STR_CONTENT_FILE, (const char *) m_strContent.mb_str(wxConvUTF8));
 
 	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
 //  Params.SetValueFloat(STR_VEHICLESIZE, m_fVehicleSize);
 //  Params.SetValueFloat(STR_VEHICLESPEED, m_fVehicleSpeed);
 
 	Params.SetValueBool(STR_SKY, m_bSky);
-	Params.SetValueString(STR_SKYTEXTURE, m_strSkyTexture.to_utf8());
+	Params.SetValueString(STR_SKYTEXTURE, (const char *) m_strSkyTexture.mb_str(wxConvUTF8));
 
 	Params.SetValueBool(STR_OCEANPLANE, m_bOceanPlane);
 	Params.SetValueFloat(STR_OCEANPLANELEVEL, m_fOceanPlaneLevel);
@@ -555,9 +557,9 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueRGBi(STR_BGCOLOR, col);
 
 	Params.SetValueBool(STR_ROUTEENABLE, m_bRouteEnable);
-	Params.SetValueString(STR_ROUTEFILE, m_strRouteFile.to_utf8());
+	Params.SetValueString(STR_ROUTEFILE, (const char *) m_strRouteFile.mb_str(wxConvUTF8));
 
-	Params.SetOverlay(m_strOverlayFile.vt_str(), m_iOverlayX, m_iOverlayY);
+	Params.SetOverlay((const char *) m_strOverlayFile.mb_str(wxConvUTF8), m_iOverlayX, m_iOverlayY);
 
 	Params.m_Scenarios = m_Scenarios;
 }
@@ -581,7 +583,7 @@ void TParamsDlg::UpdateFilenameBases()
 			int offset = s.Find(number);
 			if (offset != -1)
 				s = s.Left(offset);
-			wxString2 str = s;
+			wxString str(s, wxConvUTF8);
 			GetTFileBase()->Append(str);
 		}
 	}
@@ -612,7 +614,7 @@ void TParamsDlg::UpdateTiledTextureFilename()
 		// fill the "single texture filename" control with available bitmap files
 		if (m_TextureFiles[i].Matches(filter))
 		{
-			m_strTexture4x4 = m_TextureFiles[i];
+			m_strTexture4x4 = wxString(m_TextureFiles[i], wxConvUTF8);
 			bFound = true;
 			break;
 		}
@@ -708,7 +710,7 @@ void TParamsDlg::RefreshLocationFields()
 	m_pLocField->Append(_("(default)"));
 
 	vtString fname = "Locations/";
-	fname += m_strLocFile.mb_str();
+	fname += m_strLocFile.mb_str(wxConvUTF8);
 	vtString path = FindFileOnPaths(m_datapaths, fname);
 	if (path == "")
 		return;
@@ -720,8 +722,7 @@ void TParamsDlg::RefreshLocationFields()
 	for (i = 0; i < num; i++)
 	{
 		vtLocation *loc = saver.GetLocation(i);
-		wxString2 str;
-		str = loc->m_strName;
+		wxString str(loc->m_strName.c_str());
 		m_pLocField->Append(str);
 	}
 	if (num)
@@ -749,27 +750,28 @@ void TParamsDlg::UpdateColorMapChoice()
 
 void TParamsDlg::DeleteItem(wxListBox *pBox)
 {
-	wxString2 fname1 = pBox->GetStringSelection();
+	vtString fname = pBox->GetStringSelection().mb_str(wxConvUTF8);
 
 	// might be a layer
-	int idx = FindLayerByFilename(fname1);
+	int idx = FindLayerByFilename(fname);
 	if (idx != -1)
 		m_Layers.erase(m_Layers.begin()+idx);
 
 	// or an animpath
 	for (unsigned int i = 0; i < m_AnimPaths.size(); i++)
-		if (!fname1.vt_str().Compare(m_AnimPaths[i]))
+	{
+		if (!fname.Compare(m_AnimPaths[i]))
 		{
 			m_AnimPaths.erase(m_AnimPaths.begin()+i);
 			break;
 		}
+	}
 }
 
-int TParamsDlg::FindLayerByFilename(const wxString2 &fname)
+int TParamsDlg::FindLayerByFilename(const vtString &fname)
 {
-	vtString fname2 = fname.vt_str();
 	for (unsigned int i = 0; i < m_Layers.size(); i++)
-		if (fname2 == m_Layers[i].GetValueString("Filename"))
+		if (fname == m_Layers[i].GetValueString("Filename"))
 			return (int) i;
 	return -1;
 }
@@ -834,7 +836,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (i = 0; i < paths.size(); i++)
 	{
 		if (bShowProgress)
-			UpdateProgressDialog(i * 100 / paths.size(), wxString2(paths[i]));
+			UpdateProgressDialog(i * 100 / paths.size(), wxString(paths[i], wxConvUTF8));
 
 		// Gather all possible texture image filenames
 		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.bmp");
@@ -913,7 +915,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	// fill the "single texture filename" control with available image files
 	for (i = 0; i < m_TextureFiles.size(); i++)
 	{
-		wxString2 str = m_TextureFiles[i];
+		wxString str(m_TextureFiles[i], wxConvUTF8);
         m_pTextureFileSingle->Append(str);
 	}
 	sel = m_pTextureFileSingle->FindString(m_strTextureSingle);
@@ -995,8 +997,7 @@ bool TParamsDlg::TransferDataToWindow()
 	{
 		vtString ltype = m_Layers[i].GetValueString("Type");
 		vtString fname = m_Layers[i].GetValueString("Filename");
-		wxString2 fname2;
-		fname2.from_utf8(fname);
+		wxString fname2(fname, wxConvUTF8);
 
 		if (ltype == TERR_LTYPE_STRUCTURE)
 			m_pStructFiles->Append(fname2);
@@ -1008,14 +1009,13 @@ bool TParamsDlg::TransferDataToWindow()
 
 	m_pAnimFiles->Clear();
 	for (i = 0; i < m_AnimPaths.size(); i++)
-		m_pAnimFiles->Append(wxString2(m_AnimPaths[i]));
+		m_pAnimFiles->Append(wxString(m_AnimPaths[i], wxConvUTF8));
 	m_pAnimFiles->Append(_("(double-click to add files)"));
 
-	wxString2 str;
 	m_pScenarioList->Clear();
 	for (i = 0; i < m_Scenarios.size(); i++)
 	{
-		str.from_utf8(m_Scenarios[i].GetValueString(STR_SCENARIO_NAME));
+		wxString str(m_Scenarios[i].GetValueString(STR_SCENARIO_NAME), wxConvUTF8);
 		m_pScenarioList->Append(str);
 	}
 
@@ -1144,28 +1144,24 @@ void TParamsDlg::OnCheckBox( wxCommandEvent &event )
 
 //
 // This function is used to find all files in a given directory,
-// and if they match a wildcard, add them to a combo box.
+// and if they match a wildcard, add them to a string array.
 //
-void AddFilenamesToArray(wxArrayString &array, const char *directory,
-	const char *wildcard)
+void AddFilenamesToArray(wxArrayString &array, const wxString &dirname,
+	const wxString &wildcard)
 {
-	int entries = 0, matches = 0;
+	// We could just call this:
+	// wxDir::GetAllFiles(dirname, &array, wildcard, wxDIR_FILES);
+	// However, that gets the full path names.  We only want the filenames.
 
-	wxString2 wildstr = wildcard;
-	for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
+	if (!wxDir::Exists(dirname))
+		return;
+	wxDir dir(dirname);
+	wxString filename;
+	bool cont = dir.GetFirst(&filename, wildcard, wxDIR_FILES);
+	while ( cont )
 	{
-		entries++;
-		std::string name1 = it.filename();
-		//	  VTLOG("   entry: '%s'", name1.c_str());
-		if (it.is_hidden() || it.is_directory())
-			continue;
-
-		wxString2 name = name1.c_str();
-		if (name.Matches(wildstr))
-		{
-			array.Add(name);
-			matches++;
-		}
+		array.Add(filename);
+		cont = dir.GetNext(&filename);
 	}
 }
 
@@ -1175,9 +1171,13 @@ void TParamsDlg::OnListDblClickStructure( wxCommandEvent &event )
 	wxArrayString strings;
 
 	for (i = 0; i < m_datapaths.size(); i++)
-		AddFilenamesToArray(strings, m_datapaths[i] + "BuildingData", "*.vtst*");
+	{
+		wxString path(m_datapaths[i], wxConvUTF8);
+		path += _T("BuildingData");
+		AddFilenamesToArray(strings, path, _T("*.vtst*"));
+	}
 
-	wxString2 result = wxGetSingleChoice(_("One of the following to add:"),
+	wxString result = wxGetSingleChoice(_("One of the following to add:"),
 		_("Choose a structure file"), strings, this);
 
 	if (result.Cmp(_T(""))) // user selected something
@@ -1185,7 +1185,7 @@ void TParamsDlg::OnListDblClickStructure( wxCommandEvent &event )
 		TransferDataFromWindow();
 		vtTagArray lay;
 		lay.SetValueString("Type", TERR_LTYPE_STRUCTURE, true);
-		lay.SetValueString("Filename", result.to_utf8(), true);
+		lay.SetValueString("Filename", (const char *) result.mb_str(wxConvUTF8), true);
 		m_Layers.push_back(lay);
 		TransferDataToWindow();
 	}
@@ -1198,19 +1198,21 @@ void TParamsDlg::OnListDblClickRaw( wxCommandEvent &event )
 
 	for (i = 0; i < m_datapaths.size(); i++)
 	{
-		AddFilenamesToArray(strings, m_datapaths[i] + "PointData", "*.shp");
-		AddFilenamesToArray(strings, m_datapaths[i] + "PointData", "*.igc");
-		AddFilenamesToArray(strings, m_datapaths[i] + "PointData", "*.dxf");
+		wxString path(m_datapaths[i], *wxConvCurrent);
+		path += _T("PointData");
+		AddFilenamesToArray(strings, path, _T("*.shp"));
+		AddFilenamesToArray(strings, path, _T("*.igc"));
+		AddFilenamesToArray(strings, path, _T("*.dxf"));
 	}
 
-	wxString2 result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a structure file"),
+	wxString result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a structure file"),
 		strings, this);
 
 	if (result.Cmp(_T(""))) // user selected something
 	{
 		vtTagArray lay;
 		lay.SetValueString("Type", TERR_LTYPE_ABSTRACT, true);
-		lay.SetValueString("Filename", result.vt_str(), true);
+		lay.SetValueString("Filename", (const char *) result.mb_str(wxConvUTF8), true);
 		m_Layers.push_back(lay);
 		TransferDataToWindow();
 	}
@@ -1222,14 +1224,18 @@ void TParamsDlg::OnListDblClickAnimPaths( wxCommandEvent &event )
 	wxArrayString strings;
 
 	for (i = 0; i < m_datapaths.size(); i++)
-		AddFilenamesToArray(strings, m_datapaths[i] + "Locations", "*.vtap");
+	{
+		wxString path(m_datapaths[i], *wxConvCurrent);
+		path += _T("Locations");
+		AddFilenamesToArray(strings, path, _T("*.vtap"));
+	}
 
-	wxString2 result = wxGetSingleChoice(_("One of the following to add:"), _("Choose an animpath file"),
+	wxString result = wxGetSingleChoice(_("One of the following to add:"), _("Choose an animpath file"),
 		strings, this);
 
 	if (result.Cmp(_T(""))) // user selected something
 	{
-		m_AnimPaths.push_back(result.vt_str());
+		m_AnimPaths.push_back(vtString(result.mb_str(wxConvUTF8)));
 		TransferDataToWindow();
 	}
 }
@@ -1238,7 +1244,7 @@ void TParamsDlg::OnChoiceLocFile( wxCommandEvent &event )
 {
 	if (m_bSetting || !m_bReady) return;
 
-	wxString2 prev = m_strLocFile;
+	wxString prev = m_strLocFile;
 	TransferDataFromWindow();
 	if (m_strLocFile != prev)
 	{
@@ -1274,7 +1280,7 @@ void TParamsDlg::OnSetInitTime( wxCommandEvent &event )
 
 void TParamsDlg::OnStyle( wxCommandEvent &event )
 {
-	wxString2 str = GetRawFiles()->GetStringSelection();
+	vtString str = GetRawFiles()->GetStringSelection().mb_str(wxConvUTF8);
 	int idx = FindLayerByFilename(str);
 	if (idx == -1)
 		return;
@@ -1307,7 +1313,7 @@ void TParamsDlg::OnOverlay( wxCommandEvent &event )
 
 void TParamsDlg::UpdateTimeString()
 {
-	m_strInitTime = asctime(&m_InitTime.GetTM());
+	m_strInitTime = wxString(asctime(&m_InitTime.GetTM()), wxConvLibc);
 
 	// asctime has a weird habit of putting a LF at the end
 	m_strInitTime.Trim();
@@ -1315,13 +1321,13 @@ void TParamsDlg::UpdateTimeString()
 
 void TParamsDlg::OnNewScenario( wxCommandEvent &event )
 {
-	wxString2 ScenarioName = wxGetTextFromUser(_("Enter Scenario Name"), _("New Scenario"));
+	wxString ScenarioName = wxGetTextFromUser(_("Enter Scenario Name"), _("New Scenario"));
 
 	if (!ScenarioName.IsEmpty())
 	{
 		ScenarioParams Scenario;
 
-		Scenario.SetValueString(STR_SCENARIO_NAME, ScenarioName.to_utf8(), true);
+		Scenario.SetValueString(STR_SCENARIO_NAME, (const char *) ScenarioName.mb_str(wxConvUTF8), true);
 		m_Scenarios.push_back(Scenario);
 		m_pScenarioList->SetSelection(m_pScenarioList->Append(ScenarioName));
 		UpdateEnableState();
@@ -1354,8 +1360,7 @@ void TParamsDlg::OnEditScenario( wxCommandEvent &event )
 		{
 			if (ScenarioParamsDialog.IsModified())
 			{
-				wxString2 str;
-				str.from_utf8(m_Scenarios[iSelected].GetValueString(STR_SCENARIO_NAME));
+				wxString str(m_Scenarios[iSelected].GetValueString(STR_SCENARIO_NAME), wxConvUTF8);
 				m_Scenarios[iSelected] = ScenarioParamsDialog.GetParams();
 				m_pScenarioList->SetString(iSelected, str);
 			}
