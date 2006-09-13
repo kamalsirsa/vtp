@@ -149,20 +149,6 @@ wxString2 &wxString2::operator=(const wstring2 &ws2)
 #endif
 
 char wxString2::s_buffer[MAX_WXSTRING2_SIZE];
-#if wxUSE_UNICODE
-const char *wxString2::mb_str() const
-{
-	// watch out: multi-byte is NOT (unfortunately) the same as UTF-8
-//#if SUPPORT_WSTRING
-//	wstring2 ws(c_str());
-//	return ws.to_utf8();
-//#else
-	int result = wxWC2MB(s_buffer, c_str(), MAX_WXSTRING2_SIZE);
-	return s_buffer;
-//#endif
-}
-#endif
-
 const char *wxString2::to_utf8() const
 {
 	int result;
@@ -195,14 +181,8 @@ void wxString2::from_utf8(const char *input)
 
 vtString wxString2::vt_str() const
 {
-//#if SUPPORT_WSTRING && wxUSE_UNICODE
-//	wstring2 ws(c_str());
-//	vtString result(ws.to_utf8());
-//	return result;
-//#else
 	vtString result(mb_str());
 	return result;
-//#endif
 }
 
 

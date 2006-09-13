@@ -1,7 +1,7 @@
 //
 // wxString2.h
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -72,11 +72,6 @@ public:
 
 	// Useful methods
 	wxString2 ToBackslash() const;
-
-#if wxUSE_UNICODE
-	// explicit conversion to C string
-	const char *mb_str() const;
-#endif
 
 private:
 	static char s_buffer[MAX_WXSTRING2_SIZE];
