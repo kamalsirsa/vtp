@@ -1,7 +1,7 @@
 //
 // Options.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,8 +16,11 @@ public:
 	EnviroOptions();
 	~EnviroOptions();
 
-	bool Read(const char *szFilename);
-	bool Write();
+	bool ReadXML(const char *szFilename);
+	bool WriteXML();
+
+	// older method was .ini files
+	bool ReadINI(const char *szFilename);
 
 	vtStringArray m_DataPaths;
 	bool		m_bEarthView;

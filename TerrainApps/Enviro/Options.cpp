@@ -1,16 +1,19 @@
 //
 // Options.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
+#include "xmlhelper/easyxml.hpp"
+
 #include <string.h>
+#include <fstream>
+
 #include "Options.h"
 
-#include <fstream>
 using namespace std;
 
 EnviroOptions g_Options;
@@ -67,11 +70,15 @@ EnviroOptions::~EnviroOptions()
 {
 }
 
-bool EnviroOptions::Read(const char *szFilename)
+void LocalToUTF8(vtString &str)
+{
+	wstring2 ws((const char *)str);
+	str = ws.to_utf8();
+}
+
+bool EnviroOptions::ReadINI(const char *szFilename)
 {
 	VTLOG("Reading options from '%s'\n", szFilename);
-
-	m_strFilename = szFilename;
 
 	ifstream input(m_strFilename, ios::in | ios::binary);
 	if (!input.is_open())
@@ -153,10 +160,149 @@ bool EnviroOptions::Read(const char *szFilename)
 	if (!bFoundContentFile)
 		m_strContentFile = "common_content.vtco";
 
+	// Bad old INI file stored its strings in the local charset, which could
+	//  vary from machine to machine.  Nowadays we always encode in utf-8.
+	for (unsigned int i = 0; i < m_DataPaths.size(); i++)
+		LocalToUTF8(m_DataPaths[i]);
+	LocalToUTF8(m_strEarthImage);
+	LocalToUTF8(m_strInitTerrain);
+	LocalToUTF8(m_strContentFile);
+
+	m_strFilename = szFilename;
 	return true;
 }
 
-bool EnviroOptions::Write()
+///////////////////////////////////////////////////////////////////////
+// XML format
+
+class EnviroOptionsVisitor : public XMLVisitor
+{
+public:
+	EnviroOptionsVisitor(EnviroOptions &opt) : m_opt(opt) {}
+	void startElement(const char *name, const XMLAttributes &atts) { m_data = ""; }
+	void endElement (const char *name);
+	void data(const char *s, int length) { m_data.append(string(s, length)); }
+
+protected:
+	EnviroOptions &m_opt;
+	std::string m_data;
+};
+
+void s2b(std::string &s, bool &b)
+{
+	if (s[0] == '0') b = false;
+	if (s[0] == '1') b = true;
+}
+
+void EnviroOptionsVisitor::endElement(const char *name)
+{
+	const char *str = m_data.c_str();
+
+	if (strcmp(name, STR_DATAPATH) == 0)
+		m_opt.m_DataPaths.push_back(vtString(m_data.c_str()));
+
+	else if (strcmp(name, STR_EARTHVIEW) == 0)
+		s2b(m_data, m_opt.m_bEarthView);
+	else if (strcmp(name, STR_EARTHIMAGE) == 0)
+		m_opt.m_strEarthImage = str;
+	else if (strcmp(name, STR_INITTERRAIN) == 0)
+		m_opt.m_strInitTerrain = str;
+
+	else if (strcmp(name, STR_FULLSCREEN) == 0)
+		s2b(m_data, m_opt.m_bFullscreen);
+	else if (strcmp(name, STR_STEREO) == 0)
+		s2b(m_data, m_opt.m_bStereo);
+	else if (strcmp(name, STR_STEREO_MODE) == 0)
+		m_opt.m_iStereoMode = atoi(str);
+	else if (strcmp(name, STR_WINLOC) == 0)
+	{
+		sscanf(str, "%d %d %d %d", &m_opt.m_WinPos.x, &m_opt.m_WinPos.y,
+			&m_opt.m_WinSize.x, &m_opt.m_WinSize.y);
+	}
+	else if (strcmp(name, STR_LOCINSIDE) == 0)
+		s2b(m_data, m_opt.m_bLocationInside);
+	else if (strcmp(name, STR_HTMLPANE) == 0)
+		s2b(m_data, m_opt.m_bHtmlpane);
+	else if (strcmp(name, STR_FLOATBAR) == 0)
+		s2b(m_data, m_opt.m_bFloatingToolbar);
+	else if (strcmp(name, STR_TEXTURE_COMPRESSION) == 0)
+		s2b(m_data, m_opt.m_bTextureCompression);
+	else if (strcmp(name, STR_DISABLE_MODEL_MIPMAPS) == 0)
+		s2b(m_data, m_opt.m_bDisableModelMipmaps);
+
+	else if (strcmp(name, STR_PLANTSIZE) == 0)
+		m_opt.m_fPlantScale = atof(str);
+	else if (strcmp(name, STR_PLANTSHADOWS) == 0)
+		s2b(m_data, m_opt.m_bShadows);
+	else if (strcmp(name, STR_ONLY_AVAILABLE_SPECIES) == 0)
+		s2b(m_data, m_opt.m_bOnlyAvailableSpecies);
+
+	else if (strcmp(name, STR_DIRECT_PICKING) == 0)
+		s2b(m_data, m_opt.m_bDirectPicking);
+	else if (strcmp(name, STR_SELECTIONCUTOFF) == 0)
+		m_opt.m_fSelectionCutoff = atof(str);
+	else if (strcmp(name, STR_MAX_INST_RADIUS) == 0)
+		m_opt.m_fMaxPickableInstanceRadius = atof(str);
+	else if (strcmp(name, STR_CURSOR_THICKNESS) == 0)
+		m_opt.m_fCursorThickness = atof(str);
+	else if (strcmp(name, STR_CATENARY_FACTOR) == 0)
+		m_opt.m_fCatenaryFactor = atof(str);
+
+	else if (strcmp(name, STR_CONTENT_FILE) == 0)
+		m_opt.m_strContentFile = str;
+}
+
+bool EnviroOptions::ReadXML(const char *fname)
+{
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	VTLOG("\tReading options from '%s'\n", fname);
+
+	EnviroOptionsVisitor visitor(*this);
+	try
+	{
+		std::string fname2(fname);
+		readXML(fname2, visitor);
+	}
+	catch (xh_io_exception &ex)
+	{
+		const string msg = ex.getFormattedMessage();
+		VTLOG(" XML problem: %s\n", msg.c_str());
+		return false;
+	}
+	m_strFilename = fname;
+	return true;
+}
+
+void WriteElem(ofstream &output, const char *elem, const char *value)
+{
+	output << "\t<" << elem << ">";
+	output << value;
+	output << "</" << elem << ">\n";
+}
+
+void WriteElemB(ofstream &output, const char *elem, bool value)
+{
+	output << "\t<" << elem << ">";
+	output << value;
+	output << "</" << elem << ">\n";
+}
+
+void WriteElemI(ofstream &output, const char *elem, int value)
+{
+	output << "\t<" << elem << ">";
+	output << value;
+	output << "</" << elem << ">\n";
+}
+
+void WriteElemF(ofstream &output, const char *elem, float value)
+{
+	output << "\t<" << elem << ">";
+	output << value;
+	output << "</" << elem << ">\n";
+}
+
+bool EnviroOptions::WriteXML()
 {
 	VTLOG("Writing options to '%s'\n", (const char *) m_strFilename);
 
@@ -172,55 +318,39 @@ bool EnviroOptions::Write()
 	}
 
 	// write to file
+	output << "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << std::endl;
+	output << "<EnviroOptions>" << std::endl;
+
 	for (unsigned int i = 0; i < m_DataPaths.size(); i++)
-	{
-		output << STR_DATAPATH << "\t";
-		output << (const char *)(m_DataPaths[i]) << endl;
-	}
-	output << STR_EARTHVIEW << "\t\t\t";
-	output << m_bEarthView << endl;
-	output << STR_EARTHIMAGE << "\t\t\t";
-	output << (const char *)m_strEarthImage << endl;
-	output << STR_INITTERRAIN << "\t\t";
-	output << (const char *)m_strInitTerrain << endl;
+		WriteElem(output, STR_DATAPATH, m_DataPaths[i]);
 
-	output << STR_FULLSCREEN << "\t\t\t";
-	output << m_bFullscreen << endl;
-	output << STR_STEREO << "\t\t\t\t";
-	output << m_bStereo << endl;
-	output << STR_STEREO_MODE << "\t\t\t";
-	output << m_iStereoMode << endl;
-	output << STR_WINLOC << "\t\t";
-	output << m_WinPos.x << " " << m_WinPos.y << " " << m_WinSize.x << " " << m_WinSize.y << endl;
-	output << STR_LOCINSIDE << "\t";
-	output << m_bLocationInside << endl;
-	output << STR_HTMLPANE << "\t\t\t";
-	output << m_bHtmlpane << endl;
-	output << STR_FLOATBAR << "\t\t";
-	output << m_bFloatingToolbar << endl;
+	WriteElemB(output, STR_EARTHVIEW, m_bEarthView);
+	WriteElem(output, STR_EARTHIMAGE, m_strEarthImage);
+	WriteElem(output, STR_INITTERRAIN, m_strInitTerrain);
+	WriteElemB(output, STR_FULLSCREEN, m_bFullscreen);
+	WriteElemB(output, STR_STEREO, m_bStereo);
+	WriteElemI(output, STR_STEREO_MODE, m_iStereoMode);
 
-	output << STR_TEXTURE_COMPRESSION << "\t";
-	output << m_bTextureCompression << endl;
-	output << STR_PLANTSIZE << "\t\t\t";
-	output << m_fPlantScale << endl;
-	output << STR_PLANTSHADOWS << "\t\t";
-	output << m_bShadows << endl;
-	output << STR_ONLY_AVAILABLE_SPECIES << "\t";
-	output << m_bOnlyAvailableSpecies << endl;
-	output << STR_DIRECT_PICKING << "\t\t";
-	output << m_bDirectPicking << endl;
-	output << STR_SELECTIONCUTOFF << "\t\t";
-	output << m_fSelectionCutoff << endl;
-	output << STR_DISABLE_MODEL_MIPMAPS << "\t";
-	output << m_bDisableModelMipmaps << endl;
-	output << STR_CURSOR_THICKNESS << "\t\t";
-	output << m_fCursorThickness << endl;
-	output << STR_CATENARY_FACTOR << "\t\t";
-	output << m_fCatenaryFactor << endl;
-	output << STR_CONTENT_FILE << "\t\t\t";
-	output << (const char *)m_strContentFile << endl;
-	output << STR_MAX_INST_RADIUS << "\t";
-	output << m_fMaxPickableInstanceRadius << endl;
+	vtString winpos;
+	winpos.Format("%d %d %d %d", m_WinPos.x, m_WinPos.y, m_WinSize.x, m_WinSize.y);
+	WriteElem(output, STR_WINLOC, winpos);
+
+	WriteElemB(output, STR_LOCINSIDE, m_bLocationInside);
+	WriteElemB(output, STR_HTMLPANE, m_bHtmlpane);
+	WriteElemB(output, STR_FLOATBAR, m_bFloatingToolbar);
+	WriteElemB(output, STR_TEXTURE_COMPRESSION, m_bTextureCompression);
+	WriteElemF(output, STR_PLANTSIZE, m_fPlantScale);
+	WriteElemB(output, STR_PLANTSHADOWS, m_bShadows);
+	WriteElemB(output, STR_ONLY_AVAILABLE_SPECIES, m_bOnlyAvailableSpecies);
+	WriteElemB(output, STR_DIRECT_PICKING, m_bDirectPicking);
+	WriteElemF(output, STR_SELECTIONCUTOFF, m_fSelectionCutoff);
+	WriteElemB(output, STR_DISABLE_MODEL_MIPMAPS, m_bDisableModelMipmaps);
+	WriteElemF(output, STR_CURSOR_THICKNESS, m_fCursorThickness);
+	WriteElemF(output, STR_CATENARY_FACTOR, m_fCatenaryFactor);
+	WriteElem(output, STR_CONTENT_FILE, m_strContentFile);
+	WriteElemF(output, STR_MAX_INST_RADIUS, m_fMaxPickableInstanceRadius);
+
+	output << "</EnviroOptions>" << std::endl;
 
 	return true;
 }
