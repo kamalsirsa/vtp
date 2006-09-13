@@ -8,6 +8,7 @@
 #include "Features.h"
 #include "vtLog.h"
 #include "DxfParser.h"
+#include "FilePath.h"
 
 //
 // Construct / Destruct
@@ -33,16 +34,26 @@ void vtFeatureSet::DeleteFields()
 	m_fields.SetSize(0);
 }
 
-//
-// File IO
-//
+/**
+ * Save a featureset from a SHP (ESRI Shapefile) with corresponding DBF file
+ *
+ * \param filename	Filename in UTF-8 encoding.
+ * \param progress_callback Provide a callback function if you want to receive
+ *		progress indication.
+ *
+ * \return true if successful.
+ */
 bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) const
 {
 	// Must use "C" locale in case we write any floating-point fields
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	int nSHPType = OGRToShapelib(m_eGeomType);
-	SHPHandle hSHP = SHPCreate(filename, nSHPType);
+
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(filename);
+
+	SHPHandle hSHP = SHPCreate(fname_local, nSHPType);
 	if (!hSHP)
 		return false;
 
@@ -117,12 +128,24 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 	return true;
 }
 
+/**
+ * Load a featureset from a SHP (ESRI Shapefile).
+ *
+ * \param fname	filename in UTF-8 encoding.
+ * \param progress_callback Provide a callback function if you want to receive
+ *		progress indication.
+ *
+ * \return true if successful.
+ */
 bool vtFeatureSet::LoadFromSHP(const char *fname, bool progress_callback(int))
 {
 	VTLOG(" LoadFromSHP '%s': ", fname);
 
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(fname);
+
 	// Open the SHP File & Get Info from SHP:
-	SHPHandle hSHP = SHPOpen(fname, "rb");
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 	{
 		VTLOG("Couldn't open.\n");
@@ -145,6 +168,13 @@ bool vtFeatureSet::LoadFromSHP(const char *fname, bool progress_callback(int))
 }
 
 
+/**
+ * Load a featureset from a file.  It may be SHP, IGC, or DXF format.
+ *
+ * \param fname	filename in UTF-8 encoding.
+ *
+ * \return a new vtFeatureSet if successful, otherwise NULL;
+ */
 vtFeatureSet *vtFeatureLoader::LoadFrom(const char *filename)
 {
 	vtString fname = filename;
@@ -184,7 +214,10 @@ OGRwkbGeometryType GetTypeFromOGR(OGRLayer *pLayer)
 
 OGRwkbGeometryType GetTypeFromOGR(const char *filename)
 {
-	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
+	// OGR doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(filename);
+
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(fname_local);
 	if (!pDatasource)
 	{
 		VTLOG("unknown Datasource!");
@@ -204,8 +237,11 @@ OGRwkbGeometryType GetFeatureGeomType(const char *filename)
 	vtString ext = fname.Right(3);
 	if (!ext.CompareNoCase("shp"))
 	{
+		// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+		vtString fname_local = UTF8ToLocal(filename);
+
 		// Open the SHP File & Get Info from SHP:
-		SHPHandle hSHP = SHPOpen(filename, "rb");
+		SHPHandle hSHP = SHPOpen(fname_local, "rb");
 		if (hSHP == NULL)
 			return wkbUnknown;
 		int nElems, nShapeType;
@@ -222,12 +258,22 @@ OGRwkbGeometryType GetFeatureGeomType(const char *filename)
 		return GetTypeFromOGR(filename);
 }
 
+/**
+ * Load a featureset from a SHP (ESRI Shapefile).
+ *
+ * \param fname	filename in UTF-8 encoding.
+ *
+ * \return a new vtFeatureSet if successful, otherwise NULL.
+ */
 vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 {
 	VTLOG(" FeatureLoader LoadFromSHP\n");
 
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(filename);
+
 	// Open the SHP File & Get Info from SHP:
-	SHPHandle hSHP = SHPOpen(filename, "rb");
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 		return NULL;
 
@@ -269,7 +315,17 @@ vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 
 /////////////////////////////////////////////////////////////////////
 
-vtFeatureSet *vtFeatureLoader::LoadFromDXF(const char *filename, bool progress_callback(int))
+/**
+ * Load a featureset from a SHP (ESRI Shapefile).
+ *
+ * \param fname	filename in UTF-8 encoding.
+ * \param progress_callback Provide a callback function if you want to receive
+ *		progress indication.
+ *
+ * \return a new vtFeatureSet if successful, otherwise NULL.
+ */
+vtFeatureSet *vtFeatureLoader::LoadFromDXF(const char *filename,
+										   bool progress_callback(int))
 {
 	VTLOG("vtFeatureLoader::LoadFromDXF():\n");
 
@@ -341,6 +397,13 @@ double GetMinutes(const char *buf)
 	return atof(copy);
 }
 
+/**
+ * Load a featureset from an IGC file.
+ *
+ * \param fname	filename in UTF-8 encoding.
+ *
+ * \return a new vtFeatureSet if successful, otherwise NULL.
+ */
 vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 {
 	// Must use "C" locale because we use atof()
@@ -348,7 +411,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 
 	VTLOG(" FeatureLoader LoadFromIGC\n");
 
-	FILE *fp = fopen(filename, "rb");
+	FILE *fp = vtFileOpen(filename, "rb");
 	if (!fp)
 		return false;
 
@@ -454,13 +517,26 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(OGRLayer *pLayer,
 	return pSet;
 }
 
+/**
+ * Load a featureset from a file using the OGR library.  It can be in any
+ *  file format that OGR supports.
+ *
+ * \param fname	filename in UTF-8 encoding.
+ * \param progress_callback Provide a callback function if you want to receive
+ *		progress indication.
+ *
+ * \return a new vtFeatureSet if successful, otherwise NULL.
+ */
 vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
 							 bool progress_callback(int))
 {
 	// try using OGR
 	g_GDALWrapper.RequestOGRFormats();
 
-	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
+	// OGR doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(filename);
+
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(fname_local);
 	if (!pDatasource)
 	{
 		VTLOG("LoadWithOGR: data source is NULL.\n");
@@ -812,15 +888,29 @@ bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 }
 
 
+/**
+ * Load a featureset's field data from a DBF file
+ *
+ * \param filename	Filename in UTF-8 encoding.
+ * \param progress_callback Provide a callback function if you want to receive
+ *		progress indication.
+ *
+ * \return true if successful.
+ */
 bool vtFeatureSet::LoadDataFromDBF(const char *filename, bool progress_callback(int))
 {
 	// Must use "C" locale in case we read any floating-point fields
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	VTLOG(" LoadDataFromDBF\n");
-	// Try loading DBF File as well
+
+	// Try loading DBF File
 	vtString dbfname = MakeDBFName(filename);
-	DBFHandle db = DBFOpen(dbfname, "rb");
+
+	// DBFOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(dbfname);
+
+	DBFHandle db = DBFOpen(fname_local, "rb");
 	if (db == NULL)
 		return false;
 
@@ -839,7 +929,11 @@ bool vtFeatureSet::LoadFieldInfoFromDBF(const char *filename)
 {
 	VTLOG(" LoadFieldInfoFromDBF\n");
 	vtString dbfname = MakeDBFName(filename);
-	DBFHandle db = DBFOpen(dbfname, "rb");
+
+	// DBFOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(dbfname);
+
+	DBFHandle db = DBFOpen(fname_local, "rb");
 	if (db == NULL)
 		return false;
 
@@ -955,11 +1049,20 @@ bool isodd(int n)
 	return (n&1) != 0;
 }
 
+/**
+ * Load a featureset's field data from a comma-separated-value (CSV) file.
+ *
+ * \param fname	filename in UTF-8 encoding.
+ * \param progress_callback Provide a callback function if you want to receive
+ *		progress indication.
+ *
+ * \return true if successful.
+ */
 bool vtFeatureSet::LoadDataFromCSV(const char *filename, bool progress_callback(int))
 {
 	VTLOG(" LoadDataFromCSV\n");
-	// Try loading DBF File as well
-	FILE *fp = fopen(filename, "rb");
+
+	FILE *fp = vtFileOpen(filename, "rb");
 	if (fp == NULL)
 		return false;
 
@@ -1024,6 +1127,10 @@ bool vtFeatureSet::LoadDataFromCSV(const char *filename, bool progress_callback(
 }
 
 
+/**
+ * Set the number of entities.  This expands (or contracts) the number of
+ * geometry entitied and corresponding records.
+ */
 void vtFeatureSet::SetNumEntities(int iNum)
 {
 	// First set the number of geometries
@@ -1066,6 +1173,11 @@ void vtFeatureSet::SetGeomType(OGRwkbGeometryType eGeomType)
 	m_eGeomType = eGeomType;
 }
 
+/**
+ * Append the contents of another featureset to this one.
+ * The two featuresets must have the same geometry type.
+ * Only fields with matching names are copied in the record data.
+ */
 bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 {
 	// When copying field data, must use C locale
@@ -1409,6 +1521,16 @@ int vtFeatureSet::GetFieldIndex(const char *name) const
 	return -1;
 }
 
+/**
+ * Add a data field to this featureset.  The field contain a value of any type,
+ * for every entity.
+ *
+ * \param name Name of the new field.
+ * \param type Type of the new field.
+ * \param string_length For backward compatibility with the old SHP/DBF file formats,
+ *  this is the maximum length of a string, for string fields.  It has no effect
+ *  unless you save this featureset to a SHP/DBF file.
+ */
 int vtFeatureSet::AddField(const char *name, FieldType ftype, int string_length)
 {
 	Field *f = new Field(name, ftype);

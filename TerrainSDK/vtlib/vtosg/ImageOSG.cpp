@@ -215,8 +215,11 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 		osg::ref_ptr<osg::Image> pOsgImage;
 		try
 		{
+			// OSG doesn't yet support utf-8 or wide filenames, so convert
+			vtString fname_local = UTF8ToLocal(fname);
+
 			VTLOG("  readImageFile,");
-			pOsgImage = osgDB::readImageFile(fname);
+			pOsgImage = osgDB::readImageFile((const char *)fname_local);
 		}
 		catch (...)
 		{
@@ -507,7 +510,7 @@ bool vtImage::_ReadPNG(const char *filename)
 	info = png_create_info_struct(png);
 	endinfo = png_create_info_struct(png);
 
-	fp = fopen(filename, "rb");
+	fp = vtFileOpen(filename, "rb");
 	if (fp && fread(header, 1, 8, fp) && png_check_sig(header, 8))
 		png_init_io(png, fp);
 	else

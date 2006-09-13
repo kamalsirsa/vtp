@@ -3,12 +3,13 @@
 //
 // Class for parsing a DXF File.
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "DxfParser.h"
 #include "vtLog.h"
+#include "FilePath.h"
 
 using std::vector;
 using std::set;
@@ -45,7 +46,7 @@ bool DxfParser::RetrieveEntities(bool progress_callback(int))
 			return false;
 
 		m_iLine = 0;
-		m_pFile = fopen(m_sFileName, "r");
+		m_pFile = vtFileOpen(m_sFileName, "r");
 		if (m_pFile == NULL)
 		{
 			return false;

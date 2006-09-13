@@ -4,7 +4,7 @@
 // Implements the ContentManager class, including the ability to read
 // and write the contents to an XML file.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project.
+// Copyright (c) 2001-2006 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,7 @@
 #include "xmlhelper/easyxml.hpp"
 #include "Content.h"
 #include "vtLog.h"
+#include "FilePath.h"
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -384,7 +385,7 @@ bool vtTagArray::WriteToXML(const char *fname, const char *title) const
 {
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	FILE *fp = fopen(fname, "wb");
+	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
 		return false;
 
@@ -770,7 +771,7 @@ void vtContentManager::WriteXML(const char *filename) const
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	unsigned int i, j;
-	FILE *fp = fopen(filename, "wb");
+	FILE *fp = vtFileOpen(filename, "wb");
 	if (!fp)
 	{
 		throw xh_io_exception("Failed to open file", xh_location(filename),

@@ -4,12 +4,13 @@
 // This modules contains the implementations of the file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project.
+// Copyright (c) 2001-2006 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 #include <fstream>
 using namespace std;
 
@@ -81,7 +82,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 
 	// The first character in the file is useful for telling which format
 	// the file really is.
-	FILE *fp = fopen(szFileName, "rb");
+	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 		return false;
 	int FirstChar = fgetc(fp);
@@ -193,8 +194,11 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 #if SUPPORT_NETCDF
 	int id;
 
+	// netCDF doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(szFileName);
+
 	/* open existing netCDF dataset */
-	int status = nc_open(szFileName, NC_NOWRITE, &id);
+	int status = nc_open(fname_local, NC_NOWRITE, &id);
 	if (status != NC_NOERR)
 		return false;
 
@@ -292,7 +296,7 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 bool vtElevationGrid::LoadFrom3TX(const char *szFileName,
 								  bool progress_callback(int))
 {
-	FILE *fp = fopen(szFileName, "rb");
+	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 		return false;
 
@@ -336,7 +340,7 @@ bool vtElevationGrid::LoadFrom3TX(const char *szFileName,
 bool vtElevationGrid::LoadFromASC(const char *szFileName,
 								  bool progress_callback(int))
 {
-	FILE *fp = fopen(szFileName, "rb");
+	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 		return false;
 
@@ -426,7 +430,7 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 								bool progress_callback(int))
 {
 	char buf[8];
-	FILE *fp = fopen(szFileName, "rb");
+	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 		return false;
 
@@ -601,7 +605,7 @@ double get_ssss(FILE *fp)
 bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 								 bool progress_callback(int))
 {
-	FILE *fp = fopen(szFileName, "rb");
+	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)	// Cannot Open File
 		return false;
 
@@ -763,7 +767,10 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 {
 	if (progress_callback != NULL) progress_callback(1);
 
+
 	// Open the header file
+	// Charset Beware!  Filename may be utf-8, but how can we open an ifstream with utf-8 in
+	//  a portable way?
 	ifstream hdrFile(szFileName);
 	if (!hdrFile.is_open())
 	  return false;
@@ -827,7 +834,7 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 
 	// make the corresponding filename for the DEM
 	vtString dem_fname = ChangeFileExtension(szFileName, ".dem");
-	FILE *fp = fopen(dem_fname, "rb");
+	FILE *fp = vtFileOpen(dem_fname, "rb");
 	if (!fp)
 		return false;
 
@@ -911,6 +918,8 @@ bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
 		progress_callback(1);
 
 	// Open the header file
+	// Charset Beware!  Filename may be utf-8, but how can we open an ifstream with utf-8 in
+	//  a portable way?
 	ifstream hdrFile(szFileName);
 	if (!hdrFile.is_open())
 	  return false;
@@ -967,7 +976,7 @@ bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
 	if (!ext)
 		return false;
 	strcpy(ext, ".bin");
-	FILE *fp = fopen(dem_fname, "rb");
+	FILE *fp = vtFileOpen(dem_fname, "rb");
 	if (!fp)
 		return false;
 
@@ -1007,7 +1016,7 @@ bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
  */
 bool vtElevationGrid::LoadFromDSAA(const char* szFileName, bool progress_callback(int))
 {
-	FILE *fp = fopen(szFileName, "rt");
+	FILE *fp = vtFileOpen(szFileName, "rt");
 	if (!fp)
 		return false;
 
@@ -1084,7 +1093,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 		progress_callback(1);
 
 	// Open the header file
-	FILE *fp = fopen(szFileName, "rb");
+	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 	  return false;
 
@@ -1236,7 +1245,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback(int))
 {
 	// open input file
-	FILE *fp = fopen(szFileName, "rb");
+	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)		// Could not open input file
 		return false;
 
@@ -1444,7 +1453,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
  */
 bool vtElevationGrid::SaveToTerragen(const char *szFileName) const
 {
-	FILE *fp = fopen(szFileName, "wb");
+	FILE *fp = vtFileOpen(szFileName, "wb");
 	if (!fp)
 		return false;
 
@@ -1510,7 +1519,7 @@ bool vtElevationGrid::SaveTo3TX(const char *szFileName, bool progress_callback(i
 	if (m_iColumns != 1201 || m_iRows != 1201)
 		return false;
 
-	FILE *fp = fopen(szFileName, "wb");
+	FILE *fp = vtFileOpen(szFileName, "wb");
 	if (!fp)
 		return false;
 
@@ -1552,7 +1561,10 @@ bool vtElevationGrid::SaveToGeoTIFF(const char *szFileName) const
 
 	char **papszParmList = NULL;
 
-	GDALDataset *pDataset = pDriver->Create(szFileName, m_iColumns, m_iRows,
+	// GDAL doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(szFileName);
+
+	GDALDataset *pDataset = pDriver->Create(fname_local, m_iColumns, m_iRows,
 		1, GDT_Int16, papszParmList );
 	if (!pDataset)
 		return false;
@@ -1646,7 +1658,10 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 
 	g_GDALWrapper.RequestGDALFormats();
 
-	poDataset = (GDALDataset *) GDALOpen(szFileName, GA_ReadOnly);
+	// GDAL doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(szFileName);
+
+	poDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
 	if (poDataset == NULL)
 	{
 		// failed.
@@ -1945,9 +1960,12 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 	// let GDAL know we're going to use its OGR format drivers
 	g_GDALWrapper.RequestOGRFormats();
 
+	// OGR doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(szFileName);
+
 	vtString msg;
 	bool bSuccess = false;
-	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(szFileName);
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(fname_local);
 	if (NULL == pDatasource)
 		msg = "No datasource";
 	else
@@ -1985,7 +2003,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 								int bytes_per_element, float vertical_units,
 								bool bBigEndian, bool progress_callback(int))
 {
-	FILE *fp = fopen(szFileName, "rb");
+	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 		return false;
 
@@ -2068,7 +2086,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_callback(int))
 {
 	/* open input file */
-	FILE *fp = fopen(szFileName, "rb");
+	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)	// Could not open input file
 		return false;
 
@@ -2265,7 +2283,7 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_cal
  */
 bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback(int))
 {
-	FILE *fp = fopen(szFileName, "rb");
+	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 		return false;
 
@@ -2441,7 +2459,7 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback
 		return false;
 
 	// Check file size to guess if it is 1 arcsec
-	FILE *ffp = fopen(szFileName, "rb");
+	FILE *ffp = vtFileOpen(szFileName, "rb");
 	if (!ffp)
 		return false;
 	fseek(ffp, 0, SEEK_END);
@@ -2508,7 +2526,7 @@ typedef union {
  */
 bool vtElevationGrid::SaveToSTM(const char *szFileName, bool progress_callback(int))
 {
-	FILE *outf = fopen(szFileName, "wb");
+	FILE *outf = vtFileOpen(szFileName, "wb");
 	if (!outf)
 		return false;
 
@@ -2551,7 +2569,7 @@ bool vtElevationGrid::SaveToPlanet(const char *szDirName, bool progress_callback
 	// create index file
 	vtString fname_txt = szDirName;
 	fname_txt += "/index.txt";
-	FILE *indexfile = fopen(fname_txt, "wb");
+	FILE *indexfile = vtFileOpen(fname_txt, "wb");
 	if (!indexfile)
 		return false;
 
@@ -2565,7 +2583,7 @@ bool vtElevationGrid::SaveToPlanet(const char *szDirName, bool progress_callback
 		// create name of binary file and write it to disk
 		vtString fname_dat;
 		fname_dat.Format("%s/binarydem%02d%02d.dat", szDirName, xtile, ytile);
-		FILE *outfile = fopen(fname_dat, "wb");
+		FILE *outfile = vtFileOpen(fname_dat, "wb");
 		if (!outfile)
 			return false;
 
@@ -2625,7 +2643,7 @@ bool vtElevationGrid::SaveToPlanet(const char *szDirName, bool progress_callback
 bool vtElevationGrid::SaveToASC(const char *szFileName,
 								bool progress_callback(int)) const
 {
-	FILE *fp = fopen(szFileName, "wb");
+	FILE *fp = vtFileOpen(szFileName, "wb");
 	if (!fp)
 		return false;
 
@@ -2710,7 +2728,7 @@ bool vtElevationGrid::SaveToASC(const char *szFileName,
  */
 bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(int)) const
 {
-	FILE *fp = fopen(szFileName, "wb");
+	FILE *fp = vtFileOpen(szFileName, "wb");
 	if (!fp)
 		return false;
 
@@ -2817,7 +2835,7 @@ bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(
 bool vtElevationGrid::SaveToRAWINF(const char *szFileName, bool progress_callback(int)) const
 {
 	// First, write the raw data
-	FILE *fp = fopen(szFileName, "wb");
+	FILE *fp = vtFileOpen(szFileName, "wb");
 	if (!fp)
 		return false;
 	int i, j;
@@ -2842,7 +2860,7 @@ bool vtElevationGrid::SaveToRAWINF(const char *szFileName, bool progress_callbac
 	vtString path = fname.Left(pathlen);
 
 	vtString inf_fname = ChangeFileExtension(szFileName, ".inf");
-	fp = fopen(inf_fname, "wb");
+	fp = vtFileOpen(inf_fname, "wb");
 	if (!fp)
 		return false;
 
@@ -2879,7 +2897,7 @@ bool vtElevationGrid::SaveToPNG16(const char *fname)
 	png_infop info_ptr;
 
 	/* open the file */
-	fp = fopen(fname, "wb");
+	fp = vtFileOpen(fname, "wb");
 	if (fp == NULL)
 		return false;
 

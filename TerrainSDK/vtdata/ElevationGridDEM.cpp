@@ -4,12 +4,13 @@
 // This modules contains the implementations of the DEM file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project.
+// Copyright (c) 2001-2006 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
 #include "ElevationGrid.h"
 #include "vtLog.h"
+#include "FilePath.h"
 
 #if VTDEBUG
 #define DEBUG_DEM true
@@ -68,7 +69,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 {
 	if (progress_callback != NULL) progress_callback(0);
 
-	FILE *fp = fopen(szFileName,"rb");
+	FILE *fp = vtFileOpen(szFileName,"rb");
 	if (!fp)		// Cannot Open File
 		return false;
 

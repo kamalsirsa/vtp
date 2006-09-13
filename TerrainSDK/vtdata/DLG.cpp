@@ -2,7 +2,7 @@
 // DLG.c
 // read a DLG-O file
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,7 @@
 
 #include "DLG.h"
 #include "Projections.h"
+#include "FilePath.h"
 
 // helper functions
 int geti6(const char *buf)
@@ -69,7 +70,7 @@ bool vtDLGFile::Read(const char *fname, bool progress_callback(int))
 	m_iError = 0;
 
 	m_fname = fname;
-	m_fp = fopen(fname, "rb");
+	m_fp = vtFileOpen(fname, "rb");
 	if (!m_fp)
 	{
 		m_iError = DLG_ERR_FILE;
@@ -339,7 +340,7 @@ bool vtDLGFile::GetRecord(char *buf)
 
 void vtDLGFile::OpenFile()
 {
-	m_fp = fopen(m_fname, "rb");
+	m_fp = vtFileOpen(m_fname, "rb");
 }
 
 void vtDLGFile::CloseFile()
@@ -412,7 +413,7 @@ const char *vtDLGFile::GetErrorMessage()
 //
 bool ConvertDLG_from_LFDelim(const char *fname_from, const char *fname_to)
 {
-	FILE *out = fopen(fname_to, "wb");
+	FILE *out = vtFileOpen(fname_to, "wb");
 	if (!out) return false;
 
 	char buf[160];
