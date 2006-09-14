@@ -8,7 +8,7 @@ using namespace std;
 
 #include "easyxml.hpp"
 #include "xmlparse.h"
-
+#include "widestring.h"
 
 ////////////////////////////////////////////////////////////////////////
 // Implementation of XMLAttributes.
@@ -238,30 +238,59 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path,
 	XML_ParserFree(parser);
 }
 
-void readXML (const string &path, XMLVisitor &visitor,
+/**
+ * Read and parse the XML from a file.
+ */
+void readXML (const string &path_utf8, XMLVisitor &visitor,
 			  bool progress_callback(int))
 {
-	gzFile fp = gzopen(path.c_str(), "rb");
-
+	FILE *fp;
+#if WIN32
+	// For Windows we need to convert the utf-8 path to either multi-byte
+	//  (which might fail in some cases) or wide characters (wchar_t).
+	// The latter is better.
+	widestring fn;
+	fn.from_utf8(path_utf8.c_str());
+	fp = _wfopen(fn.c_str(), L"rb");
+#elif __DARWIN_OSX__
+	// Mac OS X already likes utf-8.
+	fp = fopen(path_utf8.c_str(), "rb");
+#else
+	// some other Unix flavor
+	widestring fn;
+	fn.from_utf8(path_utf8.c_str());
+	fp = fopen(fn.mb_str(), "rb");
+#endif
 	if (!fp)
-		throw xh_io_exception("Failed to open file", xh_location(path),
+		throw xh_io_exception("Failed to open file", xh_location(path_utf8),
+					"XML Parser");
+
+#ifdef _MSC_VER
+	int fd = _fileno(fp);
+#else
+	int fd = fileno(fp);
+#endif
+	gzFile gfp = gzdopen(fd, "rb");
+
+	if (!gfp)
+		throw xh_io_exception("Failed to open file", xh_location(path_utf8),
 					"XML Parser");
 	try
 	{
-		readCompressedXML(fp, visitor, path, progress_callback);
+		readCompressedXML(gfp, visitor, path_utf8, progress_callback);
 	}
 	catch (xh_io_exception &e)
 	{
-			gzclose(fp);
+			gzclose(gfp);
 			throw e;
 	}
 	catch (xh_throwable &t)
 	{
-			gzclose(fp);
+			gzclose(gfp);
 			throw t;
 	}
 	// If it gets here, it succeeded
-	gzclose(fp);
+	gzclose(gfp);
 }
 
 void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,

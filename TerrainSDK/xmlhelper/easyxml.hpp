@@ -370,7 +370,7 @@ extern void readCompressedXML(gzFile fp, XMLVisitor &visitor,
  * document to the application through the visitor callback methods,
  * and XML processing will be complete.
  *
- * @param path The file name of the XML resource.
+ * @param path The file name of the XML resource, in UTF-8 encoding.
  * @param visitor An object that contains callbacks for XML parsing
  * events.
  * @exception Throws xh_io_exception or xh_xml_exception if there
