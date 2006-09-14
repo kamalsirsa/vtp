@@ -176,6 +176,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\widestring.cpp">
+			</File>
+			<File
 				RelativePath="xmlparse.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -241,6 +244,9 @@
 			</File>
 			<File
 				RelativePath="exception.hpp">
+			</File>
+			<File
+				RelativePath=".\widestring.h">
 			</File>
 		</Filter>
 	</Files>
