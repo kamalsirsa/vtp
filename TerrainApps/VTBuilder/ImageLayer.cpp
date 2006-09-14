@@ -234,7 +234,7 @@ bool vtImageLayer::TransformCoords(vtProjection &proj)
 
 bool vtImageLayer::OnSave()
 {
-	return SaveToFile(GetLayerFilename().mb_str());
+	return SaveToFile(GetLayerFilename().mb_str(wxConvUTF8));
 }
 
 bool vtImageLayer::OnLoad()
@@ -274,17 +274,17 @@ bool vtImageLayer::SetExtent(const DRECT &rect)
 
 void vtImageLayer::GetPropertyText(wxString &strIn)
 {
-	wxString2 str;
-
 	strIn.Printf(_("Dimensions %d by %d pixels"), m_iXSize, m_iYSize);
 	strIn += _T("\n");
 
-	bool bGeo = (m_proj.IsGeographic() != 0);
 	strIn += _("Spacing: ");
 	DPoint2 spacing(m_Extents.Width() / m_iXSize, m_Extents.Height() / m_iYSize);
-	str += FormatCoord(bGeo, spacing.x);
+
+	bool bGeo = (m_proj.IsGeographic() != 0);
+	wxString str;
+	str += wxString(FormatCoord(bGeo, spacing.x), wxConvUTF8);
 	str += _T(" x ");
-	str += FormatCoord(bGeo, spacing.y);
+	str += wxString(FormatCoord(bGeo, spacing.y), wxConvUTF8);
 	str += _T("\n");
 	strIn += str;
 }
@@ -333,9 +333,9 @@ void vtImageLayer::GetRGB(int x, int y, RGBi &rgb)
 	}
 }
 
-bool vtImageLayer::ImportFromFile(const wxString2 &strFileName, bool progress_callback(int am))
+bool vtImageLayer::ImportFromFile(const wxString &strFileName, bool progress_callback(int am))
 {
-	VTLOG("ImportFromFile '%s'\n", strFileName.mb_str());
+	VTLOG("ImportFromFile '%s'\n", strFileName.mb_str(wxConvUTF8));
 
 	wxString strExt = strFileName.AfterLast('.');
 
@@ -343,7 +343,7 @@ bool vtImageLayer::ImportFromFile(const wxString2 &strFileName, bool progress_ca
 	if (!strExt.Left(3).CmpNoCase(_T("ppm")))
 	{
 		m_pBitmap = new vtBitmap;
-		success = ReadPPM(strFileName.mb_str());
+		success = ReadPPM(strFileName.mb_str(wxConvUTF8));
 		if (!success)
 		{
 			delete m_pBitmap;
@@ -361,7 +361,7 @@ bool vtImageLayer::ImportFromFile(const wxString2 &strFileName, bool progress_ca
 bool vtImageLayer::ReadPPM(const char *fname, bool progress_callback(int))
 {
 	// open input file
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)		// Could not open input file
 		return false;
 
@@ -527,7 +527,7 @@ bool vtImageLayer::SaveToFile(const char *fname) const
 			vtString sJGWFile = ChangeFileExtension(fname, ".jgw");
 			DPoint2 spacing = GetSpacing();
 
-			FILE *fout = fopen(sJGWFile, "w");
+			FILE *fout = vtFileOpen(sJGWFile, "w");
 			if (fout)
 			{
 				fprintf(fout, "%lf\n%lf\n%lf\n%lf\n%.2lf\n%.2lf\n",
@@ -625,7 +625,7 @@ bool vtImageLayer::ReadPNGFromMemory(unsigned char *buf, int len)
 static int WarpProgress(double dfComplete, const char *pszMessage, void *pProgressArg)
 {
 	int amount = (int)(99.0 * dfComplete);
-	return !UpdateProgressDialog(amount, wxString2(pszMessage));
+	return !UpdateProgressDialog(amount, wxString(pszMessage, wxConvUTF8));
 }
 #endif
 
@@ -653,8 +653,12 @@ bool vtImageLayer::LoadFromGDAL()
 
 	try
 	{
-		const char *fname = GetLayerFilename().mb_str();
-		pDataset = (GDALDataset *) GDALOpen(fname, GA_ReadOnly);
+		vtString fname = GetLayerFilename().mb_str(wxConvUTF8);
+
+		// GDAL doesn't yet support utf-8 or wide filenames, so convert
+		vtString fname_local = UTF8ToLocal(fname);
+
+		pDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
 		if(pDataset == NULL )
 			throw "Couldn't open that file.";
 
@@ -680,7 +684,7 @@ bool vtImageLayer::LoadFromGDAL()
 		if (!bHaveProj)
 		{
 			// check for existence of .prj file
-			bool bSuccess = temp.ReadProjFile(GetLayerFilename().mb_str());
+			bool bSuccess = temp.ReadProjFile(GetLayerFilename().mb_str(wxConvUTF8));
 			if (bSuccess)
 			{
 				m_proj = temp;
@@ -726,9 +730,9 @@ bool vtImageLayer::LoadFromGDAL()
 		{
 			// No extents.
 			m_Extents.Empty();
-			wxString2 msg = _("File lacks geographic location (extents).  ");
+			wxString msg = _("File lacks geographic location (extents).  ");
 			msg += _("Would you like to specify extents?\n");
-			VTLOG(msg.mb_str());
+			VTLOG(msg.mb_str(wxConvUTF8));
 			int res = wxMessageBox(msg, _("Image Import"), wxYES_NO | wxCANCEL);
 			if (res == wxYES)
 			{
@@ -848,7 +852,7 @@ bool vtImageLayer::LoadFromGDAL()
 #else
 					// Roger says this is a workaround for GDAL oddness
 					GDALClose((GDALDatasetH)pDstDataset);
-					pDataset = (GDALDataset *) GDALOpen(m_strFilename.mb_str(), GA_ReadOnly);
+					pDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
 #endif
 					m_iXSize = pDataset->GetRasterXSize();
 					m_iYSize = pDataset->GetRasterYSize();
@@ -938,12 +942,12 @@ bool vtImageLayer::LoadFromGDAL()
 		}
 
 		// don't try to load giant image?
-		wxString2 msg;
+		wxString msg;
 		if (m_iXSize * m_iYSize > (4096 * 4096))
 		{
 			msg.Printf(_("Image is very large (%d x %d).\n"), m_iXSize, m_iYSize);
 			msg += _("Would you like to create the layer using out-of-memory access to the image?"),
-			VTLOG(msg.mb_str());
+			VTLOG(msg.mb_str(wxConvUTF8));
 			int result = wxMessageBox(msg, _("Question"), wxYES_NO);
 			if (result == wxYES)
 				bDefer = true;
@@ -959,7 +963,7 @@ bool vtImageLayer::LoadFromGDAL()
 				msg.Printf(_("Couldn't allocate bitmap of size %d x %d.\n"),
 					m_iXSize, m_iYSize);
 				msg += _("Would you like to create the layer using out-of-memory access to the image?"),
-				VTLOG(msg.mb_str());
+				VTLOG(msg.mb_str(wxConvUTF8));
 				int result = wxMessageBox(msg, _("Question"), wxYES_NO);
 				if (result == wxYES)
 					bDefer = true;
@@ -997,10 +1001,10 @@ bool vtImageLayer::LoadFromGDAL()
 	{
 		if (!bDefer)
 		{
-			wxString2 str = msg;
 			bRet = false;
-			wxString2 str2 = "Couldn't load Image layer: ";
-			DisplayAndLog((str2+str).mb_str());
+			vtString str = "Couldn't load Image layer: ";
+			str += msg;
+			DisplayAndLog(str);
 		}
 	}
 
@@ -1205,7 +1209,7 @@ bool DownloadATile(int easting, int northing)
 	vtString filename = TileFileName(easting, northing);
 
 	// check if file exists
-	FILE *fp = fopen(filename, "rb");
+	FILE *fp = vtFileOpen(filename, "rb");
 	if (fp)
 	{
 		fclose(fp);
@@ -1213,7 +1217,7 @@ bool DownloadATile(int easting, int northing)
 	}
 	else
 	{
-		fp = fopen(filename, "wb");
+		fp = vtFileOpen(filename, "wb");
 		if (!fp)
 			return false;
 
@@ -1245,9 +1249,8 @@ bool DownloadAllTiles()
 	{
 		for (int e = starte; e < stope; e += MetersPerTile)
 		{
-			wxString2 msg;
-			msg = TileFileName(e, n);
-			UpdateProgressDialog(count * 100 / total, msg);
+			vtString msg = TileFileName(e, n);
+			UpdateProgressDialog(count * 100 / total, wxString(msg, wxConvUTF8));
 
 			if (!DownloadATile(e, n))
 				return false;
@@ -1292,7 +1295,7 @@ bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 
 	// The cache directory needs to exist; test if it's already there.
 	const char *testname = TileDownloadDir "/test.txt";
-	FILE *fp = fopen(testname, "wb");
+	FILE *fp = vtFileOpen(testname, "wb");
 	if (fp)
 	{
 		// directory already exists
@@ -1368,8 +1371,11 @@ bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 // Helper
 int GetBitDepthUsingGDAL(const char *fname)
 {
-	GDALDataset *pDataset = (GDALDataset *) GDALOpen(fname, GA_ReadOnly);
-	if (pDataset == NULL )
+	// GDAL doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(fname);
+
+	GDALDataset *pDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
+	if (pDataset == NULL)
 		return -1;
 
 	// Raster count should be 3 for colour images (assume RGB)
@@ -1470,7 +1476,7 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 	{
 		clock_t tm2 = clock();
 		float elapsed = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
-		wxString2 str;
+		wxString str;
 		str.Printf(_("Wrote %d tiles (%d cells) in %.1f seconds (%.2f seconds per cell)"),
 			m_iTotal, (opts.rows * opts.cols), elapsed, elapsed/(opts.rows * opts.cols));
 		wxMessageBox(str);

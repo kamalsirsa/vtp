@@ -345,8 +345,11 @@ bool BuilderView::ImportWorldMap()
 	const char *filename = "WorldMap/gnv19.shp";
 	VTLOG(" Attempting to open %s\n", filename);
 
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(filename);
+
 	// Open SHP file
-	hSHP = SHPOpen(filename, "rb");
+	hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 		return false;
 
@@ -1537,7 +1540,8 @@ void BuilderView::OnSize(wxSizeEvent& event)
 //////////////////
 // Keyboard shortcuts
 
-#include "vtui/wxString2.h"
+#include <wx/Dir.h>
+#include <wx/File.h>
 
 void BuilderView::OnChar(wxKeyEvent& event)
 {
@@ -1571,87 +1575,9 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		Refresh();
 #endif
 #if 0
-		wxString str = wxGetTextFromUser(_T("Test Message"),
-			_T("Test Caption"), _T(""), this);
-
-		const char *from = str.mb_str();
-		VTLOG("from wxString's mb_str: %s\n", from);
-
-		wxString2 wx2 = str.c_str();
-
-		const char *from2 = wx2.mb_str();
-		VTLOG("from wxString2's mb_str: %s\n", from2);
-
-		wstring2 str2 = str.c_str();
-		const char *utf8 = str2.to_utf8();
-		VTLOG("as UTF-8: %s\n", utf8);
-
-		// back again
-		wstring2 str3;
-		size_t result = str3.from_utf8(utf8);
-
-		utf8 = str3.to_utf8();
-		VTLOG("Twice converted: %s\n", utf8);
-#endif
-#if 0
 		vtRoadLayer *pR = (vtRoadLayer *)GetMainFrame()->FindLayerOfType(LT_ROAD);
 		vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
 		pR->CarveRoadway(pE, 2.0);
-#endif
-#if 0
-		DBFHandle db = DBFOpen("E:/GreenMaps/Locations/map_locations_v4.dbf", "rb");
-		DBFHandle db2 = DBFCreate("E:/GreenMaps/Locations/map_locations_v4d.dbf");
-		if (db != NULL && db2 != NULL)
-		{
-			int iEntities = DBFGetRecordCount(db);
-			int iFields = DBFGetFieldCount(db);
-
-			int f1 = DBFAddField(db2, "X", FTDouble, 12, 6);
-			int f2 = DBFAddField(db2, "Y", FTDouble, 12, 6);
-
-			DBFFieldType type;
-			char fieldname[80];
-			int width, decimals;
-			for (int field = 2; field < iFields; field++)
-			{
-				type = DBFGetFieldInfo(db, field, fieldname, &width, &decimals);
-				DBFAddField(db2, fieldname, type, width, decimals);
-			}
-
-			int deg, min;
-			double val;
-			const char *sz;
-			for (int i = 0; i < iEntities; i++)
-			{
-				for (int field = 0; field < iFields; field++)
-				{
-					sz = DBFReadStringAttribute(db, i, field);
-
-					if (field == 0)
-					{
-						deg = min = 0;
-						sscanf(sz, "%d %d", &deg, &min);
-						val = abs(deg) + (double)min / 60.0;
-						if (deg < 0) val = -val;
-						DBFWriteDoubleAttribute(db2, i, f1, val);
-					}
-					else if (field == 1)
-					{
-						deg = min = 0;
-						sscanf(sz, "%d %d", &deg, &min);
-						val = abs(deg) + (double)min / 60.0;
-						if (deg < 0) val = -val;
-						DBFWriteDoubleAttribute(db2, i, f2, val);
-					}
-					else
-					{
-						DBFWriteStringAttribute(db2, i, field, sz);
-					}
-				}
-			}
-			DBFClose(db);
-			DBFClose(db2);
-		}
 #endif
 #if 0
 		vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
@@ -1681,8 +1607,8 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			vtString name = it.filename().c_str();
 			if (name.Find(".obj") == -1)
 				continue;
-			FILE *in = fopen(dir + "/" + name, "rb");
-			FILE *out = fopen(dir + "/" + name+"2", "wb");
+			FILE *in = vtFileOpen(dir + "/" + name, "rb");
+			FILE *out = vtFileOpen(dir + "/" + name+"2", "wb");
 			if (!in || !out)
 				continue;
 			char buf[99];
@@ -1742,11 +1668,6 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		bld->SetColor(BLD_ROOF, RGBi(255,255,255))
 #endif
 #if 0
-#include "G:/Work/Cormorant Telematic Systems/VTBuilder_VRML_Output.cpp"
-#endif
-#if 0
-		GetMainFrame()->ImportDataFromSCC("G:/Work/Atlas Computers - Shane/3d-test.txt");
-#endif
 		double left=0.00000000000000000;
 		double top=0.0052590002305805683;
 		double right=0.0070670000277459621;
@@ -1754,6 +1675,16 @@ void BuilderView::OnChar(wxKeyEvent& event)
 
 		double ScaleX = vtProjection::GeodesicDistance(DPoint2(left,bottom),DPoint2(right,bottom));
 		double foo = ScaleX;
+#endif
+#if 1
+		wxString pname = _T("G:/Data-Charsettest/Temp");
+		wxString filename;
+		wxDir dir(pname);
+		dir.GetFirst(&filename);
+		bool result = wxFile::Access(pname + _T("/") + filename, wxFile::read);
+		if (result)
+			VTLOG("success\n");
+#endif
 	}
 	else
 		event.Skip();

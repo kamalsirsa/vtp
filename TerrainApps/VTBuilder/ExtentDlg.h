@@ -1,7 +1,7 @@
 //
 // Name: ExtentDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "vtdata/MathTypes.h"
 
 // WDR: class declarations
@@ -32,13 +31,13 @@ public:
 	wxCheckBox* GetDMS()  { return (wxCheckBox*) FindWindow( ID_DMS ); }
 	void SetArea(DRECT area, bool bMeters);
 	void FormatExtent(wxString &str, double value);
-	double GetValueFrom(const wxString2 &str);
+	double GetValueFrom(const wxString &str);
 
-	wxString2   m_strAll;
-	wxString2   m_strEast;
-	wxString2   m_strNorth;
-	wxString2   m_strSouth;
-	wxString2   m_strWest;
+	wxString   m_strAll;
+	wxString   m_strEast;
+	wxString   m_strNorth;
+	wxString   m_strSouth;
+	wxString   m_strWest;
 
 	DRECT m_area;
 	bool m_bDegrees;

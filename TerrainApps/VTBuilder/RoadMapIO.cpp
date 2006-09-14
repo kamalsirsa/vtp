@@ -1,7 +1,7 @@
 //
 // RoadMapEdit.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,7 @@
 #endif
 
 #include "vtdata/shapelib/shapefil.h"
+#include "vtdata/vtString.h"
 
 #include "RoadMapEdit.h"
 #include "assert.h"
@@ -433,10 +434,13 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 	return bReject;
 }
 
-void RoadMapEdit::AddElementsFromSHP(const wxString2 &filename, const vtProjection &proj,
+void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjection &proj,
 									 bool progress_callback(int))
 {
-	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(filename.mb_str(wxConvUTF8));
+
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 		return;
 
@@ -448,7 +452,7 @@ void RoadMapEdit::AddElementsFromSHP(const wxString2 &filename, const vtProjecti
 
 	// Open DBF File, if one exists
 	int cfcc = -1;
-	DBFHandle db = DBFOpen(filename.mb_str(), "rb");
+	DBFHandle db = DBFOpen(fname_local, "rb");
 	if (db != NULL)
 	{
 		int fields, i, *pnWidth = 0, *pnDecimals = 0;

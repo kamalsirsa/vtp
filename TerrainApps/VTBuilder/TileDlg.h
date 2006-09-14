@@ -1,7 +1,7 @@
 //
 // Name: TileDlg.h
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,7 +11,6 @@
 #include "VTBuilder_wdr.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "Layer.h"
 
 class BuilderView;
@@ -47,7 +46,7 @@ public:
 
 private:
 	// WDR: member variable declarations for TileDlg
-	wxString2 m_strToFile;
+	wxString m_strToFile;
 	int m_iColumns;
 	int m_iRows;
 	int m_iLODChoice;

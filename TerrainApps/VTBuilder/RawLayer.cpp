@@ -31,7 +31,7 @@ vtRawLayer::vtRawLayer() : vtLayer(LT_RAW)
 {
 	m_pSet = NULL;
 
-	wxString2 name = _("Untitled");
+	wxString name = _("Untitled");
 	name += _T(".shp");
 	SetLayerFilename(name);
 
@@ -288,21 +288,22 @@ bool vtRawLayer::OnLoad()
 
 	vtFeatureLoader loader;
 
-	wxString2 fname = GetLayerFilename();
+	wxString fname = GetLayerFilename();
+	vtString fname_utf8 = fname.mb_str(wxConvUTF8);
 	if (!fname.Right(4).CmpNoCase(_T(".gml")) ||
 		!fname.Right(4).CmpNoCase(_T(".xml")) ||
 		!fname.Right(4).CmpNoCase(_T(".ntf")))
 	{
-		m_pSet = loader.LoadWithOGR(fname.mb_str(), progress_callback);
+		m_pSet = loader.LoadWithOGR(fname_utf8, progress_callback);
 	}
 	else if (!fname.Right(4).CmpNoCase(_T(".shp")))
 	{
-		m_pSet = loader.LoadFromSHP(fname.mb_str());
-//		return LoadWithOGR(fname.mb_str());
+		m_pSet = loader.LoadFromSHP(fname_utf8);
+//		return LoadWithOGR(fname.mb_str(wxConvUTF8));
 	}
 	else if (!fname.Right(4).CmpNoCase(_T(".igc")))
 	{
-		m_pSet = loader.LoadFromIGC(fname.mb_str());
+		m_pSet = loader.LoadFromIGC(fname_utf8);
 	}
 	if (m_pSet)
 	{
@@ -369,9 +370,8 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 		return;
 	}
 
-	wxString2 str;
-
 	OGRwkbGeometryType type = m_pSet->GetGeomType();
+	wxString str;
 	str.Printf(_("Entity type: %hs\n"), OGRGeometryTypeToName(type));
 	strIn += str;
 

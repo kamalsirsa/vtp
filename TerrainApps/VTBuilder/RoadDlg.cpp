@@ -249,16 +249,16 @@ void RoadDlg::OnOK( wxCommandEvent &event )
 //
 void RoadDlg::ApplyState(LinkEdit *pRoad)
 {
-	wxString2 str;
+	wxString str;
 	int val;
 
 	str = GetNumLanes()->GetValue();
-	val = atoi(str.mb_str());
+	val = atoi(str.mb_str(wxConvUTF8));
 	if (val != 0)
 		pRoad->m_iLanes = val;
 
 	str = GetHwyName()->GetValue();
-	val = atoi(str.mb_str());
+	val = atoi(str.mb_str(wxConvUTF8));
 		pRoad->m_iHwy = val;
 
 	val = GetSidewalk()->GetSelection();
@@ -280,7 +280,7 @@ void RoadDlg::ApplyState(LinkEdit *pRoad)
 	float fval;
 
 	str = GetMarginWidth()->GetValue();
-    fval = atof(str.mb_str());
+    fval = atof(str.mb_str(wxConvUTF8));
     if (fval != 0.0f)
 	{
         pRoad->m_fMarginWidth = fval;
@@ -289,7 +289,7 @@ void RoadDlg::ApplyState(LinkEdit *pRoad)
 	}
 
     str = GetParkingWidth()->GetValue();
-    fval = atof(str.mb_str());
+    fval = atof(str.mb_str(wxConvUTF8));
     if (fval != 0.0f)
 	{
         pRoad->m_fParkingWidth = fval;
@@ -297,7 +297,7 @@ void RoadDlg::ApplyState(LinkEdit *pRoad)
 	}
 
     str = GetCurbHeight()->GetValue();
-    fval = atof(str.mb_str());
+    fval = atof(str.mb_str(wxConvUTF8));
     if (fval != 0.0f)
 	{
         pRoad->m_fCurbHeight = fval;
@@ -305,7 +305,7 @@ void RoadDlg::ApplyState(LinkEdit *pRoad)
 	}
 
     str = GetSidewalkWidth()->GetValue();
-    fval = atof(str.mb_str());
+    fval = atof(str.mb_str(wxConvUTF8));
     if (fval != 0.0f)
 	{
         pRoad->m_fSidewalkWidth = fval;
@@ -313,13 +313,11 @@ void RoadDlg::ApplyState(LinkEdit *pRoad)
 	}
 
     str = GetLaneWidth()->GetValue();
-    fval = atof(str.mb_str());
+    fval = atof(str.mb_str(wxConvUTF8));
     if (fval != 0.0f)
 	{
         pRoad->m_fLaneWidth = fval;
 		pRoad->Dirtied();
 	}
 }
-
-
 

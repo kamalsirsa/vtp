@@ -504,8 +504,8 @@ void MainFrame::CreateMenus()
 
 	// Help
 	helpMenu = new wxMenu;
-	wxString2 msg = _("About ");
-	msg += APPNAME;
+	wxString msg = _("About ");
+	msg += wxString(APPNAME, wxConvUTF8);
 	helpMenu->Append(wxID_HELP, _("&About"), msg);
 	helpMenu->Append(ID_HELP_DOC_LOCAL, _("Documentation (local)"), msg);
 	helpMenu->Append(ID_HELP_DOC_ONLINE, _("Documentation (on the web)"), msg);
@@ -539,9 +539,9 @@ void MainFrame::OnProjectNew(wxCommandEvent &event)
 	SetProjection(p);
 }
 
-wxString2 GetProjectFilter()
+wxString GetProjectFilter()
 {
-	wxString2 str = APPNAME;
+	wxString str(APPNAME, wxConvUTF8);
 	str += _T(" ");
 	str += _("Project Files (*.vtb)|*.vtb");
 	return str;
@@ -608,10 +608,10 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 	// read texture
 	int input_x, input_y;
 	vtDIB img;
-	wxString2 path = dlg.GetPath();
+	wxString path = dlg.GetPath();
 
 	OpenProgressDialog(_T("Reading file"), false, this);
-	bool success = img.Read(path.mb_str(), progress_callback);
+	bool success = img.Read(path.mb_str(wxConvUTF8), progress_callback);
 	CloseProgressDialog();
 	if (!success)
 	{
@@ -821,9 +821,8 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 	if (dlg1.ShowModal() == wxID_CANCEL)
 		return;
 	RGBi bg;
-	wxString2 str;
-	str = dlg1.GetValue();
-	const char *color = str.mb_str();
+	wxString str = dlg1.GetValue();
+	const char *color = str.mb_str(wxConvUTF8);
 	int res = sscanf(color, "%d %d %d", &bg.r, &bg.g, &bg.b);
 	if (res != 3)
 	{
@@ -834,13 +833,13 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 	if (dlg2.ShowModal() == wxID_CANCEL)
 		return;
 	str = dlg2.GetPath();
-	vtString fname_in = str.mb_str();
+	vtString fname_in = str.mb_str(wxConvUTF8);
 
 	wxFileDialog dlg3(this, _T("Choose output texture file"), _T(""), _T(""), _T("*.png"), wxSAVE);
 	if (dlg3.ShowModal() == wxID_CANCEL)
 		return;
 	str = dlg3.GetPath();
-	vtString fname_out = str.mb_str();
+	vtString fname_out = str.mb_str(wxConvUTF8);
 
 	OpenProgressDialog(_T("Processing"));
 
@@ -969,12 +968,15 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 	{
 		shpname = fname;
 		OpenProgressDialog(_T("Reading"), false);
-		success = feat.LoadFromSHP(shpname.mb_str(), progress_callback);
+		success = feat.LoadFromSHP(shpname.mb_str(wxConvUTF8), progress_callback);
 		CloseProgressDialog();
 	}
 	else if (!fname.Right(3).CmpNoCase(_T("dbf")))
 	{
-		DBFHandle hDBF = DBFOpen(fname.mb_str(), "rb");
+		// DBFOpen doesn't yet support utf-8 or wide filenames, so convert
+		vtString fname_local = UTF8ToLocal(fname.mb_str(wxConvUTF8));
+
+		DBFHandle hDBF = DBFOpen(fname_local, "rb");
 		if (!hDBF)
 			return;
 		int iDBFRecords = DBFGetRecordCount(hDBF);
@@ -987,14 +989,14 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 
 		shpname = fname.Left(fname.Length()-3);
 		shpname += _T("shp");
-		newfeat.SaveToSHP(shpname.mb_str());
+		newfeat.SaveToSHP(shpname.mb_str(wxConvUTF8));
 
 		// now re-open
-		success = feat.LoadFromSHP(shpname.mb_str());
+		success = feat.LoadFromSHP(shpname.mb_str(wxConvUTF8));
 	}
 	else if (!fname.Right(3).CmpNoCase(_T("csv")))
 	{
-		success = feat.LoadDataFromCSV(fname.mb_str());
+		success = feat.LoadDataFromCSV(fname.mb_str(wxConvUTF8));
 		if (success)
 		{
 			// ensure the points are initialized to zero
@@ -1024,8 +1026,8 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 	bool bHaveZip = false;
 	if (dlg.m_bGazetteer)
 	{
-		bHaveGaz = gaz.ReadPlaces(dlg.m_strGaz.mb_str());
-		bHaveZip = gaz.ReadZips(dlg.m_strZip.mb_str());
+		bHaveGaz = gaz.ReadPlaces(dlg.m_strGaz.mb_str(wxConvUTF8));
+		bHaveZip = gaz.ReadZips(dlg.m_strZip.mb_str(wxConvUTF8));
 	}
 
 	// Use by the GEOnet Name Server (GNS) data files
@@ -1034,7 +1036,7 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 	if (dlg.m_bGNS)
 	{
 		OpenProgressDialog(_T("Reading GNS file..."), false);
-		bHaveGNS = countries.ReadGCF(dlg.m_strGNS.mb_str(), progress_callback);
+		bHaveGNS = countries.ReadGCF(dlg.m_strGNS.mb_str(wxConvUTF8), progress_callback);
 		CloseProgressDialog();
 	}
 
@@ -1123,7 +1125,7 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 		{
 			shpname = saveFile.GetPath();
 			OpenProgressDialog(_T("Saving"), false);
-			feat.SaveToSHP(shpname.mb_str(), progress_callback);
+			feat.SaveToSHP(shpname.mb_str(wxConvUTF8), progress_callback);
 			CloseProgressDialog();
 		}
 	}
@@ -1238,8 +1240,8 @@ void MainFrame::OnEditOffset(wxCommandEvent &event)
 		return;
 
 	DPoint2 offset;
-	wxString2 str = dlg.GetValue();
-	sscanf(str.mb_str(), "%lf, %lf", &offset.x, &offset.y);
+	wxString str = dlg.GetValue();
+	sscanf(str.mb_str(wxConvUTF8), "%lf, %lf", &offset.x, &offset.y);
 
 	GetActiveLayer()->Offset(offset);
 	GetActiveLayer()->SetModified(true);
@@ -1319,9 +1321,9 @@ void MainFrame::OnLayerSave(wxCommandEvent &event)
 		if (!lp->AskForSaveFilename())
 			return;
 	}
-	wxString2 msg = _("Saving layer to file ") + lp->GetLayerFilename();
+	wxString msg = _("Saving layer to file ") + lp->GetLayerFilename();
 	SetStatusText(msg);
-	VTLOG(msg.mb_str());
+	VTLOG(msg.mb_str(wxConvUTF8));
 	VTLOG("\n");
 
 	if (lp->Save())
@@ -1329,7 +1331,7 @@ void MainFrame::OnLayerSave(wxCommandEvent &event)
 	else
 		msg = _("Save failed.");
 	SetStatusText(msg);
-	VTLOG(msg.mb_str());
+	VTLOG(msg.mb_str(wxConvUTF8));
 	VTLOG("\n");
 }
 
@@ -1346,10 +1348,10 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	if (!lp->AskForSaveFilename())
 		return;
 
-	wxString2 msg = _("Saving layer to file as ") + lp->GetLayerFilename();
+	wxString msg = _("Saving layer to file as ") + lp->GetLayerFilename();
 	SetStatusText(msg);
 
-	VTLOG1(msg.mb_str());
+	VTLOG1(msg.mb_str(wxConvUTF8));
 	VTLOG1("\n");
 
 	bool success = lp->Save();
@@ -1365,7 +1367,7 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	}
 	SetStatusText(msg);
 
-	VTLOG1(msg.mb_str());
+	VTLOG1(msg.mb_str(wxConvUTF8));
 	VTLOG1("\n");
 }
 
@@ -1416,7 +1418,7 @@ void MainFrame::OnLayerImportNTF(wxCommandEvent &event)
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
-	wxString2 str = loadFile.GetPath();
+	wxString str = loadFile.GetPath();
 	ImportDataFromNTF(str);
 }
 
@@ -1427,7 +1429,7 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 	bool bResult = (getDir.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
-	wxString2 strDirName = getDir.GetPath();
+	wxString strDirName = getDir.GetPath();
 
 //	dlg.m_strCaption = _T("Shapefiles do not contain projection information.  ")
 //		_T("Please indicate the projection of this file:");
@@ -1442,7 +1444,7 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 
 	// create the new layers
 	vtUtilityLayer *pUL = new vtUtilityLayer;
-	if (pUL->ImportFromSHP(strDirName.mb_str(), proj))
+	if (pUL->ImportFromSHP(strDirName.mb_str(wxConvUTF8), proj))
 	{
 		pUL->SetLayerFilename(strDirName);
 		pUL->SetModified(true);
@@ -1465,8 +1467,8 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
-	wxString2 str = loadFile.GetPath();
-	ImportFromMapSource(str.mb_str());
+	wxString str = loadFile.GetPath();
+	ImportFromMapSource(str.mb_str(wxConvUTF8));
 }
 
 void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
@@ -1477,8 +1479,8 @@ void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
-	wxString2 str = loadFile.GetPath();
-	ImportDataPointsFromTable(str.mb_str());
+	wxString str = loadFile.GetPath();
+	ImportDataPointsFromTable(str.mb_str(wxConvUTF8));
 }
 
 void MainFrame::OnLayerImportXML(wxCommandEvent &event)
@@ -1489,9 +1491,9 @@ void MainFrame::OnLayerImportXML(wxCommandEvent &event)
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
-	wxString2 str = loadFile.GetPath();
+	wxString str = loadFile.GetPath();
 	vtRawLayer *pRL = new vtRawLayer;
-	if (pRL->ImportFromXML(str.mb_str()))
+	if (pRL->ImportFromXML(str.mb_str(wxConvUTF8)))
 	{
 		pRL->SetLayerFilename(str);
 		pRL->SetModified(true);
@@ -1613,8 +1615,8 @@ void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		if (!bResult)
 			return;
-		wxString2 str = saveFile.GetPath();
-		tileopts.fname_images = str.mb_str();
+		wxString str = saveFile.GetPath();
+		tileopts.fname_images = str.mb_str(wxConvUTF8);
 
 		// Ask them how to render the image tiles
 		RenderOptionsDlg dlg(this, -1, _("Rendering options"));
@@ -1622,7 +1624,7 @@ void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
 		dlg.m_datapaths = m_datapaths;
 		if (dlg.ShowModal() != wxID_OK)
 			return;
-		dlg.m_opt.m_strColorMapFile = dlg.m_strColorMap.mb_str();
+		dlg.m_opt.m_strColorMapFile = dlg.m_strColorMap.mb_str(wxConvUTF8);
 		tileopts.draw = dlg.m_opt;
 	}
 	else
@@ -2140,8 +2142,8 @@ void MainFrame::OnSelectHwy(wxCommandEvent &event)
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		int num;
-		wxString2 str = dlg.GetValue();
-		sscanf(str.mb_str(), "%d", &num);
+		wxString str = dlg.GetValue();
+		sscanf(str.mb_str(wxConvUTF8), "%d", &num);
 		if (pRL->SelectHwyNum(num))
 			m_pView->Refresh();
 	}
@@ -2262,14 +2264,14 @@ void MainFrame::OnRoadFlatten(wxCommandEvent &event)
 	}
 
 	float margin = 2.0;
-	wxString2 str;
+	wxString str;
 	str.Printf(_("%g"), margin);
 	str = wxGetTextFromUser(_("How many meters for the margin at the edge of each road?"),
 		_("Flatten elevation grid under roads"), str, this);
 	if (str == _T(""))
 		return;
 
-	margin = atof(str.mb_str());
+	margin = atof(str.mb_str(wxConvUTF8));
 
 	vtRoadLayer *pR = (vtRoadLayer *)GetMainFrame()->FindLayerOfType(LT_ROAD);
 	vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
@@ -2315,11 +2317,11 @@ void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
 	t->GetExtent(area);
 	DPoint2 step = t->m_pGrid->GetSpacing();
 
-	wxString2 str;
+	wxString str;
 	str = wxGetTextFromUser(_("Please specify the elevation range\n(minimum and maximum in the form \"X Y\")\nAll values within this range (and within the area\ntool, if it is defined) will be set to Unknown."));
 
 	float zmin, zmax;
-	const char *text = str.mb_str();
+	vtString text = str.mb_str(wxConvUTF8);
 	if (sscanf(text, "%f %f", &zmin, &zmax) != 2)
 	{
 		wxMessageBox(_("Didn't get two numbers."));
@@ -2374,14 +2376,14 @@ void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 	vtElevationGrid *grid = t->m_pGrid;
 
 	static float fValue = 1.0f;
-	wxString2 str;
+	wxString str;
 	str.Printf(_("%g"), fValue);
 	str = wxGetTextFromUser(_("Set unknown areas to what value?"),
 		_("Set Unknown Areas"), str, this);
 	if (str == _T(""))
 		return;
 
-	fValue = atof(str.mb_str());
+	fValue = atof(str.mb_str(wxConvUTF8));
 
 	// If the Area tool defines an area, restrict ourselves to use it
 	bool bUseArea = !m_area.IsEmpty();
@@ -2429,13 +2431,13 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	if (!grid)
 		return;
 
-	wxString2 str = wxGetTextFromUser(_("Please enter a scale factor"),
+	wxString str = wxGetTextFromUser(_("Please enter a scale factor"),
 		_("Scale Elevation"), _T("1.0"), this);
 	if (str == _T(""))
 		return;
 
 	float fScale;
-	fScale = atof(str.mb_str());
+	fScale = atof(str.mb_str(wxConvUTF8));
 	if (fScale == 0.0f)
 	{
 		wxMessageBox(_("Couldn't parse the number you typed."));
@@ -2588,9 +2590,10 @@ void MainFrame::ExportPlanet()
 
 	if (strDirName == _T(""))
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToPlanet(strDirName.mb_str());
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToPlanet(strDirName.mb_str(wxConvUTF8));
 	if (success)
-		DisplayAndLog("Successfully wrote Planet dataset to '%s'", (const char *) strDirName.mb_str());
+		DisplayAndLog("Successfully wrote Planet dataset to '%s'",
+		(const char *) strDirName.mb_str(wxConvUTF8));
 	else
 		DisplayAndLog("Error writing file.");
 }
@@ -2647,7 +2650,7 @@ void MainFrame::ExportChunkLOD()
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 
-	FILE *out = fopen(fname, "wb");
+	FILE *out = vtFileOpen(fname, "wb");
 	if (out == 0) {
 		DisplayAndLog("Error: can't open %s for output.", (const char *) fname);
 		return;
@@ -2787,8 +2790,8 @@ void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		if (!bResult)
 			return;
-		wxString2 str = saveFile.GetPath();
-		tileopts.fname_images = str.mb_str();
+		wxString str = saveFile.GetPath();
+		tileopts.fname_images = str.mb_str(wxConvUTF8);
 
 		// Ask them how to render the image tiles
 		RenderOptionsDlg dlg(this, -1, _("Rendering options"));
@@ -2796,7 +2799,7 @@ void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 		dlg.m_datapaths = m_datapaths;
 		if (dlg.ShowModal() != wxID_OK)
 			return;
-		dlg.m_opt.m_strColorMapFile = dlg.m_strColorMap.mb_str();
+		dlg.m_opt.m_strColorMapFile = dlg.m_strColorMap.mb_str(wxConvUTF8);
 		tileopts.draw = dlg.m_opt;
 	}
 	else
@@ -3246,7 +3249,7 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 	vtElevLayer *pEL = GetActiveElevLayer();
 
 	ColorMap cmap;
-	vtString fname = dlg.m_strColorMap.vt_str();
+	vtString fname = dlg.m_strColorMap.mb_str(wxConvUTF8);
 	vtString path = FindFileOnPaths(m_datapaths, "GeoTypical/" + fname);
 	if (path == "")
 	{
@@ -3300,14 +3303,14 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 	if (dlg.m_bToFile)
 	{
 		UpdateProgressDialog(1, _("Writing file"));
-		wxString2 fname = dlg.m_strToFile;
+		vtString fname = dlg.m_strToFile.mb_str(wxConvUTF8);
 		bool success;
 		if (dlg.m_bJPEG)
-			success = dib.WriteJPEG(fname.mb_str(), 99, progress_callback);
+			success = dib.WriteJPEG(fname, 99, progress_callback);
 		else
-			success = dib.WriteTIF(fname.mb_str(), &area, &proj, progress_callback);
+			success = dib.WriteTIF(fname, &area, &proj, progress_callback);
 		if (success)
-			DisplayAndLog("Successfully wrote to file '%s'", fname.mb_str());
+			DisplayAndLog("Successfully wrote to file '%s'", fname);
 		else
 			DisplayAndLog("Couldn't open file for writing.");
 	}
@@ -3440,8 +3443,8 @@ void MainFrame::OnAreaRequestWFS(wxCommandEvent& event)
 		_T("Please enter server base URL"), _T("http://10.254.0.29:8081/"));
 	if (dlg.ShowModal() != wxID_OK)
 		return;
-	wxString2 value = dlg.GetValue();
-	const char *server = value.mb_str();
+	wxString value = dlg.GetValue();
+	vtString server = value.mb_str(wxConvUTF8);
 
 	OGCLayerArray layers;
 	success = GetLayersFromWFS(server, layers);
@@ -3500,11 +3503,11 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		dlg.UpdateURL();
 	}
 	FILE *fp;
-	wxString2 str;
+	wxString str;
 	if (dlg.m_bToFile)
 	{
 		// Very simple: just write the buffer to disk
-		fp = fopen(dlg.m_strToFile.mb_str(), "wb");
+		fp = vtFileOpen(dlg.m_strToFile.mb_str(wxConvUTF8), "wb");
 		if (!fp)
 		{
 			str = _("Could not open file");
@@ -3521,12 +3524,12 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 	ReqContext rc;
 	rc.SetProgressCallback(progress_callback);
 	vtBytes data;
-	bool success = rc.GetURL(dlg.m_strQueryURL.mb_str(), data);
+	bool success = rc.GetURL(dlg.m_strQueryURL.mb_str(wxConvUTF8), data);
 	CloseProgressDialog();
 
 	if (!success)
 	{
-		str = rc.GetErrorMsg();	// the HTTP request failed
+		str = wxString(rc.GetErrorMsg(), wxConvUTF8);	// the HTTP request failed
 		wxMessageBox(str);
 		return;
 	}
@@ -3537,7 +3540,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		// So show it to the user.
 		unsigned char ch = 0;
 		data.Append(&ch, 1);
-		str = (char*) data.Get();
+		str = wxString((const char*) data.Get(), wxConvUTF8);
 		wxMessageBox(str);
 		return;
 	}
@@ -3592,7 +3595,7 @@ void MainFrame::OnAreaRequestTServe(wxCommandEvent& event)
 
 	vtImageLayer *pIL = new vtImageLayer();
 	bool success = pIL->ReadFeaturesFromTerraserver(m_area, dlg.m_iTheme,
-		dlg.m_iMetersPerPixel, m_proj.GetUTMZone(), dlg.m_strToFile.mb_str());
+		dlg.m_iMetersPerPixel, m_proj.GetUTMZone(), dlg.m_strToFile.mb_str(wxConvUTF8));
 
 	CloseProgressDialog();
 
@@ -3612,7 +3615,7 @@ void MainFrame::OnAreaRequestTServe(wxCommandEvent& event)
 	}
 	else
 	{
-		pIL->SaveToFile(dlg.m_strToFile.mb_str());
+		pIL->SaveToFile(dlg.m_strToFile.mb_str(wxConvUTF8));
 		delete pIL;
 	}
 #endif
@@ -3636,8 +3639,8 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 		if (loadFile.ShowModal() != wxID_OK)
 			return;
 
-		wxString2 str = loadFile.GetPath();
-		if (!LoadSpeciesFile(str.mb_str()))
+		wxString str = loadFile.GetPath();
+		if (!LoadSpeciesFile(str.mb_str(wxConvUTF8)))
 			return;
 	}
 	if (!m_SpeciesListDlg)
@@ -3667,8 +3670,8 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 			return;
 
 		// Read bioregions, data kept on frame with m_pBioRegion.
-		wxString2 str = loadFile.GetPath();
-		if (!LoadBiotypesFile(str.mb_str()))
+		wxString str = loadFile.GetPath();
+		if (!LoadBiotypesFile(str.mb_str(wxConvUTF8)))
 			return;
 	}
 	if (!m_BioRegionDlg)
@@ -3690,26 +3693,25 @@ void MainFrame::OnVegRemap(wxCommandEvent& event)
 	vtSpeciesList *list = GetPlantList();
 
 	wxArrayString choices;
-	wxString2 str;
 	unsigned int i, n = list->NumSpecies();
 	for (i = 0; i < n; i++)
 	{
 		vtPlantSpecies *spe = list->GetSpecies(i);
-		str = spe->GetSciName();
+		wxString str(spe->GetSciName(), wxConvUTF8);
 		choices.Add(str);
 	}
 
-	wxString2 result1 = wxGetSingleChoice(_("Remap FROM Species"), _T("Species"),
+	wxString result1 = wxGetSingleChoice(_("Remap FROM Species"), _T("Species"),
 		choices, this);
 	if (result1 == _T(""))	// cancelled
 		return;
-	short species_from = list->GetSpeciesIdByName(result1.mb_str());
+	short species_from = list->GetSpeciesIdByName(result1.mb_str(wxConvUTF8));
 
-	wxString2 result2 = wxGetSingleChoice(_("Remap TO Species"), _T("Species"),
+	wxString result2 = wxGetSingleChoice(_("Remap TO Species"), _T("Species"),
 		choices, this);
 	if (result2 == _T(""))	// cancelled
 		return;
-	short species_to = list->GetSpeciesIdByName(result2.mb_str());
+	short species_to = list->GetSpeciesIdByName(result2.mb_str(wxConvUTF8));
 
 	vtFeatureSet *pSet = pVeg->GetFeatureSet();
 	vtPlantInstanceArray *pPIA = dynamic_cast<vtPlantInstanceArray *>(pSet);
@@ -3728,6 +3730,7 @@ void MainFrame::OnVegRemap(wxCommandEvent& event)
 			count++;
 		}
 	}
+	wxString str;
 	str.Printf(_("Remap successful, %d plants remapped.\n"), count);
 	wxMessageBox(str, _("Info"));
 	if (count > 0)
@@ -3744,9 +3747,9 @@ void MainFrame::OnVegExportSHP(wxCommandEvent& event)
 		_("Vegetation Files (*.shp)|*.shp"), wxSAVE | wxOVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
-	wxString2 strPathName = saveFile.GetPath();
+	wxString strPathName = saveFile.GetPath();
 
-	pVeg->ExportToSHP(strPathName.mb_str());
+	pVeg->ExportToSHP(strPathName.mb_str(wxConvUTF8));
 }
 
 void MainFrame::OnUpdateVegExportSHP(wxUpdateUIEvent& event)
@@ -3763,7 +3766,7 @@ void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
-	wxString2 strPathName = saveFile.GetPath();
+	wxString strPathName = saveFile.GetPath();
 
 	DistribVegDlg dlg(this, -1, _("Vegetation Distribution Options"));
 
@@ -3771,7 +3774,7 @@ void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 		return;
 
 	// Generate the plants
-	GenerateVegetation(strPathName.mb_str(), m_area, dlg.m_opt);
+	GenerateVegetation(strPathName.mb_str(wxConvUTF8), m_area, dlg.m_opt);
 }
 
 void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
@@ -4077,7 +4080,7 @@ void MainFrame::OnRawSetType(wxCommandEvent& event)
 
 		// must set the projection and layername again, as they are reset on
 		//  setting geom type
-		wxString2 name = pRL->GetLayerFilename();
+		wxString name = pRL->GetLayerFilename();
 		pRL->SetGeomType(types[cur_type]);
 		pRL->SetProjection(m_proj);
 		pRL->SetLayerFilename(name);
@@ -4107,12 +4110,12 @@ void MainFrame::OnUpdateRawAddPoints(wxUpdateUIEvent& event)
 
 void MainFrame::OnRawAddPointText(wxCommandEvent& event)
 {
-	wxString2 str = wxGetTextFromUser(_("(X, Y) in current projection"),
+	wxString str = wxGetTextFromUser(_("(X, Y) in current projection"),
 			_("Enter coordinate"));
 	if (str == _T(""))
 		return;
 	double x, y;
-	int num = sscanf(str.mb_str(), "%lf, %lf", &x, &y);
+	int num = sscanf(str.mb_str(wxConvUTF8), "%lf, %lf", &x, &y);
 	if (num != 2)
 		return;
 	DPoint2 p(x, y);
@@ -4154,11 +4157,11 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 	dlg.SetRawLayer(pRL);
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		wxString2 str = dlg.m_strValue;
+		wxString str = dlg.m_strValue;
 		int selected = pFS->SelectByCondition(dlg.m_iField, dlg.m_iCondition,
-			str.mb_str());
+			str.mb_str(wxConvUTF8));
 
-		wxString2 msg;
+		wxString msg;
 		if (selected == -1)
 			msg = _("Unable to select");
 		else
@@ -4166,7 +4169,7 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 		SetStatusText(msg);
 
 		msg += _T("\n");
-		VTLOG1(msg.mb_str());
+		VTLOG1(msg.mb_str(wxConvUTF8));
 
 		m_pView->Refresh(false);
 		OnSelectionChanged();
@@ -4237,8 +4240,8 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 		FSTRING_PNG, wxSAVE);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
-	vtString fullname = (const char *) loadFile.GetPath().mb_str();
-	vtString filename = (const char *) loadFile.GetFilename().mb_str();
+	vtString fullname = loadFile.GetPath().mb_str(wxConvUTF8);
+	vtString filename = loadFile.GetFilename().mb_str(wxConvUTF8);
 
 	dib.WritePNG(fullname);
 
@@ -4247,9 +4250,9 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 		FSTRING_HTML, wxSAVE);
 	if (loadFile2.ShowModal() != wxID_OK)
 		return;
-	vtString htmlname = (const char *) loadFile2.GetPath().mb_str();
+	vtString htmlname = loadFile2.GetPath().mb_str(wxConvUTF8);
 
-	FILE *fp = fopen(htmlname, "wb");
+	FILE *fp = vtFileOpen(htmlname, "wb");
 	if (!fp)
 		return;
 	fprintf(fp, "<html>\n");
@@ -4322,15 +4325,15 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += _(__DATE__);
 	wxMessageBox(str, _T("About ElevTool"));
 #else
-	wxString2 str = _("Virtual Terrain Builder\nPowerful, easy to use, free!\n");
+	wxString str = _("Virtual Terrain Builder\nPowerful, easy to use, free!\n");
 	str += _T("\n");
 	str += _("Please read the HTML documentation and license.\n");
 	str += _T("\n");
 	str += _("Send feedback to: ben@vterrain.org\n");
 	str += _("Build date: ");
-	str += __DATE__;
-	wxString2 str2 = _("About ");
-	str2 += APPNAME;
+	str += _T(__DATE__);
+	wxString str2 = _("About ");
+	str2 += _T(APPNAME);
 	wxMessageBox(str, str2);
 #endif
 }
@@ -4338,8 +4341,8 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 void MainFrame::OnHelpDocLocal(wxCommandEvent &event)
 {
 	// Launch default web browser with documentation pages
-	wxString2 wxcwd = wxGetCwd();
-	vtString cwd = wxcwd.mb_str();
+	wxString wxcwd = wxGetCwd();
+	vtString cwd = wxcwd.mb_str(wxConvUTF8);
 
 	vtStringArray paths;
 	paths.push_back(cwd + "/../Docs/VTBuilder/");
@@ -4348,7 +4351,7 @@ void MainFrame::OnHelpDocLocal(wxCommandEvent &event)
 	if (result != "")
 	{
 		result = "file:///" + result;
-		wxLaunchDefaultBrowser(wxString2(result));
+		wxLaunchDefaultBrowser(wxString(result, wxConvUTF8));
 		return;
 	}
 	wxMessageBox(_("Couldn't find local documentation files"));

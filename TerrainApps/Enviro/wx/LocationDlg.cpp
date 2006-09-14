@@ -622,7 +622,7 @@ void LocationDlg::OnPlayToDisk( wxCommandEvent &event )
 		_("Animation"), _T("0.1"), this);
 	if (step == _T(""))
 		return;
-	float fStep = atof(step.mb_str());
+	float fStep = atof(step.mb_str(wxConvUTF8));
 
 	vtAnimPathEngine *engine = GetEngine(m_iAnim);
 	vtAnimPath *path = engine->GetAnimationPath();
@@ -637,7 +637,7 @@ void LocationDlg::OnPlayToDisk( wxCommandEvent &event )
 
 	PlayToDiskEngine *eng = new PlayToDiskEngine;
 	eng->bReady = false;
-	eng->directory = dir.mb_str();
+	eng->directory = dir.mb_str(wxConvUTF8);
 	eng->step = 0;
 	eng->fStep = fStep;
 	eng->fTotal = path->GetLastTime();
@@ -658,7 +658,7 @@ void LocationDlg::OnLoadAnim( wxCommandEvent &event )
 	vtAnimPath *anim;
 	bool bSuccess;
 	wxString str = loadFile.GetPath();
-	const char *filename = str.mb_str();
+	vtString filename = str.mb_str(wxConvUTF8);
 	if (GetExtension(filename) == ".vtap")
 	{
 		anim = CreateAnimPath();
@@ -703,7 +703,7 @@ void LocationDlg::OnSaveAnim( wxCommandEvent &event )
 		return;
 
 	wxString filepath = saveFile.GetPath();
-	path->Write(filepath.mb_str());
+	path->Write(filepath.mb_str(wxConvUTF8));
 }
 
 void LocationDlg::OnRemove( wxCommandEvent &event )

@@ -428,10 +428,8 @@ void vtFrame::OnOpen(wxCommandEvent& event)
 		_T("Content XML Files (*.vtco)|*.vtco"), wxOPEN);
 	loadFile.SetFilterIndex(1);
 	if (loadFile.ShowModal() == wxID_OK)
-	{
-		wxString2 fname = loadFile.GetPath();
-		LoadContentsFile(fname);
-	}
+		LoadContentsFile(loadFile.GetPath());
+
 	m_canvas->m_bRunning = true;
 }
 
@@ -443,26 +441,24 @@ void vtFrame::OnSave(wxCommandEvent& event)
 		_T("Content XML Files (*.vtco)|*.vtco"), wxSAVE);
 	loadFile.SetFilterIndex(1);
 	if (loadFile.ShowModal() == wxID_OK)
-	{
-		wxString2 fname = loadFile.GetPath();
-		SaveContentsFile(fname);
-	}
+		SaveContentsFile(loadFile.GetPath());
+
 	m_canvas->m_bRunning = true;
 }
 
 
-void vtFrame::LoadContentsFile(const wxString2 &fname)
+void vtFrame::LoadContentsFile(const wxString &fname)
 {
-	VTLOG("LoadContentsFile '%s'\n", fname.mb_str());
+	VTLOG("LoadContentsFile '%s'\n", fname.mb_str(wxConvUTF8));
 	FreeContents();
 	try
 	{
-		m_Man.ReadXML(fname.mb_str());
+		m_Man.ReadXML(fname.mb_str(wxConvUTF8));
 	}
 	catch (xh_io_exception &e)
 	{
 		string str = e.getFormattedMessage();
-		DisplayMessageBox(str);
+		DisplayMessageBox(wxString(str.c_str(), wxConvUTF8));
 		return;
 	}
 	SetCurrentItem(NULL);
@@ -486,17 +482,17 @@ void vtFrame::FreeContents()
 	m_pCurrentModel = NULL;
 }
 
-void vtFrame::SaveContentsFile(const wxString2 &fname)
+void vtFrame::SaveContentsFile(const wxString &fname)
 {
-	VTLOG("SaveContentsFile '%s'\n", fname.mb_str());
+	VTLOG("SaveContentsFile '%s'\n", fname.mb_str(wxConvUTF8));
 	try
 	{
-		m_Man.WriteXML(fname.mb_str());
+		m_Man.WriteXML(fname.mb_str(wxConvUTF8));
 	}
 	catch (xh_io_exception &e)
 	{
 		string str = e.getFormattedMessage();
-		DisplayMessageBox(str);
+		DisplayMessageBox(wxString(str.c_str(), wxConvUTF8));
 	}
 }
 
@@ -516,7 +512,7 @@ bool SamePath(const vtString &s1, const vtString &s2)
 
 void vtFrame::AddModelFromFile(const wxString &fname1)
 {
-	vtString fname = fname1.mb_str(*wxConvCurrent);
+	vtString fname = fname1.mb_str();
 	VTLOG("AddModelFromFile '%s'\n", fname);
 
 	// Change backslashes to slashes.
@@ -619,8 +615,7 @@ void vtFrame::OnItemAddModel(wxCommandEvent& event)
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
-	wxString2 fname = loadFile.GetPath();
-	AddModelFromFile(fname);
+	AddModelFromFile(loadFile.GetPath());
 }
 
 void vtFrame::OnUpdateItemAddModel(wxUpdateUIEvent& event)
@@ -717,23 +712,23 @@ void vtFrame::OnItemRotModel(wxCommandEvent& event)
 
 vtString GetSaveName(const char *format, const char *wildcard)
 {
-	wxString2 msg, filter;
+	wxString msg, filter;
 
 	msg = _("Save ");
-	msg += format;
-	filter = format;
+	msg += wxString(format, wxConvUTF8);
+	filter = wxString(format, wxConvUTF8);
 	filter += _(" Files (");
-	filter += wildcard;
-	filter += ")|";
-	filter += wildcard;
+	filter += wxString(wildcard, wxConvUTF8);
+	filter += _T(")|");
+	filter += wxString(wildcard, wxConvUTF8);
 
 	wxFileDialog saveFile(NULL, msg, _T(""), _T(""), filter, wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return vtString("");
 
-	wxString2 str = saveFile.GetPath();
-	return str.vt_str();
+	vtString vs = saveFile.GetPath().mb_str(wxConvUTF8);
+	return vs;
 }
 
 void vtFrame::OnItemSaveSOG(wxCommandEvent& event)
@@ -952,14 +947,14 @@ vtModel *vtFrame::AddModel(const wxString &fname_in)
 	if (onpath == "")
 	{
 		// Warning!  May not be on the data path.
-		wxString2 str;
+		wxString str;
 		str.Printf(_T("That file:\n%hs\ndoes not appear to be on the data")
 			_T(" paths:"), fname);
 		for (int i = 0; i < m_DataPaths.GetSize(); i++)
 		{
 			vtString *vts = m_DataPaths[i];
 			const char *cpath = (const char *) *vts;
-			wxString2 path = cpath;
+			wxString path = cpath;
 			str += _T("\n");
 			str += path;
 		}
@@ -1004,8 +999,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 
 	OpenProgressDialog(_T("Reading file"), false, this);
 
-	wxString2 str;
-	str = (const char *) model->m_filename;
+	wxString str(model->m_filename, wxConvUTF8);
 	UpdateProgressDialog(1, str);
 
 	vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
@@ -1267,7 +1261,7 @@ void vtFrame::OnTestXML(wxCommandEvent& event)
 	catch (xh_io_exception &e)
 	{
 		string str = e.getFormattedMessage();
-		DisplayMessageBox(str);
+		DisplayMessageBox(wxString(str.c_str(), wxConvUTF8));
 		return;
 	}
 }
@@ -1295,7 +1289,7 @@ void vtFrame::OnSetDataPath(wxCommandEvent& event)
 #endif
 }
 
-void vtFrame::DisplayMessageBox(const wxString2 &str)
+void vtFrame::DisplayMessageBox(const wxString &str)
 {
 	m_canvas->m_bRunning = false;
 	wxMessageBox(str);

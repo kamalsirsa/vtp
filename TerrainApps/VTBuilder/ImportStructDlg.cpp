@@ -65,7 +65,7 @@ ImportStructDlg::ImportStructDlg( wxWindow *parent, wxWindowID id, const wxStrin
 	m_opt.bInsideOnly = false;
 	m_opt.m_bFixedColor = false;
 
-	m_defaults_filename = g_DefaultStructures.GetFilename();
+	m_defaults_filename = wxString(g_DefaultStructures.GetFilename(), wxConvUTF8);
 
 	AddValidator(ID_INSIDE_AREA, &m_opt.bInsideOnly);
 	AddValidator(ID_CHOICE_HEIGHT_TYPE, &m_iHeightType);
@@ -88,15 +88,15 @@ bool ImportStructDlg::GetRadio(int id)
 void ImportStructDlg::OnChoiceFileField( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	wxString2 str = GetChoiceFileField()->GetStringSelection();
-	m_opt.m_strFieldNameFile = str.mb_str();
+	wxString str = GetChoiceFileField()->GetStringSelection();
+	m_opt.m_strFieldNameFile = str.mb_str(wxConvUTF8);
 }
 
 void ImportStructDlg::OnChoiceHeightField( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	wxString2 str = GetChoiceHeightField()->GetStringSelection();
-	m_opt.m_strFieldNameHeight = str.mb_str();
+	wxString str = GetChoiceHeightField()->GetStringSelection();
+	m_opt.m_strFieldNameHeight = str.mb_str(wxConvUTF8);
 }
 
 void ImportStructDlg::OnChoiceHeightType( wxCommandEvent &event )
@@ -117,8 +117,8 @@ void ImportStructDlg::OnChoiceRoofType( wxCommandEvent &event )
 void ImportStructDlg::OnChoiceRoofField( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	wxString2 str = GetChoiceRoofField()->GetStringSelection();
-	m_opt.m_strFieldNameRoof = str.mb_str();
+	wxString str = GetChoiceRoofField()->GetStringSelection();
+	m_opt.m_strFieldNameRoof = str.mb_str(wxConvUTF8);
 }
 
 void ImportStructDlg::OnRadio( wxCommandEvent &event )
@@ -139,7 +139,7 @@ void ImportStructDlg::OnRadio( wxCommandEvent &event )
 
 void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	m_nShapeType = GetSHPType(m_filename.mb_str());
+	m_nShapeType = GetSHPType(m_filename.mb_str(wxConvUTF8));
 	UpdateEnables();
 
 	// Select one of the radio buttons, whichever is enabled
@@ -176,21 +176,23 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetChoiceFileField()->Append(_("(none)"));
 	GetChoiceRoofField()->Append(_("(none)"));
 
+	// DBFOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(m_filename.mb_str(wxConvUTF8));
+
 	// Open DBF File
-	DBFHandle db = DBFOpen(m_filename.mb_str(), "rb");
+	DBFHandle db = DBFOpen(fname_local, "rb");
 	if (db != NULL)
 	{
 		// Fill the DBF field names into the "Use Field" controls
 		int *pnWidth = 0, *pnDecimals = 0;
 		char pszFieldName[20];
 		int iFields = DBFGetFieldCount(db);
-		wxString2 str;
 		int i;
 		for (i = 0; i < iFields; i++)
 		{
 			DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
 				pszFieldName, pnWidth, pnDecimals );
-			str = pszFieldName;
+			wxString str(pszFieldName, wxConvUTF8);
 
 			if (fieldtype == FTString)
 				GetChoiceFileField()->Append(str);

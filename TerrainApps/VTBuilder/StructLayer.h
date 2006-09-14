@@ -37,10 +37,10 @@ public:
 	void GetPropertyText(wxString &str);
 	bool AskForSaveFilename();
 
-	wxString2 GetLayerFilename() { return wxString2(GetFilename()); }
-	void SetLayerFilename(const wxString2 &fname)
+	wxString GetLayerFilename() { return wxString(GetFilename(), wxConvUTF8); }
+	void SetLayerFilename(const wxString &fname)
 	{
-		SetFilename(fname.mb_str());
+		SetFilename((const char *) fname.mb_str(wxConvUTF8));
 		vtLayer::SetLayerFilename(fname);
 	}
 
@@ -60,7 +60,7 @@ public:
 	void UpdateResizeScale(BuilderView *pView, UIContext &ui);
 
 	void DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView);
-	bool AddElementsFromSHP(const wxString2 &filename, const vtProjection &proj, DRECT rect);
+	bool AddElementsFromSHP(const wxString &filename, const vtProjection &proj, DRECT rect);
 	void AddElementsFromDLG(vtDLGFile *pDlg);
 
 	bool EditBuildingProperties();

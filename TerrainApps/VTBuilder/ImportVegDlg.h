@@ -1,7 +1,7 @@
 //
 // Name: ImportVegDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,7 +9,6 @@
 #define __ImportVegDlg_H__
 
 #include "VTBuilder_wdr.h"
-#include "vtui/wxString2.h"
 #include "VegLayer.h"
 
 // WDR: class declarations
@@ -35,7 +34,7 @@ public:
 	VegImportFieldType m_datatype;
 	wxComboBox *m_pcbField;
 	wxRadioButton *m_pDensity, *m_pBiotype1, *m_pBiotype2;
-	wxString2 m_filename;
+	wxString m_filename;
 
 	// WDR: method declarations for ImportVegDlg
 	wxRadioButton* GetDensity()  { return (wxRadioButton*) FindWindow( ID_DENSITY ); }

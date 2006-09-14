@@ -162,7 +162,7 @@ void ResampleDlg::OnDotDotDot2( wxCommandEvent &event )
 	m_strToFileImages = saveFile.GetPath();
 	TransferDataToWindow();
 
-	m_tileopts.fname_images = m_strToFileImages.mb_str();
+	m_tileopts.fname_images = m_strToFileImages.mb_str(wxConvUTF8);
 	EnableBasedOnConstraint();
 }
 
@@ -216,7 +216,7 @@ void ResampleDlg::OnDotDotDot( wxCommandEvent &event )
 	if (!bResult)
 		return;
 
-	wxString2 name = saveFile.GetPath();
+	wxString name = saveFile.GetPath();
 
 	// work around incorrect extension(s) that wxFileDialog added
 	bool bPreferGZip = (saveFile.GetFilterIndex() == 1);
@@ -255,7 +255,7 @@ void ResampleDlg::OnTextToImageFile( wxCommandEvent &event )
 		return;
 
 	TransferDataFromWindow();
-	m_tileopts.fname_images = m_strToFileImages.mb_str();
+	m_tileopts.fname_images = m_strToFileImages.mb_str(wxConvUTF8);
 	EnableBasedOnConstraint();
 }
 

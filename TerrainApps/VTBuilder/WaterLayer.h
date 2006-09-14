@@ -1,7 +1,7 @@
 //
 // WaterLayer.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -46,7 +46,7 @@ public:
 	void PaintDibWithWater(vtDIB *dib);
 
 	void AddElementsFromDLG(vtDLGFile *pDlg);
-	void AddElementsFromSHP(const wxString2 &filename, const vtProjection &proj);
+	void AddElementsFromSHP(const wxString &filename, const vtProjection &proj);
 
 	// Import from SDTS via OGR
 	void AddElementsFromOGR(class OGRDataSource *datasource,

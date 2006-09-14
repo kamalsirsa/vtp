@@ -152,10 +152,11 @@ vtElevLayer::~vtElevLayer()
 
 bool vtElevLayer::OnSave()
 {
+	vtString fname = GetLayerFilename().mb_str(wxConvUTF8);
 	if (m_pGrid)
-		return m_pGrid->SaveToBT(GetLayerFilename().mb_str(), NULL, m_bPreferGZip);
+		return m_pGrid->SaveToBT(fname, NULL, m_bPreferGZip);
 	if (m_pTin)
-		return m_pTin->Write(GetLayerFilename().mb_str());
+		return m_pTin->Write(fname);
 	return false;
 }
 
@@ -165,7 +166,7 @@ bool vtElevLayer::OnLoad()
 
 	bool success = false;
 
-	wxString2 fname = GetLayerFilename();
+	wxString fname = GetLayerFilename();
 	if (fname.Contains(_T(".bt")))
 	{
 		// remember whether this layer was read from a compressed file
@@ -175,16 +176,15 @@ bool vtElevLayer::OnLoad()
 		m_pGrid = new vtElevationGrid;
 
 		vtElevGridError err;
-		success = m_pGrid->LoadFromBT(fname.mb_str(), progress_callback, &err);
+		success = m_pGrid->LoadFromBT(fname.mb_str(wxConvUTF8), progress_callback, &err);
 		if (!success && err == EGE_READ_CRS)
 		{
 			// Missing prj file
-			wxString2 str = _("CRS file");
-			str += " (";
-			vtString name = fname.mb_str();
-			RemoveFileExtensions(name);
-			str += name;
-			str += ".prj) ";
+			wxString str = _("CRS file");
+			str += _T(" (");
+			RemoveFileExtensions(fname);
+			str += fname;
+			str += _T(".prj) ");
 			str += _("is missing or unreadable.\n");
 			wxMessageBox(str);
 		}
@@ -198,7 +198,7 @@ bool vtElevLayer::OnLoad()
 			 !fname.Right(4).CmpNoCase(_T(".itf")))
 	{
 		m_pTin = new vtTin2d;
-		success = m_pTin->Read(fname.mb_str());
+		success = m_pTin->Read(fname.mb_str(wxConvUTF8));
 	}
 
 	CloseProgressDialog();
@@ -560,7 +560,7 @@ void vtElevLayer::RenderBitmap()
 	// TODO: re-enable this friendly cancel behavior
 	if (UpdateProgressDialog(j*100/m_iImageHeight))
 	{
-		wxString2 msg = _("Turn off displayed elevation for elevation layers?");
+		wxString msg = _("Turn off displayed elevation for elevation layers?");
 		if (wxMessageBox(msg, _T(""), wxYES_NO) == wxYES)
 		{
 			m_draw.m_bShowElevation = false;
@@ -803,16 +803,17 @@ void vtElevLayer::SetProjection(const vtProjection &proj)
 		m_pTin->m_proj = proj;
 }
 
-bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
+bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 	bool progress_callback(int am))
 {
 	// Avoid trouble with '.' and ',' in Europe - all the file readers assume
 	//  the default "C" locale.
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	VTLOG("ImportFromFile '%s'\n", strFileName.mb_str());
-
 	wxString strExt = strFileName.AfterLast('.');
+	vtString fname = strFileName.mb_str(wxConvUTF8);
+
+	VTLOG("ImportFromFile '%s'\n", fname);
 
 	if (!strExt.CmpNoCase(_T("gz")))
 	{
@@ -830,7 +831,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 
 	// The first character in the file is useful for telling which format
 	// the file really is.
-	FILE *fp = fopen(strFileName.mb_str(), "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	char first = fgetc(fp);
 	fclose(fp);
 
@@ -839,7 +840,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	if (!strExt.CmpNoCase(_T("dxf")))
 	{
 		m_pTin = new vtTin2d;
-		success = m_pTin->ReadDXF(strFileName.mb_str(), progress_callback);
+		success = m_pTin->ReadDXF(fname, progress_callback);
 	}
 	else
 	{
@@ -849,61 +850,61 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 
 	if (!strExt.CmpNoCase(_T("3tx")))
 	{
-		success = m_pGrid->LoadFrom3TX(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadFrom3TX(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("dem")))
 	{
 		// If there is a .hdr file in the same place, it is most likely
 		//  a GTOPO30/SRTM30 file
-		vtString hdr_fname = ChangeFileExtension(strFileName.mb_str(), ".hdr");
+		vtString hdr_fname = ChangeFileExtension(fname, ".hdr");
 		if (FileExists(hdr_fname))
 			success = m_pGrid->LoadFromGTOPO30(hdr_fname, progress_callback);
 		else
 		{
 			if (first == '*')
-				success = m_pGrid->LoadFromMicroDEM(strFileName.mb_str(), progress_callback);
+				success = m_pGrid->LoadFromMicroDEM(fname, progress_callback);
 			else
-				success = m_pGrid->LoadFromDEM(strFileName.mb_str(), progress_callback);
+				success = m_pGrid->LoadFromDEM(fname, progress_callback);
 		}
 	}
 	else if (!strExt.CmpNoCase(_T("asc")))
 	{
-		success = m_pGrid->LoadFromASC(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadFromASC(fname, progress_callback);
 		// vtElevationGrid does have its own ASC reader, but use GDAL instead
-//		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
+//		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(wxConvUTF8), progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("bil")))
 	{
-		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadWithGDAL(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("mem")))
 	{
-		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadWithGDAL(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("ter")))
 	{
-		success = m_pGrid->LoadFromTerragen(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadFromTerragen(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("cdf")))
 	{
-		success = m_pGrid->LoadFromCDF(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadFromCDF(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("hdr")))
 	{
-		success = m_pGrid->LoadFromGTOPO30(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadFromGTOPO30(fname, progress_callback);
 		if (!success)
-			success = m_pGrid->LoadFromGLOBE(strFileName.mb_str(), progress_callback);
+			success = m_pGrid->LoadFromGLOBE(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("dte")) ||
 			!strExt.CmpNoCase(_T("dt0")) ||
 			!strExt.CmpNoCase(_T("dt1")) ||
 			!strExt.CmpNoCase(_T("dt2")))
 	{
-		success = m_pGrid->LoadFromDTED(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadFromDTED(fname, progress_callback);
 	}
 	else if (!strExt.Left(3).CmpNoCase(_T("pgm")))
 	{
-		success = m_pGrid->LoadFromPGM(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadFromPGM(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("grd")))
 	{
@@ -911,18 +912,18 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 		if (first == 'D')
 		{
 			VTLOG("First character is 'D', attempting load as a Surfer Grid file.\n");
-			success = m_pGrid->LoadFromGRD(strFileName.mb_str(), progress_callback);
+			success = m_pGrid->LoadFromGRD(fname, progress_callback);
 		}
 		else
 		{
 			VTLOG("First character is not 'D', attempting load as a netCDF file.\n");
-			success = m_pGrid->LoadFromCDF(strFileName.mb_str(), progress_callback);
+			success = m_pGrid->LoadFromCDF(fname, progress_callback);
 		}
 		if (!success)
 		{
 			VTLOG("Didn't load successfully, attempting load with GDAL.\n");
 			// Might be 'Arc Binary Grid', try GDAL
-			success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
+			success = m_pGrid->LoadWithGDAL(fname, progress_callback);
 		}
 	}
 	else if (!strFileName.Right(8).CmpNoCase(_T("catd.ddf")) ||
@@ -931,7 +932,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 			!strExt.Left(3).CmpNoCase(_T("img")) ||
 			!strExt.CmpNoCase(_T("adf")))
 	{
-		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadWithGDAL(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("raw")))
 	{
@@ -948,7 +949,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 
 		if (dlg.ShowModal() == wxID_OK)
 		{
-			success = m_pGrid->LoadFromRAW(strFileName.mb_str(), dlg.m_iWidth,
+			success = m_pGrid->LoadFromRAW(fname, dlg.m_iWidth,
 					dlg.m_iHeight, dlg.m_iBytes, dlg.m_fVUnits, dlg.m_bBigEndian,
 					progress_callback);
 		}
@@ -960,16 +961,16 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	}
 	else if (!strExt.CmpNoCase(_T("ntf")))
 	{
-		success = m_pGrid->LoadFromNTF5(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadFromNTF5(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("txt")) ||
 		!strExt.CmpNoCase(_T("xyz")))
 	{
-		success = m_pGrid->LoadFromXYZ(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadFromXYZ(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("hgt")))
 	{
-		success = m_pGrid->LoadFromHGT(strFileName.mb_str(), progress_callback);
+		success = m_pGrid->LoadFromHGT(fname, progress_callback);
 	}
 	if (!success)
 		return false;
@@ -989,7 +990,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 		if (m_pGrid->GetEarthExtents().IsEmpty())
 		{
 			// No extents.
-			wxString2 msg = _("File lacks geographic location (extents). Would you like to specify extents?\n Yes - specify extents\n No - use some default values\n");
+			wxString msg = _("File lacks geographic location (extents). Would you like to specify extents?\n Yes - specify extents\n No - use some default values\n");
 			int res = wxMessageBox(msg, _("Elevation Import"), wxYES_NO | wxCANCEL);
 			if (res == wxYES)
 			{
@@ -1070,7 +1071,7 @@ bool vtElevLayer::SetExtent(const DRECT &rect)
 
 void vtElevLayer::GetPropertyText(wxString &strIn)
 {
-	wxString2 result = strIn, str;
+	wxString result = strIn, str;
 
 	if (m_pGrid)
 	{
@@ -1082,9 +1083,9 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 		bool bGeo = (m_pGrid->GetProjection().IsGeographic() != 0);
 		result += _("Grid spacing: ");
 		DPoint2 spacing = m_pGrid->GetSpacing();
-		result += FormatCoord(bGeo, spacing.x);
+		result += wxString(FormatCoord(bGeo, spacing.x), wxConvUTF8);
 		result += _T(" x ");
-		result += FormatCoord(bGeo, spacing.y);
+		result += wxString(FormatCoord(bGeo, spacing.y), wxConvUTF8);
 		result += _T("\n");
 
 		if (m_pGrid->IsFloatMode())
@@ -1166,7 +1167,7 @@ bool vtElevLayer::AskForSaveFilename()
 	if (!bResult)
 		return false;
 
-	vtString fname = (const char *) saveFile.GetPath().mb_str();
+	vtString fname = saveFile.GetPath().mb_str(wxConvUTF8);
 	VTLOG("Got filename: '%s'\n", (const char *) fname);
 
 	if (m_pGrid)
@@ -1181,7 +1182,7 @@ bool vtElevLayer::AskForSaveFilename()
 			fname += ".bt";
 	}
 
-	SetLayerFilename(fname);
+	SetLayerFilename(wxString(fname, wxConvUTF8));
 	m_bNative = true;
 	return true;
 }

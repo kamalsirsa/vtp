@@ -1,7 +1,7 @@
 //
 // Name: RenderDlg.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,8 @@
 
 #include "RenderDlg.h"
 #include "FileFilters.h"
+#include "Helper.h"
+
 #include "vtdata/FilePath.h"
 #include "vtui/Helper.h"		// for AddFilenamesToChoice
 #include "vtui/ColorMapDlg.h"
@@ -133,7 +135,7 @@ void RenderDlg::OnEditColors( wxCommandEvent &event )
 	if (m_strColorMap != _T(""))
 	{
 		vtString name = "GeoTypical/";
-		name += m_strColorMap.mb_str();
+		name += m_strColorMap.mb_str(wxConvUTF8);
 		name = FindFileOnPaths(m_datapaths, name);
 		if (name == "")
 		{
@@ -163,7 +165,7 @@ void RenderDlg::OnDotdotdot( wxCommandEvent &event )
 	if (!bResult)
 		return;
 
-	wxString2 name = saveFile.GetPath();
+	wxString name = saveFile.GetPath();
 
 	// work around incorrect extension(s) that wxFileDialog added
 	if (!name.Right(4).CmpNoCase(_T(".jpg")))
@@ -188,16 +190,14 @@ void RenderDlg::OnRadio( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
-	vtString fname = m_strToFile.vt_str();
-	RemoveFileExtensions(fname);
-	if (fname != "")
+	RemoveFileExtensions(m_strToFile);
+	if (m_strToFile != _T(""))
 	{
 		if (m_bJPEG)
-			fname += ".jpeg";
+			m_strToFile += _T(".jpeg");
 		else
-			fname += ".tif";
+			m_strToFile += _T(".tif");
 	}
-	m_strToFile = fname;
 
 	// update controls
 	m_bSetting = true;

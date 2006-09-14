@@ -1,7 +1,7 @@
 //
 // Layer.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,7 @@
 
 #include "vtdata/MathTypes.h"
 #include "vtdata/Projections.h"
-#include "vtui/wxString2.h"
+#include "vtdata/vtString.h"
 
 enum LayerType
 {
@@ -45,8 +45,8 @@ public:
 	bool GetModified() { return m_bModified; }
 	bool IsNative() { return m_bNative; }
 
-	wxString2 GetImportedFrom() { return m_wsImportedFrom; }
-	void SetImportedFrom(const wxString2 &fname) { m_wsImportedFrom = fname; }
+	wxString GetImportedFrom() { return m_wsImportedFrom; }
+	void SetImportedFrom(const wxString &fname) { m_wsImportedFrom = fname; }
 
 	// operations
 	static vtLayer *CreateNewLayer(LayerType ltype);
@@ -69,8 +69,8 @@ public:
 	virtual void GetPropertyText(wxString &str) {}
 	virtual wxString GetFileExtension();
 	virtual bool CanBeSaved() { return true; }
-	virtual wxString2 GetLayerFilename() { return m_wsFilename; }
-	virtual void SetLayerFilename(const wxString2 &fname);
+	virtual wxString GetLayerFilename() { return m_wsFilename; }
+	virtual void SetLayerFilename(const wxString &fname);
 	virtual bool AskForSaveFilename();
 	vtString GetExportFilename(const wxString &format_filter);
 	bool GetAreaExtent(DRECT &rect) { return GetExtent(rect); }
@@ -91,10 +91,10 @@ protected:
 	void SetMessageText(const wxString &msg);
 
 	// this filename is only used if the layer subclass doesn't have its own
-	wxString2	m_wsFilename;
+	wxString	m_wsFilename;
 
 	// remember what file this layer was imported from
-	wxString2	m_wsImportedFrom;
+	wxString	m_wsImportedFrom;
 
 	LayerType	m_type;
 	bool		m_bVisible;
@@ -180,7 +180,7 @@ struct TilingOptions
 ////////////////////
 // Helpers
 
-wxString2 GetLayerTypeName(const LayerType &lype);
+wxString GetLayerTypeName(const LayerType &lype);
 
 #endif
 

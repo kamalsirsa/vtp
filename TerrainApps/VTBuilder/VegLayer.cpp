@@ -1,7 +1,7 @@
 //
 // VegLayer.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -52,7 +52,7 @@ vtVegLayer::~vtVegLayer()
 
 void vtVegLayer::GetPropertyText(wxString &str)
 {
-	wxString2 s;
+	wxString s;
 	str = _("Vegetation layer type: ");
 	switch (m_VLType)
 	{
@@ -103,7 +103,7 @@ bool vtVegLayer::OnSave()
 {
 	// currently we can load and save VF files (Plant Instances)
 	if (m_VLType == VLT_Instances)
-		return GetPIA()->WriteVF(GetLayerFilename().mb_str());
+		return GetPIA()->WriteVF(GetLayerFilename().mb_str(wxConvUTF8));
 	else
 		return vtRawLayer::OnSave();
 }
@@ -117,20 +117,20 @@ bool vtVegLayer::OnLoad()
 		return false;
 	}
 
-	wxString2 fname = GetLayerFilename();
+	wxString fname = GetLayerFilename();
 	wxString ext = fname.Right(3);
 
-	wxString2 dbfname = fname.Left(fname.Length() - 4);
-	dbfname += ".dbf";
+	wxString dbfname = fname.Left(fname.Length() - 4);
+	dbfname += _T(".dbf");
 
 	if (!ext.CmpNoCase(_T(".vf")))
 	{
 		// read VF file
 		SetVegType(VLT_Instances);
 		GetPIA()->SetPlantList(plants);
-		if (GetPIA()->ReadVF(fname.mb_str()))
+		if (GetPIA()->ReadVF(fname.mb_str(wxConvUTF8)))
 		{
-			m_pSet->SetFilename(fname.mb_str());
+			m_pSet->SetFilename((const char *)fname.mb_str(wxConvUTF8));
 			return true;
 		}
 		else
@@ -143,9 +143,12 @@ bool vtVegLayer::OnLoad()
 	}
 	else if (!ext.CmpNoCase(_T("shp")))
 	{
+		// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+		vtString fname_local = UTF8ToLocal(fname.mb_str(wxConvUTF8));
+
 		// Study this SHP file, look at what it might be
 		int		nElems, nShapeType;
-		SHPHandle hSHP = SHPOpen(fname.mb_str(), "rb");
+		SHPHandle hSHP = SHPOpen(fname_local, "rb");
 		if (hSHP == NULL)
 			return false;
 		SHPGetInfo(hSHP, &nElems, &nShapeType, NULL, NULL);
@@ -154,7 +157,10 @@ bool vtVegLayer::OnLoad()
 			SetVegType(VLT_Instances);
 		else if (nShapeType == SHPT_POLYGON)
 		{
-			DBFHandle db = DBFOpen(dbfname.mb_str(), "rb");
+			// DBFOpen doesn't yet support utf-8 or wide filenames, so convert
+			vtString fname_localdbf = UTF8ToLocal(dbfname.mb_str(wxConvUTF8));
+
+			DBFHandle db = DBFOpen(fname_localdbf, "rb");
 			if (db == NULL)
 				return false;
 
@@ -170,7 +176,7 @@ bool vtVegLayer::OnLoad()
 				return false;
 		}
 		// OK, read the rest of the file
-		return m_pSet->LoadFromSHP(fname.mb_str());
+		return m_pSet->LoadFromSHP(fname.mb_str(wxConvUTF8));
 	}
 
 	// don't know this file
@@ -281,15 +287,18 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
  *		intepreted as a density value (double), the name of a biotype
  *		(string), or the ID of a biotype (int).
  */
-bool vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
+bool vtVegLayer::AddElementsFromSHP_Polys(const wxString &filename,
 										  const vtProjection &proj,
 										  int iField, VegImportFieldType datatype)
 {
 	// When working with float field data, must use C locale
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(filename.mb_str(wxConvUTF8));
+
 	// Open the SHP File
-	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 		return false;
 
@@ -303,7 +312,7 @@ bool vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 		return false;
 
 	// Open DBF File
-	DBFHandle db = DBFOpen(filename.mb_str(), "rb");
+	DBFHandle db = DBFOpen(fname_local, "rb");
 	if (db == NULL)
 		return false;
 
@@ -394,7 +403,7 @@ bool vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
  * The 'opt' parameter contains a description of how the fields in the
  * imported file are to be interpreted.
  */
-bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
+bool vtVegLayer::AddElementsFromSHP_Points(const wxString &filename,
 										   const vtProjection &proj,
 										   VegPointOptions &opt)
 {
@@ -405,8 +414,11 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 	vtBioRegion *pBioRegion = GetMainFrame()->GetBioRegion();
 	GetPIA()->SetPlantList(pPlantList);
 
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(filename.mb_str(wxConvUTF8));
+
 	// Open the SHP File
-	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 		return false;
 
@@ -420,7 +432,7 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 		return false;
 
 	// Open DBF File
-	DBFHandle db = DBFOpen(filename.mb_str(), "rb");
+	DBFHandle db = DBFOpen(fname_local, "rb");
 	if (db == NULL)
 		return false;
 
@@ -480,7 +492,7 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 		// Read DBF Attributes per point
 		int species_id = -1;
 		if (opt.bFixedSpecies)
-			species_id = pPlantList->GetSpeciesIdByName(opt.strFixedSpeciesName.mb_str());
+			species_id = pPlantList->GetSpeciesIdByName(opt.strFixedSpeciesName.mb_str(wxConvUTF8));
 		else
 		{
 			switch (opt.iInterpretSpeciesField)

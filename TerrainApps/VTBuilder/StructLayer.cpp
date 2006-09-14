@@ -1,7 +1,7 @@
 //
 // StructLayer.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -36,7 +36,7 @@ static bool g_bInitializedPens = false;
 
 vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
 {
-	wxString2 name = _("Untitled");
+	wxString name = _("Untitled");
 	name += _T(".vtst");
 	SetLayerFilename(name);
 
@@ -356,14 +356,13 @@ void vtStructureLayer::Offset(const DPoint2 &delta)
 
 void vtStructureLayer::GetPropertyText(wxString &strIn)
 {
-	wxString2 str;
-
 	int i, size = GetSize();
 
 	strIn += _("Filename: ");
 	strIn += GetLayerFilename();
 	strIn += _T("\n");
 
+	wxString str;
 	str.Printf(_("Number of structures: %d\n"), size);
 	strIn += str;
 
@@ -1111,7 +1110,7 @@ void vtStructureLayer::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 /////////////////////////////////////////////////////////////////////////////
 // Import methods
 
-bool vtStructureLayer::AddElementsFromSHP(const wxString2 &filename,
+bool vtStructureLayer::AddElementsFromSHP(const wxString &filename,
 										  const vtProjection &proj, DRECT rect)
 {
 	ImportStructDlg dlg(NULL, -1, _("Import Structures"));
@@ -1122,7 +1121,7 @@ bool vtStructureLayer::AddElementsFromSHP(const wxString2 &filename,
 
 	dlg.m_opt.rect = rect;
 
-	bool success = ReadSHP(filename.mb_str(), dlg.m_opt, progress_callback);
+	bool success = ReadSHP(filename.mb_str(wxConvUTF8), dlg.m_opt, progress_callback);
 	if (!success)
 		return false;
 
@@ -1155,15 +1154,15 @@ bool vtStructureLayer::AskForSaveFilename()
 	if (!bResult)
 		return false;
 
-	vtString fname = (const char *) saveFile.GetPath().mb_str();
+	wxString fname = saveFile.GetPath();
 	m_bPreferGZip = (saveFile.GetFilterIndex() == 1);
 
 	// work around incorrect extension(s) that wxFileDialog added
 	RemoveFileExtensions(fname);
 	if (m_bPreferGZip)
-		fname += ".vtst.gz";
+		fname += _T(".vtst.gz");
 	else
-		fname += ".vtst";
+		fname += _T(".vtst");
 
 	SetLayerFilename(fname);
 	m_bNative = true;

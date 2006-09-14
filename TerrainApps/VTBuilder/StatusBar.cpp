@@ -1,7 +1,7 @@
 //
 // Status bar implementation
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -56,16 +56,16 @@ void MyStatusBar::OnSize(wxSizeEvent& event)
 
 wxString MyStatusBar::FormatCoord(bool bGeo, double coord)
 {
-	wxString2 str;
+	vtString str;
 	if (bGeo)
 	{
 		str = ::FormatCoord(bGeo, coord, m_bShowMinutes);
 	}
 	else	// something meters-based
 	{
-		str.Printf(_T("%.0f"), coord);
+		str.Format("%.0f", coord);
 	}
-	return str;
+	return wxString(str, wxConvUTF8);
 }
 
 void MyStatusBar::SetTexts(MainFrame *frame)
@@ -75,7 +75,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 	vtProjection &proj = frame->GetAtProjection();
 	bool bGeo = (proj.IsGeographic() != 0);
 
-	wxString2 str = proj.GetProjectionNameShort();
+	wxString str(proj.GetProjectionNameShort(), wxConvUTF8);
 	SetStatusText(str, Field_Coord);
 
 	int zone = proj.GetUTMZone();
@@ -85,7 +85,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 		str = _T("");
 	SetStatusText(str, Field_Zone);
 
-	str = DatumToStringShort(proj.GetDatum());
+	str = wxString(DatumToStringShort(proj.GetDatum()), wxConvUTF8);
 	SetStatusText(str, Field_Datum);
 
 	DPoint2 p;
@@ -99,7 +99,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 			str.Printf(_T("1 Pixel = %.6lg "), 1.0/scale);
 		else
 			str.Printf(_T("1 Pixel = %.2lf "), 1.0/scale);
-		str += GetLinearUnitName(lu);
+		str += wxString(GetLinearUnitName(lu), wxConvUTF8);
 		SetStatusText(str, Field_HUnits);
 
 		pView->GetMouseLocation(p);

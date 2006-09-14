@@ -1,7 +1,7 @@
 //
 // Name: ModelDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "cmanager_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 
 class vtModel;
 
@@ -36,10 +35,10 @@ public:
 
 private:
 	// WDR: member variable declarations for ModelDlg
-	wxString2	m_strFilename;
+	wxString	m_strFilename;
 	float		m_fDistance;
 	float		m_fScale;
-	wxString2	m_strStatus;
+	wxString	m_strStatus;
 	vtModel		*m_pCurrentModel;
 	bool		m_bUpdating;
 

@@ -84,7 +84,7 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	// Populate the Choice controls with necessary values
 	MainFrame *frame = GetMainFrame();
-	wxString2 str, str2;
+	wxString str;
 	unsigned int i;
 
 	// Single species
@@ -95,7 +95,7 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 		for (i = 0; i < pl->NumSpecies(); i++)
 		{
 			vtPlantSpecies *spe = pl->GetSpecies(i);
-			str = spe->GetSciName();
+			str = wxString(spe->GetSciName(), wxConvUTF8);
 			GetChoiceSpecies()->Append(str);
 		}
 	}
@@ -110,7 +110,7 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 		{
 			vtBioType *bt = br->m_Types[i];
 			str.Printf(_T("(%d) "), i);
-			str2 = bt->m_name;
+			wxString str2(bt->m_name, wxConvUTF8);
 			str += str2;
 			GetChoiceBiotype()->Append(str);
 		}

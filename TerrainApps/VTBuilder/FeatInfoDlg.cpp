@@ -1,7 +1,7 @@
 //
 // Name:		FeatInfoDlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,7 +15,6 @@
 #include "FeatInfoDlg.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/Features.h"
-#include "vtui/wxString2.h"
 #include "BuilderView.h"
 
 // WDR: class implementations
@@ -99,7 +98,7 @@ void FeatInfoDlg::SetFeatureSet(vtFeatureSet *pFeatures)
 	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
 		Field *pField = m_pFeatures->GetField(i);
-		wxString2 name = pField->m_name;
+		wxString name(pField->m_name, wxConvUTF8);
 		int width1 = pField->m_width * 6;
 		int width2 = name.Length() * 8;
 		int width = max(width1, width2);
@@ -182,7 +181,6 @@ void FeatInfoDlg::ShowFeature(int iFeat)
 
 void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
 {
-	wxString2 str;
 	int field = 0;
 
 	wxString strFormat;
@@ -191,6 +189,7 @@ void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
 	else
 		strFormat = _T("%.2lf");
 
+	wxString str;
 	OGRwkbGeometryType type = m_pFeatures->GetGeomType();
 	if (type == wkbPoint)
 	{
@@ -221,15 +220,7 @@ void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
 	{
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeat, i, vs);
-
-		// Using wstring2 here works, but leaks a little memory for some
-		//  reason.  I cannot understand why, it is buried deep in insanely
-		//  convoluted STL templates.  We'll just use wxString instead.
-//		wstring2 wide;
-//		wide.from_utf8(vs);
-//		str = wide.c_str();
-		wxString wide((const char *)vs, wxConvUTF8);
-
+		wxString wide(vs, wxConvUTF8);
 		GetList()->SetItem(iItem, field++, wide);
 	}
 }
@@ -256,8 +247,7 @@ bool FeatInfoDlg::EditValue(int iFeature, int iColumn)
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeature, iField, vs);
 
-		wxString2 str;
-		str.from_utf8(vs);
+		wxString previous(vs, wxConvUTF8);
 
 		Field *pField = m_pFeatures->GetField(iField);
 
@@ -265,10 +255,10 @@ bool FeatInfoDlg::EditValue(int iFeature, int iColumn)
 		message.Printf(_("Enter a new value for field '%hs'"),
 			(const char *) pField->m_name);
 		caption.Printf(_("Text entry"));
-		str = wxGetTextFromUser(message, caption, str, this);
+		wxString str = wxGetTextFromUser(message, caption, previous, this);
 		if (str != _T(""))
 		{
-			vs = str.to_utf8();
+			vs = str.mb_str(wxConvUTF8);
 			m_pFeatures->SetValueFromString(iFeature, iField, vs);
 			return true;
 		}

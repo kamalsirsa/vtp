@@ -68,28 +68,28 @@ bool ImportStructDlgOGR::GetRadio(int id)
 
 void ImportStructDlgOGR::OnChoiceLayerName( wxCommandEvent &event )
 {
-	wxString2 str = GetLayername()->GetStringSelection();
-	m_opt.m_strLayerName = str.mb_str();
+	wxString str = GetLayername()->GetStringSelection();
+	m_opt.m_strLayerName = str.mb_str(wxConvUTF8);
 	UpdateFieldNames();
 	UpdateEnables();
 }
 
 void ImportStructDlgOGR::OnChoiceElevationFieldname( wxCommandEvent &event )
 {
-	wxString2 str = GetElevationFieldname()->GetStringSelection();
-	m_opt.m_strFieldNameElevation = str.mb_str();
+	wxString str = GetElevationFieldname()->GetStringSelection();
+	m_opt.m_strFieldNameElevation = str.mb_str(wxConvUTF8);
 }
 
 void ImportStructDlgOGR::OnChoiceFileField( wxCommandEvent &event )
 {
-	wxString2 str = GetChoiceFileField()->GetStringSelection();
-	m_opt.m_strFieldNameFile = str.mb_str();
+	wxString str = GetChoiceFileField()->GetStringSelection();
+	m_opt.m_strFieldNameFile = str.mb_str(wxConvUTF8);
 }
 
 void ImportStructDlgOGR::OnChoiceHeightField( wxCommandEvent &event )
 {
-	wxString2 str = GetChoiceHeightField()->GetStringSelection();
-	m_opt.m_strFieldNameHeight = str.mb_str();
+	wxString str = GetChoiceHeightField()->GetStringSelection();
+	m_opt.m_strFieldNameHeight = str.mb_str(wxConvUTF8);
 }
 
 void ImportStructDlgOGR::OnRadio( wxCommandEvent &event )
@@ -114,7 +114,7 @@ void ImportStructDlgOGR::OnInitDialog(wxInitDialogEvent& event)
 	int iNumLayers = m_pDatasource->GetLayerCount();
 	for (int i = 0 ; i < iNumLayers; i++)
 	{
-		wxString2 str = m_pDatasource->GetLayer(i)->GetLayerDefn()->GetName();
+		wxString str(m_pDatasource->GetLayer(i)->GetLayerDefn()->GetName(), wxConvUTF8);
 		GetLayername()->Append(str);
 	}
 	GetLayername()->Enable(iNumLayers > 1);
@@ -141,7 +141,7 @@ void ImportStructDlgOGR::UpdateFieldNames()
 	int iNumFields;
 	int i;
 	int iCount;
-	wxString2 str;
+	wxString str;
 	
 	pLayer = m_pDatasource->GetLayer(GetLayername()->GetSelection());
 
@@ -177,14 +177,14 @@ void ImportStructDlgOGR::UpdateFieldNames()
 					FieldType = pFieldDefn->GetType();
 					if ((FieldType == OFTInteger) || (FieldType == OFTReal))
 					{
-						str = pFieldDefn->GetNameRef();
+						str = wxString(pFieldDefn->GetNameRef(), wxConvUTF8);
 						GetChoiceHeightField()->Append(str);
-						str = pFieldDefn->GetNameRef();
+						str = wxString(pFieldDefn->GetNameRef(), wxConvUTF8);
 						GetElevationFieldname()->Append(str);
 					}
 					else if ((FieldType == OFTString) || (FieldType == OFTWideString))
 					{
-						str = pFieldDefn->GetNameRef();
+						str = wxString(pFieldDefn->GetNameRef(), wxConvUTF8);
 						GetChoiceFileField()->Append(str);
 					}
 				}

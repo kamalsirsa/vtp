@@ -1,7 +1,7 @@
 //
 // RoadLayer.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,7 +27,7 @@ bool vtRoadLayer::m_bDrawWidth = false;
 
 vtRoadLayer::vtRoadLayer() : vtLayer(LT_ROAD)
 {
-	wxString2 name = _("Untitled");
+	wxString name = _("Untitled");
 	name += _T(".rmf");
 	SetLayerFilename(name);
 }
@@ -56,12 +56,12 @@ void vtRoadLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 bool vtRoadLayer::OnSave()
 {
-	return WriteRMF(GetLayerFilename().mb_str());
+	return WriteRMF(GetLayerFilename().mb_str(wxConvUTF8));
 }
 
 bool vtRoadLayer::OnLoad()
 {
-	bool success = ReadRMF(GetLayerFilename().mb_str(), true, true, true);
+	bool success = ReadRMF(GetLayerFilename().mb_str(wxConvUTF8), true, true, true);
 	if (!success)
 		return false;
 

@@ -1,7 +1,7 @@
 //
 // VegDlg.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -97,14 +97,14 @@ void SpeciesListDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (unsigned int i = 0; i < pl->NumSpecies(); i++)
 	{
 		// Display species and max height in left table.
-		wxString2 str;
+		wxString str;
 		long item;
 		vtPlantSpecies *spe = pl->GetSpecies(i);
 
 		str.Printf(_T("%hs"), spe->GetSciName() );
 		item = m_PSTable->InsertItem(i+1, str, 0);
 
-		str.from_utf8(spe->GetCommonName().m_strName);
+		str = wxString(spe->GetCommonName().m_strName, wxConvUTF8);
 		item = m_PSTable->SetItem(i+1, 1, str);
 
 		str.Printf(_T("%4.2f m"), spe->GetMaxHeight() );
@@ -136,12 +136,12 @@ void SpeciesListDlg::AddAppeance(int idx)
 	for (unsigned int j = 0; j < spe->NumAppearances(); j++)
 	{
 		vtPlantAppearance* app = spe->GetAppearance(j);
-		wxString2 str1;
+		wxString str1;
 		long item1;
 
 		str1.Printf(_T("%d"), app->m_eType == AT_BILLBOARD);
 		item1 = m_PATable->InsertItem(j, str1, 0);
-		str1 = app->m_filename;
+		str1 = wxString(app->m_filename, wxConvUTF8);
 		item1 = m_PATable->SetItem(j, 1, str1);
 		str1.Printf(_T("%4.2f"), app->m_width);
 		item1 = m_PATable->SetItem(j, 2, str1);

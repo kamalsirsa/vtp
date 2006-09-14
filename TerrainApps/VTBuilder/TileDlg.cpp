@@ -101,7 +101,7 @@ void TileDlg::SetTilingOptions(TilingOptions &opt)
 	m_iRows = opt.rows;
 	m_iLOD0Size = opt.lod0size;
 	m_iNumLODs = opt.numlods;
-	m_strToFile = opt.fname;
+	m_strToFile = wxString(opt.fname, wxConvUTF8);
 
 	m_iLODChoice = vt_log2(m_iLOD0Size)-5;
 
@@ -114,7 +114,7 @@ void TileDlg::GetTilingOptions(TilingOptions &opt) const
 	opt.rows = m_iRows;
 	opt.lod0size = m_iLOD0Size;
 	opt.numlods = m_iNumLODs;
-	opt.fname = m_strToFile.mb_str();
+	opt.fname = m_strToFile.mb_str(wxConvUTF8);
 }
 
 void TileDlg::SetArea(const DRECT &area)

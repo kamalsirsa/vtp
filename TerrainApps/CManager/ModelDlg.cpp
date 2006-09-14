@@ -1,7 +1,7 @@
 //
 // Name:	ModelDlg.cpp
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -58,7 +58,7 @@ void ModelDlg::OnEnterFilename( wxCommandEvent &event )
 	if (!m_pCurrentModel)
 		return;
 
-	wxString2 prev = m_strFilename;
+	wxString prev = m_strFilename;
 	TransferDataFromWindow();
 
 	// dont do anything unless they've changed the text
@@ -66,7 +66,7 @@ void ModelDlg::OnEnterFilename( wxCommandEvent &event )
 		return;
 
 	// change in Filename should be passed to the manager
-	m_pCurrentModel->m_filename = m_strFilename.mb_str();
+	m_pCurrentModel->m_filename = m_strFilename.mb_str(wxConvUTF8);
 	GetMainFrame()->ModelNameChanged(m_pCurrentModel);
 }
 
@@ -102,16 +102,16 @@ void ModelDlg::SetCurrentModel(vtModel *model)
 {
 	if (model)
 	{
-		m_strFilename = model->m_filename;
+		m_strFilename = wxString(model->m_filename, wxConvUTF8);
 		m_fDistance = model->m_distance;
 		m_fScale = model->m_scale;
 	}
 	else
 	{
-		m_strFilename = "";
+		m_strFilename = _T("");
 		m_fDistance = 0.0f;
 		m_fScale = 1.0f;
-		m_strStatus = "";
+		m_strStatus = _T("");
 	}
 	m_pCurrentModel = model;
 	m_bUpdating = true;
@@ -121,7 +121,7 @@ void ModelDlg::SetCurrentModel(vtModel *model)
 
 void ModelDlg::SetModelStatus(const char *string)
 {
-	m_strStatus = string;
+	m_strStatus = wxString(string, wxConvUTF8);
 	m_bUpdating = true;
 	TransferDataToWindow();
 	m_bUpdating = false;

@@ -33,7 +33,7 @@ void BuilderApp::Args(int argc, wxChar **argv)
 	for (int i = 0; i < argc; i++)
 	{
 		wxString str = argv[i];
-		wxCharBuffer cbuf = str.mb_str();
+		wxCharBuffer cbuf = str.mb_str(wxConvUTF8);
 		if (!strncmp(cbuf, "-locale=", 8))
 			m_locale_name = (const char *)cbuf + 8;
 	}
@@ -105,8 +105,8 @@ bool BuilderApp::OnInit()
 	delete frametest;
 
 	VTLOG(" Creating Main Frame Window,");
-	wxString2 title = APPNAME;
-	VTLOG(" title '%s'\n", title.mb_str());
+	wxString title(APPNAME, wxConvUTF8);
+	VTLOG(" title '%s'\n", title.mb_str(wxConvUTF8));
 	MainFrame* frame = new MainFrame((wxFrame *) NULL, title,
 							   wxPoint(50, 50), wxSize(900, 500));
 
@@ -139,7 +139,7 @@ bool BuilderApp::OnInit()
 */
 //	frame->LoadProject("E:/Locations/Romania/giurgiu.vtb");
 //	frame->ImportDataFromFile(LT_ELEVATION, "E:/Earth/NOAA Globe/g10g.hdr", false);
-//	wxString2 str("E:/Data-USA/Terrains/Hawai`i.xml");
+//	wxString str("E:/Data-USA/Terrains/Hawai`i.xml");
 //	frame->LoadLayer(str);
 
 //	wxString fname("E:/VTP User's Data/Hangzhou/Data/BuildingData/a-bldgs-18dec-subset1.vtst");
@@ -178,7 +178,8 @@ void BuilderApp::SetupLocale()
 	int default_lang = m_locale.GetSystemLanguage();
 
 	const wxLanguageInfo *info = wxLocale::GetLanguageInfo(default_lang);
-	VTLOG("Default language: %d (%s)\n", default_lang, (const char *) info->Description.mb_str());
+	VTLOG("Default language: %d (%s)\n", default_lang,
+		(const char *) info->Description.mb_str(wxConvUTF8));
 
 	// After wx2.4.2, wxWidgets looks in the application's directory for
 	//  locale catalogs, not the current directory.  Here we force it to
@@ -190,7 +191,7 @@ void BuilderApp::SetupLocale()
 	if (m_locale_name != "")
 	{
 		VTLOG("Looking up language: %s\n", (const char *) m_locale_name);
-		lang = GetLangFromName(wxString2(m_locale_name));
+		lang = GetLangFromName(wxString(m_locale_name, *wxConvCurrent));
 		if (lang == wxLANGUAGE_UNKNOWN)
 		{
 			VTLOG(" Unknown, falling back on default language.\n");
@@ -200,7 +201,8 @@ void BuilderApp::SetupLocale()
 		{
 			info = m_locale.GetLanguageInfo(lang);
 			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n", lang,
-				(const char *) info->CanonicalName.mb_str(), (const char *) info->Description.mb_str());
+				(const char *) info->CanonicalName.mb_str(wxConvUTF8),
+				(const char *) info->Description.mb_str(wxConvUTF8));
 			bSuccess = m_locale.Init(lang, wxLOCALE_CONV_ENCODING);
 		}
 	}

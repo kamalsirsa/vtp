@@ -10,7 +10,6 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "vtdata/MathTypes.h"
 #include "vtdata/WFSClient.h"
 #include "vtdata/Projections.h"
@@ -52,14 +51,14 @@ public:
 
 	int m_iXSize;
 	int m_iYSize;
-	wxString2 m_strQueryURL;
+	wxString m_strQueryURL;
 	DRECT m_area;
 	bool m_bSetting;
 	int m_iServer;
 	int m_iLayer;
 	int m_iStyle;
 	int m_iFormat;	// 0 = JPEG, 1 = PNG, 2 = GeoTIFF
-	wxString2 m_strToFile;
+	wxString m_strToFile;
 	OGCServerArray *m_pServers;
 	vtProjection m_proj;
 

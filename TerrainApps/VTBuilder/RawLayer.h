@@ -51,17 +51,17 @@ public:
 		else
 			return NULL;
 	}
-	wxString2 GetLayerFilename()
+	wxString GetLayerFilename()
 	{
 		if (m_pSet)
-			return wxString2(m_pSet->GetFilename());
+			return wxString(m_pSet->GetFilename(), wxConvUTF8);
 		else
 			return vtLayer::GetLayerFilename();
 	}
-	void SetLayerFilename(const wxString2 &fname)
+	void SetLayerFilename(const wxString &fname)
 	{
 		if (m_pSet)
-			m_pSet->SetFilename(fname.mb_str());
+			m_pSet->SetFilename((const char *) fname.mb_str(wxConvUTF8));
 		vtLayer::SetLayerFilename(fname);
 	}
 

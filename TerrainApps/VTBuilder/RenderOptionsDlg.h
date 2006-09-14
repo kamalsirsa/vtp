@@ -43,7 +43,7 @@ public:
 
 	vtStringArray m_datapaths;
 	ElevDrawOptions m_opt;
-	wxString2 m_strColorMap;
+	wxString m_strColorMap;
 	bool m_bNoShading;
 
 private:

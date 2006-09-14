@@ -1,7 +1,7 @@
 //
 // Name: ImageMapDlg.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,6 @@
 
 #include "ImageMapDlg.h"
 #include "vtdata/Features.h"
-#include "vtui/wxString2.h"
 
 // WDR: class implementations
 
@@ -43,7 +42,7 @@ void ImageMapDlg::SetFields(vtFeatureSet *pSet)
 {
 	for (unsigned int i = 0; i < pSet->GetNumFields(); i++)
 	{
-		wxString2 str = pSet->GetField(i)->m_name;
+		wxString str(pSet->GetField(i)->m_name, wxConvUTF8);
 		GetLinkField()->Append(str);
 	}
 }

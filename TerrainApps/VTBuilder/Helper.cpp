@@ -92,6 +92,78 @@ vtStringArray &GetDataPaths()
 	return GetMainFrame()->m_datapaths;
 }
 
+
+/**
+ * Given a full path containing a filename, return a pointer to
+ * the filename portion of the string.
+ */
+wxString StartOfFilename(const wxString &strFullPath)
+{
+	int index = 0;
+
+	int tmp1 = strFullPath.Find('/', true);
+	if (tmp1 > index)
+		index = tmp1+1;
+	int tmp2 = strFullPath.Find('\\', true);
+	if (tmp2 > index)
+		index = tmp2+1;
+	int tmp3 = strFullPath.Find(':', true);
+	if (tmp3 > index)
+		index = tmp3+1;
+
+	return strFullPath.Mid(index);
+}
+
+/**
+ * Return a copy of the string that has forward slashes converted to backslashes.
+ * This is useful for passing paths and filenames to the file dialog on WIN32.
+ */
+wxString ToBackslash(const wxString &path)
+{
+	wxString 	result;
+	size_t 	i, len = path.length();
+	result.reserve(len);
+	for ( i = 0; i < len; i++ )
+	{
+		wxChar ch = path.GetChar(i);
+		switch ( ch )
+		{
+		case _T('/'):
+			ch = _T('\\');	// convert to backslash
+			// fall through
+		default:
+			result += ch;	// normal char
+		}
+	}
+	return result;
+}
+
+/**
+ * Given a filename (which may include a path), remove any file extension(s)
+ * which it may have.
+ */
+void RemoveFileExtensions(wxString &fname, bool bAll)
+{
+	for (int i = fname.Length()-1; i >= 0; i--)
+	{
+		wxChar ch = fname[i];
+
+		// If we hit a path divider, stop
+		if (ch == ':' || ch == '\\' || ch == '/')
+			break;
+
+		// If we hit a period which indicates an extension, snip
+		if (ch == '.')
+		{
+			fname = fname.Left(i);
+
+			// if we're not snipping all the extensions, stop now
+			if (!bAll)
+				return;
+		}
+	}
+}
+
 //////////////////////////////////////
 
 //
@@ -105,7 +177,7 @@ void DisplayAndLog(const char *pFormat, ...)
 	char ach[2048];
 	vsprintf(ach, pFormat, va);
 
-	wxString2 msg = ach;
+	wxString msg(ach, wxConvUTF8);
 	wxMessageBox(msg);
 
 	strcat(ach, "\n");
@@ -120,7 +192,7 @@ void DisplayAndLog(const wchar_t *pFormat, ...)
 {
 //#ifdef UNICODE
 //	// Try to translate the string
-//	wxString2 trans = wxGetTranslation(pFormat);
+//	wxString trans = wxGetTranslation(pFormat);
 //	pFormat = trans.c_str();
 //#endif
 
@@ -136,7 +208,7 @@ void DisplayAndLog(const wchar_t *pFormat, ...)
 	vswprintf(ach, 2048, pFormat, va);
 #endif
 
-	wxString2 msg = ach;
+	wxString msg(ach);
 	wxMessageBox(msg);
 
 	VTLOG1(ach);

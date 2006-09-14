@@ -102,12 +102,12 @@ void PropDlg::OnTagEdit( wxCommandEvent &event )
 		vtTag *tag = m_pCurrentItem->GetTag(tagnum);
 
 		TagDlg dlg(GetMainFrame(), -1, _T("Edit Tag"));
-		dlg.m_strName = tag->name;
-		dlg.m_strValue = tag->value;
+		dlg.m_strName = wxString(tag->name, wxConvUTF8);
+		dlg.m_strValue = wxString(tag->value, wxConvUTF8);
 		if (dlg.ShowModal() == wxID_OK)
 		{
-			tag->name = dlg.m_strName.mb_str();
-			tag->value = dlg.m_strValue.mb_str();
+			tag->name = dlg.m_strName.mb_str(wxConvUTF8);
+			tag->value = dlg.m_strValue.mb_str(wxConvUTF8);
 			UpdateTagList();
 		}
 	}
@@ -142,7 +142,7 @@ void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (unsigned int i = 0; i < m_types.size(); i++)
 	{
 		if (m_types[i].subtype == "")
-			m_pTypeChoice->Append(wxString2(m_types[i].type));
+			m_pTypeChoice->Append(wxString(m_types[i].type, wxConvUTF8));
 	}
 	m_pTypeChoice->SetSelection(0);
 	UpdateSubtypes();
@@ -184,13 +184,13 @@ void PropDlg::UpdateSubtypes()
 	for (unsigned int i = 0; i < m_types.size(); i++)
 	{
 		if (m_types[i].type == type)
-			m_pSubtypeChoice->Append(wxString2(m_types[i].subtype));
+			m_pSubtypeChoice->Append(wxString(m_types[i].subtype, wxConvUTF8));
 	}
 	if (m_pCurrentItem)
 	{
 		const char *subtype = m_pCurrentItem->GetValueString("subtype");
 		if (subtype)
-			m_pSubtypeChoice->SetStringSelection(wxString2(subtype));
+			m_pSubtypeChoice->SetStringSelection(wxString(subtype, wxConvUTF8));
 	}
 }
 
@@ -209,8 +209,8 @@ void PropDlg::UpdateTagList()
 			continue;
 		if (!tag->name.Compare("subtype"))
 			continue;
-		item = m_pTagList->InsertItem(i, (wxString2) tag->name);
-		m_pTagList->SetItem(item, 1, (wxString2) tag->value);
+		item = m_pTagList->InsertItem(i, wxString(tag->name, wxConvUTF8));
+		m_pTagList->SetItem(item, 1, wxString(tag->value, wxConvUTF8));
 		m_pTagList->SetItemData(item, i);
 	}
 }
@@ -219,22 +219,22 @@ void PropDlg::SetCurrentItem(vtItem *item)
 {
 	if (item)
 	{
-		m_strItem = item->m_name;
+		m_strItem = wxString(item->m_name, wxConvUTF8);
 		const char *type = item->GetValueString("type");
 		if (type)
-			m_strType = type;
+			m_strType = wxString(type, wxConvUTF8);
 		else
 			m_strType = _T("unknown");
 		const char *subtype = item->GetValueString("subtype");
 		if (subtype)
-			m_strSubtype = subtype;
+			m_strSubtype = wxString(subtype, wxConvUTF8);
 		else
 			m_strSubtype = _T("");
 	}
 	else
 	{
-		m_strItem = "";
-		m_strType = "unspecified";
+		m_strItem = _T("");
+		m_strType = _("unspecified");
 	}
 	m_pCurrentItem = item;
 
@@ -259,9 +259,9 @@ void PropDlg::UpdateFromControls()
 	if (m_pCurrentItem)
 	{
 		m_pCurrentItem->m_name = m_strItem.mb_str();
-		m_pCurrentItem->SetValueString("type", m_strType.mb_str());
+		m_pCurrentItem->SetValueString("type", (const char *) m_strType.mb_str());
 		//if (m_strSubtype != _T(""))
-			m_pCurrentItem->SetValueString("subtype", m_strSubtype.mb_str());
+			m_pCurrentItem->SetValueString("subtype", (const char *) m_strSubtype.mb_str());
 	}
 }
 

@@ -1,7 +1,7 @@
 //
 // Name: ExtentDlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include "ExtentDlg.h"
+#include "vtdata/vtString.h"
 
 // WDR: class implementations
 
@@ -77,11 +78,11 @@ void ExtentDlg::FormatExtent(wxString &str, double value)
 		str.Printf(m_fs, value);
 }
 
-double ExtentDlg::GetValueFrom(const wxString2 &str)
+double ExtentDlg::GetValueFrom(const wxString &str)
 {
 	if (m_bDMS)
 	{
-		const char *cstr = str.mb_str();
+		vtString cstr = str.mb_str(wxConvUTF8);
 		int degrees, minutes;
 		double seconds;
 		sscanf(cstr, "%d %d %lf", &degrees, &minutes, &seconds);
@@ -94,7 +95,7 @@ double ExtentDlg::GetValueFrom(const wxString2 &str)
 		return value;
 	}
 	else
-		return atof(str.mb_str());
+		return atof(str.mb_str(wxConvUTF8));
 }
 
 void ExtentDlg::FormatStrings(int which)
@@ -134,7 +135,7 @@ void ExtentDlg::OnExtentAll( wxCommandEvent &event )
 
 	TransferDataFromWindow();
 	double d1, d2, d3, d4;
-	int ret = sscanf(m_strAll.mb_str(), "(%lf, %lf), (%lf, %lf)",
+	int ret = sscanf(m_strAll.mb_str(wxConvUTF8), "(%lf, %lf), (%lf, %lf)",
 		&d1, &d2, &d3, &d4);
 	if (ret == 4)
 	{

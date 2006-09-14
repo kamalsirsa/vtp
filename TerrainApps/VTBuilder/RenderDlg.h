@@ -1,7 +1,7 @@
 //
 // Name: RenderDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,8 +13,8 @@
 #endif
 
 #include "VTBuilder_wdr.h"
+#include "vtdata/vtString.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 
 // WDR: class declarations
 
@@ -49,11 +49,11 @@ public:
 	void UpdateColorMapChoice();
 
 	bool m_bToFile;
-	wxString2 m_strToFile;
+	wxString m_strToFile;
 	bool m_bJPEG;
 
 	vtStringArray m_datapaths;
-	wxString2   m_strColorMap;
+	wxString   m_strColorMap;
 	bool m_bShading;
 
 	int	 m_iSizeX;

@@ -1,7 +1,7 @@
 //
 // Name: MapServerDlg.cpp
 //
-// Copyright (c) 2003-2004 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -139,8 +139,8 @@ void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 #if SUPPORT_HTTP
 	OpenProgressDialog(_("Querying server..."), false, this);
 
-	wxString2 val = GetBaseUrl()->GetValue();
-	vtString url = val.mb_str();
+	wxString val = GetBaseUrl()->GetValue();
+	vtString url = val.mb_str(wxConvUTF8);
 	vtString msg;
 	bool success = GetLayersFromWMS(url, m_pServers->at(m_iServer).m_layers,
 		msg, progress_callback);
@@ -155,7 +155,7 @@ void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 	}
 	else
 	{
-		wxString2 str = msg;
+		wxString str(msg, wxConvUTF8);
 		wxMessageBox(str);
 	}
 #endif // SUPPORT_HTTP
@@ -173,8 +173,8 @@ void MapServerDlg::OnServer( wxCommandEvent &event )
 void MapServerDlg::OnBaseUrlText( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	wxString2 urlvalue = GetBaseUrl()->GetValue();
-	m_pServers->at(m_iServer).m_url = urlvalue.mb_str();
+	wxString urlvalue = GetBaseUrl()->GetValue();
+	m_pServers->at(m_iServer).m_url = urlvalue.mb_str(wxConvUTF8);
 	UpdateURL();
 }
 
@@ -209,7 +209,7 @@ void MapServerDlg::OnInitDialog(wxInitDialogEvent& event)
 	int numservers = m_pServers->size();
 	for (int i = 0; i < numservers; i++)
 	{
-		wxString2 str = m_pServers->at(i).m_url;
+		wxString str(m_pServers->at(i).m_url, wxConvUTF8);
 		GetBaseUrl()->Append(str);
 	}
 	// If no selection, pick the first server
@@ -260,7 +260,7 @@ void MapServerDlg::UpdateLayerList()
 			vtTagArray *tags = layers[i];
 			vtTag *tag = tags->FindTag("Name");
 			if (tag)
-				GetListLayers()->Append(wxString2(tag->value));
+				GetListLayers()->Append(wxString(tag->value, wxConvUTF8));
 		}
 	}
 	// If no selection, pick the first layer
@@ -277,27 +277,25 @@ void MapServerDlg::UpdateLayerList()
 
 void MapServerDlg::UpdateLayerDescription()
 {
-	wxString2 str;
-	GetLayerDesc()->SetValue(str);
-
 	GetLayerDesc()->Clear();
 	if (m_iServer == -1 || m_iLayer == -1)
 		return;
 
+	wxString str;
 	vtTag *tag;
 	tag = m_pServers->at(m_iServer).m_layers.at(m_iLayer)->FindTag("Title");
 	if (tag)
 	{
-		str += "Title: ";
-		str += tag->value;
-		str += "\n";
+		str += _("Title: ");
+		str += wxString(tag->value, wxConvUTF8);
+		str += _T("\n");
 	}
 	tag = m_pServers->at(m_iServer).m_layers.at(m_iLayer)->FindTag("Abstract");
 	if (tag)
 	{
-		str += "Abstract: ";
-		str += tag->value;
-		str += "\n";
+		str += _("Abstract: ");
+		str += wxString(tag->value, wxConvUTF8);
+		str += _T("\n");
 	}
 	GetLayerDesc()->SetValue(str);
 }
@@ -342,7 +340,7 @@ void MapServerDlg::UpdateURL()
 
 	url += "&TRANSPARENT=TRUE&EXCEPTIONS=WMS_XML&";
 
-	m_strQueryURL = url;
+	m_strQueryURL = wxString(url, wxConvUTF8);
 
 	m_bSetting = true;
 	TransferDataToWindow();

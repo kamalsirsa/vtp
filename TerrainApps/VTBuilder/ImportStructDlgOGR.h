@@ -1,7 +1,7 @@
 //
 // Name: ImportStructDlgOGR.h
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,6 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "vtdata/StructArray.h"
 
 // WDR: class declarations

@@ -1,7 +1,7 @@
 //
 // Name: ImportPointDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,6 @@
 #endif
 
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "VTBuilder_wdr.h"
 #include "vtdata/Projections.h"
 
@@ -34,7 +33,7 @@ public:
 
 	int m_iEasting;
 	int m_iNorthing;
-	wxString2 m_strCRS;
+	wxString m_strCRS;
 	vtProjection m_proj;
 	bool m_bFormat1;
 	bool m_bFormat2;

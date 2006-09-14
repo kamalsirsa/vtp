@@ -1,7 +1,7 @@
 //
 // Name:     TagDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "cmanager_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 
 // WDR: class declarations
 
@@ -31,8 +30,8 @@ public:
 	wxChoice *GetTagName() { return (wxChoice *) FindWindow(ID_TAGNAME); }
 	wxTextCtrl *GetTagText() { return (wxTextCtrl *) FindWindow(ID_TAGTEXT); }
 
-	wxString2 m_strName;
-	wxString2 m_strValue;
+	wxString m_strName;
+	wxString m_strValue;
 	
 private:
 	// WDR: member variable declarations for TagDlg
@@ -45,7 +44,4 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-
-
-
-#endif
+#endif	// __TagDlg_H__

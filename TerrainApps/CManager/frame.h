@@ -1,7 +1,7 @@
 //
 // Name: frame.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,7 +12,6 @@
 #include <wx/splitter.h>	// for wxSplitterWindow
 #include "vtlib/core/Content3d.h"
 #include "vtdata/FilePath.h"
-#include "vtui/wxString2.h"
 #include <map>
 
 class vtGLCanvas;
@@ -97,10 +96,10 @@ protected:
 	void OnUpdateItemModelExists(wxUpdateUIEvent& event);
 	void OnUpdateItemSaveSOG(wxUpdateUIEvent& event);
 
-	void SaveContentsFile(const wxString2 &fname);
+	void SaveContentsFile(const wxString &fname);
 	void FreeContents();
 
-	void DisplayMessageBox(const wxString2 &str);
+	void DisplayMessageBox(const wxString &str);
 
 public:
 	vtGLCanvas		*m_canvas;
@@ -125,7 +124,7 @@ public:
 	int GetModelTriCount(vtModel *model);
 	void OnChar(wxKeyEvent& event);
 	void UseLight(vtTransform *pLight);
-	void LoadContentsFile(const wxString2 &fname);
+	void LoadContentsFile(const wxString &fname);
 
 public:
 	void		UpdateCurrentModelLOD();

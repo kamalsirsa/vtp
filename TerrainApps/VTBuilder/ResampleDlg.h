@@ -10,7 +10,6 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "vtdata/MathTypes.h"
 #include "TileDlg.h"
 #include "Layer.h"		// for ElevDrawOptions
@@ -61,8 +60,8 @@ public:
 	bool m_bNewLayer;
 	bool m_bToFile;
 	bool m_bToTiles;
-	wxString2 m_strToFile;
-	wxString2 m_strTileInfo;
+	wxString m_strToFile;
+	wxString m_strTileInfo;
 
 	double  m_fSpacingX;
 	double  m_fSpacingY;
@@ -82,7 +81,7 @@ public:
 	bool	m_bFillGaps;
 
 	// Where to write the derived image tiles, if we will create them.
-	wxString2	m_strToFileImages;
+	wxString	m_strToFileImages;
 
 	TilingOptions   m_tileopts;
 

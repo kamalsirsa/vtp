@@ -1,7 +1,7 @@
 //
 // Name: TSDlg.cpp
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,7 +9,6 @@
 #define __TSDlg_H__
 
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "VTBuilder_wdr.h"
 
 // WDR: class declarations
@@ -38,7 +37,7 @@ public:
 	int m_iMetersPerPixel;
 	bool m_bNewLayer;
 	bool m_bToFile;
-	wxString2 m_strToFile;
+	wxString m_strToFile;
 
 private:
 	void UpdateMpp();

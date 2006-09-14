@@ -1,7 +1,7 @@
 //
 // Name: SampleImageDlg.h
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "vtdata/MathTypes.h"
 #include "TileDlg.h"
 
@@ -55,8 +54,8 @@ public:
 	bool m_bNewLayer;
 	bool m_bToFile;
 	bool m_bToTiles;
-	wxString2 m_strToFile;
-	wxString2 m_strTileInfo;
+	wxString m_strToFile;
+	wxString m_strTileInfo;
 
 	double  m_fSpacingX;
 	double  m_fSpacingY;

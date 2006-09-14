@@ -47,7 +47,7 @@ TagDlg::TagDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 			// string EOL
 			if (buf[strlen(buf)-1] == 10) buf[strlen(buf)-1] = 0;
 			if (buf[strlen(buf)-1] == 13) buf[strlen(buf)-1] = 0;
-			GetTagName()->Append(wxString2(buf));
+			GetTagName()->Append(wxString(buf, wxConvUTF8));
 		}
 		fclose(fp);
 	}

@@ -605,7 +605,7 @@ void TParamsDlg::UpdateTiledTextureFilename()
 	int totalsize = NTILES * (m_iTilesize-1) + 1;
 
 	vtString filter;
-	filter.Format("%s%d.*", m_strTextureBase.mb_str(), totalsize);
+	filter.Format("%s%d.*", m_strTextureBase.mb_str(wxConvUTF8), totalsize);
 
 	bool bFound = false;
 	m_strTexture4x4 = _("<none>");
@@ -1112,7 +1112,7 @@ void TParamsDlg::OnEditColors( wxCommandEvent &event )
 
 	// Look on data paths, to give a complete path to the dialog
 	vtString name = "GeoTypical/";
-	name += m_strColorMap.mb_str();
+	name += m_strColorMap.mb_str(wxConvUTF8);
 	name = FindFileOnPaths(m_datapaths, name);
 	if (name == "")
 	{

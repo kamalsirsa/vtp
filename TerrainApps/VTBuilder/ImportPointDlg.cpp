@@ -61,7 +61,7 @@ void ImportPointDlg::RefreshProjString()
 {
 	char *str1;
 	m_proj.exportToProj4(&str1);
-	m_strCRS = str1;
+	m_strCRS = wxString(str1, wxConvUTF8);
 	OGRFree(str1);
 
 	TransferDataToWindow();

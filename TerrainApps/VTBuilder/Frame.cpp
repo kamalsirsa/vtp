@@ -1,7 +1,7 @@
 //
 // The main Frame window of the VTBuilder application
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -265,7 +265,7 @@ void MainFrame::CheckForGDALAndWarn()
 	{
 		vtString fname = proj4;
 		fname += "/nad83";		// this should always be there
-		FILE *fp = fopen((const char *)fname, "rb");
+		FILE *fp = vtFileOpen((const char *)fname, "rb");
 		if (fp)
 		{
 			fclose(fp);
@@ -555,7 +555,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	{
 		// If it's a 8-bit or 24-bit TIF, then it's likely to be an image.
 		// If it's a 16-bit TIF, then it's likely to be elevation.
-		int depth = GetBitDepthUsingGDAL(fname_in.mb_str());
+		int depth = GetBitDepthUsingGDAL(fname_in.mb_str(wxConvUTF8));
 		if (depth == 8 || depth == 24 || depth == 32)
 		{
 			vtImageLayer *pIL = new vtImageLayer;
@@ -776,7 +776,7 @@ void MainFrame::SwapLayerOrder(int n0, int n1)
 //
 bool MainFrame::ReadINI()
 {
-	m_fpIni = fopen(m_szIniFilename, "rb+");
+	m_fpIni = vtFileOpen(m_szIniFilename, "rb+");
 
 	if (m_fpIni)
 	{
@@ -800,7 +800,7 @@ bool MainFrame::ReadINI()
 
 		return true;
 	}
-	m_fpIni = fopen(m_szIniFilename, "wb");
+	m_fpIni = vtFileOpen(m_szIniFilename, "wb");
 	return false;
 }
 
@@ -1331,18 +1331,19 @@ void trim_eol(char *buf)
 	if (len && buf[len-1] == 13) buf[len-1] = 0;
 }
 
-void MainFrame::LoadProject(const wxString2 &strPathName)
+void MainFrame::LoadProject(const wxString &strPathName)
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	VTLOG("Loading project: '%s'\n", strPathName.mb_str());
+	vtString fname = strPathName.mb_str(wxConvUTF8);
+	VTLOG("Loading project: '%s'\n", fname);
 
 	// read project file
-	FILE *fp = fopen(strPathName.mb_str(), "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 	{
-		DisplayAndLog("Couldn't open project file: '%s'", strPathName.mb_str());
+		DisplayAndLog("Couldn't open project file: '%s'", fname);
 		return;
 	}
 
@@ -1418,7 +1419,7 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 
 				// trim trailing LF character
 				trim_eol(buf);
-				wxString2 fname = buf;
+				wxString fname(buf, wxConvUTF8);
 
 				int numlayers = NumLayers();
 				if (bImport)
@@ -1452,14 +1453,13 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 	RefreshToolbar();
 }
 
-void MainFrame::SaveProject(const wxString2 &strPathName) const
+void MainFrame::SaveProject(const wxString &strPathName) const
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// write project file
-	wxString2 str = strPathName;
-	FILE *fp = fopen(str.mb_str(), "wb");
+	FILE *fp = vtFileOpen(strPathName.mb_str(wxConvUTF8), "wb");
 	if (!fp)
 		return;
 
@@ -1495,13 +1495,13 @@ void MainFrame::SaveProject(const wxString2 &strPathName) const
 			fprintf(fp, " hidden");
 		fprintf(fp, "\n");
 
-		wxString2 fname = lp->GetLayerFilename();
+		wxString fname = lp->GetLayerFilename();
 		if (!bNative)
 		{
 			if (lp->GetImportedFrom() != _T(""))
 				fname = lp->GetImportedFrom();
 		}
-		fprintf(fp, "%s\n", fname.mb_str());
+		fprintf(fp, "%s\n", fname.mb_str(wxConvUTF8));
 	}
 
 	// write area
@@ -1647,16 +1647,19 @@ void MainFrame::MergeResampleElevation()
 	else if (dlg.m_bToFile)
 	{
 		OpenProgressDialog(_T("Writing file"), true);
-		wxString2 fname = dlg.m_strToFile;
+
+		wxString fname = dlg.m_strToFile;
 		bool gzip = (fname.Right(3).CmpNoCase(_T(".gz")) == 0);
-		bool success = pOutput->m_pGrid->SaveToBT(fname.mb_str(),
-			progress_callback, gzip);
+		vtString fname_utf8 = fname.mb_str(wxConvUTF8);
+
+		bool success = pOutput->m_pGrid->SaveToBT(fname_utf8, progress_callback, gzip);
 		delete pOutput;
 		CloseProgressDialog();
+
 		if (success)
-			DisplayAndLog("Successfully wrote to '%s'", fname.mb_str());
+			DisplayAndLog("Successfully wrote to '%s'", fname_utf8);
 		else
-			DisplayAndLog("Did not successfully write to '%s'", fname.mb_str());
+			DisplayAndLog("Did not successfully write to '%s'", fname_utf8);
 	}
 	else if (dlg.m_bToTiles)
 	{
@@ -2232,7 +2235,7 @@ void MainFrame::ExportImage()
 	else if (dlg.m_bToFile)
 	{
 		OpenProgressDialog(_T("Writing file"), true);
-		const char *fname = dlg.m_strToFile.mb_str();
+		vtString fname = dlg.m_strToFile.mb_str(wxConvUTF8);
 		success = pOutput->SaveToFile(fname);
 		delete pOutput;
 		CloseProgressDialog();
@@ -2434,7 +2437,7 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 
 	// display a useful message informing the user what was planted
 	int unplanted = 0;
-	wxString2 msg, str;
+	wxString msg, str;
 	msg = _("Vegetation distribution results:\n");
 	for (i = 0; i < m_BioRegion.m_Types.GetSize(); i++)
 	{
@@ -2464,7 +2467,7 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 		else
 			msg += _(": None.\n");
 	}
-	DisplayAndLog(msg.mb_str());
+	DisplayAndLog(msg.mb_str(wxConvUTF8));
 
 	if (unplanted > 0)
 	{
@@ -2503,19 +2506,21 @@ using namespace std;
 void MainFrame::ReadEnviroPaths(vtStringArray &paths)
 {
 	VTLOG("Getting data paths from Enviro.\n");
-	wxString2 IniPath = wxGetCwd();
-	VTLOG("  Current directory: '%s'\n", IniPath.mb_str());
+	wxString IniPath = wxGetCwd();
+	VTLOG("  Current directory: '%s'\n", IniPath.mb_str(wxConvUTF8));
 
 	IniPath += _T("/Enviro.ini");
-	VTLOG("  Looking for '%s'\n", IniPath.mb_str());
+	vtString fname = IniPath.mb_str(wxConvUTF8);
+	VTLOG("  Looking for '%s'\n", (const char *) fname);
 	ifstream input;
-	input.open(IniPath.mb_str(), ios::in | ios::binary);
+	input.open(fname, ios::in | ios::binary);
 	if (!input.is_open())
 	{
 		input.clear();
 		IniPath = wxGetCwd() + _T("/../Enviro/Enviro.ini");
-		VTLOG("  Not there.  Looking for '%s'\n", IniPath.mb_str());
-		input.open(IniPath.mb_str(), ios::in | ios::binary);
+		fname = IniPath.mb_str(wxConvUTF8);
+		VTLOG("  Not there.  Looking for '%s'\n", fname);
+		input.open(fname, ios::in | ios::binary);
 	}
 	if (!input.is_open())
 	{
@@ -2559,7 +2564,7 @@ bool MainFrame::ConfirmValidCRS(vtProjection *pProj)
 	if (!pProj->GetRoot())
 	{
 		// No projection.
-		wxString2 msg = _("File lacks a projection.\n Would you like to specify one?\n Yes - specify projection\n No - use current projection\n");
+		wxString msg = _("File lacks a projection.\n Would you like to specify one?\n Yes - specify projection\n No - use current projection\n");
 		int res = wxMessageBox(msg, _("Coordinate Reference System"), wxYES_NO | wxCANCEL);
 		if (res == wxYES)
 		{

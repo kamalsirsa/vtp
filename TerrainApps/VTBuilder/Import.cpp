@@ -1,7 +1,7 @@
 //
 // Import.cpp - MainFrame methods for importing data
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -51,27 +51,27 @@ wxString ImportDirectory[LAYER_TYPES];
 wxString GetTempFolderName(const char *base)
 {
 	// first determine where to put our temporary directory
-	wxString2 path;
+	vtString path;
 
 	const char *temp = getenv("TEMP");
 	if (temp)
 		path = temp;
 	else
 #if WIN32
-		path = _T("C:/TEMP");
+		path = "C:/TEMP";
 #else
-		path = _T("/tmp");
+		path = "/tmp";
 #endif
-	path += _T("/");
+	path += "/";
 
 	// the create a folder named after the file in the full path "base"
-	wxString2 base2 = StartOfFilename(base);
+	vtString base2 = StartOfFilename(base);
 	path += base2;
 
 	// appended with the word _temp
-	path += _T("_temp");
+	path += "_temp";
 
-	return path;
+	return wxString(path, wxConvUTF8);
 }
 
 
@@ -109,12 +109,12 @@ void MainFrame::ImportData(LayerType ltype)
  * archive file.  If it's an archive, it will be unarchived to a temporary
  * folder, and the contents will be imported.
  */
-void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in,
+void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 									  bool bRefresh)
 {
 	// check file extension
-	wxString2 fname = fname_in;
-	wxString2 ext = fname.AfterLast('.');
+	wxString fname = fname_in;
+	wxString ext = fname.AfterLast('.');
 
 	// check if it's an archive
 	bool bGZip = false;
@@ -142,10 +142,10 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	}
 
 	// try to uncompress
-	wxString2 path, prepend_path;
-	path = GetTempFolderName(fname_in.mb_str());
+	wxString path, prepend_path;
+	path = GetTempFolderName(fname_in.mb_str(wxConvUTF8));
 	int result;
-	result = vtCreateDir(path.mb_str());
+	result = vtCreateDir(path.mb_str(wxConvUTF8));
 	if (result == 0 && errno != EEXIST)
 	{
 		DisplayAndLog("Couldn't create temporary directory to hold contents of archive.");
@@ -153,8 +153,8 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	}
 	prepend_path = path + _T("/");
 
-	vtString str1 = fname_in.mb_str();
-	vtString str2 = prepend_path.mb_str();
+	vtString str1 = fname_in.mb_str(wxConvUTF8);
+	vtString str2 = prepend_path.mb_str(wxConvUTF8);
 
 	OpenProgressDialog(_("Expanding archive"), false, this);
 	if (bTGZip)
@@ -170,14 +170,15 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	else if (result == 1)
 	{
 		// the archive contained a single file
-		wxString2 internal_name;
-		for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
+		std::string pathname = prepend_path.mb_str(wxConvUTF8);
+		wxString internal_name;
+		for (dir_iter it(pathname); it != dir_iter(); ++it)
 		{
 			if (it.is_directory())
 				continue;
 			std::string name1 = it.filename();
 			fname = prepend_path;
-			internal_name = name1.c_str();
+			internal_name = wxString(name1.c_str(), wxConvUTF8);
 			fname += internal_name;
 			break;
 		}
@@ -210,11 +211,12 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 		bool found_cat = false;
 		bool found_hdr = false;
 		bool found_rt1 = false;
-		wxString2 fname2;
-		for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
+		wxString fname2;
+		std::string pathname = prepend_path.mb_str(wxConvUTF8);
+		for (dir_iter it(pathname); it != dir_iter(); ++it)
 		{
 			if (it.is_directory()) continue;
-			fname2 = it.filename().c_str();
+			fname2 = wxString(it.filename().c_str(), wxConvUTF8);
 			if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
 			{
 				fname = prepend_path;
@@ -253,10 +255,11 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 		else
 		{
 			// Look through archive for individual files (like .dem)
-			for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
+			std::string path = (const char *) prepend_path.mb_str(wxConvUTF8);
+			for (dir_iter it(path); it != dir_iter(); ++it)
 			{
 				if (it.is_directory()) continue;
-				fname2 = it.filename().c_str();
+				fname2 = wxString(it.filename().c_str(), wxConvUTF8);
 
 				fname = prepend_path;
 				fname += fname2;
@@ -281,8 +284,8 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	}
 
 	// clean up after ourselves
-	prepend_path = GetTempFolderName(fname_in.mb_str());
-	vtDestroyDir(prepend_path.mb_str());
+	prepend_path = GetTempFolderName(fname_in.mb_str(wxConvUTF8));
+	vtDestroyDir(prepend_path.mb_str(wxConvUTF8));
 }
 
 /**
@@ -296,7 +299,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
  * \return	True if a layer was created from the given file, or false if
  *			nothing importable was found in the file.
  */
-vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName,
+vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString &strFileName,
 								   bool bRefresh, bool bWarn)
 {
 	VTLOG1("ImportDataFromFile '");
@@ -306,18 +309,19 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 	VTLOG1("'\n");
 
 	// check to see if the file is readable
-	FILE *fp = fopen(strFileName.mb_str(), "rb");
+	vtString fname = strFileName.mb_str(wxConvUTF8);
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 	{
 		// Cannot Open File
-		VTLOG("Couldn't open file %s\n", strFileName.mb_str());
+		VTLOG("Couldn't open file %s\n", fname);
 		return false;
 	}
 	fclose(fp);
 
-	wxString2 msg = _("Importing Data from ");
+	wxString msg = _("Importing Data from ");
 	msg += strFileName;
-	VTLOG(msg.mb_str());
+	VTLOG(msg.mb_str(wxConvUTF8));
 	VTLOG("...\n");
 	OpenProgressDialog(msg, true, this);
 
@@ -404,10 +408,10 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 			// which would indicate that it is a raster.
 			bool bRaster = false;
 			int len = strFileName.Length();
-			wxString2 strFileName2 = strFileName.Left(len - 8);
-			wxString2 strFileName3 = strFileName2 + _T("rsdf.ddf");
+			wxString strFileName2 = strFileName.Left(len - 8);
+			wxString strFileName3 = strFileName2 + _T("rsdf.ddf");
 			FILE *fp;
-			fp = fopen(strFileName3.mb_str(), "rb");
+			fp = vtFileOpen(strFileName3.mb_str(wxConvUTF8), "rb");
 			if (fp != NULL)
 			{
 				bRaster = true;
@@ -417,7 +421,7 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 			{
 				// also try with upper-case (for Unix)
 				strFileName3 = strFileName2 + _T("RSDF.DDF");
-				fp = fopen(strFileName3.mb_str(), "rb");
+				fp = vtFileOpen(strFileName3.mb_str(wxConvUTF8), "rb");
 				if (fp != NULL)
 				{
 					bRaster = true;
@@ -487,8 +491,8 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 	}
 	VTLOG("  import succeeded.\n");
 
-	wxString2 fname = pLayer->GetLayerFilename();
-	if (fname.IsEmpty() || !fname.Cmp(_("Untitled")))
+	wxString layer_fname = pLayer->GetLayerFilename();
+	if (layer_fname.IsEmpty() || !layer_fname.Cmp(_("Untitled")))
 		pLayer->SetLayerFilename(strFileName);
 
 	bool success = AddLayerWithCheck(pLayer, true);
@@ -625,12 +629,10 @@ wxString GetImportFilterString(LayerType ltype)
 }
 
 
-vtLayerPtr MainFrame::ImportFromDLG(const wxString2 &fname_in, LayerType ltype)
+vtLayerPtr MainFrame::ImportFromDLG(const wxString &fname_in, LayerType ltype)
 {
-	wxString2 strFileName = fname_in;
-
 	vtDLGFile *pDLG = new vtDLGFile();
-	bool success = pDLG->Read(strFileName.mb_str(), progress_callback);
+	bool success = pDLG->Read(fname_in.mb_str(wxConvUTF8), progress_callback);
 	if (!success)
 	{
 		DisplayAndLog(pDLG->GetErrorMessage());
@@ -675,12 +677,15 @@ vtLayerPtr MainFrame::ImportFromDLG(const wxString2 &fname_in, LayerType ltype)
 	return pLayer;
 }
 
-vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltype)
+vtLayerPtr MainFrame::ImportFromSHP(const wxString &strFileName, LayerType ltype)
 {
 	bool success;
 	int nShapeType;
 
-	SHPHandle hSHP = SHPOpen(strFileName.mb_str(), "rb");
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(strFileName.mb_str(wxConvUTF8));
+
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 	{
 		wxMessageBox(_("Couldn't read that Shape file.  Perhaps it is\nmissing its corresponding .dbf and .shx files."));
@@ -708,7 +713,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 
 	// Does SHP already have a projection?
 	vtProjection proj;
-	if (proj.ReadProjFile(strFileName.mb_str()))
+	if (proj.ReadProjFile(strFileName.mb_str(wxConvUTF8)))
 	{
 		// OK, we'll use it
 	}
@@ -759,7 +764,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 			dlg.SetVegLayer(pVL);
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return NULL;
-			success = pVL->AddElementsFromSHP_Points(strFileName.mb_str(), proj, dlg.m_options);
+			success = pVL->AddElementsFromSHP_Points(strFileName, proj, dlg.m_options);
 			if (!success)
 				return NULL;
 		}
@@ -782,7 +787,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	if (ltype == LT_UTILITY)
 	{
 		vtUtilityLayer *pUL = (vtUtilityLayer *)pLayer;
-		pUL->ImportFromSHP(strFileName.mb_str(), proj);
+		pUL->ImportFromSHP(strFileName.mb_str(wxConvUTF8), proj);
 	}
 
 	if (ltype == LT_RAW)
@@ -799,7 +804,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	return pLayer;
 }
 
-vtLayerPtr MainFrame::ImportFromDXF(const wxString2 &strFileName, LayerType ltype)
+vtLayerPtr MainFrame::ImportFromDXF(const wxString &strFileName, LayerType ltype)
 {
 	if (ltype == LT_ELEVATION)
 	{
@@ -812,7 +817,7 @@ vtLayerPtr MainFrame::ImportFromDXF(const wxString2 &strFileName, LayerType ltyp
 	if (ltype == LT_RAW)
 	{
 		vtFeatureLoader loader;
-		vtFeatureSet *pSet = loader.LoadFromDXF(strFileName.mb_str());
+		vtFeatureSet *pSet = loader.LoadFromDXF(strFileName.mb_str(wxConvUTF8));
 		if (!pSet)
 			return NULL;
 
@@ -830,7 +835,7 @@ vtLayerPtr MainFrame::ImportFromDXF(const wxString2 &strFileName, LayerType ltyp
 	return NULL;
 }
 
-vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName, bool bWarn)
+vtLayerPtr MainFrame::ImportElevation(const wxString &strFileName, bool bWarn)
 {
 	vtElevLayer *pElev = new vtElevLayer;
 
@@ -847,7 +852,7 @@ vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName, bool bWarn)
 	}
 }
 
-vtLayerPtr MainFrame::ImportImage(const wxString2 &strFileName)
+vtLayerPtr MainFrame::ImportImage(const wxString &strFileName)
 {
 	vtImageLayer *pLayer = new vtImageLayer;
 
@@ -862,13 +867,13 @@ vtLayerPtr MainFrame::ImportImage(const wxString2 &strFileName)
 	}
 }
 
-vtLayerPtr MainFrame::ImportFromLULC(const wxString2 &strFileName, LayerType ltype)
+vtLayerPtr MainFrame::ImportFromLULC(const wxString &strFileName, LayerType ltype)
 {
 	// Read LULC file, check for errors
-	vtLULCFile *pLULC = new vtLULCFile(strFileName.mb_str());
+	vtLULCFile *pLULC = new vtLULCFile(strFileName.mb_str(wxConvUTF8));
 	if (pLULC->m_iError)
 	{
-		wxString2 msg = pLULC->GetErrorMessage();
+		wxString msg(pLULC->GetErrorMessage(), wxConvUTF8);
 		wxMessageBox(msg);
 		delete pLULC;
 		return NULL;
@@ -894,10 +899,10 @@ vtLayerPtr MainFrame::ImportFromLULC(const wxString2 &strFileName, LayerType lty
 	return pLayer;
 }
 
-vtStructureLayer *MainFrame::ImportFromBCF(const wxString2 &strFileName)
+vtStructureLayer *MainFrame::ImportFromBCF(const wxString &strFileName)
 {
 	vtStructureLayer *pSL = new vtStructureLayer;
-	if (pSL->ReadBCF(strFileName.mb_str()))
+	if (pSL->ReadBCF(strFileName.mb_str(wxConvUTF8)))
 		return pSL;
 	else
 	{
@@ -911,7 +916,7 @@ vtStructureLayer *MainFrame::ImportFromBCF(const wxString2 &strFileName)
 //
 void MainFrame::ImportFromMapSource(const char *fname)
 {
-	FILE *fp = fopen(fname, "r");
+	FILE *fp = vtFileOpen(fname, "r");
 	if (!fp)
 		return;
 
@@ -949,7 +954,7 @@ void MainFrame::ImportFromMapSource(const char *fname)
 				name[i-6] = ch;
 			}
 			name[i] = 0;
-			pRL->SetLayerFilename(vtString(name));
+			pRL->SetLayerFilename(wxString(name, wxConvUTF8));
 		}
 		if (!strncmp(buf, "Trackpoint", 10))
 		{
@@ -971,9 +976,9 @@ void MainFrame::ImportFromMapSource(const char *fname)
 
 	// Display the list of imported tracks to the user
 	int n = layers.GetSize();
-	wxString2 *choices = new wxString2[n];
+	wxString *choices = new wxString[n];
 	wxArrayInt selections;
-	wxString2 str;
+	wxString str;
 	for (i = 0; i < n; i++)
 	{
 		choices[i] = layers[i]->GetLayerFilename();
@@ -1069,8 +1074,11 @@ double ExtractValue(DBFHandle db, int iRec, int iField, DBFFieldType ftype,
 //
 void MainFrame::ImportDataPointsFromTable(const char *fname)
 {
+	// DBFOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(fname);
+
 	// Open DBF File
-	DBFHandle db = DBFOpen(fname, "rb");
+	DBFHandle db = DBFOpen(fname_local, "rb");
 	if (db == NULL)
 		return;
 
@@ -1083,14 +1091,13 @@ void MainFrame::ImportDataPointsFromTable(const char *fname)
 	int *pnWidth = 0, *pnDecimals = 0;
 	char pszFieldName[32];
 	int iFields = DBFGetFieldCount(db);
-	wxString2 str;
 	int i;
 	vtArray<DBFFieldType> m_fieldtypes;
 	for (i = 0; i < iFields; i++)
 	{
 		DBFFieldType fieldtype = DBFGetFieldInfo(db, i, pszFieldName,
 			pnWidth, pnDecimals );
-		str = pszFieldName;
+		wxString str(pszFieldName, wxConvUTF8);
 
 		dlg.GetEasting()->Append(str);
 		dlg.GetNorthing()->Append(str);
@@ -1133,11 +1140,11 @@ void MainFrame::ImportDataPointsFromTable(const char *fname)
 	AddLayerWithCheck(pRaw);
 }
 
-vtLayerPtr MainFrame::ImportRawFromOGR(const wxString2 &strFileName)
+vtLayerPtr MainFrame::ImportRawFromOGR(const wxString &strFileName)
 {
 	// create the new layer
 	vtRawLayer *pRL = new vtRawLayer;
-	bool success = pRL->LoadWithOGR(strFileName.mb_str(), progress_callback);
+	bool success = pRL->LoadWithOGR(strFileName.mb_str(wxConvUTF8), progress_callback);
 
 	if (success)
 		return pRL;
@@ -1148,13 +1155,16 @@ vtLayerPtr MainFrame::ImportRawFromOGR(const wxString2 &strFileName)
 	}
 }
 
-vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString2 &strFileName, LayerType ltype)
+vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString &strFileName, LayerType ltype)
 {
 	vtProjection Projection;
 
 	g_GDALWrapper.RequestOGRFormats();
 
-	OGRDataSource *datasource = OGRSFDriverRegistrar::Open(strFileName.mb_str());
+	// OGR doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(strFileName.mb_str(wxConvUTF8));
+
+	OGRDataSource *datasource = OGRSFDriverRegistrar::Open(fname_local);
 	if (!datasource)
 		return NULL;
 
@@ -1236,11 +1246,14 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString2 &strFileName, LayerTy
 //
 //Import from TIGER, returns number of layers imported
 //
-int MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
+int MainFrame::ImportDataFromTIGER(const wxString &strDirName)
 {
 	g_GDALWrapper.RequestOGRFormats();
 
-	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(strDirName.mb_str());
+	// OGR doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(strDirName.mb_str(wxConvUTF8));
+
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(fname_local);
 	if (!pDatasource)
 		return 0;
 
@@ -1260,11 +1273,11 @@ int MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 
 	// create the new layers
 	vtWaterLayer *pWL = new vtWaterLayer;
-	pWL->SetLayerFilename(layername + "_water");
+	pWL->SetLayerFilename(wxString(layername + "_water", wxConvUTF8));
 	pWL->SetModified(true);
 
 	vtRoadLayer *pRL = new vtRoadLayer;
-	pRL->SetLayerFilename(layername + "_roads");
+	pRL->SetLayerFilename(wxString(layername + "_roads", wxConvUTF8));
 	pRL->SetModified(true);
 
 	for (i = 0; i < num_layers; i++)
@@ -1444,11 +1457,14 @@ int MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 }
 
 
-void MainFrame::ImportDataFromNTF(const wxString2 &strFileName)
+void MainFrame::ImportDataFromNTF(const wxString &strFileName)
 {
 	g_GDALWrapper.RequestOGRFormats();
 
-	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(strFileName.mb_str());
+	// OGR doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(strFileName.mb_str(wxConvUTF8));
+
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(fname_local);
 	if (!pDatasource)
 		return;
 
@@ -1494,8 +1510,8 @@ void MainFrame::ImportDataFromNTF(const wxString2 &strFileName)
 		vtRawLayer *pRL = new vtRawLayer;
 		if (pRL->CreateFromOGRLayer(pOGRLayer))
 		{
-			wxString2 layname = strFileName;
-			layname += wxString2::Format(_T(";%d"), i);
+			wxString layname = strFileName;
+			layname += wxString::Format(_T(";%d"), i);
 			pRL->SetLayerFilename(layname);
 
 			bool success = AddLayerWithCheck(pRL, true);
@@ -1588,11 +1604,14 @@ void MainFrame::ImportDataFromNTF(const wxString2 &strFileName)
 }
 
 
-void MainFrame::ImportDataFromS57(const wxString2 &strDirName)
+void MainFrame::ImportDataFromS57(const wxString &strDirName)
 {
 	g_GDALWrapper.RequestOGRFormats();
 
-	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(strDirName.mb_str());
+	// OGR doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(strDirName.mb_str(wxConvUTF8));
+
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(fname_local);
 	if (!pDatasource)
 		return;
 
@@ -1701,7 +1720,7 @@ void MainFrame::ImportDataFromS57(const wxString2 &strDirName)
 //
 int MainFrame::ImportDataFromSCC(const char *filename)
 {
-	FILE *fp = fopen(filename, "rb");
+	FILE *fp = vtFileOpen(filename, "rb");
 	if (!fp)
 		return 0;
 
@@ -1714,18 +1733,18 @@ int MainFrame::ImportDataFromSCC(const char *filename)
 
 	// create the new layers
 	vtElevLayer *pEL = new vtElevLayer;
-	pEL->SetLayerFilename(shortname + "_tin");
+	pEL->SetLayerFilename(wxString(shortname + "_tin", wxConvUTF8));
 	pEL->SetModified(true);
 
 	vtStructureLayer *pSL = new vtStructureLayer;
-	pSL->SetLayerFilename(shortname + "_structures");
+	pSL->SetLayerFilename(wxString(shortname + "_structures", wxConvUTF8));
 	pSL->SetModified(true);
 	pSL->SetProjection(proj);
 
 	vtVegLayer *pVL = new vtVegLayer;
 	pVL->SetModified(true);
 	pVL->SetVegType(VLT_Instances);
-	pVL->SetLayerFilename(shortname + "_vegetation");
+	pVL->SetLayerFilename(wxString(shortname + "_vegetation", wxConvUTF8));
 	pVL->SetProjection(proj);
 	vtPlantInstanceArray *pia = pVL->GetPIA();
 	pia->SetPlantList(&m_PlantList);

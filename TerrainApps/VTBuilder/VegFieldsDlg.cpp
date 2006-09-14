@@ -1,7 +1,7 @@
 //
 // Name:		VegFieldsDlg.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -87,8 +87,11 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	unsigned int i;
 
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(m_filename.mb_str(wxConvUTF8));
+
 	// Open the SHP File
-	m_hSHP = SHPOpen(m_filename.mb_str(), "rb");
+	m_hSHP = SHPOpen(fname_local, "rb");
 	if (m_hSHP == NULL)
 	{
 		wxMessageBox(_("Couldn't open shapefile."));
@@ -99,7 +102,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	SHPGetInfo(m_hSHP, &m_nElem, &m_nShapeType, NULL, NULL);
 
 	// Open DBF File
-	DBFHandle m_db = DBFOpen(m_filename.mb_str(), "rb");
+	DBFHandle m_db = DBFOpen(fname_local, "rb");
 	if (m_db == NULL)
 	{
 		wxMessageBox(_("Couldn't open DBF file."));
@@ -107,13 +110,13 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 
 	// Fill species names into the SpeciesChoice control
-	wxString2 str;
+	wxString str;
 	GetSpeciesChoice()->Clear();
 	vtSpeciesList* pl = GetMainFrame()->GetPlantList();
 	for (i = 0; i < pl->NumSpecies(); i++)
 	{
 		vtPlantSpecies *spe = pl->GetSpecies(i);
-		str = spe->GetSciName();
+		str = wxString(spe->GetSciName(), wxConvUTF8);
 		GetSpeciesChoice()->Append(str);
 	}
 
@@ -127,7 +130,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 		void *clientdata = (void *) (10+i);
 		fieldtype = DBFGetFieldInfo(m_db, i,
 			pszFieldName, pnWidth, pnDecimals );
-		str = pszFieldName;
+		str = wxString(pszFieldName, wxConvUTF8);
 
 		if (fieldtype == FTString || fieldtype == FTInteger || fieldtype == FTDouble)
 			GetSpeciesField()->Append(str, clientdata);

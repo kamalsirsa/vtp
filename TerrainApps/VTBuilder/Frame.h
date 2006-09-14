@@ -281,8 +281,8 @@ protected:
 
 public:
 	// project
-	void LoadProject(const wxString2 &strPathName);
-	void SaveProject(const wxString2 &strPathName) const;
+	void LoadProject(const wxString &strPathName);
+	void SaveProject(const wxString &strPathName) const;
 
 	// Layer methods
 	int NumLayers() const { return m_Layers.GetSize(); }
@@ -413,23 +413,23 @@ public:
 
 	// import
 	void ImportData(LayerType ltype);
-	void ImportDataFromArchive(LayerType ltype, const wxString2 &fname_org, bool bRefresh);
-	vtLayer *ImportDataFromFile(LayerType ltype, const wxString2 &strFileName, bool bRefresh, bool bWarn = true);
-	vtLayer *ImportFromDLG(const wxString2 &strFileName, LayerType ltype);
-	vtLayer *ImportFromSHP(const wxString2 &strFileName, LayerType ltype);
-	vtLayer *ImportFromDXF(const wxString2 &strFileName, LayerType ltype);
-	vtLayer *ImportElevation(const wxString2 &strFileName, bool bWarn = true);
-	vtLayer *ImportImage(const wxString2 &strFileName);
-	vtLayer *ImportFromLULC(const wxString2 &strFileName, LayerType ltype);
-	vtLayer *ImportRawFromOGR(const wxString2 &strFileName);
-	vtLayer *ImportVectorsWithOGR(const wxString2 &strFileName, LayerType ltype);
-	vtStructureLayer *ImportFromBCF(const wxString2 &strFileName);
+	void ImportDataFromArchive(LayerType ltype, const wxString &fname_org, bool bRefresh);
+	vtLayer *ImportDataFromFile(LayerType ltype, const wxString &strFileName, bool bRefresh, bool bWarn = true);
+	vtLayer *ImportFromDLG(const wxString &strFileName, LayerType ltype);
+	vtLayer *ImportFromSHP(const wxString &strFileName, LayerType ltype);
+	vtLayer *ImportFromDXF(const wxString &strFileName, LayerType ltype);
+	vtLayer *ImportElevation(const wxString &strFileName, bool bWarn = true);
+	vtLayer *ImportImage(const wxString &strFileName);
+	vtLayer *ImportFromLULC(const wxString &strFileName, LayerType ltype);
+	vtLayer *ImportRawFromOGR(const wxString &strFileName);
+	vtLayer *ImportVectorsWithOGR(const wxString &strFileName, LayerType ltype);
+	vtStructureLayer *ImportFromBCF(const wxString &strFileName);
 	void ImportFromMapSource(const char *fname);
 	void ImportDataPointsFromTable(const char *fname);
-	int ImportDataFromTIGER(const wxString2 &strDirName);
+	int ImportDataFromTIGER(const wxString &strDirName);
 	int ImportDataFromSCC(const char *filename);
-	void ImportDataFromNTF(const wxString2 &strFileName);
-	void ImportDataFromS57(const wxString2 &strDirName);
+	void ImportDataFromNTF(const wxString &strFileName);
+	void ImportDataFromS57(const wxString &strDirName);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 	void ElevCopy();
 	void ElevPasteNew();

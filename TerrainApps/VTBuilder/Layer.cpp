@@ -41,10 +41,10 @@ wxChar *vtLayer::LayerFileExtension[LAYER_TYPES] =
 };
 
 
-wxString2 GetLayerTypeName(const LayerType &ltype)
+wxString GetLayerTypeName(const LayerType &ltype)
 {
 	if (ltype == LT_UNKNOWN)
-		return wxString2(_("Unknown"));
+		return wxString(_("Unknown"));
 	else
 		return vtLayer::LayerTypeNames[ltype];
 }
@@ -109,12 +109,11 @@ void vtLayer::SetModified(bool bModified)
 		GetMainFrame()->RefreshTreeStatus();
 }
 
-void vtLayer::SetLayerFilename(const wxString2 &fname)
+void vtLayer::SetLayerFilename(const wxString &fname)
 {
-	wxString2 fname_in = fname;
-	VTLOG("Setting layer filename to '%s'\n", fname_in.mb_str());
-	bool bNeedRefresh = (m_wsFilename.Cmp(fname_in) != 0);
-	m_wsFilename = fname_in;
+	VTLOG("Setting layer filename to '%s'\n", fname.mb_str(wxConvUTF8));
+	bool bNeedRefresh = (m_wsFilename.Cmp(fname) != 0);
+	m_wsFilename = fname;
 	if (bNeedRefresh)
 		GetMainFrame()->RefreshTreeStatus();
 }
@@ -139,12 +138,12 @@ wxString vtLayer::GetSaveFileDialogFilter()
 bool vtLayer::AskForSaveFilename()
 {
 	wxString filter = GetSaveFileDialogFilter();
-	wxString2 name = GetLayerFilename();
+	wxString fname = GetLayerFilename();
 #if WIN32
 	// The dumb Microsoft file dialog can have trouble with forward slashes.
-	name = name.ToBackslash();
+	fname = ToBackslash(fname);
 #endif
-	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), name,
+	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), fname,
 		filter, wxSAVE | wxOVERWRITE_PROMPT);
 
 	VTLOG("Asking user for file name\n");
@@ -152,37 +151,36 @@ bool vtLayer::AskForSaveFilename()
 	if (!bResult)
 		return false;
 
-	name = saveFile.GetPath();
-	VTLOG("Got filename: '%s'\n", name.mb_str());
+	fname = saveFile.GetPath();
+	VTLOG("Got filename: '%s'\n", fname.mb_str(wxConvUTF8));
 
 	// Add file extension if user didn't specify it
-	wxString2 ext = GetFileExtension();
-	if (name.Len() < ext.Len() || name.Right(ext.Len()) != ext)
+	wxString ext = GetFileExtension();
+	if (fname.Len() < ext.Len() || fname.Right(ext.Len()) != ext)
 	{
-		name += ext;
+		fname += ext;
 	}
-	SetLayerFilename(name);
+	SetLayerFilename(fname);
 	m_bNative = true;
 	return true;
 }
 
 vtString vtLayer::GetExportFilename(const wxString &format_filter)
 {
-	wxString2 filter = _("All Files|*.*");
+	wxString filter = _("All Files|*.*");
 	AddType(filter, format_filter);
 
-	wxString2 defaultFile = GetLayerFilename();
-	vtString str = defaultFile.mb_str();
-	RemoveFileExtensions(str);
-	defaultFile = str;
+	wxString defaultFile = GetLayerFilename();
+	RemoveFileExtensions(defaultFile);
 
 	// ask the user for a filename
 	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), defaultFile , filter, wxSAVE);
 	saveFile.SetFilterIndex(1);
 	if (saveFile.ShowModal() != wxID_OK)
 		return vtString("");
-	wxString2 result = saveFile.GetPath();
-	return result.vt_str();
+	wxString path = saveFile.GetPath();
+	vtString path2 = path.mb_str(wxConvUTF8);
+	return path2;
 }
 
 wxString vtLayer::GetFileExtension()

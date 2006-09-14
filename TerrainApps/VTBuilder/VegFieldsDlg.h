@@ -1,7 +1,7 @@
 //
 // Name:		VegFieldsDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,7 +11,6 @@
 #include "VTBuilder_wdr.h"
 #include "vtdata/shapelib/shapefil.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 #include "VegPointOptions.h"
 
 class vtVegLayer;
@@ -55,7 +54,7 @@ private:
 
 	SHPHandle m_hSHP;
 	int	   m_nElem, m_nShapeType;
-	wxString2  m_filename;
+	wxString  m_filename;
 	unsigned int	   m_iFields;
 
 	bool	m_bUseSpecies;

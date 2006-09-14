@@ -49,7 +49,7 @@ void EnviroApp::Args(int argc, wxChar **argv)
 	for (int i = 0; i < argc; i++)
 	{
 		wxString str1 = argv[i];
-		vtString str = str1.mb_str();
+		vtString str = str1.mb_str(wxConvUTF8);
 		if (str == "-no_startup_dialog")
 			m_bShowStartupDialog = false;
 		else if (str.Left(9) == "-terrain=")
@@ -74,7 +74,7 @@ void EnviroApp::SetupLocale()
 
 	const wxLanguageInfo *info = wxLocale::GetLanguageInfo(default_lang);
 	VTLOG("Default language: %d (%s)\n",
-		default_lang, (const char *) info->Description.mb_str());
+		default_lang, (const char *) info->Description.mb_str(wxConvUTF8));
 
 	// After wx2.4.2, wxWidgets looks in the application's directory for
 	//  locale catalogs, not the current directory.  Here we force it to
@@ -97,8 +97,8 @@ void EnviroApp::SetupLocale()
 			info = m_locale.GetLanguageInfo(lang);
 			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n",
 				lang,
-				(const char *) info->CanonicalName.mb_str(),
-				(const char *) info->Description.mb_str());
+				(const char *) info->CanonicalName.mb_str(wxConvUTF8),
+				(const char *) info->Description.mb_str(wxConvUTF8));
 			bSuccess = m_locale.Init(lang, wxLOCALE_CONV_ENCODING);
 		}
 	}

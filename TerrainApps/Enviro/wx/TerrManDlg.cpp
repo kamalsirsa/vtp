@@ -169,7 +169,7 @@ void TerrainManagerDlg::OnCopy( wxCommandEvent &event )
 		return;
 
 	TParams params;
-	params.LoadFrom(GetCurrentTerrainPath().mb_str());
+	params.LoadFrom(GetCurrentTerrainPath().mb_str(wxConvUTF8));
 
 	wxString newpath = GetCurrentPath();
 	newpath += _T("Terrains/");

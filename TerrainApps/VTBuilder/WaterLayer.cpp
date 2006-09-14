@@ -1,7 +1,7 @@
 //
 // WaterLayer.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -142,8 +142,7 @@ void vtWaterLayer::Offset(const DPoint2 &p)
 
 void vtWaterLayer::GetPropertyText(wxString &strIn)
 {
-	wxString2 str;
-
+	wxString str;
 	str.Printf(_("Features: %d\n"), m_Lines.size());
 	strIn += str;
 
@@ -208,10 +207,14 @@ void vtWaterLayer::AddElementsFromDLG(vtDLGFile *pDlg)
 	}
 }
 
-void vtWaterLayer::AddElementsFromSHP(const wxString2 &filename, const vtProjection &proj)
+void vtWaterLayer::AddElementsFromSHP(const wxString &filename,
+									  const vtProjection &proj)
 {
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(filename.mb_str(wxConvUTF8));
+
 	//Open the SHP File & Get Info from SHP:
-	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 		return;
 

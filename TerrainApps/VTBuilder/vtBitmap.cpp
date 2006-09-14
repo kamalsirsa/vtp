@@ -16,7 +16,6 @@
 
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
-#include "vtui/wxString2.h"
 #include "vtBitmap.h"
 
 // Headers for PNG support, which uses the library "libpng"
@@ -427,7 +426,7 @@ bool vtBitmap::WriteJPEG(const char *fname, int quality)
 	jpeg_destroy_compress(&cinfo);
 
 #else
-	return m_pImage->SaveFile(wxString2(fname));
+	return m_pImage->SaveFile(wxString(fname, wxConvUTF8));
 #endif
 
 	return true;

@@ -94,7 +94,7 @@ void RenderOptionsDlg::UpdateColorMapChoice()
 void RenderOptionsDlg::OnChoiceColors( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	m_opt.m_strColorMapFile = m_strColorMap.mb_str();
+	m_opt.m_strColorMapFile = m_strColorMap.mb_str(wxConvUTF8);
 }
 
 void RenderOptionsDlg::OnInitDialog(wxInitDialogEvent& event)
@@ -103,7 +103,7 @@ void RenderOptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	UpdateColorMapChoice();
 	TransferDataFromWindow();
-	m_opt.m_strColorMapFile = m_strColorMap.mb_str();
+	m_opt.m_strColorMapFile = m_strColorMap.mb_str(wxConvUTF8);
 }
 
 void RenderOptionsDlg::OnRadio( wxCommandEvent &event )
@@ -122,7 +122,7 @@ void RenderOptionsDlg::OnEditColors( wxCommandEvent &event )
 	if (m_strColorMap != _T(""))
 	{
 		vtString name = "GeoTypical/";
-		name += m_strColorMap.mb_str();
+		name += m_strColorMap.mb_str(wxConvUTF8);
 		name = FindFileOnPaths(m_datapaths, name);
 		if (name == "")
 		{

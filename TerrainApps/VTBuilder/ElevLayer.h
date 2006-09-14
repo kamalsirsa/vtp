@@ -1,7 +1,7 @@
 //
 // ElevLayer.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -75,7 +75,7 @@ public:
 	vtHeightField *GetHeightField();
 	void Offset(const DPoint2 &p);
 	float GetElevation(const DPoint2 &p);
-	bool ImportFromFile(const wxString2 &strFileName, bool progress_callback(int) = NULL);
+	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
 
 	// grid operations
 	void Resample(int iNewWidth, int iNewHeight);

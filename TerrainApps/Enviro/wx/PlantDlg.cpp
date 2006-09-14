@@ -180,7 +180,7 @@ void PlantDlg::UpdatePlantNames()
 			{
 				vtPlantSpecies::CommonName cname = plant->GetCommonName(j);
 
-				if (cname.m_strLang == m_strLang.mb_str())
+				if (cname.m_strLang == m_strLang.mb_str(wxConvUTF8))
 				{
 					str = wxString(cname.m_strName, wxConvUTF8);
 					m_pSpecies->Append(str, plant);

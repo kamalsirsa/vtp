@@ -64,7 +64,7 @@ public:
 	bool GetFilteredColor(const DPoint2 &p, RGBi &rgb);
 	void GetRGB(int x, int y, RGBi &rgb);
 
-	bool ImportFromFile(const wxString2 &strFileName, bool progress_callback(int) = NULL);
+	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
 	bool ReadPPM(const char *fname, bool progress_callback(int) = NULL);
 	bool SaveToFile(const char *fname) const;
 	bool ReadPNGFromMemory(unsigned char *buf, int len);

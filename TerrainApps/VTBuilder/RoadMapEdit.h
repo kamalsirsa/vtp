@@ -1,7 +1,7 @@
 //
 // RoadMapEdit.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "vtdata/RoadMap.h"
 #include "vtdata/Selectable.h"
-#include "vtui/wxString2.h"
 
 class vtRoadLayer;
 class vtScaledView;
@@ -128,7 +127,7 @@ public:
 
 	// Import from SHP
 	bool ApplyCFCC(LinkEdit *pR, const char *str);
-	void AddElementsFromSHP(const wxString2 &filename, const vtProjection &proj,
+	void AddElementsFromSHP(const wxString &filename, const vtProjection &proj,
 		bool progress_callback(int) = NULL);
 
 	// Import from SDTS via OGR

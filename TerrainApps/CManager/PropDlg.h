@@ -10,7 +10,6 @@
 
 #include "cmanager_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "vtui/wxString2.h"
 
 class vtItem;
 class vtModel;
@@ -44,8 +43,8 @@ private:
 	struct Pair { vtString type, subtype; };
 	std::vector<Pair> m_types;
 
-	wxString2	m_strItem;
-	wxString2	m_strType, m_strSubtype;
+	wxString	m_strItem;
+	wxString	m_strType, m_strSubtype;
 	vtItem	  *m_pCurrentItem;
 	wxListCtrl  *m_pTagList;
 	wxChoice	*m_pTypeChoice;

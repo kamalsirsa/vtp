@@ -48,8 +48,11 @@ void ImportVegDlg::SetShapefileName(const wxString &filename)
 
 void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
 {
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(m_filename.mb_str(wxConvUTF8));
+
 	// Open the SHP File
-	SHPHandle hSHP = SHPOpen(m_filename.mb_str(), "rb");
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 	{
 		wxMessageBox(_("Couldn't open shapefile."));
@@ -68,13 +71,13 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 
 	// Open DBF File
-	DBFHandle db = DBFOpen(m_filename.mb_str(), "rb");
+	DBFHandle db = DBFOpen(fname_local, "rb");
 	if (db == NULL)
 	{
 		wxMessageBox(_("Couldn't open DBF file."));
 		return;
 	}
-	wxString2 str, fieldname;
+	wxString str;
 	int fields, i, iField, *pnWidth = 0, *pnDecimals = 0;
 	DBFFieldType fieldtype;
 	char pszFieldName[80];
@@ -85,7 +88,7 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
 		fieldtype = DBFGetFieldInfo(db, iField,
 			pszFieldName, pnWidth, pnDecimals );
 		str.Printf(_T("%d: "), i);
-		fieldname = pszFieldName;
+		wxString fieldname(pszFieldName, wxConvUTF8);
 		str += fieldname;
 
 		if (fieldtype == FTString)

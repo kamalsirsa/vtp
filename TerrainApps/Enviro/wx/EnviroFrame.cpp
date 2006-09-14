@@ -1679,7 +1679,7 @@ void EnviroFrame::OnEarthPoints(wxCommandEvent& event)
 
 	wxString str = loadFile.GetPath();
 
-	int ret = g_App.AddGlobeAbstractLayer(str.mb_str());
+	int ret = g_App.AddGlobeAbstractLayer(str.mb_str(wxConvUTF8));
 	if (ret == -1)
 		wxMessageBox(_("Couldn't open"));
 	if (ret == -2)
@@ -1731,7 +1731,7 @@ void EnviroFrame::OnHelpDocLocal(wxCommandEvent &event)
 {
 	// Launch default web browser with documentation pages
 	wxString wxcwd = wxGetCwd();
-	vtString cwd = wxcwd.mb_str();
+	vtString cwd = wxcwd.mb_str(wxConvUTF8);
 
 	vtStringArray paths;
 	paths.push_back(cwd + "/../Docs/Enviro/");

@@ -1,7 +1,7 @@
 //
 // TreeView.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -113,14 +113,12 @@ void MyTreeCtrl::RefreshTreeItems(vtFrame *pFrame)
 	vtContentManager *pMan = &(pFrame->m_Man);
 
 	unsigned int i, j;
-	wxString2 str, str2;
-
 	unsigned int iItems = pMan->NumItems();
 	for (i = 0; i < iItems; i++)
 	{
 		vtItem *pItem = pMan->GetItem(i);
 
-		str = pItem->m_name;
+		wxString str(pItem->m_name, wxConvUTF8);
 
 		wxTreeItemId hItem;
 		hItem = AppendItem(rootId, str, TreeCtrlIcon_Item, TreeCtrlIcon_ItemSelected);
@@ -134,7 +132,7 @@ void MyTreeCtrl::RefreshTreeItems(vtFrame *pFrame)
 		{
 			vtModel *pModel = pItem->GetModel(j);
 
-			str = (const char *) pModel->m_filename;
+			str = wxString(pModel->m_filename, wxConvUTF8);
 
 			wxTreeItemId hItem2;
 			hItem2 = AppendItem(hItem, str, TreeCtrlIcon_Model, TreeCtrlIcon_ModelSelected);
@@ -257,13 +255,14 @@ void MyTreeCtrl::OnEndLabelEdit(wxTreeEvent& event)
 {
 	VTLOG("OnEndLabelEdit\n");
 
-	wxString2 result = event.GetLabel();
+	wxString result = event.GetLabel();
 	wxTreeItemId itemId = event.GetItem();
 	MyTreeItemData *data = (MyTreeItemData *)GetItemData(itemId);
 	if (data != NULL && data->m_pItem != NULL)
 	{
 //		RefreshTreeStatus(frame);	// no need; tree already updated
-		GetMainFrame()->SetItemName(data->m_pItem, result.vt_str());
+		vtString label = result.mb_str(wxConvUTF8);
+		GetMainFrame()->SetItemName(data->m_pItem, label);
 	}
 }
 

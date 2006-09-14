@@ -1,7 +1,7 @@
 //
 // TreeView.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,6 +20,7 @@
 #include "MenuEnum.h"	// for LayerTree_Ctrl
 #include "Frame.h"
 #include "BuilderView.h"
+#include "Helper.h"
 
 DECLARE_APP(BuilderApp)
 
@@ -139,14 +140,12 @@ wxString MyTreeCtrl::MakeItemName(vtLayerPtr lp)
 	wxString str;
 	if (lp->GetModified())
 		str = _T("(*) ");
-	wxString2 fullpath = lp->GetLayerFilename();
+	wxString path = lp->GetLayerFilename();
 
 	if (!m_bShowPaths)
-	{
-		const char *fname = StartOfFilename(fullpath.mb_str());
-		fullpath = fname;
-	}
-	str += fullpath;
+		path = StartOfFilename(path);
+
+	str += path;
 	return str;
 }
 

@@ -1,7 +1,7 @@
 //
 // Name:		SelectDlg.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -89,7 +89,7 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (unsigned int i = 0; i < pSet->GetNumFields(); i++)
 	{
 		Field *field = pSet->GetField(i);
-		wxString2 str = field->m_name;
+		wxString str(field->m_name, wxConvUTF8);
 		GetField()->Append(str, (void *) 0);
 	}
 	GetField()->SetSelection(0);
@@ -105,7 +105,7 @@ void SelectDlg::FillValuesControl()
 {
 	int values = 0;
 	vtString str;
-	wxString2 str2;
+	wxString ws;
 
 	GetComboValue()->Clear();
 
@@ -120,14 +120,13 @@ void SelectDlg::FillValuesControl()
 	for (unsigned int i = 0; i < pSet->GetNumEntities(); i++)
 	{
 		pSet->GetValueAsString(i, m_iField, str);
-
-		str2 = str;
-		if (str2 == _T(""))
+		if (str == "")
 			continue;
 
-		if (GetComboValue()->FindString(str2) == -1)
+		ws = wxString(str, wxConvUTF8);
+		if (GetComboValue()->FindString(ws) == -1)
 		{
-			GetComboValue()->Append(str2);
+			GetComboValue()->Append(ws);
 			values++;
 		}
 		if (values == 100)
