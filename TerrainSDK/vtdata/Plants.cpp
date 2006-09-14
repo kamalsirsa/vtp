@@ -893,8 +893,11 @@ bool vtPlantInstanceArray::WriteVF(const char *fname) const
 
 bool vtPlantInstanceArray::ReadSHP(const char *fname)
 {
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(fname);
+
 	// Open the SHP File & Get Info from SHP:
-	SHPHandle hSHP = SHPOpen(fname, "rb");
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 		return false;
 

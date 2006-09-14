@@ -1,12 +1,13 @@
 //
 // UtilityMap.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include <stdlib.h>
 #include "UtilityMap.h"
+#include "vtString.h"
 #include "shapelib/shapefil.h"
 
 vtUtilityMap::vtUtilityMap()
@@ -24,7 +25,10 @@ bool vtUtilityMap::ImportPolesFromSHP(const char *fname)
 	int		nEntities, nShapeType;
 	DPoint2 point;
 
-	hSHP = SHPOpen(fname, "rb");
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(fname);
+
+	hSHP = SHPOpen(fname_local, "rb");
 	if (!hSHP)
 		return false;
 
@@ -73,7 +77,10 @@ bool vtUtilityMap::ImportLinesFromSHP(const char *fname)
 	int		nEntities, nShapeType;
 	int		i, j, verts;
 
-	hSHP = SHPOpen(fname, "rb");
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(fname);
+
+	hSHP = SHPOpen(fname_local, "rb");
 	if (!hSHP)
 		return false;
 

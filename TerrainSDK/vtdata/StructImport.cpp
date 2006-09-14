@@ -203,7 +203,10 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
 bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 							   bool progress_callback(int))
 {
-	SHPHandle hSHP = SHPOpen(pathname, "rb");
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(pathname);
+
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 		return false;
 
@@ -222,7 +225,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
 
 	// Open DBF File & Get DBF Info:
-	DBFHandle db = DBFOpen(pathname, "rb");
+	DBFHandle db = DBFOpen(fname_local, "rb");
 
 	// Make sure that entities are of the expected type
 	if (opt.type == ST_BUILDING)

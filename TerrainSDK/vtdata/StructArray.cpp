@@ -1457,7 +1457,10 @@ vtBuilding *vtStructureArray::AddBuildingFromLineString(OGRLineString *pLineStri
 
 int GetSHPType(const char *filename)
 {
-	SHPHandle hSHP = SHPOpen(filename, "rb");
+	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(filename);
+
+	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
 		return SHPT_NULL;
 
