@@ -109,7 +109,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		m_pModel = NULL;
 	}
 
-	const char *filename = GetValueString("filename", false, true);
+	const char *filename = GetValueString("filename", true);
 	if (filename)
 	{
 		// relative path: look on the standards data paths
@@ -142,7 +142,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 			return false;
 		}
 	}
-	const char *itemname = GetValueString("itemname", false, true);
+	const char *itemname = GetValueString("itemname", true);
 	if (itemname)
 	{
 		// Use ContentManager to create the structure, using the

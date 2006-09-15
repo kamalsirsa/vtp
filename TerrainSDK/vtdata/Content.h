@@ -3,7 +3,7 @@
 //
 // Header for the Content Management classes.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project.
+// Copyright (c) 2001-2006 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -89,8 +89,7 @@ public:
 	void SetValueRGBi(const char *szTagName, const RGBi &value, bool bCreating = false);
 
 	// Get value directly
-	const char *GetValueString(const char *szTagName, bool bUTF8ToAnsi = false,
-		bool bSuppressWarning = false) const;
+	const char *GetValueString(const char *szTagName, bool bSuppressWarning = false) const;
 	bool GetValueBool(const char *szTagName) const;
 	int GetValueInt(const char *szTagName) const;
 	float GetValueFloat(const char *szTagName) const;

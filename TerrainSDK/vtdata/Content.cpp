@@ -194,22 +194,11 @@ void vtTagArray::SetValueRGBi(const char *szTagName, const RGBi &color, bool bCr
 //  if the tag doesn't exist.
 //
 
-const char *vtTagArray::GetValueString(const char *szTagName, bool bUTF8ToAnsi, bool bSuppressWarning) const
+const char *vtTagArray::GetValueString(const char *szTagName, bool bSuppressWarning) const
 {
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
-	{
-#if SUPPORT_WSTRING
-		if (bUTF8ToAnsi)
-		{
-			// The internal string is UTF8, but we want it as Ansi (iso-8859-1)
-			wstring2 wide_string;
-			wide_string.from_utf8(tag->value);
-			return wide_string.mb_str();
-		}
-#endif
 		return tag->value;
-	}
 	else
 	{
 		if (!bSuppressWarning)
