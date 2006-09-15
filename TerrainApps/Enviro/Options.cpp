@@ -199,7 +199,7 @@ void EnviroOptionsVisitor::endElement(const char *name)
 	const char *str = m_data.c_str();
 
 	if (strcmp(name, STR_DATAPATH) == 0)
-		m_opt.m_DataPaths.push_back(vtString(m_data.c_str()));
+		m_opt.m_DataPaths.push_back(str);
 
 	else if (strcmp(name, STR_EARTHVIEW) == 0)
 		s2b(m_data, m_opt.m_bEarthView);
