@@ -1,7 +1,7 @@
 //
 // App.cpp - Main application class for VTBuilder
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -74,14 +74,14 @@ bool BuilderApp::OnInit()
 #endif
 
 	// Redirect the wxWindows log messages to our own logging stream
-	wxLog *logger = new LogCatcher();
+	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);
 
 	Args(argc, argv);
 
 	SetupLocale();
 
-	VTLOG(" Initializing GDAL.");
+	VTLOG1(" Initializing GDAL.\n");
 	g_GDALWrapper.GuessDataPaths();
 	g_GDALWrapper.RequestGDALFormats();
 
@@ -100,25 +100,24 @@ bool BuilderApp::OnInit()
 		vtLayer::LayerTypeNames.Add(_("Utility"));
 	}
 
-	VTLOG("Testing ability to allocate a frame object.\n");
+	VTLOG1("Testing ability to allocate a frame object.\n");
 	wxFrame *frametest = new wxFrame(NULL, -1, _T("Title"));
 	delete frametest;
 
-	VTLOG(" Creating Main Frame Window,");
 	wxString title(APPNAME, wxConvUTF8);
-	VTLOG(" title '%s'\n", title.mb_str(wxConvUTF8));
+	VTLOG(" Creating Main Frame Window, title '%s'\n", title.mb_str(wxConvUTF8));
 	MainFrame* frame = new MainFrame((wxFrame *) NULL, title,
 							   wxPoint(50, 50), wxSize(900, 500));
 
-	VTLOG(" Setting up the UI.\n");
+	VTLOG1(" Setting up the UI.\n");
 	frame->SetupUI();
 
-	VTLOG(" Showing the frame.\n");
+	VTLOG1(" Showing the frame.\n");
 	frame->Show(TRUE);
 
 	SetTopWindow(frame);
 
-	VTLOG(" GDAL-supported formats:");
+	VTLOG1(" GDAL-supported formats:");
 	GDALDriverManager *poDM = GetGDALDriverManager();
 	for( int iDriver = 0; iDriver < poDM->GetDriverCount(); iDriver++ )
 	{
@@ -126,9 +125,9 @@ bool BuilderApp::OnInit()
 			VTLOG("\n  ");
 		GDALDriver *poDriver = poDM->GetDriver( iDriver );
 		const char *name = poDriver->GetDescription();
-		VTLOG("%s ", name);
+		VTLOG(" %s", name);
 	}
-	VTLOG("\n");
+	VTLOG1("\n");
 
 	// Stuff for testing
 //	wxString str("E:/Earth Imagery/NASA BlueMarble/MOD09A1.E.interpol.cyl.retouched.topo.3x00054x00027-N.bmp");
