@@ -1,7 +1,7 @@
 //
 // Name: CameraDlg.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -412,9 +412,9 @@ void CameraDlg::OnTextEnter( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
-	m_pos.x = atof(m_camX.mb_str());
-	m_pos.y = atof(m_camY.mb_str());
-	m_pos.z = atof(m_camZ.mb_str());
+	m_pos.x = atof(m_camX.mb_str(wxConvUTF8));
+	m_pos.y = atof(m_camY.mb_str(wxConvUTF8));
+	m_pos.z = atof(m_camZ.mb_str(wxConvUTF8));
 
 	FPoint3 fpos;
 	g_Conv.ConvertFromEarth(m_pos, fpos);
