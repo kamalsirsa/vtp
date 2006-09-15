@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="xmlhelper"
 	ProjectGUID="{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
+	RootNamespace="xmlhelper"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -29,9 +30,6 @@
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/xmlhelper.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
@@ -77,9 +75,6 @@
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/xmlhelper.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
