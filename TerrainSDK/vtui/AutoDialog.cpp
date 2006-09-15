@@ -17,6 +17,7 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/vtString.h"
 #include "AutoDialog.h"
 
 /////////////////////////////////////////////////
@@ -159,7 +160,7 @@ bool wxNumericValidator::TransferFromWindow()
 
 	if (str != _T(""))
 	{
-		const char *ccs = str.mb_str(*wxConvCurrent);
+		vtString ccs = str.mb_str(*wxConvCurrent);
 		if (m_pValInt)
 			sscanf(ccs, "%d", m_pValInt);
 		if (m_pValFloat)
