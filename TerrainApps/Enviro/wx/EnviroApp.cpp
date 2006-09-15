@@ -154,15 +154,6 @@ bool EnviroApp::OnInit()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	if (!g_Options.ReadXML(STRING_APPNAME ".xml"))
-	{
-		// Look for older .ini file
-		g_Options.ReadINI(STRING_APPNAME ".ini");
-
-		// We will always save to xml
-		g_Options.m_strFilename = STRING_APPNAME ".xml";
-	}
-
 	g_App.Startup();	// starts log
 
 	VTLOG("Specific application name: %s\n", STRING_APPNAME);
@@ -174,6 +165,15 @@ bool EnviroApp::OnInit()
 	VTLOG1("Build date: ");
 	VTLOG1(__DATE__);
 	VTLOG1("\n\n");
+
+	if (!g_Options.ReadXML(STRING_APPNAME ".xml"))
+	{
+		// Look for older .ini file
+		g_Options.ReadINI(STRING_APPNAME ".ini");
+
+		// We will always save to xml
+		g_Options.m_strFilename = STRING_APPNAME ".xml";
+	}
 
 	VTLOG("Datapaths:\n");
 	int i, n = g_Options.m_DataPaths.size();
