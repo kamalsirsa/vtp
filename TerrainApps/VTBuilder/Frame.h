@@ -68,7 +68,9 @@ public:
 	virtual void CreateView();
 	void ZoomAll();
 
-	void ReadEnviroPaths(vtStringArray &paths);
+	void ReadEnviroPaths();
+	void ReadDatapathsFromXML(ifstream &input, const char *path);
+	void ReadDatapathsFromINI(ifstream &input);
 	void SetupUI();
 	void CheckForGDALAndWarn();
 	virtual void CreateMenus();

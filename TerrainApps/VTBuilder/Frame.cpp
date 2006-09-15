@@ -215,8 +215,16 @@ void MainFrame::SetupUI()
 	SetProjection(proj);
 	RefreshStatusBar();
 
+	// Get datapaths from Enviro
+	ReadEnviroPaths();
+	VTLOG("Datapaths:\n");
+	int i, n = m_datapaths.size();
+	if (n == 0)
+		VTLOG("   none.\n");
+	for (i = 0; i < n; i++)
+		VTLOG("   %s\n", (const char *) m_datapaths[i]);
+
 	// Load structure defaults
-	ReadEnviroPaths(m_datapaths);
 	bool foundmaterials = LoadGlobalMaterials(m_datapaths);
 	if (!foundmaterials)
 		DisplayAndLog("The building materials file (Culture/materials.xml) was not found\n"
@@ -2503,13 +2511,13 @@ using namespace std;
 
 #define STR_DATAPATH "DataPath"
 
-void MainFrame::ReadEnviroPaths(vtStringArray &paths)
+void MainFrame::ReadEnviroPaths()
 {
 	VTLOG("Getting data paths from Enviro.\n");
-	wxString IniPath = wxGetCwd();
-	VTLOG("  Current directory: '%s'\n", IniPath.mb_str(wxConvUTF8));
+	wxString cwd = wxGetCwd();
+	VTLOG("  Current directory: '%s'\n", cwd.mb_str(wxConvUTF8));
 
-	IniPath += _T("/Enviro.ini");
+	wxString IniPath = cwd + _T("/Enviro.xml");
 	vtString fname = IniPath.mb_str(wxConvUTF8);
 	VTLOG("  Looking for '%s'\n", (const char *) fname);
 	ifstream input;
@@ -2517,19 +2525,77 @@ void MainFrame::ReadEnviroPaths(vtStringArray &paths)
 	if (!input.is_open())
 	{
 		input.clear();
-		IniPath = wxGetCwd() + _T("/../Enviro/Enviro.ini");
+		IniPath = cwd + _T("/../Enviro/Enviro.xml");
 		fname = IniPath.mb_str(wxConvUTF8);
 		VTLOG("  Not there.  Looking for '%s'\n", fname);
 		input.open(fname, ios::in | ios::binary);
 	}
-	if (!input.is_open())
+	if (input.is_open())
 	{
-		VTLOG("  Not found.\n");
+		VTLOG1(" found it.\n");
+		ReadDatapathsFromXML(input, (const char *) IniPath.mb_str(wxConvUTF8));
 		return;
 	}
-	VTLOG(" found it.\n");
+	VTLOG1("  Not found.\n");
+	IniPath = cwd + _T("/Enviro.ini");;
+	fname = IniPath.mb_str(wxConvUTF8);
+	input.open(fname, ios::in | ios::binary);
+	if (!input.is_open())
+	{
+		IniPath = cwd + _T("/../Enviro/Enviro.ini");
+		fname = IniPath.mb_str(wxConvUTF8);
+		input.open(fname, ios::in | ios::binary);
+	}
+	if (!input.is_open())
+	{
+		VTLOG1("  Not found.\n");
+		return;
+	}
+	ReadDatapathsFromINI(input);
+}
 
-	char buf[80];
+
+///////////////////////////////////////////////////////////////////////
+// XML format
+
+class EnviroOptionsVisitor : public XMLVisitor
+{
+public:
+	EnviroOptionsVisitor(vtStringArray &paths) : m_paths(paths) {}
+	void startElement(const char *name, const XMLAttributes &atts) { m_data = ""; }
+	void endElement (const char *name);
+	void data(const char *s, int length) { m_data += vtString(s, length); }
+protected:
+	vtStringArray &m_paths;
+	vtString m_data;
+};
+
+void EnviroOptionsVisitor::endElement(const char *name)
+{
+	if (!strcmp(name, "DataPath"))
+		m_paths.push_back(m_data);
+}
+
+void MainFrame::ReadDatapathsFromXML(ifstream &input, const char *path)
+{
+	EnviroOptionsVisitor visitor(m_datapaths);
+	try
+	{
+		readXML(input, visitor, path);
+	}
+	catch (xh_io_exception &ex)
+	{
+		const string msg = ex.getFormattedMessage();
+		VTLOG(" XML problem: %s\n", msg.c_str());
+	}
+}
+
+///////////////////////////////////////////////////////////////////////
+// INI format
+
+void MainFrame::ReadDatapathsFromINI(ifstream &input)
+{
+	char buf[256];
 	while (!input.eof())
 	{
 		if (input.peek() == '\n')
@@ -2546,16 +2612,8 @@ void MainFrame::ReadEnviroPaths(vtStringArray &paths)
 		if (strcmp(buf, STR_DATAPATH) == 0)
 		{
 			vtString string = get_line_from_stream(input);
-			paths.push_back(vtString(string));
+			m_datapaths.push_back(vtString(string));
 		}
-	}
-	VTLOG("Datapaths:\n");
-	int i, n = paths.size();
-	if (n == 0)
-		VTLOG("   none.\n");
-	for (i = 0; i < n; i++)
-	{
-		VTLOG("   %s\n", (const char *) paths[i]);
 	}
 }
 
