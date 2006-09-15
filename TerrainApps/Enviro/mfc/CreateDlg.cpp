@@ -2,6 +2,8 @@
 //
 
 #include "StdAfx.h"
+#include "Charset.h"
+
 #include "vtlib/vtlib.h"
 #include "stdio.h"
 #include "CreateDlg.h"
@@ -230,9 +232,9 @@ BOOL CCreateDlg::OnInitDialog()
 		m_cbTreeFile.SelectString(-1, m_strTreeFile);
 	}
 
-	m_cbLodMethod.AddString("Roettger");
-	m_cbLodMethod.AddString("TopoVista");
-	m_cbLodMethod.AddString("McNally");
+	m_cbLodMethod.AddString(_T("Roettger"));
+	m_cbLodMethod.AddString(_T("TopoVista"));
+	m_cbLodMethod.AddString(_T("McNally"));
 	m_cbLodMethod.SetCurSel(m_iLodMethod);
 
 	DetermineTerrainSizeFromBT();
@@ -318,8 +320,8 @@ void CCreateDlg::GetParams(TParams &Params)
 	VTLOG("CCreateDlg::GetParams\n");
 
 	// get the values from the dialog into the supplied paramter structure
-	Params.SetValueString(STR_NAME, (const char *) m_strName);
-	Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilename);
+	Params.SetValueString(STR_NAME, ToUTF8(m_strName));
+	Params.SetValueString(STR_ELEVFILE, ToUTF8(m_strFilename));
 	// LocationsFilename
 	Params.SetValueFloat(STR_VERTICALEXAG, m_fVerticalExag);
 	Params.SetValueInt(STR_MINHEIGHT, m_iMinHeight);
@@ -340,12 +342,12 @@ void CCreateDlg::GetParams(TParams &Params)
 
 	// single
 	if (m_iTexture != TE_TILESET)
-	Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle);
+	Params.SetValueString(STR_TEXTUREFILE, ToUTF8(m_strTextureSingle));
 
 	// tile4x4
 	Params.SetValueInt(STR_TILESIZE, m_iTilesize);
-	Params.SetValueString(STR_TEXTUREBASE, (const char *) m_strTextureBase);
-	Params.SetValueString(STR_TEXTURE4BY4, (const char *) m_strTexture4x4);
+	Params.SetValueString(STR_TEXTUREBASE, ToUTF8(m_strTextureBase));
+	Params.SetValueString(STR_TEXTURE4BY4, ToUTF8(m_strTexture4x4));
 
 	Params.SetValueBool(STR_MIPMAP, m_bMipmap);
 	Params.SetValueBool(STR_REQUEST16BIT, m_b16bit);
@@ -353,7 +355,7 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.SetValueFloat(STR_PRELIGHTFACTOR, m_fPreLightFactor);
 
 	Params.SetValueBool(STR_ROADS, m_bRoads);
-	Params.SetValueString(STR_ROADFILE, (const char *) m_strRoadFile);
+	Params.SetValueString(STR_ROADFILE, ToUTF8(m_strRoadFile));
 	Params.SetValueBool(STR_HWY, m_bHwy);
 	Params.SetValueBool(STR_PAVED, m_bPaved);
 	Params.SetValueBool(STR_DIRT, m_bDirt);
@@ -363,7 +365,7 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_ROADCULTURE, m_bRoadCulture);
 
 	Params.SetValueBool(STR_TREES, m_bPlants);
-	Params.SetValueString(STR_TREEFILE, (const char *) m_strTreeFile);
+	Params.SetValueString(STR_TREEFILE, ToUTF8(m_strTreeFile));
 	Params.SetValueInt(STR_VEGDISTANCE, m_iVegDistance);
 
 	Params.SetValueBool(STR_FOG, m_bFog);
@@ -384,7 +386,7 @@ void CCreateDlg::GetParams(TParams &Params)
 
 void CCreateDlg::UpdateTiledTextureFilename()
 {
-	m_strTexture4x4.Format("%s%d.bmp", m_strTextureBase,
+	m_strTexture4x4.Format(_T("%s%d.bmp"), m_strTextureBase,
 		NTILES * (m_iTilesize-1) + 1);
 	UpdateData(FALSE);
 }
@@ -429,15 +431,17 @@ void CCreateDlg::OnChangeMem()
 
 void CCreateDlg::DetermineTerrainSizeFromBT()
 {
-	vtString fname = FindFileOnPaths(g_Options.m_DataPaths, "Elevation/" + m_strFilename);
-	if (fname == "")
+	vtString fname = "Elevation/";
+	fname += ToUTF8(m_strFilename);
+	vtString fpath = FindFileOnPaths(g_Options.m_DataPaths, fname);
+	if (fpath == "")
 	{
 		m_iTerrainSize = 1024;
 		return;
 	}
 
 	vtElevationGrid grid;
-	if (!grid.LoadBTHeader(fname))
+	if (!grid.LoadBTHeader(fpath))
 	{
 		m_iTerrainSize = 1024;
 		return;
@@ -456,11 +460,13 @@ void CCreateDlg::DetermineSizeFromBMP()
 	OFSTRUCT			openFileStruct;
 	BITMAPFILEHEADER	bitmapHdr;
 
-	vtString fname = FindFileOnPaths(g_Options.m_DataPaths, "GeoSpecific/" + m_strTextureSingle);
-	if (fname == "")
+	vtString fname = "GeoSpecific/";
+	fname += ToUTF8(m_strTextureSingle);
+	vtString fpath = FindFileOnPaths(g_Options.m_DataPaths, fname);
+	if (fpath == "")
 		goto ErrExit;
 
-	fileHandle = OpenFile(fname, &openFileStruct, OF_READ);
+	fileHandle = OpenFile(fpath, &openFileStruct, OF_READ);
 	if (fileHandle == HFILE_ERROR) {
 		return;
 	}

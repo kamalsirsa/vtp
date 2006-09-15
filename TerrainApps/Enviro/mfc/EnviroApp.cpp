@@ -101,7 +101,8 @@ BOOL EnviroApp::InitInstance()
 
 bool EnviroApp::OnInit()
 {
-	g_Options.Read("Enviro.ini");
+	if (!g_Options.ReadXML("Enviro.xml"))
+		g_Options.ReadINI("Enviro.ini");
 
 	g_App.Startup();	// starts log
 
@@ -118,7 +119,7 @@ bool EnviroApp::OnInit()
 		return FALSE;
 
 	g_StartDlg.PutOptionsTo(g_Options);
-	g_Options.Write();
+	g_Options.WriteXML();
 
 	g_App.StartControlEngine();
 

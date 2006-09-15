@@ -72,7 +72,7 @@ void CMfcieView::OnInitialUpdate()
 	// Go to the home page initially
 	CHtmlView::OnInitialUpdate();
 //	GoHome();
-	Navigate2("http://vterrain.org/");
+	Navigate2(_T("http://vterrain.org/"));
 
 //	GetApp()->m_pHTMLView = this;
 }

@@ -1,11 +1,12 @@
 //
 // StartupDlg.cpp : implementation file
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "StdAfx.h"
+#include "Charset.h"
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
@@ -25,8 +26,8 @@ CStartupDlg g_StartDlg;
 void CStartupDlg::GetOptionsFrom(EnviroOptions &opt)
 {
 	m_iLaunch = (opt.m_bEarthView ? 0 : 1);
-	m_strImage = opt.m_strEarthImage;
-	m_strTName = opt.m_strInitTerrain;
+	m_strImage = FromUTF8(opt.m_strEarthImage);
+	m_strTName = FromUTF8(opt.m_strInitTerrain);
 	m_bFullscreen = opt.m_bFullscreen;
 	m_bHtmlpane = opt.m_bHtmlpane;
 	m_bFloatingToolbar = opt.m_bFloatingToolbar;
@@ -37,8 +38,8 @@ void CStartupDlg::GetOptionsFrom(EnviroOptions &opt)
 void CStartupDlg::PutOptionsTo(EnviroOptions &opt)
 {
 	opt.m_bEarthView = (m_iLaunch == 0);
-	opt.m_strEarthImage = m_strImage;
-	opt.m_strInitTerrain = m_strTName;
+	opt.m_strEarthImage = ToUTF8(m_strImage);
+	opt.m_strInitTerrain = ToUTF8(m_strTName);
 	opt.m_bFullscreen = m_bFullscreen;
 	opt.m_bHtmlpane = m_bHtmlpane;
 	opt.m_bFloatingToolbar = m_bFloatingToolbar;
@@ -104,7 +105,7 @@ END_MESSAGE_MAP()
 //
 void AddFilesToComboBox(CComboBox *box, CString wildcard)
 {
-	VTLOG(" AddFilenamesToComboBox '%s':", (const char *) wildcard);
+	VTLOG(" AddFilenamesToComboBox:");
 
 	CFileFind finder;
 	int entries = 0, matches = 0;
@@ -129,9 +130,10 @@ void AddFilesToComboBox(CComboBox *box, CString wildcard)
 
 BOOL CStartupDlg::OnInitDialog()
 {
-	vtTerrain *pTerr = vtGetTS()->FindTerrainByName(m_strTName);
+	vtString tname = ToUTF8(m_strTName);
+	vtTerrain *pTerr = vtGetTS()->FindTerrainByName(tname);
 	if (pTerr)
-		m_strTName = pTerr->GetName();
+		m_strTName = FromUTF8(pTerr->GetName());
 	else
 		m_strTName = "none";
 
@@ -193,7 +195,7 @@ void ShowOGLInfo(HDC hdc)
 		value = 0;
 
 	CString str;
-	str.Format("OpenGL Version: %s\nVendor: %s\nRenderer: %s\nMaximum Texture Dimension: %d\nExtensions: %s",
+	str.Format(_T("OpenGL Version: %s\nVendor: %s\nRenderer: %s\nMaximum Texture Dimension: %d\nExtensions: %s"),
 		glGetString(GL_VERSION), glGetString(GL_VENDOR),
 		glGetString(GL_RENDERER), value, glGetString(GL_EXTENSIONS));
 	AfxMessageBox(str);
@@ -238,7 +240,8 @@ void CStartupDlg::UpdateState()
 
 void CStartupDlg::OnEditProp()
 {
-	vtTerrain *pTerr = vtGetTS()->FindTerrainByName(m_strTName);
+	vtString tname = ToUTF8(m_strTName);
+	vtTerrain *pTerr = vtGetTS()->FindTerrainByName(tname);
 	if (!pTerr)
 		return;
 
@@ -258,16 +261,14 @@ void CStartupDlg::OnEditProp()
 		vtString ext = GetExtension(fname, false);
 		if (ext.CompareNoCase(".ini") == 0)
 		{
-			AfxMessageBox("Upgrading the .ini to a .xml file.\n"
-				"Please remember to remove the old .ini file.");
+			AfxMessageBox(_T("Upgrading the .ini to a .xml file.\nPlease remember to remove the old .ini file."));
 			fname = fname.Left(fname.GetLength()-4) + ".xml";
 		}
 
 		if (!Params.WriteToXML(fname, STR_TPARAMS_FORMAT_NAME))
 		{
 			CString str;
-			str.Format("Couldn't save to file %s\n"
-				"Please make sure the file is not read-only.",
+			str.Format(_T("Couldn't save to file %s\nPlease make sure the file is not read-only."),
 				(const char *)fname);
 			::AfxMessageBox(str);
 		}

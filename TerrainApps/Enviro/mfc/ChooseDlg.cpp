@@ -2,6 +2,8 @@
 //
 
 #include "StdAfx.h"
+#include "Charset.h"
+
 #include "vtlib/vtlib.h"
 #include "EnviroApp.h"
 #include "ChooseDlg.h"
@@ -55,8 +57,8 @@ BOOL CChooseDlg::OnInitDialog()
 	for (unsigned int i = 0; i < vtGetTS()->NumTerrains(); i++)
 	{
 		vtTerrain *pTerr = vtGetTS()->GetTerrain(i);
-		vtString str = pTerr->GetName();
-		m_lbList.AddString((const char *)str);
+		CString str = FromUTF8(pTerr->GetName());
+		m_lbList.AddString(str);
 	}
 	m_lbList.SelectString(-1, m_strTName);
 

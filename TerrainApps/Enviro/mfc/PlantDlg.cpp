@@ -2,6 +2,7 @@
 //
 
 #include "StdAfx.h"
+#include "Charset.h"
 
 #include "resource.h"
 
@@ -53,7 +54,8 @@ void CPlantDlg::SetPlantList(vtSpeciesList3d *plants)
 	for (unsigned int i = 0; i < plants->NumSpecies(); i++)
 	{
 		vtPlantSpecies3d *plant = plants->GetSpecies(i);
-		int index = m_cbSpecies.AddString(plant->GetCommonName().m_strName);
+		CString name = FromUTF8(plant->GetCommonName().m_strName);
+		int index = m_cbSpecies.AddString(name);
 		m_cbSpecies.SetItemData(index, i);
 	}
 	UpdateData(FALSE);

@@ -2,6 +2,7 @@
 //
 
 #include "StdAfx.h"
+#include "Charset.h"
 
 #include "vtlib/vtlib.h"
 
@@ -72,13 +73,13 @@ BOOL CFenceDlg::OnInitDialog()
 	m_cbType.ResetContent();
 	int index;
 
-	index = m_cbType.AddString("Wooden posts, 3 wires");
+	index = m_cbType.AddString(_T("Wooden posts, 3 wires"));
 	m_cbType.SetItemData(index, FS_WOOD_POSTS_WIRE);
 
-	index = m_cbType.AddString("Metal poles, 3 wires");
+	index = m_cbType.AddString(_T("Metal poles, 3 wires"));
 	m_cbType.SetItemData(index, FS_METAL_POSTS_WIRE);
 
-	index = m_cbType.AddString("Metal poles, chain-link");
+	index = m_cbType.AddString(_T("Metal poles, chain-link"));
 	m_cbType.SetItemData(index, FS_CHAINLINK);
 
 	UpdateData(FALSE);

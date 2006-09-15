@@ -94,9 +94,7 @@
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
 				PrecompiledHeaderFile=".\Debug-mfc/mfcEnviro.pch"
-				AssemblerListingLocation=".\Debug-mfc/"
-				ObjectFile=".\Debug-mfc/"
-				ProgramDataBaseFileName=".\Debug-mfc/"
+				ProgramDataBaseFileName="$(IntDir)/mfcEnviro.pdb"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -145,6 +143,66 @@
 			<Tool
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
+		<Configuration
+			Name="Debug Unicode|Win32"
+			OutputDirectory=".\Debug-Unicode-mfc"
+			IntermediateDirectory=".\Debug-Unicode-mfc"
+			ConfigurationType="1"
+			UseOfMFC="2"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\..\TerrainSDK"
+				PreprocessorDefinitions="WIN32;_DEBUG;_UNICODE;VTDEBUG;_WINDOWS;ENVIRO_MFC;VTLIB_OSG=1;WINVER=0x0400"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
+				BrowseInformation="1"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="opengl32.lib glu32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng13d.lib zlib1d.lib gdal_id.lib libjpeg.lib"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				IgnoreDefaultLibraryNames="libc.lib,libcd.lib,libcmt.lib"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="TRUE"
+				SubSystem="2"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug-mfc/mfcEnviro.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -153,10 +211,10 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe">
 			<File
-				RelativePath="mfc\res\Enviro.ico">
+				RelativePath="res\Enviro.ico">
 			</File>
 			<File
-				RelativePath="res\Enviro.ico">
+				RelativePath="mfc\res\Enviro.ico">
 			</File>
 			<File
 				RelativePath="mfc\Enviro.rc">
@@ -174,6 +232,13 @@
 						PreprocessorDefinitions=""
 						AdditionalIncludeDirectories="mfc"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCResourceCompilerTool"
+						PreprocessorDefinitions=""
+						AdditionalIncludeDirectories="mfc"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="res\Enviro.rc2">
@@ -185,10 +250,10 @@
 				RelativePath="res\EnviroDoc.ico">
 			</File>
 			<File
-				RelativePath="mfc\res\Toolbar.bmp">
+				RelativePath="res\Toolbar.bmp">
 			</File>
 			<File
-				RelativePath="res\Toolbar.bmp">
+				RelativePath="mfc\res\Toolbar.bmp">
 			</File>
 			<File
 				RelativePath="res\treeimag.bmp">
@@ -226,6 +291,17 @@
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Enviro.cpp">
@@ -241,6 +317,17 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
@@ -274,6 +361,17 @@
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Nevada.cpp">
@@ -289,6 +387,17 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
@@ -322,6 +431,17 @@
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="SpecificTerrain.cpp">
@@ -335,6 +455,15 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
@@ -357,6 +486,17 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
@@ -394,6 +534,25 @@
 						PrecompiledHeaderThrough="StdAfx.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\mfc\Charset.cpp">
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="mfc\ChooseDlg.cpp">
@@ -416,6 +575,16 @@
 						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="StdAfx.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
@@ -442,6 +611,16 @@
 						PrecompiledHeaderThrough="StdAfx.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						BrowseInformation="1"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="mfc\EnviroApp.cpp">
@@ -464,6 +643,16 @@
 						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="StdAfx.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
@@ -490,9 +679,25 @@
 						PrecompiledHeaderThrough="StdAfx.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						BrowseInformation="1"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\mfc\EnviroGUI.cpp">
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="mfc\EnviroView.cpp">
@@ -515,6 +720,16 @@
 						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="StdAfx.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
@@ -541,6 +756,16 @@
 						PrecompiledHeaderThrough="StdAfx.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						BrowseInformation="1"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="mfc\HtmlVw.cpp">
@@ -563,6 +788,16 @@
 						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="StdAfx.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
@@ -589,6 +824,16 @@
 						PrecompiledHeaderThrough="StdAfx.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						BrowseInformation="1"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="mfc\SimpleDoc.cpp">
@@ -611,6 +856,16 @@
 						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="StdAfx.h"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
@@ -637,6 +892,16 @@
 						PrecompiledHeaderThrough="StdAfx.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						BrowseInformation="1"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="mfc\StatusDlg.cpp">
@@ -661,6 +926,16 @@
 						PrecompiledHeaderThrough="StdAfx.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="2"
+						BrowseInformation="1"/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -668,6 +943,9 @@
 			Filter="">
 			<File
 				RelativePath="mfc\CameraDlg.h">
+			</File>
+			<File
+				RelativePath=".\mfc\Charset.h">
 			</File>
 			<File
 				RelativePath="mfc\ChooseDlg.h">

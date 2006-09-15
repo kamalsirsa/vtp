@@ -1,7 +1,9 @@
-// MainFrm.cpp : implementation of the EnviroFrame class
+// EnviroFrame.cpp : implementation of the EnviroFrame class
 //
 
 #include "StdAfx.h"
+#include "Charset.h"
+
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtdata/vtLog.h"
@@ -143,7 +145,8 @@ void EnviroFrame::UpdateStatusBar()
 	vs += "  ";
 	vs += g_App.GetStatusString(2);
 
-	m_wndStatusBar.SetPaneText(0, (const char *) vs);
+	CString str = FromUTF8(vs);
+	m_wndStatusBar.SetPaneText(0, str);
 }
 
 
@@ -158,10 +161,10 @@ void EnviroFrame::OnFlytoSpace()
 void EnviroFrame::OnFlytoTerrain()
 {
 	CChooseDlg dlg;
-	dlg.m_strTName = "none";
+	dlg.m_strTName = _T("none");
 	if (dlg.DoModal() == IDOK)
 	{
-		vtString fname = (const char *)dlg.m_strTName;
+		vtString fname = ToUTF8(dlg.m_strTName);
 		g_App.SwitchToTerrain(fname);
 	}
 }
@@ -202,13 +205,13 @@ void EnviroFrame::OnUpdateEarthFlatunfold(CCmdUI* pCmdUI)
 
 void EnviroFrame::OnEarthAddpointdata()
 {
-	char path[256];
+	TCHAR path[256];
 	// save
 	GetCurrentDirectory(256, path);
 
 	CFileDialog openDialog(TRUE);
-	openDialog.m_ofn.lpstrFilter = "Point Data Sources (*.shp)\0*.shp\0";
-	openDialog.m_ofn.lpstrInitialDir = ".";
+	openDialog.m_ofn.lpstrFilter = _T("Point Data Sources (*.shp)\0*.shp\0");
+	openDialog.m_ofn.lpstrInitialDir = _T(".");
 	if (openDialog.DoModal() != IDOK)
 	{
 		// restore
@@ -217,11 +220,11 @@ void EnviroFrame::OnEarthAddpointdata()
 	}
 	CString str = openDialog.GetPathName();
 
-	int ret = g_App.AddGlobeAbstractLayer(str);
+	int ret = g_App.AddGlobeAbstractLayer(ToUTF8(str));
 	if (ret == -1)
-		::AfxMessageBox("Couldn't Open");
+		::AfxMessageBox(_T("Couldn't Open"));
 	if (ret == -2)
-		::AfxMessageBox("That file isn't point data.");
+		::AfxMessageBox(_T("That file isn't point data."));
 
 	// restore
 	SetCurrentDirectory(path);
