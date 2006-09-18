@@ -128,7 +128,8 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		//  hence they already support gzipped input efficiently.
 		bGZip = true;
 	}
-	if (ext.CmpNoCase(_T("tgz")) == 0 || ext.CmpNoCase(_T("tar")) == 0)
+	if (ext.CmpNoCase(_T("tgz")) == 0 || ext.CmpNoCase(_T("tar")) == 0 ||
+		fname.Right(7).CmpNoCase(_T(".tar.gz")) == 0)
 		bTGZip = true;
 
 	if (ext.CmpNoCase(_T("zip")) == 0)
