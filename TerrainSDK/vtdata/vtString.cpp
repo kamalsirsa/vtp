@@ -990,8 +990,10 @@ void vtString::FormatForURL(const char *szInput)
 		case '\r':
 			break;
 		case '\n':
-		case ' ':
 			*this += '+';
+			break;
+		case ' ':
+			*this += "%20";
 			break;
 		case ',':
 			*this += "%2C";
@@ -999,8 +1001,11 @@ void vtString::FormatForURL(const char *szInput)
 		case '#':
 			*this += "%23";
 			break;
-		case ':':
-			*this += "%3A";
+		//case ':':
+		//	*this += "%3A";
+		//	break;
+		case '\\':
+			*this += '/';
 			break;
 		default:
 			*this += *c;
