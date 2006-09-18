@@ -4344,14 +4344,19 @@ void MainFrame::OnHelpDocLocal(wxCommandEvent &event)
 	wxString wxcwd = wxGetCwd();
 	vtString cwd = wxcwd.mb_str(wxConvUTF8);
 
+	VTLOG("OnHelpDocLocal: cwd is '%s'\n", (const char *) cwd);
+
 	vtStringArray paths;
 	paths.push_back(cwd + "/../Docs/VTBuilder/");
 	paths.push_back(cwd + "/Docs/");
 	vtString result = FindFileOnPaths(paths, "index.html");
 	if (result != "")
 	{
-		result = "file:///" + result;
-		wxLaunchDefaultBrowser(wxString(result, wxConvUTF8));
+		vtString url;
+		url.FormatForURL(result);
+		url = "file:///" + url;
+		VTLOG("Launching URL: %s\n", (const char *) url);
+		wxLaunchDefaultBrowser(wxString(url, wxConvUTF8));
 		return;
 	}
 	wxMessageBox(_("Couldn't find local documentation files"));
