@@ -62,7 +62,10 @@ public:
 protected:
 	void CreateMenus();
 	void CreateToolbar();
-	void ReadINI();
+
+	void ReadEnviroPaths();
+	void ReadDatapathsFromXML(ifstream &input, const char *path);
+	void ReadDatapathsFromINI(ifstream &input);
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);

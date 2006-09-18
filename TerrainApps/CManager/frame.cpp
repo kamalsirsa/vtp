@@ -135,8 +135,14 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		SetIcon(icon);
 	}
 
-	VTLOG(" reading INI file\n");
-	ReadINI();
+	ReadEnviroPaths();
+
+	VTLOG("Datapaths:\n");
+	int i, n = m_DataPaths.size();
+	if (n == 0)
+		VTLOG("   none.\n");
+	for (i = 0; i < n; i++)
+		VTLOG("   %s\n", (const char *) m_DataPaths[i]);
 
 	m_pCurrentModel = NULL;
 	m_pCurrentItem = NULL;
@@ -247,26 +253,97 @@ void vtFrame::UseLight(vtTransform *pLight)
 	m_pLightDlg->UseLight(pLight);
 }
 
+//////////////////////////////
+
+using namespace std;
+
+void vtFrame::ReadEnviroPaths()
+{
+	VTLOG("Getting data paths from Enviro.\n");
+	wxString cwd = wxGetCwd();
+	VTLOG("  Current directory: '%s'\n", cwd.mb_str(wxConvUTF8));
+
+	wxString IniPath = cwd + _T("/Enviro.xml");
+	vtString fname = IniPath.mb_str(wxConvUTF8);
+	VTLOG("  Looking for '%s'\n", (const char *) fname);
+	ifstream input;
+	input.open(fname, ios::in | ios::binary);
+	if (!input.is_open())
+	{
+		input.clear();
+		IniPath = cwd + _T("/../Enviro/Enviro.xml");
+		fname = IniPath.mb_str(wxConvUTF8);
+		VTLOG("  Not there.  Looking for '%s'\n", fname);
+		input.open(fname, ios::in | ios::binary);
+	}
+	if (input.is_open())
+	{
+		VTLOG1(" found it.\n");
+		ReadDatapathsFromXML(input, (const char *) IniPath.mb_str(wxConvUTF8));
+		return;
+	}
+	VTLOG1("  Not found.\n");
+	IniPath = cwd + _T("/Enviro.ini");;
+	fname = IniPath.mb_str(wxConvUTF8);
+	input.open(fname, ios::in | ios::binary);
+	if (!input.is_open())
+	{
+		IniPath = cwd + _T("/../Enviro/Enviro.ini");
+		fname = IniPath.mb_str(wxConvUTF8);
+		input.open(fname, ios::in | ios::binary);
+	}
+	if (!input.is_open())
+	{
+		VTLOG1("  Not found.\n");
+		return;
+	}
+	ReadDatapathsFromINI(input);
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// XML format
+
+class EnviroOptionsVisitor : public XMLVisitor
+{
+public:
+	EnviroOptionsVisitor(vtStringArray &paths) : m_paths(paths) {}
+	void startElement(const char *name, const XMLAttributes &atts) { m_data = ""; }
+	void endElement (const char *name);
+	void data(const char *s, int length) { m_data += vtString(s, length); }
+protected:
+	vtStringArray &m_paths;
+	vtString m_data;
+};
+
+void EnviroOptionsVisitor::endElement(const char *name)
+{
+	if (!strcmp(name, "DataPath"))
+		m_paths.push_back(m_data);
+}
+
+void vtFrame::ReadDatapathsFromXML(ifstream &input, const char *path)
+{
+	EnviroOptionsVisitor visitor(m_DataPaths);
+	try
+	{
+		readXML(input, visitor, path);
+	}
+	catch (xh_io_exception &ex)
+	{
+		const string msg = ex.getFormattedMessage();
+		VTLOG(" XML problem: %s\n", msg.c_str());
+	}
+}
+
+///////////////////////////////////////////////////////////////////////
+// INI format
+
 #define STR_DATAPATH "DataPath"
 
-void vtFrame::ReadINI()
+void vtFrame::ReadDatapathsFromINI(ifstream &input)
 {
-	ifstream input;
-	input.open("CManager.ini", ios::in | ios::binary);
-	if (!input.is_open())
-	{
-		input.clear();
-		input.open("Enviro.ini", ios::in | ios::binary);
-	}
-	if (!input.is_open())
-	{
-		input.clear();
-		input.open("../Enviro/Enviro.ini", ios::in | ios::binary);
-	}
-	if (!input.is_open())
-		return;
-
-	char buf[80];
+	char buf[256];
 	while (!input.eof())
 	{
 		if (input.peek() == '\n')
@@ -285,14 +362,6 @@ void vtFrame::ReadINI()
 			vtString string = get_line_from_stream(input);
 			m_DataPaths.push_back(vtString(string));
 		}
-	}
-	VTLOG("Datapaths:\n");
-	int i, n = m_DataPaths.size();
-	if (n == 0)
-		VTLOG("   none.\n");
-	for (i = 0; i < n; i++)
-	{
-		VTLOG("   %s\n", (const char *) m_DataPaths[i]);
 	}
 }
 
