@@ -213,7 +213,7 @@ public:
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;
 	void CreateTestVehicle();
-	void CreateSomeTestVehicles(vtTerrain *pTerrain, float fSpeed);
+	void CreateSomeTestVehicles(vtTerrain *pTerrain, int iNum, float fSpeed);
 	VehicleManager m_VehicleManager;
 	VehicleSet m_Vehicles;
 

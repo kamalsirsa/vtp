@@ -2115,7 +2115,7 @@ void Enviro::CreateTestVehicle()
 	}
 }
 
-void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSpeed)
+void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, int iNum, float fSpeed)
 {
 	vtRoadMap3d *pRoadMap = pTerrain->GetRoadMap();
 
@@ -2135,7 +2135,7 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSpeed)
 
 	// add some test vehicles
 	NodeGeom *road_node = NULL;
-	for (unsigned int i = 0; i < numv*2; i++)	// Create two of each land vehicle type
+	for (unsigned int i = 0; i < iNum; i++)
 	{
 		if (road_node == NULL)
 			road_node = pRoadMap->GetFirstNode();
@@ -2153,6 +2153,7 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, float fSpeed)
 		case 7: color.Set(1.0f, 0.8f, 0.6f); break; // tan
 		}
 
+		// Create some of each land vehicle type
 		int vnum = i % numv;
 		vtTransform *car = m_VehicleManager.CreateVehicle(vnames[vnum], color);
 		if (car)
