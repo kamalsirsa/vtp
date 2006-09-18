@@ -140,10 +140,7 @@ void IslandTerrain::CreateCustomCulture()
 	if (m_Params.GetValueBool(STR_VEHICLES))
 	{
 		float speed = m_Params.GetValueFloat(STR_VEHICLESPEED);
-
-		//create_airplanes(1, speed);
-		if (GetRoadMap() != NULL)
-			g_App.CreateSomeTestVehicles(this, speed);
+		create_airplanes(speed);
 	}
 
 #if 0
@@ -645,7 +642,7 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 
 	AddNode(copy);
 
-	// make it bigger and faster than real life
+	// make it faster than real life
 	float fSpeedExag = fSpeed;
 
 	// attach engine
