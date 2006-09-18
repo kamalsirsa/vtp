@@ -2509,8 +2509,6 @@ void MainFrame::OnMouseWheel(wxMouseEvent& event)
 
 using namespace std;
 
-#define STR_DATAPATH "DataPath"
-
 void MainFrame::ReadEnviroPaths()
 {
 	VTLOG("Getting data paths from Enviro.\n");
@@ -2592,6 +2590,8 @@ void MainFrame::ReadDatapathsFromXML(ifstream &input, const char *path)
 
 ///////////////////////////////////////////////////////////////////////
 // INI format
+
+#define STR_DATAPATH "DataPath"
 
 void MainFrame::ReadDatapathsFromINI(ifstream &input)
 {
