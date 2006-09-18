@@ -200,6 +200,7 @@ EVT_MENU(ID_TERRAIN_LOD,		EnviroFrame::OnLOD)
 EVT_MENU(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnToggleFoundations)
 EVT_MENU(ID_TERRAIN_RESHADE,	EnviroFrame::OnTerrainReshade)
 EVT_MENU(ID_TERRAIN_CHANGE_TEXTURE,	EnviroFrame::OnTerrainChangeTexture)
+EVT_MENU(ID_TERRAIN_DISTRIB_VEHICLES,	EnviroFrame::OnTerrainDistribVehicles)
 
 EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, EnviroFrame::OnUpdateCullEvery)
@@ -472,6 +473,7 @@ void EnviroFrame::CreateMenus()
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _("Toggle Artificial Foundations"));
 	m_pTerrainMenu->Append(ID_TERRAIN_RESHADE, _("&Recalculate Shading\tCtrl+R"));
 	m_pTerrainMenu->Append(ID_TERRAIN_CHANGE_TEXTURE, _("&Change Texture"));
+	m_pTerrainMenu->Append(ID_TERRAIN_DISTRIB_VEHICLES, _("&Distribute Vehicles (test)"));
 	m_pMenuBar->Append(m_pTerrainMenu, _("Te&rrain"));
 
 	if (m_bEnableEarth)
@@ -1586,6 +1588,42 @@ void EnviroFrame::OnUpdateIsTerrainView(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	event.Enable(t && g_App.m_state == AS_Terrain);
+}
+
+void EnviroFrame::OnTerrainDistribVehicles(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return;
+
+	if (pTerr->GetRoadMap() == NULL)
+	{
+		wxMessageBox(_T("There are no roads to put the vehicles on.\n"));
+		return;
+	}
+
+	int numv = 0;
+	vtContentManager3d &con = vtGetContent();
+	for (unsigned int i = 0; i < con.NumItems(); i++)
+	{
+		vtItem *item = con.GetItem(i);
+		if (vtString("ground vehicle") == item->GetValueString("type") &&
+			4 == item->GetValueInt("num_wheels"))
+			numv++;
+	}
+	if (numv == 0)
+	{
+		wxMessageBox(_T("Could not find any ground vehicles in the content file.\n"));
+		return;
+	}
+
+	wxString msg;
+	msg.Printf(_T("There are %d types of ground vehicle available."), numv);
+	int num = wxGetNumberFromUser(msg, _("Vehicles:"), _T("Distribute Vehicles"), 10, 1, 99);
+	if (num == -1)
+		return;
+
+	g_App.CreateSomeTestVehicles(pTerr, num, 1.0f);
 }
 
 void EnviroFrame::OnUpdateIsDynTerrain(wxUpdateUIEvent& event)
