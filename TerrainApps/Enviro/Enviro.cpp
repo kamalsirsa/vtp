@@ -2161,7 +2161,7 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, int iNum, float fSpeed)
 			pTerrain->AddNode(car);
 			pTerrain->PlantModelAtPoint(car, road_node->m_p);
 
-			float fSpeed = 88.0f;
+			float fSpeed = 60.0f;	// kmph
 
 			CarEngine *pE1;
 			if (road_node == NULL)
