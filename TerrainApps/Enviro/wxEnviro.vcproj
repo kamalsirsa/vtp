@@ -39,7 +39,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d.lib zlib1d.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d.lib zlib1d.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib Winmm.lib"
 				OutputFile=".\Debug-wx/wxEnviro.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -108,7 +108,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng13.lib zlib1.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng13.lib zlib1.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib Winmm.lib"
 				OutputFile="Release_Unicode/wxEnviro_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -175,7 +175,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d.lib zlib1d.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d.lib zlib1d.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib Winmm.lib"
 				OutputFile="Debug_Unicode/wxEnviro_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -243,7 +243,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng13.lib zlib1.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng13.lib zlib1.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib Winmm.lib"
 				OutputFile=".\Release-wx/wxEnviro.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
