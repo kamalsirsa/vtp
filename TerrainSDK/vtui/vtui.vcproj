@@ -319,6 +319,9 @@
 				RelativePath=".\InstanceDlg.cpp">
 			</File>
 			<File
+				RelativePath=".\Joystick.cpp">
+			</File>
+			<File
 				RelativePath="LinearStructDlg.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -469,6 +472,9 @@
 			</File>
 			<File
 				RelativePath=".\InstanceDlg.h">
+			</File>
+			<File
+				RelativePath=".\Joystick.h">
 			</File>
 			<File
 				RelativePath="LinearStructDlg.h">
