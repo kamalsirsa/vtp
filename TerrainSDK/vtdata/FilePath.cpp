@@ -654,7 +654,7 @@ gzFile vtGZOpen(const char *path, const char *mode)
 /**
  * Open a file using a UTF-8 encoded filename.
  *
- * Parameters are the same as vtFileOpen().  The only difference is that
+ * Parameters are the same as fopen().  The only difference is that
  * instead of being limited to multi-byte local charset, it is UTF-8
  * which supports all languages.
  */
@@ -673,7 +673,7 @@ FILE *vtFileOpen(const char *fname_utf8, const char *mode)
 	return _wfopen(fn.c_str(), mo.c_str());
 #elif __DARWIN_OSX__
 	// Mac OS X
-	return vtFileOpen(fname_utf8, mode);
+	return fopen(fname_utf8, mode);
 #else
 	// some other Unix flavor
   #if SUPPORT_WSTRING
