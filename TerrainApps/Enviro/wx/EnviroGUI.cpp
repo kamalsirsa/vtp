@@ -2,7 +2,7 @@
 // EnviroGUI.cpp
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/Terrain.h"
+#include "vtdata/vtLog.h"
 #include "EnviroGUI.h"
 #include "EnviroApp.h"
 #include "EnviroFrame.h"
@@ -24,6 +25,7 @@
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
 #include "vtui/ProfileDlg.h"
+#include "vtui/Joystick.h"
 
 DECLARE_APP(EnviroApp);
 
@@ -40,6 +42,7 @@ EnviroFrame *GetFrame()
 
 EnviroGUI::EnviroGUI()
 {
+	m_pJFlyer = NULL;
 }
 
 EnviroGUI::~EnviroGUI()
@@ -54,6 +57,19 @@ void EnviroGUI::ShowPopupMenu(const IPoint2 &pos)
 void EnviroGUI::SetTerrainToGUI(vtTerrain *pTerrain)
 {
 	GetFrame()->SetTerrainToGUI(pTerrain);
+
+	if (pTerrain && m_pJFlyer)
+	{
+		float speed = pTerrain->GetParams().GetValueFloat(STR_NAVSPEED);
+		m_pJFlyer->SetSpeed(speed);
+	}
+}
+
+void EnviroGUI::SetFlightSpeed(float speed)
+{
+	if (m_pJFlyer)
+		m_pJFlyer->SetSpeed(speed);
+	Enviro::SetFlightSpeed(speed);
 }
 
 void EnviroGUI::RefreshLayerView()
@@ -107,6 +123,12 @@ bool EnviroGUI::OnMouseEvent(vtMouseEvent &event)
 void EnviroGUI::SetupScene3()
 {
 	GetFrame()->Setup3DScene();
+
+#if wxUSE_JOYSTICK || WIN32
+	m_pJFlyer = new vtJoystickEngine;
+	vtGetScene()->AddEngine(m_pJFlyer);
+	m_pJFlyer->SetTarget(m_pNormalCamera);
+#endif
 }
 
 void EnviroGUI::SetTimeEngineToGUI(class TimeEngine *pEngine)
@@ -192,3 +214,55 @@ void EnviroGUI::ShowMessage(const vtString &str)
 
 	EnableContinuousRendering(true);
 }
+
+///////////////////////////////////////////////////////////////////////
+
+vtJoystickEngine::vtJoystickEngine()
+{
+	stick = new wxJoystick;
+	m_fSpeed = 1.0f;
+	m_fLastTime = 0.0f;
+}
+void vtJoystickEngine::Eval()
+{
+	float fTime = vtGetTime(), fElapsed = fTime - m_fLastTime;
+
+	vtTransform *pTarget = (vtTransform*) GetTarget();
+	if (pTarget)
+	{
+		wxPoint p = stick->GetPosition();
+		int buttons = stick->GetButtonState();
+		float dx = ((float)p.x / 32768) - 1.0f;
+		float dy = ((float)p.y / 32768) - 1.0f;
+
+		// use a small dead zone to avoid drift
+		const float dead_zone = 0.04f;
+
+		if (buttons & wxJOY_BUTTON2)
+		{
+			// move up down left right
+			if (fabs(dx) > dead_zone)
+				pTarget->TranslateLocal(FPoint3(dx * m_fSpeed * fElapsed, 0.0f, 0.0f));
+			if (fabs(dy) > dead_zone)
+				pTarget->Translate1(FPoint3(0.0f, dy * m_fSpeed * fElapsed, 0.0f));
+		}
+		else if (buttons & wxJOY_BUTTON3)
+		{
+			// pitch up down, yaw left right
+			if (fabs(dx) > dead_zone)
+				pTarget->RotateParent(FPoint3(0,1,0), -dx * fElapsed);
+			if (fabs(dy) > dead_zone)
+				pTarget->RotateLocal(FPoint3(1,0,0), dy * fElapsed);
+		}
+		else
+		{
+			// move forward-backward, turn left-right
+			if (fabs(dy) > dead_zone)
+				pTarget->TranslateLocal(FPoint3(0.0f, 0.0f, dy * m_fSpeed * fElapsed));
+			if (fabs(dx) > dead_zone)
+				pTarget->RotateParent(FPoint3(0,1,0), -dx * fElapsed);
+		}
+	}
+	m_fLastTime = fTime;
+}
+

@@ -2,11 +2,24 @@
 // EnviroGUI.h
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003-2004 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "../Enviro.h"
+
+class vtJoystickEngine : public vtEngine
+{
+public:
+	vtJoystickEngine();
+	void Eval();
+
+	void SetSpeed(float f) { m_fSpeed = f; };
+	float GetSpeed() { return m_fSpeed; }
+
+	class wxJoystick *stick;
+	float m_fSpeed, m_fLastTime;
+};
 
 class EnviroGUI : public Enviro
 {
@@ -31,10 +44,14 @@ public:
 	virtual void SetTimeEngineToGUI(class TimeEngine *pEngine);
 	virtual bool IsAcceptable(vtTerrain *pTerr);
 	virtual void ShowMessage(const vtString &str);
+	virtual void SetFlightSpeed(float speed);
 
 	// The following are useful methods
 	void SaveVegetation(bool bAskFilename);
 	void SaveStructures(bool bAskFilename);
+
+	// navigation engines
+	vtJoystickEngine	*m_pJFlyer;
 };
 
 // global singleton
