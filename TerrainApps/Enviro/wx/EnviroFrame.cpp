@@ -1771,17 +1771,22 @@ void EnviroFrame::OnHelpDocLocal(wxCommandEvent &event)
 	wxString wxcwd = wxGetCwd();
 	vtString cwd = wxcwd.mb_str(wxConvUTF8);
 
+	VTLOG("OnHelpDocLocal: cwd is '%s'\n", (const char *) cwd);
+
 	vtStringArray paths;
 	paths.push_back(cwd + "/../Docs/Enviro/");
 	paths.push_back(cwd + "/Docs/");
 	vtString result = FindFileOnPaths(paths, "index.html");
-	if (result != "")
+	if (result == "")
 	{
-		result = "file:///" + result;
-		wxLaunchDefaultBrowser(wxString(result, wxConvUTF8));
+		wxMessageBox(_("Couldn't find local documentation files"));
 		return;
 	}
-	wxMessageBox(_("Couldn't find local documentation files"));
+	vtString url;
+	url.FormatForURL(result);
+	url = "file:///" + url;
+	VTLOG("Launching URL: %s\n", (const char *) url);
+	wxLaunchDefaultBrowser(wxString(url, wxConvUTF8));
 }
 
 void EnviroFrame::OnHelpDocOnline(wxCommandEvent &event)
