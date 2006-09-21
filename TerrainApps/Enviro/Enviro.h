@@ -69,7 +69,7 @@ public:
 	void TextureHasChanged();
 
 	// navigation and camera
-	void SetFlightSpeed(float speed);
+	virtual void SetFlightSpeed(float speed);
 	float GetFlightSpeed();
 	void SetFlightAccel(bool bAccel);
 	bool GetFlightAccel();
