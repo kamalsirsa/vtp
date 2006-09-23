@@ -1542,6 +1542,8 @@ void BuilderView::OnSize(wxSizeEvent& event)
 
 #include <wx/Dir.h>
 #include <wx/File.h>
+#include "vtdata/TripDub.h"
+#include "vtdata/vtDIB.h"
 
 void BuilderView::OnChar(wxKeyEvent& event)
 {
@@ -1676,7 +1678,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		double ScaleX = vtProjection::GeodesicDistance(DPoint2(left,bottom),DPoint2(right,bottom));
 		double foo = ScaleX;
 #endif
-#if 1
+#if 0
 		wxString pname = _T("G:/Data-Charsettest/Temp");
 		wxString filename;
 		wxDir dir(pname);
@@ -1684,6 +1686,42 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		bool result = wxFile::Access(pname + _T("/") + filename, wxFile::read);
 		if (result)
 			VTLOG("success\n");
+#endif
+#if 0
+		ReqContext con;
+
+		IPoint2 base(8838, 7430);
+		IPoint2 size(50, 30);
+		vtDIB output;
+		output.Create(size.x*258, size.y*258, 24);
+		for (int x = 0; x < size.x; x++)
+		{
+			for (int y = 0; y < size.y; y++)
+			{
+				int xx = base.x + x;
+				int yy = base.y + y;
+				vtBytes data;
+				vtString url;
+				url.Format("http://us.maps3.yimg.com/aerial.maps.yimg.com/tile?v=1.4&t=a&x=%d&y=%d&z=1",
+					xx, yy);
+				VTLOG1(url + "\n");
+				bool result = con.GetURL(url, data);
+				if (!result)
+					continue;
+
+				vtString fname;
+				fname.Format("c:/temp/tile_%04d_%04d.jpg", xx, yy);
+				FILE *fp = fopen(fname, "wb");
+				fwrite(data.Get(), data.Len(), 1, fp);
+				fclose(fp);
+
+				vtDIB tile;
+				if (tile.ReadJPEG(fname))
+					tile.BlitTo(output, x * 258, (size.y - 1 - y) * 258);
+			}
+		}
+		VTLOG1("Writing output\n");
+		output.WriteBMP("c:/temp/output.bmp");
 #endif
 	}
 	else
