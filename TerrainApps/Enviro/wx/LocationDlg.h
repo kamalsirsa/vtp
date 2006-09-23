@@ -39,6 +39,7 @@ public:
 	~LocationDlg();
 
 	// WDR: method declarations for LocationDlg
+	wxButton* GetPlayToDisk()  { return (wxButton*) FindWindow( ID_PLAY_TO_DISK ); }
 	wxTextCtrl* GetSpeed()  { return (wxTextCtrl*) FindWindow( ID_SPEED ); }
 	wxTextCtrl* GetRecordSpacing()  { return (wxTextCtrl*) FindWindow( ID_RECORD_SPACING ); }
 	wxRadioButton* GetRecordInterval()  { return (wxRadioButton*) FindWindow( ID_RECORD_INTERVAL ); }

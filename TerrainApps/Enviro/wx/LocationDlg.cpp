@@ -240,6 +240,7 @@ void LocationDlg::UpdateEnabling()
 	GetRecordLinear()->Enable(m_iAnim != -1);
 
 	GetRecordSpacing()->Enable(m_bRecordInterval);
+	GetPlayToDisk()->Enable(m_iAnim != -1);
 }
 
 void LocationDlg::AppendAnimPath(vtAnimPath *anim, const char *name)
@@ -602,6 +603,12 @@ public:
 
 void LocationDlg::OnPlayToDisk( wxCommandEvent &event )
 {
+	if (m_iAnim == -1)
+	{
+		wxMessageBox(_("Please select an animpath to record."));
+		return;
+	}
+
 	// Ask for directory to place the images
 	wxDirDialog getDir(NULL, _("Output directory for the images"));
 	bool bResult = (getDir.ShowModal() == wxID_OK);
