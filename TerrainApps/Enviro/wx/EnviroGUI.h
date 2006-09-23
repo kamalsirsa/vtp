@@ -17,7 +17,7 @@ public:
 	void SetSpeed(float f) { m_fSpeed = f; };
 	float GetSpeed() { return m_fSpeed; }
 
-	class wxJoystick *stick;
+	class wxJoystick *m_pStick;
 	float m_fSpeed, m_fLastTime;
 };
 

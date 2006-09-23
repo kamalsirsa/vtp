@@ -126,6 +126,7 @@ void EnviroGUI::SetupScene3()
 
 #if wxUSE_JOYSTICK || WIN32
 	m_pJFlyer = new vtJoystickEngine;
+	m_pJFlyer->SetName2("Joystick");
 	vtGetScene()->AddEngine(m_pJFlyer);
 	m_pJFlyer->SetTarget(m_pNormalCamera);
 #endif
@@ -219,19 +220,28 @@ void EnviroGUI::ShowMessage(const vtString &str)
 
 vtJoystickEngine::vtJoystickEngine()
 {
-	stick = new wxJoystick;
 	m_fSpeed = 1.0f;
 	m_fLastTime = 0.0f;
+
+	m_pStick = new wxJoystick;
+	if (!m_pStick->IsOk())
+	{
+		delete m_pStick;
+		m_pStick = NULL;
+	}
 }
 void vtJoystickEngine::Eval()
 {
+	if (!m_pStick)
+		return;
+
 	float fTime = vtGetTime(), fElapsed = fTime - m_fLastTime;
 
 	vtTransform *pTarget = (vtTransform*) GetTarget();
 	if (pTarget)
 	{
-		wxPoint p = stick->GetPosition();
-		int buttons = stick->GetButtonState();
+		wxPoint p = m_pStick->GetPosition();
+		int buttons = m_pStick->GetButtonState();
 		float dx = ((float)p.x / 32768) - 1.0f;
 		float dy = ((float)p.y / 32768) - 1.0f;
 
