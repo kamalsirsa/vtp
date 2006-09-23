@@ -4350,16 +4350,16 @@ void MainFrame::OnHelpDocLocal(wxCommandEvent &event)
 	paths.push_back(cwd + "/../Docs/VTBuilder/");
 	paths.push_back(cwd + "/Docs/");
 	vtString result = FindFileOnPaths(paths, "index.html");
-	if (result != "")
+	if (result == "")
 	{
-		vtString url;
-		url.FormatForURL(result);
-		url = "file:///" + url;
-		VTLOG("Launching URL: %s\n", (const char *) url);
-		wxLaunchDefaultBrowser(wxString(url, wxConvUTF8));
+		wxMessageBox(_("Couldn't find local documentation files"));
 		return;
 	}
-	wxMessageBox(_("Couldn't find local documentation files"));
+	vtString url;
+	url.FormatForURL(result);
+	url = "file:///" + url;
+	VTLOG("Launching URL: %s\n", (const char *) url);
+	wxLaunchDefaultBrowser(wxString(url, wxConvUTF8));
 }
 
 void MainFrame::OnHelpDocOnline(wxCommandEvent &event)
