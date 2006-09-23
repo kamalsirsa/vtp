@@ -146,7 +146,7 @@ void TNode::AddLink(TLink *pR)
 	m_IntersectTypes[i] = IT_NONE;
 	m_Lights[i] = LT_INVALID;
 
-	if (old_roads) delete old_roads;
+	if (old_roads) delete [] old_roads;
 	delete [] iTypes;
 	delete [] lights;
 }
