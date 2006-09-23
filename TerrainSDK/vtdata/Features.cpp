@@ -1052,7 +1052,7 @@ bool isodd(int n)
 /**
  * Load a featureset's field data from a comma-separated-value (CSV) file.
  *
- * \param fname	filename in UTF-8 encoding.
+ * \param filename	filename in UTF-8 encoding.
  * \param progress_callback Provide a callback function if you want to receive
  *		progress indication.
  *
@@ -1526,7 +1526,7 @@ int vtFeatureSet::GetFieldIndex(const char *name) const
  * for every entity.
  *
  * \param name Name of the new field.
- * \param type Type of the new field.
+ * \param ftype Type of the new field.
  * \param string_length For backward compatibility with the old SHP/DBF file formats,
  *  this is the maximum length of a string, for string fields.  It has no effect
  *  unless you save this featureset to a SHP/DBF file.
