@@ -3,7 +3,7 @@
 //
 // Useful classes and functions for working with geometry and meshes.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -68,12 +68,25 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
  */
 vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 {
-	vtGeom *pGeom = new vtGeom();
-	vtMaterialArray *pMats = new vtMaterialArray();
+	vtGeom *pGeom = new vtGeom;
+	vtMaterialArray *pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f), false, false, true);
 	pGeom->SetMaterials(pMats);
 	pMats->Release();	// pass ownership to the geom
 
+	vtMesh *pMesh = CreateSphereMesh(sphere, res);
+	pGeom->AddMesh(pMesh, 0);
+	pMesh->Release();	// pass ownership to the geometry
+
+	return pGeom;
+}
+
+/**
+ * Create a wireframe sphere which is very useful for visually representing
+ * the bounding sphere of an object in the scene.
+ */
+vtMesh *CreateSphereMesh(const FSphere &sphere, int res)
+{
 	vtMesh *pMesh = new vtMesh(vtMesh::LINE_STRIP, 0, (res+1)*3*2);
 
 	float radius = sphere.radius * 0.9f;
@@ -112,10 +125,7 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 	for (i = 0; i < 6; i++)
 		pMesh->AddStrip2((res+1), (res+1) * i);
 
-	pGeom->AddMesh(pMesh, 0);
-	pMesh->Release();	// pass ownership to the geometry
-
-	return pGeom;
+	return pMesh;
 }
 
 vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
@@ -123,7 +133,7 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						const FPoint2 &min1, const FPoint2 &max1,
 						float fTiling, int steps)
 {
-	vtGeom *pGeom = new vtGeom();
+	vtGeom *pGeom = new vtGeom;
 	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, steps * steps);
 
 	mesh->CreateRectangle(steps, steps, Axis1, Axis2, Axis3, min1, max1, 0.0f, fTiling);
@@ -152,7 +162,7 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res)
 {
-	vtGeom *pGeom = new vtGeom();
+	vtGeom *pGeom = new vtGeom;
 	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, iVertType, res*res*2);
 	mesh->CreateEllipsoid(FPoint3(fRadius, fRadius, fRadius), res);
 	pGeom->SetMaterials(pMats);
@@ -195,7 +205,7 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
 	else
 		verts = res * 2;
 
-	vtGeom *pGeom = new vtGeom();
+	vtGeom *pGeom = new vtGeom;
 	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, iVertType, res*2);
 	mesh->CreateCylinder(fHeight, fRadius, res, bTop, bBottom, bCentered);
 	pGeom->SetMaterials(pMats);
@@ -211,7 +221,7 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
 vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 						   const FPoint3 &min1, const FPoint3 &max1, int steps)
 {
-	vtGeom *pGeom = new vtGeom();
+	vtGeom *pGeom = new vtGeom;
 	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, (steps+1)*4);
 
 	FPoint3 p, diff = max1 - min1, step = diff / (float)steps;

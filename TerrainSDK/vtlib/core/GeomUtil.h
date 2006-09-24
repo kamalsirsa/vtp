@@ -3,7 +3,7 @@
 //
 // Useful classes and functions for working with geometry and meshes.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -89,6 +89,7 @@ public:
 // helper functions
 vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha = 0.5f);
 vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res = 24);
+vtMesh *CreateSphereMesh(const FSphere &sphere, int res = 24);
 vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res);
 vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
