@@ -1992,11 +1992,21 @@ bool vtImageSprite::Create(const char *szTextureName, bool bBlending)
 	vtImage *pImage = vtImageRead(szTextureName);
 	if (!pImage)
 		return false;
-	return Create(pImage, bBlending);
+	bool success = Create(pImage, bBlending);
+	pImage->Release();	// pass ownership
+	return success;
 }
 
 /**
  * Create a vtImageSprite.
+ *
+ * Note that if you are not using the image for anything else, you should give
+ * ownership to the imagesprite.  Example:
+ \code
+ vtImage *image = vtImageRead("foo.png");
+ vtImageSprite *sprite = new vtImageSprite(image, false);
+ image->Release();	// pass ownership
+ \endcode
  *
  * \param pImage A texture image.
  * \param bBlending Set to true for alpha-blending, which produces smooth
@@ -2011,7 +2021,7 @@ bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
 	m_pMats = new vtMaterialArray;
 	m_pGeom = new vtGeom;
 	m_pGeom->SetMaterials(m_pMats);
-	m_pMats->Release();
+	m_pMats->Release();	// pass ownership
 
 	m_pMats->AddTextureMaterial(pImage, false, false, bBlending);
 
