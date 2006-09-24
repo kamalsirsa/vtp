@@ -80,7 +80,7 @@ bool EnviroOptions::ReadINI(const char *szFilename)
 {
 	VTLOG("Reading options from '%s'\n", szFilename);
 
-	ifstream input(m_strFilename, ios::in | ios::binary);
+	ifstream input(szFilename, ios::in | ios::binary);
 	if (!input.is_open())
 		return false;
 
