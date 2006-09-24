@@ -74,6 +74,7 @@ public:
 	DLine2 &GetFencePoints() { return m_pFencePts; }
 	void GetClosestPoint(const DPoint2 &point, DPoint2 &closest);
 	double GetDistanceToLine(const DPoint2 &point);
+	int GetNearestPointIndex(const DPoint2 &point, double &fDist);
 	bool IsContainedBy(const DRECT &rect) const;
 	bool GetExtents(DRECT &rect) const;
 

@@ -294,6 +294,25 @@ double vtFence::GetDistanceToLine(const DPoint2 &point)
 	return closest;
 }
 
+int vtFence::GetNearestPointIndex(const DPoint2 &point, double &fDist)
+{
+	int i, size = m_pFencePts.GetSize();
+	double dist, closest_dist = 1E8;
+	int closest = -1;
+	for (i = 0; i < size; i++)
+	{
+		DPoint2 p0 = m_pFencePts[i];
+		dist = (point-p0).Length();
+		if (dist < closest_dist)
+		{
+			closest_dist = dist;
+			closest = i;
+		}
+	}
+	fDist = closest_dist;
+	return closest;
+}
+
 void vtFence::WriteXML(GZOutput &out, bool bDegrees) const
 {
 	int i;
