@@ -1382,10 +1382,28 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 			str->Select(true);
 			str3d->ShowBounds(true);
 			vtStructInstance *inst = str->GetInstance();
+			vtFence *fen = str->GetFence();
 			if (inst != NULL && (event.flags & VT_SHIFT) != 0)
 			{
 				m_StartRotation = inst->GetRotation();
 				m_bRotating = true;
+			}
+			else if (fen != NULL)
+			{
+				// perhaps we have clicked on a fence control point
+				double dist;
+				int idx = fen->GetNearestPointIndex(gpos, dist);
+				if (idx != -1 && dist < 2.0f)	// distance cutoff
+				{
+					m_pDraggingFence = dynamic_cast<vtFence3d*>(str3d);
+					m_iDraggingFencePoint = idx;	// grab
+					m_bDragging = true;
+				}
+				else
+				{
+					m_pDraggingFence = NULL;
+					m_iDraggingFencePoint = -1;		// no grab
+				}
 			}
 			else
 				m_bDragging = true;
@@ -1521,7 +1539,20 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 			vtStructureArray3d *structures = pTerr->GetStructures();
 
 			if (m_bDragging)
-				structures->OffsetSelectedStructures(ground_delta);
+			{
+				if (m_pDraggingFence != NULL)
+				{
+					// Dragging a linear structure point
+					DLine2 &pts = m_pDraggingFence->GetFencePoints();
+					pts[m_iDraggingFencePoint] += ground_delta;
+					m_pDraggingFence->CreateNode(pTerr);
+				}
+				else
+				{
+					// Moving a whole structure (building or instance)
+					structures->OffsetSelectedStructures(ground_delta);
+				}
+			}
 			else if (m_bRotating)
 			{
 				for (int sel = structures->GetFirstSelected(); sel != -1; sel = structures->GetNextSelected())

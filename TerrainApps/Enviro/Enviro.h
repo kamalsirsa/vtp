@@ -182,6 +182,8 @@ public:
 	bool		m_bSelectedStruct;
 	bool		m_bSelectedPlant;
 	bool		m_bSelectedUtil;
+	vtFence3d	*m_pDraggingFence;
+	int			m_iDraggingFencePoint;
 	DPoint3		m_EarthPosDown;
 	DPoint3		m_EarthPosLast;
 	vtRoute		*m_pCurRoute;
