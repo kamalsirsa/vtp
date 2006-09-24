@@ -25,6 +25,7 @@ void vtLinearParams::Blank()
 	m_fPostHeight = 1.0f;
 	m_fPostWidth = 0.0f;
 	m_fPostDepth = 0.0f;
+	m_PostExtension = "none";
 	//
 	m_ConnectType = "none";
 	m_fConnectTop = 1.0f;
@@ -34,7 +35,7 @@ void vtLinearParams::Blank()
 
 void vtLinearParams::ApplyStyle(vtLinearStyle style)
 {
-	m_PostExtension = "none";
+	Blank();
 	switch (style)
 	{
 	case FS_WOOD_POSTS_WIRE:
@@ -173,6 +174,30 @@ void vtLinearParams::WriteXML(GZOutput &out) const
 	}
 }
 
+bool vtLinearParams::operator==(const vtLinearParams &rhs) const
+{
+	if (m_PostType != "none" || rhs.m_PostType != "none")
+	{
+		// compare posts
+		if (m_PostType != rhs.m_PostType ||
+			m_fPostWidth != rhs.m_fPostWidth ||
+			m_fPostDepth != rhs.m_fPostDepth ||
+//			m_fPostHeight != rhs.m_fPostHeight ||
+//			m_fPostSpacing != rhs.m_fPostSpacing ||
+			m_PostExtension != rhs.m_PostExtension)
+			return false;
+	}
+	if (m_ConnectType != "none" || rhs.m_ConnectType != "none")
+	{
+		// compare connection
+		if (m_ConnectType != rhs.m_ConnectType ||
+			m_fConnectTop != rhs.m_fConnectTop ||
+			m_fConnectBottom != rhs.m_fConnectBottom ||
+			m_fConnectWidth != rhs.m_fConnectWidth)
+			return false;
+	}
+	return true;
+}
 
 ///////////////////
 

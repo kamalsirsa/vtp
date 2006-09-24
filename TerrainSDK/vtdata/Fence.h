@@ -38,6 +38,8 @@ public:
 	void ApplyStyle(vtLinearStyle style);
 	void WriteXML(GZOutput &out) const;
 
+	bool operator==(const vtLinearParams &rhs) const;
+
 	// Posts
 	vtString	m_PostType;	// wood, steel, none
 	float	m_fPostHeight;
