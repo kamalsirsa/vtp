@@ -133,7 +133,6 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	unsigned int i, j;
 	unsigned int numfencepts = m_pFencePts.GetSize();
 
-	FLine3 posts3d;
 	FLine3 p3;
 
 	FPoint3 diff, fp;
@@ -141,10 +140,10 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 		m_Params.m_fPostDepth);
 
 	// first, project the posts from earth to world
-	posts3d.SetSize(numfencepts);
+	m_Posts3d.SetSize(numfencepts);
 	for (i = 0; i < numfencepts; i++)
 		// true = include culture
-		pHeightField->ConvertEarthToSurfacePoint(m_pFencePts[i], posts3d[i], true);
+		pHeightField->ConvertEarthToSurfacePoint(m_pFencePts[i], m_Posts3d[i], true);
 
 	if (m_Params.m_PostType != "none")
 	{
@@ -154,12 +153,12 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 		{
 			if (i == numfencepts-1)
 			{
-				p3.Append(posts3d[i]);
+				p3.Append(m_Posts3d[i]);
 				continue;
 			}
 			// get start and end group points for this section
-			FPoint3 wpos1 = posts3d[i];
-			FPoint3 wpos2 = posts3d[i+1];
+			FPoint3 wpos1 = m_Posts3d[i];
+			FPoint3 wpos2 = m_Posts3d[i+1];
 
 			// look at world distance (approximate meters, _not_ earth
 			//  coordinates, which might be in e.g. feet or degrees)
@@ -194,7 +193,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 		// no post spacing to consider, so just use the input vertices
 		p3.SetSize(numfencepts);
 		for (i = 0; i < numfencepts; i++)
-			p3[i] = posts3d[i];
+			p3[i] = m_Posts3d[i];
 	}
 
 	unsigned int npoints = p3.GetSize();
@@ -489,13 +488,16 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 
 void vtFence3d::DestroyGeometry()
 {
-	// Destroy the meshes so they can be re-made
-	while (m_pFenceGeom->GetNumMeshes())
+	if (m_pFenceGeom)
 	{
-		vtMesh *pMesh = m_pFenceGeom->GetMesh(0);
-		m_pFenceGeom->RemoveMesh(pMesh);
+		// Destroy the meshes so they can be re-made
+		while (m_pFenceGeom->GetNumMeshes())
+		{
+			vtMesh *pMesh = m_pFenceGeom->GetMesh(0);
+			m_pFenceGeom->RemoveMesh(pMesh);
+		}
+		m_pHighlightMesh = NULL;
 	}
-
 	m_bBuilt = false;
 }
 
@@ -507,9 +509,10 @@ void vtFence3d::DestroyGeometry()
  */
 bool vtFence3d::CreateNode(vtTerrain *pTerr)
 {
+	bool bHighlighted = (m_pHighlightMesh != NULL);
 	if (m_bBuilt)
 	{
-		// was build before; re-build geometry
+		// was build before; destroy meshes in order to re-build
 		DestroyGeometry();
 	}
 	else
@@ -532,41 +535,69 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 	// create surface and shape
 	AddFenceMeshes(pTerr->GetHeightField());
 
+	if (bHighlighted)
+		ShowBounds(true);
+
 	m_bBuilt = true;
 	return true;
 }
 
 void vtFence3d::DeleteNode()
 {
-	if (!m_pContainer)	// safety check
-		return;
-
 	DestroyGeometry();
-	m_pContainer->RemoveChild(m_pFenceGeom);
 	m_pFenceGeom->Release();
 	m_pFenceGeom = NULL;
 }
 
 void vtFence3d::ShowBounds(bool bShow)
 {
-	ShowHighlightMesh(bShow);
-}
-
-void vtFence3d::ShowHighlightMesh(bool bShow)
-{
 	if (m_pHighlightMesh)
 	{
+		// remove previous
 		m_pFenceGeom->RemoveMesh(m_pHighlightMesh);
 		m_pHighlightMesh = NULL;
 	}
 	if (bShow)
 	{
-		FSphere sphere;
-		m_pFenceGeom->GetBoundSphere(sphere);
+		// Simple bounding sphere
+//		FSphere sphere;
+//		m_pFenceGeom->GetBoundSphere(sphere);
+//		m_pHighlightMesh = CreateSphereMesh(sphere);
 
-		m_pHighlightMesh = CreateSphereMesh(sphere);
+		// border around the feature
+		unsigned int i, npoints = m_pFencePts.GetSize();
+		m_pHighlightMesh = new vtMesh(vtMesh::LINE_STRIP, 0, npoints*2);
+		FPoint3 sideways;
+		FPoint3 up(0,1,0);
+		for (i = 0; i < npoints; i++)
+		{
+			if (i < npoints-1)
+			{
+				// determine normal
+				sideways = SidewaysVector(m_Posts3d[i], m_Posts3d[i+1]);
+				sideways.SetLength(1.0f + m_Params.m_fConnectWidth);
+			}
+			m_pHighlightMesh->AddVertex(m_Posts3d[i] + sideways + up);
+			m_pHighlightMesh->AddVertex(m_Posts3d[i] - sideways + up);
+		}
+		std::vector<unsigned short> idx;
+		for (i = 0; i < npoints; i++) idx.push_back(i*2);
+		for (i = 0; i < npoints; i++) idx.push_back((npoints*2)-1 - i*2);
+		idx.push_back(0);
+		m_pHighlightMesh->AddStrip(idx.size(), &idx.front());
+
+		// Also some lines as handles for the control points
+		float height = max(m_Params.m_fPostHeight, m_Params.m_fConnectTop);
+		height += 1.0f;
+		for (i = 0; i < npoints; i++)
+		{
+			int v0 = m_pHighlightMesh->AddVertex(m_Posts3d[i]);
+			int v1 = m_pHighlightMesh->AddVertex(m_Posts3d[i] + FPoint3(0,height,0));
+			m_pHighlightMesh->AddLine(v0, v1);
+		}
 		m_pFenceGeom->AddMesh(m_pHighlightMesh, s_mi_hightlight);
 		m_pHighlightMesh->Release();	// pass ownership
 	}
 }
+
 
