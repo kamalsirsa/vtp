@@ -24,6 +24,7 @@
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/Contours.h"
 #include "vtlib/core/DynTerrain.h"
+#include "vtlib/core/Fence3d.h"
 #include "vtlib/core/Globe.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/SMTerrain.h"
@@ -997,7 +998,7 @@ void EnviroFrame::OnUpdateViewMapOverView(wxUpdateUIEvent& event)
 	if (curr)
 	{
 		TextureEnum eTex = curr->GetParams().GetTextureEnum();
-		bEnable = (eTex == TE_SINGLE || eTex == TE_TILED);
+		bEnable = (eTex == TE_SINGLE || eTex == TE_TILED  || eTex == TE_DERIVED);
 	}
 	event.Enable(bEnable);
 	event.Check(g_App.GetShowMapOverview());
@@ -2033,7 +2034,8 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 			}
 			if (fen)
 			{
-				// TODO? Enable editing of fence properties
+				// Editing of fence properties
+				m_pFenceDlg->SetOptions(fen->GetParams());
 				m_pFenceDlg->Show(true);
 			}
 			return;

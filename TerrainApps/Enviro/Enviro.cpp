@@ -1673,7 +1673,24 @@ void Enviro::close_fence()
 void Enviro::SetFenceOptions(const vtLinearParams &param)
 {
 	m_FenceParams = param;
-	finish_fence();
+
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return;
+
+	if (m_bActiveFence)
+		finish_fence();
+
+	vtStructureArray3d *structures = pTerr->GetStructures();
+	for (unsigned int i = 0; i < structures->GetSize(); i++)
+	{
+		vtStructure *str = structures->GetAt(i);
+		if (!str->IsSelected() || str->GetType() != ST_LINEAR)
+			continue;
+		vtFence3d *pFence = structures->GetFence(i);
+		pFence->SetParams(param);
+		pFence->CreateNode(pTerr);	// re-create
+	}
 }
 
 
