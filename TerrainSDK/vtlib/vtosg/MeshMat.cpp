@@ -607,12 +607,12 @@ void vtMesh::AddLine(int p0, int p1)
 	m_Index->push_back(p0);
 	m_Index->push_back(p1);
 
-	if (m_ePrimType == GL_LINES)
+	if (m_ePrimType == LINES)
 	{
 		DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
 		pDrawArrays->setCount(m_Index->size());
 	}
-	else if (m_ePrimType == GL_LINE_STRIP)
+	else if (m_ePrimType == LINE_STRIP)
 	{
 		DrawArrayLengths *pDrawArrayLengths = dynamic_cast<DrawArrayLengths*>(m_pPrimSet.get());
 		pDrawArrayLengths->push_back(2);
