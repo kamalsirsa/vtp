@@ -720,7 +720,7 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 
 	// We only support overviews for 'single' or '4x4 tiled' textures
 	TextureEnum eTex = pTerr->GetParams().GetTextureEnum();
-	if (eTex == TE_SINGLE)
+	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
 		image = pTerr->GetTextureImage();
 		if (!image)
