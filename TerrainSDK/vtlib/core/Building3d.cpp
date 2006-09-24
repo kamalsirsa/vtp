@@ -237,7 +237,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 #endif
 
 	// wrap in a shape and set materials
-	m_pGeom = new vtGeom();
+	m_pGeom = new vtGeom;
 	m_pGeom->SetName2("building-geom");
 	vtMaterialArray *pShared = GetSharedMaterialArray();
 	m_pGeom->SetMaterials(pShared);
@@ -1169,7 +1169,7 @@ bool vtBuilding3d::CreateNode(vtTerrain *pTerr)
 	else
 	{
 		// constructing for the first time
-		m_pContainer = new vtTransform();
+		m_pContainer = new vtTransform;
 		m_pContainer->SetName2("building container");
 	}
 	if (!CreateGeometry(pTerr->GetHeightField()))
