@@ -20,7 +20,7 @@
 #include "MenuEnum.h"	// for LayerTree_Ctrl
 #include "Frame.h"
 #include "BuilderView.h"
-#include "Helper.h"
+#include "vtui/Helper.h"
 
 DECLARE_APP(BuilderApp)
 
