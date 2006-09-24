@@ -108,6 +108,20 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	GetConnType()->Append(_("railing_pipe"));
 }
 
+void LinearStructureDlg::SetOptions(const vtLinearParams &param)
+{
+	m_param = param;
+
+	ValuesToSliders();
+	UpdateTypes();
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+	UpdateEnabling();
+
+	OnSetOptions(m_param);
+}
+
 void LinearStructureDlg::UpdateTypes()
 {
 	wxString ws(m_param.m_PostType, wxConvUTF8);
@@ -144,12 +158,28 @@ void LinearStructureDlg::UpdateEnabling()
 	GetConnBottomSlider()->Enable(m_param.m_ConnectType != "none");
 }
 
+void LinearStructureDlg::GuessStyle()
+{
+	// Go through the known styles and see if any match the current params
+	vtLinearParams p;
+	for (int i = 0; i < FS_TOTAL; i++)
+	{
+		p.ApplyStyle((vtLinearStyle) i);
+		if (m_param == p)
+		{
+			m_iStyle = i;
+			return;
+		}
+	}
+	m_iStyle = FS_TOTAL;	// Custom
+}
 
 // WDR: handler implementations for LinearStructureDlg
 
 void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	ValuesToSliders();
+	GuessStyle();
 	UpdateTypes();
 	m_bSetting = true;
 	TransferDataToWindow();
@@ -165,7 +195,7 @@ void LinearStructureDlg::OnConnType( wxCommandEvent &event )
 	m_param.m_ConnectType = ws.mb_str(wxConvUTF8);
 	UpdateEnabling();
 
-	m_iStyle = FS_TOTAL;	// custom
+	GuessStyle();
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
@@ -180,7 +210,7 @@ void LinearStructureDlg::OnPostType( wxCommandEvent &event )
 	m_param.m_PostType = ws.mb_str(wxConvUTF8);
 	UpdateEnabling();
 
-	m_iStyle = FS_TOTAL;	// custom
+	GuessStyle();
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
@@ -201,7 +231,7 @@ void LinearStructureDlg::OnExtension( wxCommandEvent &event )
 	if (val == 3)
 		m_param.m_PostExtension = "double";
 
-	m_iStyle = FS_TOTAL;	// custom
+	GuessStyle();
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
@@ -234,7 +264,7 @@ void LinearStructureDlg::OnSlider( wxCommandEvent &event )
 	TransferDataFromWindow();
 	int id = event.GetId();
 	SlidersToValues(id);
-	m_iStyle = FS_TOTAL;	// custom
+	GuessStyle();
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
@@ -248,7 +278,7 @@ void LinearStructureDlg::OnTextEdit( wxCommandEvent &event )
 	TransferDataFromWindow();
 	m_param.m_fPostDepth = m_param.m_fPostWidth;
 	ValuesToSliders();
-	m_iStyle = FS_TOTAL;	// custom
+	GuessStyle();
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;

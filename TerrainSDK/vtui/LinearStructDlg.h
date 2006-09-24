@@ -27,11 +27,13 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
+	void GuessStyle();
 	void OnInitDialog(wxInitDialogEvent& event);
 	void SlidersToValues(int which);
 	void ValuesToSliders();
 	void UpdateTypes();
 	void UpdateEnabling();
+	void SetOptions(const vtLinearParams &param);
 
 	// Override this with desired result
 	virtual void OnSetOptions(const vtLinearParams &param) = 0;
