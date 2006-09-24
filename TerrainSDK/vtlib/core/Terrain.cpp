@@ -1299,7 +1299,10 @@ int vtTerrain::DeleteSelectedStructures()
 		if (str->IsSelected())
 		{
 			vtStructure3d *str3d = structures->GetStructure3d(i);
-			RemoveNodeFromStructGrid(str3d->GetContainer());
+			vtNode *node = str3d->GetContainer();
+			if (!node)
+				node = str3d->GetGeom();
+			RemoveNodeFromStructGrid(node);
 		}
 	}
 
