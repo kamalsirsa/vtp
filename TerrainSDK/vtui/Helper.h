@@ -1,7 +1,7 @@
 //
 // Some useful standalone functions for use with wxWindows.
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -35,5 +35,10 @@ void ResumeProgressDialog();
 /////
 
 int GuessZoneFromGeo(const DPoint2 &pos);
+
+/////
+wxString StartOfFilename(const wxString &strFullPath);
+wxString ToBackslash(const wxString &path);
+void RemoveFileExtensions(wxString &fname, bool bAll = true);
 
 
