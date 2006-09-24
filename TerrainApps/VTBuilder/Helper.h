@@ -26,11 +26,6 @@ void AddType(wxString &str, const wxString &filter);
 vtStringArray &GetDataPaths();
 
 /////
-wxString StartOfFilename(const wxString &strFullPath);
-wxString ToBackslash(const wxString &path);
-void RemoveFileExtensions(wxString &fname, bool bAll = true);
-
-/////
 
 // Display a message to the user, and also send it to the log file.
 void DisplayAndLog(const char *pFormat, ...);
