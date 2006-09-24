@@ -15,7 +15,7 @@
 
 // statics
 vtMaterialDescriptorArray3d vtFence3d::s_FenceMats;
-int vtFence3d::s_mi_wire, vtFence3d::s_mi_metal;
+int vtFence3d::s_mi_wire, vtFence3d::s_mi_metal, vtFence3d::s_mi_hightlight;
 
 
 vtFence3d::vtFence3d() : vtFence()
@@ -25,8 +25,10 @@ vtFence3d::vtFence3d() : vtFence()
 
 void vtFence3d::Init()
 {
-	m_bBuilt = false;
+	m_pContainer = NULL;
 	m_pFenceGeom = NULL;
+	m_pHighlightMesh = NULL;
+	m_bBuilt = false;
 }
 
 void vtFence3d::CreateMaterials()
@@ -80,6 +82,12 @@ void vtFence3d::CreateMaterials()
 	// add red material for display of unknown material
 	s_FenceMats.Append(new vtMaterialDescriptor("unknown", "",
 		VT_MATERIAL_COLOURED, 1, 1, true, true, false, RGBi(255,0,0)));
+
+	// highlight (yellow)
+	s_mi_hightlight = s_FenceMats.GetMatArray()->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f), // diffuse
+		RGBf(0,0,0),	// ambient
+		false, false, true,		// culling, lighting, wireframe
+		0.7f);					// alpha
 
 	s_FenceMats.CreateMaterials();
 }
@@ -499,7 +507,12 @@ void vtFence3d::DestroyGeometry()
  */
 bool vtFence3d::CreateNode(vtTerrain *pTerr)
 {
-	if (!m_pFenceGeom)
+	if (m_bBuilt)
+	{
+		// was build before; re-build geometry
+		DestroyGeometry();
+	}
+	else
 	{
 		static bool bFirstTime = true;
 		if (bFirstTime == true)
@@ -516,9 +529,6 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 			s_FenceMats.GetMatArray()->Release();
 	}
 
-	if (m_bBuilt)
-		DestroyGeometry();
-
 	// create surface and shape
 	AddFenceMeshes(pTerr->GetHeightField());
 
@@ -528,11 +538,35 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 
 void vtFence3d::DeleteNode()
 {
-	if (m_pFenceGeom)
+	if (!m_pContainer)	// safety check
+		return;
+
+	DestroyGeometry();
+	m_pContainer->RemoveChild(m_pFenceGeom);
+	m_pFenceGeom->Release();
+	m_pFenceGeom = NULL;
+}
+
+void vtFence3d::ShowBounds(bool bShow)
+{
+	ShowHighlightMesh(bShow);
+}
+
+void vtFence3d::ShowHighlightMesh(bool bShow)
+{
+	if (m_pHighlightMesh)
 	{
-		DestroyGeometry();
-		m_pFenceGeom->Release();
-		m_pFenceGeom = NULL;
+		m_pFenceGeom->RemoveMesh(m_pHighlightMesh);
+		m_pHighlightMesh = NULL;
+	}
+	if (bShow)
+	{
+		FSphere sphere;
+		m_pFenceGeom->GetBoundSphere(sphere);
+
+		m_pHighlightMesh = CreateSphereMesh(sphere);
+		m_pFenceGeom->AddMesh(m_pHighlightMesh, s_mi_hightlight);
+		m_pHighlightMesh->Release();	// pass ownership
 	}
 }
 

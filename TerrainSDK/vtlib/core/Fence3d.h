@@ -29,6 +29,7 @@ public:
 	virtual vtGeom *GetGeom() { return m_pFenceGeom; }
 	virtual vtNode *GetContained() { return m_pFenceGeom; }
 	virtual void DeleteNode();
+	virtual void ShowBounds(bool bShow);
 
 	void DestroyGeometry();
 
@@ -40,12 +41,15 @@ protected:
 	void	AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc);
 	void	AddFenceMeshes(vtHeightField3d *pHeightField);
 	vtMaterialDescriptor *FindDescriptor(const vtString &type);
+	void	ShowHighlightMesh(bool bShow);
 
 	static void CreateMaterials();
 	static int s_mi_wire;		// s_mi = static material index
 	static int s_mi_metal;
+	static int s_mi_hightlight;
 
 	vtGeom		*m_pFenceGeom;
+	vtMesh		*m_pHighlightMesh;	// The wireframe highlight
 	bool		m_bBuilt;
 };
 
