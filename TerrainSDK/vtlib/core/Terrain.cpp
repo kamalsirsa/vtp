@@ -2857,7 +2857,7 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
 	if (iCultureFlags & CE_STRUCTURES)
 		vtIntersect(m_pStructGrid, start, end, hlist);
 
-	if (iCultureFlags & CE_ROADS)
+	if ((iCultureFlags & CE_ROADS) && m_pRoadGroup)
 		vtIntersect(m_pRoadGroup, start, end, hlist);
 
 	if (hlist.size() > 0)
