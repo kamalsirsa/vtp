@@ -70,6 +70,8 @@ void vtFence3d::CreateMaterials()
 	// create privet textured material
 	s_FenceMats.Append(new vtMaterialDescriptor("privet",
 		"Culture/privet_256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1.2f, 1.2f, true));
+	s_FenceMats.Append(new vtMaterialDescriptor("grass",
+		"GeoTypical/grass_repeat3_512.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1.5f, 1.5f));
 
 	// create railing textured materials: twosided, ambient, and alpha-blended
 	s_FenceMats.Append(new vtMaterialDescriptor("railing_pipe",
@@ -126,6 +128,35 @@ FPoint3 SidewaysVector(const FPoint3 &p0, const FPoint3 &p1)
 	FPoint3 cross = diff.Cross(up);
 	cross.Normalize();
 	return cross;
+}
+
+float SidewaysVector(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2,
+					FPoint3 &sideways)
+{
+	// Look at vectors to previous and next points
+	FPoint3 v0 = (p1-p0).Normalize();
+	FPoint3 v1 = (p2-p1).Normalize();
+
+	// we flip axes to turn the path vector 90 degrees (normal to path)
+	FPoint3 bisector(-(v0.z + v1.z), 0, v0.x + v1.x);
+	bisector.Normalize();
+
+	float wider;
+	float dot = v0.Dot(-v1);
+	if (dot <= -0.97 || dot >= 0.97)
+	{
+		// close enough to colinear, no need to widen
+		wider = 1.0f;
+	}
+	else
+	{
+		// factor to widen this corner is proportional to the angle
+        float angle = acos(dot);
+		wider = (float) (1.0 / sin(angle / 2));
+		bisector *= wider;
+	}
+	sideways = bisector;
+	return wider;
 }
 
 void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
@@ -235,11 +266,15 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 		for (i = 0; i < npoints; i++)
 		{
 			FPoint3 base = p3[i] + FPoint3(0.0f, PostSize.y, 0.0f);
-			if (i < npoints-1)
-			{
-				// determine side-pointing normal
+
+			// determine side-pointing normal
+			if (i == 0)
 				sideways = SidewaysVector(p3[i], p3[i+1]);
-			}
+			else if (i > 0 && i < npoints-1)
+				SidewaysVector(p3[i-1], p3[i], p3[i+1], sideways);
+			else if (i == npoints-1)
+				sideways = SidewaysVector(p3[i-1], p3[i]);
+
 			if (bLeft && bWires)
 			{
 				upward = -sideways + FPoint3(0,1,0);
@@ -419,16 +454,20 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 			int start = pMesh->GetNumVertices();
 			for (j = 0; j < npoints; j++)
 			{
-				if (j < npoints-1)
-				{
-					// determine normal (used for shading and thickness)
+				// determine side-pointing vector
+				if (j == 0)
 					sideways = SidewaysVector(p3[j], p3[j+1]);
-					switch (i)
-					{
-					case 0: normal = sideways; break;	// right
-					case 1: normal.Set(0,1,0); break;	// top: up
-					case 2: normal = -sideways; break;	// left
-					}
+				else if (j > 0 && j < npoints-1)
+					SidewaysVector(p3[j-1], p3[j], p3[j+1], sideways);
+				else if (j == npoints-1)
+					sideways = SidewaysVector(p3[j-1], p3[j]);
+
+				// determine vertex normal (used for shading and thickness)
+				switch (i)
+				{
+				case 0: normal = sideways; break;	// right
+				case 1: normal.Set(0,1,0); break;	// top: up
+				case 2: normal = -sideways; break;	// left
 				}
 
 				float fExtraElevation = 0.0f;
@@ -584,14 +623,18 @@ void vtFence3d::ShowBounds(bool bShow)
 		FPoint3 up(0,1,0);
 		for (i = 0; i < npoints; i++)
 		{
-			if (i < npoints-1)
-			{
-				// determine normal
+			// determine normal
+			if (i == 0)
 				sideways = SidewaysVector(m_Posts3d[i], m_Posts3d[i+1]);
-				sideways.SetLength(1.0f + m_Params.m_fConnectWidth);
-			}
-			m_pHighlightMesh->AddVertex(m_Posts3d[i] + sideways + up);
+			else if (i > 0 && i < npoints-1)
+				SidewaysVector(m_Posts3d[i-1], m_Posts3d[i], m_Posts3d[i+1], sideways);
+			else if (i == npoints-1)
+				sideways = SidewaysVector(m_Posts3d[i-1], m_Posts3d[i]);
+
+			sideways.SetLength(1.0f + m_Params.m_fConnectWidth);
+
 			m_pHighlightMesh->AddVertex(m_Posts3d[i] - sideways + up);
+			m_pHighlightMesh->AddVertex(m_Posts3d[i] + sideways + up);
 		}
 
 		std::vector<unsigned short> idx;
