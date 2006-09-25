@@ -1080,6 +1080,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 
 	if (m_state == 10)	// Linear
 	{
+		vtLinearParams &param = m_pFence->GetParams();
 		if (!strcmp(name, "Path"))
 		{
 			m_state = 11;
@@ -1089,48 +1090,54 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 			// this linear structure has posts
 			const char *type = atts.getValue("Type");
 			if (type)
-				m_pFence->GetParams().m_PostType = type;
+				param.m_PostType = type;
 			else
-				m_pFence->GetParams().m_PostType = "none";
+				param.m_PostType = "none";
 
 			const char *spacing = atts.getValue("Spacing");
 			if (spacing)
-				m_pFence->GetParams().m_fPostSpacing = (float)atof(spacing);
+				param.m_fPostSpacing = (float)atof(spacing);
 
 			const char *height = atts.getValue("Height");
 			if (height)
-				m_pFence->GetParams().m_fPostHeight = (float)atof(height);
+				param.m_fPostHeight = (float)atof(height);
 
 			const char *size = atts.getValue("Size");
 			if (size)
 			{
 				FPoint3 postsize;
 				sscanf(size, "%f, %f", &postsize.x, &postsize.z);
-				m_pFence->GetParams().m_fPostWidth = postsize.x;
-				m_pFence->GetParams().m_fPostDepth = postsize.z;
+				param.m_fPostWidth = postsize.x;
+				param.m_fPostDepth = postsize.z;
 			}
 
 			const char *exten = atts.getValue("Extension");
 			if (exten)
-				m_pFence->GetParams().m_PostExtension = exten;
+				param.m_PostExtension = exten;
 		}
 		else if (!strcmp(name, "Connect"))
 		{
 			const char *type = atts.getValue("Type");
 			if (type)
-				m_pFence->GetParams().m_ConnectType = type;
+				param.m_ConnectType = type;
 			else
-				m_pFence->GetParams().m_ConnectType = "none";
+				param.m_ConnectType = "none";
 
 			attval = atts.getValue("Top");
 			if (attval)
-				m_pFence->GetParams().m_fConnectTop = (float)atof(attval);
+				param.m_fConnectTop = (float)atof(attval);
 			attval = atts.getValue("Bottom");
 			if (attval)
-				m_pFence->GetParams().m_fConnectBottom = (float)atof(attval);
+				param.m_fConnectBottom = (float)atof(attval);
 			attval = atts.getValue("Width");
 			if (attval)
-				m_pFence->GetParams().m_fConnectWidth = (float)atof(attval);
+				param.m_fConnectWidth = (float)atof(attval);
+			attval = atts.getValue("Slope");
+			if (attval)
+				param.m_iConnectSlope = atoi(attval);
+			attval = atts.getValue("ConstantTop");
+			if (attval)
+				param.m_bConstantTop = (*attval == 't');
 		}
 	}
 	if (m_state == 20)	// Imported
