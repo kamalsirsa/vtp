@@ -23,6 +23,12 @@
 /////////////////////////////////////////////////
 //
 
+wxNumericValidator::wxNumericValidator(short *val) : wxValidator()
+{
+	Initialize();
+	m_pValShort = val;
+}
+
 wxNumericValidator::wxNumericValidator(int *val) : wxValidator()
 {
 	Initialize();
@@ -54,6 +60,7 @@ wxNumericValidator::wxNumericValidator(const wxNumericValidator& val)
 */
 void wxNumericValidator::Initialize()
 {
+	m_pValShort = NULL;
 	m_pValInt = NULL;
 	m_pValFloat = NULL;
 	m_pValDouble = NULL;
@@ -65,6 +72,7 @@ bool wxNumericValidator::Copy(const wxNumericValidator& val)
 {
 	wxValidator::Copy(val);
 
+	m_pValShort = val.m_pValShort;
 	m_pValInt = val.m_pValInt;
 	m_pValFloat = val.m_pValFloat;
 	m_pValDouble = val.m_pValDouble;
@@ -83,6 +91,8 @@ bool wxNumericValidator::TransferToWindow()
 		return true;
 
 	wxString str, format;
+	if (m_pValShort)
+		str.Printf(_T("%d"), *m_pValShort);
 	if (m_pValInt)
 		str.Printf(_T("%d"), *m_pValInt);
 	if (m_pValFloat)
@@ -161,6 +171,8 @@ bool wxNumericValidator::TransferFromWindow()
 	if (str != _T(""))
 	{
 		vtString ccs = str.mb_str(*wxConvCurrent);
+		if (m_pValShort)
+			sscanf(ccs, "%d", m_pValShort);
 		if (m_pValInt)
 			sscanf(ccs, "%d", m_pValInt);
 		if (m_pValFloat)
@@ -194,6 +206,16 @@ void AutoDialog::AddValidator(long id, int *iptr)
 	wxWindow *pWin = FindWindow(id);
 	if (!pWin) return;
 	pWin->SetValidator(wxGenericValidator(iptr));	// actually clones the one we pass in
+}
+
+wxNumericValidator *AutoDialog::AddNumValidator(long id, short *sptr)
+{
+	wxWindow *pWin = FindWindow(id);
+	if (!pWin) return NULL;
+
+	// actually clones the one we pass in
+	pWin->SetValidator(wxNumericValidator(sptr));
+	return (wxNumericValidator*) pWin->GetValidator();
 }
 
 wxNumericValidator *AutoDialog::AddNumValidator(long id, int *iptr)

@@ -16,9 +16,10 @@
 class wxNumericValidator: public wxValidator
 {
 public:
-	wxNumericValidator(int* val);
-	wxNumericValidator(float* val, int digits = -1);
-	wxNumericValidator(double* val, int digits = -1);
+	wxNumericValidator(short *val);
+	wxNumericValidator(int *val);
+	wxNumericValidator(float *val, int digits = -1);
+	wxNumericValidator(double *val, int digits = -1);
 	wxNumericValidator(const wxNumericValidator& copyFrom);
 
 	// Make a clone of this validator (or return NULL) - currently necessary
@@ -43,6 +44,7 @@ public:
 protected:
 	void Initialize();
 
+	short	*m_pValShort;
 	int		*m_pValInt;
 	float	*m_pValFloat;
 	double	*m_pValDouble;
@@ -73,6 +75,7 @@ public:
 	void AddValidator(long id, wxString *sptr);
 	void AddValidator(long id, bool *bptr);
 	void AddValidator(long id, int *iptr);
+	wxNumericValidator *AddNumValidator(long id, short *sptr);
 	wxNumericValidator *AddNumValidator(long id, int *iptr);
 	wxNumericValidator *AddNumValidator(long id, float *fptr, int digits = -1);
 	wxNumericValidator *AddNumValidator(long id, double *dptr, int digits = -1);
