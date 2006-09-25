@@ -145,6 +145,12 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 		// true = include culture
 		pHeightField->ConvertEarthToSurfacePoint(m_pFencePts[i], m_Posts3d[i], true);
 
+	// Find highest point
+	float max_y = -1E8;
+	for (i = 0; i < numfencepts; i++)
+		if (m_Posts3d[i].y > max_y)
+			max_y = m_Posts3d[i].y;
+
 	if (m_Params.m_PostType != "none")
 	{
 		// has posts
@@ -349,6 +355,10 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 		FPoint2 uvscale = desc->GetUVScale();
 		float vertical_meters = m_Params.m_fConnectTop - m_Params.m_fConnectBottom;
 
+		float fWidthTop = m_Params.m_fConnectWidth / 2;
+		double slope = m_Params.m_iConnectSlope / 180.0f * PIf;
+		float fWidthBottom = fWidthTop + vertical_meters / tan(slope);
+
 		float u = 0.0f;
 		float v1, v2;
 		for (int i = 0; i < 3; i++)
@@ -360,21 +370,21 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 			// determine v texture coordinate
 			switch (i)
 			{
-			case 0:
+			case 0:		// right side
 				v1 = 0.0f;
 				if (uvscale.y == -1)
 					v2 = 1.0f;
 				else
 					v2 = vertical_meters / uvscale.y;
 				break;
-			case 1:
+			case 1:		// top
 				v1 = 0.0f;
 				if (uvscale.y == -1)
 					v2 = 1.0f;
 				else
 					v2 = m_Params.m_fConnectWidth / uvscale.y;
 				break;
-			case 2:
+			case 2:		// left side
 				v2 = 0.0f;
 				if (uvscale.y == -1)
 					v1 = 1.0f;
@@ -386,27 +396,26 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 			// determine Y and Z values
 			switch (i)
 			{
-			case 0:
+			case 0:	// right side
 				y1 = m_Params.m_fConnectBottom;
 				y2 = m_Params.m_fConnectTop;
-				z1 = m_Params.m_fConnectWidth / 2;
-				z2 = m_Params.m_fConnectWidth / 2;
+				z1 = fWidthBottom;
+				z2 = fWidthTop;
 				break;
-			case 1:
+			case 1:	// top
 				y1 = m_Params.m_fConnectTop;
 				y2 = m_Params.m_fConnectTop;
-				z1 = m_Params.m_fConnectWidth / 2;
-				z2 = -m_Params.m_fConnectWidth / 2;
+				z1 = fWidthTop;
+				z2 = -fWidthTop;
 				break;
-			case 2:
+			case 2:	// left side
 				y1 = m_Params.m_fConnectTop;
 				y2 = m_Params.m_fConnectBottom;
-				z1 = -m_Params.m_fConnectWidth / 2;
-				z2 = -m_Params.m_fConnectWidth / 2;
+				z1 = -fWidthTop;
+				z2 = -fWidthBottom;
 				break;
 			}
 
-			int vidx;
 			int start = pMesh->GetNumVertices();
 			for (j = 0; j < npoints; j++)
 			{
@@ -416,25 +425,27 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 					sideways = SidewaysVector(p3[j], p3[j+1]);
 					switch (i)
 					{
-					case 0: normal = sideways; break;
-					case 1: normal.Set(0,1,0); break;	// up
-					case 2: normal = -sideways; break;
+					case 0: normal = sideways; break;	// right
+					case 1: normal.Set(0,1,0); break;	// top: up
+					case 2: normal = -sideways; break;	// left
 					}
 				}
 
+				float fExtraElevation = 0.0f;
+				if (m_Params.m_bConstantTop)
+					fExtraElevation = max_y - p3[j].y;
+
 				pos = p3[j];
 				pos.y += y2;
+				pos.y += fExtraElevation;
 				pos += (sideways * z2);
-				vidx = pMesh->AddVertex(pos);
-				pMesh->SetVtxTexCoord(vidx, FPoint2(u, v2));
-				pMesh->SetVtxNormal(vidx, normal);
+				pMesh->AddVertexNUV(pos, normal, FPoint2(u, v2));
 
 				pos = p3[j];
 				pos.y += y1;
+				pos.y += fExtraElevation;
 				pos += (sideways * z1);
-				vidx = pMesh->AddVertex(pos);
-				pMesh->SetVtxTexCoord(vidx, FPoint2(u, v1));
-				pMesh->SetVtxNormal(vidx, normal);
+				pMesh->AddVertexNUV(pos, normal, FPoint2(u, v1));
 
 				if (j < npoints-1)
 				{
@@ -559,13 +570,15 @@ void vtFence3d::ShowBounds(bool bShow)
 	}
 	if (bShow)
 	{
-		// Simple bounding sphere
-//		FSphere sphere;
-//		m_pFenceGeom->GetBoundSphere(sphere);
-//		m_pHighlightMesh = CreateSphereMesh(sphere);
+		unsigned int i, npoints = m_pFencePts.GetSize();
+
+		// Find highest point
+		float max_y = -1E8;
+		for (i = 0; i < npoints; i++)
+			if (m_Posts3d[i].y > max_y)
+				max_y = m_Posts3d[i].y;
 
 		// border around the feature
-		unsigned int i, npoints = m_pFencePts.GetSize();
 		m_pHighlightMesh = new vtMesh(vtMesh::LINE_STRIP, 0, npoints*2);
 		FPoint3 sideways;
 		FPoint3 up(0,1,0);
@@ -580,6 +593,7 @@ void vtFence3d::ShowBounds(bool bShow)
 			m_pHighlightMesh->AddVertex(m_Posts3d[i] + sideways + up);
 			m_pHighlightMesh->AddVertex(m_Posts3d[i] - sideways + up);
 		}
+
 		std::vector<unsigned short> idx;
 		for (i = 0; i < npoints; i++) idx.push_back(i*2);
 		for (i = 0; i < npoints; i++) idx.push_back((npoints*2)-1 - i*2);
@@ -589,10 +603,15 @@ void vtFence3d::ShowBounds(bool bShow)
 		// Also some lines as handles for the control points
 		float height = max(m_Params.m_fPostHeight, m_Params.m_fConnectTop);
 		height += 1.0f;
+
 		for (i = 0; i < npoints; i++)
 		{
+			float extra_height = 0.0f;
+			if (m_Params.m_bConstantTop)
+				extra_height = max_y - m_Posts3d[i].y;
+
 			int v0 = m_pHighlightMesh->AddVertex(m_Posts3d[i]);
-			int v1 = m_pHighlightMesh->AddVertex(m_Posts3d[i] + FPoint3(0,height,0));
+			int v1 = m_pHighlightMesh->AddVertex(m_Posts3d[i] + FPoint3(0,height+extra_height,0));
 			m_pHighlightMesh->AddLine(v0, v1);
 		}
 		m_pFenceGeom->AddMesh(m_pHighlightMesh, s_mi_hightlight);

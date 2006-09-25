@@ -31,6 +31,8 @@ void vtLinearParams::Blank()
 	m_fConnectTop = 1.0f;
 	m_fConnectBottom = 0.0f;
 	m_fConnectWidth = 0.0f;
+	m_iConnectSlope = 90;
+	m_bConstantTop = false;
 }
 
 void vtLinearParams::ApplyStyle(vtLinearStyle style)
@@ -118,6 +120,16 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.5f;
 		break;
+	case FS_BERM:
+		//
+		m_PostType = "none";
+		//
+		m_ConnectType = "berm";
+		m_fConnectTop = 1.5f;
+		m_fConnectBottom = -1.0f;
+		m_fConnectWidth = 1.0f;
+		m_iConnectSlope = 60;
+		break;
 	case FS_RAILING_ROW:
 		//
 		m_PostType = "none";
@@ -170,6 +182,10 @@ void vtLinearParams::WriteXML(GZOutput &out) const
 			gfprintf(out, " Bottom=\"%.2f\"", m_fConnectBottom);
 		if (m_fConnectWidth != 0.0f)
 			gfprintf(out, " Width=\"%.2f\"", m_fConnectWidth);
+		if (m_iConnectSlope != 90)
+			gfprintf(out, " Slope=\"%d\"", m_iConnectSlope);
+		if (m_bConstantTop)
+			gfprintf(out, " ConstantTop=\"true\"", m_iConnectSlope);
 		gfprintf(out, " />\n");
 	}
 }

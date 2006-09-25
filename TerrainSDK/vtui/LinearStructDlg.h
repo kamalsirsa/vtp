@@ -39,6 +39,9 @@ public:
 	virtual void OnSetOptions(const vtLinearParams &param) = 0;
 
 	// WDR: method declarations for LinearStructureDlg
+	wxCheckBox* GetConstantTop()  { return (wxCheckBox*) FindWindow( ID_CONSTANT_TOP ); }
+	wxSlider* GetSlopeSlider()  { return (wxSlider*) FindWindow( ID_SLOPE_SLIDER ); }
+	wxTextCtrl* GetSlope()  { return (wxTextCtrl*) FindWindow( ID_SLOPE ); }
 	wxTextCtrl* GetConnBottomEdit()  { return (wxTextCtrl*) FindWindow( ID_CONN_BOTTOM_EDIT ); }
 	wxTextCtrl* GetConnTopEdit()  { return (wxTextCtrl*) FindWindow( ID_CONN_TOP_EDIT ); }
 	wxTextCtrl* GetConnWidthEdit()  { return (wxTextCtrl*) FindWindow( ID_CONN_WIDTH_EDIT ); }
@@ -60,13 +63,14 @@ public:
 
 protected:
 	// WDR: member variable declarations for LinearStructureDlg
-	int	 m_iStyle;
-	int	 m_iPostHeight;
-	int	 m_iPostSpacing;
-	int	 m_iPostSize;
-	int	 m_iConnWidth;
-	int	 m_iConnTop;
-	int	 m_iConnBottom;
+	int  m_iStyle;
+	int  m_iPostHeight;
+	int  m_iPostSpacing;
+	int  m_iPostSize;
+	int  m_iConnWidth;
+	int  m_iConnTop;
+	int  m_iConnBottom;
+	int	 m_iSlope;
 
 	bool m_bSetting;
 
@@ -74,6 +78,7 @@ protected:
 
 private:
 	// WDR: handler declarations for LinearStructureDlg
+	void OnConstantTop( wxCommandEvent &event );
 	void OnTextEdit( wxCommandEvent &event );
 	void OnConnType( wxCommandEvent &event );
 	void OnPostType( wxCommandEvent &event );

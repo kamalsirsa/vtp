@@ -17,9 +17,9 @@
 // Include private header
 #include "vtui_wdr.h"
 
-const int ID_TEXT = 10000;
-
 #include <wx/intl.h>
+
+const int ID_TEXT = 10000;
 
 // Euro sign hack of the year
 #if wxUSE_UNICODE
@@ -508,6 +508,22 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
     item37->Add( item40, 0, wxALIGN_CENTER|wxALL, 0 );
 
     item24->Add( item37, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxBoxSizer *item41 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item42 = new wxStaticText( parent, ID_TEXT, _("Side Slope:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item41->Add( item42, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item43 = new wxTextCtrl( parent, ID_SLOPE, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item41->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item44 = new wxSlider( parent, ID_SLOPE_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
+    item41->Add( item44, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    item24->Add( item41, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxCheckBox *item45 = new wxCheckBox( parent, ID_CONSTANT_TOP, _("Constant Top Height"), wxDefaultPosition, wxDefaultSize, 0 );
+    item24->Add( item45, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item24, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 

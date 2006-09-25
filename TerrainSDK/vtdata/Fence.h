@@ -21,6 +21,7 @@ enum vtLinearStyle
 	FS_DRYSTONE,
 	FS_STONE,
 	FS_PRIVET,
+	FS_BERM,
 	FS_RAILING_ROW,
 	FS_RAILING_CABLE,
 	FS_RAILING_EU,
@@ -53,7 +54,8 @@ public:
 	float	m_fConnectTop;
 	float	m_fConnectBottom;
 	float	m_fConnectWidth;
-	// ConnectWidth assumed same at top and bottom
+	short	m_iConnectSlope;	// slope on the sides of the connector
+	bool	m_bConstantTop;		// top of connector is constant height
 };
 
 /**
