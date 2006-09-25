@@ -1710,7 +1710,11 @@ void Enviro::SetFenceOptions(const vtLinearParams &param)
 		return;
 
 	if (m_bActiveFence)
-		finish_fence();
+	{
+//		finish_fence();
+		m_pCurFence->SetParams(param);
+		m_pCurFence->CreateNode(pTerr);	// re-create
+	}
 
 	vtStructureArray3d *structures = pTerr->GetStructures();
 	for (unsigned int i = 0; i < structures->GetSize(); i++)
