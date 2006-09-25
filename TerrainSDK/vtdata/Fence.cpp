@@ -124,7 +124,7 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		//
 		m_PostType = "none";
 		//
-		m_ConnectType = "berm";
+		m_ConnectType = "grass";
 		m_fConnectTop = 1.5f;
 		m_fConnectBottom = -1.0f;
 		m_fConnectWidth = 1.0f;
