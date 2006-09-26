@@ -1711,7 +1711,6 @@ void Enviro::SetFenceOptions(const vtLinearParams &param)
 
 	if (m_bActiveFence)
 	{
-//		finish_fence();
 		m_pCurFence->SetParams(param);
 		m_pCurFence->CreateNode(pTerr);	// re-create
 	}
