@@ -102,6 +102,16 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						int Axis1, int Axis2, int Axis3,
 						const FPoint2 &min1, const FPoint2 &max1,
 						float fTiling, int steps);
+
+
+// Writing Wavefront OBJ format
+struct vtOBJFile
+{
+	FILE *fp;
+	int verts_written;
+};
+vtOBJFile *OBJFileBegin(vtGeom *geom, const char *filename);
+void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom);
 bool WriteGeomToOBJ(vtGeom *geom, const char *filename);
 
 /*@}*/	// Group sg
