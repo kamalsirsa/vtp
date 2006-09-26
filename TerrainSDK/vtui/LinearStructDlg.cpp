@@ -112,6 +112,7 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	GetConnType()->Append(_("drystone"));
 	GetConnType()->Append(_("stone"));
 	GetConnType()->Append(_("privet"));
+	GetConnType()->Append(_("grass"));
 	GetConnType()->Append(_("railing_wire"));
 	GetConnType()->Append(_("railing_eu"));
 	GetConnType()->Append(_("railing_pipe"));
