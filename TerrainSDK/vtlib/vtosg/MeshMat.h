@@ -1,5 +1,7 @@
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// MeshMat.h for OSG
+//
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -143,17 +145,19 @@ public:
 	void AddQuad(int p0, int p1, int p2, int p3);
 
 	// Access vertex properties
-	void SetVtxPos(int, const FPoint3&);
-	FPoint3 GetVtxPos(int i) const;
+	unsigned int GetNumVertices() const;
 
-	void SetVtxNormal(int, const FPoint3&);
-	FPoint3 GetVtxNormal(int i) const;
+	void SetVtxPos(unsigned int, const FPoint3&);
+	FPoint3 GetVtxPos(unsigned int i) const;
 
-	void SetVtxColor(int, const RGBAf&);
-	RGBAf GetVtxColor(int i) const;
+	void SetVtxNormal(unsigned int, const FPoint3&);
+	FPoint3 GetVtxNormal(unsigned int i) const;
 
-	void SetVtxTexCoord(int, const FPoint2&);
-	FPoint2 GetVtxTexCoord(int i) const;
+	void SetVtxColor(unsigned int, const RGBAf&);
+	RGBAf GetVtxColor(unsigned int i) const;
+
+	void SetVtxTexCoord(unsigned int, const FPoint2&);
+	FPoint2 GetVtxTexCoord(unsigned int i) const;
 
 	void SetLineWidth(float fWidth);
 

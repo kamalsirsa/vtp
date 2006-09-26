@@ -21,6 +21,7 @@ bool vtMaterial::s_bTextureCompression = false;
 
 vtMaterial::vtMaterial() : vtMaterialBase()
 {
+	m_pImage = NULL;
 	m_pStateSet = new StateSet;
 	m_pMaterial = new Material;
 	m_pStateSet->setAttributeAndModes(m_pMaterial.get());
@@ -651,12 +652,17 @@ void vtMesh::AddQuad(int p0, int p1, int p2, int p3)
 	pDrawArrays->setCount(m_Index->size());
 }
 
+unsigned int vtMesh::GetNumVertices() const
+{
+	return m_Vert->size();
+}
+
 /**
  * Set the position of a vertex.
  *	\param i	Index of the vertex.
  *	\param p	The position.
  */
-void vtMesh::SetVtxPos(int i, const FPoint3 &p)
+void vtMesh::SetVtxPos(unsigned int i, const FPoint3 &p)
 {
 	Vec3 s;
 	v2s(p, s);
@@ -680,7 +686,7 @@ void vtMesh::SetVtxPos(int i, const FPoint3 &p)
 /**
  * Get the position of a vertex.
  */
-FPoint3 vtMesh::GetVtxPos(int i) const
+FPoint3 vtMesh::GetVtxPos(unsigned int i) const
 {
 	FPoint3 p;
 	s2v( (Vec3)m_Vert->at(i), p);
@@ -695,7 +701,7 @@ FPoint3 vtMesh::GetVtxPos(int i) const
  *	\param i	Index of the vertex.
  *	\param norm	The normal vector.
  */
-void vtMesh::SetVtxNormal(int i, const FPoint3 &norm)
+void vtMesh::SetVtxNormal(unsigned int i, const FPoint3 &norm)
 {
 	Vec3 s;
 	v2s(norm, s);
@@ -709,7 +715,7 @@ void vtMesh::SetVtxNormal(int i, const FPoint3 &norm)
 /**
  * Get the normal of a vertex.
  */
-FPoint3 vtMesh::GetVtxNormal(int i) const
+FPoint3 vtMesh::GetVtxNormal(unsigned int i) const
 {
 	FPoint3 p;
 	s2v( (Vec3)m_Norm->at(i), p);
@@ -724,7 +730,7 @@ FPoint3 vtMesh::GetVtxNormal(int i) const
  *	\param i		Index of the vertex.
  *	\param color	The color.
  */
-void vtMesh::SetVtxColor(int i, const RGBAf &color)
+void vtMesh::SetVtxColor(unsigned int i, const RGBAf &color)
 {
 	if (m_iVtxType & VT_Colors)
 	{
@@ -741,7 +747,7 @@ void vtMesh::SetVtxColor(int i, const RGBAf &color)
 /**
  * Get the color of a vertex.
  */
-RGBAf vtMesh::GetVtxColor(int i) const
+RGBAf vtMesh::GetVtxColor(unsigned int i) const
 {
 	if (m_iVtxType & VT_Colors)
 	{
@@ -761,7 +767,7 @@ RGBAf vtMesh::GetVtxColor(int i) const
  *	\param i	Index of the vertex.
  *	\param uv	The texture coordinate.
  */
-void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
+void vtMesh::SetVtxTexCoord(unsigned int i, const FPoint2 &uv)
 {
 	if (m_iVtxType & VT_TexCoords)
 	{
@@ -779,7 +785,7 @@ void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
 /**
  * Get the texture coordinates of a vertex.
  */
-FPoint2 vtMesh::GetVtxTexCoord(int i) const
+FPoint2 vtMesh::GetVtxTexCoord(unsigned int i) const
 {
 	if (m_iVtxType & VT_TexCoords)
 	{
