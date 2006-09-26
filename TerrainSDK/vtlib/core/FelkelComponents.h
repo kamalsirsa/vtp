@@ -32,10 +32,6 @@ class vtMaterial;
 #include <limits>
 #endif
 
-#ifdef EPS
-#include <fstream>
-#endif
-
 using namespace std;
 
 #define CN_PI			((CNumber ) 3.14159265358979323846)

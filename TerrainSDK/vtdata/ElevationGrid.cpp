@@ -7,8 +7,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <fstream>
-using namespace std;
 
 #include "ElevationGrid.h"
 #include "ByteOrder.h"
@@ -747,10 +745,10 @@ float vtElevationGrid::GetFValue(int i, int j) const
 void vtElevationGrid::ComputeExtentsFromCorners()
 {
 	// find absolute extents of corner coordinates
-	m_EarthExtents.left = min(m_Corners[0].x, m_Corners[1].x);
-	m_EarthExtents.right = max(m_Corners[2].x, m_Corners[3].x);
-	m_EarthExtents.bottom = min(m_Corners[0].y, m_Corners[3].y);
-	m_EarthExtents.top = max(m_Corners[1].y, m_Corners[2].y);
+	m_EarthExtents.left = std::min(m_Corners[0].x, m_Corners[1].x);
+	m_EarthExtents.right = std::max(m_Corners[2].x, m_Corners[3].x);
+	m_EarthExtents.bottom = std::min(m_Corners[0].y, m_Corners[3].y);
+	m_EarthExtents.top = std::max(m_Corners[1].y, m_Corners[2].y);
 }
 
 
