@@ -588,16 +588,22 @@ void EnviroFrame::SetMode(MouseMode mode)
 
 	g_App.SetMode(mode);
 
+	if (mode == MM_FENCES)
+	{
+		// make sure fence materials have been loaded
+		vtFence3d::CreateMaterials();
+		// and inform the dialog about the materials
+		m_pFenceDlg->SetConnectionMaterials(&vtFence3d::s_FenceMats);
+	}
+
 	// Show/hide plant dialog
 	if (mode == MM_PLANTS)
 	{
 		VTLOG1("Calling Plant dialog\n");
 		m_pPlantDlg->SetPlantList(g_App.GetPlantList());
 		m_pPlantDlg->SetPlantOptions(g_App.GetPlantOptions());
-		m_pPlantDlg->Show(true);
 	}
-	else
-		m_pPlantDlg->Show(false);
+	m_pPlantDlg->Show(mode == MM_PLANTS);
 }
 
 void EnviroFrame::OnChar(wxKeyEvent& event)
