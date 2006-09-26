@@ -7,7 +7,6 @@
 
 #include "vtlib/vtlib.h"
 
-#include <fstream>
 #include "vtdata/vtLog.h"
 
 #include "Structure3d.h"

@@ -9,8 +9,6 @@
 #include "CarEngine.h"
 #include "vtdata/vtLog.h"
 
-#include <iostream>
-#include <fstream>
 using namespace std;
 
 // acceleration in meters per second^2 (for the car.)
