@@ -1,7 +1,7 @@
 //
 // Fence3d.cpp
 //
-// Creates fence geometry, drapes on a terrain
+// Creates linear structure geometry, drapes it on a terrain.
 //
 // Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -15,7 +15,7 @@
 
 // statics
 vtMaterialDescriptorArray3d vtFence3d::s_FenceMats;
-int vtFence3d::s_mi_wire, vtFence3d::s_mi_metal, vtFence3d::s_mi_hightlight;
+int vtFence3d::s_mi_wire, vtFence3d::s_mi_metal;
 
 
 vtFence3d::vtFence3d() : vtFence()
@@ -83,13 +83,7 @@ void vtFence3d::CreateMaterials()
 
 	// add red material for display of unknown material
 	s_FenceMats.Append(new vtMaterialDescriptor("unknown", "",
-		VT_MATERIAL_COLOURED, 1, 1, true, true, false, RGBi(255,0,0)));
-
-	// highlight (yellow)
-	s_mi_hightlight = s_FenceMats.GetMatArray()->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f), // diffuse
-		RGBf(0,0,0),	// ambient
-		false, false, true,		// culling, lighting, wireframe
-		0.7f);					// alpha
+		VT_MATERIAL_COLOUR, 1, 1, true, true, false, RGBi(255,0,0)));
 
 	s_FenceMats.CreateMaterials();
 }
@@ -647,6 +641,9 @@ void vtFence3d::ShowBounds(bool bShow)
 		float height = max(m_Params.m_fPostHeight, m_Params.m_fConnectTop);
 		height += 1.0f;
 
+		// Use yellow highlight material
+		int highlight_matidx = s_FenceMats.FindMatIndex("Highlight", RGBf(1,1,0));
+
 		for (i = 0; i < npoints; i++)
 		{
 			float extra_height = 0.0f;
@@ -657,7 +654,7 @@ void vtFence3d::ShowBounds(bool bShow)
 			int v1 = m_pHighlightMesh->AddVertex(m_Posts3d[i] + FPoint3(0,height+extra_height,0));
 			m_pHighlightMesh->AddLine(v0, v1);
 		}
-		m_pFenceGeom->AddMesh(m_pHighlightMesh, s_mi_hightlight);
+		m_pFenceGeom->AddMesh(m_pHighlightMesh, highlight_matidx);
 		m_pHighlightMesh->Release();	// pass ownership
 	}
 }

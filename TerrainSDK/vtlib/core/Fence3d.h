@@ -45,7 +45,6 @@ protected:
 	static void CreateMaterials();
 	static int s_mi_wire;		// s_mi = static material index
 	static int s_mi_metal;
-	static int s_mi_hightlight;
 
 	vtGeom		*m_pFenceGeom;
 	vtMesh		*m_pHighlightMesh;	// The wireframe highlight
