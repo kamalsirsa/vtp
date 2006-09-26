@@ -25,6 +25,8 @@ and distributed under a completely free <a href="../license.txt">open source lic
         <li>vtLevel</li>
         <li>vtFence</li>
         <li>vtStructureArray</li>
+        <li>vtMaterialDescriptor</li>
+        <li>vtMaterialDescriptorArray</li>
       </ul>
       <p>Vegetation</p>
       <ul>
