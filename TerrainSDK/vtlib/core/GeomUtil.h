@@ -102,6 +102,7 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						int Axis1, int Axis2, int Axis3,
 						const FPoint2 &min1, const FPoint2 &max1,
 						float fTiling, int steps);
+bool WriteGeomToOBJ(vtGeom *geom, const char *filename);
 
 /*@}*/	// Group sg
 
