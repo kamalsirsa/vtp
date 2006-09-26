@@ -196,6 +196,15 @@ void MaterialDescriptorArrayVisitor::startElement(const char *name, const XMLAtt
 				sscanf(attval, "%2hx %2hx %2hx", &r, &g, &b);
 				pDescriptor->SetRGB(RGBi(r, g, b));
 			}
+
+			attval = atts.getValue("TwoSided");
+			if (attval && !strcmp(attval, "true"))
+				pDescriptor->SetTwoSided(true);
+
+			attval = atts.getValue("Blending");
+			if (attval && !strcmp(attval, "true"))
+				pDescriptor->SetBlending(true);
+
 			m_pMDA->Append(pDescriptor);
 		}
 	}
@@ -218,12 +227,33 @@ vtMaterialDescriptor::vtMaterialDescriptor()
 	m_iMaterialIndex = -1;
 }
 
-vtMaterialDescriptor::vtMaterialDescriptor(const char *name,
+/**
+ * Create a high-level description of a material.
+ *
+ * \param Name Name of the new material.
+ * \param SourceName Filename of the source imagery, for a textured material,
+ *		 or "" otherwise.
+ * \param Colorable Enumeration, one of:
+	- VT_MATERIAL_COLOUR A plain surface of a single color.
+	- VT_MATERIAL_COLOURABLE A plain surface that can be any color.
+	- VT_MATERIAL_SELFCOLOURED_TEXTURE A textured surface.
+	- VT_MATERIAL_COLOURABLE_TEXTURE A textured surface which can be made any color.
+ * \param fUVScaleX, fUVScaleY For textured materials, this is the size of the
+ *		provided texture, in meters.  For example, if the texture is of a row
+ *		of bricks that is 50x50 cm, then the scale factors are (.5, .5).
+ *		If a texture should not be tiled (for example, a door or window which
+ *		always exactly fits its surface) then scale factor is -1.
+ * \param bTwoSided True for surfaces which should be visible from both sides.
+ * \param bAmbient True for surfaces which are only affected by ambient light.
+ * \param bBlending True for textures with transparency.
+ * \param Color For VT_MATERIAL_COLOUR only, the single color.
+ */
+vtMaterialDescriptor::vtMaterialDescriptor(const char *Name,
 	const vtString &SourceName, const vtMaterialColorEnum Colorable,
 	const float fUVScaleX, const float fUVScaleY, const bool bTwoSided,
 	const bool bAmbient, const bool bBlending, const RGBi &Color)
 {
-	m_pName = new vtString(name);	//GetGlobalMaterials()->FindName(name);
+	m_pName = new vtString(Name);	//GetGlobalMaterials()->FindName(name);
 	m_Type = 0;
 	m_SourceName = SourceName;
 	m_Colorable = Colorable;
@@ -240,6 +270,44 @@ vtMaterialDescriptor::~vtMaterialDescriptor()
 	if (m_pName)
 		delete m_pName;
 }
+
+void vtMaterialDescriptor::WriteToFile(FILE *fp)
+{
+	fprintf(fp, "\t<MaterialDescriptor Name=\"");
+	fprintf(fp, (pcchar) (*m_pName));
+	fprintf(fp, "\"");
+
+	if (m_Type != 0)
+		fprintf(fp, " Type=\"%d\"", m_Type);
+
+	fprintf(fp, " Colorable=\"%s\"", m_Colorable == VT_MATERIAL_COLOURABLE_TEXTURE ? "true" : "false");
+
+	fprintf(fp, " Source=\"");
+	fprintf(fp, (pcchar) m_SourceName);
+	fprintf(fp, "\"");
+
+	fprintf(fp, " Scale=\"%f, %f\"", m_UVScale.x, m_UVScale.y);
+//	fprintf(fp, " RGB=\"" << m_RGB.r << " " << m_RGB.g << " " << m_RGB.b << "\""
+
+	if (m_bTwoSided)
+		fprintf(fp, " TwoSided=\"true\"");
+
+	if (m_bBlending)
+		fprintf(fp, " Blending=\"true\"");
+
+	fprintf(fp, "/>\n");
+}
+	//friend std::ostream &operator << (std::ostream & Output, const vtMaterialDescriptor &Input)
+	//{
+	//	const RGBi &rgb = Input.m_RGB;
+	//	Output << "\t<MaterialDescriptor Name=\""<< (pcchar)*Input.m_pName << "\""
+	//		<< " Colorable=\"" << (Input.m_Colorable == VT_MATERIAL_COLOURABLE_TEXTURE) << "\""
+	//		<< " Source=\"" << (pcchar)Input.m_SourceName << "\""
+	//		<< " Scale=\"" << Input.m_UVScale.x << ", " << Input.m_UVScale.y << "\""
+	//		<< " RGB=\"" << rgb.r << " " << rgb.g << " " << rgb.b << "\""
+	//		<< "/>" << std::endl;
+	//	return Output;
+	//}
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -270,6 +338,36 @@ bool vtMaterialDescriptorArray::Load(const char *szFileName)
 	VTLOG(" successfully loaded %d material descriptions.\n", GetSize());
 	return true;
 }
+
+bool vtMaterialDescriptorArray::Save(const char *szFileName)
+{
+	VTLOG("Saving materials to %s\n", szFileName);
+
+	FILE *fp = vtFileOpen(szFileName, "wb");
+	if (!fp)
+		return false;
+
+	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+	fprintf(fp, "<MaterialDescriptorArray>\n");
+	unsigned int iSize = GetSize();
+	for (unsigned int i = 0; i < iSize; i++)
+		GetAt(i)->WriteToFile(fp);
+	fprintf(fp, "</MaterialDescriptorArray>\n");
+	fclose(fp);
+
+	return true;
+}
+
+	//friend std::ostream &operator << (std::ostream & Output, vtMaterialDescriptorArray &Input)
+	//{
+	//	int iSize = Input.GetSize();
+	//	Output << "<?xml version=\"1.0\"?>" << std::endl;
+	//	Output << "<MaterialDescriptorArray>" << std::endl;
+	//	for (int i = 0; i < iSize; i++)
+	//		Output << *Input.GetAt(i);
+	//	Output << "</MaterialDescriptorArray>" << std::endl;
+	//	return Output;
+	//}
 
 const vtString *vtMaterialDescriptorArray::FindName(const char *name)
 {

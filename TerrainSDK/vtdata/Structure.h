@@ -12,7 +12,6 @@
 #ifndef STRUCTUREH
 #define STRUCTUREH
 
-#include <iostream>
 #include "MathTypes.h"
 #include "Selectable.h"
 #include "Content.h"
@@ -151,17 +150,8 @@ public:
 	{
 		return (*m_pName == *rhs.m_pName);
 	}
-	friend std::ostream &operator << (std::ostream & Output, const vtMaterialDescriptor &Input)
-	{
-		const RGBi &rgb = Input.m_RGB;
-		Output << "\t<MaterialDescriptor Name=\""<< (pcchar)*Input.m_pName << "\""
-			<< " Colorable=\"" << (Input.m_Colorable == VT_MATERIAL_COLOURABLE_TEXTURE) << "\""
-			<< " Source=\"" << (pcchar)Input.m_SourceName << "\""
-			<< " Scale=\"" << Input.m_UVScale.x << ", " << Input.m_UVScale.y << "\""
-			<< " RGB=\"" << rgb.r << " " << rgb.g << " " << rgb.b << "\""
-			<< "/>" << std::endl;
-		return Output;
-	}
+	void WriteToFile(FILE *fp);
+
 private:
 	const vtString *m_pName; // Name of material
 	int m_Type;				// 0 for surface materials, >0 for classification type
@@ -178,6 +168,9 @@ private:
 	int m_iMaterialIndex; // Starting or only index of this material in the shared materials array
 };
 
+/**
+ * Contains a set of material descriptors.
+ */
 class vtMaterialDescriptorArray : public vtArray<vtMaterialDescriptor*>
 {
 public:
@@ -187,23 +180,12 @@ public:
 		for (unsigned int i = first; i <= last; i++)
 			delete GetAt(i);
 	}
-
-	friend std::ostream &operator << (std::ostream & Output, vtMaterialDescriptorArray &Input)
-	{
-		int iSize = Input.GetSize();
-		Output << "<?xml version=\"1.0\"?>" << std::endl;
-		Output << "<MaterialDescriptorArray>" << std::endl;
-		for (int i = 0; i < iSize; i++)
-			Output << *Input.GetAt(i);
-		Output << "</MaterialDescriptorArray>" << std::endl;
-		return Output;
-	}
 	bool LoadExternalMaterials(const vtStringArray &paths);
 	const vtString *FindName(const char *matname);
 	void CreatePlain();
 
-protected:
 	bool Load(const char *szFileName);
+	bool Save(const char *szFileName);
 };
 
 /**
