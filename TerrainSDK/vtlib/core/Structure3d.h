@@ -61,8 +61,7 @@ protected:
 	RGBf m_Colors[COLOR_SPREAD];
 
 	// indices of internal materials
-	int m_hightlight1;
-	int m_hightlight2;
+	int m_hightlight1, m_hightlight2, m_hightlight3;
 };
 
 

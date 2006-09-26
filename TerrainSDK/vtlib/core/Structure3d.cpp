@@ -413,6 +413,7 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 	// Create internal materials (only needed by vtlib, not vtdata)
 	m_hightlight1 = m_pMaterials->AddRGBMaterial1(RGBf(1,1,1), false, false, true);
 	m_hightlight2 = m_pMaterials->AddRGBMaterial1(RGBf(1,0,0), false, false, true);
+	m_hightlight3 = m_pMaterials->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
 }
 
 void vtMaterialDescriptorArray3d::CreateMaterials()
@@ -432,7 +433,12 @@ void vtMaterialDescriptorArray3d::CreateMaterials()
 
 		switch (descriptor->GetColorable())
 		{
-		case VT_MATERIAL_COLOURED:
+		case VT_MATERIAL_COLOUR:
+			pMat = MakeMaterial(descriptor, descriptor->GetRGB());
+			descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
+			break;
+
+		case VT_MATERIAL_COLOURABLE:
 			for (i = 0; i < COLOR_SPREAD; i++)
 			{
 				pMat = MakeMaterial(descriptor, m_Colors[i]);
@@ -513,8 +519,10 @@ int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
 		// Choose the correct highlight
 		if (inputColor == RGBf(1,1,1))
 			return m_hightlight1;
-		else
+		else if (inputColor == RGBf(1,0,0))
 			return m_hightlight2;
+		else
+			return m_hightlight3;
 	}
 
 	const vtMaterialDescriptor  *pMaterialDescriptor;
@@ -524,6 +532,9 @@ int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
 		return -1;
 	int iIndex = pMaterialDescriptor->GetMaterialIndex();
 	vtMaterialColorEnum Type = pMaterialDescriptor->GetColorable();
+
+	if (Type == VT_MATERIAL_COLOUR)
+		return iIndex;
 
 	if (Type == VT_MATERIAL_SELFCOLOURED_TEXTURE)
 		return iIndex;
