@@ -27,6 +27,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
+	void SetConnectionMaterials(vtMaterialDescriptorArray *desc);
 	void GuessStyle();
 	void OnInitDialog(wxInitDialogEvent& event);
 	void SlidersToValues(int which);
@@ -34,6 +35,8 @@ public:
 	void UpdateTypes();
 	void UpdateEnabling();
 	void SetOptions(const vtLinearParams &param);
+	void UpdateChoices();
+	void UpdateConnectChoices();
 
 	// Override this with desired result
 	virtual void OnSetOptions(const vtLinearParams &param) = 0;
@@ -75,6 +78,7 @@ protected:
 	bool m_bSetting;
 
 	vtLinearParams m_param;
+	vtMaterialDescriptorArray *m_pMaterials;
 
 private:
 	// WDR: handler declarations for LinearStructureDlg

@@ -63,6 +63,7 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	LinearStructDialogFunc( this, TRUE );
 	m_bSetting = false;
 
+	m_pMaterials = NULL;
 	m_iStyle = 0;
 	m_param.Defaults();
 
@@ -85,6 +86,18 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	AddNumValidator(ID_CONN_BOTTOM_EDIT, &m_param.m_fConnectBottom, 2);
 	AddNumValidator(ID_SLOPE, &m_param.m_iConnectSlope);
 
+	UpdateChoices();
+}
+
+void LinearStructureDlg::SetConnectionMaterials(vtMaterialDescriptorArray *desc)
+{
+	m_pMaterials = desc;
+	UpdateConnectChoices();
+	UpdateTypes();
+}
+
+void LinearStructureDlg::UpdateChoices()
+{
 	// NB -- these must match the FS_ enum in order
 	GetStyle()->Clear();
 	GetStyle()->Append(_("Wooden posts, wire"));
@@ -105,17 +118,36 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	GetPostType()->Append(_("wood"));
 	GetPostType()->Append(_("steel"));
 
+	UpdateConnectChoices();
+}
+
+void LinearStructureDlg::UpdateConnectChoices()
+{
 	GetConnType()->Clear();
 	GetConnType()->Append(_("none"));
 	GetConnType()->Append(_("wire"));
-	GetConnType()->Append(_("chain-link"));
-	GetConnType()->Append(_("drystone"));
-	GetConnType()->Append(_("stone"));
-	GetConnType()->Append(_("privet"));
-	GetConnType()->Append(_("grass"));
-	GetConnType()->Append(_("railing_wire"));
-	GetConnType()->Append(_("railing_eu"));
-	GetConnType()->Append(_("railing_pipe"));
+
+	if (m_pMaterials)
+	{
+		for (unsigned int i = 0; i < m_pMaterials->GetSize(); i++)
+		{
+			vtMaterialDescriptor *desc = m_pMaterials->GetAt(i);
+			wxString str(desc->GetName(), wxConvUTF8);
+			GetConnType()->Append(str);
+		}
+	}
+	else
+	{
+		// just show some well-known materials
+		GetConnType()->Append(_("chain-link"));
+		GetConnType()->Append(_("drystone"));
+		GetConnType()->Append(_("stone"));
+		GetConnType()->Append(_("privet"));
+		GetConnType()->Append(_("grass"));
+		GetConnType()->Append(_("railing_wire"));
+		GetConnType()->Append(_("railing_eu"));
+		GetConnType()->Append(_("railing_pipe"));
+	}
 }
 
 void LinearStructureDlg::SetOptions(const vtLinearParams &param)
