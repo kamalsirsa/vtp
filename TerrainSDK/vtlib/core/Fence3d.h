@@ -34,6 +34,7 @@ public:
 	void DestroyGeometry();
 
 	// all fences share the same set of materials
+	static void CreateMaterials();
 	static vtMaterialDescriptorArray3d s_FenceMats;
 
 protected:
@@ -42,7 +43,6 @@ protected:
 	void	AddFenceMeshes(vtHeightField3d *pHeightField);
 	vtMaterialDescriptor *FindDescriptor(const vtString &type);
 
-	static void CreateMaterials();
 	static int s_mi_wire;		// s_mi = static material index
 	static int s_mi_metal;
 

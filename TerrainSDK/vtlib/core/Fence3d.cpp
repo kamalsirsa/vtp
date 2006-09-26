@@ -33,19 +33,59 @@ void vtFence3d::Init()
 
 void vtFence3d::CreateMaterials()
 {
+	static bool bFirstTime = true;
+	if (!bFirstTime)
+		return;
+	bFirstTime = false;
+
 	s_FenceMats.InitializeMaterials();
 
-	// Materials for Posts
+	vtString path = FindFileOnPaths(vtGetDataPath(), "Culture/linear_materials.xml");
+	if (path != "")
+		s_FenceMats.Load(path);
+	else
+	{
+		// Leave these in here for now, but remove them later when everyone can
+		//  be expected to have the XML file instead.
 
-	// wood fence post
-	s_FenceMats.Append(new vtMaterialDescriptor("wood",
-		"Culture/fencepost_64.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
+		// wood fence post
+		s_FenceMats.Append(new vtMaterialDescriptor("wood",
+			"Culture/fencepost_64.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
 
-	// steel post textured material
-	s_FenceMats.Append(new vtMaterialDescriptor("steel",
-		"Culture/chainpost32.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
+		// steel post textured material
+		s_FenceMats.Append(new vtMaterialDescriptor("steel",
+			"Culture/chainpost32.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
 
-	// Materials for Connections
+		// Materials for Connections
+
+		// chainlink material: twosided, ambient, and alpha-blended
+		s_FenceMats.Append(new vtMaterialDescriptor("chain-link",
+			"Culture/chain128-4.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 0.5f, 0.5f, true, true, true));
+
+		// create drystone textured material
+		s_FenceMats.Append(new vtMaterialDescriptor("drystone",
+			"Culture/drystone_wall_512.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 2.4f, 1.2f));
+		s_FenceMats.Append(new vtMaterialDescriptor("stone",
+			"Culture/stone256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 2.5f, -1));
+
+		// create privet textured material
+		s_FenceMats.Append(new vtMaterialDescriptor("privet",
+			"Culture/privet_256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1.2f, 1.2f, true));
+		s_FenceMats.Append(new vtMaterialDescriptor("grass",
+			"GeoTypical/grass_repeat3_512.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1.5f, 1.5f));
+
+		// create railing textured materials: twosided, ambient, and alpha-blended
+		s_FenceMats.Append(new vtMaterialDescriptor("railing_pipe",
+			"Culture/railing_pipe.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
+		s_FenceMats.Append(new vtMaterialDescriptor("railing_wire",
+			"Culture/railing_wire.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
+		s_FenceMats.Append(new vtMaterialDescriptor("railing_eu",
+			"Culture/railing_eu.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
+	}
+
+	// add red material for display of unknown material
+	s_FenceMats.Append(new vtMaterialDescriptor("unknown", "",
+		VT_MATERIAL_COLOUR, 1, 1, true, true, false, RGBi(255,0,0)));
 
 	// wire material
 	s_mi_wire = s_FenceMats.GetMatArray()->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
@@ -57,33 +97,7 @@ void vtFence3d::CreateMaterials()
 	s_mi_metal = s_FenceMats.GetMatArray()->AddRGBMaterial(RGBf(0.4f, 0.4f, 0.4f), // diffuse
 		RGBf(0.3f, 0.3f, 0.3f));	// ambient
 
-	// chainlink material: twosided, ambient, and alpha-blended
-	s_FenceMats.Append(new vtMaterialDescriptor("chain-link",
-		"Culture/chain128-4.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 0.5f, 0.5f, true, true, true));
-
-	// create drystone textured material
-	s_FenceMats.Append(new vtMaterialDescriptor("drystone",
-		"Culture/drystone_wall_512.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 2.4f, 1.2f));
-	s_FenceMats.Append(new vtMaterialDescriptor("stone",
-		"Culture/stone256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 2.5f, -1));
-
-	// create privet textured material
-	s_FenceMats.Append(new vtMaterialDescriptor("privet",
-		"Culture/privet_256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1.2f, 1.2f, true));
-	s_FenceMats.Append(new vtMaterialDescriptor("grass",
-		"GeoTypical/grass_repeat3_512.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1.5f, 1.5f));
-
-	// create railing textured materials: twosided, ambient, and alpha-blended
-	s_FenceMats.Append(new vtMaterialDescriptor("railing_pipe",
-		"Culture/railing_pipe.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
-	s_FenceMats.Append(new vtMaterialDescriptor("railing_wire",
-		"Culture/railing_wire.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
-	s_FenceMats.Append(new vtMaterialDescriptor("railing_eu",
-		"Culture/railing_eu.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
-
-	// add red material for display of unknown material
-	s_FenceMats.Append(new vtMaterialDescriptor("unknown", "",
-		VT_MATERIAL_COLOUR, 1, 1, true, true, false, RGBi(255,0,0)));
+	//s_FenceMats.Save("C:/temp/fencemats.xml");
 
 	s_FenceMats.CreateMaterials();
 }
@@ -320,7 +334,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	}
 	else if (m_Params.m_ConnectType == "wire")
 	{
-		// the 3 wires
+		// special connector type, consisting of 3 wires
 		if (npoints > 1)
 		{
 			float wire_height[3] = { 0.42f, 0.66f, 0.91f };
@@ -561,19 +575,12 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 	}
 	else
 	{
-		static bool bFirstTime = true;
-		if (bFirstTime == true)
-		{
-			bFirstTime = false;
-			CreateMaterials();
-		}
+		// Make sure materials exist
+		CreateMaterials();
 
 		m_pFenceGeom = new vtGeom;
 		m_pFenceGeom->SetName2("Fence");
 		m_pFenceGeom->SetMaterials(s_FenceMats.GetMatArray());
-
-		if (bFirstTime)
-			s_FenceMats.GetMatArray()->Release();
 	}
 
 	// create surface and shape
