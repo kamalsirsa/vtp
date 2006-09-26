@@ -141,12 +141,11 @@ public:
 	{
 		m_ePrimType = ePrimType;
 		m_iVtxType = VtxType;
-		m_iNumVertsUsed = 0;
 		m_iMatIdx = -1;
 	}
 
 	// Accessors
-	virtual int GetNumVertices() const { return m_iNumVertsUsed; }
+	virtual unsigned int GetNumVertices() const = 0;
 	PrimType GetPrimType() const { return m_ePrimType; }
 	int GetVtxType() const { return m_iVtxType; }
 	virtual void GetBoundBox(FBox3 &box) const;
@@ -174,24 +173,24 @@ public:
 	virtual void AddQuad(int p0, int p1, int p2, int p3) = 0;
 
 	// Access vertex properties
-	virtual void SetVtxPos(int, const FPoint3&) = 0;
-	virtual FPoint3 GetVtxPos(int i) const = 0;
+	virtual void SetVtxPos(unsigned int, const FPoint3&) = 0;
+	virtual FPoint3 GetVtxPos(unsigned int i) const = 0;
 
-	virtual void SetVtxNormal(int, const FPoint3&) = 0;
-	virtual FPoint3 GetVtxNormal(int i) const = 0;
+	virtual void SetVtxNormal(unsigned int, const FPoint3&) = 0;
+	virtual FPoint3 GetVtxNormal(unsigned int i) const = 0;
 
-	virtual void SetVtxColor(int, const RGBAf&) = 0;
-	virtual RGBAf GetVtxColor(int i) const = 0;
+	virtual void SetVtxColor(unsigned int, const RGBAf&) = 0;
+	virtual RGBAf GetVtxColor(unsigned int i) const = 0;
 
-	virtual void SetVtxTexCoord(int, const FPoint2&) = 0;
-	virtual FPoint2 GetVtxTexCoord(int i) const = 0;
+	virtual void SetVtxTexCoord(unsigned int, const FPoint2&) = 0;
+	virtual FPoint2 GetVtxTexCoord(unsigned int i) const = 0;
 
-	void SetVtxPUV(int i, const FPoint3 &pos, float u, float v)
+	void SetVtxPUV(unsigned int i, const FPoint3 &pos, float u, float v)
 	{
 		SetVtxPos(i, pos);
 		SetVtxTexCoord(i, FPoint2(u, v));
 	}
-	void SetVtxPN(int i, const FPoint3 &pos, const FPoint3 &norm)
+	void SetVtxPN(unsigned int i, const FPoint3 &pos, const FPoint3 &norm)
 	{
 		SetVtxPos(i, pos);
 		SetVtxNormal(i, norm);
@@ -224,9 +223,6 @@ protected:
 	enum PrimType m_ePrimType;
 	int m_iVtxType;
 	int m_iMatIdx;
-
-	// keep track of the number of vertices actually used
-	int	m_iNumVertsUsed;
 };
 
 /**

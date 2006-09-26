@@ -96,9 +96,8 @@ void vtMeshBase::GetBoundBox(FBox3 &box) const
  */
 int vtMeshBase::AddVertex(float x, float y, float z)
 {
-	int i = m_iNumVertsUsed;
+	int i = GetNumVertices();
 	SetVtxPos(i, FPoint3(x, y, z));
-	m_iNumVertsUsed++;
 	return i;
 }
 
@@ -109,10 +108,9 @@ int vtMeshBase::AddVertex(float x, float y, float z)
  */
 int vtMeshBase::AddVertexN(float x, float y, float z, float nx, float ny, float nz)
 {
-	int i = m_iNumVertsUsed;
+	int i = GetNumVertices();
 	SetVtxPos(i, FPoint3(x, y, z));
 	SetVtxNormal(i, FPoint3(nx, ny, nz));
-	m_iNumVertsUsed++;
 	return i;
 }
 
@@ -123,10 +121,9 @@ int vtMeshBase::AddVertexN(float x, float y, float z, float nx, float ny, float 
  */
 int vtMeshBase::AddVertexUV(float x, float y, float z, float u, float v)
 {
-	int i = m_iNumVertsUsed;
+	int i = GetNumVertices();
 	SetVtxPos(i, FPoint3(x, y, z));
 	SetVtxTexCoord(i, FPoint2(u, v));
-	m_iNumVertsUsed++;
 	return i;
 }
 
@@ -137,9 +134,8 @@ int vtMeshBase::AddVertexUV(float x, float y, float z, float u, float v)
  */
 int vtMeshBase::AddVertex(const FPoint3 &p)
 {
-	int i = m_iNumVertsUsed;
+	int i = GetNumVertices();
 	SetVtxPos(i, p);
-	m_iNumVertsUsed++;
 	return i;
 }
 
@@ -150,10 +146,9 @@ int vtMeshBase::AddVertex(const FPoint3 &p)
  */
 int vtMeshBase::AddVertexN(const FPoint3 &p, const FPoint3 &n)
 {
-	int i = m_iNumVertsUsed;
+	int i = GetNumVertices();
 	SetVtxPos(i, p);
 	SetVtxNormal(i, n);
-	m_iNumVertsUsed++;
 	return i;
 }
 
@@ -164,10 +159,9 @@ int vtMeshBase::AddVertexN(const FPoint3 &p, const FPoint3 &n)
  */
 int vtMeshBase::AddVertexUV(const FPoint3 &p, float u, float v)
 {
-	int i = m_iNumVertsUsed;
+	int i = GetNumVertices();
 	SetVtxPos(i, p);
 	SetVtxTexCoord(i, FPoint2(u, v));
-	m_iNumVertsUsed++;
 	return i;
 }
 
@@ -178,10 +172,9 @@ int vtMeshBase::AddVertexUV(const FPoint3 &p, float u, float v)
  */
 int vtMeshBase::AddVertexUV(const FPoint3 &p, const FPoint2 &uv)
 {
-	int i = m_iNumVertsUsed;
+	int i = GetNumVertices();
 	SetVtxPos(i, p);
 	SetVtxTexCoord(i, uv);
-	m_iNumVertsUsed++;
 	return i;
 }
 
@@ -192,11 +185,10 @@ int vtMeshBase::AddVertexUV(const FPoint3 &p, const FPoint2 &uv)
  */
 int vtMeshBase::AddVertexNUV(const FPoint3 &p, const FPoint3 &n, const FPoint2 &uv)
 {
-	int i = m_iNumVertsUsed;
+	int i = GetNumVertices();
 	SetVtxPos(i, p);
 	SetVtxNormal(i, n);
 	SetVtxTexCoord(i, uv);
-	m_iNumVertsUsed++;
 	return i;
 }
 
