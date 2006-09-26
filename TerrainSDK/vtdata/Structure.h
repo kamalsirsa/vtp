@@ -3,7 +3,7 @@
 //
 // Implements the vtStructure class which represents a single built structure.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file Structure.h */
@@ -37,9 +37,10 @@ class vtStructInstance;
 
 enum vtMaterialColorEnum
 {
-	VT_MATERIAL_COLOURED,
-	VT_MATERIAL_SELFCOLOURED_TEXTURE,
-	VT_MATERIAL_COLOURABLE_TEXTURE
+	VT_MATERIAL_COLOUR,			// a single color
+	VT_MATERIAL_COLOURABLE,		// any color, untextured
+	VT_MATERIAL_SELFCOLOURED_TEXTURE,	// a single texture
+	VT_MATERIAL_COLOURABLE_TEXTURE		// any color, textured
 };
 
 /**
@@ -167,7 +168,7 @@ private:
 	vtMaterialColorEnum m_Colorable;
 	vtString m_SourceName;	// Source of material
 	FPoint2 m_UVScale;		// Texel scale;
-	RGBi m_RGB;				// Color for VT_MATERIAL_RGB
+	RGBi m_RGB;				// Color for VT_MATERIAL_COLOUR
 	bool m_bTwoSided;		// default false
 	bool m_bAmbient;		// default false
 	bool m_bBlending;		// default false

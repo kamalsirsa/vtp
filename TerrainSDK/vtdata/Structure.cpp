@@ -1,7 +1,7 @@
 //
 // Structure.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -249,7 +249,7 @@ vtMaterialDescriptor::~vtMaterialDescriptor()
 void vtMaterialDescriptorArray::CreatePlain()
 {
 	// First provide plain material, which does need to be serialized
-	Append(new vtMaterialDescriptor(BMAT_NAME_PLAIN, "", VT_MATERIAL_COLOURED));
+	Append(new vtMaterialDescriptor(BMAT_NAME_PLAIN, "", VT_MATERIAL_COLOURABLE));
 }
 
 bool vtMaterialDescriptorArray::Load(const char *szFileName)

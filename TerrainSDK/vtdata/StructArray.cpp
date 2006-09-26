@@ -1028,7 +1028,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 						// name information, and we also don't want to crash
 						// later with a NULL material.  So, make a dummy.
 						vtMaterialDescriptor *mat;
-						mat = new vtMaterialDescriptor(attval, "", VT_MATERIAL_COLOURED);
+						mat = new vtMaterialDescriptor(attval, "", VT_MATERIAL_COLOUR);
 						mat->SetRGB(RGBi(255,255,255));	// white means: missing
 						mats->Append(mat);
 						m_pEdge->m_pMaterial = &mat->GetName();
