@@ -407,6 +407,9 @@
 				RelativePath=".\ProfileDlg.cpp">
 			</File>
 			<File
+				RelativePath=".\ProfileEditDlg.cpp">
+			</File>
+			<File
 				RelativePath=".\ProjectionDlg.cpp">
 			</File>
 			<File
@@ -481,6 +484,9 @@
 			</File>
 			<File
 				RelativePath=".\ProfileDlg.h">
+			</File>
+			<File
+				RelativePath=".\ProfileEditDlg.h">
 			</File>
 			<File
 				RelativePath=".\ProjectionDlg.h">
