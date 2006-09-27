@@ -42,20 +42,22 @@ public:
 	bool operator==(const vtLinearParams &rhs) const;
 
 	// Posts
-	vtString	m_PostType;	// wood, steel, none
-	float	m_fPostHeight;
-	float	m_fPostSpacing;
-	float	m_fPostWidth;
-	float	m_fPostDepth;
+	vtString	m_PostType;			// wood, steel, none
+	float		m_fPostHeight;
+	float		m_fPostSpacing;
+	float		m_fPostWidth;
+	float		m_fPostDepth;
 	vtString	m_PostExtension;	// left, right, double, none
 
 	// Connect
-	vtString	m_ConnectType;	// wire, chain-link, privet, drystone, none
-	float	m_fConnectTop;
-	float	m_fConnectBottom;
-	float	m_fConnectWidth;
-	short	m_iConnectSlope;	// slope on the sides of the connector
-	bool	m_bConstantTop;		// top of connector is constant height
+	int			m_iConnectType;		// 0=none, 1=wire, 2=simple, 3=profile
+	vtString	m_ConnectMaterial;	// chain-link, privet, drystone, etc.
+	float		m_fConnectTop;
+	float		m_fConnectBottom;
+	float		m_fConnectWidth;
+	short		m_iConnectSlope;	// slope on the sides of the connector
+	bool		m_bConstantTop;		// top of connector is constant height
+	vtString	m_ConnectProfile;	// filename of profile
 };
 
 /**

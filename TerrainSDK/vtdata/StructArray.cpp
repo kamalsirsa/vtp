@@ -1119,9 +1119,31 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		{
 			const char *type = atts.getValue("Type");
 			if (type)
-				param.m_ConnectType = type;
+			{
+				// Older format version had string "none", "wire", or a material for type
+				// Newer format has integer 0,1,2,3 for none,wire,simple,profile
+				if (*type >= '0' && *type <= '9')
+					param.m_iConnectType = atoi(type);
+				else
+				{
+					// Convert old to new
+					if (!strcmp(type, "none"))
+						param.m_iConnectType = 0;
+					else if (!strcmp(type, "wire"))
+						param.m_iConnectType = 1;
+					else
+					{
+						param.m_iConnectType = 2;
+						param.m_ConnectMaterial = type;
+					}
+				}
+			}
 			else
-				param.m_ConnectType = "none";
+				param.m_iConnectType = 0;
+
+			attval = atts.getValue("Material");
+			if (attval)
+				param.m_ConnectMaterial = attval;
 
 			attval = atts.getValue("Top");
 			if (attval)
@@ -1138,6 +1160,10 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 			attval = atts.getValue("ConstantTop");
 			if (attval)
 				param.m_bConstantTop = (*attval == 't');
+
+			attval = atts.getValue("Profile");
+			if (attval)
+				param.m_ConnectProfile = attval;
 		}
 	}
 	if (m_state == 20)	// Imported

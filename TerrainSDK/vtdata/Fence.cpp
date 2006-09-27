@@ -27,7 +27,8 @@ void vtLinearParams::Blank()
 	m_fPostDepth = 0.0f;
 	m_PostExtension = "none";
 	//
-	m_ConnectType = "none";
+	m_iConnectType = 0;
+	m_ConnectMaterial = "none";
 	m_fConnectTop = 1.0f;
 	m_fConnectBottom = 0.0f;
 	m_fConnectWidth = 0.0f;
@@ -48,7 +49,7 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		m_fPostWidth = 0.13f;
 		m_fPostDepth = 0.13f;
 		//
-		m_ConnectType = "wire";
+		m_iConnectType = 1;
 		m_fConnectTop = 1.1f;
 		m_fConnectBottom = 0.5f;
 		m_fConnectWidth = 0.0f;
@@ -61,7 +62,7 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		m_fPostWidth = 0.05f;
 		m_fPostDepth = 0.05f;
 		//
-		m_ConnectType = "wire";
+		m_iConnectType = 1;
 		m_fConnectTop = 1.1f;
 		m_fConnectBottom = 0.5f;
 		m_fConnectWidth = 0.0f;
@@ -74,7 +75,8 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		m_fPostWidth = 0.05f;
 		m_fPostDepth = 0.05f;
 		//
-		m_ConnectType = "chain-link";
+		m_iConnectType = 2;
+		m_ConnectMaterial = "chain-link";
 		m_fConnectTop = m_fPostHeight;
 		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.0f;
@@ -88,7 +90,8 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		m_fPostDepth = 0.05f;
 		m_PostExtension = "double";
 		//
-		m_ConnectType = "chain-link";
+		m_iConnectType = 2;
+		m_ConnectMaterial = "chain-link";
 		m_fConnectTop = m_fPostHeight;
 		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.0f;
@@ -97,7 +100,8 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		//
 		m_PostType = "none";
 		//
-		m_ConnectType = "drystone";
+		m_iConnectType = 2;
+		m_ConnectMaterial = "drystone";
 		m_fConnectTop = 1.5f;
 		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.3f;
@@ -106,7 +110,8 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		//
 		m_PostType = "none";
 		//
-		m_ConnectType = "stone";
+		m_iConnectType = 2;
+		m_ConnectMaterial = "stone";
 		m_fConnectTop = 1.5f;
 		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.3f;
@@ -115,7 +120,8 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		//
 		m_PostType = "none";
 		//
-		m_ConnectType = "privet";
+		m_iConnectType = 2;
+		m_ConnectMaterial = "privet";
 		m_fConnectTop = 1.5f;
 		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.5f;
@@ -124,7 +130,8 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		//
 		m_PostType = "none";
 		//
-		m_ConnectType = "grass";
+		m_iConnectType = 2;
+		m_ConnectMaterial = "grass";
 		m_fConnectTop = 1.5f;
 		m_fConnectBottom = -1.0f;
 		m_fConnectWidth = 1.0f;
@@ -134,7 +141,8 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		//
 		m_PostType = "none";
 		//
-		m_ConnectType = "railing_pipe";
+		m_iConnectType = 2;
+		m_ConnectMaterial = "railing_pipe";
 		m_fConnectTop = 0.70f;
 		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.0f;
@@ -143,7 +151,8 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		//
 		m_PostType = "none";
 		//
-		m_ConnectType = "railing_wire";
+		m_iConnectType = 2;
+		m_ConnectMaterial = "railing_wire";
 		m_fConnectTop = 0.70f;
 		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.0f;
@@ -152,7 +161,8 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		//
 		m_PostType = "none";
 		//
-		m_ConnectType = "railing_eu";
+		m_iConnectType = 2;
+		m_ConnectMaterial = "railing_eu";
 		m_fConnectTop = 0.70f;
 		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.0f;
@@ -174,16 +184,30 @@ void vtLinearParams::WriteXML(GZOutput &out) const
 		}
 		gfprintf(out, " />\n");
 	}
-	if (m_ConnectType != "none")
+	if (m_iConnectType != 0)
 	{
-		gfprintf(out, "\t\t<Connect Type=\"%s\"", (const char *)m_ConnectType);
-		gfprintf(out, " Top=\"%.2f\"", m_fConnectTop);
-		if (m_fConnectBottom != 0.0f)
-			gfprintf(out, " Bottom=\"%.2f\"", m_fConnectBottom);
-		if (m_fConnectWidth != 0.0f)
-			gfprintf(out, " Width=\"%.2f\"", m_fConnectWidth);
-		if (m_iConnectSlope != 90)
-			gfprintf(out, " Slope=\"%d\"", m_iConnectSlope);
+		gfprintf(out, "\t\t<Connect Type=\"%d\"", m_iConnectType);
+		if (m_iConnectType == 1)	// wire
+		{
+			// no wire parameters (yet)
+		}
+		if (m_iConnectType == 2)	// simple
+		{
+			if (m_ConnectMaterial != "none")
+				gfprintf(out, " Material=\"%s\"", (const char *) m_ConnectMaterial);
+			gfprintf(out, " Top=\"%.2f\"", m_fConnectTop);
+			if (m_fConnectBottom != 0.0f)
+				gfprintf(out, " Bottom=\"%.2f\"", m_fConnectBottom);
+			if (m_fConnectWidth != 0.0f)
+				gfprintf(out, " Width=\"%.2f\"", m_fConnectWidth);
+			if (m_iConnectSlope != 90)
+				gfprintf(out, " Slope=\"%d\"", m_iConnectSlope);
+		}
+		if (m_iConnectType == 3)	// profile
+		{
+			if (m_ConnectMaterial != "none")
+				gfprintf(out, " Profile=\"%s\"", (const char *) m_ConnectProfile);
+		}
 		if (m_bConstantTop)
 			gfprintf(out, " ConstantTop=\"true\"", m_iConnectSlope);
 		gfprintf(out, " />\n");
@@ -203,14 +227,23 @@ bool vtLinearParams::operator==(const vtLinearParams &rhs) const
 			m_PostExtension != rhs.m_PostExtension)
 			return false;
 	}
-	if (m_ConnectType != "none" || rhs.m_ConnectType != "none")
+	if (m_iConnectType != 0 || rhs.m_iConnectType != 0)
 	{
 		// compare connection
-		if (m_ConnectType != rhs.m_ConnectType ||
-			m_fConnectTop != rhs.m_fConnectTop ||
-			m_fConnectBottom != rhs.m_fConnectBottom ||
-			m_fConnectWidth != rhs.m_fConnectWidth)
+		if (m_iConnectType != rhs.m_iConnectType)
 			return false;
+		if (m_iConnectType == 2)	// simple
+		{
+			if (m_fConnectTop != rhs.m_fConnectTop ||
+				m_fConnectBottom != rhs.m_fConnectBottom ||
+				m_fConnectWidth != rhs.m_fConnectWidth)
+				return false;
+		}
+		if (m_iConnectType == 3)	// profile
+		{
+			if (m_ConnectProfile != rhs.m_ConnectProfile)
+				return false;
+		}
 	}
 	return true;
 }
