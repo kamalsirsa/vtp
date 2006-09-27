@@ -265,6 +265,128 @@ void DLine2::ReverseOrder()
 
 
 //////////////////////////////////////////////////////////////////////////
+// FLine2 methods
+//
+
+float FLine2::Area() const
+{
+	int n = (int) GetSize();
+	float A = 0.0f;
+	for (int p=n-1,q=0; q<n; p=q++)
+		A += GetAt(p).x*GetAt(q).y - GetAt(q).x*GetAt(p).y;
+	return A*0.5f;
+}
+
+float FLine2::SegmentLength(unsigned int i) const
+{
+	unsigned int j = (i < GetSize()-1) ? i+1 : 0;
+	return (GetAt(j) - GetAt(i)).Length();
+}
+
+
+/**
+ * Return the nearest point (of the points which make up the line).
+ * This is not the same as the closest place on the line, which may
+ * lie between the defining points.
+ *
+ * \param Point The input point.
+ * \param iIndex Index of the first point of the nearest line segment.
+ * \param dClosest Distance from the DLine2 to the input point.
+ */
+void FLine2::NearestPoint(const FPoint2 &Point, int &iIndex, float &fClosest) const
+{
+	unsigned int iNumPoints = GetSize();
+	fClosest = 1E9;
+	float fDistance;
+
+	for (unsigned int i = 0; i < iNumPoints; i++)
+	{
+		fDistance = (Point - GetAt(i)).Length();
+		if (fDistance < fClosest)
+		{
+			fClosest = fDistance;
+			iIndex = i;
+		}
+	}
+}
+
+/**
+ * A slightly faster version of NearestPoint which doesn't provide
+ * the distance to the closest point.
+ */
+void FLine2::NearestPoint(const FPoint2 &Point, int &iIndex) const
+{
+	unsigned int iNumPoints = GetSize();
+	float fClosest = 1E9;
+	float fDistance;
+
+	for (unsigned int i = 0; i < iNumPoints; i++)
+	{
+		fDistance = (Point - GetAt(i)).LengthSquared();
+		if (fDistance < fClosest)
+		{
+			fClosest = fDistance;
+			iIndex = i;
+		}
+	}
+}
+
+bool FLine2::NearestSegment(const FPoint2 &Point, int &iIndex, float &dist, FPoint2 &Intersection) const
+{
+	int iNumPoints = GetSize();
+	int i, closest = -1;
+	float fMagnitude;
+	float fDistance;
+	float fMinDistance = 1E9;
+	float fU;
+	FPoint2 p0, p1, p2;
+
+	for (i = 0; i < iNumPoints; i++)
+	{
+		p0 = GetAt(i);
+		p1 = GetAt((i + 1) % iNumPoints);
+		fMagnitude = SegmentLength(i);
+		// Calculate U for standard line equation:
+		// values of U between 0.0 and +1.0 mean normal intersects segment
+		fU = (((Point.x - p0.x) * (p1.x - p0.x)) +
+			  ((Point.y - p0.y) * (p1.y - p0.y))) / (fMagnitude * fMagnitude);
+		if ((fU < 0.0) || (fU > 1.0))
+			continue;
+		p2.x = p0.x + fU * (p1.x - p0.x);
+		p2.y = p0.y + fU * (p1.y - p0.y);
+		fDistance = FPoint2(Point - p2).Length();
+		if (fDistance < fMinDistance)
+		{
+			fMinDistance = fDistance;
+			closest = i;
+			Intersection = p2;
+		}
+	}
+	if (closest != -1)
+	{
+		iIndex = closest;
+		dist = fMinDistance;
+		return true;
+	}
+	return false;
+}
+
+void FLine2::InsertPointAfter(int iInsertAfter, const FPoint2 &Point)
+{
+	int iNumPoints = GetSize();
+	int iIndex;
+	if (iInsertAfter == iNumPoints - 1)
+		Append(Point);
+	else
+	{
+		for (iIndex = iNumPoints - 1; iIndex > iInsertAfter ; iIndex--)
+			SetAt(iIndex + 1, GetAt(iIndex));
+		SetAt(iInsertAfter + 1, Point);
+	}
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 // DLine3 methods
 
 void DLine3::Add(const DPoint2 &p)

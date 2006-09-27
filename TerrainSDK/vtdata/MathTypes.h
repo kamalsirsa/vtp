@@ -433,14 +433,12 @@ public:
 	FLine2 &operator=(const FLine2 &v);
 	FLine2 &operator=(const DLine2 &v);
 
-	float Area() const
-	{
-		int n = (int) GetSize();
-		float A = 0.0f;
-		for (int p=n-1,q=0; q<n; p=q++)
-			A += GetAt(p).x*GetAt(q).y - GetAt(q).x*GetAt(p).y;
-		return A*0.5f;
-	}
+	float Area() const;
+	float SegmentLength(unsigned int i) const;
+	void NearestPoint(const FPoint2 &Point, int &iIndex, float &dist) const;
+	void NearestPoint(const FPoint2 &Point, int &iIndex) const;
+	bool NearestSegment(const FPoint2 &Point, int &iIndex, float &dist, FPoint2 &Intersection) const;
+	void InsertPointAfter(int iInsertAfter, const FPoint2 &Point);
 };
 
 inline DLine2 &DLine2::operator=(const DLine2 &v)
