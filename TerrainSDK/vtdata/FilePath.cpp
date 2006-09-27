@@ -62,7 +62,7 @@ dir_iter::dir_iter(std::string const &dirname)
 	wstring2 name;
 	name.from_utf8(dirname.c_str());
 	name += L"\\*";
-	m_handle = _wfindfirst(name.c_str(), &m_data);
+	m_handle = _wfindfirst((wchar_t *)name.c_str(), &m_data);
 }
 
 dir_iter::~dir_iter()
