@@ -40,6 +40,12 @@ public:
 protected:
 	void	Init();
 	void	AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc);
+
+	void AddWireMeshes(const FLine3 &p3);
+	void AddFlatConnectionMesh(const FLine3 &p3);
+	void AddThickConnectionMesh(const FLine3 &p3);
+	void AddPostExtensions(const FLine3 &p3);
+
 	void	AddFenceMeshes(vtHeightField3d *pHeightField);
 	vtMaterialDescriptor *FindDescriptor(const vtString &type);
 
@@ -50,6 +56,7 @@ protected:
 	vtMesh		*m_pHighlightMesh;	// The wireframe highlight
 	bool		m_bBuilt;
 	FLine3		m_Posts3d;
+	float		m_fMaxGroundY;
 };
 
 typedef class vtFence *vtFencePtr;
