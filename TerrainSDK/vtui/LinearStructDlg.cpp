@@ -50,10 +50,13 @@ BEGIN_EVENT_TABLE(LinearStructureDlg, AutoDialog)
 	EVT_SLIDER( ID_CONN_BOTTOM_SLIDER, LinearStructureDlg::OnSlider )
 	EVT_CHOICE( ID_POST_TYPE, LinearStructureDlg::OnPostType )
 	EVT_CHOICE( ID_CONN_TYPE, LinearStructureDlg::OnConnType )
+	EVT_CHOICE( ID_CONN_MATERIAL, LinearStructureDlg::OnConnMaterial )
 	EVT_CHOICE( ID_CHOICE_EXTENSION, LinearStructureDlg::OnExtension )
 	EVT_TEXT( ID_SLOPE, LinearStructureDlg::OnTextEdit )
 	EVT_SLIDER( ID_SLOPE_SLIDER, LinearStructureDlg::OnSlider )
 	EVT_CHECKBOX( ID_CONSTANT_TOP, LinearStructureDlg::OnConstantTop )
+	EVT_CHOICE( ID_CHOICE_PROFILE, LinearStructureDlg::OnChoiceProfile )
+	EVT_BUTTON( ID_PROFILE_EDIT, LinearStructureDlg::OnProfileEdit )
 END_EVENT_TABLE()
 
 LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -66,12 +69,15 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	m_pMaterials = NULL;
 	m_iStyle = 0;
 	m_param.Defaults();
+	m_pProfileEditDlg = NULL;
 
 	AddValidator(ID_LINEAR_STRUCTURE_STYLE, &m_iStyle);
 
 	AddValidator(ID_POST_HEIGHT_SLIDER, &m_iPostHeight);
 	AddValidator(ID_POST_SPACING_SLIDER, &m_iPostSpacing);
 	AddValidator(ID_POST_SIZE_SLIDER, &m_iPostSize);
+
+	AddValidator(ID_CONN_TYPE, &m_param.m_iConnectType);
 	AddValidator(ID_CONN_WIDTH_SLIDER, &m_iConnWidth);
 	AddValidator(ID_CONN_TOP_SLIDER, &m_iConnTop);
 	AddValidator(ID_CONN_BOTTOM_SLIDER, &m_iConnBottom);
@@ -81,6 +87,7 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	AddNumValidator(ID_POST_HEIGHT_EDIT, &m_param.m_fPostHeight, 2);
 	AddNumValidator(ID_POST_SPACING_EDIT, &m_param.m_fPostSpacing, 2);
 	AddNumValidator(ID_POST_SIZE_EDIT, &m_param.m_fPostWidth, 2);
+
 	AddNumValidator(ID_CONN_WIDTH_EDIT, &m_param.m_fConnectWidth, 2);
 	AddNumValidator(ID_CONN_TOP_EDIT, &m_param.m_fConnectTop, 2);
 	AddNumValidator(ID_CONN_BOTTOM_EDIT, &m_param.m_fConnectBottom, 2);
@@ -114,39 +121,43 @@ void LinearStructureDlg::UpdateChoices()
 	GetStyle()->Append(_("(custom)"));
 
 	GetPostType()->Clear();
-	GetPostType()->Append(_("none"));
-	GetPostType()->Append(_("wood"));
-	GetPostType()->Append(_("steel"));
+	GetPostType()->Append(_T("none"));
+	GetPostType()->Append(_T("wood"));
+	GetPostType()->Append(_T("steel"));
+
+	GetConnType()->Clear();
+	GetConnType()->Append(_T("none"));
+	GetConnType()->Append(_T("wire"));
+	GetConnType()->Append(_T("simple"));
+	GetConnType()->Append(_T("profile"));
 
 	UpdateConnectChoices();
 }
 
 void LinearStructureDlg::UpdateConnectChoices()
 {
-	GetConnType()->Clear();
-	GetConnType()->Append(_("none"));
-	GetConnType()->Append(_("wire"));
-
+	GetConnMat()->Clear();
+	GetConnMat()->Append(_T("none"));
 	if (m_pMaterials)
 	{
 		for (unsigned int i = 0; i < m_pMaterials->GetSize(); i++)
 		{
 			vtMaterialDescriptor *desc = m_pMaterials->GetAt(i);
 			wxString str(desc->GetName(), wxConvUTF8);
-			GetConnType()->Append(str);
+			GetConnMat()->Append(str);
 		}
 	}
 	else
 	{
 		// just show some well-known materials
-		GetConnType()->Append(_("chain-link"));
-		GetConnType()->Append(_("drystone"));
-		GetConnType()->Append(_("stone"));
-		GetConnType()->Append(_("privet"));
-		GetConnType()->Append(_("grass"));
-		GetConnType()->Append(_("railing_wire"));
-		GetConnType()->Append(_("railing_eu"));
-		GetConnType()->Append(_("railing_pipe"));
+		GetConnMat()->Append(_T("chain-link"));
+		GetConnMat()->Append(_T("drystone"));
+		GetConnMat()->Append(_T("stone"));
+		GetConnMat()->Append(_T("privet"));
+		GetConnMat()->Append(_T("grass"));
+		GetConnMat()->Append(_T("railing_wire"));
+		GetConnMat()->Append(_T("railing_eu"));
+		GetConnMat()->Append(_T("railing_pipe"));
 	}
 }
 
@@ -169,8 +180,8 @@ void LinearStructureDlg::UpdateTypes()
 	wxString ws(m_param.m_PostType, wxConvUTF8);
 	GetPostType()->SetStringSelection(ws);
 
-	ws = wxString(m_param.m_ConnectType, wxConvUTF8);
-	GetConnType()->SetStringSelection(ws);
+	ws = wxString(m_param.m_ConnectMaterial, wxConvUTF8);
+	GetConnMat()->SetStringSelection(ws);
 
 	vtString str = m_param.m_PostExtension;
 	if (str == "none")
@@ -186,7 +197,9 @@ void LinearStructureDlg::UpdateTypes()
 void LinearStructureDlg::UpdateEnabling()
 {
 	bool bHasPosts = (m_param.m_PostType != "none");
-	bool bHasConn = (m_param.m_ConnectType != "none");
+	bool bHasConn = (m_param.m_iConnectType != 0);
+	bool bSimpleConn = (m_param.m_iConnectType == 2);
+	bool bCustomProf = (m_param.m_iConnectType == 3);
 
 	GetPostSpacingEdit()->Enable(bHasPosts);
 	GetPostSpacingSlider()->Enable(bHasPosts);
@@ -195,15 +208,19 @@ void LinearStructureDlg::UpdateEnabling()
 	GetPostSizeEdit()->Enable(bHasPosts);
 	GetPostSizeSlider()->Enable(bHasPosts);
 
-	GetConnWidthEdit()->Enable(bHasConn);
-	GetConnWidthSlider()->Enable(bHasConn);
-	GetConnTopEdit()->Enable(bHasConn);
-	GetConnTopSlider()->Enable(bHasConn);
-	GetConnBottomEdit()->Enable(bHasConn);
-	GetConnBottomSlider()->Enable(bHasConn);
-	GetSlope()->Enable(bHasConn);
-	GetSlopeSlider()->Enable(bHasConn);
+	GetConnMat()->Enable(bSimpleConn);
+	GetConnWidthEdit()->Enable(bSimpleConn);
+	GetConnWidthSlider()->Enable(bSimpleConn);
+	GetConnTopEdit()->Enable(bSimpleConn);
+	GetConnTopSlider()->Enable(bSimpleConn);
+	GetConnBottomEdit()->Enable(bSimpleConn);
+	GetConnBottomSlider()->Enable(bSimpleConn);
+	GetSlope()->Enable(bSimpleConn);
+	GetSlopeSlider()->Enable(bSimpleConn);
 	GetConstantTop()->Enable(bHasConn);
+
+	GetChoiceProfile()->Enable(bCustomProf);
+	GetProfileEdit()->Enable(bCustomProf);
 }
 
 void LinearStructureDlg::GuessStyle()
@@ -223,6 +240,19 @@ void LinearStructureDlg::GuessStyle()
 }
 
 // WDR: handler implementations for LinearStructureDlg
+
+void LinearStructureDlg::OnProfileEdit( wxCommandEvent &event )
+{
+	if (!m_pProfileEditDlg)
+		m_pProfileEditDlg = new ProfileEditDlg(this, -1, _("Edit Linear Structure Profile"),
+		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	m_pProfileEditDlg->Show(true);
+}
+
+void LinearStructureDlg::OnChoiceProfile( wxCommandEvent &event )
+{
+	
+}
 
 void LinearStructureDlg::OnConstantTop( wxCommandEvent &event )
 {
@@ -245,8 +275,22 @@ void LinearStructureDlg::OnConnType( wxCommandEvent &event )
 {
 	if (m_bSetting) return;
 
-	wxString ws = GetConnType()->GetStringSelection();
-	m_param.m_ConnectType = ws.mb_str(wxConvUTF8);
+	TransferDataFromWindow();
+	UpdateEnabling();
+
+	GuessStyle();
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+	OnSetOptions(m_param);
+}
+
+void LinearStructureDlg::OnConnMaterial( wxCommandEvent &event )
+{
+	if (m_bSetting) return;
+
+	wxString ws = GetConnMat()->GetStringSelection();
+	m_param.m_ConnectMaterial = ws.mb_str(wxConvUTF8);
 	UpdateEnabling();
 
 	GuessStyle();
@@ -347,14 +391,14 @@ void LinearStructureDlg::SlidersToValues(int which)
 		m_param.m_fPostSpacing   = VALUE_MIN + m_iPostSpacing * (VALUE_MAX - VALUE_MIN) / 100.0f;
 		break;
 	case ID_POST_HEIGHT_SLIDER:
-		m_param.m_fPostHeight	= VALUE_MIN + m_iPostHeight *  (VALUE_MAX - VALUE_MIN) / 100.0f;
+		m_param.m_fPostHeight   = VALUE_MIN + m_iPostHeight *  (VALUE_MAX - VALUE_MIN) / 100.0f;
 		break;
 	case ID_POST_SIZE_SLIDER:
 		m_param.m_fPostWidth	 = VALUE_MIN + m_iPostSize *	(VALUE_MAX - VALUE_MIN) / 100.0f;
 		m_param.m_fPostDepth	 = VALUE_MIN + m_iPostSize *	(VALUE_MAX - VALUE_MIN) / 100.0f;
 		break;
 	case ID_CONN_TOP_SLIDER:
-		m_param.m_fConnectTop	= VALUE_MIN + m_iConnTop *	 (VALUE_MAX - VALUE_MIN) / 100.0f;
+		m_param.m_fConnectTop   = VALUE_MIN + m_iConnTop *   (VALUE_MAX - VALUE_MIN) / 100.0f;
 		break;
 	case ID_CONN_BOTTOM_SLIDER:
 		m_param.m_fConnectBottom = BOTTOM_MIN + m_iConnBottom * (BOTTOM_MAX - BOTTOM_MIN) / 100.0f;
@@ -370,12 +414,12 @@ void LinearStructureDlg::SlidersToValues(int which)
 
 void LinearStructureDlg::ValuesToSliders()
 {
-	m_iPostHeight =  (int) ((m_param.m_fPostHeight - VALUE_MIN) /	(VALUE_MAX - VALUE_MIN) * 100.0f);
+	m_iPostHeight =  (int) ((m_param.m_fPostHeight - VALUE_MIN) /   (VALUE_MAX - VALUE_MIN) * 100.0f);
 	m_iPostSpacing = (int) ((m_param.m_fPostSpacing - VALUE_MIN) /   (VALUE_MAX - VALUE_MIN) * 100.0f);
-	m_iPostSize =	 (int) ((m_param.m_fPostWidth - VALUE_MIN) /	 (VALUE_MAX - VALUE_MIN) * 100.0f);
-	m_iConnTop =	 (int) ((m_param.m_fConnectTop - VALUE_MIN) /	(VALUE_MAX - VALUE_MIN) * 100.0f);
+	m_iPostSize =	(int) ((m_param.m_fPostWidth - VALUE_MIN) /	 (VALUE_MAX - VALUE_MIN) * 100.0f);
+	m_iConnTop =	 (int) ((m_param.m_fConnectTop - VALUE_MIN) /   (VALUE_MAX - VALUE_MIN) * 100.0f);
 	m_iConnBottom =  (int) ((m_param.m_fConnectBottom - BOTTOM_MIN) / (BOTTOM_MAX - BOTTOM_MIN) * 100.0f);
 	m_iConnWidth =   (int) ((m_param.m_fConnectWidth - WIDTH_MIN) /  (WIDTH_MAX - WIDTH_MIN) * 100.0f);
-	m_iSlope =		 (int) ((m_param.m_iConnectSlope - SLOPE_MIN) /  (float)(SLOPE_MAX - SLOPE_MIN) * 100.0f);
+	m_iSlope =	   (int) ((m_param.m_iConnectSlope - SLOPE_MIN) /  (float)(SLOPE_MAX - SLOPE_MIN) * 100.0f);
 }
 

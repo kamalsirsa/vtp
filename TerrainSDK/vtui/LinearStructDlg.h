@@ -11,6 +11,7 @@
 #include "vtui_wdr.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/Fence.h"
+#include "ProfileEditDlg.h"
 
 // WDR: class declarations
 
@@ -42,6 +43,8 @@ public:
 	virtual void OnSetOptions(const vtLinearParams &param) = 0;
 
 	// WDR: method declarations for LinearStructureDlg
+	wxButton* GetProfileEdit()  { return (wxButton*) FindWindow( ID_PROFILE_EDIT ); }
+	wxChoice* GetChoiceProfile()  { return (wxChoice*) FindWindow( ID_CHOICE_PROFILE ); }
 	wxCheckBox* GetConstantTop()  { return (wxCheckBox*) FindWindow( ID_CONSTANT_TOP ); }
 	wxSlider* GetSlopeSlider()  { return (wxSlider*) FindWindow( ID_SLOPE_SLIDER ); }
 	wxTextCtrl* GetSlope()  { return (wxTextCtrl*) FindWindow( ID_SLOPE ); }
@@ -60,6 +63,7 @@ public:
 	wxSlider* GetPostSpacingSlider()  { return (wxSlider*) FindWindow( ID_POST_SPACING_SLIDER ); }
 
 	wxChoice* GetExtension()  { return (wxChoice*) FindWindow( ID_CHOICE_EXTENSION ); }
+	wxChoice* GetConnMat()  { return (wxChoice*) FindWindow( ID_CONN_MATERIAL ); }
 	wxChoice* GetConnType()  { return (wxChoice*) FindWindow( ID_CONN_TYPE ); }
 	wxChoice* GetPostType()  { return (wxChoice*) FindWindow( ID_POST_TYPE ); }
 	wxChoice* GetStyle()  { return (wxChoice*) FindWindow( ID_LINEAR_STRUCTURE_STYLE ); }
@@ -73,17 +77,21 @@ protected:
 	int  m_iConnWidth;
 	int  m_iConnTop;
 	int  m_iConnBottom;
-	int	 m_iSlope;
+	int  m_iSlope;
 
 	bool m_bSetting;
 
 	vtLinearParams m_param;
 	vtMaterialDescriptorArray *m_pMaterials;
+	ProfileEditDlg *m_pProfileEditDlg;
 
 private:
 	// WDR: handler declarations for LinearStructureDlg
+	void OnProfileEdit( wxCommandEvent &event );
+	void OnChoiceProfile( wxCommandEvent &event );
 	void OnConstantTop( wxCommandEvent &event );
 	void OnTextEdit( wxCommandEvent &event );
+	void OnConnMaterial( wxCommandEvent &event );
 	void OnConnType( wxCommandEvent &event );
 	void OnPostType( wxCommandEvent &event );
 	void OnExtension( wxCommandEvent &event );
