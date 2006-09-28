@@ -20,6 +20,7 @@ public:
 		const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL, const wxString& name = _T(""));
 
 	void OnSize(wxSizeEvent& event);
+	void NewSize(const wxSize &s);
 	void OnDraw(wxDC &dc);
 	void OnMouseEvent(wxMouseEvent &event);
 
@@ -49,10 +50,15 @@ public:
         long style = wxDEFAULT_DIALOG_STYLE );
     
     // WDR: method declarations for ProfileEditDlg
-    
+    void UpdateEnabling();
+	wxButton* GetSave()  { return (wxButton*) FindWindow( ID_SAVE_PROF ); }
+
+	void SetFilename(const char *fname);
+
 private:
     // WDR: member variable declarations for ProfileEditDlg
 	ProfDlgView *m_pView;
+	wxString	m_strFilename;
 
 private:
     // WDR: handler declarations for ProfileEditDlg
