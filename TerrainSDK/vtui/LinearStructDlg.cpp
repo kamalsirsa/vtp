@@ -225,7 +225,7 @@ void LinearStructureDlg::UpdateEnabling()
 	GetPostSizeEdit()->Enable(bHasPosts);
 	GetPostSizeSlider()->Enable(bHasPosts);
 
-	GetConnMat()->Enable(bSimpleConn);
+	GetConnMat()->Enable(bSimpleConn || bCustomProf);
 	GetConnWidthEdit()->Enable(bSimpleConn);
 	GetConnWidthSlider()->Enable(bSimpleConn);
 	GetConnTopEdit()->Enable(bSimpleConn);
@@ -258,6 +258,18 @@ void LinearStructureDlg::GuessStyle()
 
 // WDR: handler implementations for LinearStructureDlg
 
+void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event)
+{
+	ValuesToSliders();
+	GuessStyle();
+	UpdateTypes();
+	UpdateProfiles();
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+	UpdateEnabling();
+}
+
 void LinearStructureDlg::OnProfileEdit( wxCommandEvent &event )
 {
 	if (!m_pProfileEditDlg)
@@ -275,30 +287,20 @@ void LinearStructureDlg::OnProfileEdit( wxCommandEvent &event )
 	m_pProfileEditDlg->ShowModal();
 
 	UpdateProfiles();
+	OnSetOptions(m_param);
 }
 
 void LinearStructureDlg::OnChoiceProfile( wxCommandEvent &event )
 {
 	wxString ws = GetChoiceProfile()->GetStringSelection();
 	m_param.m_ConnectProfile = ws.mb_str(wxConvUTF8);
+	OnSetOptions(m_param);
 }
 
 void LinearStructureDlg::OnConstantTop( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	OnSetOptions(m_param);
-}
-
-void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event)
-{
-	ValuesToSliders();
-	GuessStyle();
-	UpdateTypes();
-	UpdateProfiles();
-	m_bSetting = true;
-	TransferDataToWindow();
-	m_bSetting = false;
-	UpdateEnabling();
 }
 
 void LinearStructureDlg::OnConnType( wxCommandEvent &event )
