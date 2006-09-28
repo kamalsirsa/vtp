@@ -581,7 +581,6 @@ void EnviroFrame::Setup3DScene()
 void EnviroFrame::SetMode(MouseMode mode)
 {
 	// Show/hide the modeless dialogs as appropriate
-	m_pFenceDlg->Show(mode == MM_FENCES);
 	m_pUtilDlg->Show(mode == MM_ROUTES);
 	m_pInstanceDlg->Show(mode == MM_INSTANCES);
 	m_pDistanceDlg->Show(mode == MM_MEASURE);
@@ -594,6 +593,9 @@ void EnviroFrame::SetMode(MouseMode mode)
 		vtFence3d::CreateMaterials();
 		// and inform the dialog about the materials
 		m_pFenceDlg->SetConnectionMaterials(&vtFence3d::s_FenceMats);
+		// and the datapath
+		m_pFenceDlg->m_datapaths = g_Options.m_DataPaths;
+		m_pFenceDlg->Show(mode == MM_FENCES);
 	}
 
 	// Show/hide plant dialog
