@@ -8,8 +8,8 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#include "vtdata/shapelib/shapefil.h"
-#include "vtdata/vtString.h"
+#include "vtdata/Fence.h"
+#include "vtdata/PolyChecker.h"
 #include "ProfileEditDlg.h"
 
 // WDR: class implementations
@@ -182,61 +182,6 @@ void ProfDlgView::OnMouseEvent(wxMouseEvent &event)
 	//if (event1.AltDown())
 }
 
-//----------------------------------------------------------------------------
-
-bool LoadProfileFromSHP(const char *fname, FLine2 &prof)
-{
-	SHPHandle hSHP = SHPOpen(fname, "rb");
-	if (hSHP == NULL)
-		return false;
-
-	int nElems, nShapeType;
-	SHPGetInfo(hSHP, &nElems, &nShapeType, NULL, NULL);
-	if (!nElems || nShapeType != SHPT_ARC)
-		return false;
-
-	SHPObject *psShape = SHPReadObject(hSHP, 0);
-	int verts = psShape->nVertices;
-	prof.SetSize(verts);
-	for (int j = 0; j < verts; j++)
-	{
-		prof.GetAt(j).x = (float) psShape->padfX[j];
-		prof.GetAt(j).y = (float) psShape->padfY[j];
-	}
-	SHPDestroyObject(psShape);
-	SHPClose(hSHP);
-	return true;
-}
-
-bool SaveProfileToSHP(const char *fname, const FLine2 &prof)
-{
-	SHPHandle hSHP = SHPCreate(fname, SHPT_ARC);
-	if (!hSHP)
-		return false;
-
-	int size = prof.GetSize();
-	double* dX = new double[size];
-	double* dY = new double[size];
-
-	for (int j = 0; j < size; j++) //for each vertex
-	{
-		FPoint2 pt = prof.GetAt(j);
-		dX[j] = pt.x;
-		dY[j] = pt.y;
-
-	}
-	SHPObject *obj = SHPCreateSimpleObject(SHPT_ARC, size, dX, dY, NULL);
-
-	delete [] dX;
-	delete [] dY;
-
-	SHPWriteObject(hSHP, -1, obj);
-	SHPDestroyObject(obj);
-
-	SHPClose(hSHP);
-	return true;
-}
-
 
 //----------------------------------------------------------------------------
 // ProfileEditDlg
@@ -272,13 +217,23 @@ void ProfileEditDlg::UpdateEnabling()
 
 void ProfileEditDlg::SetFilename(const char *fname)
 {
-	if (LoadProfileFromSHP(fname, m_pView->m_profile))
+	if (LoadFLine2FromSHP(fname, m_pView->m_profile))
 	{
 		m_strFilename = wxString(fname, wxConvUTF8);
 		UpdateEnabling();
 	}
 }
 
+void ProfileEditDlg::CheckClockwisdom()
+{
+	// We want to stick to a counter-clockwise convention for closed shapes.
+	//  Check if they have specified some clockwise points, and flip if so.
+	PolyChecker pc;
+	if (pc.IsClockwisePolygon(m_pView->m_profile))
+	{
+		m_pView->m_profile.ReverseOrder();
+	}
+}
 
 // WDR: handler implementations for ProfileEditDlg
 
@@ -302,7 +257,7 @@ void ProfileEditDlg::OnLoad( wxCommandEvent &event )
 		return;
 	wxString str = loadFile.GetPath();
 	vtString fname = str.mb_str(wxConvUTF8);
-	if (LoadProfileFromSHP(fname, m_pView->m_profile))
+	if (LoadFLine2FromSHP(fname, m_pView->m_profile))
 	{
 		m_strFilename = str;
 		Refresh();
@@ -312,6 +267,8 @@ void ProfileEditDlg::OnLoad( wxCommandEvent &event )
 
 void ProfileEditDlg::OnSaveAs( wxCommandEvent &event )
 {
+	CheckClockwisdom();
+
 	wxFileDialog saveFile(NULL, _("Save Profile"), _T(""), _T(""),
 		_("Profile Files (*.shp)|*.shp"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
@@ -319,7 +276,7 @@ void ProfileEditDlg::OnSaveAs( wxCommandEvent &event )
 		return;
 	wxString str = saveFile.GetPath();
 	vtString fname = str.mb_str(wxConvUTF8);
-	if (SaveProfileToSHP(fname, m_pView->m_profile))
+	if (SaveFLine2ToSHP(fname, m_pView->m_profile))
 	{
 		m_strFilename = str;
 		TransferDataToWindow();
@@ -329,8 +286,10 @@ void ProfileEditDlg::OnSaveAs( wxCommandEvent &event )
 
 void ProfileEditDlg::OnSave( wxCommandEvent &event )
 {
+	CheckClockwisdom();
+
 	vtString fname = m_strFilename.mb_str(wxConvUTF8);
-	SaveProfileToSHP(fname, m_pView->m_profile);
+	SaveFLine2ToSHP(fname, m_pView->m_profile);
 }
 
 void ProfileEditDlg::OnRemove( wxCommandEvent &event )

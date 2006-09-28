@@ -54,6 +54,7 @@ public:
 	wxButton* GetSave()  { return (wxButton*) FindWindow( ID_SAVE_PROF ); }
 
 	void SetFilename(const char *fname);
+	void CheckClockwisdom();
 
 private:
     // WDR: member variable declarations for ProfileEditDlg
