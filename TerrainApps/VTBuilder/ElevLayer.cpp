@@ -1233,12 +1233,9 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 	if (!vtCreateDir(dirname))
 		return false;
 
-	// Write .ini file
-	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size, area, proj))
-	{
-		vtDestroyDir(dirname);
-		return false;
-	}
+	// We won't know the exact height extents until the tiles have generated,
+	//  so gather extents as we produce the tiles and write the INI later.
+	float minheight = 1E9, maxheight = -1E9;
 
 	ColorMap cmap;
 	vtElevLayer::SetupDefaultColors(cmap);	// defaults
@@ -1311,7 +1308,15 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 					if (fvalue == INVALID_ELEVATION)
 						bAllValid = false;
 					else
+					{
 						bAllInvalid = false;
+
+						// Gather height extents
+						if (fvalue < minheight)
+							minheight = fvalue;
+						if (fvalue > maxheight)
+							maxheight = fvalue;
+					}
 					if (fvalue != 0)
 						bAllZero = false;
 				}
@@ -1422,5 +1427,14 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 			}
 		}
 	}
+
+	// Write .ini file
+	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
+		area, proj, minheight, maxheight))
+	{
+		vtDestroyDir(dirname);
+		return false;
+	}
+
 	return true;
 }

@@ -4,6 +4,7 @@
 #define MINIDATABUF_H
 
 #include <stdio.h>
+#include "HeightField.h"	// for INVALID_ELEVATION
 
 /* This is a subset of a libMini class which represents a single 1D, 2D, 3D
 	or 4D data buffer, with associated metadata such as dimensions and type. */
@@ -62,6 +63,7 @@ private:
 class DRECT;
 class vtProjection;
 bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
-						const DRECT &area, const vtProjection &proj);
+						const DRECT &area, const vtProjection &proj,
+						float minheight=INVALID_ELEVATION, float maxheight=INVALID_ELEVATION);
 
 #endif

@@ -196,7 +196,8 @@ void MiniDatabuf::swapbytes()
    }
 
 bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
-						const DRECT &area, const vtProjection &proj)
+						const DRECT &area, const vtProjection &proj,
+						float minheight, float maxheight)
 {
 	FILE *fp = vtFileOpen(filename, "wb");
 	if (!fp)
@@ -219,6 +220,14 @@ bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 	fprintf(fp, "CRS=%s\n", wkt);
 	OGRFree(wkt);	// Free CRS
 	delete poSimpleClone;
+
+	// For elevation tilesets, also write vertical extents
+	if (minheight != INVALID_ELEVATION)
+	{
+		fprintf(fp, "Elevation_Min=%.f\n", minheight);
+		fprintf(fp, "Elevation_Max=%.f\n", maxheight);
+	}
+
 	fclose(fp);
 
 	return true;

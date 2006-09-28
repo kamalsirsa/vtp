@@ -1703,13 +1703,8 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 	if (!vtCreateDir(dirname))
 		return false;
 
-	// Write .ini file
-	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
-		m_area, m_proj))
-	{
-		vtDestroyDir(dirname);
-		return false;
-	}
+	// Gather height extents as we produce the tiles
+	float minheight = 1E9, maxheight = -1E9;
 
 	ColorMap cmap;
 	vtElevLayer::SetupDefaultColors(cmap);	// defaults
@@ -1834,13 +1829,21 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				{
 					p.x = m_area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
 
-					short value = (short) GridLayerArrayValue(grids, p);
-					base_lod.SetValue(x, y, value);
+					float value = GridLayerArrayValue(grids, p);
+					base_lod.SetFValue(x, y, value);
 
 					if (value == INVALID_ELEVATION)
 						bAllValid = false;
 					else
+					{
 						bAllInvalid = false;
+
+						// Gather height extents
+						if (value < minheight)
+							minheight = value;
+						if (value > maxheight)
+							maxheight = value;
+					}
 					if (value != 0)
 						bAllZero = false;
 				}
@@ -1986,6 +1989,14 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				buf.savedata(fname);
 			}
 		}
+	}
+
+	// Write .ini file
+	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
+		m_area, m_proj, minheight, maxheight))
+	{
+		vtDestroyDir(dirname);
+		return false;
 	}
 
 #if USE_OPENGL
