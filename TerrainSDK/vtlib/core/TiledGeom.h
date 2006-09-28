@@ -20,12 +20,14 @@
 class TiledDatasetDescription
 {
 public:
+	TiledDatasetDescription();
 	bool Read(const char *ini_fname);
 	bool GetCorners(DLine2 &line, bool bGeo) const;
 
 	int cols, rows;
 	int lod0size;
 	DRECT earthextents;
+	float minheight, maxheight;	// for elevation tilesets only
 	vtProjection proj;
 };
 #endif

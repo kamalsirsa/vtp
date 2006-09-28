@@ -33,24 +33,46 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 ///////////////////////////////////////////////////////////////////////
 // class TiledDatasetDescription implementation
 
+TiledDatasetDescription::TiledDatasetDescription()
+{
+	cols = rows = lod0size = 0;
+	earthextents.Empty();
+	minheight = maxheight = INVALID_ELEVATION;
+}
+
 bool TiledDatasetDescription::Read(const char *dataset_fname)
 {
 	FILE *fp = vtFileOpen(dataset_fname, "rb");
 	if (!fp) return false;
 	fscanf(fp, "[TilesetDescription]\n");
-	fscanf(fp, "Columns=%d\n", &cols);
-	fscanf(fp, "Rows=%d\n", &rows);
-	fscanf(fp, "LOD0_Size=%d\n", &lod0size);
-	fscanf(fp, "Extent_Left=%lf\n", &earthextents.left);
-	fscanf(fp, "Extent_Right=%lf\n", &earthextents.right);
-	fscanf(fp, "Extent_Bottom=%lf\n", &earthextents.bottom);
-	fscanf(fp, "Extent_Top=%lf\n", &earthextents.top);
-	// read CRS from WKT
-	char wkt[4096];
-//	fscanf(fp, "CRS=%s\n", wkt);
-	fgets(wkt, 4096, fp);
-	char *wktp = wkt + 4;	// skip "CRS="
-	proj.importFromWkt(&wktp);
+	char buf[4096];
+	while (fgets(buf, 4096, fp))
+	{
+		if (!strncmp(buf, "Columns", 7))
+			sscanf(buf, "Columns=%d\n", &cols);
+		if (!strncmp(buf, "Rows", 4))
+			sscanf(buf, "Rows=%d\n", &rows);
+		if (!strncmp(buf, "LOD0_Size", 9))
+			sscanf(buf, "LOD0_Size=%d\n", &lod0size);
+		if (!strncmp(buf, "Extent_Left", 11))
+			sscanf(buf, "Extent_Left=%lf\n", &earthextents.left);
+		if (!strncmp(buf, "Extent_Right", 12))
+			sscanf(buf, "Extent_Right=%lf\n", &earthextents.right);
+		if (!strncmp(buf, "Extent_Bottom", 13))
+			sscanf(buf, "Extent_Bottom=%lf\n", &earthextents.bottom);
+		if (!strncmp(buf, "Extent_Top", 10))
+			sscanf(buf, "Extent_Top=%lf\n", &earthextents.top);
+		if (!strncmp(buf, "Elevation_Min", 13))
+			sscanf(buf, "Elevation_Min=%f\n", &minheight);
+		if (!strncmp(buf, "Elevation_Max", 13))
+			sscanf(buf, "Elevation_Max=%f\n", &maxheight);
+		if (!strncmp(buf, "CRS", 3))
+		{
+			// read CRS from WKT
+			char *wktp = buf + 4;	// skip "CRS="
+			proj.importFromWkt(&wktp);
+		}
+	}
 	fclose(fp);
 	return true;
 }
@@ -227,12 +249,20 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 	if (!image.Read(dataset_fname_image))
 		return false;
 
+	// If it's an older elevation dataset, we won't know elevation extents, so
+	//  conservatively guess +/-8kmeters
+	if (elev.minheight == INVALID_ELEVATION)
+	{
+		elev.minheight = -8192;
+		elev.maxheight = 8192;
+	}
+
 	// We assume that the projection and extents of the two datasets are the same,
 	//  so simply take them from the elevation dataset.
 
 	// Set up earth->world heightfield properties
 	m_proj = elev.proj;
-	Initialize(m_proj.GetUnits(), elev.earthextents, 0, 4000);	// TODO min/maxheight?
+	Initialize(m_proj.GetUnits(), elev.earthextents, elev.minheight, elev.maxheight);
 
 	cols = elev.cols;
 	rows = elev.rows;
