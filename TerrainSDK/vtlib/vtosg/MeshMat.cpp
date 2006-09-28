@@ -532,11 +532,19 @@ void vtMesh::GetBoundBox(FBox3 &box) const
  */
 void vtMesh::AddTri(int p0, int p1, int p2)
 {
-	DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
 	m_Index->push_back(p0);
 	m_Index->push_back(p1);
 	m_Index->push_back(p2);
-	pDrawArrays->setCount(m_Index->size());
+	if (m_ePrimType == TRIANGLES)
+	{
+		DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
+		pDrawArrays->setCount(m_Index->size());
+	}
+	else if (m_ePrimType == TRIANGLE_STRIP || m_ePrimType == TRIANGLE_FAN)
+	{
+		DrawArrayLengths *pDrawArrayLengths = dynamic_cast<DrawArrayLengths*>(m_pPrimSet.get());
+		pDrawArrayLengths->push_back(3);
+	}
 }
 
 /**
