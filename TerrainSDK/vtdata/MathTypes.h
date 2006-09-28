@@ -439,6 +439,7 @@ public:
 	void NearestPoint(const FPoint2 &Point, int &iIndex) const;
 	bool NearestSegment(const FPoint2 &Point, int &iIndex, float &dist, FPoint2 &Intersection) const;
 	void InsertPointAfter(int iInsertAfter, const FPoint2 &Point);
+	void ReverseOrder();
 };
 
 inline DLine2 &DLine2::operator=(const DLine2 &v)
