@@ -31,6 +31,9 @@ public:
 	virtual void DeleteNode();
 	virtual void ShowBounds(bool bShow);
 
+	// implement vtFence methods
+	virtual void SetParams(const vtLinearParams &params);
+
 	void DestroyGeometry();
 
 	// all fences share the same set of materials
@@ -44,6 +47,7 @@ protected:
 	void AddWireMeshes(const FLine3 &p3);
 	void AddFlatConnectionMesh(const FLine3 &p3);
 	void AddThickConnectionMesh(const FLine3 &p3);
+	void AddProfileConnectionMesh(const FLine3 &p3);
 	void AddPostExtensions(const FLine3 &p3);
 
 	void	AddFenceMeshes(vtHeightField3d *pHeightField);
@@ -57,6 +61,7 @@ protected:
 	bool		m_bBuilt;
 	FLine3		m_Posts3d;
 	float		m_fMaxGroundY;
+	FLine2		m_Profile;
 };
 
 typedef class vtFence *vtFencePtr;

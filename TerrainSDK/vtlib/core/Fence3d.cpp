@@ -8,6 +8,8 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtdata/Triangulate.h"
+
 #include "Light.h"
 #include "Terrain.h"
 #include "Fence3d.h"
@@ -339,7 +341,7 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 			{
 				// increment u based on the length of each fence segment
 				float length_meters = (p3[j+1] - p3[j]).Length();
-				u += (length_meters / desc->GetUVScale().x);
+				u += (length_meters / uvscale.x);
 			}
 		}
 		pMesh->AddStrip2(npoints * 2, start);
@@ -379,6 +381,180 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 	pMesh->SetVtxTexCoord(start+2, FPoint2(u, 0.0f));
 	pMesh->SetVtxTexCoord(start+3, FPoint2(u, v2));
 	pMesh->AddStrip2(4, start);
+
+	m_pFenceGeom->AddMesh(pMesh, desc->GetMaterialIndex());
+	pMesh->Release();	// pass ownership
+}
+
+void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
+{
+	unsigned int i, j, npoints = p3.GetSize(), prof_points = m_Profile.GetSize();
+
+	// Each segment of the profile becomes a long triangle strip.
+	// If there are no shared vertices between segments, the number of
+	//  vertices is, for a profile of N points and a line of P points:
+	//   P * (N-1) * 2, for the sides
+	//   N*2, for the end caps (or more if we have to tessellate)
+	//
+	int iEstimateVerts = npoints * (prof_points-1) * 2 + (prof_points * 2);
+	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP,
+		VT_TexCoords | VT_Normals, iEstimateVerts);
+
+	vtMaterialDescriptor *desc = FindDescriptor(m_Params.m_ConnectMaterial);
+	FPoint2 uvscale = desc->GetUVScale();
+
+	// determine side-pointing vector
+	vtArray<float> ExtraElevation(npoints);
+	FLine3 sideways(npoints);
+	for (j = 0; j < npoints; j++)
+	{
+		// determine side-pointing vector
+		if (j == 0)
+			sideways[j] = SidewaysVector(p3[j], p3[j+1]);
+		else if (j > 0 && j < npoints-1)
+			SidewaysVector(p3[j-1], p3[j], p3[j+1], sideways[j]);
+		else if (j == npoints-1)
+			sideways[j] = SidewaysVector(p3[j-1], p3[j]);
+
+		ExtraElevation[j] = 0.0f;
+		if (m_Params.m_bConstantTop)
+			ExtraElevation[j] = m_fMaxGroundY - p3[j].y;
+	}
+
+	float u;
+	float v1, v2;
+	for (i = 0; i < prof_points-1; i++)
+	{
+		float y1, y2;
+		float z1, z2;
+		FPoint3 pos, normal;
+
+		// determine v texture coordinate
+		float seg_length = m_Profile.SegmentLength(i);
+		if (uvscale.y == -1)
+		{
+			v1 = 0.0f;
+			v2 = 1.0f;
+		}
+		else
+		{
+			if (i == 0)
+			{
+				v1 = 0.0f;
+				v2 = seg_length / uvscale.y;
+			}
+			else
+			{
+				v1 = v2;
+				v2 += seg_length / uvscale.y;
+			}
+		}
+
+		// determine Y and Z values
+		y1 = m_Profile[i].y;
+		y2 = m_Profile[i+1].y;
+		z1 = m_Profile[i].x;
+		z2 = m_Profile[i+1].x;
+
+		u = 0.0f;
+		int start = pMesh->GetNumVertices();
+		for (j = 0; j < npoints; j++)
+		{
+			// determine vertex normal (for shading)
+			float diffy = y2-y1;
+			float diffz = z2-z1;
+			float dy = -diffz;
+			float dz = diffy;
+
+			FPoint3 n1, n2;
+			n1.Set(0, y1, 0);
+			n1 += (sideways[j] * z1);
+			n2.Set(0, y1 + dy, 0);
+			n2 += (sideways[j] * (z1 + dz));
+
+			normal = n2 - n1;
+			normal.Normalize();
+
+			// determine the two points of this segment edge, and add them
+			pos = p3[j];
+			pos.y += y2;
+			pos.y += ExtraElevation[j];
+			pos += (sideways[j] * z2);
+			pMesh->AddVertexNUV(pos, normal, FPoint2(u, v2));
+
+			pos = p3[j];
+			pos.y += y1;
+			pos.y += ExtraElevation[j];
+			pos += (sideways[j] * z1);
+			pMesh->AddVertexNUV(pos, normal, FPoint2(u, v1));
+
+			if (j < npoints-1)
+			{
+				// increment u based on the length of each fence segment
+				float length_meters = (p3[j+1] - p3[j]).Length();
+				u += (length_meters / uvscale.x);
+			}
+		}
+		pMesh->AddStrip2(npoints * 2, start);
+	}
+
+	// We must assume the profile is interpreted as a closed polygon, which
+	//  may not be convex.  Hence it must be triangulated.
+	FLine2 result;
+	Triangulate_f::Process(m_Profile, result);
+	unsigned int tcount = result.GetSize()/3;
+
+	int ind[3];
+	int line_point;
+	FPoint3 normal;
+
+	// add cap at beginning
+	line_point = 0;
+	normal = p3[0] - p3[1];
+	normal.Normalize();
+	for (i=0; i<tcount; i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
+			FPoint2 p2 = result[i*3+j];
+
+			FPoint3 pos = p3[line_point];
+			pos.y += p2.y;
+			pos.y += ExtraElevation[line_point];
+			pos += (sideways[line_point] * p2.x);
+
+			FPoint2 uv = p2;
+			if (uvscale.y != -1)
+				uv.Div(uvscale);	// divide meters by [meters/uv] to get uv
+
+			ind[j] = pMesh->AddVertexNUV(pos, normal, uv);
+		}
+		pMesh->AddTri(ind[0], ind[1], ind[2]);
+	}
+
+	// add cap at end
+	line_point = npoints-1;
+	normal = p3[npoints-1] - p3[npoints-2];
+	normal.Normalize();
+	for (i=0; i<tcount; i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
+			FPoint2 p2 = result[i*3+j];
+
+			FPoint3 pos = p3[line_point];
+			pos.y += p2.y;
+			pos.y += ExtraElevation[line_point];
+			pos += (sideways[line_point] * p2.x);
+
+			FPoint2 uv = p2;
+			if (uvscale.y != -1)
+				uv.Div(uvscale);	// divide meters by [meters/uv] to get uv
+
+			ind[j] = pMesh->AddVertexNUV(pos, normal, uv);
+		}
+		pMesh->AddTri(ind[0], ind[2], ind[1]);
+	}
 
 	m_pFenceGeom->AddMesh(pMesh, desc->GetMaterialIndex());
 	pMesh->Release();	// pass ownership
@@ -563,7 +739,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	}
 	else if (m_Params.m_iConnectType == 3)	// profile
 	{
-		// TODO
+		AddProfileConnectionMesh(p3);
 	}
 }
 
@@ -683,4 +859,19 @@ void vtFence3d::ShowBounds(bool bShow)
 	}
 }
 
+void vtFence3d::SetParams(const vtLinearParams &params)
+{
+	// Reload profile, if necessary
+	if (params.m_iConnectType == 3 &&
+		params.m_ConnectProfile != m_Params.m_ConnectProfile)
+	{
+		vtString path = FindFileOnPaths(vtGetDataPath(),
+			"BuildingData/" + params.m_ConnectProfile);
+		if (path != "")
+			LoadFLine2FromSHP(path, m_Profile);
+		else
+			m_Profile.Empty();
+	}
+	m_Params = params;
+}
 
