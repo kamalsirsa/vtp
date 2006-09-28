@@ -3,7 +3,7 @@
 // Purpose:  Contour-related code, which interfaces vtlib to the
 //	QuikGrid library.
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,8 +11,9 @@
 
 #if SUPPORT_QUIKGRID
 
-#include "QuikGrid/surfgrid.h"
-#include "QuikGrid/contour.h"
+// QuikGrid headers
+#include "surfgrid.h"
+#include "contour.h"
 
 #ifdef _MSC_VER
 #pragma comment( lib, "QuikGrid.lib" )
