@@ -13,6 +13,7 @@
 #endif
 
 #include "LinearStructDlg.h"
+#include "Helper.h"		// for AddFilenamesToChoice
 
 #define VALUE_MIN  0.2f
 #define VALUE_MAX  10.2f
@@ -161,6 +162,22 @@ void LinearStructureDlg::UpdateConnectChoices()
 	}
 }
 
+void LinearStructureDlg::UpdateProfiles()
+{
+	wxChoice *cc = GetChoiceProfile();
+	cc->Clear();
+	for (unsigned int i = 0; i < m_datapaths.size(); i++)
+	{
+		// fill the "profiles" control with available profile files
+		AddFilenamesToChoice(cc, m_datapaths[i] + "BuildingData", "*.shp");
+
+		wxString ws(m_param.m_ConnectProfile, wxConvUTF8);
+		int sel = cc->FindString(ws);
+		if (sel != -1)
+			cc->SetSelection(sel);
+	}
+}
+
 void LinearStructureDlg::SetOptions(const vtLinearParams &param)
 {
 	m_param = param;
@@ -244,14 +261,26 @@ void LinearStructureDlg::GuessStyle()
 void LinearStructureDlg::OnProfileEdit( wxCommandEvent &event )
 {
 	if (!m_pProfileEditDlg)
-		m_pProfileEditDlg = new ProfileEditDlg(this, -1, _("Edit Linear Structure Profile"),
-		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pProfileEditDlg->Show(true);
+		m_pProfileEditDlg = new ProfileEditDlg(this, -1,
+		 _("Edit Linear Structure Profile"),	wxDefaultPosition, wxDefaultSize,
+		 wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+
+	if (m_param.m_ConnectProfile != "")
+	{
+		vtString look_in = "BuildingData/";
+		vtString path = FindFileOnPaths(m_datapaths, look_in + m_param.m_ConnectProfile);
+		if (path != "")
+			m_pProfileEditDlg->SetFilename(path);
+	}
+	m_pProfileEditDlg->ShowModal();
+
+	UpdateProfiles();
 }
 
 void LinearStructureDlg::OnChoiceProfile( wxCommandEvent &event )
 {
-	
+	wxString ws = GetChoiceProfile()->GetStringSelection();
+	m_param.m_ConnectProfile = ws.mb_str(wxConvUTF8);
 }
 
 void LinearStructureDlg::OnConstantTop( wxCommandEvent &event )
@@ -265,6 +294,7 @@ void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event)
 	ValuesToSliders();
 	GuessStyle();
 	UpdateTypes();
+	UpdateProfiles();
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;

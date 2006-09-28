@@ -38,6 +38,7 @@ public:
 	void SetOptions(const vtLinearParams &param);
 	void UpdateChoices();
 	void UpdateConnectChoices();
+	void UpdateProfiles();
 
 	// Override this with desired result
 	virtual void OnSetOptions(const vtLinearParams &param) = 0;
@@ -67,6 +68,8 @@ public:
 	wxChoice* GetConnType()  { return (wxChoice*) FindWindow( ID_CONN_TYPE ); }
 	wxChoice* GetPostType()  { return (wxChoice*) FindWindow( ID_POST_TYPE ); }
 	wxChoice* GetStyle()  { return (wxChoice*) FindWindow( ID_LINEAR_STRUCTURE_STYLE ); }
+
+	vtStringArray m_datapaths;
 
 protected:
 	// WDR: member variable declarations for LinearStructureDlg
