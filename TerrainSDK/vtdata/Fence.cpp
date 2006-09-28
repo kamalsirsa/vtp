@@ -8,6 +8,7 @@
 //
 
 #include "Fence.h"
+#include "shapelib/shapefil.h"
 
 #define LONGEST_FENCE 2000   // in meters
 
@@ -397,5 +398,62 @@ void vtFence::WriteXML(GZOutput &out, bool bDegrees) const
 bool vtFence::IsContainedBy(const DRECT &rect) const
 {
 	return rect.ContainsLine(m_pFencePts);
+}
+
+
+//----------------------------------------------------------------------------
+// Helpers
+
+bool LoadFLine2FromSHP(const char *fname, FLine2 &prof)
+{
+	SHPHandle hSHP = SHPOpen(fname, "rb");
+	if (hSHP == NULL)
+		return false;
+
+	int nElems, nShapeType;
+	SHPGetInfo(hSHP, &nElems, &nShapeType, NULL, NULL);
+	if (!nElems || nShapeType != SHPT_ARC)
+		return false;
+
+	SHPObject *psShape = SHPReadObject(hSHP, 0);
+	int verts = psShape->nVertices;
+	prof.SetSize(verts);
+	for (int j = 0; j < verts; j++)
+	{
+		prof.GetAt(j).x = (float) psShape->padfX[j];
+		prof.GetAt(j).y = (float) psShape->padfY[j];
+	}
+	SHPDestroyObject(psShape);
+	SHPClose(hSHP);
+	return true;
+}
+
+bool SaveFLine2ToSHP(const char *fname, const FLine2 &prof)
+{
+	SHPHandle hSHP = SHPCreate(fname, SHPT_ARC);
+	if (!hSHP)
+		return false;
+
+	int size = prof.GetSize();
+	double* dX = new double[size];
+	double* dY = new double[size];
+
+	for (int j = 0; j < size; j++) //for each vertex
+	{
+		FPoint2 pt = prof.GetAt(j);
+		dX[j] = pt.x;
+		dY[j] = pt.y;
+
+	}
+	SHPObject *obj = SHPCreateSimpleObject(SHPT_ARC, size, dX, dY, NULL);
+
+	delete [] dX;
+	delete [] dY;
+
+	SHPWriteObject(hSHP, -1, obj);
+	SHPDestroyObject(obj);
+
+	SHPClose(hSHP);
+	return true;
 }
 

@@ -88,13 +88,17 @@ public:
 	// style
 	void ApplyStyle(vtLinearStyle style);
 	vtLinearParams &GetParams() { return m_Params; }
-	void SetParams(const vtLinearParams &params) { m_Params = params; }
+	virtual void SetParams(const vtLinearParams &params) { m_Params = params; }
 
 protected:
 	DLine2		m_pFencePts;	// in earth coordinates
 
 	vtLinearParams	m_Params;
 };
+
+// Helpers
+bool LoadFLine2FromSHP(const char *fname, FLine2 &prof);
+bool SaveFLine2ToSHP(const char *fname, const FLine2 &prof);
 
 #endif	// FENCESH
 
