@@ -42,6 +42,9 @@ vtStructInstance3d::vtStructInstance3d() : vtStructInstance()
 
 void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 {
+	if (!m_pContainer)	// safety check
+		return;
+
 	m_pContainer->Identity();
 
 	if (m_fScale != 1.0f)
