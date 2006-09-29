@@ -17,8 +17,6 @@
 
 #define VALUE_MIN  0.2f
 #define VALUE_MAX  10.2f
-#define SIZE_MIN  0.05f
-#define SIZE_MAX  2.55f
 #define BOTTOM_MIN  -4.0f
 #define BOTTOM_MAX  9.0f
 #define WIDTH_MIN   0.0f
@@ -287,7 +285,9 @@ void LinearStructureDlg::OnProfileEdit( wxCommandEvent &event )
 	m_pProfileEditDlg->ShowModal();
 
 	UpdateProfiles();
-	OnSetOptions(m_param);
+
+	// Profile may have changed, even if the parameters didn't, so pass true.
+	OnSetOptions(m_param, true);
 }
 
 void LinearStructureDlg::OnChoiceProfile( wxCommandEvent &event )

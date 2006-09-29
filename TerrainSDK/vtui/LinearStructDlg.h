@@ -41,7 +41,7 @@ public:
 	void UpdateProfiles();
 
 	// Override this with desired result
-	virtual void OnSetOptions(const vtLinearParams &param) = 0;
+	virtual void OnSetOptions(const vtLinearParams &param, bool bProfileChanged = false) = 0;
 
 	// WDR: method declarations for LinearStructureDlg
 	wxButton* GetProfileEdit()  { return (wxButton*) FindWindow( ID_PROFILE_EDIT ); }
