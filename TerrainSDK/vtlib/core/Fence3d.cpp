@@ -811,10 +811,26 @@ void vtFence3d::ShowBounds(bool bShow)
 	{
 		unsigned int i, npoints = m_pFencePts.GetSize();
 
+		// Create border around the feature, also some lines as handles for
+		//  the control points.
+		// Must be tall enough to be visible above all the posts and profile.
+		float height = max(m_Params.m_fPostHeight, m_Params.m_fConnectTop);
+		float width = m_Params.m_fConnectWidth;
+		if (m_Params.m_ConnectProfile != "")
+		{
+			for (i = 0; i < m_Profile.GetSize(); i++)
+			{
+				float x = fabs(m_Profile[i].x), y = m_Profile[i].y;
+				if (y > height) height = y;
+				if (x > width) width = x;
+			}
+		}
+		height += 1.0f;
+		width += 1.0f;
+
 		// border around the feature
 		m_pHighlightMesh = new vtMesh(vtMesh::LINE_STRIP, 0, npoints*2);
-		FPoint3 sideways;
-		FPoint3 up(0,1,0);
+		FPoint3 sideways, up(0,1,0);
 		for (i = 0; i < npoints; i++)
 		{
 			// determine normal
@@ -825,7 +841,7 @@ void vtFence3d::ShowBounds(bool bShow)
 			else if (i == npoints-1)
 				sideways = SidewaysVector(m_Posts3d[i-1], m_Posts3d[i]);
 
-			sideways.SetLength(1.0f + m_Params.m_fConnectWidth);
+			sideways.SetLength(width);
 
 			m_pHighlightMesh->AddVertex(m_Posts3d[i] - sideways + up);
 			m_pHighlightMesh->AddVertex(m_Posts3d[i] + sideways + up);
@@ -837,13 +853,6 @@ void vtFence3d::ShowBounds(bool bShow)
 		idx.push_back(0);
 		m_pHighlightMesh->AddStrip(idx.size(), &idx.front());
 
-		// Also some lines as handles for the control points
-		float height = max(m_Params.m_fPostHeight, m_Params.m_fConnectTop);
-		height += 1.0f;
-
-		// Use yellow highlight material
-		int highlight_matidx = s_FenceMats.FindMatIndex("Highlight", RGBf(1,1,0));
-
 		for (i = 0; i < npoints; i++)
 		{
 			float extra_height = 0.0f;
@@ -854,6 +863,10 @@ void vtFence3d::ShowBounds(bool bShow)
 			int v1 = m_pHighlightMesh->AddVertex(m_Posts3d[i] + FPoint3(0,height+extra_height,0));
 			m_pHighlightMesh->AddLine(v0, v1);
 		}
+
+		// Use yellow highlight material
+		int highlight_matidx = s_FenceMats.FindMatIndex("Highlight", RGBf(1,1,0));
+
 		m_pFenceGeom->AddMesh(m_pHighlightMesh, highlight_matidx);
 		m_pHighlightMesh->Release();	// pass ownership
 	}
@@ -861,17 +874,28 @@ void vtFence3d::ShowBounds(bool bShow)
 
 void vtFence3d::SetParams(const vtLinearParams &params)
 {
-	// Reload profile, if necessary
-	if (params.m_iConnectType == 3 &&
-		params.m_ConnectProfile != m_Params.m_ConnectProfile)
-	{
-		vtString path = FindFileOnPaths(vtGetDataPath(),
-			"BuildingData/" + params.m_ConnectProfile);
-		if (path != "")
-			LoadFLine2FromSHP(path, m_Profile);
-		else
-			m_Profile.Empty();
-	}
+	// Reload profile, if we know it is different than before
+	bool bReload = (params.m_iConnectType == 3 &&
+		params.m_ConnectProfile != m_Params.m_ConnectProfile);
+
 	m_Params = params;
+
+	if (bReload)
+		LoadProfile();
 }
 
+void vtFence3d::ProfileChanged()
+{
+	// When we know the profile has changed, reload it.
+	LoadProfile();
+}
+
+void vtFence3d::LoadProfile()
+{
+	vtString path = FindFileOnPaths(vtGetDataPath(),
+		"BuildingData/" + m_Params.m_ConnectProfile);
+	if (path != "")
+		LoadFLine2FromSHP(path, m_Profile);
+	else
+		m_Profile.Empty();
+}

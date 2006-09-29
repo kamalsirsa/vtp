@@ -33,6 +33,7 @@ public:
 
 	// implement vtFence methods
 	virtual void SetParams(const vtLinearParams &params);
+	virtual void ProfileChanged();
 
 	void DestroyGeometry();
 
@@ -42,6 +43,7 @@ public:
 
 protected:
 	void	Init();
+	void	LoadProfile();
 	void	AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc);
 
 	void AddWireMeshes(const FLine3 &p3);
