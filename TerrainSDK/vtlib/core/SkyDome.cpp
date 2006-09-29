@@ -599,7 +599,6 @@ bool vtSkyDome::SetTexture(const char *filename)
 void vtSkyDome::ApplyDomeColors()
 {
 	vtMesh *mesh = m_pDomeMesh;
-	int i = 0;
 	RGBf vtxcol;
 	FPoint3 psph;
 	float phipct, phipct_cut, thetapct;
@@ -623,7 +622,7 @@ void vtSkyDome::ApplyDomeColors()
 		return;
 
 	// Set day colors
-	for (i = 0; i < mesh->GetNumVertices(); i++)
+	for (unsigned int i = 0; i < mesh->GetNumVertices(); i++)
 	{
 		FPoint3 p = mesh->GetVtxPos(i);
 		psph = SphVertices[i];
