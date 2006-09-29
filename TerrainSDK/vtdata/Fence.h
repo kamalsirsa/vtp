@@ -89,6 +89,7 @@ public:
 	void ApplyStyle(vtLinearStyle style);
 	vtLinearParams &GetParams() { return m_Params; }
 	virtual void SetParams(const vtLinearParams &params) { m_Params = params; }
+	virtual void ProfileChanged() {}
 
 protected:
 	DLine2		m_pFencePts;	// in earth coordinates
