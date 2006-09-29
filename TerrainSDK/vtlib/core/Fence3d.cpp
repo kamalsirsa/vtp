@@ -390,6 +390,10 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 {
 	unsigned int i, j, npoints = p3.GetSize(), prof_points = m_Profile.GetSize();
 
+	// Must have at least 2 points in the profile
+	if (prof_points < 2)
+		return;
+
 	// Each segment of the profile becomes a long triangle strip.
 	// If there are no shared vertices between segments, the number of
 	//  vertices is, for a profile of N points and a line of P points:
@@ -816,7 +820,7 @@ void vtFence3d::ShowBounds(bool bShow)
 		// Must be tall enough to be visible above all the posts and profile.
 		float height = max(m_Params.m_fPostHeight, m_Params.m_fConnectTop);
 		float width = m_Params.m_fConnectWidth;
-		if (m_Params.m_ConnectProfile != "")
+		if (m_Params.m_iConnectType == 3)
 		{
 			for (i = 0; i < m_Profile.GetSize(); i++)
 			{
