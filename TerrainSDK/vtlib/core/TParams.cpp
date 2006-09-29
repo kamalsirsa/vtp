@@ -272,6 +272,8 @@ bool TParams::LoadFromXML(const char *fname)
 void TParamsVisitor::startElement(const char *name, const XMLAttributes &atts)
 {
 	TagVisitor::startElement(name, atts);
+
+	// Detect and support old "Structure_File" parameter
 	if (m_level == 2 && !strcmp(name, STR_STRUCTFILE))
 	{
 		m_bViz = true;
