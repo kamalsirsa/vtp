@@ -884,6 +884,17 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	// Inform the map overview
 	if (m_pMapOverview)
 		m_pMapOverview->SetTerrain(pTerrain);
+
+	// If there is an initial scenario, show it
+	vtString sname;
+	if (param.GetValueString(STR_INIT_SCENARIO, sname))
+	{
+		for (int snum = 0; snum < param.m_Scenarios.size(); snum++)
+		{
+			if (sname == param.m_Scenarios[snum].GetValueString(STR_SCENARIO_NAME))
+				pTerrain->ActivateScenario(snum);
+		}
+	}
 }
 
 
@@ -1701,7 +1712,7 @@ void Enviro::close_fence()
 	m_bActiveFence = false;
 }
 
-void Enviro::SetFenceOptions(const vtLinearParams &param)
+void Enviro::SetFenceOptions(const vtLinearParams &param, bool bProfileChanged)
 {
 	m_FenceParams = param;
 
@@ -1712,6 +1723,8 @@ void Enviro::SetFenceOptions(const vtLinearParams &param)
 	if (m_bActiveFence)
 	{
 		m_pCurFence->SetParams(param);
+		if (bProfileChanged)
+			m_pCurFence->ProfileChanged();
 		m_pCurFence->CreateNode(pTerr);	// re-create
 	}
 
@@ -1723,6 +1736,8 @@ void Enviro::SetFenceOptions(const vtLinearParams &param)
 			continue;
 		vtFence3d *pFence = structures->GetFence(i);
 		pFence->SetParams(param);
+		if (bProfileChanged)
+			pFence->ProfileChanged();
 		pFence->CreateNode(pTerr);	// re-create
 	}
 }
@@ -2166,7 +2181,7 @@ void Enviro::CreateTestVehicle()
 	}
 }
 
-void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, int iNum, float fSpeed)
+void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, float fSpeed)
 {
 	vtRoadMap3d *pRoadMap = pTerrain->GetRoadMap();
 
