@@ -154,7 +154,7 @@ public:
 	void start_new_fence();
 	void finish_fence();
 	void close_fence();
-	void SetFenceOptions(const vtLinearParams &param);
+	void SetFenceOptions(const vtLinearParams &param, bool bProfileChanged = false);
 
 	// route methods
 	void start_new_route();
@@ -215,7 +215,7 @@ public:
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;
 	void CreateTestVehicle();
-	void CreateSomeTestVehicles(vtTerrain *pTerrain, int iNum, float fSpeed);
+	void CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, float fSpeed);
 	VehicleManager m_VehicleManager;
 	VehicleSet m_Vehicles;
 
