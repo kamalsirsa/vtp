@@ -127,6 +127,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_BUTTON( ID_MOVEUP_SCENARIO, TParamsDlg::OnMoveUpScenario )
 	EVT_BUTTON( ID_MOVEDOWN_SCENARIO, TParamsDlg::OnMoveDownSceanario )
 	EVT_LISTBOX( ID_SCENARIO_LIST, TParamsDlg::OnScenarioListEvent )
+	EVT_CHOICE( ID_CHOICE_SCENARIO, TParamsDlg::OnChoiceScenario )
 END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -422,6 +423,9 @@ void TParamsDlg::SetParams(const TParams &Params)
 	if (Params.GetOverlay(fname, m_iOverlayX, m_iOverlayY))
 		m_strOverlayFile = wxString(fname, wxConvUTF8);
 
+	// Scenarios
+	m_strInitScenario = wxString(Params.GetValueString(STR_INIT_SCENARIO), wxConvUTF8);
+
 	// Safety check
 	if (m_iTriCount < 500 || m_iTriCount > 100000)
 		m_iTriCount = 10000;
@@ -561,6 +565,8 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	Params.SetOverlay((const char *) m_strOverlayFile.mb_str(wxConvUTF8), m_iOverlayX, m_iOverlayY);
 
+	// Scenarios
+	Params.SetValueString(STR_INIT_SCENARIO, (const char *) m_strInitScenario.mb_str(wxConvUTF8));
 	Params.m_Scenarios = m_Scenarios;
 }
 
@@ -970,6 +976,8 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	UpdateColorControl();
 
+	UpdateScenarioChoices();
+
 	wxWindow::OnInitDialog(event);
 
 	UpdateEnableState();
@@ -1319,17 +1327,31 @@ void TParamsDlg::UpdateTimeString()
 	m_strInitTime.Trim();
 }
 
+void TParamsDlg::UpdateScenarioChoices()
+{
+	GetScenarios()->Clear();
+	for (unsigned int i = 0; i < m_Scenarios.size(); i++)
+	{
+		vtString vs = m_Scenarios[i].GetValueString(STR_SCENARIO_NAME);
+		GetScenarios()->Append(wxString(vs, wxConvUTF8));
+	}
+	GetScenarios()->SetStringSelection(m_strInitScenario);
+}
+
 void TParamsDlg::OnNewScenario( wxCommandEvent &event )
 {
-	wxString ScenarioName = wxGetTextFromUser(_("Enter Scenario Name"), _("New Scenario"));
+	wxString ScenarioName = wxGetTextFromUser(_("Enter Scenario Name"),
+		_("New Scenario"));
 
 	if (!ScenarioName.IsEmpty())
 	{
 		ScenarioParams Scenario;
 
-		Scenario.SetValueString(STR_SCENARIO_NAME, (const char *) ScenarioName.mb_str(wxConvUTF8), true);
+		Scenario.SetValueString(STR_SCENARIO_NAME,
+			(const char *) ScenarioName.mb_str(wxConvUTF8), true);
 		m_Scenarios.push_back(Scenario);
 		m_pScenarioList->SetSelection(m_pScenarioList->Append(ScenarioName));
+		UpdateScenarioChoices();
 		UpdateEnableState();
 	}
 }
@@ -1342,6 +1364,7 @@ void TParamsDlg::OnDeleteScenario( wxCommandEvent &event )
 	{
 		m_pScenarioList->Delete(iSelected);
 		m_Scenarios.erase(m_Scenarios.begin() + iSelected);
+		UpdateScenarioChoices();
 		UpdateEnableState();
 	}
 }
@@ -1410,3 +1433,9 @@ void TParamsDlg::OnScenarioListEvent( wxCommandEvent &event )
 {
 	UpdateEnableState();
 }
+
+void TParamsDlg::OnChoiceScenario( wxCommandEvent &event )
+{
+	m_strInitScenario = GetScenarios()->GetStringSelection();
+}
+

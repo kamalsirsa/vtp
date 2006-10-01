@@ -2043,6 +2043,20 @@ wxSizer *ScenariosPaneFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
 
+    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Start with active scenario:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString strs11[] = 
+    {
+        _("ChoiceItem")
+    };
+    wxChoice *item11 = new wxChoice( parent, ID_CHOICE_SCENARIO, wxDefaultPosition, wxSize(200,-1), 1, strs11, 0 );
+    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item9, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
     if (set_sizer)
     {
         parent->SetSizer( item0 );

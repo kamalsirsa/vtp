@@ -283,27 +283,28 @@ const int ID_DELETE_SCENARIO = 10210;
 const int ID_EDIT_SCENARIO = 10211;
 const int ID_MOVEUP_SCENARIO = 10212;
 const int ID_MOVEDOWN_SCENARIO = 10213;
+const int ID_CHOICE_SCENARIO = 10214;
 wxSizer *ScenariosPaneFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SCENARIO_VISIBLE_LAYERS = 10214;
-const int ID_SCENARIO_ADD_VISIBLE_LAYER = 10215;
-const int ID_SCENARIO_REMOVE_VISIBLE_LAYER = 10216;
-const int ID_SCENARIO_AVAILABLE_LAYERS = 10217;
+const int ID_SCENARIO_VISIBLE_LAYERS = 10215;
+const int ID_SCENARIO_ADD_VISIBLE_LAYER = 10216;
+const int ID_SCENARIO_REMOVE_VISIBLE_LAYER = 10217;
+const int ID_SCENARIO_AVAILABLE_LAYERS = 10218;
 wxSizer *ScenarioVisibleLayersPane( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SCENARIO_NAME = 10218;
+const int ID_SCENARIO_NAME = 10219;
 wxSizer *ScenarioParamsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SCENARIO_PREVIOUS = 10219;
-const int ID_SCENARIO_NEXT = 10220;
+const int ID_SCENARIO_PREVIOUS = 10220;
+const int ID_SCENARIO_NEXT = 10221;
 wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_PANEL1 = 10221;
-const int ID_TARGET = 10222;
-const int ID_CURRENT = 10223;
-const int ID_CACHE_USED = 10224;
-const int ID_TILE_LOADS = 10225;
-const int ID_TILE_HITS = 10226;
+const int ID_PANEL1 = 10222;
+const int ID_TARGET = 10223;
+const int ID_CURRENT = 10224;
+const int ID_CACHE_USED = 10225;
+const int ID_TILE_LOADS = 10226;
+const int ID_TILE_HITS = 10227;
 wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 wxSizer *TextureDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );

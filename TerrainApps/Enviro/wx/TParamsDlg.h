@@ -46,6 +46,7 @@ public:
 	void UpdateColorMapChoice();
 	void DeleteItem(wxListBox *pBox);
 	int FindLayerByFilename(const vtString &fname);
+	void UpdateScenarioChoices();
 
 	// overall name
 	wxString   m_strTerrainName;
@@ -149,6 +150,8 @@ public:
 	int		m_iOverlayX;
 	int		m_iOverlayY;
 
+	wxString m_strInitScenario;
+
 	wxString m_strInitTime;
 //  wxString   m_strMemRequired;
 
@@ -156,6 +159,7 @@ public:
 	std::vector<ScenarioParams> m_Scenarios;
 
 	// WDR: method declarations for TParamsDlg
+	wxChoice* GetScenarios()  { return (wxChoice*) FindWindow( ID_CHOICE_SCENARIO ); }
 	wxChoice* GetTilesize()  { return (wxChoice*) FindWindow( ID_CHOICE_TILESIZE ); }
 	wxChoice* GetTFileBase()  { return (wxChoice*) FindWindow( ID_TFILE_BASE ); }
 	wxButton* GetMovedownScenario()  { return (wxButton*) FindWindow( ID_MOVEDOWN_SCENARIO ); }
@@ -258,6 +262,7 @@ private:
 	void OnEditScenario( wxCommandEvent &event );
 	void OnMoveUpScenario( wxCommandEvent &event );
 	void OnMoveDownSceanario( wxCommandEvent &event );
+	void OnChoiceScenario( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()
