@@ -77,11 +77,12 @@ VTBuilder<br>
   <ol>
     <li>Load your Bioregion (list of Biotypes) with the menu command 
     &quot;Vegetation: BioRegions&quot;.<br>
-    An example file is in <code>VTP/Enviro/Data/PlantData/bioregion.txt</code></li>
+    An example file is in <code>Data/PlantData/bioregion.txt<br>
+    </code>The plant densities are in plants per square meter.</li>
     <li>Import at least one vegetation layer with <b>Biotype</b>.&nbsp; Biotype is by 
     0-based index, so a integer field with values of 0, 1, 2, 3 etc. indicates 
     which biotype.</li>
-    <li>If you also have polygon data with additional information about plant density, import that layer as <b>Density</b>.&nbsp; 
+    <li>If you also (<i>optionally</i>) have polygon data with additional information about plant density, import that layer as <b>Density</b>.&nbsp; 
     This can be the same GIS file that contains the Biotype, or a separate file 
     such as a LULC file.&nbsp; If you don't have a data file, the default of 
     &quot;Normal Density&quot; will be assumed.</li>
@@ -89,11 +90,11 @@ VTBuilder<br>
       vegetation</li>
     <li>Give the menu command &quot;Area Tool - Generate  Vegetation&quot;&nbsp; A dialog will ask for :
       <ul>
-        <li>Grid Spacing of Sampling, in meters.&nbsp; The distribution will
-          occur on a regular grid.&nbsp; At each point, it will test to see what
-          kind of plant belongs at that location, given all known inputs.&nbsp;
-          Then, if a plant is generated, a small random offset is applied to
-          avoid the &quot;regular&quot; look of an evenly distribution.</li>
+        <li>Grid Spacing of Sampling, in meters.&nbsp; The distribution will 
+        occur on a regular grid.&nbsp; At each point, it will test to see what 
+        kind of plant belongs at that location, given all known inputs.&nbsp; 
+        Then, if a plant is generated, a small random offset is applied to avoid 
+        the &quot;regular&quot; look of an gridded distribution.</li>
         <li>Artificial Scarcity.&nbsp; Most interactive simulation can't handle
           the full density of real-world vegetation.&nbsp; You can set this to a
           value less than 1 to produce an artificially scarce
@@ -101,7 +102,9 @@ VTBuilder<br>
           normal density of vegetation.</li>
       </ul>
     </li>
-    <li>The resulting VF file can be used by Enviro.</li>
+    <li>A VF file will be produced.&nbsp; You can load this file back into 
+    VTBuilder to check for correct distribution, or you can load it into Enviro 
+    for 3D visualization.</li>
   </ol>
   <p>Please <a href="mailto:ben@vterrain.org">email any questions</a>.</p>
 </blockquote>
