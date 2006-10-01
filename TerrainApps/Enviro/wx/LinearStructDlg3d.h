@@ -23,7 +23,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
-	virtual void OnSetOptions(const vtLinearParams &param);
+	virtual void OnSetOptions(const vtLinearParams &param, bool bProfileChanged = false);
 };
 
 #endif	// __LinearStructureDlg3d_H__

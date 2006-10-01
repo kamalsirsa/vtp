@@ -33,8 +33,7 @@ LinearStructureDlg3d::LinearStructureDlg3d( wxWindow *parent, wxWindowID id, con
 	m_param.Defaults();
 }
 
-void LinearStructureDlg3d::OnSetOptions(const vtLinearParams &param)
+void LinearStructureDlg3d::OnSetOptions(const vtLinearParams &param, bool bProfileChanged)
 {
-	g_App.SetFenceOptions(param);
+	g_App.SetFenceOptions(param, bProfileChanged);
 }
-
