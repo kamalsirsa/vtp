@@ -383,7 +383,7 @@ bool vtDIB::ReadBMP(const char *fname, bool progress_callback(int))
 	BITMAPFILEHEADER	bitmapHdr;
 	int MemorySize;
 
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 
@@ -493,7 +493,7 @@ ErrExit:
  */
 bool vtDIB::WriteBMP(const char *fname)
 {
-	FILE *fp = fopen(fname, "wb");
+	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp) return false;
 
 	// write file header
@@ -557,7 +557,7 @@ bool vtDIB::ReadJPEG(const char *fname, bool progress_callback(int))
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_decompress(&cinfo);
 
-	input_file = fopen(fname, "rb");
+	input_file = vtFileOpen(fname, "rb");
 	if (input_file == NULL)
 		return false;
 
@@ -649,7 +649,7 @@ bool vtDIB::WriteJPEG(const char *fname, int quality, bool progress_callback(int
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_compress(&cinfo);
 
-	outfile = fopen(fname, "wb");
+	outfile = vtFileOpen(fname, "wb");
 	if (outfile == NULL)
 		return false;
 
@@ -747,7 +747,7 @@ bool vtDIB::ReadPNG(const char *fname, bool progress_callback(int))
 	info = png_create_info_struct(png);
 	endinfo = png_create_info_struct(png);
 
-	fp = fopen(fname, "rb");
+	fp = vtFileOpen(fname, "rb");
 	if (fp && fread(header, 1, 8, fp) && png_check_sig(header, 8))
 		png_init_io(png, fp);
 	else
@@ -883,7 +883,7 @@ bool vtDIB::WritePNG(const char *fname)
 	png_colorp palette = NULL;
 
 	/* open the file */
-	fp = fopen(fname, "wb");
+	fp = vtFileOpen(fname, "wb");
 	if (fp == NULL)
 		return false;
 
