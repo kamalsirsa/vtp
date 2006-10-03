@@ -1540,10 +1540,11 @@ void BuilderView::OnSize(wxSizeEvent& event)
 //////////////////
 // Keyboard shortcuts
 
-#include <wx/Dir.h>
-#include <wx/File.h>
-#include "vtdata/TripDub.h"
-#include "vtdata/vtDIB.h"
+//#include <wx/Dir.h>
+//#include <wx/File.h>
+//#include "vtdata/TripDub.h"
+//#include "vtdata/vtDIB.h"
+
 
 void BuilderView::OnChar(wxKeyEvent& event)
 {
@@ -1722,6 +1723,11 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		}
 		VTLOG1("Writing output\n");
 		output.WriteBMP("c:/temp/output.bmp");
+#endif
+#if 0
+	CUnzip uz;
+	bool success = uz.Open("C:/APIs/test/unzip101e.zip");
+	success = uz.Extract(true, true, "C:/temp/");
 #endif
 	}
 	else
