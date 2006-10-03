@@ -19,10 +19,7 @@
 #include "config_vtdata.h"
 #include "FilePath.h"
 #include "Unarchive.h"
-
-#if SUPPORT_UNZIP
-#include "ZipArchive.h"
-#endif
+#include "vtUnzip.h"
 
 #include "zlib.h"
 
@@ -235,36 +232,6 @@ int ExpandTGZ(const char *archive_fname, const char *prepend_path)
 	return files_encountered;
 }
 
-typedef bool (*ProgFunc)(int prog);
-
-#if SUPPORT_UNZIP
-struct MyZipCallback : public CZipActionCallback
-{
-	MyZipCallback()
-	{
-		m_progfunc = NULL;
-	}
-	virtual bool Callback(int iProgress)
-	{
-		// Return false from the callback function to abort operation.
-		float progress = (float)m_uTotalSoFar/m_uTotalToDo;
-		if (m_progfunc != NULL)
-		{
-			bool bCancel = m_progfunc( (int) (progress*99) );
-//			if (bCancel)
-//				return false;
-			// We don't support cancel here, because the ZipArchive
-			//  library has been seen to crash when it tries to throw
-			//  its "aborted" exception.
-		}
-		return true;
-	}
-	virtual void CallbackEnd()
-	{
-	}
-	ProgFunc m_progfunc;
-};
-#endif
 
 /**
  * Unarchives the indicated zipped file.
@@ -277,49 +244,10 @@ struct MyZipCallback : public CZipActionCallback
 int ExpandZip(const char *archive_fname, const char *prepend_path,
 			  bool progress_callback(int))
 {
-#if SUPPORT_UNZIP
-	int iVolumeSize = 0;
-	int iCount = 0;
-	int i;
-
-	CZipArchive zip;
-
-	MyZipCallback mycallback;
-	mycallback.m_progfunc = progress_callback;
-	zip.SetCallback(&mycallback);
-
-	try
-	{
-#ifdef UNICODE
-		wstring2 fname = archive_fname;
-		wstring2 path = prepend_path;
-#else
-		std::string fname = archive_fname;
-		std::string path = prepend_path;
-#endif
-
-		zip.Open(fname.c_str(), CZipArchive::zipOpenReadOnly, iVolumeSize);
-		iCount = zip.GetCount();
-
-		CZipFileHeader fh;
-		for (i = 0; i < iCount; i++)
-		{
-//			if (zip.GetFileInfo(fh, i))
-//				printf("%d: %s\n", i, fh.GetFileName());
-			zip.ExtractFile((WORD)i, path.c_str());
-		}
-	}
-	catch(...)
-	{
-		// all failures go here
-		return 0;
-	}
-	if (progress_callback != NULL)
-		progress_callback(100);
-	zip.Close();
-	return iCount;
-#else
-	return 0;
-#endif	// SUPPORT_UNZIP
+	vtUnzip uz;
+	bool success = uz.Open(archive_fname);
+	if (!success)
+		return -1;
+	return uz.Extract(true, true, prepend_path, progress_callback);
 }
 
