@@ -121,7 +121,7 @@ ReqContext::ReqContext()
 	if (s_bFirst)
 		InitializeLibrary();
 
-	m_curl = curl_easy_init(); 
+	m_curl = curl_easy_init();
 
 	CURLcode result;
 	result = curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, this);
@@ -136,7 +136,7 @@ ReqContext::ReqContext()
 
 ReqContext::~ReqContext()
 {
-	curl_easy_cleanup(m_curl); 
+	curl_easy_cleanup(m_curl);
 }
 
 void ReqContext::SetProgressCallback(bool progress_callback(int) = NULL)
@@ -191,8 +191,9 @@ bool ReqContext::DoQuery(vtBytes &data, int redirects)
 void ReqContext::InitializeLibrary()
 {
 	s_bFirst = false;
-	long flags = CURL_GLOBAL_ALL;	// Initialize everything possible. This sets all known bits. 
-	CURLcode result = curl_global_init(flags); 
+	// Initialize everything possible. This sets all known bits.
+	long flags = CURL_GLOBAL_ALL;
+	CURLcode result = curl_global_init(flags);
 	if (result != 0)
 	{
 		// error

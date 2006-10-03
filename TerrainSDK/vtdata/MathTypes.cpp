@@ -894,7 +894,7 @@ FPlane::FPlane(const FPoint3& PointA, const FPoint3& PointB, const float Theta)
 /**
  * Find the intersection of two planes. which in the general case is a line.
  * The line is provided as a ray (origin and direction).
- * 
+ *
  * \return status, which is either INTERSECTING, COPLANAR, or PARALLEL.  In
  *		the case of INTERSECTING, then the Origin and Direction parameters
  *		describe the line of intersection.

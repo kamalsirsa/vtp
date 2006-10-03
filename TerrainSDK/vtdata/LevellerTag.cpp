@@ -77,13 +77,13 @@ size_t daylon::CRootTag::GetValSize(int valKind) const
 
 size_t daylon::CRootTag::CalcNormalStorage
 (
-	size_t numTags, 
-	int valKind, 
+	size_t numTags,
+	int valKind,
 	size_t arraySize /* = 1 */
 ) const
 {
-	return (numTags * 
-			(sizeof(TAGHEADER) +  
+	return (numTags *
+			(sizeof(TAGHEADER) +
 			arraySize * this->GetValSize(valKind) )
 			);
 }
@@ -164,8 +164,8 @@ size_t daylon::CRootTag::Read
 
 	m_mark = 0; // Start from the start.
 	return this->ReadTag(pszPath, ppvData);
-	// Note: it doesn't matter that m_mark is 
-	// not zero here, because it will be if 
+	// Note: it doesn't matter that m_mark is
+	// not zero here, because it will be if
 	// we Read again.
 }
 
@@ -184,13 +184,13 @@ size_t daylon::CRootTag::ReadTag
 	void**		ppvData
 )
 {
-	// Advance down to the tag whose full pathspec 
-	// matches pszPath. Return zero and put NULL 
+	// Advance down to the tag whose full pathspec
+	// matches pszPath. Return zero and put NULL
 	// into *ppvData on failure.
 
-	if(pszPath == NULL || 
-		ppvData == NULL || 
-		*pszPath == 0 || 
+	if(pszPath == NULL ||
+		ppvData == NULL ||
+		*pszPath == 0 ||
 		*pszPath == kSep)
 		TAG_THROW;
 
@@ -224,10 +224,10 @@ size_t daylon::CRootTag::ReadTag
 		
 		TAG* pTag = (TAG*)(m_pRoot + m_mark);
 
-		int bHasKids = (TAGRELATION_CHILD == 
+		int bHasKids = (TAGRELATION_CHILD ==
 						(TAGRELATION_CHILD & pTag->header.relationFlags));
 
-		bHasSibling = (TAGRELATION_SIBLING == 
+		bHasSibling = (TAGRELATION_SIBLING ==
 						(TAGRELATION_SIBLING & pTag->header.relationFlags));
 
 		int bMatch = (strcmp(sz, pTag->header.szName) == 0);
@@ -238,7 +238,7 @@ size_t daylon::CRootTag::ReadTag
 
 		if(bMatch)
 		{
-			// We can't be a parent if we're at the end of the 
+			// We can't be a parent if we're at the end of the
 			// path, and vice versa.
 			if(bAtEnd == bHasKids)
 			{
@@ -271,8 +271,8 @@ size_t daylon::CRootTag::ReadTag
 		}
 	} while(bHasSibling);
 
-	// We didn't match, and we don't have any siblings, 
-	// so return failure. Maybe one of the other children 
+	// We didn't match, and we don't have any siblings,
+	// so return failure. Maybe one of the other children
 	// in the parent tag will match.
 	*ppvData = NULL;
 	return 0;
@@ -295,7 +295,7 @@ int daylon::CRootTag::SkipTag(void)
 	if(TAGRELATION_CHILD == (pTag->relationFlags & TAGRELATION_CHILD))
 		while(this->SkipTag()) {}
 
-	return (TAGRELATION_SIBLING == (pTag->relationFlags & 
+	return (TAGRELATION_SIBLING == (pTag->relationFlags &
 			TAGRELATION_SIBLING));
 }
 
@@ -304,7 +304,7 @@ size_t daylon::CRootTag::ArraySize(const TAG& tag) const
 {
 	// Get the array size of a tag's value.
 
-	return (tag.header.valueSize / 
+	return (tag.header.valueSize /
 				this->GetValSize(tag.header.valueKind));
 
 }
@@ -321,9 +321,9 @@ void daylon::CRootTag::Write
 {
 	// Append a tag.
 
-	// To store an array of scalar values, 
-	// set valueKind to the scaler's type, put 
-	// the array to start at pvData, and make 
+	// To store an array of scalar values,
+	// set valueKind to the scaler's type, put
+	// the array to start at pvData, and make
 	// datasize the byte size of the array.
 	// Otherwise, leave datasize at zero.
 
@@ -335,7 +335,7 @@ void daylon::CRootTag::Write
 	daylon_assert(strlen(pszName) <= MAX_TAGNAMELEN);
 	daylon_assert(relationFlags <= (TAGRELATION_SIBLING | TAGRELATION_CHILD));
 
-	for(const unsigned char* psz = (const unsigned char*)pszName; 
+	for(const unsigned char* psz = (const unsigned char*)pszName;
 		*psz != 0; psz++)
 	{
 		if(*psz < ' ' || *psz > 0x7F)
@@ -354,7 +354,7 @@ void daylon::CRootTag::Write
 
 	if(TAGRELATION_CHILD == (relationFlags & TAGRELATION_CHILD))
 	{
-		// Parent tag; force valuesize to zero, 
+		// Parent tag; force valuesize to zero,
 		// and set no value type.
 		pTag->header.valueSize = 0;
 		pTag->header.valueKind = VALKIND_NONE;
@@ -383,14 +383,14 @@ void daylon::CRootTag::Write
 
 void* daylon::CRootTag::WriteBinary
 (
-	const char* pszName, 
+	const char* pszName,
 	bool bHasSibling,
 	size_t datasize
 )
 {
-	// Write a binary value tag, but leave the 
+	// Write a binary value tag, but leave the
 	// filling in of the value portion up to the caller.
-	// Return a pointer to the start of the memory block 
+	// Return a pointer to the start of the memory block
 	// where it should write.
 
 	this->WasEndReached();
@@ -411,7 +411,7 @@ void* daylon::CRootTag::WriteBinary
 	}
 
 	strcpy(pTag->header.szName, pszName);
-	pTag->header.relationFlags = bHasSibling ? 
+	pTag->header.relationFlags = bHasSibling ?
 		TAGRELATION_SIBLING : 0;
 	pTag->header.valueKind = VALKIND_BINARY;
 	pTag->header.reserved = 0;
@@ -426,32 +426,32 @@ void* daylon::CRootTag::WriteBinary
 
 void daylon::CRootTag::Write
 (
-	const char* pszName, 
+	const char* pszName,
 	daylon::uint32 value,
 	bool bHasSibling
 )
 {
 	this->Write(
-		pszName, 
+		pszName,
 		bHasSibling ? TAGRELATION_SIBLING : 0,
-		VALKIND_UINT32, 
-		&value, 
+		VALKIND_UINT32,
+		&value,
 		this->GetValSize(VALKIND_UINT32));
 }
 
 void daylon::CRootTag::Write
 (
-	const char* pszName, 
+	const char* pszName,
 	double value,
 	bool bHasSibling
 )
 {
 	const daylon::float64 f64 = (daylon::float64)value;
 	this->Write(
-		pszName, 
+		pszName,
 		bHasSibling ? TAGRELATION_SIBLING : 0,
-		VALKIND_DOUBLE, 
-		&f64, 
+		VALKIND_DOUBLE,
+		&f64,
 		this->GetValSize(VALKIND_DOUBLE));
 }
 
@@ -481,7 +481,7 @@ void daylon::CRootTag::Destroy(_FREEFUNC fnFree)
 
 void daylon::CRootTag::Dump(void)
 {
-	// Preserve mark for those dumping the tree 
+	// Preserve mark for those dumping the tree
 	// in the middle of I/O operations.
 	size_t oldmark = m_mark;
 	
@@ -506,10 +506,10 @@ void daylon::CRootTag::DumpTag(const char* pszIndent)
 	{
 		TAG* pTag = (TAG*)(m_pRoot + m_mark);
 
-		bool bHasKids = (TAGRELATION_CHILD == 
+		bool bHasKids = (TAGRELATION_CHILD ==
 						(TAGRELATION_CHILD & pTag->header.relationFlags));
 
-		bHasSibling = (TAGRELATION_SIBLING == 
+		bHasSibling = (TAGRELATION_SIBLING ==
 						(TAGRELATION_SIBLING & pTag->header.relationFlags));
 
 		// Advance read mark to next tag.
@@ -523,10 +523,10 @@ void daylon::CRootTag::DumpTag(const char* pszIndent)
 		szColumn[colwidth] = 0;
 		char sz[50];
 
-		VTLOG("%s%s%s%8s %9d bytes %20s\n", pszIndent, 
+		VTLOG("%s%s%s%8s %9d bytes %20s\n", pszIndent,
 			pTag->header.szName,
 			szColumn,
-			CRootTag::TypeString(pTag->header.valueKind), 
+			CRootTag::TypeString(pTag->header.valueKind),
 			pTag->header.valueSize,
 			CRootTag::ValueString(*pTag, sz)
 			);
@@ -544,12 +544,12 @@ void daylon::CRootTag::DumpTag(const char* pszIndent)
 //static
 const char* daylon::CRootTag::TypeString(int n)
 {
-	const char* kTypeStrs[] = 
-		{ "void", "binary", "char", "byte", 
-			"int16", "uint16", "int32", "uint32", 
+	const char* kTypeStrs[] =
+		{ "void", "binary", "char", "byte",
+			"int16", "uint16", "int32", "uint32",
 			"float32", "float64" };
 
-	daylon_assert(n >= 0 && 
+	daylon_assert(n >= 0 &&
 		n < sizeof(kTypeStrs) / sizeof(kTypeStrs[0]));
 
 	return kTypeStrs[n];
