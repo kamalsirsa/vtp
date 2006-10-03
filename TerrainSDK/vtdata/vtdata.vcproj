@@ -817,6 +817,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\vtUnzip.cpp">
+			</File>
+			<File
 				RelativePath="WFSClient.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -965,6 +968,9 @@
 			</File>
 			<File
 				RelativePath="vtTin.h">
+			</File>
+			<File
+				RelativePath=".\vtUnzip.h">
 			</File>
 			<File
 				RelativePath=".\WFSClient.h">
