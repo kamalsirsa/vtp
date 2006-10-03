@@ -556,10 +556,8 @@ void ContentVisitor::endXML ()
 }
 
 
-void ContentVisitor::startElement (const char * name, const XMLAttributes &atts)
+void ContentVisitor::startElement(const char *name, const XMLAttributes &atts)
 {
-	State &st = state();
-
 	if (_level == 0)
 	{
 		if (string(name) != (string)"vtp-content") {
@@ -596,6 +594,7 @@ void ContentVisitor::startElement (const char * name, const XMLAttributes &atts)
 
 	if (_level == 2)
 	{
+		State &st = state();
 		vtItem *pItem = st.item;
 
 		if (string(name) == (string)"model")
