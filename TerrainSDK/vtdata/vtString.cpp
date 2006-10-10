@@ -1039,18 +1039,17 @@ wstring2 vtString::UTF8ToWideString()
  */
 vtString vtString::UTF8ToLocal()
 {
+	// first make wide string
 	wstring2 ws;
 	ws.from_utf8(m_pchData);
+
+	// get ready for conversion
 	int len = ws.length();
-	mbstate_t       mbstate;
 	const wchar_t *cstr = ws.c_str();
+	mbstate_t       mbstate;
+	memset(&mbstate, '\0', sizeof (mbstate));
 
-	//char *buf = new char[len+1];
-	//int count = wcsrtombs(buf, &cstr, buflen, &mbstate);
-	//vtString vts(buf, count);
-	//delete [] buf;
-	//return vts;
-
+	// then convert it to a (local encoding) multi-byte string
 	vtString str;
 	char *target = str.GetBufferSetLength(len);
 	int count = wcsrtombs(target, &cstr, len+1, &mbstate);
@@ -1059,20 +1058,24 @@ vtString vtString::UTF8ToLocal()
 
 vtString UTF8ToLocal(const char *string_utf8)
 {
+	// safety check
+	if (!string_utf8)
+		return vtString("");
+
+	// first make wide string
 	wstring2 ws;
 	ws.from_utf8(string_utf8);
+
+	// get ready for conversion
 	int len = ws.length();
-	mbstate_t       mbstate;
 	const wchar_t *cstr = ws.c_str();
+	mbstate_t       mbstate;
+	memset(&mbstate, '\0', sizeof (mbstate));
 
-	//char *buf = new char[buflen];
-	//int count = wcsrtombs(buf, &cstr, buflen, &mbstate);
-	//vtString vts(buf, count);
-	//delete [] buf;
-	//return vts;
-
+	// then convert it to a (local encoding) multi-byte string
 	vtString str;
 	char *target = str.GetBufferSetLength(len);
+	//VTLOG("Calling wcsrtombs(dst=%lx, src=%lx, len=%d, mbstate=%lx\n", target, cstr, len+1, &mbstate);
 	int count = wcsrtombs(target, &cstr, len+1, &mbstate);
 	return str;
 }
