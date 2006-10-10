@@ -696,7 +696,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 
 	delete[] pChoices;
 
-	vtString matname = m_strMaterial.mb_str(wxConvUTF8);
+	vtString matname = (const char *) m_strMaterial.mb_str(wxConvUTF8);
 	const vtString *matname2 = GetGlobalMaterials()->FindName(matname);
 	if (m_bEdges)
 		m_pEdge->m_pMaterial = matname2;
@@ -745,7 +745,7 @@ void BuildingDlg::SetEdgeFacade()
 	if (m_bEdges && (NULL != m_pEdge))
 	{
 		// Store current facade
-		vtString facade = m_strFacade.mb_str(wxConvUTF8);
+		vtString facade = (const char *) m_strFacade.mb_str(wxConvUTF8);
 		if (0 != m_pEdge->m_Facade.Compare(facade))
 		{
 			m_pEdge->m_Facade = facade;

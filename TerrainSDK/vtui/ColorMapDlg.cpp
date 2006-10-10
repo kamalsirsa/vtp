@@ -127,7 +127,7 @@ void ColorMapDlg::OnLoad( wxCommandEvent &event )
 	if (!bResult)
 		return;
 	wxString str = loadFile.GetPath();
-	vtString fname = str.mb_str(wxConvUTF8);
+	vtString fname = (const char *) str.mb_str(wxConvUTF8);
 	if (m_cmap.Load(fname))
 	{
 		m_strFile = str;
@@ -142,7 +142,7 @@ void ColorMapDlg::OnSave( wxCommandEvent &event )
 	m_cmap.m_bRelative = m_bRelative;
 	m_cmap.m_bBlend = m_bBlend;
 
-	vtString fname = m_strFile.mb_str(wxConvUTF8);
+	vtString fname = (const char *) m_strFile.mb_str(wxConvUTF8);
 	m_cmap.Save(fname);
 }
 
@@ -158,7 +158,7 @@ void ColorMapDlg::OnSaveAs( wxCommandEvent &event )
 	if (!bResult)
 		return;
 	wxString str = saveFile.GetPath();
-	vtString fname = str.mb_str(wxConvUTF8);
+	vtString fname = (const char *) str.mb_str(wxConvUTF8);
 	if (m_cmap.Save(fname))
 	{
 		m_strFile = str;

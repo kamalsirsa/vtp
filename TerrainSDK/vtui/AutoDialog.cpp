@@ -170,7 +170,7 @@ bool wxNumericValidator::TransferFromWindow()
 
 	if (str != _T(""))
 	{
-		vtString ccs = str.mb_str(*wxConvCurrent);
+		vtString ccs = (const char *) str.mb_str(*wxConvCurrent);
 		if (m_pValShort)
 			sscanf(ccs, "%d", m_pValShort);
 		if (m_pValInt)
