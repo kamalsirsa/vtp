@@ -105,7 +105,7 @@ bool BuilderApp::OnInit()
 	delete frametest;
 
 	wxString title(APPNAME, wxConvUTF8);
-	VTLOG(" Creating Main Frame Window, title '%s'\n", title.mb_str(wxConvUTF8));
+	VTLOG(" Creating Main Frame Window, title '%s'\n", (const char *) title.mb_str(wxConvUTF8));
 	MainFrame* frame = new MainFrame((wxFrame *) NULL, title,
 							   wxPoint(50, 50), wxSize(900, 500));
 

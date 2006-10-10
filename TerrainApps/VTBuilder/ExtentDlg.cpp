@@ -82,7 +82,7 @@ double ExtentDlg::GetValueFrom(const wxString &str)
 {
 	if (m_bDMS)
 	{
-		vtString cstr = str.mb_str(wxConvUTF8);
+		vtString cstr = (const char *) str.mb_str(wxConvUTF8);
 		int degrees, minutes;
 		double seconds;
 		sscanf(cstr, "%d %d %lf", &degrees, &minutes, &seconds);

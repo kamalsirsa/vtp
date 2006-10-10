@@ -152,7 +152,7 @@ vtElevLayer::~vtElevLayer()
 
 bool vtElevLayer::OnSave()
 {
-	vtString fname = GetLayerFilename().mb_str(wxConvUTF8);
+	vtString fname = (const char *) GetLayerFilename().mb_str(wxConvUTF8);
 	if (m_pGrid)
 		return m_pGrid->SaveToBT(fname, NULL, m_bPreferGZip);
 	if (m_pTin)
@@ -811,9 +811,9 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	wxString strExt = strFileName.AfterLast('.');
-	vtString fname = strFileName.mb_str(wxConvUTF8);
+	vtString fname = (const char *) strFileName.mb_str(wxConvUTF8);
 
-	VTLOG("ImportFromFile '%s'\n", fname);
+	VTLOG("ImportFromFile '%s'\n", (const char *) fname);
 
 	if (!strExt.CmpNoCase(_T("gz")))
 	{
@@ -1167,7 +1167,7 @@ bool vtElevLayer::AskForSaveFilename()
 	if (!bResult)
 		return false;
 
-	vtString fname = saveFile.GetPath().mb_str(wxConvUTF8);
+	vtString fname = (const char *) saveFile.GetPath().mb_str(wxConvUTF8);
 	VTLOG("Got filename: '%s'\n", (const char *) fname);
 
 	if (m_pGrid)
