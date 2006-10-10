@@ -85,14 +85,17 @@ void Enviro::SetupGlobe()
 		pSunLight->SetTrans(FPoint3(0, 0, -5));
 
 		vtLight *pLight = (vtLight *) pSunLight->GetChild(0);
-if (pwdemo){
-		pLight->SetDiffuse(RGBf(1, 1, 1));
-		pLight->SetAmbient(RGBf(0, 0, 0));
-}else{
-		// standard bright sunlight
-		pLight->SetDiffuse(RGBf(3, 3, 3));
-		pLight->SetAmbient(RGBf(0.5f, 0.5f, 0.5f));
-}
+		if (pLight)
+		{
+	if (pwdemo){
+			pLight->SetDiffuse(RGBf(1, 1, 1));
+			pLight->SetAmbient(RGBf(0, 0, 0));
+	}else{
+			// standard bright sunlight
+			pLight->SetDiffuse(RGBf(3, 3, 3));
+			pLight->SetAmbient(RGBf(0.5f, 0.5f, 0.5f));
+	}
+		}
 		vtGetScene()->SetBgColor(RGBf(SPACE_DARKNESS, SPACE_DARKNESS, SPACE_DARKNESS));
 
 		m_pGlobeContainer->SetEnabled(true);
