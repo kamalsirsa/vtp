@@ -51,12 +51,13 @@ all : $(OSX_APP)
 else
 # Support for all other Unix platforms
 LIBS   +=  -lGL -lX11 $(EXTRA_LIBS)   \
-	  -lxmlhelper -lvtdata -lvtui -lcurl -lbz2
+	  -lxmlhelper -lvtdata -lvtui -lunzip -lcurl -lbz2
 
 LDIRS  += \
 	  $(VTDATA_INST_DIR)             \
 	  $(VTUI_INST_DIR)               \
-          $(XMLHELPER_INST_DIR)
+          $(XMLHELPER_INST_DIR)          \
+          $(UNZIP_INST_DIR)
 
 all : $(EXEC)
 endif
