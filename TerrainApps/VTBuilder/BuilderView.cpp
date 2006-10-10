@@ -343,7 +343,7 @@ bool BuilderView::ImportWorldMap()
 	int j, k;
 
 	const char *filename = "WorldMap/gnv19.shp";
-	VTLOG(" Attempting to open %s\n", filename);
+	VTLOG(" Attempting to open %s\n", (const char *) filename);
 
 	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(filename);
