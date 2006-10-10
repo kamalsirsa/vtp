@@ -81,12 +81,14 @@ void RenderOptionsDlg::UpdateColorMapChoice()
 	{
 		// fill the "colormap" control with available colormap files
 		AddFilenamesToChoice(GetChoiceColors(), m_datapaths[i] + "GeoTypical", "*.cmt");
-		int sel = GetChoiceColors()->FindString(m_strColorMap);
-		if (sel != -1)
-			GetChoiceColors()->SetSelection(sel);
-		else
-			GetChoiceColors()->SetSelection(0);
 	}
+	GetChoiceColors()->Append(_T(""));
+
+	int sel = GetChoiceColors()->FindString(m_strColorMap);
+	if (sel != -1)
+		GetChoiceColors()->SetSelection(sel);
+	else
+		GetChoiceColors()->SetSelection(0);
 }
 
 // WDR: handler implementations for RenderOptionsDlg
@@ -99,11 +101,11 @@ void RenderOptionsDlg::OnChoiceColors( wxCommandEvent &event )
 
 void RenderOptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	wxDialog::OnInitDialog(event);
-
+	m_strColorMap = wxString(m_opt.m_strColorMapFile, wxConvUTF8);
 	UpdateColorMapChoice();
-	TransferDataFromWindow();
-	m_opt.m_strColorMapFile = m_strColorMap.mb_str(wxConvUTF8);
+
+	wxDialog::OnInitDialog(event);
+//	TransferDataFromWindow();
 }
 
 void RenderOptionsDlg::OnRadio( wxCommandEvent &event )

@@ -572,7 +572,16 @@ void vtElevLayer::RenderBitmap()
 	}
 #endif
 	ColorMap cmap;
-	SetupDefaultColors(cmap);
+	vtString cmap_fname = m_draw.m_strColorMapFile;
+	vtString cmap_path = FindFileOnPaths(GetMainFrame()->m_datapaths, "GeoTypical/" + cmap_fname);
+	bool bLoaded = false;
+	if (cmap_path != "")
+	{
+		if (cmap.Load(cmap_path))
+			bLoaded = true;
+	}
+	if (!bLoaded)
+		SetupDefaultColors(cmap);
 
 	bool has_invalid = m_pGrid->ColorDibFromElevation(m_pBitmap, &cmap,
 		8000, progress_callback);
