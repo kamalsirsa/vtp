@@ -205,7 +205,7 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 	{
 		// remove path
 		wxString path = m_pTree->GetItemText(m_Selected);
-		vtString vpath = path.mb_str(wxConvUTF8);
+		vtString vpath = (const char *) path.mb_str(wxConvUTF8);
 		for (vtStringArray::iterator it = paths.begin(); it != paths.end(); it++)
 		{
 			if (*it == vpath)
@@ -220,7 +220,7 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 	{
 		// delete terrain .ini file
 		wxTreeItemId parent = m_pTree->GetItemParent(m_Selected);
-		vtString path = m_pTree->GetItemText(parent).mb_str(wxConvUTF8);
+		vtString path = (const char *) m_pTree->GetItemText(parent).mb_str(wxConvUTF8);
 		path +="Terrains/";
 
 		TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
@@ -241,7 +241,7 @@ void TerrainManagerDlg::OnAddTerrain( wxCommandEvent &event )
 	if (str.Right(4).CmpNoCase(_T(".xml")))
 		str += _T(".xml");
 
-	vtString path = m_pTree->GetItemText(m_Selected).mb_str(wxConvUTF8);
+	vtString path = (const char *) m_pTree->GetItemText(m_Selected).mb_str(wxConvUTF8);
 	path += "Terrains";
 
 	// Make sure Terrains directory exists

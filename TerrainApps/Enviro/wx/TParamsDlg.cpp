@@ -611,7 +611,7 @@ void TParamsDlg::UpdateTiledTextureFilename()
 	int totalsize = NTILES * (m_iTilesize-1) + 1;
 
 	vtString filter;
-	filter.Format("%s%d.*", m_strTextureBase.mb_str(wxConvUTF8), totalsize);
+	filter.Format("%s%d.*", (const char *) m_strTextureBase.mb_str(wxConvUTF8), totalsize);
 
 	bool bFound = false;
 	m_strTexture4x4 = _("<none>");
@@ -756,7 +756,7 @@ void TParamsDlg::UpdateColorMapChoice()
 
 void TParamsDlg::DeleteItem(wxListBox *pBox)
 {
-	vtString fname = pBox->GetStringSelection().mb_str(wxConvUTF8);
+	vtString fname = (const char *) pBox->GetStringSelection().mb_str(wxConvUTF8);
 
 	// might be a layer
 	int idx = FindLayerByFilename(fname);
@@ -1288,7 +1288,7 @@ void TParamsDlg::OnSetInitTime( wxCommandEvent &event )
 
 void TParamsDlg::OnStyle( wxCommandEvent &event )
 {
-	vtString str = GetRawFiles()->GetStringSelection().mb_str(wxConvUTF8);
+	vtString str = (const char *) GetRawFiles()->GetStringSelection().mb_str(wxConvUTF8);
 	int idx = FindLayerByFilename(str);
 	if (idx == -1)
 		return;

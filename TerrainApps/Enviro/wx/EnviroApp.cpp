@@ -49,7 +49,7 @@ void EnviroApp::Args(int argc, wxChar **argv)
 	for (int i = 0; i < argc; i++)
 	{
 		wxString str1 = argv[i];
-		vtString str = str1.mb_str(wxConvUTF8);
+		vtString str = (const char *) str1.mb_str(wxConvUTF8);
 		if (str == "-no_startup_dialog")
 			m_bShowStartupDialog = false;
 		else if (str.Left(9) == "-terrain=")

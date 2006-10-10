@@ -25,7 +25,12 @@
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
 #include "vtui/ProfileDlg.h"
-#include "vtui/Joystick.h"
+
+#if WIN32 || !wxUSE_JOYSTICK
+  #include "vtui/Joystick.h"
+#else
+  #include "wx/joystick.h"
+#endif
 
 DECLARE_APP(EnviroApp);
 

@@ -366,7 +366,7 @@ void StartupDlg::OnTerrMan( wxCommandEvent &event )
 
 void StartupDlg::OnEditProp( wxCommandEvent &event )
 {
-	vtString name_old = m_strTName.mb_str(wxConvUTF8);
+	vtString name_old = (const char *) m_strTName.mb_str(wxConvUTF8);
 	vtString path_to_ini = wxGetApp().GetIniFileForTerrain(name_old);
 	if (path_to_ini == "")
 		return;

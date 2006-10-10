@@ -540,8 +540,8 @@ public:
 		if (step > 0)
 		{
 			wxString msg;
-			msg.Printf(_T("Output %.2f/%.2f"), fStep * step, fTotal);
-			if (UpdateProgressDialog(99 * fStep * step / fTotal, msg) == true)
+			msg.Printf(_T("Output %.2f/%.2f"), (int) (fStep * step), fTotal);
+			if (UpdateProgressDialog((int) (99 * fStep * step / fTotal), msg) == true)
 			{
 				// user pressed cancel
 				scene->GetRootEngine()->RemoveChild(this);
@@ -665,7 +665,7 @@ void LocationDlg::OnLoadAnim( wxCommandEvent &event )
 	vtAnimPath *anim;
 	bool bSuccess;
 	wxString str = loadFile.GetPath();
-	vtString filename = str.mb_str(wxConvUTF8);
+	vtString filename = (const char *) str.mb_str(wxConvUTF8);
 	if (GetExtension(filename) == ".vtap")
 	{
 		anim = CreateAnimPath();
@@ -742,7 +742,7 @@ void LocationDlg::OnLoad( wxCommandEvent &event )
 		return;
 
 	wxString path = loadFile.GetPath();
-	vtString upath = path.mb_str(wxConvUTF8);
+	vtString upath = (const char *) path.mb_str(wxConvUTF8);
 	if (m_pSaver->Read(upath))
 	{
 		RefreshList();
@@ -770,7 +770,7 @@ void LocationDlg::OnSave( wxCommandEvent &event )
 		return;
 
 	wxString path = saveFile.GetPath();
-	vtString upath = path.mb_str(wxConvUTF8);
+	vtString upath = (const char *) path.mb_str(wxConvUTF8);
 	if (!m_pSaver->Write(upath))
 		return;  // couldn't write
 }

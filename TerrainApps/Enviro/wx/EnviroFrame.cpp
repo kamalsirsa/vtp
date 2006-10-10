@@ -1778,7 +1778,7 @@ void EnviroFrame::OnHelpDocLocal(wxCommandEvent &event)
 {
 	// Launch default web browser with documentation pages
 	wxString wxcwd = wxGetCwd();
-	vtString cwd = wxcwd.mb_str(wxConvUTF8);
+	vtString cwd = (const char *) wxcwd.mb_str(wxConvUTF8);
 
 	VTLOG("OnHelpDocLocal: cwd is '%s'\n", (const char *) cwd);
 
