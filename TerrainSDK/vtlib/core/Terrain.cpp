@@ -2278,6 +2278,8 @@ void vtTerrain::CreateStep0()
  */
 bool vtTerrain::CreateStep1()
 {
+	VTLOG("Step1\n");
+
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
@@ -2450,6 +2452,8 @@ bool vtTerrain::CreateStep1()
  */
 bool vtTerrain::CreateStep2(vtTransform *pSunLight)
 {
+	VTLOG("Step2\n");
+
 	// if we aren't going to produce the terrain surface, nothing to do
 	if (m_Params.GetValueBool(STR_SUPPRESS))
 		return true;
@@ -2467,6 +2471,8 @@ bool vtTerrain::CreateStep2(vtTransform *pSunLight)
  */
 bool vtTerrain::CreateStep3()
 {
+	VTLOG("Step3\n");
+
 	// if we aren't going to produce the terrain surface, nothing to do
 	if (m_Params.GetValueBool(STR_SUPPRESS))
 		return true;
@@ -2534,6 +2540,8 @@ bool vtTerrain::CreateFromTiles()
  */
 bool vtTerrain::CreateStep4()
 {
+	VTLOG("Step4\n");
+
 	// some algorithms need an additional stage of initialization
 	if (m_pDynGeom != NULL)
 	{
@@ -2555,6 +2563,8 @@ bool vtTerrain::CreateStep4()
  */
 bool vtTerrain::CreateStep5()
 {
+	VTLOG("Step5\n");
+
 	// must have a heightfield by this point
 	if (!m_pHeightField)
 		return false;
