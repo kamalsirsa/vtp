@@ -69,8 +69,8 @@ void ProfDlgView::OnDraw(wxDC &dc)
 	m_screen.SetSize(size);
 	for (i = 0; i < size; i++)
 	{
-		m_screen[i].x = m_org.x + m_profile[i].x * m_scale;
-		m_screen[i].y = m_org.y - m_profile[i].y * m_scale;
+		m_screen[i].x = (int) (m_org.x + m_profile[i].x * m_scale);
+		m_screen[i].y = (int) (m_org.y - m_profile[i].y * m_scale);
 	}
 
 	// line itself
@@ -256,7 +256,7 @@ void ProfileEditDlg::OnLoad( wxCommandEvent &event )
 	if (!bResult)
 		return;
 	wxString str = loadFile.GetPath();
-	vtString fname = str.mb_str(wxConvUTF8);
+	vtString fname = (const char *) str.mb_str(wxConvUTF8);
 	if (LoadFLine2FromSHP(fname, m_pView->m_profile))
 	{
 		m_strFilename = str;
@@ -275,7 +275,7 @@ void ProfileEditDlg::OnSaveAs( wxCommandEvent &event )
 	if (!bResult)
 		return;
 	wxString str = saveFile.GetPath();
-	vtString fname = str.mb_str(wxConvUTF8);
+	vtString fname = (const char *) str.mb_str(wxConvUTF8);
 	if (SaveFLine2ToSHP(fname, m_pView->m_profile))
 	{
 		m_strFilename = str;
@@ -288,7 +288,7 @@ void ProfileEditDlg::OnSave( wxCommandEvent &event )
 {
 	CheckClockwisdom();
 
-	vtString fname = m_strFilename.mb_str(wxConvUTF8);
+	vtString fname = (const char *) m_strFilename.mb_str(wxConvUTF8);
 	SaveFLine2ToSHP(fname, m_pView->m_profile);
 }
 
