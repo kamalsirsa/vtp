@@ -1624,7 +1624,6 @@ void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
 		dlg.m_datapaths = m_datapaths;
 		if (dlg.ShowModal() != wxID_OK)
 			return;
-		dlg.m_opt.m_strColorMapFile = dlg.m_strColorMap.mb_str(wxConvUTF8);
 		tileopts.draw = dlg.m_opt;
 	}
 	else
