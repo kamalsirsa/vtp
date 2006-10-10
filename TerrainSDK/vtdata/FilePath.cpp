@@ -736,7 +736,7 @@ FILE *vtFileOpen(const wstring &fname_ws, const char *mode)
 	return fopen(fn.to_utf8(), mode);
 #else
 	// some other Unix flavor
-	wstring2 fn = fname_ws;
+	const wstring2 fn(fname_ws.c_str());
 	return fopen(fn.mb_str(), mode);
 #endif
 }
