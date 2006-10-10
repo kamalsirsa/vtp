@@ -154,8 +154,8 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	}
 	prepend_path = path + _T("/");
 
-	vtString str1 = fname_in.mb_str(wxConvUTF8);
-	vtString str2 = prepend_path.mb_str(wxConvUTF8);
+	vtString str1 = (const char *) fname_in.mb_str(wxConvUTF8);
+	vtString str2 = (const char *) prepend_path.mb_str(wxConvUTF8);
 
 	OpenProgressDialog(_("Expanding archive"), false, this);
 	if (bTGZip)
@@ -171,7 +171,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	else if (result == 1)
 	{
 		// the archive contained a single file
-		std::string pathname = prepend_path.mb_str(wxConvUTF8);
+		std::string pathname = (const char *) prepend_path.mb_str(wxConvUTF8);
 		wxString internal_name;
 		for (dir_iter it(pathname); it != dir_iter(); ++it)
 		{
@@ -213,7 +213,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		bool found_hdr = false;
 		bool found_rt1 = false;
 		wxString fname2;
-		std::string pathname = prepend_path.mb_str(wxConvUTF8);
+		std::string pathname = (const char *) prepend_path.mb_str(wxConvUTF8);
 		for (dir_iter it(pathname); it != dir_iter(); ++it)
 		{
 			if (it.is_directory()) continue;
@@ -310,12 +310,12 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString &strFileN
 	VTLOG1("'\n");
 
 	// check to see if the file is readable
-	vtString fname = strFileName.mb_str(wxConvUTF8);
+	vtString fname = (const char *) strFileName.mb_str(wxConvUTF8);
 	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 	{
 		// Cannot Open File
-		VTLOG("Couldn't open file %s\n", fname);
+		VTLOG("Couldn't open file %s\n", (const char *) fname);
 		return false;
 	}
 	fclose(fp);

@@ -112,7 +112,7 @@ void vtLayer::SetModified(bool bModified)
 
 void vtLayer::SetLayerFilename(const wxString &fname)
 {
-	VTLOG("Setting layer filename to '%s'\n", fname.mb_str(wxConvUTF8));
+	VTLOG("Setting layer filename to '%s'\n", (const char *) fname.mb_str(wxConvUTF8));
 	bool bNeedRefresh = (m_wsFilename.Cmp(fname) != 0);
 	m_wsFilename = fname;
 	if (bNeedRefresh)
@@ -153,7 +153,7 @@ bool vtLayer::AskForSaveFilename()
 		return false;
 
 	fname = saveFile.GetPath();
-	VTLOG("Got filename: '%s'\n", fname.mb_str(wxConvUTF8));
+	VTLOG("Got filename: '%s'\n", (const char *) fname.mb_str(wxConvUTF8));
 
 	// Add file extension if user didn't specify it
 	wxString ext = GetFileExtension();
@@ -180,7 +180,7 @@ vtString vtLayer::GetExportFilename(const wxString &format_filter)
 	if (saveFile.ShowModal() != wxID_OK)
 		return vtString("");
 	wxString path = saveFile.GetPath();
-	vtString path2 = path.mb_str(wxConvUTF8);
+	vtString path2 = (const char *) path.mb_str(wxConvUTF8);
 	return path2;
 }
 

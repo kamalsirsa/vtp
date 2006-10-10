@@ -833,13 +833,13 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 	if (dlg2.ShowModal() == wxID_CANCEL)
 		return;
 	str = dlg2.GetPath();
-	vtString fname_in = str.mb_str(wxConvUTF8);
+	vtString fname_in = (const char *) str.mb_str(wxConvUTF8);
 
 	wxFileDialog dlg3(this, _T("Choose output texture file"), _T(""), _T(""), _T("*.png"), wxSAVE);
 	if (dlg3.ShowModal() == wxID_CANCEL)
 		return;
 	str = dlg3.GetPath();
-	vtString fname_out = str.mb_str(wxConvUTF8);
+	vtString fname_out = (const char *) str.mb_str(wxConvUTF8);
 
 	OpenProgressDialog(_T("Processing"));
 
@@ -2321,7 +2321,7 @@ void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
 	str = wxGetTextFromUser(_("Please specify the elevation range\n(minimum and maximum in the form \"X Y\")\nAll values within this range (and within the area\ntool, if it is defined) will be set to Unknown."));
 
 	float zmin, zmax;
-	vtString text = str.mb_str(wxConvUTF8);
+	vtString text = (const char *) str.mb_str(wxConvUTF8);
 	if (sscanf(text, "%f %f", &zmin, &zmax) != 2)
 	{
 		wxMessageBox(_("Didn't get two numbers."));
@@ -3249,7 +3249,7 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 	vtElevLayer *pEL = GetActiveElevLayer();
 
 	ColorMap cmap;
-	vtString fname = dlg.m_strColorMap.mb_str(wxConvUTF8);
+	vtString fname = (const char *) dlg.m_strColorMap.mb_str(wxConvUTF8);
 	vtString path = FindFileOnPaths(m_datapaths, "GeoTypical/" + fname);
 	if (path == "")
 	{
@@ -3303,14 +3303,14 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 	if (dlg.m_bToFile)
 	{
 		UpdateProgressDialog(1, _("Writing file"));
-		vtString fname = dlg.m_strToFile.mb_str(wxConvUTF8);
+		vtString fname = (const char *) dlg.m_strToFile.mb_str(wxConvUTF8);
 		bool success;
 		if (dlg.m_bJPEG)
 			success = dib.WriteJPEG(fname, 99, progress_callback);
 		else
 			success = dib.WriteTIF(fname, &area, &proj, progress_callback);
 		if (success)
-			DisplayAndLog("Successfully wrote to file '%s'", fname);
+			DisplayAndLog("Successfully wrote to file '%s'", (const char *) fname);
 		else
 			DisplayAndLog("Couldn't open file for writing.");
 	}
@@ -4240,8 +4240,8 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 		FSTRING_PNG, wxSAVE);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
-	vtString fullname = loadFile.GetPath().mb_str(wxConvUTF8);
-	vtString filename = loadFile.GetFilename().mb_str(wxConvUTF8);
+	vtString fullname = (const char *) loadFile.GetPath().mb_str(wxConvUTF8);
+	vtString filename = (const char *) loadFile.GetFilename().mb_str(wxConvUTF8);
 
 	dib.WritePNG(fullname);
 
@@ -4250,7 +4250,7 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 		FSTRING_HTML, wxSAVE);
 	if (loadFile2.ShowModal() != wxID_OK)
 		return;
-	vtString htmlname = loadFile2.GetPath().mb_str(wxConvUTF8);
+	vtString htmlname = (const char *) loadFile2.GetPath().mb_str(wxConvUTF8);
 
 	FILE *fp = vtFileOpen(htmlname, "wb");
 	if (!fp)
@@ -4331,9 +4331,9 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += _T("\n");
 	str += _("Send feedback to: ben@vterrain.org\n");
 	str += _("Build date: ");
-	str += _T(__DATE__);
+	str += wxString(__DATE__, wxConvUTF8);
 	wxString str2 = _("About ");
-	str2 += _T(APPNAME);
+	str2 += wxString(APPNAME, wxConvUTF8);
 	wxMessageBox(str, str2);
 #endif
 }
@@ -4342,7 +4342,7 @@ void MainFrame::OnHelpDocLocal(wxCommandEvent &event)
 {
 	// Launch default web browser with documentation pages
 	wxString wxcwd = wxGetCwd();
-	vtString cwd = wxcwd.mb_str(wxConvUTF8);
+	vtString cwd = (const char *) wxcwd.mb_str(wxConvUTF8);
 
 	VTLOG("OnHelpDocLocal: cwd is '%s'\n", (const char *) cwd);
 

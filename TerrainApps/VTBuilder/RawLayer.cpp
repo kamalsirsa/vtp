@@ -289,7 +289,7 @@ bool vtRawLayer::OnLoad()
 	vtFeatureLoader loader;
 
 	wxString fname = GetLayerFilename();
-	vtString fname_utf8 = fname.mb_str(wxConvUTF8);
+	vtString fname_utf8 = (const char *) fname.mb_str(wxConvUTF8);
 	if (!fname.Right(4).CmpNoCase(_T(".gml")) ||
 		!fname.Right(4).CmpNoCase(_T(".xml")) ||
 		!fname.Right(4).CmpNoCase(_T(".ntf")))

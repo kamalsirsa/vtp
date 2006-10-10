@@ -1344,14 +1344,14 @@ void MainFrame::LoadProject(const wxString &strPathName)
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	vtString fname = strPathName.mb_str(wxConvUTF8);
-	VTLOG("Loading project: '%s'\n", fname);
+	vtString fname = (const char *) strPathName.mb_str(wxConvUTF8);
+	VTLOG("Loading project: '%s'\n", (const char *) fname);
 
 	// read project file
 	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 	{
-		DisplayAndLog("Couldn't open project file: '%s'", fname);
+		DisplayAndLog("Couldn't open project file: '%s'", (const char *) fname);
 		return;
 	}
 
@@ -1509,7 +1509,7 @@ void MainFrame::SaveProject(const wxString &strPathName) const
 			if (lp->GetImportedFrom() != _T(""))
 				fname = lp->GetImportedFrom();
 		}
-		fprintf(fp, "%s\n", fname.mb_str(wxConvUTF8));
+		fprintf(fp, "%s\n", (const char *) fname.mb_str(wxConvUTF8));
 	}
 
 	// write area
@@ -1658,16 +1658,16 @@ void MainFrame::MergeResampleElevation()
 
 		wxString fname = dlg.m_strToFile;
 		bool gzip = (fname.Right(3).CmpNoCase(_T(".gz")) == 0);
-		vtString fname_utf8 = fname.mb_str(wxConvUTF8);
+		vtString fname_utf8 = (const char *) fname.mb_str(wxConvUTF8);
 
 		bool success = pOutput->m_pGrid->SaveToBT(fname_utf8, progress_callback, gzip);
 		delete pOutput;
 		CloseProgressDialog();
 
 		if (success)
-			DisplayAndLog("Successfully wrote to '%s'", fname_utf8);
+			DisplayAndLog("Successfully wrote to '%s'", (const char *) fname_utf8);
 		else
-			DisplayAndLog("Did not successfully write to '%s'", fname_utf8);
+			DisplayAndLog("Did not successfully write to '%s'", (const char *) fname_utf8);
 	}
 	else if (dlg.m_bToTiles)
 	{
@@ -2254,14 +2254,14 @@ void MainFrame::ExportImage()
 	else if (dlg.m_bToFile)
 	{
 		OpenProgressDialog(_T("Writing file"), true);
-		vtString fname = dlg.m_strToFile.mb_str(wxConvUTF8);
+		vtString fname = (const char *) dlg.m_strToFile.mb_str(wxConvUTF8);
 		success = pOutput->SaveToFile(fname);
 		delete pOutput;
 		CloseProgressDialog();
 		if (success)
-			DisplayAndLog("Successfully wrote to '%s'", fname);
+			DisplayAndLog("Successfully wrote to '%s'", (const char *) fname);
 		else
-			DisplayAndLog(("Did not successfully write to '%s'."), fname);
+			DisplayAndLog(("Did not successfully write to '%s'."), (const char *) fname);
 	}
 	else if (dlg.m_bToTiles)
 	{
@@ -2524,10 +2524,10 @@ void MainFrame::ReadEnviroPaths()
 {
 	VTLOG("Getting data paths from Enviro.\n");
 	wxString cwd = wxGetCwd();
-	VTLOG("  Current directory: '%s'\n", cwd.mb_str(wxConvUTF8));
+	VTLOG("  Current directory: '%s'\n", (const char *) cwd.mb_str(wxConvUTF8));
 
 	wxString IniPath = cwd + _T("/Enviro.xml");
-	vtString fname = IniPath.mb_str(wxConvUTF8);
+	vtString fname = (const char *) IniPath.mb_str(wxConvUTF8);
 	VTLOG("  Looking for '%s'\n", (const char *) fname);
 	ifstream input;
 	input.open(fname, ios::in | ios::binary);
@@ -2536,7 +2536,7 @@ void MainFrame::ReadEnviroPaths()
 		input.clear();
 		IniPath = cwd + _T("/../Enviro/Enviro.xml");
 		fname = IniPath.mb_str(wxConvUTF8);
-		VTLOG("  Not there.  Looking for '%s'\n", fname);
+		VTLOG("  Not there.  Looking for '%s'\n", (const char *) fname);
 		input.open(fname, ios::in | ios::binary);
 	}
 	if (input.is_open())

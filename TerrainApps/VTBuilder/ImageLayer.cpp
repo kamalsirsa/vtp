@@ -335,7 +335,7 @@ void vtImageLayer::GetRGB(int x, int y, RGBi &rgb)
 
 bool vtImageLayer::ImportFromFile(const wxString &strFileName, bool progress_callback(int am))
 {
-	VTLOG("ImportFromFile '%s'\n", strFileName.mb_str(wxConvUTF8));
+	VTLOG("ImportFromFile '%s'\n", (const char *) strFileName.mb_str(wxConvUTF8));
 
 	wxString strExt = strFileName.AfterLast('.');
 
@@ -653,7 +653,7 @@ bool vtImageLayer::LoadFromGDAL()
 
 	try
 	{
-		vtString fname = GetLayerFilename().mb_str(wxConvUTF8);
+		vtString fname = (const char *) GetLayerFilename().mb_str(wxConvUTF8);
 
 		// GDAL doesn't yet support utf-8 or wide filenames, so convert
 		vtString fname_local = UTF8ToLocal(fname);
