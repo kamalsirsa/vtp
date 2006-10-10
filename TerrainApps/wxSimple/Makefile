@@ -40,7 +40,7 @@ LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) $(shell $(WX_DIR)/bin/wx-config -
 	-framework vtosg -framework vtdata \
 	-lgdal -losgGA -losgDB -losgUtil -losgText -losg -lOpenThreads \
 	-L$(FINK_LIB) -lnetcdf \
-	-framework xmlhelper $(MINI_LIB) \
+	-framework xmlhelper -framework unzip $(MINI_LIB) \
         $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
 	-framework Carbon -lobjc -lm 
 
@@ -50,11 +50,12 @@ else
 LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
 	 -lvtosg -lvtdata \
 	 -lgdal -losgDB -losgUtil -losgText -losg -lOpenThreads -lnetcdf \
-	 -lxmlhelper $(MINI_LIB) \
+	 -lxmlhelper -lunzip $(MINI_LIB) \
 	 $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lcurl -lbz2 -lm
 
 LDIRS += \
 	 $(XMLHELPER_INST_DIR)          \
+	 $(UNZIP_INST_DIR)          \
 	 $(VTDATA_INST_DIR)             \
 	 $(VTOSG_INST_DIR)
 
