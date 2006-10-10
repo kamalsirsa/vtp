@@ -11,18 +11,20 @@ VTP_ROOT = $(shell cd ../..; pwd)
 include $(VTP_ROOT)/Make.defs
 
 IFLAGS = -I$(X_INC)                \
-		 -I/usr/include/SDL        \
-		 -I/usr/local/include/SDL  \
-         -I$(TERRAIN_SDK_DIR)      \
-         -I$(VTLIB_DIR)            \
-		 -I$(OSG_INC)              \
-		 -I$(X_INC)
+	 -I/usr/include/SDL        \
+	 -I/usr/local/include/SDL  \
+	 -I$(TERRAIN_SDK_DIR)      \
+	 -I$(VTLIB_DIR)            \
+	 -I$(OSG_INC)              \
+	 -I$(X_INC)
 
-LDIRS = $(OSG_LIB)            \
+LDIRS = $(OSG_LIB)                \
 	    $(VTDATA_INST_DIR)    \
 	    $(VTOSG_INST_DIR)     \
-        $(PNG_LIB)            \
-        $(NETCDF_LIB)         \
+	    $(XMLHELPER_INST_DIR) \
+	    $(UNZIP_INST_DIR)     \
+	    $(PNG_LIB)            \
+	    $(NETCDF_LIB)         \
 	    $(X_LIB)              \
 	    $(EXTRA_LDIRS)
 
@@ -36,7 +38,7 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = sdlSimple
 LIBS   = -lvtosg -lvtdata \
          -lgdal -losgDB -losgUtil -losgText -losg \
-		 -lxmlhelper -lMini `sdl-config --libs` \
+	 -lxmlhelper -lunzip $(MINI_LIB) `sdl-config --libs` \
          $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
 
 all : $(EXEC)

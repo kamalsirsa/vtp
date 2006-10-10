@@ -13,15 +13,15 @@ IFLAGS = -I$(X_INC)                 \
 	 -I$(GDAL_INC)              \
 	 -I$(X_INC)
 
-LDIRS  = $(OSG_LIB)                     \
-	 $(VTDATA_INST_DIR)             \
-	 $(XMLHELPER_INST_DIR)          \
-	 $(XMLHELPER_INST_DIR)          \
-	 $(VTOSG_INST_DIR)              \
-         $(PNG_LIB)                     \
-         $(NETCDF_LIB)                  \
-         $(GDAL_LIB)                    \
-	 $(X_LIB)                       \
+LDIRS  = $(OSG_LIB)             \
+	 $(VTDATA_INST_DIR)     \
+	 $(XMLHELPER_INST_DIR)  \
+	 $(UNZIP_INST_DIR)      \
+	 $(VTOSG_INST_DIR)      \
+         $(PNG_LIB)             \
+         $(NETCDF_LIB)          \
+         $(GDAL_LIB)            \
+	 $(X_LIB)               \
 	 $(EXTRA_LDIRS)
 
 SWITCHES := $(SWITCHES) -DUNIX -DVTLIB_OSG=1
@@ -38,7 +38,7 @@ LIBS   = -bind_at_load -F$(FRAMEWORKS) \
 	-framework vtosg -framework vtdata \
 	-lgdal -losgGA -losgDB -losgUtil -losgText -losg -lOpenThreads \
 	-L$(FINK_LIB) -lnetcdf \
-	-framework xmlhelper $(MINI_LIB) \
+	-framework xmlhelper -framework unzip $(MINI_LIB) \
         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
 	-framework Carbon -lobjc -lm 
 
@@ -48,7 +48,7 @@ else
 #LIBS   = $(shell fltk-config --use-gl --libs)
 LIBS   = -lvtosg -lvtdata \
          -lgdal -losgDB -losgUtil -losgText -losg \
-		 -lxmlhelper $(MINI_LIB) \
+	 -lxmlhelper -lunzip $(MINI_LIB) \
          $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
 
 all : $(EXEC)
