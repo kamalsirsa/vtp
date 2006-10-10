@@ -35,7 +35,7 @@ void print_help()
 	printf("\n");
 }
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	vtString str, fname_in, fname_out;
 	bool bGZip = false;
@@ -56,7 +56,7 @@ void main(int argc, char **argv)
 		else if (str.Left(2) == "-h")
 		{
 			print_help();
-			return;
+			return 0;
 		}
 		else if (str == "-gzip")
 		{
@@ -66,7 +66,7 @@ void main(int argc, char **argv)
 	if (fname_in == "")
 	{
 		printf("Didn't get an input name.  Try -h for help.\n");
-		return;
+		return 0;
 	}
 
 	// Check if output is a directory
@@ -112,4 +112,5 @@ void main(int argc, char **argv)
 	{
 		printf("Failed to read elevation data from %s\n", (const char *) fname_in);
 	}
+	return 0;
 }
