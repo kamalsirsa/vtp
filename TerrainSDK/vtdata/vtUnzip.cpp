@@ -16,6 +16,10 @@
 #include "vtLog.h"
 #include <assert.h>
 
+#ifndef MAX_PATH
+#define MAX_PATH 256
+#endif
+
 ///////////////////////////////////////////////////////////////////////
 
 vtUnzip::vtUnzip() : m_handle(NULL)
@@ -150,14 +154,14 @@ bool vtUnzip::ExtractCurrentFile(FILE* file, void* buf, size_t size_buf)
 		if (bytes < 0)
 		{
 			VTLOG("error with zipfile in ReadCurrentFile\n");
-			bOK = FALSE;
+			bOK = false;
 		}
 		else if (bytes > 0)
 		{
 			if (fwrite(buf,bytes,1,file)!=1)
 			{
 				VTLOG("error in writing extracted file\n");
-				bOK = FALSE;
+				bOK = false;
 			}
 		}
 		else
@@ -190,7 +194,7 @@ vtUnzip::operator unzFile(void)
 
 bool vtUnzip::ExtractAccept(const char *write_filename, bool bOverwrite)
 {
-	bool bOK = TRUE;
+	bool bOK = true;
 	if (!bOverwrite)
 	{
 		FILE* file = vtFileOpen(write_filename, "rb");
@@ -218,16 +222,17 @@ int vtUnzip::Extract(bool bFullPath, bool bOverwrite, const char *lpszDst,
 
 		vtString src_filename = szFileName;
 
-		const char *short_filename = (const char *)src_filename;
-		for (const char *p = short_filename;
+		const char *short_fname = (const char *)src_filename;
+		for (const char *p = short_fname;
 			(*p) != '\0';
 			p++)
 		{
 			if (((*p)=='/') || ((*p)=='\\'))
 			{
-				short_filename = p+1;
+				short_fname = p+1;
 			}
 		}
+		vtString short_filename = short_fname;
 
 		if ((*short_filename)=='\0')
 		{
