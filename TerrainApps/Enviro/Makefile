@@ -19,16 +19,17 @@ IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	  -I$(X_INC)
 
 LDIRS  = \
-	  $(VTDATA_INST_DIR)             \
-	  $(VTOSG_INST_DIR)              \
-	  $(VTUI_INST_DIR)               \
-	  $(XMLHELPER_INST_DIR)          \
-	  $(OSG_LIB)                     \
-	  $(SHAPE_LIB)                   \
-	  $(PNG_LIB)                     \
-	  $(GDAL_LIB)                    \
-	  $(NETCDF_LIB)                  \
-	  $(X_LIB)                       \
+	  $(VTDATA_INST_DIR)     \
+	  $(VTOSG_INST_DIR)      \
+	  $(VTUI_INST_DIR)       \
+	  $(XMLHELPER_INST_DIR)  \
+	  $(UNZIP_INST_DIR)      \
+	  $(OSG_LIB)             \
+	  $(SHAPE_LIB)           \
+	  $(PNG_LIB)             \
+	  $(GDAL_LIB)            \
+	  $(NETCDF_LIB)          \
+	  $(X_LIB)               \
 	  $(EXTRA_LDIRS)
 
 SWITCHES := $(SWITCHES) -DUNIX -DVTLIB_OSG=1
@@ -53,7 +54,7 @@ LIBS   = -F$(FRAMEWORKS) \
 	  -lobjc -framework Carbon \
 	  -lOpenThreads \
 	  -framework vtdata -framework vtui -framework vtosg \
-	  -framework xmlhelper \
+	  -framework xmlhelper -framework unzip \
 	  -L$(FINK_LIB) -lnetcdf \
 	  -lX11 -L$(X11BASE)/lib \
 	  -lz -lstdc++
@@ -62,7 +63,7 @@ all : $(OSX_APP)
 
 else
 # Support for all other Unix platforms
-LIBS   +=  -lxmlhelper -lvtdata -lvtui -lvtosg $(MINI_LIB) -lGL $(GLU_LIB) -lX11 \
+LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg $(MINI_LIB) -lGL $(GLU_LIB) -lX11 \
 	  -lnetcdf                
 
 LDIR   +=\
