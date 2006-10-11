@@ -2347,3 +2347,4 @@ void vtLogGraph(vtNode *node, int indent)
 			vtLogGraph(grp->GetChild(i), indent+2);
 	}
 }
+
