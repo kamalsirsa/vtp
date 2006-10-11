@@ -20,7 +20,7 @@ IFLAGS = -I$(X_INC)                 \
 LDIRS  = $(OSG_LIB)                     \
 	 $(VTDATA_INST_DIR)             \
 	 $(XMLHELPER_INST_DIR)          \
-	 $(XMLHELPER_INST_DIR)          \
+	 $(UNZIP_INST_DIR)              \
 	 $(VTOSG_INST_DIR)              \
          $(PNG_LIB)                     \
          $(NETCDF_LIB)                  \
@@ -49,8 +49,8 @@ LIBS   = -bind_at_load -F$(FRAMEWORKS) \
 all : $(OSX_APP)
 
 else
-LIBS   = -lvtosg -lvtdata \
-         -lgdal -losgDB -losgUtil -losgText -losg -lOpenThreads -lnetcdf \
+LIBS   = -lvtosg -lvtdata -lunzip \
+         -lgdal -losgDB -losgUtil -losgText -losg -lOpenThreads \
 		 -lxmlhelper $(MINI_LIB) \
          $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lcurl -lbz2 -lm 
 
