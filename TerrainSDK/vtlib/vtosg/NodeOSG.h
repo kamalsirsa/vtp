@@ -52,7 +52,7 @@ struct vtPrimInfo
  * Represents a node in the vtlib scenegraph.  The scenegraph is simply
  * a tree of nodes, with a root node at the top.
  */
-class vtNode : public vtNodeBase, protected osg::Referenced
+class vtNode : public vtNodeBase, public osg::Referenced
 {
 public:
 	virtual void Release();
