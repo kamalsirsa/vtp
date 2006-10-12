@@ -176,7 +176,7 @@ void InstanceDlg::OnBrowseModeFile( wxCommandEvent &event )
 	wxFileDialog SelectFile(this, _T("Choose model file"),
 							_T(""),
 							_T(""),
-							_T("3D Model files (*.3ds;*.obj;*.lwo;*.flt)|*.3ds;*.obj;*.lwo;*.flt|All files(*.*)|*.*"),
+							_T("3D Model files (*.3ds;*.obj;*.lwo;*.flt;*.osg;*.ive)|*.3ds;*.obj;*.lwo;*.flt;*.osg;*.ive|All files(*.*)|*.*"),
 							wxOPEN);
 	if (SelectFile.ShowModal() != wxID_OK)
 		return;
