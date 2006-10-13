@@ -167,7 +167,13 @@ public:
 	vtSpeciesList3d	*GetPlantList() { return m_pPlantList; }
 	PlantingOptions &GetPlantOptions() { return m_PlantOpt; }
 	bool PlantATree(const DPoint2 &epos);
-	void SetPlantOptions(PlantingOptions &opt);
+	void SetPlantOptions(const PlantingOptions &opt);
+
+	// vehicles
+	void SetVehicleOptions(const VehicleOptions &opt);
+	void CreateGroundVehicle(const VehicleOptions &opt);
+	VehicleManager m_VehicleManager;
+	VehicleSet m_Vehicles;
 
 	// global state
 	AppState	m_state;
@@ -182,6 +188,7 @@ public:
 	bool		m_bSelectedStruct;
 	bool		m_bSelectedPlant;
 	bool		m_bSelectedUtil;
+	bool		m_bSelectedVehicle;
 	vtFence3d	*m_pDraggingFence;
 	int			m_iDraggingFencePoint;
 	DPoint3		m_EarthPosDown;
@@ -214,10 +221,7 @@ public:
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;
-	void CreateTestVehicle();
 	void CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, float fSpeed);
-	VehicleManager m_VehicleManager;
-	VehicleSet m_Vehicles;
 
 protected:
 	// startup methods
@@ -243,6 +247,9 @@ protected:
 	vtSpeciesList3d	*m_pPlantList;
 	PlantingOptions m_PlantOpt;
 	bool		m_bPlantsLoaded;
+
+	// vehicles
+	VehicleOptions m_VehicleOpt;
 
 	// fence members
 	bool		m_bActiveFence, m_bFenceClosed;

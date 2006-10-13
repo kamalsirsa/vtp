@@ -45,6 +45,9 @@ public:
 	int GetSelected() { return m_iSelected; }
 	void SetVehicleSpeed(int vehicle, float fMetersPerSec);
 
+	CarEngine *GetSelectedCarEngine();
+	void SetSelectedRotation(float fRot);
+
 	std::vector<CarEngine*> m_Engines;
 	int m_iSelected;
 };

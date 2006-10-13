@@ -1298,6 +1298,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\VehicleDlg.cpp">
+			</File>
+			<File
 				RelativePath=".\wx\wx_headers.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -1410,6 +1413,9 @@
 			</File>
 			<File
 				RelativePath="wx\UtilDlg.h">
+			</File>
+			<File
+				RelativePath=".\wx\VehicleDlg.h">
 			</File>
 		</Filter>
 		<Filter

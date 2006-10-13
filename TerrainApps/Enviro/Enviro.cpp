@@ -17,6 +17,7 @@
 #include "Hawaii.h"
 #include "Nevada.h"
 #include "SpecificTerrain.h"
+#include "CarEngine.h"
 
 #define ORTHO_HITHER	50	// 50m above highest point on terrain
 
@@ -79,6 +80,7 @@ Enviro::Enviro() : vtTerrainScene()
 	m_bDragging = false;
 	m_bSelectedStruct = false;
 	m_bSelectedPlant = false;
+	m_bSelectedVehicle = false;
 
 	m_pLegendGeom = NULL;
 	m_bCreatedLegend = false;
@@ -987,6 +989,7 @@ void Enviro::SetMode(MouseMode mode)
 		case MM_ROUTES:
 		case MM_PLANTS:
 		case MM_INSTANCES:
+		case MM_VEHICLES:
 		case MM_MOVE:
 		case MM_MEASURE:
 			m_pCursorMGeom->SetEnabled(true);
@@ -1131,6 +1134,9 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	}
 	if (m_mode == MM_INSTANCES)
 		PlantInstance();
+
+	if (m_mode == MM_VEHICLES)
+		CreateGroundVehicle(m_VehicleOpt);
 
 	if (m_mode == MM_SELECT)
 		OnMouseLeftDownTerrainSelect(event);
@@ -1365,6 +1371,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 		m_pSelUtilNode, dist3);
 
 	// Check Vehicles
+	m_bSelectedVehicle = false;
 	float dist4;
 	FPoint3 wpos;
 	g_Conv.ConvertFromEarth(m_EarthPos, wpos);
@@ -1373,9 +1380,9 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	if (dist4 > g_Options.m_fSelectionCutoff)
 		vehicle = -1;
 
-	bool click_struct = (result1 && dist1 < dist2 && dist1 < dist3);
-	bool click_plant = (result2 && dist2 < dist1 && dist2 < dist3);
-	bool click_route = (result3 && dist3 < dist1 && dist3 < dist2);
+	bool click_struct = (result1 && dist1 < dist2 && dist1 < dist3 && dist1 < dist4);
+	bool click_plant = (result2 && dist2 < dist1 && dist2 < dist3 && dist2 < dist4);
+	bool click_route = (result3 && dist3 < dist1 && dist3 < dist2 && dist3 < dist4);
 	bool click_vehicle = (vehicle!=-1 && dist4 < dist1 && dist4 < dist2 && dist4 < dist3);
 
 	if (click_struct)
@@ -1444,6 +1451,14 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	{
 		VTLOG(" vehicle is closest.\n");
 		m_Vehicles.VisualSelect(vehicle);
+		if ((event.flags & VT_SHIFT) != 0)
+		{
+			m_StartRotation = m_Vehicles.GetSelectedCarEngine()->GetRotation();
+			m_bRotating = true;
+		}
+		else
+			m_bDragging = true;
+		m_bSelectedVehicle = true;
 	}
 	else
 		VTLOG(" nothing.\n");
@@ -1544,6 +1559,8 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 
 		//VTLOG("ground_delta %f, %f\n", delta.x, delta.y);
 
+		float fNewRotation = m_StartRotation + (event.pos.x - m_MouseDown.x) / 100.0f;
+
 		vtTerrain *pTerr = GetCurrentTerrain();
 		if (m_bSelectedStruct)
 		{
@@ -1571,7 +1588,7 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 					vtStructInstance *inst = structures->GetAt(sel)->GetInstance();
 					vtStructInstance3d *str3d = structures->GetInstance(sel);
 
-					inst->SetRotation(m_StartRotation + (event.pos.x - m_MouseDown.x) / 100.0f);
+					inst->SetRotation(fNewRotation);
 					str3d->UpdateTransform(pTerr->GetHeightField());
 				}
 			}
@@ -1590,7 +1607,23 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 				m_pSelRoute->Dirty();
 				routemap.BuildGeometry(pTerr->GetHeightField());
 			}
+			if (m_bSelectedVehicle)
+			{
+				CarEngine *eng = m_Vehicles.GetSelectedCarEngine();
+				if (eng)
+					eng->SetEarthPos(eng->GetEarthPos() + ground_delta);
+			}
 		}
+		else if (m_bRotating)
+		{
+			if (m_bSelectedVehicle)
+			{
+				CarEngine *eng = m_Vehicles.GetSelectedCarEngine();
+				if (eng)
+					eng->SetRotation(fNewRotation);
+			}
+		}
+
 
 		m_EarthPosLast = m_EarthPos;
 	}
@@ -1776,7 +1809,7 @@ void Enviro::SetRouteOptions(const vtString &sStructType)
 ////////////////////////////////////////////////
 // Plants
 
-void Enviro::SetPlantOptions(PlantingOptions &opt)
+void Enviro::SetPlantOptions(const PlantingOptions &opt)
 {
 	m_PlantOpt = opt;
 	if (m_mode == MM_SELECT)
@@ -1791,6 +1824,11 @@ void Enviro::SetPlantOptions(PlantingOptions &opt)
 			}
 		}
 	}
+}
+
+void Enviro::SetVehicleOptions(const VehicleOptions &opt)
+{
+	m_VehicleOpt = opt;
 }
 
 /**
@@ -2150,7 +2188,7 @@ void Enviro::CreateElevationLegend()
 ////////////////////////////////////////////////////////////////////////
 #include "CarEngine.h"
 
-void Enviro::CreateTestVehicle()
+void Enviro::CreateGroundVehicle(const VehicleOptions &opt)
 {
 	// Create test vehicle
 	vtTerrain *pTerr = GetCurrentTerrain();
@@ -2162,7 +2200,7 @@ void Enviro::CreateTestVehicle()
 	if (!bOn)
 		return;
 
-	vtTransform *car = m_VehicleManager.CreateVehicle("Bronco", RGBf(1,1,1));
+	vtTransform *car = m_VehicleManager.CreateVehicle(opt.m_Itemname, opt.m_Color);
 	if (!car)
 		return;
 	pTerr->AddNode(car);

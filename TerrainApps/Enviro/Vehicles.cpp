@@ -6,12 +6,11 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/Roads.h"
-#include "vtlib/core/TerrainScene.h"
+#include "vtlib/core/TerrainScene.h"	// for vtGetContent
+#include "vtlib/core/GeomUtil.h"		// for CreateBoundSphereGeom
 #include "vtdata/vtLog.h"
 #include "CarEngine.h"
-#include "Engines.h"
-#include "Hawaii.h"
+#include "Vehicles.h"
 
 
 ///////////////////////////////
@@ -218,7 +217,8 @@ int VehicleSet::FindClosestVehicle(const FPoint3 &point, float &closest)
 	int vehicle = -1;
 	for (unsigned int i = 0; i < m_Engines.size(); i++)
 	{
-		float dist = (point - m_Engines[i]->GetCurPos()).Length();
+		FPoint3 vepos = m_Engines[i]->GetCurPos();
+		float dist = (point - vepos).Length();
 		if (dist < closest)
 		{
 			closest = dist;
@@ -230,7 +230,11 @@ int VehicleSet::FindClosestVehicle(const FPoint3 &point, float &closest)
 
 void VehicleSet::VisualSelect(int vehicle)
 {
-	Vehicle *car = dynamic_cast<Vehicle*> (m_Engines[vehicle]->GetTarget());
+	// Stop vehicle simulation while it is selected
+	CarEngine *eng = m_Engines[vehicle];
+	eng->SetEnabled(false);
+
+	Vehicle *car = dynamic_cast<Vehicle*> (eng->GetTarget());
 	if (!car)
 		return;
 	car->ShowBounds(true);
@@ -242,7 +246,12 @@ void VehicleSet::VisualDeselectAll()
 	unsigned int size = m_Engines.size();
 	for (unsigned int i = 0; i < size; i++)
 	{
-		Vehicle *car = dynamic_cast<Vehicle*> (m_Engines[i]->GetTarget());
+		// Resume vehicle simulation while it is deselected
+		CarEngine *eng = m_Engines[i];
+		eng->SetEnabled(true);
+		eng->IgnoreElapsedTime();
+
+		Vehicle *car = dynamic_cast<Vehicle*> (eng->GetTarget());
 		if (car)
 			car->ShowBounds(false);
 	}
@@ -253,5 +262,13 @@ void VehicleSet::SetVehicleSpeed(int vehicle, float fMetersPerSec)
 {
 	CarEngine *eng = m_Engines[vehicle];
 	eng->SetTargetSpeed(fMetersPerSec);
+}
+
+CarEngine *VehicleSet::GetSelectedCarEngine()
+{
+	if (m_iSelected != -1)
+		return m_Engines[m_iSelected];
+	else
+		return NULL;
 }
 
