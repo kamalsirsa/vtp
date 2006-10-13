@@ -27,6 +27,7 @@ class TimeDlg;
 class TimeEngine;
 class UtilDlg;
 class ProfileDlg;
+class VehicleDlg;
 class vtTerrain;
 
 // some shortcuts
@@ -127,6 +128,8 @@ public:
 	void OnUpdateToolsPlants(wxUpdateUIEvent& event);
 	void OnToolsInstances(wxCommandEvent& event);
 	void OnUpdateToolsInstances(wxUpdateUIEvent& event);
+	void OnToolsVehicles(wxCommandEvent& event);
+	void OnUpdateToolsVehicles(wxUpdateUIEvent& event);
 	void OnToolsMove(wxCommandEvent& event);
 	void OnUpdateToolsMove(wxUpdateUIEvent& event);
 	void OnToolsNavigate(wxCommandEvent& event);
@@ -236,6 +239,7 @@ public:
 	CScenarioSelectDialog *m_pScenarioSelectDialog;
 	LODDlg				*m_pLODDlg;
 	ProfileDlg			*m_pProfileDlg;
+	VehicleDlg			*m_pVehicleDlg;
 	MouseMode			m_ToggledMode;
 
 protected:

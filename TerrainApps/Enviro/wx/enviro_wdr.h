@@ -311,6 +311,10 @@ wxSizer *TextureDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_siz
 
 wxSizer *LayerAnimDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+const int ID_CHOICE_VEHICLES = 10228;
+const int ID_SET_VEHICLE_COLOR = 10229;
+wxSizer *VehicleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

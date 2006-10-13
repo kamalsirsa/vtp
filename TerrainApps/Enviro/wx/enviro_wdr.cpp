@@ -2425,6 +2425,40 @@ wxSizer *LayerAnimDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *VehicleDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxString strs1[] = 
+    {
+        _("ChoiceItem")
+    };
+    wxChoice *item1 = new wxChoice( parent, ID_CHOICE_VEHICLES, wxDefaultPosition, wxSize(100,-1), 1, strs1, 0 );
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item2 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, _("Body color:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item2->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticBitmap *item4 = new wxStaticBitmap( parent, ID_COLOR3, MyBitmapsFunc( 0 ), wxDefaultPosition, wxSize(32,18) );
+    item2->Add( item4, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxButton *item5 = new wxButton( parent, ID_SET_VEHICLE_COLOR, _("Set"), wxDefaultPosition, wxSize(40,-1), 0 );
+    item2->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item2, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions

@@ -52,6 +52,7 @@
 #include "TextureDlg.h"
 #include "TimeDlg.h"
 #include "UtilDlg.h"
+#include "VehicleDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
 #include "vtui/ProfileDlg.h"
@@ -96,6 +97,7 @@
 #  include "time.xpm"
 #  include "tree.xpm"
 #  include "unfold.xpm"
+#  include "vehicles.xpm"
 #  include "view_profile.xpm"
 #endif
 
@@ -124,6 +126,8 @@ EVT_MENU(ID_TOOLS_PLANTS,			EnviroFrame::OnToolsPlants)
 EVT_UPDATE_UI(ID_TOOLS_PLANTS,		EnviroFrame::OnUpdateToolsPlants)
 EVT_MENU(ID_TOOLS_INSTANCES,		EnviroFrame::OnToolsInstances)
 EVT_UPDATE_UI(ID_TOOLS_INSTANCES,	EnviroFrame::OnUpdateToolsInstances)
+EVT_MENU(ID_TOOLS_VEHICLES,			EnviroFrame::OnToolsVehicles)
+EVT_UPDATE_UI(ID_TOOLS_VEHICLES,	EnviroFrame::OnUpdateToolsVehicles)
 //EVT_MENU(ID_TOOLS_MOVE,			EnviroFrame::OnToolsMove)
 //EVT_UPDATE_UI(ID_TOOLS_MOVE,		EnviroFrame::OnUpdateToolsMove)
 EVT_MENU(ID_TOOLS_NAVIGATE,			EnviroFrame::OnToolsNavigate)
@@ -330,6 +334,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pTimeDlg = new TimeDlg(this, -1, _("Time"));
 	m_pUtilDlg = new UtilDlg(this, -1, _("Routes"));
 	m_pScenarioSelectDialog = new CScenarioSelectDialog(this, -1, _("Scenarios"));
+	m_pVehicleDlg = new VehicleDlg(this, -1, _("Vehicles"));
 	m_pProfileDlg = NULL;
 
 	if (m_canvas)
@@ -375,6 +380,7 @@ void EnviroFrame::CreateMenus()
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _("Routes"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_PLANTS, _("Plants"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _("Instances"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_VEHICLES, _("Vehicles"));
 //	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _("Navigate"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances\tCtrl+D"));
@@ -527,6 +533,7 @@ void EnviroFrame::CreateToolbar(bool bVertical)
 	ADD_TOOL(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
 //	ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);	// not yet
 	ADD_TOOL(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
+	ADD_TOOL(ID_TOOLS_VEHICLES, wxBITMAP(vehicles), _("Create Vehicles"), true);
 	ADD_TOOL(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
 	ADD_TOOL(ID_TOOLS_MEASURE, wxBITMAP(distance), _("Measure Distance"), true);
 	ADD_TOOL(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), true);
@@ -584,6 +591,7 @@ void EnviroFrame::SetMode(MouseMode mode)
 	m_pUtilDlg->Show(mode == MM_ROUTES);
 	m_pInstanceDlg->Show(mode == MM_INSTANCES);
 	m_pDistanceDlg->Show(mode == MM_MEASURE);
+	m_pVehicleDlg->Show(mode == MM_VEHICLES);
 
 	g_App.SetMode(mode);
 
@@ -595,8 +603,8 @@ void EnviroFrame::SetMode(MouseMode mode)
 		m_pFenceDlg->SetConnectionMaterials(&vtFence3d::s_FenceMats);
 		// and the datapath
 		m_pFenceDlg->m_datapaths = g_Options.m_DataPaths;
-		m_pFenceDlg->Show(mode == MM_FENCES);
 	}
+	m_pFenceDlg->Show(mode == MM_FENCES);
 
 	// Show/hide plant dialog
 	if (mode == MM_PLANTS)
@@ -710,7 +718,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 #endif
 		break;
 
-	case 'D':	// Ctrl-D
+	case 'D':	// Shift-D
 		// dump camera info
 		g_App.DumpCameraInfo();
 		break;
@@ -718,10 +726,6 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 	case 2:	// Ctrl-B
 		// toggle logo
 		g_App.ToggleLogo();
-		break;
-
-	case WXK_F11:
-		g_App.CreateTestVehicle();
 		break;
 
 	case WXK_F12:
@@ -1248,6 +1252,17 @@ void EnviroFrame::OnUpdateToolsInstances(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_INSTANCES);
+}
+
+void EnviroFrame::OnToolsVehicles(wxCommandEvent& event)
+{
+	SetMode(MM_VEHICLES);
+}
+
+void EnviroFrame::OnUpdateToolsVehicles(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_mode == MM_VEHICLES);
 }
 
 void EnviroFrame::OnToolsMove(wxCommandEvent& event)
