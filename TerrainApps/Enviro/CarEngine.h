@@ -37,9 +37,15 @@ public:
 	bool FindWheelTransforms();
 
 	void Eval();
+	void IgnoreElapsedTime();
 
 	FPoint3 GetCurPos() { return m_vCurPos; }
+	DPoint2 GetEarthPos();
+	void SetEarthPos(const DPoint2 &pos);
 	void SetTargetSpeed(float fMeterPerSec);
+	float GetRotation() { return m_fCurRotation; }
+	void SetRotation(float fRot);
+	void ApplyCurrentLocation(bool bAlignOnGround);
 
 private:
 	//called to constructor for basic setup

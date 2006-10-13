@@ -211,10 +211,60 @@ void CarEngine::Eval()
 	m_fPrevTime = t;
 }
 
+void CarEngine::IgnoreElapsedTime()
+{
+	m_fPrevTime = vtGetTime();
+}
+
 void CarEngine::SetTargetSpeed(float fMetersPerSec)
 {
 	m_fTargetSpeed = fMetersPerSec;
 	m_fSpeed = fMetersPerSec;
+}
+
+DPoint2 CarEngine::GetEarthPos()
+{
+	// convert terrain to earth coords
+	DPoint3 d3;
+	g_Conv.ConvertToEarth(m_vCurPos, d3);
+	return DPoint2(d3.x, d3.y);
+}
+
+void CarEngine::SetEarthPos(const DPoint2 &pos)
+{
+	// convert earth to terrain coords
+	DPoint3 d3(pos.x, pos.y, 0);
+	g_Conv.ConvertFromEarth(d3, m_vCurPos);
+
+	ApplyCurrentLocation(true);
+}
+
+void CarEngine::SetRotation(float fRot)
+{
+	m_fCurRotation = fRot;
+	ApplyCurrentLocation(true);
+}
+
+void CarEngine::ApplyCurrentLocation(bool bAlignOnGround)
+{
+	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
+	if (!car)
+		return;
+
+	// re-settle vehicle on terrain surface
+	car->Identity();
+
+	car->SetTrans(m_vCurPos);
+
+	// Angle is measure from +X, but our car's "forward" is -Z.  That's a difference
+	//  in angle of PI/2 between them.
+	car->RotateLocal(FPoint3(0,1,0), m_fCurRotation-PID2f);
+
+	if (bAlignOnGround)
+	{
+		m_vCurPos.y = SetPitch();
+		car->SetTrans(m_vCurPos);
+	}
 }
 
 //
@@ -254,18 +304,25 @@ float CarEngine::SetPitch()
 	FPoint3 vNormal = back_side.Cross(left_side);
 	vNormal.Normalize();
 
-	// new orientation
-	m_vAxis = back_side;
-
 	// new pitch
 	FPoint3 horiz = left_side;
 	horiz.y = 0;
 	float xz = horiz.Length();
 
-	// sin(pitch) = y / xz, so pitch = asin(y/xz);
-	m_fCurPitch = asinf(left_side.y / xz);
+	// tan(pitch) = y / xz, so pitch = atan(y/xz);
+	m_fCurPitch = atanf(left_side.y / xz);
 
-	car->RotateLocal(m_vAxis, m_fCurPitch);
+	car->RotateLocal(FPoint3(1,0,0), m_fCurPitch);
+
+	// new roll
+	horiz = back_side;
+	horiz.y = 0;
+	xz = horiz.Length();
+
+	// tan(roll) = y / xz, so roll = atan(y/xz);
+	float fRoll = atanf(back_side.y / xz);
+
+	car->RotateLocal(FPoint3(0,0,1), fRoll);
 
 	// return height of midpoint of all wheels.
 	return (fM.y+rM.y)/2;
@@ -624,6 +681,7 @@ void CarEngine::MoveCarTo(const FPoint3 &pos)
 	// New position is now current
 	m_vCurPos = pos;
 	m_vCurPos.y = elev;
+	pTarget->SetTrans(m_vCurPos);
 }
 
 //spin the wheels base on how much we've driven
