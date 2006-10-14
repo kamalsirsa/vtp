@@ -43,6 +43,10 @@ public:
 	}
 } g_Trap;
 
+// preserve and restore
+static std::streambuf *previous_cout;
+static std::streambuf *previous_cerr;
+
 ///////////////////////////////////////////////////////////////
 
 // There is always and only one global vtScene object
@@ -94,8 +98,8 @@ int vtGetMaxTextureSize()
 bool vtScene::Init(bool bStereo, int iStereoMode)
 {
 	// Redirect cout messages (where OSG sends its messages) to our own log
-	std::cout.rdbuf(&g_Trap);
-	std::cerr.rdbuf(&g_Trap);
+	previous_cout =  std::cout.rdbuf(&g_Trap);
+	previous_cerr = std::cerr.rdbuf(&g_Trap);
 
 #if 0
 	// If you encounter trouble in OSG that you want to debug, enable this
@@ -162,6 +166,10 @@ void vtScene::Shutdown()
 	vtNode::ClearOsgModelCache();
 	vtImageCacheClear();
 	osgDB::Registry::instance()->clearObjectCache();
+
+	// restore
+	std::cout.rdbuf(previous_cout);
+	std::cerr.rdbuf(previous_cerr);
 }
 
 void vtScene::TimerRunning(bool bRun)
