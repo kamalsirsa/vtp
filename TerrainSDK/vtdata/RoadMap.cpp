@@ -56,10 +56,10 @@ TNode::TNode()
 
 TNode::~TNode()
 {
-	if (m_r) delete m_r;
-	if (m_fLinkAngle) delete m_fLinkAngle;
-	if (m_IntersectTypes) delete m_IntersectTypes;
-	if (m_Lights) delete m_Lights;
+	if (m_r) delete [] m_r;
+	if (m_fLinkAngle) delete [] m_fLinkAngle;
+	if (m_IntersectTypes) delete [] m_IntersectTypes;
+	if (m_Lights) delete [] m_Lights;
 }
 
 bool TNode::operator==(TNode &ref)
