@@ -197,9 +197,7 @@ void ItemGroup::ShowLOD(bool bTrue)
 
 vtGeom *CreateRulers(vtFont *font, float fSize)
 {
-	int i, j, start;
-	vtMesh *mesh;
-	vtTextMesh *text;
+	int i, j;
 
 	vtGeom *pGeom = new vtGeom();
 	vtMaterialArray *pMats = new vtMaterialArray();
@@ -221,16 +219,16 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 		if (up > 2) up = 0;
 	}
 	int ticks = fSize / interval;
-
-	vtString str;
 	FPoint3 p;
 	float *wide;
 	float *thin;
+
+	// First create the three axes (XYZ) with tick marks
 	for (i = 0; i < 3; i++)
 	{
 		p.Set(0,0,0);
 
-		mesh = new vtMesh(vtMesh::LINES, VT_Normals, 24);
+		vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 24);
 
 		if (i == 0) { wide = &p.x; thin = &p.z; }
 		if (i == 1) { wide = &p.y; thin = &p.x; }
@@ -246,7 +244,7 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 		{
 			*wide = j * interval;
 			*thin = -interval/2;
-			start = mesh->AddVertex(p);
+			int start = mesh->AddVertex(p);
 			*thin =  interval/2;
 			mesh->AddVertex(p);
 			mesh->AddLine(start, start+1);
@@ -254,6 +252,9 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 		pGeom->AddMesh(mesh, 0);
 		mesh->Release();
 	}
+
+	// then the text labels on each tick
+	vtString str;
 	for (i = 0; i < 3; i++)
 	{
 		p.Set(0,0,0);
@@ -270,7 +271,7 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 			if (font)
 			{
 				str.Format("%g", j * interval);
-				text = new vtTextMesh(font, interval/2, false);
+				vtTextMesh *text = new vtTextMesh(font, interval/2, false);
 				text->SetPosition(p);
 				if (i == 0)
 					text->SetAlignment(0);
