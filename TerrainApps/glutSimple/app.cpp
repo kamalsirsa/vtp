@@ -6,12 +6,6 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifdef __DARWIN_OSX__
- #import <GLUT/glut.h>
-#else
- #include <GL/glut.h>
-#endif
-
 #ifdef __FreeBSD__
 #  include <ieeefp.h>
 #endif
@@ -21,6 +15,12 @@
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtdata/vtLog.h"
+
+#ifdef __DARWIN_OSX__
+ #import <GLUT/glut.h>
+#else
+ #include <GL/glut.h>
+#endif
 
 void redraw();
 void reshape(int w, int h);
