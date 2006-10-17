@@ -16,8 +16,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug Unicode|Win32"
-			OutputDirectory=".\Debug_Unicode-vc8"
-			IntermediateDirectory=".\Debug_Unicode-vc8"
+			OutputDirectory=".\Debug-Unicode-vc8"
+			IntermediateDirectory=".\Debug-Unicode-vc8"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -74,7 +74,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Advapi32.lib User32.lib Gdi32.lib gdal_id.lib ws2_32.lib netcdf.lib libpng13d.lib zlib1d-vc8.lib libjpeg.lib"
-				OutputFile="$(OutDir)\VTBuilder_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="oldnames.lib,MSVCRT.lib"
@@ -109,8 +108,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release Unicode|Win32"
-			OutputDirectory=".\Release_Unicode-vc8"
-			IntermediateDirectory=".\Release_Unicode-vc8"
+			OutputDirectory=".\Release-Unicode-vc8"
+			IntermediateDirectory=".\Release-Unicode-vc8"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -169,7 +168,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Advapi32.lib User32.lib Gdi32.lib gdal_i.lib ws2_32.lib netcdf.lib libpng13.lib zlib1-vc8.lib libjpeg.lib"
-				OutputFile="$(OutDir)\VTBuilder_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="oldnames.lib"
