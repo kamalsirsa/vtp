@@ -568,8 +568,8 @@ void vtFrame::SaveContentsFile(const wxString &fname)
 /// String comparison which considers '/' and '\' equivalent
 bool SamePath(const vtString &s1, const vtString &s2)
 {
-	int n = s1.GetLength();
-	for (int i = 0; i < n; i++)
+	int i, n = s1.GetLength();
+	for (i = 0; i < n; i++)
 	{
 		if (s1[i] != s2[i] &&
 			!(s1[i] == '/' && s2[i] == '\\') &&
