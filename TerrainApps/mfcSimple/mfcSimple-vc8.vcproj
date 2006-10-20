@@ -51,7 +51,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="WIN32=1;NDEBUG;_WINDOWS;VTLIB_OSG=1"
+				PreprocessorDefinitions="WIN32=1;NDEBUG;_WINDOWS;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -75,7 +75,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib glaux.lib osg.lib osgUtil.lib osgDB.lib osgText.lib netcdf.lib libpng13.lib zlib1-vc8.lib gdal_i.lib libjpeg.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib glaux.lib osg.lib osgUtil.lib osgDB.lib osgText.lib netcdf.lib libpng13-vc8.lib zlib1-vc8.lib gdal_i-vc8.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,libcd.lib,libcmt.lib"
@@ -142,7 +142,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;VTLIB_OSG=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
@@ -167,7 +167,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng13d.lib zlib1d-vc8.lib gdal_id.lib libjpeg.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,libcd.lib,libcmt.lib,msvcrt.lib"

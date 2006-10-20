@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="unzip"
-	ProjectGUID="{80D6498F-D7CA-4087-BA90-2AF930E389B5}"
+	ProjectGUID="{5F06081A-A795-48D3-8336-27455E83CD8E}"
 	RootNamespace="unzipvc8"
 	Keyword="Win32Proj"
 	>
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -103,7 +103,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOUNCRYPT"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOUNCRYPT;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"

@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="vtosg"
-	ProjectGUID="{1045CA3D-3526-482B-B4BA-ACBF57404E9B}"
+	ProjectGUID="{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}"
 	RootNamespace="vtosg"
 	>
 	<Platforms>
@@ -44,7 +44,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..,..\.."
-				PreprocessorDefinitions="NDEBUG;WIN32;_LIB;VTLIB_OSG=1"
+				PreprocessorDefinitions="NDEBUG;WIN32;_LIB;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -118,7 +118,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..,..\.."
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_LIB;VTLIB_OSG=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_LIB;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"

@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../TerrainSDK"
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdal_id.lib ws2_32.lib netcdf.lib libpng13.lib libjpeg.lib zlib1-vc8.lib"
+				AdditionalDependencies="gdal_id-vc8.lib ws2_32.lib netcdf.lib libpng13-vc8.lib libjpeg.lib zlib1-vc8.lib"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="MSVCRT.lib"
 				GenerateDebugInformation="true"
@@ -120,7 +120,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="../../TerrainSDK"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdal_i.lib ws2_32.lib netcdf.lib libpng13.lib libjpeg.lib zlib1-vc8.lib"
+				AdditionalDependencies="gdal_i-vc8.lib ws2_32.lib netcdf.lib libpng13-vc8.lib libjpeg.lib zlib1-vc8.lib"
 				OutputFile="$(OutDir)/VTConvert.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="false"

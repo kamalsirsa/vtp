@@ -49,7 +49,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../TerrainSDK"
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;STRICT;WXUSINGDLL=1;VTLIB_OSG=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;STRICT;WXUSINGDLL=1;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
@@ -74,7 +74,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib opengl32.lib netcdf.lib libpng13d.lib zlib1d-vc8.lib gdal_id.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib opengl32.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib glu32.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="C:\APIs\sgl-0.6.0\lib\platform.msvc60.i686.dbg"
@@ -144,7 +144,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../../TerrainSDK"
-				PreprocessorDefinitions="WIN32=1;NDEBUG;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;STRICT;WXUSINGDLL=1;VTLIB_OSG=1"
+				PreprocessorDefinitions="WIN32=1;NDEBUG;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;STRICT;WXUSINGDLL=1;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -168,7 +168,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgUtil.lib osgDB.lib osgText.lib opengl32.lib netcdf.lib libpng13.lib zlib1-vc8.lib gdal_i.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osg.lib osgUtil.lib osgDB.lib osgText.lib opengl32.lib netcdf.lib libpng13-vc8.lib zlib1-vc8.lib gdal_i-vc8.lib glu32.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="\APIs\libpng-1.0.8,\APIs\netcdf-3.5.0.win32bin\lib"

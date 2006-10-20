@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="wxEnviro"
-	ProjectGUID="{EB511FDC-A380-4724-9A95-7FEAC5561FEA}"
+	ProjectGUID="{13E5F4CD-63ED-454D-A086-1545C79E2552}"
 	RootNamespace="wxEnviro"
 	>
 	<Platforms>
@@ -50,7 +50,7 @@
 				Optimization="1"
 				InlineFunctionExpansion="2"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;VTLIB_OSG=1;UNICODE"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -74,7 +74,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng13.lib zlib1-vc8.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng13-vc8.lib zlib1-vc8.lib netcdf.lib gdal_i-vc8.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,MSVCRTD.lib"
@@ -141,7 +141,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;VTLIB_OSG=1;UNICODE"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
 				BrowseInformation="1"
@@ -165,7 +165,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d.lib zlib1d-vc8.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d-vc8.lib zlib1d-vc8.lib netcdf.lib gdal_id-vc8.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,libcmt.lib,msvcrt.lib,libcd.lib,libcmtd.lib"

@@ -49,7 +49,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;UNICODE;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;SUPPORT_TRANSIT=0;USE_DIBSECTIONS=1;USE_OPENGL=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;SUPPORT_TRANSIT=0;USE_DIBSECTIONS=1;USE_OPENGL=1;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="wx/wxprec.h"
@@ -73,7 +73,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Advapi32.lib User32.lib Gdi32.lib gdal_id.lib ws2_32.lib netcdf.lib libpng13d.lib zlib1d-vc8.lib libjpeg.lib"
+				AdditionalDependencies="Advapi32.lib User32.lib Gdi32.lib gdal_id-vc8.lib ws2_32.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="oldnames.lib,MSVCRT.lib"
@@ -86,6 +86,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				EmbedManifest="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -142,7 +143,7 @@
 				Optimization="1"
 				InlineFunctionExpansion="2"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="NDEBUG;UNICODE;WIN32;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;SUPPORT_TRANSIT=0;USE_DIBSECTIONS=1;USE_OPENGL=1"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;SUPPORT_TRANSIT=0;USE_DIBSECTIONS=1;USE_OPENGL=1;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -167,11 +168,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Advapi32.lib User32.lib Gdi32.lib gdal_i.lib ws2_32.lib netcdf.lib libpng13.lib zlib1-vc8.lib libjpeg.lib"
+				AdditionalDependencies="Advapi32.lib User32.lib Gdi32.lib gdal_i-vc8.lib ws2_32.lib netcdf.lib libpng13-vc8.lib zlib1-vc8.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="oldnames.lib"
 				SubSystem="2"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool

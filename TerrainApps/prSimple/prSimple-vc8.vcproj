@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_CONSOLE;VTLIB_OSG=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_CONSOLE;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgText.lib osgUtild.lib osgProducerd.lib Producerd.lib OpenThreadsWin32d.lib netcdf.lib libpng13d.lib zlib1d-vc8.lib gdal_id.lib opengl32.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgText.lib osgUtild.lib osgProducerd.lib Producerd.lib OpenThreadsWin32d.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile="$(OutDir)/prSimple.exe"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
@@ -122,7 +122,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="../../TerrainSDK"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;VTLIB_OSG=1"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgText.lib osgUtil.lib osgProducer.lib Producer.lib OpenThreadsWin32.lib netcdf.lib libpng13.lib zlib1-vc8.lib gdal_i.lib opengl32.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgText.lib osgUtil.lib osgProducer.lib Producer.lib OpenThreadsWin32.lib netcdf.lib libpng13-vc8.lib zlib1-vc8.lib gdal_i-vc8.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile="$(OutDir)/prSimple.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

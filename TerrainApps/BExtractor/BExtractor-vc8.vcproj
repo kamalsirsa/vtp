@@ -72,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ipl.lib vfw32.lib gdal_i.lib zlib1-vc8.lib"
+				AdditionalDependencies="ipl.lib vfw32.lib gdal_i-vc8.lib zlib1-vc8.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="\APIs\GBM"
@@ -163,7 +163,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="vfw32.lib gdal_id.lib ipl.lib zlib1d-vc8.lib"
+				AdditionalDependencies="vfw32.lib gdal_id-vc8.lib ipl.lib zlib1d-vc8.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="\APIs\GBM"

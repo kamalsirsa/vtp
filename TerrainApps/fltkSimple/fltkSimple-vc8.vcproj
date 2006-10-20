@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_CONSOLE;VTLIB_OSG=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_CONSOLE;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng13d.lib zlib1d-vc8.lib gdal_id.lib libjpeg.lib fltkd.lib fltkgld.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib"
+				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib libjpeg.lib fltkd.lib fltkgld.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib"
 				OutputFile="$(OutDir)/fltkSimple.exe"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
@@ -123,7 +123,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;VTLIB_OSG=1"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
@@ -142,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng13.lib zlib1-vc8.lib gdal_i.lib libjpeg.lib fltk.lib fltkgl.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib"
+				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng13-vc8.lib zlib1-vc8.lib gdal_i-vc8.lib libjpeg.lib fltk.lib fltkgl.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib"
 				OutputFile="$(OutDir)/fltkSimple.exe"
 				LinkIncremental="1"
 				SubSystem="1"

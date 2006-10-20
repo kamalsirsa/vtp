@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="mfcEnviro-OSG-vc8"
+	Name="mfcEnviro-OSG"
 	ProjectGUID="{85B7F371-B172-4F4A-8EAD-202BC2DAD041}"
+	RootNamespace="mfcEnviro-OSG"
 	Keyword="MFCProj"
 	>
 	<Platforms>
@@ -49,7 +50,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="RELEASE;WIN32=1;_WINDOWS;ENVIRO_MFC;VTLIB_OSG=1"
+				PreprocessorDefinitions="RELEASE;WIN32=1;_WINDOWS;ENVIRO_MFC;VTLIB_OSG=1;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -76,7 +77,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib libpng13.lib zlib1-vc8.lib glu32.lib opengl32.lib winmm.lib netcdf.lib gdal_i.lib libjpeg.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib libpng13-vc8.lib zlib1-vc8.lib glu32.lib opengl32.lib winmm.lib netcdf.lib gdal_i-vc8.lib libjpeg.lib"
 				OutputFile=".\Release-mfc/mfcEnviro.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -145,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;ENVIRO_MFC;VTLIB_OSG=1;WINVER=0x0400"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;ENVIRO_MFC;VTLIB_OSG=1;WINVER=0x0400;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
 				PrecompiledHeaderFile=".\Debug-mfc/mfcEnviro.pch"
@@ -169,7 +170,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng13d.lib zlib1d-vc8.lib gdal_id.lib libjpeg.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib libjpeg.lib"
 				OutputFile=".\Debug-mfc/mfcEnviro.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -213,6 +214,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="2"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -239,7 +241,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="WIN32;_DEBUG;_UNICODE;VTDEBUG;_WINDOWS;ENVIRO_MFC;VTLIB_OSG=1;WINVER=0x0400"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;ENVIRO_MFC;VTLIB_OSG=1;WINVER=0x0400;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
 				BrowseInformation="1"
@@ -261,7 +263,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng13d.lib zlib1d-vc8.lib gdal_id.lib libjpeg.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,libcd.lib,libcmt.lib"
@@ -304,11 +306,11 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="res\Enviro.ico"
+				RelativePath="mfc\res\Enviro.ico"
 				>
 			</File>
 			<File
-				RelativePath="mfc\res\Enviro.ico"
+				RelativePath="res\Enviro.ico"
 				>
 			</File>
 			<File
@@ -355,11 +357,11 @@
 				>
 			</File>
 			<File
-				RelativePath="res\Toolbar.bmp"
+				RelativePath="mfc\res\Toolbar.bmp"
 				>
 			</File>
 			<File
-				RelativePath="mfc\res\Toolbar.bmp"
+				RelativePath="res\Toolbar.bmp"
 				>
 			</File>
 			<File
