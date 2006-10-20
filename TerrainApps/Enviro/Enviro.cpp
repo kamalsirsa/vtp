@@ -891,7 +891,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	vtString sname;
 	if (param.GetValueString(STR_INIT_SCENARIO, sname))
 	{
-		for (int snum = 0; snum < param.m_Scenarios.size(); snum++)
+		for (unsigned int snum = 0; snum < param.m_Scenarios.size(); snum++)
 		{
 			if (sname == param.m_Scenarios[snum].GetValueString(STR_SCENARIO_NAME))
 				pTerrain->ActivateScenario(snum);
