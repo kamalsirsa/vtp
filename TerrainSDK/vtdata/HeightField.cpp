@@ -238,13 +238,13 @@ int vtHeightField3d::PointIsAboveTerrain(const FPoint3 &p) const
  * on the surface of the heightfield.
  */
 bool vtHeightField3d::ConvertEarthToSurfacePoint(const DPoint2 &epos,
-									FPoint3 &p3, int iCultureFlags)
+									FPoint3 &p3, int iCultureFlags, bool bTrue)
 {
 	// convert earth -> XZ
 	m_Conversion.ConvertFromEarth(epos, p3.x, p3.z);
 
 	// look up altitude
-	return FindAltitudeAtPoint(p3, p3.y, false, iCultureFlags);
+	return FindAltitudeAtPoint(p3, p3.y, bTrue, iCultureFlags);
 }
 
 /**
