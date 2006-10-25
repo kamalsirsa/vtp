@@ -656,11 +656,13 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	FPoint3 PostSize(m_Params.m_fPostWidth, m_Params.m_fPostHeight,
 		m_Params.m_fPostDepth);
 
+	// All culture (roads and buildings) can be draped on
+	int iIncludeCulture = CE_ALL;
+
 	// first, project the posts from earth to world
 	m_Posts3d.SetSize(numfencepts);
 	for (i = 0; i < numfencepts; i++)
-		// true = include culture
-		pHeightField->ConvertEarthToSurfacePoint(m_pFencePts[i], m_Posts3d[i], true);
+		pHeightField->ConvertEarthToSurfacePoint(m_pFencePts[i], m_Posts3d[i], iIncludeCulture);
 
 	// Find highest point
 	m_fMaxGroundY = -1E8;

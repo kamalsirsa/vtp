@@ -53,9 +53,10 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 	if (m_fRotation != 0.0f)
 		m_pContainer->Rotate2(FPoint3(0,1,0), m_fRotation);
 
-	bool bIncludeCulture = true;
+	// All culture (roads and buildings) can be draped on
+	int iIncludeCulture = CE_ALL;
 	FPoint3 point;
-	pHeightField->ConvertEarthToSurfacePoint(m_p, point, bIncludeCulture);
+	pHeightField->ConvertEarthToSurfacePoint(m_p, point, iIncludeCulture);
 	if (m_bAbsolute)
 		// Absolute means elevation is relative to sealevel
 		point.y = m_fElevationOffset;
