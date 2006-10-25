@@ -2042,7 +2042,8 @@ void vtTerrain::CreateFeatureLabels(vtAbstractLayer *layer, const vtTagArray &st
 			p2 = dp[0].Centroid();
 		}
 
-		if (!m_pHeightField->ConvertEarthToSurfacePoint(p2, fp3))
+		// Don't drape on culture, but do use true elevation
+		if (!m_pHeightField->ConvertEarthToSurfacePoint(p2, fp3, 0, true))
 			continue;
 
 		// Elevate the location by the desired vertical offset
