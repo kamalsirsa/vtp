@@ -965,6 +965,12 @@ void vtFeatureSet::ParseDBFFields(DBFHandle db)
 void vtFeatureSet::ParseDBFRecords(DBFHandle db, bool progress_callback(int))
 {
 	int iRecords = DBFGetRecordCount(db);
+
+	// safety check
+	// i have seen some DBF to have more records than the SHP has entities
+	if ((unsigned int) iRecords > GetNumEntities())
+		iRecords = GetNumEntities();
+
 	for (int i = 0; i < iRecords; i++)
 	{
 		if (progress_callback && ((i%16)==0))
