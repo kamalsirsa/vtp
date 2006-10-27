@@ -212,6 +212,7 @@ ifeq ($(OS),Darwin)
 	      -losgText -losgDB -losgGA -losgUtil -lOpenThreads
    XMLHELPER_OPTS = -framework xmlhelper
    VTDATA_OPTS = -framework vtdata
+   UNZIP_OPTS = -framework unzip
 
    #
    # options used by individual make files to build their respective packages.
@@ -221,7 +222,8 @@ ifeq ($(OS),Darwin)
    XMLHELPER_LINK_OPTS = -lstdc++ -lz   
 
    VTDATA_LINK_OPTS =  $(COMMON_OPTS) \
-		       $(XMLHELPER_OPTS)
+		       $(XMLHELPER_OPTS) \
+		       $(UNZIP_OPTS)
 
    VTUI_LINK_OPTS = $(shell $(WX_DIR)/bin/wx-config --libs) \
 		    $(COMMON_OPTS) \
