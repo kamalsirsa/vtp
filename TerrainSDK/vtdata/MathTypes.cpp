@@ -1,7 +1,7 @@
 //
 // Implementation of methods for the basic data classes
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -291,7 +291,7 @@ float FLine2::SegmentLength(unsigned int i) const
  *
  * \param Point The input point.
  * \param iIndex Index of the first point of the nearest line segment.
- * \param dClosest Distance from the DLine2 to the input point.
+ * \param fClosest Distance from the FLine2 to the input point.
  */
 void FLine2::NearestPoint(const FPoint2 &Point, int &iIndex, float &fClosest) const
 {
