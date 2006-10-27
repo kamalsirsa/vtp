@@ -57,6 +57,9 @@ public:
 	/// Call this method once before calling any other vtlib methods.
 	bool Init(bool bStereo = false, int iStereoMode = 0);
 
+	/// Call this if you want to integrate VTP into a 3rd party framework
+	bool CustomInit( SceneViewOSG * sceneview );
+
 	/// Call this method after all other vtlib methods, to free memory.
 	void Shutdown();
 

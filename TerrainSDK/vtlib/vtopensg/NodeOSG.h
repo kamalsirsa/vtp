@@ -18,6 +18,9 @@
 	#include <OpenSG/OSGMaterialGroup.h>
 	#include <OpenSG/OSGDistanceLOD.h>
 	#include <OpenSG/OSGDirectionalLight.h>
+	#include <OpenSG/OSGPassiveViewport.h>
+	#include <OpenSG/OSGDepthClearBackground.h>
+	#include <OpenSG/OSGMatrixCamera.h>
 
 	#include "vtOsgDynMesh.h"
 
@@ -60,7 +63,6 @@ struct vtPrimInfo {
 class vtNode : public vtNodeBase// EXCEPT, protected osg::Referenced 
 {
 public:
-	vtNodeBase *Clone() { return NULL;};
 	virtual void Release();
 
 	// implement vtNodeBase methods
@@ -85,6 +87,7 @@ public:
 	void LocalToWorld(FPoint3 &point);
 
 	vtGroup *GetParent(int iParent = 0);
+	virtual vtNode *Clone(bool bDeep = false);
 
 	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
 
@@ -134,14 +137,14 @@ protected:
 class vtGroup : public vtNode, public vtGroupBase {
 public:
 	vtGroup(bool suppress = false);
-	vtNodeBase *Clone();
+	virtual vtNode *Clone(bool bDeep = false);
 	void CopyFrom(const vtGroup *rhs);
 	virtual void Release();
 
 	// implement vtGroupBase methods
 
 	/** Add a node as a child of this Group. */
-	void AddChild(vtNode *pChild);
+	virtual void AddChild(vtNode *pChild);
 
 	/** Remove a node as a child of this Group.  If the indicated node is not
 	 a child, then this method has no effect. */
@@ -173,7 +176,7 @@ protected:
 class vtTransform : public vtGroup, public vtTransformBase {
 public:
 	vtTransform();
-	vtNodeBase *Clone();
+	virtual vtNode *Clone(bool bDeep = false);
 	void CopyFrom(const vtTransform *rhs);
 	void Release();
 
@@ -249,7 +252,7 @@ protected:
 class vtLight : public vtNode {
 public:
 	vtLight();
-	vtNodeBase *Clone();
+	virtual vtNode *Clone(bool bDeep = false);
 	void CopyFrom(const vtLight *rhs);
 	void Release();
 
@@ -289,7 +292,7 @@ class vtTextMesh;
 class vtGeom : public vtNode {
 public:
 	vtGeom();
-	vtNodeBase *Clone();
+	virtual vtNode *Clone(bool bDeep = false);
 	void CopyFrom(const vtGeom *rhs);
 	void Release();
 
@@ -417,6 +420,7 @@ public:
 	vtLOD();
 	void Release();
 
+	void AddChild(vtNode *pChild);
 	void SetRanges(float *ranges, int nranges);
 	void SetCenter(FPoint3 &center);
 
@@ -442,7 +446,7 @@ protected:
 class vtCamera : public vtTransform {
 public:
 	vtCamera();
-	vtNodeBase* Clone();
+	virtual vtNode *Clone(bool bDeep = false);
 	void CopyFrom(const vtCamera *rhs);
 
 	void SetHither(float f);
@@ -478,19 +482,20 @@ protected:
 class vtHUD : public vtGroup {
 public:
 	vtHUD(bool bPixelCoords = true);
-	vtNodeBase *Clone();
+	virtual vtNode *Clone(bool bDeep = false);
 	void CopyFrom(const vtHUD *rhs);
 	void Release();
 
 	void SetWindowSize(int w, int h);
 
 protected:
-	#if EXCEPT
-	// OSG-specific Implementation
-	osg::Projection *m_projection;
-	#endif //EXCEPT
-	bool m_bPixelCoords;
+	OSG::Matrix4f makeOrtho2D (float left, float right, float bottom, float top);
 
+	bool m_bPixelCoords;
+	OSG::Matrix4f m_projection;
+	OSG::MatrixCameraPtr m_camera;
+	OSG::PassiveViewportPtr m_pHudViewport;
+		
 	virtual ~vtHUD() {};
 };
 

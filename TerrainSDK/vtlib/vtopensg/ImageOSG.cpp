@@ -145,35 +145,35 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 
 bool vtImage::WritePNG(const char *fname, bool progress_callback(int) )
 {
-	typedef std::list< const osg::Char8 * > suffixList_t;
+	/*typedef std::list< const osg::Char8 * > suffixList_t;
 	suffixList_t suffixList;
 	osg::ImageFileHandler::the().getSuffixList (suffixList, osg::ImageFileType::OSG_WRITE_SUPPORTED);
 	//png should have been added during registration of the png's suffixlist
 	suffixList_t::const_iterator it = std::find( suffixList.begin(), suffixList.end(), "png" );
-	if (it != suffixList.end() ) {
+	if (it != suffixList.end() ) {*/
 		return OSG::PNGImageFileType::the().write( m_Image, fname );
-	}
+	/*}
 	else {
 		//jpeg not supported
 		return false;
-	}
+	}*/
 }
 
 bool vtImage::WriteJPEG(const char *fname, int quality, bool progress_callback(int))
 {
-	typedef std::list< const osg::Char8 * > suffixList_t;
+	/*typedef std::list< const osg::Char8 * > suffixList_t;
 	suffixList_t suffixList;
 	osg::ImageFileHandler::the().getSuffixList (suffixList, osg::ImageFileType::OSG_WRITE_SUPPORTED);
 	//jpg should have been added during registration of the jpg's suffixlist
 	suffixList_t::const_iterator it = std::find( suffixList.begin(), suffixList.end(), "jpg" );
-	if (it != suffixList.end() ) {
+	if (it != suffixList.end() ) {*/
 		OSG::JPGImageFileType::the().setQuality( quality );
 		return OSG::JPGImageFileType::the().write( m_Image, fname );
-	}
+	/*}
 	else {
 		//jpeg not supported
 		return false;
-	}
+	}*/
 }
 
 void vtImage::Release()

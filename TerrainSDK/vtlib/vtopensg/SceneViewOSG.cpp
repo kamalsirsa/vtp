@@ -31,10 +31,24 @@ const bool USE_HEADLIGHT            (false);
 //takes mono components for usage within VTP
 SceneViewOSG::SceneViewOSG(
 						  OSG::WindowPtr window, 
-						  OSG::ViewportPtr leftViewport,
-						  OSG::RenderAction renderAction ) :  m_bUsesSSM (false), m_bStereo (false)
+						  OSG::ViewportPtr viewport,
+						  OSG::PerspectiveCameraPtr camera,
+						  OSG::RenderAction *renderAction,
+						  int stereoMode,
+						  OSG::SolidBackgroundPtr background
+						   ) :  
+m_bUsesSSM (false), 
+m_bStereo ( stereoMode>0 ),
+m_bUsesCustomSceneView (true), 
+m_WindowPtr ( window ),
+m_LeftViewportPtr ( viewport ),
+m_LeftCameraPtr ( camera ),
+m_pRenderAction ( renderAction ),
+m_iStereoMode ( stereoMode ),
+m_SolidBackgroundPtr ( background )
 {
-
+	renderAction->setFrustumCulling( true );
+    renderAction->setAutoFrustum( true );
 }
 
 /**
@@ -49,7 +63,10 @@ SceneViewOSG::SceneViewOSG(
  * @param bStereo
  * @param iStereoMode
  */
-SceneViewOSG::SceneViewOSG( bool bStereo, int iStereoMode ) : m_bStereo(bStereo), m_iStereoMode (iStereoMode) 
+SceneViewOSG::SceneViewOSG( bool bStereo, int iStereoMode ) : 
+m_bStereo(bStereo), 
+m_iStereoMode (iStereoMode),
+m_bUsesCustomSceneView (false)
 {
 	if ( IsStereo() ) {
 		switch ( m_iStereoMode ) {
@@ -187,8 +204,7 @@ void SceneViewOSG::UpdateCamera(
 							   float aspect, 
 							   float fov_y,
 							   float hither, 
-							   float yon, 
-							   OSG::NodePtr node )
+							   float yon )
 {
 
 	if ( !IsStereo() ||  GetStereoMode() == PASSIVE ) {
@@ -198,7 +214,6 @@ void SceneViewOSG::UpdateCamera(
 		cam->setFov(fov_y);
 		cam->setNear(hither);
 		cam->setFar(yon);
-		cam->setBeacon(node);
 		endEditCP(cam);
 	}
 }
@@ -230,10 +245,14 @@ OSG::PerspectiveCameraPtr SceneViewOSG::GetCamera() const
 
 void SceneViewOSG::Redraw()
 {
-	if ( UsesSSM() ) {
-		GetSSM()->redraw();
-	} else {
-		m_WindowPtr->render(m_pRenderAction);
+	//we don't need to apply the renderaction within vtp,
+	//this should be done within the custom framework.
+	if (!m_bUsesCustomSceneView) {
+		if ( UsesSSM() ) {
+			GetSSM()->redraw();
+		} else {
+			m_WindowPtr->render(m_pRenderAction);
+		}
 	}
 }
 

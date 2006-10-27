@@ -17,23 +17,27 @@
 #include <OpenSG/OSGViewport.h>
 #include <OpenSG/OSGRenderAction.h>
 #include <OpenSG/OSGSolidBackground.h>
+#include <OpenSG/OSGShearedStereoCameraDecorator.h>
 
 /**
  * a scene viewer wrapper for dealing with vtp.
  */
 class SceneViewOSG {
 public:
-	//takes mono components for usage within VTP
 	SceneViewOSG( OSG::WindowPtr window, 
-			   OSG::ViewportPtr leftViewport,
-			   OSG::RenderAction renderAction );
+			   OSG::ViewportPtr viewport,
+			   OSG::PerspectiveCameraPtr camera,
+			   OSG::RenderAction *renderAction,
+			   int stereoMode=0,
+			   OSG::SolidBackgroundPtr background=OSG::NullFC
+			   );
 
 	//from vtScene::Init(bStereo, iStereoMode)
 	SceneViewOSG( bool bStereo, int iStereoMode );
 
 	void SetRoot( OSG::NodePtr root );
 	OSG::Line CalcViewRay(OSG::UInt32 x, OSG::UInt32 y);
-	void UpdateCamera( float aspect, float fov_y, float hither, float yon, OSG::NodePtr node);
+	void UpdateCamera( float aspect, float fov_y, float hither, float yon);
 				
 	OSG::DrawActionBase *GetAction() const;
 	OSG::ViewportPtr GetLeftViewport() const {return m_LeftViewportPtr; };
@@ -44,6 +48,7 @@ public:
     OSG::PerspectiveCameraPtr GetRightCamera() const {return m_RightCameraPtr;}; 
 	OSG::WindowPtr GetWindow() const; 
 	void SetBackgroundColor ( osg::Color3f backColor );
+	bool IsCustomSceneView() const { return m_bUsesCustomSceneView;};
 	OSG::SimpleSceneManager *GetSSM() const;
 	bool UsesSSM() const {return m_bUsesSSM;};
 	bool IsStereo() const {return m_bStereo;};
@@ -57,14 +62,16 @@ protected:
 private:
 	bool m_bStereo;
 	bool m_bUsesSSM;
+	bool m_bUsesCustomSceneView;
 	int m_iStereoMode;
-	OSG::PerspectiveCameraPtr m_LeftCameraPtr, m_RightCameraPtr;
+	OSG::RefPtr<OSG::PerspectiveCameraPtr> m_LeftCameraPtr, m_RightCameraPtr;
 	OSG::ViewportPtr m_LeftViewportPtr,  m_RightViewportPtr;
-	OSG::WindowPtr m_WindowPtr;
+	OSG::RefPtr<OSG::WindowPtr> m_WindowPtr;
     OSG::RenderAction *m_pRenderAction;
 	//wrap also SSM
 	OSG::SimpleSceneManager *m_pSimpleSceneManager;
-	OSG::SolidBackgroundPtr m_SolidBackgroundPtr;
+	OSG::RefPtr<OSG::SolidBackgroundPtr> m_SolidBackgroundPtr;
+	OSG::RefPtr<OSG::ShearedStereoCameraDecoratorPtr> m_SSCD;
 };
 
 #endif

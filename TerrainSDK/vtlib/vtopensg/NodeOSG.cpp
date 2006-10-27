@@ -53,9 +53,9 @@ void vtNode::Release()
 	}
 	//TODO check fog states once ported
 	//TODO check refcounting
-	vtString name = osg::getName(m_pNode);
+	//vtString name = osg::getName(m_pNode);
 
-	osg::subRefCP (m_pNode);
+	//osg::subRefCP (m_pNode);
 
 	if( m_pNode == osg::NullFC ) { //if node has been deleted finally, out << debug info
 #if DEBUG_NODE_LOAD
@@ -219,6 +219,12 @@ vtGroup *vtNode::GetParent(int iParent)
 		vtGroup *vgroup = dynamic_cast<vtGroup *>(vnode);
 		if( vgroup != NULL ) return vgroup;
 	}
+	return NULL;
+}
+
+vtNode *vtNode::Clone(bool bDeep)
+{
+	// we should never get here, because you can't instantiate a plain vtNode
 	return NULL;
 }
 
@@ -400,7 +406,7 @@ vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 }
 
 
-vtNodeBase *vtGroup::Clone()
+vtNode *vtGroup::Clone(bool bDeep)
 {
 	vtGroup *group = new vtGroup;
 	group->CopyFrom(this);
@@ -579,7 +585,7 @@ vtTransform::vtTransform() : vtGroup(true), vtTransformBase()
 	SetOsgNode(node);
 }
 
-vtNodeBase *vtTransform::Clone()
+vtNode *vtTransform::Clone(bool bDeep)
 {
 	vtTransform *trans = new vtTransform();
 	trans->CopyFrom(this);
@@ -799,7 +805,7 @@ vtLight::vtLight()
 	SetOsgNode(node);
 }
 
-vtNodeBase *vtLight::Clone()
+vtNode *vtLight::Clone(bool bDeep)
 {
 	vtLight *light = new vtLight();
 	light->CopyFrom(this);
@@ -887,7 +893,7 @@ vtCamera::vtCamera() : vtTransform()
 	m_fWidth = 1;
 }
 
-vtNodeBase *vtCamera::Clone()
+vtNode *vtCamera::Clone(bool bDeep)
 {
 	vtCamera *newcam = new vtCamera();
 	newcam->CopyFrom(this);
@@ -1022,7 +1028,7 @@ vtGeom::vtGeom() : vtNode()
 	SetOsgNode(node);
 }
 
-vtNodeBase *vtGeom::Clone()
+vtNode *vtGeom::Clone(bool bDeep)
 {
 	vtGeom *geom = new vtGeom();
 	geom->CopyFrom(this);
@@ -1080,13 +1086,25 @@ void vtGeom::Release()
 
 void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
 {
-	beginEditCP(m_pNode, osg::Node::ChildrenFieldMask);
-	m_pNode->addChild(pMesh->m_pGeometryNode);
-	endEditCP(m_pNode, osg::Node::ChildrenFieldMask);
+	// problem is that nodes cannot be referenced, only cores..
+	// what about the decorated node then ? should i take the attachment from 
+	// the mesh ?
+	if (pMesh!= NULL) //some safety checks
+		if (pMesh->m_pGeometryNode != OSG::NullFC) {
+			//if (pMesh->m_pGeometryNode->getCore() != OSG::NullFC) {
+				OSG::NodePtr new_node = OSG::Node::create();
+				//beginEditCP(new_node, OSG::Node::CoreFieldMask);
+				new_node->setCore( pMesh->m_pGeometryNode->getCore());
+				//endEditCP(new_node, OSG::Node::CoreFieldMask);
 
-	//TODO add referencing to mesh: addRefCP(ref());
+				//beginEditCP(m_pNode, osg::Node::ChildrenFieldMask);
+				m_pNode->addChild( new_node );
+				//endEditCP(m_pNode, osg::Node::ChildrenFieldMask);
 
-	SetMeshMatIndex(pMesh, iMatIdx);
+				//TODO add referencing to mesh: addRefCP(ref());
+
+				SetMeshMatIndex(pMesh, iMatIdx);
+			}
 }
 
 //TODO AddTextMesh
@@ -1284,15 +1302,27 @@ vtMaterial *vtGeom::GetMaterial(int idx)
 
 vtLOD::vtLOD() : vtGroup(true)
 {
-	//m_pNode = osg::makeCoredNode<osg::Group>();
-	//SetOsgNode(m_pNode);
-
 	m_pNode = osg::makeCoredNode<osg::DistanceLOD>(&m_pLOD);
 	beginEditCP(m_pLOD); 
 	m_pLOD->setCenter(osg::Vec3f(0,0,0));   
 	endEditCP(m_pLOD);
 
 	SetOsgNode(m_pNode);
+
+	//add an empty child group for large distances ( no visibility ); 
+	beginEditCP(m_pNode);
+	m_pNode->addChild( OSG::makeCoredNode<OSG::Group>()); 
+	endEditCP(m_pNode);
+}
+
+void vtLOD::AddChild(vtNode *pChild)
+{
+	if( pChild ) {
+		int n = m_pNode->getNChildren();
+		beginEditCP( m_pNode, osg::Node::ChildrenFieldMask );
+		m_pNode->insertChild( n < 2 ? 0 : n-1, pChild->GetOsgNode() );
+		endEditCP( m_pNode, osg::Node::ChildrenFieldMask );
+	}
 }
 
 void vtLOD::Release()
@@ -1312,15 +1342,16 @@ void vtLOD::Release()
 void vtLOD::SetRanges(float *ranges, int nranges)
 {
 	int i;
-	beginEditCP(m_pLOD);
-	m_pLOD->getMFRange()->clear();
-	endEditCP(m_pLOD);
-	for( i = 0; i < nranges; i++ ) {
-		beginEditCP(m_pLOD);
-		m_pLOD->getMFRange()->push_back(ranges[i]);
-		endEditCP(m_pLOD);
+	float next;
+	for (i=0; i < nranges; ++i) {
+		if (i < nranges - 1) {
+			next = ranges[i+1];
+			beginEditCP(m_pLOD);
+			m_pLOD->getRange().push_back(next);
+			//VTLOG("adding range to LOD: %f\n", next);
+			endEditCP(m_pLOD);
+		}
 	}
-	m_pLOD->getMFRange()->push_back(1E10); 
 }
 
 void vtLOD::SetCenter(FPoint3 &center)
@@ -1546,42 +1577,106 @@ void vtDynGeom::UnApplyMaterial()
  *		Otherwise, they are considered in normalized window coordinates,
  *		from (0,0) in the lower-left to (1,1) in the upper right.
  */
-vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true)
+vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true), m_bPixelCoords(bPixelCoords)
 {
-#if EXCEPT
-	osg::MatrixTransform* modelview_abs = new osg::MatrixTransform;
-	modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-	modelview_abs->setMatrix(osg::Matrix::identity());
+	using namespace OSG;
 
-	m_projection = new osg::Projection;
-	m_projection->addChild(modelview_abs);
-	SetOsgGroup(m_projection);
+	m_pHudViewport = PassiveViewport::create();
+	vtGetScene()->GetSceneView()->GetWindow();
 
-	// We can set the projection to pixels (0,width,0,height) or
-	//	normalized (0,1,0,1)
-	m_bPixelCoords = bPixelCoords;
-	if( m_bPixelCoords ) {
+	SceneViewOSG *sv = vtGetScene()->GetSceneView();
+
+	//create camera
+	beginEditCP(m_pHudViewport);
+	m_pHudViewport->setLeft( sv->GetLeftViewport()->getLeft() );
+	m_pHudViewport->setRight( sv->GetLeftViewport()->getRight() );
+	m_pHudViewport->setTop( sv->GetLeftViewport()->getTop() );
+	m_pHudViewport->setBottom( sv->GetLeftViewport()->getBottom() );
+	m_pHudViewport->setBackground( DepthClearBackground::create() );
+	endEditCP(m_pHudViewport);
+
+	m_camera = MatrixCamera::create();
+	
+	m_projection.setIdentity();
+		
+	Matrix4f modelview;
+	modelview.setIdentity();
+
+	Matrix4f rootmat;
+	rootmat.setIdentity();
+
+    if( m_bPixelCoords ) {
 		IPoint2 winsize = vtGetScene()->GetWindowSize();
-
-		// safety check first, avoid /0 crash
-		if( winsize.x != 0 && winsize.y != 0 )
-			m_projection->setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
+			// safety check first, avoid /0 crash
+		if( winsize.x != 0 && winsize.y != 0 ) {
+			m_projection = makeOrtho2D(0,winsize.x, 0, winsize.y);
+		} 
 	} else {
 		// Normalized window coordinates, 0 to 1
-		m_projection->setMatrix(osg::Matrix::ortho2D(0, 1, 0, 1));
+		m_projection = makeOrtho2D(0,1.0,0,1.0);
 	}
+	
+	beginEditCP(m_camera);
+	m_camera->setProjectionMatrix(m_projection);
+	m_camera->setModelviewMatrix(modelview);
+	endEditCP(m_camera);
 
-	// To ensure that the sprite appears on top we can use osg::Depth to
-	//  force the depth fragments to be placed at the front of the screen.
-	osg::StateSet* stateset = m_projection->getOrCreateStateSet();
-	stateset->setAttribute(new osg::Depth(osg::Depth::LESS,0.0,0.0001));
+	m_pNode = OSG::makeCoredNode<OSG::Transform>();
 
-	// A HUD node is unlike other group nodes!
-	// The modelview node is the container for the node's children.
-	m_pGroup = modelview_abs;
+	NodePtr lightBeacon = makeCoredNode<Transform>();
 
-	vtGetScene()->SetHUD(this);
-#endif
+	//create the light source for the overlay
+	DirectionalLightPtr dLight = DirectionalLight::create();
+    beginEditCP(dLight);
+        dLight->setDirection(Vec3f(0,0,1));
+        
+        //color information
+        dLight->setDiffuse(Color4f(1,0,0,0.5));
+        //dLight->setAmbient(Color4f(0.2,0.2,0.2,1));
+        //dLight->setSpecular(Color4f(1,1,1,1));
+        
+        //set the beacon which is the camera of the scene 
+		//it is only orthographic and the light isnt expected to move
+		//m_pNode = root transform node
+        dLight->setBeacon(lightBeacon);
+    endEditCP  (dLight);
+
+	NodePtr lightNode = Node::create();
+	beginEditCP(lightNode);
+	lightNode->setCore(dLight);
+	lightNode->addChild(lightBeacon);
+	//lightNode->addChild(m_pNode);
+	endEditCP(lightNode);
+
+	beginEditCP(m_pHudViewport);
+	m_pHudViewport->setCamera( m_camera );
+	//the root will be the light node
+	m_pHudViewport->setRoot( lightNode );
+	endEditCP(m_pHudViewport);
+	
+
+/*testing */
+	/*OOSG::GeometryPtr spheregeo = OSG::makeSphereGeo(3, .2f);
+	OSG::SimpleMaterialPtr mat = OSG::SimpleMaterial::create();
+	mat->setDiffuse( OSG::Color3f(1,0,0) );
+	mat->setTransparency(0.5f);
+	mat->setLit(true);
+
+	
+	SG::NodePtr sphere = OSG::Node::create();
+	spheregeo->setMaterial(mat);
+	beginEditCP(sphere);
+	sphere->setCore( spheregeo );
+	endEditCP(sphere);
+
+	lightNode->addChild(sphere);*/
+
+
+	beginEditCP(sv->GetWindow() );
+	sv->GetWindow()->addPort( m_pHudViewport );
+	endEditCP(sv->GetWindow());
+
+    vtGetScene()->SetHUD(this);
 }
 
 void vtHUD::Release()
@@ -1596,7 +1691,43 @@ void vtHUD::Release()
 #endif // EXCEPT
 }
 
-vtNodeBase *vtHUD::Clone()
+OSG::Matrix4f vtHUD::makeOrtho2D (float left, float right, float bottom, float top)
+{
+	OSG::Matrix4f mat;
+	mat.setIdentity();
+
+	float zNear= -1;
+	float zFar = 1;
+	
+	float tx = -(right+left)/(right-left);
+    float ty = -(top+bottom)/(top-bottom);
+    float tz = -(zFar+zNear)/(zFar-zNear);
+    
+	//taken from osg implementation which is the transpose of opengl
+	mat.setValue(
+		OSG::Vec3f( 2.0/(right-left),			     0.0,						0.0),
+		OSG::Vec3f( 0.0,							 2.0/(top-bottom),          0.0 ),
+		OSG::Vec3f( 0.0,							 0.0,						-2.0/(zFar-zNear)),
+		OSG::Vec3f( tx,								 ty,			            tz)
+		);
+
+	mat.transpose();
+
+	/* original osg implementation//
+	note transpose of Matrix_implementation wr.t OpenGL, since the OSG use post multiplication rather than pre.
+    double tx = -(right+left)/(right-left);
+    double ty = -(top+bottom)/(top-bottom);
+    double tz = -(zFar+zNear)/(zFar-zNear);
+    SET_ROW(0, 2.0/(right-left),               0.0,               0.0, 0.0 )
+    SET_ROW(1,              0.0,  2.0/(top-bottom),               0.0, 0.0 )
+    SET_ROW(2,              0.0,               0.0,  -2.0/(zFar-zNear), 0.0 )
+    SET_ROW(3,               tx,                ty,                 tz, 1.0 )*/
+
+	return mat;
+
+}
+
+vtNode *vtHUD::Clone(bool bDeep)
 {
 	vtHUD *hud = new vtHUD();
 	hud->CopyFrom(this);
@@ -1610,12 +1741,14 @@ void vtHUD::CopyFrom(const vtHUD *rhs)
 
 void vtHUD::SetWindowSize(int w, int h)
 {
-#if EXCEPT
 	if( m_bPixelCoords ) {
-		if( w != 0 && h != 0 )
-			m_projection->setMatrix(osg::Matrix::ortho2D(0, w, 0, h));
+		if( w != 0 && h != 0 ) {
+			m_projection = makeOrtho2D( 0, w, 0 , h );
+			beginEditCP(m_camera);
+			m_camera->setProjectionMatrix(m_projection);
+			endEditCP(m_camera);
+		}
 	}
-#endif
 }
 
 
@@ -1624,11 +1757,9 @@ void vtHUD::SetWindowSize(int w, int h)
 
 vtImageSprite::vtImageSprite()
 {
-#if EXCEPT
 	m_pMats = NULL;
 	m_pGeom = NULL;
 	m_pMesh = NULL;
-#endif
 }
 
 vtImageSprite::~vtImageSprite()

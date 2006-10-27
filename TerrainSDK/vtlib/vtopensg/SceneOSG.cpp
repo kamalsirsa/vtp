@@ -128,6 +128,43 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 	return true;
 }
 
+/**
+ * Initialize the vtlib library, including the display and scene graph.
+ * You should call this function only once, before any other vtlib calls.
+ *
+ * \param SceneViewOSG the wrapper for the rendering components.
+ * \return true, if succeeded.
+ */
+bool vtScene::CustomInit( SceneViewOSG * sceneview )
+{
+	assert( sceneview != NULL );
+
+	m_pSceneViewOSG = sceneview;
+
+	m_pDefaultCamera = new vtCamera;
+	m_pDefaultWindow = new vtWindow;
+	SetCamera(m_pDefaultCamera);
+	AddWindow(m_pDefaultWindow);
+
+	//the external camera controls now the vtp cam
+	//dont set the beacon...
+	if (!GetSceneView()->IsCustomSceneView() ) {
+		if (!GetSceneView()->IsStereo() || GetSceneView()->GetStereoMode() == 2) 
+			GetSceneView()->GetCamera()->setBeacon( m_pCamera->GetOsgNode() );
+		else {
+			GetSceneView()->GetLeftCamera()->setBeacon( m_pCamera->GetOsgNode() );
+			GetSceneView()->GetRightCamera()->setBeacon( m_pCamera->GetOsgNode() );
+		}
+	}
+
+	_initialTick = clock();
+	_frameTick = _initialTick;
+
+	m_bInitialized = true;
+
+	return true;
+}
+
 void vtScene::Shutdown()
 {
 	VTLOG("vtScene::Shutdown\n");
@@ -215,8 +252,7 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 									aspect, 
 									fov_y, 
 									m_pCamera->GetHither(), 
-									m_pCamera->GetYon(), 
-									m_pCamera->GetOsgNode()
+									m_pCamera->GetYon()
 									);
 	}
 
@@ -479,6 +515,7 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 	if ( m_pHUD )
 		m_pHUD->SetWindowSize(w, h);
 
+	if (!pWindow) pWindow = vtGetScene()->GetWindow(0);
 	vtSceneBase::SetWindowSize(w, h, pWindow);
 } 
 

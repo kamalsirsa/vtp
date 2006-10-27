@@ -30,22 +30,28 @@ bool vtMaterial::s_bTextureCompression = false;
 
 vtMaterial::vtMaterial() : vtMaterialBase()
 {
-/*#if EXCEPT
-	m_pStateSet = new StateSet;
-	m_pMaterial = new Material;
-	m_pStateSet->setAttributeAndModes(m_pMaterial.get());
-
-	// Not sure why this is required (should be the default!)
-	m_pStateSet->setMode(GL_DEPTH_TEST, SA_ON);
-#endif //EXCEPT */
-
 	m_pMaterial = osg::SimpleTexturedMaterial::create();
 	
 	//if i turn this on buildings are correct, if out, the streets are correct..
 	//theres an alpha channel in the road/tree textures
 	beginEditCP(m_pMaterial);
-    m_pMaterial->setEnvMode      (GL_MODULATE); 
+    //--
+	m_pMaterial->setEnvMode			(GL_MODULATE); 
+	m_pMaterial->setLit				(true);
+	m_pMaterial->setColorMaterial	(GL_AMBIENT_AND_DIFFUSE);
+	
+	//--
+	/*m_pMaterial->setEnvMode			(GL_DIFFUSE);
+	m_pMaterial->setLit				(true);
+	m_pMaterial->setColorMaterial	(GL_AMBIENT_AND_DIFFUSE);	 */
+
+	
+	
+	m_pMaterial->setTransparency(0);
+	m_pMaterial->setEnvMap			(false);
 	endEditCP(m_pMaterial);
+
+	SetDiffuse(1,1,1);
 
 }
 
@@ -75,7 +81,7 @@ void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 
 	beginEditCP(m_pMaterial);
 	m_pMaterial->setDiffuse(osg::Color3f(r,g,b));
-	if (a>0.01f) m_pMaterial->setTransparency(1-a);
+	if (a>0.01f) m_pMaterial->setTransparency(1.f-a);
 	endEditCP(m_pMaterial);
 }
 /**
@@ -221,7 +227,7 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 			endEditCP(bchunk);
 		} else {
 			//simply remove blend chunk ...
-			if( bchunk ) m_pMaterial->subChunk(bchunk, slot);
+			//if( bchunk ) m_pMaterial->subChunk(bchunk, slot);
 		}
 
 		if( bAdd ) {
@@ -239,14 +245,7 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
  */
 bool vtMaterial::GetTransparent() const
 {
-	int slot(0);
-	osg::StateChunkPtr statechunk = m_pMaterial->find( osg::BlendChunk::getClassType(), slot);
-	osg::BlendChunkPtr bchunk = osg::BlendChunkPtr::dcast( statechunk );
-
-	if( bchunk ) {
-		return bchunk->isTransparent();
-	}
-	return false;
+	return m_pMaterial->getTransparency() > .01f;
 }
 
 osg::StatePtr vtMaterial::GetState() const
@@ -947,12 +946,17 @@ void vtMesh::AddQuad(int p0, int p1, int p2, int p3)
 
 }
 
+unsigned int vtMesh::GetNumVertices() const
+{
+	return m_Vert->size();
+}
+
 /**
  * Set the position of a vertex.
  *	\param i	Index of the vertex.
  *	\param p	The position.
  */
-void vtMesh::SetVtxPos(int i, const FPoint3 &p)
+void vtMesh::SetVtxPos(unsigned int i, const FPoint3 &p)
 {
 	osg::Vec3f s;
 	v2s(p, s);
@@ -983,7 +987,7 @@ void vtMesh::SetVtxPos(int i, const FPoint3 &p)
 /**
  * Get the position of a vertex.
  */
-FPoint3 vtMesh::GetVtxPos(int i) const
+FPoint3 vtMesh::GetVtxPos(unsigned int i) const
 {
 	FPoint3 p;
 	s2v( m_Vert->getValue(i), p);
@@ -998,7 +1002,7 @@ FPoint3 vtMesh::GetVtxPos(int i) const
  *	\param i	Index of the vertex.
  *	\param norm	The normal vector.
  */
-void vtMesh::SetVtxNormal(int i, const FPoint3 &norm)
+void vtMesh::SetVtxNormal(unsigned int i, const FPoint3 &norm)
 {
 	osg::Vec3f s;
 	v2s(norm, s);
@@ -1014,7 +1018,7 @@ void vtMesh::SetVtxNormal(int i, const FPoint3 &norm)
 /**
  * Get the normal of a vertex.
  */
-FPoint3 vtMesh::GetVtxNormal(int i) const
+FPoint3 vtMesh::GetVtxNormal(unsigned int i) const
 {
 	FPoint3 p;
 	s2v( m_Norm->getValue(i), p);
@@ -1029,7 +1033,7 @@ FPoint3 vtMesh::GetVtxNormal(int i) const
  *	\param i		Index of the vertex.
  *	\param color	The color.
  */
-void vtMesh::SetVtxColor(int i, const RGBAf &color)
+void vtMesh::SetVtxColor(unsigned int i, const RGBAf &color)
 {
 /*#if EXCEPT
 	if (m_iVtxType & VT_Colors)
@@ -1057,7 +1061,7 @@ void vtMesh::SetVtxColor(int i, const RGBAf &color)
 /**
  * Get the color of a vertex.
  */
-RGBAf vtMesh::GetVtxColor(int i) const
+RGBAf vtMesh::GetVtxColor(unsigned int i) const
 {
 /*#if EXCEPT
 	if (m_iVtxType & VT_Colors)
@@ -1097,7 +1101,7 @@ RGBAf vtMesh::GetVtxColor(int i) const
  *	\param i	Index of the vertex.
  *	\param uv	The texture coordinate.
  */
-void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
+void vtMesh::SetVtxTexCoord(unsigned int i, const FPoint2 &uv)
 {
 
 	if( m_iVtxType & VT_TexCoords ) {
@@ -1114,7 +1118,7 @@ void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
 /**
  * Get the texture coordinates of a vertex.
  */
-FPoint2 vtMesh::GetVtxTexCoord(int i) const
+FPoint2 vtMesh::GetVtxTexCoord(unsigned int i) const
 {
 	if( m_iVtxType & VT_TexCoords ) {
 		FPoint2 p;
