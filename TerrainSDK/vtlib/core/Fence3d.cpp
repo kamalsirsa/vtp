@@ -242,7 +242,6 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 
 	float fWidthTop = m_Params.m_fConnectWidth / 2;
 	double slope = m_Params.m_iConnectSlope / 180.0f * PIf;
-	float fWidthBottom = fWidthTop + vertical_meters / tan(slope);
 
 	unsigned int i, j, npoints = p3.GetSize();
 	float u = 0.0f;
@@ -252,55 +251,6 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 		float y1, y2;
 		float z1, z2;
 		FPoint3 pos, sideways, normal;
-
-		// determine v texture coordinate
-		switch (i)
-		{
-		case 0:		// right side
-			v1 = 0.0f;
-			if (uvscale.y == -1)
-				v2 = 1.0f;
-			else
-				v2 = vertical_meters / uvscale.y;
-			break;
-		case 1:		// top
-			v1 = 0.0f;
-			if (uvscale.y == -1)
-				v2 = 1.0f;
-			else
-				v2 = m_Params.m_fConnectWidth / uvscale.y;
-			break;
-		case 2:		// left side
-			v2 = 0.0f;
-			if (uvscale.y == -1)
-				v1 = 1.0f;
-			else
-				v1 = vertical_meters / uvscale.y;
-			break;
-		}
-
-		// determine Y and Z values
-		switch (i)
-		{
-		case 0:	// right side
-			y1 = m_Params.m_fConnectBottom;
-			y2 = m_Params.m_fConnectTop;
-			z1 = fWidthBottom;
-			z2 = fWidthTop;
-			break;
-		case 1:	// top
-			y1 = m_Params.m_fConnectTop;
-			y2 = m_Params.m_fConnectTop;
-			z1 = fWidthTop;
-			z2 = -fWidthTop;
-			break;
-		case 2:	// left side
-			y1 = m_Params.m_fConnectTop;
-			y2 = m_Params.m_fConnectBottom;
-			z1 = -fWidthTop;
-			z2 = -fWidthBottom;
-			break;
-		}
 
 		int start = pMesh->GetNumVertices();
 		for (j = 0; j < npoints; j++)
@@ -313,6 +263,63 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 			else if (j == npoints-1)
 				sideways = SidewaysVector(p3[j-1], p3[j]);
 
+			// 'extra' elevation is added to maintain a constant top
+			float fExtraElevation = 0.0f;
+			if (m_Params.m_bConstantTop)
+				fExtraElevation = m_fMaxGroundY - p3[j].y;
+
+			float fVertical = vertical_meters + fExtraElevation;
+			float fWidthBottom = fWidthTop + fVertical / tan(slope);
+
+			// determine v texture coordinate
+			switch (i)
+			{
+			case 0:		// right side
+				v1 = 0.0f;
+				if (uvscale.y == -1)
+					v2 = 1.0f;
+				else
+					v2 = fVertical / uvscale.y;
+				break;
+			case 1:		// top
+				v1 = 0.0f;
+				if (uvscale.y == -1)
+					v2 = 1.0f;
+				else
+					v2 = m_Params.m_fConnectWidth / uvscale.y;
+				break;
+			case 2:		// left side
+				v2 = 0.0f;
+				if (uvscale.y == -1)
+					v1 = 1.0f;
+				else
+					v1 = fVertical / uvscale.y;
+				break;
+			}
+
+			// determine Y and Z values
+			switch (i)
+			{
+			case 0:	// right side
+				y1 = m_Params.m_fConnectBottom;
+				y2 = m_Params.m_fConnectTop + fExtraElevation;
+				z1 = fWidthBottom;
+				z2 = fWidthTop;
+				break;
+			case 1:	// top
+				y1 = m_Params.m_fConnectTop + fExtraElevation;
+				y2 = m_Params.m_fConnectTop + fExtraElevation;
+				z1 = fWidthTop;
+				z2 = -fWidthTop;
+				break;
+			case 2:	// left side
+				y1 = m_Params.m_fConnectTop + fExtraElevation;
+				y2 = m_Params.m_fConnectBottom;
+				z1 = -fWidthTop;
+				z2 = -fWidthBottom;
+				break;
+			}
+
 			// determine vertex normal (used for shading and thickness)
 			switch (i)
 			{
@@ -321,19 +328,13 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 			case 2: normal = -sideways; break;	// left
 			}
 
-			float fExtraElevation = 0.0f;
-			if (m_Params.m_bConstantTop)
-				fExtraElevation = m_fMaxGroundY - p3[j].y;
-
 			pos = p3[j];
 			pos.y += y2;
-			pos.y += fExtraElevation;
 			pos += (sideways * z2);
 			pMesh->AddVertexNUV(pos, normal, FPoint2(u, v2));
 
 			pos = p3[j];
 			pos.y += y1;
-			pos.y += fExtraElevation;
 			pos += (sideways * z1);
 			pMesh->AddVertexNUV(pos, normal, FPoint2(u, v1));
 
