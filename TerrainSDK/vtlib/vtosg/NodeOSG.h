@@ -255,6 +255,10 @@ protected:
 /**
  * A Light node is placed into the scene graph to illumninate all
  * lit geometry with vertex normals.
+ *
+ * If you want a light, you should create a vtLight node and add it to your
+ * scene graph.  To move or orient the light, make it a child of a
+ * vtTransform node.  The light will illuminate the entire scene.
  */
 class vtLight : public vtNode
 {
