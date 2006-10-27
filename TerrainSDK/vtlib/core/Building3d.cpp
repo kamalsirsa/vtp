@@ -676,7 +676,7 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 {
 	PolyChecker PolyChecker;
-	CStraightSkeleton StraightSkeleton;
+	vtStraightSkeleton StraightSkeleton;
 	CSkeleton Skeleton;
 	float fMaxHeight = 0.0;
 	ContourVector RoofEaves;

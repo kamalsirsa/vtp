@@ -362,14 +362,14 @@ void vtTerrain::_CreateRoads()
 	if (m_pRoadMap && m_Params.GetValueBool(STR_ROADCULTURE))
 	{
 		NodeGeom* node = m_pRoadMap->GetFirstNode();
-		IntersectionEngine* lightEngine;
+		vtIntersectionEngine *lightEngine;
 		char string[50];
 		while (node)
 		{
 			if (node->HasLights())
 			{
 				// add an traffic control engine
-				lightEngine = new IntersectionEngine(node);
+				lightEngine = new vtIntersectionEngine(node);
 				sprintf(string, "Traffic Control: Node %i", node->m_id);
 				lightEngine->SetName2(string);
 				AddEngine(lightEngine);
@@ -1475,7 +1475,7 @@ void vtTerrain::_CreateCulture()
 	if (m_Params.GetValueBool(STR_ROADS))
 		_CreateRoads();
 
-	m_pBBEngine = new SimpleBillboardEngine(PID2f);
+	m_pBBEngine = new vtSimpleBillboardEngine(PID2f);
 	m_pBBEngine->SetName2("Billboard Engine");
 	m_pEngineGroup->AddChild(m_pBBEngine);
 

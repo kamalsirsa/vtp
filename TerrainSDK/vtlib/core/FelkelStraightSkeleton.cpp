@@ -1,5 +1,5 @@
 //
-// FelkelStraightSkeleton.cpp: implementation of the CStraightSkeleton class.
+// FelkelStraightSkeleton.cpp: implementation of the vtStraightSkeleton class.
 //
 // Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -17,17 +17,17 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CStraightSkeleton::CStraightSkeleton()
+vtStraightSkeleton::vtStraightSkeleton()
 {
 
 }
 
-CStraightSkeleton::~CStraightSkeleton()
+vtStraightSkeleton::~vtStraightSkeleton()
 {
 
 }
 
-CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
+CSkeleton& vtStraightSkeleton::MakeSkeleton(ContourVector &contours)
 {
 	try
 	{
@@ -203,7 +203,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 	return m_skeleton;
 }
 
-CSkeleton& CStraightSkeleton::MakeSkeleton(Contour &points)
+CSkeleton& vtStraightSkeleton::MakeSkeleton(Contour &points)
 {
 	ContourVector vv;
 
@@ -212,7 +212,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(Contour &points)
 	return MakeSkeleton(vv);
 }
 
-CSkeleton CStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contours)
+CSkeleton vtStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contours)
 {
 	// Save current skeleton
 	int iOldSize = m_skeleton.size();
@@ -278,7 +278,7 @@ CSkeleton CStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contours
 	return m_skeleton;
 }
 
-void CStraightSkeleton::FixSkeleton()
+void vtStraightSkeleton::FixSkeleton()
 {
 	// Search the skeleton list for consecutive pairs of incorrectly linked lines
 	CSkeleton::iterator s1 = m_skeleton.begin();
@@ -373,7 +373,7 @@ void CStraightSkeleton::FixSkeleton()
 }
 
 #ifdef FELKELDEBUG
-void CStraightSkeleton::Dump()
+void vtStraightSkeleton::Dump()
 {
 	int i;
 

@@ -1,7 +1,7 @@
 //
 // Globe.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,7 +21,7 @@ vtTransform *WireAxis(RGBf color, float len);
 
 /////////////////////////////////////////////////////
 
-IcoGlobe::IcoGlobe()
+vtIcoGlobe::vtIcoGlobe()
 {
 	m_top = NULL;
 	m_SurfaceGroup = NULL;
@@ -32,7 +32,7 @@ IcoGlobe::IcoGlobe()
 	m_cylinder = NULL;
 }
 
-IcoGlobe::~IcoGlobe()
+vtIcoGlobe::~vtIcoGlobe()
 {
 	m_mats->Release();
 	for (unsigned int i = 0; i < m_features.GetSize(); i++)
@@ -61,10 +61,10 @@ IcoGlobe::~IcoGlobe()
  *			on seperate geometries so that the globe can be unfolded in the
  *			Dymaxion style.
  */
-void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
+void vtIcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 					  const vtString &strImagePrefix, Style style)
 {
-	VTLOG("IcoGlobe::Create\n");
+	VTLOG("vtIcoGlobe::Create\n");
 
 	m_style = style;
 
@@ -135,7 +135,7 @@ void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
  *
  * \param f Ranges from 0 (icosahedron) to 1 (sphere)
  */
-void IcoGlobe::SetInflation(float f)
+void vtIcoGlobe::SetInflation(float f)
 {
 	for (int i = 0; i < m_meshes; i++)
 	{
@@ -151,7 +151,7 @@ void IcoGlobe::SetInflation(float f)
  *
  * \param f Ranges from 0 (sphere/icosahedron) to 1 (entirely unfolded flat)
  */
-void IcoGlobe::SetUnfolding(float f)
+void vtIcoGlobe::SetUnfolding(float f)
 {
 	// only possible on unfoldable globes
 	if (m_style != DYMAX_UNFOLD)
@@ -191,7 +191,7 @@ void IcoGlobe::SetUnfolding(float f)
 	m_mface[0].xform->SetTransform1(m3);
 }
 
-void IcoGlobe::SetCulling(bool bCull)
+void vtIcoGlobe::SetCulling(bool bCull)
 {
 	int pair;
 	for (pair = 0; pair < 10; pair++)
@@ -201,7 +201,7 @@ void IcoGlobe::SetCulling(bool bCull)
 	}
 }
 
-void IcoGlobe::SetLighting(bool bLight)
+void vtIcoGlobe::SetLighting(bool bLight)
 {
 	for (int i = 0; i < 10; i++)
 	{
@@ -217,7 +217,7 @@ void IcoGlobe::SetLighting(bool bLight)
  *
  * \param time A time value (assumed to be Greenwich Mean Time).
  */
-void IcoGlobe::SetTime(const vtTime &time)
+void vtIcoGlobe::SetTime(const vtTime &time)
 {
 	float second_of_day = (float) time.GetSecondOfDay();
 	float fraction_of_day = second_of_day / (24 * 60 * 60);
@@ -260,7 +260,7 @@ void IcoGlobe::SetTime(const vtTime &time)
 		m_top->SetTransform1(m4);
 }
 
-void IcoGlobe::ShowAxis(bool bShow)
+void vtIcoGlobe::ShowAxis(bool bShow)
 {
 	if (m_pAxisGeom)
 		m_pAxisGeom->SetEnabled(bShow);
@@ -270,7 +270,7 @@ void IcoGlobe::ShowAxis(bool bShow)
 ///////////////////////////////////////////////////////////////////////
 // Surface feature methods
 
-int IcoGlobe::AddGlobeFeatures(const char *fname, float fSize)
+int vtIcoGlobe::AddGlobeFeatures(const char *fname, float fSize)
 {
 	vtFeatureLoader loader;
 
@@ -287,7 +287,7 @@ int IcoGlobe::AddGlobeFeatures(const char *fname, float fSize)
 	return feat->GetNumEntities();
 }
 
-void IcoGlobe::BuildSphericalFeatures(vtFeatureSet *feat, float fSize)
+void vtIcoGlobe::BuildSphericalFeatures(vtFeatureSet *feat, float fSize)
 {
 	if (feat->GetGeomType() == wkbPoint)
 		BuildSphericalPoints(feat, fSize);
@@ -299,7 +299,7 @@ void IcoGlobe::BuildSphericalFeatures(vtFeatureSet *feat, float fSize)
 		BuildSphericalPolygons(feat, fSize);
 }
 
-void IcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
+void vtIcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
 {
 	int i, j, size;
 	vtArray<FSphere> spheres;
@@ -431,7 +431,7 @@ void IcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
 	mesh->Release();
 }
 
-void IcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
+void vtIcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
 {
 	vtFeatureSetLineString *pSetLS = dynamic_cast<vtFeatureSetLineString*>(feat);
 	if (!pSetLS)
@@ -453,7 +453,7 @@ void IcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
 	}
 }
 
-void IcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
+void vtIcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
 {
 	vtFeatureSetPolygon *pSetPoly = dynamic_cast<vtFeatureSetPolygon*>(feat);
 	if (!pSetPoly)
@@ -479,7 +479,7 @@ void IcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
 	}
 }
 
-void IcoGlobe::BuildFlatFeatures(vtFeatureSet *feat, float fSize)
+void vtIcoGlobe::BuildFlatFeatures(vtFeatureSet *feat, float fSize)
 {
 	if (feat->GetGeomType() == wkbPoint)
 	{
@@ -500,7 +500,7 @@ void IcoGlobe::BuildFlatFeatures(vtFeatureSet *feat, float fSize)
 	}
 }
 
-void IcoGlobe::BuildFlatPoint(vtFeatureSet *feat, int i, float fSize)
+void vtIcoGlobe::BuildFlatPoint(vtFeatureSet *feat, int i, float fSize)
 {
 	vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D*>(feat);
 	if (!pSetP2)
@@ -547,7 +547,7 @@ void IcoGlobe::BuildFlatPoint(vtFeatureSet *feat, int i, float fSize)
 	m_mface[mface].surfgroup->AddChild(mgeom);
 }
 
-void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
+void vtIcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 {
 	FPoint3 p;
 
@@ -578,7 +578,7 @@ void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 	}
 }
 
-double IcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, const DPoint2 &g2)
+double vtIcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, const DPoint2 &g2)
 {
 	// first determine how many points we should use for a smooth arc
 	DPoint3 p1, p2;
@@ -621,7 +621,7 @@ double IcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, con
 	return angle;
 }
 
-double IcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 *line)
+double vtIcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 *line)
 {
 	DPoint2 g1, g2;
 	DPoint3 p1, p2;
@@ -733,7 +733,7 @@ dymax_info dymax_subfaces[22] =
 	{ 14, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, 19, 19, 1 },	// 21
 };
 
-int IcoGlobe::GetMFace(int face, int subface)
+int vtIcoGlobe::GetMFace(int face, int subface)
 {
 	int submask = 1<<(subface+1);
 	for (int i = 0; i < 22; i++)
@@ -763,7 +763,7 @@ int GetMaterialForFace(int face, bool &which)
 	return -1;
 }
 
-void IcoGlobe::EstimateTesselation(int iTriangleCount)
+void vtIcoGlobe::EstimateTesselation(int iTriangleCount)
 {
 	int per_face = iTriangleCount / 20;
 	if (m_style == GEODESIC || m_style == INDEPENDENT_GEODESIC)
@@ -800,7 +800,7 @@ void IcoGlobe::EstimateTesselation(int iTriangleCount)
 //
 // argument "f" goes from 0 (icosahedron) to 1 (sphere)
 //
-void IcoGlobe::set_face_verts1(vtMesh *mesh, int face, float f)
+void vtIcoGlobe::set_face_verts1(vtMesh *mesh, int face, float f)
 {
 	int i, j;
 
@@ -872,7 +872,7 @@ void IcoGlobe::set_face_verts1(vtMesh *mesh, int face, float f)
 //
 // argument "f" goes from 0 (icosahedron) to 1 (sphere)
 //
-void IcoGlobe::set_face_verts2(vtMesh *mesh, int mface, float f)
+void vtIcoGlobe::set_face_verts2(vtMesh *mesh, int mface, float f)
 {
 	refresh_face_positions(m_mesh[mface], mface, f);
 
@@ -887,7 +887,7 @@ void IcoGlobe::set_face_verts2(vtMesh *mesh, int mface, float f)
 }
 
 // \param second True for the second triangle in a face pair; affects UV coords.
-void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
+void vtIcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 {
 	int i, j;
 
@@ -957,7 +957,7 @@ void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 	delete [] indices;
 }
 
-void IcoGlobe::add_face2(vtMesh *mesh, int face, int mface, int subfaces, bool second)
+void vtIcoGlobe::add_face2(vtMesh *mesh, int face, int mface, int subfaces, bool second)
 {
 	int i;
 	IcoVert v0, v1, v2, e0, e1, e2, center;
@@ -1023,7 +1023,7 @@ void IcoGlobe::add_face2(vtMesh *mesh, int face, int mface, int subfaces, bool s
 	refresh_face_positions(mesh, mface, 1);
 }
 
-void IcoGlobe::refresh_face_positions(vtMesh *mesh, int mface, float f)
+void vtIcoGlobe::refresh_face_positions(vtMesh *mesh, int mface, float f)
 {
 	int i;
 	double len;
@@ -1044,7 +1044,7 @@ void IcoGlobe::refresh_face_positions(vtMesh *mesh, int mface, float f)
 	}
 }
 
-void IcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
+void vtIcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
 						   bool flip, int depth)
 {
 	if (depth > 0)
@@ -1089,7 +1089,7 @@ void IcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
 }
 
 
-void IcoGlobe::CreateMaterials(const vtStringArray &paths,
+void vtIcoGlobe::CreateMaterials(const vtStringArray &paths,
 							   const vtString &strImagePrefix)
 {
 	m_mats = new vtMaterialArray;
@@ -1173,7 +1173,7 @@ void IcoGlobe::CreateMaterials(const vtStringArray &paths,
 	}
 }
 
-void IcoGlobe::FindLocalOrigin(int mface)
+void vtIcoGlobe::FindLocalOrigin(int mface)
 {
 	int parent_face = dymax_subfaces[mface].parent_face;
 	int edge = dymax_subfaces[mface].parentedge;
@@ -1196,7 +1196,7 @@ void IcoGlobe::FindLocalOrigin(int mface)
 	m_mface[mface].axis.Normalize();
 }
 
-void IcoGlobe::SetMeshConnect(int mface)
+void vtIcoGlobe::SetMeshConnect(int mface)
 {
 	int parent_mface = dymax_subfaces[mface].parent_mface;
 
@@ -1225,7 +1225,7 @@ void IcoGlobe::SetMeshConnect(int mface)
 		xform->Translate1(edge_center - m_mface[parent_mface].local_origin);
 }
 
-void IcoGlobe::CreateUnfoldableDymax()
+void vtIcoGlobe::CreateUnfoldableDymax()
 {
 	int i;
 	for (i = 0; i < 22; i++)
@@ -1324,7 +1324,7 @@ void IcoGlobe::CreateUnfoldableDymax()
 #endif
 }
 
-void IcoGlobe::CreateNormalSphere()
+void vtIcoGlobe::CreateNormalSphere()
 {
 	// Create the meshes
 	int pair;
@@ -1363,7 +1363,7 @@ void IcoGlobe::CreateNormalSphere()
 	}
 }
 
-void IcoGlobe::create_independent_face(int face, bool second)
+void vtIcoGlobe::create_independent_face(int face, bool second)
 {
 	int i, j;
 
@@ -1454,7 +1454,7 @@ void IcoGlobe::create_independent_face(int face, bool second)
 	delete [] verts;
 }
 
-void IcoGlobe::CreateIndependentGeodesicSphere()
+void vtIcoGlobe::CreateIndependentGeodesicSphere()
 {
 	// Create a geom to contain the meshes
 	m_GlobeGeom = new vtGeom();
@@ -1478,7 +1478,7 @@ void IcoGlobe::CreateIndependentGeodesicSphere()
 	}
 }
 
-void IcoGlobe::add_face_independent_meshes(int pair, int face, bool second)
+void vtIcoGlobe::add_face_independent_meshes(int pair, int face, bool second)
 {
 	int mat_base = pair * m_freq * m_freq;
 	int mesh_base = face * m_freq * m_freq;

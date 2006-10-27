@@ -1,7 +1,7 @@
 //
 // Globe.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,14 +22,14 @@ typedef vtArray<vtFeatureSet*> vtFeaturesSet;
 /*@{*/
 
 /**
- * IcoGlobe is an icosahedral globe.  To use it:
+ * vtIcoGlobe is an icosahedral globe.  To use it:
  *  - call Create() with the desired parameters to construct the object
  *  - call GetTop() to get the top node in the globe's scene graph
  *  - add that node to your scene graph
  *
  * The globe has unit radius.
  */
-class IcoGlobe : public DymaxIcosa, public TimeTarget
+class vtIcoGlobe : public DymaxIcosa, public vtTimeTarget
 {
 public:
 	enum Style
@@ -38,8 +38,8 @@ public:
 	};
 
 	// construction
-	IcoGlobe();
-	virtual ~IcoGlobe();
+	vtIcoGlobe();
+	virtual ~vtIcoGlobe();
 
 	void Create(int iTriangleCount, const vtStringArray &paths,
 		const vtString &strImagePrefix, Style style = GEODESIC);
@@ -116,7 +116,7 @@ protected:
 	void create_independent_face(int face, bool second);
 	void add_face_independent_meshes(int pair, int face, bool second);
 
-	IcoGlobe::Style m_style;
+	vtIcoGlobe::Style m_style;
 
 	// Common to all globe styles
 	vtTransform	*m_top;

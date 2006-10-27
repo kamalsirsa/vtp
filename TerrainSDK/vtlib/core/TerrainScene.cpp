@@ -1,7 +1,7 @@
 //
 // vtTerrainScene - Container class for all of the terrains loaded
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -177,8 +177,8 @@ vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 void vtTerrainScene::_CreateEngines()
 {
 	// Set Time in motion
-	m_pTimeEngine = new TimeEngine();
-	m_pTimeEngine->SetTarget((TimeTarget *)this);
+	m_pTimeEngine = new vtTimeEngine;
+	m_pTimeEngine->SetTarget((vtTimeTarget *)this);
 	m_pTimeEngine->SetName2("Terrain Time");
 	m_pTimeEngine->SetEnabled(false);
 	vtGetScene()->AddEngine(m_pTimeEngine);

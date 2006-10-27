@@ -143,11 +143,11 @@ public:
  * A simple "Billboard" engine which turns its target to face the
  * camera each frame.
  */
-class SimpleBillboardEngine : public vtEngine
+class vtSimpleBillboardEngine : public vtEngine
 {
 public:
-	SimpleBillboardEngine(float fAngleOffset = 0.0f);
-	virtual ~SimpleBillboardEngine() {}
+	vtSimpleBillboardEngine(float fAngleOffset = 0.0f);
+	virtual ~vtSimpleBillboardEngine() {}
 
 	void SetPitch(bool bFlag) { m_bPitch = bFlag; }
 

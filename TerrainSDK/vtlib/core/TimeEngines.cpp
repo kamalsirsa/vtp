@@ -1,14 +1,14 @@
 //
 // TimeEngines.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "TimeEngines.h"
 
-TimeEngine::TimeEngine(int start_hour) : vtEngine()
+vtTimeEngine::vtTimeEngine(int start_hour) : vtEngine()
 {
 	m_last_time = -1.0f;
 	m_fSpeed = 0.0f;
@@ -18,7 +18,7 @@ TimeEngine::TimeEngine(int start_hour) : vtEngine()
 		m_time.SetTimeOfDay(start_hour, 0, 0);
 }
 
-void TimeEngine::Eval()
+void vtTimeEngine::Eval()
 {
 	float time = vtGetTime();
 
@@ -40,33 +40,33 @@ void TimeEngine::Eval()
 	m_last_time = time;
 }
 
-void TimeEngine::SetSpeed(float factor)
+void vtTimeEngine::SetSpeed(float factor)
 {
 	m_fSpeed = factor;
 	_InformTarget();
 }
 
-void TimeEngine::SetTime(const vtTime &time)
+void vtTimeEngine::SetTime(const vtTime &time)
 {
 	m_time = time;
 	_InformTarget();
 }
 
-void TimeEngine::GetTime(vtTime &time) const
+void vtTimeEngine::GetTime(vtTime &time) const
 {
 	time = m_time;
 }
 
-vtTime TimeEngine::GetTime() const
+vtTime vtTimeEngine::GetTime() const
 {
 	return m_time;
 }
 
-void TimeEngine::_InformTarget()
+void vtTimeEngine::_InformTarget()
 {
 	for (unsigned int i = 0; i < NumTargets(); i++)
 	{
-		TimeTarget* pTarget = (TimeTarget *)GetTarget(i);
+		vtTimeTarget* pTarget = (vtTimeTarget *)GetTarget(i);
 		pTarget->SetTime(m_time);
 	}
 }

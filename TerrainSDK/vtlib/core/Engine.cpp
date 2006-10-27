@@ -1,7 +1,7 @@
 //
 // Engine.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -107,13 +107,13 @@ void vtLastMouse::GetNormalizedMouseCoords(float &mx, float &my)
 
 //////////////////////////////////////////////////////////////////////
 
-SimpleBillboardEngine::SimpleBillboardEngine(float fAngleOffset)
+vtSimpleBillboardEngine::vtSimpleBillboardEngine(float fAngleOffset)
 {
 	m_fAngleOffset = fAngleOffset;
 	m_bPitch = true;
 }
 
-void SimpleBillboardEngine::Eval()
+void vtSimpleBillboardEngine::Eval()
 {
 	// Potential optimization: store last camera pos and only update on change
 

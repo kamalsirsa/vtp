@@ -33,7 +33,7 @@ class vtElevationGrid;
 class vtTin;
 class vtTin3d;
 class vtFeatureSet;
-class SimpleBillboardEngine;
+class vtSimpleBillboardEngine;
 
 /** \addtogroup terrain */
 /*@{*/
@@ -458,7 +458,7 @@ protected:
 
 	// contain the engines specific to this terrain
 	vtEngine		*m_pEngineGroup;
-	SimpleBillboardEngine	*m_pBBEngine;
+	vtSimpleBillboardEngine	*m_pBBEngine;
 
 	vtArray<POIPtr>	m_PointsOfInterest;
 	bool			m_bShowPOI;

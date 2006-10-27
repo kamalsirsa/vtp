@@ -21,7 +21,7 @@
 
 #include "Contours.h"
 
-static ContourConverter *s_cc = NULL;
+static vtContourConverter *s_cc = NULL;
 
 //
 // This globally-scoped method is found at link time by the QuikGrid
@@ -35,15 +35,15 @@ void DoLineTo( float x, float y, int drawtype )
 
 
 /////////////////////////////////////////////////////////////////////////////
-// class ContourConverter
+// class vtContourConverter
 
-ContourConverter::ContourConverter()
+vtContourConverter::vtContourConverter()
 {
 	m_pMF = NULL;
 	m_pGrid = NULL;
 }
 
-ContourConverter::~ContourConverter()
+vtContourConverter::~vtContourConverter()
 {
 	delete m_pMF;
 	delete m_pGrid;
@@ -59,7 +59,7 @@ ContourConverter::~ContourConverter()
  *		colliding with the terrain itself.
  * \return A geometry node which contains the contours.
  */
-vtGeom *ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
+vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
 {
 	if (!pTerr)
 		return NULL;
@@ -110,7 +110,7 @@ vtGeom *ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeig
  *
  * \param fAlt The altitude (elevation) of the line to be generated.
  */
-void ContourConverter::GenerateContour(float fAlt)
+void vtContourConverter::GenerateContour(float fAlt)
 {
 	Contour(*m_pGrid, fAlt);
 }
@@ -122,7 +122,7 @@ void ContourConverter::GenerateContour(float fAlt)
  *		if the elevation range of your data is from 50 to 350 meters, then
  *		an fIterval of 100 will place contour bands at 100,200,300 meters.
  */
-void ContourConverter::GenerateContours(float fInterval)
+void vtContourConverter::GenerateContours(float fInterval)
 {
 	float fMin, fMax;
 	m_pHF->GetHeightExtents(fMin, fMax);
@@ -136,7 +136,7 @@ void ContourConverter::GenerateContours(float fInterval)
 	}
 }
 
-void ContourConverter::Coord(float x, float y, bool bStart)
+void vtContourConverter::Coord(float x, float y, bool bStart)
 {
 	if (bStart)
 		Flush();
@@ -151,7 +151,7 @@ void ContourConverter::Coord(float x, float y, bool bStart)
  * Finishes the contour generation process.  Call once when you are done
  * using the class to generate contours.
  */
-void ContourConverter::Finish()
+void vtContourConverter::Finish()
 {
 	Flush();
 
@@ -162,7 +162,7 @@ void ContourConverter::Finish()
 	s_cc = NULL;
 }
 
-void ContourConverter::Flush()
+void vtContourConverter::Flush()
 {
 	if (m_line.GetSize() > 2)
 	{

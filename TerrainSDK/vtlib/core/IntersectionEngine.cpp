@@ -1,7 +1,7 @@
 //
 // IntersectionEngine.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,7 +12,7 @@
 // Intersection Engine.  changes traffic lights at nodes.
 //
 
-IntersectionEngine::IntersectionEngine(NodeGeom *node) {
+vtIntersectionEngine::vtIntersectionEngine(NodeGeom *node) {
 	//uses node's initial light state to determine which signal lights are linked.
 	//lights of one color change together.
 	m_pNode = node;
@@ -39,7 +39,7 @@ IntersectionEngine::IntersectionEngine(NodeGeom *node) {
 }
 
 //changes the light colors at a node.
-void IntersectionEngine::Eval() {
+void vtIntersectionEngine::Eval() {
 	float t = vtGetTime();
 	if (!m_bFirstTime) {
 		if (t > m_fNextChange) {

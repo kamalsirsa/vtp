@@ -1,7 +1,7 @@
 //
 // TimeEngines.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,7 +18,7 @@
  * A TimeTarget is a kind of vtTarget which expects to be told what time
  * it is.
  */
-class TimeTarget : public vtTarget
+class vtTimeTarget : public vtTarget
 {
 public:
 	virtual void SetTime(const vtTime &time) {}
@@ -31,10 +31,10 @@ public:
  * Time can advance at either real time (1 second simulated = 1 real second),
  * or at any faster or slower rate.
  */
-class TimeEngine : public vtEngine
+class vtTimeEngine : public vtEngine
 {
 public:
-	TimeEngine(int start_hour = -1);
+	vtTimeEngine(int start_hour = -1);
 
 	void Eval();
 

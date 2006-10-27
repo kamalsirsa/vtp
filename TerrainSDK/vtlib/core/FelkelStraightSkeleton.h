@@ -1,5 +1,5 @@
 //
-// StraightSkeleton.h: interface for the CStraightSkeleton class.
+// StraightSkeleton.h: interface for the vtStraightSkeleton class.
 //
 // Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -23,11 +23,11 @@
  *
  * See the top of the header file for history and credits.
  */
-class CStraightSkeleton
+class vtStraightSkeleton
 {
 public:
-	CStraightSkeleton();
-	virtual ~CStraightSkeleton();
+	vtStraightSkeleton();
+	virtual ~vtStraightSkeleton();
 
 	CSkeleton& MakeSkeleton(ContourVector &contours);
 	CSkeleton& MakeSkeleton(Contour &points);

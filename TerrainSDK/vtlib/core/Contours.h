@@ -1,7 +1,7 @@
 //
 // Contours.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,7 +25,7 @@ class SurfaceGrid;
  *
  * \par Here is an example of how to use it:
 	\code
-	ContourConverter cc;
+	vtContourConverter cc;
 	cc.Setup(pTerrain, RGBf(1,1,0), 10);
 	cc.GenerateContours(100);
 	cc.Finish();
@@ -33,7 +33,7 @@ class SurfaceGrid;
  *
  * \par Or, you can generate specific contour lines:
 	\code
-	ContourConverter cc;
+	vtContourConverter cc;
 	cc.Setup(pTerrain, RGBf(1,1,0), 10);
 	cc.GenerateContour(75);
 	cc.GenerateContour(125);
@@ -41,12 +41,22 @@ class SurfaceGrid;
 	cc.Finish();
 	\endcode
  *
+ * \par If you keep a pointer to the geometry, you can toggle or delete it later:
+	\code
+	vtContourConverter cc;
+	vtGeom *geom = cc.Setup(pTerrain, RGBf(1,1,0), 10);
+	[...]
+	geom->SetEnabled(bool);	// set visibility
+	[...]
+	pTerrain->GetScaledFeatures()->RemoveChild(geom);
+	geom->Release();		// delete
+	\endcode
  */
-class ContourConverter
+class vtContourConverter
 {
 public:
-	ContourConverter();
-	~ContourConverter();
+	vtContourConverter();
+	~vtContourConverter();
 
 	vtGeom *Setup(vtTerrain *pTerr, const RGBf &color, float fHeight);
 	void GenerateContour(float fAlt);

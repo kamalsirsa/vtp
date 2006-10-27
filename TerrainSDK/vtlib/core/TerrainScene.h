@@ -1,7 +1,7 @@
 //
 // TerrainScene.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,7 +15,7 @@
 // Forward references
 class vtSkyDome;
 class vtTerrain;
-class TimeEngine;
+class vtTimeEngine;
 class vtSkyTrackEngine;
 
 /**
@@ -56,7 +56,7 @@ public:
  * surrounding environment (sunlight, skydome) which is common to all
  * of the terrains.
  */
-class vtTerrainScene : public TimeTarget
+class vtTerrainScene : public vtTimeTarget
 {
 public:
 	vtTerrainScene();
@@ -84,7 +84,7 @@ public:
 	/// Find a terrain by its name.
 	vtTerrain *FindTerrainByName(const char *name);
 	vtTransform *GetSunLight() { return m_pSunLight; }
-	TimeEngine *GetTimeEngine() { return m_pTimeEngine; }
+	vtTimeEngine *GetTimeEngine() { return m_pTimeEngine; }
 
 	void SetTime(const vtTime &time);
 
@@ -125,7 +125,7 @@ protected:
 	vtTerrain	*m_pCurrentTerrain;
 
 	// engines
-	TimeEngine		 *m_pTimeEngine;
+	vtTimeEngine		 *m_pTimeEngine;
 	vtSkyTrackEngine *m_pSkyTrack;
 
 	// Utility structures, created on demand from global content file

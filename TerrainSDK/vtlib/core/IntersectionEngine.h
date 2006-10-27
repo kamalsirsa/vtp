@@ -1,7 +1,7 @@
 //
 // IntersectionEngine.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,11 +27,11 @@
  * at that intersection.  for example, in a normal intersection, the non-perpendicular road
  * segments should have the same color - one pair green, the other red.
  */
-class IntersectionEngine : public vtEngine
+class vtIntersectionEngine : public vtEngine
 {
 public:
 	//builds the intersection engine.  links it to the node.
-	IntersectionEngine(NodeGeom *node);
+	vtIntersectionEngine(NodeGeom *node);
 	void Eval();
 
 protected:
