@@ -10,12 +10,8 @@
 #include "vtlib/vtlib.h"
 #include "StructureShadowsOSG.h"
 
-#include <osg/LightSource>
-#include <osg/PolygonMode>
-#include <osg/Switch>
-#include <osg/Fog>
-#include <osgDB/Registry>
-#include <time.h>		// clock() & CLOCKS_PER_SEC
+#include <osg/PolygonMode>	// SetGlobalWireframe
+#include <osgDB/Registry>	// for clearObjectCache
 
 #ifdef __FreeBSD__
 #  include <sys/types.h>
@@ -23,8 +19,8 @@
 #  include <sys/resource.h>
 #endif
 
-#include <iostream>
-#include "vtdata/vtLog.h"
+#include <iostream>			// For redirecting OSG's stdout messages
+#include "vtdata/vtLog.h"	// to the VTP log.
 
 using namespace osg;
 
