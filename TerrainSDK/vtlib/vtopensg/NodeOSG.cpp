@@ -376,6 +376,15 @@ void vtNode::DecorateNativeGraph()
 	DecorateVisit(m_pNode);
 }
 
+// Find and decorate a native node
+// To allow subsequent graph following from the VT side
+// return osg::Group as vtGroup
+vtNode *vtNode::FindNativeNode(const char *pName, bool bDescend)
+{
+	// TODO
+	return NULL;
+}
+
 vtNode *vtNativeNode::FindParentVTNode()
 {
 	osg::NodePtr node = GetOsgNode();

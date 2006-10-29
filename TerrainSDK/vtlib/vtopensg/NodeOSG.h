@@ -95,8 +95,8 @@ public:
 	void SetOsgNode(osg::NodePtr n);
 	osg::NodePtr GetOsgNode() {return m_pNode;};
 	const osg::NodePtr GetOsgNode() const { return m_pNode;};
-
 	void DecorateNativeGraph();
+	vtNode *FindNativeNode(const char *pName, bool bDescend = true);
 
 	/// Load a 3D model file
 	static vtNode *LoadModel(const char *filename, bool bAllowCache = true, bool bDisableMipmaps = false);
