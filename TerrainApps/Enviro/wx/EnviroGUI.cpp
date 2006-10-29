@@ -137,7 +137,7 @@ void EnviroGUI::SetupScene3()
 #endif
 }
 
-void EnviroGUI::SetTimeEngineToGUI(class TimeEngine *pEngine)
+void EnviroGUI::SetTimeEngineToGUI(class vtTimeEngine *pEngine)
 {
 	GetFrame()->SetTimeEngine(pEngine);
 }

@@ -91,7 +91,7 @@ protected:
 
 ///////////////////////////////////////////////////
 
-class IcoGlobe;
+class vtIcoGlobe;
 
 class GlobePicker : public vtLastMouse
 {
@@ -99,7 +99,7 @@ public:
 	GlobePicker();
 	void Eval();
 	void SetRadius(double fRadius) { m_fRadius = fRadius; }
-	void SetGlobe(IcoGlobe *pGlobe) { m_pGlobe = pGlobe; }
+	void SetGlobe(vtIcoGlobe *pGlobe) { m_pGlobe = pGlobe; }
 	void SetTargetScale(float s) { m_fTargetScale = s; }
 
 	bool GetCurrentPoint(FPoint3 &p);
@@ -110,7 +110,7 @@ protected:
 	DPoint3		m_EarthPos;
 	bool		m_bOnTerrain;
 	double		m_fRadius;
-	IcoGlobe	*m_pGlobe;
+	vtIcoGlobe	*m_pGlobe;
 	float		m_fTargetScale;
 };
 

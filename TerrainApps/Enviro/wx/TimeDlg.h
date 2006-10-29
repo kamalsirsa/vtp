@@ -19,7 +19,7 @@
 // TimeDlg
 //----------------------------------------------------------------------------
 
-class TimeDlg: public AutoDialog, public TimeTarget
+class TimeDlg: public AutoDialog, public vtTimeTarget
 {
 public:
 	// constructors and destructors
@@ -44,7 +44,7 @@ public:
 
 	// implement TimeTarget method, to catch events from the engine
 	void SetTime(const vtTime &time);
-	void SetTimeEngine(TimeEngine *pEngine);
+	void SetTimeEngine(vtTimeEngine *pEngine);
 	void GetTime(vtTime &time);
 
 private:
@@ -64,7 +64,7 @@ private:
 
 	bool m_bSetting;
 
-	TimeEngine	*m_pTimeEngine;
+	vtTimeEngine	*m_pTimeEngine;
 
 	wxSizer *m_pTop;
 

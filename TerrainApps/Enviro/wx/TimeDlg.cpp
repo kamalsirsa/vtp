@@ -137,11 +137,11 @@ void TimeDlg::GetTime(vtTime &time)
 	time.SetTimeOfDay(hour, minute, second);
 }
 
-void TimeDlg::SetTimeEngine(TimeEngine *pEngine)
+void TimeDlg::SetTimeEngine(vtTimeEngine *pEngine)
 {
 	m_pTimeEngine = pEngine;
 
-	TimeTarget *self = dynamic_cast<TimeTarget *>(this);
+	vtTimeTarget *self = dynamic_cast<vtTimeTarget *>(this);
 
 	// If the engine is not yet connected to us, connect it.
 	bool bFound = false;

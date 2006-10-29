@@ -24,11 +24,11 @@ class PlantDlg;
 class CScenarioSelectDialog;
 class SceneGraphDlg;
 class TimeDlg;
-class TimeEngine;
 class UtilDlg;
 class ProfileDlg;
 class VehicleDlg;
 class vtTerrain;
+class vtTimeEngine;
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
@@ -51,7 +51,7 @@ public:
 	void SetFullScreen(bool bFull);
 	ProfileDlg *ShowProfileDlg();
 	void ShowPopupMenu(const IPoint2 &pos);
-	void SetTimeEngine(TimeEngine *pEngine);
+	void SetTimeEngine(vtTimeEngine *pEngine);
 	void Snapshot(bool bNumbered);
 	void CameraChanged();
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain);

@@ -163,7 +163,7 @@ void Enviro::MakeGlobe()
 {
 	VTLOG("MakeGlobe\n");
 
-	m_pGlobeTime = new TimeEngine;
+	m_pGlobeTime = new vtTimeEngine;
 	m_pGlobeTime->SetName2("GlobeTime");
 	vtGetScene()->AddEngine(m_pGlobeTime);
 
@@ -174,14 +174,14 @@ void Enviro::MakeGlobe()
 //	m_pGlobeXForm = CreateSimpleEarth(g_Options.m_DataPaths);
 
 	// fancy icosahedral globe
-	m_pIcoGlobe = new IcoGlobe();
+	m_pIcoGlobe = new vtIcoGlobe;
 	m_pIcoGlobe->Create(5000, g_Options.m_DataPaths, g_Options.m_strEarthImage,
-//		IcoGlobe::GEODESIC);
-//		IcoGlobe::RIGHT_TRIANGLE);
-		IcoGlobe::DYMAX_UNFOLD);
-//		IcoGlobe::INDEPENDENT_GEODESIC);
+//		vtIcoGlobe::GEODESIC);
+//		vtIcoGlobe::RIGHT_TRIANGLE);
+		vtIcoGlobe::DYMAX_UNFOLD);
+//		vtIcoGlobe::INDEPENDENT_GEODESIC);
 	m_pGlobeContainer->AddChild(m_pIcoGlobe->GetTop());
-	m_pGlobeTime->AddTarget((TimeTarget *)m_pIcoGlobe);
+	m_pGlobeTime->AddTarget((vtTimeTarget *)m_pIcoGlobe);
 
 if (pwdemo){
 /*	logo = new vtGroup;

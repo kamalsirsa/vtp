@@ -374,7 +374,7 @@ void LayerDlg::RefreshTreeSpace()
 	g_pLayerSizer1->Show(g_pLayerSizer2, false);
 	g_pLayerSizer1->Layout();
 
-	IcoGlobe *globe = g_App.GetGlobe();
+	vtIcoGlobe *globe = g_App.GetGlobe();
 	if (!globe)
 		return;
 

@@ -23,7 +23,7 @@
 class vtTerrainScene;
 class vtTerrain;
 class TerrainPicker;
-class IcoGlobe;
+class vtIcoGlobe;
 class vtRoute;
 class vtUtilNode;
 class vtFence3d;
@@ -92,7 +92,7 @@ public:
 	void SwitchToTerrain(vtTerrain *pTerr);
 
 	// these work in space
-	IcoGlobe *GetGlobe() { return m_pIcoGlobe; }
+	vtIcoGlobe *GetGlobe() { return m_pIcoGlobe; }
 	void SetEarthShading(bool bShade);
 	bool GetEarthShading();
 	void SetEarthTilt(bool bTilt);
@@ -215,7 +215,7 @@ public:
 		double fGround, double fVertical) {}
 	virtual vtTagArray *GetInstanceFromGUI() { return NULL; }
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
-	virtual void SetTimeEngineToGUI(TimeEngine *pEngine) {}
+	virtual void SetTimeEngineToGUI(vtTimeEngine *pEngine) {}
 	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
 	virtual void ShowMessage(const vtString &str) {}
 
@@ -278,9 +278,9 @@ protected:
 	vtGroup		*m_pRoot;		// top of the scene graph
 
 	// globe
-	TimeEngine	*m_pGlobeTime;
+	vtTimeEngine	*m_pGlobeTime;
 	vtGroup		*m_pGlobeContainer;
-	IcoGlobe	*m_pIcoGlobe;
+	vtIcoGlobe	*m_pIcoGlobe;
 	bool		m_bEarthShade;
 	bool		m_bGlobeFlat;
 	float		m_fFlattening, m_fFlattenDir;

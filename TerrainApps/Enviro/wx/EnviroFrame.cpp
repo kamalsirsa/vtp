@@ -710,7 +710,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 #if SUPPORT_QUIKGRID
 		if (pTerr)
 		{
-			ContourConverter cc;
+			vtContourConverter cc;
 			cc.Setup(pTerr, RGBf(1,1,0), 10);
 			cc.GenerateContours(500);
 			cc.Finish();
@@ -1873,7 +1873,7 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 //
 // Called when the Earth View has been constructed
 //
-void EnviroFrame::SetTimeEngine(TimeEngine *pEngine)
+void EnviroFrame::SetTimeEngine(vtTimeEngine *pEngine)
 {
 	m_pTimeDlg->SetTimeEngine(pEngine);
 	// poke it once to let the time dialog know

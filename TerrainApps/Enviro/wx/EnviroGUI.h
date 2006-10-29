@@ -41,7 +41,7 @@ public:
 	virtual vtTagArray *GetInstanceFromGUI();
 	virtual bool OnMouseEvent(vtMouseEvent &event);
 	virtual void SetupScene3();
-	virtual void SetTimeEngineToGUI(class TimeEngine *pEngine);
+	virtual void SetTimeEngineToGUI(class vtTimeEngine *pEngine);
 	virtual bool IsAcceptable(vtTerrain *pTerr);
 	virtual void ShowMessage(const vtString &str);
 	virtual void SetFlightSpeed(float speed);
