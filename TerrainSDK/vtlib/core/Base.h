@@ -196,7 +196,7 @@ public:
 		SetVtxNormal(i, norm);
 	}
 
-	void TransformVertices(FMatrix4 &mat);
+	void TransformVertices(const FMatrix4 &mat);
 
 	void CreateEllipsoid(FPoint3 size, int res, bool hemi = false);
 	void CreateBlock(const FPoint3& size);

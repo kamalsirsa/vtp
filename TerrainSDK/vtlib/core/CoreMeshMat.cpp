@@ -691,7 +691,7 @@ void vtMeshBase::CreateRectangle(int iQuads1, int iQuads2,
 /**
  * Transform all the vertices of the mesh by the indicated matrix.
  */
-void vtMeshBase::TransformVertices(FMatrix4 &mat)
+void vtMeshBase::TransformVertices(const FMatrix4 &mat)
 {
 	int i, num = GetNumVertices();
 	FPoint3 p, p2;
