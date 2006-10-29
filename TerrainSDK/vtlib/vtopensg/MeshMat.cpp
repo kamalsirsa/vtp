@@ -558,7 +558,10 @@ vtMeshBase(ePrimType, VertType, NumVertices)
 	//make room for the expected # of vertices
 	m_Vert = osg::GeoPositions3f::create();	//the vertices are directly stored in the scenegraph
 	beginEditCP(m_Vert, osg::GeoPositions3f::GeoPropDataFieldMask);
-	m_Vert->resize( NumVertices );
+
+	// We would like to pre-allocate room for NumVertices vertices.  However,
+	//  there is no 'reserve' method available in OpenSG!
+	//m_Vert->reserve( NumVertices );
 	endEditCP(m_Vert, osg::GeoPositions3f::GeoPropDataFieldMask); 
 
 	//no, this duplicates the first primitive, for time being leave it as it is. first prim. has zero length
@@ -600,7 +603,7 @@ vtMeshBase(ePrimType, VertType, NumVertices)
 	if( VertType & VT_Normals ) {
 		//TODO for the time being, single indexing is used, this defaults to a PER_VERTEX mapping
 		m_Norm = osg::GeoNormals3f::create();
-		m_Norm->resize(NumVertices); //make room for expected Normals
+		//m_Norm->reserve(NumVertices); //make room for expected Normals
 		beginEditCP(m_pGeometryCore);
 		m_pGeometryCore->setNormals(m_Norm);
 		endEditCP(m_pGeometryCore);
@@ -610,7 +613,7 @@ vtMeshBase(ePrimType, VertType, NumVertices)
 	//TODO for the time being, single indexing is used, this defaults to a PER_VERTEX mapping
 	{
 		m_Color = osg::GeoColors3f::create();
-		m_Color->resize(NumVertices);
+		//m_Color->reserve(NumVertices);
 		beginEditCP(m_pGeometryCore);
 		m_pGeometryCore->setColors(m_Color);
 		endEditCP(m_pGeometryCore);
@@ -618,7 +621,7 @@ vtMeshBase(ePrimType, VertType, NumVertices)
 
 	if( VertType & VT_TexCoords ) {
 		m_Tex = osg::GeoTexCoords2f::create();
-		m_Tex->resize(NumVertices);
+		//m_Tex->reserve(NumVertices);
 		beginEditCP(m_pGeometryCore);
 		m_pGeometryCore->setTexCoords(m_Tex);
 		endEditCP(m_pGeometryCore);
