@@ -156,7 +156,7 @@ void VegFieldsDlg::OnOK( wxCommandEvent &event )
 	m_options.bFixedSpecies = m_bUseSpecies;
 	m_options.strFixedSpeciesName = GetSpeciesChoice()->GetStringSelection();
 	int sel = GetSpeciesField()->GetSelection();
-	m_options.iSpeciesFieldIndex = ((int) GetSpeciesField()->GetClientData(sel)) - 10;
+	m_options.iSpeciesFieldIndex = ((long int) GetSpeciesField()->GetClientData(sel)) - 10;
 
 	if (GetSpeciesId()->GetValue())
 		m_options.iInterpretSpeciesField = 0;
@@ -172,7 +172,7 @@ void VegFieldsDlg::OnOK( wxCommandEvent &event )
 	// Height
 	m_options.bHeightRandom = m_bHeightRandomize;
 	sel = GetHeightField()->GetSelection();
-	m_options.iHeightFieldIndex = ((int) GetHeightField()->GetClientData(sel)) - 10;
+	m_options.iHeightFieldIndex = ((long int) GetHeightField()->GetClientData(sel)) - 10;
 
 	wxDialog::OnOK(event);
 }
