@@ -37,10 +37,9 @@ typedef const unsigned char *pcuchar;
 
 struct vtStringData
 {
-	long nRefs;			// reference count
+	int nRefs;			// reference count
 	int nDataLength;	// length of data (including terminator)
 	int nAllocLength;	// length of allocation
-	// char data[nAllocLength]
 
 	char* data()		// char* to managed data
 		{ return (char*)(this+1); }
