@@ -156,11 +156,15 @@ void LocationDlg::RefreshList()
 
 void LocationDlg::RefreshAnims()
 {
+	GetAnimTree()->DeleteAllItems();
+	m_root = GetAnimTree()->AddRoot(_T("Root"));
+
+	if (!m_pAnimPaths)
+		return;
+
 	wxString str;
 	unsigned int i, num = m_pAnimPaths->GetSize();
 
-	GetAnimTree()->DeleteAllItems();
-	m_root = GetAnimTree()->AddRoot(_T("Root"));
 	for (i = 0; i < num; i++)
 	{
 		wxTreeItemId id = GetAnimTree()->AppendItem(m_root, _T("anim"));
@@ -169,7 +173,6 @@ void LocationDlg::RefreshAnims()
 		vtAnimPath::TimeControlPointMap &tcm = anim->GetTimeControlPointMap();
 		vtAnimPath::TimeControlPointMap::iterator iter;
 
-//		for (j = 0; j < anim->GetNumPoints(); j++)
 		int count = 0;
 		for (iter = tcm.begin(); iter != tcm.end(); iter++)
 		{
