@@ -207,7 +207,7 @@ void ProjectionDlg::UpdateControlStatus()
 	// manually transfer value
 	for (i = 0; i < m_pHorizCtrl->GetCount(); i++)
 	{
-		if ((int) m_pHorizCtrl->GetClientData(i) == m_proj.GetUnits())
+		if ((long int) m_pHorizCtrl->GetClientData(i) == m_proj.GetUnits())
 			m_pHorizCtrl->SetSelection(i);
 	}
 
@@ -395,7 +395,7 @@ void ProjectionDlg::OnDatum( wxCommandEvent &event )
 	// operate on a copy for safety
 	vtProjection copy = m_proj;
 	int sel = event.GetInt();
-	int datum_new = ((int) m_pDatumCtrl->GetClientData(sel)) - CHOICE_OFFSET;
+	int datum_new = ((long int) m_pDatumCtrl->GetClientData(sel)) - CHOICE_OFFSET;
 	OGRErr err = copy.SetDatum(datum_new);
 	if (err == OGRERR_NONE)
 	{
@@ -459,7 +459,7 @@ void ProjectionDlg::OnHorizUnits( wxCommandEvent &event )
 
 	m_iUnits = m_pHorizCtrl->GetSelection();
 
-	LinearUnits iUnits = (LinearUnits) (int) m_pHorizCtrl->GetClientData(m_iUnits);
+	LinearUnits iUnits = (LinearUnits) (long int) m_pHorizCtrl->GetClientData(m_iUnits);
 
 	if (iUnits == LU_METERS)
 	{
