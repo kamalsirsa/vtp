@@ -140,7 +140,7 @@ void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 	OpenProgressDialog(_("Querying server..."), false, this);
 
 	wxString val = GetBaseUrl()->GetValue();
-	vtString url = val.mb_str(wxConvUTF8);
+	vtString url = (const char *) val.mb_str(wxConvUTF8);
 	vtString msg;
 	bool success = GetLayersFromWMS(url, m_pServers->at(m_iServer).m_layers,
 		msg, progress_callback);

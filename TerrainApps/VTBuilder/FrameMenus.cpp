@@ -3443,7 +3443,7 @@ void MainFrame::OnAreaRequestWFS(wxCommandEvent& event)
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 	wxString value = dlg.GetValue();
-	vtString server = value.mb_str(wxConvUTF8);
+	vtString server = (const char *) value.mb_str(wxConvUTF8);
 
 	OGCLayerArray layers;
 	success = GetLayersFromWFS(server, layers);
