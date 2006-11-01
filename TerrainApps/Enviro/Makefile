@@ -50,9 +50,8 @@ LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) \
 # Support of Mac OS X
 ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
-LIBS   = -F$(FRAMEWORKS) \
+LIBS   += -F$(FRAMEWORKS) \
 	  -lobjc -framework Carbon \
-	  -lOpenThreads \
 	  -framework vtdata -framework vtui -framework vtosg \
 	  -framework xmlhelper -framework unzip \
 	  -L$(FINK_LIB) -lnetcdf \
