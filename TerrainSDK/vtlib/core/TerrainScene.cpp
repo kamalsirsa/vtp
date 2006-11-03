@@ -352,6 +352,10 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 
 void vtTerrainScene::_UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 {
+	// safety check
+	if (!m_pSkyDome)
+		return;
+
 	TParams &param = pTerrain->GetParams();
 
 	// move the sky to fit the new current terrain
