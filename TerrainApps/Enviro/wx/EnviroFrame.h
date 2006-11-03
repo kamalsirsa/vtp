@@ -43,6 +43,7 @@ public:
 
 	void CreateMenus();
 	void CreateToolbar(bool bVertical);
+	void RefreshToolbar();
 
 	void SetMode(MouseMode mode);
 	void ToggleNavigate();
@@ -126,6 +127,8 @@ public:
 	void OnUpdateToolsRoutes(wxUpdateUIEvent& event);
 	void OnToolsPlants(wxCommandEvent& event);
 	void OnUpdateToolsPlants(wxUpdateUIEvent& event);
+	void OnToolsPoints(wxCommandEvent& event);
+	void OnUpdateToolsPoints(wxUpdateUIEvent& event);
 	void OnToolsInstances(wxCommandEvent& event);
 	void OnUpdateToolsInstances(wxUpdateUIEvent& event);
 	void OnToolsVehicles(wxCommandEvent& event);

@@ -124,6 +124,8 @@ EVT_MENU(ID_TOOLS_ROUTES,			EnviroFrame::OnToolsRoutes)
 EVT_UPDATE_UI(ID_TOOLS_ROUTES,		EnviroFrame::OnUpdateToolsRoutes)
 EVT_MENU(ID_TOOLS_PLANTS,			EnviroFrame::OnToolsPlants)
 EVT_UPDATE_UI(ID_TOOLS_PLANTS,		EnviroFrame::OnUpdateToolsPlants)
+EVT_MENU(ID_TOOLS_POINTS,			EnviroFrame::OnToolsPoints)
+EVT_UPDATE_UI(ID_TOOLS_POINTS,		EnviroFrame::OnUpdateToolsPoints)
 EVT_MENU(ID_TOOLS_INSTANCES,		EnviroFrame::OnToolsInstances)
 EVT_UPDATE_UI(ID_TOOLS_INSTANCES,	EnviroFrame::OnUpdateToolsInstances)
 EVT_MENU(ID_TOOLS_VEHICLES,			EnviroFrame::OnToolsVehicles)
@@ -379,6 +381,7 @@ void EnviroFrame::CreateMenus()
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_BUILDINGS, _("Buildings"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _("Routes"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_PLANTS, _("Plants"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_POINTS, _("Points"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _("Instances"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_VEHICLES, _("Vehicles"));
 //	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
@@ -526,55 +529,91 @@ void EnviroFrame::CreateToolbar(bool bVertical)
 	m_pToolbar->SetMargins(2, 2);
 	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
 
-	ADD_TOOL(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
-	ADD_TOOL(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
-	ADD_TOOL(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
-	ADD_TOOL(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
-	ADD_TOOL(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
-//	ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);	// not yet
-	ADD_TOOL(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
-	ADD_TOOL(ID_TOOLS_VEHICLES, wxBITMAP(vehicles), _("Create Vehicles"), true);
-	ADD_TOOL(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
-	ADD_TOOL(ID_TOOLS_MEASURE, wxBITMAP(distance), _("Measure Distance"), true);
-	ADD_TOOL(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), true);
+	RefreshToolbar();
+}
+
+void EnviroFrame::RefreshToolbar()
+{
+	if (!m_pToolbar)	// safety check
+		return;
+
+	// remove any existing buttons
+	int count = m_pToolbar->GetToolsCount();
+	if (!count)
+	{
+		ADD_TOOL(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
+		count = 1;
+	}
+	while (count > 1)
+	{
+		m_pToolbar->DeleteToolByPos(count-1);
+		count = m_pToolbar->GetToolsCount();
+	}
+
+	bool bEarth = (g_App.m_state == AS_Orbit);
+	bool bTerr = (g_App.m_state == AS_Terrain);
+
+	if (bTerr)
+	{
+		ADD_TOOL(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
+		ADD_TOOL(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
+		ADD_TOOL(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
+		ADD_TOOL(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
+		ADD_TOOL(ID_TOOLS_POINTS, wxBITMAP(points), _("Create Points"), true);
+//		ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);	// not yet
+		ADD_TOOL(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
+		ADD_TOOL(ID_TOOLS_VEHICLES, wxBITMAP(vehicles), _("Create Vehicles"), true);
+		ADD_TOOL(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
+	}
+	if (bTerr || bEarth)
+	{
+		ADD_TOOL(ID_TOOLS_MEASURE, wxBITMAP(distance), _("Measure Distance"), true);
+	}
+	if (bTerr)
+	{
+		m_pToolbar->AddSeparator();
+		ADD_TOOL(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), true);
+	}
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_VIEW_MAINTAIN, wxBITMAP(maintain), _("Maintain Height"), true);
-	ADD_TOOL(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
-	ADD_TOOL(ID_VIEW_SLOWER, wxBITMAP(nav_slow), _("Fly Slower"), false);
-	ADD_TOOL(ID_VIEW_SETTINGS, wxBITMAP(nav_set), _("Camera Dialog"), false);
-	ADD_TOOL(ID_VIEW_LOCATIONS, wxBITMAP(loc), _("Locations"), false);
 	ADD_TOOL(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
 	ADD_TOOL(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_FILE_LAYERS, wxBITMAP(layers), _("Show Layer Dialog"), false);
-
+	if (bTerr || bEarth)
+	{
+		ADD_TOOL(ID_FILE_LAYERS, wxBITMAP(layers), _("Show Layer Dialog"), false);
+	}
+	if (bTerr)
+	{
+		ADD_TOOL(ID_VIEW_MAINTAIN, wxBITMAP(maintain), _("Maintain Height"), true);
+		ADD_TOOL(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
+		ADD_TOOL(ID_VIEW_SLOWER, wxBITMAP(nav_slow), _("Fly Slower"), false);
+		ADD_TOOL(ID_VIEW_SETTINGS, wxBITMAP(nav_set), _("Camera Dialog"), false);
+		ADD_TOOL(ID_VIEW_LOCATIONS, wxBITMAP(loc), _("Locations"), false);
+	}
 	if (m_bEnableEarth)
 	{
 		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
+		if (bTerr) ADD_TOOL(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
 		ADD_TOOL(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
 		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Show Sunlight"), true);
-		ADD_TOOL(ID_EARTH_SHOWAXES, wxBITMAP(axes), _("Axes"), true);
-		ADD_TOOL(ID_EARTH_TILT, wxBITMAP(tilt), _("Tilt"), true);
-		ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
-		ADD_TOOL(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
+		if (bEarth)
+		{
+			ADD_TOOL(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Show Sunlight"), true);
+			ADD_TOOL(ID_EARTH_SHOWAXES, wxBITMAP(axes), _("Axes"), true);
+			ADD_TOOL(ID_EARTH_TILT, wxBITMAP(tilt), _("Tilt"), true);
+			ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
+			ADD_TOOL(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
+		}
 	}
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_TIME_DIALOG, wxBITMAP(time), _("Time"), false);
 	ADD_TOOL(ID_TIME_FASTER, wxBITMAP(faster), _("Time Faster"), false);
 	ADD_TOOL(ID_TIME_STOP, wxBITMAP(stop), _("Time Stop"), false);
 
-	if (m_bEnableEarth)
-	{
-		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
-	}
+	m_pToolbar->AddSeparator();
+	ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
 
-//	m_pToolbar->SetRows(32);
-//	m_pToolbar->Realize();
-//	SendSizeEvent();
-//	m_pToolbar->Refresh();
+	m_pToolbar->Realize();
 }
 
 void EnviroFrame::Setup3DScene()
@@ -1241,6 +1280,17 @@ void EnviroFrame::OnUpdateToolsPlants(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_PLANTS);
+}
+
+void EnviroFrame::OnToolsPoints(wxCommandEvent& event)
+{
+	SetMode(MM_POINTS);
+}
+
+void EnviroFrame::OnUpdateToolsPoints(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_mode == MM_POINTS);
 }
 
 void EnviroFrame::OnToolsInstances(wxCommandEvent& event)
