@@ -77,6 +77,28 @@ void EnviroGUI::SetFlightSpeed(float speed)
 	Enviro::SetFlightSpeed(speed);
 }
 
+void EnviroGUI::SetState(AppState s)
+{
+	// if entering or leaving terrain or orbit state
+	AppState previous = m_state;
+	m_state = s;
+
+	if ((previous == AS_Terrain && m_state != AS_Terrain) ||
+		(previous == AS_Orbit && m_state != AS_Orbit) ||
+		(previous != AS_Terrain && m_state == AS_Terrain) ||
+		(previous != AS_Orbit && m_state == AS_Orbit))
+	{
+		GetFrame()->RefreshToolbar();
+	}
+}
+
+vtString EnviroGUI::GetStringFromUser(const vtString &msg)
+{
+	wxString message(msg, wxConvUTF8);
+	wxString str = wxGetTextFromUser(message, _("caption"), _T(""), this);
+	return (vtString) (const char *) str.mb_str(wxConvUTF8);
+}
+
 void EnviroGUI::RefreshLayerView()
 {
 	LayerDlg *dlg = GetFrame()->m_pLayerDlg;

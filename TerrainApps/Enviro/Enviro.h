@@ -218,6 +218,8 @@ public:
 	virtual void SetTimeEngineToGUI(vtTimeEngine *pEngine) {}
 	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
 	virtual void ShowMessage(const vtString &str) {}
+	virtual void SetState(AppState s) { m_state = s; }
+	virtual vtString GetStringFromUser(const vtString &msg) = 0;
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;

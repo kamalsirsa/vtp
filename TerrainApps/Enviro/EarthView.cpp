@@ -47,7 +47,7 @@ void Enviro::FlyToSpace()
 	SetTerrain(NULL);
 	EnableFlyerEngine(false);
 
-	m_state = AS_MovingOut;
+	SetState(AS_MovingOut);
 	m_iInitStep = 0;
 	FreeArc();
 
@@ -127,7 +127,7 @@ if (pwdemo){
 	}
 	if (m_iInitStep == 7)
 	{
-		m_state = AS_Orbit;
+		SetState(AS_Orbit);
 		SetMode(MM_SELECT);
 		if (!strncmp((const char *) g_Options.m_strEarthImage, "geosphere", 9))
 			SetMessage("Earth image (c) The GeoSphere Project", 3);

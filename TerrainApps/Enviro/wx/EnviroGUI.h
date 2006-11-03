@@ -45,6 +45,8 @@ public:
 	virtual bool IsAcceptable(vtTerrain *pTerr);
 	virtual void ShowMessage(const vtString &str);
 	virtual void SetFlightSpeed(float speed);
+	virtual void SetState(AppState s);
+	virtual vtString GetStringFromUser(const vtString &msg);
 
 	// The following are useful methods
 	void SaveVegetation(bool bAskFilename);

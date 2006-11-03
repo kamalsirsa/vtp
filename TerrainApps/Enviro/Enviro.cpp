@@ -249,7 +249,7 @@ void Enviro::DoControl()
 		}
 		if (g_Options.m_bStartInNeutral)
 		{
-			m_state = AS_Neutral;
+			SetState(AS_Neutral);
 		}
 		else if (g_Options.m_bEarthView)
 		{
@@ -261,7 +261,7 @@ void Enviro::DoControl()
 			if (!SwitchToTerrain(g_Options.m_strInitTerrain))
 			{
 				SetMessage("Terrain not found");
-				m_state = AS_Error;
+				SetState(AS_Error);
 			}
 			return;
 		}
@@ -333,7 +333,7 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 	// Load the species file and check which appearances are available
 	LoadSpeciesList();
 
-	m_state = AS_MovingIn;
+				SetState(AS_MovingIn);
 	m_pTargetTerrain = pTerr;
 	m_iInitStep = 0;
 	FreeArc();
@@ -367,7 +367,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		pTerr->CreateStep0();
 		if (!pTerr->CreateStep1())
 		{
-			m_state = AS_Error;
+			SetState(AS_Error);
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
@@ -387,7 +387,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		if (!pTerr->CreateStep2(GetSunLight()))
 		{
-			m_state = AS_Error;
+			SetState(AS_Error);
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
@@ -397,7 +397,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	{
 		if (!pTerr->CreateStep3())
 		{
-			m_state = AS_Error;
+			SetState(AS_Error);
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
@@ -407,7 +407,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	{
 		if (!pTerr->CreateStep4())
 		{
-			m_state = AS_Error;
+			SetState(AS_Error);
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
@@ -417,7 +417,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	{
 		if (!pTerr->CreateStep5())
 		{
-			m_state = AS_Error;
+			SetState(AS_Error);
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
@@ -474,7 +474,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	else if (m_iInitStep == 11)
 	{
-		m_state = AS_Terrain;
+		SetState(AS_Terrain);
 		vtString str;
 		str.Format("Welcome to %s", (const char *)pTerr->GetName());
 		SetMessage(str, 5.0f);
@@ -1137,6 +1137,15 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 			VTLOG("Create a plant at %.2lf,%.2lf:", m_EarthPos.x, m_EarthPos.y);
 		bool success = PlantATree(DPoint2(m_EarthPos.x, m_EarthPos.y));
 		VTLOG(" %s.\n", success ? "yes" : "no");
+	}
+	if (m_mode == MM_POINTS)
+	{
+		vtString str = GetStringFromUser("Label");
+		if (str != "")
+		{
+			vtAbstractLayers &abs = pTerr->GetAbstractLayers();
+
+		}
 	}
 	if (m_mode == MM_INSTANCES)
 		PlantInstance();
