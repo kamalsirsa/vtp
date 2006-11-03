@@ -32,19 +32,19 @@ enum LayerType
 class LayerItemData : public wxTreeItemData
 {
 public:
-	LayerItemData(vtStructureArray3d *sa, int index, int item)
+	LayerItemData(vtStructureLayer *slay, int index, int item)
 	{
 		Defaults();
 		m_type = LT_STRUCTURE;
-		m_sa = sa;
+		m_layer = m_slay = slay;
 		m_index = index;
 		m_item = item;
 	}
-	LayerItemData(vtAbstractLayer *layer, vtFeatureSet *set)
+	LayerItemData(vtAbstractLayer *alay, vtFeatureSet *set)
 	{
 		Defaults();
 		m_type = LT_ABSTRACT;
-		m_layer = layer;
+		m_layer = m_alay = alay;
 		m_fset = set;
 	}
 	LayerItemData(LayerType type)
@@ -54,8 +54,9 @@ public:
 	}
 	void Defaults()
 	{
-		m_sa = NULL;
 		m_layer = NULL;
+		m_alay = NULL;
+		m_slay = NULL;
 		m_fset = NULL;
 		m_index = -1;
 		m_item = -1;
@@ -63,8 +64,9 @@ public:
 		shadow_last_visible = false;
 	}
 	LayerType m_type;
-	vtStructureArray3d *m_sa;
-	vtAbstractLayer *m_layer;
+	vtLayer *m_layer;
+	vtAbstractLayer *m_alay;
+	vtStructureLayer *m_slay;
 	vtFeatureSet *m_fset;
 	int m_index;
 	int m_item;
@@ -115,7 +117,7 @@ private:
 
 private:
 	vtNode *GetNodeFromItem(wxTreeItemId item, bool bContainer = false);
-	vtStructureArray3d *GetStructureArray3dFromItem(wxTreeItemId item);
+	vtStructureLayer *GetStructureLayerFromItem(wxTreeItemId item);
 	LayerItemData *GetLayerDataFromItem(wxTreeItemId item);
 	void ToggleVisible(bool bVis, wxTreeItemId id);
 	void CreateImageList(int size = 16);

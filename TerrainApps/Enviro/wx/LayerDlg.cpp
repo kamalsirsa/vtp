@@ -133,12 +133,12 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 	if (!data)
 		return NULL;
 	if (data->m_type == LT_ABSTRACT)
-		return data->m_layer->pContainer;
+		return data->m_alay->pContainer;
 	if (data->m_item == -1)
 		return NULL;
 
-	vtStructure3d *str3d = data->m_sa->GetStructure3d(data->m_item);
-	vtStructure *str = data->m_sa->GetAt(data->m_item);
+	vtStructure3d *str3d = data->m_slay->GetStructure3d(data->m_item);
+	vtStructure *str = data->m_slay->GetAt(data->m_item);
 	vtStructureType typ = str->GetType();
 
 	if (bContainer && typ != ST_LINEAR)
@@ -148,15 +148,13 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 		return str3d->GetContained();
 }
 
-vtStructureArray3d *LayerDlg::GetStructureArray3dFromItem(wxTreeItemId item)
+vtStructureLayer *LayerDlg::GetStructureLayerFromItem(wxTreeItemId item)
 {
-	if (!item.IsOk())
-		return NULL;
-	LayerItemData *data = (LayerItemData *)m_pTree->GetItemData(item);
+	LayerItemData *data = GetLayerDataFromItem(item);
 	if (!data)
 		return NULL;
 	if (data->m_item == -1)
-		return data->m_sa;
+		return data->m_slay;
 	return NULL;
 }
 
@@ -222,99 +220,99 @@ void LayerDlg::RefreshTreeTerrain()
 	wxString str;
 	vtString vs;
 	unsigned int i, j;
-	StructureSet &set = terr->GetStructureSet();
-	vtStructureArray3d *sa;
-	for (i = 0; i < set.GetSize(); i++)
+	LayerSet &layers = terr->GetLayers();
+	for (i = 0; i < layers.GetSize(); i++)
 	{
-		sa = set[i];
-
-		str = wxString(sa->GetFilename(), wxConvUTF8);
-		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_BUILDING, ICON_BUILDING);
-		if (sa == terr->GetStructures())
-			m_pTree->SetItemBold(hLayer, true);
-		m_pTree->SetItemData(hLayer, new LayerItemData(sa, i, -1));
-
-		wxTreeItemId hItem;
-		if (m_bShowAll)
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(layers[i]);
+		if (slay)
 		{
-			for (j = 0; j < sa->GetSize(); j++)
+			str = wxString(slay->GetFilename(), wxConvUTF8);
+			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_BUILDING, ICON_BUILDING);
+			if (slay == terr->GetStructureLayer())
+				m_pTree->SetItemBold(hLayer, true);
+			m_pTree->SetItemData(hLayer, new LayerItemData(slay, i, -1));
+
+			wxTreeItemId hItem;
+			if (m_bShowAll)
 			{
-				if (sa->GetBuilding(j))
-					hItem = m_pTree->AppendItem(hLayer, _("Building"), ICON_BUILDING, ICON_BUILDING);
-				if (sa->GetFence(j))
-					hItem = m_pTree->AppendItem(hLayer, _("Fence"), ICON_FENCE, ICON_FENCE);
-				if (vtStructInstance *inst = sa->GetInstance(j))
+				for (j = 0; j < slay->GetSize(); j++)
 				{
-					vs = inst->GetValueString("filename", true);
-					if (vs != "")
+					if (slay->GetBuilding(j))
+						hItem = m_pTree->AppendItem(hLayer, _("Building"), ICON_BUILDING, ICON_BUILDING);
+					if (slay->GetFence(j))
+						hItem = m_pTree->AppendItem(hLayer, _("Fence"), ICON_FENCE, ICON_FENCE);
+					if (vtStructInstance *inst = slay->GetInstance(j))
 					{
-						str = _T("File ");
-						str += vs.UTF8ToWideString().c_str();
+						vs = inst->GetValueString("filename", true);
+						if (vs != "")
+						{
+							str = _T("File ");
+							str += vs.UTF8ToWideString().c_str();
+						}
+						else
+						{
+							vs = inst->GetValueString("itemname", true);
+							str = _T("Item ");
+							str += vs.UTF8ToWideString().c_str();
+						}
+						hItem = m_pTree->AppendItem(hLayer, str, ICON_INSTANCE, ICON_INSTANCE);
 					}
-					else
-					{
-						vs = inst->GetValueString("itemname", true);
-						str = _T("Item ");
-						str += vs.UTF8ToWideString().c_str();
-					}
-					hItem = m_pTree->AppendItem(hLayer, str, ICON_INSTANCE, ICON_INSTANCE);
+					m_pTree->SetItemData(hItem, new LayerItemData(slay, i, j));
 				}
-				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, j));
 			}
+			else
+			{
+				int bld = 0, fen = 0, inst = 0;
+				for (j = 0; j < slay->GetSize(); j++)
+				{
+					if (slay->GetBuilding(j)) bld++;
+					if (slay->GetFence(j)) fen++;
+					if (slay->GetInstance(j)) inst++;
+				}
+				if (bld)
+				{
+					str.Printf(_("Buildings: %d"), bld);
+					hItem = m_pTree->AppendItem(hLayer, str, ICON_BUILDING, ICON_BUILDING);
+					m_pTree->SetItemData(hItem, new LayerItemData(slay, i, -1));
+				}
+				if (fen)
+				{
+					str.Printf(_("Fences: %d"), fen);
+					hItem = m_pTree->AppendItem(hLayer, str, ICON_FENCE, ICON_FENCE);
+					m_pTree->SetItemData(hItem, new LayerItemData(slay, i, -1));
+				}
+				if (inst)
+				{
+					str.Printf(_("Instances: %d"), inst);
+					hItem = m_pTree->AppendItem(hLayer, str, ICON_INSTANCE, ICON_INSTANCE);
+					m_pTree->SetItemData(hItem, new LayerItemData(slay, i, -1));
+				}
+			}
+			m_pTree->Expand(hLayer);
 		}
-		else
+
+		// Now, abstract layers
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
+		if (alay)
 		{
-			int bld = 0, fen = 0, inst = 0;
-			for (j = 0; j < sa->GetSize(); j++)
-			{
-				if (sa->GetBuilding(j)) bld++;
-				if (sa->GetFence(j)) fen++;
-				if (sa->GetInstance(j)) inst++;
-			}
-			if (bld)
-			{
-				str.Printf(_("Buildings: %d"), bld);
-				hItem = m_pTree->AppendItem(hLayer, str, ICON_BUILDING, ICON_BUILDING);
-				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, -1));
-			}
-			if (fen)
-			{
-				str.Printf(_("Fences: %d"), fen);
-				hItem = m_pTree->AppendItem(hLayer, str, ICON_FENCE, ICON_FENCE);
-				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, -1));
-			}
-			if (inst)
-			{
-				str.Printf(_("Instances: %d"), inst);
-				hItem = m_pTree->AppendItem(hLayer, str, ICON_INSTANCE, ICON_INSTANCE);
-				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, -1));
-			}
+			vtFeatureSet *fset = alay->pSet;
+
+			vs = fset->GetFilename();
+			str = wxString(vs, wxConvUTF8);
+
+			str += _(" (Type: ");
+			str += wxString(OGRGeometryTypeToName(fset->GetGeomType()), wxConvLibc);
+
+			str += _(", Features: ");
+			vs.Format("%d", fset->GetNumEntities());
+			str += wxString(vs, wxConvLibc);
+			str += _T(")");
+
+			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_RAW, ICON_RAW);
+			//if (sa == terr->GetStructureLayer())
+			//	m_pTree->SetItemBold(hLayer, true);
+			m_pTree->SetItemData(hLayer, new LayerItemData(alay, fset));
 		}
-		m_pTree->Expand(hLayer);
-	}
-
-	// Now, abstract layers
-	vtAbstractLayers &raw = terr->GetAbstractLayers();
-	for (i = 0; i < raw.GetSize(); i++)
-	{
-		vtAbstractLayer *layer = raw[i];
-		vtFeatureSet *set = layer->pSet;
-
-		vs = set->GetFilename();
-		str = wxString(vs, wxConvUTF8);
-
-		str += _(" (Type: ");
-		str += wxString(OGRGeometryTypeToName(set->GetGeomType()), wxConvLibc);
-
-		str += _(", Features: ");
-		vs.Format("%d", set->GetNumEntities());
-		str += wxString(vs, wxConvLibc);
-		str += _T(")");
-
-		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_RAW, ICON_RAW);
-		//if (sa == terr->GetStructures())
-		//	m_pTree->SetItemBold(hLayer, true);
-		m_pTree->SetItemData(hLayer, new LayerItemData(layer, set));
 	}
 
 	// Vegetation
@@ -339,8 +337,6 @@ void LayerDlg::UpdateTreeTerrain()
 	if (!terr)
 		return;
 
-	StructureSet &set = terr->GetStructureSet();
-
 	wxTreeItemIdValue cookie;
 	wxTreeItemId id;
 	int count = 0;
@@ -353,7 +349,7 @@ void LayerDlg::UpdateTreeTerrain()
 		if (data)
 		{
 			// Hightlight the active structure layer in Bold
-			if (data->m_sa && data->m_sa == terr->GetStructures() && data->m_item == -1)
+			if (data->m_slay && data->m_slay == terr->GetStructureLayer() && data->m_item == -1)
 				m_pTree->SetItemBold(id, true);
 			else
 				m_pTree->SetItemBold(id, false);
@@ -416,9 +412,9 @@ void LayerDlg::OnLayerRemove( wxCommandEvent &event )
 	if (!data)
 		return;
 
-	if (data->m_sa != NULL)
+	if (data->m_layer != NULL)
 	{
-		GetCurrentTerrain()->DeleteStructureSet(data->m_index);
+		GetCurrentTerrain()->RemoveLayer(data->m_layer);
 		RefreshTreeContents();
 	}
 }
@@ -429,10 +425,42 @@ void LayerDlg::OnLayerCreate( wxCommandEvent &event )
 	if (!pTerr)
 		return;
 
-	vtStructureArray3d *sa = pTerr->NewStructureArray();
-	sa->SetFilename("Untitled.vtst");
-	sa->m_proj = pTerr->GetProjection();
-	RefreshTreeContents();
+	wxArrayString choices;
+	choices.Add(_("Abstract (Points with labels)"));
+	choices.Add(_("Structure"));
+	int index = wxGetSingleChoiceIndex(_("Msg"), _("caption"), choices, this);
+	if (index == 0)
+	{
+		// make a new abstract layer (points)
+		vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
+		pSet->SetFilename("Untitled.shp");
+		pSet->AddField("Label", FT_String);
+
+		vtTagArray &props = pSet->GetProperties();
+		props.SetValueBool("Geometry", true, true);
+		props.SetValueBool("Labels", true, true);
+		props.SetValueRGBi("LabelColor", RGBi(255,255,0), true);
+		props.SetValueFloat("Elevation", 10.0f, true);
+		props.SetValueInt("TextFieldIndex", 0, true);
+
+		// wrap the features in an abstract layer
+		vtAbstractLayer *pLay = new vtAbstractLayer;
+		pLay->pSet = pSet;
+
+		// add the new layer to the terrain
+		pTerr->GetLayers().Append(pLay);
+		pTerr->SetAbstractLayer(pLay);
+
+		RefreshTreeContents();
+	}
+	else if (index == 1)
+	{
+		// make a new structure layer
+		vtStructureLayer *slay = pTerr->NewStructureLayer();
+		slay->SetFilename("Untitled.vtst");
+		slay->m_proj = pTerr->GetProjection();
+		RefreshTreeContents();
+	}
 }
 
 //Helper
@@ -471,9 +499,9 @@ void LayerDlg::OnLayerSave( wxCommandEvent &event )
 	if (!data)
 		return;
 
-	if (data->m_type == LT_STRUCTURE && data->m_sa != NULL)
+	if (data->m_type == LT_STRUCTURE && data->m_slay != NULL)
 	{
-		GetCurrentTerrain()->SetStructureIndex(data->m_index);
+		GetCurrentTerrain()->SetStructureLayer(data->m_slay);
 		RefreshTreeContents();
 		g_App.SaveStructures(false);	// don't ask for filename
 	}
@@ -529,15 +557,17 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 	bool bVis = event.IsChecked();
 
 	vtNode *pThing = GetNodeFromItem(m_item);
-	if (pThing) {
+	if (pThing)
 		vtGetScene()->ShadowVisibleNode(pThing, bVis);
-	}
 
-	vtStructureArray3d *sa = GetStructureArray3dFromItem(m_item);
-	if (sa) {
-		for (unsigned int j = 0; j < sa->GetSize(); j++) {
-			vtStructure3d *str3d = sa->GetStructure3d(j);
-			if (str3d) {
+	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
+	if (slay)
+	{
+		for (unsigned int j = 0; j < slay->GetSize(); j++)
+		{
+			vtStructure3d *str3d = slay->GetStructure3d(j);
+			if (str3d)
+			{
 				pThing = str3d->GetContained();
 				if (pThing)
 					vtGetScene()->ShadowVisibleNode(pThing, bVis);
@@ -559,10 +589,10 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 		pThing->SetEnabled(bVis);
 		return;
 	}
-	vtStructureArray3d *sa = GetStructureArray3dFromItem(m_item);
-	if (sa)
+	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
+	if (slay)
 	{
-		sa->SetEnabled(bVis);
+		slay->SetEnabled(bVis);
 		LayerItemData *data = GetLayerDataFromItem(m_item);
 		if (data)
 			data->last_visible = bVis;
@@ -583,13 +613,13 @@ void LayerDlg::OnSelChanged( wxTreeEvent &event )
 
 	LayerItemData *data = GetLayerDataFromItem(m_item);
 	VTLOG("OnSelChanged, item %d, data %d\n", m_item.m_pItem, data);
-	if (data && data->m_sa != NULL)
+	if (data && data->m_slay != NULL)
 	{
-		int newindex = data->m_index;
-		int oldindex = GetCurrentTerrain()->GetStructureIndex();
-		if (newindex != oldindex)
+		vtStructureLayer *newlay = data->m_slay;
+		vtStructureLayer *oldlay = GetCurrentTerrain()->GetStructureLayer();
+		if (newlay != oldlay)
 		{
-			GetCurrentTerrain()->SetStructureIndex(newindex);
+			GetCurrentTerrain()->SetStructureLayer(newlay);
 			UpdateTreeTerrain();
 		}
 	}
@@ -601,22 +631,22 @@ void LayerDlg::UpdateEnabling()
 {
 	vtNode *pThing = GetNodeFromItem(m_item);
 	LayerItemData *data = GetLayerDataFromItem(m_item);
-	vtStructureArray3d *sa = GetStructureArray3dFromItem(m_item);
+	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
 
 	GetZoomTo()->Enable(pThing != NULL);
-	GetVisible()->Enable((pThing != NULL) || (sa != NULL));
+	GetVisible()->Enable((pThing != NULL) || (slay != NULL));
 
 	bool bShadows = false;
 #if VTLIB_OSG
 	vtTerrain *terr = GetCurrentTerrain();
 	bShadows = (terr && terr->GetParams().GetValueBool(STR_STRUCT_SHADOWS) &&
-		((pThing != NULL) || (sa != NULL)));
+		((pThing != NULL) || (slay != NULL)));
 #endif
 	GetShadow()->Enable(bShadows);
 
 	if (pThing)
 		GetVisible()->SetValue(pThing->GetEnabled());
-	if (sa)
+	if (slay)
 	{
 		if (data) {
 			GetVisible()->SetValue(data->last_visible);
@@ -628,7 +658,7 @@ void LayerDlg::UpdateEnabling()
 	if (data != NULL)
 	{
 		// We can save a structure layer if it is selected
-		if (data->m_type == LT_STRUCTURE && sa)
+		if (data->m_type == LT_STRUCTURE && slay)
 			bRemovable = bSaveable = true;
 		
 		// We can save always save or remove an abstract layer

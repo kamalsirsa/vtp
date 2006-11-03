@@ -91,7 +91,7 @@ void IslandTerrain::CreateCustomCulture()
 //	g_bLineOfSightTest = true;
 
 	// create a container for the Hawai'i-specific structures
-	m_pSA = NewStructureArray();
+	m_pSA = NewStructureLayer();
 	m_pSA->SetFilename("Hawai'i Dynamic Structures");
 
 	do_test_code();

@@ -994,6 +994,7 @@ void Enviro::SetMode(MouseMode mode)
 		case MM_BUILDINGS:
 		case MM_ROUTES:
 		case MM_PLANTS:
+		case MM_POINTS:
 		case MM_INSTANCES:
 		case MM_VEHICLES:
 		case MM_MOVE:
@@ -1143,8 +1144,14 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		vtString str = GetStringFromUser("Label");
 		if (str != "")
 		{
-			vtAbstractLayers &abs = pTerr->GetAbstractLayers();
-
+			vtAbstractLayer *alay = pTerr->GetAbstractLayer();
+			vtFeatureSetPoint2D *pset = dynamic_cast<vtFeatureSetPoint2D*>(alay->pSet);
+			if (pset)
+			{
+				int rec = pset->AddPoint(DPoint2(m_EarthPos.x, m_EarthPos.y));
+				int field = pset->GetFieldIndex("Label");
+				pset->SetValueFromString(rec, field, str);
+			}
 		}
 	}
 	if (m_mode == MM_INSTANCES)
@@ -1207,7 +1214,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 	VTLOG("Click, raypick at %d %d, ", event.pos.x, event.pos.y);
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *pActiveStructures = pTerr->GetStructures();
+	vtStructureArray3d *pActiveStructures = pTerr->GetStructureLayer();
 
 	if (!(event.flags & VT_CONTROL) && (pActiveStructures != NULL))
 	{
@@ -1241,14 +1248,15 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		VTLOG("%d hits\n", iNumHits);
 
 	// Check for structures
-	int iSet, iOffset;
-	if (pTerr->GetStructureSet().FindStructureFromNode(HitList.front().node, iSet, iOffset))
+	int iOffset;
+	vtStructureLayer *slay;
+	slay = pTerr->GetLayers().FindStructureFromNode(HitList.front().node, iOffset);
+	if (slay)
 	{
 		VTLOG("  Found structure ");
-		vtStructureArray3d *pSelectedStructures = pTerr->GetStructureSet().GetAt(iSet);
-		vtBuilding3d *pBuilding = pSelectedStructures->GetBuilding(iOffset);
-		vtStructInstance3d *pInstance = pSelectedStructures->GetInstance(iOffset);
-		vtFence3d *pFence = pSelectedStructures->GetFence(iOffset);
+		vtBuilding3d *pBuilding = slay->GetBuilding(iOffset);
+		vtStructInstance3d *pInstance = slay->GetInstance(iOffset);
+		vtFence3d *pFence = slay->GetFence(iOffset);
 
 		if (NULL != pBuilding)
 		{
@@ -1294,16 +1302,16 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		}
 		else
 			VTLOG("(unknown)\n");
-		if (pTerr->GetStructureIndex() != iSet)
+		if (pActiveStructures != slay)
 		{
 			// Switching to a different structure set
 			pActiveStructures->VisualDeselectAll();
-			pTerr->SetStructureIndex(iSet);
+			pTerr->SetStructureLayer(slay);
 			ShowLayerView();
 			UpdateLayerView();
 		}
 		// This is inefficient it would be better to maintain a live count if possible
-		if (pTerr->GetStructures()->NumSelected())
+		if (pTerr->GetStructureLayer()->NumSelected())
 			m_bSelectedStruct = true;
 		else
 			m_bSelectedStruct = false;
@@ -1344,7 +1352,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 
 	double dist1, dist2, dist3;
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructures();
+	vtStructureArray3d *structures = pTerr->GetStructureLayer();
 	if (!(event.flags & VT_CONTROL) && structures != NULL)
 		structures->VisualDeselectAll();
 
@@ -1403,7 +1411,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	if (click_struct)
 	{
 		VTLOG(" struct is closest.\n");
-		vtStructureArray3d *structures_picked = pTerr->GetStructures();
+		vtStructureArray3d *structures_picked = pTerr->GetStructureLayer();
 		vtStructure *str = structures_picked->GetAt(structure);
 		vtStructure3d *str3d = structures_picked->GetStructure3d(structure);
 		if (str->GetType() != ST_INSTANCE && str3d->GetGeom() == NULL)
@@ -1508,7 +1516,7 @@ void Enviro::OnMouseRightDown(vtMouseEvent &event)
 	{
 		// Close and create new building in the current structure array
 		vtTerrain *pTerr = GetCurrentTerrain();
-		vtStructureArray3d *pbuildingarray = pTerr->GetStructures(); 
+		vtStructureArray3d *pbuildingarray = pTerr->GetStructureLayer(); 
 		vtBuilding3d *pbuilding = (vtBuilding3d*) pbuildingarray->AddNewBuilding();
 		pbuilding->SetFootprint(0, m_NewLine);
 
@@ -1546,7 +1554,7 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 		if (m_mode == MM_SELECT)
 		{
 			vtTerrain *t = GetCurrentTerrain();
-			vtStructureArray3d *sa = t->GetStructures();
+			vtStructureArray3d *sa = t->GetStructureLayer();
 			vtPlantInstanceArray3d &plants = t->GetPlantInstances();
 
 			if (sa->NumSelected() != 0 || plants.NumSelected() != 0 ||
@@ -1579,7 +1587,7 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 		vtTerrain *pTerr = GetCurrentTerrain();
 		if (m_bSelectedStruct)
 		{
-			vtStructureArray3d *structures = pTerr->GetStructures();
+			vtStructureArray3d *structures = pTerr->GetStructureLayer();
 
 			if (m_bDragging)
 			{
@@ -1776,7 +1784,7 @@ void Enviro::SetFenceOptions(const vtLinearParams &param, bool bProfileChanged)
 		m_pCurFence->CreateNode(pTerr);	// re-create
 	}
 
-	vtStructureArray3d *structures = pTerr->GetStructures();
+	vtStructureArray3d *structures = pTerr->GetStructureLayer();
 	for (unsigned int i = 0; i < structures->GetSize(); i++)
 	{
 		vtStructure *str = structures->GetAt(i);
@@ -1915,7 +1923,7 @@ void Enviro::PlantInstance()
 
 	// create a new Instance object
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structs = pTerr->GetStructures();
+	vtStructureArray3d *structs = pTerr->GetStructureLayer();
 	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
 	inst->CopyTagsFrom(*tags);
 	inst->SetPoint(DPoint2(m_EarthPos.x, m_EarthPos.y));

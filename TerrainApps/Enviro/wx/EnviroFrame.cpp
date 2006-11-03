@@ -577,13 +577,14 @@ void EnviroFrame::RefreshToolbar()
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
 	ADD_TOOL(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
-	m_pToolbar->AddSeparator();
 	if (bTerr || bEarth)
 	{
+		m_pToolbar->AddSeparator();
 		ADD_TOOL(ID_FILE_LAYERS, wxBITMAP(layers), _("Show Layer Dialog"), false);
 	}
 	if (bTerr)
 	{
+		m_pToolbar->AddSeparator();
 		ADD_TOOL(ID_VIEW_MAINTAIN, wxBITMAP(maintain), _("Maintain Height"), true);
 		ADD_TOOL(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
 		ADD_TOOL(ID_VIEW_SLOWER, wxBITMAP(nav_slow), _("Fly Slower"), false);
@@ -737,7 +738,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 #if 0
 		if (pTerr && g_App.m_bSelectedStruct)
 		{
-			vtStructureArray3d *sa = pTerr->GetStructures();
+			vtStructureArray3d *sa = pTerr->GetStructureLayer();
 			int i = 0;
 			while (!sa->GetAt(i)->IsSelected())
 				i++;
@@ -1289,7 +1290,7 @@ void EnviroFrame::OnToolsPoints(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdateToolsPoints(wxUpdateUIEvent& event)
 {
-	event.Enable(g_App.m_state == AS_Terrain);
+	event.Enable(g_App.m_state == AS_Terrain && GetCurrentTerrain()->GetAbstractLayer());
 	event.Check(g_App.m_mode == MM_POINTS);
 }
 
@@ -1592,7 +1593,7 @@ void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 	s_bBuilt = !s_bBuilt;
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *sa = pTerr->GetStructures();
+	vtStructureArray3d *sa = pTerr->GetStructureLayer();
 
 	if (s_bBuilt)
 	{
@@ -1610,7 +1611,7 @@ void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 void EnviroFrame::OnUpdateFoundations(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	event.Enable(t && t->GetStructures() && t->GetStructures()->GetSize() > 0);
+	event.Enable(t && t->GetStructureLayer() && t->GetStructureLayer()->GetSize() > 0);
 	event.Check(s_bBuilt);
 }
 
@@ -2043,7 +2044,7 @@ ProfileDlg *EnviroFrame::ShowProfileDlg()
 void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *sa = pTerr->GetStructures();
+	vtStructureArray3d *sa = pTerr->GetStructureLayer();
 
 	wxMenu *popmenu = new wxMenu;
 	wxMenuItem *item;
@@ -2089,7 +2090,7 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *sa = pTerr->GetStructures();
+	vtStructureArray3d *sa = pTerr->GetStructureLayer();
 	if (sa)
 	{
 		int sel = sa->GetFirstSelected();
@@ -2149,7 +2150,7 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 void EnviroFrame::OnPopupFlip(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructures();
+	vtStructureArray3d *structures = pTerr->GetStructureLayer();
 
 	int count = structures->GetSize();
 	vtStructure *str;
@@ -2171,7 +2172,7 @@ void EnviroFrame::OnPopupFlip(wxCommandEvent& event)
 void EnviroFrame::OnPopupReload(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructures();
+	vtStructureArray3d *structures = pTerr->GetStructureLayer();
 
 	int count = structures->GetSize();
 	vtStructure *str;
@@ -2209,7 +2210,7 @@ void EnviroFrame::OnPopupDelete(wxCommandEvent& event)
 
 void EnviroFrame::OnPopupURL(wxCommandEvent& event)
 {
-	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
+	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructureLayer();
 	vtStructure *struc = sa->GetAt(sa->GetFirstSelected());
 	wxLaunchDefaultBrowser(wxString(struc->GetValueString("url"), wxConvUTF8));
 }

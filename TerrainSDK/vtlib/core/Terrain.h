@@ -35,14 +35,68 @@ class vtTin3d;
 class vtFeatureSet;
 class vtSimpleBillboardEngine;
 
+class vtLayer
+{
+public:
+	virtual ~vtLayer() {}
+
+	virtual void SetLayerName(const vtString &fname) = 0;
+	virtual vtString GetLayerName() = 0;
+	virtual void SetVisible(bool vis) = 0;
+	virtual bool GetVisible() = 0;
+};
+
+class vtStructureLayer : public vtStructureArray3d, public vtLayer
+{
+public:
+	~vtStructureLayer() {}
+
+	void SetLayerName(const vtString &fname) { SetFilename(fname); }
+	vtString GetLayerName() { return GetFilename(); }
+	void SetVisible(bool vis)
+	{
+		SetEnabled(vis);
+	}
+	bool GetVisible()
+	{
+		return false;	// TODO
+	}
+};
+
+/**
+ * An abstract layer is a traditional GIS-style set of geometry features with
+ * attributes.  It can be shown on the terrain in a variety of ways.  It is
+ * described with a set of XML-style properties (see TParams).
+ */
+class vtAbstractLayer : public vtLayer
+{
+public:
+	vtAbstractLayer();
+	~vtAbstractLayer();
+
+	void SetLayerName(const vtString &fname) { if (pSet) pSet->SetFilename(fname); }
+	vtString GetLayerName() { if (pSet) return pSet->GetFilename(); else return ""; }
+	void SetVisible(bool vis);
+	bool GetVisible();
+
+	/// This is the set of features which the layer contains. Style information
+	///  is associated with it, using vtFeatureSet::SetProperties() and 
+	///  vtFeatureSet::GetProperties().
+	vtFeatureSet *pSet;
+	vtGroup *pContainer;
+	vtGroup *pGeomGroup;
+	vtGroup *pLabelGroup;
+};
+
 /** \addtogroup terrain */
 /*@{*/
 
 /** The set of all structure arrays which are on a terrain. */
-class StructureSet : public vtArray<vtStructureArray3d *>
+class LayerSet : public vtArray<vtLayer *>
 {
 public:
-	bool FindStructureFromNode(vtNode* pNode, int &iSet, int &iOffset);
+	void Remove(vtLayer *lay);
+	vtStructureLayer *FindStructureFromNode(vtNode* pNode, int &iOffset);
 };
 
 
@@ -74,27 +128,6 @@ enum TFType
 	TFT_ROADS
 };
 
-/**
- * An abstract layer is a traditional GIS-style set of geometry features with
- * attributes.  It can be shown on the terrain in a variety of ways.  It is
- * described with a set of XML-style properties (see TParams).
- */
-class vtAbstractLayer
-{
-public:
-	vtAbstractLayer();
-	~vtAbstractLayer();
-	/// This is the set of features which the layer contains. Style information
-	///  is associated with it, using vtFeatureSet::SetProperties() and 
-	///  vtFeatureSet::GetProperties().
-	vtFeatureSet *pSet;
-	vtGroup *pContainer;
-	vtGroup *pGeomGroup;
-	vtGroup *pLabelGroup;
-};
-
-// Container for the abstract layers
-typedef vtArray<vtAbstractLayer*> vtAbstractLayers;
 
 /**
  * The vtTerrain class represents a terrain, which is a part of the surface
@@ -110,7 +143,7 @@ typedef vtArray<vtAbstractLayer*> vtAbstractLayers;
  * if you want to set them from memory instead of from disk.  These include:
 	- Elevation grid: use SetLocalGrid().
 	- Elevation TIN: use SetTin().
-	- Structures: use NewStructureArray(), then fill the array with your structures.
+	- Structures: use NewStructureLayer(), then fill it with your structures.
 	- Vegetation: call SetPlantList(), then GetPlantInstances().
 	- Abstract layers: use GetAbstractLayers(), then create and append
 	  your vtAbstractLayer objects. The features will be created
@@ -220,6 +253,10 @@ public:
 	vtRoute* GetLastRoute() { return m_Routes.GetSize()>0?m_Routes[m_Routes.GetSize()-1]:0; }
 	vtRouteMap &GetRouteMap() { return m_Routes; }
 
+	// Layers
+	LayerSet &GetLayers() { return m_Layers; }
+	void RemoveLayer(vtLayer *lay);
+
 	// plants
 	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
 	int DeleteSelectedPlants();
@@ -230,16 +267,14 @@ public:
 	bool AddNodeToVegGrid(vtTransform *pTrans);
 
 	// structures
-	StructureSet &GetStructureSet() { return m_StructureSet; }
-	vtStructureArray3d *GetStructures();
-	int GetStructureIndex();
-	void SetStructureIndex(int index);
-	vtStructureArray3d *NewStructureArray();
+	vtStructureLayer *GetStructureLayer();
+	void SetStructureLayer(vtStructureLayer *slay);
+	vtStructureLayer *NewStructureLayer();
 	vtStructureArray3d *LoadStructuresFromXML(const vtString &strFilename);
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
 	int DeleteSelectedStructures();
-	void DeleteStructureSet(unsigned int index);
+	void DeleteLayer(unsigned int index);
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
 							  int &structure, double &closest, float fMaxInstRadius);
 	bool AddNodeToStructGrid(vtTransform *pTrans);
@@ -248,10 +283,8 @@ public:
 	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
 
 	// abstract layers
-	/// Get the set of abstract layers for this terrain.  You can modify them.
-	vtAbstractLayers &GetAbstractLayers() { return m_AbstractLayers; }
-	void SetAbstractVisible(vtAbstractLayer *layer, bool bVis);
-	bool GetAbstractVisible(vtAbstractLayer *layer);
+	vtAbstractLayer *GetAbstractLayer();
+	void SetAbstractLayer(vtAbstractLayer *alay);
 	/// You should add your nodes to this terrain's scaled features if 
 	/// they are 'flat' like GIS features or contour lines, which should
 	/// be scaled up/down with the vertical exaggeration of the terrain.
@@ -418,9 +451,11 @@ protected:
 	RGBf			m_fog_color;
 	RGBf			m_background_color;
 
+	// Layers
+	LayerSet		m_Layers;
+
 	// built structures, e.g. buildings and fences
-	StructureSet	m_StructureSet;
-	unsigned int	m_iStructSet;
+	vtStructureLayer *m_pActiveStructLayer;
 	vtLodGrid		*m_pStructGrid;
 
 	vtMaterialArray	*m_pTerrMats;	// materials for the LOD terrain
@@ -428,7 +463,7 @@ protected:
 	bool			m_bBothSides;
 
 	// abstract layers
-	vtAbstractLayers m_AbstractLayers;
+	vtAbstractLayer *m_pActiveAbstractLayer;
 	vtTransform		*m_pScaledFeatures;
 
 	// roads

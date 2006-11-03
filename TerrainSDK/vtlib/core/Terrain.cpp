@@ -98,8 +98,11 @@ vtTerrain::vtTerrain()
 	m_pTiledGeom = NULL;
 
 	// structures
-	m_iStructSet = 0;
+	m_pActiveStructLayer = NULL;
 	m_pStructGrid = NULL;
+
+	// abstracts
+	m_pActiveAbstractLayer = NULL;
 
 	m_CamLocation.Identity();
 	m_bVisited = false;
@@ -133,11 +136,15 @@ vtTerrain::~vtTerrain()
 		delete p;
 	}
 
-	size = m_StructureSet.GetSize();
+	size = m_Layers.GetSize();
 	for (i = 0; i < size; i++)
 	{
-		vtStructureArray3d *sa3d = m_StructureSet[i];
-		delete sa3d;
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i]);
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
+		if (slay)
+			delete slay;
+		else if (alay)
+			delete alay;
 	}
 
 	// Do not delete the PlantList, the application may be sharing the same
@@ -197,12 +204,6 @@ vtTerrain::~vtTerrain()
 	{
 		//m_pDynGeomScale->RemoveChild(m_pTiledGeom);
 		m_pTiledGeom->Release();
-	}
-
-	size = m_AbstractLayers.GetSize();
-	for (i = 0; i < size; i++)
-	{
-		delete m_AbstractLayers[i];
 	}
 
 	// This will mop up anything remaining in the terrain's scenegraph
@@ -928,7 +929,7 @@ void vtTerrain::_SetErrorMessage(const vtString &msg)
 
 bool vtTerrain::AddFence(vtFence3d *fen)
 {
-	vtStructureArray3d *structs = GetStructures();
+	vtStructureArray3d *structs = GetStructureLayer();
 	if (!structs)
 		return false;
 
@@ -1189,13 +1190,13 @@ bool vtTerrain::GetGeoExtentsFromMetadata()
 vtStructureArray3d *vtTerrain::LoadStructuresFromXML(const vtString &strFilename)
 {
 	VTLOG("LoadStructuresFromXML '%s'\n", (const char *) strFilename);
-	vtStructureArray3d *structures = NewStructureArray();
+	vtStructureLayer *structures = NewStructureLayer();
 	if (!structures->ReadXML(strFilename))
 	{
 		VTLOG("\tCouldn't load file.\n");
+		m_Layers.Remove(structures);
 		delete structures;
-		m_StructureSet.RemoveAt(m_iStructSet);
-		m_iStructSet = m_StructureSet.GetSize() - 1;
+		m_pActiveStructLayer = NULL;
 		return NULL;
 	}
 	return structures;
@@ -1248,41 +1249,33 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 	return bSuccess;
 }
 
+void vtTerrain::SetStructureLayer(vtStructureLayer *sa)
+{
+	m_pActiveStructLayer = sa;
+}
+
 /**
- * Get the currently active structure array for this terrain.
+ * Get the currently active structure layer for this terrain.
  */
-vtStructureArray3d *vtTerrain::GetStructures()
+vtStructureLayer *vtTerrain::GetStructureLayer()
 {
-	if (m_iStructSet < m_StructureSet.GetSize())
-		return m_StructureSet[m_iStructSet];
-	else
-		return NULL;
-}
-
-int vtTerrain::GetStructureIndex()
-{
-	return m_iStructSet;
-}
-
-void vtTerrain::SetStructureIndex(int index)
-{
-	m_iStructSet = index;
+	return m_pActiveStructLayer;
 }
 
 /**
  * Create a new structure array for this terrain, and return it.
  */
-vtStructureArray3d *vtTerrain::NewStructureArray()
+vtStructureLayer *vtTerrain::NewStructureLayer()
 {
-	vtStructureArray3d *sa = new vtStructureArray3d;
+	vtStructureLayer *slay = new vtStructureLayer;
 
 	// these structures will use the heightfield and projection of this terrain
-	sa->SetTerrain(this);
-	sa->m_proj = m_proj;
+	slay->SetTerrain(this);
+	slay->m_proj = m_proj;
 
-	m_StructureSet.Append(sa);
-	m_iStructSet = m_StructureSet.GetSize() - 1;
-	return sa;
+	m_Layers.Append(slay);
+	m_pActiveStructLayer = slay;
+	return slay;
 }
 
 /**
@@ -1290,7 +1283,7 @@ vtStructureArray3d *vtTerrain::NewStructureArray()
  */
 int vtTerrain::DeleteSelectedStructures()
 {
-	vtStructureArray3d *structures = GetStructures();
+	vtStructureArray3d *structures = GetStructureLayer();
 
 	// first remove them from the terrain
 	for (unsigned int i = 0; i < structures->GetSize(); i++)
@@ -1310,25 +1303,6 @@ int vtTerrain::DeleteSelectedStructures()
 	return structures->DeleteSelected();
 }
 
-void vtTerrain::DeleteStructureSet(unsigned int index)
-{
-	vtStructureArray3d *sa = m_StructureSet[index];
-
-	// first remove them from the terrain
-	for (unsigned int i = 0; i < sa->GetSize(); i++)
-	{
-		vtStructure3d *str3d = sa->GetStructure3d(i);
-		RemoveNodeFromStructGrid(str3d->GetContainer());
-		str3d->DeleteNode();
-	}
-	m_StructureSet.RemoveAt(index);
-	delete sa;
-
-	// If that was the current layer, deal with it
-	if (index == m_iStructSet)
-		m_iStructSet = 0;
-}
-
 bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
 					   int &structure, double &closest, float fMaxInstRadius)
 {
@@ -1336,18 +1310,19 @@ bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
 	closest = 1E8;
 
 	double dist;
-	int i, index, sets = m_StructureSet.GetSize();
-	for (i = 0; i < sets; i++)
+	int i, index, layers = m_Layers.GetSize();
+	for (i = 0; i < layers; i++)
 	{
-		vtStructureArray *sa = m_StructureSet[i];
-
-		if (sa->FindClosestStructure(point, epsilon, index, dist, fMaxInstRadius))
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i]);
+		if (!slay)
+			continue;
+		if (slay->FindClosestStructure(point, epsilon, index, dist, fMaxInstRadius))
 		{
 			if (dist < closest)
 			{
 				structure = index;
 				closest = dist;
-				m_iStructSet = i;
+				m_pActiveStructLayer = slay;
 			}
 		}
 	}
@@ -1651,20 +1626,23 @@ void vtTerrain::_CreateStructures()
 		}
 	}
 	int created = 0;
-	for (i = 0; i < m_StructureSet.GetSize(); i++)
+	for (i = 0; i < m_Layers.GetSize(); i++)
 	{
-		vtStructureArray3d *structures = m_StructureSet[i];
-		CreateStructures(structures);
-		created++;
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i]);
+		if (slay)
+		{
+			CreateStructures(slay);
+			created++;
+		}
 	}
 	if (created == 0)
 	{
 		// No structures loaded, but the user might want to create some later,
 		//  so create a default structure set, and set the projection to match
 		//  the terrain.
-		vtStructureArray3d *sa = NewStructureArray();
-		sa->SetFilename("Untitled.vtst");
-		sa->m_proj = m_proj;
+		vtStructureLayer *slay = NewStructureLayer();
+		slay->SetFilename("Untitled.vtst");
+		slay->m_proj = m_proj;
 	}
 }
 
@@ -1717,14 +1695,15 @@ void vtTerrain::_CreateAbstractLayers()
 
 		vtAbstractLayer *layer = new vtAbstractLayer;
 		layer->pSet = feat;
-		m_AbstractLayers.Append(layer);
+		m_Layers.Append(layer);
 	}
 
 	// Now for each layer that we have, create the geometry and labels
-	for (i = 0; i < m_AbstractLayers.GetSize(); i++)
+	for (i = 0; i < m_Layers.GetSize(); i++)
 	{
-		vtAbstractLayer *layer = m_AbstractLayers[i];
-		CreateStyledFeatures(layer, layer->pSet->GetProperties());
+		vtAbstractLayer *layer = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
+		if (layer)
+			CreateStyledFeatures(layer, layer->pSet->GetProperties());
 	}
 }
 
@@ -2119,16 +2098,16 @@ void vtTerrain::CreateFeatureLabels(vtAbstractLayer *layer, const vtTagArray &st
 	VTLOG("Created %d text labels\n", features);
 }
 
-void vtTerrain::SetAbstractVisible(vtAbstractLayer *layer, bool bVis)
+void vtAbstractLayer::SetVisible(bool bVis)
 {
-	if (layer->pContainer != NULL)
-		layer->pContainer->SetEnabled(bVis);
+	if (pContainer != NULL)
+		pContainer->SetEnabled(bVis);
 }
 
-bool vtTerrain::GetAbstractVisible(vtAbstractLayer *layer)
+bool vtAbstractLayer::GetVisible()
 {
-	if (layer->pContainer != NULL)
-		return layer->pContainer->GetEnabled();
+	if (pContainer != NULL)
+		return pContainer->GetEnabled();
 	return false;
 }
 
@@ -3185,6 +3164,35 @@ void vtTerrain::HideAllPOI()
 	}
 }
 
+
+///////////////////////////////////////////////////////////////////////
+// Layers
+
+void vtTerrain::RemoveLayer(vtLayer *lay)
+{
+	vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
+	if (slay)
+	{
+		// first remove them from the terrain
+		for (unsigned int i = 0; i < slay->GetSize(); i++)
+		{
+			vtStructure3d *str3d = slay->GetStructure3d(i);
+			RemoveNodeFromStructGrid(str3d->GetContainer());
+			str3d->DeleteNode();
+		}
+		delete slay;
+
+		// If that was the current layer, deal with it
+		if (slay == m_pActiveStructLayer)
+			m_pActiveStructLayer = NULL;
+	}
+	m_Layers.Remove(lay);
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Plants
+
 /**
  * Create a new plant instance at a given location and add it to the terrain.
  * \param pos The 2D earth position of the new plant.
@@ -3331,30 +3339,64 @@ void vtTerrain::RemoveNodeFromStructGrid(vtNode *pNode)
 		m_pStructGrid->RemoveNodeFromGrid(pNode);
 }
 
+
+////////////////////////////////////////////////////////////////////////////
+// Abstracts
+
+void vtTerrain::SetAbstractLayer(vtAbstractLayer *alay)
+{
+	m_pActiveAbstractLayer = alay;
+}
+
+/** Get the currently active abstract layer for this terrain. */
+vtAbstractLayer *vtTerrain::GetAbstractLayer()
+{
+	return m_pActiveAbstractLayer;
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+// Scenarios
+
 void vtTerrain::ActivateScenario(int iScenario)
 {
 	ScenarioParams &ScenarioParams = m_Params.m_Scenarios[iScenario];
 	vtStringArray &ActiveLayers = ScenarioParams.GetActiveLayers();
-	int iNumStructArrays = m_StructureSet.GetSize();
+
 	int iNumActiveLayers = ActiveLayers.size();
 
-	for (int i = 0; i < iNumStructArrays; i++)
+	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
 	{
-		vtStructureArray3d *pStructureArray = m_StructureSet[i];
-		vtString Name = StartOfFilename(pStructureArray->GetFilename());
+		vtLayer *lay = m_Layers[i];
+		vtString Name = StartOfFilename(lay->GetLayerName());
 		RemoveFileExtensions(Name);
-		pStructureArray->SetEnabled(false);
+		lay->SetVisible(false);
 		for (int j = 0; j < iNumActiveLayers; j++)
 			if (Name == ActiveLayers[j])
-				pStructureArray->SetEnabled(true);
+				lay->SetVisible(true);
 	}
 }
 
-bool StructureSet::FindStructureFromNode(vtNode* pNode, int &iSet, int &iOffset)
+
+////////////////////////////////////////////////////////////////////////////
+// Layers
+
+void LayerSet::Remove(vtLayer *lay)
 {
-	iSet = -1;
+	for (unsigned int i = 0; i < GetSize(); i++)
+	{
+		if (lay == GetAt(i))
+		{
+			RemoveAt(i);
+			return;
+		}
+	}
+}
+
+vtStructureLayer *LayerSet::FindStructureFromNode(vtNode* pNode, int &iOffset)
+{
 	iOffset = -1;
-	int iNumArrays = GetSize();
+	int iNumLayers = GetSize();
 	bool bFound = false;
 
 	// We might have a low-level native scenegraph node; we want the higher-level
@@ -3366,24 +3408,25 @@ bool StructureSet::FindStructureFromNode(vtNode* pNode, int &iSet, int &iOffset)
 			return false;
 	}
 
-	for (int i = 0; (i < iNumArrays) && !bFound; i++)
+	for (int i = 0; i < iNumLayers && !bFound; i++)
 	{
-		vtStructureArray3d *pStructureArray = GetAt(i);
-		int iNumStructures = pStructureArray->GetSize();
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer *>(GetAt(i));
+		if (!slay)
+			continue;
+		int iNumStructures = slay->GetSize();
 		for (int j = 0; (j < iNumStructures) && !bFound; j++)
 		{
-			vtStructure3d *pStructure3d = pStructureArray->GetStructure3d(j);
+			vtStructure3d *pStructure3d = slay->GetStructure3d(j);
 			if ((pNode == pStructure3d->GetContainer()) ||
 				(pNode == pStructure3d->GetContained()) ||
 				(pNode->GetParent() == pStructure3d->GetContained()) ||
 				(pNode == pStructure3d->GetGeom()))
 			{
-				iSet = i;
 				iOffset = j;
-				bFound = true;
+				return slay;
 			}
 		}
 	}
-	return bFound;
+	return NULL;
 }
 

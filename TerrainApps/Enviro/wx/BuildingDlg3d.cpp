@@ -40,7 +40,7 @@ void BuildingDlg3d::Setup(vtBuilding3d *bld3d, vtHeightField3d *pHeightField)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	m_pStructure3d = bld3d;
-	BuildingDlg::Setup(pTerr->GetStructures(), bld3d, pHeightField);
+	BuildingDlg::Setup(pTerr->GetStructureLayer(), bld3d, pHeightField);
 }
 
 void BuildingDlg3d::OnOK( wxCommandEvent &event )
@@ -48,7 +48,7 @@ void BuildingDlg3d::OnOK( wxCommandEvent &event )
 	BuildingDlg::OnOK(event);
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	pTerr->GetStructures()->ConstructStructure(m_pStructure3d);
+	pTerr->GetStructureLayer()->ConstructStructure(m_pStructure3d);
 }
 
 void BuildingDlg3d::EnableRendering(bool bEnable)
@@ -59,5 +59,5 @@ void BuildingDlg3d::EnableRendering(bool bEnable)
 void BuildingDlg3d::Modified()
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	pTerr->GetStructures()->ConstructStructure(m_pStructure3d);
+	pTerr->GetStructureLayer()->ConstructStructure(m_pStructure3d);
 }

@@ -95,7 +95,7 @@ void EnviroGUI::SetState(AppState s)
 vtString EnviroGUI::GetStringFromUser(const vtString &msg)
 {
 	wxString message(msg, wxConvUTF8);
-	wxString str = wxGetTextFromUser(message, _("caption"), _T(""), this);
+	wxString str = wxGetTextFromUser(message, _("caption"), _T(""), GetFrame());
 	return (vtString) (const char *) str.mb_str(wxConvUTF8);
 }
 
@@ -200,7 +200,7 @@ void EnviroGUI::SaveVegetation(bool bAskFilename)
 
 void EnviroGUI::SaveStructures(bool bAskFilename)
 {
-	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
+	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructureLayer();
 	vtString fname = sa->GetFilename();
 	if (bAskFilename)
 	{
