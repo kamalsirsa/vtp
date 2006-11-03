@@ -375,12 +375,15 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	else if (m_iInitStep == 4)
 	{
-		// Tell the skydome where on the planet we are
-		DPoint2 geo = pTerr->GetCenterGeoLocation();
-		m_pSkyDome->SetGeoLocation(geo);
+		if (m_pSkyDome)
+		{
+			// Tell the skydome where on the planet we are
+			DPoint2 geo = pTerr->GetCenterGeoLocation();
+			m_pSkyDome->SetGeoLocation(geo);
 
-		// Set time to that of the new terrain
-		m_pSkyDome->SetTime(pTerr->GetInitialTime());
+			// Set time to that of the new terrain
+			m_pSkyDome->SetTime(pTerr->GetInitialTime());
+		}
 
 		if (!pTerr->CreateStep2(GetSunLight()))
 		{
@@ -478,6 +481,9 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		// Layer view needs to update
 		RefreshLayerView();
+
+		clock_t clock2 = clock();
+		VTLOG(" seconds since app start: %.2f\n", (float)clock2/CLOCKS_PER_SEC);
 	}
 }
 

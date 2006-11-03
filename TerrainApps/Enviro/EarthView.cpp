@@ -408,7 +408,9 @@ void Enviro::SetSpaceAxes(bool bShow)
 	}
 	else if (m_state == AS_Terrain)
 	{
-		vtGetTS()->GetSkyDome()->ShowMarkers(bShow);
+		vtSkyDome *sky = vtGetTS()->GetSkyDome();
+		if (sky)
+			sky->ShowMarkers(bShow);
 	}
 }
 
@@ -421,7 +423,9 @@ bool Enviro::GetSpaceAxes()
 	}
 	else if (m_state == AS_Terrain)
 	{
-		return vtGetTS()->GetSkyDome()->MarkersShown();
+		vtSkyDome *sky = vtGetTS()->GetSkyDome();
+		if (sky)
+			return sky->MarkersShown();
 	}
 	return false;
 }
