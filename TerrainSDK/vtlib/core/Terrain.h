@@ -11,21 +11,20 @@
 #include "vtdata/vtTime.h"
 #include "vtdata/FilePath.h"
 
-#include "TParams.h"
-#include "Trees.h"
-#include "Structure3d.h"
-#include "Route.h"
-#include "DynTerrain.h"
+#include "AbstractLayer.h"
+#include "AnimPath.h"
 #include "Content3d.h"
+#include "DynTerrain.h"
 #include "GeomUtil.h"	// for MeshFactory
 #include "Location.h"
-#include "AnimPath.h"
+#include "Route.h"
+#include "Structure3d.h"
+#include "TParams.h"
+#include "Trees.h"
 
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
-class vtTerrainGeom;
 class vtTiledGeom;
-class vtTextureCoverage;
 class vtFence3d;
 class vtRoadMap3d;
 class vtLodGrid;
@@ -34,17 +33,6 @@ class vtTin;
 class vtTin3d;
 class vtFeatureSet;
 class vtSimpleBillboardEngine;
-
-class vtLayer
-{
-public:
-	virtual ~vtLayer() {}
-
-	virtual void SetLayerName(const vtString &fname) = 0;
-	virtual vtString GetLayerName() = 0;
-	virtual void SetVisible(bool vis) = 0;
-	virtual bool GetVisible() = 0;
-};
 
 class vtStructureLayer : public vtStructureArray3d, public vtLayer
 {
@@ -61,31 +49,6 @@ public:
 	{
 		return false;	// TODO
 	}
-};
-
-/**
- * An abstract layer is a traditional GIS-style set of geometry features with
- * attributes.  It can be shown on the terrain in a variety of ways.  It is
- * described with a set of XML-style properties (see TParams).
- */
-class vtAbstractLayer : public vtLayer
-{
-public:
-	vtAbstractLayer();
-	~vtAbstractLayer();
-
-	void SetLayerName(const vtString &fname) { if (pSet) pSet->SetFilename(fname); }
-	vtString GetLayerName() { if (pSet) return pSet->GetFilename(); else return ""; }
-	void SetVisible(bool vis);
-	bool GetVisible();
-
-	/// This is the set of features which the layer contains. Style information
-	///  is associated with it, using vtFeatureSet::SetProperties() and 
-	///  vtFeatureSet::GetProperties().
-	vtFeatureSet *pSet;
-	vtGroup *pContainer;
-	vtGroup *pGeomGroup;
-	vtGroup *pLabelGroup;
 };
 
 /** \addtogroup terrain */
@@ -302,6 +265,7 @@ public:
 	// manage engines specific to this terrain
 	void AddEngine(vtEngine *pE);
 	void ActivateEngines(bool bActive);
+	vtSimpleBillboardEngine	*GetBillboardEngine() { return m_pBBEngine; }
 
 	// reports world coordinates
 	FPoint3 GetCenter();
@@ -338,9 +302,6 @@ public:
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
 		float fOffset, bool bInterp = true, bool bCurve = false, bool bTrue = false);
-	void CreateStyledFeatures(vtAbstractLayer *layer,  const vtTagArray &style);
-	void CreateFeatureGeometry(vtAbstractLayer *layer, const vtTagArray &style);
-	void CreateFeatureLabels(vtAbstractLayer *layer,   const vtTagArray &style);
 
 	// Access the viewpoint(s) associated with this terrain
 	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }
