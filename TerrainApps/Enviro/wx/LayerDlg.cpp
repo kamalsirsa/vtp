@@ -20,6 +20,7 @@
 #include "canvas.h"		// for EnableContinuousRendering
 
 #include "LayerDlg.h"
+#include "StyleDlg.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "building.xpm"
@@ -433,15 +434,25 @@ void LayerDlg::OnLayerCreate( wxCommandEvent &event )
 	{
 		// make a new abstract layer (points)
 		vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
+		vtTagArray &props = pSet->GetProperties();
 		pSet->SetFilename("Untitled.shp");
 		pSet->AddField("Label", FT_String);
 
-		vtTagArray &props = pSet->GetProperties();
-		props.SetValueBool("Geometry", true, true);
+		// Ask style for the new point layer
+		props.SetValueBool("Geometry", false, true);
 		props.SetValueBool("Labels", true, true);
 		props.SetValueRGBi("LabelColor", RGBi(255,255,0), true);
 		props.SetValueFloat("Elevation", 10.0f, true);
 		props.SetValueInt("TextFieldIndex", 0, true);
+
+		StyleDlg dlg(this, -1, _("Style"));
+		dlg.SetFeatureSet(pSet);
+		dlg.SetOptions(vtGetDataPath(), props);
+		if (dlg.ShowModal() != wxID_OK)
+		{
+			delete pSet;
+			return;
+		}
 
 		// wrap the features in an abstract layer
 		vtAbstractLayer *pLay = new vtAbstractLayer;
