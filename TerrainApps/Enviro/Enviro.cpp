@@ -1141,6 +1141,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	}
 	if (m_mode == MM_POINTS)
 	{
+		DPoint2 atpoint(m_EarthPos.x, m_EarthPos.y);
 		vtString str = GetStringFromUser("Label");
 		if (str != "")
 		{
@@ -1148,9 +1149,13 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 			vtFeatureSetPoint2D *pset = dynamic_cast<vtFeatureSetPoint2D*>(alay->pSet);
 			if (pset)
 			{
-				int rec = pset->AddPoint(DPoint2(m_EarthPos.x, m_EarthPos.y));
+				// add a single 2D point
+				int rec = pset->AddPoint(atpoint);
 				int field = pset->GetFieldIndex("Label");
 				pset->SetValueFromString(rec, field, str);
+
+				// recreate the 3D visuals
+				alay->CreateStyledFeatures(pTerr);
 			}
 		}
 	}
