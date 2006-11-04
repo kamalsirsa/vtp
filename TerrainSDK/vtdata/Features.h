@@ -173,6 +173,7 @@ public:
 	// attribute (field) operations
 	unsigned int GetNumFields() const { return m_fields.GetSize(); }
 	Field *GetField(int i) { return m_fields.GetAt(i); }
+	const Field *GetField(int i) const { return m_fields.GetAt(i); }
 	Field *GetField(const char *name);
 	int GetFieldIndex(const char *name) const;
 	int AddField(const char *name, FieldType ftype, int string_length = 40);
