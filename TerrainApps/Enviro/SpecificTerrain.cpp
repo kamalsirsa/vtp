@@ -7,7 +7,7 @@
 //	Hawaii.cpp, Nevada.cpp).  You can put your own implementation here, in
 //	a file by itself, or wherever you like.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,35 +21,6 @@
 
 void Romania::CreateCustomCulture()
 {
-#if 0
-	vtString fname = "PointData/";
-	fname += "RO.shp";
-//	fname += "RO-subset.shp";
-	vtString path = FindFileOnPaths(s_DataPaths, fname);
-	if (path == "")
-		return;
-
-	vtFeatures feat;
-	if (!feat.LoadFrom(path))
-		return;
-
-	int i, num = feat.GetNumEntities();
-	for (i = 0; i < num; i++)
-	{
-		int ppc = feat.GetIntegerValue(i, 1);
-		if (ppc != 1)
-			feat.SetToDelete(i);
-	}
-	feat.ApplyDeletion();
-	num = feat.GetNumEntities();
-
-	PointStyle style;
-	style.m_field_index = 2;
-	style.m_label_elevation = 3000;
-	style.m_label_size = 3000;
-
-	CreateStyledFeatures(feat, "Fonts/Arial.ttf", style);
-#endif
 }
 
 ///////////////////////////////
