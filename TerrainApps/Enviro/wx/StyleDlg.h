@@ -29,7 +29,15 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
-	void SetOptions(vtStringArray &datapaths, const vtTagArray &Layer);
+	// This dialog can operate on a featureset in memory.  If you do not give
+	//  it a featureset, it will assume the layer's filename is a SHP on disk
+	//  and use that instead.
+	void SetFeatureSet(const vtFeatureSet *pSet)
+	{
+		m_pFeatureSet = pSet;
+	}
+
+	void SetOptions(const vtStringArray &datapaths, const vtTagArray &Layer);
 	void GetOptions(vtTagArray &pLayer);
 
 private:
@@ -49,7 +57,8 @@ private:
 
 private:
 	// WDR: member variable declarations for StyleDlg
-	vtString m_strFilename, m_strResolved;
+	const vtFeatureSet *m_pFeatureSet;
+	vtString m_strResolved;
 
 	OGRwkbGeometryType m_type;
 	wxString m_strFeatureType;
@@ -67,7 +76,7 @@ private:
 	float m_fLabelHeight;
 	float m_fLabelSize;
 
-	vtFeatureSetPoint2D m_Fields;
+	vtFeatureSetPoint2D m_DummyFeatures;
 	wxColourData m_ColourData;
 	wxColour m_Colour;
 

@@ -43,6 +43,7 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// WDR: dialog function StyleDialogFunc for StyleDlg
 	StyleDialogFunc( this, TRUE );
 
+	m_pFeatureSet = NULL;
 	m_bGeometry = true;
 	m_GeomColor.Set(255,255,255);
 
@@ -75,10 +76,29 @@ void StyleDlg::OnInitDialog(wxInitDialogEvent& event)
 	wxDialog::OnInitDialog(event);
 }
 
-void StyleDlg::SetOptions(vtStringArray &datapaths, const vtTagArray &Layer)
+void StyleDlg::SetOptions(const vtStringArray &datapaths, const vtTagArray &Layer)
 {
-	// for our purposes, we need the actual file location
-	m_strFilename = Layer.GetValueString("Filename");
+	if (m_pFeatureSet)
+	{
+		m_type = m_pFeatureSet->GetGeomType();
+	}
+	else
+	{
+		// without a featureset, we need the actual file location
+		vtString strFilename = Layer.GetValueString("Filename");
+		m_strResolved = strFilename;
+		m_strResolved = FindFileOnPaths(datapaths, m_strResolved);
+		if (m_strResolved == "")
+		{
+			vtString path = "PointData/";
+			m_strResolved = path + strFilename;
+			m_strResolved = FindFileOnPaths(datapaths, m_strResolved);
+		}
+
+		m_type = GetFeatureGeomType(m_strResolved);
+		if (m_DummyFeatures.LoadFieldInfoFromDBF(m_strResolved))
+			m_pFeatureSet = &m_DummyFeatures;
+	}
 
 	m_bGeometry = Layer.GetValueBool("Geometry");
 	if (!Layer.GetValueRGBi("GeomColor", m_GeomColor))
@@ -103,14 +123,6 @@ void StyleDlg::SetOptions(vtStringArray &datapaths, const vtTagArray &Layer)
 	if (!Layer.GetValueFloat("LabelSize", m_fLabelSize))
 		m_fLabelSize = 20;
 
-	m_strResolved = m_strFilename;
-	m_strResolved = FindFileOnPaths(datapaths, m_strResolved);
-	if (m_strResolved == "")
-	{
-		vtString path = "PointData/";
-		m_strResolved = path + m_strFilename;
-		m_strResolved = FindFileOnPaths(datapaths, m_strResolved);
-	}
 }
 
 void StyleDlg::GetOptions(vtTagArray &pLayer)
@@ -160,30 +172,25 @@ void StyleDlg::RefreshFields()
 	GetColorField()->Clear();
 	GetColorField()->Append(_("(none)"));
 
-	m_type = GetFeatureGeomType(m_strResolved);
 	m_strFeatureType = wxString(OGRGeometryTypeToName(m_type), wxConvUTF8);
-
-	if (m_Fields.LoadFieldInfoFromDBF(m_strResolved))
+	int i, num = m_pFeatureSet->GetNumFields();
+	for (i = 0; i < num; i++)
 	{
-		int i, num = m_Fields.GetNumFields();
-		for (i = 0; i < num; i++)
-		{
-			Field *field = m_Fields.GetField(i);
-			wxString field_name(field->m_name, wxConvUTF8);
-			GetTextField()->Append(field_name);
-			GetColorField()->Append(field_name);
-		}
-		if (num)
-		{
-			if (m_iTextField < 0)
-				m_iTextField = 0;
-			if (m_iTextField > num-1)
-				m_iTextField = num-1;
-			if (m_iColorField < 0)
-				m_iColorField = 0;
-			if (m_iColorField > num-1)
-				m_iColorField = num-1;
-		}
+		const Field *field = m_pFeatureSet->GetField(i);
+		wxString field_name(field->m_name, wxConvUTF8);
+		GetTextField()->Append(field_name);
+		GetColorField()->Append(field_name);
+	}
+	if (num)
+	{
+		if (m_iTextField < 0)
+			m_iTextField = 0;
+		if (m_iTextField > num-1)
+			m_iTextField = num-1;
+		if (m_iColorField < 0)
+			m_iColorField = 0;
+		if (m_iColorField > num-1)
+			m_iColorField = num-1;
 	}
 }
 
@@ -196,7 +203,7 @@ void StyleDlg::UpdateEnabling()
 
 	GetLabelColor()->Enable(m_bTextLabels);
 	GetTextField()->Enable(m_bTextLabels);
-	GetColorField()->Enable(m_bTextLabels && m_Fields.GetNumFields() > 1);
+	GetColorField()->Enable(m_bTextLabels && m_pFeatureSet->GetNumFields() > 1);
 	GetLabelSize()->Enable(m_bTextLabels);
 	GetLabelHeight()->Enable(m_bTextLabels);
 }
