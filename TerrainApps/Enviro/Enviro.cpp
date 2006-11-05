@@ -2192,20 +2192,20 @@ void Enviro::CreateElevationLegend()
 
 	// Text labels
 	vtFont *font = new vtFont;
-	vtString font_path = FindFileOnPaths(vtGetDataPath(), "Fonts/Arial.ttf");
-	if (font_path != "")
-		font->LoadFont(font_path);
-	for (i = 0; i < ticks; i++)
+	if (font->LoadFont("Arial.ttf"))
 	{
-		vtTextMesh *mesh3 = new vtTextMesh(font, fontsize, false);
-		vtString str;
-		str.Format("%4.1f", fMin + (fMax - fMin) / (ticks-1) * i);
-		mesh3->SetText(str);
-		FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0.0f);
-		mesh3->SetPosition(p1);
+		for (i = 0; i < ticks; i++)
+		{
+			vtTextMesh *mesh3 = new vtTextMesh(font, fontsize, false);
+			vtString str;
+			str.Format("%4.1f", fMin + (fMax - fMin) / (ticks-1) * i);
+			mesh3->SetText(str);
+			FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0.0f);
+			mesh3->SetPosition(p1);
 
-		m_pLegendGeom->AddTextMesh(mesh3, 0);
-		mesh3->Release();
+			m_pLegendGeom->AddTextMesh(mesh3, 0);
+			mesh3->Release();
+		}
 	}
 	delete font;
 
