@@ -17,14 +17,16 @@
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/Terrain.h"
 #include "vtdata/vtLog.h"
+#include "vtui/InstanceDlg.h"
+#include "vtui/DistanceDlg.h"
+#include "vtui/ProfileDlg.h"
+
 #include "EnviroGUI.h"
 #include "EnviroApp.h"
 #include "EnviroFrame.h"
 #include "canvas.h"
 #include "LayerDlg.h"
-#include "vtui/InstanceDlg.h"
-#include "vtui/DistanceDlg.h"
-#include "vtui/ProfileDlg.h"
+#include "StyleDlg.h"
 
 #if WIN32 || !wxUSE_JOYSTICK
   #include "vtui/Joystick.h"
@@ -303,3 +305,42 @@ void vtJoystickEngine::Eval()
 	m_fLastTime = fTime;
 }
 
+
+///////////////////////////////////////////////////////////////////////
+// Helpers
+
+vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
+{
+	// make a new abstract layer (points)
+	vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
+	vtTagArray &props = pSet->GetProperties();
+	pSet->SetFilename("Untitled.shp");
+	pSet->AddField("Label", FT_String);
+
+	// Ask style for the new point layer
+	props.SetValueBool("Geometry", false, true);
+	props.SetValueBool("Labels", true, true);
+	props.SetValueRGBi("LabelColor", RGBi(255,255,0), true);
+	props.SetValueFloat("Elevation", 10.0f, true);
+	props.SetValueInt("TextFieldIndex", 0, true);
+	props.SetValueString("Font", "ArialUni.ttf", true);
+
+	StyleDlg dlg(NULL, -1, _("Style"));
+	dlg.SetFeatureSet(pSet);
+	dlg.SetOptions(vtGetDataPath(), props);
+	if (dlg.ShowModal() != wxID_OK)
+	{
+		delete pSet;
+		return NULL;
+	}
+
+	// wrap the features in an abstract layer
+	vtAbstractLayer *pLay = new vtAbstractLayer;
+	pLay->pSet = pSet;
+
+	// add the new layer to the terrain
+	pTerr->GetLayers().Append(pLay);
+	pTerr->SetAbstractLayer(pLay);
+
+	return pLay;
+}

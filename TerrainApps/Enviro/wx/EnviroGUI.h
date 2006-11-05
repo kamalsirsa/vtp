@@ -56,6 +56,9 @@ public:
 	vtJoystickEngine	*m_pJFlyer;
 };
 
+// Helper
+vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr);
+
 // global singleton
 extern EnviroGUI g_App;
 
