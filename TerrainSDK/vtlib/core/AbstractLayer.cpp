@@ -83,13 +83,7 @@ void vtAbstractLayer::ReleaseGeometry()
  * Given a featureset and style description, create the geometry and place it
  * on the terrain.
  *
- * \param layer The set of features to create.
- * \param style The style (color, size, etc.) to use in creating the features.
-		See CreateFeatureGeometry() and CreateFeatureLabels() for descriptions
-		of the supported style tags.  Control tags to this method are:
-		- Geometry: Boolean, true indicates that geometry (such as lines or
-			spheres) should be created.
-		- Labels: Boolean, true indicates that text labels should be created.
+ * \param pTerr The terrain to drape on.
  */
 void vtAbstractLayer::CreateStyledFeatures(vtTerrain *pTerr)
 {
@@ -114,22 +108,15 @@ void vtAbstractLayer::CreateStyledFeatures(vtTerrain *pTerr)
 }
 
 /**
- * Given a featureset and style description, create geometry objects (such as
- * lines or spheres) and place them on the terrain.
- *
- * \param layer The set of features to create.  If the features are 2D or 3D
-		polylines (vtFeatureSetLineString or vtFeatureSetLineString3D) then
-		line geometry will be created.  If 2D, it will be draped on the
-		terrain. Polygon features (vtFeatureSetPolygon) will also be created
-		as line geometry (unfilled polygons) and draped on the ground.
- * \param style The style (color, size, etc.) to use in creating the features.
-		Supported tags include:
-		- GeomColor: RGB value to be used for all features.  Default is white.
-		- GeomHeight: Height above ground, for draped geometry.
-		- LineWidth: Width of line geometry, in pixels.
-		- Tessellate: Boolean, indicates whether to tesselate each line segment
-			to allow for smoother draping on uneven terrain.  Default is false.
- */
+	Given a featureset and style description, create geometry objects (such as
+	lines or spheres) and place them on the terrain.
+	If the features are 2D or 3D polylines (vtFeatureSetLineString or
+	vtFeatureSetLineString3D) then line geometry will be created.  If 2D, it
+	will be draped on the terrain. Polygon features (vtFeatureSetPolygon) will
+	also be created as line geometry (unfilled polygons) and draped on the ground.
+
+	\param pTerr The terrain to drape on.
+*/
 void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
 {
 	vtTagArray &style = pSet->GetProperties();
@@ -263,20 +250,11 @@ void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
  * Given a featureset and style description, create geometry objects (such as
  * lines or spheres) and place them on the terrain.
  *
- * \param layer The set of features to create.  If the features are 2D or 3D
-		points (vtFeatureSetPoint2D or vtFeatureSetPoint3D) then the labels
-		will be placed at those points.  If the features are 2D polygons
-		(vtFeatureSetPolygon) then the point used is the centroid of the
-		polygon.
- * \param style The style (color, size, etc.) to use in creating the features.
-		Supported tags include:
-		- LabelColor: RGB value to be used for all features.  Default is white.
-		- TextFieldIndex: The 0-based index of the field to use for the label text.
-		- ColorFieldIndex: The 0-based index of the field to use for the label color.
-		- Elevation: Float value to elevate the label.  For example, if the
-			input is 2D points, and this value is 30, then the labels are
-			created 30 meters above the ground.  Default is 0.
-		- LabelSize: Size (height) of the label in meters.  Default is 18.
+ * If the features are 2D or 3D points (vtFeatureSetPoint2D or vtFeatureSetPoint3D)
+ * then the labels will be placed at those points.  If the features are 2D polygons
+ * (vtFeatureSetPolygon) then the point used is the centroid of the polygon.
+ *
+ * \param pTerr The terrain to drape on.
  */
 void vtAbstractLayer::CreateFeatureLabels(vtTerrain *pTerr)
 {
