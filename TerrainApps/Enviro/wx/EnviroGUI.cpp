@@ -323,7 +323,6 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
 	props.SetValueRGBi("LabelColor", RGBi(255,255,0), true);
 	props.SetValueFloat("Elevation", 10.0f, true);
 	props.SetValueInt("TextFieldIndex", 0, true);
-	props.SetValueString("Font", "ArialUni.ttf", true);
 
 	StyleDlg dlg(NULL, -1, _("Style"));
 	dlg.SetFeatureSet(pSet);
