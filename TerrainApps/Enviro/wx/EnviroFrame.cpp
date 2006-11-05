@@ -559,7 +559,7 @@ void EnviroFrame::RefreshToolbar()
 		ADD_TOOL(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
 		ADD_TOOL(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
 		ADD_TOOL(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
-		ADD_TOOL(ID_TOOLS_POINTS, wxBITMAP(points), _("Create Points"), true);
+		ADD_TOOL(ID_TOOLS_POINTS, wxBITMAP(placemark), _("Create Points"), true);
 //		ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);	// not yet
 		ADD_TOOL(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
 		ADD_TOOL(ID_TOOLS_VEHICLES, wxBITMAP(vehicles), _("Create Vehicles"), true);
@@ -1285,12 +1285,17 @@ void EnviroFrame::OnUpdateToolsPlants(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnToolsPoints(wxCommandEvent& event)
 {
+	vtAbstractLayer *alay = g_App.GetLabelLayer();
+	if (!alay)
+		alay = CreateNewAbstractPointLayer(GetCurrentTerrain());
+	if (!alay)
+		return;
 	SetMode(MM_POINTS);
 }
 
 void EnviroFrame::OnUpdateToolsPoints(wxUpdateUIEvent& event)
 {
-	event.Enable(g_App.m_state == AS_Terrain && GetCurrentTerrain()->GetAbstractLayer());
+	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_POINTS);
 }
 
