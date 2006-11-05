@@ -27,6 +27,7 @@ class vtIcoGlobe;
 class vtRoute;
 class vtUtilNode;
 class vtFence3d;
+class vtAbstractLayer;
 
 // Engines
 class GlobePicker;
@@ -174,6 +175,9 @@ public:
 	void CreateGroundVehicle(const VehicleOptions &opt);
 	VehicleManager m_VehicleManager;
 	VehicleSet m_Vehicles;
+
+	// abstract layers
+	vtAbstractLayer *GetLabelLayer();
 
 	// global state
 	AppState	m_state;

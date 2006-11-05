@@ -1145,7 +1145,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		vtString str = GetStringFromUser("Label");
 		if (str != "")
 		{
-			vtAbstractLayer *alay = pTerr->GetAbstractLayer();
+			vtAbstractLayer *alay = GetLabelLayer();
 			vtFeatureSetPoint2D *pset = dynamic_cast<vtFeatureSetPoint2D*>(alay->pSet);
 			if (pset)
 			{
@@ -2214,6 +2214,8 @@ void Enviro::CreateElevationLegend()
 
 
 ////////////////////////////////////////////////////////////////////////
+// Vehicles
+
 #include "CarEngine.h"
 
 void Enviro::CreateGroundVehicle(const VehicleOptions &opt)
@@ -2316,6 +2318,29 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, floa
 		}
 		road_node = (NodeGeom*) road_node->m_pNext;
 	}
+}
+
+
+////////////////////////////////////////////////////////////////////////
+// Abstract Layers
+
+// Find an appropriate point layer for labels.
+vtAbstractLayer *Enviro::GetLabelLayer()
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return false;
+	LayerSet &layers = pTerr->GetLayers();
+	for (unsigned int i = 0; i < layers.GetSize(); i++)
+	{
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
+		if (!alay)
+			continue;
+		if (alay->pSet->GetGeomType() == wkbPoint &&
+			alay->pSet->GetField("Label") != NULL)
+			return alay;
+	}
+	return NULL;
 }
 
 
