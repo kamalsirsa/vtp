@@ -42,6 +42,7 @@ public:
 
 private:
 	// WDR: method declarations for StyleDlg
+	wxTextCtrl* GetFont()  { return (wxTextCtrl*) FindWindow( ID_FONT ); }
 	wxTextCtrl* GetLineWidth()  { return (wxTextCtrl*) FindWindow( ID_LINE_WIDTH ); }
 	wxTextCtrl* GetGeomHeight()  { return (wxTextCtrl*) FindWindow( ID_GEOM_HEIGHT ); }
 	wxCheckBox* GetTessellate()  { return (wxCheckBox*) FindWindow( ID_TESSELLATE ); }
@@ -75,6 +76,7 @@ private:
 	int m_iColorField;
 	float m_fLabelHeight;
 	float m_fLabelSize;
+	wxString m_strFont;
 
 	vtFeatureSetPoint2D m_DummyFeatures;
 	wxColourData m_ColourData;

@@ -12,7 +12,9 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#include "wx/colordlg.h"
+#include <wx/colordlg.h>
+#include <wx/fontdlg.h>
+#include <wx/fontenum.h>
 
 #include "StyleDlg.h"
 #include "vtlib/vtlib.h"
@@ -66,6 +68,8 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_COLOR_FIELD, &m_iColorField);
 	AddNumValidator(ID_LABEL_HEIGHT, &m_fLabelHeight);
 	AddNumValidator(ID_LABEL_SIZE, &m_fLabelSize);
+
+	AddValidator(ID_FONT, &m_strFont);
 }
 
 void StyleDlg::OnInitDialog(wxInitDialogEvent& event)
@@ -123,6 +127,11 @@ void StyleDlg::SetOptions(const vtStringArray &datapaths, const vtTagArray &Laye
 	if (!Layer.GetValueFloat("LabelSize", m_fLabelSize))
 		m_fLabelSize = 20;
 
+	vtString font;
+	if (Layer.GetValueString("Font", font))
+		m_strFont = wxString(font, wxConvUTF8);
+	else
+		m_strFont = _T("Arial.ttf");
 }
 
 void StyleDlg::GetOptions(vtTagArray &pLayer)
@@ -155,6 +164,7 @@ void StyleDlg::GetOptions(vtTagArray &pLayer)
 		pLayer.SetValueInt("ColorFieldIndex", m_iColorField, true);
 		pLayer.SetValueFloat("Elevation", m_fLabelHeight, true);
 		pLayer.SetValueFloat("LabelSize", m_fLabelSize, true);
+		pLayer.SetValueString("Font", (const char *) m_strFont.mb_str(wxConvUTF8), true);
 	}
 	else
 	{
@@ -163,6 +173,7 @@ void StyleDlg::GetOptions(vtTagArray &pLayer)
 		pLayer.RemoveTag("ColorFieldIndex");
 		pLayer.RemoveTag("Elevation");
 		pLayer.RemoveTag("LabelSize");
+		pLayer.RemoveTag("Font");
 	}
 }
 

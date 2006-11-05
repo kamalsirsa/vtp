@@ -1988,19 +1988,31 @@ wxSizer *StyleDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item22->Add( item37, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    item4->Add( item22, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-
-    item0->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
-
     wxBoxSizer *item41 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item42 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item41->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
+
+    wxStaticText *item42 = new wxStaticText( parent, ID_TEXT, _("Font:"), wxDefaultPosition, wxDefaultSize, 0 );
     item41->Add( item42, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item43 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item41->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item43 = new wxTextCtrl( parent, ID_FONT, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item41->Add( item43, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item41, 0, wxALIGN_CENTER|wxALL, 5 );
+    item22->Add( item41, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    item4->Add( item22, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item0->Add( item4, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+
+    wxBoxSizer *item44 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item45 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item44->Add( item45, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item46 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item44->Add( item46, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item44, 0, wxALIGN_CENTER, 5 );
 
     if (set_sizer)
     {

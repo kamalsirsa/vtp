@@ -275,44 +275,45 @@ const int ID_TEXT_FIELD = 10204;
 const int ID_COLOR_FIELD = 10205;
 const int ID_LABEL_HEIGHT = 10206;
 const int ID_LABEL_SIZE = 10207;
+const int ID_FONT = 10208;
 wxSizer *StyleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SCENARIO_LIST = 10208;
-const int ID_NEW_SCENARIO = 10209;
-const int ID_DELETE_SCENARIO = 10210;
-const int ID_EDIT_SCENARIO = 10211;
-const int ID_MOVEUP_SCENARIO = 10212;
-const int ID_MOVEDOWN_SCENARIO = 10213;
-const int ID_CHOICE_SCENARIO = 10214;
+const int ID_SCENARIO_LIST = 10209;
+const int ID_NEW_SCENARIO = 10210;
+const int ID_DELETE_SCENARIO = 10211;
+const int ID_EDIT_SCENARIO = 10212;
+const int ID_MOVEUP_SCENARIO = 10213;
+const int ID_MOVEDOWN_SCENARIO = 10214;
+const int ID_CHOICE_SCENARIO = 10215;
 wxSizer *ScenariosPaneFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SCENARIO_VISIBLE_LAYERS = 10215;
-const int ID_SCENARIO_ADD_VISIBLE_LAYER = 10216;
-const int ID_SCENARIO_REMOVE_VISIBLE_LAYER = 10217;
-const int ID_SCENARIO_AVAILABLE_LAYERS = 10218;
+const int ID_SCENARIO_VISIBLE_LAYERS = 10216;
+const int ID_SCENARIO_ADD_VISIBLE_LAYER = 10217;
+const int ID_SCENARIO_REMOVE_VISIBLE_LAYER = 10218;
+const int ID_SCENARIO_AVAILABLE_LAYERS = 10219;
 wxSizer *ScenarioVisibleLayersPane( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SCENARIO_NAME = 10219;
+const int ID_SCENARIO_NAME = 10220;
 wxSizer *ScenarioParamsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SCENARIO_PREVIOUS = 10220;
-const int ID_SCENARIO_NEXT = 10221;
+const int ID_SCENARIO_PREVIOUS = 10221;
+const int ID_SCENARIO_NEXT = 10222;
 wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_PANEL1 = 10222;
-const int ID_TARGET = 10223;
-const int ID_CURRENT = 10224;
-const int ID_CACHE_USED = 10225;
-const int ID_TILE_LOADS = 10226;
-const int ID_TILE_HITS = 10227;
+const int ID_PANEL1 = 10223;
+const int ID_TARGET = 10224;
+const int ID_CURRENT = 10225;
+const int ID_CACHE_USED = 10226;
+const int ID_TILE_LOADS = 10227;
+const int ID_TILE_HITS = 10228;
 wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 wxSizer *TextureDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 wxSizer *LayerAnimDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_CHOICE_VEHICLES = 10228;
-const int ID_SET_VEHICLE_COLOR = 10229;
+const int ID_CHOICE_VEHICLES = 10229;
+const int ID_SET_VEHICLE_COLOR = 10230;
 wxSizer *VehicleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
