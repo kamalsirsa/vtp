@@ -42,6 +42,8 @@ public:
 	void CreateFeatureLabels(vtTerrain *pTerr);
 	void CreateFeatureGeometry(vtTerrain *pTerr);
 
+	void ReleaseGeometry();
+
 	/// This is the set of features which the layer contains. Style information
 	///  is associated with it, using vtFeatureSet::SetProperties() and 
 	///  vtFeatureSet::GetProperties().

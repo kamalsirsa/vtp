@@ -25,9 +25,12 @@ vtAbstractLayer::vtAbstractLayer()
 vtAbstractLayer::~vtAbstractLayer()
 {
 	delete pSet;
-	if (pGeomGroup) pGeomGroup->Release();
-	if (pLabelGroup) pLabelGroup->Release();
-	if (pContainer) pContainer->Release();
+	ReleaseGeometry();
+	if (pContainer)
+	{
+		pContainer->GetParent()->RemoveChild(pContainer);
+		pContainer->Release();
+	}
 }
 
 void vtAbstractLayer::SetLayerName(const vtString &fname)
@@ -56,6 +59,26 @@ bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgb
 	return true;
 }
 
+
+/**
+ * Release all the 3D stuff created for the layer (including geometry and labels).
+ */
+void vtAbstractLayer::ReleaseGeometry()
+{
+	if (pGeomGroup)
+	{
+		pContainer->RemoveChild(pGeomGroup);
+		pGeomGroup->Release();
+		pGeomGroup = NULL;
+	}
+	if (pLabelGroup)
+	{
+		pContainer->RemoveChild(pLabelGroup);
+		pLabelGroup->Release();
+		pLabelGroup = NULL;
+	}
+}
+
 /**
  * Given a featureset and style description, create the geometry and place it
  * on the terrain.
@@ -70,30 +93,16 @@ bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgb
  */
 void vtAbstractLayer::CreateStyledFeatures(vtTerrain *pTerr)
 {
-	if (pContainer)
-	{
-		// re-creating, so remove any previous geometry
-		if (pGeomGroup)
-		{
-			pGeomGroup->Release();
-			pGeomGroup = NULL;
-		}
-		if (pLabelGroup)
-		{
-			pLabelGroup->Release();
-			pLabelGroup = NULL;
-		}
-	}
-	else
+	if (!pContainer)
 	{
 		// first time
 		pContainer = new vtGroup;
 		pContainer->SetName2("Abstract Layer");
-	}
 
-	// Abstract geometry goes into the scale features group, so it will be
-	//  scaled up/down with the vertical exaggeration.
-	pTerr->GetScaledFeatures()->AddChild(pContainer);
+		// Abstract geometry goes into the scale features group, so it will be
+		//  scaled up/down with the vertical exaggeration.
+		pTerr->GetScaledFeatures()->AddChild(pContainer);
+	}
 
 	vtTagArray &style = pSet->GetProperties();
 
@@ -174,7 +183,7 @@ void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
 
 	vtGeom *geom = new vtGeom;
 	geom->SetMaterials(pMats);
-	pMats->Release();
+	pMats->Release();	// pass ownership
 
 	vtMeshFactory mf(geom, vtMesh::LINE_STRIP, 0, 30000, 0);
 
@@ -324,34 +333,33 @@ void vtAbstractLayer::CreateFeatureLabels(vtTerrain *pTerr)
 	}
 #endif
 
-	// Find and load the font.
-	vtString fontname = "Fonts/";
-
 	// If they specified a font name, use it
-	vtString fname;
-	if (!style.GetValueString("Font", fname))
+	vtString fontfile;
+	if (!style.GetValueString("Font", fontfile))
 	{
 		// otherwise, use the default
 #if VTLIB_OPENSG
-		fname = "Arial.txf";
+		fontfile = "Arial.txf";
 #else
-		fname = "Arial.ttf";
+		fontfile = "Arial.ttf";
 #endif
 	}
-	fontname += fname;
-	vtString font_path = FindFileOnPaths(vtGetDataPath(), fontname);
-	if (font_path == "")
-	{
-		VTLOG("Couldn't find font file '%s'\n", fontname);
-		return;
-	}
+	// First, let the underlying scenegraph library try to find the font
 	vtFont *font = new vtFont;
-	bool success = font->LoadFont(font_path);
+	bool success = font->LoadFont(fontfile);
+	if (!success)
+	{
+		// look on VTP data paths
+		vtString vtname = "Fonts/" + fontfile;
+		fontfile = FindFileOnPaths(vtGetDataPath(), vtname);
+		if (fontfile != "")
+			success = font->LoadFont(fontfile);
+	}
 	if (success)
-		VTLOG("Successfully read font from '%s'\n", (const char *)font_path);
+		VTLOG("Successfully read font from '%s'\n", (const char *) fontfile);
 	else
 	{
-		VTLOG("Couldn't read font from file '%s', not creating labels.\n", fontname);
+		VTLOG("Couldn't read font from file '%s', not creating labels.\n", (const char *) fontfile);
 		return;
 	}
 
@@ -463,8 +471,11 @@ void vtAbstractLayer::CreateFeatureLabels(vtTerrain *pTerr)
 		bb->SetTrans(fp3);
 		pLabelGroup->AddChild(bb);
 	}
-	delete font;
+	// pass ownership to all the geometries
 	pLabelMats->Release();
+
+	// we are done with the font (hopefully it is cached by the SG)
+	delete font;
 
 	VTLOG("Created %d text labels\n", features);
 }
