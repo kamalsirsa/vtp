@@ -14,6 +14,21 @@ vtEngine::vtEngine() : vtEnabledBase()
 	m_pWindow = NULL;
 }
 
+vtTarget *vtEngine::GetTarget(unsigned int which)
+{
+	if (which < NumTargets())
+		return m_Targets.GetAt(which);
+	else
+		return NULL;
+}
+
+void vtEngine::RemoveTarget(vtTarget *ptr)
+{
+	int index = m_Targets.Find(ptr);
+	if (index != -1)
+		m_Targets.RemoveAt(index);
+}
+
 void vtEngine::Eval()
 {
 }

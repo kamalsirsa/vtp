@@ -43,21 +43,13 @@ public:
 	 * target.
 	 * \param which The number of the target (default 0).
 	 */
-	vtTarget *GetTarget(unsigned int which = 0)
-	{
-		if (which < NumTargets())
-			return m_Targets.GetAt(which);
-		else
-			return NULL;
-	}
-	/**
-	 * Adds a target to the engine.
-	 */
+	vtTarget *GetTarget(unsigned int which = 0);
+	/** Adds a target to the engine. */
 	void AddTarget(vtTarget *ptr) { m_Targets.Append(ptr); }
-	/**
-	 * Sets a single target for this engine (for backward compatibility.)
-	 */
+	/** Sets a single target for this engine (for backward compatibility.) */
 	void SetTarget(vtTarget *ptr) { m_Targets.SetAt(0, ptr); }
+	/** Removes a target from the engine. */
+	void RemoveTarget(vtTarget *ptr);
 
 	/// Return the number of targets for this engine.
 	unsigned int NumTargets() { return m_Targets.GetSize(); }
