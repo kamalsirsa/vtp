@@ -83,6 +83,7 @@
 #  include "nav_fast.xpm"
 #  include "nav_set.xpm"
 #  include "nav_slow.xpm"
+#  include "placemark.xpm"
 #  include "points.xpm"
 #  include "route.xpm"
 #  include "select.xpm"
