@@ -325,11 +325,20 @@ void vtAbstractLayer::CreateFeatureLabels(vtTerrain *pTerr)
 #endif
 
 	// Find and load the font.
+	vtString fontname = "Fonts/";
+
+	// If they specified a font name, use it
+	vtString fname;
+	if (!style.GetValueString("Font", fname))
+	{
+		// otherwise, use the default
 #if VTLIB_OPENSG
-	const char *fontname = "Fonts/Arial.txf";
+		fname = "Arial.txf";
 #else
-	const char *fontname = "Fonts/Arial.ttf";
+		fname = "Arial.ttf";
 #endif
+	}
+	fontname += fname;
 	vtString font_path = FindFileOnPaths(vtGetDataPath(), fontname);
 	if (font_path == "")
 	{
