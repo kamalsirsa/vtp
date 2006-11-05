@@ -2755,7 +2755,7 @@ void vtTerrain::RemoveLayer(vtLayer *lay)
 	vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
 	if (slay)
 	{
-		// first remove them from the terrain
+		// first remove each structure from the terrain
 		for (unsigned int i = 0; i < slay->GetSize(); i++)
 		{
 			vtStructure3d *str3d = slay->GetStructure3d(i);
@@ -2771,12 +2771,7 @@ void vtTerrain::RemoveLayer(vtLayer *lay)
 	else if (alay)
 	{
 		// first remove them from the terrain
-		for (unsigned int i = 0; i < slay->GetSize(); i++)
-		{
-			vtStructure3d *str3d = slay->GetStructure3d(i);
-			RemoveNodeFromStructGrid(str3d->GetContainer());
-			str3d->DeleteNode();
-		}
+		RemoveFeatureGeometry(alay);
 		delete alay;
 
 		// If that was the current layer, deal with it
@@ -2949,6 +2944,18 @@ void vtTerrain::SetAbstractLayer(vtAbstractLayer *alay)
 vtAbstractLayer *vtTerrain::GetAbstractLayer()
 {
 	return m_pActiveAbstractLayer;
+}
+
+void vtTerrain::RemoveFeatureGeometry(vtAbstractLayer *alay)
+{
+	// labels might be targets of the billboard engine
+	vtGroup *labels = alay->pLabelGroup;
+	if (labels)
+	{
+		for (unsigned int i = 0; i < labels->GetNumChildren(); i++)
+			GetBillboardEngine()->RemoveTarget(labels->GetChild(i));
+	}
+	alay->ReleaseGeometry();
 }
 
 
