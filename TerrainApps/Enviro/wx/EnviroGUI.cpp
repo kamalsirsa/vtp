@@ -333,6 +333,7 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
 		delete pSet;
 		return NULL;
 	}
+	dlg.GetOptions(props);
 
 	// wrap the features in an abstract layer
 	vtAbstractLayer *pLay = new vtAbstractLayer;
