@@ -191,6 +191,9 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 								bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 #if SUPPORT_NETCDF
 	int id;
 
@@ -296,6 +299,9 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 bool vtElevationGrid::LoadFrom3TX(const char *szFileName,
 								  bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 		return false;
@@ -340,6 +346,9 @@ bool vtElevationGrid::LoadFrom3TX(const char *szFileName,
 bool vtElevationGrid::LoadFromASC(const char *szFileName,
 								  bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 		return false;
@@ -429,6 +438,9 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 								bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	char buf[8];
 	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
@@ -605,6 +617,9 @@ double get_ssss(FILE *fp)
 bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 								 bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)	// Cannot Open File
 		return false;
@@ -765,8 +780,10 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 									bool progress_callback(int))
 {
-	if (progress_callback != NULL) progress_callback(1);
+	// Free buffers to prepare to receive new data
+	FreeData();
 
+	if (progress_callback != NULL) progress_callback(1);
 
 	// Open the header file
 	// Charset Beware!  Filename may be utf-8, but how can we open an ifstream with utf-8 in
@@ -914,6 +931,9 @@ void ParseExtent(DRECT &extents, const char *name, const char *value)
 bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
 									bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	if (progress_callback != NULL)
 		progress_callback(1);
 
@@ -1016,6 +1036,9 @@ bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
  */
 bool vtElevationGrid::LoadFromDSAA(const char* szFileName, bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	FILE *fp = vtFileOpen(szFileName, "rt");
 	if (!fp)
 		return false;
@@ -1089,6 +1112,9 @@ bool vtElevationGrid::LoadFromDSAA(const char* szFileName, bool progress_callbac
 bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 								bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	if (progress_callback != NULL)
 		progress_callback(1);
 
@@ -1244,6 +1270,9 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
  */
 bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	// open input file
 	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)		// Could not open input file
@@ -1957,6 +1986,9 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 								   bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	// let GDAL know we're going to use its OGR format drivers
 	g_GDALWrapper.RequestOGRFormats();
 
@@ -2003,6 +2035,9 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 								int bytes_per_element, float vertical_units,
 								bool bBigEndian, bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 		return false;
@@ -2085,6 +2120,9 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
  */
 bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	/* open input file */
 	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)	// Could not open input file
@@ -2283,6 +2321,9 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_cal
  */
 bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
 		return false;
@@ -2441,6 +2482,9 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
  */
 bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	// extract extents from the filename
 	const char *fname = StartOfFilename(szFileName);
 	if (!fname)

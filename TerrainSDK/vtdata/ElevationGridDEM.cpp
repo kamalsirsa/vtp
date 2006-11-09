@@ -67,6 +67,9 @@ int IConvert(FILE *fp, int length)
 bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 								  bool progress_callback(int))
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	if (progress_callback != NULL) progress_callback(0);
 
 	FILE *fp = vtFileOpen(szFileName,"rb");

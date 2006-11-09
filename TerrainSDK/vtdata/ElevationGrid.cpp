@@ -65,12 +65,10 @@ vtElevationGrid & vtElevationGrid::operator=(const vtElevationGrid &rhs)
 	if (this == &rhs)
 		return *this;
 
-	if (m_pData)
-		free(m_pData);
+	// Free data first before copying over data from other grid
+	FreeData();
 
-	if (m_pFData)
-		free(m_pFData);
-
+	// Copy each member individually
 	m_EarthExtents = rhs.m_EarthExtents;
 	m_iColumns   = rhs.m_iColumns;
 	m_iRows		 = rhs.m_iRows;
@@ -89,33 +87,21 @@ vtElevationGrid & vtElevationGrid::operator=(const vtElevationGrid &rhs)
 
 	if ( m_bFloatMode )
 	{
-		m_pData = NULL;
-
 		if ( rhs.m_pFData )
 		{
 			size_t Size = m_iColumns * m_iRows * sizeof(float);
-
 			m_pFData = (float *)malloc( Size );
-
 			memcpy( m_pFData, rhs.m_pFData, Size );
 		}
-		else
-			m_pFData = NULL;
 	}
 	else
 	{
-		m_pFData = NULL;
-
 		if ( rhs.m_pData )
 		{
 			size_t Size = m_iColumns * m_iRows * sizeof(short);
-
 			m_pData = (short *)malloc(Size);
-
 			memcpy( m_pData, rhs.m_pData, Size );
 		}
-		else
-			m_pData = NULL;
 	}
 	return *this;
 }
@@ -126,12 +112,7 @@ vtElevationGrid & vtElevationGrid::operator=(const vtElevationGrid &rhs)
  */
 vtElevationGrid::~vtElevationGrid()
 {
-	if (m_pData)
-		free(m_pData);
-	m_pData = NULL;
-	if (m_pFData)
-		free(m_pFData);
-	m_pFData = NULL;
+	FreeData();
 }
 
 
@@ -161,6 +142,20 @@ void vtElevationGrid::Create(const DRECT &area, int iColumns, int iRows,
 	m_fVMeters = 1.0f;
 	m_fVerticalScale = 1.0f;
 }
+
+/**
+ * Free any memory being used by this class for elevation data.
+ */
+void vtElevationGrid::FreeData()
+{
+	if (m_pData)
+		free(m_pData);
+	m_pData = NULL;
+	if (m_pFData)
+		free(m_pFData);
+	m_pFData = NULL;
+}
+
 
 // helper
 double MetersPerLongitude(double latitude)

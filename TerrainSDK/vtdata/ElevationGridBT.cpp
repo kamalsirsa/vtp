@@ -174,6 +174,9 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevGridError *err)
 bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(int),
 								 vtElevGridError *err)
 {
+	// Free buffers to prepare to receive new data
+	FreeData();
+
 	// First load the header
 	if (!LoadBTHeader(szFileName, err))
 		return false;

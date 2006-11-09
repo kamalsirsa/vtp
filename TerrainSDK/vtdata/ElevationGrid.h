@@ -52,6 +52,7 @@ public:
 
 	void Create(const DRECT &area, int iColumns, int iRows, bool bFloat,
 		const vtProjection &proj);
+	void FreeData();
 	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj, bool progress_callback(int) = NULL);
 	bool ReprojectExtents(const vtProjection &proj_new);
 	void Scale(float fScale, bool bDirect, bool bRecomputeExtents = true);
