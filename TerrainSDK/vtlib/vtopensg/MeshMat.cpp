@@ -35,22 +35,12 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 	//if i turn this on buildings are correct, if out, the streets are correct..
 	//theres an alpha channel in the road/tree textures
 	beginEditCP(m_pMaterial);
-    //--
-	//m_pMaterial->setEnvMode			(GL_MODULATE); 
-	//m_pMaterial->setLit				(true);
+	m_pMaterial->setEnvMode			(GL_MODULATE); 
 	m_pMaterial->setColorMaterial	(GL_AMBIENT_AND_DIFFUSE);
-	
-	//--
-	/*m_pMaterial->setEnvMode			(GL_DIFFUSE);
-	m_pMaterial->setLit				(true);
-	m_pMaterial->setColorMaterial	(GL_AMBIENT_AND_DIFFUSE);	 */
-
-		
-	//m_pMaterial->setTransparency(1);
-	//m_pMaterial->setEnvMap			(false);
+	m_pMaterial->setEnvMap			(false);
 	endEditCP(m_pMaterial);
 
-	//SetDiffuse(1,1,1);
+	SetDiffuse(1,1,1);
 
 }
 
@@ -152,7 +142,7 @@ RGBf vtMaterial::GetEmission() const
  */
 void vtMaterial::SetCulling(bool bCulling)
 {
-	/*int slot(0);
+	int slot(0);
 	osg::StateChunkPtr statechunk = m_pMaterial->find( osg::PolygonChunk::getClassType(), slot);
 	osg::PolygonChunkPtr pchunk = osg::PolygonChunkPtr::dcast( statechunk );
 
@@ -166,7 +156,7 @@ void vtMaterial::SetCulling(bool bCulling)
 
 	beginEditCP(pchunk);
 	pchunk->setCullFace(bCulling ? GL_CULL_FACE : GL_FRONT_AND_BACK);
-	endEditCP(pchunk);*/
+	endEditCP(pchunk);
 }
 /**
  * Get the backface culling property of this material.
@@ -216,7 +206,7 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 		int slot(0);
 		osg::StateChunkPtr statechunk = m_pMaterial->find( osg::BlendChunk::getClassType(), slot);
 		osg::BlendChunkPtr bchunk = osg::BlendChunkPtr::dcast( statechunk );
-		if (!bchunk && bOn) {
+		if (!bchunk && bOn ) {
 				bchunk = osg::BlendChunk::create();
 				m_pMaterial->addChunk(bchunk, slot);
 		}
@@ -228,7 +218,7 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 			endEditCP(bchunk);
 		} else {
 			//simply remove blend chunk ...
-			//if( bchunk ) m_pMaterial->subChunk(bchunk, slot);
+			m_pMaterial->subChunk(bchunk, slot);
 		}
 
 		if( bAdd ) {
@@ -298,12 +288,6 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	beginEditCP(m_pMaterial);
 	m_pMaterial->setImage(pImage->GetImage());
-	/*m_pMaterial->setEnvMode			(GL_MODULATE); 
-	m_pMaterial->setLit				(false);
-	m_pMaterial->setColorMaterial	(GL_AMBIENT_AND_DIFFUSE);*/
-
-	m_pMaterial->setEnvMode			(GL_MODULATE);
-	m_pMaterial->setLit				(false);
 	endEditCP(m_pMaterial);
 
 	m_pImage = pImage;
@@ -356,13 +340,13 @@ vtImage *vtMaterial::GetTexture() const
  */
 void vtMaterial::ModifiedTexture()
 {
-/*	if( m_pMaterial->getImage() == osg::NullFC ) return;
+	if( m_pMaterial->getImage() == osg::NullFC ) return;
 
 	int slot(0);
 	osg::StateChunkPtr statechunk = m_pMaterial->find( osg::TextureChunk::getClassType(), slot);
 	osg::TextureChunkPtr tex = osg::TextureChunkPtr::dcast( statechunk );
 
-	if( tex ) tex->imageContentChanged();*/
+	if( tex ) tex->imageContentChanged();
 }
 
 
@@ -371,7 +355,7 @@ void vtMaterial::ModifiedTexture()
  */
 void vtMaterial::SetClamp(bool bClamp)
 {
-	/*if( m_pMaterial->getImage() == osg::NullFC ) {
+	if( m_pMaterial->getImage() == osg::NullFC ) {
 		return;
 	}
 
@@ -395,7 +379,7 @@ void vtMaterial::SetClamp(bool bClamp)
 			tex->setWrapT(GL_REPEAT);
 		}
 		endEditCP(tex);
-	}*/
+	}
 }
 
 /**
@@ -403,7 +387,7 @@ void vtMaterial::SetClamp(bool bClamp)
  */
 bool vtMaterial::GetClamp() const
 {
-	/*if( m_pMaterial->getImage() == osg::NullFC ) {
+	if( m_pMaterial->getImage() == osg::NullFC ) {
 		return false;
 	}
 
@@ -412,7 +396,7 @@ bool vtMaterial::GetClamp() const
 	osg::TextureChunkPtr tex = osg::TextureChunkPtr::dcast( statechunk );
 	if( tex ) {
 		return tex->getWrapS() == GL_CLAMP; 
-	}*/
+	}
 	return false;
 
 }
@@ -445,7 +429,6 @@ bool vtMaterial::GetMipMap() const
 		return false;
 	}
 	return m_pMaterial->getMinFilter() == GL_LINEAR_MIPMAP_LINEAR;
-	return false;
 }
 
 
