@@ -98,28 +98,6 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 		GetSceneView()->GetRightCamera()->setBeacon( m_pCamera->GetOsgNode() );
 	}
 
-	/*m_pShadowMapViewport = osg::ShadowMapViewport::create();
-	// Shadow viewport
-	beginEditCP(m_pShadowMapViewport);
-		m_pShadowMapViewport->setBackground(m_Background);
-	  //later  svp->setRoot(rootNode);
-		m_pShadowMapViewport->setSize(0,0,1,1);
-		m_pShadowMapViewport->setOffFactor(10.0);
-		m_pShadowMapViewport->setOffBias(4.0);
-		m_pShadowMapViewport->setShadowColor(osg::Color4f(0.1, 0.1, 0.1, 1.0));
-		m_pShadowMapViewport->setMapSize(1024);
-		// you can add the light sources here, as default all light source in
-		// the scenegraph are used.
-		//svp->getLightNodes().push_back(point1);
-		m_pShadowMapViewport->setCamera( m_pOsgSceneView->getCamera());
-
-	endEditCP(m_pShadowMapViewport);
-
-	beginEditCP(m_pOsgWindow);
-	m_pOsgWindow->addPort(m_pShadowMapViewport);
-	endEditCP(m_pOsgWindow);*/
-
-
 	_initialTick = clock();
 	_frameTick = _initialTick;
 
@@ -303,7 +281,6 @@ void vtScene::SetRoot(vtGroup *pRoot)
 
 	if ( GetSceneView() != NULL ) {
 		GetSceneView()->SetRoot(m_pOsgSceneRoot);
-		//m_pShadowMapViewport->setRoot(m_pOsgSceneRoot);
 	}
 
 	m_pRoot = pRoot;
@@ -499,6 +476,11 @@ void vtScene::SetGlobalWireframe(bool bWire)
 		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::FILL);
 	global_state->setAttributeAndModes(npm, StateAttribute::ON);
 #endif //EXCEPT
+}
+
+void vtScene::SetShadowOn (bool bOn)
+{
+	GetSceneView()->SetShadowOn(bOn);
 }
 
 bool vtScene::GetGlobalWireframe()

@@ -12,9 +12,9 @@
 
 //OpenSG includes
 #include <OpenSG/OSGPerspectiveCamera.h>
-#include <OpenSG/OSGSimpleSceneManager.h>
 #include <OpenSG/OSGWindow.h>
 #include <OpenSG/OSGViewport.h>
+#include <OpenSG/OSGShadowMapViewport.h>
 #include <OpenSG/OSGRenderAction.h>
 #include <OpenSG/OSGSolidBackground.h>
 #include <OpenSG/OSGShearedStereoCameraDecorator.h>
@@ -40,18 +40,21 @@ public:
 	void UpdateCamera( float aspect, float fov_y, float hither, float yon);
 				
 	OSG::DrawActionBase *GetAction() const;
-	OSG::ViewportPtr GetLeftViewport() const {return m_LeftViewportPtr; };
-	OSG::ViewportPtr GetRightViewport() const {return m_RightViewportPtr;};
-	OSG::ViewportPtr GetViewport() const;
+	OSG::ViewportPtr/*OSG::ShadowMapViewportPtr*/ GetLeftViewport() const {return m_LeftViewportPtr; };
+	OSG::ViewportPtr/*OSG::ShadowMapViewportPtr*/ GetRightViewport() const {return m_RightViewportPtr;};
+	OSG::ViewportPtr/*OSG::ShadowMapViewportPtr*/ GetViewport() const;
 	OSG::PerspectiveCameraPtr GetCamera() const;
 	OSG::PerspectiveCameraPtr GetLeftCamera() const {return m_LeftCameraPtr;}; 
     OSG::PerspectiveCameraPtr GetRightCamera() const {return m_RightCameraPtr;}; 
 	OSG::WindowPtr GetWindow() const; 
 	void SetBackgroundColor ( osg::Color3f backColor );
 	bool IsCustomSceneView() const { return m_bUsesCustomSceneView;};
-	OSG::SimpleSceneManager *GetSSM() const;
-	bool UsesSSM() const {return m_bUsesSSM;};
 	bool IsStereo() const {return m_bStereo;};
+	
+	//shadows
+	void SetShadowOn( bool bOn );
+	bool UsesShadow () const {return m_bUsesShadow;};
+	
 	int  GetStereoMode() const {return m_iStereoMode;};
 	void Redraw();
 	
@@ -61,15 +64,14 @@ protected:
 
 private:
 	bool m_bStereo;
-	bool m_bUsesSSM;
+	bool m_bUsesShadow;
 	bool m_bUsesCustomSceneView;
 	int m_iStereoMode;
 	OSG::RefPtr<OSG::PerspectiveCameraPtr> m_LeftCameraPtr, m_RightCameraPtr;
-	OSG::ViewportPtr m_LeftViewportPtr,  m_RightViewportPtr;
+	OSG::ViewportPtr/*OSG::ShadowMapViewportPtr*/ m_LeftViewportPtr,  m_RightViewportPtr;
 	OSG::RefPtr<OSG::WindowPtr> m_WindowPtr;
     OSG::RenderAction *m_pRenderAction;
 	//wrap also SSM
-	OSG::SimpleSceneManager *m_pSimpleSceneManager;
 	OSG::RefPtr<OSG::SolidBackgroundPtr> m_SolidBackgroundPtr;
 	OSG::RefPtr<OSG::ShearedStereoCameraDecoratorPtr> m_SSCD;
 };

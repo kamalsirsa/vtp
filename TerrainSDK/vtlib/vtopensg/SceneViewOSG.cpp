@@ -18,7 +18,6 @@
 #include <OpenSG/OSGShearedStereoCameraDecorator.h>
 
 //change this for creating the rendering components manually
-#define	   USE_SSM_WHEN_POSSIBLE		0
 const bool USE_RENDER_STATISTICS    (false);
 const bool USE_OPENSG_LOGO          (true);
 const bool USE_HEADLIGHT            (false);
@@ -37,11 +36,10 @@ SceneViewOSG::SceneViewOSG(
 						  int stereoMode,
 						  OSG::SolidBackgroundPtr background
 						   ) :  
-m_bUsesSSM (false), 
 m_bStereo ( stereoMode>0 ),
 m_bUsesCustomSceneView (true), 
 m_WindowPtr ( window ),
-m_LeftViewportPtr ( viewport ),
+m_LeftViewportPtr ( /*OSG::ShadowMapViewportPtr::dcast(*/viewport ),
 m_LeftCameraPtr ( camera ),
 m_pRenderAction ( renderAction ),
 m_iStereoMode ( stereoMode ),
@@ -66,7 +64,8 @@ m_SolidBackgroundPtr ( background )
 SceneViewOSG::SceneViewOSG( bool bStereo, int iStereoMode ) : 
 m_bStereo(bStereo), 
 m_iStereoMode (iStereoMode),
-m_bUsesCustomSceneView (false)
+m_bUsesCustomSceneView (false),
+m_bUsesShadow(false)
 {
 	if ( IsStereo() ) {
 		switch ( m_iStereoMode ) {
@@ -74,97 +73,13 @@ m_bUsesCustomSceneView (false)
 		case QUADBUFFER: break;
 			/* P A S S I V E  S T E R E O */
 		case PASSIVE   : 
-#if USE_SSM_WHEN_POSSIBLE
-			{
-				m_bUsesSSM = true;
-
-				OSG::PassiveWindowPtr gwin = osg::PassiveWindow::create();
-				gwin->init();
-				m_WindowPtr = gwin;
-
-				m_pSimpleSceneManager = new OSG::SimpleSceneManager;
-
-				GetSSM()->setWindow(gwin);
-				GetSSM()->setHeadlight( USE_HEADLIGHT );
-				GetSSM()->setStatistics( USE_RENDER_STATISTICS );
-				if ( USE_OPENSG_LOGO ) {
-					GetSSM()->useOpenSGLogo();
-				}
-
-				//get left viewport from default viewport
-				m_LeftViewportPtr = GetSSM()->getWindow()->getPort(0);
-
-				OSG::PerspectiveCameraPtr cam = GetCamera();
-				//left = right camera
-				m_LeftCameraPtr = cam;
-				m_RightCameraPtr = cam;         
-
-				//decorate the camera
-				OSG::ShearedStereoCameraDecoratorPtr rightCameraDecorator = OSG::ShearedStereoCameraDecorator::create();
-				beginEditCP(rightCameraDecorator);
-				rightCameraDecorator->setLeftEye(false);
-				rightCameraDecorator->setEyeSeparation(6);
-				rightCameraDecorator->setDecoratee( GetCamera() );
-				rightCameraDecorator->setZeroParallaxDistance(200);
-				m_RightViewportPtr = OSG::Viewport::create();
-				beginEditCP(m_RightViewportPtr);
-				m_RightViewportPtr->setCamera    ( rightCameraDecorator );
-				m_RightViewportPtr->setSize      ( .5,0,1,1 );
-				endEditCP(m_RightViewportPtr);
-				endEditCP(rightCameraDecorator);
-
-				beginEditCP(m_WindowPtr);
-				m_WindowPtr->addPort ( m_RightViewportPtr );
-				endEditCP(m_WindowPtr);
-
-				//decorate the camera
-				OSG::ShearedStereoCameraDecoratorPtr leftCameraDecorator  
-				= OSG::ShearedStereoCameraDecorator::create();
-				beginEditCP(leftCameraDecorator);
-				leftCameraDecorator->setLeftEye(true);
-				leftCameraDecorator->setEyeSeparation(6);
-				leftCameraDecorator->setDecoratee( GetCamera() );
-
-				leftCameraDecorator->setZeroParallaxDistance(200);
-				beginEditCP(m_LeftViewportPtr);
-				m_LeftViewportPtr->setCamera    ( leftCameraDecorator );
-				m_LeftViewportPtr->setSize      ( 0,0,.5f,1 );
-				endEditCP(m_LeftViewportPtr);
-				endEditCP(leftCameraDecorator);
-			}
-#else  //NO SSM
-
-#endif //USE_SSM_WHEN_POSSIBLE
 
 			break;
 		default: ;
 		}
 
 	} else {
-		/* M O N O  W/  S I M P L E S C E N E M A N A G E R */
-#if USE_SSM_WHEN_POSSIBLE
-		m_bUsesSSM = true;
-
-		OSG::PassiveWindowPtr gwin = osg::PassiveWindow::create();
-		gwin->init();
-
-		m_pSimpleSceneManager = new OSG::SimpleSceneManager;
-
-		GetSSM()->setWindow(gwin);
-		GetSSM()->setHeadlight( USE_HEADLIGHT );
-		GetSSM()->turnHeadlightOff();
-		GetSSM()->setStatistics( USE_RENDER_STATISTICS );
-		if ( USE_OPENSG_LOGO ) {
-			GetSSM()->useOpenSGLogo();
-		}
-		m_pRenderAction = static_cast<OSG::RenderAction*> (GetSSM()->getAction());
-		//raction->setLocalLights( true );
-		//raction->setZWriteTrans(true);
-		//raction->setFrustumCulling( true );
-		//raction->setAutoFrustum( true );
-
-#else   /* M O N O  W/O  S I M P L E S C E N E M A N A G E R */
-		m_bUsesSSM = false;
+		/* M O N O  W/O  S I M P L E S C E N E M A N A G E R */
 		m_bStereo = false;
 
 		//only create rudimentary components
@@ -180,6 +95,21 @@ m_bUsesCustomSceneView (false)
 		m_LeftViewportPtr->setCamera( m_LeftCameraPtr );
 		m_LeftViewportPtr->setSize( 0,0,1,1 );
 		endEditCP( m_LeftViewportPtr );
+		
+		// Shadow viewport
+		/*m_LeftViewportPtr = OSG::ShadowMapViewport::create();
+		beginEditCP(m_LeftViewportPtr);
+		m_LeftViewportPtr->setSize(0,0,1,1);
+		m_LeftViewportPtr->setOffFactor(10.0);
+		m_LeftViewportPtr->setOffBias(4.0);
+		m_LeftViewportPtr->setShadowColor(osg::Color4f(0.1, 0.1, 0.1, 1.0));
+		m_LeftViewportPtr->setMapSize(256);
+		// you can add the light sources here, as default all light source in
+		// the scenegraph are used.
+		m_LeftViewportPtr->setCamera( m_LeftCameraPtr );
+
+		endEditCP(m_LeftViewportPtr);*/
+
 
 		//the one and only window
 		m_WindowPtr = OSG::PassiveWindow::create();
@@ -196,7 +126,6 @@ m_bUsesCustomSceneView (false)
 		//m_pRenderAction->setZWriteTrans(true);
 		//m_pRenderAction->setFrustumCulling( true );
 		//m_pRenderAction->setAutoFrustum(true );
-#endif
 	}
 }
 
@@ -218,29 +147,20 @@ void SceneViewOSG::UpdateCamera(
 	}
 }
 
-OSG::SimpleSceneManager *SceneViewOSG::GetSSM() const 
-{ 
-	assert (m_pSimpleSceneManager != NULL);
-	return m_pSimpleSceneManager; 
-}
-
 OSG::WindowPtr SceneViewOSG::GetWindow() const
 {
-	return UsesSSM() ? GetSSM()->getWindow() : m_WindowPtr;
+	return m_WindowPtr;
 }
 
 //for mono only, and for passive stereo
-OSG::ViewportPtr SceneViewOSG::GetViewport() const
+OSG::ViewportPtr/*OSG::ShadowMapViewportPtr*/ SceneViewOSG::GetViewport() const
 {
-	return UsesSSM() ? GetSSM()->getWindow()->getPort(0) : GetLeftViewport() ;
+	return  GetLeftViewport() ;
 }
 
 OSG::PerspectiveCameraPtr SceneViewOSG::GetCamera() const
 {
-	return UsesSSM() ? 
-	OSG::PerspectiveCameraPtr::dcast( GetSSM()->getCamera() ) 
-	: 
-	OSG::PerspectiveCameraPtr::dcast(GetLeftCamera());
+	return OSG::PerspectiveCameraPtr::dcast(GetLeftCamera());
 }
 
 void SceneViewOSG::Redraw()
@@ -248,24 +168,35 @@ void SceneViewOSG::Redraw()
 	//we don't need to apply the renderaction within vtp,
 	//this should be done within the custom framework.
 	if (!m_bUsesCustomSceneView) {
-		if ( UsesSSM() ) {
-			GetSSM()->redraw();
-		} else {
-			m_WindowPtr->render(m_pRenderAction);
-		}
+		m_WindowPtr->render(m_pRenderAction);
 	}
+}
+
+void SceneViewOSG::SetShadowOn( bool bOn )
+{
+	/*if ( !IsStereo() ) {
+		beginEditCP( m_LeftViewportPtr );
+		m_LeftViewportPtr->setShadowOn(bOn); 
+		endEditCP( m_LeftViewportPtr );
+	} else {
+		beginEditCP( m_LeftViewportPtr );
+		m_LeftViewportPtr->setShadowOn(bOn); 
+		endEditCP( m_LeftViewportPtr );
+
+		beginEditCP( m_RightViewportPtr );
+		m_RightViewportPtr->setShadowOn(bOn); 
+		endEditCP( m_RightViewportPtr );
+	}*/
+
+	m_bUsesShadow = bOn;
 }
 
 void SceneViewOSG::SetRoot( OSG::NodePtr root )
 {
 	if ( !IsStereo() ) {
-		if ( UsesSSM() ) {
-			GetSSM()->setRoot( root );
-		} else {
-			beginEditCP( m_LeftViewportPtr );
-			m_LeftViewportPtr->setRoot( root ); 
-			endEditCP( m_LeftViewportPtr );
-		}
+		beginEditCP( m_LeftViewportPtr );
+		m_LeftViewportPtr->setRoot( root ); 
+		endEditCP( m_LeftViewportPtr );
 	} else {
 		beginEditCP( m_LeftViewportPtr );
 		m_LeftViewportPtr->setRoot(root);
@@ -279,24 +210,16 @@ void SceneViewOSG::SetRoot( OSG::NodePtr root )
 
 OSG::DrawActionBase *SceneViewOSG::GetAction() const 
 {
-	if ( UsesSSM() ) {
-		return GetSSM()->getAction();
-	} else {
-		return m_pRenderAction;
-	} 
+	return m_pRenderAction;
 }
 
 OSG::Line SceneViewOSG::CalcViewRay(OSG::UInt32 x, OSG::UInt32 y)
 {
-	if ( !IsStereo() ) {
-		if ( UsesSSM() ) {
-			return m_pSimpleSceneManager->calcViewRay( x, y );
-		} else {
-			osg::Line l;
-			m_LeftCameraPtr->calcViewRay(l, x, y, *m_LeftViewportPtr);
-			return l;
-		}
-	} 
+	//if ( !IsStereo() ) {
+		osg::Line l;
+		m_LeftCameraPtr->calcViewRay(l, x, y, *m_LeftViewportPtr);
+		return l;
+	//} 
 
 	//shouldn't come here, but to make compiler happy
 	return OSG::Line( OSG::Pnt3f(0,0,0), OSG::Pnt3f(0,0,0) );

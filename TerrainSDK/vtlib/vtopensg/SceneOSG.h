@@ -18,7 +18,6 @@
 #include <OpenSG/OSGGroup.h>
 #include <OpenSG/OSGRefPtr.h>
 #include <OpenSG/OSGSolidBackground.h>
-#include <OpenSG/OSGShadowMapViewport.h>
 
 #include "SceneViewOSG.h"
 
@@ -105,6 +104,9 @@ public:
 	//osg::ref_ptr<CreateProjectedShadowTextureCullCallback> m_pShadowVisitor;
 	void ShadowVisibleNode(vtNode *node, bool bVis){};
 
+	//shadow handling, experimental for OpenSG
+	void SetShadowOn (bool bOn);
+
 
 	void SetHUD(vtHUD *hud) { m_pHUD = hud;};
 	vtHUD *GetHUD() { return m_pHUD;};
@@ -135,8 +137,7 @@ protected:
 	//{
 	//osg::GroupPtr m_pOsgSceneRootCore;
 	osg::RefPtr<osg::NodePtr> m_pOsgSceneRoot;
-	//preliminary, until opensg gets real shadow as discussed (soon).
-	osg::RefPtr<osg::ShadowMapViewportPtr> m_pShadowMapViewport;
+
 	//osg::NodePtr m_pOsgSceneRoot;
 	//}
 	osg::NodePtr m_pCameraTransformNode;

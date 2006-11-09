@@ -36,8 +36,8 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 	//theres an alpha channel in the road/tree textures
 	beginEditCP(m_pMaterial);
     //--
-	m_pMaterial->setEnvMode			(GL_MODULATE); 
-	m_pMaterial->setLit				(true);
+	//m_pMaterial->setEnvMode			(GL_MODULATE); 
+	//m_pMaterial->setLit				(true);
 	m_pMaterial->setColorMaterial	(GL_AMBIENT_AND_DIFFUSE);
 	
 	//--
@@ -45,13 +45,12 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 	m_pMaterial->setLit				(true);
 	m_pMaterial->setColorMaterial	(GL_AMBIENT_AND_DIFFUSE);	 */
 
-	
-	
-	m_pMaterial->setTransparency(0);
-	m_pMaterial->setEnvMap			(false);
+		
+	//m_pMaterial->setTransparency(1);
+	//m_pMaterial->setEnvMap			(false);
 	endEditCP(m_pMaterial);
 
-	SetDiffuse(1,1,1);
+	//SetDiffuse(1,1,1);
 
 }
 
@@ -153,7 +152,7 @@ RGBf vtMaterial::GetEmission() const
  */
 void vtMaterial::SetCulling(bool bCulling)
 {
-	int slot(0);
+	/*int slot(0);
 	osg::StateChunkPtr statechunk = m_pMaterial->find( osg::PolygonChunk::getClassType(), slot);
 	osg::PolygonChunkPtr pchunk = osg::PolygonChunkPtr::dcast( statechunk );
 
@@ -167,7 +166,7 @@ void vtMaterial::SetCulling(bool bCulling)
 
 	beginEditCP(pchunk);
 	pchunk->setCullFace(bCulling ? GL_CULL_FACE : GL_FRONT_AND_BACK);
-	endEditCP(pchunk);
+	endEditCP(pchunk);*/
 }
 /**
  * Get the backface culling property of this material.
@@ -210,6 +209,8 @@ bool vtMaterial::GetLighting() const
  */
 void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 {
+	
+	//all this seems to affect only the sun ?!
 	if ( !m_pMaterial->getLit() ) {
 		beginEditCP(m_pMaterial);
 		int slot(0);
@@ -297,6 +298,12 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	beginEditCP(m_pMaterial);
 	m_pMaterial->setImage(pImage->GetImage());
+	/*m_pMaterial->setEnvMode			(GL_MODULATE); 
+	m_pMaterial->setLit				(false);
+	m_pMaterial->setColorMaterial	(GL_AMBIENT_AND_DIFFUSE);*/
+
+	m_pMaterial->setEnvMode			(GL_MODULATE);
+	m_pMaterial->setLit				(false);
 	endEditCP(m_pMaterial);
 
 	m_pImage = pImage;
@@ -349,13 +356,13 @@ vtImage *vtMaterial::GetTexture() const
  */
 void vtMaterial::ModifiedTexture()
 {
-	if( m_pMaterial->getImage() == osg::NullFC ) return;
+/*	if( m_pMaterial->getImage() == osg::NullFC ) return;
 
 	int slot(0);
 	osg::StateChunkPtr statechunk = m_pMaterial->find( osg::TextureChunk::getClassType(), slot);
 	osg::TextureChunkPtr tex = osg::TextureChunkPtr::dcast( statechunk );
 
-	if( tex ) tex->imageContentChanged();
+	if( tex ) tex->imageContentChanged();*/
 }
 
 
@@ -364,7 +371,7 @@ void vtMaterial::ModifiedTexture()
  */
 void vtMaterial::SetClamp(bool bClamp)
 {
-	if( m_pMaterial->getImage() == osg::NullFC ) {
+	/*if( m_pMaterial->getImage() == osg::NullFC ) {
 		return;
 	}
 
@@ -388,7 +395,7 @@ void vtMaterial::SetClamp(bool bClamp)
 			tex->setWrapT(GL_REPEAT);
 		}
 		endEditCP(tex);
-	}
+	}*/
 }
 
 /**
@@ -396,7 +403,7 @@ void vtMaterial::SetClamp(bool bClamp)
  */
 bool vtMaterial::GetClamp() const
 {
-	if( m_pMaterial->getImage() == osg::NullFC ) {
+	/*if( m_pMaterial->getImage() == osg::NullFC ) {
 		return false;
 	}
 
@@ -405,7 +412,7 @@ bool vtMaterial::GetClamp() const
 	osg::TextureChunkPtr tex = osg::TextureChunkPtr::dcast( statechunk );
 	if( tex ) {
 		return tex->getWrapS() == GL_CLAMP; 
-	}
+	}*/
 	return false;
 
 }
@@ -438,6 +445,7 @@ bool vtMaterial::GetMipMap() const
 		return false;
 	}
 	return m_pMaterial->getMinFilter() == GL_LINEAR_MIPMAP_LINEAR;
+	return false;
 }
 
 
@@ -1038,18 +1046,6 @@ FPoint3 vtMesh::GetVtxNormal(unsigned int i) const
  */
 void vtMesh::SetVtxColor(unsigned int i, const RGBAf &color)
 {
-/*#if EXCEPT
-	if (m_iVtxType & VT_Colors)
-	{
-		Vec4 s;
-		v2s(color, s);
-
-		if (i >= (int)m_Color->size())
-			m_Color->resize(i + 1);
-
-		m_Color->at(i) = s;
-	}
-#endif*/
 	if( m_iVtxType & VT_Colors ) {
 		osg::Vec4f s;
 		v2s(color, s);
@@ -1066,25 +1062,6 @@ void vtMesh::SetVtxColor(unsigned int i, const RGBAf &color)
  */
 RGBAf vtMesh::GetVtxColor(unsigned int i) const
 {
-/*#if EXCEPT
-	if (m_iVtxType & VT_Colors)
-	{
-		RGBAf p;
-		s2v( (Vec4)m_Color->at(i), p);
-		return p;
-	}
-	return RGBf(0,0,0);
-#endif*/
-
-	/*if (m_iVtxType & VT_Colors)
-	{
-		RGBAf p;
-		s2v( m_Color->getValue(i), p);
-		return p;
-	}
-	return RGBf(0,0,0);*/
-
-	//TODO use Color4f
 	if( m_iVtxType & VT_Colors ) {
 		RGBAf p;
 		osg::Color3f col;

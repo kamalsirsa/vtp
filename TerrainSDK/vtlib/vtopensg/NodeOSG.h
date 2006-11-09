@@ -249,7 +249,7 @@ protected:
  * A Light node is placed into the scene graph to illumninate all
  * lit geometry with vertex normals.
  */
-class vtLight : public vtNode {
+class vtLight : public vtGroup {
 public:
 	vtLight();
 	virtual vtNode *Clone(bool bDeep = false);
@@ -265,6 +265,9 @@ public:
 
 	// provide override to catch this state
 	virtual void SetEnabled(bool bOn);
+
+	//set the transform node of the directional light
+	void SetBeacon (vtTransform *vtTrans);
 
 	osg::DirectionalLightPtr GetOsgLight() const { return m_pLight;}
 

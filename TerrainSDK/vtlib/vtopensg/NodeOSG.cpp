@@ -812,6 +812,10 @@ vtLight::vtLight()
 {
 	osg::NodePtr node = osg::makeCoredNode<osg::DirectionalLight>(&m_pLight);
 	SetOsgNode(node);
+	beginEditCP(m_pLight);
+	m_pLight->setOn(true);
+	m_pLight->setDirection(OSG::Vec3f(0,0,1));
+	endEditCP(m_pLight);
 }
 
 vtNode *vtLight::Clone(bool bDeep)
@@ -886,6 +890,16 @@ RGBf vtLight::GetAmbient() const
 void vtLight::SetEnabled(bool bOn)
 {
 	vtNode::SetEnabled(bOn);
+	beginEditCP(m_pLight);
+	m_pLight->setOn(bOn);
+	endEditCP(m_pLight);
+}
+
+void vtLight::SetBeacon (vtTransform *vtTrans)
+{
+	beginEditCP(m_pLight);
+	m_pLight->setBeacon ( vtTrans->GetOsgNode() );
+	endEditCP(m_pLight);
 }
 
 

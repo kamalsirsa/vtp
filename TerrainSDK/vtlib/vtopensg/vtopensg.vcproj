@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\.."
+				AdditionalIncludeDirectories="..\..;$(VTP_INCLUDES)"
 				PreprocessorDefinitions="NDEBUG;WIN32;_LIB;VTLIB_OPENSG=1;OSG_BUILD_DLL;OSG_DEBUG;OSG_WITH_GLUT;OSG_WITH_GIF;OSG_WITH_TIF;OSG_WITH_JPG;_OSG_HAVE_CONFIGURED_H_"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -78,7 +78,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\.."
+				AdditionalIncludeDirectories="..\..;$(VTP_INCLUDES)"
 				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_LIB;VTLIB_OPENSG=1;OSG_BUILD_DLL;OSG_DEBUG;OSG_WITH_GLUT;OSG_WITH_GIF;OSG_WITH_TIF;OSG_WITH_JPG;_OSG_HAVE_CONFIGURED_H_"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

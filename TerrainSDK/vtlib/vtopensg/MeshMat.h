@@ -80,6 +80,7 @@ public:
 
 	// the VT material object includes texture
 	osg::RefPtr<OSG::SimpleTexturedMaterialPtr> m_pMaterial; 
+	//osg::RefPtr<OSG::SimpleMaterialPtr> m_pMaterial;
 };
 
 /**
@@ -169,23 +170,6 @@ public:
 protected:
 	// Implementation
 	void _AddStripNormals();
-/*#if EXCEPT
-	// Holder for all osg geometry information
-	osg::ref_ptr<osg::Geometry> m_pGeometry;
-
-	// The vertex co-ordinates array
-	osg::ref_ptr<osg::Vec3Array>	m_Vert;
-	// The vertex normals array
-	osg::ref_ptr<osg::Vec3Array>	m_Norm;
-	// The vetex colors array
-	osg::ref_ptr<osg::Vec4Array>	m_Color;
-	//  The vertex texture co-ordinates array
-	osg::ref_ptr<osg::Vec2Array>	m_Tex;
-	// The vertex index array
-	osg::ref_ptr<osg::UIntArray>	m_Index;
-
-	osg::ref_ptr<osg::PrimitiveSet>	m_pPrimSet;
-#endif //EXCEPT */
 
 	//{ as always there is a node && a node core.
 	osg::RefPtr<osg::NodePtr> m_pGeometryNode;
