@@ -393,6 +393,8 @@ public:
 
 	/// Add a given offset to all points
 	void Add(const DPoint2 &p);
+	/// Multiply all points by a given factor
+	void Mult(double factor);
 
 	void From3D(const DLine3 &input);
 	void InsertPointAfter(int iInsertAfter, const DPoint2 &Point);
@@ -709,6 +711,7 @@ class DPolygon2 : public DLine2Array
 public:
 	bool ContainsPoint(const DPoint2 &p) const;
 	void Add(const DPoint2 &p);
+	void Mult(double factor);
 	bool ComputeExtents(DRECT &rect) const;
 
 	void GetAsDLine2(DLine2 &dline) const;

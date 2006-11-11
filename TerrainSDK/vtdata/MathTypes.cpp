@@ -53,16 +53,23 @@ int DPolyArray::FindPoly(const DPoint2 &p) const
 
 void DLine2::Add(const DPoint2 &p)
 {
-	int size = GetSize();
-	for (int i=0; i < size; i++)
+	unsigned int i, size = GetSize();
+	for (i=0; i < size; i++)
 		GetAt(i) += p;
+}
+
+void DLine2::Mult(double factor)
+{
+	unsigned int i, size = GetSize();
+	for (i=0; i < size; i++)
+		GetAt(i) *= factor;
 }
 
 void DLine2::From3D(const DLine3 &input)
 {
-	unsigned int size = input.GetSize();
+	unsigned int i, size = input.GetSize();
 	SetSize(size);
-	for (unsigned int i = 0; i < size; i++)
+	for (i = 0; i < size; i++)
 	{
 		const DPoint3 &p = input.GetAt(i);
 		m_Data[i].x = p.x;
@@ -536,6 +543,19 @@ void DPolygon2::Add(const DPoint2 &p)
 		DLine2 &ring = at(ringnum);
 		for (unsigned int i = 0; i < ring.GetSize(); i++)
 			ring[i] += p;
+	}
+}
+
+/**
+ * Multiplies (scales) all the coordinates of the polygon.
+ */
+void DPolygon2::Mult(double factor)
+{
+	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	{
+		DLine2 &ring = at(ringnum);
+		for (unsigned int i = 0; i < ring.GetSize(); i++)
+			ring[i].Mult(factor, factor);
 	}
 }
 
