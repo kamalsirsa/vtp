@@ -283,6 +283,7 @@ public:
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPoint(const DPoint3 &p);
+	void SetPoint(unsigned int num, const DPoint3 &p);
 	void GetPoint(unsigned int num, DPoint3 &p) const;
 	DPoint3 &GetPoint(unsigned int num) { return m_Point3[num]; }
 	const DPoint3 &GetPoint(unsigned int num) const { return m_Point3[num]; }

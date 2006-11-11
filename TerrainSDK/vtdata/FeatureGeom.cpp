@@ -291,6 +291,11 @@ int vtFeatureSetPoint3D::AddPoint(const DPoint3 &p)
 	return rec;
 }
 
+void vtFeatureSetPoint3D::SetPoint(unsigned int num, const DPoint3 &p)
+{
+	m_Point3.SetAt(num, p);
+}
+
 void vtFeatureSetPoint3D::GetPoint(unsigned int num, DPoint3 &p) const
 {
 	p = m_Point3.GetAt(num);
