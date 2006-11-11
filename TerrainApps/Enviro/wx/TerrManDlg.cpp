@@ -267,7 +267,7 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 		return;
 #endif
 	// Ask the user for a directory (can only be absolute)
-	wxDirDialog getDir(NULL, _("Specify Data Directory"));
+	wxDirDialog getDir(this, _("Specify Data Directory"));
 	bool bResult = (getDir.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
