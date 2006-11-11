@@ -16,166 +16,20 @@
 #  include "wx/wx.h"
 #endif
 
-//#if defined(UNIX)
-//#  include <X11/Xlib.h>
-//#  include <X11/Xutil.h>
-//#  include <GL/glx.h>
-//#endif
+#include "wx/glcanvas.h"
 
 #include "vtlib/vtlib.h"	// mostly for gl.h
-
-#include "StartupDlg.h"
+#include "vtlib/core/TParams.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for AddFilenamesToComboBox
 
 #include "EnviroApp.h"
-#include "TParamsDlg.h"
-#include "TerrManDlg.h"
 #include "OptionsDlg.h"
+#include "StartupDlg.h"
+#include "TerrManDlg.h"
 
 DECLARE_APP(EnviroApp);
 
-#include "wx/glcanvas.h"
-
-//
-// Helper: find the largest texture size supported by OpenGL
-//
-/*
-#ifdef WIN32
-static void ShowOGLInfo(bool bLog, HDC hdc)
-#else
-static void ShowOGLInfo(bool bLog)
-#endif
-{
-	VTLOG("Opening an OpenGL context:\n");
-#if defined(WIN32)
-	PIXELFORMATDESCRIPTOR pfd =
-	{
-		sizeof(PIXELFORMATDESCRIPTOR),   // size of this pfd
-		1,				  // version number
-		PFD_DRAW_TO_WINDOW |	// support window
-		PFD_SUPPORT_OPENGL |	// support OpenGL
-		PFD_DOUBLEBUFFER,	 // double buffered
-		PFD_TYPE_RGBA,	  // RGBA type
-		24,			   // 24-bit color depth
-		0, 0, 0, 0, 0, 0,	 // color bits ignored
-		0, 0, 0,				// no alpha buffer
-		0, 0, 0, 0,	   // accum bits ignored
-		32, 0, 0,			 // 32-bit z-buffer
-		PFD_MAIN_PLANE,   // main layer
-		0, 0, 0, 0		  // reserved, layer masks ignored
-	};
-
-	// get the best available match of pixel format for the device context
-	VTLOG("ChoosePixelFormat, ");
-	int iPixelFormat = ChoosePixelFormat(hdc, &pfd);
-
-	// make that the pixel format of the device context
-	VTLOG("SetPixelFormat, ");
-	SetPixelFormat(hdc, iPixelFormat, &pfd);
-
-	VTLOG("wglCreateContext, ");
-	HGLRC device = wglCreateContext(hdc);
-	if (device == NULL)
-	{
-		DWORD lasterror = GetLastError();
-		VTLOG(" failed with error %d\n", lasterror);
-		// 2000 The pixel format is invalid.  ERROR_INVALID_PIXEL_FORMAT
-		return;
-	}
-	VTLOG("wglMakeCurrent.\n");
-	wglMakeCurrent(hdc, device);
-#elif defined(UNIX)
-	static int dblBuf[] =  {GLX_RGBA, GLX_RED_SIZE, 1, GLX_GREEN_SIZE, 1,
-		GLX_BLUE_SIZE, 1, GLX_DEPTH_SIZE, 1,
-		GLX_DOUBLEBUFFER, None};
-	Display *dpy;
-	Window win;
-	XVisualInfo *vi;
-	Colormap cmap;
-	XSetWindowAttributes swa;
-	GLXContext cx;
-	int dummy;
-
-	dpy = XOpenDisplay(NULL);
-	if (dpy == NULL)
-		wxLogFatalError( _T("could not open display") );
-
-	if (!glXQueryExtension(dpy, &dummy, &dummy))
-		wxLogFatalError( _T("X server has no OpenGL GLX extension") );
-
-	vi = glXChooseVisual(dpy, DefaultScreen(dpy), dblBuf);
-	if (vi == NULL)
-		wxLogFatalError( _T("no RGB visual with double and depth buffer") );
-	if (vi->c_class != TrueColor)
-		wxLogFatalError( _T("TrueColor visual required for this program") );
-
-	cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen),
-			vi->visual, AllocNone);
-	swa.colormap = cmap;
-	swa.border_pixel = 0;
-	swa.event_mask = ExposureMask | ButtonPressMask | StructureNotifyMask;
-	win = XCreateWindow(dpy, RootWindow(dpy, vi->screen),
-			0, 0, 300, 300, 0, vi->depth,
-			InputOutput, vi->visual,
-			CWBorderPixel | CWColormap | CWEventMask, &swa);
-
-	XSetStandardProperties(dpy, win, "test", "test",
-		None, NULL, 0, NULL);
-
-	cx = glXCreateContext(dpy, vi, None, True);
-	if (cx == NULL)
-		wxLogFatalError( _T("could not create rendering context") );
-
-	glXMakeCurrent(dpy, win, cx);
-#else
-#  error "I don't know this platform."
-#endif
-
-	GLint value;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &value);
-	GLenum error = glGetError();
-	if (error == GL_INVALID_OPERATION)
-		value = 0;
-
-	if (bLog)
-	{
-		VTLOG("\tOpenGL Version: %hs\n\tVendor: %hs\n\tRenderer: %hs\n"
-			"\tMaximum Texture Dimension: %d\n",
-			glGetString(GL_VERSION), glGetString(GL_VENDOR),
-			glGetString(GL_RENDERER), value);
-	}
-	else
-	{
-		wxString msg;
-
-		wxString str;
-		str.Printf(_T("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n"),
-			glGetString(GL_VERSION), glGetString(GL_VENDOR),
-			glGetString(GL_RENDERER));
-		msg += str;
-		str.Printf(_("Maximum Texture Dimension: %d\n"), value);
-		msg += str;
-		msg += _T("Extensions: ");
-		msg += glGetString(GL_EXTENSIONS);
-
-		wxDialog dlg(NULL, -1, _("OpenGL Info"), wxDefaultPosition);
-		TextDialogFunc(&dlg, true);
-		wxTextCtrl* pText = (wxTextCtrl*) dlg.FindWindow( ID_TEXT );
-		pText->SetValue(msg);
-
-		dlg.ShowModal();
-	}
-
-#ifdef WIN32
-	wglDeleteContext(device);
-#elif defined(UNIX)
-	glXDestroyContext(dpy, cx);
-	XDestroyWindow(dpy, win);
-	XCloseDisplay(dpy);
-#endif
-}
-*/
 
 static void ShowOGLInfo2(bool bLog)
 {
@@ -309,13 +163,6 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	VTLOG("StartupDlg Init.\n");
 
 	// log OpenGL info, including max texture size
-//#ifdef WIN32
-//	wxClientDC wdc(this);
-//	HDC hdc = (HDC) wdc.GetHDC();
-//	ShowOGLInfo(true, hdc);
-//#else
-//	ShowOGLInfo(true);
-//#endif
 	ShowOGLInfo2(true);
 
 	// Populate Earth Image files choices
@@ -406,13 +253,6 @@ void StartupDlg::OnEarthView( wxCommandEvent &event )
 void StartupDlg::OnOpenGLInfo( wxCommandEvent &event )
 {
 	// display OpenGL info, including max texture size
-//#ifdef WIN32
-//	wxClientDC wdc(this);
-//	HDC hdc = (HDC) wdc.GetHDC();
-//	ShowOGLInfo(false, hdc);
-//#else
-//	ShowOGLInfo(false);
-//#endif
 	ShowOGLInfo2(false);
 }
 
