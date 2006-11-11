@@ -243,6 +243,7 @@ protected:
 	void OnRawSelectCondition(wxCommandEvent& event);
 	void OnRawExportImageMap(wxCommandEvent& event);
 	void OnRawStyle(wxCommandEvent& event);
+	void OnRawScale(wxCommandEvent& event);
 
 	void OnUpdateRawSetType(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPoints(wxUpdateUIEvent& event);

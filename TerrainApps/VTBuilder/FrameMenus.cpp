@@ -226,6 +226,7 @@ EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
 EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
 EVT_MENU(ID_RAW_STYLE,				MainFrame::OnRawStyle)
+EVT_MENU(ID_RAW_SCALE,				MainFrame::OnRawScale)
 
 EVT_UPDATE_UI(ID_RAW_SETTYPE,			MainFrame::OnUpdateRawSetType)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS,			MainFrame::OnUpdateRawAddPoints)
@@ -234,6 +235,7 @@ EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnUpdateRawAddPointsGPS)
 EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_STYLE,				MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_SCALE,				MainFrame::OnUpdateRawIsActive)
 
 EVT_MENU(ID_AREA_ZOOM_ALL,			MainFrame::OnAreaZoomAll)
 EVT_MENU(ID_AREA_ZOOM_LAYER,		MainFrame::OnAreaZoomLayer)
@@ -464,6 +466,7 @@ void MainFrame::CreateMenus()
 	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, _("Add Point with Text\tCtrl+T"), _("Add point"));
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, _("Add Points with GPS"), _("Add points with GPS"));
 	rawMenu->Append(ID_RAW_STYLE, _("Style..."));
+	rawMenu->Append(ID_RAW_SCALE, _("Scale"));
 #endif
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SELECTCONDITION, _("Select Features by Condition"));
@@ -4310,6 +4313,21 @@ void MainFrame::OnRawStyle(wxCommandEvent& event)
 	DrawStyle style = pRL->GetDrawStyle();
 	style.m_LineColor.Set(0,0,0);
 	pRL->SetDrawStyle(style);
+}
+
+void MainFrame::OnRawScale(wxCommandEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+
+	wxString str = _T("1");
+	str = wxGetTextFromUser(_("Scale factor?"), 
+		_("Scale Raw Layer"), str, this);
+	if (str == _T(""))
+		return;
+
+	double value = atof(str.mb_str(wxConvUTF8));
+	pRL->Scale(value);
+	m_pView->Refresh();
 }
 
 

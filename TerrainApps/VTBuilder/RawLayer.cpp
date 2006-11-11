@@ -501,6 +501,56 @@ bool vtRawLayer::LoadWithOGR(const char *filename, bool progress_callback(int))
 	return (pSet != NULL);
 }
 
+void vtRawLayer::Scale(double factor)
+{
+	if (!m_pSet)
+		return;
+
+	unsigned int i, j, entities = m_pSet->GetNumEntities();
+	OGRwkbGeometryType type = m_pSet->GetGeomType();
+	if (type == wkbPoint)
+	{
+		vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D *>(m_pSet);
+		for (i = 0; i < entities; i++)
+			pSetP2->SetPoint(i, pSetP2->GetPoint(i) * factor);
+	}
+	if (type == wkbPoint25D)
+	{
+		vtFeatureSetPoint3D *pSetP3 = dynamic_cast<vtFeatureSetPoint3D *>(m_pSet);
+		for (i = 0; i < entities; i++)
+		{
+			const DPoint3 &p3 = pSetP3->GetPoint(i);
+			pSetP3->SetPoint(i, DPoint3(p3.x * factor, p3.y * factor, p3.z));
+		}
+	}
+	if (type == wkbLineString)
+	{
+		vtFeatureSetLineString *pSetLine = dynamic_cast<vtFeatureSetLineString *>(m_pSet);
+		for (i = 0; i < entities; i++)
+			pSetLine->GetPolyLine(i).Mult(factor);
+	}
+	if (type == wkbLineString25D)
+	{
+		vtFeatureSetLineString3D *pSetLine = dynamic_cast<vtFeatureSetLineString3D *>(m_pSet);
+		for (i = 0; i < entities; i++)
+		{
+			DLine3 &dline3 = pSetLine->GetPolyLine(i);
+			for (j = 0; j < dline3.GetSize(); j++)
+			{
+				dline3[j].x *= factor;
+				dline3[j].y *= factor;
+			}
+		}
+	}
+	if (type == wkbPolygon)
+	{
+		vtFeatureSetPolygon *pSetPoly = dynamic_cast<vtFeatureSetPolygon *>(m_pSet);
+		for (i = 0; i < entities; i++)
+			pSetPoly->GetPolygon(i).Mult(factor);
+	}
+	SetModified(true);
+}
+
 ////////////////////////////////////////////////////////////////////////
 // Visitor class, for XML parsing of a GeoURL file.
 ////////////////////////////////////////////////////////////////////////

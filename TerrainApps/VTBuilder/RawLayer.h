@@ -37,9 +37,10 @@ public:
 	void OnLeftDown(BuilderView *pView, UIContext &ui);
 
 	void AddPoint(const DPoint2 &p2);
-	bool LoadWithOGR(const char *filename, bool progress_callback(int) = NULL);
 	bool CreateFromOGRLayer(OGRLayer *pOGRLayer);
 	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
+	bool LoadWithOGR(const char *filename, bool progress_callback(int) = NULL);
+	void Scale(double factor);
 
 	void SetDrawStyle(const DrawStyle &style) { m_DrawStyle = style; }
 	DrawStyle GetDrawStyle() { return m_DrawStyle; }
