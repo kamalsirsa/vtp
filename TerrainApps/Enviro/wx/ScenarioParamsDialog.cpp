@@ -103,11 +103,6 @@ void CScenarioParamsDialog::OnInitDialog(wxInitDialogEvent& event)
 
 	for (unsigned int i = 0; i < m_Layers.size(); i++)
 	{
-		// Look for structure layers
-		vtString LayerType = m_Layers[i].GetValueString("Type");
-		if (LayerType != TERR_LTYPE_STRUCTURE)
-			continue;
-
 		wxFileName FileName;
 		wxString fname(m_Layers[i].GetValueString("Filename"), wxConvUTF8);
 
