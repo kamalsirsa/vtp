@@ -1,7 +1,7 @@
 //
 // InstanceDlg.h
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -58,7 +58,7 @@ private:
 private:
 	// WDR: handler declarations for InstanceDlg
 	void OnLocationText( wxCommandEvent &event );
-	void OnBrowseModeFile( wxCommandEvent &event );
+	void OnBrowseModelFile( wxCommandEvent &event );
 	void OnChoice( wxCommandEvent &event );
 	void OnChoiceItem( wxCommandEvent &event );
 	void OnRadio( wxCommandEvent &event );
