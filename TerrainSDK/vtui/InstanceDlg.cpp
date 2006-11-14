@@ -33,7 +33,7 @@ BEGIN_EVENT_TABLE(InstanceDlg, AutoDialog)
 	EVT_CHOICE( ID_CHOICE_FILE, InstanceDlg::OnChoice )
 	EVT_CHOICE( ID_CHOICE_TYPE, InstanceDlg::OnChoice )
 	EVT_CHOICE( ID_CHOICE_ITEM, InstanceDlg::OnChoiceItem )
-	EVT_BUTTON( ID_BROWSE_MODEL_FILE, InstanceDlg::OnBrowseModeFile )
+	EVT_BUTTON( ID_BROWSE_MODEL_FILE, InstanceDlg::OnBrowseModelFile )
 	EVT_TEXT( ID_LOCATION, InstanceDlg::OnLocationText )
 END_EVENT_TABLE()
 
@@ -156,7 +156,7 @@ void InstanceDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetChoiceFile()->Select(0);
 
 	GetChoiceType()->Clear();
-	GetChoiceType()->Append(_T("(All)"));
+	GetChoiceType()->Append(_("(All)"));
 	GetChoiceType()->Select(0);
 
 	UpdateLoc();
@@ -171,13 +171,15 @@ void InstanceDlg::OnLocationText( wxCommandEvent &event )
 	// todo? only for edit
 }
 
-void InstanceDlg::OnBrowseModeFile( wxCommandEvent &event )
+void InstanceDlg::OnBrowseModelFile( wxCommandEvent &event )
 {
+	wxString filter;
+	filter += _("3D Model files");
+	filter += _T(" (*.3ds;*.obj;*.lwo;*.flt;*.osg;*.ive)|*.3ds;*.obj;*.lwo;*.flt;*.osg;*.ive|");
+	filter += _("All files");
+	filter += _T(" (*.*)|*.*");
 	wxFileDialog SelectFile(this, _T("Choose model file"),
-							_T(""),
-							_T(""),
-							_T("3D Model files (*.3ds;*.obj;*.lwo;*.flt;*.osg;*.ive)|*.3ds;*.obj;*.lwo;*.flt;*.osg;*.ive|All files(*.*)|*.*"),
-							wxOPEN);
+							_T(""), _T(""), filter, wxOPEN);
 	if (SelectFile.ShowModal() != wxID_OK)
 		return;
 	GetModelFile()->SetValue(SelectFile.GetPath());

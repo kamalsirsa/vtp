@@ -39,25 +39,25 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 {
 	DistanceDialogFunc( this, TRUE );
 
-	GetUnits2()->Append(_T("Meters"));
-	GetUnits2()->Append(_T("Feet"));
-	GetUnits2()->Append(_T("US Survey Feet"));
+	GetUnits2()->Append(_("Meters"));
+	GetUnits2()->Append(_("Feet"));
+	GetUnits2()->Append(_("US Survey Feet"));
 
-	GetUnits3()->Append(_T("Meters"));
-	GetUnits3()->Append(_T("Feet"));
-	GetUnits3()->Append(_T("US Survey Feet"));
-	GetUnits3()->Append(_T("Kilometers"));
-	GetUnits3()->Append(_T("Miles"));
+	GetUnits3()->Append(_("Meters"));
+	GetUnits3()->Append(_("Feet"));
+	GetUnits3()->Append(_("US Survey Feet"));
+	GetUnits3()->Append(_("Kilometers"));
+	GetUnits3()->Append(_("Miles"));
 
-	GetUnits4()->Append(_T("Meters"));
-	GetUnits4()->Append(_T("Feet"));
-	GetUnits4()->Append(_T("US Survey Feet"));
-	GetUnits4()->Append(_T("Kilometers"));
-	GetUnits4()->Append(_T("Miles"));
+	GetUnits4()->Append(_("Meters"));
+	GetUnits4()->Append(_("Feet"));
+	GetUnits4()->Append(_("US Survey Feet"));
+	GetUnits4()->Append(_("Kilometers"));
+	GetUnits4()->Append(_("Miles"));
 
-	GetUnits5()->Append(_T("Meters"));
-	GetUnits5()->Append(_T("Feet"));
-	GetUnits5()->Append(_T("US Survey Feet"));
+	GetUnits5()->Append(_("Meters"));
+	GetUnits5()->Append(_("Feet"));
+	GetUnits5()->Append(_("US Survey Feet"));
 
 	AddValidator(ID_UNITS1, &m_iUnits1);
 	AddValidator(ID_UNITS2, &m_iUnits2);
@@ -223,12 +223,12 @@ void DistanceDlg::UpdateAvailableUnits()
 	GetMapDist()->Enable(!bIsGeo);
 
 	GetUnits1()->Clear();
-	GetUnits1()->Append(_T("Degrees"));
+	GetUnits1()->Append(_("Degrees"));
 	if (!bIsGeo)
 	{
-		GetUnits1()->Append(_T("Meters"));
-		GetUnits1()->Append(_T("Feet"));
-		GetUnits1()->Append(_T("US Survey Feet"));
+		GetUnits1()->Append(_("Meters"));
+		GetUnits1()->Append(_("Feet"));
+		GetUnits1()->Append(_("US Survey Feet"));
 	}
 
 	switch (m_proj.GetUnits())
