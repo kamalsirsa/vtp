@@ -239,7 +239,8 @@ public:
 	int DeleteSelectedStructures();
 	void DeleteLayer(unsigned int index);
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
-							  int &structure, double &closest, float fMaxInstRadius);
+							  int &structure, double &closest, float fMaxInstRadius,
+							  float fLinearWidthBuffer);
 	bool AddNodeToStructGrid(vtTransform *pTrans);
 	bool AddNodeToStructGrid(vtGeom *pGeom);
 	void RemoveNodeFromStructGrid(vtNode *pNode);

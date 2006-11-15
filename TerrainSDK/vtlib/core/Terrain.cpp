@@ -1289,10 +1289,15 @@ int vtTerrain::DeleteSelectedStructures()
 }
 
 bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
-					   int &structure, double &closest, float fMaxInstRadius)
+					   int &structure, double &closest, float fMaxInstRadius,
+					   float fLinearWidthBuffer)
 {
 	structure = -1;
 	closest = 1E8;
+
+	// if all structures are hidden, don't find them
+	if (!GetFeatureVisible(TFT_STRUCTURES))
+		return false;
 
 	double dist;
 	int i, index, layers = m_Layers.GetSize();
@@ -1301,7 +1306,8 @@ bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
 		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i]);
 		if (!slay)
 			continue;
-		if (slay->FindClosestStructure(point, epsilon, index, dist, fMaxInstRadius))
+		if (slay->FindClosestStructure(point, epsilon, index, dist,
+			fMaxInstRadius, fLinearWidthBuffer))
 		{
 			if (dist < closest)
 			{
@@ -2094,6 +2100,11 @@ bool vtTerrain::CreateFromTiles()
 {
 	// m_pTiledGeom already exists (although probably should be unbundled)
 	m_pTerrainGroup->AddChild(m_pTiledGeom);
+
+	// the tileset will be the heightfield used at runtime, so extend
+	//  it with the terrain's culture
+	m_pTiledGeom->SetCulture(this);
+
 	return true;
 }
 
@@ -2282,6 +2293,8 @@ void vtTerrain::SetFeatureVisible(TFType ftype, bool bOn)
 	case TFT_TERRAINSURFACE:
 		if (m_pDynGeom)
 			m_pDynGeom->SetEnabled(bOn);
+		else if (m_pTiledGeom)
+			m_pTiledGeom->SetEnabled(bOn);
 		break;
 	case TFT_HORIZON:
 		if (m_pHorizonGeom)
@@ -2313,6 +2326,8 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 	case TFT_TERRAINSURFACE:
 		if (m_pDynGeom)
 			return m_pDynGeom->GetEnabled();
+		else if (m_pTiledGeom)
+			return m_pTiledGeom->GetEnabled();
 		break;
 	case TFT_HORIZON:
 		if (m_pHorizonGeom)
