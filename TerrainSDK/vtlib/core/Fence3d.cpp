@@ -653,6 +653,9 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	if (p3.GetSize() < 2)
 		return;
 
+	if (m_Params.m_ConnectMaterial == "none")
+		return;
+
 	if (m_Params.m_iConnectType == 0)	// none
 	{
 		// nothing to do
