@@ -638,10 +638,8 @@ void EnviroFrame::SetMode(MouseMode mode)
 
 	if (mode == MM_FENCES)
 	{
-		// make sure fence materials have been loaded
-		vtFence3d::CreateMaterials();
-		// and inform the dialog about the materials
-		m_pFenceDlg->SetConnectionMaterials(&vtFence3d::s_FenceMats);
+		// inform the dialog about the materials
+		m_pFenceDlg->SetStructureMaterials(&vtStructure3d::GetMaterialDescriptors());
 		// and the datapath
 		m_pFenceDlg->m_datapaths = g_Options.m_DataPaths;
 	}
