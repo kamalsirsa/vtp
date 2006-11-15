@@ -101,7 +101,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OSGBaseD.lib OSGSystemD.lib opengl32.lib libpng13d.lib zlib1d.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="Winmm.lib OSGBaseD.lib OSGSystemD.lib opengl32.lib libpng13d.lib zlib1d.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libc.lib,libcmt.lib,msvcrt.lib,libcd.lib,libcmtd.lib"
@@ -686,6 +686,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\VehicleDlg.cpp">
+			</File>
+			<File
 				RelativePath=".\wx\wx_headers.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -782,6 +785,9 @@
 			</File>
 			<File
 				RelativePath="wx\UtilDlg.h">
+			</File>
+			<File
+				RelativePath=".\wx\VehicleDlg.h">
 			</File>
 		</Filter>
 		<Filter
