@@ -332,6 +332,11 @@ void vtFence::GetClosestPoint(const DPoint2 &point, DPoint2 &closest_point)
 double vtFence::GetDistanceToLine(const DPoint2 &point)
 {
 	int i, size = m_pFencePts.GetSize();
+
+	// simple case, one point, just get distance to it
+	if (size == 1)
+		return (point-m_pFencePts[0]).Length();
+
 	double dist, closest = 1E8;
 	for (i = 0; i < size-1; i++)
 	{
