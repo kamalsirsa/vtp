@@ -232,7 +232,8 @@ bool vtStructureArray::FindClosestLinearCorner(const DPoint2 &point, double epsi
  * \return True if a building was found.
  */
 bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon,
-					   int &structure, double &closest, float fMaxInstRadius, bool bSkipBuildings)
+					   int &structure, double &closest, float fMaxInstRadius,
+					   float fLinearWidthBuffer)
 {
 	structure = -1;
 	closest = 1E8;
@@ -241,25 +242,18 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 		return false;
 
 	DPoint2 loc;
-	double dist=0;
+	double dist;
 
+	// Check buildings and instances first
 	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
+		dist = 1E9;
 
-		// it might be a building
+		// or a building
 		vtBuilding *bld = str->GetBuilding();
 		if (bld)
-		{
-			if (bSkipBuildings)
-				continue;
 			dist = bld->GetDistanceToInterior(point);
-		}
-
-		// or a fence
-		vtFence *fen = str->GetFence();
-		if (fen)
-			dist = fen->GetDistanceToLine(point);
 
 		// or an instance
 		vtStructInstance *inst = str->GetInstance();
@@ -272,6 +266,31 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 		{
 			structure = i;
 			closest = dist;
+		}
+	}
+	// then check fences
+	for (unsigned int i = 0; i < GetSize(); i++)
+	{
+		vtStructure *str = GetAt(i);
+
+		vtFence *fen = str->GetFence();
+		if (fen)
+		{
+			dist = fen->GetDistanceToLine(point);
+
+			if (dist > epsilon)
+				continue;
+
+			// If the point is within the buffer around the line, consider it
+			//  closer than the other structures.  This allows picking of
+			//  linear structures on top of other structures.
+			if (dist < fLinearWidthBuffer && dist > closest)
+				dist = closest - (1E-6);
+			if (dist < closest)
+			{
+				structure = i;
+				closest = dist;
+			}
 		}
 	}
 	return (structure != -1);
