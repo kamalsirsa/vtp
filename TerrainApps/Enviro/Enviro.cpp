@@ -1428,8 +1428,15 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 		{
 			str->Select(true);
 			str3d->ShowBounds(true);
+
 			vtStructInstance *inst = str->GetInstance();
 			vtFence *fen = str->GetFence();
+
+			// Reset dragging state
+			m_bRotating = false;
+			m_pDraggingFence = NULL;
+			m_iDraggingFencePoint = -1;		// no grab
+
 			if (inst != NULL && (event.flags & VT_SHIFT) != 0)
 			{
 				m_StartRotation = inst->GetRotation();
@@ -1445,11 +1452,6 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 					m_pDraggingFence = dynamic_cast<vtFence3d*>(str3d);
 					m_iDraggingFencePoint = idx;	// grab
 					m_bDragging = true;
-				}
-				else
-				{
-					m_pDraggingFence = NULL;
-					m_iDraggingFencePoint = -1;		// no grab
 				}
 			}
 			else
