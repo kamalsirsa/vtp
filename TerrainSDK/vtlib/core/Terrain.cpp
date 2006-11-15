@@ -1589,6 +1589,7 @@ void vtTerrain::_CreateStructures()
 		if (ltype != TERR_LTYPE_STRUCTURE)
 			continue;
 
+		VTLOG(" Layer %d: Structure\n", i);
 		vtString building_fname = "BuildingData/";
 		building_fname += lay.GetValueString("Filename");
 
@@ -2967,17 +2968,19 @@ void vtTerrain::ActivateScenario(int iScenario)
 	ScenarioParams &ScenarioParams = m_Params.m_Scenarios[iScenario];
 	vtStringArray &ActiveLayers = ScenarioParams.GetActiveLayers();
 
-	int iNumActiveLayers = ActiveLayers.size();
+	unsigned int iNumActiveLayers = ActiveLayers.size();
 
 	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *lay = m_Layers[i];
 		vtString Name = StartOfFilename(lay->GetLayerName());
 		RemoveFileExtensions(Name);
-		lay->SetVisible(false);
-		for (int j = 0; j < iNumActiveLayers; j++)
+
+		bool bFound = false;
+		for (unsigned int j = 0; j < iNumActiveLayers; j++)
 			if (Name == ActiveLayers[j])
-				lay->SetVisible(true);
+				bFound = true;
+		lay->SetVisible(bFound);
 	}
 }
 
