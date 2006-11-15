@@ -51,6 +51,7 @@ public:
 	void ChangeTerrainDetail(bool bIncrease);
 	void SetFullScreen(bool bFull);
 	ProfileDlg *ShowProfileDlg();
+	void OpenFenceDialog();
 	void ShowPopupMenu(const IPoint2 &pos);
 	void SetTimeEngine(vtTimeEngine *pEngine);
 	void Snapshot(bool bNumbered);

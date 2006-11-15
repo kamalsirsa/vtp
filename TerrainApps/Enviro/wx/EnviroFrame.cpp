@@ -637,13 +637,9 @@ void EnviroFrame::SetMode(MouseMode mode)
 	g_App.SetMode(mode);
 
 	if (mode == MM_FENCES)
-	{
-		// inform the dialog about the materials
-		m_pFenceDlg->SetStructureMaterials(&vtStructure3d::GetMaterialDescriptors());
-		// and the datapath
-		m_pFenceDlg->m_datapaths = g_Options.m_DataPaths;
-	}
-	m_pFenceDlg->Show(mode == MM_FENCES);
+		OpenFenceDialog();
+	else
+		m_pFenceDlg->Show(false);
 
 	// Show/hide plant dialog
 	if (mode == MM_PLANTS)
@@ -2064,6 +2060,15 @@ ProfileDlg *EnviroFrame::ShowProfileDlg()
 	return m_pProfileDlg;
 }
 
+void EnviroFrame::OpenFenceDialog()
+{
+	// inform the dialog about the materials
+	m_pFenceDlg->SetStructureMaterials(&vtStructure3d::GetMaterialDescriptors());
+	// and the datapath
+	m_pFenceDlg->m_datapaths = g_Options.m_DataPaths;
+	m_pFenceDlg->Show(true);
+}
+
 ///////////////////////////////////////////////////////////////////
 
 void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
@@ -2121,21 +2126,18 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 		int sel = sa->GetFirstSelected();
 		if (sel != -1)
 		{
-			vtBuilding3d *bld;
-			vtFence3d *fen;
-
-			bld = sa->GetBuilding(sel);
-			fen = sa->GetFence(sel);
+			vtBuilding3d *bld = sa->GetBuilding(sel);
 			if (bld)
 			{
 				m_pBuildingDlg->Setup(bld, pTerr->GetHeightField());
 				m_pBuildingDlg->Show(true);
 			}
+			vtFence3d *fen = sa->GetFence(sel);
 			if (fen)
 			{
 				// Editing of fence properties
 				m_pFenceDlg->SetOptions(fen->GetParams());
-				m_pFenceDlg->Show(true);
+				OpenFenceDialog();
 			}
 			return;
 		}
