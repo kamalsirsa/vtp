@@ -345,7 +345,7 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 bool vtStructureArray3d::GetEnabled()
 {
 	// Take a vote.  How many of the structures as enabled?
-	int num_sel = 0;
+	unsigned int num_sel = 0;
 	for (unsigned int j = 0; j < GetSize(); j++)
 	{
 		vtStructure3d *str3d = GetStructure3d(j);
