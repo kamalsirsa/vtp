@@ -27,7 +27,7 @@ public:
 	void Setup(vtBuilding3d *bld3d, vtHeightField3d *pHeightField);
 
 	// WDR: member variable declarations for BuildingDlg
-	vtStructure3d	*m_pStructure3d;
+	vtBuilding3d	*m_pBuilding3d;
 
 	// allow the dialog to control rendering
 	virtual void EnableRendering(bool bEnable);
