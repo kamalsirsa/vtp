@@ -1365,6 +1365,27 @@ void EnviroFrame::OnSceneGraph(wxCommandEvent& event)
 void EnviroFrame::OnSceneTerrain(wxCommandEvent& event)
 {
 	wxString str;
+
+	// When switching terrains, highlight the current on
+	vtTerrain *pTerr = GetCurrentTerrain();
+
+	// Or, if in Earth view, highlight a terrain that's already been created
+	if (!pTerr && g_App.m_state == AS_Orbit)
+	{
+		for (unsigned int i = 0; i < vtGetTS()->NumTerrains(); i++)
+		{
+			vtTerrain *t = vtGetTS()->GetTerrain(i);
+			if (t->IsCreated())
+			{
+				pTerr = t;
+				break;
+			}
+		}
+	}
+	// Get the name from the terrain, if we found one
+	if (pTerr)
+		str = wxString(pTerr->GetName(), wxConvUTF8);
+
 	if (wxGetApp().AskForTerrainName(this, str))
 		g_App.SwitchToTerrain(str.mb_str(wxConvUTF8));
 }
