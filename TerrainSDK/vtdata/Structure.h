@@ -68,11 +68,19 @@ public:
 	{
 		return *m_pName;
 	}
-	void SetType(int type)
+	/**
+	\param type One of:
+	- 0: A surface material, such as brick, siding, or stucco.
+	- 1: An element of a strcture edge, such as a door or window.
+	- 2: Reserved for "Window Wall", an efficiency optimization material
+		which contains both a window and a wall.
+	- 3: A post material, for linear structures, such as a fencepost.
+	*/
+	void SetMatType(int type)
 	{
 		m_Type = type;
 	}
-	int GetType() const
+	int GetMatType() const
 	{
 		return m_Type;
 	}
@@ -181,7 +189,7 @@ public:
 			delete GetAt(i);
 	}
 	bool LoadExternalMaterials(const vtStringArray &paths);
-	const vtString *FindName(const char *matname);
+	const vtString *FindName(const char *matname) const;
 	void CreatePlain();
 
 	bool Load(const char *szFileName);

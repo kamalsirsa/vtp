@@ -175,7 +175,7 @@ void MaterialDescriptorArrayVisitor::startElement(const char *name, const XMLAtt
 
 			attval = atts.getValue("Type");
 			if (attval)
-				pDescriptor->SetType(atoi(attval));
+				pDescriptor->SetMatType(atoi(attval));
 			attval = atts.getValue("Source");
 			if (attval)
 				pDescriptor->SetSourceName(attval);
@@ -369,7 +369,7 @@ bool vtMaterialDescriptorArray::Save(const char *szFileName)
 	//	return Output;
 	//}
 
-const vtString *vtMaterialDescriptorArray::FindName(const char *name)
+const vtString *vtMaterialDescriptorArray::FindName(const char *name) const
 {
 	int iIndex;
 	int iSize = GetSize();
@@ -377,7 +377,7 @@ const vtString *vtMaterialDescriptorArray::FindName(const char *name)
 	for (iIndex = 0; iIndex < iSize; iIndex++)
 	{
 		const vtString *pFoundName = &GetAt(iIndex)->GetName();
-		if (pFoundName && *pFoundName == name)
+		if (pFoundName && (*pFoundName).CompareNoCase(name) == 0)
 			return pFoundName;
 	}
 	return NULL;
