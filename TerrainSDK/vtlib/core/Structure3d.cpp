@@ -417,6 +417,12 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 	m_hightlight1 = m_pMaterials->AddRGBMaterial1(RGBf(1,1,1), false, false, true);
 	m_hightlight2 = m_pMaterials->AddRGBMaterial1(RGBf(1,0,0), false, false, true);
 	m_hightlight3 = m_pMaterials->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
+
+	// wire material
+	m_wire = m_pMaterials->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
+		RGBf(0.4f, 0.4f, 0.4f),	// ambient
+		false, true, false,		// culling, lighting, wireframe
+		0.6f);					// alpha
 }
 
 void vtMaterialDescriptorArray3d::CreateMaterials()
@@ -508,7 +514,8 @@ void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *
 // existing vtMaterial.
 //
 int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
-											  const RGBf &inputColor)
+											  const RGBf &inputColor,
+											  int iType)
 {
 	if (!m_bMaterialsCreated)
 	{
@@ -527,9 +534,13 @@ int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
 		else
 			return m_hightlight3;
 	}
+	if (Material == "Wire")
+	{
+		return m_wire;
+	}
 
 	const vtMaterialDescriptor  *pMaterialDescriptor;
-	pMaterialDescriptor = FindMaterialDescriptor(Material, inputColor);
+	pMaterialDescriptor = FindMaterialDescriptor(Material, inputColor, iType);
 
 	if (pMaterialDescriptor == NULL)
 		return -1;
@@ -561,7 +572,8 @@ int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
 }
 
 vtMaterialDescriptor *vtMaterialDescriptorArray3d::FindMaterialDescriptor(const vtString& MaterialName,
-																		  const RGBf &color)
+																		  const RGBf &color,
+																		  int iType) const
 {
 	if (&MaterialName == NULL)
 		return NULL;
@@ -575,7 +587,13 @@ vtMaterialDescriptor *vtMaterialDescriptorArray3d::FindMaterialDescriptor(const 
 	for (i = 0; i < iSize; i++)
 	{
 		desc = GetAt(i);
-		if (desc->GetName() != MaterialName)
+
+		// omit if the name does not match
+		if (desc->GetName().CompareNoCase(MaterialName) != 0)
+			continue;
+
+		// omit if the desired type is not matched
+		if (iType != -1 && iType != desc->GetMatType())
 			continue;
 
 		// look for matching name with closest color
@@ -630,7 +648,6 @@ void vtStructure3d::ReleaseSharedMaterials()
 {
 	VTLOG1("ReleaseSharedMaterials\n");
 	s_MaterialDescriptors.ReleaseMaterials();
-	vtFence3d::s_FenceMats.ReleaseMaterials();
 }
 
 //

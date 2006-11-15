@@ -38,12 +38,14 @@ public:
 	vtMaterialDescriptorArray3d();
 
 	vtMaterial *MakeMaterial(vtMaterialDescriptor *desc, const RGBf &color);
-	int FindMatIndex(const vtString & Material, const RGBf &inputColor);
-	vtMaterialDescriptor * FindMaterialDescriptor(const vtString& MaterialName, const RGBf &color);
+	int FindMatIndex(const vtString & Material, const RGBf &inputColor = RGBf(),
+		int iType = -1);
+	vtMaterialDescriptor *FindMaterialDescriptor(const vtString& MaterialName,
+		const RGBf &color = RGBf(), int iType = -1) const;
 	void InitializeMaterials();
 	void CreateMaterials();
 	void ReleaseMaterials();
-	vtMaterialArray *GetMatArray() { return m_pMaterials; }
+	vtMaterialArray *GetMatArray() const { return m_pMaterials; };
 
 protected:
 	// There is a single array of materials, shared by all buildings.
@@ -59,7 +61,7 @@ protected:
 	RGBf m_Colors[COLOR_SPREAD];
 
 	// indices of internal materials
-	int m_hightlight1, m_hightlight2, m_hightlight3;
+	int m_hightlight1, m_hightlight2, m_hightlight3, m_wire;
 };
 
 
@@ -86,7 +88,7 @@ public:
 	virtual void ShowBounds(bool bShow) {}
 
 	// Get the material descriptors
-	const vtMaterialDescriptorArray& GetMaterialDescriptors()
+	static vtMaterialDescriptorArray3d& GetMaterialDescriptors()
 	{
 		return s_MaterialDescriptors;
 	}
@@ -94,11 +96,14 @@ public:
 	static void InitializeMaterialArrays();
 	static void ReleaseSharedMaterials();
 
+	// all fences share the same set of materials
+	static void CreateSharedMaterials();
+
 protected:
 	// material
-	int FindMatIndex(const vtString & Material, const RGBf &inputColor)
+	int FindMatIndex(const vtString &Material, const RGBf &inputColor = RGBf(), int iType = -1)
 	{
-		return s_MaterialDescriptors.FindMatIndex(Material, inputColor);
+		return s_MaterialDescriptors.FindMatIndex(Material, inputColor, iType);
 	}
 	vtMaterialArray *GetSharedMaterialArray() const
 	{
@@ -108,6 +113,7 @@ protected:
 
 protected:
 	float ColorDiff(const RGBi &c1, const RGBi &c2);
+
 	static vtMaterialDescriptorArray3d s_MaterialDescriptors;
 	static bool s_bMaterialsLoaded;
 };

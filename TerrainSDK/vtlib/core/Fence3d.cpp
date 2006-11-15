@@ -15,10 +15,6 @@
 #include "Fence3d.h"
 #include "TerrainScene.h"
 
-// statics
-vtMaterialDescriptorArray3d vtFence3d::s_FenceMats;
-int vtFence3d::s_mi_wire, vtFence3d::s_mi_metal;
-
 
 vtFence3d::vtFence3d() : vtFence()
 {
@@ -33,78 +29,7 @@ void vtFence3d::Init()
 	m_bBuilt = false;
 }
 
-void vtFence3d::CreateMaterials()
-{
-	static bool bFirstTime = true;
-	if (!bFirstTime)
-		return;
-	bFirstTime = false;
-
-	s_FenceMats.InitializeMaterials();
-
-	vtString path = FindFileOnPaths(vtGetDataPath(), "Culture/linear_materials.xml");
-	if (path != "")
-		s_FenceMats.Load(path);
-	else
-	{
-		// Leave these in here for now, but remove them later when everyone can
-		//  be expected to have the XML file instead.
-
-		// wood fence post
-		s_FenceMats.Append(new vtMaterialDescriptor("wood",
-			"Culture/fencepost_64.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
-
-		// steel post textured material
-		s_FenceMats.Append(new vtMaterialDescriptor("steel",
-			"Culture/chainpost32.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
-
-		// Materials for Connections
-
-		// chainlink material: twosided, ambient, and alpha-blended
-		s_FenceMats.Append(new vtMaterialDescriptor("chain-link",
-			"Culture/chain128-4.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 0.5f, 0.5f, true, true, true));
-
-		// create drystone textured material
-		s_FenceMats.Append(new vtMaterialDescriptor("drystone",
-			"Culture/drystone_wall_512.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 2.4f, 1.2f));
-		s_FenceMats.Append(new vtMaterialDescriptor("stone",
-			"Culture/stone256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 2.5f, -1));
-
-		// create privet textured material
-		s_FenceMats.Append(new vtMaterialDescriptor("privet",
-			"Culture/privet_256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1.2f, 1.2f, true));
-		s_FenceMats.Append(new vtMaterialDescriptor("grass",
-			"GeoTypical/grass_repeat3_512.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1.5f, 1.5f));
-
-		// create railing textured materials: twosided, ambient, and alpha-blended
-		s_FenceMats.Append(new vtMaterialDescriptor("railing_pipe",
-			"Culture/railing_pipe.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
-		s_FenceMats.Append(new vtMaterialDescriptor("railing_wire",
-			"Culture/railing_wire.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
-		s_FenceMats.Append(new vtMaterialDescriptor("railing_eu",
-			"Culture/railing_eu.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
-	}
-
-	// add red material for display of unknown material
-	s_FenceMats.Append(new vtMaterialDescriptor("unknown", "",
-		VT_MATERIAL_COLOUR, 1, 1, true, true, false, RGBi(255,0,0)));
-
-	// wire material
-	s_mi_wire = s_FenceMats.GetMatArray()->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
-		RGBf(0.4f, 0.4f, 0.4f),	// ambient
-		false, true, false,		// culling, lighting, wireframe
-		0.6f);					// alpha
-
-	// metal material (grey)
-	s_mi_metal = s_FenceMats.GetMatArray()->AddRGBMaterial(RGBf(0.4f, 0.4f, 0.4f), // diffuse
-		RGBf(0.3f, 0.3f, 0.3f));	// ambient
-
-	//s_FenceMats.Save("C:/temp/fencemats.xml");
-
-	s_FenceMats.CreateMaterials();
-}
-
-void vtFence3d::AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc)
+void vtFence3d::AddFencepost(const FPoint3 &p1, int iMatIdx)
 {
 	// create fencepost block
 	vtMesh *pPostMesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 20);
@@ -118,17 +43,8 @@ void vtFence3d::AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc)
 	t.Translate(p1);
 	pPostMesh->TransformVertices(t);
 
-	m_pFenceGeom->AddMesh(pPostMesh, desc->GetMaterialIndex());
+	m_pFenceGeom->AddMesh(pPostMesh, iMatIdx);
 	pPostMesh->Release();	// pass ownership
-}
-
-vtMaterialDescriptor *vtFence3d::FindDescriptor(const vtString &type)
-{
-	RGBf dummy;
-	vtMaterialDescriptor *desc = s_FenceMats.FindMaterialDescriptor(type, dummy);
-	if (!desc)
-		desc = s_FenceMats.FindMaterialDescriptor("unknown", dummy);
-	return desc;
 }
 
 FPoint3 SidewaysVector(const FPoint3 &p0, const FPoint3 &p1)
@@ -190,17 +106,20 @@ void vtFence3d::AddWireMeshes(const FLine3 &p3)
 			}
 			pWireMesh->AddStrip2(npoints, start);
 		}
-		m_pFenceGeom->AddMesh(pWireMesh, s_mi_wire);
+		m_pFenceGeom->AddMesh(pWireMesh, FindMatIndex("Wire"));
 		pWireMesh->Release();	// pass ownership
 	}
 }
 
+//
+// A single thin strip polygon with a single texture.
+//
 void vtFence3d::AddFlatConnectionMesh(const FLine3 &p3)
 {
 	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_TexCoords, 100);
 
-	// A single thin strip polygon with a single texture.
-	vtMaterialDescriptor *desc = FindDescriptor(m_Params.m_ConnectMaterial);
+	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
+
 	FPoint2 uvscale = desc->GetUVScale();
 
 	float u = 0.0f;
@@ -236,7 +155,7 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_TexCoords | VT_Normals, 100);
 
 	// a solid block, with top/left/right sides, made of 3 strips
-	vtMaterialDescriptor *desc = FindDescriptor(m_Params.m_ConnectMaterial);
+	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
 	FPoint2 uvscale = desc->GetUVScale();
 	float vertical_meters = m_Params.m_fConnectTop - m_Params.m_fConnectBottom;
 
@@ -405,7 +324,7 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP,
 		VT_TexCoords | VT_Normals, iEstimateVerts);
 
-	vtMaterialDescriptor *desc = FindDescriptor(m_Params.m_ConnectMaterial);
+	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
 	FPoint2 uvscale = desc->GetUVScale();
 
 	// determine side-pointing vector
@@ -625,7 +544,7 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 				pWiresRight->SetVtxPos(j*npoints + i, base + upward * wire_height[j]);
 		}
 	}
-	m_pFenceGeom->AddMesh(pMesh, s_mi_metal);
+	m_pFenceGeom->AddMesh(pMesh, FindMatIndex("Steel"));
 	pMesh->Release();	// pass ownership
 
 	if (bLeft && bWires)
@@ -633,7 +552,7 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 		pWiresLeft->AddStrip2(npoints, 0);
 		pWiresLeft->AddStrip2(npoints, npoints);
 		pWiresLeft->AddStrip2(npoints, npoints*2);
-		m_pFenceGeom->AddMesh(pWiresLeft, s_mi_wire);
+		m_pFenceGeom->AddMesh(pWiresLeft, FindMatIndex("Wire"));
 		pWiresLeft->Release();	// pass ownership
 	}
 	if (bRight && bWires)
@@ -641,7 +560,7 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 		pWiresRight->AddStrip2(npoints, 0);
 		pWiresRight->AddStrip2(npoints, npoints);
 		pWiresRight->AddStrip2(npoints, npoints*2);
-		m_pFenceGeom->AddMesh(pWiresRight, s_mi_wire);
+		m_pFenceGeom->AddMesh(pWiresRight, FindMatIndex("Wire"));
 		pWiresRight->Release();	// pass ownership
 	}
 }
@@ -710,9 +629,14 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 			}
 		}
 		// generate the posts
-		vtMaterialDescriptor *desc = FindDescriptor(m_Params.m_PostType);
+		// Look first for post materials (type 3)
+		int iMatIdx = FindMatIndex(m_Params.m_PostType, RGBf(), 3);
+
+		// If that didn't work, look for any material by that name
+		if (iMatIdx == -1)
+			int iMatIdx = FindMatIndex(m_Params.m_PostType);
 		for (i = 0; i < p3.GetSize(); i++)
-			AddFencepost(p3[i], desc);
+			AddFencepost(p3[i], iMatIdx);
 	}
 	else
 	{
@@ -781,12 +705,9 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 	}
 	else
 	{
-		// Make sure materials exist
-		CreateMaterials();
-
 		m_pFenceGeom = new vtGeom;
 		m_pFenceGeom->SetName2("Fence");
-		m_pFenceGeom->SetMaterials(s_FenceMats.GetMatArray());
+		m_pFenceGeom->SetMaterials(GetSharedMaterialArray());
 	}
 
 	// create surface and shape
@@ -872,7 +793,7 @@ void vtFence3d::ShowBounds(bool bShow)
 		}
 
 		// Use yellow highlight material
-		int highlight_matidx = s_FenceMats.FindMatIndex("Highlight", RGBf(1,1,0));
+		int highlight_matidx = FindMatIndex("Highlight", RGBf(1,1,0));
 
 		m_pFenceGeom->AddMesh(m_pHighlightMesh, highlight_matidx);
 		m_pHighlightMesh->Release();	// pass ownership

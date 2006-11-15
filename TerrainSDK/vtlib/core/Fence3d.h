@@ -37,14 +37,10 @@ public:
 
 	void DestroyGeometry();
 
-	// all fences share the same set of materials
-	static void CreateMaterials();
-	static vtMaterialDescriptorArray3d s_FenceMats;
-
 protected:
 	void	Init();
 	void	LoadProfile();
-	void	AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc);
+	void	AddFencepost(const FPoint3 &p1, int iMatIdx);
 
 	void AddWireMeshes(const FLine3 &p3);
 	void AddFlatConnectionMesh(const FLine3 &p3);
@@ -53,10 +49,6 @@ protected:
 	void AddPostExtensions(const FLine3 &p3);
 
 	void	AddFenceMeshes(vtHeightField3d *pHeightField);
-	vtMaterialDescriptor *FindDescriptor(const vtString &type);
-
-	static int s_mi_wire;		// s_mi = static material index
-	static int s_mi_metal;
 
 	vtGeom		*m_pFenceGeom;
 	vtMesh		*m_pHighlightMesh;	// The wireframe highlight
