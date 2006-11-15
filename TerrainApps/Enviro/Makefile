@@ -87,7 +87,7 @@ clobber :
 	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files $(EXEC) $(EXEC).pure $(OSX_APPS)/$(EXEC).app
 
 #
-# Internationalization steps (iso-8859-1) for Enviro
+# Internationalization steps for Enviro
 #
 
 I18N_SOURCES = \
@@ -98,8 +98,7 @@ I18N_SOURCES = \
 	wx/*Dialog.cpp \
 	wx/enviro_wdr.cpp \
 	../../TerrainSDK/vtui/vtui_wdr.cpp \
-	../../TerrainSDK/vtui/BuildingDlg.cpp \
-	../../TerrainSDK/vtui/LinearStructDlg.cpp
+	../../TerrainSDK/vtui/*Dlg.cpp
 
 update-pot:
 	xgettext --from-code=iso-8859-1 -k_ -o Enviro.pot $(I18N_SOURCES)
@@ -111,6 +110,14 @@ publish-af:
 
 update-af:
 	msgmerge --no-fuzzy-matching af/Enviro.po Enviro.pot -o af/Enviro.pox
+
+#----------
+publish-ar:
+	cp ar/Enviro.pox ar/Enviro.po
+	msgfmt ar/Enviro.po -o ar/Enviro.mo
+
+update-ar:
+	msgmerge --no-fuzzy-matching ar/Enviro.po Enviro.pot -o ar/Enviro.pox
 
 #----------
 publish-zh:
