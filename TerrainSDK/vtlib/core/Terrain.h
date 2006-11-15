@@ -47,7 +47,7 @@ public:
 	}
 	bool GetVisible()
 	{
-		return false;	// TODO
+		return GetEnabled();
 	}
 };
 

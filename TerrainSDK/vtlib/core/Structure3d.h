@@ -182,6 +182,9 @@ public:
 	/// Enable (set visibility of) the structures
 	void SetEnabled(bool bTrue);
 
+	/// Get enabled state (visibility) of the structures
+	bool GetEnabled();
+
 	// Be informed of edit hightlighting
 	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
 
