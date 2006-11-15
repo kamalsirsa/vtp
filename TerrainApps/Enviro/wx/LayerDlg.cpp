@@ -148,6 +148,14 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 		return str3d->GetContained();
 }
 
+vtLayer *LayerDlg::GetLayerFromItem(wxTreeItemId item)
+{
+	LayerItemData *data = GetLayerDataFromItem(item);
+	if (!data)
+		return NULL;
+	return data->m_layer;
+}
+
 vtStructureLayer *LayerDlg::GetStructureLayerFromItem(wxTreeItemId item)
 {
 	LayerItemData *data = GetLayerDataFromItem(item);
@@ -570,13 +578,12 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 		pThing->SetEnabled(bVis);
 		return;
 	}
-	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
-	if (slay)
+	vtLayer *lay = GetLayerFromItem(m_item);
+	if (lay)
 	{
-		slay->SetEnabled(bVis);
-		LayerItemData *data = GetLayerDataFromItem(m_item);
-		if (data)
-			data->last_visible = bVis;
+		lay->SetVisible(bVis);
+		// Set might not succeed.  Update with true state.
+		GetVisible()->SetValue(lay->GetVisible());
 	}
 }
 
@@ -612,6 +619,7 @@ void LayerDlg::UpdateEnabling()
 {
 	vtNode *pThing = GetNodeFromItem(m_item);
 	LayerItemData *data = GetLayerDataFromItem(m_item);
+	vtLayer *lay = GetLayerFromItem(m_item);
 	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
 
 	GetZoomTo()->Enable(pThing != NULL);
@@ -627,10 +635,11 @@ void LayerDlg::UpdateEnabling()
 
 	if (pThing)
 		GetVisible()->SetValue(pThing->GetEnabled());
+	if (lay)
+		GetVisible()->SetValue(lay->GetVisible());
 	if (slay)
 	{
 		if (data) {
-			GetVisible()->SetValue(data->last_visible);
 			GetShadow()->SetValue(data->shadow_last_visible);
 		}
 	}

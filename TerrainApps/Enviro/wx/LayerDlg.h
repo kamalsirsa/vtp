@@ -60,7 +60,6 @@ public:
 		m_fset = NULL;
 		m_index = -1;
 		m_item = -1;
-		last_visible = false;
 		shadow_last_visible = false;
 	}
 	LayerType m_type;
@@ -70,7 +69,6 @@ public:
 	vtFeatureSet *m_fset;
 	int m_index;
 	int m_item;
-	bool last_visible;
 	bool shadow_last_visible;
 };
 
@@ -118,6 +116,7 @@ private:
 private:
 	vtNode *GetNodeFromItem(wxTreeItemId item, bool bContainer = false);
 	vtStructureLayer *GetStructureLayerFromItem(wxTreeItemId item);
+	vtLayer *GetLayerFromItem(wxTreeItemId item);
 	LayerItemData *GetLayerDataFromItem(wxTreeItemId item);
 	void ToggleVisible(bool bVis, wxTreeItemId id);
 	void CreateImageList(int size = 16);
