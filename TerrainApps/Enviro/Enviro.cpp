@@ -1369,10 +1369,15 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	double epsilon = eoffset.x;
 	VTLOG("epsilon %lf, ", epsilon);
 
+	// We also want to use a small (2m) buffer around linear features, so they
+	//  can be picked even if they are inside/on top of a building.
+	g_Conv.ConvertVectorToEarth(2.0f, 0, eoffset);
+	double linear_buffer = eoffset.x;
+
 	// Check Structures
 	int structure;		// index of closest structure
 	bool result1 = pTerr->FindClosestStructure(gpos, epsilon, structure, dist1,
-		g_Options.m_fMaxPickableInstanceRadius);
+		g_Options.m_fMaxPickableInstanceRadius, linear_buffer);
 	if (result1)
 		VTLOG("structure at dist %lf, ", dist1);
 	m_bSelectedStruct = false;
