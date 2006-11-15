@@ -139,31 +139,9 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	s_pGrid = pGrid;
 	s_iRows = m_iRows;
 
-#if 0
-	// NOTE: the following workaround is no longer needed with libMini 5.02
-	//
-	// Totally strange but repeatable behavior: runtime exit in Release-mode
-	//  libMini with values over a certain level.  Workaround here!
-	// Exit happens if (scale * maximum_height / dim > 967)
-	//
-	// 	scale * maximum_height / dim > 967
-	//	scale > dim * 967 / maximum_height
-	//
-	float fMin, fMax;
-	pGrid->GetHeightExtents(fMin, fMax);
-	// Avoid trouble with fMax small or zero
-	if (fMax < 10) fMax = 10;
-	// compute the largest supported value for MaxScale
-	float fMaxMax = dim * 960 / fMax;
-	// values greater than 10 are unnecessarily large
-	if (fMaxMax > 10)
-		fMaxMax = 10;
-	m_fMaximumScale = fMaxMax;
-#else
 	// This maxiumum scale is a reasonable tradeoff between the exaggeration
 	//  that the user is likely to need, and numerical precision issues.
 	m_fMaximumScale = 10;
-#endif
 
 	m_fHeightScale = fZScale;
 	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
