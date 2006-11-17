@@ -47,6 +47,7 @@ public:
 	unsigned char *GetData() { return data(); }
 	unsigned char *GetRowData(int row) { return data(0, row); }
 	void Set16Bit(bool bFlag);
+	void SetLoadWithAlpha(bool bFlag) { m_bLoadWithAlpha = bFlag; }
 
 protected:
 	void _CreateFromDIB(vtDIB *pDIB);
@@ -61,6 +62,7 @@ protected:
 
 protected:
 	bool m_b16bit;
+	bool m_bLoadWithAlpha;
 	vtString m_strFilename;
 	int m_iRowSize;		// in bytes
 };

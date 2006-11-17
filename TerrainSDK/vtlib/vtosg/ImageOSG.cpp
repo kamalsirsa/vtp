@@ -48,11 +48,15 @@ void vtImageCacheClear()
 vtImage::vtImage()
 {
 	ref();
+	m_b16bit = false;
+	m_bLoadWithAlpha = false;
 }
 
 vtImage::vtImage(const char *fname, bool bAllowCache)
 {
 	ref();
+	m_b16bit = false;
+	m_bLoadWithAlpha = false;
 	Read(fname, bAllowCache);
 }
 
@@ -60,6 +64,7 @@ vtImage::vtImage(vtDIB *pDIB)
 {
 	ref();
 	m_b16bit = false;
+	m_bLoadWithAlpha = false;
 	_CreateFromDIB(pDIB);
 }
 
@@ -748,7 +753,12 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 
 		// Allocate the image buffer
 		if (iRasterCount == 3 || bColorPalette)
-			Create(iXSize, iYSize, 24);
+		{
+			if (m_bLoadWithAlpha)
+				Create(iXSize, iYSize, 32);
+			else
+				Create(iXSize, iYSize, 24);
+		}
 		else if (iRasterCount == 1)
 			Create(iXSize, iYSize, 8);
 
@@ -847,7 +857,10 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 							rgb.r = pRedline[iY * xBlockSize + iX];
 							rgb.g = pGreenline[iY * xBlockSize + iX];
 							rgb.b = pBlueline[iY * xBlockSize + iX];
-							SetPixel24(x + iX, y + iY, rgb);
+							if (m_bLoadWithAlpha)
+								SetPixel32(x + iX, y + iY, rgb);
+							else
+								SetPixel24(x + iX, y + iY, rgb);
 						}
 					}
 				}
