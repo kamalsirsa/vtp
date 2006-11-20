@@ -47,29 +47,31 @@ void vtImageCacheClear()
 
 vtImage::vtImage()
 {
-	ref();
-	m_b16bit = false;
-	m_bLoadWithAlpha = false;
+	_BasicInit();
 }
 
 vtImage::vtImage(const char *fname, bool bAllowCache)
 {
-	ref();
-	m_b16bit = false;
-	m_bLoadWithAlpha = false;
+	_BasicInit();
 	Read(fname, bAllowCache);
 }
 
 vtImage::vtImage(vtDIB *pDIB)
 {
-	ref();
-	m_b16bit = false;
-	m_bLoadWithAlpha = false;
+	_BasicInit();
 	_CreateFromDIB(pDIB);
 }
 
 vtImage::~vtImage()
 {
+}
+
+void vtImage::_BasicInit()
+{
+	ref();
+	m_b16bit = false;
+	m_bLoadWithAlpha = false;
+	m_extents.Empty();
 }
 
 bool vtImage::Create(int width, int height, int bitdepth, bool create_palette)
@@ -668,8 +670,43 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 		if(pDataset == NULL )
 			throw "Couldn't open that file.";
 
+		// Get size
 		iXSize = pDataset->GetRasterXSize();
 		iYSize = pDataset->GetRasterYSize();
+
+		// Try getting CRS
+		vtProjection temp;
+		bool bHaveProj = false;
+		const char *pProjectionString = pDataset->GetProjectionRef();
+		if (pProjectionString)
+		{
+			OGRErr err = temp.importFromWkt((char**)&pProjectionString);
+			if (err == OGRERR_NONE)
+			{
+				m_proj = temp;
+				bHaveProj = true;
+			}
+		}
+		if (!bHaveProj)
+		{
+			// check for existence of .prj file
+			bool bSuccess = temp.ReadProjFile(filename);
+			if (bSuccess)
+			{
+				m_proj = temp;
+				bHaveProj = true;
+			}
+		}
+
+		// Try getting extents
+		double affineTransform[6];
+		if (pDataset->GetGeoTransform(affineTransform) == CE_None)
+		{
+			m_extents.left = affineTransform[0];
+			m_extents.right = m_extents.left + affineTransform[1] * iXSize;
+			m_extents.top = affineTransform[3];
+			m_extents.bottom = m_extents.top + affineTransform[5] * iYSize;
+		}
 
 		// Raster count should be 3 for colour images (assume RGB)
 		int iRasterCount = pDataset->GetRasterCount();

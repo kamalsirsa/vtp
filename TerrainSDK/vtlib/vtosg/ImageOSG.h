@@ -7,6 +7,7 @@
 #define VTOSG_IMAGEH
 
 #include "vtdata/vtDIB.h"
+#include "vtdata/Projections.h"
 #include <osg/Image>
 
 /**
@@ -49,7 +50,13 @@ public:
 	void Set16Bit(bool bFlag);
 	void SetLoadWithAlpha(bool bFlag) { m_bLoadWithAlpha = bFlag; }
 
+	// In case the image was loaded from a georeferenced format (such as
+	//  GeoTIFF), provide access to the georef
+	vtProjection &GetProjection() { return m_proj; }
+	DRECT &GetExtents() { return m_extents; }
+
 protected:
+	void _BasicInit();
 	void _CreateFromDIB(vtDIB *pDIB);
 	bool _ReadPNG(const char *filename);
 	bool _ReadTIF(const char *filename, bool progress_callback(int) = NULL);
@@ -65,6 +72,11 @@ protected:
 	bool m_bLoadWithAlpha;
 	vtString m_strFilename;
 	int m_iRowSize;		// in bytes
+
+	// These two fields are rarely used, and increase size of this object
+	//  from 168 to 256 bytes.
+	vtProjection m_proj;
+	DRECT m_extents;
 };
 
 class vtOverlappedTiledImage : public vtOverlappedTiledBitmap
