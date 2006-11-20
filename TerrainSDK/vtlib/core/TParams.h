@@ -41,6 +41,7 @@ enum LodMethodEnum {
 // TParam Layer Types
 #define TERR_LTYPE_STRUCTURE	"Structure"
 #define TERR_LTYPE_ABSTRACT		"Abstract"
+#define TERR_LTYPE_IMAGE		"Image"
 
 ////////////////////////////////////////////////////////////////////////
 // Class to encapsulate a scenarios parameters.
