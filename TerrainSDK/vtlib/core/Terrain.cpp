@@ -7,6 +7,10 @@
 
 #include "vtlib/vtlib.h"
 
+#if VTLIB_OSG
+#include "osg/Texgen"
+#endif
+
 #include "vtdata/vtLog.h"
 #include "vtdata/Features.h"
 #include "vtdata/StructArray.h"
@@ -53,6 +57,8 @@ vtTerrain::vtTerrain()
 	m_pTerrMats = NULL;
 	m_bBothSides = false;
 	m_bTextureInitialized = false;
+	for (int i = 0; i < 8; i++)
+		m_bTextureUnitUsed[i] = false;
 
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
@@ -126,10 +132,13 @@ vtTerrain::~vtTerrain()
 	{
 		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i]);
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
+		vtImageLayer *ilay = dynamic_cast<vtImageLayer*>(m_Layers[i]);
 		if (slay)
 			delete slay;
 		else if (alay)
 			delete alay;
+		else if (ilay)
+			delete ilay;
 	}
 
 	// Do not delete the PlantList, the application may be sharing the same
@@ -543,6 +552,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 
 	// If we get this far, we can consider the texture initialized
 	m_bTextureInitialized = true;
+	m_bTextureUnitUsed[0] = true;
 
 	if (eTex == TE_NONE)	// none or failed to find texture
 	{
@@ -633,6 +643,19 @@ void vtTerrain::_CreateDetailTexture()
 	FRECT r = m_pHeightField->m_WorldExtents;
 	float width_meters = r.Width();
 	m_pDynGeom->SetDetailMaterial(pDetailMat, width_meters / scale, dist);
+}
+
+int vtTerrain::_ClaimAvailableTextureUnit()
+{
+	for (int i = 0; i < 8; i++)
+	{
+		if (!m_bTextureUnitUsed[i])
+		{
+			m_bTextureUnitUsed[i] = true;
+			return i;
+		}
+	}
+	return -1;
 }
 
 //
@@ -1699,6 +1722,120 @@ void vtTerrain::_CreateAbstractLayers()
 	}
 }
 
+/////////////////////////
+
+void vtTerrain::_CreateImageLayers()
+{
+	// Must have something to drape on
+	if (!GetHeightFieldGrid3d())
+		return;
+
+	// and (for now) it must be a regular dynterrain
+	if (!GetDynTerrain())
+		return;
+
+	// Go through the layers in the terrain parameters, and try to load them
+	unsigned int i, num = m_Params.m_Layers.size();
+	for (i = 0; i < num; i++)
+	{
+		const vtTagArray &lay = m_Params.m_Layers[i];
+
+		// Look for image layers
+		vtString ltype = lay.GetValueString("Type");
+		if (ltype != TERR_LTYPE_IMAGE)
+			continue;
+
+		VTLOG(" Layer %d: Image\n", i);
+		for (unsigned int j = 0; j < lay.NumTags(); j++)
+		{
+			const vtTag *tag = lay.GetTag(j);
+			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
+		}
+
+		vtString fname = lay.GetValueString("Filename");
+		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
+		if (path == "")
+		{
+			vtString prefix = "GeoSpecific/";
+			path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
+		}
+		if (path == "")
+		{
+			VTLOG("Couldn't find image layer file '%s'\n", (const char *) fname);
+			continue;
+		}
+
+		vtImageLayer *ilayer = new vtImageLayer;
+		ilayer->m_pImage->SetLoadWithAlpha(true);
+		if (!ilayer->m_pImage->Read(path))
+		{
+			VTLOG("Couldn't read image from file '%s'\n", (const char *) path);
+			continue;
+		}
+		VTLOG("Read image from file '%s'\n", (const char *) path);
+
+		// Copy all the other attributes to the new layer
+		//feat->GetProperties() = lay;
+
+		m_Layers.Append(ilayer);
+
+		AddMultiTextureOverlay(ilayer->m_pImage, ilayer->m_pImage->GetExtents());
+	}
+}
+
+void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents)
+{
+	DRECT TerrainExtents = GetHeightField()->GetEarthExtents();
+
+	int iTextureUnit = _ClaimAvailableTextureUnit();
+
+	// Calculate the mapping of texture coordinates
+	int iCols, iRows;
+	GetHeightFieldGrid3d()->GetDimensions(iCols, iRows);
+
+	// input values go from (0,0) to (Cols-1,Rows-1)
+	// output values go from 0 to 1
+	FPoint2 texstep(1.0f/(iCols - 1), 1.0f/(iRows - 1));
+
+	// stretch the (0-1) over the data extents
+	texstep.x *= (TerrainExtents.Width() / extents.Width());
+	texstep.y *= (TerrainExtents.Height() / extents.Height());
+
+	// and offset it to place it at the right place
+	FPoint2 offset;
+	offset.x = (extents.left - TerrainExtents.left) / extents.Width();
+	offset.y = (extents.bottom - TerrainExtents.bottom) / extents.Height();
+
+	// Currently, multi-texture support is OSG-only
+#if VTLIB_OSG
+	osg::Node *onode = GetDynTerrain()->GetOsgNode();
+
+	osg::ref_ptr<osg::Texture2D> pTexture = new osg::Texture2D(pImage);
+
+	pTexture->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
+	pTexture->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::LINEAR);
+	pTexture->setWrap(osg::Texture2D::WRAP_S, osg::Texture2D::CLAMP_TO_BORDER);
+	pTexture->setWrap(osg::Texture2D::WRAP_T, osg::Texture2D::CLAMP_TO_BORDER);
+
+	// Set up the texgen
+	osg::ref_ptr<osg::TexGen> pTexgen = new osg::TexGen;
+	pTexgen->setMode(osg::TexGen::OBJECT_LINEAR);
+	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(texstep.x, 0.0f, 0.0f, -offset.x));
+	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, texstep.y, -offset.y));
+
+	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(osg::TexEnv::DECAL);
+
+	// Apply state
+	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
+
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexture.get(), osg::StateAttribute::ON);
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexgen.get(), osg::StateAttribute::ON);
+	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
+	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_T,  osg::StateAttribute::ON);
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexEnv.get(), osg::StateAttribute::ON);
+#endif // VTLIB_OSG
+}
+
 void vtTerrain::SetFog(bool fog)
 {
 	m_bFog = fog;
@@ -2165,6 +2302,8 @@ bool vtTerrain::CreateStep5()
 	}
 
 	_CreateAbstractLayers();
+
+	_CreateImageLayers();
 
 	// Engines will be activated later in vtTerrainScene::SetTerrain
 	ActivateEngines(false);
@@ -3050,5 +3189,16 @@ vtStructureLayer *LayerSet::FindStructureFromNode(vtNode* pNode, int &iOffset)
 		}
 	}
 	return NULL;
+}
+
+vtImageLayer::vtImageLayer()
+{
+	m_pImage = new vtImage;
+}
+
+vtImageLayer::~vtImageLayer()
+{
+	if (m_pImage)
+		m_pImage->Release();
 }
 

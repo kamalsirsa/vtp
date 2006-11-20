@@ -37,8 +37,6 @@ class vtSimpleBillboardEngine;
 class vtStructureLayer : public vtStructureArray3d, public vtLayer
 {
 public:
-	~vtStructureLayer() {}
-
 	void SetLayerName(const vtString &fname) { SetFilename(fname); }
 	vtString GetLayerName() { return GetFilename(); }
 	void SetVisible(bool vis)
@@ -49,6 +47,26 @@ public:
 	{
 		return GetEnabled();
 	}
+};
+
+class vtImageLayer : public vtLayer
+{
+public:
+	vtImageLayer();
+	~vtImageLayer();
+
+	void SetLayerName(const vtString &fname) { /* not applicable */ }
+	vtString GetLayerName() { return m_pImage->GetFilename(); }
+	void SetVisible(bool vis)
+	{
+		// TODO
+	}
+	bool GetVisible()
+	{
+		// TODO 
+		return true;
+	}
+	vtImage *m_pImage;
 };
 
 /** \addtogroup terrain */
@@ -344,6 +362,7 @@ public:
 	void RecreateTextures(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 	vtImage *GetTextureImage();
 	vtOverlappedTiledImage	*GetOverlappedImage() { return &m_ImageTiles; }
+	void AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents);
 
 protected:
 	/********************** Protected Methods ******************/
@@ -359,8 +378,10 @@ protected:
 	void _SetupVegGrid(float fLODDistance);
 	void _SetupStructGrid(float fLODDistance);
 	void _CreateAbstractLayers();
+	void _CreateImageLayers();
 	void _CreateTextures(const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	void _CreateDetailTexture();
+	int  _ClaimAvailableTextureUnit();
 	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
 	void _SetErrorMessage(const vtString &msg);
@@ -393,7 +414,7 @@ protected:
 	// construction parameters used to create this terrain
 	TParams		m_Params;
 
-	// data grids
+	// elevation data
 	vtElevationGrid	*m_pInputGrid;	// if non-NULL, use instead of BT
 	vtHeightField3d	*m_pHeightField;
 	bool			m_bPreserveInputGrid;
@@ -448,6 +469,7 @@ protected:
 	vtOverlappedTiledImage	m_ImageTiles;
 	ColorMap		*m_pTextureColors;
 	bool			m_bTextureInitialized;
+	bool			m_bTextureUnitUsed[8];
 
 	FSphere			m_bound_sphere;	// bounding sphere of terrain
 									// (without surrounding ocean)
