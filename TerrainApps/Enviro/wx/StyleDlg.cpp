@@ -100,8 +100,11 @@ void StyleDlg::SetOptions(const vtStringArray &datapaths, const vtTagArray &Laye
 		}
 
 		m_type = GetFeatureGeomType(m_strResolved);
-		if (m_DummyFeatures.LoadFieldInfoFromDBF(m_strResolved))
-			m_pFeatureSet = &m_DummyFeatures;
+
+		// try to load field list (there may or may not be a DBF)
+		m_DummyFeatures.LoadFieldInfoFromDBF(m_strResolved);
+
+		m_pFeatureSet = &m_DummyFeatures;
 	}
 
 	m_bGeometry = Layer.GetValueBool("Geometry");
@@ -182,6 +185,9 @@ void StyleDlg::RefreshFields()
 	GetTextField()->Clear();
 	GetColorField()->Clear();
 	GetColorField()->Append(_("(none)"));
+
+	if (!m_pFeatureSet)
+		return;
 
 	m_strFeatureType = wxString(OGRGeometryTypeToName(m_type), wxConvUTF8);
 	int i, num = m_pFeatureSet->GetNumFields();
