@@ -1311,6 +1311,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\enviroenum.h"
+				>
+			</File>
+			<File
 				RelativePath="Hawaii.h"
 				>
 			</File>
