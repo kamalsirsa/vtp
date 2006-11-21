@@ -863,7 +863,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 
 	// build heirarchy (add terrain to scene graph)
 	m_pDynGeomScale = new vtTransform;
-	m_pDynGeomScale->SetName2("Dynamic Geometry Container");
+	m_pDynGeomScale->SetName2("Dynamic Geometry Scaling Container");
 
 	FPoint2 spacing = m_pElevGrid->GetWorldSpacing();
 	m_pDynGeomScale->Scale3(spacing.x, m_fVerticalExag, -spacing.y);
@@ -1727,11 +1727,7 @@ void vtTerrain::_CreateAbstractLayers()
 void vtTerrain::_CreateImageLayers()
 {
 	// Must have something to drape on
-	if (!GetHeightFieldGrid3d())
-		return;
-
-	// and (for now) it must be a regular dynterrain
-	if (!GetDynTerrain())
+	if (!GetHeightField())
 		return;
 
 	// Go through the layers in the terrain parameters, and try to load them
@@ -1858,13 +1854,24 @@ void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
 
 	int iTextureUnit = _ClaimAvailableTextureUnit();
 
-	// Calculate the mapping of texture coordinates
-	int iCols, iRows;
-	GetHeightFieldGrid3d()->GetDimensions(iCols, iRows);
+		// Calculate the mapping of texture coordinates
+	DPoint2 texstep;
+	vtHeightFieldGrid3d *grid = GetHeightFieldGrid3d();
+	vtTiledGeom *tiles = GetTiledGeom();
+	if (grid)
+	{
+		int iCols, iRows;
+		grid->GetDimensions(iCols, iRows);
 
-	// input values go from (0,0) to (Cols-1,Rows-1)
-	// output values go from 0 to 1
-	FPoint2 texstep(1.0f/(iCols - 1), 1.0f/(iRows - 1));
+		// input values go from (0,0) to (Cols-1,Rows-1)
+		// output values go from 0 to 1
+		texstep.Set(1.0/(iCols - 1), 1.0/(iRows - 1));
+	}
+	else if (tiles)
+	{
+		// Map input values (0-terrain size in world coords) to 0-1
+		texstep.Set(1.0/TerrainExtents.Width(), -1.0/TerrainExtents.Height());
+	}
 
 	// stretch the (0-1) over the data extents
 	texstep.x *= (TerrainExtents.Width() / extents.Width());
@@ -1877,7 +1884,11 @@ void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
 
 	// Currently, multi-texture support is OSG-only
 #if VTLIB_OSG
-	osg::Node *onode = GetDynTerrain()->GetOsgNode();
+	osg::Node *onode;
+	if (GetDynTerrain())
+		onode = GetDynTerrain()->GetOsgNode();
+	else if (GetTiledGeom())
+		onode = GetTiledGeom()->GetOsgNode();
 
 	osg::ref_ptr<osg::Texture2D> pTexture = new osg::Texture2D(pImage);
 
@@ -1893,11 +1904,11 @@ void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
 	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, texstep.y, -offset.y));
 
 	osg::TexEnv::Mode mode;
-	if (TextureMode = GL_DECAL) mode = osg::TexEnv::DECAL;
-	if (TextureMode = GL_MODULATE) mode = osg::TexEnv::MODULATE;
-	if (TextureMode = GL_BLEND) mode = osg::TexEnv::BLEND;
-	if (TextureMode = GL_REPLACE) mode = osg::TexEnv::REPLACE;
-	if (TextureMode = GL_ADD) mode = osg::TexEnv::ADD;
+	if (TextureMode == GL_DECAL) mode = osg::TexEnv::DECAL;
+	if (TextureMode == GL_MODULATE) mode = osg::TexEnv::MODULATE;
+	if (TextureMode == GL_BLEND) mode = osg::TexEnv::BLEND;
+	if (TextureMode == GL_REPLACE) mode = osg::TexEnv::REPLACE;
+	if (TextureMode == GL_ADD) mode = osg::TexEnv::ADD;
 	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(mode);
 
 	// Apply state
@@ -2216,6 +2227,9 @@ bool vtTerrain::CreateStep1()
 		m_pHeightField = m_pTiledGeom;
 		g_Conv = m_pHeightField->m_Conversion;
 		m_proj = m_pTiledGeom->m_proj;
+
+		// The tiled geometry base texture will always use texture unit 0
+		m_bTextureUnitUsed[0] = true;
 	}
 	char type[10], value[2048];
 	m_proj.GetTextDescription(type, value);
