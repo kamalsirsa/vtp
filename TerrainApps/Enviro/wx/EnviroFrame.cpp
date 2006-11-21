@@ -753,6 +753,11 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 #endif
 		break;
 
+	case 'Z':
+		{
+		// A handy place to put test code
+			GetCurrentTerrain()->TestAbstractLayerPolygonDrape();
+		}
 	case 'D':	// Shift-D
 		// dump camera info
 		g_App.DumpCameraInfo();
