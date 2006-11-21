@@ -362,7 +362,8 @@ public:
 	void RecreateTextures(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 	vtImage *GetTextureImage();
 	vtOverlappedTiledImage	*GetOverlappedImage() { return &m_ImageTiles; }
-	void AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents);
+	void AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents, int TextureMode);
+	bool TestAbstractLayerPolygonDrape();
 
 protected:
 	/********************** Protected Methods ******************/

@@ -1779,11 +1779,80 @@ void vtTerrain::_CreateImageLayers()
 
 		m_Layers.Append(ilayer);
 
-		AddMultiTextureOverlay(ilayer->m_pImage, ilayer->m_pImage->GetExtents());
+		AddMultiTextureOverlay(ilayer->m_pImage, ilayer->m_pImage->GetExtents(),
+			GL_DECAL);
 	}
 }
 
-void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents)
+bool vtTerrain::TestAbstractLayerPolygonDrape()
+{
+	const int ALPD_RESOLUTION = 1024;
+
+	// Set up the image
+	vtImage *image = new vtImage;
+	if (!image->Create(ALPD_RESOLUTION, ALPD_RESOLUTION, 32))
+		return false;
+
+	// Get data extents
+	LayerSet& Layers = GetLayers();
+	int iNumLayers = Layers.GetSize();
+	DRECT DataExtents(1E9,-1E9,-1E9,1E9);
+	for (int iLayer = 0; iLayer < iNumLayers; iLayer++)
+	{
+		vtAbstractLayer* pLayer = dynamic_cast<vtAbstractLayer*>(Layers[iLayer]);
+		if (!pLayer)
+			continue;
+		if (wkbPolygon != wkbFlatten(pLayer->pSet->GetGeomType()))
+			continue;
+
+		DRECT rect;
+		pLayer->pSet->ComputeExtent(rect);
+		DataExtents.GrowToContainRect(rect);
+	}
+
+	double DeltaX = DataExtents.Width() / (double)ALPD_RESOLUTION;
+	double DeltaY = DataExtents.Height() / (double)ALPD_RESOLUTION;
+
+	for (int iLayer = 0; iLayer < iNumLayers; iLayer++)
+	{
+		vtAbstractLayer* pLayer = dynamic_cast<vtAbstractLayer*>(Layers[iLayer]);
+		if (!pLayer)
+			continue;
+		if (wkbPolygon != wkbFlatten(pLayer->pSet->GetGeomType()))
+			continue;
+
+		vtFeatureSetPolygon *pPolygonSet = dynamic_cast<vtFeatureSetPolygon*>(pLayer->pSet);
+		int iNumFeatures = pLayer->pSet->GetNumEntities();
+		RGBAi LayerColour = pPolygonSet->GetProperties().GetValueRGBi("GeomColor");
+		LayerColour.a = 255;
+
+		for (int ImageX = 0; ImageX < ALPD_RESOLUTION; ImageX++)
+		{
+			for (int ImageY = 0; ImageY < ALPD_RESOLUTION; ImageY++)
+			{
+				image->SetPixel32(ImageX, ImageY, RGBAi(0,0,0,0));
+				for (int feat = 0; feat < iNumFeatures; feat++)
+				{
+					DPoint2 Point(DataExtents.left + DeltaX / 2 + DeltaX * ImageX,
+									DataExtents.top - DeltaY / 2 - DeltaY * ImageY);
+					if (pPolygonSet->GetPolygon(feat).ContainsPoint(Point))
+					{
+						image->SetPixel32(ImageX, ImageY, LayerColour);
+					}
+				}
+			}
+		}
+	}
+
+	AddMultiTextureOverlay(image, DataExtents, GL_ADD);
+	return true;
+}
+
+//
+// \param TextureMode One of GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD
+//
+void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
+									   int TextureMode)
 {
 	DRECT TerrainExtents = GetHeightField()->GetEarthExtents();
 
@@ -1823,7 +1892,13 @@ void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents)
 	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(texstep.x, 0.0f, 0.0f, -offset.x));
 	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, texstep.y, -offset.y));
 
-	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(osg::TexEnv::DECAL);
+	osg::TexEnv::Mode mode;
+	if (TextureMode = GL_DECAL) mode = osg::TexEnv::DECAL;
+	if (TextureMode = GL_MODULATE) mode = osg::TexEnv::MODULATE;
+	if (TextureMode = GL_BLEND) mode = osg::TexEnv::BLEND;
+	if (TextureMode = GL_REPLACE) mode = osg::TexEnv::REPLACE;
+	if (TextureMode = GL_ADD) mode = osg::TexEnv::ADD;
+	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(mode);
 
 	// Apply state
 	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
