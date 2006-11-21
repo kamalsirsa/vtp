@@ -490,17 +490,8 @@ databuf vtTiledGeom::FetchAndCacheTile(const char *fname)
 #endif
 		m_iTileLoads++;
 
-		//vtString strfname = fname;
-		//if (strfname.Find(".db") != -1)
-		//{
-			// Load data buffer directly
-			result.loaddata(fname);
-		//}
-		//else if (strfname.Find(".ppm") != -1 || strfname.Find(".pgm") )
-		//{
-		//	// Load from PGM / PPM
-		//	result.loadPNMdata(fname);
-		//}
+		// Load data buffer directly
+		result.loaddata(fname);
 
 		// max cache size of 0 disables caching
 		if (m_iMaxCacheSize == 0)
