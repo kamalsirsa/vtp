@@ -108,6 +108,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClickStructure )
 	EVT_LISTBOX_DCLICK( ID_RAWFILES, TParamsDlg::OnListDblClickRaw )
 	EVT_LISTBOX_DCLICK( ID_ANIM_PATHS, TParamsDlg::OnListDblClickAnimPaths )
+	EVT_LISTBOX_DCLICK( ID_IMAGEFILES, TParamsDlg::OnListDblClickImage )
 
 	EVT_CHECKBOX( ID_OCEANPLANE, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_DEPRESSOCEAN, TParamsDlg::OnCheckBox )
@@ -151,6 +152,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pStructFiles = GetStructFiles();
 	m_pRawFiles = GetRawFiles();
 	m_pAnimFiles = GetAnimPaths();
+	m_pImageFiles = GetImageFiles();
 	m_pRoadFile = GetRoadfile();
 	m_pTreeFile = GetTreefile();
 	m_pTextureFileSingle = GetTfileSingle();
@@ -285,6 +287,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pStructFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pStructFiles));
 	m_pRawFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pRawFiles));
 	m_pAnimFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pAnimFiles));
+	m_pImageFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pImageFiles));
 }
 
 TParamsDlg::~TParamsDlg()
@@ -292,6 +295,7 @@ TParamsDlg::~TParamsDlg()
 	m_pStructFiles->PopEventHandler(true);
 	m_pRawFiles->PopEventHandler(true);
 	m_pAnimFiles->PopEventHandler(true);
+	m_pImageFiles->PopEventHandler(true);
 }
 
 //
@@ -1001,6 +1005,7 @@ bool TParamsDlg::TransferDataToWindow()
 	unsigned int i;
 	m_pStructFiles->Clear();
 	m_pRawFiles->Clear();
+	m_pImageFiles->Clear();
 	for (i = 0; i < m_Layers.size(); i++)
 	{
 		vtString ltype = m_Layers[i].GetValueString("Type");
@@ -1011,9 +1016,12 @@ bool TParamsDlg::TransferDataToWindow()
 			m_pStructFiles->Append(fname2);
 		if (ltype == TERR_LTYPE_ABSTRACT)
 			m_pRawFiles->Append(fname2);
+		if (ltype == TERR_LTYPE_IMAGE)
+			m_pImageFiles->Append(fname2);
 	}
 	m_pStructFiles->Append(_("(double-click to add files)"));
 	m_pRawFiles->Append(_("(double-click to add files)"));
+	m_pImageFiles->Append(_("(double-click to add files)"));
 
 	m_pAnimFiles->Clear();
 	for (i = 0; i < m_AnimPaths.size(); i++)
@@ -1244,6 +1252,36 @@ void TParamsDlg::OnListDblClickAnimPaths( wxCommandEvent &event )
 	if (result.Cmp(_T(""))) // user selected something
 	{
 		m_AnimPaths.push_back(vtString(result.mb_str(wxConvUTF8)));
+		TransferDataToWindow();
+	}
+}
+
+void TParamsDlg::OnListDblClickImage( wxCommandEvent &event )
+{
+	unsigned int i;
+	wxArrayString strings;
+
+	for (i = 0; i < m_datapaths.size(); i++)
+	{
+		wxString path(m_datapaths[i], wxConvUTF8);
+		path += _T("GeoSpecific");
+		AddFilenamesToArray(strings, path, _T("*.bmp"));
+		AddFilenamesToArray(strings, path, _T("*.jpg"));
+		AddFilenamesToArray(strings, path, _T("*.jpeg"));
+		AddFilenamesToArray(strings, path, _T("*.png"));
+		AddFilenamesToArray(strings, path, _T("*.tif"));
+	}
+
+	wxString result = wxGetSingleChoice(_("One of the following to add:"),
+		_("Choose an image file"), strings, this);
+
+	if (result.Cmp(_T(""))) // user selected something
+	{
+		TransferDataFromWindow();
+		vtTagArray lay;
+		lay.SetValueString("Type", TERR_LTYPE_IMAGE, true);
+		lay.SetValueString("Filename", (const char *) result.mb_str(wxConvUTF8), true);
+		m_Layers.push_back(lay);
 		TransferDataToWindow();
 	}
 }

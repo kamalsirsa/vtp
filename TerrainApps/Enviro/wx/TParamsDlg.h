@@ -200,6 +200,7 @@ public:
 	wxChoice* GetLocField()  { return (wxChoice*) FindWindow( ID_INIT_LOCATION ); }
 	wxListBox* GetStructFiles()  { return (wxListBox*) FindWindow( ID_STRUCTFILES ); }
 	wxListBox* GetRawFiles()  { return (wxListBox*) FindWindow( ID_RAWFILES ); }
+	wxListBox* GetImageFiles()  { return (wxListBox*) FindWindow( ID_IMAGEFILES ); }
 
 	bool	m_bReady;
 	bool	m_bSetting;
@@ -218,6 +219,7 @@ private:
 	wxChoice* m_pNavStyle;
 	wxTextCtrl* m_pPreLightFactor;
 	wxListBox* m_pStructFiles;
+	wxListBox* m_pImageFiles;
 	wxComboBox* m_pRoadFile;
 	wxComboBox* m_pTreeFile;
 	wxComboBox* m_pTextureFileSingle;
@@ -252,6 +254,7 @@ private:
 	void OnListDblClickStructure( wxCommandEvent &event );
 	void OnListDblClickRaw( wxCommandEvent &event );
 	void OnListDblClickAnimPaths( wxCommandEvent &event );
+	void OnListDblClickImage( wxCommandEvent &event );
 	void OnChoiceLocFile( wxCommandEvent &event );
 	void OnChoiceInitLocation( wxCommandEvent &event );
 	void OnSetInitTime( wxCommandEvent &event );
