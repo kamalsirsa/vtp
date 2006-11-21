@@ -105,6 +105,9 @@ void vtAbstractLayer::CreateStyledFeatures(vtTerrain *pTerr)
 
 	if (style.GetValueBool("Labels"))
 		CreateFeatureLabels(pTerr);
+
+	if (style.GetValueBool("TextureOverlay"))
+		CreateTextureOverlay(pTerr);
 }
 
 /**
@@ -456,6 +459,65 @@ void vtAbstractLayer::CreateFeatureLabels(vtTerrain *pTerr)
 	delete font;
 
 	VTLOG("Created %d text labels\n", features);
+}
+
+bool vtAbstractLayer::CreateTextureOverlay(vtTerrain *pTerr)
+{
+	vtTagArray &style = pSet->GetProperties();
+
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	VTLOG1("CreateTextureOverlay\n");
+
+	// We support texture overlay for only 2D polygons (so far)
+	vtFeatureSet &feat = *(pSet);
+	const vtFeatureSetPolygon *pSetPG = dynamic_cast<const vtFeatureSetPolygon*>(&feat);
+	if (!pSetPG)
+		return false;
+
+	const int ALPD_RESOLUTION = 1024;
+
+	// Set up the image
+	vtImage *image = new vtImage;
+	if (!image->Create(ALPD_RESOLUTION, ALPD_RESOLUTION, 32))
+		return false;
+
+	// Get data extents
+	DRECT DataExtents;
+	pSet->ComputeExtent(DataExtents);
+
+	double DeltaX = DataExtents.Width() / (double)ALPD_RESOLUTION;
+	double DeltaY = DataExtents.Height() / (double)ALPD_RESOLUTION;
+
+	int iNumFeatures = pSetPG->GetNumEntities();
+	RGBAi LayerColour = style.GetValueRGBi("GeomColor");
+	LayerColour.a = 255;
+
+	for (int ImageX = 0; ImageX < ALPD_RESOLUTION; ImageX++)
+	{
+		for (int ImageY = 0; ImageY < ALPD_RESOLUTION; ImageY++)
+		{
+			image->SetPixel32(ImageX, ImageY, RGBAi(0,0,0,0));
+			for (int feat = 0; feat < iNumFeatures; feat++)
+			{
+				DPoint2 Point(DataExtents.left + DeltaX / 2 + DeltaX * ImageX,
+								DataExtents.top - DeltaY / 2 - DeltaY * ImageY);
+				if (pSetPG->GetPolygon(feat).ContainsPoint(Point))
+				{
+					image->SetPixel32(ImageX, ImageY, LayerColour);
+				}
+			}
+		}
+	}
+
+	int iTextureMode;
+	vtString mode = style.GetValueString("TextureMode");
+	if (mode == "ADD") iTextureMode = GL_ADD;
+	if (mode == "MODULATE") iTextureMode = GL_MODULATE;
+	if (mode == "DECAL") iTextureMode = GL_DECAL;
+	pTerr->AddMultiTextureOverlay(image, DataExtents, iTextureMode);
+	return true;
 }
 
 void vtAbstractLayer::SetVisible(bool bVis)
