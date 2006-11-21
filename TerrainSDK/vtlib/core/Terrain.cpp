@@ -1904,11 +1904,11 @@ void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
 	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, texstep.y, -offset.y));
 
 	osg::TexEnv::Mode mode;
-	if (TextureMode == GL_DECAL) mode = osg::TexEnv::DECAL;
-	if (TextureMode == GL_MODULATE) mode = osg::TexEnv::MODULATE;
+	if (TextureMode == GL_ADD) mode = osg::TexEnv::ADD;
 	if (TextureMode == GL_BLEND) mode = osg::TexEnv::BLEND;
 	if (TextureMode == GL_REPLACE) mode = osg::TexEnv::REPLACE;
-	if (TextureMode == GL_ADD) mode = osg::TexEnv::ADD;
+	if (TextureMode == GL_MODULATE) mode = osg::TexEnv::MODULATE;
+	if (TextureMode == GL_DECAL) mode = osg::TexEnv::DECAL;
 	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(mode);
 
 	// Apply state
