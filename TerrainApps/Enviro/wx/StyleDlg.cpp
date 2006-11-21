@@ -241,6 +241,7 @@ void StyleDlg::RefreshFields()
 
 void StyleDlg::UpdateEnabling()
 {
+	GetGeometry()->Enable(m_type != wkbPoint && m_type != wkbPoint25D);
 	GetGeomColor()->Enable(m_bGeometry);
 	GetGeomHeight()->Enable(m_bGeometry && !GeometryTypeIs3D(m_type));
 	GetLineWidth()->Enable(m_bGeometry);
@@ -251,6 +252,10 @@ void StyleDlg::UpdateEnabling()
 	GetColorField()->Enable(m_bTextLabels && m_pFeatureSet->GetNumFields() > 1);
 	GetLabelSize()->Enable(m_bTextLabels);
 	GetLabelHeight()->Enable(m_bTextLabels);
+	GetFont()->Enable(m_bTextLabels);
+
+	GetTextureOverlay()->Enable(m_type == wkbPolygon);
+	GetTextureMode()->Enable(m_bTextureOverlay);
 }
 
 void StyleDlg::UpdateColorButtons()
