@@ -42,6 +42,8 @@ public:
 
 private:
 	// WDR: method declarations for StyleDlg
+	wxChoice* GetTextureMode()  { return (wxChoice*) FindWindow( ID_TEXTURE_MODE ); }
+	wxCheckBox* GetTextureOverlay()  { return (wxCheckBox*) FindWindow( ID_TEXTURE_OVERLAY ); }
 	wxTextCtrl* GetFont()  { return (wxTextCtrl*) FindWindow( ID_FONT ); }
 	wxTextCtrl* GetLineWidth()  { return (wxTextCtrl*) FindWindow( ID_LINE_WIDTH ); }
 	wxTextCtrl* GetGeomHeight()  { return (wxTextCtrl*) FindWindow( ID_GEOM_HEIGHT ); }
@@ -78,6 +80,9 @@ private:
 	float m_fLabelSize;
 	wxString m_strFont;
 
+	bool m_bTextureOverlay;
+	wxString m_strTextureMode;
+
 	vtFeatureSetPoint2D m_DummyFeatures;
 	wxColourData m_ColourData;
 	wxColour m_Colour;
@@ -98,5 +103,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif	// __StyleDlg_H__
+#endif  // __StyleDlg_H__
 

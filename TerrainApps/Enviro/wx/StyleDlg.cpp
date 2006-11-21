@@ -36,6 +36,7 @@ BEGIN_EVENT_TABLE(StyleDlg,AutoDialog)
 	EVT_BUTTON( ID_LABEL_COLOR, StyleDlg::OnLabelColor )
 	EVT_CHECKBOX( ID_GEOMETRY, StyleDlg::OnCheck )
 	EVT_CHECKBOX( ID_TEXT_LABELS, StyleDlg::OnCheck )
+	EVT_CHECKBOX( ID_TEXTURE_OVERLAY, StyleDlg::OnCheck )
 END_EVENT_TABLE()
 
 StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -68,8 +69,14 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_COLOR_FIELD, &m_iColorField);
 	AddNumValidator(ID_LABEL_HEIGHT, &m_fLabelHeight);
 	AddNumValidator(ID_LABEL_SIZE, &m_fLabelSize);
-
 	AddValidator(ID_FONT, &m_strFont);
+
+	AddValidator(ID_TEXTURE_OVERLAY, &m_bTextureOverlay);
+	GetTextureMode()->Clear();
+	GetTextureMode()->Append(_("ADD"));
+	GetTextureMode()->Append(_("MODULATE"));
+	GetTextureMode()->Append(_("DECAL"));
+	AddValidator(ID_TEXTURE_MODE, &m_strTextureMode);
 }
 
 void StyleDlg::OnInitDialog(wxInitDialogEvent& event)
@@ -135,6 +142,15 @@ void StyleDlg::SetOptions(const vtStringArray &datapaths, const vtTagArray &Laye
 		m_strFont = wxString(font, wxConvUTF8);
 	else
 		m_strFont = _T("Arial.ttf");
+
+	m_bTextureOverlay = Layer.GetValueBool("TextureOverlay");
+	if (m_bTextureOverlay)
+	{
+		vtString modename = Layer.GetValueString("TextureMode");
+		m_strTextureMode = wxString(modename, wxConvUTF8);
+	}
+	else
+		m_strTextureMode = _T("");
 }
 
 void StyleDlg::GetOptions(vtTagArray &pLayer)
@@ -177,6 +193,18 @@ void StyleDlg::GetOptions(vtTagArray &pLayer)
 		pLayer.RemoveTag("Elevation");
 		pLayer.RemoveTag("LabelSize");
 		pLayer.RemoveTag("Font");
+	}
+
+	if (m_bTextureOverlay)
+	{
+		pLayer.SetValueBool("TextureOverlay", m_bTextureOverlay, true);
+		vtString modename = m_strTextureMode.mb_str(wxConvUTF8);
+		pLayer.SetValueString("TextureMode", modename);
+	}
+	else
+	{
+		pLayer.RemoveTag("TextureOverlay");
+		pLayer.RemoveTag("TextureMode");
 	}
 }
 
