@@ -53,4 +53,5 @@ veg1	  ICON "icons/veg1.ico"
 raw		  ICON "icons/raw.ico"
 fence	  ICON "icons/fence.ico"
 instance  ICON "icons/instance.ico"
+image  ICON "icons/image.ico"
 
