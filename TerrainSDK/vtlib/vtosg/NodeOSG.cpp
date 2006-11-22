@@ -18,6 +18,7 @@
 #include <osgDB/FileNameUtils>
 #include <osgUtil/Optimizer>
 #include <osg/Version>
+#include <osg/Texgen>
 
 using namespace osg;
 
@@ -827,6 +828,73 @@ void vtNode::DecorateNativeGraph()
 {
 	DecorateVisit(m_pNode.get());
 }
+
+vtMultiTexture *vtNode::AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
+										const FPoint2 &scale, const FPoint2 &offset)
+{
+	vtMultiTexture *mt = new vtMultiTexture;
+	mt->m_pNode = this;
+	mt->m_iTextureUnit = iTextureUnit;
+
+	// Currently, multi-texture support is OSG-only
+	osg::Node *onode = GetOsgNode();
+
+	mt->m_pTexture = new osg::Texture2D(pImage);
+
+	mt->m_pTexture->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
+	mt->m_pTexture->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::LINEAR);
+	mt->m_pTexture->setWrap(osg::Texture2D::WRAP_S, osg::Texture2D::CLAMP_TO_BORDER);
+	mt->m_pTexture->setWrap(osg::Texture2D::WRAP_T, osg::Texture2D::CLAMP_TO_BORDER);
+
+	// Set up the texgen
+	osg::ref_ptr<osg::TexGen> pTexgen = new osg::TexGen;
+	pTexgen->setMode(osg::TexGen::EYE_LINEAR);
+	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(scale.x, 0.0f, 0.0f, -offset.x));
+	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, scale.y, -offset.y));
+
+	osg::TexEnv::Mode mode;
+	if (iTextureMode == GL_ADD) mode = osg::TexEnv::ADD;
+	if (iTextureMode == GL_BLEND) mode = osg::TexEnv::BLEND;
+	if (iTextureMode == GL_REPLACE) mode = osg::TexEnv::REPLACE;
+	if (iTextureMode == GL_MODULATE) mode = osg::TexEnv::MODULATE;
+	if (iTextureMode == GL_DECAL) mode = osg::TexEnv::DECAL;
+	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(mode);
+
+	// Apply state
+	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
+
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, mt->m_pTexture.get(), osg::StateAttribute::ON);
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexgen.get(), osg::StateAttribute::ON);
+	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
+	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_T,  osg::StateAttribute::ON);
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexEnv.get(), osg::StateAttribute::ON);
+
+	return mt;
+}
+
+void vtNode::EnableMultiTexture(vtMultiTexture *mt, bool bEnable)
+{
+	osg::Node *onode = GetOsgNode();
+	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
+	if (bEnable)
+		pStateSet->setTextureAttributeAndModes(mt->m_iTextureUnit, mt->m_pTexture.get(), osg::StateAttribute::ON);
+	else
+	{
+		osg::StateAttribute *attr = pStateSet->getTextureAttribute(mt->m_iTextureUnit, osg::StateAttribute::TEXTURE);
+		if (attr != NULL)
+			pStateSet->removeTextureAttribute(mt->m_iTextureUnit, attr);
+	}
+}
+
+bool vtNode::MultiTextureIsEnabled(vtMultiTexture *mt)
+{
+	osg::Node *onode = GetOsgNode();
+	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
+	osg::StateAttribute *attr = pStateSet->getTextureAttribute(mt->m_iTextureUnit, osg::StateAttribute::TEXTURE);
+	return (attr != NULL);
+}
+
+///////////////////////////////////////////////////////////////////////
 
 vtNode *vtNativeNode::FindParentVTNode()
 {

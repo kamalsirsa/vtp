@@ -48,6 +48,17 @@ struct vtPrimInfo
 	int LineSegments;
 };
 
+class vtNode;
+
+class vtMultiTexture
+{
+public:
+	int	m_iTextureUnit;
+	vtNode *m_pNode;
+	osg::ref_ptr<osg::Texture2D> m_pTexture;
+};
+
+
 /**
  * Represents a node in the vtlib scenegraph.  The scenegraph is simply
  * a tree of nodes, with a root node at the top.
@@ -82,6 +93,11 @@ public:
 	virtual vtNode *Clone(bool bDeep = false);
 
 	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
+
+	vtMultiTexture *AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
+										const FPoint2 &scale, const FPoint2 &offset);
+	void EnableMultiTexture(vtMultiTexture *mt, bool bEnable);
+	bool MultiTextureIsEnabled(vtMultiTexture *mt);
 
 	// OSG access
 	void SetOsgNode(osg::Node *n);
