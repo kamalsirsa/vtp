@@ -29,6 +29,7 @@ public:
 	bool Read(const char *fname);
 
 	vtGeom *CreateGeometry(bool bDropShadowMesh);
+	vtGeom *GetGeometry() { return m_pGeom; }
 	void SetTextureMaterials(vtMaterialArray *pMats);
 
 	// implement HeightField3d virtual methods
