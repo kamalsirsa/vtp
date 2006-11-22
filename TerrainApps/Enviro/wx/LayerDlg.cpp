@@ -29,6 +29,7 @@
 #  include "fence.xpm"
 #  include "instance.xpm"
 #  include "icon8.xpm"
+#  include "image.xpm"
 #endif
 
 #define ICON_BUILDING	0
@@ -38,6 +39,7 @@
 #define ICON_FENCE		4
 #define ICON_INSTANCE	5
 #define ICON_TOP		6
+#define ICON_IMAGE		7
 
 /////////////////////////////
 
@@ -93,7 +95,7 @@ void LayerDlg::CreateImageList(int size)
 	// Make an image list containing small icons
 	m_imageListNormal = new wxImageList(size, size, TRUE);
 
-	wxIcon icons[7];
+	wxIcon icons[8];
 	icons[0] = wxICON(building);
 	icons[1] = wxICON(road);
 	icons[2] = wxICON(veg1);
@@ -101,6 +103,7 @@ void LayerDlg::CreateImageList(int size)
 	icons[4] = wxICON(fence);
 	icons[5] = wxICON(instance);
 	icons[6] = wxICON(icon8);
+	icons[7] = wxICON(image);
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )
@@ -317,9 +320,16 @@ void LayerDlg::RefreshTreeTerrain()
 			str += _T(")");
 
 			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_RAW, ICON_RAW);
-			//if (sa == terr->GetStructureLayer())
-			//	m_pTree->SetItemBold(hLayer, true);
 			m_pTree->SetItemData(hLayer, new LayerItemData(alay, fset));
+		}
+		vtImageLayer *ilay = dynamic_cast<vtImageLayer*>(layers[i]);
+		if (ilay)
+		{
+			vs = ilay->GetLayerName();
+			str = wxString(vs, wxConvUTF8);
+
+			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_IMAGE, ICON_IMAGE);
+			m_pTree->SetItemData(hLayer, new LayerItemData(ilay));
 		}
 	}
 
@@ -572,8 +582,9 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 {
 	bool bVis = event.IsChecked();
 
+	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
 	vtNode *pThing = GetNodeFromItem(m_item);
-	if (pThing)
+	if (pThing && slay != NULL)
 	{
 		pThing->SetEnabled(bVis);
 		return;
@@ -623,7 +634,7 @@ void LayerDlg::UpdateEnabling()
 	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
 
 	GetZoomTo()->Enable(pThing != NULL);
-	GetVisible()->Enable((pThing != NULL) || (slay != NULL));
+	GetVisible()->Enable((pThing != NULL) || (slay != NULL) || (data != NULL && data->m_ilay != NULL));
 
 	bool bShadows = false;
 #if VTLIB_OSG

@@ -20,8 +20,8 @@ enum LayerType
 	LT_ROAD,
 	LT_STRUCTURE,
 	LT_VEG,
+	LT_IMAGE,
 //	LT_ELEVATION,	// these aren't layer types in enviro.. yet :)
-//	LT_IMAGE,
 //	LT_WATER,
 //	LT_TRANSIT,
 //	LT_UTILITY,
@@ -47,6 +47,12 @@ public:
 		m_layer = m_alay = alay;
 		m_fset = set;
 	}
+	LayerItemData(vtImageLayer *ilay)
+	{
+		Defaults();
+		m_type = LT_IMAGE;
+		m_layer = m_ilay = ilay;
+	}
 	LayerItemData(LayerType type)
 	{
 		Defaults();
@@ -65,6 +71,7 @@ public:
 	LayerType m_type;
 	vtLayer *m_layer;
 	vtAbstractLayer *m_alay;
+	vtImageLayer *m_ilay;
 	vtStructureLayer *m_slay;
 	vtFeatureSet *m_fset;
 	int m_index;
