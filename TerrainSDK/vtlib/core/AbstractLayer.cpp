@@ -21,6 +21,7 @@ vtAbstractLayer::vtAbstractLayer()
 	pContainer = NULL;
 	pGeomGroup = NULL;
 	pLabelGroup = NULL;
+	pMultiTexture = NULL;
 }
 vtAbstractLayer::~vtAbstractLayer()
 {
@@ -31,6 +32,7 @@ vtAbstractLayer::~vtAbstractLayer()
 		pContainer->GetParent()->RemoveChild(pContainer);
 		pContainer->Release();
 	}
+	delete pMultiTexture;
 }
 
 void vtAbstractLayer::SetLayerName(const vtString &fname)
@@ -516,7 +518,7 @@ bool vtAbstractLayer::CreateTextureOverlay(vtTerrain *pTerr)
 	if (mode == "ADD") iTextureMode = GL_ADD;
 	if (mode == "MODULATE") iTextureMode = GL_MODULATE;
 	if (mode == "DECAL") iTextureMode = GL_DECAL;
-	pTerr->AddMultiTextureOverlay(image, DataExtents, iTextureMode);
+	pMultiTexture = pTerr->AddMultiTextureOverlay(image, DataExtents, iTextureMode);
 	return true;
 }
 
@@ -524,12 +526,19 @@ void vtAbstractLayer::SetVisible(bool bVis)
 {
 	if (pContainer != NULL)
 		pContainer->SetEnabled(bVis);
+
+	if (pMultiTexture)
+		pMultiTexture->m_pNode->EnableMultiTexture(pMultiTexture, bVis);
 }
 
 bool vtAbstractLayer::GetVisible()
 {
 	if (pContainer != NULL)
 		return pContainer->GetEnabled();
+
+	else if (pMultiTexture)
+		return pMultiTexture->m_pNode->MultiTextureIsEnabled(pMultiTexture);
+
 	return false;
 }
 

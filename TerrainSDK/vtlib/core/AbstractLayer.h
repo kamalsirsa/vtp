@@ -81,6 +81,7 @@ public:
 	vtGroup *pContainer;
 	vtGroup *pGeomGroup;
 	vtGroup *pLabelGroup;
+	vtMultiTexture *pMultiTexture;
 };
 
 #endif // ABSTRACTLAYERH
