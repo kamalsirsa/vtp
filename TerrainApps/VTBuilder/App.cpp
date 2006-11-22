@@ -122,7 +122,7 @@ bool BuilderApp::OnInit()
 	for( int iDriver = 0; iDriver < poDM->GetDriverCount(); iDriver++ )
 	{
 		if ((iDriver % 13) == 0)
-			VTLOG("\n  ");
+			VTLOG1("\n  ");
 		GDALDriver *poDriver = poDM->GetDriver( iDriver );
 		const char *name = poDriver->GetDescription();
 		VTLOG(" %s", name);
@@ -219,13 +219,13 @@ void BuilderApp::SetupLocale()
 
 	if (lang != wxLANGUAGE_ENGLISH_US)
 	{
-		VTLOG("Attempting to load the 'VTBuilder.mo' catalog for the current locale.\n");
+		VTLOG1("Attempting to load the 'VTBuilder.mo' catalog for the current locale.\n");
 		bSuccess = m_locale.AddCatalog(wxT("VTBuilder"));
 		if (bSuccess)
 			VTLOG(" succeeded.\n");
 		else
 			VTLOG(" not found.\n");
-		VTLOG("\n");
+		VTLOG1("\n");
 	}
 
 	// Test it
