@@ -460,7 +460,6 @@ void BuildingDlg::SetLevel(int iLev)
 
 void BuildingDlg::UpdateMaterialControl()
 {
-
 	// In the case of a whole level, attempt to show the most
 	//  commonly occuring material.
 	if (m_bEdges == false)
@@ -662,7 +661,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 		vtMaterialDescriptor *mat = GetGlobalMaterials()->GetAt(i);
 
 		// only show surface materials, not typed feature materials
-		if (mat->GetType() > 0)
+		if (mat->GetMatType() > 0)
 			continue;
 
 		const vtString& MaterialName = mat->GetName();
@@ -684,7 +683,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	}
 
 	wxSingleChoiceDialog dialog(this, _T("Choice"),
-		_("Set Building Material for All Edges"), iNumberofMaterials, pChoices);
+		_("Set Building Material for All Edges"), iShown, pChoices);
 
 	if (iInitialSelection != -1)
 		dialog.SetSelection(iInitialSelection);
