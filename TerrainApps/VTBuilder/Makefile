@@ -75,17 +75,23 @@ clobber :
 	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files $(EXEC) $(EXEC).pure $(OSX_APPS)/$(EXEC).app
 
 #
-# Internationalization steps (iso-8859-1) for VTBuilder
+# Internationalization steps for VTBuilder
 #
 
 I18N_SOURCES = \
 	$(CXXSRC) \
-	VTBuilder_wdr.cpp \
 	../../TerrainSDK/vtui/vtui_wdr.cpp \
-	../../TerrainSDK/vtui/BuildingDlg.cpp
+	../../TerrainSDK/vtui/*Dlg.cpp
 
 update-pot:
 	xgettext --from-code=iso-8859-1 -k_ -o VTBuilder.pot $(I18N_SOURCES)
+
+publish-ar:
+	cp ar/VTBuilder.pox ar/VTBuilder.po
+	msgfmt ar/VTBuilder.po -o ar/VTBuilder.mo
+
+update-ar:
+	msgmerge --no-fuzzy-matching ar/VTBuilder.po VTBuilder.pot -o ar/VTBuilder.pox
 
 publish-zh:
 	cp zh/VTBuilder.pox zh/VTBuilder.po
