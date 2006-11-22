@@ -7,10 +7,6 @@
 
 #include "vtlib/vtlib.h"
 
-#if VTLIB_OSG
-#include "osg/Texgen"
-#endif
-
 #include "vtdata/vtLog.h"
 #include "vtdata/Features.h"
 #include "vtdata/StructArray.h"
@@ -1775,8 +1771,8 @@ void vtTerrain::_CreateImageLayers()
 
 		m_Layers.Append(ilayer);
 
-		AddMultiTextureOverlay(ilayer->m_pImage, ilayer->m_pImage->GetExtents(),
-			GL_DECAL);
+		ilayer->m_pMultiTexture = AddMultiTextureOverlay(ilayer->m_pImage,
+			ilayer->m_pImage->GetExtents(), GL_DECAL);
 	}
 }
 
@@ -1847,7 +1843,7 @@ bool vtTerrain::TestAbstractLayerPolygonDrape()
 //
 // \param TextureMode One of GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD
 //
-void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
+vtMultiTexture *vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
 									   int TextureMode)
 {
 	DRECT TerrainExtents = GetHeightField()->GetEarthExtents();
@@ -1855,7 +1851,7 @@ void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
 	int iTextureUnit = _ClaimAvailableTextureUnit();
 
 		// Calculate the mapping of texture coordinates
-	DPoint2 texstep;
+	DPoint2 scale;
 	FPoint2 offset;
 	vtHeightFieldGrid3d *grid = GetDynTerrain();
 
@@ -1866,16 +1862,16 @@ void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
 
 		// input values go from (0,0) to (Cols-1,Rows-1)
 		// output values go from 0 to 1
-		texstep.Set(1.0/(iCols - 1), 1.0/(iRows - 1));
+		scale.Set(1.0/(iCols - 1), 1.0/(iRows - 1));
 
 		// stretch the (0-1) over the data extents
-		texstep.x *= (TerrainExtents.Width() / extents.Width());
-		texstep.y *= (TerrainExtents.Height() / extents.Height());
+		scale.x *= (TerrainExtents.Width() / extents.Width());
+		scale.y *= (TerrainExtents.Height() / extents.Height());
 	}
 	else	// might be a TiledGeom, or a TIN
 	{
 		// Map input values (0-terrain size in world coords) to 0-1
-		texstep.Set(1.0/extents.Width(), -1.0/extents.Height());
+		scale.Set(1.0/extents.Width(), -1.0/extents.Height());
 	}
 
 	// and offset it to place it at the right place
@@ -1883,49 +1879,20 @@ void vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
 	offset.y = (extents.bottom - TerrainExtents.bottom) / extents.Height();
 
 	// apply it to the node that is above the terrain surface
-	vtNode *node;
-	if (GetDynTerrain())
-		node = GetDynTerrain();
-	else if (GetTiledGeom())
-		node = GetTiledGeom();
-	else if (GetTin())
-		node = GetTin()->GetGeometry();
-
-	// Currently, multi-texture support is OSG-only
-#if VTLIB_OSG
-	osg::Node *onode = node->GetOsgNode();
-
-	osg::ref_ptr<osg::Texture2D> pTexture = new osg::Texture2D(pImage);
-
-	pTexture->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
-	pTexture->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::LINEAR);
-	pTexture->setWrap(osg::Texture2D::WRAP_S, osg::Texture2D::CLAMP_TO_BORDER);
-	pTexture->setWrap(osg::Texture2D::WRAP_T, osg::Texture2D::CLAMP_TO_BORDER);
-
-	// Set up the texgen
-	osg::ref_ptr<osg::TexGen> pTexgen = new osg::TexGen;
-	pTexgen->setMode(osg::TexGen::EYE_LINEAR);
-	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(texstep.x, 0.0f, 0.0f, -offset.x));
-	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, texstep.y, -offset.y));
-
-	osg::TexEnv::Mode mode;
-	if (TextureMode == GL_ADD) mode = osg::TexEnv::ADD;
-	if (TextureMode == GL_BLEND) mode = osg::TexEnv::BLEND;
-	if (TextureMode == GL_REPLACE) mode = osg::TexEnv::REPLACE;
-	if (TextureMode == GL_MODULATE) mode = osg::TexEnv::MODULATE;
-	if (TextureMode == GL_DECAL) mode = osg::TexEnv::DECAL;
-	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(mode);
-
-	// Apply state
-	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
-
-	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexture.get(), osg::StateAttribute::ON);
-	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexgen.get(), osg::StateAttribute::ON);
-	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
-	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_T,  osg::StateAttribute::ON);
-	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexEnv.get(), osg::StateAttribute::ON);
-#endif // VTLIB_OSG
+	return GetTerrainSurfaceNode()->AddMultiTexture(iTextureUnit, pImage,
+		TextureMode, scale, offset);
 } 
+
+vtNode *vtTerrain::GetTerrainSurfaceNode()
+{
+	if (GetDynTerrain())
+		return GetDynTerrain();
+	else if (GetTiledGeom())
+		return GetTiledGeom();
+	else if (GetTin())
+		return GetTin()->GetGeometry();
+	return NULL;
+}
 
 void vtTerrain::SetFog(bool fog)
 {
@@ -3288,6 +3255,7 @@ vtStructureLayer *LayerSet::FindStructureFromNode(vtNode* pNode, int &iOffset)
 vtImageLayer::vtImageLayer()
 {
 	m_pImage = new vtImage;
+	m_pMultiTexture = NULL;
 }
 
 vtImageLayer::~vtImageLayer()
@@ -3296,3 +3264,14 @@ vtImageLayer::~vtImageLayer()
 		m_pImage->Release();
 }
 
+void vtImageLayer::SetVisible(bool vis)
+{
+	if (m_pMultiTexture)
+		m_pMultiTexture->m_pNode->EnableMultiTexture(m_pMultiTexture, vis);
+}
+bool vtImageLayer::GetVisible()
+{
+	if (m_pMultiTexture)
+		return m_pMultiTexture->m_pNode->MultiTextureIsEnabled(m_pMultiTexture);
+	return false;
+}

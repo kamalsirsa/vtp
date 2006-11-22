@@ -57,16 +57,11 @@ public:
 
 	void SetLayerName(const vtString &fname) { /* not applicable */ }
 	vtString GetLayerName() { return m_pImage->GetFilename(); }
-	void SetVisible(bool vis)
-	{
-		// TODO
-	}
-	bool GetVisible()
-	{
-		// TODO 
-		return true;
-	}
+	void SetVisible(bool vis);
+	bool GetVisible();
+
 	vtImage *m_pImage;
+	vtMultiTexture *m_pMultiTexture;
 };
 
 /** \addtogroup terrain */
@@ -362,7 +357,8 @@ public:
 	void RecreateTextures(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 	vtImage *GetTextureImage();
 	vtOverlappedTiledImage	*GetOverlappedImage() { return &m_ImageTiles; }
-	void AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents, int TextureMode);
+	vtMultiTexture *AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents, int TextureMode);
+	vtNode *GetTerrainSurfaceNode();
 	bool TestAbstractLayerPolygonDrape();
 
 protected:
