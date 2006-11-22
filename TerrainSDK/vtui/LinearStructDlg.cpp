@@ -65,7 +65,7 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	LinearStructDialogFunc( this, TRUE );
 	m_bSetting = false;
 
-	m_pMaterials = NULL;
+	m_pStructureMaterials = NULL;
 	m_iStyle = 0;
 	m_param.Defaults();
 	m_pProfileEditDlg = NULL;
@@ -95,9 +95,9 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	UpdateChoices();
 }
 
-void LinearStructureDlg::SetConnectionMaterials(vtMaterialDescriptorArray *desc)
+void LinearStructureDlg::SetStructureMaterials(const vtMaterialDescriptorArray *desc)
 {
-	m_pMaterials = desc;
+	m_pStructureMaterials = desc;
 	UpdateConnectChoices();
 	UpdateTypes();
 }
@@ -119,11 +119,6 @@ void LinearStructureDlg::UpdateChoices()
 	GetStyle()->Append(_("Railing (EU)"));
 	GetStyle()->Append(_("(custom)"));
 
-	GetPostType()->Clear();
-	GetPostType()->Append(_T("none"));
-	GetPostType()->Append(_T("wood"));
-	GetPostType()->Append(_T("steel"));
-
 	GetConnType()->Clear();
 	GetConnType()->Append(_T("none"));
 	GetConnType()->Append(_T("wire"));
@@ -133,19 +128,29 @@ void LinearStructureDlg::UpdateChoices()
 	UpdateConnectChoices();
 }
 
-void LinearStructureDlg::UpdateConnectChoices()
+void LinearStructureDlg::AddConnectStringsFromDescriptors(const vtMaterialDescriptorArray *mats)
 {
-	GetConnMat()->Clear();
-	GetConnMat()->Append(_T("none"));
-	if (m_pMaterials)
+	for (unsigned int i = 0; i < mats->GetSize(); i++)
 	{
-		for (unsigned int i = 0; i < m_pMaterials->GetSize(); i++)
+		vtMaterialDescriptor *desc = mats->GetAt(i);
+
+		// Type 0 means a surface type. This avoids fence posts, windows,
+		//  and other things inappropriate for a linear connector.
+		if (desc->GetMatType() == 0)
 		{
-			vtMaterialDescriptor *desc = m_pMaterials->GetAt(i);
 			wxString str(desc->GetName(), wxConvUTF8);
 			GetConnMat()->Append(str);
 		}
 	}
+}
+
+void LinearStructureDlg::UpdateConnectChoices()
+{
+	GetConnMat()->Clear();
+	GetConnMat()->Append(_T("none"));
+
+	if (m_pStructureMaterials)
+		AddConnectStringsFromDescriptors(m_pStructureMaterials);
 	else
 	{
 		// just show some well-known materials
@@ -157,6 +162,21 @@ void LinearStructureDlg::UpdateConnectChoices()
 		GetConnMat()->Append(_T("railing_wire"));
 		GetConnMat()->Append(_T("railing_eu"));
 		GetConnMat()->Append(_T("railing_pipe"));
+	}
+
+	// Also update post materials available
+	GetPostType()->Clear();
+	GetPostType()->Append(_T("none"));
+	if (m_pStructureMaterials)
+	{
+		for (unsigned int i = 0; i < m_pStructureMaterials->GetSize(); i++)
+		{
+			vtMaterialDescriptor *desc = m_pStructureMaterials->GetAt(i);
+
+			// Type 3 means a post material.
+			if (desc->GetMatType() == 3)
+				GetPostType()->Append(wxString(desc->GetName(), wxConvUTF8));
+		}
 	}
 }
 

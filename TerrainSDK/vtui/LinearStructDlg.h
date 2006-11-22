@@ -28,7 +28,8 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
-	void SetConnectionMaterials(vtMaterialDescriptorArray *desc);
+	void SetStructureMaterials(const vtMaterialDescriptorArray *desc);
+
 	void GuessStyle();
 	void OnInitDialog(wxInitDialogEvent& event);
 	void SlidersToValues(int which);
@@ -72,6 +73,8 @@ public:
 	vtStringArray m_datapaths;
 
 protected:
+	void AddConnectStringsFromDescriptors(const vtMaterialDescriptorArray *mats);
+
 	// WDR: member variable declarations for LinearStructureDlg
 	int  m_iStyle;
 	int  m_iPostHeight;
@@ -85,7 +88,7 @@ protected:
 	bool m_bSetting;
 
 	vtLinearParams m_param;
-	vtMaterialDescriptorArray *m_pMaterials;
+	const vtMaterialDescriptorArray *m_pStructureMaterials;
 	ProfileEditDlg *m_pProfileEditDlg;
 
 private:
