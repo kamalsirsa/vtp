@@ -231,6 +231,9 @@ vtTiledGeom::vtTiledGeom()
 	m_iMaxCacheSize = 60 * 1024 * 1024;	// 40 MB cache max
 	m_iTileLoads = 0;
 	m_iCacheHits = 0;
+
+	m_pPlainMaterial = new vtMaterial;
+	m_pPlainMaterial->SetDiffuse(1,1,1);
 }
 
 vtTiledGeom::~vtTiledGeom()
@@ -238,6 +241,8 @@ vtTiledGeom::~vtTiledGeom()
 	EmptyCache();
 	delete m_pMiniCache;
 	delete m_pMiniLoad;
+
+	delete m_pPlainMaterial;
 }
 
 bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *dataset_fname_image)
@@ -566,6 +571,10 @@ void vtTiledGeom::EmptyCache()
 void vtTiledGeom::DoRender()
 {
 	clock_t c1 = clock();
+
+	// This vtlib material is just a placeholder, since libMini applies its own
+	//  textured materials directly using OpenGL.
+	ApplyMaterial(m_pPlainMaterial);
 
 	// count frames
 	m_iFrame++;

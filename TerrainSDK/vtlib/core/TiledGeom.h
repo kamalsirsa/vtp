@@ -105,6 +105,9 @@ protected:
 	FPoint3 center;
 	ucharptr *hfields, *textures;
 
+	// a vtlib material
+	vtMaterial *m_pPlainMaterial;
+
 	// Values used to render each frame
 	IPoint2 m_window_size;
 	FPoint3 m_eyepos_ogl;
