@@ -12,15 +12,14 @@
 #include "vtdata/FilePath.h"
 
 #include "AbstractLayer.h"
-#include "AnimPath.h"
+#include "AnimPath.h"	// for vtAnimContainer
 #include "Content3d.h"
 #include "DynTerrain.h"
 #include "GeomUtil.h"	// for MeshFactory
 #include "Location.h"
 #include "Route.h"
-#include "Structure3d.h"
 #include "TParams.h"
-#include "Trees.h"
+#include "Trees.h"	// for vtSpeciesList3d, vtPlantInstanceArray3d
 
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
@@ -34,46 +33,8 @@ class vtTin3d;
 class vtFeatureSet;
 class vtSimpleBillboardEngine;
 
-class vtStructureLayer : public vtStructureArray3d, public vtLayer
-{
-public:
-	void SetLayerName(const vtString &fname) { SetFilename(fname); }
-	vtString GetLayerName() { return GetFilename(); }
-	void SetVisible(bool vis)
-	{
-		SetEnabled(vis);
-	}
-	bool GetVisible()
-	{
-		return GetEnabled();
-	}
-};
-
-class vtImageLayer : public vtLayer
-{
-public:
-	vtImageLayer();
-	~vtImageLayer();
-
-	void SetLayerName(const vtString &fname) { /* not applicable */ }
-	vtString GetLayerName() { return m_pImage->GetFilename(); }
-	void SetVisible(bool vis);
-	bool GetVisible();
-
-	vtImage *m_pImage;
-	vtMultiTexture *m_pMultiTexture;
-};
-
 /** \addtogroup terrain */
 /*@{*/
-
-/** The set of all structure arrays which are on a terrain. */
-class LayerSet : public vtArray<vtLayer *>
-{
-public:
-	void Remove(vtLayer *lay);
-	vtStructureLayer *FindStructureFromNode(vtNode* pNode, int &iOffset);
-};
 
 
 /**
@@ -305,15 +266,6 @@ public:
 	vtProjection &GetProjection() { return m_proj; }
 	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, int iCultureFlags) const;
 
-	// Points of interest
-	void AddPointOfInterest(double left, double bottom, double right,
-					   double top, const char *name, const char *url);
-	vtPointOfInterest *FindPointOfInterest(DPoint2 utm);
-	void SetShowPOI( bool flag ) { m_bShowPOI = flag; }
-	bool GetShowPOI() { return m_bShowPOI; }
-	void ShowPOI(vtPointOfInterest *poi, bool bShow);
-	void HideAllPOI();
-
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
 		float fOffset, bool bInterp = true, bool bCurve = false, bool bTrue = false);
@@ -359,7 +311,6 @@ public:
 	vtOverlappedTiledImage	*GetOverlappedImage() { return &m_ImageTiles; }
 	vtMultiTexture *AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents, int TextureMode);
 	vtNode *GetTerrainSurfaceNode();
-	bool TestAbstractLayerPolygonDrape();
 
 protected:
 	/********************** Protected Methods ******************/

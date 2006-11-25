@@ -8,20 +8,14 @@
 #include "vtlib/vtlib.h"
 
 #include "vtdata/vtLog.h"
-#include "vtdata/Features.h"
-#include "vtdata/StructArray.h"
 #include "vtdata/CubicSpline.h"
-#include "xmlhelper/exception.hpp"
 
 #include "Terrain.h"
 #include "Light.h"
 #include "Building3d.h"
-#include "Building3d.h"
 #include "IntersectionEngine.h"
 #include "Fence3d.h"
-#include "Route.h"
 #include "vtTin3d.h"
-#include "TerrainScene.h"
 
 #include "TVTerrain.h"
 #include "SMTerrain.h"
@@ -1766,7 +1760,7 @@ void vtTerrain::_CreateImageLayers()
 		}
 		VTLOG("Read image from file '%s'\n", (const char *) path);
 
-		// Copy all the other attributes to the new layer
+		// Copy all the other attributes to the new layer (TODO?)
 		//feat->GetProperties() = lay;
 
 		m_Layers.Append(ilayer);
@@ -1774,70 +1768,6 @@ void vtTerrain::_CreateImageLayers()
 		ilayer->m_pMultiTexture = AddMultiTextureOverlay(ilayer->m_pImage,
 			ilayer->m_pImage->GetExtents(), GL_DECAL);
 	}
-}
-
-bool vtTerrain::TestAbstractLayerPolygonDrape()
-{
-	const int ALPD_RESOLUTION = 1024;
-
-	// Set up the image
-	vtImage *image = new vtImage;
-	if (!image->Create(ALPD_RESOLUTION, ALPD_RESOLUTION, 32))
-		return false;
-
-	// Get data extents
-	LayerSet& Layers = GetLayers();
-	int iNumLayers = Layers.GetSize();
-	DRECT DataExtents(1E9,-1E9,-1E9,1E9);
-	for (int iLayer = 0; iLayer < iNumLayers; iLayer++)
-	{
-		vtAbstractLayer* pLayer = dynamic_cast<vtAbstractLayer*>(Layers[iLayer]);
-		if (!pLayer)
-			continue;
-		if (wkbPolygon != wkbFlatten(pLayer->pSet->GetGeomType()))
-			continue;
-
-		DRECT rect;
-		pLayer->pSet->ComputeExtent(rect);
-		DataExtents.GrowToContainRect(rect);
-	}
-
-	double DeltaX = DataExtents.Width() / (double)ALPD_RESOLUTION;
-	double DeltaY = DataExtents.Height() / (double)ALPD_RESOLUTION;
-
-	for (int iLayer = 0; iLayer < iNumLayers; iLayer++)
-	{
-		vtAbstractLayer* pLayer = dynamic_cast<vtAbstractLayer*>(Layers[iLayer]);
-		if (!pLayer)
-			continue;
-		if (wkbPolygon != wkbFlatten(pLayer->pSet->GetGeomType()))
-			continue;
-
-		vtFeatureSetPolygon *pPolygonSet = dynamic_cast<vtFeatureSetPolygon*>(pLayer->pSet);
-		int iNumFeatures = pLayer->pSet->GetNumEntities();
-		RGBAi LayerColour = pPolygonSet->GetProperties().GetValueRGBi("GeomColor");
-		LayerColour.a = 255;
-
-		for (int ImageX = 0; ImageX < ALPD_RESOLUTION; ImageX++)
-		{
-			for (int ImageY = 0; ImageY < ALPD_RESOLUTION; ImageY++)
-			{
-				image->SetPixel32(ImageX, ImageY, RGBAi(0,0,0,0));
-				for (int feat = 0; feat < iNumFeatures; feat++)
-				{
-					DPoint2 Point(DataExtents.left + DeltaX / 2 + DeltaX * ImageX,
-									DataExtents.top - DeltaY / 2 - DeltaY * ImageY);
-					if (pPolygonSet->GetPolygon(feat).ContainsPoint(Point))
-					{
-						image->SetPixel32(ImageX, ImageY, LayerColour);
-					}
-				}
-			}
-		}
-	}
-
-	AddMultiTextureOverlay(image, DataExtents, GL_ADD);
-	return true;
 }
 
 //
@@ -2729,65 +2659,6 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bit
 	VTLOG("%.3f seconds.\n", (float)c3 / CLOCKS_PER_SEC);
 }
 
-void vtTerrain::AddPointOfInterest(double left, double bottom, double right,
-					   double top, const char *name, const char *url)
-{
-	POIPtr p = new vtPointOfInterest;
-	p->m_rect.SetRect(left, top, right, bottom);
-	p->m_name = name;
-	p->m_url = url;
-
-	m_PointsOfInterest.Append(p);
-}
-
-vtPointOfInterest *vtTerrain::FindPointOfInterest(DPoint2 utm)
-{
-	int points = m_PointsOfInterest.GetSize();
-	for (int i = 0; i < points; i++)
-	{
-		vtPointOfInterest *p = m_PointsOfInterest.GetAt(i);
-		if (p->m_rect.ContainsPoint(utm))
-			return p;
-	}
-	return NULL;
-}
-
-void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
-{
-	if (!bShow)
-	{
-		if (poi->m_pGeom) poi->m_pGeom->SetEnabled(false);
-		return;
-	}
-
-	// now we must show it - check if the shape is already built
-	if (poi->m_pGeom)
-	{
-		poi->m_pGeom->SetEnabled(true);
-		return;
-	}
-
-	poi->m_pGeom = new vtGeom;
-	poi->m_pGeom->SetName2("POI Geom");
-	vtMaterialArray *pMat = new vtMaterialArray;
-	pMat->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false, false); // red
-	poi->m_pGeom->SetMaterials(pMat);
-	pMat->Release();
-
-	vtMeshFactory mf(poi->m_pGeom, vtMesh::LINE_STRIP, 0, 30000, 0);
-
-	DLine2 dline;
-	dline.Append(DPoint2(poi->m_rect.left, poi->m_rect.top));
-	dline.Append(DPoint2(poi->m_rect.right, poi->m_rect.top));
-	dline.Append(DPoint2(poi->m_rect.right, poi->m_rect.bottom));
-	dline.Append(DPoint2(poi->m_rect.left, poi->m_rect.bottom));
-	dline.Append(DPoint2(poi->m_rect.left, poi->m_rect.top));
-	AddSurfaceLineToMesh(&mf, dline, 10.0f, true, false);
-
-	m_pTerrainGroup->AddChild(poi->m_pGeom);
-}
-
-
 /**
  * Create geometry on the terrain for a 2D line by draping the point onto
  * the terrain surface.
@@ -2949,16 +2820,6 @@ float vtTerrain::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
 	}
 	pMF->PrimEnd();
 	return fTotalLength;
-}
-
-void vtTerrain::HideAllPOI()
-{
-	int points = m_PointsOfInterest.GetSize();
-	for (int i = 0; i < points; i++)
-	{
-		vtPointOfInterest *p = m_PointsOfInterest.GetAt(i);
-		ShowPOI(p, false);
-	}
 }
 
 
@@ -3200,78 +3061,3 @@ void vtTerrain::ActivateScenario(int iScenario)
 }
 
 
-////////////////////////////////////////////////////////////////////////////
-// Layers
-
-void LayerSet::Remove(vtLayer *lay)
-{
-	for (unsigned int i = 0; i < GetSize(); i++)
-	{
-		if (lay == GetAt(i))
-		{
-			RemoveAt(i);
-			return;
-		}
-	}
-}
-
-vtStructureLayer *LayerSet::FindStructureFromNode(vtNode* pNode, int &iOffset)
-{
-	iOffset = -1;
-	int iNumLayers = GetSize();
-	bool bFound = false;
-
-	// We might have a low-level native scenegraph node; we want the higher-level
-	vtNativeNode *native = dynamic_cast<vtNativeNode *>(pNode);
-	if (native)
-	{
-		pNode = native->FindParentVTNode();
-		if (!pNode)
-			return false;
-	}
-
-	for (int i = 0; i < iNumLayers && !bFound; i++)
-	{
-		vtStructureLayer *slay = dynamic_cast<vtStructureLayer *>(GetAt(i));
-		if (!slay)
-			continue;
-		int iNumStructures = slay->GetSize();
-		for (int j = 0; (j < iNumStructures) && !bFound; j++)
-		{
-			vtStructure3d *pStructure3d = slay->GetStructure3d(j);
-			if ((pNode == pStructure3d->GetContainer()) ||
-				(pNode == pStructure3d->GetContained()) ||
-				(pNode->GetParent() == pStructure3d->GetContained()) ||
-				(pNode == pStructure3d->GetGeom()))
-			{
-				iOffset = j;
-				return slay;
-			}
-		}
-	}
-	return NULL;
-}
-
-vtImageLayer::vtImageLayer()
-{
-	m_pImage = new vtImage;
-	m_pMultiTexture = NULL;
-}
-
-vtImageLayer::~vtImageLayer()
-{
-	if (m_pImage)
-		m_pImage->Release();
-}
-
-void vtImageLayer::SetVisible(bool vis)
-{
-	if (m_pMultiTexture)
-		m_pMultiTexture->m_pNode->EnableMultiTexture(m_pMultiTexture, vis);
-}
-bool vtImageLayer::GetVisible()
-{
-	if (m_pMultiTexture)
-		return m_pMultiTexture->m_pNode->MultiTextureIsEnabled(m_pMultiTexture);
-	return false;
-}
