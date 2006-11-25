@@ -8,19 +8,10 @@
 #ifndef ABSTRACTLAYERH
 #define ABSTRACTLAYERH
 
+#include "TerrainLayers.h"
+
 class vtTerrain;
 class vtFeatureSet;
-
-class vtLayer
-{
-public:
-	virtual ~vtLayer() {}
-
-	virtual void SetLayerName(const vtString &fname) = 0;
-	virtual vtString GetLayerName() = 0;
-	virtual void SetVisible(bool vis) = 0;
-	virtual bool GetVisible() = 0;
-};
 
 /**
  * An abstract layer is a traditional GIS-style set of geometry features with
