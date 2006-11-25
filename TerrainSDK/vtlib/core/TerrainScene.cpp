@@ -133,9 +133,9 @@ void vtTerrainScene::_CreateSky()
 	m_pTop->AddChild(m_pAtmosphereGroup);
 
 	// 'bsc' is the Bright Star Catalog
-	vtString bsc = FindFileOnPaths(m_DataPaths, "Sky/bsc.data");
-	vtString sun = FindFileOnPaths(m_DataPaths, "Sky/glow2.png");
-	vtString moon = FindFileOnPaths(m_DataPaths, "Sky/moon5_256.png");
+	vtString bsc = FindFileOnPaths(vtGetDataPath(), "Sky/bsc.data");
+	vtString sun = FindFileOnPaths(vtGetDataPath(), "Sky/glow2.png");
+	vtString moon = FindFileOnPaths(vtGetDataPath(), "Sky/moon5_256.png");
 
 	VTLOG("  Stars: '%s'\n", (const char *) bsc);
 	VTLOG("    Sun: '%s'\n", (const char *) sun);
@@ -396,7 +396,7 @@ void vtTerrainScene::_UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 		{
 			vtString filename = "Sky/";
 			filename += fname;
-			vtString skytex = FindFileOnPaths(m_DataPaths, filename);
+			vtString skytex = FindFileOnPaths(vtGetDataPath(), filename);
 			if (skytex != "")
 				m_pSkyDome->SetTexture(skytex);
 		}
@@ -478,11 +478,6 @@ vtUtilStruct *vtTerrainScene::LoadUtilStructure(const vtString &name)
 vtTerrainScene *vtGetTS()
 {
 	return vtTerrainScene::s_pTerrainScene;
-}
-
-const vtStringArray &vtGetDataPath()
-{
-	return vtTerrainScene::s_pTerrainScene->m_DataPaths;
 }
 
 vtContentManager3d &vtGetContent()

@@ -99,10 +99,6 @@ public:
 	// handle to the singleton
 	static vtTerrainScene *s_pTerrainScene;
 
-	// during creation, all data will be looked for on the global data path
-	void SetDataPath(const vtStringArray &paths) { m_DataPaths = paths; }
-	vtStringArray m_DataPaths;
-
 	// Global content manager for content shared between all terrains
 	vtContentManager3d m_Content;
 
@@ -136,7 +132,6 @@ protected:
 
 // global helper function
 vtTerrainScene *vtGetTS();
-const vtStringArray &vtGetDataPath();
 vtContentManager3d &vtGetContent();
 
 /*@}*/	// Group terrain
