@@ -3,19 +3,15 @@
 //
 // Terrain implementation specific to Black Rock City, Nevada.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/Light.h"
-#include "vtlib/core/DynTerrain.h"
-#include "vtlib/core/TerrainScene.h"
-#include "vtlib/core/SkyDome.h"
+#include "vtlib/core/Light.h"	// for TERRAIN_AMBIENT etc.
 
 #include "Nevada.h"
 #include "Engines.h"
-#include "Hawaii.h"
 #include "Enviro.h"
 
 // measured with GPS in 1999:

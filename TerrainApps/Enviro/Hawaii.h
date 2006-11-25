@@ -1,17 +1,15 @@
 //
-// Hawaii.h
+// Hawai'i.h
 //
 // The IslandTerrain class contains Hawaii-specific functionality and test code.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 
 #ifndef ISLANDH
 #define ISLANDH
 
 #include "vtlib/core/Terrain.h"
-#include "Engines.h"
-#include "Vehicles.h"
 
 // extents of the island landmass
 #define WEST_EXTENT		-156.064270f
@@ -27,7 +25,6 @@ class IslandTerrain : public vtTerrain
 {
 public:
 	IslandTerrain();
-	~IslandTerrain();
 
 	// methods
 	void CreateCustomCulture();

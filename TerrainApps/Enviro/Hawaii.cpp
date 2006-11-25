@@ -1,24 +1,20 @@
 //
-// Hawai`i.cpp
+// Hawai'i.cpp
 //
-// Terrain implementation specific to the Big Island of Hawai`i.
+// Terrain implementation specific to the Big Island of Hawai'i.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/Building3d.h"
-#include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/Content3d.h"
-#include "vtlib/core/TerrainScene.h"
-#include "vtlib/core/AnimPath.h"
 #include "vtdata/Features.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
-#include "xmlhelper/easyxml.hpp"
 
 #include "Hawaii.h"
+#include "Engines.h"	// for PlaneEngine
 #include "wx/EnviroGUI.h"
 
 ///////////////////////////////
@@ -29,6 +25,7 @@ IslandTerrain::IslandTerrain()
 	m_pSA = NULL;
 	m_pTelescopes = NULL;
 
+#if 0
 	// Points of Interest
 	// bottom left (x,y) then top right (x,y)
 	AddPointOfInterest(283376, 2181205, 287025, 2182614, "Hilo Airport",
@@ -41,10 +38,7 @@ IslandTerrain::IslandTerrain()
 		"/Html/kealakekua.htm");
 	AddPointOfInterest(253500, 2080000, 282500, 2103500, "Lo`ihi",
 		"/Html/loihi_seamount.htm");
-}
-
-IslandTerrain::~IslandTerrain()
-{
+#endif
 }
 
 void IslandTerrain::PaintDib(bool progress_callback(int))
@@ -555,11 +549,6 @@ void IslandTerrain::do_test_code()
 #endif
 
 #if 0
-	MyGeom *geom = new MyGeom();
-	vtGetScene()->GetRoot()->AddChild(geom);
-#endif
-
-#if 0
 	float x, y;
 	DPoint3 p;
 	int meter_height;
@@ -582,47 +571,6 @@ void IslandTerrain::do_test_code()
 	}
 	fclose(fp);
 	feat.SaveToSHP("../Data/PointData/hawai`i.shp");
-#endif
-
-#if 0
-	// test vtDIB JPEG
-	vtDIB dib;
-	bool result = dib.ReadJPEG("C:/APIs/jpeg-6b/8bit.jpg");
-	if (result == true)
-		dib.WriteBMP("C:/APIs/jpeg-6b/8bit.bmp");
-#endif
-
-#if 0
-	// Matrix and Quaternion testing
-	FMatrix4 mat;
-	vtTransform *x = new vtTransform;
-	x->Identity();
-	x->Translate1(FPoint3(0, 2, 0));
-	x->RotateLocal(FPoint3(1,0,0), 45.0f/180.0f*PIf);
-	x->GetTransform1(mat);
-	vtLogMatrix(mat);
-
-	x->Destroy();
-
-/*	FPoint3 pos(0,2,0);
-	FPoint3 forward(0, 1, -1);
-	FPoint3 up(0,1,1);
-
-	forward.Normalize();
-	up.Normalize();
-
-	mat.SetFromVectors(pos, forward, up);
-	vtLogMatrix(mat);
-*/
-	FMatrix3 m3;
-	m3.AxisAngle(FPoint3(0,1,0), 45.0f/180.0f*PIf);
-	vtLogMatrix(m3);
-
-	FQuat q;
-//	q.SetAxisAngle(FPoint3(0,1,0), 45.0f/180.0f*PIf);
-	q.SetFromMatrix(m3);
-	q.GetMatrix(m3);
-	vtLogMatrix(m3);
 #endif
 }
 
