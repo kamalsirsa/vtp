@@ -7,7 +7,6 @@
 
 #include "vtlib/vtlib.h"
 #include "Terrain.h"
-#include "TerrainScene.h"		// for vtGetDataPath()
 
 #include "AbstractLayer.h"
 

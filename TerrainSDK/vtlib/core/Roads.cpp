@@ -11,7 +11,7 @@
 #include "vtdata/vtLog.h"
 #include "Light.h"
 #include "Roads.h"
-#include "TerrainScene.h"	// for sign models
+#include "TerrainScene.h"	// content manager for sign models
 
 #define ROAD_HEIGHT			(vtRoadMap3d::s_fHeight)	// height about the ground
 #define ROADSIDE_WIDTH		2.0f

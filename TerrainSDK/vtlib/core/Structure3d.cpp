@@ -1,7 +1,7 @@
 //
 // Structure3d.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,7 @@
 #include "Building3d.h"
 #include "Fence3d.h"
 #include "Terrain.h"
-#include "TerrainScene.h"
+#include "TerrainScene.h"	// For content manager
 
 const vtString BMAT_NAME_HIGHLIGHT = "Highlight";
 

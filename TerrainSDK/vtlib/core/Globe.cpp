@@ -8,7 +8,7 @@
 #include "vtlib/vtlib.h"
 #include "Engine.h"
 #include "Terrain.h"
-#include "TerrainScene.h"
+#include "TerrainScene.h"	// For iterating terrains
 
 #include "vtdata/shapelib/shapefil.h"
 

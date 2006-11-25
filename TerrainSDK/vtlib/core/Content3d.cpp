@@ -3,7 +3,7 @@
 //
 // 3D Content Management class.
 //
-// Copyright (c) 2003-2004 Virtual Terrain Project.
+// Copyright (c) 2003-2006 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,7 +11,6 @@
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 #include "Content3d.h"
-#include "TerrainScene.h"
 
 vtItem3d::vtItem3d()
 {

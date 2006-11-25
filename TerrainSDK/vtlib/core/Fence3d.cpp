@@ -13,7 +13,6 @@
 #include "Light.h"
 #include "Terrain.h"
 #include "Fence3d.h"
-#include "TerrainScene.h"
 
 
 vtFence3d::vtFence3d() : vtFence()

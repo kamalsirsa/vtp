@@ -15,7 +15,6 @@
 
 #include "Light.h"
 #include "Terrain.h"
-#include "TerrainScene.h"
 #include "Building3d.h"
 #include "FelkelStraightSkeleton.h"
 

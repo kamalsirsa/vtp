@@ -4,7 +4,7 @@
 // Creates a route (a series of utility structures, e.g. an electrical
 // transmission line), creates geometry, drapes on a terrain
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 //////////////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@
 #include "Light.h"
 #include "Route.h"
 #include "Terrain.h"
-#include "TerrainScene.h"
+#include "TerrainScene.h"	// for LoadUtilStructure
 
 #define NUM_WIRE_SEGMENTS	160
 #define METERS_PER_FOOT		0.3048f	// meters per foot
