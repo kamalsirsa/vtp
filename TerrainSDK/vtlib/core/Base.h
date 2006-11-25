@@ -388,6 +388,10 @@ public:
 			return NULL;
 	}
 
+	// all data will be looked for on the global data path
+	void SetDataPath(const vtStringArray &paths) { m_DataPaths = paths; }
+	vtStringArray m_DataPaths;
+
 protected:
 	void DoEngines();
 
@@ -400,6 +404,8 @@ protected:
 	vtCamera	*m_pDefaultCamera;
 	vtWindow	*m_pDefaultWindow;
 };
+
+const vtStringArray &vtGetDataPath();
 
 /*@}*/	// Group sg
 
