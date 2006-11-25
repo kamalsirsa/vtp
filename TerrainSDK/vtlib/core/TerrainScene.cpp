@@ -343,8 +343,9 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 			float fDarkness;
 			if (!param.GetValueFloat(STR_SHADOW_DARKNESS, fDarkness))
 				fDarkness = 0.8f;
+			int iTextureUnit = m_pCurrentTerrain->GetShadowTextureUnit();
 			vtGetScene()->SetShadowedNode(m_pSunLight, pStructures, pTransform,
-				iRez, fDarkness);
+				iRez, fDarkness, iTextureUnit);
 		}
 #endif
 	}

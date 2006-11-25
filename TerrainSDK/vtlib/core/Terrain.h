@@ -18,6 +18,7 @@
 #include "GeomUtil.h"	// for MeshFactory
 #include "Location.h"
 #include "Route.h"
+#include "TextureUnitManager.h"
 #include "TParams.h"
 #include "Trees.h"	// for vtSpeciesList3d, vtPlantInstanceArray3d
 
@@ -265,6 +266,7 @@ public:
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
 	vtProjection &GetProjection() { return m_proj; }
 	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, int iCultureFlags) const;
+	int GetShadowTextureUnit();
 
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
@@ -329,7 +331,6 @@ protected:
 	void _CreateImageLayers();
 	void _CreateTextures(const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	void _CreateDetailTexture();
-	int  _ClaimAvailableTextureUnit();
 	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
 	void _SetErrorMessage(const vtString &msg);
@@ -417,7 +418,8 @@ protected:
 	vtOverlappedTiledImage	m_ImageTiles;
 	ColorMap		*m_pTextureColors;
 	bool			m_bTextureInitialized;
-	bool			m_bTextureUnitUsed[8];
+	vtTextureUnitManager m_TextureUnits;
+	int				m_iShadowTextureUnit;
 
 	FSphere			m_bound_sphere;	// bounding sphere of terrain
 									// (without surrounding ocean)

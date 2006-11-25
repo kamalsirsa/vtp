@@ -47,8 +47,7 @@ vtTerrain::vtTerrain()
 	m_pTerrMats = NULL;
 	m_bBothSides = false;
 	m_bTextureInitialized = false;
-	for (int i = 0; i < 8; i++)
-		m_bTextureUnitUsed[i] = false;
+	m_iShadowTextureUnit = -1;
 
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
@@ -542,7 +541,6 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 
 	// If we get this far, we can consider the texture initialized
 	m_bTextureInitialized = true;
-	m_bTextureUnitUsed[0] = true;
 
 	if (eTex == TE_NONE)	// none or failed to find texture
 	{
@@ -562,6 +560,10 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 			target = m_pImage;
 		_ApplyPreLight(pHFGrid, target, light_dir, progress_callback);
 	}
+
+	// The terrain's base texture will always use unit 0
+	m_TextureUnits.ReserveTextureUnit();
+
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
 		// single texture
@@ -633,19 +635,6 @@ void vtTerrain::_CreateDetailTexture()
 	FRECT r = m_pHeightField->m_WorldExtents;
 	float width_meters = r.Width();
 	m_pDynGeom->SetDetailMaterial(pDetailMat, width_meters / scale, dist);
-}
-
-int vtTerrain::_ClaimAvailableTextureUnit()
-{
-	for (int i = 0; i < 8; i++)
-	{
-		if (!m_bTextureUnitUsed[i])
-		{
-			m_bTextureUnitUsed[i] = true;
-			return i;
-		}
-	}
-	return -1;
 }
 
 //
@@ -1778,7 +1767,9 @@ vtMultiTexture *vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &
 {
 	DRECT TerrainExtents = GetHeightField()->GetEarthExtents();
 
-	int iTextureUnit = _ClaimAvailableTextureUnit();
+	int iTextureUnit = m_TextureUnits.ReserveTextureUnit();
+	if (iTextureUnit == -1)
+		return NULL;
 
 		// Calculate the mapping of texture coordinates
 	DPoint2 scale;
@@ -2131,7 +2122,7 @@ bool vtTerrain::CreateStep1()
 		m_proj = m_pTiledGeom->m_proj;
 
 		// The tiled geometry base texture will always use texture unit 0
-		m_bTextureUnitUsed[0] = true;
+		m_TextureUnits.ReserveTextureUnit();
 	}
 	char type[10], value[2048];
 	m_proj.GetTextDescription(type, value);
@@ -2585,6 +2576,13 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
 		return true;
 	}
 	return false;
+}
+
+int vtTerrain::GetShadowTextureUnit()
+{
+	if (m_iShadowTextureUnit == -1)
+		m_iShadowTextureUnit = m_TextureUnits.ReserveTextureUnit();
+	return m_iShadowTextureUnit;
 }
 
 /*
