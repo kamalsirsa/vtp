@@ -590,7 +590,6 @@ void StructureVisitor::endXML ()
 void StructureVisitor::startElement (const char * name, const XMLAttributes &atts)
 {
 	int i;
-	State &st = state();
 
 	if (_level == 0)
 	{
@@ -664,6 +663,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 		return;
 	}
 
+	State &st = state();
 	vtStructure *pStruct = st.item;
 	if (!pStruct)
 		return;
