@@ -1,12 +1,11 @@
 //
-// Earth View functionality of class Enviro
+// Earth View functionality of the Enviro class.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/Globe.h"
 #include "vtlib/core/SkyDome.h"

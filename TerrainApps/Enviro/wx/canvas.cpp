@@ -14,7 +14,6 @@
 #endif
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/Event.h"
 #include "vtdata/vtLog.h"
 #include "EnviroGUI.h"			// for g_App, GetTerrainScene

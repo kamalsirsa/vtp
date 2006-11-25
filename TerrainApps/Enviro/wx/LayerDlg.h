@@ -9,7 +9,8 @@
 #define __LayerDlg_H__
 
 #include "enviro_wdr.h"
-#include "vtlib/core/Structure3d.h"
+#include "vtlib/core/AbstractLayer.h"
+#include "vtlib/core/TerrainLayers.h"
 
 class vtNodeBase;
 

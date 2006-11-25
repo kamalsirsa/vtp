@@ -15,7 +15,6 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
-#include "vtlib/core/TerrainScene.h"
 #include "../Options.h"
 #include "EnviroGUI.h"		// for g_App, GetTerrainScene
 #include "vtui/Helper.h"	// for LogWindowsVersion, ProgressDialog

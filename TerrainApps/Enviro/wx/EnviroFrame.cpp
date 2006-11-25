@@ -23,15 +23,10 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/Contours.h"
-#include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/Fence3d.h"
-#include "vtlib/core/Globe.h"
-#include "vtlib/core/NavEngines.h"
 #include "vtlib/core/SMTerrain.h"
 #include "vtlib/core/SRTerrain.h"
 #include "vtlib/core/SkyDome.h"
-#include "vtlib/core/Terrain.h"
-#include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/TiledGeom.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for progress dialog
@@ -756,7 +751,6 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 	case 'Z':
 		{
 		// A handy place to put test code
-			GetCurrentTerrain()->TestAbstractLayerPolygonDrape();
 		}
 	case 'D':	// Shift-D
 		// dump camera info

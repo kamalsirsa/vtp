@@ -1,7 +1,7 @@
 //
 // Name: UtilDlg.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,6 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Route.h"
-#include "vtlib/core/TerrainScene.h"
 #include "UtilDlg.h"
 #include "EnviroGUI.h"
 

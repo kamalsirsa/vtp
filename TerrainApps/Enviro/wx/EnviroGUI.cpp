@@ -14,7 +14,6 @@
 #endif
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/Terrain.h"
 #include "vtdata/vtLog.h"
 #include "vtui/InstanceDlg.h"

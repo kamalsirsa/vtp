@@ -18,8 +18,8 @@
 
 #include "StyleDlg.h"
 #include "vtlib/vtlib.h"
-#include "vtlib/core/TerrainScene.h"
 #include "vtdata/Features.h"
+#include "vtdata/FilePath.h"
 #include "vtui/Helper.h"
 
 // WDR: class implementations
