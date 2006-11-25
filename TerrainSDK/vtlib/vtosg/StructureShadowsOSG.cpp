@@ -27,8 +27,6 @@
 // These must match
 #define MAIN_SCENE_TEXTURE_UNIT 0
 #define MAIN_SCENE_TEXTURE_UNIT_STR "0"
-#define TERRAIN_SHADOW_TEXTURE_UNIT 1
-#define TERRAIN_SHADOW_TEXTURE_UNIT_STR "1"
 
 #define SA_OVERRIDE	osg::StateAttribute::OVERRIDE
 #define SA_OFF		osg::StateAttribute::OFF
@@ -87,7 +85,8 @@ CStructureShadowsOSG::~CStructureShadowsOSG()
 }
 
 bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
-	osg::Node *pStructures, osg::Node *pShadowed, const int iResolution, float fDarkness)
+	osg::Node *pStructures, osg::Node *pShadowed, const int iResolution,
+	float fDarkness, int iTextureUnit)
 {
 	m_fShadowDarkness = fDarkness;
 	m_pSceneView = pSceneView;
@@ -218,17 +217,17 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
 		m_pPolygonOffset = NULL;
 		return false;
 	}
-	m_pTerrainTexGenNode->setTextureUnit(TERRAIN_SHADOW_TEXTURE_UNIT);
+	m_pTerrainTexGenNode->setTextureUnit(iTextureUnit);
 	m_pTop = dynamic_cast<osg::Group*>(m_pSceneView->getSceneData());
 	m_pTop->addChild(m_pTerrainTexGenNode.get());
 
 	// Decorate the shadowed node
 	osg::StateSet *pShadowedStateSet = m_pShadowed->getOrCreateStateSet();
-	pShadowedStateSet->setTextureAttributeAndModes(TERRAIN_SHADOW_TEXTURE_UNIT, m_pTexture.get(), SA_OVERRIDE|SA_ON);
-	pShadowedStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_S, SA_OVERRIDE|SA_ON);
-	pShadowedStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_T, SA_OVERRIDE|SA_ON);
-	pShadowedStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_R, SA_OVERRIDE|SA_ON);
-	pShadowedStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_Q, SA_OVERRIDE|SA_ON);
+	pShadowedStateSet->setTextureAttributeAndModes(iTextureUnit, m_pTexture.get(), SA_OVERRIDE|SA_ON);
+	pShadowedStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_S, SA_OVERRIDE|SA_ON);
+	pShadowedStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_T, SA_OVERRIDE|SA_ON);
+	pShadowedStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_R, SA_OVERRIDE|SA_ON);
+	pShadowedStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_Q, SA_OVERRIDE|SA_ON);
 
 	if (m_bDepthShadow)
 	{
@@ -241,7 +240,7 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
 			"void main(void) \n"
 			"{ \n"
 			"	vec4 colour = texture2D( MainSceneTexture, gl_TexCoord[" MAIN_SCENE_TEXTURE_UNIT_STR "].xy ); \n"
-			"   vec4 shadow = shadow2DProj( ShadowTexture, gl_TexCoord[" TERRAIN_SHADOW_TEXTURE_UNIT_STR "] ); \n"
+			"   vec4 shadow = shadow2DProj( ShadowTexture, gl_TexCoord[" iTextureUnit_STR "] ); \n"
 				// Check if a shadow is to be applied
 			"   if (shadow.r == 1.0) \n"
 				   // texture2D seems to return vec4(0,0,0,0) when there is no texture assigned.
@@ -278,7 +277,7 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
 			m_pCameraNode = NULL;
 			return false;
 		}
-		osg::ref_ptr<osg::Uniform> pShadowTexture = new osg::Uniform("ShadowTexture", TERRAIN_SHADOW_TEXTURE_UNIT);
+		osg::ref_ptr<osg::Uniform> pShadowTexture = new osg::Uniform("ShadowTexture", iTextureUnit);
 		if (!pShadowTexture.valid())
 		{
 			m_pTexture = NULL;
@@ -309,11 +308,11 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
 		if (m_bStructureOnStructureShadows)
 		{
 			osg::StateSet *pStructuresStateSet = pStructures->getOrCreateStateSet();
-			pStructuresStateSet->setTextureAttributeAndModes(TERRAIN_SHADOW_TEXTURE_UNIT, m_pTexture.get(), SA_OVERRIDE|SA_ON);
-			pStructuresStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_S, SA_OVERRIDE|SA_ON);
-			pStructuresStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_T, SA_OVERRIDE|SA_ON);
-			pStructuresStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_R, SA_OVERRIDE|SA_ON);
-			pStructuresStateSet->setTextureMode(TERRAIN_SHADOW_TEXTURE_UNIT, GL_TEXTURE_GEN_Q, SA_OVERRIDE|SA_ON);
+			pStructuresStateSet->setTextureAttributeAndModes(iTextureUnit, m_pTexture.get(), SA_OVERRIDE|SA_ON);
+			pStructuresStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_S, SA_OVERRIDE|SA_ON);
+			pStructuresStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_T, SA_OVERRIDE|SA_ON);
+			pStructuresStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_R, SA_OVERRIDE|SA_ON);
+			pStructuresStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_Q, SA_OVERRIDE|SA_ON);
 
 #if USE_FRAGMENT_SHADER
 			pStructuresStateSet->setAttribute(pProgram.get());
