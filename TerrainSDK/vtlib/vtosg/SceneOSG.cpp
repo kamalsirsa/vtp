@@ -583,3 +583,10 @@ void printnode(osg::Node *node, int tab)
 	}
 }
 
+///////////////////////////////////////////////////////////////////////
+
+const vtStringArray &vtGetDataPath()
+{
+	return g_Scene.m_DataPaths;
+}
+
