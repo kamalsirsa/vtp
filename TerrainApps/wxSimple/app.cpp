@@ -2,7 +2,7 @@
 // Name:     app.cpp
 // Purpose:  The application class for a wxWindows application.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -59,7 +59,7 @@ bool vtApp::CreateScene()
 	// Set the global data path
 	vtStringArray paths;
 	paths.push_back(vtString("Data/"));
-	m_pTerrainScene->SetDataPath(paths);
+	pScene->SetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
 	vtGroup *pTopGroup = m_pTerrainScene->BeginTerrainScene();

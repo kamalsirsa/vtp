@@ -2,7 +2,7 @@
 // Name:	 sdlSimple/app.cpp
 // Purpose:  Example SDL/vtlib application.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -143,7 +143,7 @@ bool App::CreateScene()
 	// Set the global data path
 	vtStringArray paths;
 	paths.push_back(vtString("Data/"));
-	m_ts->SetDataPath(paths);
+	pScene->SetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
 	vtGroup *pTopGroup = m_ts->BeginTerrainScene();

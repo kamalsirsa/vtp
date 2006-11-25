@@ -4,7 +4,7 @@
 //   (tested only on Linux using FLTK 1.1.5)
 //   (tested only on Windows using FLTK 1.1.6)
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Provided by Clark Borst (November 12, 2004)
@@ -229,7 +229,7 @@ bool VTPWindow::CreateScene()
 	// Set the global data path
 	vtStringArray paths;
 	paths.push_back(vtString("Data/"));
-	ts->SetDataPath(paths);
+	pScene->SetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
 	vtGroup *pTopGroup = ts->BeginTerrainScene();
