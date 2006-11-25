@@ -1,6 +1,9 @@
 //
 // EnviroView.cpp : The 3d view window of the Enviro application
 //
+// Copyright (c) 2001-2006 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #include "StdAfx.h"
 
@@ -321,21 +324,6 @@ void EnviroView::OnUpdateShowdetailtexture(CCmdUI* pCmdUI)
 
 void EnviroView::OnMouseMove(UINT nFlags, CPoint point)
 {
-	if ((g_App.m_mode == MM_NAVIGATE || g_App.m_mode == MM_FENCES) &&
-		(g_App.m_pTerrainPicker != NULL))
-	{
-		vtTerrain *ter = GetCurrentTerrain();
-		if (ter && ter->GetShowPOI())
-		{
-			ter->HideAllPOI();
-			DPoint2 epos(g_App.m_EarthPos.x, g_App.m_EarthPos.y);
-			vtPointOfInterest *poi = ter->FindPointOfInterest(epos);
-			if (poi)
-				ter->ShowPOI(poi, true);
-		}
-
-	}
-//	CView::OnMouseMove(nFlags, point);
 	vtMouseEvent event;
 	event.type = VT_MOVE;
 	event.button = VT_NONE;

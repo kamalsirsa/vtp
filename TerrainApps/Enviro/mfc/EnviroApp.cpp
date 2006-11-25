@@ -1,6 +1,9 @@
 //
 // EnviroApp.cpp : Defines the class behaviors for the application.
 //
+// Copyright (c) 2001-2006 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #include "StdAfx.h"
 #include "vtlib/vtlib.h"
@@ -126,34 +129,6 @@ bool EnviroApp::OnInit()
 	return TRUE;
 }
 
-#if 0
-void EnviroApp::OnMouse(IPoint2 pos, uint32 flags)
-{
-	int foo = 1;
-
-	// Points of Interest
-	if (g_App.m_mode == MM_NAVIGATE && m_pHTMLView && (event.button & VT_LEFT) && (event.flags & VT_MF_SHIFT))
-	{
-		vtPointOfInterest *poi = GetCurrentTerrain()->FindPointOfInterest(g_App.m_EarthPos);
-		if (poi)
-		{
-			vtString url;
-			if (poi->m_url[0] == 'h')	// start with "http"
-				url = poi->m_url;
-			else
-			{
-				// build a URL containing a local relative path
-				char buf[256];
-				GetCurrentDirectory(256, buf);
-				vtString buf2 = buf;
-				url = "file://" + buf2 + poi->m_url;
-			}
-			m_pHTMLView->Navigate2(url);
-		}
-	}
-	g_App.OnMouse(event);
-}
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About

@@ -12,6 +12,7 @@
 #include "vtlib/core/Building3d.h"
 #include "vtdata/vtLog.h"
 
+#include "Engines.h"
 #include "Enviro.h"
 #include "Options.h"
 #include "Hawaii.h"
@@ -567,7 +568,7 @@ void Enviro::SetupScene1()
 	VTLOG1("SetupScene1\n");
 
 	// Set some global properties
-	SetDataPath(g_Options.m_DataPaths);
+	vtGetScene()->SetDataPath(g_Options.m_DataPaths);
 	m_fCatenaryFactor = g_Options.m_fCatenaryFactor;
 	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
 	vtNode::s_bDisableMipmaps = g_Options.m_bDisableModelMipmaps;
@@ -1662,18 +1663,6 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 
 
 		m_EarthPosLast = m_EarthPos;
-	}
-	if (m_mode == MM_SELECT && m_pTerrainPicker != NULL)
-	{
-		vtTerrain *ter = GetCurrentTerrain();
-		if (ter && ter->GetShowPOI())
-		{
-			ter->HideAllPOI();
-			DPoint2 epos(m_EarthPos.x, m_EarthPos.y);
-			vtPointOfInterest *poi = ter->FindPointOfInterest(epos);
-			if (poi)
-				ter->ShowPOI(poi, true);
-		}
 	}
 	if (m_mode == MM_MEASURE && m_bDragging && m_bOnTerrain)
 	{
