@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="vtosg"
-	ProjectGUID="{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}"
+	ProjectGUID="{1045CA3D-3526-482B-B4BA-ACBF57404E9B}"
 	RootNamespace="vtosg"
 	>
 	<Platforms>
@@ -868,6 +868,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\TerrainLayers.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\core\TerrainScene.cpp"
 				>
 				<FileConfiguration
@@ -1160,6 +1164,10 @@
 			</File>
 			<File
 				RelativePath="..\core\Terrain.h"
+				>
+			</File>
+			<File
+				RelativePath="..\core\TerrainLayers.h"
 				>
 			</File>
 			<File
