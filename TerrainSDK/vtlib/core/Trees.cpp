@@ -17,7 +17,6 @@
 #include "vtdata/vtLog.h"
 #include "Trees.h"
 #include "Terrain.h"
-#include "TerrainScene.h"
 #include "Light.h"
 
 #define SHADOW_HEIGHT		0.1f	// distance above groundpoint in meters

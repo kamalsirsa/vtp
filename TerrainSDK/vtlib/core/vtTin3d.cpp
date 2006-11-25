@@ -8,8 +8,8 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtdata/FilePath.h"	// for FindFileOnPaths
 #include "vtTin3d.h"
-#include "TerrainScene.h"	// for vtGetDataPath
 
 vtTin3d::vtTin3d()
 {
