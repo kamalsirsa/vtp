@@ -1,7 +1,7 @@
 //
 // Roads.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -33,12 +33,16 @@ public:
 	NodeGeom();
 	virtual ~NodeGeom();
 
-	class LinkGeom *GetLink(int n) { return (class LinkGeom *)m_r[n]; }
+	class LinkGeom *GetLink(int n)
+	{
+		return (class LinkGeom *)m_connections[n].pLink;
+	}
 	void BuildIntersection();
-	void FindVerticesForRoad(TLink *pR, FPoint3 &p0, FPoint3 &p1);
+	void FindVerticesForLink(TLink *pR, bool bStart, FPoint3 &p0, FPoint3 &p1);
 	vtMesh *GenerateGeometry();
 	FPoint3 GetLinkVector(int i);
 	FPoint3 GetUnitLinkVector(int i);
+	const FPoint3 &GetAdjacentRoadpoint(int iLinkNumber);
 
 	int m_iVerts;
 	FLine3 m_v;		// vertices of the polygon
@@ -169,7 +173,7 @@ public:
 	void DrapeOnTerrain(vtHeightField3d *pHeightField);
 	void BuildIntersections();
 	void AddMeshToGrid(vtMesh *pMesh, int iMatIdx);
-	vtGroup *GenerateGeometry(bool do_texture, const vtStringArray &paths);
+	vtGroup *GenerateGeometry(bool do_texture);
 	void GenerateSigns(vtLodGrid *pLodGrid);
 	vtGroup *GetGroup() { return m_pGroup; }
 	void SetHeightOffGround(float fHeight) { s_fHeight = fHeight; }
@@ -193,6 +197,7 @@ public:
 	int		m_mi_red;
 
 protected:
+	void _CreateMaterials(bool do_texture);
 	void _GatherExtents();
 
 	vtGroup	*m_pGroup;
