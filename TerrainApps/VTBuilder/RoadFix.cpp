@@ -321,7 +321,7 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 				}
 				tmpNode = aLink->GetNode(index);
 				newLink->SetNode(0, tmpNode);
-				tmpNode->AddLink(newLink);
+				tmpNode->AddLink(newLink, true);
 				tmpNode->SetIntersectType(newLink,tmpNode->GetIntersectType(aLink));
 				aLink->GetNode(index)->DetachLink(aLink);
 				if (bLink->GetNode(0) == curNode) {
@@ -331,7 +331,7 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 				}
 				tmpNode = bLink->GetNode(index);
 				newLink->SetNode(1, tmpNode);
-				tmpNode->AddLink(newLink);
+				tmpNode->AddLink(newLink, false);
 				tmpNode->SetIntersectType(newLink,tmpNode->GetIntersectType(bLink));
 				tmpNode->DetachLink(bLink);
 
@@ -484,14 +484,14 @@ int RoadMapEdit::FixOverlappedLinks(bool bDegrees)
 		for (i = 0; i < roads-1 && !bad; i++)
 		{
 			pR1 = pN->GetLink(i);
-			p0 = pN->find_adjacent_roadpoint2d(pR1);
+			p0 = pN->GetAdjacentRoadpoint2d(i);
 			for (j = i+1; j < roads; j++)
 			{
 				pR2 = pN->GetLink(j);
 
 				if (pR1 == pR2) continue;	// don't worry about loops
 
-				p1 = pN->find_adjacent_roadpoint2d(pR2);
+				p1 = pN->GetAdjacentRoadpoint2d(j);
 				diff = (p1 - p0);
 				if (fabs(diff.x) < 1.0f && fabs(diff.y) < 1.0f)
 				{
@@ -656,14 +656,14 @@ int RoadMapEdit::SplitLoopingLinks()
 
 			//add roads to node;
 			roadA->SetNode(0, curNode);
-			curNode->AddLink(roadA);
+			curNode->AddLink(roadA, true);
 			roadA->SetNode(1, node);
-			node->AddLink(roadA);
+			node->AddLink(roadA, false);
 
 			roadB->SetNode(1, curNode);
-			curNode->AddLink(roadB);
+			curNode->AddLink(roadB, false);
 			roadB->SetNode(0, node);
-			node->AddLink(roadB);
+			node->AddLink(roadB, true);
 
 			node->SetIntersectType(0, IT_NONE);
 			node->SetIntersectType(1, IT_NONE);

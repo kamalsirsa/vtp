@@ -228,8 +228,8 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		AddLink(pR);
 
 		// inform the Nodes to which it belongs
-		pR->GetNode(0)->AddLink(pR);
-		pR->GetNode(1)->AddLink(pR);
+		pR->GetNode(0)->AddLink(pR, true);
+		pR->GetNode(1)->AddLink(pR, false);
 		pR->m_fLength = pR->Length();	
 	}
 	
@@ -533,8 +533,8 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 		AddLink(pR);
 
 		// inform the Nodes to which it belongs
-		pR->GetNode(0)->AddLink(pR);
-		pR->GetNode(1)->AddLink(pR);
+		pR->GetNode(0)->AddLink(pR, true);
+		pR->GetNode(1)->AddLink(pR, false);
 		pR->m_fLength = pR->Length();
 
 		SHPDestroyObject(psShape);
@@ -745,8 +745,8 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				AddLink(pR);
 
 				// inform the Nodes to which it belongs
-				pR->GetNode(0)->AddLink(pR);
-				pR->GetNode(1)->AddLink(pR);
+				pR->GetNode(0)->AddLink(pR, true);
+				pR->GetNode(1)->AddLink(pR, false);
 			}
 		}
 		else if (!bIsSDTS)
@@ -921,7 +921,7 @@ void RoadMapEdit::AddLinkFromLineString(OGRLineString *pLineString)
 	AddLink(pR);
 
 	// point node to links
-	pR->GetNode(0)->AddLink(pR);
-	pR->GetNode(1)->AddLink(pR);
+	pR->GetNode(0)->AddLink(pR, true);
+	pR->GetNode(1)->AddLink(pR, false);
 }
 

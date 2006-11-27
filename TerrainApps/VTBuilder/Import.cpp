@@ -1373,8 +1373,8 @@ int MainFrame::ImportDataFromTIGER(const wxString &strDirName)
 				pRL->AddNode(n2);
 				r->SetNode(0, n1);
 				r->SetNode(1, n2);
-				n1->AddLink(r);
-				n2->AddLink(r);
+				n1->AddLink(r, true);
+				n2->AddLink(r, false);
 
 				//set bounding box for the road
 				r->ComputeExtent();

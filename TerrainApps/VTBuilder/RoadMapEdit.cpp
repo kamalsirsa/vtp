@@ -102,10 +102,10 @@ void NodeEdit::Translate(DPoint2 offset)
 	// also move the endpoint of all the roads that end here
 	for (int i = 0; i < m_iLinks; i++)
 	{
-		TLink *pR = m_r[i];
+		TLink *pR = m_connections[i].pLink;
 		if (pR->GetNode(0) == this)
 			pR->SetAt(0, m_p);
-		else
+		if (pR->GetNode(1) == this)
 			pR->SetAt(pR->GetSize()-1, m_p);
 	}
 }
@@ -877,7 +877,7 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 		if (pR->GetNode(0) == pN)
 		{
 			pR->SetNode(0, pN2);
-			pN2->AddLink(pR);
+			pN2->AddLink(pR, true);
 			type = pN->GetIntersectType(pR);
 			pN2->SetIntersectType(pR, type);
 			if (type == IT_LIGHT)
@@ -886,7 +886,7 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 		if (pR->GetNode(1) == pN)
 		{
 			pR->SetNode(1, pN2);
-			pN2->AddLink(pR);
+			pN2->AddLink(pR, false);
 			type = pN->GetIntersectType(pR);
 			pN2->SetIntersectType(pR, type);
 			if (type == IT_LIGHT)
@@ -900,8 +900,8 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 
 class LinkEdit *NodeEdit::GetLink(int n)
 {
-	if (m_r && n < m_iLinks)	// safety check
-		return (LinkEdit *)m_r[n];
+	if (n >= 0 && n < m_iLinks)	// safety check
+		return (LinkEdit *) m_connections[n].pLink;
 	else
 		return NULL;
 }
@@ -925,8 +925,8 @@ LinkEdit *RoadMapEdit::AddRoadSegment(OGRLineString *pLineString)
 	AddNode(n2);
 	r->SetNode(0, n1);
 	r->SetNode(1, n2);
-	n1->AddLink(r);
-	n2->AddLink(r);
+	n1->AddLink(r, true);
+	n2->AddLink(r, false);
 
 	//set bounding box for the road
 	r->ComputeExtent();
