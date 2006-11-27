@@ -202,6 +202,7 @@ EVT_MENU(ID_STRUCTURE_ADD_FOUNDATION, MainFrame::OnStructureAddFoundation)
 EVT_MENU(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnStructureConstrain)
 EVT_MENU(ID_STRUCTURE_SELECT_USING_POLYGONS, MainFrame::OnStructureSelectUsingPolygons)
 EVT_MENU(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, MainFrame::OnStructureColourSelectedRoofs)
+EVT_MENU(ID_STRUCTURE_EXPORT_FOOTPRINTS, MainFrame::OnStructureExportFootprints)
 
 EVT_UPDATE_UI(ID_FEATURE_SELECT,		MainFrame::OnUpdateFeatureSelect)
 EVT_UPDATE_UI(ID_FEATURE_PICK,			MainFrame::OnUpdateFeaturePick)
@@ -216,6 +217,7 @@ EVT_UPDATE_UI(ID_STRUCTURE_ADD_FOUNDATION,	MainFrame::OnUpdateStructureAddFounda
 EVT_UPDATE_UI(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnUpdateStructureConstrain)
 EVT_UPDATE_UI(ID_STRUCTURE_SELECT_USING_POLYGONS, MainFrame::OnUpdateStructureSelectUsingPolygons)
 EVT_UPDATE_UI(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, MainFrame::OnUpdateStructureColourSelectedRoofs)
+EVT_UPDATE_UI(ID_STRUCTURE_EXPORT_FOOTPRINTS, MainFrame::OnUpdateStructureExportFootprints)
 
 EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
 EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
@@ -444,6 +446,8 @@ void MainFrame::CreateMenus()
 	bldMenu->Append(ID_STRUCTURE_ADD_FOUNDATION, _("Add Foundation Levels to Buildings"), _T(""));
 	bldMenu->Append(ID_STRUCTURE_SELECT_USING_POLYGONS, _("Select Using Polygons"), _("Select buildings using selected raw layer polygons"));
 	bldMenu->Append(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, _("Colour Selected Roofs"), _("Set roof colour on selected buildings"));
+	bldMenu->AppendSeparator();
+	bldMenu->Append(ID_STRUCTURE_EXPORT_FOOTPRINTS, _("Colour Selected Roofs"), _("Set roof colour on selected buildings"));
 
 	bldMenu->AppendSeparator();
 	bldMenu->AppendCheckItem(ID_STRUCTURE_CONSTRAIN, _("Constrain angles on footprint edit"));
@@ -2920,7 +2924,6 @@ void MainFrame::OnBuildingEdit(wxCommandEvent &event)
 	m_pView->SetMode(LB_BldEdit);
 }
 
-
 void MainFrame::OnUpdateBuildingEdit(wxUpdateUIEvent& event)
 {
 	event.Check(m_pView->GetMode() == LB_BldEdit);
@@ -3103,6 +3106,25 @@ void MainFrame::OnStructureColourSelectedRoofs(wxCommandEvent& event)
 void MainFrame::OnUpdateStructureColourSelectedRoofs(wxUpdateUIEvent& event)
 {
 	event.Enable((NULL != GetActiveStructureLayer()) && (GetActiveStructureLayer()->NumSelected() > 0));
+}
+
+void MainFrame::OnStructureExportFootprints(wxCommandEvent& event)
+{
+	// Open File Save Dialog
+	wxFileDialog saveFile(NULL, _("Export footprints to SHP"), _T(""), _T(""),
+		_("SHP Files (*.shp)|*.shp"), wxSAVE | wxOVERWRITE_PROMPT);
+
+	if (saveFile.ShowModal() == wxID_CANCEL)
+		return;
+	wxString strPathName = saveFile.GetPath();
+
+	vtStructureLayer *pLayer = GetActiveStructureLayer();
+	pLayer->WriteFootprintsToSHP(strPathName.mb_str(wxConvUTF8));
+}
+
+void MainFrame::OnUpdateStructureExportFootprints(wxUpdateUIEvent& event)
+{
+	event.Enable(NULL != GetActiveStructureLayer());
 }
 
 
