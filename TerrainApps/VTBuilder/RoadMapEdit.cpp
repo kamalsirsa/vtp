@@ -451,52 +451,41 @@ RoadMapEdit::~RoadMapEdit()
 {
 }
 
-//merges the 2 selected nodes
-bool RoadMapEdit::Merge2Nodes() {
-	NodeEdit *prev = NULL;
-	NodeEdit *pNprev = NULL;
+//merge 2 selected nodes
+bool RoadMapEdit::Merge2Nodes()
+{
 	NodeEdit *pN = NULL;
 	NodeEdit *pN2 = NULL;
 	NodeEdit *curNode = GetFirstNode();
-	IPoint2 diff;
-	bool removed = false;
 	int count = 0;
 
-	while (curNode && count <=2) {
-		if (curNode->IsSelected()) {
-			count++;
-			if (pN == NULL) {
-				pN = curNode;
-				pNprev = prev;
-
-			} else if (pN2 == NULL) {
-				pN2 = curNode;
-			}
-		}
-		prev = curNode;
+	while (curNode)
+	{
+		if (!curNode->IsSelected())
+			continue;
+		count++;
+		if (pN == NULL)
+			pN = curNode;
+		else if (pN2 == NULL)
+			pN2 = curNode;
 		curNode = curNode->GetNext();
 	}
+	if (count != 2)
+		return false;
 
-	if (count == 2) {
-		// we've got a pair that need to be merged
-		//new point is placed between the 2 original points
-		pN2->m_p.x = (pN2->m_p.x + pN->m_p.x) / 2;
-		pN2->m_p.y = (pN2->m_p.y + pN->m_p.y) / 2;
-		// we're going to remove the "pN" node
-		// inform any roads which may have referenced it
-		ReplaceNode(pN, pN2);
-		// to remove pN, link around it
-		if (pNprev)
-			pNprev->m_pNext = pN->m_pNext;
-		else
-			m_pFirstNode = pN->m_pNext;
-		delete pN;
+	// we've got a pair that need to be merged
+	//new point is placed between the 2 original points
+	pN2->m_p.x = (pN2->m_p.x + pN->m_p.x) / 2;
+	pN2->m_p.y = (pN2->m_p.y + pN->m_p.y) / 2;
+	// we're going to remove the "pN" node
+	// inform any roads which may have referenced it
+	ReplaceNode(pN, pN2);
+	// remove pN
+	RemoveNode(pN);
 
-		// for the roads that now end in pN2, move their end points
-		pN2->EnforceLinkEndpoints();
-		removed = true;
-	}
-	return removed;
+	// for the roads that now end in pN2, move their end points
+	pN2->EnforceLinkEndpoints();
+	return true;
 }
 
 //
