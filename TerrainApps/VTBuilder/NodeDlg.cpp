@@ -41,7 +41,7 @@ void NodeDlgView::OnDraw(wxDC &dc)
 		pR->Draw(&dc, this);
 
 		//we need to use the original node here because the roads point to it.
-		DPoint2 close = m_pNode->GetAdjacentRoadpoint2d(i);
+		DPoint2 close = m_pNode->GetAdjacentLinkPoint2d(i);
 		DPoint2 vector = close - m_pNode->m_p;
 		vector.Normalize();
 		IPoint2 vec;
