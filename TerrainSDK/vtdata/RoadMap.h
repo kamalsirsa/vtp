@@ -62,9 +62,21 @@ class TNode;
 class TLink;
 
 // Store the connectivity information for each place a link meets a node.
-struct LinkConnect {
+struct LinkConnect
+{
 	TLink *pLink;
-	bool bStart;	// True if the link starts at this node, false if it ends
+
+	// True if the link starts at this node, false if it ends
+	bool bStart;
+
+	// intersection types of the link at this node.
+	IntersectionType eIntersection;
+
+	// light of the link at this node.
+	LightStatus eLight;
+
+	// angle of each road, not initialized till SortLinksByAngle is called
+	float fLinkAngle;
 };
 
 /**
@@ -83,21 +95,21 @@ public:
 	void Copy(TNode* node);
 
 	TLink *GetLink(int n);
-	void AddLink(TLink *pR, bool bStart);	// adds a road to the node
-	void DetachLink(TLink *pR);	// detaches the road from the node.
+	int AddLink(TLink *pR, bool bStart);		// attaches a link to the node
+	void DetachLink(TLink *pR, bool bStart);	// detaches the link from the node
 	void DetermineLinkAngles();	// resulting angles > 0
+	float GetLinkAngle(int iLinkNum);
 	void SortLinksByAngle();	// sorts the internal roads by angle.
-	DPoint2 GetAdjacentRoadpoint2d(int iLinkNum);  //returns the 2nd point on the road from the node.
+	DPoint2 GetAdjacentLinkPoint2d(int iLinkNum);  //returns the 2nd point on the road from the node.
 
-	//sets intersection type for node.  returns false if road not found
-	bool SetIntersectType(TLink *road, IntersectionType type);
-	bool SetIntersectType(int roadNum, IntersectionType type);  //roadNum is internal index within the node
-	IntersectionType GetIntersectType(TLink *road);	//returns the intersection type of given road
-	IntersectionType GetIntersectType(int roadNum); //returns the intersection type of given road index (not ID)
-	LightStatus GetLightStatus(TLink *road);			//returns the light status of given road
-	LightStatus GetLightStatus(int roadNum);		//returns the light status of given road index (not ID)
-	bool SetLightStatus(TLink *road, LightStatus light); //sets the light status of given road
-	bool SetLightStatus(int roadNum, LightStatus light); //sets the light status of given road index (not ID)
+	int GetLinkNum(TLink *link, bool bStart);
+	LinkConnect &GetLinkConnect(int iLinkNum) { return m_connect[iLinkNum]; }
+
+	//sets intersection type for node.  returns false if link is invalid
+	bool SetIntersectType(int linkNum, IntersectionType type);  //linkNum is internal index within the node
+	IntersectionType GetIntersectType(int linkNum); //returns the intersection type of given link index (not ID)
+	LightStatus GetLightStatus(int linkNum);		//returns the light status of given link index (not ID)
+	bool SetLightStatus(int linkNum, LightStatus light); //sets the light status of given link index (not ID)
 
 	bool HasLights();
 	bool IsControlled();	// true if any stopsigns or stoplights
@@ -106,10 +118,7 @@ public:
 	void AdjustForLights();
 
 	DPoint2 m_p;	// utm coordinates of center
-	int m_iLinks;	// number of roads meeting here
-
-	// angle of each road, not initialized till SortLinksByAngle is called
-	std::vector<float> m_fLinkAngle;
+	int m_iLinks;	// number of links meeting here
 
 	TNode *m_pNext;
 
@@ -118,11 +127,8 @@ public:
 	int m_id;
 
 protected:
-	std::vector<IntersectionType> m_IntersectTypes;	//intersection types of the roads at this node.
-	std::vector<LightStatus>	m_Lights;	//lights of the links at this node.
-
-	// The links that connect to or from this node.
-	std::vector<LinkConnect> m_connections;
+	// Information about the links that connect to or from this node.
+	std::vector<LinkConnect> m_connect;
 
 private:
 	// Don't let unsuspecting users stumble into assuming that object

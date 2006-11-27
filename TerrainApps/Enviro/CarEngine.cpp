@@ -478,7 +478,8 @@ void CarEngine::PickFirstRoad()
 	if (m_bForwards)
 	{
 		m_pNextNode = m_pCurRoad->GetNode(1);
-		m_iNextIntersect = m_pNextNode->GetIntersectType(m_pCurRoad);
+		int iLinkNum = m_pNextNode->GetLinkNum(m_pCurRoad, false);	// ends there
+		m_iNextIntersect = m_pNextNode->GetIntersectType(iLinkNum);
 		//reset coord index
 		m_iRCoord = 0;
 		//m_iLane = 0;
@@ -486,7 +487,8 @@ void CarEngine::PickFirstRoad()
 	else
 	{
 		m_pNextNode = m_pCurRoad->GetNode(0);
-		m_iNextIntersect = m_pNextNode->GetIntersectType(m_pCurRoad);
+		int iLinkNum = m_pNextNode->GetLinkNum(m_pCurRoad, true);	// begins there
+		m_iNextIntersect = m_pNextNode->GetIntersectType(iLinkNum);
 		//reset coord index
 		m_iRCoord = m_pCurRoad->GetSize()-1;
 		//m_iLane = m_pCurRoad->m_iLanes - 1;
@@ -527,14 +529,16 @@ void CarEngine::PickRoad()
 	if (m_bForwards)
 	{
 		m_pNextNode = m_pCurRoad->GetNode(1);
-		m_iNextIntersect = m_pNextNode->GetIntersectType(m_pCurRoad);
+		int iLinkNum = m_pNextNode->GetLinkNum(m_pCurRoad, false);	// ends there
+		m_iNextIntersect = m_pNextNode->GetIntersectType(iLinkNum);
 		//reset coord index
 		m_iRCoord = 0;
 	}
 	else
 	{
 		m_pNextNode = m_pCurRoad->GetNode(0);
-		m_iNextIntersect = m_pNextNode->GetIntersectType(m_pCurRoad);
+		int iLinkNum = m_pNextNode->GetLinkNum(m_pCurRoad, true);	// begins there
+		m_iNextIntersect = m_pNextNode->GetIntersectType(iLinkNum);
 		//reset coord index
 		m_iRCoord = m_pCurRoad->GetSize()-1;
 	}
@@ -722,7 +726,11 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 		if (m_iNextIntersect == IT_LIGHT)
 		{
 			//go only if green
-			if (m_pNextNode->GetLightStatus(m_pCurRoad) == LT_GREEN)
+			// if we are moving 'forward', then our current link ends at the next node
+			// if we are moving 'backward', then our current link begins at the next node
+			bool bStart = !m_bForwards;
+			int iLinkNum = m_pNextNode->GetLinkNum(m_pCurRoad, bStart);
+			if (m_pNextNode->GetLightStatus(iLinkNum) == LT_GREEN)
 			{
 				m_bStopped = false;
 				PickRoad();
@@ -761,10 +769,13 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 		}
 		if (newroad)
 		{
+			bool bStart = !m_bForwards;
+			int iLinkNum = m_pNextNode->GetLinkNum(m_pCurRoad, bStart);
+
 			//out of coords, need to look at next road.
 			if (m_iNextIntersect == IT_STOPSIGN ||
 				(m_iNextIntersect == IT_LIGHT &&
-				m_pNextNode->GetLightStatus(m_pCurRoad) == LT_RED))
+				m_pNextNode->GetLightStatus(iLinkNum) == LT_RED))
 			{
 				m_bStopped = true;
 				m_fStopTime = fCurTime;
@@ -805,6 +816,9 @@ void CarEngine::AdjustSpeed(float fDeltaTime)
 		return;
 	}
 
+	bool bStart = !m_bForwards;
+	int iLinkNum = m_pNextNode->GetLinkNum(m_pCurRoad, bStart);
+
 	//calculate distance to go.
 	FPoint3 endOfRoad = ((NodeGeom*)m_pNextNode)->m_p3;
 
@@ -828,7 +842,7 @@ void CarEngine::AdjustSpeed(float fDeltaTime)
 		break;
 	case IT_LIGHT:
 		//adjust speed based on light condition.
-		switch (m_pNextNode->GetLightStatus(m_pCurRoad))
+		switch (m_pNextNode->GetLightStatus(iLinkNum))
 		{
 		case LT_RED:
 			//stop if we're getting close

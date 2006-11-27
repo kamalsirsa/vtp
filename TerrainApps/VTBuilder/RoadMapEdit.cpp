@@ -95,14 +95,14 @@ bool NodeEdit::EditProperties(vtRoadLayer *pLayer)
 	return (dlg.ShowModal() == wxID_OK);
 }
 
-void NodeEdit::Translate(DPoint2 offset)
+void NodeEdit::Translate(const DPoint2 &offset)
 {
 	m_p += offset;
 
-	// also move the endpoint of all the roads that end here
+	// update the endpoints of all the links that meet here
 	for (int i = 0; i < m_iLinks; i++)
 	{
-		TLink *pR = m_connections[i].pLink;
+		TLink *pR = m_connect[i].pLink;
 		if (pR->GetNode(0) == this)
 			pR->SetAt(0, m_p);
 		if (pR->GetNode(1) == this)
@@ -568,10 +568,10 @@ DRECT *RoadMapEdit::DeleteSelected(int &nDeleted)
 
 			tmpNode = tmpLink->GetNode(0);
 			if (tmpNode)
-				tmpNode->DetachLink(tmpLink);
+				tmpNode->DetachLink(tmpLink, true);
 			tmpNode = tmpLink->GetNode(1);
 			if (tmpNode)
-				tmpNode->DetachLink(tmpLink);
+				tmpNode->DetachLink(tmpLink, false);
 			delete tmpLink;
 		}
 		else
@@ -641,7 +641,7 @@ bool RoadMapEdit::SelectAndExtendLink(DPoint2 point, float error, DRECT &bound)
 				//compare index with all the other roads at the node.
 				for (j = 0; j < node->m_iLinks; j++) {
 					if (j != index) {
-						float newAngle  = node->m_fLinkAngle[j] - (node->m_fLinkAngle[index] + PIf);
+						float newAngle  = node->GetLinkAngle(j) - (node->GetLinkAngle(index) + PIf);
 						//adjust to value between 180 and -180 degrees
 						while (newAngle > PIf) {
 							newAngle -= PI2f;
@@ -858,8 +858,8 @@ void RoadMapEdit::DeleteSingleLink(LinkEdit *pDeleteLink)
 				prev->m_pNext = curLink->GetNext();
 			else
 				m_pFirstLink = curLink->GetNext();
-			curLink->GetNode(0)->DetachLink(curLink);
-			curLink->GetNode(1)->DetachLink(curLink);
+			curLink->GetNode(0)->DetachLink(curLink, true);
+			curLink->GetNode(1)->DetachLink(curLink, false);
 			delete curLink;
 			return;
 		}
@@ -872,28 +872,19 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 	bool lights = false;
 	IntersectionType type = IT_NONE;
 
-	while (TLink *pR = pN->GetLink(0))
+	for (int i = 0; i < pN->m_iLinks; i++)
 	{
-		if (pR->GetNode(0) == pN)
-		{
-			pR->SetNode(0, pN2);
-			pN2->AddLink(pR, true);
-			type = pN->GetIntersectType(pR);
-			pN2->SetIntersectType(pR, type);
-			if (type == IT_LIGHT)
-				lights = true;
-		}
-		if (pR->GetNode(1) == pN)
-		{
-			pR->SetNode(1, pN2);
-			pN2->AddLink(pR, false);
-			type = pN->GetIntersectType(pR);
-			pN2->SetIntersectType(pR, type);
-			if (type == IT_LIGHT)
-				lights = true;
-		}
-		pN->DetachLink(pR);
+		LinkConnect &lc = pN->GetLinkConnect(i);
+
+		if (lc.eIntersection == IT_LIGHT)
+			lights = true;
+
+		int iNewLinkNum = pN2->AddLink(lc.pLink, lc.bStart);
+		pN2->SetIntersectType(iNewLinkNum, lc.eIntersection);
 	}
+	while (TLink *pL = pN->GetLink(0))
+		pN->DetachLink(pL, pN->GetLinkConnect(0).bStart);
+
 	if (lights)
 		pN2->AdjustForLights();
 }
@@ -901,7 +892,7 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 class LinkEdit *NodeEdit::GetLink(int n)
 {
 	if (n >= 0 && n < m_iLinks)	// safety check
-		return (LinkEdit *) m_connections[n].pLink;
+		return (LinkEdit *) m_connect[n].pLink;
 	else
 		return NULL;
 }

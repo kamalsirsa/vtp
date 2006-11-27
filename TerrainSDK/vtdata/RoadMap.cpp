@@ -60,9 +60,9 @@ bool TNode::operator==(TNode &ref)
 		return false;
 	for (int i = 0; i < m_iLinks; i++)
 	{
-		if (m_IntersectTypes[i] != ref.m_IntersectTypes[i])
+		if (m_connect[i].eIntersection != ref.m_connect[i].eIntersection)
 			return false;
-		if (m_Lights[i] != ref.m_Lights[i])
+		if (m_connect[i].eLight != ref.m_connect[i].eLight)
 			return false;
 	}
 	return true;
@@ -73,19 +73,14 @@ void TNode::Copy(TNode *node)
 	m_p = node->m_p;
 	m_iLinks = node->m_iLinks;
 	m_id = node->m_id;
-
-	m_IntersectTypes = node->m_IntersectTypes;
-	m_Lights = node->m_Lights;
-	m_connections = node->m_connections;
-	m_fLinkAngle = node->m_fLinkAngle;
-
+	m_connect = node->m_connect;
 	m_pNext = NULL;	//don't copy this
 }
 
 TLink *TNode::GetLink(int n)
 {
 	if (n >= 0 && n < m_iLinks)	// safety check
-		return m_connections[n].pLink;
+		return m_connect[n].pLink;
 	else
 		return NULL;
 }
@@ -94,38 +89,36 @@ int TNode::FindLink(int roadID)
 {
 	for (int i = 0; i < m_iLinks; i++)
 	{
-		if (m_connections[i].pLink->m_id == roadID)
+		if (m_connect[i].pLink->m_id == roadID)
 			return i;
 	}
 	return -1;
 }
 
-void TNode::AddLink(TLink *pR, bool bStart)
+int TNode::AddLink(TLink *pL, bool bStart)
 {
 	m_iLinks++;
 
 	// fill in the entry for the new road
 	LinkConnect lc;
 	lc.bStart = bStart;
-	lc.pLink = pR;
-	m_connections.push_back(lc);
+	lc.pLink = pL;
+	lc.eIntersection = IT_NONE;
+	lc.eLight = LT_INVALID;
+	m_connect.push_back(lc);
 
-	m_IntersectTypes.push_back(IT_NONE);
-	m_Lights.push_back(LT_INVALID);
+	return m_connect.size() - 1;
 }
 
-void TNode::DetachLink(TLink *pR)
+void TNode::DetachLink(TLink *pL, bool bStart)
 {
 	for (int i = 0; i < m_iLinks; i++)
 	{
-		if (m_connections[i].pLink == pR)
+		if (m_connect[i].pLink == pL && m_connect[i].bStart == bStart)
 		{
-			for (int j = i; j < m_iLinks-1; j++) {
-				m_connections[j] = m_connections[j+1];
-				m_IntersectTypes[j] = m_IntersectTypes[j+1];
-				m_Lights[j] = m_Lights[j+1];
-			}
-			m_iLinks--;
+			// found it
+			m_connect.erase(m_connect.begin() + i);
+			m_iLinks = m_connect.size();
 			return;
 		}
 	}
@@ -134,19 +127,23 @@ void TNode::DetachLink(TLink *pR)
 //angles all > 0.
 void TNode::DetermineLinkAngles()
 {
-	m_fLinkAngle.resize(m_iLinks);
-
 	DPoint2 pn0, pn1, diff;
 	for (int i = 0; i < m_iLinks; i++)
 	{
 		pn0 = m_p;
-		pn1 = GetAdjacentRoadpoint2d(i);
+		pn1 = GetAdjacentLinkPoint2d(i);
 		diff = pn1 - pn0;
 
-		m_fLinkAngle[i] = atan2f((float)diff.y, (float)diff.x);
-		if (m_fLinkAngle[i] < 0.0f)
-			m_fLinkAngle[i] += PI2f;
+		float angle = atan2f((float)diff.y, (float)diff.x);
+		if (angle < 0.0f)
+			angle += PI2f;
+		m_connect[i].fLinkAngle = angle;
 	}
+}
+
+float TNode::GetLinkAngle(int iLinkNum)
+{
+	return m_connect[iLinkNum].fLinkAngle;
 }
 
 void TNode::SortLinksByAngle()
@@ -162,26 +159,12 @@ void TNode::SortLinksByAngle()
 		sorted = true;
 		for (int i = 0; i < m_iLinks-1; i++)
 		{
-			if (m_fLinkAngle[i] > m_fLinkAngle[i+1])
+			if (m_connect[i].fLinkAngle > m_connect[i+1].fLinkAngle)
 			{
-				//save info to be replaced
-				LinkConnect tmp1 = m_connections[i];
-				IntersectionType tmp2 = m_IntersectTypes[i];
-				LightStatus tmp3 = m_Lights[i];
-				float tmp4 = m_fLinkAngle[i];
-
-				//move info over
-				m_connections[i] = m_connections[i+1];
-				m_connections[i+1] = tmp1;
-
-				m_IntersectTypes[i] = m_IntersectTypes[i+1];
-				m_IntersectTypes[i+1] = tmp2;
-
-				m_Lights[i] = m_Lights[i+1];
-				m_Lights[i+1] = tmp3;
-
-				m_fLinkAngle[i] = m_fLinkAngle[i+1];
-				m_fLinkAngle[i+1] = tmp4;
+				// swap entries in connection array
+				LinkConnect tmp1 = m_connect[i];
+				m_connect[i] = m_connect[i+1];
+				m_connect[i+1] = tmp1;
 
 				sorted = false;
 			}
@@ -189,90 +172,57 @@ void TNode::SortLinksByAngle()
 	}
 }
 
-DPoint2 TNode::GetAdjacentRoadpoint2d(int iLinkNum)
+DPoint2 TNode::GetAdjacentLinkPoint2d(int iLinkNum)
 {
-	LinkConnect &lc = m_connections[iLinkNum];
+	LinkConnect &lc = m_connect[iLinkNum];
 	if (lc.bStart)
 		return lc.pLink->GetAt(1);			// roads starts here
 	else
 		return lc.pLink->GetAt(lc.pLink->GetSize() - 2);	// road ends here
 }
 
-
-//traffic control
-bool TNode::SetIntersectType(TLink *link, IntersectionType type)
+int TNode::GetLinkNum(TLink *link, bool bStart)
 {
-	for (int i = 0; i < m_iLinks; i++) {
-		if (m_connections[i].pLink == link) {
-			m_IntersectTypes[i] = type;
-			return true;
-		}
+	for (int i = 0; i < m_iLinks; i++)
+	{
+		if (m_connect[i].pLink == link && m_connect[i].bStart == bStart)
+			return i;
 	}
-	return false;
+	return -1;
 }
 
-bool TNode::SetIntersectType(int roadNum, IntersectionType type)
+//traffic control
+bool TNode::SetIntersectType(int linkNum, IntersectionType type)
 {
-	if (roadNum >= m_iLinks || roadNum < 0) {
+	if (linkNum < 0 || linkNum >= m_iLinks)
 		return false;
-	}
-	m_IntersectTypes[roadNum] = type;
+
+	m_connect[linkNum].eIntersection = type;
 	return true;
 }
 
-IntersectionType TNode::GetIntersectType(TLink *link)
+IntersectionType TNode::GetIntersectType(int linkNum)
 {
-#if 1
-	for (int i = 0; i < m_iLinks; i++)
-	{
-		if (m_connections[i].pLink == link) {
-			return m_IntersectTypes[i];
-		}
-	}
-	return IT_NONE;
-#else
-	if (road->GetNode(0))
-#endif
-}
-
-IntersectionType TNode::GetIntersectType(int roadNum) {
-	if (roadNum >= m_iLinks || roadNum < 0) {
+	if (linkNum < 0 || linkNum >= m_iLinks)
 		return IT_NONE;
-	}
-	return m_IntersectTypes[roadNum];
+
+	return m_connect[linkNum].eIntersection;
 }
 
-LightStatus TNode::GetLightStatus(TLink *link) {
-	for (int i = 0; i < m_iLinks; i++) {
-		if (m_connections[i].pLink == link) {
-			return m_Lights[i];
-		}
-	}
-	return LT_INVALID;
-}
-
-LightStatus TNode::GetLightStatus(int roadNum) {
-	if (roadNum >= m_iLinks || roadNum < 0) {
+LightStatus TNode::GetLightStatus(int linkNum)
+{
+	if (linkNum >= m_iLinks || linkNum < 0)
 		return LT_INVALID;
-	}
-	return m_Lights[roadNum];
+
+	return m_connect[linkNum].eLight;
 }
 
-bool TNode::SetLightStatus(TLink *link, LightStatus light) {
-	for (int i = 0; i < m_iLinks; i++) {
-		if (m_connections[i].pLink == link) {
-			m_Lights[i] = light;
-			return true;
-		}
-	}
-	return false;
-}
-
-bool TNode::SetLightStatus(int roadNum, LightStatus light) {
-	if (roadNum >= m_iLinks || roadNum < 0) {
+bool TNode::SetLightStatus(int linkNum, LightStatus light)
+{
+	if (linkNum >= m_iLinks || linkNum < 0) {
 		return false;
 	}
-	m_Lights[roadNum] = light;
+	m_connect[linkNum].eLight = light;
 	return true;
 }
 
@@ -330,7 +280,7 @@ void TNode::AdjustForLights()
 			{
 				if (i != j)
 				{
-					newAngle  = m_fLinkAngle[j] - (m_fLinkAngle[i] + PIf);
+					newAngle  = m_connect[j].fLinkAngle - (m_connect[i].fLinkAngle + PIf);
 					//get absolute value
 					if (newAngle < 0) {
 						newAngle = -newAngle;
@@ -343,7 +293,10 @@ void TNode::AdjustForLights()
 					if (newAngle < 0) {
 						newAngle = -newAngle;
 					}
-					printf("%i:%f, %i:%f, %f, %f", i,m_fLinkAngle[i], j,m_fLinkAngle[j], newAngle, bestAngle);
+					printf("%i:%f, %i:%f, %f, %f",
+						i, m_connect[i].fLinkAngle,
+						j, m_connect[j].fLinkAngle
+						, newAngle, bestAngle);
 					if (newAngle < bestAngle) {
 						bestChoiceA = i;
 						bestChoiceB = j;
@@ -607,7 +560,7 @@ TNode *vtRoadMap::FindNodeAtPoint(const DPoint2 &point, double epsilon)
 int	vtRoadMap::NumLinks() const
 {
 	int count = 0;
-	for (TLink *pR = m_pFirstLink; pR; pR = pR->m_pNext)
+	for (TLink *pL = m_pFirstLink; pL; pL = pL->m_pNext)
 		count++;
 	return count;
 }
@@ -641,10 +594,10 @@ void vtRoadMap::ComputeExtents()
 
 	// iterate through all elements accumulating extents
 	m_extents.SetRect(1E9, -1E9, -1E9, 1E9);
-	for (TLink *pR = m_pFirstLink; pR; pR = pR->m_pNext)
+	for (TLink *pL = m_pFirstLink; pL; pL = pL->m_pNext)
 	{
 		// roads are a subclass of line, so we can treat them as lines
-		DLine2 *dl = pR;
+		DLine2 *dl = pL;
 		m_extents.GrowToContainLine(*dl);
 	}
 	m_bValidExtents = true;
@@ -717,25 +670,25 @@ void vtRoadMap::RemoveNode(TNode *pNode)
 void vtRoadMap::RemoveLink(TLink *pLink)
 {
 	TLink *prev = NULL, *next;
-	TLink *pR = m_pFirstLink;
+	TLink *pL = m_pFirstLink;
 
-	while (pR)
+	while (pL)
 	{
-		next = pR->m_pNext;
-		if (pLink == pR)
+		next = pL->m_pNext;
+		if (pLink == pL)
 		{
 			// delete it
 			if (prev)
 				prev->m_pNext = next;
 			else
 				m_pFirstLink = next;
-			delete pR;
+			delete pL;
 			// I assume that a node cannot be on the list more than once!!!
 			break;
 		}
 		else
-			prev = pR;
-		pR = next;
+			prev = pL;
+		pL = next;
 	}
 }
 
