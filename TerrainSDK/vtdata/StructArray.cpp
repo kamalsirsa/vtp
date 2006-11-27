@@ -92,26 +92,6 @@ void vtStructureArray::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 	m_iEditEdge = edge;
 }
 
-bool vtStructureArray::WriteSHP(const char* pathname)
-{
-	SHPHandle hSHP = SHPCreate ( pathname, SHPT_POINT );
-	if (!hSHP)
-		return false;
-
-	int count = GetSize();
-//	SHPObject *obj;
-	for (int i = 0; i < count; i++)	//for each coordinate
-	{
-		// TODO
-//		obj = SHPCreateSimpleObject(SHPT_POINT, 1, &temp.x, &temp.y, NULL);
-//		SHPWriteObject(hSHP, -1, obj);
-//		SHPDestroyObject(obj);
-	}
-	SHPClose(hSHP);
-	return true;
-}
-
-
 /** Find the building corner closest to the given point, if it is within
  * 'epsilon' distance.  The building index, corner index, and distance from
  * the given point are all returned by reference.
@@ -511,7 +491,6 @@ int vtStructureArray::GetNextSelected()
 		}
 	return -1;
 }
-
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -1456,6 +1435,54 @@ bool vtStructureArray::ReadXML(const char *pathname, bool progress_callback(int)
 	}
 
 	return success;
+}
+
+bool vtStructureArray::WriteFootprintsToSHP(const char* pathname)
+{
+	SHPHandle hSHP = SHPCreate ( pathname, SHPT_POINT );
+	if (!hSHP)
+		return false;
+
+	unsigned int i, j, count = GetSize();
+	for (i = 0; i < count; i++)	//for each coordinate
+	{
+		vtBuilding *bld = GetAt(i)->GetBuilding();
+		if (!bld)
+			continue;
+
+		const DLine2 &poly = bld->GetLevel(0)->GetAtFootprint();
+		int total = poly.GetSize();
+
+		double *dX = new double[total];
+		double *dY = new double[total];
+
+		int vert = 0;
+		for (j=0; j < poly.GetSize(); j++) //for each vertex
+		{
+			DPoint2 pt = poly.GetAt(j);
+			dX[vert] = pt.x;
+			dY[vert] = pt.y;
+			vert++;
+		}
+		// duplicate first vertex, it's just what SHP files do.
+		//DPoint2 pt = poly.GetAt(0);
+		//dX[vert] = pt.x;
+		//dY[vert] = pt.y;
+		//vert++;
+
+		// Save to SHP
+		//SHPObject *obj = SHPCreateObject(SHPT_POLYGON, -1, parts, NULL,
+		//	NULL, total, dX, dY, NULL, NULL );
+		SHPObject *obj = SHPCreateSimpleObject(SHPT_POLYGON, total, dX, dY, NULL);
+
+		SHPWriteObject(hSHP, -1, obj);
+		SHPDestroyObject(obj);
+
+		delete [] dY;
+		delete [] dX;
+	}
+	SHPClose(hSHP);
+	return true;
 }
 
 vtBuilding *vtStructureArray::AddBuildingFromLineString(OGRLineString *pLineString)

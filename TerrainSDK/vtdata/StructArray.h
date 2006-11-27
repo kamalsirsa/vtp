@@ -104,8 +104,8 @@ public:
 	bool ReadBCF_Old(FILE *fp);				// support obsolete format
 	bool ReadXML(const char *pathname, bool progress_callback(int) = NULL);
 
-	bool WriteSHP(const char *pathname);
 	bool WriteXML(const char *pathname, bool bGZip = false) const;
+	bool WriteFootprintsToSHP(const char *pathname);
 
 	bool FindClosestBuildingCorner(const DPoint2 &point, double epsilon,
 						   int &building, int &corner, double &distance);
