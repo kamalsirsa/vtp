@@ -285,6 +285,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Export.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Frame.cpp"
 				>
 				<FileConfiguration
@@ -333,6 +337,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Geocode.cpp"
+				>
 			</File>
 			<File
 				RelativePath="Helper.cpp"

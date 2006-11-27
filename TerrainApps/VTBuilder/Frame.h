@@ -286,6 +286,7 @@ public:
 	// project
 	void LoadProject(const wxString &strPathName);
 	void SaveProject(const wxString &strPathName) const;
+	void DoGeocode();
 
 	// Layer methods
 	int NumLayers() const { return m_Layers.GetSize(); }
@@ -437,7 +438,7 @@ public:
 	void ElevCopy();
 	void ElevPasteNew();
 
-	// Elevation Export
+	// Export
 	void ExportASC();
 	void ExportGeoTIFF();
 	void ExportTerragen();
@@ -449,6 +450,11 @@ public:
 	void ExportChunkLOD();
 	void ExportPNG16();
 	void Export3TX();
+	void ElevExportTiles();
+	void ImageExportTiles();
+	void ExportAreaOptimizedElevTileset();
+	void ExportAreaOptimizedImageTileset();
+	void ExportDymaxTexture();
 
 	// area tool
 	void ScanElevationLayers(int &count, int &floating, DPoint2 &spacing);
