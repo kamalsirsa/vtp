@@ -61,6 +61,12 @@ enum LightStatus {
 class TNode;
 class TLink;
 
+// Store the connectivity information for each place a link meets a node.
+struct LinkConnect {
+	TLink *pLink;
+	bool bStart;	// True if the link starts at this node, false if it ends
+};
+
 /**
  * A Transporation Node is a place where 2 or more roads (links) meet.
  */
@@ -77,12 +83,11 @@ public:
 	void Copy(TNode* node);
 
 	TLink *GetLink(int n);
-	int FindLink(int roadID);			//returns internal number of road with given ID.  -1 if not found.
-	void AddLink(TLink *pR);		//adds a road to the node
-	void DetachLink(TLink *pR);	//detaches the road from the node.
-	void DetermineLinkAngles();			//resulting angles > 0
-	void SortLinksByAngle();			//sorts the internal roads by angle.
-	DPoint2 find_adjacent_roadpoint2d(TLink *pR);  //returns the 2nd point on the road from the node.
+	void AddLink(TLink *pR, bool bStart);	// adds a road to the node
+	void DetachLink(TLink *pR);	// detaches the road from the node.
+	void DetermineLinkAngles();	// resulting angles > 0
+	void SortLinksByAngle();	// sorts the internal roads by angle.
+	DPoint2 GetAdjacentRoadpoint2d(int iLinkNum);  //returns the 2nd point on the road from the node.
 
 	//sets intersection type for node.  returns false if road not found
 	bool SetIntersectType(TLink *road, IntersectionType type);
@@ -102,16 +107,22 @@ public:
 
 	DPoint2 m_p;	// utm coordinates of center
 	int m_iLinks;	// number of roads meeting here
-	int m_id;		// only used for reading from DLG/RMF
 
 	// angle of each road, not initialized till SortLinksByAngle is called
-	float *m_fLinkAngle;
+	std::vector<float> m_fLinkAngle;
 
 	TNode *m_pNext;
+
+	// only used for reading from DLG/RMF
+	int FindLink(int roadID);	// returns internal number of road with given ID.  -1 if not found.
+	int m_id;
+
 protected:
-	IntersectionType *m_IntersectTypes;	//intersection types of the roads at this node.
-	LightStatus *m_Lights;  //lights of the roads at this node.
-	TLink **m_r;  //array of roads that intersect this node.
+	std::vector<IntersectionType> m_IntersectTypes;	//intersection types of the roads at this node.
+	std::vector<LightStatus>	m_Lights;	//lights of the links at this node.
+
+	// The links that connect to or from this node.
+	std::vector<LinkConnect> m_connections;
 
 private:
 	// Don't let unsuspecting users stumble into assuming that object
