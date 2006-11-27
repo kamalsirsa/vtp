@@ -83,7 +83,7 @@ NodeGeom::~NodeGeom()
 FPoint3 NodeGeom::GetLinkVector(int i)
 {
 	FPoint3 linkpoint = GetAdjacentRoadpoint(i);
-	return CreateRoadVector(m_p3, linkpoint, m_connections[i].pLink->m_fWidth);
+	return CreateRoadVector(m_p3, linkpoint, m_connect[i].pLink->m_fWidth);
 }
 
 FPoint3 NodeGeom::GetUnitLinkVector(int i)
@@ -94,7 +94,7 @@ FPoint3 NodeGeom::GetUnitLinkVector(int i)
 
 const FPoint3 &NodeGeom::GetAdjacentRoadpoint(int iLinkNumber)
 {
-	LinkConnect &lc = m_connections[iLinkNumber];
+	LinkConnect &lc = m_connect[iLinkNumber];
 	LinkGeom *lg = (LinkGeom*) lc.pLink;
 	if (lc.bStart)
 		return lg->m_centerline[1];
@@ -261,7 +261,7 @@ void NodeGeom::FindVerticesForLink(TLink *pR, bool bStart, FPoint3 &p0, FPoint3 
 	}
 	else if (m_iLinks == 2)
 	{
-		if (pR == m_connections[0].pLink)
+		if (pR == m_connect[0].pLink)
 		{
 			p0 = m_v[1];
 			p1 = m_v[0];
@@ -276,7 +276,7 @@ void NodeGeom::FindVerticesForLink(TLink *pR, bool bStart, FPoint3 &p0, FPoint3 
 	{
 		for (int i = 0; i < m_iLinks; i++)
 		{
-			if (m_connections[i].pLink == pR && m_connections[i].bStart == bStart)
+			if (m_connect[i].pLink == pR && m_connect[i].bStart == bStart)
 			{
 				p0 = m_v[i*2];
 				p1 = m_v[i*2+1];
@@ -988,7 +988,7 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 			FPoint3 offset;
 
 			// Turn the sign (yaw) to face the oncoming traffic
-			trans->RotateLocal(FPoint3(0,1,0), pN->m_fLinkAngle[r] + PID2f);
+			trans->RotateLocal(FPoint3(0,1,0), pN->GetLinkAngle(r) + PID2f);
 
 			if (pN->GetIntersectType(r) == IT_STOPSIGN)
 			{
