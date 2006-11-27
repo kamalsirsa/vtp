@@ -45,7 +45,7 @@ public:
 	bool EditProperties(vtRoadLayer *pLayer);
 
 	//move the node
-	void Translate(DPoint2 offset);
+	void Translate(const DPoint2 &offset);
 	//makes sure road endpoints match the node's position
 	void EnforceLinkEndpoints();
 
@@ -152,8 +152,6 @@ public:
 	int FixOverlappedLinks(bool bDegrees);
 	// delete roads that are really close to another road, but go nowhere coming out of a node
 	int FixExtraneousParallels();
-	// split loops.  create an uncontrolled node in the middle.
-	int SplitLoopingLinks();
 	//----------------------------------------------
 
 	// merge 2 selected nodes.
