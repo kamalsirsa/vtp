@@ -154,9 +154,6 @@ public:
 	int FixExtraneousParallels();
 	//----------------------------------------------
 
-	// merge 2 selected nodes.
-	bool Merge2Nodes();
-
 	// draw the road network in window, given size of drawing area
 	void Draw(wxDC* pDC, vtScaledView *pView, bool bNodes);
 

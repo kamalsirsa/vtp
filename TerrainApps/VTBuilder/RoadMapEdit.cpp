@@ -451,43 +451,6 @@ RoadMapEdit::~RoadMapEdit()
 {
 }
 
-//merge 2 selected nodes
-bool RoadMapEdit::Merge2Nodes()
-{
-	NodeEdit *pN = NULL;
-	NodeEdit *pN2 = NULL;
-	NodeEdit *curNode = GetFirstNode();
-	int count = 0;
-
-	while (curNode)
-	{
-		if (!curNode->IsSelected())
-			continue;
-		count++;
-		if (pN == NULL)
-			pN = curNode;
-		else if (pN2 == NULL)
-			pN2 = curNode;
-		curNode = curNode->GetNext();
-	}
-	if (count != 2)
-		return false;
-
-	// we've got a pair that need to be merged
-	//new point is placed between the 2 original points
-	pN2->m_p.x = (pN2->m_p.x + pN->m_p.x) / 2;
-	pN2->m_p.y = (pN2->m_p.y + pN->m_p.y) / 2;
-	// we're going to remove the "pN" node
-	// inform any roads which may have referenced it
-	ReplaceNode(pN, pN2);
-	// remove pN
-	RemoveNode(pN);
-
-	// for the roads that now end in pN2, move their end points
-	pN2->EnforceLinkEndpoints();
-	return true;
-}
-
 //
 // draw the road network in window, given center and size or drawing area
 //
