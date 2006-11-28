@@ -583,39 +583,24 @@ void CarEngine::PickNextRoad()
 	else
 	{
 		//select the next road to follow.
-		if (m_pNextNode->m_iLinks != 1)
+		//find index for current road
+		int r_index= m_pNextNode->GetLinkNum(m_pCurRoad, !m_bForwards);
+		//wrap around
+		i = (r_index+1) % m_pNextNode->m_iLinks;
+
+		int temp_i = -1;
+		//find next road available with traffic going out from the node.
+		for (i = 1; i < m_pNextNode->m_iLinks; i++)
 		{
-			i = m_pNextNode->m_iLinks;
-			if (i == m_pNextNode->m_iLinks)
+			//wrap around
+			temp_i = (r_index + i)% m_pNextNode->m_iLinks;
+			TLink *r = m_pNextNode->GetLink(temp_i);
+			if ((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pNextNode)
+				||
+				(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pNextNode))
 			{
-				//find index for current road
-				int r_index=0;
-				for (i = 0; i < m_pNextNode->m_iLinks; i++)
-				{
-					if (m_pNextNode->GetLink(i) == m_pCurRoad)
-					{
-						r_index = i;
-						i++;
-						//wrap around
-						i %= m_pNextNode->m_iLinks;
-						break;
-					}
-				}
-				int temp_i = -1;
-				//find next road available with traffic going out from the node.
-				for (i = 1; i < m_pNextNode->m_iLinks; i++)
-				{
-					//wrap around
-					temp_i = (r_index + i)% m_pNextNode->m_iLinks;
-					TLink *r = m_pNextNode->GetLink(temp_i);
-					if ((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pNextNode)
-						||
-						(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pNextNode))
-					{
-						i = temp_i;
-						break;
-					}
-				}
+				i = temp_i;
+				break;
 			}
 		}
 	}
