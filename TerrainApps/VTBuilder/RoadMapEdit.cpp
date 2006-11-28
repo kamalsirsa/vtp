@@ -859,7 +859,6 @@ void RoadMapEdit::DeleteSingleLink(LinkEdit *pDeleteLink)
 void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 {
 	bool lights = false;
-	IntersectionType type = IT_NONE;
 
 	for (int i = 0; i < pN->m_iLinks; i++)
 	{
@@ -867,6 +866,11 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 
 		if (lc.eIntersection == IT_LIGHT)
 			lights = true;
+
+		if (lc.bStart)
+			lc.pLink->SetNode(0, pN2);
+		else
+			lc.pLink->SetNode(1, pN2);
 
 		int iNewLinkNum = pN2->AddLink(lc.pLink, lc.bStart);
 		pN2->SetIntersectType(iNewLinkNum, lc.eIntersection);
