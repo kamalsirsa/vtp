@@ -447,7 +447,7 @@ void MainFrame::CreateMenus()
 	bldMenu->Append(ID_STRUCTURE_SELECT_USING_POLYGONS, _("Select Using Polygons"), _("Select buildings using selected raw layer polygons"));
 	bldMenu->Append(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, _("Colour Selected Roofs"), _("Set roof colour on selected buildings"));
 	bldMenu->AppendSeparator();
-	bldMenu->Append(ID_STRUCTURE_EXPORT_FOOTPRINTS, _("Colour Selected Roofs"), _("Set roof colour on selected buildings"));
+	bldMenu->Append(ID_STRUCTURE_EXPORT_FOOTPRINTS, _("Export footprints to SHP"));
 
 	bldMenu->AppendSeparator();
 	bldMenu->AppendCheckItem(ID_STRUCTURE_CONSTRAIN, _("Constrain angles on footprint edit"));
