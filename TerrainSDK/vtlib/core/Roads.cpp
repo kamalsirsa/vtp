@@ -46,8 +46,8 @@ float angle_diff(float a, float b)
 }
 
 //
-// helper: given two points along a road, produce a vector
-// along to that road, parallel to the ground plane,
+// helper: given two points along a link, produce a vector
+// along to that link, parallel to the ground plane,
 // with length corresponding to the supplied width
 //
 FPoint3 CreateRoadVector(FPoint3 p1, FPoint3 p2, float w)
@@ -110,11 +110,11 @@ void NodeGeom::BuildIntersection()
 {
 	FPoint3 v, v_next, v_prev;
 	FPoint3 pn0, pn1;
-	float w;				// road width
+	float w;				// link width
 
 	SortLinksByAngle();
 
-	// how many roads meet here?
+	// how many links meet here?
 	if (m_iLinks == 0)
 	{
 		; // bogus case (put a breakpoint here)
@@ -125,7 +125,7 @@ void NodeGeom::BuildIntersection()
 		m_iVerts = 2;
 		m_v.SetSize(2);
 
-		// get info about the road
+		// get info about the link
 		LinkGeom *r = GetLink(0);
 		w = r->m_fWidth;
 
@@ -143,7 +143,7 @@ void NodeGeom::BuildIntersection()
 		m_iVerts = 2;
 		m_v.SetSize(2);
 
-		// get info about the roads
+		// get info about the links
 		w = (GetLink(0)->m_fWidth + GetLink(1)->m_fWidth) / 2.0f;
 
 		pn0 = GetAdjacentRoadpoint(0);
@@ -158,11 +158,11 @@ void NodeGeom::BuildIntersection()
 	}
 	else
 	{
-		// intersection: need 2 vertices for each road meeting here
+		// intersection: need 2 vertices for each link meeting here
 		m_iVerts = 2 * m_iLinks;
 		m_v.SetSize(m_iVerts);
 
-		// For each pairs of links, find the places where the road edges
+		// For each pairs of links, find the places where the link edges
 		//  intersect as they approach this node.
 
 		// The following is an array of float triples, used as follows:
@@ -175,14 +175,14 @@ void NodeGeom::BuildIntersection()
 		int i;
 		for (i = 0; i < m_iLinks; i++)
 		{
-			// indices of the next and previous roads
+			// indices of the next and previous links
 			int i_next = (i == m_iLinks-1) ? 0 : i+1;
 
-			TLink *pR = GetLink(i);
-			TLink *pR_next = GetLink(i_next);
+			TLink *pL = GetLink(i);
+			TLink *pL_next = GetLink(i_next);
 
-			float width1 = pR->m_fWidth;
-			float width2 = pR_next->m_fWidth;
+			float width1 = pL->m_fWidth;
+			float width2 = pL_next->m_fWidth;
 
 			FPoint3 linkv1 = GetUnitLinkVector(i);
 			FPoint3 linkv2 = GetUnitLinkVector(i_next);
@@ -230,12 +230,12 @@ void NodeGeom::BuildIntersection()
 		//  intersection without overlapping with the other links
 		for (i = 0; i < m_iLinks; i++)
 		{
-			TLink *pR = GetLink(i);
+			TLink *pL = GetLink(i);
 			v = GetUnitLinkVector(i);
 
 			FPoint3 norm(v.z, 0, -v.x);
 			norm.Normalize();
-			norm *= (pR->m_fWidth / 2);
+			norm *= (pL->m_fWidth / 2);
 
 			FPoint3 up(0, ROAD_HEIGHT, 0);
 
@@ -252,7 +252,7 @@ void NodeGeom::BuildIntersection()
 // Given a node and a link, return the two points that the link
 // will need in order to hook up with the node.
 //
-void NodeGeom::FindVerticesForLink(TLink *pR, bool bStart, FPoint3 &p0, FPoint3 &p1)
+void NodeGeom::FindVerticesForLink(TLink *pL, bool bStart, FPoint3 &p0, FPoint3 &p1)
 {
 	if (m_iLinks == 1)
 	{
@@ -261,7 +261,7 @@ void NodeGeom::FindVerticesForLink(TLink *pR, bool bStart, FPoint3 &p0, FPoint3 
 	}
 	else if (m_iLinks == 2)
 	{
-		if (pR == m_connect[0].pLink)
+		if (pL == m_connect[0].pLink)
 		{
 			p0 = m_v[1];
 			p1 = m_v[0];
@@ -276,14 +276,14 @@ void NodeGeom::FindVerticesForLink(TLink *pR, bool bStart, FPoint3 &p0, FPoint3 
 	{
 		for (int i = 0; i < m_iLinks; i++)
 		{
-			if (m_connect[i].pLink == pR && m_connect[i].bStart == bStart)
+			if (m_connect[i].pLink == pL && m_connect[i].bStart == bStart)
 			{
 				p0 = m_v[i*2];
 				p1 = m_v[i*2+1];
 				return;
 			}
 		}
-		// Should not get here!  This node does not reference the road passed
+		// Should not get here!  This node does not reference the link passed
 		; // (put a breakpoint here)
 	}
 }
@@ -361,7 +361,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 	FPoint3 pn0, pn1, pn2;
 	float length = 0.0f;
 
-	//  for each point in the road, determine coordinates
+	//  for each point in the link, determine coordinates
 	unsigned int j, size = GetSize();
 	for (j = 0; j < size; j++)
 	{
@@ -369,7 +369,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 
 		if (j > 0)
 		{
-			// increment 2D length along road
+			// increment 2D length along link
 			FPoint2 v2;
 			v2.x = m_centerline[j].x - m_centerline[j-1].x;
 			v2.y = m_centerline[j].z - m_centerline[j-1].z;
@@ -377,11 +377,11 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 		}
 		bi.fvLength[j] = length;
 
-		// At sharp corners, we must widen the road to keep each segment the
+		// At sharp corners, we must widen the link to keep each segment the
 		//  desired width.
 		float wider = 1.0f;
 
-		// we will add 2 vertices to the road mesh
+		// we will add 2 vertices to the link mesh
 		FPoint3 p0, p1;
 		if (j == 0)
 		{
@@ -401,7 +401,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 			FPoint3 v0 = (pn1-pn0).Normalize();
 			FPoint3 v1 = (pn2-pn1).Normalize();
 
-			// we flip axes to turn the road vector 90 degrees (normal to road)
+			// we flip axes to turn the link vector 90 degrees (normal to link)
 			FPoint3 bisector(v0.z + v1.z, 0, -(v0.x + v1.x));
 			bisector.Normalize();
 
@@ -418,7 +418,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 				bisector *= wider;
 			}
 
-			// and elevate the road above the terrain
+			// and elevate the link above the terrain
 			FPoint3 up(0, ROAD_HEIGHT, 0);
 
 			left = pn1 - bisector + up;
@@ -691,7 +691,7 @@ FPoint3 LinkGeom::FindPointAlongRoad(float fDistance)
 		c++;
 		return m_centerline[0];
 	}
-	// compute 2D length of this road, by adding up the 2d road segment lengths
+	// compute 2D length of this link, by adding up the 2d link segment lengths
 	for (unsigned int j = 0; j < GetSize()-1; j++)
 	{
 		// consider length of next segment
@@ -714,7 +714,7 @@ FPoint3 LinkGeom::FindPointAlongRoad(float fDistance)
 }
 
 //
-// Return the 2D length of this road segment in world units
+// Return the 2D length of this link segment in world units
 //
 float LinkGeom::Length()
 {
@@ -722,7 +722,7 @@ float LinkGeom::Length()
 	v.y = 0;
 	float length = 0.0f;
 
-	// compute 2D length of this road, by adding up the 2d road segment lengths
+	// compute 2D length of this link, by adding up the 2d link segment lengths
 	for (unsigned int j = 0; j < GetSize(); j++)
 	{
 		if (j > 0)
@@ -854,9 +854,9 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture)
 
 	vtMesh *pMesh;
 	int count = 0;
-	for (LinkGeom *pR = GetFirstLink(); pR; pR=(LinkGeom *)pR->m_pNext)
+	for (LinkGeom *pL = GetFirstLink(); pL; pL=(LinkGeom *)pL->m_pNext)
 	{
-		pR->GenerateGeometry(this);
+		pL->GenerateGeometry(this);
 		count++;
 	}
 	count = 0;
@@ -868,7 +868,7 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture)
 		count++;
 	}
 
-	// return top road group, ready to be added to scene graph
+	// return top roadmap group, ready to be added to scene graph
 	return m_pGroup;
 }
 
@@ -982,7 +982,7 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 			vtTransform *trans = new vtTransform;
 			trans->AddChild(shape);
 
-			LinkGeom *road = pN->GetLink(r);
+			LinkGeom *link = pN->GetLink(r);
 			FPoint3 unit = pN->GetUnitLinkVector(r);
 			FPoint3 perp(unit.z, unit.y, -unit.x);
 			FPoint3 offset;
@@ -992,11 +992,11 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 
 			if (pN->GetIntersectType(r) == IT_STOPSIGN)
 			{
-				offset = pN->m_p3 + (unit * 6.0f) + (perp * (road->m_fWidth/2.0f));
+				offset = pN->m_p3 + (unit * 6.0f) + (perp * (link->m_fWidth/2.0f));
 			}
 			if (pN->GetIntersectType(r) == IT_LIGHT)
 			{
-				offset = pN->m_p3 - (unit * 6.0f) + (perp * (road->m_fWidth/2.0f));
+				offset = pN->m_p3 - (unit * 6.0f) + (perp * (link->m_fWidth/2.0f));
 			}
 			trans->Translate1(FPoint3(offset.x, offset.y + s_fHeight, offset.z));
 			pLodGrid->AppendToGrid(trans);
@@ -1007,14 +1007,14 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 
 void vtRoadMap3d::_GatherExtents()
 {
-	// Find extents of area covered by roads
+	// Find extents of area covered by links
 	m_extents.InsideOut();
 
 	// Examine the range of the roadmap area
 	for (LinkGeom *pL = GetFirstLink(); pL; pL = pL->GetNext())
 		m_extents.GrowToContainLine(pL->m_centerline);
 
-	// Expand slightly for safety - in case we allow dragging road nodes
+	// Expand slightly for safety - in case we allow dragging link nodes
 	//  interactively in the future.
 	FPoint3 diff = m_extents.max - m_extents.min;
 	m_extents.min -= (diff / 20.0f);
@@ -1025,51 +1025,51 @@ void vtRoadMap3d::_GatherExtents()
 
 void vtRoadMap3d::DetermineSurfaceAppearance()
 {
-	// Pre-process some road attributes
-	for (LinkGeom *pR = GetFirstLink(); pR; pR = pR->GetNext())
+	// Pre-process some link attributes
+	for (LinkGeom *pL = GetFirstLink(); pL; pL = pL->GetNext())
 	{
 		// set material index based on surface type, number of lanes, and direction
-		bool two_way = (pR->m_iFlags & RF_FORWARD) &&
-					   (pR->m_iFlags & RF_REVERSE);
-		switch (pR->m_Surface)
+		bool two_way = (pL->m_iFlags & RF_FORWARD) &&
+					   (pL->m_iFlags & RF_REVERSE);
+		switch (pL->m_Surface)
 		{
 		case SURFT_NONE:
-//			pR->m_vti = 3;
-			pR->m_vti = 0;
+//			pL->m_vti = 3;
+			pL->m_vti = 0;
 			break;
 		case SURFT_GRAVEL:
-//			pR->m_vti = MATIDX_GRAVEL;
-			pR->m_vti = 0;
+//			pL->m_vti = MATIDX_GRAVEL;
+			pL->m_vti = 0;
 			break;
 		case SURFT_TRAIL:
-			pR->m_vti = VTI_TRAIL;
+			pL->m_vti = VTI_TRAIL;
 			break;
 		case SURFT_2TRACK:
 		case SURFT_DIRT:
-			pR->m_vti = VTI_4WD;
+			pL->m_vti = VTI_4WD;
 			break;
 		case SURFT_PAVED:
-			switch (pR->m_iLanes)
+			switch (pL->m_iLanes)
 			{
 			case 1:
-				pR->m_vti = VTI_1LANE;
+				pL->m_vti = VTI_1LANE;
 				break;
 			case 2:
-				pR->m_vti = two_way ? VTI_2LANE2WAY : VTI_2LANE1WAY;
+				pL->m_vti = two_way ? VTI_2LANE2WAY : VTI_2LANE1WAY;
 				break;
 			case 3:
-				pR->m_vti = two_way ? VTI_3LANE2WAY : VTI_3LANE1WAY;
+				pL->m_vti = two_way ? VTI_3LANE2WAY : VTI_3LANE1WAY;
 				break;
 			case 4:
-				pR->m_vti = two_way ? VTI_4LANE2WAY : VTI_4LANE1WAY;
+				pL->m_vti = two_way ? VTI_4LANE2WAY : VTI_4LANE1WAY;
 				break;
 			}
 			break;
 		case SURFT_RAILROAD:
-			pR->m_vti = VTI_RAIL;
+			pL->m_vti = VTI_RAIL;
 			break;
 		case SURFT_STONE:
-			pR->m_vti = VTI_STONE;
+			pL->m_vti = VTI_STONE;
 			break;
 		}
 	}
@@ -1107,7 +1107,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 
 #if 0
 	// This code attempts to identify cases where a node actually
-	// represents something like an overpass: two roads that don't
+	// represents something like an overpass: two links that don't
 	// actually connect.  However, it's better to take care of this
 	// as a preprocess, rather than at runtime.
 	float height;
@@ -1128,11 +1128,11 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 			pNew = new NodeGeom();
 			for (r = 1; r < pN->m_iLinks; r++)
 			{
-				LinkGeom *pR = pN->GetLink(r);
-				if (pR->GetHeightAt(pN) != height)
+				LinkGeom *pL = pN->GetLink(r);
+				if (pL->GetHeightAt(pN) != height)
 				{
-					pN->DetachRoad(pR);
-					pNew->AddRoad(pR);
+					pN->DetachRoad(pL);
+					pNew->AddRoad(pL);
 				}
 			}
 		}
@@ -1149,18 +1149,18 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 		}
 #endif
 	}
-	for (LinkGeom *pR = GetFirstLink(); pR; pR = (LinkGeom *)pR->m_pNext)
+	for (LinkGeom *pL = GetFirstLink(); pL; pL = (LinkGeom *)pL->m_pNext)
 	{
-		pR->m_centerline.SetSize(pR->GetSize());
-		for (unsigned int j = 0; j < pR->GetSize(); j++)
+		pL->m_centerline.SetSize(pL->GetSize());
+		for (unsigned int j = 0; j < pL->GetSize(); j++)
 		{
-			pHeightField->ConvertEarthToSurfacePoint(pR->GetAt(j), p);
-			pR->m_centerline[j] = p;
+			pHeightField->ConvertEarthToSurfacePoint(pL->GetAt(j), p);
+			pL->m_centerline[j] = p;
 		}
 		// ignore width from file - imply from properties
-		pR->m_fWidth = pR->m_iLanes * pR->m_fLaneWidth;
-		if (pR->m_fWidth == 0)
-			pR->m_fWidth = 10.0f;
+		pL->m_fWidth = pL->m_iLanes * pL->m_fLaneWidth;
+		if (pL->m_fWidth == 0)
+			pL->m_fWidth = 10.0f;
 	}
 }
 

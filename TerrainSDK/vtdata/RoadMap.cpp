@@ -85,11 +85,11 @@ TLink *TNode::GetLink(int n)
 		return NULL;
 }
 
-int TNode::FindLink(int roadID)
+int TNode::FindLink(int linkID)
 {
 	for (int i = 0; i < m_iLinks; i++)
 	{
-		if (m_connect[i].pLink->m_id == roadID)
+		if (m_connect[i].pLink->m_id == linkID)
 			return i;
 	}
 	return -1;
@@ -99,7 +99,7 @@ int TNode::AddLink(TLink *pL, bool bStart)
 {
 	m_iLinks++;
 
-	// fill in the entry for the new road
+	// fill in the entry for the new link
 	LinkConnect lc;
 	lc.bStart = bStart;
 	lc.pLink = pL;
@@ -148,10 +148,10 @@ float TNode::GetLinkAngle(int iLinkNum)
 
 void TNode::SortLinksByAngle()
 {
-	// first determine the angle of each road
+	// first determine the angle of each link
 	DetermineLinkAngles();
 
-	// sort roads by radial angle (make them counter-clockwise)
+	// sort links by radial angle (make them counter-clockwise)
 	// use a bubble sort
 	bool sorted = false;
 	while (!sorted)
@@ -176,9 +176,9 @@ DPoint2 TNode::GetAdjacentLinkPoint2d(int iLinkNum)
 {
 	LinkConnect &lc = m_connect[iLinkNum];
 	if (lc.bStart)
-		return lc.pLink->GetAt(1);			// roads starts here
+		return lc.pLink->GetAt(1);			// link starts here
 	else
-		return lc.pLink->GetAt(lc.pLink->GetSize() - 2);	// road ends here
+		return lc.pLink->GetAt(lc.pLink->GetSize() - 2);	// link ends here
 }
 
 int TNode::GetLinkNum(TLink *link, bool bStart)
@@ -271,7 +271,7 @@ void TNode::AdjustForLights()
 		int bestChoiceB = 0;
 		float newAngle;
 
-		//go through all road pairs and see what is the difference of their angles.
+		//go through all link pairs and see what is the difference of their angles.
 		//we're shooting for difference of PI.
 		for (i = 0; i < m_iLinks - 1; i++)
 		{
@@ -325,7 +325,7 @@ TLink::TLink()
 	m_iHwy = -1;
 	m_pNext = NULL;
 	m_id = 0;
-	m_iFlags = (RF_FORWARD|RF_REVERSE);	// by default, road are bidirectional
+	m_iFlags = (RF_FORWARD|RF_REVERSE);	// by default, links are bidirectional
 	m_fHeight[0] = 0;
 	m_fHeight[1] = 0;
 	m_pNode[0] = NULL;
@@ -373,7 +373,7 @@ int TLink::GetFlag(int flag)
 }
 
 /**
- * Find closest lateral distance from a given point to the road.
+ * Find closest lateral distance from a given point to the link.
  */
 double TLink::DistanceToPoint(const DPoint2 &point, bool bAllowEnds)
 {
@@ -387,22 +387,22 @@ double TLink::DistanceToPoint(const DPoint2 &point, bool bAllowEnds)
 
 /**
  * Produces the "linear coordinates" a and b, where a is the distance
- * along the road, and b is the signed lateral distance orthogonal to
- * the road at that point.
+ * along the link, and b is the signed lateral distance orthogonal to
+ * the link at that point.
  *
  * \param p The input point.
  * \param result_a	The resulting distance along the link.
  * \param result_b  The signed lateral (or absolute) distance to the link.
  * \param closest	The closest point on the link.
- * \param roadpoint	Index into the roads points just before the closest point.
- * \param fractional Fractional distance between this road point and the next.
+ * \param linkpoint	Index into the links points just before the closest point.
+ * \param fractional Fractional distance between this link point and the next.
  * \param bAllowEnds	If true, then for cases where the the closest
  *		point is either end of the link, the distance to that point
  *		is returned.  Otherwise, only laterial distances are returned.
  */
 double TLink::GetLinearCoordinates(const DPoint2 &p, double &result_a,
 								  double &result_b, DPoint2 &closest,
-								  int &roadpoint, float &fractional,
+								  int &linkpoint, float &fractional,
 								  bool bAllowEnds)
 {
 	double u, b, length, traversed = 0, min_dist = 1E10;
@@ -449,7 +449,7 @@ double TLink::GetLinearCoordinates(const DPoint2 &p, double &result_a,
 			result_a = traversed + u;
 			result_b = b;
 			closest = p1 + (vec_a * u);
-			roadpoint = i;
+			linkpoint = i;
 			fractional = (float) (u/length);
 		}
 		traversed += length;
@@ -596,7 +596,7 @@ void vtRoadMap::ComputeExtents()
 	m_extents.SetRect(1E9, -1E9, -1E9, 1E9);
 	for (TLink *pL = m_pFirstLink; pL; pL = pL->m_pNext)
 	{
-		// roads are a subclass of line, so we can treat them as lines
+		// links are a subclass of line, so we can treat them as lines
 		DLine2 *dl = pL;
 		m_extents.GrowToContainLine(*dl);
 	}
@@ -665,7 +665,7 @@ void vtRoadMap::RemoveNode(TNode *pNode)
 }
 
 //
-// Remove a road - use with caution
+// Remove a link - use with caution
 //
 void vtRoadMap::RemoveLink(TLink *pLink)
 {
@@ -793,7 +793,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	}
 	m_bValidExtents = true;
 
-	//get number of nodes and roads
+	//get number of nodes and links
 	fread(&numNodes, intSize, 1, fp);
 	fread(&numLinks, intSize, 1, fp);
 
@@ -839,7 +839,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		return false;
 	}
 
-	// Read the roads
+	// Read the links
 	float ftmp;
 	int itmp;
 	short stmp;
@@ -872,8 +872,8 @@ bool vtRoadMap::ReadRMF(const char *filename,
 
 		if (version < 1.89)
 		{
-			fread(&ftmp, floatSize, 1, fp);		//height of road at node 0
-			fread(&ftmp, floatSize, 1, fp);		//height of road at node 1
+			fread(&ftmp, floatSize, 1, fp);		//height of link at node 0
+			fread(&ftmp, floatSize, 1, fp);		//height of link at node 1
 		}
 
 		if (version >= 2.0)
@@ -885,7 +885,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 			fread(&(tmpLink->m_fParkingWidth), floatSize, 1, fp);	// parking width
 		}
 		int size;
-		fread(&size, intSize, 1, fp);	// number of coordinates making the road
+		fread(&size, intSize, 1, fp);	// number of coordinates making the link
 		tmpLink->SetSize(size);
 
 		for (j = 0; j < size; j++)
@@ -946,7 +946,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	}
 	if (reject1 || reject2 || reject3)
 	{
-		VTLOG("  Ignored roads:");
+		VTLOG("  Ignored links:");
 		if (reject1) VTLOG(" %d for being highways, ", reject1);
 		if (reject2) VTLOG(" %d for being paved, ", reject2);
 		if (reject3) VTLOG(" %d for being dirt, ", reject3);
@@ -977,17 +977,17 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		fread(&dummy, intSize, 1, fp);
 		fread(&numLinks, intSize, 1, fp);
 
-		//get specifics for each road at the intersection:
+		//get specifics for each link at the intersection:
 		for (j = 0; j < numLinks; j++)
 		{
-			//match road number
+			//match link number
 			IntersectionType type;
 			LightStatus lStatus;
 			//read in data
-			fread(&id, intSize, 1, fp);  //road ID
+			fread(&id, intSize, 1, fp);  //link ID
 			fread(&type, intSize, 1, fp);
 			fread(&lStatus, intSize, 1, fp);
-			//now figure out which roads at the node get what behavior
+			//now figure out which links at the node get what behavior
 			id = tmpNode->FindLink(id);
 			if (id >= 0)
 			{
@@ -1033,7 +1033,7 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	}
 
 	i= 1;
-	// go through and set id numbers for the nodes and roads
+	// go through and set id numbers for the nodes and links
 	while (curNode) {
 		curNode->m_id = i++;
 		curNode = curNode->m_pNext;
@@ -1065,7 +1065,7 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	FWrite(&m_extents.bottom, doubleSize);
 	FWrite(&m_extents.top, doubleSize);
 	FWrite(&numNodes, intSize);  // number of nodes
-	FWrite(&numLinks, intSize);  // number of roads
+	FWrite(&numLinks, intSize);  // number of links
 	FWrite("Nodes:",7);
 	//write nodes
 	while (curNode)
@@ -1076,7 +1076,7 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		curNode = curNode->m_pNext;
 	}
 	FWrite("Roads:",7);
-	//write roads
+	//write links
 	while (curLink)
 	{
 		FWrite(&(curLink->m_id), intSize);			//id
@@ -1092,15 +1092,15 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		FWrite(&(curLink->m_fParkingWidth), floatSize);	// parking width
 
 		int size = curLink->GetSize();
-		FWrite(&size, intSize);//number of coordinates making the road
+		FWrite(&size, intSize);//number of coordinates making the link
 		for (i = 0; i < size; i++)
 		{
-			//coordinates that make the road
+			//coordinates that make the link
 			FWrite(&curLink->GetAt(i).x, doubleSize);
 			FWrite(&curLink->GetAt(i).y, doubleSize);
 		}
 		//nodes (endpoints)
-		FWrite(&(curLink->GetNode(0)->m_id), intSize);	//what road is at the end point?
+		FWrite(&(curLink->GetNode(0)->m_id), intSize);	//what link is at the end point?
 		FWrite(&(curLink->GetNode(1)->m_id), intSize);
 
 		curLink = curLink->m_pNext;
@@ -1123,8 +1123,8 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		for (i = 0; i < curNode->m_iLinks; i++) {
 			IntersectionType type = curNode->GetIntersectType(i);
 			LightStatus lStatus = curNode->GetLightStatus(i);
-			FWrite(&(curNode->GetLink(i)->m_id), intSize);  //road ID
-			FWrite(&type, intSize);  //get the intersection type associated with that road
+			FWrite(&(curNode->GetLink(i)->m_id), intSize);  //link ID
+			FWrite(&type, intSize);  //get the intersection type associated with that link
 			FWrite(&lStatus,intSize);
 		}
 		curNode = curNode->m_pNext;

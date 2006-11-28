@@ -12,7 +12,7 @@
  * These classes are used for transportation - roads, trails and rails.
  * Transportation in the vtlib library consists of subclassing the vtdata
  * transportation classes to extend them with the ability to create and
- * operate on 3D geometry of the roads.
+ * operate on 3D geometry of the links.
  */
 /*@{*/
 
@@ -131,7 +131,7 @@ public:
 	FPoint3 FindPointAlongRoad(float fDistance);
 	float	Length();	// find 2D length in world units
 
-	// road-construction methods
+	// link-construction methods
 	void SetupBuildInfo(RoadBuildInfo &bi);
 	void AddRoadStrip(vtMesh *pGeom, RoadBuildInfo &bi,
 					float offset_left, float offset_right,

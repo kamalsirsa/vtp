@@ -26,7 +26,7 @@ enum SurfaceType {
 };
 
 //
-// This enum describes how a single road meets a node.
+// This enum describes how a single link meets a node.
 //
 enum IntersectionType {
 	IT_NONE,	// uncontrolled
@@ -41,7 +41,7 @@ enum LightStatus {
 	LT_GREEN
 };
 
-// road flags
+// link flags
 #define RF_SIDEWALK	0x0800
 #define RF_PARKING	0x0400
 #define RF_MARGIN	0x0200
@@ -75,12 +75,12 @@ struct LinkConnect
 	// light of the link at this node.
 	LightStatus eLight;
 
-	// angle of each road, not initialized till SortLinksByAngle is called
+	// angle of each link, not initialized till SortLinksByAngle is called
 	float fLinkAngle;
 };
 
 /**
- * A Transporation Node is a place where 2 or more roads (links) meet.
+ * A Transporation Node is a place where 2 or more links meet.
  */
 class TNode
 {
@@ -99,8 +99,8 @@ public:
 	void DetachLink(TLink *pR, bool bStart);	// detaches the link from the node
 	void DetermineLinkAngles();	// resulting angles > 0
 	float GetLinkAngle(int iLinkNum);
-	void SortLinksByAngle();	// sorts the internal roads by angle.
-	DPoint2 GetAdjacentLinkPoint2d(int iLinkNum);  //returns the 2nd point on the road from the node.
+	void SortLinksByAngle();	// sorts the internal links by angle.
+	DPoint2 GetAdjacentLinkPoint2d(int iLinkNum);  //returns the 2nd point on the link from the node.
 
 	int GetLinkNum(TLink *link, bool bStart);
 	LinkConnect &GetLinkConnect(int iLinkNum) { return m_connect[iLinkNum]; }
@@ -114,7 +114,7 @@ public:
 	bool HasLights();
 	bool IsControlled();	// true if any stopsigns or stoplights
 
-	//adjust the light relationship of the roads at the node (if the intersection is has a signal light.)
+	//adjust the light relationship of the links at the node (if the intersection is has a signal light.)
 	void AdjustForLights();
 
 	DPoint2 m_p;	// utm coordinates of center
@@ -123,7 +123,7 @@ public:
 	TNode *m_pNext;
 
 	// only used for reading from DLG/RMF
-	int FindLink(int roadID);	// returns internal number of road with given ID.  -1 if not found.
+	int FindLink(int linkID);	// returns internal number of link with given ID.  -1 if not found.
 	int m_id;
 
 protected:
@@ -155,27 +155,27 @@ public:
 	void SetNode(int n, TNode *pNode) { m_pNode[n] = pNode; }
 	TNode *GetNode(int n) { return m_pNode[n]; }
 
-	// closest distance from point to the road
+	// closest distance from point to the link
 	double GetLinearCoordinates(const DPoint2 &p, double &a, double &b,
-		DPoint2 &closest, int &roadpoint, float &fractional, bool bAllowEnds = true);
+		DPoint2 &closest, int &linkpoint, float &fractional, bool bAllowEnds = true);
 	double DistanceToPoint(const DPoint2 &point, bool bAllowEnds = true);
 
-	// is the road a loop?
+	// is the link a loop?
 	bool IsLoop() { return (m_pNode[0] == m_pNode[1]); }
 
 	// accessors for flag properties
 	virtual void SetFlag(int flag, bool value);
 	int GetFlag(int flag);
 
-	// Return length of road centerline.
+	// Return length of link centerline.
 	float Length();
 	float EstimateWidth(bool bIncludeSidewalk = true);
 
-	float	m_fWidth;		// road width in meters
+	float	m_fWidth;		// link width in meters
 	unsigned short m_iLanes; // number of lanes
 	SurfaceType m_Surface;
-	short	m_iHwy;			// highway number: -1 for normal roads
-	TLink	*m_pNext;		// the next Link, if roads are maintained in link list form
+	short	m_iHwy;			// highway number: -1 for normal links
+	TLink	*m_pNext;		// the next Link, if links are maintained in link list form
 	short	m_iFlags;		// a flag to be used to holding any addition info.
 	int		m_id;			// only used during file reading
 	float	m_fSidewalkWidth;
@@ -216,7 +216,7 @@ public:
 	DRECT GetMapExtent();		// get the geographical extent of the road map
 	void ComputeExtents();
 
-	int		NumLinks() const;	// returns number of roads in the road map
+	int		NumLinks() const;	// returns number of links in the road map
 	int		NumNodes() const;	// returns number of nodes in the road map
 
 	TLink	*GetFirstLink() { return m_pFirstLink; }
