@@ -71,17 +71,17 @@ bool vtRoadLayer::OnLoad()
 		pN->DetermineVisualFromLinks();
 	}
 
-	// Pre-process some road attributes
-	for (LinkEdit *pR = GetFirstLink(); pR; pR = pR->GetNext())
+	// Pre-process some link attributes
+	for (LinkEdit *pL = GetFirstLink(); pL; pL = pL->GetNext())
 	{
-		pR->m_fLength = pR->Length();
+		pL->m_fLength = pL->Length();
 
-		//set the bounding box for the road
-		pR->ComputeExtent();		
+		//set the bounding box for the link
+		pL->ComputeExtent();		
 
-		// clean up road direction info
-		if ((pR->m_iFlags & (RF_FORWARD|RF_REVERSE)) == 0)
-			pR->m_iFlags |= (RF_FORWARD|RF_REVERSE);
+		// clean up link direction info
+		if ((pL->m_iFlags & (RF_FORWARD|RF_REVERSE)) == 0)
+			pL->m_iFlags |= (RF_FORWARD|RF_REVERSE);
 	}
 	return true;
 }
@@ -108,7 +108,7 @@ bool vtRoadLayer::AppendDataFrom(vtLayer *pL)
 		m_pFirstNode = n;
 		n = next;
 	}
-	// add roads to our list
+	// add links to our list
 	TLink *r = pFrom->GetFirstLink();
 	while (r)
 	{
@@ -192,7 +192,7 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 
 	delete trans;
 
-	// recompute road extents
+	// recompute link extents
 	for (l = GetFirstLink(); l; l=l->GetNext())
 	{
 		l->ComputeExtent();
@@ -214,7 +214,7 @@ void vtRoadLayer::SetProjection(const vtProjection &proj)
 	m_proj = proj;
 
 	// Extents are still valid, but we should recompute things like displayed
-	// road widths, which may have different values in another projection.
+	// link widths, which may have different values in another projection.
 	for (LinkEdit *link = GetFirstLink(); link; link = link->GetNext())
 		link->m_bSidesComputed = false;
 
@@ -259,7 +259,7 @@ void vtRoadLayer::Offset(const DPoint2 &p)
 		}
 	}
 
-	// recompute road extents
+	// recompute link extents
 	for (LinkEdit *r2 = GetFirstLink(); r2; r2=r2->GetNext())
 		r2->ComputeExtent();
 
@@ -314,18 +314,18 @@ void vtRoadLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	}
 	if (ui.mode == LB_LinkEdit)
 	{
-		// see if there is a road or node at m_DownPoint
+		// see if there is a link or node at m_DownPoint
 		float error = pView->odx(5);
 
-		LinkEdit *pRoad = FindLink(ui.m_DownLocation, error);
-		if (pRoad != ui.m_pEditingRoad)
+		LinkEdit *pLink = FindLink(ui.m_DownLocation, error);
+		if (pLink != ui.m_pEditingRoad)
 		{
 			if (ui.m_pEditingRoad)
 			{
 				pView->RefreshRoad(ui.m_pEditingRoad);
 				ui.m_pEditingRoad->m_bDrawPoints = false;
 			}
-			ui.m_pEditingRoad = pRoad;
+			ui.m_pEditingRoad = pLink;
 			if (ui.m_pEditingRoad)
 			{
 				pView->RefreshRoad(ui.m_pEditingRoad);
@@ -499,7 +499,7 @@ bool vtRoadLayer::EditLinksProperties()
 	int count = 0;
 	LinkEdit *link=NULL;
 
-	//only bring up dialog is there is a selected road.
+	//only bring up dialog is there is a selected link.
 	for (LinkEdit* r = GetFirstLink(); r; r = r->GetNext())
 	{
 		if (!r->IsSelected())
@@ -512,7 +512,7 @@ bool vtRoadLayer::EditLinksProperties()
 
 	RoadDlg dlg(NULL, -1, _("Link Properties"));
 	if (count == 1)
-		dlg.SetRoad(link, this);	//only one road found
+		dlg.SetRoad(link, this);	//only one link found
 	else
 		dlg.SetRoad(NULL, this);
 	return (dlg.ShowModal() == wxID_OK);
@@ -536,7 +536,7 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 		else
 			selected = SelectLinks(box, true);
 
-		wxString str = wxString::Format(_("Selected %d roads"), selected);
+		wxString str = wxString::Format(_("Selected %d links"), selected);
 		if (selected) SetMessageText(str);
 		ret = (selected != 0);
 	}
@@ -554,7 +554,7 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 		return;
 
 	// how many units to flatten on either side of the roadway, past the
-	//  physical edge of the road surface
+	//  physical edge of the link surface
 	float shoulder = margin;
 	float fade = margin;
 
@@ -571,7 +571,7 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 
 	int altered_heixels = 0;
 	float height;
-	int roadpoint;
+	int linkpoint;
 	float fractional;
 	double a, b, total;
 	DPoint3 loc;
@@ -591,25 +591,25 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 				if (!pLink->WithinExtent(p2))
 					continue;
 
-				// Find position in road coordinates.
+				// Find position in link coordinates.
 				// These factors (a,b) are similar to what Pete Willemsen calls
 				//  Curvilinear Coordinates: distance and offset.
 				DPoint2 closest;
 				total = pLink->GetLinearCoordinates(p2, a, b, closest,
-					roadpoint, fractional, false);
+					linkpoint, fractional, false);
 				half = pLink->m_fWidth / 2 + shoulder + fade;
 
-				// Check if the point is actually on the road
+				// Check if the point is actually on the link
 				if (a < 0 || a > total || b < -half || b > half)
 					continue;
 
-				// Don't use the height of the ground at the middle of the road.
-				// That assumes the road is draped perfectly.  In reality,
+				// Don't use the height of the ground at the middle of the link.
+				// That assumes the link is draped perfectly.  In reality,
 				//  it's draped based only on the height at each vertex of
-				//  the road.  Just use those.
+				//  the link.  Just use those.
 				float alt1, alt2;
-				grid->FindAltitudeOnEarth(pLink->GetAt(roadpoint), alt1);
-				grid->FindAltitudeOnEarth(pLink->GetAt(roadpoint+1), alt2);
+				grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint), alt1);
+				grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint+1), alt2);
 				height = alt1 + (alt2 - alt1) * fractional;
 
 				// If the point falls in the 'fade' region, interpolate

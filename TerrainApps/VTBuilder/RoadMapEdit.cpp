@@ -1,7 +1,7 @@
 //
 // RoadMapEdit.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,7 +21,7 @@
 
 #define NODE_RADIUS 5
 
-wxPen RoadPen[11];
+wxPen LinkPen[11];
 wxPen NodePen[VIT_TOTAL];
 static bool g_bInitializedPens = false;
 
@@ -102,11 +102,11 @@ void NodeEdit::Translate(const DPoint2 &offset)
 	// update the endpoints of all the links that meet here
 	for (int i = 0; i < m_iLinks; i++)
 	{
-		TLink *pR = m_connect[i].pLink;
-		if (pR->GetNode(0) == this)
-			pR->SetAt(0, m_p);
-		if (pR->GetNode(1) == this)
-			pR->SetAt(pR->GetSize()-1, m_p);
+		TLink *pL = m_connect[i].pLink;
+		if (pL->GetNode(0) == this)
+			pL->SetAt(0, m_p);
+		if (pL->GetNode(1) == this)
+			pL->SetAt(pL->GetSize()-1, m_p);
 	}
 }
 
@@ -171,7 +171,7 @@ void LinkEdit::ComputeExtent()
 
 void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 {
-	// also refresh the parallel left and right road edges
+	// also refresh the parallel left and right link edges
 	m_fWidth = EstimateWidth();
 	double half_width = (m_fWidth / 2);
 
@@ -236,7 +236,7 @@ bool LinkEdit::WithinExtent(const DPoint2 &p)
 			p.y > m_extent.bottom && p.y < m_extent.top);
 }
 
-//is extent of the road in "bound"
+//is extent of the link in "bound"
 bool LinkEdit::InBounds(const DRECT &bound)
 {
 	//eliminate easy cases.
@@ -258,7 +258,7 @@ bool LinkEdit::InBounds(const DRECT &bound)
 	return false;
 }
 
-//is extent of the road in "bound"
+//is extent of the link in "bound"
 bool LinkEdit::PartiallyInBounds(const DRECT &bound)
 {
 	//eliminate easy cases.
@@ -287,12 +287,12 @@ bool LinkEdit::PartiallyInBounds(const DRECT &bound)
 bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	bool bShowWidth)
 {
-	// base road color on type of road
+	// base link color on type of link
 	pDC->SetLogicalFunction(wxCOPY);
 	if (m_iHwy != -1)
-		pDC->SetPen(RoadPen[RP_HIGHWAY]);
+		pDC->SetPen(LinkPen[RP_HIGHWAY]);
 	else
-		pDC->SetPen(RoadPen[m_Surface]);
+		pDC->SetPen(LinkPen[m_Surface]);
 
 	int c, size = GetSize();
 	if (bShowWidth)
@@ -303,7 +303,7 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	if (m_bSelect)
 	{
 		pDC->SetLogicalFunction(wxINVERT);
-		pDC->SetPen(RoadPen[RP_SELECTION]);
+		pDC->SetPen(LinkPen[RP_SELECTION]);
 		pView->DrawLine(pDC, *this, false);
 	}
 	if (bShowDirection)
@@ -331,7 +331,7 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 		fw.Normalize();
 		side.x = -fw.y;
 		side.y = fw.x;
-		pDC->SetPen(RoadPen[RP_DIRECTION]);
+		pDC->SetPen(LinkPen[RP_DIRECTION]);
 		if (m_iFlags & RF_FORWARD)
 		{
 			pDC->DrawLine((int) (center.x - side.x * 5.0f),
@@ -357,7 +357,7 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	}
 	if (m_bDrawPoints)
 	{
-		pDC->SetPen(RoadPen[RP_CROSSES]);
+		pDC->SetPen(LinkPen[RP_CROSSES]);
 		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
 		{
 			pDC->DrawLine(g_screenbuf[c].x-3, g_screenbuf[c].y,
@@ -398,35 +398,35 @@ void LinkEdit::Dirtied()
 
 RoadMapEdit::RoadMapEdit() : vtRoadMap()
 {
-	// create Pens for drawing roads
+	// create Pens for drawing links
 	if (!g_bInitializedPens)
 	{
 		g_bInitializedPens = true;
 
-		RoadPen[RP_HIGHWAY].SetColour(128,0,0);	// dark red highways
-		RoadPen[RP_HIGHWAY].SetWidth(2);
+		LinkPen[RP_HIGHWAY].SetColour(128,0,0);	// dark red highways
+		LinkPen[RP_HIGHWAY].SetWidth(2);
 
-		RoadPen[SURFT_GRAVEL].SetColour(128,128,128);
+		LinkPen[SURFT_GRAVEL].SetColour(128,128,128);
 
-		RoadPen[SURFT_TRAIL].SetColour(130,100,70);
-		RoadPen[SURFT_TRAIL].SetStyle(wxDOT);
+		LinkPen[SURFT_TRAIL].SetColour(130,100,70);
+		LinkPen[SURFT_TRAIL].SetStyle(wxDOT);
 
-		RoadPen[SURFT_2TRACK].SetColour(130,100,70);
+		LinkPen[SURFT_2TRACK].SetColour(130,100,70);
 
-		RoadPen[SURFT_DIRT].SetColour(130,100,70);
+		LinkPen[SURFT_DIRT].SetColour(130,100,70);
 
-		RoadPen[SURFT_PAVED].SetColour(0,0,0);
+		LinkPen[SURFT_PAVED].SetColour(0,0,0);
 
-		RoadPen[SURFT_RAILROAD].SetColour(0,0,0);
-		RoadPen[SURFT_RAILROAD].SetStyle(wxSHORT_DASH);
+		LinkPen[SURFT_RAILROAD].SetColour(0,0,0);
+		LinkPen[SURFT_RAILROAD].SetStyle(wxSHORT_DASH);
 
-		RoadPen[RP_SELECTION].SetColour(255,255,255);	// for selection
-		RoadPen[RP_SELECTION].SetWidth(3);
+		LinkPen[RP_SELECTION].SetColour(255,255,255);	// for selection
+		LinkPen[RP_SELECTION].SetWidth(3);
 
-		RoadPen[RP_DIRECTION].SetColour(0,180,0);	// for direction
-		RoadPen[RP_DIRECTION].SetWidth(2);
+		LinkPen[RP_DIRECTION].SetColour(0,180,0);	// for direction
+		LinkPen[RP_DIRECTION].SetWidth(2);
 
-		RoadPen[RP_CROSSES].SetColour(128,0,128);	// for edit crosses
+		LinkPen[RP_CROSSES].SetColour(128,0,128);	// for edit crosses
 
 		NodePen[VIT_UNKNOWN].SetColour(255,0,255);
 
@@ -487,7 +487,7 @@ void RoadMapEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bNodes)
 }
 
 //
-// delete all selected roads
+// delete all selected links
 //
 DRECT *RoadMapEdit::DeleteSelected(int &nDeleted)
 {
@@ -509,7 +509,7 @@ DRECT *RoadMapEdit::DeleteSelected(int &nDeleted)
 		curLink = curLink->GetNext();
 		if (tmpLink->IsSelected())
 		{
-			//delete the road
+			//delete the link
 			array[n] = tmpLink->m_extent;
 			n++;
 
@@ -567,30 +567,30 @@ bool RoadMapEdit::SelectAndExtendLink(DPoint2 point, float error, DRECT &bound)
 
 	originalLink->Select(true);
 	bound = originalLink->m_extent;
-	//extend the given road
+	//extend the given link
 	NodeEdit* node;
-	LinkEdit* road = originalLink;
+	LinkEdit* link = originalLink;
 	//run twice.  once in node 0 direction.  once in node 1 direction
 	node = (NodeEdit*) originalLink->GetNode(0);
 	bool search;
 	for (int i = 0; i < 2; i++) {
 		search = true;
 		while (search) {
-			//ignore if there is only the one road.
+			//ignore if there is only the one link.
 			int index = -1;
 			int j;
 			float bestAngle = PI2f;
 			int bestLinkIndex = -1;
 			if (node->m_iLinks > 1) {
 				node->SortLinksByAngle();
-				//find index for current road
+				//find index for current link
 				for (j=0; j < node->m_iLinks; j++) {
-					if (road == node->GetLink(j)) {
+					if (link == node->GetLink(j)) {
 						index = j;	
 					}
 				}
 
-				//compare index with all the other roads at the node.
+				//compare index with all the other links at the node.
 				for (j = 0; j < node->m_iLinks; j++) {
 					if (j != index) {
 						float newAngle  = node->GetLinkAngle(j) - (node->GetLinkAngle(index) + PIf);
@@ -604,7 +604,7 @@ bool RoadMapEdit::SelectAndExtendLink(DPoint2 point, float error, DRECT &bound)
 						newAngle = fabsf(newAngle);
 
 						//same highway number
-						if (road->m_iHwy > 0 && road->m_iHwy == node->GetLink(j)->m_iHwy) {
+						if (link->m_iHwy > 0 && link->m_iHwy == node->GetLink(j)->m_iHwy) {
 							bestLinkIndex = j;
 							bestAngle = 0;
 							break;
@@ -615,34 +615,33 @@ bool RoadMapEdit::SelectAndExtendLink(DPoint2 point, float error, DRECT &bound)
 						}
 					}
 				}
-				//wxLogMessage("best angle:%f, road: %i\n", bestAngle, bestLinkIndex);
+				//wxLogMessage("best angle:%f, link: %i\n", bestAngle, bestLinkIndex);
 				//ignore result if angle is too big
 				if (bestAngle > PIf/6 && node->m_iLinks > 2) {
 					bestLinkIndex = -1;
-				} else if (road->m_iHwy > 0 && road->m_iHwy != node->GetLink(bestLinkIndex)->m_iHwy) {
+				} else if (link->m_iHwy > 0 && link->m_iHwy != node->GetLink(bestLinkIndex)->m_iHwy) {
 					//highway must match with same highway number
 					bestLinkIndex = -1;
-				} else if (road->m_iHwy < 0 && node->GetLink(bestLinkIndex)->m_iHwy > 0) {
+				} else if (link->m_iHwy < 0 && node->GetLink(bestLinkIndex)->m_iHwy > 0) {
 					//non-highway can't pair with a highway
 					bestLinkIndex = -1;
 				}
 				if (bestLinkIndex != -1) {
-					//select the road
-					road = node->GetLink(bestLinkIndex);
-					if (node == road->GetNode(0)) {
-						node = road->GetNode(1);
-					} else {
-						node = road->GetNode(0);
-					}
-					road->Select(true);
+					//select the link
+					link = node->GetLink(bestLinkIndex);
+					if (node == link->GetNode(0))
+						node = link->GetNode(1);
+					else
+						node = link->GetNode(0);
+
+					link->Select(true);
 					//increase the size of the extent
-					if (road->m_extent.left < bound.left) bound.left = road->m_extent.left;
-					if (road->m_extent.bottom < bound.bottom) bound.bottom = road->m_extent.bottom;
-					if (road->m_extent.right > bound.right) bound.right = road->m_extent.right;
-					if (road->m_extent.top > bound.top) bound.top = road->m_extent.top;
-					if (road == originalLink) {
+					if (link->m_extent.left < bound.left) bound.left = link->m_extent.left;
+					if (link->m_extent.bottom < bound.bottom) bound.bottom = link->m_extent.bottom;
+					if (link->m_extent.right > bound.right) bound.right = link->m_extent.right;
+					if (link->m_extent.top > bound.top) bound.top = link->m_extent.top;
+					if (link == originalLink)
 						bestLinkIndex = -1;
-					}
 				}
 			}
 			if (bestLinkIndex == -1) {
@@ -652,7 +651,7 @@ bool RoadMapEdit::SelectAndExtendLink(DPoint2 point, float error, DRECT &bound)
 		}
 		//search in node(1) direction.
 		node = (NodeEdit*) originalLink->GetNode(1);
-		road = originalLink;
+		link = originalLink;
 	}
 	return true;
 }
@@ -782,7 +781,7 @@ LinkEdit *RoadMapEdit::FindLink(DPoint2 point, float error)
 	double dist = error;
 	double b;
 
-	//a backwards rectangle, to provide greater flexibility for finding the road.
+	//a backwards rectangle, to provide greater flexibility for finding the link.
 	DRECT target(point.x-error, point.y+error, point.x+error, point.y-error);
 	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
@@ -875,7 +874,7 @@ LinkEdit *RoadMapEdit::AddRoadSegment(OGRLineString *pLineString)
 	n1->AddLink(r, true);
 	n2->AddLink(r, false);
 
-	//set bounding box for the road
+	//set bounding box for the link
 	r->ComputeExtent();
 
 	AddLink(r);

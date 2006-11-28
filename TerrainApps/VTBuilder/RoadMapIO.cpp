@@ -154,7 +154,7 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		DLGNode &dnode = pDlg->m_nodes[i];
 
 		// create new node
-		pN = new NodeEdit();
+		pN = new NodeEdit;
 		pN->m_id = id++;
 		pN->m_p = dnode.m_p;
 
@@ -163,27 +163,27 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		//add to array
 		pNodeLookup[pN->m_id] = pN;
 	}
-	LinkEdit *pR;
+	LinkEdit *pL;
 	for (i = 0; i < pDlg->m_iLines; i++)
 	{
 		DLGLine &dline = pDlg->m_lines[i];
-		
+
 		int priority;
 		bool result = false;
 		result = attribute_filter_roads(&dline, lanes, stype, priority);
 		if (!result)
 			continue;
 
-		// create new road
-		pR = new LinkEdit();
-		pR->m_Surface = stype;
-		pR->m_iLanes = lanes;
-		pR->m_iPriority = priority;
+		// create new link
+		pL = new LinkEdit;
+		pL->m_Surface = stype;
+		pL->m_iLanes = lanes;
+		pL->m_iPriority = priority;
 
 		// copy data from DLG line
-		pR->SetNode(0, pNodeLookup[dline.m_iNode1]);
-		pR->SetNode(1, pNodeLookup[dline.m_iNode2]);
-		
+		pL->SetNode(0, pNodeLookup[dline.m_iNode1]);
+		pL->SetNode(1, pNodeLookup[dline.m_iNode2]);
+
 		int actual_coords = 0;
 		for (j = 0; j < dline.m_iCoords; j++)
 		{
@@ -215,24 +215,24 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 			buffer[actual_coords] = dline.m_p[j];
 			actual_coords++;
 		}
-		pR->SetSize(actual_coords);
+		pL->SetSize(actual_coords);
 		for (j = 0; j < actual_coords; j++)
-			pR->SetAt(j, buffer[j]);
+			pL->SetAt(j, buffer[j]);
 
-		//set bounding box for the road
-		pR->ComputeExtent();
+		//set bounding box for the link
+		pL->ComputeExtent();
 
-		pR->m_iHwy = dline.HighwayNumber();
+		pL->m_iHwy = dline.HighwayNumber();
 
 		// add to list
-		AddLink(pR);
+		AddLink(pL);
 
 		// inform the Nodes to which it belongs
-		pR->GetNode(0)->AddLink(pR, true);
-		pR->GetNode(1)->AddLink(pR, false);
-		pR->m_fLength = pR->Length();	
+		pL->GetNode(0)->AddLink(pL, true);
+		pL->GetNode(1)->AddLink(pL, false);
+		pL->m_fLength = pL->Length();
 	}
-	
+
 	//delete the lookup array.
 	delete [] pNodeLookup;
 
@@ -265,7 +265,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 			int topCount = 0;
 			int lowPriority = topPriority;
 
-			//analyze the roads intersecting at the node
+			//analyze the links intersecting at the node
 			for (i = 0; i < pN->m_iLinks; i++)
 			{
 				curRoad = (LinkEdit*)(pN->GetLink(i));
@@ -280,7 +280,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 			}
 
 			IntersectionType bType;
-			//all roads have same priority
+			//all links have same priority
 			if (topCount == pN->m_iLinks)
 			{
 				if (topPriority <= 2) {
@@ -315,13 +315,13 @@ void RoadMapEdit::GuessIntersectionTypes()
 				}
 				else
 				{
-					//top priority roads have right of way
+					//top priority links have right of way
 					pN->SetVisual(VIT_STOPSIGN);
 					for (i = 0; i < pN->m_iLinks; i++)
 					{
 						curRoad = (LinkEdit*)(pN->GetLink(i));
 						if (curRoad->m_iPriority == topPriority) {
-							//higher priority road.
+							//higher priority link.
 							pN->SetIntersectType(i, IT_NONE);
 						} else {
 							//low priority.
@@ -341,7 +341,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 	}
 }
 
-bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
+bool RoadMapEdit::ApplyCFCC(LinkEdit *pL, const char *str)
 {
 	bool bReject = false;
 
@@ -353,26 +353,26 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 	{
 	case 1:
 		// Primary Highway With Limited Access
-		pR->m_iLanes = 4;
-		pR->m_iHwy = 1;		// better to have actual highway number
+		pL->m_iLanes = 4;
+		pL->m_iHwy = 1;		// better to have actual highway number
 		break;
 	case 2:
 		// Primary Road Without Limited Access
-		pR->m_iLanes = 2;
-		pR->m_iHwy = 1;		// better to have actual highway number
+		pL->m_iLanes = 2;
+		pL->m_iHwy = 1;		// better to have actual highway number
 		break;
 	case 3:
 		// Secondary and Connecting Road
-		pR->m_iLanes = 2;
+		pL->m_iLanes = 2;
 		break;
 	case 4:
 		// Local, Neighborhood, and Rural Road
-		pR->m_iLanes = 2;
+		pL->m_iLanes = 2;
 		break;
 	case 5:
 		// Vehicular Trail
-		pR->m_iLanes = 1;
-		pR->m_Surface = SURFT_2TRACK;
+		pL->m_iLanes = 1;
+		pL->m_Surface = SURFT_2TRACK;
 		break;
 	// Road with Special Characteristics
 	case 6:
@@ -388,8 +388,8 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 		{
 			// access ramp
 			// 1 lane, 1 direction
-			pR->m_iLanes = 1;
-			pR->m_iFlags &= ~RF_REVERSE;
+			pL->m_iLanes = 1;
+			pL->m_iFlags &= ~RF_REVERSE;
 		}
 		if (code2 == 4)
 		{
@@ -407,8 +407,8 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 		if (code2 == 1)
 		{
 			// Walkway or trail for pedestrians, usually unnamed
-			pR->m_iLanes = 1;
-			pR->m_Surface = SURFT_TRAIL;
+			pL->m_iLanes = 1;
+			pL->m_Surface = SURFT_TRAIL;
 		}
 		if (code2 == 2)
 		{
@@ -419,7 +419,7 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 		{
 			// Alley, road for service vehicles, usually unnamed, located at
 			// the rear of buildings and property
-			pR->m_iLanes = 1;
+			pL->m_iLanes = 1;
 		}
 		if (code2 == 4)
 		{
@@ -427,7 +427,7 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 			// used as access to residences, trailer parks, and apartment
 			// complexes, or as access to logging areas, oil rigs, ranches,
 			// farms, and park lands
-			pR->m_iLanes = 1;
+			pL->m_iLanes = 1;
 		}
 		break;
 	}
@@ -470,7 +470,7 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 	m_proj = proj;
 
 	NodeEdit *pN1, *pN2;
-	LinkEdit *pR;
+	LinkEdit *pL;
 	int i, j, npoints;
 
 	for (i = 0; i < nEntities; i++)
@@ -489,7 +489,7 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 		}
 
 		// create 2 new nodes (begin/end) and a new line
-		pN1 = new NodeEdit();
+		pN1 = new NodeEdit;
 		pN1->m_p.x = psShape->padfX[0];
 		pN1->m_p.y = psShape->padfY[0];
 		pN1->SetVisual(VIT_NONE);
@@ -497,7 +497,7 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 		// add to list
 		AddNode(pN1);
 
-		pN2 = new NodeEdit();
+		pN2 = new NodeEdit;
 		pN2->m_p.x = psShape->padfX[npoints-1];
 		pN2->m_p.y = psShape->padfY[npoints-1];
 		pN2->SetVisual(VIT_NONE);
@@ -505,37 +505,37 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 		// add to list
 		AddNode(pN2);
 
-		// create new road
-		pR = new LinkEdit();
-		pR->m_iLanes = 2;
-		pR->m_iPriority = 1;
+		// create new link
+		pL = new LinkEdit;
+		pL->m_iLanes = 2;
+		pL->m_iPriority = 1;
 
 		if (cfcc != -1)
 		{
 			const char *str = DBFReadStringAttribute(db, i, cfcc);
-			ApplyCFCC(pR, str);
+			ApplyCFCC(pL, str);
 		}
 		// copy point data
-		pR->SetNode(0, pN1);
-		pR->SetNode(1, pN2);
+		pL->SetNode(0, pN1);
+		pL->SetNode(1, pN2);
 
-		pR->SetSize(npoints);
+		pL->SetSize(npoints);
 		for (j = 0; j < npoints; j++)
 		{
-			pR->GetAt(j).x = psShape->padfX[j];
-			pR->GetAt(j).y = psShape->padfY[j];
+			pL->GetAt(j).x = psShape->padfX[j];
+			pL->GetAt(j).y = psShape->padfY[j];
 		}
 
-		//set bounding box for the road
-		pR->ComputeExtent();
+		//set bounding box for the link
+		pL->ComputeExtent();
 
 		// add to list
-		AddLink(pR);
+		AddLink(pL);
 
 		// inform the Nodes to which it belongs
-		pR->GetNode(0)->AddLink(pR, true);
-		pR->GetNode(1)->AddLink(pR, false);
-		pR->m_fLength = pR->Length();
+		pL->GetNode(0)->AddLink(pL, true);
+		pL->GetNode(1)->AddLink(pL, false);
+		pL->m_fLength = pL->Length();
 
 		SHPDestroyObject(psShape);
 	}
@@ -590,7 +590,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 	const char		*layer_name;
 
 	NodeEdit *pN;
-	LinkEdit *pR;
+	LinkEdit *pL;
 	NodeEditPtr *pNodeLookup = NULL;
 
 	//
@@ -636,7 +636,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pGeom = pFeature->GetGeometryRef();
 				if (!pGeom) continue;
 				pPoint = (OGRPoint *) pGeom;
-				pN = new NodeEdit();
+				pN = new NodeEdit;
 				pN->m_id = id++;
 
 				pN->m_p.x = pPoint->getX();
@@ -688,11 +688,11 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				if (!pGeom) continue;
 				pLineString = (OGRLineString *) pGeom;
 
-				pR = new LinkEdit();
-				pR->m_fWidth = 1.0f;	// defaults
-				pR->m_Surface = stype;
-				pR->m_iLanes = lanes;		// defaults
-				pR->m_iPriority = priority;
+				pL = new LinkEdit;
+				pL->m_fWidth = 1.0f;	// defaults
+				pL->m_Surface = stype;
+				pL->m_iLanes = lanes;		// defaults
+				pL->m_iPriority = priority;
 
 				if (pFeature->IsFieldSet(index_lanes))
 				{
@@ -700,7 +700,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 					// previous guess
 					int value_lanes = pFeature->GetFieldAsInteger(index_lanes);
 					if (value_lanes > 0)
-						pR->m_iLanes = value_lanes;
+						pL->m_iLanes = value_lanes;
 				}
 				if (pFeature->IsFieldSet(index_route))
 				{
@@ -710,7 +710,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 					if (!strncmp(str_route, "SR", 2))
 					{
 						int int_route = atoi(str_route+2);
-						pR->m_iHwy = int_route;
+						pL->m_iHwy = int_route;
 					}
 				}
 				if (pFeature->IsFieldSet(index_rtype))
@@ -719,34 +719,34 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				}
 
 				int num_points = pLineString->getNumPoints();
-				pR->SetSize(num_points);
+				pL->SetSize(num_points);
 				for (j = 0; j < num_points; j++)
-					pR->SetAt(j, DPoint2(pLineString->getX(j),
+					pL->SetAt(j, DPoint2(pLineString->getX(j),
 						pLineString->getY(j)));
 
 #if 0
 				// Slow way to guess at road-node connectivity: compare points
 				for (pN = GetFirstNode(); pN; pN=pN->GetNext())
 				{
-					if (pR->GetAt(0) == pN->m_p)
-						pR->SetNode(0, pN);
-					if (pR->GetAt(num_points-1) == pN->m_p)
-						pR->SetNode(1, pN);
+					if (pL->GetAt(0) == pN->m_p)
+						pL->SetNode(0, pN);
+					if (pL->GetAt(num_points-1) == pN->m_p)
+						pL->SetNode(1, pN);
 				}
 #else
 				// Much faster: Get start/end information from SDTS via OGR
 				int snid = pFeature->GetFieldAsInteger(index_snid);
 				int enid = pFeature->GetFieldAsInteger(index_enid);
-				pR->SetNode(0, pNodeLookup[snid]);
-				pR->SetNode(1, pNodeLookup[enid]);
+				pL->SetNode(0, pNodeLookup[snid]);
+				pL->SetNode(1, pNodeLookup[enid]);
 #endif
-				pR->ComputeExtent();
+				pL->ComputeExtent();
 
-				AddLink(pR);
+				AddLink(pL);
 
 				// inform the Nodes to which it belongs
-				pR->GetNode(0)->AddLink(pR, true);
-				pR->GetNode(1)->AddLink(pR, false);
+				pL->GetNode(0)->AddLink(pL, true);
+				pL->GetNode(1)->AddLink(pL, false);
 			}
 		}
 		else if (!bIsSDTS)
@@ -876,25 +876,25 @@ bool RoadMapEdit::AppendFromOGRLayer(OGRLayer *pLayer)
 void RoadMapEdit::AddLinkFromLineString(OGRLineString *pLineString)
 {
 	NodeEdit *pN1, *pN2;
-	LinkEdit *pR;
+	LinkEdit *pL;
 	DPoint2 p2;
 
 	int j, num_points = pLineString->getNumPoints();
 
-	// create new road
-	pR = new LinkEdit();
-	pR->m_iLanes = 2;
-	pR->m_iPriority = 1;
+	// create new link
+	pL = new LinkEdit;
+	pL->m_iLanes = 2;
+	pL->m_iPriority = 1;
 
-	pR->SetSize(num_points);
+	pL->SetSize(num_points);
 	for (j = 0; j < num_points; j++)
 	{
 		p2.Set(pLineString->getX(j), pLineString->getY(j));
-		pR->SetAt(j, p2);
+		pL->SetAt(j, p2);
 	}
 
 	// create 2 new nodes (begin/end) and a new line
-	pN1 = new NodeEdit();
+	pN1 = new NodeEdit;
 	pN1->m_p.x = pLineString->getX(0);
 	pN1->m_p.y = pLineString->getY(0);
 	pN1->SetVisual(VIT_NONE);
@@ -902,7 +902,7 @@ void RoadMapEdit::AddLinkFromLineString(OGRLineString *pLineString)
 	// add to list
 	AddNode(pN1);
 
-	pN2 = new NodeEdit();
+	pN2 = new NodeEdit;
 	pN2->m_p.x = pLineString->getX(num_points-1);
 	pN2->m_p.y = pLineString->getY(num_points-1);
 	pN2->SetVisual(VIT_NONE);
@@ -911,17 +911,17 @@ void RoadMapEdit::AddLinkFromLineString(OGRLineString *pLineString)
 	AddNode(pN2);
 
 	// point link to nodes
-	pR->SetNode(0, pN1);
-	pR->SetNode(1, pN2);
+	pL->SetNode(0, pN1);
+	pL->SetNode(1, pN2);
 
-	//set bounding box for the road
-	pR->ComputeExtent();
+	//set bounding box for the link
+	pL->ComputeExtent();
 
 	// add to list
-	AddLink(pR);
+	AddLink(pL);
 
 	// point node to links
-	pR->GetNode(0)->AddLink(pR, true);
-	pR->GetNode(1)->AddLink(pR, false);
+	pL->GetNode(0)->AddLink(pL, true);
+	pL->GetNode(1)->AddLink(pL, false);
 }
 
