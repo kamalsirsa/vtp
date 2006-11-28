@@ -797,7 +797,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 		fDist[0] = 0.0f;
 		fDist[1] = m_fLodDistance;
 
-		m_pRoads[a][b] = new vtLOD();
+		m_pRoads[a][b] = new vtLOD;
 		m_pRoads[a][b]->SetRanges(fDist, 2);
 		m_pGroup->AddChild(m_pRoads[a][b]);
 
@@ -814,7 +814,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 		pSphere2->SetTrans(lod_center);
 #endif
 
-		pGeom = new vtGeom();
+		pGeom = new vtGeom;
 		pGeom->SetName2("road");
 		m_pRoads[a][b]->AddChild(pGeom);
 		pGeom->SetMaterials(m_pMats);
@@ -1125,7 +1125,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 		}
 		if (!all_same_height)
 		{
-			pNew = new NodeGeom();
+			pNew = new NodeGeom;
 			for (r = 1; r < pN->m_iLinks; r++)
 			{
 				LinkGeom *pL = pN->GetLink(r);
