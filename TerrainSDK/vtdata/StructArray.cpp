@@ -1437,13 +1437,23 @@ bool vtStructureArray::ReadXML(const char *pathname, bool progress_callback(int)
 	return success;
 }
 
-bool vtStructureArray::WriteFootprintsToSHP(const char* pathname)
+bool vtStructureArray::WriteFootprintsToSHP(const char* filename)
 {
-	SHPHandle hSHP = SHPCreate ( pathname, SHPT_POINT );
+	SHPHandle hSHP = SHPCreate(filename, SHPT_POLYGON);
 	if (!hSHP)
 		return false;
 
-	unsigned int i, j, count = GetSize();
+	vtString dbfname = filename;
+	dbfname = dbfname.Left(dbfname.GetLength() - 4);
+	dbfname += ".dbf";
+	DBFHandle db = DBFCreate(dbfname);
+	if (!db)
+		return false;
+
+	// Field 0: height in meters
+	DBFAddField(db, "Height", FTDouble, 3, 2);	// width, decimals
+
+	unsigned int i, j, count = GetSize(), record = 0;
 	for (i = 0; i < count; i++)	//for each coordinate
 	{
 		vtBuilding *bld = GetAt(i)->GetBuilding();
@@ -1451,7 +1461,7 @@ bool vtStructureArray::WriteFootprintsToSHP(const char* pathname)
 			continue;
 
 		const DLine2 &poly = bld->GetLevel(0)->GetAtFootprint();
-		int total = poly.GetSize();
+		int total = poly.GetSize() + 1;
 
 		double *dX = new double[total];
 		double *dY = new double[total];
@@ -1465,14 +1475,12 @@ bool vtStructureArray::WriteFootprintsToSHP(const char* pathname)
 			vert++;
 		}
 		// duplicate first vertex, it's just what SHP files do.
-		//DPoint2 pt = poly.GetAt(0);
-		//dX[vert] = pt.x;
-		//dY[vert] = pt.y;
-		//vert++;
+		DPoint2 pt = poly.GetAt(0);
+		dX[vert] = pt.x;
+		dY[vert] = pt.y;
+		vert++;
 
 		// Save to SHP
-		//SHPObject *obj = SHPCreateObject(SHPT_POLYGON, -1, parts, NULL,
-		//	NULL, total, dX, dY, NULL, NULL );
 		SHPObject *obj = SHPCreateSimpleObject(SHPT_POLYGON, total, dX, dY, NULL);
 
 		SHPWriteObject(hSHP, -1, obj);
@@ -1480,7 +1488,16 @@ bool vtStructureArray::WriteFootprintsToSHP(const char* pathname)
 
 		delete [] dY;
 		delete [] dX;
+
+		// Save to DBF
+		float h = bld->GetTotalHeight();
+		DBFWriteDoubleAttribute(db, record, 0, h);
+
+		// Because not every structure may be a building, there may be fewer
+		//  records than structures.
+		record++;
 	}
+	DBFClose(db);
 	SHPClose(hSHP);
 	return true;
 }
