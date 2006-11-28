@@ -233,6 +233,7 @@ public:
 
 	void SetStories(int i);
 	int GetStories() const;
+	float GetTotalHeight() const;
 
 	unsigned int GetNumLevels() const { return m_Levels.GetSize(); }
 	vtLevel *GetLevel(int i) { return (i < (int)m_Levels.GetSize()) ? m_Levels[i] : NULL; }

@@ -992,6 +992,17 @@ int vtBuilding::GetStories() const
 	return stories;
 }
 
+float vtBuilding::GetTotalHeight() const
+{
+	float h = 0.0f;
+	for (unsigned int i = 0; i < m_Levels.GetSize(); i++)
+	{
+		vtLevel *lev = m_Levels[i];
+		h += (lev->m_fStoryHeight * lev->m_iStories);
+	}
+	return h;
+}
+
 /**
  * Set the footprintf of the given level of the building.
  *
