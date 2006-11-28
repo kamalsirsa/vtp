@@ -264,7 +264,7 @@ void vtLevel::SynchToOGR()
 	OGRLinearRing *pRing = m_Foot.getExteriorRing();
 	if (pRing == NULL && size != 0)
 	{
-		pRing = new OGRLinearRing();
+		pRing = new OGRLinearRing;
 		pRing->setNumPoints(size);
 		m_Foot.addRingDirectly(pRing);
 	}
@@ -274,7 +274,7 @@ void vtLevel::SynchToOGR()
 		if (oldsize != size)
 		{
 			m_Foot.clear();
-			pRing = new OGRLinearRing();
+			pRing = new OGRLinearRing;
 			pRing->setNumPoints(size);
 			m_Foot.addRingDirectly(pRing);
 		}
@@ -1140,7 +1140,7 @@ bool vtBuilding::GetExtents(DRECT &rect) const
 
 vtLevel *vtBuilding::CreateLevel()
 {
-	vtLevel *pLev = new vtLevel();
+	vtLevel *pLev = new vtLevel;
 	m_Levels.Append(pLev);
 
 	// keep 2d and 3d in synch
@@ -1151,7 +1151,7 @@ vtLevel *vtBuilding::CreateLevel()
 
 vtLevel *vtBuilding::CreateLevel(const DLine2 &footprint)
 {
-	vtLevel *pLev = new vtLevel();
+	vtLevel *pLev = new vtLevel;
 	pLev->SetFootprint(footprint);
 
 	m_Levels.Append(pLev);

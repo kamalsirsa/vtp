@@ -820,7 +820,7 @@ bool vtImageLayer::LoadFromGDAL()
 
 					// Assume a non cancellable progress dialog is already open
 					// more work needed to clean up after cancel
-					psWarpOptions->pfnProgress = WarpProgress;  
+					psWarpOptions->pfnProgress = WarpProgress;
 
 					if (NULL == (psWarpOptions->pTransformerArg = GDALCreateGenImgProjTransformer( (GDALDatasetH)pDataset,
 																					pWkt,
@@ -1597,5 +1597,3 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 	return true;
 }
 
-
-	

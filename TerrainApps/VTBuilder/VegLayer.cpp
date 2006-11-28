@@ -42,7 +42,7 @@ void vtVegLayer::SetVegType(VegLayerType type)
 			m_pSet = new vtPlantInstanceArray;
 
 		if (type == VLT_Density || type == VLT_BioMap)
-			m_pSet = new vtFeatureSetPolygon();
+			m_pSet = new vtFeatureSetPolygon;
 	}
 }
 

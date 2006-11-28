@@ -93,7 +93,7 @@ private:
 	float m_fIntersectHeight;
 	float m_fIntersectDistance;
 	int m_iIntersectIndex;
-	
+
 	float m_fGeodesicDistance;
 	bool  m_bHaveFresnel;
 	bool  m_bHaveLOS;

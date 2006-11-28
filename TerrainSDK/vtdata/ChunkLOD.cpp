@@ -108,7 +108,7 @@ struct heightfield {
 		}
 		m_level->get(z, x >> 1) = current;
 	}
-	
+
 	// Sets the activation_level to the given level, if it's greater than
 	// the vert's current activation level.
 	void	activate(int x, int z, int lev)
@@ -228,9 +228,9 @@ const char*	spinner = "-\\|/";
 
 
 /** Generate LOD chunks from the given heightfield.
- * 
+ *
  * tree_depth determines the depth of the chunk quadtree.
- * 
+ *
  * base_max_error specifies the maximum allowed geometric vertex error,
  * at the finest level of detail.
  *
@@ -243,7 +243,7 @@ bool HeightfieldChunker::ProcessGrid(vtElevationGrid *grid, FILE *out,
 									bool progress_callback(int))
 {
 	heightfield	hf(vertical_scale, input_vertical_scale);
-	
+
 	if (!hf.init_bt(grid))
 	{
 		printf("Failed to initialize heightfield.\n");
@@ -500,7 +500,7 @@ int	check_propagation(heightfield& hf, int cx, int cz, int level)
 	int	en = hf.get_level(cx, cz - half_size);
 	int	ew = hf.get_level(cx - half_size, cz);
 	int	es = hf.get_level(cx, cz + half_size);
-	
+
 	if (level > 0) {
 		// Check child verts against edge verts.
 		if (cne > ee || cse > ee) {
@@ -514,7 +514,7 @@ int	check_propagation(heightfield& hf, int cx, int cz, int level)
 		if (cnw > ew || csw > ew) {
 			printf("cp error! ew! lev = %d, cx = %d, cz = %d, alev = %d\n", level, cx, cz, ew);	//xxxxx
 		}
-		
+
 		if (csw > es || cse > es) {
 			printf("cp error! es! lev = %d, cx = %d, cz = %d, alev = %d\n", level, cx, cz, es);	//xxxxx
 		}
@@ -815,7 +815,7 @@ void	generate_edge_data(FILE* out, heightfield& hf, int dir, int x0, int z0, int
 	//
 	// Vertices.
 	//
-	
+
 	// Scan the edge, looking for the minimum height at each vert,
 	// taking into account the full LOD mesh, plus all meshes up to
 	// two levels above our own.
@@ -897,7 +897,7 @@ void	generate_edge_data(FILE* out, heightfield& hf, int dir, int x0, int z0, int
 
 			// Remember the minimum height of the edge for this
 			// segment.
-			
+
 			if (current_min > -32768) {
 				current_min -= 1;	// be slightly conservative here.
 			}
@@ -1009,7 +1009,7 @@ namespace mesh {
 		return index;
 	}
 
-	
+
 	// Add a "special" vertex; i.e. a vert that is not on the
 	// heightfield.
 	int	special_vertex_index(int x, short y, int z)
@@ -1104,7 +1104,7 @@ namespace mesh {
 		// Write a placeholder for the mesh data file pos.
 		int	current_pos = ftell(rw);
 		WriteUint32(rw, 0);
-		
+
 		// write out the vertex data at the *end* of the file.
 		fseek(rw, 0, SEEK_END);
 		int	mesh_pos = ftell(rw);

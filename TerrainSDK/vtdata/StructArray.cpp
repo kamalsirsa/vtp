@@ -394,7 +394,7 @@ int vtStructureArray::AddFoundations(vtHeightField *pHF)
 			continue;
 
 		// Create and add a foundation level
-		pNewLev = new vtLevel();
+		pNewLev = new vtLevel;
 		pNewLev->m_iStories = 1;
 		pNewLev->m_fStoryHeight = fDiff;
 		bld->InsertLevel(0, pNewLev);

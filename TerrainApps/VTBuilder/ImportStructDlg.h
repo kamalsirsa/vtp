@@ -26,7 +26,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for ImportStructDlg
 	wxRadioButton* GetRadioColorFixed()  { return (wxRadioButton*) FindWindow( ID_RADIO_COLOR_FIXED ); }
 	wxRadioButton* GetRadioColorDefault()  { return (wxRadioButton*) FindWindow( ID_RADIO_COLOR_DEFAULT ); }

@@ -1,7 +1,7 @@
 //
 // Name: ProfileDlg.cpp
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -361,7 +361,7 @@ void ProfileDlg::ComputeGeoidSurface()
   The partial arc angle at C between P1 and P3 is given by  dist/R
   We have an iscoceles triangle - P1, P2, C
   The angle at P1 must equal the angle at P2, and is given by (PI-angle_at_C)/2
-  
+
   We now have a triangle X, C, P1 in which we know the angles at C and P1, plus
   the length of R.
 
@@ -377,7 +377,7 @@ void ProfileDlg::ComputeGeoidSurface()
 
   NOTE: It may be more appropriate to compute the length of the normal from the chord
 	through P3 (ie a line perpendicular to the chord P1, P2, passing through P3
-	but as the heights are drawn as perpendicular to the surface, I think the surface 
+	but as the heights are drawn as perpendicular to the surface, I think the surface
 	should be drawn in the same manner.
 
   The code optimises by calculating some values that do not change once only.

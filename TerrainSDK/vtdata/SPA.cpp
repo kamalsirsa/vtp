@@ -459,7 +459,7 @@ double limit_degrees(double degrees)
 	limited = 360.0*(degrees-floor(degrees));
 	if (limited < 0) limited += 360.0;
 
-	return limited;	
+	return limited;
 }
 
 double limit_degrees180pm(double degrees)
@@ -471,7 +471,7 @@ double limit_degrees180pm(double degrees)
 	if		(limited < -180.0) limited += 360.0;
 	else if (limited >  180.0) limited -= 360.0;
 
-	return limited;	
+	return limited;
 }
 
 double limit_degrees180(double degrees)
@@ -482,7 +482,7 @@ double limit_degrees180(double degrees)
 	limited = 180.0*(degrees-floor(degrees));
 	if (limited < 0) limited += 180.0;
 
-	return limited;	
+	return limited;
 }
 
 double limit_zero2one(double value)
@@ -492,7 +492,7 @@ double limit_zero2one(double value)
 	limited = value - floor(value);
 	if (limited < 0) limited += 1.0;
 
-	return limited;	
+	return limited;
 }
 
 double dayfrac_to_local_hr(double dayfrac, float timezone)
@@ -559,7 +559,7 @@ double earth_periodic_term_summation(const double terms[][TERM_COUNT], int count
 
 	return sum;
 }
-	
+
 double earth_values(double term_sum[], int count, double jme)
 {
 	int i;
@@ -567,7 +567,7 @@ double earth_values(double term_sum[], int count, double jme)
 
 	for (i = 0; i < count; i++)
 		sum += term_sum[i]*pow(jme, i);
-	
+
 	sum /= 1.0e8;
 
 	return sum;
@@ -580,7 +580,7 @@ double earth_heliocentric_longitude(double jme)
 
 	for (i = 0; i < L_COUNT; i++)
 		sum[i] = earth_periodic_term_summation(L_TERMS[i], l_subcount[i], jme);
-	
+
 	return limit_degrees(rad2deg(earth_values(sum, L_COUNT, jme)));
 
 }
@@ -592,7 +592,7 @@ double earth_heliocentric_latitude(double jme)
 
 	for (i = 0; i < B_COUNT; i++)
 		sum[i] = earth_periodic_term_summation(B_TERMS[i], b_subcount[i], jme);
-	
+
 	return rad2deg(earth_values(sum, B_COUNT, jme));
 
 }
@@ -604,7 +604,7 @@ double earth_radius_vector(double jme)
 
 	for (i = 0; i < R_COUNT; i++)
 		sum[i] = earth_periodic_term_summation(R_TERMS[i], r_subcount[i], jme);
-	
+
 	return earth_values(sum, R_COUNT, jme);
 
 }
@@ -655,7 +655,7 @@ double xy_term_summation(int i, double x[TERM_X_COUNT])
 
 	for (j = 0; j < TERM_Y_COUNT; j++)
 		sum += x[j]*Y_TERMS[i][j];
-	
+
 	return sum;
 }
 
@@ -883,15 +883,15 @@ void calculate_geocentric_sun_right_ascension_and_declination(spa_data *spa)
 {
 	double x[TERM_X_COUNT];
 
-	spa->jc = julian_century(spa->jd);										
+	spa->jc = julian_century(spa->jd);
 
 	spa->jde = julian_ephemeris_day(spa->jd, spa->delta_t);
-	spa->jce = julian_ephemeris_century(spa->jde);	
+	spa->jce = julian_ephemeris_century(spa->jde);
 	spa->jme = julian_ephemeris_millennium(spa->jce);
 
 	spa->l = earth_heliocentric_longitude(spa->jme);
 	spa->b = earth_heliocentric_latitude(spa->jme);
-	spa->r = earth_radius_vector(spa->jme);		
+	spa->r = earth_radius_vector(spa->jme);
 
 	spa->theta = geocentric_longitude(spa->l);
 	spa->beta  = geocentric_latitude(spa->b);
@@ -900,7 +900,7 @@ void calculate_geocentric_sun_right_ascension_and_declination(spa_data *spa)
 	spa->x1 = mean_anomaly_sun(spa->jce);
 	spa->x2 = mean_anomaly_moon(spa->jce);
 	spa->x3 = argument_latitude_moon(spa->jce);
-	spa->x4 = ascending_longitude_moon(spa->jce);  		
+	spa->x4 = ascending_longitude_moon(spa->jce);
 
 	x[TERM_X0] = spa->x0;
 	x[TERM_X1] = spa->x1;
@@ -969,25 +969,25 @@ void calculate_eot_and_sun_rise_transit_set(spa_data *spa)
 		for (i = 0; i < SUN_COUNT; i++) {
 
 			nu_rts[i]		= nu + 360.985647*m_rts[i];
-	
+
 			n				= m_rts[i] + spa->delta_t/86400.0;
 			alpha_prime[i]	= rts_alpha_delta_prime(alpha, n);
 			delta_prime[i]	= rts_alpha_delta_prime(delta, n);
-	
+
 			h_prime[i]		= limit_degrees180pm(nu_rts[i] + spa->longitude - alpha_prime[i]);
-		
+
 			h_rts[i]		= rts_sun_altitude(spa->latitude, delta_prime[i], h_prime[i]);
 		}
-	
+
 		spa->suntransit = dayfrac_to_local_hr(m_rts[SUN_TRANSIT] - h_prime[SUN_TRANSIT] / 360.0,
 											  spa->timezone);
-	
+
 		spa->sunrise = dayfrac_to_local_hr(sun_rise_and_set(m_rts, h_rts, delta_prime,
 						  spa->latitude, h_prime, h0_prime, SUN_RISE), spa->timezone);
 
 		spa->sunset  = dayfrac_to_local_hr(sun_rise_and_set(m_rts, h_rts, delta_prime,
 						  spa->latitude, h_prime, h0_prime, SUN_SET),  spa->timezone);
-	
+
 	} else {
 		spa->suntransit	= -99999;
 		spa->sunrise	= -99999;
@@ -995,10 +995,10 @@ void calculate_eot_and_sun_rise_transit_set(spa_data *spa)
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////	
+///////////////////////////////////////////////////////////////////////////////////////////
 // Calculate all SPA parameters and put into structure
 // Note: All inputs values (listed in header file) must already be in structure
-///////////////////////////////////////////////////////////////////////////////////////////	
+///////////////////////////////////////////////////////////////////////////////////////////
 void spa_calculate(spa_data *spa)
 {
 	spa->jd = julian_day (spa->year, spa->month,  spa->day,

@@ -42,7 +42,7 @@ StatePlaneDlg::StatePlaneDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	m_bFeet = false;
 	m_bFeetUS = false;
 
-	StatePlaneDialogFunc( this, TRUE ); 
+	StatePlaneDialogFunc( this, TRUE );
 
 	AddValidator(ID_NAD27, &m_bNAD27);
 	AddValidator(ID_NAD83, &m_bNAD83);

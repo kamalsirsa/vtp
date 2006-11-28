@@ -1,7 +1,7 @@
 //
 // Name: RawDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -28,7 +28,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for RawDlg
 	wxButton* GetCrs()  { return (wxButton*) FindWindow( ID_CRS ); }
 	wxButton* GetExtents()  { return (wxButton*) FindWindow( ID_EXTENTS ); }
@@ -57,7 +57,7 @@ private:
 	void UpdateEnabling();
 	void UpdateExtents();
 	void UpdateProjection();
-	
+
 private:
 	// WDR: handler declarations for RawDlg
 	void OnCRS( wxCommandEvent &event );
@@ -67,8 +67,5 @@ private:
 private:
 	DECLARE_EVENT_TABLE()
 };
-
-
-
 
 #endif

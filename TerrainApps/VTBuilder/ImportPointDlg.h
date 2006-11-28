@@ -53,7 +53,7 @@ public:
 
 private:
 	// WDR: member variable declarations for ImportPointDlg
-	
+
 private:
 	// WDR: handler declarations for ImportPointDlg
 	void OnSetCRS( wxCommandEvent &event );

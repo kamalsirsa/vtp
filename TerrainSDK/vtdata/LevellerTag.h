@@ -62,16 +62,16 @@ enum
 {
 	VALKIND_NONE	= 0,
 	VALKIND_BINARY	= 1,
-	VALKIND_CHAR	= 2,	
-	VALKIND_BYTE	= 3,	
-	VALKIND_INT16	= 4,	
-	VALKIND_UINT16	= 5,	
-	VALKIND_INT32	= 6,	
-	VALKIND_UINT32	= 7,	
-	VALKIND_FLOAT	= 8,	
-	VALKIND_DOUBLE	= 9	
+	VALKIND_CHAR	= 2,
+	VALKIND_BYTE	= 3,
+	VALKIND_INT16	= 4,
+	VALKIND_UINT16	= 5,
+	VALKIND_INT32	= 6,
+	VALKIND_UINT32	= 7,
+	VALKIND_FLOAT	= 8,
+	VALKIND_DOUBLE	= 9
 };
-	
+
 // Relation flags; OR together.
 enum
 {
@@ -131,7 +131,7 @@ class CRootTag
 	// Call Open to read or write tags.
 	// If you're writing a root tag, call Write
 	// to append each tag. If you're reading, call ReadTag.
-	
+
 	public:
 		CRootTag() : m_pRoot(NULL), m_mark(0), m_size(0),
 					m_openMode(0) {}
@@ -144,7 +144,7 @@ class CRootTag
 		void SetStorage(void* p, size_t n)
 			{ m_pRoot = (unsigned char*)p;
 			m_mark = 0; m_size = n; m_openMode = 0; }
-	
+
 		void Open(const char* pszMode);
 		void Close(void);
 

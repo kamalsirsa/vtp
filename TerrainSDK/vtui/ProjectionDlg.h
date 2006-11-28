@@ -44,7 +44,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	void SetProjection(const vtProjection &proj);
 	void GetProjection(vtProjection &proj);
 	void SetGeoRefPoint(const DPoint2 &p) { m_GeoRefPoint = p; }

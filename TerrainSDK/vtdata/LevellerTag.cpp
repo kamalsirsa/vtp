@@ -1,7 +1,7 @@
 /*
 	LevellerTag.cpp
 	Tag storage support.
-	Copyright 2002-2005 Daylon Graphics Ltd. /  Virtual Terrain Project
+	Copyright 2002-2006 Daylon Graphics Ltd. /  Virtual Terrain Project
 	____________________________________________________________________________
 	Please use a tab setting of 4 to view this file.
 
@@ -221,7 +221,7 @@ size_t daylon::CRootTag::ReadTag
 			*ppvData = NULL;
 			return 0;
 		}
-		
+
 		TAG* pTag = (TAG*)(m_pRoot + m_mark);
 
 		int bHasKids = (TAGRELATION_CHILD ==
@@ -258,7 +258,7 @@ size_t daylon::CRootTag::ReadTag
 				return this->ReadTag(pszRest, ppvData);
 			}
 		}
-		
+
 
 		// No match. Maybe the next tag.
 		// We have to skip children and try siblings.
@@ -371,7 +371,7 @@ void daylon::CRootTag::Write
 		}
 		else
 			pTag->header.valueSize = this->GetValSize(valueKind);
-			
+
 		// Transfer data.
 		memcpy(&pTag->value.n, pvData, pTag->header.valueSize);
 	}
@@ -420,7 +420,7 @@ void* daylon::CRootTag::WriteBinary
 	// Advance write mark.
 	m_mark += this->CalcBinaryTagStorage(pTag->header.valueSize);
 
-	return &pTag->value.n;	
+	return &pTag->value.n;
 }
 
 
@@ -484,7 +484,7 @@ void daylon::CRootTag::Dump(void)
 	// Preserve mark for those dumping the tree
 	// in the middle of I/O operations.
 	size_t oldmark = m_mark;
-	
+
 	m_mark = 0;
 	VTLOG("\nDump of clip tree structure:\n\n");
 	VTLOG("Tag                        Type         Size                 Value\n");

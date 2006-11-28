@@ -1,7 +1,7 @@
 //
 // Name: FeatInfoDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -49,7 +49,7 @@ public:
 	wxChoice* GetChoiceVertical()  { return (wxChoice*) FindWindow( ID_CHOICE_VERTICAL ); }
 	wxChoice* GetChoiceShow()  { return (wxChoice*) FindWindow( ID_CHOICE_SHOW ); }
 	wxListCtrl* GetList()  { return (wxListCtrl*) FindWindow( ID_LIST ); }
-	
+
 private:
 	// WDR: member variable declarations for FeatInfoDlg
 	BuilderView *m_pView;

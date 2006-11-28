@@ -165,7 +165,7 @@ protected:
 	void DoArea(wxPoint delta);
 
 	// Mouse handlers
-	void OnLeftDown(wxMouseEvent& event);	
+	void OnLeftDown(wxMouseEvent& event);
 	void OnLeftUp(wxMouseEvent& event);
 	void OnLeftDoubleClick(wxMouseEvent& event);
 	void OnMiddleDown(wxMouseEvent& event);

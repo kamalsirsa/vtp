@@ -1,7 +1,7 @@
 //
 // Name: StatePlaneDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -26,7 +26,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for StatePlaneDlg
 	wxListBox* GetStatePlanes()  { return (wxListBox*) FindWindow( ID_STATEPLANES ); }
 	wxRadioButton* GetNad27()  { return (wxRadioButton*) FindWindow( ID_NAD27 ); }
@@ -42,7 +42,7 @@ public:
 	bool m_bFeet;
 	bool m_bFeetUS;
 	bool m_bSetting;
-	
+
 private:
 	// WDR: handler declarations for StatePlaneDlg
 	void OnNad83( wxCommandEvent &event );

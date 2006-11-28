@@ -1,7 +1,7 @@
 //
 // Name: ChunkDlg.h
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,14 +25,14 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for ChunkDlg
-	
+
 public:
 	// WDR: member variable declarations for ChunkDlg
 	int m_iDepth;
 	float m_fMaxError;
-	
+
 private:
 	// WDR: handler declarations for ChunkDlg
 

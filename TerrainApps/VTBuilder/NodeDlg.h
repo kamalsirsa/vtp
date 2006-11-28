@@ -1,7 +1,7 @@
 //
 // Name: NodeDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -39,7 +39,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	void SetNode(NodeEdit *pSingleLink, vtRoadLayer *pLayer);
 	void ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype);
 
@@ -47,7 +47,7 @@ public:
 	wxListBox* GetBehavior()  { return (wxListBox*) FindWindow( ID_BEHAVIOR ); }
 	wxListBox* GetLinkNum()  { return (wxListBox*) FindWindow( ID_ROADNUM ); }
 	wxListBox* GetIntType()  { return (wxListBox*) FindWindow( ID_INTTYPE ); }
-	
+
 private:
 	// WDR: member variable declarations for NodeDlg
 	NodeEdit *m_pNode;

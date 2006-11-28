@@ -31,7 +31,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for RenderDlg
 	wxRadioButton* GetJpeg()  { return (wxRadioButton*) FindWindow( ID_JPEG ); }
 	wxRadioButton* GetGeotiff()  { return (wxRadioButton*) FindWindow( ID_GEOTIFF ); }
@@ -66,7 +66,7 @@ public:
 
 private:
 	// WDR: member variable declarations for RenderDlg
-	
+
 private:
 	// WDR: handler declarations for RenderDlg
 	void OnEditColors( wxCommandEvent &event );
@@ -80,8 +80,5 @@ private:
 private:
 	DECLARE_EVENT_TABLE()
 };
-
-
-
 
 #endif

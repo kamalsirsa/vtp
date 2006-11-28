@@ -26,7 +26,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for ExtentDlg
 	wxCheckBox* GetDMS()  { return (wxCheckBox*) FindWindow( ID_DMS ); }
 	void SetArea(DRECT area, bool bMeters);
@@ -47,7 +47,7 @@ public:
 
 private:
 	// WDR: member variable declarations for ExtentDlg
-	
+
 private:
 	// WDR: handler declarations for ExtentDlg
 	void OnExtentAll( wxCommandEvent &event );

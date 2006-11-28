@@ -902,7 +902,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 			if (fDiff > MINIMUM_BASEMENT_SIZE)
 			{
 				// Create and add a foundation level
-				pNewLevel = new vtLevel();
+				pNewLevel = new vtLevel;
 				pNewLevel->m_iStories = 1;
 				pNewLevel->m_fStoryHeight = fDiff;
 				pBld->InsertLevel(0, pNewLevel);

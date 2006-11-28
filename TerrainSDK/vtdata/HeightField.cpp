@@ -889,7 +889,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 		f = fabs(light_dir.z);
 	}
 	grid_light_dir /= f;
-		
+
 	int i_init, i_final, i_incr;
 	int j_init, j_final, j_incr;
 	if (grid_light_dir.x > 0)
@@ -965,7 +965,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 					continue;
 
 				if (elevation - shadowheight > 0)
-				{ 	
+				{
 					if (k>1)
 						Under_Out = true; // Under the terrain
 					break;

@@ -96,7 +96,7 @@ bool vtBitmap::Allocate24(int iXSize, int iYSize)
 	if (hSection == NULL)
 		return false;
 
-	m_pBitmap = new wxBitmap();
+	m_pBitmap = new wxBitmap;
 	m_pBitmap->SetHBITMAP((WXHBITMAP)hSection);
 	m_pBitmap->SetWidth(ScanlineFormat.bmiHeader.biWidth);
 //	m_pBitmap->SetHeight(ScanlineFormat.bmiHeader.biHeight);

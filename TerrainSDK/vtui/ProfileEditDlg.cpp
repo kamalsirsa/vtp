@@ -205,7 +205,7 @@ ProfileEditDlg::ProfileEditDlg( wxWindow *parent, wxWindowID id, const wxString 
     wxDialog( parent, id, title, position, size, style )
 {
     // WDR: dialog function ProfileEditDialogFunc for ProfileEditDlg
-    ProfileEditDialogFunc( this, TRUE ); 
+    ProfileEditDialogFunc( this, TRUE );
 
 	m_pView = (ProfDlgView *) FindWindow( ID_EDIT_PANEL );
 }

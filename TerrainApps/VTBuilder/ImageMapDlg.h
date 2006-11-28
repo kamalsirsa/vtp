@@ -1,7 +1,7 @@
 //
 // Name: ImageMapDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,7 +25,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for ImageMapDlg
 	wxChoice* GetLinkField()  { return (wxChoice*) FindWindow( ID_LINK_FIELD ); }
 	void SetFields(class vtFeatureSet *pSet);
@@ -33,15 +33,12 @@ public:
 public:
 	// WDR: member variable declarations for ImageMapDlg
 	int m_iField;
-	
+
 private:
 	// WDR: handler declarations for ImageMapDlg
 
 private:
 	DECLARE_EVENT_TABLE()
 };
-
-
-
 
 #endif

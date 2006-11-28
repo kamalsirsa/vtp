@@ -28,7 +28,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER);
-	
+
 	// WDR: method declarations for MapServerDlg.cpp
 	wxButton* GetDotdotdot()  { return (wxButton*) FindWindow( ID_DOTDOTDOT ); }
 	wxTextCtrl* GetTextToFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_FILE ); }
@@ -64,7 +64,7 @@ public:
 
 private:
 	// WDR: member variable declarations for MapServerDlg.cpp
-	
+
 private:
 	// WDR: handler declarations for MapServerDlg.cpp
 	void OnTextToFile( wxCommandEvent &event );

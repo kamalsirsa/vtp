@@ -596,7 +596,7 @@ void Countries::ParseRawCountry(int which, bool bNativeNames)
 		// count how many of each importance
 		if (pc >= 1 && pc <= 6) num_important[pc] ++;
 
-		place = new Place();
+		place = new Place;
 		place->m_pos = point;
 		place->m_ppc = pc;
 		country->m_places.Append(place);
@@ -743,7 +743,7 @@ bool Countries::ReadGCF(const char *fname, bool progress_callback(int))
 		if (progress_callback != NULL)
 			progress_callback(i * 100 / num);
 
-		Country *country = new Country();
+		Country *country = new Country;
 		m_countries.Append(country);
 
 		ReadString(fp, country->m_full);
@@ -754,7 +754,7 @@ bool Countries::ReadGCF(const char *fname, bool progress_callback(int))
 
 		for (j = 0; j < num_places; j++)
 		{
-			Place *place = new Place();
+			Place *place = new Place;
 			fread(&place->m_pos.x, sizeof(double), 2, fp);
 			ReadString(fp, place->m_fullname_nd);
 			country->m_places.Append(place);

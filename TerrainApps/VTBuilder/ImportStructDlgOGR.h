@@ -29,7 +29,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for ImportStructDlgOGR
 	wxChoice* GetLayername()  { return (wxChoice*) FindWindow( ID_LAYERNAME ); }
 	wxCheckBox* GetUse25d()  { return (wxCheckBox*) FindWindow( ID_USE_25D ); }

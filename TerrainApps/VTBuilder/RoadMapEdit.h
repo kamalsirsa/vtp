@@ -41,7 +41,7 @@ public:
 	void Copy(NodeEdit *node);
 	//draws the node
 	bool Draw(wxDC* pDC, vtScaledView *pView);
-	//brings up a node dialog to edit road properties	
+	//brings up a node dialog to edit road properties
 	bool EditProperties(vtRoadLayer *pLayer);
 
 	//move the node
@@ -169,7 +169,7 @@ public:
 	bool SelectLink(DPoint2 point, float error, DRECT &bound);
 	// if bval true, select roads within bound.  otherwise deselect roads
 	int SelectLinks(DRECT bound, bool bval);
-	
+
 	// selects a road, as well as any adjacent roads that is an extension of that road.
 	bool SelectAndExtendLink(DPoint2 point, float error, DRECT &bound);
 

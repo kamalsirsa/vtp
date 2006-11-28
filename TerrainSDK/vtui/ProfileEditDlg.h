@@ -48,7 +48,7 @@ public:
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxDefaultSize,
         long style = wxDEFAULT_DIALOG_STYLE );
-    
+
     // WDR: method declarations for ProfileEditDlg
     void UpdateEnabling();
 	wxButton* GetSave()  { return (wxButton*) FindWindow( ID_SAVE_PROF ); }

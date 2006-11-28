@@ -599,7 +599,7 @@ void ContentVisitor::startElement(const char *name, const XMLAttributes &atts)
 
 		if (string(name) == (string)"model")
 		{
-			vtModel *pModel = new vtModel();
+			vtModel *pModel = new vtModel;
 			pModel->m_filename = atts.getValue("filename");
 
 			attval = atts.getValue("distance");

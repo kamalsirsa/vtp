@@ -2077,7 +2077,7 @@ void MainFrame::ElevCopy()
 							x	d
 							z	d
 				altitude			(assumes raw elevs are zero-based)
-					units	ui32	(EPSG measure code; 9001=m, 9002=ft, 9003=sft, etc.)				
+					units	ui32	(EPSG measure code; 9001=m, 9002=ft, 9003=sft, etc.)
 					scale	d		(raw-to-units scaling)
 					offset	d		(raw-to-units base)
 			[
@@ -2089,7 +2089,7 @@ void MainFrame::ElevCopy()
 			]
 
 		  5-7 parent tags  +7 (12-14)
-		    1 nil tag		
+		    1 nil tag
 		  5-6 ui32 tags		+3 (8-9)
 		    0 double tags   +6
 		  1-2 binary tags   +1 (2-3)
@@ -2295,7 +2295,7 @@ void MainFrame::ElevPasteNew()
 	daylon::CRootTag clip;
 
 	BYTE* pData = ((BYTE*)pMem) /*+ sizeof(kPublicHFclipID)*/;
-	clip.SetStorage(pData, nbytes /*- 
+	clip.SetStorage(pData, nbytes /*-
 				sizeof(kPublicHFclipID)*/);
 	if (!VerifyHFclip((BYTE*)pMem, nbytes))
 		return;
@@ -2308,7 +2308,7 @@ void MainFrame::ElevPasteNew()
 	const int bpp = clip.ReadUINT32("body/heixels/format/depth", 0);
 	const bool bFP = (0 != clip.ReadUINT32("body/heixels/format/fp", 0));
 
-	// Get any coordsys info. Ignore geometries other 
+	// Get any coordsys info. Ignore geometries other
 	// than code 1 (planetary body, Earth). Ignore projection
 	// formats other than WKT.
 
@@ -2318,7 +2318,7 @@ void MainFrame::ElevPasteNew()
 
 	const int geomcode =
 		clip.ReadUINT32("body/coordsys/geometry", 0);
-	const int projFmt = 
+	const int projFmt =
 		clip.ReadUINT32("body/coordsys/projection/format", 0);
 	if (geomcode == 1 && projFmt == 0)
 	{
@@ -2530,7 +2530,7 @@ void MainFrame::OnAreaRequestWFS(wxCommandEvent& event)
 	if (dlg2.ShowModal() != wxID_OK)
 		return;
 
-	vtRawLayer *pRL = new vtRawLayer();
+	vtRawLayer *pRL = new vtRawLayer;
 	success = pRL->ReadFeaturesFromWFS(server, "rail");
 	if (success)
 		AddLayerWithCheck(pRL);
@@ -2660,7 +2660,7 @@ void MainFrame::OnAreaRequestTServe(wxCommandEvent& event)
 
 	OpenProgressDialog(_("Requesting data from Terraserver..."));
 
-	vtImageLayer *pIL = new vtImageLayer();
+	vtImageLayer *pIL = new vtImageLayer;
 	bool success = pIL->ReadFeaturesFromTerraserver(m_area, dlg.m_iTheme,
 		dlg.m_iMetersPerPixel, m_proj.GetUTMZone(), dlg.m_strToFile.mb_str(wxConvUTF8));
 
@@ -3403,8 +3403,8 @@ void MainFrame::OnRawScale(wxCommandEvent& event)
 	vtRawLayer *pRL = GetActiveRawLayer();
 
 	wxString str = _T("1");
-	str = wxGetTextFromUser(_("Scale factor?"), 
-		_("Scale Raw Layer"), str, this);
+	str = wxGetTextFromUser(_("Scale factor?"),	_("Scale Raw Layer"),
+		str, this);
 	if (str == _T(""))
 		return;
 

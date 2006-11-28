@@ -1,7 +1,7 @@
 //
 // Helper.cpp - various helper functions used by the classes
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -221,10 +221,10 @@ void* getGLExtensionFuncPtr(const char *funcName)
     } else
         return NULL;
 
-#elif defined (__sun) 
+#elif defined (__sun)
      static void *handle = dlopen((const char *)0L, RTLD_LAZY);
      return dlsym(handle, funcName);
-    
+
 #elif defined (__sgi)
      static void *handle = dlopen((const char *)0L, RTLD_LAZY);
      return dlsym(handle, funcName);

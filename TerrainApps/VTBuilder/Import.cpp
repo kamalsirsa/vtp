@@ -632,7 +632,7 @@ wxString GetImportFilterString(LayerType ltype)
 
 vtLayerPtr MainFrame::ImportFromDLG(const wxString &fname_in, LayerType ltype)
 {
-	vtDLGFile *pDLG = new vtDLGFile();
+	vtDLGFile *pDLG = new vtDLGFile;
 	bool success = pDLG->Read(fname_in.mb_str(wxConvUTF8), progress_callback);
 	if (!success)
 	{
@@ -1119,7 +1119,7 @@ void MainFrame::ImportDataPointsFromTable(const char *fname)
 	int iStyle = dlg.m_bFormat2 ? 1 : 0;
 
 	// Now import
-	vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D();
+	vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
 	pSet->SetProjection(dlg.m_proj);
 
 	int iRecords = DBFGetRecordCount(db);
