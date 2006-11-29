@@ -71,7 +71,11 @@ int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 
 	int entries = 0, matches = 0;
 
+	// We want to do a case-insensitive wildcard comparison, so do everything
+	//  in lower-case.
 	wxString wildstr(wildcard, wxConvUTF8);
+	wildstr.LowerCase();
+
 	for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
 	{
 		entries++;
@@ -81,6 +85,8 @@ int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 			continue;
 
 		wxString name(name1.c_str(), wxConvUTF8);
+		name.LowerCase();
+
 		if (name.Matches(wildstr))
 		{
 			if (omit_chars)
