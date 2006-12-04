@@ -449,7 +449,7 @@ void vtIcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
 	for (i = 0; i < size; i++)
 	{
 		const DLine2 &line = pSetLS->GetPolyLine(i);
-		AddSurfaceLineToMesh(&mf, &line);
+		AddSurfaceLineToMesh(&mf, line);
 	}
 }
 
@@ -474,7 +474,7 @@ void vtIcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
 		for (unsigned int ring = 0; ring < poly.size(); ring++)
 		{
 			const DLine2 &line = poly[ring];
-			AddSurfaceLineToMesh(&mf, &line);
+			AddSurfaceLineToMesh(&mf, line);
 		}
 	}
 }
@@ -621,7 +621,7 @@ double vtIcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, c
 	return angle;
 }
 
-double vtIcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 *line)
+double vtIcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line)
 {
 	DPoint2 g1, g2;
 	DPoint3 p1, p2;
@@ -630,12 +630,12 @@ double vtIcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 *line)
 	DMatrix3 rot3;
 
 	pMF->PrimStart();
-	int i, j, size = line->GetSize();
+	int i, j, size = line.GetSize();
 
 	for (i = 0; i < size-1; i++)
 	{
-		g1 = line->GetAt(i);
-		g2 = line->GetAt(i+1);
+		g1 = line.GetAt(i);
+		g2 = line.GetAt(i+1);
 
 		// for each pair of points, determine how many more points are needed
 		//  for a smooth arc
@@ -672,7 +672,7 @@ double vtIcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 *line)
 	// last vertex
 	if (size > 1)
 	{
-		g2 = line->GetAt(size-1);
+		g2 = line.GetAt(size-1);
 		geo_to_xyz(1.0, g2, p2);
 		pMF->AddVertex(p2 * scale);
 		length++;

@@ -61,7 +61,7 @@ public:
 	int AddGlobeFeatures(const char *fname, float fSize);
 	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
 	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, const DPoint2 &g2);
-	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 *line);
+	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line);
 
 protected:
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
