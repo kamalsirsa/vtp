@@ -150,6 +150,11 @@ int	vtProjection::GetUTMZone() const
 
 /**
  * Set the datum to an EPSG Datum code, a value in the range (6120 - 6904).
+ *
+ * Here are the codes for some of the better-known datums:
+	- NAD27		6267
+	- NAD83		6269
+	- WGS84		6326
  */
 OGRErr vtProjection::SetDatum(int iDatum)
 {
