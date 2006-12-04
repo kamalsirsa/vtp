@@ -37,6 +37,7 @@
 // dialogs
 #include "BuildingDlg3d.h"
 #include "CameraDlg.h"
+#include "DistanceDlg3d.h"
 #include "LayerDlg.h"
 #include "LinearStructDlg3d.h"
 #include "LocationDlg.h"
@@ -49,7 +50,6 @@
 #include "UtilDlg.h"
 #include "VehicleDlg.h"
 #include "vtui/InstanceDlg.h"
-#include "vtui/DistanceDlg.h"
 #include "vtui/ProfileDlg.h"
 
 #include "../Engines.h"
@@ -312,7 +312,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	VTLOG("Constructing dialogs\n");
 	m_pBuildingDlg = new BuildingDlg3d(this, -1, _("Building Properties"));
 	m_pCameraDlg = new CameraDlg(this, -1, _("Camera-View"));
-	m_pDistanceDlg = new DistanceDlg(this, -1, _("Distance"));
+	m_pDistanceDlg = new DistanceDlg3d(this, -1, _("Distance"));
 	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
 	m_pInstanceDlg = new InstanceDlg(this, -1, _("Instances"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);

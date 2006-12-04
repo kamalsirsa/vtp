@@ -50,7 +50,7 @@ class vtElevationGrid;
 class SpeciesListDlg;
 class BioRegionDlg;
 class FeatInfoDlg;
-class DistanceDlg;
+class DistanceDlg2d;
 class LinearStructureDlg;
 class LinearStructureDlg2d;
 class InstanceDlg;
@@ -371,9 +371,11 @@ public:
 	FeatInfoDlg	*m_pFeatInfoDlg;
 
 	// Distance and Elevation Profile
-	DistanceDlg	*ShowDistanceDlg();
-	DistanceDlg *m_pDistanceDlg;
+	DistanceDlg2d	*ShowDistanceDlg();
+	DistanceDlg2d *m_pDistanceDlg;
 	void UpdateDistance(const DPoint2 &p1, const DPoint2 &p2);
+	void UpdateDistance(const DLine2 &path);
+	void ClearDistance();
 	ProfileDlg	*ShowProfileDlg();
 	ProfileDlg	*m_pProfileDlg;
 

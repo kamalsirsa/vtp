@@ -14,7 +14,7 @@
 // forward declare dialogs
 class BuildingDlg3d;
 class CameraDlg;
-class DistanceDlg;
+class DistanceDlg3d;
 class InstanceDlg;
 class LODDlg;
 class LinearStructureDlg3d;
@@ -238,7 +238,7 @@ public:
 	BuildingDlg3d		*m_pBuildingDlg;
 	LayerDlg			*m_pLayerDlg;
 	InstanceDlg			*m_pInstanceDlg;
-	DistanceDlg			*m_pDistanceDlg;
+	DistanceDlg3d		*m_pDistanceDlg;
 	TimeDlg				*m_pTimeDlg;
 	CScenarioSelectDialog *m_pScenarioSelectDialog;
 	LODDlg				*m_pLODDlg;

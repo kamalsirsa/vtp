@@ -65,6 +65,7 @@ Enviro::Enviro() : vtTerrainScene()
 	m_pArcMats = NULL;
 	m_fArcLength = 0.0;
 	m_fDistToolHeight = 5.0f;
+	m_bMeasurePath = false;
 
 	m_fMessageTime = 0.0f;
 	m_pHUD = NULL;
@@ -1172,11 +1173,31 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 
 	if (m_mode == MM_MEASURE)
 	{
-		m_EarthPosDown = m_EarthPos;
 		m_bDragging = true;
-		DPoint2 g1(m_EarthPosDown.x, m_EarthPosDown.y);
-		SetTerrainMeasure(g1, g1);
-		ShowDistance(g1, g1, 0, 0);
+		DPoint2 g1(m_EarthPos.x, m_EarthPos.y);
+
+		if (m_bMeasurePath)
+		{
+			// Path mode - set initial segment
+			int len = m_distance_path.GetSize();
+			if (len == 0)
+			{
+				// begin new path
+				m_EarthPosDown = m_EarthPos;
+				m_distance_path.Append(g1);
+			}
+			// default: add point to the path
+			m_distance_path.Append(g1);
+
+			SetTerrainMeasure(m_distance_path);
+			ShowDistance(m_distance_path, m_fArcLength, m_EarthPos.z - m_EarthPosDown.z);
+		}
+		else
+		{
+			m_EarthPosDown = m_EarthPos;
+			SetTerrainMeasure(g1, g1);
+			ShowDistance(g1, g1, 0, 0);
+		}
 	}
 }
 
@@ -1667,10 +1688,22 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 	if (m_mode == MM_MEASURE && m_bDragging && m_bOnTerrain)
 	{
 //		VTLOG("MouseMove, MEASURE & Drag & OnTerrain: %.1lf, %.1lf\n", m_EarthPos.x, m_EarthPos.y);
-		DPoint2 g1(m_EarthPosDown.x, m_EarthPosDown.y);
-		DPoint2 g2(m_EarthPos.x, m_EarthPos.y);
-		SetTerrainMeasure(g1, g2);
-		ShowDistance(g1, g2, m_fArcLength, m_EarthPos.z - m_EarthPosDown.z);
+		if (m_bMeasurePath)
+		{
+			DPoint2 g2(m_EarthPos.x, m_EarthPos.y);
+			unsigned int len = m_distance_path.GetSize();
+			if (len > 1)
+				m_distance_path[len-1] = g2;
+			SetTerrainMeasure(m_distance_path);
+			ShowDistance(m_distance_path, m_fArcLength, m_EarthPos.z - m_EarthPosDown.z);
+		}
+		else
+		{
+			DPoint2 g1(m_EarthPosDown.x, m_EarthPosDown.y);
+			DPoint2 g2(m_EarthPos.x, m_EarthPos.y);
+			SetTerrainMeasure(g1, g2);
+			ShowDistance(g1, g2, m_fArcLength, m_EarthPos.z - m_EarthPosDown.z);
+		}
 	}
 }
 
@@ -1729,6 +1762,40 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 1);
 	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, dline, m_fDistToolHeight, true);
+}
+
+void Enviro::SetTerrainMeasure(const DLine2 &path)
+{
+	// place the arc for the distance measuring tool on the terrain
+	SetupArcMesh();
+
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 1);
+	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, path, m_fDistToolHeight, true);
+}
+
+void Enviro::SetDistanceToolMode(bool bPath)
+{
+	// if switching modes, reset
+	bool bNeedReset = (m_bMeasurePath != bPath);
+
+	m_bMeasurePath = bPath;
+
+	if (bNeedReset)
+		ResetDistanceTool();
+}
+
+void Enviro::ResetDistanceTool()
+{
+	m_distance_path.Empty();
+	m_fArcLength = 0.0;
+	if (m_bMeasurePath)
+		ShowDistance(DLine2(), FLT_MIN, FLT_MIN);
+	else
+		ShowDistance(DPoint2(0,0), DPoint2(0,0), FLT_MIN, FLT_MIN);
+
+	// remove visible terrain line
+	FreeArcMesh();
 }
 
 

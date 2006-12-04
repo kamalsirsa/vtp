@@ -25,7 +25,6 @@
 #include "vtdata/vtLog.h"
 #include "vtdata/WFSClient.h"
 #include "vtui/Helper.h"
-#include "vtui/DistanceDlg.h"
 #include "vtui/ProfileDlg.h"
 #include "vtui/ProjectionDlg.h"
 
@@ -48,6 +47,7 @@
 #include "VegLayer.h"
 #include "WaterLayer.h"
 // Dialogs
+#include "DistanceDlg2d.h"
 #include "DistribVegDlg.h"
 #include "ExtentDlg.h"
 #include "FeatInfoDlg.h"
@@ -1394,6 +1394,7 @@ void MainFrame::OnViewDistance(wxCommandEvent &event)
 {
 	m_pView->SetMode(LB_Dist);
 	m_pView->SetCorrectCursor();
+	ShowDistanceDlg();
 }
 
 void MainFrame::OnUpdateDistance(wxUpdateUIEvent& event)
@@ -3473,7 +3474,6 @@ void MainFrame::OnHelpDocOnline(wxCommandEvent &event)
 
 void MainFrame::OnDistanceClear(wxCommandEvent &event)
 {
-	UpdateDistance(DPoint2(0,0), DPoint2(0,0));
-	GetView()->SetDistancePoints(DPoint2(0,0), DPoint2(0,0));
-	GetView()->Refresh();
+	ClearDistance();
 }
+

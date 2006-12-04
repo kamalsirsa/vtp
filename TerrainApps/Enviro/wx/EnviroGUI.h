@@ -38,6 +38,8 @@ public:
 	virtual void EarthPosUpdated();
 	virtual void ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
 		double fGround, double fVertical);
+	virtual void ShowDistance(const DLine2 &path,
+		double fGround, double fVertical);
 	virtual vtTagArray *GetInstanceFromGUI();
 	virtual bool OnMouseEvent(vtMouseEvent &event);
 	virtual void SetupScene3();

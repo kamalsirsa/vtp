@@ -592,9 +592,26 @@ void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 	}
 	if (m_mode == MM_MEASURE)
 	{
-		m_EarthPosDown = m_EarthPos;
 		m_bDragging = true;
-		UpdateEarthArc();
+		if (m_bMeasurePath)
+		{
+			DPoint2 g1(m_EarthPos.x, m_EarthPos.y);
+			// Path mode - set initial segment
+			int len = m_distance_path.GetSize();
+			if (len == 0)
+			{
+				// begin new path
+				m_EarthPosDown = m_EarthPos;
+				m_distance_path.Append(g1);
+			}
+			// default: add point to the path
+			m_distance_path.Append(g1);
+		}
+		else
+		{
+			m_EarthPosDown = m_EarthPos;
+			UpdateEarthArc();
+		}
 	}
 }
 
@@ -676,10 +693,23 @@ void Enviro::SetEarthUnfold(bool bUnfold)
 void Enviro::UpdateEarthArc()
 {
 //	VTLOG("UpdateEarthArc %.1lf %.1lf,  %.1lf %.1lf\n", m_EarthPosDown.x, m_EarthPosDown.y, m_EarthPos.x, m_EarthPos.y);
-	DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
-	DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
-	SetDisplayedArc(epos1, epos2);
-	ShowDistance(epos1, epos2, DBL_MIN, DBL_MIN);
+	if (m_bMeasurePath)
+	{
+		DPoint2 g2(m_EarthPos.x, m_EarthPos.y);
+		unsigned int len = m_distance_path.GetSize();
+		if (len > 1)
+			m_distance_path[len-1] = g2;
+
+		SetDisplayedArc(m_distance_path);
+		ShowDistance(m_distance_path, FLT_MIN, FLT_MIN);
+	}
+	else
+	{
+		DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
+		DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
+		SetDisplayedArc(epos1, epos2);
+		ShowDistance(epos1, epos2, FLT_MIN, FLT_MIN);
+	}
 }
 
 void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
@@ -688,6 +718,17 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 
 	vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 0);
 	double angle = m_pIcoGlobe->AddSurfaceLineToMesh(&mf, g1, g2);
+
+	// estimate horizontal distance (angle * radius)
+	m_fArcLength = angle * EARTH_RADIUS;
+}
+
+void Enviro::SetDisplayedArc(const DLine2 &path)
+{
+	SetupArcMesh();
+
+	vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 0);
+	double angle = m_pIcoGlobe->AddSurfaceLineToMesh(&mf, path);
 
 	// estimate horizontal distance (angle * radius)
 	m_fArcLength = angle * EARTH_RADIUS;

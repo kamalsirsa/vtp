@@ -90,6 +90,7 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	m_ui.m_iEditingPoint = -1;
 	m_ui.m_pCurBuilding = NULL;
 	m_ui.m_pCurLinear = NULL;
+	m_ui.m_bDistanceToolMode = false;
 
 	m_distance_p1.Set(0,0);
 	m_distance_p2.Set(0,0);
@@ -713,22 +714,56 @@ void BuilderView::DrawAreaTool(wxDC *pDC, const DRECT &area)
 
 void BuilderView::DrawDistanceTool(wxDC *pDC)
 {
-	wxPoint p1, p2;
-	screen(m_distance_p1, p1);
-	screen(m_distance_p2, p2);
-
 	pDC->SetPen(wxPen(*wxBLACK_PEN));
 	pDC->SetLogicalFunction(wxINVERT);
 
-	// draw small crosshairs
-	pDC->DrawLine(p1.x-4, p1.y, p1.x+4+1, p1.y);
-	pDC->DrawLine(p1.x, p1.y-4, p1.x, p1.y+4+1);
-	pDC->DrawLine(p2.x-4, p2.y, p2.x+4+1, p2.y);
-	pDC->DrawLine(p2.x, p2.y-4, p2.x, p2.y+4+1);
-	// and the line itself
-	pDC->DrawLine(p1.x, p1.y, p2.x, p2.y);
+	if (m_ui.m_bDistanceToolMode)
+	{
+		// Path mode
+		// draw the polyline
+		DrawLine(pDC, m_distance_path, false);
+
+		// draw small crosshairs
+		unsigned int i, len = m_distance_path.GetSize();
+		for (i = 0; i < len; i++)
+		{
+			wxPoint p1 = g_screenbuf[i];
+			pDC->DrawLine(p1.x-4, p1.y, p1.x+4+1, p1.y);
+			pDC->DrawLine(p1.x, p1.y-4, p1.x, p1.y+4+1);
+		}
+	}
+	else
+	{
+		// Line mode
+		wxPoint p1, p2;
+		screen(m_distance_p1, p1);
+		screen(m_distance_p2, p2);
+
+		// draw small crosshairs
+		pDC->DrawLine(p1.x-4, p1.y, p1.x+4+1, p1.y);
+		pDC->DrawLine(p1.x, p1.y-4, p1.x, p1.y+4+1);
+		pDC->DrawLine(p2.x-4, p2.y, p2.x+4+1, p2.y);
+		pDC->DrawLine(p2.x, p2.y-4, p2.x, p2.y+4+1);
+		// and the line itself
+		pDC->DrawLine(p1.x, p1.y, p2.x, p2.y);
+	}
 }
 
+void BuilderView::DrawDistanceTool()
+{
+	wxClientDC dc(this);
+	PrepareDC(dc);
+	DrawDistanceTool(&dc);
+}
+
+void BuilderView::ClearDistanceTool()
+{
+	DrawDistanceTool();	// erase
+
+	SetDistancePoints(DPoint2(0,0), DPoint2(0,0));
+	SetDistancePath(DLine2());
+//	Refresh();
+}
 
 ////////////////////////////////////////////////////////////
 // Elevation
@@ -872,6 +907,37 @@ void BuilderView::SetCorrectCursor()
 	}
 }
 
+///////////////////////////////////////////////////////////////////////
+// Distance tool
+
+void BuilderView::BeginDistance()
+{
+	wxClientDC dc(this);
+	PrepareDC(dc);
+
+	DrawDistanceTool(&dc);	// erase
+	if (m_ui.m_bDistanceToolMode)
+	{
+		// Path mode - set initial segment
+		int len = m_distance_path.GetSize();
+		if (len == 0)
+		{
+			// begin new path
+			m_distance_path.Append(m_ui.m_DownLocation);
+		}
+		// default: add point to the path
+		m_distance_path.Append(m_ui.m_DownLocation);
+
+		GetMainFrame()->UpdateDistance(m_distance_path);
+	}
+	else
+	{
+		// Line mode - set initial points
+		m_distance_p1 = m_ui.m_DownLocation;
+		m_distance_p2 = m_ui.m_DownLocation;
+	}
+	DrawDistanceTool(&dc);	// redraw
+}
 
 /////////////////////////////////////////////////////////////
 
@@ -1108,6 +1174,17 @@ void BuilderView::SetShowMap(bool bShow)
 	m_bShowMap = bShow;
 }
 
+void BuilderView::SetDistanceToolMode(bool bPath)
+{
+	m_ui.m_bDistanceToolMode = bPath;
+}
+
+bool BuilderView::GetDistanceToolMode()
+{
+	return m_ui.m_bDistanceToolMode;
+}
+
+
 /////////////////////////////////////////////////////////////
 // Mouse handlers
 
@@ -1159,6 +1236,10 @@ void BuilderView::OnLeftDown(wxMouseEvent& event)
 
 		case LB_Box:
 			BeginArea();
+			break;
+
+		case LB_Dist:
+			BeginDistance();
 			break;
 	}
 	// Dispatch for layer-specific handling
@@ -1241,10 +1322,19 @@ void BuilderView::OnLButtonDragRelease(wxMouseEvent& event)
 
 void BuilderView::OnDragDistance()
 {
-	object(m_ui.m_DownPoint, m_distance_p1);
-	object(m_ui.m_LastPoint, m_distance_p2);
-
-	GetMainFrame()->UpdateDistance(m_distance_p1, m_distance_p2);
+	if (m_ui.m_bDistanceToolMode)
+	{
+		// Path mode
+		int len = m_distance_path.GetSize();
+		m_distance_path[len-1] = m_ui.m_CurLocation;
+		GetMainFrame()->UpdateDistance(m_distance_path);
+	}
+	else
+	{
+		// Line mode
+		m_distance_p2 = m_ui.m_CurLocation;
+		GetMainFrame()->UpdateDistance(m_distance_p1, m_distance_p2);
+	}
 }
 
 void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
@@ -1545,7 +1635,6 @@ void BuilderView::OnSize(wxSizeEvent& event)
 //#include "vtdata/TripDub.h"
 //#include "vtdata/vtDIB.h"
 
-
 void BuilderView::OnChar(wxKeyEvent& event)
 {
 #if VTDEBUG
@@ -1725,9 +1814,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		output.WriteBMP("c:/temp/output.bmp");
 #endif
 #if 0
-	CUnzip uz;
-	bool success = uz.Open("C:/APIs/test/unzip101e.zip");
-	success = uz.Extract(true, true, "C:/temp/");
+	#include "C:/Dev/TMK-Process/TMK.cpp"
 #endif
 	}
 	else

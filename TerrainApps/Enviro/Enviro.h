@@ -107,6 +107,7 @@ public:
 	int AddGlobeAbstractLayer(const char *fname);
 	void UpdateEarthArc();
 	void SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2);
+	void SetDisplayedArc(const DLine2 &path);
 	void SetEarthLines(double lon, double lat);
 	void ShowEarthLines(bool bShow);
 	vtTerrain *FindTerrainOnEarth(const DPoint2 &p);
@@ -179,6 +180,10 @@ public:
 	// abstract layers
 	vtAbstractLayer *GetLabelLayer();
 
+	// distance tool
+	void SetDistanceToolMode(bool bPath);
+	void ResetDistanceTool();
+
 	// global state
 	AppState	m_state;
 	MouseMode	m_mode;
@@ -217,6 +222,8 @@ public:
 	virtual void EarthPosUpdated() {}
 	virtual void ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
 		double fGround, double fVertical) {}
+	virtual void ShowDistance(const DLine2 &path,
+		double fGround, double fVertical) {}
 	virtual vtTagArray *GetInstanceFromGUI() { return NULL; }
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
 	virtual void SetTimeEngineToGUI(vtTimeEngine *pEngine) {}
@@ -246,6 +253,7 @@ protected:
 	void FreeArc();
 	void FreeArcMesh();
 	void SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2);
+	void SetTerrainMeasure(const DLine2 &path);
 	void CreateElevationLegend();
 	void CreateMapOverview();
 
@@ -274,6 +282,8 @@ protected:
 	vtMaterialArray *m_pArcMats;
 	double		m_fArcLength;
 	float		m_fDistToolHeight;
+	bool		m_bMeasurePath;
+	DLine2		m_distance_path;
 
 	// view and navigation
 	vtCamera	*m_pNormalCamera;

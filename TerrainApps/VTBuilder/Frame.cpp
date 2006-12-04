@@ -45,7 +45,7 @@
 #include "ResampleDlg.h"
 #include "SampleImageDlg.h"
 #include "FeatInfoDlg.h"
-#include "vtui/DistanceDlg.h"
+#include "DistanceDlg2d.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/LinearStructDlg.h"
 #include "vtui/ProjectionDlg.h"
@@ -941,14 +941,15 @@ FeatInfoDlg	*MainFrame::ShowFeatInfoDlg()
 }
 
 
-DistanceDlg	*MainFrame::ShowDistanceDlg()
+DistanceDlg2d *MainFrame::ShowDistanceDlg()
 {
 	if (!m_pDistanceDlg)
 	{
 		// Create new Distance Dialog
-		m_pDistanceDlg = new DistanceDlg(this, wxID_ANY, _("Distance Tool"),
+		m_pDistanceDlg = new DistanceDlg2d(this, wxID_ANY, _("Distance Tool"),
 				wxPoint(200, 200), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pDistanceDlg->SetProjection(m_proj);
+		m_pDistanceDlg->SetFrame(this);
 	}
 	m_pDistanceDlg->Show(true);
 	return m_pDistanceDlg;
@@ -956,7 +957,7 @@ DistanceDlg	*MainFrame::ShowDistanceDlg()
 
 void MainFrame::UpdateDistance(const DPoint2 &p1, const DPoint2 &p2)
 {
-	DistanceDlg *pDlg = ShowDistanceDlg();
+	DistanceDlg2d *pDlg = ShowDistanceDlg();
 	if (pDlg)
 	{
 		pDlg->SetPoints(p1, p2, true);
@@ -972,6 +973,36 @@ void MainFrame::UpdateDistance(const DPoint2 &p1, const DPoint2 &p2)
 	ProfileDlg *pDlg2 = m_pProfileDlg;
 	if (pDlg2)
 		pDlg2->SetPoints(p1, p2);
+}
+
+void MainFrame::UpdateDistance(const DLine2 &path)
+{
+	DistanceDlg2d *pDlg = ShowDistanceDlg();
+	if (pDlg)
+	{
+		pDlg->SetPath(path, true);
+		//float h1 = GetHeightFromTerrain(p1);
+		//float h2 = GetHeightFromTerrain(p2);
+		//float diff = FLT_MIN;
+		//if (h1 != INVALID_ELEVATION && h2 != INVALID_ELEVATION)
+		//	diff = h2 - h1;
+		//if (pDlg)
+		//	pDlg->SetGroundAndVertical(FLT_MIN, diff, false);
+	}
+
+	// TODO
+	//ProfileDlg *pDlg2 = m_pProfileDlg;
+	//if (pDlg2)
+	//	pDlg2->SetPoints(p1, p2);
+}
+
+void MainFrame::ClearDistance()
+{
+	UpdateDistance(DPoint2(0,0), DPoint2(0,0));
+	UpdateDistance(DLine2());
+
+	// erase previous
+	GetView()->ClearDistanceTool();
 }
 
 

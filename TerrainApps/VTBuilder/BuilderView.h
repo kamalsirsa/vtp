@@ -90,6 +90,8 @@ struct UIContext
 	wxPoint	m_DownPoint;
 	wxPoint m_CurPoint;		// current position of mouse
 	wxPoint m_LastPoint;	// last position of mouse
+
+	bool m_bDistanceToolMode;
 };
 
 class BuilderView : public vtScaledView
@@ -134,8 +136,13 @@ public:
 	void InvertAreaTool(const DRECT &rect);
 	void ShowGridMarks(const DRECT &area, int cols, int rows, int active_col, int active_row);
 	void HideGridMarks();
+	void SetDistanceToolMode(bool bPath);
+	bool GetDistanceToolMode();
 	void SetDistancePoints(const DPoint2 &p1, const DPoint2 &p2)
 	{ m_distance_p1 = p1; m_distance_p2 = p2; }
+	void SetDistancePath(const DLine2 &path)
+	{ m_distance_path = path; }
+	void ClearDistanceTool();
 
 	bool	m_bCrossSelect;
 	bool	m_bShowUTMBounds;
@@ -191,6 +198,8 @@ protected:
 	void InvertRect(wxDC *pDC, const wxPoint &one, const wxPoint &two, bool bDashed = false);
 	void DrawAreaTool(wxDC *pDC, const DRECT &area);
 	void DrawDistanceTool(wxDC *pDC);
+	void DrawDistanceTool();
+	void BeginDistance();
 
 	bool m_bGotFirstIdle;
 	bool m_bSkipNextDraw;
@@ -198,6 +207,7 @@ protected:
 	wxSize m_previous_size;
 	DRECT m_world_rect;		// rectangle box drawn by mouse
 	DPoint2 m_distance_p1, m_distance_p2;
+	DLine2 m_distance_path;
 
 	// Mouse in window coords
 	wxPoint m_DownClient;

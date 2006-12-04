@@ -17,13 +17,13 @@
 #include "vtlib/core/Terrain.h"
 #include "vtdata/vtLog.h"
 #include "vtui/InstanceDlg.h"
-#include "vtui/DistanceDlg.h"
 #include "vtui/ProfileDlg.h"
 
 #include "EnviroGUI.h"
 #include "EnviroApp.h"
 #include "EnviroFrame.h"
 #include "canvas.h"
+#include "DistanceDlg3d.h"
 #include "LayerDlg.h"
 #include "StyleDlg.h"
 
@@ -136,6 +136,17 @@ void EnviroGUI::ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
 
 	if (GetFrame()->m_pProfileDlg)
 		GetFrame()->m_pProfileDlg->SetPoints(p1, p2);
+}
+
+void EnviroGUI::ShowDistance(const DLine2 &path,
+							 double fGround, double fVertical)
+{
+	GetFrame()->m_pDistanceDlg->SetPath(path, false);
+	GetFrame()->m_pDistanceDlg->SetGroundAndVertical(fGround, fVertical, true);
+
+	// TODO
+	//if (GetFrame()->m_pProfileDlg)
+	//	GetFrame()->m_pProfileDlg->SetPoints(p1, p2);
 }
 
 vtTagArray *EnviroGUI::GetInstanceFromGUI()
