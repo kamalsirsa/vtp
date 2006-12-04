@@ -14,7 +14,7 @@
 
 #include "DistanceDlg.h"
 #include "Helper.h" // for FormatCoord
-#include <float.h>	// for FLT_MIN
+#include <float.h>  // for FLT_MIN
 
 // WDR: class implementations
 
@@ -31,6 +31,9 @@ BEGIN_EVENT_TABLE(DistanceDlg, AutoDialog)
 	EVT_CHOICE( ID_UNITS3, DistanceDlg::OnUnits )
 	EVT_CHOICE( ID_UNITS4, DistanceDlg::OnUnits )
 	EVT_CHOICE( ID_UNITS5, DistanceDlg::OnUnits )
+	EVT_RADIOBUTTON( ID_RADIO_LINE, DistanceDlg::OnRadioLine )
+	EVT_RADIOBUTTON( ID_RADIO_PATH, DistanceDlg::OnRadioPath )
+	EVT_BUTTON( ID_DIST_TOOL_CLEAR, DistanceDlg::OnClear )
 END_EVENT_TABLE()
 
 DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -42,6 +45,8 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	GetUnits2()->Append(_("Meters"));
 	GetUnits2()->Append(_("Feet"));
 	GetUnits2()->Append(_("US Survey Feet"));
+	GetUnits2()->Append(_("Kilometers"));
+	GetUnits2()->Append(_("Miles"));
 
 	GetUnits3()->Append(_("Meters"));
 	GetUnits3()->Append(_("Feet"));
@@ -64,21 +69,61 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	AddValidator(ID_UNITS3, &m_iUnits3);
 	AddValidator(ID_UNITS4, &m_iUnits4);
 	AddValidator(ID_UNITS5, &m_iUnits5);
+
+	m_pTransformToGeo = NULL;
+	m_bPathMode = false;
+	Zero();
+}
+
+DistanceDlg::~DistanceDlg()
+{
+	if (m_pTransformToGeo)
+		delete m_pTransformToGeo;
+}
+
+void DistanceDlg::Zero()
+{
+	m_p1.Set(0,0);
+	m_p2.Set(0,0);
+	m_path.Empty();
+	m_fGround = FLT_MIN;
+	m_fVertical = FLT_MIN;
 }
 
 void DistanceDlg::SetProjection(const vtProjection &proj)
 {
+	if (m_proj != proj)
+	{
+		// Changing projection
+		Reset();
+	}
 	m_proj = proj;
+
 	GetMapOffset()->SetValue(_T(""));
 	GetMapDist()->SetValue(_T(""));
 	GetGeodDist()->SetValue(_T(""));
 	UpdateAvailableUnits();
+
+	bool bIsGeo = (m_proj.IsGeographic() != FALSE);
+	if (!bIsGeo)
+	{
+		// Free previous object
+		if (m_pTransformToGeo)
+			delete m_pTransformToGeo;
+
+		// We may need degrees later, but don't have them, prepare to compute them.
+		vtProjection geo;
+		CreateSimilarGeographicProjection(m_proj, geo);
+		m_pTransformToGeo = CreateCoordTransform(&m_proj, &geo);
+	}
+	ShowValues();
 }
 
 void DistanceDlg::SetPoints(const DPoint2 &p1, const DPoint2 &p2, bool bUpdate)
 {
 	m_p1 = p1;
 	m_p2 = p2;
+	m_bPathMode = false;
 	if (bUpdate)
 		ShowValues();
 }
@@ -87,6 +132,14 @@ void DistanceDlg::GetPoints(DPoint2 &p1, DPoint2 &p2)
 {
 	p1 = m_p1;
 	p2 = m_p2;
+}
+
+void DistanceDlg::SetPath(const DLine2 &path, bool bUpdate)
+{
+	m_path = path;
+	m_bPathMode = true;
+	if (bUpdate)
+		ShowValues();
 }
 
 void DistanceDlg::SetGroundAndVertical(float fGround, float fVertical, bool bUpdate)
@@ -102,7 +155,7 @@ double GetScaleFromUnits(int units)
 	switch (units)
 	{
 	case 3:
-		return 1.0 / 1000;	// km
+		return 1.0 / 1000;  // km
 	case 4:
 		return 1.0 / (5280 * GetMetersPerUnit(LU_FEET_INT)); // miles
 	}
@@ -112,75 +165,112 @@ double GetScaleFromUnits(int units)
 
 void DistanceDlg::ShowValues()
 {
-	DPoint2 diff_degrees;
-	DPoint2 diff_map = m_p2 - m_p1;
-
+	wxString str;
 	bool bIsGeo = (m_proj.IsGeographic() != FALSE);
-	DPoint2 geo1, geo2;
-	if (bIsGeo)
-	{
-		diff_degrees = diff_map;
-		geo1 = m_p1;
-		geo2 = m_p2;
-	}
-	else
-	{
-		// We need degrees, but don't have them, so compute them.
-		vtProjection geo;
-		CreateSimilarGeographicProjection(m_proj, geo);
-
-		OCT *trans = CreateCoordTransform(&m_proj, &geo);
-		if (!trans)
-		{
-			// This should never happen, unless something is majorly wrong,
-			//  like proj.dll is not found.
-			GetMapOffset()->SetValue(_("<Projection failure>"));
-			return;
-		}
-
-		geo1 = m_p1;
-		geo2 = m_p2;
-		trans->Transform(1, &geo1.x, &geo1.y);
-		trans->Transform(1, &geo2.x, &geo2.y);
-
-		diff_degrees = geo2 - geo1;
-
-		delete trans;
-	}
-	// find geodesic distance
-	double geodesic_meters = vtProjection::GeodesicDistance(geo1, geo2);
+	double scale;
+	double map_distance, geodesic_meters;
 
 	LinearUnits lu = m_proj.GetUnits();
 
-	// Map Offset
-	wxString str;
-	double scale;
-
-	if (m_iUnits1 == 0) // degrees
+	if (!bIsGeo && !m_pTransformToGeo)
 	{
-		str = wxString(FormatCoord(true, diff_degrees.x), wxConvUTF8);
-		str += _T(", ");
-		str += wxString(FormatCoord(true, diff_degrees.y), wxConvUTF8);
+		// This should never happen, unless something is majorly wrong,
+		//  like proj.dll is not found.
+		GetMapOffset()->SetValue(_("<Projection failure>"));
+		return;
+	}
+
+	if (m_bPathMode)
+	{
+		DLine2 geo_line;
+
+		unsigned int i, len = m_path.GetSize();
+		if (bIsGeo)
+			geo_line = m_path;
+		else
+		{
+			// We need degrees, but don't have them, so compute them.
+			geo_line.SetSize(len);
+			for (i = 0; i < len; i++)
+			{
+				DPoint2 p = m_path[i];
+				m_pTransformToGeo->Transform(1, &p.x, &p.y);
+				geo_line[i] = p;
+			}
+		}
+		map_distance = 0.0f;
+		geodesic_meters = 0.0f;
+		if (len > 1)
+		{
+			for (i = 0; i < len-1; i++)
+			{
+				// find map distance
+				map_distance += (m_path[i+1] - m_path[i]).Length();
+
+				// find geodesic distance
+				geodesic_meters += vtProjection::GeodesicDistance(geo_line[i], geo_line[i+1]);
+			}
+		}
+
+		// Map Offset
+		str = _T("N/A");
+		GetMapOffset()->SetValue(str);
 	}
 	else
 	{
-		scale = GetMetersPerUnit(lu) /
-			GetMetersPerUnit((LinearUnits)m_iUnits1);
-		DPoint2 diff_show = diff_map * scale;
-		str = wxString(FormatCoord(bIsGeo, diff_show.x), wxConvUTF8);
-		str += _T(", ");
-		str += wxString(FormatCoord(bIsGeo, diff_show.y), wxConvUTF8);
+		// The "simple" case: two points
+		// Find map offset and map distance
+		DPoint2 diff_map = m_p2 - m_p1;
+		map_distance = diff_map.Length();
+
+		DPoint2 diff_degrees;
+		DPoint2 geo1, geo2;
+		if (bIsGeo)
+		{
+			diff_degrees = diff_map;
+			geo1 = m_p1;
+			geo2 = m_p2;
+		}
+		else
+		{
+			// We need degrees, but don't have them, so compute them.
+			geo1 = m_p1;
+			geo2 = m_p2;
+			m_pTransformToGeo->Transform(1, &geo1.x, &geo1.y);
+			m_pTransformToGeo->Transform(1, &geo2.x, &geo2.y);
+			diff_degrees = geo2 - geo1;
+		}
+		// find geodesic distance
+		geodesic_meters = vtProjection::GeodesicDistance(geo1, geo2);
+
+		// Map Offset
+		if (m_iUnits1 == 0) // degrees
+		{
+			str = wxString(FormatCoord(true, diff_degrees.x), wxConvUTF8);
+			str += _T(", ");
+			str += wxString(FormatCoord(true, diff_degrees.y), wxConvUTF8);
+		}
+		else
+		{
+			scale = GetMetersPerUnit(lu) /
+				GetMetersPerUnit((LinearUnits)m_iUnits1);
+			DPoint2 diff_show = diff_map * scale;
+			str = wxString(FormatCoord(bIsGeo, diff_show.x), wxConvUTF8);
+			str += _T(", ");
+			str += wxString(FormatCoord(bIsGeo, diff_show.y), wxConvUTF8);
+		}
+		GetMapOffset()->SetValue(str);
 	}
-	GetMapOffset()->SetValue(str);
 
 	// Map Distance
 	if (bIsGeo)
 		str = _T("N/A");
 	else
 	{
-		scale = GetMetersPerUnit(lu) /
-			GetMetersPerUnit((LinearUnits)(m_iUnits2+1));
-		str = wxString(FormatCoord(false, diff_map.Length() * scale), wxConvUTF8);
+		// convert map units to meters, then meters to the desired unit
+		scale = GetMetersPerUnit(lu) *
+			GetScaleFromUnits(m_iUnits2);
+		str = wxString(FormatCoord(false, map_distance * scale), wxConvUTF8);
 	}
 	GetMapDist()->SetValue(str);
 
@@ -221,6 +311,9 @@ void DistanceDlg::UpdateAvailableUnits()
 	bool bIsGeo = (m_proj.IsGeographic() != FALSE);
 	GetUnits2()->Enable(!bIsGeo);
 	GetMapDist()->Enable(!bIsGeo);
+
+	GetMapOffset()->Enable(!m_bPathMode);
+	GetUnits1()->Enable(!m_bPathMode);
 
 	GetUnits1()->Clear();
 	GetUnits1()->Append(_("Degrees"));
@@ -263,6 +356,25 @@ void DistanceDlg::UpdateAvailableUnits()
 }
 
 // WDR: handler implementations for DistanceDlg
+
+void DistanceDlg::OnClear( wxCommandEvent &event )
+{
+	Reset();
+}
+
+void DistanceDlg::OnRadioPath( wxCommandEvent &event )
+{
+	m_bPathMode = true;
+	OnMode(m_bPathMode);
+	UpdateAvailableUnits();
+}
+
+void DistanceDlg::OnRadioLine( wxCommandEvent &event )
+{
+	m_bPathMode = false;
+	OnMode(m_bPathMode);
+	UpdateAvailableUnits();
+}
 
 void DistanceDlg::OnInitDialog(wxInitDialogEvent& event)
 {

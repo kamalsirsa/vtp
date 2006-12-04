@@ -26,8 +26,12 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
+	~DistanceDlg();
 
 	// WDR: method declarations for DistanceDlg
+	wxButton* GetDistToolClear()  { return (wxButton*) FindWindow( ID_DIST_TOOL_CLEAR ); }
+	wxRadioButton* GetRadioPath()  { return (wxRadioButton*) FindWindow( ID_RADIO_PATH ); }
+	wxRadioButton* GetRadioLine()  { return (wxRadioButton*) FindWindow( ID_RADIO_LINE ); }
 	wxTextCtrl* GetVertical()  { return (wxTextCtrl*) FindWindow( ID_VERTICAL ); }
 	wxTextCtrl* GetGroundDist()  { return (wxTextCtrl*) FindWindow( ID_GROUND_DIST ); }
 	wxChoice* GetUnits1()  { return (wxChoice*) FindWindow( ID_UNITS1 ); }
@@ -41,24 +45,35 @@ public:
 
 	void SetProjection(const vtProjection &proj);
 	void SetPoints(const DPoint2 &p1, const DPoint2 &p2, bool bUpdate);
+	void SetPath(const DLine2 &path, bool bUpdate);
 	void GetPoints(DPoint2 &p1, DPoint2 &p2);
 	void SetGroundAndVertical(float fGround, float fVertical, bool bUpdate);
 	void UpdateAvailableUnits();
 	void ShowValues();
+	void Zero();
+
+	virtual void OnMode(bool bPath) = 0;
+	virtual void Reset() = 0;
 
 private:
 	// WDR: member variable declarations for DistanceDlg
 	vtProjection	m_proj;
-	int		m_iUnits1;
-	int		m_iUnits2;
-	int		m_iUnits3;
-	int		m_iUnits4;
-	int		m_iUnits5;
-	DPoint2	m_p1, m_p2;
-	float	m_fGround, m_fVertical;
+	int	 m_iUnits1;
+	int	 m_iUnits2;
+	int	 m_iUnits3;
+	int	 m_iUnits4;
+	int	 m_iUnits5;
+	DPoint2 m_p1, m_p2;
+	DLine2 m_path;
+	float   m_fGround, m_fVertical;
+	bool m_bPathMode;
+	OCT *m_pTransformToGeo;
 
 private:
 	// WDR: handler declarations for DistanceDlg
+	void OnClear( wxCommandEvent &event );
+	void OnRadioPath( wxCommandEvent &event );
+	void OnRadioLine( wxCommandEvent &event );
 	void OnUnits( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
@@ -66,5 +81,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif	// __DistanceDlg_H__
+#endif  // __DistanceDlg_H__
 
