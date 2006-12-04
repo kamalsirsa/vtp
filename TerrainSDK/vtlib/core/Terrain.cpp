@@ -2775,6 +2775,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
 	else
 	{
 		// not curved: straight line in earth coordinates
+		FPoint3 last_v;
 		for (i = 0; i < points; i++)
 		{
 			if (bInterp)
@@ -2790,7 +2791,6 @@ float vtTerrain::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
 				unsigned int iSteps = (unsigned int) (fLen / fSpacing);
 				if (iSteps < 1) iSteps = 1;
 
-				FPoint3 last_v;
 				for (j = (i == 1 ? 0:1); j <= iSteps; j++)
 				{
 					// simple linear interpolation of the ground coordinate
@@ -2800,7 +2800,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
 					pMF->AddVertex(v);
 					iVerts++;
 
-					// keep a running toal of approximate ground length
+					// keep a running total of approximate ground length
 					if (j > 0)
 						fTotalLength += (v - last_v).Length();
 					last_v = v;
