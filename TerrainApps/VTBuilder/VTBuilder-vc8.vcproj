@@ -862,6 +862,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DistanceDlg2d.h"
+				>
+			</File>
+			<File
 				RelativePath="DistribVegDlg.h"
 				>
 			</File>
@@ -1278,6 +1282,10 @@
 			>
 			<File
 				RelativePath=".\ChunkDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DistanceDlg2d.cpp"
 				>
 			</File>
 			<File
