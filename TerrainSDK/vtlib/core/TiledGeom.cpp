@@ -232,8 +232,13 @@ vtTiledGeom::vtTiledGeom()
 	m_iTileLoads = 0;
 	m_iCacheHits = 0;
 
+	// The terrain surface is not lit by diffuse light (since there are no normals
+	//  for per-vertex lighting).  However, it does respond to ambient light level
+	//  (so that the terrain is dark at night).
 	m_pPlainMaterial = new vtMaterial;
-	m_pPlainMaterial->SetDiffuse(1,1,1);
+	m_pPlainMaterial->SetDiffuse(0,0,0);
+	m_pPlainMaterial->SetAmbient(1,1,1);
+	m_pPlainMaterial->SetLighting(true);
 }
 
 vtTiledGeom::~vtTiledGeom()
