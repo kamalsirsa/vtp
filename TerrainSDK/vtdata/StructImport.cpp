@@ -461,7 +461,8 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 		}
 		SHPDestroyObject(psShape);
 	}
-	DBFClose(db);
+	if (db != NULL)
+		DBFClose(db);
 	SHPClose(hSHP);
 	return true;
 }
