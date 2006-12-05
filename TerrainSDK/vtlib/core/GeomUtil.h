@@ -46,6 +46,7 @@ public:
 	void AddVertex(const FPoint3 &p);
 	void PrimEnd();
 
+	void SetLineWidth(int width);
 	void SetMatIndex(int iIdx);
 
 protected:
@@ -60,6 +61,7 @@ protected:
 	vtMesh *m_pMesh;
 	int m_iPrimStart;
 	int m_iPrimVerts;
+	int m_iLineWidth;
 
 	bool m_bSimple;
 };

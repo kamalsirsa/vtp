@@ -283,6 +283,7 @@ vtMeshFactory::vtMeshFactory(vtGeom *pGeom, vtMeshBase::PrimType ePrimType,
 	m_pMesh = NULL;
 	m_iPrimStart = -1;
 	m_iPrimVerts = -1;
+	m_iLineWidth = 1;
 
 	m_bSimple = false;
 }
@@ -299,6 +300,7 @@ vtMeshFactory::vtMeshFactory(vtMesh *pMesh)
 	m_pMesh = pMesh;
 	m_iPrimStart = -1;
 	m_iPrimVerts = -1;
+	m_iLineWidth = 1;
 
 	m_bSimple = true;
 }
@@ -308,6 +310,8 @@ void vtMeshFactory::NewMesh()
 	m_pMesh = new vtMesh(m_ePrimType, m_iVertType, m_iMaxVertsPerMesh);
 	m_pGeom->AddMesh(m_pMesh, m_iMatIndex);
 	m_pMesh->Release();	// pass ownership to geometry
+	if (m_iLineWidth != 1)
+		m_pMesh->SetLineWidth(m_iLineWidth);
 }
 
 /** Tell the factory to start a primitive. */
@@ -348,6 +352,11 @@ void vtMeshFactory::PrimEnd()
 		m_pMesh->AddStrip2(m_iPrimVerts, m_iPrimStart);
 	m_iPrimStart = -1;
 	m_iPrimVerts = -1;
+}
+
+void vtMeshFactory::SetLineWidth(int width)
+{
+	m_iLineWidth = width;
 }
 
 void vtMeshFactory::SetMatIndex(int iIdx)
