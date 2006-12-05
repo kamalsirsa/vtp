@@ -92,25 +92,61 @@ void ProfileDlg::SetPoints(const DPoint2 &p1, const DPoint2 &p2)
 	m_p1 = p1;
 	m_p2 = p2;
 	m_bHavePoints = true;
+	m_bHavePath = false;
 	m_bHaveValues = false;
 	m_bHaveLOS = false;
 	m_bHaveFresnel = false;
 	m_bHaveGeoidSurface = false;
 
-	m_geo1 = m_p1;
-	m_geo2 = m_p2;
+	DPoint2 geo1, geo2;		// points 1 and 2 in geographic CS
+	geo1 = m_p1;
+	geo2 = m_p2;
 	if (!m_proj.IsGeographic())
 	{
 		// convert points to geographic CS
 		vtProjection geo;
 		CreateSimilarGeographicProjection(m_proj, geo);
 		OCT *trans = CreateCoordTransform(&m_proj, &geo);
-		trans->Transform(1, &m_geo1.x, &m_geo1.y);
-		trans->Transform(1, &m_geo2.x, &m_geo2.y);
-		m_fGeodesicDistance=vtProjection::GeodesicDistance(m_p1,m_p2);
+		trans->Transform(1, &geo1.x, &geo1.y);
+		trans->Transform(1, &geo2.x, &geo2.y);
 		delete trans;
 	}
-	m_fGeodesicDistance=vtProjection::GeodesicDistance(m_geo1,m_geo2);
+	m_fGeodesicDistance = vtProjection::GeodesicDistance(geo1, geo2);
+
+	Refresh();
+	UpdateEnabling();
+}
+
+void ProfileDlg::SetPath(const DLine2 &path)
+{
+	m_path = path;
+	m_bHavePoints = false;
+	m_bHavePath = true;
+	m_bHaveValues = false;
+	m_bHaveLOS = false;
+	m_bHaveFresnel = false;
+	m_bHaveGeoidSurface = false;
+
+	m_fGeodesicDistance = 0.0f;
+	unsigned int i, len = m_path.GetSize();
+	if (len > 1)
+	{
+		DLine2 m_path_geo = m_path;		// path in geographic CS
+		if (!m_proj.IsGeographic())
+		{
+			// convert points to geographic CS
+			vtProjection geo;
+			CreateSimilarGeographicProjection(m_proj, geo);
+			OCT *trans = CreateCoordTransform(&m_proj, &geo);
+			for (i = 0; i < len; i++)
+				trans->Transform(1, &(m_path_geo[i].x), &(m_path_geo[i].y));
+
+			delete trans;
+		}
+		for (i = 0; i < len-1; i++)
+			m_fGeodesicDistance += vtProjection::GeodesicDistance(m_path_geo[i],
+				m_path_geo[i+1]);
+	}
 
 	Refresh();
 	UpdateEnabling();
@@ -139,14 +175,44 @@ void ProfileDlg::GetValues()
 	m_fMax = -1E9;
 	m_values.resize(m_xrange);
 	m_callback->Begin();
-	DPoint2 p;
+
+	// We can use the same logic for two points or a polyline
+	if (m_bHavePoints)
+	{
+		m_path.Empty();
+		m_path.Append(m_p1);
+		m_path.Append(m_p2);
+	}
+
 	m_bHaveValidData = false;
 	m_bHaveInvalid = false;
-	int i;
+	m_bHaveValues = false;
+	m_bMouseOnLine = false;
+
+	unsigned int i, len = m_path.GetSize();
+	if (len < 2)
+	{
+		// Need more points
+		return;
+	}
+
+	// Iterate over the polyline (linearly in map coordinates)
+	double fTotalDistance = 0.0;
+	unsigned int seg = 0, total_segments = len-1;
+	for (seg = 0; seg < total_segments; seg++)
+		fTotalDistance += (m_path[seg+1] - m_path[seg]).Length();
+	double fStep = fTotalDistance / (m_xrange - 1);
+	double fSegmentDist = 0.0;
+	double fDist = 0.0;
+	seg = 0;
+	DPoint2 segvector(m_path[seg+1] - m_path[seg]);
+	double fSegmentLength = segvector.Length();
+	DPoint2 p = m_path[0];
+
 	for (i = 0; i < m_xrange; i++)
 	{
-		double ratio = (double)i / (m_xrange-1);
-		p = m_p1 + (m_p2 - m_p1) * ratio;
+		//double ratio = (double)i / (m_xrange-1);
+		//p = m_p1 + (m_p2 - m_p1) * ratio;
 
 		float f = m_callback->GetElevation(p);
 		m_values[i] = f;
@@ -160,19 +226,49 @@ void ProfileDlg::GetValues()
 			{
 				m_fMin = f;
 				m_iMin = i;
-				m_fMinDist = ratio * m_fGeodesicDistance;
+				m_fMinDist = fDist * m_fGeodesicDistance;
 			}
 			if (f > m_fMax)
 			{
 				m_fMax = f;
 				m_iMax = i;
-				m_fMaxDist = ratio * m_fGeodesicDistance;
+				m_fMaxDist = fDist * m_fGeodesicDistance;
+			}
+		}
+
+		if (i == m_xrange-1)	// finished
+			break;
+
+		// Advance one step
+		double fRemain = fSegmentLength - fSegmentDist;
+		double fAdvance = fStep;
+		while (fAdvance != 0.0)
+		{
+			if (fAdvance <= fRemain)
+			{
+				// same segment
+				fDist += fAdvance;
+				fSegmentDist += fAdvance;
+
+				p = m_path[seg] + (segvector / fSegmentLength * fSegmentDist);
+				fAdvance = 0.0f;
+			}
+			else
+			{
+				// advance to next segment
+				fDist += fRemain;
+				fAdvance -= fRemain;
+
+				seg++;
+				segvector = m_path[seg+1] - m_path[seg];
+				fSegmentLength = segvector.Length();
+				fSegmentDist = 0.0;
+				fRemain = fSegmentLength;
 			}
 		}
 	}
 	m_fRange = m_fMax - m_fMin;
 	m_bHaveValues = true;
-	m_bMouseOnLine = false;
 
 	Analyze();
 }
@@ -194,7 +290,7 @@ void ProfileDlg::Analyze()
 		m_bValidStart = true;
 	}
 
-	if (m_bHavePoints)
+	if (m_bHavePoints || m_bHavePath)
 		ComputeGeoidSurface();
 
 	if (m_bLineOfSight)
@@ -456,7 +552,7 @@ void ProfileDlg::MakePoint(wxPoint &p, int i, float value)
 
 void ProfileDlg::DrawChart(wxDC& dc)
 {
-	if (!m_bHavePoints)
+	if (!m_bHavePoints && !m_bHavePath)
 	{
 		GetText()->SetValue(_("No Endpoints"));
 		return;

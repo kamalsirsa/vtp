@@ -49,13 +49,17 @@ public:
 	wxTextCtrl* GetText()  { return (wxTextCtrl*) FindWindow( ID_STATUS_TEXT ); }
 	wxCheckBox* GetLineOfSight()  { return (wxCheckBox*) FindWindow( ID_LINE_OF_SIGHT ); }
 	wxCheckBox* GetVisibility()  { return (wxCheckBox*) FindWindow( ID_VISIBILITY ); }
+
 	void MakePoint(wxPoint &p, int i, float value);
 	void DrawChart(wxDC& dc);
 	void UpdateMessageText();
 	void UpdateEnabling();
+
 	void SetProjection(const vtProjection &proj);
+	void SetPath(const DLine2 &path);
 	void SetPoints(const DPoint2 &p1, const DPoint2 &p2);
 	void SetCallback(ProfileCallback *callback);
+
 	void GetValues();
 	void Analyze();
 	void ComputeLineOfSight();
@@ -73,12 +77,12 @@ private:
 	std::vector<bool> m_visible;
 	vtProjection    m_proj;
 	DPoint2 m_p1, m_p2;
-	DPoint2 m_geo1, m_geo2;		// same points in geographic CS
+	DLine2 m_path;
 	wxSize m_clientsize;
 	int m_xrange, m_yrange;
 	float m_fMin, m_fMax, m_fRange, m_fDrawRange;
 	float m_fMinDist, m_fMaxDist, m_fTotalDist;
-	bool m_bHavePoints, m_bHaveValues;
+	bool m_bHavePoints, m_bHavePath, m_bHaveValues;
 	bool m_bHaveValidData, m_bHaveInvalid;
 	bool m_bMouseOnLine;
 	float m_fMouse, m_fMouseDist;
