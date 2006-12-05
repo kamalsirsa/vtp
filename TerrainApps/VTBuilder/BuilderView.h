@@ -143,6 +143,7 @@ public:
 	void SetDistancePath(const DLine2 &path)
 	{ m_distance_path = path; }
 	void ClearDistanceTool();
+	void UpdateDistance();
 
 	bool	m_bCrossSelect;
 	bool	m_bShowUTMBounds;

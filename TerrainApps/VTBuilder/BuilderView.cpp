@@ -29,7 +29,6 @@
 #include "UtilityLayer.h"
 // Dialogs
 #include "vtui/DistanceDlg.h"
-#include "vtui/ProfileDlg.h"
 #include "vtui/Helper.h"	// for GuessZoneFromGeo
 
 #include "cpl_error.h"
@@ -765,6 +764,15 @@ void BuilderView::ClearDistanceTool()
 //	Refresh();
 }
 
+void BuilderView::UpdateDistance()
+{
+	if (m_ui.m_bDistanceToolMode)
+		GetMainFrame()->UpdateDistance(m_distance_path);
+	else
+		GetMainFrame()->UpdateDistance(m_distance_p1, m_distance_p2);
+}
+
+
 ////////////////////////////////////////////////////////////
 // Elevation
 
@@ -1327,14 +1335,13 @@ void BuilderView::OnDragDistance()
 		// Path mode
 		int len = m_distance_path.GetSize();
 		m_distance_path[len-1] = m_ui.m_CurLocation;
-		GetMainFrame()->UpdateDistance(m_distance_path);
 	}
 	else
 	{
 		// Line mode
 		m_distance_p2 = m_ui.m_CurLocation;
-		GetMainFrame()->UpdateDistance(m_distance_p1, m_distance_p2);
 	}
+	UpdateDistance();
 }
 
 void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
