@@ -183,6 +183,7 @@ public:
 	// distance tool
 	void SetDistanceToolMode(bool bPath);
 	void ResetDistanceTool();
+	void UpdateDistanceTool();
 
 	// global state
 	AppState	m_state;
