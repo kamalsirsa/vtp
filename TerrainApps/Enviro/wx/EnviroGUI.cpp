@@ -144,9 +144,8 @@ void EnviroGUI::ShowDistance(const DLine2 &path,
 	GetFrame()->m_pDistanceDlg->SetPath(path, false);
 	GetFrame()->m_pDistanceDlg->SetGroundAndVertical(fGround, fVertical, true);
 
-	// TODO
-	//if (GetFrame()->m_pProfileDlg)
-	//	GetFrame()->m_pProfileDlg->SetPoints(p1, p2);
+	if (GetFrame()->m_pProfileDlg)
+		GetFrame()->m_pProfileDlg->SetPath(path);
 }
 
 vtTagArray *EnviroGUI::GetInstanceFromGUI()

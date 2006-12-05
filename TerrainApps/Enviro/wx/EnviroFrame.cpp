@@ -1205,11 +1205,7 @@ void EnviroFrame::OnViewProfile(wxCommandEvent& event)
 		// this might be the first time it's displayed, so we need to get
 		//  the point values from the distance tool
 		if (m_pDistanceDlg)
-		{
-			DPoint2 p1, p2;
-			m_pDistanceDlg->GetPoints(p1, p2);
-			dlg->SetPoints(p1, p2);
-		}
+			g_App.UpdateDistanceTool();
 	}
 }
 
