@@ -17,7 +17,8 @@ enum vtMouseEventType
 {
 	VT_MOVE,
 	VT_DOWN,
-	VT_UP
+	VT_UP,
+	VT_WHEEL
 };
 
 #define VT_NONE		0

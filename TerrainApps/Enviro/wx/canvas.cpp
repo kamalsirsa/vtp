@@ -264,6 +264,9 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 		event.type = VT_MOVE;
 		event.button = VT_NONE;
 		m_iConsecutiveMousemoves++;		// Increment
+	} else if (ev == wxEVT_MOUSEWHEEL) {
+		event.type = VT_WHEEL;
+		event.button = event1.GetWheelRotation() / event1.GetWheelDelta();
 	} else {
 		// ignored mouse events, such as wxEVT_LEAVE_WINDOW
 		return;
