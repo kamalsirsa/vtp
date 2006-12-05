@@ -990,10 +990,9 @@ void MainFrame::UpdateDistance(const DLine2 &path)
 		//	pDlg->SetGroundAndVertical(FLT_MIN, diff, false);
 	}
 
-	// TODO
-	//ProfileDlg *pDlg2 = m_pProfileDlg;
-	//if (pDlg2)
-	//	pDlg2->SetPoints(p1, p2);
+	ProfileDlg *pDlg2 = m_pProfileDlg;
+	if (pDlg2)
+		pDlg2->SetPath(path);
 }
 
 void MainFrame::ClearDistance()
@@ -1138,6 +1137,11 @@ ProfileDlg *MainFrame::ShowProfileDlg()
 		m_pProfileDlg->SetProjection(m_proj);
 	}
 	m_pProfileDlg->Show(true);
+
+	// This might be the first time it's displayed, so we need to get
+	//  the point values from the distance tool
+	GetView()->UpdateDistance();
+
 	return m_pProfileDlg;
 }
 
