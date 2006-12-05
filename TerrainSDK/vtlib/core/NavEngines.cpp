@@ -945,6 +945,10 @@ void vtTrackball::OnMouse(vtMouseEvent &event)
 			m_Trans.y = m_Start.y + (event.pos.y - m_MouseStart.y) / 100.0f * m_fTransScale;
 		}
 	}
+	if (event.type == VT_WHEEL)
+	{
+		m_Pos.z -= (event.button / 5.0f * m_fZoomScale);
+	}
 }
 
 /**
