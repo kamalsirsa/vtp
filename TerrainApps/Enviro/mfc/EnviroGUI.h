@@ -22,7 +22,7 @@ public:
 	virtual void RefreshLayerView();
 	virtual void EarthPosUpdated();
 	virtual vtString GetPathFromGUI();
-	virtual vtString GetStringFromUser(const vtString &msg);
+	virtual vtString GetStringFromUser(const vtString &title, const vtString &msg);
 };
 
 // global singleton

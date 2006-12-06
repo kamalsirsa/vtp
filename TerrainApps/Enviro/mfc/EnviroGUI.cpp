@@ -64,7 +64,7 @@ vtString EnviroGUI::GetPathFromGUI()
 	return "";
 }
 
-vtString EnviroGUI::GetStringFromUser(const vtString &msg)
+vtString EnviroGUI::GetStringFromUser(const vtString &title, const vtString &msg)
 {
 	return "";
 }
