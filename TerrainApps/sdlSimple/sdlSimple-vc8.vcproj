@@ -107,8 +107,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\Release"
-			IntermediateDirectory=".\Release"
+			OutputDirectory=".\Release-vc8"
+			IntermediateDirectory=".\Release-vc8"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -147,10 +147,6 @@
 				EnableFunctionLevelLinking="true"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile=".\Release/sdlSimple.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				CompileAs="0"
@@ -169,11 +165,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng13-vc8.lib zlib1-vc8.lib gdal_i-vc8.lib SDLmain.lib SDL.lib opengl32.lib glu32.lib libjpeg.lib"
-				OutputFile=".\Release/sdlSimple.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib"
-				ProgramDatabaseFile=".\Release/sdlSimple.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
