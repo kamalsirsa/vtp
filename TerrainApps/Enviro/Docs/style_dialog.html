@@ -1,0 +1,58 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link rel="stylesheet" href="docs.css">
+<title>Style Dialog</title>
+</head>
+
+<body>
+
+<h2><i><font face="Verdana">Style Dialog</font></i></h2>
+
+<blockquote>
+  <table border="0" cellpadding="7" cellspacing="7" style="border-collapse: collapse" bordercolor="#111111">
+    <tr>
+      <td valign="top">The Style Dialog defines the visual style for an Abstract 
+      Layer.&nbsp; You can define the style for a layer by pressing <b>Style...</b> 
+      under Abstract Layers in the Terrain Properties.<p>Each of the possible 
+      feature types can be displayed as follows.</p>
+      <h3>2D/3D Points</h3>
+      <ul>
+        <li><b>Text Labels.</b>&nbsp; The label will float above the terrain at 
+        the indicated height above ground.&nbsp; You can specify font.&nbsp; If 
+        you are using a non-English language, be sure to choose a font that 
+        supports your character set.&nbsp; For example, on Windows, <b>
+        ArialUni.ttf</b> instead of the default Arial.ttf will support nearly 
+        everyting.</li>
+      </ul>
+      <h3>2D/3D Polylines</h3>
+      <ul>
+        <li><b>Geometry</b>.&nbsp; 2D polylines will be draped on the terrain.&nbsp; 
+        You can specify height above the ground.&nbsp; 3D polylines will be 
+        drawn at their own elevation.&nbsp; The '<b>Tesselate edges</b>' option 
+        means that every segment of the polyline is split into a lot of small 
+        segments, so that it can drape more smoothly on uneven terrain.</li>
+      </ul>
+      <h3>2D Polygons</h3>
+      <ul>
+        <li><b>Text Labels.</b>&nbsp; The label will float above the terrain at 
+        the centroid of the polygon.</li>
+        <li><b>Geometry</b>.&nbsp; 2D polylines will be draped on the terrain.</li>
+        <li><b>Texture Overlay</b>.&nbsp; <i>(Experimental)&nbsp; </i>The 
+        polygons will be rasterized to a 1024x1024 texture overlay, using the 
+        geometry color.&nbsp; Texture mode can be ADD (color is added), MODULATE 
+        (color multiplies), or DECAL (color is shows directly).</li>
+      </ul>
+      <p>&nbsp;</td>
+      <td valign="top">
+      <img border="0" src="images/style.png" width="300" height="543"></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+</blockquote>
+
+</body>
+
+</html>
