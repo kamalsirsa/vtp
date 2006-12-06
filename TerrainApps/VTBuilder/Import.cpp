@@ -13,6 +13,7 @@
 #endif
 
 #include "vtdata/DLG.h"
+#include "vtdata/ElevationGrid.h"
 #include "vtdata/LULC.h"
 #include "vtdata/Unarchive.h"
 #include "vtdata/FilePath.h"
@@ -847,7 +848,15 @@ vtLayerPtr MainFrame::ImportElevation(const wxString &strFileName, bool bWarn)
 	else
 	{
 		if (bWarn)
-			DisplayAndLog("Couldn't import data from that file.");
+		{
+			// Try getting descriptive message from the grid
+			vtString msg;
+			if (pElev->m_pGrid)
+				msg = pElev->m_pGrid->GetErrorMsg();
+			if (msg == "")
+				msg = "Couldn't import data from that file.";
+			DisplayAndLog(msg);
+		}
 		delete pElev;
 		return NULL;
 	}
