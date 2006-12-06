@@ -437,6 +437,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\DistanceDlg3d.cpp">
+			</File>
+			<File
 				RelativePath="wx\enviro_wdr.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -1347,6 +1350,9 @@
 			</File>
 			<File
 				RelativePath="wx\canvas.h">
+			</File>
+			<File
+				RelativePath=".\wx\DistanceDlg3d.h">
 			</File>
 			<File
 				RelativePath="wx\enviro_wdr.h">
