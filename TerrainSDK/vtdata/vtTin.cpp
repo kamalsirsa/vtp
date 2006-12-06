@@ -151,11 +151,11 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 	}
 
 	int vtx = 0;
-	int faces = 0;
+	int found = 0;
 	for (unsigned int i = 0; i < entities.size(); i++)
 	{
 		const DxfEntity &ent = entities[i];
-		if (ent.m_iType == DET_3DFace)
+		if (ent.m_iType == DET_3DFace || ent.m_iType == DET_Polygon)
 		{
 			int NumVerts = ent.m_points.size();
 			if (NumVerts == 3)
@@ -169,14 +169,14 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 				}
 				AddTri(vtx, vtx+1, vtx+2);
 				vtx += 3;
-				faces ++;
+				found ++;
 			}
 		}
 	}
-	VTLOG("  Found %d entities of type 3DFace.\n", faces);
+	VTLOG(" Found %d triangle entities, of type 3DFace or Polygon.\n", found);
 
 	// If we didn't find any surfaces, we haven't got a TIN
-	if (faces == 0)
+	if (found == 0)
 		return false;
 
 	// Test each triangle for clockwisdom, fix if needed
