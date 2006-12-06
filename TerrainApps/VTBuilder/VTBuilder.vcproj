@@ -367,6 +367,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\DistanceDlg2d.cpp">
+			</File>
+			<File
 				RelativePath="ElevLayer.cpp">
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -402,6 +405,9 @@
 						PreprocessorDefinitions=""
 						BrowseInformation="1"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Export.cpp">
 			</File>
 			<File
 				RelativePath="Frame.cpp">
@@ -476,6 +482,9 @@
 						PreprocessorDefinitions=""
 						BrowseInformation="1"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Geocode.cpp">
 			</File>
 			<File
 				RelativePath="Helper.cpp">
@@ -1233,6 +1242,9 @@
 			</File>
 			<File
 				RelativePath=".\ChunkDlg.h">
+			</File>
+			<File
+				RelativePath=".\DistanceDlg2d.h">
 			</File>
 			<File
 				RelativePath="DistribVegDlg.h">
