@@ -93,10 +93,11 @@ void EnviroGUI::SetState(AppState s)
 	}
 }
 
-vtString EnviroGUI::GetStringFromUser(const vtString &msg)
+vtString EnviroGUI::GetStringFromUser(const vtString &title, const vtString &msg)
 {
+	wxString caption(title, wxConvUTF8);
 	wxString message(msg, wxConvUTF8);
-	wxString str = wxGetTextFromUser(message, _("caption"), _T(""), GetFrame());
+	wxString str = wxGetTextFromUser(message, caption, _T(""), GetFrame());
 	return (vtString) (const char *) str.mb_str(wxConvUTF8);
 }
 

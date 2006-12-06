@@ -1144,7 +1144,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	if (m_mode == MM_POINTS)
 	{
 		DPoint2 atpoint(m_EarthPos.x, m_EarthPos.y);
-		vtString str = GetStringFromUser("Label");
+		vtString str = GetStringFromUser("Created labeled point feature", "Label:");
 		if (str != "")
 		{
 			vtAbstractLayer *alay = GetLabelLayer();
