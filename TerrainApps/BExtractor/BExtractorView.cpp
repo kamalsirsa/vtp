@@ -760,7 +760,7 @@ void BExtractorView::OnLButtonDownEditRoad(UINT nFlags, CPoint point)
 			(*m_pCurrentRoad)[0] = pNode->m_p;
 			pDoc->m_Links.AddLink(m_pCurrentRoad);
 			m_pCurrentRoad->SetNode(0, pNode);
-			pNode->AddLink(m_pCurrentRoad);
+			pNode->AddLink(m_pCurrentRoad, true);	// road starts at this node
 			m_bRubber = true;
 			m_p1 = m_p0 = nodePoint;
 			OnMouseMove(nFlags, point);
@@ -776,7 +776,7 @@ void BExtractorView::OnLButtonDownEditRoad(UINT nFlags, CPoint point)
 			m_pCurrentRoad->SetNode(1, pNode);
 			if (pNode != m_pCurrentRoad->GetNode(0))
 			{
-				pNode->AddLink(m_pCurrentRoad);
+				pNode->AddLink(m_pCurrentRoad, false);	// road ends at this node
 				m_pCurrentRoad->SetSize(m_pCurrentRoad->GetSize() + 1);
 				(*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 1] = pNode->m_p;
 			}
@@ -1526,11 +1526,16 @@ void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
 			for (int i = 0; i < numRoads; i++)
 			{
 				TLink *pLink = pNode->GetLink(0);
-				pNode->DetachLink(pLink);
 				if (pLink->GetNode(0) == pNode)
-					pLink->GetNode(1)->DetachLink(pLink);
+				{
+					pLink->GetNode(0)->DetachLink(pLink, true);
+					pLink->GetNode(1)->DetachLink(pLink, false);
+				}
 				else
-					pLink->GetNode(0)->DetachLink(pLink);
+				{
+					pLink->GetNode(0)->DetachLink(pLink, false);
+					pLink->GetNode(1)->DetachLink(pLink, true);
+				}
 				doc->m_Links.RemoveLink(pLink);
 			}
 			doc->m_Links.RemoveNode(pNode);
