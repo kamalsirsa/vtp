@@ -446,7 +446,7 @@ void LayerDlg::OnLayerCreate( wxCommandEvent &event )
 	wxArrayString choices;
 	choices.Add(_("Abstract (Points with labels)"));
 	choices.Add(_("Structure"));
-	int index = wxGetSingleChoiceIndex(_("Msg"), _("caption"), choices, this);
+	int index = wxGetSingleChoiceIndex(_("Layer type:"), _("Create new layer"), choices, this);
 	if (index == 0)
 	{
 		if (CreateNewAbstractPointLayer(pTerr))
