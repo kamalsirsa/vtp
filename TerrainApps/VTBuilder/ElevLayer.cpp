@@ -42,17 +42,17 @@ void vtTin2d::DrawTin(wxDC* pDC, vtScaledView *pView)
 	pDC->SetPen(TinPen);
 
 	FPoint2 p2;
-	int tris = NumTris();
-	for (int j = 0; j < tris; j++)
+	unsigned int i, tris = NumTris();
+	for (i = 0; i < tris; i++)
 	{
 		if (m_bConstrain)
 		{
-			if (m_fEdgeLen[j] > m_fMaxEdge)
+			if (m_fEdgeLen[i] > m_fMaxEdge)
 				continue;
 		}
-		int v0 = m_tri[j*3+0];
-		int v1 = m_tri[j*3+1];
-		int v2 = m_tri[j*3+2];
+		int v0 = m_tri[i*3+0];
+		int v1 = m_tri[i*3+1];
+		int v2 = m_tri[i*3+2];
 
 		pView->screen(m_vert[v0], g_screenbuf[0]);
 		pView->screen(m_vert[v1], g_screenbuf[1]);
@@ -61,6 +61,15 @@ void vtTin2d::DrawTin(wxDC* pDC, vtScaledView *pView)
 		g_screenbuf[3] = g_screenbuf[0];
 		pDC->DrawLines(4, g_screenbuf);
 	}
+#if 0
+	// For testing purposes, draw the vertices as well
+	unsigned int points = NumVerts();
+	for (i = 0; i < tris; i++)
+	{
+		pView->screen(m_vert[i], g_screenbuf[0]);
+		pDC->DrawPoint(g_screenbuf[0]);
+	}
+#endif
 }
 
 void vtTin2d::SetConstraint(bool bConstrain, double fMaxEdge)
