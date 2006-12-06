@@ -11,6 +11,7 @@
 #include "ElevationGrid.h"
 #include "ByteOrder.h"
 #include "vtDIB.h"
+#include "vtLog.h"
 
 //////////////////////////////////////////////////
 
@@ -766,20 +767,35 @@ void vtElevationGrid::ComputeCornersFromExtents()
 //
 // Allocates a data array big enough to contain the grid data.
 //
-void vtElevationGrid::_AllocateArray()
+bool vtElevationGrid::_AllocateArray()
 {
 	if (m_bFloatMode)
 	{
 		m_pData = NULL;
 		m_pFData = (float *)malloc(m_iColumns * m_iRows * sizeof(float));
+		if (!m_pFData)
+		{
+			m_strError.Format("Could not allocate an floating-point elevation grid of size %d x %d (%d MB)\n",
+				m_iColumns, m_iRows, (m_iColumns * m_iRows * 4) / (1024 * 1024));
+			VTLOG(m_strError);
+			return false;
+		}
 	}
 	else
 	{
 		m_pData = (short *)malloc(m_iColumns * m_iRows * sizeof(short));
 		m_pFData = NULL;
+		if (!m_pData)
+		{
+			m_strError.Format("Could not allocate an short-integer elevation grid of size %d x %d (%d MB)\n",
+				m_iColumns, m_iRows, (m_iColumns * m_iRows * 2) / (1024 * 1024));
+			VTLOG(m_strError);
+			return false;
+		}
 	}
 	// Initially no data
 	FillWithSingleValue(INVALID_ELEVATION);
+	return true;
 }
 
 void vtElevationGrid::FillWithSingleValue(float fValue)

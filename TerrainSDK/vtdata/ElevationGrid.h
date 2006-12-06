@@ -93,6 +93,9 @@ public:
 	// Use OGR to read a file
 	bool LoadFromNTF5(const char *szFileName, bool progress_callback(int) = NULL);
 
+	// If there was a load error, this method should return a description
+	vtString GetErrorMsg() { return m_strError; }
+
 	// Save
 	bool SaveTo3TX(const char *szFileName, bool progress_callback(int) = NULL);
 	bool SaveToGeoTIFF(const char *szFileName) const;
@@ -176,8 +179,9 @@ protected:
 	DPoint2		m_Corners[4];	// data corners, in the CRS of this terrain
 	vtProjection	m_proj;		// a grid always has some projection
 
-	void	_AllocateArray();
+	bool	_AllocateArray();
 	vtString	m_strOriginalDEMName;
+	vtString	m_strError;
 };
 
 #endif	// ELEVATIONGRIDH

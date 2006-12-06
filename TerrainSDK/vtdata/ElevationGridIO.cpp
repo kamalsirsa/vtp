@@ -255,7 +255,8 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 	m_iRows = dimension[1];
 
 	m_bFloatMode = false;
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 	if (progress_callback != NULL) progress_callback(80);
 
 	int i, j;
@@ -317,7 +318,8 @@ bool vtElevationGrid::LoadFrom3TX(const char *szFileName,
 	m_iColumns = 1201;
 	m_iRows = 1201;
 	m_bFloatMode = false;
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	// elevationdata one per line in column-first order from the SW
 	short val;
@@ -399,7 +401,8 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	m_EarthExtents.bottom = yllcorner;
 
 	ComputeCornersFromExtents();
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	int i, j;
 	float z;
@@ -515,7 +518,8 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 			fread(&HeightScale, 2, 1, fp);
 			fread(&BaseHeight, 2, 1, fp);
 
-			_AllocateArray();
+			if (!_AllocateArray())
+				return false;
 			for (j = 0; j < m_iRows; j++)
 			{
 				if (progress_callback != NULL) progress_callback(j*100/m_iRows);
@@ -706,7 +710,8 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 		fseek(fp, 1+24, SEEK_CUR);
 	}
 
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	// REF: record header length + (2 * number of rows) + checksum length
 	int line_length = 8 + (2 * m_iRows) + 4;
@@ -871,7 +876,8 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 	m_iColumns = gh.NumCols;
 	m_iRows = gh.NumRows;
 
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	// read the file
 	int i, j;
@@ -1008,7 +1014,8 @@ bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
 
 	ComputeCornersFromExtents();
 
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	// read the file
 	int i, j;
@@ -1068,7 +1075,8 @@ bool vtElevationGrid::LoadFromDSAA(const char* szFileName, bool progress_callbac
 	m_iColumns = nx;
 	m_iRows = ny;
 
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	int x, y;
 	float z;
@@ -1211,7 +1219,8 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 	m_iColumns = nx;
 	m_iRows = ny;
 
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	int x, y;
 	float z;
@@ -1419,7 +1428,8 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 	m_iColumns = xsize;
 	m_iRows = ysize;
 
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	if (bBinary)
 	{
@@ -1755,7 +1765,13 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 			SetScale(0.3048f);	// stay with shorts, use scaling
 	}
 
-	_AllocateArray();
+	// We don't check for memory allocation many places in the VTP software,
+	//  because most allocations are fine-grained and will degrade gracefully
+	//  on a modern OS.  However, some singular large allocation, such as
+	//  huge elevation grids, should be checked.
+	bool success = _AllocateArray();
+	if (!success)
+		return false;
 
 	short *pasScanline;
 	short elev;
@@ -1929,7 +1945,8 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 	m_EarthExtents.bottom = Extent.MinY;
 	ComputeCornersFromExtents();
 
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
   	pLayer->ResetReading();
 
@@ -2059,7 +2076,8 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 	else
 		m_bFloatMode = false;
 
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	ByteOrder order;
 	if (bBigEndian)
@@ -2271,7 +2289,8 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_cal
 	m_iColumns = xsize;
 	m_iRows = ysize;
 
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	for (i = 0; i < xsize; i++)
 	{
@@ -2525,7 +2544,8 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback
 		m_iColumns = m_iRows = 3601;
 	else
 		m_iColumns = m_iRows = 1201;
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 #define SWAP_2(x) ( (((x) & 0xff) << 8) | ((unsigned short)(x) >> 8) )
 
