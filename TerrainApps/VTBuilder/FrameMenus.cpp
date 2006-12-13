@@ -3420,7 +3420,7 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += _T("\n");
 	str += _("Please read the HTML documentation and license.\n");
 	str += _T("\n");
-	str += _("Send feedback to: )";
+	str += _("Send feedback to: ");
 	str += _T("ben@vterrain.org\n");
 	str += _("Build date: ");
 	str += wxString(__DATE__, wxConvUTF8);
