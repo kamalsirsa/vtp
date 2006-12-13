@@ -507,7 +507,7 @@ void vtElevLayer::SetupDefaultColors(ColorMap &cmap)
 {
 	cmap.m_bRelative = false;
 	cmap.Add(-400*17, RGBi(255, 255, 255));
-	cmap.Add(-400*16, RGBi(0, 0, 0	));
+	cmap.Add(-400*16, RGBi(20, 20, 30	));
 	cmap.Add(-400*15, RGBi(60, 60, 70	));
 	cmap.Add(-400*14, RGBi(120, 120, 130));
 	cmap.Add(-400*13, RGBi(180, 185, 190));
@@ -538,7 +538,9 @@ void vtElevLayer::SetupDefaultColors(ColorMap &cmap)
 	cmap.Add( 450*10, RGBi(144, 40, 128	));
 	cmap.Add( 450*11, RGBi(128, 128, 128));
 	cmap.Add( 450*12, RGBi(255, 255, 255));
-	cmap.Add( 450*13, RGBi(128, 128, 128));
+	cmap.Add( 450*13, RGBi(255, 255, 128));
+	cmap.Add( 450*14, RGBi(255, 128, 0));
+	cmap.Add( 450*15, RGBi(0, 128, 0));
 }
 
 void vtElevLayer::RenderBitmap()
