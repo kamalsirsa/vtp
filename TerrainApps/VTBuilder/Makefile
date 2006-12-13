@@ -93,12 +93,12 @@ publish-ar:
 update-ar:
 	msgmerge --no-fuzzy-matching ar/VTBuilder.po VTBuilder.pot -o ar/VTBuilder.pox
 
-publish-zh:
-	cp zh/VTBuilder.pox zh/VTBuilder.po
-	msgfmt zh/VTBuilder.po -o zh/VTBuilder.mo
+publish-de:
+	cp de/VTBuilder.pox de/VTBuilder.po
+	msgfmt de/VTBuilder.po -o de/VTBuilder.mo
 
-update-zh:
-	msgmerge --no-fuzzy-matching zh/VTBuilder.po VTBuilder.pot -o zh/VTBuilder.pox
+update-de:
+	msgmerge --no-fuzzy-matching de/VTBuilder.po VTBuilder.pot -o de/VTBuilder.pox
 
 publish-fr:
 	cp fr/VTBuilder.pox fr/VTBuilder.po
@@ -106,4 +106,18 @@ publish-fr:
 
 update-fr:
 	msgmerge --no-fuzzy-matching fr/VTBuilder.po VTBuilder.pot -o fr/VTBuilder.pox
+
+publish-it:
+	cp it/VTBuilder.pox it/VTBuilder.po
+	msgfmt it/VTBuilder.po -o it/VTBuilder.mo
+
+update-it:
+	msgmerge --no-fuzzy-matching it/VTBuilder.po VTBuilder.pot -o it/VTBuilder.pox
+
+publish-zh:
+	cp zh/VTBuilder.pox zh/VTBuilder.po
+	msgfmt zh/VTBuilder.po -o zh/VTBuilder.mo
+
+update-zh:
+	msgmerge --no-fuzzy-matching zh/VTBuilder.po VTBuilder.pot -o zh/VTBuilder.pox
 
