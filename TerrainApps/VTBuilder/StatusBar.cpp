@@ -80,7 +80,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 
 	int zone = proj.GetUTMZone();
 	if (zone != 0)
-		str.Printf(_T("Zone %d"), zone);
+		str.Printf(_("Zone %d"), zone);
 	else
 		str = _T("");
 	SetStatusText(str, Field_Zone);
@@ -96,9 +96,9 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 		double scale = pView->GetScale();
 		LinearUnits lu = proj.GetUnits();
 		if (lu == LU_DEGREES)
-			str.Printf(_T("1 Pixel = %.6lg "), 1.0/scale);
+			str.Printf(_("1 Pixel = %.6lg "), 1.0/scale);
 		else
-			str.Printf(_T("1 Pixel = %.2lf "), 1.0/scale);
+			str.Printf(_("1 Pixel = %.2lf "), 1.0/scale);
 		str += wxString(GetLinearUnitName(lu), wxConvUTF8);
 		SetStatusText(str, Field_HUnits);
 
