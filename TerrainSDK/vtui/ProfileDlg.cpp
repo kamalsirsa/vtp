@@ -147,6 +147,14 @@ void ProfileDlg::SetPath(const DLine2 &path)
 			m_fGeodesicDistance += vtProjection::GeodesicDistance(m_path_geo[i],
 				m_path_geo[i+1]);
 	}
+	if (len > 2)
+	{
+		// Several of the options only make sense for a single segment
+		m_bLineOfSight = false;
+		m_bVisibility = false;
+		m_bUseFresnel = false;
+		m_bUseEffectiveRadius = false;
+	}
 
 	Refresh();
 	UpdateEnabling();
@@ -879,8 +887,8 @@ void ProfileDlg::UpdateEnabling()
 	GetFresnel()->Enable(m_bLineOfSight);
 
 	GetRF()->Enable(m_bUseFresnel);
-//	GetCurvature()->Enable(m_bUseFresnel);
-//	GetEffective()->Enable(m_iCurvature != 0);
+	GetCurvature()->Enable(m_bHavePoints);
+	GetEffective()->Enable(m_bHavePoints);
 }
 
 // WDR: handler implementations for ProfileDlg
