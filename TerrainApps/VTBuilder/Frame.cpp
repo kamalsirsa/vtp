@@ -417,7 +417,6 @@ void MainFrame::RefreshToolbar()
 		break;
 	case LT_WATER:
 	case LT_VEG:
-	case LT_TRANSIT:
 		break;
 	case LT_UTILITY:
 		toolBar_main->AddSeparator();

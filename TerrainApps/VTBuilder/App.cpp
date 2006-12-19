@@ -96,8 +96,10 @@ bool BuilderApp::OnInit()
 		vtLayer::LayerTypeNames.Add(_("Structure"));
 		vtLayer::LayerTypeNames.Add(_("Water"));
 		vtLayer::LayerTypeNames.Add(_("Vegetation"));
-		vtLayer::LayerTypeNames.Add(_("Transit"));
 		vtLayer::LayerTypeNames.Add(_("Utility"));
+#if SUPPORT_TRANSIT
+		vtLayer::LayerTypeNames.Add(_("Transit"));
+#endif
 	}
 
 	VTLOG1("Testing ability to allocate a frame object.\n");

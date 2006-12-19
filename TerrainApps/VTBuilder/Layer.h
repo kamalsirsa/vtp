@@ -22,8 +22,10 @@ enum LayerType
 	LT_STRUCTURE,
 	LT_WATER,
 	LT_VEG,
-	LT_TRANSIT,
 	LT_UTILITY,
+#if SUPPORT_TRANSIT
+	LT_TRANSIT,
+#endif
 	LAYER_TYPES
 };
 
@@ -175,6 +177,9 @@ struct TilingOptions
 	bool bCreateDerivedImages;
 	vtString fname_images;
 	ElevDrawOptions draw;
+
+	bool bOmitFlatTiles;
+	bool bUseTextureCompression;
 };
 
 ////////////////////
