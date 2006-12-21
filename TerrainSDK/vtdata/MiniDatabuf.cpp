@@ -45,6 +45,19 @@ MiniDatabuf::~MiniDatabuf()
 	release();
 }
 
+// set the geographic extents
+void MiniDatabuf::set_extents(float left, float right, float top, float bottom)
+{
+	swx = left;
+	swy = bottom;
+	nwx = left;
+	nwy = top;
+	sex = right;
+	sey = bottom;
+	nex = right;
+	ney = top;
+}
+
 // allocate a new memory chunk
 void MiniDatabuf::alloc(unsigned int xs,unsigned int ys,unsigned int zs,unsigned int ts,unsigned int ty)
    {
