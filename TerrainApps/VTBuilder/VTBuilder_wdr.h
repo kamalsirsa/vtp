@@ -280,14 +280,16 @@ const int ID_TOTALX = 10193;
 const int ID_TOTALY = 10194;
 const int ID_CURX = 10195;
 const int ID_CURY = 10196;
+const int ID_OMIT_FLAT = 10197;
+const int ID_USE_COMPRESS = 10198;
 wxSizer *TileDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_RADIO_SHADING_NONE = 10197;
-const int ID_RADIO_SHADING_QUICK = 10198;
-const int ID_RADIO_SHADING_DOT = 10199;
-const int ID_SPIN_CAST_ANGLE = 10200;
-const int ID_SPIN_CAST_DIRECTION = 10201;
-const int ID_CHECK_SHADOWS = 10202;
+const int ID_RADIO_SHADING_NONE = 10199;
+const int ID_RADIO_SHADING_QUICK = 10200;
+const int ID_RADIO_SHADING_DOT = 10201;
+const int ID_SPIN_CAST_ANGLE = 10202;
+const int ID_SPIN_CAST_DIRECTION = 10203;
+const int ID_CHECK_SHADOWS = 10204;
 wxSizer *RenderOptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

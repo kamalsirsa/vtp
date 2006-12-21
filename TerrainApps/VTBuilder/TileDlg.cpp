@@ -1,7 +1,7 @@
 //
 // Name: TileDlg.cpp
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,7 @@
 #include "TileDlg.h"
 #include "FileFilters.h"	// for FSTRING_INI
 #include "BuilderView.h"
+#include "vtdata/vtLog.h"
 
 // WDR: class implementations
 
@@ -42,6 +43,7 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	m_bSetting = false;
 	m_pView = NULL;
+	m_bElev = false;
 
 	AddValidator(ID_TEXT_TO_FOLDER, &m_strToFile);
 	AddNumValidator(ID_COLUMNS, &m_iColumns);
@@ -61,6 +63,9 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddNumValidator(ID_CURX, &m_fCurX);
 	AddNumValidator(ID_CURY, &m_fCurY);
+
+	AddValidator(ID_OMIT_FLAT, &m_bOmitFlatTiles);
+	AddValidator(ID_USE_COMPRESS, &m_bUseTextureCompression);
 
 	UpdateEnables();
 }
@@ -97,11 +102,13 @@ void TileDlg::SetElevation(bool bElev)
 
 void TileDlg::SetTilingOptions(TilingOptions &opt)
 {
+	m_strToFile = wxString(opt.fname, wxConvUTF8);
 	m_iColumns = opt.cols;
 	m_iRows = opt.rows;
 	m_iLOD0Size = opt.lod0size;
 	m_iNumLODs = opt.numlods;
-	m_strToFile = wxString(opt.fname, wxConvUTF8);
+	m_bOmitFlatTiles = opt.bOmitFlatTiles;
+	m_bUseTextureCompression = opt.bUseTextureCompression;
 
 	m_iLODChoice = vt_log2(m_iLOD0Size)-5;
 
@@ -115,6 +122,8 @@ void TileDlg::GetTilingOptions(TilingOptions &opt) const
 	opt.lod0size = m_iLOD0Size;
 	opt.numlods = m_iNumLODs;
 	opt.fname = m_strToFile.mb_str(wxConvUTF8);
+	opt.bOmitFlatTiles = m_bOmitFlatTiles;
+	opt.bUseTextureCompression = m_bUseTextureCompression;
 }
 
 void TileDlg::SetArea(const DRECT &area)
@@ -158,6 +167,13 @@ void TileDlg::UpdateInfo()
 void TileDlg::UpdateEnables()
 {
 	FindWindow(wxID_OK)->Enable(m_strToFile != _T(""));
+
+	FindWindow(ID_OMIT_FLAT)->Enable(m_bElev);
+#if USE_OPENGL
+	FindWindow(ID_USE_COMPRESS)->Enable(!m_bElev);
+#else
+	FindWindow(ID_USE_COMPRESS)->Enable(false);
+#endif
 }
 
 // WDR: handler implementations for TileDlg

@@ -2423,15 +2423,25 @@ wxSizer *TileDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item16, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxBoxSizer *item33 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item33 = new wxBoxSizer( wxVERTICAL );
 
-    wxButton *item34 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item33->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item34 = new wxCheckBox( parent, ID_OMIT_FLAT, _("Omit flat elevation tiles (sea level)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item33->Add( item34, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item35 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxCheckBox *item35 = new wxCheckBox( parent, ID_USE_COMPRESS, _("Use texture compression for image tiles"), wxDefaultPosition, wxDefaultSize, 0 );
     item33->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item33, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item36 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item37 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item37, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item38 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item38, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item36, 0, wxALIGN_CENTER, 5 );
 
     if (set_sizer)
     {

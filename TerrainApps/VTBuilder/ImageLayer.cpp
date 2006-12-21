@@ -1389,11 +1389,17 @@ int GetBitDepthUsingGDAL(const char *fname)
 
 bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pView)
 {
+	wxFrame *frame = NULL;
+	bool bCompress = false;
 #if USE_OPENGL
-	wxFrame *frame = new wxFrame;
-	frame->Create(pView, -1, _T("Texture Compression OpenGL Context"),
-		wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
-	m_pCanvas = new ImageGLCanvas(frame);
+	if (opts.bUseTextureCompression)
+	{
+		bCompress = true;
+		wxFrame *frame = new wxFrame;
+		frame->Create(pView, -1, _T("Texture Compression OpenGL Context"),
+			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
+		m_pCanvas = new ImageGLCanvas(frame);
+	}
 #endif
 
 	// Avoid trouble with '.' and ',' in Europe
@@ -1465,7 +1471,7 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 			for (lod = 0; lod < opts.numlods && !bCancelled; lod++)
 			{
 				if (!WriteTile(opts, pView, dirname, tile_area, tile_dim,
-					col, row, lod))
+					col, row, lod, bCompress))
 					bCancelled = true;
 			}
 		}
@@ -1493,7 +1499,8 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 }
 
 bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString &dirname,
-							 DRECT &tile_area, DPoint2 &tile_dim, int col, int row, int lod)
+							 DRECT &tile_area, DPoint2 &tile_dim, int col, int row, int lod,
+							 bool bCompress)
 {
 	int tilesize = opts.lod0size >> lod;
 
@@ -1570,25 +1577,31 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 	output_buf.zsize = 1;
 	output_buf.tsteps = 1;
 
+	if (bCompress)
+	{
 #if USE_OPENGL
-	// Compressed
-	DoTextureCompress(rgb_bytes, output_buf, m_pCanvas->m_iTex);
+		// Compressed
+		DoTextureCompress(rgb_bytes, output_buf, m_pCanvas->m_iTex);
 
-	output_buf.savedata(fname);
-	free(output_buf.data);
-	output_buf.data = NULL;
+		output_buf.savedata(fname);
+		free(output_buf.data);
+		output_buf.data = NULL;
 
-	if (tilesize == 256)
-		m_pCanvas->Refresh(false);
-#else
-	// Uncompressed
-	// Output to a plain RGB .db file
-	output_buf.type = 3;	// RGB
-	output_buf.bytes = iUncompressedSize;
-	output_buf.data = rgb_bytes;
-	output_buf.savedata(fname);
-	output_buf.data = NULL;
+		if (tilesize == 256)
+			m_pCanvas->Refresh(false);
 #endif
+	}
+	else
+	{
+		// Uncompressed
+		// Output to a plain RGB .db file
+		output_buf.type = 3;	// RGB
+		output_buf.bytes = iUncompressedSize;
+		output_buf.data = rgb_bytes;
+		output_buf.savedata(fname);
+		output_buf.data = NULL;
+	}
+
 	// Free the uncompressed image
 	free(rgb_bytes);
 

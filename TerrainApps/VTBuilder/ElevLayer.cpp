@@ -1348,8 +1348,8 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 			if (bAllInvalid)
 				continue;
 
-			// Omit all-zero tiles
-			if (bAllZero)
+			// Omit all-zero tiles (flat sea-level) if desired
+			if (opts.bOmitFlatTiles && bAllZero)
 				continue;
 
 			if (!bAllValid)

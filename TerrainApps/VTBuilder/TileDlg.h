@@ -41,10 +41,7 @@ public:
 	void SetView(BuilderView *pView) { m_pView = pView; }
 	void UpdateEnables();
 
-	double m_fEstX;
-	double m_fEstY;
-
-private:
+public:
 	// WDR: member variable declarations for TileDlg
 	wxString m_strToFile;
 	int m_iColumns;
@@ -52,14 +49,20 @@ private:
 	int m_iLODChoice;
 	int m_iLOD0Size;
 	int m_iNumLODs;
+
 	bool m_bElev;
 
 	int m_iTotalX;
 	int m_iTotalY;
 	double m_fAreaX;
 	double m_fAreaY;
+	double m_fEstX;
+	double m_fEstY;
 	double m_fCurX;
 	double m_fCurY;
+
+	bool m_bOmitFlatTiles;
+	bool m_bUseTextureCompression;
 
 	DRECT m_area;
 	bool m_bSetting;

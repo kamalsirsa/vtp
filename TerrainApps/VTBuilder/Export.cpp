@@ -458,6 +458,8 @@ void MainFrame::ImageExportTiles()
 	tileopts.rows = 4;
 	tileopts.lod0size = 256;
 	tileopts.numlods = 3;
+	tileopts.bOmitFlatTiles = true;
+	tileopts.bUseTextureCompression = true;
 
 	TileDlg dlg(this, -1, _("Tiling Options"));
 	dlg.m_fEstX = spacing.x;
@@ -776,8 +778,8 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			if (bAllInvalid)
 				continue;
 
-			// Omit all-zero tiles
-			if (bAllZero)
+			// Omit all-zero tiles (flat sea-level) if desired
+			if (opts.bOmitFlatTiles && bAllZero)
 				continue;
 
 			if (!bAllValid)
@@ -964,11 +966,18 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 		return false;
 	}
 
+	wxFrame *frame = NULL;
+	ImageGLCanvas *pCanvas = NULL;
+	bool bCompress = false;
 #if USE_OPENGL
-	wxFrame *frame = new wxFrame;
-	frame->Create(this, -1, _T("Texture Compression OpenGL Context"),
-		wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
-	ImageGLCanvas *pCanvas = new ImageGLCanvas(frame);
+	if (opts.bUseTextureCompression)
+	{
+		bCompress = true;
+		wxFrame *frame = new wxFrame;
+		frame->Create(this, -1, _T("Texture Compression OpenGL Context"),
+			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
+		pCanvas = new ImageGLCanvas(frame);
+	}
 #endif
 
 	int i, j, im;
@@ -1093,36 +1102,41 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				output_buf.zsize = 1;
 				output_buf.tsteps = 1;
 
+				if (bCompress)
+				{
 #if USE_OPENGL
-				// Compressed
-				DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex);
+					// Compressed
+					DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex);
 
-				output_buf.savedata(fname);
-				free(output_buf.data);
-				output_buf.data = NULL;
+					output_buf.savedata(fname);
+					free(output_buf.data);
+					output_buf.data = NULL;
 
-				if (tilesize == 256)
-					pCanvas->Refresh(false);
-#else
-				// Uncompressed
-				// Output to a plain RGB .db file
-				output_buf.type = 3;	// RGB
-				output_buf.bytes = iUncompressedSize;
-				output_buf.data = rgb_bytes;
-				output_buf.savedata(fname);
-				output_buf.data = NULL;
+					if (tilesize == 256)
+						pCanvas->Refresh(false);
 #endif
+				}
+				else
+				{
+					// Uncompressed
+					// Output to a plain RGB .db file
+					output_buf.type = 3;	// RGB
+					output_buf.bytes = iUncompressedSize;
+					output_buf.data = rgb_bytes;
+					output_buf.savedata(fname);
+					output_buf.data = NULL;
+				}
 				// Free the uncompressed image
 				free(rgb_bytes);
 			}
 		}
 	}
 
-#if USE_OPENGL
-	frame->Close();
-	delete frame;
-#endif
-
+	if (bCompress)
+	{
+		frame->Close();
+		delete frame;
+	}
 	return true;
 }
 
