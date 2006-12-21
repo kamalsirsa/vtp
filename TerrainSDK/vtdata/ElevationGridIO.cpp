@@ -1844,9 +1844,10 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 	OGREnvelope Extent;
 	OGRFeature *pFeature = NULL;
 
-	if (1 != pDatasource->GetLayerCount())
+	int lays = pDatasource->GetLayerCount();
+	if (1 != lays)
 	{
-		msg = "Layer count isn't 1";
+		msg.Format("Layer count is %d, expected 1", lays);
 		return false;
 	}
 	OGRLayer *pLayer = pDatasource->GetLayer(0);
@@ -2021,6 +2022,10 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 		bSuccess = ParseNTF5(pDatasource, msg, progress_callback);
 
 	VTLOG("LoadFromNTF5 result: %s.\n", (const char *) msg);
+
+	if (!bSuccess)
+		m_strError = msg;
+
 	delete pDatasource;
 	return bSuccess;
 }
