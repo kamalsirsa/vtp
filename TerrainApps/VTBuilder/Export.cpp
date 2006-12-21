@@ -827,6 +827,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 					output_buf.ysize = tilesize;
 					output_buf.zsize = 1;
 					output_buf.tsteps = 1;
+					output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 
 					int iUncompressedSize = tilesize * tilesize * 3;
 					unsigned char *rgb_bytes = (unsigned char *) malloc(iUncompressedSize);
@@ -889,6 +890,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				UpdateProgressDialog(done*99/total, msg);
 
 				MiniDatabuf buf;
+				buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 				buf.alloc(tilesize+1, tilesize+1, 1, 1, bFloat ? 2 : 1);
 				float *fdata = (float *) buf.data;
 				short *sdata = (short *) buf.data;
@@ -1101,6 +1103,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				output_buf.ysize = tilesize;
 				output_buf.zsize = 1;
 				output_buf.tsteps = 1;
+				output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 
 				if (bCompress)
 				{

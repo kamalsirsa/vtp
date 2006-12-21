@@ -1576,6 +1576,7 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 	output_buf.ysize = tilesize;
 	output_buf.zsize = 1;
 	output_buf.tsteps = 1;
+	output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 
 	if (bCompress)
 	{

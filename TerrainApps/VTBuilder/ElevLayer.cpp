@@ -1385,6 +1385,7 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 
 				// write uncompressed image
 				MiniDatabuf output_buf;
+				output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 				output_buf.alloc(base_tilesize, base_tilesize, 1, 1, 3);
 				char *dst = (char *) output_buf.data;
 				RGBi rgb;
@@ -1418,6 +1419,7 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 				UpdateProgressDialog(done*99/total, msg);
 
 				MiniDatabuf buf;
+				buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 				buf.alloc(tilesize+1, tilesize+1, 1, 1, bFloat ? 2 : 1);
 				float *fdata = (float *) buf.data;
 				short *sdata = (short *) buf.data;
