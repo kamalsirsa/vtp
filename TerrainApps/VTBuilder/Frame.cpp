@@ -16,7 +16,6 @@
 #include "vtdata/FilePath.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
-#include "vtdata/MiniDatabuf.h"
 #include "xmlhelper/exception.hpp"
 #include <fstream>
 #include <float.h>	// for FLT_MIN
