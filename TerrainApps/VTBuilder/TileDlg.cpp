@@ -214,7 +214,7 @@ void TileDlg::OnDotDotDot( wxCommandEvent &event )
 	// ask the user for a filename
 	wxString filter;
 	filter += FSTRING_INI;
-	wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;

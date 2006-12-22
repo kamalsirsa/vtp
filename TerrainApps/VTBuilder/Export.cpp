@@ -328,7 +328,7 @@ void MainFrame::ElevExportTiles()
 		// Ask them where to write the image tiles
 		tileopts.bCreateDerivedImages = true;
 		wxString filter = FSTRING_INI;
-		wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxSAVE);
+		wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		if (!bResult)
 			return;
@@ -539,7 +539,7 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 		// Ask them where to write the image tiles
 		tileopts.bCreateDerivedImages = true;
 		wxString filter = FSTRING_INI;
-		wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxSAVE);
+		wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		if (!bResult)
 			return;

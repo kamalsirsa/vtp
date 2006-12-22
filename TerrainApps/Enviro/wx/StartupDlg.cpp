@@ -35,7 +35,7 @@ static void ShowOGLInfo2(bool bLog)
 {
 	wxFrame *frame = new wxFrame();
 	frame->Create(NULL, -1, _T("Test"));
-	wxGLCanvas *canvas = new wxGLCanvas(frame);
+	wxGLCanvas *canvas = new wxGLCanvas(frame, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 	frame->Show();
 
 	GLint value;
@@ -269,6 +269,6 @@ void StartupDlg::OnOptions( wxCommandEvent &event )
 void StartupDlg::OnOK( wxCommandEvent &event )
 {
 	VTLOG("StartupDlg pressed OK.\n");
-	wxDialog::OnOK(event);
+	event.Skip();
 }
 

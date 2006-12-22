@@ -195,7 +195,7 @@ void EnviroGUI::SaveVegetation(bool bAskFilename)
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Vegetation Data"), default_dir,
-			default_file, _("Vegetation Files (*.vf)|*.vf"), wxSAVE);
+			default_file, _("Vegetation Files (*.vf)|*.vf"), wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);
 		if (!bResult)
@@ -225,7 +225,7 @@ void EnviroGUI::SaveStructures(bool bAskFilename)
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Built Structures Data"),
 			default_dir, default_file, _("Structure Files (*.vtst)|*.vtst"),
-			wxSAVE | wxOVERWRITE_PROMPT);
+			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);
 		if (!bResult)

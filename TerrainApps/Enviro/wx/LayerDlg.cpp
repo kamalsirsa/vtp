@@ -477,7 +477,7 @@ void SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Abstract Data"), default_dir,
-			default_file, _("GIS Files (*.shp)|*.shp"), wxSAVE);
+			default_file, _("GIS Files (*.shp)|*.shp"), wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);
 		if (!bResult)

@@ -179,7 +179,7 @@ void InstanceDlg::OnBrowseModelFile( wxCommandEvent &event )
 	filter += _("All files");
 	filter += _T(" (*.*)|*.*");
 	wxFileDialog SelectFile(this, _T("Choose model file"),
-							_T(""), _T(""), filter, wxOPEN);
+							_T(""), _T(""), filter, wxFD_OPEN);
 	if (SelectFile.ShowModal() != wxID_OK)
 		return;
 	GetModelFile()->SetValue(SelectFile.GetPath());

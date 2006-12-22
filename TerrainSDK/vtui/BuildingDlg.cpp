@@ -13,6 +13,7 @@
 #endif
 
 #include <wx/colordlg.h>
+#include <wx/numdlg.h>
 #include "BuildingDlg.h"
 #include "vtui/Helper.h"
 
@@ -148,7 +149,7 @@ void BuildingDlg::OnModifyFacade( wxCommandEvent &event )
 							_T(""),
 							_T(""),
 							_T("Jpeg files (*.jpg)|*.jpg|PNG files(*.png)|*.png|Bitmap files (*.bmp)|*.bmp|All files(*.*)|*.*"),
-							wxOPEN);
+							wxFD_OPEN);
 
 	if (SelectFile.ShowModal() != wxID_OK)
 		return;
@@ -312,13 +313,13 @@ void BuildingDlg::OnColor1( wxCommandEvent &event )
 void BuildingDlg::OnOK( wxCommandEvent &event )
 {
 	m_pSA->SetEditedEdge(NULL, 0, 0);
-	wxDialog::OnOK(event);
+	event.Skip();
 }
 
 void BuildingDlg::OnCloseWindow(wxCloseEvent& event)
 {
 	m_pSA->SetEditedEdge(NULL, 0, 0);
-	wxDialog::OnCloseWindow(event);
+	event.Skip();
 }
 
 void BuildingDlg::SetupControls()

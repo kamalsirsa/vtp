@@ -50,7 +50,8 @@ GeocodeDlg::GeocodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void GeocodeDlg::OnGetFileData( wxCommandEvent &event )
 {
 	wxFileDialog dlg(this, _T(""), _T(""), _T(""),
-		_T("SHP and DBF Files (*.shp,*.dbf,*.csv)|*.shp;*.dbf;*.csv|SHP Files (*.shp)|*.shp|DBF Files (*.dbf)|*.dbf"), wxOPEN);
+		_T("SHP and DBF Files (*.shp,*.dbf,*.csv)|*.shp;*.dbf;*.csv|SHP Files (*.shp)|*.shp|DBF Files (*.dbf)|*.dbf"),
+		wxFD_OPEN);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		TransferDataFromWindow();
@@ -62,7 +63,7 @@ void GeocodeDlg::OnGetFileData( wxCommandEvent &event )
 void GeocodeDlg::OnGetFileGaz( wxCommandEvent &event )
 {
 	wxFileDialog dlg(this, _T(""), _T(""), _T(""),
-		_T("Gazetteer Files (*.txt)|*.txt"), wxOPEN);
+		_T("Gazetteer Files (*.txt)|*.txt"), wxFD_OPEN);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		TransferDataFromWindow();
@@ -74,7 +75,7 @@ void GeocodeDlg::OnGetFileGaz( wxCommandEvent &event )
 void GeocodeDlg::OnGetFileZip( wxCommandEvent &event )
 {
 	wxFileDialog dlg(this, _T(""), _T(""), _T(""),
-		_T("Gazetteer Zipcode Files (*.txt)|*.txt"), wxOPEN);
+		_T("Gazetteer Zipcode Files (*.txt)|*.txt"), wxFD_OPEN);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		TransferDataFromWindow();
@@ -86,7 +87,7 @@ void GeocodeDlg::OnGetFileZip( wxCommandEvent &event )
 void GeocodeDlg::OnGetFileGNS( wxCommandEvent &event )
 {
 	wxFileDialog dlg(this, _T(""), _T(""), _T(""),
-		_T("VTP GNS Files (*.gcf)|*.gcf"), wxOPEN);
+		_T("VTP GNS Files (*.gcf)|*.gcf"), wxFD_OPEN);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		TransferDataFromWindow();

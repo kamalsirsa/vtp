@@ -56,7 +56,6 @@ private:
 	void OnInitDialog(wxInitDialogEvent& event);
 	void OnDeleteItem( wxTreeEvent &event );
 	void OnSelChanged( wxTreeEvent &event );
-	void OnOK( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -555,7 +555,7 @@ wxString GetProjectFilter()
 void MainFrame::OnProjectOpen(wxCommandEvent &event)
 {
 	wxFileDialog loadFile(NULL, _("Load Project"), _T(""), _T(""),
-		GetProjectFilter(), wxOPEN);
+		GetProjectFilter(), wxFD_OPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -565,7 +565,7 @@ void MainFrame::OnProjectOpen(wxCommandEvent &event)
 void MainFrame::OnProjectSave(wxCommandEvent &event)
 {
 	wxFileDialog saveFile(NULL, _("Save Project"), _T(""), _T(""),
-		GetProjectFilter(), wxSAVE | wxOVERWRITE_PROMPT );
+		GetProjectFilter(), wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -740,7 +740,8 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 	str = dlg2.GetPath();
 	vtString fname_in = (const char *) str.mb_str(wxConvUTF8);
 
-	wxFileDialog dlg3(this, _T("Choose output texture file"), _T(""), _T(""), _T("*.png"), wxSAVE);
+	wxFileDialog dlg3(this, _T("Choose output texture file"), _T(""), _T(""),
+		_T("*.png"), wxFD_SAVE);
 	if (dlg3.ShowModal() == wxID_CANCEL)
 		return;
 	str = dlg3.GetPath();
@@ -924,7 +925,7 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	AddType(filter, FSTRING_SHP);	// raw files
 
 	// ask the user for a filename
-	wxFileDialog loadFile(NULL, _("Open Layer"), _T(""), _T(""), filter, wxOPEN);
+	wxFileDialog loadFile(NULL, _("Open Layer"), _T(""), _T(""), filter, wxFD_OPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -1032,7 +1033,7 @@ void MainFrame::OnLayerImportNTF(wxCommandEvent &event)
 {
 	// Use file dialog to open plant list text file.
 	wxFileDialog loadFile(NULL, _("Import Layers from NTF File"), _T(""), _T(""),
-		_("NTF Files (*.ntf)|*.ntf"), wxOPEN);
+		_("NTF Files (*.ntf)|*.ntf"), wxFD_OPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -1081,7 +1082,7 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 {
 	wxFileDialog loadFile(NULL, _("Import MapSource File"), _T(""), _T(""),
-		_("MapSource Export Files (*.txt)|*.txt"), wxOPEN);
+		_("MapSource Export Files (*.txt)|*.txt"), wxFD_OPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -1093,7 +1094,7 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 {
 	wxFileDialog loadFile(NULL, _("Import Point Data"), _T(""), _T(""),
-		_("Tabular Data Files (*.dbf)|*.dbf"), wxOPEN);
+		_("Tabular Data Files (*.dbf)|*.dbf"), wxFD_OPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -1105,7 +1106,7 @@ void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 void MainFrame::OnLayerImportXML(wxCommandEvent &event)
 {
 	wxFileDialog loadFile(NULL, _("Import XML Data"), _T(""), _T(""),
-		_("XML files (*.xml)|*.xml"), wxOPEN);
+		_("XML files (*.xml)|*.xml"), wxFD_OPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -2692,7 +2693,7 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 
 		// Use file dialog to open plant list text file.
 		wxFileDialog loadFile(NULL, _("Load Plant Info"), _T(""), _T(""),
-			filter, wxOPEN);
+			filter, wxFD_OPEN);
 
 		if (loadFile.ShowModal() != wxID_OK)
 			return;
@@ -2722,7 +2723,7 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 
 		// Use file dialog to open bioregion text file.
 		wxFileDialog loadFile(NULL, _("Load BioRegion Info"), _T(""), _T(""),
-			filter, wxOPEN);
+			filter, wxFD_OPEN);
 
 		if (loadFile.ShowModal() != wxID_OK)
 			return;
@@ -2802,7 +2803,7 @@ void MainFrame::OnVegExportSHP(wxCommandEvent& event)
 
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export vegetation to SHP"), _T(""), _T(""),
-		_("Vegetation Files (*.shp)|*.shp"), wxSAVE | wxOVERWRITE_PROMPT);
+		_("Vegetation Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString strPathName = saveFile.GetPath();
@@ -2820,7 +2821,7 @@ void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 {
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Save Vegetation File"), _T(""), _T(""),
-		_("Vegetation Files (*.vf)|*.vf"), wxSAVE | wxOVERWRITE_PROMPT);
+		_("Vegetation Files (*.vf)|*.vf"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
@@ -3103,7 +3104,7 @@ void MainFrame::OnStructureExportFootprints(wxCommandEvent& event)
 {
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export footprints to SHP"), _T(""), _T(""),
-		_("SHP Files (*.shp)|*.shp"), wxSAVE | wxOVERWRITE_PROMPT);
+		_("SHP Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
@@ -3313,7 +3314,7 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 		return;
 
 	wxFileDialog loadFile(NULL, _("Save to Image File"), _T(""), _T(""),
-		FSTRING_PNG, wxSAVE);
+		FSTRING_PNG, wxFD_SAVE);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 	vtString fullname = (const char *) loadFile.GetPath().mb_str(wxConvUTF8);
@@ -3323,7 +3324,7 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 
 	// Then write imagemap
 	wxFileDialog loadFile2(NULL, _("Save to Image File"), _T(""), _T(""),
-		FSTRING_HTML, wxSAVE);
+		FSTRING_HTML, wxFD_SAVE);
 	if (loadFile2.ShowModal() != wxID_OK)
 		return;
 	vtString htmlname = (const char *) loadFile2.GetPath().mb_str(wxConvUTF8);

@@ -147,7 +147,7 @@ bool vtLayer::AskForSaveFilename()
 	fname = ToBackslash(fname);
 #endif
 	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), fname,
-		filter, wxSAVE | wxOVERWRITE_PROMPT);
+		filter, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	VTLOG("Asking user for file name\n");
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
@@ -177,7 +177,8 @@ vtString vtLayer::GetExportFilename(const wxString &format_filter)
 	RemoveFileExtensions(defaultFile);
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), defaultFile , filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), defaultFile,
+		filter, wxFD_SAVE);
 	saveFile.SetFilterIndex(1);
 	if (saveFile.ShowModal() != wxID_OK)
 		return vtString("");

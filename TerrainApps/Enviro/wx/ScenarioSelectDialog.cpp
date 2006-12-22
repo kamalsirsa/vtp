@@ -279,7 +279,7 @@ void CScenarioSelectDialog::OnApply(wxCommandEvent& event)
 	{
 		m_bModified = false;
 		UpdateEnableState();
-		wxDialog::OnApply(event);
+		event.Skip();
 	}
 	else
 	{
@@ -302,7 +302,7 @@ void CScenarioSelectDialog::OnOK(wxCommandEvent& event)
 		{
 			m_bModified = false;
 			UpdateEnableState();
-			wxDialog::OnOK(event);
+			event.Skip();
 		}
 		else
 		{
@@ -323,7 +323,7 @@ void CScenarioSelectDialog::OnCancel(wxCommandEvent& event)
 		SetTerrain(m_pTerrain);
 		TransferDataToWindow();
 	}
-	wxDialog::OnCancel(event);
+	event.Skip();
 }
 
 

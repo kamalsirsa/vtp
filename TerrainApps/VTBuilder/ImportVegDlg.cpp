@@ -122,6 +122,6 @@ void ImportVegDlg::OnOK( wxCommandEvent &event )
 	if (m_pBiotype2->GetValue())
 		m_datatype = VIFT_BiotypeID;
 
-	wxDialog::OnOK(event);
+	event.Skip();
 }
 

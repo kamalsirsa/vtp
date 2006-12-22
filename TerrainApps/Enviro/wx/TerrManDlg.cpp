@@ -45,7 +45,6 @@ BEGIN_EVENT_TABLE(TerrainManagerDlg,wxDialog)
 	EVT_BUTTON( ID_DELETE, TerrainManagerDlg::OnDelete )
 	EVT_BUTTON( ID_EDIT_PARAMS, TerrainManagerDlg::OnEditParams )
 	EVT_BUTTON( ID_COPY, TerrainManagerDlg::OnCopy )
-	EVT_BUTTON( wxID_OK, TerrainManagerDlg::OnOK )
 END_EVENT_TABLE()
 
 TerrainManagerDlg::TerrainManagerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -295,11 +294,6 @@ void TerrainManagerDlg::OnInitDialog(wxInitDialogEvent& event)
 	RefreshTreeContents();
 	UpdateEnabling();
 	wxWindow::OnInitDialog(event);
-}
-
-void TerrainManagerDlg::OnOK( wxCommandEvent &event )
-{
-	wxDialog::OnOK(event);
 }
 
 

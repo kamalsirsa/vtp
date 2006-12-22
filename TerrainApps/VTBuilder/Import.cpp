@@ -86,7 +86,8 @@ void MainFrame::ImportData(LayerType ltype)
 
 	// ask the user for a filename
 	// default the same directory they used last time for a layer of this type
-	wxFileDialog loadFile(NULL, _("Import Data"), ImportDirectory[ltype], _T(""), filter, wxOPEN | wxMULTIPLE);
+	wxFileDialog loadFile(NULL, _("Import Data"), ImportDirectory[ltype],
+		_T(""), filter, wxFD_OPEN | wxFD_MULTIPLE);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;

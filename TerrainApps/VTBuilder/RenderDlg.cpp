@@ -159,7 +159,8 @@ void RenderDlg::OnDotdotdot( wxCommandEvent &event )
 	filter += FSTRING_TIF;
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Specify image file"), _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _("Specify image file"), _T(""), _T(""),
+		filter, wxFD_SAVE);
 	saveFile.SetFilterIndex(0);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)

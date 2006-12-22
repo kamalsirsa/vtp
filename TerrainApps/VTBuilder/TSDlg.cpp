@@ -131,7 +131,7 @@ void TSDialog::OnDotDotDot( wxCommandEvent &event )
 	filter += FSTRING_JPEG;
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Image Filename"), _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _("Image Filename"), _T(""), _T(""), filter, wxFD_SAVE);
 	saveFile.SetFilterIndex(0);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)

@@ -231,7 +231,7 @@ void DistribVegDlg::OnRadio( wxCommandEvent &event )
 void DistribVegDlg::OnOK( wxCommandEvent &event )
 {
 	// pass through
-	wxDialog::OnOK(event);
+	event.Skip();
 
 	// species
 	if (m_bSpecies1)

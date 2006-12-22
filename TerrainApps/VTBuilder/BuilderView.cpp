@@ -976,7 +976,7 @@ void BuilderView::BeginArea()	// in canvas coordinates
 	if (!m_iDragSide)
 	{
 		// if they click inside the box, drag it
-		if (r.Inside(m_ui.m_CurPoint.x, m_ui.m_CurPoint.y))
+		if (r.Contains(m_ui.m_CurPoint.x, m_ui.m_CurPoint.y))
 			m_iDragSide = 15;
 
 		// if they didn't click near the box, start a new one

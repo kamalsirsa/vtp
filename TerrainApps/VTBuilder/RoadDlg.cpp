@@ -241,7 +241,7 @@ void RoadDlg::OnOK( wxCommandEvent &event )
 				ApplyState(pRoad);
 		}
 	}
-	wxDialog::OnOK(event);
+	event.Skip();
 }
 
 //

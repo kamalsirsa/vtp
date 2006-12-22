@@ -166,7 +166,7 @@ void SelectDlg::OnOK( wxCommandEvent &event )
 	// of wxWindows.  Get the value directly instead.
 	m_strValue = GetComboValue()->GetValue();
 
-	wxDialog::OnOK(event);
+	event.Skip();
 }
 
 

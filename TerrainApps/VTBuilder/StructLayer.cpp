@@ -1147,7 +1147,7 @@ bool vtStructureLayer::AskForSaveFilename()
 	filter += _T("GZipped VTST File (.vtst.gz)|*.vtst.gz");
 
 	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), GetLayerFilename(),
-		filter, wxSAVE | wxOVERWRITE_PROMPT);
+		filter, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	saveFile.SetFilterIndex( m_bPreferGZip ? 1 : 0);
 
 	bool bResult = (saveFile.ShowModal() == wxID_OK);

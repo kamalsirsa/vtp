@@ -174,6 +174,6 @@ void VegFieldsDlg::OnOK( wxCommandEvent &event )
 	sel = GetHeightField()->GetSelection();
 	m_options.iHeightFieldIndex = ((long int) GetHeightField()->GetClientData(sel)) - 10;
 
-	wxDialog::OnOK(event);
+	event.Skip();
 }
 

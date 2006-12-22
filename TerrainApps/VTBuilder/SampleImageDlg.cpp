@@ -269,7 +269,7 @@ void SampleImageDlg::OnDotDotDot( wxCommandEvent &event )
 	AddType(filter, FSTRING_JPEG);
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Save Imagery"), _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _("Save Imagery"), _T(""), _T(""), filter, wxFD_SAVE);
 	saveFile.SetFilterIndex(0);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)

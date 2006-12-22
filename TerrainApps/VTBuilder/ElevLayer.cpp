@@ -1179,7 +1179,7 @@ bool vtElevLayer::AskForSaveFilename()
 		filter = _("BT File (.bt)|*.bt|GZipped BT File (.bt.gz)|*.bt.gz");
 
 	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), GetLayerFilename(),
-		filter, wxSAVE | wxOVERWRITE_PROMPT);
+		filter, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	saveFile.SetFilterIndex(m_pGrid && m_bPreferGZip ? 1 : 0);
 
 	VTLOG("Asking user for elevation file name\n");
