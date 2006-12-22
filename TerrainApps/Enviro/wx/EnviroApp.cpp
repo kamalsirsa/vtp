@@ -267,8 +267,7 @@ bool EnviroApp::OnInit()
 	EnviroFrame *frame = new FRAME_NAME(NULL, title, pos, size);
 
 	// Now we can realize the toolbar
-	VTLOG1("Realize toolbar.\n");
-	frame->m_pToolbar->Realize();
+	frame->CreateToolbar();
 
 	// Allow the frame to do something after it's created
 	frame->PostConstruction();
