@@ -91,12 +91,7 @@ clobber :
 #
 
 I18N_SOURCES = \
-	wx/EnviroApp.cpp \
-	wx/EnviroFrame.cpp \
-	wx/EnviroGUI.cpp \
-	wx/*Dlg.cpp \
-	wx/*Dialog.cpp \
-	wx/enviro_wdr.cpp \
+	wx/*.cpp \
 	../../TerrainSDK/vtui/vtui_wdr.cpp \
 	../../TerrainSDK/vtui/*Dlg.cpp
 
