@@ -15,6 +15,7 @@
 
 #include "wx/image.h"
 #include "wx/progdlg.h"
+#include "wx/numdlg.h"
 
 #ifdef UNIX
 #include <unistd.h>
@@ -260,6 +261,9 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	VTLOG1("Frame constructor.\n");
 	m_bCloseOnIdle = false;
 
+    // tell wxAuiManager to manage this frame
+    m_mgr.SetManagedWindow(this);
+
 #if WIN32
 	// Give it an icon
 	// Not sure why this doesn't work for Enviro on wxGTK, but it gives a
@@ -277,13 +281,13 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_bEnableEarth = bEnableEarth;
 	m_bEarthLines = false;
 	m_bUseCultureInProfile = false;
+	m_bVerticalToolbar = bVerticalToolbar;
 
 	m_pStatusBar = NULL;
 	m_pToolbar = NULL;
 
 	VTLOG1("Frame window: creating menus and toolbars.\n");
 	CreateMenus();
-	CreateToolbar(bVerticalToolbar);	// argument: vertical
 
 	// Create StatusBar
 	m_pStatusBar = new MyStatusBar(this);
@@ -337,11 +341,20 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 
 	if (m_canvas)
 		m_canvas->SetCurrent();
+
+    m_mgr.AddPane(m_canvas, wxAuiPaneInfo().
+                  Name(wxT("canvas")).Caption(wxT("Canvas")).
+//                  Dockable(false).Floatable(false).Resizable(true));
+                  CenterPane());
+	m_mgr.Update();
 }
 
 EnviroFrame::~EnviroFrame()
 {
 	VTLOG("Deleting Frame\n");
+
+    m_mgr.UnInit();
+
 	delete m_canvas;
 	delete m_pSceneGraphDlg;
 	delete m_pPlantDlg;
@@ -355,7 +368,6 @@ EnviroFrame::~EnviroFrame()
 	delete m_pStatusBar;
 	delete m_pToolbar;
 	SetStatusBar(NULL);
-	SetToolBar(NULL);
 }
 
 
@@ -507,25 +519,45 @@ void EnviroFrame::CreateMenus()
 	SetMenuBar(m_pMenuBar);
 }
 
-void EnviroFrame::CreateToolbar(bool bVertical)
+void EnviroFrame::CreateToolbar()
 {
-	SetToolBar(NULL);
-
-	long style = wxNO_BORDER | wxTB_DOCKABLE;
-	if (bVertical)
+	long style = wxTB_FLAT | wxTB_NODIVIDER;	// wxTB_DOCKABLE is GTK-only
+	if (m_bVerticalToolbar)
 		style |= wxTB_VERTICAL;
-	else
-		style |= wxTB_HORIZONTAL;
 
 	if (m_pToolbar != NULL)
 		delete m_pToolbar;
 
-	// tool bar
-	m_pToolbar = CreateToolBar(style);
-	m_pToolbar->SetMargins(2, 2);
+	// Create
+	m_pToolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                   style);
+	m_pToolbar->SetMargins(1, 1);
 	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
 
+	// populate the toolbar with buttons
 	RefreshToolbar();
+
+	wxAuiPaneInfo api;
+	api.Name(_T("toolbar"));
+	api.ToolbarPane();
+	if (m_bVerticalToolbar)
+	{
+		api.GripperTop();
+		api.Left();
+		api.TopDockable(false);
+		api.BottomDockable(false);
+	}
+	else
+	{
+		api.Top();
+		api.LeftDockable(false);
+		api.RightDockable(false);
+	}
+	wxSize best = m_pToolbar->GetBestSize();
+	api.MinSize(best);
+	api.Floatable(false);
+    m_mgr.AddPane(m_pToolbar, api);
+	m_mgr.Update();
 }
 
 void EnviroFrame::RefreshToolbar()
@@ -610,7 +642,17 @@ void EnviroFrame::RefreshToolbar()
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
 
+	VTLOG1("Realize toolbar.\n");
 	m_pToolbar->Realize();
+
+	// "commit" all changes made to wxAuiManager
+	wxAuiPaneInfo &api = m_mgr.GetPane(wxT("toolbar"));
+	if (api.IsOk())
+	{
+		wxSize best = m_pToolbar->GetBestSize();
+		api.MinSize(best);
+		m_mgr.Update();
+	}
 }
 
 void EnviroFrame::Setup3DScene()
@@ -1107,7 +1149,7 @@ void EnviroFrame::Snapshot(bool bNumbered)
 			_T("TIF Files (*.tif)|*.tif");
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save View Snapshot"), _T(""), _T(""),
-			filter, wxSAVE);
+			filter, wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);
 		if (!bResult)
@@ -1797,7 +1839,7 @@ void EnviroFrame::OnEarthPoints(wxCommandEvent& event)
 	wxString path = wxGetCwd();
 
 	wxFileDialog loadFile(NULL, _("Abstract Data"), _T(""), _T(""),
-		_("GIS Data Sources (*.shp)|*.shp"), wxOPEN);
+		_("GIS Data Sources (*.shp)|*.shp"), wxFD_OPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 	{

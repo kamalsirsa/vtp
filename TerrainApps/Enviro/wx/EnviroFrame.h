@@ -8,6 +8,8 @@
 #ifndef FRAMEH
 #define FRAMEH
 
+#include "wx/aui/aui.h"
+
 #include "../EnviroEnum.h"
 #include "vtlib/core/Event.h"
 
@@ -42,8 +44,8 @@ public:
 	~EnviroFrame();
 
 	void CreateMenus();
-	void CreateToolbar(bool bVertical);
-	void RefreshToolbar();
+	void CreateToolbar();
+	virtual void RefreshToolbar();
 
 	void SetMode(MouseMode mode);
 	void ToggleNavigate();
@@ -247,6 +249,8 @@ public:
 	MouseMode			m_ToggledMode;
 
 protected:
+    wxAuiManager m_mgr;
+
 	bool m_bAlwaysMove;
 	bool m_bCulleveryframe;
 	bool m_bFullscreen;
@@ -254,6 +258,7 @@ protected:
 	bool m_bEnableEarth;
 	bool m_bEarthLines;
 	bool m_bUseCultureInProfile;
+	bool m_bVerticalToolbar;
 
 	// snapshot members
 	wxString m_strSnapshotFilename;
