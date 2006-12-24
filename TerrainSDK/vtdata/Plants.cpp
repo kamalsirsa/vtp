@@ -238,7 +238,6 @@ short vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
 
 ////////////////////////////////////////////////////////////////////////
 // Visitor class, for XML parsing of PlantList files.
-////////////////////////////////////////////////////////////////////////
 
 class PlantListVisitor : public XMLVisitor
 {
@@ -249,30 +248,20 @@ public:
 	virtual ~PlantListVisitor () { delete m_pSpecies; }
 
 	void startXML() { m_state = 0; }
-	void startElement(const char * name, const XMLAttributes &atts);
-	void endElement(const char * name);
-	void data(const char * s, int length);
+	void startElement(const char *name, const XMLAttributes &atts);
+	void endElement(const char *name);
 
 private:
-	void push_state()
-	{
-		m_state++;
-		m_data = "";
-	}
-	void pop_state() { m_state--; }
-
-	vtPlantSpecies *m_pSpecies;
-	string m_data;
-	int m_state;
-
 	vtSpeciesList *m_pPL;
+	vtPlantSpecies *m_pSpecies;
+	int m_state;
 };
 
-void PlantListVisitor::startElement(const char * name, const XMLAttributes &atts)
+void PlantListVisitor::startElement(const char *name, const XMLAttributes &atts)
 {
 	const char *attval;
 
-	push_state();
+	m_state++;
 
 	if (m_state == 1)
 	{
@@ -298,7 +287,6 @@ void PlantListVisitor::startElement(const char * name, const XMLAttributes &atts
 			attval = atts.getValue("max_height");
 			if (attval != NULL)
 				m_pSpecies->SetMaxHeight((float)atof(attval));
-
 		}
 	}
 
@@ -352,12 +340,7 @@ void PlantListVisitor::endElement(const char *name)
 		m_pPL->Append(m_pSpecies);
 		m_pSpecies = NULL;
 	}
-	pop_state();
-}
-
-void PlantListVisitor::data(const char *s, int length)
-{
-	m_data.append(string(s, length));
+	m_state--;
 }
 
 bool vtSpeciesList::ReadXML(const char *pathname, vtString *msg)
@@ -432,30 +415,146 @@ bool vtBioRegion::Read(const char *fname, const vtSpeciesList &species)
 	return true;
 }
 
-bool vtBioRegion::Write(const char *fname) const
+bool vtBioRegion::WriteXML(const char *fname) const
 {
-	// TODO: replace with XML format
-/*	FILE *fp = vtFileOpen(fname, "wb");
-	if (!fp) return false;
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	FILE *fp = vtFileOpen(fname, "wb");
+	if (!fp)
+	{
+		throw xh_io_exception("Failed to open file", xh_location(fname),
+				"XML Writer");
+	}
+
+	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n");
+	fprintf(fp, "<bioregion-file file-format-version=\"1.1\">\n");
 
 	int num = m_Types.GetSize();
-	fprintf(fp, "bioregion1.0\n");
-	fprintf(fp, "types: %d\n", num);
-
 	for (int i = 0; i < num; i++)
 	{
 		vtBioType *bt = m_Types[i];
+		fprintf(fp, "\t<biotype name=\"%s\" id=\"%d\">\n", bt->m_name, i);
+
 		int num2 = bt->m_Densities.GetSize();
-		fprintf(fp, "species: %d\n", num2);
 		for (int j = 0; j < num2; j++)
 		{
-			const char *common = bt->m_Densities[j]->m_common_name;
-			fprintf(fp, "\t%s %f\n", common,
-				bt->m_Densities[j]->m_plant_per_m2);
+			vtPlantDensity *pd = bt->m_Densities[j];
+			fprintf(fp, "\t\t<species name=\"%s\" per_hectare=\"%.2f\"",
+				pd->m_pSpecies->GetSciName(), pd->m_plant_per_m2 * 10000);
+			if (pd->m_typical_size != -1.0f)
+				fprintf(fp, " typical_size=\"%.2f\"", pd->m_typical_size);
+			fprintf(fp, " />\n");
+		}
+		fprintf(fp, "\t</biotype>\n");
+	}
+	fprintf(fp, "</bioregion-file>\n");
+	fclose(fp);
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Visitor class, for XML parsing of Bioregion files.
+
+class BioRegionVisitor : public XMLVisitor
+{
+public:
+	BioRegionVisitor(vtBioRegion *br, const vtSpeciesList &sl) :
+	  m_pBR(br), m_Species(sl) {}
+
+	void startXML() { m_state = 0; }
+	void startElement(const char *name, const XMLAttributes &atts);
+	void endElement(const char *name);
+
+private:
+	int m_state;
+	vtBioRegion *m_pBR;
+	vtBioType *m_pBiotype;
+	const vtSpeciesList &m_Species;
+};
+
+void BioRegionVisitor::startElement(const char *name, const XMLAttributes &atts)
+{
+	const char *attval;
+
+	m_state++;
+
+	if (m_state == 1)
+	{
+		if (string(name) != (string)"bioregion-file")
+		{
+			string message = "Root element name is ";
+			message += name;
+			message += "; expected bioregion-file";
+			throw xh_io_exception(message, "XML Reader");
 		}
 	}
-	fclose(fp);
-	*/
+
+	if (m_state == 2)
+	{
+		if (string(name) == (string)"biotype")
+		{
+			m_pBiotype = new vtBioType;
+			// Get name and max_height
+			attval = atts.getValue("name");
+			if (attval != NULL)
+				m_pBiotype->m_name = attval;
+		}
+	}
+
+	if (m_state == 3)
+	{
+		if (string(name) == (string)"species")
+		{
+			vtString sciname;
+			float per_m2;
+			float typical_size = -1.0f;
+			attval = atts.getValue("name");
+			if (attval != NULL)
+				sciname = attval;
+			attval = atts.getValue("per_hectare");
+			if (attval != NULL)
+				per_m2 = atof(attval) / 10000;	// hectare is 100m*100m
+			attval = atts.getValue("typical_size");
+			if (attval != NULL)
+				typical_size = atof(attval);
+
+			int index = m_Species.GetSpeciesIdByName(sciname);
+			if (index != -1)
+			{
+				vtPlantSpecies *ps = m_Species.GetSpecies(index);
+				m_pBiotype->AddPlant(ps, per_m2, typical_size);
+			}
+		}
+	}
+}
+
+void BioRegionVisitor::endElement(const char *name)
+{
+	if (m_state == 2)
+		m_pBR->AddType(m_pBiotype);
+
+	m_state--;
+}
+
+bool vtBioRegion::ReadXML(const char *fname, const vtSpeciesList &species,
+						  vtString *msg)
+{
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	BioRegionVisitor visitor(this, species);
+	try
+	{
+		readXML(fname, visitor);
+	}
+	catch (xh_exception &ex)
+	{
+		// pass back the error message, if they want it
+		if (msg)
+			*msg = ex.getFormattedMessage().c_str();
+		return false;
+	}
 	return true;
 }
 
@@ -493,11 +592,12 @@ vtBioType::~vtBioType()
 		delete m_Densities[i];
 }
 
-void vtBioType::AddPlant(vtPlantSpecies *pSpecies, float plant_per_m2)
+void vtBioType::AddPlant(vtPlantSpecies *pSpecies, float plant_per_m2, float typical_size)
 {
 	vtPlantDensity *pd = new vtPlantDensity;
 	pd->m_pSpecies = pSpecies;
 	pd->m_plant_per_m2 = plant_per_m2;
+	pd->m_typical_size = typical_size;
 	pd->m_amount = 0.0f;
 	pd->m_iNumPlanted = 0;
 	m_Densities.Append(pd);

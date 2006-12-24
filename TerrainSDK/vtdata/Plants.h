@@ -85,8 +85,10 @@ protected:
 
 /**
  * A plant density is a representation of how densely a plant is distributed,
- * consisting of a reference to a species and a density, in instances per
- * square meter.
+ * consisting of:
+	- a reference to a species
+	- a density, in instances per square meter.
+	- optionally, a typical size
  */
 class vtPlantDensity
 {
@@ -95,6 +97,7 @@ public:
 
 	vtPlantSpecies	*m_pSpecies;
 	float		m_plant_per_m2;
+	float		m_typical_size;
 
 	float		m_amount;			// these two fields are using during the
 	int			m_iNumPlanted;		// plant distribution process
@@ -112,7 +115,7 @@ public:
 	vtBioType();
 	~vtBioType();
 
-	void AddPlant(vtPlantSpecies *pSpecies, float plant_per_m2);
+	void AddPlant(vtPlantSpecies *pSpecies, float plant_per_m2, float typical_size = -1.0f);
 	void ResetAmounts();
 	int GetWeightedRandomPlant();
 
@@ -167,7 +170,10 @@ public:
 	~vtBioRegion();
 
 	bool Read(const char *fname, const vtSpeciesList &species);
-	bool Write(const char *fname) const;
+	bool ReadXML(const char *fname, const vtSpeciesList &species,
+		vtString *msg = NULL);
+	bool WriteXML(const char *fname) const;
+
 	int AddType(vtBioType *bt) { return m_Types.Append(bt); }
 	int NumTypes() const { return m_Types.GetSize(); }
 	vtBioType *GetBioType(int i) const { return m_Types[i]; }
