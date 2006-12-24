@@ -185,6 +185,11 @@ public:
 	void ResetDistanceTool();
 	void UpdateDistanceTool();
 
+	// UI
+	void PolygonSelectionAddPoint();
+	void PolygonSelectionClose();
+	DLine2 &GetPolygonSelection() { return m_NewLine; }
+
 	// global state
 	AppState	m_state;
 	MouseMode	m_mode;

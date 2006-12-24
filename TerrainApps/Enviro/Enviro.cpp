@@ -1204,38 +1204,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 
 void Enviro::OnMouseLeftDownBuildings()
 {
-	SetupArcMesh();
-	DPoint2 g1(m_EarthPos.x, m_EarthPos.y);
-
-	// Create a marker pole for this corner of the new building
-	int matidx = 2;
-	float fHeight = 10.0f;
-	float fRadius = 0.2f;
-	vtGeom *geom = CreateCylinderGeom(m_pArcMats, matidx, VT_Normals, fHeight,
-		fRadius, 10, true, false, false, 1);
-	vtTransform *trans = new vtTransform;
-	trans->AddChild(geom);
-	m_Markers.push_back(trans);
-	vtTerrain *pTerr = GetCurrentTerrain();
-	pTerr->PlantModelAtPoint(trans, g1);
-	pTerr->AddNode(trans);
-
-	if (m_bLineDrawing)
-	{
-		// continue existing line
-		m_NewLine.Append(g1);
-
-		vtTerrain *pTerr = GetCurrentTerrain();
-		vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 1);
-		pTerr->AddSurfaceLineToMesh(&mf, m_NewLine, m_fDistToolHeight, true);
-	}
-	else
-	{
-		// start new line
-		m_bLineDrawing = true;
-		m_NewLine.Empty();
-		m_NewLine.Append(g1);
-	}
+	PolygonSelectionAddPoint();
 }
 
 void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
@@ -1544,26 +1513,16 @@ void Enviro::OnMouseLeftUp(vtMouseEvent &event)
 
 void Enviro::OnMouseRightDown(vtMouseEvent &event)
 {
-	if (false == m_bLineDrawing)
-		return;
-
-	m_bLineDrawing = false;
-	if (m_mode == MM_BUILDINGS)
+	if (m_mode == MM_BUILDINGS && m_bLineDrawing)
 	{
+		// Hide the temporary markers which showed the vertices
+		PolygonSelectionClose();
+
 		// Close and create new building in the current structure array
 		vtTerrain *pTerr = GetCurrentTerrain();
 		vtStructureArray3d *pbuildingarray = pTerr->GetStructureLayer(); 
 		vtBuilding3d *pbuilding = (vtBuilding3d*) pbuildingarray->AddNewBuilding();
 		pbuilding->SetFootprint(0, m_NewLine);
-
-		// Hide the temporary markers which showed the vertices
-		SetupArcMesh();
-		for (unsigned int i = 0; i < m_Markers.size(); i++)
-		{
-			pTerr->RemoveNode(m_Markers[i]);
-			m_Markers[i]->Release();
-		}
-		m_Markers.clear();
 
 		// Describe the appearance of the new building
 		pbuilding->SetStories(2);
@@ -1811,6 +1770,61 @@ void Enviro::UpdateDistanceTool()
 		ShowDistance(g1, g2, m_fArcLength, m_EarthPos.z - m_EarthPosDown.z);
 	}
 }
+
+//
+// Use the current cursor position as a point to add to a polygon being
+//  visually selected.
+//
+void Enviro::PolygonSelectionAddPoint()
+{
+	SetupArcMesh();
+	DPoint2 g1(m_EarthPos.x, m_EarthPos.y);
+
+	// Create a marker pole for this corner of the new building
+	int matidx = 2;
+	float fHeight = 10.0f;
+	float fRadius = 0.2f;
+	vtGeom *geom = CreateCylinderGeom(m_pArcMats, matidx, VT_Normals, fHeight,
+		fRadius, 10, true, false, false, 1);
+	vtTransform *trans = new vtTransform;
+	trans->AddChild(geom);
+	m_Markers.push_back(trans);
+	vtTerrain *pTerr = GetCurrentTerrain();
+	pTerr->PlantModelAtPoint(trans, g1);
+	pTerr->AddNode(trans);
+
+	if (m_bLineDrawing)
+	{
+		// continue existing line
+		m_NewLine.Append(g1);
+
+		vtTerrain *pTerr = GetCurrentTerrain();
+		vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 1);
+		pTerr->AddSurfaceLineToMesh(&mf, m_NewLine, m_fDistToolHeight, true);
+	}
+	else
+	{
+		// start new line
+		m_bLineDrawing = true;
+		m_NewLine.Empty();
+		m_NewLine.Append(g1);
+	}
+}
+
+void Enviro::PolygonSelectionClose()
+{
+	m_bLineDrawing = false;
+
+	// Hide the temporary markers which showed the vertices
+	SetupArcMesh();
+	for (unsigned int i = 0; i < m_Markers.size(); i++)
+	{
+		GetCurrentTerrain()->RemoveNode(m_Markers[i]);
+		m_Markers[i]->Release();
+	}
+	m_Markers.clear();
+}
+
 
 ////////////////////////////////////////////////////////////////
 // Fences
