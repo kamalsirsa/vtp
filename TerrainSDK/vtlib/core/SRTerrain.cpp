@@ -29,17 +29,28 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale) { return DTEr
 #include "ministub.hpp"
 
 using namespace mini;
-#ifdef _MSC_VER
+
 // Set the following "1" to "0" before each code release, because non-core
 //	developers don't need to debug into the libMini library, so they won't
 //  need the *d version.
-#if VTDEBUG && 0
-#pragma message( "Adding link with libMinid.lib" )
-#pragma comment( lib, "libMinid.lib" )
-#else
-#pragma message( "Adding link with libMini.lib" )
-#pragma comment( lib, "libMini.lib" )
-#endif
+#ifdef _MSC_VER
+  #if _MSC_VER >= 1400	// vc8
+	#if VTDEBUG && 0
+	  #pragma message( "Adding link with libMinid.lib" )
+	  #pragma comment( lib, "libMinid-vc8.lib" )
+	#else
+	  #pragma message( "Adding link with libMini.lib" )
+	  #pragma comment( lib, "libMini-vc8.lib" )
+	#endif
+  #else					// vc71
+	#if VTDEBUG && 0
+	  #pragma message( "Adding link with libMinid.lib" )
+	  #pragma comment( lib, "libMinid.lib" )
+	#else
+	  #pragma message( "Adding link with libMini.lib" )
+	  #pragma comment( lib, "libMini.lib" )
+	#endif
+  #endif
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
