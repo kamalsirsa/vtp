@@ -344,7 +344,6 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 
     m_mgr.AddPane(m_canvas, wxAuiPaneInfo().
                   Name(wxT("canvas")).Caption(wxT("Canvas")).
-//                  Dockable(false).Floatable(false).Resizable(true));
                   CenterPane());
 	m_mgr.Update();
 }
