@@ -245,6 +245,7 @@ EVT_MENU(ID_AREA_EXPORT_IMAGE,		MainFrame::OnAreaExportImage)
 EVT_MENU(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnAreaOptimizedElevTileset)
 EVT_MENU(ID_AREA_EXPORT_IMAGE_OPT,	MainFrame::OnAreaOptimizedImageTileset)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
+EVT_MENU(ID_AREA_VEG_DENSITY,		MainFrame::OnAreaVegDensity)
 EVT_MENU(ID_AREA_REQUEST_WFS,		MainFrame::OnAreaRequestWFS)
 EVT_MENU(ID_AREA_REQUEST_WMS,		MainFrame::OnAreaRequestWMS)
 EVT_MENU(ID_AREA_REQUEST_TSERVE,	MainFrame::OnAreaRequestTServe)
@@ -256,6 +257,7 @@ EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnUpdateAreaExportElev)
 EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE_OPT,MainFrame::OnUpdateAreaExportImage)
 EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE,	MainFrame::OnUpdateAreaExportImage)
 EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
+EVT_UPDATE_UI(ID_AREA_VEG_DENSITY,	MainFrame::OnUpdateAreaVegDensity)
 EVT_UPDATE_UI(ID_AREA_REQUEST_WFS,	MainFrame::OnUpdateAreaRequestWMS)
 EVT_UPDATE_UI(ID_AREA_REQUEST_WMS,	MainFrame::OnUpdateAreaRequestWMS)
 
@@ -492,7 +494,9 @@ void MainFrame::CreateMenus()
 	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _("Merge && Resample &Imagery"),
 		_("Sample imagery within the Area Tool to produce a single, new image."));
 	areaMenu->Append(ID_AREA_GENERATE_VEG, _("Generate Vegetation"),
-		_("Generate Vegetation File (*.vf) containg plant distribution."));
+		_("Generate Vegetation File (*.vf) containing plant distribution."));
+	areaMenu->Append(ID_AREA_VEG_DENSITY, _("Compute Vegetation Density"),
+		_("Compute and display the density of each species of vegetation in the given area."));
 #if SUPPORT_HTTP
 	areaMenu->Append(ID_AREA_REQUEST_WFS, _("Request Layer from WFS"));
 	areaMenu->Append(ID_AREA_REQUEST_WMS, _("Request Image from WMS"));
@@ -2842,6 +2846,77 @@ void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 	event.Enable(m_strSpeciesFilename != "" && !m_area.IsEmpty());
 }
 
+void MainFrame::OnAreaVegDensity(wxCommandEvent& event)
+{
+	wxString str, s;
+
+	LinearUnits lu = m_proj.GetUnits();
+	float xsize = m_area.Width() * GetMetersPerUnit(lu);
+	float ysize = m_area.Height() * GetMetersPerUnit(lu);
+	float area = xsize * ysize;
+
+	s.Printf(_("Total area: %.1f square meters (%.3f hectares)\n"), area, area/10000);
+	str += s;
+
+	// Get all the objects we'll need
+	vtVegLayer *vlay = (vtVegLayer *) FindLayerOfType(LT_VEG);
+	if (!vlay) return;
+	vtPlantInstanceArray *pia = vlay->GetPIA();
+	if (!pia) return;
+	unsigned int ent = pia->GetNumEntities();
+	vtSpeciesList *list = GetMainFrame()->GetPlantList();
+
+	// Put the results in a biotype as well
+	vtBioType btype;
+
+	float size;
+	short species;
+	int total = 0;
+	for (unsigned int i = 0; i < list->NumSpecies(); i++)
+	{
+		int count = 0;
+		float height = 0;
+		for (unsigned int j = 0; j < ent; j++)
+		{
+			pia->GetPlant(j, size, species);
+			DPoint2 &p = pia->GetPoint(j);
+			if (species == i && m_area.ContainsPoint(p))
+			{
+				total++;
+				count++;
+				height += size;
+			}
+		}
+		if (count != 0)
+		{
+			vtPlantSpecies *spe = list->GetSpecies(i);
+			float density = (float) count / area;
+			s.Printf(_("  %d instances of species %hs: %.5f per m^2, average height %.1f\n"),
+				count, spe->GetSciName(), density, height/count);
+			str += s;
+
+			btype.AddPlant(spe, density, height/count);
+		}
+	}
+	s.Printf(_("Total plant instances: %d\n"), total);
+	str += s;
+	wxMessageBox(str, _("Info"));
+
+	vtBioRegion bregion;
+	btype.m_name = "Default";
+	bregion.AddType(&btype);
+	bregion.WriteXML("bioregion.xml");
+	bregion.Clear();
+}
+
+void MainFrame::OnUpdateAreaVegDensity(wxUpdateUIEvent& event)
+{
+	// we needs some plants, and an area to estimate
+	vtVegLayer *vlay = (vtVegLayer *) FindLayerOfType(LT_VEG);
+	event.Enable(m_strSpeciesFilename != "" && vlay != NULL &&
+		vlay->GetVegType() == VLT_Instances && !m_area.IsEmpty());
+}
+
 
 //////////////////////////////
 // Utilities Menu
@@ -3241,8 +3316,10 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 		wxString msg;
 		if (selected == -1)
 			msg = _("Unable to select");
+		else if (selected == 1)
+			msg.Printf(_("Selected 1 entity"));
 		else
-			msg.Printf(_("Selected %d entit%hs"), selected, selected == 1 ? "y" : "ies");
+			msg.Printf(_("Selected %d entities"), selected);
 		SetStatusText(msg);
 
 		msg += _T("\n");
