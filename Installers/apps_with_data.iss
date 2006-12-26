@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2006.09.22
+AppVerName=VTP Software 2006.12.05
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -12,7 +12,7 @@ DefaultDirName={pf}\VTP
 DefaultGroupName=VTP
 AllowNoIcons=yes
 LicenseFile=C:\VTP\Installers\license.txt
-OutputBaseFilename=setup_full
+OutputBaseFilename=setup_vtp
 OutputDir=C:\Distrib
 ; We need the following because Windows won't turn Registry settings into Enviroment variables w/o a reboot
 AlwaysRestart=yes
@@ -35,31 +35,35 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "PROJ_LIB"; ValueData: "{app}\PROJ4-data"; Components: proj
 
 [Files]
-Source: "C:\VTP\TerrainApps\BExtractor\license.txt"; DestDir: "{app}/Apps"; Flags: ignoreversion; Components: main
+;Source: "C:\VTP\TerrainApps\BExtractor\license.txt"; DestDir: "{app}/Apps"; Flags: ignoreversion; Components: main
 
-Source: "C:\VTP\TerrainApps\BExtractor\Release\BExtractor.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
-Source: "C:\VTP\TerrainApps\BExtractor\BE.ini"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
-Source: "C:\VTP\TerrainApps\BExtractor\Docs\index.html"; DestDir: "{app}/Docs/BExtractor"; Flags: ignoreversion; Components: docs
+;Source: "C:\VTP\TerrainApps\BExtractor\Release\BExtractor.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+;Source: "C:\VTP\TerrainApps\BExtractor\BE.ini"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+;Source: "C:\VTP\TerrainApps\BExtractor\Docs\index.html"; DestDir: "{app}/Docs/BExtractor"; Flags: ignoreversion; Components: docs
 
-Source: "C:\VTP\TerrainApps\CManager\Release_Unicode\CManager_u.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\CManager\Release-Unicode-vc8\CManager.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+;Source: "C:\VTP\TerrainApps\CManager\Release-Unicode-vc8\*.manifest"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\CManager\itemtypes.txt"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\CManager\tags.txt"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\CManager\Docs\index.html"; DestDir: "{app}/Docs/CManager"; Flags: ignoreversion; Components: docs
 Source: "C:\VTP\TerrainApps\CManager\Docs\images\*.png"; DestDir: "{app}/Docs/CManager/images"; Flags: ignoreversion; Components: docs
 
-Source: "C:\VTP\TerrainApps\Enviro\Release_Unicode\wxEnviro_u.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\Release-Unicode-vc8\wxEnviro.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+;Source: "C:\VTP\TerrainApps\Enviro\Release-Unicode-vc8\*.manifest"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\Ship\Enviro.xml"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\Docs\*.html"; DestDir: "{app}\Docs\Enviro"; Flags: ignoreversion; Components: docs
 Source: "C:\VTP\TerrainApps\Enviro\Docs\Navigation\*"; DestDir: "{app}\Docs\Enviro\Navigation"; Flags: ignoreversion; Components: docs
 Source: "C:\VTP\TerrainApps\Enviro\Docs\images\*"; DestDir: "{app}\Docs\Enviro\images"; Flags: ignoreversion; Components: docs
 
-Source: "C:\VTP\TerrainApps\VTBuilder\Release_Unicode\VTBuilder_u.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\VTBuilder\Release-Unicode-vc8\VTBuilder.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+;Source: "C:\VTP\TerrainApps\VTBuilder\Release-Unicode-vc8\*.manifest"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\VTBuilder.ini"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\Docs\*.html"; DestDir: "{app}\Docs\VTBuilder"; Flags: ignoreversion; Components: docs
 Source: "C:\VTP\TerrainApps\VTBuilder\Docs\images\*"; DestDir: "{app}\Docs\VTBuilder\images"; Flags: ignoreversion; Components: docs
 
 ; Translation files
 Source: "C:\VTP\TerrainApps\Enviro\af\Enviro.mo"; DestDir: "{app}\Apps\af"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\ar\Enviro.mo"; DestDir: "{app}\Apps\ar"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\de\Enviro.mo"; DestDir: "{app}\Apps\de"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\en_GB\Enviro.mo"; DestDir: "{app}\Apps\en_GB"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\es\Enviro.mo"; DestDir: "{app}\Apps\es"; Flags: ignoreversion; Components: main
@@ -71,6 +75,7 @@ Source: "C:\VTP\TerrainApps\Enviro\ro\Enviro.mo"; DestDir: "{app}\Apps\ro"; Flag
 Source: "C:\VTP\TerrainApps\Enviro\sv\Enviro.mo"; DestDir: "{app}\Apps\sv"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\tr\Enviro.mo"; DestDir: "{app}\Apps\tr"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\zh\Enviro.mo"; DestDir: "{app}\Apps\zh"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\VTBuilder\ar\VTBuilder.mo"; DestDir: "{app}\Apps\ar"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\fr\VTBuilder.mo"; DestDir: "{app}\Apps\fr"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\zh\VTBuilder.mo"; DestDir: "{app}\Apps\zh"; Flags: ignoreversion; Components: main
 
@@ -82,35 +87,36 @@ Source: "G:\Data-Distro\*"; DestDir: "{app}\Data"; Flags: ignoreversion recurses
 Source: "C:\VTP\Docs\*.html"; DestDir: "{app}\Docs"; Flags: ignoreversion; Components: docs
 
 ; Projection Stuff
-Source: "C:\APIs\gdal132\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
-Source: "C:\VTP\proj\nad\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
+Source: "C:\APIs\gdal-1.3.2\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
+Source: "C:\VTP\PROJ4-data\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
 
 ; DLLs
 Source: "C:\APIs\bzip2-1.0.3-bin\bzip2.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal132\bin\gdal13.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal132\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal132\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal132-vc8\bin\gdal13-vc8.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal132-vc8\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal132-vc8\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\osg-1.2-bin\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\osg-1.2-bin-vc8\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\libcurl-7.15.0\libcurl.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\wx2.6.3\lib\vc_dll\wxbase26u_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\wx2.6.3\lib\vc_dll\wxmsw26u_core_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\wx2.6.3\lib\vc_dll\wxmsw26u_gl_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\xerces-c_2_3_0-win32\bin\xerces-c_2_3_0.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\libpng-1.2.8\libpng13.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\libpng-1.2.8\zlib1.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\wx2.6.3\lib-vc8\vc_dll\wxbase26u_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\wx2.6.3\lib-vc8\vc_dll\wxmsw26u_core_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\wx2.6.3\lib-vc8\vc_dll\wxmsw26u_gl_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\wx2.6.3\lib-vc8\vc_dll\wxbase26u_net_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\libpng-1.2.12\libpng13-vc8.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\libpng-1.2.12\zlib1-vc8.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 
 ; Microsoft DLLs
-Source: "C:\VTP\Installers\Redistributable_MS_DLLs\msvcp71.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist uninsneveruninstall; Components: dlls
-Source: "C:\VTP\Installers\Redistributable_MS_DLLs\msvcr71.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist uninsneveruninstall; Components: dlls
+Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\msvcp80.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\msvcr80.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
 Name: "{group}\Documentation"; Filename: "{app}\Docs\index.html"
-Name: "{group}\BExtractor"; Filename: "{app}\Apps\BExtractor.exe"; WorkingDir: "{app}\Apps"
-Name: "{group}\CManager"; Filename: "{app}\Apps\CManager_u.exe"; WorkingDir: "{app}\Apps"
-Name: "{group}\Enviro"; Filename: "{app}\Apps\wxEnviro_u.exe"; WorkingDir: "{app}\Apps"
-Name: "{group}\VTBuilder"; Filename: "{app}\Apps\VTBuilder_u.exe"; WorkingDir: "{app}\Apps"
+;Name: "{group}\BExtractor"; Filename: "{app}\Apps\BExtractor.exe"; WorkingDir: "{app}\Apps"
+Name: "{group}\CManager"; Filename: "{app}\Apps\CManager.exe"; WorkingDir: "{app}\Apps"
+Name: "{group}\Enviro"; Filename: "{app}\Apps\wxEnviro.exe"; WorkingDir: "{app}\Apps"
+Name: "{group}\VTBuilder"; Filename: "{app}\Apps\VTBuilder.exe"; WorkingDir: "{app}\Apps"
 Name: "{group}\Uninstall VTP Software"; Filename: "{uninstallexe}"
 
