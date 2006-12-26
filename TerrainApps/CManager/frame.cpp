@@ -442,7 +442,7 @@ void vtFrame::CreateToolbar()
 
 void vtFrame::OnChar(wxKeyEvent& event)
 {
-	long key = event.KeyCode();
+	long key = event.GetKeyCode();
 
 	if (key == 27)
 	{
@@ -494,7 +494,7 @@ void vtFrame::OnOpen(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
 	wxFileDialog loadFile(NULL, _T("Load Content File"), _T(""), _T(""),
-		_T("Content XML Files (*.vtco)|*.vtco"), wxOPEN);
+		_T("Content XML Files (*.vtco)|*.vtco"), wxFD_OPEN);
 	loadFile.SetFilterIndex(1);
 	if (loadFile.ShowModal() == wxID_OK)
 		LoadContentsFile(loadFile.GetPath());
@@ -507,7 +507,7 @@ void vtFrame::OnSave(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
 	wxFileDialog loadFile(NULL, _T("Save Content File"), _T(""), _T(""),
-		_T("Content XML Files (*.vtco)|*.vtco"), wxSAVE);
+		_T("Content XML Files (*.vtco)|*.vtco"), wxFD_SAVE);
 	loadFile.SetFilterIndex(1);
 	if (loadFile.ShowModal() == wxID_OK)
 		SaveContentsFile(loadFile.GetPath());
@@ -679,7 +679,7 @@ void vtFrame::OnItemAddModel(wxCommandEvent& event)
 		_T("IVE Files (*.ive)|*.ive|")
 		_T("OSG Files (*.osg)|*.osg|")
 		_T("VRML Files (*.wrl)|*.wrl|")
-		_T("All Files (*.*)|*.*"), wxOPEN);
+		_T("All Files (*.*)|*.*"), wxFD_OPEN);
 	loadFile.SetFilterIndex(0);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -791,7 +791,7 @@ vtString GetSaveName(const char *format, const char *wildcard)
 	filter += _T(")|");
 	filter += wxString(wildcard, wxConvUTF8);
 
-	wxFileDialog saveFile(NULL, msg, _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, msg, _T(""), _T(""), filter, wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return vtString("");

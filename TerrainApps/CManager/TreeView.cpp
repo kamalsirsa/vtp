@@ -155,11 +155,11 @@ void MyTreeCtrl::RefreshTreeStatus(vtFrame *pFrame)
 
 	wxTreeItemId root = GetRootItem();
 	wxTreeItemId parent, item;
-	long cookie = 0, cookie2 = 1;
+	wxTreeItemIdValue  cookie, cookie2;
 
-	for (parent = GetFirstChild(root, cookie); parent; parent = GetNextChild(root, cookie))
+	for (parent = GetFirstChild(root, cookie); parent.IsOk(); parent = GetNextChild(root, cookie))
 	{
-		for (item = GetFirstChild(parent, cookie2); item; item = GetNextChild(parent, cookie2))
+		for (item = GetFirstChild(parent, cookie2); item.IsOk(); item = GetNextChild(parent, cookie2))
 		{
 			MyTreeItemData *data = (MyTreeItemData *)GetItemData(item);
 			if (data)
