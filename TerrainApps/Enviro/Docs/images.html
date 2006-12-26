@@ -39,10 +39,16 @@ files that are located in any <b>GeoSpecific</b> folder on your data path.</p>
   extents.</li>
   <li><b>Same CRS (projection) as the terrain.</b>&nbsp; Image layers will not 
   be dynamically reprojected.</li>
-  <li><b>Power of 2 in dimension</b>, up to the limits of your graphics card.&nbsp; 
+  <li>Within the<b> </b><b>size limits</b> of your graphics card.&nbsp; 
   For example, ATI cards support 2048x2048, and NVidia cards support up to 
   4096x4096.&nbsp; You can also use smaller images, e.g. 1024x1024, and 
   rectangular images, e.g. 2048x512.</li>
+</ul>
+
+<p>If you have an older card without OpenGL 2.0, the the image must also be:</p>
+<ul>
+  <li><b>Power of 2 in each dimension.</b>&nbsp; For example, 256x512 is 
+  supported, 300*711 is not.</li>
 </ul>
 
 </blockquote>
