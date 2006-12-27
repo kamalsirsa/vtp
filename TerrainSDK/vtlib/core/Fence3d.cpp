@@ -9,6 +9,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/Triangulate.h"
+#include "vtdata/vtLog.h"
 
 #include "Light.h"
 #include "Terrain.h"
@@ -118,6 +119,13 @@ void vtFence3d::AddFlatConnectionMesh(const FLine3 &p3)
 	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_TexCoords, 100);
 
 	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
+	if (!desc)
+	{
+		VTLOG1("Warning: could not find material:");
+		VTLOG1(m_Params.m_ConnectMaterial);
+		VTLOG1("\n");
+		return;
+	}
 
 	FPoint2 uvscale = desc->GetUVScale();
 
@@ -652,9 +660,6 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	if (p3.GetSize() < 2)
 		return;
 
-	if (m_Params.m_ConnectMaterial == "none")
-		return;
-
 	if (m_Params.m_iConnectType == 0)	// none
 	{
 		// nothing to do
@@ -663,7 +668,11 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	{
 		AddWireMeshes(p3);
 	}
-	else if (m_Params.m_iConnectType == 2)	// simple
+
+	if (m_Params.m_ConnectMaterial == "none")
+		return;
+
+	if (m_Params.m_iConnectType == 2)	// simple
 	{
 		if (m_Params.m_fConnectWidth == 0.0f)
 			AddFlatConnectionMesh(p3);
