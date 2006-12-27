@@ -137,7 +137,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	VTLOG("TParamsDlg: Constructing.\n");
 
-	TParamsFunc( this, TRUE );
+	TParamsFunc( this, TRUE, TRUE );
 
 	m_bSetting = false;
 
