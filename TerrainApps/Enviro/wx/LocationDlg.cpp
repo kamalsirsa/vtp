@@ -177,7 +177,7 @@ void LocationDlg::RefreshAnims()
 		for (iter = tcm.begin(); iter != tcm.end(); iter++)
 		{
 			anim->GetFirstTime();
-			str.Printf(_T("%d: time %lf"), count, iter->first);
+			str.Printf(_("%d: time %lf"), count, iter->first);
 			GetAnimTree()->AppendItem(id, str);
 			count++;
 		}
@@ -516,7 +516,7 @@ void LocationDlg::OnRecord1( wxCommandEvent &event )
 	path->ProcessPoints();
 
 	wxString str;
-	str.Printf(_T("%d: time %lf"), path->GetNumPoints()-1, fTime);
+	str.Printf(_("%d: time %lf"), path->GetNumPoints()-1, fTime);
 
 	// Find the current animation
 	wxTreeItemId CurrentAnimation = GetAnimTree()->GetItemParent(m_current);

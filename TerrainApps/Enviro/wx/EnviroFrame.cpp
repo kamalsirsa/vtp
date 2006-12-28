@@ -1869,9 +1869,9 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 
  	wxString str(STRING_APPORG "\n\n", wxConvUTF8);
 #ifdef ENVIRO_NATIVE
-	str += _T("The runtime environment for the Virtual Terrain Project.\n\n");
- 	str += _T("Please read the HTML documentation and license.\n\n");
- 	str += _T("Send feedback to: ben@vterrain.org\n");
+	str += _("The runtime environment for the Virtual Terrain Project.\n\n");
+ 	str += _("Please read the HTML documentation and license.\n\n");
+ 	str += _("Send feedback to: ben@vterrain.org\n");
 #else
 	str += _T("Based on the Virtual Terrain Project 3D Runtime Environment.\n");
 #endif
@@ -1888,7 +1888,7 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
  	str += _T("SSG");
 #endif
  	str += _T(" Library.\n\n");
-	str += _T("Build date: ");
+	str += _("Build date: ");
 	str += wxString(__DATE__, *wxConvCurrent);
 
 	wxString str2 = _("About ");

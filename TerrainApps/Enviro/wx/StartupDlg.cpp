@@ -56,13 +56,13 @@ static void ShowOGLInfo2(bool bLog)
 		wxString msg;
 
 		wxString str;
-		str.Printf(_T("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n"),
+		str.Printf(_("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n"),
 			glGetString(GL_VERSION), glGetString(GL_VENDOR),
 			glGetString(GL_RENDERER));
 		msg += str;
 		str.Printf(_("Maximum Texture Dimension: %d\n"), value);
 		msg += str;
-		msg += _T("Extensions: ");
+		msg += _("Extensions: ");
 		const char *ext = (const char *) glGetString(GL_EXTENSIONS);
 		msg += wxString(ext, wxConvUTF8);
 

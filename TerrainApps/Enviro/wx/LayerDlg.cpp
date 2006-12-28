@@ -212,7 +212,7 @@ wxString MakeVegLayerString(vtPlantInstanceArray3d &pia)
 {
 	wxString str(pia.GetFilename(), wxConvUTF8);
 	wxString str2;
-	str2.Printf(_T(" (Plants: %d)"), pia.GetNumEntities());
+	str2.Printf(_(" (Plants: %d)"), pia.GetNumEntities());
 	str += str2;
 	return str;
 }
@@ -257,13 +257,13 @@ void LayerDlg::RefreshTreeTerrain()
 						vs = inst->GetValueString("filename", true);
 						if (vs != "")
 						{
-							str = _T("File ");
+							str = _("File ");
 							str += vs.UTF8ToWideString().c_str();
 						}
 						else
 						{
 							vs = inst->GetValueString("itemname", true);
-							str = _T("Item ");
+							str = _("Item ");
 							str += vs.UTF8ToWideString().c_str();
 						}
 						hItem = m_pTree->AppendItem(hLayer, str, ICON_INSTANCE, ICON_INSTANCE);
