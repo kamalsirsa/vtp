@@ -76,6 +76,9 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	vtGetScene()->SetKeyStates(m_pbKeyState);
 	m_iConsecutiveMousemoves = 0;
 
+	// On RTL (right-to-left) system, the canvas should still be always LTR
+	SetLayoutDirection(wxLayout_LeftToRight);
+
 	s_canvas = this;
 	VTLOG1("vtGLCanvas, leaving constructor\n");
 }
