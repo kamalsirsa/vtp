@@ -1731,7 +1731,7 @@ void EnviroFrame::OnTerrainDistribVehicles(wxCommandEvent& event)
 
 	if (pTerr->GetRoadMap() == NULL)
 	{
-		wxMessageBox(_T("There are no roads to put the vehicles on.\n"));
+		wxMessageBox(_("There are no roads to put the vehicles on.\n"));
 		return;
 	}
 
@@ -1746,13 +1746,13 @@ void EnviroFrame::OnTerrainDistribVehicles(wxCommandEvent& event)
 	}
 	if (numv == 0)
 	{
-		wxMessageBox(_T("Could not find any ground vehicles in the content file.\n"));
+		wxMessageBox(_("Could not find any ground vehicles in the content file.\n"));
 		return;
 	}
 
 	wxString msg;
-	msg.Printf(_T("There are %d types of ground vehicle available."), numv);
-	int num = wxGetNumberFromUser(msg, _("Vehicles:"), _T("Distribute Vehicles"), 10, 1, 99);
+	msg.Printf(_("There are %d types of ground vehicle available."), numv);
+	int num = wxGetNumberFromUser(msg, _("Vehicles:"), _("Distribute Vehicles"), 10, 1, 99);
 	if (num == -1)
 		return;
 
