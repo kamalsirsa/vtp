@@ -18,6 +18,7 @@ public:
 	void RefreshTerrainList();
 	bool AskForTerrainName(wxWindow *pParent, wxString &strTerrainName);
 	vtString GetIniFileForTerrain(const vtString &name);
+	wxString GetLanguageCode() { return m_locale.GetCanonicalName(); }
 
 	bool m_bShowStartupDialog;
 
