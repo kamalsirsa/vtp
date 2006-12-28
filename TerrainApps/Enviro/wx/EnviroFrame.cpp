@@ -324,6 +324,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 
 	m_pPlantDlg = new PlantDlg(this, -1, _("Plants"));
 	m_pPlantDlg->ShowOnlyAvailableSpecies(g_Options.m_bOnlyAvailableSpecies);
+	m_pPlantDlg->SetLang(wxGetApp().GetLanguageCode());
 
 	m_pLocationDlg = new LocationDlg(this, -1, _("Locations"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
