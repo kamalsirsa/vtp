@@ -35,6 +35,7 @@ public:
 	void SetPlantList(vtSpeciesList3d *plants);
 	void SetPlantOptions(PlantingOptions &opt);
 	void ShowOnlyAvailableSpecies(bool bFlag) { m_bOnlyAvailableSpecies = bFlag; }
+	void SetLang(const wxString &strTwoLetterLangCode);
 
 	// WDR: method declarations for PlantDlg
 	wxChoice* GetLanguage()  { return (wxChoice*) FindWindow( ID_LANGUAGE ); }
@@ -48,6 +49,7 @@ public:
 
 protected:
 	void UpdateEnabling();
+	void UpdateAvailableLanguages();
 	void UpdatePlantSizes();
 	void UpdatePlantNames();
 	void HeightToSlider();

@@ -22,6 +22,19 @@
 #include "vtdata/vtLog.h"
 #include "EnviroGUI.h"
 
+// helper
+void InsertSortedString(wxChoice *ch, const wxString &str)
+{
+	unsigned int i;
+	for (i = 0; i < ch->GetCount(); i++)
+	{
+		if (str < ch->GetString(i))
+			break;
+	}
+	ch->Insert(str, i);
+	return;
+}
+
 // WDR: class implementations
 
 //---------------------------------------------------------------------------
@@ -76,6 +89,11 @@ PlantDlg::~PlantDlg()
 {
 }
 
+void PlantDlg::SetLang(const wxString &strTwoLetterLangCode)
+{
+	m_strLang = strTwoLetterLangCode.Left(2);
+}
+
 void PlantDlg::SetPlantList(vtSpeciesList3d *plants)	
 {
 	VTLOG1("PlantDlg SetPlantList: ");
@@ -86,6 +104,7 @@ void PlantDlg::SetPlantList(vtSpeciesList3d *plants)
 	if (m_pPlantList == plants)
 		return;
 	m_pPlantList = plants;
+	UpdateAvailableLanguages();
 	UpdatePlantSizes();
 	UpdatePlantNames();
 }
@@ -141,6 +160,28 @@ void PlantDlg::UpdatePlantSizes()
 	}
 }
 
+void PlantDlg::UpdateAvailableLanguages()
+{
+	GetLanguage()->Clear();
+	GetLanguage()->Append(_T("en"));
+
+	// Collect every unique language string
+	wxString str;
+	for (unsigned int i = 0; i < m_pPlantList->NumSpecies(); i++)
+	{
+		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
+		for (unsigned int j = 0; j < plant->NumCommonNames(); j++)
+		{
+			vtPlantSpecies::CommonName cname = plant->GetCommonName(j);
+			str = wxString(cname.m_strLang, wxConvUTF8);
+			if (GetLanguage()->FindString(str) == -1)
+			{
+				InsertSortedString(GetLanguage(), str);
+			}
+		}
+	}
+}
+
 void PlantDlg::UpdatePlantNames()
 {
 	VTLOG1("PlantDlg UpdatePlantNames\n");
@@ -152,8 +193,6 @@ void PlantDlg::UpdatePlantNames()
 		previous = (vtPlantSpecies *) m_pSpecies->GetClientData(m_iSpeciesChoice);
 
 	m_pSpecies->Clear();
-	GetLanguage()->Clear();
-	GetLanguage()->Append(_T("en"));
 
 	if (!m_pPlantList)
 		return;
@@ -176,20 +215,23 @@ void PlantDlg::UpdatePlantNames()
 
 		if (m_bCommonNames)
 		{
+			// Display all common names in the current language
+			vtString showLang = m_strLang.mb_str(wxConvUTF8);
+			int names = plant->CommonNamesOfLanguage(showLang);
+			if (names == 0)
+			{
+				// Didn't find any common names for this plant in current language,
+				//  so fall back on English
+				showLang = "en";
+			}
 			for (unsigned int j = 0; j < plant->NumCommonNames(); j++)
 			{
 				vtPlantSpecies::CommonName cname = plant->GetCommonName(j);
 
-				if (cname.m_strLang == m_strLang.mb_str(wxConvUTF8))
+				if (cname.m_strLang == showLang)
 				{
 					str = wxString(cname.m_strName, wxConvUTF8);
 					m_pSpecies->Append(str, plant);
-				}
-
-				str = wxString(cname.m_strLang, wxConvUTF8);
-				if (GetLanguage()->FindString(str) == -1)
-				{
-					GetLanguage()->Append(str);
 				}
 			}
 		}
@@ -203,7 +245,7 @@ void PlantDlg::UpdatePlantNames()
 	if (previous != NULL)
 	{
 		// look for a corresponding entry
-		for (int j = 0; j < m_pSpecies->GetCount(); j++)
+		for (unsigned int j = 0; j < m_pSpecies->GetCount(); j++)
 		{
 			void *data = m_pSpecies->GetClientData(j);
 			if (data == previous)
@@ -226,7 +268,7 @@ void PlantDlg::SpeciesIdToSpeciesIndex()
 {
 	// look up corresponding species choice index
 	vtPlantSpecies *ps = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
-	for (int i = 0; i < m_pSpecies->GetCount(); i++)
+	for (unsigned int i = 0; i < m_pSpecies->GetCount(); i++)
 	{
 		if (ps == m_pSpecies->GetClientData(i))
 		{
