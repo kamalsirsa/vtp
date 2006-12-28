@@ -56,6 +56,7 @@ public:
 	void AddCommonName(const char *Name, const char *Lang = NULL);
 	unsigned int NumCommonNames() const { return m_CommonNames.size(); }
 	CommonName GetCommonName(int n = 0) const { return m_CommonNames[n]; }
+	unsigned int CommonNamesOfLanguage(const char *lang);
 
 	void SetSciName(const char *szSciName);
 	const char *GetSciName() const { return m_szSciName; }

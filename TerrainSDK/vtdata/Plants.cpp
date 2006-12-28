@@ -81,6 +81,21 @@ void vtPlantSpecies::AddCommonName(const char *Name, const char *Lang)
 }
 
 /**
+ * Return the number of common names of this species in a given language.
+ * Language is a two-letter ISO 639 code, e.g. "fr" for French.
+ */
+unsigned int vtPlantSpecies::CommonNamesOfLanguage(const char *lang)
+{
+	unsigned int count = 0;
+	for (unsigned int j = 0; j < NumCommonNames(); j++)
+	{
+		if (m_CommonNames[j].m_strLang == lang)
+			count++;
+	}
+	return count;
+}
+
+/**
  * Set the scientific name for this species, as a plain ASCII string.
  * It should have the standard form with the genus capitolized,
  * e.g. "Cocos nucifera"
