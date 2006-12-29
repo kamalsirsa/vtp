@@ -229,7 +229,6 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 		}
 	}
 
-	Expand(rootId);
 	Expand(elevId);
 #ifndef ELEVATION_ONLY
 	Expand(imageId);
@@ -305,9 +304,10 @@ void MyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 	if (lp != last)
 		frame->GetView()->SetActiveLayer(lp);
 
+	LayerType curr_ltype = lp ? lp->GetType() : LT_UNKNOWN;
 	LayerType last_ltype = last ? last->GetType() : LT_UNKNOWN;
-	if (lp && lp->GetType() != last_ltype)
-		frame->RefreshToolbar();
+	if (curr_ltype != last_ltype)
+		frame->RefreshToolbars();
 }
 
 void MyTreeCtrl::OnBeginDrag(wxTreeEvent& event)
