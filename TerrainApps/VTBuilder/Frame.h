@@ -8,6 +8,7 @@
 #ifndef VTBUILDERFRAMEH
 #define VTBUILDERFRAMEH
 
+#include "wx/aui/aui.h"
 #include "wx/dnd.h"
 
 #include "vtdata/Projections.h"
@@ -25,13 +26,12 @@
 #endif
 
 // some shortcuts
-#define ADD_TOOL(id, bmp, label) \
-	toolBar_main->AddTool(id, label, bmp, wxNullBitmap, wxITEM_NORMAL, label, label)
-#define ADD_TOOL2(id, bmp, label, type) \
-	toolBar_main->AddTool(id, label, bmp, wxNullBitmap, type, label, label)
+#define ADD_TOOL(bar, id, bmp, label) \
+	bar->AddTool(id, label, bmp, wxNullBitmap, wxITEM_NORMAL, label, label)
+#define ADD_TOOL2(bar, id, bmp, label, type) \
+	bar->AddTool(id, label, bmp, wxNullBitmap, type, label, label)
 
 class MyTreeCtrl;
-class MySplitterWindow;
 class MyStatusBar;
 class vtDLGFile;
 class vtVegLayer;
@@ -56,6 +56,7 @@ class LinearStructureDlg2d;
 class InstanceDlg;
 class RenderDlg;
 class ProfileDlg;
+class vtScaleBar;
 
 class MainFrame: public wxFrame
 {
@@ -74,8 +75,10 @@ public:
 	void SetupUI();
 	void CheckForGDALAndWarn();
 	virtual void CreateMenus();
+	void ManageToolbar(const wxString &name, wxToolBar *bar, bool show);
+	wxToolBar *NewToolbar();
 	void CreateToolbar();
-	void RefreshToolbar();
+	void RefreshToolbars();
 	virtual void AddMainToolbars();
 	bool DrawDisabled() { return m_bDrawDisabled; }
 
@@ -136,9 +139,12 @@ protected:
 	void OnViewZoomAll(wxCommandEvent& event);
 	void OnViewZoomToLayer(wxCommandEvent& event);
 	void OnViewFull(wxCommandEvent& event);
+	void OnViewToolbar(wxCommandEvent& event);
+	void OnViewLayers(wxCommandEvent& event);
 	void OnViewWorldMap(wxCommandEvent& event);
 	void OnViewUTMBounds(wxCommandEvent& event);
 	void OnViewProfile(wxCommandEvent& event);
+	void OnViewScaleBar(wxCommandEvent& event);
 	void OnViewOptions(wxCommandEvent& event);
 
 	void OnUpdateLayerShow(wxUpdateUIEvent& event);
@@ -147,11 +153,14 @@ protected:
 	void OnUpdatePan(wxUpdateUIEvent& event);
 	void OnUpdateDistance(wxUpdateUIEvent& event);
 	void OnUpdateViewFull(wxUpdateUIEvent& event);
+	void OnUpdateViewToolbar(wxUpdateUIEvent& event);
+	void OnUpdateViewLayers(wxUpdateUIEvent& event);
 	void OnUpdateViewZoomToLayer(wxUpdateUIEvent& event);
 	void OnUpdateCrossingSelection(wxUpdateUIEvent& event);
 	void OnUpdateWorldMap(wxUpdateUIEvent& event);
 	void OnUpdateUTMBounds(wxUpdateUIEvent& event);
 	void OnUpdateViewProfile(wxUpdateUIEvent& event);
+	void OnUpdateViewScaleBar(wxUpdateUIEvent& event);
 
 	void OnSelectLink(wxCommandEvent& event);
 	void OnSelectNode(wxCommandEvent& event);
@@ -503,15 +512,15 @@ protected:
 	wxMenu *areaMenu;
 	wxMenu *helpMenu;
 	wxMenuBar *m_pMenuBar;
-	wxToolBar *toolBar_main;
-	wxToolBar *toolBar_road;
+	wxToolBar *m_pToolbar;				// main toolbar
+	wxToolBar *m_pLayBar[LAYER_TYPES];	// layer type-specific toolbars
 	MyStatusBar *m_statbar;
 	int		m_iMainButtons;
 
-	MySplitterWindow *m_splitter;
 	MyTreeCtrl	*m_pTree;		// left child of splitter
 	BuilderView	*m_pView;		// right child of splitter
 	bool	m_bDrawDisabled;
+	vtScaleBar *m_pScaleBar;
 
 	vtProjection	m_proj;
 	bool	m_bAdoptFirstCRS;	// If true, silenty assume user wants to
@@ -519,6 +528,8 @@ protected:
 
 	// menu numbers, for each layer type that has a corresponding menu
 	int		m_iLayerMenu[LAYER_TYPES];
+
+    wxAuiManager m_mgr;
 
 	DECLARE_EVENT_TABLE()
 };

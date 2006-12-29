@@ -107,6 +107,41 @@
 
 DECLARE_APP(BuilderApp)
 
+////////////////////////////////////////////////////////////////
+
+#if 0
+class vtScaleBar : public wxWindow
+{
+public:
+	vtScaleBar(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxPanelNameStr);
+
+	void OnPaint(wxPaintEvent& event);
+
+protected:
+	DECLARE_EVENT_TABLE()
+};
+
+BEGIN_EVENT_TABLE(vtScaleBar, wxWindow)
+EVT_PAINT(OnPaint)
+END_EVENT_TABLE()
+
+vtScaleBar::vtScaleBar(wxWindow* parent, wxWindowID id, const wxPoint& pos,
+	const wxSize& size, long style, const wxString& name) :
+  wxWindow(parent, id, pos, size, style, name)
+{
+	VTLOG1("vtScaleBar constructor\n");
+}
+
+void vtScaleBar::OnPaint(wxPaintEvent& event)
+{
+	wxPaintDC dc(this);
+	wxCoord w, h;
+	GetClientSize(&w,&h);
+	dc.DrawRoundedRectangle(0, 0, w, h, 5);
+}
+#endif
+
 //////////////////////////////////////////////////////////////////
 
 MainFrame *GetMainFrame()
@@ -123,6 +158,9 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 {
 	VTLOG("  MainFrame constructor: enter\n");
 
+    // tell wxAuiManager to manage this frame
+    m_mgr.SetManagedWindow(this);
+
 	// init app data
 	m_pView = NULL;
 	m_pActiveLayer = NULL;
@@ -137,23 +175,36 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 	m_bDrawDisabled = false;
 	m_bAdoptFirstCRS = true;
 	m_LSOptions.Defaults();
+	m_pToolbar = NULL;
+	for (int i = 0; i < LAYER_TYPES; i++)
+		m_pLayBar[i] = NULL;
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
-	VTLOG("  MainFrame constructor: exit\n");
+	VTLOG1("  MainFrame constructor: exit\n");
 }
 
 MainFrame::~MainFrame()
 {
-	VTLOG("Frame destructor\n");
+	VTLOG1("Frame destructor\n");
 	WriteINI();
 	DeleteContents();
+
+    m_mgr.UnInit();
 }
 
 void MainFrame::CreateView()
 {
-	m_pView = new BuilderView(m_splitter, wxID_ANY,
+	VTLOG1("CreateView\n");
+	m_pView = new BuilderView(this, wxID_ANY,
 			wxPoint(0, 0), wxSize(200, 400), _T("") );
+
+    m_mgr.AddPane(m_pView, wxAuiPaneInfo().
+                  Name(wxT("view")).Caption(wxT("View")).
+                  CenterPane().Show(true));
+	m_mgr.Update();
+	VTLOG1(" refreshing view\n");
+	m_pView->Refresh();
 }
 
 void MainFrame::ZoomAll()
@@ -180,15 +231,14 @@ void MainFrame::SetupUI()
 	SetDropTarget(new DnDFile);
 #endif
 
-	// splitter
-	m_splitter = new MySplitterWindow(this, wxID_ANY);
-
-	m_pTree = new MyTreeCtrl(m_splitter, LayerTree_Ctrl,
+	m_pTree = new MyTreeCtrl(this, LayerTree_Ctrl,
 			wxPoint(0, 0), wxSize(200, 400),
-#ifndef NO_VARIABLE_HEIGHT
-			wxTR_HAS_VARIABLE_ROW_HEIGHT |
-#endif
-			wxNO_BORDER);
+			wxTR_HIDE_ROOT | wxNO_BORDER);
+
+    m_mgr.AddPane(m_pTree, wxAuiPaneInfo().
+                  Name(_T("layers")).Caption(_("Layers")).
+                  Left());
+	m_mgr.Update();
 
 	// The following makes the views match, but it looks funny on Linux
 //	m_pTree->SetBackgroundColour(*wxLIGHT_GREY);
@@ -200,12 +250,7 @@ void MainFrame::SetupUI()
 	// Read INI file after creating the view
 	ReadINI();
 
-	m_splitter->Initialize(m_pTree);
-
-	////////////////////////
-	m_pTree->Show(TRUE);
-	m_pView->Show(TRUE);
-	m_splitter->SplitVertically( m_pTree, m_pView, 200);
+	RefreshToolbars();
 
 	CheckForGDALAndWarn();
 
@@ -233,6 +278,19 @@ void MainFrame::SetupUI()
 
 	// Load content files, which might be referenced by structure layers
 	LookForContentFiles();
+
+#if 0
+	long style = 0;//wxCAPTION | wxCLOSE_BOX;
+	m_pScaleBar = new vtScaleBar(this, wxID_ANY, wxPoint(0,0), wxSize(400,30), style,
+		_T("ScaleBarPanel"));
+    m_mgr.AddPane(m_pScaleBar, wxAuiPaneInfo().
+                  Name(wxT("scalebar")).Caption(wxT("Scale Bar")).
+                  Dockable(false).Float().MinSize(400,30).MaxSize(400,60).Resizable(false));
+	m_mgr.Update();
+#endif
+
+	// Again, for good measure
+	m_mgr.Update();
 
 	SetStatusText(_("Ready"));
 }
@@ -340,92 +398,59 @@ void MainFrame::OnClose(wxCloseEvent &event)
 	Destroy();
 }
 
+void MainFrame::ManageToolbar(const wxString &name, wxToolBar *bar, bool show)
+{
+	wxAuiPaneInfo api;
+	api.Name(name);
+	api.ToolbarPane();
+	api.Top();
+	api.LeftDockable(false);
+	api.RightDockable(false);
+	api.Show(show);
+    m_mgr.AddPane(bar, api);
+}
+
+wxToolBar *MainFrame::NewToolbar()
+{
+	int style = (wxTB_HORIZONTAL | wxNO_BORDER);
+	wxToolBar *bar = new wxToolBar(this, wxID_ANY, wxDefaultPosition,
+		wxDefaultSize, style);
+	bar->SetMargins(1, 1);
+	bar->SetToolBitmapSize(wxSize(20, 20));
+	return bar;
+}
+
 void MainFrame::CreateToolbar()
 {
 	// tool bar
-	toolBar_main = CreateToolBar(wxTB_HORIZONTAL | wxNO_BORDER | wxTB_DOCKABLE);
-	toolBar_main->SetMargins(2, 2);
-	toolBar_main->SetToolBitmapSize(wxSize(20, 20));
+	m_pToolbar = NewToolbar();
+	m_pLayBar[LT_RAW] = NewToolbar();
+	m_pLayBar[LT_ELEVATION] = NewToolbar();
+	m_pLayBar[LT_IMAGE] = NewToolbar();
+	m_pLayBar[LT_ROAD] = NewToolbar();
+	m_pLayBar[LT_STRUCTURE] = NewToolbar();
+	m_pLayBar[LT_VEG] = NewToolbar();
+	m_pLayBar[LT_UTILITY] = NewToolbar();
 
-	RefreshToolbar();
+	AddMainToolbars();
+
+	ManageToolbar(_T("toolbar"), m_pToolbar, true);
+	ManageToolbar(_T("toolbar_raw"), m_pLayBar[LT_RAW], false);
+	ManageToolbar(_T("toolbar_elev"), m_pLayBar[LT_ELEVATION], false);
+	ManageToolbar(_T("toolbar_image"), m_pLayBar[LT_IMAGE], false);
+	ManageToolbar(_T("toolbar_road"), m_pLayBar[LT_ROAD], false);
+	ManageToolbar(_T("toolbar_struct"), m_pLayBar[LT_STRUCTURE], false);
+	ManageToolbar(_T("toolbar_veg"), m_pLayBar[LT_VEG], false);
+	ManageToolbar(_T("toolbar_util"), m_pLayBar[LT_UTILITY], false);
+	m_mgr.Update();
 }
 
-void MainFrame::RefreshToolbar()
+void MainFrame::RefreshToolbars()
 {
-	int count = toolBar_main->GetToolsCount();
-
-	// the first time, add the original buttons
-	if (count == 0)
-	{
-		AddMainToolbars();
-		m_iMainButtons = toolBar_main->GetToolsCount();
-	}
-
-	// remove any existing extra buttons
-	while (count > m_iMainButtons)
-	{
-		toolBar_main->DeleteToolByPos(m_iMainButtons);
-		count = toolBar_main->GetToolsCount();
-	}
-
-	vtLayer *pLayer = GetActiveLayer();
+	vtLayer *lay = GetActiveLayer();
 	LayerType lt = LT_UNKNOWN;
-	if (pLayer)
-		lt = pLayer->GetType();
-
-	switch (lt)
-	{
-	case LT_UNKNOWN:
-		break;
-	case LT_RAW:
-		toolBar_main->AddSeparator();
-		ADD_TOOL2(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), wxITEM_CHECK);
-		ADD_TOOL2(ID_FEATURE_PICK, wxBITMAP(info), _("Pick Features"), wxITEM_CHECK);
-		ADD_TOOL2(ID_FEATURE_TABLE, wxBITMAP(table), _("Table"), wxITEM_CHECK);
-		ADD_TOOL2(ID_RAW_ADDPOINTS, wxBITMAP(raw_add_point), _("Add Points with Mouse"), wxITEM_CHECK);
-		break;
-	case LT_ELEVATION:
-		toolBar_main->AddSeparator();
-		ADD_TOOL2(ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), wxITEM_CHECK);
-		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"));
-		break;
-	case LT_IMAGE:
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"));
-		break;
-	case LT_ROAD:
-		toolBar_main->AddSeparator();
-		ADD_TOOL2(ID_ROAD_SELECTROAD, wxBITMAP(rd_select_road), _("Select Roads"), wxITEM_CHECK);
-		ADD_TOOL2(ID_ROAD_SELECTNODE, wxBITMAP(rd_select_node), _("Select Nodes"), wxITEM_CHECK);
-		ADD_TOOL2(ID_ROAD_SELECTWHOLE, wxBITMAP(rd_select_whole), _("Select Whole Roads"), wxITEM_CHECK);
-		ADD_TOOL2(ID_ROAD_DIRECTION, wxBITMAP(rd_direction), _("Set Road Direction"), wxITEM_CHECK);
-		ADD_TOOL2(ID_ROAD_EDIT, wxBITMAP(rd_edit), _("Edit Road Points"), wxITEM_CHECK);
-		ADD_TOOL2(ID_ROAD_SHOWNODES, wxBITMAP(rd_shownodes), _("Show Nodes"), wxITEM_CHECK);
-		ADD_TOOL2(ID_EDIT_CROSSINGSELECTION, wxBITMAP(edit_crossing), _("Crossing Selection"), wxITEM_CHECK);
-		break;
-	case LT_STRUCTURE:
-		toolBar_main->AddSeparator();
-		ADD_TOOL2(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), wxITEM_CHECK);
-		ADD_TOOL2(ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), wxITEM_CHECK);
-		ADD_TOOL2(ID_STRUCTURE_ADD_POINTS, wxBITMAP(bld_add_points), _("Add points to building footprints"), wxITEM_CHECK);
-		ADD_TOOL2(ID_STRUCTURE_DELETE_POINTS, wxBITMAP(bld_delete_points), _("Delete points from building footprints"), wxITEM_CHECK);
-		ADD_TOOL2(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Structures"), wxITEM_CHECK);
-		ADD_TOOL2(ID_STRUCTURE_EDIT_LINEAR, wxBITMAP(str_edit_linear), _("Edit Linear Structures"), wxITEM_CHECK);
-		ADD_TOOL2(ID_STRUCTURE_CONSTRAIN, wxBITMAP(bld_corner), _("Constrain Angles"), wxITEM_CHECK);
-		ADD_TOOL2(ID_STRUCTURE_ADD_INST, wxBITMAP(instances), _("Add Instances"), wxITEM_CHECK);
-		break;
-	case LT_WATER:
-	case LT_VEG:
-		break;
-	case LT_UTILITY:
-		toolBar_main->AddSeparator();
-		ADD_TOOL2(ID_TOWER_ADD,wxBITMAP(rd_select_node), _("Add Tower"), wxITEM_CHECK);
-		toolBar_main->AddSeparator();
-		ADD_TOOL2(ID_TOWER_SELECT,wxBITMAP(select),_("Select Towers"), wxITEM_CHECK);
-		ADD_TOOL2(ID_TOWER_EDIT, wxBITMAP(twr_edit), _("Edit Towers"), wxITEM_CHECK);
-		break;
-	}
-	toolBar_main->Realize();
+	if (lay)
+		lt = lay->GetType();
 
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_ELEVATION], lt == LT_ELEVATION);
 #ifndef ELEVATION_ONLY
@@ -436,38 +461,98 @@ void MainFrame::RefreshToolbar()
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_STRUCTURE], lt == LT_STRUCTURE);
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_RAW], lt == LT_RAW);
 #endif
+
+	for (int i = 0; i < LAYER_TYPES; i++)
+	{
+		wxToolBar *bar = m_pLayBar[i];
+		if (bar)
+		{
+			wxAuiPaneInfo &info = m_mgr.GetPane(bar);
+			info.Show(lt == i);
+		}
+	}
+	m_mgr.Update();
 }
 
 void MainFrame::AddMainToolbars()
 {
-	ADD_TOOL(ID_FILE_NEW, wxBITMAP(proj_new), _("New Project"));
-	ADD_TOOL(ID_FILE_OPEN, wxBITMAP(proj_open), _("Open Project"));
-	ADD_TOOL(ID_FILE_SAVE, wxBITMAP(proj_save), _("Save Project"));
-	ADD_TOOL(ID_VIEW_OPTIONS, wxBITMAP(view_options), _("View Options"));
-	toolBar_main->AddSeparator();
-	ADD_TOOL(ID_LAYER_NEW, wxBITMAP(layer_new), _("New Layer"));
-	ADD_TOOL(ID_LAYER_OPEN, wxBITMAP(layer_open), _("Open Layer"));
-	ADD_TOOL(ID_LAYER_SAVE, wxBITMAP(layer_save), _("Save Layer"));
-	ADD_TOOL(ID_LAYER_IMPORT, wxBITMAP(layer_import), _("Import Data"));
-	toolBar_main->AddSeparator();
-	ADD_TOOL(ID_EDIT_DELETE, wxBITMAP(edit_delete), _("Delete"));
-	ADD_TOOL(ID_EDIT_OFFSET, wxBITMAP(edit_offset), _("Offset"));
-	ADD_TOOL2(ID_VIEW_SHOWLAYER, wxBITMAP(layer_show), _("Layer Visibility"), wxITEM_CHECK);
-	ADD_TOOL(ID_VIEW_LAYER_UP, wxBITMAP(layer_up), _("Layer Up"));
-	toolBar_main->AddSeparator();
-	ADD_TOOL(ID_VIEW_ZOOMIN, wxBITMAP(view_plus), _("Zoom In"));
-	ADD_TOOL(ID_VIEW_ZOOMOUT, wxBITMAP(view_minus), _("Zoom Out"));
-	ADD_TOOL(ID_VIEW_ZOOMALL, wxBITMAP(view_zoomall), _("Zoom All"));
-	ADD_TOOL(ID_VIEW_ZOOM_LAYER, wxBITMAP(view_zoom_layer), _("Zoom To Layer"));
-	toolBar_main->AddSeparator();
-	ADD_TOOL2(ID_VIEW_MAGNIFIER, wxBITMAP(view_mag), _("Magnifier"), wxITEM_CHECK);
-	ADD_TOOL2(ID_VIEW_PAN, wxBITMAP(view_hand), _("Pan"), wxITEM_CHECK);
-	ADD_TOOL2(ID_VIEW_DISTANCE, wxBITMAP(distance), _("Distance"), wxITEM_CHECK);
-	ADD_TOOL2(ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Area Tool"), wxITEM_CHECK);
-	ADD_TOOL2(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), wxITEM_CHECK);
-	toolBar_main->AddSeparator();
-	ADD_TOOL(ID_AREA_EXPORT_ELEV, wxBITMAP(elev_resample), _("Merge/Resample Elevation"));
-	ADD_TOOL(ID_AREA_EXPORT_IMAGE, wxBITMAP(image_resample), _("Merge/Resample Imagery"));
+	ADD_TOOL(m_pToolbar, ID_FILE_NEW, wxBITMAP(proj_new), _("New Project"));
+	ADD_TOOL(m_pToolbar, ID_FILE_OPEN, wxBITMAP(proj_open), _("Open Project"));
+	ADD_TOOL(m_pToolbar, ID_FILE_SAVE, wxBITMAP(proj_save), _("Save Project"));
+	ADD_TOOL(m_pToolbar, ID_VIEW_OPTIONS, wxBITMAP(view_options), _("View Options"));
+	m_pToolbar->AddSeparator();
+	ADD_TOOL(m_pToolbar, ID_LAYER_NEW, wxBITMAP(layer_new), _("New Layer"));
+	ADD_TOOL(m_pToolbar, ID_LAYER_OPEN, wxBITMAP(layer_open), _("Open Layer"));
+	ADD_TOOL(m_pToolbar, ID_LAYER_SAVE, wxBITMAP(layer_save), _("Save Layer"));
+	ADD_TOOL(m_pToolbar, ID_LAYER_IMPORT, wxBITMAP(layer_import), _("Import Data"));
+	m_pToolbar->AddSeparator();
+	ADD_TOOL(m_pToolbar, ID_EDIT_DELETE, wxBITMAP(edit_delete), _("Delete"));
+	ADD_TOOL(m_pToolbar, ID_EDIT_OFFSET, wxBITMAP(edit_offset), _("Offset"));
+	ADD_TOOL2(m_pToolbar, ID_VIEW_SHOWLAYER, wxBITMAP(layer_show), _("Layer Visibility"), wxITEM_CHECK);
+	ADD_TOOL(m_pToolbar, ID_VIEW_LAYER_UP, wxBITMAP(layer_up), _("Layer Up"));
+	m_pToolbar->AddSeparator();
+	ADD_TOOL(m_pToolbar, ID_VIEW_ZOOMIN, wxBITMAP(view_plus), _("Zoom In"));
+	ADD_TOOL(m_pToolbar, ID_VIEW_ZOOMOUT, wxBITMAP(view_minus), _("Zoom Out"));
+	ADD_TOOL(m_pToolbar, ID_VIEW_ZOOMALL, wxBITMAP(view_zoomall), _("Zoom All"));
+	ADD_TOOL(m_pToolbar, ID_VIEW_ZOOM_LAYER, wxBITMAP(view_zoom_layer), _("Zoom To Layer"));
+	m_pToolbar->AddSeparator();
+	ADD_TOOL2(m_pToolbar, ID_VIEW_MAGNIFIER, wxBITMAP(view_mag), _("Magnifier"), wxITEM_CHECK);
+	ADD_TOOL2(m_pToolbar, ID_VIEW_PAN, wxBITMAP(view_hand), _("Pan"), wxITEM_CHECK);
+	ADD_TOOL2(m_pToolbar, ID_VIEW_DISTANCE, wxBITMAP(distance), _("Distance"), wxITEM_CHECK);
+	ADD_TOOL2(m_pToolbar, ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Area Tool"), wxITEM_CHECK);
+	ADD_TOOL2(m_pToolbar, ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), wxITEM_CHECK);
+	m_pToolbar->AddSeparator();
+	ADD_TOOL(m_pToolbar, ID_AREA_EXPORT_ELEV, wxBITMAP(elev_resample), _("Merge/Resample Elevation"));
+	ADD_TOOL(m_pToolbar, ID_AREA_EXPORT_IMAGE, wxBITMAP(image_resample), _("Merge/Resample Imagery"));
+	m_pToolbar->Realize();
+
+	// Raw
+	ADD_TOOL2(m_pLayBar[LT_RAW], ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_RAW], ID_FEATURE_PICK, wxBITMAP(info), _("Pick Features"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_RAW], ID_FEATURE_TABLE, wxBITMAP(table), _("Table"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_RAW], ID_RAW_ADDPOINTS, wxBITMAP(raw_add_point), _("Add Points with Mouse"), wxITEM_CHECK);
+	m_pLayBar[LT_RAW]->Realize();
+
+	// Elevation
+	ADD_TOOL2(m_pLayBar[LT_ELEVATION], ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), wxITEM_CHECK);
+	ADD_TOOL(m_pLayBar[LT_ELEVATION], ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"));
+	m_pLayBar[LT_ELEVATION]->Realize();
+
+	// Image
+	ADD_TOOL(m_pLayBar[LT_IMAGE], ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"));
+	m_pLayBar[LT_IMAGE]->Realize();
+
+	// Road
+	ADD_TOOL2(m_pLayBar[LT_ROAD], ID_ROAD_SELECTROAD, wxBITMAP(rd_select_road), _("Select Roads"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_ROAD], ID_ROAD_SELECTNODE, wxBITMAP(rd_select_node), _("Select Nodes"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_ROAD], ID_ROAD_SELECTWHOLE, wxBITMAP(rd_select_whole), _("Select Whole Roads"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_ROAD], ID_ROAD_DIRECTION, wxBITMAP(rd_direction), _("Set Road Direction"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_ROAD], ID_ROAD_EDIT, wxBITMAP(rd_edit), _("Edit Road Points"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_ROAD], ID_ROAD_SHOWNODES, wxBITMAP(rd_shownodes), _("Show Nodes"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_ROAD], ID_EDIT_CROSSINGSELECTION, wxBITMAP(edit_crossing), _("Crossing Selection"), wxITEM_CHECK);
+	m_pLayBar[LT_ROAD]->Realize();
+
+	// Structure
+	ADD_TOOL2(m_pLayBar[LT_STRUCTURE], ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_STRUCTURE], ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_STRUCTURE], ID_STRUCTURE_ADD_POINTS, wxBITMAP(bld_add_points), _("Add points to building footprints"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_STRUCTURE], ID_STRUCTURE_DELETE_POINTS, wxBITMAP(bld_delete_points), _("Delete points from building footprints"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_STRUCTURE], ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Structures"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_STRUCTURE], ID_STRUCTURE_EDIT_LINEAR, wxBITMAP(str_edit_linear), _("Edit Linear Structures"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_STRUCTURE], ID_STRUCTURE_CONSTRAIN, wxBITMAP(bld_corner), _("Constrain Angles"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_STRUCTURE], ID_STRUCTURE_ADD_INST, wxBITMAP(instances), _("Add Instances"), wxITEM_CHECK);
+	m_pLayBar[LT_STRUCTURE]->Realize();
+
+	// Veg
+	ADD_TOOL2(m_pLayBar[LT_VEG], ID_FEATURE_SELECT, wxBITMAP(select), _("Select Plants"), wxITEM_CHECK);
+	m_pLayBar[LT_VEG]->Realize();
+
+	// Utility
+	ADD_TOOL2(m_pLayBar[LT_UTILITY], ID_TOWER_ADD,wxBITMAP(rd_select_node), _("Add Tower"), wxITEM_CHECK);
+	m_pLayBar[LT_UTILITY]->AddSeparator();
+	ADD_TOOL2(m_pLayBar[LT_UTILITY], ID_TOWER_SELECT,wxBITMAP(select),_("Select Towers"), wxITEM_CHECK);
+	ADD_TOOL2(m_pLayBar[LT_UTILITY], ID_TOWER_EDIT, wxBITMAP(twr_edit), _("Edit Towers"), wxITEM_CHECK);
+	m_pLayBar[LT_UTILITY]->Realize();
 }
 
 
@@ -646,7 +731,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 	{
 		// refresh the view
 		ZoomAll();
-		RefreshToolbar();
+		RefreshToolbars();
 		RefreshTreeView();
 		RefreshStatusBar();
 	}
@@ -681,7 +766,7 @@ void MainFrame::RemoveLayer(vtLayer *lp)
 	DeleteLayer(lp);
 	m_pView->Refresh();
 	m_pTree->RefreshTreeItems(this);
-	RefreshToolbar();
+	RefreshToolbars();
 }
 
 void MainFrame::DeleteLayer(vtLayer *lp)
@@ -804,6 +889,13 @@ bool MainFrame::ReadINI()
 		m_pTree->SetShowPaths(ShowPaths != 0);
 		vtRoadLayer::SetDrawWidth(DrawWidth != 0);
 
+		char buf[4000];
+		if (fscanf(m_fpIni, "\n%s\n", buf) == 1)
+		{
+			wxString str(buf, wxConvUTF8);
+			m_mgr.LoadPerspective(str, false);
+		}
+
 		return true;
 	}
 	m_fpIni = vtFileOpen(m_szIniFilename, "wb");
@@ -814,14 +906,18 @@ bool MainFrame::WriteINI()
 {
 	if (m_fpIni)
 	{
+		wxString str = m_mgr.SavePerspective();
+		vtString vs = str.mb_str(wxConvUTF8);
+
 		rewind(m_fpIni);
-		fprintf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d", m_pView->GetShowMap(),
+		fprintf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d\n", m_pView->GetShowMap(),
 			vtElevLayer::m_draw.m_bShowElevation,
 			vtElevLayer::m_draw.m_bShadingQuick, vtElevLayer::m_draw.m_bDoMask,
 			m_pView->m_bShowUTMBounds, m_pTree->GetShowPaths(),
 			vtRoadLayer::GetDrawWidth(), vtElevLayer::m_draw.m_bCastShadows,
 			vtElevLayer::m_draw.m_bShadingDot, vtElevLayer::m_draw.m_iCastAngle,
 			vtElevLayer::m_draw.m_iCastDirection);
+		fprintf(m_fpIni, "%s\n", (const char *) vs);
 		fclose(m_fpIni);
 		m_fpIni = NULL;
 		return true;
@@ -1491,7 +1587,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 	if (!bHasView)
 		ZoomAll();
 	RefreshTreeView();
-	RefreshToolbar();
+	RefreshToolbars();
 }
 
 void MainFrame::SaveProject(const wxString &strPathName) const

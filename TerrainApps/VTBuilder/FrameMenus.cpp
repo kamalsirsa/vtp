@@ -102,18 +102,21 @@ EVT_UPDATE_UI(ID_EDIT_OFFSET,	MainFrame::OnUpdateEditOffset)
 
 EVT_MENU(ID_VIEW_SHOWLAYER,		MainFrame::OnLayerShow)
 EVT_MENU(ID_VIEW_LAYER_UP,		MainFrame::OnLayerUp)
-EVT_MENU(ID_VIEW_MAGNIFIER,		MainFrame::OnViewMagnifier)
-EVT_MENU(ID_VIEW_PAN,			MainFrame::OnViewPan)
-EVT_MENU(ID_VIEW_DISTANCE,		MainFrame::OnViewDistance)
 EVT_MENU(ID_VIEW_ZOOMIN,		MainFrame::OnViewZoomIn)
 EVT_MENU(ID_VIEW_ZOOMOUT,		MainFrame::OnViewZoomOut)
 EVT_MENU(ID_VIEW_ZOOMALL,		MainFrame::OnViewZoomAll)
 EVT_MENU(ID_VIEW_ZOOM_LAYER,	MainFrame::OnViewZoomToLayer)
 EVT_MENU(ID_VIEW_FULLVIEW,		MainFrame::OnViewFull)
+EVT_MENU(ID_VIEW_TOOLBAR,		MainFrame::OnViewToolbar)
+EVT_MENU(ID_VIEW_LAYERS,		MainFrame::OnViewLayers)
+EVT_MENU(ID_VIEW_MAGNIFIER,		MainFrame::OnViewMagnifier)
+EVT_MENU(ID_VIEW_PAN,			MainFrame::OnViewPan)
+EVT_MENU(ID_VIEW_DISTANCE,		MainFrame::OnViewDistance)
 EVT_MENU(ID_VIEW_SETAREA,		MainFrame::OnViewSetArea)
 EVT_MENU(ID_VIEW_WORLDMAP,		MainFrame::OnViewWorldMap)
 EVT_MENU(ID_VIEW_SHOWUTM,		MainFrame::OnViewUTMBounds)
 EVT_MENU(ID_VIEW_PROFILE,		MainFrame::OnViewProfile)
+EVT_MENU(ID_VIEW_SCALE_BAR,		MainFrame::OnViewScaleBar)
 EVT_MENU(ID_VIEW_OPTIONS,		MainFrame::OnViewOptions)
 
 EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,	MainFrame::OnUpdateLayerShow)
@@ -123,10 +126,13 @@ EVT_UPDATE_UI(ID_VIEW_PAN,			MainFrame::OnUpdatePan)
 EVT_UPDATE_UI(ID_VIEW_DISTANCE,		MainFrame::OnUpdateDistance)
 EVT_UPDATE_UI(ID_VIEW_ZOOM_LAYER,	MainFrame::OnUpdateViewZoomToLayer)
 EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewFull)
+EVT_UPDATE_UI(ID_VIEW_TOOLBAR,		MainFrame::OnUpdateViewToolbar)
+EVT_UPDATE_UI(ID_VIEW_LAYERS,		MainFrame::OnUpdateViewLayers)
 EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateViewSetArea)
 EVT_UPDATE_UI(ID_VIEW_WORLDMAP,		MainFrame::OnUpdateWorldMap)
 EVT_UPDATE_UI(ID_VIEW_SHOWUTM,		MainFrame::OnUpdateUTMBounds)
 EVT_UPDATE_UI(ID_VIEW_PROFILE,		MainFrame::OnUpdateViewProfile)
+EVT_UPDATE_UI(ID_VIEW_SCALE_BAR,	MainFrame::OnUpdateViewScaleBar)
 
 EVT_MENU(ID_ROAD_SELECTROAD,	MainFrame::OnSelectLink)
 EVT_MENU(ID_ROAD_SELECTNODE,	MainFrame::OnSelectNode)
@@ -354,6 +360,9 @@ void MainFrame::CreateMenus()
 	viewMenu->Append(ID_VIEW_ZOOM_LAYER, _("Zoom to Current &Layer"));
 	viewMenu->Append(ID_VIEW_FULLVIEW, _("Zoom to &Full Res (1:1)"));
 	viewMenu->AppendSeparator();
+	viewMenu->AppendCheckItem(ID_VIEW_TOOLBAR, _("Toolbar"));
+	viewMenu->AppendCheckItem(ID_VIEW_LAYERS, _("Layers"));
+	viewMenu->AppendSeparator();
 	viewMenu->AppendCheckItem(ID_VIEW_MAGNIFIER, _("&Magnifier\tZ"));
 	viewMenu->AppendCheckItem(ID_VIEW_PAN, _("&Pan\tSPACE"));
 	viewMenu->AppendCheckItem(ID_VIEW_DISTANCE, _("Obtain &Distance"));
@@ -363,6 +372,7 @@ void MainFrame::CreateMenus()
 	viewMenu->AppendCheckItem(ID_VIEW_SHOWUTM, _("Show &UTM Boundaries"));
 //	viewMenu->AppendCheckItem(ID_VIEW_SHOWGRID, _("Show 7.5\" Grid"), _("Show 7.5\" Grid"), true);
 	viewMenu->AppendCheckItem(ID_VIEW_PROFILE, _("Elevation Profile"));
+	viewMenu->AppendCheckItem(ID_VIEW_SCALE_BAR, _("Scale Bar"));
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_OPTIONS, _("&Options"));
 	m_pMenuBar->Append(viewMenu, _("&View"));
@@ -542,7 +552,7 @@ void MainFrame::OnProjectNew(wxCommandEvent &event)
 	m_BioRegion.Clear();
 
 	RefreshTreeView();
-	RefreshToolbar();
+	RefreshToolbars();
 
 	vtProjection p;
 	SetProjection(p);
@@ -906,7 +916,7 @@ void MainFrame::OnLayerNew(wxCommandEvent &event)
 	m_pView->SetActiveLayer(pL);
 	AddLayer(pL);
 	m_pTree->RefreshTreeItems(this);
-	RefreshToolbar();
+	RefreshToolbars();
 }
 
 void MainFrame::OnLayerOpen(wxCommandEvent &event)
@@ -1442,6 +1452,11 @@ void MainFrame::OnViewZoomToLayer(wxCommandEvent &event)
 		m_pView->ZoomToRect(rect, 0.1f);
 }
 
+void MainFrame::OnUpdateViewZoomToLayer(wxUpdateUIEvent& event)
+{
+	event.Enable(GetActiveLayer() != NULL);
+}
+
 void MainFrame::OnViewFull(wxCommandEvent& event)
 {
 	vtElevLayer *pEL = GetActiveElevLayer();
@@ -1452,16 +1467,37 @@ void MainFrame::OnViewFull(wxCommandEvent& event)
 		m_pView->MatchZoomToImage(pIL);
 }
 
-void MainFrame::OnUpdateViewZoomToLayer(wxUpdateUIEvent& event)
-{
-	event.Enable(GetActiveLayer() != NULL);
-}
-
 void MainFrame::OnUpdateViewFull(wxUpdateUIEvent& event)
 {
 	vtLayer *lp = GetActiveLayer();
 	event.Enable(lp &&
 			(lp->GetType() == LT_ELEVATION || lp->GetType() == LT_IMAGE));
+}
+
+void MainFrame::OnViewToolbar(wxCommandEvent& event)
+{
+	wxAuiPaneInfo &info = m_mgr.GetPane(m_pToolbar);
+	info.Show(!info.IsShown());
+	m_mgr.Update();
+}
+
+void MainFrame::OnUpdateViewToolbar(wxUpdateUIEvent& event)
+{
+	wxAuiPaneInfo &info = m_mgr.GetPane(m_pToolbar);
+	event.Check(info.IsShown());
+}
+
+void MainFrame::OnViewLayers(wxCommandEvent& event)
+{
+	wxAuiPaneInfo &info = m_mgr.GetPane(m_pTree);
+	info.Show(!info.IsShown());
+	m_mgr.Update();
+}
+
+void MainFrame::OnUpdateViewLayers(wxUpdateUIEvent& event)
+{
+	wxAuiPaneInfo &info = m_mgr.GetPane(m_pTree);
+	event.Check(info.IsShown());
 }
 
 void MainFrame::OnViewWorldMap(wxCommandEvent& event)
@@ -1472,7 +1508,8 @@ void MainFrame::OnViewWorldMap(wxCommandEvent& event)
 
 void MainFrame::OnUpdateWorldMap(wxUpdateUIEvent& event)
 {
-	event.Check(m_pView->GetShowMap());
+	wxAuiPaneInfo &info = m_mgr.GetPane(m_pView);
+	event.Check(info.IsShown());
 }
 
 void MainFrame::OnViewUTMBounds(wxCommandEvent& event)
@@ -1500,11 +1537,21 @@ void MainFrame::OnUpdateViewProfile(wxUpdateUIEvent& event)
 	event.Enable(LayersOfType(LT_ELEVATION) > 0);
 }
 
+void MainFrame::OnViewScaleBar(wxCommandEvent& event)
+{
+	m_pView->SetShowScaleBar(!m_pView->GetShowScaleBar());
+}
+
+void MainFrame::OnUpdateViewScaleBar(wxUpdateUIEvent& event)
+{
+	event.Check(m_pView && m_pView->GetShowScaleBar());
+}
+
 void MainFrame::OnViewOptions(wxCommandEvent& event)
 {
 	OptionsDlg dlg(this, -1, _("Options"));
 
-	dlg.m_bShowToolbar = toolBar_main->IsShown();
+	dlg.m_bShowToolbar = m_pToolbar->IsShown();
 	dlg.m_bShowMinutes = m_statbar->m_bShowMinutes;
 	dlg.m_iElevUnits = (int)(m_statbar->m_ShowVertUnits) - 1;
 
@@ -1518,9 +1565,9 @@ void MainFrame::OnViewOptions(wxCommandEvent& event)
 
 	bool bNeedRefresh = false;
 
-	if (dlg.m_bShowToolbar != toolBar_main->IsShown())
+	if (dlg.m_bShowToolbar != m_pToolbar->IsShown())
 	{
-		toolBar_main->Show(dlg.m_bShowToolbar);
+		m_pToolbar->Show(dlg.m_bShowToolbar);
 		// send a fake OnSize event so the frame will draw itself correctly
 		wxSizeEvent dummy;
 		wxFrame::OnSize(dummy);
