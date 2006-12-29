@@ -39,6 +39,7 @@
 #include "App.h"
 DECLARE_APP(BuilderApp)
 
+
 ////////////////////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE(BuilderView, vtScaledView)
@@ -57,6 +58,15 @@ EVT_CHAR(BuilderView::OnChar)
 EVT_IDLE(BuilderView::OnIdle)
 EVT_SIZE(BuilderView::OnSize)
 EVT_ERASE_BACKGROUND(BuilderView::OnEraseBackground)
+
+EVT_SCROLLWIN_THUMBTRACK(BuilderView::OnBeginScroll)
+EVT_SCROLLWIN_THUMBRELEASE(BuilderView::OnEndScroll)
+
+EVT_SCROLLWIN_LINEUP(BuilderView::OnOtherScrollEvents)
+EVT_SCROLLWIN_LINEDOWN(BuilderView::OnOtherScrollEvents)
+EVT_SCROLLWIN_PAGEUP(BuilderView::OnOtherScrollEvents)
+EVT_SCROLLWIN_PAGEDOWN(BuilderView::OnOtherScrollEvents)
+//EVT_SCROLLWIN_CHANGED(BuilderView::OnScrollChanged)
 END_EVENT_TABLE()
 
 /////////////////////////////////////////////////////////////////
@@ -67,16 +77,17 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 {
 	VTLOG(" Constructing BuilderView\n");
 
-	m_bSkipNextDraw = false;
 	m_bSkipNextRefresh = false;
 	m_bGotFirstIdle = false;
 
 	m_bCrossSelect = false;
 	m_bShowMap = true;
+	m_bScaleBar = false;
 	m_bShowUTMBounds = false;
 
 	m_bMouseMoved = false;
 	m_bPanning = false;
+	m_bScrolling = false;
 	m_bBoxing = false;
 	m_iDragSide = 0;
 	m_bMouseCaptured = false;
@@ -130,12 +141,6 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	// no point in drawing until the Idle events have made it to the splitter
 	if (!m_bGotFirstIdle)
 		return;
-
-	if (m_bSkipNextDraw)
-	{
-		m_bSkipNextDraw = false;
-		return;
-	}
 
 	MainFrame *pFrame = GetMainFrame();
 	if (pFrame->DrawDisabled())
@@ -191,6 +196,9 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 		DrawGridMarks(dc);	// erase
 
 	DrawDistanceTool(&dc);
+
+	if (m_bScaleBar && !m_bPanning && !m_bScrolling)
+		DrawScaleBar(&dc);
 }
 
 void BuilderView::DrawDymaxionOutline(wxDC *pDC)
@@ -509,19 +517,137 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 		DrawLine(pDC, WMPolyDraw[i], true);
 }
 
+void BuilderView::DrawScaleBar(wxDC * p_DC)
+{
+	VTLOG1("DrawScaleBar\n");
+#ifndef _SCALE
+
+#define _SCALE
+#define _SCALEBOTTOM	20	//merge to bottom
+#define _SCALERIGHT		160 //merge to right side
+#define _POSTEXT		20	//merge between text and scale
+#define _BARHIGHT		3	//hight of side-delimitor of scale
+#define _MARGIN			10	//margin
+
+#endif //_SCALE
+
+	int xx, yy, w,  h, ww,hh;
+    int scaleLen = 180; //default scale lenght
+	wxString str;
+
+	// Set pen options
+	wxPen WMPen(wxColor(0,0,0), 1, wxSOLID);  //solid black pen
+	p_DC->SetLogicalFunction(wxCOPY);
+	p_DC->SetPen(WMPen);
+	
+	GetClientSize(&w,&h);
+	
+	//right bottom corner
+	CalcUnscrolledPosition(w, h, &ww, &hh);
+
+	vtProjection &proj = GetMainFrame()->GetAtProjection();
+	LinearUnits lu = proj.GetUnits();
+	wxString unit_str;
+
+	double val = scaleLen/GetScale();
+	if (lu == LU_DEGREES)
+	{
+		str.Printf(_T("%.6lg"), val);
+		unit_str = _T("°");
+	}
+	else if (lu == LU_FEET_INT || lu == LU_FEET_US)
+	{
+		if (val > 5280)
+		{
+			val /= 5280;
+			str.Printf(_T("%.2lf "), val);
+			unit_str = _("miles");
+		}
+		else
+		{
+			str.Printf(_T("%.2lf"), val);
+			unit_str = _T("'");
+		}
+	}
+	else if (lu == LU_METERS)
+	{
+		if (val > 1000)
+		{
+			val /= 1000;
+			str.Printf(_T("%.2lf"), val);
+			unit_str = _T("km");
+		}
+		else
+		{
+			str.Printf(_T("%.2lf"), val);
+			unit_str = _T("m");
+		}
+	}
+	else
+		return;		// unknown units
+
+	str += unit_str;
+
+	//high and width of the string on right side 
+	wxFont font(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+	p_DC->SetFont(font);
+	wxCoord textsize_x, textsize_y;
+	p_DC->GetTextExtent(str, &textsize_x, &textsize_y);
+
+	int width = scaleLen + textsize_x + 2 * _MARGIN;
+	int height = 30;
+
+	// coord of the round corner rectangle (in unscrolled coordinates)
+	xx = ww - width;
+	yy = hh - height; 
+
+	// Scale Bar Area in scrolled coordinates
+	m_ScaleBarArea = wxRect(w - width, h - height, width, height);
+	p_DC->DrawRoundedRectangle(xx, yy, width, height, 5);
+
+	p_DC->DrawText(_T("0"),xx + _MARGIN,yy + 5);
+	p_DC->DrawText(str, xx + scaleLen, yy + 5);
+
+	p_DC->DrawLine(xx + _MARGIN,
+				   yy + 20,
+				   xx + scaleLen + _MARGIN,
+				   yy + 20);
+	p_DC->DrawLine(xx + _MARGIN,
+				   yy + 20 + _BARHIGHT,
+				   xx + _MARGIN,
+				   yy + 20 - _BARHIGHT);
+	p_DC->DrawLine(xx + scaleLen + _MARGIN,
+				   yy + 20 + _BARHIGHT,
+				   xx + scaleLen + _MARGIN,
+				   yy + 20 - _BARHIGHT);
+}
+
+
 //////////////////////////////////////////////////////////
 // Pan handlers
 
 void BuilderView::BeginPan()
 {
+	VTLOG1("BeginPan\n");
+
 	m_bPanning = true;
 	SetCursor(*m_pCursorPan);
+
+	// hide scale bar while panning
+	if (m_bScaleBar)
+		RefreshRect(m_ScaleBarArea);
 }
 
 void BuilderView::EndPan()
 {
+	VTLOG1("EndPan\n");
+
 	m_bPanning = false;
 	SetCorrectCursor();
+
+	// redraw scale bar when done panning
+	if (m_bScaleBar)
+		RefreshRect(m_ScaleBarArea);
 }
 
 void BuilderView::DoPan(wxPoint point)
@@ -710,6 +836,45 @@ void BuilderView::DrawAreaTool(wxDC *pDC, const DRECT &area)
 	InvertRect(pDC, wxPoint(r.x-d, r.y+r.height-d), wxPoint(r.x+d, r.y+r.height+d));
 	InvertRect(pDC, wxPoint(r.x+r.width-d, r.y+r.height-d), wxPoint(r.x+r.width+d, r.y+r.height+d));
 }
+
+
+////////////////////////////////////////////////////////////
+
+void BuilderView::OnBeginScroll(wxScrollWinEvent & event)
+{
+	if (!m_bScrolling)
+	{
+		VTLOG1("BeginScroll\n");
+		m_bScrolling = true;
+		// hide scale bar while scrolling
+		if (m_bScaleBar)
+			RefreshRect(m_ScaleBarArea);
+	}
+	event.Skip();
+}
+
+void BuilderView::OnEndScroll(wxScrollWinEvent & event)
+{
+	VTLOG1("EndScroll\n");
+	m_bScrolling = false;
+
+	// redraw scale bar when done scrolling
+	if (m_bScaleBar)
+		RefreshRect(m_ScaleBarArea);
+
+	event.Skip();
+}
+
+void BuilderView::OnOtherScrollEvents(wxScrollWinEvent & event)
+{
+	VTLOG1("OnOtherScrollEvents\n");
+	if (m_bScaleBar)
+		RefreshRect(m_ScaleBarArea);
+	event.Skip();
+}
+
+
+////////////////////////////////////////////////////////////
 
 void BuilderView::DrawDistanceTool(wxDC *pDC)
 {
@@ -1182,6 +1347,12 @@ void BuilderView::SetShowMap(bool bShow)
 	m_bShowMap = bShow;
 }
 
+void BuilderView::SetShowScaleBar(bool bShow)
+{
+	m_bScaleBar = bShow;
+	Refresh();
+}
+
 void BuilderView::SetDistanceToolMode(bool bPath)
 {
 	m_ui.m_bDistanceToolMode = bPath;
@@ -1616,20 +1787,26 @@ void BuilderView::OnSize(wxSizeEvent& event)
 	// Unfortunately using Skip() alone appears to have no effect,
 	//  we still get the Refresh-Draw event.
 	wxSize size = GetSize();
+	VTLOG("View OnSize %d, %d\n", size.x, size.y);
 	if (size == m_previous_size)
 		event.Skip(true);	// allow event to be handled normally
-	else if (size.x <= m_previous_size.x && size.y <= m_previous_size.y && m_bGotFirstIdle)
-	{
-		// "prevent additional event handlers from being called and control
-		// will be returned to the sender of the event immediately after the
-		// current handler has finished."
-		event.Skip(false);
-
-		// Since that doesn't work, we use our own logic
-		m_bSkipNextRefresh = true;
-	}
 	else
-		event.Skip(true);	// allow event to be handled normally
+	{
+		if (m_bScaleBar)
+			RefreshRect(m_ScaleBarArea);
+		if (size.x <= m_previous_size.x && size.y <= m_previous_size.y && m_bGotFirstIdle)
+		{
+			// "prevent additional event handlers from being called and control
+			// will be returned to the sender of the event immediately after the
+			// current handler has finished."
+			event.Skip(false);
+
+			// Since that doesn't work, we use our own logic
+			m_bSkipNextRefresh = true;
+		}
+		else
+			event.Skip(true);	// allow event to be handled normally
+	}
 	m_previous_size = size;
 }
 
@@ -1855,10 +2032,7 @@ void BuilderView::OnEraseBackground( wxEraseEvent& event )
 	// there are some erase events we don't need, such as when sizing the
 	//  window smaller
 	if (m_bSkipNextRefresh)
-	{
 		event.Skip(false);
-		m_bSkipNextDraw = true;
-	}
 	else
 		event.Skip(true);
 	m_bSkipNextRefresh = false;

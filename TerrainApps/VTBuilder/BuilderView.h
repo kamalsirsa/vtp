@@ -133,6 +133,8 @@ public:
 	void MatchZoomToImage(vtImageLayer *pEL);
 	void SetShowMap(bool bShow);
 	bool GetShowMap() { return m_bShowMap; }
+	void SetShowScaleBar(bool bShow);
+	bool GetShowScaleBar() { return m_bScaleBar; }
 	void InvertAreaTool(const DRECT &rect);
 	void ShowGridMarks(const DRECT &area, int cols, int rows, int active_col, int active_row);
 	void HideGridMarks();
@@ -216,6 +218,7 @@ protected:
 	// Used while mouse button is down
 	bool	m_bMouseMoved;
 	bool	m_bPanning;		// currently panning
+	bool	m_bScrolling;	// currently scrolling
 	bool	m_bBoxing;		// currently drawing a rubber box
 	int		m_iDragSide;	// which side of the area box being dragged
 
@@ -227,6 +230,7 @@ protected:
 
 	// World Map
 	bool	m_bShowMap;
+	bool	m_bScaleBar;
 	DLine2Array		WMPoly;		// Original data from SHP file
 	DLine2Array		WMPolyDraw; // This is the WM that is drawn
 	unsigned int	m_iEntities;
@@ -241,6 +245,13 @@ protected:
 	DRECT m_GridArea;
 	int m_iGridCols, m_iGridRows, m_iActiveCol, m_iActiveRow;
 	void DrawGridMarks(wxDC &dc);
+
+	//--------------------------------
+	void DrawScaleBar(wxDC * dc);
+	void OnBeginScroll(wxScrollWinEvent & event);
+	void OnEndScroll(wxScrollWinEvent& event); 
+	void OnOtherScrollEvents(wxScrollWinEvent & event);
+	wxRect m_ScaleBarArea;
 
 	UIContext m_ui;
 
