@@ -986,10 +986,6 @@
 				>
 			</File>
 			<File
-				RelativePath="SplitterWin.h"
-				>
-			</File>
-			<File
 				RelativePath="StatusBar.h"
 				>
 			</File>
