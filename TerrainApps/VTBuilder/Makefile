@@ -114,6 +114,13 @@ publish-it:
 update-it:
 	msgmerge --no-fuzzy-matching it/VTBuilder.po VTBuilder.pot -o it/VTBuilder.pox
 
+publish-ro:
+	cp ro/VTBuilder.pox ro/VTBuilder.po
+	msgfmt ro/VTBuilder.po -o ro/VTBuilder.mo
+
+update-ro:
+	msgmerge --no-fuzzy-matching ro/VTBuilder.po VTBuilder.pot -o ro/VTBuilder.pox
+
 publish-zh:
 	cp zh/VTBuilder.pox zh/VTBuilder.po
 	msgfmt zh/VTBuilder.po -o zh/VTBuilder.mo
