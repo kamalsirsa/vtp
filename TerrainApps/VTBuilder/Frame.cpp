@@ -21,7 +21,6 @@
 #include <float.h>	// for FLT_MIN
 
 #include "Frame.h"
-#include "SplitterWin.h"
 #include "TreeView.h"
 #include "MenuEnum.h"
 #include "App.h"
