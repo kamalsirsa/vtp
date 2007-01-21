@@ -2358,40 +2358,107 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// first, test if we are comma or space delimited
-	double x, y, z;
-	bool bCommas;
+	float a, b, c, d;
 	rewind(fp);
-	int count1 = fscanf(fp, "%lf,%lf,%lf", &x, &y, &z);
+	int count1 = fscanf(fp, "%f,%f,%f,%f", &a, &b, &c, &d);
 	rewind(fp);
-	int count2 = fscanf(fp, "%lf %lf %lf", &x, &y, &z);
+	int count2 = fscanf(fp, "%f %f %f %f", &a, &b, &c, &d);
 
-	if (count1 == 3)
-		bCommas = true;
-	else if (count2 == 3)
-		bCommas = false;
+	const char *pattern;
+	if (count1 > 1)
+	{
+		if (count1 == 3)
+			pattern = "x,y,z";
+		else if (count1 == 4)
+			pattern = "n,x,y,z";
+	}
+	else if (count2 > 1)
+	{
+		if (count2 == 3)
+			pattern = "x y z";
+		else if (count2 == 4)
+			pattern = "n x y z";
+	}
 	else
 	{
 		fclose(fp);
 		return false;
 	}
+	bool success = LoadFromXYZ(fp, pattern, progress_callback);
+	fclose(fp);
+	return success;
+}
 
+bool vtElevationGrid::GetXYZLine(FILE *fp, const char *pattern, const char *format,
+								 int components, double *x, double *y, double *z)
+{
+	double val[4];
+	if (fscanf(fp, format, &val[0], &val[1], &val[2], &val[3]) != components)
+		return false;
+	int v = 0;
+	for (unsigned int i = 0; i < strlen(pattern); i++)
+	{
+		char ch = pattern[i];
+		switch (ch)
+		{
+		case 'n':
+			v++;
+			break;
+		case 'x':
+			*x = val[v++];
+			break;
+		case 'y':
+			*y = val[v++];
+			break;
+		case 'z':
+			*z = val[v++];
+			break;
+		}
+	}
+	return true;
+}
+
+bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_callback(int))
+{
 	char buf[80];
 	DRECT extents;
 	extents.SetRect(1E9, -1E9, -1E9, 1E9);
-	int count, iNum = 0;
+	int iNum = 0;
+
+	// Convert pattern ("n x y z") to fscanf format ("%lf %lf %lf %lf")
+	char format[40];
+	int j = 0;
+	int components = 0;
+	for (unsigned int i = 0; i < strlen(pattern); i++)
+	{
+		char ch = pattern[i];
+		switch (ch)
+		{
+		case 'n':
+		case 'x':
+		case 'y':
+		case 'z':
+			format[j++] = '%';
+			format[j++] = 'l';
+			format[j++] = 'f';
+			components++;
+			break;
+		default:
+			format[j++] = pattern[i];
+		}
+	}
+	format[j] = 0;	// terminate string
 
 	// Look at the first two points
 	rewind(fp);
 	DPoint2 testp[2];
 	bool bInteger = true;
 	int i;
+	double x, y, z;
 	for (i = 0; fgets(buf, 80, fp) != NULL && i < 2; i++)
 	{
 		VTLOG("Line %d: %s", i, buf);
-		if (bCommas)
-			count = sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
-		else
-			count = sscanf(buf, "%lf %lf %lf", &x, &y, &z);
+		GetXYZLine(fp, pattern, format, components, &x, &y, &z);
 		testp[i].Set(x, y);
 
 		// Try to guess if the data is integer or floating point
@@ -2428,12 +2495,7 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 			}
 		}
 
-		if (bCommas)
-			count = sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
-		else
-			count = sscanf(buf, "%lf %lf %lf", &x, &y, &z);
-		if (count != 3)
-			return false;
+		GetXYZLine(fp, pattern, format, components, &x, &y, &z);
 		extents.GrowToContainPoint(DPoint2(x, y));
 		iNum++;
 	}
@@ -2475,10 +2537,7 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 			}
 		}
 
-		if (bCommas)
-			sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
-		else
-			sscanf(buf, "%lf %lf %lf", &x, &y, &z);
+		GetXYZLine(fp, pattern, format, components, &x, &y, &z);
 		p.Set(x, y);
 		xpos = (int) ((x - base.x) / spacing.x);
 		ypos = (int) ((y - base.y) / spacing.y);

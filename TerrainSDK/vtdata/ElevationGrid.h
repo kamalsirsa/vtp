@@ -82,6 +82,7 @@ public:
 		bool progress_callback(int));
 	bool LoadFromMicroDEM(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromXYZ(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromXYZ(FILE *fp, const char *format, bool progress_callback(int) = NULL);
 	bool LoadFromHGT(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromBT(const char *szFileName, bool progress_callback(int) = NULL,
 		vtElevGridError *err = NULL);
@@ -175,6 +176,8 @@ protected:
 	void ComputeExtentsFromCorners();
 	void ComputeCornersFromExtents();
 	bool ParseNTF5(OGRDataSource *pDatasource, vtString &msg, bool progress_callback(int));
+	bool GetXYZLine(FILE *fp, const char *pattern, const char *format,
+								 int components, double *x, double *y, double *z);
 
 	DPoint2		m_Corners[4];	// data corners, in the CRS of this terrain
 	vtProjection	m_proj;		// a grid always has some projection
