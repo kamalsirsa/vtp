@@ -1818,6 +1818,7 @@ void BuilderView::OnSize(wxSizeEvent& event)
 //#include <wx/File.h>
 //#include "vtdata/TripDub.h"
 //#include "vtdata/vtDIB.h"
+#include <map>
 
 void BuilderView::OnChar(wxKeyEvent& event)
 {
