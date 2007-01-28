@@ -1061,6 +1061,8 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 				pL->m_vti = two_way ? VTI_3LANE2WAY : VTI_3LANE1WAY;
 				break;
 			case 4:
+			case 5:
+			case 6:
 				pL->m_vti = two_way ? VTI_4LANE2WAY : VTI_4LANE1WAY;
 				break;
 			}
@@ -1070,6 +1072,9 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 			break;
 		case SURFT_STONE:
 			pL->m_vti = VTI_STONE;
+			break;
+		default:
+			pL->m_vti = 0;
 			break;
 		}
 	}
