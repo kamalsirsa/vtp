@@ -1322,13 +1322,13 @@ void EnviroFrame::OnToolsPoints(wxCommandEvent& event)
 		alay = CreateNewAbstractPointLayer(GetCurrentTerrain());
 	if (!alay)
 		return;
-	SetMode(MM_POINTS);
+	SetMode(MM_ADDPOINTS);
 }
 
 void EnviroFrame::OnUpdateToolsPoints(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
-	event.Check(g_App.m_mode == MM_POINTS);
+	event.Check(g_App.m_mode == MM_ADDPOINTS);
 }
 
 void EnviroFrame::OnToolsInstances(wxCommandEvent& event)
