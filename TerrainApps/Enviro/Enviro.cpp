@@ -996,7 +996,7 @@ void Enviro::SetMode(MouseMode mode)
 		case MM_BUILDINGS:
 		case MM_ROUTES:
 		case MM_PLANTS:
-		case MM_POINTS:
+		case MM_ADDPOINTS:
 		case MM_INSTANCES:
 		case MM_VEHICLES:
 		case MM_MOVE:
@@ -1141,7 +1141,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		bool success = PlantATree(DPoint2(m_EarthPos.x, m_EarthPos.y));
 		VTLOG(" %s.\n", success ? "yes" : "no");
 	}
-	if (m_mode == MM_POINTS)
+	if (m_mode == MM_ADDPOINTS)
 	{
 		DPoint2 atpoint(m_EarthPos.x, m_EarthPos.y);
 		vtString str = GetStringFromUser("Created labeled point feature", "Label:");
