@@ -195,8 +195,13 @@ void wxDC2::StretchBlit(const wxBitmap &bmp,
 
 #if USE_OPENGL
 
-#include "GL/gl.h"
-#include "GL/glext.h"
+#ifdef __DARWIN_OSX__
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glext.h>
+#else
+  #include <GL/gl.h>
+  #include <GL/glext.h>
+#endif
 #ifdef _MSC_VER
 	#pragma message( "Adding link with opengl32.lib" )
 	#pragma comment( lib, "opengl32.lib" )
@@ -204,6 +209,9 @@ void wxDC2::StretchBlit(const wxBitmap &bmp,
 
 #if !WIN32
 #include <dlfcn.h>
+#endif
+#ifdef __DARWIN_OSX__
+# include <mach-o/dyld.h> 
 #endif
 
 void* getGLExtensionFuncPtr(const char *funcName)
@@ -253,7 +261,7 @@ void* getGLExtensionFuncPtr(const char *funcName)
 
 
 void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
-					   unsigned int &iTex)
+					   GLuint &iTex)
 {
 	// Next, compress them to a DXT1 output file
 	GLenum target = GL_TEXTURE_2D;

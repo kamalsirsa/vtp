@@ -52,9 +52,9 @@ public:
 /////////////////
 
 #if USE_OPENGL
-void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
-					   unsigned int &iTex);
 #include "wx/glcanvas.h"
+void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
+					   GLuint &iTex);
 
 //
 // ImageGLCanvas class:
@@ -72,7 +72,7 @@ public:
 	void OnSize(wxSizeEvent& event);
 	void OnEraseBackground(wxEraseEvent& event) {}	// Do nothing, to avoid flashing.
 
-	unsigned int m_iTex;
+	GLuint m_iTex;
 protected:
 	DECLARE_EVENT_TABLE()
 };
