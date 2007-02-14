@@ -15,7 +15,8 @@
 #include "wx/wx.h"
 #endif
 
-#include <wx/colordlg.h>
+#include <wx/colordlg.h>	// for wxColourDialog
+#include <wx/imaglist.h>	// for wxImageList
 #include "ColorMapDlg.h"
 #include "vtdata/FilePath.h"
 #include "vtui/Helper.h"
