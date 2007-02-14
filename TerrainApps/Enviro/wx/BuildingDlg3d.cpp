@@ -65,7 +65,7 @@ void BuildingDlg3d::Modified()
 	slay->ConstructStructure(m_pBuilding3d);
 
 	// We might also have to rebuild any linear structures around or on it
-	DLine2 &foot = m_pBuilding3d->GetFootprint(0);
+	DLine2 foot = m_pBuilding3d->GetFootprint(0);
 	for (unsigned int i = 0; i < slay->GetSize(); i++)
 	{
 		vtFence3d *fen = slay->GetFence(i);
