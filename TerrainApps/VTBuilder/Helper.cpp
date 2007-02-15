@@ -280,15 +280,15 @@ void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
 		output_buf.xsize, output_buf.ysize, border, format, type, pixels);
 
 	// Check to see if the compression operation succeeded
-	int iParam;
+	GLint iParam;
 	glGetTexLevelParameteriv(target, level, GL_TEXTURE_COMPRESSED_ARB, &iParam);
 //	VTLOG("GL_TEXTURE_COMPRESSED_ARB: %d\n", iParam);
 
-	int iInternalFormat;
+	GLint iInternalFormat;
 	glGetTexLevelParameteriv(target, level, GL_TEXTURE_INTERNAL_FORMAT, &iInternalFormat);
 //	VTLOG("GL_TEXTURE_INTERNAL_FORMAT: %d\n", iInternalFormat);
 
-	int iSize;
+	GLint iSize;
 	glGetTexLevelParameteriv(target, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &iSize);
 //	VTLOG("GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB: %d\n", iSize);
 
