@@ -2001,6 +2001,32 @@ void BuilderView::OnChar(wxKeyEvent& event)
 #if 0
 	#include "C:/Dev/TMK-Process/TMK.cpp"
 #endif
+#if 0
+		{
+			// create grid of points over current layer
+			vtFeatureSetPoint2D set;
+			vtProjection proj;
+			set.SetProjection(GetMainFrame()->GetAtProjection());
+			DRECT area = GetMainFrame()->m_area;
+			set.AddField("filename", FT_String, 30);
+			set.AddField("rotation", FT_Float);
+
+			DPoint2 spacing(area.Width()/21, area.Height()/21);
+			for (int i = 0; i < 22; i++)
+			{
+				for (int j = 0; j < 22; j++)
+				{
+					DPoint2 p;
+					p.x = area.left + i*spacing.x;
+					p.y = area.bottom + j*spacing.y;
+					int rec = set.AddPoint(p);
+					set.SetValue(rec, 0, "C:/temp/triangle.osg");
+					set.SetValue(rec, 1, 110 + (i * 5) - (j * 2));
+				}
+			}
+			set.SaveToSHP("C:/Temp/PearlRiverPoints.shp");
+		}
+#endif
 	}
 	else
 		event.Skip();
