@@ -834,6 +834,10 @@ void vtMesh::ReOptimize()
 
 /**
  * Set the line width, in pixels, for this mesh's geometry.
+ *
+ * You should call this method _after_ the mesh has been added to some
+ *  geometry with vtGeom::AddMesh()
+ * (this requirement was found with the OSG flavor of vtlib.)
  */
 void vtMesh::SetLineWidth(float fWidth)
 {
