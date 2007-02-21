@@ -8,7 +8,7 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "textureunitmanager.h"
+#include "TextureUnitManager.h"
 
 //
 // RJ's warning: NONE OF THIS IS THREAD SAFE!!!
