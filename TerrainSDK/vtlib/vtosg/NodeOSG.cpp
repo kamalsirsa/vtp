@@ -18,7 +18,7 @@
 #include <osgDB/FileNameUtils>
 #include <osgUtil/Optimizer>
 #include <osg/Version>
-#include <osg/Texgen>
+#include <osg/TexGen>
 
 using namespace osg;
 
