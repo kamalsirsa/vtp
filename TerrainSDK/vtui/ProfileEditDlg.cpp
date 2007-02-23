@@ -49,11 +49,11 @@ void ProfDlgView::OnDraw(wxDC &dc)
 
 	int x, y;
 	for (x = -20; x <= 20; x++)
-		dc.DrawLine(m_org.x + x * m_scale, m_org.y + -500,
-					m_org.x + x * m_scale, m_org.y + 500);
+		dc.DrawLine((int)(m_org.x + x * m_scale), (int)m_org.y + -500,
+					(int)(m_org.x + x * m_scale), m_org.y + 500);
 	for (y = -20; y <= 20; y++)
-		dc.DrawLine(m_org.x + -500, m_org.y + y * m_scale,
-					m_org.x + 500, m_org.y + y * m_scale);
+		dc.DrawLine(m_org.x + -500, (int)(m_org.y + y * m_scale),
+					m_org.x + 500, (int)(m_org.y + y * m_scale));
 
 	// Draw axes
 	pen.SetColour(0,0,0);
