@@ -113,7 +113,7 @@ bool vtBitmap::Allocate24(int iXSize, int iYSize)
 		m_pImage = NULL;
 		return false;
 	}
-	m_pBitmap = new wxBitmap(m_pImage);
+	m_pBitmap = new wxBitmap(*m_pImage);
 	if (!m_pBitmap->Ok())
 	{
 		delete m_pBitmap;
@@ -202,7 +202,7 @@ void vtBitmap::ContentsChanged()
 		return;
 	if (m_pBitmap)
 		delete m_pBitmap;
-	m_pBitmap = new wxBitmap(m_pImage);
+	m_pBitmap = new wxBitmap(*m_pImage);
 #endif
 }
 
