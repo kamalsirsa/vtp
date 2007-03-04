@@ -411,7 +411,7 @@ void MainFrame::ManageToolbar(const wxString &name, wxToolBar *bar, bool show)
 
 wxToolBar *MainFrame::NewToolbar()
 {
-	int style = (wxTB_HORIZONTAL | wxNO_BORDER);
+	int style = (wxTB_FLAT | wxTB_NODIVIDER);
 	wxToolBar *bar = new wxToolBar(this, wxID_ANY, wxDefaultPosition,
 		wxDefaultSize, style);
 	bar->SetMargins(1, 1);
