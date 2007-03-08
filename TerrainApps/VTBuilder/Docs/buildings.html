@@ -120,7 +120,18 @@ VTBuilder<br>
 </ol>
 <blockquote>
   <p>The data will then import, so you can review it and save to VTST.</p>
-  <p><b>Attributes: </b>&nbsp;Building footprints will be created with the 
+  <p><b>Attributes for Instances: </b>&nbsp;In addition to the filename file 
+  which you can specify in the Import dialog, the following optional fields will 
+  be recognized in your input SHP if they are present:</p>
+  <ul>
+    <li><i>itemname</i> - The item name of the model to show (from a content 
+    file).</li>
+    <li><i>scale</i> - Scale for the instance model, e.g. a value of 3 means to 
+    scale the model by 3x in all dimensions.</li>
+    <li><i>rotation</i> - Rotation for the instance model, around its vertical 
+    axis by the indicated number in degrees.</li>
+  </ul>
+  <p><b>Attributes for Buildings: </b>&nbsp;Building footprints will be created with the 
   default attributes of 1 story, flat red roof.&nbsp; If there is a SHP field 
   called &quot;stories&quot;, it will be used for the number of stories.&nbsp; There are 
   plans to eventually extend this functionality to allow any of the fields to be 
