@@ -37,6 +37,7 @@ static void ShowOGLInfo2(bool bLog)
 	frame->Create(NULL, -1, _T("Test"));
 	wxGLCanvas *canvas = new wxGLCanvas(frame, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 	frame->Show();
+	canvas->SetCurrent();	// This is necessary as of wx 2.8
 
 	GLint value;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &value);
@@ -44,8 +45,10 @@ static void ShowOGLInfo2(bool bLog)
 	if (error == GL_INVALID_OPERATION)
 		value = 0;
 
+	wxString msg, str;
 	if (bLog)
 	{
+		// send the information to the debug log only
 		VTLOG("\tOpenGL Version: %hs\n\tVendor: %hs\n\tRenderer: %hs\n"
 			"\tMaximum Texture Dimension: %d\n",
 			glGetString(GL_VERSION), glGetString(GL_VENDOR),
@@ -53,9 +56,7 @@ static void ShowOGLInfo2(bool bLog)
 	}
 	else
 	{
-		wxString msg;
-
-		wxString str;
+		// show the information in a popup dialog
 		str.Printf(_("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n"),
 			glGetString(GL_VERSION), glGetString(GL_VENDOR),
 			glGetString(GL_RENDERER));
@@ -65,7 +66,12 @@ static void ShowOGLInfo2(bool bLog)
 		msg += _("Extensions: ");
 		const char *ext = (const char *) glGetString(GL_EXTENSIONS);
 		msg += wxString(ext, wxConvUTF8);
+	}
+	frame->Close();
+	delete frame;
 
+	if (!bLog)
+	{
 		wxDialog dlg(NULL, -1, _("OpenGL Info"), wxDefaultPosition);
 		TextDialogFunc(&dlg, true);
 		wxTextCtrl* pText = (wxTextCtrl*) dlg.FindWindow( ID_TEXT );
@@ -73,9 +79,6 @@ static void ShowOGLInfo2(bool bLog)
 
 		dlg.ShowModal();
 	}
-
-	frame->Close();
-	delete frame;
 }
 
 // WDR: class implementations
