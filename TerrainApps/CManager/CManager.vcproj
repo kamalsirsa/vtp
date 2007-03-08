@@ -10,76 +10,6 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
-			IntermediateDirectory=".\Debug"
-			ConfigurationType="1"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\..\TerrainSDK,\APIs"
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;__WXMSW__;__WIN32__;STRICT;WXUSINGDLL=1;VTLIB_OSG=1"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="3"
-				PrecompiledHeaderThrough="wx/wxprec.h"
-				PrecompiledHeaderFile=".\Debug/CManager.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
-				BrowseInformation="1"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng13d.lib zlib1d.lib gdal_id.lib opengl32.lib glu32.lib libjpeg.lib"
-				OutputFile=".\Debug/CManager.exe"
-				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="\APIs\plib-1.3.1\lib\Debug,\APIs\NetCDF,\APIs\libpng-1.0.8"
-				IgnoreDefaultLibraryNames="libc.lib,libcd.lib,libcmt.lib,msvcrt.lib"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/CManager.pdb"
-				SubSystem="2"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/CManager.tlb"
-				HeaderFileName=""/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="\APIs\wx2\include"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Debug Unicode|Win32"
 			OutputDirectory=".\Debug_Unicode"
 			IntermediateDirectory=".\Debug_Unicode"
@@ -219,74 +149,6 @@
 			<Tool
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory=".\Release"
-			IntermediateDirectory=".\Release"
-			ConfigurationType="1"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="1"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\TerrainSDK,\APIs"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;__WXMSW__;__WIN32__;STRICT;WXUSINGDLL=1;VTLIB_OSG=1"
-				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="3"
-				PrecompiledHeaderThrough="wx/wxprec.h"
-				PrecompiledHeaderFile=".\Release/CManager.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="2"
-				CompileAs="0"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng13.lib zlib1.lib gdal_i.lib opengl32.lib glu32.lib libjpeg.lib"
-				OutputFile=".\Release/CManager.exe"
-				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				IgnoreDefaultLibraryNames="libc.lib"
-				ProgramDatabaseFile=".\Release/CManager.pdb"
-				SubSystem="2"
-				TargetMachine="1"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/CManager.tlb"
-				HeaderFileName=""/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -297,16 +159,6 @@
 			<File
 				RelativePath="app.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -318,14 +170,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -336,16 +180,6 @@
 			<File
 				RelativePath="canvas.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -357,14 +191,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -375,16 +201,6 @@
 			<File
 				RelativePath="cmanager_wdr.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -396,14 +212,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -414,16 +222,6 @@
 			<File
 				RelativePath="frame.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -435,14 +233,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -453,16 +243,6 @@
 			<File
 				RelativePath="ItemGroup.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -474,14 +254,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -495,16 +267,6 @@
 			<File
 				RelativePath="ModelDlg.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -516,14 +278,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -534,17 +288,6 @@
 			<File
 				RelativePath="pre.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						UsePrecompiledHeader="1"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -557,15 +300,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -577,16 +311,6 @@
 			<File
 				RelativePath="PropDlg.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -598,14 +322,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -616,16 +332,6 @@
 			<File
 				RelativePath="SceneGraphDlg.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -637,14 +343,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -655,16 +353,6 @@
 			<File
 				RelativePath="TagDlg.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -676,14 +364,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -694,16 +374,6 @@
 			<File
 				RelativePath="TreeView.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -715,14 +385,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
@@ -782,13 +444,6 @@
 			</File>
 			<File
 				RelativePath="CManager.rc">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories=""/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
 					<Tool
