@@ -2358,11 +2358,11 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// first, test if we are comma or space delimited
+	char firstline[256];
+	fgets(firstline, 256, fp);
 	float a, b, c, d;
-	rewind(fp);
-	int count1 = fscanf(fp, "%f,%f,%f,%f", &a, &b, &c, &d);
-	rewind(fp);
-	int count2 = fscanf(fp, "%f %f %f %f", &a, &b, &c, &d);
+	int count1 = sscanf(firstline, "%f,%f,%f,%f\n", &a, &b, &c, &d);
+	int count2 = sscanf(firstline, "%f %f %f %f\n", &a, &b, &c, &d);
 
 	const char *pattern;
 	if (count1 > 1)
@@ -2389,11 +2389,11 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	return success;
 }
 
-bool vtElevationGrid::GetXYZLine(FILE *fp, const char *pattern, const char *format,
+bool vtElevationGrid::GetXYZLine(const char *buf, const char *pattern, const char *format,
 								 int components, double *x, double *y, double *z)
 {
 	double val[4];
-	if (fscanf(fp, format, &val[0], &val[1], &val[2], &val[3]) != components)
+	if (sscanf(buf, format, &val[0], &val[1], &val[2], &val[3]) != components)
 		return false;
 	int v = 0;
 	for (unsigned int i = 0; i < strlen(pattern); i++)
@@ -2458,7 +2458,7 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
 	for (i = 0; fgets(buf, 80, fp) != NULL && i < 2; i++)
 	{
 		VTLOG("Line %d: %s", i, buf);
-		GetXYZLine(fp, pattern, format, components, &x, &y, &z);
+		GetXYZLine(buf, pattern, format, components, &x, &y, &z);
 		testp[i].Set(x, y);
 
 		// Try to guess if the data is integer or floating point
@@ -2495,7 +2495,7 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
 			}
 		}
 
-		GetXYZLine(fp, pattern, format, components, &x, &y, &z);
+		GetXYZLine(buf, pattern, format, components, &x, &y, &z);
 		extents.GrowToContainPoint(DPoint2(x, y));
 		iNum++;
 	}
@@ -2537,7 +2537,7 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
 			}
 		}
 
-		GetXYZLine(fp, pattern, format, components, &x, &y, &z);
+		GetXYZLine(buf, pattern, format, components, &x, &y, &z);
 		p.Set(x, y);
 		xpos = (int) ((x - base.x) / spacing.x);
 		ypos = (int) ((y - base.y) / spacing.y);
