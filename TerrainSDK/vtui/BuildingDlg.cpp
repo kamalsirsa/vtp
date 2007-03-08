@@ -52,9 +52,8 @@ BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
 	EVT_BUTTON( ID_FEAT_DOOR, BuildingDlg::OnFeatDoor )
 	EVT_CLOSE(BuildingDlg::OnCloseWindow)
 	EVT_CHAR_HOOK(BuildingDlg::OnCharHook)
-	EVT_TEXT_ENTER( ID_FACADE, BuildingDlg::OnFacadeEnter )
 	EVT_BUTTON( ID_EDITHEIGHTS, BuildingDlg::OnEditHeights )
-	EVT_BUTTON( ID_MODIFY_FACADE, BuildingDlg::OnModifyFacade )
+	EVT_CHOICE( ID_FACADE, BuildingDlg::OnChoiceFacade )
 END_EVENT_TABLE()
 
 BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -79,7 +78,6 @@ void BuildingDlg::SetupValidators()
 		AddValidator(ID_MATERIAL2, &m_strMaterial);
 		AddNumValidator(ID_EDGE_SLOPE, &m_iEdgeSlope);
 		AddValidator(ID_FEATURES, &m_strFeatures);
-		AddValidator(ID_FACADE, &m_strFacade);
 	}
 	else
 	{
@@ -88,11 +86,13 @@ void BuildingDlg::SetupValidators()
 	}
 }
 
-void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld, vtHeightField *pHeightField)
+void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld,
+						vtHeightField *pHeightField, const vtStringArray &Datapaths)
 {
 	m_pSA = pSA;
 	m_pBuilding = bld;
 	m_pHeightField = pHeightField;
+	m_pDatapaths = &Datapaths;
 }
 
 void BuildingDlg::EditColor()
@@ -143,20 +143,18 @@ void BuildingDlg::HighlightSelectedEdge()
 
 // WDR: handler implementations for BuildingDlg
 
-void BuildingDlg::OnModifyFacade( wxCommandEvent &event )
+void BuildingDlg::OnChoiceFacade( wxCommandEvent &event )
 {
-	wxFileDialog SelectFile(this, _("Choose facade texture"),
-							_T(""),
-							_T(""),
-							_T("Jpeg files (*.jpg)|*.jpg|PNG files(*.png)|*.png|Bitmap files (*.bmp)|*.bmp|All files(*.*)|*.*"),
-							wxFD_OPEN);
+	wxString Facade = GetFacadeChoice()->GetStringSelection();
 
-	if (SelectFile.ShowModal() != wxID_OK)
-		return;
+	if (Facade == _("(None)"))
+		Facade = wxT("");
 
-	m_strFacade = SelectFile.GetFilename();
-	UpdateFacade();
-	SetEdgeFacade();
+	if (0 != m_pEdge->m_Facade.Compare(Facade.mb_str(wxConvUTF8)))
+	{
+		m_pEdge->m_Facade = Facade.mb_str(wxConvUTF8);
+		Modified();
+	}
 }
 
 void BuildingDlg::OnEditHeights( wxCommandEvent &event )
@@ -167,12 +165,6 @@ void BuildingDlg::OnEditHeights( wxCommandEvent &event )
 	//CHeightDialog HeightDialog(this, -1, _("Baseline Editor"));
 	//HeightDialog.Setup(m_pBuilding, m_pHeightField);
 	//HeightDialog.ShowModal();
-}
-
-void BuildingDlg::OnFacadeEnter( wxCommandEvent &event )
-{
-	TransferDataFromWindow();
-	SetEdgeFacade();
 }
 
 void BuildingDlg::OnFeatDoor( wxCommandEvent &event )
@@ -339,6 +331,32 @@ void BuildingDlg::SetupControls()
 
 	SetLevel(m_iLevel);
 	HighlightSelectedLevel();
+
+	if (NULL != GetFacadeChoice())
+	{
+		GetFacadeChoice()->Clear();
+		for (unsigned int i = 0; i < m_pDatapaths->size(); i++)
+		{
+			vtString Directory = (*m_pDatapaths)[i] + "BuildingModels";
+			for (dir_iter it((const char *)Directory); it != dir_iter(); ++it)
+			{
+				if (it.is_hidden() || it.is_directory())
+					continue;
+
+				std::string name1 = it.filename();
+				vtString name = name1.c_str();
+
+				// Only look for ".jpg|.png|.bmp" image files
+				vtString ext = GetExtension(name, false);
+				if ((ext.CompareNoCase(".jpg") != 0) &&
+					(ext.CompareNoCase(".png") != 0) &&
+					(ext.CompareNoCase(".bmp") != 0))
+					continue;
+
+				GetFacadeChoice()->Append(wxString(name, wxConvUTF8));
+			}
+		}
+	}
 }
 
 void BuildingDlg::OnInitDialog(wxInitDialogEvent& event)
@@ -382,6 +400,7 @@ void BuildingDlg::RefreshLevelsBox()
 		}
 		m_pLevelListBox->Append(str);
 	}
+	GetSizer()->Fit(this);
 }
 
 void BuildingDlg::RefreshEdgesBox()
@@ -394,6 +413,7 @@ void BuildingDlg::RefreshEdgesBox()
 		str.Printf(_T("%d"), i);
 		m_pEdgeListBox->Append(str);
 	}
+	GetSizer()->Fit(this);
 }
 
 
@@ -409,11 +429,9 @@ void BuildingDlg::OnEdge( wxCommandEvent &event )
 void BuildingDlg::SetEdge(int iEdge)
 {
 	TransferDataFromWindow();
-	SetEdgeFacade();
 	m_iEdge = iEdge;
 	m_pEdge = m_pLevel->GetEdge(iEdge);
 	m_iEdgeSlope = m_pEdge->m_iSlope;
-	m_strFacade = wxString::FromAscii((const char *) m_pEdge->m_Facade);
 
 	UpdateMaterialControl();	// material
 	UpdateColorControl();		// color
@@ -641,9 +659,15 @@ void BuildingDlg::UpdateFeatures()
 
 void BuildingDlg::UpdateFacade()
 {
-	m_bSetting = true;
-	TransferDataToWindow();
-	m_bSetting = false;
+	wxChoice *pFacadeChoice = GetFacadeChoice();
+	wxString Facade = wxString(m_pEdge->m_Facade, wxConvUTF8);
+
+	if (wxT("") == Facade)
+		Facade = _("(None)");
+	
+	if (pFacadeChoice->FindString(Facade) == wxNOT_FOUND)
+		pFacadeChoice->Append(Facade);
+	pFacadeChoice->SetStringSelection(Facade);
 }
 
 void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
@@ -718,7 +742,6 @@ void BuildingDlg::AdjustDialogForEdges()
 	}
 	else
 	{
-		SetEdgeFacade();
 		DestroyChildren();
 		BuildingDialogFunc( this, TRUE );
 		if (m_pSA)
@@ -738,20 +761,6 @@ void BuildingDlg::OnEdges( wxCommandEvent &event )
 	TransferDataToWindow();
 	m_bSetting = false;
 	SetupControls();
-}
-
-void BuildingDlg::SetEdgeFacade()
-{
-	if (m_bEdges && (NULL != m_pEdge))
-	{
-		// Store current facade
-		vtString facade = (const char *) m_strFacade.mb_str(wxConvUTF8);
-		if (0 != m_pEdge->m_Facade.Compare(facade))
-		{
-			m_pEdge->m_Facade = facade;
-			Modified();
-		}
-	}
 }
 
 

@@ -273,10 +273,10 @@ wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit, bool set_size
     wxBoxSizer *item27 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item28 = new wxStaticText( parent, ID_TEXT, _("Material:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item27->Add( item28, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
+    item27->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item29 = new wxTextCtrl( parent, ID_MATERIAL2, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
-    item27->Add( item29, 1, wxALIGN_CENTER|wxRIGHT|wxTOP, 5 );
+    item27->Add( item29, 1, wxALIGN_CENTER|wxALL, 5 );
 
     wxButton *item30 = new wxButton( parent, ID_SET_MATERIAL, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
     item27->Add( item30, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
@@ -285,11 +285,15 @@ wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit, bool set_size
 
     wxBoxSizer *item31 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item32 = new wxButton( parent, ID_MODIFY_FACADE, _("Facade"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item32 = new wxStaticText( parent, ID_TEXT, _("Facade:"), wxDefaultPosition, wxDefaultSize, 0 );
     item31->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item33 = new wxTextCtrl( parent, ID_FACADE, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_PROCESS_ENTER );
-    item31->Add( item33, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
+    wxString strs33[] = 
+    {
+        _("ChoiceItem")
+    };
+    wxChoice *item33 = new wxChoice( parent, ID_FACADE, wxDefaultPosition, wxSize(100,-1), 1, strs33, 0 );
+    item31->Add( item33, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item25->Add( item31, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
