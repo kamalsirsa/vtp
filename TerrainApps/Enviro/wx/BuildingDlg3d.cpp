@@ -41,7 +41,7 @@ void BuildingDlg3d::Setup(vtBuilding3d *bld3d, vtHeightField3d *pHeightField)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	m_pBuilding3d = bld3d;
-	BuildingDlg::Setup(pTerr->GetStructureLayer(), bld3d, pHeightField);
+	BuildingDlg::Setup(pTerr->GetStructureLayer(), bld3d, pHeightField, vtGetDataPath());
 }
 
 void BuildingDlg3d::OnOK( wxCommandEvent &event )
