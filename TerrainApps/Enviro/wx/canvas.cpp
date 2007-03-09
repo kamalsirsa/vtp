@@ -133,6 +133,9 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 		m_bPainting = true;
 
+		// Make sure the Graphics context of this thread is this window
+		SetCurrent();
+
 		// Render the Scene Graph
 		if (bFirstPaint) VTLOG1("vtGLCanvas: DoUpdate\n");
 		vtGetScene()->DoUpdate();
