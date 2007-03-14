@@ -2891,7 +2891,7 @@ int vtTerrain::DeleteSelectedPlants()
 	int num_deleted = 0;
 
 	// first remove them from the terrain
-	for (unsigned int i = 0; i < m_PIA.GetNumEntities(); i++)
+	for (int i = m_PIA.GetNumEntities() - 1; i >= 0; i--)
 	{
 		if (m_PIA.IsSelected(i))
 		{
