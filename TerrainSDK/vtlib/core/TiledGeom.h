@@ -1,7 +1,7 @@
 //
 // vtTiledGeom : Renders tiled heightfields using Roettger's libMini library
 //
-// Copyright (c) 2005-2006 Virtual Terrain Project
+// Copyright (c) 2005-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,8 @@
 #define TILEDGEOMH
 
 #include "vtdata/HeightField.h"
+#include "vtdata/MiniDatabuf.h"
+#include <map>
 
 #define TILEDGEOM_RESOLUTION_MIN 8000.0f
 #define TILEDGEOM_RESOLUTION_MAX 8000000.0f
@@ -29,6 +31,7 @@ public:
 	DRECT earthextents;
 	float minheight, maxheight;	// for elevation tilesets only
 	vtProjection proj;
+	LODMap lodmap;
 };
 #endif
 
@@ -50,7 +53,8 @@ public:
 	vtTiledGeom();
 	~vtTiledGeom();
 
-	bool ReadTileList(const char *dataset_fname_elev, const char *dataset_fname_image);
+	bool ReadTileList(const char *dataset_fname_elev,
+		const char *dataset_fname_image, bool bThreading);
 	void SetVerticalExag(float fExag);
 	float GetVerticalExag() { return m_fDrawScale; }
 	void SetVertexTarget(int iVertices);
@@ -97,14 +101,26 @@ public:
 	int m_iTileLoads;
 	int m_iCacheHits;
 
-protected:
+	// Size of base texture LOD
+	int image_lod0size;
+
 	// Values used to initialize miniload
 	int cols, rows;
 	float coldim, rowdim;
-	int image_lod0size;
 	FPoint3 center;
 	ucharptr *hfields, *textures;
 
+	class miniload *GetMiniLoad() { return m_pMiniLoad; }
+	class minitile *GetMiniTile() { return m_pMiniTile; }
+	class datacloud *GetDataCloud() { return m_pDataCloud; }
+
+	// information about all the tiles LODs which exist
+	bool CheckMapFile(const char *mapfile, bool bIsTexture);
+	vtString m_folder_elev;
+	vtString m_folder_image;
+	TiledDatasetDescription m_elev_info, m_image_info;
+
+protected:
 	// a vtlib material
 	vtMaterial *m_pPlainMaterial;
 
@@ -126,8 +142,9 @@ protected:
 	class miniload *m_pMiniLoad;
 	class minitile *m_pMiniTile;
 	class minicache *m_pMiniCache;	// This is cache of OpenGL primitives to be rendered
+	class datacloud *m_pDataCloud;
 
-	void SetupMiniLoad();
+	void SetupMiniLoad(bool bThreading);
 };
 
 /*@}*/	// Group dynterr

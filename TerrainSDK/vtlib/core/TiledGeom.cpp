@@ -1,7 +1,7 @@
 //
 // vtTiledGeom: Renders tiled heightfields using Roettger's libMini library
 //
-// Copyright (c) 2005-2006 Virtual Terrain Project
+// Copyright (c) 2005-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,18 @@
 #include "mini.h"
 #include "miniload.hpp"
 #include "minicache.hpp"
+#include "datacloud.hpp"
 #include "miniOGL.h"
+
+#define SUPPORT_PTHREADING	1
+
+#if SUPPORT_PTHREADING
+  #include <pthread.h>
+  #ifdef _MSC_VER
+	#pragma message( "Adding link with pthreadVC2.lib" )
+	#pragma comment( lib, "pthreadVC2.lib" )
+  #endif
+#endif
 
 // Set this to use the 'minicache' OpenGL primitive cache.
 //  Actually, we depend on it for adaptive resolution, so leave it at 1.
@@ -28,6 +39,41 @@
 // singleton; TODO: get rid of this to allow multiple instances
 static vtTiledGeom *s_pTiledGeom = NULL;
 
+#if SUPPORT_PTHREADING
+   const int numthreads = 1;
+   pthread_t pthread[numthreads];
+   pthread_mutex_t mutex;
+   pthread_attr_t attr;
+
+   void threadinit()
+      {
+      pthread_mutex_init(&mutex,NULL);
+
+      pthread_attr_init(&attr);
+      pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
+      }
+
+   void threadexit()
+      {
+      pthread_mutex_destroy(&mutex);
+      pthread_attr_destroy(&attr);
+      }
+
+   void startthread(void *(*thread)(void *background),backarrayelem *background,void *data)
+      {pthread_create(&pthread[background->background-1],&attr,thread,background);}
+
+   void jointhread(backarrayelem *background,void *data)
+      {
+      void *status;
+      pthread_join(pthread[background->background-1],&status);
+      }
+
+   void lock_cs(void *data)
+      {pthread_mutex_lock(&mutex);}
+
+   void unlock_cs(void *data)
+      {pthread_mutex_unlock(&mutex);}
+#endif
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 ///////////////////////////////////////////////////////////////////////
@@ -71,6 +117,28 @@ bool TiledDatasetDescription::Read(const char *dataset_fname)
 			// read CRS from WKT
 			char *wktp = buf + 4;	// skip "CRS="
 			proj.importFromWkt(&wktp);
+		}
+		if (!strncmp(buf, "RowLODs", 7))
+		{
+			int rownum;
+			sscanf(buf+7, "%d:", &rownum);
+
+			// safety check
+			if (rownum < 0 || rownum >= rows)
+				return false;
+
+			if (rownum == 0)
+				lodmap.alloc(cols, rows);
+
+			char *c = buf + 11;
+			for (int i = 0; i < cols; i++)
+			{
+				int mmin, mmax;
+				while (*c == ' ') c++;
+				sscanf(c, "%d/%d", &mmin, &mmax);
+				lodmap.set(i, rownum, mmin, mmax);
+				while (*c != 0 && *c != ' ' && *c != '\n') c++;
+			}
 		}
 	}
 	fclose(fp);
@@ -119,14 +187,13 @@ bool TiledDatasetDescription::GetCorners(DLine2 &line, bool bGeo) const
 
 // check a file
 int file_exists(const char *filename)
-   {
-   FILE *file;
-
-   if ((file=vtFileOpen(filename,"rb"))==NULL) return(0);
-   fclose(file);
-
-   return(1);
-   }
+{
+	FILE *file;
+	if ((file=vtFileOpen(filename,"rb"))==NULL)
+		return(0);
+	fclose(file);
+	return(1);
+}
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -135,6 +202,7 @@ int request_callback(int col,int row,unsigned char *mapfile,int hlod,
 					  unsigned char *fogfile, void *data,
 					  databuf *hfield, databuf *texture, databuf *fogmap)
 {
+	vtTiledGeom *tg = (vtTiledGeom *) data;
 #if 0
 	vtString str1 = "NULL", str2 = "NULL";
 	if (mapfile)
@@ -160,7 +228,8 @@ int request_callback(int col,int row,unsigned char *mapfile,int hlod,
 			VTLOG1(" exist check: ");
 			VTLOG1((char *)mapfile);
 #endif
-			present&=file_exists((char *)mapfile);
+//			present&=file_exists((char *)mapfile);
+			present &= (tg->CheckMapFile((char *)mapfile, false) ? 1 : 0);
 		}
 		if (texfile!=NULL)
 		{
@@ -168,7 +237,8 @@ int request_callback(int col,int row,unsigned char *mapfile,int hlod,
 			VTLOG1(" exist check: ");
 			VTLOG1((char *)texfile);
 #endif
-			present&=file_exists((char *)texfile);
+//			present&=file_exists((char *)texfile);
+			present &= (tg->CheckMapFile((char *)texfile, true) ? 1 : 0);
 		}
 #if LOG_TILE_LOADS
 		if (present)
@@ -196,11 +266,46 @@ int request_callback(int col,int row,unsigned char *mapfile,int hlod,
 	return 1;
 }
 
-void mini_error_handler(char *file,int line,int fatal)
+void mini_error_handler(char *file, int line, int fatal)
 {
 	VTLOG("libMini error: file '%s', line %d, fatal %d\n", file, line, fatal);
 }
 
+void request_callback_async(unsigned char *mapfile, databuf *map,
+							int istexture, int background, void *data)
+{
+	map->loaddata((char *)mapfile);
+}
+
+int check_callback(unsigned char *mapfile, int istexture, void *data)
+{
+	vtTiledGeom *tg = (vtTiledGeom*) data;
+	return tg->CheckMapFile((char *)mapfile, istexture != 0);
+}
+
+void query_callback(int col, int row, unsigned char *texfile, int tlod,
+					void *data, int *tsizex, int *tsizey)
+{
+	vtTiledGeom *tg = (vtTiledGeom*) data;
+
+	// Find the actual size of this lod of this tile
+	LODMap &map = tg->m_image_info.lodmap;
+	if (map.exists())
+	{
+		int mmin, mmax;
+		map.get(col, row, mmin, mmax);
+		int lodsize = 1 << (mmin - tlod);
+		*tsizex = *tsizey = lodsize;
+	}
+	else
+	{
+		// we must assume that all tiles have the same base LOD size
+		int tbasesize = tg->image_lod0size; // size of texture LOD 0
+		while (tlod-->0)
+			tbasesize/=2;
+		*tsizex = *tsizey = tbasesize;
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////
 // class vtTiledGeom implementation
@@ -212,6 +317,7 @@ vtTiledGeom::vtTiledGeom()
 	m_pMiniLoad = NULL;
 	m_pMiniTile = NULL;
 	m_pMiniCache = NULL;
+	m_pDataCloud = NULL;
 
 	// This maxiumum scale is a reasonable tradeoff between the exaggeration
 	//  that the user is likely to need, and numerical precision issues.
@@ -244,68 +350,82 @@ vtTiledGeom::vtTiledGeom()
 vtTiledGeom::~vtTiledGeom()
 {
 	EmptyCache();
+#if SUPPORT_PTHREADING
+	delete m_pDataCloud;
+#endif
 	delete m_pMiniCache;
 	delete m_pMiniLoad;
 
 	delete m_pPlainMaterial;
 }
 
-bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *dataset_fname_image)
+bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev,
+							   const char *dataset_fname_image, bool bThreading)
 {
-	TiledDatasetDescription elev, image;
-
-	if (!elev.Read(dataset_fname_elev))
+	if (!m_elev_info.Read(dataset_fname_elev))
 		return false;
-	if (!image.Read(dataset_fname_image))
+	if (!m_image_info.Read(dataset_fname_image))
 		return false;
 
 	// If it's an older elevation dataset, we won't know elevation extents, so
 	//  conservatively guess +/-8kmeters
-	if (elev.minheight == INVALID_ELEVATION)
+	if (m_elev_info.minheight == INVALID_ELEVATION)
 	{
-		elev.minheight = -8192;
-		elev.maxheight = 8192;
+		m_elev_info.minheight = -8192;
+		m_elev_info.maxheight = 8192;
 	}
 
 	// We assume that the projection and extents of the two datasets are the same,
 	//  so simply take them from the elevation dataset.
 
 	// Set up earth->world heightfield properties
-	m_proj = elev.proj;
-	Initialize(m_proj.GetUnits(), elev.earthextents, elev.minheight, elev.maxheight);
+	m_proj = m_elev_info.proj;
+	Initialize(m_proj.GetUnits(), m_elev_info.earthextents, m_elev_info.minheight, m_elev_info.maxheight);
 
-	cols = elev.cols;
-	rows = elev.rows;
+	cols = m_elev_info.cols;
+	rows = m_elev_info.rows;
 	//coldim = elev.earthextents.Width() / cols;	// TODO: watchout, earth vs. world?
 	//rowdim = elev.earthextents.Height() / rows;
 	coldim = m_WorldExtents.Width() / cols;
 	rowdim = -m_WorldExtents.Height() / rows;
-	image_lod0size = image.lod0size;
+	image_lod0size = m_image_info.lod0size;
 	center.x = coldim * cols / 2.0f;
 	center.y = 0;
 	center.z = -rowdim * rows / 2.0f;
 
 	// folder names are same as the .ini files, without the .ini
-	vtString folder_elev = dataset_fname_elev;
-	RemoveFileExtensions(folder_elev);
-	vtString folder_image = dataset_fname_image;
-	RemoveFileExtensions(folder_image);
+	m_folder_elev = dataset_fname_elev;
+	RemoveFileExtensions(m_folder_elev);
+	m_folder_image = dataset_fname_image;
+	RemoveFileExtensions(m_folder_image);
 
 	hfields = new ucharptr[cols*rows];
 	textures = new ucharptr[cols*rows];
 	vtString str, str2;
-	int i, j;
+	int i, j, mmin, mmax;
 	for (i = 0; i < cols; i++)
 	{
 		for (j = 0; j < rows; j++)
 		{
+			// Set up elevation LOD0 filename 
 			str2.Format("/tile.%d-%d", i, j);
-
-			str = folder_elev;
+			str = m_folder_elev;
 			str += str2;
 			str += ".db";
 
-			if (file_exists(str))
+			bool elev_exists = false, image_exists = false;
+			if (m_elev_info.lodmap.exists())
+			{
+				m_elev_info.lodmap.get(i, j, mmin, mmax);
+				if (mmin > 0)
+					elev_exists = true;
+			}
+			else
+			{
+				// we don't already know, so we must test file existence
+				elev_exists = (file_exists(str) != 0);
+			}
+			if (elev_exists)
 			{
 				hfields[i+cols*j] = new byte[str.GetLength()+1];
 				strcpy((char *) hfields[i+cols*j], str);
@@ -313,11 +433,22 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 			else
 				hfields[i+cols*j] = NULL;
 
-			str = folder_image;
+			// Set up image LOD0 filename 
+			str = m_folder_image;
 			str += str2;
 			str += ".db";
-
-			if (file_exists(str))
+			if (m_image_info.lodmap.exists())
+			{
+				m_image_info.lodmap.get(i, j, mmin, mmax);
+				if (mmin > 0)
+					image_exists = true;
+			}
+			else
+			{
+				// we don't already know, so we must test file existence
+				image_exists = (file_exists(str) != 0);
+			}
+			if (image_exists)
 			{
 				textures[i+cols*j] = new byte[str.GetLength()+1];
 				strcpy((char *) textures[i+cols*j], str);
@@ -329,7 +460,7 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev, const char *datas
 
 	setminierrorhandler(mini_error_handler);
 
-	SetupMiniLoad();
+	SetupMiniLoad(bThreading);
 
 	// The miniload constructor has copied all the strings we passed to it,
 	//  so we should delete the original copy of them
@@ -366,7 +497,7 @@ void vtTiledGeom::SetVertexTarget(int iVertices)
 	m_bNeedResolutionAdjust = true;
 }
 
-void vtTiledGeom::SetupMiniLoad()
+void vtTiledGeom::SetupMiniLoad(bool bThreading)
 {
 	VTLOG("Calling miniload constructor(%d,%d,..)\n", cols, rows);
 	m_pMiniLoad = new miniload(hfields, textures,
@@ -452,7 +583,7 @@ void vtTiledGeom::SetupMiniLoad()
 
 	m_pMiniLoad->setloader(
 		request_callback,
-		NULL,	// data
+		this,	// data
 		NULL,	// preload_callback
 		NULL,	// deliver_callback
 		paging,
@@ -478,6 +609,30 @@ void vtTiledGeom::SetupMiniLoad()
 	m_pMiniLoad->configure_dontfree(WE_OWN_BUFFERS);
 
 	miniOGL::configure_compression(0);
+
+#if SUPPORT_PTHREADING
+	if (bThreading)
+	{
+		// Now set up MiniCloud
+		m_pDataCloud = new datacloud(m_pMiniLoad);
+		m_pDataCloud->setloader(request_callback_async, this, check_callback,
+		   paging, pfarp, prange, pbasesize, plazyness, pupdate, pexpire);
+
+		// optional callback for better paging performance
+		m_pDataCloud->setquery(query_callback, this);
+
+		// upload for 10ms and keep for 5min
+		m_pDataCloud->setschedule(0.01, 5.0);
+
+		// allow 512 MB tile cache size?
+	//	m_pDataCloud->setmaxsize(512.0);
+		m_pDataCloud->setmaxsize(0);
+
+		m_pDataCloud->setthread(startthread, NULL, jointhread, lock_cs, unlock_cs);
+		m_pDataCloud->setmulti(numthreads);
+		threadinit();
+	}
+#endif // THREADED
 }
 
 databuf vtTiledGeom::FetchAndCacheTile(const char *fname)
@@ -571,6 +726,38 @@ void vtTiledGeom::EmptyCache()
 		count++;
 	}
 	m_Cache.clear();
+}
+
+bool vtTiledGeom::CheckMapFile(const char *mapfile, bool bIsTexture)
+{
+	// we don't need to check file existence if we already know which LODs exist
+	if (m_elev_info.lodmap.exists())
+	{
+		int col, row, lod = 0;
+		int mmin, mmax;
+		if (bIsTexture)
+		{
+			// checking an image tile
+			sscanf((char *)mapfile + m_folder_image.GetLength(), "/tile.%d-%d.db%d", &col, &row, &lod);
+			m_image_info.lodmap.get(col, row, mmin, mmax);
+			int num_lods = mmin-mmax+1;
+			return (lod < num_lods);
+		}
+		else
+		{
+			// checking an elevation tile
+			sscanf((char *)mapfile + m_folder_elev.GetLength(), "/tile.%d-%d.db%d", &col, &row, &lod);
+			m_elev_info.lodmap.get(col, row, mmin, mmax);
+			int num_lods = mmin-mmax+1;
+			return (lod < num_lods);
+		}
+	}
+	else
+	{
+		// no lod info, must check file
+		return (file_exists((char *)mapfile) != 0);
+	}
+	return false;
 }
 
 void vtTiledGeom::DoRender()
