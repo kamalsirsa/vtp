@@ -1,7 +1,7 @@
 //
 //  The export functions of the VTBuilder application.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,6 +17,7 @@
 #include "vtdata/ChunkLOD.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/MiniDatabuf.h"
 
 #include "vtui/Helper.h"
 

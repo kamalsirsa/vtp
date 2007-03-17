@@ -15,6 +15,7 @@
 #include "BuilderView.h"
 #include "Helper.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/MiniDatabuf.h"
 
 //////////////////////////////////
 
