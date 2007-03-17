@@ -2427,9 +2427,9 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
 
 	// Convert pattern ("n x y z") to fscanf format ("%lf %lf %lf %lf")
 	char format[40];
-	int j = 0;
+	unsigned int i, j = 0;
 	int components = 0;
-	for (unsigned int i = 0; i < strlen(pattern); i++)
+	for (i = 0; i < strlen(pattern); i++)
 	{
 		char ch = pattern[i];
 		switch (ch)
@@ -2453,7 +2453,6 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
 	rewind(fp);
 	DPoint2 testp[2];
 	bool bInteger = true;
-	int i;
 	double x, y, z;
 	for (i = 0; fgets(buf, 80, fp) != NULL && i < 2; i++)
 	{

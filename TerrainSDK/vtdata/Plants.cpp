@@ -529,10 +529,10 @@ void BioRegionVisitor::startElement(const char *name, const XMLAttributes &atts)
 				sciname = attval;
 			attval = atts.getValue("per_hectare");
 			if (attval != NULL)
-				per_m2 = atof(attval) / 10000;	// hectare is 100m*100m
+				per_m2 = (float) atof(attval) / 10000;	// hectare is 100m*100m
 			attval = atts.getValue("typical_size");
 			if (attval != NULL)
-				typical_size = atof(attval);
+				typical_size = (float) atof(attval);
 
 			int index = m_Species.GetSpeciesIdByName(sciname);
 			if (index != -1)
