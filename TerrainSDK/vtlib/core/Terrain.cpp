@@ -1,7 +1,7 @@
 //
 // Terrain.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -2109,7 +2109,8 @@ bool vtTerrain::CreateStep1()
 		int tile_cache_mb = m_Params.GetValueInt(STR_TILE_CACHE_SIZE);
 		m_pTiledGeom->SetTileCacheSize(tile_cache_mb * 1024 * 1024);
 
-		bool status = m_pTiledGeom->ReadTileList(elev_path, tex_path);
+		bool bThread = m_Params.GetValueBool(STR_TILE_THREADING);
+		bool status = m_pTiledGeom->ReadTileList(elev_path, tex_path, bThread);
 
 		if (status == false)
 		{

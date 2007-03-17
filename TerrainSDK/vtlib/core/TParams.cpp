@@ -3,7 +3,7 @@
 //
 // Defines all the construction parameters for a terrain.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -78,6 +78,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_TRISTRIPS, "true");
 	AddTag(STR_VERTCOUNT, "20000");
 	AddTag(STR_TILE_CACHE_SIZE, "80");	// 80 MB
+	AddTag(STR_TILE_THREADING, "false");
 
 	AddTag(STR_TIMEON, "false");
 	AddTag(STR_INITTIME, "104 2 21 10 0 0");	// 2004, spring, 10am

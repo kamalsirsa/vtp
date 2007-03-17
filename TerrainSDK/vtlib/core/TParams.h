@@ -3,7 +3,7 @@
 //
 // defines all the construction parameters for a terrain
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -425,6 +425,7 @@ protected:
 #define STR_TRISTRIPS "Tristrips"
 #define STR_VERTCOUNT "Vert_Count"
 #define STR_TILE_CACHE_SIZE "Tile_Cache_Size"	// in MB
+#define STR_TILE_THREADING "Tile_Threading"
 
 #define STR_TIMEON "Time_On"
 #define STR_INITTIME "Init_Time"
