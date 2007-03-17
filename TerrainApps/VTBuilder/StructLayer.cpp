@@ -960,7 +960,7 @@ bool vtStructureLayer::EditBuildingProperties()
 	SetModified(true);
 
 	BuildingDlg dlg(NULL, -1, _("Building Properties"));
-	dlg.Setup(this, bld_selected, pHeightField);
+	dlg.Setup(this, bld_selected, pHeightField, GetMainFrame()->m_datapaths);
 
 	dlg.ShowModal();
 
