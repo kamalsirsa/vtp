@@ -10,7 +10,6 @@
 
 #include "vtdata/Projections.h"
 #include "vtdata/MathTypes.h"
-#include "vtdata/MiniDatabuf.h"
 
 /////
 
@@ -53,6 +52,7 @@ public:
 
 #if USE_OPENGL
 #include "wx/glcanvas.h"
+class MiniDatabuf;
 void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
 					   GLuint &iTex);
 
