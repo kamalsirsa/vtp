@@ -1,7 +1,7 @@
 //
 // ImageLayer.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -53,6 +53,7 @@ public:
 	bool SetExtent(const DRECT &rect);
 	void GetPropertyText(wxString &str);
 
+	bool IsAllocated() const;
 	DPoint2 GetSpacing() const;
 	vtBitmap *GetBitmap() { return m_pBitmap; }
 

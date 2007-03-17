@@ -1,7 +1,7 @@
 //
 // vtBitmap.h
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -23,6 +23,7 @@ public:
 	virtual ~vtBitmap();
 
 	bool Allocate(int iXSize, int iYSize, int iDepth = 24);
+	bool IsAllocated() const;
 	void SetPixel24(int x, int y, unsigned char r, unsigned char g, unsigned char b);
 	void SetPixel24(int x, int y, const RGBi &rgb)
 	{

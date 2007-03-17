@@ -1,7 +1,7 @@
 //
 // vtBitmap.cpp
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -55,6 +55,11 @@ bool vtBitmap::Allocate(int iXSize, int iYSize, int iDepth)
 		return Allocate24(iXSize, iYSize);
 	else
 		return false;
+}
+
+bool vtBitmap::IsAllocated() const
+{
+	return (m_pBitmap != NULL && m_pBitmap->Ok());
 }
 
 bool vtBitmap::Allocate8(int iXSize, int iYSize)

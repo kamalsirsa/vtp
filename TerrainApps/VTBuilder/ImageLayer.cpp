@@ -1,7 +1,7 @@
 //
 // ImageLayer.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -293,6 +293,11 @@ DPoint2 vtImageLayer::GetSpacing() const
 {
 	return DPoint2(m_Extents.Width() / (m_iXSize),
 		m_Extents.Height() / (m_iYSize));
+}
+
+bool vtImageLayer::IsAllocated() const
+{
+	return (m_pBitmap != NULL && m_pBitmap->IsAllocated());
 }
 
 bool vtImageLayer::GetFilteredColor(const DPoint2 &p, RGBi &rgb)
@@ -1395,7 +1400,7 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 	if (opts.bUseTextureCompression)
 	{
 		bCompress = true;
-		wxFrame *frame = new wxFrame;
+		frame = new wxFrame;
 		frame->Create(pView, -1, _T("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
 		m_pCanvas = new ImageGLCanvas(frame);
@@ -1423,15 +1428,14 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 	else
 		crs = "Other";
 
-	// Write .ini file
-	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size, area, m_proj))
-		return false;
-
 	// Try to create directory to hold the tiles
 	vtString dirname = opts.fname;
 	RemoveFileExtensions(dirname);
 	if (!vtCreateDir(dirname))
 		return false;
+
+	// make a note of which lods exist
+	LODMap lod_existence_map(opts.cols, opts.rows);
 
 	if (!m_pBitmap)
 	{
@@ -1468,6 +1472,10 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 			int col = i;
 			int row = opts.rows-1-j;
 
+			// We know this tile will be included, so note the LODs present
+			int base_tile_exponent = vt_log2(base_tilesize);
+			lod_existence_map.set(i, j, base_tile_exponent, base_tile_exponent-(opts.numlods-1));
+
 			for (lod = 0; lod < opts.numlods && !bCancelled; lod++)
 			{
 				if (!WriteTile(opts, pView, dirname, tile_area, tile_dim,
@@ -1480,6 +1488,11 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 		wxMessageBox(_("Cancelled."));
 	else
 	{
+		// Write .ini file
+		WriteTilesetHeader(opts.fname, opts.cols, opts.rows,
+			opts.lod0size, area, m_proj, INVALID_ELEVATION, INVALID_ELEVATION,
+			&lod_existence_map);
+
 		clock_t tm2 = clock();
 		float elapsed = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
 		wxString str;
@@ -1491,7 +1504,8 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 		pView->HideGridMarks();
 
 #if USE_OPENGL
-	frame->Close();
+	if (frame)
+		frame->Close();
 	delete frame;
 #endif
 
