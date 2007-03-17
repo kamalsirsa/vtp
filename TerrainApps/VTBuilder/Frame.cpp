@@ -1849,6 +1849,13 @@ void MainFrame::ExportImage()
 	vtImageLayer *pOutput = new vtImageLayer(dlg.m_area, dlg.m_iSizeX,
 			dlg.m_iSizeY, m_proj);
 
+	if (!pOutput->IsAllocated())
+	{
+		DisplayAndLog(_("Sorry, could not allocate an image of that size."));
+		delete pOutput;
+		return;
+	}
+
 	// fill in the value for pBig by merging samples from all other terrain
 	bool success = SampleCurrentImages(pOutput);
 	if (!success)
