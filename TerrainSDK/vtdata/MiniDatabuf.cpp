@@ -1,6 +1,9 @@
 //
-// Copyright (c) 2006 Virtual Terrain Project and Stefan Roettger
+// MiniDatabuf.cpp
+//
+// Copyright (c) 2006-2007 Virtual Terrain Project and Stefan Roettger
 // Free for all uses, see license.txt for details.
+//
 
 #include "MiniDatabuf.h"
 #include "vtLog.h"
@@ -210,7 +213,8 @@ void MiniDatabuf::swapbytes()
 
 bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 						const DRECT &area, const vtProjection &proj,
-						float minheight, float maxheight)
+						float minheight, float maxheight,
+						LODMap *lodmap)
 {
 	FILE *fp = vtFileOpen(filename, "wb");
 	if (!fp)
@@ -239,6 +243,21 @@ bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 	{
 		fprintf(fp, "Elevation_Min=%.f\n", minheight);
 		fprintf(fp, "Elevation_Max=%.f\n", maxheight);
+	}
+
+	if (lodmap != NULL)
+	{
+		int mmin, mmax;
+		for (int i = 0; i < rows; i++)
+		{
+			fprintf(fp, "RowLODs %2d:", i);
+			for (int j = 0; j < cols; j++)
+			{
+				lodmap->get(j, i, mmin, mmax);
+				fprintf(fp, " %d/%d", mmin, mmax);
+			}
+			fprintf(fp, "\n");
+		}
 	}
 
 	fclose(fp);

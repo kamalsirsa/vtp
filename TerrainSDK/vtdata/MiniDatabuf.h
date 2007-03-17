@@ -1,4 +1,9 @@
-// (c) VTP and Stefan Roettger
+//
+// MiniDatabuf.h
+//
+// Copyright (c) 2006-2007 Virtual Terrain Project and Stefan Roettger
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef MINIDATABUF_H
 #define MINIDATABUF_H
@@ -64,8 +69,48 @@ private:
 // Helper to write headers
 class DRECT;
 class vtProjection;
+class LODMap	// A simple 2D array of min/max LOD values (log2)
+{
+public:
+	LODMap()
+	{
+		m_min = m_max = NULL;
+	}
+	LODMap(int cols, int rows)
+	{
+		alloc(cols, rows);
+	}
+	~LODMap()
+	{
+		delete [] m_min;
+		delete [] m_max;
+	}
+	bool exists() { return m_min != NULL; }
+	void alloc(int cols, int rows)
+	{
+		m_cols = cols;
+		m_rows = rows;
+		m_min = new int [cols*rows];
+		m_max = new int [cols*rows];
+		for (int i = 0; i < cols*rows; i++)
+			m_min[i] = m_max[i] = 0;
+	}
+	void set(int c, int r, int minlevel, int maxlevel)
+	{
+		m_min[c*m_rows+r] = minlevel;
+		m_max[c*m_rows+r] = maxlevel;
+	}
+	void get(int c, int r, int &minlevel, int &maxlevel)
+	{
+		minlevel = m_min[c*m_rows+r];
+		maxlevel = m_max[c*m_rows+r];
+	}
+	int m_cols, m_rows;
+	int *m_min, *m_max;
+};
 bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 						const DRECT &area, const vtProjection &proj,
-						float minheight=INVALID_ELEVATION, float maxheight=INVALID_ELEVATION);
+						float minheight=INVALID_ELEVATION, float maxheight=INVALID_ELEVATION,
+						LODMap *lodmap = NULL);
 
 #endif
