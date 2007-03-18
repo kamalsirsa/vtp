@@ -641,14 +641,6 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 		if (!vtCreateDir(dirname_image))
 			return false;
 
-		// Write .ini file
-		if (!WriteTilesetHeader(opts.fname_images, opts.cols, opts.rows,
-			opts.lod0size, m_area, m_proj))
-		{
-			vtDestroyDir(dirname_image);
-			return false;
-		}
-
 		vtString cmap_fname = opts.draw.m_strColorMapFile;
 		vtString cmap_path = FindFileOnPaths(GetMainFrame()->m_datapaths, "GeoTypical/" + cmap_fname);
 		if (cmap_path == "")
@@ -674,6 +666,9 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 	// Form an array of pointers to the existing elevation layers
 	std::vector<vtElevLayer*> elevs;
 	int elev_layers = ElevLayerArray(elevs);
+
+	// make a note of which lods exist
+	LODMap lod_existence_map(opts.cols, opts.rows);
 
 	int i, j, e;
 	int total = opts.rows * opts.cols * opts.numlods, done = 0;
@@ -783,6 +778,10 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			if (opts.bOmitFlatTiles && bAllZero)
 				continue;
 
+			// Now we know this tile will be included, so note the LODs present
+			int base_tile_exponent = vt_log2(base_tilesize);
+			lod_existence_map.set(col, row, base_tile_exponent, base_tile_exponent-(total_lods-1));
+
 			if (!bAllValid)
 			{
 				// We don't want any gaps at all in the output tiles, because
@@ -811,7 +810,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 					base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f, true);
 				}
 
-				for (int k = 0; k < 3; k++)
+				for (int k = 0; k < total_lods; k++)
 				{
 					vtString fname = dirname_image, str;
 					fname += '/';
@@ -921,11 +920,17 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 	// Write .ini file
 	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
-		m_area, m_proj, minheight, maxheight))
+		m_area, m_proj, minheight, maxheight, &lod_existence_map))
 	{
 		vtDestroyDir(dirname);
 		return false;
 	}
+
+	// Write .ini file for images
+	if (opts.bCreateDerivedImages)
+		WriteTilesetHeader(opts.fname_images, opts.cols, opts.rows,
+			opts.lod0size, m_area, m_proj, INVALID_ELEVATION, INVALID_ELEVATION,
+			&lod_existence_map);
 
 #if USE_OPENGL
 	frame->Close();
@@ -961,14 +966,6 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 	if (!vtCreateDir(dirname))
 		return false;
 
-	// Write .ini file
-	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
-		m_area, m_proj))
-	{
-		vtDestroyDir(dirname);
-		return false;
-	}
-
 	wxFrame *frame = NULL;
 	ImageGLCanvas *pCanvas = NULL;
 	bool bCompress = false;
@@ -982,6 +979,9 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 		pCanvas = new ImageGLCanvas(frame);
 	}
 #endif
+
+	// make a note of which lods exist
+	LODMap lod_existence_map(opts.cols, opts.rows);
 
 	int i, j, im;
 	int total = opts.rows * opts.cols, done = 0;
@@ -998,7 +998,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 			tile_area.bottom =	m_area.bottom + tile_dim.y * j;
 			tile_area.top =		m_area.bottom + tile_dim.y * (j+1);
 
-			// Look through the elevation layers to find those which this
+			// Look through the image layers to find those which this
 			//  tile can sample from.  Determine the highest resolution
 			//  available for this tile.
 			DPoint2 best_spacing(1E9, 1E9);
@@ -1041,6 +1041,10 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 
 			int col = i;
 			int row = opts.rows-1-j;
+
+			// Now we know this tile will be included, so note the LODs present
+			int base_tile_exponent = vt_log2(base_tilesize);
+			lod_existence_map.set(col, row, base_tile_exponent, base_tile_exponent-(total_lods-1));
 
 			// Now sample the images we found to the highest LOD we need
 			vtImageLayer Target(tile_area, base_tilesize, base_tilesize, m_proj);
@@ -1135,6 +1139,10 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 			}
 		}
 	}
+
+	// Write .ini file
+	WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
+		m_area, m_proj, INVALID_ELEVATION, INVALID_ELEVATION, &lod_existence_map);
 
 	if (bCompress)
 	{
