@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -218,6 +218,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
 	AddNumValidator(ID_VTX_COUNT, &m_iVertCount);
 	AddNumValidator(ID_TILE_CACHE_SIZE, &m_iTileCacheSize);
+	AddValidator(ID_TILE_THREADING, &m_bTileThreading);
 
 	// time
 	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
@@ -339,6 +340,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bTriStrips =		Params.GetValueBool(STR_TRISTRIPS);
 	m_iVertCount =		Params.GetValueInt(STR_VERTCOUNT);
 	m_iTileCacheSize =	Params.GetValueInt(STR_TILE_CACHE_SIZE);
+	m_bTileThreading =	Params.GetValueBool(STR_TILE_THREADING);
 
 	// time
 	m_bTimeOn =			Params.GetValueBool(STR_TIMEON);
@@ -483,6 +485,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_TRISTRIPS, m_bTriStrips);
 	Params.SetValueInt(STR_VERTCOUNT, m_iVertCount);
 	Params.SetValueInt(STR_TILE_CACHE_SIZE, m_iTileCacheSize);
+	Params.SetValueBool(STR_TILE_THREADING, m_bTileThreading);
 
 	// time
 	Params.SetValueBool(STR_TIMEON, m_bTimeOn);

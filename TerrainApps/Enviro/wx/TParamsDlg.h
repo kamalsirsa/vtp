@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -76,6 +76,7 @@ public:
 	bool	m_bTriStrips;
 	int	 m_iVertCount;
 	int	 m_iTileCacheSize;
+	bool m_bTileThreading;
 
 	// time
 	bool	m_bTimeOn;
