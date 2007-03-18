@@ -2,7 +2,7 @@
 // Name:	 EnviroFrame.cpp
 // Purpose:  The frame class for the wxEnviro application.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -321,6 +321,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pInstanceDlg = new InstanceDlg(this, -1, _("Instances"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pLODDlg = new LODDlg(this, -1, _("Terrain LOD Info"));
+	// m_pLODDlg->Show();	// Enable this to see the LOD dialog immediately
 
 	m_pPlantDlg = new PlantDlg(this, -1, _("Plants"));
 	m_pPlantDlg->ShowOnlyAvailableSpecies(g_Options.m_bOnlyAvailableSpecies);
@@ -2017,6 +2018,8 @@ void EnviroFrame::UpdateLODInfo()
 {
 	if (!m_pLODDlg)
 		return;
+	if (!m_pLODDlg->IsShown())
+		return;
 	vtTerrain *terr = g_App.GetCurrentTerrain();
 	if (!terr)
 		return;
@@ -2035,6 +2038,8 @@ void EnviroFrame::UpdateLODInfo()
 			geom->m_iVertexTarget, geom->m_iVertexCount,
 			geom->m_iMaxCacheSize, geom->m_iCacheSize,
 			geom->m_iTileLoads, geom->m_iCacheHits);
+
+		m_pLODDlg->DrawTilesetState(geom, vtGetScene()->GetCamera());
 	}
 	vtDynTerrainGeom *dyn = terr->GetDynTerrain();
 	if (dyn)
