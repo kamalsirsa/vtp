@@ -8,6 +8,7 @@
 #ifndef __LayerDlg_H__
 #define __LayerDlg_H__
 
+#include "wx/imaglist.h"
 #include "enviro_wdr.h"
 #include "vtlib/core/AbstractLayer.h"
 #include "vtlib/core/TerrainLayers.h"
