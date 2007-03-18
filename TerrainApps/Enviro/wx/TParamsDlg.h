@@ -91,6 +91,7 @@ public:
 	wxString   m_strTexture4x4;
 	wxString   m_strTextureFilename;
 	wxString   m_strTextureTileset;
+	bool	m_bTextureGradual;
 	bool	m_bMipmap;
 	bool	m_b16bit;
 	bool	m_bPreLight;
@@ -251,6 +252,7 @@ private:
 	void OnTextureTiled( wxCommandEvent &event );
 	void OnTextureTileset( wxCommandEvent &event );
 	void OnEditColors( wxCommandEvent &event );
+	void OnCheckBoxElevType( wxCommandEvent &event );
 	void OnCheckBox( wxCommandEvent &event );
 	void OnListDblClickStructure( wxCommandEvent &event );
 	void OnListDblClickRaw( wxCommandEvent &event );

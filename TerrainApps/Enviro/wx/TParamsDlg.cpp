@@ -83,11 +83,11 @@ END_EVENT_TABLE()
 BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_INIT_DIALOG (TParamsDlg::OnInitDialog)
 
-	EVT_RADIOBUTTON( ID_USE_GRID, TParamsDlg::OnCheckBox )
-	EVT_RADIOBUTTON( ID_USE_TIN, TParamsDlg::OnCheckBox )
-	EVT_RADIOBUTTON( ID_USE_TILESET, TParamsDlg::OnCheckBox )
+	EVT_RADIOBUTTON( ID_USE_GRID, TParamsDlg::OnCheckBoxElevType )
+	EVT_RADIOBUTTON( ID_USE_TIN, TParamsDlg::OnCheckBoxElevType )
+	EVT_RADIOBUTTON( ID_USE_TILESET, TParamsDlg::OnCheckBoxElevType )
 	EVT_CHOICE( ID_LODMETHOD, TParamsDlg::OnCheckBox )
-		
+
 	EVT_CHOICE( ID_CHOICE_TILESIZE, TParamsDlg::OnTileSize )
 	EVT_CHOICE( ID_TFILE_BASE, TParamsDlg::OnTextureFileBase )
 
@@ -96,6 +96,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_DERIVED, TParamsDlg::OnTextureDerived )
 	EVT_RADIOBUTTON( ID_TILED_4BY4, TParamsDlg::OnTextureTiled )
 	EVT_RADIOBUTTON( ID_TILESET, TParamsDlg::OnTextureTileset )
+	EVT_CHECKBOX( ID_TILE_THREADING, TParamsDlg::OnCheckBox )
 
 	EVT_COMBOBOX( ID_TFILE_SINGLE, TParamsDlg::OnComboTFileSingle )
 	EVT_BUTTON( ID_EDIT_COLORS, TParamsDlg::OnEditColors )
@@ -231,6 +232,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_TFILE_BASE, &m_strTextureBase);
 	AddValidator(ID_TFILENAME, &m_strTexture4x4);
 	AddValidator(ID_TFILE_TILESET, &m_strTextureTileset);
+	AddValidator(ID_TEXTURE_GRADUAL, &m_bTextureGradual);
 	AddValidator(ID_MIPMAP, &m_bMipmap);
 	AddValidator(ID_16BIT, &m_b16bit);
 	AddValidator(ID_PRELIGHT, &m_bPreLight);
@@ -367,6 +369,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	if (m_iTexture == TE_TILESET)
 		m_strTextureTileset = wxString(Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
 
+	m_bTextureGradual =	Params.GetValueBool(STR_TEXTURE_GRADUAL);
 	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
 	m_b16bit =			Params.GetValueBool(STR_REQUEST16BIT);
 	m_bPreLight =		Params.GetValueBool(STR_PRELIGHT);
@@ -511,6 +514,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	if (m_iTexture == TE_TILESET)
 		Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureTileset.mb_str(wxConvUTF8));
 
+	Params.SetValueBool(STR_TEXTURE_GRADUAL, m_bTextureGradual);
 	Params.SetValueBool(STR_MIPMAP, m_bMipmap);
 	Params.SetValueBool(STR_REQUEST16BIT, m_b16bit);
 	Params.SetValueBool(STR_PRELIGHT, m_bPreLight);
@@ -646,7 +650,8 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_TRISTRIPS)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY);
 	FindWindow(ID_DETAILTEXTURE)->Enable(m_bGrid);
 	FindWindow(ID_VTX_COUNT)->Enable(m_bTileset);
-	FindWindow(ID_TILE_CACHE_SIZE)->Enable(m_bTileset);
+	FindWindow(ID_TILE_CACHE_SIZE)->Enable(false);
+	FindWindow(ID_TILE_THREADING)->Enable(m_bTileset);
 
 	FindWindow(ID_NONE)->Enable(!m_bTileset);
 	FindWindow(ID_SINGLE)->Enable(!m_bTileset);
@@ -661,6 +666,7 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_TFILE_BASE)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILENAME)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILE_TILESET)->Enable(m_iTexture == TE_TILESET);
+	FindWindow(ID_TEXTURE_GRADUAL)->Enable(m_iTexture == TE_TILESET && m_bTileThreading);
 
 	FindWindow(ID_MIPMAP)->Enable(m_iTexture != TE_NONE && !m_bTileset);
 	FindWindow(ID_16BIT)->Enable(m_iTexture != TE_NONE && !m_bTileset);
@@ -1147,16 +1153,23 @@ void TParamsDlg::OnEditColors( wxCommandEvent &event )
 	UpdateColorMapChoice();
 }
 
-void TParamsDlg::OnCheckBox( wxCommandEvent &event )
+void TParamsDlg::OnCheckBoxElevType( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
 	// the tileset elevation and tileset texture only work with each other
 	if (event.GetId() == ID_USE_TILESET && event.IsChecked())
 		m_iTexture = TE_TILESET;
-	if (event.GetId() != ID_USE_TILESET  && event.IsChecked() && m_iTexture == TE_TILESET)
+	if (event.GetId() != ID_USE_TILESET && event.IsChecked() && m_iTexture == TE_TILESET)
 		m_iTexture = TE_NONE;
 
+	UpdateEnableState();
+	UpdateTiledTextureFilename();
+}
+
+void TParamsDlg::OnCheckBox( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
 	UpdateEnableState();
 	UpdateTiledTextureFilename();
 }
