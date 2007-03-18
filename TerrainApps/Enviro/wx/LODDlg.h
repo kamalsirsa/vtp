@@ -1,7 +1,7 @@
 //
 // LODDlg.h
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,8 @@
 
 #include "enviro_wdr.h"
 class EnviroFrame;
+class vtTiledGeom;
+class vtCamera;
 
 // WDR: class declarations
 
@@ -27,16 +29,19 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for LODDlg
+	wxTextCtrl* GetTileStatus()  { return (wxTextCtrl*) FindWindow( ID_TILE_STATUS ); }
 	wxTextCtrl* GetCacheUsed()  { return (wxTextCtrl*) FindWindow( ID_CACHE_USED ); }
 	wxTextCtrl* GetTileHits()  { return (wxTextCtrl*) FindWindow( ID_TILE_HITS ); }
 	wxTextCtrl* GetTileLoads()  { return (wxTextCtrl*) FindWindow( ID_TILE_LOADS ); }
 	wxSpinCtrl* GetTarget()  { return (wxSpinCtrl*) FindWindow( ID_TARGET ); }
 	wxTextCtrl* GetCurrent()  { return (wxTextCtrl*) FindWindow( ID_CURRENT ); }
 	wxPanel* GetPanel1()  { return (wxPanel*) FindWindow( ID_PANEL1 ); }
+	wxPanel* GetPanel2()  { return (wxPanel*) FindWindow( ID_PANEL2 ); }
 
 	void Refresh(float res0, float res, float res1, int target, int count,
 		int cache_size, int cache_used, int disk_loads, int cache_hits);
 	void DrawChart(float res0, float res, float res1, int target, int count);
+	void DrawTilesetState(vtTiledGeom *tg, vtCamera *cam);
 	void SetFrame(EnviroFrame *pFrame) { m_pFrame = pFrame; }
 
 private:

@@ -1,15 +1,22 @@
 //
 // LODDlg.cpp
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#include "vtlib/vtlib.h"
+#include "vtlib/core/TiledGeom.h"
+
 #include "LODDlg.h"
 #include "EnviroFrame.h"
+
+#include "mini.h"
+#include "miniload.hpp"
+#include "datacloud.hpp"
 
 // WDR: class implementations
 
@@ -30,6 +37,8 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	// WDR: dialog function LODDialogFunc for LODDlg
 	LODDialogFunc( this, TRUE ); 
+
+	GetTileStatus()->SetValue(_T("No paging threads"));
 
 	m_iTarget = 0;
 }
@@ -140,6 +149,93 @@ void LODDlg::DrawChart(float res0, float res, float res1, int target, int count)
 	dc.SetPen(pen4);
 
 	dc.DrawLine(icount, 20, icount, 40);
+}
+
+void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
+{
+	wxPanel *panel = GetPanel2();
+	wxClientDC dc(panel);
+	PrepareDC(dc);
+	dc.Clear();
+
+	//wxPen pen3(wxColour(0,128,0), 1, wxSOLID);	// green
+	//dc.SetPen(pen3);
+	wxBrush b1(wxColour(255,0,0), wxSOLID);
+	wxBrush b2(wxColour(255,128,0), wxSOLID);
+	wxBrush b3(wxColour(255,255,0), wxSOLID);
+	wxBrush b4(wxColour(0,255,0), wxSOLID);
+	wxBrush b5(wxColour(0,255,255), wxSOLID);
+	wxBrush b6(wxColour(0,0,255), wxSOLID);
+	wxBrush b7(wxColour(255,0,255), wxSOLID);
+	wxBrush bwhite(wxColour(255,255,255), wxSOLID);
+
+	wxPen p1(wxColour(255,0,0), 2, wxSOLID);
+	wxPen p2(wxColour(255,128,0), 2, wxSOLID);
+	wxPen p3(wxColour(255,255,0), 2, wxSOLID);
+	wxPen p4(wxColour(0,255,0), 2, wxSOLID);
+	wxPen p5(wxColour(0,255,255), 2, wxSOLID);
+	wxPen p6(wxColour(0,0,255), 2, wxSOLID);
+	wxPen p7(wxColour(255,0,255), 2, wxSOLID);
+	wxPen pwhite(wxColour(255,255,255), 2, wxSOLID);
+	wxPen pblack(wxColour(0,0,0), 1, wxSOLID);
+
+	// draw rectangles for texture state
+	minitile *mt = tg->GetMiniTile();
+	wxSize size = panel->GetSize();
+	int border = 20;
+	int sx = (size.x - border*2) / tg->cols;
+	int sy = (size.y - border*2) / tg->rows;
+	for (int i = 0; i < tg->cols; i++)
+	{
+		for (int j = 0; j < tg->rows; j++)
+		{
+			int t = mt->gettexw(i,j);
+			switch (t)
+			{
+			case 64: dc.SetBrush(b1); break;
+			case 128: dc.SetBrush(b2); break;
+			case 256: dc.SetBrush(b3); break;
+			case 512: dc.SetBrush(b4); break;
+			case 1024: dc.SetBrush(b5); break;
+			case 2048: dc.SetBrush(b6); break;
+			default: dc.SetBrush(bwhite); break;
+			}
+			/*
+			int s = mt->getsize(i,j);
+			switch (s)
+			{
+			case 65: dc.SetPen(p1); break;
+			case 129: dc.SetPen(p2); break;
+			case 257: dc.SetPen(p3); break;
+			case 513: dc.SetPen(p4); break;
+			case 1025: dc.SetPen(p5); break;
+			case 2049: dc.SetPen(p6); break;
+			default: dc.SetPen(pwhite); break;
+			}
+			*/
+			dc.DrawRectangle(border + i*sx, border + j*sy, sx-1, sy-1);
+		}
+	}
+	// draw camera FOV
+	FPoint3 p = cam->GetTrans();
+	float fx = p.x / tg->coldim;
+	float fy = tg->rows + (p.z / tg->coldim);
+	int csx = border + fx * sx;
+	int csy = border + fy * sy;
+	dc.SetPen(pblack);
+	dc.DrawLine(csx - 10, csy, csx + 10, csy);
+	dc.DrawLine(csx, csy - 10, csx, csy + 10);
+
+	datacloud *cloud = tg->GetDataCloud();
+	if (cloud)
+	{
+		double mem = cloud->getmem();
+		wxString str;
+		str.Printf(_T("Mem %.1f MB, Total %d, Pending %d, Visible %d, Active %d, Missing %d"),
+			mem, cloud->gettotal(), cloud->getpending(), cloud->getvisible(),
+			cloud->getactive(), cloud->getmissing());
+		GetTileStatus()->SetValue(str);
+	}
 }
 
 // WDR: handler implementations for LODDlg
