@@ -1,7 +1,7 @@
 //
 // ElevLayer.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1266,14 +1266,6 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 		if (!vtCreateDir(dirname_image))
 			return false;
 
-		// Write .ini file
-		if (!WriteTilesetHeader(opts.fname_images, opts.cols, opts.rows,
-			opts.lod0size, area, proj))
-		{
-			vtDestroyDir(dirname_image);
-			return false;
-		}
-
 		vtString cmap_fname = opts.draw.m_strColorMapFile;
 		vtString cmap_path = FindFileOnPaths(GetMainFrame()->m_datapaths, "GeoTypical/" + cmap_fname);
 		if (cmap_path == "")
@@ -1284,6 +1276,9 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 				DisplayAndLog("Couldn't load color map.");
 		}
 	}
+
+	// make a note of which lods exist
+	LODMap lod_existence_map(opts.cols, opts.rows);
 
 	bool bFloat = m_pGrid->IsFloatMode();
 
@@ -1351,6 +1346,10 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 			// Omit all-zero tiles (flat sea-level) if desired
 			if (opts.bOmitFlatTiles && bAllZero)
 				continue;
+
+			// Now we know this tile will be included, so note the LODs present
+			int base_tile_exponent = vt_log2(base_tilesize);
+			lod_existence_map.set(i, j, base_tile_exponent, base_tile_exponent-(opts.numlods-1));
 
 			if (!bAllValid)
 			{
@@ -1452,10 +1451,17 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 
 	// Write .ini file
 	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
-		area, proj, minheight, maxheight))
+		area, proj, minheight, maxheight, &lod_existence_map))
 	{
 		vtDestroyDir(dirname);
 		return false;
+	}
+
+	if (opts.bCreateDerivedImages)
+	{
+		// Write .ini file for images
+		WriteTilesetHeader(opts.fname_images, opts.cols, opts.rows,
+			opts.lod0size, area, proj, INVALID_ELEVATION, INVALID_ELEVATION, &lod_existence_map);
 	}
 
 	return true;
