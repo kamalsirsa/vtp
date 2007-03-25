@@ -906,7 +906,7 @@ bool MainFrame::WriteINI()
 	if (m_fpIni)
 	{
 		wxString str = m_mgr.SavePerspective();
-		vtString vs = str.mb_str(wxConvUTF8);
+		vtString vs = (const char *) str.mb_str(wxConvUTF8);
 
 		rewind(m_fpIni);
 		fprintf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d\n", m_pView->GetShowMap(),
