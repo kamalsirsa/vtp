@@ -1244,7 +1244,7 @@ void MainFrame::ExportDymaxTexture()
 			}
 		}
 		vtString name;
-		name.Format("%s_%02d%02d.png", prefix.mb_str(wxConvUTF8),
+		name.Format("%s_%02d%02d.png", (const char *) prefix.mb_str(wxConvUTF8),
 			icosa_face_pairs[i][0]+1, icosa_face_pairs[i][1]+1);
 		success = out.WritePNG(name);
 		if (!success)
