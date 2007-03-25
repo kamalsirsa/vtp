@@ -382,3 +382,4 @@ bool wxJoystick::ReleaseCapture()
 #endif // !wxUSE_JOYSTICK
 
 #endif // WIN32
+
