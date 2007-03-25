@@ -459,7 +459,7 @@ void LinearStructureDlg::SlidersToValues(int which)
 		m_param.m_fConnectWidth  = WIDTH_MIN + m_iConnWidth *   (WIDTH_MAX - WIDTH_MIN) / 100.0f;
 		break;
 	case ID_SLOPE_SLIDER:
-		m_param.m_iConnectSlope  = SLOPE_MIN + m_iSlope *   (SLOPE_MAX - SLOPE_MIN) / 100.0f;
+		m_param.m_iConnectSlope  = SLOPE_MIN + (int) (m_iSlope * (SLOPE_MAX - SLOPE_MIN) / 100.0f);
 		break;
 	}
 }
