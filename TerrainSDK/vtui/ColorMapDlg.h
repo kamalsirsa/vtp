@@ -12,6 +12,8 @@
 	#include "wx/wx.h"
 #endif
 
+#include "wx/imaglist.h"
+
 #include "vtui_wdr.h"
 #include "AutoDialog.h"
 #include "vtdata/HeightField.h"
