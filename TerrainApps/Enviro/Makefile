@@ -14,6 +14,7 @@ IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	  -I$(TERRAIN_SDK_DIR)       \
 	  -I$(OSG_INC)               \
 	  -I$(GDAL_INC)              \
+	  -I$(MINI_INC)              \
 	  -I$(TERRAIN_APPS_DIR)/Enviro/wx/bitmap \
 	  -I$(TERRAIN_APPS_DIR)/Enviro/wx/icons \
 	  -I$(X_INC)
