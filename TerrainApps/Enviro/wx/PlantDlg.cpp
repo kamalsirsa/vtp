@@ -216,7 +216,7 @@ void PlantDlg::UpdatePlantNames()
 		if (m_bCommonNames)
 		{
 			// Display all common names in the current language
-			vtString showLang = m_strLang.mb_str(wxConvUTF8);
+			vtString showLang = (const char *) m_strLang.mb_str(wxConvUTF8);
 			int names = plant->CommonNamesOfLanguage(showLang);
 			if (names == 0)
 			{

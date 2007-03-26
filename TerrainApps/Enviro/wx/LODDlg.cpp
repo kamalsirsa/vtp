@@ -220,8 +220,8 @@ void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
 	FPoint3 p = cam->GetTrans();
 	float fx = p.x / tg->coldim;
 	float fy = tg->rows + (p.z / tg->coldim);
-	int csx = border + fx * sx;
-	int csy = border + fy * sy;
+	int csx = border + (int)(fx * sx);
+	int csy = border + (int)(fy * sy);
 	dc.SetPen(pblack);
 	dc.DrawLine(csx - 10, csy, csx + 10, csy);
 	dc.DrawLine(csx, csy - 10, csx, csy + 10);
