@@ -59,8 +59,14 @@ progress.</p>
   <li><b>Plants</b> - Opens the Plants dialog for creating plants by clicking on 
   the terrain.&nbsp; See <a href="culture.html">Working with Culture Objects</a> 
   for more information.</li>
+  <li><b>Points</b> - Use the mouse to click on the terrain to create labeled 
+  points.&nbsp; The first time you select this mode, it will ask you for the 
+  style you want (Color, Size, etc.).&nbsp; The points are generated in a new 
+  Abstract Layer, which you can view and save from the Layers Dialog.</li>
   <li><b>Instances</b> - Opens the Instances dialog for creating 3D model 
   instances by clicking on the terrain.</li>
+  <li><b>Vehicles</b> - Opens the Vehicles dialog for creating vehicle models by clicking on the terrain.&nbsp; 
+  Vehicles can be selected, moved and rotated just like instances.</li>
   <li><b>Navigate</b> - Use the mouse to fly over the terrain.&nbsp; See <a href="Navigation/index.html">using
     the mouse to navigate</a>.</li>
   <li><b>Measure Distances</b> - Opens the Distance dialog.&nbsp; Drag a line on 
@@ -85,11 +91,19 @@ progress.</p>
   <li><b>Cull once</b> - When Cull Every Frame is turned off, this tells the 
   CLOD to calculate (cull).</li>
   <li>
-  <p style="margin-top: 9"><b>Show Sky</b> (toggle) - The Skydome object.</li>
-  <li><b>Show Ocean</b> (toggle) - The Skydome object.</li>
-  <li><b>Show Plants</b> (toggle) - The Skydome object.</li>
-  <li><b>Show Structures</b> (toggle) - The Skydome object.</li>
-  <li><b>Show Roads</b> (toggle) - The Skydome object.</li>
+  <p style="margin-top: 9"><b>Show Sky</b> (toggle) - The sky (Skydome) is a 
+  hemisphere which surround the camera, showing either a static texture, or 
+  correct lighting for the time of day (sun, moon, stars, sunrise, sunset).</li>
+  <li><b>Show Horizon</b> (toggle) - The horizon is the flat geometry between 
+  the edge of the terrain and the far clipping plane.</li>
+  <li><b>Show Ocean</b> (toggle) - The ocean plane is an additional flat 
+  geometry which intersects the entire terrain, with a watery translucent 
+  texture.</li>
+  <li><b>Show Plants</b> (toggle) - You can turn all plants (the Vegetation 
+  Layer) on and off.</li>
+  <li><b>Show Structures</b> (toggle).</li>
+  <li><b>Show Roads</b> (toggle).</li>
+  <li><b>Show Fog</b> (toggle).</li>
   <li>
   <p style="margin-top: 9"><b>Increase Detail</b> - Increases the detail 
   (triangles or vertices used) of the CLOD terrain surface by 1000.&nbsp; If 
@@ -98,7 +112,8 @@ progress.</p>
   <li><b>Decrease Detail</b> - Decreases the detail (triangles or vertices used) 
   of the CLOD terrain surface by 1000.</li>
   <li><b>Level of Detail Info</b> - Shows the Terrain LOD Info dialog with 
-  technical information about the CLOD algorithm.</li>
+  technical information about the CLOD algorithm and (if you are using Tilesets) 
+  the texture paging.</li>
   <li>
   <p style="margin-top: 9"><b>Toggle Artificial Foundations</b> - For the 
   current structure layer, each building which lies on a slope has a cement 
@@ -110,6 +125,9 @@ progress.</p>
   seeing what a terrain looks like at different times of day.</li>
   <li><b>Change Texture</b> - Opens the Change Texture dialog to let you change 
   the texture on the terrain.</li>
+  <li><b>Distribute Vehicles</b> - Puts a number of test vehicles around your 
+  road network, where they will will traverse randomly.&nbsp; This is not a real 
+  simulation, just a simple test.</li>
 </ul>
 
 </blockquote>
