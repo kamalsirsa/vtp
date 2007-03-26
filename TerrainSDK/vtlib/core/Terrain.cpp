@@ -2110,7 +2110,9 @@ bool vtTerrain::CreateStep1()
 		m_pTiledGeom->SetTileCacheSize(tile_cache_mb * 1024 * 1024);
 
 		bool bThread = m_Params.GetValueBool(STR_TILE_THREADING);
-		bool status = m_pTiledGeom->ReadTileList(elev_path, tex_path, bThread);
+		bool bGradual = m_Params.GetValueBool(STR_TEXTURE_GRADUAL);
+		bool status = m_pTiledGeom->ReadTileList(elev_path, tex_path,
+			bThread, bGradual);
 
 		if (status == false)
 		{

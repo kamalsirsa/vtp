@@ -54,7 +54,7 @@ public:
 	~vtTiledGeom();
 
 	bool ReadTileList(const char *dataset_fname_elev,
-		const char *dataset_fname_image, bool bThreading);
+		const char *dataset_fname_image, bool bThreading, bool bGradual);
 	void SetVerticalExag(float fExag);
 	float GetVerticalExag() { return m_fDrawScale; }
 	void SetVertexTarget(int iVertices);
@@ -144,7 +144,7 @@ protected:
 	class minicache *m_pMiniCache;	// This is cache of OpenGL primitives to be rendered
 	class datacloud *m_pDataCloud;
 
-	void SetupMiniLoad(bool bThreading);
+	void SetupMiniLoad(bool bThreading, bool bGradual);
 };
 
 /*@}*/	// Group dynterr

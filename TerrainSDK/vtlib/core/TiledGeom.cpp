@@ -16,6 +16,7 @@
 #include "datacloud.hpp"
 #include "miniOGL.h"
 
+// If we use the pthreads library, we can support multithreading
 #define SUPPORT_PTHREADING	1
 
 #if SUPPORT_PTHREADING
@@ -283,6 +284,15 @@ int check_callback(unsigned char *mapfile, int istexture, void *data)
 	return tg->CheckMapFile((char *)mapfile, istexture != 0);
 }
 
+int inquiry_callback(int col, int row, unsigned char *mapfile, int hlod,
+					  void *data, float *minvalue, float *maxvalue)
+{
+	vtTiledGeom *tg = (vtTiledGeom*) data;
+	*minvalue = tg->m_elev_info.minheight;
+	*maxvalue = tg->m_elev_info.maxheight;
+	return 1;
+}
+
 void query_callback(int col, int row, unsigned char *texfile, int tlod,
 					void *data, int *tsizex, int *tsizey)
 {
@@ -360,7 +370,8 @@ vtTiledGeom::~vtTiledGeom()
 }
 
 bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev,
-							   const char *dataset_fname_image, bool bThreading)
+							   const char *dataset_fname_image,
+							   bool bThreading, bool bGradual)
 {
 	if (!m_elev_info.Read(dataset_fname_elev))
 		return false;
@@ -460,7 +471,7 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev,
 
 	setminierrorhandler(mini_error_handler);
 
-	SetupMiniLoad(bThreading);
+	SetupMiniLoad(bThreading, bGradual);
 
 	// The miniload constructor has copied all the strings we passed to it,
 	//  so we should delete the original copy of them
@@ -497,7 +508,7 @@ void vtTiledGeom::SetVertexTarget(int iVertices)
 	m_bNeedResolutionAdjust = true;
 }
 
-void vtTiledGeom::SetupMiniLoad(bool bThreading)
+void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 {
 	VTLOG("Calling miniload constructor(%d,%d,..)\n", cols, rows);
 	m_pMiniLoad = new miniload(hfields, textures,
@@ -572,7 +583,7 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading)
 	//	- then for each frame only a small fraction of the tiles is
 	//		updated in order to limit the update latencies
 	//	- a value of zero means that one tile is updated per frame
-	int pupdate = 300;
+	int pupdate = 120;
 
 	//expire: expiration time
 	//	- determines the number of frames after which invisible tiles
@@ -619,10 +630,13 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading)
 		   paging, pfarp, prange, pbasesize, plazyness, pupdate, pexpire);
 
 		// optional callback for better paging performance
+		m_pDataCloud->setinquiry(inquiry_callback, this);
+
+		// optional callback for better paging performance
 		m_pDataCloud->setquery(query_callback, this);
 
-		// upload for 10ms and keep for 5min
-		m_pDataCloud->setschedule(0.01, 5.0);
+		// upload for 10ms and keep for 18 seconds (0.3 minutes)
+		m_pDataCloud->setschedule(0.01, 0.3);
 
 		// allow 512 MB tile cache size?
 	//	m_pDataCloud->setmaxsize(512.0);
@@ -630,7 +644,26 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading)
 
 		m_pDataCloud->setthread(startthread, NULL, jointhread, lock_cs, unlock_cs);
 		m_pDataCloud->setmulti(numthreads);
+
 		threadinit();
+
+		// If the user wants, start with minimal tileset and load first tiles gradually
+		if (bGradual)
+		{
+			float rx = center.x;
+			float rz = center.z;
+			//float rrad = prange;
+			float rrad = 1.0f;
+			// This will start with a _very_ minimal tileset of 2x2 tiles
+			//m_pMiniLoad->restrictroi(rx, rz, rrad);
+
+			float res = TILEDGEOM_RESOLUTION_MIN;
+			float ex = center.x;
+			float ey = 10*farp;
+			float ez = center.z;
+			// This ensures that lowest detail is loaded first
+			m_pMiniLoad->updateroi(res, ex, ey, ez, rx, rz, rrad);
+		}
 	}
 #endif // THREADED
 }
