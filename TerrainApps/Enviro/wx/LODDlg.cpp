@@ -231,9 +231,8 @@ void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
 	{
 		double mem = cloud->getmem();
 		wxString str;
-		str.Printf(_T("Mem %.1f MB, Total %d, Pending %d, Visible %d, Active %d, Missing %d"),
-			mem, cloud->gettotal(), cloud->getpending(), cloud->getvisible(),
-			cloud->getactive(), cloud->getmissing());
+		str.Printf(_T("Mem %.1f MB, Total %d, Pending %d, Missing %d"),
+			mem, cloud->gettotal(), cloud->getpending(), cloud->getmissing());
 		GetTileStatus()->SetValue(str);
 	}
 
