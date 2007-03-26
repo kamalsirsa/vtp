@@ -88,6 +88,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_TILESIZE, "512");
 	AddTag(STR_TEXTUREFILE, "");
 	AddTag(STR_TEXTUREBASE, "");
+	AddTag(STR_TEXTURE_GRADUAL, "false");
 	AddTag(STR_MIPMAP, "false");
 	AddTag(STR_REQUEST16BIT, "true");
 	AddTag(STR_PRELIGHT, "true");
