@@ -198,7 +198,7 @@ void StyleDlg::GetOptions(vtTagArray &pLayer)
 	if (m_bTextureOverlay)
 	{
 		pLayer.SetValueBool("TextureOverlay", m_bTextureOverlay, true);
-		vtString modename = m_strTextureMode.mb_str(wxConvUTF8);
+		vtString modename = (const char *) m_strTextureMode.mb_str(wxConvUTF8);
 		pLayer.SetValueString("TextureMode", modename);
 	}
 	else
