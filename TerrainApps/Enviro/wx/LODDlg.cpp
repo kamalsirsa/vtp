@@ -236,6 +236,12 @@ void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
 			cloud->getactive(), cloud->getmissing());
 		GetTileStatus()->SetValue(str);
 	}
+
+	// These always return the whole extents, for some reason
+	int left = mt->getvisibleleft();
+	int right = mt->getvisibleright();
+	int bottom = mt->getvisiblebottom();
+	int top = mt->getvisibletop();
 }
 
 // WDR: handler implementations for LODDlg
