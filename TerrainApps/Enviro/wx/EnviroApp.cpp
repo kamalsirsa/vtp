@@ -234,17 +234,25 @@ bool EnviroApp::OnInit()
 	vtString fname = FindFileOnPaths(g_Options.m_DataPaths, g_Options.m_strContentFile);
 	if (fname != "")
 	{
-		VTLOG("  Loading content file.\n");
+		bool success = true;
+		vtContentManager3d &con = vtGetContent();
+		VTLOG1("  Loading content file.\n");
 		try {
-			vtGetContent().ReadXML(fname);
+			con.ReadXML(fname);
 		}
-		catch (xh_io_exception &e) {
+		catch (xh_io_exception &e)
+		{
+			success = false;
 			string str = e.getFormattedMessage();
 			VTLOG("  Error: %s\n", str.c_str());
 		}
+		if (success)
+			VTLOG("   Load successful, %d items\n", con.NumItems());
+		else
+			VTLOG1("   Load not successful.\n");
 	}
 	else
-		VTLOG("  Couldn't find it.\n");
+		VTLOG1("  Couldn't find it.\n");
 
 	//
 	// Create the main frame window
