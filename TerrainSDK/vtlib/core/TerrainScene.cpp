@@ -164,13 +164,15 @@ vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 	VTLOG("FindTerrainByName (%s):\n", name);
 	for (unsigned int i = 0; i < NumTerrains(); i++)
 	{
-		if (m_Terrains[i]->GetName() == name)
+		vtString tname = m_Terrains[i]->GetName();
+		//VTLOG(" %d: %s\n", i, (const char *) tname);
+		if (tname == name)
 		{
 			VTLOG("  found terrain number %d.\n", i);
 			return m_Terrains[i];
 		}
 	}
-	VTLOG("  not found.\n");
+	VTLOG1("  not found.\n");
 	return NULL;
 }
 
