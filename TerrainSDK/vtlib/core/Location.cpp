@@ -199,7 +199,12 @@ void vtLocationSaver::SetProjection(const vtProjection &proj)
 
 	// convert from projected to global CS
 	vtProjection global_proj;
-	global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+	OGRErr err = global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+	if (err != OGRERR_NONE)
+	{
+		VTLOG("Can't set location saver's projection, error %d\n", err);
+		return;
+	}
 
 	delete m_pConvertToWGS;
 	delete m_pConvertFromWGS;
