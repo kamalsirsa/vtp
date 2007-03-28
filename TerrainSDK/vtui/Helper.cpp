@@ -1,7 +1,7 @@
 //
 // Some useful standalone functions for use with wxWindows.
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,8 @@
 
 #include "wx/image.h"
 #include "wx/progdlg.h"
+
+#include "DoubleProgDlg.h"
 
 #include "vtdata/FilePath.h"	// for dir_iter
 #include "vtdata/vtLog.h"
@@ -424,6 +426,7 @@ void OpenProgressDialog(const wxString &title, bool bCancellable, wxWindow *pPar
 	int style = wxPD_AUTO_HIDE | wxPD_APP_MODAL;
 	if (bCancellable)
 		style |= wxPD_CAN_ABORT;
+	style |= wxPD_SMOOTH;
 
 	s_bOpen = true;
 	g_pProg = new wxProgressDialog(title, message, 100, pParent, style);
@@ -457,6 +460,80 @@ bool UpdateProgressDialog(int amount, const wxString& newmsg)
 		value = (g_pProg->Update(amount, newmsg) == false);
 	return value;
 }
+
+
+///////////////////////////////////////////////////////////////////////
+// Shared Double Progress Dialog Functionality
+//
+
+static bool s_bOpen2 = false;
+DoubleProgressDialog *g_pProg2 = NULL;
+
+bool progress_callback2(int amount1, int amount2)
+{
+	bool value = false;
+	// Update() returns false if the Cancel button has been pushed
+	// but this functions return _true_ if user wants to cancel
+	if (g_pProg2)
+		value = (g_pProg2->Update(amount1, amount2) == false);
+	return value;
+}
+
+bool progress_callback_minor(int amount)
+{
+	bool value = false;
+	// Update() returns false if the Cancel button has been pushed
+	// but this functions return _true_ if user wants to cancel
+	if (g_pProg2)
+		value = (g_pProg2->Update(-1, amount) == false);
+	return value;
+}
+
+void OpenProgressDialog2(const wxString &title, bool bCancellable, wxWindow *pParent)
+{
+	if (s_bOpen2)
+		return;
+
+	// force the window to be wider by giving a dummy string
+	wxString message = _T("___________________________________");
+	int style = wxPD_AUTO_HIDE | wxPD_APP_MODAL;
+	if (bCancellable)
+		style |= wxPD_CAN_ABORT;
+	style |= wxPD_SMOOTH;
+
+	s_bOpen2 = true;
+	g_pProg2 = new DoubleProgressDialog(title, message, pParent, style);
+	g_pProg2->Show(true);
+	g_pProg2->Update(0, 0, _T(" "));
+}
+
+void CloseProgressDialog2()
+{
+	if (g_pProg2)
+	{
+		g_pProg2->Destroy();
+		g_pProg2 = NULL;
+		s_bOpen2 = false;
+	}
+}
+
+void ResumeProgressDialog2()
+{
+	if (g_pProg2)
+		g_pProg2->Resume();
+}
+
+//
+// returns true if the user pressed the "Cancel" button
+//
+bool UpdateProgressDialog2(int amount1, int amount2, const wxString& newmsg)
+{
+	bool value = false;
+	if (g_pProg2)
+		value = (g_pProg2->Update(amount1, amount2, newmsg) == false);
+	return value;
+}
+#endif
 
 
 //////////////////////////////////////
