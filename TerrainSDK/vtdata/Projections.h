@@ -1,7 +1,7 @@
 //
 // Projections.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Derived from public-domain USGS software.
@@ -157,6 +157,12 @@ double GetMetersPerUnit(LinearUnits lu);
  * Return a string describing the units.
  */
 const char *GetLinearUnitName(LinearUnits lu);
+
+/**
+ * Read the contents of a world file.  You can pass any filename, and it will
+ * look for the corresponding world file.
+ */
+bool ReadAssociatedWorldFile(const char *filename_base, double params[6]);
 
 ///////////////////////////
 

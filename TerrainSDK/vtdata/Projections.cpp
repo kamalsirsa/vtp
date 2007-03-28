@@ -1,7 +1,7 @@
 //
 // Projections.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Parts of the code are derived from public-domain USGS software.
@@ -1135,6 +1135,35 @@ const char *GetLinearUnitName(LinearUnits lu)
 	case LU_UNITEDGE:  return "UnitEdge";
 	}
 	return "Unknown";
+}
+
+bool ReadAssociatedWorldFile(const char *filename_base, double params[6])
+{
+	// Look for the file with a variety of possible extensions
+	FILE *fp = NULL;
+	vtString ext = GetExtension(filename_base), fname;
+	if (!ext.CompareNoCase(".jpg"))
+		fname = ChangeFileExtension(filename_base, ".jgw");
+	else if (!ext.CompareNoCase(".png"))
+		fname = ChangeFileExtension(filename_base, ".pgw");
+	else if (!ext.CompareNoCase(".tif"))
+		fname = ChangeFileExtension(filename_base, ".tfw");
+	else
+		fname = ChangeFileExtension(filename_base, ".wld");
+	fp = fopen(fname, "rb");
+	if (!fp && GetExtension(fname) != ".wld")
+	{
+		fname = ChangeFileExtension(filename_base, ".wld");
+		fp = fopen(fname, "rb");
+	}
+	if (!fp)
+		return false;
+
+	// read the parameters
+	for (int i = 0; i < 6; i++)
+		fscanf(fp, "%lf", &params[i]);
+	fclose(fp);
+	return true;
 }
 
 static const char *papszDatumEquiv[] =
