@@ -13,12 +13,12 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
-			IntermediateDirectory=".\Debug"
+			OutputDirectory=".\Debug-Unicode"
+			IntermediateDirectory=".\Debug-Unicode"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -29,10 +29,6 @@
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="wx/wxprec.h"
-				PrecompiledHeaderFile=".\Debug/wxSimple.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -43,13 +39,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib opengl32.lib netcdf.lib libpng13d.lib zlib1d.lib gdal_id.lib glu32.lib libjpeg.lib"
-				OutputFile=".\Debug/wxSimple.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="C:\APIs\sgl-0.6.0\lib\platform.msvc60.i686.dbg"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="libc.lib,libcd.lib,libcmt.lib,msvcrt.lib,libcmtd.lib"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/wxSimple.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
@@ -83,12 +77,12 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\Release"
-			IntermediateDirectory=".\Release"
+			OutputDirectory=".\Release-Unicode"
+			IntermediateDirectory=".\Release-Unicode"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			CharacterSet="1">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
@@ -101,10 +95,6 @@
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="wx/wxprec.h"
-				PrecompiledHeaderFile=".\Release/wxSimple.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
@@ -113,12 +103,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib osgUtil.lib osgDB.lib osgText.lib opengl32.lib netcdf.lib libpng13.lib zlib1.lib gdal_i.lib glu32.lib libjpeg.lib"
-				OutputFile=".\Release/wxSimple.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="\APIs\libpng-1.0.8,\APIs\netcdf-3.5.0.win32bin\lib"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="libc.lib"
-				ProgramDatabaseFile=".\Release/wxSimple.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
