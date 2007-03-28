@@ -173,6 +173,9 @@
 				RelativePath=".\DistanceDlg.cpp">
 			</File>
 			<File
+				RelativePath=".\DoubleProgDlg.cpp">
+			</File>
+			<File
 				RelativePath=".\Helper.cpp">
 			</File>
 			<File
@@ -273,6 +276,9 @@
 			</File>
 			<File
 				RelativePath=".\DistanceDlg.h">
+			</File>
+			<File
+				RelativePath=".\DoubleProgDlg.h">
 			</File>
 			<File
 				RelativePath=".\Helper.h">
