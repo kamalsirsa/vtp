@@ -1,7 +1,7 @@
 //
 // Options.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -40,6 +40,7 @@ EnviroOptions g_Options;
 #define STR_CATENARY_FACTOR "CatenaryFactor"
 #define STR_MAX_INST_RADIUS "MaxPickableInstanceRadius"
 #define STR_DIRECT_PICKING "DirectPicking"
+#define STR_SHOW_PROGRESS "ShowProgress"
 
 EnviroOptions::EnviroOptions()
 {
@@ -64,6 +65,8 @@ EnviroOptions::EnviroOptions()
 	m_fPlantScale = 1.0f;
 	m_bOnlyAvailableSpecies = true;
 	m_fCatenaryFactor = 140.0f;
+
+	m_bShowProgress = true;
 }
 
 EnviroOptions::~EnviroOptions()
@@ -149,6 +152,8 @@ bool EnviroOptions::ReadINI(const char *szFilename)
 		}
 		else if (strcmp(buf, STR_MAX_INST_RADIUS) == 0)
 			input >> m_fMaxPickableInstanceRadius;
+		else if (strcmp(buf, STR_SHOW_PROGRESS) == 0)
+			input >> m_bShowProgress;
 		else
 		{
 //			cout << "Input from INI file unrecognized.\n";
@@ -250,6 +255,8 @@ void EnviroOptionsVisitor::endElement(const char *name)
 
 	else if (strcmp(name, STR_CONTENT_FILE) == 0)
 		m_opt.m_strContentFile = str;
+	else if (strcmp(name, STR_SHOW_PROGRESS) == 0)
+		s2b(m_data, m_opt.m_bShowProgress);
 }
 
 bool EnviroOptions::ReadXML(const char *fname)
@@ -349,6 +356,7 @@ bool EnviroOptions::WriteXML()
 	WriteElemF(output, STR_CATENARY_FACTOR, m_fCatenaryFactor);
 	WriteElem(output, STR_CONTENT_FILE, m_strContentFile);
 	WriteElemF(output, STR_MAX_INST_RADIUS, m_fMaxPickableInstanceRadius);
+	WriteElemB(output, STR_SHOW_PROGRESS, m_bShowProgress);
 
 	output << "</EnviroOptions>" << std::endl;
 

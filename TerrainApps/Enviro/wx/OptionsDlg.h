@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.h
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -68,8 +68,9 @@ private:
 //  bool	m_bShadows;
 	bool	m_bOnlyAvailableSpecies;
 
-	int	  m_iContentFile;
+	int		m_iContentFile;
 	wxString   m_strContentFile;
+	bool	m_bShowProgress;
 
 private:
 	// WDR: handler declarations for OptionsDlg
@@ -81,7 +82,4 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-
-
-
-#endif
+#endif	// __OptionsDlg_H__

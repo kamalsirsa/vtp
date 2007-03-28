@@ -1,7 +1,7 @@
 //
 // Options.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -54,6 +54,8 @@ public:
 	float	m_fCatenaryFactor;
 
 	vtString	m_strContentFile;
+
+	bool	m_bShowProgress;
 
 	// filename (with path) from which ini was read
 	vtString m_strFilename;

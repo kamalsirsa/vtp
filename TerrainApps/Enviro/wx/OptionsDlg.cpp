@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.cpp
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -32,6 +32,7 @@ BEGIN_EVENT_TABLE(OptionsDlg,AutoDialog)
 	EVT_CHECKBOX( ID_FULLSCREEN, OptionsDlg::OnCheck )
 	EVT_CHECKBOX( ID_STEREO, OptionsDlg::OnCheck )
 	EVT_CHECKBOX( ID_DIRECT_PICKING, OptionsDlg::OnCheck )
+	EVT_CHECKBOX( ID_TERRAIN_PROGRESS, OptionsDlg::OnCheck )
 	EVT_BUTTON( wxID_OK, OptionsDlg::OnOK )
 END_EVENT_TABLE()
 
@@ -65,6 +66,8 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddValidator(ID_CHOICE_CONTENT, &m_iContentFile);
 	AddValidator(ID_CHOICE_CONTENT, &m_strContentFile);
+
+	AddValidator(ID_TERRAIN_PROGRESS, &m_bShowProgress);
 }
 
 
@@ -91,6 +94,7 @@ void OptionsDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_bOnlyAvailableSpecies = opt.m_bOnlyAvailableSpecies;
 
 	m_strContentFile = wxString(opt.m_strContentFile, wxConvUTF8);
+	m_bShowProgress = opt.m_bShowProgress;
 }
 
 void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
@@ -116,6 +120,7 @@ void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
 	opt.m_bOnlyAvailableSpecies = m_bOnlyAvailableSpecies;
 
 	opt.m_strContentFile = m_strContentFile.mb_str(wxConvUTF8);
+	opt.m_bShowProgress = m_bShowProgress;
 }
 
 void OptionsDlg::UpdateEnabling()
