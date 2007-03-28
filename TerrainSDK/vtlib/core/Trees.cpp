@@ -9,7 +9,7 @@
 // vtPlantInstance3d
 // vtPlantInstanceArray3d
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -564,7 +564,7 @@ vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(unsigned int i) const
 	return m_Instances3d.GetAt(i);
 }
 
-int vtPlantInstanceArray3d::CreatePlantNodes()
+int vtPlantInstanceArray3d::CreatePlantNodes(bool progress_dialog(int))
 {
 	unsigned int i, size = GetNumEntities();
 	int created = 0;
@@ -578,6 +578,9 @@ int vtPlantInstanceArray3d::CreatePlantNodes()
 
 		if (CreatePlantNode(i))
 			created++;
+
+		if (progress_dialog != NULL)
+			progress_dialog(i * 100 / size);
 	}
 	return created;
 }

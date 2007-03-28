@@ -1,7 +1,7 @@
 //
 // Roads.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -173,7 +173,7 @@ public:
 	void DrapeOnTerrain(vtHeightField3d *pHeightField);
 	void BuildIntersections();
 	void AddMeshToGrid(vtMesh *pMesh, int iMatIdx);
-	vtGroup *GenerateGeometry(bool do_texture);
+	vtGroup *GenerateGeometry(bool do_texture, bool progress_callback(int) = NULL);
 	void GenerateSigns(vtLodGrid *pLodGrid);
 	vtGroup *GetGroup() { return m_pGroup; }
 	void SetHeightOffGround(float fHeight) { s_fHeight = fHeight; }

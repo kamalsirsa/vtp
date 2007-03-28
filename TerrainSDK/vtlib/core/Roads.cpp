@@ -3,7 +3,7 @@
 //
 // also shorelines and rivers
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -826,7 +826,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 }
 
 
-vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture)
+vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture, bool progress_callback(int))
 {
 	VTLOG("   vtRoadMap3d::GenerateGeometry\n");
 	VTLOG("   Nodes %d, Links %d\n", NumNodes(), NumLinks());
@@ -853,11 +853,13 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture)
 #endif
 
 	vtMesh *pMesh;
-	int count = 0;
+	int count = 0, total = NumLinks() + NumNodes();
 	for (LinkGeom *pL = GetFirstLink(); pL; pL=(LinkGeom *)pL->m_pNext)
 	{
 		pL->GenerateGeometry(this);
 		count++;
+		if (progress_callback != NULL)
+			progress_callback(count * 100 / total);
 	}
 	count = 0;
 	for (NodeGeom *pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
@@ -866,6 +868,8 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture)
 		if (pMesh)
 			AddMeshToGrid(pMesh, m_mi_pavement);	// TODO: correct matidx
 		count++;
+		if (progress_callback != NULL)
+			progress_callback(count * 100 / total);
 	}
 
 	// return top roadmap group, ready to be added to scene graph

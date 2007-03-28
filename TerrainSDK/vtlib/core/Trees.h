@@ -1,7 +1,7 @@
 //
 // Trees.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -136,7 +136,7 @@ public:
 	vtPlantInstanceArray3d();
 	~vtPlantInstanceArray3d();
 
-	int CreatePlantNodes();
+	int CreatePlantNodes(bool progress_dialog(int) = NULL);
 	bool CreatePlantNode(unsigned int i);
 	int NumOffTerrain() { return m_iOffTerrain; }
 
