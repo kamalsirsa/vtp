@@ -1,7 +1,7 @@
 //
 // Terrain.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -66,6 +66,7 @@ enum TFType
 	TFT_ROADS
 };
 
+typedef bool (*ProgFuncPtrType)(int);
 
 /**
  * The vtTerrain class represents a terrain, which is a part of the surface
@@ -141,6 +142,10 @@ public:
 	bool CreateStep4();
 	bool CreateStep5();
 	vtString GetLastError() { return m_strErrorMsg; }
+
+	void SetProgressCallback(ProgFuncPtrType progress_callback = NULL);
+	ProgFuncPtrType m_progress_callback;
+	bool ProgressCallback(int i);
 
 	/// Set the colors to be used in a derived texture.
 	void SetTextureColors(ColorMap *colors);

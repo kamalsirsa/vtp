@@ -90,6 +90,7 @@ vtTerrain::vtTerrain()
 	m_CenterGeoLocation.Set(-999, -999);	// initially unknown
 
 	m_pOverlay = NULL;
+	m_progress_callback = NULL;
 }
 
 vtTerrain::~vtTerrain()
@@ -336,7 +337,9 @@ void vtTerrain::_CreateRoads()
 	m_pRoadMap->BuildIntersections();
 
 	m_pRoadMap->SetLodDistance(m_Params.GetValueFloat(STR_ROADDISTANCE) * 1000);	// convert km to m
-	m_pRoadGroup = m_pRoadMap->GenerateGeometry(m_Params.GetValueBool(STR_TEXROADS));
+
+	bool bDoTexture = m_Params.GetValueBool(STR_TEXROADS);
+	m_pRoadGroup = m_pRoadMap->GenerateGeometry(bDoTexture, m_progress_callback);
 	m_pTerrainGroup->AddChild(m_pRoadGroup);
 
 	if (m_Params.GetValueBool(STR_ROADCULTURE))
@@ -1199,6 +1202,8 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 		bool bSuccess = CreateStructure(structures, i);
 		if (bSuccess)
 			suceeded++;
+		if (m_progress_callback != NULL)
+			m_progress_callback(i * 100 / num_structs);
 	}
 	VTLOG("\tSuccessfully created and added %d of %d structures.\n",
 		suceeded, num_structs);
@@ -1544,7 +1549,7 @@ void vtTerrain::_CreateVegetation()
 	}
 	VTLOG1("  Creating Plant geometry..\n");
 	// Create the 3d plants
-	int created = m_PIA.CreatePlantNodes();
+	int created = m_PIA.CreatePlantNodes(m_progress_callback);
 	VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetNumEntities());
 	if (m_PIA.NumOffTerrain())
 		VTLOG("\t%d were off the terrain.\n", m_PIA.NumOffTerrain());
@@ -2016,7 +2021,7 @@ bool vtTerrain::CreateStep1()
 		m_pElevGrid = new vtElevationGrid;
 
 		vtElevGridError err;
-		bool status = m_pElevGrid->LoadFromBT(elev_path, NULL, &err);
+		bool status = m_pElevGrid->LoadFromBT(elev_path, m_progress_callback, &err);
 		if (status == false)
 		{
 			if (err == EGE_READ_CRS)
@@ -2151,7 +2156,7 @@ bool vtTerrain::CreateStep2(vtTransform *pSunLight)
 	int tex = m_Params.GetValueInt(STR_TEXTURE);
 	if (type == 0 ||	// single grid
 		(type == 1 && tex == 1))	// TIN, single texture
-		_CreateTextures(pSunLight->GetDirection());
+		_CreateTextures(pSunLight->GetDirection(), m_progress_callback);
 	return true;
 }
 
@@ -2333,6 +2338,19 @@ bool vtTerrain::CreateStep5()
 	}
 
 	return true;
+}
+
+void vtTerrain::SetProgressCallback(ProgFuncPtrType progress_callback)
+{
+	m_progress_callback = progress_callback;
+}
+
+bool vtTerrain::ProgressCallback(int i)
+{
+	if (m_progress_callback != NULL)
+		return m_progress_callback(i);
+	else
+		return false;
 }
 
 bool vtTerrain::IsCreated()
