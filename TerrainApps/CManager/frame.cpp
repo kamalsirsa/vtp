@@ -215,17 +215,26 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	Show(true);
 
 	// Load the font
-	const char *fontname = "Fonts/Arial.ttf";
-	vtString font_path = FindFileOnPaths(vtFrame::m_DataPaths, fontname);
-	if (font_path == "")
+#if VTLIB_OPENSG
+	vtString fontfile = "Arial.txf";
+#else
+	vtString fontfile = "Arial.ttf";
+#endif
+	m_pFont = new vtFont;
+	bool success = m_pFont->LoadFont(fontfile);
+	if (!success)
 	{
-		VTLOG("Couldn't find or read font from file '%s'\n", fontname);
-		m_pFont = NULL;
-	}
-	else
-	{
-		m_pFont = new vtFont();
-		m_pFont->LoadFont(font_path);
+		vtString fontname = "Fonts/" + fontfile;
+		vtString font_path = FindFileOnPaths(vtFrame::m_DataPaths, fontname);
+		if (font_path != "")
+			success = m_pFont->LoadFont(font_path);
+		if (!success)
+		{
+			VTLOG("Couldn't find or read font from file '%s'\n",
+				(const char *) fontname);
+			delete m_pFont;
+			m_pFont = NULL;
+		}
 	}
 
 #if VTLIB_OSG && 0
@@ -1000,7 +1009,7 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 void vtFrame::AddNewItem()
 {
 	VTLOG("Creating new Item\n");
-	vtItem *pItem = new vtItem();
+	vtItem *pItem = new vtItem;
 	pItem->m_name = "untitled";
 	m_Man.AddItem(pItem);
 	SetCurrentItemAndModel(pItem, NULL);
@@ -1039,7 +1048,7 @@ vtModel *vtFrame::AddModel(const wxString &fname_in)
 	if (!m_pCurrentItem)
 		AddNewItem();
 
-	vtModel *new_model = new vtModel();
+	vtModel *new_model = new vtModel;
 	new_model->m_filename = fname;
 
 	vtNode *node = AttemptLoad(new_model);
@@ -1092,7 +1101,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	pNode->GetBoundSphere(sphere);
 
 	// Wrap in a transform node so that we can scale/rotate the node
-	vtTransform *pTrans = new vtTransform();
+	vtTransform *pTrans = new vtTransform;
 	pTrans->SetName2("Scaling Transform");
 	pTrans->AddChild(pNode);
 
