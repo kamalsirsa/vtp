@@ -3,7 +3,7 @@
 //
 // Implementation of vtScene for the OSG library
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -256,7 +256,10 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 
 	CalcCullPlanes();
 
-#define USE_OSG_UPDATE 0	// We don't actually need OSG's "update" functionality
+	// We don't actually need OSG's "update" functionality, but enabling it
+	//  avoids some potential crashing if they try to load something like a
+	//  OSG file with particle effects in it.
+#define USE_OSG_UPDATE 1
 
 #if USE_OSG_UPDATE
 	// record the timer tick at the start of rendering.
