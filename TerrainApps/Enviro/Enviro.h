@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -237,6 +237,9 @@ public:
 	virtual void ShowMessage(const vtString &str) {}
 	virtual void SetState(AppState s) { m_state = s; }
 	virtual vtString GetStringFromUser(const vtString &title, const vtString &msg) = 0;
+	virtual void ShowProgress(bool bShow) {}
+	virtual void SetProgressTerrain(vtTerrain *pTerr) {}
+	virtual void UpdateProgress(const char *msg, int amount1, int amount2) {}
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;

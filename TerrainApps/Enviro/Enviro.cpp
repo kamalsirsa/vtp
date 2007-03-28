@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -335,10 +335,16 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 	// Load the species file and check which appearances are available
 	LoadSpeciesList();
 
-				SetState(AS_MovingIn);
+	SetState(AS_MovingIn);
 	m_pTargetTerrain = pTerr;
 	m_iInitStep = 0;
 	FreeArc();
+
+	if (g_Options.m_bShowProgress)
+	{
+		ShowProgress(true);
+		SetProgressTerrain(pTerr);
+	}
 
 	// Layer view needs to update
 	RefreshLayerView();
@@ -355,6 +361,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		vtString str;
 		str.Format("Creating Terrain '%s'", (const char*) pTerr->GetName());
 		SetMessage(str);
+		UpdateProgress(m_strMessage, 10, 0);
 	}
 	else if (m_iInitStep == 2)
 	{
@@ -362,6 +369,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			m_iInitStep = 8;	// already made, skip ahead
 		else
 			SetMessage("Loading Elevation");
+		UpdateProgress(m_strMessage, 20, 0);
 	}
 	if (m_iInitStep == 3)
 	{
@@ -374,6 +382,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			return;
 		}
 		SetMessage("Loading/Chopping/Prelighting Textures");
+		UpdateProgress(m_strMessage, 30, 0);
 	}
 	else if (m_iInitStep == 4)
 	{
@@ -393,7 +402,8 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
-		SetMessage("Building Terrain");
+		SetMessage("Processing Elevation");
+		UpdateProgress(m_strMessage, 40, 0);
 	}
 	else if (m_iInitStep == 5)
 	{
@@ -404,6 +414,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			return;
 		}
 		SetMessage("Building CLOD");
+		UpdateProgress(m_strMessage, 50, 0);
 	}
 	else if (m_iInitStep == 6)
 	{
@@ -414,6 +425,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			return;
 		}
 		SetMessage("Creating Culture");
+		UpdateProgress(m_strMessage, 60, 0);
 	}
 	else if (m_iInitStep == 7)
 	{
@@ -421,6 +433,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		{
 			SetState(AS_Error);
 			SetMessage(pTerr->GetLastError());
+			ShowProgress(false);
 			return;
 		}
 
@@ -447,6 +460,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		mat.Identity();
 		mat.SetTrans(middle);
 		pTerr->SetCamLocation(mat);
+		UpdateProgress(m_strMessage, 70, 0);
 	}
 	else if (m_iInitStep == 8)
 	{
@@ -454,12 +468,14 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		vtCamera *pCam = vtGetScene()->GetCamera();
 		pCam->SetHither(pTerr->GetParams().GetValueFloat(STR_HITHER));
 		pCam->SetYon(500000.0f);
+		UpdateProgress(m_strMessage, 80, 0);
 	}
 	else if (m_iInitStep == 9)
 	{
 		VTLOG("Setting Camera Location\n");
 		m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
 		SetMessage("Switching to Terrain");
+		UpdateProgress(m_strMessage, 90, 0);
 	}
 	else if (m_iInitStep == 10)
 	{
@@ -486,6 +502,8 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		clock_t clock2 = clock();
 		VTLOG(" seconds since app start: %.2f\n", (float)clock2/CLOCKS_PER_SEC);
+
+		ShowProgress(false);
 	}
 }
 

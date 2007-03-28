@@ -16,6 +16,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "vtdata/vtLog.h"
+#include "vtui/Helper.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/ProfileDlg.h"
 
@@ -99,6 +100,25 @@ vtString EnviroGUI::GetStringFromUser(const vtString &title, const vtString &msg
 	wxString message(msg, wxConvUTF8);
 	wxString str = wxGetTextFromUser(message, caption, _T(""), GetFrame());
 	return (vtString) (const char *) str.mb_str(wxConvUTF8);
+}
+
+void EnviroGUI::ShowProgress(bool bShow)
+{
+	if (bShow)
+		OpenProgressDialog2(_("Creating Terrain"), false, GetFrame());
+	else
+		CloseProgressDialog2();
+}
+
+void EnviroGUI::SetProgressTerrain(vtTerrain *pTerr)
+{
+	pTerr->SetProgressCallback(progress_callback_minor);
+}
+
+void EnviroGUI::UpdateProgress(const char *msg, int amount1, int amount2)
+{
+	wxString str(msg, wxConvUTF8);
+	UpdateProgressDialog2(amount1, amount2, str);
 }
 
 void EnviroGUI::RefreshLayerView()

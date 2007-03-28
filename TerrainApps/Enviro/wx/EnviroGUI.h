@@ -49,6 +49,9 @@ public:
 	virtual void SetFlightSpeed(float speed);
 	virtual void SetState(AppState s);
 	virtual vtString GetStringFromUser(const vtString &title, const vtString &msg);
+	virtual void ShowProgress(bool bShow);
+	virtual void SetProgressTerrain(vtTerrain *pTerr);
+	virtual void UpdateProgress(const char *msg, int amount1, int amount2);
 
 	// The following are useful methods
 	void SaveVegetation(bool bAskFilename);
