@@ -1,7 +1,7 @@
 //
 // AbstractLayer.cpp
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -234,6 +234,7 @@ void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
 				pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve, true);
 			}
 		}
+		pTerr->ProgressCallback(i * 100 / feat.GetNumEntities());
 	}
 
 	// If the user specified a line width, apply it now
@@ -452,6 +453,8 @@ void vtAbstractLayer::CreateFeatureLabels(vtTerrain *pTerr)
 
 		bb->SetTrans(fp3);
 		pLabelGroup->AddChild(bb);
+
+		pTerr->ProgressCallback(i * 100 / features);
 	}
 	// pass ownership to all the geometries
 	pLabelMats->Release();
