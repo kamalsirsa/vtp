@@ -533,7 +533,6 @@ bool UpdateProgressDialog2(int amount1, int amount2, const wxString& newmsg)
 		value = (g_pProg2->Update(amount1, amount2, newmsg) == false);
 	return value;
 }
-#endif
 
 
 //////////////////////////////////////
