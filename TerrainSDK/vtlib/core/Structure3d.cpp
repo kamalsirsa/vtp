@@ -150,9 +150,11 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	{
 		// Use ContentManager to create the structure, using the
 		//  terrain's specific content manager
-		m_pModel = pTerr->m_Content.CreateNodeFromItemname(itemname);
+		vtContentManager3d &con = pTerr->m_Content;
+		VTLOG("Looking in terrain's content (%x, %d items)\n", &con, con.NumItems());
+		m_pModel = con.CreateNodeFromItemname(itemname);
 
-		// Also try the global content manager
+		// If that didn't work, also try the global content manager
 		if (!m_pModel)
 			m_pModel = vtGetContent().CreateNodeFromItemname(itemname);
 
