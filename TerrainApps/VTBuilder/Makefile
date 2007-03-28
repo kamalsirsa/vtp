@@ -38,7 +38,6 @@ ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS   += -F$(FRAMEWORKS) \
 	  -lobjc -framework Carbon \
-	  -losg -losgDB -losgGA -losgText -losgUtil -lOpenThreads \
 	  -framework vtdata -framework vtui \
 	  -framework xmlhelper \
 	  -L$(FINK_LIB) \
