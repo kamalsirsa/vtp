@@ -1975,8 +1975,9 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 	else
 	{
 		vtProjection geo;
-		geo.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
-		m_pDistanceDlg->SetProjection(geo);
+		OGRErr err = geo.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+		if (err == OGRERR_NONE)
+			m_pDistanceDlg->SetProjection(geo);
 	}
 }
 
