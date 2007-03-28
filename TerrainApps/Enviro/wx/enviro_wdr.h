@@ -265,63 +265,64 @@ wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer 
 #define ID_PLANTSIZE 10196
 #define ID_ONLY_AVAILABLE_SPECIES 10197
 #define ID_CHOICE_CONTENT 10198
+#define ID_TERRAIN_PROGRESS 10199
 wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_FEATURE_TYPE 10199
-#define ID_GEOMETRY 10200
-#define ID_GEOM_COLOR 10201
-#define ID_GEOM_HEIGHT 10202
-#define ID_LINE_WIDTH 10203
-#define ID_TESSELLATE 10204
-#define ID_TEXT_LABELS 10205
-#define ID_LABEL_COLOR 10206
-#define ID_TEXT_FIELD 10207
-#define ID_COLOR_FIELD 10208
-#define ID_LABEL_HEIGHT 10209
-#define ID_LABEL_SIZE 10210
-#define ID_FONT 10211
-#define ID_TEXTURE_OVERLAY 10212
-#define ID_TEXTURE_MODE 10213
+#define ID_FEATURE_TYPE 10200
+#define ID_GEOMETRY 10201
+#define ID_GEOM_COLOR 10202
+#define ID_GEOM_HEIGHT 10203
+#define ID_LINE_WIDTH 10204
+#define ID_TESSELLATE 10205
+#define ID_TEXT_LABELS 10206
+#define ID_LABEL_COLOR 10207
+#define ID_TEXT_FIELD 10208
+#define ID_COLOR_FIELD 10209
+#define ID_LABEL_HEIGHT 10210
+#define ID_LABEL_SIZE 10211
+#define ID_FONT 10212
+#define ID_TEXTURE_OVERLAY 10213
+#define ID_TEXTURE_MODE 10214
 wxSizer *StyleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SCENARIO_LIST 10214
-#define ID_NEW_SCENARIO 10215
-#define ID_DELETE_SCENARIO 10216
-#define ID_EDIT_SCENARIO 10217
-#define ID_MOVEUP_SCENARIO 10218
-#define ID_MOVEDOWN_SCENARIO 10219
-#define ID_CHOICE_SCENARIO 10220
+#define ID_SCENARIO_LIST 10215
+#define ID_NEW_SCENARIO 10216
+#define ID_DELETE_SCENARIO 10217
+#define ID_EDIT_SCENARIO 10218
+#define ID_MOVEUP_SCENARIO 10219
+#define ID_MOVEDOWN_SCENARIO 10220
+#define ID_CHOICE_SCENARIO 10221
 wxSizer *ScenariosPaneFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SCENARIO_VISIBLE_LAYERS 10221
-#define ID_SCENARIO_ADD_VISIBLE_LAYER 10222
-#define ID_SCENARIO_REMOVE_VISIBLE_LAYER 10223
-#define ID_SCENARIO_AVAILABLE_LAYERS 10224
+#define ID_SCENARIO_VISIBLE_LAYERS 10222
+#define ID_SCENARIO_ADD_VISIBLE_LAYER 10223
+#define ID_SCENARIO_REMOVE_VISIBLE_LAYER 10224
+#define ID_SCENARIO_AVAILABLE_LAYERS 10225
 wxSizer *ScenarioVisibleLayersPane( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SCENARIO_NAME 10225
+#define ID_SCENARIO_NAME 10226
 wxSizer *ScenarioParamsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SCENARIO_PREVIOUS 10226
-#define ID_SCENARIO_NEXT 10227
+#define ID_SCENARIO_PREVIOUS 10227
+#define ID_SCENARIO_NEXT 10228
 wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_PANEL1 10228
-#define ID_TARGET 10229
-#define ID_CURRENT 10230
-#define ID_CACHE_USED 10231
-#define ID_TILE_LOADS 10232
-#define ID_TILE_HITS 10233
-#define ID_PANEL2 10234
-#define ID_TILE_STATUS 10235
+#define ID_PANEL1 10229
+#define ID_TARGET 10230
+#define ID_CURRENT 10231
+#define ID_CACHE_USED 10232
+#define ID_TILE_LOADS 10233
+#define ID_TILE_HITS 10234
+#define ID_PANEL2 10235
+#define ID_TILE_STATUS 10236
 wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 wxSizer *TextureDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 wxSizer *LayerAnimDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_CHOICE_VEHICLES 10236
-#define ID_SET_VEHICLE_COLOR 10237
+#define ID_CHOICE_VEHICLES 10237
+#define ID_SET_VEHICLE_COLOR 10238
 wxSizer *VehicleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
