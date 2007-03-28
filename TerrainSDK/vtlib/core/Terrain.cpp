@@ -1753,6 +1753,13 @@ void vtTerrain::_CreateImageLayers()
 		}
 		VTLOG("Read image from file '%s'\n", (const char *) path);
 
+		DRECT extents = ilayer->m_pImage->GetExtents();
+		if (extents.IsEmpty())
+		{
+			VTLOG("Couldn't get extents from image, so we can't use it as an image overlay.\n");
+			continue;
+		}
+
 		// Copy all the other attributes to the new layer (TODO?)
 		//feat->GetProperties() = lay;
 
