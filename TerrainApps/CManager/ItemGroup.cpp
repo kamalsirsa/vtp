@@ -28,8 +28,8 @@ void ItemGroup::CreateNodes()
 {
 	m_pAxes = NULL;
 	m_pRulers = NULL;
-	m_pGroup = new vtGroup();
-	m_pLOD = new vtLOD();
+	m_pGroup = new vtGroup;
+	m_pLOD = new vtLOD;
 	m_pLOD->SetName2("LOD Container");
 	m_pTop = new vtGroup;
 	m_pLOD->SetName2("Individual Container");
@@ -199,8 +199,8 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 {
 	int i, j;
 
-	vtGeom *pGeom = new vtGeom();
-	vtMaterialArray *pMats = new vtMaterialArray();
+	vtGeom *pGeom = new vtGeom;
+	vtMaterialArray *pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
 	pGeom->SetMaterials(pMats);
 	pMats->Release();

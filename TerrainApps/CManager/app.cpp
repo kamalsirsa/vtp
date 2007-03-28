@@ -47,7 +47,7 @@ class LogCatcher : public wxLog
 bool vtApp::OnInit(void)
 {
 	// Redirect the wxWindows log messages to our own logging stream
-	wxLog *logger = new LogCatcher();
+	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);
 
 	Args(argc, argv);
@@ -72,7 +72,7 @@ bool vtApp::OnInit(void)
 	vtCamera *pCamera = pScene->GetCamera();
 	pCamera->SetName2("Default Camera");
 
-	m_pRoot = new vtGroup();
+	m_pRoot = new vtGroup;
 	m_pRoot->SetName2("Root");
 	pScene->SetRoot(m_pRoot);
 
@@ -99,7 +99,7 @@ bool vtApp::OnInit(void)
 #if 0
 #if 0
 	// make a yellow sphere
-	vtMaterialArray *pMats = new vtMaterialArray();
+	vtMaterialArray *pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f), RGBf(0.0f, 0.0f, 1.0f));
 	vtGeom *pGeom = CreateSphereGeom(pMats, 0, VT_Normals, 0.5, 16);
 	pGeom->SetName2("Yellow Sphere");

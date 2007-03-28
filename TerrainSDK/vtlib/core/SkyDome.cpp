@@ -2,7 +2,7 @@
 // SkyDome - a simple day/night skydome, should be replaced with a
 // more realistic version at some point.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -73,12 +73,12 @@ vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color)
 	mesh->AddVertex(FPoint3(0,  0.07, -0.94));
 	mesh->AddLine(0, 1);
 	mesh->AddLine(2, 3);
-	vtGeom *geom = new vtGeom();
+	vtGeom *geom = new vtGeom;
 	geom->SetName2("sky marker");
 	geom->SetMaterials(pMats);
 	geom->AddMesh(mesh, matidx);
 	mesh->Release();	// pass ownership to Geometry
-	vtTransform *trans = new vtTransform();
+	vtTransform *trans = new vtTransform;
 	trans->AddChild(geom);
 	return trans;
 }
@@ -195,7 +195,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		m_pSunMat = m_pMats->GetAt(idx);
 
 		VTLOG("   Creating Sun Geom\n");
-		vtGeom *pGeom = new vtGeom();
+		vtGeom *pGeom = new vtGeom;
 		pGeom->SetName2("Sun geom");
 		m_pSunGeom = new vtMovGeom(pGeom);
 		m_pSunGeom->SetName2("Sun xform");
@@ -224,7 +224,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	// Create the vtStarDome
 	if (starfile && *starfile)
 	{
-		m_pStarDome = new vtStarDome();
+		m_pStarDome = new vtStarDome;
 		m_pStarDome->Create(starfile, 2.0f, moon_texture);
 		m_pStarDome->SetName2("StarDome");
 		m_pCelestial->AddChild(m_pStarDome);
@@ -244,7 +244,7 @@ void vtSkyDome::CreateMarkers()
 		tics->AddLine(FPoint3(-0.05, sint, cost), FPoint3(0.05, sint, cost));
 		tics->AddLine(FPoint3(cost, sint, -0.05), FPoint3(cost, sint, 0.05));
 	}
-	m_pTicks = new vtGeom();
+	m_pTicks = new vtGeom;
 	m_pTicks->SetName2("Ticks");
 	m_pTicks->SetMaterials(m_pMats);
 	m_pTicks->AddMesh(tics, yellow);
@@ -707,7 +707,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	VTLOG("  vtStarDome::Create\n");
 
 	SetName2("StarDome");
-	m_pStarGeom = new vtGeom();
+	m_pStarGeom = new vtGeom;
 	m_pStarGeom->SetName2("StarDomeGeom");
 
 	NumStars = 0;
@@ -716,7 +716,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	// Read in the star data
 	ReadStarData(starfile);
 
-	m_pMats = new vtMaterialArray();
+	m_pMats = new vtMaterialArray;
 	int star_mat = m_pMats->AddRGBMaterial1(RGBf(0,0,0), false, false);
 	vtMaterial *pMat = m_pMats->GetAt(star_mat);
 	pMat->SetTransparent(true, true);
@@ -746,7 +746,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 			return;		// could not load texture, cannot have sun
 
 		// Create moon
-		vtGeom *pGeom = new vtGeom();
+		vtGeom *pGeom = new vtGeom;
 		pGeom->SetName2("Moon geom");
 		m_pMoonGeom = new vtMovGeom(pGeom);
 		m_pMoonGeom->SetName2("Moon xform");
