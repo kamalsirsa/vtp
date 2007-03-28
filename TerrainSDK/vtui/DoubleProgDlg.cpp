@@ -298,9 +298,12 @@ DoubleProgressDialog::Update(int value1, int value2, const wxString& newmsg)
 
 bool DoubleProgressDialog::DoAfterUpdate()
 {
-	// we have to yield because not only we want to update the display but
-	// also to process the clicks on the cancel button
-	wxYieldIfNeeded();
+	if (m_hasAbortButton)
+	{
+		// we have to yield because not only we want to update the display but
+		// also to process the clicks on the cancel button
+		wxYieldIfNeeded();
+	}
 
 	Update();
 
