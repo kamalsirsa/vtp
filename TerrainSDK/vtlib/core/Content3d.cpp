@@ -3,7 +3,7 @@
 //
 // 3D Content Management class.
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project.
+// Copyright (c) 2003-2007 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -76,7 +76,7 @@ bool vtItem3d::LoadModels()
 		if (model->m_scale != 1.0f)
 		{
 			// Wrap in a transform node so that we can scale/rotate the node
-			vtTransform *pTrans = new vtTransform();
+			vtTransform *pTrans = new vtTransform;
 			pTrans->SetName2("scaling xform");
 			pTrans->AddChild(pNode);
 			pTrans->Identity();
@@ -163,7 +163,7 @@ vtNode *vtContentManager3d::CreateNodeFromItemname(const char *itemname)
 
 		if (!m_pGroup)
 		{
-			m_pGroup = new vtGroup();
+			m_pGroup = new vtGroup;
 			m_pGroup->SetName2("Content Manager Container Group");
 		}
 
