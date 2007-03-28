@@ -738,10 +738,11 @@ void vtContentManager::ReadXML(const char *filename)
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	m_strFilename = filename;
-
 	ContentVisitor visitor(this);
 	readXML(filename, visitor);
+
+	// If no exception was thrown, store the name of the file we loaded from
+	m_strFilename = filename;
 }
 
 
