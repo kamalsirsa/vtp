@@ -273,6 +273,20 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 		m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
 	}
 	VTLOG("  succeeded.\n");
+
+	// This might be a geospecific image.  If we did not get extents, look
+	//  a world file.
+	if (m_extents.IsEmpty())
+	{
+		double params[6];
+		if (ReadAssociatedWorldFile(fname, params))
+		{
+			m_extents.left = params[4];
+			m_extents.right = params[4] + params[0] * GetWidth();
+			m_extents.top = params[5];
+			m_extents.bottom = params[5] + params[3] * GetHeight();
+		}
+	}
 	return true;
 }
 
