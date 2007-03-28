@@ -79,7 +79,7 @@ class SpinEngine: public vtEngine
 	}
 };
 
-#if 0
+#if VTLIB_OSG
 // Test particle effects
 class psGeodeTransform : public osg::MatrixTransform
 {
@@ -153,10 +153,14 @@ protected:
 
 void IslandTerrain::CreateCustomCulture()
 {
-#if 0
+#if VTLIB_OSG
 	osg::Group *cessna = (osg::Group*) osgDB::readNodeFile("C:/Dev/OSGParticleDirt/cessnafire.osg");
-	particleSystemHelper* psh = new particleSystemHelper(cessna);
-	vtGetScene()->GetRoot()->GetOsgGroup()->addChild(psh);
+	if (cessna)
+	{
+		particleSystemHelper* psh = new particleSystemHelper(cessna);
+		vtNativeNode *native = new vtNativeNode(psh);
+		AddNode(native);
+	}
 #endif
 
 	// Enable this to test Line Of Sight feature on texture recalculation
