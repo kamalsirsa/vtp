@@ -355,10 +355,11 @@ void EnviroApp::RefreshTerrainList()
 		OpenProgressDialog(_("Scanning data paths for terrains"), false, NULL);
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
-		if (bShowProgess)
-			UpdateProgressDialog(i * 100 / paths.size());
-
 		vtString directory = paths[i] + "Terrains";
+
+		if (bShowProgess)
+			UpdateProgressDialog(i * 100 / paths.size(), wxString(paths[i], wxConvUTF8));
+
 		for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
 		{
 			if (it.is_hidden() || it.is_directory())
