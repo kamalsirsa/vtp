@@ -127,7 +127,8 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
 	m_pCameraNode->setClearColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	m_pCameraNode->setViewport(0, 0, m_iCurrentResolution, m_iCurrentResolution);
 	m_pCameraNode->setRenderOrder(osg::CameraNode::PRE_RENDER);
-	m_pCameraNode->setRenderTargetImplementation(osg::CameraNode::FRAME_BUFFER_OBJECT);
+	m_pCameraNode->setRenderTargetImplementation(osg::CameraNode::FRAME_BUFFER_OBJECT,
+		osg::CameraNode::FRAME_BUFFER);
 	m_pCameraNode->setComputeNearFarMode(osg::CameraNode::DO_NOT_COMPUTE_NEAR_FAR);
 	if (m_bDepthShadow)
 	{
