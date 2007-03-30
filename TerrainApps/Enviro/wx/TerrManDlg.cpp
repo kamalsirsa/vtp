@@ -283,6 +283,29 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 	vtString path(str.mb_str(wxConvUTF8));
 	m_DataPaths.push_back(path);
 
+    // To be helpful, also create most of the standard sub-directories
+    vtString SubDirectory;
+    SubDirectory = path + vtString("BuildingData");
+    vtCreateDir(SubDirectory);
+    SubDirectory = path + vtString("BuildingModels");
+    vtCreateDir(SubDirectory);
+    SubDirectory = path + vtString("Culture");
+    vtCreateDir(SubDirectory);
+    SubDirectory = path + vtString("Elevation");
+    vtCreateDir(SubDirectory);
+    SubDirectory = path + vtString("GeoSpecific");
+    vtCreateDir(SubDirectory);
+    SubDirectory = path + vtString("Locations");
+    vtCreateDir(SubDirectory);
+    SubDirectory = path + vtString("PlantData");
+    vtCreateDir(SubDirectory);
+    SubDirectory = path + vtString("PointData");
+    vtCreateDir(SubDirectory);
+    SubDirectory = path + vtString("RoadData");
+    vtCreateDir(SubDirectory);
+    SubDirectory = path + vtString("Terrains");
+    vtCreateDir(SubDirectory);
+
 	// Also inform global data paths
 	g_Options.m_DataPaths = m_DataPaths;
 
