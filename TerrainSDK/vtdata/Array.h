@@ -1,7 +1,7 @@
 //
 // Array.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file Array.h */
@@ -207,7 +207,7 @@ template <class E> bool vtArray<E>::Grow(unsigned int growto)
 		}
 		else
 		{
-			if (growto < 12) growto = 12;	// minimum growth
+			if (growto < 4) growto = 4;	// minimum growth
 			old_data = m_Data;
 			m_Data = (E*) malloc(sizeof(E) * (growto));
 			memcpy(m_Data, old_data, sizeof(E) * m_Size);
