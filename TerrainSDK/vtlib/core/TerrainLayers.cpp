@@ -1,7 +1,7 @@
 //
 // TerrainLayers.cpp
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -68,6 +68,7 @@ vtImageLayer::vtImageLayer()
 
 vtImageLayer::~vtImageLayer()
 {
+	delete m_pMultiTexture;
 	if (m_pImage)
 		m_pImage->Release();
 }
