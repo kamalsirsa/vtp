@@ -40,31 +40,41 @@ END_EVENT_TABLE()
 
 static vtGLCanvas *s_canvas = NULL;
 
-vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
-	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
-		wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
+vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
+	const wxSize &size, long style, const wxString &name, int *gl_attrib):
+		wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
 {
 	VTLOG1("vtGLCanvas constructor\n");
 
 	VTLOG1("vtGLCanvas: calling Show on parent\n");
 	parent->Show();
 
+	m_glContext = new wxGLContext(this);
+
+#if __WXMSW__
+	HGLRC hContext = m_glContext->GetGLRC();
+	if (NULL == hContext)
+	{
+		wxMessageBox(_("No OpenGL support found") , _("Error"), wxICON_ERROR | wxOK);
+		exit(-1);
+	}
+	else
+		VTLOG("OpenGL context: %lx\n", hContext);
+#endif
+
 	// Documentation says about SetCurrent:
 	// "Note that this function may only be called after the window has been shown."
 	VTLOG1("vtGLCanvas: calling SetCurrent\n");
 	SetCurrent();
 
-	wxGLContext *context = GetContext();
-	if (context)
-		VTLOG("OpenGL context: %lx\n", context);
-	else
-	{
-		VTLOG1("No OpenGL context, quitting app.\n");
-	    exit(0);
-	}
-
 	VTLOG1("OpenGL version: ");
 	VTLOG1((const char *) glGetString(GL_VERSION));
+	VTLOG1("\n");
+	VTLOG1("OpenGL vendor: ");
+	VTLOG1((const char *) glGetString(GL_VENDOR));
+	VTLOG1("\n");
+	VTLOG1("OpenGL renderer: ");
+	VTLOG1((const char *) glGetString(GL_RENDERER));
 	VTLOG1("\n");
 
 	m_bPainting = false;
@@ -120,11 +130,6 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		if (!s_canvas)
 		{
 			VTLOG1("OnPaint: Canvas not yet constructed, returning\n");
-			return;
-		}
-		if (!GetContext())
-		{
-			VTLOG1("OnPaint: No context yet, returning\n");
 			return;
 		}
 
@@ -185,15 +190,6 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 		VTLOG("Canvas  OnSize: %d %d\n", event.GetSize().x, event.GetSize().y);
 		count++;
 	}
-  // Presumably this is a wxMSWism.
-  // For wxGTK & wxMotif, all canvas resize events occur before the context
-  //   is set.  So ignore this context check and grab the window width/height
-  //   when we get it so it (and derived values such as aspect ratio and
-  //   viewport parms) are computed correctly.
-#ifdef __WXMSW__
-	if (!GetContext()) return;
-#endif
-
 	SetCurrent();
 	int width, height;
 	GetClientSize(& width, & height);
