@@ -1188,18 +1188,25 @@ void StructVisitorGML::endElement(const char *name)
 	{
 		if (!strcmp(name, "gml:coordinates"))
 		{
+			// Speed/memory optimization: quick check of how many vertices
+			//  there are, then preallocate that many
+			unsigned int verts = 0;
+			for (size_t i = 0; i < strlen(data); i++)
+				if (data[i] == ',')
+					verts++;
 			DLine2 line;
+			line.SetMaxSize(verts);
+
 			double x, y;
 			while (sscanf(data, "%lf,%lf", &x, &y) == 2)
 			{
 				line.Append(DPoint2(x,y));
 				data = strchr(data, ' ');
-				if (data)
-					data++;
-				else
+				if (!data)
 					break;
+				data++;
 			}
-			m_pBuilding->SetFootprint(m_iLevel, line);
+			m_pLevel->SetFootprint(line);
 		}
 		else if (!strcmp(name, "Footprint"))
 			m_state = 3;
@@ -1216,6 +1223,9 @@ void StructVisitorGML::endElement(const char *name)
 		if (!strcmp(name, "Building"))
 		{
 			m_state = 1;
+
+			// do this once after we done adding levels
+			m_pBuilding->DetermineLocalFootprints();
 
 			m_pSA->Append(m_pStructure);
 			m_pStructure = NULL;
