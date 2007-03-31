@@ -169,7 +169,8 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 		m_pAlphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
 		m_pStateSet->setAttributeAndModes(m_pAlphaFunc.get(), SA_ON );
 		m_pStateSet->setRenderingHint(StateSet::TRANSPARENT_BIN);
-#ifdef ENVIRON
+
+#if MAYBE_SOMEDAY
 		// RJ says he needed this to make multiple transparent surfaces work
 		//  properly.  In general, the transparent bin takes care of that,
 		//  but there are cases where polygons (sorted by center) can end up
