@@ -12,6 +12,8 @@
 #include "wx/wx.h"
 #endif
 
+#include <wx/filename.h>
+
 #include "InstanceDlg.h"
 #include "vtdata/Content.h"
 #include "vtdata/FilePath.h"
@@ -182,7 +184,29 @@ void InstanceDlg::OnBrowseModelFile( wxCommandEvent &event )
 							_T(""), _T(""), filter, wxFD_OPEN);
 	if (SelectFile.ShowModal() != wxID_OK)
 		return;
-	GetModelFile()->SetValue(SelectFile.GetPath());
+
+	// If model file is in a BuildingModels subdirectory
+	// remove the directory part of the path
+	wxFileName path(SelectFile.GetPath());
+	wxString result = path.GetFullPath();
+	int i, count = path.GetDirCount();
+	for (i = 0; i < count; i++)
+	{
+		if (path.GetDirs().Item(i) == wxT("BuildingModels"))
+		{
+			for (int j = 0; j <= i; j++)
+				path.RemoveDir(0);
+			path.SetVolume(_T(""));
+			result = path.GetFullPath();
+			// avoid backslashes
+			result.Replace(_T("\\"), _T("/"));
+			// avoid leading slash
+			if (result.GetChar(0) == '/')
+				result = result.Right(result.Length() - 1);
+			break;;
+		}
+	}
+	GetModelFile()->SetValue(result);
 }
 
 void InstanceDlg::OnChoice( wxCommandEvent &event )
