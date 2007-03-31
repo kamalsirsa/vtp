@@ -1,7 +1,7 @@
 //
 // StructLayer.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -552,48 +552,9 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 	int i, iIndex, iLevel, iNumLevels;
 	DPoint2 Intersection;
 
-#if ROGER
-	// See if I can get some UI feedback;
-	m_pEditBuilding = pBuilding;
-	m_iEditLevel = 0;
-	pLevel = pBuilding->GetLevel(0);
-	pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex,
-		dClosest, Intersection);
-	m_iEditEdge = iIndex;
-
-	// Find out the level to work on
-#if 0
-	CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
-
-	LevelSelectionDialog.SetBuilding(pBuilding);
-
-	if (LevelSelectionDialog.ShowModal()!= wxID_OK)
-	{
-		m_pEditBuilding = NULL;
-		pView->Refresh(true, &Redraw);
-		return;
-	}
-	iLevel = LevelSelectionDialog.GetLevel();
-#else
-	int iLevels = pBuilding->GetNumLevels();
-	wxString msg;
-	msg.Printf(_("Select level to edit (0 .. %d)"), iLevels);
-	iLevel = wxGetNumberFromUser(msg, _("Level"), _("Enter Value"), 0, 0, iLevels);
-	if (iLevel == -1)
-	{
-		m_pEditBuilding = NULL;
-		pView->Refresh(true, &Redraw);
-		return;
-	}
-#endif
-
-	m_pEditBuilding = NULL;
-	pView->Refresh(true, &Redraw);
-#else
 	// Since we don't yet do editing of level footprints other than 0,
 	//  and editing it affects all levels, it's only useful to do all levels
 	iLevel = -1;
-#endif
 
 	if (-1 == iLevel)
 	{
@@ -645,46 +606,9 @@ void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &
 	vtLevel *pLevel;
 	int i, iIndex, iLevel, iNumLevels;
 
-#if ROGER
-	// See if I can get some UI feedback;
-	m_pEditBuilding = pBuilding;
-	m_iEditLevel = 0;
-	pLevel = pBuilding->GetLevel(0);
-	pLevel->GetFootprint().NearestPoint(ui.m_DownLocation, iIndex);
-	m_iEditEdge = iIndex;
-
-	// Find out the level to work on
-#if 0
-	CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
-
-	LevelSelectionDialog.SetBuilding(pBuilding);
-
-	if (LevelSelectionDialog.ShowModal()!= wxID_OK)
-	{
-		m_pEditBuilding = NULL;
-		pView->Refresh(true, &Redraw);
-		return;
-	}
-	iLevel = LevelSelectionDialog.GetLevel();
-#else
-	int iLevels = pBuilding->GetNumLevels();
-	wxString msg;
-	msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
-	iLevel = wxGetNumberFromUser(msg, _("Level"), _("Enter Value"), 0, 0, iLevels);
-	if (iLevel == -1)
-	{
-		m_pEditBuilding = NULL;
-		pView->Refresh(true, &Redraw);
-		return;
-	}
-#endif
-	m_pEditBuilding = NULL;
-	pView->Refresh(true, &Redraw);
-#else
 	// Since we don't yet do editing of level footprints other than 0,
 	//  and editing it affects all levels, it's only useful to do all levels
 	iLevel = -1;
-#endif
 
 	if (-1 == iLevel)
 	{
