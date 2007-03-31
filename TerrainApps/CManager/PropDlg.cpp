@@ -1,7 +1,7 @@
 //
 // Name:	PropDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -126,7 +126,7 @@ void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 			// string EOL
 			if (buf[strlen(buf)-1] == 10) buf[strlen(buf)-1] = 0;
 			if (buf[strlen(buf)-1] == 13) buf[strlen(buf)-1] = 0;
-            
+
 			if (buf[0] == '\t')
 				p.subtype = buf+1;
 			else

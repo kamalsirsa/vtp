@@ -1,7 +1,7 @@
 //
 // Name:        OptionsDlg.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -54,7 +54,6 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 void OptionsDlg::OnHideUnknown( wxCommandEvent &event )
 {
-    
 }
 
 void OptionsDlg::OnRenderOptions( wxCommandEvent &event )

@@ -300,7 +300,7 @@ void vtScene::ComputeViewMatrix(FMatrix4 &mat)
 	osg::Matrix _viewMatrix = m_pOsgSceneView->getViewMatrix();
 	osg::Matrix _projectionMatrix = m_pOsgSceneView->getProjectionMatrix();
 	osg::Matrix matrix( _viewMatrix * _projectionMatrix);
-        
+
 	osg::Viewport *_viewport = m_pOsgSceneView->getViewport();
     if (_viewport != NULL)
         matrix.postMult(_viewport->computeWindowMatrix());
