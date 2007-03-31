@@ -2324,7 +2324,12 @@ bool vtTerrain::CreateStep5()
 
 		vtAnimPath *anim = new vtAnimPath;
 		// Ensure that anim knows the projection
-		anim->SetProjection(GetProjection());
+		if (!anim->SetProjection(GetProjection()))
+		{
+			// no projection, no functionality
+			delete anim;
+			continue;
+		}
 		if (!anim->Read(path))
 		{
 			delete anim;
