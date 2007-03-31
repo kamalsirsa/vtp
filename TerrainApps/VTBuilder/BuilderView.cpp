@@ -2027,6 +2027,15 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			set.SaveToSHP("C:/Temp/PearlRiverPoints.shp");
 		}
 #endif
+#if 0
+		{
+			vtStructureArray *sa = new vtStructureArray();
+			sa->m_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+			// 1557 buildings
+			sa->ReadXML("G:/Data-USA/Data-Hawaii/BuildingData/stage5.vtst");
+			//sa->ReadXML("G:/Data-USA/Data-Hawaii/BuildingData/one_building.vtst");
+		}
+#endif
 	}
 	else
 		event.Skip();
