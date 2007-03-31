@@ -1,7 +1,7 @@
 //
 // Earth View functionality of the Enviro class.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -184,10 +184,10 @@ void Enviro::MakeGlobe()
 
 if (pwdemo){
 /*	logo = new vtGroup;
-	IcoGlobe *Globe2 = new IcoGlobe();
+	IcoGlobe *Globe2 = new IcoGlobe;
 	Globe2->Create(1000, g_Options.m_DataPaths, vtString(""),
 		IcoGlobe::GEODESIC);
-	vtTransform *trans = new vtTransform();
+	vtTransform *trans = new vtTransform;
 	trans->SetName2("2nd Globe Scaler");
 	m_pGlobeContainer->AddChild(logo);
 	logo->AddChild(trans);
@@ -201,8 +201,8 @@ if (pwdemo){
 	time.SetTimeOfDay(15,0,0);
 	m_pGlobeTime->SetTime(time);
 
-	vtGeom *geom = new vtGeom();
-	vtMaterialArray *mats = new vtMaterialArray();
+	vtGeom *geom = new vtGeom;
+	vtMaterialArray *mats = new vtMaterialArray;
 	mats->AddTextureMaterial2("Planetwork/logo3.png", false, false, true);
 	mats->AddTextureMaterial2("Planetwork/logo2.png", false, false, true);
 	geom->SetMaterials(mats);
@@ -228,7 +228,7 @@ if (pwdemo){
 		vtMaterial *mat = rainbow->GetAt(i);
 		mat->SetTransparent(true, true);
 	}
-	tg = new vtGeom();
+	tg = new vtGeom;
 	tg->SetMaterials(rainbow);
 	rainbow->Release();
 	Globe2->GetTop()->AddChild(tg);
@@ -288,7 +288,7 @@ if (pwdemo){
 
 	// create the GlobePicker engine for picking features on the earth
 	//
-	m_pGlobePicker = new GlobePicker();
+	m_pGlobePicker = new GlobePicker;
 	m_pGlobePicker->SetName2("GlobePicker");
 	m_pGlobePicker->SetGlobe(m_pIcoGlobe);
 	vtGetScene()->AddEngine(m_pGlobePicker);
@@ -298,12 +298,12 @@ if (pwdemo){
 
 	// create some stars around the earth
 	//
-	vtStarDome *pStars = new vtStarDome();
+	vtStarDome *pStars = new vtStarDome;
 	vtString bsc_file = FindFileOnPaths(g_Options.m_DataPaths, "Sky/bsc.data");
 	if (bsc_file != "")
 	{
 		pStars->Create(bsc_file, 5.0f);	// brightness
-		vtTransform *pScale = new vtTransform();
+		vtTransform *pScale = new vtTransform;
 		pScale->SetName2("Star Scaling Transform");
 		pScale->Scale3(20, 20, 20);
 		m_pGlobeContainer->AddChild(pScale);
@@ -311,12 +311,12 @@ if (pwdemo){
 	}
 
 	// create some geometry showing various astronomical axes
-	vtMaterialArray *pMats = new vtMaterialArray();
+	vtMaterialArray *pMats = new vtMaterialArray;
 	int yellow = pMats->AddRGBMaterial1(RGBf(1,1,0), false, false);
 	int red = pMats->AddRGBMaterial1(RGBf(1,0,0), false, false);
 	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
 
-	m_pSpaceAxes = new vtGeom();
+	m_pSpaceAxes = new vtGeom;
 	m_pSpaceAxes->SetName2("Earth Axes");
 	m_pSpaceAxes->SetMaterials(pMats);
 	pMats->Release();	// pass ownership
@@ -344,7 +344,7 @@ if (pwdemo){
 	m_pSpaceAxes->SetEnabled(false);
 
 	// Lon-lat cursor lines
-	m_pEarthLines = new vtGeom();
+	m_pEarthLines = new vtGeom;
 	m_pEarthLines->SetName2("Earth Lines");
 	int orange = pMats->AddRGBMaterial1(RGBf(1,.7,1), false, false, true, 0.6);
 	m_pEarthLines->SetMaterials(pMats);
