@@ -3,7 +3,7 @@
 //
 // Implementation animation path capabilities.
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -61,7 +61,7 @@ public:
 	virtual ~vtAnimPath();
 
 	/// Must tell the AnimPath what projection its points are in, for serialization.
-	void SetProjection(const vtProjection &proj);
+	bool SetProjection(const vtProjection &proj);
 
 	/// Get the transformation matrix for a point in time.
 	bool GetMatrix(double time, FMatrix4 &matrix, bool bPosOnly) const

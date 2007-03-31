@@ -3,7 +3,7 @@
 //
 // Implementation animation path capabilities.
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -66,19 +66,23 @@ vtAnimPath::~vtAnimPath()
 	delete m_pConvertFromWGS;
 }
 
-void vtAnimPath::SetProjection(const vtProjection &proj)
+bool vtAnimPath::SetProjection(const vtProjection &proj)
 {
 	m_proj = proj;
 
 	// convert from projected to global CS
 	vtProjection global_proj;
-	global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+	OGRErr err = global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+	if (err != OGRERR_NONE)
+		return false;
 
 	delete m_pConvertToWGS;
 	delete m_pConvertFromWGS;
 
 	m_pConvertToWGS = CreateCoordTransform(&m_proj, &global_proj, true);
 	m_pConvertFromWGS = CreateCoordTransform(&global_proj, &m_proj, true);
+
+	return true;
 }
 
 void vtAnimPath::Insert(double time,const ControlPoint &controlPoint)
