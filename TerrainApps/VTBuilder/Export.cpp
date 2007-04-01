@@ -590,7 +590,7 @@ void MainFrame::ExportAreaOptimizedImageTileset()
 	TileDlg dlg(this, -1, _("Tiling Options"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
-	dlg.SetElevation(true);
+	dlg.SetElevation(false);
 	dlg.SetArea(m_area);
 	dlg.SetTilingOptions(tileopts);
 	dlg.SetView(GetView());
@@ -933,8 +933,11 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			&lod_existence_map);
 
 #if USE_OPENGL
-	frame->Close();
-	delete frame;
+	if (frame)
+	{
+		frame->Close();
+		delete frame;
+	}
 #endif
 
 	return true;
@@ -966,14 +969,13 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 	if (!vtCreateDir(dirname))
 		return false;
 
-	wxFrame *frame = NULL;
+	wxFrame *frame = new wxFrame;
 	ImageGLCanvas *pCanvas = NULL;
 	bool bCompress = false;
 #if USE_OPENGL
 	if (opts.bUseTextureCompression)
 	{
 		bCompress = true;
-		wxFrame *frame = new wxFrame;
 		frame->Create(this, -1, _T("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
 		pCanvas = new ImageGLCanvas(frame);
@@ -1144,7 +1146,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 	WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
 		m_area, m_proj, INVALID_ELEVATION, INVALID_ELEVATION, &lod_existence_map);
 
-	if (bCompress)
+	if (frame)
 	{
 		frame->Close();
 		delete frame;
