@@ -164,6 +164,7 @@ void Enviro::LoadTerrainDescriptions()
 		vtString directory = g_Options.m_DataPaths[i] + "Terrains";
 		for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
 		{
+			//VTLOG("\t file: %s\n", it.filename().c_str());
 			if (it.is_hidden() || it.is_directory())
 				continue;
 
@@ -201,7 +202,13 @@ void Enviro::LoadTerrainDescriptions()
 				pTerr = new vtTerrain;
 
 			if (pTerr->SetParamFile(directory + "/" + name))
+			{
+				//vtString sn = pTerr->GetParams().GetValueString(STR_NAME);
+				//VTLOG("Terrain name: '%s'\n", (const char *) sn);
 				AppendTerrain(pTerr);
+			}
+			else
+				VTLOG1("\t Couldn't read.\n");
 			count++;
 		}
 		VTLOG("\t%d terrains.\n", count);
