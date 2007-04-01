@@ -44,6 +44,7 @@ mv VTP/TerrainApps/Enviro/Enviro_dev.xml VTP/TerrainApps/Enviro/Enviro.xml
 
 # Enviro locale files
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/af/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/ar/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/de/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/en_GB/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/es/Enviro.mo
@@ -64,7 +65,9 @@ zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/Docs/*
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/Docs/images/*
 
 # VTBuilder locale files
+zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/ar/VTBuilder.mo
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/fr/VTBuilder.mo
+zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/ro/VTBuilder.mo
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/zh/VTBuilder.mo
 
 # VTConvert
