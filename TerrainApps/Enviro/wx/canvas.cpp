@@ -42,14 +42,20 @@ static vtGLCanvas *s_canvas = NULL;
 
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	const wxSize &size, long style, const wxString &name, int *gl_attrib):
+#ifdef __WXMAC__
+		wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
+#else
 		wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
+#endif
 {
 	VTLOG1("vtGLCanvas constructor\n");
 
 	VTLOG1("vtGLCanvas: calling Show on parent\n");
 	parent->Show();
 
+#ifndef __WXMAC__
 	m_glContext = new wxGLContext(this);
+#endif
 
 #if __WXMSW__
 	HGLRC hContext = m_glContext->GetGLRC();
