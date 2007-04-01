@@ -302,14 +302,15 @@ void IslandTerrain::create_state_park()
 
 	// An example of how to add the content definitions from a content
 	//	file (vtco) to the global content manager.
+	vtContentManager3d &con = vtGetContent();
 	try
 	{
-		vtGetContent().ReadXML("../Data/kai.vtco");
+		con.ReadXML("../Data/kai.vtco");
 	}
 	catch (xh_io_exception &e)
 	{
 		string str = e.getFormattedMessage();
-		VTLOG(str.c_str());
+		VTLOG("Error: '%s'\n", str.c_str());
 	}
 
 	// Here is an example of how to create a structure instance which
