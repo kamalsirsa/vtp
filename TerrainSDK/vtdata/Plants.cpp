@@ -449,7 +449,7 @@ bool vtBioRegion::WriteXML(const char *fname) const
 	for (int i = 0; i < num; i++)
 	{
 		vtBioType *bt = m_Types[i];
-		fprintf(fp, "\t<biotype name=\"%s\" id=\"%d\">\n", bt->m_name, i);
+		fprintf(fp, "\t<biotype name=\"%s\" id=\"%d\">\n", (const char *) bt->m_name, i);
 
 		int num2 = bt->m_Densities.GetSize();
 		for (int j = 0; j < num2; j++)
