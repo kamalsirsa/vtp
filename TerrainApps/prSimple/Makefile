@@ -40,11 +40,16 @@ ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS   = -bind_at_load -F$(FRAMEWORKS) \
 	-framework vtosg -framework vtdata \
-	-lgdal -losgGA -losgDB -losgUtil -losgText -losg -lProducer -lOpenThreads \
+	-lgdal \
+	-framework osg -framework osgUtil \
+    -framework osgText -framework osgDB -framework OpenThreads -framework Producer \
 	-L$(FINK_LIB) -lnetcdf \
 	-framework xmlhelper $(MINI_LIB) \
         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
 	-framework Carbon -lobjc -lm 
+
+# Use these if you are not using osg frameworks
+# -losgDB -losgUtil -losgText -losg -lOpenThreads -lProducer
 
 all : $(OSX_APP)
 

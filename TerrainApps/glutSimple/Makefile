@@ -2,10 +2,6 @@
 # GNU Makefile:  TerrainApps/glutSimple
 #
 
-#------------------------------------------------------------------------------
-# You shouldn't need to tweak below this line
-#------------------------------------------------------------------------------
-
 VTP_ROOT = $(shell cd ../..; pwd)
 EXEC = glutSimple
 include $(VTP_ROOT)/Make.defs
@@ -40,11 +36,15 @@ ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS   = -bind_at_load -F$(FRAMEWORKS) \
 	-framework vtosg -framework vtdata \
-	-lgdal -losgGA -losgDB -losgUtil -losgText -losg -lOpenThreads \
+	-framework osg -framework osgGA -framework osgUtil \
+        -framework osgText -framework osgDB -framework OpenThreads \
 	-L$(FINK_LIB) -lnetcdf \
 	-framework xmlhelper $(MINI_LIB) \
         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
 	-framework Carbon -lobjc -lm 
+
+# Use this if you're not using Xcode libraries
+#	-lgdal -losgGA -losgDB -losgUtil -losgText -losg -lOpenThreads \
 
 all : $(OSX_APP)
 

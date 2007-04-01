@@ -2,10 +2,6 @@
 # GNU Makefile:  TerrainApps/VTBuilder
 #
 
-#------------------------------------------------------------------------------
-# You shouldn't need to tweak below this line
-#------------------------------------------------------------------------------
-
 VTP_ROOT = $(shell cd ../..; pwd)
 EXEC   = VTBuilder
 include $(VTP_ROOT)/Make.defs
@@ -23,7 +19,12 @@ LDIRS  = \
 	  $(X_LIB)                       \
 	  $(EXTRA_LDIRS)
 
+ifeq ($(OS),Darwin)
+SWITCHES := $(SWITCHES) -DUSE_OPENGL=0
+else
 SWITCHES := $(SWITCHES) -DUSE_OPENGL=1
+endif
+
 LDFLAGS  = $(LDIRFLAGS) \
 	   $(EXTRA_LDFLAGS)
 
@@ -39,7 +40,7 @@ OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS   += -F$(FRAMEWORKS) \
 	  -lobjc -framework Carbon \
 	  -framework vtdata -framework vtui \
-	  -framework xmlhelper \
+	  -framework xmlhelper -framework unzip \
 	  -L$(FINK_LIB) \
 	  -lz
 

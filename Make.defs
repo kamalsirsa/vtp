@@ -208,10 +208,14 @@ ifeq ($(OS),Darwin)
    #
    # Enumerates the build flags required to use each lib/framework
    #
-   OSG_OPTS = -L$(OSG_LIB) -losg -losgGA -losgUtil \
-	      -losgText -losgDB -losgGA -losgUtil -lOpenThreads
+# Swap these definitions if you are not using Xcode built osg frameworks
+#   OSG_OPTS = -L$(OSG_LIB) -losg -losgGA -losgUtil \
+#	      -losgText -losgDB -losgGA -losgUtil -lOpenThreads
+   OSG_OPTS = -framework osg -framework osgGA -framework osgUtil \
+	      -framework osgText -framework osgDB -framework osgGA -framework OpenThreads
    XMLHELPER_OPTS = -framework xmlhelper
    VTDATA_OPTS = -framework vtdata
+   VTUI_OPTS = -framework vtdata -framework unzip -framework Python -framework unzip
    UNZIP_OPTS = -framework unzip
 
    #
@@ -227,19 +231,21 @@ ifeq ($(OS),Darwin)
 
    VTUI_LINK_OPTS = $(shell $(WX_DIR)/bin/wx-config --libs) \
 		    $(COMMON_OPTS) \
-		    -flat_namespace \
-		    -undefined suppress \
 		    $(GLU_LIB)  \
 		    $(OSG_OPTS) \
 		    $(XMLHELPER_OPTS) \
-		    $(VTDATA_OPTS)
+		    $(VTDATA_OPTS) \
+		    $(VTUI_OPTS)
+#		    -undefined dynamic_lookup
+#		    -flat_namespace \
+#		    -undefined suppress \
 
    VTOSG_LINK_OPTS =  $(OSG_OPTS) \
                       $(COMMON_OPTS) \
 		      $(GLU_LIB) \
 		      $(XMLHELPER_OPTS)\
 		      $(VTDATA_OPTS) \
-		      -losgText -lMini -lz
+		      -framework osgText -lMini -lz -lbz2
 
    #
    # The default rule for building an *.app package.  Requires the
@@ -269,7 +275,7 @@ ifeq ($(OS),Darwin)
    %.framework: $(HEADERS) $(FRAMEWORKS)
 	-mkdir -p $*.framework/Versions/A 
 	-mkdir -p $*.framework/Headers
-	-ln -s $*.framework/Versions/A $*.framework/Versions/Current 
+	-if [ -e $*.framework/Versions/A $*.framework/Versions/Current ] ; then ln -s $*.framework/Versions/A $*.framework/Versions/Current ; fi
 	-cp $(HEADERS) $*.framework/Headers/
 
 endif
