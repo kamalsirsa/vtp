@@ -1,7 +1,7 @@
 //
 // Event.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -57,8 +57,6 @@ enum vtKeyCode
 	VTK_MENU,
 	VTK_PAUSE,
 	VTK_CAPITAL,
-	VTK_PAGEUP,		// 'Prior'
-	VTK_PAGEDOWN,   // 'Next'
 	VTK_END,
 	VTK_HOME,
 	VTK_LEFT,
@@ -112,7 +110,9 @@ enum vtKeyCode
 	VTK_F23,
 	VTK_F24,
 	VTK_NUMLOCK,
-	VTK_SCROLL
+	VTK_SCROLL,
+	VTK_PAGEUP,		// 'Prior'
+	VTK_PAGEDOWN	// 'Next'
 };
 
 /*@}*/	// Group eng
