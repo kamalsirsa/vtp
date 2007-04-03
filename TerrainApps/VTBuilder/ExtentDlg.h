@@ -1,7 +1,7 @@
 //
 // Name: ExtentDlg.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -43,7 +43,7 @@ public:
 	bool m_bDegrees;
 	bool m_bSetting;
 	bool m_bDMS;	// Degrees Minutes Seconds
-	wxString m_fs;  // Format string depends on coordiante scheme
+	wxString m_fs;  // Format string depends on coordinate scheme
 
 private:
 	// WDR: member variable declarations for ExtentDlg
