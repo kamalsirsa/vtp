@@ -26,6 +26,7 @@
 #include <wx/notebook.h>
 #include <wx/grid.h>
 #include <wx/toolbar.h>
+#include <wx/tglbtn.h>
 
 // Declare window functions
 
@@ -291,6 +292,16 @@ const int ID_SPIN_CAST_ANGLE = 10202;
 const int ID_SPIN_CAST_DIRECTION = 10203;
 const int ID_CHECK_SHADOWS = 10204;
 wxSizer *RenderOptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+const int ID_EXTENT1 = 10205;
+const int ID_EXTENT2 = 10206;
+const int ID_MATCH_LAYER = 10207;
+const int ID_LAYER_RES = 10208;
+const int ID_GROW = 10209;
+const int ID_SHRINK = 10210;
+const int ID_TILE_SIZE = 10211;
+const int ID_SIZE_SPIN = 10212;
+wxSizer *MatchDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 

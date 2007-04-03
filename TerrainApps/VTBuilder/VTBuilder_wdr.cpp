@@ -2537,6 +2537,114 @@ wxSizer *RenderOptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_size
     return item0;
 }
 
+wxSizer *MatchDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("Origin and Size:") );
+    wxStaticBoxSizer *item1 = new wxStaticBoxSizer( item2, wxVERTICAL );
+
+    wxFlexGridSizer *item3 = new wxFlexGridSizer( 2, 0, 0 );
+    item3->AddGrowableCol( 1 );
+
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("Previous:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item5 = new wxTextCtrl( parent, ID_EXTENT1, wxT(""), wxDefaultPosition, wxSize(280,-1), wxTE_READONLY );
+    item3->Add( item5, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("Current:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item7 = new wxTextCtrl( parent, ID_EXTENT2, wxT(""), wxDefaultPosition, wxSize(280,-1), wxTE_READONLY );
+    item3->Add( item7, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    item1->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Match Layer:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString strs10[] = 
+    {
+        _("ChoiceItem")
+    };
+    wxChoice *item10 = new wxChoice( parent, ID_MATCH_LAYER, wxDefaultPosition, wxSize(200,-1), 1, strs10, 0 );
+    item8->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item8, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item11 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("Layer Resolution:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_LAYER_RES, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+    item11->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item11, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("Allow area to:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxCheckBox *item16 = new wxCheckBox( parent, ID_GROW, _("Grow"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxCheckBox *item17 = new wxCheckBox( parent, ID_SHRINK, _("Shrink"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item14, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item18 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item19 = new wxStaticText( parent, ID_TEXT, _("Tile LOD0 Size:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item20 = new wxTextCtrl( parent, ID_TILE_SIZE, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+    item18->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSpinButton *item21 = new wxSpinButton( parent, ID_SIZE_SPIN, wxDefaultPosition, wxSize(-1,26), 0 );
+    item21->SetRange( 0, 100 );
+    item21->SetValue( 0 );
+    item18->Add( item21, 0, wxALIGN_CENTER|wxRIGHT, 5 );
+
+    item0->Add( item18, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("Tiling:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item24 = new wxTextCtrl( parent, ID_TILING, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+    item22->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item22, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item25 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item26 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item25->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item27 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item25->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item25, 0, wxALIGN_CENTER, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions
