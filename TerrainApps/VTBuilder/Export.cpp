@@ -454,20 +454,16 @@ void MainFrame::ImageExportTiles()
 	pIL->GetExtent(area);
 	DPoint2 spacing = pIL->GetSpacing();
 
-	TilingOptions tileopts;
-	tileopts.cols = 4;
-	tileopts.rows = 4;
-	tileopts.lod0size = 256;
-	tileopts.numlods = 3;
-	tileopts.bOmitFlatTiles = true;
-	tileopts.bUseTextureCompression = true;
+	m_tileopts.numlods = 3;
+	m_tileopts.bOmitFlatTiles = true;
+	m_tileopts.bUseTextureCompression = true;
 
 	TileDlg dlg(this, -1, _("Tiling Options"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(false);
 	dlg.SetArea(area);
-	dlg.SetTilingOptions(tileopts);
+	dlg.SetTilingOptions(m_tileopts);
 	dlg.SetView(GetView());
 
 	int ret = dlg.ShowModal();
@@ -475,24 +471,20 @@ void MainFrame::ImageExportTiles()
 	if (ret == wxID_CANCEL)
 		return;
 
-	dlg.GetTilingOptions(tileopts);
+	dlg.GetTilingOptions(m_tileopts);
 
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = pIL->WriteGridOfTilePyramids(tileopts, GetView());
+	bool success = pIL->WriteGridOfTilePyramids(m_tileopts, GetView());
 	CloseProgressDialog();
 	if (success)
-		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
+		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
-		DisplayAndLog("Did not successfully write to '%s'", (const char *) tileopts.fname);
+		DisplayAndLog("Did not successfully write to '%s'", (const char *) m_tileopts.fname);
 }
 
 void MainFrame::ExportAreaOptimizedElevTileset()
 {
-	TilingOptions tileopts;
-	tileopts.cols = 4;
-	tileopts.rows = 4;
-	tileopts.lod0size = 256;
-	tileopts.numlods = 3;
+	m_tileopts.numlods = 3;
 
 	int count, floating;
 	DPoint2 spacing;
@@ -510,15 +502,15 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(true);
 	dlg.SetArea(m_area);
-	dlg.SetTilingOptions(tileopts);
 	dlg.SetView(GetView());
+	dlg.SetTilingOptions(m_tileopts);
 
 	if (dlg.ShowModal() != wxID_OK)
 	{
 		GetView()->HideGridMarks();
 		return;
 	}
-	dlg.GetTilingOptions(tileopts);
+	dlg.GetTilingOptions(m_tileopts);
 
 	// If some of the input grids have floating-point elevation values, ask
 	//  the user if they want their resampled output to be floating-point.
@@ -538,43 +530,39 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 	if (res == wxYES)
 	{
 		// Ask them where to write the image tiles
-		tileopts.bCreateDerivedImages = true;
+		m_tileopts.bCreateDerivedImages = true;
 		wxString filter = FSTRING_INI;
 		wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		if (!bResult)
 			return;
 		wxString str = saveFile.GetPath();
-		tileopts.fname_images = str.mb_str(wxConvUTF8);
+		m_tileopts.fname_images = str.mb_str(wxConvUTF8);
 
 		// Ask them how to render the image tiles
 		RenderOptionsDlg dlg(this, -1, _("Rendering options"));
-		dlg.SetOptions(tileopts.draw);
+		dlg.SetOptions(m_tileopts.draw);
 		dlg.m_datapaths = m_datapaths;
 		if (dlg.ShowModal() != wxID_OK)
 			return;
-		tileopts.draw = dlg.m_opt;
+		m_tileopts.draw = dlg.m_opt;
 	}
 	else
-		tileopts.bCreateDerivedImages = false;
+		m_tileopts.bCreateDerivedImages = false;
 
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = SampleElevationToTilePyramids(tileopts, bFloat);
+	bool success = SampleElevationToTilePyramids(m_tileopts, bFloat);
 	GetView()->HideGridMarks();
 	CloseProgressDialog();
 	if (success)
-		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
+		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
-		DisplayAndLog("Could not successfully write to '%s'", (const char *) tileopts.fname);
+		DisplayAndLog("Could not successfully write to '%s'", (const char *) m_tileopts.fname);
 }
 
 void MainFrame::ExportAreaOptimizedImageTileset()
 {
-	TilingOptions tileopts;
-	tileopts.cols = 4;
-	tileopts.rows = 4;
-	tileopts.lod0size = 256;
-	tileopts.numlods = 3;
+	m_tileopts.numlods = 3;
 
 	DPoint2 spacing(0, 0);
 	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
@@ -592,7 +580,7 @@ void MainFrame::ExportAreaOptimizedImageTileset()
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(false);
 	dlg.SetArea(m_area);
-	dlg.SetTilingOptions(tileopts);
+	dlg.SetTilingOptions(m_tileopts);
 	dlg.SetView(GetView());
 
 	if (dlg.ShowModal() != wxID_OK)
@@ -600,17 +588,17 @@ void MainFrame::ExportAreaOptimizedImageTileset()
 		GetView()->HideGridMarks();
 		return;
 	}
-	dlg.GetTilingOptions(tileopts);
-	tileopts.bCreateDerivedImages = false;
+	dlg.GetTilingOptions(m_tileopts);
+	m_tileopts.bCreateDerivedImages = false;
 
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = SampleImageryToTilePyramids(tileopts);
+	bool success = SampleImageryToTilePyramids(m_tileopts);
 	GetView()->HideGridMarks();
 	CloseProgressDialog();
 	if (success)
-		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
+		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
-		DisplayAndLog("Could not successfully write to '%s'", (const char *) tileopts.fname);
+		DisplayAndLog("Could not successfully write to '%s'", (const char *) m_tileopts.fname);
 }
 
 bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat)

@@ -1,7 +1,7 @@
 //
 // The main Frame window of the VTBuilder application
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -177,6 +177,10 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 	m_pToolbar = NULL;
 	for (int i = 0; i < LAYER_TYPES; i++)
 		m_pLayBar[i] = NULL;
+
+	m_tileopts.cols = 4;
+	m_tileopts.rows = 4;
+	m_tileopts.lod0size = 256;
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
@@ -1750,7 +1754,9 @@ void MainFrame::MergeResampleElevation()
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
 	dlg.m_bFloats = floatmode;
+	dlg.m_tileopts = m_tileopts;
 	dlg.SetView(GetView());
+	dlg.FormatTilingString();
 
 	int ret = dlg.ShowModal();
 	GetView()->HideGridMarks();
@@ -1839,6 +1845,8 @@ void MainFrame::ExportImage()
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
 	dlg.SetView(GetView());
+	dlg.m_tileopts = m_tileopts;
+	dlg.FormatTilingString();
 
 	int ret = dlg.ShowModal();
 	GetView()->HideGridMarks();
