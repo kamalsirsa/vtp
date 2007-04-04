@@ -265,6 +265,7 @@ protected:
 	void OnAreaZoomAll(wxCommandEvent& event);
 	void OnAreaZoomLayer(wxCommandEvent& event);
 	void OnAreaTypeIn(wxCommandEvent& event);
+	void OnAreaMatch(wxCommandEvent& event);
 	void OnAreaExportElev(wxCommandEvent& event);
 	void OnAreaOptimizedElevTileset(wxCommandEvent& event);
 	void OnAreaOptimizedImageTileset(wxCommandEvent& event);
@@ -277,6 +278,7 @@ protected:
 
 	void OnUpdateAreaZoomAll(wxUpdateUIEvent& event);
 	void OnUpdateAreaZoomLayer(wxUpdateUIEvent& event);
+	void OnUpdateAreaMatch(wxUpdateUIEvent& event);
 	void OnUpdateAreaExportElev(wxUpdateUIEvent& event);
 	void OnUpdateAreaExportImage(wxUpdateUIEvent& event);
 	void OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event);
@@ -496,6 +498,7 @@ protected:
 	// Application Data
 	LayerArray	m_Layers;
 	vtLayerPtr	m_pActiveLayer;
+	TilingOptions m_tileopts;
 
 	// UI members
 	wxMenu *fileMenu;

@@ -55,6 +55,7 @@
 #include "ImageMapDlg.h"
 #include "LayerPropDlg.h"
 #include "MapServerDlg.h"
+#include "MatchDlg.h"
 #include "OptionsDlg.h"
 #include "RenderDlg.h"
 #include "SelectDlg.h"
@@ -246,6 +247,7 @@ EVT_UPDATE_UI(ID_RAW_SCALE,				MainFrame::OnUpdateRawIsActive)
 EVT_MENU(ID_AREA_ZOOM_ALL,			MainFrame::OnAreaZoomAll)
 EVT_MENU(ID_AREA_ZOOM_LAYER,		MainFrame::OnAreaZoomLayer)
 EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
+EVT_MENU(ID_AREA_MATCH,				MainFrame::OnAreaMatch)
 EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
 EVT_MENU(ID_AREA_EXPORT_IMAGE,		MainFrame::OnAreaExportImage)
 EVT_MENU(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnAreaOptimizedElevTileset)
@@ -258,6 +260,7 @@ EVT_MENU(ID_AREA_REQUEST_TSERVE,	MainFrame::OnAreaRequestTServe)
 
 EVT_UPDATE_UI(ID_AREA_ZOOM_ALL,		MainFrame::OnUpdateAreaZoomAll)
 EVT_UPDATE_UI(ID_AREA_ZOOM_LAYER,	MainFrame::OnUpdateAreaZoomLayer)
+EVT_UPDATE_UI(ID_AREA_MATCH,		MainFrame::OnUpdateAreaMatch)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnUpdateAreaExportElev)
 EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE_OPT,MainFrame::OnUpdateAreaExportImage)
@@ -497,6 +500,8 @@ void MainFrame::CreateMenus()
 		_("Set the Area Tool rectangle to the extent of the active layer."));
 	areaMenu->Append(ID_AREA_TYPEIN, _("Numeric Values"),
 		_("Set the Area Tool rectangle by text entry of coordinates."));
+	areaMenu->Append(ID_AREA_MATCH, _("Match Area and Tiling to Layer"),
+		_("Set the Area Tool rectangle by matching the resolution of a layer."));
 	areaMenu->AppendSeparator();
 	areaMenu->Append(ID_AREA_EXPORT_ELEV, _("Merge && Resample &Elevation"),
 		_("Sample all elevation data within the Area Tool to produce a single, new elevation."));
@@ -2533,6 +2538,12 @@ void MainFrame::OnUpdateAreaZoomLayer(wxUpdateUIEvent& event)
 	event.Enable(GetActiveLayer() != NULL);
 }
 
+void MainFrame::OnUpdateAreaMatch(wxUpdateUIEvent& event)
+{
+	int iRasters = LayersOfType(LT_ELEVATION) + LayersOfType(LT_IMAGE);
+	event.Enable(!m_area.IsEmpty() && iRasters > 0);
+}
+
 void MainFrame::OnAreaTypeIn(wxCommandEvent &event)
 {
 	ExtentDlg dlg(NULL, -1, _("Edit Area"));
@@ -2542,6 +2553,21 @@ void MainFrame::OnAreaTypeIn(wxCommandEvent &event)
 		m_area = dlg.m_area;
 		m_pView->Refresh();
 	}
+}
+
+void MainFrame::OnAreaMatch(wxCommandEvent &event)
+{
+	MatchDlg dlg(NULL, -1, _("Match Area and Tiling to Layer"));
+	dlg.SetArea(m_area, (m_proj.IsGeographic() != 0));
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		m_tileopts.cols = dlg.m_tile.x;
+		m_tileopts.rows = dlg.m_tile.y;
+		m_tileopts.lod0size = dlg.m_iTileSize;
+		m_area = dlg.m_area;
+		m_pView->Refresh();
+	}
+	GetView()->HideGridMarks();
 }
 
 void MainFrame::OnAreaRequestWFS(wxCommandEvent& event)
