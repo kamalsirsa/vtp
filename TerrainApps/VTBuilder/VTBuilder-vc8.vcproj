@@ -930,6 +930,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MatchDlg.h"
+				>
+			</File>
+			<File
 				RelativePath="MenuEnum.h"
 				>
 			</File>
@@ -1495,6 +1499,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\MatchDlg.cpp"
+				>
 			</File>
 			<File
 				RelativePath="NodeDlg.cpp"
