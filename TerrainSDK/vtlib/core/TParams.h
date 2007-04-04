@@ -501,6 +501,8 @@ protected:
 #define STR_INIT_SCENARIO "Init_Scenario"
 #define STR_SCENARIO_NAME "Scenario_Name"
 
+#define STR_ALLOW_GRID_SCULPTING "Allow_Sculpting"
+
 /*@}*/	// Group terrain
 
 #endif	// TPARAMSH
