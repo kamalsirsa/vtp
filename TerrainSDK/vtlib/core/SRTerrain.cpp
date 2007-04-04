@@ -5,7 +5,7 @@
 // Utilizes: Roettger's MINI library implementation
 // http://stereofx.org/#Terrain
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -112,13 +112,15 @@ void notify_vtp(int i, int j, int size)
 	}
 }
 
-short int getelevation_vtp1(int i, int j, int size, void *data_unused)
+short int getelevation_vtp1(int i, int j, int size, void *objref)
 {
+	//return ((vtElevationGrid *)objref)->GetValue(i, s_iRows-1-j);
 	return s_pGrid->GetValue(i, s_iRows-1-j);
 }
 
-float getelevation_vtp2(int i, int j, int size, void *data_unused)
+float getelevation_vtp2(int i, int j, int size, void *objref)
 {
+	//return ((vtElevationGrid *)objref)->GetFValue(i, s_iRows-1-j);
 	return s_pGrid->GetFValue(i, s_iRows-1-j);
 }
 
@@ -150,13 +152,48 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	s_pGrid = pGrid;
 	s_iRows = m_iRows;
 
-	// This maxiumum scale is a reasonable tradeoff between the exaggeration
+	// This maximum scale is a reasonable tradeoff between the exaggeration
 	//  that the user is likely to need, and numerical precision issues.
 	m_fMaximumScale = 10;
 
 	m_fHeightScale = fZScale;
 	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
 
+	if (pGrid->IsFloatMode())
+	{
+		m_bFloat = true;
+		float *image = NULL;
+		m_pMini = new ministub(image,
+				&size, &dim, m_fMaximumScale, cellaspect,
+				0.0f, 0.0f, 0.0f,	// grid center
+				beginfan_vtp, fanvertex_vtp, notify_vtp,
+				getelevation_vtp2);
+	}
+	else
+	{
+		m_bFloat = false;
+		short *image = NULL;
+		m_pMini = new ministub(image,
+				&size, &dim, m_fMaximumScale, cellaspect,
+				0.0f, 0.0f, 0.0f,	// grid center
+				beginfan_vtp, fanvertex_vtp, notify_vtp,
+				getelevation_vtp1);
+	}
+	m_pMini->setrelscale(m_fDrawScale);
+
+	m_iDrawnTriangles = -1;
+	m_iBlockSize = m_iColumns / 4;
+
+	return DTErr_OK;
+}
+
+DTErr SRTerrain::ReInit(const vtElevationGrid *pGrid)
+{
+	int size = m_iColumns;
+	float dim = m_fXStep;
+	float cellaspect = m_fZStep / m_fXStep;
+
+	delete m_pMini;
 	if (pGrid->IsFloatMode())
 	{
 		float *image = NULL;
@@ -177,10 +214,21 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	}
 	m_pMini->setrelscale(m_fDrawScale);
 
-	m_iDrawnTriangles = -1;
-	m_iBlockSize = m_iColumns / 4;
-
 	return DTErr_OK;
+}
+
+void SRTerrain::ElevationChanged()
+{
+	//if (m_bFloat)
+	//{
+	//	Mini::calcDH();
+	//	Mini::calcD2();
+	//}
+	//else
+	//{
+	//	mini::calcDH();
+	//	mini::calcD2();
+	//}
 }
 
 void SRTerrain::SetVerticalExag(float fExag)

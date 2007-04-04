@@ -5,7 +5,7 @@
 // Utilizes: Roettger's MINI library implementation
 // http://stereofx.org/#Terrain
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -38,6 +38,10 @@ public:
 	void SetVerticalExag(float fExag);
 	void SetPolygonTarget(int iCount);
 
+	// Dynamic elevation
+	DTErr ReInit(const vtElevationGrid *pGrid);
+	void ElevationChanged();
+
 	void LoadSingleMaterial();
 	void LoadBlockMaterial(int a, int b);
 
@@ -68,7 +72,7 @@ private:
 	float m_fHeightScale;
 	float m_fMaximumScale;
 	float m_fDrawScale;
-
+	bool m_bFloat;
 };
 
 /*@}*/	// Group dynterr
