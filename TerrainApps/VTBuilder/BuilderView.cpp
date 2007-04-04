@@ -1,7 +1,7 @@
 //
 // BuilderView.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1184,6 +1184,10 @@ void BuilderView::ShowGridMarks(const DRECT &area, int cols, int rows,
 
 	if (m_bShowGridMarks)
 		DrawGridMarks(dc);	// erase
+
+	if (cols < 1 || rows < 1)
+		return;
+
 	m_GridArea = area;
 	m_iGridCols = cols;
 	m_iGridRows = rows;

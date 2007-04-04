@@ -210,6 +210,8 @@ void MatchDlg::OnSpinUp( wxSpinEvent &event )
 void MatchDlg::OnSpinDown( wxSpinEvent &event )
 {
 	m_iTileSize >>= 1;
+	if (m_iTileSize < 1)
+		m_iTileSize = 1;
 	UpdateGuess();
 	UpdateValues();
 	TransferDataToWindow();
