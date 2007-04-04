@@ -791,9 +791,33 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 #endif
 		break;
 
-	case 'Z':
-		{
+	case 'y':
 		// A handy place to put test code
+		{
+			vtTerrain *pTerr = GetCurrentTerrain();
+			if (pTerr && pTerr->GetParams().GetValueBool(STR_ALLOW_GRID_SCULPTING))
+			{
+				vtElevationGrid	*grid = pTerr->GetInitialGrid();
+				//vtHeightFieldGrid3d *grid = pTerr->GetHeightFieldGrid3d();
+				if (grid)
+				{
+					// Raise an area of the terrain
+					int cols, rows;
+					grid->GetDimensions(cols, rows);
+					for (int i  = cols / 4; i < cols / 2; i++)
+						for (int j = rows / 4; j < rows / 2; j++)
+						{
+							grid->SetValue(i, j, grid->GetValue(i, j) + 40);
+						}
+					pTerr->UpdateElevation();
+
+					// Update the shading and culture
+					pTerr->RecreateTextures(vtGetTS()->GetSunLight());
+					DRECT area;
+					area.Empty();
+					pTerr->RedrapeCulture(area);
+				}
+			}
 		}
 	case 'D':	// Shift-D
 		// dump camera info
