@@ -2220,7 +2220,7 @@ bool vtTerrain::CreateFromGrid()
 		m_pHeightField = m_pDynGeom;
 	}
 
-	if (!m_bPreserveInputGrid)
+	if (!m_bPreserveInputGrid && !m_Params.GetValueBool(STR_ALLOW_GRID_SCULPTING))
 	{
 		// we don't need the original grid any more
 		delete m_pElevGrid;
@@ -3090,4 +3090,70 @@ void vtTerrain::ActivateScenario(int iScenario)
 	}
 }
 
+
+////////////////////////////////////////////////////////////////////////////
+// Dynamic elevation
+
+void vtTerrain::UpdateElevation()
+{
+	if (!m_pDynGeom)
+		return;
+	SRTerrain *sr = dynamic_cast<SRTerrain*>(m_pDynGeom);
+	if (!sr)
+		return;
+	sr->ReInit(m_pElevGrid);
+	//sr->ElevationChanged();
+}
+
+/**
+ * Drape all the culture on the terrain again, to keep them on the surface
+ * in the case when the elevation values have changed.
+ *
+ * \param area You can speed up this function by passing the area to re-drape
+ *		in.  Otherwise, simply pass an empty area, and all culture will be
+ *		re-draped.
+ */
+void vtTerrain::RedrapeCulture(const DRECT &area)
+{
+	// Tell the terrain to re-drape all its structure instances.
+	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+	{
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer *>(m_Layers[i]);
+		if (slay)
+		{
+			for (unsigned int j = 0; j < slay->GetSize(); j++)
+			{
+				vtStructure *st = slay->GetAt(j);
+				vtStructure3d *s3 = slay->GetStructure3d(j);
+
+				// If we were given an area, omit structures outside it
+				if (!area.IsEmpty() && !st->IsContainedBy(area))
+					continue;
+
+				// A fence might need re-draping, so we have to rebuild geometry
+				vtFence3d *f3 = dynamic_cast<vtFence3d*>(s3);
+				if (f3)
+					f3->CreateNode(this);
+
+				// A building's geometry will not change, only move up or down
+				vtBuilding3d *b3 = dynamic_cast<vtBuilding3d*>(s3);
+				if (b3)
+					b3->AdjustHeight(m_pHeightField);
+
+				// A instance's geometry will not change, only move up or down
+				vtStructInstance3d *si = dynamic_cast<vtStructInstance3d*>(s3);
+				if (si)
+					si->UpdateTransform(m_pHeightField);
+
+			}
+		}
+		//vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer *>(m_Layers[i]);
+	}
+	// And plants
+	for (unsigned int i = 0; i < m_PIA.GetNumEntities(); i++)
+	{
+		m_PIA.UpdateTransform(i);
+	}
+	// What else?  Abstract Layers. Roads, perhaps.
+}
 

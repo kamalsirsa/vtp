@@ -307,6 +307,11 @@ public:
 	// Scenarios
 	void ActivateScenario(int iScenario);
 
+	// Dynamic elevation
+	vtElevationGrid	*GetInitialGrid() { return m_pElevGrid; }
+	void UpdateElevation();
+	void RedrapeCulture(const DRECT &area);
+
 	/********************** Public Data ******************/
 
 	// polygon containing geo corners of terrain area
