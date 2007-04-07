@@ -36,7 +36,7 @@
 #include <osgDB/ReadFile>
 #endif
 
-#if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
+#ifndef __WXMSW__
 #  include "icons/cmanager.xpm"
 #endif
 
@@ -131,13 +131,9 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 {
 	m_bCloseOnIdle = false;
 
-	VTLOG(" constructing Frame\n");
+	VTLOG(" constructing Frame (%x, title, pos, size, %x)\n", parent, style);
 	// Give it an icon
-	{
-		wxString name = _T("cmanager");
-		wxIcon icon(name);
-		SetIcon(icon);
-	}
+	//SetIcon(wxIcon(cmanager));
 
 	ReadEnviroPaths();
 
@@ -192,7 +188,6 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_pSceneGraphDlg = new SceneGraphDlg(this, wxID_ANY, _T("Scene Graph"),
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(250, 350);
-	m_canvas->SetCurrent();
 
 	m_pPropDlg = new PropDlg(m_splitter2, wxID_ANY,
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
