@@ -20,7 +20,7 @@
 
 #include "PropDlg.h"
 #include "vtdata/Content.h"
-#include "Frame.h"
+#include "frame.h"
 #include "TagDlg.h"
 
 // WDR: class implementations
@@ -178,7 +178,7 @@ void PropDlg::OnTextItem( wxCommandEvent &event )
 
 void PropDlg::UpdateSubtypes()
 {
-	vtString type = m_pTypeChoice->GetStringSelection().mb_str();
+	vtString type = (const char *) m_pTypeChoice->GetStringSelection().mb_str();
 
 	m_pSubtypeChoice->Clear();
 	for (unsigned int i = 0; i < m_types.size(); i++)

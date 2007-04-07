@@ -8,16 +8,20 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #ifdef _MSC_VER
 #pragma warning( disable : 4786 )
 #endif
 
 #include "vtlib/vtlib.h"
 
-#include "App.h"
+#include "app.h"
 #include "TreeView.h"
 #include "menu_id.h"
-#include "Frame.h"
+#include "frame.h"
 
 #include "vtdata/Content.h"
 #include "vtdata/vtLog.h"
@@ -31,7 +35,7 @@ DECLARE_APP(vtApp)
 	#include "icon3.xpm"
 	#include "icon4.xpm"
 	#include "icon5.xpm"
-	#include "mondrian.xpm"
+	//#include "mondrian.xpm"
 #endif
 
 

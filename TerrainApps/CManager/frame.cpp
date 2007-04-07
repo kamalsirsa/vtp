@@ -274,10 +274,10 @@ void vtFrame::ReadEnviroPaths()
 {
 	VTLOG("Getting data paths from Enviro.\n");
 	wxString cwd = wxGetCwd();
-	VTLOG("  Current directory: '%s'\n", cwd.mb_str(wxConvUTF8));
+	VTLOG("  Current directory: '%s'\n", (const char *) cwd.mb_str(wxConvUTF8));
 
 	wxString IniPath = cwd + _T("/Enviro.xml");
-	vtString fname = IniPath.mb_str(wxConvUTF8);
+	vtString fname = (const char *) IniPath.mb_str(wxConvUTF8);
 	VTLOG("  Looking for '%s'\n", (const char *) fname);
 	ifstream input;
 	input.open(fname, ios::in | ios::binary);
@@ -285,8 +285,8 @@ void vtFrame::ReadEnviroPaths()
 	{
 		input.clear();
 		IniPath = cwd + _T("/../Enviro/Enviro.xml");
-		fname = IniPath.mb_str(wxConvUTF8);
-		VTLOG("  Not there.  Looking for '%s'\n", fname);
+		fname = (const char *) IniPath.mb_str(wxConvUTF8);
+		VTLOG("  Not there.  Looking for '%s'\n", (const char *) fname);
 		input.open(fname, ios::in | ios::binary);
 	}
 	if (input.is_open())
@@ -531,7 +531,7 @@ void vtFrame::OnSave(wxCommandEvent& event)
 
 void vtFrame::LoadContentsFile(const wxString &fname)
 {
-	VTLOG("LoadContentsFile '%s'\n", fname.mb_str(wxConvUTF8));
+	VTLOG("LoadContentsFile '%s'\n", (const char *) fname.mb_str(wxConvUTF8));
 	FreeContents();
 	try
 	{
@@ -566,7 +566,7 @@ void vtFrame::FreeContents()
 
 void vtFrame::SaveContentsFile(const wxString &fname)
 {
-	VTLOG("SaveContentsFile '%s'\n", fname.mb_str(wxConvUTF8));
+	VTLOG("SaveContentsFile '%s'\n", (const char *) fname.mb_str(wxConvUTF8));
 	try
 	{
 		m_Man.WriteXML(fname.mb_str(wxConvUTF8));
@@ -594,8 +594,8 @@ bool SamePath(const vtString &s1, const vtString &s2)
 
 void vtFrame::AddModelFromFile(const wxString &fname1)
 {
-	vtString fname = fname1.mb_str();
-	VTLOG("AddModelFromFile '%s'\n", fname);
+	vtString fname = (const char *) fname1.mb_str();
+	VTLOG("AddModelFromFile '%s'\n", (const char *) fname);
 
 	// Change backslashes to slashes.
 	for (int j = 0; j < fname.GetLength(); j++)
@@ -809,7 +809,7 @@ vtString GetSaveName(const char *format, const char *wildcard)
 	if (!bResult)
 		return vtString("");
 
-	vtString vs = saveFile.GetPath().mb_str(wxConvUTF8);
+	vtString vs = (const char *) saveFile.GetPath().mb_str(wxConvUTF8);
 	return vs;
 }
 
@@ -1021,7 +1021,7 @@ void vtFrame::AddNewItem()
 
 vtModel *vtFrame::AddModel(const wxString &fname_in)
 {
-	VTLOG("AddModel %s\n", fname_in.mb_str());
+	VTLOG("AddModel %s\n", (const char *) fname_in.mb_str());
 #if 0
 	const char *fname = StartOfFilename(fname_in.mb_str());
 
@@ -1045,7 +1045,7 @@ vtModel *vtFrame::AddModel(const wxString &fname_in)
 	}
 #else
 	// data path code is too complicated, just store absolute paths
-	vtString fname = fname_in.mb_str();
+	vtString fname = (const char *) fname_in.mb_str();
 #endif
 
 	// If there is no item, make a new one.
@@ -1140,7 +1140,7 @@ void vtFrame::SetCurrentItemAndModel(vtItem *item, vtModel *model)
 
 void vtFrame::SetCurrentItem(vtItem *item)
 {
-	VTLOG("SetCurrentItem(%s)\n", item == NULL ? "none" : item->m_name);
+	VTLOG("SetCurrentItem(%s)\n", item == NULL ? "none" : (const char *) item->m_name);
 
 	if (item == m_pCurrentItem)
 		return;
@@ -1202,7 +1202,7 @@ void vtFrame::ShowItemGroupLOD(bool bTrue)
 
 void vtFrame::SetCurrentModel(vtModel *model)
 {
-	VTLOG("SetCurrentModel(%s)\n", model == NULL ? "none" : model->m_filename);
+	VTLOG("SetCurrentModel(%s)\n", model == NULL ? "none" : (const char *) model->m_filename);
 
 	if (model == m_pCurrentModel)
 		return;
