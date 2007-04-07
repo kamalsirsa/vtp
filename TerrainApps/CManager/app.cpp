@@ -13,6 +13,7 @@
 #include "wx/wx.h"
 #endif
 
+// Header for the vtlib librarys
 #include "vtlib/vtlib.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/vtSOG.h"
@@ -20,13 +21,6 @@
 
 #include "app.h"
 #include "frame.h"
-
-// #include <osgDB/ReadFile>
-
-static void Args(int argc, wxChar **argv)
-{
-   return;
-}
 
 IMPLEMENT_APP(vtApp)
 
@@ -50,23 +44,19 @@ bool vtApp::OnInit(void)
 	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);
 
-	Args(argc, argv);
-
 	VTSTARTLOG("debug.txt");
 	VTLOG("CManager\n");
 
 	VTLOG("Setup scene\n");
 	vtScene *pScene = vtGetScene();
 	pScene->Init();
-	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));
+	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));		// grey
 
 	//
 	// Create the main frame window
 	//
 	VTLOG("Creating frame\n");
-	wxString title = _T("Content Manager");
-	vtFrame *frame = new vtFrame(NULL, title,
-		wxPoint(50, 50), wxSize(800, 600));
+	vtFrame *frame = new vtFrame(NULL, _T("Content Manager"), wxPoint(50, 50), wxSize(800, 600));
 
 	VTLOG(" creating camera\n");
 	vtCamera *pCamera = pScene->GetCamera();
