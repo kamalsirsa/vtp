@@ -47,6 +47,16 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 	parent->Show(true);
 	SetCurrent();
 
+	wxGLContext *context = GetContext();
+	if (context)
+		VTLOG("OpenGL context: %lx\n", context);
+	else
+	{
+		VTLOG("No OpenGL context.\n");
+		return;
+	}
+	VTLOG("OpenGL version: %s\n", (const char *) glGetString(GL_VERSION));
+
 	m_bPainting = false;
 	m_bRunning = true;
 }
@@ -55,27 +65,6 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 vtGLCanvas::~vtGLCanvas(void)
 {
 	VTLOG(" destructing Canvas\n");
-}
-
-void vtGLCanvas::QueueRefresh(bool eraseBackground)
-	// A Refresh routine we can call from inside OnPaint.
-	//   (queues the events rather than dispatching them immediately).
-{
-	// With wxGTK, you can't do a Refresh() in OnPaint because it doesn't
-	//   queue (post) a Refresh event for later.  Rather it dispatches
-	//   (processes) the underlying events immediately via ProcessEvent
-	//   (read, recursive call).  See the wxPostEvent docs and Refresh code
-	//   for more details.
-	if (eraseBackground)
-	{
-		wxEraseEvent eevent( GetId() );
-		eevent.SetEventObject( this );
-		wxPostEvent( GetEventHandler(), eevent );
-	}
-
-	wxPaintEvent event( GetId() );
-	event.SetEventObject( this );
-	wxPostEvent( GetEventHandler(), event );
 }
 
 void vtGLCanvas::UpdateStatusText()
@@ -135,19 +124,6 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		if (diff > 0)
 			Sleep((int)(diff * 1000));
 
-#ifdef WIN32
-		// We use refresh-on-idle on WIN32
-#else
-		// Queue another refresh for continuous rendering.
-		//   (Yield first so we don't starve out keyboard & mouse events.)
-		//
-		// FIXME: We may want to use a frame timer instead of immediate-
-		//   redraw so we don't eat so much CPU on machines that can
-		//   easily handle the frame rate.
-		wxYield();
-		QueueRefresh(false);
-#endif
-
 		// update the status bar every 1/10 of a second
 		static float last_stat = 0.0f;
 		float cur = vtGetTime();
@@ -159,6 +135,10 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 		m_bPainting = false;
 	}
+
+	// Must allow some idle processing to occur - or the toolbars will not
+	// update, and the close box will not respond!
+	wxGetApp().ProcessIdle();
 }
 
 static void Reshape(int width, int height)
