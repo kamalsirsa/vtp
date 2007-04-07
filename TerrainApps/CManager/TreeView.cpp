@@ -271,7 +271,7 @@ void MyTreeCtrl::OnEndLabelEdit(wxTreeEvent& event)
 	if (data != NULL && data->m_pItem != NULL)
 	{
 //		RefreshTreeStatus(frame);	// no need; tree already updated
-		vtString label = result.mb_str(wxConvUTF8);
+		vtString label = (const char *) result.mb_str(wxConvUTF8);
 		GetMainFrame()->SetItemName(data->m_pItem, label);
 	}
 }
