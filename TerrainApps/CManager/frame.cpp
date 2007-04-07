@@ -132,8 +132,10 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_bCloseOnIdle = false;
 
 	VTLOG(" constructing Frame (%x, title, pos, size, %x)\n", parent, style);
+#if WIN32
 	// Give it an icon
-	//SetIcon(wxIcon(cmanager));
+	SetIcon(wxIcon(_T("cmanager")));
+#endif
 
 	ReadEnviroPaths();
 
