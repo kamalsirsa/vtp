@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="CManager"
-	ProjectGUID="{620C6FB1-C94C-459D-AF5F-DCBB765F69CF}"
+	ProjectGUID="{B04668EA-4E34-4C2E-84B0-06AEDD22AC5D}"
 	RootNamespace="CManager"
 	>
 	<Platforms>
