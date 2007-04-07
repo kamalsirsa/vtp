@@ -1,7 +1,7 @@
 //
 // TreeView.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -30,12 +30,18 @@ DECLARE_APP(vtApp)
 
 // under Windows the icons are in the .rc file
 #ifndef __WXMSW__
-	#include "icon1.xpm"
-	#include "icon2.xpm"
-	#include "icon3.xpm"
-	#include "icon4.xpm"
-	#include "icon5.xpm"
-	//#include "mondrian.xpm"
+#  include "../Enviro/wx/icons/icon1.xpm"
+#  include "../Enviro/wx/icons/icon2.xpm"
+#  include "../Enviro/wx/icons/icon3.xpm"
+#  include "../Enviro/wx/icons/icon4.xpm"
+#  include "../Enviro/wx/icons/icon5.xpm"
+#  include "../Enviro/wx/icons/icon6.xpm"
+#  include "../Enviro/wx/icons/icon7.xpm"
+#  include "../Enviro/wx/icons/icon8.xpm"
+#  include "../Enviro/wx/icons/icon9.xpm"
+#  include "../Enviro/wx/icons/icon10.xpm"
+#  include "icons/icon11.xpm"
+#  include "icons/icon12.xpm"
 #endif
 
 

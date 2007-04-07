@@ -27,16 +27,16 @@
 using namespace std;
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
-#  include "icon1.xpm"
-#  include "icon2.xpm"
-#  include "icon3.xpm"
-#  include "icon4.xpm"
-#  include "icon5.xpm"
-#  include "icon6.xpm"
-#  include "icon7.xpm"
-#  include "icon8.xpm"
-#  include "icon9.xpm"
-#  include "icon10.xpm"
+#  include "../Enviro/wx/icons/icon1.xpm"
+#  include "../Enviro/wx/icons/icon2.xpm"
+#  include "../Enviro/wx/icons/icon3.xpm"
+#  include "../Enviro/wx/icons/icon4.xpm"
+#  include "../Enviro/wx/icons/icon5.xpm"
+#  include "../Enviro/wx/icons/icon6.xpm"
+#  include "../Enviro/wx/icons/icon7.xpm"
+#  include "../Enviro/wx/icons/icon8.xpm"
+#  include "../Enviro/wx/icons/icon9.xpm"
+#  include "../Enviro/wx/icons/icon10.xpm"
 #endif
 
 /////////////////////////////
