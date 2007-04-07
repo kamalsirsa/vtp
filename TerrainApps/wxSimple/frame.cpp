@@ -16,6 +16,7 @@
 // Header for the vtlib library
 #include "vtlib/vtlib.h"
 
+#include "vtdata/vtLog.h"
 #include "app.h"
 #include "frame.h"
 #include "canvas.h"
@@ -31,6 +32,8 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	const wxSize& size, long style):
 	wxFrame(parent, -1, title, pos, size, style)
 {
+	VTLOG(" constructing Frame (%x, title, pos, size, %x)\n", parent, style);
+
 	// We definitely want full color and a 24-bit Z-buffer!
 	int gl_attrib[7] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
 		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0	};
@@ -41,8 +44,6 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	// Show the frame
 	Show(TRUE);
-
-	m_canvas->SetCurrent();
 }
 
 vtFrame::~vtFrame()
