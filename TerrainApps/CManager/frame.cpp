@@ -1,8 +1,8 @@
 //
 // Name:	 frame.cpp
-// Purpose:  The frame class for the wxWindows application.
+// Purpose:  The frame class for the Content Manager.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,6 +34,10 @@
 #if VTLIB_OSG
 #include <osgDB/Registry>
 #include <osgDB/ReadFile>
+#endif
+
+#if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
+#  include "icons/cmanager.xpm"
 #endif
 
 DECLARE_APP(vtApp)
