@@ -54,6 +54,7 @@ MatchDlg::MatchDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 void MatchDlg::SetArea(const DRECT &area, bool bIsGeo)
 {
+	// Set the area extents, and set some initial default values
 	m_area = area;
 	m_original = area;
 	m_bIsGeo = bIsGeo;
@@ -62,6 +63,7 @@ void MatchDlg::SetArea(const DRECT &area, bool bIsGeo)
 	m_bGrow = true;
 	m_bShrink = true;
 
+	// If geographic (degrees), format the coordinates with more decimals
 	if (m_bIsGeo)
 		m_fs = _T("%4.8f");
 	else
@@ -73,6 +75,7 @@ void MatchDlg::SetArea(const DRECT &area, bool bIsGeo)
 
 void MatchDlg::UpdateValues()
 {
+	// Format the strings with the extent and tiling values
 	m_strExtent1.Printf(_T("(")+m_fs+_T(", ")+m_fs+_T("), (")+m_fs+_T(", ")+m_fs+_T(")"),
 		m_original.left, m_original.bottom, m_original.Width(), m_original.Height());
 
@@ -84,6 +87,7 @@ void MatchDlg::UpdateValues()
 
 void MatchDlg::UpdateLayers()
 {
+	// (Re-)fill the 'Layers' control with all available layers
 	GetMatchLayer()->Clear();
 	MainFrame *frame = GetMainFrame();
 	for (int i = 0; i < frame->NumLayers(); i++)
@@ -99,11 +103,13 @@ void MatchDlg::UpdateLayers()
 
 void MatchDlg::GetLayerSpacing()
 {
+	// Look at the layer selected in the dialog
 	vtLayer *lay = GetMainFrame()->GetLayer(m_iLayer);
 
 	m_strLayerRes = _("n/a");
 	m_spacing.Set(0,0);
 
+	// Get resolution (ground spacing) from it
 	if (lay->GetType() == LT_ELEVATION)
 	{
 		vtElevLayer *elay = (vtElevLayer *)lay;
@@ -113,6 +119,7 @@ void MatchDlg::GetLayerSpacing()
 	if (lay->GetType() == LT_IMAGE)
 		m_spacing = ((vtImageLayer *)lay)->GetSpacing();
 
+	// Update the string displayed to the user
 	if (m_spacing != DPoint2(0,0))
 	{
 		m_strLayerRes.Printf(_T("%.2f, %.2f"), m_spacing.x, m_spacing.y);
@@ -121,16 +128,23 @@ void MatchDlg::GetLayerSpacing()
 
 void MatchDlg::UpdateGuess()
 {
+	// Based on what the user specified for Tile LOD0 Size, estimate how
+	//  closely a set of tiles can match the original area.  This is affected
+	//  by whether the user allows us to increase or decrease the area.
 	DPoint2 tilearea;
 	bool go = true;
 	double estx, esty;
 	while (go)
 	{
 		tilearea = m_spacing * m_iTileSize;
+
+		// How many tiles would fit in the original area?
 		estx = m_original.Width() / tilearea.x;
 		esty = m_original.Height() / tilearea.y;
+
 		if (estx < 1.0 || esty < 1.0)
 		{
+			// Tiles would not fit at all, so force the tile size smaller
 			m_iTileSize >>= 1;
 			if (m_iTileSize == 1)
 				go = false;
@@ -140,22 +154,24 @@ void MatchDlg::UpdateGuess()
 	}
 	if (m_bGrow && m_bShrink)
 	{
+		// round to closest
 		m_tile.x = (int) (estx + 0.5);
 		m_tile.y = (int) (esty + 0.5);
 	}
 	else if (m_bGrow)
 	{
-		// grow but not shrink; force round up
+		// grow but not shrink: round up
 		m_tile.x = (int) (estx + 0.99999);
 		m_tile.y = (int) (esty + 0.99999);
 	}
 	else if (m_bShrink)
 	{
-		// shrink but not grow: force round down
+		// shrink but not grow: round down
 		m_tile.x = (int) estx;
 		m_tile.y = (int) esty;
 	}
 
+	// Now that we know the tile size, we can compute the new area
 	DPoint2 center = m_original.GetCenter();
 	DPoint2 new_area(m_tile.x * tilearea.x, m_tile.y * tilearea.y);
 	m_area.left   = center.x - 0.5 * new_area.x;
@@ -163,6 +179,7 @@ void MatchDlg::UpdateGuess()
 	m_area.bottom = center.y - 0.5 * new_area.y;
 	m_area.top	= center.y + 0.5 * new_area.y;
 
+	// Show to the user, visually
 	GetMainFrame()->GetView()->ShowGridMarks(m_area, m_tile.x, m_tile.y, -1, -1);
 }
 
