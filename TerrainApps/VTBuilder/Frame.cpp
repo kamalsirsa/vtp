@@ -2260,8 +2260,14 @@ bool MainFrame::ConfirmValidCRS(vtProjection *pProj)
 	if (!pProj->GetRoot())
 	{
 		// No projection.
-		wxString msg = _("File lacks a projection.\n Would you like to specify one?\n Yes - specify projection\n No - use current projection\n");
-		int res = wxMessageBox(msg, _("Coordinate Reference System"), wxYES_NO | wxCANCEL);
+		int res;
+		if (m_bUseCurrentCRS)
+			res = wxNO;		// Don't ask user, just use current CRS
+		else
+		{
+			wxString msg = _("File lacks a projection.\n Would you like to specify one?\n Yes - specify projection\n No - use current projection\n");
+			res = wxMessageBox(msg, _("Coordinate Reference System"), wxYES_NO | wxCANCEL);
+		}
 		if (res == wxYES)
 		{
 			ProjectionDlg dlg(NULL, -1, _("Please indicate projection"));
