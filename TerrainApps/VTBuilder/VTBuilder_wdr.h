@@ -303,6 +303,13 @@ const int ID_TILE_SIZE = 10211;
 const int ID_SIZE_SPIN = 10212;
 wxSizer *MatchDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+const int ID_RADIO1 = 10213;
+const int ID_RADIO2 = 10214;
+const int ID_RADIO3 = 10215;
+const int ID_RADIO4 = 10216;
+const int ID_RADIO5 = 10217;
+wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

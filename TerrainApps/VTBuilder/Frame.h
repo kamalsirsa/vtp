@@ -1,7 +1,7 @@
 //
 // Frame.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -90,6 +90,7 @@ protected:
 	void OnProjectNew(wxCommandEvent& event);
 	void OnProjectOpen(wxCommandEvent& event);
 	void OnProjectSave(wxCommandEvent& event);
+	void OnProjectPrefs(wxCommandEvent& event);
 	void OnDymaxTexture(wxCommandEvent &event);
 	void OnProcessBillboard(wxCommandEvent &event);
 	void OnGeocode(wxCommandEvent &event);
@@ -487,6 +488,11 @@ public:
 	// Application Data
 	DRECT		m_area;
 	vtStringArray	m_datapaths;
+
+	// User Preferences
+	bool m_bUseCurrentCRS;
+	bool m_bLoadImagesAlways;
+	bool m_bLoadImagesNever;
 
 protected:
 	// INI File

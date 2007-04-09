@@ -946,6 +946,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PrefDlg.h"
+				>
+			</File>
+			<File
 				RelativePath="RawDlg.h"
 				>
 			</File>
@@ -1553,6 +1557,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\PrefDlg.cpp"
+				>
 			</File>
 			<File
 				RelativePath="RawDlg.cpp"

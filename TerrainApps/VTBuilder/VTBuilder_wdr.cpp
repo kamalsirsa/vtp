@@ -2645,6 +2645,55 @@ wxSizer *MatchDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("When importing data that lacks a CRS:") );
+    wxStaticBoxSizer *item1 = new wxStaticBoxSizer( item2, wxVERTICAL );
+
+    wxRadioButton *item3 = new wxRadioButton( parent, ID_RADIO1, _("Use the current CRS"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item1->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxRadioButton *item4 = new wxRadioButton( parent, ID_RADIO2, _("Ask"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item6 = new wxStaticBox( parent, -1, _("When loading an image which is very large:") );
+    wxStaticBoxSizer *item5 = new wxStaticBoxSizer( item6, wxVERTICAL );
+
+    wxRadioButton *item7 = new wxRadioButton( parent, ID_RADIO3, _("Load it into memory"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item5->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxRadioButton *item8 = new wxRadioButton( parent, ID_RADIO4, _("Use out-of-core access"), wxDefaultPosition, wxSize(220,-1), 0 );
+    item5->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxRadioButton *item9 = new wxRadioButton( parent, ID_RADIO5, _("Ask"), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    item0->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item11 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item12 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item10, 0, wxALIGN_CENTER, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions

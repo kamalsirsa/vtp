@@ -1,7 +1,7 @@
 //
 //  The menus functions of the main Frame window of the VTBuilder application.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -57,6 +57,7 @@
 #include "MapServerDlg.h"
 #include "MatchDlg.h"
 #include "OptionsDlg.h"
+#include "PrefDlg.h"
 #include "RenderDlg.h"
 #include "SelectDlg.h"
 #include "TSDlg.h"
@@ -66,6 +67,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
 EVT_MENU(ID_FILE_OPEN,		MainFrame::OnProjectOpen)
 EVT_MENU(ID_FILE_SAVE,		MainFrame::OnProjectSave)
+EVT_MENU(ID_FILE_PREFS,		MainFrame::OnProjectPrefs)
 EVT_MENU(ID_SPECIAL_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
 EVT_MENU(ID_SPECIAL_PROCESS_BILLBOARD,	MainFrame::OnProcessBillboard)
 EVT_MENU(ID_SPECIAL_GEOCODE,	MainFrame::OnGeocode)
@@ -306,6 +308,8 @@ void MainFrame::CreateMenus()
 	specialMenu->Append(ID_ELEV_PASTE_NEW, _("New Elevation Layer from Clipboard"));
 	fileMenu->Append(0, _("Special"), specialMenu);
 #endif
+	fileMenu->AppendSeparator();
+	fileMenu->Append(ID_FILE_PREFS, _("Preferences"));
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_FILE_EXIT, _("E&xit\tAlt-X"), _("Exit"));
 	m_pMenuBar->Append(fileMenu, _("&Project"));
@@ -591,6 +595,23 @@ void MainFrame::OnProjectSave(wxCommandEvent &event)
 	wxString strPathName = saveFile.GetPath();
 
 	SaveProject(strPathName);
+}
+
+void MainFrame::OnProjectPrefs(wxCommandEvent &event)
+{
+	PrefDlg dlg(this, wxID_ANY, _("Preferences"));
+	dlg.b1 = (m_bUseCurrentCRS == true);
+	dlg.b2 = (m_bUseCurrentCRS == false);
+	dlg.b3 = (m_bLoadImagesAlways == true);
+	dlg.b4 = (m_bLoadImagesNever == true);
+	dlg.b5 = (!m_bLoadImagesAlways && !m_bLoadImagesNever);
+    TransferDataToWindow();
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		m_bUseCurrentCRS = dlg.b1;
+		m_bLoadImagesAlways = dlg.b3;
+		m_bLoadImagesNever = dlg.b4;
+	}
 }
 
 void MainFrame::OnDymaxTexture(wxCommandEvent &event)

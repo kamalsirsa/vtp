@@ -182,6 +182,10 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 	m_tileopts.rows = 4;
 	m_tileopts.lod0size = 256;
 
+	m_bUseCurrentCRS = false;
+	m_bLoadImagesAlways = false;
+	m_bLoadImagesNever = false;
+
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
 	VTLOG1("  MainFrame constructor: exit\n");
