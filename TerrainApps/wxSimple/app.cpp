@@ -21,7 +21,6 @@
 
 #include "app.h"
 #include "frame.h"
-#include "canvas.h"
 
 IMPLEMENT_APP(vtApp);
 
@@ -75,7 +74,6 @@ bool vtApp::CreateScene()
 	m_pTerrainScene->AppendTerrain(pTerr);
 	if (!m_pTerrainScene->BuildTerrain(pTerr))
 	{
-		m_pFrame->m_canvas->m_bRunning = false;
 		wxMessageBox(_T("Couldn't create the terrain.  Perhaps the elevation data file isn't in the expected location?"));
 		return false;
 	}
