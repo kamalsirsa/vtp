@@ -140,6 +140,7 @@ protected:
 	void OnViewZoomAll(wxCommandEvent& event);
 	void OnViewZoomToLayer(wxCommandEvent& event);
 	void OnViewFull(wxCommandEvent& event);
+	void OnViewZoomArea(wxCommandEvent& event);
 	void OnViewToolbar(wxCommandEvent& event);
 	void OnViewLayers(wxCommandEvent& event);
 	void OnViewWorldMap(wxCommandEvent& event);
@@ -154,6 +155,7 @@ protected:
 	void OnUpdatePan(wxUpdateUIEvent& event);
 	void OnUpdateDistance(wxUpdateUIEvent& event);
 	void OnUpdateViewFull(wxUpdateUIEvent& event);
+	void OnUpdateViewZoomArea(wxUpdateUIEvent& event);
 	void OnUpdateViewToolbar(wxUpdateUIEvent& event);
 	void OnUpdateViewLayers(wxUpdateUIEvent& event);
 	void OnUpdateViewZoomToLayer(wxUpdateUIEvent& event);

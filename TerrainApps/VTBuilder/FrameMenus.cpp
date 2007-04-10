@@ -110,6 +110,7 @@ EVT_MENU(ID_VIEW_ZOOMOUT,		MainFrame::OnViewZoomOut)
 EVT_MENU(ID_VIEW_ZOOMALL,		MainFrame::OnViewZoomAll)
 EVT_MENU(ID_VIEW_ZOOM_LAYER,	MainFrame::OnViewZoomToLayer)
 EVT_MENU(ID_VIEW_FULLVIEW,		MainFrame::OnViewFull)
+EVT_MENU(ID_VIEW_ZOOM_AREA,		MainFrame::OnViewZoomArea)
 EVT_MENU(ID_VIEW_TOOLBAR,		MainFrame::OnViewToolbar)
 EVT_MENU(ID_VIEW_LAYERS,		MainFrame::OnViewLayers)
 EVT_MENU(ID_VIEW_MAGNIFIER,		MainFrame::OnViewMagnifier)
@@ -129,6 +130,7 @@ EVT_UPDATE_UI(ID_VIEW_PAN,			MainFrame::OnUpdatePan)
 EVT_UPDATE_UI(ID_VIEW_DISTANCE,		MainFrame::OnUpdateDistance)
 EVT_UPDATE_UI(ID_VIEW_ZOOM_LAYER,	MainFrame::OnUpdateViewZoomToLayer)
 EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewFull)
+EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewZoomArea)
 EVT_UPDATE_UI(ID_VIEW_TOOLBAR,		MainFrame::OnUpdateViewToolbar)
 EVT_UPDATE_UI(ID_VIEW_LAYERS,		MainFrame::OnUpdateViewLayers)
 EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateViewSetArea)
@@ -366,6 +368,7 @@ void MainFrame::CreateMenus()
 	viewMenu->Append(ID_VIEW_ZOOMALL, _("Zoom &All"));
 	viewMenu->Append(ID_VIEW_ZOOM_LAYER, _("Zoom to Current &Layer"));
 	viewMenu->Append(ID_VIEW_FULLVIEW, _("Zoom to &Full Res (1:1)"));
+	viewMenu->Append(ID_VIEW_ZOOM_AREA, _("Zoom to Area Tool"));
 	viewMenu->AppendSeparator();
 	viewMenu->AppendCheckItem(ID_VIEW_TOOLBAR, _("Toolbar"));
 	viewMenu->AppendCheckItem(ID_VIEW_LAYERS, _("Layers"));
@@ -1498,6 +1501,16 @@ void MainFrame::OnUpdateViewFull(wxUpdateUIEvent& event)
 	vtLayer *lp = GetActiveLayer();
 	event.Enable(lp &&
 			(lp->GetType() == LT_ELEVATION || lp->GetType() == LT_IMAGE));
+}
+
+void MainFrame::OnViewZoomArea(wxCommandEvent& event)
+{
+	m_pView->ZoomToRect(m_area, 0.1f);
+}
+
+void MainFrame::OnUpdateViewZoomArea(wxUpdateUIEvent& event)
+{
+	event.Enable(!m_area.IsEmpty());
 }
 
 void MainFrame::OnViewToolbar(wxCommandEvent& event)
