@@ -321,7 +321,7 @@ void MainFrame::ElevExportTiles()
 	dlg.GetTilingOptions(tileopts);
 
 	// Also write derived image tiles?
-	int res = wxMessageBox(_("Also write derived image tiles?"), _("Tiled output"), wxYES_NO | wxCANCEL);
+	int res = wxMessageBox(_("Also derive and export color-mapped image tiles?"), _("Tiled output"), wxYES_NO | wxCANCEL);
 	if (res == wxCANCEL)
 		return;
 	if (res == wxYES)
@@ -497,7 +497,7 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 		return;
 	}
 
-	TileDlg dlg(this, -1, _("Tiling Options"));
+	TileDlg dlg(this, -1, _("Export Optimized Elevation Tileset"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(true);
@@ -524,7 +524,7 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 	}
 	
 	// Also write derived image tiles?
-	int res = wxMessageBox(_("Also write derived image tiles?"), _("Tiled output"), wxYES_NO | wxCANCEL);
+	int res = wxMessageBox(_("Also derive and export color-mapped image tiles?"), _("Tiled output"), wxYES_NO | wxCANCEL);
 	if (res == wxCANCEL)
 		return;
 	if (res == wxYES)
@@ -575,7 +575,7 @@ void MainFrame::ExportAreaOptimizedImageTileset()
 		}
 	}
 
-	TileDlg dlg(this, -1, _("Tiling Options"));
+	TileDlg dlg(this, -1, _("Export Optimized Image Tileset"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(false);
