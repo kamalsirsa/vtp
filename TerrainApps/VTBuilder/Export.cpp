@@ -407,14 +407,19 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 	pEL->m_pGrid->ColorDibFromElevation(pBitmap, &cmap, 8000, progress_callback);
 	if (dlg.m_bShading)
 	{
-		// Quick and simple sunlight vector
-		FPoint3 light_dir = LightDirection(vtElevLayer::m_draw.m_iCastAngle,
-			vtElevLayer::m_draw.m_iCastDirection);
-
-		if (vtElevLayer::m_draw.m_bCastShadows)
-			pEL->m_pGrid->ShadowCastDib(pBitmap, light_dir, 1.0, progress_callback);
+		if (vtElevLayer::m_draw.m_bShadingQuick)
+			pEL->m_pGrid->ShadeQuick(pBitmap, SHADING_BIAS, true, progress_callback);
 		else
-			pEL->m_pGrid->ShadeDibFromElevation(pBitmap, light_dir, 1.0, true, progress_callback);
+		{
+			// Quick and simple sunlight vector
+			FPoint3 light_dir = LightDirection(vtElevLayer::m_draw.m_iCastAngle,
+				vtElevLayer::m_draw.m_iCastDirection);
+
+			if (vtElevLayer::m_draw.m_bCastShadows)
+				pEL->m_pGrid->ShadowCastDib(pBitmap, light_dir, 1.0, progress_callback);
+			else
+				pEL->m_pGrid->ShadeDibFromElevation(pBitmap, light_dir, 1.0, true, progress_callback);
+		}
 	}
 
 	if (dlg.m_bToFile)
