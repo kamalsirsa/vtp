@@ -99,8 +99,10 @@ void SampleImageDlg::OnInitDialog(wxInitDialogEvent& event)
 	// initial value: based on estimate spacing
 	m_fSpacingX = m_fEstX;
 	m_fSpacingY = m_fEstY;
-	m_iSizeX = (int) (m_fAreaX / m_fSpacingX);
-	m_iSizeY = (int) (m_fAreaY / m_fSpacingY);
+
+	// don't just truncate, round slightly to avoid precision issues
+	m_iSizeX = (int) (m_fAreaX / m_fSpacingX + 0.5);
+	m_iSizeY = (int) (m_fAreaY / m_fSpacingY + 0.5);
 
 	m_bSetting = true;
 	TransferDataToWindow();
