@@ -55,9 +55,9 @@ void ExtentDlg::SetArea(DRECT area, bool bDegrees)
 	m_area = area;
 	m_bDegrees = bDegrees;
 	if (m_bDegrees)
-		m_fs = _T("%4.8f");
+		m_fs = _T("%4.8lf");
 	else
-		m_fs = _T("%8.1f");
+		m_fs = _T("%8.2lf");
 }
 
 void ExtentDlg::FormatExtent(wxString &str, double value)
