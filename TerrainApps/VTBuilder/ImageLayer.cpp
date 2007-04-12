@@ -290,14 +290,14 @@ bool vtImageLayer::GetFilteredColor(const DPoint2 &p, RGBi &rgb)
 	DPoint2 spacing = GetSpacing();
 
 	double u = (p.x - m_Extents.left) / spacing.x;
-	int ix = (int) u;
+	int ix = (int) (u + 0.5);		// round to closest pixel
 	if (u == (double) m_iXSize)		// check for exact far edge
 		ix = m_iXSize-1;
 	if (ix < 0 || ix >= m_iXSize)
 		return false;
 
 	double v = (m_Extents.top - p.y) / spacing.y;
-	int iy = (int) v;
+	int iy = (int) (v + 0.5);		// round to closest pixel
 	if (v == (double) m_iYSize)		// check for exact far edge
 		iy = m_iYSize-1;
 	if (iy < 0 || iy >= m_iYSize)
@@ -1450,7 +1450,7 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 
 	if (bCompress)
 	{
-#if USE_OPENGL
+#if USE_OPENGL && 1
 		// Compressed
 		DoTextureCompress(rgb_bytes, output_buf, m_pCanvas->m_iTex);
 
@@ -1460,7 +1460,13 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 
 		if (tilesize == 256)
 			m_pCanvas->Refresh(false);
+#else
+		DoTextureSquish(rgb_bytes, output_buf);
 #endif
+
+		output_buf.savedata(fname);
+		free(output_buf.data);
+		output_buf.data = NULL;
 	}
 	else
 	{
