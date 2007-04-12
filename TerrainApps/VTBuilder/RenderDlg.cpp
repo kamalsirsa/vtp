@@ -117,10 +117,12 @@ void RenderDlg::UpdateColorMapChoice()
 	{
 		// fill the "colormap" control with available colormap files
 		AddFilenamesToChoice(GetColorMap(), m_datapaths[i] + "GeoTypical", "*.cmt");
-		int sel = GetColorMap()->FindString(m_strColorMap);
-		if (sel != -1)
-			GetColorMap()->SetSelection(sel);
 	}
+	int sel = GetColorMap()->FindString(m_strColorMap);
+	if (sel != -1)
+		GetColorMap()->SetSelection(sel);
+	else if (GetColorMap()->GetCount() > 0)
+		GetColorMap()->SetSelection(0);
 }
 
 // WDR: handler implementations for RenderDlg
