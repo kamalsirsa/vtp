@@ -1269,11 +1269,15 @@ void EnviroFrame::OnViewProfile(wxCommandEvent& event)
 		m_pProfileDlg->Hide();
 	else
 	{
-		ProfileDlg *dlg = ShowProfileDlg();
 		// this might be the first time it's displayed, so we need to get
 		//  the point values from the distance tool
+		ProfileDlg *dlg = ShowProfileDlg();
 		if (m_pDistanceDlg)
-			g_App.UpdateDistanceTool();
+		{
+			DPoint2 p1, p2;
+			m_pDistanceDlg->GetPoints(p1, p2);
+			dlg->SetPoints(p1, p2);
+		}
 	}
 }
 
@@ -2105,6 +2109,19 @@ public:
 			terr->GetHeightField()->m_Conversion.ConvertFromEarth(p, w.x, w.z);
 			terr->GetHeightField()->FindAltitudeAtPoint(w, w.y, true, m_bUseCulture ? CE_ALL : 0);
 			return w.y;
+		}
+		return INVALID_ELEVATION;
+	}
+	float GetCultureHeight(const DPoint2 &p)
+	{
+		vtTerrain *terr = GetCurrentTerrain();
+		if (terr)
+		{
+			FPoint3 w;
+			terr->GetHeightField()->m_Conversion.ConvertFromEarth(p, w.x, w.z);
+			bool success = terr->FindAltitudeOnCulture(w, w.y, true, CE_STRUCTURES);
+			if (success)
+				return w.y;
 		}
 		return INVALID_ELEVATION;
 	}
