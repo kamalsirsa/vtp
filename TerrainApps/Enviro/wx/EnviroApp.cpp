@@ -32,6 +32,7 @@
   #include FRAME_INCLUDE
 #else
   #define FRAME_NAME EnviroFrame
+  #define STARTUP_DIALOG StartupDlg
   #define LoadAppCatalog(locale)
 #endif
 
@@ -214,7 +215,7 @@ bool EnviroApp::OnInit()
 		VTLOG("Opening the Startup dialog.\n");
 		wxString appname(STRING_APPNAME, wxConvUTF8);
 		appname += _(" Startup");
-		StartupDlg StartDlg(NULL, -1, appname, wxDefaultPosition);
+		STARTUP_DIALOG StartDlg(NULL, -1, appname, wxDefaultPosition);
 
 		StartDlg.GetOptionsFrom(g_Options);
 		StartDlg.CenterOnParent();
@@ -258,17 +259,22 @@ bool EnviroApp::OnInit()
 	// Create the main frame window
 	//
 	wxString title(STRING_APPORG, wxConvUTF8);
-#if VTLIB_PSM
-	title += _T(" PSM");
-#elif VTLIB_OSG
-	title += _T(" OSG");
-#elif VTLIB_OPENSG
-	title += _T(" OpenSG");
-#elif VTLIB_SGL
-	title += _T(" SGL");
-#elif VTLIB_SSG
-	title += _T(" SSG");
-#endif
+
+	if (!strcmp(STRING_ORGNAME, "VTP"))
+	{
+	#if VTLIB_PSM
+		title += _T(" PSM");
+	#elif VTLIB_OSG
+		title += _T(" OSG");
+	#elif VTLIB_OPENSG
+		title += _T(" OpenSG");
+	#elif VTLIB_SGL
+		title += _T(" SGL");
+	#elif VTLIB_SSG
+		title += _T(" SSG");
+	#endif
+	}
+
 	VTLOG1("Creating the frame window.\n");
 	wxPoint pos(g_Options.m_WinPos.x, g_Options.m_WinPos.y);
 	wxSize size(g_Options.m_WinSize.x, g_Options.m_WinSize.y);
