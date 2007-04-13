@@ -36,6 +36,7 @@ public:
 	float GetElevation(int iX, int iZ, bool bTrue = false) const;
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue = false) const;
 	void SetVerticalExag(float fExag);
+	float GetVerticalExag() const { return m_fHeightScale; }
 	void SetPolygonTarget(int iCount);
 
 	// Dynamic elevation

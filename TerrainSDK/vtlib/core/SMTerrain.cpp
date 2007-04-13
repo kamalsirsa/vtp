@@ -2,7 +2,7 @@
 // SMTerrain class : An implementation a terrain rendering engine
 //		based on the ideas and input of Seumas McNally.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1134,5 +1134,10 @@ void SMTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue) const
 void SMTerrain::SetVerticalExag(float fExag)
 {
 	m_fZScale = fExag / PACK_SCALE;
+}
+
+float SMTerrain::GetVerticalExag() const
+{
+	return m_fZScale * PACK_SCALE;
 }
 
