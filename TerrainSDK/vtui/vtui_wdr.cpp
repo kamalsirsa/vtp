@@ -17,9 +17,9 @@
 // Include private header
 #include "vtui_wdr.h"
 
-#include <wx/intl.h>
-
 const int ID_TEXT = 10000;
+
+#include <wx/intl.h>
 
 // Euro sign hack of the year
 #if wxUSE_UNICODE
@@ -710,7 +710,7 @@ wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item5->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("Geodesic Distance"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+    item5->Add( item12, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxTextCtrl *item13 = new wxTextCtrl( parent, ID_GEOD_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
     item5->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -720,7 +720,7 @@ wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item5->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("Approximate Ground"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+    item5->Add( item15, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxTextCtrl *item16 = new wxTextCtrl( parent, ID_GROUND_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
     item5->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -730,7 +730,7 @@ wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item5->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxStaticText *item18 = new wxStaticText( parent, ID_TEXT, _("Vertical Difference"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+    item5->Add( item18, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxTextCtrl *item19 = new wxTextCtrl( parent, ID_VERTICAL, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
     item5->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
