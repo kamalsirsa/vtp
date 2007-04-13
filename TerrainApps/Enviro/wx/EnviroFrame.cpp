@@ -82,6 +82,7 @@
 #  include "placemark.xpm"
 #  include "points.xpm"
 #  include "route.xpm"
+#  include "scenario.xpm"
 #  include "select.xpm"
 #  include "sgraph.xpm"
 #  include "snap.xpm"
