@@ -94,20 +94,24 @@ wxSizer *PlantDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer
 #define ID_RECORD_SPACING 10053
 wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+extern wxSizer *CamSizerTop;
 #define ID_CAMX 10054
 #define ID_CAMY 10055
 #define ID_CAMZ 10056
 #define ID_FOV_TEXT 10057
 #define ID_FOV 10058
 #define ID_FOVSLIDER 10059
+extern wxSizer *CamSizerNear;
 #define ID_NEAR 10060
 #define ID_NEARSLIDER 10061
+extern wxSizer *CamSizerFar;
 #define ID_FAR 10062
 #define ID_FARSLIDER 10063
 #define ID_EYE_SEP 10064
 #define ID_EYE_SEPSLIDER 10065
 #define ID_SPEED_UNITS 10066
 #define ID_ACCEL 10067
+extern wxSizer *CamSizerLOD;
 #define ID_LOD_VEG 10068
 #define ID_SLIDER_VEG 10069
 #define ID_LOD_STRUCT 10070

@@ -484,9 +484,14 @@ wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *CamSizerTop;
+wxSizer *CamSizerNear;
+wxSizer *CamSizerFar;
+wxSizer *CamSizerLOD;
 wxSizer *CameraDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    CamSizerTop = item0;
 
     wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -525,6 +530,7 @@ wxSizer *CameraDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item0->Add( item8, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxTOP, 5 );
 
     wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
+    CamSizerNear = item12;
 
     wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("Near Clipping Plane (meters):"), wxDefaultPosition, wxDefaultSize, 0 );
     item12->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -538,6 +544,7 @@ wxSizer *CameraDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item0->Add( item12, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
+    CamSizerFar = item16;
 
     wxStaticText *item17 = new wxStaticText( parent, ID_TEXT, _("Far Clipping Plane (meters):"), wxDefaultPosition, wxDefaultSize, 0 );
     item16->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -599,47 +606,50 @@ wxSizer *CameraDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item32, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxStaticLine *item34 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    wxStaticBox *item35 = new wxStaticBox( parent, -1, _("LOD Distance") );
+    wxStaticBoxSizer *item34 = new wxStaticBoxSizer( item35, wxVERTICAL );
+    CamSizerLOD = item34;
+
+    wxBoxSizer *item36 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item37 = new wxStaticText( parent, ID_TEXT, _("Vegetation"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item37, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item38 = new wxTextCtrl( parent, ID_LOD_VEG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item36->Add( item38, 0, wxALIGN_CENTER, 5 );
+
+    wxSlider *item39 = new wxSlider( parent, ID_SLIDER_VEG, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item36->Add( item39, 0, wxALIGN_CENTER, 0 );
+
+    item34->Add( item36, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item40 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item41 = new wxStaticText( parent, ID_TEXT, _("Structures"), wxDefaultPosition, wxDefaultSize, 0 );
+    item40->Add( item41, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item42 = new wxTextCtrl( parent, ID_LOD_STRUCT, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item40->Add( item42, 0, wxALIGN_CENTER, 5 );
+
+    wxSlider *item43 = new wxSlider( parent, ID_SLIDER_STRUCT, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item40->Add( item43, 0, wxALIGN_CENTER, 0 );
+
+    item34->Add( item40, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item44 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item45 = new wxStaticText( parent, ID_TEXT, _("Roads"), wxDefaultPosition, wxDefaultSize, 0 );
+    item44->Add( item45, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item46 = new wxTextCtrl( parent, ID_LOD_ROAD, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item44->Add( item46, 0, wxALIGN_CENTER, 5 );
+
+    wxSlider *item47 = new wxSlider( parent, ID_SLIDER_ROAD, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item44->Add( item47, 0, wxALIGN_CENTER, 0 );
+
+    item34->Add( item44, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+
     item0->Add( item34, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    wxBoxSizer *item35 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item36 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Vegetation"), wxDefaultPosition, wxDefaultSize, 0 );
-    item35->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item37 = new wxTextCtrl( parent, ID_LOD_VEG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item35->Add( item37, 0, wxALIGN_CENTER, 5 );
-
-    wxSlider *item38 = new wxSlider( parent, ID_SLIDER_VEG, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
-    item35->Add( item38, 0, wxALIGN_CENTER, 0 );
-
-    item0->Add( item35, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
-
-    wxBoxSizer *item39 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item40 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Structures"), wxDefaultPosition, wxDefaultSize, 0 );
-    item39->Add( item40, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item41 = new wxTextCtrl( parent, ID_LOD_STRUCT, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item39->Add( item41, 0, wxALIGN_CENTER, 5 );
-
-    wxSlider *item42 = new wxSlider( parent, ID_SLIDER_STRUCT, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
-    item39->Add( item42, 0, wxALIGN_CENTER, 0 );
-
-    item0->Add( item39, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxTOP, 5 );
-
-    wxBoxSizer *item43 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item44 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Roads"), wxDefaultPosition, wxDefaultSize, 0 );
-    item43->Add( item44, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-
-    wxTextCtrl *item45 = new wxTextCtrl( parent, ID_LOD_ROAD, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item43->Add( item45, 0, wxALIGN_CENTER, 5 );
-
-    wxSlider *item46 = new wxSlider( parent, ID_SLIDER_ROAD, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
-    item43->Add( item46, 0, wxALIGN_CENTER, 0 );
-
-    item0->Add( item43, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxTOP|wxBOTTOM, 5 );
 
     if (set_sizer)
     {
