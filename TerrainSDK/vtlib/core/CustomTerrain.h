@@ -1,7 +1,7 @@
 //
 // CustomTerrain class : Dynamically rendering terrain
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -36,6 +36,7 @@ public:
 	void DoCulling(const vtCamera *pCam);
 	float GetElevation(int iX, int iZ, bool bTrue = false) const;
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue = false) const;
+	float GetVerticalExag() const { return m_fZScale; }
 
 protected:
 	virtual ~CustomTerrain();

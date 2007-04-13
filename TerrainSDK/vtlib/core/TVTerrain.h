@@ -133,6 +133,7 @@ public:
 	void DoCulling(const vtCamera *pCam);
 	float GetElevation(int iX, int iZ, bool bTrue = false) const;
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue = false) const;
+	virtual float GetVerticalExag() const { return m_fZScale; }
 
 protected:
 	void mkscale(const vtElevationGrid *pGrid);

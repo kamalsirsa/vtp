@@ -1,7 +1,7 @@
 //
 // DynTerrain class : Dynamically rendering terrain
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -44,6 +44,7 @@ public:
 	DTErr BasicInit(const vtElevationGrid *pGrid);
 	void SetOptions(bool bUseTriStrips, int iBlockArrayDim, int iTextureSize);
 	virtual void SetVerticalExag(float fExag) {}
+	virtual float GetVerticalExag() const = 0;
 
 	virtual void SetPolygonTarget(int iPolygonCount);
 	int GetPolygonTarget();
