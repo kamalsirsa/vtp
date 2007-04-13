@@ -1,7 +1,7 @@
 //
 // Name: ProfileDlg.h
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,6 +21,7 @@ class ProfileCallback
 public:
 	virtual void Begin() {}
 	virtual float GetElevation(const DPoint2 &p) = 0;
+	virtual float GetCultureHeight(const DPoint2 &p) = 0;
 };
 
 // WDR: class declarations
@@ -74,6 +75,7 @@ private:
 	// WDR: member variable declarations for ProfileDlg
 	ProfileCallback *m_callback;
 	std::vector<float> m_values;
+	std::vector<float> m_values_culture;
 	std::vector<bool> m_visible;
 	vtProjection    m_proj;
 	DPoint2 m_p1, m_p2;
@@ -114,6 +116,8 @@ private:
 	float m_fHeight1, m_fHeight2;
 	float m_fRadioFrequency;
 	int m_iCurvature;	// 0=none, 1=terrain, 2=line of sight
+	bool m_bGetCulture;
+	bool m_bHaveCulture;
 
 	// these values are retreived as needed from the GUI
 	bool m_bLineOfSight, m_bVisibility;
@@ -128,6 +132,7 @@ private:
 	void OnHeight2( wxCommandEvent &event );
 	void OnHeight1( wxCommandEvent &event );
 	void OnLineOfSight( wxCommandEvent &event );
+	void OnShowCulture( wxCommandEvent &event );
 	void OnVisibility( wxCommandEvent &event );
 	void OnPaint(wxPaintEvent &event);
 	void OnDraw(wxDC& dc); // overridden to draw this view

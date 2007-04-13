@@ -31,6 +31,7 @@ BEGIN_EVENT_TABLE(ProfileDlg, AutoDialog)
 	EVT_LEFT_DOWN(ProfileDlg::OnLeftDown)
 	EVT_LEFT_UP(ProfileDlg::OnLeftUp)
 	EVT_MOTION(ProfileDlg::OnMouseMove)
+	EVT_BUTTON( ID_SHOW_CULTURE, ProfileDlg::OnShowCulture )
 	EVT_CHECKBOX( ID_LINE_OF_SIGHT, ProfileDlg::OnLineOfSight )
 	EVT_CHECKBOX( ID_VISIBILITY, ProfileDlg::OnVisibility )
 	EVT_TEXT( ID_HEIGHT1, ProfileDlg::OnHeight1 )
@@ -64,6 +65,8 @@ ProfileDlg::ProfileDlg( wxWindow *parent, wxWindowID id,
 	m_xrange = 0;
 	m_fRadioFrequency = 2400.0;
 	m_iCurvature = 0;
+	m_bGetCulture = false;
+	m_bHaveCulture = false;
 
 	// WDR: dialog function ColorMapDialogFunc for ProfileDlg
 	ProfileDialogFunc( this, TRUE );
@@ -182,6 +185,7 @@ void ProfileDlg::GetValues()
 	m_fMin = 1E9;
 	m_fMax = -1E9;
 	m_values.resize(m_xrange);
+	m_values_culture.resize(m_xrange);
 	m_callback->Begin();
 
 	// We can use the same logic for two points or a polyline
@@ -244,6 +248,16 @@ void ProfileDlg::GetValues()
 			}
 		}
 
+		if (m_bGetCulture)
+		{
+			float f2 = m_callback->GetCultureHeight(p);
+			m_values_culture[i] = f2;
+			if (f2 != INVALID_ELEVATION && f2 > m_fMax)
+			{
+				m_fMax = f2;
+			}
+		}
+
 		if (i == m_xrange-1)	// finished
 			break;
 
@@ -275,6 +289,13 @@ void ProfileDlg::GetValues()
 			}
 		}
 	}
+	if (m_bGetCulture)
+	{
+		m_bGetCulture = false;
+		m_bHaveCulture = true;
+	}
+	else
+		m_bHaveCulture = false;
 	m_fRange = m_fMax - m_fMin;
 	m_bHaveValues = true;
 
@@ -583,6 +604,7 @@ void ProfileDlg::DrawChart(wxDC& dc)
 	wxPen pen4(wxColour(128,0,0), 1, wxSOLID);  // dark red
 	wxPen pen5(wxColour(0,160,0), 1, wxSOLID);  // light green
 	wxPen pen6(wxColour(170,0,0), 1, wxSOLID);  // light red
+	wxPen pen7(wxColour(0,0,170), 1, wxSOLID);  // medium blue
 
 	wxFont font(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 	dc.SetFont(font);
@@ -813,6 +835,28 @@ void ProfileDlg::DrawChart(wxDC& dc)
 		dc.DrawCircle(p1, 5);
 	}
 
+	if (m_bHaveCulture)
+	{
+		dc.SetPen(pen7);
+
+		// slow way, one datapoint at a time
+		for (i = 0; i < m_xrange; i++)
+		{
+			float v1 = m_values[i];
+			float v2 = m_values_culture[i];
+			if (v1 == INVALID_ELEVATION || v2 == INVALID_ELEVATION)
+				continue;
+			if (apply_geoid == 1)
+			{
+				v1+=m_GeoidSurface[i];
+				v2+=m_GeoidSurface[i];
+			}
+			MakePoint(p1, i, v1);
+			MakePoint(p2, i, v2);
+			dc.DrawLine(p1, p2);
+		}
+	}
+
 	// Also update message text
 	UpdateMessageText();
 }
@@ -1035,5 +1079,12 @@ void ProfileDlg::OnVisibility( wxCommandEvent &event )
 	Analyze();
 	Refresh();
 	UpdateEnabling();
+}
+
+void ProfileDlg::OnShowCulture( wxCommandEvent &event )
+{
+	m_bHaveValues = false;
+	m_bGetCulture = true;
+	Refresh();
 }
 
