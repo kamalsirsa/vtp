@@ -21,7 +21,7 @@ other layers, such as elevation, imagery, and vegetation.
 
 <ul>
   <li><b>Area Tool</b><ul>
-      <li>Set to Extents<ul>
+      <li>Set to Full Extents<ul>
           <li>Resizes the area tool to surround all of the currently loaded 
           layers.</li>
         </ul>
@@ -36,6 +36,15 @@ other layers, such as elevation, imagery, and vegetation.
           tool.</li>
         </ul>
       </li>
+      <li>Match Area and Tiling to Layer
+        <ul>
+          <li>This is useful when you will be tiling your terrain, and you want 
+          to sample your data at its exact, full resolution.&nbsp; See <b>Match 
+          Area and Tiling to Layer Dialog </b>below.</li>
+        </ul>
+      </li>
+    </ul>
+  <ul>
       <li>Merge &amp; Resample Elevation
         <ul>
           <li>Displays the <b>Merge and Resample Elevation</b> dialog (see 
@@ -71,7 +80,7 @@ other layers, such as elevation, imagery, and vegetation.
   area without resizing.</li>
 </ul>
 
-<h3><b>Merge and Resample Elevation Dialog</b></h3>
+<h3>Merge and Resample Elevation Dialog</h3>
 <blockquote>
   <p>You can choose where the output will go: To a new layer (in memory), To a 
   file, or To a tileset (folder of tiles).</p>
@@ -117,7 +126,7 @@ other layers, such as elevation, imagery, and vegetation.
   </blockquote>
 </blockquote>
 
-<h3><b>Merge and Resample Imagery Dialog</b></h3>
+<h3>Merge and Resample Imagery Dialog</h3>
 <blockquote>
   <p>You can choose where the output will go: To a new layer (in memory), To a 
   file, or To a tileset (folder of tiles).</p>
@@ -160,6 +169,45 @@ other layers, such as elevation, imagery, and vegetation.
   tileset for your imagery, you must have a tileset of the same grid size for 
   the elevation.</p>
   </blockquote>
+</blockquote>
+
+<h3>Match Area<b> and Tiling to Layer</b> Dialog</h3>
+<blockquote>
+  <p>This is useful when you will be tiling your terrain, and you want to sample 
+  your data at its exact, full resolution.&nbsp; For example, if you have some 
+  elevation data with 10m spacing or aerial photos with 1m spacing, you will 
+  probably want your tile resolution to match this exactly, so that you are 
+  seeing your full original data without any sampling artifacts.</p>
+  <p>Set the area you are interested in, with the Area Tool, then give this 
+  command.&nbsp; You should see the dialog <b>Match Area and Tiling to Layer.</b></p>
+  <ul>
+    <li><b><i>Previous:</i> </b>This is your original area of interest, which we 
+    will try to match.</li>
+    <li><b><i>Current: </i></b>This is the current tiled area, as close as 
+    possible to the original area.</li>
+    <li><b><i>Match Layer: </i></b>This is the layer you want to match.&nbsp; 
+    For example, if you have one layers at 2m and some others at 4m, you might 
+    want to tell the dialog to match the 2m layer.</li>
+    <li><b><i>Layer Resolution: </i></b>This shows you the resolution (X and Y 
+    spacing) of the selected layer.</li>
+    <li><i><b>Allow Area to Grow/Shrink:</b>&nbsp; </i>In case your desired area 
+    can't be matched exactly with tiling, the area will need to grow or shrink.&nbsp; 
+    You can indicate which is allowable.&nbsp; For example, if you are sampling 
+    elevation, you will probably not want to grow the area outside the bounds of 
+    your original area, because then you would be sampling from an area with no 
+    elevation, which is undesirable.</li>
+    <li><b><i>Tile LOD0 Size: </i></b>This is value you set.&nbsp; Tiles have a 
+    number of levels of detail (LOD), which are numbered starting from 0.&nbsp; 
+    Hence, the LOD0 size is the highest resolution of each tile, which is value 
+    we want to match to the input data.&nbsp; For efficient paging at runtime, 
+    you should try to keep this value small (512 for elevation, 1024 for 
+    imagery).&nbsp; You can make it smaller, for even smoother paging at the 
+    expense of more tile files.</li>
+    <li><b><i>Tiling: </i></b>This is the tiling that results from matching your 
+    desired resolution and area.</li>
+  </ul>
+  <p>The tiling (area and number of tiles) is also shown visually in the main 
+  view.</p>
 </blockquote>
 
 </body>
