@@ -156,7 +156,6 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="2057"
 				AdditionalIncludeDirectories=""
 			/>
 			<Tool
@@ -165,7 +164,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d-vc8.lib zlib1d-vc8.lib netcdf.lib gdal_id-vc8.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib"
-				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,libcmt.lib,msvcrt.lib,libcd.lib,libcmtd.lib"
 				GenerateDebugInformation="true"
