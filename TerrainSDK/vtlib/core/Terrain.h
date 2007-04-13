@@ -261,16 +261,17 @@ public:
 	void SetLODDistance(TFType ftype, float fDistance);
 	float GetLODDistance(TFType ftype);
 	void SetVerticalExag(float fExag);
-	float GetVerticalExag() { return m_fVerticalExag; }
+	float GetVerticalExag() const { return m_fVerticalExag; }
 
 	// query
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
+	const vtDynTerrainGeom *GetDynTerrain() const { return m_pDynGeom; }
 	vtTiledGeom *GetTiledGeom() { return m_pTiledGeom; }
 	vtGroup *GetTopGroup() { return m_pTerrainGroup; }
 	vtHeightField3d *GetHeightField();
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
 	vtProjection &GetProjection() { return m_proj; }
-	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, int iCultureFlags) const;
+	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, bool bTrue, int iCultureFlags) const;
 	int GetShadowTextureUnit();
 
 	// symbols and labels for abstract data
