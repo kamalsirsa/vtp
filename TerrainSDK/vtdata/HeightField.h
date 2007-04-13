@@ -1,7 +1,7 @@
 //
 // vtHeightField.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -83,7 +83,7 @@ class CultureExtension
 {
 public:
 	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
-		int iCultureFlags) const = 0;
+		bool bTrue, int iCultureFlags) const = 0;
 };
 
 /**
@@ -120,6 +120,9 @@ public:
 	 *		- CE_ALL Test everything on the ground.
 	 * \param vNormal If you supply a pointer to a vector, it will be set
 	 *		to the upward-pointing surface normal at the ground point.
+	 *
+	 * \return true if successful, false if there was nothing found at that
+	 *		point.
 	 */
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		bool bTrue = false, int iCultureFlags = 0,

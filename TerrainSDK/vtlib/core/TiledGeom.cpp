@@ -27,6 +27,11 @@
   #endif
 #endif
 
+#define USE_OPENTHREADS	0
+#if USE_OPENTHREADS
+  #include "OpenThreads/Thread"
+#endif
+
 // Set this to use the 'minicache' OpenGL primitive cache.
 //  Actually, we depend on it for adaptive resolution, so leave it at 1.
 #define USE_VERTEX_CACHE	1
@@ -43,6 +48,41 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 #if SUPPORT_PTHREADING
    const int numthreads = 1;
    pthread_t pthread[numthreads];
+   pthread_mutex_t mutex;
+   pthread_attr_t attr;
+
+   void threadinit()
+      {
+      pthread_mutex_init(&mutex,NULL);
+
+      pthread_attr_init(&attr);
+      pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
+      }
+
+   void threadexit()
+      {
+      pthread_mutex_destroy(&mutex);
+      pthread_attr_destroy(&attr);
+      }
+
+   void startthread(void *(*thread)(void *background),backarrayelem *background,void *data)
+      {pthread_create(&pthread[background->background-1],&attr,thread,background);}
+
+   void jointhread(backarrayelem *background,void *data)
+      {
+      void *status;
+      pthread_join(pthread[background->background-1],&status);
+      }
+
+   void lock_cs(void *data)
+      {pthread_mutex_lock(&mutex);}
+
+   void unlock_cs(void *data)
+      {pthread_mutex_unlock(&mutex);}
+#endif
+#if USE_OPENTHREADS
+   const int numthreads = 1;
+   OpenThread::Thread pthread[numthreads];
    pthread_mutex_t mutex;
    pthread_attr_t attr;
 
@@ -961,7 +1001,7 @@ bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 	// Look on culture first
 	if (iCultureFlags != 0 && m_pCulture != NULL)
 	{
-		if (m_pCulture->FindAltitudeOnCulture(p3, fAltitude, iCultureFlags))
+		if (m_pCulture->FindAltitudeOnCulture(p3, fAltitude, bTrue, iCultureFlags))
 			return true;
 	}
 

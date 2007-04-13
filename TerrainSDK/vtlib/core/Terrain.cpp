@@ -2581,7 +2581,7 @@ vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()
 }
 
 bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
-									  int iCultureFlags) const
+									  bool bTrue, int iCultureFlags) const
 {
 	// beware - OSG can be picking about the length of this segment.  It
 	//  is a numerical precision issue.  If we use 1E9,-1E9 then it fails
@@ -2605,6 +2605,13 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
 		// take first match encountered
 		vtString name = hlist[0].node->GetName2();
 		fAltitude =  hlist[0].point.y;
+
+		if (bTrue)
+		{
+			const vtDynTerrainGeom *dg = GetDynTerrain();
+			if (dg)
+				fAltitude /= dg->GetVerticalExag();
+		}
 		return true;
 	}
 	return false;
