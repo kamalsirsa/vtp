@@ -2125,6 +2125,7 @@ public:
 		}
 		return INVALID_ELEVATION;
 	}
+	virtual bool HasCulture() { return true; }
 	bool m_bUseCulture;
 };
 
