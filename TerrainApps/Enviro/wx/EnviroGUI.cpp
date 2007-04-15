@@ -2,7 +2,7 @@
 // EnviroGUI.cpp
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -79,11 +79,28 @@ void EnviroGUI::SetFlightSpeed(float speed)
 	Enviro::SetFlightSpeed(speed);
 }
 
+const char *AppStateNames[] = 
+{
+	"AS_Initializing",
+	"AS_Neutral",
+	"AS_Orbit",
+	"AS_MovingIn",
+	"AS_Terrain",
+	"AS_MovingOut",
+	"AS_Error"
+};
+
 void EnviroGUI::SetState(AppState s)
 {
 	// if entering or leaving terrain or orbit state
 	AppState previous = m_state;
 	m_state = s;
+
+	if (m_state != previous)
+	{
+		VTLOG("Changing app state from %s to %s\n", AppStateNames[previous],
+			AppStateNames[m_state]);
+	}
 
 	if ((previous == AS_Terrain && m_state != AS_Terrain) ||
 		(previous == AS_Orbit && m_state != AS_Orbit) ||
