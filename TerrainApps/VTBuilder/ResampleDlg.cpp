@@ -1,7 +1,7 @@
 //
 // Name: ResampleDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -356,8 +356,13 @@ void ResampleDlg::EnableBasedOnConstraint()
 
 	// If they've selected derived images, they must have an output file
 	//  in order to proceed
-	FindWindow(wxID_OK)->Enable(!m_tileopts.bCreateDerivedImages ||
-		m_tileopts.fname_images != "");
+	bool bOk = true;
+	if (m_bToTiles)
+	{
+		if (m_tileopts.bCreateDerivedImages && m_tileopts.fname_images == "")
+			bOk = false;
+	}
+	FindWindow(wxID_OK)->Enable(bOk);
 }
 
 void ResampleDlg::OnBigger( wxCommandEvent &event )
