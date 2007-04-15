@@ -1,7 +1,7 @@
 //
 // Name: ProfileDlg.cpp
 //
-// Copyright (c) 2005-2006 Virtual Terrain Project
+// Copyright (c) 2005-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,7 +15,7 @@
 #include "ProfileDlg.h"
 
 #define MARGIN_LEFT   60
-#define MARGIN_BOTTOM 170
+#define MARGIN_BOTTOM 185
 
 // WDR: class implementations
 
@@ -184,6 +184,8 @@ void ProfileDlg::GetValues()
 	// fill array with elevation values, collect extents
 	m_fMin = 1E9;
 	m_fMax = -1E9;
+	m_fDrawMin = 1E9;
+	m_fDrawMax = -1E9;
 	m_values.resize(m_xrange);
 	m_values_culture.resize(m_xrange);
 	m_callback->Begin();
@@ -238,23 +240,26 @@ void ProfileDlg::GetValues()
 			{
 				m_fMin = f;
 				m_iMin = i;
-				m_fMinDist = fDist * m_fGeodesicDistance;
+				m_fMinDist = fDist;
 			}
 			if (f > m_fMax)
 			{
 				m_fMax = f;
 				m_iMax = i;
-				m_fMaxDist = fDist * m_fGeodesicDistance;
+				m_fMaxDist = fDist;
 			}
+			if (f < m_fDrawMin) m_fDrawMin = f;
+			if (f > m_fDrawMax) m_fDrawMax = f;
 		}
 
 		if (m_bGetCulture)
 		{
 			float f2 = m_callback->GetCultureHeight(p);
 			m_values_culture[i] = f2;
-			if (f2 != INVALID_ELEVATION && f2 > m_fMax)
+			if (f2 != INVALID_ELEVATION)
 			{
-				m_fMax = f2;
+				if (f2 < m_fDrawMin) m_fDrawMin = f2;
+				if (f2 > m_fDrawMax) m_fDrawMax = f2;
 			}
 		}
 
@@ -296,7 +301,7 @@ void ProfileDlg::GetValues()
 	}
 	else
 		m_bHaveCulture = false;
-	m_fRange = m_fMax - m_fMin;
+	m_fDrawRange = m_fDrawMax - m_fDrawMin;
 	m_bHaveValues = true;
 
 	Analyze();
@@ -338,7 +343,6 @@ void ProfileDlg::ComputeLineOfSight()
 {
 	// compute height at end of line-of-sight, and the height
 	//  range to draw
-	m_fDrawRange = m_fRange;
 	if (m_bValidStart)
 	{
 		m_fHeightAtEnd = m_values[m_xrange - 1];
@@ -576,7 +580,7 @@ void ProfileDlg::ComputeSignalLoss(float dist, float freq)
 void ProfileDlg::MakePoint(wxPoint &p, int i, float value)
 {
 	p.x = m_base.x + i;
-	p.y = (int)(m_base.y - (value - m_fMin) / m_fDrawRange * m_yrange);
+	p.y = (int)(m_base.y - (value - m_fDrawMin) / m_fDrawRange * m_yrange);
 }
 
 void ProfileDlg::DrawChart(wxDC& dc)
@@ -590,11 +594,11 @@ void ProfileDlg::DrawChart(wxDC& dc)
 	if (!m_bHaveValues)
 		GetValues();
 
-	float DrawMax = m_fMax;
-	if (m_bValidStart) DrawMax = std::max(m_fMax, m_fHeightAtStart);
+	float DrawMax = m_fDrawMax;
+	if (m_bValidStart) DrawMax = std::max(DrawMax, m_fHeightAtStart);
 	if (m_bValidLine) DrawMax = std::max(DrawMax, m_fHeightAtEnd);
 	if (m_bHaveGeoidSurface && m_iCurvature!=0) DrawMax += m_fGeoidCurvature;
-	m_fDrawRange = DrawMax - m_fMin;
+	m_fDrawRange = DrawMax - m_fDrawMin;
 
 	wxPen pen1(*wxMEDIUM_GREY_PEN);
 	pen1.SetWidth(2);
@@ -644,7 +648,7 @@ void ProfileDlg::DrawChart(wxDC& dc)
 		dc.SetPen(pen1);
 		dc.DrawLine(m_base.x - 5, y, m_base.x + 5, y);
 
-		str.Printf(_T("%5.1f"), m_fMin + (m_fDrawRange / (numticks-1) * i));
+		str.Printf(_T("%5.1f"), m_fDrawMin + (m_fDrawRange / (numticks-1) * i));
 		dc.GetTextExtent(str, &w, &h);
 		dc.DrawText(str, MARGIN_LEFT - w - 8, y-(h/2));
 	}
@@ -933,6 +937,9 @@ void ProfileDlg::UpdateEnabling()
 	GetRF()->Enable(m_bUseFresnel);
 	GetCurvature()->Enable(m_bHavePoints);
 	GetEffective()->Enable(m_bHavePoints);
+
+	if (m_callback)
+		GetShowCulture()->Enable(m_callback->HasCulture());
 }
 
 // WDR: handler implementations for ProfileDlg

@@ -125,16 +125,16 @@ const int ID_SAVE_AS_CMAP = 10080;
 const int ID_LOAD_CMAP = 10081;
 wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SHOW_CULTURE = 10082;
-const int ID_LINE_OF_SIGHT = 10083;
-const int ID_VISIBILITY = 10084;
-const int ID_FRESNEL = 10085;
-const int ID_USE_EFFECTIVE = 10086;
-const int ID_HEIGHT1 = 10087;
-const int ID_HEIGHT2 = 10088;
-const int ID_RF = 10089;
-const int ID_CURVATURE = 10090;
-const int ID_LINE2 = 10091;
+const int ID_LINE_OF_SIGHT = 10082;
+const int ID_VISIBILITY = 10083;
+const int ID_FRESNEL = 10084;
+const int ID_USE_EFFECTIVE = 10085;
+const int ID_SHOW_CULTURE = 10086;
+const int ID_LINE2 = 10087;
+const int ID_HEIGHT1 = 10088;
+const int ID_HEIGHT2 = 10089;
+const int ID_RF = 10090;
+const int ID_CURVATURE = 10091;
 const int ID_STATUS_TEXT = 10092;
 wxSizer *ProfileDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 

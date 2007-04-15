@@ -22,6 +22,7 @@ public:
 	virtual void Begin() {}
 	virtual float GetElevation(const DPoint2 &p) = 0;
 	virtual float GetCultureHeight(const DPoint2 &p) = 0;
+	virtual bool HasCulture() { return false; }
 };
 
 // WDR: class declarations
@@ -50,6 +51,7 @@ public:
 	wxTextCtrl* GetText()  { return (wxTextCtrl*) FindWindow( ID_STATUS_TEXT ); }
 	wxCheckBox* GetLineOfSight()  { return (wxCheckBox*) FindWindow( ID_LINE_OF_SIGHT ); }
 	wxCheckBox* GetVisibility()  { return (wxCheckBox*) FindWindow( ID_VISIBILITY ); }
+	wxButton* GetShowCulture()  { return (wxButton*) FindWindow( ID_SHOW_CULTURE ); }
 
 	void MakePoint(wxPoint &p, int i, float value);
 	void DrawChart(wxDC& dc);
@@ -82,8 +84,9 @@ private:
 	DLine2 m_path;
 	wxSize m_clientsize;
 	int m_xrange, m_yrange;
-	float m_fMin, m_fMax, m_fRange, m_fDrawRange;
+	float m_fMin, m_fMax;
 	float m_fMinDist, m_fMaxDist, m_fTotalDist;
+	float m_fDrawMin, m_fDrawMax, m_fDrawRange;
 	bool m_bHavePoints, m_bHavePath, m_bHaveValues;
 	bool m_bHaveValidData, m_bHaveInvalid;
 	bool m_bMouseOnLine;
