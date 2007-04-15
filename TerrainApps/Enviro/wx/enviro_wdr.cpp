@@ -2131,7 +2131,7 @@ wxSizer *ScenariosPaneFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxChoice *item11 = new wxChoice( parent, ID_CHOICE_SCENARIO, wxDefaultPosition, wxSize(200,-1), 1, strs11, 0 );
     item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item9, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item0->Add( item9, 0, wxALIGN_CENTER|wxALL, 0 );
 
     if (set_sizer)
     {
@@ -2236,17 +2236,23 @@ wxSizer *ScenarioParamsDialogFunc( wxWindow *parent, bool call_fit, bool set_siz
     return item0;
 }
 
+wxSizer *ScenarioSizerTop;
+wxSizer *ScenarioSizerMid;
+wxSizer *ScenarioSizerSide;
 wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    ScenarioSizerTop = item0;
 
     wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+    ScenarioSizerMid = item1;
 
     wxString *strs2 = (wxString*) NULL;
-    wxListBox *item2 = new wxListBox( parent, ID_SCENARIO_LIST, wxDefaultPosition, wxSize(200,150), 0, strs2, wxLB_SINGLE );
+    wxListBox *item2 = new wxListBox( parent, ID_SCENARIO_LIST, wxDefaultPosition, wxSize(200,200), 0, strs2, wxLB_SINGLE );
     item1->Add( item2, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     wxBoxSizer *item3 = new wxBoxSizer( wxVERTICAL );
+    ScenarioSizerSide = item3;
 
     wxButton *item4 = new wxButton( parent, ID_NEW_SCENARIO, _("New"), wxDefaultPosition, wxDefaultSize, 0 );
     item3->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -2269,7 +2275,7 @@ wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit, bool set_siz
     wxButton *item10 = new wxButton( parent, ID_SCENARIO_NEXT, _("Next"), wxDefaultPosition, wxDefaultSize, 0 );
     item3->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+    item1->Add( item3, 0, wxALIGN_CENTER, 5 );
 
     item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
 
@@ -2284,7 +2290,7 @@ wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit, bool set_siz
     wxButton *item14 = new wxButton( parent, wxID_APPLY, _("Apply"), wxDefaultPosition, wxDefaultSize, 0 );
     item11->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item11, 0, wxALIGN_CENTER, 5 );
 
     if (set_sizer)
     {

@@ -307,6 +307,9 @@ wxSizer *ScenarioVisibleLayersPane( wxWindow *parent, bool call_fit = TRUE, bool
 #define ID_SCENARIO_NAME 10226
 wxSizer *ScenarioParamsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+extern wxSizer *ScenarioSizerTop;
+extern wxSizer *ScenarioSizerMid;
+extern wxSizer *ScenarioSizerSide;
 #define ID_SCENARIO_PREVIOUS 10227
 #define ID_SCENARIO_NEXT 10228
 wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
