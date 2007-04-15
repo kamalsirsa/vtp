@@ -1221,6 +1221,10 @@ public:
 	{
 		return m_frame->ElevLayerArrayValue(m_elevs, p);
 	}
+	float GetCultureHeight(const DPoint2 &p)
+	{
+		return INVALID_ELEVATION;
+	}
 	MainFrame *m_frame;
 	std::vector<vtElevLayer*> m_elevs;
 };
