@@ -118,7 +118,13 @@ void EnviroGUI::SetProgressTerrain(vtTerrain *pTerr)
 void EnviroGUI::UpdateProgress(const char *msg, int amount1, int amount2)
 {
 	wxString str(msg, wxConvUTF8);
-	UpdateProgressDialog2(amount1, amount2, str);
+
+	// Try to translate it; a translation might be available.
+	// If the string is not found in any of the loaded message catalogs,
+	// the original string is returned.
+	wxString str2 = wxGetTranslation(str);
+
+	UpdateProgressDialog2(amount1, amount2, str2);
 }
 
 void EnviroGUI::RefreshLayerView()

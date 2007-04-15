@@ -94,8 +94,8 @@ clobber :
 
 I18N_SOURCES = \
 	wx/*.cpp \
-	../../TerrainSDK/vtui/vtui_wdr.cpp \
-	../../TerrainSDK/vtui/*Dlg.cpp
+	Enviro.cpp \
+	../../TerrainSDK/vtui/*.cpp
 
 update-pot:
 	xgettext --from-code=iso-8859-1 -k_ -o Enviro.pot $(I18N_SOURCES)

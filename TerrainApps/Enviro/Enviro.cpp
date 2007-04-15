@@ -20,6 +20,12 @@
 #include "SpecificTerrain.h"
 #include "CarEngine.h"
 
+// Although there is no string translation in the core of Enviro (because it
+//  is independent of wx or any GUI library) nonetheless we want the text
+//  messages to be found by the gettext utility, so we need to enclose
+//  anything to be translated in _()
+#define _(x) x
+
 #define ORTHO_HITHER	50	// 50m above highest point on terrain
 
 int pwdemo = 0;
@@ -269,7 +275,7 @@ void Enviro::DoControl()
 		{
 			if (!SwitchToTerrain(g_Options.m_strInitTerrain))
 			{
-				SetMessage("Terrain not found");
+				SetMessage(_("Terrain not found"));
 				SetState(AS_Error);
 			}
 			return;
@@ -365,8 +371,10 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	VTLOG("SetupTerrain step %d\n", m_iInitStep);
 	if (m_iInitStep == 1)
 	{
-		vtString str;
-		str.Format("Creating Terrain '%s'", (const char*) pTerr->GetName());
+		vtString str = _("Creating Terrain ");
+		str += "'";
+		str += pTerr->GetName();
+		str += "'";
 		SetMessage(str);
 		UpdateProgress(m_strMessage, 10, 0);
 	}
@@ -375,7 +383,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (pTerr->IsCreated())
 			m_iInitStep = 8;	// already made, skip ahead
 		else
-			SetMessage("Loading Elevation");
+			SetMessage(_("Loading Elevation"));
 		UpdateProgress(m_strMessage, 20, 0);
 	}
 	if (m_iInitStep == 3)
@@ -388,7 +396,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
-		SetMessage("Loading/Chopping/Prelighting Textures");
+		SetMessage(_("Loading/Chopping/Prelighting Textures"));
 		UpdateProgress(m_strMessage, 30, 0);
 	}
 	else if (m_iInitStep == 4)
@@ -409,7 +417,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
-		SetMessage("Processing Elevation");
+		SetMessage(_("Processing Elevation"));
 		UpdateProgress(m_strMessage, 40, 0);
 	}
 	else if (m_iInitStep == 5)
@@ -420,7 +428,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
-		SetMessage("Building CLOD");
+		SetMessage(_("Building CLOD"));
 		UpdateProgress(m_strMessage, 50, 0);
 	}
 	else if (m_iInitStep == 6)
@@ -431,7 +439,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
-		SetMessage("Creating Culture");
+		SetMessage(_("Creating Culture"));
 		UpdateProgress(m_strMessage, 60, 0);
 	}
 	else if (m_iInitStep == 7)
@@ -467,24 +475,23 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		mat.Identity();
 		mat.SetTrans(middle);
 		pTerr->SetCamLocation(mat);
+
+		SetMessage(_("Setting Camera"));
 		UpdateProgress(m_strMessage, 70, 0);
 	}
 	else if (m_iInitStep == 8)
 	{
-		SetMessage("Setting hither/yon");
-		vtCamera *pCam = vtGetScene()->GetCamera();
-		pCam->SetHither(pTerr->GetParams().GetValueFloat(STR_HITHER));
-		pCam->SetYon(500000.0f);
+		// Set hither and yon
+		m_pNormalCamera->SetHither(pTerr->GetParams().GetValueFloat(STR_HITHER));
+		m_pNormalCamera->SetYon(500000.0f);
+
+		// Set initial location
+		m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
+
+		SetMessage(_("Switching to Terrain"));
 		UpdateProgress(m_strMessage, 80, 0);
 	}
 	else if (m_iInitStep == 9)
-	{
-		VTLOG("Setting Camera Location\n");
-		m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
-		SetMessage("Switching to Terrain");
-		UpdateProgress(m_strMessage, 90, 0);
-	}
-	else if (m_iInitStep == 10)
 	{
 		// make first terrain active
 		SetTerrain(pTerr);
@@ -497,11 +504,11 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		m_pTerrainPicker->SetEnabled(true);
 		SetMode(MM_NAVIGATE);
 	}
-	else if (m_iInitStep == 11)
+	else if (m_iInitStep == 10)
 	{
 		SetState(AS_Terrain);
-		vtString str;
-		str.Format("Welcome to %s", (const char *)pTerr->GetName());
+		vtString str = _("Welcome to ");
+		str += pTerr->GetName();
 		SetMessage(str, 5.0f);
 
 		// Layer view needs to update
@@ -2094,7 +2101,7 @@ void Enviro::DescribeCoordinatesTerrain(vtString &str)
 #endif
 
 	// ground cursor
-	str += "Cursor:";
+	str += _("Cursor: ");
 	bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
 	if (bOn)
 	{
@@ -2103,7 +2110,7 @@ void Enviro::DescribeCoordinatesTerrain(vtString &str)
 		str += str1;
 	}
 	else
-		str += " Not on ground";
+		str += _("Not on ground");
 }
 
 void Enviro::DescribeCLOD(vtString &str)
@@ -2116,9 +2123,9 @@ void Enviro::DescribeCLOD(vtString &str)
 	vtDynTerrainGeom *dtg = t->GetDynTerrain();
 	if (!dtg) return;
 
-	//
-	// McNally CLOD algo uses a triangle count target, all other current
-	// implementations use a floating point factor relating to error/detail
+	// McNally and Roettger CLOD algos use a triangle/vertex count target.
+	//  The older implementations use a floating point factor relating to
+	//  error/detail.
 	//
 	LodMethodEnum method = t->GetParams().GetLodMethod();
 	if (method == LM_MCNALLY || method == LM_ROETTGER)
@@ -2179,10 +2186,13 @@ vtString Enviro::GetStatusString(int which)
 					exag = GetCurrentTerrain()->GetVerticalExag();
 				}
 				epos.z /= exag;
-				str.Format("Elev: %.1f", epos.z);
+				str = _("Elev: ");
+				vtString str2;
+				str2.Format("%.1f", epos.z);
+				str += str2;
 			}
 			else
-				str += "Not on ground";
+				str += _("Not on ground");
 		}
 	}
 	return str;
