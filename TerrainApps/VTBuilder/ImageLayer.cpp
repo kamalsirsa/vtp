@@ -1450,7 +1450,7 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 
 	if (bCompress)
 	{
-#if USE_OPENGL && 1
+#if USE_OPENGL
 		// Compressed
 		DoTextureCompress(rgb_bytes, output_buf, m_pCanvas->m_iTex);
 
@@ -1460,13 +1460,14 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 
 		if (tilesize == 256)
 			m_pCanvas->Refresh(false);
-#else
-		DoTextureSquish(rgb_bytes, output_buf);
 #endif
+#if 0
+		DoTextureSquish(rgb_bytes, output_buf);
 
 		output_buf.savedata(fname);
 		free(output_buf.data);
 		output_buf.data = NULL;
+#endif
 	}
 	else
 	{
