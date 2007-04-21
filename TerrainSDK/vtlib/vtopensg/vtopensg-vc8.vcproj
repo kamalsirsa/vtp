@@ -171,6 +171,10 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
+				RelativePath="..\core\AbstractLayer.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\core\AnimPath.cpp"
 				>
 			</File>
@@ -864,6 +868,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\TerrainLayers.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\core\TerrainScene.cpp"
 				>
 				<FileConfiguration
@@ -889,6 +897,10 @@
 						BrowseInformation="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\core\TextureUnitManager.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\core\TiledGeom.cpp"
@@ -1039,6 +1051,10 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath="..\core\AbstractLayer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\core\AnimPath.h"
 				>
 			</File>
@@ -1155,7 +1171,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\core\TerrainLayers.h"
+				>
+			</File>
+			<File
 				RelativePath="..\core\TerrainScene.h"
+				>
+			</File>
+			<File
+				RelativePath="..\core\TextureUnitManager.h"
 				>
 			</File>
 			<File
