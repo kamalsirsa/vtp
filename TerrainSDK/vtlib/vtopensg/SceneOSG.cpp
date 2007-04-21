@@ -3,7 +3,7 @@
 //
 // Implementation of vtScene for the OpenSG library
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -500,4 +500,11 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 	if (!pWindow) pWindow = vtGetScene()->GetWindow(0);
 	vtSceneBase::SetWindowSize(w, h, pWindow);
 } 
+
+///////////////////////////////////////////////////////////////////////
+
+const vtStringArray &vtGetDataPath()
+{
+	return g_Scene.m_DataPaths;
+}
 
