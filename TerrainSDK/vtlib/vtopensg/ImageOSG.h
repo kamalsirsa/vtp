@@ -9,6 +9,7 @@
 #define VTOPENSG_IMAGEH
 
 #include "vtdata/vtDIB.h"
+#include "vtdata/Projections.h"
 
 #include <OpenSG/OSGImage.h>
 #include <OpenSG/OSGRefPtr.h>
@@ -54,6 +55,18 @@ public:
 	unsigned int GetDepth() const;
 
 	void Set16Bit(bool bFlag);
+	void SetLoadWithAlpha(bool bFlag) { m_bLoadWithAlpha = bFlag; }
+
+	// In case the image was loaded from a georeferenced format (such as
+	//  GeoTIFF), provide access to the georef
+	vtProjection &GetProjection() { return m_proj; }
+	DRECT &GetExtents() { return m_extents; }
+
+protected:
+	void _BasicInit();
+	void _CreateFromDIB(vtDIB *pDIB);
+	bool _ReadPNG(const char *filename);
+	bool _ReadTIF(const char *filename, bool progress_callback(int) = NULL);
 
 protected:
 	// Destructor is protected so that people will use Release() instead,
@@ -63,8 +76,14 @@ protected:
 
 protected:
 	bool m_b16bit;
+	bool m_bLoadWithAlpha;
 	vtString m_strFilename;
 	int m_iRowSize;		// in bytes
+
+	// These two fields are rarely used, and increase size of this object
+	//  from 168 to 256 bytes.
+	vtProjection m_proj;
+	DRECT m_extents;
 
 	osg::RefPtr<osg::ImagePtr> m_Image;	//do it the pimpl way
 };
