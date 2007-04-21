@@ -1,7 +1,7 @@
 //
 // vtTerrainScene - Container class for all of the terrains loaded
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -120,12 +120,39 @@ void vtTerrainScene::_CreateSky()
 {
 	// create the sun
 	VTLOG(" Creating Main Light\n");
+
+#if VTLIB_OPENSG==1
+	//opensg handles light quite different to osg, 
+	//this requires to modify the internal vtp sg
+	//m_pTop is a light group!
+	//the actual light node (m_pTop) is now parent to all nodes to be lit.
+
+	m_pTop->SetName2("Main Light");
+	//m_pSunLight holds now only(!) the transform, which acts as the beacon node
+	m_pSunLight = new vtTransform;
+	m_pSunLight->SetName2("SunLight");
+
+	//store like previously, but this time only the transform
+	m_pTop->AddChild(m_pSunLight);
+
+	//point to the sun transformation
+	vtLight *pLight(0);
+	pLight = dynamic_cast<vtLight*>(m_pTop);
+	pLight->SetBeacon(m_pSunLight);
+
+	//sun light defaults
+	pLight->SetDiffuse(RGBf(1,1,1));
+    pLight->SetAmbient(RGBf(1,1,1));
+    pLight->SetSpecular(RGBf(1,1,1));
+
+#else
 	vtLight *pLight = new vtLight;
 	pLight->SetName2("Main Light");
 	m_pSunLight = new vtTransform;
 	m_pSunLight->AddChild(pLight);
 	m_pSunLight->SetName2("SunLight");
 	m_pTop->AddChild(m_pSunLight);
+#endif
 
 	VTLOG(" Creating SkyDome\n");
 	m_pAtmosphereGroup = new vtGroup;
@@ -196,7 +223,12 @@ vtGroup *vtTerrainScene::BeginTerrainScene()
 	VTLOG("BeginTerrainScene:\n");
 	_CreateEngines();
 
+#if VTLIB_OPENSG==1
+	m_pTop = new vtLight;
+#else
 	m_pTop = new vtGroup;
+#endif
+
 	m_pTop->SetName2("All Terrain");
 
 	// create sky group - this holds all celestial objects
