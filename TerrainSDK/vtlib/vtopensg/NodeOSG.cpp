@@ -335,6 +335,48 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 	return pGroup;
 }
 
+//
+// Given a node with an imported model, rotate the vertices of that model
+//  by a given axis/angle.
+//
+void vtNode::ApplyVertexRotation(const FPoint3 &axis, float angle)
+{
+#ifdef EXCEPT
+	vtGroup *vtgroup = dynamic_cast<vtGroup*>(this);
+	if (!vtgroup)
+		return;
+	osg::Group *container_group = vtgroup->GetOsgGroup();
+	osg::Node *unique_node = container_group->getChild(0);
+	if (!unique_node)
+		return;
+	osg::Group *unique_group = dynamic_cast<osg::Group*>(unique_node);
+	osg::Node *node = unique_group->getChild(0);
+
+	osg::MatrixTransform *transform = new osg::MatrixTransform;
+	transform->setMatrix(osg::Matrix::rotate(angle, v2s(axis)));
+	// it's not going to change, so tell OSG that it can be optimized
+	transform->setDataVariance(osg::Object::STATIC);
+
+	node->ref();	// avoid losing this node
+	unique_group->removeChild(node);
+	unique_group->addChild(transform);
+	transform->addChild(node);
+	node->unref();
+
+	// Now do some OSG voodoo, which should spread the transform downward
+	//  through the loaded model, and delete the transform.
+	//
+	// NOTE: OSG 1.0 seems to have a bug (limitation): Optimizer doesn't
+	//  inform the display lists that they have changed.  So, this doesn't
+	//  produce a visual update for objects which have already been rendered.
+	// It is a one-line fix in Optimizer.cpp (CollectLowestTransformsVisitor::doTransform)
+	// I wrote the OSG list with the fix on 2006.04.12.
+	//
+	osgUtil::Optimizer optimizer;
+	optimizer.optimize(unique_group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
+#endif
+}
+
 void vtNode::ClearOsgModelCache()
 {
 	m_ModelCache.clear();
@@ -375,6 +417,80 @@ void vtNode::DecorateNativeGraph()
 {
 	DecorateVisit(m_pNode);
 }
+
+vtMultiTexture *vtNode::AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
+										const FPoint2 &scale, const FPoint2 &offset)
+{
+#ifdef EXCEPT
+	vtMultiTexture *mt = new vtMultiTexture;
+	mt->m_pNode = this;
+	mt->m_iTextureUnit = iTextureUnit;
+
+	// Currently, multi-texture support is OSG-only
+	osg::Node *onode = GetOsgNode();
+
+	mt->m_pTexture = new osg::Texture2D(pImage);
+
+	mt->m_pTexture->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
+	mt->m_pTexture->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::LINEAR);
+	mt->m_pTexture->setWrap(osg::Texture2D::WRAP_S, osg::Texture2D::CLAMP_TO_BORDER);
+	mt->m_pTexture->setWrap(osg::Texture2D::WRAP_T, osg::Texture2D::CLAMP_TO_BORDER);
+
+	// Set up the texgen
+	osg::ref_ptr<osg::TexGen> pTexgen = new osg::TexGen;
+	pTexgen->setMode(osg::TexGen::EYE_LINEAR);
+	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(scale.x, 0.0f, 0.0f, -offset.x));
+	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, scale.y, -offset.y));
+
+	osg::TexEnv::Mode mode;
+	if (iTextureMode == GL_ADD) mode = osg::TexEnv::ADD;
+	if (iTextureMode == GL_BLEND) mode = osg::TexEnv::BLEND;
+	if (iTextureMode == GL_REPLACE) mode = osg::TexEnv::REPLACE;
+	if (iTextureMode == GL_MODULATE) mode = osg::TexEnv::MODULATE;
+	if (iTextureMode == GL_DECAL) mode = osg::TexEnv::DECAL;
+	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(mode);
+
+	// Apply state
+	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
+
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, mt->m_pTexture.get(), osg::StateAttribute::ON);
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexgen.get(), osg::StateAttribute::ON);
+	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
+	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_T,  osg::StateAttribute::ON);
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexEnv.get(), osg::StateAttribute::ON);
+
+	return mt;
+#endif
+	return NULL;
+}
+
+void vtNode::EnableMultiTexture(vtMultiTexture *mt, bool bEnable)
+{
+#ifdef EXCEPT
+	osg::Node *onode = GetOsgNode();
+	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
+	if (bEnable)
+		pStateSet->setTextureAttributeAndModes(mt->m_iTextureUnit, mt->m_pTexture.get(), osg::StateAttribute::ON);
+	else
+	{
+		osg::StateAttribute *attr = pStateSet->getTextureAttribute(mt->m_iTextureUnit, osg::StateAttribute::TEXTURE);
+		if (attr != NULL)
+			pStateSet->removeTextureAttribute(mt->m_iTextureUnit, attr);
+	}
+#endif 
+}
+
+bool vtNode::MultiTextureIsEnabled(vtMultiTexture *mt)
+{
+#ifdef EXCEPT
+	osg::Node *onode = GetOsgNode();
+	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
+	osg::StateAttribute *attr = pStateSet->getTextureAttribute(mt->m_iTextureUnit, osg::StateAttribute::TEXTURE);
+	return (attr != NULL);
+#endif
+	return false;
+}
+
 
 // Find and decorate a native node
 // To allow subsequent graph following from the VT side

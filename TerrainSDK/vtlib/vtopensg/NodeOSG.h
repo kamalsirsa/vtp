@@ -56,6 +56,16 @@ struct vtPrimInfo {
 	int LineSegments;
 };
 
+class vtNode;
+
+class vtMultiTexture
+{
+public:
+	int	m_iTextureUnit;
+	vtNode *m_pNode;
+	//osg::ref_ptr<osg::Texture2D> m_pTexture;
+};
+
 /**
  * Represents a node in the vtlib scenegraph.  The scenegraph is simply
  * a tree of nodes, with a root node at the top.
@@ -89,12 +99,18 @@ public:
 	vtGroup *GetParent(int iParent = 0);
 	virtual vtNode *Clone(bool bDeep = false);
 
+	vtMultiTexture *AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
+										const FPoint2 &scale, const FPoint2 &offset);
+	void EnableMultiTexture(vtMultiTexture *mt, bool bEnable);
+	bool MultiTextureIsEnabled(vtMultiTexture *mt);
+
 	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
 
 	// OSG access
 	void SetOsgNode(osg::NodePtr n);
 	osg::NodePtr GetOsgNode() {return m_pNode;};
 	const osg::NodePtr GetOsgNode() const { return m_pNode;};
+	void ApplyVertexRotation(const FPoint3 &axis, float angle);
 	void DecorateNativeGraph();
 	vtNode *FindNativeNode(const char *pName, bool bDescend = true);
 
