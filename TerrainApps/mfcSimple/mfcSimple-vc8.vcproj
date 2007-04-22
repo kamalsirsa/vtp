@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="mfcSimple"
-	ProjectGUID="{A1E5E34C-C2D7-48EC-A3F9-A1FF4CBA5149}"
+	ProjectGUID="{2277C66F-45BF-4DEE-BCFD-81A92A58286D}"
 	RootNamespace="mfcSimple"
 	Keyword="MFCProj"
 	>
