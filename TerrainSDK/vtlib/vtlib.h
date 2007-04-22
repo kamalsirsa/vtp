@@ -1,7 +1,7 @@
 //
 // Main header for VT library, for all platforms
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -106,6 +106,7 @@
 
 ///////////////////////////////// OPENSG //////////////////////////////
 #if VTLIB_OPENSG
+    #include "GL/glext.h"
     #ifdef _MSC_VER
       #pragma warning(disable: 4251) // turn off warning about std::map dll-interface
       #pragma warning(disable: 4275) // turn off warning about subclass dll-interface
