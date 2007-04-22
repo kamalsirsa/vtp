@@ -73,6 +73,10 @@ public:
 	float ApplyGeoid(float h, int i, char t);
 	void ComputeSignalLoss(float dist, float freq);
 
+	void WriteDXF(const char *filename);
+	void MakePoint(FPoint2 &p, int i, float value);
+	void DrawToDXF(FILE *fp);
+
 private:
 	// WDR: member variable declarations for ProfileDlg
 	ProfileCallback *m_callback;
@@ -128,6 +132,7 @@ private:
 
 private:
 	// WDR: handler declarations for ProfileDlg
+	void OnExportDXF( wxCommandEvent &event );
 	void OnCurvature( wxCommandEvent &event );
 	void OnRF( wxCommandEvent &event );
 	void OnUseEffective( wxCommandEvent &event );

@@ -13,6 +13,7 @@
 #endif
 
 #include "ProfileDlg.h"
+#include "vtdata/vtString.h"
 
 #define MARGIN_LEFT   60
 #define MARGIN_BOTTOM 185
@@ -40,6 +41,7 @@ BEGIN_EVENT_TABLE(ProfileDlg, AutoDialog)
 	EVT_CHECKBOX( ID_USE_EFFECTIVE, ProfileDlg::OnUseEffective )
 	EVT_TEXT( ID_RF, ProfileDlg::OnRF )
 	EVT_CHOICE( ID_CURVATURE, ProfileDlg::OnCurvature )
+	EVT_BUTTON( ID_EXPORT_DXF, ProfileDlg::OnExportDXF )
 END_EVENT_TABLE()
 
 
@@ -1095,3 +1097,422 @@ void ProfileDlg::OnShowCulture( wxCommandEvent &event )
 	Refresh();
 }
 
+void ProfileDlg::OnExportDXF( wxCommandEvent &event )
+{
+	wxFileDialog saveFile(this, _("Export Profile to DXF"),
+		_T(""), _T(""), _("DXF Files (*.dxf)|*.dxf"),
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (bResult)
+	{
+		wxString str = saveFile.GetPath();
+		vtString fname = str.mb_str(wxConvUTF8);
+		WriteDXF(fname);
+	}
+}
+
+void WriteLine(FILE *fp, const char *layer, float x1, float y1, float x2, float y2)
+{
+	fprintf(fp, "  0\nLINE\n");
+	fprintf(fp, "  8\n%s\n", layer);
+	fprintf(fp, " 10\n%f\n", x1);
+	fprintf(fp, " 20\n%f\n", y1);
+	fprintf(fp, " 30\n0.0\n");
+	fprintf(fp, " 11\n%f\n", x2);
+	fprintf(fp, " 21\n%f\n", y2);
+	fprintf(fp, " 31\n0.0\n");
+}
+
+void WriteText(FILE *fp, const char *layer, const FPoint2 &p1, const char *text)
+{
+	fprintf(fp, "  0\nTEXT\n");
+	fprintf(fp, "  8\n%s\n", layer);
+	fprintf(fp, " 10\n%f\n", p1.x);
+	fprintf(fp, " 20\n%f\n", p1.y);
+	fprintf(fp, " 30\n0.0\n");
+	fprintf(fp, " 40\n5.0\n");	// text size
+	fprintf(fp, "  1\n%s\n", text);
+}
+
+void WriteLine(FILE *fp, const char *layer, const FPoint2 &p1, const FPoint2 &p2)
+{
+	WriteLine(fp, layer, p1.x, p1.y, p2.x, p2.y);
+}
+
+void WriteLines(FILE *fp, const char *layer, int n, const FLine2 &line)
+{
+	for (int i = 0; i < n-1; i++)
+	{
+		WriteLine(fp, layer, line[i].x, line[i].y, line[i+1].x, line[i+1].y);
+	}
+}
+
+/*
+Color numbers:
+ACAD Color Name
+1 RED
+2 YELLOW
+3 GREEN
+4 CYAN
+5 BLUE
+6 MAGENTA
+7 BLACK/WHITE
+21 = another cyan?
+131 = light red?
+*/
+
+void ProfileDlg::WriteDXF(const char *filename)
+{
+	FILE *fp = fopen(filename, "wb");
+	if (!fp)
+		return;
+
+	// Header
+	fprintf(fp, "  0\nSECTION\n");
+	fprintf(fp, "  2\nHEADER\n  9\n$ACADVER\n  1\nAC1009\n");
+	fprintf(fp, "  0\nENDSEC\n");
+
+	// Tables section
+	fprintf(fp, "  0\nSECTION\n");
+	fprintf(fp, "  2\nTABLES\n");
+
+	// ------------------------------------
+	// Table of Linetypes
+	fprintf(fp, "  0\nTABLE\n");
+	fprintf(fp, "  2\nLTYPE\n");
+	fprintf(fp, " 70\n2\n");	// max number of linetypes which follow
+
+	// A linetype
+	fprintf(fp, "  0\nLTYPE\n");
+	fprintf(fp, "  2\nCONTINUOUS\n");	// ltype name
+	fprintf(fp, " 70\n0\n");		// ltype flags
+	fprintf(fp, "  3\nSolid line\n");	// descriptive text for linetype
+	fprintf(fp, " 72\n65\n");		// alignment code, always 65
+	fprintf(fp, " 73\n0\n");		// number of dash length items
+	fprintf(fp, " 40\n0.0\n");		// total pattern length
+
+	// A linetype
+	fprintf(fp, "  0\nLTYPE\n");
+	fprintf(fp, "  2\nDASHED\n");	// ltype name
+	fprintf(fp, " 70\n0\n");		// ltype flags
+	fprintf(fp, "  3\nDashed line\n");	// descriptive text for linetype
+	fprintf(fp, " 72\n65\n");		// alignment code, always 65
+	fprintf(fp, " 73\n1\n");		// number of dash length items
+	fprintf(fp, " 40\n1.0\n");		// total pattern length
+	fprintf(fp, " 49\n0.5\n");		// dash length 1
+
+	// end linetypes table
+	fprintf(fp, "  0\nENDTAB\n");
+
+	// ------------------------------------
+	// Table of Layers
+	fprintf(fp, "  0\nTABLE\n");
+	fprintf(fp, "  2\nLAYER\n");
+	fprintf(fp, " 70\n7\n");	// max number of layers which follow
+
+	// A layer
+	fprintf(fp, "  0\nLAYER\n");
+	fprintf(fp, "  2\nPEN1\n");	// layer name
+	fprintf(fp, " 70\n0\n");	// layer flags
+	fprintf(fp, " 62\n7\n");	// color number 7 = black
+	fprintf(fp, "  6\nCONTINUOUS\n");	// linetype name
+
+	// A layer
+	fprintf(fp, "  0\nLAYER\n");
+	fprintf(fp, "  2\nPEN2\n");	// layer name
+	fprintf(fp, " 70\n0\n");	// layer flags
+	fprintf(fp, " 62\n2\n");	// color number 2 = yellow
+	fprintf(fp, "  6\nDASHED\n");	// linetype name
+
+	// A layer
+	fprintf(fp, "  0\nLAYER\n");
+	fprintf(fp, "  2\nPEN3\n");	// layer name
+	fprintf(fp, " 70\n0\n");	// layer flags
+	fprintf(fp, " 62\n3\n");	// color number 3 = green
+	fprintf(fp, "  6\nCONTINUOUS\n");	// linetype name
+
+	// A layer
+	fprintf(fp, "  0\nLAYER\n");
+	fprintf(fp, "  2\nPEN7\n");	// layer name
+	fprintf(fp, " 70\n0\n");	// layer flags
+	fprintf(fp, " 62\n5\n");	// color number 5 = blue
+	fprintf(fp, "  6\nCONTINUOUS\n");	// linetype name
+
+	// end tables layer
+	fprintf(fp, "  0\nENDTAB\n");
+
+	// ------------------------------------
+	// end tables section
+	fprintf(fp, "  0\nENDSEC\n");
+
+	// Entities
+	fprintf(fp, "  0\nSECTION\n");
+	fprintf(fp, "  2\nENTITIES\n");
+	DrawToDXF(fp);
+	fprintf(fp, "  0\nENDSEC\n");
+
+	fprintf(fp, "  0\nEOF\n");
+	fclose(fp);
+}
+
+void ProfileDlg::MakePoint(FPoint2 &p, int i, float value)
+{
+	p.x = i;
+	p.y = (value - m_fDrawMin) / m_fDrawRange * m_yrange;
+}
+
+void ProfileDlg::DrawToDXF(FILE *fp)
+{
+	const char *layer = "PEN1";
+	WriteLine(fp, layer, 0, 0, m_xrange, 0);
+	WriteLine(fp, layer, 0, 0, 0, m_yrange);
+
+	if (!m_bHaveValidData)
+		return;
+
+	// Draw tick marks
+	int numticks, x, y, tick_spacing = 32;
+	vtString str;
+	int i;
+
+	// Vertical ticks
+	numticks = (m_yrange / tick_spacing)+2;
+	for (i = 0; i < numticks; i++)
+	{
+		y = (i * m_yrange / (numticks-1));
+
+		if (i > 0)
+		{
+			layer = "PEN2";
+			WriteLine(fp, layer, 0, y, 0 + m_xrange, y);
+		}
+
+		layer = "PEN1";
+		WriteLine(fp, layer, 0 - 5, y, 0 + 5, y);
+
+		str.Format("%5.1f", m_fDrawMin + (m_fDrawRange / (numticks-1) * i));
+		//dc.GetTextExtent(str, &w, &h);
+		//dc.DrawText(str, MARGIN_LEFT - w - 8, y-(h/2));
+		WriteText(fp, layer, FPoint2(-30.0f, y-2.5f), str);
+	}
+	// Horizontal ticks
+	numticks = (m_xrange / tick_spacing)+2;
+	for (i = 0; i < numticks; i++)
+	{
+		x = 0 + (i * m_xrange / (numticks-1));
+
+		layer = "PEN1";
+		WriteLine(fp, layer, x, 0 - 5, x, 0 + 5);
+
+		if (m_fGeodesicDistance >= 50000)
+			str.Format("%5.0fkm", m_fGeodesicDistance / (numticks-1) * i / 1000);
+		else
+			str.Format("%5.1f", m_fGeodesicDistance / (numticks-1) * i);
+		//dc.GetTextExtent(str, &w, &h);
+		//dc.DrawRotatedText(str, x-(h/2), 0 + w + 8, 90);
+		WriteText(fp, layer, FPoint2(x - 15.0f, -10.0f), str);
+	}
+
+	// Draw surface line
+	FPoint2 p1, p2;
+	int apply_geoid = (m_bHaveGeoidSurface ? m_iCurvature : 0);
+
+#if 0
+	if (m_bVisibility && m_bValidStart)
+	{
+		bool vis = true;
+		bool visr= true;
+		layer = "PEN3";
+		for (i = 0; i < m_xrange; i++)
+		{
+			if (m_visible[i] != vis || m_rvisible[i] != visr)
+			{
+				vis = m_visible[i];
+				visr= m_rvisible[i];
+				if (vis && visr) layer = "PEN5";
+				else if (visr) layer = "PEN6";
+				else if (vis) layer = "PEN3";
+				else layer = "PEN4";
+			}
+			float v1 = m_values[i];
+			if (v1 == INVALID_ELEVATION)
+				continue;
+
+			if (apply_geoid==1)
+				v1 += m_GeoidSurface[i];
+
+			MakePoint(p1, i, v1);
+			p2 = p1;
+			p2.y = 0;
+			WriteLine(fp, layer, p1, p2);
+		}
+	}
+	else
+	{
+#endif
+		layer = "PEN3";
+
+		// slow way, one datapoint at a time
+		for (i = 0; i < m_xrange-1; i++)
+		{
+			float v1 = m_values[i];
+			float v2 = m_values[i+1];
+			if (v1 == INVALID_ELEVATION || v2 == INVALID_ELEVATION)
+				continue;
+			if (apply_geoid == 1)
+			{
+				v1+=m_GeoidSurface[i];
+				v2+=m_GeoidSurface[i+1];
+			}
+			MakePoint(p1, i, v1);
+			MakePoint(p2, i+1, v2);
+			WriteLine(fp, layer, p1, p2);
+		}
+	//}
+#if 0
+	// Draw the fresnel zones
+	if (m_bUseFresnel && m_bHaveFresnel && m_bHaveLOS)
+	{
+		wxPoint *pts0 = new wxPoint[m_xrange];
+		wxPoint *pts1 = new wxPoint[m_xrange];
+		wxPoint *pts2 = new wxPoint[m_xrange];
+
+		for (i=0; i<m_xrange; i++)
+		{
+			float base=(apply_geoid==2 ? m_GeoidSurface[i] : 0);
+			MakePoint(pts1[i], i, m_LineOfSight[i] - m_FirstFresnel[i] - base);
+			MakePoint(pts0[i], i, m_LineOfSight[i] - (m_FirstFresnel[i] * 0.60) - base);
+
+			float r=ComputeFresnelRadius(m_fGeodesicDistance * i/m_xrange,m_fRadioFrequency,2);
+			MakePoint(pts2[i], i, m_LineOfSight[i] - r - base);
+		}
+
+		// object free zone (60% of first zone)
+		wxPen fresnelColourOF(wxColour(255,200,180));
+		layer = "fresnelColourOF";
+		WriteLines(fp, m_xrange, pts0);
+
+		// first zone
+		wxPen fresnelColour1(wxColour(255,210,190));
+		layer = "fresnelColour1";
+		WriteLines(fp, m_xrange, pts1);
+
+		// second zone
+		wxPen fresnelColour2(wxColour(255,220,200));
+		layer = "fresnelColour2";
+		WriteLines(fp, m_xrange, pts2);
+
+		delete [] pts0;
+		delete [] pts1;
+		delete [] pts2;
+	}
+#endif
+	// Draw Line of Sight
+	if (m_bValidLine)
+	{
+		wxPen orange(wxColour(255,128,0), 1, wxSOLID);
+		layer = "ORANGE";
+		if (apply_geoid == 2)
+		{
+			FLine2 pts(m_xrange);
+			for (i=0; i<m_xrange; i++)
+				MakePoint(pts[i], i, m_LineOfSight[i]);
+			WriteLines(fp, layer, m_xrange, pts);
+		}
+		else
+		{
+			MakePoint(p1, 0, m_fHeightAtStart);
+			MakePoint(p2, m_xrange - 1, m_fHeightAtEnd);
+			WriteLine(fp, layer, p1, p2);
+		}
+	}
+
+#if 0
+	// Draw origin of line of sight
+	if ((m_bLineOfSight || m_bVisibility) && m_bValidStart)
+	{
+		// it's hard to see a yellow dot without a bit of outline
+		wxPen lightgrey(*wxLIGHT_GREY_PEN);
+		layer = "lightgrey";
+
+		wxBrush yellow(wxColour(255,255,0), wxSOLID);
+		dc.SetBrush(yellow);
+		MakePoint(p1, 0, m_fHeightAtStart);
+		dc.DrawCircle(p1, 5);
+	}
+
+	// Draw min/max/mouse markers
+	wxBrush brush1(wxColour(0,0,255), wxSOLID); // blue: minimum
+	dc.SetBrush(brush1);
+	MakePoint(p1, m_iMin, m_fMin + (apply_geoid==1 ? m_GeoidSurface[m_iMin] : 0));
+	dc.DrawCircle(p1, 5);
+
+	wxBrush brush2(wxColour(255,0,0), wxSOLID); // red: maximum
+	dc.SetBrush(brush2);
+	MakePoint(p1, m_iMax, m_fMax + (apply_geoid==1 ? m_GeoidSurface[m_iMax] : 0));
+	dc.DrawCircle(p1, 5);
+
+	if (m_bMouseOnLine)
+	{
+		wxBrush brush3(wxColour(0,255,0), wxSOLID); // green: mouse
+		dc.SetBrush(brush3);
+		MakePoint(p1, m_iMouse, m_fMouse + (apply_geoid==1 ? m_GeoidSurface[m_iMouse] : 0));
+		dc.DrawCircle(p1, 5);
+	}
+
+	if (m_bIntersectsGround)
+	{
+		wxBrush brush3(wxColour(255,128,0), wxSOLID);	// orange: intersection
+		dc.SetBrush(brush3);
+		MakePoint(p1, m_iIntersectIndex, m_fIntersectHeight);
+		dc.DrawCircle(p1, 5);
+	}
+#endif
+
+	if (m_bHaveCulture)
+	{
+		layer = "PEN7";
+
+		// slow way, one datapoint at a time
+		for (i = 0; i < m_xrange-1; i++)
+		{
+			float v1 = m_values_culture[i];
+			float v2 = m_values_culture[i+1];
+			float v3 = m_values[i];
+			float v4 = m_values[i+1];
+			if (v1 == INVALID_ELEVATION && v2 == INVALID_ELEVATION)
+				continue;
+			if (v1 == INVALID_ELEVATION && v2 != INVALID_ELEVATION)
+			{
+				if (apply_geoid == 1)
+				{
+					v4+=m_GeoidSurface[i];
+					v2+=m_GeoidSurface[i];
+				}
+				MakePoint(p1, i+1, v4);
+				MakePoint(p2, i+1, v2);
+			}
+			else if (v1 != INVALID_ELEVATION && v2 == INVALID_ELEVATION)
+			{
+				if (apply_geoid == 1)
+				{
+					v1+=m_GeoidSurface[i];
+					v3+=m_GeoidSurface[i];
+				}
+				MakePoint(p1, i, v1);
+				MakePoint(p2, i, v3);
+			}
+			else
+			{
+				if (apply_geoid == 1)
+				{
+					v1+=m_GeoidSurface[i];
+					v2+=m_GeoidSurface[i];
+				}
+				MakePoint(p1, i, v1);
+				MakePoint(p2, i+1, v2);
+			}
+			WriteLine(fp, layer, p1, p2);
+		}
+	}
+}
