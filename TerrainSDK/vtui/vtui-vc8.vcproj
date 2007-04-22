@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="vtui"
-	ProjectGUID="{1182B805-A4E1-4E20-AED3-C535DC09F2DD}"
+	ProjectGUID="{7C827991-8AEF-4B89-A980-DC2BDFC93955}"
 	RootNamespace="vtui"
 	>
 	<Platforms>
