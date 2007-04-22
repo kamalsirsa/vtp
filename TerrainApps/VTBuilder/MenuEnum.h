@@ -1,7 +1,8 @@
 // ID for the menu commands
 enum
 {
-	ID_FILE_EXIT,
+	// start at 1, as 0 is reserved on OSX
+	ID_FILE_EXIT = 1,
 	ID_FILE_NEW,
 	ID_FILE_OPEN,
 	ID_FILE_PREFS,
