@@ -314,6 +314,10 @@ void MainFrame::CreateMenus()
 	fileMenu->Append(ID_FILE_PREFS, _("Preferences"));
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_FILE_EXIT, _("E&xit\tAlt-X"), _("Exit"));
+#ifdef __WXMAC__
+	wxApp::s_macPreferencesMenuItemId = ID_FILE_PREFS;
+	wxApp::s_macExitMenuItemId = ID_FILE_EXIT;
+#endif
 	m_pMenuBar->Append(fileMenu, _("&Project"));
 	menu_num++;
 
@@ -537,10 +541,16 @@ void MainFrame::CreateMenus()
 	helpMenu = new wxMenu;
 	wxString msg = _("About ");
 	msg += wxString(APPNAME, wxConvUTF8);
+#ifdef __WXMAC__
+#endif
 	helpMenu->Append(wxID_HELP, _("&About"), msg);
 	helpMenu->Append(ID_HELP_DOC_LOCAL, _("Documentation (local)"), msg);
 	helpMenu->Append(ID_HELP_DOC_ONLINE, _("Documentation (on the web)"), msg);
 	m_pMenuBar->Append(helpMenu, _("&Help"));
+#ifdef __WXMAC__
+	wxApp::s_macAboutMenuItemId = wxID_HELP;
+	wxApp::s_macHelpMenuTitleName = _("&Help");
+#endif
 	menu_num++;
 
 	SetMenuBar(m_pMenuBar);
