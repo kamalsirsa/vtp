@@ -46,7 +46,9 @@ LIBS   = -bind_at_load -F$(FRAMEWORKS) \
 	-L$(FINK_LIB) -lnetcdf \
 	-framework xmlhelper $(MINI_LIB) \
         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
-	-framework Carbon -lobjc -lm 
+	-framework Carbon -lobjc -lm \
+	-Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS
+
 
 # Use these if you are not using osg frameworks
 # -losgDB -losgUtil -losgText -losg -lOpenThreads -lProducer
