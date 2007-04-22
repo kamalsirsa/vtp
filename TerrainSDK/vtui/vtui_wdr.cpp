@@ -909,13 +909,20 @@ wxSizer *ProfileDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxChoice *item19 = new wxChoice( parent, ID_CURVATURE, wxDefaultPosition, wxDefaultSize, 3, strs19, 0 );
     item9->Add( item19, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item1->Add( item9, 0, wxALIGN_CENTER_HORIZONTAL|wxTOP, 5 );
+    item1->Add( item9, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
 
     wxStaticLine *item20 = new wxStaticLine( parent, ID_LINE2, wxDefaultPosition, wxSize(-1,20), wxLI_VERTICAL );
     item1->Add( item20, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
-    wxTextCtrl *item21 = new wxTextCtrl( parent, ID_STATUS_TEXT, wxT(""), wxDefaultPosition, wxSize(210,-1), wxTE_MULTILINE );
-    item1->Add( item21, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxBoxSizer *item21 = new wxBoxSizer( wxVERTICAL );
+
+    wxTextCtrl *item22 = new wxTextCtrl( parent, ID_STATUS_TEXT, wxT(""), wxDefaultPosition, wxSize(210,-1), wxTE_MULTILINE );
+    item21->Add( item22, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxButton *item23 = new wxButton( parent, ID_EXPORT_DXF, _("Export to DXF"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item23, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    item1->Add( item21, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
