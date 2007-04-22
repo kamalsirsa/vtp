@@ -317,48 +317,36 @@ void MainFrame::CheckForGDALAndWarn()
 {
 	// check for correctly set up environment variables and locatable files
 	bool has1 = false, has2 = false, has3 = false;
+	vtStringArray dpg;
+	const char *gdalenv = getenv("GDAL_DATA");
 
-	const char *gdal = getenv("GDAL_DATA");
-	VTLOG("getenv GDAL_DATA: '%s'\n", gdal ? gdal : "NULL");
-	const char *gtif = getenv("GEOTIFF_CSV");
-	VTLOG("getenv GEOTIFF_CSV: '%s'\n", gtif ? gtif : "NULL");
+#ifdef UNIX
+	dpg.push_back(vtString("./Shared/share/gdal/"));
+	dpg.push_back(vtString("/usr/local/share/gdal/"));
+#elif WIN32
+	dpg.push_back(vtString("../GDAL-data/"));
+#endif
+	VTLOG("getenv GDAL_DATA: '%s'\n", gdalenv ? gdalenv : "NULL");
+	if (gdalenv != NULL)
+	  dpg.push_back(vtString(gdalenv)+"/");
+
+	has1 = FindGDALData(dpg, (const char*)dpg[0]);
+
+	vtStringArray dpp;
+#ifdef UNIX
+	dpp.push_back(vtString("./Shared/share/proj/"));
+	dpp.push_back(vtString("/usr/local/share/proj/"));
+#elif WIN32
+	dpp.push_back(vtString("../PROJ4-data/"));
+#endif
 	const char *proj4 = getenv("PROJ_LIB");
 	VTLOG("getenv PROJ_LIB: '%s'\n", proj4 ? proj4 : "NULL");
+	if (proj4 != NULL)
+	  dpp.push_back(vtString(proj4)+"/");
 
-	const char *gdal1 = CSVFilename("pcs.csv");	// this should always be there
-	if (gdal1 != NULL)
-		has1 = true;
+	has2 = FindPROJ4Data(dpp, (const char*)dpp[0]);
 
-	const char *gdal2 = CSVFilename("gdal_datum.csv");	// this should be there if data is current
-	if (gdal2 != NULL)
-		has2 = true;
-
-	if (proj4)
-	{
-		vtString fname = proj4;
-		fname += "/nad83";		// this should always be there
-		FILE *fp = vtFileOpen((const char *)fname, "rb");
-		if (fp)
-		{
-			fclose(fp);
-			has3 = true;
-		}
-	}
-	VTLOG("Has: %d %d %d\n", has1, has2, has3);
-	if (has1 && !has2)
-	{
-		DisplayAndLog("The GDAL data files on your computer are missing or out of date.\n"
-			" You will need the latest files for full coordinate system support.\n"
-			" Please get the latest (gdal-data-120.zip) from the VTP website or CD.\n"
-			" Without these files, many operations won't work.");
-	}
-	else if (!has1 || !has3)
-	{
-		DisplayAndLog("Unable to locate the necessary files for full coordinate\n"
-			" system support.  Check that the environment variables GEOTIFF_CSV\n"
-			" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4\n"
-			" data files.  Without these files, many operations won't work.");
-	}
+	VTLOG("GDAL/PROJ tests has: %d %d\n", has1, has2);
 
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -377,6 +365,63 @@ void MainFrame::CheckForGDALAndWarn()
 		DisplayAndLog("Unable to transform coordinates.  This may be because the shared\n"
 			"library for PROJ.4 is not found.  Without this, many operations won't work.");
 	}
+}
+
+void SetEnvironmentVar(const vtString &var, const vtString &value)
+{
+#if UNIX
+	setenv(var, value, 1);	// 1 means overwrite
+#elif WIN32
+	vtString msg = var + "=" + value;
+	_putenv(msg);
+#endif
+	VTLOG1("setenv ");
+	VTLOG1(var);
+	VTLOG1(" = ");
+	VTLOG1(value);
+	VTLOG1("\n");
+}
+
+bool MainFrame::FindGDALData(vtStringArray &searchPaths,
+							 const char *defaultDataPath)
+{
+	vtString pcsPath = FindFileOnPaths(searchPaths, "pcs.csv");
+	vtString datumPath = FindFileOnPaths(searchPaths, "gdal_datum.csv");
+	searchPaths.pop_back();
+	if (pcsPath == vtEmptyString || datumPath == vtEmptyString)
+	{
+		vtString msg = "Unable to locate the necessary GDAL files for full coordinate\n"
+			" system support. Without these files, many operations won't work.\n"
+			" GDAL files are usually stored in ";
+		msg += defaultDataPath;
+		msg += ".\n";
+		DisplayAndLog(msg);
+		return false;
+	}
+	if (ExtractPath(pcsPath) != ExtractPath(datumPath))
+		VTLOG("Warning: multiple versions of GDAL data installed: %s and %s.\n", (const char*)pcsPath, (const char*)datumPath);
+
+	SetEnvironmentVar("GDAL_DATA", ExtractPath(datumPath));
+	return true;
+}
+
+bool MainFrame::FindPROJ4Data(vtStringArray &searchPaths,
+							  const char *defaultDataPath) 
+{
+	vtString fname = FindFileOnPaths(searchPaths, "nad83");
+	FILE *fp = fname ? vtFileOpen((const char *)fname, "rb") : NULL;
+	if (fp == NULL)
+	{
+		vtString msg = "Unable to locate the necessary PROJ.4 files for full coordinate\n"
+			" system support. Without these files, many operations won't work.\n"
+			" PROJ.4 files are usually stored in ";
+		msg += defaultDataPath;
+		msg += ".\n";
+		DisplayAndLog(msg);
+		return false;
+	}
+	SetEnvironmentVar("PROJ_LIB", ExtractPath(fname));
+	return true;
 }
 
 void MainFrame::OnClose(wxCloseEvent &event)
