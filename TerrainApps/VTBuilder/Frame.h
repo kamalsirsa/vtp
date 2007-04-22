@@ -74,6 +74,8 @@ public:
 	void ReadDatapathsFromINI(ifstream &input);
 	void SetupUI();
 	void CheckForGDALAndWarn();
+	bool FindGDALData(vtStringArray &searchPaths, const char *defaultDataPath);
+	bool FindPROJ4Data(vtStringArray &searchPaths, const char *defaultDataPath);
 	virtual void CreateMenus();
 	void ManageToolbar(const wxString &name, wxToolBar *bar, bool show);
 	wxToolBar *NewToolbar();
