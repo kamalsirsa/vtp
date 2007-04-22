@@ -38,7 +38,7 @@ LIBS   = -bind_at_load -F$(FRAMEWORKS) \
 	-framework vtosg -framework vtdata \
 	-framework osg -framework osgGA -framework osgUtil \
         -framework osgText -framework osgDB -framework OpenThreads \
-	-L$(FINK_LIB) -lnetcdf \
+	-L$(FINK_LIB) -lnetcdf -lgdal \
 	-framework xmlhelper $(MINI_LIB) \
         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
 	-framework Carbon -lobjc -lm 
