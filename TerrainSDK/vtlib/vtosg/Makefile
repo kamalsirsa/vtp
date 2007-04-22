@@ -33,8 +33,8 @@ $(LIB) : $(OBJS)
 
 
 $(FRAMEWORK_LIB) : $(OBJS) $(FRAMEWORK)
-	$(LD_SHARED) -o $(FRAMEWORK_LIB) -install_name @executable_path$(FRAMEWORK_INSTALL_NAME) $(VTOSG_LINK_OPTS) $(OBJS) 
-	-ln -s $(FRAMEWORK_LIB) $(FRAMEWORK_EXE)
+	$(LD_SHARED) -o $(FRAMEWORK_LIB) -install_name $(FRAMEWORK_INSTALL_NAME) $(VTOSG_LINK_OPTS) $(OBJS) 
+	-(cd $(shell dirname $(FRAMEWORK_EXE)) && ln -sf Versions/A/$(LIB_NAME) $(LIB_NAME))
 
 clean :
 	rm -rf $(OBJS) ii_files so_locations

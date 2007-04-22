@@ -35,7 +35,8 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 
 ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
-LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
+LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) \
+	$(shell $(WX_DIR)/bin/wx-config --gl-libs) \
 	-bind_at_load -F$(FRAMEWORKS) \
 	-framework vtosg -framework vtdata \
 	-framework osg -framework osgUtil \
@@ -44,7 +45,8 @@ LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) $(shell $(WX_DIR)/bin/wx-config -
 	-L$(FINK_LIB) -lnetcdf \
 	-framework xmlhelper -framework unzip $(MINI_LIB) \
         $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
-	-framework Carbon -lobjc -lm 
+	-framework Carbon -lobjc -lm \
+	-Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS
 
 # Use these if you are not using osg frameworks
 # -losgDB -losgUtil -losgText -losg -lOpenThreads

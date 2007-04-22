@@ -28,13 +28,6 @@
 	<string>2.4.0</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
-	<key>LSEnvironment</key>
-	<dict>
-		<key>GEOTIFF_CSV</key>
-		<string>/data/TerrainData/GDAL_PROJ/geotiff_csv</string>
-		<key>PROJ_LIB</key>
-		<string>/data/TerrainData/GDAL_PROJ/nad</string>
-	</dict>
 	<key>LSRequiresCarbon</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
