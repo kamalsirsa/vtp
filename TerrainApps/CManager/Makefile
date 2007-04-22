@@ -37,7 +37,6 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) \
 	 $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
 	 -lgdal \
-	 -losg -losgDB -losgUtil -losgText -lOpenThreads \
 	 -lbz2 -lcurl -lm $(EXTRA_LIBS)
 
 # Support of Mac OS X
@@ -47,6 +46,9 @@ LIBS   += -F$(FRAMEWORKS) \
 	  -lobjc -framework Carbon \
 	  -framework vtdata -framework vtui -framework vtosg \
 	  -framework xmlhelper -framework unzip \
+ 	  -framework osg -framework osgDB -framework osgUtil \
+	  -framework osgText -framework OpenThreads \
+	  -framework OpenGL \
 	  -L$(FINK_LIB) -lnetcdf \
 	  -lX11 -L$(X11BASE)/lib \
 	  -lz -lstdc++
@@ -55,7 +57,9 @@ all : $(OSX_APP)
 
 else
 # Support for all other Unix platforms
-LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg $(MINI_LIB) -lGL $(GLU_LIB) -lX11                
+LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg \
+	$(MINI_LIB) -lGL $(GLU_LIB) -lX11 \
+	-losg -losgDB -losgUtil -losgText -lOpenThreads \                
 
 LDIR   +=\
 	  $(VTDATA_INST_DIR)             \

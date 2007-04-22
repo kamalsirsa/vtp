@@ -54,10 +54,14 @@ LIBS   += -F$(FRAMEWORKS) \
 	  -lobjc -framework Carbon \
 	  -framework vtdata -framework vtui -framework vtosg \
 	  -framework xmlhelper -framework unzip \
-	  -framework osg -framework osgDB -framework osgUtil -framework osgText -framework OpenThreads \
-	  -L$(FINK_LIB) -lnetcdf \
+	  -framework osg -framework osgUtil \
+	  -framework osgText -framework osgDB -framework OpenThreads \
+	  -framework OpenGL \
+	  -L$(FINK_LIB) -lnetcdf -L$(GDAL_LIB) -lgdal \
 	  -lX11 -L$(X11BASE)/lib \
-	  -lz -lstdc++
+	  -lz -lstdc++ \
+	  -Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS \
+	  -bind_at_load
 
 all : $(OSX_APP)
 
