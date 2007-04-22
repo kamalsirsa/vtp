@@ -11,6 +11,7 @@
 #include <errno.h>
 
 #include "FilePath.h"
+#include "vtLog.h"
 
 #ifdef unix
 # include <unistd.h>
@@ -166,6 +167,13 @@ bool dir_iter::operator!=(const dir_iter &it)
 #endif	// !WIN32
 
 
+#define LOG_FIND 0
+#if LOG_FIND
+#define LOGFIND VTLOG
+#else
+#define LOGFIND
+#endif
+
 /**
  * This function will search for a given file on the given paths, returning
  * the full path to the first file which is found (file exists and can be
@@ -187,21 +195,25 @@ vtString FindFileOnPaths(const vtStringArray &paths, const char *filename)
 
 	// it's possible that the filename is already resolvable without
 	// searching the data paths
+	LOGFIND("Searching for file... '%s'\n", filename);
 	fp = vtFileOpen(filename, "r");
 	if (fp != NULL)
 	{
 		fclose(fp);
+		LOGFIND("File exists: %s\n", filename);
 		return vtString(filename);
 	}
 
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
 		vtString fname = paths[i];
+		LOGFIND("... looking in '%s'\n", (const char*) fname);
 		fname += filename;
 		fp = vtFileOpen((const char *)fname, "r");
 		if (fp != NULL)
 		{
 			fclose(fp);
+			LOGFIND("Resolved file: '%s'\n", (const char*)fname);
 			return fname;
 		}
 	}
