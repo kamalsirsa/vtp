@@ -569,6 +569,18 @@ void EnviroFrame::RefreshToolbar()
 
 	// remove any existing buttons
 	int count = m_pToolbar->GetToolsCount();
+#ifdef __WXMAC__
+	// Nino says: I spent a long time with this one, the issue was definitely
+	// deep in wxMac, but I don't remember, nor want to repeat it :).  Can we
+	// #ifdef __WXMAC__ for the time being to revisit it after Xcode is working?
+	while (count >= 1)
+ 	{
+ 		m_pToolbar->DeleteToolByPos(count-1);
+ 		count = m_pToolbar->GetToolsCount();
+ 	}
+	m_pToolbar->Realize();
+	ADD_TOOL(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
+#else
 	if (!count)
 	{
 		ADD_TOOL(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
@@ -579,6 +591,7 @@ void EnviroFrame::RefreshToolbar()
 		m_pToolbar->DeleteToolByPos(count-1);
 		count = m_pToolbar->GetToolsCount();
 	}
+#endif
 
 	bool bEarth = (g_App.m_state == AS_Orbit);
 	bool bTerr = (g_App.m_state == AS_Terrain);
