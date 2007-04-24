@@ -2,10 +2,6 @@
 # GNU Makefile:  TerrainApps/Enviro
 #
 
-#------------------------------------------------------------------------------
-# You shouldn't need to tweak below this line
-#------------------------------------------------------------------------------
-
 VTP_ROOT = $(shell cd ../..; pwd)
 EXEC = Enviro
 include $(VTP_ROOT)/Make.defs
