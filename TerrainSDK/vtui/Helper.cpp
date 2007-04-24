@@ -65,16 +65,32 @@ void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color)
 /**
  * This function is used to find all files in a given directory,
  * and if they match a wildcard, add them to a combo box.
-*/
+ *
+ * The wildcard comparison is case-insensitive, so for example "*.vtst"
+ * will match "Foo.vtst" and "BAR.VTST".
+ */
 int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	const char *wildcard, int omit_chars)
 {
-//	VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
+//  VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
+
+	return AddFilenamesToChoice(box, directory, wildcard, omit_chars);
+}
+
+/**
+ * This function is used to find all files in a given directory,
+ * and if they match a wildcard, add them to a combo box.
+ *
+ * The wildcard comparison is case-insensitive, so for example "*.vtst"
+ * will match "Foo.vtst" and "BAR.VTST".
+ */
+int AddFilenamesToChoice(wxChoice *choice, const char *directory,
+	const char *wildcard, int omit_chars)
+{
+//  VTLOG(" AddFilenamesToChoice '%s', '%s':", directory, wildcard);
 
 	int entries = 0, matches = 0;
 
-	// We want to do a case-insensitive wildcard comparison, so do everything
-	//  in lower-case.
 	wxString wildstr(wildcard, wxConvUTF8);
 	wildstr.LowerCase();
 
@@ -87,43 +103,10 @@ int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 			continue;
 
 		wxString name(name1.c_str(), wxConvUTF8);
-		name.LowerCase();
+		wxString name_lower = name;
+		name_lower.LowerCase();
 
-		if (name.Matches(wildstr))
-		{
-			if (omit_chars)
-				box->Append(name.Left(name.Length()-omit_chars));
-			else
-				box->Append(name);
-			matches++;
-		}
-	}
-//	VTLOG(" %d entries, %d matches\n", entries, matches);
-	return matches;
-}
-
-/**
- * This function is used to find all files in a given directory,
- * and if they match a wildcard, add them to a combo box.
- */
-int AddFilenamesToChoice(wxChoice *choice, const char *directory,
-	const char *wildcard, int omit_chars)
-{
-//  VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
-
-	int entries = 0, matches = 0;
-
-	wxString wildstr(wildcard, wxConvUTF8);
-	for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
-	{
-		entries++;
-		std::string name1 = it.filename();
-		//	VTLOG("   entry: '%s'", name1.c_str());
-		if (it.is_hidden() || it.is_directory())
-			continue;
-
-		wxString name(name1.c_str(), wxConvUTF8);
-		if (name.Matches(wildstr))
+		if (name_lower.Matches(wildstr))
 		{
 			if (omit_chars)
 				choice->Append(name.Left(name.Length()-omit_chars));
