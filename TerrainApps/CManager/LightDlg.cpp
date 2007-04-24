@@ -1,7 +1,7 @@
 //
 // Name:		LightDlg.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,7 +19,8 @@
 #include "vtlib/vtlib.h"
 #include "vtui/Helper.h"	// for FillWithColor
 #include "LightDlg.h"
-#include <wx/colordlg.h>
+
+#include <wx/colordlg.h>	// for wxColourDialog
 
 // WDR: class implementations
 
