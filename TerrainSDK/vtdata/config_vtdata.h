@@ -1,7 +1,8 @@
 //
-// Use this file to configure the vtdata library.
+// This file configures the dependencies for the vtdata library.
 //
-// Set each option to either 0 or 1 as desired.
+// Set each option to either 0 or 1 as desired, or you can set them beforehand
+//  in the build process.
 //
 
 #ifndef CONFIG_VTDATA_H
@@ -13,7 +14,9 @@
 // The QuikGrid library is LGPL and available from:
 //		http://www.perspectiveedge.com/
 //
+#ifndef SUPPORT_QUIKGRID
 #define SUPPORT_QUIKGRID	1
+#endif
 
 // Use the NetCDF library, which adds support for the "CDF" file format,
 // which is commonly used for bathymetry.
@@ -21,7 +24,9 @@
 // The NetCDF library is available from:
 //		http://www.unidata.ucar.edu/packages/netcdf/
 //
+#ifndef SUPPORT_NETCDF
 #define SUPPORT_NETCDF	1
+#endif
 
 // Use the Curl library, which adds cross-platform support for HTTP
 // operations such as reading from WFS (Web Feature Servers).
@@ -29,14 +34,18 @@
 // The Curl library is available from:
 //		http://curl.haxx.se/libcurl/
 //
+#ifndef SUPPORT_HTTP
 #define SUPPORT_HTTP	1
+#endif
 
 // Use the bzip2 library, which adds support for reading from .bz2 files
 //
 // The library is free (BSD-style license) and available from:
 // http://www.bzip.org/
 //
+#ifndef SUPPORT_BZIP2
 #define SUPPORT_BZIP2	1
+#endif
 
 // Set to 1 if your C++ compiler supports wide strings (std::wstring)
 //
@@ -44,7 +53,9 @@
 // If 0, then international characters in strings may not (will not)
 // be handled correctly.
 //
+#ifndef SUPPORT_WSTRING
 #define SUPPORT_WSTRING	1
+#endif
 
 #endif // CONFIG_VTDATA_H
 
