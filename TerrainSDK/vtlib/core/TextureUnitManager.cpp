@@ -3,7 +3,7 @@
 //
 // Originally written by RJ.
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,6 +31,11 @@ void vtTextureUnitManager::Initialise()
 #if VTLIB_OSG
 	osg::ref_ptr<osg::Texture::Extensions> pTextureExtensions = osg::Texture::getExtensions(0, true);
 	m_iNumTextureUnits = pTextureExtensions->numTextureUnits();
+	if (m_iNumTextureUnits < 0)
+	{
+		// got a bogus value, probably because there is no OpenGL context yet.
+		m_iNumTextureUnits = 4;
+	}
 #else
 	// Assume four.
 	m_iNumTextureUnits = 4;
