@@ -175,6 +175,8 @@ public:
 	DPoint2 GetSpacing() const;
 	FPoint2 GetWorldSpacing() const;
 	void GetDimensions(int &nColumns, int &nRows) const;
+	void EarthToGrid(const DPoint2 &epos, IPoint2 &ipos);
+	void WorldToGrid(const FPoint3 &pos, IPoint2 &ipos);
 
 	// all grids must be able to return the elevation at a grid point
 	virtual float GetElevation(int iX, int iZ, bool bTrue = false) const = 0;

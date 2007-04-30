@@ -1,7 +1,7 @@
 //
 // HeightField.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -363,6 +363,24 @@ void vtHeightFieldGrid3d::GetDimensions(int &nColumns, int &nRows) const
 {
 	nColumns = m_iColumns;
 	nRows = m_iRows;
+}
+
+/** Convert a point from earth coordinates to the integer coordinates
+ * of the grid.
+ */
+void vtHeightFieldGrid3d::EarthToGrid(const DPoint2 &epos, IPoint2 &ipos)
+{
+	ipos.x = (int) ((epos.x - m_EarthExtents.left) / m_dXStep);
+	ipos.y = (int) ((epos.y - m_EarthExtents.bottom) / m_dYStep);
+}
+
+/** Convert a point from world coordinates to the integer coordinates
+ * of the grid.
+ */
+void vtHeightFieldGrid3d::WorldToGrid(const FPoint3 &pos, IPoint2 &ipos)
+{
+	ipos.x = (int) ((pos.x - m_WorldExtents.left) / m_fXStep);
+	ipos.y = (int) ((m_WorldExtents.bottom - pos.z) / m_fZStep);
 }
 
 /**
