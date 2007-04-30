@@ -806,13 +806,13 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		break;
 
 	case 'y':
-		// A handy place to put test code
+		// Example code: modify the terrain by using the (slow) approach of using
+		//  vtTerrain methods GetInitialGrid and UpdateElevation.
 		{
 			vtTerrain *pTerr = GetCurrentTerrain();
 			if (pTerr && pTerr->GetParams().GetValueBool(STR_ALLOW_GRID_SCULPTING))
 			{
 				vtElevationGrid	*grid = pTerr->GetInitialGrid();
-				//vtHeightFieldGrid3d *grid = pTerr->GetHeightFieldGrid3d();
 				if (grid)
 				{
 					clock_t t1 = clock();
@@ -838,7 +838,8 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		}
 		break;
 	case 'Y':
-		// more elevation-setting test code
+		// Example code: modify the terrain by using the (fast) approach of using
+		//  vtDynTerrainGeom::SetElevation.
 		{
 			vtTerrain *pTerr = GetCurrentTerrain();
 			if (pTerr)
@@ -868,7 +869,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		}
 		break;
 	case 'u':
-		// more elevation-setting test code
+		// Example code: modify a small area of terrain around the mouse pointer.
 		{
 			vtTerrain *pTerr = GetCurrentTerrain();
 			if (pTerr)
@@ -876,10 +877,10 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 				vtDynTerrainGeom *dyn = pTerr->GetDynTerrain();
 				if (dyn)
 				{
-					// Raise an area of the terrain, directly around the mouse
-					IPoint2 ipos;
+					// Get 3D cursor location in grid coordinates
 					FPoint3 fpos;
 					g_App.m_pTerrainPicker->GetCurrentPoint(fpos);
+					IPoint2 ipos;
 					dyn->WorldToGrid(fpos, ipos);
 					for (int x  = -4; x < 4; x++)
 						for (int y = -4; y < 4; y++)
@@ -888,7 +889,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 							dyn->SetElevation(ipos.x + x, ipos.y + y, val + 40);
 						}
 
-					// Update the shading and culture
+					// Update the (entire) shading and culture
 					pTerr->RecreateTextures(vtGetTS()->GetSunLight());
 					DRECT area;
 					area.Empty();
