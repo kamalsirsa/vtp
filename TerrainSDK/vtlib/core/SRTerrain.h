@@ -34,6 +34,7 @@ public:
 	void DoRender();
 	void DoCulling(const vtCamera *pCam);
 	float GetElevation(int iX, int iZ, bool bTrue = false) const;
+	void SetElevation(int iX, int iZ, float fValue, bool bTrue = false);
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue = false) const;
 	void SetVerticalExag(float fExag);
 	float GetVerticalExag() const { return m_fHeightScale; }

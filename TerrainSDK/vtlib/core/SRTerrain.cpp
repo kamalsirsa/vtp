@@ -78,13 +78,12 @@ SRTerrain::~SRTerrain()
 /////////////////////////////////////////////////////////////////////////////
 
 //
-// Unfortunately the following statics are required because libMini only
-// supports some functionality by callback, and the callback is only a
-// simple C function which has no context to tell us which terrain.
+// Unfortunately the following statics are required because libMini
+// supports some functionality by callback, and some of the callbacks
+// have no context to tell us which terrain.
 //
-static const vtElevationGrid *s_pGrid;
 static SRTerrain *s_pSRTerrain;
-static int myfancnt, myvtxcnt;
+static int myfancnt;
 static int s_iRows;
 
 void beginfan_vtp()
@@ -92,13 +91,13 @@ void beginfan_vtp()
 	if (myfancnt++>0)
 		glEnd();
 	glBegin(GL_TRIANGLE_FAN);
-	myvtxcnt-=2;	// 2 vertices are needed to start each fan
+	s_pSRTerrain->m_iDrawnTriangles-=2;	// 2 vertices are needed to start each fan
 }
 
 void fanvertex_vtp(float x, float y, float z)
 {
 	glVertex3f(x,y,z);
-	myvtxcnt++;
+	s_pSRTerrain->m_iDrawnTriangles++;
 }
 
 void notify_vtp(int i, int j, int size)
@@ -114,14 +113,12 @@ void notify_vtp(int i, int j, int size)
 
 short int getelevation_vtp1(int i, int j, int size, void *objref)
 {
-	//return ((vtElevationGrid *)objref)->GetValue(i, s_iRows-1-j);
-	return s_pGrid->GetValue(i, s_iRows-1-j);
+	return ((vtElevationGrid *)objref)->GetValue(i, s_iRows-1-j);
 }
 
 float getelevation_vtp2(int i, int j, int size, void *objref)
 {
-	//return ((vtElevationGrid *)objref)->GetFValue(i, s_iRows-1-j);
-	return s_pGrid->GetFValue(i, s_iRows-1-j);
+	return ((vtElevationGrid *)objref)->GetFValue(i, s_iRows-1-j);
 }
 
 //
@@ -149,7 +146,6 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	float dim = m_fXStep;
 	float cellaspect = m_fZStep / m_fXStep;
 
-	s_pGrid = pGrid;
 	s_iRows = m_iRows;
 
 	// This maximum scale is a reasonable tradeoff between the exaggeration
@@ -159,6 +155,7 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	m_fHeightScale = fZScale;
 	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
 
+	void *objref = (void *) pGrid;
 	if (pGrid->IsFloatMode())
 	{
 		m_bFloat = true;
@@ -167,7 +164,8 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 				&size, &dim, m_fMaximumScale, cellaspect,
 				0.0f, 0.0f, 0.0f,	// grid center
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
-				getelevation_vtp2);
+				getelevation_vtp2,
+				objref);
 	}
 	else
 	{
@@ -177,7 +175,8 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 				&size, &dim, m_fMaximumScale, cellaspect,
 				0.0f, 0.0f, 0.0f,	// grid center
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
-				getelevation_vtp1);
+				getelevation_vtp1,
+				objref);
 	}
 	m_pMini->setrelscale(m_fDrawScale);
 
@@ -194,6 +193,7 @@ DTErr SRTerrain::ReInit(const vtElevationGrid *pGrid)
 	float cellaspect = m_fZStep / m_fXStep;
 
 	delete m_pMini;
+	void *objref = (void *) pGrid;
 	if (pGrid->IsFloatMode())
 	{
 		float *image = NULL;
@@ -201,7 +201,8 @@ DTErr SRTerrain::ReInit(const vtElevationGrid *pGrid)
 				&size, &dim, m_fMaximumScale, cellaspect,
 				0.0f, 0.0f, 0.0f,	// grid center
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
-				getelevation_vtp2);
+				getelevation_vtp2,
+				objref);
 	}
 	else
 	{
@@ -210,7 +211,8 @@ DTErr SRTerrain::ReInit(const vtElevationGrid *pGrid)
 				&size, &dim, m_fMaximumScale, cellaspect,
 				0.0f, 0.0f, 0.0f,	// grid center
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
-				getelevation_vtp1);
+				getelevation_vtp1,
+				objref);
 	}
 	m_pMini->setrelscale(m_fDrawScale);
 
@@ -375,7 +377,8 @@ void SRTerrain::RenderPass()
 	float dy = eye_forward.y;
 	float dz = eye_forward.z;
 
-	myfancnt = myvtxcnt = 0;
+	myfancnt = 0;
+	m_iDrawnTriangles = 0;
 
 	// Convert the eye location to the unusual coordinate scheme of libMini.
 	ex -= (m_iColumns/2)*m_fXStep;
@@ -389,10 +392,6 @@ void SRTerrain::RenderPass()
 				m_fNear, m_fFar);
 
 	if (myfancnt>0) glEnd();
-
-	// We are drawing fans, so the number of triangles is roughly equal to
-	// number of vertices
-	m_iDrawnTriangles = myvtxcnt;
 
 	// adaptively adjust resolution threshold up or down to attain
 	// the desired polygon (vertex) count target
@@ -443,10 +442,10 @@ void SRTerrain::RenderPass()
 //
 float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
-	float height = m_pMini->getheight(iX, iZ);
-
 	if (iX<0 || iX>m_iColumns-1 || iZ<0 || iZ>m_iRows-1)
 		return 0.0f;
+
+	float height = m_pMini->getheight(iX, iZ);
 
 	if (bTrue)
 		// convert stored value to true value
@@ -454,6 +453,17 @@ float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 	else
 		// convert stored value to drawn value
 		return height;
+}
+
+void SRTerrain::SetElevation(int iX, int iZ, float fValue, bool bTrue)
+{
+	if (iX<0 || iX>m_iColumns-1 || iZ<0 || iZ>m_iRows-1)
+		return;
+
+	if (bTrue)
+		m_pMini->setrealheight(iX, iZ, fValue * m_fDrawScale * m_fMaximumScale);
+	else
+		m_pMini->setrealheight(iX, iZ, fValue);
 }
 
 void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
