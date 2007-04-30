@@ -72,6 +72,7 @@ public:
 
 	// overridables
 	virtual void DoCulling(const vtCamera *pCam) = 0;
+	virtual void SetElevation(int i, int j, float fValue, bool bTrue = false) {}
 
 	// control
 	void SetCull(bool bOnOff);
@@ -83,16 +84,16 @@ public:
 	int		m_iTPatchDim;
 	int		m_iTPatchSize;		// size of each texture patch in texels
 
+	// statistics
+	int m_iTotalTriangles;
+	int m_iDrawnTriangles;
+
 protected:
 	// tables for quick conversion from x,y index to output X,Z coordinates
 	float	*m_fXLookup, *m_fZLookup;
 
 	// this determines the overall level of detail
 	int		m_iPolygonTarget;
-
-	// statistics
-	int m_iTotalTriangles;
-	int m_iDrawnTriangles;
 
 	// flags
 	bool m_bUseTriStrips;
