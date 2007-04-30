@@ -3101,6 +3101,12 @@ void vtTerrain::ActivateScenario(int iScenario)
 ////////////////////////////////////////////////////////////////////////////
 // Dynamic elevation
 
+/**
+ * If you have told vtTerrain to preserve a copy of the original elevation
+ * grid in memory, you can modify that grid, then call this method to update
+ * the CLOD surface.  This can take up a few seconds, depending on the size
+ * of your grid.
+ */
 void vtTerrain::UpdateElevation()
 {
 	if (!m_pDynGeom)
