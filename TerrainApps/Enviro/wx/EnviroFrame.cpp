@@ -815,6 +815,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 				//vtHeightFieldGrid3d *grid = pTerr->GetHeightFieldGrid3d();
 				if (grid)
 				{
+					clock_t t1 = clock();
 					// Raise an area of the terrain
 					int cols, rows;
 					grid->GetDimensions(cols, rows);
@@ -824,6 +825,8 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 							grid->SetValue(i, j, grid->GetValue(i, j) + 40);
 						}
 					pTerr->UpdateElevation();
+					clock_t t2 = clock();
+					VTLOG(" Modify1: %.3f sec\n", (float)(t2-t1)/CLOCKS_PER_SEC);
 
 					// Update the shading and culture
 					pTerr->RecreateTextures(vtGetTS()->GetSunLight());
@@ -833,6 +836,67 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 				}
 			}
 		}
+		break;
+	case 'Y':
+		// more elevation-setting test code
+		{
+			vtTerrain *pTerr = GetCurrentTerrain();
+			if (pTerr)
+			{
+				vtDynTerrainGeom *dyn = pTerr->GetDynTerrain();
+				if (dyn)
+				{
+					clock_t t1 = clock();
+					// Raise an area of the terrain
+					int cols, rows;
+					dyn->GetDimensions(cols, rows);
+					for (int i  = cols / 4; i < cols / 2; i++)
+						for (int j = rows / 4; j < rows / 2; j++)
+						{
+							dyn->SetElevation(i, j, dyn->GetElevation(i, j) + 40);
+						}
+					clock_t t2 = clock();
+					VTLOG(" Modify2: %.3f sec\n", (float)(t2-t1)/CLOCKS_PER_SEC);
+
+					// Update the shading and culture
+					pTerr->RecreateTextures(vtGetTS()->GetSunLight());
+					DRECT area;
+					area.Empty();
+					pTerr->RedrapeCulture(area);
+				}
+			}
+		}
+		break;
+	case 'u':
+		// more elevation-setting test code
+		{
+			vtTerrain *pTerr = GetCurrentTerrain();
+			if (pTerr)
+			{
+				vtDynTerrainGeom *dyn = pTerr->GetDynTerrain();
+				if (dyn)
+				{
+					// Raise an area of the terrain, directly around the mouse
+					IPoint2 ipos;
+					FPoint3 fpos;
+					g_App.m_pTerrainPicker->GetCurrentPoint(fpos);
+					dyn->WorldToGrid(fpos, ipos);
+					for (int x  = -4; x < 4; x++)
+						for (int y = -4; y < 4; y++)
+						{
+							float val = dyn->GetElevation(ipos.x + x, ipos.y + y);
+							dyn->SetElevation(ipos.x + x, ipos.y + y, val + 40);
+						}
+
+					// Update the shading and culture
+					pTerr->RecreateTextures(vtGetTS()->GetSunLight());
+					DRECT area;
+					area.Empty();
+					pTerr->RedrapeCulture(area);
+				}
+			}
+		}
+		break;
 	case 'D':	// Shift-D
 		// dump camera info
 		g_App.DumpCameraInfo();
