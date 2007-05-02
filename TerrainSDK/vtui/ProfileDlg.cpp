@@ -42,6 +42,7 @@ BEGIN_EVENT_TABLE(ProfileDlg, AutoDialog)
 	EVT_TEXT( ID_RF, ProfileDlg::OnRF )
 	EVT_CHOICE( ID_CURVATURE, ProfileDlg::OnCurvature )
 	EVT_BUTTON( ID_EXPORT_DXF, ProfileDlg::OnExportDXF )
+	EVT_BUTTON( ID_EXPORT_TRACE, ProfileDlg::OnExportTrace )
 END_EVENT_TABLE()
 
 
@@ -117,6 +118,9 @@ void ProfileDlg::SetPoints(const DPoint2 &p1, const DPoint2 &p2)
 		delete trans;
 	}
 	m_fGeodesicDistance = vtProjection::GeodesicDistance(geo1, geo2);
+	m_fGeoDistAtPoint.resize(2);
+	m_fGeoDistAtPoint[0] = 0.0f;
+	m_fGeoDistAtPoint[1] = m_fGeodesicDistance;
 
 	Refresh();
 	UpdateEnabling();
@@ -148,9 +152,14 @@ void ProfileDlg::SetPath(const DLine2 &path)
 
 			delete trans;
 		}
+		m_fGeoDistAtPoint.resize(len);
+		m_fGeoDistAtPoint[0] = 0.0;
 		for (i = 0; i < len-1; i++)
+		{
 			m_fGeodesicDistance += vtProjection::GeodesicDistance(m_path_geo[i],
 				m_path_geo[i+1]);
+			m_fGeoDistAtPoint[i+1] = m_fGeodesicDistance;
+		}
 	}
 	if (len > 2)
 	{
@@ -1107,7 +1116,21 @@ void ProfileDlg::OnExportDXF( wxCommandEvent &event )
 	{
 		wxString str = saveFile.GetPath();
 		vtString fname = str.mb_str(wxConvUTF8);
-		WriteDXF(fname);
+		WriteProfileToDXF(fname);
+	}
+}
+
+void ProfileDlg::OnExportTrace( wxCommandEvent &event )
+{
+	wxFileDialog saveFile(this, _("Export Trace to DXF"),
+		_T(""), _T(""), _("DXF Files (*.dxf)|*.dxf"),
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (bResult)
+	{
+		wxString str = saveFile.GetPath();
+		vtString fname = str.mb_str(wxConvUTF8);
+		WriteTraceToDXF(fname);
 	}
 }
 
@@ -1161,12 +1184,8 @@ ACAD Color Name
 131 = light red?
 */
 
-void ProfileDlg::WriteDXF(const char *filename)
+void WriteHeader(FILE *fp)
 {
-	FILE *fp = fopen(filename, "wb");
-	if (!fp)
-		return;
-
 	// Header
 	fprintf(fp, "  0\nSECTION\n");
 	fprintf(fp, "  2\nHEADER\n  9\n$ACADVER\n  1\nAC1009\n");
@@ -1221,7 +1240,7 @@ void ProfileDlg::WriteDXF(const char *filename)
 	fprintf(fp, "  0\nLAYER\n");
 	fprintf(fp, "  2\nPEN2\n");	// layer name
 	fprintf(fp, " 70\n0\n");	// layer flags
-	fprintf(fp, " 62\n2\n");	// color number 2 = yellow
+	fprintf(fp, " 62\n1\n");	// color number 1 = red
 	fprintf(fp, "  6\nDASHED\n");	// linetype name
 
 	// A layer
@@ -1244,11 +1263,38 @@ void ProfileDlg::WriteDXF(const char *filename)
 	// ------------------------------------
 	// end tables section
 	fprintf(fp, "  0\nENDSEC\n");
+}
+
+void ProfileDlg::WriteProfileToDXF(const char *filename)
+{
+	FILE *fp = fopen(filename, "wb");
+	if (!fp)
+		return;
+
+	WriteHeader(fp);
 
 	// Entities
 	fprintf(fp, "  0\nSECTION\n");
 	fprintf(fp, "  2\nENTITIES\n");
-	DrawToDXF(fp);
+	DrawProfileToDXF(fp);
+	fprintf(fp, "  0\nENDSEC\n");
+
+	fprintf(fp, "  0\nEOF\n");
+	fclose(fp);
+}
+
+void ProfileDlg::WriteTraceToDXF(const char *filename)
+{
+	FILE *fp = fopen(filename, "wb");
+	if (!fp)
+		return;
+
+	WriteHeader(fp);
+
+	// Entities
+	fprintf(fp, "  0\nSECTION\n");
+	fprintf(fp, "  2\nENTITIES\n");
+	DrawTraceToDXF(fp);
 	fprintf(fp, "  0\nENDSEC\n");
 
 	fprintf(fp, "  0\nEOF\n");
@@ -1261,7 +1307,13 @@ void ProfileDlg::MakePoint(FPoint2 &p, int i, float value)
 	p.y = (value - m_fDrawMin) / m_fDrawRange * m_yrange;
 }
 
-void ProfileDlg::DrawToDXF(FILE *fp)
+void ProfileDlg::MakePoint(const DPoint2 &p_in, DPoint2 &p_out)
+{
+	p_out.x = (p_in.x - m_DrawOrg.x) * m_DrawScale.x;
+	p_out.y = (p_in.y - m_DrawOrg.y) * m_DrawScale.y;
+}
+
+void ProfileDlg::DrawProfileToDXF(FILE *fp)
 {
 	const char *layer = "PEN1";
 	WriteLine(fp, layer, 0, 0, m_xrange, 0);
@@ -1514,5 +1566,142 @@ void ProfileDlg::DrawToDXF(FILE *fp)
 			}
 			WriteLine(fp, layer, p1, p2);
 		}
+	}
+}
+
+#if SUPPORT_QUIKGRID
+// We can use the QuikGrid library to derive and draw contours
+#include "vtdata/QuikGrid.h"
+
+void LineCallback(void *context, float x, float y, bool bStart)
+{
+	static FPoint2 oldp;
+
+	if (bStart)
+		oldp.Set(x, y);	// start a new line
+	else
+	{
+		FILE *fp = (FILE *) context;
+		FPoint2 newp(x, y);
+		WriteLine(fp, "PEN7", oldp.x, oldp.y, newp.x, newp.y);
+		oldp = newp;
+	}
+}
+#endif	// SUPPORT_QUIKGRID
+
+void ProfileDlg::DrawTraceToDXF(FILE *fp)
+{
+	if (!m_bHavePoints && !m_bHavePath)
+		return;
+
+	// Gather extents of the area we're going to write
+	DRECT ext(1E9, -1E9, -1E9, 1E9);
+	ext.GrowToContainLine(m_path);
+
+	// Enforce minimum ratio of width to height
+	DPoint2 center = ext.GetCenter();
+	double w = ext.Width(), h = ext.Height();
+	if (h < w/2)
+	{
+		h = w/2;
+		ext.bottom = center.y - h/2;
+		ext.top = center.y + h/2;
+	}
+	else if (w < h/2)
+	{
+		w = h/2;
+		ext.left = center.x - w/2;
+		ext.right = center.x + w/2;
+	}
+
+	// Draw larger dimension as 500 units
+	double larger = std::max(w, h);
+
+	// Give it a little space around the sides
+	ext.Grow(larger/10, larger/10);
+	w = ext.Width();
+	h = ext.Height();
+	larger = std::max(w, h);
+
+	DPoint2 ratio(w / larger, h / larger);
+	DPoint2 drawing_size(500 * ratio.x, 500 * ratio.y);
+
+	m_DrawOrg.Set(ext.left, ext.bottom);
+	m_DrawScale.Set(drawing_size.x / w, drawing_size.y / h);
+
+	// Draw rectangle around the drawing
+	const char *layer = "PEN1";
+	WriteLine(fp, layer, 0, 0, drawing_size.x, 0);
+	WriteLine(fp, layer, drawing_size.x, 0, drawing_size.x, drawing_size.y);
+	WriteLine(fp, layer, drawing_size.x, drawing_size.y, 0, drawing_size.y);
+	WriteLine(fp, layer, 0, drawing_size.y, 0, 0);
+
+#if SUPPORT_QUIKGRID
+	// Draw contours
+	if (m_bHaveValidData)
+	{
+		const int samp = 500;
+		SurfaceGrid grid(samp,samp);
+		DPoint2 p;
+		float zmin = 1E9, zmax = -1E9;
+		for (int a = 0; a < samp; a++)
+		{
+			grid.xset(a, a * ratio.x * (500 / samp));
+			grid.yset(a, a * ratio.y * (500 / samp));
+		}
+		for (int x = 0; x < samp; x++)
+		{
+			p.x = ext.left + (double) x / samp * w;
+			for (int y = 0; y < samp; y++)
+			{
+				p.y = ext.bottom + (double) y / samp * h;
+				float z = m_callback->GetElevation(p);
+				if (z != INVALID_ELEVATION)
+				{
+					grid.zset(x, y, z);
+					if (z < zmin) zmin = z;
+					if (z > zmax) zmax = z;
+				}
+			}
+		}
+		SetQuikGridCallbackFunction(LineCallback, fp);
+		const int contours = 12;
+		for (int c = 1; c < contours-1; c++)
+		{
+			float fContourValue = zmin + (zmax - zmin) / contours * c;
+			Contour(grid, fContourValue);
+		}
+	}
+#endif
+
+	// Draw crosshairs
+	DPoint2 p1, p2;
+	layer = "PEN3";
+	double dist = 0.0f;
+	for (unsigned int i = 0; i < m_path.GetSize(); i++)
+	{
+		MakePoint(m_path[i], p1);
+		WriteLine(fp, layer, p1.x - 5, p1.y, p1.x + 5, p1.y);
+		WriteLine(fp, layer, p1.x, p1.y - 5, p1.x, p1.y + 5);
+
+		// Label each crosshair with distance along line
+		if (i > 0)
+			dist += (m_path[i] - m_path[i-1]).Length();
+
+		vtString str;
+		if (m_fGeodesicDistance >= 50000)
+			str.Format("%5.0fkm", m_fGeoDistAtPoint[i] / 1000);
+		else
+			str.Format("%5.1f", m_fGeoDistAtPoint[i]);
+		WriteText(fp, "PEN1", p1, str);
+	}
+
+	// Draw path
+	layer = "PEN1";
+	for (unsigned int i = 0; i < m_path.GetSize()-1; i++)
+	{
+		MakePoint(m_path[i], p1);
+		MakePoint(m_path[i+1], p2);
+		WriteLine(fp, layer, p1.x, p1.y, p2.x, p2.y);
 	}
 }

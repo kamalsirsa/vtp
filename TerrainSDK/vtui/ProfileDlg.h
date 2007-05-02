@@ -73,9 +73,8 @@ public:
 	float ApplyGeoid(float h, int i, char t);
 	void ComputeSignalLoss(float dist, float freq);
 
-	void WriteDXF(const char *filename);
-	void MakePoint(FPoint2 &p, int i, float value);
-	void DrawToDXF(FILE *fp);
+	void WriteProfileToDXF(const char *filename);
+	void WriteTraceToDXF(const char *filename);
 
 private:
 	// WDR: member variable declarations for ProfileDlg
@@ -118,6 +117,7 @@ private:
 	float m_fGeoidCurvature;
 	float m_fMouseFresnel;
 	float m_fMouseLOS;
+	std::vector<double> m_fGeoDistAtPoint;
 
 	// these values are exposed directly in the GUI
 	float m_fHeight1, m_fHeight2;
@@ -130,8 +130,15 @@ private:
 	bool m_bLineOfSight, m_bVisibility;
 	bool m_bUseFresnel, m_bUseEffectiveRadius;
 
+	DPoint2 m_DrawOrg, m_DrawScale;
+	void MakePoint(FPoint2 &p, int i, float value);
+	void MakePoint(const DPoint2 &p_in, DPoint2 &p_out);
+	void DrawProfileToDXF(FILE *fp);
+	void DrawTraceToDXF(FILE *fp);
+
 private:
 	// WDR: handler declarations for ProfileDlg
+	void OnExportTrace( wxCommandEvent &event );
 	void OnExportDXF( wxCommandEvent &event );
 	void OnCurvature( wxCommandEvent &event );
 	void OnRF( wxCommandEvent &event );
