@@ -700,6 +700,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\QuikGrid.cpp"
+				>
+			</File>
+			<File
 				RelativePath="RoadMap.cpp"
 				>
 				<FileConfiguration
@@ -1169,6 +1173,10 @@
 			</File>
 			<File
 				RelativePath="Projections.h"
+				>
+			</File>
+			<File
+				RelativePath=".\QuikGrid.h"
 				>
 			</File>
 			<File
