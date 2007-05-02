@@ -10,27 +10,16 @@
 #include "vtlib/vtlib.h"
 
 #if SUPPORT_QUIKGRID
-
-// QuikGrid headers
-#include "surfgrid.h"
-#include "contour.h"
-
-#ifdef _MSC_VER
-#pragma comment( lib, "QuikGrid.lib" )
-#endif
-
+#include "vtdata/QuikGrid.h"
 #include "Contours.h"
 
-static vtContourConverter *s_cc = NULL;
-
 //
-// This globally-scoped method is found at link time by the QuikGrid
-//  library, which uses it as a callback.
+// This callback function will receive points output from QuikGrid.
 //
-void DoLineTo( float x, float y, int drawtype )
+void ReceiveContourPoint(void *context, float x, float y, bool bStart)
 {
-	if (s_cc)
-		s_cc->Coord(x, y, drawtype == 0);
+	vtContourConverter *cc = (vtContourConverter *) context;
+	cc->Coord(x, y, bStart);
 }
 
 
@@ -97,10 +86,6 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 	}
 	m_pMF = new vtMeshFactory(m_pGeom, vtMesh::LINE_STRIP, 0, 30000, 0);
 
-	// Since we have to interface to a global callback, set a global
-	//  pointer to the recipient of the callback.
-	s_cc = this;
-
 	return m_pGeom;
 }
 
@@ -112,6 +97,7 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
  */
 void vtContourConverter::GenerateContour(float fAlt)
 {
+	SetQuikGridCallbackFunction(ReceiveContourPoint, this);
 	Contour(*m_pGrid, fAlt);
 }
 
@@ -130,10 +116,9 @@ void vtContourConverter::GenerateContours(float fInterval)
 	int start = (int) (fMin / fInterval) + 1;
 	int stop = (int) (fMax / fInterval);
 
+	SetQuikGridCallbackFunction(ReceiveContourPoint, this);
 	for (int i = start; i <= stop; i++)
-	{
 		Contour(*m_pGrid, i * fInterval);
-	}
 }
 
 void vtContourConverter::Coord(float x, float y, bool bStart)
@@ -158,8 +143,6 @@ void vtContourConverter::Finish()
 	// Add the geometry to the terrain's scaled features, so that it will scale
 	//  up/down with the terrain's vertical exaggeration.
 	m_pTerrain->GetScaledFeatures()->AddChild(m_pGeom);
-
-	s_cc = NULL;
 }
 
 void vtContourConverter::Flush()
