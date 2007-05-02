@@ -519,8 +519,13 @@ bool vtImageLayer::SaveToFile(const char *fname) const
 			FILE *fout = vtFileOpen(sJGWFile, "w");
 			if (fout)
 			{
+				// World file extents are always (strangely) pixel centers,
+				//  not full image extents, so we have to scoot inwards by 
+				//  half a pixel.
 				fprintf(fout, "%lf\n%lf\n%lf\n%lf\n%.2lf\n%.2lf\n",
-					spacing.x, 0.0, 0.0, -1*spacing.y, m_Extents.left, m_Extents.top);
+					spacing.x, 0.0, 0.0, -1*spacing.y,
+					m_Extents.left + (spacing.x/2),
+					m_Extents.top - (spacing.y/2));
 				fclose(fout);
 			}
 			return true;
