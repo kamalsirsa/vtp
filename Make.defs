@@ -5,6 +5,11 @@
 -include $(HOME)/.vtp-user.defs
 
 #----------------------------------------------------------------------------
+# Here you can turn various build options on and off
+#----------------------------------------------------------------------------
+SWITCHES = -DUNIX -DSUPPORT_QUIKGRID=0 -DSUPPORT_NETCDF=0 -DSUPPORT_HTTP=0 -DSUPPORT_BZIP2=0
+
+#----------------------------------------------------------------------------
 # define the OS to dynamically figure out the configuration
 #----------------------------------------------------------------------------
 OS := $(shell uname)
@@ -57,7 +62,6 @@ HEADERS = $(CHEAD) $(CXXHEAD)
 OBJS   = $(CSRC:%.c=%.o) $(CXXSRC:%.cpp=%.o)
 LIB_EXT = so
 
-SWITCHES = -DUNIX
 CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS) -finput-charset=ISO-8859-1
 CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS) -finput-charset=ISO-8859-1
 LIB = $(LIB_NAME).$(LIB_EXT)
@@ -75,6 +79,7 @@ VTLIB_DIR        = $(TERRAIN_SDK_DIR)/vtlib
 VTUI_DIR         = $(TERRAIN_SDK_DIR)/vtui
 VTOSG_DIR        = $(VTLIB_DIR)/vtosg
 XMLHELPER_DIR    = $(TERRAIN_SDK_DIR)/xmlhelper
+UNZIP_DIR        = $(TERRAIN_SDK_DIR)/unzip
 
 NETCDF_INC = $(LOCALBASE)/include
 NETCDF_LIB = $(LOCALBASE)/lib
@@ -96,6 +101,7 @@ VTDATA_INST_DIR = $(VTDATA_DIR)
 VTUI_INST_DIR = $(VTUI_DIR)
 VTOSG_INST_DIR  = $(VTOSG_DIR)
 XMLHELPER_INST_DIR = $(XMLHELPER_DIR)
+UNZIP_INST_DIR = $(UNZIP_DIR)
 
 WX_DIR		 ?= /usr/local
 
