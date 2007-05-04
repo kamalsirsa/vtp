@@ -59,7 +59,7 @@ else
 # Support for all other Unix platforms
 LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg \
 	$(MINI_LIB) -lGL $(GLU_LIB) -lX11 \
-	-losg -losgDB -losgUtil -losgText -lOpenThreads \                
+	-losg -losgDB -losgUtil -losgText -lOpenThreads                
 
 LDIR   +=\
 	  $(VTDATA_INST_DIR)             \
