@@ -1146,14 +1146,15 @@ void WriteLine(FILE *fp, const char *layer, float x1, float y1, float x2, float 
 	fprintf(fp, " 31\n0.0\n");
 }
 
-void WriteText(FILE *fp, const char *layer, const FPoint2 &p1, const char *text)
+void WriteText(FILE *fp, const char *layer, const FPoint2 &p1, const char *text,
+			   float fSize)
 {
 	fprintf(fp, "  0\nTEXT\n");
 	fprintf(fp, "  8\n%s\n", layer);
 	fprintf(fp, " 10\n%f\n", p1.x);
 	fprintf(fp, " 20\n%f\n", p1.y);
 	fprintf(fp, " 30\n0.0\n");
-	fprintf(fp, " 40\n5.0\n");	// text size
+	fprintf(fp, " 40\n%f\n", fSize);	// text size
 	fprintf(fp, "  1\n%s\n", text);
 }
 
@@ -1345,7 +1346,7 @@ void ProfileDlg::DrawProfileToDXF(FILE *fp)
 		str.Format("%5.1f", m_fDrawMin + (m_fDrawRange / (numticks-1) * i));
 		//dc.GetTextExtent(str, &w, &h);
 		//dc.DrawText(str, MARGIN_LEFT - w - 8, y-(h/2));
-		WriteText(fp, layer, FPoint2(-30.0f, y-2.5f), str);
+		WriteText(fp, layer, FPoint2(-30.0f, y-2.5f), str, 5.0f);
 	}
 	// Horizontal ticks
 	numticks = (m_xrange / tick_spacing)+2;
@@ -1362,7 +1363,7 @@ void ProfileDlg::DrawProfileToDXF(FILE *fp)
 			str.Format("%5.1f", m_fGeodesicDistance / (numticks-1) * i);
 		//dc.GetTextExtent(str, &w, &h);
 		//dc.DrawRotatedText(str, x-(h/2), 0 + w + 8, 90);
-		WriteText(fp, layer, FPoint2(x - 15.0f, -10.0f), str);
+		WriteText(fp, layer, FPoint2(x - 15.0f, -10.0f), str, 5.0f);
 	}
 
 	// Draw surface line
@@ -1614,7 +1615,7 @@ void ProfileDlg::DrawTraceToDXF(FILE *fp)
 		ext.right = center.x + w/2;
 	}
 
-	// Draw larger dimension as 500 units
+	// Consider larger dimension
 	double larger = std::max(w, h);
 
 	// Give it a little space around the sides
@@ -1624,10 +1625,10 @@ void ProfileDlg::DrawTraceToDXF(FILE *fp)
 	larger = std::max(w, h);
 
 	DPoint2 ratio(w / larger, h / larger);
-	DPoint2 drawing_size(500 * ratio.x, 500 * ratio.y);
+	DPoint2 drawing_size(w, h);
 
 	m_DrawOrg.Set(ext.left, ext.bottom);
-	m_DrawScale.Set(drawing_size.x / w, drawing_size.y / h);
+	m_DrawScale.Set(1, 1);
 
 	// Draw rectangle around the drawing
 	const char *layer = "PEN1";
@@ -1635,6 +1636,9 @@ void ProfileDlg::DrawTraceToDXF(FILE *fp)
 	WriteLine(fp, layer, drawing_size.x, 0, drawing_size.x, drawing_size.y);
 	WriteLine(fp, layer, drawing_size.x, drawing_size.y, 0, drawing_size.y);
 	WriteLine(fp, layer, 0, drawing_size.y, 0, 0);
+
+	// Text cannot be fixed size, so scale it based on vertical extent
+	float text_size = h/20;
 
 #if SUPPORT_QUIKGRID
 	// Draw contours
@@ -1646,8 +1650,8 @@ void ProfileDlg::DrawTraceToDXF(FILE *fp)
 		float zmin = 1E9, zmax = -1E9;
 		for (int a = 0; a < samp; a++)
 		{
-			grid.xset(a, a * ratio.x * (500 / samp));
-			grid.yset(a, a * ratio.y * (500 / samp));
+			grid.xset(a, a * (drawing_size.x / samp));
+			grid.yset(a, a * (drawing_size.y / samp));
 		}
 		for (int x = 0; x < samp; x++)
 		{
@@ -1664,12 +1668,16 @@ void ProfileDlg::DrawTraceToDXF(FILE *fp)
 				}
 			}
 		}
-		SetQuikGridCallbackFunction(LineCallback, fp);
-		const int contours = 12;
-		for (int c = 1; c < contours-1; c++)
+		// Don't try to make contours if there is no elevation range
+		if (zmin != INVALID_ELEVATION && zmax != zmin)
 		{
-			float fContourValue = zmin + (zmax - zmin) / contours * c;
-			Contour(grid, fContourValue);
+			SetQuikGridCallbackFunction(LineCallback, fp);
+			const int contours = 12;
+			for (int c = 1; c < contours-1; c++)
+			{
+				float fContourValue = zmin + (zmax - zmin) / contours * c;
+				Contour(grid, fContourValue);
+			}
 		}
 	}
 #endif
@@ -1693,7 +1701,7 @@ void ProfileDlg::DrawTraceToDXF(FILE *fp)
 			str.Format("%5.0fkm", m_fGeoDistAtPoint[i] / 1000);
 		else
 			str.Format("%5.1f", m_fGeoDistAtPoint[i]);
-		WriteText(fp, "PEN1", p1, str);
+		WriteText(fp, "PEN1", p1, str, text_size);
 	}
 
 	// Draw path
@@ -1704,4 +1712,15 @@ void ProfileDlg::DrawTraceToDXF(FILE *fp)
 		MakePoint(m_path[i+1], p2);
 		WriteLine(fp, layer, p1.x, p1.y, p2.x, p2.y);
 	}
+
+	// Label the local origin
+	const char *format;
+	if (m_proj.IsGeographic())
+		format = "(%2.7f, %2.7f)";
+	else
+		format = "(%7.2f, %7.2f)";
+	vtString str;
+	str.Format(format, ext.left, ext.bottom);
+	WriteText(fp, "PEN1", DPoint2(0,0), str, text_size);
 }
+
