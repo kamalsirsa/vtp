@@ -1115,7 +1115,7 @@ void ProfileDlg::OnExportDXF( wxCommandEvent &event )
 	if (bResult)
 	{
 		wxString str = saveFile.GetPath();
-		vtString fname = str.mb_str(wxConvUTF8);
+		vtString fname = (const char *) str.mb_str(wxConvUTF8);
 		WriteProfileToDXF(fname);
 	}
 }
@@ -1129,7 +1129,7 @@ void ProfileDlg::OnExportTrace( wxCommandEvent &event )
 	if (bResult)
 	{
 		wxString str = saveFile.GetPath();
-		vtString fname = str.mb_str(wxConvUTF8);
+		vtString fname = (const char *) str.mb_str(wxConvUTF8);
 		WriteTraceToDXF(fname);
 	}
 }
