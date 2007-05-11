@@ -163,6 +163,13 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 
 	// a solid block, with top/left/right sides, made of 3 strips
 	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
+	if (!desc)
+	{
+		VTLOG1("Warning: could not find material: ");
+		VTLOG1(m_Params.m_ConnectMaterial);
+		VTLOG1("\n");
+		return;
+	}
 	FPoint2 uvscale = desc->GetUVScale();
 	float vertical_meters = m_Params.m_fConnectTop - m_Params.m_fConnectBottom;
 
@@ -332,6 +339,13 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 		VT_TexCoords | VT_Normals, iEstimateVerts);
 
 	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
+	if (!desc)
+	{
+		VTLOG1("Warning: could not find material: ");
+		VTLOG1(m_Params.m_ConnectMaterial);
+		VTLOG1("\n");
+		return;
+	}
 	FPoint2 uvscale = desc->GetUVScale();
 
 	// determine side-pointing vector
