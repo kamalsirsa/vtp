@@ -180,7 +180,7 @@ bool App::CreateScene()
 	pScene->AddEngine(pConstrain);
 
 #if 0
-#include "Tests.cpp"
+#include "C:/Dev/vtlibTests.cpp"
 #endif
 
 	return true;
