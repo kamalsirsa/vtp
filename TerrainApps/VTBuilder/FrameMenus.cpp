@@ -780,7 +780,7 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 		return;
 	RGBi bg;
 	wxString str = dlg1.GetValue();
-	const char *color = str.mb_str(wxConvUTF8);
+	vtString color = (const char *) str.mb_str(wxConvUTF8);
 	int res = sscanf(color, "%d %d %d", &bg.r, &bg.g, &bg.b);
 	if (res != 3)
 	{
