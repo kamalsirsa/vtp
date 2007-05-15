@@ -369,16 +369,15 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 #if VTLIB_OSG
 		// Set up cull callback on the dynamic geometry transform node
 		vtLodGrid *pStructures = m_pCurrentTerrain->GetStructureGrid();
-		osg::Referenced *ref = m_pCurrentTerrain->GetTopGroup()->GetOsgGroup()->getChild(0)->getUserData();
-		vtTransform *pTransform = dynamic_cast<vtTransform*>(ref);
-		if (NULL != pTransform)
+		vtNode *pShadowed = m_pCurrentTerrain->GetTopGroup()->GetChild(0);
+		if (NULL != pShadowed)
 		{
 			LocaleWrap normal_numbers(LC_NUMERIC, "C");
 			float fDarkness;
 			if (!param.GetValueFloat(STR_SHADOW_DARKNESS, fDarkness))
 				fDarkness = 0.8f;
 			int iTextureUnit = m_pCurrentTerrain->GetShadowTextureUnit();
-			vtGetScene()->SetShadowedNode(m_pSunLight, pStructures, pTransform,
+			vtGetScene()->SetShadowedNode(m_pSunLight, pStructures, pShadowed,
 				iRez, fDarkness, iTextureUnit);
 		}
 #endif
