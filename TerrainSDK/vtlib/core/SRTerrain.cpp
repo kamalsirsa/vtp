@@ -219,20 +219,6 @@ DTErr SRTerrain::ReInit(const vtElevationGrid *pGrid)
 	return DTErr_OK;
 }
 
-void SRTerrain::ElevationChanged()
-{
-	//if (m_bFloat)
-	//{
-	//	Mini::calcDH();
-	//	Mini::calcD2();
-	//}
-	//else
-	//{
-	//	mini::calcDH();
-	//	mini::calcD2();
-	//}
-}
-
 void SRTerrain::SetVerticalExag(float fExag)
 {
 	m_fHeightScale = fExag;

@@ -3115,7 +3115,6 @@ void vtTerrain::UpdateElevation()
 	if (!sr)
 		return;
 	sr->ReInit(m_pElevGrid);
-	//sr->ElevationChanged();
 }
 
 /**

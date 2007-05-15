@@ -42,7 +42,6 @@ public:
 
 	// Dynamic elevation
 	DTErr ReInit(const vtElevationGrid *pGrid);
-	void ElevationChanged();
 
 	void LoadSingleMaterial();
 	void LoadBlockMaterial(int a, int b);
