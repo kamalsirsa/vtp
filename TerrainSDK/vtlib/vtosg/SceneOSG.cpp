@@ -543,13 +543,13 @@ void vtScene::ShadowVisibleNode(vtNode *node, bool bVis)
 			m_pStructureShadowsOSG->ExcludeFromShadower(node->GetOsgNode(), true);
 }
 
-void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode,
-							  vtTransform *pTransform, int iRez, float fDarkness,
+void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowerNode,
+							  vtNode *pShadowed, int iRez, float fDarkness,
 							  int iTextureUnit)
 {
 	m_pStructureShadowsOSG = new CStructureShadowsOSG;
 	m_pStructureShadowsOSG->Initialise(m_pOsgSceneView.get(),
-		pShadowNode->GetOsgNode(), pTransform->GetOsgNode(), iRez, fDarkness,
+		pShadowerNode->GetOsgNode(), pShadowed->GetOsgNode(), iRez, fDarkness,
 		iTextureUnit);
 	m_pStructureShadowsOSG->SetSunPosition(v2s(-pLight->GetDirection()), true);
 }

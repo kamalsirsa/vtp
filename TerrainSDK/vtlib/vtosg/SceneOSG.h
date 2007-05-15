@@ -1,7 +1,7 @@
 //
 // SceneOSG.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -80,8 +80,8 @@ public:
 
 	// Experimental:
 	// Object-terrain shadow casting, only for OSG
-	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode,
-		vtTransform *pTransform, int iRez, float fDarkness, int iTextureUnit);
+	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowerNode,
+		vtNode *pShadowed, int iRez, float fDarkness, int iTextureUnit);
 	void UnsetShadowedNode(vtTransform *pTransform);
 	void UpdateShadowLightDirection(vtTransform *pLight);
 	void SetShadowDarkness(float fDarkness);
