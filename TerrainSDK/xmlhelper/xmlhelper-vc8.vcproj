@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="xmlhelper"
-	ProjectGUID="{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
+	ProjectGUID="{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}"
 	RootNamespace="xmlhelper"
 	>
 	<Platforms>
