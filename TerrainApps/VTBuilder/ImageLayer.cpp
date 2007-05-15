@@ -767,6 +767,7 @@ bool vtImageLayer::LoadFromGDAL()
 
 		if (iRasterCount == 3)
 		{
+			int num_undefined = 0;
 			for (i = 1; i <= 3; i++)
 			{
 				pBand = pDataset->GetRasterBand(i);
@@ -786,7 +787,17 @@ bool vtImageLayer::LoadFromGDAL()
 				case GCI_BlueBand:
 					pBlue = pBand;
 					break;
+				case GCI_Undefined:
+					num_undefined++;
+					break;
 				}
+			}
+			if (num_undefined == 3)
+			{
+				// All three are undefined, assume they are R,G,B
+				pRed = pDataset->GetRasterBand(1);
+				pGreen = pDataset->GetRasterBand(2);
+				pBlue = pDataset->GetRasterBand(3);
 			}
 			if ((NULL == pRed) || (NULL == pGreen) || (NULL == pBlue))
 				throw "Couldn't find bands for Red, Green, Blue.";
