@@ -1794,6 +1794,9 @@ void MainFrame::MergeResampleElevation()
 	VTLOG(" Layers: %d, Elevation layers: %d, %d are floating point\n",
 		NumLayers(), count, floating);
 
+	if (floating > 0)
+		floatmode = true;
+
 	if (spacing == DPoint2(0, 0))
 	{
 		DisplayAndLog("Sorry, you must have some elevation grid layers\n"
