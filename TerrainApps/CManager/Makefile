@@ -51,7 +51,9 @@ LIBS   += -F$(FRAMEWORKS) \
 	  -framework OpenGL \
 	  -L$(FINK_LIB) -lnetcdf \
 	  -lX11 -L$(X11BASE)/lib \
-	  -lz -lstdc++
+	  -lz -lstdc++ \
+	  -Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS \
+	  -bind_at_load
 
 all : $(OSX_APP)
 
