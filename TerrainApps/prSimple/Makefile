@@ -44,13 +44,12 @@ LIBS   = -bind_at_load -F$(FRAMEWORKS) \
 	-framework osg -framework osgUtil \
     -framework osgText -framework osgDB -framework OpenThreads -framework Producer \
 	-L$(FINK_LIB) -lnetcdf \
-	-framework xmlhelper $(MINI_LIB) \
+	-framework xmlhelper -framework unzip $(MINI_LIB) \
         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
 	-framework Carbon -lobjc -lm \
 	-Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS
 
-
-# Use these if you are not using osg frameworks
+# Use these instead if you are not using osg frameworks:
 # -losgDB -losgUtil -losgText -losg -lOpenThreads -lProducer
 
 all : $(OSX_APP)
@@ -58,7 +57,7 @@ all : $(OSX_APP)
 else
 LIBS   = -lvtosg -lvtdata \
          -lgdal -losgDB -losgUtil -losgText -losg -lProducer -lOpenThreads -lnetcdf \
-		 -lxmlhelper $(MINI_LIB) \
+		 -lxmlhelper -lunzip $(MINI_LIB) \
          $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lcurl -lbz2 -lm 
 
 all : $(EXEC)
