@@ -2,7 +2,7 @@
 // Name:     app.cpp
 // Purpose:  Example GLUT/vtlib application.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,13 @@
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtdata/vtLog.h"
+
+#define TEST_SNOW 0
+
+#if TEST_SNOW
+#include <osgParticle/PrecipitationEffect>
+#pragma comment(lib, "osgParticled.lib")
+#endif
 
 #ifdef __DARWIN_OSX__
  #import <GLUT/glut.h>
@@ -160,6 +167,16 @@ bool CreateScene()
 	// Begin creating the scene, including the sun and sky
 	vtGroup *pTopGroup = ts->BeginTerrainScene();
 
+#if TEST_SNOW
+	osgParticle::PrecipitationEffect *precipitationEffect = new osgParticle::PrecipitationEffect;
+	precipitationEffect->snow(1);
+	//precipitationEffect->rain(1);
+	vtTransform *xform = new vtTransform;
+	xform->Rotate2(FPoint3(1,0,0), -PID2f);
+	pTopGroup->AddChild(xform);
+	xform->GetOsgGroup()->addChild(precipitationEffect);
+#endif
+
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
 
@@ -193,6 +210,8 @@ bool CreateScene()
 	pScene->AddEngine(pConstrain);
 
 #if 1
+	// This example code demonstrates how to create colored lines, and it's
+	//  also useful for debugging vtlib ports to new scenegraphs.
 	vtHeightFieldGrid3d *grid = pTerr->GetHeightFieldGrid3d();
 	FRECT ext = grid->m_WorldExtents;
 	float minh, maxh;
