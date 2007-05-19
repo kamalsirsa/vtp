@@ -1,7 +1,7 @@
 //
 // vtString.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -166,6 +166,9 @@ public:
 
 	// replace occurrences of chOld with chNew
 	int Replace(char chOld, char chNew);
+	// replace occurrences of strOld with strNew
+	int Replace(const char *strOld, const char *strNew, bool bReplaceAll = false);
+
 	// remove occurrences of chRemove
 	int Remove(char chRemove);
 	// insert character at zero-based index; concatenates

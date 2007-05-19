@@ -1,7 +1,7 @@
 //
 // vtString.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -885,7 +885,6 @@ int vtString::Replace(char chOld, char chNew)
 	// short-circuit the nop case
 	if (chOld != chNew)
 	{
-
 		char *pszBuffer = m_pchData;
 
 		// otherwise modify each character that matches in the string
@@ -908,6 +907,47 @@ int vtString::Replace(char chOld, char chNew)
 		}
 	}
 	return nCount;
+}
+
+// replace occurrences of strOld with strNew
+int vtString::Replace(const char *strOld, const char *strNew, bool bReplaceAll)
+{
+    int iCount = 0;   // count of replacements made
+
+	char *pszBuffer = m_pchData;
+
+    size_t uiOldLen = strlen(strOld);
+    size_t uiNewLen = strlen(strNew);
+
+    size_t dwPos = 0;
+
+    while ( pszBuffer[dwPos] != 0 )
+    {
+        char *result = strstr(pszBuffer + dwPos, strOld);
+        if ( result == NULL )
+            break;                  // exit the loop
+        else
+        {
+			dwPos = result - pszBuffer;
+
+            //replace this occurance of the old string with the new one
+			*this = Left(dwPos) + strNew + Right(GetLength() - dwPos - uiOldLen);
+
+            //move up pos past the string that was replaced
+            dwPos += uiNewLen;
+
+			pszBuffer = m_pchData;
+
+            //increase replace count
+            ++iCount;
+
+            // stop now?
+            if ( !bReplaceAll )
+                break;                  // exit the loop
+        }
+    }
+
+    return iCount;
 }
 
 // remove occurrences of chRemove
