@@ -354,6 +354,10 @@ vtPlantAppearance3d *vtPlantSpecies3d::GetRandomAppearance()
 
 void vtPlantSpecies3d::CheckAvailability()
 {
+#if VTDEBUG
+	VTLOG(" species '%s' checking availability of %d appearances\n",
+		(const char *) m_szSciName, NumAppearances());
+#endif
 	for (unsigned int i = 0; i < NumAppearances(); i++)
 		GetAppearance(i)->CheckAvailability();
 }
@@ -451,6 +455,9 @@ vtPlantSpecies3d *vtSpeciesList3d::GetSpecies(unsigned int i) const
 
 int vtSpeciesList3d::CheckAvailability()
 {
+	VTLOG("vtSpeciesList3d checking availability of %d species.\n",
+		NumSpecies());
+
 	int num = 0;
 	for (unsigned int i = 0; i < NumSpecies(); i++)
 	{
