@@ -2,7 +2,7 @@
 // Name:	 EnviroApp.cpp
 // Purpose:  The application class for our wxWindows application.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,9 @@
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
+
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
@@ -166,12 +169,37 @@ bool EnviroApp::OnInit()
 	VTLOG1(__DATE__);
 	VTLOG1("\n\n");
 
-	if (!g_Options.ReadXML(STRING_APPNAME ".xml"))
-	{
-		// Look for older .ini file
-		g_Options.ReadINI(STRING_APPNAME ".ini");
+	// Look for the options file.  There are two supported places for it.
+	//  1. In the same directory as the executable.
+	//  2. On Windows, in the user's "Application Data" folder.
+	vtString OptionsFile = STRING_APPNAME ".xml";
+	vtString AppDataDir;
 
-		// We will always save to xml
+	bool bWindows = wxPlatformInfo::Get().GetPortId() == wxPORT_MSW;
+	bool bFound = FileExists(OptionsFile);
+	if (!bFound && bWindows)
+	{
+		wxFileName UserDir(wxStandardPaths::Get().GetUserConfigDir(), wxEmptyString);
+		wxFileName ConfigFileName(UserDir.GetPath(), wxT(STRING_APPNAME), wxT("xml"));
+		AppDataDir = (const char *)ConfigFileName.GetPath().mb_str(wxConvUTF8);
+		OptionsFile = (const char *)ConfigFileName.GetFullPath().mb_str(wxConvUTF8);
+		bFound = FileExists(OptionsFile);
+	}
+	if (bFound)
+	{
+		g_Options.ReadXML(OptionsFile);
+		g_Options.m_strFilename = OptionsFile;
+
+		if (bWindows)
+		{
+			// Supply the special symbol {appdata}
+			for (int i = 0; i < g_Options.m_DataPaths.size(); i++)
+				g_Options.m_DataPaths[i].Replace("{appdata}", AppDataDir);
+		}
+	}
+	else
+	{
+		// Not found anywhere.  Default to current directory.
 		g_Options.m_strFilename = STRING_APPNAME ".xml";
 	}
 
