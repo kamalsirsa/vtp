@@ -173,16 +173,20 @@ bool EnviroApp::OnInit()
 	//  1. In the same directory as the executable.
 	//  2. On Windows, in the user's "Application Data" folder.
 	vtString OptionsFile = STRING_APPNAME ".xml";
-	vtString AppDataDir;
+	vtString AppDataUser;
+	vtString AppDataCommon;
 
 	bool bWindows = wxPlatformInfo::Get().GetPortId() == wxPORT_MSW;
 	bool bFound = FileExists(OptionsFile);
 	if (!bFound && bWindows)
 	{
-		wxFileName UserDir(wxStandardPaths::Get().GetUserConfigDir(), wxEmptyString);
-		wxFileName ConfigFileName(UserDir.GetPath(), wxT(STRING_APPNAME), wxT("xml"));
-		AppDataDir = (const char *)ConfigFileName.GetPath().mb_str(wxConvUTF8);
-		OptionsFile = (const char *)ConfigFileName.GetFullPath().mb_str(wxConvUTF8);
+		wxString Dir1 = wxStandardPaths::Get().GetUserConfigDir();
+		wxString Dir2 = wxStandardPaths::Get().GetConfigDir();
+
+		AppDataUser = (const char *) Dir1.mb_str(wxConvUTF8);
+		AppDataCommon = (const char *) Dir2.mb_str(wxConvUTF8);
+
+		OptionsFile = AppDataUser + "/" + STRING_APPNAME ".xml";
 		bFound = FileExists(OptionsFile);
 	}
 	if (bFound)
@@ -192,9 +196,12 @@ bool EnviroApp::OnInit()
 
 		if (bWindows)
 		{
-			// Supply the special symbol {appdata}
-			for (int i = 0; i < g_Options.m_DataPaths.size(); i++)
-				g_Options.m_DataPaths[i].Replace("{appdata}", AppDataDir);
+			// Supply the special symbols {appdata} and {appdatacommon}
+			for (unsigned int i = 0; i < g_Options.m_DataPaths.size(); i++)
+			{
+				g_Options.m_DataPaths[i].Replace("{appdata}", AppDataUser);
+				g_Options.m_DataPaths[i].Replace("{appdatacommon}", AppDataCommon);
+			}
 		}
 	}
 	else
