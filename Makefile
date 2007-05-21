@@ -28,7 +28,7 @@ clobber :
 	cd TerrainApps && $(MAKE) clobber
 
 createpatch:
-	-cvs diff -up > "patch.`date`.txt"
+	-svn diff > "patch.`date`.txt"
 
 #
 # To use this target, call it with the name the patchfile, like this:

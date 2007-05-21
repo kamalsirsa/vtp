@@ -183,7 +183,7 @@ ifeq ($(OS),Darwin)
    CC        = gcc
    CXX       = g++
    AR        = ar ruv
-   COPT      = -g -O3 -Dunix=1 -D__DARWIN_OSX__ -fPIC -I$(FINK_INC)
+   COPT      = -g -O3 -Dunix=1 -D__DARWIN_OSX__ -fPIC -I$(FINK_INC) -F$(FRAMEWORKS)
    LD        = $(CXX)
    LD_SHARED = $(CXX) -dynamiclib
    LIB_EXT   = dynlib
@@ -287,8 +287,8 @@ ifeq ($(OS),Darwin)
 		cp osx/$(EXEC).icns $(OSX_APPS)/$(EXEC).app/Contents/Resources/; \
 	fi
 
-
-   %.framework: $(HEADERS) $(FRAMEWORKS)
+   %.framework: $(HEADERS)
+	-mkdir -p $(FRAMEWORKS)
 	-mkdir -p $*.framework/Versions/A 
 	-mkdir -p $*.framework/Headers
 	-if [ ! -h $*.framework/Versions/Current ] ; then \
@@ -298,7 +298,7 @@ ifeq ($(OS),Darwin)
 	       (cd $*.framework/Versions/Current && \
 		ln -s ../../../../../Shared Shared ); \
 	fi 
-	-cp $(HEADERS) $*.framework/Headers/
+	-cp -r $(HEADERS) $*.framework/Headers/
 
 endif
 #------------------------------------------------------------------------------

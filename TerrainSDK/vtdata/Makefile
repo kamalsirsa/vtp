@@ -12,6 +12,7 @@ IFLAGS = -I./shapelib \
          -I$(GDAL_INC) \
 	 -I$(VTP_ROOT)/TerrainSDK/
 
+HEADERS = $(CHEAD) $(CXXHEAD) ./shapelib
 
 ifeq ($(OS), Darwin)
 all : $(FRAMEWORK_LIB)

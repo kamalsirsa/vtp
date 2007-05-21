@@ -6,8 +6,8 @@ VTP_ROOT = $(shell cd ..; pwd)
 
 include $(VTP_ROOT)/Make.defs
 
-APPS = glutSimple wxSimple prSimple VTBuilder Enviro CManager
-
+APPS = glutSimple wxSimple VTBuilder Enviro CManager
+# prSimple is currently broken on OS X; per Ben. Removing it from the default targets.
 all:
 	for app in $(APPS); do              \
 	  cd $(VTP_ROOT)/TerrainApps/$$app; \
