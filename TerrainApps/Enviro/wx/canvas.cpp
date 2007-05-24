@@ -35,6 +35,7 @@ EVT_KEY_DOWN(vtGLCanvas::OnKeyDown)
 EVT_KEY_UP(vtGLCanvas::OnKeyUp)
 EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
 EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
+EVT_MOUSE_CAPTURE_LOST(vtGLCanvas::OnMouseCaptureLost)
 EVT_IDLE(vtGLCanvas::OnIdle)
 END_EVENT_TABLE()
 
@@ -49,6 +50,12 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 #endif
 {
 	VTLOG1("vtGLCanvas constructor\n");
+
+	m_bPainting = false;
+	m_bRunning = true;
+	m_bShowFrameRateChart = false;
+	m_bFirstPaint = true;
+	m_bCapture = false;
 
 	VTLOG1("vtGLCanvas: calling Show on parent\n");
 	parent->Show();
@@ -82,10 +89,6 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	VTLOG1("OpenGL renderer: ");
 	VTLOG1((const char *) glGetString(GL_RENDERER));
 	VTLOG1("\n");
-
-	m_bPainting = false;
-	m_bRunning = true;
-	m_bShowFrameRateChart = false;
 
 	for (int i = 0; i < 512; i++)
 		m_pbKeyState[i] = false;
@@ -121,15 +124,14 @@ void EnableContinuousRendering(bool bTrue)
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
-	static bool bFirstPaint = true;
-	if (bFirstPaint) VTLOG1("vtGLCanvas: first OnPaint\n");
+	if (m_bFirstPaint) VTLOG1("vtGLCanvas: first OnPaint\n");
 
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
 		// This is a dummy, to avoid an endless succession of paint messages.
 		// OnPaint handlers must always create a wxPaintDC.
-		if (bFirstPaint) VTLOG1("vtGLCanvas: creating a wxPaintDC on the stack\n");
+		if (m_bFirstPaint) VTLOG1("vtGLCanvas: creating a wxPaintDC on the stack\n");
 		wxPaintDC dc(this);
 	}
 
@@ -149,16 +151,16 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	SetCurrent();
 
 	// Render the Scene Graph
-	if (bFirstPaint) VTLOG1("vtGLCanvas: DoUpdate\n");
+	if (m_bFirstPaint) VTLOG1("vtGLCanvas: DoUpdate\n");
 	vtGetScene()->DoUpdate();
 
 	if (m_bShowFrameRateChart)
 		vtGetScene()->DrawFrameRateChart();
 
-	if (bFirstPaint) VTLOG1("vtGLCanvas: SwapBuffers\n");
+	if (m_bFirstPaint) VTLOG1("vtGLCanvas: SwapBuffers\n");
 	SwapBuffers();
 
-	if (bFirstPaint) VTLOG1("vtGLCanvas: update status bar\n");
+	if (m_bFirstPaint) VTLOG1("vtGLCanvas: update status bar\n");
 	EnviroFrame *frame = (EnviroFrame*) GetParent();
 
 	// update the status bar every 1/10 of a second
@@ -179,8 +181,8 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	// Reset the number of mousemoves we've gotten since last redraw
 	m_iConsecutiveMousemoves = 0;
 
-	if (bFirstPaint)
-		bFirstPaint = false;
+	if (m_bFirstPaint)
+		m_bFirstPaint = false;
 }
 
 void vtGLCanvas::OnClose(wxCloseEvent& event)
@@ -245,8 +247,6 @@ void vtGLCanvas::OnKeyUp(wxKeyEvent& event)
 
 void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 {
-	static bool bCapture = false;
-
 	// turn WX mouse event into a VT mouse event
 	vtMouseEvent event;
 	wxEventType  ev = event1.GetEventType();
@@ -282,11 +282,11 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 
 	if (ev == wxEVT_LEFT_DOWN || ev == wxEVT_MIDDLE_DOWN || ev == wxEVT_RIGHT_DOWN)
 	{
-//		VTLOG("DOWN: capture %d", bCapture);
-		if (!bCapture)
+//		VTLOG("DOWN: capture %d", m_bCapture);
+		if (!m_bCapture)
 		{
 			CaptureMouse();
-			bCapture = true;
+			m_bCapture = true;
 //			VTLOG(" -> true");
 		}
 //		VTLOG("\n");
@@ -294,10 +294,11 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	if (ev == wxEVT_LEFT_UP || ev == wxEVT_MIDDLE_UP || ev == wxEVT_RIGHT_UP)
 	{
 //		VTLOG("  UP: capture %d", bCapture);
-		if (bCapture)
+		// Only clear capture when no buttons are pressed
+		if (m_bCapture && !event1.LeftIsDown() && !event1.MiddleIsDown() && !event1.RightIsDown())
 		{
 			ReleaseMouse();
-			bCapture = false;
+			m_bCapture = false;
 //			VTLOG(" -> false");
 		}
 //		VTLOG("\n");
@@ -336,6 +337,19 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
 {
 	// Do nothing, to avoid flashing.
+}
+
+void vtGLCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event1)
+{
+	m_bCapture = false;
+
+	// When capture is lost, we won't get mouse events anymore.
+	// That means we won't know when a mouse button goes up or down, so 
+	//  Enviro might think that a button is still down even when the focus
+	//  comes back, when the button isn't down.
+	// If we get this event, should we let the app know that any mouse
+	//  buttons which were down are no longer down?  Not necessarily.
+	//  They might in fact still be down. There is not a clear good solution.
 }
 
 void vtGLCanvas::OnIdle(wxIdleEvent &event)
