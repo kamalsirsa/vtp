@@ -208,6 +208,8 @@ bool EnviroApp::OnInit()
 	{
 		// Not found anywhere.  Default to current directory.
 		g_Options.m_strFilename = STRING_APPNAME ".xml";
+		// And to default data path
+		g_Options.m_DataPaths.push_back(vtString("../Data/"));
 	}
 
 	VTLOG("Datapaths:\n");
