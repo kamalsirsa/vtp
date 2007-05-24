@@ -44,9 +44,12 @@ EnviroOptions g_Options;
 
 EnviroOptions::EnviroOptions()
 {
+	// Provide defaults
+	m_bEarthView = false;
 	m_strEarthImage = "ev11656_512";
 
 	m_bStartInNeutral = false;
+
 	m_bFullscreen = false;
 	m_bStereo = false;
 	m_iStereoMode = 0;
@@ -54,8 +57,10 @@ EnviroOptions::EnviroOptions()
 	m_WinSize.Set(800, 600);
 	m_bLocationInside = false;
 
-	m_bDisableModelMipmaps = false;
+	m_bHtmlpane = false;
+	m_bFloatingToolbar = false;
 	m_bTextureCompression = true;
+	m_bDisableModelMipmaps = false;
 
 	m_bDirectPicking = false;
 	m_fSelectionCutoff = 10.0f;
@@ -63,6 +68,7 @@ EnviroOptions::EnviroOptions()
 	m_fCursorThickness = 0.025f;
 
 	m_fPlantScale = 1.0f;
+	m_bShadows = false;
 	m_bOnlyAvailableSpecies = true;
 	m_fCatenaryFactor = 140.0f;
 
