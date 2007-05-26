@@ -23,6 +23,13 @@
 
 DECLARE_APP(EnviroApp)
 
+#define LOG_MOUSE_CAPTURE	0
+#if LOG_MOUSE_CAPTURE
+#define VTLOGCAP VTLOG
+#else
+#define VTLOGCAP
+#endif
+
 /*
  * vtGLCanvas implementation
  */
@@ -282,26 +289,27 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 
 	if (ev == wxEVT_LEFT_DOWN || ev == wxEVT_MIDDLE_DOWN || ev == wxEVT_RIGHT_DOWN)
 	{
-//		VTLOG("DOWN: capture %d", m_bCapture);
+		VTLOGCAP("DOWN: capture %d", m_bCapture);
 		if (!m_bCapture)
 		{
 			CaptureMouse();
 			m_bCapture = true;
-//			VTLOG(" -> true");
+			VTLOGCAP(" -> true");
 		}
-//		VTLOG("\n");
+		VTLOGCAP("\n");
 	}
 	if (ev == wxEVT_LEFT_UP || ev == wxEVT_MIDDLE_UP || ev == wxEVT_RIGHT_UP)
 	{
-//		VTLOG("  UP: capture %d", bCapture);
-		// Only clear capture when no buttons are pressed
-		if (m_bCapture && !event1.LeftIsDown() && !event1.MiddleIsDown() && !event1.RightIsDown())
+		VTLOGCAP("  UP: capture %d, isdown %d %d %d", m_bCapture,
+			event1.LeftIsDown(), event1.MiddleIsDown(), event1.RightIsDown());
+
+		if (m_bCapture)
 		{
 			ReleaseMouse();
 			m_bCapture = false;
-//			VTLOG(" -> false");
+			VTLOGCAP(" -> false");
 		}
-//		VTLOG("\n");
+		VTLOGCAP("\n");
 	}
 
 	// Because of the way the event pump works, if it takes too long to
@@ -341,6 +349,7 @@ void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
 
 void vtGLCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event1)
 {
+	VTLOGCAP("MouseCaptureLost, capture -> false\n");
 	m_bCapture = false;
 
 	// When capture is lost, we won't get mouse events anymore.
