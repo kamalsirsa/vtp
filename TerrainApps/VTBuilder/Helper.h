@@ -1,7 +1,7 @@
 //
 // Helper.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -78,5 +78,10 @@ protected:
 };
 
 #endif	// USE_OPENGL
+
+#if SUPPORT_SQUISH
+void DoTextureSquish(unsigned char *rgb_bytes, MiniDatabuf &output_buf, bool bFast);
+#endif
+
 #endif	// HELPERH
 

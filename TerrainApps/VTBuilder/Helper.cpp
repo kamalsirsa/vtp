@@ -1,7 +1,7 @@
 //
-// Helper.cpp - various helper functions used by the classes
+// Helper.cpp - various helper functions used by VTBuilder
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,14 @@
 #include "Helper.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/MiniDatabuf.h"
+
+#if SUPPORT_SQUISH
+#include "squish.h"
+#ifdef _MSC_VER
+	#pragma message( "Adding link with squish.lib" )
+	#pragma comment( lib, "squish.lib" )
+#endif
+#endif
 
 //////////////////////////////////
 
@@ -362,7 +370,70 @@ void ImageGLCanvas::OnSize(wxSizeEvent& event)
 {
 	glViewport(0, 0, event.m_size.x, event.m_size.y);
 }
-
 #endif	// USE_OPENGL
 
+
+///////////////////////////////////////////////////////////////////////
+// As an alternative to using OpenGL for texture compression, use the
+//  Squish library if available.
+//
+#if SUPPORT_SQUISH
+using namespace squish;
+
+void DoTextureSquish(unsigned char *rgb_bytes, MiniDatabuf &output_buf, bool bFast)
+{
+	int flags = kDxt1;
+
+	if (bFast)
+	{
+		//! Use a fast but low quality colour compressor.
+		flags |= kColourRangeFit;
+	}
+	else
+	{
+		//! Use a slow but very high quality colour compressor.
+		flags |= kColourClusterFit;	
+	}
+
+	int bytesPerBlock = ( ( flags & kDxt1 ) != 0 ) ? 8 : 16;
+	int targetDataSize = bytesPerBlock*output_buf.xsize*output_buf.ysize/16;
+	int stride = output_buf.xsize * 3;
+
+	output_buf.type = 5;	// compressed RGB
+	output_buf.bytes = targetDataSize;
+	output_buf.data = malloc(targetDataSize);
+
+	// loop over blocks and compress them
+	u8* targetBlock = (u8 *) output_buf.data;
+	for( unsigned int y = 0; y < output_buf.ysize; y += 4 )
+	{
+		// process a row of blocks
+		for( unsigned int x = 0; x < output_buf.xsize; x += 4 )
+		{
+			// get the block data
+			u8 sourceRgba[16*4];
+
+			for( int py = 0, i = 0; py < 4; ++py )
+			{
+				u8 const *row = rgb_bytes + (y + py)*stride + (x*3);
+				for( int px = 0; px < 4; ++px, ++i )
+				{
+					// get the pixel colour 
+					for( int j = 0; j < 3; ++j )
+						sourceRgba[4*i + j] = *row++;
+					
+					// skip alpha for now
+					sourceRgba[4*i + 3] = 255;
+				}
+			}
+			
+			// compress this block
+			Compress( sourceRgba, targetBlock, flags );
+			
+			// advance
+			targetBlock += bytesPerBlock;
+		}
+	}
+}
+#endif	// SUPPORT_SQUISH
 
