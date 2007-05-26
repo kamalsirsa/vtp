@@ -48,12 +48,13 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 #if SUPPORT_PTHREADING
    const int numthreads = 1;
    pthread_t pthread[numthreads];
-   pthread_mutex_t mutex;
+   pthread_mutex_t mutex,iomutex;
    pthread_attr_t attr;
 
    void threadinit()
       {
       pthread_mutex_init(&mutex,NULL);
+	  pthread_mutex_init(&iomutex,NULL);
 
       pthread_attr_init(&attr);
       pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
@@ -62,6 +63,7 @@ static vtTiledGeom *s_pTiledGeom = NULL;
    void threadexit()
       {
       pthread_mutex_destroy(&mutex);
+	  pthread_mutex_destroy(&iomutex);
       pthread_attr_destroy(&attr);
       }
 
@@ -79,6 +81,12 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 
    void unlock_cs(void *data)
       {pthread_mutex_unlock(&mutex);}
+
+	void lock_io(void *data)
+	  {pthread_mutex_lock(&iomutex);}
+
+	void unlock_io(void *data)
+	  {pthread_mutex_unlock(&iomutex);}
 #endif
 #if USE_OPENTHREADS
    const int numthreads = 1;
@@ -682,7 +690,9 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 	//	m_pDataCloud->setmaxsize(512.0);
 		m_pDataCloud->setmaxsize(0);
 
-		m_pDataCloud->setthread(startthread, NULL, jointhread, lock_cs, unlock_cs);
+		m_pDataCloud->setthread(startthread, NULL, jointhread,
+			lock_cs, unlock_cs,
+			lock_io, unlock_io);
 		m_pDataCloud->setmulti(numthreads);
 
 		threadinit();
