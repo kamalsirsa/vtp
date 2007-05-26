@@ -57,5 +57,14 @@
 #define SUPPORT_WSTRING	1
 #endif
 
+// Use the 'squish' texture compression library, 
+//
+// The library is free (MIT license) and available from:
+// http://sjbrown.co.uk/?code=squish
+//
+#ifndef SUPPORT_SQUISH
+#define SUPPORT_SQUISH	1
+#endif
+
 #endif // CONFIG_VTDATA_H
 
