@@ -45,6 +45,11 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pView = NULL;
 	m_bElev = false;
 
+	m_bCompressNone = true;
+	m_bCompressOGL = false;
+	m_bCompressSquishFast = false;
+	m_bCompressSquishSlow = false;
+
 	AddValidator(ID_TEXT_TO_FOLDER, &m_strToFile);
 	AddNumValidator(ID_COLUMNS, &m_iColumns);
 	AddNumValidator(ID_ROWS, &m_iRows);
@@ -65,9 +70,15 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_CURY, &m_fCurY);
 
 	AddValidator(ID_OMIT_FLAT, &m_bOmitFlatTiles);
-	AddValidator(ID_USE_COMPRESS, &m_bUseTextureCompression);
+
+	AddValidator(ID_TC_NONE, &m_bCompressNone);
+	AddValidator(ID_TC_OGL, &m_bCompressOGL);
+	AddValidator(ID_TC_SQUISH_FAST, &m_bCompressSquishFast);
+	AddValidator(ID_TC_SQUISH_SLOW, &m_bCompressSquishSlow);
 
 	UpdateEnables();
+
+	TransferDataToWindow();
 }
 
 void TileDlg::SetElevation(bool bElev)
@@ -108,7 +119,14 @@ void TileDlg::SetTilingOptions(TilingOptions &opt)
 	m_iLOD0Size = opt.lod0size;
 	m_iNumLODs = opt.numlods;
 	m_bOmitFlatTiles = opt.bOmitFlatTiles;
-	m_bUseTextureCompression = opt.bUseTextureCompression;
+
+	m_bCompressNone = !opt.bUseTextureCompression;
+	if (opt.bUseTextureCompression)
+	{
+		m_bCompressOGL = (opt.eCompressionType == TC_OPENGL);
+		m_bCompressSquishFast = (opt.eCompressionType == TC_SQUISH_FAST);
+		m_bCompressSquishSlow = (opt.eCompressionType == TC_SQUISH_SLOW);
+	}
 
 	m_iLODChoice = vt_log2(m_iLOD0Size)-5;
 
@@ -123,7 +141,11 @@ void TileDlg::GetTilingOptions(TilingOptions &opt) const
 	opt.numlods = m_iNumLODs;
 	opt.fname = m_strToFile.mb_str(wxConvUTF8);
 	opt.bOmitFlatTiles = m_bOmitFlatTiles;
-	opt.bUseTextureCompression = m_bUseTextureCompression;
+
+	opt.bUseTextureCompression = !m_bCompressNone;
+	if (m_bCompressOGL) opt.eCompressionType = TC_OPENGL;
+	if (m_bCompressSquishFast) opt.eCompressionType = TC_SQUISH_FAST;
+	if (m_bCompressSquishSlow) opt.eCompressionType = TC_SQUISH_SLOW;
 }
 
 void TileDlg::SetArea(const DRECT &area)
@@ -169,10 +191,21 @@ void TileDlg::UpdateEnables()
 	FindWindow(wxID_OK)->Enable(m_strToFile != _T(""));
 
 	FindWindow(ID_OMIT_FLAT)->Enable(m_bElev);
+
+	FindWindow(ID_TC_NONE)->Enable(!m_bElev);
+
 #if USE_OPENGL
-	FindWindow(ID_USE_COMPRESS)->Enable(!m_bElev);
+	FindWindow(ID_TC_OGL)->Enable(!m_bElev);
 #else
-	FindWindow(ID_USE_COMPRESS)->Enable(false);
+	FindWindow(ID_TC_OGL)->Enable(false);
+#endif
+
+#if SUPPORT_SQUISH
+	FindWindow(ID_TC_SQUISH_FAST)->Enable(!m_bElev);
+	FindWindow(ID_TC_SQUISH_SLOW)->Enable(!m_bElev);
+#else
+	FindWindow(ID_TC_SQUISH_FAST)->Enable(false);
+	FindWindow(ID_TC_SQUISH_SLOW)->Enable(false);
 #endif
 }
 

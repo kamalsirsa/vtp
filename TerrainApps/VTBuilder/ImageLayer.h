@@ -76,8 +76,7 @@ public:
 		int iMetersPerPixel, int iUTMZone, const char *filename);
 	bool WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pView);
 	bool WriteTile(const TilingOptions &opts, BuilderView *pView, vtString &dirname,
-		DRECT &tile_area, DPoint2 &tile_dim, int col, int row, int lod,
-		bool bCompress);
+		DRECT &tile_area, DPoint2 &tile_dim, int col, int row, int lod);
 
 protected:
 	void SetDefaults();

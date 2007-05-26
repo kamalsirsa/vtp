@@ -1267,11 +1267,10 @@ int GetBitDepthUsingGDAL(const char *fname)
 bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pView)
 {
 	wxFrame *frame = NULL;
-	bool bCompress = false;
+
 #if USE_OPENGL
-	if (opts.bUseTextureCompression)
+	if (opts.bUseTextureCompression && opts.eCompressionType == TC_OPENGL)
 	{
-		bCompress = true;
 		frame = new wxFrame;
 		frame->Create(pView, -1, _T("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
@@ -1351,7 +1350,7 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 			for (lod = 0; lod < opts.numlods && !bCancelled; lod++)
 			{
 				if (!WriteTile(opts, pView, dirname, tile_area, tile_dim,
-					col, row, lod, bCompress))
+					col, row, lod))
 					bCancelled = true;
 			}
 		}
@@ -1385,8 +1384,7 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 }
 
 bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString &dirname,
-							 DRECT &tile_area, DPoint2 &tile_dim, int col, int row, int lod,
-							 bool bCompress)
+							 DRECT &tile_area, DPoint2 &tile_dim, int col, int row, int lod)
 {
 	int tilesize = opts.lod0size >> lod;
 
@@ -1464,26 +1462,33 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 	output_buf.tsteps = 1;
 	output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 
-	if (bCompress)
+	if (opts.bUseTextureCompression)
 	{
-#if USE_OPENGL
 		// Compressed
-		DoTextureCompress(rgb_bytes, output_buf, m_pCanvas->m_iTex);
+		if (opts.eCompressionType == TC_OPENGL)
+		{
+#if USE_OPENGL
+			DoTextureCompress(rgb_bytes, output_buf, m_pCanvas->m_iTex);
 
-		output_buf.savedata(fname);
-		free(output_buf.data);
-		output_buf.data = NULL;
+			output_buf.savedata(fname);
+			free(output_buf.data);
+			output_buf.data = NULL;
 
-		if (tilesize == 256)
-			m_pCanvas->Refresh(false);
+			if (tilesize == 256)
+				m_pCanvas->Refresh(false);
 #endif
-#if 0
-		DoTextureSquish(rgb_bytes, output_buf);
+		}
+		else if (opts.eCompressionType == TC_SQUISH_FAST ||
+			opts.eCompressionType == TC_SQUISH_SLOW)
+		{
+#if SUPPORT_SQUISH
+			DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
 
-		output_buf.savedata(fname);
-		free(output_buf.data);
-		output_buf.data = NULL;
+			output_buf.savedata(fname);
+			free(output_buf.data);
+			output_buf.data = NULL;
 #endif
+		}
 	}
 	else
 	{

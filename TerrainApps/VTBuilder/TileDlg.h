@@ -62,7 +62,10 @@ public:
 	double m_fCurY;
 
 	bool m_bOmitFlatTiles;
-	bool m_bUseTextureCompression;
+	bool m_bCompressNone;
+	bool m_bCompressOGL;
+	bool m_bCompressSquishFast;
+	bool m_bCompressSquishSlow;
 
 	DRECT m_area;
 	bool m_bSetting;

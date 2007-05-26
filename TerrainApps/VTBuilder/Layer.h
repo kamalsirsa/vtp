@@ -165,6 +165,8 @@ public:
 	vtString m_strColorMapFile;
 };
 
+enum TextureCompressionType { TC_OPENGL, TC_SQUISH_FAST, TC_SQUISH_SLOW };
+
 struct TilingOptions
 {
 	int cols, rows;
@@ -180,6 +182,7 @@ struct TilingOptions
 
 	bool bOmitFlatTiles;
 	bool bUseTextureCompression;
+	TextureCompressionType eCompressionType;
 };
 
 ////////////////////

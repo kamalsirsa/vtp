@@ -282,32 +282,35 @@ const int ID_TOTALY = 10194;
 const int ID_CURX = 10195;
 const int ID_CURY = 10196;
 const int ID_OMIT_FLAT = 10197;
-const int ID_USE_COMPRESS = 10198;
+const int ID_TC_NONE = 10198;
+const int ID_TC_OGL = 10199;
+const int ID_TC_SQUISH_FAST = 10200;
+const int ID_TC_SQUISH_SLOW = 10201;
 wxSizer *TileDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_RADIO_SHADING_NONE = 10199;
-const int ID_RADIO_SHADING_QUICK = 10200;
-const int ID_RADIO_SHADING_DOT = 10201;
-const int ID_SPIN_CAST_ANGLE = 10202;
-const int ID_SPIN_CAST_DIRECTION = 10203;
-const int ID_CHECK_SHADOWS = 10204;
+const int ID_RADIO_SHADING_NONE = 10202;
+const int ID_RADIO_SHADING_QUICK = 10203;
+const int ID_RADIO_SHADING_DOT = 10204;
+const int ID_SPIN_CAST_ANGLE = 10205;
+const int ID_SPIN_CAST_DIRECTION = 10206;
+const int ID_CHECK_SHADOWS = 10207;
 wxSizer *RenderOptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_EXTENT1 = 10205;
-const int ID_EXTENT2 = 10206;
-const int ID_MATCH_LAYER = 10207;
-const int ID_LAYER_RES = 10208;
-const int ID_GROW = 10209;
-const int ID_SHRINK = 10210;
-const int ID_TILE_SIZE = 10211;
-const int ID_SIZE_SPIN = 10212;
+const int ID_EXTENT1 = 10208;
+const int ID_EXTENT2 = 10209;
+const int ID_MATCH_LAYER = 10210;
+const int ID_LAYER_RES = 10211;
+const int ID_GROW = 10212;
+const int ID_SHRINK = 10213;
+const int ID_TILE_SIZE = 10214;
+const int ID_SIZE_SPIN = 10215;
 wxSizer *MatchDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_RADIO1 = 10213;
-const int ID_RADIO2 = 10214;
-const int ID_RADIO3 = 10215;
-const int ID_RADIO4 = 10216;
-const int ID_RADIO5 = 10217;
+const int ID_RADIO1 = 10216;
+const int ID_RADIO2 = 10217;
+const int ID_RADIO3 = 10218;
+const int ID_RADIO4 = 10219;
+const int ID_RADIO5 = 10220;
 wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
