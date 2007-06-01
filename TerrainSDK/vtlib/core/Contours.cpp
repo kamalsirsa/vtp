@@ -63,7 +63,7 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 	m_fHeight = fHeight;
 
 	// Create material and geometry to contain the vector geometry
-	vtMaterialArray *pMats = new vtMaterialArray();
+	vtMaterialArray *pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(color, false, false, true);
 
 	m_pGeom = new vtGeom;

@@ -357,7 +357,7 @@ vtMaterial *InputSOG::ReadMaterial(FILE *fp)
 
 	assert(token == FT_MATERIAL);
 	fread(&components, 2, 1, fp);
-	vtMaterial *pMat = new vtMaterial();
+	vtMaterial *pMat = new vtMaterial;
 
 	for (i = 0; i < components; i++)
 	{
@@ -535,7 +535,7 @@ bool InputSOG::ReadContents(FILE *fp, vtGroup *Parent)
 		return false;
 	fread(&num_mat, 2, 1, fp);
 
-	vtMaterialArray	*pMats = new vtMaterialArray();
+	vtMaterialArray	*pMats = new vtMaterialArray;
 	vtMaterial *pMat;
 
 	for (j = 0; j < num_mat; j++)
@@ -569,7 +569,7 @@ vtGeom *InputSOG::ReadGeometry(FILE *fp, vtMaterialArray *pMats)
 	assert(token == FT_GEOMETRY);
 	fread(&components, 2, 1, fp);
 
-	vtGeom *pGeom = new vtGeom();
+	vtGeom *pGeom = new vtGeom;
 	vtMesh *pMesh;
 
 	pGeom->SetMaterials(pMats);

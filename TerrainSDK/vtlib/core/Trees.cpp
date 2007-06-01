@@ -114,7 +114,7 @@ void vtPlantAppearance3d::LoadAndCreate()
 		VTLOG("\tLoading plant texture '%s' ", (const char *) m_filename);
 		vtString fname = FindPlantModel(m_filename);
 
-		m_pMats = new vtMaterialArray();
+		m_pMats = new vtMaterialArray;
 
 		// create textured appearance
 		m_iMatIdx = m_pMats->AddTextureMaterial2(fname,
@@ -239,7 +239,7 @@ bool vtPlantAppearance3d::GenerateGeom(vtTransform *container)
 {
 	if (m_eType == AT_BILLBOARD)
 	{
-		vtGeom *pGeom = new vtGeom();
+		vtGeom *pGeom = new vtGeom;
 		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(m_pMesh, m_iMatIdx);
 		container->AddChild(pGeom);
@@ -395,7 +395,7 @@ vtSpeciesList3d &vtSpeciesList3d::operator=(const vtSpeciesList &v)
 	for (int i = 0; i < sp; i++)
 	{
 		vtPlantSpecies *pOld = v.GetSpecies(i);
-		vtPlantSpecies3d *pNew = new vtPlantSpecies3d();
+		vtPlantSpecies3d *pNew = new vtPlantSpecies3d;
 		*pNew = *pOld;
 		m_Species.Append((vtPlantSpecies *) pNew);
 	}
@@ -614,7 +614,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(unsigned int i)
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 	if (!inst3d)
 	{
-		inst3d = new vtPlantInstance3d();
+		inst3d = new vtPlantInstance3d;
 		m_Instances3d.SetAt(i, inst3d);
 	}
 
@@ -630,7 +630,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(unsigned int i)
 	pApp->LoadAndCreate();
 
 	if (!inst3d->m_pContainer)
-		inst3d->m_pContainer = new vtTransform();
+		inst3d->m_pContainer = new vtTransform;
 
 	pApp->GenerateGeom(inst3d->m_pContainer);
 

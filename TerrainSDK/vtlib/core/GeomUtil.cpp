@@ -40,8 +40,8 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	}
 
 	// Add the geometry and materials to the shape
-	vtGeom *pGeom = new vtGeom();
-	vtMaterialArray *pMats = new vtMaterialArray();
+	vtGeom *pGeom = new vtGeom;
+	vtMaterialArray *pMats = new vtMaterialArray;
 
 	pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true, true, false, fAlpha);
 	pMats->AddRGBMaterial1(RGBf(0.0f, 1.0f, 0.0f), true, true, false, fAlpha);

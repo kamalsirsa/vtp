@@ -128,7 +128,7 @@ void LocationVisitor::startElement(const char *name, const XMLAttributes &atts)
 {
 	if (m_level == 1 && !strcmp(name, "location"))
 	{
-		m_loc = new vtLocation();
+		m_loc = new vtLocation;
 		m_level = 2;
 	}
 	if (m_level == 0 && !strcmp(name, "locations-file"))
@@ -222,7 +222,7 @@ bool vtLocationSaver::StoreTo(unsigned int num, const LocNameString &name)
 	if (num < m_loc.GetSize())
 		loc = m_loc.GetAt(num);
 	else
-		loc = new vtLocation();
+		loc = new vtLocation;
 
 	// Get terrain coordinates for position and direction from the vtTransform
 	FMatrix4 mat;

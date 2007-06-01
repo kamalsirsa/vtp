@@ -64,7 +64,7 @@ void vtLodGrid::AllocateCell(int a, int b)
 {
 	int i = index(a,b);
 
-	m_pCells[i] = new vtLOD();
+	m_pCells[i] = new vtLOD;
 	vtString name;
 	name.Format("LOD cell %d %d", a, b);
 	m_pCells[i]->SetName2(name);
@@ -82,7 +82,7 @@ void vtLodGrid::AllocateCell(int a, int b)
 	if (m_pHeightField)
 		m_pHeightField->FindAltitudeAtPoint(lod_center, lod_center.y);
 
-	vtGroup *group = new vtGroup();
+	vtGroup *group = new vtGroup;
 	group->SetName2("LOD group");
 	m_pCells[i]->SetCenter(lod_center);
 	m_pCells[i]->AddChild(group);

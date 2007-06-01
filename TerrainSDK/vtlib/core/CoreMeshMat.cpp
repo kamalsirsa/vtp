@@ -797,7 +797,7 @@ int vtMaterialArrayBase::AddTextureMaterial(vtImage *pImage,
 						 bool bTexGen, bool bClamp,
 						 bool bMipMap)
 {
-	vtMaterial *pMat = new vtMaterial();
+	vtMaterial *pMat = new vtMaterial;
 	pMat->SetTexture(pImage);
 	pMat->SetCulling(bCulling);
 	pMat->SetLighting(bLighting);
@@ -879,7 +879,7 @@ int vtMaterialArrayBase::AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient
 					 bool bCulling, bool bLighting, bool bWireframe,
 					 float fAlpha, float fEmissive)
 {
-	vtMaterial *pMat = new vtMaterial();
+	vtMaterial *pMat = new vtMaterial;
 	pMat->SetCulling(bCulling);
 	pMat->SetLighting(bLighting);
 	pMat->SetWireframe(bWireframe);
@@ -938,7 +938,7 @@ int vtMaterialArrayBase::AddRGBMaterial1(const RGBf &diffuse,
  */
 void vtMaterialArrayBase::AddShadowMaterial(float fOpacity)
 {
-	vtMaterial *pMat = new vtMaterial();
+	vtMaterial *pMat = new vtMaterial;
 	pMat->SetCulling(true);
 	pMat->SetLighting(false);
 	pMat->SetTransparent(true);
@@ -958,7 +958,7 @@ void vtMaterialArrayBase::CopyFrom(vtMaterialArrayBase *pFrom)
 	for (int i = 0; i < num; i++)
 	{
 		vtMaterial *pMat1 = pFrom->GetAt(i);
-		vtMaterial *pMat2 = new vtMaterial();
+		vtMaterial *pMat2 = new vtMaterial;
 		pMat2->CopyFrom(pMat1);
 		AppendMaterial(pMat2);
 	}

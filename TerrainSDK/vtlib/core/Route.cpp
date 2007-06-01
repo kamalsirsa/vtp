@@ -148,7 +148,7 @@ int vtRoute::m_mi_wire;
 
 void vtRoute::_CreateMaterials()
 {
-	m_pRouteMats = new vtMaterialArray();
+	m_pRouteMats = new vtMaterialArray;
 
 	// add wire material (0)
 	m_mi_wire = m_pRouteMats->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse

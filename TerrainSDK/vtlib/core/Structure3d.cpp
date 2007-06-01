@@ -164,7 +164,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	if (!m_pContainer)
 	{
 		// constructing for the first time
-		m_pContainer = new vtTransform();
+		m_pContainer = new vtTransform;
 		m_pContainer->SetName2("instance container");
 	}
 	m_pContainer->AddChild(m_pModel);
@@ -679,7 +679,7 @@ void vtStructure3d::ReleaseSharedMaterials()
 vtMaterial *vtMaterialDescriptorArray3d::MakeMaterial(vtMaterialDescriptor *desc,
 													  const RGBf &color)
 {
-	vtMaterial *pMat = new vtMaterial();
+	vtMaterial *pMat = new vtMaterial;
 	if (desc->GetAmbient())
 	{
 		// a purely ambient material
