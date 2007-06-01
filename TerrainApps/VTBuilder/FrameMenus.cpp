@@ -3619,6 +3619,19 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += _T("ben@vterrain.org\n");
 	str += _("Build date: ");
 	str += wxString(__DATE__, wxConvUTF8);
+	str += _T("\n");
+
+#if defined(_MSC_VER) && defined(_DEBUG)	// == 1300 for VC7.1
+	_CrtMemState state;
+	_CrtMemCheckpoint(&state);
+	int iAllocated = state.lSizes[1] + state.lSizes[2];
+	wxString str3;
+	str3.Printf(_T("Memory in use: %d bytes (%.0fK, %.1fMB)"), iAllocated,
+		(float)iAllocated/1024, (float)iAllocated/1024/1024);
+	str += _T("\n");
+	str += str3;
+#endif
+
 	wxString str2 = _("About ");
 	str2 += wxString(APPNAME, wxConvUTF8);
 	wxMessageBox(str, str2);
