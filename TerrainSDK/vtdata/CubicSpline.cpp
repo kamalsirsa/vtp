@@ -3,7 +3,7 @@
 //
 // Originally adapted from some LGPL code found around the net.
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -128,7 +128,18 @@ bool CubicSpline::Generate()
 		// identical points are not allowed, because a curve through them is
 		//  not mathematically defined
 		if (h[i] == 0.0)
+		{
+			delete [] h;
+			delete [] ih;
+			delete [] a;
+			delete [] dvec;
+			delete [] m;
+			delete [] l;
+			delete [] yvec;
+			delete [] xvec;
+			delete [] invec;
 			return false;
+		}
 
 		ih[i] = 1.0 / h[i];
 	}
