@@ -1,7 +1,7 @@
 //
 // TerrainLayers.h
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -59,6 +59,7 @@ class LayerSet : public vtArray<vtLayer *>
 {
 public:
 	void Remove(vtLayer *lay);
+	vtLayer *FindByName(const vtString &name);
 	vtStructureLayer *FindStructureFromNode(vtNode* pNode, int &iOffset);
 };
 

@@ -23,6 +23,16 @@ void LayerSet::Remove(vtLayer *lay)
 	}
 }
 
+vtLayer *LayerSet::FindByName(const vtString &name)
+{
+	for (unsigned int i = 0; i < GetSize(); i++)
+	{
+		if (GetAt(i)->GetLayerName() == name)
+			return GetAt(i);
+	}
+	return NULL;
+}
+
 vtStructureLayer *LayerSet::FindStructureFromNode(vtNode* pNode, int &iOffset)
 {
 	iOffset = -1;
