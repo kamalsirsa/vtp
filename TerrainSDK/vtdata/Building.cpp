@@ -5,7 +5,7 @@
 // This is can be a single building, or any single artificial structure
 // such as a wall or fence.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -69,6 +69,7 @@ vtEdge::vtEdge(const vtEdge &lhs)
 	for (unsigned int i = 0; i < lhs.m_Features.size(); i++)
 		m_Features.push_back(lhs.m_Features[i]);
 	m_pMaterial = lhs.m_pMaterial;
+	m_Facade = lhs.m_Facade;
 }
 
 void vtEdge::Set(int iDoors, int iWindows, const char *material)
