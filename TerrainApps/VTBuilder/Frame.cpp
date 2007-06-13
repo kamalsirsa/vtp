@@ -346,25 +346,22 @@ void MainFrame::CheckForGDALAndWarn()
 
 	has2 = FindPROJ4Data(dpp, (const char*)dpp[0]);
 
-	VTLOG("GDAL/PROJ tests has: %d %d\n", has1, has2);
-
+	vtStringArray dpso;
+#ifdef __WXMAC__
+	dpso.push_back(vtString("./Shared/lib/"));
+	dpso.push_back(vtString("/usr/local/lib/"));
+#endif
+#if defined(__WXGTK__) || defined(__WXMOTIF__) 
+	dpso.push_back(vtString("/usr/local/lib/"));
+#endif
+#ifdef WIN32
+	dpso.push_back(vtString("."));
+#endif
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	// confirm ability to transform cooridates
-	// (Test that the PROJ .so/.dll is found and functional)
-	VTLOG1("Testing ability to create coordinate transforms.\n");
-	vtProjection proj1, proj2;
-	proj1.SetUTM(1);
-	proj2.SetUTM(2);
-	OCT *trans = CreateCoordTransform(&proj1, &proj2);
-	if (trans)
-		delete trans;
-	else
-	{
-		DisplayAndLog("Unable to transform coordinates.  This may be because the shared\n"
-			"library for PROJ.4 is not found.  Without this, many operations won't work.");
-	}
+	has3 = FindPROJ4SO(dpso, (const char*)dpso[0]);
+	VTLOG("GDAL/PROJ/PROJSO tests has: %d %d %d\n", has1, has2, has3);
 }
 
 void SetEnvironmentVar(const vtString &var, const vtString &value)
@@ -419,9 +416,63 @@ bool MainFrame::FindPROJ4Data(vtStringArray &searchPaths,
 		msg += ".\n";
 		DisplayAndLog(msg);
 		return false;
+	} 
+	else {
+	  fclose(fp);
 	}
 	SetEnvironmentVar("PROJ_LIB", ExtractPath(fname));
 	return true;
+}
+
+bool MainFrame::FindPROJ4SO(vtStringArray &searchPaths,
+							  const char *defaultDataPath) 
+{
+	vtString soExtension;
+	vtString soName = "libproj";
+#ifdef __WXMAC__
+	soExtension = ".dylib";
+#endif
+#if defined(__WXGTK__) || defined(__WXMOTIF__)
+	soExtension = ".so";
+#endif
+#ifdef WIN32
+	soExtension = ".dll";
+#endif
+
+    vtString fname = FindFileOnPaths(searchPaths, soName + soExtension);
+	FILE *fp = fname ? vtFileOpen((const char *)fname, "rb") : NULL;
+	if (fp == NULL)
+	{
+		vtString msg = "Unable to locate the PROJ.4 shared library for full coordinate\n"
+			" system support. Without the file, many operations won't work.\n"
+			" The PROJ.4 shared library is usually stored in ";
+		msg += defaultDataPath;
+		msg += soName + soExtension;
+		msg += ".\n";
+		DisplayAndLog(msg);
+		return false;
+	} 
+	else {
+	  fclose(fp);
+	}
+
+	CPLSetConfigOption("PROJSO", fname);
+
+	VTLOG1("Testing ability to create coordinate transforms.\n");
+	vtProjection proj1, proj2;
+	proj1.SetUTM(1);
+	proj2.SetUTM(2);
+	OCT *trans = CreateCoordTransform(&proj1, &proj2);
+	if (trans)
+		delete trans;
+	else
+	{
+		DisplayAndLog("Unable to transform coordinates.  This may be because the shared\n"
+			"library for PROJ.4 is not found.  Without this, many operations won't work.");
+		return false;
+	}
+	return true;
+
 }
 
 void MainFrame::OnClose(wxCloseEvent &event)
