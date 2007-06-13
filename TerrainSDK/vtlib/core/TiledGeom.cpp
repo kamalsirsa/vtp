@@ -82,11 +82,6 @@ static vtTiledGeom *s_pTiledGeom = NULL;
    void unlock_cs(void *data)
       {pthread_mutex_unlock(&mutex);}
 
-	void lock_io(void *data)
-	  {pthread_mutex_lock(&iomutex);}
-
-	void unlock_io(void *data)
-	  {pthread_mutex_unlock(&iomutex);}
 #endif
 #if USE_OPENTHREADS
    const int numthreads = 1;
@@ -690,9 +685,7 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 	//	m_pDataCloud->setmaxsize(512.0);
 		m_pDataCloud->setmaxsize(0);
 
-		m_pDataCloud->setthread(startthread, NULL, jointhread,
-			lock_cs, unlock_cs,
-			lock_io, unlock_io);
+		m_pDataCloud->setthread(startthread, NULL, jointhread, lock_cs, unlock_cs);
 		m_pDataCloud->setmulti(numthreads);
 
 		threadinit();
