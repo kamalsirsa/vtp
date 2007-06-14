@@ -1,7 +1,7 @@
 //
 // Name: BuildingDlg.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -329,9 +329,6 @@ void BuildingDlg::SetupControls()
 //  if (m_bEdges)
 //  RefreshEdgesBox();
 
-	SetLevel(m_iLevel);
-	HighlightSelectedLevel();
-
 	if (NULL != GetFacadeChoice())
 	{
 		GetFacadeChoice()->Clear();
@@ -357,6 +354,9 @@ void BuildingDlg::SetupControls()
 			}
 		}
 	}
+
+	SetLevel(m_iLevel);
+	HighlightSelectedLevel();
 }
 
 void BuildingDlg::OnInitDialog(wxInitDialogEvent& event)
@@ -459,6 +459,10 @@ void BuildingDlg::SetLevel(int iLev)
 
 	if (m_bEdges)
 	{
+		m_bSetting = true;
+		TransferDataToWindow();
+		m_bSetting = false;
+
 		RefreshEdgesBox();
 		SetEdge(0);
 		HighlightSelectedEdge();
@@ -757,10 +761,11 @@ void BuildingDlg::OnEdges( wxCommandEvent &event )
 	AdjustDialogForEdges();
 
 	SetupValidators();
+	SetupControls();
+
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
-	SetupControls();
 }
 
 
