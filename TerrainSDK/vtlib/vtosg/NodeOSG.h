@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -248,7 +248,9 @@ public:
 	/** Scale (stretch) by given factors in the x,y,z dimensions. */
 	void Scale3(float x, float y, float z);
 
+	/** Set the entire transform with a 4x4 matrix. */
 	void SetTransform1(const FMatrix4 &mat);
+	/** Get the entire transform as a 4x4 matrix. */
 	void GetTransform1(FMatrix4 &mat) const;
 
 	/** Rotate the object such that it points toward a given point.  By
