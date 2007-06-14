@@ -3,7 +3,7 @@
 //
 // Navigation Engines, generally for moving the camera with mouse input.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1006,6 +1006,11 @@ void vtTrackball::Eval()
 	vtTransform *pTarget = (vtTransform *) GetTarget();
 	if (!pTarget)
 		return;
+
+	if (m_Pos.x < 0)
+		m_Pos.x += PI2f;
+	if (m_Pos.x > PI2f)
+		m_Pos.x -= PI2f;
 
 	_ApplyLimits();
 
