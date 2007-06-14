@@ -1,7 +1,7 @@
 //
 // Implementation of methods for the basic data classes
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -812,23 +812,23 @@ FQuat &FQuat::operator/=(const FQuat &q)
 
 void FPQ::FromMatrix(const FMatrix4 &matrix)
 {
-  FMatrix3 m3 = matrix;
-  q.SetFromMatrix(m3);
-  p = matrix.GetTrans();
+	FMatrix3 m3 = matrix;
+	q.SetFromMatrix(m3);
+	p = matrix.GetTrans();
 }
 
 void FPQ::ToMatrix(FMatrix4 &matrix)
 {
-  FMatrix3 m3;
-  q.GetMatrix(m3);
-  matrix.SetFromMatrix3(m3);
-  matrix.SetTrans(p);
+	FMatrix3 m3;
+	q.GetMatrix(m3);
+	matrix.SetFromMatrix3(m3);
+	matrix.SetTrans(p);
 }
 
 void FPQ::Interpolate(const FPQ &from, const FPQ &to, float f)
 {
-  p = from.p + (to.p - from.p) * f;
-  q.Slerp(from.q, to.q, f);
+	p = from.p + (to.p - from.p) * f;
+	q.Slerp(from.q, to.q, f);
 }
 
 
