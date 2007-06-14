@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="unzip"
-	ProjectGUID="{80D6498F-D7CA-4087-BA90-2AF930E389B5}"
+	ProjectGUID="{5F06081A-A795-48D3-8336-27455E83CD8E}"
 	RootNamespace="unzipvc8"
 	Keyword="Win32Proj"
 	>
