@@ -1,7 +1,7 @@
 //
 // Globe.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -55,6 +55,7 @@ public:
 	void ShowAxis(bool bShow);
 	void SetSeasonalTilt(bool bTilt) { m_bTilt = bTilt; }
 	bool GetSeasonalTilt() { return m_bTilt; }
+	FQuat GetRotation() { return m_Rotation; }
 
 	// surface features
 	vtFeaturesSet &GetFeaturesSet() { return m_features; }
