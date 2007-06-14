@@ -36,7 +36,7 @@ struct ControlPoint
 		m_Rotation(rotation) {}
 
 	void Interpolate(double ratio,const ControlPoint &first, const ControlPoint &second);
-	void GetMatrix(FMatrix4 &matrix, bool bPosOnly) const;
+	void GetMatrix(FMatrix4 &matrix, bool bPosOnly = false) const;
 
 	FPoint3 m_Position;
 	FQuat m_Rotation;
@@ -112,6 +112,7 @@ public:
 	TimeControlPointMap &GetTimeControlPointMap() { return m_TimeControlPointMap; }
 	const TimeControlPointMap &GetTimeControlPointMap() const { return m_TimeControlPointMap; }
 
+	void Empty() { m_TimeControlPointMap.clear(); }
 	bool IsEmpty() const { return m_TimeControlPointMap.empty(); }
 
 	/** If Loop is true, interpolation of the control points will loop back
