@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project.
+// Copyright (c) 2001-2007 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -128,20 +128,21 @@ vtElevationGrid::~vtElevationGrid()
  *
  * The grid will initially have no data in it (all values are INVALID_ELEVATION).
  */
-void vtElevationGrid::Create(const DRECT &area, int iColumns, int iRows,
+bool vtElevationGrid::Create(const DRECT &area, int iColumns, int iRows,
 	bool bFloat, const vtProjection &proj)
 {
 	vtHeightFieldGrid3d::Initialize(proj.GetUnits(), area, INVALID_ELEVATION,
 		INVALID_ELEVATION, iColumns, iRows);
 
 	m_bFloatMode = bFloat;
-	_AllocateArray();
 
 	ComputeCornersFromExtents();
 
 	m_proj = proj;
 	m_fVMeters = 1.0f;
 	m_fVerticalScale = 1.0f;
+
+	return _AllocateArray();
 }
 
 /**

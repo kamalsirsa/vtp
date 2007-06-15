@@ -50,7 +50,7 @@ public:
 
 	vtElevationGrid &operator=(const vtElevationGrid &rhs);
 
-	void Create(const DRECT &area, int iColumns, int iRows, bool bFloat,
+	bool Create(const DRECT &area, int iColumns, int iRows, bool bFloat,
 		const vtProjection &proj);
 	void FreeData();
 	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj, bool progress_callback(int) = NULL);
@@ -151,6 +151,8 @@ public:
 
 	void SetScale(float sc) { m_fVMeters = sc; }
 	float GetScale() const { return m_fVMeters; }
+
+	bool HasData() { return (m_pData != NULL || m_pFData != NULL); }
 
 	// Implement vtHeightField methods
 	bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
