@@ -49,10 +49,10 @@ public:
 #endif	// WIN32
 
 /////////////////
+class MiniDatabuf;
 
 #if USE_OPENGL
 #include "wx/glcanvas.h"
-class MiniDatabuf;
 void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
 					   GLuint &iTex);
 
