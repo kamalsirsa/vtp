@@ -160,14 +160,14 @@ void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
 		else
 		{
 			// use absolute elevations
-			while (current < num-2 && elev >= m_elev[current+1])
+			while (current < num-1 && elev >= m_elev[current])
 			{
-				current++;
 				c1 = m_color[current];
 				c2 = m_color[current+1];
 				base = m_elev[current];
 				next = m_elev[current+1];
 				bracket_size = next - base;
+				current++;
 			}
 		}
 		if (m_bBlend)
