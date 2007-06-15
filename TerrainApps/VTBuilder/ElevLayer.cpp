@@ -139,11 +139,13 @@ vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
 	VTLOG(" Constructing vtElevLayer of size %d x %d, floats %d\n",
 		iColumns, iRows, bFloats);
 
+	m_pTin = NULL;
 	m_pGrid = new vtElevationGrid(area, iColumns, iRows, bFloats, proj);
+	if (!m_pGrid->HasData())
+		VTLOG1(" Grid allocation failed.\n");
+
 	m_pGrid->SetScale(fScale);
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
-
-	m_pTin = NULL;
 }
 
 vtElevLayer::~vtElevLayer()

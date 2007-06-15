@@ -1874,6 +1874,14 @@ void MainFrame::MergeResampleElevation()
 	vtElevLayer *pOutput = new vtElevLayer(dlg.m_area, dlg.m_iSizeX,
 			dlg.m_iSizeY, dlg.m_bFloats, dlg.m_fVUnits, m_proj);
 
+	if (!pOutput->m_pGrid->HasData())
+	{
+		wxString str;
+		str.Format(_("Failed to initialize %d x %d elevation grid"), dlg.m_iSizeX, dlg.m_iSizeY);
+		wxMessageBox(str);
+		return;
+	}
+
 	// fill in the value for pOutput by merging samples from all other terrain
 	if (!SampleCurrentTerrains(pOutput))
 	{
