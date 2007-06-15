@@ -2040,6 +2040,23 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			//sa->ReadXML("G:/Data-USA/Data-Hawaii/BuildingData/one_building.vtst");
 		}
 #endif
+#if 0
+		{
+			vtRawLayer *ab = GetMainFrame()->GetActiveRawLayer();
+			vtFeatureSetLineString3D *fe3;
+			fe3 = dynamic_cast<vtFeatureSetLineString3D*>(ab->GetFeatureSet());
+			if (fe3)
+			{
+				DLine3 &line = fe3->GetPolyLine(0);
+				for (int i = 0; i < line.GetSize(); i++)
+				{
+					DPoint3 p = line[i];
+					p.z -= 2000;
+					line[i] = p;
+				}
+			}
+		}
+#endif
 	}
 	else
 		event.Skip();
