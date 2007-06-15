@@ -702,6 +702,14 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		Schema = SCHEMA_OSGB_TOPO_AREA;
 	else if (!strcmp(layer_name, "osgb:TopographicPoint"))
 		Schema = SCHEMA_OSGB_TOPO_POINT;
+	else if (!strcmp(layer_name, "TopographicArea"))
+		Schema = SCHEMA_OSGB_TOPO_AREA;
+	else if (!strcmp(layer_name, "TopographicPoint"))
+		Schema = SCHEMA_OSGB_TOPO_POINT;
+	else if (!strcmp(layer_name, "topographicarea"))
+		Schema = SCHEMA_MAPINFO_OSGB_TOPO_AREA;
+	else if (!strcmp(layer_name, "topographicpoint"))
+		Schema = SCHEMA_MAPINFO_OSGB_TOPO_POINT;
 
 	count = 0;
 	while( (pFeature = pLayer->GetNextFeature()) != NULL )
@@ -712,6 +720,13 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		switch(Schema)
 		{
 			case SCHEMA_OSGB_TOPO_AREA:
+			case SCHEMA_MAPINFO_OSGB_TOPO_AREA:
+				// Get feature code
+				if (Schema == SCHEMA_OSGB_TOPO_AREA)
+					iFeatureCode = pFeature->GetFieldAsInteger(pLayerDefn->GetFieldIndex("featureCode"));
+				else
+					iFeatureCode = pFeature->GetFieldAsInteger(pLayerDefn->GetFieldIndex("FC"));
+
 				// Skip things that are not buildings
 				iFeatureCode = pFeature->GetFieldAsInteger(pLayerDefn->GetFieldIndex("osgb:featureCode"));
 				switch(iFeatureCode)
@@ -736,7 +751,10 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 
 		OGRGeometry *pGeom = pFeature->GetGeometryRef();
 		if (!pGeom)
+		{
+			OGRFeature::DestroyFeature(pFeature);
 			continue;
+		}
 		GeometryType = pGeom->getGeometryType();
 
 		int line_points=0;
@@ -808,10 +826,10 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 				footprint.Append(dPoint + DPoint2(- DEFAULT_BUILDING_SIZE / 2, DEFAULT_BUILDING_SIZE / 2));
 
 				fAverageZ = (float)((OGRPoint *)pGeom)->getZ();
-
 				break;
 
 			default:
+				OGRFeature::DestroyFeature(pFeature);
 				continue;
 		}
 
