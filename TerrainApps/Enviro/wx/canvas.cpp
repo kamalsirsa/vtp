@@ -303,7 +303,7 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 		VTLOGCAP("  UP: capture %d, isdown %d %d %d", m_bCapture,
 			event1.LeftIsDown(), event1.MiddleIsDown(), event1.RightIsDown());
 
-		if (m_bCapture)
+		if (m_bCapture && !event1.LeftIsDown() && !event1.MiddleIsDown() && !event1.RightIsDown())
 		{
 			ReleaseMouse();
 			m_bCapture = false;
