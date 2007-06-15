@@ -71,6 +71,7 @@ private:
 	int		m_iContentFile;
 	wxString   m_strContentFile;
 	bool	m_bShowProgress;
+	bool	m_bFlyIn;
 
 private:
 	// WDR: handler declarations for OptionsDlg

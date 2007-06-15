@@ -68,6 +68,7 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_CHOICE_CONTENT, &m_strContentFile);
 
 	AddValidator(ID_TERRAIN_PROGRESS, &m_bShowProgress);
+	AddValidator(ID_FLY_IN, &m_bFlyIn);
 }
 
 
@@ -95,6 +96,7 @@ void OptionsDlg::GetOptionsFrom(EnviroOptions &opt)
 
 	m_strContentFile = wxString(opt.m_strContentFile, wxConvUTF8);
 	m_bShowProgress = opt.m_bShowProgress;
+	m_bFlyIn = opt.m_bFlyIn;
 }
 
 void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
@@ -121,6 +123,7 @@ void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
 
 	opt.m_strContentFile = m_strContentFile.mb_str(wxConvUTF8);
 	opt.m_bShowProgress = m_bShowProgress;
+	opt.m_bFlyIn = m_bFlyIn;
 }
 
 void OptionsDlg::UpdateEnabling()

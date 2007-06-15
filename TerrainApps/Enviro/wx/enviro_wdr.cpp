@@ -1856,16 +1856,19 @@ wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item41 = new wxCheckBox( parent, ID_TERRAIN_PROGRESS, _("Show progress dialog during terrain creation"), wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item42 = new wxBoxSizer( wxHORIZONTAL );
+    wxCheckBox *item42 = new wxCheckBox( parent, ID_FLY_IN, _("Fly in gradually from earth view"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item42, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item43 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item43->SetDefault();
-    item42->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item43 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item44 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item42->Add( item44, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item44 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item44->SetDefault();
+    item43->Add( item44, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item1->Add( item42, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item45 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item43->Add( item45, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item1->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
 

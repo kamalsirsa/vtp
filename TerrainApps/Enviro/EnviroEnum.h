@@ -10,7 +10,8 @@ enum AppState {
 	AS_Initializing,	// still setting up
 	AS_Neutral,			// not doing anything
 	AS_Orbit,			// full view of the earth
-	AS_MovingIn,		// moving in toward a specific terrain
+	AS_FlyingIn,		// moving in toward a specific terrain
+	AS_SwitchToTerrain,	// ready to switch
 	AS_Terrain,			// inside a terrain
 	AS_MovingOut,		// moving out to orbit
 	AS_Error

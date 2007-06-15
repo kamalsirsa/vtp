@@ -41,6 +41,7 @@ EnviroOptions g_Options;
 #define STR_MAX_INST_RADIUS "MaxPickableInstanceRadius"
 #define STR_DIRECT_PICKING "DirectPicking"
 #define STR_SHOW_PROGRESS "ShowProgress"
+#define STR_FLY_IN "FlyIn"
 
 EnviroOptions::EnviroOptions()
 {
@@ -73,6 +74,7 @@ EnviroOptions::EnviroOptions()
 	m_fCatenaryFactor = 140.0f;
 
 	m_bShowProgress = true;
+	m_bFlyIn = false;
 }
 
 EnviroOptions::~EnviroOptions()
@@ -160,6 +162,8 @@ bool EnviroOptions::ReadINI(const char *szFilename)
 			input >> m_fMaxPickableInstanceRadius;
 		else if (strcmp(buf, STR_SHOW_PROGRESS) == 0)
 			input >> m_bShowProgress;
+		else if (strcmp(buf, STR_FLY_IN) == 0)
+			input >> m_bFlyIn;
 		else
 		{
 //			cout << "Input from INI file unrecognized.\n";
@@ -263,6 +267,8 @@ void EnviroOptionsVisitor::endElement(const char *name)
 		m_opt.m_strContentFile = str;
 	else if (strcmp(name, STR_SHOW_PROGRESS) == 0)
 		s2b(m_data, m_opt.m_bShowProgress);
+	else if (strcmp(name, STR_FLY_IN) == 0)
+		s2b(m_data, m_opt.m_bFlyIn);
 }
 
 bool EnviroOptions::ReadXML(const char *fname)
@@ -363,6 +369,7 @@ bool EnviroOptions::WriteXML()
 	WriteElem(output, STR_CONTENT_FILE, m_strContentFile);
 	WriteElemF(output, STR_MAX_INST_RADIUS, m_fMaxPickableInstanceRadius);
 	WriteElemB(output, STR_SHOW_PROGRESS, m_bShowProgress);
+	WriteElemB(output, STR_FLY_IN, m_bFlyIn);
 
 	output << "</EnviroOptions>" << std::endl;
 

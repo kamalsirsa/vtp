@@ -84,7 +84,8 @@ const char *AppStateNames[] =
 	"AS_Initializing",
 	"AS_Neutral",
 	"AS_Orbit",
-	"AS_MovingIn",
+	"AS_FlyingIn",
+	"AS_SwitchToTerrain",
 	"AS_Terrain",
 	"AS_MovingOut",
 	"AS_Error"

@@ -56,6 +56,7 @@ public:
 	vtString	m_strContentFile;
 
 	bool	m_bShowProgress;
+	bool	m_bFlyIn;
 
 	// filename (with path) from which ini was read
 	vtString m_strFilename;

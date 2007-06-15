@@ -94,6 +94,7 @@ Enviro::Enviro() : vtTerrainScene()
 	m_bCreatedLegend = false;
 
 	m_pMapOverview = NULL;
+	m_bFlyIn = false;
 }
 
 Enviro::~Enviro()
@@ -158,68 +159,100 @@ void Enviro::StartupArgument(int i, const char *str)
 		g_Options.m_bStartInNeutral = true;
 }
 
-void Enviro::LoadTerrainDescriptions()
+void Enviro::LoadAllTerrainDescriptions()
 {
-	VTLOG("LoadTerrainDescriptions...\n");
+	VTLOG("LoadAllTerrainDescriptions...\n");
 
 	for (unsigned int i = 0; i < g_Options.m_DataPaths.size(); i++)
-	{
-		int count = 0;
-		VTLOG("  On path '%s':\n", (const char *) g_Options.m_DataPaths[i]);
+		LoadTerrainDescriptions(g_Options.m_DataPaths[i]);
 
-		vtString directory = g_Options.m_DataPaths[i] + "Terrains";
-		for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
-		{
-			//VTLOG("\t file: %s\n", it.filename().c_str());
-			if (it.is_hidden() || it.is_directory())
-				continue;
-
-			std::string name1 = it.filename();
-			vtString name = name1.c_str();
-
-			// Only look for ".xml" files which describe a terrain
-			vtString ext = GetExtension(name, false);
-			if (ext.CompareNoCase(".xml") != 0)
-				continue;
-
-			// Some terrain .xml files want to use a different Terrain class
-			int dot = name.Find('.');
-			vtString before_dot;
-			if (dot == -1)
-				before_dot = name;
-			else
-				before_dot = name.Left(dot);
-
-			// This is where you can tell Enviro to contruct your own terrain
-			//  class, for a particular config file, rather than the default
-			//  vtTerrain.
-			vtTerrain *pTerr;
-			if (before_dot == "Hawai`i" || before_dot == "Hawai'i" ||
-				before_dot == "Hawaii" || before_dot == "Honoka`a" ||
-				before_dot == "Kealakekua" || before_dot == "Kamuela")
-				pTerr = new IslandTerrain;
-			else if (before_dot == "Nevada")
-				pTerr = new NevadaTerrain;
-			else if (before_dot == "TransitTerrain")
-				pTerr = new TransitTerrain;
-			else if (before_dot == "Romania")
-				pTerr = new Romania;
-			else
-				pTerr = new vtTerrain;
-
-			if (pTerr->SetParamFile(directory + "/" + name))
-			{
-				//vtString sn = pTerr->GetParams().GetValueString(STR_NAME);
-				//VTLOG("Terrain name: '%s'\n", (const char *) sn);
-				AppendTerrain(pTerr);
-			}
-			else
-				VTLOG1("\t Couldn't read.\n");
-			count++;
-		}
-		VTLOG("\t%d terrains.\n", count);
-	}
 	VTLOG(" Done.\n");
+}
+
+void Enviro::LoadTerrainDescriptions(const vtString &path)
+{
+	int count = 0;
+	VTLOG("  On path '%s':\n", (const char *) path);
+
+	vtString directory = path + "Terrains";
+	for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
+	{
+		//VTLOG("\t file: %s\n", it.filename().c_str());
+		if (it.is_hidden() || it.is_directory())
+			continue;
+
+		std::string name1 = it.filename();
+		vtString name = name1.c_str();
+
+		// Only look for ".xml" files which describe a terrain
+		vtString ext = GetExtension(name, false);
+		if (ext.CompareNoCase(".xml") != 0)
+			continue;
+
+		// Some terrain .xml files want to use a different Terrain class
+		int dot = name.Find('.');
+		vtString before_dot;
+		if (dot == -1)
+			before_dot = name;
+		else
+			before_dot = name.Left(dot);
+
+		// This is where you can tell Enviro to contruct your own terrain
+		//  class, for a particular config file, rather than the default
+		//  vtTerrain.
+		vtTerrain *pTerr;
+		if (before_dot == "Hawai`i" || before_dot == "Hawai'i" ||
+			before_dot == "Hawaii" || before_dot == "Honoka`a" ||
+			before_dot == "Kealakekua" || before_dot == "Kamuela")
+			pTerr = new IslandTerrain;
+		else if (before_dot == "Nevada")
+			pTerr = new NevadaTerrain;
+		else if (before_dot == "TransitTerrain")
+			pTerr = new TransitTerrain;
+		else if (before_dot == "Romania")
+			pTerr = new Romania;
+		else
+			pTerr = new vtTerrain;
+
+		if (pTerr->SetParamFile(directory + "/" + name))
+		{
+			//vtString sn = pTerr->GetParams().GetValueString(STR_NAME);
+			//VTLOG("Terrain name: '%s'\n", (const char *) sn);
+			AppendTerrain(pTerr);
+		}
+		else
+			VTLOG1("\t Couldn't read.\n");
+		count++;
+	}
+	VTLOG("\t%d terrains.\n", count);
+}
+
+void Enviro::LoadGlobalContent()
+{
+	// Load the global content file, if there is one
+	VTLOG("Looking for global content file '%s'\n", (const char *)g_Options.m_strContentFile);
+	vtString fname = FindFileOnPaths(g_Options.m_DataPaths, g_Options.m_strContentFile);
+	if (fname != "")
+	{
+		bool success = true;
+		vtContentManager3d &con = vtGetContent();
+		VTLOG1("  Loading content file.\n");
+		try {
+			con.ReadXML(fname);
+		}
+		catch (xh_io_exception &e)
+		{
+			success = false;
+			string str = e.getFormattedMessage();
+			VTLOG("  Error: %s\n", str.c_str());
+		}
+		if (success)
+			VTLOG("   Load successful, %d items\n", con.NumItems());
+		else
+			VTLOG1("   Load not successful.\n");
+	}
+	else
+		VTLOG1("  Couldn't find it.\n");
 }
 
 void Enviro::StartControlEngine()
@@ -281,10 +314,29 @@ void Enviro::DoControl()
 			return;
 		}
 	}
-	if (m_state == AS_MovingIn)
+	if (m_state == AS_FlyingIn)
+	{
+		if (m_iFlightStage == 1)
+		{
+			FlyInStage1();
+			return;
+		}
+		if (m_iFlightStage == 2)
+		{
+			FlyInStage2();
+			return;
+		}
+	}
+	if (m_state == AS_SwitchToTerrain)
 	{
 		m_iInitStep++;
 		SetupTerrain(m_pTargetTerrain);
+		if (m_bFlyIn && m_iInitStep >= 7)
+		{
+			// Finished constructing, can smoothly fly in now
+			ShowProgress(false);
+			StartFlyIn();
+		}
 	}
 	if (m_state == AS_MovingOut)
 	{
@@ -317,20 +369,15 @@ bool Enviro::SwitchToTerrain(const char *name)
 void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 {
 	VTLOG("SwitchToTerrain %lx\n", pTerr);
+
+	// Load the species file and check which appearances are available
+	LoadSpeciesList();
+	FreeArc();
+
 	if (m_state == AS_Orbit)
 	{
-		// hide globe
-		if (m_pGlobeContainer != NULL)
-		{
-			m_pGlobeContainer->SetEnabled(false);
-			m_pGlobePicker->SetEnabled(false);
-		}
-
 		// remember camera position
-		vtCamera *pCam = vtGetScene()->GetCamera();
-		pCam->GetTransform1(m_SpaceCamLocation);
-
-		m_pTrackball->SetEnabled(false);
+		m_pTrackball->GetState(m_SpaceTrackballState);
 	}
 	if (m_state == AS_Terrain)
 	{
@@ -340,18 +387,17 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 		FMatrix4 mat;
 		pCam->GetTransform1(mat);
 		pT->SetCamLocation(mat);
-	}
-	vtTerrain *pT = GetCurrentTerrain();
-	if (pT)
 		pT->SaveRoute();
+	}
 
-	// Load the species file and check which appearances are available
-	LoadSpeciesList();
+	// If it's not a tileset, and we're coming in from space, fly in
+	if (m_state == AS_Orbit && g_Options.m_bFlyIn &&
+		pTerr->GetParams().GetValueInt(STR_SURFACE_TYPE) != 2)
+		m_bFlyIn = true;
 
-	SetState(AS_MovingIn);
+	SetState(AS_SwitchToTerrain);
 	m_pTargetTerrain = pTerr;
 	m_iInitStep = 0;
-	FreeArc();
 
 	if (g_Options.m_bShowProgress)
 	{
@@ -381,7 +427,10 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	else if (m_iInitStep == 2)
 	{
 		if (pTerr->IsCreated())
-			m_iInitStep = 8;	// already made, skip ahead
+		{
+			m_iInitStep = 7;	// already made, skip ahead
+			return;
+		}
 		else
 			SetMessage(_("Loading Elevation"));
 		UpdateProgress(m_strMessage, 20, 0);
@@ -481,12 +530,24 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	else if (m_iInitStep == 8)
 	{
+		// If we were in Earth View, hide the globe and disable the trackball
+		if (m_pGlobeContainer != NULL)
+		{
+			m_pGlobeContainer->SetEnabled(false);
+			m_pGlobePicker->SetEnabled(false);
+		}
+		if (m_pTrackball)
+			m_pTrackball->SetEnabled(false);
+
 		// Set hither and yon
 		m_pNormalCamera->SetHither(pTerr->GetParams().GetValueFloat(STR_HITHER));
 		m_pNormalCamera->SetYon(500000.0f);
 
-		// Set initial location
-		m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
+		if (m_iFlightStage != 2)
+		{
+			// Set initial location
+			m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
+		}
 
 		SetMessage(_("Switching to Terrain"));
 		UpdateProgress(m_strMessage, 80, 0);
@@ -518,6 +579,11 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		VTLOG(" seconds since app start: %.2f\n", (float)clock2/CLOCKS_PER_SEC);
 
 		ShowProgress(false);
+
+		if (m_iFlightStage == 2)
+		{
+			SetState(AS_FlyingIn);
+		}
 	}
 }
 

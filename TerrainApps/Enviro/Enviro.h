@@ -12,6 +12,7 @@
 
 #include "vtdata/Fence.h"
 #include "vtdata/Projections.h"
+#include "vtlib/core/AnimPath.h"
 #include "vtlib/core/NavEngines.h"
 #include "EnviroEnum.h"
 #include "PlantingOptions.h"
@@ -56,7 +57,8 @@ public:
 	void Shutdown();
 	virtual void StartupArgument(int i, const char *str);
 
-	void LoadTerrainDescriptions();
+	void LoadAllTerrainDescriptions();
+	void LoadGlobalContent();
 	void StartControlEngine();
 	void DoControl();
 	void DoControlOrbit();
@@ -124,7 +126,6 @@ public:
 	TerrainPicker	*m_pTerrainPicker;
 	GlobePicker		*m_pGlobePicker;
 	vtMovGeom		*m_pCursorMGeom;
-	FMatrix4		m_SpaceCamLocation;
 
 	// navigation engines
 	vtTerrainFlyer	*m_pTFlyer;
@@ -247,6 +248,7 @@ public:
 
 protected:
 	// startup methods
+	void LoadTerrainDescriptions(const vtString &path);
 	void SetupScene1();
 	void SetupScene2();
 	virtual void SetupScene3() {}
@@ -265,6 +267,9 @@ protected:
 	void SetTerrainMeasure(const DLine2 &path);
 	void CreateElevationLegend();
 	void CreateMapOverview();
+	void StartFlyIn();
+	void FlyInStage1();
+	void FlyInStage2();
 
 	// plants
 	vtSpeciesList3d	*m_pPlantList;
@@ -326,6 +331,13 @@ protected:
 
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to
+	bool		m_bFlyIn;
+	int			m_iFlightStage;		// 1, 2
+	int			m_iFlightStep;		// 0-100
+	FPoint3		m_TrackStart[3], m_TrackPosDiff;
+	FPoint3		m_SpaceTrackballState[3];
+	vtAnimPath	m_FlyInAnim;
+	DPoint2		m_FlyInCenter;
 
 	vtGeom		*m_pLegendGeom;
 	bool		m_bCreatedLegend;

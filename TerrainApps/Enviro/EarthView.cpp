@@ -71,8 +71,10 @@ void Enviro::SetupGlobe()
 		if (m_pGlobeContainer == NULL)
 		{
 			MakeGlobe();
-			m_SpaceCamLocation.Identity();
-			m_SpaceCamLocation.Translate(FPoint3(0.0f, 0.0f, INITIAL_SPACE_DIST));
+			m_SpaceTrackballState[0].Set(0,0,INITIAL_SPACE_DIST);
+			m_SpaceTrackballState[1].Set(0,0,0);
+			m_SpaceTrackballState[2].Set(0,0,0);
+			m_pRoot->AddChild(m_pGlobeContainer);
 		}
 		SetMessage("Switching to Globe");
 	}
@@ -98,7 +100,6 @@ void Enviro::SetupGlobe()
 		vtGetScene()->SetBgColor(RGBf(SPACE_DARKNESS, SPACE_DARKNESS, SPACE_DARKNESS));
 
 		m_pGlobeContainer->SetEnabled(true);
-		m_pRoot->AddChild(m_pGlobeContainer);
 		m_pCursorMGeom->Identity();
 		m_pCursorMGeom->Scale3(.1f, .1f, .1f);
 	}
@@ -119,9 +120,7 @@ if (pwdemo){
 	}
 	if (m_iInitStep == 6)
 	{
-		vtCamera *pCam = vtGetScene()->GetCamera();
-		pCam->SetTransform1(m_SpaceCamLocation);
-
+		m_pTrackball->SetState(m_SpaceTrackballState);
 		m_pTrackball->SetEnabled(true);
 	}
 	if (m_iInitStep == 7)
@@ -278,7 +277,7 @@ if (pwdemo){
 	vtGetScene()->AddEngine(m_pTrackball);
 
 	// stop them from going in too far (they'd see through the earth)
-	m_pTrackball->LimitPos(FPoint3(-1E9,-1E9,1.1f), FPoint3(1E9,1E9,1E9));
+	m_pTrackball->LimitPos(FPoint3(-1E9,-1E9,1.02f), FPoint3(1E9,1E9,1E9));
 
 	// determine where the terrains are, and show them as red rectangles
 	//
@@ -770,6 +769,126 @@ void Enviro::ToggleLogo()
 	{
 		logo->SetEnabled(true);
 		tg->SetEnabled(true);
+	}
+}
+
+void Enviro::StartFlyIn()
+{
+	m_state = AS_FlyingIn;
+	m_iFlightStage = 1;
+	m_iFlightStep = 0;
+
+	m_pTrackball->GetState(m_TrackStart);
+
+	DPoint2 nw, se;
+	nw = m_pTargetTerrain->m_Corners_geo[1];
+	se = m_pTargetTerrain->m_Corners_geo[3];
+	m_FlyInCenter = (nw + se) / 2;
+
+	// Account for offset between trackball and longitude
+	DPoint2 center = m_FlyInCenter;
+	center.x = 270.0 - center.x;
+		if (center.x > 360.0) center.x -= 360.0;
+		if (center.x < 0) center.x += 360.0;
+
+	// Account for the earth's rotation
+	FQuat rot = m_pIcoGlobe->GetRotation().Inverse();
+
+	FPoint3 p1, p2;
+	DPoint3 center3d;
+
+	geo_to_xyz(1.0, center, p1);
+	FMatrix3 mat;
+	rot.GetMatrix(mat);
+	mat.Transform(p1, p2);
+	xyz_to_geo(1.0, p2, center3d);
+
+		if (center3d.x > 360.0) center3d.x -= 360.0;
+		if (center3d.x < 0) center3d.x += 360.0;
+
+	FPoint3 TrackPosEnd;
+	TrackPosEnd.x = center3d.x / 180 * PIf;
+	TrackPosEnd.y = center3d.y / 180 * PIf;
+	TrackPosEnd.z = 1.05f;
+	m_TrackPosDiff = TrackPosEnd - m_TrackStart[0];
+}
+
+void Enviro::FlyInStage1()
+{
+	m_iFlightStep++;
+	FPoint3 curtrack[3];
+	curtrack[0] = m_TrackStart[0] +
+		(m_TrackPosDiff * (float)m_iFlightStep / 100);
+	curtrack[1] = m_TrackStart[1];
+	curtrack[2] = m_TrackStart[2];
+	m_pTrackball->SetState(curtrack);
+	if (m_iFlightStep == 100)
+	{
+		m_bFlyIn = false;
+		m_state = AS_SwitchToTerrain;
+		m_iInitStep = 7;
+		m_iFlightStage = 2;
+		m_iFlightStep = 0;
+
+		m_FlyInAnim.Empty();
+
+		// Set special high initial camera location to match earth view
+		DPoint3 earth_geo(m_FlyInCenter.x, m_FlyInCenter.y, .02 * EARTH_RADIUS);
+		FPoint3 world;
+
+		vtProjection &tproj = m_pTargetTerrain->GetProjection();
+		vtProjection gproj;
+		CreateSimilarGeographicProjection(tproj, gproj);
+		OCT *trans = CreateCoordTransform(&gproj, &tproj);
+		DPoint3 earth_local = earth_geo;
+		trans->Transform(1, &earth_local.x, &earth_local.y);
+
+		vtLocalConversion &conv = m_pTargetTerrain->GetHeightField()->m_Conversion;
+		conv.ConvertFromEarth(earth_local, world);
+
+		FPQ Flight2Start, Flight2End;
+		Flight2Start.p = world;
+		Flight2Start.q.AxisAngle(FPoint3(1,0,0), -PID2f);
+
+		ControlPoint cp1(Flight2Start.p, Flight2Start.q);
+		m_FlyInAnim.Insert(0.0, cp1);
+
+		// End is the terrain's initial/current location
+		FMatrix4 mat = m_pTargetTerrain->GetCamLocation();
+		Flight2End.FromMatrix(mat);
+
+		FPoint3 fall = Flight2Start.p - Flight2End.p;
+		ControlPoint cp2(Flight2End.p + (fall*0.2), Flight2Start.q);
+		m_FlyInAnim.Insert(60.0, cp2);
+
+		ControlPoint cp3(Flight2End.p, Flight2End.q);
+		m_FlyInAnim.Insert(100.0, cp3);
+
+		// Start the camera at the start
+		Flight2Start.ToMatrix(mat);
+		m_pNormalCamera->SetTransform1(mat);
+
+		return;
+	}
+}
+
+void Enviro::FlyInStage2()
+{
+	m_iFlightStep++;
+
+	ControlPoint cp;
+	if (m_FlyInAnim.GetInterpolatedControlPoint(m_iFlightStep, cp))
+	{
+		FMatrix4 matrix;
+		cp.GetMatrix(matrix);
+		m_pNormalCamera->SetTransform1(matrix);
+	}
+	if (m_iFlightStep == 100)
+	{
+		m_iFlightStep = 0;
+		m_iFlightStage = 0;
+		m_iInitStep = 0;
+		SetState(AS_Terrain);
 	}
 }
 
