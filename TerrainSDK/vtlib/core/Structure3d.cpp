@@ -1,7 +1,7 @@
 //
 // Structure3d.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -358,6 +358,8 @@ bool vtStructureArray3d::GetEnabled()
 				num_sel++;
 		}
 	}
+	if (0 == num_sel)
+		return false;
 	if (GetSize() == 0)	// Presumed innocent if empty.
 		return true;
 	if (num_sel >= GetSize()/2)	// Like, a majority
