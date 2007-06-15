@@ -38,6 +38,7 @@ static void ShowOGLInfo2(bool bLog)
 	wxGLCanvas *canvas = new wxGLCanvas(frame, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 	frame->Show();
 	canvas->SetCurrent();	// This is necessary as of wx 2.8
+	frame->Show(false);		// Minimise the visibility of the opengl test window
 
 	GLint value;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &value);

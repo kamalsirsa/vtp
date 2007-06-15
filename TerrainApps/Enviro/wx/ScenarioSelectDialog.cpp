@@ -313,6 +313,8 @@ void CScenarioSelectDialog::OnOK(wxCommandEvent& event)
 			m_pTerrain->GetParams().m_Scenarios = TempParams;
 		}
 	}
+	else
+		event.Skip();
 }
 
 void CScenarioSelectDialog::OnCancel(wxCommandEvent& event)
