@@ -149,14 +149,12 @@ CSkeleton& vtStraightSkeleton::MakeSkeleton(ContourVector &contours)
 			VTLOG("Processing %d %d left done %d right done %d\n",
 				i.m_leftVertex->m_ID, i.m_rightVertex->m_ID, i.m_leftVertex->m_done, i.m_rightVertex->m_done);
 #endif
-#ifdef FOR_INTEGRATION
 			if ((NULL == i.m_leftVertex) || (NULL == i.m_rightVertex))
 			{
 				vtString *str = new vtString;
 				str->Format("%s (%d): Invalid intersection queue entry\n", __FILE__, __LINE__);
 				throw str;
 			}
-#endif
 			if (i.m_leftVertex->m_done && i.m_rightVertex->m_done)
 				continue;
 			if (i.m_leftVertex->m_done || i.m_rightVertex->m_done)

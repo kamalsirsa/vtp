@@ -83,14 +83,13 @@ C3DPoint CRidgeLine::Intersection(const CRidgeLine &a)
 			if (m_Origin.m_y == a.m_Origin.m_y)
 			{
 #ifdef FELKELDEBUG
-			VTLOG("(SAME HEIGHT)\n");
+				VTLOG("(SAME HEIGHT)\n");
 #endif
-#ifdef FOR_INTEGRATION
 				if (m_Slope == a.m_Slope)
 				{
 					return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / 2.0f,
-							0,
-							m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / 2.0f);
+						0,
+						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / 2.0f);
 				}
 				if (m_Slope == 0.0)
 				{
@@ -100,10 +99,10 @@ C3DPoint CRidgeLine::Intersection(const CRidgeLine &a)
 				{
 					return C3DPoint(m_Origin);
 				}
-#endif
+
 				return C3DPoint (m_Origin.m_x + (a.m_Origin.m_x - m_Origin.m_x) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))),
-						0,
-						m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
+					0,
+					m_Origin.m_z + (a.m_Origin.m_z - m_Origin.m_z) / (1 + fabs(tan(m_Slope))/fabs(tan(a.m_Slope))));
 			}
 			else
 			{
