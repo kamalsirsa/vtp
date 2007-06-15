@@ -157,6 +157,82 @@ bool EnviroApp::OnInit()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+	StartLog();
+	LoadOptions();
+
+	// Redirect the wxWindows log messages to our own logging stream
+	wxLog *logger = new LogCatcher;
+	wxLog::SetActiveTarget(logger);
+
+	Args(argc, argv);
+	SetupLocale();
+
+	// Try to guess GDAL and PROJ.4 data paths, in case the user doesn't have
+	//  their GDAL_DATA and PROJ_LIB environment variables set.
+	g_GDALWrapper.GuessDataPaths();
+
+	// Create and show the Startup Dialog
+	if (m_bShowStartupDialog)
+	{
+		// Look for all terrains on all data paths, so that we have a list
+		//  of them even before we call vtlib.
+		RefreshTerrainList();
+
+		VTLOG("Opening the Startup dialog.\n");
+		wxString appname(STRING_APPNAME, wxConvUTF8);
+		appname += _(" Startup");
+		STARTUP_DIALOG StartDlg(NULL, -1, appname, wxDefaultPosition);
+
+		StartDlg.GetOptionsFrom(g_Options);
+		StartDlg.CenterOnParent();
+		int result = StartDlg.ShowModal();
+		if (result == wxID_CANCEL)
+			return false;
+
+		StartDlg.PutOptionsTo(g_Options);
+		g_Options.WriteXML();
+	}
+
+	// Now we can create vtTerrain objects for each terrain
+	g_App.LoadAllTerrainDescriptions();
+
+	// Load the global content file, if there is one
+	g_App.LoadGlobalContent();
+
+	// Create the main frame window
+	VTLOG1("Creating the frame window.\n");
+	EnviroFrame *frame = CreateMainFrame();
+
+	// Also let the frame see the command-line arguments
+	for (int i = 0; i < argc; i++)
+	{
+		wxString str = argv[i];
+		frame->FrameArgument(i, str.mb_str(wxConvUTF8));
+	}
+
+	bool go = true;
+	while (go)
+		go = ProcessIdle();
+
+	g_App.StartControlEngine();
+
+	if (g_Options.m_bFullscreen)
+		frame->SetFullScreen(true);
+
+	return true;
+}
+
+int EnviroApp::OnExit()
+{
+	VTLOG("App Exit\n");
+	g_App.Shutdown();
+	vtGetScene()->Shutdown();
+
+	return wxApp::OnExit();
+}
+
+void EnviroApp::StartLog()
+{
 	g_App.Startup();	// starts log
 
 	VTLOG("Specific application name: %s\n", STRING_APPNAME);
@@ -168,7 +244,10 @@ bool EnviroApp::OnInit()
 	VTLOG1("Build date: ");
 	VTLOG1(__DATE__);
 	VTLOG1("\n\n");
+}
 
+void EnviroApp::LoadOptions()
+{
 	// Look for the options file.  There are two supported places for it.
 	//  1. In the same directory as the executable.
 	//  2. On Windows, in the user's "Application Data" folder.
@@ -219,82 +298,10 @@ bool EnviroApp::OnInit()
 	for (i = 0; i < n; i++)
 		VTLOG("   %s\n", (const char *) g_Options.m_DataPaths[i]);
 	VTLOG1("\n");
+}
 
-	// Redirect the wxWindows log messages to our own logging stream
-	wxLog *logger = new LogCatcher();
-	wxLog::SetActiveTarget(logger);
-
-	Args(argc, argv);
-
-	SetupLocale();
-
-	// Try to guess GDAL and PROJ.4 data paths, in case the user doesn't have
-	//  their GDAL_DATA and PROJ_LIB environment variables set.
-	g_GDALWrapper.GuessDataPaths();
-
-/*	class AA { public: virtual void func() {} };
-	class BB : public AA {};
-	VTLOG("Testing the ability to use dynamic_cast to downcast...\n");
-	BB *b = new BB;
-	AA *a = (AA *) b;
-	BB *result1 = dynamic_cast<BB *>(a);
-	VTLOG("  successful (%lx)\n", result1); */
-
-	//
-	// Create and show the Startup Dialog
-	//
-	if (m_bShowStartupDialog)
-	{
-		// Look for all terrains on all data paths, so that we have a list
-		//  of them even before we call vtlib.
-		RefreshTerrainList();
-
-		VTLOG("Opening the Startup dialog.\n");
-		wxString appname(STRING_APPNAME, wxConvUTF8);
-		appname += _(" Startup");
-		STARTUP_DIALOG StartDlg(NULL, -1, appname, wxDefaultPosition);
-
-		StartDlg.GetOptionsFrom(g_Options);
-		StartDlg.CenterOnParent();
-		int result = StartDlg.ShowModal();
-		if (result == wxID_CANCEL)
-			return FALSE;
-
-		StartDlg.PutOptionsTo(g_Options);
-		g_Options.WriteXML();
-	}
-
-	// Now we can create vtTerrain objects for each terrain
-	g_App.LoadTerrainDescriptions();
-
-	// Load the global content file, if there is one
-	VTLOG("Looking for global content file '%s'\n", (const char *)g_Options.m_strContentFile);
-	vtString fname = FindFileOnPaths(g_Options.m_DataPaths, g_Options.m_strContentFile);
-	if (fname != "")
-	{
-		bool success = true;
-		vtContentManager3d &con = vtGetContent();
-		VTLOG1("  Loading content file.\n");
-		try {
-			con.ReadXML(fname);
-		}
-		catch (xh_io_exception &e)
-		{
-			success = false;
-			string str = e.getFormattedMessage();
-			VTLOG("  Error: %s\n", str.c_str());
-		}
-		if (success)
-			VTLOG("   Load successful, %d items\n", con.NumItems());
-		else
-			VTLOG1("   Load not successful.\n");
-	}
-	else
-		VTLOG1("  Couldn't find it.\n");
-
-	//
-	// Create the main frame window
-	//
+EnviroFrame *EnviroApp::CreateMainFrame()
+{
 	wxString title(STRING_APPORG, wxConvUTF8);
 
 	if (!strcmp(STRING_ORGNAME, "VTP"))
@@ -312,7 +319,6 @@ bool EnviroApp::OnInit()
 	#endif
 	}
 
-	VTLOG1("Creating the frame window.\n");
 	wxPoint pos(g_Options.m_WinPos.x, g_Options.m_WinPos.y);
 	wxSize size(g_Options.m_WinSize.x, g_Options.m_WinSize.y);
 	EnviroFrame *frame = new FRAME_NAME(NULL, title, pos, size);
@@ -347,37 +353,7 @@ bool EnviroApp::OnInit()
 		int dy = size1.y - size2.y;
 		frame->SetSize(-1, -1, size1.x + dx, size1.y + dy);
 	}
-
-	// Also let the frame see the command-line arguments
-	for (int i = 0; i < argc; i++)
-	{
-		wxString str = argv[i];
-		frame->FrameArgument(i, str.mb_str(wxConvUTF8));
-	}
-
-	go = true;
-	while (go)
-		go = ProcessIdle();
-
-	g_App.StartControlEngine();
-
-	if (g_Options.m_bFullscreen)
-		frame->SetFullScreen(true);
-
-	return true;
-}
-
-int EnviroApp::OnExit()
-{
-	VTLOG("App Exit\n");
-#ifdef VTLIB_PSM
-	PSWorld3D::Get()->Stop();
-	PSGetScene()->SetWindow(NULL);
-#endif
-	g_App.Shutdown();
-	vtGetScene()->Shutdown();
-
-	return wxApp::OnExit();
+	return frame;
 }
 
 //

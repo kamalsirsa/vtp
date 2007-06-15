@@ -5,6 +5,8 @@
 // Free for all uses, see license.txt for details.
 //
 
+class EnviroFrame;
+
 // Define a new application type
 class EnviroApp: public wxApp
 {
@@ -27,7 +29,10 @@ public:
 	vtStringArray terrain_names;
 
 protected:
+	void StartLog();
+	void LoadOptions();
 	void SetupLocale();
+	EnviroFrame *CreateMainFrame();
 
 	wxLocale m_locale; // locale we'll be using
 	vtString m_locale_name;
