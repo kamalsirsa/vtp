@@ -16,9 +16,12 @@
 #include "vtlib/core/NavEngines.h"
 #include "vtdata/vtLog.h"
 
-#define TEST_SNOW 0
+// Enable bits of example code
+#define EXAMPLE_SNOW		0
+#define EXAMPLE_PLANTS		0
+#define EXAMPLE_GEOMETRY	0
 
-#if TEST_SNOW
+#if EXAMPLE_SNOW
 #include <osgParticle/PrecipitationEffect>
 #pragma comment(lib, "osgParticled.lib")
 #endif
@@ -161,13 +164,14 @@ bool CreateScene()
 
 	// Set the global data path
 	vtStringArray paths;
+	paths.push_back(vtString("../Data/"));
 	paths.push_back(vtString("Data/"));
 	pScene->SetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
 	vtGroup *pTopGroup = ts->BeginTerrainScene();
 
-#if TEST_SNOW
+#if EXAMPLE_SNOW
 	osgParticle::PrecipitationEffect *precipitationEffect = new osgParticle::PrecipitationEffect;
 	precipitationEffect->snow(1);
 	//precipitationEffect->rain(1);
@@ -183,6 +187,17 @@ bool CreateScene()
 	// Create a new vtTerrain, read its parameters from a file
 	vtTerrain *pTerr = new vtTerrain;
 	pTerr->SetParamFile("Data/Simple.xml");
+
+#if EXAMPLE_PLANTS
+	//Set species list
+	vtString species = FindFileOnPaths(paths, "PlantData/species.xml");
+	if (species != "")
+	{
+		vtSpeciesList3d *pList = new vtSpeciesList3d;
+		if (pList->ReadXML(species))
+			pTerr->SetPlantList(pList); 
+	}
+#endif
 
 	// Add the terrain to the scene, and contruct it
 	ts->AppendTerrain(pTerr);
@@ -209,7 +224,7 @@ bool CreateScene()
 	pConstrain->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pConstrain);
 
-#if 1
+#if EXAMPLE_GEOMETRY
 	// This example code demonstrates how to create colored lines, and it's
 	//  also useful for debugging vtlib ports to new scenegraphs.
 	vtHeightFieldGrid3d *grid = pTerr->GetHeightFieldGrid3d();
