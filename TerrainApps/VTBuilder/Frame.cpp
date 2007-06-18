@@ -332,19 +332,7 @@ void MainFrame::CheckForGDALAndWarn()
 
 	has1 = FindGDALData(dpg, (const char*)dpg[0]);
 
-	vtStringArray dpp;
-#ifdef UNIX
-	dpp.push_back(vtString("./Shared/share/proj/"));
-	dpp.push_back(vtString("/usr/local/share/proj/"));
-#elif WIN32
-	dpp.push_back(vtString("../PROJ4-data/"));
-#endif
-	const char *proj4 = getenv("PROJ_LIB");
-	VTLOG("getenv PROJ_LIB: '%s'\n", proj4 ? proj4 : "NULL");
-	if (proj4 != NULL)
-	  dpp.push_back(vtString(proj4)+"/");
-
-	has2 = FindPROJ4Data(dpp, (const char*)dpp[0]);
+	has2 = FindPROJ4Data();
 
 	vtStringArray dpso;
 #ifdef __WXMAC__
@@ -402,17 +390,28 @@ bool MainFrame::FindGDALData(vtStringArray &searchPaths,
 	return true;
 }
 
-bool MainFrame::FindPROJ4Data(vtStringArray &searchPaths,
-							  const char *defaultDataPath) 
+bool MainFrame::FindPROJ4Data() 
 {
-	vtString fname = FindFileOnPaths(searchPaths, "nad83");
+	vtStringArray dpp;
+#ifdef UNIX
+	dpp.push_back(vtString("./Shared/share/proj/"));
+	dpp.push_back(vtString("/usr/local/share/proj/"));
+#elif WIN32
+	dpp.push_back(vtString("../PROJ4-data/"));
+#endif
+	const char *proj4 = getenv("PROJ_LIB");
+	VTLOG("getenv PROJ_LIB: '%s'\n", proj4 ? proj4 : "NULL");
+	if (proj4 != NULL)
+	  dpp.push_back(vtString(proj4)+"/");
+
+	vtString fname = FindFileOnPaths(dpp, "nad83");
 	FILE *fp = fname ? vtFileOpen((const char *)fname, "rb") : NULL;
 	if (fp == NULL)
 	{
 		vtString msg = "Unable to locate the necessary PROJ.4 files for full coordinate\n"
 			" system support. Without these files, many operations won't work.\n"
 			" PROJ.4 files are usually stored in ";
-		msg += defaultDataPath;
+		msg += dpp[0];
 		msg += ".\n";
 		DisplayAndLog(msg);
 		return false;
@@ -420,7 +419,9 @@ bool MainFrame::FindPROJ4Data(vtStringArray &searchPaths,
 	else {
 	  fclose(fp);
 	}
-	SetEnvironmentVar("PROJ_LIB", ExtractPath(fname));
+	vtString found_on_path = ExtractPath(fname);
+	if (found_on_path != proj4)
+		SetEnvironmentVar("PROJ_LIB", ExtractPath(fname));
 	return true;
 }
 
