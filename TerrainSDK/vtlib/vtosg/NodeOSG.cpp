@@ -2028,7 +2028,10 @@ void vtHUD::SetWindowSize(int w, int h)
 	if (m_bPixelCoords)
 	{
 		if (w != 0 && h != 0)
+		{
 			m_projection->setMatrix(osg::Matrix::ortho2D(0, w, 0, h));
+			// VTLOG("HUD SetWindowSize %d %d\n", w, h);
+		}
 	}
 }
 
@@ -2115,14 +2118,31 @@ bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
  * \param r Right.
  * \param b Bottom.
  */
-void vtImageSprite::SetPosition(float l, float t, float r, float b)
+void vtImageSprite::SetPosition(float l, float t, float r, float b, float rot)
 {
 	if (!m_pMesh)	// safety check
 		return;
-	m_pMesh->SetVtxPos(0, FPoint3(l, b, 0));
-	m_pMesh->SetVtxPos(1, FPoint3(r, b, 0));
-	m_pMesh->SetVtxPos(2, FPoint3(r, t, 0));
-	m_pMesh->SetVtxPos(3, FPoint3(l, t, 0));
+
+	FPoint2 p[4];
+	p[0].Set(l, b);
+	p[1].Set(r, b);
+	p[2].Set(r, t);
+	p[3].Set(l, t);
+
+	if (rot != 0.0f)
+	{
+		FPoint2 center((l+r)/2, (b+t)/2);
+		for (int i = 0; i < 4; i++)
+		{
+			p[i] -= center;
+			p[i].Rotate(rot);
+			p[i] += center;
+		}
+	}
+
+	for (int i = 0; i < 4; i++)
+		m_pMesh->SetVtxPos(i, FPoint3(p[i].x, p[i].y, 0));
+
 	m_pMesh->ReOptimize();
 }
 
