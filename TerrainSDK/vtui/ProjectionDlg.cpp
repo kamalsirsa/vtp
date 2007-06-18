@@ -170,6 +170,7 @@ void ProjectionDlg::UpdateControlStatus()
 		break;
 	case PT_ALBERS:
 	case PT_HOM:
+	case PT_KROVAK:
 	case PT_LCC:
 	case PT_LAEA:
 	case PT_NZMG:
@@ -205,10 +206,10 @@ void ProjectionDlg::UpdateControlStatus()
 	if (m_eProj == PT_DYMAX)
 		m_pHorizCtrl->Append(_("Unit Edges"), (void *) LU_UNITEDGE);
 	// manually transfer value
-	for (i = 0; i < m_pHorizCtrl->GetCount(); i++)
+	for (unsigned int j = 0; j < m_pHorizCtrl->GetCount(); j++)
 	{
-		if ((long int) m_pHorizCtrl->GetClientData(i) == m_proj.GetUnits())
-			m_pHorizCtrl->SetSelection(i);
+		if ((long int) m_pHorizCtrl->GetClientData(j) == m_proj.GetUnits())
+			m_pHorizCtrl->SetSelection(j);
 	}
 
 	DisplayProjectionSpecificParams();
@@ -339,6 +340,9 @@ void ProjectionDlg::SetUIFromProjection()
 
 		else if (!strcmp(proj_string, SRS_PT_POLAR_STEREOGRAPHIC))
 			SetProjectionUI(PT_PS);
+
+		else if (!strcmp(proj_string, SRS_PT_KROVAK))
+			SetProjectionUI(PT_KROVAK);
 
 		// I've seen a .prj file for Stereo70 which refers to the projection
 		//  as "Double_Stereographic", but this is unknown by OGR.  We do know
@@ -528,6 +532,11 @@ void ProjectionDlg::OnProjChoice( wxCommandEvent &event )
 		m_proj.SetHOM( 57, -133.66666666666666,
 			323.13010236111114, 323.13010236111114,
 			0.9999, 5000000, -5000000 );
+		break;
+	case PT_KROVAK:
+		// Put in some default values
+		m_proj.SetKrovak(49.5, 24.83333333333333,
+			30.28813975277778, 78.5, 0.9999, 0, 0);
 		break;
 	case PT_LAEA:
 		// Put in some default values
