@@ -1,7 +1,7 @@
 //
 // Basic data type definitions shared by all the VTP software.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file MathTypes.h */
@@ -240,6 +240,12 @@ public:
 	void Mult(const float fx, const float fy) { x *= fx; y *= fy; }
 	void Div(const FPoint2 &factor) { x /= factor.x; y /= factor.y; }
 	void Div(const float fx, const float fy) { x /= fx; y /= fy; }
+	void Rotate(double radians)
+	{
+		float tempx = x;
+		x = x * (float) cos(radians) - y * (float) sin(radians);
+		y = tempx * (float) sin(radians) + y * (float) cos(radians);
+	}
 
 	// assignment
 	FPoint2 &operator=(const FPoint2 &v) { x = v.x; y = v.y; return *this; }
