@@ -317,6 +317,8 @@ const char *vtProjection::GetProjectionNameShort() const
 		return "OS";
 	if (!strcmp(proj_string, SRS_PT_POLAR_STEREOGRAPHIC))
 		return "PS";
+	if (!strcmp(proj_string, SRS_PT_KROVAK))
+		return "Krovak";
 	return "Other";
 }
 
