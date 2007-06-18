@@ -36,6 +36,7 @@ class GrabFlyer;
 class FlatFlyer;
 class MapOverviewEngine;
 class CarEngine;
+class vtSpriteSizer;
 
 // Plants
 class vtSpeciesList3d;
@@ -67,6 +68,8 @@ public:
 
 	void ShowElevationLegend(bool bShow);
 	bool GetShowElevationLegend();
+	void ShowCompass(bool bShow);
+	bool GetShowCompass();
 	void ShowMapOverview(bool bShow);
 	bool GetShowMapOverview();
 	void TextureHasChanged();
@@ -140,7 +143,7 @@ public:
 	vtHeightConstrain *m_pHeightEngine;
 
 	// event handlers
-	void OnMouse(vtMouseEvent &event);
+	bool OnMouse(vtMouseEvent &event);
 	void OnMouseLeftDownTerrain(vtMouseEvent &event);
 	void OnMouseLeftDownBuildings();
 	void OnMouseLeftDownTerrainSelect(vtMouseEvent &event);
@@ -152,6 +155,7 @@ public:
 	void OnMouseMoveTerrain(vtMouseEvent &event);
 	void OnMouseSelectRayPick(vtMouseEvent &event);
 	void OnMouseSelectCursorPick(vtMouseEvent &event);
+	bool OnMouseCompass(vtMouseEvent &event);
 
 	// fence methods
 	void start_new_fence();
@@ -190,6 +194,7 @@ public:
 	void PolygonSelectionAddPoint();
 	void PolygonSelectionClose();
 	DLine2 &GetPolygonSelection() { return m_NewLine; }
+	void UpdateCompass();
 
 	// global state
 	AppState	m_state;
@@ -266,6 +271,7 @@ protected:
 	void SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2);
 	void SetTerrainMeasure(const DLine2 &path);
 	void CreateElevationLegend();
+	void CreateCompass();
 	void CreateMapOverview();
 	void StartFlyIn();
 	void FlyInStage1();
@@ -341,6 +347,12 @@ protected:
 
 	vtGeom		*m_pLegendGeom;
 	bool		m_bCreatedLegend;
+
+	vtSpriteSizer	*m_pCompassSizer;
+	vtGeom		*m_pCompassGeom;
+	bool		m_bCreatedCompass;
+	bool		m_bDragCompass;
+	float		m_fDragAngle;
 
 	// mapoverviewengine
 	MapOverviewEngine *m_pMapOverview;

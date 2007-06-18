@@ -193,5 +193,31 @@ protected:
 	bool	m_bDown;
 };
 
+///////////////////////////////////////////////////////////////////////
+// vtSpriteSizer:
+//   An engine to put sprites in the right place, even when the window resizes.
+//
+class vtSpriteSizer : public vtEngine
+{
+public:
+	vtSpriteSizer(vtImageSprite *pSprite, float l, float t, float r, float b);
+
+	void SetRect(const FRECT &rect) { m_rect = rect; }
+	FRECT GetRect() { return m_rect; }
+	FRECT GetWindowRect() { return m_window_rect; }
+	FPoint2 GetWindowCenter();
+
+	void SetRotation(float rot) { m_fRotation = rot; }
+	float GetRotation() { return m_fRotation; }
+
+	void OnWindowSize(int width, int height);
+
+protected:
+	FRECT m_rect;
+	FRECT m_window_rect;
+	float m_fRotation;
+	vtImageSprite *m_pSprite;
+};
+
 #endif	// ENVIRO_ENGINESH
 

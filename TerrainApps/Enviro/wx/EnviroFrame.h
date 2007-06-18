@@ -86,6 +86,7 @@ public:
 	void OnViewTopDown(wxCommandEvent& event);
 	void OnViewFramerate(wxCommandEvent& event);
 	void OnViewElevLegend(wxCommandEvent& event);
+	void OnViewCompass(wxCommandEvent& event);
 	void OnViewMapOverView(wxCommandEvent& event);
 	void OnViewSettings(wxCommandEvent& event);
 	void OnViewLocations(wxCommandEvent& event);
@@ -101,6 +102,7 @@ public:
 	void OnUpdateViewTopDown(wxUpdateUIEvent& event);
 	void OnUpdateViewFramerate(wxUpdateUIEvent& event);
 	void OnUpdateViewElevLegend(wxUpdateUIEvent& event);
+	void OnUpdateViewCompass(wxUpdateUIEvent& event);
 	void OnUpdateViewMapOverView(wxUpdateUIEvent& event);
 	void OnUpdateViewLocations(wxUpdateUIEvent& event);
 	void OnUpdateViewStatusBar(wxUpdateUIEvent& event);

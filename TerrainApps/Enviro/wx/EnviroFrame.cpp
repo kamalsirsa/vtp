@@ -147,6 +147,8 @@ EVT_MENU(ID_VIEW_FRAMERATE,			EnviroFrame::OnViewFramerate)
 EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	EnviroFrame::OnUpdateViewFramerate)
 EVT_MENU(ID_VIEW_ELEV_LEGEND,		EnviroFrame::OnViewElevLegend)
 EVT_UPDATE_UI(ID_VIEW_ELEV_LEGEND,	EnviroFrame::OnUpdateViewElevLegend)
+EVT_MENU(ID_VIEW_COMPASS,			EnviroFrame::OnViewCompass)
+EVT_UPDATE_UI(ID_VIEW_COMPASS,		EnviroFrame::OnUpdateViewCompass)
 EVT_MENU(ID_VIEW_MAP_OVERVIEW,		EnviroFrame::OnViewMapOverView)
 EVT_UPDATE_UI(ID_VIEW_MAP_OVERVIEW,	EnviroFrame::OnUpdateViewMapOverView)
 EVT_MENU(ID_VIEW_SETTINGS,			EnviroFrame::OnViewSettings)
@@ -446,6 +448,7 @@ void EnviroFrame::CreateMenus()
 	m_pViewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _("Top-Down Camera\tCtrl+T"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _("Framerate Chart\tCtrl+Z"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_ELEV_LEGEND, _("Elevation Legend"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_COMPASS, _("Compass"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_MAP_OVERVIEW, _("Overview"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SETTINGS, _("Camera - View Settings\tCtrl+S"));
@@ -1175,6 +1178,18 @@ void EnviroFrame::OnUpdateViewElevLegend(wxUpdateUIEvent& event)
 		bEnable = (curr->GetParams().GetValueInt(STR_TEXTURE) == 3);
 	event.Enable(g_App.m_state == AS_Terrain && bEnable);
 	event.Check(g_App.GetShowElevationLegend());
+}
+
+void EnviroFrame::OnViewCompass(wxCommandEvent& event)
+{
+	g_App.ShowCompass(!g_App.GetShowCompass());
+}
+
+void EnviroFrame::OnUpdateViewCompass(wxUpdateUIEvent& event)
+{
+	// enable only for terrain view
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.GetShowCompass());
 }
 
 void EnviroFrame::OnViewMapOverView(wxCommandEvent& event)

@@ -3,7 +3,7 @@
 //
 // Engines used by Enviro
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -848,5 +848,37 @@ void MapOverviewEngine::RefreshMapView()
 		m_pArrow->RotateLocal(FPoint3(0,0,1),-(angle - anglePrec));
 		anglePrec = angle;
 	}
+}
+
+///////////////////////////////////////////////////////////////////////
+// vtSpriteSizer
+//   An engine to put sprites in the right place.
+//
+vtSpriteSizer::vtSpriteSizer(vtImageSprite *pSprite, float l, float t, float r, float b)
+{
+	m_pSprite = pSprite;
+	m_fRotation = 0.0f;
+	m_rect.SetRect(l, t, r, b);
+	IPoint2 size = vtGetScene()->GetWindowSize();
+	OnWindowSize(size.x, size.y);
+}
+
+void vtSpriteSizer::OnWindowSize(int width, int height)
+{
+	m_window_rect = m_rect;
+	if (m_window_rect.left < 0) m_window_rect.left += width;
+	if (m_window_rect.top < 0) m_window_rect.top += height;
+	if (m_window_rect.right < 0) m_window_rect.right += width;
+	if (m_window_rect.bottom < 0) m_window_rect.bottom += height;
+
+	m_pSprite->SetPosition(m_window_rect.left, m_window_rect.top, m_window_rect.right, m_window_rect.bottom, m_fRotation);
+}
+
+FPoint2 vtSpriteSizer::GetWindowCenter()
+{
+	FPoint2 center = m_window_rect.Center();
+	IPoint2 size = vtGetScene()->GetWindowSize();
+	center.y = size.y - center.y;
+	return center;
 }
 

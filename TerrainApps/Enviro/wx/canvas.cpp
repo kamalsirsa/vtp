@@ -183,6 +183,8 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 	frame->UpdateLODInfo();
 
+	g_App.UpdateCompass();
+
 	m_bPainting = false;
 
 	// Reset the number of mousemoves we've gotten since last redraw
@@ -335,11 +337,12 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	if (event1.AltDown())
 		event.flags |= VT_ALT;
 
+	// inform Enviro app, it will return false if it takes over the event
+	if (g_App.OnMouse(event) == false)
+		return;
+
 	// inform vtlib scene, which informs the engines
 	vtGetScene()->OnMouse(event);
-
-	// inform Enviro app
-	g_App.OnMouse(event);
 }
 
 void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)

@@ -93,6 +93,11 @@ Enviro::Enviro() : vtTerrainScene()
 	m_pLegendGeom = NULL;
 	m_bCreatedLegend = false;
 
+	m_pCompassSizer = NULL;
+	m_pCompassGeom = NULL;
+	m_bCreatedCompass = false;
+	m_bDragCompass = false;
+
 	m_pMapOverview = NULL;
 	m_bFlyIn = false;
 }
@@ -771,6 +776,7 @@ void Enviro::SetupScene2()
 
 	// This HUD group will contain geometry such as the legend
 	m_pHUD = new vtHUD;
+	m_pHUD->SetName2("HUD");
 	m_pRoot->AddChild(m_pHUD);
 }
 
@@ -1160,7 +1166,7 @@ float Enviro::GetSpeed()
 	return 0;
 }
 
-void Enviro::OnMouse(vtMouseEvent &event)
+bool Enviro::OnMouse(vtMouseEvent &event)
 {
 	// check for what is under the 3D cursor
 	if (m_state == AS_Orbit)
@@ -1172,7 +1178,10 @@ void Enviro::OnMouse(vtMouseEvent &event)
 	// give the child classes first chance to take this event
 	bool bCancel = OnMouseEvent(event);
 	if (bCancel)
-		return;
+		return true;
+
+	if (!OnMouseCompass(event))
+		return false;
 
 	if (event.type == VT_DOWN)
 	{
@@ -1197,6 +1206,7 @@ void Enviro::OnMouse(vtMouseEvent &event)
 		if (event.button == VT_RIGHT)
 			OnMouseRightUp(event);
 	}
+	return true;
 }
 
 void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
@@ -1764,6 +1774,48 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 	}
 }
 
+bool Enviro::OnMouseCompass(vtMouseEvent &event)
+{
+	if (m_pCompassSizer)
+	{
+		if (m_bDragCompass)
+		{
+			if (event.type == VT_UP)
+				m_bDragCompass = false;
+
+			if (event.type == VT_MOVE)
+			{
+				FPoint2 center = m_pCompassSizer->GetWindowCenter();
+				FPoint2 pos(event.pos.x, event.pos.y);
+				FPoint2 diff = (pos - center);
+				float angle = atan2(diff.y, diff.x);
+				float delta = angle - m_fDragAngle;
+				m_fDragAngle = angle;
+
+				vtCamera *cam = vtGetScene()->GetCamera();
+				cam->RotateParent(FPoint3(0,1.0f,0), delta);
+			}
+		}
+		else if (event.type == VT_DOWN)
+		{
+			FPoint2 center = m_pCompassSizer->GetWindowCenter();
+			FPoint2 pos(event.pos.x, event.pos.y);
+			FPoint2 diff = (pos - center);
+			float dist = diff.Length();
+			if (dist > 20 && dist < 64)
+			{
+				m_bDragCompass = true;
+				m_fDragAngle = atan2(diff.y, diff.x);
+			}
+		}
+
+		if (m_bDragCompass)
+			return false;
+	}
+	return true;
+}
+
+
 void Enviro::SetupArcMesh()
 {
 	if (!m_pArcMats)
@@ -2315,6 +2367,36 @@ bool Enviro::GetShowElevationLegend()
 	return false;
 }
 
+void Enviro::ShowCompass(bool bShow)
+{
+	if (bShow && !m_bCreatedCompass)
+		CreateCompass();
+	if (m_pCompassGeom)
+		m_pCompassGeom->SetEnabled(bShow);
+}
+
+bool Enviro::GetShowCompass()
+{
+	if (m_pCompassGeom)
+		return m_pCompassGeom->GetEnabled();
+	return false;
+}
+
+void Enviro::UpdateCompass()
+{
+	vtCamera *cam = vtGetScene()->GetCamera();
+	if (!cam)
+		return;
+	FPoint3 dir = cam->GetDirection();
+	float theta = atan2(dir.z, dir.x) + PID2f;
+	if (m_pCompassSizer)
+	{
+		m_pCompassSizer->SetRotation(theta);
+		IPoint2 size = vtGetScene()->GetWindowSize();
+		m_pCompassSizer->OnWindowSize(size.x, size.y);
+	}
+}
+
 void Enviro::CreateElevationLegend()
 {
 	// Must have a color-mapped texture on the terrain to show a legend
@@ -2342,6 +2424,7 @@ void Enviro::CreateElevationLegend()
 	pMats->AddRGBMaterial1(RGBf(.2, .2, .2), false, false); // dark grey
 
 	m_pLegendGeom = new vtGeom;
+	m_pLegendGeom->SetName2("Legend");
 	m_pLegendGeom->SetMaterials(pMats);
 	pMats->Release();
 
@@ -2402,6 +2485,36 @@ void Enviro::CreateElevationLegend()
 
 	m_pHUD->AddChild(m_pLegendGeom);
 	m_bCreatedLegend = true;
+}
+
+void Enviro::CreateCompass()
+{
+	// Define the size and shape of the compass
+	const IPoint2 base(310, 10);
+	const IPoint2 size(128, 128);
+
+	VTLOG1("Loading compass..\n");
+	vtString path = FindFileOnPaths(vtGetDataPath(), "compass.png");
+	if (path == "")
+	{
+		VTLOG1(" not found.\n");
+		return;
+	}
+
+	vtImageSprite *CompassSprite = new vtImageSprite;
+	bool success = CompassSprite->Create(path, true);	// blending = true
+	if (!success)
+		return;
+
+	m_pCompassSizer = new vtSpriteSizer(CompassSprite, -133, -5, -5, -133);
+	m_pCompassSizer->SetName2("Sizer for Compass");
+	vtGetScene()->AddEngine(m_pCompassSizer);
+
+	m_pHUD->AddChild(CompassSprite->GetNode());
+
+	m_pCompassGeom = (vtGeom *) CompassSprite->GetNode();
+	m_pCompassGeom->SetName2("Compass");
+	m_bCreatedCompass = true;
 }
 
 
