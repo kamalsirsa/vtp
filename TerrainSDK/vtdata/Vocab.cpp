@@ -33,7 +33,7 @@
 struct ColorEntry
 {
 	short r, g, b, words;
-	char *name;
+	const char *name;
 };
 
 ColorEntry ColorEntries[] =

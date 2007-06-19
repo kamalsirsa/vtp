@@ -36,7 +36,7 @@ vtFeatureSet *vtFeatureLoader::ReadFeaturesFromWFS(const char *szServerURL, cons
 	if (str == "")
 		return false;
 
-	char *temp_fname = "C:/temp/gml_temp.gml";
+	const char *temp_fname = "C:/temp/gml_temp.gml";
 	FILE *fp = vtFileOpen(temp_fname, "wb");
 	if (!fp)
 		return false;
@@ -135,7 +135,7 @@ bool GetLayersFromWFS(const char *szServerURL, OGCLayerArray &layers)
 	if (str == "")
 		return false;
 
-	char *temp_fname = "C:/temp/layers_temp.xml";
+	const char *temp_fname = "C:/temp/layers_temp.xml";
 	FILE *fp = vtFileOpen(temp_fname, "wb");
 	if (!fp)
 		return false;
@@ -180,7 +180,7 @@ bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers,
 
 #if 1
 	// write to file for debugging
-	char *temp_fname = "C:/temp/wms.xml";
+	const char *temp_fname = "C:/temp/wms.xml";
 	FILE *fp = vtFileOpen(temp_fname, "wb");
 	if (!fp)
 		return false;
