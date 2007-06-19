@@ -77,6 +77,7 @@ public:
 	bool FindGDALData(vtStringArray &searchPaths, const char *defaultDataPath);
 	bool FindPROJ4Data();
 	bool FindPROJ4SO(vtStringArray &searchPaths, const char *defaultDataPath);
+	bool TestPROJ4();
 	virtual void CreateMenus();
 	void ManageToolbar(const wxString &name, wxToolBar *bar, bool show);
 	wxToolBar *NewToolbar();

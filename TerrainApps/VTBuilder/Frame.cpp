@@ -334,6 +334,8 @@ void MainFrame::CheckForGDALAndWarn()
 
 	has2 = FindPROJ4Data();
 
+#ifndef WIN32
+	// On non-Windows platform, we have to look for the library itself
 	vtStringArray dpso;
 #ifdef __WXMAC__
 	dpso.push_back(vtString("./Shared/lib/"));
@@ -342,14 +344,11 @@ void MainFrame::CheckForGDALAndWarn()
 #if defined(__WXGTK__) || defined(__WXMOTIF__) 
 	dpso.push_back(vtString("/usr/local/lib/"));
 #endif
-#ifdef WIN32
-	dpso.push_back(vtString("."));
-#endif
-	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
 	has3 = FindPROJ4SO(dpso, (const char*)dpso[0]);
-	VTLOG("GDAL/PROJ/PROJSO tests has: %d %d %d\n", has1, has2, has3);
+#endif	// WIN32
+
+	// Now test that PROJ4 is working.
+	TestPROJ4();
 }
 
 void SetEnvironmentVar(const vtString &var, const vtString &value)
@@ -420,6 +419,8 @@ bool MainFrame::FindPROJ4Data()
 	  fclose(fp);
 	}
 	vtString found_on_path = ExtractPath(fname);
+	if (found_on_path.Right(1) == "/")
+		found_on_path = found_on_path.Left(found_on_path.GetLength()-1);
 	if (found_on_path != proj4)
 		SetEnvironmentVar("PROJ_LIB", ExtractPath(fname));
 	return true;
@@ -428,6 +429,8 @@ bool MainFrame::FindPROJ4Data()
 bool MainFrame::FindPROJ4SO(vtStringArray &searchPaths,
 							  const char *defaultDataPath) 
 {
+#ifndef WIN32
+	// On non-Windows platform, we have to look for the library itself
 	vtString soExtension;
 	vtString soName = "libproj";
 #ifdef __WXMAC__
@@ -435,9 +438,6 @@ bool MainFrame::FindPROJ4SO(vtStringArray &searchPaths,
 #endif
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 	soExtension = ".so";
-#endif
-#ifdef WIN32
-	soExtension = ".dll";
 #endif
 
     vtString fname = FindFileOnPaths(searchPaths, soName + soExtension);
@@ -458,7 +458,16 @@ bool MainFrame::FindPROJ4SO(vtStringArray &searchPaths,
 	}
 
 	CPLSetConfigOption("PROJSO", fname);
+#endif	// WIN32
+	return true;
+}
 
+bool MainFrame::TestPROJ4()
+{
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	// Now test that PROJ4 is working.
 	VTLOG1("Testing ability to create coordinate transforms.\n");
 	vtProjection proj1, proj2;
 	proj1.SetUTM(1);
