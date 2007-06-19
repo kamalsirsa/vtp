@@ -1,7 +1,7 @@
 //
 // Name: EnviroFrame.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -35,6 +35,8 @@ class vtTimeEngine;
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
 	m_pToolbar->AddTool(id, bmp, wxNullBitmap, tog, -1, -1, (wxObject *)0, tooltip, tooltip)
+#define ADD_TOOL2(bar, id, bmp, label, type) \
+	bar->AddTool(id, label, bmp, wxNullBitmap, type, label, label)
 
 class EnviroFrame: public wxFrame
 {
@@ -47,7 +49,7 @@ public:
 	void CreateToolbar();
 	virtual void RefreshToolbar();
 
-	void SetMode(MouseMode mode);
+	virtual void SetMode(MouseMode mode);
 	void ToggleNavigate();
 	void ChangeFlightSpeed(float factor);
 	void ChangeTerrainDetail(bool bIncrease);
