@@ -1,7 +1,7 @@
 //
 // Name:		ProjectionDlg.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -68,6 +68,7 @@ ProjectionDlg::ProjectionDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	m_pProjCtrl->Append(_("Albers Equal Area Conic"));
 	m_pProjCtrl->Append(_("Geographic"));
 	m_pProjCtrl->Append(_("Hotine Oblique Mercator"));
+	m_pProjCtrl->Append(_("Krovak"));
 	m_pProjCtrl->Append(_("Lambert Azimuthal Equal-Area"));
 	m_pProjCtrl->Append(_("Lambert Conformal Conic"));
 	m_pProjCtrl->Append(_("New Zealand Map Grid"));
