@@ -1368,6 +1368,107 @@ double DistancePointToLine(const DPoint2 &p1, const DPoint2 &p2, const DPoint2 &
   return (p3 - closest).Length();
 }
 
+/**
+ * Given the four vectors defining your points A1, A2, B1, and B2, the points
+ * result1 and result2 on the lines A1A2 and B1B2, respectively, which are
+ * closest together, and their distance, d, apart.
+ */
+float DistanceLineToLine(const FPoint3 &A1, const FPoint3 &A2,
+						 const FPoint3 &B1, const FPoint3 &B2,
+						 FPoint3 &result1, FPoint3 &result2)
+{
+	FPoint3 U = A2-A1;
+	FPoint3 V = B2-B1;
+	FPoint3 W = U.Cross(V);
+	result1 = A1 + U * (((B1-A1).Cross(V)).Dot(W) / W.Dot(W));
+	result2 = B1 + V * (((B1-A1).Cross(U)).Dot(W) / W.Dot(W));
+	float d = (result2-result1).Length();
+	return d;
+}
+
+/** Calculate closest distance from one line segment to another.
+ * Input:  two 3D line segments A1>A2 and B1->B2
+ * Return: the points result1 and result2 on the lines A1A2 and B1B2,
+ * respectively, which are closest together, and their distance apart.
+ */
+#define dot(a,b) a.Dot(b)
+#define SMALL_NUM 0.0001f
+float DistanceSegmentToSegment(const FPoint3 &A1, const FPoint3 &A2,
+						 const FPoint3 &B1, const FPoint3 &B2,
+						 FPoint3 &result1, FPoint3 &result2)
+{
+    FPoint3   u = A2 - A1;
+    FPoint3   v = B2 - B1;
+    FPoint3   w = A1 - B1;
+    float    a = dot(u,u);        // always >= 0
+    float    b = dot(u,v);
+    float    c = dot(v,v);        // always >= 0
+    float    d = dot(u,w);
+    float    e = dot(v,w);
+    float    D = a*c - b*b;       // always >= 0
+    float    sc, sN, sD = D;      // sc = sN / sD, default sD = D >= 0
+    float    tc, tN, tD = D;      // tc = tN / tD, default tD = D >= 0
+
+    // compute the line parameters of the two closest points
+    if (D < SMALL_NUM) { // the lines are almost parallel
+        sN = 0.0;        // force using point P0 on segment S1
+        sD = 1.0;        // to prevent possible division by 0.0 later
+        tN = e;
+        tD = c;
+    }
+    else {                // get the closest points on the infinite lines
+        sN = (b*e - c*d);
+        tN = (a*e - b*d);
+        if (sN < 0.0) {       // sc < 0 => the s=0 edge is visible
+            sN = 0.0;
+            tN = e;
+            tD = c;
+        }
+        else if (sN > sD) {  // sc > 1 => the s=1 edge is visible
+            sN = sD;
+            tN = e + b;
+            tD = c;
+        }
+    }
+
+    if (tN < 0.0) {           // tc < 0 => the t=0 edge is visible
+        tN = 0.0;
+        // recompute sc for this edge
+        if (-d < 0.0)
+            sN = 0.0;
+        else if (-d > a)
+            sN = sD;
+        else {
+            sN = -d;
+            sD = a;
+        }
+    }
+    else if (tN > tD) {      // tc > 1 => the t=1 edge is visible
+        tN = tD;
+        // recompute sc for this edge
+        if ((-d + b) < 0.0)
+            sN = 0;
+        else if ((-d + b) > a)
+            sN = sD;
+        else {
+            sN = (-d + b);
+            sD = a;
+        }
+    }
+    // finally do the division to get sc and tc
+    sc = (abs(sN) < SMALL_NUM ? 0.0f : sN / sD);
+    tc = (abs(tN) < SMALL_NUM ? 0.0f : tN / tD);
+
+    // get the difference of the two closest points
+    FPoint3   dP = w + (u * sc) - (v * tc);  // = S1(sc) - S2(tc)
+
+	// and the two closest points themselves
+	result1 = A1 + u * sc;
+	result2 = B1 + v * tc;
+
+	return dP.Length();   // return the closest distance
+}
+
 void vtLogMatrix(const FMatrix4 &mat)
 {
   VTLOG("Mat: %f %f %f %f\n"

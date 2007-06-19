@@ -1380,6 +1380,12 @@ bool BarycentricCoords(const DPoint2 &p1, const DPoint2 &p2,
 bool PlaneIntersection(const FPlane &plane1, const FPlane &plane2,
 					   const FPlane &plane3, FPoint3 &result);
 double DistancePointToLine(const DPoint2 &p1, const DPoint2 &p2, const DPoint2 &p3);
+float DistanceLineToLine(const FPoint3 &A1, const FPoint3 &A2,
+						 const FPoint3 &B1, const FPoint3 &B2,
+						 FPoint3 &result1, FPoint3 &result2);
+float DistanceSegmentToSegment(const FPoint3 &A1, const FPoint3 &A2,
+						 const FPoint3 &B1, const FPoint3 &B2,
+						 FPoint3 &result1, FPoint3 &result2);
 void vtLogMatrix(const FMatrix4 &mat);
 void vtLogMatrix(const FMatrix3 &mat);
 bool RaySphereIntersection(const FPoint3 &rkOrigin, const FPoint3 &rkDirection,
