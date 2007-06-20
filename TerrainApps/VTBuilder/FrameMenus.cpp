@@ -184,6 +184,9 @@ EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 EVT_MENU(ID_IMAGE_EXPORT_TILES,		MainFrame::OnImageExportTiles)
 EVT_UPDATE_UI(ID_IMAGE_EXPORT_TILES,MainFrame::OnUpdateImageExportTiles)
 
+EVT_MENU(ID_IMAGE_EXPORT_PPM,		MainFrame::OnImageExportPPM)
+EVT_UPDATE_UI(ID_IMAGE_EXPORT_PPM,	MainFrame::OnUpdateImageExportPPM)
+
 EVT_MENU(ID_TOWER_ADD,				MainFrame::OnTowerAdd)
 EVT_MENU(ID_TOWER_SELECT,			MainFrame::OnTowerSelect)
 EVT_MENU(ID_TOWER_EDIT,				MainFrame::OnTowerEdit)
@@ -444,6 +447,7 @@ void MainFrame::CreateMenus()
 	// Imagery
 	imgMenu = new wxMenu;
 	imgMenu->Append(ID_IMAGE_EXPORT_TILES, _("Export to Tiles..."));
+	imgMenu->Append(ID_IMAGE_EXPORT_PPM, _("Export to PPM"));
 	m_pMenuBar->Append(imgMenu, _("Imagery"));
 	m_iLayerMenu[LT_IMAGE] = menu_num;
 	menu_num++;
@@ -2535,7 +2539,7 @@ void MainFrame::OnUpdateElevMergeTin(wxUpdateUIEvent& event)
 
 
 //////////////////////////////////////////////////////////////////////////
-// Area Menu
+// Image Menu
 //
 
 void MainFrame::OnImageExportTiles(wxCommandEvent& event)
@@ -2544,6 +2548,17 @@ void MainFrame::OnImageExportTiles(wxCommandEvent& event)
 }
 
 void MainFrame::OnUpdateImageExportTiles(wxUpdateUIEvent& event)
+{
+	vtImageLayer *pIL = GetActiveImageLayer();
+	event.Enable(pIL != NULL);
+}
+
+void MainFrame::OnImageExportPPM(wxCommandEvent& event)
+{
+	ImageExportPPM();
+}
+
+void MainFrame::OnUpdateImageExportPPM(wxUpdateUIEvent& event)
 {
 	vtImageLayer *pIL = GetActiveImageLayer();
 	event.Enable(pIL != NULL);

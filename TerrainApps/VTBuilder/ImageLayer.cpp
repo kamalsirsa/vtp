@@ -273,15 +273,15 @@ void vtImageLayer::GetPropertyText(wxString &strIn)
 	strIn += str;
 }
 
+bool vtImageLayer::IsAllocated() const
+{
+	return (m_pBitmap != NULL && m_pBitmap->IsAllocated());
+}
+
 DPoint2 vtImageLayer::GetSpacing() const
 {
 	return DPoint2(m_Extents.Width() / (m_iXSize),
 		m_Extents.Height() / (m_iYSize));
-}
-
-bool vtImageLayer::IsAllocated() const
-{
-	return (m_pBitmap != NULL && m_pBitmap->IsAllocated());
 }
 
 bool vtImageLayer::GetFilteredColor(const DPoint2 &p, RGBi &rgb)
@@ -497,7 +497,38 @@ bool vtImageLayer::ReadPPM(const char *fname, bool progress_callback(int))
 		for (int i = 0; i < m_iXSize; i++)
 			m_pBitmap->SetPixel24(i, j, line[i*3+0], line[i*3+1], line[i*3+2]);
 	}
-	delete line;
+	delete [] line;
+	fclose(fp);
+	return true;
+}
+
+bool vtImageLayer::WritePPM(const char *fname)
+{
+	// open input file
+	FILE *fp = vtFileOpen(fname, "wb");
+	if (!fp)		// Could not open output file
+		return false;
+
+	fprintf(fp, "P6\n");		// PGM binary format
+	fprintf(fp, "%d %d\n", m_iXSize, m_iYSize);
+	fprintf(fp, "255\n");		// PGM standard value
+
+	int line_length = 3 * m_iXSize;
+	unsigned char *line = new unsigned char[line_length];
+
+	RGBi rgb;
+	for (int j = 0; j < m_iYSize; j++)
+	{
+		for (int i = 0; i < m_iXSize; i++)
+		{
+			GetRGB(i, j, rgb);
+			line[i*3+0] = rgb.r;
+			line[i*3+1] = rgb.g;
+			line[i*3+2] = rgb.b;
+		}
+		fwrite(line, line_length, 1, fp);
+	}
+	delete [] line;
 	fclose(fp);
 	return true;
 }

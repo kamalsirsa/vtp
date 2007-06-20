@@ -1,7 +1,7 @@
 //
 // Layer.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -177,7 +177,7 @@ vtString vtLayer::GetExportFilename(const wxString &format_filter)
 	RemoveFileExtensions(defaultFile);
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), defaultFile,
+	wxFileDialog saveFile(NULL, _("Export"), _T(""), defaultFile,
 		filter, wxFD_SAVE);
 	saveFile.SetFilterIndex(1);
 	if (saveFile.ShowModal() != wxID_OK)

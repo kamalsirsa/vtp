@@ -209,6 +209,8 @@ protected:
 
 	void OnImageExportTiles(wxCommandEvent& event);
 	void OnUpdateImageExportTiles(wxUpdateUIEvent& event);
+	void OnImageExportPPM(wxCommandEvent& event);
+	void OnUpdateImageExportPPM(wxUpdateUIEvent& event);
 
 	void OnTowerSelect(wxCommandEvent& event);
 	void OnTowerEdit(wxCommandEvent& event);
@@ -476,6 +478,7 @@ public:
 	void Export3TX();
 	void ElevExportTiles();
 	void ImageExportTiles();
+	void ImageExportPPM();
 	void ExportAreaOptimizedElevTileset();
 	void ExportAreaOptimizedImageTileset();
 	void ExportDymaxTexture();

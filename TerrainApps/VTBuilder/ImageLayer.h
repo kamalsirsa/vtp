@@ -67,6 +67,7 @@ public:
 
 	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
 	bool ReadPPM(const char *fname, bool progress_callback(int) = NULL);
+	bool WritePPM(const char *fname);
 	bool SaveToFile(const char *fname) const;
 	bool ReadPNGFromMemory(unsigned char *buf, int len);
 	void SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b);

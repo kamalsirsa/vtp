@@ -487,6 +487,20 @@ void MainFrame::ImageExportTiles()
 		DisplayAndLog("Did not successfully write to '%s'", (const char *) m_tileopts.fname);
 }
 
+void MainFrame::ImageExportPPM()
+{
+	vtImageLayer *pIL = GetActiveImageLayer();
+
+	vtString fname = pIL->GetExportFilename(FSTRING_PPM);
+	if (fname == "")
+		return;
+	bool success = pIL->WritePPM(fname);
+	if (success)
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+	else
+		DisplayAndLog("Error writing file.");
+}
+
 void MainFrame::ExportAreaOptimizedElevTileset()
 {
 	m_tileopts.numlods = 3;
