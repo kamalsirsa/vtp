@@ -723,7 +723,7 @@ void vtTiledGeom::SetPagingRange(float val)
 
 float vtTiledGeom::GetPagingRange()
 {
-	prange = m_pMiniLoad->PRANGE;
+	//prange = m_pMiniLoad->PRANGE;	// TODO
 	return prange;
 }
 
