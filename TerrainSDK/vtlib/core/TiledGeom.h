@@ -38,8 +38,6 @@ public:
 // Simple cache of tiles loaded from disk
 typedef unsigned char *ucharptr;
 class databuf;
-struct CacheEntry { databuf *buf; int framestamp; };
-typedef std::map<std::string, CacheEntry> TileCache;
 
 /**
  * This class represents a tiled textured terrain heightfield, which is drawn
@@ -59,9 +57,6 @@ public:
 	float GetVerticalExag() const { return m_fDrawScale; }
 	void SetVertexTarget(int iVertices);
 	int GetVertexTarget() { return m_iVertexTarget; }
-	void SetTileCacheSize(int iBytes) { m_iMaxCacheSize = iBytes; }
-	int GetTileCacheSize() { return m_iMaxCacheSize; }
-	int GetTileCacheUsed() { return m_iCacheSize; }
 	FPoint2 GetWorldSpacingAtPoint(const DPoint2 &p);
 
 	// overrides for vtDynGeom
@@ -79,9 +74,8 @@ public:
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const;
 
-	// Tile cache methods
-	databuf FetchAndCacheTile(const char *fname);
-	void EmptyCache();
+	// Tile methods
+	databuf FetchTile(const char *fname);
 
 	// CRS of this tileset
 	vtProjection m_proj;
@@ -94,12 +88,8 @@ public:
 	int m_iVertexCount;
 
 	// Tile cache in host RAM, to reduce loading from disk
-	TileCache m_Cache;
-	int	m_iCacheSize;		// In bytes
-	int	m_iMaxCacheSize;	// In bytes
 	int m_iFrame;
 	int m_iTileLoads;
-	int m_iCacheHits;
 
 	// Size of base texture LOD
 	int image_lod0size;
@@ -109,10 +99,14 @@ public:
 	float coldim, rowdim;
 	FPoint3 center;
 	ucharptr *hfields, *textures;
+	float prange;
+	float prange_min, prange_max;
 
 	class miniload *GetMiniLoad() { return m_pMiniLoad; }
 	class minitile *GetMiniTile() { return m_pMiniTile; }
 	class datacloud *GetDataCloud() { return m_pDataCloud; }
+	void SetPagingRange(float val);
+	float GetPagingRange();
 
 	// information about all the tiles LODs which exist
 	bool CheckMapFile(const char *mapfile, bool bIsTexture);

@@ -36,8 +36,7 @@
 //  Actually, we depend on it for adaptive resolution, so leave it at 1.
 #define USE_VERTEX_CACHE	1
 
-#define ENABLE_TILE_CACHE	0
-#define WE_OWN_BUFFERS		ENABLE_TILE_CACHE
+#define WE_OWN_BUFFERS		0
 
 #define LOG_TILE_LOADS		0
 
@@ -304,13 +303,13 @@ int request_callback(int col,int row,unsigned char *mapfile,int hlod,
 
 	// we need to load (or get from cache) one or both: hfield and texture
 	if (mapfile!=NULL)
-		*hfield = s_pTiledGeom->FetchAndCacheTile((char *)mapfile);
+		*hfield = s_pTiledGeom->FetchTile((char *)mapfile);
 
 	if (texfile!=NULL)
-		*texture = s_pTiledGeom->FetchAndCacheTile((char *)texfile);
+		*texture = s_pTiledGeom->FetchTile((char *)texfile);
 
 	if (fogfile!=NULL)
-		*fogmap = s_pTiledGeom->FetchAndCacheTile((char *)fogfile);
+		*fogmap = s_pTiledGeom->FetchTile((char *)fogfile);
 
 	return 1;
 }
@@ -391,10 +390,7 @@ vtTiledGeom::vtTiledGeom()
 	m_bNeedResolutionAdjust = false;
 
 	m_iFrame = 0;
-	m_iCacheSize = 0;
-	m_iMaxCacheSize = 60 * 1024 * 1024;	// 40 MB cache max
 	m_iTileLoads = 0;
-	m_iCacheHits = 0;
 
 	// The terrain surface is not lit by diffuse light (since there are no normals
 	//  for per-vertex lighting).  However, it does respond to ambient light level
@@ -407,7 +403,6 @@ vtTiledGeom::vtTiledGeom()
 
 vtTiledGeom::~vtTiledGeom()
 {
-	EmptyCache();
 #if SUPPORT_PTHREADING
 	delete m_pDataCloud;
 #endif
@@ -588,7 +583,9 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 	//	- the range can be calculated easily from a given screen space
 	//		error threshold using the miniload::calcrange method
 //	float prange = m_pMiniLoad->calcrange(texdim,winheight,fovy);
-	float prange = sqrt(coldim*coldim+rowdim*rowdim)/2;
+	prange = sqrt(coldim*coldim+rowdim*rowdim)/2;
+	prange_min = prange / 2;
+	prange_max = prange * 5;
 
 	//pbasesize: specifies the maximum texture size that is paged in
 	//	- a value of zero means that texture size is not limited
@@ -718,97 +715,35 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 #endif // THREADED
 }
 
-databuf vtTiledGeom::FetchAndCacheTile(const char *fname)
+void vtTiledGeom::SetPagingRange(float val)
 {
-#if !ENABLE_TILE_CACHE
-	m_iMaxCacheSize = 0;	// disable it
-#endif
-	databuf result;
-
-	std::string name = fname;
-	TileCache::iterator it = m_Cache.find(name);
-	if (it == m_Cache.end())
-	{
-		// not found in cache; load it
-#if LOG_TILE_LOADS
-		vtString str = StartOfFilename((char *)fname);
-		VTLOG1(" disk load: ");
-		VTLOG1(str);
-		VTLOG1("\n");
-#endif
-		m_iTileLoads++;
-
-		// Load data buffer directly
-		result.loaddata(fname);
-
-		// max cache size of 0 disables caching
-		if (m_iMaxCacheSize == 0)
-			return result;
-
-		// Add it to the cache
-		// First, make room for it
-		while (m_iCacheSize > m_iMaxCacheSize)
-		{
-			// look for oldest (LRU) tile
-			TileCache::iterator oldest;
-			int oldest_frame = 1<<30;
-			for (it = m_Cache.begin(); it != m_Cache.end(); it++)
-			{
-				if (it->second.framestamp < oldest_frame)
-				{
-					oldest_frame = it->second.framestamp;
-					oldest = it;
-				}
-			}
-			// remove it from the cache
-			CacheEntry &entry = oldest->second;
-			m_iCacheSize -= entry.buf->bytes;
-			free(entry.buf->data);
-			delete entry.buf;
-			m_Cache.erase(oldest);
-		}
-		// add new entry to the cache
-		CacheEntry entry;
-		entry.buf = new databuf;
-		*entry.buf = result;
-		entry.framestamp = m_iFrame;
-		m_Cache[name] = entry;
-		m_iCacheSize += entry.buf->bytes;
-
-#if LOG_TILE_LOADS
-		VTLOG(" cache size (K): %d\n", m_iCacheSize / 1024);
-#endif
-		// return the original
-		return result;
-	}
-	else
-	{
-#if LOG_TILE_LOADS
-		vtString str = StartOfFilename((char *)fname);
-		VTLOG1("from cache: ");
-		VTLOG1(str);
-		VTLOG1("\n");
-#endif
-		// found in cache
-		m_iCacheHits++;
-		CacheEntry &entry = it->second;
-
-		// return the original
-		return *entry.buf;
-	}
-	return result;		// just suppress compiler warning, it won't get there
+	prange = val;
+	m_pMiniLoad->setrange(prange);
 }
 
-void vtTiledGeom::EmptyCache()
+float vtTiledGeom::GetPagingRange()
 {
-	int count = 0;
-	for (TileCache::iterator it = m_Cache.begin(); it != m_Cache.end(); it++)
-	{
-		free(it->second.buf->data);
-		delete it->second.buf;
-		count++;
-	}
-	m_Cache.clear();
+	prange = m_pMiniLoad->PRANGE;
+	return prange;
+}
+
+databuf vtTiledGeom::FetchTile(const char *fname)
+{
+	databuf result;
+
+	// load it
+#if LOG_TILE_LOADS
+	vtString str = StartOfFilename((char *)fname);
+	VTLOG1(" disk load: ");
+	VTLOG1(str);
+	VTLOG1("\n");
+#endif
+	m_iTileLoads++;
+
+	// Load data buffer directly
+	result.loaddata(fname);
+
+	return result;
 }
 
 bool vtTiledGeom::CheckMapFile(const char *mapfile, bool bIsTexture)
