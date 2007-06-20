@@ -2138,7 +2138,7 @@ bool vtTerrain::CreateStep1()
 
 		// tile cache size is in MB for the user, but bytes for the class
 		int tile_cache_mb = m_Params.GetValueInt(STR_TILE_CACHE_SIZE);
-		m_pTiledGeom->SetTileCacheSize(tile_cache_mb * 1024 * 1024);
+		//m_pTiledGeom->SetTileCacheSize(tile_cache_mb * 1024 * 1024);
 
 		bool bThread = m_Params.GetValueBool(STR_TILE_THREADING);
 		bool bGradual = m_Params.GetValueBool(STR_TEXTURE_GRADUAL);
