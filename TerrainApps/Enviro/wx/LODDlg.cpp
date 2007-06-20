@@ -26,26 +26,44 @@
 
 // WDR: event table for LODDlg
 
-BEGIN_EVENT_TABLE(LODDlg,wxDialog)
+BEGIN_EVENT_TABLE(LODDlg,AutoDialog)
 	EVT_SPIN_UP( ID_TARGET, LODDlg::OnSpinTargetUp )
 	EVT_SPIN_DOWN( ID_TARGET, LODDlg::OnSpinTargetDown )
+	EVT_TEXT( ID_TEXT_PRANGE, LODDlg::OnText )
+	EVT_SLIDER( ID_SLIDER_PRANGE, LODDlg::OnRangeSlider )
 END_EVENT_TABLE()
 
 LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	AutoDialog( parent, id, title, position, size, style )
 {
+	m_bSet = false;
+	m_bHaveRange = false;
+	m_bHaveRangeVal = false;
+
 	// WDR: dialog function LODDialogFunc for LODDlg
 	LODDialogFunc( this, TRUE ); 
 
 	GetTileStatus()->SetValue(_T("No paging threads"));
 
+	AddNumValidator(ID_TEXT_PRANGE, &m_fRange);
+	AddValidator(ID_SLIDER_PRANGE, &m_iRange);
+
 	m_iTarget = 0;
 }
 
+float PRANGE_MIN = 0.0f;
+float PRANGE_RANGE = 100.0f;
+
+void LODDlg::SetPagingRange(float fmin, float fmax)
+{
+	PRANGE_MIN = fmin;
+	PRANGE_RANGE = fmax - fmin;
+	m_bHaveRange = true;
+}
+
 void LODDlg::Refresh(float res0, float res, float res1, int target,
-					 int count, int cache_size, int cache_used,
-					 int disk_loads, int cache_hits)
+					 int count, float prange)
 {
 	// don't bother updating if window isn't shown
 	if (!IsShown())
@@ -62,39 +80,56 @@ void LODDlg::Refresh(float res0, float res, float res1, int target,
 	str.Printf(_T("%d"), count);
 	GetCurrent()->SetValue(str);
 
-	if (cache_size != m_iCacheSize || cache_used != m_iCacheUsed)
+	if (m_bHaveRange && prange != m_fRange)
 	{
-		m_iCacheSize = cache_size;
-		m_iCacheUsed = cache_used;
-		if (m_iCacheSize == -1)
-			str = _T("n/a");
-		else
-			str.Printf(_T("%d / %d"), m_iCacheUsed/1024, m_iCacheSize/1024);
-		GetCacheUsed()->SetValue(str);
-	}
-
-	if (disk_loads != m_iDiskLoads)
-	{
-		m_iDiskLoads = disk_loads;
-		if (m_iDiskLoads == -1)
-			str = _T("n/a");
-		else
-			str.Printf(_T("%d"), m_iDiskLoads);
-		GetTileLoads()->SetValue(str);
-	}
-
-	if (cache_hits != m_iCacheHits)
-	{
-		m_iCacheHits = cache_hits;
-		if (m_iCacheHits == -1)
-			str = _T("n/a");
-		else
-			str.Printf(_T("%d"), m_iCacheHits);
-		GetTileHits()->SetValue(str);
+		m_fRange = prange;
+		ValuesToSliders();
+		m_bSet = true;
+		TransferDataToWindow();
+		m_bSet = false;
+		m_bHaveRangeVal = true;
 	}
 
 	// Now draw the chart
 	DrawChart(res0, res, res1, target, count);
+}
+
+void LODDlg::SlidersToValues()
+{
+	m_fRange = PRANGE_MIN + (m_iRange * PRANGE_RANGE / 100);
+}
+
+void LODDlg::ValuesToSliders()
+{
+	m_iRange = (int) ((m_fRange - PRANGE_MIN) / PRANGE_RANGE * 100);
+}
+
+void LODDlg::OnText( wxCommandEvent &event )
+{
+	if (m_bSet || !m_bHaveRangeVal)
+		return;
+	TransferDataFromWindow();
+	ValuesToSliders();
+
+	m_pFrame->ChangePagingRange(m_fRange);
+
+	//m_bSet = true;
+	//TransferDataToWindow();
+	//m_bSet = false;
+}
+
+void LODDlg::OnRangeSlider( wxCommandEvent &event )
+{
+	if (m_bSet || !m_bHaveRangeVal)
+		return;
+	TransferDataFromWindow();
+	SlidersToValues();
+
+	m_pFrame->ChangePagingRange(m_fRange);
+
+	//m_bSet = true;
+	//TransferDataToWindow();
+	//m_bSet = false;
 }
 
 void LODDlg::DrawChart(float res0, float res, float res1, int target, int count)

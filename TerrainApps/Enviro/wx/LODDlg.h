@@ -9,6 +9,8 @@
 #define __LODDlg_H__
 
 #include "enviro_wdr.h"
+#include "vtui/AutoDialog.h"
+
 class EnviroFrame;
 class vtTiledGeom;
 class vtCamera;
@@ -19,7 +21,7 @@ class vtCamera;
 // LODDlg
 //----------------------------------------------------------------------------
 
-class LODDlg: public wxDialog
+class LODDlg: public AutoDialog
 {
 public:
 	// constructors and destructors
@@ -30,30 +32,37 @@ public:
 	
 	// WDR: method declarations for LODDlg
 	wxTextCtrl* GetTileStatus()  { return (wxTextCtrl*) FindWindow( ID_TILE_STATUS ); }
-	wxTextCtrl* GetCacheUsed()  { return (wxTextCtrl*) FindWindow( ID_CACHE_USED ); }
-	wxTextCtrl* GetTileHits()  { return (wxTextCtrl*) FindWindow( ID_TILE_HITS ); }
-	wxTextCtrl* GetTileLoads()  { return (wxTextCtrl*) FindWindow( ID_TILE_LOADS ); }
 	wxSpinCtrl* GetTarget()  { return (wxSpinCtrl*) FindWindow( ID_TARGET ); }
 	wxTextCtrl* GetCurrent()  { return (wxTextCtrl*) FindWindow( ID_CURRENT ); }
 	wxPanel* GetPanel1()  { return (wxPanel*) FindWindow( ID_PANEL1 ); }
 	wxPanel* GetPanel2()  { return (wxPanel*) FindWindow( ID_PANEL2 ); }
 
 	void Refresh(float res0, float res, float res1, int target, int count,
-		int cache_size, int cache_used, int disk_loads, int cache_hits);
+		float prange);
 	void DrawChart(float res0, float res, float res1, int target, int count);
 	void DrawTilesetState(vtTiledGeom *tg, vtCamera *cam);
 	void SetFrame(EnviroFrame *pFrame) { m_pFrame = pFrame; }
+	void SetPagingRange(float fmin, float fmax);
 
 private:
 	// WDR: member variable declarations for LODDlg
+	bool m_bHaveRange;
+	bool m_bHaveRangeVal;
+	bool m_bSet;
 	int m_iTarget;
-	int m_iCacheSize, m_iCacheUsed, m_iDiskLoads, m_iCacheHits;
 	EnviroFrame *m_pFrame;
-	
+	int m_iRange;
+	float m_fRange;
+
+	void SlidersToValues();
+	void ValuesToSliders();
+
 private:
 	// WDR: handler declarations for LODDlg
 	void OnSpinTargetUp( wxSpinEvent &event );
 	void OnSpinTargetDown( wxSpinEvent &event );
+	void OnText( wxCommandEvent &event );
+	void OnRangeSlider( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

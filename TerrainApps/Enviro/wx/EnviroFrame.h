@@ -53,6 +53,7 @@ public:
 	void ToggleNavigate();
 	void ChangeFlightSpeed(float factor);
 	void ChangeTerrainDetail(bool bIncrease);
+	void ChangePagingRange(float prange);
 	void SetFullScreen(bool bFull);
 	ProfileDlg *ShowProfileDlg();
 	void OpenFenceDialog();

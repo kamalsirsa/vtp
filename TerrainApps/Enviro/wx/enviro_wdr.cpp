@@ -2333,56 +2333,36 @@ wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item4, 0, wxALIGN_CENTER, 5 );
 
-    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBox *item10 = new wxStaticBox( parent, -1, _("Tileset Texture Status") );
+    wxStaticBoxSizer *item9 = new wxStaticBoxSizer( item10, wxVERTICAL );
 
-    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Tile RAM cache used"), wxDefaultPosition, wxDefaultSize, 0 );
-    item10->Enable( false );
-    item9->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item11 = new wxBoxSizer( wxVERTICAL );
 
-    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_CACHE_USED, wxT(""), wxDefaultPosition, wxSize(100,-1), 0 );
-    item11->Enable( false );
+    wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("prange"), wxDefaultPosition, wxDefaultSize, 0 );
+    item12->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item14 = new wxSlider( parent, ID_SLIDER_PRANGE, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item12->Add( item14, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+
+    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_TEXT_PRANGE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item12->Add( item15, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item11->Add( item12, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxPanel *item16 = new wxPanel( parent, ID_PANEL2, wxDefaultPosition, wxSize(300,300), 0 );
+    item11->Add( item16, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item17 = new wxStaticText( parent, ID_TEXT, _("Red 64, Orange 128, Yellow 256, Green 512, Cyan 1k, Blue 2k"), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item18 = new wxTextCtrl( parent, ID_TILE_STATUS, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item11->Add( item18, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
     item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("K"), wxDefaultPosition, wxDefaultSize, 0 );
-    item9->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item0->Add( item9, 0, wxALIGN_CENTER, 5 );
-
-    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("Disk loads"), wxDefaultPosition, wxDefaultSize, 0 );
-    item13->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_TILE_LOADS, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
-    item13->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("Cache hits"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Enable( false );
-    item13->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_TILE_HITS, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
-    item17->Enable( false );
-    item13->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item0->Add( item13, 0, wxALIGN_CENTER, 5 );
-
-    wxStaticBox *item19 = new wxStaticBox( parent, -1, _("Tileset Texture Status") );
-    wxStaticBoxSizer *item18 = new wxStaticBoxSizer( item19, wxVERTICAL );
-
-    wxBoxSizer *item20 = new wxBoxSizer( wxVERTICAL );
-
-    wxPanel *item21 = new wxPanel( parent, ID_PANEL2, wxDefaultPosition, wxSize(300,300), 0 );
-    item20->Add( item21, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    wxStaticText *item22 = new wxStaticText( parent, ID_TEXT, _("Red 64, Orange 128, Yellow 256, Green 512, Cyan 1k, Blue 2k"), wxDefaultPosition, wxDefaultSize, 0 );
-    item20->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item23 = new wxTextCtrl( parent, ID_TILE_STATUS, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item20->Add( item23, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-
-    item18->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item0->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

@@ -968,6 +968,15 @@ void EnviroFrame::ChangeTerrainDetail(bool bIncrease)
 	}
 }
 
+void EnviroFrame::ChangePagingRange(float prange)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr) return;
+	vtTiledGeom *pTiled = pTerr->GetTiledGeom();
+	if (pTiled)
+		pTiled->SetPagingRange(prange);
+}
+
 void EnviroFrame::SetFullScreen(bool bFull)
 {
 	m_bFullscreen = bFull;
@@ -2093,6 +2102,11 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		//  not the globe.
 		SetTimeEngine(vtGetTS()->GetTimeEngine());
 		m_pScenarioSelectDialog->SetTerrain(pTerrain);
+
+		// If there is paging involved, Inform the LOD dialog
+		vtTiledGeom *geom = pTerrain->GetTiledGeom();
+		if (geom && m_pLODDlg)
+			m_pLODDlg->SetPagingRange(geom->prange_min, geom->prange_max);
 	}
 	else
 	{
@@ -2159,8 +2173,7 @@ void EnviroFrame::UpdateLODInfo()
 			(log1-fmin) * scale,
 			(log2-fmin) * scale,
 			geom->m_iVertexTarget, geom->m_iVertexCount,
-			geom->m_iMaxCacheSize, geom->m_iCacheSize,
-			geom->m_iTileLoads, geom->m_iCacheHits);
+			geom->GetPagingRange());
 
 		m_pLODDlg->DrawTilesetState(geom, vtGetScene()->GetCamera());
 	}
@@ -2173,16 +2186,14 @@ void EnviroFrame::UpdateLODInfo()
 			m_pLODDlg->Refresh(log(sr->m_fLResolution)*17,
 				log(sr->m_fResolution)*17,
 				log(sr->m_fHResolution)*17,
-				sr->GetPolygonTarget(), sr->GetNumDrawnTriangles(),
-				-1, -1, -1, -1);
+				sr->GetPolygonTarget(), sr->GetNumDrawnTriangles(),	-1);
 		}
 		SMTerrain *sm = dynamic_cast<SMTerrain*>(dyn);
 		if (sm)
 		{
 			m_pLODDlg->Refresh(-1,
 				log((sm->GetQualityConstant()-0.002f)*10000)*40, -1,
-				sm->GetPolygonTarget(), sm->GetNumDrawnTriangles(),
-				-1, -1, -1, -1);
+				sm->GetPolygonTarget(), sm->GetNumDrawnTriangles(),	-1);
 		}
 	}
 }

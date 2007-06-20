@@ -318,19 +318,18 @@ wxSizer *ScenarioSelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool 
 #define ID_PANEL1 10230
 #define ID_TARGET 10231
 #define ID_CURRENT 10232
-#define ID_CACHE_USED 10233
-#define ID_TILE_LOADS 10234
-#define ID_TILE_HITS 10235
-#define ID_PANEL2 10236
-#define ID_TILE_STATUS 10237
+#define ID_SLIDER_PRANGE 10233
+#define ID_TEXT_PRANGE 10234
+#define ID_PANEL2 10235
+#define ID_TILE_STATUS 10236
 wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 wxSizer *TextureDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 wxSizer *LayerAnimDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_CHOICE_VEHICLES 10238
-#define ID_SET_VEHICLE_COLOR 10239
+#define ID_CHOICE_VEHICLES 10237
+#define ID_SET_VEHICLE_COLOR 10238
 wxSizer *VehicleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
