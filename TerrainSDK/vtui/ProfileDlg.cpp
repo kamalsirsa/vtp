@@ -214,7 +214,7 @@ void ProfileDlg::GetValues()
 	m_bHaveValues = false;
 	m_bMouseOnLine = false;
 
-	unsigned int i, len = m_path.GetSize();
+	unsigned int len = m_path.GetSize();
 	if (len < 2)
 	{
 		// Need more points
@@ -234,7 +234,7 @@ void ProfileDlg::GetValues()
 	double fSegmentLength = segvector.Length();
 	DPoint2 p = m_path[0];
 
-	for (i = 0; i < m_xrange; i++)
+	for (int i = 0; i < m_xrange; i++)
 	{
 		//double ratio = (double)i / (m_xrange-1);
 		//p = m_p1 + (m_p2 - m_p1) * ratio;
