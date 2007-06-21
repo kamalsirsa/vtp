@@ -1,7 +1,7 @@
 //
 // FilePath.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file FilePath.h */
@@ -95,7 +95,7 @@ bool vtCreateDir(const char *dirname);
 void vtDestroyDir(const char *dirname);
 void vtDeleteFile(const char *filename);
 const char *StartOfFilename(const char *szFullPath);
-vtString ExtractPath(const char *szFullPath);
+vtString ExtractPath(const char *szFullPath, bool bTrailingSlash);
 bool PathIsAbsolute(const char *szPath);
 vtString get_line_from_stream(std::ifstream &input);
 void RemoveFileExtensions(vtString &fname, bool bAll = true);
@@ -103,6 +103,9 @@ vtString GetExtension(const vtString &fname, bool bFull = true);
 vtString ChangeFileExtension(const char *input, const char *extension);
 bool FileExists(const char *fname);
 int GetFileSize(const char *fname);
+
+void SetEnvironmentVar(const vtString &var, const vtString &value);
+
 
 // Encapsulation for Zlib's gzip output functions.
 class GZOutput

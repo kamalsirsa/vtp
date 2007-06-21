@@ -3,7 +3,7 @@
 //
 // Functions for helping with management of files, paths and directories.
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -347,11 +347,22 @@ const char *StartOfFilename(const char *szFullPath)
 /**
  * Given a full path containing a filename, return a string containing
  * just the path portion of the string.
+ *
+ * \param szFullPath The full path.
+ * \param bTrailingSlash If true, include the trailing slash, if present.
+ *		Example Input: "/usr/data/file.txt"
+ *		Output: /usr/data/" with trailing slash, "/usr/data" without.
  */
-vtString ExtractPath(const char *szFullPath)
+vtString ExtractPath(const char *szFullPath, bool bTrailingSlash)
 {
 	const char *fname = StartOfFilename(szFullPath);
-	return vtString(szFullPath).Left(fname - szFullPath);
+	int len = fname - szFullPath;
+	if (!bTrailingSlash  && len > 0)
+	{
+		if (szFullPath[len-1] == '/' || szFullPath[len-1] == '\\')
+			len--;
+	}
+	return vtString(szFullPath, len);
 }
 
 /**
@@ -452,6 +463,21 @@ int GetFileSize(const char *fname)
 	if (result != 0)
 		return 0;
 	return buf.st_size;
+}
+
+void SetEnvironmentVar(const vtString &var, const vtString &value)
+{
+#if UNIX
+	setenv(var, value, 1);	// 1 means overwrite
+#elif WIN32
+	vtString msg = var + "=" + value;
+	_putenv(msg);
+#endif
+	VTLOG1("setenv ");
+	VTLOG1(var);
+	VTLOG1(" = ");
+	VTLOG1(value);
+	VTLOG1("\n");
 }
 
 
