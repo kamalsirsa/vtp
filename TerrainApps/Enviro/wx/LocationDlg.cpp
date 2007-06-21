@@ -763,7 +763,7 @@ void LocationDlg::OnSave( wxCommandEvent &event )
 	if (previous != "")
 	{
 		default_file = wxString(StartOfFilename(previous), wxConvUTF8);
-		default_dir = wxString(ExtractPath(previous), wxConvUTF8);
+		default_dir = wxString(ExtractPath(previous, false), wxConvUTF8);
 	}
 
 	wxFileDialog saveFile(NULL, _("Save Locations"), default_dir, default_file,

@@ -473,7 +473,7 @@ void SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 		wxString path = wxGetCwd();
 
 		wxString default_file(StartOfFilename(fname), wxConvUTF8);
-		wxString default_dir(ExtractPath(fname), wxConvUTF8);
+		wxString default_dir(ExtractPath(fname, false), wxConvUTF8);
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Abstract Data"), default_dir,
