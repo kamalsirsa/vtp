@@ -43,7 +43,7 @@ struct epsg_datum
 	{ 0, 6153, "Rassadiran", "" },
 	{ 0, 6154, "European Datum 1950(1977)", "" },
 	{ 0, 6155, "Dabola 1981", "" },
-	{ 0, 6156, "Jednotne Trigonometricke Site Katastralni", "" },
+	{ 0, 6156, "Jednotne Trigonometricke Site Katastralni", "JTSK" },
 	{ 0, 6157, "Mount Dillon", "" },
 	{ 0, 6158, "Naparima 1955", "" },
 	{ 0, 6159, "European Libyan Datum 1979", "" },
