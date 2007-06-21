@@ -82,7 +82,7 @@ bool BuilderApp::OnInit()
 	SetupLocale();
 
 	VTLOG1(" Initializing GDAL.\n");
-	g_GDALWrapper.GuessDataPaths();
+	CheckForGDALAndWarn();
 	g_GDALWrapper.RequestGDALFormats();
 
 	// Fill list of layer type names

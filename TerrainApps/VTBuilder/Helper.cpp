@@ -104,59 +104,6 @@ vtStringArray &GetDataPaths()
 
 //////////////////////////////////////
 
-//
-// Display a message to the user, and also send it to the log file.
-//
-void DisplayAndLog(const char *pFormat, ...)
-{
-	va_list va;
-	va_start(va, pFormat);
-
-	char ach[2048];
-	vsprintf(ach, pFormat, va);
-
-	wxString msg(ach, wxConvUTF8);
-	wxMessageBox(msg);
-
-	strcat(ach, "\n");
-	VTLOG1(ach);
-}
-
-#if SUPPORT_WSTRING
-//
-// Also wide-character version of the same function.
-//
-void DisplayAndLog(const wchar_t *pFormat, ...)
-{
-//#ifdef UNICODE
-//	// Try to translate the string
-//	wxString trans = wxGetTranslation(pFormat);
-//	pFormat = trans.c_str();
-//#endif
-
-	va_list va;
-	va_start(va, pFormat);
-
-	// Use wide characters
-	wchar_t ach[2048];
-#ifdef _MSC_VER
-	vswprintf(ach, pFormat, va);
-#else
-	// apparently on non-MSVC platforms this takes 4 arguments (safer)
-	vswprintf(ach, 2048, pFormat, va);
-#endif
-
-	wxString msg(ach);
-	wxMessageBox(msg);
-
-	VTLOG1(ach);
-	VTLOG1("\n");
-}
-#endif // SUPPORT_WSTRING
-
-
-//////////////////////////////////////
-
 #if WIN32
 
 //

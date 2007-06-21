@@ -1,5 +1,5 @@
 //
-// Helper.h
+// VTBuilder Helper.h
 //
 // Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -23,14 +23,6 @@ void AddType(wxString &str, const wxString &filter);
 /////
 
 vtStringArray &GetDataPaths();
-
-/////
-
-// Display a message to the user, and also send it to the log file.
-void DisplayAndLog(const char *pFormat, ...);
-#if SUPPORT_WSTRING
-void DisplayAndLog(const wchar_t *pFormat, ...);
-#endif
 
 /////
 

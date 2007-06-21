@@ -1298,32 +1298,119 @@ void GDALWrapper::RequestOGRFormats()
 	}
 }
 
-//
-// Attempt to guess where the GDAL and PROJ.4 data files are located, in case
-//  the user has failed to set their data paths.  Calling this function
-//  should be harmless even if the data paths are already set correctly.
-//
-void GDALWrapper::GuessDataPaths()
+bool GDALWrapper::Init()
 {
-#ifdef WIN32
-	// Frank says:
-	// "The GDAL_DATA value can be set programmatically with CPLSetConfigOption()"
-	// However, the user might already have the GDAL_DATA environment variable
-	//  set, and we don't want to override that.
-	CPLPushFinderLocation("../../GDAL-data");
+	// check for correctly set up environment variables and locatable files
+	m_initResult.hasGDAL_DATA = FindGDALData();
+	m_initResult.hasPROJ_LIB = FindPROJ4Data();
+	m_initResult.hasPROJSO = FindPROJ4SO();
+	VTLOG("GDAL_DATA/PROJ_LIB/PROJSO tests has: %d %d %d\n", m_initResult.hasGDAL_DATA, m_initResult.hasPROJ_LIB, m_initResult.hasPROJSO);
 
-	// Frank says:
-	// "The PROJ_DATA value can be implicitly set by calling pj_set_searchpath()
-	//   or installing a file finder with pj_set_finder()."
-	// pj_set_searchpath was only added recently (2004.09, libproj 4.4.9)
-	// However, neither the VTP nor GDAL links directly to PROJ.4, so this
-	//  is a difficult method to call.
-//	pj_set_searchpath("../PROJ4-data");
-
-	// Instead, we can try manipulating the environment variable
-	char *result = getenv("PROJ_LIB");
-	if (!result)
-		_putenv("PROJ_LIB=../../PROJ4-data");
-#endif
+	return m_initResult.Success();
 }
 
+bool GDALWrapper::FindGDALData()
+{
+	vtStringArray dpg;
+
+	const char *gdalenv = getenv("GDAL_DATA");
+	VTLOG("getenv GDAL_DATA: '%s'\n", gdalenv ? gdalenv : "NULL");
+	if (gdalenv != NULL)
+		dpg.push_back(vtString(gdalenv)+"/");
+
+	dpg.push_back(vtString(DEFAULT_LOCATION_GDAL_DATA));
+#if UNIX
+	// add the usual unix paths
+	dpg.push_back(vtString("/usr/local/share/gdal/"));
+#endif
+
+	vtString pcsPath = FindFileOnPaths(dpg, "pcs.csv");
+	vtString datumPath = FindFileOnPaths(dpg, "gdal_datum.csv");
+	dpg.pop_back();
+	if (pcsPath == vtEmptyString || datumPath == vtEmptyString)
+		return false;
+
+	if (ExtractPath(pcsPath, false) != ExtractPath(datumPath, false))
+		VTLOG("Warning: multiple versions of GDAL data installed: %s and %s.\n", (const char*)pcsPath, (const char*)datumPath);
+
+	vtString newpath = ExtractPath(datumPath, false);
+	if (newpath != gdalenv)
+		SetEnvironmentVar("GDAL_DATA", newpath);
+	return true;
+}
+
+bool GDALWrapper::FindPROJ4Data() 
+{
+	vtStringArray dpp;
+
+	const char *proj4 = getenv("PROJ_LIB");
+	VTLOG("getenv PROJ_LIB: '%s'\n", proj4 ? proj4 : "NULL");
+	if (proj4 != NULL)
+		dpp.push_back(vtString(proj4)+"/");
+
+	dpp.push_back(vtString(DEFAULT_LOCATION_PROJ_LIB));
+#if UNIX
+	// add the usual unix paths
+	dpp.push_back(vtString("/usr/local/share/proj/"));
+#endif
+
+	vtString fname = FindFileOnPaths(dpp, "nad83");
+	FILE *fp = (fname != "") ? vtFileOpen((const char *)fname, "rb") : NULL;
+	if (fp == NULL)
+		return false;
+	else
+		fclose(fp);
+
+	vtString newpath = ExtractPath(fname, false);
+	if (newpath != proj4)
+		SetEnvironmentVar("PROJ_LIB", newpath);
+	return true;
+}
+
+bool GDALWrapper::FindPROJ4SO() 
+{
+#ifndef WIN32
+	vtStringArray dpso;
+	dpso.push_back(vtString(DEFAULT_LOCATION_PROJSO));
+	// add the usual unix paths
+	dpso.push_back(vtString("/usr/local/lib/"));
+
+	// On non-Windows platform, we have to look for the library itself
+	vtString soExtension = ".unknown"; // for no platform.
+	vtString soName = "libproj";
+#if __APPLE__
+	soExtension = ".dylib";
+#else // other unixes
+	soExtension = ".so";
+#endif
+
+    vtString fname = FindFileOnPaths(searchPaths, soName + soExtension);
+	FILE *fp = (fname != "") ? vtFileOpen((const char *)fname, "rb") : NULL;
+	if (fp == NULL)
+		return false;
+	else
+		fclose(fp);
+
+	CPLSetConfigOption("PROJSO", fname);
+#endif	// WIN32
+	return true;
+}
+
+bool GDALWrapper::TestPROJ4()
+{
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	// Now test that PROJ4 is working.
+	VTLOG1("Testing ability to create coordinate transforms.\n");
+	vtProjection proj1, proj2;
+	proj1.SetUTM(1);
+	proj2.SetUTM(2);
+	OCT *trans = CreateCoordTransform(&proj1, &proj2);
+	if (trans)
+	{
+		delete trans;
+		return true;
+	}
+	return false;
+}

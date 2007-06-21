@@ -167,9 +167,7 @@ bool EnviroApp::OnInit()
 	Args(argc, argv);
 	SetupLocale();
 
-	// Try to guess GDAL and PROJ.4 data paths, in case the user doesn't have
-	//  their GDAL_DATA and PROJ_LIB environment variables set.
-	g_GDALWrapper.GuessDataPaths();
+	CheckForGDALAndWarn();
 
 	// Create and show the Startup Dialog
 	if (m_bShowStartupDialog)
