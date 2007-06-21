@@ -110,6 +110,13 @@ void EnviroGUI::SetState(AppState s)
 	{
 		GetFrame()->RefreshToolbar();
 	}
+
+	if (s == AS_Error)
+	{
+		// If we encounter an error while trying to open a terrain, don't get
+		//  stuck in a progress dialog.
+		CloseProgressDialog2();
+	}
 }
 
 vtString EnviroGUI::GetStringFromUser(const vtString &title, const vtString &msg)
