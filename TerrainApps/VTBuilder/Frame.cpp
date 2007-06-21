@@ -2271,44 +2271,29 @@ using namespace std;
 void MainFrame::ReadEnviroPaths()
 {
 	VTLOG("Getting data paths from Enviro.\n");
-	wxString cwd = wxGetCwd();
-	VTLOG("  Current directory: '%s'\n", (const char *) cwd.mb_str(wxConvUTF8));
+	wxString cwd1 = wxGetCwd();
+	vtString cwd = (const char *) cwd1.mb_str(wxConvUTF8);
+	VTLOG("  Current directory: '%s'\n", (const char *) cwd);
 
-	wxString IniPath = cwd + _T("/Enviro.xml");
-	vtString fname = (const char *) IniPath.mb_str(wxConvUTF8);
+	vtString fname = cwd + "/Enviro.xml";
 	VTLOG("  Looking for '%s'\n", (const char *) fname);
 	ifstream input;
 	input.open(fname, ios::in | ios::binary);
 	if (!input.is_open())
 	{
 		input.clear();
-		IniPath = cwd + _T("/../Enviro/Enviro.xml");
-		fname = IniPath.mb_str(wxConvUTF8);
+		fname = cwd + "/../Enviro/Enviro.xml";
 		VTLOG("  Not there.  Looking for '%s'\n", (const char *) fname);
 		input.open(fname, ios::in | ios::binary);
 	}
 	if (input.is_open())
 	{
 		VTLOG1(" found it.\n");
-		ReadDatapathsFromXML(input, (const char *) IniPath.mb_str(wxConvUTF8));
+		ReadDatapathsFromXML(input, fname);
 		return;
 	}
-	VTLOG1("  Not found.\n");
-	IniPath = cwd + _T("/Enviro.ini");;
-	fname = IniPath.mb_str(wxConvUTF8);
-	input.open(fname, ios::in | ios::binary);
-	if (!input.is_open())
-	{
-		IniPath = cwd + _T("/../Enviro/Enviro.ini");
-		fname = IniPath.mb_str(wxConvUTF8);
-		input.open(fname, ios::in | ios::binary);
-	}
-	if (!input.is_open())
-	{
-		VTLOG1("  Not found.\n");
-		return;
-	}
-	ReadDatapathsFromINI(input);
+	VTLOG1("  Not found, using default of '../Data/'.\n");
+	m_datapaths.push_back(vtString("../Data/"));
 }
 
 
@@ -2344,35 +2329,6 @@ void MainFrame::ReadDatapathsFromXML(ifstream &input, const char *path)
 	{
 		const string msg = ex.getFormattedMessage();
 		VTLOG(" XML problem: %s\n", msg.c_str());
-	}
-}
-
-///////////////////////////////////////////////////////////////////////
-// INI format
-
-#define STR_DATAPATH "DataPath"
-
-void MainFrame::ReadDatapathsFromINI(ifstream &input)
-{
-	char buf[256];
-	while (!input.eof())
-	{
-		if (input.peek() == '\n')
-			input.ignore();
-		input >> buf;
-
-		// data value should been separated by a tab or space
-		int next = input.peek();
-		if (next != '\t' && next != ' ')
-			continue;
-		while (input.peek() == '\t' || input.peek() == ' ')
-			input.ignore();
-
-		if (strcmp(buf, STR_DATAPATH) == 0)
-		{
-			vtString string = get_line_from_stream(input);
-			m_datapaths.push_back(vtString(string));
-		}
 	}
 }
 

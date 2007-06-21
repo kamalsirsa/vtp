@@ -71,7 +71,6 @@ public:
 
 	void ReadEnviroPaths();
 	void ReadDatapathsFromXML(ifstream &input, const char *path);
-	void ReadDatapathsFromINI(ifstream &input);
 	void SetupUI();
 	void CheckForGDALAndWarn();
 	bool FindGDALData(vtStringArray &searchPaths, const char *defaultDataPath);
