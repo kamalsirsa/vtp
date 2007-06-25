@@ -88,7 +88,7 @@ public:
    {
       virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
       {
-         if ( psGeodeTransform* ps = dynamic_cast<psGeodeTransform*>( node ) )
+         if ( psGeodeTransform* geodetrans = dynamic_cast<psGeodeTransform*>( node ) )
          {
             osg::NodePath fullNodePath = nv->getNodePath();
             fullNodePath.pop_back();
@@ -96,7 +96,7 @@ public:
             osg::Matrix localCoordMat = osg::computeLocalToWorld( fullNodePath );
             osg::Matrix inverseOfAccum = osg::Matrix::inverse( localCoordMat );
 
-            ps->setMatrix( inverseOfAccum );
+            geodetrans->setMatrix( inverseOfAccum );
          }
          traverse(node, nv); 
       }
@@ -153,12 +153,15 @@ protected:
 
 void IslandTerrain::CreateCustomCulture()
 {
-#if VTLIB_OSG
+#if VTLIB_OSG && 0
 	osg::Group *cessna = (osg::Group*) osgDB::readNodeFile("C:/Dev/OSGParticleDirt/cessnafire.osg");
 	if (cessna)
 	{
-		particleSystemHelper* psh = new particleSystemHelper(cessna);
-		vtNativeNode *native = new vtNativeNode(psh);
+		//particleSystemHelper* psh = new particleSystemHelper(cessna);
+		//vtNativeNode *native = new vtNativeNode(psh);
+
+		vtNativeNode *native = new vtNativeNode(cessna);
+
 		AddNode(native);
 	}
 #endif
