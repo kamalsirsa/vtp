@@ -564,6 +564,12 @@ public:
 typedef std::map< vtString, osg::ref_ptr<Node> > NodeCache;
 NodeCache m_ModelCache;
 bool vtNode::s_bDisableMipmaps = false;
+osg::Node *(*s_NodeCallback)(osg::Transform *input) = NULL;
+
+void SetLoadModelCallback(osg::Node *callback(osg::Transform *input))
+{
+	s_NodeCallback = callback;
+}
 
 /**
  * Load a 3D model from a file.
@@ -691,19 +697,28 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 		// it's not going to change, so tell OSG that it can be optimized
 		transform->setDataVariance(osg::Object::STATIC);
 
+		if (s_NodeCallback == NULL)
+		{
 #if 0
-		// Now do some OSG voodoo, which should spread ("flatten") the
-		//  transform downward through the loaded model, and delete the transform.
-		// In practice, i find that it doesn't actually do any flattening.
-		osg::Group *group = new osg::Group;
-		group->addChild(transform);
+			// Now do some OSG voodoo, which should spread ("flatten") the
+			//  transform downward through the loaded model, and delete the transform.
+			// In practice, i find that it doesn't actually do any flattening.
+			osg::Group *group = new osg::Group;
+			group->addChild(transform);
 
-		osgUtil::Optimizer optimizer;
-		optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
-		node = group;
+			osgUtil::Optimizer optimizer;
+			optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
+			node = group;
 #else
-		node = transform;
+			node = transform;
 #endif
+		}
+		else
+		{
+			osg::Node *node_new = s_NodeCallback(transform);
+			node = node_new;
+		}
+
 
 		//VTLOG1("--------------\n");
 		//vtLogNativeGraph(node);

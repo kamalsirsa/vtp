@@ -596,6 +596,7 @@ struct vtHit
 typedef std::vector<vtHit> vtHitList;
 int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 				vtHitList &hitlist, bool bLocalCoords = false, bool bNativeNodes = true);
+void SetLoadModelCallback(osg::Node *callback(osg::Transform *input));
 void vtLogGraph(vtNode *node, int indent=0);
 void vtLogNativeGraph(osg::Node *node, int indent=0);
 
