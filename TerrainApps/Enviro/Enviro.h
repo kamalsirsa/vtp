@@ -147,6 +147,7 @@ public:
 	void OnMouseLeftDownTerrain(vtMouseEvent &event);
 	void OnMouseLeftDownBuildings();
 	void OnMouseLeftDownTerrainSelect(vtMouseEvent &event);
+	void OnMouseLeftDownTerrainMove(vtMouseEvent &event);
 	void OnMouseLeftDownOrbit(vtMouseEvent &event);
 	void OnMouseLeftUp(vtMouseEvent &event);
 	void OnMouseRightDown(vtMouseEvent &event);
@@ -205,6 +206,7 @@ public:
 
 	// used for mouse interaction
 	bool		m_bDragging;
+	bool		m_bDragUpDown;
 	bool		m_bRotating;
 	bool		m_bSelectedStruct;
 	bool		m_bSelectedPlant;
@@ -217,7 +219,7 @@ public:
 	vtRoute		*m_pCurRoute;
 	vtUtilNode	*m_pSelUtilNode;
 	vtRoute		*m_pSelRoute;
-	IPoint2		m_MouseDown;
+	IPoint2		m_MouseDown, m_MouseLast;
 	float		m_StartRotation;
 
 	// handle to the singleton

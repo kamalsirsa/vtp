@@ -128,8 +128,8 @@ EVT_MENU(ID_TOOLS_INSTANCES,		EnviroFrame::OnToolsInstances)
 EVT_UPDATE_UI(ID_TOOLS_INSTANCES,	EnviroFrame::OnUpdateToolsInstances)
 EVT_MENU(ID_TOOLS_VEHICLES,			EnviroFrame::OnToolsVehicles)
 EVT_UPDATE_UI(ID_TOOLS_VEHICLES,	EnviroFrame::OnUpdateToolsVehicles)
-//EVT_MENU(ID_TOOLS_MOVE,			EnviroFrame::OnToolsMove)
-//EVT_UPDATE_UI(ID_TOOLS_MOVE,		EnviroFrame::OnUpdateToolsMove)
+EVT_MENU(ID_TOOLS_MOVE,				EnviroFrame::OnToolsMove)
+EVT_UPDATE_UI(ID_TOOLS_MOVE,		EnviroFrame::OnUpdateToolsMove)
 EVT_MENU(ID_TOOLS_NAVIGATE,			EnviroFrame::OnToolsNavigate)
 EVT_UPDATE_UI(ID_TOOLS_NAVIGATE,	EnviroFrame::OnUpdateToolsNavigate)
 EVT_MENU(ID_TOOLS_MEASURE,			EnviroFrame::OnToolsMeasure)
@@ -396,7 +396,7 @@ void EnviroFrame::CreateMenus()
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_POINTS, _("Points"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _("Instances"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_VEHICLES, _("Vehicles"));
-//	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _("Navigate"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances\tCtrl+D"));
 	m_pMenuBar->Append(m_pToolsMenu, _("&Tools"));
@@ -423,6 +423,7 @@ void EnviroFrame::CreateMenus()
 	// D Toggle Grab-Pivot
 	// F Faster
 	// S Faster
+	// W Navigate w/o mouse button
 
 	if (m_bEnableEarth)
 	{
@@ -606,9 +607,9 @@ void EnviroFrame::RefreshToolbar()
 		ADD_TOOL(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
 		ADD_TOOL(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
 		ADD_TOOL(ID_TOOLS_POINTS, wxBITMAP(placemark), _("Create Points"), true);
-//		ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);	// not yet
 		ADD_TOOL(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
 		ADD_TOOL(ID_TOOLS_VEHICLES, wxBITMAP(vehicles), _("Create Vehicles"), true);
+		ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);
 		ADD_TOOL(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
 	}
 	if (bTerr || bEarth)
@@ -1492,8 +1493,7 @@ void EnviroFrame::OnToolsMove(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdateToolsMove(wxUpdateUIEvent& event)
 {
-	// not yet implemented
-	event.Enable(false);
+	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_MOVE);
 }
 

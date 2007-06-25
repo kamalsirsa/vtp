@@ -86,6 +86,7 @@ Enviro::Enviro() : vtTerrainScene()
 	m_PlantOpt.m_fSpacing = 2.0f;
 
 	m_bDragging = false;
+	m_bDragUpDown = false;
 	m_bSelectedStruct = false;
 	m_bSelectedPlant = false;
 	m_bSelectedVehicle = false;
@@ -207,7 +208,7 @@ void Enviro::LoadTerrainDescriptions(const vtString &path)
 		//  vtTerrain.
 		vtTerrain *pTerr;
 		if (before_dot == "Hawai`i" || before_dot == "Hawai'i" ||
-			before_dot == "Hawaii" || before_dot == "Honoka`a" ||
+			before_dot == "Hawaii" || before_dot == "Honoka'a" ||
 			before_dot == "Kealakekua" || before_dot == "Kamuela")
 			pTerr = new IslandTerrain;
 		else if (before_dot == "Nevada")
@@ -1206,6 +1207,7 @@ bool Enviro::OnMouse(vtMouseEvent &event)
 		if (event.button == VT_RIGHT)
 			OnMouseRightUp(event);
 	}
+	m_MouseLast = event.pos;
 	return true;
 }
 
@@ -1278,6 +1280,9 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 
 	if (m_mode == MM_SELECT)
 		OnMouseLeftDownTerrainSelect(event);
+
+	if (m_mode == MM_MOVE)
+		OnMouseLeftDownTerrainMove(event);
 
 	if (m_mode == MM_MEASURE)
 	{
@@ -1560,7 +1565,12 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 				}
 			}
 			else
+			{
 				m_bDragging = true;
+				// Press 'alt' key to drag vertically instead of horizontally
+				if ((event.flags & VT_ALT) != 0)
+					m_bDragUpDown = true;
+			}
 			m_bSelectedStruct = true;
 		}
 		if (structures_picked != structures)
@@ -1611,9 +1621,22 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 	m_MouseDown = event.pos;
 }
 
+void Enviro::OnMouseLeftDownTerrainMove(vtMouseEvent &event)
+{
+	m_EarthPosDown = m_EarthPosLast = m_EarthPos;
+	m_MouseDown = event.pos;
+
+	// In move mode, always start dragging
+	m_bDragging = true;
+
+	// Press 'shift' key to drag vertically instead of horizontally
+	if ((event.flags & VT_SHIFT) != 0)
+		m_bDragUpDown = true;
+}
+
 void Enviro::OnMouseLeftUp(vtMouseEvent &event)
 {
-	m_bDragging = m_bRotating = false;
+	m_bDragging = m_bDragUpDown = m_bRotating = false;
 
 	if (m_state == AS_Orbit && m_mode == MM_MEASURE && m_bDragging)
 		UpdateEarthArc();
@@ -1678,7 +1701,8 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 
 void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 {
-	if (m_mode == MM_SELECT && (m_bDragging || m_bRotating))
+	if ((m_mode == MM_SELECT || m_mode == MM_MOVE) &&
+		(m_bDragging || m_bRotating))
 	{
 		DPoint3 delta = m_EarthPos - m_EarthPosLast;
 		DPoint2 ground_delta(delta.x, delta.y);
@@ -1694,7 +1718,13 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 
 			if (m_bDragging)
 			{
-				if (m_pDraggingFence != NULL)
+				if (m_bDragUpDown)
+				{
+					// Moving a whole structure (building or instance)
+					float fDelta = (m_MouseLast.y - event.pos.y) / 20.0f;
+					structures->OffsetSelectedStructuresVertical(fDelta);
+				}
+				else if (m_pDraggingFence != NULL)
 				{
 					// Dragging a linear structure point
 					DLine2 &pts = m_pDraggingFence->GetFencePoints();
@@ -1749,8 +1779,6 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 					eng->SetRotation(fNewRotation);
 			}
 		}
-
-
 		m_EarthPosLast = m_EarthPos;
 	}
 	if (m_mode == MM_MEASURE && m_bDragging && m_bOnTerrain)
