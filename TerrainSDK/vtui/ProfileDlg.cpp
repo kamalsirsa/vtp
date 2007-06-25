@@ -394,7 +394,7 @@ void ProfileDlg::ComputeLineOfSight()
 				{
 					// line of sight intersects the culture
 					m_bIntersectsCulture = true;
-					m_fIntersectHeight = fCultureHeight;
+					m_fIntersectHeight = fLineHeight;
 					m_fIntersectDistance = (float)i / (m_xrange-1) * m_fGeodesicDistance;
 					m_iIntersectIndex = i;
 				}
@@ -410,6 +410,27 @@ void ProfileDlg::ComputeLineOfSight()
 		}
 	}
 	m_bHaveLOS = true;
+}
+
+float ProfileDlg::TotalHeightAt(int i)
+{
+	float val = m_values[i];
+	if (val == INVALID_ELEVATION)
+		return val;
+
+	if (m_bHaveGeoidSurface && m_iCurvature == 1)
+		val += m_GeoidSurface[i];
+
+	if (m_bHaveCulture)
+	{
+		float fCultureHeight = m_values_culture[i];
+		if (fCultureHeight != INVALID_ELEVATION)
+		{
+			float diff = m_values_culture[i] - m_values[i];
+			val += diff;
+		}
+	}
+	return val;
 }
 
 void ProfileDlg::ComputeVisibility()
@@ -431,7 +452,7 @@ void ProfileDlg::ComputeVisibility()
 		for (i = 0; i < j; i++)
 		{
 			float fLineHeight = m_fHeightAtStart + diff * i / j;
-			if (fLineHeight <= (m_values[i]+(apply_geoid>0 ? m_GeoidSurface[i] : 0)))
+			if (fLineHeight <= TotalHeightAt(i))
 			{
 				vis = false;
 				break;
@@ -445,7 +466,7 @@ void ProfileDlg::ComputeVisibility()
 		for (i = m_xrange-1; i > j; i--)
 		{
 			float fLineHeight = m_fHeightAtEnd + diff * (m_xrange-i) / (m_xrange-j);
-			if (fLineHeight <= (m_values[i]+(apply_geoid>0 ? m_GeoidSurface[i] : 0)))
+			if (fLineHeight <= TotalHeightAt(i))
 			{
 				vis = 0;
 				break;

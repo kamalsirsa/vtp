@@ -72,6 +72,7 @@ public:
 	void ComputeGeoidSurface();
 	float ApplyGeoid(float h, int i, char t);
 	void ComputeSignalLoss(float dist, float freq);
+	float TotalHeightAt(int i);
 
 	void WriteProfileToDXF(const char *filename);
 	void WriteTraceToDXF(const char *filename);
