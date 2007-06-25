@@ -323,6 +323,7 @@ void ProfileDlg::Analyze()
 	m_bValidStart = false;
 	m_bValidLine = false;
 	m_bIntersectsGround = false;
+	m_bIntersectsCulture = false;
 
 	if (!m_bHaveValues)
 		return;
@@ -382,14 +383,30 @@ void ProfileDlg::ComputeLineOfSight()
 		if (m_bHaveGeoidSurface && m_iCurvature == 1)
 			fGroundHeight += m_GeoidSurface[i];
 
-		m_LineOfSight[i]=fLineHeight;
-		if (!m_bIntersectsGround && fLineHeight < fGroundHeight)
+		m_LineOfSight[i] = fLineHeight;
+
+		if (!m_bIntersectsCulture && !m_bIntersectsGround)
 		{
-			// line of sight intersects the ground
-			m_bIntersectsGround = true;
-			m_fIntersectHeight = fGroundHeight;
-			m_fIntersectDistance = (float)i / (m_xrange-1) * m_fGeodesicDistance;
-			m_iIntersectIndex = i;
+			if (m_bHaveCulture)
+			{
+				float fCultureHeight = m_values_culture[i];
+				if (fLineHeight < fCultureHeight)
+				{
+					// line of sight intersects the culture
+					m_bIntersectsCulture = true;
+					m_fIntersectHeight = fCultureHeight;
+					m_fIntersectDistance = (float)i / (m_xrange-1) * m_fGeodesicDistance;
+					m_iIntersectIndex = i;
+				}
+			}
+			if (fLineHeight < fGroundHeight)
+			{
+				// line of sight intersects the ground
+				m_bIntersectsGround = true;
+				m_fIntersectHeight = fGroundHeight;
+				m_fIntersectDistance = (float)i / (m_xrange-1) * m_fGeodesicDistance;
+				m_iIntersectIndex = i;
+			}
 		}
 	}
 	m_bHaveLOS = true;
@@ -842,14 +859,6 @@ void ProfileDlg::DrawChart(wxDC& dc)
 		dc.DrawCircle(p1, 5);
 	}
 
-	if (m_bIntersectsGround)
-	{
-		wxBrush brush3(wxColour(255,128,0), wxSOLID);	// orange: intersection
-		dc.SetBrush(brush3);
-		MakePoint(p1, m_iIntersectIndex, m_fIntersectHeight);
-		dc.DrawCircle(p1, 5);
-	}
-
 	if (m_bHaveCulture)
 	{
 		dc.SetPen(pen7);
@@ -870,6 +879,14 @@ void ProfileDlg::DrawChart(wxDC& dc)
 			MakePoint(p2, i, v2);
 			dc.DrawLine(p1, p2);
 		}
+	}
+
+	if (m_bIntersectsGround || m_bIntersectsCulture)
+	{
+		wxBrush brush3(wxColour(255,128,0), wxSOLID);	// orange: intersection
+		dc.SetBrush(brush3);
+		MakePoint(p1, m_iIntersectIndex, m_fIntersectHeight);
+		dc.DrawCircle(p1, 5);
 	}
 
 	// Also update message text
@@ -929,6 +946,13 @@ void ProfileDlg::UpdateMessageText()
 	{
 		str += _T("\n");
 		str2.Printf(_("Intersects ground at height %.2f, distance %.1f"),
+			m_fIntersectHeight, m_fIntersectDistance);
+		str += str2;
+	}
+	if (m_bValidLine && m_bIntersectsCulture)
+	{
+		str += _T("\n");
+		str2.Printf(_("Intersects culture at height %.2f, distance %.1f"),
 			m_fIntersectHeight, m_fIntersectDistance);
 		str += str2;
 	}

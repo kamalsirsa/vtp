@@ -102,6 +102,7 @@ private:
 	bool m_bValidStart, m_bValidLine;
 	float m_fHeightAtStart, m_fHeightAtEnd;
 	bool m_bIntersectsGround;
+	bool m_bIntersectsCulture;
 	float m_fIntersectHeight;
 	float m_fIntersectDistance;
 	int m_iIntersectIndex;
