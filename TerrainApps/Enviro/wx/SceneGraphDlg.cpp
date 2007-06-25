@@ -1,7 +1,7 @@
 //
 // Name:		SceneGraphDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -44,12 +44,12 @@ using namespace std;
 class MyTreeItemData : public wxTreeItemData
 {
 public:
-	MyTreeItemData(vtNodeBase *pNode, vtEngine *pEngine)
+	MyTreeItemData(vtNode *pNode, vtEngine *pEngine)
 	{
 		m_pNode = pNode;
 		m_pEngine = pEngine;
 	}
-	vtNodeBase *m_pNode;
+	vtNode *m_pNode;
 	vtEngine *m_pEngine;
 };
 
@@ -68,6 +68,8 @@ BEGIN_EVENT_TABLE(SceneGraphDlg,wxDialog)
 	EVT_CHECKBOX( ID_ENABLED, SceneGraphDlg::OnEnabled )
 	EVT_BUTTON( ID_ZOOMTO, SceneGraphDlg::OnZoomTo )
 	EVT_BUTTON( ID_REFRESH, SceneGraphDlg::OnRefresh )
+	EVT_BUTTON( ID_LOG, SceneGraphDlg::OnLog )
+	EVT_CHAR( SceneGraphDlg::OnChar )
 END_EVENT_TABLE()
 
 SceneGraphDlg::SceneGraphDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -156,7 +158,7 @@ void SceneGraphDlg::RefreshTreeContents()
 
 
 void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
-										vtNodeBase *pNode, int depth)
+										vtNode *pNode, int depth)
 {
 	wxString str;
 	int nImage;
@@ -387,5 +389,22 @@ void SceneGraphDlg::OnInitDialog(wxInitDialogEvent& event)
 	RefreshTreeContents();
 
 	wxWindow::OnInitDialog(event);
+}
+
+void SceneGraphDlg::OnChar(wxKeyEvent& event)
+{
+	long key = event.GetKeyCode();
+
+	if (key == 'd' && m_pSelectedNode)
+		vtLogNativeGraph(m_pSelectedNode->GetOsgNode());
+
+	// Allow wxWindows to pass the event along to other code
+	event.Skip();
+}
+
+void SceneGraphDlg::OnLog( wxCommandEvent &event )
+{
+	if (m_pSelectedNode)
+		vtLogNativeGraph(m_pSelectedNode->GetOsgNode());
 }
 

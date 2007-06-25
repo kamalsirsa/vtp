@@ -133,6 +133,9 @@ wxSizer *SceneGraphFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxButton *item5 = new wxButton( parent, ID_REFRESH, _("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
+    wxButton *item6 = new wxButton( parent, ID_LOG, _("Log"), wxDefaultPosition, wxSize(30,-1), 0 );
+    item2->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+
     item0->Add( item2, 0, wxALIGN_CENTER|wxALL, 0 );
 
     if (set_sizer)
