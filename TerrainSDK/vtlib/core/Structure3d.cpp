@@ -318,6 +318,29 @@ void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 	}
 }
 
+void vtStructureArray3d::OffsetSelectedStructuresVertical(float offset)
+{
+	vtStructure *str;
+	for (unsigned int i = 0; i < GetSize(); i++)
+	{
+		str = GetAt(i);
+		if (!str->IsSelected())
+			continue;
+		if (str->GetType() == ST_BUILDING)
+		{
+			vtBuilding3d *bld = GetBuilding(i);
+			bld->SetElevationOffset(bld->GetElevationOffset() + offset);
+			bld->AdjustHeight(m_pTerrain->GetHeightField());
+		}
+		if (str->GetType() == ST_INSTANCE)
+		{
+			vtStructInstance3d *inst = GetInstance(i);
+			inst->SetElevationOffset(inst->GetElevationOffset() + offset);
+			inst->UpdateTransform(m_pTerrain->GetHeightField());
+		}
+	}
+}
+
 void vtStructureArray3d::VisualDeselectAll()
 {
 	for (unsigned int i = 0; i < GetSize(); i++)

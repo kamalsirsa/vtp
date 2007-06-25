@@ -4,7 +4,7 @@
 // Implements the vtStructure3d class which extends vtStructure with the
 // ability to create 3D geometry.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -175,6 +175,7 @@ public:
 	bool ConstructStructure(vtStructure3d *str);
 	bool ConstructStructure(int index);
 	void OffsetSelectedStructures(const DPoint2 &offset);
+	void OffsetSelectedStructuresVertical(float offset);
 
 	/// Deselect all structures including turning off their visual highlights
 	void VisualDeselectAll();
