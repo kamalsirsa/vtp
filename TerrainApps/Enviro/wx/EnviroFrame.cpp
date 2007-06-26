@@ -583,11 +583,11 @@ void EnviroFrame::RefreshToolbar()
  		count = m_pToolbar->GetToolsCount();
  	}
 	m_pToolbar->Realize();
-	ADD_TOOL(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
+	AddTool(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
 #else
 	if (!count)
 	{
-		ADD_TOOL(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
+		AddTool(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
 		count = 1;
 	}
 	while (count > 1)
@@ -602,64 +602,64 @@ void EnviroFrame::RefreshToolbar()
 
 	if (bTerr)
 	{
-		ADD_TOOL(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
-		ADD_TOOL(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
-		ADD_TOOL(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
-		ADD_TOOL(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
-		ADD_TOOL(ID_TOOLS_POINTS, wxBITMAP(placemark), _("Create Points"), true);
-		ADD_TOOL(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
-		ADD_TOOL(ID_TOOLS_VEHICLES, wxBITMAP(vehicles), _("Create Vehicles"), true);
-		ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);
-		ADD_TOOL(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
+		AddTool(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
+		AddTool(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
+		AddTool(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
+		AddTool(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
+		AddTool(ID_TOOLS_POINTS, wxBITMAP(placemark), _("Create Points"), true);
+		AddTool(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
+		AddTool(ID_TOOLS_VEHICLES, wxBITMAP(vehicles), _("Create Vehicles"), true);
+		AddTool(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);
+		AddTool(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
 	}
 	if (bTerr || bEarth)
 	{
-		ADD_TOOL(ID_TOOLS_MEASURE, wxBITMAP(distance), _("Measure Distance"), true);
+		AddTool(ID_TOOLS_MEASURE, wxBITMAP(distance), _("Measure Distance"), true);
 	}
 	if (bTerr)
 	{
 		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), true);
+		AddTool(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), true);
 	}
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
-	ADD_TOOL(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
+	AddTool(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
+	AddTool(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
 	if (bTerr || bEarth)
 	{
 		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_FILE_LAYERS, wxBITMAP(layers), _("Show Layer Dialog"), false);
+		AddTool(ID_FILE_LAYERS, wxBITMAP(layers), _("Show Layer Dialog"), false);
 	}
 	if (bTerr)
 	{
 		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_VIEW_MAINTAIN, wxBITMAP(maintain), _("Maintain Height"), true);
-		ADD_TOOL(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
-		ADD_TOOL(ID_VIEW_SLOWER, wxBITMAP(nav_slow), _("Fly Slower"), false);
-		ADD_TOOL(ID_VIEW_SETTINGS, wxBITMAP(nav_set), _("Camera Dialog"), false);
-		ADD_TOOL(ID_VIEW_LOCATIONS, wxBITMAP(loc), _("Locations"), false);
+		AddTool(ID_VIEW_MAINTAIN, wxBITMAP(maintain), _("Maintain Height"), true);
+		AddTool(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
+		AddTool(ID_VIEW_SLOWER, wxBITMAP(nav_slow), _("Fly Slower"), false);
+		AddTool(ID_VIEW_SETTINGS, wxBITMAP(nav_set), _("Camera Dialog"), false);
+		AddTool(ID_VIEW_LOCATIONS, wxBITMAP(loc), _("Locations"), false);
 	}
 	if (m_bEnableEarth)
 	{
 		m_pToolbar->AddSeparator();
-		if (bTerr) ADD_TOOL(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
-		ADD_TOOL(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
-		m_pToolbar->AddSeparator();
+		if (bTerr) AddTool(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
+		AddTool(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
 		if (bEarth)
 		{
-			ADD_TOOL(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Show Sunlight"), true);
-			ADD_TOOL(ID_EARTH_SHOWAXES, wxBITMAP(axes), _("Axes"), true);
-			ADD_TOOL(ID_EARTH_TILT, wxBITMAP(tilt), _("Tilt"), true);
-			ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
-			ADD_TOOL(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
+			m_pToolbar->AddSeparator();
+			AddTool(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Show Sunlight"), true);
+			AddTool(ID_EARTH_SHOWAXES, wxBITMAP(axes), _("Axes"), true);
+			AddTool(ID_EARTH_TILT, wxBITMAP(tilt), _("Tilt"), true);
+			AddTool(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
+			AddTool(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
 		}
 	}
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_TIME_DIALOG, wxBITMAP(time), _("Time"), false);
-	ADD_TOOL(ID_TIME_FASTER, wxBITMAP(faster), _("Time Faster"), false);
-	ADD_TOOL(ID_TIME_STOP, wxBITMAP(stop), _("Time Stop"), false);
+	AddTool(ID_TIME_DIALOG, wxBITMAP(time), _("Time"), false);
+	AddTool(ID_TIME_FASTER, wxBITMAP(faster), _("Time Faster"), false);
+	AddTool(ID_TIME_STOP, wxBITMAP(stop), _("Time Stop"), false);
 
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
+	AddTool(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
 
 	VTLOG1("Realize toolbar.\n");
 	m_pToolbar->Realize();
@@ -676,6 +676,12 @@ void EnviroFrame::RefreshToolbar()
 
 void EnviroFrame::Setup3DScene()
 {
+}
+
+void EnviroFrame::AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, bool tog)
+{
+	m_pToolbar->AddTool(id, tooltip, bmp, tooltip,
+		tog ? wxITEM_CHECK : wxITEM_NORMAL);
 }
 
 //

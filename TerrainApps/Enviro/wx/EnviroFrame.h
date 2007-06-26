@@ -33,8 +33,6 @@ class vtTerrain;
 class vtTimeEngine;
 
 // some shortcuts
-#define ADD_TOOL(id, bmp, tooltip, tog)	 \
-	m_pToolbar->AddTool(id, bmp, wxNullBitmap, tog, -1, -1, (wxObject *)0, tooltip, tooltip)
 #define ADD_TOOL2(bar, id, bmp, label, type) \
 	bar->AddTool(id, label, bmp, wxNullBitmap, type, label, label)
 
@@ -69,6 +67,8 @@ public:
 	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
 	virtual void FrameArgument(int i, const char *str) { }
 	virtual void PostConstruction() { }
+	virtual void AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, bool tog);
+
 	void UpdateLODInfo();
 
 	// command handlers
