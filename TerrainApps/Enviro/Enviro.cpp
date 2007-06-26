@@ -2462,9 +2462,12 @@ void Enviro::CreateElevationLegend()
 	m_pLegendGeom->AddMesh(mesh4, 1);
 	mesh4->Release();
 
+	float fMin, fMax;
+	GetCurrentTerrain()->GetHeightField()->GetHeightExtents(fMin, fMax);
+
 	// Big band of color
 	std::vector<RGBi> table;
-	cmap->GenerateColors(table, in_size.y, 0, 1);
+	cmap->GenerateColors(table, in_size.y, fMin, fMax);
 	vtMesh *mesh1 = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
 	for (i = 0; i < in_size.y + 1; i++)
 	{
@@ -2488,9 +2491,6 @@ void Enviro::CreateElevationLegend()
 	}
 	m_pLegendGeom->AddMesh(mesh2, 0);
 	mesh2->Release();
-
-	float fMin, fMax;
-	GetCurrentTerrain()->GetHeightField()->GetHeightExtents(fMin, fMax);
 
 	// Text labels
 	vtFont *font = new vtFont;
