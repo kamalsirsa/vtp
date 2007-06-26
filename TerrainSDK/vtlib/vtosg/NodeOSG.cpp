@@ -916,6 +916,11 @@ vtNode *vtNativeNode::FindParentVTNode()
 	osg::Node *node = GetOsgNode();
 	while (node)
 	{
+		// safety check: handle the case in which moving upwards leads nowhere
+		int parents = node->getNumParents();
+		if (parents == 0)
+			return NULL;
+
 		node = node->getParent(0);
 		osg::Referenced *ref = node->getUserData();
 		if (ref)
