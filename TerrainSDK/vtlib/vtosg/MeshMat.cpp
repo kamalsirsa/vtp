@@ -831,6 +831,7 @@ void vtMesh::AllowOptimize(bool bAllow)
 void vtMesh::ReOptimize()
 {
 	m_pGeometry->dirtyDisplayList();
+	m_pGeometry->dirtyBound();
 }
 
 /**
