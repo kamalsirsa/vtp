@@ -1,7 +1,7 @@
 //
 // Name: StartupDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -33,12 +33,24 @@ DECLARE_APP(EnviroApp);
 
 static void ShowOGLInfo2(bool bLog)
 {
+#if 1
+	wxFrame *frame = new wxFrame(NULL, wxID_ANY, wxT(""), wxPoint(0, 0), wxSize(0, 0), 0);
+	wxGLCanvas *canvas = new wxGLCanvas(frame, wxID_ANY, wxPoint(0, 0), wxSize(0, 0));
+#ifdef __WXGTK__
+		frame->Show(true);
+		canvas->SetCurrent();
+		frame->Show(false);
+#else
+		canvas->GetContext()->SetCurrent(*canvas);
+#endif
+#else
 	wxFrame *frame = new wxFrame();
 	frame->Create(NULL, -1, _T("Test"));
 	wxGLCanvas *canvas = new wxGLCanvas(frame, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 	frame->Show();
 	canvas->SetCurrent();	// This is necessary as of wx 2.8
 	frame->Show(false);		// Minimise the visibility of the opengl test window
+#endif
 
 	GLint value;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &value);
