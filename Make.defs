@@ -7,7 +7,7 @@
 #----------------------------------------------------------------------------
 # Here you can turn various build options on and off
 #----------------------------------------------------------------------------
-SWITCHES = -DUNIX -DSUPPORT_QUIKGRID=0 -DSUPPORT_NETCDF=0 -DSUPPORT_HTTP=0 -DSUPPORT_BZIP2=0
+SWITCHES = -DUNIX -DSUPPORT_QUIKGRID=0 -DSUPPORT_NETCDF=0 -DSUPPORT_HTTP=0 -DSUPPORT_BZIP2=0 -DSUPPORT_SQUISH=0
 
 #----------------------------------------------------------------------------
 # define the OS to dynamically figure out the configuration
