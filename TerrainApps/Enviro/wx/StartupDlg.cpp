@@ -16,12 +16,12 @@
 #  include "wx/wx.h"
 #endif
 
-#include "wx/glcanvas.h"
-
 #include "vtlib/vtlib.h"	// mostly for gl.h
 #include "vtlib/core/TParams.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for AddFilenamesToComboBox
+
+#include "wx/glcanvas.h"
 
 #include "EnviroApp.h"
 #include "OptionsDlg.h"
