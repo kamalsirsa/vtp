@@ -73,6 +73,9 @@ private:
 	void EnableAbort(bool enable=true);
 	inline void DisableAbort() { EnableAbort(false); }
 
+	// Yield to other parts of the GUI
+	void DoYield();
+
 	// the status bars
 	wxGauge *m_gauge1;
 	wxGauge *m_gauge2;

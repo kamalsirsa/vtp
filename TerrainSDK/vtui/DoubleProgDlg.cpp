@@ -271,7 +271,7 @@ DoubleProgressDialog::Update(int value1, int value2, const wxString& newmsg)
 				m_msg->SetLabel(_("Done."));
 			}
 
-			wxYieldIfNeeded() ;
+			DoYield();
 
 			(void)ShowModal();
 		}
@@ -302,7 +302,7 @@ bool DoubleProgressDialog::DoAfterUpdate()
 	{
 		// we have to yield because not only we want to update the display but
 		// also to process the clicks on the cancel button
-		wxYieldIfNeeded();
+		DoYield();
 	}
 
 	Update();
@@ -449,8 +449,17 @@ void DoubleProgressDialog::UpdateMessage(const wxString &newmsg)
 	if ( !newmsg.empty() && newmsg != m_msg->GetLabel() )
 	{
 		m_msg->SetLabel(newmsg);
-
-		wxYieldIfNeeded() ;
+		DoYield();
 	}
+}
+
+void DoubleProgressDialog::DoYield()
+{
+#ifndef __WXGTK__
+	// For some reason, calling wxYieldIfNeeded on Linux seems to cause the
+	//  application to lock up quite often.  And it seems to work OK on that
+	//  platform if we don't even call Yield at all.
+	wxYieldIfNeeded() ;
+#endif
 }
 
