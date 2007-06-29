@@ -364,6 +364,8 @@ int vtStructureArray::AddFoundations(vtHeightField *pHF)
 
 	int selected = NumSelected();
 	int size = GetSize();
+	VTLOG("AddFoundations: %d selected, %d total, ", selected, size);
+
 	for (i = 0; i < size; i++)
 	{
 		vtStructure *str = GetAt(i);
@@ -403,6 +405,7 @@ int vtStructureArray::AddFoundations(vtHeightField *pHF)
 		pNewLev->SetEdgeColor(RGBi(255, 255, 255));
 		built++;
 	}
+	VTLOG("%d added.\n", built);
 	return built;
 }
 
