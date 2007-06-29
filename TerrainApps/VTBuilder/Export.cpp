@@ -891,10 +891,6 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 					// Free the uncompressed image
 					free(rgb_bytes);
-
-					// Don't bother making tiny tiles
-					if (tilesize == 64)
-						break;
 				}
 			}
 
