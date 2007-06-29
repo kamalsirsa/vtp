@@ -52,7 +52,8 @@ public:
 		if (event.GetKeyCode() == WXK_DELETE)
 		{
 			int sel = m_pBox->GetSelection();
-			if (sel != -1 && sel < m_pBox->GetCount()-1)
+			int count = m_pBox->GetCount();
+			if (sel != -1 && sel < count-1)
 			{
 				m_pDlg->DeleteItem(m_pBox);
 				m_pDlg->TransferDataToWindow();
