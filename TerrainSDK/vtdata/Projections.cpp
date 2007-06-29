@@ -1374,6 +1374,7 @@ bool GDALWrapper::FindPROJ4SO()
 	dpso.push_back(vtString(DEFAULT_LOCATION_PROJSO));
 	// add the usual unix paths
 	dpso.push_back(vtString("/usr/local/lib/"));
+	dpso.push_back(vtString("/usr/lib/"));
 
 	// On non-Windows platform, we have to look for the library itself
 	vtString soExtension = ".unknown"; // for no platform.
