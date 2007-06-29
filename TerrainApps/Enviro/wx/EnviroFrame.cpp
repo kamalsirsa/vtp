@@ -1799,9 +1799,16 @@ void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 	{
 		sa->RemoveFoundations();
 	}
-	int i, size = sa->GetSize();
+	int i, size = sa->GetSize(), selected = sa->NumSelected();
 	for (i = 0; i < size; i++)
+	{
+		vtStructure *s = sa->GetAt(i);
+		if (selected > 0 && !s->IsSelected())
+			continue;
+		if (s->GetType() != ST_BUILDING)
+			continue;
 		sa->ConstructStructure(i);
+	}
 }
 
 void EnviroFrame::OnUpdateFoundations(wxUpdateUIEvent& event)
