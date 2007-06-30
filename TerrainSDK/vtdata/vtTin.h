@@ -1,7 +1,7 @@
 //
 // vtTin.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -36,11 +36,14 @@ public:
 
 	void AddVert(const DPoint2 &p, float z);
 	void AddVert(const DPoint2 &p, float z, FPoint3 &normal);
-	void AddTri(int i1, int i2, int i3, int surface_type = -1);
+	void AddTri(int v1, int v2, int v3, int surface_type = -1);
+	void RemVert(int v);
+	void RemTri(int t);
 
 	bool Read(const char *fname);
 	bool Write(const char *fname) const;
 	bool ReadDXF(const char *fname, bool progress_callback(int) = NULL);
+	bool ReadADF(const char *fname, bool progress_callback(int) = NULL);
 
 	unsigned int AddSurfaceType(const vtString &surface_texture, bool bTiled = false);
 

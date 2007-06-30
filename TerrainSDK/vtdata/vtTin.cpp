@@ -3,7 +3,7 @@
 //
 // Class which represents a Triangulated Irregular Network.
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,7 +11,7 @@
 #include "vtLog.h"
 #include "DxfParser.h"
 #include "FilePath.h"
-
+#include "ByteOrder.h"
 
 void vtTin::AddVert(const DPoint2 &p, float z)
 {
@@ -34,6 +34,42 @@ void vtTin::AddTri(int i1, int i2, int i3, int surface_type)
 	m_tri.Append(i3);
 	if (surface_type != -1)
 		m_surfidx.Append(surface_type);
+}
+
+void vtTin::RemVert(int v)
+{
+	// safety check
+	if (v < 0 || v >= (int) m_vert.GetSize())
+		return;
+	m_vert.RemoveAt(v);
+	m_z.RemoveAt(v);
+	m_vert_normal.RemoveAt(v);
+
+	// Re-index the triangles
+	for (int i = 0; i < m_tri.GetSize()/3; i++)
+	{
+		// Remove any triangles which referenced this vertex
+		if (m_tri[i*3 + 0] == v ||
+			m_tri[i*3 + 1] == v ||
+			m_tri[i*3 + 2] == v)
+		{
+			m_tri.RemoveAt(i*3, 3);
+			i--;
+			continue;
+		}
+		// For all other triangles, adjust the indices to reflect the removal
+		if (m_tri[i*3 + 0] > v) m_tri[i*3 + 0] = m_tri[i*3 + 0] - 1;
+		if (m_tri[i*3 + 1] > v) m_tri[i*3 + 1] = m_tri[i*3 + 1] - 1;
+		if (m_tri[i*3 + 2] > v) m_tri[i*3 + 2] = m_tri[i*3 + 2] - 1;
+	}
+}
+
+void vtTin::RemTri(int t)
+{
+	// safety check
+	if (t < 0 || t >= (int) m_tri.GetSize())
+		return;
+	m_tri.RemoveAt(t*3, 3);
 }
 
 unsigned int vtTin::AddSurfaceType(const vtString &surface_texture, bool bTiled)
@@ -186,6 +222,143 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 	return true;
 }
 
+bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
+{
+	vtString tnxy_name = fname;
+	if (tnxy_name.Right(6) != "xy.adf")
+		return false;
+
+	vtString base = tnxy_name.Left(tnxy_name.GetLength()-6);
+	vtString tnz_name = base + "z.adf";
+	vtString tnod_name = base + "od.adf";
+
+	FILE *fp1 = vtFileOpen(tnxy_name, "rb");
+	FILE *fp2 = vtFileOpen(tnz_name, "rb");
+	FILE *fp3 = vtFileOpen(tnod_name, "rb");
+	if (!fp1 || !fp2 || !fp3)
+		return false;
+
+	fseek(fp1, 0, SEEK_END);
+	int length_xy = ftell(fp1);
+	rewind(fp1);	// go back again
+	int num_points = length_xy / 16;	// X and Y, each 8 byte doubles
+
+	fseek(fp2, 0, SEEK_END);
+	int length_z = ftell(fp2);
+	rewind(fp2);	// go back again
+	int num_heights = length_z / 4;		// Z is a 4 byte float
+
+	DPoint2 p;
+	float z;
+	for (int i = 0; i < num_points; i++)
+	{
+		FRead(&p.x, DT_DOUBLE, 2, fp1, BO_BIG_ENDIAN, BO_LITTLE_ENDIAN);
+		FRead(&z, DT_FLOAT, 1, fp2, BO_BIG_ENDIAN, BO_LITTLE_ENDIAN);
+		AddVert(p, z);
+	}
+
+	fseek(fp3, 0, SEEK_END);
+	int length_od = ftell(fp3);
+	rewind(fp3);	// go back again
+	int num_faces = length_od / 12;		// A B C as 4-byte ints
+
+	int v[3];
+	for (int i = 0; i < num_faces; i++)
+	{
+		FRead(v, DT_INT, 3, fp3, BO_BIG_ENDIAN, BO_LITTLE_ENDIAN);
+		AddTri(v[0]-1, v[1]-1, v[2]-1);
+	}
+
+	fclose(fp1);
+	fclose(fp2);
+	fclose(fp3);
+
+	// Cleanup: the ESRI TIN contains four "boundary" point far outside the
+	//  extents (directly North, South, East, and West).  We should ignore
+	//  those four points and the triangles connected to them.
+#if 0
+	// Look for far-West:
+	int outer;
+	double farthest;
+	outer = -1;
+	farthest = 1E9;
+	for (int i = 0; i < m_vert.GetSize(); i++)
+	{
+		if (m_vert[i].x < farthest)
+		{
+			farthest = m_vert[i].x;
+			outer = i;
+		}
+	}
+	RemVert(outer);
+
+	// Look for far-East:
+	outer = -1;
+	farthest = -1E9;
+	for (int i = 0; i < m_vert.GetSize(); i++)
+	{
+		if (m_vert[i].x > farthest)
+		{
+			farthest = m_vert[i].x;
+			outer = i;
+		}
+	}
+	RemVert(outer);
+	// Look for far-South:
+	outer = -1;
+	farthest = 1E9;
+	for (int i = 0; i < m_vert.GetSize(); i++)
+	{
+		if (m_vert[i].y < farthest)
+		{
+			farthest = m_vert[i].y;
+			outer = i;
+		}
+	}
+	RemVert(outer);
+	// Look for far-North:
+	outer = -1;
+	farthest = -1E9;
+	for (int i = 0; i < m_vert.GetSize(); i++)
+	{
+		if (m_vert[i].y > farthest)
+		{
+			farthest = m_vert[i].y;
+			outer = i;
+		}
+	}
+	RemVert(outer);
+#endif
+	// It seems we can assume the four 'extra' vertices are the first four.
+	m_vert.RemoveAt(0, 4);
+	m_z.RemoveAt(0, 4);
+	m_vert_normal.RemoveAt(0, 4);
+
+	// Re-index the triangles
+	for (int i = 0; i < m_tri.GetSize()/3; i++)
+	{
+		// Remove any triangles which referenced this vertex
+		if (m_tri[i*3 + 0] < 4 ||
+			m_tri[i*3 + 1] < 4 ||
+			m_tri[i*3 + 2] < 4)
+		{
+			m_tri.RemoveAt(i*3, 3);
+			i--;
+			continue;
+		}
+		// For all other triangles, adjust the indices to reflect the removal
+		m_tri[i*3 + 0] = m_tri[i*3 + 0] - 4;
+		m_tri[i*3 + 1] = m_tri[i*3 + 1] - 4;
+		m_tri[i*3 + 2] = m_tri[i*3 + 2] - 4;
+	}
+
+	// Test each triangle for clockwisdom, fix if needed
+	CleanupClockwisdom();
+
+	ComputeExtents();
+
+	return true;
+}
 
 /**
  * Write the TIN to a new-style .tin file (custom VTP format).
@@ -264,6 +437,7 @@ void vtTin::Offset(const DPoint2 &p)
 	{
 		m_vert[j] += p;
 	}
+	ComputeExtents();
 }
 
 bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) const
