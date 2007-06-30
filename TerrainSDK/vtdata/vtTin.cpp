@@ -46,7 +46,7 @@ void vtTin::RemVert(int v)
 	m_vert_normal.RemoveAt(v);
 
 	// Re-index the triangles
-	for (int i = 0; i < m_tri.GetSize()/3; i++)
+	for (unsigned int i = 0; i < m_tri.GetSize()/3; i++)
 	{
 		// Remove any triangles which referenced this vertex
 		if (m_tri[i*3 + 0] == v ||
@@ -241,17 +241,20 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 	fseek(fp1, 0, SEEK_END);
 	int length_xy = ftell(fp1);
 	rewind(fp1);	// go back again
-	int num_points = length_xy / 16;	// X and Y, each 8 byte doubles
+	unsigned int num_points = length_xy / 16;	// X and Y, each 8 byte doubles
 
 	fseek(fp2, 0, SEEK_END);
 	int length_z = ftell(fp2);
 	rewind(fp2);	// go back again
-	int num_heights = length_z / 4;		// Z is a 4 byte float
+	unsigned int num_heights = length_z / 4;		// Z is a 4 byte float
 
 	DPoint2 p;
 	float z;
-	for (int i = 0; i < num_points; i++)
+	for (unsigned int i = 0; i < num_points; i++)
 	{
+		if ((i%200) == 0 && progress_callback != NULL)
+			progress_callback(i * 40 / num_points);
+
 		FRead(&p.x, DT_DOUBLE, 2, fp1, BO_BIG_ENDIAN, BO_LITTLE_ENDIAN);
 		FRead(&z, DT_FLOAT, 1, fp2, BO_BIG_ENDIAN, BO_LITTLE_ENDIAN);
 		AddVert(p, z);
@@ -260,11 +263,14 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 	fseek(fp3, 0, SEEK_END);
 	int length_od = ftell(fp3);
 	rewind(fp3);	// go back again
-	int num_faces = length_od / 12;		// A B C as 4-byte ints
+	unsigned int num_faces = length_od / 12;		// A B C as 4-byte ints
 
 	int v[3];
-	for (int i = 0; i < num_faces; i++)
+	for (unsigned int i = 0; i < num_faces; i++)
 	{
+		if ((i%200) == 0 && progress_callback != NULL)
+			progress_callback(40 + i * 40 / num_faces);
+
 		FRead(v, DT_INT, 3, fp3, BO_BIG_ENDIAN, BO_LITTLE_ENDIAN);
 		AddTri(v[0]-1, v[1]-1, v[2]-1);
 	}
@@ -335,8 +341,12 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 	m_vert_normal.RemoveAt(0, 4);
 
 	// Re-index the triangles
-	for (int i = 0; i < m_tri.GetSize()/3; i++)
+	unsigned int total = m_tri.GetSize()/3;
+	for (unsigned int i = 0; i < total; i++)
 	{
+		if ((i%200) == 0 && progress_callback != NULL)
+			progress_callback(80 + i * 20 / total);
+
 		// Remove any triangles which referenced this vertex
 		if (m_tri[i*3 + 0] < 4 ||
 			m_tri[i*3 + 1] < 4 ||
@@ -344,13 +354,13 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 		{
 			m_tri.RemoveAt(i*3, 3);
 			i--;
+			total--;
 			continue;
 		}
-		// For all other triangles, adjust the indices to reflect the removal
-		m_tri[i*3 + 0] = m_tri[i*3 + 0] - 4;
-		m_tri[i*3 + 1] = m_tri[i*3 + 1] - 4;
-		m_tri[i*3 + 2] = m_tri[i*3 + 2] - 4;
 	}
+	// For all other triangles, adjust the indices to reflect the removal
+	for (unsigned int i = 0; i < m_tri.GetSize(); i++)
+		m_tri[i] = m_tri[i] - 4;
 
 	// Test each triangle for clockwisdom, fix if needed
 	CleanupClockwisdom();
