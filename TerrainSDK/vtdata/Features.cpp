@@ -1542,7 +1542,9 @@ int vtFeatureSet::AddField(const char *name, FieldType ftype, int string_length)
 	Field *f = new Field(name, ftype);
 	if (ftype == FT_Integer)
 	{
-		f->m_width = 11;
+		// 10 is the maximum number of digits that Shapelib will recognize as
+		//  an integer.  More than that and it assume it's a FTDouble.
+		f->m_width = 10;
 		f->m_decimals = 0;
 	}
 	else if (ftype == FT_Short)
