@@ -1,7 +1,7 @@
 //
 // Name:		VegFieldsDlg.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -60,7 +60,9 @@ private:
 	bool	m_bUseSpecies;
 	bool	m_bSpeciesUseField;
 	bool	m_bHeightRandomize;
+	bool	m_bHeightFixed;
 	bool	m_bHeightUseField;
+	float	m_fFixedHeight;
 
 	void RefreshEnabled();
 

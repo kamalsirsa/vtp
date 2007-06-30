@@ -539,8 +539,11 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString &filename,
 		float size;
 		if (opt.bHeightRandom)
 			size = random(pSpecies->GetMaxHeight());
-		else
+		else if (opt.iHeightFieldIndex != -1)
 			size = (float) DBFReadDoubleAttribute(db, i, opt.iHeightFieldIndex);
+		else
+			// fixed height
+			size = opt.fHeightFixed;
 
 		// If we get here, there is a valid plant to append
 		GetPIA()->AddPlant(pos, size, species_id);

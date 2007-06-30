@@ -1,7 +1,7 @@
 //
 // Name:		VegFieldsDlg.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -47,10 +47,14 @@ VegFieldsDlg::VegFieldsDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	AddValidator(ID_SPECIES_USE_FIELD, &m_bSpeciesUseField);
 
 	m_bHeightRandomize = true;
+	m_bHeightFixed = false;
 	m_bHeightUseField = false;
+	m_fFixedHeight = 5.0f;
 
 	AddValidator(ID_HEIGHT_RANDOM, &m_bHeightRandomize);
+	AddValidator(ID_HEIGHT_FIXED, &m_bHeightFixed);
 	AddValidator(ID_HEIGHT_USE_FIELD, &m_bHeightUseField);
+	AddNumValidator(ID_HEIGHT_FIXED_VALUE, &m_fFixedHeight);
 }
 
 void VegFieldsDlg::SetShapefileName(const wxString &filename)
@@ -152,6 +156,8 @@ void VegFieldsDlg::OnChoice2( wxCommandEvent &event )
 
 void VegFieldsDlg::OnOK( wxCommandEvent &event )
 {
+	TransferDataFromWindow();
+
 	// Species
 	m_options.bFixedSpecies = m_bUseSpecies;
 	m_options.strFixedSpeciesName = GetSpeciesChoice()->GetStringSelection();
@@ -171,8 +177,17 @@ void VegFieldsDlg::OnOK( wxCommandEvent &event )
 
 	// Height
 	m_options.bHeightRandom = m_bHeightRandomize;
-	sel = GetHeightField()->GetSelection();
-	m_options.iHeightFieldIndex = ((long int) GetHeightField()->GetClientData(sel)) - 10;
+	if (m_bHeightFixed)
+		m_options.fHeightFixed = m_fFixedHeight;
+	else
+		m_options.fHeightFixed = -1.0f;
+	if (m_bHeightUseField)
+	{
+		sel = GetHeightField()->GetSelection();
+		m_options.iHeightFieldIndex = ((long int) GetHeightField()->GetClientData(sel)) - 10;
+	}
+	else
+		m_options.iHeightFieldIndex = -1;
 
 	event.Skip();
 }

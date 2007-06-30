@@ -26,6 +26,7 @@ public:
 	int iInterpretSpeciesField;
 
 	bool bHeightRandom;
+	float fHeightFixed;
 	int iHeightFieldIndex;
 };
 

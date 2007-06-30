@@ -1134,35 +1134,41 @@ wxSizer *VegFieldsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticBox *item16 = new wxStaticBox( parent, -1, _("Height") );
     wxStaticBoxSizer *item15 = new wxStaticBoxSizer( item16, wxVERTICAL );
 
-    wxBoxSizer *item17 = new wxBoxSizer( wxHORIZONTAL );
+    wxRadioButton *item17 = new wxRadioButton( parent, ID_HEIGHT_RANDOM, _("Randomize"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item15->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item18 = new wxRadioButton( parent, ID_HEIGHT_RANDOM, _("Randomize"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    item17->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item18 = new wxBoxSizer( wxHORIZONTAL );
 
-    item15->Add( item17, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxRadioButton *item19 = new wxRadioButton( parent, ID_HEIGHT_FIXED, _("Fixed:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item19, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+    wxTextCtrl *item20 = new wxTextCtrl( parent, ID_HEIGHT_FIXED_VALUE, wxT(""), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxRadioButton *item20 = new wxRadioButton( parent, ID_HEIGHT_USE_FIELD, _("Use field:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    item15->Add( item18, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxString *strs21 = (wxString*) NULL;
-    wxChoice *item21 = new wxChoice( parent, ID_HEIGHT_FIELD, wxDefaultPosition, wxSize(140,-1), 0, strs21, 0 );
-    item19->Add( item21, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
 
-    item15->Add( item19, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxRadioButton *item22 = new wxRadioButton( parent, ID_HEIGHT_USE_FIELD, _("Use field:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs23 = (wxString*) NULL;
+    wxChoice *item23 = new wxChoice( parent, ID_HEIGHT_FIELD, wxDefaultPosition, wxSize(140,-1), 0, strs23, 0 );
+    item21->Add( item23, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item15->Add( item21, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
     item0->Add( item15, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item24 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item23 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item25 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item24->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item24 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item26 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item24->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {
