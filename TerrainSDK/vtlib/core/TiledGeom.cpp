@@ -583,9 +583,9 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 	//	- the range can be calculated easily from a given screen space
 	//		error threshold using the miniload::calcrange method
 //	float prange = m_pMiniLoad->calcrange(texdim,winheight,fovy);
-	prange = sqrt(coldim*coldim+rowdim*rowdim)/2;
+	prange = sqrt(coldim*coldim+rowdim*rowdim)/4;
 	prange_min = prange / 2;
-	prange_max = prange * 5;
+	prange_max = prange * 2;
 
 	//pbasesize: specifies the maximum texture size that is paged in
 	//	- a value of zero means that texture size is not limited
@@ -645,6 +645,12 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 		paging,
 		pfarp, prange, pbasesize,
 		plazyness, pupdate, pexpire);
+
+	// Texture paging range calculates: distance to a tile.
+	// To be on the safe side libMini has to take the distance to the next
+	// corner and then subtract at least x times the actual tile edge length.
+	// x is 0.5 by default but you can configure it with configure_tsafety
+	m_pMiniLoad->configure_tsafety(0.0f);
 
 	// define resolution reduction of invisible tiles
 	m_pMiniTile->setreduction(2.0f,3.0f);
@@ -723,7 +729,7 @@ void vtTiledGeom::SetPagingRange(float val)
 
 float vtTiledGeom::GetPagingRange()
 {
-	//prange = m_pMiniLoad->PRANGE;	// TODO
+	prange = m_pMiniLoad->getrange();
 	return prange;
 }
 
