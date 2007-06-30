@@ -865,6 +865,12 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 		success = m_pTin->ReadDXF(fname, progress_callback);
 	}
 	else
+	if (!strFileName.Right(6).CmpNoCase(_T("xy.adf")))
+	{
+		m_pTin = new vtTin2d;
+		success = m_pTin->ReadADF(fname, progress_callback);
+	}
+	else
 	{
 		if (m_pGrid == NULL)
 			m_pGrid = new vtElevationGrid;
@@ -954,7 +960,8 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 			!strExt.Left(3).CmpNoCase(_T("img")) ||
 			!strExt.CmpNoCase(_T("adf")))
 	{
-		success = m_pGrid->LoadWithGDAL(fname, progress_callback);
+		if (m_pGrid)
+			success = m_pGrid->LoadWithGDAL(fname, progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("raw")))
 	{
