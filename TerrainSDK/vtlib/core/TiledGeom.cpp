@@ -991,10 +991,13 @@ bool vtTiledGeom::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		return false;	// already firmly underground
 
 	// adjust magnitude of dir until 2D component has a good magnitude
+
 	// TODO: better estimate than 0,0 tile!
-	int size = m_pMiniTile->getsize(0,0);
-	if (size == 0)	// there might be no tile loaded there
-		return false;
+	//int size = m_pMiniTile->getsize(0,0);
+	//if (size == 0)	// there might be no tile loaded there
+	//	return false;
+	int size = 1024;	// A reasonable default
+
 	float fXStep = m_pMiniTile->getcoldim() / size;
 	float fZStep = m_pMiniTile->getrowdim() / size;
 	float smallest = std::min(fXStep, fZStep);
