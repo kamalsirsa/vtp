@@ -30,11 +30,11 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale) { return DTEr
 
 using namespace mini;
 
-// Set the following "1" to "0" before each code release, because non-core
-//	developers don't need to debug into the libMini library, so they won't
-//  need the *d version.
 #ifdef _MSC_VER
   #if _MSC_VER >= 1400	// vc8
+	// Set the following "1" to "0" before each code release, because non-core
+	//	developers don't need to debug into the libMini library, so they won't
+	//  need the *d version.
 	#if VTDEBUG && 0
 	  #pragma message( "Adding link with libMinid.lib" )
 	  #pragma comment( lib, "libMinid-vc8.lib" )
