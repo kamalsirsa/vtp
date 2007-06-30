@@ -113,9 +113,9 @@ void LODDlg::OnText( wxCommandEvent &event )
 
 	m_pFrame->ChangePagingRange(m_fRange);
 
-	//m_bSet = true;
-	//TransferDataToWindow();
-	//m_bSet = false;
+	m_bSet = true;
+	TransferDataToWindow();
+	m_bSet = false;
 }
 
 void LODDlg::OnRangeSlider( wxCommandEvent &event )
@@ -127,9 +127,9 @@ void LODDlg::OnRangeSlider( wxCommandEvent &event )
 
 	m_pFrame->ChangePagingRange(m_fRange);
 
-	//m_bSet = true;
-	//TransferDataToWindow();
-	//m_bSet = false;
+	m_bSet = true;
+	TransferDataToWindow();
+	m_bSet = false;
 }
 
 void LODDlg::DrawChart(float res0, float res, float res1, int target, int count)
