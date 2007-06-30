@@ -348,7 +348,7 @@ void LayerDlg::RefreshTreeTerrain()
 
 //
 // Refresh only the state (text) of the items: don't destroy or create any.
-// 
+//
 void LayerDlg::UpdateTreeTerrain()
 {
 	vtTerrain *terr = GetCurrentTerrain();

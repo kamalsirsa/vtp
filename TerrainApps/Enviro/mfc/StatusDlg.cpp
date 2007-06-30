@@ -49,7 +49,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CStatusDlg message handlers
 
-void CStatusDlg::PostNcDestroy() 
+void CStatusDlg::PostNcDestroy()
 {
 	CDialog::PostNcDestroy();
 	delete this;

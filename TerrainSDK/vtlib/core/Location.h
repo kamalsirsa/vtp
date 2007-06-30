@@ -1,7 +1,7 @@
 //
 // Location classes
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -26,11 +26,11 @@
  * and an orientation.  The point is always in Geographic coordinates
  * (Latitude/Longitude, WGS84).  It should be converted to and from
  * the actual, desired CRS as appropriate.
- * 
+ *
  * Location and view direction are encoded as two 3D points.  The first
  * is the location, the second is the "Look At" point.  Heading and
  * pitch are implicit in the second point.
- * 
+ *
  * The distance between the two points is arbitrary, but it should be
  * neither very small nor very large, to avoid numerical problems.
  */
@@ -101,7 +101,7 @@ public:
 	/// Return the object attached to this LocationSaver
 	vtTransform *GetTransform() { return m_pTransform; }
 
-	/// Define the conversion between 
+	/// Define the conversion between this saver and terrain coordinates
 	void SetConversion(const vtLocalConversion &conv) { m_conv = conv; }
 
 	/// Define the projection of the object attached to this LocationSaver

@@ -146,7 +146,7 @@ void vtNode::GetBoundBox(FBox3 &box)
 	osg::Pnt3f min, max;
 	vol.getBounds(min, max);
 	box.max = s2v ( max.subZero() );
-	box.min = s2v ( min.subZero() ); 
+	box.min = s2v ( min.subZero() );
 }
 
 void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
@@ -399,7 +399,7 @@ void DecorateVisit(osg::NodePtr node)
 			// needs decorating.  it is a group?
 			if( group ) {
 				vgroup = new vtGroup(true);
-				vgroup->SetOsgNode(node); 
+				vgroup->SetOsgNode(node);
 				vnode = vgroup;
 			} else {
 				// decorate as plain native node
@@ -477,7 +477,7 @@ void vtNode::EnableMultiTexture(vtMultiTexture *mt, bool bEnable)
 		if (attr != NULL)
 			pStateSet->removeTextureAttribute(mt->m_iTextureUnit, attr);
 	}
-#endif 
+#endif
 }
 
 bool vtNode::MultiTextureIsEnabled(vtMultiTexture *mt)
@@ -670,7 +670,7 @@ vtNode *vtGroup::GetChild(unsigned int num) const
 	{
 		osg::NodePtr pChild = m_pNode->getChild (num);
 		//mw: as for now, void attachments are being used similar to userData
-		//mw: in future versions, move on to attachmentPtr 
+		//mw: in future versions, move on to attachmentPtr
 		osg::AttachmentPtr a = pChild->findAttachment(osg::VoidPAttachment::getClassType());
 		if (a!=osg::NullFC)
 		{
@@ -733,7 +733,7 @@ void vtTransform::Release()
 
 void vtTransform::Identity()
 {
-	//TODO better way ? 
+	//TODO better way ?
 	osg::Matrix4f mat = osg::Matrix4f::identity();
 	beginEditCP(m_pTransform);
 	m_pTransform->setMatrix( mat );
@@ -1226,7 +1226,7 @@ void vtGeom::Release()
 void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
 {
 	// problem is that nodes cannot be referenced, only cores..
-	// what about the decorated node then ? should i take the attachment from 
+	// what about the decorated node then ? should i take the attachment from
 	// the mesh ?
 	if (pMesh!= NULL) //some safety checks
 		if (pMesh->m_pGeometryNode != OSG::NullFC) {
@@ -1306,7 +1306,7 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 			geo->setMaterial( pMat->m_pMaterial );
 			endEditCP(geo);
 		
-			return; 
+			return;
 
 	/*	osg::GeometryPtr geo = pMesh->m_pGeometryCore;
 		if ( geo->getMaterial() != OSG::NullFC )
@@ -1314,7 +1314,7 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 			beginEditCP(geo);
 			geo->setMaterial( pMat->m_pMaterial );
 			endEditCP(geo);
-		} 
+		}
 
 		//if (pMat->GetLighting()) {
 		// Beware: the mesh may already have its own stateset
@@ -1339,7 +1339,7 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 		}
 		//} pmat-getlighting
 		
-		if( !pMat->GetLighting() ) { 
+		if( !pMat->GetLighting() ) {
 			//no vertex colors
 			osg::GeometryPtr geo = pMesh->m_pGeometryCore;
 			// colors set ?
@@ -1442,15 +1442,15 @@ vtMaterial *vtGeom::GetMaterial(int idx)
 vtLOD::vtLOD() : vtGroup(true)
 {
 	m_pNode = osg::makeCoredNode<osg::DistanceLOD>(&m_pLOD);
-	beginEditCP(m_pLOD); 
-	m_pLOD->setCenter(osg::Vec3f(0,0,0));   
+	beginEditCP(m_pLOD);
+	m_pLOD->setCenter(osg::Vec3f(0,0,0));
 	endEditCP(m_pLOD);
 
 	SetOsgNode(m_pNode);
 
-	//add an empty child group for large distances ( no visibility ); 
+	//add an empty child group for large distances ( no visibility );
 	beginEditCP(m_pNode);
-	m_pNode->addChild( OSG::makeCoredNode<OSG::Group>()); 
+	m_pNode->addChild( OSG::makeCoredNode<OSG::Group>());
 	endEditCP(m_pNode);
 }
 
@@ -1497,8 +1497,8 @@ void vtLOD::SetCenter(FPoint3 &center)
 {
 	osg::Vec3f p;
 	v2s(center, p);
-	beginEditCP(m_pLOD); 
-	m_pLOD->setCenter(p);   
+	beginEditCP(m_pLOD);
+	m_pLOD->setCenter(p);
 	endEditCP(m_pLOD);
 }
 
@@ -1535,7 +1535,7 @@ vtDynGeom::vtDynGeom() : vtGeom()
 
 	//add some dummy data for testing
 	/*beginEditCP(m_pDynMesh);
-	  
+	
 	for ( int i=0; i < 1; ++i )
 	{
 		m_pDynMesh->getMFPosition()->push_back( osg::Pnt3f(0,0,0) );
@@ -1749,7 +1749,7 @@ vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true), m_bPixelCoords(bPixelCoords)
 			// safety check first, avoid /0 crash
 		if( winsize.x != 0 && winsize.y != 0 ) {
 			m_projection = makeOrtho2D(0,winsize.x, 0, winsize.y);
-		} 
+		}
 	} else {
 		// Normalized window coordinates, 0 to 1
 		m_projection = makeOrtho2D(0,1.0,0,1.0);
@@ -1768,13 +1768,13 @@ vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true), m_bPixelCoords(bPixelCoords)
 	DirectionalLightPtr dLight = DirectionalLight::create();
     beginEditCP(dLight);
         dLight->setDirection(Vec3f(0,0,1));
-        
+
         //color information
         dLight->setDiffuse(Color4f(1,0,0,0.5));
         //dLight->setAmbient(Color4f(0.2,0.2,0.2,1));
         //dLight->setSpecular(Color4f(1,1,1,1));
-        
-        //set the beacon which is the camera of the scene 
+
+        //set the beacon which is the camera of the scene
 		//it is only orthographic and the light isnt expected to move
 		//m_pNode = root transform node
         dLight->setBeacon(lightBeacon);
@@ -1841,7 +1841,7 @@ OSG::Matrix4f vtHUD::makeOrtho2D (float left, float right, float bottom, float t
 	float tx = -(right+left)/(right-left);
     float ty = -(top+bottom)/(top-bottom);
     float tz = -(zFar+zNear)/(zFar-zNear);
-    
+
 	//taken from osg implementation which is the transpose of opengl
 	mat.setValue(
 		OSG::Vec3f( 2.0/(right-left),			     0.0,						0.0),
@@ -2049,7 +2049,7 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 	delete act;
 	return hitlist.size();
 
-#if EXCEPT 
+#if EXCEPT
 	// set up intersect visitor and create the line segment
 	osgUtil::IntersectVisitor visitor;
 	osgUtil::IntersectVisitor::HitList hlist;

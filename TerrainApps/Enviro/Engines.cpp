@@ -680,9 +680,9 @@ void MapOverviewEngine::OnMouse(vtMouseEvent &event)
 		return;
 
 	IPoint2 position = IPoint2(event.pos.x,vtGetScene()->GetWindowSize().y - event.pos.y);
-	if( event.button == VT_MIDDLE 
+	if( event.button == VT_MIDDLE
 		&& m_bDown
-		&& position.x < (MapWidth + MapMargin) 
+		&& position.x < (MapWidth + MapMargin)
 		&& position.y < ((float)MapWidth / MapRatio + (float)MapMargin)
 		&& position.x > MapMargin
 		&& position.y > MapMargin)

@@ -167,7 +167,7 @@ void wxDC2::StretchBlit(const wxBitmap &bmp,
 #include <dlfcn.h>
 #endif
 #ifdef __DARWIN_OSX__
-# include <mach-o/dyld.h> 
+# include <mach-o/dyld.h>
 #endif
 
 void* getGLExtensionFuncPtr(const char *funcName)
@@ -365,7 +365,7 @@ void DoTextureSquish(unsigned char *rgb_bytes, MiniDatabuf &output_buf, bool bFa
 				u8 const *row = rgb_bytes + (y + py)*stride + (x*3);
 				for( int px = 0; px < 4; ++px, ++i )
 				{
-					// get the pixel colour 
+					// get the pixel colour
 					for( int j = 0; j < 3; ++j )
 						sourceRgba[4*i + j] = *row++;
 					

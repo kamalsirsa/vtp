@@ -372,7 +372,7 @@ bool vtBitmap::WriteJPEG(const char *fname, int quality)
 	if (outfile == NULL)
 		return false;
 
-	// Specify data source for decompression 
+	// Specify data source for decompression
 	jpeg_stdio_dest(&cinfo, outfile);
 
 	// set parameters for compression

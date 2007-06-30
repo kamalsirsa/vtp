@@ -33,11 +33,11 @@ vtString ToUTF8(const CString &cstr)
 	char *mbs = new char[len+1];
 
 	int mblen = WideCharToMultiByte(
-		CP_UTF8, 
-		0, 
+		CP_UTF8,
+		0,
 		cstr,
-		len+1, 
-		mbs, 
+		len+1,
+		mbs,
 		len+1,
 		NULL,
 		NULL);
@@ -65,13 +65,13 @@ CString FromUTF8(const char *input)
 		len+1);
 
 	int mblen = WideCharToMultiByte(
-		CP_ACP, 
-		0, 
+		CP_ACP,
+		0,
 		unicode,
-		wcharlen+1, 
-		mbs, 
+		wcharlen+1,
+		mbs,
 		len+1,
-		"?",    
+		"?",
 		NULL);
 
 	CString str(mbs);
@@ -96,13 +96,13 @@ vtString ToUTF8(const CString &cstr)
 		len+1);
 
 	int mblen = WideCharToMultiByte(
-		CP_UTF8, 
-		0, 
+		CP_UTF8,
+		0,
 		unicode,
-		-1, 
-		mbs, 
+		-1,
+		mbs,
 		len+1,
-		NULL,    
+		NULL,
 		NULL);
 
 	vtString str(mbs);

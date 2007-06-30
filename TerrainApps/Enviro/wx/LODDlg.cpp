@@ -42,7 +42,7 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bHaveRangeVal = false;
 
 	// WDR: dialog function LODDialogFunc for LODDlg
-	LODDialogFunc( this, TRUE ); 
+	LODDialogFunc(this, true);
 
 	GetTileStatus()->SetValue(_T("No paging threads"));
 

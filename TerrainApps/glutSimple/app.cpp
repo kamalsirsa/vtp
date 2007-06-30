@@ -195,7 +195,7 @@ bool CreateScene()
 	{
 		vtSpeciesList3d *pList = new vtSpeciesList3d;
 		if (pList->ReadXML(species))
-			pTerr->SetPlantList(pList); 
+			pTerr->SetPlantList(pList);
 	}
 #endif
 

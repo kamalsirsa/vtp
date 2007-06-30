@@ -42,7 +42,7 @@ VehicleDlg::VehicleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	wxDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function VehicleDialogFunc for VehicleDlg
-	VehicleDialogFunc( this, TRUE ); 
+	VehicleDialogFunc( this, TRUE );
 
 	m_options.m_Color.Set(255, 255, 0);
 	wxColour rgb(255, 255, 0);

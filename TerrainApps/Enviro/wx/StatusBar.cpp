@@ -35,7 +35,7 @@ MyStatusBar::MyStatusBar(wxWindow *parent) :
 	SetStatusWidths(Field_Max, widths);
 }
 
-wxString trans_table[5] = 
+wxString trans_table[5] =
 {
 	_T("Welcome to "),
 	_T("Elev: "),

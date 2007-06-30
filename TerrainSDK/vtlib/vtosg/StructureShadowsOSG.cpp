@@ -233,7 +233,7 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
 	if (m_bDepthShadow)
 	{
 #if USE_FRAGMENT_SHADER
-		static char FragmentShaderSource[] = 
+		static char FragmentShaderSource[] =
 			"uniform sampler2D MainSceneTexture; \n"
 			"uniform sampler2DShadow ShadowTexture; \n"
 			"uniform float ShadowDarkness; \n"

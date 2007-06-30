@@ -356,7 +356,7 @@ void vtGLCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event1)
 	m_bCapture = false;
 
 	// When capture is lost, we won't get mouse events anymore.
-	// That means we won't know when a mouse button goes up or down, so 
+	// That means we won't know when a mouse button goes up or down, so
 	//  Enviro might think that a button is still down even when the focus
 	//  comes back, when the button isn't down.
 	// If we get this event, should we let the app know that any mouse

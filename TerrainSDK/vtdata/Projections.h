@@ -205,7 +205,7 @@ protected:
 extern GDALWrapper g_GDALWrapper;
 
 #ifdef WIN32
-	#define DEFAULT_LOCATION_GDAL_DATA "../../GDAL-data/" 
+	#define DEFAULT_LOCATION_GDAL_DATA "../../GDAL-data/"
 	#define DEFAULT_LOCATION_PROJ_LIB "../../PROJ4-data/"
 #elif __APPLE__
 	#define DEFAULT_LOCATION_GDAL_DATA "Shared/share/gdal/"

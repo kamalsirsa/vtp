@@ -461,7 +461,7 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev,
 	{
 		for (j = 0; j < rows; j++)
 		{
-			// Set up elevation LOD0 filename 
+			// Set up elevation LOD0 filename
 			str2.Format("/tile.%d-%d", i, j);
 			str = m_folder_elev;
 			str += str2;
@@ -487,7 +487,7 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev,
 			else
 				hfields[i+cols*j] = NULL;
 
-			// Set up image LOD0 filename 
+			// Set up image LOD0 filename
 			str = m_folder_image;
 			str += str2;
 			str += ".db";

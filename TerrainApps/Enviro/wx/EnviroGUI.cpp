@@ -79,7 +79,7 @@ void EnviroGUI::SetFlightSpeed(float speed)
 	Enviro::SetFlightSpeed(speed);
 }
 
-const char *AppStateNames[] = 
+const char *AppStateNames[] =
 {
 	"AS_Initializing",
 	"AS_Neutral",

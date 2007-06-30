@@ -57,7 +57,7 @@
 #define SUPPORT_WSTRING	1
 #endif
 
-// Use the 'squish' texture compression library, 
+// Use the 'squish' texture compression library,
 //
 // The library is free (MIT license) and available from:
 // http://sjbrown.co.uk/?code=squish

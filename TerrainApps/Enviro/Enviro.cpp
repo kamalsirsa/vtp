@@ -1651,7 +1651,7 @@ void Enviro::OnMouseRightDown(vtMouseEvent &event)
 
 		// Close and create new building in the current structure array
 		vtTerrain *pTerr = GetCurrentTerrain();
-		vtStructureArray3d *pbuildingarray = pTerr->GetStructureLayer(); 
+		vtStructureArray3d *pbuildingarray = pTerr->GetStructureLayer();
 		vtBuilding3d *pbuilding = (vtBuilding3d*) pbuildingarray->AddNewBuilding();
 		pbuilding->SetFootprint(0, m_NewLine);
 

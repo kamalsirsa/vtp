@@ -46,7 +46,7 @@ TextureDlg::TextureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function TextureDialogFunc for TextureDlg
-	TextureDialogFunc( this, TRUE ); 
+	TextureDialogFunc( this, TRUE );
 
 	m_pSingle = GetSingle();
 	m_pDerived = GetDerived();

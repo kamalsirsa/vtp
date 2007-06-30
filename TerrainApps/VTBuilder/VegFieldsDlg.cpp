@@ -38,7 +38,7 @@ VegFieldsDlg::VegFieldsDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	VegFieldsDialogFunc( this, TRUE ); 
+	VegFieldsDialogFunc(this, true);
 
 	m_bUseSpecies = true;
 	m_bSpeciesUseField = false;

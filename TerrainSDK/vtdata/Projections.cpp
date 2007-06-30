@@ -1339,7 +1339,7 @@ bool GDALWrapper::FindGDALData()
 	return true;
 }
 
-bool GDALWrapper::FindPROJ4Data() 
+bool GDALWrapper::FindPROJ4Data()
 {
 	vtStringArray dpp;
 
@@ -1367,7 +1367,7 @@ bool GDALWrapper::FindPROJ4Data()
 	return true;
 }
 
-bool GDALWrapper::FindPROJ4SO() 
+bool GDALWrapper::FindPROJ4SO()
 {
 #ifndef WIN32
 	vtStringArray dpso;

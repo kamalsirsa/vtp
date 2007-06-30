@@ -658,7 +658,7 @@ void CarEngine::MoveCarTo(const FPoint3 &pos)
 	if (!pTarget)
 		return;
 
-	// Place the car in the XZ plane 
+	// Place the car in the XZ plane
 	pTarget->Identity();
 	pTarget->SetTrans(pos);
 
@@ -674,7 +674,7 @@ void CarEngine::MoveCarTo(const FPoint3 &pos)
 }
 
 //spin the wheels base on how much we've driven
-void CarEngine::SpinWheels(float dist) 
+void CarEngine::SpinWheels(float dist)
 {
 	m_pFrontLeft->RotateLocal(XAXIS, -dist);
 	m_pFrontRight->RotateLocal(XAXIS, -dist);

@@ -241,7 +241,7 @@ CSkeleton vtStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contour
 			}
 			if (i == iOldSize)
 			{
-				VTLOG("CompleteWingedEdgeStructure - Failed to find matching empty lower left\n"); 
+				VTLOG("CompleteWingedEdgeStructure - Failed to find matching empty lower left\n");
 				return CSkeleton();
 			}
 			CSkeletonLine& OldLowerLeft = *si;
@@ -255,7 +255,7 @@ CSkeleton vtStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contour
 			}
 			if (i == iOldSize)
 			{
-				VTLOG("CompleteWingedEdgeStructure - Failed to find matching empty lower right\n"); 
+				VTLOG("CompleteWingedEdgeStructure - Failed to find matching empty lower right\n");
 				return CSkeleton();
 			}
 			CSkeletonLine& OldLowerRight = *si;

@@ -176,7 +176,7 @@ void ShowOGLInfo(HDC hdc)
 		0, 0, 0					// layer masks ignored
 	};
 	int  iPixelFormat;
-	// get the best available match of pixel format for the device context 
+	// get the best available match of pixel format for the device context
 	iPixelFormat = ChoosePixelFormat(hdc, &pfd);
 	// make that the pixel format of the device context
 	SetPixelFormat(hdc, iPixelFormat, &pfd);

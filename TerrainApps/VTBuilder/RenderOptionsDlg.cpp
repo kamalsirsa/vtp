@@ -36,7 +36,7 @@ RenderOptionsDlg::RenderOptionsDlg( wxWindow *parent, wxWindowID id, const wxStr
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function RenderOptionsDialogFunc for RenderOptionsDlg
-	RenderOptionsDialogFunc( this, TRUE ); 
+	RenderOptionsDialogFunc(this, true);
 
 	m_opt.m_bShowElevation = true;
 	m_bNoShading = false;

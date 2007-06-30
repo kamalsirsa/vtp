@@ -588,7 +588,7 @@ void BuilderView::DrawScaleBar(wxDC * p_DC)
 
 	str += unit_str;
 
-	//high and width of the string on right side 
+	// height and width of the string on right side
 	wxFont font(8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 	p_DC->SetFont(font);
 	wxCoord textsize_x, textsize_y;
@@ -599,7 +599,7 @@ void BuilderView::DrawScaleBar(wxDC * p_DC)
 
 	// coord of the round corner rectangle (in unscrolled coordinates)
 	xx = ww - width;
-	yy = hh - height; 
+	yy = hh - height;
 
 	// Scale Bar Area in scrolled coordinates
 	m_ScaleBarArea = wxRect(w - width, h - height, width, height);

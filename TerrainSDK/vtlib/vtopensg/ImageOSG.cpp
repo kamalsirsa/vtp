@@ -19,7 +19,7 @@
 
 #include <list>
 
-typedef std::map< vtString, vtImage* > ImageCache; 
+typedef std::map< vtString, vtImage* > ImageCache;
 ImageCache s_ImageCache;
 
 void vtImageCacheClear()
@@ -34,7 +34,7 @@ vtImage::vtImage()
 	m_Image = osg::Image::create();
 }
 
-vtImage::vtImage(const char *fname, bool bAllowCache) 
+vtImage::vtImage(const char *fname, bool bAllowCache)
 {
 	vtImage();
 
@@ -42,7 +42,7 @@ vtImage::vtImage(const char *fname, bool bAllowCache)
 }
 
 //don't need this one anymore
-vtImage::vtImage(vtDIB *pDIB) 
+vtImage::vtImage(vtDIB *pDIB)
 {
 	vtImage();
 
@@ -80,15 +80,15 @@ bool vtImage::Create(int width, int height, int bitdepth, bool create_palette)
 	beginEditCP(m_Image);
 	m_Image->set(
 				pixelFormat,//UInt32 pixelFormat,
-				width,//Int32 width, 
-				height,//Int32 height=1, 
-				1,//Int32 depth=1, 
-				1,//,//Int32 mipmapCount=1, 
-				1,//Int32 frameCount=1, 
-				0.f,//Time frameDelay=0.0, 
-				image,	//,//const UInt8 *data=0, 
-				dataType, 
-				true,//bool allocMem=true, 
+				width,//Int32 width,
+				height,//Int32 height=1,
+				1,//Int32 depth=1,
+				1,//,//Int32 mipmapCount=1,
+				1,//Int32 frameCount=1,
+				0.f,//Time frameDelay=0.0,
+				image,	//,//const UInt8 *data=0,
+				dataType,
+				true,//bool allocMem=true,
 				1//Int32 sideCount=1)
 				);
 	endEditCP(m_Image);
@@ -169,7 +169,7 @@ void vtImage::Release()
 	//EXCEPT unref();
 }
 
-unsigned char * vtImage::GetRowData(int row) const 
+unsigned char * vtImage::GetRowData(int row) const
 {
 	unsigned char *data = m_Image->getData() + row*m_iRowSize;
 	return data;
@@ -193,7 +193,7 @@ void vtImage::GetPixel24(int x, int y, RGBi &rgb) const
 	unsigned char *buf = m_Image->getData() + x*3 + (m_Image->getHeight()-1-y)*m_iRowSize;
 	rgb.r = buf[0];
 	rgb.g = buf[1];
-	rgb.b = buf[2]; 
+	rgb.b = buf[2];
 }
 
 void vtImage::SetPixel24(int x, int y, const RGBi &rgb)
@@ -235,27 +235,27 @@ unsigned int vtImage::GetHeight() const
 //mw depth==bitdepth.. opensg can handle 3d images...
 unsigned int vtImage::GetDepth() const
 {
-	/*OSG_INVALID_PF = 0, OSG_I_PF = GL_INTENSITY, OSG_L_PF = GL_LUMINANCE, OSG_LA_PF = GL_LUMINANCE_ALPHA, 
-	  OSG_BGR_PF = 0, OSG_BGRA_PF = 0, OSG_RGB_DXT1 = GL_COMPRESSED_RGB_S3TC_DXT1_EXT, OSG_RGBA_DXT1 = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, 
+	/*OSG_INVALID_PF = 0, OSG_I_PF = GL_INTENSITY, OSG_L_PF = GL_LUMINANCE, OSG_LA_PF = GL_LUMINANCE_ALPHA,
+	  OSG_BGR_PF = 0, OSG_BGRA_PF = 0, OSG_RGB_DXT1 = GL_COMPRESSED_RGB_S3TC_DXT1_EXT, OSG_RGBA_DXT1 = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
 	  OSG_RGBA_DXT3 = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, OSG_RGBA_DXT5 = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, OSG_RGB_PF = GL_RGB, OSG_RGBA_PF = GL_RGBA */
 
 	/*unsigned int depth(0);
 	osg::Int32 pixelformat = m_Image->getPixelFormat();
 	switch( pixelformat ) {
-		case osg::Image::OSG_RGBA_PF: 
+		case osg::Image::OSG_RGBA_PF:
 			depth=32;
 			break;
-		case osg::Image::OSG_RGB_PF: 
+		case osg::Image::OSG_RGB_PF:
 			depth=24;
 			break;
-		case GL_LUMINANCE: 
+		case GL_LUMINANCE:
 			depth=8;
 			break;
 		default: ;
 	};*/
 	unsigned int depth(0);
 	depth = m_Image->getBpp()*( m_Image->getDataType() == osg::Image::OSG_UINT8_IMAGEDATA ? 8 : 16 );
-	assert(depth != 0); 
+	assert(depth != 0);
 	return depth;
 }
 

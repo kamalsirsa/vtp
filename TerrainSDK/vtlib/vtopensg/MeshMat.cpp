@@ -35,7 +35,7 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 	//if i turn this on buildings are correct, if out, the streets are correct..
 	//theres an alpha channel in the road/tree textures
 	beginEditCP(m_pMaterial);
-	m_pMaterial->setEnvMode			(GL_MODULATE); 
+	m_pMaterial->setEnvMode			(GL_MODULATE);
 	m_pMaterial->setColorMaterial	(GL_AMBIENT_AND_DIFFUSE);
 	m_pMaterial->setEnvMap			(false);
 	endEditCP(m_pMaterial);
@@ -395,7 +395,7 @@ bool vtMaterial::GetClamp() const
 	osg::StateChunkPtr statechunk = m_pMaterial->find( osg::TextureChunk::getClassType(), slot);
 	osg::TextureChunkPtr tex = osg::TextureChunkPtr::dcast( statechunk );
 	if( tex ) {
-		return tex->getWrapS() == GL_CLAMP; 
+		return tex->getWrapS() == GL_CLAMP;
 	}
 	return false;
 
@@ -520,7 +520,7 @@ vtMeshBase(ePrimType, VertType, NumVertices)
 	beginEditCP( m_pPrimSet, osg::GeoPTypesUI8::GeoPropDataFieldMask );
 	switch( ePrimType ) {
 		case POINTS:
-			m_pPrimSet->addValue(GL_POINTS); 
+			m_pPrimSet->addValue(GL_POINTS);
 			break;
 		case LINES:
 			m_pPrimSet->addValue(GL_LINES);
@@ -553,12 +553,12 @@ vtMeshBase(ePrimType, VertType, NumVertices)
 	// We would like to pre-allocate room for NumVertices vertices.  However,
 	//  there is no 'reserve' method available in OpenSG!
 	//m_Vert->reserve( NumVertices );
-	endEditCP(m_Vert, osg::GeoPositions3f::GeoPropDataFieldMask); 
+	endEditCP(m_Vert, osg::GeoPositions3f::GeoPropDataFieldMask);
 
 	//no, this duplicates the first primitive, for time being leave it as it is. first prim. has zero length
 	m_Length = osg::GeoPLengthsUI32::create();
 	beginEditCP(m_Length, osg::GeoPLengthsUI32::GeoPropDataFieldMask);
-	m_Length->addValue(0); 
+	m_Length->addValue(0);
 	endEditCP(m_Length, osg::GeoPLengthsUI32::GeoPropDataFieldMask);
 
 	m_Index = osg::GeoIndicesUI32::create();
@@ -642,7 +642,7 @@ void vtMesh::GetBoundBox(FBox3 &box) const
 //	vol.getCenter( cen );
 
 	box.max = s2v ( max.subZero() );
-	box.min = s2v ( min.subZero() ); 
+	box.min = s2v ( min.subZero() );
 }
 
 
@@ -670,7 +670,7 @@ void vtMesh::AddTri(int p0, int p1, int p2)
 	//adjust length
 	osg::UInt32 l = m_Index->getSize();
 	beginEditCP( m_Length );
-	m_Length->setValue(l,0); 
+	m_Length->setValue(l,0);
 	endEditCP(m_Length);
 }
 
@@ -706,27 +706,27 @@ void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
 
 	if( p2 != -1 ) {
 		beginEditCP( m_Index );
-		m_Index->push_back(p2); 
+		m_Index->push_back(p2);
 		endEditCP( m_Index );
-		len = 3; 
+		len = 3;
 	}
 	if( p3 != -1 ) {
 		beginEditCP( m_Index );
-		m_Index->push_back(p3); 
+		m_Index->push_back(p3);
 		endEditCP( m_Index );
-		len = 4; 
+		len = 4;
 	}
 	if( p4 != -1 ) {
 		beginEditCP( m_Index );
-		m_Index->push_back(p4); 
+		m_Index->push_back(p4);
 		endEditCP( m_Index );
-		len = 5; 
+		len = 5;
 	}
 	if( p5 != -1 ) {
 		beginEditCP( m_Index );
 		m_Index->push_back(p5);
 		endEditCP( m_Index );
-		len = 6; 
+		len = 6;
 	}
 
 	//create new primitive
@@ -769,7 +769,7 @@ void vtMesh::AddFan(int *idx, int iNVerts)
 	for( int i = 0; i < iNVerts; ++i ) {
 
 		beginEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
-		m_Index->push_back(idx[i]); 
+		m_Index->push_back(idx[i]);
 		endEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
 	}
 
@@ -811,7 +811,7 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 	for( int i = 0; i < iNVerts; ++i ) {
 
 		beginEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
-		m_Index->push_back( pIndices[i]);   
+		m_Index->push_back( pIndices[i]);
 		endEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
 	}
 	//the indices are in, but we need to create a new primitive..
@@ -819,7 +819,7 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 	beginEditCP(m_Length);
 	m_Length->addValue(iNVerts);
 	endEditCP(m_Length);
-	//since multiple types of primitives could be stored, set also the type of the prim 
+	//since multiple types of primitives could be stored, set also the type of the prim
 	//it is ok to simply copy the type of the first, since all are of the same type in VTP
 	beginEditCP(m_pPrimSet);
 	m_pPrimSet->addValue(m_pPrimSet->getValue(0));
@@ -967,7 +967,7 @@ void vtMesh::SetVtxPos(unsigned int i, const FPoint3 &p)
 		if( i >= m_Index->size() ) {
 			m_Index->resize(i+1);
 		}
-		m_Index->setValue(i,i);     
+		m_Index->setValue(i,i);
 		endEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
 
 		//# of vertices eq # of indices
@@ -1139,7 +1139,7 @@ void vtMesh::SetLineWidth(float fWidth)
 	}
 
 	beginEditCP(lchunk);
-	lchunk->setWidth( fWidth ); 
+	lchunk->setWidth( fWidth );
 	endEditCP(lchunk);
 
 	endEditCP(mat);
@@ -1268,7 +1268,7 @@ vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
 	//font resolution is now in vtFont
 	font->GetFontStyle()->setSize( fSize );
 
-	m_pSharedFontStyle = osg::SharedFontStyle::create(); 
+	m_pSharedFontStyle = osg::SharedFontStyle::create();
 	m_pSharedFontStyle->setContainedFontStyle( font->GetFontStyle() );
 
 	m_pSharedFontStyleWrapper = osg::SharedFontStyleWrapper::create();
@@ -1374,7 +1374,7 @@ void vtTextMesh::SetText(const std::wstring &text)
 
 void vtTextMesh::SetPosition(const FPoint3 &pos)
 {
-	osg::Vec3f s; 
+	osg::Vec3f s;
 	v2s(pos, s);
 	beginEditCP(m_pOsgText);
 	m_pOsgText->setPosition( s );
@@ -1383,7 +1383,7 @@ void vtTextMesh::SetPosition(const FPoint3 &pos)
 
 void vtTextMesh::SetRotation(const FQuat &rot)
 {
-	osg::Quaternion q; 
+	osg::Quaternion q;
 	q.setValueAsQuat ( rot.x, rot.y, rot.z, rot.w );
 
 	osg::Matrix mat;

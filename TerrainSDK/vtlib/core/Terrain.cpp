@@ -1832,7 +1832,7 @@ vtMultiTexture *vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &
 	// apply it to the node that is above the terrain surface
 	return GetTerrainSurfaceNode()->AddMultiTexture(iTextureUnit, pImage,
 		TextureMode, scale, offset);
-} 
+}
 
 vtNode *vtTerrain::GetTerrainSurfaceNode()
 {

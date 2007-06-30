@@ -122,7 +122,7 @@ void vtTerrainScene::_CreateSky()
 	VTLOG(" Creating Main Light\n");
 
 #if VTLIB_OPENSG==1
-	//opensg handles light quite different to osg, 
+	//opensg handles light quite different to osg,
 	//this requires to modify the internal vtp sg
 	//m_pTop is a light group!
 	//the actual light node (m_pTop) is now parent to all nodes to be lit.

@@ -36,7 +36,7 @@ TSDialog::TSDialog( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function TSDialogFunc for TSDialog
-	TSDialogFunc( this, TRUE ); 
+	TSDialogFunc(this, true);
 
 	AddValidator(ID_THEME, &m_iTheme);
 	AddValidator(ID_MPP, &m_iMpp);

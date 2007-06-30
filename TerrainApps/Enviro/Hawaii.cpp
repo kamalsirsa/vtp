@@ -79,7 +79,7 @@ class SpinEngine: public vtEngine
 	}
 };
 
-#if VTLIB_OSG
+#if VTLIB_OSG && 0
 // Test particle effects
 class psGeodeTransform : public osg::MatrixTransform
 {
@@ -98,13 +98,12 @@ public:
 
             geodetrans->setMatrix( inverseOfAccum );
          }
-         traverse(node, nv); 
+         traverse(node, nv);
       }
    };
    psGeodeTransform() {setUpdateCallback( new psGeodeTransformCallback() );}
 
 };
-
 class findGeodeVisitor : public osg::NodeVisitor
 {
 public:
@@ -123,31 +122,30 @@ public:
 protected:
    osg::Geode* foundGeode;
 };
-
-class particleSystemHelper : public osg::Group 
-{ 
-public: 
-   particleSystemHelper(osg::Group* psGroup) : osg::Group(*psGroup) 
-   { 
-      findGeodeVisitor* fg = new findGeodeVisitor(); 
-      accept(*fg); 
-      osg::Geode* psGeode = fg->getGeode(); 
-      psGeodeXForm = new psGeodeTransform(); 
-      psGeodeXForm->addChild (psGeode); 
-      replaceChild(psGeode,psGeodeXForm); 
-   } 
-   void addEffect(osg::Group* psGroup) 
-   { 
-      this->addChild(psGroup); 
-      findGeodeVisitor* fg = new findGeodeVisitor(); 
-      psGroup->accept(*fg); 
-      osg::Geode* psGeode = fg->getGeode(); 
-      psGeodeXForm->addChild(psGeode); 
-      psGroup->removeChild( psGroup->getChildIndex(psGeode) ); 
-   } 
-protected: 
-   psGeodeTransform* psGeodeXForm; 
-}; 
+class particleSystemHelper : public osg::Group
+{
+public:
+   particleSystemHelper(osg::Group* psGroup) : osg::Group(*psGroup)
+   {
+      findGeodeVisitor* fg = new findGeodeVisitor();
+      accept(*fg);
+      osg::Geode* psGeode = fg->getGeode();
+      psGeodeXForm = new psGeodeTransform();
+      psGeodeXForm->addChild (psGeode);
+      replaceChild(psGeode,psGeodeXForm);
+   }
+   void addEffect(osg::Group* psGroup)
+   {
+      this->addChild(psGroup);
+      findGeodeVisitor* fg = new findGeodeVisitor();
+      psGroup->accept(*fg);
+      osg::Geode* psGeode = fg->getGeode();
+      psGeodeXForm->addChild(psGeode);
+      psGroup->removeChild( psGroup->getChildIndex(psGeode) );
+   }
+protected:
+   psGeodeTransform* psGeodeXForm;
+};
 #include <osgDB/ReadFile>
 #endif
 

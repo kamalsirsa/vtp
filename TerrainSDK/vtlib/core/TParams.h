@@ -295,7 +295,7 @@ protected:
 </tr>
 </table>
 
-Remaining to be documented in the table: 
+Remaining to be documented in the table:
 
 Color_Map
 Texture_Retain

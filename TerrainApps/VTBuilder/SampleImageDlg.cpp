@@ -52,7 +52,7 @@ SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString 
 	m_bTiling = false;
 	m_bSetting = false;
 
-	SampleImageDialogFunc( this, TRUE ); 
+	SampleImageDialogFunc(this, true);
 
 	m_bNewLayer = true;
 	m_bToFile = false;

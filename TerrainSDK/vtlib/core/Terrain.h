@@ -77,7 +77,7 @@ typedef bool (*ProgFuncPtrType)(int);
  * in the class TParams.
  *
  * To create a new terrain, first construct a vtTerrain and set its
- * parameters with SetParams() or SetParamFile().  
+ * parameters with SetParams() or SetParamFile().
  * You can also set many properties of the terrain directly, which is useful
  * if you want to set them from memory instead of from disk.  These include:
 	- Elevation grid: use SetLocalGrid().
@@ -230,7 +230,7 @@ public:
 	void SetAbstractLayer(vtAbstractLayer *alay);
 	vtAbstractLayer *GetAbstractLayer();
 	void RemoveFeatureGeometry(vtAbstractLayer *alay);
-	/// You should add your nodes to this terrain's scaled features if 
+	/// You should add your nodes to this terrain's scaled features if
 	/// they are 'flat' like GIS features or contour lines, which should
 	/// be scaled up/down with the vertical exaggeration of the terrain.
 	vtTransform *GetScaledFeatures() { return m_pScaledFeatures; }

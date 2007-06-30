@@ -31,7 +31,7 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function PrefDialogFunc for PrefDlg
-	PrefDialogFunc( this, TRUE ); 
+	PrefDialogFunc(this, true);
 
 	AddValidator(ID_RADIO1, &b1);
 	AddValidator(ID_RADIO2, &b2);
