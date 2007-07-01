@@ -20,6 +20,7 @@ enum ProjType
 	PT_KROVAK,
 	PT_LAEA,	// Lambert Azimuthal Equal-Area
 	PT_LCC,		// Lambert Conformal Conic
+	PT_LCC1SP,	// Lambert Conformal Conic with 1 Standard Parallel
 	PT_NZMG,
 	PT_OS,
 	PT_PS,

@@ -277,7 +277,8 @@ const char *vtProjection::GetProjectionName() const
 /**
  * Return a very short string describing the type of projection.
  * \par
- * Possible values are "Geo", "UTM", "TM", "Albers", "LCC", "Other", or "Unknown"
+ * Example values are "Geo", "UTM", "TM", "Albers", "LCC", etc.
+ * or "Unknown" if it is unknown.
  */
 const char *vtProjection::GetProjectionNameShort() const
 {
@@ -303,6 +304,8 @@ const char *vtProjection::GetProjectionNameShort() const
 		return "GK";
 	if (!strcmp(proj_string, SRS_PT_ALBERS_CONIC_EQUAL_AREA))
 		return "Albers";
+	if (!strcmp(proj_string, SRS_PT_LAMBERT_CONFORMAL_CONIC_1SP))
+		return "LCC1SP";
 	if (!strncmp(proj_string, "Lambert_Conformal_Conic", 23))
 		return "LCC";
 	if (!strcmp(proj_string, SRS_PT_HOTINE_OBLIQUE_MERCATOR))
@@ -1180,6 +1183,8 @@ static const char *papszDatumEquiv[] =
 	"WGS_1972",
 	"European_Terrestrial_Reference_System_89",
 	"European_Reference_System_1989",
+	"Nouvelle_Triangulation_Francaise_(Paris)",
+	"Nouvelle_Triangulation_Francaise_Paris",
 	NULL
 };
 

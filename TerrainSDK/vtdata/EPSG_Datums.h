@@ -227,7 +227,7 @@ struct epsg_datum
 	{ 0, 6804, "Makassar (Jakarta)", "" },
 	{ 0, 6805, "Militar-Geographische Institut (Ferro)", "" },
 	{ 0, 6806, "Monte Mario (Rome)", "" },
-	{ 0, 6807, "Nouvelle Triangulation Francaise (Paris)", "" },
+	{ 0, 6807, "Nouvelle Triangulation Francaise (Paris)", "NTF Paris" },
 	{ 0, 6808, "Padang 1884 (Jakarta)", "" },
 	{ 0, 6809, "Reseau National Belge 1950 (Brussels)", "" },
 	{ 0, 6810, "Tananarive 1925 (Paris)", "" },
@@ -242,7 +242,7 @@ struct epsg_datum
 	{ 0, 6820, "Gunung Segara (Jakarta)", "" },
 	{ 0, 6901, "Ancienne Triangulation Francaise (Paris)", "" },
 	{ 0, 6902, "Nord de Guerre (Paris)", "" },
-	{ 0, 6903, "Madrid 1870 (Madrid)", "" },
+	{ 0, 6903, "Madrid 1870 (Madrid)", "Madrid" },
 	{ 0, 6904, "Lisbon 1890 (Lisbon)", "" }
 };
 

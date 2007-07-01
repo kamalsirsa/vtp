@@ -65,12 +65,14 @@ ProjectionDlg::ProjectionDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	AddValidator(ID_ZONE, &m_iZone);
 	AddValidator(ID_SHOW_ALL_DATUMS, &m_bShowAllDatums);
 
+	// The order here must match the ProjType enum!
 	m_pProjCtrl->Append(_("Albers Equal Area Conic"));
 	m_pProjCtrl->Append(_("Geographic"));
 	m_pProjCtrl->Append(_("Hotine Oblique Mercator"));
 	m_pProjCtrl->Append(_("Krovak"));
 	m_pProjCtrl->Append(_("Lambert Azimuthal Equal-Area"));
 	m_pProjCtrl->Append(_("Lambert Conformal Conic"));
+	m_pProjCtrl->Append(_("Lambert Conformal Conic 1 SP"));
 	m_pProjCtrl->Append(_("New Zealand Map Grid"));
 	m_pProjCtrl->Append(_("Oblique Stereographic"));
 	m_pProjCtrl->Append(_("Polar Stereographic"));
@@ -173,6 +175,7 @@ void ProjectionDlg::UpdateControlStatus()
 	case PT_HOM:
 	case PT_KROVAK:
 	case PT_LCC:
+	case PT_LCC1SP:
 	case PT_LAEA:
 	case PT_NZMG:
 	case PT_MERC:
@@ -319,7 +322,7 @@ void ProjectionDlg::SetUIFromProjection()
 			SetProjectionUI(PT_HOM);
 
 		else if (!strcmp(proj_string, SRS_PT_LAMBERT_CONFORMAL_CONIC_1SP))
-			SetProjectionUI(PT_LCC);
+			SetProjectionUI(PT_LCC1SP);
 
 		else if (!strcmp(proj_string, SRS_PT_LAMBERT_CONFORMAL_CONIC_2SP))
 			SetProjectionUI(PT_LCC);
@@ -546,6 +549,10 @@ void ProjectionDlg::OnProjChoice( wxCommandEvent &event )
 	case PT_LCC:
 		// Put in some default values
 		m_proj.SetLCC( 10, 20, 0, 15, 0, 0 );
+		break;
+	case PT_LCC1SP:
+		// Put in some default values
+		m_proj.SetLCC1SP( 30, 10, 1.0, 0, 0 );
 		break;
 	case PT_NZMG:
 		// Put in some default values
