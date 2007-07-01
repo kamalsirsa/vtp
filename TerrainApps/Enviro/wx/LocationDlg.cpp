@@ -543,7 +543,7 @@ public:
 		if (step > 0)
 		{
 			wxString msg;
-			msg.Printf(_T("Output %.2f/%.2f"), (int) (fStep * step), fTotal);
+			msg.Printf(_T("Output %.2f/%.2f"), fStep * step, fTotal);
 			if (UpdateProgressDialog((int) (99 * fStep * step / fTotal), msg) == true)
 			{
 				// user pressed cancel
@@ -639,7 +639,7 @@ void LocationDlg::OnPlayToDisk( wxCommandEvent &event )
 
 	wxString msg;
 	msg.Printf(_("The animation of %.2f seconds will be recorded as %d frames (%.2f/sec)"),
-		path->GetLastTime(), (int) (path->GetLastTime()/fStep), fStep);
+		path->GetLastTime(), (int) (path->GetLastTime()/fStep), 1.0f/fStep);
 	if (wxMessageBox(msg, _("Animation"), wxOK+wxCANCEL) == wxCANCEL)
 		return;
 
