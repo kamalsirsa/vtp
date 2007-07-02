@@ -491,7 +491,7 @@ void ProjectionDlg::OnZone( wxCommandEvent &event )
 	TransferDataFromWindow();
 
 	void *vval = m_pZoneCtrl->GetClientData(m_iZone);
-	int val = (int) vval - 100;
+	long int val = (long int) vval - 100;
 	m_proj.SetUTMZone(val);
 
 	UpdateControlStatus();
