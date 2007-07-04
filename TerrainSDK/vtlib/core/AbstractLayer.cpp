@@ -88,6 +88,7 @@ void vtAbstractLayer::ReleaseGeometry()
  */
 void vtAbstractLayer::CreateStyledFeatures(vtTerrain *pTerr)
 {
+	VTLOG1("CreateStyledFeatures\n");
 	if (!pContainer)
 	{
 		// first time
@@ -123,6 +124,7 @@ void vtAbstractLayer::CreateStyledFeatures(vtTerrain *pTerr)
 */
 void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
 {
+	VTLOG1("  CreateFeatureGeometry\n");
 	vtTagArray &style = pSet->GetProperties();
 
 	// for GetValueFloat below
@@ -186,6 +188,7 @@ void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
 
 	int material_index;
 	FPoint3 f3;
+	VTLOG("  Creating %d entities.. ", feat.GetNumEntities());
 	for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
 	{
 		if (color_field_index == -1)
@@ -249,6 +252,7 @@ void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
 	}
 
 	pGeomGroup->AddChild(geom);
+	VTLOG1("Done.\n");
 }
 
 /**
@@ -263,12 +267,11 @@ void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
  */
 void vtAbstractLayer::CreateFeatureLabels(vtTerrain *pTerr)
 {
+	VTLOG1("  CreateFeatureLabels\n");
 	vtTagArray &style = pSet->GetProperties();
 
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
-	VTLOG1("CreateFeatureLabels\n");
 
 	// We support text labels for both 2D and 3D points, and 2D polygons
 	vtFeatureSet &feat = *(pSet);
@@ -467,12 +470,12 @@ void vtAbstractLayer::CreateFeatureLabels(vtTerrain *pTerr)
 
 bool vtAbstractLayer::CreateTextureOverlay(vtTerrain *pTerr)
 {
+	VTLOG1("  CreateTextureOverlay\n");
+
 	vtTagArray &style = pSet->GetProperties();
 
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
-	VTLOG1("CreateTextureOverlay\n");
 
 	// We support texture overlay for only 2D polygons (so far)
 	vtFeatureSet &feat = *(pSet);
