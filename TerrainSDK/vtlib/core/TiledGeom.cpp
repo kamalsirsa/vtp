@@ -575,8 +575,11 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 
 	//pfarp: controls the radius of the preloading area
 	//	- should be greater than the distance to the far plane farp
-	float pfarp = 1.25f*farp;
 //	float pfarp = farp;
+//	float pfarp = 1.25f*farp;
+	// Doc says: a value of zero disables preloading of invisible tiles
+	//  beyond the far plane.
+	float pfarp = 0.0f;
 
 	//prange: controls the enabling distance of the first texture LOD
 	//	- a value of zero disables the use of the texture pyramid
