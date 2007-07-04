@@ -1,7 +1,7 @@
 //
 // LodGrid.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -35,7 +35,33 @@ class vtHeightField3d;
 class vtLodGrid : public vtGroup
 {
 public:
-	vtLodGrid(const FPoint3 &origin, const FPoint3 &size,
+	virtual void Setup(const FPoint3 &origin, const FPoint3 &size,
+		int iDimension, float fLODDistance, vtHeightField3d *pHF = NULL) = 0;
+	void Release() = 0;
+
+	// methods
+	virtual bool AppendToGrid(vtTransform *pTrans) = 0;
+	virtual bool AppendToGrid(vtGeom *pGeom) = 0;
+	virtual void RemoveFromGrid(vtTransform *pTNode) = 0;
+	virtual void RemoveFromGrid(vtGeom *pModel) = 0;
+	virtual void RemoveNodeFromGrid(vtNode *pNode) = 0;
+
+	virtual void SetDistance(float fLODDistance) = 0;
+	virtual float GetDistance() = 0;
+};
+
+/**
+ * vtSimpleLodGrid provides a very simple implementation of vtLodGrid.
+ *
+ * It consists of a 2D grid of LOD nodes, each covering a rectangular cell,
+ * which causes that cell's children to only be shown when within a given
+ * distance.
+ */
+class vtSimpleLodGrid : public vtLodGrid
+{
+public:
+	vtSimpleLodGrid();
+	void Setup(const FPoint3 &origin, const FPoint3 &size,
 		int iDimension, float fLODDistance, vtHeightField3d *pHF = NULL);
 	void Release();
 
@@ -66,4 +92,5 @@ protected:
 
 /*@}*/  // sg
 
-#endif
+#endif	// LODGRIDH
+

@@ -24,15 +24,17 @@
 
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
-class vtTiledGeom;
-class vtFence3d;
-class vtRoadMap3d;
-class vtLodGrid;
 class vtElevationGrid;
+class vtFeatureSet;
+class vtFence3d;
+class vtLodGrid;
+class vtPagedStructureLodGrid;
+class vtRoadMap3d;
+class vtSimpleBillboardEngine;
+class vtSimpleLodGrid;
+class vtTiledGeom;
 class vtTin;
 class vtTin3d;
-class vtFeatureSet;
-class vtSimpleBillboardEngine;
 
 /** \addtogroup terrain */
 /*@{*/
@@ -401,6 +403,7 @@ protected:
 	// built structures, e.g. buildings and fences
 	vtStructureLayer *m_pActiveStructLayer;
 	vtLodGrid		*m_pStructGrid;
+	vtPagedStructureLodGrid		*m_pPagedStructGrid;
 
 	vtMaterialArray	*m_pTerrMats;	// materials for the LOD terrain
 	vtMaterialArray *m_pDetailMats;
@@ -418,7 +421,7 @@ protected:
 	vtPlantInstanceArray3d	m_PIA;
 	vtSpeciesList3d	*m_pPlantList;
 	vtGroup			*m_pVegGroup;
-	vtLodGrid		*m_pVegGrid;
+	vtSimpleLodGrid	*m_pVegGrid;
 
 	// routes
 	vtRouteMap		m_Routes;

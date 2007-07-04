@@ -35,10 +35,6 @@
 
 #if EXPERIMENTAL_STRUCTURE_PAGING
 #include "LODTest.cpp"
-static vtPagedLodGrid		*m_sStructGrid;
-#else
-#define m_sStructGrid m_pStructGrid
-#define vtPagedLodGrid vtLodGrid
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -88,7 +84,7 @@ vtTerrain::vtTerrain()
 
 	// structures
 	m_pActiveStructLayer = NULL;
-	m_sStructGrid = NULL;
+	m_pStructGrid = NULL;
 
 	// abstracts
 	m_pActiveAbstractLayer = NULL;
@@ -169,10 +165,10 @@ vtTerrain::~vtTerrain()
 		m_pTerrainGroup->RemoveChild(m_pOceanGeom);
 		m_pOceanGeom->Release();
 	}
-	if (m_sStructGrid)
+	if (m_pStructGrid)
 	{
-		m_pTerrainGroup->RemoveChild(m_sStructGrid);
-		m_sStructGrid->Release();
+		m_pTerrainGroup->RemoveChild(m_pStructGrid);
+		m_pStructGrid->Release();
 	}
 	if (m_pVegGrid)
 	{
@@ -944,7 +940,7 @@ void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
 	// Adding a fence point might change the fence extents such that it moves
 	// to a new LOD cell.  So, remove it from the LOD grid, add the point,
 	// then add it back.
-	m_sStructGrid->RemoveFromGrid(f->GetGeom());
+	m_pStructGrid->RemoveFromGrid(f->GetGeom());
 
 	f->AddPoint(epos);
 
@@ -1207,10 +1203,10 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 
 #if EXPERIMENTAL_STRUCTURE_PAGING
 	// Don't construct, add to the paged structure grid
-	m_sStructGrid->SetArray(structures);
+	m_pPagedStructGrid->SetArray(structures);
 	for (int i = 0; i < num_structs; i++)
 	{
-		m_sStructGrid->AppendToGrid(structures->GetAt(i),
+		m_pPagedStructGrid->AppendToGrid(structures->GetAt(i),
 			structures->GetStructure3d(i));
 	}
 #else
@@ -1514,7 +1510,8 @@ void vtTerrain::_SetupVegGrid(float fLODDistance)
 	FPoint3 org(world_extents.left, 0.0f, world_extents.bottom);
 	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
 
-	m_pVegGrid = new vtLodGrid(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
+	m_pVegGrid = new vtSimpleLodGrid;
+	m_pVegGrid->Setup(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
 	m_pVegGrid->SetName2("Vegetation LOD Grid");
 	m_pTerrainGroup->AddChild(m_pVegGrid);
 }
@@ -1600,9 +1597,16 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 	FPoint3 org(world_extents.left, 0.0f, world_extents.bottom);
 	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
 
-	m_sStructGrid = new vtPagedLodGrid(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
-	m_sStructGrid->SetName2("Structures LOD Grid");
-	m_pTerrainGroup->AddChild(m_sStructGrid);
+#if EXPERIMENTAL_STRUCTURE_PAGING
+		m_pPagedStructGrid = new vtPagedStructureLodGrid;
+		m_pStructGrid = m_pPagedStructGrid;
+#else
+		m_pStructGrid = new vtSimpleLodGrid;
+#endif
+
+	m_pStructGrid->Setup(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
+	m_pStructGrid->SetName2("Structures LOD Grid");
+	m_pTerrainGroup->AddChild(m_pStructGrid);
 }
 
 void vtTerrain::_CreateStructures()
@@ -1705,11 +1709,13 @@ void vtTerrain::_CreateAbstractLayers()
 			VTLOG("Couldn't read features from file '%s'\n", (const char *) path);
 			continue;
 		}
-		VTLOG("Read features from file '%s'\n", (const char *) path);
+		VTLOG("Successfully read features from file '%s'\n", (const char *) path);
 
 		// Copy all the other attributes to the new featureset
+		VTLOG1("  Setting featureset properties.\n");
 		feat->GetProperties() = lay;
 
+		VTLOG1("  Constructing and appending layer.\n");
 		vtAbstractLayer *layer = new vtAbstractLayer;
 		layer->pSet = feat;
 		m_Layers.Append(layer);
@@ -2481,8 +2487,8 @@ void vtTerrain::SetFeatureVisible(TFType ftype, bool bOn)
 			m_pVegGrid->SetEnabled(bOn);
 		break;
 	case TFT_STRUCTURES:
-		if (m_sStructGrid)
-			m_sStructGrid->SetEnabled(bOn);
+		if (m_pStructGrid)
+			m_pStructGrid->SetEnabled(bOn);
 		break;
 	case TFT_ROADS:
 		if (m_pRoadGroup)
@@ -2514,8 +2520,8 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 			return m_pVegGrid->GetEnabled();
 		break;
 	case TFT_STRUCTURES:
-		if (m_sStructGrid)
-			return m_sStructGrid->GetEnabled();
+		if (m_pStructGrid)
+			return m_pStructGrid->GetEnabled();
 		break;
 	case TFT_ROADS:
 		if (m_pRoadGroup)
@@ -2537,8 +2543,8 @@ void vtTerrain::SetLODDistance(TFType ftype, float fDistance)
 			m_pVegGrid->SetDistance(fDistance);
 		break;
 	case TFT_STRUCTURES:
-		if (m_sStructGrid)
-			m_sStructGrid->SetDistance(fDistance);
+		if (m_pStructGrid)
+			m_pStructGrid->SetDistance(fDistance);
 		break;
 	case TFT_ROADS:
 		if (m_pRoadMap)
@@ -2559,8 +2565,8 @@ float vtTerrain::GetLODDistance(TFType ftype)
 			return m_pVegGrid->GetDistance();
 		break;
 	case TFT_STRUCTURES:
-		if (m_sStructGrid)
-			return m_sStructGrid->GetDistance();
+		if (m_pStructGrid)
+			return m_pStructGrid->GetDistance();
 		break;
 	case TFT_ROADS:
 		if (m_pRoadMap)
@@ -2614,7 +2620,7 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
 	vtHitList hlist;
 
 	if (iCultureFlags & CE_STRUCTURES)
-		vtIntersect(m_sStructGrid, start, end, hlist);
+		vtIntersect(m_pStructGrid, start, end, hlist);
 
 	if ((iCultureFlags & CE_ROADS) && m_pRoadGroup)
 		vtIntersect(m_pRoadGroup, start, end, hlist);
@@ -3020,9 +3026,9 @@ bool vtTerrain::AddNodeToVegGrid(vtTransform *pTrans)
  */
 bool vtTerrain::AddNodeToStructGrid(vtTransform *pTrans)
 {
-	if (!m_sStructGrid)
+	if (!m_pStructGrid)
 		return false;
-	return m_sStructGrid->AppendToGrid(pTrans);
+	return m_pStructGrid->AppendToGrid(pTrans);
 }
 
 /**
@@ -3037,9 +3043,9 @@ bool vtTerrain::AddNodeToStructGrid(vtTransform *pTrans)
  */
 bool vtTerrain::AddNodeToStructGrid(vtGeom *pGeom)
 {
-	if (!m_sStructGrid)
+	if (!m_pStructGrid)
 		return false;
-	return m_sStructGrid->AppendToGrid(pGeom);
+	return m_pStructGrid->AppendToGrid(pGeom);
 }
 
 
@@ -3060,8 +3066,8 @@ void vtTerrain::RemoveNode(vtNode *pNode)
  */
 void vtTerrain::RemoveNodeFromStructGrid(vtNode *pNode)
 {
-	if (m_sStructGrid)
-		m_sStructGrid->RemoveNodeFromGrid(pNode);
+	if (m_pStructGrid)
+		m_pStructGrid->RemoveNodeFromGrid(pNode);
 }
 
 

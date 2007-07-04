@@ -1,7 +1,7 @@
 //
 // LodGrid.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,9 +10,15 @@
 #include "vtdata/HeightField.h"
 #include "LodGrid.h"
 
-#define index(a,b) ((a*m_dim)+b)
+#define CellIndex(a,b) ((a*m_dim)+b)
 
-vtLodGrid::vtLodGrid(const FPoint3 &origin, const FPoint3 &size,
+vtSimpleLodGrid::vtSimpleLodGrid()
+{
+	m_pCells = NULL;
+	m_pHeightField = NULL;
+}
+
+void vtSimpleLodGrid::Setup(const FPoint3 &origin, const FPoint3 &size,
 				 int iDimension, float fLODDistance, vtHeightField3d *pHF)
 {
 	m_origin = origin;
@@ -29,13 +35,13 @@ vtLodGrid::vtLodGrid(const FPoint3 &origin, const FPoint3 &size,
 	{
 		for (b = 0; b < m_dim; b++)
 		{
-			m_pCells[index(a,b)] = NULL;
+			m_pCells[CellIndex(a,b)] = NULL;
 		}
 	}
 	m_pHeightField = pHF;
 }
 
-void vtLodGrid::Release()
+void vtSimpleLodGrid::Release()
 {
 	// get rid of children first
 	vtLOD *lod;
@@ -44,7 +50,7 @@ void vtLodGrid::Release()
 	{
 		for (b = 0; b < m_dim; b++)
 		{
-			lod = m_pCells[index(a,b)];
+			lod = m_pCells[CellIndex(a,b)];
 			if (lod != NULL)
 			{
 				RemoveChild(lod);
@@ -60,9 +66,9 @@ void vtLodGrid::Release()
 }
 
 
-void vtLodGrid::AllocateCell(int a, int b)
+void vtSimpleLodGrid::AllocateCell(int a, int b)
 {
-	int i = index(a,b);
+	int i = CellIndex(a,b);
 
 	m_pCells[i] = new vtLOD;
 	vtString name;
@@ -90,13 +96,13 @@ void vtLodGrid::AllocateCell(int a, int b)
 	AddChild(m_pCells[i]);
 }
 
-void vtLodGrid::DetermineCell(const FPoint3 &pos, int &a, int &b)
+void vtSimpleLodGrid::DetermineCell(const FPoint3 &pos, int &a, int &b)
 {
 	a = (int) ((pos.x - m_origin.x) / m_step.x);
 	b = (int) ((pos.z - m_origin.z) / m_step.z);
 }
 
-vtGroup *vtLodGrid::FindCellParent(const FPoint3 &point)
+vtGroup *vtSimpleLodGrid::FindCellParent(const FPoint3 &point)
 {
 	int a, b;
 
@@ -104,14 +110,14 @@ vtGroup *vtLodGrid::FindCellParent(const FPoint3 &point)
 	if (a < 0 || a >= m_dim || b < 0 || b >= m_dim)
 		return NULL;
 
-	int i = index(a, b);
+	int i = CellIndex(a, b);
 	if (!m_pCells[i])
 		AllocateCell(a, b);
 
 	return (vtGroup *)m_pCells[i]->GetChild(0);
 }
 
-bool vtLodGrid::AppendToGrid(vtTransform *pTNode)
+bool vtSimpleLodGrid::AppendToGrid(vtTransform *pTNode)
 {
 	vtGroup *pGroup = FindCellParent(pTNode->GetTrans());
 	if (pGroup)
@@ -123,7 +129,7 @@ bool vtLodGrid::AppendToGrid(vtTransform *pTNode)
 		return false;
 }
 
-bool vtLodGrid::AppendToGrid(vtGeom *pGNode)
+bool vtSimpleLodGrid::AppendToGrid(vtGeom *pGNode)
 {
 	FSphere sph;
 	pGNode->GetBoundSphere(sph);
@@ -138,14 +144,14 @@ bool vtLodGrid::AppendToGrid(vtGeom *pGNode)
 		return false;
 }
 
-void vtLodGrid::RemoveFromGrid(vtTransform *pTNode)
+void vtSimpleLodGrid::RemoveFromGrid(vtTransform *pTNode)
 {
 	vtGroup *pGroup = FindCellParent(pTNode->GetTrans());
 	if (pGroup)
 		pGroup->RemoveChild(pTNode);
 }
 
-void vtLodGrid::RemoveFromGrid(vtGeom *pGNode)
+void vtSimpleLodGrid::RemoveFromGrid(vtGeom *pGNode)
 {
 	FSphere sph;
 	pGNode->GetBoundSphere(sph);
@@ -156,12 +162,12 @@ void vtLodGrid::RemoveFromGrid(vtGeom *pGNode)
 }
 
 /**
- * This version is slower but safer than calling RemoveFromGrid.  Is
- * searches through all of the LOD grid's cells looking for the node,
- * so it will work even in cases where the object may have moved
- * out of its original cell.
+ * This version is slower than calling RemoveFromGrid, but it covers more
+ * situations.  It searches through all of the LOD grid's cells looking
+ * for the node, so it will work even in cases where the object may have
+ * moved out of its original cell.
  */
-void vtLodGrid::RemoveNodeFromGrid(vtNode *pNode)
+void vtSimpleLodGrid::RemoveNodeFromGrid(vtNode *pNode)
 {
 	vtLOD *lod;
 	int a, b;
@@ -169,7 +175,7 @@ void vtLodGrid::RemoveNodeFromGrid(vtNode *pNode)
 	{
 		for (b = 0; b < m_dim; b++)
 		{
-			lod = m_pCells[index(a,b)];
+			lod = m_pCells[CellIndex(a,b)];
 			if (lod == NULL)
 				continue;
 			vtGroup *group = (vtGroup *) lod->GetChild(0);
@@ -182,7 +188,7 @@ void vtLodGrid::RemoveNodeFromGrid(vtNode *pNode)
 	}
 }
 
-void vtLodGrid::SetDistance(float fLODDistance)
+void vtSimpleLodGrid::SetDistance(float fLODDistance)
 {
 	m_fLODDistance = fLODDistance;
 
@@ -196,14 +202,14 @@ void vtLodGrid::SetDistance(float fLODDistance)
 	{
 		for (b = 0; b < m_dim; b++)
 		{
-			lod = m_pCells[index(a,b)];
+			lod = m_pCells[CellIndex(a,b)];
 			if (lod)
 				lod->SetRanges(ranges, 2);
 		}
 	}
 }
 
-float vtLodGrid::GetDistance()
+float vtSimpleLodGrid::GetDistance()
 {
 	return m_fLODDistance;
 }
