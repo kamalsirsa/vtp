@@ -154,15 +154,11 @@ bool vtTin::Read(const char *fname)
 	if (!fp)
 		return false;
 
-	char buf[3];
-	fread(buf, 3, 1, fp);
-	fseek(fp, 0, SEEK_SET);
-
 	bool success = _ReadTin(fp);
+	fclose(fp);
+
 	if (!success)
 		return false;
-
-	fclose(fp);
 
 	ComputeExtents();
 	return true;
@@ -282,59 +278,6 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 	// Cleanup: the ESRI TIN contains four "boundary" point far outside the
 	//  extents (directly North, South, East, and West).  We should ignore
 	//  those four points and the triangles connected to them.
-#if 0
-	// Look for far-West:
-	int outer;
-	double farthest;
-	outer = -1;
-	farthest = 1E9;
-	for (int i = 0; i < m_vert.GetSize(); i++)
-	{
-		if (m_vert[i].x < farthest)
-		{
-			farthest = m_vert[i].x;
-			outer = i;
-		}
-	}
-	RemVert(outer);
-
-	// Look for far-East:
-	outer = -1;
-	farthest = -1E9;
-	for (int i = 0; i < m_vert.GetSize(); i++)
-	{
-		if (m_vert[i].x > farthest)
-		{
-			farthest = m_vert[i].x;
-			outer = i;
-		}
-	}
-	RemVert(outer);
-	// Look for far-South:
-	outer = -1;
-	farthest = 1E9;
-	for (int i = 0; i < m_vert.GetSize(); i++)
-	{
-		if (m_vert[i].y < farthest)
-		{
-			farthest = m_vert[i].y;
-			outer = i;
-		}
-	}
-	RemVert(outer);
-	// Look for far-North:
-	outer = -1;
-	farthest = -1E9;
-	for (int i = 0; i < m_vert.GetSize(); i++)
-	{
-		if (m_vert[i].y > farthest)
-		{
-			farthest = m_vert[i].y;
-			outer = i;
-		}
-	}
-	RemVert(outer);
-#endif
 	// It seems we can assume the four 'extra' vertices are the first four.
 	m_vert.RemoveAt(0, 4);
 	m_z.RemoveAt(0, 4);
