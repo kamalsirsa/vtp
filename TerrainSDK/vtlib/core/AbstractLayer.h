@@ -59,7 +59,8 @@ public:
 	bool GetVisible();
 
 	void CreateStyledFeatures(vtTerrain *pTerr);
-	void CreateFeatureGeometry(vtTerrain *pTerr);
+	void CreateObjectGeometry(vtTerrain *pTerr);
+	void CreateLineGeometry(vtTerrain *pTerr);
 	void CreateFeatureLabels(vtTerrain *pTerr);
 	bool CreateTextureOverlay(vtTerrain *pTerr);
 

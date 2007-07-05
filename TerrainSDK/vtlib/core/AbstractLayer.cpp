@@ -102,8 +102,11 @@ void vtAbstractLayer::CreateStyledFeatures(vtTerrain *pTerr)
 
 	vtTagArray &style = pSet->GetProperties();
 
-	if (style.GetValueBool("Geometry"))
-		CreateFeatureGeometry(pTerr);
+	if (style.GetValueBool("ObjectGeometry"))
+		CreateObjectGeometry(pTerr);
+
+	if (style.GetValueBool("LineGeometry"))
+		CreateLineGeometry(pTerr);
 
 	if (style.GetValueBool("Labels"))
 		CreateFeatureLabels(pTerr);
@@ -114,48 +117,189 @@ void vtAbstractLayer::CreateStyledFeatures(vtTerrain *pTerr)
 
 /**
 	Given a featureset and style description, create geometry objects (such as
-	lines or spheres) and place them on the terrain.
-	If the features are 2D or 3D polylines (vtFeatureSetLineString or
-	vtFeatureSetLineString3D) then line geometry will be created.  If 2D, it
-	will be draped on the terrain. Polygon features (vtFeatureSetPolygon) will
-	also be created as line geometry (unfilled polygons) and draped on the ground.
+	spheres) and place them on the terrain.
+	If 2D, they will be draped on the terrain.
 
 	\param pTerr The terrain to drape on.
 */
-void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
+void vtAbstractLayer::CreateObjectGeometry(vtTerrain *pTerr)
 {
-	VTLOG1("  CreateFeatureGeometry\n");
+	VTLOG1("  CreateObjectGeometry\n");
 	vtTagArray &style = pSet->GetProperties();
+
+	vtHeightField3d *hf = pTerr->GetHeightField();
 
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// We support geometry for 2D and 3D polylines
-	const vtFeatureSetLineString   *pSetLS2 = dynamic_cast<const vtFeatureSetLineString*>(pSet);
+	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(pSet);
+	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(pSet);
 	const vtFeatureSetLineString3D *pSetLS3 = dynamic_cast<const vtFeatureSetLineString3D*>(pSet);
-	const vtFeatureSetPolygon *pSetPoly = dynamic_cast<const vtFeatureSetPolygon*>(pSet);
-	if (!pSetLS2 && !pSetLS3 && !pSetPoly)
+	if (!pSetP2 && !pSetP3 && !pSetLS3)
 		return;
 
 	// shorthand ref
 	vtFeatureSet &feat = *pSet;
 
 	// create geometry group to contain all the meshes
-	pGeomGroup = new vtGroup;
-	pGeomGroup->SetName2("Geometry");
-	pContainer->AddChild(pGeomGroup);
+	if (!pGeomGroup)
+	{
+		pGeomGroup = new vtGroup;
+		pGeomGroup->SetName2("Geometry");
+		pContainer->AddChild(pGeomGroup);
+	}
 
 	// Create materials.
 	vtMaterialArray *pMats = new vtMaterialArray;
 
 	// common color
-	RGBi color = style.GetValueRGBi("GeomColor");
+	RGBi color = style.GetValueRGBi("ObjectGeomColor");
+	int common_material_index = pMats->AddRGBMaterial1(color, true, true);
+
+	// If each feature has its own color, we need to create those materials
+	int color_field_index;
+	RGBAf rgba;
+	if (!style.GetValueInt("ObjectColorFieldIndex", color_field_index))
+		color_field_index = -1;
+	if (color_field_index != -1)
+	{
+		// go through all the features collecting unique colors
+		for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
+		{
+			// if we have a unique color, add it
+			if (GetColorField(feat, i, color_field_index, rgba))
+			{
+				if (pMats->FindByDiffuse(rgba) == -1)
+				{
+					RGBf rgb = (RGBf) rgba;
+					pMats->AddRGBMaterial1(rgb, true, true);
+				}
+			}
+		}
+	}
+
+	vtGeom *geom = new vtGeom;
+	geom->SetMaterials(pMats);
+	pMats->Release();	// pass ownership
+
+	float fHeight;
+	if (!style.GetValueFloat("ObjectGeomHeight", fHeight))
+		fHeight = 1;
+
+	float fRadius;
+	if (!style.GetValueFloat("ObjectGeomSize", fRadius))
+		fRadius = 1;
+
+	int res = 7;
+
+	int material_index;
+	FPoint3 f3;
+	VTLOG("  Creating %d entities.. ", feat.GetNumEntities());
+	for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
+	{
+		if (color_field_index == -1)
+			material_index = common_material_index;
+		else
+		{
+			if (GetColorField(feat, i, color_field_index, rgba))
+				material_index = pMats->FindByDiffuse(rgba);
+			else
+				material_index = common_material_index;
+		}
+
+		FPoint3 p3;
+		if (pSetP2)
+		{
+			const DPoint2 &epos = pSetP2->GetPoint(i);
+			hf->ConvertEarthToSurfacePoint(epos, p3);
+			p3.y += fHeight;
+
+			vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals, res*res*2);
+			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
+
+			geom->AddMesh(mesh, material_index);
+			mesh->Release();
+		}
+		else if (pSetP3)
+		{
+			const DPoint3 &epos = pSetP3->GetPoint(i);
+			float original_z = epos.z;
+			hf->m_Conversion.ConvertFromEarth(epos, p3);
+
+			vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals, res*res*2);
+			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
+
+			geom->AddMesh(mesh, material_index);
+			mesh->Release();
+		}
+		else if (pSetLS3)
+		{
+			const DLine3 &dline = pSetLS3->GetPolyLine(i);
+			for (unsigned int j = 0; j < dline.GetSize(); j++)
+			{
+				// preserve 3D point's elevation: don't drape
+				hf->m_Conversion.ConvertFromEarth(dline[j], p3);
+
+				vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals, res*res*2);
+				mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
+
+				geom->AddMesh(mesh, material_index);
+				mesh->Release();
+			}
+		}
+		pTerr->ProgressCallback(i * 100 / feat.GetNumEntities());
+	}
+	pGeomGroup->AddChild(geom);
+	VTLOG1("Done.\n");
+}
+
+/**
+	Given a featureset and style description, create line geometry.
+	If 2D, it will be draped on the terrain. Polygon features
+	(vtFeatureSetPolygon) will also be created as line geometry
+	(unfilled polygons) and draped on the ground.
+
+	\param pTerr The terrain to drape on.
+*/
+void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr)
+{
+	VTLOG1("  CreateLineGeometry\n");
+	vtTagArray &style = pSet->GetProperties();
+
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	// We support geometry for 2D and 3D polylines
+	const vtFeatureSetPoint3D	   *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(pSet);
+	const vtFeatureSetLineString   *pSetLS2 = dynamic_cast<const vtFeatureSetLineString*>(pSet);
+	const vtFeatureSetLineString3D *pSetLS3 = dynamic_cast<const vtFeatureSetLineString3D*>(pSet);
+	const vtFeatureSetPolygon	   *pSetPoly = dynamic_cast<const vtFeatureSetPolygon*>(pSet);
+	if (!pSetP3 && !pSetLS2 && !pSetLS3 && !pSetPoly)
+		return;
+
+	// shorthand ref
+	vtFeatureSet &feat = *pSet;
+
+	// create geometry group to contain all the meshes
+	if (!pGeomGroup)
+	{
+		pGeomGroup = new vtGroup;
+		pGeomGroup->SetName2("Geometry");
+		pContainer->AddChild(pGeomGroup);
+	}
+
+	// Create materials.
+	vtMaterialArray *pMats = new vtMaterialArray;
+
+	// common color
+	RGBi color = style.GetValueRGBi("LineGeomColor");
 	int common_material_index = pMats->AddRGBMaterial1(color, false, false);
 
 	// If each feature has its own color, we need to create those materials
 	int color_field_index;
 	RGBAf rgba;
-	if (!style.GetValueInt("ColorFieldIndex", color_field_index))
+	if (!style.GetValueInt("LineColorFieldIndex", color_field_index))
 		color_field_index = -1;
 	if (color_field_index != -1)
 	{
@@ -181,7 +325,7 @@ void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
 	vtMeshFactory mf(geom, vtMesh::LINE_STRIP, 0, 30000, 0);
 
 	float fHeight;
-	if (!style.GetValueFloat("GeomHeight", fHeight))
+	if (!style.GetValueFloat("LineGeomHeight", fHeight))
 		fHeight = 1;
 	bool bTessellate = style.GetValueBool("Tessellate");
 	bool bCurve = false;
@@ -202,7 +346,20 @@ void vtAbstractLayer::CreateFeatureGeometry(vtTerrain *pTerr)
 		}
 
 		unsigned int size;
-		if (pSetLS2)
+		if (pSetP3)
+		{
+			mf.PrimStart();
+			const DLine3 &dline = pSetP3->GetAllPoints();
+			size = dline.GetSize();
+			for (unsigned int j = 0; j < size; j++)
+			{
+				// preserve 3D point's elevation: don't drape
+				pTerr->GetHeightFieldGrid3d()->m_Conversion.ConvertFromEarth(dline[j], f3);
+				mf.AddVertex(f3);
+			}
+			mf.PrimEnd();
+		}
+		else if (pSetLS2)
 		{
 			const DLine2 &dline = pSetLS2->GetPolyLine(i);
 
