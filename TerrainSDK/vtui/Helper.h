@@ -49,6 +49,10 @@ void ResumeProgressDialog2();
 int GuessZoneFromGeo(const DPoint2 &pos);
 
 /////
+
+vtString MakeFilenameDB(const vtString &base, int col, int row, int relative_lod);
+
+/////
 wxString StartOfFilename(const wxString &strFullPath);
 wxString ToBackslash(const wxString &path);
 void RemoveFileExtensions(wxString &fname, bool bAll = true);

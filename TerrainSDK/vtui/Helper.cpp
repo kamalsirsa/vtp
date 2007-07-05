@@ -561,6 +561,21 @@ int GuessZoneFromGeo(const DPoint2 &pos)
 	return zone;
 }
 
+//////////////////////////////////////
+
+// Assemble the filepath for a libMini .db file
+vtString MakeFilenameDB(const vtString &base, int col, int row, int relative_lod)
+{
+	vtString fname = base, str;
+	fname += '/';
+	if (relative_lod == 0)
+		str.Format("tile.%d-%d.db", col, row);
+	else
+		str.Format("tile.%d-%d.db%d", col, row, relative_lod);
+	fname += str;
+	return fname;
+}
+
 /**
  * Given a full path containing a filename, return a pointer to
  * the filename portion of the string.
