@@ -351,6 +351,22 @@ void Enviro::DoControl()
 	}
 	if (m_state == AS_Orbit)
 		DoControlOrbit();
+	if (m_state == AS_Terrain)
+		DoControlTerrain();
+}
+
+void Enviro::DoControlTerrain()
+{
+	// do a paging cleanup pass every 1/4 of a second
+	static float last_time = 0.0f;
+	float cur = vtGetTime();
+	if (cur - last_time > 0.25f)
+	{
+		last_time = cur;
+		vtTerrain *terr = GetCurrentTerrain();
+		if (terr)
+			terr->DeleteFarawayStructures();
+	}
 }
 
 bool Enviro::SwitchToTerrain(const char *name)

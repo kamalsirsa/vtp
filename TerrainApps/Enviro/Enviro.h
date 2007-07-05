@@ -63,6 +63,7 @@ public:
 	void StartControlEngine();
 	void DoControl();
 	void DoControlOrbit();
+	void DoControlTerrain();
 	void SetTerrain(vtTerrain *pTerrain);
 	vtGroup *GetRoot() { return m_pRoot; }
 
