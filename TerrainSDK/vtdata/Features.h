@@ -287,6 +287,7 @@ public:
 	void GetPoint(unsigned int num, DPoint3 &p) const;
 	DPoint3 &GetPoint(unsigned int num) { return m_Point3[num]; }
 	const DPoint3 &GetPoint(unsigned int num) const { return m_Point3[num]; }
+	const DLine3 &GetAllPoints() const { return m_Point3; }
 	bool ComputeHeightRange(float &fmin, float &fmax);
 
 	// implement necessary virtual methods
