@@ -1,7 +1,7 @@
 //
 // Name: TileDlg.cpp
 //
-// Copyright (c) 2005-2006 Virtual Terrain Project
+// Copyright (c) 2005-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -192,17 +192,21 @@ void TileDlg::UpdateEnables()
 
 	FindWindow(ID_OMIT_FLAT)->Enable(m_bElev);
 
-	FindWindow(ID_TC_NONE)->Enable(!m_bElev);
+	// We actually need to leave the compression options enabled even if we're
+	//  using this dialog for elevation, because they might want to write
+	//  derived textures separately, and this is the only place they can
+	//  indicate whether to compress.
+	FindWindow(ID_TC_NONE)->Enable(true);
 
 #if USE_OPENGL
-	FindWindow(ID_TC_OGL)->Enable(!m_bElev);
+	FindWindow(ID_TC_OGL)->Enable(true);
 #else
 	FindWindow(ID_TC_OGL)->Enable(false);
 #endif
 
 #if SUPPORT_SQUISH
-	FindWindow(ID_TC_SQUISH_FAST)->Enable(!m_bElev);
-	FindWindow(ID_TC_SQUISH_SLOW)->Enable(!m_bElev);
+	FindWindow(ID_TC_SQUISH_FAST)->Enable(true);
+	FindWindow(ID_TC_SQUISH_SLOW)->Enable(true);
 #else
 	FindWindow(ID_TC_SQUISH_FAST)->Enable(false);
 	FindWindow(ID_TC_SQUISH_SLOW)->Enable(false);

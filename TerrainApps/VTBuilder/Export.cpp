@@ -819,13 +819,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 				for (int k = 0; k < total_lods; k++)
 				{
-					vtString fname = dirname_image, str;
-					fname += '/';
-					if (k == 0)
-						str.Format("tile.%d-%d.db", col, row);
-					else
-						str.Format("tile.%d-%d.db%d", col, row, k);
-					fname += str;
+					vtString fname = MakeFilenameDB(dirname_image, col, row, k);
 
 					int tilesize = base_tilesize >> k;
 
@@ -838,7 +832,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 					int iUncompressedSize = tilesize * tilesize * 3;
 					unsigned char *rgb_bytes = (unsigned char *) malloc(iUncompressedSize);
-//					output_buf.alloc(tilesize, tilesize, 1, 1, 3);
+
 					unsigned char *dst = rgb_bytes;
 					RGBi rgb;
 					for (int ro = 0; ro < base_tilesize; ro += (1<<k))
@@ -899,13 +893,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				int lod = start_lod + k;
 				int tilesize = base_tilesize >> k;
 
-				vtString fname = dirname, str;
-				fname += '/';
-				if (k == 0)
-					str.Format("tile.%d-%d.db", col, row);
-				else
-					str.Format("tile.%d-%d.db%d", col, row, k);
-				fname += str;
+				vtString fname = MakeFilenameDB(dirname, col, row, k);
 
 				// make a message for the progress dialog
 				wxString msg;
@@ -1098,13 +1086,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				int lod = start_lod + k;
 				int tilesize = base_tilesize >> k;
 
-				vtString fname = dirname, str;
-				fname += '/';
-				if (k == 0)
-					str.Format("tile.%d-%d.db", col, row);
-				else
-					str.Format("tile.%d-%d.db%d", col, row, k);
-				fname += str;
+				vtString fname = MakeFilenameDB(dirname, col, row, k);
 
 				// make a message for the progress dialog
 				wxString msg;

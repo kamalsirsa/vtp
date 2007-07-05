@@ -1286,6 +1286,17 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 		}
 	}
 
+#if USE_OPENGL
+	wxFrame *frame = new wxFrame;
+	ImageGLCanvas *pCanvas = NULL;
+	if (opts.bCreateDerivedImages && opts.eCompressionType == TC_OPENGL)
+	{
+		frame->Create(GetMainFrame(), -1, _T("Texture Compression OpenGL Context"),
+			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
+		pCanvas = new ImageGLCanvas(frame);
+	}
+#endif
+
 	// make a note of which lods exist
 	LODMap lod_existence_map(opts.cols, opts.rows);
 
@@ -1369,15 +1380,10 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 			// Create a matching derived texture tileset
 			if (opts.bCreateDerivedImages)
 			{
-				vtString fname = dirname_image, str;
-				fname += '/';
-				str.Format("tile.%d-%d.db", col, row);
-				fname += str;
-
 				vtDIB dib;
 				dib.Create(base_tilesize, base_tilesize, 24);
 				base_lod.ComputeHeightExtents();
-				base_lod.ColorDibFromElevation(&dib, &cmap, 4096);
+				base_lod.ColorDibFromElevation(&dib, &cmap, 4000);
 
 				if (opts.draw.m_bShadingQuick)
 					base_lod.ShadeQuick(&dib, SHADING_BIAS, true);
@@ -1391,34 +1397,82 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 					base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f, true);
 				}
 
-				// write uncompressed image
-				MiniDatabuf output_buf;
-				output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
-				output_buf.alloc(base_tilesize, base_tilesize, 1, 1, 3);
-				char *dst = (char *) output_buf.data;
-				RGBi rgb;
-				for (int ro = 0; ro < base_tilesize; ro++)
-					for (int co = 0; co < base_tilesize; co++)
+				for (int k = 0; k < opts.numlods; k++)
+				{
+					vtString fname = MakeFilenameDB(dirname_image, col, row, k);
+
+					int tilesize = base_tilesize >> k;
+
+					MiniDatabuf output_buf;
+					output_buf.xsize = tilesize;
+					output_buf.ysize = tilesize;
+					output_buf.zsize = 1;
+					output_buf.tsteps = 1;
+					output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
+
+					int iUncompressedSize = tilesize * tilesize * 3;
+					unsigned char *rgb_bytes = (unsigned char *) malloc(iUncompressedSize);
+
+					unsigned char *dst = rgb_bytes;
+					RGBi rgb;
+					for (int ro = 0; ro < base_tilesize; ro += (1<<k))
+						for (int co = 0; co < base_tilesize; co += (1<<k))
+						{
+							dib.GetPixel24(co, ro, rgb);
+							*dst++ = rgb.r;
+							*dst++ = rgb.g;
+							*dst++ = rgb.b;
+						}
+
+					// Always try to compress derived images
+					bool bWritten = false;
+					if (opts.eCompressionType == TC_OPENGL)
 					{
-						dib.GetPixel24(co, ro, rgb);
-						*dst++ = rgb.r;
-						*dst++ = rgb.g;
-						*dst++ = rgb.b;
+#if USE_OPENGL
+						DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex);
+
+						output_buf.savedata(fname);
+						free(output_buf.data);
+						output_buf.data = NULL;
+						bWritten = true;
+
+						if (tilesize == 256)
+							pCanvas->Refresh(false);
+#endif
 					}
-				output_buf.savedata(fname);
+					else if (opts.eCompressionType == TC_SQUISH_FAST ||
+						opts.eCompressionType == TC_SQUISH_SLOW)
+					{
+#if SUPPORT_SQUISH
+						DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
+
+						output_buf.savedata(fname);
+						free(output_buf.data);
+						output_buf.data = NULL;
+						bWritten = true;
+#endif
+					}
+					if (!bWritten)
+					{
+						// Uncompressed
+						// Output to a plain RGB .db file
+						output_buf.type = 3;	// RGB
+						output_buf.bytes = iUncompressedSize;
+						output_buf.data = rgb_bytes;
+						output_buf.savedata(fname);
+						output_buf.data = NULL;
+					}
+
+					// Free the uncompressed image
+					free(rgb_bytes);
+				}
 			}
 
 			for (lod = 0; lod < opts.numlods; lod++)
 			{
 				int tilesize = base_tilesize >> lod;
 
-				vtString fname = dirname, str;
-				fname += '/';
-				if (lod == 0)
-					str.Format("tile.%d-%d.db", col, row);
-				else
-					str.Format("tile.%d-%d.db%d", col, row, lod);
-				fname += str;
+				vtString fname = MakeFilenameDB(dirname, col, row, lod);
 
 				// make a message for the progress dialog
 				wxString msg;
@@ -1472,6 +1526,14 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 		WriteTilesetHeader(opts.fname_images, opts.cols, opts.rows,
 			opts.lod0size, area, proj, INVALID_ELEVATION, INVALID_ELEVATION, &lod_existence_map);
 	}
+
+#if USE_OPENGL
+	if (frame)
+	{
+		frame->Close();
+		delete frame;
+	}
+#endif
 
 	return true;
 }

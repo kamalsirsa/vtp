@@ -1428,13 +1428,7 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 	DPoint2 spacing = tile_dim / (tilesize-1);
 
 	// Write DB file (libMini's databuf format)
-	vtString fname = dirname, str;
-	fname += '/';
-	if (lod == 0)
-		str.Format("tile.%d-%d.db", col, row);
-	else
-		str.Format("tile.%d-%d.db%d", col, row, lod);
-	fname += str;
+	vtString fname = MakeFilenameDB(dirname, col, row, lod);
 
 	// make a message for the progress dialog
 	wxString msg;
