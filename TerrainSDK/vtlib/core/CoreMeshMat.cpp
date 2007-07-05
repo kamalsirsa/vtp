@@ -4,7 +4,7 @@
 // Mesh and Material classes and methods which are a core part of the vtlib
 // library.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -364,7 +364,8 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
  *		from top to bottom.
  * \param hemi Create only the top of the ellipsoid (e.g. a hemisphere).
  */
-void vtMeshBase::CreateEllipsoid(FPoint3 size, int res, bool hemi)
+void vtMeshBase::CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
+								 int res, bool hemi)
 {
 	int		i, j;
 	int		vidx;
@@ -399,7 +400,7 @@ void vtMeshBase::CreateEllipsoid(FPoint3 size, int res, bool hemi)
 			v.y = cosf(phi);
 
 			FPoint3 p(size.x * v.x, size.y * v.y, size.z * v.z);
-			vidx = AddVertex(p);
+			vidx = AddVertex(center + p);
 			if (GetVtxType() & VT_Normals)		/* compute normals */
 				SetVtxNormal(vidx, v);
 			if (GetVtxType() & VT_TexCoords)	/* compute tex coords */

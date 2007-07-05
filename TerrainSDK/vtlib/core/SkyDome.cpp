@@ -155,7 +155,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	VTLOG("   Creating Dome Mesh\n");
 	int res = 16;
 	m_pDomeMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors | VT_TexCoords, res*res);
-	m_pDomeMesh->CreateEllipsoid(FPoint3(1.0f, 1.0f, 1.0f), res, true);
+	m_pDomeMesh->CreateEllipsoid(FPoint3(0,0,0), FPoint3(1.0f, 1.0f, 1.0f), res, true);
 	m_pDomeGeom->AddMesh(m_pDomeMesh, 0);
 	m_pDomeMesh->Release();	// pass ownership to Geometry
 

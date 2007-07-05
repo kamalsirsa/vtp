@@ -1609,7 +1609,7 @@ vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
 	vtMesh *mesh = new vtMesh(vtMesh::QUADS, VT_Normals | VT_TexCoords, 20*20*2);
 	int res = 20;
 	FPoint3 size(1.0f, 1.0f, 1.0f);
-	mesh->CreateEllipsoid(size, res);
+	mesh->CreateEllipsoid(FPoint3(0,0,0), size, res);
 
 	// fix up the texture coordinates
 	int numvtx = mesh->GetNumVertices();

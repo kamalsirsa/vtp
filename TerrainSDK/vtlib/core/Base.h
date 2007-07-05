@@ -1,7 +1,7 @@
 //
 // Base.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -198,7 +198,8 @@ public:
 
 	void TransformVertices(const FMatrix4 &mat);
 
-	void CreateEllipsoid(FPoint3 size, int res, bool hemi = false);
+	void CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
+		int res, bool hemi = false);
 	void CreateBlock(const FPoint3& size);
 	void CreateOptimizedBlock(const FPoint3& size);
 	void CreatePrism(const FPoint3 &base, const FPoint3 &vector_up,

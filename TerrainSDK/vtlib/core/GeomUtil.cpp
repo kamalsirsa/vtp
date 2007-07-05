@@ -3,7 +3,7 @@
 //
 // Useful classes and functions for working with geometry and meshes.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -166,7 +166,7 @@ vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertTyp
 {
 	vtGeom *pGeom = new vtGeom;
 	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, iVertType, res*res*2);
-	mesh->CreateEllipsoid(FPoint3(fRadius, fRadius, fRadius), res);
+	mesh->CreateEllipsoid(FPoint3(0,0,0), FPoint3(fRadius, fRadius, fRadius), res);
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
 	mesh->Release();	// pass ownership to the Geometry
