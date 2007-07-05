@@ -679,6 +679,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\PagedLodGrid.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\core\Roads.cpp"
 				>
 				<FileConfiguration
@@ -1144,6 +1148,10 @@
 			</File>
 			<File
 				RelativePath="..\core\NavEngines.h"
+				>
+			</File>
+			<File
+				RelativePath="..\core\PagedLodGrid.h"
 				>
 			</File>
 			<File

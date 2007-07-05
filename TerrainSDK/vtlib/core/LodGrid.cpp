@@ -12,10 +12,96 @@
 
 #define CellIndex(a,b) ((a*m_dim)+b)
 
+/////////////////////////////////////////////////////////////////////////////
+// Base LOD Grid
+
+vtLodGrid::vtLodGrid()
+{
+	m_dim = 100;
+	m_fLODDistance = 0.0f;
+	m_pHeightField = NULL;
+}
+
+void vtLodGrid::DetermineCell(const FPoint3 &pos, int &a, int &b)
+{
+	a = (int) ((pos.x - m_origin.x) / m_step.x);
+	b = (int) ((pos.z - m_origin.z) / m_step.z);
+}
+
+bool vtLodGrid::AppendToGrid(vtTransform *pTNode)
+{
+	vtGroup *pGroup = FindCellParent(pTNode->GetTrans());
+	if (pGroup)
+	{
+		pGroup->AddChild(pTNode);
+		return true;
+	}
+	else
+		return false;
+}
+
+bool vtLodGrid::AppendToGrid(vtGeom *pGNode)
+{
+	FSphere sph;
+	pGNode->GetBoundSphere(sph);
+
+	vtGroup *pGroup = FindCellParent(sph.center);
+	if (pGroup)
+	{
+		pGroup->AddChild(pGNode);
+		return true;
+	}
+	else
+		return false;
+}
+
+void vtLodGrid::RemoveFromGrid(vtTransform *pTNode)
+{
+	vtGroup *pGroup = FindCellParent(pTNode->GetTrans());
+	if (pGroup)
+		pGroup->RemoveChild(pTNode);
+}
+
+void vtLodGrid::RemoveFromGrid(vtGeom *pGNode)
+{
+	FSphere sph;
+	pGNode->GetBoundSphere(sph);
+
+	vtGroup *pGroup = FindCellParent(sph.center);
+	if (pGroup)
+		pGroup->RemoveChild(pGNode);
+}
+
+/**
+ * This version is slower than calling RemoveFromGrid, but it covers more
+ * situations.  It searches through all of the LOD grid's cells looking
+ * for the node, so it will work even in cases where the object may have
+ * moved out of its original cell.
+ */
+void vtLodGrid::RemoveNodeFromGrid(vtNode *pNode)
+{
+	int a, b;
+	for (a = 0; a < m_dim; a++)
+	{
+		for (b = 0; b < m_dim; b++)
+		{
+			vtGroup *group = GetCell(a, b);
+			if (group && group->ContainsChild(pNode))
+			{
+				group->RemoveChild(pNode);
+				return;
+			}
+		}
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Simple LOD Grid
+
 vtSimpleLodGrid::vtSimpleLodGrid()
 {
 	m_pCells = NULL;
-	m_pHeightField = NULL;
 }
 
 void vtSimpleLodGrid::Setup(const FPoint3 &origin, const FPoint3 &size,
@@ -96,10 +182,14 @@ void vtSimpleLodGrid::AllocateCell(int a, int b)
 	AddChild(m_pCells[i]);
 }
 
-void vtSimpleLodGrid::DetermineCell(const FPoint3 &pos, int &a, int &b)
+
+vtGroup *vtSimpleLodGrid::GetCell(int a, int b)
 {
-	a = (int) ((pos.x - m_origin.x) / m_step.x);
-	b = (int) ((pos.z - m_origin.z) / m_step.z);
+	int i = CellIndex(a, b);
+	vtLOD *pCell = m_pCells[i];
+	if (!pCell)
+		return NULL;
+	return (vtGroup *) pCell->GetChild(0);
 }
 
 vtGroup *vtSimpleLodGrid::FindCellParent(const FPoint3 &point)
@@ -115,77 +205,6 @@ vtGroup *vtSimpleLodGrid::FindCellParent(const FPoint3 &point)
 		AllocateCell(a, b);
 
 	return (vtGroup *)m_pCells[i]->GetChild(0);
-}
-
-bool vtSimpleLodGrid::AppendToGrid(vtTransform *pTNode)
-{
-	vtGroup *pGroup = FindCellParent(pTNode->GetTrans());
-	if (pGroup)
-	{
-		pGroup->AddChild(pTNode);
-		return true;
-	}
-	else
-		return false;
-}
-
-bool vtSimpleLodGrid::AppendToGrid(vtGeom *pGNode)
-{
-	FSphere sph;
-	pGNode->GetBoundSphere(sph);
-
-	vtGroup *pGroup = FindCellParent(sph.center);
-	if (pGroup)
-	{
-		pGroup->AddChild(pGNode);
-		return true;
-	}
-	else
-		return false;
-}
-
-void vtSimpleLodGrid::RemoveFromGrid(vtTransform *pTNode)
-{
-	vtGroup *pGroup = FindCellParent(pTNode->GetTrans());
-	if (pGroup)
-		pGroup->RemoveChild(pTNode);
-}
-
-void vtSimpleLodGrid::RemoveFromGrid(vtGeom *pGNode)
-{
-	FSphere sph;
-	pGNode->GetBoundSphere(sph);
-
-	vtGroup *pGroup = FindCellParent(sph.center);
-	if (pGroup)
-		pGroup->RemoveChild(pGNode);
-}
-
-/**
- * This version is slower than calling RemoveFromGrid, but it covers more
- * situations.  It searches through all of the LOD grid's cells looking
- * for the node, so it will work even in cases where the object may have
- * moved out of its original cell.
- */
-void vtSimpleLodGrid::RemoveNodeFromGrid(vtNode *pNode)
-{
-	vtLOD *lod;
-	int a, b;
-	for (a = 0; a < m_dim; a++)
-	{
-		for (b = 0; b < m_dim; b++)
-		{
-			lod = m_pCells[CellIndex(a,b)];
-			if (lod == NULL)
-				continue;
-			vtGroup *group = (vtGroup *) lod->GetChild(0);
-			if (group->ContainsChild(pNode))
-			{
-				group->RemoveChild(pNode);
-				return;
-			}
-		}
-	}
 }
 
 void vtSimpleLodGrid::SetDistance(float fLODDistance)
@@ -209,8 +228,4 @@ void vtSimpleLodGrid::SetDistance(float fLODDistance)
 	}
 }
 
-float vtSimpleLodGrid::GetDistance()
-{
-	return m_fLODDistance;
-}
 

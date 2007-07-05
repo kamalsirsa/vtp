@@ -35,19 +35,34 @@ class vtHeightField3d;
 class vtLodGrid : public vtGroup
 {
 public:
+	vtLodGrid();
 	virtual void Setup(const FPoint3 &origin, const FPoint3 &size,
 		int iDimension, float fLODDistance, vtHeightField3d *pHF = NULL) = 0;
 	void Release() = 0;
 
 	// methods
-	virtual bool AppendToGrid(vtTransform *pTrans) = 0;
-	virtual bool AppendToGrid(vtGeom *pGeom) = 0;
-	virtual void RemoveFromGrid(vtTransform *pTNode) = 0;
-	virtual void RemoveFromGrid(vtGeom *pModel) = 0;
-	virtual void RemoveNodeFromGrid(vtNode *pNode) = 0;
+	bool AppendToGrid(vtTransform *pTrans);
+	bool AppendToGrid(vtGeom *pGeom);
+	void RemoveFromGrid(vtTransform *pTNode);
+	void RemoveFromGrid(vtGeom *pModel);
+	void RemoveNodeFromGrid(vtNode *pNode);
 
 	virtual void SetDistance(float fLODDistance) = 0;
-	virtual float GetDistance() = 0;
+	float GetDistance() { return m_fLODDistance; }
+
+protected:
+	FPoint3 m_origin;
+	FPoint3 m_size;
+	FPoint3 m_step;
+
+	int m_dim;
+	float m_fLODDistance;
+	vtHeightField3d *m_pHeightField;
+
+	virtual vtGroup *FindCellParent(const FPoint3 &point) = 0;
+	virtual void AllocateCell(int a, int b) = 0;
+	virtual vtGroup *GetCell(int a, int b) = 0;
+	void DetermineCell(const FPoint3 &pos, int &a, int &b);
 };
 
 /**
@@ -66,28 +81,14 @@ public:
 	void Release();
 
 	// methods
-	bool AppendToGrid(vtTransform *pTrans);
-	bool AppendToGrid(vtGeom *pGeom);
-	void RemoveFromGrid(vtTransform *pTNode);
-	void RemoveFromGrid(vtGeom *pModel);
-	void RemoveNodeFromGrid(vtNode *pNode);
-
 	void SetDistance(float fLODDistance);
-	float GetDistance();
 
 protected:
-	FPoint3 m_origin;
-	FPoint3 m_size;
-	FPoint3 m_step;
-
-	int m_dim;
-	float m_fLODDistance;
 	vtLOD **m_pCells;
-	vtHeightField3d *m_pHeightField;
 
 	vtGroup *FindCellParent(const FPoint3 &point);
 	void AllocateCell(int a, int b);
-	void DetermineCell(const FPoint3 &pos, int &a, int &b);
+	vtGroup *GetCell(int a, int b);
 };
 
 /*@}*/  // sg

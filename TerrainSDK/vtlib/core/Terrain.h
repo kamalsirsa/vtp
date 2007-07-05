@@ -227,6 +227,7 @@ public:
 	bool AddNodeToStructGrid(vtGeom *pGeom);
 	void RemoveNodeFromStructGrid(vtNode *pNode);
 	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
+	void DeleteFarawayStructures();
 
 	// abstract layers
 	void SetAbstractLayer(vtAbstractLayer *alay);

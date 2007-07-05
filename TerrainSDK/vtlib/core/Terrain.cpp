@@ -29,13 +29,10 @@
 // The Terrain uses two LOD grids (class vtLodGrid, a sparse grid of LOD cells)
 //  of size LOD_GRIDSIZE x LOD_GRIDSIZE to group structures and vegetation.
 //  This allows them to be culled more efficiently.
-#define LOD_GRIDSIZE		192
+#define LOD_GRIDSIZE		128
 
-#define EXPERIMENTAL_STRUCTURE_PAGING 0
-
-#if EXPERIMENTAL_STRUCTURE_PAGING
-#include "LODTest.cpp"
-#endif
+#define EXPERIMENTAL_STRUCTURE_PAGING 1
+#include "PagedLodGrid.h"
 
 //////////////////////////////////////////////////////////////////////
 
@@ -1201,27 +1198,31 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 	int num_structs = structures->GetSize();
 	VTLOG("CreateStructures, %d structs\n", num_structs);
 
-#if EXPERIMENTAL_STRUCTURE_PAGING
-	// Don't construct, add to the paged structure grid
-	m_pPagedStructGrid->SetArray(structures);
-	for (int i = 0; i < num_structs; i++)
+	bool bPaging = m_Params.GetValueBool("PagingStructures");
+	if (bPaging)
 	{
-		m_pPagedStructGrid->AppendToGrid(structures->GetAt(i),
-			structures->GetStructure3d(i));
+		// Don't construct geometry, just add to the paged structure grid
+		m_pPagedStructGrid->SetArray(structures);
+		for (int i = 0; i < num_structs; i++)
+		{
+			m_pPagedStructGrid->AppendToGrid(structures->GetAt(i),
+				structures->GetStructure3d(i));
+		}
 	}
-#else
-	int suceeded = 0;
-	for (int i = 0; i < num_structs; i++)
+	else
 	{
-		bool bSuccess = CreateStructure(structures, i);
-		if (bSuccess)
-			suceeded++;
-		if (m_progress_callback != NULL)
-			m_progress_callback(i * 100 / num_structs);
+		int suceeded = 0;
+		for (int i = 0; i < num_structs; i++)
+		{
+			bool bSuccess = CreateStructure(structures, i);
+			if (bSuccess)
+				suceeded++;
+			if (m_progress_callback != NULL)
+				m_progress_callback(i * 100 / num_structs);
+		}
+		VTLOG("\tSuccessfully created and added %d of %d structures.\n",
+			suceeded, num_structs);
 	}
-	VTLOG("\tSuccessfully created and added %d of %d structures.\n",
-		suceeded, num_structs);
-#endif
 }
 
 bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
@@ -3068,6 +3069,21 @@ void vtTerrain::RemoveNodeFromStructGrid(vtNode *pNode)
 {
 	if (m_pStructGrid)
 		m_pStructGrid->RemoveNodeFromGrid(pNode);
+}
+
+void vtTerrain::DeleteFarawayStructures()
+{
+	if (!m_pPagedStructGrid)
+		return;
+
+	vtCamera *cam = vtGetScene()->GetCamera();
+	FPoint3 CamPos = cam->GetTrans();
+
+	int iMaxStructures = m_Params.GetValueInt("PagingStructureMax");
+	float fDistance = m_Params.GetValueInt("PagingStructureDist");
+
+	m_pPagedStructGrid->DeleteFarawayStructures(CamPos, iMaxStructures,
+		fDistance);
 }
 
 
