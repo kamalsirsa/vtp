@@ -2335,7 +2335,11 @@ bool vtTerrain::CreateStep5()
 	loc += m_Params.GetValueString(STR_LOCFILE);
 	vtString path = FindFileOnPaths(vtGetDataPath(), loc);
 	if (path != "")
+	{
+		VTLOG("Reading locations file: %s.\n", (const char *) path);
 		m_LocSaver.Read(path);
+	}
+	VTLOG1("Setup location saver coordinate conversion.\n");
 	m_LocSaver.SetConversion(m_pHeightField->m_Conversion);
 	m_LocSaver.SetProjection(m_proj);
 
@@ -2348,6 +2352,7 @@ bool vtTerrain::CreateStep5()
 		if (path == "")
 			continue;
 
+		VTLOG("Reading animpath: %s.\n", (const char *) path);
 		vtAnimPath *anim = new vtAnimPath;
 		// Ensure that anim knows the projection
 		if (!anim->SetProjection(GetProjection()))
