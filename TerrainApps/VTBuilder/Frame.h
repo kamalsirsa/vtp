@@ -402,8 +402,6 @@ public:
 	float GetHeightFromTerrain(const DPoint2 &p);
 	void ExportBitmap(RenderDlg &dlg);
 	int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
-	float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p);
-	float GridLayerArrayValue(std::vector<vtElevationGrid*> &grids, const DPoint2 &p);
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);
@@ -559,6 +557,9 @@ public:
 
 extern MainFrame *GetMainFrame();
 wxString GetImportFilterString(LayerType ltype);
+float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p);
+void ElevLayerArrayRange(std::vector<vtElevLayer*> &elevs,
+						 float &minval, float &maxval);
 
 #endif	// VTBUILDERFRAMEH
 

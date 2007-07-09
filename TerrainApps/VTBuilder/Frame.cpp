@@ -181,7 +181,11 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 
 	m_tileopts.cols = 4;
 	m_tileopts.rows = 4;
-	m_tileopts.lod0size = 256;
+	m_tileopts.numlods = 3;
+	m_tileopts.lod0size = 512;
+	m_tileopts.bCreateDerivedImages = false;
+	m_tileopts.bUseTextureCompression = true;
+	m_tileopts.eCompressionType = TC_OPENGL;
 
 	m_bUseCurrentCRS = false;
 	m_bLoadImagesAlways = false;
@@ -1150,7 +1154,7 @@ public:
 	}
 	float GetElevation(const DPoint2 &p)
 	{
-		return m_frame->ElevLayerArrayValue(m_elevs, p);
+		return ElevLayerArrayValue(m_elevs, p);
 	}
 	float GetCultureHeight(const DPoint2 &p)
 	{
@@ -1192,8 +1196,7 @@ int MainFrame::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
 	return elevs.size();
 }
 
-float MainFrame::ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs,
-									 const DPoint2 &p)
+float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 {
 	float fData, fBestData = INVALID_ELEVATION;
 	for (unsigned int g = 0; g < elevs.size(); g++)
@@ -1217,24 +1220,23 @@ float MainFrame::ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs,
 	return fBestData;
 }
 
-//
-// Get the best (highest resolution valid value) elevation from a set of grids
-//
-float MainFrame::GridLayerArrayValue(std::vector<vtElevationGrid*> &grids,
-									 const DPoint2 &p)
+void ElevLayerArrayRange(std::vector<vtElevLayer*> &elevs,
+						 float &minval, float &maxval)
 {
-	float fData, fBestData = INVALID_ELEVATION, fRes, fBestRes = 1E9;
-	for (unsigned int g = 0; g < grids.size(); g++)
+	float fMin = 1E9;
+	float fMax = -1E9;
+	for (unsigned int g = 0; g < elevs.size(); g++)
 	{
-		fData = grids[g]->GetFilteredValue2(p);
-		fRes = grids[g]->GetSpacing().x;
-		if (fData != INVALID_ELEVATION  && fRes <= fBestRes)
-		{
-			fBestData = fData;
-			fBestRes = fRes;
-		}
+		float LayerMin, LayerMax;
+		elevs[g]->GetHeightField()->GetHeightExtents(LayerMin, LayerMax);
+
+		if (LayerMin != INVALID_ELEVATION && LayerMin < fMin)
+			fMin = LayerMin;
+		if (LayerMax != INVALID_ELEVATION && LayerMax  > fMax)
+			fMax = LayerMax;
 	}
-	return fBestData;
+	minval = fMin;
+	maxval = fMax;
 }
 
 //

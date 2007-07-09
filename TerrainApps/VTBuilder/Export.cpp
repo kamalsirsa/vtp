@@ -511,7 +511,7 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 
 	if (count == 0)
 	{
-		DisplayAndLog("Sorry, you must have some elevation grid layers\n"
+		DisplayAndLog("Sorry, you must have some elevation layers\n"
 					  "to perform a sampling operation on them.");
 		return;
 	}
@@ -677,8 +677,17 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 	// make a note of which lods exist
 	LODMap lod_existence_map(opts.cols, opts.rows);
 
+	// Pre-build a color lookup table once, rather than for each tile
+	std::vector<RGBi> color_table;
+	float color_min_elev, color_max_elev;
+	if (opts.bCreateDerivedImages)
+	{
+		ElevLayerArrayRange(elevs, color_min_elev, color_max_elev);
+		cmap.GenerateColors(color_table, 4000, color_min_elev, color_max_elev);
+	}
+
 	int i, j, e;
-	int total = opts.rows * opts.cols * opts.numlods, done = 0;
+	int total = opts.rows * opts.cols, done = 0;
 	for (j = 0; j < opts.rows; j++)
 	{
 		for (i = 0; i < opts.cols; i++)
@@ -692,10 +701,9 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			tile_area.bottom =	m_area.bottom + tile_dim.y * j;
 			tile_area.top =		m_area.bottom + tile_dim.y * (j+1);
 
-			// Look through the elevation layers to find those which this
-			//  tile can sample from.  Determine the highest resolution
-			//  available for this tile.
-			std::vector<vtElevationGrid*> grids;
+			// Look through the elevation layers, determine the highest
+			//  resolution available for this tile.
+			std::vector<vtElevLayer*> relevant_elevs;
 			DPoint2 best_spacing(1E9, 1E9);
 			for (e = 0; e < elev_layers; e++)
 			{
@@ -703,13 +711,15 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				elevs[e]->GetExtent(layer_extent);
 				if (tile_area.OverlapsRect(layer_extent))
 				{
-					// TODO: extend support here to sampling from TINs
-					vtElevationGrid *grid = elevs[e]->m_pGrid;
-					if (!grid)
-						continue;
+					relevant_elevs.push_back(elevs[e]);
 
-					grids.push_back(grid);
-					DPoint2 spacing = grid->GetSpacing();
+					DPoint2 spacing;
+					vtElevationGrid *grid = elevs[e]->m_pGrid;
+					if (grid)
+						spacing = grid->GetSpacing();
+					else
+						spacing.Set(1,1);	// default for TINs
+
 					if (spacing.x < best_spacing.x ||
 						spacing.y < best_spacing.y)
 						best_spacing = spacing;
@@ -720,7 +730,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			done++;
 
 			// if there is no data, omit this tile
-			if (grids.size() == 0)
+			if (relevant_elevs.size() == 0)
 				continue;
 
 			// Estimate what tile resolution is appropriate.
@@ -741,7 +751,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			int col = i;
 			int row = opts.rows-1-j;
 
-			// Now sample the grids we found to the highest LOD we need
+			// Now sample the elevation we found to the highest LOD we need
 			vtElevationGrid base_lod(tile_area, base_tilesize+1, base_tilesize+1,
 				bFloat, m_proj);
 
@@ -757,7 +767,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				{
 					p.x = m_area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
 
-					float value = GridLayerArrayValue(grids, p);
+					float value = ElevLayerArrayValue(relevant_elevs, p);
 					base_lod.SetFValue(x, y, value);
 
 					if (value == INVALID_ELEVATION)
@@ -802,8 +812,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			{
 				vtDIB dib;
 				dib.Create(base_tilesize, base_tilesize, 24);
-				base_lod.ComputeHeightExtents();
-				base_lod.ColorDibFromElevation(&dib, &cmap, 4000);
+				base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev);
 
 				if (opts.draw.m_bShadingQuick)
 					base_lod.ShadeQuick(&dib, SHADING_BIAS, true);
