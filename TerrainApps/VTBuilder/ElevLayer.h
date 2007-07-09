@@ -79,6 +79,7 @@ public:
 	vtHeightField *GetHeightField();
 	void Offset(const DPoint2 &p);
 	float GetElevation(const DPoint2 &p);
+	bool GetHeightExtents(float &fMinHeight, float &fMaxHeight) const;
 	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
 
 	// grid operations

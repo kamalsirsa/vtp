@@ -829,6 +829,17 @@ float vtElevLayer::GetElevation(const DPoint2 &p)
 	return INVALID_ELEVATION;
 }
 
+bool vtElevLayer::GetHeightExtents(float &fMinHeight, float &fMaxHeight) const
+{
+	if (m_pGrid)
+		m_pGrid->GetHeightExtents(fMinHeight, fMaxHeight);
+	else if (m_pTin)
+		m_pTin->GetHeightExtents(fMinHeight, fMaxHeight);
+	else
+		return false;
+	return true;
+}
+
 void vtElevLayer::GetProjection(vtProjection &proj)
 {
 	if (m_pGrid)
