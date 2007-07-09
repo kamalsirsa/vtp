@@ -858,23 +858,30 @@ void vtMesh::SetLineWidth(float fWidth)
  */
 void vtMesh::SetNormalsFromPrimitives()
 {
+	if (m_ePrimType != vtMesh::TRIANGLE_STRIP &&
+		m_ePrimType != vtMesh::POLYGON)
+		return;
+
+	m_Norm->resize(m_Vert->size());
 	Vec3Array::iterator itr;
 	for (itr = m_Norm->begin(); itr != m_Norm->end(); itr++)
 		itr->set(0, 0, 0);
 
 	switch (m_ePrimType)
 	{
-	case GL_POINTS:
-	case GL_LINES:
-	case GL_LINE_STRIP:
-	case GL_TRIANGLES:
+	case vtMesh::POINTS:
+	case vtMesh::LINES:
+	case vtMesh::LINE_STRIP:
+	case vtMesh::TRIANGLES:
 		break;
-	case GL_TRIANGLE_STRIP:
+	case vtMesh::TRIANGLE_STRIP:
 		_AddStripNormals();
 		break;
-	case GL_TRIANGLE_FAN:
-	case GL_QUADS:
-	case GL_POLYGON:
+	case vtMesh::TRIANGLE_FAN:
+	case vtMesh::QUADS:
+		break;
+	case vtMesh::POLYGON:
+		_AddPolyNormals();
 		break;
 	}
 
@@ -918,6 +925,47 @@ void vtMesh::_AddStripNormals()
 	}
 }
 
+void vtMesh::_AddPolyNormals()
+{
+	DrawArrayLengths *pDrawArrayLengths = dynamic_cast<DrawArrayLengths*>(m_pPrimSet.get());
+	if (!pDrawArrayLengths)
+		return;
+
+	int prims = GetNumPrims();
+	int i, j, len, idx;
+	unsigned short v0 = 0, v1 = 0, v2 = 0;
+	osg::Vec3 p0, p1, p2, d0, d1, norm;
+
+	idx = 0;
+	for (i = 0; i < prims; i++)
+	{
+		len = pDrawArrayLengths->at(i);
+		// ensure this poly has enough verts to define a surface
+		if (len >= 3)
+		{
+			v0 = m_Index->at(idx);
+			v1 = m_Index->at(idx+1);
+			v2 = m_Index->at(idx+2);
+			p0 = m_Vert->at(v0);
+			p1 = m_Vert->at(v1);
+			p2 = m_Vert->at(v2);
+
+			d0 = (p1 - p0);
+			d1 = (p2 - p0);
+			d0.normalize();
+			d1.normalize();
+
+			norm = d0^d1;
+
+			for (j = 0; j < len; j++)
+			{
+				int v = m_Index->at(idx + j);
+				m_Norm->at(v) += norm;
+			}
+		}
+		idx += len;
+	}
+}
 
 
 /////////////////////////////////////////////////////////////////////////////
