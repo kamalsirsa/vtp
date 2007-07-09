@@ -65,6 +65,7 @@ public:
 	double GetTriMaxEdgeLength(int iTri) const;
 	void MergeSharedVerts(bool progress_callback(int) = NULL);
 	bool HasVertexNormals() { return m_vert_normal.GetSize() != 0; }
+	int RemoveTrianglesBySegment(const DPoint2 &ep1, const DPoint2 &ep2);
 
 	vtProjection	m_proj;
 

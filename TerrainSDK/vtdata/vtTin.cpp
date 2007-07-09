@@ -699,3 +699,41 @@ void vtTin::_CompareBins(int bin1, int bin2)
 	}
 }
 
+/**
+ * Remove all the triangles of this TIN which intersect a given line segment.
+ *
+ * \param ep1, ep2 The endpoints of the line segment.
+ * \return The number of triangles removed.
+ */
+int vtTin::RemoveTrianglesBySegment(const DPoint2 &ep1, const DPoint2 &ep2)
+{
+	int count = 0;
+
+	DPoint2 p1, p2, p3;		// 2D points
+	int v0, v1, v2;
+	unsigned int tris = NumTris();
+	for (unsigned int i = 0; i < tris; i++)
+	{
+		// get 2D points
+		v0 = m_tri[i*3];
+		v1 = m_tri[i*3+1];
+		v2 = m_tri[i*3+2];
+		p1 = m_vert.GetAt(v0);
+		p2 = m_vert.GetAt(v1);
+		p3 = m_vert.GetAt(v2);
+
+		if (LineSegmentsIntersect(ep1, ep2, p1, p2) ||
+			LineSegmentsIntersect(ep1, ep2, p2, p3) ||
+			LineSegmentsIntersect(ep1, ep2, p3, p1))
+		{
+			m_tri.RemoveAt(i*3, 3);
+			i--;
+			count++;
+		}
+	}
+	if (count > 0)
+		ComputeExtents();
+
+	return count;
+}
+
