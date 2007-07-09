@@ -534,16 +534,6 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 
 	VTLOG("ColorDibFromElevation: ");
 
-	int i, j;
-	int x, y;
-	RGBi color;
-
-	int w = pBM->GetWidth();
-	int h = pBM->GetHeight();
-
-	int gw, gh;
-	GetDimensions(gw, gh);
-
 	float fMin, fMax;
 	GetHeightExtents(fMin, fMax);
 	float fRange = fMax - fMin;
@@ -556,10 +546,9 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 		fRange = fMax - fMin;
 	}
 
-	VTLOG("dib size %d %d, ", w, h);
 	VTLOG("table of %d values, first [%d %d %d],\n",
 		cmap->Num(), cmap->m_color[0].r, cmap->m_color[0].g, cmap->m_color[0].b);
-	VTLOG("\tmin %g, max %g, range %g, granularity %d, ",
+	VTLOG("\tmin %g, max %g, range %g, granularity %d\n",
 		fMin, fMax, fRange, iGranularity);
 
 	// Rather than look through the color map for each pixel, pre-build
@@ -567,10 +556,32 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	std::vector<RGBi> table;
 	cmap->GenerateColors(table, iGranularity, fMin, fMax);
 
+	return ColorDibFromTable(pBM, table, fMin, fMax);
+}
+
+
+bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
+	   std::vector<RGBi> &table, float fMin, float fMax,
+	   bool progress_callback(int))
+{
+	int w = pBM->GetWidth();
+	int h = pBM->GetHeight();
+	int gw, gh;
+	GetDimensions(gw, gh);
+
+	VTLOG(" ColorDibFromTable: dib size %d x %d, grid %d x %d.. ", w, h, gw, gh);
+
+	float fRange = fMax - fMin;
+	unsigned int iGranularity = table.size()-1;
+
 	// now iterate over the texels
 	float elev;
 	bool has_invalid = false;
 	RGBi c3;
+	int i, j;
+	int x, y;
+	RGBi color;
+
 	for (i = 0; i < w; i++)
 	{
 		if (progress_callback != NULL)
@@ -591,7 +602,9 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 				has_invalid = true;
 				continue;
 			}
-			int table_entry = (int) ((elev - fMin) / fRange * iGranularity);
+			unsigned int table_entry = (unsigned int) ((elev - fMin) / fRange * iGranularity);
+			if (table_entry > iGranularity-1)
+				table_entry = iGranularity-1;
 			c3 = table[table_entry];
 			pBM->SetPixel24(i, h-1-j, c3);
 		}
@@ -599,7 +612,6 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	VTLOG("Done.\n");
 	return has_invalid;
 }
-
 
 /**
  * Perform simple shading of a bitmap, based on this grid's elevation values.

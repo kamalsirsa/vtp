@@ -184,6 +184,8 @@ public:
 
 	bool ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
 		int iGranularity, bool progress_callback(int) = NULL);
+	bool ColorDibFromTable(vtBitmapBase *pBM, std::vector<RGBi> &table,
+		float fMin, float fMax, bool progress_callback(int) = NULL);
 	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 		float light_factor, bool bTrue = false, bool progress_callback(int) = NULL);
 	void ShadeQuick(vtBitmapBase *pBM, float light_factor, bool bTrue = false,
