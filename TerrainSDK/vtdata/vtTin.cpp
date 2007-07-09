@@ -13,6 +13,18 @@
 #include "FilePath.h"
 #include "ByteOrder.h"
 
+
+vtTin::vtTin()
+{
+	m_trianglebins = NULL;
+}
+
+vtTin::~vtTin()
+{
+	if (m_trianglebins)
+		delete m_trianglebins;
+}
+
 void vtTin::AddVert(const DPoint2 &p, float z)
 {
 	m_vert.Append(p);
@@ -393,40 +405,133 @@ void vtTin::Offset(const DPoint2 &p)
 	ComputeExtents();
 }
 
+bool vtTin::TestTriangle(int tri, const DPoint2 &p, float &fAltitude) const
+{
+	// get points
+	int v0 = m_tri[tri*3];
+	int v1 = m_tri[tri*3+1];
+	int v2 = m_tri[tri*3+2];
+	DPoint2 p1 = m_vert.GetAt(v0);
+	DPoint2 p2 = m_vert.GetAt(v1);
+	DPoint2 p3 = m_vert.GetAt(v2);
+
+	// First try to identify which triangle
+	if (PointInTriangle(p, p1, p2, p3))
+	{
+		double bary[3], val;
+		if (BarycentricCoords(p1, p2, p3, p, bary))
+		{
+			// compute barycentric combination of function values at vertices
+			val = bary[0] * m_z[v0] +
+				bary[1] * m_z[v1] +
+				bary[2] * m_z[v2];
+			fAltitude = (float) val;
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * If you are going to do a large number of height-testing of this TIN
+ * (with FindAltitudeOnEarth), call this method once first to set up a
+ * series of bins which greatly speed up testing.
+ *
+ * \param bins Number of bins per dimension, e.g. a value of 50 produces
+ *		50*50=2500 bins.  More bins produces faster height-testing with
+ *		the only tradeoff being a small amount of RAM per bin.
+ * \param progress_callback If supplied, this function will be called back
+ *		with a value of 0 to 100 as the operation progresses.
+ */
+void vtTin::SetupTriangleBins(int bins, bool progress_callback(int))
+{
+	DRECT rect = m_EarthExtents;
+	m_BinSize.x = rect.Width() / bins;
+	m_BinSize.y = rect.Height() / bins;
+
+	if (m_trianglebins)
+		delete m_trianglebins;
+	m_trianglebins = new BinArray(bins, bins);
+
+	DPoint2 p1, p2, p3;
+	unsigned int tris = NumTris();
+	for (unsigned int i = 0; i < tris; i++)
+	{
+		if ((i%100)==0 && progress_callback)
+			progress_callback(i * 100 / tris);
+
+		// get 2D points
+		p1 = m_vert.GetAt(m_tri[i*3]);
+		p2 = m_vert.GetAt(m_tri[i*3+1]);
+		p3 = m_vert.GetAt(m_tri[i*3+2]);
+
+		// find the correct range of bins, and add the index of this index to it
+		DPoint2 fminrange, fmaxrange;
+
+		fminrange.x = std::min(std::min(p1.x, p2.x), p3.x);
+		fmaxrange.x = std::max(std::max(p1.x, p2.x), p3.x);
+
+		fminrange.y = std::min(std::min(p1.y, p2.y), p3.y);
+		fmaxrange.y = std::max(std::max(p1.y, p2.y), p3.y);
+
+		IPoint2 bin_start, bin_end;
+
+		bin_start.x = (unsigned int) ((fminrange.x-rect.left) / m_BinSize.x);
+		bin_end.x = (unsigned int)	 ((fmaxrange.x-rect.left) / m_BinSize.x);
+
+		bin_start.y = (unsigned int) ((fminrange.y-rect.bottom) / m_BinSize.y);
+		bin_end.y = (unsigned int)	 ((fmaxrange.y-rect.bottom) / m_BinSize.y);
+
+		for (int j = bin_start.x; j <= bin_end.x; j++)
+			for (int k = bin_start.y; k <= bin_end.y; k++)
+			{
+				Bin *bin = m_trianglebins->GetBin(j, k);
+				if (bin)
+					bin->Append(i);
+			}
+	}
+}
+
 bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) const
 {
-	DPoint2 p1, p2, p3;		// 2D points
-	bool good;
+	unsigned int tris = NumTris();
 
-	int v0, v1, v2;
-	int tris = NumTris();
-	for (int i = 0; i < tris; i++)
+	// If we have some triangle bins, they can be used for a much faster test
+	if (m_trianglebins != NULL)
 	{
-		v0 = m_tri[i*3];
-		v1 = m_tri[i*3+1];
-		v2 = m_tri[i*3+2];
-		// get points
-		p1 = m_vert.GetAt(v0);
-		p2 = m_vert.GetAt(v1);
-		p3 = m_vert.GetAt(v2);
+		int col = (int) ((p.x - m_EarthExtents.left) / m_BinSize.x);
+		int row = (int) ((p.y - m_EarthExtents.bottom) / m_BinSize.y);
+		Bin *bin = m_trianglebins->GetBin(col, row);
+		if (!bin)
+			return false;
 
-		// First try to identify which triangle
-		if (!PointInTriangle(p, p1, p2, p3))
-			continue;
-
-		// compute barycentric coordinates with respect to the triangle
-		double bary[3], val;
-		good = BarycentricCoords(p1, p2, p3, p, bary);
-		if (!good)
-			continue;
-
-		// compute barycentric combination of function values at vertices
-		val = bary[0] * m_z[v0] +
-			bary[1] * m_z[v1] +
-			bary[2] * m_z[v2];
-		fAltitude = (float) val;
-		return true;
+		for (unsigned int i = 0; i < bin->GetSize(); i++)
+		{
+			if (TestTriangle(bin->GetAt(i), p, fAltitude))
+				return true;
+		}
+		// If it was not in any of these bins, then it did not hit anything
+		return false;
 	}
+
+#if 0
+	static int last_hit = -1;
+	if (last_hit >= 0 && last_hit < tris)
+	{
+		if (TestTriangle(last_hit, p, fAltitude))
+			return true;
+		last_hit = -1;
+	}
+#endif
+	for (unsigned int i = 0; i < tris; i++)
+	{
+		if (TestTriangle(i, p, fAltitude))
+		{
+			//last_hit = i;
+			return true;
+		}
+	}
+	//last_hit = -1;
 	return false;
 }
 
@@ -509,6 +614,7 @@ double vtTin::GetTriMaxEdgeLength(int iTri) const
 		(len1 > len3 ? len1 : len3) :
 	(len2 > len3 ? len2 : len3);
 }
+
 
 // Number of bins used by the merge algorithm.  Time is roughly proportional
 // to N*N/BINS, where N is the number of vertices, so increase BINS for speed.
