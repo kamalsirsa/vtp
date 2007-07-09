@@ -48,7 +48,8 @@ enum LBMode {
 	LB_AddPoints,	// add raw points
 	LB_TowerSelect,	// selectTowers
 	LB_TowerAdd,	// Add Tower to layer
-	LB_FeatInfo		// Get info about features by picking them
+	LB_FeatInfo,	// Get info about features by picking them
+	LB_TrimTIN		// Trim TIN triangles by indicating them
 };
 
 // A useful class to contain an array of bools
@@ -146,6 +147,7 @@ public:
 	{ m_distance_path = path; }
 	void ClearDistanceTool();
 	void UpdateDistance();
+	void DrawInvertedLine(const DPoint2 &ep1, const DPoint2 &ep2);
 
 	bool	m_bCrossSelect;
 	bool	m_bShowUTMBounds;

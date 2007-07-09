@@ -38,6 +38,7 @@ info			BITMAP "bitmaps/info.bmp"
 table			BITMAP "bitmaps/table.bmp"
 elev_box		BITMAP "bitmaps/elev_box.bmp"
 raw_add_point	BITMAP "bitmaps/raw_add_point.bmp"
+tin_trim		BITMAP "bitmaps/tin_trim.bmp"
 
 bld_edit		BITMAP "bitmaps/bld_edit.bmp"
 bld_add_points	BITMAP "bitmaps/bld_add_points.bmp"

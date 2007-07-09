@@ -130,7 +130,7 @@ EVT_UPDATE_UI(ID_VIEW_PAN,			MainFrame::OnUpdatePan)
 EVT_UPDATE_UI(ID_VIEW_DISTANCE,		MainFrame::OnUpdateDistance)
 EVT_UPDATE_UI(ID_VIEW_ZOOM_LAYER,	MainFrame::OnUpdateViewZoomToLayer)
 EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewFull)
-EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewZoomArea)
+EVT_UPDATE_UI(ID_VIEW_ZOOM_AREA,	MainFrame::OnUpdateViewZoomArea)
 EVT_UPDATE_UI(ID_VIEW_TOOLBAR,		MainFrame::OnUpdateViewToolbar)
 EVT_UPDATE_UI(ID_VIEW_LAYERS,		MainFrame::OnUpdateViewLayers)
 EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateViewSetArea)
@@ -169,6 +169,7 @@ EVT_MENU(ID_ELEV_COPY,				MainFrame::OnElevCopy)
 EVT_MENU(ID_ELEV_PASTE_NEW,			MainFrame::OnElevPasteNew)
 EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
+EVT_MENU(ID_ELEV_TRIMTIN,			MainFrame::OnElevTrimTin)
 
 EVT_UPDATE_UI(ID_ELEV_SELECT,		MainFrame::OnUpdateElevSelect)
 EVT_UPDATE_UI(ID_ELEV_REMOVERANGE,	MainFrame::OnUpdateIsGrid)
@@ -180,6 +181,7 @@ EVT_UPDATE_UI(ID_ELEV_EXPORT_TILES,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_COPY,			MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
+EVT_UPDATE_UI(ID_ELEV_TRIMTIN,		MainFrame::OnUpdateElevTrimTin)
 
 EVT_MENU(ID_IMAGE_EXPORT_TILES,		MainFrame::OnImageExportTiles)
 EVT_UPDATE_UI(ID_IMAGE_EXPORT_TILES,MainFrame::OnUpdateImageExportTiles)
@@ -439,6 +441,7 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_BITMAP, _("Re&nder to Bitmap..."));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, _("&Merge shared TIN vertices"));
+	elevMenu->AppendCheckItem(ID_ELEV_TRIMTIN, _("Trim TIN triangles by line segment"));
 	m_pMenuBar->Append(elevMenu, _("Elev&ation"));
 	m_iLayerMenu[LT_ELEVATION] = menu_num;
 	menu_num++;
@@ -2536,6 +2539,20 @@ void MainFrame::OnUpdateElevMergeTin(wxUpdateUIEvent& event)
 	vtElevLayer *pEL = GetActiveElevLayer();
 	event.Enable(pEL && !pEL->IsGrid());
 }
+
+void MainFrame::OnElevTrimTin(wxCommandEvent& event)
+{
+	m_pView->SetMode(LB_TrimTIN);
+	m_pView->SetCorrectCursor();
+}
+
+void MainFrame::OnUpdateElevTrimTin(wxUpdateUIEvent& event)
+{
+	vtElevLayer *pEL = GetActiveElevLayer();
+	event.Enable(pEL && !pEL->IsGrid());
+	event.Check(m_pView->GetMode() == LB_TrimTIN);
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////

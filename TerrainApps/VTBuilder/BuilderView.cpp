@@ -964,6 +964,20 @@ void BuilderView::CheckForTerrainSelect(const DPoint2 &loc)
 	}
 }
 
+void BuilderView::DrawInvertedLine(const DPoint2 &ep1, const DPoint2 &ep2)
+{
+	wxClientDC dc(this);
+	PrepareDC(dc);
+
+	dc.SetPen(wxPen(*wxBLACK_PEN));
+	dc.SetLogicalFunction(wxINVERT);
+
+	wxPoint p1, p2;
+	screen(ep1, p1);
+	screen(ep2, p2);
+	dc.DrawLine(p1.x, p1.y, p2.x, p2.y);
+}
+
 //
 // The view needs to be notified of the new active layer to update
 // the selection marks drawn around the active elevation layer.
@@ -1058,7 +1072,7 @@ void BuilderView::SetCorrectCursor()
 	switch (m_ui.mode)
 	{
 	case LB_None:	// none
-	case LB_Link:	// select/edit roads
+	case LB_Link:	// select/edit links
 	case LB_Node:	// select/edit nodes
 	case LB_Move:	// move selected nodes
 		SetCursor(wxCURSOR_ARROW); break;
@@ -1068,8 +1082,10 @@ void BuilderView::SetCorrectCursor()
 		SetCursor(wxCURSOR_CROSS); break;
 	case LB_Mag:	// zoom into rectangle
 		SetCursor(wxCURSOR_MAGNIFIER); break;
-	case LB_TowerAdd:
-		SetCursor(wxCURSOR_CROSS);break; // add a tower to the location
+	case LB_TowerAdd: // add a tower to the location
+		SetCursor(wxCURSOR_CROSS);break;
+	case LB_TrimTIN:
+		SetCursor(wxCURSOR_CROSS); break;
 	case LB_Dir:		// show/change road direction
 	case LB_LinkEdit:	// edit road points
 	case LB_LinkExtend: //extend a road selection

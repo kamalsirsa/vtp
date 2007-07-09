@@ -62,6 +62,10 @@ public:
 	bool AskForSaveFilename();
 	bool GetAreaExtent(DRECT &rect);
 
+	void OnLeftDown(BuilderView *pView, UIContext &ui);
+	void OnLeftUp(BuilderView *pView, UIContext &ui);
+	void OnMouseMove(BuilderView *pView, UIContext &ui);
+
 	void DrawLayerBitmap(wxDC* pDC, vtScaledView *pView);
 	void DrawLayerOutline(wxDC* pDC, vtScaledView *pView);
 	bool AppendDataFrom(vtLayer *pL);

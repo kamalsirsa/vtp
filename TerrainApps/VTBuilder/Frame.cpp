@@ -87,6 +87,7 @@
 #  include "str_add_linear.xpm"
 #  include "str_edit_linear.xpm"
 #  include "raw_add_point.xpm"
+#  include "tin_trim.xpm"
 
 #  include "table.xpm"
 #  include "twr_edit.xpm"
@@ -452,6 +453,7 @@ void MainFrame::AddMainToolbars()
 	// Elevation
 	ADD_TOOL2(m_pLayBar[LT_ELEVATION], ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), wxITEM_CHECK);
 	ADD_TOOL(m_pLayBar[LT_ELEVATION], ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"));
+	ADD_TOOL2(m_pLayBar[LT_ELEVATION], ID_ELEV_TRIMTIN, wxBITMAP(tin_trim), _("Trim TIN triangles by line segment"), wxITEM_CHECK);
 	m_pLayBar[LT_ELEVATION]->Realize();
 
 	// Image

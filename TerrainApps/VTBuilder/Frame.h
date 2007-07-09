@@ -193,12 +193,14 @@ protected:
 	void OnElevCopy(wxCommandEvent& event);
 	void OnElevPasteNew(wxCommandEvent& event);
 	void OnElevMergeTin(wxCommandEvent& event);
+	void OnElevTrimTin(wxCommandEvent& event);
 
 	void OnUpdateElevSelect(wxUpdateUIEvent& event);
 	void OnUpdateViewSetArea(wxUpdateUIEvent& event);
 	void OnUpdateElevSetUnknown(wxUpdateUIEvent& event);
 	void OnUpdateScaleElevation(wxUpdateUIEvent& event);
 	void OnUpdateElevMergeTin(wxUpdateUIEvent& event);
+	void OnUpdateElevTrimTin(wxUpdateUIEvent& event);
 	void OnUpdateIsGrid(wxUpdateUIEvent& event);
 
 	void OnImageExportTiles(wxCommandEvent& event);

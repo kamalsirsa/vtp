@@ -303,6 +303,37 @@ bool vtElevLayer::GetAreaExtent(DRECT &rect)
 	return false;
 }
 
+void vtElevLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
+{
+	if (ui.mode == LB_TrimTIN)
+	{
+		pView->DrawInvertedLine(ui.m_DownLocation, ui.m_CurLocation);	//draw
+		ui.m_bRubber = true;
+	}
+}
+
+void vtElevLayer::OnMouseMove(BuilderView *pView, UIContext &ui)
+{
+	if (ui.mode == LB_TrimTIN && ui.m_bRubber)
+	{
+		pView->DrawInvertedLine(ui.m_DownLocation, ui.m_PrevLocation);	// erase
+		pView->DrawInvertedLine(ui.m_DownLocation, ui.m_CurLocation);	// redraw
+	}
+}
+
+void vtElevLayer::OnLeftUp(BuilderView *pView, UIContext &ui)
+{
+	if (ui.mode == LB_TrimTIN && ui.m_bRubber)
+	{
+		ui.m_bRubber = false;
+		pView->DrawInvertedLine(ui.m_DownLocation, ui.m_PrevLocation);	// erase
+
+		int num = m_pTin->RemoveTrianglesBySegment(ui.m_DownLocation, ui.m_CurLocation);
+		if (num)
+			pView->Refresh();
+	}
+}
+
 void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 {
 	if (!m_pGrid)
