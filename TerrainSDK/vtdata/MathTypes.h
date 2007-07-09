@@ -1386,6 +1386,8 @@ float DistanceLineToLine(const FPoint3 &A1, const FPoint3 &A2,
 float DistanceSegmentToSegment(const FPoint3 &A1, const FPoint3 &A2,
 						 const FPoint3 &B1, const FPoint3 &B2,
 						 FPoint3 &result1, FPoint3 &result2);
+int LineSegmentsIntersect(const DPoint2 &p1, const DPoint2 &p2,
+						 const DPoint2 &p3, const DPoint2 &p4, DPoint2 *result = NULL);
 void vtLogMatrix(const FMatrix4 &mat);
 void vtLogMatrix(const FMatrix3 &mat);
 bool RaySphereIntersection(const FPoint3 &rkOrigin, const FPoint3 &rkDirection,

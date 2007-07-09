@@ -1469,6 +1469,95 @@ float DistanceSegmentToSegment(const FPoint3 &A1, const FPoint3 &A2,
 	return dP.Length();   // return the closest distance
 }
 
+/* return values */
+#define DONT_INTERSECT 0
+#define DO_INTERSECT   1
+#define PARALLEL       2
+bool SameSigns(double a, double b) { return ((a < 0 && b < 0) || (a > 0 && b > 0)); }
+
+/**
+ * Test whether two 2D line segment intersect or not.
+ * Based on the algorithm 'Faster Line Segment Intersection' by Franklin
+ * Antonio
+ *
+ * \return 0 if the segments do not intersect, 1 if they do,
+ *		2 if the segments are parallel.
+ */
+int LineSegmentsIntersect(const DPoint2 &p1, const DPoint2 &p2,
+						 const DPoint2 &p3, const DPoint2 &p4, DPoint2 *result)
+{
+
+	double Ax, Bx, Cx, Ay, By, Cy, d, e, f, num, offset;
+	double x1lo, x1hi, y1lo, y1hi;
+
+	Ax = p2.x-p1.x;
+	Bx = p3.x-p4.x;
+
+	if(Ax<0) {						/* X bound box test*/
+		x1lo = p2.x;
+		x1hi = p1.x;
+	} else {
+		x1hi = p2.x;
+		x1lo = p1.x;
+	}
+
+	if(Bx>0) {
+		if(x1hi < p4.x || p3.x < x1lo) return DONT_INTERSECT;
+	} else {
+		if(x1hi < p3.x || p4.x < x1lo) return DONT_INTERSECT;
+	}
+
+	Ay = p2.y - p1.y;
+	By = p3.y - p4.y;
+
+	if(Ay<0) {				/* Y bound box test*/
+		y1lo = p2.y;
+		y1hi = p1.y;
+	} else {
+		y1hi = p2.y;
+		y1lo = p1.y;
+	}
+
+	if(By>0) {
+		if(y1hi < p4.y || p3.y < y1lo) return DONT_INTERSECT;
+	} else {
+		if(y1hi < p3.y || p4.y < y1lo) return DONT_INTERSECT;
+	}
+
+	Cx = p1.x - p3.x;
+	Cy = p1.y - p3.y;
+	d = By*Cx - Bx*Cy;		/* alpha numerator*/
+	f = Ay*Bx - Ax*By;		/* both denominator*/
+	if (f>0) {				/* alpha tests*/
+		if(d<0 || d>f) return DONT_INTERSECT;
+	} else {
+		if(d>0 || d<f) return DONT_INTERSECT;
+	}
+
+	e = Ax*Cy - Ay*Cx;		/* beta numerator*/
+	if (f>0) {				/* beta tests*/
+		if(e<0 || e>f) return DONT_INTERSECT;
+	} else {
+		if(e>0 || e<f) return DONT_INTERSECT;
+	}
+
+	if (fabs(f) < 1E-4)
+		return PARALLEL;
+
+	if (result != NULL)
+	{
+		/* compute intersection coordinates */
+		num = d*Ax;									/* numerator */
+		offset = SameSigns(num,f) ? f/2 : -f/2;	/* round direction*/
+		result->x = p1.x + (num+offset) / f;			/* intersection x */
+
+		num = d*Ay;
+		offset = SameSigns(num,f) ? f/2 : -f/2;
+		result->y = p1.y + (num+offset) / f;			/* intersection y */
+	}
+	return DO_INTERSECT;
+}
+
 void vtLogMatrix(const FMatrix4 &mat)
 {
 	VTLOG("Mat: %f %f %f %f\n"
