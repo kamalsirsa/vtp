@@ -505,9 +505,9 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 {
 	m_tileopts.numlods = 3;
 
-	int count, floating;
+	int count, floating, tins;
 	DPoint2 spacing;
-	ScanElevationLayers(count, floating, spacing);
+	ScanElevationLayers(count, floating, tins, spacing);
 
 	if (count == 0)
 	{

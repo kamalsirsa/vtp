@@ -480,7 +480,7 @@ public:
 	void ExportDymaxTexture();
 
 	// area tool
-	void ScanElevationLayers(int &count, int &floating, DPoint2 &spacing);
+	void ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 &spacing);
 	void MergeResampleElevation();
 	bool SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat);
 	bool SampleImageryToTilePyramids(const TilingOptions &opts);

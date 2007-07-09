@@ -1203,12 +1203,16 @@ float MainFrame::ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs,
 		vtElevationGrid *grid = elev->m_pGrid;
 		vtTin2d *tin = elev->m_pTin;
 		if (grid)
+		{
 			fData = grid->GetFilteredValue2(p);
+			if (fData != INVALID_ELEVATION)
+				fBestData = fData;
+		}
 		else if (tin)
-			tin->FindAltitudeOnEarth(p, fData);
-
-		if (fData != INVALID_ELEVATION)
-			fBestData = fData;
+		{
+			if (tin->FindAltitudeOnEarth(p, fData))
+				fBestData = fData;
+		}
 	}
 	return fBestData;
 }
@@ -1256,6 +1260,25 @@ bool MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 
 	std::vector<vtElevLayer*> elevs;
 	ElevLayerArray(elevs);
+
+	// Setup TINs for speedy picking
+	for (int l = 0; l < NumLayers(); l++)
+	{
+		vtLayer *lp = m_Layers.GetAt(l);
+		if (lp->GetType() == LT_ELEVATION && lp->GetVisible())
+		{
+			vtElevLayer *el = (vtElevLayer *)lp;
+			if (el->m_pTin)
+			{
+				int tris = el->m_pTin->NumTris();
+				// Aim for no more than 50 triangles in a bin
+				int bins = (int) sqrt((double) tris / 50);
+				if (bins < 10)
+					bins = 10;
+				el->m_pTin->SetupTriangleBins(bins, progress_callback);
+			}
+		}
+	}
 
 	// iterate through the vertices of the new terrain
 	DPoint2 p;
@@ -1642,9 +1665,9 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 //////////////////////////
 // Elevation ops
 
-void MainFrame::ScanElevationLayers(int &count, int &floating, DPoint2 &spacing)
+void MainFrame::ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 &spacing)
 {
-	count = floating = 0;
+	count = floating = tins = 0;
 	spacing.Set(0,0);
 	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
 	{
@@ -1662,6 +1685,8 @@ void MainFrame::ScanElevationLayers(int &count, int &floating, DPoint2 &spacing)
 
 			spacing = grid->GetSpacing();
 		}
+		else
+			tins++;
 	}
 }
 
@@ -1675,19 +1700,29 @@ void MainFrame::MergeResampleElevation()
 
 	// sample spacing in meters/heixel or degrees/heixel
 	DPoint2 spacing(0, 0);
-	int count = 0, floating = 0;
-	ScanElevationLayers(count, floating, spacing);
+	int count = 0, floating = 0, tins = 0;
+	ScanElevationLayers(count, floating, tins, spacing);
 	VTLOG(" Layers: %d, Elevation layers: %d, %d are floating point\n",
 		NumLayers(), count, floating);
 
-	if (floating > 0)
-		floatmode = true;
-
-	if (spacing == DPoint2(0, 0))
+	if (count == 0)
 	{
 		DisplayAndLog("Sorry, you must have some elevation grid layers\n"
 					  "to perform a sampling operation on them.");
 		return;
+	}
+	if (floating > 0)
+		floatmode = true;
+
+	// Always recommend sub-meter precision when sampling TINs
+	if (tins > 0)
+		floatmode = true;
+
+	if (spacing == DPoint2(0, 0))
+	{
+		// There were no elevation grids to estimate spacing, so just give 
+		//  a default value.
+		spacing.Set(1,1);
 	}
 
 	// Open the Resample dialog
