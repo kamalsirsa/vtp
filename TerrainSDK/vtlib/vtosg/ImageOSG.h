@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -28,6 +28,7 @@ public:
 	bool WritePNG(const char *fname, bool progress_callback(int) = NULL);
 	bool WriteJPEG(const char *fname, int quality = 99, bool progress_callback(int) = NULL);
 	bool HasData() { return _data != NULL; }
+	void Scale(int w, int h);
 
 	/// Return the name of the file, if any, from which the image was loaded.
 	vtString GetFilename() { return m_strFilename; }

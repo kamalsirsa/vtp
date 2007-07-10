@@ -1,7 +1,7 @@
 //
 // ImageOSG.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -492,6 +492,11 @@ void vtImage::_CreateFromDIB(vtDIB *pDIB)
 	m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
 }
 
+void vtImage::Scale(int w, int h)
+{
+	scaleImage(w, h, 1);
+	m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
+}
 
 //////////////////////////
 
