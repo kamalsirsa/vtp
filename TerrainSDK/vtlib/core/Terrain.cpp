@@ -78,6 +78,7 @@ vtTerrain::vtTerrain()
 	m_pDynGeomScale = NULL;
 	m_pTin = NULL;
 	m_pTiledGeom = NULL;
+	m_pPagedStructGrid = NULL;
 
 	// structures
 	m_pActiveStructLayer = NULL;
@@ -1599,11 +1600,15 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
 
 #if EXPERIMENTAL_STRUCTURE_PAGING
+	bool bPaging = m_Params.GetValueBool("PagingStructures");
+	if (bPaging)
+	{
 		m_pPagedStructGrid = new vtPagedStructureLodGrid;
 		m_pStructGrid = m_pPagedStructGrid;
-#else
-		m_pStructGrid = new vtSimpleLodGrid;
+	}
+	else
 #endif
+		m_pStructGrid = new vtSimpleLodGrid;
 
 	m_pStructGrid->Setup(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
 	m_pStructGrid->SetName2("Structures LOD Grid");
