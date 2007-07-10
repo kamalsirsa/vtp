@@ -662,6 +662,11 @@ public:
 		for (unsigned int i = 0; i < line.GetSize(); i++)
 			GrowToContainPoint(line[i]);
 	}
+	void GrowToContainBox(const FBox3 &box)
+	{
+		GrowToContainPoint(box.min);
+		GrowToContainPoint(box.max);
+	}
 
 	FPoint3	min, max;
 };
