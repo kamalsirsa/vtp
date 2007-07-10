@@ -309,7 +309,8 @@ public:
 					 bool bCulling = true, bool bLighting= true, bool bWireframe = false,
 					 float fAlpha = 1.0f, float fEmissive = 0.0f);
 	void AddShadowMaterial(float fOpacity);
-	int FindByDiffuse(const RGBAf &rgba);
+	int FindByDiffuse(const RGBAf &rgba) const;
+	int FindByImage(const vtImage *image) const;
 
 	void CopyFrom(vtMaterialArrayBase *pFromMats);
 

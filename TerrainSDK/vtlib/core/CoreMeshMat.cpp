@@ -977,11 +977,27 @@ void vtMaterialArrayBase::RemoveMaterial(vtMaterial *pMat)
  *
  * \return The index of the material if found, otherwise -1.
  */
-int vtMaterialArrayBase::FindByDiffuse(const RGBAf &rgba)
+int vtMaterialArrayBase::FindByDiffuse(const RGBAf &rgba) const
 {
 	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		if (rgba == GetAt(i)->GetDiffuse())
+			return i;
+	}
+	return -1;
+}
+
+/**
+ * Find a material in an array by looking for a specific texture image.
+ *
+ * \return The index of the material if found, otherwise -1.
+ */
+int vtMaterialArrayBase::FindByImage(const vtImage *image) const
+{
+	for (unsigned int i = 0; i < GetSize(); i++)
+	{
+		const vtImage *tex = GetAt(i)->GetTexture();
+		if (tex == image)
 			return i;
 	}
 	return -1;
