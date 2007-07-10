@@ -762,7 +762,11 @@ void vtNode::ApplyVertexRotation(const FPoint3 &axis, float angle)
 	if (!unique_node)
 		return;
 	osg::Group *unique_group = dynamic_cast<osg::Group*>(unique_node);
+	if (!unique_group)
+		return;
 	osg::Node *node = unique_group->getChild(0);
+	if (!node)
+		return;
 
 	osg::MatrixTransform *transform = new osg::MatrixTransform;
 	transform->setMatrix(osg::Matrix::rotate(angle, v2s(axis)));
