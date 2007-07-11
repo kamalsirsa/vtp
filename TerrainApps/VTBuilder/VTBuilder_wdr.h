@@ -313,6 +313,8 @@ const int ID_RADIO2 = 10219;
 const int ID_RADIO3 = 10220;
 const int ID_RADIO4 = 10221;
 const int ID_RADIO5 = 10222;
+const int ID_RADIO6 = 10223;
+const int ID_RADIO7 = 10224;
 wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

@@ -402,6 +402,7 @@ public:
 	float GetHeightFromTerrain(const DPoint2 &p);
 	void ExportBitmap(RenderDlg &dlg);
 	int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
+	bool FillElevGaps(vtElevLayer *el);
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);
@@ -496,6 +497,7 @@ public:
 	bool m_bUseCurrentCRS;
 	bool m_bLoadImagesAlways;
 	bool m_bLoadImagesNever;
+	bool m_bSlowFillGaps;
 
 protected:
 	// INI File

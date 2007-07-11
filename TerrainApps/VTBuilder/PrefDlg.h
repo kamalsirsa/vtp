@@ -30,7 +30,7 @@ public:
 	
 public:
 	// WDR: member variable declarations for PrefDlg
-	bool b1, b2, b3, b4, b5;
+	bool b1, b2, b3, b4, b5, b6, b7;
 
 private:
 	// WDR: handler declarations for PrefDlg

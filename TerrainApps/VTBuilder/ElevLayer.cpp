@@ -507,6 +507,11 @@ void vtElevLayer::SetupDefaults()
 
 	m_pBitmap = NULL;
 	m_pMask = NULL;
+	m_iImageWidth = 0;
+	m_iImageHeight = 0;
+	m_iColumns = 0;
+	m_iRows = 0;
+	m_fSpacing = 0.0f;
 }
 
 
@@ -578,6 +583,9 @@ void vtElevLayer::SetupDefaultColors(ColorMap &cmap)
 
 void vtElevLayer::RenderBitmap()
 {
+	if (!m_pGrid)
+		return;
+
 	// flag as being rendered
 	m_bNeedsDraw = false;
 
@@ -675,103 +683,6 @@ void vtElevLayer::ReImage()
 	m_bBitmapRendered = false;
 }
 
-
-bool vtElevLayer::FillGaps()
-{
-	int i, j, ix, jx, surrounding;
-	int gaps = 1;
-	float value, value2, sum;
-	float *patch_column = new float[m_iRows];
-
-	// Create progress dialog for the slow part
-	OpenProgressDialog(_("Filling Gaps"), true);
-
-	// For speed, remember which lines already have no gaps, so we don't have
-	// to visit them again.
-	bool *line_gap = new bool[m_iColumns];
-	for (i = 0; i < m_iColumns; i++)
-		line_gap[i] = true;
-
-	wxString msg;
-	msg = _T("Gaps: Counting");
-	UpdateProgressDialog(1, msg);
-
-	while (gaps > 0)
-	{
-		gaps = 0;
-		int lines_with_gaps = 0;
-
-		// iterate through the heixels of the elevation grid
-		for (i = 0; i < m_iColumns; i++)
-		{
-			// Don't visit lines without a gap
-			if (!line_gap[i])
-				continue;
-
-			lines_with_gaps++;
-			line_gap[i] = false;
-
-			bool patches = false;
-			for (j = 0; j < m_iRows; j++)
-				patch_column[j] = INVALID_ELEVATION;
-
-			for (j = 0; j < m_iRows; j++)
-			{
-				value = m_pGrid->GetFValue(i, j);
-				if (value != INVALID_ELEVATION)
-					continue;
-
-				// else gap
-				gaps++;
-				line_gap[i] = true;
-
-				// look at surrounding pixels
-				sum = 0;
-				surrounding = 0;
-				for (ix = -1; ix <= 1; ix++)
-				{
-					for (jx = -1; jx <= 1; jx++)
-					{
-						value2 = m_pGrid->GetFValueSafe(i+ix, j+jx);
-						if (value2 != INVALID_ELEVATION)
-						{
-							sum += value2;
-							surrounding++;
-						}
-					}
-				}
-				if (surrounding != 0)
-				{
-					patch_column[j] = sum / surrounding;
-					patches = true;
-				}
-			}
-			if (patches)
-			{
-				for (j = 0; j < m_iRows; j++)
-				{
-					if (patch_column[j] != INVALID_ELEVATION)
-						m_pGrid->SetFValue(i, j, patch_column[j]);
-				}
-			}
-		}
-
-		msg.Printf(_T("Gaps: %d, lines %d"), gaps, lines_with_gaps);
-		if (UpdateProgressDialog((m_iColumns-lines_with_gaps) * 99 / m_iColumns, msg))
-		{
-			CloseProgressDialog();
-			return false;
-		}
-	}
-	delete line_gap;
-	delete patch_column;
-
-	// recompute what has likely changed
-	m_pGrid->ComputeHeightExtents();
-
-	CloseProgressDialog();
-	return true;
-}
 
 /**
  * Determine the approximate spacing, in meters, between each grid cell, in the X
@@ -1271,7 +1182,8 @@ FPoint3 LightDirection(float angle, float direction)
 	return light_dir;
 }
 
-bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pView)
+bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
+											  BuilderView *pView)
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -1415,8 +1327,15 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 
 			if (!bAllValid)
 			{
-				UpdateProgressDialog(done*99/total, _("Filling gaps"));
-				base_lod.FillGaps2();
+				UpdateProgressDialog2(done*99/total, 0, _("Filling gaps"));
+
+				bool bGood;
+				if (GetMainFrame()->m_bSlowFillGaps)
+					bGood = base_lod.FillGapsSmooth(progress_callback_minor);
+				else
+					bGood = base_lod.FillGaps(progress_callback_minor);
+				if (!bGood)
+					return false;
 			}
 
 			// Create a matching derived texture tileset
@@ -1520,7 +1439,7 @@ bool vtElevLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView
 				wxString msg;
 				msg.Printf(_("Writing tile '%hs', size %dx%d"),
 					(const char *)fname, tilesize, tilesize);
-				UpdateProgressDialog(done*99/total, msg);
+				UpdateProgressDialog2(done*99/total, 0, msg);
 
 				MiniDatabuf buf;
 				buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);

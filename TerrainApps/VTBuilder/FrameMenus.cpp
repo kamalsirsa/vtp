@@ -625,12 +625,15 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 	dlg.b3 = (m_bLoadImagesAlways == true);
 	dlg.b4 = (m_bLoadImagesNever == true);
 	dlg.b5 = (!m_bLoadImagesAlways && !m_bLoadImagesNever);
-    TransferDataToWindow();
+	dlg.b6 = !m_bSlowFillGaps;
+	dlg.b7 = m_bSlowFillGaps;
+    dlg.TransferDataToWindow();
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		m_bUseCurrentCRS = dlg.b1;
 		m_bLoadImagesAlways = dlg.b3;
 		m_bLoadImagesNever = dlg.b4;
+		m_bSlowFillGaps = dlg.b7;
 	}
 }
 
@@ -2017,7 +2020,7 @@ void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 void MainFrame::OnFillIn(wxCommandEvent &event)
 {
 	vtElevLayer *el = GetActiveElevLayer();
-	el->FillGaps();
+	FillElevGaps(el);
 	el->ReRender();
 	m_pView->Refresh();
 }

@@ -348,10 +348,10 @@ void MainFrame::ElevExportTiles()
 	else
 		tileopts.bCreateDerivedImages = false;
 
-	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = pEL->WriteGridOfTilePyramids(tileopts, GetView());
+	OpenProgressDialog2(_T("Writing tiles"), true);
+	bool success = pEL->WriteGridOfElevTilePyramids(tileopts, GetView());
 	GetView()->HideGridMarks();
-	CloseProgressDialog();
+	CloseProgressDialog2();
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
 	else
@@ -569,14 +569,14 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 	else
 		m_tileopts.bCreateDerivedImages = false;
 
-	OpenProgressDialog(_T("Writing tiles"), true);
+	OpenProgressDialog2(_T("Writing tiles"), true, this);
 	bool success = SampleElevationToTilePyramids(m_tileopts, bFloat);
 	GetView()->HideGridMarks();
-	CloseProgressDialog();
+	CloseProgressDialog2();
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
-		DisplayAndLog("Could not successfully write to '%s'", (const char *) m_tileopts.fname);
+		DisplayAndLog("Did not successfully write to '%s'", (const char *) m_tileopts.fname);
 }
 
 void MainFrame::ExportAreaOptimizedImageTileset()
@@ -803,8 +803,15 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			{
 				// We don't want any gaps at all in the output tiles, because
 				//  they will cause huge cliffs.
-				UpdateProgressDialog(done*99/total, _("Filling gaps"));
-				base_lod.FillGaps2();
+				UpdateProgressDialog2(done*99/total, -1, _("Filling gaps"));
+
+				bool bGood;
+				if (m_bSlowFillGaps)
+					bGood = base_lod.FillGapsSmooth(progress_callback_minor);
+				else
+					bGood = base_lod.FillGaps(progress_callback_minor);
+				if (!bGood)
+					return false;
 			}
 
 			// Create a matching derived texture tileset
@@ -908,7 +915,9 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				wxString msg;
 				msg.Printf(_("Tile '%hs', size %dx%d"),
 					(const char *)fname, tilesize, tilesize);
-				UpdateProgressDialog(done*99/total, msg);
+				bool bCancel = UpdateProgressDialog2(done*99/total, 0, msg);
+				if (bCancel)
+					return false;
 
 				MiniDatabuf buf;
 				buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);

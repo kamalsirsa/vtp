@@ -24,6 +24,8 @@ BEGIN_EVENT_TABLE(PrefDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_RADIO3, PrefDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO4, PrefDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO5, PrefDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_RADIO6, PrefDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_RADIO7, PrefDlg::OnRadio )
 END_EVENT_TABLE()
 
 PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -38,6 +40,8 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_RADIO3, &b3);
 	AddValidator(ID_RADIO4, &b4);
 	AddValidator(ID_RADIO5, &b5);
+	AddValidator(ID_RADIO6, &b6);
+	AddValidator(ID_RADIO7, &b7);
 }
 
 // WDR: handler implementations for PrefDlg

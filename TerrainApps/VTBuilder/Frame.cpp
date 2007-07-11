@@ -190,6 +190,7 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 	m_bUseCurrentCRS = false;
 	m_bLoadImagesAlways = false;
 	m_bLoadImagesNever = false;
+	m_bSlowFillGaps = false;
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
@@ -1196,6 +1197,23 @@ int MainFrame::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
 	return elevs.size();
 }
 
+bool MainFrame::FillElevGaps(vtElevLayer *el)
+{
+	// Create progress dialog for the slow part
+	OpenProgressDialog(_("Filling Gaps"), true);
+
+	bool bGood;
+	if (m_bSlowFillGaps)
+		// slow and smooth
+		bGood = el->m_pGrid->FillGapsSmooth(progress_callback);
+	else
+		// fast
+		bGood = el->m_pGrid->FillGaps(progress_callback);
+
+	CloseProgressDialog();
+	return bGood;
+}
+
 float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 {
 	float fData, fBestData = INVALID_ELEVATION;
@@ -1764,7 +1782,7 @@ void MainFrame::MergeResampleElevation()
 
 	if (dlg.m_bFillGaps)
 	{
-		if (!pOutput->FillGaps())
+		if (!FillElevGaps(pOutput))
 		{
 			delete pOutput;
 			return;
@@ -1792,11 +1810,11 @@ void MainFrame::MergeResampleElevation()
 	}
 	else if (dlg.m_bToTiles)
 	{
-		OpenProgressDialog(_T("Writing tiles"), true);
-		bool success = pOutput->WriteGridOfTilePyramids(dlg.m_tileopts, GetView());
+		OpenProgressDialog2(_T("Writing tiles"), true);
+		bool success = pOutput->WriteGridOfElevTilePyramids(dlg.m_tileopts, GetView());
 		GetView()->HideGridMarks();
 		delete pOutput;
-		CloseProgressDialog();
+		CloseProgressDialog2();
 		if (success)
 			DisplayAndLog("Successfully wrote to '%s'", (const char *) dlg.m_tileopts.fname);
 		else

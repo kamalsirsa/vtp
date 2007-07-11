@@ -86,7 +86,7 @@ public:
 	void Resample(int iNewWidth, int iNewHeight);
 	bool FillGaps();
 	void DetermineMeterSpacing();
-	bool WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pView);
+	bool WriteGridOfElevTilePyramids(const TilingOptions &opts, BuilderView *pView);
 
 	// TIN operations
 	void SetTin(vtTin2d *pTin);

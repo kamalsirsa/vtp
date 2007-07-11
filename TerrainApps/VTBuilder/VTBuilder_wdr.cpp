@@ -2695,15 +2695,26 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBox *item11 = new wxStaticBox( parent, -1, _("Filling unknown areas of elevation grids:") );
+    wxStaticBoxSizer *item10 = new wxStaticBoxSizer( item11, wxVERTICAL );
 
-    wxButton *item11 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item10->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item12 = new wxRadioButton( parent, ID_RADIO6, _("Fast"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item10->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item12 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item10->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item13 = new wxRadioButton( parent, ID_RADIO7, _("Slow and smooth"), wxDefaultPosition, wxSize(220,-1), 0 );
+    item10->Add( item13, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item10, 0, wxALIGN_CENTER, 5 );
+    item0->Add( item10, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item15 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item16 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item14, 0, wxALIGN_CENTER, 5 );
 
     if (set_sizer)
     {
