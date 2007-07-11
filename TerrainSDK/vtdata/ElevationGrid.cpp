@@ -445,7 +445,7 @@ void vtElevationGrid::ReplaceValue(float value1, float value2)
  * This method uses a simple, unoptimized algorithm to move across the grid,
  * one column at a time, averaging the surrounding pixels to fill each gap.
  */
-void vtElevationGrid::FillGaps()
+bool vtElevationGrid::FillGaps(bool progress_callback(int))
 {
 	int i, j, ix, jx, surrounding;
 	int gaps = 1;
@@ -458,16 +458,23 @@ void vtElevationGrid::FillGaps()
 	for (i = 0; i < m_iColumns; i++)
 		line_gap[i] = true;
 
+	int iPass = 0;
+	int iTotalGaps;
+
 	while (gaps > 0)
 	{
 		gaps = 0;
 		int lines_with_gaps = 0;
 
 		// iterate through the heixels of the new elevation grid
-		for (i = 0; i < m_iColumns; i++)
+		int start, step;
+		if (iPass & 1) { start = 0; step = 1; }
+				  else { start = m_iColumns-1; step = -1; }
+		for (i = start; i >= 0 && i < m_iColumns; i += step)
 		{
 			if (!line_gap[i])
 				continue;
+
 			lines_with_gaps++;
 			line_gap[i] = false;
 
@@ -500,7 +507,7 @@ void vtElevationGrid::FillGaps()
 						}
 					}
 				}
-				if (surrounding != 0)
+				if (surrounding > 1)
 				{
 					patch_column[j] = sum / surrounding;
 					patches = true;
@@ -515,13 +522,30 @@ void vtElevationGrid::FillGaps()
 				}
 			}
 		}
+		if (iPass == 0)
+		{
+			iTotalGaps = gaps;
+			if (progress_callback != NULL)
+				progress_callback(0);
+		}
+		else
+		{
+			if (progress_callback != NULL)
+			{
+				if (progress_callback((iTotalGaps-gaps)*99/iTotalGaps))
+					return false;
+			}
+		}
+		iPass++;
 	}
 	delete [] line_gap;
 	delete [] patch_column;
 
 	// recompute what has likely changed
 	ComputeHeightExtents();
+	return true;
 }
+
 
 /**
  * Fill the gaps (heixels of value INVALID_ELVATION) in this grid, by
@@ -530,9 +554,11 @@ void vtElevationGrid::FillGaps()
  * This method attempts to be a little better than FillGaps by keeping an
  * entire second grid for the interpolated results on each pass, to avoid
  * some cases of the results getting "smeared" left to right.  However, this
- * makes it a little slower on most data.
+ * makes it much slower on most data.
+ *
+ * \return true if successful, false if cancelled.
  */
-void vtElevationGrid::FillGaps2()
+bool vtElevationGrid::FillGapsSmooth(bool progress_callback(int))
 {
 	int i, j, ix, jx;
 	int gaps = 1;
@@ -551,6 +577,9 @@ void vtElevationGrid::FillGaps2()
 		has_delta[i] = false;
 	}
 
+	bool bFirstPass = true;
+	int iTotalGaps;
+
 	while (gaps > 0)
 	{
 		gaps = 0;
@@ -563,26 +592,8 @@ void vtElevationGrid::FillGaps2()
 			if (!line_gap[i])
 				continue;
 
-			// compute average value on this line
-			sum = 0.0f;
-			surrounding = 0;
-			for (j = 0; j < m_iRows; j++)
-			{
-				value = GetFValue(i, j);
-				if (value != INVALID_ELEVATION)
-				{
-					sum += value;
-					surrounding++;
-				}
-			}
-			float average;
-			if (surrounding > 10)
-				average = sum / surrounding;
-			else
-				average = INVALID_ELEVATION;
-
 			lines_with_gaps++;
-			bool gap_on_this_line = false;
+			line_gap[i] = false;	// by default
 
 			for (j = 0; j < m_iRows; j++)
 			{
@@ -592,14 +603,14 @@ void vtElevationGrid::FillGaps2()
 
 				// else gap
 				gaps++;
-				gap_on_this_line = true;
+				line_gap[i] = true;
 
 				// look at surrounding pixels
 				sum = 0;
 				surrounding = 0;
-				for (ix = -1; ix <= 1; ix++)
+				for (ix = -2; ix <= 2; ix++)
 				{
-					for (jx = -1; jx <= 1; jx++)
+					for (jx = -2; jx <= 2; jx++)
 					{
 						value2 = GetFValueSafe(i+ix, j+jx);
 						if (value2 != INVALID_ELEVATION)
@@ -609,23 +620,14 @@ void vtElevationGrid::FillGaps2()
 						}
 					}
 				}
-
-				// Smoothing of areas without enough surrounding pixels
-				if (surrounding > 0 && surrounding < 4 && average != INVALID_ELEVATION)
-				{
-					sum += (average * 0.2f);
-					surrounding += 0.2f;
-				}
-				if (surrounding != 0)
+				if (surrounding > 4)
 				{
 					delta.SetFValue(i, j, sum / surrounding);
 					has_delta[i] = true;
 				}
 				else
-					delta.SetFValue(i, j, value);
+					delta.SetFValue(i, j, INVALID_ELEVATION);
 			}
-			if (!gap_on_this_line)
-				line_gap[i] = false;
 		}
 		for (i = 0; i < m_iColumns; i++)
 		{
@@ -639,10 +641,26 @@ void vtElevationGrid::FillGaps2()
 				has_delta[i] = false;
 			}
 		}
+		if (bFirstPass)
+		{
+			iTotalGaps = gaps;
+			if (progress_callback != NULL)
+				progress_callback(0);
+			bFirstPass = false;
+		}
+		else
+		{
+			if (progress_callback != NULL)
+			{
+				if (progress_callback((iTotalGaps-gaps)*99/iTotalGaps))
+					return false;
+			}
+		}
 	}
 
 	// recompute what has likely changed
 	ComputeHeightExtents();
+	return true;
 }
 
 /** Set an elevation value to the grid.

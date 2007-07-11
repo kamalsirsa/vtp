@@ -59,8 +59,8 @@ public:
 	void ComputeHeightExtents();
 	void Offset(const DPoint2 &delta);
 	void ReplaceValue(float value1, float value2);
-	void FillGaps();
-	void FillGaps2();
+	bool FillGaps(bool progress_callback(int) = NULL);
+	bool FillGapsSmooth(bool progress_callback(int) = NULL);
 
 	// Load from unknown file format
 	bool LoadFromFile( const char *szFileName, bool progress_callback(int) = NULL );
