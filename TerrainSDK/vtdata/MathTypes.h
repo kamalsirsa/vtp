@@ -1267,7 +1267,9 @@ public:
 	RGBf operator -(const RGBf &v) const { return RGBf(r-v.r, g-v.g, b-v.b); }
 	RGBf operator *(float s) const { return RGBf(r*s, g*s, b*s); }
 	RGBf operator /(float s) const { return RGBf(r/s, g/s, b/s); }
+	void operator +=(const RGBf &v) { r+=v.r; g+=v.g; b+=v.b; }
 	void operator *=(float s) { r*=s; g*=s; b*=s; }
+	void operator /=(float s) { r/=s; g/=s; b/=s; }
 
 	// assignment
 	RGBf &operator=(const RGBf &v) { r = v.r; g = v.g; b = v.b; return *this; }
