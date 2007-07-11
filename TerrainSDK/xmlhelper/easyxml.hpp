@@ -356,6 +356,7 @@ extern void readXML(istream &input, XMLVisitor &visitor,
 					bool progress_callback(int) = NULL);
 extern void readCompressedXML(gzFile fp, XMLVisitor &visitor,
 							  const string& path="",
+							  int iFileLength = -1,
 							  bool progress_callback(int) = NULL);
 
 

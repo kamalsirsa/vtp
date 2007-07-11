@@ -265,6 +265,16 @@ void readXML (const string &path_utf8, XMLVisitor &visitor,
 		throw xh_io_exception("Failed to open file", xh_location(path_utf8),
 					"XML Parser");
 
+	// If it is not compressed, we can get the length of the file
+	int iFileLength = -1;
+	const char *path_cstr = path_utf8.c_str();
+	if (strncmp(path_cstr+path_utf8.length()-1, "gz", 2))
+	{
+		fseek(fp, 0, SEEK_END);
+		iFileLength = ftell(fp);
+		rewind(fp);
+	}
+
 #ifdef _MSC_VER
 	int fd = _fileno(fp);
 #else
@@ -277,7 +287,7 @@ void readXML (const string &path_utf8, XMLVisitor &visitor,
 					"XML Parser");
 	try
 	{
-		readCompressedXML(gfp, visitor, path_utf8, progress_callback);
+		readCompressedXML(gfp, visitor, path_utf8, iFileLength, progress_callback);
 	}
 	catch (xh_io_exception &e)
 	{
@@ -294,7 +304,7 @@ void readXML (const string &path_utf8, XMLVisitor &visitor,
 }
 
 void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
-						bool progress_callback(int))
+						int iFileLength, bool progress_callback(int))
 {
 	XML_Parser parser = XML_ParserCreate(0);
 	XML_SetUserData(parser, &visitor);
@@ -304,11 +314,12 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
 
 	visitor.startXML();
 
+	const int BUFSIZE = 8192;
 	int progress = 0;
-	char buf[16384];
+	char buf[8192];
 	while (!gzeof(fp))
 	{
-		int iCount = gzread(fp, buf, 16384);
+		int iCount = gzread(fp, buf, BUFSIZE);
 		if (iCount > 0)
 		{
 			if (!XML_Parse(parser, buf, iCount, false))
@@ -323,10 +334,20 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
 			}
 			if (progress_callback != NULL)
 			{
-				progress++;
-				if (progress == 400)
-					progress = 0;
-				progress_callback(progress/4);
+				if (iFileLength != -1)
+				{
+					// We know the length, so we can estimate total progress
+					progress += BUFSIZE;
+					progress_callback(progress * 99 / iFileLength);
+				}
+				else
+				{
+					// Give a gradually advancing progress that wraps around
+					progress++;
+					if (progress == 400)
+						progress = 0;
+					progress_callback(progress/4);
+				}
 			}
 		}
 		else if (iCount < 0)
