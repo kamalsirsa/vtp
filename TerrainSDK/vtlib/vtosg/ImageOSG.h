@@ -21,6 +21,7 @@ public:
 	vtImage();
 	vtImage(const char *fname, bool bAllowCache = true);
 	vtImage(class vtDIB *pDIB);
+	vtImage(vtImage *copyfrom);
 	void Release();
 
 	bool Create(int width, int height, int bitdepth, bool create_palette = false);

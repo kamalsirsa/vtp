@@ -62,6 +62,18 @@ vtImage::vtImage(vtDIB *pDIB)
 	_CreateFromDIB(pDIB);
 }
 
+vtImage::vtImage(vtImage *copyfrom) :
+	osg::Image(*copyfrom, osg::CopyOp::DEEP_COPY_ALL)
+{
+	ref();
+	m_b16bit = copyfrom->m_b16bit;
+	m_bLoadWithAlpha = copyfrom->m_bLoadWithAlpha;
+	m_proj = copyfrom->m_proj;
+	m_extents = copyfrom->m_extents;
+	m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
+}
+
+
 vtImage::~vtImage()
 {
 }
