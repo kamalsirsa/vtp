@@ -267,12 +267,15 @@ void readXML (const string &path_utf8, XMLVisitor &visitor,
 
 	// If it is not compressed, we can get the length of the file
 	int iFileLength = -1;
-	const char *path_cstr = path_utf8.c_str();
-	if (strncmp(path_cstr+path_utf8.length()-1, "gz", 2))
+	if (progress_callback != NULL)
 	{
-		fseek(fp, 0, SEEK_END);
-		iFileLength = ftell(fp);
-		rewind(fp);
+		const char *path_cstr = path_utf8.c_str();
+		if (strncmp(path_cstr+path_utf8.length()-1, "gz", 2))
+		{
+			fseek(fp, 0, SEEK_END);
+			iFileLength = ftell(fp);
+			rewind(fp);
+		}
 	}
 
 #ifdef _MSC_VER
