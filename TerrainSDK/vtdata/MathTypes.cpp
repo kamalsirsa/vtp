@@ -1456,8 +1456,8 @@ float DistanceSegmentToSegment(const FPoint3 &A1, const FPoint3 &A2,
 		}
 	}
 	// finally do the division to get sc and tc
-	sc = (abs(sN) < SMALL_NUM ? 0.0f : sN / sD);
-	tc = (abs(tN) < SMALL_NUM ? 0.0f : tN / tD);
+	sc = (fabs(sN) < SMALL_NUM ? 0.0f : sN / sD);
+	tc = (fabs(tN) < SMALL_NUM ? 0.0f : tN / tD);
 
 	// get the difference of the two closest points
 	FPoint3   dP = w + (u * sc) - (v * tc);  // = S1(sc) - S2(tc)
