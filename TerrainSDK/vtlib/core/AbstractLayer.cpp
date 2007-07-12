@@ -354,7 +354,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr)
 			for (unsigned int j = 0; j < size; j++)
 			{
 				// preserve 3D point's elevation: don't drape
-				pTerr->GetHeightFieldGrid3d()->m_Conversion.ConvertFromEarth(dline[j], f3);
+				pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
 				mf.AddVertex(f3);
 			}
 			mf.PrimEnd();
@@ -374,7 +374,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr)
 			for (unsigned int j = 0; j < size; j++)
 			{
 				// preserve 3D point's elevation: don't drape
-				pTerr->GetHeightFieldGrid3d()->m_Conversion.ConvertFromEarth(dline[j], f3);
+				pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
 				mf.AddVertex(f3);
 			}
 			mf.PrimEnd();
