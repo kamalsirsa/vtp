@@ -687,7 +687,6 @@ bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 			dib2.SetPixel32(i, j, res);
 		}
 	}
-	dib2.WritePNG("D:/2d/pass1.png");
 
 	// Now make many passes over the bitmap, filling in areas of alpha==0
 	//  with values from the nearest pixels.
