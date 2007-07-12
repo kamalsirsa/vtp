@@ -1487,44 +1487,9 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 	output_buf.tsteps = 1;
 	output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 
-	if (opts.bUseTextureCompression)
-	{
-		// Compressed
-		if (opts.eCompressionType == TC_OPENGL)
-		{
-#if USE_OPENGL
-			DoTextureCompress(rgb_bytes, output_buf, m_pCanvas->m_iTex);
-
-			output_buf.savedata(fname);
-			free(output_buf.data);
-			output_buf.data = NULL;
-
-			if (tilesize == 256)
-				m_pCanvas->Refresh(false);
-#endif
-		}
-		else if (opts.eCompressionType == TC_SQUISH_FAST ||
-			opts.eCompressionType == TC_SQUISH_SLOW)
-		{
-#if SUPPORT_SQUISH
-			DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
-
-			output_buf.savedata(fname);
-			free(output_buf.data);
-			output_buf.data = NULL;
-#endif
-		}
-	}
-	else
-	{
-		// Uncompressed
-		// Output to a plain RGB .db file
-		output_buf.type = 3;	// RGB
-		output_buf.bytes = iUncompressedSize;
-		output_buf.data = rgb_bytes;
-		output_buf.savedata(fname);
-		output_buf.data = NULL;
-	}
+	// Write and optionally compress the image
+	WriteMiniImage(fname, opts, rgb_bytes, output_buf,
+		iUncompressedSize, m_pCanvas);
 
 	// Free the uncompressed image
 	free(rgb_bytes);

@@ -149,6 +149,51 @@ void wxDC2::StretchBlit(const wxBitmap &bmp,
 
 /////////////////////////////////////////////////////
 
+void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
+					unsigned char *rgb_bytes, MiniDatabuf &output_buf,
+					int iUncompressedSize, ImageGLCanvas *pCanvas)
+{
+	if (opts.bUseTextureCompression)
+	{
+		if (opts.eCompressionType == TC_OPENGL)
+		{
+#if USE_OPENGL
+			DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex);
+
+			output_buf.savedata(fname);
+			free(output_buf.data);
+			output_buf.data = NULL;
+
+			if (output_buf.xsize == 256)
+				pCanvas->Refresh(false);
+#endif
+		}
+		else if (opts.eCompressionType == TC_SQUISH_FAST ||
+			opts.eCompressionType == TC_SQUISH_SLOW)
+		{
+#if SUPPORT_SQUISH
+			DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
+
+			output_buf.savedata(fname);
+			free(output_buf.data);
+			output_buf.data = NULL;
+#endif
+		}
+	}
+	else
+	{
+		// Uncompressed
+		// Output to a plain RGB .db file
+		output_buf.type = 3;	// RGB
+		output_buf.bytes = iUncompressedSize;
+		output_buf.data = rgb_bytes;
+		output_buf.savedata(fname);
+		output_buf.data = NULL;
+	}
+}
+
+/////////////////////////////////////////////////////
+
 #if USE_OPENGL
 
 #ifdef __DARWIN_OSX__

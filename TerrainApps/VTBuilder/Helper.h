@@ -42,6 +42,12 @@ public:
 
 /////////////////
 class MiniDatabuf;
+class ImageGLCanvas;
+struct TilingOptions;
+
+void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
+					unsigned char *rgb_bytes, MiniDatabuf &output_buf,
+					int iUncompressedSize, ImageGLCanvas *pCanvas);
 
 #if USE_OPENGL
 #include "wx/glcanvas.h"

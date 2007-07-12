@@ -662,7 +662,8 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 #if USE_OPENGL
 	wxFrame *frame = new wxFrame;
 	ImageGLCanvas *pCanvas = NULL;
-	if (opts.bCreateDerivedImages && opts.eCompressionType == TC_OPENGL)
+	if (opts.bCreateDerivedImages && opts.bUseTextureCompression &&
+		opts.eCompressionType == TC_OPENGL)
 	{
 		frame->Create(this, -1, _T("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
@@ -860,44 +861,9 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 							*dst++ = rgb.b;
 						}
 
-					// Always try to compress derived images
-					bool bWritten = false;
-					if (opts.eCompressionType == TC_OPENGL)
-					{
-#if USE_OPENGL
-						DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex);
-
-						output_buf.savedata(fname);
-						free(output_buf.data);
-						output_buf.data = NULL;
-						bWritten = true;
-
-						if (tilesize == 256)
-							pCanvas->Refresh(false);
-#endif
-					}
-					else if (opts.eCompressionType == TC_SQUISH_FAST ||
-						opts.eCompressionType == TC_SQUISH_SLOW)
-					{
-#if SUPPORT_SQUISH
-						DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
-
-						output_buf.savedata(fname);
-						free(output_buf.data);
-						output_buf.data = NULL;
-						bWritten = true;
-#endif
-					}
-					if (!bWritten)
-					{
-						// Uncompressed
-						// Output to a plain RGB .db file
-						output_buf.type = 3;	// RGB
-						output_buf.bytes = iUncompressedSize;
-						output_buf.data = rgb_bytes;
-						output_buf.savedata(fname);
-						output_buf.data = NULL;
-					}
+					// Write and optionally compress the image
+					WriteMiniImage(fname, opts, rgb_bytes, output_buf,
+						iUncompressedSize, pCanvas);
 
 					// Free the uncompressed image
 					free(rgb_bytes);
@@ -1134,44 +1100,10 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				output_buf.tsteps = 1;
 				output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 
-				if (opts.bUseTextureCompression)
-				{
-					if (opts.eCompressionType == TC_OPENGL)
-					{
-#if USE_OPENGL
-						// Compressed
-						DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex);
+				// Write and optionally compress the image
+				WriteMiniImage(fname, opts, rgb_bytes, output_buf,
+					iUncompressedSize, pCanvas);
 
-						output_buf.savedata(fname);
-						free(output_buf.data);
-						output_buf.data = NULL;
-
-						if (tilesize == 256)
-							pCanvas->Refresh(false);
-#endif
-					}
-					else if (opts.eCompressionType == TC_SQUISH_FAST ||
-						opts.eCompressionType == TC_SQUISH_SLOW)
-					{
-#if SUPPORT_SQUISH
-						DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
-
-						output_buf.savedata(fname);
-						free(output_buf.data);
-						output_buf.data = NULL;
-#endif
-					}
-				}
-				else
-				{
-					// Uncompressed
-					// Output to a plain RGB .db file
-					output_buf.type = 3;	// RGB
-					output_buf.bytes = iUncompressedSize;
-					output_buf.data = rgb_bytes;
-					output_buf.savedata(fname);
-					output_buf.data = NULL;
-				}
 				// Free the uncompressed image
 				free(rgb_bytes);
 			}
