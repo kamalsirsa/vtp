@@ -1,7 +1,7 @@
 //
 // Name: DistanceDlg.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -123,7 +123,6 @@ void DistanceDlg::SetPoints(const DPoint2 &p1, const DPoint2 &p2, bool bUpdate)
 {
 	m_p1 = p1;
 	m_p2 = p2;
-	m_bPathMode = false;
 	if (bUpdate)
 		ShowValues();
 }
@@ -137,7 +136,6 @@ void DistanceDlg::GetPoints(DPoint2 &p1, DPoint2 &p2)
 void DistanceDlg::SetPath(const DLine2 &path, bool bUpdate)
 {
 	m_path = path;
-	m_bPathMode = true;
 	if (bUpdate)
 		ShowValues();
 }
