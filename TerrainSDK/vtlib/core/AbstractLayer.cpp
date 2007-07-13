@@ -180,6 +180,7 @@ void vtAbstractLayer::CreateObjectGeometry(vtTerrain *pTerr)
 	}
 
 	vtGeom *geom = new vtGeom;
+	geom->SetName2("Objects");
 	geom->SetMaterials(pMats);
 	pMats->Release();	// pass ownership
 
@@ -191,7 +192,10 @@ void vtAbstractLayer::CreateObjectGeometry(vtTerrain *pTerr)
 	if (!style.GetValueFloat("ObjectGeomSize", fRadius))
 		fRadius = 1;
 
-	int res = 7;
+	int res = 3;
+
+	// If a large number of entities, make as simple geometry as possible
+	bool bTetrahedra = (feat.GetNumEntities() > 10000);
 
 	int material_index;
 	FPoint3 f3;
@@ -227,8 +231,20 @@ void vtAbstractLayer::CreateObjectGeometry(vtTerrain *pTerr)
 			float original_z = epos.z;
 			hf->m_Conversion.ConvertFromEarth(epos, p3);
 
-			vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals, res*res*2);
-			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
+			bool bShaded = true;
+			vtMesh *mesh;
+			if (bTetrahedra)
+			{
+				vtMesh *mesh = new vtMesh(vtMesh::TRIANGLES, bShaded ? VT_Normals : 0, 12);
+				mesh->CreateTetrahedron(p3, fRadius);
+				if (bShaded)
+					mesh->SetNormalsFromPrimitives();
+			}
+			else
+			{
+				vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, bShaded ? VT_Normals : 0, res*res*2);
+				mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
+			}
 
 			geom->AddMesh(mesh, material_index);
 			mesh->Release();
@@ -320,6 +336,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr)
 
 	vtGeom *geom = new vtGeom;
 	geom->SetMaterials(pMats);
+	geom->SetName2("Lines");
 	pMats->Release();	// pass ownership
 
 	vtMeshFactory mf(geom, vtMesh::LINE_STRIP, 0, 30000, 0);
@@ -333,68 +350,73 @@ void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr)
 	int material_index;
 	FPoint3 f3;
 	VTLOG("  Creating %d entities.. ", feat.GetNumEntities());
-	for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
+
+	unsigned int size;
+	if (pSetP3)
 	{
-		if (color_field_index == -1)
-			material_index = common_material_index;
-		else
+		mf.SetMatIndex(common_material_index);
+		mf.PrimStart();
+		const DLine3 &dline = pSetP3->GetAllPoints();
+		size = dline.GetSize();
+		for (unsigned int j = 0; j < size; j++)
 		{
-			if (GetColorField(feat, i, color_field_index, rgba))
-				material_index = pMats->FindByDiffuse(rgba);
-			else
+			// preserve 3D point's elevation: don't drape
+			pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
+			mf.AddVertex(f3);
+		}
+		mf.PrimEnd();
+	}
+	else
+	{
+		for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
+		{
+			if (color_field_index == -1)
 				material_index = common_material_index;
-		}
-
-		unsigned int size;
-		if (pSetP3)
-		{
-			mf.PrimStart();
-			const DLine3 &dline = pSetP3->GetAllPoints();
-			size = dline.GetSize();
-			for (unsigned int j = 0; j < size; j++)
+			else
 			{
-				// preserve 3D point's elevation: don't drape
-				pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
-				mf.AddVertex(f3);
+				if (GetColorField(feat, i, color_field_index, rgba))
+					material_index = pMats->FindByDiffuse(rgba);
+				else
+					material_index = common_material_index;
 			}
-			mf.PrimEnd();
-		}
-		else if (pSetLS2)
-		{
-			const DLine2 &dline = pSetLS2->GetPolyLine(i);
 
-			mf.SetMatIndex(material_index);
-			pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve);
-		}
-		else if (pSetLS3)
-		{
-			mf.PrimStart();
-			const DLine3 &dline = pSetLS3->GetPolyLine(i);
-			size = dline.GetSize();
-			for (unsigned int j = 0; j < size; j++)
+			if (pSetLS2)
 			{
-				// preserve 3D point's elevation: don't drape
-				pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
-				mf.AddVertex(f3);
+				const DLine2 &dline = pSetLS2->GetPolyLine(i);
+
+				mf.SetMatIndex(material_index);
+				pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve);
 			}
-			mf.PrimEnd();
-		}
-		else if (pSetPoly)
-		{
-			const DPolygon2 &dpoly = pSetPoly->GetPolygon(i);
-			for (unsigned int k = 0; k < dpoly.size(); k++)
+			else if (pSetLS3)
 			{
-				// This would be the efficient way
-//				const DLine2 &dline = dpoly[k];
-
-				// but we must copy each polyline in order to close it
-				DLine2 dline = dpoly[k];
-				dline.Append(dline[0]);
-
-				pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve, true);
+				mf.PrimStart();
+				const DLine3 &dline = pSetLS3->GetPolyLine(i);
+				size = dline.GetSize();
+				for (unsigned int j = 0; j < size; j++)
+				{
+					// preserve 3D point's elevation: don't drape
+					pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
+					mf.AddVertex(f3);
+				}
+				mf.PrimEnd();
 			}
+			else if (pSetPoly)
+			{
+				const DPolygon2 &dpoly = pSetPoly->GetPolygon(i);
+				for (unsigned int k = 0; k < dpoly.size(); k++)
+				{
+					// This would be the efficient way
+	//				const DLine2 &dline = dpoly[k];
+
+					// but we must copy each polyline in order to close it
+					DLine2 dline = dpoly[k];
+					dline.Append(dline[0]);
+
+					pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve, true);
+				}
+			}
+			pTerr->ProgressCallback(i * 100 / feat.GetNumEntities());
 		}
-		pTerr->ProgressCallback(i * 100 / feat.GetNumEntities());
 	}
 
 	// If the user specified a line width, apply it now
