@@ -208,6 +208,7 @@ public:
 	void CreateCylinder(float height, float radius, int res,
 		bool bTop = true, bool bBottom = true, bool bCentered = true,
 		int direction = 1);
+	void CreateTetrahedron(const FPoint3 &center, float fRadius);
 
 	void AddRectangleXZ(float xsize, float zsize);
 	void AddRectangleXY(float x, float y, float xsize, float ysize,

@@ -386,12 +386,12 @@ void vtMeshBase::CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
 	}
 	theta_res = res * 2;
 
-	theta_step = PI2f / (theta_res - 1);
-	phi_step = phi_range / (phi_res - 1);
-	for (i = 0; i < theta_res; i++)
+	theta_step = PI2f / (theta_res);
+	phi_step = phi_range / (phi_res);
+	for (i = 0; i <= theta_res; i++)
 	{
 		float theta = i * theta_step;
-		for (j = 0; j < phi_res; j++)
+		for (j = 0; j <= phi_res; j++)
 		{
 			float phi = j * phi_step;
 
@@ -410,7 +410,7 @@ void vtMeshBase::CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
 			}
 		}
 	}
-	CreateRectangularMesh(theta_res, phi_res);
+	CreateRectangularMesh(theta_res+1, phi_res+1);
 }
 
 /**
@@ -533,6 +533,51 @@ void vtMeshBase::CreateCylinder(float height, float radius, int res,
 		AddStrip(j, indices);
 	}
 	delete indices;
+}
+
+void vtMeshBase::CreateTetrahedron(const FPoint3 &center, float fRadius)
+{
+	float A = fRadius * 1.632993161858;
+	float B = fRadius;
+	float D = fRadius * 0.333333333333;
+	float F = fRadius * 0.9428090415834;
+	float G = fRadius * 0.4714045207904;
+	FPoint3 p0(-A/2, -D, G);
+	FPoint3 p1( A/2, -D, G);
+	FPoint3 p2( 0, B, 0);
+	FPoint3 p3( 0, -D, -F);
+
+	p0 += center;
+	p1 += center;
+	p2 += center;
+	p3 += center;
+
+	int vidx;
+	if (m_iVtxType & VT_Normals)
+	{
+		// We need distinct vertices for each triangle, so they can have
+		//  different normals.  This means 12 vertices, 4 faces * 3 corners.
+		vidx = AddVertex(p0); AddVertex(p1); AddVertex(p2);
+		AddTri(vidx, vidx+1, vidx+2);
+
+		vidx = AddVertex(p1); AddVertex(p3); AddVertex(p2);
+		AddTri(vidx, vidx+1, vidx+2);
+
+		vidx = AddVertex(p3); AddVertex(p0); AddVertex(p2);
+		AddTri(vidx, vidx+1, vidx+2);
+
+		vidx = AddVertex(p0); AddVertex(p3); AddVertex(p1);
+		AddTri(vidx, vidx+1, vidx+2);
+	}
+	else
+	{
+		// With no shading, all we need is 4 vertices for the 4 faces.
+		vidx = AddVertex(p0); AddVertex(p1); AddVertex(p2); AddVertex(p3);
+		AddTri(vidx+0, vidx+1, vidx+2);
+		AddTri(vidx+1, vidx+3, vidx+2);
+		AddTri(vidx+3, vidx+0, vidx+2);
+		AddTri(vidx+0, vidx+3, vidx+1);
+	}
 }
 
 

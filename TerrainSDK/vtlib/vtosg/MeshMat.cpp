@@ -858,7 +858,8 @@ void vtMesh::SetLineWidth(float fWidth)
  */
 void vtMesh::SetNormalsFromPrimitives()
 {
-	if (m_ePrimType != vtMesh::TRIANGLE_STRIP &&
+	if (m_ePrimType != vtMesh::TRIANGLES &&
+		m_ePrimType != vtMesh::TRIANGLE_STRIP &&
 		m_ePrimType != vtMesh::POLYGON)
 		return;
 
@@ -872,7 +873,9 @@ void vtMesh::SetNormalsFromPrimitives()
 	case vtMesh::POINTS:
 	case vtMesh::LINES:
 	case vtMesh::LINE_STRIP:
+		break;
 	case vtMesh::TRIANGLES:
+		_AddTriangleNormals();
 		break;
 	case vtMesh::TRIANGLE_STRIP:
 		_AddStripNormals();
@@ -964,6 +967,34 @@ void vtMesh::_AddPolyNormals()
 			}
 		}
 		idx += len;
+	}
+}
+
+void vtMesh::_AddTriangleNormals()
+{
+	int tris = GetNumPrims();
+	unsigned short v0, v1, v2;
+	osg::Vec3 p0, p1, p2, d0, d1, norm;
+
+	for (int i = 0; i < tris; i++)
+	{
+		v0 = m_Index->at(i*3);
+		v1 = m_Index->at(i*3+1);
+		v2 = m_Index->at(i*3+2);
+		p0 = m_Vert->at(v0);
+		p1 = m_Vert->at(v1);
+		p2 = m_Vert->at(v2);
+
+		d0 = (p1 - p0);
+		d1 = (p2 - p0);
+		d0.normalize();
+		d1.normalize();
+
+		norm = d0^d1;
+
+		m_Norm->at(v0) = norm;
+		m_Norm->at(v1) = norm;
+		m_Norm->at(v2) = norm;
 	}
 }
 

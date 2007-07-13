@@ -177,6 +177,7 @@ protected:
 	// Implementation
 	void _AddStripNormals();
 	void _AddPolyNormals();
+	void _AddTriangleNormals();
 
 	// Holder for all osg geometry information
 	osg::ref_ptr<osg::Geometry> m_pGeometry;
