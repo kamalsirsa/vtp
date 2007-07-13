@@ -111,7 +111,7 @@ bool EnviroApp::OnInit()
 
 	VTLOG("Application framework: MFC\n");
 	vtGetScene()->Init();
-	g_App.LoadTerrainDescriptions();
+	g_App.LoadAllTerrainDescriptions();
 
 	//
 	// Create and show the Startup Dialog

@@ -65,7 +65,7 @@ BOOL CBExtractorApp::InitInstance()
 
 	// Try to guess GDAL and PROJ.4 data paths, in case the user doesn't have
 	//  their GDAL_DATA and PROJ_LIB environment variables set.
-	g_GDALWrapper.GuessDataPaths();
+	g_GDALWrapper.Init();
 
 	AfxEnableControlContainer();
 

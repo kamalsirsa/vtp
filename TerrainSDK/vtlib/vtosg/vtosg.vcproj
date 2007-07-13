@@ -543,6 +543,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\PagedLodGrid.cpp">
+			</File>
+			<File
 				RelativePath="..\core\Roads.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -912,6 +915,9 @@
 			</File>
 			<File
 				RelativePath="..\core\NavEngines.h">
+			</File>
+			<File
+				RelativePath="..\core\PagedLodGrid.h">
 			</File>
 			<File
 				RelativePath="..\core\Roads.h">
