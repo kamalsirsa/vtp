@@ -235,14 +235,14 @@ void vtAbstractLayer::CreateObjectGeometry(vtTerrain *pTerr)
 			vtMesh *mesh;
 			if (bTetrahedra)
 			{
-				vtMesh *mesh = new vtMesh(vtMesh::TRIANGLES, bShaded ? VT_Normals : 0, 12);
+				mesh = new vtMesh(vtMesh::TRIANGLES, bShaded ? VT_Normals : 0, 12);
 				mesh->CreateTetrahedron(p3, fRadius);
 				if (bShaded)
 					mesh->SetNormalsFromPrimitives();
 			}
 			else
 			{
-				vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, bShaded ? VT_Normals : 0, res*res*2);
+				mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, bShaded ? VT_Normals : 0, res*res*2);
 				mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 			}
 
