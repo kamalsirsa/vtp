@@ -2141,6 +2141,7 @@ bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
  * \param t Top.
  * \param r Right.
  * \param b Bottom.
+ * \param rot Rotation in radians.
  */
 void vtImageSprite::SetPosition(float l, float t, float r, float b, float rot)
 {

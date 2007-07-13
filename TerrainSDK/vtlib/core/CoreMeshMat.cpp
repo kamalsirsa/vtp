@@ -359,6 +359,7 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
  * to 1 from the top to the bottom.  For a hemisphere, V ranges from
  * 0 at the top to 1 at the base.
  *
+ * \param center Position of the center, pass FPoint3(0,0,0) to center on the origin.
  * \param size The width, height and depth of the ellipsoid.
  * \param res The resolution (number of vertices used in the tesselation)
  *		from top to bottom.
