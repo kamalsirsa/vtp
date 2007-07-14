@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -887,6 +887,14 @@ vtMultiTexture *vtNode::AddMultiTexture(int iTextureUnit, vtImage *pImage, int i
 	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
 	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_T,  osg::StateAttribute::ON);
 	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexEnv.get(), osg::StateAttribute::ON);
+
+	// If texture mode is DECAL and intenal texture format does not have an alpha channel then
+	// force the format to be converted on texture binding
+	if ((GL_DECAL == iTextureMode) && (pImage->getInternalTextureFormat() != GL_RGBA))
+	{
+		// Force the internal format to RGBA
+		pImage->setInternalTextureFormat(GL_RGBA);
+	}
 
 	return mt;
 }
