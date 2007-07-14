@@ -334,17 +334,17 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
 {
 	int i, j;
 
-	unsigned short *strip = new unsigned short[ysize*2];
-	for (i = 0; i < xsize - 1; i++)
+	unsigned short *strip = new unsigned short[xsize*2];
+	for (j = 0; j < ysize - 1; j++)
 	{
-		int start = i * ysize;
+		int start = j * xsize;
 		int len = 0;
-		for (j = 0; j < ysize; j++)
+		for (i = 0; i < xsize; i++)
 		{
-			strip[len++] = start + j;
-			strip[len++] = start + j + ysize;
+			strip[len++] = start + i;
+			strip[len++] = start + i + xsize;
 		}
-		AddStrip(ysize*2, strip);
+		AddStrip(xsize*2, strip);
 	}
 	delete [] strip;
 }
@@ -361,8 +361,8 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
  *
  * \param center Position of the center, pass FPoint3(0,0,0) to center on the origin.
  * \param size The width, height and depth of the ellipsoid.
- * \param res The resolution (number of vertices used in the tesselation)
- *		from top to bottom.
+ * \param res The resolution (number of quads used in the tesselation)
+ *		from top to bottom (north pole to south pole).
  * \param hemi Create only the top of the ellipsoid (e.g. a hemisphere).
  */
 void vtMeshBase::CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
@@ -387,15 +387,15 @@ void vtMeshBase::CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
 	}
 	theta_res = res * 2;
 
-	theta_step = PI2f / (theta_res);
-	phi_step = phi_range / (phi_res);
-	for (i = 0; i <= theta_res; i++)
+	theta_step = PI2f / theta_res;
+	phi_step = phi_range / phi_res;
+	for (j = 0; j <= phi_res; j++)
 	{
-		float theta = i * theta_step;
-		for (j = 0; j <= phi_res; j++)
-		{
-			float phi = j * phi_step;
+		float phi = j * phi_step;
 
+		for (i = 0; i <= theta_res; i++)
+		{
+			float theta = i * theta_step;
 			v.x = cosf(theta) * sinf(phi);
 			v.z = sinf(theta) * sinf(phi);
 			v.y = cosf(phi);
@@ -406,7 +406,7 @@ void vtMeshBase::CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
 				SetVtxNormal(vidx, v);
 			if (GetVtxType() & VT_TexCoords)	/* compute tex coords */
 			{
-				FPoint2 t((float)i / (theta_res-1), (float)j / (phi_res-1));
+				FPoint2 t((float)i / theta_res, 1.0f - (float)j / phi_res);
 				SetVtxTexCoord(vidx, t);
 			}
 		}
