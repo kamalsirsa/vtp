@@ -24,6 +24,8 @@ const float MAX_INT = 1.0f;
 // only show stars up to this magnitude
 const float MAX_MAGNITUDE = 5.8f;
 
+#define SKYDOME_SMOOTHNESS 16
+
 /**
  * Sunrise and sunset cause a warm-colored circular glow at the point where
  * the sun is touching the horizon.  This function sets the radius of that
@@ -153,8 +155,9 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 
 	// Create the geometry of the dome itself
 	VTLOG("   Creating Dome Mesh\n");
-	int res = 16;
-	m_pDomeMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors | VT_TexCoords, res*res);
+	int res = SKYDOME_SMOOTHNESS;
+	int vertices = (res*2+1)*(res/2+1);
+	m_pDomeMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors | VT_TexCoords, vertices);
 	m_pDomeMesh->CreateEllipsoid(FPoint3(0,0,0), FPoint3(1.0f, 1.0f, 1.0f), res, true);
 	m_pDomeGeom->AddMesh(m_pDomeMesh, 0);
 	m_pDomeMesh->Release();	// pass ownership to Geometry
@@ -560,34 +563,6 @@ bool vtSkyDome::SetTexture(const char *filename)
 
 	for (i = 0; i < verts; i++)
 		m_pDomeMesh->SetVtxColor(i, RGBf(1,1,1));	// all white vertices
-
-	// First way: do texture projection based on vertex position.  This is
-	// not ideal for the case of sky domes because of cylindrical UV
-	// wraparound: there will be a UV texture seam.
-	/*
-	for (i = 0; i < verts; i++)
-	{
-		p = m_pDomeMesh->GetVtxPos(i);
-		uv.x = (float) atan2(p.z, p.x) / PI2d;
-		uv.y = (p.y - box.min.y) / (box.max.y - box.min.y);
-		uv.y = 1.0 - uv.y;	// flip
-		m_pDomeMesh->SetVtxTexCoord(i, uv);
-	}
-	*/
-	// Second way: use our special knowledge of how the sphere vertices are
-	// constructed to set the UV values evently from 0 to 1 without
-	// wraparound.
-	int ysize = (int) (sqrt((double)verts/4));
-	int xsize = ysize * 4;
-	for (i =0; i < xsize; i++)
-	{
-		uv.x = (float)i / (float)(xsize-1);
-		for (j = 0; j < ysize; j++)
-		{
-			uv.y = 1.0f - (float)j / (float)(ysize-1);
-			m_pDomeMesh->SetVtxTexCoord(i*ysize+j, uv);
-		}
-	}
 
 	m_pDomeGeom->SetMeshMatIndex(m_pDomeMesh, index);
 	m_pDomeMesh->ReOptimize();
