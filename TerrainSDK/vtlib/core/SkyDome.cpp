@@ -553,15 +553,9 @@ bool vtSkyDome::SetTexture(const char *filename)
 
 	m_pTextureMat = m_pMats->GetAt(index);
 
-	// set the UV values to cylindrically project the texture onto the hemisphere
-	int i, j;
+	// set the vertices to initially white
 	int verts = m_pDomeMesh->GetNumVertices();
-	FPoint3 p;
-	FPoint2 uv;
-	FBox3 box;
-	m_pDomeMesh->GetBoundBox(box);
-
-	for (i = 0; i < verts; i++)
+	for (int i = 0; i < verts; i++)
 		m_pDomeMesh->SetVtxColor(i, RGBf(1,1,1));	// all white vertices
 
 	m_pDomeGeom->SetMeshMatIndex(m_pDomeMesh, index);
