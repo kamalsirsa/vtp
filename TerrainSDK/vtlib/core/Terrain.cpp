@@ -1776,7 +1776,6 @@ void vtTerrain::_CreateImageLayers()
 		}
 
 		vtImageLayer *ilayer = new vtImageLayer;
-		ilayer->m_pImage->SetLoadWithAlpha(true);
 		if (!ilayer->m_pImage->Read(path, true, m_progress_callback))
 		{
 			VTLOG("Couldn't read image from file '%s'\n", (const char *) path);

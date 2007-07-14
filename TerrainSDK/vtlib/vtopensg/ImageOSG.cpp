@@ -58,7 +58,6 @@ void vtImage::_BasicInit()
 {
 	//ref();
 	m_b16bit = false;
-	m_bLoadWithAlpha = false;
 	m_extents.Empty();
 }
 
