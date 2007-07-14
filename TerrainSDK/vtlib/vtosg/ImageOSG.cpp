@@ -67,7 +67,6 @@ vtImage::vtImage(vtImage *copyfrom) :
 {
 	ref();
 	m_b16bit = copyfrom->m_b16bit;
-	m_bLoadWithAlpha = copyfrom->m_bLoadWithAlpha;
 	m_proj = copyfrom->m_proj;
 	m_extents = copyfrom->m_extents;
 	m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
@@ -82,7 +81,6 @@ void vtImage::_BasicInit()
 {
 	ref();
 	m_b16bit = false;
-	m_bLoadWithAlpha = false;
 	m_extents.Empty();
 }
 
@@ -822,10 +820,7 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 		// Allocate the image buffer
 		if (iRasterCount == 3 || bColorPalette)
 		{
-			if (m_bLoadWithAlpha)
-				Create(iXSize, iYSize, 32);
-			else
-				Create(iXSize, iYSize, 24);
+			Create(iXSize, iYSize, 24);
 		}
 		else if (iRasterCount == 1)
 			Create(iXSize, iYSize, 8);
@@ -876,10 +871,7 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 								rgb.r = (unsigned char) Ent.c1;
 								rgb.g = (unsigned char) Ent.c2;
 								rgb.b = (unsigned char) Ent.c3;
-								if (m_bLoadWithAlpha)
-									SetPixel32(x + iX, y + iY, rgb);
-								else
-									SetPixel24(x + iX, y + iY, rgb);
+								SetPixel24(x + iX, y + iY, rgb);
 							}
 							else
 								SetPixel8(x + iX, y + iY, pScanline[iY * xBlockSize + iX]);
@@ -928,10 +920,7 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 							rgb.r = pRedline[iY * xBlockSize + iX];
 							rgb.g = pGreenline[iY * xBlockSize + iX];
 							rgb.b = pBlueline[iY * xBlockSize + iX];
-							if (m_bLoadWithAlpha)
-								SetPixel32(x + iX, y + iY, rgb);
-							else
-								SetPixel24(x + iX, y + iY, rgb);
+							SetPixel24(x + iX, y + iY, rgb);
 						}
 					}
 				}
