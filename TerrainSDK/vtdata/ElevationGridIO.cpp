@@ -897,7 +897,7 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 				cp[0] = cp[1];
 				cp[1] = temp;
 			}
-			SetValue(i, m_iRows-1-j, (z == gh.NoData) ? 0 : z);
+			SetValue(i, m_iRows-1-j, (z == gh.NoData) ? INVALID_ELEVATION : z);
 		}
 	}
 	return true;
@@ -1325,7 +1325,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 		fscanf(fp,"%[^\n]", sbuf);  // read comment beyond '#'
 		fscanf(fp,"%[\n]", dummy);  // read newline
 		char *buf = sbuf+1;	// skip leading space after '#'
-		if (!strncmp(buf, "DEM", 3))
+		if (!strncmp(buf, "DEM", 3) || !strncmp(buf, "BOX", 3))
 		{
 			have_header= true;
 		}
@@ -1449,7 +1449,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 			if (progress_callback != NULL) progress_callback(j * 100 / ysize);
 			for (int i = 0; i < xsize; i++)
 			{
-				if (maxval == 32767)
+				if (maxval == 32767 || maxval == 65535)
 				{
 					fread(&twob, sizeof(short), 1, fp);
 					twob = SwapShort(twob);
