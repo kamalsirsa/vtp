@@ -5323,6 +5323,9 @@
 					"$SRCROOT/../../build.shared/Shared/include/wx-2.8",
 					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
+					$SRCROOT/../TerrainApps/VTBuilder/icons,
+					$SRCROOT/../TerrainApps/VTBuilder/bitmaps,
+					$SRCROOT/../TerrainApps/VTBuilder/icons,
 				);
 				INFOPLIST_FILE = "VTBuilder-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
