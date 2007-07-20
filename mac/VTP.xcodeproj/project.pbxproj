@@ -391,6 +391,7 @@
 		982FD8850C297D2D00364006 /* VTBuilder_wdr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982FD8140C297B8B00364006 /* VTBuilder_wdr.cpp */; };
 		982FD8860C297D2D00364006 /* WaterLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982FD8170C297B8B00364006 /* WaterLayer.cpp */; };
 		982FD9480C29872400364006 /* libpng.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4530C244B31003001FF /* libpng.dylib */; };
+		985823DD0C514A9F00A2F19D /* PagedLodGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 985823DC0C514A9F00A2F19D /* PagedLodGrid.cpp */; };
 		986BF2470C2448FB003001FF /* xmlhelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4362C30C1F44D400DBCF37 /* xmlhelper.framework */; };
 		986BF2480C244901003001FF /* unzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4C370C20908300F54366 /* unzip.framework */; };
 		986BF24D0C244908003001FF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
@@ -1693,6 +1694,7 @@
 		982FD8180C297B8B00364006 /* WaterLayer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = WaterLayer.h; path = ../TerrainApps/VTBuilder/WaterLayer.h; sourceTree = SOURCE_ROOT; };
 		982FD8400C297BA600364006 /* VTBuilder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VTBuilder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		982FD8420C297BA600364006 /* VTBuilder-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "VTBuilder-Info.plist"; sourceTree = "<group>"; };
+		985823DC0C514A9F00A2F19D /* PagedLodGrid.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PagedLodGrid.cpp; path = ../TerrainSDK/vtlib/core/PagedLodGrid.cpp; sourceTree = SOURCE_ROOT; };
 		986BF1DF0C2447F0003001FF /* libgdal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgdal.dylib; path = ../../build.shared/Shared/lib/libgdal.dylib; sourceTree = SOURCE_ROOT; };
 		986BF4460C2449A5003001FF /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = /sw/lib/libbz2.dylib; sourceTree = "<absolute>"; };
 		986BF4480C2449C7003001FF /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = /sw/lib/libcurl.dylib; sourceTree = "<absolute>"; };
@@ -2397,6 +2399,7 @@
 				0A6A4B880C20722B00F54366 /* Matrix.cpp */,
 				0A6A4B890C20722B00F54366 /* MiniDatabuf.cpp */,
 				0A6A4B8A0C20722B00F54366 /* MiniDatabuf.h */,
+				985823DC0C514A9F00A2F19D /* PagedLodGrid.cpp */,
 				0A6A4B8B0C20722B00F54366 /* Plants.cpp */,
 				0A6A4B8C0C20722B00F54366 /* Plants.h */,
 				0A6A4B8D0C20722B00F54366 /* PolyChecker.cpp */,
@@ -4332,6 +4335,7 @@
 				0A6A4E1D0C209AD200F54366 /* TVTerrain.cpp in Sources */,
 				0A6A4E1F0C209AD200F54366 /* vtSOG.cpp in Sources */,
 				0A6A4E210C209AD200F54366 /* vtTin3d.cpp in Sources */,
+				985823DD0C514A9F00A2F19D /* PagedLodGrid.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
