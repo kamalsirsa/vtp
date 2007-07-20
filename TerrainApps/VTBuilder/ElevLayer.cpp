@@ -1240,9 +1240,9 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 		}
 	}
 
+	ImageGLCanvas *pCanvas = NULL;
 #if USE_OPENGL
 	wxFrame *frame = new wxFrame;
-	ImageGLCanvas *pCanvas = NULL;
 	if (opts.bCreateDerivedImages && opts.bUseTextureCompression && opts.eCompressionType == TC_OPENGL)
 	{
 		frame->Create(GetMainFrame(), -1, _T("Texture Compression OpenGL Context"),
