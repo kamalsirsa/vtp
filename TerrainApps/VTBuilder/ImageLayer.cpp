@@ -95,6 +95,7 @@ void vtImageLayer::SetDefaults()
 	m_use_next = 0;
 
 	m_wsFilename = _("Untitled");
+	m_pCanvas = NULL;
 }
 
 bool vtImageLayer::GetExtent(DRECT &rect)
@@ -1409,6 +1410,7 @@ bool vtImageLayer::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderVie
 	if (frame)
 		frame->Close();
 	delete frame;
+	m_pCanvas = NULL;
 #endif
 
 	return !bCancelled;

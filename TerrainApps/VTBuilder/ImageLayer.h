@@ -114,9 +114,7 @@ protected:
 
 	// Used during writing of tilesets
 	int m_iTotal, m_iCompleted;
-#if USE_OPENGL
 	ImageGLCanvas *m_pCanvas;
-#endif
 };
 
 // Helper
