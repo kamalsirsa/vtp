@@ -659,9 +659,9 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 		}
 	}
 
+	ImageGLCanvas *pCanvas = NULL;
 #if USE_OPENGL
 	wxFrame *frame = new wxFrame;
-	ImageGLCanvas *pCanvas = NULL;
 	if (opts.bCreateDerivedImages && opts.bUseTextureCompression &&
 		opts.eCompressionType == TC_OPENGL)
 	{
