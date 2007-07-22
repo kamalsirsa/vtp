@@ -1339,7 +1339,7 @@ bool GDALWrapper::FindGDALData()
 		VTLOG("Warning: multiple versions of GDAL data installed: %s and %s.\n", (const char*)pcsPath, (const char*)datumPath);
 
 	vtString newpath = ExtractPath(datumPath, false);
-	if (newpath != gdalenv)
+	if (gdalenv == NULL || newpath != gdalenv)
 		SetEnvironmentVar("GDAL_DATA", newpath);
 	return true;
 }
@@ -1367,7 +1367,7 @@ bool GDALWrapper::FindPROJ4Data()
 		fclose(fp);
 
 	vtString newpath = ExtractPath(fname, false);
-	if (newpath != proj4)
+	if (proj4 == NULL || newpath != proj4)
 		SetEnvironmentVar("PROJ_LIB", newpath);
 	return true;
 }
