@@ -5460,7 +5460,7 @@
 				OTHER_LDFLAGS = (
 					"-bind_at_load",
 					"-Wl,-executable_path",
-					"-Wl,$BUILT_PRODUCTS_DIR/$PRODUCT_NAME/Contents/MacOS",
+					"-Wl,$BUILT_PRODUCTS_DIR/${PRODUCT_NAME}.app/Contents/MacOS",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = wxSimple;
@@ -5578,7 +5578,7 @@
 				OTHER_LDFLAGS = (
 					"-bind_at_load",
 					"-Wl,-executable_path",
-					"-Wl,$BUILT_PRODUCTS_DIR/$PRODUCT_NAME/Contents/MacOS",
+					"-Wl,$BUILT_PRODUCTS_DIR/${PRODUCT_NAME}.app/Contents/MacOS",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Enviro;
@@ -5698,7 +5698,7 @@
 				OTHER_LDFLAGS = (
 					"-bind_at_load",
 					"-Wl,-executable_path",
-					"-Wl,$BUILT_PRODUCTS_DIR/$PRODUCT_NAME/Contents/MacOS",
+					"-Wl,$BUILT_PRODUCTS_DIR/${PRODUCT_NAME}.app/Contents/MacOS",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = CManager;
