@@ -343,14 +343,15 @@ void BuildingDlg::SetupControls()
 				std::string name1 = it.filename();
 				vtString name = name1.c_str();
 
-				// Only look for ".jpg|.png|.bmp" image files
+				// Only look for ".jpg|.png|.bmp|.dds" image files
 				vtString ext = GetExtension(name, false);
-				if ((ext.CompareNoCase(".jpg") != 0) &&
-					(ext.CompareNoCase(".png") != 0) &&
-					(ext.CompareNoCase(".bmp") != 0))
-					continue;
-
-				GetFacadeChoice()->Append(wxString(name, wxConvUTF8));
+				if (!ext.CompareNoCase(".jpg") ||
+					!ext.CompareNoCase(".png") ||
+					!ext.CompareNoCase(".bmp") ||
+					!ext.CompareNoCase(".dds"))
+				{
+					GetFacadeChoice()->Append(wxString(name, wxConvUTF8));
+				}
 			}
 		}
 	}
