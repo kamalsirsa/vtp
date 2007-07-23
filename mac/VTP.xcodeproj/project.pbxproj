@@ -488,8 +488,6 @@
 		98A9F0A20C2A0E1500A3AF4C /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707D0C216DD5001A161E /* osgGA.framework */; };
 		98A9F0A30C2A0E1500A3AF4C /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707E0C216DD5001A161E /* osgText.framework */; };
 		98A9F0A40C2A0E1500A3AF4C /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707F0C216DD5001A161E /* osgUtil.framework */; };
-		98A9F0A50C2A0E1500A3AF4C /* libwx_macud-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF8680C24A295003001FF /* libwx_macud-2.8.0.dylib */; };
-		98A9F0A60C2A0E1500A3AF4C /* libwx_macud_gl-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF8670C24A295003001FF /* libwx_macud_gl-2.8.0.dylib */; };
 		98A9F0A70C2A0E1500A3AF4C /* libpng.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4530C244B31003001FF /* libpng.dylib */; };
 		98A9F0B50C2A0F2300A3AF4C /* BuildingDlg3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9EFC60C2A0D5C00A3AF4C /* BuildingDlg3d.cpp */; };
 		98A9F0B70C2A0F2300A3AF4C /* CameraDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9EFC90C2A0D5C00A3AF4C /* CameraDlg.cpp */; };
@@ -579,7 +577,6 @@
 		98A9F1C40C2A12DF00A3AF4C /* itemtypes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98A9F1850C2A12DF00A3AF4C /* itemtypes.txt */; };
 		98A9F1C50C2A12DF00A3AF4C /* LightDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9F1860C2A12DF00A3AF4C /* LightDlg.cpp */; };
 		98A9F1C60C2A12DF00A3AF4C /* LightDlg.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98A9F1870C2A12DF00A3AF4C /* LightDlg.h */; };
-		98A9F1C80C2A12DF00A3AF4C /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 98A9F1890C2A12DF00A3AF4C /* Makefile */; };
 		98A9F1C90C2A12DF00A3AF4C /* menu_id.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98A9F18A0C2A12DF00A3AF4C /* menu_id.h */; };
 		98A9F1CA0C2A12DF00A3AF4C /* ModelDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9F18B0C2A12DF00A3AF4C /* ModelDlg.cpp */; };
 		98A9F1CB0C2A12DF00A3AF4C /* ModelDlg.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98A9F18C0C2A12DF00A3AF4C /* ModelDlg.h */; };
@@ -593,6 +590,11 @@
 		98A9F1D80C2A12DF00A3AF4C /* tags.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98A9F1990C2A12DF00A3AF4C /* tags.txt */; };
 		98A9F1D90C2A12DF00A3AF4C /* TreeView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9F19A0C2A12DF00A3AF4C /* TreeView.cpp */; };
 		98A9F1DA0C2A12DF00A3AF4C /* TreeView.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98A9F19B0C2A12DF00A3AF4C /* TreeView.h */; };
+		98BAEE110C544484001112BA /* libwx_macud-2.8.0.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */; };
+		98BAEE120C544484001112BA /* libwx_macud_gl-2.8.0.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */; };
+		98BAEE190C544554001112BA /* libgdal.1.11.0.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB16840C2A278100943462 /* libgdal.1.11.0.dylib */; };
+		98BAEE500C544CFA001112BA /* libwx_macud-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */; };
+		98BAEE510C544CFA001112BA /* libwx_macud_gl-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */; };
 		98D9F46A0C22E2EB000F9A7A /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98D9F4680C22E2EB000F9A7A /* README.txt */; };
 		98D9F46B0C22E2EB000F9A7A /* Simple.xml in Resources */ = {isa = PBXBuildFile; fileRef = 98D9F4690C22E2EB000F9A7A /* Simple.xml */; };
 		98D9F4710C22E34D000F9A7A /* Simple.xml in Copy Config Files */ = {isa = PBXBuildFile; fileRef = 98D9F4690C22E2EB000F9A7A /* Simple.xml */; };
@@ -619,8 +621,6 @@
 		98EB17F50C2A291400943462 /* wxrc-2.8 in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16820C2A278100943462 /* wxrc-2.8 */; };
 		98EB17F60C2A294C00943462 /* libgdal.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB16870C2A278100943462 /* libgdal.dylib */; };
 		98EB17F70C2A294C00943462 /* libproj.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB168D0C2A278100943462 /* libproj.dylib */; };
-		98EB17F80C2A294C00943462 /* libwx_macud-2.8.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB16910C2A278100943462 /* libwx_macud-2.8.dylib */; };
-		98EB17F90C2A294C00943462 /* libwx_macud_gl-2.8.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB169A0C2A278100943462 /* libwx_macud_gl-2.8.dylib */; };
 		98EB17FA0C2A297000943462 /* osgdb_3dc.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16A60C2A278100943462 /* osgdb_3dc.so */; };
 		98EB17FB0C2A297000943462 /* osgdb_3ds.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16A70C2A278100943462 /* osgdb_3ds.so */; };
 		98EB17FC0C2A297000943462 /* osgdb_ac.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16A80C2A278100943462 /* osgdb_ac.so */; };
@@ -809,6 +809,69 @@
 			proxyType = 1;
 			remoteGlobalIDString = 0A6A4B2E0C20202900F54366;
 			remoteInfo = vtdata;
+		};
+		98BAEE1F0C5445A8001112BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4362B60C1F44B600DBCF37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 98EB19480C2A2A7400943462 /* copy-vtp-data */;
+			remoteInfo = "copy-vtp-data";
+		};
+		98BAEE210C5445A8001112BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4362B60C1F44B600DBCF37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 98EB16670C2A26EF00943462 /* copy-dependencies */;
+			remoteInfo = "copy-dependencies";
+		};
+		98BAEE250C5445B0001112BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4362B60C1F44B600DBCF37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 98EB19480C2A2A7400943462 /* copy-vtp-data */;
+			remoteInfo = "copy-vtp-data";
+		};
+		98BAEE270C5445B0001112BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4362B60C1F44B600DBCF37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 98EB16670C2A26EF00943462 /* copy-dependencies */;
+			remoteInfo = "copy-dependencies";
+		};
+		98BAEE2B0C5445B7001112BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4362B60C1F44B600DBCF37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 98EB16670C2A26EF00943462 /* copy-dependencies */;
+			remoteInfo = "copy-dependencies";
+		};
+		98BAEE2F0C5445C3001112BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4362B60C1F44B600DBCF37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 98EB19480C2A2A7400943462 /* copy-vtp-data */;
+			remoteInfo = "copy-vtp-data";
+		};
+		98BAEE310C5445C3001112BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4362B60C1F44B600DBCF37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 98EB16670C2A26EF00943462 /* copy-dependencies */;
+			remoteInfo = "copy-dependencies";
+		};
+		98BAEE350C5445CA001112BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4362B60C1F44B600DBCF37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 98EB19480C2A2A7400943462 /* copy-vtp-data */;
+			remoteInfo = "copy-vtp-data";
+		};
+		98BAEE370C5445CA001112BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4362B60C1F44B600DBCF37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 98EB16670C2A26EF00943462 /* copy-dependencies */;
+			remoteInfo = "copy-dependencies";
 		};
 		98EB19390C2A2A0B00943462 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1045,10 +1108,11 @@
 			dstPath = Shared/lib;
 			dstSubfolderSpec = 16;
 			files = (
+				98BAEE190C544554001112BA /* libgdal.1.11.0.dylib in Copy Shared lib Files */,
+				98BAEE110C544484001112BA /* libwx_macud-2.8.0.dylib in Copy Shared lib Files */,
+				98BAEE120C544484001112BA /* libwx_macud_gl-2.8.0.dylib in Copy Shared lib Files */,
 				98EB17F60C2A294C00943462 /* libgdal.dylib in Copy Shared lib Files */,
 				98EB17F70C2A294C00943462 /* libproj.dylib in Copy Shared lib Files */,
-				98EB17F80C2A294C00943462 /* libwx_macud-2.8.dylib in Copy Shared lib Files */,
-				98EB17F90C2A294C00943462 /* libwx_macud_gl-2.8.dylib in Copy Shared lib Files */,
 			);
 			name = "Copy Shared lib Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1992,21 +2056,11 @@
 		98EB168C0C2A278100943462 /* libproj.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libproj.a; sourceTree = "<group>"; };
 		98EB168D0C2A278100943462 /* libproj.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libproj.dylib; sourceTree = "<group>"; };
 		98EB168E0C2A278100943462 /* libproj.la */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = libproj.la; sourceTree = "<group>"; };
-		98EB168F0C2A278100943462 /* libwx_macud-2.8.0.1.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud-2.8.0.1.1.dylib"; sourceTree = "<group>"; };
 		98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud-2.8.0.dylib"; sourceTree = "<group>"; };
-		98EB16910C2A278100943462 /* libwx_macud-2.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud-2.8.dylib"; sourceTree = "<group>"; };
-		98EB16920C2A278100943462 /* libwx_macud_gizmos-2.8.0.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gizmos-2.8.0.1.0.dylib"; sourceTree = "<group>"; };
 		98EB16930C2A278100943462 /* libwx_macud_gizmos-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gizmos-2.8.0.dylib"; sourceTree = "<group>"; };
-		98EB16940C2A278100943462 /* libwx_macud_gizmos-2.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gizmos-2.8.dylib"; sourceTree = "<group>"; };
-		98EB16950C2A278100943462 /* libwx_macud_gizmos_xrc-2.8.0.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gizmos_xrc-2.8.0.1.0.dylib"; sourceTree = "<group>"; };
 		98EB16960C2A278100943462 /* libwx_macud_gizmos_xrc-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gizmos_xrc-2.8.0.dylib"; sourceTree = "<group>"; };
-		98EB16970C2A278100943462 /* libwx_macud_gizmos_xrc-2.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gizmos_xrc-2.8.dylib"; sourceTree = "<group>"; };
-		98EB16980C2A278100943462 /* libwx_macud_gl-2.8.0.1.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gl-2.8.0.1.1.dylib"; sourceTree = "<group>"; };
 		98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gl-2.8.0.dylib"; sourceTree = "<group>"; };
-		98EB169A0C2A278100943462 /* libwx_macud_gl-2.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gl-2.8.dylib"; sourceTree = "<group>"; };
-		98EB169B0C2A278100943462 /* libwx_macud_stc-2.8.0.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_stc-2.8.0.1.0.dylib"; sourceTree = "<group>"; };
 		98EB169C0C2A278100943462 /* libwx_macud_stc-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_stc-2.8.0.dylib"; sourceTree = "<group>"; };
-		98EB169D0C2A278100943462 /* libwx_macud_stc-2.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_stc-2.8.dylib"; sourceTree = "<group>"; };
 		98EB16A00C2A278100943462 /* mac-unicode-debug-2.8 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = "mac-unicode-debug-2.8"; sourceTree = "<group>"; };
 		98EB16A40C2A278100943462 /* setup.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = setup.h; sourceTree = "<group>"; };
 		98EB16A60C2A278100943462 /* osgdb_3dc.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3dc.so; sourceTree = "<group>"; };
@@ -2251,11 +2305,11 @@
 				98A9F0A20C2A0E1500A3AF4C /* osgGA.framework in Frameworks */,
 				98A9F0A30C2A0E1500A3AF4C /* osgText.framework in Frameworks */,
 				98A9F0A40C2A0E1500A3AF4C /* osgUtil.framework in Frameworks */,
-				98A9F0A50C2A0E1500A3AF4C /* libwx_macud-2.8.0.dylib in Frameworks */,
-				98A9F0A60C2A0E1500A3AF4C /* libwx_macud_gl-2.8.0.dylib in Frameworks */,
 				98A9F0A70C2A0E1500A3AF4C /* libpng.dylib in Frameworks */,
 				98A9F0F40C2A102100A3AF4C /* libz.dylib in Frameworks */,
 				98A9F0F50C2A102B00A3AF4C /* libnetcdf.dylib in Frameworks */,
+				98BAEE500C544CFA001112BA /* libwx_macud-2.8.0.dylib in Frameworks */,
+				98BAEE510C544CFA001112BA /* libwx_macud_gl-2.8.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3427,21 +3481,11 @@
 				98EB168C0C2A278100943462 /* libproj.a */,
 				98EB168D0C2A278100943462 /* libproj.dylib */,
 				98EB168E0C2A278100943462 /* libproj.la */,
-				98EB168F0C2A278100943462 /* libwx_macud-2.8.0.1.1.dylib */,
 				98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */,
-				98EB16910C2A278100943462 /* libwx_macud-2.8.dylib */,
-				98EB16920C2A278100943462 /* libwx_macud_gizmos-2.8.0.1.0.dylib */,
 				98EB16930C2A278100943462 /* libwx_macud_gizmos-2.8.0.dylib */,
-				98EB16940C2A278100943462 /* libwx_macud_gizmos-2.8.dylib */,
-				98EB16950C2A278100943462 /* libwx_macud_gizmos_xrc-2.8.0.1.0.dylib */,
 				98EB16960C2A278100943462 /* libwx_macud_gizmos_xrc-2.8.0.dylib */,
-				98EB16970C2A278100943462 /* libwx_macud_gizmos_xrc-2.8.dylib */,
-				98EB16980C2A278100943462 /* libwx_macud_gl-2.8.0.1.1.dylib */,
 				98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */,
-				98EB169A0C2A278100943462 /* libwx_macud_gl-2.8.dylib */,
-				98EB169B0C2A278100943462 /* libwx_macud_stc-2.8.0.1.0.dylib */,
 				98EB169C0C2A278100943462 /* libwx_macud_stc-2.8.0.dylib */,
-				98EB169D0C2A278100943462 /* libwx_macud_stc-2.8.dylib */,
 				98EB169E0C2A278100943462 /* wx */,
 			);
 			name = lib;
@@ -3888,6 +3932,8 @@
 				986BF59D0C244FCC003001FF /* PBXTargetDependency */,
 				0A6A52080C20A48D00F54366 /* PBXTargetDependency */,
 				0A6A52050C20A47C00F54366 /* PBXTargetDependency */,
+				98BAEE260C5445B0001112BA /* PBXTargetDependency */,
+				98BAEE280C5445B0001112BA /* PBXTargetDependency */,
 			);
 			name = glutSimple;
 			productName = glutSimple;
@@ -3911,6 +3957,8 @@
 				982FD81B0C297BA600364006 /* PBXTargetDependency */,
 				982FD81D0C297BA600364006 /* PBXTargetDependency */,
 				982FD81F0C297BA600364006 /* PBXTargetDependency */,
+				98BAEE200C5445A8001112BA /* PBXTargetDependency */,
+				98BAEE220C5445A8001112BA /* PBXTargetDependency */,
 			);
 			name = VTBuilder;
 			productName = glutSimple;
@@ -3931,10 +3979,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				98EB19CF0C2A35F500943462 /* PBXTargetDependency */,
 				986BF7720C249C48003001FF /* PBXTargetDependency */,
 				986BF7740C249C48003001FF /* PBXTargetDependency */,
 				986BF7760C249C48003001FF /* PBXTargetDependency */,
+				98BAEE2C0C5445B7001112BA /* PBXTargetDependency */,
+				98EB19CF0C2A35F500943462 /* PBXTargetDependency */,
 			);
 			name = wxSimple;
 			productName = glutSimple;
@@ -3957,6 +4006,8 @@
 				98A9F0550C2A0E1500A3AF4C /* PBXTargetDependency */,
 				98A9F0570C2A0E1500A3AF4C /* PBXTargetDependency */,
 				98A9F0590C2A0E1500A3AF4C /* PBXTargetDependency */,
+				98BAEE300C5445C3001112BA /* PBXTargetDependency */,
+				98BAEE320C5445C3001112BA /* PBXTargetDependency */,
 			);
 			name = Enviro;
 			productName = glutSimple;
@@ -3980,6 +4031,8 @@
 				98A9F10F0C2A128100A3AF4C /* PBXTargetDependency */,
 				98A9F1110C2A128100A3AF4C /* PBXTargetDependency */,
 				98A9F1130C2A128100A3AF4C /* PBXTargetDependency */,
+				98BAEE360C5445CA001112BA /* PBXTargetDependency */,
+				98BAEE380C5445CA001112BA /* PBXTargetDependency */,
 			);
 			name = CManager;
 			productName = glutSimple;
@@ -4124,7 +4177,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH\nln -sf ~/vterrain/build.shared/Shared\nln -sf ~/vterrain/build.shared/Shared/Frameworks\nln -sf ~/vterrain/build.shared/Shared/lib\nmkdir -p Data/Elevation\n";
+			shellScript = "cd $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH\nln -sf ../../Shared\nln -sf ../../Shared/Frameworks\nln -sf ../../Shared/lib\n";
 		};
 		986BF78A0C249C48003001FF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4137,7 +4190,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH\nln -sf ~/vterrain/build.shared/Shared\nln -sf ~/vterrain/build.shared/Shared/Frameworks\nln -sf ~/vterrain/build.shared/Shared/lib\nmkdir -p Data/Elevation\n";
+			shellScript = "cd $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH\nln -sf ../../Shared\nln -sf ../../Shared/Frameworks\nln -sf ../../Shared/lib\n";
 		};
 		98A9F05D0C2A0E1500A3AF4C /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4150,7 +4203,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH\nln -sf ~/vterrain/build.shared/Shared\nln -sf ~/vterrain/build.shared/Shared/Frameworks\nln -sf ~/vterrain/build.shared/Shared/lib\nmkdir -p Data/Elevation\n";
+			shellScript = "cd $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH\nln -sf ../../Shared\nln -sf ../../Shared/Frameworks\nln -sf ../../Shared/lib\n";
 		};
 		98A9F1170C2A128100A3AF4C /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4163,7 +4216,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH\nln -sf ~/vterrain/build.shared/Shared\nln -sf ~/vterrain/build.shared/Shared/Frameworks\nln -sf ~/vterrain/build.shared/Shared/lib\nmkdir -p Data/Elevation\n";
+			shellScript = "cd $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH\nln -sf ../../Shared\nln -sf ../../Shared/Frameworks\nln -sf ../../Shared/lib\n";
 		};
 		98D9F3190C2224D1000F9A7A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4496,7 +4549,6 @@
 				98A9F1AE0C2A12DF00A3AF4C /* frame.cpp in Sources */,
 				98A9F1C10C2A12DF00A3AF4C /* ItemGroup.cpp in Sources */,
 				98A9F1C50C2A12DF00A3AF4C /* LightDlg.cpp in Sources */,
-				98A9F1C80C2A12DF00A3AF4C /* Makefile in Sources */,
 				98A9F1CA0C2A12DF00A3AF4C /* ModelDlg.cpp in Sources */,
 				98A9F1CD0C2A12DF00A3AF4C /* pre.cpp in Sources */,
 				98A9F1CF0C2A12DF00A3AF4C /* PropDlg.cpp in Sources */,
@@ -4603,6 +4655,51 @@
 			isa = PBXTargetDependency;
 			target = 0A6A4B2E0C20202900F54366 /* vtdata */;
 			targetProxy = 98A9F1140C2A128100A3AF4C /* PBXContainerItemProxy */;
+		};
+		98BAEE200C5445A8001112BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 98EB19480C2A2A7400943462 /* copy-vtp-data */;
+			targetProxy = 98BAEE1F0C5445A8001112BA /* PBXContainerItemProxy */;
+		};
+		98BAEE220C5445A8001112BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 98EB16670C2A26EF00943462 /* copy-dependencies */;
+			targetProxy = 98BAEE210C5445A8001112BA /* PBXContainerItemProxy */;
+		};
+		98BAEE260C5445B0001112BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 98EB19480C2A2A7400943462 /* copy-vtp-data */;
+			targetProxy = 98BAEE250C5445B0001112BA /* PBXContainerItemProxy */;
+		};
+		98BAEE280C5445B0001112BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 98EB16670C2A26EF00943462 /* copy-dependencies */;
+			targetProxy = 98BAEE270C5445B0001112BA /* PBXContainerItemProxy */;
+		};
+		98BAEE2C0C5445B7001112BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 98EB16670C2A26EF00943462 /* copy-dependencies */;
+			targetProxy = 98BAEE2B0C5445B7001112BA /* PBXContainerItemProxy */;
+		};
+		98BAEE300C5445C3001112BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 98EB19480C2A2A7400943462 /* copy-vtp-data */;
+			targetProxy = 98BAEE2F0C5445C3001112BA /* PBXContainerItemProxy */;
+		};
+		98BAEE320C5445C3001112BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 98EB16670C2A26EF00943462 /* copy-dependencies */;
+			targetProxy = 98BAEE310C5445C3001112BA /* PBXContainerItemProxy */;
+		};
+		98BAEE360C5445CA001112BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 98EB19480C2A2A7400943462 /* copy-vtp-data */;
+			targetProxy = 98BAEE350C5445CA001112BA /* PBXContainerItemProxy */;
+		};
+		98BAEE380C5445CA001112BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 98EB16670C2A26EF00943462 /* copy-dependencies */;
+			targetProxy = 98BAEE370C5445CA001112BA /* PBXContainerItemProxy */;
 		};
 		98EB193A0C2A2A0B00943462 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5449,7 +5546,7 @@
 					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
 				);
-				INFOPLIST_FILE = "/Users/kolohe/vterrain/vtp/mac/wxSimple-Info.plist";
+				INFOPLIST_FILE = "wxSimple-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
@@ -5505,7 +5602,7 @@
 					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
 				);
-				INFOPLIST_FILE = "/Users/kolohe/vterrain/vtp/mac/wxSimple-Info.plist";
+				INFOPLIST_FILE = "wxSimple-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
