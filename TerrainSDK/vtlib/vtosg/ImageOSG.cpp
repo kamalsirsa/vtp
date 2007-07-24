@@ -13,6 +13,10 @@
 #include "gdal_priv.h"
 #include "vtdata/Projections.h"
 
+#ifndef LOG_IMAGE_LOAD
+#define LOG_IMAGE_LOAD 0
+#endif
+
 //
 // Set any of these definitions to use OSG's own support for the various
 // image file formats instead of our own.
@@ -28,14 +32,20 @@ ImageCache s_ImageCache;
 
 void vtImageCacheClear()
 {
-	VTLOG("Clearing image cache, contents:\n");
+	VTLOG1("Clearing image cache");
+#if LOG_IMAGE_LOAD
+	VTLOG1(", contents:");
+#endif
+	VTLOG1("\n");
 	for (ImageCache::iterator iter = s_ImageCache.begin();
 		iter != s_ImageCache.end(); iter++)
 	{
 		vtString str = iter->first;
 		vtImage *im = iter->second.get();
+#if LOG_IMAGE_LOAD
 		VTLOG("  Image '%s', refcount %d\n", (const char *) str,
 			im->referenceCount());
+#endif
 	}
 	s_ImageCache.clear();
 
@@ -145,7 +155,9 @@ osg::ref_ptr<osgDB::ReaderWriter::Options> s_options;
 
 bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(int))
 {
+#if LOG_IMAGE_LOAD
 	VTLOG(" vtImage::Read(%s)\n", fname);
+#endif
 	m_b16bit = false;
 	m_strFilename = fname;
 
@@ -209,7 +221,9 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 		opts = reg->getOptions();
 		if (!opts)
 		{
-			VTLOG("  creating osgDB::ReaderWriter::Options\n");
+#if LOG_IMAGE_LOAD
+			VTLOG1("  creating osgDB::ReaderWriter::Options\n");
+#endif
 			s_options = new OPTS;
 			opts = s_options.get();
 		}
@@ -225,7 +239,9 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 				~(OPTS::CACHE_IMAGES)));
 		}
 		int after = (int) opts->getObjectCacheHint();
-		VTLOG("  calling SetOptions,");
+#if LOG_IMAGE_LOAD
+		VTLOG1("  calling SetOptions,");
+#endif
 		reg->setOptions(opts);
 
 		// Call OSG to attempt image load.
@@ -235,7 +251,9 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 			// OSG doesn't yet support utf-8 or wide filenames, so convert
 			vtString fname_local = UTF8ToLocal(fname);
 
-			VTLOG("  readImageFile,");
+#if LOG_IMAGE_LOAD
+			VTLOG1("  readImageFile,");
+#endif
 			pOsgImage = osgDB::readImageFile((const char *)fname_local);
 		}
 		catch (...)
@@ -248,7 +266,7 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 
 		if (!pOsgImage.valid())
 		{
-			VTLOG("  failed.\n");
+			VTLOG("  failed to read '%s'\n", fname);
 			return false;
 		}
 
@@ -282,7 +300,9 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 		}
 		m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
 	}
+#if LOG_IMAGE_LOAD
 	VTLOG("  succeeded.\n");
+#endif
 
 	// This might be a geospecific image.  If we did not get extents, look
 	//  a world file.
@@ -826,7 +846,9 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 			Create(iXSize, iYSize, 8);
 
 		// Read the data
+#if LOG_IMAGE_LOAD
 		VTLOG("Reading the image data (%d x %d pixels)\n", iXSize, iYSize);
+#endif
 
 		int x, y;
 		int ixBlock, iyBlock;
