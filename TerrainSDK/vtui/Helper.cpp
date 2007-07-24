@@ -495,6 +495,16 @@ bool progress_callback2(int amount1, int amount2)
 	return value;
 }
 
+bool progress_callback_major(int amount)
+{
+	bool value = false;
+	// Update() returns false if the Cancel button has been pushed
+	// but this functions return _true_ if user wants to cancel
+	if (g_pProg2)
+		value = (g_pProg2->Update(amount, -1) == false);
+	return value;
+}
+
 bool progress_callback_minor(int amount)
 {
 	bool value = false;

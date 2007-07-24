@@ -38,6 +38,7 @@ void ResumeProgressDialog();
 // Helper methods which provide a 'double' progress dialog.
 
 extern bool progress_callback2(int amount1, int amount2);
+extern bool progress_callback_major(int amount);
 extern bool progress_callback_minor(int amount);
 void OpenProgressDialog2(const wxString &title, bool bCancellable = false, wxWindow *pParent = NULL);
 void CloseProgressDialog2();
