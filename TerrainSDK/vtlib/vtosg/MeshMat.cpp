@@ -1,7 +1,7 @@
 //
 // MeshMat.cpp - Meshes and Materials for vtlib-OSG
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -539,6 +539,8 @@ void vtMesh::AddTri(int p0, int p1, int p2)
 	if (m_ePrimType == TRIANGLES)
 	{
 		DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
+
+		// OSG's "Count" is the number of indices
 		pDrawArrays->setCount(m_Index->size());
 	}
 	else if (m_ePrimType == TRIANGLE_STRIP || m_ePrimType == TRIANGLE_FAN)
@@ -859,6 +861,7 @@ void vtMesh::SetLineWidth(float fWidth)
 void vtMesh::SetNormalsFromPrimitives()
 {
 	if (m_ePrimType != vtMesh::TRIANGLES &&
+		m_ePrimType != vtMesh::QUADS &&
 		m_ePrimType != vtMesh::TRIANGLE_STRIP &&
 		m_ePrimType != vtMesh::POLYGON)
 		return;
@@ -870,22 +873,14 @@ void vtMesh::SetNormalsFromPrimitives()
 
 	switch (m_ePrimType)
 	{
-	case vtMesh::POINTS:
-	case vtMesh::LINES:
-	case vtMesh::LINE_STRIP:
-		break;
-	case vtMesh::TRIANGLES:
-		_AddTriangleNormals();
-		break;
-	case vtMesh::TRIANGLE_STRIP:
-		_AddStripNormals();
-		break;
-	case vtMesh::TRIANGLE_FAN:
-	case vtMesh::QUADS:
-		break;
-	case vtMesh::POLYGON:
-		_AddPolyNormals();
-		break;
+	case vtMesh::POINTS:		 break;
+	case vtMesh::LINES:			 break;
+	case vtMesh::LINE_STRIP:	 break;
+	case vtMesh::TRIANGLES:		 _AddTriangleNormals(); break;
+	case vtMesh::TRIANGLE_STRIP: _AddStripNormals(); break;
+	case vtMesh::TRIANGLE_FAN:	 break;
+	case vtMesh::QUADS:			 _AddQuadNormals(); break;
+	case vtMesh::POLYGON:		 _AddPolyNormals(); break;
 	}
 
 	for (itr = m_Norm->begin(); itr != m_Norm->end(); itr++)
@@ -992,9 +987,39 @@ void vtMesh::_AddTriangleNormals()
 
 		norm = d0^d1;
 
-		m_Norm->at(v0) = norm;
-		m_Norm->at(v1) = norm;
-		m_Norm->at(v2) = norm;
+		m_Norm->at(v0) += norm;
+		m_Norm->at(v1) += norm;
+		m_Norm->at(v2) += norm;
+	}
+}
+
+void vtMesh::_AddQuadNormals()
+{
+	int quads = GetNumPrims();
+	unsigned short v0, v1, v2, v3;
+	osg::Vec3 p0, p1, p2, d0, d1, norm;
+
+	for (int i = 0; i < quads; i++)
+	{
+		v0 = m_Index->at(i*3);
+		v1 = m_Index->at(i*3+1);
+		v2 = m_Index->at(i*3+2);
+		v3 = m_Index->at(i*3+3);
+		p0 = m_Vert->at(v0);
+		p1 = m_Vert->at(v1);
+		p2 = m_Vert->at(v2);
+
+		d0 = (p1 - p0);
+		d1 = (p2 - p0);
+		d0.normalize();
+		d1.normalize();
+
+		norm = d0^d1;
+
+		m_Norm->at(v0) += norm;
+		m_Norm->at(v1) += norm;
+		m_Norm->at(v2) += norm;
+		m_Norm->at(v3) += norm;
 	}
 }
 

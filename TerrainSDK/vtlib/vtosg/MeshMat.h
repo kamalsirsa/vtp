@@ -1,7 +1,7 @@
 //
 // MeshMat.h for OSG
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -178,6 +178,7 @@ protected:
 	void _AddStripNormals();
 	void _AddPolyNormals();
 	void _AddTriangleNormals();
+	void _AddQuadNormals();
 
 	// Holder for all osg geometry information
 	osg::ref_ptr<osg::Geometry> m_pGeometry;
