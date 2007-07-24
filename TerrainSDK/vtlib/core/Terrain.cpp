@@ -1203,6 +1203,9 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 	if (bPaging)
 	{
 		// Don't construct geometry, just add to the paged structure grid
+		m_iPagingStructureMax = m_Params.GetValueInt("PagingStructureMax");
+		m_fPagingStructureDist = m_Params.GetValueInt("PagingStructureDist");
+
 		m_pPagedStructGrid->SetArray(structures);
 		for (int i = 0; i < num_structs; i++)
 		{
@@ -3080,19 +3083,16 @@ void vtTerrain::RemoveNodeFromStructGrid(vtNode *pNode)
 		m_pStructGrid->RemoveNodeFromGrid(pNode);
 }
 
-void vtTerrain::DeleteFarawayStructures()
+int vtTerrain::DoStructurePaging()
 {
 	if (!m_pPagedStructGrid)
-		return;
+		return 0;
 
 	vtCamera *cam = vtGetScene()->GetCamera();
 	FPoint3 CamPos = cam->GetTrans();
 
-	int iMaxStructures = m_Params.GetValueInt("PagingStructureMax");
-	float fDistance = m_Params.GetValueInt("PagingStructureDist");
-
-	m_pPagedStructGrid->DeleteFarawayStructures(CamPos, iMaxStructures,
-		fDistance);
+	m_pPagedStructGrid->DoPaging(CamPos, m_iPagingStructureMax, m_fPagingStructureDist);
+	return m_pPagedStructGrid->GetQueueSize();
 }
 
 

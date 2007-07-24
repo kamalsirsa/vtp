@@ -227,7 +227,7 @@ public:
 	bool AddNodeToStructGrid(vtGeom *pGeom);
 	void RemoveNodeFromStructGrid(vtNode *pNode);
 	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
-	void DeleteFarawayStructures();
+	int DoStructurePaging();
 
 	// abstract layers
 	void SetAbstractLayer(vtAbstractLayer *alay);
@@ -405,6 +405,8 @@ protected:
 	vtStructureLayer *m_pActiveStructLayer;
 	vtLodGrid		*m_pStructGrid;
 	vtPagedStructureLodGrid		*m_pPagedStructGrid;
+	int		m_iPagingStructureMax;
+	float	m_fPagingStructureDist;
 
 	vtMaterialArray	*m_pTerrMats;	// materials for the LOD terrain
 	vtMaterialArray *m_pDetailMats;

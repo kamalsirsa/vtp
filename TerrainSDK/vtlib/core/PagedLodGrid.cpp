@@ -54,7 +54,7 @@ bool vtPagedStructureLOD::TestVisible(float fDistance, bool bLoad)
 {
 	if (fDistance < m_fRange)
 	{
-		if (!m_bConstructed && bLoad)
+		if (!m_bConstructed)// && bLoad)
 			Construct();
 		return true;
 	}
@@ -66,20 +66,13 @@ bool vtPagedStructureLOD::TestVisible(float fDistance, bool bLoad)
 
 void vtPagedStructureLOD::Construct()
 {
-	VTLOG("Constructing %d buildings: ", m_Structures.GetSize());
+	VTLOG("Adding %d buildings to queue.\n", m_Structures.GetSize());
 	for (unsigned int i = 0; i < m_Structures.GetSize(); i++)
 	{
 		vtStructure3d *s3d = m_Structures[i];
-		bool bSuccess = m_pStructureArray->ConstructStructure(s3d);
-		if (bSuccess)
-		{
-			vtTransform *pTrans = s3d->GetContainer();
-			if (pTrans)
-				AddChild(pTrans);
-		}
+		m_pGrid->AddToQueue(this, s3d);
 	}
 	m_bConstructed = true;
-	VTLOG1("\n");
 }
 
 void vtPagedStructureLOD::Deconstruct()
@@ -177,7 +170,7 @@ void vtPagedStructureLodGrid::AllocateCell(int a, int b)
 	if (m_pHeightField)
 		m_pHeightField->FindAltitudeAtPoint(lod_center, lod_center.y);
 	m_pCells[i]->SetCenter(lod_center);
-	m_pCells[i]->SetArray(m_pStructureArray);
+	m_pCells[i]->SetGrid(this);
 
 	AddChild(m_pCells[i]);
 }
@@ -274,3 +267,58 @@ void vtPagedStructureLodGrid::DeleteFarawayStructures(const FPoint3 &CamPos,
 		}
 	}
 }
+
+void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
+									   int iMaxStructures, float fDistance)
+{
+	static float last_cull = 0.0f, last_load = 0.0f;
+	float current = vtGetTime();
+	if (current - last_cull > 0.25f)
+	{
+		// Do a paging cleanup pass every 1/4 of a second
+		// Unload anything excessive
+		DeleteFarawayStructures(CamPos, iMaxStructures, fDistance);
+		last_cull = current;
+	}
+
+	// Every N times a second
+	else if (current - last_load > 0.01f && !m_Queue.empty())
+	{
+		last_load = current;
+#if 1
+		// Gradually load anything that needs loading
+		const QueueEntry &e = m_Queue.back();
+		bool bSuccess = m_pStructureArray->ConstructStructure(e.pStr);
+		if (bSuccess)
+		{
+			vtTransform *pTrans = e.pStr->GetContainer();
+			if (pTrans)
+				e.pLOD->AddChild(pTrans);
+		}
+		m_Queue.pop_back();
+#else
+		// Instantaneous, not gradual
+		for (unsigned int i = 0; i < m_Queue.size(); i++)
+		{
+			vtStructure3d *s3d = m_Queue[i];
+			bool bSuccess = m_pStructureArray->ConstructStructure(s3d);
+			if (bSuccess)
+			{
+				vtTransform *pTrans = s3d->GetContainer();
+				if (pTrans)
+					AddChild(pTrans);
+			}
+		}
+		m_Queue.clear();
+#endif
+	}
+}
+
+void vtPagedStructureLodGrid::AddToQueue(vtPagedStructureLOD *pLOD, vtStructure3d *str3d)
+{
+	QueueEntry e;
+	e.pLOD = pLOD;
+	e.pStr = str3d;
+	m_Queue.push_back(e);
+}
+

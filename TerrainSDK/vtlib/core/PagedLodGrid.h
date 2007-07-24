@@ -29,6 +29,7 @@ class vtStructureArray3d;
  The only part which is OSG-specific is C.
  */
 class PagedNativeLOD;
+class vtPagedStructureLodGrid;
 
 /**
  * An vtPagedStructureLOD node controls the visibility of its child nodes.
@@ -48,7 +49,7 @@ public:
 	bool TestVisible(float fDistance, bool bLoad);
 
 	void Add(vtStructure3d *str3d) { m_Structures.Append(str3d); }
-	void SetArray(vtStructureArray3d *sa) { m_pStructureArray = sa; }
+	void SetGrid(vtPagedStructureLodGrid *g) { m_pGrid = g; }
 	void Construct();
 	void Deconstruct();
 	bool IsConstructed() { return m_bConstructed; }
@@ -60,7 +61,8 @@ protected:
 
 	bool m_bConstructed;
 	vtArray<vtStructure3d*> m_Structures;
-	vtStructureArray3d *m_pStructureArray;
+	// Pointer up to container
+	vtPagedStructureLodGrid *m_pGrid;
 };
 
 #if VTLIB_OSG
@@ -122,6 +124,11 @@ public:
 };
 #endif // VTLIB_OSG
 
+struct QueueEntry {
+	vtPagedStructureLOD *pLOD;
+	vtStructure3d *pStr;
+};
+
 /**
  * vtPagedStructureLodGrid provides a more complex implementation of vtLodGrid.
  *
@@ -143,10 +150,15 @@ public:
 	void SetDistance(float fLODDistance);
 	void SetArray(vtStructureArray3d *sa) { m_pStructureArray = sa; }
 	bool AppendToGrid(vtStructure *str, vtStructure3d *str3d);
+
+	void DoPaging(const FPoint3 &CamPos, int iMaxStructures, float fDistance);
+	void AddToQueue(vtPagedStructureLOD *pLOD, vtStructure3d *str3d);
+	unsigned int GetQueueSize() { return m_Queue.size(); }
+
+protected:
 	void DeleteFarawayStructures(const FPoint3 &CamPos,
 		int iMaxStructures, float fDistance);
 
-protected:
 	vtStructureArray3d *m_pStructureArray;
 	vtPagedStructureLOD **m_pCells;
 
@@ -154,6 +166,8 @@ protected:
 	vtPagedStructureLOD *FindPagedCellParent(const FPoint3 &point);
 	void AllocateCell(int a, int b);
 	vtGroup *GetCell(int a, int b);
+
+	std::vector<QueueEntry> m_Queue;
 };
 
 #endif // PAGEDLODGRIDH
