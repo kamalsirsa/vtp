@@ -45,23 +45,28 @@ void vtPagedStructureLOD::GetCenter(FPoint3 &center)
 	m_pNativeLOD->GetCenter(center);
 }
 
-bool vtPagedStructureLOD::TestVisible(float distance)
+/**
+ * \param fDistance The distance in meters to check against.
+ * \param bLoad If true, and this cell is within the distance, and it isn't
+ *		loaded, then load it.
+ */
+bool vtPagedStructureLOD::TestVisible(float fDistance, bool bLoad)
 {
-	if (distance < m_fRange)
+	if (fDistance < m_fRange)
 	{
-		if (!m_bConstructed)
+		if (!m_bConstructed && bLoad)
 			Construct();
 		return true;
 	}
-	// It is not sufficient to do the test here, because this is only called
-	//  for nodes within the view frustum.
+	// It is not sufficient to do the too-far test here, because this is
+	//  only called for nodes within the view frustum.
 	// if (distance > m_fRange * 2 && m_bConstructed) Deconstruct();
 	return false;
 }
 
 void vtPagedStructureLOD::Construct()
 {
-	VTLOG("Constructing %d buildings\n", m_Structures.GetSize());
+	VTLOG("Constructing %d buildings: ", m_Structures.GetSize());
 	for (unsigned int i = 0; i < m_Structures.GetSize(); i++)
 	{
 		vtStructure3d *s3d = m_Structures[i];
@@ -74,6 +79,7 @@ void vtPagedStructureLOD::Construct()
 		}
 	}
 	m_bConstructed = true;
+	VTLOG1("\n");
 }
 
 void vtPagedStructureLOD::Deconstruct()

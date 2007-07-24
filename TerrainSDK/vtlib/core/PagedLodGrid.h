@@ -45,7 +45,7 @@ public:
 	void SetRange(float range) { m_fRange = range; }
 	void SetCenter(const FPoint3 &center);
 	void GetCenter(FPoint3 &center);
-	bool TestVisible(float distance);
+	bool TestVisible(float fDistance, bool bLoad);
 
 	void Add(vtStructure3d *str3d) { m_Structures.Append(str3d); }
 	void SetArray(vtStructureArray3d *sa) { m_pStructureArray = sa; }
@@ -78,7 +78,7 @@ public:
 	{
 		s2v(getCenter(), center);
 	}
-	// This implemented OSG's traversal with our own logic
+	// Implement OSG's traversal with our own logic
 	virtual void traverse(osg::NodeVisitor& nv)
 	{
 		switch(nv.getTraversalMode())
@@ -88,14 +88,20 @@ public:
 			break;
 		case(osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN):
 			{
-				// 'Active' children are those within a the given distance
+				// 'Active' children are those within the given distance
 				float distance = nv.getDistanceToEyePoint(getCenter(),true);
 
 				// Get the vtlib node from this OSG node
 				vtPagedStructureLOD *vnode = dynamic_cast<vtPagedStructureLOD *>(getUserData());
 
-				// It will test distance and contruct geometry as it needs
-				if (vnode->TestVisible(distance))
+				// _visitorType might be NODE_VISITOR (in cases such as
+				//  intersection testing) or CULL_VISITOR (during rendering).
+				//  We only want do visibility testing / page loading during
+				//  rendering.
+
+				// Test distance and contruct geometry if needed
+				if (vnode->TestVisible(distance,
+					nv.getVisitorType() == osg::NodeVisitor::CULL_VISITOR))
 				{
 					// Tell OSG to traverse all children
 					std::for_each(_children.begin(),_children.end(),osg::NodeAcceptOp(nv));
