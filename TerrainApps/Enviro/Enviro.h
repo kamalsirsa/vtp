@@ -337,6 +337,7 @@ protected:
 	float			m_fMessageStart, m_fMessageTime;
 	ControlEngine	*m_pControlEng;
 	vtHUD		*m_pHUD;
+	vtTextMesh	*m_pHUDMessage;
 
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to

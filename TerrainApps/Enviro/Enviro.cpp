@@ -75,6 +75,7 @@ Enviro::Enviro() : vtTerrainScene()
 
 	m_fMessageTime = 0.0f;
 	m_pHUD = NULL;
+	m_pHUDMessage = NULL;
 
 	// plants
 	m_pPlantList = NULL;
@@ -357,15 +358,21 @@ void Enviro::DoControl()
 
 void Enviro::DoControlTerrain()
 {
-	// do a paging cleanup pass every 1/4 of a second
-	static float last_time = 0.0f;
-	float cur = vtGetTime();
-	if (cur - last_time > 0.25f)
+	vtTerrain *terr = GetCurrentTerrain();
+	if (terr)
 	{
-		last_time = cur;
-		vtTerrain *terr = GetCurrentTerrain();
-		if (terr)
-			terr->DeleteFarawayStructures();
+		int remaining = terr->DoStructurePaging();
+		if (m_pHUDMessage)
+		{
+			if (remaining != 0)
+			{
+				vtString msg;
+				msg.Format("Structure queue: %d\n", remaining);
+				m_pHUDMessage->SetText(msg);
+			}
+			else
+				m_pHUDMessage->SetText("");
+		}
 	}
 }
 
@@ -795,6 +802,18 @@ void Enviro::SetupScene2()
 	m_pHUD = new vtHUD;
 	m_pHUD->SetName2("HUD");
 	m_pRoot->AddChild(m_pHUD);
+
+	// The HUD always has a place to put status messages to the user
+	vtFont *font = new vtFont;
+	if (font->LoadFont("Arial.ttf"))
+	{
+		vtGeom *geom = new vtGeom;
+		m_pHUD->AddChild(geom);
+		m_pHUDMessage = new vtTextMesh(font, 18);
+		m_pHUDMessage->SetText("");
+		m_pHUDMessage->SetPosition(FPoint3(3,3,0));
+		geom->AddTextMesh(m_pHUDMessage, 0);
+	}
 }
 
 //
