@@ -68,8 +68,7 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 		int iIncludeCulture = CE_ALL;
 
 		// look up altitude
-		point.y = pHeightField->FindAltitudeAtPoint(point, point.y,
-			false, iIncludeCulture);
+		pHeightField->FindAltitudeAtPoint(point, point.y, false, iIncludeCulture);
 
 		// Elevation Offset is relative to the terrain surface
 		point.y += m_fElevationOffset;
