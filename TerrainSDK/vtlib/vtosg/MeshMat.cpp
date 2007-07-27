@@ -10,6 +10,7 @@
 
 #include <osg/LineWidth>
 #include <osg/PolygonMode>
+#include <osg/Depth>
 using namespace osg;
 
 ///////////////////////////////////
@@ -175,7 +176,7 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 		//  properly.  In general, the transparent bin takes care of that,
 		//  but there are cases where polygons (sorted by center) can end up
 		//  in the wrong order.
-		ref_ptr<Depth> pDepth  = new Depth;
+		ref_ptr<Depth> pDepth  = new osg::Depth;
 		pDepth->setWriteMask(false);
 		m_pStateSet->setAttribute(pDepth.get());
 #endif
@@ -205,7 +206,7 @@ bool vtMaterial::GetTransparent() const
 //	StateAttribute::GLModeValue m = m_pStateSet->getMode(StateAttribute::TRANSPARENCY);
 	// OSG 0.9.0 onwards
 	StateAttribute::GLModeValue m;
-	m = m_pStateSet->getMode(StateAttribute::BLENDFUNC);
+	m = m_pStateSet->getMode(GL_BLEND);
 	return (m == SA_ON);
 }
 
