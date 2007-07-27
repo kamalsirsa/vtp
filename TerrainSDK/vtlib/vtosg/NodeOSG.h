@@ -519,7 +519,7 @@ public:
 	void SetWidth(float f);
 	float GetWidth() const;
 
-	void ZoomToSphere(const FSphere &sphere);
+	void ZoomToSphere(const FSphere &sphere, float fPitch = 0.0f);
 
 protected:
 	float m_fFOV;

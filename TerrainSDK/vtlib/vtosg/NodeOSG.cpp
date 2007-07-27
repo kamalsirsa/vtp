@@ -1479,15 +1479,20 @@ float vtCamera::GetVertFOV() const
 }
 
 /**
- * Zoom (move) the camera to a sphere, generall the bounding sphere of
+ * Zoom (move) the camera to a sphere, generally the bounding sphere of
  *  something you want to look at.  The camera will be pointing directly
  *  down the -Z axis at the center of the sphere.
+ *
+ * \param sphere The sphere to look at.
+ * \param fPitch An optional pitch angle to look, in radians.  For example,
+ *		a pitch of -PIf/10 would be looking down at a mild angle.
  */
-void vtCamera::ZoomToSphere(const FSphere &sphere)
+void vtCamera::ZoomToSphere(const FSphere &sphere, float fPitch)
 {
 	Identity();
 	Translate1(sphere.center);
-	Translate1(FPoint3(0.0f, 0.0f, sphere.radius));
+	RotateLocal(FPoint3(1,0,0), fPitch);
+	TranslateLocal(FPoint3(0.0f, 0.0f, sphere.radius));
 }
 
 /**
