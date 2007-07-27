@@ -701,11 +701,13 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 	GDALRasterBand *pRed;
 	GDALRasterBand *pGreen;
 	GDALRasterBand *pBlue;
+	GDALRasterBand *pAlpha;
 	GDALColorTable *pTable;
 	unsigned char *pScanline = NULL;
 	unsigned char *pRedline = NULL;
 	unsigned char *pGreenline = NULL;
 	unsigned char *pBlueline = NULL;
+	unsigned char *pAlphaline = NULL;
 
 	CPLErr Err;
 	bool bColorPalette = false;
@@ -760,9 +762,9 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 		// Raster count should be 3 for colour images (assume RGB)
 		int iRasterCount = pDataset->GetRasterCount();
 
-		if (iRasterCount != 1 && iRasterCount != 3)
+		if (iRasterCount != 1 && iRasterCount != 3 && iRasterCount != 4)
 		{
-			message.Format("Image has %d bands (not 1 or 3).", iRasterCount);
+			message.Format("Image has %d bands (not 1, 3, or 4).", iRasterCount);
 			throw (const char *)message;
 		}
 
@@ -837,8 +839,54 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 			pBlueline = new unsigned char[xBlockSize * yBlockSize];
 		}
 
+		if (iRasterCount == 4)
+		{
+			for (int i = 1; i <= 4; i++)
+			{
+				pBand = pDataset->GetRasterBand(i);
+
+				// Check the band's data type
+				GDALDataType dtype = pBand->GetRasterDataType();
+				if (dtype != GDT_Byte)
+				{
+					message.Format("Band is of type %s, but we support type Byte.", GDALGetDataTypeName(dtype));
+					throw (const char *)message;
+				}
+				switch (pBand->GetColorInterpretation())
+				{
+				case GCI_RedBand:
+					pRed = pBand;
+					break;
+				case GCI_GreenBand:
+					pGreen = pBand;
+					break;
+				case GCI_BlueBand:
+					pBlue = pBand;
+					break;
+				case GCI_AlphaBand:
+					pAlpha = pBand;
+					break;
+				}
+			}
+			if ((NULL == pRed) || (NULL == pGreen) || (NULL == pBlue) || (NULL == pAlpha))
+				throw "Couldn't find bands for Red, Green, Blue, ALpha.";
+
+			pRed->GetBlockSize(&xBlockSize, &yBlockSize);
+			nxBlocks = (iXSize + xBlockSize - 1) / xBlockSize;
+			nyBlocks = (iYSize + yBlockSize - 1) / yBlockSize;
+
+			pRedline = new unsigned char[xBlockSize * yBlockSize];
+			pGreenline = new unsigned char[xBlockSize * yBlockSize];
+			pBlueline = new unsigned char[xBlockSize * yBlockSize];
+			pAlphaline = new unsigned char[xBlockSize * yBlockSize];
+		}
+
 		// Allocate the image buffer
-		if (iRasterCount == 3 || bColorPalette)
+		if (iRasterCount == 4)
+		{
+			Create(iXSize, iYSize, 32);
+		}
+		else if (iRasterCount == 3 || bColorPalette)
 		{
 			Create(iXSize, iYSize, 24);
 		}
@@ -855,6 +903,7 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 		int nxValid, nyValid;
 		int iY, iX;
 		RGBi rgb;
+		RGBAi rgba;
 		if (iRasterCount == 1)
 		{
 			GDALColorEntry Ent;
@@ -902,7 +951,7 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 				}
 			}
 		}
-		if (iRasterCount == 3)
+		if (iRasterCount >= 3)
 		{
 			for (iyBlock = 0; iyBlock < nyBlocks; iyBlock++)
 			{
@@ -922,6 +971,12 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 					Err = pBlue->ReadBlock(ixBlock, iyBlock, pBlueline);
 					if (Err != CE_None)
 						throw "Cannot read data.";
+					if (iRasterCount == 4)
+					{
+						Err = pAlpha->ReadBlock(ixBlock, iyBlock, pAlphaline);
+						if (Err != CE_None)
+							throw "Cannot read data.";
+					}
 
 					// Compute the portion of the block that is valid
 					// for partial edge blocks.
@@ -939,10 +994,21 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 					{
 						for (int iX = 0; iX < nxValid; iX++)
 						{
-							rgb.r = pRedline[iY * xBlockSize + iX];
-							rgb.g = pGreenline[iY * xBlockSize + iX];
-							rgb.b = pBlueline[iY * xBlockSize + iX];
-							SetPixel24(x + iX, y + iY, rgb);
+							if (iRasterCount == 3)
+							{
+								rgb.r = pRedline[iY * xBlockSize + iX];
+								rgb.g = pGreenline[iY * xBlockSize + iX];
+								rgb.b = pBlueline[iY * xBlockSize + iX];
+								SetPixel24(x + iX, y + iY, rgb);
+							}
+							else if (iRasterCount == 4)
+							{
+								rgba.r = pRedline[iY * xBlockSize + iX];
+								rgba.g = pGreenline[iY * xBlockSize + iX];
+								rgba.b = pBlueline[iY * xBlockSize + iX];
+								rgba.a = pAlphaline[iY * xBlockSize + iX];
+								SetPixel32(x + iX, y + iY, rgba);
+							}
 						}
 					}
 				}
@@ -967,6 +1033,8 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 		delete pGreenline;
 	if (NULL != pBlueline)
 		delete pBlueline;
+	if (NULL != pAlphaline)
+		delete pAlphaline;
 
 	return bRet;
 }
