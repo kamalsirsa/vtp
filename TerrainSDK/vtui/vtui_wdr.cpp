@@ -1143,6 +1143,23 @@ wxSizer *ProfileEditDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer 
     return item0;
 }
 
+wxSizer *TagDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxListCtrl *item1 = new wxListCtrl( parent, ID_TAGLIST, wxDefaultPosition, wxSize(160,120), wxLC_REPORT|wxLC_EDIT_LABELS|wxSUNKEN_BORDER );
+    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions

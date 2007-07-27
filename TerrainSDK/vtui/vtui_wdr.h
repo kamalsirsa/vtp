@@ -169,6 +169,9 @@ const int ID_SAVE_AS_PROF = 10116;
 const int ID_LOAD_PROF = 10117;
 wxSizer *ProfileEditDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+const int ID_TAGLIST = 10118;
+wxSizer *TagDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
