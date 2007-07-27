@@ -25,6 +25,7 @@ class LayerDlg;
 class PlantDlg;
 class CScenarioSelectDialog;
 class SceneGraphDlg;
+class TagDlg;
 class TimeDlg;
 class UtilDlg;
 class ProfileDlg;
@@ -243,6 +244,7 @@ public:
 	CameraDlg			*m_pCameraDlg;
 	LocationDlg			*m_pLocationDlg;
 	BuildingDlg3d		*m_pBuildingDlg;
+	TagDlg				*m_pTagDlg;
 	LayerDlg			*m_pLayerDlg;
 	InstanceDlg			*m_pInstanceDlg;
 	DistanceDlg3d		*m_pDistanceDlg;

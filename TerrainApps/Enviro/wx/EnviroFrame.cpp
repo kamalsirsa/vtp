@@ -52,6 +52,7 @@
 #include "VehicleDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/ProfileDlg.h"
+#include "vtui/TagDlg.h"
 
 #include "../Engines.h"
 #include "../Options.h"
@@ -322,6 +323,9 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
 	m_pInstanceDlg = new InstanceDlg(this, -1, _("Instances"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	m_pTagDlg = new TagDlg(this, -1, _("Tags"), wxDefaultPosition,
+		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	m_pTagDlg->SetSize(440,80);
 	m_pLODDlg = new LODDlg(this, -1, _("Terrain LOD Info"));
 	// m_pLODDlg->Show();	// Enable this to see the LOD dialog immediately
 
@@ -362,6 +366,7 @@ EnviroFrame::~EnviroFrame()
 	delete m_pSceneGraphDlg;
 	delete m_pPlantDlg;
 	delete m_pFenceDlg;
+	delete m_pTagDlg;
 	delete m_pUtilDlg;
 	delete m_pCameraDlg;
 	delete m_pLocationDlg;
@@ -2339,6 +2344,13 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 				// Editing of fence properties
 				m_pFenceDlg->SetOptions(fen->GetParams());
 				OpenFenceDialog();
+			}
+			vtStructInstance3d *inst = sa->GetInstance(sel);
+			if (inst)
+			{
+				// Display of instance properties
+				m_pTagDlg->Show(true);
+				m_pTagDlg->SetTags(inst);
 			}
 			return;
 		}
