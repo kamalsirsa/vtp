@@ -842,6 +842,25 @@ bool vtTerrain::_CreateDynamicTerrain()
 		return false;
 	}
 
+#if VTLIB_OSG
+	//
+	// This is a hack to allow a transparent terrain surface.
+	//  In order for OSG to draw the transparent surface correctly, it needs
+	//  to know it's in the the "TRANSPARENT" render bin.  But because
+	//  our surface draws itself, OSG doesn't know at binning time that
+	//  it's transparent.  So, we have to tell it ahead of time.
+	//
+	if (m_Params.GetTextureEnum() == TE_SINGLE)
+	{
+		vtMaterial *mat = m_pTerrMats->GetAt(0);
+		if (mat->GetTransparent())
+		{
+			osg::StateSet *sset = m_pDynGeom->GetOsgNode()->getOrCreateStateSet();
+			sset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+		}
+	}
+#endif
+
 	m_pDynGeom->SetPolygonTarget(m_Params.GetValueInt(STR_TRICOUNT));
 	m_pDynGeom->SetMaterials(m_pTerrMats);
 
