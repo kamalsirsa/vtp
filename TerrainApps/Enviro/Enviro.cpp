@@ -1747,10 +1747,10 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 		float fNewRotation = m_StartRotation + (event.pos.x - m_MouseDown.x) / 100.0f;
 
 		vtTerrain *pTerr = GetCurrentTerrain();
-		if (m_bSelectedStruct)
-		{
-			vtStructureArray3d *structures = pTerr->GetStructureLayer();
 
+		vtStructureArray3d *structures = pTerr->GetStructureLayer();
+		if (structures && structures->NumSelected() > 0)
+		{
 			if (m_bDragging)
 			{
 				if (m_bDragUpDown)
