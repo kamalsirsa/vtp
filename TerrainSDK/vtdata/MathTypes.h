@@ -702,6 +702,22 @@ public:
 	}
 	void Empty() { center.Set(0,0,0); radius = 0; }
 
+	void GrowToContain(const FSphere &sh)
+	{
+		FPoint3 dv = sh.center - center;
+		float dv_len = dv.Length();
+
+		if (dv_len == 0 && sh.radius > radius)
+			radius = sh.radius;
+		else if (dv_len+sh.radius > radius)
+		{
+			FPoint3 e1 = center - (dv*(radius/dv_len));
+			FPoint3 e2 = sh.center + (dv*(sh.radius/dv_len));
+			center = (e1 + e2) * 0.5f;
+			radius = (e2 - center).Length();
+		}
+	}
+
 	FPoint3 center;
 	float radius;
 };
