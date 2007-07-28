@@ -187,6 +187,11 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	return true;
 }
 
+bool vtStructInstance3d::IsCreated()
+{
+	return (m_pContainer != NULL);
+}
+
 void vtStructInstance3d::DeleteNode()
 {
 	if (m_pContainer)

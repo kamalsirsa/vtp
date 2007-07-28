@@ -79,6 +79,7 @@ public:
 
 	/// Create the node(s) and position them on the indicated heightfield
 	virtual bool CreateNode(vtTerrain *pTerr) = 0;
+	virtual bool IsCreated() = 0;
 
 	/// Access the Geometry node for this structure, if it has one
 	virtual vtGeom *GetGeom() { return NULL; }
@@ -134,6 +135,7 @@ public:
 	// implement vtStructure3d methods
 	/// Create the node(s) and position them on the indicated heightfield
 	virtual bool CreateNode(vtTerrain *pTerr);
+	virtual bool IsCreated();
 	virtual void DeleteNode();
 	virtual void ShowBounds(bool bShow);
 	virtual vtNode *GetContained() { return m_pModel; }

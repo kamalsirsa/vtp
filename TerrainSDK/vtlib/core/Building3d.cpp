@@ -1178,6 +1178,11 @@ bool vtBuilding3d::CreateNode(vtTerrain *pTerr)
 	return true;
 }
 
+bool vtBuilding3d::IsCreated()
+{
+	return (m_pContainer != NULL);
+}
+
 void vtBuilding3d::DeleteNode()
 {
 	if (m_pContainer)

@@ -26,6 +26,7 @@ public:
 
 	// implement vtStructure3d methods
 	virtual bool CreateNode(vtTerrain *pTerr);
+	virtual bool IsCreated();
 	virtual vtGeom *GetGeom() { return m_pFenceGeom; }
 	virtual vtNode *GetContained() { return m_pFenceGeom; }
 	virtual void DeleteNode();

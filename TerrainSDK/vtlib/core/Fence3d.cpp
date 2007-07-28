@@ -745,6 +745,11 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 	return true;
 }
 
+bool vtFence3d::IsCreated()
+{
+	return (m_pFenceGeom != NULL);
+}
+
 void vtFence3d::DeleteNode()
 {
 	DestroyGeometry();
