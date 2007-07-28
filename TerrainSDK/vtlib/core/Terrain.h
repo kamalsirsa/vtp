@@ -228,6 +228,8 @@ public:
 	void RemoveNodeFromStructGrid(vtNode *pNode);
 	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
 	int DoStructurePaging();
+	vtPagedStructureLodGrid *GetStructureLodGrid() { return m_pPagedStructGrid; }
+	float GetStructurePageOutDistance() { return m_fPagingStructureDist; }
 
 	// abstract layers
 	void SetAbstractLayer(vtAbstractLayer *alay);

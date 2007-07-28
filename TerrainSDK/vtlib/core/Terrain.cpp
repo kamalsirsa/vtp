@@ -1228,8 +1228,7 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 		m_pPagedStructGrid->SetArray(structures);
 		for (int i = 0; i < num_structs; i++)
 		{
-			m_pPagedStructGrid->AppendToGrid(structures->GetAt(i),
-				structures->GetStructure3d(i));
+			m_pPagedStructGrid->AppendToGrid(i);
 		}
 	}
 	else
@@ -3110,7 +3109,8 @@ int vtTerrain::DoStructurePaging()
 	vtCamera *cam = vtGetScene()->GetCamera();
 	FPoint3 CamPos = cam->GetTrans();
 
-	m_pPagedStructGrid->DoPaging(CamPos, m_iPagingStructureMax, m_fPagingStructureDist);
+	m_pPagedStructGrid->DoPaging(CamPos, m_iPagingStructureMax,
+		m_fPagingStructureDist);
 	return m_pPagedStructGrid->GetQueueSize();
 }
 
