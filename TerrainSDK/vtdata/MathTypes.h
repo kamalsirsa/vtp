@@ -134,9 +134,9 @@ public:
 	FPoint3 operator *(double s) const { return FPoint3((float)(x*s), (float)(y*s), (float)(z*s)); }
 	FPoint3 operator /(float s) const { return FPoint3(x/s, y/s, z/s); }
 	FPoint3 operator -() { return FPoint3(-x, -y, -z); }
-	bool operator==(const FPoint3 &v2)
+	bool operator==(const FPoint3 &v2) const
 	{ return (x == v2.x && y == v2.y && z == v2.z); }
-	bool operator!=(const FPoint3 &v2)
+	bool operator!=(const FPoint3 &v2) const
 	{ return (x != v2.x || y != v2.y || z != v2.z); }
 
 	void operator +=(const FPoint3 &v) { x+=v.x; y+=v.y; z+=v.z; }
@@ -189,9 +189,9 @@ public:
 	DPoint3 operator -(const DPoint3 &v) const { return DPoint3(x-v.x, y-v.y, z-v.z); }
 	DPoint3 operator *(double s) const { return DPoint3(x*s, y*s, z*s); }
 	DPoint3 operator /(double s) const { return DPoint3(x/s, y/s, z/s); }
-	bool operator==(const DPoint3 &v2)
+	bool operator==(const DPoint3 &v2) const
 	{ return (x == v2.x && y == v2.y && z == v2.z); }
-	bool operator!=(const DPoint3 &v2)
+	bool operator!=(const DPoint3 &v2) const
 	{ return (x != v2.x || y != v2.y || z != v2.z); }
 
 	// dot product
@@ -261,8 +261,8 @@ public:
 	void operator *=(float s) { x*=s; y*=s; }
 	void operator /=(float s) { x/=s; y/=s; }
 
-	bool operator==(const FPoint2 &v) { return (x == v.x && y == v.y); }
-	bool operator!=(const FPoint2 &v) { return (x != v.x || y != v.y); }
+	bool operator==(const FPoint2 &v) const { return (x == v.x && y == v.y); }
+	bool operator!=(const FPoint2 &v) const { return (x != v.x || y != v.y); }
 
 	float x, y;
 };
@@ -886,11 +886,11 @@ public:
 		if (r2.top > top)		top = r2.top;
 		if (r2.bottom < bottom)	bottom = r2.bottom;
 	}
-	bool operator==(const DRECT &v)
+	bool operator==(const DRECT &v) const
 	{
 		return (left == v.left && top == v.top && right == v.right && bottom == v.bottom);
 	}
-	bool operator!=(const DRECT &v)
+	bool operator!=(const DRECT &v) const
 	{
 		return (left != v.left || top != v.top || right != v.right || bottom != v.bottom);
 	}
@@ -1092,8 +1092,8 @@ public:
 	// operators
 	float operator()(int col, int row) const { return data[col][row]; }
 	FMatrix4 &operator=(const FMatrix3 &mat);
-	bool operator==(const FMatrix4 &mat);
-	bool operator!=(const FMatrix4 &mat);
+	bool operator==(const FMatrix4 &mat) const;
+	bool operator!=(const FMatrix4 &mat) const;
 
 protected:
 	float data[4][4];
@@ -1110,12 +1110,12 @@ inline FMatrix4 &FMatrix4::operator=(const FMatrix3 &mat)
 	return (*this);
 }
 
-inline bool FMatrix4::operator==(const FMatrix4 &mat)
+inline bool FMatrix4::operator==(const FMatrix4 &mat) const
 {
 	return memcmp(data, mat.data, sizeof(data)) == 0;
 }
 
-inline bool FMatrix4::operator!=(const FMatrix4 &mat)
+inline bool FMatrix4::operator!=(const FMatrix4 &mat) const
 {
 	return memcmp(data, mat.data, sizeof(data)) != 0;
 }
