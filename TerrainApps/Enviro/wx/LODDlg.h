@@ -14,6 +14,7 @@
 class EnviroFrame;
 class vtTiledGeom;
 class vtCamera;
+class vtPagedStructureLodGrid;
 
 // WDR: class declarations
 
@@ -36,11 +37,14 @@ public:
 	wxTextCtrl* GetCurrent()  { return (wxTextCtrl*) FindWindow( ID_CURRENT ); }
 	wxPanel* GetPanel1()  { return (wxPanel*) FindWindow( ID_PANEL1 ); }
 	wxPanel* GetPanel2()  { return (wxPanel*) FindWindow( ID_PANEL2 ); }
+	wxPanel* GetPanel3()  { return (wxPanel*) FindWindow( ID_PANEL3 ); }
+	wxNotebook *GetNotebook() { return (wxNotebook*) FindWindow( ID_NOTEBOOK ); }
 
 	void Refresh(float res0, float res, float res1, int target, int count,
 		float prange);
-	void DrawChart(float res0, float res, float res1, int target, int count);
+	void DrawLODChart(float res0, float res, float res1, int target, int count);
 	void DrawTilesetState(vtTiledGeom *tg, vtCamera *cam);
+	void DrawStructureState(vtPagedStructureLodGrid *grid, float fPageOutDist);
 	void SetFrame(EnviroFrame *pFrame) { m_pFrame = pFrame; }
 	void SetPagingRange(float fmin, float fmax);
 
