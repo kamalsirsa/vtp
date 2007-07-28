@@ -14,10 +14,13 @@
 
 #include "PagedLodGrid.h"
 
+#include <algorithm>	// for sort
 
 vtPagedStructureLOD::vtPagedStructureLOD() : vtGroup(true)
 {
-	m_bConstructed = false;
+	m_iNumConstructed = 0;
+	m_bAddedToQueue = false;
+
 	m_pNativeLOD = new PagedNativeLOD;
 	m_pNativeLOD->SetCenter(FPoint3(0, 0, 0));
 #if VTLIB_OSG
@@ -54,8 +57,13 @@ bool vtPagedStructureLOD::TestVisible(float fDistance, bool bLoad)
 {
 	if (fDistance < m_fRange)
 	{
-		if (!m_bConstructed)// && bLoad)
-			Construct();
+		// Check if this group has any unbuilt structures
+		if (bLoad && !m_bAddedToQueue &&
+			m_iNumConstructed != m_StructureIndices.GetSize())
+		{
+			AppendToQueue();
+			m_bAddedToQueue = true;
+		}
 		return true;
 	}
 	// It is not sufficient to do the too-far test here, because this is
@@ -64,36 +72,23 @@ bool vtPagedStructureLOD::TestVisible(float fDistance, bool bLoad)
 	return false;
 }
 
-void vtPagedStructureLOD::Construct()
-{
-	VTLOG("Adding %d buildings to queue.\n", m_Structures.GetSize());
-	for (unsigned int i = 0; i < m_Structures.GetSize(); i++)
-	{
-		vtStructure3d *s3d = m_Structures[i];
-		m_pGrid->AddToQueue(this, s3d);
-	}
-	m_bConstructed = true;
-}
-
-void vtPagedStructureLOD::Deconstruct()
+void vtPagedStructureLOD::AppendToQueue()
 {
 	int count = 0;
-	VTLOG("Deconstruction check on %d structures: ", m_Structures.GetSize());
-	for (unsigned int i = 0; i < m_Structures.GetSize(); i++)
+	for (unsigned int i = 0; i < m_StructureIndices.GetSize(); i++)
 	{
-		vtStructure3d *str3d = m_Structures[i];
-		vtNode *node = str3d->GetContainer();
-		if (!node)
-			node = str3d->GetGeom();
-		if (!node)
-			continue;
-		RemoveChild(node);
-		str3d->DeleteNode();
-		count++;
+		if (m_pGrid->AddToQueue(this, m_StructureIndices[i]))
+			count++;
 	}
-	VTLOG("%d decon.\n", count);
-	m_bConstructed = false;
+	VTLOG("Added %d buildings to queue.\n", count);
+
+	// We have just added a lump of structures, sort them by distance
+	m_pGrid->SortQueue();
 }
+
+
+///////////////////////////////////////////////////////////////////////
+// vtPagedStructureLodGrid
 
 #define CellIndex(a,b) ((a*m_dim)+b)
 
@@ -216,8 +211,10 @@ void vtPagedStructureLodGrid::SetDistance(float fLODDistance)
 	}
 }
 
-bool vtPagedStructureLodGrid::AppendToGrid(vtStructure *str, vtStructure3d *str3d)
+bool vtPagedStructureLodGrid::AppendToGrid(int iIndex)
 {
+	// Get 2D extents from the unbuild structure
+	vtStructure *str = m_pStructureArray->GetAt(iIndex);
 	DRECT rect;
 	if (str->GetExtents(rect))
 	{
@@ -229,16 +226,62 @@ bool vtPagedStructureLodGrid::AppendToGrid(vtStructure *str, vtStructure3d *str3
 
 		vtPagedStructureLOD *pGroup = FindPagedCellParent(mid);
 		if (pGroup)
-			pGroup->Add(str3d);
+			pGroup->Add(iIndex);
 
 		return true;
 	}
 	return false;
 }
 
-void vtPagedStructureLodGrid::DeleteFarawayStructures(const FPoint3 &CamPos,
-													  int iMaxStructures,
-													  float fDistance)
+vtPagedStructureLOD *vtPagedStructureLodGrid::GetPagedCell(int a, int b)
+{
+	return m_pCells[CellIndex(a,b)];
+}
+
+void vtPagedStructureLodGrid::DeconstructCell(vtPagedStructureLOD *pLOD)
+{
+	int count = 0;
+	vtArray<int> &indices = pLOD->m_StructureIndices;
+	VTLOG("Deconstruction check on %d structures: ", indices.GetSize());
+	for (unsigned int i = 0; i < indices.GetSize(); i++)
+	{
+		vtStructure3d *str3d = m_pStructureArray->GetStructure3d(indices[i]);
+		vtNode *node = str3d->GetContainer();
+		if (!node)
+			node = str3d->GetGeom();
+		if (!node)
+			continue;
+		pLOD->RemoveChild(node);
+		str3d->DeleteNode();
+		count++;
+	}
+	VTLOG("%d decon.\n", count);
+	pLOD->m_iNumConstructed = 0;
+	pLOD->m_bAddedToQueue = false;
+}
+
+void vtPagedStructureLodGrid::RemoveCellFromQueue(vtPagedStructureLOD *pLOD)
+{
+	if (!pLOD->m_bAddedToQueue)
+		return;
+	if (pLOD->m_iNumConstructed == pLOD->m_StructureIndices.GetSize())
+		return;
+
+	vtArray<int> &indices = pLOD->m_StructureIndices;
+	VTLOG("Dequeueing check on %d structures: ", indices.GetSize());
+	int count = 0;
+	for (unsigned int i = 0; i < indices.GetSize(); i++)
+	{
+		if (RemoveFromQueue(indices[i]))
+			count++;
+	}
+	VTLOG("%d dequeued.\n", count);
+	pLOD->m_bAddedToQueue = false;
+}
+
+void vtPagedStructureLodGrid::CullFarawayStructures(const FPoint3 &CamPos,
+													int iMaxStructures,
+													float fDistance)
 {
 	int total_constructed = 0;
 	for (int a = 0; a < m_dim; a++)
@@ -249,76 +292,161 @@ void vtPagedStructureLodGrid::DeleteFarawayStructures(const FPoint3 &CamPos,
 			if (lod) total_constructed += lod->GetNumChildren();
 		}
 	}
-	if (total_constructed < iMaxStructures)
-		return;
-
-	FPoint3 center;
-	for (int a = 0; a < m_dim; a++)
+	// If we have too many or have items in the queue
+	if (total_constructed > iMaxStructures || m_Queue.size() > 0)
 	{
-		for (int b = 0; b < m_dim; b++)
+		// Delete/dequeue the ones that are very far
+		FPoint3 center;
+		for (int a = 0; a < m_dim; a++)
 		{
-			vtPagedStructureLOD *lod = m_pCells[CellIndex(a,b)];
-			if (!lod || !lod->IsConstructed())
-				continue;
-			lod->GetCenter(center);
-			float dist = (center - CamPos).Length();
-			if (dist > fDistance)
-				lod->Deconstruct();
-		}
-	}
-}
-
-void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
-									   int iMaxStructures, float fDistance)
-{
-	static float last_cull = 0.0f, last_load = 0.0f;
-	float current = vtGetTime();
-	if (current - last_cull > 0.25f)
-	{
-		// Do a paging cleanup pass every 1/4 of a second
-		// Unload anything excessive
-		DeleteFarawayStructures(CamPos, iMaxStructures, fDistance);
-		last_cull = current;
-	}
-
-	// Every N times a second
-	else if (current - last_load > 0.01f && !m_Queue.empty())
-	{
-		last_load = current;
-#if 1
-		// Gradually load anything that needs loading
-		const QueueEntry &e = m_Queue.back();
-		bool bSuccess = m_pStructureArray->ConstructStructure(e.pStr);
-		if (bSuccess)
-		{
-			vtTransform *pTrans = e.pStr->GetContainer();
-			if (pTrans)
-				e.pLOD->AddChild(pTrans);
-		}
-		m_Queue.pop_back();
-#else
-		// Instantaneous, not gradual
-		for (unsigned int i = 0; i < m_Queue.size(); i++)
-		{
-			vtStructure3d *s3d = m_Queue[i];
-			bool bSuccess = m_pStructureArray->ConstructStructure(s3d);
-			if (bSuccess)
+			for (int b = 0; b < m_dim; b++)
 			{
-				vtTransform *pTrans = s3d->GetContainer();
-				if (pTrans)
-					AddChild(pTrans);
+				vtPagedStructureLOD *lod = m_pCells[CellIndex(a,b)];
+				if (!lod || lod->m_iNumConstructed == 0)
+					continue;
+				lod->GetCenter(center);
+				float dist = (center - CamPos).Length();
+
+				// If very far, delete the structures entirely
+				if (total_constructed > iMaxStructures && dist > fDistance)
+					DeconstructCell(lod);
+
+				// If it has fallen out of the frustum, remove them
+				//  from the queue
+				if (dist > m_fLODDistance)
+					RemoveCellFromQueue(lod);
 			}
 		}
-		m_Queue.clear();
-#endif
 	}
 }
 
-void vtPagedStructureLodGrid::AddToQueue(vtPagedStructureLOD *pLOD, vtStructure3d *str3d)
+bool operator<(const QueueEntry& a, const QueueEntry& b)
 {
+	// Reverse-sort, to put smallest values (closest points) at the end
+	//  of the list so they can be efficiently removed
+    return a.fDistance > b.fDistance;
+}
+
+void vtPagedStructureLodGrid::SortQueue()
+{
+	vtCamera *cam = vtGetScene()->GetCamera();
+	FPoint3 CamPos = cam->GetTrans();
+	FPoint3 CamDir = cam->GetDirection();
+
+	// Prioritization is by distance.
+	// We can measure horizontal distance, which is faster.
+	DPoint3 cam_epos, cam_epos2;
+	g_Conv.ConvertToEarth(CamPos, cam_epos);
+	g_Conv.ConvertToEarth(CamPos+CamDir, cam_epos2);
+	DPoint2 cam_pos(cam_epos.x, cam_epos.y);
+	DPoint2 cam_dir(cam_epos2.x - cam_epos.x, cam_epos2.y - cam_epos.y);
+	cam_dir.Normalize();
+
+	DPoint2 p;
+	for (unsigned int i = 0; i < m_Queue.size(); i++)
+	{
+		QueueEntry &e = m_Queue[i];
+		vtStructure *st = m_pStructureArray->GetAt(e.iStructIndex);
+		vtBuilding *bld = st->GetBuilding();
+		vtStructInstance *inst = st->GetInstance();
+		if (bld)
+			p = bld->GetAtFootprint(0).Centroid();
+		else if (inst)
+			p = inst->GetPoint();
+		else
+			continue;
+
+		// Calculate distance
+		DPoint2 diff = p-cam_pos;
+		e.fDistance = (float) diff.Length();
+
+		// Is point behind the camera?  If so, give it lowest priority
+		if (diff.Dot(cam_dir) < 0)
+			e.fDistance += 1E5;
+	}
+	std::sort(m_Queue.begin(), m_Queue.end());
+}
+
+
+void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
+									   int iMaxStructures, float fDeleteDistance)
+{
+	static float last_cull = 0.0f, last_load = 0.0f, last_prioritize = 0.0f;
+	float current = vtGetTime();
+
+	if (current - last_prioritize > 1.0f)
+	{
+		// Do a re-priortization every 1 second.
+		SortQueue();
+		last_prioritize = current;
+	}
+	else if (current - last_cull > 0.25f)
+	{
+		// Do a paging cleanup pass every 1/4 of a second
+		// Unload/unqueue anything excessive
+		CullFarawayStructures(CamPos, iMaxStructures, fDeleteDistance);
+		last_cull = current;
+	}
+	else if (current - last_load > 0.01f && !m_Queue.empty())
+	{
+		// Do loading every other available frame
+		last_load = current;
+
+		// Check if the camera is not moving; if so, construct more.
+		int construct;
+		static FPoint3 last_campos;
+		if (CamPos == last_campos)
+			construct = 5;
+		else
+			construct = 1;
+
+		for (int i = 0; i < construct && m_Queue.size() > 0; i++)
+		{
+			// Gradually load anything that needs loading
+			const QueueEntry &e = m_Queue.back();
+			bool bSuccess = m_pStructureArray->ConstructStructure(e.iStructIndex);
+			if (bSuccess)
+			{
+				vtStructure3d *str3d = m_pStructureArray->GetStructure3d(e.iStructIndex);
+				vtTransform *pTrans = str3d->GetContainer();
+				if (pTrans)
+					e.pLOD->AddChild(pTrans);
+				e.pLOD->m_iNumConstructed ++;
+			}
+			m_Queue.pop_back();
+		}
+		last_campos = CamPos;
+	}
+}
+
+bool vtPagedStructureLodGrid::AddToQueue(vtPagedStructureLOD *pLOD, int iIndex)
+{
+	// Check if it's already built
+	vtStructure3d *str3d = m_pStructureArray->GetStructure3d(iIndex);
+	if (str3d && str3d->IsCreated())
+		return false;
+
+	// If not, add it
 	QueueEntry e;
 	e.pLOD = pLOD;
-	e.pStr = str3d;
+	e.iStructIndex = iIndex;
+	e.fDistance = 1E9;
 	m_Queue.push_back(e);
+	return true;
+}
+
+bool vtPagedStructureLodGrid::RemoveFromQueue(int iIndex)
+{
+	// Check if it's in the queue
+	for (unsigned int i = 0; i < m_Queue.size(); i++)
+	{
+		QueueEntry &e = m_Queue[i];
+		if (e.iStructIndex == iIndex)
+		{
+			m_Queue.erase(m_Queue.begin()+i);
+			return true;
+		}
+	}
+	return false;
 }
 

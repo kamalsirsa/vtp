@@ -48,19 +48,19 @@ public:
 	void GetCenter(FPoint3 &center);
 	bool TestVisible(float fDistance, bool bLoad);
 
-	void Add(vtStructure3d *str3d) { m_Structures.Append(str3d); }
+	void Add(int iIndex) { m_StructureIndices.Append(iIndex); }
 	void SetGrid(vtPagedStructureLodGrid *g) { m_pGrid = g; }
-	void Construct();
-	void Deconstruct();
-	bool IsConstructed() { return m_bConstructed; }
+	void AppendToQueue();
+
+	vtArray <int> m_StructureIndices;
+	int m_iNumConstructed;
+	bool m_bAddedToQueue;
 
 protected:
 	float m_fRange;
 	PagedNativeLOD *m_pNativeLOD;
 	virtual ~vtPagedStructureLOD() {}
 
-	bool m_bConstructed;
-	vtArray<vtStructure3d*> m_Structures;
 	// Pointer up to container
 	vtPagedStructureLodGrid *m_pGrid;
 };
@@ -126,7 +126,10 @@ public:
 
 struct QueueEntry {
 	vtPagedStructureLOD *pLOD;
-	vtStructure3d *pStr;
+	//vtStructure *pStr;
+	//vtStructure3d *pStr3d;
+	int iStructIndex;
+	float fDistance;
 };
 
 /**
@@ -149,15 +152,21 @@ public:
 	// methods
 	void SetDistance(float fLODDistance);
 	void SetArray(vtStructureArray3d *sa) { m_pStructureArray = sa; }
-	bool AppendToGrid(vtStructure *str, vtStructure3d *str3d);
+	bool AppendToGrid(int iIndex);
 
-	void DoPaging(const FPoint3 &CamPos, int iMaxStructures, float fDistance);
-	void AddToQueue(vtPagedStructureLOD *pLOD, vtStructure3d *str3d);
+	vtPagedStructureLOD *GetPagedCell(int a, int b);
+
+	void DoPaging(const FPoint3 &CamPos, int iMaxStructures, float fDeleteDistance);
+	bool AddToQueue(vtPagedStructureLOD *pLOD, int iIndex);
+	bool RemoveFromQueue(int iIndex);
 	unsigned int GetQueueSize() { return m_Queue.size(); }
+	void SortQueue();
 
 protected:
-	void DeleteFarawayStructures(const FPoint3 &CamPos,
+	void CullFarawayStructures(const FPoint3 &CamPos,
 		int iMaxStructures, float fDistance);
+	void DeconstructCell(vtPagedStructureLOD *pLOD);
+	void RemoveCellFromQueue(vtPagedStructureLOD *pLOD);
 
 	vtStructureArray3d *m_pStructureArray;
 	vtPagedStructureLOD **m_pCells;
