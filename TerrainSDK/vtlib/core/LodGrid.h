@@ -49,6 +49,8 @@ public:
 
 	virtual void SetDistance(float fLODDistance) = 0;
 	float GetDistance() { return m_fLODDistance; }
+	int GetDimension() { return m_dim; }
+	FPoint3 GetCellSize() { return m_step; }
 
 protected:
 	FPoint3 m_origin;
