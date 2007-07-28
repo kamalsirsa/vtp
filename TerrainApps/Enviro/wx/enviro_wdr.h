@@ -353,6 +353,11 @@ wxSizer *Style3Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TR
 #define ID_TEXTURE_MODE 10251
 wxSizer *Style4Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_PANEL3 10252
+wxSizer *StructLODDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+wxSizer *PagingDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

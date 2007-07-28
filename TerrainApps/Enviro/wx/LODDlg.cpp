@@ -10,6 +10,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TiledGeom.h"
+#include "vtlib/core/PagedLodGrid.h"
 
 #include "LODDlg.h"
 #include "EnviroFrame.h"
@@ -42,7 +43,13 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bHaveRangeVal = false;
 
 	// WDR: dialog function LODDialogFunc for LODDlg
-	LODDialogFunc(this, true);
+	PagingDialogFunc(this, true);
+
+	// make sure that validation gets down to the child windows
+	SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
+
+	// including the children of the notebook
+	GetNotebook()->SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
 	GetTileStatus()->SetValue(_T("No paging threads"));
 
@@ -69,6 +76,10 @@ void LODDlg::Refresh(float res0, float res, float res1, int target,
 	if (!IsShown())
 		return;
 
+	// Only on the first notebook page
+	if (GetNotebook()->GetSelection() != 0)
+		return;
+
 	wxString str;
 	if (target != m_iTarget)
 	{
@@ -91,7 +102,7 @@ void LODDlg::Refresh(float res0, float res, float res1, int target,
 	}
 
 	// Now draw the chart
-	DrawChart(res0, res, res1, target, count);
+	DrawLODChart(res0, res, res1, target, count);
 }
 
 void LODDlg::SlidersToValues()
@@ -132,7 +143,7 @@ void LODDlg::OnRangeSlider( wxCommandEvent &event )
 	m_bSet = false;
 }
 
-void LODDlg::DrawChart(float res0, float res, float res1, int target, int count)
+void LODDlg::DrawLODChart(float res0, float res, float res1, int target, int count)
 {
 	int ires = (int) res;
 	int imax = target * 2;
@@ -188,6 +199,14 @@ void LODDlg::DrawChart(float res0, float res, float res1, int target, int count)
 
 void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
 {
+	// don't bother updating if window isn't shown
+	if (!IsShown())
+		return;
+
+	// Only on the first notebook page
+	if (GetNotebook()->GetSelection() != 0)
+		return;
+
 	wxPanel *panel = GetPanel2();
 	wxClientDC dc(panel);
 	PrepareDC(dc);
@@ -254,7 +273,7 @@ void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
 	// draw camera FOV
 	FPoint3 p = cam->GetTrans();
 	float fx = p.x / tg->coldim;
-	float fy = tg->rows + (p.z / tg->coldim);
+	float fy = tg->rows + (p.z / tg->rowdim);
 	int csx = border + (int)(fx * sx);
 	int csy = border + (int)(fy * sy);
 	dc.SetPen(pblack);
@@ -276,6 +295,158 @@ void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
 	int right = mt->getvisibleright();
 	int bottom = mt->getvisiblebottom();
 	int top = mt->getvisibletop();
+}
+
+void LODDlg::DrawStructureState(vtPagedStructureLodGrid *grid, float fPageOutDist)
+{
+	// don't bother updating if window isn't shown
+	if (!IsShown())
+		return;
+
+	// Only on the second notebook page
+	if (GetNotebook()->GetSelection() != 1)
+		return;
+
+	static float last_draw = 0.0f;
+	float curtime = vtGetTime();
+	if (curtime - last_draw < 0.1f)	// 10 time a second
+		return;
+	last_draw = curtime;
+
+	int dim = grid->GetDimension();
+
+	wxPanel *panel = GetPanel3();
+	wxClientDC dc(panel);
+	PrepareDC(dc);
+	dc.SetFont(*wxSWISS_FONT);
+	dc.Clear();
+
+	wxBrush bwhite(wxColour(255,255,255), wxSOLID);
+	wxPen pwhite(wxColour(255,255,255), 2, wxSOLID);
+	wxPen pblack(wxColour(0,0,0), 1, wxSOLID);
+	wxPen pgreen(wxColour(0,128,0), 1, wxSOLID);
+	wxPen pblue(wxColour(0,0,255), 1, wxSOLID);
+	wxPen pred(wxColour(255,0,0), 1, wxSOLID);
+
+	// Consider camera FOV
+	vtCamera *cam = vtGetScene()->GetCamera();
+	FPoint3 cam_pos = cam->GetTrans();
+	FPoint3 cam_dir = cam->GetDirection();
+
+	FPoint3 csize = grid->GetCellSize();
+	float fx = cam_pos.x / csize.x;
+	float fy = /*(dim-1) -*/ (cam_pos.z / csize.z);
+
+	wxSize panelsize = panel->GetSize();
+	int cellx = (panelsize.x / 56);
+	int celly = (panelsize.y / 70);
+
+	int startx = (int)(fx - cellx);
+	int starty = (int)(fy - celly);
+	if (startx < 0) startx = 0;
+	if (starty < 0) starty = 0;
+
+	// draw rectangles for Structure state
+	dc.SetPen(pblack);
+	dc.SetBrush(*wxTRANSPARENT_BRUSH);
+
+	int border = 10;
+	int sx = (panelsize.x - border*2) / (cellx*2);
+	int sy = (panelsize.y - border*2) / (celly*2);
+
+	wxString msg;
+	dc.SetPen(pblack);
+	for (int i = startx; i < (startx+cellx*2) && i < dim; i++)
+	{
+		int drawx = border + (i-startx)*sx;
+		for (int j = starty; j < (starty+celly*2) && j < dim; j++)
+		{
+			int drawy = panelsize.y - (border + (j-starty)*sy);
+			dc.DrawRectangle(drawx, drawy-sy, sx-1, sy-1);
+		}
+	}
+	for (int i = startx; i < (startx+cellx*2) && i < dim; i++)
+	{
+		int drawx = border + (i-startx)*sx;
+		for (int j = starty; j < (starty+celly*2) && j < dim; j++)
+		{
+			vtPagedStructureLOD *cell = grid->GetPagedCell(i, j);
+			int drawy = panelsize.y - (border + (j-starty)*sy);
+			if (cell)
+			{
+				int num_con = cell->m_iNumConstructed;
+				int num_tot = cell->m_StructureIndices.GetSize();
+				if (num_con == num_tot)
+				{
+					// all built
+					dc.SetTextForeground(wxColour(0,128,0));
+					msg.Printf(_T("%d"), num_con);
+					dc.DrawText(msg, drawx+4, drawy - 25);
+				}
+				else if (num_con > 0 && num_con < num_tot)
+				{
+					// partially built
+					dc.SetTextForeground(wxColour(0,128,0));
+					msg.Printf(_T("%d"), num_con);
+					dc.DrawText(msg, drawx+4, drawy - 33);
+
+					dc.SetTextForeground(wxColour(80,0,80));
+					msg.Printf(_T("%d"), num_tot-num_con);
+					dc.DrawText(msg, drawx+4, drawy - 19);
+				}
+				else
+				{
+					// not at all built
+					dc.SetTextForeground(wxColour(80,0,80));
+					msg.Printf(_T("%d"), num_tot);
+					dc.DrawText(msg, drawx+4, drawy - 25);
+				}
+			}
+		}
+	}
+
+	// Draw camera location as blue crosshair
+	dc.SetPen(pblue);
+	int csx = border + (int)((fx-startx) * sx);
+	int csy = panelsize.y - (border + (int)((fy-starty) * sy));
+	dc.DrawLine(csx - 10, csy, csx + 10, csy);
+	dc.DrawLine(csx, csy - 10, csx, csy + 10);
+
+	// Draw LOD range as blue circle
+	float lod_dist = grid->GetDistance();
+	int circle_xsize = lod_dist / csize.x * sx;
+	int circle_ysize = lod_dist / (-csize.z) * sy;
+	dc.DrawEllipse(csx - circle_xsize, csy - circle_ysize,
+		circle_xsize*2, circle_ysize*2);
+
+	// Draw frustum (FOV)
+	float fov = cam->GetFOV();
+	cam_dir.y = 0;
+	cam_dir.Normalize();
+	cam_dir *= (lod_dist * 0.9f);
+
+	FPoint2 vec(cam_dir.x, cam_dir.z);
+	FPoint2 vecrot = vec;
+	vecrot.Rotate(fov/2);
+	int vx, vy;
+
+	vx = vecrot.x / csize.x * sx;
+	vy = vecrot.y / (-csize.z) * sy;
+	dc.DrawLine(csx, csy, csx+vx, csy+vy);
+
+	vecrot = vec;
+	vecrot.Rotate(-fov/2);
+
+	vx = vecrot.x / csize.x * sx;
+	vy = vecrot.y / (-csize.z) * sy;
+	dc.DrawLine(csx, csy, csx+vx, csy+vy);
+
+	// Draw page-out range as red circle
+	dc.SetPen(pred);
+	circle_xsize = fPageOutDist / csize.x * sx;
+	circle_ysize = fPageOutDist / (-csize.z) * sy;
+	dc.DrawEllipse(csx - circle_xsize, csy - circle_ysize,
+		circle_xsize*2, circle_ysize*2);
 }
 
 // WDR: handler implementations for LODDlg

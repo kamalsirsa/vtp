@@ -326,7 +326,8 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pTagDlg = new TagDlg(this, -1, _("Tags"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pTagDlg->SetSize(440,80);
-	m_pLODDlg = new LODDlg(this, -1, _("Terrain LOD Info"));
+	m_pLODDlg = new LODDlg(this, -1, _("Terrain LOD Info"), wxDefaultPosition,
+		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	// m_pLODDlg->Show();	// Enable this to see the LOD dialog immediately
 
 	m_pPlantDlg = new PlantDlg(this, -1, _("Plants"));
@@ -2213,6 +2214,9 @@ void EnviroFrame::UpdateLODInfo()
 				sm->GetPolygonTarget(), sm->GetNumDrawnTriangles(),	-1);
 		}
 	}
+	vtPagedStructureLodGrid *pPSLG = terr->GetStructureLodGrid();
+	if (pPSLG)
+		m_pLODDlg->DrawStructureState(pPSLG, terr->GetStructurePageOutDistance());
 }
 
 ///////////////////////////////////////////////////////////////////

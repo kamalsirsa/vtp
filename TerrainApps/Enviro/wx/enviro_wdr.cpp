@@ -2168,7 +2168,7 @@ wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxPanel *item3 = new wxPanel( parent, ID_PANEL1, wxDefaultPosition, wxSize(300,40), 0 );
     item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -2205,7 +2205,7 @@ wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item11->Add( item12, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     wxPanel *item16 = new wxPanel( parent, ID_PANEL2, wxDefaultPosition, wxSize(300,300), 0 );
-    item11->Add( item16, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item11->Add( item16, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxStaticText *item17 = new wxStaticText( parent, ID_TEXT, _("Red 64, Orange 128, Yellow 256, Green 512, Cyan 1k, Blue 2k"), wxDefaultPosition, wxDefaultSize, 0 );
     item11->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -2213,9 +2213,9 @@ wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxTextCtrl *item18 = new wxTextCtrl( parent, ID_TILE_STATUS, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
     item11->Add( item18, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+    item9->Add( item11, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item9, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {
@@ -2709,6 +2709,55 @@ wxSizer *Style4Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item2->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
+wxSizer *StructLODDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxStaticBox *item1 = new wxStaticBox( parent, -1, _("Structure Paging Status") );
+    wxStaticBoxSizer *item0 = new wxStaticBoxSizer( item1, wxVERTICAL );
+
+    wxPanel *item2 = new wxPanel( parent, ID_PANEL3, wxDefaultPosition, wxSize(300,300), 0 );
+    item0->Add( item2, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
+wxSizer *PagingDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxNotebook *item2 = new wxNotebook( parent, ID_NOTEBOOK, wxDefaultPosition, wxDefaultSize, 0 );
+#if !wxCHECK_VERSION(2,5,2)
+    wxNotebookSizer *item1 = new wxNotebookSizer( item2 );
+#else
+    wxWindow *item1 = item2;
+#endif
+
+    wxPanel *item3 = new wxPanel( item2, -1 );
+    LODDialogFunc( item3, FALSE );
+    item2->AddPage( item3, _("Textures") );
+
+    wxPanel *item4 = new wxPanel( item2, -1 );
+    StructLODDialogFunc( item4, FALSE );
+    item2->AddPage( item4, _("Structures") );
+
+    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {
