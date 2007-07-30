@@ -1557,9 +1557,9 @@ void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 		Refresh(TRUE, &screen_bound);
 		wxString str;
 		if (m_ui.mode == LB_Node)
-			str.Format(_("Selected 1 Node (%d total)"), pRL->GetSelectedNodes());
+			str.Printf(_("Selected 1 Node (%d total)"), pRL->GetSelectedNodes());
 		else
-			str.Format(_("Selected 1 Road (%d total)"), pRL->GetSelectedLinks());
+			str.Printf(_("Selected 1 Road (%d total)"), pRL->GetSelectedLinks());
 		GetMainFrame()->SetStatusText(str);
 	}
 	else

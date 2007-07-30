@@ -1767,7 +1767,7 @@ void MainFrame::MergeResampleElevation()
 	if (!pOutput->m_pGrid->HasData())
 	{
 		wxString str;
-		str.Format(_("Failed to initialize %d x %d elevation grid"), dlg.m_iSizeX, dlg.m_iSizeY);
+		str.Printf(_("Failed to initialize %d x %d elevation grid"), dlg.m_iSizeX, dlg.m_iSizeY);
 		wxMessageBox(str);
 		return;
 	}
