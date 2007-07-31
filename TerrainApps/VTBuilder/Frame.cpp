@@ -395,14 +395,12 @@ void MainFrame::RefreshToolbars()
 		lt = lay->GetType();
 
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_ELEVATION], lt == LT_ELEVATION);
-#ifndef ELEVATION_ONLY
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_IMAGE], lt == LT_IMAGE);
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_ROAD], lt == LT_ROAD);
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_UTILITY], lt == LT_UTILITY);
 //	m_pMenuBar->EnableTop(m_iLayerMenu[LT_VEG], lt == LT_VEG);
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_STRUCTURE], lt == LT_STRUCTURE);
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_RAW], lt == LT_RAW);
-#endif
 
 	for (int i = 0; i < LAYER_TYPES; i++)
 	{

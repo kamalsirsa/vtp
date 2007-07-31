@@ -305,7 +305,6 @@ void MainFrame::CreateMenus()
 	fileMenu->Append(ID_FILE_NEW, _("&New\tCtrl+N"), _("New Project"));
 	fileMenu->Append(ID_FILE_OPEN, _("Open Project\tCtrl+O"), _("Open Project"));
 	fileMenu->Append(ID_FILE_SAVE, _("Save Project\tCtrl+S"), _("Save Project As"));
-#ifndef ELEVATION_ONLY
 	fileMenu->AppendSeparator();
 	wxMenu *specialMenu = new wxMenu;
 	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, _("Create Dymaxion Textures"));
@@ -314,7 +313,6 @@ void MainFrame::CreateMenus()
 	specialMenu->Append(ID_ELEV_COPY, _("Copy Elevation Layer to Clipboard"));
 	specialMenu->Append(ID_ELEV_PASTE_NEW, _("New Elevation Layer from Clipboard"));
 	fileMenu->Append(0, _("Special"), specialMenu);
-#endif
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_FILE_PREFS, _("Preferences"));
 	fileMenu->AppendSeparator();
@@ -332,29 +330,23 @@ void MainFrame::CreateMenus()
 	editMenu->AppendSeparator();
 	editMenu->Append(ID_EDIT_DESELECTALL, _("Deselect All"), _("Clears selection"));
 	editMenu->Append(ID_EDIT_INVERTSELECTION, _("Invert Selection"));
-#ifndef ELEVATION_ONLY
 	editMenu->AppendCheckItem(ID_EDIT_CROSSINGSELECTION, _("Crossing Selection"));
-#endif
 	m_pMenuBar->Append(editMenu, _("&Edit"));
 	menu_num++;
 
 	// Layer
 	layerMenu = new wxMenu;
-#ifndef ELEVATION_ONLY
 	layerMenu->Append(ID_LAYER_NEW, _("&New Layer"), _("Create New Layer"));
-#endif
 	layerMenu->Append(ID_LAYER_OPEN, _("Open Layer"), _("Open Existing Layer"));
 	layerMenu->Append(ID_LAYER_SAVE, _("Save Layer"), _("Save Active Layer"));
 	layerMenu->Append(ID_LAYER_SAVE_AS, _("Save Layer As..."), _("Save Active Layer As"));
 	layerMenu->Append(ID_LAYER_IMPORT, _("Import Data\tCtrl+I"), _("Import Data"));
-#ifndef ELEVATION_ONLY
 	layerMenu->Append(ID_LAYER_IMPORTTIGER, _("Import Data From TIGER"), _("Import Data From TIGER"));
 	layerMenu->Append(ID_LAYER_IMPORTNTF, _("Import Data From NTF"), _("Import Data From TIGER"));
 	layerMenu->Append(ID_LAYER_IMPORTUTIL, _("Import Utilites From SHP"), _("Import Utilites From SHP"));
 	layerMenu->Append(ID_LAYER_IMPORT_MS, _("Import From MapSource File"));
 	layerMenu->Append(ID_LAYER_IMPORT_POINT, _("Import Point Data From Table"));
 	layerMenu->Append(ID_LAYER_IMPORT_XML, _("Import Point Data From XML"));
-#endif
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_PROPS, _("Layer Properties"), _("Layer Properties"));
 	layerMenu->Append(ID_EDIT_OFFSET, _("Offset Coordinates"), _("Offset"));
@@ -397,7 +389,6 @@ void MainFrame::CreateMenus()
 	m_pMenuBar->Append(viewMenu, _("&View"));
 	menu_num++;
 
-#ifndef ELEVATION_ONLY
 	// Roads
 	roadMenu = new wxMenu;
 	roadMenu->AppendCheckItem(ID_ROAD_SELECTROAD, _("Select/Modify Roads"));
@@ -425,7 +416,6 @@ void MainFrame::CreateMenus()
 	m_pMenuBar->Append(utilityMenu, _("Util&ities"));
 	m_iLayerMenu[LT_UTILITY] = menu_num;
 	menu_num++;
-#endif
 
 	// Elevation
 	elevMenu = new wxMenu;
@@ -446,7 +436,6 @@ void MainFrame::CreateMenus()
 	m_iLayerMenu[LT_ELEVATION] = menu_num;
 	menu_num++;
 
-#ifndef ELEVATION_ONLY
 	// Imagery
 	imgMenu = new wxMenu;
 	imgMenu->Append(ID_IMAGE_EXPORT_TILES, _("Export to Tiles..."));
@@ -487,14 +476,12 @@ void MainFrame::CreateMenus()
 	m_pMenuBar->Append(bldMenu, _("&Structures"));
 	m_iLayerMenu[LT_STRUCTURE] = menu_num;
 	menu_num++;
-#endif
 
 	// Raw
 	rawMenu = new wxMenu;
 	rawMenu->AppendCheckItem(ID_FEATURE_SELECT, _("Select Features"));
 	rawMenu->AppendCheckItem(ID_FEATURE_PICK, _("Pick Features"));
 	rawMenu->AppendCheckItem(ID_FEATURE_TABLE, _("Show Attribute Table"));
-#ifndef ELEVATION_ONLY
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SETTYPE, _("Set Entity Type"), _("Set Entity Type"));
 	rawMenu->AppendCheckItem(ID_RAW_ADDPOINTS, _("Add Points with Mouse"));
@@ -502,7 +489,6 @@ void MainFrame::CreateMenus()
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, _("Add Points with GPS"), _("Add points with GPS"));
 	rawMenu->Append(ID_RAW_STYLE, _("Style..."));
 	rawMenu->Append(ID_RAW_SCALE, _("Scale"));
-#endif
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SELECTCONDITION, _("Select Features by Condition"));
 	rawMenu->Append(ID_RAW_EXPORT_IMAGEMAP, _("Export as HTML ImageMap"));
@@ -523,7 +509,6 @@ void MainFrame::CreateMenus()
 	areaMenu->AppendSeparator();
 	areaMenu->Append(ID_AREA_EXPORT_ELEV, _("Merge && Resample &Elevation"),
 		_("Sample all elevation data within the Area Tool to produce a single, new elevation."));
-#ifndef ELEVATION_ONLY
 	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _("Merge && Resample &Imagery"),
 		_("Sample imagery within the Area Tool to produce a single, new image."));
 	areaMenu->Append(ID_AREA_GENERATE_VEG, _("Generate Vegetation"),
@@ -535,7 +520,6 @@ void MainFrame::CreateMenus()
 	areaMenu->Append(ID_AREA_REQUEST_WMS, _("Request Image from WMS"));
 	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _("Request Image from Terraserver"));
 #endif // SUPPORT_HTTP
-#endif
 	areaMenu->AppendSeparator();
 	areaMenu->Append(ID_AREA_EXPORT_ELEV_SPARSE, _("Optimized Resample Elevation to Tileset"),
 		_("Sample all elevation data within the Area Tool efficiently to produce an elevation tileset."));
@@ -974,7 +958,6 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	AddType(filter, FSTRING_BT);	// elevation
 	AddType(filter, FSTRING_BTGZ);	// compressed elevation
 	AddType(filter, FSTRING_TIN);	// elevation
-#ifndef ELEVATION_ONLY
 	AddType(filter, FSTRING_RMF);	// roads
 	AddType(filter, FSTRING_GML);	// raw
 	AddType(filter, FSTRING_UTL);	// utility towers
@@ -983,7 +966,6 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	AddType(filter, FSTRING_VF);	// vegetation files
 	AddType(filter, FSTRING_TIF);	// image files
 	AddType(filter, FSTRING_IMG);	// image or elevation file
-#endif
 	AddType(filter, FSTRING_SHP);	// raw files
 
 	// ask the user for a filename, allow multiple select
@@ -1073,14 +1055,11 @@ void MainFrame::OnLayerImport(wxCommandEvent &event)
 {
 	LayerType lt;
 
-#ifdef ELEVATION_ONLY
-	lt = LT_ELEVATION;
-#else
 	// first ask what kind of data layer
 	lt = AskLayerType();
 	if (lt == LT_UNKNOWN)
 		return;
-#endif
+
 	ImportData(lt);
 }
 
@@ -3644,12 +3623,6 @@ void MainFrame::OnRawScale(wxCommandEvent& event)
 
 void MainFrame::OnHelpAbout(wxCommandEvent &event)
 {
-#ifdef ELEVATION_ONLY
-	wxString str = _T("Elevation Tool\n\n");
-	str += _T("Build date: ");
-	str += _(__DATE__);
-	wxMessageBox(str, _T("About ElevTool"));
-#else
 	wxString str = _("Virtual Terrain Builder\nPowerful, easy to use, free!\n");
 	str += _T("\n");
 	str += _("Please read the HTML documentation and license.\n");
@@ -3674,7 +3647,6 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	wxString str2 = _("About ");
 	str2 += wxString(APPNAME, wxConvUTF8);
 	wxMessageBox(str, str2);
-#endif
 }
 
 void MainFrame::OnHelpDocLocal(wxCommandEvent &event)

@@ -1,7 +1,7 @@
 //
 // TreeView.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -161,7 +161,6 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	int	image, imageSel;
 
 	wxTreeItemId elevId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Grid, _("Elevation"));
-#ifndef ELEVATION_ONLY
 	wxTreeItemId imageId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Image, _("Images"));
 	wxTreeItemId buildId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Building, _("Structures"));
 	wxTreeItemId roadId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Road, _("Roads"));
@@ -171,7 +170,6 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	wxTreeItemId transId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Transit, _("Transit"));
 #endif
 	wxTreeItemId utilityId = AddRootItem(MyTreeCtrl::TreeCtrlIcon_Utility, _("Utilities"));
-#endif
 	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, _("Raw"));
 
 	image = TreeCtrlIcon_File;
@@ -191,7 +189,6 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 			case LT_ELEVATION:
 				hItem = AppendItem(elevId, str, image, imageSel);
 				break;
-#ifndef ELEVATION_ONLY
 			case LT_IMAGE:
 				hItem = AppendItem(imageId, str, image, imageSel);
 				break;
@@ -215,7 +212,6 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 			case LT_UTILITY:
 				hItem = AppendItem(utilityId, str, image, imageSel);
 				break;
-#endif
 			case LT_RAW:
 				hItem = AppendItem(rawId, str, image, imageSel);
 				break;
@@ -230,7 +226,6 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	}
 
 	Expand(elevId);
-#ifndef ELEVATION_ONLY
 	Expand(imageId);
 	Expand(roadId);
 	Expand(buildId);
@@ -240,7 +235,6 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	Expand(transId);
 #endif
 	Expand(utilityId);
-#endif
 	Expand(rawId);
 }
 
