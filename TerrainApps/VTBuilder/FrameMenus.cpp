@@ -986,13 +986,18 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 #endif
 	AddType(filter, FSTRING_SHP);	// raw files
 
-	// ask the user for a filename
-	wxFileDialog loadFile(NULL, _("Open Layer"), _T(""), _T(""), filter, wxFD_OPEN);
+	// ask the user for a filename, allow multiple select
+	wxFileDialog loadFile(NULL, _("Open Layer"), _T(""), _T(""), filter,
+		wxFD_OPEN | wxFD_MULTIPLE);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
 
-	LoadLayer(loadFile.GetPath());
+	wxArrayString Paths;
+	loadFile.GetPaths(Paths);
+
+	for (size_t i = 0; i < Paths.GetCount(); i++)
+		LoadLayer(Paths[i]);
 }
 
 void MainFrame::OnLayerSave(wxCommandEvent &event)
