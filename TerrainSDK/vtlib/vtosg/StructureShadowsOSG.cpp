@@ -346,7 +346,7 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
 	}
 #endif
 
-#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR > 0
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR > 0 || OSG_VERSION_MAJOR > 1
 	// We are probably OSG 1.1 or newer
 	osg::FBOExtensions* fbo_ext = osg::FBOExtensions::instance(0, true);
 #else
@@ -377,9 +377,9 @@ void CStructureShadowsOSG::SetSunPosition(osg::Vec3 SunPosition,
 		{
 			int iNewResolution = m_iTargetResolution;
 			if (iNewResolution > pCurrentMainViewport->width())
-				iNewResolution = pCurrentMainViewport->width();
+				iNewResolution = int( pCurrentMainViewport->width() );
 			if (iNewResolution > pCurrentMainViewport->height())
-				iNewResolution = pCurrentMainViewport->height();
+				iNewResolution = int( pCurrentMainViewport->height() );
 			int iTemp = 1;
 			while ((iTemp = iTemp << 1) <= iNewResolution);
 			iNewResolution  = iTemp / 2;

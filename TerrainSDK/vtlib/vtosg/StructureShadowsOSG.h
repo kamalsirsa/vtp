@@ -11,6 +11,7 @@
 #include <osg/Vec3>
 #include <osg/TexGenNode>
 #include <osg/PolygonOffset>
+#include <osg/CameraNode>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
