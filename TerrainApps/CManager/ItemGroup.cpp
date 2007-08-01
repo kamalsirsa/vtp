@@ -218,7 +218,7 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 		up++;
 		if (up > 2) up = 0;
 	}
-	int ticks = fSize / interval;
+	int ticks = int( fSize / interval );
 	FPoint3 p;
 	float *wide;
 	float *thin;
