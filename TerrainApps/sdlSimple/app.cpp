@@ -20,7 +20,7 @@
 class App
 {
 public:
-	App::App() { m_ts = NULL; m_pCamera = NULL; }
+	App() { m_ts = NULL; m_pCamera = NULL; }
 	bool CreateScene();
 
 	void videosettings(bool same_video_mode, bool fullscreen);
@@ -142,6 +142,7 @@ bool App::CreateScene()
 
 	// Set the global data path
 	vtStringArray paths;
+	paths.push_back(vtString("../Data/"));
 	paths.push_back(vtString("Data/"));
 	pScene->SetDataPath(paths);
 
