@@ -38,7 +38,8 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = sdlSimple
 LIBS   = -lvtosg -lvtdata \
          -lgdal -losgDB -losgUtil -losgText -losg \
-	 -lxmlhelper -lunzip $(MINI_LIB) `sdl-config --libs` \
+	 -lxmlhelper -lunzip $(MINI_LIB) \
+         `sdl-config --libs` \
          $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
 
 all : $(EXEC)
