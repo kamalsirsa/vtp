@@ -1593,7 +1593,7 @@ void vtGeom::Release()
 					textmesh->Release();
 			}
 		}
-#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR > 0
+#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR > 0 || OSG_VERSION_MAJOR > 1
 		// We are probably OSG 1.1 or newer
 		m_pGeode->removeDrawables(0, num);
 #else
@@ -1815,10 +1815,19 @@ osg::BoundingBox OsgDynMesh::computeBound() const
 	return _boundingBox;
 }
 
+
+#if OSG_VERSION_MAJOR >= 2
+void OsgDynMesh::drawImplementation(osg::RenderInfo& renderInfo) const
+#else
 void OsgDynMesh::drawImplementation(State& state) const
+#endif
 {
 	OsgDynMesh *cthis = const_cast<OsgDynMesh*>(this);
+#if OSG_VERSION_MAJOR >= 2
+	cthis->m_pDrawState = renderInfo.getState();
+#else
 	cthis->m_pDrawState = (&state);
+#endif
 
 	// Our dyamic mesh might use Vertex Arrays, and this can conflict with
 	//  other objects in the OSG scene graph which are also using Vertex
@@ -1827,7 +1836,7 @@ void OsgDynMesh::drawImplementation(State& state) const
 	// NOTE: I would guess we should be pushing/popping the state here,
 	//  but i don't understand how to use osg::State that way, and just
 	//  disabling the arrays seems to make things work!
-	state.disableAllVertexArrays();
+	cthis->m_pDrawState->disableAllVertexArrays();
 
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCam = pScene->GetCamera();

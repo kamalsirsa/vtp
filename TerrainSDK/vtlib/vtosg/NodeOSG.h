@@ -14,6 +14,7 @@
 #include <osg/MatrixTransform>
 #include <osg/Fog>
 #include <osg/Geode>
+#include <osg/Version>
 
 /** \addtogroup sg */
 /*@{*/
@@ -403,7 +404,11 @@ public:
 
 	// As of OSG 0.9.9, computeBound returns a BoundingBox
 	virtual osg::BoundingBox computeBound() const;
+#if OSG_VERSION_MAJOR == 2
+	virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
+#else
 	virtual void drawImplementation(osg::State& state) const;
+#endif
 
 	class vtDynGeom		*m_pDynGeom;
 	osg::State			*m_pDrawState;
