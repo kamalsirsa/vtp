@@ -1378,8 +1378,15 @@ bool GDALWrapper::FindPROJ4SO()
 	vtStringArray dpso;
 	dpso.push_back(vtString(DEFAULT_LOCATION_PROJSO));
 	// add the usual unix paths
+
+// On 64-bit Linux, 64-bit libs are in lib64
+#ifdef _LP64
+	dpso.push_back(vtString("/usr/local/lib64/"));
+	dpso.push_back(vtString("/usr/lib64/"));
+#else
 	dpso.push_back(vtString("/usr/local/lib/"));
 	dpso.push_back(vtString("/usr/lib/"));
+#endif
 
 	// On non-Windows platform, we have to look for the library itself
 	vtString soExtension = ".unknown"; // for no platform.

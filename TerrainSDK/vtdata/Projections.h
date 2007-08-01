@@ -214,7 +214,11 @@ extern GDALWrapper g_GDALWrapper;
 #else // other unixes
 	#define DEFAULT_LOCATION_GDAL_DATA "/usr/local/share/gdal/"
 	#define DEFAULT_LOCATION_PROJ_LIB "/usr/local/share/proj/"
-	#define DEFAULT_LOCATION_PROJSO "/usr/local/lib/"
+#  if _LP64
+#       define DEFAULT_LOCATION_PROJSO "/usr/local/lib64/"
+#  else
+#       define DEFAULT_LOCATION_PROJSO "/usr/local/lib/"
+#  endif
 #endif
 
 #endif	// PROJECTIONSH
