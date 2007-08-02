@@ -415,6 +415,8 @@ void LinearStructureDlg::OnSlider( wxCommandEvent &event )
 	int id = event.GetId();
 	SlidersToValues(id);
 	GuessStyle();
+
+	// Update text controls
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
@@ -429,9 +431,17 @@ void LinearStructureDlg::OnTextEdit( wxCommandEvent &event )
 	m_param.m_fPostDepth = m_param.m_fPostWidth;
 	ValuesToSliders();
 	GuessStyle();
+
+	// Update sliders
 	m_bSetting = true;
-	TransferDataToWindow();
+	GetConnBottomSlider()->GetValidator()->TransferToWindow();
+	GetConnTopSlider()->GetValidator()->TransferToWindow();
+	GetConnWidthSlider()->GetValidator()->TransferToWindow();
+	GetPostSizeSlider()->GetValidator()->TransferToWindow();
+	GetPostHeightSlider()->GetValidator()->TransferToWindow();
+	GetPostSpacingSlider()->GetValidator()->TransferToWindow();
 	m_bSetting = false;
+
 	OnSetOptions(m_param);
 }
 
