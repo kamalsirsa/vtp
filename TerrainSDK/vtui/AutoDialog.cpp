@@ -7,7 +7,7 @@
 //
 // wxNumericValidator - A validator capable of transfering numeric values.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -90,13 +90,49 @@ bool wxNumericValidator::TransferToWindow()
 	if ( !m_bEnabled )
 		return true;
 
-	wxString str, format;
-	if (m_pValShort)
-		str.Printf(_T("%d"), *m_pValShort);
-	if (m_pValInt)
-		str.Printf(_T("%d"), *m_pValInt);
-	if (m_pValFloat)
+	// Compare existing string to new string; don't update unless the actual
+	//  numeric value has changed.
+	wxString OldString;
+	if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
 	{
+		wxStaticText* pControl = (wxStaticText*) m_validatorWindow;
+		if (pControl)
+			OldString = pControl->GetLabel() ;
+	}
+	else if (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl)) )
+	{
+		wxTextCtrl* pControl = (wxTextCtrl*) m_validatorWindow;
+		if (pControl)
+			OldString = pControl->GetValue() ;
+	}
+	else
+		return false;
+
+	wxString str, format;
+	long OldIntValue;
+	double OldDoubleValue;
+	if (m_pValShort)
+	{
+		OldString.ToLong(&OldIntValue);
+		if (OldIntValue == (long)*m_pValShort)
+			return true;
+
+		str.Printf(_T("%d"), *m_pValShort);
+	}
+	else if (m_pValInt)
+	{
+		OldString.ToLong(&OldIntValue);
+		if (OldIntValue == (long)*m_pValInt)
+			return true;
+
+		str.Printf(_T("%d"), *m_pValInt);
+	}
+	else if (m_pValFloat)
+	{
+		OldString.ToDouble(&OldDoubleValue);
+		if (OldDoubleValue == (double)*m_pValFloat)
+			return true;
+
 		if (m_iDigits != -1)
 		{
 			format.Printf(_T("%%.%df"), m_iDigits);
@@ -105,8 +141,12 @@ bool wxNumericValidator::TransferToWindow()
 		else
 			str.Printf(_T("%.8g"), *m_pValFloat);	// 8 significant digits
 	}
-	if (m_pValDouble)
+	else if (m_pValDouble)
 	{
+		OldString.ToDouble(&OldDoubleValue);
+		if (OldDoubleValue == *m_pValDouble)
+			return true;
+
 		if (m_iDigits != -1)
 		{
 			format.Printf(_T("%%.%dlf"), m_iDigits);
@@ -121,7 +161,7 @@ bool wxNumericValidator::TransferToWindow()
 		wxStaticText* pControl = (wxStaticText*) m_validatorWindow;
 		if (pControl)
 		{
-			pControl->SetLabel(str) ;
+			pControl->SetLabel(str);
 			return true;
 		}
 	}
@@ -131,12 +171,10 @@ bool wxNumericValidator::TransferToWindow()
 		wxTextCtrl* pControl = (wxTextCtrl*) m_validatorWindow;
 		if (pControl)
 		{
-			pControl->SetValue(str) ;
+			pControl->SetValue(str);
 			return true;
 		}
 	}
-	else
-		return false;
 
 	// unrecognized control, or bad pointer
 	return false;
@@ -157,13 +195,13 @@ bool wxNumericValidator::TransferFromWindow()
 	{
 		wxStaticText* pControl = (wxStaticText*) m_validatorWindow;
 		if (pControl)
-			str = pControl->GetLabel() ;
+			str = pControl->GetLabel();
 	}
 	else if (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl)) )
 	{
 		wxTextCtrl* pControl = (wxTextCtrl*) m_validatorWindow;
 		if (pControl)
-			str = pControl->GetValue() ;
+			str = pControl->GetValue();
 	}
 	else // unrecognized control, or bad pointer
 		return false;
