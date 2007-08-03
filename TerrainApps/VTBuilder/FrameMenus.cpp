@@ -1550,8 +1550,7 @@ void MainFrame::OnViewWorldMap(wxCommandEvent& event)
 
 void MainFrame::OnUpdateWorldMap(wxUpdateUIEvent& event)
 {
-	wxAuiPaneInfo &info = m_mgr.GetPane(m_pView);
-	event.Check(info.IsShown());
+	event.Check(m_pView->GetShowMap());
 }
 
 void MainFrame::OnViewUTMBounds(wxCommandEvent& event)
