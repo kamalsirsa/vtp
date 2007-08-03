@@ -113,25 +113,34 @@ bool wxNumericValidator::TransferToWindow()
 	double OldDoubleValue;
 	if (m_pValShort)
 	{
-		OldString.ToLong(&OldIntValue);
-		if (OldIntValue == (long)*m_pValShort)
-			return true;
+		if (OldString != _T(""))
+		{
+			OldString.ToLong(&OldIntValue);
+			if (OldIntValue == (long)*m_pValShort)
+				return true;
+		}
 
 		str.Printf(_T("%d"), *m_pValShort);
 	}
 	else if (m_pValInt)
 	{
-		OldString.ToLong(&OldIntValue);
-		if (OldIntValue == (long)*m_pValInt)
-			return true;
+		if (OldString != _T(""))
+		{
+			OldString.ToLong(&OldIntValue);
+			if (OldIntValue == (long)*m_pValInt)
+				return true;
+		}
 
 		str.Printf(_T("%d"), *m_pValInt);
 	}
 	else if (m_pValFloat)
 	{
-		OldString.ToDouble(&OldDoubleValue);
-		if (OldDoubleValue == (double)*m_pValFloat)
-			return true;
+		if (OldString != _T(""))
+		{
+			OldString.ToDouble(&OldDoubleValue);
+			if (OldDoubleValue == (double)*m_pValFloat)
+				return true;
+		}
 
 		if (m_iDigits != -1)
 		{
@@ -143,9 +152,12 @@ bool wxNumericValidator::TransferToWindow()
 	}
 	else if (m_pValDouble)
 	{
-		OldString.ToDouble(&OldDoubleValue);
-		if (OldDoubleValue == *m_pValDouble)
-			return true;
+		if (OldString != _T(""))
+		{
+			OldString.ToDouble(&OldDoubleValue);
+			if (OldDoubleValue == *m_pValDouble)
+				return true;
+		}
 
 		if (m_iDigits != -1)
 		{
