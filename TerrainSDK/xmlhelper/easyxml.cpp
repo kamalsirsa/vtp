@@ -340,7 +340,7 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
 				if (iFileLength != -1)
 				{
 					// We know the length, so we can estimate total progress
-					progress += BUFSIZE;
+					progress += iCount;
 					// beware integer overflow, use doubles
 					double prog = (float)progress * 99.0 / iFileLength;
 					progress_callback((int) prog);
