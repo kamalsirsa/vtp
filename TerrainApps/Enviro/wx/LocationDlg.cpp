@@ -441,7 +441,7 @@ void LocationDlg::OnText( wxCommandEvent &event )
 	TransferDataFromWindow();
 	ValuesToSliders();
 	SetValues(PF_SPEED);
-	TransferToWindow();
+	FindWindow(ID_SPEEDSLIDER)->GetValidator()->TransferToWindow();
 }
 
 void LocationDlg::OnSpeedSlider( wxCommandEvent &event )

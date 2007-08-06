@@ -30,6 +30,7 @@
 BEGIN_EVENT_TABLE(LODDlg,AutoDialog)
 	EVT_SPIN_UP( ID_TARGET, LODDlg::OnSpinTargetUp )
 	EVT_SPIN_DOWN( ID_TARGET, LODDlg::OnSpinTargetDown )
+	EVT_TEXT( ID_TARGET, LODDlg::OnTarget )
 	EVT_TEXT( ID_TEXT_PRANGE, LODDlg::OnText )
 	EVT_SLIDER( ID_SLIDER_PRANGE, LODDlg::OnRangeSlider )
 END_EVENT_TABLE()
@@ -53,6 +54,7 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	GetTileStatus()->SetValue(_T("No paging threads"));
 
+	AddValidator(ID_TARGET, &m_iTarget);
 	AddNumValidator(ID_TEXT_PRANGE, &m_fRange);
 	AddValidator(ID_SLIDER_PRANGE, &m_iRange);
 
@@ -453,13 +455,20 @@ void LODDlg::DrawStructureState(vtPagedStructureLodGrid *grid, float fPageOutDis
 
 void LODDlg::OnSpinTargetUp( wxSpinEvent &event )
 {
-	m_pFrame->ChangeTerrainDetail(true);
+	m_pFrame->SetTerrainDetail(m_pFrame->GetTerrainDetail()+1000);
 	event.Veto();
 }
 
 void LODDlg::OnSpinTargetDown( wxSpinEvent &event )
 {
-	m_pFrame->ChangeTerrainDetail(false);
+	m_pFrame->SetTerrainDetail(m_pFrame->GetTerrainDetail()-1000);
 	event.Veto();
+}
+
+void LODDlg::OnTarget( wxCommandEvent &event )
+{
+	// User typed something into the Target control
+	TransferDataFromWindow();
+	m_pFrame->SetTerrainDetail(m_iTarget);
 }
 

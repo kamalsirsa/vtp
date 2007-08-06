@@ -66,6 +66,7 @@ private:
 	void OnSpinTargetUp( wxSpinEvent &event );
 	void OnSpinTargetDown( wxSpinEvent &event );
 	void OnText( wxCommandEvent &event );
+	void OnTarget( wxCommandEvent &event );
 	void OnRangeSlider( wxCommandEvent &event );
 
 private:

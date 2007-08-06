@@ -51,7 +51,8 @@ public:
 	virtual void SetMode(MouseMode mode);
 	void ToggleNavigate();
 	void ChangeFlightSpeed(float factor);
-	void ChangeTerrainDetail(bool bIncrease);
+	void SetTerrainDetail(int iMetric);
+	int GetTerrainDetail();
 	void ChangePagingRange(float prange);
 	void SetFullScreen(bool bFull);
 	ProfileDlg *ShowProfileDlg();

@@ -752,10 +752,10 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		break;
 
 	case '+':
-		ChangeTerrainDetail(true);
+		SetTerrainDetail(GetTerrainDetail()+1000);
 		break;
 	case '-':
-		ChangeTerrainDetail(false);
+		SetTerrainDetail(GetTerrainDetail()-1000);
 		break;
 
 	case 'd':
@@ -958,26 +958,34 @@ void EnviroFrame::ChangeFlightSpeed(float factor)
 	m_pCameraDlg->Refresh();
 }
 
-void EnviroFrame::ChangeTerrainDetail(bool bIncrease)
+void EnviroFrame::SetTerrainDetail(int iMetric)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	if (!pTerr) return;
+	if (!pTerr)
+		return;
+
 	vtDynTerrainGeom *pDyn = pTerr->GetDynTerrain();
 	if (pDyn)
-	{
-		if (bIncrease)
-			pDyn->SetPolygonTarget(pDyn->GetPolygonTarget()+1000);
-		else
-			pDyn->SetPolygonTarget(pDyn->GetPolygonTarget()-1000);
-	}
+		return pDyn->SetPolygonTarget(iMetric);
+
 	vtTiledGeom *pTiled = pTerr->GetTiledGeom();
 	if (pTiled)
-	{
-		if (bIncrease)
-			pTiled->SetVertexTarget(pTiled->GetVertexTarget()+1000);
-		else
-			pTiled->SetVertexTarget(pTiled->GetVertexTarget()-1000);
-	}
+		return pTiled->SetVertexTarget(iMetric);
+}
+
+int EnviroFrame::GetTerrainDetail()
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return 0;
+
+	vtDynTerrainGeom *pDyn = pTerr->GetDynTerrain();
+	if (pDyn)
+		return pDyn->GetPolygonTarget();
+
+	vtTiledGeom *pTiled = pTerr->GetTiledGeom();
+	if (pTiled)
+		return pTiled->GetVertexTarget();
 }
 
 void EnviroFrame::ChangePagingRange(float prange)
@@ -1767,12 +1775,12 @@ void EnviroFrame::OnUpdateFog(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnIncrease(wxCommandEvent& event)
 {
-	ChangeTerrainDetail(true);
+	SetTerrainDetail(GetTerrainDetail()+1000);
 }
 
 void EnviroFrame::OnDecrease(wxCommandEvent& event)
 {
-	ChangeTerrainDetail(false);
+	SetTerrainDetail(GetTerrainDetail()-1000);
 }
 
 void EnviroFrame::OnLOD(wxCommandEvent& event)
