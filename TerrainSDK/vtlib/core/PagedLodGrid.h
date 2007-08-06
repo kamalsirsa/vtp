@@ -126,8 +126,6 @@ public:
 
 struct QueueEntry {
 	vtPagedStructureLOD *pLOD;
-	//vtStructure *pStr;
-	//vtStructure3d *pStr3d;
 	int iStructIndex;
 	float fDistance;
 };
