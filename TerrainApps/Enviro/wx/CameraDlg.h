@@ -1,7 +1,7 @@
 //
 // Name: CameraDlg.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -39,6 +39,7 @@ public:
 	void GetValues();
 	void SetValues();
 	void TransferToWindow();
+	void SetSliderControls();
 
 	void CameraChanged();
 	void CheckAndUpdatePos();

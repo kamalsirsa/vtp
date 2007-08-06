@@ -1,7 +1,7 @@
 //
 // Name: CameraDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -285,7 +285,7 @@ void CameraDlg::CheckAndUpdatePos()
 		}
 	}
 	if (bTransfer)
-		TransferDataToWindow();
+		TransferToWindow();
 }
 
 void CameraDlg::TransferToWindow()
@@ -293,6 +293,19 @@ void CameraDlg::TransferToWindow()
 	m_bSet = false;
 	TransferDataToWindow();
 	m_bSet = true;
+}
+
+void CameraDlg::SetSliderControls()
+{
+	FindWindow(ID_FOVSLIDER)->GetValidator()->TransferToWindow();
+	FindWindow(ID_NEARSLIDER)->GetValidator()->TransferToWindow();
+	FindWindow(ID_FARSLIDER)->GetValidator()->TransferToWindow();
+	FindWindow(ID_EYE_SEPSLIDER)->GetValidator()->TransferToWindow();
+	FindWindow(ID_SPEEDSLIDER)->GetValidator()->TransferToWindow();
+
+	FindWindow(ID_SLIDER_VEG)->GetValidator()->TransferToWindow();
+	FindWindow(ID_SLIDER_STRUCT)->GetValidator()->TransferToWindow();
+	FindWindow(ID_SLIDER_ROAD)->GetValidator()->TransferToWindow();
 }
 
 // WDR: handler implementations for CameraDlg
@@ -315,7 +328,9 @@ void CameraDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	GetValues();
 	ValuesToSliders();
+	m_bSet = false;
 	wxDialog::OnInitDialog(event);  // calls TransferDataToWindow
+	m_bSet = true;
 }
 
 void CameraDlg::OnFovSlider( wxCommandEvent &event )
@@ -405,7 +420,7 @@ void CameraDlg::OnText( wxCommandEvent &event )
 	TransferDataFromWindow();
 	ValuesToSliders();
 	SetValues();
-	TransferToWindow();
+	SetSliderControls();
 }
 
 void CameraDlg::OnTextEnter( wxCommandEvent &event )
