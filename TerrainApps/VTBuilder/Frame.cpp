@@ -176,6 +176,7 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 	m_bAdoptFirstCRS = true;
 	m_LSOptions.Defaults();
 	m_pToolbar = NULL;
+	m_pMapServerDlg = NULL;
 	for (int i = 0; i < LAYER_TYPES; i++)
 		m_pLayBar[i] = NULL;
 

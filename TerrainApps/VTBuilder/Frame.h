@@ -54,6 +54,7 @@ class DistanceDlg2d;
 class LinearStructureDlg;
 class LinearStructureDlg2d;
 class InstanceDlg;
+class MapServerDlg;
 class RenderDlg;
 class ProfileDlg;
 class vtScaleBar;
@@ -510,6 +511,8 @@ protected:
 	LayerArray	m_Layers;
 	vtLayerPtr	m_pActiveLayer;
 	TilingOptions m_tileopts;
+
+	MapServerDlg *m_pMapServerDlg;
 
 	// UI members
 	wxMenu *fileMenu;

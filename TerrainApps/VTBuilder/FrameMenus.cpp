@@ -2683,33 +2683,34 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 
 #if SUPPORT_HTTP
 	// Ask the user for what server and layer they want
-	MapServerDlg dlg(this, -1, _T("WMS Request"));
+	if (!m_pMapServerDlg)
+		m_pMapServerDlg = new MapServerDlg(this, -1, _T("WMS Request"));
 
-	dlg.m_area = m_area;
-	dlg.m_proj = m_proj;
-	dlg.SetServerArray(m_wms_servers);
+	m_pMapServerDlg->m_area = m_area;
+	m_pMapServerDlg->m_proj = m_proj;
+	m_pMapServerDlg->SetServerArray(m_wms_servers);
 
-	if (dlg.ShowModal() != wxID_OK)
+	if (m_pMapServerDlg->ShowModal() != wxID_OK)
 		return;
 
 	// Prepare to receive the WMS data
-	if (dlg.m_bNewLayer)
+	if (m_pMapServerDlg->m_bNewLayer)
 	{
 		// Enforce PNG, that's all we support so far
-		dlg.m_iFormat = 1;	// png
-		dlg.UpdateURL();
+		m_pMapServerDlg->m_iFormat = 1;	// png
+		m_pMapServerDlg->UpdateURL();
 	}
 	FILE *fp;
 	wxString str;
-	if (dlg.m_bToFile)
+	if (m_pMapServerDlg->m_bToFile)
 	{
 		// Very simple: just write the buffer to disk
-		fp = vtFileOpen(dlg.m_strToFile.mb_str(wxConvUTF8), "wb");
+		fp = vtFileOpen(m_pMapServerDlg->m_strToFile.mb_str(wxConvUTF8), "wb");
 		if (!fp)
 		{
 			str = _("Could not open file");
 			str += _T(" '");
-			str += dlg.m_strToFile;
+			str += m_pMapServerDlg->m_strToFile;
 			str += _T("'");
 			wxMessageBox(str);
 			return;
@@ -2721,7 +2722,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 	ReqContext rc;
 	rc.SetProgressCallback(progress_callback);
 	vtBytes data;
-	bool success = rc.GetURL(dlg.m_strQueryURL.mb_str(wxConvUTF8), data);
+	bool success = rc.GetURL(m_pMapServerDlg->m_strQueryURL.mb_str(wxConvUTF8), data);
 	CloseProgressDialog();
 
 	if (!success)
@@ -2730,7 +2731,10 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		wxMessageBox(str);
 		return;
 	}
-	if (data.Len() > 5 && !strncmp((char *)data.Get(), "<?xml", 5))
+	if (data.Len() > 5 &&
+		(!strncmp((char *)data.Get(), "<?xml", 5) ||
+		 !strncmp((char *)data.Get(), "<WMT", 4) ||
+		 !strncmp((char *)data.Get(), "<!DOC", 5)))
 	{
 		// We got an XML-formatted response, not the image we were expecting.
 		// The XML probably contains diagnostic error msg.
@@ -2742,7 +2746,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		return;
 	}
 
-	if (dlg.m_bNewLayer)
+	if (m_pMapServerDlg->m_bNewLayer)
 	{
 		// Now data contains the PNG file in memory, so parse it.
 		vtImageLayer *pIL = new vtImageLayer;
@@ -2756,7 +2760,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		else
 			delete pIL;
 	}
-	if (dlg.m_bToFile)
+	if (m_pMapServerDlg->m_bToFile)
 	{
 		fwrite(data.Get(), data.Len(), 1, fp);
 		fclose(fp);

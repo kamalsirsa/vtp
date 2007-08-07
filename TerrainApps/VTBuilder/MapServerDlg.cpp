@@ -53,7 +53,7 @@ MapServerDlg::MapServerDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	m_iServer = -1;
 	m_iLayer = -1;
 	m_iStyle = -1;
-	m_iFormat = 0;
+	m_iFormat = 1;
 	m_bNewLayer = true;
 	m_bToFile = false;
 
@@ -93,6 +93,11 @@ void MapServerDlg::UpdateEnabling()
 {
 	GetTextToFile()->Enable(m_bToFile);
 	GetDotdotdot()->Enable(m_bToFile);
+
+	// For now, going straight to memory must be PNG
+	if (!m_bToFile)
+		GetFormat()->SetSelection(1);
+	GetFormat()->Enable(m_bToFile);
 }
 
 
@@ -227,7 +232,9 @@ void MapServerDlg::OnInitDialog(wxInitDialogEvent& event)
 	UpdateLayerList();
 	UpdateLayerDescription();
 
+	m_bSetting = true;
 	wxWindow::OnInitDialog(event);
+	m_bSetting = false;
 }
 
 void MapServerDlg::OnSize( wxCommandEvent &event )
@@ -308,6 +315,9 @@ void MapServerDlg::UpdateURL()
 	OGCServer &server = m_pServers->at(m_iServer);
 	vtString url = server.m_url;
 	url += "?REQUEST=GetMap";
+
+	// Some servers seem to insist on a VERSION element
+    url += "&VERSION=1.1.0";
 
 	url += "&LAYERS=";  // required, even if left blank
 	if (m_iLayer != -1)
