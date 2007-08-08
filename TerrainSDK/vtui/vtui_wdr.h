@@ -148,28 +148,29 @@ const int ID_HORUNITS = 10099;
 const int ID_ZONE = 10100;
 const int ID_PROJPARAM = 10101;
 const int ID_STATEPLANE = 10102;
-const int ID_PROJ_LOAD = 10103;
-const int ID_PROJ_SAVE = 10104;
+const int ID_SET_EPSG = 10103;
+const int ID_PROJ_LOAD = 10104;
+const int ID_PROJ_SAVE = 10105;
 wxSizer *ProjectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_STATEPLANES = 10105;
-const int ID_NAD27 = 10106;
-const int ID_NAD83 = 10107;
-const int ID_RADIO_METERS = 10108;
-const int ID_RADIO_FEET = 10109;
-const int ID_RADIO_FEET_US = 10110;
+const int ID_STATEPLANES = 10106;
+const int ID_NAD27 = 10107;
+const int ID_NAD83 = 10108;
+const int ID_RADIO_METERS = 10109;
+const int ID_RADIO_FEET = 10110;
+const int ID_RADIO_FEET_US = 10111;
 wxSizer *StatePlaneDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_EDIT_PANEL = 10111;
-const int ID_ADD_POINT = 10112;
-const int ID_MOVE_POINT = 10113;
-const int ID_REMOVE_POINT = 10114;
-const int ID_SAVE_PROF = 10115;
-const int ID_SAVE_AS_PROF = 10116;
-const int ID_LOAD_PROF = 10117;
+const int ID_EDIT_PANEL = 10112;
+const int ID_ADD_POINT = 10113;
+const int ID_MOVE_POINT = 10114;
+const int ID_REMOVE_POINT = 10115;
+const int ID_SAVE_PROF = 10116;
+const int ID_SAVE_AS_PROF = 10117;
+const int ID_LOAD_PROF = 10118;
 wxSizer *ProfileEditDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TAGLIST = 10118;
+const int ID_TAGLIST = 10119;
 wxSizer *TagDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

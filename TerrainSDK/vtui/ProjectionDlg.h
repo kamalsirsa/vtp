@@ -1,7 +1,7 @@
 //
 // Name:		ProjectionDlg.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -96,6 +96,7 @@ private:
 	void OnHorizUnits( wxCommandEvent &event );
 	void OnZone( wxCommandEvent &event );
 	void OnSetStatePlane( wxCommandEvent &event );
+	void OnSetEPSG( wxCommandEvent &event );
 	void OnProjChoice( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 	void OnShowAllDatums( wxCommandEvent &event );
@@ -104,6 +105,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-
-#endif
+#endif	// __ProjectionDlg_H__
 

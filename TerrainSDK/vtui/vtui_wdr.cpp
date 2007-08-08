@@ -998,31 +998,38 @@ wxSizer *ProjectionDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxListCtrl *item15 = new wxListCtrl( parent, ID_PROJPARAM, wxDefaultPosition, wxSize(230,120), wxLC_REPORT|wxSUNKEN_BORDER );
     item0->Add( item15, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxButton *item16 = new wxButton( parent, ID_STATEPLANE, _("Set State Plane Projection"), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item17 = new wxBoxSizer( wxHORIZONTAL );
+    wxButton *item17 = new wxButton( parent, ID_STATEPLANE, _("Set State Plane Projection"), wxDefaultPosition, wxDefaultSize, 0 );
+    item16->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item18 = new wxButton( parent, ID_PROJ_LOAD, _("Load from File"), wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item18 = new wxButton( parent, ID_SET_EPSG, _("Set EPSG"), wxDefaultPosition, wxDefaultSize, 0 );
+    item16->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item19 = new wxButton( parent, ID_PROJ_SAVE, _("Save to File"), wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item16, 0, wxALIGN_CENTER, 5 );
 
-    item0->Add( item17, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticLine *item20 = new wxStaticLine( parent, ID_LINE2, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
-    item0->Add( item20, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxButton *item20 = new wxButton( parent, ID_PROJ_LOAD, _("Load from File"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
+    wxButton *item21 = new wxButton( parent, ID_PROJ_SAVE, _("Save to File"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item22 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item21->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item19, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    wxButton *item23 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item21->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticLine *item22 = new wxStaticLine( parent, ID_LINE2, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    item0->Add( item22, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item24 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item25 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

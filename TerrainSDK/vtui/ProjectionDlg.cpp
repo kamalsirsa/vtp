@@ -12,6 +12,8 @@
 #include "wx/wx.h"
 #endif
 
+#include <wx/numdlg.h>
+
 #include "ProjectionDlg.h"
 #include "StatePlaneDlg.h"
 #include "Helper.h"			// for GuessZoneFromGeo
@@ -35,6 +37,7 @@ BEGIN_EVENT_TABLE(ProjectionDlg, AutoDialog)
 	EVT_INIT_DIALOG (ProjectionDlg::OnInitDialog)
 	EVT_CHOICE( ID_PROJ, ProjectionDlg::OnProjChoice )
 	EVT_BUTTON( ID_STATEPLANE, ProjectionDlg::OnSetStatePlane )
+	EVT_BUTTON( ID_SET_EPSG, ProjectionDlg::OnSetEPSG )
 	EVT_CHOICE( ID_ZONE, ProjectionDlg::OnZone )
 	EVT_CHOICE( ID_HORUNITS, ProjectionDlg::OnHorizUnits )
 	EVT_LIST_ITEM_RIGHT_CLICK( ID_PROJPARAM, ProjectionDlg::OnItemRightClick )
@@ -500,6 +503,25 @@ void ProjectionDlg::OnZone( wxCommandEvent &event )
 void ProjectionDlg::OnSetStatePlane( wxCommandEvent &event )
 {
 	AskStatePlane();
+}
+
+void ProjectionDlg::OnSetEPSG( wxCommandEvent &event )
+{
+	// 4001 - 4904 for GCS values, 2000 - 3993 or 20004 - 32766 for PCS
+	// Get an integer
+	int value = m_proj.GuessEPSGCode();
+	int minv = 2000;
+	int maxv = 32766;
+	value = wxGetNumberFromUser(_T(""), _("Enter EPSG code:"), _("Input"),
+		value, minv, maxv);
+	if (value < 0)
+		return;
+
+	OGRErr result = m_proj.importFromEPSG(value);
+	if (result == OGRERR_FAILURE)
+		wxMessageBox(_("Couldn't set EPSG coordinate system."));
+	else
+		SetUIFromProjection();
 }
 
 void ProjectionDlg::OnProjChoice( wxCommandEvent &event )
