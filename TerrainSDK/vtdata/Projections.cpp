@@ -667,29 +667,36 @@ void vtProjection::LogDescription() const
 	}
 }
 
+/**
+ * Try to determine the EPSG code that corresponds to the current projection.
+ * This important capability is mysteriously absent from the underlying
+ * libraries (OGR, PROJ.4) so it is implemented here.
+ *
+ * \return An EPSG coordinate system code, or -1 if it couldn't be guessed.
+ */
 int vtProjection::GuessEPSGCode() const
 {
 	int iCoordSystem = -1;
 	int iDatum = GetDatum();
 	if (IsGeographic())
+		return iDatum - 2000;
+
+	const char *attr = GetAttrValue("PROJCS");
+	if (attr != NULL && strcmp(attr, "OSGB 1936 / British National Grid") == 0)
+		return 27700;
+
+	int zone = GetUTMZone();
+	if (zone > 0)
 	{
-		iCoordSystem = iDatum - 2000;
+		// It's UTM North
+		if (iDatum == 6326)
+			iCoordSystem = 32600 + zone;
 	}
-	else
+	if (zone < 0)
 	{
-		int zone = GetUTMZone();
-		if (zone > 0)
-		{
-			// It's UTM North
-			if (iDatum == 6326)
-				iCoordSystem = 32600 + zone;
-		}
-		if (zone < 0)
-		{
-			// It's UTM South
-			if (iDatum == 6326)
-				iCoordSystem = 32700 + (-zone);
-		}
+		// It's UTM South
+		if (iDatum == 6326)
+			iCoordSystem = 32700 + (-zone);
 	}
 	return iCoordSystem;
 }
