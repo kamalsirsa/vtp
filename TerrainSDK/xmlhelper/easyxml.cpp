@@ -179,6 +179,9 @@ static void processing_instruction (void * userData,
 // Implementation of XMLReader.
 ////////////////////////////////////////////////////////////////////////
 
+/**
+ * Read and parse the XML from an istream.
+ */
 void readXML (istream &input, XMLVisitor &visitor, const string &path,
 			  bool progress_callback(int))
 {
@@ -270,7 +273,9 @@ void readXML (const string &path_utf8, XMLVisitor &visitor,
 	if (progress_callback != NULL)
 	{
 		const char *path_cstr = path_utf8.c_str();
-		if (strncmp(path_cstr+path_utf8.length()-1, "gz", 2))
+
+		// Not compressed if: filename does not end with "gz"
+		if (strncmp(path_cstr+path_utf8.length()-2, "gz", 2))
 		{
 			fseek(fp, 0, SEEK_END);
 			iFileLength = ftell(fp);
