@@ -96,14 +96,12 @@ bool wxNumericValidator::TransferToWindow()
 	if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
 	{
 		wxStaticText* pControl = (wxStaticText*) m_validatorWindow;
-		if (pControl)
-			OldString = pControl->GetLabel() ;
+		OldString = pControl->GetLabel();
 	}
 	else if (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl)) )
 	{
 		wxTextCtrl* pControl = (wxTextCtrl*) m_validatorWindow;
-		if (pControl)
-			OldString = pControl->GetValue() ;
+		OldString = pControl->GetValue();
 	}
 	else
 		return false;
