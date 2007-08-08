@@ -241,6 +241,9 @@
 				RelativePath=".\StatePlaneDlg.cpp">
 			</File>
 			<File
+				RelativePath=".\TagDlg.cpp">
+			</File>
+			<File
 				RelativePath="vtui_wdr.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -303,6 +306,9 @@
 			</File>
 			<File
 				RelativePath=".\StatePlaneDlg.h">
+			</File>
+			<File
+				RelativePath=".\TagDlg.h">
 			</File>
 			<File
 				RelativePath="vtui_wdr.h">
