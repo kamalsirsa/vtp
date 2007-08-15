@@ -13,6 +13,9 @@
 /** \addtogroup terrain */
 /*@{*/
 
+/**
+ * Simple abstraction class to describe all vtlib terrain layers.
+ */
 class vtLayer
 {
 public:
@@ -24,6 +27,9 @@ public:
 	virtual bool GetVisible() = 0;
 };
 
+/**
+ * This class encapsulates vtStructureArray3d as a terrain layer.
+ */
 class vtStructureLayer : public vtStructureArray3d, public vtLayer
 {
 public:
@@ -39,6 +45,9 @@ public:
 	}
 };
 
+/**
+ * A vtlib image layer is a bitmap draped on the terrain surface.
+ */
 class vtImageLayer : public vtLayer
 {
 public:

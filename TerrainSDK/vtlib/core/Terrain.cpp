@@ -1198,7 +1198,7 @@ bool vtTerrain::GetGeoExtentsFromMetadata()
  * Attempt to load structures from a VTST file.  If successful, the structures
  * will be added to the Terrain's set of structure arrays.
  */
-vtStructureArray3d *vtTerrain::LoadStructuresFromXML(const vtString &strFilename)
+vtStructureLayer *vtTerrain::LoadStructuresFromXML(const vtString &strFilename)
 {
 	VTLOG("LoadStructuresFromXML '%s'\n", (const char *) strFilename);
 	vtStructureLayer *structures = NewStructureLayer();
@@ -1226,6 +1226,7 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 		m_fPagingStructureDist = m_Params.GetValueInt("PagingStructureDist");
 
 		m_pPagedStructGrid->SetArray(structures);
+		VTLOG("\tAppending %d structures to the paged grid.\n", num_structs);
 		for (int i = 0; i < num_structs; i++)
 		{
 			m_pPagedStructGrid->AppendToGrid(i);

@@ -215,7 +215,7 @@ public:
 	vtStructureLayer *GetStructureLayer();
 	void SetStructureLayer(vtStructureLayer *slay);
 	vtStructureLayer *NewStructureLayer();
-	vtStructureArray3d *LoadStructuresFromXML(const vtString &strFilename);
+	vtStructureLayer *LoadStructuresFromXML(const vtString &strFilename);
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
 	int DeleteSelectedStructures();
