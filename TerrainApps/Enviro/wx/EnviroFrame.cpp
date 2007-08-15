@@ -986,6 +986,8 @@ int EnviroFrame::GetTerrainDetail()
 	vtTiledGeom *pTiled = pTerr->GetTiledGeom();
 	if (pTiled)
 		return pTiled->GetVertexTarget();
+
+	return 0;
 }
 
 void EnviroFrame::ChangePagingRange(float prange)
