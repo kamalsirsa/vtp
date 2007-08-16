@@ -413,6 +413,16 @@ void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
 					e.pLOD->AddChild(pTrans);
 				e.pLOD->m_iNumConstructed ++;
 			}
+			else
+			{
+				VTLOG("Error: couldn't construct index %d\n", e.iStructIndex);
+				vtStructInstance *si = m_pStructureArray->GetInstance(e.iStructIndex);
+				if (si)
+				{
+					const char *fname = si->GetValueString("filename", true);
+					VTLOG("\tinstance fname: '%s'\n", fname ? fname : "null");
+				}
+			}
 			m_Queue.pop_back();
 		}
 		last_campos = CamPos;
