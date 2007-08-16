@@ -231,6 +231,8 @@ void EnviroGUI::SetTimeEngineToGUI(class vtTimeEngine *pEngine)
 
 void EnviroGUI::SaveVegetation(bool bAskFilename)
 {
+	VTLOG1("EnviroGUI::SaveVegetation\n");
+
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtPlantInstanceArray &pia = pTerr->GetPlantInstances();
 
@@ -263,6 +265,8 @@ void EnviroGUI::SaveVegetation(bool bAskFilename)
 
 void EnviroGUI::SaveStructures(bool bAskFilename)
 {
+	VTLOG1("EnviroGUI::SaveStructures\n");
+
 	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructureLayer();
 	vtString fname = sa->GetFilename();
 	if (bAskFilename)
@@ -298,6 +302,10 @@ bool EnviroGUI::IsAcceptable(vtTerrain *pTerr)
 
 void EnviroGUI::ShowMessage(const vtString &str)
 {
+	VTLOG1("EnviroGUI::ShowMessage '");
+	VTLOG1(str);
+	VTLOG1("'\n");
+
 	EnableContinuousRendering(false);
 
 	wxString str2(str, wxConvUTF8);

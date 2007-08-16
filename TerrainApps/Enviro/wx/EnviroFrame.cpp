@@ -1279,6 +1279,8 @@ void EnviroFrame::OnUpdateViewLocations(wxUpdateUIEvent& event)
 
 void EnviroFrame::Snapshot(bool bNumbered)
 {
+	VTLOG1("EnviroFrame::Snapshot\n");
+
 	vtScene *scene = vtGetScene();
 	IPoint2 size = scene->GetWindowSize();
 
@@ -1835,6 +1837,8 @@ void EnviroFrame::OnUpdateFoundations(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnTerrainReshade(wxCommandEvent& event)
 {
+	VTLOG1("EnviroFrame::OnTerrainReshade\n");
+
 	vtTerrain *pTerr = GetCurrentTerrain();
 	if (!pTerr)
 		return;
@@ -1852,6 +1856,8 @@ void EnviroFrame::OnTerrainReshade(wxCommandEvent& event)
 
 void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 {
+	VTLOG1("EnviroFrame::OnTerrainChangeTexture\n");
+
 	vtTerrain *pTerr = GetCurrentTerrain();
 	if (!pTerr)
 		return;
