@@ -2576,7 +2576,11 @@ void vtTerrain::SetLODDistance(TFType ftype, float fDistance)
 		break;
 	case TFT_STRUCTURES:
 		if (m_pStructGrid)
+		{
+			if (fDistance != m_pStructGrid->GetDistance())
+				VTLOG("Structure LOD dist = %.1f\n", fDistance);
 			m_pStructGrid->SetDistance(fDistance);
+		}
 		break;
 	case TFT_ROADS:
 		if (m_pRoadMap)
