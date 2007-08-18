@@ -2,17 +2,17 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C++ Express 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg-vc8.vcproj", "{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtui", "..\..\TerrainSDK\vtui\vtui-vc8.vcproj", "{1182B805-A4E1-4E20-AED3-C535DC09F2DD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtui", "..\..\TerrainSDK\vtui\vtui-vc8.vcproj", "{7C827991-8AEF-4B89-A980-DC2BDFC93955}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro-OSG-vc8.vcproj", "{13E5F4CD-63ED-454D-A086-1545C79E2552}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro-OSG-vc8.vcproj", "{EB511FDC-A380-4724-9A95-7FEAC5561FEA}"
 	ProjectSection(ProjectDependencies) = postProject
-		{1182B805-A4E1-4E20-AED3-C535DC09F2DD} = {1182B805-A4E1-4E20-AED3-C535DC09F2DD}
-		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8} = {CE530C9F-129C-4398-B95A-26A2F1AFB9B8}
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6} = {F35AD44A-5921-4C7F-842F-0B3138825EA6}
+		{7C827991-8AEF-4B89-A980-DC2BDFC93955} = {7C827991-8AEF-4B89-A980-DC2BDFC93955}
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98} = {C2715AAA-C99B-438E-BF57-8357BD21AE98}
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D} = {15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper-vc8.vcproj", "{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper-vc8.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata-vc8.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
 EndProject
@@ -26,18 +26,18 @@ Global
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}.Debug Unicode|Win32.Build.0 = Debug|Win32
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}.Release Unicode|Win32.ActiveCfg = Release|Win32
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}.Release Unicode|Win32.Build.0 = Release|Win32
-		{1182B805-A4E1-4E20-AED3-C535DC09F2DD}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
-		{1182B805-A4E1-4E20-AED3-C535DC09F2DD}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
-		{1182B805-A4E1-4E20-AED3-C535DC09F2DD}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
-		{1182B805-A4E1-4E20-AED3-C535DC09F2DD}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
-		{13E5F4CD-63ED-454D-A086-1545C79E2552}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
-		{13E5F4CD-63ED-454D-A086-1545C79E2552}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
-		{13E5F4CD-63ED-454D-A086-1545C79E2552}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
-		{13E5F4CD-63ED-454D-A086-1545C79E2552}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
-		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
-		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}.Debug Unicode|Win32.Build.0 = Debug|Win32
-		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}.Release Unicode|Win32.ActiveCfg = Release|Win32
-		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}.Release Unicode|Win32.Build.0 = Release|Win32
+		{7C827991-8AEF-4B89-A980-DC2BDFC93955}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
+		{7C827991-8AEF-4B89-A980-DC2BDFC93955}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
+		{7C827991-8AEF-4B89-A980-DC2BDFC93955}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{7C827991-8AEF-4B89-A980-DC2BDFC93955}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
+		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
+		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
+		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Release Unicode|Win32.Build.0 = Release|Win32
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug Unicode|Win32.Build.0 = Debug|Win32
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Release Unicode|Win32.ActiveCfg = Release|Win32
