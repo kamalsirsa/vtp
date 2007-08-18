@@ -54,8 +54,8 @@ public:
 	virtual void UpdateProgress(const char *msg, int amount1, int amount2);
 
 	// The following are useful methods
-	void SaveVegetation(bool bAskFilename);
-	void SaveStructures(bool bAskFilename);
+	bool SaveVegetation(bool bAskFilename);
+	bool SaveStructures(bool bAskFilename);
 
 	// navigation engines
 	vtJoystickEngine	*m_pJFlyer;

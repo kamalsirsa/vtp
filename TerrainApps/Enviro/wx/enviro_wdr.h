@@ -362,9 +362,16 @@ wxSizer *PagingDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_size
 
 // Declare toolbar functions
 
+#define ID_LAYER_LOAD 10253
+#define ID_LAYER_DELETE 10254
+#define ID_LAYER_SHADOW 10255
+void LayerToolBarFunc( wxToolBar *parent );
+
 // Declare bitmap functions
 
 wxBitmap MyBitmapsFunc( size_t index );
+
+wxBitmap ToolBitmapsFunc( size_t index );
 
 #endif
 

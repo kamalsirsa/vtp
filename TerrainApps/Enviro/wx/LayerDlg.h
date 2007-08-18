@@ -9,6 +9,8 @@
 #define __LayerDlg_H__
 
 #include "wx/imaglist.h"
+#include "wx/aui/aui.h"
+
 #include "enviro_wdr.h"
 #include "vtlib/core/AbstractLayer.h"
 #include "vtlib/core/TerrainLayers.h"
@@ -97,15 +99,6 @@ public:
 	~LayerDlg();
 	
 	// WDR: method declarations for LayerDlg
-	wxButton* GetLayerRemove()  { return (wxButton*) FindWindow( ID_LAYER_REMOVE ); }
-	wxButton* GetLayerCreate()  { return (wxButton*) FindWindow( ID_LAYER_CREATE ); }
-	wxButton* GetLayerSaveAs()  { return (wxButton*) FindWindow( ID_LAYER_SAVE_AS ); }
-	wxButton* GetLayerSave()  { return (wxButton*) FindWindow( ID_LAYER_SAVE ); }
-	wxButton* GetZoomTo()  { return (wxButton*) FindWindow( ID_LAYER_ZOOM_TO ); }
-	wxCheckBox* GetVisible()  { return (wxCheckBox*) FindWindow( ID_LAYER_VISIBLE ); }
-	wxCheckBox* GetShadow()  { return (wxCheckBox*) FindWindow( ID_SHADOW_VISIBLE ); }
-	wxCheckBox* GetShowAll()  { return (wxCheckBox*) FindWindow( ID_SHOW_ALL ); }
-	wxTreeCtrl *GetTree()  { return (wxTreeCtrl*) FindWindow( ID_LAYER_TREE ); }
 	void RefreshTreeContents();
 	void RefreshTreeTerrain();
 	void UpdateTreeTerrain();
@@ -123,6 +116,10 @@ private:
 	bool	m_bShowAll;
 
 private:
+    wxAuiManager m_mgr;
+	wxPanel *m_main;
+	wxToolBar *m_pToolbar;
+
 	vtNode *GetNodeFromItem(wxTreeItemId item, bool bContainer = false);
 	vtStructureLayer *GetStructureLayerFromItem(wxTreeItemId item);
 	vtLayer *GetLayerFromItem(wxTreeItemId item);
@@ -133,6 +130,7 @@ private:
 	// WDR: handler declarations for LayerDlg
 	void OnLayerRemove( wxCommandEvent &event );
 	void OnLayerCreate( wxCommandEvent &event );
+	void OnLayerLoad( wxCommandEvent &event );
 	void OnLayerSave( wxCommandEvent &event );
 	void OnLayerSaveAs( wxCommandEvent &event );
 	void OnZoomTo( wxCommandEvent &event );
@@ -141,6 +139,10 @@ private:
 	void OnShowAll( wxCommandEvent &event );
 	void OnSelChanged( wxTreeEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
+
+	void OnUpdateVisible(wxUpdateUIEvent& event);
+	void OnUpdateShadow(wxUpdateUIEvent& event);
+	void OnUpdateShowAll(wxUpdateUIEvent& event);
 
 private:
 	DECLARE_EVENT_TABLE()

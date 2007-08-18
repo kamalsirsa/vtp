@@ -229,7 +229,7 @@ void EnviroGUI::SetTimeEngineToGUI(class vtTimeEngine *pEngine)
 
 //////////////////////////////////////////////////////////////////////
 
-void EnviroGUI::SaveVegetation(bool bAskFilename)
+bool EnviroGUI::SaveVegetation(bool bAskFilename)
 {
 	VTLOG1("EnviroGUI::SaveVegetation\n");
 
@@ -254,16 +254,17 @@ void EnviroGUI::SaveVegetation(bool bAskFilename)
 		if (!bResult)
 		{
 			wxSetWorkingDirectory(path);	// restore
-			return;
+			return false;
 		}
 		wxString str = saveFile.GetPath();
 		fname = str.mb_str(wxConvUTF8);
 		pia.SetFilename(fname);
 	}
 	pia.WriteVF(fname);
+	return true;
 }
 
-void EnviroGUI::SaveStructures(bool bAskFilename)
+bool EnviroGUI::SaveStructures(bool bAskFilename)
 {
 	VTLOG1("EnviroGUI::SaveStructures\n");
 
@@ -286,13 +287,14 @@ void EnviroGUI::SaveStructures(bool bAskFilename)
 		if (!bResult)
 		{
 			wxSetWorkingDirectory(path);	// restore
-			return;
+			return false;
 		}
 		wxString str = saveFile.GetPath();
 		fname = str.mb_str(wxConvUTF8);
 		sa->SetFilename(fname);
 	}
 	sa->WriteXML(fname);
+	return true;
 }
 
 bool EnviroGUI::IsAcceptable(vtTerrain *pTerr)

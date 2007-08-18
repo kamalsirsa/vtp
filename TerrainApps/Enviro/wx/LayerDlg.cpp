@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.cpp
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -54,32 +54,81 @@
 BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 	EVT_INIT_DIALOG (LayerDlg::OnInitDialog)
 	EVT_TREE_SEL_CHANGED( ID_LAYER_TREE, LayerDlg::OnSelChanged )
+
 	EVT_CHECKBOX( ID_SHOW_ALL, LayerDlg::OnShowAll )
 	EVT_CHECKBOX( ID_LAYER_VISIBLE, LayerDlg::OnVisible )
 	EVT_CHECKBOX( ID_SHADOW_VISIBLE, LayerDlg::OnShadowVisible )
-	EVT_BUTTON( ID_LAYER_ZOOM_TO, LayerDlg::OnZoomTo )
-	EVT_BUTTON( ID_LAYER_SAVE, LayerDlg::OnLayerSave )
-	EVT_BUTTON( ID_LAYER_SAVE_AS, LayerDlg::OnLayerSaveAs )
-	EVT_BUTTON( ID_LAYER_CREATE, LayerDlg::OnLayerCreate )
-	EVT_BUTTON( ID_LAYER_REMOVE, LayerDlg::OnLayerRemove )
+
+	EVT_MENU( ID_LAYER_CREATE, LayerDlg::OnLayerCreate )
+	EVT_MENU( ID_LAYER_LOAD, LayerDlg::OnLayerLoad )
+	EVT_MENU( ID_LAYER_SAVE, LayerDlg::OnLayerSave )
+	EVT_MENU( ID_LAYER_SAVE_AS, LayerDlg::OnLayerSaveAs )
+	EVT_MENU( ID_LAYER_DELETE, LayerDlg::OnLayerRemove )
+	EVT_MENU( ID_LAYER_ZOOM_TO, LayerDlg::OnZoomTo )
+
+	EVT_MENU( ID_LAYER_VISIBLE, LayerDlg::OnVisible )
+	EVT_MENU( ID_LAYER_SHADOW, LayerDlg::OnShadowVisible )
+	EVT_MENU( ID_SHOW_ALL, LayerDlg::OnShowAll )
+
+	EVT_UPDATE_UI(ID_LAYER_VISIBLE,	LayerDlg::OnUpdateVisible)
+	EVT_UPDATE_UI(ID_LAYER_SHADOW, LayerDlg::OnUpdateShadow)
+	EVT_UPDATE_UI(ID_SHOW_ALL,	LayerDlg::OnUpdateShowAll)
+
 END_EVENT_TABLE()
 
 LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	wxDialog( parent, id, title, position, size, style )
 {
-	// WDR: dialog function LayerDialogFunc for LayerDlg
-	LayerDialogFunc( this, TRUE );
+	long tbstyle = wxTB_FLAT | wxTB_NODIVIDER;
+	//tbstyle |= wxTB_HORZ_TEXT;
+	m_pToolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+								   tbstyle);
+	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
+	LayerToolBarFunc(m_pToolbar);
+	m_pToolbar->Realize();
 
-	m_pTree = GetTree();
+	// tell wxAuiManager to manage this frame
+	m_mgr.SetManagedWindow(this);
+
+	wxAuiPaneInfo api;
+	api.Name(_T("toolbar"));
+	api.ToolbarPane();
+	api.Top();
+	api.LeftDockable(false);
+	api.RightDockable(false);
+	wxSize best = m_pToolbar->GetBestSize();
+	api.MinSize(best);
+	api.Floatable(false);
+	m_mgr.AddPane(m_pToolbar, api);
+
+	m_main = new wxPanel( this, -1, wxDefaultPosition, wxDefaultSize, 0 );
+	m_mgr.AddPane(m_main, wxAuiPaneInfo().
+				  Name(wxT("pane1")).Caption(wxT("pane1")).
+				  CenterPane());
+	m_mgr.Update();
+
+    wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
+	m_pTree = new wxTreeCtrl( m_main, ID_LAYER_TREE, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_LINES_AT_ROOT|wxSUNKEN_BORDER );
+    item0->Add( m_pTree, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	wxSizer *top = item0;
+
+	m_main->SetSizer( item0 );
+
 	m_bShowAll = false;
 	m_imageListNormal = NULL;
 
 	CreateImageList(16);
+
+	// Note that the sizer for the _main_ pain informs the window of its
+	//  size hints.  The top level window (the dialog) has no sizer at all.
+	top->SetSizeHints(this);
 }
 
 LayerDlg::~LayerDlg()
 {
+    m_mgr.UnInit();
+
 	delete m_imageListNormal;
 }
 
@@ -120,7 +169,6 @@ void LayerDlg::CreateImageList(int size)
 void LayerDlg::SetShowAll(bool bTrue)
 {
 	m_bShowAll = bTrue;
-	GetShowAll()->SetValue(bTrue);
 }
 
 //
@@ -180,9 +228,6 @@ LayerItemData *LayerDlg::GetLayerDataFromItem(wxTreeItemId item)
 void LayerDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	RefreshTreeContents();
-	m_item = m_pTree->GetSelection();
-	UpdateEnabling();
-
 	wxWindow::OnInitDialog(event);
 }
 
@@ -205,6 +250,8 @@ void LayerDlg::RefreshTreeContents()
 	default:
 		break;
 	}
+	m_item = m_pTree->GetSelection();
+	UpdateEnabling();
 }
 
 // Helper
@@ -219,8 +266,8 @@ wxString MakeVegLayerString(vtPlantInstanceArray3d &pia)
 
 void LayerDlg::RefreshTreeTerrain()
 {
-	g_pLayerSizer1->Show(g_pLayerSizer2, true);
-	g_pLayerSizer1->Layout();
+	//g_pLayerSizer1->Show(g_pLayerSizer2, true);
+	//g_pLayerSizer1->Layout();
 
 	vtTerrain *terr = GetCurrentTerrain();
 	if (!terr)
@@ -385,8 +432,8 @@ void LayerDlg::UpdateTreeTerrain()
 
 void LayerDlg::RefreshTreeSpace()
 {
-	g_pLayerSizer1->Show(g_pLayerSizer2, false);
-	g_pLayerSizer1->Layout();
+	//g_pLayerSizer1->Show(g_pLayerSizer2, false);
+	//g_pLayerSizer1->Layout();
 
 	vtIcoGlobe *globe = g_App.GetGlobe();
 	if (!globe)
@@ -463,7 +510,7 @@ void LayerDlg::OnLayerCreate( wxCommandEvent &event )
 }
 
 //Helper
-void SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
+bool SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 {
 	vtString fname = set->GetFilename();
 
@@ -483,13 +530,19 @@ void SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 		if (!bResult)
 		{
 			wxSetWorkingDirectory(path);	// restore
-			return;
+			return false;
 		}
 		wxString str = saveFile.GetPath();
 		fname = str.mb_str(wxConvUTF8);
 		set->SetFilename(fname);
 	}
 	set->SaveToSHP(fname);
+	return true;
+}
+
+void LayerDlg::OnLayerLoad( wxCommandEvent &event )
+{
+	// TODO
 }
 
 void LayerDlg::OnLayerSave( wxCommandEvent &event )
@@ -498,23 +551,28 @@ void LayerDlg::OnLayerSave( wxCommandEvent &event )
 	if (!data)
 		return;
 
+	bool bSaved = false;
 	if (data->m_type == LT_STRUCTURE && data->m_slay != NULL)
 	{
 		GetCurrentTerrain()->SetStructureLayer(data->m_slay);
-		RefreshTreeContents();
-		g_App.SaveStructures(false);	// don't ask for filename
+		bSaved = g_App.SaveStructures(false);	// don't ask for filename
 	}
 
 	if (data->m_type == LT_VEG)
-		g_App.SaveVegetation(false);	// don't ask for filename
+		bSaved = g_App.SaveVegetation(false);	// don't ask for filename
 
 	if (data->m_type == LT_ABSTRACT)
-		SaveAbstractLayer(data->m_fset, false);	// don't ask for filename
+		bSaved = SaveAbstractLayer(data->m_fset, false);	// don't ask for filename
+
+	// Update the (*) next to the modified layer name
+	RefreshTreeContents();
 }
 
 void LayerDlg::OnLayerSaveAs( wxCommandEvent &event )
 {
 	LayerItemData *data = GetLayerDataFromItem(m_item);
+	if (!data)
+		return;
 
 	if (data->m_type == LT_STRUCTURE)
 		g_App.SaveStructures(true);		// ask for filename
@@ -578,6 +636,28 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 	}
 }
 
+void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
+{
+	if (!IsShown())
+		return;
+
+	bool bShadows = false;
+#if VTLIB_OSG
+	vtNode *pThing = GetNodeFromItem(m_item);
+	vtTerrain *terr = GetCurrentTerrain();
+	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
+	bShadows = (terr && terr->GetParams().GetValueBool(STR_STRUCT_SHADOWS) &&
+		(pThing != NULL || slay != NULL));
+#endif
+	event.Enable(bShadows);
+
+	LayerItemData *data = GetLayerDataFromItem(m_item);
+	if (slay && data)
+	{
+		event.Check(data->shadow_last_visible);
+	}
+}
+
 void LayerDlg::OnVisible( wxCommandEvent &event )
 {
 	bool bVis = event.IsChecked();
@@ -594,16 +674,40 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 	{
 		lay->SetVisible(bVis);
 		// Set might not succeed.  Update with true state.
-		GetVisible()->SetValue(lay->GetVisible());
+//		GetVisible()->SetValue(lay->GetVisible());
 	}
 }
+
+void LayerDlg::OnUpdateVisible(wxUpdateUIEvent& event)
+{
+	if (!IsShown())
+		return;
+
+	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
+	vtNode *pThing = GetNodeFromItem(m_item);
+	if (pThing && slay != NULL)
+	{
+		event.Check(pThing->GetEnabled());
+		return;
+	}
+	vtLayer *lay = GetLayerFromItem(m_item);
+	if (lay)
+	{
+		event.Check(lay->GetVisible());
+	}
+	event.Enable(pThing != NULL || lay != NULL);
+}
+
 
 void LayerDlg::OnShowAll( wxCommandEvent &event )
 {
 	m_bShowAll = event.IsChecked();
 	RefreshTreeContents();
-	m_item = m_pTree->GetSelection();
-	UpdateEnabling();
+}
+
+void LayerDlg::OnUpdateShowAll(wxUpdateUIEvent& event)
+{
+	event.Check(m_bShowAll);
 }
 
 void LayerDlg::OnSelChanged( wxTreeEvent &event )
@@ -628,34 +732,12 @@ void LayerDlg::OnSelChanged( wxTreeEvent &event )
 
 void LayerDlg::UpdateEnabling()
 {
-	vtNode *pThing = GetNodeFromItem(m_item);
+	bool bRemovable = false, bSaveable = false;
+
 	LayerItemData *data = GetLayerDataFromItem(m_item);
-	vtLayer *lay = GetLayerFromItem(m_item);
+	vtNode *pThing = GetNodeFromItem(m_item);
 	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
 
-	GetZoomTo()->Enable(pThing != NULL);
-	GetVisible()->Enable((pThing != NULL) || (slay != NULL) || (data != NULL && data->m_ilay != NULL));
-
-	bool bShadows = false;
-#if VTLIB_OSG
-	vtTerrain *terr = GetCurrentTerrain();
-	bShadows = (terr && terr->GetParams().GetValueBool(STR_STRUCT_SHADOWS) &&
-		((pThing != NULL) || (slay != NULL)));
-#endif
-	GetShadow()->Enable(bShadows);
-
-	if (pThing)
-		GetVisible()->SetValue(pThing->GetEnabled());
-	if (lay)
-		GetVisible()->SetValue(lay->GetVisible());
-	if (slay)
-	{
-		if (data) {
-			GetShadow()->SetValue(data->shadow_last_visible);
-		}
-	}
-
-	bool bRemovable = false, bSaveable = false;
 	if (data != NULL)
 	{
 		// We can save a structure layer if it is selected
@@ -671,8 +753,11 @@ void LayerDlg::UpdateEnabling()
 			bSaveable = true;
 	}
 
-	GetLayerRemove()->Enable(bRemovable);
-	GetLayerSave()->Enable(bSaveable);
-	GetLayerSaveAs()->Enable(bSaveable);
+	m_pToolbar->EnableTool(ID_LAYER_DELETE, bRemovable);
+
+	m_pToolbar->EnableTool(ID_LAYER_SAVE, bSaveable);
+	m_pToolbar->EnableTool(ID_LAYER_SAVE_AS, bSaveable);
+
+	m_pToolbar->EnableTool(ID_LAYER_ZOOM_TO, pThing != NULL);
 }
 
