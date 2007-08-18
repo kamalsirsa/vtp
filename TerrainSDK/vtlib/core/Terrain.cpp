@@ -2952,6 +2952,34 @@ void vtTerrain::RemoveLayer(vtLayer *lay)
 	m_Layers.Remove(lay);
 }
 
+/**
+ * Currently handled by this method: structure and abstract layers.
+ */
+vtLayer *vtTerrain::LoadLayer(const char *fname)
+{
+	vtString ext = GetExtension(fname);
+	if (!ext.CompareNoCase(".vtst"))
+	{
+		return LoadStructuresFromXML(fname);
+	}
+	else if (!ext.CompareNoCase(".shp"))
+	{
+		vtFeatureLoader loader;
+		vtFeatureSet *feat = loader.LoadFrom(fname);
+		if (!feat)
+		{
+			VTLOG("Couldn't read features from file '%s'\n", fname);
+			return NULL;
+		}
+		VTLOG("Successfully read features from file '%s'\n", fname);
+		vtAbstractLayer *alay = new vtAbstractLayer;
+		alay->pSet = feat;
+		m_Layers.Append(alay);
+		return alay;
+	}
+	return NULL;
+}
+
 
 ///////////////////////////////////////////////////////////////////////
 // Plants

@@ -201,6 +201,7 @@ public:
 	// Layers
 	LayerSet &GetLayers() { return m_Layers; }
 	void RemoveLayer(vtLayer *lay);
+	vtLayer *LoadLayer(const char *fname);
 
 	// plants
 	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
