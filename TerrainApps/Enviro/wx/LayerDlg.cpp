@@ -18,6 +18,7 @@
 #include "vtdata/vtLog.h"
 #include "EnviroGUI.h"  // for GetCurrentTerrain
 #include "canvas.h"		// for EnableContinuousRendering
+#include "StyleDlg.h"
 
 #include "LayerDlg.h"
 
@@ -542,7 +543,51 @@ bool SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 
 void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 {
-	// TODO
+	wxString filter = _("GIS Files (*.shp)|*.shp");
+	filter += _T("|");
+	filter += _("Structure Files (*.vtst)|*.vtst");
+	filter += _T("|");
+	filter += _("All supported layer formats (*.shp;*.vtst)|*.shp;*.vtst");
+
+	wxFileDialog loadFile(NULL, _("Load Layer"), _T(""), _T(""), filter, wxFD_OPEN);
+	bool bResult = (loadFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+	wxString str = loadFile.GetPath();
+	vtString fname = (const char *) str.mb_str(wxConvUTF8);
+
+	vtTerrain *terr = GetCurrentTerrain();
+	vtLayer *lay = terr->LoadLayer(fname);
+
+	vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
+	vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
+
+	if (slay)
+		terr->CreateStructures(slay);
+
+	if (alay)
+	{
+		// Ask style for the newly loaded layer
+		vtTagArray &props = alay->pSet->GetProperties();
+
+		StyleDlg dlg(NULL, -1, _("Style"));
+		dlg.SetFeatureSet(alay->pSet);
+		dlg.SetOptions(vtGetDataPath(), props);
+		if (dlg.ShowModal() != wxID_OK)
+		{
+			terr->GetLayers().Remove(alay);
+			delete alay;
+			return;
+		}
+		// Copy all the style attributes to the new featureset
+		VTLOG1("  Setting featureset properties.\n");
+		dlg.GetOptions(props);
+
+		alay->CreateStyledFeatures(terr);
+	}
+
+	if (lay)
+		RefreshTreeContents();
 }
 
 void LayerDlg::OnLayerSave( wxCommandEvent &event )
@@ -565,7 +610,8 @@ void LayerDlg::OnLayerSave( wxCommandEvent &event )
 		bSaved = SaveAbstractLayer(data->m_fset, false);	// don't ask for filename
 
 	// Update the (*) next to the modified layer name
-	RefreshTreeContents();
+	if (bSaved)
+		RefreshTreeContents();
 }
 
 void LayerDlg::OnLayerSaveAs( wxCommandEvent &event )
@@ -574,17 +620,19 @@ void LayerDlg::OnLayerSaveAs( wxCommandEvent &event )
 	if (!data)
 		return;
 
+	bool bSaved = false;
 	if (data->m_type == LT_STRUCTURE)
-		g_App.SaveStructures(true);		// ask for filename
+		bSaved = g_App.SaveStructures(true);		// ask for filename
 
 	if (data->m_type == LT_VEG)
-		g_App.SaveVegetation(true);	// ask for filename
+		bSaved = g_App.SaveVegetation(true);	// ask for filename
 
 	if (data->m_type == LT_ABSTRACT)
-		SaveAbstractLayer(data->m_fset, true);	// ask for filename
+		bSaved = SaveAbstractLayer(data->m_fset, true);	// ask for filename
 
 	// The filename may have changed
-	RefreshTreeContents();
+	if (bSaved)
+		RefreshTreeContents();
 }
 
 void LayerDlg::OnZoomTo( wxCommandEvent &event )
