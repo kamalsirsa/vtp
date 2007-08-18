@@ -150,6 +150,7 @@ public:
 	// methods
 	void SetDistance(float fLODDistance);
 	void SetArray(vtStructureArray3d *sa) { m_pStructureArray = sa; }
+	vtStructureArray3d *GetArray() { return m_pStructureArray; }
 	bool AppendToGrid(int iIndex);
 
 	vtPagedStructureLOD *GetPagedCell(int a, int b);
@@ -159,6 +160,7 @@ public:
 	bool RemoveFromQueue(int iIndex);
 	unsigned int GetQueueSize() { return m_Queue.size(); }
 	void SortQueue();
+	void ClearQueue();
 
 protected:
 	void CullFarawayStructures(const FPoint3 &CamPos,

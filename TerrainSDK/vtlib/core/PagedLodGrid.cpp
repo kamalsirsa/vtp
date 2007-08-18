@@ -55,6 +55,10 @@ void vtPagedStructureLOD::GetCenter(FPoint3 &center)
  */
 bool vtPagedStructureLOD::TestVisible(float fDistance, bool bLoad)
 {
+	// Check if this group belongs to a layer which should be visible
+	if (m_pGrid->GetArray()->GetEnabled() == false)
+		return false;
+
 	if (fDistance < m_fRange)
 	{
 		// Check if this group has any unbuilt structures
@@ -367,6 +371,15 @@ void vtPagedStructureLodGrid::SortQueue()
 	std::sort(m_Queue.begin(), m_Queue.end());
 }
 
+void vtPagedStructureLodGrid::ClearQueue()
+{
+	for (unsigned int i = 0; i < m_Queue.size(); i++)
+	{
+		QueueEntry &e = m_Queue[i];
+		e.pLOD->m_bAddedToQueue = false;
+	}
+	m_Queue.clear();
+}
 
 void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
 									   int iMaxStructures, float fDeleteDistance)

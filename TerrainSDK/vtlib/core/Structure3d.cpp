@@ -14,6 +14,7 @@
 #include "Fence3d.h"
 #include "Terrain.h"
 #include "TerrainScene.h"	// For content manager
+#include "PagedLodGrid.h"
 
 const vtString BMAT_NAME_HIGHLIGHT = "Highlight";
 
@@ -380,29 +381,14 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 				pThing->SetEnabled(bTrue);
 		}
 	}
-}
-
-bool vtStructureArray3d::GetEnabled()
-{
-	// Take a vote.  How many of the structures as enabled?
-	unsigned int num_sel = 0;
-	for (unsigned int j = 0; j < GetSize(); j++)
+	m_bEnabled = bTrue;
+	if (m_pTerrain && bTrue == false)
 	{
-		vtStructure3d *str3d = GetStructure3d(j);
-		if (str3d)
-		{
-			vtNode *pThing = str3d->GetContained();
-			if (pThing && pThing->GetEnabled())
-				num_sel++;
-		}
+		// don't keep paging in structures for this array
+		vtPagedStructureLodGrid *paged = m_pTerrain->GetStructureLodGrid();
+		if (paged)
+			paged->ClearQueue();
 	}
-	if (0 == num_sel)
-		return false;
-	if (GetSize() == 0)	// Presumed innocent if empty.
-		return true;
-	if (num_sel >= GetSize()/2)	// Like, a majority
-		return true;
-	return false;
 }
 
 //

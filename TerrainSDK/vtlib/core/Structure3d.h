@@ -156,7 +156,7 @@ protected:
  * This class extends vtStructureArray with the ability to construct and
  * manage 3D representations of the structures.
  */
-class vtStructureArray3d : public vtStructureArray
+class vtStructureArray3d : public vtStructureArray, public vtEnabledBase
 {
 public:
 	vtStructureArray3d();
@@ -184,9 +184,6 @@ public:
 
 	/// Enable (set visibility of) the structures
 	void SetEnabled(bool bTrue);
-
-	/// Get enabled state (visibility) of the structures
-	bool GetEnabled();
 
 	// Be informed of edit hightlighting
 	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
