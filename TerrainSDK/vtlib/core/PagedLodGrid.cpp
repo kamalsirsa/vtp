@@ -246,7 +246,7 @@ void vtPagedStructureLodGrid::DeconstructCell(vtPagedStructureLOD *pLOD)
 {
 	int count = 0;
 	vtArray<int> &indices = pLOD->m_StructureIndices;
-	VTLOG("Deconstruction check on %d structures: ", indices.GetSize());
+	//VTLOG("Deconstruction check on %d structures: ", indices.GetSize());
 	for (unsigned int i = 0; i < indices.GetSize(); i++)
 	{
 		vtStructure3d *str3d = m_pStructureArray->GetStructure3d(indices[i]);
@@ -259,7 +259,7 @@ void vtPagedStructureLodGrid::DeconstructCell(vtPagedStructureLOD *pLOD)
 		str3d->DeleteNode();
 		count++;
 	}
-	VTLOG("%d decon.\n", count);
+	//VTLOG("%d decon.\n", count);
 	pLOD->m_iNumConstructed = 0;
 	pLOD->m_bAddedToQueue = false;
 }
@@ -271,15 +271,15 @@ void vtPagedStructureLodGrid::RemoveCellFromQueue(vtPagedStructureLOD *pLOD)
 	if (pLOD->m_iNumConstructed == pLOD->m_StructureIndices.GetSize())
 		return;
 
-	vtArray<int> &indices = pLOD->m_StructureIndices;
-	VTLOG("Dequeueing check on %d structures: ", indices.GetSize());
+	const vtArray<int> &indices = pLOD->m_StructureIndices;
 	int count = 0;
 	for (unsigned int i = 0; i < indices.GetSize(); i++)
 	{
 		if (RemoveFromQueue(indices[i]))
 			count++;
 	}
-	VTLOG("%d dequeued.\n", count);
+	if (count != 0)
+		VTLOG("Dequeued %d of %d.\n", count, indices.GetSize());
 	pLOD->m_bAddedToQueue = false;
 }
 
@@ -299,6 +299,8 @@ void vtPagedStructureLodGrid::CullFarawayStructures(const FPoint3 &CamPos,
 	// If we have too many or have items in the queue
 	if (total_constructed > iMaxStructures || m_Queue.size() > 0)
 	{
+		//VTLOG("CullFarawayStructures: %d in Queue, ", m_Queue.size());
+		int total = 0, removed = 0;
 		// Delete/dequeue the ones that are very far
 		FPoint3 center;
 		for (int a = 0; a < m_dim; a++)
@@ -306,21 +308,29 @@ void vtPagedStructureLodGrid::CullFarawayStructures(const FPoint3 &CamPos,
 			for (int b = 0; b < m_dim; b++)
 			{
 				vtPagedStructureLOD *lod = m_pCells[CellIndex(a,b)];
-				if (!lod || lod->m_iNumConstructed == 0)
+				if (!lod)
 					continue;
+
+				total++;
 				lod->GetCenter(center);
 				float dist = (center - CamPos).Length();
 
 				// If very far, delete the structures entirely
-				if (total_constructed > iMaxStructures && dist > fDistance)
+				if (lod->m_iNumConstructed != 0 &&
+					total_constructed > iMaxStructures &&
+					dist > fDistance)
 					DeconstructCell(lod);
 
 				// If it has fallen out of the frustum, remove them
 				//  from the queue
 				if (dist > m_fLODDistance)
+				{
 					RemoveCellFromQueue(lod);
+					removed++;
+				}
 			}
 		}
+		//VTLOG(" %d cells, %d cell removed\n", total, removed);
 	}
 }
 
@@ -461,12 +471,11 @@ bool vtPagedStructureLodGrid::AddToQueue(vtPagedStructureLOD *pLOD, int iIndex)
 bool vtPagedStructureLodGrid::RemoveFromQueue(int iIndex)
 {
 	// Check if it's in the queue
-	for (unsigned int i = 0; i < m_Queue.size(); i++)
+	for (QueueVector::iterator it = m_Queue.begin(); it != m_Queue.end(); it++)
 	{
-		QueueEntry &e = m_Queue[i];
-		if (e.iStructIndex == iIndex)
+		if (it->iStructIndex == iIndex)
 		{
-			m_Queue.erase(m_Queue.begin()+i);
+			m_Queue.erase(it);
 			return true;
 		}
 	}

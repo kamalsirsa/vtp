@@ -130,6 +130,8 @@ struct QueueEntry {
 	float fDistance;
 };
 
+typedef std::vector<QueueEntry> QueueVector;
+
 /**
  * vtPagedStructureLodGrid provides a more complex implementation of vtLodGrid.
  *
@@ -176,7 +178,7 @@ protected:
 	void AllocateCell(int a, int b);
 	vtGroup *GetCell(int a, int b);
 
-	std::vector<QueueEntry> m_Queue;
+	QueueVector m_Queue;
 };
 
 #endif // PAGEDLODGRIDH
