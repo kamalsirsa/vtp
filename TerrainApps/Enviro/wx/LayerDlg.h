@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.h
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@
 #include "enviro_wdr.h"
 #include "vtlib/core/AbstractLayer.h"
 #include "vtlib/core/TerrainLayers.h"
+#include "vtlib/core/Globe.h"
 
 class vtNodeBase;
 
@@ -57,6 +58,13 @@ public:
 		m_type = LT_IMAGE;
 		m_layer = m_ilay = ilay;
 	}
+	LayerItemData(GlobeLayer *glay)
+	{
+		Defaults();
+		m_type = LT_ABSTRACT;
+		m_glay = glay;
+		m_fset = glay->m_pSet;
+	}
 	LayerItemData(LayerType type)
 	{
 		Defaults();
@@ -67,6 +75,7 @@ public:
 		m_layer = NULL;
 		m_alay = NULL;
 		m_slay = NULL;
+		m_glay = NULL;
 		m_fset = NULL;
 		m_index = -1;
 		m_item = -1;
@@ -78,6 +87,7 @@ public:
 	vtImageLayer *m_ilay;
 	vtStructureLayer *m_slay;
 	vtFeatureSet *m_fset;
+	GlobeLayer *m_glay;
 	int m_index;
 	int m_item;
 	bool shadow_last_visible;
@@ -107,6 +117,10 @@ public:
 	void SetShowAll(bool bTrue);
 	void UpdateEnabling();
 
+	// Public handler declarations for LayerDlg
+	void OnLayerCreate( wxCommandEvent &event );
+	void OnLayerLoad( wxCommandEvent &event );
+
 private:
 	// WDR: member variable declarations for LayerDlg
 	wxTreeCtrl *m_pTree;
@@ -129,8 +143,6 @@ private:
 
 	// WDR: handler declarations for LayerDlg
 	void OnLayerRemove( wxCommandEvent &event );
-	void OnLayerCreate( wxCommandEvent &event );
-	void OnLayerLoad( wxCommandEvent &event );
 	void OnLayerSave( wxCommandEvent &event );
 	void OnLayerSaveAs( wxCommandEvent &event );
 	void OnZoomTo( wxCommandEvent &event );
@@ -140,6 +152,7 @@ private:
 	void OnSelChanged( wxTreeEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
+	void OnUpdateCreate(wxUpdateUIEvent& event);
 	void OnUpdateVisible(wxUpdateUIEvent& event);
 	void OnUpdateShadow(wxUpdateUIEvent& event);
 	void OnUpdateShowAll(wxUpdateUIEvent& event);

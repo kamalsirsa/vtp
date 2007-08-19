@@ -85,6 +85,12 @@ public:
 
 	void OnFileLayers(wxCommandEvent& event);
 
+	void OnLayerCreate(wxCommandEvent& event);
+	void OnLayerLoad(wxCommandEvent& event);
+
+	void OnUpdateLayerCreate(wxUpdateUIEvent& event);
+	void OnUpdateLayerLoad(wxUpdateUIEvent& event);
+
 	void OnViewMaintain(wxCommandEvent& event);
 	void OnViewWireframe(wxCommandEvent& event);
 	void OnViewFullscreen(wxCommandEvent& event);
@@ -200,7 +206,6 @@ public:
 	void OnEarthTilt(wxCommandEvent& event);
 	void OnEarthFlatten(wxCommandEvent& event);
 	void OnEarthUnfold(wxCommandEvent& event);
-	void OnEarthPoints(wxCommandEvent& event);
 
 	void OnUpdateEarthShowShading(wxUpdateUIEvent& event);
 	void OnUpdateEarthShowAxes(wxUpdateUIEvent& event);

@@ -16,7 +16,18 @@
 
 class vtTerrainScene;
 
-typedef vtArray<vtFeatureSet*> vtFeaturesSet;
+class GlobeLayer : public vtEnabledBase
+{
+public:
+	void AddNode(vtNode *node) { m_GeomNodes.Append(node); }
+	void DestructGeometry();
+	void SetEnabled(bool bOn);
+
+	vtFeatureSet *m_pSet;
+	vtArray<vtNode*> m_GeomNodes;
+};
+
+typedef vtArray<GlobeLayer*> GlobeLayerArray;
 
 /** \addtogroup terrain */
 /*@{*/
@@ -58,8 +69,10 @@ public:
 	FQuat GetRotation() { return m_Rotation; }
 
 	// surface features
-	vtFeaturesSet &GetFeaturesSet() { return m_features; }
+	GlobeLayerArray &GetGlobeLayers() { return m_GlobeLayers; }
 	int AddGlobeFeatures(const char *fname, float fSize);
+	void RemoveLayer(GlobeLayer *glay);
+
 	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
 	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, const DPoint2 &g2);
 	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line);
@@ -85,12 +98,12 @@ protected:
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 	int GetMFace(int face, int subface);
-	void BuildSphericalFeatures(vtFeatureSet *feat, float fSize);
-	void BuildSphericalPoints(vtFeatureSet *feat, float fSize);
-	void BuildSphericalLines(vtFeatureSet *feat, float fSize);
-	void BuildSphericalPolygons(vtFeatureSet *feat, float fSize);
-	void BuildFlatFeatures(vtFeatureSet *feat, float fSize);
-	void BuildFlatPoint(vtFeatureSet *feat, int i, float fSize);
+	void BuildSphericalFeatures(GlobeLayer *glay, float fSize);
+	void BuildSphericalPoints(GlobeLayer *glay, float fSize);
+	void BuildSphericalLines(GlobeLayer *glay, float fSize);
+	void BuildSphericalPolygons(GlobeLayer *glay, float fSize);
+	void BuildFlatFeatures(GlobeLayer *glay, float fSize);
+	void BuildFlatPoint(GlobeLayer *glay, int i, float fSize);
 
 	void CreateMaterials(const vtStringArray &paths, const vtString &strImagePrefix);
 
@@ -154,7 +167,7 @@ protected:
 	FQuat	m_diff;
 
 	// Features (point, line, polygon..) draped on the globe
-	vtFeaturesSet	m_features;
+	GlobeLayerArray	m_GlobeLayers;
 };
 
 vtMovGeom *CreateSimpleEarth(const vtString &strDataPath);

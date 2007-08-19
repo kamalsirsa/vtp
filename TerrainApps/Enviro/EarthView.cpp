@@ -457,12 +457,16 @@ void Enviro::LookUpTerrainLocations()
 
 int Enviro::AddGlobeAbstractLayer(const char *fname)
 {
-//	int num_added = m_pIcoGlobe->AddGlobeFeatures(fname, 0.0015f);	// this size works OK for the VTP recipients
+	// Size: 0.0015f  works OK for the VTP recipients, 0.0005f for GeoURL s size works OK for the VTP recipients
 	int num_added = m_pIcoGlobe->AddGlobeFeatures(fname, 0.003f);
-//	int num_added = m_pIcoGlobe->AddGlobeFeatures(fname, 0.0005f);	// better for GeoURL
 	if (num_added != -1)
 		RefreshLayerView();
 	return num_added;
+}
+
+void Enviro::RemoveGlobeAbstractLayer(GlobeLayer *glay)
+{
+	m_pIcoGlobe->RemoveLayer(glay);
 }
 
 void Enviro::DoControlOrbit()

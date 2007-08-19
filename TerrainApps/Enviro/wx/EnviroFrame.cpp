@@ -81,7 +81,6 @@
 #  include "nav_set.xpm"
 #  include "nav_slow.xpm"
 #  include "placemark.xpm"
-#  include "points.xpm"
 #  include "route.xpm"
 #  include "scenario.xpm"
 #  include "select.xpm"
@@ -109,6 +108,10 @@ DECLARE_APP(EnviroApp);
 BEGIN_EVENT_TABLE(EnviroFrame, wxFrame)
 EVT_CHAR(EnviroFrame::OnChar)
 EVT_MENU(ID_FILE_LAYERS,			EnviroFrame::OnFileLayers)
+EVT_MENU(ID_FILE_LAYER_CREATE,		EnviroFrame::OnLayerCreate)
+EVT_UPDATE_UI(ID_FILE_LAYER_CREATE,	EnviroFrame::OnUpdateLayerCreate)
+EVT_MENU(ID_FILE_LAYER_LOAD,		EnviroFrame::OnLayerLoad)
+EVT_UPDATE_UI(ID_FILE_LAYER_LOAD,	EnviroFrame::OnUpdateLayerLoad)
 EVT_MENU(wxID_EXIT,					EnviroFrame::OnExit)
 EVT_CLOSE(EnviroFrame::OnClose)
 EVT_IDLE(EnviroFrame::OnIdle)
@@ -232,14 +235,12 @@ EVT_MENU(ID_EARTH_SHOWAXES,		EnviroFrame::OnEarthShowAxes)
 EVT_MENU(ID_EARTH_TILT,			EnviroFrame::OnEarthTilt)
 EVT_MENU(ID_EARTH_FLATTEN,		EnviroFrame::OnEarthFlatten)
 EVT_MENU(ID_EARTH_UNFOLD,		EnviroFrame::OnEarthUnfold)
-EVT_MENU(ID_EARTH_POINTS,		EnviroFrame::OnEarthPoints)
 
 EVT_UPDATE_UI(ID_EARTH_SHOWSHADING, EnviroFrame::OnUpdateEarthShowShading)
 EVT_UPDATE_UI(ID_EARTH_SHOWAXES, EnviroFrame::OnUpdateEarthShowAxes)
 EVT_UPDATE_UI(ID_EARTH_TILT,	EnviroFrame::OnUpdateEarthTilt)
 EVT_UPDATE_UI(ID_EARTH_FLATTEN, EnviroFrame::OnUpdateEarthFlatten)
 EVT_UPDATE_UI(ID_EARTH_UNFOLD,	EnviroFrame::OnUpdateEarthUnfold)
-EVT_UPDATE_UI(ID_EARTH_POINTS,	EnviroFrame::OnUpdateInOrbit)
 
 EVT_MENU(ID_HELP_ABOUT, EnviroFrame::OnHelpAbout)
 EVT_MENU(ID_HELP_DOC_LOCAL, EnviroFrame::OnHelpDocLocal)
@@ -389,6 +390,9 @@ void EnviroFrame::CreateMenus()
 	m_pFileMenu = new wxMenu;
 	m_pFileMenu->Append(ID_FILE_LAYERS, _("Layers"), _("Layers"));
 	m_pFileMenu->AppendSeparator();
+	m_pFileMenu->Append(ID_FILE_LAYER_CREATE, _("Create Layer"), _("Create Layer"));
+	m_pFileMenu->Append(ID_FILE_LAYER_LOAD, _("Load Layer"), _("Load Layers"));
+	m_pFileMenu->AppendSeparator();
 	m_pFileMenu->Append(wxID_EXIT, _("E&xit (Esc)"), _("Exit"));
 	m_pMenuBar->Append(m_pFileMenu, _("&File"));
 
@@ -513,7 +517,6 @@ void EnviroFrame::CreateMenus()
 		m_pEarthMenu->AppendCheckItem(ID_EARTH_TILT, _("Seasonal &Tilt"));
 		m_pEarthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _("&Flatten\tCtrl+E"));
 		m_pEarthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _("&Unfold\tCtrl+U"));
-		m_pEarthMenu->Append(ID_EARTH_POINTS, _("&Load Point Data...\tCtrl+P"));
 		m_pMenuBar->Append(m_pEarthMenu, _("&Earth"));
 	}
 
@@ -654,7 +657,6 @@ void EnviroFrame::RefreshToolbar()
 			AddTool(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Show Sunlight"), true);
 			AddTool(ID_EARTH_SHOWAXES, wxBITMAP(axes), _("Axes"), true);
 			AddTool(ID_EARTH_TILT, wxBITMAP(tilt), _("Tilt"), true);
-			AddTool(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
 			AddTool(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
 		}
 	}
@@ -1088,6 +1090,7 @@ WXLRESULT EnviroFrame::MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lPar
 }
 #endif
 
+
 //////////////////// File menu //////////////////////////
 
 void EnviroFrame::OnFileLayers(wxCommandEvent& event)
@@ -1095,6 +1098,25 @@ void EnviroFrame::OnFileLayers(wxCommandEvent& event)
 	m_pLayerDlg->Show(true);
 }
 
+void EnviroFrame::OnLayerCreate(wxCommandEvent& event)
+{
+	m_pLayerDlg->OnLayerCreate(event);
+}
+
+void EnviroFrame::OnUpdateLayerCreate(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+}
+
+void EnviroFrame::OnLayerLoad(wxCommandEvent& event)
+{
+	m_pLayerDlg->OnLayerLoad(event);
+}
+
+void EnviroFrame::OnUpdateLayerLoad(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain || g_App.m_state == AS_Orbit);
+}
 
 //////////////////// View menu //////////////////////////
 
@@ -1997,33 +2019,6 @@ void EnviroFrame::OnEarthFlatten(wxCommandEvent& event)
 void EnviroFrame::OnEarthUnfold(wxCommandEvent& event)
 {
 	g_App.SetEarthUnfold(!g_App.GetEarthUnfold());
-}
-
-void EnviroFrame::OnEarthPoints(wxCommandEvent& event)
-{
-	// save current directory
-	wxString path = wxGetCwd();
-
-	wxFileDialog loadFile(NULL, _("Abstract Data"), _T(""), _T(""),
-		_("GIS Data Sources (*.shp)|*.shp"), wxFD_OPEN);
-	bool bResult = (loadFile.ShowModal() == wxID_OK);
-	if (!bResult)
-	{
-		// restore
-		wxSetWorkingDirectory(path);
-		return;
-	}
-
-	wxString str = loadFile.GetPath();
-
-	int ret = g_App.AddGlobeAbstractLayer(str.mb_str(wxConvUTF8));
-	if (ret == -1)
-		wxMessageBox(_("Couldn't open"));
-	if (ret == -2)
-		wxMessageBox(_("That file isn't point data."));
-
-	// restore
-	wxSetWorkingDirectory(path);
 }
 
 

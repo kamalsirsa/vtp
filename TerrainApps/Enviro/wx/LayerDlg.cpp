@@ -71,6 +71,7 @@ BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 	EVT_MENU( ID_LAYER_SHADOW, LayerDlg::OnShadowVisible )
 	EVT_MENU( ID_SHOW_ALL, LayerDlg::OnShowAll )
 
+	EVT_UPDATE_UI(ID_LAYER_CREATE,	LayerDlg::OnUpdateCreate)
 	EVT_UPDATE_UI(ID_LAYER_VISIBLE,	LayerDlg::OnUpdateVisible)
 	EVT_UPDATE_UI(ID_LAYER_SHADOW, LayerDlg::OnUpdateShadow)
 	EVT_UPDATE_UI(ID_SHOW_ALL,	LayerDlg::OnUpdateShowAll)
@@ -184,7 +185,7 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 	LayerItemData *data = (LayerItemData *)m_pTree->GetItemData(item);
 	if (!data)
 		return NULL;
-	if (data->m_type == LT_ABSTRACT)
+	if (data->m_alay)
 		return data->m_alay->pContainer;
 	if (data->m_item == -1)
 		return NULL;
@@ -267,9 +268,6 @@ wxString MakeVegLayerString(vtPlantInstanceArray3d &pia)
 
 void LayerDlg::RefreshTreeTerrain()
 {
-	//g_pLayerSizer1->Show(g_pLayerSizer2, true);
-	//g_pLayerSizer1->Layout();
-
 	vtTerrain *terr = GetCurrentTerrain();
 	if (!terr)
 		return;
@@ -433,22 +431,21 @@ void LayerDlg::UpdateTreeTerrain()
 
 void LayerDlg::RefreshTreeSpace()
 {
-	//g_pLayerSizer1->Show(g_pLayerSizer2, false);
-	//g_pLayerSizer1->Layout();
-
 	vtIcoGlobe *globe = g_App.GetGlobe();
 	if (!globe)
 		return;
 
-	wxTreeItemId hRoot = m_pTree->AddRoot(_("Layers"));
+	wxTreeItemId hRoot = m_pTree->AddRoot(_("Layers"), ICON_TOP, ICON_TOP);
 
-	vtFeaturesSet &feats = globe->GetFeaturesSet();
-	for (unsigned int i = 0; i < feats.GetSize(); i++)
+	GlobeLayerArray &glayers = globe->GetGlobeLayers();
+	for (unsigned int i = 0; i < glayers.GetSize(); i++)
 	{
-		vtFeatureSet *feat = feats[i];
+		GlobeLayer *glay = glayers[i];
+		vtFeatureSet *feat = glay->m_pSet;
 
 		wxString str(feat->GetFilename(), wxConvUTF8);
-		wxTreeItemId hItem = m_pTree->AppendItem(hRoot, str, -1, -1);
+		wxTreeItemId hItem = m_pTree->AppendItem(hRoot, str, ICON_RAW, ICON_RAW);
+		m_pTree->SetItemData(hItem, new LayerItemData(glay));
 
 		OGRwkbGeometryType type = feat->GetGeomType();
 		int num = feat->GetNumEntities();
@@ -464,7 +461,7 @@ void LayerDlg::RefreshTreeSpace()
 		str += _T(" Feature");
 		if (num != 1)
 			str += _T("s");
-		m_pTree->AppendItem(hItem, str, -1, -1);
+		m_pTree->AppendItem(hItem, str, ICON_RAW, ICON_RAW);
 		m_pTree->Expand(hItem);
 	}
 	m_pTree->Expand(hRoot);
@@ -481,6 +478,11 @@ void LayerDlg::OnLayerRemove( wxCommandEvent &event )
 	if (data->m_layer != NULL)
 	{
 		GetCurrentTerrain()->RemoveLayer(data->m_layer);
+		RefreshTreeContents();
+	}
+	if (data->m_glay != NULL)
+	{
+		g_App.RemoveGlobeAbstractLayer(data->m_glay);
 		RefreshTreeContents();
 	}
 }
@@ -543,11 +545,16 @@ bool SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 
 void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 {
+	bool bTerrain = (g_App.m_state == AS_Terrain);
+
 	wxString filter = _("GIS Files (*.shp)|*.shp");
-	filter += _T("|");
-	filter += _("Structure Files (*.vtst)|*.vtst");
-	filter += _T("|");
-	filter += _("All supported layer formats (*.shp;*.vtst)|*.shp;*.vtst");
+	if (bTerrain)
+	{
+		filter += _T("|");
+		filter += _("Structure Files (*.vtst)|*.vtst");
+		filter += _T("|");
+		filter += _("All supported layer formats (*.shp;*.vtst)|*.shp;*.vtst");
+	}
 
 	wxFileDialog loadFile(NULL, _("Load Layer"), _T(""), _T(""), filter, wxFD_OPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
@@ -556,38 +563,52 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 	wxString str = loadFile.GetPath();
 	vtString fname = (const char *) str.mb_str(wxConvUTF8);
 
-	vtTerrain *terr = GetCurrentTerrain();
-	vtLayer *lay = terr->LoadLayer(fname);
-
-	vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
-	vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
-
-	if (slay)
-		terr->CreateStructures(slay);
-
-	if (alay)
+	if (bTerrain)
 	{
-		// Ask style for the newly loaded layer
-		vtTagArray &props = alay->pSet->GetProperties();
+		vtTerrain *terr = GetCurrentTerrain();
+		vtLayer *lay = terr->LoadLayer(fname);
 
-		StyleDlg dlg(NULL, -1, _("Style"));
-		dlg.SetFeatureSet(alay->pSet);
-		dlg.SetOptions(vtGetDataPath(), props);
-		if (dlg.ShowModal() != wxID_OK)
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
+
+		if (slay)
+			terr->CreateStructures(slay);
+
+		if (alay)
 		{
-			terr->GetLayers().Remove(alay);
-			delete alay;
-			return;
+			// Ask style for the newly loaded layer
+			vtTagArray &props = alay->pSet->GetProperties();
+
+			StyleDlg dlg(NULL, -1, _("Style"));
+			dlg.SetFeatureSet(alay->pSet);
+			dlg.SetOptions(vtGetDataPath(), props);
+			if (dlg.ShowModal() != wxID_OK)
+			{
+				terr->GetLayers().Remove(alay);
+				delete alay;
+				return;
+			}
+			// Copy all the style attributes to the new featureset
+			VTLOG1("  Setting featureset properties.\n");
+			dlg.GetOptions(props);
+
+			alay->CreateStyledFeatures(terr);
 		}
-		// Copy all the style attributes to the new featureset
-		VTLOG1("  Setting featureset properties.\n");
-		dlg.GetOptions(props);
 
-		alay->CreateStyledFeatures(terr);
+		if (lay)
+			RefreshTreeContents();
 	}
-
-	if (lay)
-		RefreshTreeContents();
+	else
+	{
+		// earth view
+		int ret = g_App.AddGlobeAbstractLayer(fname);
+		if (ret == -1)
+			wxMessageBox(_("Couldn't open"));
+		else if (ret == -2)
+			wxMessageBox(_("That file isn't point data."));
+		else
+			RefreshTreeContents();
+	}
 }
 
 void LayerDlg::OnLayerSave( wxCommandEvent &event )
@@ -606,7 +627,7 @@ void LayerDlg::OnLayerSave( wxCommandEvent &event )
 	if (data->m_type == LT_VEG)
 		bSaved = g_App.SaveVegetation(false);	// don't ask for filename
 
-	if (data->m_type == LT_ABSTRACT)
+	if (data->m_fset)
 		bSaved = SaveAbstractLayer(data->m_fset, false);	// don't ask for filename
 
 	// Update the (*) next to the modified layer name
@@ -627,7 +648,7 @@ void LayerDlg::OnLayerSaveAs( wxCommandEvent &event )
 	if (data->m_type == LT_VEG)
 		bSaved = g_App.SaveVegetation(true);	// ask for filename
 
-	if (data->m_type == LT_ABSTRACT)
+	if (data->m_fset)
 		bSaved = SaveAbstractLayer(data->m_fset, true);	// ask for filename
 
 	// The filename may have changed
@@ -710,19 +731,24 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 {
 	bool bVis = event.IsChecked();
 
-	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
-	vtNode *pThing = GetNodeFromItem(m_item);
-	if (pThing && slay != NULL)
+	if (g_App.m_state == AS_Terrain)
 	{
-		pThing->SetEnabled(bVis);
-		return;
+		vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
+		vtNode *pThing = GetNodeFromItem(m_item);
+		if (pThing && slay != NULL)
+		{
+			pThing->SetEnabled(bVis);
+			return;
+		}
+		vtLayer *lay = GetLayerFromItem(m_item);
+		if (lay)
+			lay->SetVisible(bVis);
 	}
-	vtLayer *lay = GetLayerFromItem(m_item);
-	if (lay)
+	else if (g_App.m_state == AS_Orbit)
 	{
-		lay->SetVisible(bVis);
-		// Set might not succeed.  Update with true state.
-//		GetVisible()->SetValue(lay->GetVisible());
+		LayerItemData *data = GetLayerDataFromItem(m_item);
+		if (data && data->m_glay)
+			data->m_glay->SetEnabled(bVis);
 	}
 }
 
@@ -731,19 +757,36 @@ void LayerDlg::OnUpdateVisible(wxUpdateUIEvent& event)
 	if (!IsShown())
 		return;
 
-	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
-	vtNode *pThing = GetNodeFromItem(m_item);
-	if (pThing && slay != NULL)
+	if (g_App.m_state == AS_Terrain)
 	{
-		event.Check(pThing->GetEnabled());
+		vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
+		vtNode *pThing = GetNodeFromItem(m_item);
+		if (pThing && slay != NULL)
+		{
+			event.Check(pThing->GetEnabled());
+			return;
+		}
+		vtLayer *lay = GetLayerFromItem(m_item);
+		if (lay)
+		{
+			event.Check(lay->GetVisible());
+		}
+		event.Enable(pThing != NULL || lay != NULL);
+	}
+	else if (g_App.m_state == AS_Orbit)
+	{
+		LayerItemData *data = GetLayerDataFromItem(m_item);
+		if (data && data->m_glay)
+			event.Check(data->m_glay->GetEnabled());
+		event.Enable(data && data->m_glay);
+	}
+}
+
+void LayerDlg::OnUpdateCreate(wxUpdateUIEvent& event)
+{
+	if (!IsShown())
 		return;
-	}
-	vtLayer *lay = GetLayerFromItem(m_item);
-	if (lay)
-	{
-		event.Check(lay->GetVisible());
-	}
-	event.Enable(pThing != NULL || lay != NULL);
+	event.Enable(g_App.m_state == AS_Terrain);
 }
 
 
@@ -756,6 +799,7 @@ void LayerDlg::OnShowAll( wxCommandEvent &event )
 void LayerDlg::OnUpdateShowAll(wxUpdateUIEvent& event)
 {
 	event.Check(m_bShowAll);
+	event.Enable(g_App.m_state == AS_Terrain);
 }
 
 void LayerDlg::OnSelChanged( wxTreeEvent &event )

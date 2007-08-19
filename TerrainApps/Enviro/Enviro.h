@@ -29,6 +29,7 @@ class vtRoute;
 class vtUtilNode;
 class vtFence3d;
 class vtAbstractLayer;
+class GlobeLayer;
 
 // Engines
 class GlobePicker;
@@ -111,6 +112,7 @@ public:
 	void SetSpaceAxes(bool bShow);
 	bool GetSpaceAxes();
 	int AddGlobeAbstractLayer(const char *fname);
+	void RemoveGlobeAbstractLayer(GlobeLayer *glay);
 	void UpdateEarthArc();
 	void SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2);
 	void SetDisplayedArc(const DLine2 &path);

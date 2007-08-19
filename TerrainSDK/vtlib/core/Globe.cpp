@@ -35,8 +35,8 @@ vtIcoGlobe::vtIcoGlobe()
 vtIcoGlobe::~vtIcoGlobe()
 {
 	m_mats->Release();
-	for (unsigned int i = 0; i < m_features.GetSize(); i++)
-		delete m_features[i];
+	for (unsigned int i = 0; i < m_GlobeLayers.GetSize(); i++)
+		delete m_GlobeLayers[i];
 	if (m_cylinder)
 		m_cylinder->Release();
 }
@@ -279,28 +279,40 @@ int vtIcoGlobe::AddGlobeFeatures(const char *fname, float fSize)
 	if (!feat)
 		return -1;
 
-	m_features.Append(feat);
+	GlobeLayer *gl = new GlobeLayer;
+	gl->m_pSet = feat;
 
-	BuildSphericalFeatures(feat, fSize);
-	BuildFlatFeatures(feat, fSize);
+	m_GlobeLayers.Append(gl);
+
+	BuildSphericalFeatures(gl, fSize);
+	BuildFlatFeatures(gl, fSize);
 
 	return feat->GetNumEntities();
 }
 
-void vtIcoGlobe::BuildSphericalFeatures(vtFeatureSet *feat, float fSize)
+void vtIcoGlobe::RemoveLayer(GlobeLayer *glay)
 {
-	if (feat->GetGeomType() == wkbPoint)
-		BuildSphericalPoints(feat, fSize);
-
-	if (feat->GetGeomType() == wkbLineString)
-		BuildSphericalLines(feat, fSize);
-
-	if (feat->GetGeomType() == wkbPolygon)
-		BuildSphericalPolygons(feat, fSize);
+	glay->DestructGeometry();
+	int idx = m_GlobeLayers.Find(glay);
+	if (idx != -1)
+		m_GlobeLayers.RemoveAt(idx);
 }
 
-void vtIcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
+void vtIcoGlobe::BuildSphericalFeatures(GlobeLayer *glay, float fSize)
 {
+	if (glay->m_pSet->GetGeomType() == wkbPoint)
+		BuildSphericalPoints(glay, fSize);
+
+	if (glay->m_pSet->GetGeomType() == wkbLineString)
+		BuildSphericalLines(glay, fSize);
+
+	if (glay->m_pSet->GetGeomType() == wkbPolygon)
+		BuildSphericalPolygons(glay, fSize);
+}
+
+void vtIcoGlobe::BuildSphericalPoints(GlobeLayer *glay, float fSize)
+{
+	vtFeatureSet *feat = glay->m_pSet;
 	int i, j, size;
 	vtArray<FSphere> spheres;
 
@@ -426,13 +438,15 @@ void vtIcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
 			mgeom->Scale3(0.002f, (float)area*1000, 0.002f);
 		}
 		m_SurfaceGroup->AddChild(mgeom);
+		glay->AddNode(mgeom);
 	}
 	// pass mesh ownership to the geom containers
 	mesh->Release();
 }
 
-void vtIcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
+void vtIcoGlobe::BuildSphericalLines(GlobeLayer *glay, float fSize)
 {
+	vtFeatureSet *feat = glay->m_pSet;
 	vtFeatureSetLineString *pSetLS = dynamic_cast<vtFeatureSetLineString*>(feat);
 	if (!pSetLS)
 		return;
@@ -444,6 +458,7 @@ void vtIcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
 	geom->SetName2("spherical lines");
 	geom->SetMaterials(m_mats);
 	m_SurfaceGroup->AddChild(geom);
+	glay->AddNode(geom);
 
 	vtMeshFactory mf(geom, vtMesh::LINE_STRIP, 0, 30000, m_yellow);
 	for (i = 0; i < size; i++)
@@ -453,8 +468,9 @@ void vtIcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
 	}
 }
 
-void vtIcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
+void vtIcoGlobe::BuildSphericalPolygons(GlobeLayer *glay, float fSize)
 {
+	vtFeatureSet *feat = glay->m_pSet;
 	vtFeatureSetPolygon *pSetPoly = dynamic_cast<vtFeatureSetPolygon*>(feat);
 	if (!pSetPoly)
 		return;
@@ -466,6 +482,7 @@ void vtIcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
 	geom->SetName2("spherical lines");
 	geom->SetMaterials(m_mats);
 	m_SurfaceGroup->AddChild(geom);
+	glay->AddNode(geom);
 
 	vtMeshFactory mf(geom, vtMesh::LINE_STRIP, 0, 30000, m_yellow);
 	for (i = 0; i < size; i++)
@@ -479,8 +496,9 @@ void vtIcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
 	}
 }
 
-void vtIcoGlobe::BuildFlatFeatures(vtFeatureSet *feat, float fSize)
+void vtIcoGlobe::BuildFlatFeatures(GlobeLayer *glay, float fSize)
 {
+	vtFeatureSet *feat = glay->m_pSet;
 	if (feat->GetGeomType() == wkbPoint)
 	{
 		if (!m_cylinder)
@@ -496,12 +514,13 @@ void vtIcoGlobe::BuildFlatFeatures(vtFeatureSet *feat, float fSize)
 		size = feat->GetNumEntities();
 
 		for (i = 0; i < size; i++)
-			BuildFlatPoint(feat, i, fSize);
+			BuildFlatPoint(glay, i, fSize);
 	}
 }
 
-void vtIcoGlobe::BuildFlatPoint(vtFeatureSet *feat, int i, float fSize)
+void vtIcoGlobe::BuildFlatPoint(GlobeLayer *glay, int i, float fSize)
 {
+	vtFeatureSet *feat = glay->m_pSet;
 	vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D*>(feat);
 	if (!pSetP2)
 		return;
@@ -545,6 +564,7 @@ void vtIcoGlobe::BuildFlatPoint(vtFeatureSet *feat, int i, float fSize)
 	mgeom->Scale3(fSize, 0.001f, fSize);
 
 	m_mface[mface].surfgroup->AddChild(mgeom);
+	glay->AddNode(mgeom);
 }
 
 void vtIcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
@@ -1506,7 +1526,34 @@ void vtIcoGlobe::add_face_independent_meshes(int pair, int face, bool second)
 	}
 }
 
+
+///////////////////////////////////////////////////////////////////////
+// GlobeLayer class
 //
+
+void GlobeLayer::DestructGeometry()
+{
+	for (unsigned int i = 0; i < m_GeomNodes.GetSize(); i++)
+	{
+		vtNode *node = m_GeomNodes[i];
+		vtGroup *parent = dynamic_cast<vtGroup*>(node->GetParent());
+		if (parent)
+			parent->RemoveChild(node);
+		node->Release();
+	}
+	m_GeomNodes.Empty();
+}
+
+void GlobeLayer::SetEnabled(bool bOn)
+{
+	for (unsigned int i = 0; i < m_GeomNodes.GetSize(); i++)
+		m_GeomNodes[i]->SetEnabled(bOn);
+
+	m_bEnabled = bOn;
+}
+
+
+///////////////////////////////////////////////////////////////////////
 // Sphere Helpers
 //
 
