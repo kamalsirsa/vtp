@@ -10,6 +10,7 @@
 #include "vtlib/core/Globe.h"
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/Building3d.h"
+#include "vtlib/core/PagedLodGrid.h"
 #include "vtdata/vtLog.h"
 
 #include "Engines.h"
@@ -359,7 +360,13 @@ void Enviro::DoControl()
 void Enviro::DoControlTerrain()
 {
 	vtTerrain *terr = GetCurrentTerrain();
-	if (terr)
+	if (!terr)
+		return;
+
+	// Update structure paging and shadows
+	vtLodGrid *plg = terr->GetStructureGrid();
+	vtPagedStructureLodGrid *pslg = terr->GetStructureLodGrid();
+	if (pslg)
 	{
 		int remaining = terr->DoStructurePaging();
 		if (m_pHUDMessage)
@@ -372,6 +379,37 @@ void Enviro::DoControlTerrain()
 			}
 			else
 				m_pHUDMessage->SetText("");
+		}
+	}
+	if (plg)
+	{
+		// Periodically re-render the shadows
+		static FPoint3 previous_shadow_center(0,0,0);
+
+		// Only draw shadows in the area of visible structure LOD
+		FSphere sph;
+		vtCamera *cam = vtGetScene()->GetCamera();
+		sph.center = cam->GetTrans();
+		sph.radius = terr->GetLODDistance(TFT_STRUCTURES);
+
+		bool bRedrawShadows = false;
+
+		// If we moved 15% of the LOD distance, re-render
+		if ((sph.center - previous_shadow_center).Length() > (sph.radius * 0.15f))
+			bRedrawShadows = true;
+
+		// If we've paged in 20 buildings since last render, re-render
+		if (pslg && pslg->GetLoadCount() > 20)
+			bRedrawShadows = true;
+
+		if (bRedrawShadows)
+		{
+			// Pass true to force re-render with current area
+			vtGetScene()->SetShadowSphere(sph, true);
+
+			previous_shadow_center = sph.center;
+			if (pslg)
+				pslg->ResetLoadCount();
 		}
 	}
 }
