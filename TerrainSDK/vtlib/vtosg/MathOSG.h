@@ -2,7 +2,7 @@
 // A handy set of inline functions to convert between the VTP and OSG
 // math classes.  v2s() converts from VTP to OSG, s2v() goes the other way.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -49,6 +49,12 @@ inline osg::Vec4 v2s(const RGBAf &f)
 	osg::Vec4 s;
 	s[0] = f.r; s[1] = f.g; s[2] = f.b; s[3] = f.a;
 	return s;
+}
+
+inline void v2s(const FSphere &sph, osg::BoundingSphere &bs)
+{
+	v2s(sph.center, bs._center);
+	bs._radius = sph.radius;
 }
 
 inline void s2v(const osg::Vec3 &s, FPoint3 &f) { f.x = s[0]; f.y = s[1]; f.z = s[2]; }
