@@ -11,6 +11,9 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TiledGeom.h"
 #include "vtlib/core/PagedLodGrid.h"
+#include "vtlib/core/Terrain.h"
+
+#include "../Enviro.h"
 
 #include "LODDlg.h"
 #include "EnviroFrame.h"
@@ -28,11 +31,14 @@
 // WDR: event table for LODDlg
 
 BEGIN_EVENT_TABLE(LODDlg,AutoDialog)
+	EVT_INIT_DIALOG (LODDlg::OnInitDialog)
 	EVT_SPIN_UP( ID_TARGET, LODDlg::OnSpinTargetUp )
 	EVT_SPIN_DOWN( ID_TARGET, LODDlg::OnSpinTargetDown )
 	EVT_TEXT( ID_TARGET, LODDlg::OnTarget )
 	EVT_TEXT( ID_TEXT_PRANGE, LODDlg::OnText )
 	EVT_SLIDER( ID_SLIDER_PRANGE, LODDlg::OnRangeSlider )
+	EVT_TEXT( ID_TEXT_PAGEOUT, LODDlg::OnText )
+	EVT_SLIDER( ID_SLIDER_PAGEOUT, LODDlg::OnRangeSlider )
 END_EVENT_TABLE()
 
 LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -54,15 +60,22 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	GetTileStatus()->SetValue(_T("No paging threads"));
 
+	m_iTarget = 0;
 	AddValidator(ID_TARGET, &m_iTarget);
+
 	AddNumValidator(ID_TEXT_PRANGE, &m_fRange);
 	AddValidator(ID_SLIDER_PRANGE, &m_iRange);
 
-	m_iTarget = 0;
+	AddNumValidator(ID_TEXT_PAGEOUT, &m_fPageout);
+	AddValidator(ID_SLIDER_PAGEOUT, &m_iPageout);
 }
 
 float PRANGE_MIN = 0.0f;
 float PRANGE_RANGE = 100.0f;
+
+#define DIST_MIN 2.0f	// 100 m
+#define DIST_MAX 4.0f	// 10 km
+#define DIST_RANGE (DIST_MAX-DIST_MIN)
 
 void LODDlg::SetPagingRange(float fmin, float fmax)
 {
@@ -110,21 +123,27 @@ void LODDlg::Refresh(float res0, float res, float res1, int target,
 void LODDlg::SlidersToValues()
 {
 	m_fRange = PRANGE_MIN + (m_iRange * PRANGE_RANGE / 100);
+	m_fPageout = powf(10, (DIST_MIN + m_iPageout * DIST_RANGE / 200));
 }
 
 void LODDlg::ValuesToSliders()
 {
 	m_iRange = (int) ((m_fRange - PRANGE_MIN) / PRANGE_RANGE * 100);
+	m_iPageout = (int) ((log10f(m_fPageout) - DIST_MIN) / DIST_RANGE * 200);
 }
 
 void LODDlg::OnText( wxCommandEvent &event )
 {
-	if (m_bSet || !m_bHaveRangeVal)
+	if (m_bSet)
 		return;
 	TransferDataFromWindow();
 	ValuesToSliders();
 
-	m_pFrame->ChangePagingRange(m_fRange);
+	if (m_bHaveRangeVal)
+		m_pFrame->ChangePagingRange(m_fRange);
+	vtTerrain *terr = GetCurrentTerrain();
+	if (terr)
+		terr->SetStructurePageOutDistance(m_fPageout);
 
 	m_bSet = true;
 	TransferDataToWindow();
@@ -133,12 +152,16 @@ void LODDlg::OnText( wxCommandEvent &event )
 
 void LODDlg::OnRangeSlider( wxCommandEvent &event )
 {
-	if (m_bSet || !m_bHaveRangeVal)
+	if (m_bSet)
 		return;
 	TransferDataFromWindow();
 	SlidersToValues();
 
-	m_pFrame->ChangePagingRange(m_fRange);
+	if (m_bHaveRangeVal)
+		m_pFrame->ChangePagingRange(m_fRange);
+	vtTerrain *terr = GetCurrentTerrain();
+	if (terr)
+		terr->SetStructurePageOutDistance(m_fPageout);
 
 	m_bSet = true;
 	TransferDataToWindow();
@@ -309,6 +332,21 @@ void LODDlg::DrawStructureState(vtPagedStructureLodGrid *grid, float fPageOutDis
 	if (GetNotebook()->GetSelection() != 1)
 		return;
 
+	//
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (pTerr)
+	{
+		float prev = m_fPageout;
+		m_fPageout = pTerr->GetStructurePageOutDistance();
+		if (prev != m_fPageout)
+		{
+			ValuesToSliders();
+			m_bSet = true;
+			TransferDataToWindow();
+			m_bSet = false;
+		}
+	}
+
 	static float last_draw = 0.0f;
 	float curtime = vtGetTime();
 	if (curtime - last_draw < 0.1f)	// 10 time a second
@@ -452,6 +490,13 @@ void LODDlg::DrawStructureState(vtPagedStructureLodGrid *grid, float fPageOutDis
 }
 
 // WDR: handler implementations for LODDlg
+
+void LODDlg::OnInitDialog(wxInitDialogEvent& event)
+{
+	m_bSet = true;
+	wxDialog::OnInitDialog(event);  // calls TransferDataToWindow
+	m_bSet = false;
+}
 
 void LODDlg::OnSpinTargetUp( wxSpinEvent &event )
 {

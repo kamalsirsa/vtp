@@ -57,6 +57,8 @@ private:
 	EnviroFrame *m_pFrame;
 	int m_iRange;
 	float m_fRange;
+	int m_iPageout;
+	float m_fPageout;
 
 	void SlidersToValues();
 	void ValuesToSliders();
@@ -68,6 +70,7 @@ private:
 	void OnText( wxCommandEvent &event );
 	void OnTarget( wxCommandEvent &event );
 	void OnRangeSlider( wxCommandEvent &event );
+	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
 	DECLARE_EVENT_TABLE()
