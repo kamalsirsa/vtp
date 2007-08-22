@@ -561,6 +561,8 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 	}
 
 	wxFileDialog loadFile(NULL, _("Load Layer"), _T(""), _T(""), filter, wxFD_OPEN);
+	if (bTerrain)
+		loadFile.SetFilterIndex(2);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
