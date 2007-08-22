@@ -44,6 +44,8 @@
 
 /////////////////////////////
 
+#define ID_LAYER_TREE 10500
+
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
@@ -58,7 +60,7 @@ BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 
 	EVT_CHECKBOX( ID_SHOW_ALL, LayerDlg::OnShowAll )
 	EVT_CHECKBOX( ID_LAYER_VISIBLE, LayerDlg::OnVisible )
-	EVT_CHECKBOX( ID_SHADOW_VISIBLE, LayerDlg::OnShadowVisible )
+	EVT_CHECKBOX( ID_LAYER_SHADOW, LayerDlg::OnShadowVisible )
 
 	EVT_MENU( ID_LAYER_CREATE, LayerDlg::OnLayerCreate )
 	EVT_MENU( ID_LAYER_LOAD, LayerDlg::OnLayerLoad )
@@ -545,6 +547,8 @@ bool SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 
 void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 {
+	VTLOG1("LayerDlg::OnLayerLoad\n");
+
 	bool bTerrain = (g_App.m_state == AS_Terrain);
 
 	wxString filter = _("GIS Files (*.shp)|*.shp");
@@ -563,10 +567,20 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 	wxString str = loadFile.GetPath();
 	vtString fname = (const char *) str.mb_str(wxConvUTF8);
 
+	VTLOG1(" File dialog: ");
+	VTLOG1(fname);
+	VTLOG1("\n");
+
 	if (bTerrain)
 	{
 		vtTerrain *terr = GetCurrentTerrain();
 		vtLayer *lay = terr->LoadLayer(fname);
+
+		if (!lay)
+		{
+			VTLOG1(" OnLayerLoad exit.\n");
+			return;
+		}
 
 		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
@@ -613,6 +627,8 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 
 void LayerDlg::OnLayerSave( wxCommandEvent &event )
 {
+	VTLOG1("LayerDlg::OnLayerSave\n");
+
 	LayerItemData *data = GetLayerDataFromItem(m_item);
 	if (!data)
 		return;
@@ -637,6 +653,8 @@ void LayerDlg::OnLayerSave( wxCommandEvent &event )
 
 void LayerDlg::OnLayerSaveAs( wxCommandEvent &event )
 {
+	VTLOG1("LayerDlg::OnLayerSaveAs\n");
+
 	LayerItemData *data = GetLayerDataFromItem(m_item);
 	if (!data)
 		return;
@@ -658,6 +676,8 @@ void LayerDlg::OnLayerSaveAs( wxCommandEvent &event )
 
 void LayerDlg::OnZoomTo( wxCommandEvent &event )
 {
+	VTLOG1("LayerDlg::OnZoomTo\n");
+
 	vtNode *pThing = GetNodeFromItem(m_item, true);	// get container
 	if (pThing)
 	{
@@ -676,7 +696,6 @@ void LayerDlg::OnZoomTo( wxCommandEvent &event )
 		pCam->TranslateLocal(FPoint3(0.0f, 0.0f, distance));
 	}
 }
-
 
 void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 {
@@ -792,6 +811,31 @@ void LayerDlg::OnUpdateCreate(wxUpdateUIEvent& event)
 
 void LayerDlg::OnShowAll( wxCommandEvent &event )
 {
+	// Check to see if this might be more than they expected
+	if (g_App.m_state == AS_Terrain && m_bShowAll == false && event.IsChecked())
+	{
+		// Count all the structures in all the layers
+		int total = 0;
+		vtTerrain *terr = GetCurrentTerrain();
+		if (!terr)
+			return;
+		LayerSet &layers = terr->GetLayers();
+		for (unsigned int i = 0; i < layers.GetSize(); i++)
+		{
+			vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(layers[i]);
+			if (slay)
+				total += slay->GetSize();
+		}
+		if (total > 5000)
+		{
+			wxString str;
+			str.Printf(_("There are %d structures.  Are you sure you want to display them all?"), total);
+			int res = wxMessageBox(str, _("Warning"), wxYES_NO);
+			if (res == wxNO)
+				return;
+		}
+	}
+
 	m_bShowAll = event.IsChecked();
 	RefreshTreeContents();
 }
