@@ -48,6 +48,11 @@ void vtPagedStructureLOD::SetCenter(const FPoint3 &center)
 	m_pNativeLOD->SetCenter(center);
 }
 
+void vtPagedStructureLOD::SetRadius(float r)
+{
+	m_pNativeLOD->SetRadius(r);
+}
+
 void vtPagedStructureLOD::GetCenter(FPoint3 &center)
 {
 	m_pNativeLOD->GetCenter(center);
@@ -177,6 +182,17 @@ void vtPagedStructureLodGrid::AllocateCell(int a, int b)
 	if (m_pHeightField)
 		m_pHeightField->FindAltitudeAtPoint(lod_center, lod_center.y);
 	m_pCells[i]->SetCenter(lod_center);
+
+	// and a radius to give the LOD a bounding sphere, for efficient culling
+	FPoint2 diag(m_size.x / m_dim, m_size.z / m_dim);
+	float diagonal = diag.Length();
+	float radius = diagonal/2;
+
+	// Increase it a little, because some structures might visually extend outside
+	//  the minimal bounding sphere
+	radius *= 1.6f;
+
+	m_pCells[i]->SetRadius(radius);
 	m_pCells[i]->SetGrid(this);
 
 	AddChild(m_pCells[i]);
@@ -223,10 +239,8 @@ void vtPagedStructureLodGrid::SetDistance(float fLODDistance)
 	}
 }
 
-bool vtPagedStructureLodGrid::AppendToGrid(int iIndex)
+vtPagedStructureLOD *vtPagedStructureLodGrid::FindGroup(vtStructure *str)
 {
-	// Get 2D extents from the unbuild structure
-	vtStructure *str = m_pStructureArray->GetAt(iIndex);
 	DRECT rect;
 	if (str->GetExtents(rect))
 	{
@@ -236,10 +250,19 @@ bool vtPagedStructureLodGrid::AppendToGrid(int iIndex)
 
 		FPoint3 mid((xmin+xmax) / 2, 0.0f, (zmin+zmax)/2);
 
-		vtPagedStructureLOD *pGroup = FindPagedCellParent(mid);
-		if (pGroup)
-			pGroup->Add(iIndex);
-
+		return FindPagedCellParent(mid);
+	}
+	return NULL;
+}
+	
+bool vtPagedStructureLodGrid::AppendToGrid(int iIndex)
+{
+	// Get 2D extents from the unbuild structure
+	vtStructure *str = m_pStructureArray->GetAt(iIndex);
+	vtPagedStructureLOD *pGroup = FindGroup(str);
+	if (pGroup)
+	{
+		pGroup->Add(iIndex);
 		return true;
 	}
 	return false;
@@ -435,31 +458,37 @@ void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
 		{
 			// Gradually load anything that needs loading
 			const QueueEntry &e = m_Queue.back();
-			bool bSuccess = m_pStructureArray->ConstructStructure(e.iStructIndex);
-			if (bSuccess)
-			{
-				vtStructure3d *str3d = m_pStructureArray->GetStructure3d(e.iStructIndex);
-				vtTransform *pTrans = str3d->GetContainer();
-				if (pTrans)
-					e.pLOD->AddChild(pTrans);
-				e.pLOD->m_iNumConstructed ++;
-
-				// Keep track of overall number of loads
-				m_iLoadCount++;
-			}
-			else
-			{
-				VTLOG("Error: couldn't construct index %d\n", e.iStructIndex);
-				vtStructInstance *si = m_pStructureArray->GetInstance(e.iStructIndex);
-				if (si)
-				{
-					const char *fname = si->GetValueString("filename", true);
-					VTLOG("\tinstance fname: '%s'\n", fname ? fname : "null");
-				}
-			}
+			ConstructByIndex(e.pLOD, e.iStructIndex);
 			m_Queue.pop_back();
 		}
 		last_campos = CamPos;
+	}
+}
+
+void vtPagedStructureLodGrid::ConstructByIndex(vtPagedStructureLOD *pLOD,
+											   unsigned int iStructIndex)
+{
+	bool bSuccess = m_pStructureArray->ConstructStructure(iStructIndex);
+	if (bSuccess)
+	{
+		vtStructure3d *str3d = m_pStructureArray->GetStructure3d(iStructIndex);
+		vtTransform *pTrans = str3d->GetContainer();
+		if (pTrans)
+			pLOD->AddChild(pTrans);
+		pLOD->m_iNumConstructed ++;
+
+		// Keep track of overall number of loads
+		m_iLoadCount++;
+	}
+	else
+	{
+		VTLOG("Error: couldn't construct index %d\n", iStructIndex);
+		vtStructInstance *si = m_pStructureArray->GetInstance(iStructIndex);
+		if (si)
+		{
+			const char *fname = si->GetValueString("filename", true);
+			VTLOG("\tinstance fname: '%s'\n", fname ? fname : "null");
+		}
 	}
 }
 

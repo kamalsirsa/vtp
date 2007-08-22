@@ -10,6 +10,7 @@
 
 #include "LodGrid.h"
 
+class vtStructure;
 class vtStructure3d;
 class vtStructureArray3d;
 
@@ -45,6 +46,7 @@ public:
 
 	void SetRange(float range);
 	void SetCenter(const FPoint3 &center);
+	void SetRadius(float r);
 	void GetCenter(FPoint3 &center);
 	bool TestVisible(float fDistance, bool bLoad);
 
@@ -79,6 +81,10 @@ public:
 	void GetCenter(FPoint3 &center)
 	{
 		s2v(getCenter(), center);
+	}
+	void SetRadius(float r)
+	{
+		setRadius(r);
 	}
 	// Implement OSG's traversal with our own logic
 	virtual void traverse(osg::NodeVisitor& nv)
@@ -126,7 +132,7 @@ public:
 
 struct QueueEntry {
 	vtPagedStructureLOD *pLOD;
-	int iStructIndex;
+	unsigned int iStructIndex;
 	float fDistance;
 };
 
@@ -169,6 +175,10 @@ public:
 
 	int GetLoadCount() { return m_iLoadCount; }
 	void ResetLoadCount() { m_iLoadCount = 0; }
+
+	vtPagedStructureLOD *FindGroup(vtStructure *str);
+	void ConstructByIndex(vtPagedStructureLOD *pLOD,
+		unsigned int iStructIndex);
 
 protected:
 	void CullFarawayStructures(const FPoint3 &CamPos,
