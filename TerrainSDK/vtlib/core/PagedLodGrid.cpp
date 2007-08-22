@@ -38,6 +38,11 @@ void vtPagedStructureLOD::Release()
 	vtGroup::Release();
 }
 
+void vtPagedStructureLOD::SetRange(float range)
+{
+	m_fRange = range;
+}
+
 void vtPagedStructureLOD::SetCenter(const FPoint3 &center)
 {
 	m_pNativeLOD->SetCenter(center);
@@ -63,7 +68,8 @@ bool vtPagedStructureLOD::TestVisible(float fDistance, bool bLoad)
 	{
 		// Check if this group has any unbuilt structures
 		if (bLoad && !m_bAddedToQueue &&
-			m_iNumConstructed != m_StructureIndices.GetSize())
+			m_iNumConstructed != m_StructureIndices.GetSize() &&
+			m_pGrid->m_LoadingEnabled)
 		{
 			AppendToQueue();
 			m_bAddedToQueue = true;
@@ -100,6 +106,8 @@ vtPagedStructureLodGrid::vtPagedStructureLodGrid()
 {
 	m_pStructureArray = NULL;
 	m_pCells = NULL;
+	m_LoadingEnabled = true;
+	m_iLoadCount = 0;
 }
 
 void vtPagedStructureLodGrid::Setup(const FPoint3 &origin, const FPoint3 &size,
@@ -435,6 +443,9 @@ void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
 				if (pTrans)
 					e.pLOD->AddChild(pTrans);
 				e.pLOD->m_iNumConstructed ++;
+
+				// Keep track of overall number of loads
+				m_iLoadCount++;
 			}
 			else
 			{

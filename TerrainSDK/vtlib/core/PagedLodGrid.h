@@ -43,7 +43,7 @@ public:
 	vtPagedStructureLOD();
 	void Release();
 
-	void SetRange(float range) { m_fRange = range; }
+	void SetRange(float range);
 	void SetCenter(const FPoint3 &center);
 	void GetCenter(FPoint3 &center);
 	bool TestVisible(float fDistance, bool bLoad);
@@ -164,6 +164,12 @@ public:
 	void SortQueue();
 	void ClearQueue();
 
+	void EnableLoading(bool b) { m_LoadingEnabled = b; }
+	bool m_LoadingEnabled;
+
+	int GetLoadCount() { return m_iLoadCount; }
+	void ResetLoadCount() { m_iLoadCount = 0; }
+
 protected:
 	void CullFarawayStructures(const FPoint3 &CamPos,
 		int iMaxStructures, float fDistance);
@@ -172,6 +178,7 @@ protected:
 
 	vtStructureArray3d *m_pStructureArray;
 	vtPagedStructureLOD **m_pCells;
+	int m_iLoadCount;
 
 	vtGroup *FindCellParent(const FPoint3 &point);
 	vtPagedStructureLOD *FindPagedCellParent(const FPoint3 &point);
