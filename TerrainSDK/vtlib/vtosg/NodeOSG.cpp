@@ -2388,7 +2388,12 @@ void vtLogNativeGraph(osg::Node *node, int indent)
 		else
 			VTLOG1(" (non-node!)");
 
-		VTLOG(" '%s'\n", node->getName().c_str());
+		VTLOG(" '%s'", node->getName().c_str());
+
+		if (node->getNodeMask() != 0xffffffff)
+			VTLOG(" mask=%x", node->getNodeMask());
+
+		VTLOG1("\n");
 	}
 	else
 		VTLOG1("<null>\n");
