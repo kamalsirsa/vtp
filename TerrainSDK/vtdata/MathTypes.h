@@ -717,6 +717,8 @@ public:
 			radius = (e2 - center).Length();
 		}
 	}
+	bool operator==(const FSphere &v) const { return (center == v.center && radius == v.radius); }
+	bool operator!=(const FSphere &v) const { return (center != v.center || radius != v.radius); }
 
 	FPoint3 center;
 	float radius;
