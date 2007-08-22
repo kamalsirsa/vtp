@@ -91,17 +91,20 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 {
 	if (bShow)
 	{
-		if (!m_pHighlight)
+		if (m_pModel)
 		{
-			// the highlight geometry doesn't exist, so create it
-			// get bounding sphere
-			FSphere sphere;
-			m_pModel->GetBoundSphere(sphere);
+			if (!m_pHighlight)
+			{
+				// the highlight geometry doesn't exist, so create it
+				// get bounding sphere
+				FSphere sphere;
+				m_pModel->GetBoundSphere(sphere);
 
-			m_pHighlight = CreateBoundSphereGeom(sphere);
-			m_pContainer->AddChild(m_pHighlight);
+				m_pHighlight = CreateBoundSphereGeom(sphere);
+				m_pContainer->AddChild(m_pHighlight);
+			}
+			m_pHighlight->SetEnabled(true);
 		}
-		m_pHighlight->SetEnabled(true);
 	}
 	else
 	{
@@ -271,6 +274,10 @@ vtStructInstance *vtStructureArray3d::NewInstance()
 
 vtStructure3d *vtStructureArray3d::GetStructure3d(int i)
 {
+	// Safety check
+	if (i < 0 || i >= (int) GetSize())
+		return NULL;
+
 	vtStructure *str = GetAt(i);
 
 	// Due to the somewhat complicated structure of the multiple inheritance
