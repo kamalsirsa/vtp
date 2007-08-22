@@ -231,6 +231,7 @@ public:
 	int DoStructurePaging();
 	vtPagedStructureLodGrid *GetStructureLodGrid() { return m_pPagedStructGrid; }
 	float GetStructurePageOutDistance() { return m_fPagingStructureDist; }
+	void SetStructurePageOutDistance(float f);
 
 	// abstract layers
 	void SetAbstractLayer(vtAbstractLayer *alay);
@@ -360,6 +361,7 @@ protected:
 		const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	void _ComputeCenterLocation();
 	void GetTerrainBounds();
+	void EnforcePageOut();
 
 	/********************** Protected Data ******************/
 

@@ -16,6 +16,7 @@
 #include "IntersectionEngine.h"
 #include "Fence3d.h"
 #include "vtTin3d.h"
+#include "PagedLodGrid.h"
 
 #include "TVTerrain.h"
 #include "SMTerrain.h"
@@ -31,8 +32,6 @@
 //  This allows them to be culled more efficiently.
 #define LOD_GRIDSIZE		128
 
-#define EXPERIMENTAL_STRUCTURE_PAGING 1
-#include "PagedLodGrid.h"
 
 //////////////////////////////////////////////////////////////////////
 
@@ -1621,7 +1620,6 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 	FPoint3 org(world_extents.left, 0.0f, world_extents.bottom);
 	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
 
-#if EXPERIMENTAL_STRUCTURE_PAGING
 	bool bPaging = m_Params.GetValueBool("PagingStructures");
 	if (bPaging)
 	{
@@ -1629,7 +1627,6 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 		m_pStructGrid = m_pPagedStructGrid;
 	}
 	else
-#endif
 		m_pStructGrid = new vtSimpleLodGrid;
 
 	m_pStructGrid->Setup(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
@@ -2580,6 +2577,7 @@ void vtTerrain::SetLODDistance(TFType ftype, float fDistance)
 			if (fDistance != m_pStructGrid->GetDistance())
 				VTLOG("Structure LOD dist = %.1f\n", fDistance);
 			m_pStructGrid->SetDistance(fDistance);
+			EnforcePageOut();
 		}
 		break;
 	case TFT_ROADS:
@@ -2961,6 +2959,8 @@ void vtTerrain::RemoveLayer(vtLayer *lay)
  */
 vtLayer *vtTerrain::LoadLayer(const char *fname)
 {
+	VTLOG1("vtTerrain::LoadLayer\n");
+
 	vtString ext = GetExtension(fname);
 	if (!ext.CompareNoCase(".vtst"))
 	{
@@ -3147,6 +3147,24 @@ int vtTerrain::DoStructurePaging()
 	return m_pPagedStructGrid->GetQueueSize();
 }
 
+void vtTerrain::SetStructurePageOutDistance(float f)
+{
+	if (m_pPagedStructGrid)
+	{
+		m_fPagingStructureDist = f;
+		EnforcePageOut();
+	}
+}
+
+void vtTerrain::EnforcePageOut()
+{
+	// The page-out distance should never be less than the structure LOD
+	//  distance, otherwise we might be trying to load and unload the same
+	//  structures.
+	float fStructLodDist = GetLODDistance(TFT_STRUCTURES);
+	if (m_fPagingStructureDist < fStructLodDist)
+		m_fPagingStructureDist = fStructLodDist;
+}
 
 ////////////////////////////////////////////////////////////////////////////
 // Abstracts
