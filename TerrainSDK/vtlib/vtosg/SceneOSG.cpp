@@ -545,12 +545,12 @@ void vtScene::ShadowVisibleNode(vtNode *node, bool bVis)
 
 void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowerNode,
 							  vtNode *pShadowed, int iRez, float fDarkness,
-							  int iTextureUnit)
+							  int iTextureUnit, const FSphere &ShadowSphere)
 {
 	m_pStructureShadowsOSG = new CStructureShadowsOSG;
 	m_pStructureShadowsOSG->Initialise(m_pOsgSceneView.get(),
 		pShadowerNode->GetOsgNode(), pShadowed->GetOsgNode(), iRez, fDarkness,
-		iTextureUnit);
+		iTextureUnit, ShadowSphere);
 	m_pStructureShadowsOSG->SetSunPosition(v2s(-pLight->GetDirection()), true);
 }
 
@@ -569,6 +569,12 @@ void vtScene::SetShadowDarkness(float fDarkness)
 {
 	if (m_pStructureShadowsOSG.valid())
 		m_pStructureShadowsOSG->SetShadowDarkness(fDarkness);
+}
+
+void vtScene::SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw)
+{
+	if (m_pStructureShadowsOSG.valid())
+		m_pStructureShadowsOSG->SetShadowSphere(ShadowSphere, bForceRedraw);
 }
 
 ////////////////////////////////////////

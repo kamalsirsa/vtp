@@ -81,10 +81,12 @@ public:
 	// Experimental:
 	// Object-terrain shadow casting, only for OSG
 	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowerNode,
-		vtNode *pShadowed, int iRez, float fDarkness, int iTextureUnit);
+		vtNode *pShadowed, int iRez, float fDarkness, int iTextureUnit,
+		const FSphere &ShadowSphere);
 	void UnsetShadowedNode(vtTransform *pTransform);
 	void UpdateShadowLightDirection(vtTransform *pLight);
 	void SetShadowDarkness(float fDarkness);
+	void SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw);
 	void ShadowVisibleNode(vtNode *node, bool bVis);
 
 	void SetHUD(vtHUD *hud) { m_pHUD = hud; }

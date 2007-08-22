@@ -24,8 +24,9 @@ public:
 	void SetSunPosition(osg::Vec3 SunPosition, bool bForceRecompute = false);
 	bool Initialise(osgUtil::SceneView *pSceneView, osg::Node *pStructures,
 		osg::Node *pShadowed, const int iResolution, float fDarkness,
-		int iTextureUnit);
+		int iTextureUnit, const FSphere &ShadowSphere);
 	void SetShadowDarkness(float fDarkness);
+	void SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw);
 	void SetPolygonOffset(float fFactor, float fUnits);
 	void ExcludeFromShadower(osg::Node *pNode, bool bExclude);
 
@@ -70,6 +71,7 @@ protected:
 	std::list<osg::Node*> m_ExcludeFromShadower;
 	float m_fPolygonOffsetFactor;
 	float m_fPolygonOffsetUnits;
+	FSphere m_ShadowSphere;
 };
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS

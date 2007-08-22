@@ -8,6 +8,7 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/HeightField.h"
 #include "vtlib/core/LodGrid.h"
+#include "vtlib/core/PagedLodGrid.h"
 #include "vtdata/vtLog.h"
 
 #include "StructureShadowsOSG.h"
@@ -86,12 +87,13 @@ CStructureShadowsOSG::~CStructureShadowsOSG()
 
 bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
 	osg::Node *pStructures, osg::Node *pShadowed, const int iResolution,
-	float fDarkness, int iTextureUnit)
+	float fDarkness, int iTextureUnit, const FSphere &ShadowSphere)
 {
 	m_fShadowDarkness = fDarkness;
 	m_pSceneView = pSceneView;
 	m_iTargetResolution = m_iCurrentResolution = iResolution;
 	m_pTexture = new osg::Texture2D;
+	m_ShadowSphere = ShadowSphere;
 	if (!m_pTexture.valid())
 		return false;
 
@@ -365,6 +367,14 @@ void CStructureShadowsOSG::SetSunPosition(osg::Vec3 SunPosition,
 {
 	SunPosition.normalize();
 
+	// We must have a valid shadow sphere in order to do anything
+	if (m_ShadowSphere.radius < 0)
+	{
+		// But, always remember the sun's position
+		m_SunPosition = SunPosition;
+		return;
+	}
+
 	if ((acos(m_SunPosition * SunPosition) > PIf * SHADOW_UPDATE_ANGLE / 180.0f) || bForceRecompute)
 	{
 		const osg::Viewport *pCurrentMainViewport = m_pSceneView->getViewport();
@@ -394,7 +404,12 @@ void CStructureShadowsOSG::SetSunPosition(osg::Vec3 SunPosition,
 		}
 
 		// Recompute the shadow texture
+#if 0
 		osg::BoundingSphere ShadowerBounds = m_pCameraNode->getChild(0)->getBound();
+#else
+		osg::BoundingSphere ShadowerBounds;
+		v2s(m_ShadowSphere, ShadowerBounds);
+#endif
 		osg::BoundingSphere ShadowedBounds;
 		if (m_bDepthShadow)
 			ShadowedBounds = ShadowerBounds;
@@ -478,11 +493,15 @@ void CStructureShadowsOSG::SetSunPosition(osg::Vec3 SunPosition,
 		}
 		else
 			pGrid = dynamic_cast<vtLodGrid*>(m_pCameraNode->getChild(0)->getUserData());
+		vtPagedStructureLodGrid *pPagedGrid = dynamic_cast<vtPagedStructureLodGrid*>(pGrid);
 		float fOldDistance;
 		if (NULL != pGrid)
 		{
 			fOldDistance = pGrid->GetDistance();
 			pGrid->SetDistance(1E9);
+
+			if (pPagedGrid)
+				pPagedGrid->EnableLoading(false);
 		}
 
 		// No shadows after sunset
@@ -511,11 +530,14 @@ void CStructureShadowsOSG::SetSunPosition(osg::Vec3 SunPosition,
 		m_pSceneView->cull();
 		m_pSceneView->draw();
 
+		// Now restore everything
 		m_pSceneView->getSceneData()->setNodeMask(MainSceneNodemask);
 
 		m_pSceneView->getCamera()->removeChild(m_pCameraNode.get());
 		for (iTr1 = m_ExcludeFromShadower.begin(), iTr2 = Nodemasks.begin(); iTr1 != m_ExcludeFromShadower.end(); iTr1++, iTr2++)
 			(*iTr1)->setNodeMask(*iTr2);
+		if (pPagedGrid)
+			pPagedGrid->EnableLoading(true);
 		if (NULL != pGrid)
 			pGrid->SetDistance(fOldDistance);
 		if (m_SunPosition.y() < 0.0f)
@@ -535,6 +557,17 @@ void CStructureShadowsOSG::SetShadowDarkness(float fDarkness)
 
 	// Force re-render of the shadows for the new shadow darkness
 	SetSunPosition(m_SunPosition, true);
+}
+
+void CStructureShadowsOSG::SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw)
+{
+	// If changed
+	if (ShadowSphere != m_ShadowSphere || bForceRedraw)
+	{
+		m_ShadowSphere = ShadowSphere;
+		// Force re-render of the shadows for the new shadow darkness
+		SetSunPosition(m_SunPosition, true);
+	}
 }
 
 void CStructureShadowsOSG::SetPolygonOffset(float fFactor, float fUnits)
