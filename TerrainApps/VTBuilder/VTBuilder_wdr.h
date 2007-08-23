@@ -321,9 +321,15 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer 
 
 // Declare toolbar functions
 
+const int ID_VIEW_LAYER_UP = 10225;
+const int ID_VIEW_LAYER_DOWN = 10226;
+void MainToolBarFunc( wxToolBar *parent );
+
 // Declare bitmap functions
 
 wxBitmap MyBitmapsFunc( size_t index );
+
+wxBitmap ToolBitmapsFunc( size_t index );
 
 #endif
 

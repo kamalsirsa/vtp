@@ -2730,6 +2730,16 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
 // Implement toolbar functions
 
+void MainToolBarFunc( wxToolBar *parent )
+{
+    parent->SetMargins( 2, 2 );
+    
+    parent->AddTool( ID_VIEW_LAYER_UP, wxT(""), ToolBitmapsFunc( 0 ), wxNullBitmap, wxITEM_NORMAL, wxT("") );
+    parent->AddTool( ID_VIEW_LAYER_DOWN, wxT(""), ToolBitmapsFunc( 1 ), wxNullBitmap, wxITEM_NORMAL, wxT("") );
+    
+    parent->Realize();
+}
+
 // Implement bitmap functions
 
 wxBitmap MyBitmapsFunc( size_t index )
@@ -2744,7 +2754,7 @@ wxBitmap MyBitmapsFunc( size_t index )
         "b c #FFFFFF",
         "c c #FF0000",
         "d c #0000FF",
-        "f c #00FF00",
+        "e c #00FF00",
         /* pixels */
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -2762,7 +2772,7 @@ wxBitmap MyBitmapsFunc( size_t index )
         "aaabbaabbabaabababaabaabaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "aaccccccccaaffffffffaadddddddaaa",
+        "aaccccccccaaeeeeeeeeaadddddddaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         };
         wxBitmap bitmap( xpm_data );
@@ -2795,6 +2805,79 @@ wxBitmap MyBitmapsFunc( size_t index )
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    return wxNullBitmap;
+}
+
+wxBitmap ToolBitmapsFunc( size_t index )
+{
+    if (index == 0)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 3 1",
+        "  c None",
+        "a c Black",
+        "b c #808080",
+        /* pixels */
+        "                    ",
+        "                    ",
+        "                    ",
+        "        baab        ",
+        "        baab        ",
+        "       baaaab       ",
+        "       baaaab       ",
+        "      baa  aab      ",
+        "      baa  aab      ",
+        "     baa    aab     ",
+        "     baa    aab     ",
+        "    baa      aab    ",
+        "    baa      aab    ",
+        "   baa        aab   ",
+        "   baa        aab   ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 1)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 3 1",
+        "  c None",
+        "a c Black",
+        "b c #808080",
+        /* pixels */
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "   baa        aab   ",
+        "   baa        aab   ",
+        "    baa      aab    ",
+        "    baa      aab    ",
+        "     baa    aab     ",
+        "     baa    aab     ",
+        "      baa  aab      ",
+        "      baa  aab      ",
+        "       baaaab       ",
+        "       baaaab       ",
+        "        baab        ",
+        "        baab        ",
+        "                    ",
+        "                    ",
+        "                    "
         };
         wxBitmap bitmap( xpm_data );
         return bitmap;

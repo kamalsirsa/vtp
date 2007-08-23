@@ -128,6 +128,7 @@ protected:
 
 	void OnLayerShow(wxCommandEvent& event);
 	void OnLayerUp(wxCommandEvent& event);
+	void OnLayerDown(wxCommandEvent& event);
 	void OnViewMagnifier(wxCommandEvent& event);
 	void OnViewPan(wxCommandEvent& event);
 	void OnViewDistance(wxCommandEvent& event);
@@ -150,6 +151,7 @@ protected:
 
 	void OnUpdateLayerShow(wxUpdateUIEvent& event);
 	void OnUpdateLayerUp(wxUpdateUIEvent& event);
+	void OnUpdateLayerDown(wxUpdateUIEvent& event);
 	void OnUpdateMagnifier(wxUpdateUIEvent& event);
 	void OnUpdatePan(wxUpdateUIEvent& event);
 	void OnUpdateDistance(wxUpdateUIEvent& event);
