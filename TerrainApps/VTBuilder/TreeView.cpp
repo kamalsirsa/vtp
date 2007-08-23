@@ -153,7 +153,14 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 {
 	VTLOG("Refreshing Tree Items\n");
 
+	// Deleting the previous items can call OnSelChanged, which causes VTB to
+	//  forget the active layer, so be sure to preserve it.
+	vtLayer *active_lay;
+	if (pFrame)
+		active_lay = pFrame->GetActiveLayer();
 	DeleteAllItems();
+	if (pFrame)
+		pFrame->SetActiveLayer(active_lay);
 
 	rootId = AddRoot(_("Layers"));
 	SetItemBold(rootId);
