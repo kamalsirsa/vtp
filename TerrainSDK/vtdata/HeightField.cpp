@@ -127,6 +127,9 @@ int ColorMap::Num() const
 void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
 							  float fMin, float fMax) const
 {
+	if (m_color.size() < 2)
+		return;
+
 	float fRange = fMax - fMin;
 	float step = fRange/iTableSize;
 
@@ -620,12 +623,13 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
  *
  * \param pBM	The bitmap to shade.
  * \param light_dir	Direction vector of the light.
- * \param light_factor Value from 0 (no shading) to 1 (full shading)
+ * \param fLightFactor Value from 0 (no shading) to 1 (full shading)
+ * \param fAmbient Ambient light values from 0 to 1, a typical value is 0.1.
  * \param bTrue	If true, use the real elevation values, ignoring vertical exaggeration.
  * \param progress_callback	If supplied, will be called with values from 0 to 100.
  */
 void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
-	float light_factor, bool bTrue, bool progress_callback(int))
+	float fLightFactor, float fAmbient, bool bTrue, bool progress_callback(int))
 {
 	// consider upward-pointing, rather than downward-pointing, normal
 	FPoint3 light_direction = -light_dir;
@@ -634,15 +638,16 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 	int h = pBM->GetHeight();
 	int gw = m_iColumns, gh = m_iRows;
 
-	float xFactor = (float)gw/(float)w;
-	float yFactor = (float)gh/(float)h;
+	int xFactor = gw/w;
+	int yFactor = gh/h;
 
 	int depth = pBM->GetDepth();
-	FPoint3 p1, p2, p3;
-	FPoint3 v1, v2, v3;
 	int i, j;
 	int x, y;
 	RGBi rgb;
+
+	// Center, Left, Right, Top, Bottom
+	FPoint3 c, l, r, t, b, v3;
 
 	// iterate over the texels
 	for (j = 0; j < h; j++)
@@ -658,51 +663,69 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 		{
 			x = (int) (i * xFactor);
 
-			float shade;
+			GetWorldLocation(x, y, c, bTrue);
+			if (c.y == INVALID_ELEVATION)
+				continue;
 
-			// If we are right on the edge, we cannot shade precisely because
-			//  the adjacent values are not known.  So, we pull back by 1 grid
-			//  point to avoid having a significant seam in the lighting.
-			int offx = 0, offy = 0;
-			if (x == gw-1)
-				offx = -1;
-			if (y == gh-1)
-				offy = -1;
+			// Check to see what surrounding values are valid
+			GetWorldLocation(x-xFactor, y, l, bTrue);
+			GetWorldLocation(x+xFactor, y, r, bTrue);
+			GetWorldLocation(x, y+yFactor, t, bTrue);
+			GetWorldLocation(x, y-yFactor, b, bTrue);
+
+			FPoint3 p1, p2, p3, p4;
 
 			// compute surface normal
-			GetWorldLocation(offx+x,   offy+y,   p1, bTrue);
-			GetWorldLocation(offx+x+1, offy+y,   p2, bTrue);
-			GetWorldLocation(offx+x,   offy+y+1, p3, bTrue);
-			v1 = p2 - p1;
-			v2 = p3 - p1;
-#if 1
-			v1.y *= light_factor;
-			v2.y *= light_factor;
-#endif
-			v3 = v1.Cross(v2);
-			v3.Normalize();
+			if (l.y != INVALID_ELEVATION)
+				p1 = l;
+			else
+				p1 = c;
 
-			shade = v3.Dot(light_direction); // shading 0 (dark) to 1 (light)
+			if (r.y != INVALID_ELEVATION)
+				p2 = r;
+			else
+				p2 = c;
 
-			// boost with ambient light
-			shade += 0.4f;
+			if (t.y != INVALID_ELEVATION)
+				p3 = t;
+			else
+				p3 = c;
 
-			// clip - don't drop below ambient, or overbrighten
-			if (shade < 0.4f)
-				shade = 0.4f;
-			else if (shade > 1.1f)
-				shade = 1.1f;
+			if (b.y != INVALID_ELEVATION)
+				p4 = b;
+			else
+				p4 = c;
 
 #if 0
-			// Push the value of 'shade' toward 1.0 by the light_factor factor.
-			// This means that light_factor=0 means no lighting, 1 means full lighting.
-			float diff = 1 - shade;
-			diff = diff * (1 - light_factor);
-			shade += diff;
-#endif
+			FPoint3 v1 = p2 - p1;
+			FPoint3 v2 = p3 - p4;
 
-			// don't over-darken
-			if (shade < 0.05f) shade = 0.05f;
+			// This provides some 'exaggeration' for the lighting
+			v1.y *= fLightFactor;
+			v2.y *= fLightFactor;
+
+			v3 = v1.Cross(v2);
+#else
+			// This is equivalent to the cross product, and the overall
+			//  render is 2% faster
+			v3.Set((p1.y - p2.y)*fLightFactor/(p2.x - p1.x), 1,
+				   (p3.y - p4.y)*fLightFactor/(p4.z - p3.z));
+#endif
+			v3.Normalize();
+
+			float shade = v3.Dot(light_direction); // shading 0 (dark) to 1 (light)
+
+			// boost with ambient light
+			shade = fAmbient + (1-fAmbient)*shade;
+
+			// Most of the values are in the bottom half of the 0-1 range, so push
+			//  them upwards with a gamma factor.
+			// TODO maybe: expose this factor in GUI
+			shade = powf(shade, 0.75f);
+
+			// Never shade below zero, can cause RGB wraparound
+			if (shade < 0)
+				shade = 0;
 
 			// combine color and shading
 			if (depth == 8)
@@ -720,7 +743,7 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
  * using the east-west slope to produce lightening/darkening.
  * The bitmap must be the same size as the elevation grid, or a power of 2 smaller.
  */
-void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
+void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 									 bool bTrue, bool progress_callback(int))
 {
 	int w = pBM->GetWidth();
@@ -760,7 +783,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
 			float value2 = GetElevation(x+1, y, bTrue);
 			if (value2 == INVALID_ELEVATION)
 				value2 = value;
-			short diff = (short) ((value2 - value) / m_fXStep * light_factor);
+			short diff = (short) ((value2 - value) / m_fXStep * fLightFactor);
 
 			// clip to keep values under control
 			if (diff > 128)
@@ -830,8 +853,9 @@ inline DPoint2 GridPos(const DPoint2 &base, const DPoint2 &spacing, int i, int j
  *		down toward the terrain.  For example, (-1,-1,0) is pointing down
  *		where the sun would be at 9AM on the equator.  Despite this example,
  *		light_dir should be normalized to unit length.
- * \param light_factor	Amount of shading, from 0 to 1.  A value of 0 means
+ * \param fLightFactor	Amount of shading, from 0 to 1.  A value of 0 means
  *		no lighting, 1 means full lighting.
+ * \param fAmbient	Amount of ambient light, from 0 to 1.  A typical value is 0.1.
  * \param progress_callback	Optional callback for progress notification.
  */
 /* Core code contributed by Kevin Behilo, 2/20/04.
@@ -844,7 +868,7 @@ inline DPoint2 GridPos(const DPoint2 &base, const DPoint2 &spacing, int i, int j
  *  Context, so that it could be re-used for quickly re-shading multiple times.
  */
 void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_dir,
-	float light_factor, bool progress_callback(int))
+	float fLightFactor, float fAmbient, bool progress_callback(int))
 {
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
@@ -864,7 +888,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 	// These values are hardcoded here but could be exposed in the GUI
 	float sun =  0.7f;
-	float amb =  0.45f;
+	float amb =  fAmbient;
 
 	// If we have light that's pointing UP, rather than down at the terrain,
 	//  then it's only going to take a really long time to produce a
@@ -1101,10 +1125,10 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			else if (shade > 1.2f)
 				shade = 1.2f;
 
-			// Push the value of 'shade' toward 1.0 by the light_factor factor.
-			// This means that light_factor=0 means no lighting, 1 means full lighting.
+			// Push the value of 'shade' toward 1.0 by the fLightFactor factor.
+			// This means that fLightFactor=0 means no lighting, 1 means full lighting.
 			float diff = 1 - shade;
-			diff = diff * (1 - light_factor);
+			diff = diff * (1 - fLightFactor);
 			shade += diff;
 
 			// Rather than doing the shading at this point we may want to

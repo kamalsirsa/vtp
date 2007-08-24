@@ -187,11 +187,11 @@ public:
 	bool ColorDibFromTable(vtBitmapBase *pBM, std::vector<RGBi> &table,
 		float fMin, float fMax, bool progress_callback(int) = NULL);
 	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
-		float light_factor, bool bTrue = false, bool progress_callback(int) = NULL);
+		float fLightFactor, float fAmbient = 0.1f, bool bTrue = false, bool progress_callback(int) = NULL);
 	void ShadeQuick(vtBitmapBase *pBM, float light_factor, bool bTrue = false,
 		bool progress_callback(int) = NULL);
 	void ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &ight_dir,
-		float light_factor, bool progress_callback(int) = NULL);
+		float fLightFactor, float fAmbient, bool progress_callback(int) = NULL);
 
 protected:
 	int		m_iColumns, m_iRows;
