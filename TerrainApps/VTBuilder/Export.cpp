@@ -416,9 +416,11 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 				vtElevLayer::m_draw.m_iCastDirection);
 
 			if (vtElevLayer::m_draw.m_bCastShadows)
-				pEL->m_pGrid->ShadowCastDib(pBitmap, light_dir, 1.0, progress_callback);
+				pEL->m_pGrid->ShadowCastDib(pBitmap, light_dir, 1.0f,
+					vtElevLayer::m_draw.m_fAmbient, progress_callback);
 			else
-				pEL->m_pGrid->ShadeDibFromElevation(pBitmap, light_dir, 1.0, true, progress_callback);
+				pEL->m_pGrid->ShadeDibFromElevation(pBitmap, light_dir, 1.0f,
+					vtElevLayer::m_draw.m_fAmbient, true, progress_callback);
 		}
 	}
 
@@ -831,7 +833,8 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 					// Don't cast shadows for tileset; they won't cast
 					//  correctly from one tile to the next.
-					base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f, true);
+					base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f,
+						opts.draw.m_fAmbient, true);
 				}
 
 				for (int k = 0; k < total_lods; k++)

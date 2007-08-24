@@ -2529,24 +2529,32 @@ wxSizer *RenderOptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_size
     wxSpinCtrl *item17 = new wxSpinCtrl( parent, ID_SPIN_CAST_DIRECTION, wxT("45"), wxDefaultPosition, wxSize(70,-1), 0, 0, 360, 45 );
     item13->Add( item17, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
+    item13->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item18 = new wxStaticText( parent, ID_TEXT, _("Ambient light (0-1):"), wxDefaultPosition, wxDefaultSize, 0 );
+    item13->Add( item18, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+
+    wxTextCtrl *item19 = new wxTextCtrl( parent, ID_AMBIENT, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item13->Add( item19, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
     item9->Add( item13, 0, wxALIGN_CENTER, 5 );
 
-    wxCheckBox *item18 = new wxCheckBox( parent, ID_CHECK_SHADOWS, _("Cast Shadows"), wxDefaultPosition, wxDefaultSize, 0 );
-    item9->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item20 = new wxCheckBox( parent, ID_CHECK_SHADOWS, _("Cast Shadows"), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item20, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item7->Add( item9, 0, wxALIGN_CENTER, 5 );
 
     item0->Add( item7, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item20 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item22 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item21 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item23 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item19, 0, wxALIGN_CENTER, 5 );
+    item0->Add( item21, 0, wxALIGN_CENTER, 5 );
 
     if (set_sizer)
     {

@@ -53,6 +53,7 @@ RenderOptionsDlg::RenderOptionsDlg( wxWindow *parent, wxWindowID id, const wxStr
 
 	AddValidator(ID_SPIN_CAST_ANGLE, &m_opt.m_iCastAngle);
 	AddValidator(ID_SPIN_CAST_DIRECTION, &m_opt.m_iCastDirection);
+	AddNumValidator(ID_AMBIENT, &m_opt.m_fAmbient, 2);
 }
 
 void RenderOptionsDlg::SetOptions(ElevDrawOptions &opt)

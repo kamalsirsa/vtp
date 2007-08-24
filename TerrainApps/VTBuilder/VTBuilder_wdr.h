@@ -295,34 +295,35 @@ const int ID_RADIO_SHADING_QUICK = 10205;
 const int ID_RADIO_SHADING_DOT = 10206;
 const int ID_SPIN_CAST_ANGLE = 10207;
 const int ID_SPIN_CAST_DIRECTION = 10208;
-const int ID_CHECK_SHADOWS = 10209;
+const int ID_AMBIENT = 10209;
+const int ID_CHECK_SHADOWS = 10210;
 wxSizer *RenderOptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_EXTENT1 = 10210;
-const int ID_EXTENT2 = 10211;
-const int ID_MATCH_LAYER = 10212;
-const int ID_LAYER_RES = 10213;
-const int ID_GROW = 10214;
-const int ID_SHRINK = 10215;
-const int ID_TILE_SIZE = 10216;
-const int ID_SIZE_SPIN = 10217;
+const int ID_EXTENT1 = 10211;
+const int ID_EXTENT2 = 10212;
+const int ID_MATCH_LAYER = 10213;
+const int ID_LAYER_RES = 10214;
+const int ID_GROW = 10215;
+const int ID_SHRINK = 10216;
+const int ID_TILE_SIZE = 10217;
+const int ID_SIZE_SPIN = 10218;
 wxSizer *MatchDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_RADIO1 = 10218;
-const int ID_RADIO2 = 10219;
-const int ID_RADIO3 = 10220;
-const int ID_RADIO4 = 10221;
-const int ID_RADIO5 = 10222;
-const int ID_RADIO6 = 10223;
-const int ID_RADIO7 = 10224;
+const int ID_RADIO1 = 10219;
+const int ID_RADIO2 = 10220;
+const int ID_RADIO3 = 10221;
+const int ID_RADIO4 = 10222;
+const int ID_RADIO5 = 10223;
+const int ID_RADIO6 = 10224;
+const int ID_RADIO7 = 10225;
 wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
 // Declare toolbar functions
 
-const int ID_VIEW_LAYER_UP = 10225;
-const int ID_VIEW_LAYER_DOWN = 10226;
+const int ID_VIEW_LAYER_UP = 10226;
+const int ID_VIEW_LAYER_DOWN = 10227;
 void MainToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

@@ -647,9 +647,9 @@ void vtElevLayer::RenderBitmap()
 		FPoint3 light_dir = LightDirection(m_draw.m_iCastAngle, m_draw.m_iCastDirection);
 
 		if (m_draw.m_bCastShadows)
-			m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0f, progress_callback);
+			m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0f, m_draw.m_fAmbient, progress_callback);
 		else
-			m_pGrid->ShadeDibFromElevation(m_pBitmap, light_dir, 1.0f, true, progress_callback);
+			m_pGrid->ShadeDibFromElevation(m_pBitmap, light_dir, 1.0f, m_draw.m_fAmbient, true, progress_callback);
 	}
 
 	if (has_invalid && m_draw.m_bDoMask)
@@ -1355,7 +1355,8 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 
 					// Don't cast shadows for tileset; they won't cast
 					//  correctly from one tile to the next.
-					base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f, true);
+					base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f,
+						opts.draw.m_fAmbient, true);
 				}
 
 				for (int k = 0; k < opts.numlods; k++)

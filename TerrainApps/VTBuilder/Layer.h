@@ -142,6 +142,7 @@ public:
 		m_bDoMask = true;
 		m_iCastAngle = 30;
 		m_iCastDirection = 90;
+		m_fAmbient = 0.1f;
 		m_strColorMapFile = "";
 	}
 	bool operator != (const ElevDrawOptions &val)
@@ -153,6 +154,7 @@ public:
 			m_bDoMask != val.m_bDoMask ||
 			m_iCastAngle != val.m_iCastAngle ||
 			m_iCastDirection != val.m_iCastDirection ||
+			m_fAmbient != val.m_fAmbient ||
 			m_strColorMapFile != val.m_strColorMapFile);
 	}
 	bool m_bShowElevation;
@@ -162,6 +164,7 @@ public:
 	bool m_bDoMask;
 	int m_iCastAngle;
 	int m_iCastDirection;
+	float m_fAmbient;
 	vtString m_strColorMapFile;
 };
 
