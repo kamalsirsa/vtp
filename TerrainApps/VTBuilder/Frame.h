@@ -299,6 +299,8 @@ protected:
 
 	// Popup menu items
 	void OnDistanceClear(wxCommandEvent& event);
+	void OnShowAll(wxCommandEvent& event);
+	void OnHideAll(wxCommandEvent& event);
 
 	// keys (used for shortcuts)
 	void OnChar(wxKeyEvent& event);
@@ -371,6 +373,7 @@ public:
 	LayerType AskLayerType();
 	int LayerNum(vtLayer *lp);
 	void SwapLayerOrder(int n0, int n1);
+	void RefreshLayerInView(vtLayer *pLayer);
 
 	vtFeatureSet *GetActiveFeatureSet();
 

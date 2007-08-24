@@ -168,16 +168,33 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	int	image, imageSel;
 
 	wxTreeItemId elevId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Grid, _("Elevation"));
+	SetItemData(elevId, new MyTreeItemData(LT_ELEVATION));
+
 	wxTreeItemId imageId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Image, _("Images"));
+	SetItemData(imageId, new MyTreeItemData(LT_IMAGE));
+
 	wxTreeItemId buildId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Building, _("Structures"));
+	SetItemData(buildId, new MyTreeItemData(LT_STRUCTURE));
+
 	wxTreeItemId roadId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Road, _("Roads"));
+	SetItemData(roadId, new MyTreeItemData(LT_ROAD));
+
 	wxTreeItemId vegId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Veg1, _("Vegetation"));
+	SetItemData(vegId, new MyTreeItemData(LT_VEG));
+
 	wxTreeItemId waterId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Water, _("Water"));
+	SetItemData(waterId, new MyTreeItemData(LT_WATER));
+
 #if SUPPORT_TRANSIT
 	wxTreeItemId transId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Transit, _("Transit"));
+	SetItemData(transId, new MyTreeItemData(LT_TRANSIT));
 #endif
+
 	wxTreeItemId utilityId = AddRootItem(MyTreeCtrl::TreeCtrlIcon_Utility, _("Utilities"));
+	SetItemData(utilityId, new MyTreeItemData(LT_UTILITY));
+
 	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, _("Raw"));
+	SetItemData(rawId, new MyTreeItemData(LT_RAW));
 
 	image = TreeCtrlIcon_File;
 	imageSel = TreeCtrlIcon_FileSelected;
@@ -311,6 +328,27 @@ void MyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 		frame->RefreshToolbars();
 }
 
+void MyTreeCtrl::OnItemRightClick(wxTreeEvent& event)
+{
+	// for testing, prevent the user from collapsing the first child folder
+	wxTreeItemId itemId = event.GetItem();
+
+	MyTreeItemData *data = (MyTreeItemData *)GetItemData(itemId);
+	if (data)
+	{
+		if (data->m_pLayer)
+			m_clicked_layer_type = data->m_pLayer->GetType();
+		else
+			m_clicked_layer_type = data->m_type;
+
+		wxMenu *popmenu = new wxMenu;
+		popmenu->Append(ID_POPUP_SHOWALL, _("Show All"));
+		popmenu->Append(ID_POPUP_HIDEALL, _("Hide All"));
+		PopupMenu(popmenu);
+		delete popmenu;
+	}
+}
+
 void MyTreeCtrl::OnBeginDrag(wxTreeEvent& event)
 {
 }
@@ -410,9 +448,11 @@ EVT_TREE_ITEM_EXPANDED(LayerTree_Ctrl, MyTreeCtrl::OnItemExpanded)
 EVT_TREE_ITEM_EXPANDING(LayerTree_Ctrl, MyTreeCtrl::OnItemExpanding)
 EVT_TREE_ITEM_COLLAPSED(LayerTree_Ctrl, MyTreeCtrl::OnItemCollapsed)
 EVT_TREE_ITEM_COLLAPSING(LayerTree_Ctrl, MyTreeCtrl::OnItemCollapsing)
+EVT_TREE_ITEM_RIGHT_CLICK(LayerTree_Ctrl, MyTreeCtrl::OnItemRightClick)
 EVT_TREE_SEL_CHANGED(LayerTree_Ctrl, MyTreeCtrl::OnSelChanged)
 EVT_TREE_SEL_CHANGING(LayerTree_Ctrl, MyTreeCtrl::OnSelChanging)
 EVT_TREE_KEY_DOWN(LayerTree_Ctrl, MyTreeCtrl::OnTreeKeyDown)
 EVT_TREE_ITEM_ACTIVATED(LayerTree_Ctrl, MyTreeCtrl::OnItemActivated)
 EVT_RIGHT_DCLICK(MyTreeCtrl::OnRMouseDClick)
 END_EVENT_TABLE()
+

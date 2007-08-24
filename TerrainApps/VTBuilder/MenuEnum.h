@@ -133,6 +133,8 @@ enum
 
 	// Popup menu items
 	ID_DISTANCE_CLEAR,
+	ID_POPUP_SHOWALL,
+	ID_POPUP_HIDEALL,
 
 	ID_HIGHEST_MENU_ENUM,
 

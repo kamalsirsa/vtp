@@ -286,7 +286,9 @@ EVT_MENU(ID_HELP_DOC_LOCAL,		MainFrame::OnHelpDocLocal)
 EVT_MENU(ID_HELP_DOC_ONLINE,	MainFrame::OnHelpDocOnline)
 
 // Popup menu items
-EVT_MENU(ID_DISTANCE_CLEAR,			MainFrame::OnDistanceClear)
+EVT_MENU(ID_DISTANCE_CLEAR,		MainFrame::OnDistanceClear)
+EVT_MENU(ID_POPUP_SHOWALL,		MainFrame::OnShowAll)
+EVT_MENU(ID_POPUP_HIDEALL,		MainFrame::OnHideAll)
 
 EVT_CHAR(MainFrame::OnChar)
 EVT_KEY_DOWN(MainFrame::OnKeyDown)
@@ -1370,6 +1372,7 @@ void MainFrame::OnUpdateLayerFlatten(wxUpdateUIEvent& event)
 			 lp->GetType() == LT_RAW));
 }
 
+
 ////////////////////////////////////////////////////////////
 // View menu
 
@@ -1379,12 +1382,7 @@ void MainFrame::OnLayerShow(wxCommandEvent &event)
 	if (!pLayer)
 		return;
 	pLayer->SetVisible(!pLayer->GetVisible());
-
-	DRECT r;
-	pLayer->GetExtent(r);
-	wxRect sr = m_pView->WorldToWindow(r);
-	IncreaseRect(sr, 5);
-	m_pView->Refresh(TRUE, &sr);
+	RefreshLayerInView(pLayer);
 }
 
 void MainFrame::OnUpdateLayerShow(wxUpdateUIEvent& event)
@@ -1404,12 +1402,7 @@ void MainFrame::OnLayerUp(wxCommandEvent &event)
 	if (num < NumLayers()-1)
 		SwapLayerOrder(num, num+1);
 
-	DRECT r;
-	pLayer->GetExtent(r);
-	wxRect sr = m_pView->WorldToWindow(r);
-	IncreaseRect(sr, 5);
-	m_pView->Refresh(TRUE, &sr);
-
+	RefreshLayerInView(pLayer);
 	m_pTree->RefreshTreeItems(this);
 }
 
@@ -1428,12 +1421,7 @@ void MainFrame::OnLayerDown(wxCommandEvent &event)
 	if (num > 0)
 		SwapLayerOrder(num-1, num);
 
-	DRECT r;
-	pLayer->GetExtent(r);
-	wxRect sr = m_pView->WorldToWindow(r);
-	IncreaseRect(sr, 5);
-	m_pView->Refresh(TRUE, &sr);
-
+	RefreshLayerInView(pLayer);
 	m_pTree->RefreshTreeItems(this);
 }
 
@@ -3717,4 +3705,43 @@ void MainFrame::OnDistanceClear(wxCommandEvent &event)
 {
 	ClearDistance();
 }
+
+void MainFrame::OnShowAll(wxCommandEvent& event)
+{
+	wxTreeItemId itemId = m_pTree->GetSelection();
+	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(itemId);
+	if (!data)
+		return;
+
+	int layers = m_Layers.GetSize();
+	for (int l = 0; l < layers; l++)
+	{
+		vtLayer *lp = m_Layers.GetAt(l);
+		if (lp->GetType() == m_pTree->m_clicked_layer_type)
+		{
+			lp->SetVisible(true);
+			RefreshLayerInView(lp);
+		}
+	}
+}
+
+void MainFrame::OnHideAll(wxCommandEvent& event)
+{
+	wxTreeItemId itemId = m_pTree->GetSelection();
+	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(itemId);
+	if (!data)
+		return;
+
+	int layers = m_Layers.GetSize();
+	for (int l = 0; l < layers; l++)
+	{
+		vtLayer *lp = m_Layers.GetAt(l);
+		if (lp->GetType() == m_pTree->m_clicked_layer_type)
+		{
+			lp->SetVisible(false);
+			RefreshLayerInView(lp);
+		}
+	}
+}
+
 

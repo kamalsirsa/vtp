@@ -805,6 +805,16 @@ void MainFrame::SwapLayerOrder(int n0, int n1)
 	m_Layers[n1] = lp0;
 }
 
+void MainFrame::RefreshLayerInView(vtLayer *pLayer)
+{
+	DRECT r;
+	pLayer->GetExtent(r);
+	wxRect sr = m_pView->WorldToWindow(r);
+	IncreaseRect(sr, 5);
+	m_pView->Refresh(TRUE, &sr);
+}
+
+
 //
 // read / write ini file
 //

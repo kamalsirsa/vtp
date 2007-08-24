@@ -1,7 +1,7 @@
 //
 // TreeView.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,7 +16,9 @@ class MyTreeItemData : public wxTreeItemData
 {
 public:
 	MyTreeItemData(vtLayer *pLayer) { m_pLayer = pLayer; }
+	MyTreeItemData(LayerType lt) { m_type = lt; m_pLayer = NULL; }
 	vtLayerPtr m_pLayer;
+	LayerType m_type;
 };
 
 class MyTreeCtrl : public wxTreeCtrl
@@ -62,6 +64,8 @@ public:
 
 	void DoToggleIcon(const wxTreeItemId& item);
 
+	LayerType	 m_clicked_layer_type;
+
 protected:
 	void OnBeginDrag(wxTreeEvent& event);
 	void OnBeginRDrag(wxTreeEvent& event);
@@ -79,6 +83,7 @@ protected:
 	void OnSelChanging(wxTreeEvent& event);
 	void OnTreeKeyDown(wxTreeEvent& event);
 	void OnItemActivated(wxTreeEvent& event);
+	void OnItemRightClick(wxTreeEvent& event);
 	void OnRMouseDClick(wxMouseEvent& event);
 
 	virtual int OnCompareItems(const wxTreeItemId& i1, const wxTreeItemId& i2);
