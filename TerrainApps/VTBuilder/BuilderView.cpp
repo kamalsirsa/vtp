@@ -2073,6 +2073,31 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			}
 		}
 #endif
+#if 0
+		{
+			vtProjection proj;
+			vtElevationGrid grid(DRECT(0, 1, 1, 0), 5, 5, true, proj);
+			for (int i = 0; i < 5; i++)
+			{
+				for (int j = 0; j < 5; j++)
+				{
+					if (i == 4 || j == 4)
+						grid.SetFValue(i, j, 1);
+					else
+						grid.SetFValue(i, j, 0);
+				}
+			}
+
+			vtBitmap bmp;
+			bmp.Allocate(4, 4, 24);
+
+			std::vector<RGBi> table;
+			table.push_back(RGBi(0,0,0));
+			table.push_back(RGBi(255,255,255));
+
+			grid.ColorDibFromTable(&bmp, table, 0, 1);
+		}
+#endif
 	}
 	else
 		event.Skip();
