@@ -896,18 +896,16 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 				for (y = base_tilesize; y >= 0; y -= (1<<k))
 				{
-					p.y = m_area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
 					for (x = 0; x <= base_tilesize; x += (1<<k))
 					{
-						p.x = m_area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
 						if (bFloat)
 						{
-							*fdata = base_lod.GetFilteredValue(p);
+							*fdata = base_lod.GetFValue(x, y);
 							fdata++;
 						}
 						else
 						{
-							*sdata = (short) base_lod.GetFilteredValue(p);
+							*sdata = base_lod.GetValue(x, y);
 							sdata++;
 						}
 					}
