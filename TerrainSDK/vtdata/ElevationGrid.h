@@ -119,7 +119,6 @@ public:
 
 	float GetClosestValue(const DPoint2 &p) const;
 	float GetFilteredValue(const DPoint2 &p) const;
-	float GetFilteredValue2(const DPoint2 &p) const;
 
 	// Accessors
 	/** Return the embedded name of the DEM is it has one */

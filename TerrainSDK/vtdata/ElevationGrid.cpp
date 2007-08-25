@@ -845,7 +845,7 @@ void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
 }
 
 /**
- * Get the height of the grid at a specific world coordinate.
+ * Get the height of the grid at a specific world coordinate (nearest neighbor)
  *
  * The value of the gridpoint closest to the specified location is returned.
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
@@ -853,14 +853,15 @@ void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
  */
 float vtElevationGrid::GetClosestValue(const DPoint2 &p) const
 {
-	int ix = (int)((p.x - m_EarthExtents.left) / m_EarthExtents.Width() * m_iColumns);
-	int iy = (int)((p.y - m_EarthExtents.bottom) / m_EarthExtents.Height() * m_iRows);
+	int ix = (int)((p.x - m_EarthExtents.left) / m_EarthExtents.Width() * (m_iColumns-1) + 0.5);
+	int iy = (int)((p.y - m_EarthExtents.bottom) / m_EarthExtents.Height() * (m_iRows-1) + 0.5);
 	if (ix >= 0 && ix < m_iColumns && iy >= 0 && iy < m_iRows)
 		return GetFValue(ix, iy);
 	else
 		return INVALID_ELEVATION;
 }
 
+#if 0
 /**
  * Get the interpolated height of the grid at a specific world coordinate.
  *
@@ -874,11 +875,11 @@ float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 	double local_x = (p.x - m_EarthExtents.left) / (m_EarthExtents.Width());
 	double local_y = (p.y - m_EarthExtents.bottom) / (m_EarthExtents.Height());
 
-	int index_x = (int) (local_x * (m_iColumns-1) + 0.0000000001);
+	int index_x = (int) floor(local_x * (m_iColumns-1));
 	if (index_x < 0 || index_x >= m_iColumns)
 		return INVALID_ELEVATION;
 
-	int index_y = (int) (local_y * (m_iRows-1) + 0.0000000001);
+	int index_y = (int) floor(local_y * (m_iRows-1));
 	if (index_y < 0 || index_y >= m_iRows)
 		return INVALID_ELEVATION;
 
@@ -942,6 +943,7 @@ float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 	}
 	return (float) fData;
 }
+#endif
 
 float vtElevationGrid::GetFValueSafe(int i, int j) const
 {
@@ -953,95 +955,23 @@ float vtElevationGrid::GetFValueSafe(int i, int j) const
 
 /**
  * Get the interpolated height of the grid at a specific world coordinate.
- * This method is more liberal in regards to finding a valid data point
- * among undefined data than GetFilteredValue()
+ * This method is generous in allowing points 1/2 grid cell outside the grid.
  */
-float vtElevationGrid::GetFilteredValue2(const DPoint2 &p) const
+float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 {
-	float fData;
-
 	// Quickly reject points well outside the greatest possible extents of
 	//  this grid, for speed.
-	if (GetAreaExtents().ContainsPoint(p) == false)
-		return INVALID_ELEVATION;
-
-	// simple case, within the precise extents
-	if (m_EarthExtents.ContainsPoint(p, true))
-	{
-		fData = GetFilteredValue(p);
-		if (fData != INVALID_ELEVATION)
-			return fData;
-	}
+	//if (GetAreaExtents().ContainsPoint(p) == false)
+	//	return INVALID_ELEVATION;
 
 	// what data point in t is closest to (x,y)?
 	double local_x = (p.x - m_EarthExtents.left) / (m_EarthExtents.Width());
 	double local_y = (p.y - m_EarthExtents.bottom) / (m_EarthExtents.Height());
 
-	int index_x = (int) (local_x * (m_iColumns-1) + 0.0000000001);
-	int index_x2 = (int) (local_x * (m_iColumns-1) + 0.5);
-	if (index_x2 < 0 || index_x2 > m_iColumns)
-		return INVALID_ELEVATION;
-
-	int index_y = (int) (local_y * (m_iRows-1) + 0.0000000001);
-	int index_y2 = (int) (local_y * (m_iRows-1) + 0.5);
-	if (index_y2 < 0 || index_y2 > m_iRows)
-		return INVALID_ELEVATION;
-
 	double findex_x = local_x * (m_iColumns-1);
 	double findex_y = local_y * (m_iRows-1);
 
-	float fDataBL, fDataTL, fDataTR, fDataBR;
-
-	int valid = 0;
-	float sum = 0.0f;
-	fDataBL = GetFValueSafe(index_x, index_y);
-	fDataBR = GetFValueSafe(index_x+1, index_y);
-	fDataTL = GetFValueSafe(index_x, index_y+1);
-	fDataTR = GetFValueSafe(index_x+1, index_y+1);
-
-	if (fDataBL != INVALID_ELEVATION)
-	{
-		sum += fDataBL;
-		valid++;
-	}
-	if (fDataBR != INVALID_ELEVATION)
-	{
-		sum += fDataBR;
-		valid++;
-	}
-	if (fDataTL != INVALID_ELEVATION)
-	{
-		sum += fDataTL;
-		valid++;
-	}
-	if (fDataTR != INVALID_ELEVATION)
-	{
-		sum += fDataTR;
-		valid++;
-	}
-	if (valid == 4)	// all valid
-	{
-		// do bilinear filtering
-		double diff_x = findex_x - index_x;
-		double diff_y = findex_y - index_y;
-		// catch numerical roundoff, diff must be [0..1]
-		if (diff_x < 0)
-			diff_x = 0;
-		if (diff_y < 0)
-			diff_y = 0;
-		fData = (float) (fDataBL + (fDataBR-fDataBL)*diff_x +
-				(fDataTL-fDataBL)*diff_y +
-				(fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y);
-	}
-	else if (valid == 3 || valid == 2)
-	{
-		// do average; it's better than nothing
-		fData = sum / valid;
-	}
-	else
-		fData = INVALID_ELEVATION;
-
-	return fData;
+	return GetInterpolatedElevation(findex_x, findex_y);
 }
 
 /**
@@ -1148,7 +1078,7 @@ void vtElevationGrid::SetupConversion(float fVerticalExag)
 float vtElevationGrid::GetElevation(int iX, int iZ, bool bTrue) const
 {
 	// we ignore bTrue because this class always stores true elevation
-	return GetFValue(iX, iZ);
+	return GetFValueSafe(iX, iZ);
 }
 
 void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue) const
@@ -1156,7 +1086,7 @@ void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue) c
 	if (bTrue)
 	{
 		loc.Set(m_WorldExtents.left + i * m_fXStep,
-			GetFValue(i,j),
+			GetFValueSafe(i,j),
 			m_WorldExtents.bottom - j * m_fZStep);
 	}
 	else

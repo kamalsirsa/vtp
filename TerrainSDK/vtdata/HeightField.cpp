@@ -387,6 +387,132 @@ void vtHeightFieldGrid3d::WorldToGrid(const FPoint3 &pos, IPoint2 &ipos)
 }
 
 /**
+ * Get the interpolated height of the grid at a specific grid coordinate,
+ * where the coordinates can be non-integer; the result is interpolated
+ * between the source heixels when possible (i.e. not at the edge)
+ *
+ * \param findex_x Floating point index, from 0 to width in heixels.
+ * \param findex_y Floating point index, from 0 to height in heixels.
+ */
+float vtHeightFieldGrid3d::GetInterpolatedElevation(double findex_x, double findex_y) const
+{
+#if 0
+	// Allow the test point to fall 1/2 grid cell outside the grid, clamp to
+	//  edge, which effectively does a nearest-neighbor interpolation in that area.
+	if (findex_x < -0.5 || findex_x > m_iColumns-0.5)
+		return INVALID_ELEVATION;
+	if (findex_y < -0.5 || findex_y > m_iRows-0.5)
+		return INVALID_ELEVATION;
+
+	if (findex_x < 0)
+		findex_x = 0;
+	else if (findex_x > m_iColumns-1)
+		findex_x = m_iColumns-1;
+	if (findex_y < 0)
+		findex_y = 0;
+	else if (findex_y > m_iRows-1)
+		findex_y = m_iRows-1;
+#else
+	// Require the point to be inside the grid
+	if (findex_x < 0 || findex_x > m_iColumns-1)
+		return INVALID_ELEVATION;
+	if (findex_y < 0 || findex_y > m_iRows-1)
+		return INVALID_ELEVATION;
+#endif
+
+	int index_x = (int) findex_x;
+	int index_y = (int) findex_y;
+
+	float diff_x = (float) (findex_x - index_x);
+	float diff_y = (float) (findex_y - index_y);
+
+	if (index_x == m_iColumns-1)
+	{
+		// On right edge
+		index_x --;
+		diff_x = 1.0f;
+	}
+	if (index_y == m_iRows-1)
+	{
+		// On top edge
+		index_y --;
+		diff_y = 1.0f;
+	}
+
+	float fDataBL = GetElevation(index_x, index_y);
+	float fDataBR = GetElevation(index_x+1, index_y);
+	float fDataTL = GetElevation(index_x, index_y+1);
+	float fDataTR = GetElevation(index_x+1, index_y+1);
+
+	int valid = 0;
+	if (fDataBL != INVALID_ELEVATION)
+		valid++;
+	if (fDataBR != INVALID_ELEVATION)
+		valid++;
+	if (fDataTL != INVALID_ELEVATION)
+		valid++;
+	if (fDataTR != INVALID_ELEVATION)
+		valid++;
+
+	float fData;
+	if (valid == 4)	// all valid
+	{
+		// do bilinear filtering
+		fData = (float) (fDataBL +
+				(fDataBR-fDataBL)*diff_x +
+				(fDataTL-fDataBL)*diff_y +
+				(fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y);
+	}
+	else if (valid > 0)
+	{
+		// Look for closest valid nearest neighbor
+		float dist[4];
+		float value[4];
+
+		value[0] = fDataBL;
+		value[1] = fDataBR;
+		value[2] = fDataTL;
+		value[3] = fDataTR;
+
+		if (fDataBL != INVALID_ELEVATION)
+			dist[0] = fabs(diff_x*diff_x) + fabs(diff_y*diff_y);
+		else
+			dist[0] = 3;	// Not valid, use a value > 2
+
+		if (fDataBR != INVALID_ELEVATION)
+			dist[1] = fabs((1-diff_x)*(1-diff_x)) + fabs(diff_y*diff_y);
+		else
+			dist[1] = 3;
+
+		if (fDataTL != INVALID_ELEVATION)
+			dist[2] = fabs(diff_x*diff_x) + fabs((1-diff_y)*(1-diff_y));
+		else
+			dist[2] = 3;
+
+		if (fDataTR != INVALID_ELEVATION)
+			dist[3] = fabs((1-diff_x)*(1-diff_x)) + fabs((1-diff_y)*(1-diff_y));
+		else
+			dist[3] = 3;
+
+		float closest = 4;
+		int closest_index;
+		for (int i = 0; i < 4; i++)
+		{
+			if (dist[i] < closest)
+			{
+				closest = dist[i];
+				closest_index = i;
+			}
+		}
+		fData = value[closest_index];
+	}
+	else
+		fData = INVALID_ELEVATION;
+
+	return fData;
+}
+
+/**
  * Tests a ray against a heightfield grid.
  *
  * Note: This algorithm is not guaranteed to give absolutely correct results,
@@ -562,7 +688,18 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	return ColorDibFromTable(pBM, table, fMin, fMax);
 }
 
-
+/**
+ * Use the height data in the grid and a colormap fill a bitmap with colors.
+ * Any undefined heixels in the source will be fill with red (255,0,0).
+ *
+ * \param pBM			The bitmap to be colored.
+ * \param table			The table of colors.
+ * \param fMin, fMax	The range of valid elevation values expect in the input.
+ * \param progress_callback If supplied, this function will be called back
+ *			with a value of 0 to 100 as the operation progresses.
+ *
+ * \return true if any invalid elevation values were encountered.
+ */
 bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	   std::vector<RGBi> &table, float fMin, float fMax,
 	   bool progress_callback(int))
@@ -582,8 +719,10 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	bool has_invalid = false;
 	RGBi c3;
 	int i, j;
-	int x, y;
+	double x, y;
 	RGBi color;
+
+	double ratiox = (double)(gw-1)/(w-1), ratioy = (double)(gh-1)/(h-1);
 
 	for (i = 0; i < w; i++)
 	{
@@ -592,13 +731,13 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 			if ((i&7) == 0)
 				progress_callback(i * 100 / w);
 		}
-		x = i * gw / w;			// find corresponding location in terrain
+		x = i * ratiox;		// find corresponding location in height grid
 
 		for (j = 0; j < h; j++)
 		{
-			y = j * gh / h;
+			y = j * ratioy;
 
-			elev = GetElevation(x, y, true);	// local units, true elevation
+			elev = GetInterpolatedElevation(x, y);
 			if (elev == INVALID_ELEVATION)
 			{
 				pBM->SetPixel24(i, h-1-j, RGBi(255,0,0));
@@ -697,6 +836,8 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 				p4 = c;
 
 #if 0
+			// The naive way is to use the surface vectors and cross them to
+			//  find the normal.
 			FPoint3 v1 = p2 - p1;
 			FPoint3 v2 = p3 - p4;
 
@@ -770,17 +911,19 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 		{
 			pBM->GetPixel24(i, j, rgb);
 
+			int x_offset = 0;
+			if (i == w-1)
+				x_offset = -1;
+
 			x = i * stepx;
-			float value = GetElevation(x, y, bTrue);
+			float value = GetElevation(x + x_offset, y, bTrue);
 			if (value == INVALID_ELEVATION)
 			{
 				pBM->SetPixel24(i, j, RGBi(255, 0, 0));
 				continue;
 			}
-			if (i == w-1)
-				continue;
 
-			float value2 = GetElevation(x+1, y, bTrue);
+			float value2 = GetElevation(x+1 + x_offset, y, bTrue);
 			if (value2 == INVALID_ELEVATION)
 				value2 = value;
 			short diff = (short) ((value2 - value) / m_fXStep * fLightFactor);

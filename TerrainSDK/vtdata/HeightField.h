@@ -178,6 +178,8 @@ public:
 	void EarthToGrid(const DPoint2 &epos, IPoint2 &ipos);
 	void WorldToGrid(const FPoint3 &pos, IPoint2 &ipos);
 
+	float GetInterpolatedElevation(double findex_x, double findex_y) const;
+
 	// all grids must be able to return the elevation at a grid point
 	virtual float GetElevation(int iX, int iZ, bool bTrue = false) const = 0;
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const = 0;
