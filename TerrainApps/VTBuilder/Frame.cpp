@@ -1226,6 +1226,10 @@ bool MainFrame::FillElevGaps(vtElevLayer *el)
 	return bGood;
 }
 
+/**
+ * From a set of elevation layers, pick the valid elevation that occurs latest
+ *  in the set.
+ */
 float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 {
 	float fData, fBestData = INVALID_ELEVATION;
@@ -1237,7 +1241,7 @@ float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 		vtTin2d *tin = elev->m_pTin;
 		if (grid)
 		{
-			fData = grid->GetFilteredValue2(p);
+			fData = grid->GetFilteredValue(p);
 			if (fData != INVALID_ELEVATION)
 				fBestData = fData;
 		}
@@ -1248,6 +1252,45 @@ float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 		}
 	}
 	return fBestData;
+}
+
+/**
+ * From a set of elevation layers, pick the average of all the valid elevations
+ *  in the set.
+ */
+float ElevLayerArrayValueAverage(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
+{
+	float fData, fSum = 0.0f;
+	int count = 0;
+
+	for (unsigned int g = 0; g < elevs.size(); g++)
+	{
+		vtElevLayer *elev = elevs[g];
+
+		vtElevationGrid *grid = elev->m_pGrid;
+		vtTin2d *tin = elev->m_pTin;
+		if (grid)
+		{
+			fData = grid->GetFilteredValue(p);
+			if (fData != INVALID_ELEVATION)
+			{
+				fSum += fData;
+				count++;
+			}
+		}
+		else if (tin)
+		{
+			if (tin->FindAltitudeOnEarth(p, fData))
+			{
+				fSum += fData;
+				count++;
+			}
+		}
+	}
+	if (count)
+		return fSum / count;
+	else
+		return INVALID_ELEVATION;
 }
 
 void ElevLayerArrayRange(std::vector<vtElevLayer*> &elevs,
