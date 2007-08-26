@@ -949,8 +949,7 @@ float vtElevationGrid::GetFValueSafe(int i, int j) const
 {
 	if (i < 0 || i > m_iColumns-1 || j < 0 || j > m_iRows-1)
 		return INVALID_ELEVATION;
-	float fData = GetFValue(i, j);
-	return fData;
+	return GetFValue(i, j);
 }
 
 /**
@@ -1091,8 +1090,10 @@ void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue) c
 	}
 	else
 	{
+		float value = GetFValueSafe(i,j);
+		if (value != INVALID_ELEVATION) value *= m_fVerticalScale;
 		loc.Set(m_WorldExtents.left + i * m_fXStep,
-			GetFValue(i,j) * m_fVerticalScale,
+			value,
 			m_WorldExtents.bottom - j * m_fZStep);
 	}
 }
