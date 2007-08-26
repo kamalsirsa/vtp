@@ -58,6 +58,7 @@ MyTreeCtrl::MyTreeCtrl(wxWindow *parent, const wxWindowID id,
 	m_reverseSort = false;
 	m_imageListNormal = NULL;
 	m_bShowPaths = true;
+	m_bUser = true;
 
 	CreateImageList(16);
 
@@ -153,14 +154,11 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 {
 	VTLOG("Refreshing Tree Items\n");
 
-	// Deleting the previous items can call OnSelChanged, which causes VTB to
-	//  forget the active layer, so be sure to preserve it.
-	vtLayer *active_lay;
-	if (pFrame)
-		active_lay = pFrame->GetActiveLayer();
+	// Deleting the previous items can call OnSelChanged, which can cause VTB
+	//  to forget the active layer, so indicate that this is not user input.
+	m_bUser = false;
 	DeleteAllItems();
-	if (pFrame)
-		pFrame->SetActiveLayer(active_lay);
+	m_bUser = true;
 
 	rootId = AddRoot(_("Layers"));
 	SetItemBold(rootId);
@@ -297,7 +295,6 @@ void MyTreeCtrl::name(wxTreeEvent& event)	\
 TREE_EVENT_HANDLER(OnBeginRDrag)
 TREE_EVENT_HANDLER(OnDeleteItem)
 TREE_EVENT_HANDLER(OnGetInfo)
-TREE_EVENT_HANDLER(OnSetInfo)
 TREE_EVENT_HANDLER(OnItemExpanded)
 TREE_EVENT_HANDLER(OnItemExpanding)
 TREE_EVENT_HANDLER(OnItemCollapsed)
@@ -308,6 +305,9 @@ TREE_EVENT_HANDLER(OnTreeKeyDown)
 
 void MyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
+	if (!m_bUser)	// only listen for actual user input
+		return;
+
 	wxTreeItemId item = event.GetItem();
 	if (!item.IsOk())
 		return;
@@ -443,7 +443,6 @@ EVT_TREE_END_DRAG(LayerTree_Ctrl, MyTreeCtrl::OnEndDrag)
 EVT_TREE_BEGIN_LABEL_EDIT(LayerTree_Ctrl, MyTreeCtrl::OnBeginLabelEdit)
 EVT_TREE_END_LABEL_EDIT(LayerTree_Ctrl, MyTreeCtrl::OnEndLabelEdit)
 EVT_TREE_DELETE_ITEM(LayerTree_Ctrl, MyTreeCtrl::OnDeleteItem)
-EVT_TREE_SET_INFO(LayerTree_Ctrl, MyTreeCtrl::OnSetInfo)
 EVT_TREE_ITEM_EXPANDED(LayerTree_Ctrl, MyTreeCtrl::OnItemExpanded)
 EVT_TREE_ITEM_EXPANDING(LayerTree_Ctrl, MyTreeCtrl::OnItemExpanding)
 EVT_TREE_ITEM_COLLAPSED(LayerTree_Ctrl, MyTreeCtrl::OnItemCollapsed)

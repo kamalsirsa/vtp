@@ -74,7 +74,6 @@ protected:
 	void OnEndLabelEdit(wxTreeEvent& event);
 	void OnDeleteItem(wxTreeEvent& event);
 	void OnGetInfo(wxTreeEvent& event);
-	void OnSetInfo(wxTreeEvent& event);
 	void OnItemExpanded(wxTreeEvent& event);
 	void OnItemExpanding(wxTreeEvent& event);
 	void OnItemCollapsed(wxTreeEvent& event);
@@ -93,6 +92,7 @@ private:
 	bool		 m_reverseSort;			 // flag for OnCompareItems
 	wxTreeItemId m_lastItem;				// for OnEnsureVisible()
 	bool		 m_bShowPaths;
+	bool		 m_bUser;
 
 	// NB: due to an ugly wxMSW hack you _must_ use DECLARE_DYNAMIC_CLASS()
 	//	 if you want your overloaded OnCompareItems() to be called.

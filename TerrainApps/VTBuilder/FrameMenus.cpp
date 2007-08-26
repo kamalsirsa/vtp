@@ -954,6 +954,7 @@ void MainFrame::OnLayerNew(wxCommandEvent &event)
 	AddLayer(pL);
 	m_pTree->RefreshTreeItems(this);
 	RefreshToolbars();
+	RefreshLayerInView(pL);
 }
 
 void MainFrame::OnLayerOpen(wxCommandEvent &event)
