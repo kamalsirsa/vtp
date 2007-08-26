@@ -235,6 +235,22 @@
 			</File>
 			<File
 				RelativePath=".\wx\DistanceDlg3d.cpp">
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="wx\enviro_wdr.cpp">
@@ -700,6 +716,22 @@
 			</File>
 			<File
 				RelativePath=".\wx\VehicleDlg.cpp">
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\wx\wx_headers.cpp">
