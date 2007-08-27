@@ -268,8 +268,10 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 
 	// set up the frame stamp for current frame to record the current time and frame number so that animtion code can advance correctly
 	osg::ref_ptr<osg::FrameStamp> frameStamp = new osg::FrameStamp;
-	frameStamp->setReferenceTime(osg::Timer::instance()->delta_s(start_tick,osg::Timer::instance()->tick()));
+
 	frameStamp->setFrameNumber(frameNum++);
+	frameStamp->setReferenceTime(osg::Timer::instance()->delta_s(start_tick,osg::Timer::instance()->tick()));
+	frameStamp->setSimulationTime(frameStamp->getReferenceTime());
 
 	// pass frame stamp to the SceneView so that the update, cull and draw traversals all use the same FrameStamp
 	m_pOsgSceneView->setFrameStamp(frameStamp.get());
