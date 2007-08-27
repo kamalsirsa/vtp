@@ -88,6 +88,8 @@ public:
 	void SetShadowDarkness(float fDarkness);
 	void SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw);
 	void ShadowVisibleNode(vtNode *node, bool bVis);
+	bool IsShadowVisibleNode(vtNode *node);
+	void ComputeShadows();
 
 	void SetHUD(vtHUD *hud) { m_pHUD = hud; }
 	vtHUD *GetHUD() { return m_pHUD; }

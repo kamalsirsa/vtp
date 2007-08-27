@@ -534,6 +534,9 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 }
 
 
+////////////////////////////////////////
+// Shadow methods
+
 void vtScene::ShadowVisibleNode(vtNode *node, bool bVis)
 {
 	if (m_pStructureShadowsOSG.valid())
@@ -541,6 +544,13 @@ void vtScene::ShadowVisibleNode(vtNode *node, bool bVis)
 			m_pStructureShadowsOSG->ExcludeFromShadower(node->GetOsgNode(), false);
 		else
 			m_pStructureShadowsOSG->ExcludeFromShadower(node->GetOsgNode(), true);
+}
+
+bool vtScene::IsShadowVisibleNode(vtNode *node)
+{
+	if (m_pStructureShadowsOSG.valid())
+		return (m_pStructureShadowsOSG->IsExcludedFromShadower(node->GetOsgNode()) == false);
+	return false;
 }
 
 void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowerNode,
@@ -551,7 +561,8 @@ void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowerNode,
 	m_pStructureShadowsOSG->Initialise(m_pOsgSceneView.get(),
 		pShadowerNode->GetOsgNode(), pShadowed->GetOsgNode(), iRez, fDarkness,
 		iTextureUnit, ShadowSphere);
-	m_pStructureShadowsOSG->SetSunPosition(v2s(-pLight->GetDirection()), true);
+	m_pStructureShadowsOSG->SetSunDirection(v2s(-pLight->GetDirection()));
+	m_pStructureShadowsOSG->ComputeShadows();
 }
 
 void vtScene::UnsetShadowedNode(vtTransform *pTransform)
@@ -562,7 +573,7 @@ void vtScene::UnsetShadowedNode(vtTransform *pTransform)
 void vtScene::UpdateShadowLightDirection(vtTransform *pLight)
 {
 	if (m_pStructureShadowsOSG.valid())
-		m_pStructureShadowsOSG->SetSunPosition(v2s(-pLight->GetDirection()));
+		m_pStructureShadowsOSG->SetSunDirection(v2s(-pLight->GetDirection()));
 }
 
 void vtScene::SetShadowDarkness(float fDarkness)
@@ -576,6 +587,13 @@ void vtScene::SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw)
 	if (m_pStructureShadowsOSG.valid())
 		m_pStructureShadowsOSG->SetShadowSphere(ShadowSphere, bForceRedraw);
 }
+
+void vtScene::ComputeShadows()
+{
+	if (m_pStructureShadowsOSG.valid())
+		m_pStructureShadowsOSG->ComputeShadows();
+}
+
 
 ////////////////////////////////////////
 

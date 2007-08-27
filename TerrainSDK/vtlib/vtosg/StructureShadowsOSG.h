@@ -1,7 +1,7 @@
 //
 // StructureShadowsOSG.h
 //
-// Copyright (c) 2005-2006 Virtual Terrain Project
+// Copyright (c) 2005-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,7 +21,8 @@ public:
 	CStructureShadowsOSG(bool bDepthShadow = false, bool bStructureOnStructureShadows = false);
 	~CStructureShadowsOSG();
 
-	void SetSunPosition(osg::Vec3 SunPosition, bool bForceRecompute = false);
+	void SetSunDirection(osg::Vec3 SunPosition);
+	void ComputeShadows();
 	bool Initialise(osgUtil::SceneView *pSceneView, osg::Node *pStructures,
 		osg::Node *pShadowed, const int iResolution, float fDarkness,
 		int iTextureUnit, const FSphere &ShadowSphere);
@@ -29,6 +30,7 @@ public:
 	void SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw);
 	void SetPolygonOffset(float fFactor, float fUnits);
 	void ExcludeFromShadower(osg::Node *pNode, bool bExclude);
+	bool IsExcludedFromShadower(osg::Node *pNode);
 
 	// Strip out any modelling transforms from the model view matrix
 	class EyeLinearTexGen : public osg::TexGen
@@ -63,7 +65,7 @@ protected:
 	float m_fShadowDarkness;
 	bool m_bDepthShadow;
 	bool m_bStructureOnStructureShadows;
-	osg::Vec3 m_SunPosition;
+	osg::Vec3 m_SunDirection;
 	static osg::TexGenNode *m_pStructureTexGenNode;
 	int m_iTargetResolution;
 	int m_iCurrentResolution;
