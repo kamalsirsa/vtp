@@ -420,7 +420,8 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 					vtElevLayer::m_draw.m_fAmbient, progress_callback);
 			else
 				pEL->m_pGrid->ShadeDibFromElevation(pBitmap, light_dir, 1.0f,
-					vtElevLayer::m_draw.m_fAmbient, true, progress_callback);
+					vtElevLayer::m_draw.m_fAmbient, vtElevLayer::m_draw.m_fGamma,
+					true, progress_callback);
 		}
 	}
 
@@ -834,7 +835,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 					// Don't cast shadows for tileset; they won't cast
 					//  correctly from one tile to the next.
 					base_lod.ShadeDibFromElevation(&dib, light_dir, 1.0f,
-						opts.draw.m_fAmbient, true);
+						opts.draw.m_fAmbient, opts.draw.m_fGamma, true);
 				}
 
 				for (int k = 0; k < total_lods; k++)

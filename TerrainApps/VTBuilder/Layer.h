@@ -1,7 +1,7 @@
 //
 // Layer.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -143,6 +143,7 @@ public:
 		m_iCastAngle = 30;
 		m_iCastDirection = 90;
 		m_fAmbient = 0.1f;
+		m_fGamma = 0.8f;
 		m_strColorMapFile = "";
 	}
 	bool operator != (const ElevDrawOptions &val)
@@ -155,6 +156,7 @@ public:
 			m_iCastAngle != val.m_iCastAngle ||
 			m_iCastDirection != val.m_iCastDirection ||
 			m_fAmbient != val.m_fAmbient ||
+			m_fGamma != val.m_fGamma ||
 			m_strColorMapFile != val.m_strColorMapFile);
 	}
 	bool m_bShowElevation;
@@ -165,6 +167,7 @@ public:
 	int m_iCastAngle;
 	int m_iCastDirection;
 	float m_fAmbient;
+	float m_fGamma;
 	vtString m_strColorMapFile;
 };
 

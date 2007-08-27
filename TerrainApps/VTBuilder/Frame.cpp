@@ -827,9 +827,10 @@ bool MainFrame::ReadINI()
 		int ShowMap, ShowElev, ShadeQuick, DoMask, DoUTM, ShowPaths, DrawWidth,
 			CastShadows, ShadeDot=0, Angle=30, Direction=45;
 		float Ambient = 0.1f;
-		fscanf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f", &ShowMap, &ShowElev, &ShadeQuick,
-			&DoMask, &DoUTM, &ShowPaths, &DrawWidth, &CastShadows, &ShadeDot,
-			&Angle, &Direction, &Ambient);
+		float Gamma = 0.8f;
+		fscanf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f", &ShowMap,
+			&ShowElev, &ShadeQuick, &DoMask, &DoUTM, &ShowPaths, &DrawWidth,
+			&CastShadows, &ShadeDot, &Angle, &Direction, &Ambient, &Gamma);
 
 		m_pView->SetShowMap(ShowMap != 0);
 		vtElevLayer::m_draw.m_bShowElevation = (ShowElev != 0);
@@ -840,6 +841,7 @@ bool MainFrame::ReadINI()
 		vtElevLayer::m_draw.m_iCastAngle = Angle;
 		vtElevLayer::m_draw.m_iCastDirection = Direction;
 		vtElevLayer::m_draw.m_fAmbient = Ambient;
+		vtElevLayer::m_draw.m_fGamma = Gamma;
 		m_pView->m_bShowUTMBounds = (DoUTM != 0);
 		m_pTree->SetShowPaths(ShowPaths != 0);
 		vtRoadLayer::SetDrawWidth(DrawWidth != 0);
@@ -865,13 +867,14 @@ bool MainFrame::WriteINI()
 		vtString vs = (const char *) str.mb_str(wxConvUTF8);
 
 		rewind(m_fpIni);
-		fprintf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f\n", m_pView->GetShowMap(),
+		fprintf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f\n", m_pView->GetShowMap(),
 			vtElevLayer::m_draw.m_bShowElevation,
 			vtElevLayer::m_draw.m_bShadingQuick, vtElevLayer::m_draw.m_bDoMask,
 			m_pView->m_bShowUTMBounds, m_pTree->GetShowPaths(),
 			vtRoadLayer::GetDrawWidth(), vtElevLayer::m_draw.m_bCastShadows,
 			vtElevLayer::m_draw.m_bShadingDot, vtElevLayer::m_draw.m_iCastAngle,
-			vtElevLayer::m_draw.m_iCastDirection, vtElevLayer::m_draw.m_fAmbient);
+			vtElevLayer::m_draw.m_iCastDirection, vtElevLayer::m_draw.m_fAmbient,
+			vtElevLayer::m_draw.m_fGamma);
 		fprintf(m_fpIni, "%s\n", (const char *) vs);
 		fclose(m_fpIni);
 		m_fpIni = NULL;

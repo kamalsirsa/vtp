@@ -764,11 +764,12 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
  * \param light_dir	Direction vector of the light.
  * \param fLightFactor Value from 0 (no shading) to 1 (full shading)
  * \param fAmbient Ambient light values from 0 to 1, a typical value is 0.1.
+ * \param fGamma Gamma values from 0 to 1, values less than 1 boost the brightness curve.
  * \param bTrue	If true, use the real elevation values, ignoring vertical exaggeration.
  * \param progress_callback	If supplied, will be called with values from 0 to 100.
  */
 void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
-	float fLightFactor, float fAmbient, bool bTrue, bool progress_callback(int))
+	float fLightFactor, float fAmbient, float fGamma, bool bTrue, bool progress_callback(int))
 {
 	// consider upward-pointing, rather than downward-pointing, normal
 	FPoint3 light_direction = -light_dir;
@@ -856,17 +857,19 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 
 			float shade = v3.Dot(light_direction); // shading 0 (dark) to 1 (light)
 
-			// boost with ambient light
-			shade = fAmbient + (1-fAmbient)*shade;
-
 			// Most of the values are in the bottom half of the 0-1 range, so push
 			//  them upwards with a gamma factor.
-			// TODO maybe: expose this factor in GUI
-			shade = powf(shade, 0.75f);
+			if (fGamma != 1.0f)
+				shade = powf(shade, fGamma);
+
+			// boost with ambient light
+			shade += fAmbient;
 
 			// Never shade below zero, can cause RGB wraparound
 			if (shade < 0)
 				shade = 0;
+			if (shade > 1.1f)
+				shade = 1.1f;
 
 			// combine color and shading
 			if (depth == 8)
