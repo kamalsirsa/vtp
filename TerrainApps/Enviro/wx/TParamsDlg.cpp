@@ -23,10 +23,10 @@
 #include "vtlib/core/Location.h"
 #include "vtdata/FilePath.h"		// for FindFileOnPaths
 #include "vtdata/vtLog.h"
-#include "TParamsDlg.h"
 #include "vtui/ColorMapDlg.h"
 #include "vtui/Helper.h"			// for AddFilenamesToChoice
 
+#include "TParamsDlg.h"
 #include "TimeDlg.h"
 #include "StyleDlg.h"
 
@@ -1431,7 +1431,11 @@ void TParamsDlg::OnEditScenario( wxCommandEvent &event )
 	
 	if (iSelected != wxNOT_FOUND)
 	{
-		ScenarioParamsDialog.SetAvailableLayers(m_Layers);
+		vtStringArray lnames;
+		for (int i = 0; i < m_Layers.size(); i++)
+			lnames.push_back(m_Layers[i].GetValueString("Filename"));
+
+		ScenarioParamsDialog.SetAvailableLayers(lnames);
 		ScenarioParamsDialog.SetParams(m_Scenarios[iSelected]);
 
 		if (wxID_OK == ScenarioParamsDialog.ShowModal())

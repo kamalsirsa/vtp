@@ -1,7 +1,7 @@
 //
 // Name: ScenarioParamsDialog.h
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -39,7 +39,7 @@ public:
 		m_Params = Params;
 		m_bModified = false;
 	}
-	void SetAvailableLayers(std::vector<vtTagArray>& Layers) { m_Layers = Layers; }
+	void SetAvailableLayers(vtStringArray& Layers) { m_Layers = Layers; }
 	bool IsModified() { return m_bModified; }
 	
 private:
@@ -61,7 +61,7 @@ protected:
 	void UpdateEnableState();
 
 	ScenarioParams m_Params;
-	std::vector<vtTagArray> m_Layers;
+	vtStringArray m_Layers;
 	bool m_bModified;
 };
 

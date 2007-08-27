@@ -1,7 +1,7 @@
 //
 // Name: ScenarioParamsDialog.cpp
 //
-// Copyright (c) 2005-2006 Virtual Terrain Project
+// Copyright (c) 2005-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -104,7 +104,7 @@ void CScenarioParamsDialog::OnInitDialog(wxInitDialogEvent& event)
 	for (unsigned int i = 0; i < m_Layers.size(); i++)
 	{
 		wxFileName FileName;
-		wxString fname(m_Layers[i].GetValueString("Filename"), wxConvUTF8);
+		wxString fname(m_Layers[i], wxConvUTF8);
 
 		FileName.Assign(fname);
 		pAvailableLayers->Append(FileName.GetName());

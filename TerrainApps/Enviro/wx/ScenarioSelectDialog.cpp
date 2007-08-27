@@ -1,7 +1,7 @@
 //
 // Name: ScenarioSelectDialog.cpp
 //
-// Copyright (c) 2005-2006 Virtual Terrain Project
+// Copyright (c) 2005-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -212,7 +212,21 @@ void CScenarioSelectDialog::OnEditScenario( wxCommandEvent &event )
 	
 	if (iSelected != wxNOT_FOUND)
 	{
-		ScenarioParamsDialog.SetAvailableLayers(m_pTerrain->GetParams().m_Layers);
+		vtStringArray lnames;
+		if (m_pTerrain->IsCreated())
+		{
+			LayerSet &layers = m_pTerrain->GetLayers();
+			for (int i = 0; i < layers.GetSize(); i++)
+				lnames.push_back(layers[i]->GetLayerName());
+		}
+		else
+		{
+			std::vector<vtTagArray> &layers = m_pTerrain->GetParams().m_Layers;
+			for (int i = 0; i < layers.size(); i++)
+				lnames.push_back(layers[i].GetValueString("Filename"));
+		}
+
+		ScenarioParamsDialog.SetAvailableLayers(lnames);
 		ScenarioParamsDialog.SetParams(m_Scenarios[iSelected]);
 
 		if (wxID_OK == ScenarioParamsDialog.ShowModal())
