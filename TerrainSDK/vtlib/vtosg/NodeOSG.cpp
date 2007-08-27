@@ -19,6 +19,8 @@
 #include <osgUtil/Optimizer>
 #include <osg/Version>
 #include <osg/TexGen>
+#include <osgParticle/ModularEmitter>
+#include <osgParticle/ParticleSystemUpdater>
 
 using namespace osg;
 
@@ -184,9 +186,26 @@ void vtNode::GetBoundBox(FBox3 &box)
 
 void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
 {
+	// Try to just get the bounds normally
 	BoundingSphere bs = m_pNode->getBound();
-	s2v(bs, sphere);
 
+	// Hack to support particle systems, which do not return a reliably
+	//  correct bounding sphere, because of the extra transform inside which
+	//  provides the particle effects with an absolute position
+	if (ContainsParticleSystem())
+	{
+		osg::Group *grp = dynamic_cast<osg::Group*>(m_pNode.get());
+		for (int i = 0; i < 3; i++)
+		{
+			grp = dynamic_cast<osg::Group*>(grp->getChild(0));
+			if (grp)
+				bs = grp->getBound();
+			else
+				break;
+		}
+	}
+
+	s2v(bs, sphere);
 	if (bGlobal)
 	{
 		// Note that this isn't 100% complete; we should be
@@ -498,6 +517,35 @@ vtNode *vtNode::FindNativeNode(const char *pName, bool bDescend)
 	// Otherwise we have to use the opaque wrapper "Native Node"
 	return new vtNativeNode(pNode.get());
 }
+
+//
+// This visitor looks in a node tree for any instance of ModularEmitter.
+//
+#include <osgParticle/ModularEmitter>
+class findParticlesVisitor : public osg::NodeVisitor
+{
+public:
+	findParticlesVisitor() : osg::NodeVisitor(TRAVERSE_ALL_CHILDREN) {
+		bFound = false;
+	}
+	virtual void apply(osg::Node &searchNode) {
+		if (osgParticle::ModularEmitter* me = dynamic_cast<osgParticle::ModularEmitter*> (&searchNode) )
+			bFound = true;
+		else
+			traverse(searchNode);
+	}
+	bool bFound;
+};
+
+bool vtNode::ContainsParticleSystem() const
+{
+	osg::ref_ptr<findParticlesVisitor> fp = new findParticlesVisitor;
+	findParticlesVisitor *fpp = fp.get();
+	m_pNode->accept(*fpp);
+	return fp->bFound;
+}
+
+
 // Walk an OSG scenegraph looking for Texture states, and disable mipmap.
 class MipmapVisitor : public NodeVisitor
 {
@@ -2385,6 +2433,10 @@ void vtLogNativeGraph(osg::Node *node, int indent)
 		else if (dynamic_cast<osg::Geode*>(node))
 			VTLOG1(" (Geode)");
 
+		else if (dynamic_cast<osgParticle::ModularEmitter*>(node))
+			VTLOG1(" (Geode)");
+		else if (dynamic_cast<osgParticle::ParticleSystemUpdater*>(node))
+			VTLOG1(" (Geode)");
 		else
 			VTLOG1(" (non-node!)");
 
@@ -2392,6 +2444,10 @@ void vtLogNativeGraph(osg::Node *node, int indent)
 
 		if (node->getNodeMask() != 0xffffffff)
 			VTLOG(" mask=%x", node->getNodeMask());
+
+		const osg::BoundingSphere &bs = node->getBound();
+		if (bs._radius != -1)
+			VTLOG(" (bs: %.1f %.1f %.1f %1.f)", bs._center[0], bs._center[1], bs._center[2], bs._radius);
 
 		VTLOG1("\n");
 	}

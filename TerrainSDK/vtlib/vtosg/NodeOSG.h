@@ -107,6 +107,7 @@ public:
 	void DecorateNativeGraph();
 	void ApplyVertexRotation(const FPoint3 &axis, float angle);
 	virtual vtNode *FindNativeNode(const char *pName, bool bDescend = true);
+	bool ContainsParticleSystem() const;
 
 	/// Load a 3D model file
 	static vtNode *LoadModel(const char *filename, bool bAllowCache = true,
