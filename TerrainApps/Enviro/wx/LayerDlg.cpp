@@ -705,24 +705,9 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 
 	vtNode *pThing = GetNodeFromItem(m_item);
 	if (pThing)
-		vtGetScene()->ShadowVisibleNode(pThing, bVis);
-
-	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
-	if (slay)
 	{
-		for (unsigned int j = 0; j < slay->GetSize(); j++)
-		{
-			vtStructure3d *str3d = slay->GetStructure3d(j);
-			if (str3d)
-			{
-				pThing = str3d->GetContained();
-				if (pThing)
-					vtGetScene()->ShadowVisibleNode(pThing, bVis);
-			}
-		}
-		LayerItemData *data = GetLayerDataFromItem(m_item);
-		if (data)
-			data->shadow_last_visible = bVis;
+		vtGetScene()->ShadowVisibleNode(pThing, bVis);
+		vtGetScene()->ComputeShadows();
 	}
 }
 
@@ -732,20 +717,21 @@ void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 		return;
 
 	bool bShadows = false;
+	vtNode *pThing = NULL;
 #if VTLIB_OSG
-	vtNode *pThing = GetNodeFromItem(m_item);
-	vtTerrain *terr = GetCurrentTerrain();
-	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
-	bShadows = (terr && terr->GetParams().GetValueBool(STR_STRUCT_SHADOWS) &&
-		(pThing != NULL || slay != NULL));
+	LayerItemData *data = GetLayerDataFromItem(m_item);
+	if (data && data->m_slay)
+	{
+		pThing = GetNodeFromItem(m_item);
+		vtTerrain *terr = GetCurrentTerrain();
+		bShadows = (terr && terr->GetParams().GetValueBool(STR_STRUCT_SHADOWS) &&
+			pThing != NULL);
+	}
 #endif
 	event.Enable(bShadows);
 
-	LayerItemData *data = GetLayerDataFromItem(m_item);
-	if (slay && data)
-	{
-		event.Check(data->shadow_last_visible);
-	}
+	if (pThing)
+		event.Check(vtGetScene()->IsShadowVisibleNode(pThing));
 }
 
 void LayerDlg::OnVisible( wxCommandEvent &event )

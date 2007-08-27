@@ -79,7 +79,6 @@ public:
 		m_fset = NULL;
 		m_index = -1;
 		m_item = -1;
-		shadow_last_visible = false;
 	}
 	LayerType m_type;
 	vtLayer *m_layer;
@@ -90,7 +89,6 @@ public:
 	GlobeLayer *m_glay;
 	int m_index;
 	int m_item;
-	bool shadow_last_visible;
 };
 
 
