@@ -92,6 +92,8 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	m_iDragSide = 0;
 	m_bMouseCaptured = false;
 	m_bShowGridMarks = false;
+	m_pMapToCurrent = NULL;
+	m_pCurrentToMap = NULL;
 
 	m_ui.m_bRubber = false;
 	m_ui.mode = LB_None;
@@ -124,6 +126,10 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 BuilderView::~BuilderView()
 {
 	delete m_pCursorPan;
+	if (m_pMapToCurrent)
+		delete m_pMapToCurrent;
+	if (m_pCurrentToMap)
+		delete m_pCurrentToMap;
 }
 
 ////////////////////////////////////////////////////////////
@@ -464,29 +470,45 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 #endif
 
 	// Create conversion object
-	OCT *trans = CreateCoordTransform(&Source, &proj);
+	if (m_pMapToCurrent)
+	{
+		delete m_pMapToCurrent;
+		m_pMapToCurrent = NULL;
+	}
+	if (m_pCurrentToMap)
+	{
+		delete m_pCurrentToMap;
+		m_pCurrentToMap = NULL;
+	}
+	m_pMapToCurrent = CreateCoordTransform(&Source, &proj);
+	m_pCurrentToMap = CreateCoordTransform(&proj, &Source);
 
-	if (!trans)
+	if (!m_pMapToCurrent)
 	{
 		m_bShowMap = false;
 		return;
 	}
 
 	DPoint2 point;
+	WMPolyExtents.resize(m_iEntities);
 	for (i = 0; i < m_iEntities; i++)
 	{
+		// gather an extent bound for each original feature
+		WMPolyExtents[i].SetRect(1E9, -1E9, -1E9, 1E9);
+		WMPolyExtents[i].GrowToContainLine(WMPoly[i]);
+
+		// and project into current CRS
 		WMPolyDraw[i].Empty();
 		for (j = 0; j < WMPoly[i].GetSize(); j++)
 		{
 			point = WMPoly[i].GetAt(j);
 
-			int converted = trans->Transform(1, &point.x, &point.y);
+			int converted = m_pMapToCurrent->Transform(1, &point.x, &point.y);
 
 			if (converted == 1)
 				WMPolyDraw[i].Append(point);
 		}
 	}
-	delete trans;
 }
 
 void BuilderView::DrawWorldMap(wxDC *pDC)
@@ -512,9 +534,44 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(WMPen);
 
+	// Don't draw polys that are outside the window bounds; convert the bounds
+	//  from the current CRS to Geo, so that we can test
+	bool bHaveBounds = false;
+	DRECT bounds(1E9, -1E9, -1E9, 1E9);
+	vtProjection &proj = GetMainFrame()->GetAtProjection();
+	if (!proj.IsGeographic() && m_pCurrentToMap != NULL)
+	{
+		wxSize size = GetClientSize();
+		wxPoint pix[4];
+		CalcUnscrolledPosition(0, 0,			&pix[0].x, &pix[0].y);
+		CalcUnscrolledPosition(size.x, 0,		&pix[1].x, &pix[1].y);
+		CalcUnscrolledPosition(size.x, size.y,	&pix[2].x, &pix[2].y);
+		CalcUnscrolledPosition(0, size.y,		&pix[3].x, &pix[3].y);
+
+		for (int i = 0; i < 4; i++)
+		{
+			DPoint2 p;
+			// convert canvas -> earth
+			object(pix[i], p);
+			// convert earth -> map geo
+			if (m_pCurrentToMap->Transform(1, &p.x, &p.y) == 1)
+			{
+				bounds.GrowToContainPoint(p);
+				bHaveBounds = true;
+			}
+		}
+	}
+
 	// Draw each poly in WMPolyDraw
 	for (unsigned int i = 0; i < m_iEntities; i++)
+	{
+		if (bHaveBounds)
+		{
+			if (!bounds.OverlapsRect(WMPolyExtents[i]))
+				continue;
+		}
 		DrawLine(pDC, WMPolyDraw[i], true);
+	}
 }
 
 void BuilderView::DrawScaleBar(wxDC * p_DC)
