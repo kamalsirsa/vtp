@@ -337,10 +337,10 @@ wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item5 = new wxButton( parent, ID_SAVE, _("Save"), wxDefaultPosition, wxSize(60,-1), 0 );
+    wxButton *item5 = new wxButton( parent, ID_SAVE, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
     item4->Add( item5, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxButton *item6 = new wxButton( parent, ID_LOAD, _("Load"), wxDefaultPosition, wxSize(60,-1), 0 );
+    wxButton *item6 = new wxButton( parent, ID_LOAD, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
     item4->Add( item6, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item2->Add( item4, 0, wxALIGN_CENTER|wxALL, 0 );
