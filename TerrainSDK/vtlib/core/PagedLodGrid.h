@@ -58,6 +58,7 @@ public:
 	bool TestVisible(float fDistance, bool bLoad);
 
 	void Add(vtStructureArray3d *pArray, int iIndex);
+	void Remove(vtStructureArray3d *pArray, int iIndex);
 	void SetGrid(vtPagedStructureLodGrid *g) { m_pGrid = g; }
 	void AppendToQueue();
 
@@ -165,6 +166,7 @@ public:
 	// methods
 	void SetDistance(float fLODDistance);
 	bool AppendToGrid(vtStructureArray3d *sa, int iIndex);
+	void RemoveFromGrid(vtStructureArray3d *sa, int iIndex);
 
 	vtPagedStructureLOD *GetPagedCell(int a, int b);
 

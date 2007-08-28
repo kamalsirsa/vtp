@@ -108,6 +108,23 @@ void vtPagedStructureLOD::Add(vtStructureArray3d *pArray, int iIndex)
 	m_StructureRefs.push_back(ref);
 }
 
+void vtPagedStructureLOD::Remove(vtStructureArray3d *pArray, int iIndex)
+{
+	StructureRefVector::iterator it = m_StructureRefs.begin();
+	while (it != m_StructureRefs.end())
+	{
+		if (it->pArray == pArray && it->iIndex == iIndex)
+		{
+			vtStructure3d *s3d = it->pArray->GetStructure3d(it->iIndex);
+			if (s3d->IsCreated())
+				m_iNumConstructed--;
+			it = m_StructureRefs.erase(it);
+		}
+		else
+			it++;
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////
 // vtPagedStructureLodGrid
@@ -276,6 +293,15 @@ bool vtPagedStructureLodGrid::AppendToGrid(vtStructureArray3d *pArray, int iInde
 		return true;
 	}
 	return false;
+}
+
+void vtPagedStructureLodGrid::RemoveFromGrid(vtStructureArray3d *pArray, int iIndex)
+{
+	// Get 2D extents from the unbuild structure
+	vtStructure *str = pArray->GetAt(iIndex);
+	vtPagedStructureLOD *pGroup = FindGroup(str);
+	if (pGroup)
+		pGroup->Remove(pArray, iIndex);
 }
 
 vtPagedStructureLOD *vtPagedStructureLodGrid::GetPagedCell(int a, int b)

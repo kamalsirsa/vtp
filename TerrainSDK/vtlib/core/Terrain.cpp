@@ -1319,6 +1319,10 @@ int vtTerrain::DeleteSelectedStructures()
 		vtStructure *str = structures->GetAt(i);
 		if (str->IsSelected())
 		{
+			// Remove it from the paging grid
+			if (m_pPagedStructGrid)
+				m_pPagedStructGrid->RemoveFromGrid(structures, i);
+
 			vtStructure3d *str3d = structures->GetStructure3d(i);
 			vtNode *node = str3d->GetContainer();
 			if (!node)
@@ -2924,7 +2928,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
 ///////////////////////////////////////////////////////////////////////
 // Layers
 
-void vtTerrain::RemoveLayer(vtLayer *lay)
+void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 {
 	vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
 	vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
@@ -2933,10 +2937,22 @@ void vtTerrain::RemoveLayer(vtLayer *lay)
 		// first remove each structure from the terrain
 		for (unsigned int i = 0; i < slay->GetSize(); i++)
 		{
+			if (progress_callback != NULL)
+				progress_callback(i * 99 / slay->GetSize());
+
+			// Remove it from the paging grid
+			if (m_pPagedStructGrid)
+				m_pPagedStructGrid->RemoveFromGrid(slay, i);
+
 			vtStructure3d *str3d = slay->GetStructure3d(i);
 			RemoveNodeFromStructGrid(str3d->GetContainer());
 			str3d->DeleteNode();
 		}
+
+		// Be certain we're not still trying to page it in
+		if (m_pPagedStructGrid)
+			m_pPagedStructGrid->ClearQueue(slay);
+
 		delete slay;
 
 		// If that was the current layer, deal with it

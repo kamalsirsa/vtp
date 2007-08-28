@@ -200,7 +200,7 @@ public:
 
 	// Layers
 	LayerSet &GetLayers() { return m_Layers; }
-	void RemoveLayer(vtLayer *lay);
+	void RemoveLayer(vtLayer *lay, bool progress_callback(int) = NULL);
 	vtLayer *LoadLayer(const char *fname);
 
 	// plants
