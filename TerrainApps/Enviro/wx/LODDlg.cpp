@@ -415,7 +415,7 @@ void LODDlg::DrawStructureState(vtPagedStructureLodGrid *grid, float fPageOutDis
 			if (cell)
 			{
 				int num_con = cell->m_iNumConstructed;
-				int num_tot = cell->m_StructureIndices.GetSize();
+				int num_tot = cell->m_StructureRefs.size();
 				if (num_con == num_tot)
 				{
 					// all built

@@ -216,13 +216,13 @@ void CScenarioSelectDialog::OnEditScenario( wxCommandEvent &event )
 		if (m_pTerrain->IsCreated())
 		{
 			LayerSet &layers = m_pTerrain->GetLayers();
-			for (int i = 0; i < layers.GetSize(); i++)
+			for (unsigned int i = 0; i < layers.GetSize(); i++)
 				lnames.push_back(layers[i]->GetLayerName());
 		}
 		else
 		{
 			std::vector<vtTagArray> &layers = m_pTerrain->GetParams().m_Layers;
-			for (int i = 0; i < layers.size(); i++)
+			for (unsigned int i = 0; i < layers.size(); i++)
 				lnames.push_back(layers[i].GetValueString("Filename"));
 		}
 
