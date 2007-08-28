@@ -16,6 +16,7 @@
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/Globe.h"
 #include "vtdata/vtLog.h"
+#include "vtui/Helper.h"	// for progress dialog
 #include "EnviroGUI.h"  // for GetCurrentTerrain
 #include "canvas.h"		// for EnableContinuousRendering
 #include "StyleDlg.h"
@@ -479,14 +480,15 @@ void LayerDlg::OnLayerRemove( wxCommandEvent &event )
 
 	if (data->m_layer != NULL)
 	{
-		GetCurrentTerrain()->RemoveLayer(data->m_layer);
-		RefreshTreeContents();
+		OpenProgressDialog(_T("Deleting layer"), false, this);
+		GetCurrentTerrain()->RemoveLayer(data->m_layer, progress_callback);
+		CloseProgressDialog();
 	}
-	if (data->m_glay != NULL)
+	else if (data->m_glay != NULL)
 	{
 		g_App.RemoveGlobeAbstractLayer(data->m_glay);
-		RefreshTreeContents();
 	}
+	RefreshTreeContents();
 }
 
 void LayerDlg::OnLayerCreate( wxCommandEvent &event )
