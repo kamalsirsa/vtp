@@ -467,6 +467,10 @@ bool DLine3::ContainsPoint2D(const DPoint2 &p) const
 // DRECT methods
 //
 
+/**
+ * Fast, naive test for polyline/polygon inside rectangle.
+ * \return true if any point of the poly is inside the rectangle.
+ */
 bool DRECT::ContainsLine(const DLine2 &line) const
 {
 	for (unsigned int i = 0; i < line.GetSize(); i++)
