@@ -586,8 +586,8 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 	//	- the range can be calculated easily from a given screen space
 	//		error threshold using the miniload::calcrange method
 //	float prange = m_pMiniLoad->calcrange(texdim,winheight,fovy);
-	prange = sqrt(coldim*coldim+rowdim*rowdim)/4;
-	prange_min = prange / 2;
+	prange = sqrt(coldim*coldim+rowdim*rowdim)/8;
+	prange_min = prange / 3;
 	prange_max = prange * 2;
 
 	//pbasesize: specifies the maximum texture size that is paged in
@@ -672,6 +672,9 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
     // Tell the library not to free the buffers we pass to it, so that our
 	// cache can own them and pass them again when needed, without copying.
 	m_pMiniLoad->configure_dontfree(WE_OWN_BUFFERS);
+
+	// New feature of libMini 8.3.x for faster paging
+	m_pMiniLoad->setfastinit(1);
 
 	miniOGL::configure_compression(0);
 
