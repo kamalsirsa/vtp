@@ -65,15 +65,11 @@ void vtPagedStructureLOD::GetCenter(FPoint3 &center)
  */
 bool vtPagedStructureLOD::TestVisible(float fDistance, bool bLoad)
 {
-	// Check if this group belongs to a layer which should be visible
-	if (m_pGrid->GetArray()->GetEnabled() == false)
-		return false;
-
 	if (fDistance < m_fRange)
 	{
 		// Check if this group has any unbuilt structures
 		if (bLoad && !m_bAddedToQueue &&
-			m_iNumConstructed != m_StructureIndices.GetSize() &&
+			m_iNumConstructed != m_StructureRefs.size() &&
 			m_pGrid->m_LoadingEnabled)
 		{
 			AppendToQueue();
@@ -81,24 +77,35 @@ bool vtPagedStructureLOD::TestVisible(float fDistance, bool bLoad)
 		}
 		return true;
 	}
-	// It is not sufficient to do the too-far test here, because this is
-	//  only called for nodes within the view frustum.
-	// if (distance > m_fRange * 2 && m_bConstructed) Deconstruct();
 	return false;
 }
 
 void vtPagedStructureLOD::AppendToQueue()
 {
 	int count = 0;
-	for (unsigned int i = 0; i < m_StructureIndices.GetSize(); i++)
+	for (unsigned int i = 0; i < m_StructureRefs.size(); i++)
 	{
-		if (m_pGrid->AddToQueue(this, m_StructureIndices[i]))
+		StructureRef &ref = m_StructureRefs[i];
+
+		// Don't queue structures from layers that aren't visible
+		if (ref.pArray->GetEnabled() == false)
+			continue;
+
+		if (m_pGrid->AddToQueue(this, ref.pArray, ref.iIndex))
 			count++;
 	}
 	VTLOG("Added %d buildings to queue.\n", count);
 
 	// We have just added a lump of structures, sort them by distance
 	m_pGrid->SortQueue();
+}
+
+void vtPagedStructureLOD::Add(vtStructureArray3d *pArray, int iIndex)
+{
+	StructureRef ref;
+	ref.pArray = pArray;
+	ref.iIndex = iIndex;
+	m_StructureRefs.push_back(ref);
 }
 
 
@@ -109,7 +116,6 @@ void vtPagedStructureLOD::AppendToQueue()
 
 vtPagedStructureLodGrid::vtPagedStructureLodGrid()
 {
-	m_pStructureArray = NULL;
 	m_pCells = NULL;
 	m_LoadingEnabled = true;
 	m_iLoadCount = 0;
@@ -239,6 +245,10 @@ void vtPagedStructureLodGrid::SetDistance(float fLODDistance)
 	}
 }
 
+/**
+ * For a given vtStructure, find the lod group parent for it, using the
+ * structure's earth extents.
+ */
 vtPagedStructureLOD *vtPagedStructureLodGrid::FindGroup(vtStructure *str)
 {
 	DRECT rect;
@@ -255,14 +265,14 @@ vtPagedStructureLOD *vtPagedStructureLodGrid::FindGroup(vtStructure *str)
 	return NULL;
 }
 	
-bool vtPagedStructureLodGrid::AppendToGrid(int iIndex)
+bool vtPagedStructureLodGrid::AppendToGrid(vtStructureArray3d *pArray, int iIndex)
 {
 	// Get 2D extents from the unbuild structure
-	vtStructure *str = m_pStructureArray->GetAt(iIndex);
+	vtStructure *str = pArray->GetAt(iIndex);
 	vtPagedStructureLOD *pGroup = FindGroup(str);
 	if (pGroup)
 	{
-		pGroup->Add(iIndex);
+		pGroup->Add(pArray, iIndex);
 		return true;
 	}
 	return false;
@@ -276,11 +286,13 @@ vtPagedStructureLOD *vtPagedStructureLodGrid::GetPagedCell(int a, int b)
 void vtPagedStructureLodGrid::DeconstructCell(vtPagedStructureLOD *pLOD)
 {
 	int count = 0;
-	vtArray<int> &indices = pLOD->m_StructureIndices;
+
+	StructureRefVector &refs = pLOD->m_StructureRefs;
 	//VTLOG("Deconstruction check on %d structures: ", indices.GetSize());
-	for (unsigned int i = 0; i < indices.GetSize(); i++)
+	for (unsigned int i = 0; i < refs.size(); i++)
 	{
-		vtStructure3d *str3d = m_pStructureArray->GetStructure3d(indices[i]);
+		StructureRef &ref = refs[i];
+		vtStructure3d *str3d = ref.pArray->GetStructure3d(ref.iIndex);
 		vtNode *node = str3d->GetContainer();
 		if (!node)
 			node = str3d->GetGeom();
@@ -299,18 +311,18 @@ void vtPagedStructureLodGrid::RemoveCellFromQueue(vtPagedStructureLOD *pLOD)
 {
 	if (!pLOD->m_bAddedToQueue)
 		return;
-	if (pLOD->m_iNumConstructed == pLOD->m_StructureIndices.GetSize())
+	if (pLOD->m_iNumConstructed == pLOD->m_StructureRefs.size())
 		return;
 
-	const vtArray<int> &indices = pLOD->m_StructureIndices;
+	const StructureRefVector &refs = pLOD->m_StructureRefs;
 	int count = 0;
-	for (unsigned int i = 0; i < indices.GetSize(); i++)
+	for (unsigned int i = 0; i < refs.size(); i++)
 	{
-		if (RemoveFromQueue(indices[i]))
+		if (RemoveFromQueue(refs[i].pArray, refs[i].iIndex))
 			count++;
 	}
 	if (count != 0)
-		VTLOG("Dequeued %d of %d.\n", count, indices.GetSize());
+		VTLOG("Dequeued %d of %d.\n", count, refs.size());
 	pLOD->m_bAddedToQueue = false;
 }
 
@@ -391,7 +403,7 @@ void vtPagedStructureLodGrid::SortQueue()
 	for (unsigned int i = 0; i < m_Queue.size(); i++)
 	{
 		QueueEntry &e = m_Queue[i];
-		vtStructure *st = m_pStructureArray->GetAt(e.iStructIndex);
+		vtStructure *st = e.pStructureArray->GetAt(e.iStructIndex);
 		vtBuilding *bld = st->GetBuilding();
 		vtStructInstance *inst = st->GetInstance();
 		if (bld)
@@ -412,14 +424,33 @@ void vtPagedStructureLodGrid::SortQueue()
 	std::sort(m_Queue.begin(), m_Queue.end());
 }
 
-void vtPagedStructureLodGrid::ClearQueue()
+void vtPagedStructureLodGrid::ClearQueue(vtStructureArray3d *pArray)
 {
-	for (unsigned int i = 0; i < m_Queue.size(); i++)
+	QueueVector::iterator it = m_Queue.begin();
+	while (it != m_Queue.end())
 	{
-		QueueEntry &e = m_Queue[i];
-		e.pLOD->m_bAddedToQueue = false;
+		if (it->pStructureArray == pArray)
+			it = m_Queue.erase(it);
+		else
+			it++;
 	}
-	m_Queue.clear();
+}
+
+/**
+ * In case the paging grid did not load some structure before (because the
+ *  structures were hidden), tell it to check again.
+ * You should call this when a structure layer becomes enabled (un-hidden).
+ */
+void vtPagedStructureLodGrid::RefreshPaging(vtStructureArray3d *pArray)
+{
+	for (unsigned int i = 0; i < pArray->GetSize(); i++)
+	{
+		// Get 2D extents from the unbuild structure
+		vtStructure *str = pArray->GetAt(i);
+		vtPagedStructureLOD *pGroup = FindGroup(str);
+		if (pGroup)
+			pGroup->m_bAddedToQueue = false;
+	}
 }
 
 void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
@@ -458,7 +489,7 @@ void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
 		{
 			// Gradually load anything that needs loading
 			const QueueEntry &e = m_Queue.back();
-			ConstructByIndex(e.pLOD, e.iStructIndex);
+			ConstructByIndex(e.pLOD, e.pStructureArray, e.iStructIndex);
 			m_Queue.pop_back();
 		}
 		last_campos = CamPos;
@@ -466,12 +497,13 @@ void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
 }
 
 void vtPagedStructureLodGrid::ConstructByIndex(vtPagedStructureLOD *pLOD,
+											   vtStructureArray3d *pArray,
 											   unsigned int iStructIndex)
 {
-	bool bSuccess = m_pStructureArray->ConstructStructure(iStructIndex);
+	bool bSuccess = pArray->ConstructStructure(iStructIndex);
 	if (bSuccess)
 	{
-		vtStructure3d *str3d = m_pStructureArray->GetStructure3d(iStructIndex);
+		vtStructure3d *str3d = pArray->GetStructure3d(iStructIndex);
 		vtTransform *pTrans = str3d->GetContainer();
 		if (pTrans)
 			pLOD->AddChild(pTrans);
@@ -483,7 +515,7 @@ void vtPagedStructureLodGrid::ConstructByIndex(vtPagedStructureLOD *pLOD,
 	else
 	{
 		VTLOG("Error: couldn't construct index %d\n", iStructIndex);
-		vtStructInstance *si = m_pStructureArray->GetInstance(iStructIndex);
+		vtStructInstance *si = pArray->GetInstance(iStructIndex);
 		if (si)
 		{
 			const char *fname = si->GetValueString("filename", true);
@@ -492,28 +524,30 @@ void vtPagedStructureLodGrid::ConstructByIndex(vtPagedStructureLOD *pLOD,
 	}
 }
 
-bool vtPagedStructureLodGrid::AddToQueue(vtPagedStructureLOD *pLOD, int iIndex)
+bool vtPagedStructureLodGrid::AddToQueue(vtPagedStructureLOD *pLOD,
+										 vtStructureArray3d *pArray, int iIndex)
 {
 	// Check if it's already built
-	vtStructure3d *str3d = m_pStructureArray->GetStructure3d(iIndex);
+	vtStructure3d *str3d = pArray->GetStructure3d(iIndex);
 	if (str3d && str3d->IsCreated())
 		return false;
 
 	// If not, add it
 	QueueEntry e;
 	e.pLOD = pLOD;
+	e.pStructureArray = pArray;
 	e.iStructIndex = iIndex;
 	e.fDistance = 1E9;
 	m_Queue.push_back(e);
 	return true;
 }
 
-bool vtPagedStructureLodGrid::RemoveFromQueue(int iIndex)
+bool vtPagedStructureLodGrid::RemoveFromQueue(vtStructureArray3d *pArray, int iIndex)
 {
 	// Check if it's in the queue
 	for (QueueVector::iterator it = m_Queue.begin(); it != m_Queue.end(); it++)
 	{
-		if (it->iStructIndex == iIndex)
+		if (it->pStructureArray == pArray && it->iStructIndex == iIndex)
 		{
 			m_Queue.erase(it);
 			return true;

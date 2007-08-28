@@ -1224,11 +1224,10 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 		m_iPagingStructureMax = m_Params.GetValueInt("PagingStructureMax");
 		m_fPagingStructureDist = m_Params.GetValueInt("PagingStructureDist");
 
-		m_pPagedStructGrid->SetArray(structures);
 		VTLOG("\tAppending %d structures to the paged grid.\n", num_structs);
 		for (int i = 0; i < num_structs; i++)
 		{
-			m_pPagedStructGrid->AppendToGrid(i);
+			m_pPagedStructGrid->AppendToGrid(structures, i);
 		}
 	}
 	else

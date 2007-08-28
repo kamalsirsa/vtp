@@ -389,12 +389,18 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 		}
 	}
 	m_bEnabled = bTrue;
-	if (m_pTerrain && bTrue == false)
+	if (m_pTerrain)
 	{
-		// don't keep paging in structures for this array
 		vtPagedStructureLodGrid *paged = m_pTerrain->GetStructureLodGrid();
 		if (paged)
-			paged->ClearQueue();
+		{
+			if (bTrue == false)
+				// don't keep paging in structures for this array
+				paged->ClearQueue(this);
+			else
+				// re-check paging for this array, now that it's visible
+				paged->RefreshPaging(this);
+		}
 	}
 }
 

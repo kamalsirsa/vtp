@@ -32,6 +32,13 @@ class vtStructureArray3d;
 class PagedNativeLOD;
 class vtPagedStructureLodGrid;
 
+
+struct StructureRef {
+	vtStructureArray3d *pArray;
+	unsigned int iIndex;
+};
+typedef std::vector<StructureRef> StructureRefVector;
+
 /**
  * An vtPagedStructureLOD node controls the visibility of its child nodes.
  *
@@ -50,11 +57,11 @@ public:
 	void GetCenter(FPoint3 &center);
 	bool TestVisible(float fDistance, bool bLoad);
 
-	void Add(int iIndex) { m_StructureIndices.Append(iIndex); }
+	void Add(vtStructureArray3d *pArray, int iIndex);
 	void SetGrid(vtPagedStructureLodGrid *g) { m_pGrid = g; }
 	void AppendToQueue();
 
-	vtArray <int> m_StructureIndices;
+	StructureRefVector m_StructureRefs;
 	int m_iNumConstructed;
 	bool m_bAddedToQueue;
 
@@ -132,10 +139,10 @@ public:
 
 struct QueueEntry {
 	vtPagedStructureLOD *pLOD;
+	vtStructureArray3d *pStructureArray;
 	unsigned int iStructIndex;
 	float fDistance;
 };
-
 typedef std::vector<QueueEntry> QueueVector;
 
 /**
@@ -157,18 +164,17 @@ public:
 
 	// methods
 	void SetDistance(float fLODDistance);
-	void SetArray(vtStructureArray3d *sa) { m_pStructureArray = sa; }
-	vtStructureArray3d *GetArray() { return m_pStructureArray; }
-	bool AppendToGrid(int iIndex);
+	bool AppendToGrid(vtStructureArray3d *sa, int iIndex);
 
 	vtPagedStructureLOD *GetPagedCell(int a, int b);
 
 	void DoPaging(const FPoint3 &CamPos, int iMaxStructures, float fDeleteDistance);
-	bool AddToQueue(vtPagedStructureLOD *pLOD, int iIndex);
-	bool RemoveFromQueue(int iIndex);
+	bool AddToQueue(vtPagedStructureLOD *pLOD, vtStructureArray3d *pArray, int iIndex);
+	bool RemoveFromQueue(vtStructureArray3d *pArray, int iIndex);
 	unsigned int GetQueueSize() { return m_Queue.size(); }
 	void SortQueue();
-	void ClearQueue();
+	void ClearQueue(vtStructureArray3d *pArray);
+	void RefreshPaging(vtStructureArray3d *pArray);
 
 	void EnableLoading(bool b) { m_LoadingEnabled = b; }
 	bool m_LoadingEnabled;
@@ -177,7 +183,7 @@ public:
 	void ResetLoadCount() { m_iLoadCount = 0; }
 
 	vtPagedStructureLOD *FindGroup(vtStructure *str);
-	void ConstructByIndex(vtPagedStructureLOD *pLOD,
+	void ConstructByIndex(vtPagedStructureLOD *pLOD, vtStructureArray3d *pArray,
 		unsigned int iStructIndex);
 
 protected:
@@ -186,7 +192,6 @@ protected:
 	void DeconstructCell(vtPagedStructureLOD *pLOD);
 	void RemoveCellFromQueue(vtPagedStructureLOD *pLOD);
 
-	vtStructureArray3d *m_pStructureArray;
 	vtPagedStructureLOD **m_pCells;
 	int m_iLoadCount;
 
