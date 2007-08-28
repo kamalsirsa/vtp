@@ -83,7 +83,7 @@ vtTagArray *InstanceDlg::GetTagArray()
 		vtContentManager *cman = Current();
 		if (!cman)
 			return NULL;
-		if (m_iItem >= cman->NumItems())
+		if (m_iItem >= (int) cman->NumItems())
 			return NULL;
 		vtItem *item = cman->GetItem(m_iItem);
 		if (!item)
