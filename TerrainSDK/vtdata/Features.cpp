@@ -275,7 +275,10 @@ vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 	// Open the SHP File & Get Info from SHP:
 	SHPHandle hSHP = SHPOpen(fname_local, "rb");
 	if (hSHP == NULL)
+	{
+		m_strErrorMsg = "Could not open file.";
 		return NULL;
+	}
 
 	// Get number of entities (nElem) and type of data (nShapeType)
 	int		nElems, nShapeType;
@@ -302,6 +305,8 @@ vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 		pSet = new vtFeatureSetPolygon;
 		break;
 	default:
+		m_strErrorMsg = "Unsupported SHP geometry type: ";
+		m_strErrorMsg += GetShapeTypeName(nShapeType);
 		SHPClose(hSHP);
 		return NULL;
 	}
@@ -2097,5 +2102,27 @@ bool GeometryTypeIs3D(OGRwkbGeometryType type)
 	default:
 		return false;
 	}
+}
+
+vtString GetShapeTypeName(int nShapeType)
+{
+	switch (nShapeType)
+	{
+	case SHPT_NULL:			return "NULL"; break;
+	case SHPT_POINT:		return "POINT"; break;
+	case SHPT_ARC:			return "ARC"; break;
+	case SHPT_POLYGON:		return "POLYGON"; break;
+	case SHPT_MULTIPOINT:	return "MULTIPOINT"; break;
+	case SHPT_POINTZ:		return "POINTZ"; break;
+	case SHPT_ARCZ:			return "ARCZ"; break;
+	case SHPT_POLYGONZ:		return "POLYGONZ"; break;
+	case SHPT_MULTIPOINTZ:	return "MULTIPOINTZ"; break;
+	case SHPT_POINTM:		return "POINTM"; break;
+	case SHPT_ARCM:			return "ARCM"; break;
+	case SHPT_POLYGONM:		return "POLYGONM"; break;
+	case SHPT_MULTIPOINTM:	return "MULTIPOINTM"; break;
+	case SHPT_MULTIPATCH:	return "MULTIPATCH"; break;
+	}
+	return "Unknown";
 }
 

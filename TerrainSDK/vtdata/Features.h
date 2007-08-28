@@ -442,6 +442,8 @@ public:
 	vtFeatureSet *LoadFromDXF(const char *filename, bool progress_callback(int) = NULL);
 
 	vtFeatureSet *ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
+
+	vtString m_strErrorMsg;
 };
 
 // Helpers
@@ -451,6 +453,7 @@ int OGRToShapelib(OGRwkbGeometryType eGeomType);
 vtString MakeDBFName(const char *filename);
 int GetIntFromString(const char *buf, int len);
 bool GeometryTypeIs3D(OGRwkbGeometryType type);
+vtString GetShapeTypeName(int nShapeType);
 
 #endif // VTDATA_FEATURES
 
