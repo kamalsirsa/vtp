@@ -315,6 +315,10 @@ bool vtRawLayer::OnLoad()
 			return false;
 		}
 	}
+	else
+	{
+		wxMessageBox(wxString(loader.m_strErrorMsg, wxConvUTF8));
+	}
 	return (m_pSet != NULL);
 }
 
