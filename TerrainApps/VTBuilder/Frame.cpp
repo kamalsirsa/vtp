@@ -191,6 +191,8 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 	m_bUseCurrentCRS = false;
 	m_bLoadImagesAlways = false;
 	m_bLoadImagesNever = false;
+	m_bReproToFloatAlways = false;
+	m_bReproToFloatNever = false;
 	m_bSlowFillGaps = false;
 
 	// frame icon

@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project.
+// Copyright (c) 2001-2007 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -53,7 +53,8 @@ public:
 	bool Create(const DRECT &area, int iColumns, int iRows, bool bFloat,
 		const vtProjection &proj);
 	void FreeData();
-	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj, bool progress_callback(int) = NULL);
+	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj,
+		float bUpgradeToFloat, bool progress_callback(int) = NULL);
 	bool ReprojectExtents(const vtProjection &proj_new);
 	void Scale(float fScale, bool bDirect, bool bRecomputeExtents = true);
 	void ComputeHeightExtents();
@@ -63,7 +64,7 @@ public:
 	bool FillGapsSmooth(bool progress_callback(int) = NULL);
 
 	// Load from unknown file format
-	bool LoadFromFile( const char *szFileName, bool progress_callback(int) = NULL );
+	bool LoadFromFile( const char *szFileName, bool progress_callback(int) = NULL);
 
 	// Load from a specific kind of file
 	bool LoadFrom3TX(const char *szFileName, bool progress_callback(int) = NULL);

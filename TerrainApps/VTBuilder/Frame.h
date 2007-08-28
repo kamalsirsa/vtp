@@ -503,6 +503,8 @@ public:
 	bool m_bUseCurrentCRS;
 	bool m_bLoadImagesAlways;
 	bool m_bLoadImagesNever;
+	bool m_bReproToFloatAlways;
+	bool m_bReproToFloatNever;
 	bool m_bSlowFillGaps;
 
 protected:

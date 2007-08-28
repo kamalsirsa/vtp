@@ -224,8 +224,6 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 	if (proj_old == proj_new)
 		return true;		// No conversion necessary
 
-	OpenProgressDialog(_("Converting Elevation Projection"));
-
 	bool success = false;
 	if (m_pGrid)
 	{
@@ -238,10 +236,30 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 		}
 		else
 		{
+			bool bUpgradeToFloat = false;
+
+			if (!m_pGrid->IsFloatMode())
+			{
+				if (GetMainFrame()->m_bReproToFloatNever)
+					bUpgradeToFloat = false;
+				else if (GetMainFrame()->m_bReproToFloatAlways)
+					bUpgradeToFloat = true;
+				else
+				{
+					// Ask
+					int res = wxMessageBox(_("Input grid is integer.  Use floating-point values in reprojected grid?"),
+						_("query"), wxYES_NO);
+					if (res == wxYES)
+						bUpgradeToFloat = true;
+				}
+			}
+
 			// actually re-project the grid elements
 			vtElevationGrid *grid_new = new vtElevationGrid;
 
-			success = grid_new->ConvertProjection(m_pGrid, proj_new, progress_callback);
+			OpenProgressDialog(_("Converting Elevation Projection"));
+			success = grid_new->ConvertProjection(m_pGrid, proj_new,
+				bUpgradeToFloat, progress_callback);
 
 			if (success)
 			{
@@ -255,6 +273,7 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 	}
 	if (m_pTin)
 	{
+		OpenProgressDialog(_("Converting Elevation Projection"));
 		success = m_pTin->ConvertProjection(proj_new);
 	}
 	SetModified(true);

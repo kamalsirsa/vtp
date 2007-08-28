@@ -172,13 +172,15 @@ double MetersPerLongitude(double latitude)
  *
  * \param pOld		An existing elevation grid to convert from.
  * \param NewProj	The new projection to convert to.
+ * \param bUpgradeToFloat	If true, the resulting grid will always use
+ *		floating-point values.  Otherwise, it matches the input grid.
  * \param progress_callback If supplied, this function will be called back
  *				with a value of 0 to 100 as the operation progresses.
  *
  * \return True if successful.
  */
 bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
-	const vtProjection &NewProj, bool progress_callback(int))
+	const vtProjection &NewProj, float bUpgradeToFloat, bool progress_callback(int))
 {
 	int i, j;
 
@@ -261,6 +263,10 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	m_proj = NewProj;
 	m_bFloatMode = pOld->m_bFloatMode;
 	m_strOriginalDEMName = pOld->GetDEMName();
+
+	// Allow user to upgrade to a float grid if they want
+	if (bUpgradeToFloat)
+		m_bFloatMode = true;
 
 	// Others are on the parent class:
 	vtHeightFieldGrid3d::Initialize(NewProj.GetUnits(), m_EarthExtents, INVALID_ELEVATION,
