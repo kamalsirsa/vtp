@@ -51,7 +51,7 @@ BEGIN_EVENT_TABLE(StyleDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_RADIO_USE_OBJECT_COLOR_FIELD, StyleDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO2, StyleDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_USE_LINE_COLOR_FIELD, StyleDlg::OnRadio )
-	EVT_RADIOBUTTON( ID_RADIO_USE_LINE_COLOR_FIELD, StyleDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_RADIO3, StyleDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_USE_TEXT_COLOR_FIELD, StyleDlg::OnRadio )
 END_EVENT_TABLE()
 
@@ -352,7 +352,7 @@ void StyleDlg::UpdateEnabling()
 
 	// Line Geometry
 	GetRadio2()->Enable(m_bLineGeometry);
-	GetLineGeomColor()->Enable(!m_bRadioUseLineColorField);
+	GetLineGeomColor()->Enable(m_bLineGeometry && !m_bRadioUseLineColorField);
 	GetRadioUseLineColorField()->Enable(m_bLineGeometry);
 	GetLineColorField()->Enable(m_bRadioUseLineColorField);
 	GetLineGeomHeight()->Enable(m_bLineGeometry && !GeometryTypeIs3D(m_type));
@@ -361,7 +361,7 @@ void StyleDlg::UpdateEnabling()
 
 	// Text Labels
 	GetRadio3()->Enable(m_bTextLabels);
-	GetTextColor()->Enable(!m_bRadioUseTextColorField);
+	GetTextColor()->Enable(m_bTextLabels && !m_bRadioUseTextColorField);
 	GetRadioUseTextColorField()->Enable(m_bTextLabels);
 	GetTextColorField()->Enable(m_bRadioUseTextColorField);
 	GetTextField()->Enable(m_bTextLabels);
