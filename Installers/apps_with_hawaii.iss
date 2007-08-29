@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2007.07.13
+AppVerName=VTP Software 2007.08.28
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -117,7 +117,7 @@ Source: "C:\APIs\gdal141-vc8\bin\gdal14-vc8.dll"; DestDir: "{app}\Apps"; Flags: 
 Source: "C:\APIs\gdal141-vc8\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\gdal141-vc8\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\osg-1.2-bin-vc8\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\osg-2.0-bin-vc8\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\libcurl-7.15.0\libcurl.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\libpng-1.2.12\libpng13-vc8.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\libpng-1.2.12\zlib1-vc8.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
