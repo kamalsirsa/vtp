@@ -120,11 +120,15 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_FOGDISTANCE, "50");		// 50 km
 	AddTag(STR_FOGCOLOR, "-1 -1 -1");	// unset
 
-	AddTag(STR_STRUCTDIST, "2000");		// 2 km
+	AddTag(STR_CONTENT_FILE, "");
+
+	AddTag(STR_STRUCTDIST, "1000");		// 1 km
 	AddTag(STR_STRUCT_SHADOWS, "false");
 	AddTag(STR_SHADOW_REZ, "1024");
 	AddTag(STR_SHADOW_DARKNESS, "0.8");
-	AddTag(STR_CONTENT_FILE, "");
+	AddTag(STR_STRUCTURE_PAGING, "false");
+	AddTag(STR_STRUCTURE_PAGING_MAX, "2000");	// 2000 structures
+	AddTag(STR_STRUCTURE_PAGING_DIST, "2000");	// 2 km
 
 	AddTag(STR_TOWERS, "false");
 	AddTag(STR_TOWERFILE, "");
@@ -140,7 +144,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_DEPRESSOCEAN, "false");
 	AddTag(STR_DEPRESSOCEANLEVEL, "-40");
 	AddTag(STR_HORIZON, "false");
-	AddTag(STR_BGCOLOR, "40 75 124");	// old blue
+	AddTag(STR_BGCOLOR, "0 0 0");	// black
 
 	AddTag(STR_ROUTEENABLE, "false");	// not used yet
 	AddTag(STR_ROUTEFILE, "");			// not used yet

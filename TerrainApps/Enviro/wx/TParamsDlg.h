@@ -124,13 +124,17 @@ public:
 	bool	m_bFog;
 	float   m_fFogDistance;
 
+	wxString m_strContent;
+
 	std::vector<vtTagArray> m_Layers;
 	vtStringArray m_AnimPaths;
 	int		m_iStructDistance;
 	bool	m_bStructureShadows;
 	int		m_iStructureRez;
 	float	m_fDarkness;
-	wxString m_strContent;
+	bool	m_bPagingStructures;
+	int		m_iPagingStructureMax;
+	float	m_fPagingStructureDist;
 
 	bool	m_bSky;
 	wxString   m_strSkyTexture;
@@ -141,7 +145,7 @@ public:
 	bool	m_bHorizon;
 	wxColor	m_BgColor;
 
-	bool	m_bVehicles;
+//	bool	m_bVehicles;
 //  float   m_fVehicleSize;
 //  float   m_fVehicleSpeed;
 

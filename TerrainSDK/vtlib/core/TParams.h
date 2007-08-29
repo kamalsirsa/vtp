@@ -469,12 +469,16 @@ protected:
 #define STR_FOGDISTANCE "Fog_Distance"
 #define STR_FOGCOLOR "Fog_Color"
 
-#define STR_STRUCTFILE	 "Structure_File"
+#define STR_CONTENT_FILE "Content_File"
+
+#define STR_STRUCTFILE	 "Structure_File"	// Obsolete, use layers now
 #define STR_STRUCTDIST	 "Structure_Distance"
 #define STR_STRUCT_SHADOWS "Structure_Shadows"
 #define STR_SHADOW_REZ	"Shadow_Resolution"
 #define STR_SHADOW_DARKNESS "Shadow_Darkness"
-#define STR_CONTENT_FILE "Content_File"
+#define STR_STRUCTURE_PAGING		"PagingStructures"
+#define STR_STRUCTURE_PAGING_MAX	"PagingStructureMax"
+#define STR_STRUCTURE_PAGING_DIST	"PagingStructureDist"
 
 #define STR_TOWERS "Trans_Towers"
 #define	STR_TOWERFILE "Tower_File"

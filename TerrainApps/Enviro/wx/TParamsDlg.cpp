@@ -106,6 +106,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_CHECKBOX( ID_PLANTS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_CHECK_STRUCTURE_SHADOWS, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_CHECK_STRUCTURE_PAGING, TParamsDlg::OnCheckBox )
 
 	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClickStructure )
 	EVT_LISTBOX_DCLICK( ID_RAWFILES, TParamsDlg::OnListDblClickRaw )
@@ -267,8 +268,11 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
 	AddValidator(ID_CHECK_STRUCTURE_SHADOWS, &m_bStructureShadows);
 	AddValidator(ID_CHOICE_SHADOW_REZ, &m_iStructureRez);
-	AddNumValidator(ID_DARKNESS, &m_fDarkness);
-	AddValidator(ID_VEHICLES, &m_bVehicles);
+	AddNumValidator(ID_DARKNESS, &m_fDarkness, 2);
+	AddValidator(ID_CHECK_STRUCTURE_PAGING, &m_bPagingStructures);
+	AddNumValidator(ID_PAGING_MAX_STRUCTURES, &m_iPagingStructureMax);
+	AddNumValidator(ID_PAGE_OUT_DISTANCE, &m_fPagingStructureDist, 1);
+//	AddValidator(ID_VEHICLES, &m_bVehicles);
 
 	// Atmosphere and water page
 	AddValidator(ID_SKY, &m_bSky);
@@ -403,14 +407,17 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_fFogDistance =	Params.GetValueFloat(STR_FOGDISTANCE);
 
 	// Layers and structure stuff
+	m_strContent = wxString(Params.GetValueString(STR_CONTENT_FILE), wxConvUTF8);
 	m_Layers = Params.m_Layers;
 	m_iStructDistance = Params.GetValueInt(STR_STRUCTDIST);
 	m_bStructureShadows = Params.GetValueBool(STR_STRUCT_SHADOWS);
 	m_iStructureRez = vt_log2(Params.GetValueInt(STR_SHADOW_REZ))-8;
 	m_fDarkness =		Params.GetValueFloat(STR_SHADOW_DARKNESS);
-	m_strContent = wxString(Params.GetValueString(STR_CONTENT_FILE), wxConvUTF8);
+	m_bPagingStructures =	 Params.GetValueBool(STR_STRUCTURE_PAGING);
+	m_iPagingStructureMax =	 Params.GetValueInt(STR_STRUCTURE_PAGING_MAX);
+	m_fPagingStructureDist = Params.GetValueFloat(STR_STRUCTURE_PAGING_DIST);
 
-	m_bVehicles =	   Params.GetValueBool(STR_VEHICLES);
+//	m_bVehicles =	   Params.GetValueBool(STR_VEHICLES);
 //  m_fVehicleSize =	Params.GetValueFloat(STR_VEHICLESIZE);
 //  m_fVehicleSpeed =   Params.GetValueFloat(STR_VEHICLESPEED);
 
@@ -549,15 +556,18 @@ void TParamsDlg::GetParams(TParams &Params)
 	// (fog color not exposed in UI)
 
 	// Layers and structure stuff
+	Params.SetValueString(STR_CONTENT_FILE, (const char *) m_strContent.mb_str(wxConvUTF8));
 	Params.m_Layers = m_Layers;
 
 	Params.SetValueInt(STR_STRUCTDIST, m_iStructDistance);
 	Params.SetValueBool(STR_STRUCT_SHADOWS, m_bStructureShadows);
 	Params.SetValueInt(STR_SHADOW_REZ, 1 << (m_iStructureRez+8));
 	Params.SetValueFloat(STR_SHADOW_DARKNESS, m_fDarkness);
-	Params.SetValueString(STR_CONTENT_FILE, (const char *) m_strContent.mb_str(wxConvUTF8));
+	Params.SetValueBool(STR_STRUCTURE_PAGING, m_bPagingStructures);
+	Params.SetValueInt(STR_STRUCTURE_PAGING_MAX, m_iPagingStructureMax);
+	Params.SetValueFloat(STR_STRUCTURE_PAGING_DIST, m_fPagingStructureDist);
 
-	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
+//	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
 //  Params.SetValueFloat(STR_VEHICLESIZE, m_fVehicleSize);
 //  Params.SetValueFloat(STR_VEHICLESPEED, m_fVehicleSpeed);
 
@@ -695,6 +705,8 @@ void TParamsDlg::UpdateEnableState()
 
 	FindWindow(ID_CHOICE_SHADOW_REZ)->Enable(m_bStructureShadows);
 	FindWindow(ID_DARKNESS)->Enable(m_bStructureShadows);
+	FindWindow(ID_PAGING_MAX_STRUCTURES)->Enable(m_bPagingStructures);
+	FindWindow(ID_PAGE_OUT_DISTANCE)->Enable(m_bPagingStructures);
 
 	GetOceanPlaneOffset()->Enable(m_bOceanPlane);
 	GetDepressOceanOffset()->Enable(m_bDepressOcean);
@@ -1432,7 +1444,7 @@ void TParamsDlg::OnEditScenario( wxCommandEvent &event )
 	if (iSelected != wxNOT_FOUND)
 	{
 		vtStringArray lnames;
-		for (int i = 0; i < m_Layers.size(); i++)
+		for (unsigned int i = 0; i < m_Layers.size(); i++)
 			lnames.push_back(m_Layers[i].GetValueString("Filename"));
 
 		ScenarioParamsDialog.SetAvailableLayers(lnames);
