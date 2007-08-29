@@ -229,6 +229,7 @@ bool VTPWindow::CreateScene()
 	// Set the global data path
 	vtStringArray paths;
 	paths.push_back(vtString("Data/"));
+	paths.push_back(vtString("../Data/"));
 	pScene->SetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
