@@ -18,6 +18,7 @@
 
 #include "StatusBar.h"
 #include "Layer.h"
+#include "TilingOptions.h"
 
 #ifdef ENVIRON
   #define APPNAME "EnvironBuilder"
@@ -58,6 +59,20 @@ class MapServerDlg;
 class RenderDlg;
 class ProfileDlg;
 class vtScaleBar;
+
+// option tag names
+#define TAG_SHOW_MAP "ShowMap"
+#define TAG_SHOW_UTM "ShowUTMBounds"
+#define TAG_SHOW_PATHS "ShowFullPaths"
+#define TAG_ROAD_DRAW_WIDTH "RoadDrawWidth"
+
+#define TAG_USE_CURRENT_CRS	"UseCurrentCRS"
+#define TAG_LOAD_IMAGES_ALWAYS "LoadImagesAlways"
+#define TAG_LOAD_IMAGES_NEVER "LoadImagesNever"
+#define TAG_REPRO_TO_FLOAT_ALWAYS "ReproToFloatAlways"
+#define TAG_REPRO_TO_FLOAT_NEVER "ReproToFloatNever"
+#define TAG_SLOW_FILL_GAPS "SlowFillGaps"
+
 
 class MainFrame: public wxFrame
 {
@@ -500,18 +515,14 @@ public:
 	vtStringArray	m_datapaths;
 
 	// User Preferences
-	bool m_bUseCurrentCRS;
-	bool m_bLoadImagesAlways;
-	bool m_bLoadImagesNever;
-	bool m_bReproToFloatAlways;
-	bool m_bReproToFloatNever;
-	bool m_bSlowFillGaps;
+	vtTagArray m_Options;
 
 protected:
 	// INI File
-	bool ReadINI();
-	bool WriteINI();
-	FILE *m_fpIni;
+	bool ReadINI(const char *fname);
+	//bool WriteINI();
+	bool ReadXML(const char *fname);
+	bool WriteXML(const char *fname);
 	const char *m_szIniFilename;
 
 	// Application Data

@@ -1,7 +1,7 @@
 //
 // ElevLayer.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,8 @@
 #include "wx/image.h"
 #include "Layer.h"
 #include "vtdata/vtTin.h"
+#include "ElevDrawOptions.h"
+#include "TilingOptions.h"
 
 #define SHADING_BIAS	200
 

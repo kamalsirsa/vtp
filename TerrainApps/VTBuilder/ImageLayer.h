@@ -10,6 +10,7 @@
 
 #include "wx/image.h"
 #include "Layer.h"
+#include "TilingOptions.h"
 
 class vtBitmap;
 class GDALDataset;

@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,7 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
-#include "Layer.h"	// for ElevDrawOptions
+#include "ElevDrawOptions.h"
 
 // WDR: class declarations
 

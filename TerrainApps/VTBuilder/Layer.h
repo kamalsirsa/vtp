@@ -9,7 +9,6 @@
 #define LAYER_H
 
 #include "vtdata/MathTypes.h"
-#include "vtdata/Projections.h"
 #include "vtdata/vtString.h"
 
 enum LayerType
@@ -31,6 +30,7 @@ enum LayerType
 
 class BuilderView;
 class vtScaledView;
+class vtProjection;
 struct UIContext;
 
 class vtLayer
@@ -128,67 +128,6 @@ public:
 	bool m_bFill;
 	int m_MarkerShape;	// 0 = circle, 1 = crosshair, this should be an enum
 	int m_MarkerSize;	// in pixels
-};
-
-class ElevDrawOptions
-{
-public:
-	ElevDrawOptions()
-	{
-		m_bShowElevation = true;
-		m_bShadingQuick = true;
-		m_bShadingDot = false;
-		m_bCastShadows = false;
-		m_bDoMask = true;
-		m_iCastAngle = 30;
-		m_iCastDirection = 90;
-		m_fAmbient = 0.1f;
-		m_fGamma = 0.8f;
-		m_strColorMapFile = "";
-	}
-	bool operator != (const ElevDrawOptions &val)
-	{
-		return (m_bShowElevation != val.m_bShowElevation ||
-			m_bShadingQuick != val.m_bShadingQuick ||
-			m_bShadingDot != val.m_bShadingDot ||
-			m_bCastShadows != val.m_bCastShadows ||
-			m_bDoMask != val.m_bDoMask ||
-			m_iCastAngle != val.m_iCastAngle ||
-			m_iCastDirection != val.m_iCastDirection ||
-			m_fAmbient != val.m_fAmbient ||
-			m_fGamma != val.m_fGamma ||
-			m_strColorMapFile != val.m_strColorMapFile);
-	}
-	bool m_bShowElevation;
-	bool m_bShadingQuick;
-	bool m_bShadingDot;
-	bool m_bCastShadows;
-	bool m_bDoMask;
-	int m_iCastAngle;
-	int m_iCastDirection;
-	float m_fAmbient;
-	float m_fGamma;
-	vtString m_strColorMapFile;
-};
-
-enum TextureCompressionType { TC_OPENGL, TC_SQUISH_FAST, TC_SQUISH_SLOW };
-
-struct TilingOptions
-{
-	int cols, rows;
-	int lod0size;
-	int numlods;
-	vtString fname;
-
-	// If this is an elevation tileset, then optionally a corresponding
-	//  derived image tileset can be created.
-	bool bCreateDerivedImages;
-	vtString fname_images;
-	ElevDrawOptions draw;
-
-	bool bOmitFlatTiles;
-	bool bUseTextureCompression;
-	TextureCompressionType eCompressionType;
 };
 
 ////////////////////

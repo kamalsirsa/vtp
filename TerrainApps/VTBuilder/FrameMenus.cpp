@@ -609,29 +609,31 @@ void MainFrame::OnProjectSave(wxCommandEvent &event)
 void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 {
 	PrefDlg dlg(this, wxID_ANY, _("Preferences"));
-	dlg.b1 = (m_bUseCurrentCRS == true);
-	dlg.b2 = (m_bUseCurrentCRS == false);
+	dlg.b1 = (m_Options.GetValueBool(TAG_USE_CURRENT_CRS) == true);
+	dlg.b2 = (m_Options.GetValueBool(TAG_USE_CURRENT_CRS) == false);
 
-	dlg.b3 = (m_bLoadImagesAlways == true);
-	dlg.b4 = (m_bLoadImagesNever == true);
-	dlg.b5 = (!m_bLoadImagesAlways && !m_bLoadImagesNever);
+	dlg.b3 = m_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS);
+	dlg.b4 = m_Options.GetValueBool(TAG_LOAD_IMAGES_NEVER);
+	dlg.b5 = (!m_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS) &&
+			  !m_Options.GetValueBool(TAG_LOAD_IMAGES_NEVER));
 
-	dlg.b6 = (m_bReproToFloatNever == true);
-	dlg.b7 = (m_bReproToFloatAlways == true);
-	dlg.b8 = (!m_bReproToFloatAlways && !m_bReproToFloatNever);
+	dlg.b6 = m_Options.GetValueBool(TAG_REPRO_TO_FLOAT_NEVER);
+	dlg.b7 = m_Options.GetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS);
+	dlg.b8 = (!m_Options.GetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS) &&
+			  !m_Options.GetValueBool(TAG_REPRO_TO_FLOAT_NEVER));
 
-	dlg.b9 = !m_bSlowFillGaps;
-	dlg.b10 = m_bSlowFillGaps;
+	dlg.b9 = !m_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
+	dlg.b10 = m_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
     dlg.TransferDataToWindow();
 
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		m_bUseCurrentCRS = dlg.b1;
-		m_bLoadImagesAlways = dlg.b3;
-		m_bLoadImagesNever = dlg.b4;
-		m_bReproToFloatAlways = dlg.b7;
-		m_bReproToFloatNever = dlg.b6;
-		m_bSlowFillGaps = dlg.b10;
+		m_Options.SetValueBool(TAG_USE_CURRENT_CRS, dlg.b1);
+		m_Options.SetValueBool(TAG_LOAD_IMAGES_ALWAYS, dlg.b3);
+		m_Options.SetValueBool(TAG_LOAD_IMAGES_NEVER, dlg.b4);
+		m_Options.SetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS, dlg.b7);
+		m_Options.SetValueBool(TAG_REPRO_TO_FLOAT_NEVER, dlg.b6);
+		m_Options.SetValueBool(TAG_SLOW_FILL_GAPS, dlg.b10);
 	}
 }
 

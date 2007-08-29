@@ -1,7 +1,7 @@
 //
 // Name: ResampleDlg.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,7 +12,7 @@
 #include "vtui/AutoDialog.h"
 #include "vtdata/MathTypes.h"
 #include "TileDlg.h"
-#include "Layer.h"		// for ElevDrawOptions
+#include "ElevDrawOptions.h"
 
 class BuilderView;
 

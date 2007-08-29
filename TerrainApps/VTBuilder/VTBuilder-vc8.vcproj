@@ -260,6 +260,18 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ElevDrawOptions.cpp"
+				>
+				<FileConfiguration
+					Name="Debug Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="ElevLayer.cpp"
 				>
 				<FileConfiguration
@@ -870,6 +882,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ElevDrawOptions.h"
+				>
+			</File>
+			<File
 				RelativePath="ElevLayer.h"
 				>
 			</File>
@@ -1003,6 +1019,10 @@
 			</File>
 			<File
 				RelativePath=".\TileDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TilingOptions.h"
 				>
 			</File>
 			<File

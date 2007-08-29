@@ -810,7 +810,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				UpdateProgressDialog2(done*99/total, -1, _("Filling gaps"));
 
 				bool bGood;
-				if (m_bSlowFillGaps)
+				if (m_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
 					bGood = base_lod.FillGapsSmooth(progress_callback_minor);
 				else
 					bGood = base_lod.FillGaps(progress_callback_minor);

@@ -847,12 +847,13 @@ bool vtImageLayer::LoadFromGDAL()
 		wxString msg;
 		if (m_iXSize * m_iYSize > (4096 * 4096))
 		{
-			if (GetMainFrame()->m_bLoadImagesAlways)
+			if (GetMainFrame()->m_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS))
 				bDefer = false;
-			else if (GetMainFrame()->m_bLoadImagesNever)
+			else if (GetMainFrame()->m_Options.GetValueBool(TAG_LOAD_IMAGES_NEVER))
 				bDefer = true;
 			else
 			{
+				// Ask
 				msg.Printf(_("Image is very large (%d x %d).\n"), m_iXSize, m_iYSize);
 				msg += _("Would you like to create the layer using out-of-memory access to the image?"),
 				VTLOG(msg.mb_str(wxConvUTF8));

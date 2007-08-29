@@ -171,7 +171,6 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 	m_pProfileDlg = NULL;
 	m_pLinearStructureDlg = NULL;
 	m_pInstanceDlg = NULL;
-	m_szIniFilename = APPNAME ".ini";
 	m_bDrawDisabled = false;
 	m_bAdoptFirstCRS = true;
 	m_LSOptions.Defaults();
@@ -188,13 +187,6 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 	m_tileopts.bUseTextureCompression = true;
 	m_tileopts.eCompressionType = TC_OPENGL;
 
-	m_bUseCurrentCRS = false;
-	m_bLoadImagesAlways = false;
-	m_bLoadImagesNever = false;
-	m_bReproToFloatAlways = false;
-	m_bReproToFloatNever = false;
-	m_bSlowFillGaps = false;
-
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
 	VTLOG1("  MainFrame constructor: exit\n");
@@ -203,7 +195,7 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 MainFrame::~MainFrame()
 {
 	VTLOG1("Frame destructor\n");
-	WriteINI();
+	WriteXML(APPNAME ".xml");
 	DeleteContents();
 
     m_mgr.UnInit();
@@ -264,7 +256,11 @@ void MainFrame::SetupUI()
 	m_pView->Show(FALSE);
 
 	// Read INI file after creating the view
-	ReadINI();
+	if (!ReadXML(APPNAME ".xml"))
+	{
+		// fall back on older ini file
+		ReadINI(APPNAME ".ini");
+	}
 
 	RefreshToolbars();
 
@@ -820,21 +816,20 @@ void MainFrame::RefreshLayerInView(vtLayer *pLayer)
 //
 // read / write ini file
 //
-bool MainFrame::ReadINI()
+bool MainFrame::ReadINI(const char *fname)
 {
-	m_fpIni = vtFileOpen(m_szIniFilename, "rb+");
+	FILE *fpIni = vtFileOpen(fname, "rb+");
 
-	if (m_fpIni)
+	if (fpIni)
 	{
 		int ShowMap, ShowElev, ShadeQuick, DoMask, DoUTM, ShowPaths, DrawWidth,
 			CastShadows, ShadeDot=0, Angle=30, Direction=45;
 		float Ambient = 0.1f;
 		float Gamma = 0.8f;
-		fscanf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f", &ShowMap,
+		fscanf(fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f", &ShowMap,
 			&ShowElev, &ShadeQuick, &DoMask, &DoUTM, &ShowPaths, &DrawWidth,
 			&CastShadows, &ShadeDot, &Angle, &Direction, &Ambient, &Gamma);
 
-		m_pView->SetShowMap(ShowMap != 0);
 		vtElevLayer::m_draw.m_bShowElevation = (ShowElev != 0);
 		vtElevLayer::m_draw.m_bShadingQuick = (ShadeQuick != 0);
 		vtElevLayer::m_draw.m_bShadingDot = (ShadeDot != 0);
@@ -844,12 +839,13 @@ bool MainFrame::ReadINI()
 		vtElevLayer::m_draw.m_iCastDirection = Direction;
 		vtElevLayer::m_draw.m_fAmbient = Ambient;
 		vtElevLayer::m_draw.m_fGamma = Gamma;
+		m_pView->SetShowMap(ShowMap != 0);
 		m_pView->m_bShowUTMBounds = (DoUTM != 0);
 		m_pTree->SetShowPaths(ShowPaths != 0);
 		vtRoadLayer::SetDrawWidth(DrawWidth != 0);
 
 		char buf[4000];
-		if (fscanf(m_fpIni, "\n%s\n", buf) == 1)
+		if (fscanf(fpIni, "\n%s\n", buf) == 1)
 		{
 			wxString str(buf, wxConvUTF8);
 			m_mgr.LoadPerspective(str, false);
@@ -857,19 +853,20 @@ bool MainFrame::ReadINI()
 
 		return true;
 	}
-	m_fpIni = vtFileOpen(m_szIniFilename, "wb");
 	return false;
 }
 
+#if 0
 bool MainFrame::WriteINI()
 {
-	if (m_fpIni)
+	fpIni = vtFileOpen(m_szIniFilename, "wb");
+	if (fpIni)
 	{
 		wxString str = m_mgr.SavePerspective();
 		vtString vs = (const char *) str.mb_str(wxConvUTF8);
 
-		rewind(m_fpIni);
-		fprintf(m_fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f\n", m_pView->GetShowMap(),
+		rewind(fpIni);
+		fprintf(fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f\n", m_pView->GetShowMap(),
 			vtElevLayer::m_draw.m_bShowElevation,
 			vtElevLayer::m_draw.m_bShadingQuick, vtElevLayer::m_draw.m_bDoMask,
 			m_pView->m_bShowUTMBounds, m_pTree->GetShowPaths(),
@@ -877,12 +874,55 @@ bool MainFrame::WriteINI()
 			vtElevLayer::m_draw.m_bShadingDot, vtElevLayer::m_draw.m_iCastAngle,
 			vtElevLayer::m_draw.m_iCastDirection, vtElevLayer::m_draw.m_fAmbient,
 			vtElevLayer::m_draw.m_fGamma);
-		fprintf(m_fpIni, "%s\n", (const char *) vs);
-		fclose(m_fpIni);
-		m_fpIni = NULL;
+		fprintf(fpIni, "%s\n", (const char *) vs);
+		fclose(fpIni);
 		return true;
 	}
 	return false;
+}
+#endif
+
+//
+// read / write ini file
+//
+bool MainFrame::ReadXML(const char *fname)
+{
+	if (!m_Options.LoadFromXML(fname))
+		return false;
+
+	// Apply all the options, from m_Options the rest of the application
+	m_pView->SetShowMap(m_Options.GetValueBool(TAG_SHOW_MAP));
+	m_pView->m_bShowUTMBounds = m_Options.GetValueBool(TAG_SHOW_UTM);
+	m_pTree->SetShowPaths(m_Options.GetValueBool(TAG_SHOW_PATHS));
+	vtRoadLayer::SetDrawWidth(m_Options.GetValueBool(TAG_ROAD_DRAW_WIDTH));
+
+	vtElevLayer::m_draw.SetFromTags(m_Options);
+
+	vtString str;
+	if (m_Options.GetValueString("UI_Layout", str))
+	{
+		wxString str2(str, wxConvUTF8);
+		m_mgr.LoadPerspective(str2, false);
+	}
+
+	return true;
+}
+
+bool MainFrame::WriteXML(const char *fname)
+{
+	// Gather all the options into m_Options
+	m_Options.SetValueBool(TAG_SHOW_MAP, m_pView->GetShowMap());
+	m_Options.SetValueBool(TAG_SHOW_UTM, m_pView->m_bShowUTMBounds);
+	m_Options.SetValueBool(TAG_SHOW_PATHS, m_pTree->GetShowPaths());
+	m_Options.SetValueBool(TAG_ROAD_DRAW_WIDTH, vtRoadLayer::GetDrawWidth());
+
+	vtElevLayer::m_draw.SetToTags(m_Options);
+
+	wxString str = m_mgr.SavePerspective();
+	m_Options.SetValueString("UI_Layout", (const char *) str.mb_str(wxConvUTF8));
+
+	// Write it to XML
+	return m_Options.WriteToXML(fname, "Options");
 }
 
 DRECT MainFrame::GetExtents()
@@ -1220,7 +1260,7 @@ bool MainFrame::FillElevGaps(vtElevLayer *el)
 	OpenProgressDialog(_("Filling Gaps"), true);
 
 	bool bGood;
-	if (m_bSlowFillGaps)
+	if (m_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
 		// slow and smooth
 		bGood = el->m_pGrid->FillGapsSmooth(progress_callback);
 	else
@@ -2278,7 +2318,7 @@ bool MainFrame::ConfirmValidCRS(vtProjection *pProj)
 	{
 		// No projection.
 		int res;
-		if (m_bUseCurrentCRS)
+		if (m_Options.GetValueBool(TAG_USE_CURRENT_CRS))
 			res = wxNO;		// Don't ask user, just use current CRS
 		else
 		{
