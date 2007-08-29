@@ -271,7 +271,8 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	// Others are on the parent class:
 	vtHeightFieldGrid3d::Initialize(NewProj.GetUnits(), m_EarthExtents, INVALID_ELEVATION,
 		INVALID_ELEVATION, m_iColumns, m_iRows);
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	// Convert each bit of data from the old array to the new
 	// Transformation points backwards, from the target to the source
@@ -279,6 +280,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	if (!trans)
 	{
 		// inconvertible projections
+		m_strError = "Couldn't convert between coordinate systems.";
 		return false;
 	}
 	DPoint2 p, step = GetSpacing();

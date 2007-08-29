@@ -268,7 +268,11 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 				ReImage();
 			}
 			else
+			{
+				wxString msg(grid_new->GetErrorMsg(), wxConvUTF8);
+				wxMessageBox(msg, _("Error"));
 				delete grid_new;
+			}
 		}
 	}
 	if (m_pTin)
