@@ -47,7 +47,7 @@ all : $(OSX_APP)
 else
 #LIBS   = $(shell fltk-config --use-gl --libs)
 LIBS   = -lvtosg -lvtdata \
-         -lgdal -losgDB -losgUtil -losgText -losg \
+         -lgdal -losgDB -losgUtil -losgText -losgParticle -losg \
 	 -lxmlhelper -lunzip $(MINI_LIB) \
          $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
 
