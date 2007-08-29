@@ -50,7 +50,7 @@ all : $(OSX_APP)
 
 else
 LIBS   = -lvtosg -lvtdata -lunzip \
-         -lgdal -losgDB -losgUtil -losgText -losg -lOpenThreads \
+         -lgdal -losgDB -losgUtil -losgText -losgParticle -losg -lOpenThreads \
 		 -lxmlhelper $(MINI_LIB) \
          $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lcurl -lbz2 -lm 
 
