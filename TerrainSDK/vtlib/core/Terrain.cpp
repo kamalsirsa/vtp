@@ -1353,6 +1353,8 @@ bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
 		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i]);
 		if (!slay)
 			continue;
+		if (!slay->GetEnabled())
+			continue;
 		if (slay->FindClosestStructure(point, epsilon, index, dist,
 			fMaxInstRadius, fLinearWidthBuffer))
 		{
