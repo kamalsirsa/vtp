@@ -1864,7 +1864,7 @@ void BuilderView::OnSize(wxSizeEvent& event)
 	// Unfortunately using Skip() alone appears to have no effect,
 	//  we still get the Refresh-Draw event.
 	wxSize size = GetSize();
-	VTLOG("View OnSize %d, %d\n", size.x, size.y);
+	//VTLOG("View OnSize %d, %d\n", size.x, size.y);
 	if (size == m_previous_size)
 		event.Skip(true);	// allow event to be handled normally
 	else
