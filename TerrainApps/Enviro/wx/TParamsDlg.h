@@ -152,9 +152,12 @@ public:
 	bool	m_bRouteEnable;		// not yet used
 	wxString m_strRouteFile;	// not yet used
 
+	// HUD
 	wxString m_strOverlayFile;
 	int		m_iOverlayX;
 	int		m_iOverlayY;
+	bool	m_bOverview;
+	bool	m_bCompass;
 
 	wxString m_strInitScenario;
 

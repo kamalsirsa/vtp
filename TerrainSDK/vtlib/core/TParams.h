@@ -501,6 +501,8 @@ protected:
 
 #define STR_DIST_TOOL_HEIGHT "Distance_Tool_Height"
 #define STR_HUD_OVERLAY "HUD_Overlay"
+#define STR_OVERVIEW "HUD_Overview"
+#define STR_COMPASS "HUD_Compass"
 
 #define STR_INIT_SCENARIO "Init_Scenario"
 #define STR_SCENARIO_NAME "Scenario_Name"

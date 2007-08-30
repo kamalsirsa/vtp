@@ -65,10 +65,20 @@ void EnviroGUI::SetTerrainToGUI(vtTerrain *pTerrain)
 {
 	GetFrame()->SetTerrainToGUI(pTerrain);
 
-	if (pTerrain && m_pJFlyer)
+	if (pTerrain)
 	{
-		float speed = pTerrain->GetParams().GetValueFloat(STR_NAVSPEED);
-		m_pJFlyer->SetSpeed(speed);
+		if (m_pJFlyer)
+		{
+			float speed = pTerrain->GetParams().GetValueFloat(STR_NAVSPEED);
+			m_pJFlyer->SetSpeed(speed);
+		}
+		ShowMapOverview(pTerrain->GetParams().GetValueBool(STR_OVERVIEW));
+		ShowCompass(pTerrain->GetParams().GetValueBool(STR_COMPASS));
+	}
+	else
+	{
+		ShowMapOverview(false);
+		ShowCompass(false);
 	}
 }
 

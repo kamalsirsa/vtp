@@ -84,11 +84,13 @@ END_EVENT_TABLE()
 BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_INIT_DIALOG (TParamsDlg::OnInitDialog)
 
+	// Elevation
 	EVT_RADIOBUTTON( ID_USE_GRID, TParamsDlg::OnCheckBoxElevType )
 	EVT_RADIOBUTTON( ID_USE_TIN, TParamsDlg::OnCheckBoxElevType )
 	EVT_RADIOBUTTON( ID_USE_TILESET, TParamsDlg::OnCheckBoxElevType )
 	EVT_CHOICE( ID_LODMETHOD, TParamsDlg::OnCheckBox )
 
+	// Texture
 	EVT_CHOICE( ID_CHOICE_TILESIZE, TParamsDlg::OnTileSize )
 	EVT_CHOICE( ID_TFILE_BASE, TParamsDlg::OnTextureFileBase )
 
@@ -103,28 +105,31 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_BUTTON( ID_EDIT_COLORS, TParamsDlg::OnEditColors )
 	EVT_CHECKBOX( ID_DETAILTEXTURE, TParamsDlg::OnCheckBox )
 
+	// Culture
 	EVT_CHECKBOX( ID_PLANTS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_CHECK_STRUCTURE_SHADOWS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_CHECK_STRUCTURE_PAGING, TParamsDlg::OnCheckBox )
 
-	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClickStructure )
-	EVT_LISTBOX_DCLICK( ID_RAWFILES, TParamsDlg::OnListDblClickRaw )
-	EVT_LISTBOX_DCLICK( ID_ANIM_PATHS, TParamsDlg::OnListDblClickAnimPaths )
-	EVT_LISTBOX_DCLICK( ID_IMAGEFILES, TParamsDlg::OnListDblClickImage )
-
+	// Ephemeris
 	EVT_CHECKBOX( ID_OCEANPLANE, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_DEPRESSOCEAN, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_SKY, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_FOG, TParamsDlg::OnCheckBox )
 	EVT_BUTTON( ID_BGCOLOR, TParamsDlg::OnBgColor )
+	EVT_BUTTON( ID_SET_INIT_TIME, TParamsDlg::OnSetInitTime )
 
+	// Abstracts
+	EVT_BUTTON( ID_STYLE, TParamsDlg::OnStyle )
+
+	// HUD
+	EVT_BUTTON( ID_OVERLAY_DOTDOTDOT, TParamsDlg::OnOverlay )
+
+	// Camera
 	EVT_TEXT( ID_LOCFILE, TParamsDlg::OnChoiceLocFile )
 	EVT_CHOICE( ID_INIT_LOCATION, TParamsDlg::OnChoiceInitLocation )
 
-	EVT_BUTTON( ID_SET_INIT_TIME, TParamsDlg::OnSetInitTime )
-	EVT_BUTTON( ID_STYLE, TParamsDlg::OnStyle )
-	EVT_BUTTON( ID_OVERLAY_DOTDOTDOT, TParamsDlg::OnOverlay )
+	// Scenario
 	EVT_BUTTON( ID_NEW_SCENARIO, TParamsDlg::OnNewScenario )
 	EVT_BUTTON( ID_DELETE_SCENARIO, TParamsDlg::OnDeleteScenario )
 	EVT_BUTTON( ID_EDIT_SCENARIO, TParamsDlg::OnEditScenario )
@@ -132,6 +137,13 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_BUTTON( ID_MOVEDOWN_SCENARIO, TParamsDlg::OnMoveDownSceanario )
 	EVT_LISTBOX( ID_SCENARIO_LIST, TParamsDlg::OnScenarioListEvent )
 	EVT_CHOICE( ID_CHOICE_SCENARIO, TParamsDlg::OnChoiceScenario )
+
+	// Clickable listboxes
+	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClickStructure )
+	EVT_LISTBOX_DCLICK( ID_RAWFILES, TParamsDlg::OnListDblClickRaw )
+	EVT_LISTBOX_DCLICK( ID_ANIM_PATHS, TParamsDlg::OnListDblClickAnimPaths )
+	EVT_LISTBOX_DCLICK( ID_IMAGEFILES, TParamsDlg::OnListDblClickImage )
+
 END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -181,6 +193,8 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pScenarioList = GetScenarioList();
 	m_iOverlayX = 0;
 	m_iOverlayY = 0;
+	m_bOverview = false;
+	m_bCompass = false;
 
 	GetTilesize()->Clear();
 	GetTilesize()->Append(_T("256"));
@@ -274,7 +288,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_PAGE_OUT_DISTANCE, &m_fPagingStructureDist, 1);
 //	AddValidator(ID_VEHICLES, &m_bVehicles);
 
-	// Atmosphere and water page
+	// Ephemeric
 	AddValidator(ID_SKY, &m_bSky);
 	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
 	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
@@ -285,10 +299,12 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_FOG, &m_bFog);
 	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
 
-	// Abstract Layers page, overlay stuff
+	// HUD
 	AddValidator(ID_OVERLAY_FILE, &m_strOverlayFile);
 	AddNumValidator(ID_OVERLAY_X, &m_iOverlayX);
 	AddNumValidator(ID_OVERLAY_Y, &m_iOverlayY);
+	AddValidator(ID_CHECK_OVERVIEW, &m_bOverview);
+	AddValidator(ID_CHECK_COMPASS, &m_bCompass);
 
 	// It's somewhat roundabout, but this lets us capture events on the
 	// listbox controls without having to subclass.
@@ -439,6 +455,8 @@ void TParamsDlg::SetParams(const TParams &Params)
 	vtString fname;
 	if (Params.GetOverlay(fname, m_iOverlayX, m_iOverlayY))
 		m_strOverlayFile = wxString(fname, wxConvUTF8);
+	m_bOverview =	Params.GetValueBool(STR_OVERVIEW);
+	m_bCompass =	Params.GetValueBool(STR_COMPASS);
 
 	// Scenarios
 	m_strInitScenario = wxString(Params.GetValueString(STR_INIT_SCENARIO), wxConvUTF8);
@@ -585,7 +603,10 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_ROUTEENABLE, m_bRouteEnable);
 	Params.SetValueString(STR_ROUTEFILE, (const char *) m_strRouteFile.mb_str(wxConvUTF8));
 
+	// HUD
 	Params.SetOverlay((const char *) m_strOverlayFile.mb_str(wxConvUTF8), m_iOverlayX, m_iOverlayY);
+	Params.SetValueBool(STR_OVERVIEW, m_bOverview);
+	Params.SetValueBool(STR_COMPASS, m_bCompass);
 
 	// Scenarios
 	Params.SetValueString(STR_INIT_SCENARIO, (const char *) m_strInitScenario.mb_str(wxConvUTF8));
