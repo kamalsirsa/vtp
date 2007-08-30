@@ -3181,8 +3181,8 @@ void vtTerrain::EnforcePageOut()
 	//  distance, otherwise we might be trying to load and unload the same
 	//  structures.
 	float fStructLodDist = GetLODDistance(TFT_STRUCTURES);
-	if (m_fPagingStructureDist < fStructLodDist)
-		m_fPagingStructureDist = fStructLodDist;
+	if (m_fPagingStructureDist < fStructLodDist + 50)	// 50m arbitrary spacing
+		m_fPagingStructureDist = fStructLodDist + 50;
 }
 
 ////////////////////////////////////////////////////////////////////////////
