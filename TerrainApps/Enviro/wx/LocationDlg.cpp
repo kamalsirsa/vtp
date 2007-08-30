@@ -1,7 +1,7 @@
 //
 // Name:		LocationDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -547,7 +547,7 @@ public:
 			if (UpdateProgressDialog((int) (99 * fStep * step / fTotal), msg) == true)
 			{
 				// user pressed cancel
-				scene->GetRootEngine()->RemoveChild(this);
+				scene->SetPostDrawEngine(NULL);
 				CloseProgressDialog();
 				return;
 			}
@@ -564,23 +564,7 @@ public:
 			glReadPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
 
 			// Write to disk
-			unsigned char *data;
-			vtDIB dib;
-			dib.Create(size.x, size.y, 24);
-			int x, y;
-			short r, g, b;
-			for (y = 0; y < size.y; y++)
-			{
-				data = pImage->GetRowData(y);
-				for (x = 0; x < size.x; x++)
-				{
-					r = *data++;
-					g = *data++;
-					b = *data++;
-					dib.SetPixel24(x, size.y-1-y, RGBi(r, g, b));
-				}
-			}
-			dib.WriteJPEG((const char *)(directory+fname), 98);
+			pImage->WriteJPEG((const char *)(directory+fname), 98);
 			pImage->Release();
 		}
 		// Show the next frame time
@@ -592,7 +576,7 @@ public:
 		if (fStep * step > fTotal)
 		{
 			// We're finished
-			scene->GetRootEngine()->RemoveChild(this);
+			scene->SetPostDrawEngine(NULL);
 			CloseProgressDialog();
 			return;
 		}
@@ -652,7 +636,11 @@ void LocationDlg::OnPlayToDisk( wxCommandEvent &event )
 	eng->fStep = fStep;
 	eng->fTotal = path->GetLastTime();
 	eng->engine = engine;
-	vtGetScene()->GetRootEngine()->AddChild(eng);
+
+	// If we use a regular engine, it is possible (due to timing) that it
+	//  will capture the window contents at the wrong time (a blank window).
+	// So, we add it to the list of engines that are called _after_ draw.
+	vtGetScene()->SetPostDrawEngine(eng);
 }
 
 void LocationDlg::OnLoadAnim( wxCommandEvent &event )

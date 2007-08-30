@@ -1,7 +1,7 @@
 //
 // CoreScene.cpp
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -49,6 +49,7 @@ vtSceneBase::vtSceneBase()
 	m_pCamera = NULL;
 	m_pRoot = NULL;
 	m_pRootEngine = NULL;
+	m_pRootEnginePostDraw = NULL;
 	m_piKeyState = NULL;
 	m_pDefaultCamera = NULL;
 	m_pDefaultWindow = NULL;
@@ -121,10 +122,10 @@ IPoint2 vtSceneBase::GetWindowSize(vtWindow *pWindow)
 	return pWindow->GetSize();
 }
 
-void vtSceneBase::DoEngines()
+void vtSceneBase::DoEngines(vtEngine *eng)
 {
 	// Evaluate Engines
-	vtEngineArray list(m_pRootEngine);
+	vtEngineArray list(eng);
 	for (unsigned int i = 0; i < list.GetSize(); i++)
 	{
 		vtEngine *pEng = list[i];

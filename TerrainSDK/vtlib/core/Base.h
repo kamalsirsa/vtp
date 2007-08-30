@@ -357,6 +357,12 @@ public:
 	/// Get the top engine in the Engine graph
 	vtEngine *GetRootEngine() { return m_pRootEngine; }
 
+	/// Set the top engine in the Engine graph
+	void SetPostDrawEngine(vtEngine *ptr) { m_pRootEnginePostDraw = ptr; }
+
+	/// Get the top engine in the Engine graph
+	vtEngine *GetPostDrawEngine() { return m_pRootEnginePostDraw; }
+
 	/// Add an Engine to the scene. (for backward compatibility only)
 	void AddEngine(vtEngine *ptr);
 
@@ -396,12 +402,13 @@ public:
 	vtStringArray m_DataPaths;
 
 protected:
-	void DoEngines();
+	void DoEngines(vtEngine *eng);
 
 	vtArray<vtWindow*> m_Windows;
 	vtCamera	*m_pCamera;
 	vtGroup		*m_pRoot;
 	vtEngine	*m_pRootEngine;
+	vtEngine	*m_pRootEnginePostDraw;
 	bool		*m_piKeyState;
 
 	vtCamera	*m_pDefaultCamera;

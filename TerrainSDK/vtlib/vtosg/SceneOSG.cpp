@@ -202,7 +202,13 @@ void vtScene::UpdateBegin()
 void vtScene::UpdateEngines()
 {
 	if (!m_bInitialized) return;
-	DoEngines();
+	DoEngines(m_pRootEngine);
+}
+
+void vtScene::PostDrawEngines()
+{
+	if (!m_bInitialized) return;
+	DoEngines(m_pRootEnginePostDraw);
 }
 
 void vtScene::UpdateWindow(vtWindow *pWindow)
@@ -315,6 +321,9 @@ void vtScene::DoUpdate()
 	UpdateBegin();
 	UpdateEngines();
 	UpdateWindow(GetWindow(0));
+
+	// Some engines need to run after the cull-draw phase
+	PostDrawEngines();
 }
 
 void vtScene::SetRoot(vtGroup *pRoot)

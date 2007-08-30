@@ -51,6 +51,7 @@ public:
 	void UpdateBegin();
 	void UpdateEngines();
 	void UpdateWindow(vtWindow *window);
+	void PostDrawEngines();
 
 	// backward compatibility
 	void DoUpdate();
