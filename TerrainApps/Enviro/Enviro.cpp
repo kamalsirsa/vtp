@@ -2665,8 +2665,9 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, floa
 	for (unsigned int i = 0; i < con.NumItems(); i++)
 	{
 		vtItem *item = con.GetItem(i);
-		if (vtString("ground vehicle") == item->GetValueString("type") &&
-			4 == item->GetValueInt("num_wheels"))
+		const char *type = item->GetValueString("type");
+		int wheels = item->GetValueInt("num_wheels");
+		if (type && vtString(type) == "ground vehicle" && wheels == 4)
 		{
 			vnames.push_back(item->m_name);
 		}

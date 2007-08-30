@@ -1928,8 +1928,9 @@ void EnviroFrame::OnTerrainDistribVehicles(wxCommandEvent& event)
 	for (unsigned int i = 0; i < con.NumItems(); i++)
 	{
 		vtItem *item = con.GetItem(i);
-		if (vtString("ground vehicle") == item->GetValueString("type") &&
-			4 == item->GetValueInt("num_wheels"))
+		const char *type = item->GetValueString("type");
+		int wheels = item->GetValueInt("num_wheels");
+		if (type && vtString(type) == "ground vehicle" && wheels == 4)
 			numv++;
 	}
 	if (numv == 0)
