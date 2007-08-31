@@ -792,12 +792,12 @@ bool vtTerrain::_CreateDynamicTerrain()
 
 	if (method == LM_TOPOVISTA)
 	{
-		m_pDynGeom = new TVTerrain();
+		m_pDynGeom = new TVTerrain;
 		m_pDynGeom->SetName2("TV Geom");
 	}
 	else if (method == LM_MCNALLY)
 	{
-		m_pDynGeom = new SMTerrain();
+		m_pDynGeom = new SMTerrain;
 		m_pDynGeom->SetName2("Seumas Geom");
 	}
 	else if (method == LM_DEMETER)
@@ -809,12 +809,12 @@ bool vtTerrain::_CreateDynamicTerrain()
 	}
 	else if (method == LM_CUSTOM)
 	{
-		m_pDynGeom = new CustomTerrain();
+		m_pDynGeom = new CustomTerrain;
 		m_pDynGeom->SetName2("CustomTerrain Geom");
 	}
 	else if (method == LM_ROETTGER)
 	{
-		m_pDynGeom = new SRTerrain();
+		m_pDynGeom = new SRTerrain;
 		m_pDynGeom->SetName2("Roettger Geom");
 	}
 	// else if (method == LM_YOURMETHOD)
@@ -2169,6 +2169,7 @@ bool vtTerrain::CreateStep1()
 		m_pTiledGeom->SetName2("Tiled Geometry Container");
 		m_pTiledGeom->SetVerticalExag(m_fVerticalExag);
 		m_pTiledGeom->SetVertexTarget(m_Params.GetValueInt(STR_VERTCOUNT));
+		m_pTiledGeom->SetProgressCallback(m_progress_callback);
 
 		// tile cache size is in MB for the user, but bytes for the class
 		int tile_cache_mb = m_Params.GetValueInt(STR_TILE_CACHE_SIZE);

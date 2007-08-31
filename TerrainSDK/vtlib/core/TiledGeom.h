@@ -39,6 +39,8 @@ public:
 typedef unsigned char *ucharptr;
 class databuf;
 
+typedef bool (*ProgFuncPtrType)(int);
+
 /**
  * This class represents a tiled textured terrain heightfield, which is drawn
  * using the tiled paging capabilities of Roettger's libMini.  It is rendered
@@ -113,6 +115,10 @@ public:
 	vtString m_folder_elev;
 	vtString m_folder_image;
 	TiledDatasetDescription m_elev_info, m_image_info;
+
+	void SetProgressCallback(ProgFuncPtrType progress_callback)
+	{ m_progress_callback = progress_callback; }
+	ProgFuncPtrType m_progress_callback;
 
 protected:
 	// a vtlib material

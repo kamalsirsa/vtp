@@ -322,7 +322,13 @@ void mini_error_handler(char *file, int line, int fatal)
 void request_callback_async(unsigned char *mapfile, databuf *map,
 							int istexture, int background, void *data)
 {
+	vtTiledGeom *tg = (vtTiledGeom*) data;
 	map->loaddata((char *)mapfile);
+	if (tg->m_progress_callback != NULL)
+	{
+		tg->m_iTileLoads++;
+		tg->m_progress_callback(tg->m_iTileLoads * 99 / (tg->cols * tg->rows * 2));
+	}
 }
 
 int check_callback(unsigned char *mapfile, int istexture, void *data)
@@ -391,6 +397,7 @@ vtTiledGeom::vtTiledGeom()
 
 	m_iFrame = 0;
 	m_iTileLoads = 0;
+	m_progress_callback = NULL;
 
 	// The terrain surface is not lit by diffuse light (since there are no normals
 	//  for per-vertex lighting).  However, it does respond to ambient light level
@@ -830,6 +837,7 @@ void vtTiledGeom::DoRender()
 	{
 		VTLOG("  First Render: %.3f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
 		first = false;
+		SetProgressCallback(NULL);
 	}
 
 	// When vertex count changes, we know a full update occurred
