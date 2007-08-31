@@ -733,6 +733,7 @@ vtTrackball::vtTrackball(float fRadius)
 	m_bRotate = false;
 	m_bZoom = false;
 	m_fZoomScale = 1.0f;
+	m_fRotScale = 1.0f;
 	m_fTransScale = 1.0f;
 
 	// Default button assignments: can be changed
@@ -770,6 +771,15 @@ float vtTrackball::GetRadius() const
 void vtTrackball::SetZoomScale(float s)
 {
 	m_fZoomScale = s;
+}
+
+/**
+ * Set the scale factor for rotation, which controls how fast the Trackball
+ * will spin its target.
+ */
+void vtTrackball::SetRotScale(float s)
+{
+	m_fRotScale = s;
 }
 
 /**
@@ -936,8 +946,8 @@ void vtTrackball::OnMouse(vtMouseEvent &event)
 			m_Pos.z = m_Start.z - (event.pos.y - m_MouseStart.y) / 200.0f * m_fZoomScale;
 		if (m_bRotate)
 		{
-			m_Pos.x = m_Start.x + (event.pos.x - m_MouseStart.x) / 200.0f;
-			m_Pos.y = m_Start.y + (event.pos.y - m_MouseStart.y) / 200.0f;
+			m_Pos.x = m_Start.x + (event.pos.x - m_MouseStart.x) / 200.0f * m_fRotScale;
+			m_Pos.y = m_Start.y + (event.pos.y - m_MouseStart.y) / 200.0f * m_fRotScale;
 		}
 		if (m_bTrans)
 		{

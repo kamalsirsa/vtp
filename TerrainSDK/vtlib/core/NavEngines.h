@@ -289,6 +289,7 @@ public:
 	void SetTranslateButton(int button, int modifier = 0, bool bExact = true);
 
 	void SetZoomScale(float s);
+	void SetRotScale(float s);
 	void SetTransScale(float s);
 
 	void SetDirection(float fTheta, float fPhi);
@@ -320,6 +321,7 @@ protected:
 
 	IPoint2	m_MouseStart;
 	float	m_fZoomScale;
+	float	m_fRotScale;
 	float	m_fTransScale;
 
 	int		m_rotate_button;

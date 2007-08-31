@@ -526,6 +526,14 @@ void Enviro::DoControlOrbit()
 		pq.ToMatrix(m4);
 		m_pNormalCamera->SetTransform1(m4);
 	}
+
+	if (m_bOnTerrain)
+	{
+		// Attempt to scale the 3d cursor, rather than keeping it the
+		//  same size in world space (it would be too small in the distance)
+		float fAltitude = m_pTrackball->GetRadius() - 1;
+		m_pGlobePicker->SetTargetScale(fAltitude * 0.06f);
+	}
 }
 
 
@@ -545,16 +553,18 @@ void Enviro::DoCursorOnEarth()
 
 		// Update Earth Lines
 		SetEarthLines(m_EarthPos.x, m_EarthPos.y);
-
-		// Attempt to scale the 3d cursor, rather than keeping it the
-		//  same size in world space (it would be too small in the distance)
-		float fAltitude = m_pTrackball->GetRadius() - 1;
-		m_pGlobePicker->SetTargetScale(fAltitude * 0.06f);
 	}
 	vtString str1, str2;
 	FormatCoordString(str1, m_EarthPos, LU_DEGREES);
 	str2 = "Cursor ";
 	str2 += str1;
+
+	// The ideal relation, between trackball radius (height above earth) and
+	//  rotation speed, is probably a curve, but here we fit it with a simple
+	//  line, slope determined empirically
+	float radius = m_pTrackball->GetRadius();
+	IPoint2 winsize = vtGetScene()->GetWindowSize();
+	m_pTrackball->SetRotScale((radius-1.0) / winsize.x * 280);
 }
 
 
