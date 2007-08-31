@@ -4,7 +4,7 @@
 // This modules contains the implementations of the DEM file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project.
+// Copyright (c) 2001-2007 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -408,7 +408,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	if (m_iRows > 10000)
 		return false;
 
-	_AllocateArray();
+	if (!_AllocateArray())
+		return false;
 
 	// jump to start of actual data
 	fseek(fp, iDataStartOffset, 0);

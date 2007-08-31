@@ -4,7 +4,7 @@
 // This modules contains the implementations of the BT file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project.
+// Copyright (c) 2001-2007 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -191,7 +191,11 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(
 	// elevation data always starts at offset 256
 	gzseek(fp, 256, SEEK_SET);
 
-	_AllocateArray();
+	if (!_AllocateArray())
+	{
+		gzclose(fp);
+		return false;
+	}
 
 	int i;
 #if 0
