@@ -562,6 +562,7 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 		}
 	}
 
+#if 1
 	// Draw each poly in WMPolyDraw
 	for (unsigned int i = 0; i < m_iEntities; i++)
 	{
@@ -572,6 +573,43 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 		}
 		DrawLine(pDC, WMPolyDraw[i], true);
 	}
+#else
+	// Draw each poly in WMPolyDraw
+	for (unsigned int i = 0; i < m_iEntities; i++)
+	{
+		if (bHaveBounds)
+		{
+			// reject entity if it doesn't overlap view extents
+			if (!bounds.OverlapsRect(WMPolyExtents[i]))
+				continue;
+
+			// attempt to reject a few more entities
+			DPoint2 p1(WMPolyExtents[i].left,WMPolyExtents[i].bottom),p2(WMPolyExtents[i].right,WMPolyExtents[i].top);
+
+			float size_x_orig = p2.x-p1.x;
+			float size_y_orig = p2.y-p1.y;
+
+			if (m_pMapToCurrent->Transform(1, &p1.x, &p1.y) == 1)
+				if (m_pMapToCurrent->Transform(1, &p2.x, &p2.y) == 1)
+				{
+					// reject entity if it is mirrored
+					if (p1.x>=p2.x || p1.y>=p2.y) continue;
+
+					float size_x_proj = p2.x-p1.x;
+					float size_y_proj = p2.y-p1.y;
+
+					static const float distortion=0.5f; // allow 50% distortion
+
+					// reject entity if the distortion threshold is exceeded
+					if (size_x_proj>0 && size_y_proj>0)
+						if ( fabs( (size_x_orig/size_x_proj) / (size_y_orig/size_y_proj) - 1) > distortion )
+							continue;
+				}
+		}
+
+		DrawLine(pDC, WMPolyDraw[i], true);
+	}
+#endif
 }
 
 void BuilderView::DrawScaleBar(wxDC * p_DC)
