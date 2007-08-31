@@ -58,6 +58,8 @@ public:
 	DPoint2 GetSpacing() const;
 	vtBitmap *GetBitmap() { return m_pBitmap; }
 
+	bool ReprojectExtents(const vtProjection &proj_new);
+
 	void GetDimensions(int &xsize, int &ysize)
 	{
 		xsize = m_iXSize;

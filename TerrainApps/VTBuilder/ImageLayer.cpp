@@ -212,9 +212,26 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	}
 }
 
-bool vtImageLayer::TransformCoords(vtProjection &proj)
+bool vtImageLayer::TransformCoords(vtProjection &proj_new)
 {
-	return false;
+	if (m_proj == proj_new)
+		return true;		// No conversion necessary
+
+	bool success = false;
+
+	// Check to see if the projections differ *only* by datum
+	vtProjection test = m_proj;
+	test.SetDatum(proj_new.GetDatum());
+	if (test == proj_new)
+	{
+		success = ReprojectExtents(proj_new);
+		SetModified(true);
+	}
+	else
+		wxMessageBox(_("Transformation of Image Layers is not supported."),
+			_("Warning"));
+
+	return success;
 }
 
 bool vtImageLayer::OnSave()
@@ -283,6 +300,39 @@ DPoint2 vtImageLayer::GetSpacing() const
 {
 	return DPoint2(m_Extents.Width() / (m_iXSize),
 		m_Extents.Height() / (m_iYSize));
+}
+
+/**
+ * Reprojects an image by converting just the extents to a new
+ * projection.
+ *
+ * This is much faster than creating a new grid and reprojecting every
+ * heixel, but it only produces correct results when the difference
+ * between the projections is only a horizontal shift.  For example, this
+ * occurs when the only difference between the old and new projection
+ * is choice of Datum.
+ *
+ * \param proj_new	The new projection to convert to.
+ *
+ * \return True if successful.
+ */
+bool vtImageLayer::ReprojectExtents(const vtProjection &proj_new)
+{
+	// Create conversion object
+	OCT *trans = CreateCoordTransform(&m_proj, &proj_new);
+	if (!trans)
+		return false;	// inconvertible projections
+
+	int success = 0;
+	success += trans->Transform(1, &m_Extents.left, &m_Extents.bottom);
+	success += trans->Transform(1, &m_Extents.right, &m_Extents.top);
+	delete trans;
+
+	if (success != 2)
+		return false;	// inconvertible projections
+
+	m_proj = proj_new;
+	return true;
 }
 
 bool vtImageLayer::GetFilteredColor(const DPoint2 &p, RGBi &rgb)
