@@ -91,7 +91,7 @@ public:
 	vtLocation *GetLocation(int num) const { return m_loc[num]; }
 
 	/// Find a location by name
-	int FindLocation(const vtString &locname);
+	int FindLocation(const char *locname);
 
 	void Empty();
 
@@ -113,6 +113,7 @@ public:
 
 	/// Recall a location by index, and set it to the attached object
 	bool RecallFrom(int num);
+	bool RecallFrom(const char *name);
 
 protected:
 	// Implementation

@@ -1,7 +1,7 @@
 //
 // Location classes
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -305,7 +305,15 @@ bool vtLocationSaver::RecallFrom(int num)
 	return true;
 }
 
-int vtLocationSaver::FindLocation(const vtString &locname)
+bool vtLocationSaver::RecallFrom(const char *name)
+{
+	int num = FindLocation(name);
+	if (num != -1)
+		return RecallFrom(num);
+	return false;
+}
+
+int vtLocationSaver::FindLocation(const char *locname)
 {
 	LocNameString name;
 #if SUPPORT_WSTRING
