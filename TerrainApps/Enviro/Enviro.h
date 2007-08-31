@@ -350,6 +350,7 @@ protected:
 	FPoint3		m_SpaceTrackballState[3];
 	vtAnimPath	m_FlyInAnim;
 	DPoint2		m_FlyInCenter;
+	float		m_fTransitionHeight;	// in meters
 
 	vtGeom		*m_pLegendGeom;
 	bool		m_bCreatedLegend;

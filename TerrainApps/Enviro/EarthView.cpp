@@ -277,7 +277,7 @@ if (pwdemo){
 	vtGetScene()->AddEngine(m_pTrackball);
 
 	// stop them from going in too far (they'd see through the earth)
-	m_pTrackball->LimitPos(FPoint3(-1E9,-1E9,1.02f), FPoint3(1E9,1E9,1E9));
+	m_pTrackball->LimitPos(FPoint3(-1E9,-1E9,1.01f), FPoint3(1E9,1E9,1E9));
 
 	// determine where the terrains are, and show them as red rectangles
 	//
@@ -778,9 +778,9 @@ void Enviro::ToggleLogo()
 
 //
 // For flying in from earth to terrain, we need to switch between them at some
-//  point, for example, 3.5% of the earth's radius above the ground
+//  point, for example, 50 km above the ground
 //
-#define TRANSITION_HEIGHT_ABOVE_EARTH	.035
+#define MINIMUM_TRANSITION_HEIGHT_ABOVE_EARTH	50000
 
 void Enviro::StartFlyIn()
 {
@@ -788,11 +788,28 @@ void Enviro::StartFlyIn()
 	m_iFlightStage = 1;
 	m_iFlightStep = 0;
 
-	m_pTrackball->GetState(m_TrackStart);
-
+	// Decide how high above the earth we should be at the transition point.
+	//  This is largely due to the horizontal extent of the terrain.
 	DPoint2 nw, se;
 	nw = m_pTargetTerrain->m_Corners_geo[1];
 	se = m_pTargetTerrain->m_Corners_geo[3];
+
+	// A bit of trigonometry
+	double diff_latitude = nw.y - se.y;
+	double diff_meters = diff_latitude * METERS_PER_LATITUDE;
+	double fov_y = m_pNormalCamera->GetVertFOV();
+	m_fTransitionHeight = (diff_meters/2) / tan(fov_y / 2);
+
+	// We should account for the terrain's height here - zooming into the
+	//  Himalaya is significantly different - but we don't have that height
+	//  because the terrain (generally) isn't loaded yet.
+
+	if (m_fTransitionHeight < MINIMUM_TRANSITION_HEIGHT_ABOVE_EARTH)
+		m_fTransitionHeight = MINIMUM_TRANSITION_HEIGHT_ABOVE_EARTH;
+
+	// Determine how to spin the trackball to put us directly over the terrain
+	m_pTrackball->GetState(m_TrackStart);
+
 	m_FlyInCenter = (nw + se) / 2;
 
 	// Account for offset between trackball and longitude
@@ -819,7 +836,7 @@ void Enviro::StartFlyIn()
 	FPoint3 TrackPosEnd;
 	TrackPosEnd.x = center3d.x / 180 * PIf;
 	TrackPosEnd.y = center3d.y / 180 * PIf;
-	TrackPosEnd.z = 1.0f + TRANSITION_HEIGHT_ABOVE_EARTH;
+	TrackPosEnd.z = 1.0f + (m_fTransitionHeight  / EARTH_RADIUS);
 	m_TrackPosDiff = TrackPosEnd - m_TrackStart[0];
 
 	// Hide the earth cursor on our way in
@@ -846,10 +863,10 @@ void Enviro::FlyInStage1()
 
 		m_FlyInAnim.Empty();
 
-		// Set special high initial camera location to match earth view
+		// Set special high initial camera location to match where the
+		//  trackball left us in earth view
 		DPoint3 earth_geo(m_FlyInCenter.x, m_FlyInCenter.y,
-			TRANSITION_HEIGHT_ABOVE_EARTH * EARTH_RADIUS);
-		FPoint3 world;
+			m_fTransitionHeight);
 
 		vtProjection &tproj = m_pTargetTerrain->GetProjection();
 		vtProjection gproj;
@@ -859,6 +876,7 @@ void Enviro::FlyInStage1()
 		trans->Transform(1, &earth_local.x, &earth_local.y);
 
 		vtLocalConversion &conv = m_pTargetTerrain->GetHeightField()->m_Conversion;
+		FPoint3 world;
 		conv.ConvertFromEarth(earth_local, world);
 
 		FPQ Flight2Start, Flight2End;

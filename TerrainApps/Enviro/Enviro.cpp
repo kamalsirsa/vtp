@@ -459,8 +459,7 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 	}
 
 	// If it's not a tileset, and we're coming in from space, fly in
-	if (m_state == AS_Orbit && g_Options.m_bFlyIn &&
-		pTerr->GetParams().GetValueInt(STR_SURFACE_TYPE) != 2)
+	if (m_state == AS_Orbit && g_Options.m_bFlyIn)
 		m_bFlyIn = true;
 
 	SetState(AS_SwitchToTerrain);
