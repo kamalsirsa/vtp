@@ -776,9 +776,15 @@ void Enviro::ToggleLogo()
 	}
 }
 
+//
+// For flying in from earth to terrain, we need to switch between them at some
+//  point, for example, 3.5% of the earth's radius above the ground
+//
+#define TRANSITION_HEIGHT_ABOVE_EARTH	.035
+
 void Enviro::StartFlyIn()
 {
-	m_state = AS_FlyingIn;
+	SetState(AS_FlyingIn);
 	m_iFlightStage = 1;
 	m_iFlightStep = 0;
 
@@ -813,8 +819,12 @@ void Enviro::StartFlyIn()
 	FPoint3 TrackPosEnd;
 	TrackPosEnd.x = center3d.x / 180 * PIf;
 	TrackPosEnd.y = center3d.y / 180 * PIf;
-	TrackPosEnd.z = 1.05f;
+	TrackPosEnd.z = 1.0f + TRANSITION_HEIGHT_ABOVE_EARTH;
 	m_TrackPosDiff = TrackPosEnd - m_TrackStart[0];
+
+	// Hide the earth cursor on our way in
+	m_pGlobePicker->SetEnabled(false);
+	m_pCursorMGeom->SetEnabled(false);
 }
 
 void Enviro::FlyInStage1()
@@ -826,18 +836,19 @@ void Enviro::FlyInStage1()
 	curtrack[1] = m_TrackStart[1];
 	curtrack[2] = m_TrackStart[2];
 	m_pTrackball->SetState(curtrack);
+
 	if (m_iFlightStep == 100)
 	{
+		// Done with stage 1, prepare stage 2
 		m_bFlyIn = false;
-		m_state = AS_SwitchToTerrain;
-		m_iInitStep = 7;
 		m_iFlightStage = 2;
 		m_iFlightStep = 0;
 
 		m_FlyInAnim.Empty();
 
 		// Set special high initial camera location to match earth view
-		DPoint3 earth_geo(m_FlyInCenter.x, m_FlyInCenter.y, .02 * EARTH_RADIUS);
+		DPoint3 earth_geo(m_FlyInCenter.x, m_FlyInCenter.y,
+			TRANSITION_HEIGHT_ABOVE_EARTH * EARTH_RADIUS);
 		FPoint3 world;
 
 		vtProjection &tproj = m_pTargetTerrain->GetProjection();
@@ -871,6 +882,37 @@ void Enviro::FlyInStage1()
 		// Start the camera at the start
 		Flight2Start.ToMatrix(mat);
 		m_pNormalCamera->SetTransform1(mat);
+
+		// Now, all at once, we've got turn off the globe and turn on the
+		//  terrain, with as immediate a transition as possible.
+		if (m_pGlobeContainer != NULL)
+			m_pGlobeContainer->SetEnabled(false);
+
+		// Don't let the trackball mess with the camera anymore
+		if (m_pTrackball)
+			m_pTrackball->SetEnabled(false);
+
+		// make terrain active
+		SetTerrain(m_pTargetTerrain);
+
+		// Set hither and yon
+		m_pNormalCamera->SetHither(m_pTargetTerrain->GetParams().GetValueFloat(STR_HITHER));
+		m_pNormalCamera->SetYon(500000.0f);
+
+		// ensure that sunlight is active
+		GetSunLight()->SetEnabled(true);
+
+		m_pTerrainPicker->SetEnabled(true);
+		SetMode(MM_NAVIGATE);
+
+		vtString str = "Welcome to ";
+		str += m_pTargetTerrain->GetName();
+		SetMessage(str, 5.0f);
+
+		// Layer view needs to update
+		RefreshLayerView();
+
+		// SetState(AS_FlyingIn);
 
 		return;
 	}

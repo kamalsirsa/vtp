@@ -2104,21 +2104,6 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		m_pLocationDlg->SetLocSaver(pTerrain->GetLocSaver());
 		m_pLocationDlg->SetAnimContainer(pTerrain->GetAnimContainer());
 
-		// Only do this the first time:
-		if (!pTerrain->IsVisited())
-		{
-			VTLOG1("First visit to this terrain, looking up stored viewpoint.\n");
-			if (g_Options.m_strInitLocation != "")
-			{
-				// may have been given on command line
-				m_pLocationDlg->RecallFrom(g_Options.m_strInitLocation);
-				g_Options.m_strInitLocation = "";
-			}
-			else
-				m_pLocationDlg->RecallFrom(pTerrain->GetParams().GetValueString(STR_INITLOCATION));
-		}
-		pTerrain->Visited(true);
-
 		m_pInstanceDlg->SetProjection(pTerrain->GetProjection());
 		m_pDistanceDlg->SetProjection(pTerrain->GetProjection());
 

@@ -103,6 +103,7 @@ Enviro::Enviro() : vtTerrainScene()
 
 	m_pMapOverview = NULL;
 	m_bFlyIn = false;
+	m_iFlightStage = 0;
 }
 
 Enviro::~Enviro()
@@ -606,15 +607,8 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (m_pTrackball)
 			m_pTrackball->SetEnabled(false);
 
-		// Set hither and yon
-		m_pNormalCamera->SetHither(pTerr->GetParams().GetValueFloat(STR_HITHER));
-		m_pNormalCamera->SetYon(500000.0f);
-
-		if (m_iFlightStage != 2)
-		{
-			// Set initial location
-			m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
-		}
+		// Set initial location
+		m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
 
 		SetMessage(_("Switching to Terrain"));
 		UpdateProgress(m_strMessage, 80, 0);
@@ -623,6 +617,10 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	{
 		// make first terrain active
 		SetTerrain(pTerr);
+
+		// Set hither and yon
+		m_pNormalCamera->SetHither(pTerr->GetParams().GetValueFloat(STR_HITHER));
+		m_pNormalCamera->SetYon(500000.0f);
 
 		// ensure that sunlight is active
 		GetSunLight()->SetEnabled(true);
@@ -634,7 +632,6 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	else if (m_iInitStep == 10)
 	{
-		SetState(AS_Terrain);
 		vtString str = _("Welcome to ");
 		str += pTerr->GetName();
 		SetMessage(str, 5.0f);
@@ -647,10 +644,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		ShowProgress(false);
 
-		if (m_iFlightStage == 2)
-		{
-			SetState(AS_FlyingIn);
-		}
+		SetState(AS_Terrain);
 	}
 }
 
@@ -1065,6 +1059,24 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	vtGroup *pOverlay = pTerrain->GetOverlay();
 	if (pOverlay)
 		m_pHUD->AddChild(pOverlay);
+
+	if (m_iFlightStage != 2)
+	{
+		// Only do this the first time: jump to initial viewpoint
+		if (!pTerrain->IsVisited())
+		{
+			VTLOG1("First visit to this terrain, looking up stored viewpoint.\n");
+			if (g_Options.m_strInitLocation != "")
+			{
+				// may have been given on command line
+				pTerrain->GetLocSaver()->RecallFrom(g_Options.m_strInitLocation);
+				g_Options.m_strInitLocation = "";
+			}
+			else
+				pTerrain->GetLocSaver()->RecallFrom(pTerrain->GetParams().GetValueString(STR_INITLOCATION));
+		}
+	}
+	pTerrain->Visited(true);
 
 	// Inform the GUI that the terrain has changed
 	SetTerrainToGUI(pTerrain);
