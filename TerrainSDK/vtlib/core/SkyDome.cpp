@@ -150,15 +150,23 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	//  colors are used to change the color of the sky.
 	m_pMat = new vtMaterial;
 	m_pMat->SetLighting(false);
-	m_pMat->SetCulling(false);
+	m_pMat->SetCulling(true);	// only visible from the inside
 	m_pMats->Append(m_pMat);
 
 	// Create the geometry of the dome itself
 	VTLOG("   Creating Dome Mesh\n");
 	int res = SKYDOME_SMOOTHNESS;
 	int vertices = (res*2+1)*(res/2+1);
+
 	m_pDomeMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors | VT_TexCoords, vertices);
-	m_pDomeMesh->CreateEllipsoid(FPoint3(0,0,0), FPoint3(1.0f, 1.0f, 1.0f), res, true);
+
+	// Face normals point in, not out
+	bool bNormalsIn = false;
+	bool bHemisphere = true;
+
+	m_pDomeMesh->CreateEllipsoid(FPoint3(0,0,0), FPoint3(1.0f, 1.0f, 1.0f),
+		res, bHemisphere, bNormalsIn);
+
 	m_pDomeGeom->AddMesh(m_pDomeMesh, 0);
 	m_pDomeMesh->Release();	// pass ownership to Geometry
 

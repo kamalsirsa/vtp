@@ -199,12 +199,12 @@ public:
 	void TransformVertices(const FMatrix4 &mat);
 
 	void CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
-		int res, bool hemi = false);
+		int res, bool hemi = false, bool bNormalsIn = false);
 	void CreateBlock(const FPoint3& size);
 	void CreateOptimizedBlock(const FPoint3& size);
 	void CreatePrism(const FPoint3 &base, const FPoint3 &vector_up,
 					 const FPoint2 &size1, const FPoint2 &size2);
-	void CreateRectangularMesh(int xsize, int ysize);
+	void CreateRectangularMesh(int xsize, int ysize, bool bReverseNormals = false);
 	void CreateCylinder(float height, float radius, int res,
 		bool bTop = true, bool bBottom = true, bool bCentered = true,
 		int direction = 1);

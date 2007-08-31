@@ -330,7 +330,7 @@ void vtMeshBase::CreatePrism(const FPoint3 &base, const FPoint3 &vector_up,
  * \param xsize Number of vertices in the first dimension.
  * \param ysize Number of vertices in the second dimension.
  */
-void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
+void vtMeshBase::CreateRectangularMesh(int xsize, int ysize, bool bReverseNormals)
 {
 	int i, j;
 
@@ -341,8 +341,17 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
 		int len = 0;
 		for (i = 0; i < xsize; i++)
 		{
-			strip[len++] = start + i;
-			strip[len++] = start + i + xsize;
+			if (bReverseNormals)
+			{
+				// reverse the vertex order so thte normals point the other way
+				strip[len++] = start + i + xsize;
+				strip[len++] = start + i;
+			}
+			else
+			{
+				strip[len++] = start + i;
+				strip[len++] = start + i + xsize;
+			}
 		}
 		AddStrip(xsize*2, strip);
 	}
@@ -364,9 +373,12 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
  * \param res The resolution (number of quads used in the tesselation)
  *		from top to bottom (north pole to south pole).
  * \param hemi Create only the top of the ellipsoid (e.g. a hemisphere).
+ * \param bNormalsIn Use a vertex order in the mesh so that the normals point
+ *		in, instead of out.  This is useful for, example, a backface-culled
+ *		sphere that you want to see from the inside, instead of the outside.
  */
 void vtMeshBase::CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
-								 int res, bool hemi)
+								 int res, bool hemi, bool bNormalsIn)
 {
 	int		i, j;
 	int		vidx;
@@ -411,7 +423,7 @@ void vtMeshBase::CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
 			}
 		}
 	}
-	CreateRectangularMesh(theta_res+1, phi_res+1);
+	CreateRectangularMesh(theta_res+1, phi_res+1, bNormalsIn);
 }
 
 /**
