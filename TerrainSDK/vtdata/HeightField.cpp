@@ -778,8 +778,15 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 	int h = pBM->GetHeight();
 	int gw = m_iColumns, gh = m_iRows;
 
-	int xFactor = gw/w;
-	int yFactor = gh/h;
+	float xFactor = (float)gw/w;
+	float yFactor = (float)gh/h;
+
+	// For purposes of shading, we need to look at adjacent heixels which are
+	//  at least one grid cell away:
+	int xOffset = (int)xFactor;
+	int yOffset = (int)yFactor;
+	if (xOffset < 1) xOffset = 1;
+	if (yOffset < 1) yOffset = 1;
 
 	int depth = pBM->GetDepth();
 	int i, j;
@@ -808,10 +815,10 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 				continue;
 
 			// Check to see what surrounding values are valid
-			GetWorldLocation(x-xFactor, y, l, bTrue);
-			GetWorldLocation(x+xFactor, y, r, bTrue);
-			GetWorldLocation(x, y+yFactor, t, bTrue);
-			GetWorldLocation(x, y-yFactor, b, bTrue);
+			GetWorldLocation(x-xOffset, y, l, bTrue);
+			GetWorldLocation(x+xOffset, y, r, bTrue);
+			GetWorldLocation(x, y+yOffset, t, bTrue);
+			GetWorldLocation(x, y-yOffset, b, bTrue);
 
 			FPoint3 p1, p2, p3, p4;
 
