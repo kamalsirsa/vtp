@@ -2161,11 +2161,60 @@ wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxPanel *item16 = new wxPanel( parent, ID_PANEL2, wxDefaultPosition, wxSize(300,300), 0 );
     item11->Add( item16, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item17 = new wxStaticText( parent, ID_TEXT, _("Red 64, Orange 128, Yellow 256, Green 512, Cyan 1k, Blue 2k"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxBoxSizer *item17 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticBitmap *item18 = new wxStaticBitmap( parent, ID_STATICBITMAP, ColorBitmapsFunc( 0 ), wxDefaultPosition, wxSize(20,20) );
+    item17->Add( item18, 0, wxALIGN_CENTER, 0 );
+
+    wxStaticText *item19 = new wxStaticText( parent, ID_TEXT, _("16"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item19, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxStaticBitmap *item20 = new wxStaticBitmap( parent, ID_STATICBITMAP, ColorBitmapsFunc( 1 ), wxDefaultPosition, wxSize(20,20) );
+    item17->Add( item20, 0, wxALIGN_CENTER, 5 );
+
+    wxStaticText *item21 = new wxStaticText( parent, ID_TEXT, _("32"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item21, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxStaticBitmap *item22 = new wxStaticBitmap( parent, ID_STATICBITMAP, ColorBitmapsFunc( 2 ), wxDefaultPosition, wxSize(20,20) );
+    item17->Add( item22, 0, wxALIGN_CENTER, 5 );
+
+    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("64"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item23, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxStaticBitmap *item24 = new wxStaticBitmap( parent, ID_STATICBITMAP, ColorBitmapsFunc( 3 ), wxDefaultPosition, wxSize(20,20) );
+    item17->Add( item24, 0, wxALIGN_CENTER, 5 );
+
+    wxStaticText *item25 = new wxStaticText( parent, ID_TEXT, _("128"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item25, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxStaticBitmap *item26 = new wxStaticBitmap( parent, ID_STATICBITMAP, ColorBitmapsFunc( 4 ), wxDefaultPosition, wxSize(20,20) );
+    item17->Add( item26, 0, wxALIGN_CENTER, 5 );
+
+    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("256"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item27, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxStaticBitmap *item28 = new wxStaticBitmap( parent, ID_STATICBITMAP, ColorBitmapsFunc( 5 ), wxDefaultPosition, wxSize(20,20) );
+    item17->Add( item28, 0, wxALIGN_CENTER, 5 );
+
+    wxStaticText *item29 = new wxStaticText( parent, ID_TEXT, _("512"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item29, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxStaticBitmap *item30 = new wxStaticBitmap( parent, ID_STATICBITMAP, ColorBitmapsFunc( 6 ), wxDefaultPosition, wxSize(20,20) );
+    item17->Add( item30, 0, wxALIGN_CENTER, 5 );
+
+    wxStaticText *item31 = new wxStaticText( parent, ID_TEXT, _("1k"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item31, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxStaticBitmap *item32 = new wxStaticBitmap( parent, ID_STATICBITMAP, ColorBitmapsFunc( 7 ), wxDefaultPosition, wxSize(20,20) );
+    item17->Add( item32, 0, wxALIGN_CENTER, 5 );
+
+    wxStaticText *item33 = new wxStaticText( parent, ID_TEXT, _("2k"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item33, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
     item11->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item18 = new wxTextCtrl( parent, ID_TILE_STATUS, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item11->Add( item18, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxTextCtrl *item34 = new wxTextCtrl( parent, ID_TILE_STATUS, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item11->Add( item34, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item9->Add( item11, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
@@ -3357,6 +3406,219 @@ wxBitmap ToolBitmapsFunc( size_t index )
         wxImage image( 20, 20, (unsigned char*)data, TRUE );
         image.SetMaskColour( 217, 209, 196);
         wxBitmap bitmap( image );
+        return bitmap;
+    }
+    return wxNullBitmap;
+}
+
+wxBitmap ColorBitmapsFunc( size_t index )
+{
+    if (index == 0)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "14 14 1 1",
+        "a c #C0C0C0",
+        /* pixels */
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 1)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "14 14 1 1",
+        "a c #FF64FF",
+        /* pixels */
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 2)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "14 14 1 1",
+        "a c #FF0000",
+        /* pixels */
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 3)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "14 14 1 1",
+        "a c #FF8000",
+        /* pixels */
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 4)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "14 14 1 1",
+        "a c #FFFF00",
+        /* pixels */
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 5)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "14 14 1 1",
+        "a c #00FF00",
+        /* pixels */
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 6)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "14 14 1 1",
+        "a c #00FFFF",
+        /* pixels */
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 7)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "14 14 1 1",
+        "a c #0000FF",
+        /* pixels */
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa",
+        "aaaaaaaaaaaaaa"
+        };
+        wxBitmap bitmap( xpm_data );
         return bitmap;
     }
     return wxNullBitmap;

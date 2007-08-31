@@ -235,27 +235,27 @@ void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
 	wxPanel *panel = GetPanel2();
 	wxClientDC dc(panel);
 	PrepareDC(dc);
-	dc.Clear();
 
 	//wxPen pen3(wxColour(0,128,0), 1, wxSOLID);	// green
 	//dc.SetPen(pen3);
-	wxBrush b1(wxColour(255,0,0), wxSOLID);
-	wxBrush b2(wxColour(255,128,0), wxSOLID);
-	wxBrush b3(wxColour(255,255,0), wxSOLID);
-	wxBrush b4(wxColour(0,255,0), wxSOLID);
-	wxBrush b5(wxColour(0,255,255), wxSOLID);
-	wxBrush b6(wxColour(0,0,255), wxSOLID);
-	wxBrush b7(wxColour(255,0,255), wxSOLID);
+	wxBrush b1(wxColour(180,180,180), wxSOLID);
+	wxBrush b2(wxColour(255,100,255), wxSOLID);
+	wxBrush b3(wxColour(255,0,0), wxSOLID);
+	wxBrush b4(wxColour(255,128,0), wxSOLID);
+	wxBrush b5(wxColour(255,255,0), wxSOLID);
+	wxBrush b6(wxColour(0,255,0), wxSOLID);
+	wxBrush b7(wxColour(0,255,255), wxSOLID);
+	wxBrush b8(wxColour(0,0,255), wxSOLID);
 	wxBrush bwhite(wxColour(255,255,255), wxSOLID);
 
-	wxPen p1(wxColour(255,0,0), 2, wxSOLID);
-	wxPen p2(wxColour(255,128,0), 2, wxSOLID);
-	wxPen p3(wxColour(255,255,0), 2, wxSOLID);
-	wxPen p4(wxColour(0,255,0), 2, wxSOLID);
-	wxPen p5(wxColour(0,255,255), 2, wxSOLID);
-	wxPen p6(wxColour(0,0,255), 2, wxSOLID);
-	wxPen p7(wxColour(255,0,255), 2, wxSOLID);
-	wxPen pwhite(wxColour(255,255,255), 2, wxSOLID);
+	//wxPen p1(wxColour(255,0,0), 2, wxSOLID);
+	//wxPen p2(wxColour(255,128,0), 2, wxSOLID);
+	//wxPen p3(wxColour(255,255,0), 2, wxSOLID);
+	//wxPen p4(wxColour(0,255,0), 2, wxSOLID);
+	//wxPen p5(wxColour(0,255,255), 2, wxSOLID);
+	//wxPen p6(wxColour(0,0,255), 2, wxSOLID);
+	//wxPen p7(wxColour(255,0,255), 2, wxSOLID);
+	//wxPen pwhite(wxColour(255,255,255), 2, wxSOLID);
 	wxPen pblack(wxColour(0,0,0), 1, wxSOLID);
 
 	// draw rectangles for texture state
@@ -264,6 +264,8 @@ void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
 	int border = 20;
 	int sx = (size.x - border*2) / tg->cols;
 	int sy = (size.y - border*2) / tg->rows;
+
+	dc.Clear();
 	for (int i = 0; i < tg->cols; i++)
 	{
 		for (int j = 0; j < tg->rows; j++)
@@ -271,12 +273,14 @@ void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
 			int t = mt->gettexw(i,j);
 			switch (t)
 			{
-			case 64: dc.SetBrush(b1); break;
-			case 128: dc.SetBrush(b2); break;
-			case 256: dc.SetBrush(b3); break;
-			case 512: dc.SetBrush(b4); break;
-			case 1024: dc.SetBrush(b5); break;
-			case 2048: dc.SetBrush(b6); break;
+			case 16: dc.SetBrush(b1); break;
+			case 32: dc.SetBrush(b2); break;
+			case 64: dc.SetBrush(b3); break;
+			case 128: dc.SetBrush(b4); break;
+			case 256: dc.SetBrush(b5); break;
+			case 512: dc.SetBrush(b6); break;
+			case 1024: dc.SetBrush(b7); break;
+			case 2048: dc.SetBrush(b8); break;
 			default: dc.SetBrush(bwhite); break;
 			}
 			/*
