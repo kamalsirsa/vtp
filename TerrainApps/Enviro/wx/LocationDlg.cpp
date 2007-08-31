@@ -824,16 +824,11 @@ void LocationDlg::RefreshButtons()
 	GetRemove()->Enable(num != -1);
 }
 
-void LocationDlg::RecallFrom(const vtString &locname)
+void LocationDlg::RecallFrom(const char *locname)
 {
-	int num = m_pSaver->FindLocation(locname);
-	if (num != -1)
-	{
-		VTLOG(" Recalling location %d (%s)\n", num, (const char *)locname);
-		m_pSaver->RecallFrom(num);
-		m_pLocList->SetSelection(num);
-	}
+	if (m_pSaver->RecallFrom(locname))
+		VTLOG(" Recalled location '%s'\n", (const char *)locname);
 	else
-		VTLOG(" There is no location '%s'\n", (const char *)locname);
+		VTLOG(" Couldn't recall location '%s'\n", (const char *)locname);
 }
 

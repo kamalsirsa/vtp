@@ -70,7 +70,7 @@ public:
 	void SetLocSaver(vtLocationSaver *saver);
 	void SetAnimContainer(vtAnimContainer *ac);
 	void RefreshButtons();
-	void RecallFrom(const vtString &locname);
+	void RecallFrom(const char *locname);
 
 	void RefreshAnims();
 	void RefreshAnimsText();
