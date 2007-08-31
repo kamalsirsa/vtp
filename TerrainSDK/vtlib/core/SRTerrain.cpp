@@ -454,6 +454,12 @@ void SRTerrain::SetElevation(int iX, int iZ, float fValue, bool bTrue)
 
 void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
 {
+	if (i<0 || i>m_iColumns-1 || j<0 || j>m_iRows-1)
+	{
+		p.Set(0, INVALID_ELEVATION, 0);
+		return;
+	}
+
 	float height = m_pMini->getheight(i, j);
 
 	if (bTrue)
@@ -464,6 +470,7 @@ void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
 		  height,
 		  m_fZLookup[j]);
 }
+
 void SRTerrain::SetPolygonTarget(int iPolygonCount)
 {
 	vtDynTerrainGeom::SetPolygonTarget(iPolygonCount);
