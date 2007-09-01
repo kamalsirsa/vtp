@@ -946,7 +946,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 	VTLOG1("SampleImageryToTilePyramids\n");
 
 	// Gather array of existing image layers we will sample from
-	int l, layers = m_Layers.GetSize(), num_image = 0;
+	unsigned int l, layers = m_Layers.GetSize(), num_image = 0;
 	vtImageLayer **images = new vtImageLayer *[LayersOfType(LT_IMAGE)];
 	for (l = 0; l < layers; l++)
 	{
@@ -981,7 +981,8 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 	// make a note of which lods exist
 	LODMap lod_existence_map(opts.cols, opts.rows);
 
-	int i, j, im;
+	int i, j;
+	unsigned int im;
 	int total = opts.rows * opts.cols, done = 0;
 	for (j = 0; j < opts.rows; j++)
 	{
@@ -999,6 +1000,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 			// Look through the image layers to find those which this
 			//  tile can sample from.  Determine the highest resolution
 			//  available for this tile.
+			std::vector<vtImageLayer*> overlapping_images;
 			DPoint2 best_spacing(1E9, 1E9);
 			int num_source_images = 0;
 			for (im = 0; im < num_image; im++)
@@ -1008,6 +1010,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				if (tile_area.OverlapsRect(layer_extent))
 				{
 					num_source_images++;
+					overlapping_images.push_back(images[im]);
 					DPoint2 spacing = images[im]->GetSpacing();
 					if (spacing.x < best_spacing.x ||
 						spacing.y < best_spacing.y)
@@ -1059,8 +1062,8 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 
 					// find some data for this point
 					rgb.Set(0,0,0);
-					for (int im = 0; im < num_image; im++)
-						if (images[im]->GetFilteredColor(p, pixel))
+					for (unsigned int im = 0; im < overlapping_images.size(); im++)
+						if (overlapping_images[im]->GetFilteredColor(p, pixel))
 							rgb = pixel;
 
 					Target.SetRGB(x, y, rgb);
