@@ -13,7 +13,6 @@
 
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
-#include "vtdata/MiniDatabuf.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for FormatCoord
@@ -26,6 +25,7 @@
 #include "Helper.h"
 #include "RawDlg.h"
 #include "vtBitmap.h"
+#include "LocalDatabuf.h"
 
 ////////////////////////////////////////////////////////////////////
 
@@ -1390,7 +1390,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 
 					int tilesize = base_tilesize >> k;
 
-					MiniDatabuf output_buf;
+					vtMiniDatabuf output_buf;
 					output_buf.xsize = tilesize;
 					output_buf.ysize = tilesize;
 					output_buf.zsize = 1;
@@ -1432,7 +1432,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 					(const char *)fname, tilesize, tilesize);
 				UpdateProgressDialog2(done*99/total, 0, msg);
 
-				MiniDatabuf buf;
+				vtMiniDatabuf buf;
 				buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 				buf.alloc(tilesize+1, tilesize+1, 1, 1, bFloat ? 2 : 1);
 				float *fdata = (float *) buf.data;

@@ -41,17 +41,17 @@ public:
 #endif	// WIN32
 
 /////////////////
-class MiniDatabuf;
+class vtMiniDatabuf;
 class ImageGLCanvas;
 struct TilingOptions;
 
 void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
-					unsigned char *rgb_bytes, MiniDatabuf &output_buf,
+					unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 					int iUncompressedSize, ImageGLCanvas *pCanvas);
 
 #if USE_OPENGL
 #include "wx/glcanvas.h"
-void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
+void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 					   GLuint &iTex);
 
 //
@@ -78,7 +78,7 @@ protected:
 #endif	// USE_OPENGL
 
 #if SUPPORT_SQUISH
-void DoTextureSquish(unsigned char *rgb_bytes, MiniDatabuf &output_buf, bool bFast);
+void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool bFast);
 #endif
 
 #endif	// HELPERH

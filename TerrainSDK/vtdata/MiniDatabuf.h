@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include "HeightField.h"	// for INVALID_ELEVATION
 
+#if !USE_LIBMINI_DATABUF
+
 /* This is a subset of a libMini class which represents a single 1D, 2D, 3D
 	or 4D data buffer, with associated metadata such as dimensions and type. */
 
@@ -65,6 +67,8 @@ private:
 	static unsigned short int INTEL_CHECK;
 	void swapbytes();
 };
+
+#endif // !USE_LIBMINI_DATABUF
 
 // Helper to write headers
 class DRECT;

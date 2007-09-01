@@ -17,7 +17,6 @@
 #include "vtdata/ChunkLOD.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
-#include "vtdata/MiniDatabuf.h"
 
 #include "vtui/Helper.h"
 
@@ -26,6 +25,7 @@
 #include "Frame.h"
 #include "Helper.h"
 #include "vtBitmap.h"
+#include "LocalDatabuf.h"
 // Layers
 #include "ElevLayer.h"
 #include "ImageLayer.h"
@@ -844,7 +844,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 					int tilesize = base_tilesize >> k;
 
-					MiniDatabuf output_buf;
+					vtMiniDatabuf output_buf;
 					output_buf.xsize = tilesize;
 					output_buf.ysize = tilesize;
 					output_buf.zsize = 1;
@@ -889,7 +889,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				if (bCancel)
 					return false;
 
-				MiniDatabuf buf;
+				vtMiniDatabuf buf;
 				buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
 				buf.alloc(tilesize+1, tilesize+1, 1, 1, bFloat ? 2 : 1);
 				float *fdata = (float *) buf.data;
@@ -1095,7 +1095,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				}
 				int iUncompressedSize = cb;
 
-				MiniDatabuf output_buf;
+				vtMiniDatabuf output_buf;
 				output_buf.xsize = tilesize;
 				output_buf.ysize = tilesize;
 				output_buf.zsize = 1;

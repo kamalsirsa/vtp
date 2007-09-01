@@ -11,7 +11,6 @@
 #include "wx/wx.h"
 #endif
 
-#include "vtdata/MiniDatabuf.h"
 #include "vtdata/vtLog.h"
 
 #include "vtui/Helper.h"
@@ -24,6 +23,7 @@
 #include "Helper.h"
 #include "Frame.h"
 #include "vtBitmap.h"
+#include "LocalDatabuf.h"
 
 #include "ExtentDlg.h"
 
@@ -1533,7 +1533,7 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 	}
 	int iUncompressedSize = cb;
 
-	MiniDatabuf output_buf;
+	vtMiniDatabuf output_buf;
 	output_buf.xsize = tilesize;
 	output_buf.ysize = tilesize;
 	output_buf.zsize = 1;

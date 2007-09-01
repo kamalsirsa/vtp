@@ -15,7 +15,7 @@
 #include "BuilderView.h"
 #include "Helper.h"
 #include "vtdata/vtLog.h"
-#include "vtdata/MiniDatabuf.h"
+#include "LocalDatabuf.h"
 
 #if SUPPORT_SQUISH
 #include "squish.h"
@@ -150,7 +150,7 @@ void wxDC2::StretchBlit(const wxBitmap &bmp,
 /////////////////////////////////////////////////////
 
 void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
-					unsigned char *rgb_bytes, MiniDatabuf &output_buf,
+					unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 					int iUncompressedSize, ImageGLCanvas *pCanvas)
 {
 	if (opts.bUseTextureCompression)
@@ -261,7 +261,7 @@ void* getGLExtensionFuncPtr(const char *funcName)
 }
 
 
-void DoTextureCompress(unsigned char *rgb_bytes, MiniDatabuf &output_buf,
+void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 					   GLuint &iTex)
 {
 	// Next, compress them to a DXT1 output file
@@ -372,7 +372,7 @@ void ImageGLCanvas::OnSize(wxSizeEvent& event)
 #if SUPPORT_SQUISH
 using namespace squish;
 
-void DoTextureSquish(unsigned char *rgb_bytes, MiniDatabuf &output_buf, bool bFast)
+void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool bFast)
 {
 	int flags = kDxt1;
 
