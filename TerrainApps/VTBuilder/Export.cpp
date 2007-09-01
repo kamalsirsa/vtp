@@ -1047,33 +1047,37 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 			int base_tile_exponent = vt_log2(base_tilesize);
 			lod_existence_map.set(col, row, base_tile_exponent, base_tile_exponent-(total_lods-1));
 
-			// Now sample the images we found to the highest LOD we need
-			vtImageLayer Target(tile_area, base_tilesize, base_tilesize, m_proj);
-
-			DPoint2 p;
-			int x, y;
-			RGBi pixel, rgb;
-			for (y = base_tilesize-1; y >= 0; y--)
-			{
-				p.y = m_area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
-				for (x = 0; x < base_tilesize; x++)
-				{
-					p.x = m_area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
-
-					// find some data for this point
-					rgb.Set(0,0,0);
-					for (unsigned int im = 0; im < overlapping_images.size(); im++)
-						if (overlapping_images[im]->GetFilteredColor(p, pixel))
-							rgb = pixel;
-
-					Target.SetRGB(x, y, rgb);
-				}
-			}
-
 			for (int k = 0; k < total_lods; k++)
 			{
 				int lod = start_lod + k;
 				int tilesize = base_tilesize >> k;
+
+				// The output image area is 1/2 texel larger than the tile area
+				DPoint2 texel = tile_dim / (tilesize-1);
+				DRECT image_area = tile_area;
+				image_area.Grow(texel.x/2, texel.y/2);
+
+				// Sample the images we found to the exact LOD we need
+				vtImageLayer Target(image_area, tilesize, tilesize, m_proj);
+
+				DPoint2 p;
+				RGBi pixel, rgb;
+				for (int y = tilesize-1; y >= 0; y--)
+				{
+					p.y = tile_area.bottom + ((double)y / (tilesize-1) * tile_dim.y);
+					for (int x = 0; x < tilesize; x++)
+					{
+						p.x = tile_area.left + ((double)x / (tilesize-1) * tile_dim.x);
+
+						// find some data for this point
+						rgb.Set(0,0,0);
+						for (unsigned int im = 0; im < overlapping_images.size(); im++)
+							if (overlapping_images[im]->GetFilteredColor(p, pixel))
+								rgb = pixel;
+
+						Target.SetRGB(x, y, rgb);
+					}
+				}
 
 				vtString fname = MakeFilenameDB(dirname, col, row, k);
 
@@ -1086,9 +1090,10 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				unsigned char *rgb_bytes = (unsigned char *) malloc(tilesize * tilesize * 3);
 				int cb = 0;	// count bytes
 
-				for (y = base_tilesize-1; y >= 0; y -= (1<<k))
+				// Copy whole image directly from Target to rgb_bytes
+				for (int y = tilesize-1; y >= 0; y--)
 				{
-					for (x = 0; x < base_tilesize; x += (1<<k))
+					for (int x = 0; x < tilesize; x++)
 					{
 						Target.GetRGB(x, y, rgb);
 						rgb_bytes[cb++] = rgb.r;
