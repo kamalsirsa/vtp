@@ -413,16 +413,15 @@ bool vtImageLayer::ReadPPM(const char *fname, bool progress_callback(int))
 		return false;
 	}
 
-	bool bBinary = false;	// PGM binary format flag: assume PGM ascii
-	if (!strncmp(sbuf,"P6",2))
-		bBinary = 1;		// PGM binary format
-
-	if (!strncmp(sbuf, "P5", 2) || !strncmp(sbuf, "P2", 2))
+	if (strncmp(sbuf, "P6", 2))
 	{
-		/* not the flavor of PNM we're expecting */
+		// not the flavor of PNM we're expecting
 		fclose(fp);
 		return false;
 	}
+
+	// P5 and P2 are not the flavors of PNM we're expecting:
+	// if (!strncmp(sbuf, "P5", 2) || !strncmp(sbuf, "P2", 2))
 
 	// read PGM ASCII or binary file
 	bool have_header = false;
