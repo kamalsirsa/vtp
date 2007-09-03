@@ -1,0 +1,24 @@
+//
+// Copyright (c) 2007 Virtual Terrain Project.
+// Free for all uses, see license.txt for details.
+//
+
+#include "vtdata/Content.h"
+
+// option tag names
+#define TAG_SHOW_MAP "ShowMap"
+#define TAG_SHOW_UTM "ShowUTMBounds"
+#define TAG_SHOW_PATHS "ShowFullPaths"
+#define TAG_ROAD_DRAW_WIDTH "RoadDrawWidth"
+
+#define TAG_USE_CURRENT_CRS	"UseCurrentCRS"
+#define TAG_LOAD_IMAGES_ALWAYS "LoadImagesAlways"
+#define TAG_LOAD_IMAGES_NEVER "LoadImagesNever"
+#define TAG_REPRO_TO_FLOAT_ALWAYS "ReproToFloatAlways"
+#define TAG_REPRO_TO_FLOAT_NEVER "ReproToFloatNever"
+#define TAG_SLOW_FILL_GAPS "SlowFillGaps"
+#define TAG_SAMPLING_N "MultiSampleN"
+
+// User Preferences
+extern vtTagArray g_Options;
+

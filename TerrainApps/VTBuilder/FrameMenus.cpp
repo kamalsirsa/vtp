@@ -38,6 +38,7 @@
 #include "vtBitmap.h"
 #include "vtImage.h"
 #include "FileFilters.h"
+#include "Options.h"
 // Layers
 #include "ElevLayer.h"
 #include "ImageLayer.h"
@@ -610,22 +611,22 @@ void MainFrame::OnProjectSave(wxCommandEvent &event)
 void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 {
 	PrefDlg dlg(this, wxID_ANY, _("Preferences"));
-	dlg.b1 = (m_Options.GetValueBool(TAG_USE_CURRENT_CRS) == true);
-	dlg.b2 = (m_Options.GetValueBool(TAG_USE_CURRENT_CRS) == false);
+	dlg.b1 = (g_Options.GetValueBool(TAG_USE_CURRENT_CRS) == true);
+	dlg.b2 = (g_Options.GetValueBool(TAG_USE_CURRENT_CRS) == false);
 
-	dlg.b3 = m_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS);
-	dlg.b4 = m_Options.GetValueBool(TAG_LOAD_IMAGES_NEVER);
-	dlg.b5 = (!m_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS) &&
-			  !m_Options.GetValueBool(TAG_LOAD_IMAGES_NEVER));
+	dlg.b3 = g_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS);
+	dlg.b4 = g_Options.GetValueBool(TAG_LOAD_IMAGES_NEVER);
+	dlg.b5 = (!g_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS) &&
+			  !g_Options.GetValueBool(TAG_LOAD_IMAGES_NEVER));
 
-	dlg.b6 = m_Options.GetValueBool(TAG_REPRO_TO_FLOAT_NEVER);
-	dlg.b7 = m_Options.GetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS);
-	dlg.b8 = (!m_Options.GetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS) &&
-			  !m_Options.GetValueBool(TAG_REPRO_TO_FLOAT_NEVER));
+	dlg.b6 = g_Options.GetValueBool(TAG_REPRO_TO_FLOAT_NEVER);
+	dlg.b7 = g_Options.GetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS);
+	dlg.b8 = (!g_Options.GetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS) &&
+			  !g_Options.GetValueBool(TAG_REPRO_TO_FLOAT_NEVER));
 
-	dlg.b9 = !m_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
-	dlg.b10 = m_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
-	dlg.i1 =  m_Options.GetValueInt(TAG_SAMPLING_N);
+	dlg.b9 = !g_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
+	dlg.b10 = g_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
+	dlg.i1 =  g_Options.GetValueInt(TAG_SAMPLING_N);
 
 	dlg.TransferDataToWindow();
 
@@ -635,13 +636,13 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 		if (dlg.i1 < 1) dlg.i1 = 1;
 		if (dlg.i1 > 32) dlg.i1 = 32;
 
-		m_Options.SetValueBool(TAG_USE_CURRENT_CRS, dlg.b1);
-		m_Options.SetValueBool(TAG_LOAD_IMAGES_ALWAYS, dlg.b3);
-		m_Options.SetValueBool(TAG_LOAD_IMAGES_NEVER, dlg.b4);
-		m_Options.SetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS, dlg.b7);
-		m_Options.SetValueBool(TAG_REPRO_TO_FLOAT_NEVER, dlg.b6);
-		m_Options.SetValueBool(TAG_SLOW_FILL_GAPS, dlg.b10);
-		m_Options.SetValueInt(TAG_SAMPLING_N, dlg.i1);
+		g_Options.SetValueBool(TAG_USE_CURRENT_CRS, dlg.b1);
+		g_Options.SetValueBool(TAG_LOAD_IMAGES_ALWAYS, dlg.b3);
+		g_Options.SetValueBool(TAG_LOAD_IMAGES_NEVER, dlg.b4);
+		g_Options.SetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS, dlg.b7);
+		g_Options.SetValueBool(TAG_REPRO_TO_FLOAT_NEVER, dlg.b6);
+		g_Options.SetValueBool(TAG_SLOW_FILL_GAPS, dlg.b10);
+		g_Options.SetValueInt(TAG_SAMPLING_N, dlg.i1);
 	}
 }
 

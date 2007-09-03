@@ -43,13 +43,14 @@ public:
 	void SetExtent(const DRECT &rect);
 	void DrawToView(wxDC* pDC, vtScaledView *pView);
 	bool ConvertProjection(vtImage *input, vtProjection &proj_new,
-						   bool progress_callback(int) = NULL);
+						   int iSampleN, bool progress_callback(int) = NULL);
 
 	bool IsAllocated() const;
 	DPoint2 GetSpacing() const;
 	vtBitmap *GetBitmap() { return m_pBitmap; }
 
 	void GetProjection(vtProjection &proj);
+	vtProjection &GetAtProjection() { return m_proj; }
 	void SetProjection(const vtProjection &proj);
 	bool ReprojectExtents(const vtProjection &proj_new);
 

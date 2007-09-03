@@ -27,6 +27,7 @@
 #include "vtBitmap.h"
 #include "vtImage.h"
 #include "LocalDatabuf.h"
+#include "Options.h"
 // Layers
 #include "ElevLayer.h"
 #include "ImageLayer.h"
@@ -811,7 +812,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				UpdateProgressDialog2(done*99/total, -1, _("Filling gaps"));
 
 				bool bGood;
-				if (m_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
+				if (g_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
 					bGood = base_lod.FillGapsSmooth(progress_callback_minor);
 				else
 					bGood = base_lod.FillGaps(progress_callback_minor);
@@ -1065,7 +1066,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				// Get ready to multisample
 				DLine2 offsets;
 				MakeSampleOffsets(tile_dim / (tilesize-1),
-					m_Options.GetValueInt(TAG_SAMPLING_N), offsets);
+					g_Options.GetValueInt(TAG_SAMPLING_N), offsets);
 
 				DPoint2 p;
 				RGBi pixel, rgb;

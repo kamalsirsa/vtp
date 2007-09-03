@@ -28,6 +28,7 @@
 #include "BuilderView.h"
 #include "VegGenOptions.h"
 #include "vtImage.h"
+#include "Options.h"
 
 #include "vtui/Helper.h"
 #include "vtui/ProfileDlg.h"
@@ -106,7 +107,9 @@
 #	include "VTBuilder.xpm"
 #endif
 
+// Singletons
 DECLARE_APP(BuilderApp)
+vtTagArray g_Options;
 
 ////////////////////////////////////////////////////////////////
 
@@ -888,25 +891,25 @@ bool MainFrame::WriteINI()
 //
 bool MainFrame::ReadXML(const char *fname)
 {
-	if (!m_Options.LoadFromXML(fname))
+	if (!g_Options.LoadFromXML(fname))
 		return false;
 
 	// Safety check
-	if (m_Options.GetValueInt(TAG_SAMPLING_N) < 1)
-		m_Options.SetValueInt(TAG_SAMPLING_N, 1);
-	if (m_Options.GetValueInt(TAG_SAMPLING_N) > 32)
-		m_Options.SetValueInt(TAG_SAMPLING_N, 32);
+	if (g_Options.GetValueInt(TAG_SAMPLING_N) < 1)
+		g_Options.SetValueInt(TAG_SAMPLING_N, 1);
+	if (g_Options.GetValueInt(TAG_SAMPLING_N) > 32)
+		g_Options.SetValueInt(TAG_SAMPLING_N, 32);
 
-	// Apply all the options, from m_Options the rest of the application
-	m_pView->SetShowMap(m_Options.GetValueBool(TAG_SHOW_MAP));
-	m_pView->m_bShowUTMBounds = m_Options.GetValueBool(TAG_SHOW_UTM);
-	m_pTree->SetShowPaths(m_Options.GetValueBool(TAG_SHOW_PATHS));
-	vtRoadLayer::SetDrawWidth(m_Options.GetValueBool(TAG_ROAD_DRAW_WIDTH));
+	// Apply all the options, from g_Options the rest of the application
+	m_pView->SetShowMap(g_Options.GetValueBool(TAG_SHOW_MAP));
+	m_pView->m_bShowUTMBounds = g_Options.GetValueBool(TAG_SHOW_UTM);
+	m_pTree->SetShowPaths(g_Options.GetValueBool(TAG_SHOW_PATHS));
+	vtRoadLayer::SetDrawWidth(g_Options.GetValueBool(TAG_ROAD_DRAW_WIDTH));
 
-	vtElevLayer::m_draw.SetFromTags(m_Options);
+	vtElevLayer::m_draw.SetFromTags(g_Options);
 
 	vtString str;
-	if (m_Options.GetValueString("UI_Layout", str))
+	if (g_Options.GetValueString("UI_Layout", str))
 	{
 		wxString str2(str, wxConvUTF8);
 		m_mgr.LoadPerspective(str2, false);
@@ -917,19 +920,19 @@ bool MainFrame::ReadXML(const char *fname)
 
 bool MainFrame::WriteXML(const char *fname)
 {
-	// Gather all the options into m_Options
-	m_Options.SetValueBool(TAG_SHOW_MAP, m_pView->GetShowMap());
-	m_Options.SetValueBool(TAG_SHOW_UTM, m_pView->m_bShowUTMBounds);
-	m_Options.SetValueBool(TAG_SHOW_PATHS, m_pTree->GetShowPaths());
-	m_Options.SetValueBool(TAG_ROAD_DRAW_WIDTH, vtRoadLayer::GetDrawWidth());
+	// Gather all the options into g_Options
+	g_Options.SetValueBool(TAG_SHOW_MAP, m_pView->GetShowMap());
+	g_Options.SetValueBool(TAG_SHOW_UTM, m_pView->m_bShowUTMBounds);
+	g_Options.SetValueBool(TAG_SHOW_PATHS, m_pTree->GetShowPaths());
+	g_Options.SetValueBool(TAG_ROAD_DRAW_WIDTH, vtRoadLayer::GetDrawWidth());
 
-	vtElevLayer::m_draw.SetToTags(m_Options);
+	vtElevLayer::m_draw.SetToTags(g_Options);
 
 	wxString str = m_mgr.SavePerspective();
-	m_Options.SetValueString("UI_Layout", (const char *) str.mb_str(wxConvUTF8));
+	g_Options.SetValueString("UI_Layout", (const char *) str.mb_str(wxConvUTF8));
 
 	// Write it to XML
-	return m_Options.WriteToXML(fname, "Options");
+	return g_Options.WriteToXML(fname, "Options");
 }
 
 DRECT MainFrame::GetExtents()
@@ -1267,7 +1270,7 @@ bool MainFrame::FillElevGaps(vtElevLayer *el)
 	OpenProgressDialog(_("Filling Gaps"), true);
 
 	bool bGood;
-	if (m_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
+	if (g_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
 		// slow and smooth
 		bGood = el->m_pGrid->FillGapsSmooth(progress_callback);
 	else
@@ -1470,7 +1473,7 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTargetLayer)
 
 	// Get ready to multisample
 	DLine2 offsets;
-	MakeSampleOffsets(step, m_Options.GetValueInt(TAG_SAMPLING_N), offsets);
+	MakeSampleOffsets(step, g_Options.GetValueInt(TAG_SAMPLING_N), offsets);
 
 	// iterate through the pixels of the new image
 	DPoint2 p;
@@ -2339,7 +2342,7 @@ bool MainFrame::ConfirmValidCRS(vtProjection *pProj)
 	{
 		// No projection.
 		int res;
-		if (m_Options.GetValueBool(TAG_USE_CURRENT_CRS))
+		if (g_Options.GetValueBool(TAG_USE_CURRENT_CRS))
 			res = wxNO;		// Don't ask user, just use current CRS
 		else
 		{

@@ -970,6 +970,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Options.h"
+				>
+			</File>
+			<File
 				RelativePath="OptionsDlg.h"
 				>
 			</File>

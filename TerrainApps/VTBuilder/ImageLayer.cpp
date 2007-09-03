@@ -15,7 +15,7 @@
 #include "vtui/Helper.h"	// For ProgressDialog
 #include "ImageLayer.h"
 #include "vtImage.h"
-
+#include "Options.h"
 
 vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 {
@@ -70,8 +70,11 @@ bool vtImageLayer::TransformCoords(vtProjection &proj_new)
 		// Actually re-project the image pixels
 		vtImage *img_new = new vtImage;
 
+		int iSampleN = g_Options.GetValueInt(TAG_SAMPLING_N);
+
 		OpenProgressDialog(_("Converting Image CRS"));
-		success = img_new->ConvertProjection(m_pImage, proj_new, progress_callback);
+		success = img_new->ConvertProjection(m_pImage, proj_new, iSampleN,
+			progress_callback);
 
 		if (success)
 		{
@@ -85,6 +88,7 @@ bool vtImageLayer::TransformCoords(vtProjection &proj_new)
 			wxMessageBox(msg, _("Error"));
 			delete img_new;
 		}
+		CloseProgressDialog();
 	}
 
 	return success;

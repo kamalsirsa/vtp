@@ -26,6 +26,7 @@
 #include "RawDlg.h"
 #include "vtBitmap.h"
 #include "LocalDatabuf.h"
+#include "Options.h"
 
 ////////////////////////////////////////////////////////////////////
 
@@ -240,9 +241,9 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 
 			if (!m_pGrid->IsFloatMode())
 			{
-				if (GetMainFrame()->m_Options.GetValueBool(TAG_REPRO_TO_FLOAT_NEVER))
+				if (g_Options.GetValueBool(TAG_REPRO_TO_FLOAT_NEVER))
 					bUpgradeToFloat = false;
-				else if (GetMainFrame()->m_Options.GetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS))
+				else if (g_Options.GetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS))
 					bUpgradeToFloat = true;
 				else
 				{
@@ -1355,7 +1356,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 				UpdateProgressDialog2(done*99/total, 0, _("Filling gaps"));
 
 				bool bGood;
-				if (GetMainFrame()->m_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
+				if (g_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
 					bGood = base_lod.FillGapsSmooth(progress_callback_minor);
 				else
 					bGood = base_lod.FillGaps(progress_callback_minor);

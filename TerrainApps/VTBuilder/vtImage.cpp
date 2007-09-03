@@ -25,6 +25,7 @@
 #include "Frame.h"
 #include "vtBitmap.h"
 #include "LocalDatabuf.h"
+#include "Options.h"
 
 #include "ExtentDlg.h"
 
@@ -211,11 +212,153 @@ void vtImage::DrawToView(wxDC* pDC, vtScaledView *pView)
 	}
 }
 
-bool vtImage::ConvertProjection(vtImage *input, vtProjection &proj_new,
-								 bool progress_callback(int))
+bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
+								int iSampleN, bool progress_callback(int))
 {
-	bool success = false;
-	return success;
+	int i, j;
+
+	// Create conversion object
+	const vtProjection *pSource, *pDest;
+	pSource = &pOld->GetAtProjection();
+	pDest = &NewProj;
+
+	OCT *trans = CreateCoordTransform(pSource, pDest);
+	if (!trans)
+	{
+		// inconvertible projections
+		return false;
+	}
+
+	// find where the extent corners are going to be in the new terrain
+	DRECT OldExtents;
+	pOld->GetExtent(OldExtents);
+	DLine2 OldCorners;
+	OldCorners.Append(DPoint2(OldExtents.left, OldExtents. bottom));
+	OldCorners.Append(DPoint2(OldExtents.right, OldExtents. bottom));
+	OldCorners.Append(DPoint2(OldExtents.right, OldExtents. top));
+	OldCorners.Append(DPoint2(OldExtents.left, OldExtents. top));
+
+	DLine2 Corners = OldCorners;
+	m_Extents.SetRect(1E9, -1E9, -1E9, 1E9);
+	int success;
+	for (i = 0; i < 4; i++)
+	{
+		success = trans->Transform(1, &Corners[i].x, &Corners[i].y);
+		if (success == 0)
+		{
+			// inconvertible projections
+			delete trans;
+			return false;
+		}
+		m_Extents.GrowToContainPoint(Corners[i]);
+	}
+	delete trans;
+
+	// now, how large an array will we need for the new terrain?
+	// try to preserve the sampling rate approximately
+	//
+	bool bOldGeo = (pSource->IsGeographic() != 0);
+	bool bNewGeo = (pDest->IsGeographic() != 0);
+
+	DPoint2 old_step = pOld->GetSpacing();
+	DPoint2 new_step;
+	double meters_per_longitude;
+
+	if (bOldGeo && !bNewGeo)
+	{
+		// convert degrees to meters (approximately)
+		meters_per_longitude = MetersPerLongitude(OldCorners[0].y);
+		new_step.x = old_step.x * meters_per_longitude;
+		new_step.y = old_step.y * METERS_PER_LATITUDE;
+	}
+	else if (!bOldGeo && bNewGeo)
+	{
+		// convert meters to degrees (approximately)
+		meters_per_longitude = MetersPerLongitude(Corners[0].y);
+		new_step.x = old_step.x / meters_per_longitude;
+		new_step.y = old_step.y / METERS_PER_LATITUDE;	// convert degrees to meters (approximately)
+	}
+	else
+	{
+		// check horizontal units or old and new terrain
+		double units_old = pSource->GetLinearUnits(NULL);
+		double units_new = pDest->GetLinearUnits(NULL);
+		new_step = old_step * (units_old / units_new);
+	}
+	double fColumns = m_Extents.Width() / new_step.x;
+	double fRows = m_Extents.Height() / new_step.y;
+
+	// round up to the nearest integer
+	m_iXSize = (int)(fColumns + 0.999);
+	m_iYSize = (int)(fRows + 0.999);
+
+	// do safety checks
+	if (m_iXSize < 1 || m_iYSize < 1)
+		return false;
+
+	if (m_iXSize > 40000 || m_iYSize > 40000)
+		return false;
+
+	// Now we're ready to fill in the new image.
+	m_proj = NewProj;
+	m_pBitmap = new vtBitmap;
+	if (!m_pBitmap->Allocate(m_iXSize, m_iYSize))
+		return false;
+
+	// Convert each bit of data from the old array to the new
+	// Transformation points backwards, from the target to the source
+	trans = CreateCoordTransform(pDest, pSource);
+	if (!trans)
+	{
+		// inconvertible projections
+		// "Couldn't convert between coordinate systems.";
+		return false;
+	}
+
+	// Prepare to multisample
+	DPoint2 step = GetSpacing();
+	DLine2 offsets;
+	MakeSampleOffsets(step, iSampleN, offsets);
+
+	DPoint2 p, mp;
+	RGBi value, sum;
+	int count;
+	for (i = 0; i < m_iXSize; i++)
+	{
+		if (progress_callback != NULL)
+			progress_callback(i*99/m_iXSize);
+
+		for (j = 0; j < m_iYSize; j++)
+		{
+			// Sample at pixel centers
+			p.x = m_Extents.left + (step.x/2) + (i * step.x);
+			p.y = m_Extents.bottom + (step.y/2)+ (j * step.y);
+
+			count = 0;
+			sum.Set(0,0,0);
+			for (unsigned int k = 0; k < offsets.GetSize(); k++)
+			{
+				mp = p + offsets[k];
+
+				// Since transforming the extents succeeded, it's safe to assume
+				// that the points will also transform without errors.
+				trans->Transform(1, &mp.x, &mp.y);
+
+				if (pOld->GetColorSolid(mp, value))
+				{
+					count++;
+					sum += value;
+				}
+			}
+			if (count > 0)
+				SetRGB(i, m_iYSize-1-j, sum / count);
+			else
+				SetRGB(i, m_iYSize-1-j, RGBi(0,0,0));	// nodata
+		}
+	}
+	delete trans;
+
+	return true;
 }
 
 void vtImage::GetProjection(vtProjection &proj)
@@ -849,9 +992,9 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		wxString msg;
 		if (m_iXSize * m_iYSize > (4096 * 4096))
 		{
-			if (GetMainFrame()->m_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS))
+			if (g_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS))
 				bDefer = false;
-			else if (GetMainFrame()->m_Options.GetValueBool(TAG_LOAD_IMAGES_NEVER))
+			else if (g_Options.GetValueBool(TAG_LOAD_IMAGES_NEVER))
 				bDefer = true;
 			else
 			{
