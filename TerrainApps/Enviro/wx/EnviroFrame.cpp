@@ -2280,6 +2280,8 @@ void EnviroFrame::OpenFenceDialog()
 
 void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 {
+	VTLOG1("Creating popup, ");
+
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructureLayer();
 
@@ -2320,12 +2322,14 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 	popmenu->AppendSeparator();
 	popmenu->Append(ID_POPUP_DELETE, _("Delete"));
 
+	VTLOG1("show.\n");
 	m_canvas->PopupMenu(popmenu, pos.x, pos.y);
 	delete popmenu;
 }
 
 void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 {
+	VTLOG1("OnPopupProperties.\n");
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructureLayer();
 	if (sa)
