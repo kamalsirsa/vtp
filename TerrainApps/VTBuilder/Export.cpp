@@ -1060,6 +1060,11 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				// Sample the images we found to the exact LOD we need
 				vtImageLayer Target(image_area, tilesize, tilesize, m_proj);
 
+				// Get ready to multisample
+				DLine2 offsets;
+				MakeSampleOffsets(tile_dim / (tilesize-1),
+					m_Options.GetValueInt(TAG_SAMPLING_N), offsets);
+
 				DPoint2 p;
 				RGBi pixel, rgb;
 				for (int y = tilesize-1; y >= 0; y--)
@@ -1072,7 +1077,8 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 						// find some data for this point
 						rgb.Set(0,0,0);
 						for (unsigned int im = 0; im < overlapping_images.size(); im++)
-							if (overlapping_images[im]->GetFilteredColor(p, pixel))
+//							if (overlapping_images[im]->GetColorSolid(p, pixel))
+							if (overlapping_images[im]->GetMultiSample(p, offsets, pixel))
 								rgb = pixel;
 
 						Target.SetRGB(x, y, rgb);

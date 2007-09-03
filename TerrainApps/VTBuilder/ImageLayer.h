@@ -65,7 +65,8 @@ public:
 		xsize = m_iXSize;
 		ysize = m_iYSize;
 	}
-	bool GetFilteredColor(const DPoint2 &p, RGBi &rgb);
+	bool GetColorSolid(const DPoint2 &p, RGBi &rgb);
+	bool GetMultiSample(const DPoint2 &p, const DLine2 offsets, RGBi &rgb);
 	void GetRGB(int x, int y, RGBi &rgb);
 
 	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
@@ -122,5 +123,6 @@ protected:
 
 // Helper
 int GetBitDepthUsingGDAL(const char *fname);
+void MakeSampleOffsets(const DPoint2 cellsize, unsigned int N, DLine2 &offsets);
 
 #endif	// IMAGELAYER_H

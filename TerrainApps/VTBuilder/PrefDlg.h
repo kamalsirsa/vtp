@@ -31,10 +31,12 @@ public:
 public:
 	// WDR: member variable declarations for PrefDlg
 	bool b1, b2, b3, b4, b5, b6, b7, b8, b9, b10;
+	int i1;
 
 private:
 	// WDR: handler declarations for PrefDlg
 	void OnRadio( wxCommandEvent &event );
+	void OnOK( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -890,6 +890,12 @@ bool MainFrame::ReadXML(const char *fname)
 	if (!m_Options.LoadFromXML(fname))
 		return false;
 
+	// Safety check
+	if (m_Options.GetValueInt(TAG_SAMPLING_N) < 1)
+		m_Options.SetValueInt(TAG_SAMPLING_N, 1);
+	if (m_Options.GetValueInt(TAG_SAMPLING_N) > 32)
+		m_Options.SetValueInt(TAG_SAMPLING_N, 32);
+
 	// Apply all the options, from m_Options the rest of the application
 	m_pView->SetShowMap(m_Options.GetValueBool(TAG_SHOW_MAP));
 	m_pView->m_bShowUTMBounds = m_Options.GetValueBool(TAG_SHOW_UTM);
@@ -1459,10 +1465,14 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 			images[num_image++] = (vtImageLayer *)lp;
 	}
 
+	// Get ready to multisample
+	DLine2 offsets;
+	MakeSampleOffsets(step, m_Options.GetValueInt(TAG_SAMPLING_N), offsets);
+
 	// iterate through the pixels of the new image
 	DPoint2 p;
 	RGBi rgb;
-	bool bHit;
+	int count;
 	for (j = 0; j < iRows; j++)
 	{
 		if (UpdateProgressDialog(j*100/iRows))
@@ -1471,21 +1481,28 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 			CloseProgressDialog();
 			return false;
 		}
-		p.y = area.bottom + (j * step.y);
+
+		// Sample at the pixel centers, which are 1/2 pixel in from extents
+		p.y = area.bottom + (step.y/2) + (j * step.y);
 
 		for (i = 0; i < iColumns; i++)
 		{
-			p.x = area.left + (i * step.x);
+			p.x = area.left + (step.x/2) + (i * step.x);
 
 			// find some data for this point
-			rgb.Set(0,0,0);
+			count = 0;
 			for (g = 0; g < num_image; g++)
 			{
-				bHit = images[g]->GetFilteredColor(p, rgb);
-				if (bHit)
-					break;
+				// take image that's on top (last in list)
+//				if (images[g]->GetColorSolid(p, rgb);
+				if (images[g]->GetMultiSample(p, offsets, rgb))
+					count++;
 			}
-			pTarget->SetRGB(i, iRows-1-j, rgb.r, rgb.g, rgb.b);
+			if (count)
+				pTarget->SetRGB(i, iRows-1-j, rgb.r, rgb.g, rgb.b);
+			else
+				// write NODATA (black, for now)
+				pTarget->SetRGB(i, iRows-1-j, 0, 0, 0);
 		}
 	}
 	CloseProgressDialog();

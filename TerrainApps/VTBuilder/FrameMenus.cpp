@@ -624,16 +624,23 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 
 	dlg.b9 = !m_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
 	dlg.b10 = m_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
-    dlg.TransferDataToWindow();
+	dlg.i1 =  m_Options.GetValueInt(TAG_SAMPLING_N);
+
+	dlg.TransferDataToWindow();
 
 	if (dlg.ShowModal() == wxID_OK)
 	{
+		// Safety check
+		if (dlg.i1 < 1) dlg.i1 = 1;
+		if (dlg.i1 > 32) dlg.i1 = 32;
+
 		m_Options.SetValueBool(TAG_USE_CURRENT_CRS, dlg.b1);
 		m_Options.SetValueBool(TAG_LOAD_IMAGES_ALWAYS, dlg.b3);
 		m_Options.SetValueBool(TAG_LOAD_IMAGES_NEVER, dlg.b4);
 		m_Options.SetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS, dlg.b7);
 		m_Options.SetValueBool(TAG_REPRO_TO_FLOAT_NEVER, dlg.b6);
 		m_Options.SetValueBool(TAG_SLOW_FILL_GAPS, dlg.b10);
+		m_Options.SetValueInt(TAG_SAMPLING_N, dlg.i1);
 	}
 }
 

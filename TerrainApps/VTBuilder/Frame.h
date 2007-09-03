@@ -72,6 +72,7 @@ class vtScaleBar;
 #define TAG_REPRO_TO_FLOAT_ALWAYS "ReproToFloatAlways"
 #define TAG_REPRO_TO_FLOAT_NEVER "ReproToFloatNever"
 #define TAG_SLOW_FILL_GAPS "SlowFillGaps"
+#define TAG_SAMPLING_N "MultiSampleN"
 
 
 class MainFrame: public wxFrame

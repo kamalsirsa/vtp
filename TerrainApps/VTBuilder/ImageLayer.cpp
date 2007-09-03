@@ -335,26 +335,64 @@ bool vtImageLayer::ReprojectExtents(const vtProjection &proj_new)
 	return true;
 }
 
-bool vtImageLayer::GetFilteredColor(const DPoint2 &p, RGBi &rgb)
+/**
+ * Sample image color at a given point, assuming that the pixels are solid.
+ */
+bool vtImageLayer::GetColorSolid(const DPoint2 &p, RGBi &rgb)
 {
 	// could speed this up by keeping these values around
 	DPoint2 spacing = GetSpacing();
 
 	double u = (p.x - m_Extents.left) / spacing.x;
-	int ix = (int) (u + 0.5);		// round to closest pixel
+	int ix = (int) u;				// round to closest pixel
 	if (u == (double) m_iXSize)		// check for exact far edge
 		ix = m_iXSize-1;
 	if (ix < 0 || ix >= m_iXSize)
 		return false;
 
 	double v = (m_Extents.top - p.y) / spacing.y;
-	int iy = (int) (v + 0.5);		// round to closest pixel
+	int iy = (int) v;				// round to closest pixel
 	if (v == (double) m_iYSize)		// check for exact far edge
 		iy = m_iYSize-1;
 	if (iy < 0 || iy >= m_iYSize)
 		return false;
 	GetRGB(ix, iy, rgb);
 	return true;
+}
+
+void MakeSampleOffsets(const DPoint2 cellsize, unsigned int N, DLine2 &offsets)
+{
+	DPoint2 spacing = cellsize / N;
+	DPoint2 base = spacing * -((float) (N-1) / 2);
+	for (unsigned int i = 0; i < N; i++)
+		for (unsigned int j = 0; j < N; j++)
+			offsets.Append(DPoint2(base.x + (i*spacing.x), base.y + (j*spacing.y)));
+}
+
+/**
+ * Get image color by sampling several points and averaging them.
+ * The area to test is given by center and offsets, use MakeSampleOffsets()
+ * to make a set if N x N offsets.
+ */
+bool vtImageLayer::GetMultiSample(const DPoint2 &p, const DLine2 offsets, RGBi &rgb)
+{
+	RGBi color;
+	rgb.Set(0,0,0);
+	int count = 0;
+	for (unsigned int i = 0; i < offsets.GetSize(); i++)
+	{
+		if (GetColorSolid(p+offsets[i], color))
+		{
+			rgb += color;
+			count++;
+		}
+	}
+	if (count)
+	{
+		rgb /= count;
+		return true;
+	}
+	return false;
 }
 
 void vtImageLayer::GetRGB(int x, int y, RGBi &rgb)
@@ -1060,7 +1098,7 @@ void vtImageLayer::ReadScanline(int iYRequest, int bufrow)
 			}
 		}
 	}
-	if (iRasterCount == 3)
+	else if (iRasterCount == 3)
 	{
 		RGBi rgb;
 		for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
@@ -1511,7 +1549,7 @@ bool vtImageLayer::WriteTile(const TilingOptions &opts, BuilderView *pView, vtSt
 		{
 			p.x = tile_area.left + x * spacing.x;
 
-			GetFilteredColor(p, rgb);
+			GetColorSolid(p, rgb);
 #if 0 // LOD Stripes
 			// For testing, add stripes to indicate LOD
 			if (lod == 3 && x == y) rgb.Set(255,0,0);

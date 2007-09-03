@@ -19,6 +19,7 @@
 // WDR: event table for PrefDlg
 
 BEGIN_EVENT_TABLE(PrefDlg,AutoDialog)
+	EVT_BUTTON( wxID_OK, PrefDlg::OnOK )
 	EVT_RADIOBUTTON( ID_RADIO1, PrefDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO2, PrefDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO3, PrefDlg::OnRadio )
@@ -48,6 +49,7 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_RADIO8, &b8);
 	AddValidator(ID_RADIO9, &b9);
 	AddValidator(ID_RADIO10, &b10);
+	AddNumValidator(ID_SAMPLING_N, &i1);
 }
 
 // WDR: handler implementations for PrefDlg
@@ -55,4 +57,10 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void PrefDlg::OnRadio( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
+}
+
+void PrefDlg::OnOK( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	event.Skip();
 }

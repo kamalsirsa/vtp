@@ -2738,13 +2738,23 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item20 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Imagery: N > 1 for NxN multisampling"), wxDefaultPosition, wxDefaultSize, 0 );
     item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item21 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxTextCtrl *item21 = new wxTextCtrl( parent, ID_SAMPLING_N, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
     item19->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item19, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
+    item0->Add( item19, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+
+    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item23 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item24 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item22, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
 
     if (set_sizer)
     {
