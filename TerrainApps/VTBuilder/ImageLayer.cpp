@@ -374,7 +374,7 @@ void MakeSampleOffsets(const DPoint2 cellsize, unsigned int N, DLine2 &offsets)
  * The area to test is given by center and offsets, use MakeSampleOffsets()
  * to make a set if N x N offsets.
  */
-bool vtImageLayer::GetMultiSample(const DPoint2 &p, const DLine2 offsets, RGBi &rgb)
+bool vtImageLayer::GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb)
 {
 	RGBi color;
 	rgb.Set(0,0,0);

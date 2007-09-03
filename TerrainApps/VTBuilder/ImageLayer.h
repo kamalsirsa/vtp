@@ -66,7 +66,7 @@ public:
 		ysize = m_iYSize;
 	}
 	bool GetColorSolid(const DPoint2 &p, RGBi &rgb);
-	bool GetMultiSample(const DPoint2 &p, const DLine2 offsets, RGBi &rgb);
+	bool GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb);
 	void GetRGB(int x, int y, RGBi &rgb);
 
 	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
