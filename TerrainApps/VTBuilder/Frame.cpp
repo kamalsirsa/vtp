@@ -27,6 +27,7 @@
 #include "Helper.h"
 #include "BuilderView.h"
 #include "VegGenOptions.h"
+#include "vtImage.h"
 
 #include "vtui/Helper.h"
 #include "vtui/ProfileDlg.h"
@@ -1443,8 +1444,10 @@ bool MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 //
 // sample all image data into this one
 //
-bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
+bool MainFrame::SampleCurrentImages(vtImageLayer *pTargetLayer)
 {
+	vtImage *pTarget = pTargetLayer->GetImage();
+
 	DRECT area;
 	pTarget->GetExtent(area);
 	DPoint2 step = pTarget->GetSpacing();
@@ -1456,13 +1459,13 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 	// Create progress dialog for the slow part
 	OpenProgressDialog(_("Merging and Resampling Image Layers"), true);
 
-	vtImageLayer **images = new vtImageLayer *[LayersOfType(LT_IMAGE)];
+	vtImage **images = new vtImage *[LayersOfType(LT_IMAGE)];
 	int g, num_image = 0;
 	for (l = 0; l < layers; l++)
 	{
 		vtLayer *lp = m_Layers.GetAt(l);
 		if (lp->GetType() == LT_IMAGE)
-			images[num_image++] = (vtImageLayer *)lp;
+			images[num_image++] = ((vtImageLayer *)lp)->GetImage();
 	}
 
 	// Get ready to multisample
@@ -1976,26 +1979,27 @@ void MainFrame::ExportImage()
 		return;
 
 	// Make new image
-	vtImageLayer *pOutput = new vtImageLayer(dlg.m_area, dlg.m_iSizeX,
+	vtImageLayer *pOutputLayer = new vtImageLayer(dlg.m_area, dlg.m_iSizeX,
 			dlg.m_iSizeY, m_proj);
+	vtImage *pOutput = pOutputLayer->GetImage();
 
 	if (!pOutput->IsAllocated())
 	{
 		DisplayAndLog(_("Sorry, could not allocate an image of that size."));
-		delete pOutput;
+		delete pOutputLayer;
 		return;
 	}
 
 	// fill in the value for pBig by merging samples from all other terrain
-	bool success = SampleCurrentImages(pOutput);
+	bool success = SampleCurrentImages(pOutputLayer);
 	if (!success)
 	{
-		delete pOutput;
+		delete pOutputLayer;
 		return;
 	}
 
 	if (dlg.m_bNewLayer)
-		AddLayerWithCheck(pOutput);
+		AddLayerWithCheck(pOutputLayer);
 	else if (dlg.m_bToFile)
 	{
 		OpenProgressDialog(_T("Writing file"), true);

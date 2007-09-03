@@ -36,6 +36,7 @@
 #include "TreeView.h"
 #include "Helper.h"
 #include "vtBitmap.h"
+#include "vtImage.h"
 #include "FileFilters.h"
 // Layers
 #include "ElevLayer.h"
@@ -2785,7 +2786,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 	{
 		// Now data contains the PNG file in memory, so parse it.
 		vtImageLayer *pIL = new vtImageLayer;
-		success = pIL->ReadPNGFromMemory(data.Get(), data.Len());
+		success = pIL->GetImage()->ReadPNGFromMemory(data.Get(), data.Len());
 		if (success)
 		{
 			pIL->SetExtent(m_area);
@@ -2830,7 +2831,7 @@ void MainFrame::OnAreaRequestTServe(wxCommandEvent& event)
 	OpenProgressDialog(_("Requesting data from Terraserver..."));
 
 	vtImageLayer *pIL = new vtImageLayer;
-	bool success = pIL->ReadFeaturesFromTerraserver(m_area, dlg.m_iTheme,
+	bool success = pIL->GetImage()->ReadFeaturesFromTerraserver(m_area, dlg.m_iTheme,
 		dlg.m_iMetersPerPixel, m_proj.GetUTMZone(), dlg.m_strToFile.mb_str(wxConvUTF8));
 
 	CloseProgressDialog();

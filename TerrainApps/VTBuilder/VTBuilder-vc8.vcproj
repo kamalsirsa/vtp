@@ -840,6 +840,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\vtImage.cpp"
+				>
+			</File>
+			<File
 				RelativePath="WaterLayer.cpp"
 				>
 				<FileConfiguration
@@ -1071,6 +1075,10 @@
 			</File>
 			<File
 				RelativePath="VTBuilder_wdr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\vtImage.h"
 				>
 			</File>
 			<File

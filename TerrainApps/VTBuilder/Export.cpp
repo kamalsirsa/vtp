@@ -25,6 +25,7 @@
 #include "Frame.h"
 #include "Helper.h"
 #include "vtBitmap.h"
+#include "vtImage.h"
 #include "LocalDatabuf.h"
 // Layers
 #include "ElevLayer.h"
@@ -385,7 +386,7 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 	pEL->GetExtent(area);
 	pEL->GetProjection(proj);
 
-	vtImageLayer *pOutput = NULL;
+	vtImageLayer *pOutputLayer = NULL;
 	vtBitmapBase *pBitmap = NULL;
 	vtDIB dib;
 
@@ -400,8 +401,8 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 	}
 	else
 	{
-		pOutput = new vtImageLayer(area, xsize, ysize, proj);
-		pBitmap = pOutput->GetBitmap();
+		pOutputLayer = new vtImageLayer(area, xsize, ysize, proj);
+		pBitmap = pOutputLayer->GetImage()->GetBitmap();
 	}
 
 	pEL->m_pGrid->ColorDibFromElevation(pBitmap, &cmap, 8000, progress_callback);
@@ -441,7 +442,7 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 	}
 	else
 	{
-		AddLayerWithCheck(pOutput);
+		AddLayerWithCheck(pOutputLayer);
 	}
 #if 0
 	// TEST - try coloring from water polygons
@@ -482,7 +483,7 @@ void MainFrame::ImageExportTiles()
 	dlg.GetTilingOptions(m_tileopts);
 
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = pIL->WriteGridOfTilePyramids(m_tileopts, GetView());
+	bool success = pIL->GetImage()->WriteGridOfTilePyramids(m_tileopts, GetView());
 	CloseProgressDialog();
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
@@ -497,7 +498,7 @@ void MainFrame::ImageExportPPM()
 	vtString fname = pIL->GetExportFilename(FSTRING_PPM);
 	if (fname == "")
 		return;
-	bool success = pIL->WritePPM(fname);
+	bool success = pIL->GetImage()->WritePPM(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
@@ -1000,7 +1001,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 			// Look through the image layers to find those which this
 			//  tile can sample from.  Determine the highest resolution
 			//  available for this tile.
-			std::vector<vtImageLayer*> overlapping_images;
+			std::vector<vtImage*> overlapping_images;
 			DPoint2 best_spacing(1E9, 1E9);
 			int num_source_images = 0;
 			for (im = 0; im < num_image; im++)
@@ -1010,8 +1011,9 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				if (tile_area.OverlapsRect(layer_extent))
 				{
 					num_source_images++;
-					overlapping_images.push_back(images[im]);
-					DPoint2 spacing = images[im]->GetSpacing();
+					vtImage *img = images[im]->GetImage();
+					overlapping_images.push_back(img);
+					DPoint2 spacing = img->GetSpacing();
 					if (spacing.x < best_spacing.x ||
 						spacing.y < best_spacing.y)
 						best_spacing = spacing;
@@ -1058,7 +1060,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 				image_area.Grow(texel.x/2, texel.y/2);
 
 				// Sample the images we found to the exact LOD we need
-				vtImageLayer Target(image_area, tilesize, tilesize, m_proj);
+				vtImage Target(image_area, tilesize, tilesize, m_proj);
 
 				// Get ready to multisample
 				DLine2 offsets;
