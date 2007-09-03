@@ -25,7 +25,10 @@ struct TilingOptions
 	vtString fname_images;
 	ElevDrawOptions draw;
 
+	// If elevation, we can omit flat (sea-level) tiles
 	bool bOmitFlatTiles;
+
+	// If imagery (or deriving imagery from elevation) then it can be compressed
 	bool bUseTextureCompression;
 	TextureCompressionType eCompressionType;
 };
