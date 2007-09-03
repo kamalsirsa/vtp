@@ -61,20 +61,6 @@ vtImage::~vtImage()
 	}
 }
 
-void vtImage::SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b)
-{
-	// this method clearly only works for in-memory images
-	if (m_pBitmap)
-		m_pBitmap->SetPixel24(x, y, r, g, b);
-}
-
-void vtImage::SetRGB(int x, int y, const RGBi &rgb)
-{
-	// this method clearly only works for in-memory images
-	if (m_pBitmap)
-		m_pBitmap->SetPixel24(x, y, rgb);
-}
-
 void vtImage::SetDefaults()
 {
 	m_iXSize = 0;
@@ -494,6 +480,35 @@ void vtImage::GetRGB(int x, int y, RGBi &rgb)
 		RGBi *data = GetScanlineFromBuffer(y);
 		rgb = data[x];
 	}
+}
+
+void vtImage::SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b)
+{
+	// this method clearly only works for in-memory images
+	if (m_pBitmap)
+		m_pBitmap->SetPixel24(x, y, r, g, b);
+}
+
+void vtImage::SetRGB(int x, int y, const RGBi &rgb)
+{
+	// this method clearly only works for in-memory images
+	if (m_pBitmap)
+		m_pBitmap->SetPixel24(x, y, rgb);
+}
+
+void vtImage::ReplaceColor(const RGBi &rgb1, const RGBi &rgb2)
+{
+	// this method only works for in-memory images
+	if (!m_pBitmap)
+		return;
+	RGBi color;
+	for (int i = 0; i < m_iXSize; i++)
+		for (int j = 0; j < m_iYSize; j++)
+		{
+			m_pBitmap->GetPixel24(i, j, color);
+			if (color == rgb1)
+				m_pBitmap->SetPixel24(i, j, rgb2);
+		}
 }
 
 bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))

@@ -66,6 +66,9 @@ public:
 	bool GetColorSolid(const DPoint2 &p, RGBi &rgb);
 	bool GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb);
 	void GetRGB(int x, int y, RGBi &rgb);
+	void SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b);
+	void SetRGB(int x, int y, const RGBi &rgb);
+	void ReplaceColor(const RGBi &rgb1, const RGBi &rgb2);
 
 	// File IO
 	bool ReadPPM(const char *fname, bool progress_callback(int) = NULL);
@@ -73,9 +76,6 @@ public:
 	bool SaveToFile(const char *fname) const;
 	bool ReadPNGFromMemory(unsigned char *buf, int len);
 	bool LoadFromGDAL(const char *fname);
-
-	void SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b);
-	void SetRGB(int x, int y, const RGBi &rgb);
 
 	bool ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 		int iMetersPerPixel, int iUTMZone, const char *filename);

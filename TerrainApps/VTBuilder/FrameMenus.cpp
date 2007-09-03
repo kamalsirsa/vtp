@@ -187,11 +187,14 @@ EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 EVT_UPDATE_UI(ID_ELEV_TRIMTIN,		MainFrame::OnUpdateElevTrimTin)
 
+EVT_MENU(ID_IMAGE_REPLACE_RGB,		MainFrame::OnImageReplaceRGB)
+EVT_UPDATE_UI(ID_IMAGE_REPLACE_RGB,	MainFrame::OnUpdateHaveImageLayer)
+
 EVT_MENU(ID_IMAGE_EXPORT_TILES,		MainFrame::OnImageExportTiles)
-EVT_UPDATE_UI(ID_IMAGE_EXPORT_TILES,MainFrame::OnUpdateImageExportTiles)
+EVT_UPDATE_UI(ID_IMAGE_EXPORT_TILES,MainFrame::OnUpdateHaveImageLayer)
 
 EVT_MENU(ID_IMAGE_EXPORT_PPM,		MainFrame::OnImageExportPPM)
-EVT_UPDATE_UI(ID_IMAGE_EXPORT_PPM,	MainFrame::OnUpdateImageExportPPM)
+EVT_UPDATE_UI(ID_IMAGE_EXPORT_PPM,	MainFrame::OnUpdateHaveImageLayer)
 
 EVT_MENU(ID_TOWER_ADD,				MainFrame::OnTowerAdd)
 EVT_MENU(ID_TOWER_SELECT,			MainFrame::OnTowerSelect)
@@ -445,6 +448,8 @@ void MainFrame::CreateMenus()
 
 	// Imagery
 	imgMenu = new wxMenu;
+	imgMenu->Append(ID_IMAGE_REPLACE_RGB, _("Replace RGB..."));
+	imgMenu->AppendSeparator();
 	imgMenu->Append(ID_IMAGE_EXPORT_TILES, _("Export to Tiles..."));
 	imgMenu->Append(ID_IMAGE_EXPORT_PPM, _("Export to PPM"));
 	m_pMenuBar->Append(imgMenu, _("Imagery"));
@@ -2581,15 +2586,37 @@ void MainFrame::OnUpdateElevTrimTin(wxUpdateUIEvent& event)
 // Image Menu
 //
 
+void MainFrame::OnImageReplaceRGB(wxCommandEvent& event)
+{
+	wxString msg = _("R G B in the range 0-255:");
+	wxString str = wxGetTextFromUser(msg, _("Replace color:"));
+	if (str == _T(""))
+		return;
+	RGBi rgb1, rgb2;
+	int count = sscanf(str.mb_str(), "%d %d %d", &rgb1.r, &rgb1.g, &rgb1.b);
+	if (count != 3 || rgb1.r < 0 || rgb1.r > 255 || rgb1.g < 0 ||
+		rgb1.g > 255 || rgb1.b < 0 || rgb1.b > 255)
+	{
+		wxMessageBox(_("Didn't get three R G B values in range."));
+		return;
+	}
+	str = wxGetTextFromUser(msg, _("With color:"));
+	if (str == _T(""))
+		return;
+	count = sscanf(str.mb_str(), "%d %d %d", &rgb2.r, &rgb2.g, &rgb2.b);
+	if (count != 3 || rgb2.r < 0 || rgb2.r > 255 || rgb2.g < 0 ||
+		rgb2.g > 255 || rgb2.b < 0 || rgb2.b > 255)
+	{
+		wxMessageBox(_("Didn't get three R G B values in range."));
+		return;
+	}
+	GetActiveImageLayer()->ReplaceColor(rgb1, rgb2);
+	RefreshLayerInView(GetActiveImageLayer());
+}
+
 void MainFrame::OnImageExportTiles(wxCommandEvent& event)
 {
 	ImageExportTiles();
-}
-
-void MainFrame::OnUpdateImageExportTiles(wxUpdateUIEvent& event)
-{
-	vtImageLayer *pIL = GetActiveImageLayer();
-	event.Enable(pIL != NULL);
 }
 
 void MainFrame::OnImageExportPPM(wxCommandEvent& event)
@@ -2597,7 +2624,7 @@ void MainFrame::OnImageExportPPM(wxCommandEvent& event)
 	ImageExportPPM();
 }
 
-void MainFrame::OnUpdateImageExportPPM(wxUpdateUIEvent& event)
+void MainFrame::OnUpdateHaveImageLayer(wxUpdateUIEvent& event)
 {
 	vtImageLayer *pIL = GetActiveImageLayer();
 	event.Enable(pIL != NULL);

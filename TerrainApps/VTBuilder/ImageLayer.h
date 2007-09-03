@@ -40,6 +40,7 @@ public:
 	vtImage *GetImage() { return m_pImage; }
 	DPoint2 GetSpacing() const;
 	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
+	void ReplaceColor(const RGBi &rgb1, const RGBi &rgb2);
 
 protected:
 	vtImage	*m_pImage;

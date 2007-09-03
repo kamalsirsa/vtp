@@ -207,10 +207,10 @@ protected:
 	void OnUpdateElevTrimTin(wxUpdateUIEvent& event);
 	void OnUpdateIsGrid(wxUpdateUIEvent& event);
 
+	void OnImageReplaceRGB(wxCommandEvent& event);
 	void OnImageExportTiles(wxCommandEvent& event);
-	void OnUpdateImageExportTiles(wxUpdateUIEvent& event);
 	void OnImageExportPPM(wxCommandEvent& event);
-	void OnUpdateImageExportPPM(wxUpdateUIEvent& event);
+	void OnUpdateHaveImageLayer(wxUpdateUIEvent& event);
 
 	void OnTowerSelect(wxCommandEvent& event);
 	void OnTowerEdit(wxCommandEvent& event);

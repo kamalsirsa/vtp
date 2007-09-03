@@ -191,3 +191,9 @@ bool vtImageLayer::ImportFromFile(const wxString &strFileName, bool progress_cal
 	return success;
 }
 
+void vtImageLayer::ReplaceColor(const RGBi &rgb1, const RGBi &rgb2)
+{
+	m_pImage->ReplaceColor(rgb1, rgb2);
+	SetModified(true);
+}
+
