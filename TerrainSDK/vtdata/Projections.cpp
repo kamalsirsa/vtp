@@ -1149,6 +1149,12 @@ const char *GetLinearUnitName(LinearUnits lu)
 	return "Unknown";
 }
 
+// helper
+double MetersPerLongitude(double latitude)
+{
+	return METERS_PER_LATITUDE * cos(latitude / 180.0 * PId);
+}
+
 bool ReadAssociatedWorldFile(const char *filename_base, double params[6])
 {
 	// Look for the file with a variety of possible extensions

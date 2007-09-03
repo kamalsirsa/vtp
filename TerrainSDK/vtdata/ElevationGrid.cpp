@@ -158,14 +158,6 @@ void vtElevationGrid::FreeData()
 	m_pFData = NULL;
 }
 
-
-// helper
-double MetersPerLongitude(double latitude)
-{
-	return METERS_PER_LATITUDE * cos(latitude / 180.0 * PId);
-}
-
-
 /**
  * Initializes an elevation grid by converting the contents of an another
  * grid to a new projection.

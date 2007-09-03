@@ -159,6 +159,11 @@ double GetMetersPerUnit(LinearUnits lu);
 const char *GetLinearUnitName(LinearUnits lu);
 
 /**
+ * Return number of meters per degree of longitude, at a given latitude.
+ */
+double MetersPerLongitude(double latitude);
+
+/**
  * Read the contents of a world file.  You can pass any filename, and it will
  * look for the corresponding world file.
  */
