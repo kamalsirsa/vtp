@@ -413,6 +413,7 @@ public:
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);
+	bool GetRGBUnderCursor(const DPoint2 &p, RGBi &rgb);
 
 	// Structures
 	LinearStructureDlg *ShowLinearStructureDlg(bool bShow = true);

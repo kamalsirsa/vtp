@@ -1534,6 +1534,21 @@ float MainFrame::GetHeightFromTerrain(const DPoint2 &p)
 	return height;
 }
 
+bool MainFrame::GetRGBUnderCursor(const DPoint2 &p, RGBi &rgb)
+{
+	bool success = false;
+	int layers = m_Layers.GetSize();
+	for (int i = 0; i < layers; i++)
+	{
+		vtLayer *l = m_Layers.GetAt(i);
+		if (l->GetType() != LT_IMAGE || !l->GetVisible()) continue;
+		vtImageLayer *pIL = (vtImageLayer *)l;
+		if (pIL->GetImage()->GetColorSolid(p, rgb))
+			success = true;
+	}
+	return success;
+}
+
 void MainFrame::SetProjection(const vtProjection &p)
 {
 	char type[7], value[4000];

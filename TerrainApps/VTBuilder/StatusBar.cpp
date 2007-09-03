@@ -63,7 +63,7 @@ wxString MyStatusBar::FormatCoord(bool bGeo, double coord)
 	}
 	else	// something meters-based
 	{
-		str.Format("%.0f", coord);
+		str.Format("%.1f", coord);
 	}
 	return wxString(str, wxConvUTF8);
 }
@@ -122,6 +122,15 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 			else
 				str.Printf(_T("%.2f ft"), height / GetMetersPerUnit(m_ShowVertUnits));
 		}
+
+		RGBi rgb;
+		if (frame->GetRGBUnderCursor(p, rgb))
+		{
+			if (str != _T(""))
+				str += _T(", ");
+			str += wxString::Format(_T("%d %d %d"), rgb.r, rgb.g, rgb.b);
+		}
+
 		SetStatusText(str, Field_Height);
 	}
 	else
