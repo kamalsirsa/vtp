@@ -78,6 +78,7 @@ wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item11 = new wxBoxSizer( wxHORIZONTAL );
 
     wxButton *item12 = new wxButton( parent, ID_EDITHEIGHTS, _("Baseline Editor"), wxDefaultPosition, wxDefaultSize, 0 );
+    item12->Enable( false );
     item11->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxButton *item13 = new wxButton( parent, ID_SET_ROOF_TYPE, _("Set Roof Type"), wxDefaultPosition, wxDefaultSize, 0 );
