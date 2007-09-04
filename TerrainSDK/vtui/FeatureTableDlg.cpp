@@ -48,6 +48,8 @@ FeatureTableDlg::FeatureTableDlg( wxWindow *parent, wxWindowID id, const wxStrin
 
 	AddValidator(ID_CHOICE_SHOW, &m_iShow);
 	AddValidator(ID_CHOICE_VERTICAL, &m_iVUnits);
+
+	UpdateTitle();
 }
 
 void FeatureTableDlg::SetFeatureSet(vtFeatureSet *pFeatures)
@@ -105,6 +107,19 @@ void FeatureTableDlg::SetFeatureSet(vtFeatureSet *pFeatures)
 			width = 20;
 		GetList()->InsertColumn(field++, name, wxLIST_FORMAT_LEFT, width);
 	}
+
+	UpdateTitle();
+}
+
+void FeatureTableDlg::UpdateTitle()
+{
+	wxString title = _("Feature Info");
+	if (m_pFeatures)
+	{
+		title += _T(": ");
+		title += wxString(m_pFeatures->GetFilename(), wxConvUTF8);
+	}
+	SetTitle(title);
 }
 
 void FeatureTableDlg::Clear()
@@ -139,6 +154,9 @@ void FeatureTableDlg::ShowSelected()
 
 void FeatureTableDlg::ShowPicked()
 {
+	if (!m_pFeatures)
+		return;
+
 	m_iShow = 1;
 	TransferDataToWindow();
 	Clear();
@@ -152,6 +170,9 @@ void FeatureTableDlg::ShowPicked()
 
 void FeatureTableDlg::ShowAll()
 {
+	if (!m_pFeatures)
+		return;
+
 	m_iShow = 2;
 	TransferDataToWindow();
 	Clear();

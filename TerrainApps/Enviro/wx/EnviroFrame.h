@@ -17,6 +17,7 @@
 class BuildingDlg3d;
 class CameraDlg;
 class DistanceDlg3d;
+class FeatureTableDlg3d;
 class InstanceDlg;
 class LODDlg;
 class LinearStructureDlg3d;
@@ -72,6 +73,7 @@ public:
 	virtual void AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, bool tog);
 
 	void UpdateLODInfo();
+	void ShowTable(vtFeatureSet *set);
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);
@@ -99,6 +101,7 @@ public:
 	void OnViewElevLegend(wxCommandEvent& event);
 	void OnViewCompass(wxCommandEvent& event);
 	void OnViewMapOverView(wxCommandEvent& event);
+	void OnViewFeatureTable(wxCommandEvent& event);
 	void OnViewSettings(wxCommandEvent& event);
 	void OnViewLocations(wxCommandEvent& event);
 	void OnViewSnapshot(wxCommandEvent& event);
@@ -254,6 +257,7 @@ public:
 	LayerDlg			*m_pLayerDlg;
 	InstanceDlg			*m_pInstanceDlg;
 	DistanceDlg3d		*m_pDistanceDlg;
+	FeatureTableDlg3d	*m_pFeatureDlg;
 	TimeDlg				*m_pTimeDlg;
 	CScenarioSelectDialog *m_pScenarioSelectDialog;
 	LODDlg				*m_pLODDlg;

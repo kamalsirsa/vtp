@@ -49,7 +49,9 @@ public:
 	wxChoice* GetChoiceShow()  { return (wxChoice*) FindWindow( ID_CHOICE_SHOW ); }
 	wxListCtrl* GetList()  { return (wxListCtrl*) FindWindow( ID_LIST ); }
 
-private:
+protected:
+	void UpdateTitle();
+
 	// WDR: member variable declarations for FeatInfoDlg
 	vtFeatureSet *m_pFeatures;
 	int m_iShow;

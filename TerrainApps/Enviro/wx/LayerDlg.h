@@ -145,6 +145,7 @@ private:
 	void OnLayerSaveAs( wxCommandEvent &event );
 	void OnZoomTo( wxCommandEvent &event );
 	void OnVisible( wxCommandEvent &event );
+	void OnTable( wxCommandEvent &event );
 	void OnShadowVisible( wxCommandEvent &event );
 	void OnShowAll( wxCommandEvent &event );
 	void OnSelChanged( wxTreeEvent &event );

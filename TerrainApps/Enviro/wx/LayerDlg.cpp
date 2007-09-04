@@ -71,6 +71,7 @@ BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 	EVT_MENU( ID_LAYER_ZOOM_TO, LayerDlg::OnZoomTo )
 
 	EVT_MENU( ID_LAYER_VISIBLE, LayerDlg::OnVisible )
+	EVT_MENU( ID_LAYER_TABLE, LayerDlg::OnTable )
 	EVT_MENU( ID_LAYER_SHADOW, LayerDlg::OnShadowVisible )
 	EVT_MENU( ID_SHOW_ALL, LayerDlg::OnShowAll )
 
@@ -761,6 +762,13 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 	}
 }
 
+void LayerDlg::OnTable( wxCommandEvent &event )
+{
+	LayerItemData *data = GetLayerDataFromItem(m_item);
+	if (data && data->m_alay)
+		g_App.ShowTable(data->m_alay->pSet);
+}
+
 void LayerDlg::OnUpdateVisible(wxUpdateUIEvent& event)
 {
 	if (!IsShown())
@@ -878,6 +886,8 @@ void LayerDlg::UpdateEnabling()
 		if (data->m_type == LT_VEG)
 			bSaveable = true;
 	}
+
+	m_pToolbar->EnableTool(ID_LAYER_TABLE, (data && data->m_alay));
 
 	m_pToolbar->EnableTool(ID_LAYER_DELETE, bRemovable);
 

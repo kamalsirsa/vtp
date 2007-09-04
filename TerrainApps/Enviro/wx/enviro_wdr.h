@@ -365,8 +365,9 @@ wxSizer *TParams7Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_LAYER_DELETE 10255
 #define ID_LAYER_ZOOM_TO 10256
 #define ID_LAYER_VISIBLE 10257
-#define ID_LAYER_SHADOW 10258
-#define ID_SHOW_ALL 10259
+#define ID_LAYER_TABLE 10258
+#define ID_LAYER_SHADOW 10259
+#define ID_SHOW_ALL 10260
 void LayerToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

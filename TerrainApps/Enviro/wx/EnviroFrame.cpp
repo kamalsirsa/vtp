@@ -39,6 +39,7 @@
 #include "BuildingDlg3d.h"
 #include "CameraDlg.h"
 #include "DistanceDlg3d.h"
+#include "FeatureTableDlg3d.h"
 #include "LayerDlg.h"
 #include "LinearStructDlg3d.h"
 #include "LocationDlg.h"
@@ -155,6 +156,7 @@ EVT_MENU(ID_VIEW_COMPASS,			EnviroFrame::OnViewCompass)
 EVT_UPDATE_UI(ID_VIEW_COMPASS,		EnviroFrame::OnUpdateViewCompass)
 EVT_MENU(ID_VIEW_MAP_OVERVIEW,		EnviroFrame::OnViewMapOverView)
 EVT_UPDATE_UI(ID_VIEW_MAP_OVERVIEW,	EnviroFrame::OnUpdateViewMapOverView)
+EVT_MENU(ID_VIEW_FEATURE_TABLE,		EnviroFrame::OnViewFeatureTable)
 EVT_MENU(ID_VIEW_SETTINGS,			EnviroFrame::OnViewSettings)
 EVT_MENU(ID_VIEW_LOCATIONS,			EnviroFrame::OnViewLocations)
 EVT_UPDATE_UI(ID_VIEW_LOCATIONS,	EnviroFrame::OnUpdateViewLocations)
@@ -321,6 +323,9 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pBuildingDlg = new BuildingDlg3d(this, -1, _("Building Properties"));
 	m_pCameraDlg = new CameraDlg(this, -1, _("Camera-View"));
 	m_pDistanceDlg = new DistanceDlg3d(this, -1, _("Distance"));
+	m_pDistanceDlg = new DistanceDlg3d(this, -1, _("Distance"));
+	m_pFeatureDlg = new FeatureTableDlg3d(this, -1, _(""), wxDefaultPosition,
+		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
 	m_pInstanceDlg = new InstanceDlg(this, -1, _("Instances"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
@@ -460,6 +465,7 @@ void EnviroFrame::CreateMenus()
 	m_pViewMenu->AppendCheckItem(ID_VIEW_ELEV_LEGEND, _("Elevation Legend"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_COMPASS, _("Compass"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_MAP_OVERVIEW, _("Overview"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_FEATURE_TABLE, _("Feature Info"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SETTINGS, _("Camera - View Settings\tCtrl+S"));
 	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _("Store/Recall Locations\tCtrl+L"));
@@ -1262,6 +1268,11 @@ void EnviroFrame::OnUpdateViewMapOverView(wxUpdateUIEvent& event)
 	}
 	event.Enable(bEnable);
 	event.Check(g_App.GetShowMapOverview());
+}
+
+void EnviroFrame::OnViewFeatureTable(wxCommandEvent& event)
+{
+	m_pFeatureDlg->Show(true);
 }
 
 void EnviroFrame::OnViewSlower(wxCommandEvent& event)
@@ -2214,6 +2225,12 @@ void EnviroFrame::UpdateLODInfo()
 	vtPagedStructureLodGrid *pPSLG = terr->GetStructureLodGrid();
 	if (pPSLG)
 		m_pLODDlg->DrawStructureState(pPSLG, terr->GetStructurePageOutDistance());
+}
+
+void EnviroFrame::ShowTable(vtFeatureSet *set)
+{
+	m_pFeatureDlg->Show();
+	m_pFeatureDlg->SetFeatureSet(set);
 }
 
 ///////////////////////////////////////////////////////////////////

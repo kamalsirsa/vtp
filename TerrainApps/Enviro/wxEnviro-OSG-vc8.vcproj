@@ -430,6 +430,20 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\FeatureTableDlg3d.cpp"
+				>
+				<FileConfiguration
+					Name="Debug Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\wx\LayerDlg.cpp"
 				>
 				<FileConfiguration
@@ -968,6 +982,10 @@
 			</File>
 			<File
 				RelativePath=".\wx\EnviroGUI.h"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\FeatureTableDlg3d.h"
 				>
 			</File>
 			<File

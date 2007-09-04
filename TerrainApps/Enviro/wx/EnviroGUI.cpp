@@ -307,6 +307,11 @@ bool EnviroGUI::SaveStructures(bool bAskFilename)
 	return true;
 }
 
+void EnviroGUI::ShowTable(vtFeatureSet *set)
+{
+	GetFrame()->ShowTable(set);
+}
+
 bool EnviroGUI::IsAcceptable(vtTerrain *pTerr)
 {
 	return GetFrame()->IsAcceptable(pTerr);
@@ -422,6 +427,9 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
 	// add the new layer to the terrain
 	pTerr->GetLayers().Append(pLay);
 	pTerr->SetAbstractLayer(pLay);
+
+	// and show it in the layers dialog
+	GetFrame()->m_pLayerDlg->RefreshTreeContents();	// full refresh
 
 	return pLay;
 }

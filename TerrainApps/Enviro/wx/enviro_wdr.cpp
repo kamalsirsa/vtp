@@ -2859,6 +2859,7 @@ void LayerToolBarFunc( wxToolBar *parent )
     parent->AddSeparator();
     parent->AddTool( ID_LAYER_ZOOM_TO, _("Zoom"), ToolBitmapsFunc( 3 ), wxNullBitmap, wxITEM_NORMAL, _("Zoom to Layer") );
     parent->AddTool( ID_LAYER_VISIBLE, _("Visible"), ToolBitmapsFunc( 5 ), wxNullBitmap, wxITEM_CHECK, _("Toggle Layer Visibility") );
+    parent->AddTool( ID_LAYER_TABLE, wxT(""), ToolBitmapsFunc( 9 ), wxNullBitmap, wxITEM_NORMAL, wxT("") );
     parent->AddTool( ID_LAYER_SHADOW, _("Shadow"), ToolBitmapsFunc( 6 ), wxNullBitmap, wxITEM_CHECK, _("Toggle Structure Shadow") );
     parent->AddSeparator();
     parent->AddTool( ID_SHOW_ALL, _("All"), ToolBitmapsFunc( 7 ), wxNullBitmap, wxITEM_CHECK, _("Show all elements of every layer") );
@@ -3406,6 +3407,40 @@ wxBitmap ToolBitmapsFunc( size_t index )
         wxImage image( 20, 20, (unsigned char*)data, TRUE );
         image.SetMaskColour( 217, 209, 196);
         wxBitmap bitmap( image );
+        return bitmap;
+    }
+    if (index == 9)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 3 1",
+        "  c None",
+        "a c Black",
+        "b c #BFBF00",
+        /* pixels */
+        "                    ",
+        " aaaaaaaaaaaaaaaaaa ",
+        " abbbbabbbbabbbbabb ",
+        " abbbbabbbbabbbbabb ",
+        " aaaaaaaaaaaaaaaaaa ",
+        " a    a    a    a   ",
+        " a    a    a    a   ",
+        " aaaaaaaaaaaaaaaaaa ",
+        " a    a    a    a   ",
+        " a    a    a    a   ",
+        " aaaaaaaaaaaaaaaaaa ",
+        " a    a    a    a   ",
+        " a    a    a    a   ",
+        " aaaaaaaaaaaaaaaaaa ",
+        " a    a    a    a   ",
+        " a    a    a    a   ",
+        " aaaaaaaaaaaaaaaaaa ",
+        " a    a    a    a   ",
+        " a    a    a    a   ",
+        "                    "
+        };
+        wxBitmap bitmap( xpm_data );
         return bitmap;
     }
     return wxNullBitmap;

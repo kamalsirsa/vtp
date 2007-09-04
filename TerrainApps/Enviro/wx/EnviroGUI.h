@@ -56,6 +56,7 @@ public:
 	// The following are useful methods
 	bool SaveVegetation(bool bAskFilename);
 	bool SaveStructures(bool bAskFilename);
+	void ShowTable(vtFeatureSet *set);
 
 	// navigation engines
 	vtJoystickEngine	*m_pJFlyer;
