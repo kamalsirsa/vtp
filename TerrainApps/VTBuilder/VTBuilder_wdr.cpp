@@ -958,44 +958,6 @@ wxSizer *SelectDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
-wxSizer *FeatInfoDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
-{
-    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
-
-    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT_SHOW, _("Show features:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxString *strs3 = (wxString*) NULL;
-    wxChoice *item3 = new wxChoice( parent, ID_CHOICE_SHOW, wxDefaultPosition, wxSize(105,-1), 0, strs3, 0 );
-    item1->Add( item3, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
-
-    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT_VERTICAL, _("Vertical units:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item1->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxString *strs5 = (wxString*) NULL;
-    wxChoice *item5 = new wxChoice( parent, ID_CHOICE_VERTICAL, wxDefaultPosition, wxSize(95,-1), 0, strs5, 0 );
-    item1->Add( item5, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
-
-    wxButton *item6 = new wxButton( parent, ID_DEL_HIGH, _("Delete Highlighted"), wxDefaultPosition, wxDefaultSize, 0 );
-    item1->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item0->Add( item1, 0, wxALIGN_CENTER_VERTICAL, 5 );
-
-    wxListCtrl *item7 = new wxListCtrl( parent, ID_LIST, wxDefaultPosition, wxSize(550,150), wxLC_REPORT|wxSUNKEN_BORDER );
-    item0->Add( item7, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-
-    if (set_sizer)
-    {
-        parent->SetSizer( item0 );
-        if (call_fit)
-            item0->SetSizeHints( parent );
-    }
-    
-    return item0;
-}
-
 wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );

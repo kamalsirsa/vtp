@@ -173,6 +173,14 @@ wxSizer *ProfileEditDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set
 const int ID_TAGLIST = 10119;
 wxSizer *TagDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+const int ID_TEXT_SHOW = 10120;
+const int ID_CHOICE_SHOW = 10121;
+const int ID_TEXT_VERTICAL = 10122;
+const int ID_CHOICE_VERTICAL = 10123;
+const int ID_DEL_HIGH = 10124;
+const int ID_LIST = 10125;
+wxSizer *FeatureTableDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
