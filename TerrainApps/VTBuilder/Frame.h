@@ -408,7 +408,7 @@ public:
 	bool SampleCurrentTerrains(vtElevLayer *pTarget);
 	float GetHeightFromTerrain(const DPoint2 &p);
 	void ExportBitmap(RenderDlg &dlg);
-	int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
+	unsigned int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
 	bool FillElevGaps(vtElevLayer *el);
 
 	// Images

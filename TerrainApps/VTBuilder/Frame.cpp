@@ -1253,7 +1253,7 @@ ProfileDlg *MainFrame::ShowProfileDlg()
 	return m_pProfileDlg;
 }
 
-int MainFrame::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
+unsigned int MainFrame::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
 {
 	for (int l = 0; l < NumLayers(); l++)
 	{

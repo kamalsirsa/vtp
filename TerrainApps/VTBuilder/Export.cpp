@@ -678,7 +678,24 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 	// Form an array of pointers to the existing elevation layers
 	std::vector<vtElevLayer*> elevs;
-	int elev_layers = ElevLayerArray(elevs);
+	unsigned int elev_layers = ElevLayerArray(elevs);
+
+	// Setup TINs for speedy picking
+	unsigned int e;
+	for (e = 0; e < elev_layers; e++)
+	{
+		vtElevLayer *el = elevs[e];
+		if (el->m_pTin)
+		{
+			int tris = el->m_pTin->NumTris();
+			// Aim for no more than 50 triangles in a bin
+			int bins = (int) sqrt((double) tris / 50);
+			if (bins < 10)
+				bins = 10;
+			UpdateProgressDialog2(1, -1, _T("Binning TIN"));
+			el->m_pTin->SetupTriangleBins(bins, progress_callback_minor);
+		}
+	}
 
 	// make a note of which lods exist
 	LODMap lod_existence_map(opts.cols, opts.rows);
@@ -692,7 +709,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 		cmap.GenerateColors(color_table, 4000, color_min_elev, color_max_elev);
 	}
 
-	int i, j, e;
+	int i, j;
 	int total = opts.rows * opts.cols, done = 0;
 	for (j = 0; j < opts.rows; j++)
 	{
@@ -758,6 +775,8 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			int row = opts.rows-1-j;
 
 			// Now sample the elevation we found to the highest LOD we need
+			UpdateProgressDialog2(done*99/total, -1, _("Sampling elevation"));
+
 			vtElevationGrid base_lod(tile_area, base_tilesize+1, base_tilesize+1,
 				bFloat, m_proj);
 
@@ -769,6 +788,10 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			for (y = base_tilesize; y >= 0; y--)
 			{
 				p.y = m_area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
+
+				// Inform user
+				progress_callback_minor((base_tilesize-1-y)*99/base_tilesize);
+
 				for (x = 0; x <= base_tilesize; x++)
 				{
 					p.x = m_area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
