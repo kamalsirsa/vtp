@@ -354,7 +354,10 @@ void vtElevLayer::OnLeftUp(BuilderView *pView, UIContext &ui)
 
 		int num = m_pTin->RemoveTrianglesBySegment(ui.m_DownLocation, ui.m_CurLocation);
 		if (num)
+		{
+			SetModified(true);
 			pView->Refresh();
+		}
 	}
 }
 
