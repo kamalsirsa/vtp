@@ -176,6 +176,9 @@
 				RelativePath=".\DoubleProgDlg.cpp">
 			</File>
 			<File
+				RelativePath=".\FeatureTableDlg.cpp">
+			</File>
+			<File
 				RelativePath=".\Helper.cpp">
 			</File>
 			<File
@@ -282,6 +285,9 @@
 			</File>
 			<File
 				RelativePath=".\DoubleProgDlg.h">
+			</File>
+			<File
+				RelativePath=".\FeatureTableDlg.h">
 			</File>
 			<File
 				RelativePath=".\Helper.h">
