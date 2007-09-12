@@ -25,6 +25,7 @@
 #include "EnviroFrame.h"
 #include "canvas.h"
 #include "DistanceDlg3d.h"
+#include "FeatureTableDlg3d.h"
 #include "LayerDlg.h"
 #include "StyleDlg.h"
 
@@ -310,6 +311,11 @@ bool EnviroGUI::SaveStructures(bool bAskFilename)
 void EnviroGUI::ShowTable(vtFeatureSet *set)
 {
 	GetFrame()->ShowTable(set);
+}
+
+vtFeatureSet *EnviroGUI::TableShown()
+{
+	return GetFrame()->m_pFeatureDlg->GetFeatureSet();
 }
 
 bool EnviroGUI::IsAcceptable(vtTerrain *pTerr)
