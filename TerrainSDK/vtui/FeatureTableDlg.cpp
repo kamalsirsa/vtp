@@ -15,6 +15,7 @@
 #include "FeatureTableDlg.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/Features.h"
+#include "Helper.h"		// for ProgressDialog
 
 
 // WDR: class implementations
@@ -64,6 +65,7 @@ void FeatureTableDlg::SetFeatureSet(vtFeatureSet *pFeatures)
 
 	if (!m_pFeatures)
 	{
+		// No feature set, disable controls
 		GetList()->Enable(false);
 		GetChoiceShow()->Enable(false);
 		GetDelHigh()->Enable(false);
@@ -136,6 +138,7 @@ void FeatureTableDlg::ShowSelected()
 	m_iShow = 0;
 	TransferDataToWindow();
 	Clear();
+
 	int selected = m_pFeatures->NumSelected();
 	if (selected > 2000)
 	{
@@ -144,12 +147,19 @@ void FeatureTableDlg::ShowSelected()
 		if (wxMessageBox(msg, _("Warning"), wxYES_NO) == wxNO)
 			return;
 	}
+	bool bProgress = (selected > 500);
+	if (bProgress)
+		OpenProgressDialog(_("Populating table"), false, this);
 	int i, num = m_pFeatures->GetNumEntities();
 	for (i = 0; i < num; i++)
 	{
+		if (bProgress && (i%20)==0)
+			UpdateProgressDialog(i * 99 / num);
 		if (m_pFeatures->IsSelected(i))
 			ShowFeature(i);
 	}
+	if (bProgress)
+		CloseProgressDialog();
 }
 
 void FeatureTableDlg::ShowPicked()
@@ -160,7 +170,9 @@ void FeatureTableDlg::ShowPicked()
 	m_iShow = 1;
 	TransferDataToWindow();
 	Clear();
+
 	int i, num = m_pFeatures->GetNumEntities();
+
 	for (i = 0; i < num; i++)
 	{
 		if (m_pFeatures->IsPicked(i))
@@ -176,6 +188,7 @@ void FeatureTableDlg::ShowAll()
 	m_iShow = 2;
 	TransferDataToWindow();
 	Clear();
+
 	int i, num = m_pFeatures->GetNumEntities();
 	if (num > 2000)
 	{
@@ -184,10 +197,17 @@ void FeatureTableDlg::ShowAll()
 		if (wxMessageBox(msg, _("Warning"), wxYES_NO) == wxNO)
 			return;
 	}
+	bool bProgress = (num > 500);
+	if (bProgress)
+		OpenProgressDialog(_("Populating table"), false, this);
 	for (i = 0; i < num; i++)
 	{
+		if (bProgress && (i%20)==0)
+			UpdateProgressDialog(i * 99 / num);
 		ShowFeature(i);
 	}
+	if (bProgress)
+		CloseProgressDialog();
 }
 
 void FeatureTableDlg::ShowFeature(int iFeat)

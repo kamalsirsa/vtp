@@ -30,6 +30,7 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	void SetFeatureSet(vtFeatureSet *pFeatures);
+	vtFeatureSet *GetFeatureSet() { return m_pFeatures; }
 	void Clear();
 	void ShowSelected();
 	void ShowPicked();
