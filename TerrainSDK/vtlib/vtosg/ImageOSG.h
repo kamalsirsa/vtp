@@ -15,7 +15,7 @@
  * file formats, and used as a texture map for a textured material, by
  * passing it to vtMaterial::SetTexture()
  */
-class vtImage: public osg::Image, public vtBitmapBase
+class vtImage: public vtBitmapBase, public osg::Referenced
 {
 public:
 	vtImage();
@@ -28,7 +28,7 @@ public:
 	bool Read(const char *fname, bool bAllowCache = true, bool progress_callback(int) = NULL);
 	bool WritePNG(const char *fname, bool progress_callback(int) = NULL);
 	bool WriteJPEG(const char *fname, int quality = 99, bool progress_callback(int) = NULL);
-	bool HasData() { return _data != NULL; }
+	bool HasData() { return m_pOsgImage.valid() && m_pOsgImage->data() != NULL; }
 	void Scale(int w, int h);
 
 	/// Return the name of the file, if any, from which the image was loaded.
@@ -47,8 +47,8 @@ public:
 	unsigned int GetHeight() const;
 	unsigned int GetDepth() const;
 
-	unsigned char *GetData() { return data(); }
-	unsigned char *GetRowData(int row) { return data(0, row); }
+	unsigned char *GetData() { return m_pOsgImage->data(); }
+	unsigned char *GetRowData(int row) { return m_pOsgImage->data(0, row); }
 	void Set16Bit(bool bFlag);
 
 	// In case the image was loaded from a georeferenced format (such as
@@ -56,11 +56,14 @@ public:
 	vtProjection &GetProjection() { return m_proj; }
 	DRECT &GetExtents() { return m_extents; }
 
+	osg::Image *GetOsgImage() { return m_pOsgImage.get(); }
+
 protected:
 	void _BasicInit();
 	void _CreateFromDIB(vtDIB *pDIB);
 	bool _ReadPNG(const char *filename);
 	bool _ReadTIF(const char *filename, bool progress_callback(int) = NULL);
+	void _ComputeRowWidth();
 
 protected:
 	// Destructor is protected so that people will use Release() instead,
@@ -72,6 +75,7 @@ protected:
 	bool m_b16bit;
 	vtString m_strFilename;
 	int m_iRowSize;		// in bytes
+	osg::ref_ptr<osg::Image> m_pOsgImage;
 
 	// These two fields are rarely used, and increase size of this object
 	//  from 168 to 256 bytes.

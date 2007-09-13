@@ -250,7 +250,7 @@ void vtMaterial::SetTexture(vtImage *pImage)
 		m_pTexture = new Texture2D;
 
 	// this stores a reference so that it won't get deleted without this material's permission
-	m_pTexture->setImage(pImage);
+	m_pTexture->setImage(pImage->GetOsgImage());
 
 	// also store a convenience pointer
 	m_pImage = pImage;

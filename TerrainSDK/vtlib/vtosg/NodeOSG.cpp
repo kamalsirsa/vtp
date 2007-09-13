@@ -906,7 +906,7 @@ vtMultiTexture *vtNode::AddMultiTexture(int iTextureUnit, vtImage *pImage, int i
 	// Currently, multi-texture support is OSG-only
 	osg::Node *onode = GetOsgNode();
 
-	mt->m_pTexture = new osg::Texture2D(pImage);
+	mt->m_pTexture = new osg::Texture2D(pImage->GetOsgImage());
 
 	mt->m_pTexture->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
 	mt->m_pTexture->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::LINEAR);
@@ -938,10 +938,11 @@ vtMultiTexture *vtNode::AddMultiTexture(int iTextureUnit, vtImage *pImage, int i
 
 	// If texture mode is DECAL and intenal texture format does not have an alpha channel then
 	// force the format to be converted on texture binding
-	if ((GL_DECAL == iTextureMode) && (pImage->getInternalTextureFormat() != GL_RGBA))
+	if ((GL_DECAL == iTextureMode) &&
+		(pImage->GetOsgImage()->getInternalTextureFormat() != GL_RGBA))
 	{
 		// Force the internal format to RGBA
-		pImage->setInternalTextureFormat(GL_RGBA);
+		pImage->GetOsgImage()->setInternalTextureFormat(GL_RGBA);
 	}
 
 	return mt;

@@ -58,33 +58,40 @@ void vtImageCacheClear()
 vtImage::vtImage()
 {
 	_BasicInit();
+	m_pOsgImage = new osg::Image;
 }
 
 vtImage::vtImage(const char *fname, bool bAllowCache)
 {
 	_BasicInit();
+	m_pOsgImage = new osg::Image;
+
 	Read(fname, bAllowCache);
 }
 
 vtImage::vtImage(vtDIB *pDIB)
 {
 	_BasicInit();
+	m_pOsgImage = new osg::Image;
+
 	_CreateFromDIB(pDIB);
 }
 
-vtImage::vtImage(vtImage *copyfrom) :
-	osg::Image(*copyfrom, osg::CopyOp::DEEP_COPY_ALL)
+vtImage::vtImage(vtImage *copyfrom)
 {
-	ref();
+	_BasicInit();
+	m_pOsgImage = new osg::Image(*(copyfrom->GetOsgImage()), osg::CopyOp::DEEP_COPY_ALL);
+
 	m_b16bit = copyfrom->m_b16bit;
 	m_proj = copyfrom->m_proj;
 	m_extents = copyfrom->m_extents;
-	m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
+	_ComputeRowWidth();
 }
 
 
 vtImage::~vtImage()
 {
+	m_pOsgImage = NULL;	// unreferences OSG image
 }
 
 void vtImage::_BasicInit()
@@ -114,8 +121,8 @@ bool vtImage::Create(int width, int height, int bitdepth, bool create_palette)
 	else
 		return false;
 
-	allocateImage(width, height, 1, pixelFormat, dataType);
-	m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
+	m_pOsgImage->allocateImage(width, height, 1, pixelFormat, dataType);
+	_ComputeRowWidth();
 
 	return true;
 }
@@ -254,7 +261,7 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 #if LOG_IMAGE_LOAD
 			VTLOG1("  readImageFile,");
 #endif
-			pOsgImage = osgDB::readImageFile((const char *)fname_local);
+			m_pOsgImage = osgDB::readImageFile((const char *)fname_local);
 		}
 		catch (...)
 		{
@@ -264,41 +271,12 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 			/// all the way to the app.
 		}
 
-		if (!pOsgImage.valid())
+		if (!m_pOsgImage.valid())
 		{
 			VTLOG("  failed to read '%s'\n", fname);
 			return false;
 		}
-
-		// beware - NO_DELETE means that OSG has given us the same image again
-		//  so don't try to steal it again
-		osg::Image::AllocationMode mode = pOsgImage->getAllocationMode();
-		if (mode == osg::Image::NO_DELETE)
-		{
-			// do nothing - we already have the buffer from the previous time
-		}
-		else
-		{
-			// _Very carefully_ copy the entire resulting image into our own
-			//   image class.
-			_fileName = pOsgImage->getFileName();
-			_s = pOsgImage->s(); _t = pOsgImage->t(); _r = pOsgImage->r();
-			_internalTextureFormat = pOsgImage->getInternalTextureFormat();
-			_pixelFormat = pOsgImage->getPixelFormat();
-			_dataType = pOsgImage->getDataType();
-			_packing = pOsgImage->getPacking();
-// OSG 0.9.8-3 (Feb. 12) has a count:
-			_modifiedCount = pOsgImage->getModifiedCount();
-			for (unsigned int k = 0; k < pOsgImage->getNumMipmapLevels()-1; k++)
-				_mipmapData.push_back(pOsgImage->getMipmapData(k) - pOsgImage->data());
-			if (pOsgImage->data())
-			{
-				// Steal the data by grabbing the pointer
-				pOsgImage->setAllocationMode(osg::Image::NO_DELETE);
-				setData(pOsgImage->data(), mode);
-			}
-		}
-		m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
+		_ComputeRowWidth();
 	}
 #if LOG_IMAGE_LOAD
 	VTLOG("  succeeded.\n");
@@ -323,7 +301,7 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 bool vtImage::WritePNG(const char *fname, bool progress_callback(int))
 {
 #if USE_OSG_FOR_PNG
-	return osgDB::writeImageFile(*this, fname);
+	return osgDB::writeImageFile(*(m_pOsgImage.get()), fname);
 #else
 	// TODO: native libpng code here
 	return false;
@@ -352,7 +330,7 @@ bool vtImage::WriteJPEG(const char *fname, int quality, bool progress_callback(i
 	str.Format("JPEG_QUALITY %d", quality);
 	opts->setOptionString((const char *)str);
 
-	return osgDB::writeImageFile(*this, fname);
+	return osgDB::writeImageFile(*(m_pOsgImage.get()), fname);
 #else
 	// TODO: native libjpeg code here
 	return false;
@@ -366,20 +344,20 @@ void vtImage::Release()
 
 unsigned char vtImage::GetPixel8(int x, int y) const
 {
-	unsigned char *buf = _data + x + (_t-1-y)*m_iRowSize;
+	unsigned char *buf = m_pOsgImage->data() + x + (m_pOsgImage->t()-1-y)*m_iRowSize;
 	return *buf;
 }
 
 void vtImage::SetPixel8(int x, int y, unsigned char color)
 {
-	unsigned char *buf = _data + x + (_t-1-y)*m_iRowSize;
+	unsigned char *buf = m_pOsgImage->data() + x + (m_pOsgImage->t()-1-y)*m_iRowSize;
 	*buf = color;
 }
 
 void vtImage::GetPixel24(int x, int y, RGBi &rgb) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = _data + x*3 + (_t-1-y)*m_iRowSize;
+	unsigned char *buf = m_pOsgImage->data() + x*3 + (m_pOsgImage->t()-1-y)*m_iRowSize;
 	rgb.r = buf[0];
 	rgb.g = buf[1];
 	rgb.b = buf[2];
@@ -388,7 +366,7 @@ void vtImage::GetPixel24(int x, int y, RGBi &rgb) const
 void vtImage::SetPixel24(int x, int y, const RGBi &rgb)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = _data + x*3 + (_t-1-y)*m_iRowSize;
+	unsigned char *buf = m_pOsgImage->data() + x*3 + (m_pOsgImage->t()-1-y)*m_iRowSize;
 	buf[0] = rgb.r;
 	buf[1] = rgb.g;
 	buf[2] = rgb.b;
@@ -397,7 +375,7 @@ void vtImage::SetPixel24(int x, int y, const RGBi &rgb)
 void vtImage::GetPixel32(int x, int y, RGBAi &rgba) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = _data + x*4 + (_t-1-y)*m_iRowSize;
+	unsigned char *buf = m_pOsgImage->data() + x*4 + (m_pOsgImage->t()-1-y)*m_iRowSize;
 	rgba.r = buf[0];
 	rgba.g = buf[1];
 	rgba.b = buf[2];
@@ -407,7 +385,7 @@ void vtImage::GetPixel32(int x, int y, RGBAi &rgba) const
 void vtImage::SetPixel32(int x, int y, const RGBAi &rgba)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = _data + x*4 + (_t-1-y)*m_iRowSize;
+	unsigned char *buf = m_pOsgImage->data() + x*4 + (m_pOsgImage->t()-1-y)*m_iRowSize;
 	buf[0] = rgba.r;
 	buf[1] = rgba.g;
 	buf[2] = rgba.b;
@@ -416,17 +394,17 @@ void vtImage::SetPixel32(int x, int y, const RGBAi &rgba)
 
 unsigned int vtImage::GetWidth() const
 {
-	return s();
+	return m_pOsgImage->s();
 }
 
 unsigned int vtImage::GetHeight() const
 {
-	return t();
+	return m_pOsgImage->t();
 }
 
 unsigned int vtImage::GetDepth() const
 {
-	return getPixelSizeInBits();
+	return m_pOsgImage->getPixelSizeInBits();
 }
 
 /**
@@ -435,16 +413,17 @@ unsigned int vtImage::GetDepth() const
  */
 void vtImage::Set16Bit(bool bFlag)
 {
+	GLenum pixf = m_pOsgImage->getPixelFormat();
 	if (bFlag)
 	{
 		// use a 16-bit internal
-		if (_pixelFormat == GL_RGB)
-			_internalTextureFormat = GL_RGB5;
-		if (_pixelFormat == GL_RGBA)
-			_internalTextureFormat = GL_RGB5_A1;
+		if (pixf == GL_RGB)
+			m_pOsgImage->setInternalTextureFormat(GL_RGB5);
+		if (pixf == GL_RGBA)
+			m_pOsgImage->setInternalTextureFormat(GL_RGB5_A1);
 	}
 	else
-		_internalTextureFormat = _pixelFormat;
+		m_pOsgImage->setInternalTextureFormat(pixf);
 }
 
 void vtImage::_CreateFromDIB(vtDIB *pDIB)
@@ -513,19 +492,24 @@ void vtImage::_CreateFromDIB(vtDIB *pDIB)
 	else
 		internalFormat = pixelFormat;	// use default
 
-	setImage(w, h, 1,		// s, t, r
+	m_pOsgImage->setImage(w, h, 1,		// s, t, r
 	   internalFormat,		// int internalFormat,
 	   pixelFormat,			// unsigned int pixelFormat,
 	   GL_UNSIGNED_BYTE, 	// unsigned int dataType,
 	   image,
 	   osg::Image::USE_NEW_DELETE);
-	m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
+	_ComputeRowWidth();
 }
 
 void vtImage::Scale(int w, int h)
 {
-	scaleImage(w, h, 1);
-	m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
+	m_pOsgImage->scaleImage(w, h, 1);
+	_ComputeRowWidth();
+}
+
+void vtImage::_ComputeRowWidth()
+{
+	m_iRowSize = m_pOsgImage->getRowSizeInBytes();
 }
 
 //////////////////////////
