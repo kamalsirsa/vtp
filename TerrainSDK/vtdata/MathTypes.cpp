@@ -893,28 +893,6 @@ FPlane::FPlane(const FPoint3& Point, const FPoint3& Normal)
 	w = - x * Normal.x - y * Normal.y - z * Normal.z;
 }
 
-/** Construct a plane from two 3D points and an angle from the
-intersection with the 2D (x,z) co-ordinate plane.
-N.B. The y co-ordinates must be the same.
-This produces a plane that is clockwise oriented in XZ.
-*/
-FPlane::FPlane(const FPoint3& PointA, const FPoint3& PointB, const float Theta)
-{
-	// Do this long handed for the time being
-	FPoint3 VectorAB = PointB - PointA;
-	assert(0.0 == VectorAB.y);
-	// Rotate clockwise 90 degrees in x z
-	FPoint3 VectorAC(VectorAB.z, 0.0, -VectorAB.x);
-	// Construct a rotation matrix around vectorAB
-	VectorAB.Normalize();
-	FMatrix3 Matrix;
-	Matrix.AxisAngle(VectorAB, Theta);
-	FPoint3 PointC;
-	Matrix.Transform(VectorAC, PointC);
-	PointC = PointC + PointA;
-	*this = FPlane(PointA, PointB, PointC);
-}
-
 /**
 * Find the intersection of two planes. which in the general case is a line.
 * The line is provided as a ray (origin and direction).

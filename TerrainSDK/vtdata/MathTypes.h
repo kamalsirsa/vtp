@@ -583,8 +583,6 @@ public:
 	FPlane(const FPoint3& p, const FPoint3& q, const FPoint3& r);
 	/// Construct from point and normal vector
 	FPlane(const FPoint3& Point, const FPoint3& Normal);
-	/// Construct from two 2D points and an angle
-	FPlane(const FPoint3& PointA, const FPoint3& PointB, const float Theta);
 
 	const FPlane &operator=(const FPlane &rhs)
 	{
