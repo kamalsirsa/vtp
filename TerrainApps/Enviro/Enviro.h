@@ -340,6 +340,7 @@ protected:
 	ControlEngine	*m_pControlEng;
 	vtHUD		*m_pHUD;
 	vtTextMesh	*m_pHUDMessage;
+	vtFont		*m_pArial;
 
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to

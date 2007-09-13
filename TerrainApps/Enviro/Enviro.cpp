@@ -77,6 +77,7 @@ Enviro::Enviro() : vtTerrainScene()
 	m_fMessageTime = 0.0f;
 	m_pHUD = NULL;
 	m_pHUDMessage = NULL;
+	m_pArial = NULL;
 
 	// plants
 	m_pPlantList = NULL;
@@ -131,6 +132,8 @@ void Enviro::Startup()
 void Enviro::Shutdown()
 {
 	VTLOG1("Shutdown.\n");
+
+	delete m_pArial;
 	delete m_pPlantList;
 	if (m_pArcMats)
 		m_pArcMats->Release();
@@ -835,16 +838,16 @@ void Enviro::SetupScene2()
 	m_pRoot->AddChild(m_pHUD);
 
 	// The HUD always has a place to put status messages to the user
-	vtFont *font = new vtFont;
-	if (font->LoadFont("Arial.ttf"))
-	{
-		vtGeom *geom = new vtGeom;
-		m_pHUD->AddChild(geom);
-		m_pHUDMessage = new vtTextMesh(font, 18);
-		m_pHUDMessage->SetText("");
-		m_pHUDMessage->SetPosition(FPoint3(3,3,0));
-		geom->AddTextMesh(m_pHUDMessage, 0);
-	}
+	m_pArial = new vtFont;
+	m_pArial->LoadFont("Arial.ttf");
+
+	vtGeom *geom = new vtGeom;
+	m_pHUD->AddChild(geom);
+	m_pHUDMessage = new vtTextMesh(m_pArial, 18);
+	m_pHUDMessage->SetText("");
+	m_pHUDMessage->SetPosition(FPoint3(3,3,0));
+	geom->AddTextMesh(m_pHUDMessage, 0);
+	m_pHUDMessage->Release();	// pass ownership
 }
 
 //
@@ -2577,23 +2580,18 @@ void Enviro::CreateElevationLegend()
 	mesh2->Release();
 
 	// Text labels
-	vtFont *font = new vtFont;
-	if (font->LoadFont("Arial.ttf"))
+	for (i = 0; i < ticks; i++)
 	{
-		for (i = 0; i < ticks; i++)
-		{
-			vtTextMesh *mesh3 = new vtTextMesh(font, fontsize, false);
-			vtString str;
-			str.Format("%4.1f", fMin + (fMax - fMin) / (ticks-1) * i);
-			mesh3->SetText(str);
-			FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0.0f);
-			mesh3->SetPosition(p1);
+		vtTextMesh *mesh3 = new vtTextMesh(m_pArial, fontsize, false);
+		vtString str;
+		str.Format("%4.1f", fMin + (fMax - fMin) / (ticks-1) * i);
+		mesh3->SetText(str);
+		FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0.0f);
+		mesh3->SetPosition(p1);
 
-			m_pLegendGeom->AddTextMesh(mesh3, 0);
-			mesh3->Release();
-		}
+		m_pLegendGeom->AddTextMesh(mesh3, 0);
+		mesh3->Release();
 	}
-	delete font;
 
 	m_pHUD->AddChild(m_pLegendGeom);
 	m_bCreatedLegend = true;
