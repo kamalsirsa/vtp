@@ -246,6 +246,12 @@ public:
 		x = x * (float) cos(radians) - y * (float) sin(radians);
 		y = tempx * (float) sin(radians) + y * (float) cos(radians);
 	}
+	/** The so-called "2D cross product" is really the dot-product with the
+		perpendicular vector */
+	float Cross(const FPoint2 &rhs)
+	{
+		return (x*rhs.y - y*rhs.x);
+	}
 
 	// assignment
 	FPoint2 &operator=(const FPoint2 &v) { x = v.x; y = v.y; return *this; }
@@ -297,8 +303,8 @@ public:
 		x = x * cos(radians) - y * sin(radians);
 		y = tempx * sin(radians) + y * cos(radians);
 	}
-	// so-called "2D cross product" is really the dot-product with the
-	// perpendicular vector
+	/** The so-called "2D cross product" is really the dot-product with the
+		perpendicular vector */
 	double Cross(const DPoint2 &rhs)
 	{
 		return (x*rhs.y - y*rhs.x);
@@ -410,6 +416,7 @@ public:
 	void NearestPoint(const DPoint2 &Point, int &iIndex, double &dist) const;
 	bool NearestSegment(const DPoint2 &Point, int &iIndex, double &dist, DPoint2 &Intersection) const;
 	void ReverseOrder();
+	bool IsConvex() const;
 
 	DPoint2 &GetSafePoint(int index) const;
 	void SetSafePoint(int index, const DPoint2 &p);
@@ -448,6 +455,7 @@ public:
 	bool NearestSegment(const FPoint2 &Point, int &iIndex, float &dist, FPoint2 &Intersection) const;
 	void InsertPointAfter(int iInsertAfter, const FPoint2 &Point);
 	void ReverseOrder();
+	bool IsConvex() const;
 };
 
 inline DLine2 &DLine2::operator=(const DLine2 &v)
