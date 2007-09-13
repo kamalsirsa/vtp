@@ -198,6 +198,21 @@
 				RelativePath=".\DistanceDlg2d.cpp">
 			</File>
 			<File
+				RelativePath=".\ElevDrawOptions.cpp">
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="ElevLayer.cpp">
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -646,6 +661,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\vtImage.cpp">
+			</File>
+			<File
 				RelativePath="WaterLayer.cpp">
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -683,6 +701,9 @@
 			</File>
 			<File
 				RelativePath="DistribVegDlg.h">
+			</File>
+			<File
+				RelativePath=".\ElevDrawOptions.h">
 			</File>
 			<File
 				RelativePath="ElevLayer.h">
@@ -818,6 +839,9 @@
 			</File>
 			<File
 				RelativePath="VTBuilder_wdr.h">
+			</File>
+			<File
+				RelativePath=".\vtImage.h">
 			</File>
 			<File
 				RelativePath="WaterLayer.h">
