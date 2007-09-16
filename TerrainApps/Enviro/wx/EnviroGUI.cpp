@@ -413,7 +413,7 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
 	props.SetValueBool("Geometry", false, true);
 	props.SetValueBool("Labels", true, true);
 	props.SetValueRGBi("LabelColor", RGBi(255,255,0), true);
-	props.SetValueFloat("Elevation", 10.0f, true);
+	props.SetValueFloat("LabelHeight", 10.0f, true);
 	props.SetValueInt("TextFieldIndex", 0, true);
 
 	StyleDlg dlg(NULL, -1, _("Style"));
