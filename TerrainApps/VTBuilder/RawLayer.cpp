@@ -265,7 +265,7 @@ bool vtRawLayer::TransformCoords(vtProjection &proj)
 	if (!trans)
 		return false;		// inconvertible projections
 
-	bool success = m_pSet->TransformCoords(trans);
+	bool success = m_pSet->TransformCoords(trans, progress_callback);
 	delete trans;
 
 	if (!success)

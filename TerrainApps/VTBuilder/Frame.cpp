@@ -655,7 +655,9 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 				keep = true;
 			if (ret == wxYES)
 			{
+				OpenProgressDialog(_("Reprojecting"), false, this);
 				bool success = pLayer->TransformCoords(m_proj);
+				CloseProgressDialog();
 				if (success)
 					keep = true;
 				else
@@ -1477,7 +1479,7 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTargetLayer)
 
 	// iterate through the pixels of the new image
 	DPoint2 p;
-	RGBi rgb;
+	RGBi rgb, sampled;
 	int count;
 	for (j = 0; j < iRows; j++)
 	{
@@ -1500,9 +1502,11 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTargetLayer)
 			for (g = 0; g < num_image; g++)
 			{
 				// take image that's on top (last in list)
-//				if (images[g]->GetColorSolid(p, rgb);
-				if (images[g]->GetMultiSample(p, offsets, rgb))
+				if (images[g]->GetMultiSample(p, offsets, sampled))
+				{
+					rgb = sampled;
 					count++;
+				}
 			}
 			if (count)
 				pTarget->SetRGB(i, iRows-1-j, rgb.r, rgb.g, rgb.b);
