@@ -1,7 +1,7 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -59,11 +59,14 @@ void vtFeatureSetPoint2D::Offset(const DPoint2 &p, bool bSelectedOnly)
 	}
 }
 
-bool vtFeatureSetPoint2D::TransformCoords(OCT *pTransform)
+bool vtFeatureSetPoint2D::TransformCoords(OCT *pTransform, bool progress_callback(int))
 {
 	unsigned int i, bad = 0, size = m_Point2.GetSize();
 	for (i = 0; i < size; i++)
 	{
+		if (progress_callback != NULL && (i%200)==0)
+			progress_callback(i * 99 / size);
+
 		int success = pTransform->Transform(1, &m_Point2[i].x, &m_Point2[i].y);
 		if (success != 1)
 			bad++;
@@ -259,11 +262,14 @@ void vtFeatureSetPoint3D::Offset(const DPoint2 &p, bool bSelectedOnly)
 	}
 }
 
-bool vtFeatureSetPoint3D::TransformCoords(OCT *pTransform)
+bool vtFeatureSetPoint3D::TransformCoords(OCT *pTransform, bool progress_callback(int))
 {
 	unsigned int i, bad = 0, size = m_Point3.GetSize();
 	for (i = 0; i < size; i++)
 	{
+		if (progress_callback != NULL && (i%200)==0)
+			progress_callback(i * 99 / size);
+
 		int success = pTransform->Transform(1, &m_Point3[i].x, &m_Point3[i].y);
 		if (success != 1)
 			bad++;
@@ -423,11 +429,14 @@ void vtFeatureSetLineString::Offset(const DPoint2 &p, bool bSelectedOnly)
 	}
 }
 
-bool vtFeatureSetLineString::TransformCoords(OCT *pTransform)
+bool vtFeatureSetLineString::TransformCoords(OCT *pTransform, bool progress_callback(int))
 {
 	unsigned int i, j, pts, bad = 0, size = m_Line.size();
 	for (i = 0; i < size; i++)
 	{
+		if (progress_callback != NULL && (i%200)==0)
+			progress_callback(i * 99 / size);
+
 		DLine2 &dline = m_Line[i];
 		pts = dline.GetSize();
 		for (j = 0; j < pts; j++)
@@ -534,20 +543,29 @@ void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callb
 
 		// Beware: it is possible for the shape to not actually have vertices
 		if (pObj->nVertices == 0)
-			m_Line[i] = dline;
+			m_Line.push_back(dline);
 		else
 		{
-			// Store each coordinate
-			dline.SetSize(pObj->nVertices);
-			for (int j = 0; j < pObj->nVertices; j++)
-				dline.SetAt(j, DPoint2(pObj->padfX[j], pObj->padfY[j]));
-
-			m_Line.push_back(dline);
+			// Copy each part
+			for (int part = 0; part < pObj->nParts; part++)
+			{
+				int start = pObj->panPartStart[part], end;
+				if (part+1 < pObj->nParts)
+					end = pObj->panPartStart[part+1]-1;
+				else
+					end = pObj->nVertices-1;
+	
+				dline.SetSize(end - start + 1);
+				for (int j = start; j <= end; j++)
+					dline.SetAt(j-start, DPoint2(pObj->padfX[j], pObj->padfY[j]));
+	
+				m_Line.push_back(dline);
+			}
 		}
 		SHPDestroyObject(pObj);
 	}
 	// allocate flag array
-	m_Flags.resize(nElems, 0);
+	m_Flags.resize(m_Line.size(), 0);
 }
 
 
@@ -599,11 +617,14 @@ void vtFeatureSetLineString3D::Offset(const DPoint2 &p, bool bSelectedOnly)
 	}
 }
 
-bool vtFeatureSetLineString3D::TransformCoords(OCT *pTransform)
+bool vtFeatureSetLineString3D::TransformCoords(OCT *pTransform, bool progress_callback(int))
 {
 	unsigned int i, j, pts, bad = 0, size = m_Line.size();
 	for (i = 0; i < size; i++)
 	{
+		if (progress_callback != NULL && (i%200)==0)
+			progress_callback(i * 99 / size);
+
 		DLine3 &dline = m_Line[i];
 		pts = dline.GetSize();
 		for (j = 0; j < pts; j++)
@@ -807,11 +828,14 @@ void vtFeatureSetPolygon::Offset(const DPoint2 &p, bool bSelectedOnly)
 	}
 }
 
-bool vtFeatureSetPolygon::TransformCoords(OCT *pTransform)
+bool vtFeatureSetPolygon::TransformCoords(OCT *pTransform, bool progress_callback(int))
 {
 	unsigned int i, j, k, pts, bad = 0, size = m_Poly.size();
 	for (i = 0; i < size; i++)
 	{
+		if (progress_callback != NULL && (i%200)==0)
+			progress_callback(i * 99 / size);
+
 		DPolygon2 &dpoly = m_Poly[i];
 		for (j = 0; j < dpoly.size(); j++)
 		{
@@ -1035,50 +1059,63 @@ void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(i
 			progress_callback(i*100/size);
 
 		const DPolygon2 &poly = m_Poly[i];
+
 		int parts = poly.size();
 
-		// count total vertices in all parts
-		int total = 0;
-		for (part = 0; part < parts; part++)
+		SHPObject *obj;
+
+		// Beware: it is possible for the shape to not actually have vertices
+		if (parts == 1 && poly[0].GetSize() == 0)
 		{
-			total += poly[part].GetSize();
-			total++;	// duplicate first vertex
+			obj = SHPCreateObject(SHPT_POLYGON, -1, parts, NULL,
+				NULL, 0, NULL, NULL, NULL, NULL );
+			SHPWriteObject(hSHP, -1, obj);
+			SHPDestroyObject(obj);
 		}
-
-		double *dX = new double[total];
-		double *dY = new double[total];
-		int *panPartStart = new int[parts];
-
-		int vert = 0;
-		for (part = 0; part < parts; part++)
+		else
 		{
-			panPartStart[part] = vert;
-
-			const DLine2 &dl = poly[part];
-			for (j=0; j < dl.GetSize(); j++) //for each vertex
+			// count total vertices in all parts
+			int total = 0;
+			for (part = 0; part < parts; part++)
 			{
-				DPoint2 pt = dl.GetAt(j);
+				total += poly[part].GetSize();
+				total++;	// duplicate first vertex
+			}
+
+			double *dX = new double[total];
+			double *dY = new double[total];
+			int *panPartStart = new int[parts];
+
+			int vert = 0;
+			for (part = 0; part < parts; part++)
+			{
+				panPartStart[part] = vert;
+
+				const DLine2 &dl = poly[part];
+				for (j=0; j < dl.GetSize(); j++) //for each vertex
+				{
+					DPoint2 pt = dl.GetAt(j);
+					dX[vert] = pt.x;
+					dY[vert] = pt.y;
+					vert++;
+				}
+				// duplicate first vertex, it's just what SHP files do.
+				DPoint2 pt = dl.GetAt(0);
 				dX[vert] = pt.x;
 				dY[vert] = pt.y;
 				vert++;
 			}
-			// duplicate first vertex, it's just what SHP files do.
-			DPoint2 pt = dl.GetAt(0);
-			dX[vert] = pt.x;
-			dY[vert] = pt.y;
-			vert++;
+
+			// Save to SHP
+			obj = SHPCreateObject(SHPT_POLYGON, -1, parts, panPartStart,
+				NULL, total, dX, dY, NULL, NULL );
+			SHPWriteObject(hSHP, -1, obj);
+			SHPDestroyObject(obj);
+
+			delete [] panPartStart;
+			delete [] dY;
+			delete [] dX;
 		}
-
-		// Save to SHP
-		SHPObject *obj = SHPCreateObject(SHPT_POLYGON, -1, parts, panPartStart,
-			NULL, total, dX, dY, NULL, NULL );
-
-		SHPWriteObject(hSHP, -1, obj);
-		SHPDestroyObject(obj);
-
-		delete [] panPartStart;
-		delete [] dY;
-		delete [] dX;
 	}
 }
 
@@ -1097,17 +1134,17 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 		if (progress_callback && ((i%16)==0))
 			progress_callback(i*100/nElems);
 
-		DLine2 dline;
-		DPolygon2 dpoly;
-
 		// Get the i-th Shape in the SHP file
 		SHPObject *pObj = SHPReadObject(hSHP, i);
 
-		// Beware: it is possible for the shape to not actually have vertices
-		if (pObj->nVertices == 0)
-			m_Poly[i] = dpoly;
-		else
+		// Beware: it is possible for the shape to not actually have vertices, or
+		//  to have less than the minimum needed to define a polygon.  Ignore any
+		//  such degenerate cases
+		if (pObj->nVertices >= 3)
 		{
+			DPolygon2 dpoly;
+			DLine2 dline;
+
 			// Store each part
 			for (int part = 0; part < pObj->nParts; part++)
 			{
@@ -1134,6 +1171,6 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 		SHPDestroyObject(pObj);
 	}
 	// allocate flag array
-	m_Flags.resize(nElems, 0);
+	m_Flags.resize(m_Poly.size(), 0);
 }
 

@@ -1,7 +1,7 @@
 //
 // Features.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -129,7 +129,7 @@ public:
 	virtual void Reserve(int iNum) = 0;
 	virtual bool ComputeExtent(DRECT &rect) const = 0;
 	virtual void Offset(const DPoint2 &p, bool bSelectedOnly = false) = 0;
-	virtual bool TransformCoords(OCT *pTransform) = 0;
+	virtual bool TransformCoords(OCT *pTransform, bool progress_callback(int)=0) = 0;
 	virtual bool AppendGeometryFrom(vtFeatureSet *pFromSet) = 0;
 	virtual int NumTotalVertices() const { return 0; }
 
@@ -244,7 +244,7 @@ public:
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
 	void Offset(const DPoint2 &p, bool bSelectedOnly = false);
-	bool TransformCoords(OCT *pTransform);
+	bool TransformCoords(OCT *pTransform, bool progress_callback(int)=0);
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPoint(const DPoint2 &p);
@@ -279,7 +279,7 @@ public:
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
 	void Offset(const DPoint2 &p, bool bSelectedOnly = false);
-	bool TransformCoords(OCT *pTransform);
+	bool TransformCoords(OCT *pTransform, bool progress_callback(int)=0);
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPoint(const DPoint3 &p);
@@ -314,7 +314,7 @@ public:
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
 	void Offset(const DPoint2 &p, bool bSelectedOnly = false);
-	bool TransformCoords(OCT *pTransform);
+	bool TransformCoords(OCT *pTransform, bool progress_callback(int)=0);
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPolyLine(const DLine2 &pl);
@@ -346,7 +346,7 @@ public:
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
 	void Offset(const DPoint2 &p, bool bSelectedOnly = false);
-	bool TransformCoords(OCT *pTransform);
+	bool TransformCoords(OCT *pTransform, bool progress_callback(int)=0);
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPolyLine(const DLine3 &pl);
@@ -403,7 +403,7 @@ public:
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
 	void Offset(const DPoint2 &p, bool bSelectedOnly = false);
-	bool TransformCoords(OCT *pTransform);
+	bool TransformCoords(OCT *pTransform, bool progress_callback(int)=0);
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPolygon(const DPolygon2 &poly);

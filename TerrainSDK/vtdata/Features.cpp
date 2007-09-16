@@ -55,7 +55,10 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 
 	SHPHandle hSHP = SHPCreate(fname_local, nSHPType);
 	if (!hSHP)
+	{
+		VTLOG1("SHPCreate failed.\n");
 		return false;
+	}
 
 	unsigned int i, j;
 
@@ -70,7 +73,10 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 		dbfname += ".dbf";
 		DBFHandle db = DBFCreate(dbfname);
 		if (db == NULL)
+		{
+			VTLOG1("DBFCreate failed.\n");
 			return false;
+		}
 
 		Field *field;
 		for (i = 0; i < m_fields.GetSize(); i++)
