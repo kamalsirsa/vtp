@@ -536,7 +536,7 @@ void vtAbstractLayer::CreateFeatureLabels(vtTerrain *pTerr)
 		color_field_index = -1;
 
 	float label_elevation, label_size;
-	if (!style.GetValueFloat("Elevation", label_elevation))
+	if (!style.GetValueFloat("LabelHeight", label_elevation))
 		label_elevation = 0.0f;
 	if (!style.GetValueFloat("LabelSize", label_size))
 		label_size = 18;
