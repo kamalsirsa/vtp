@@ -1336,7 +1336,7 @@ bool vtStructureArray::WriteXML(const char* filename, bool bGZip) const
 	GZOutput out(bGZip);
 	if (!gfopen(out, filename))
 	{
-		throw xh_io_exception("Failed to open file", xh_location(filename),
+		throw xh_io_exception("Could not open output file", xh_location(filename),
 				"XML Writer");
 	}
 
@@ -1366,7 +1366,10 @@ bool vtStructureArray::WriteXML(const char* filename, bool bGZip) const
 	char *wkt;
 	OGRErr err = m_proj.exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
-		return false;
+	{
+		throw xh_io_exception("Couldn't write CRS to file", xh_location(filename),
+				"XML Writer");
+	}
 	gfprintf(out, "\t<SRS>%s</SRS>\n", wkt);
 	gfprintf(out, "\n");
 	OGRFree(wkt);
