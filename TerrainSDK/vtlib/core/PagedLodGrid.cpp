@@ -94,7 +94,8 @@ void vtPagedStructureLOD::AppendToQueue()
 		if (m_pGrid->AddToQueue(this, ref.pArray, ref.iIndex))
 			count++;
 	}
-	VTLOG("Added %d buildings to queue.\n", count);
+	if (count > 0)
+		VTLOG("Added %d buildings to queue.\n", count);
 
 	// We have just added a lump of structures, sort them by distance
 	m_pGrid->SortQueue();
@@ -557,6 +558,13 @@ bool vtPagedStructureLodGrid::AddToQueue(vtPagedStructureLOD *pLOD,
 	vtStructure3d *str3d = pArray->GetStructure3d(iIndex);
 	if (str3d && str3d->IsCreated())
 		return false;
+
+	// Check if it's already in the queue
+	for (QueueVector::iterator it = m_Queue.begin(); it != m_Queue.end(); it++)
+	{
+		if (it->pStructureArray == pArray && it->iStructIndex == iIndex)
+			return false;
+	}
 
 	// If not, add it
 	QueueEntry e;
