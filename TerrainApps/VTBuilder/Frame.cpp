@@ -1848,7 +1848,11 @@ void MainFrame::ScanElevationLayers(int &count, int &floating, int &tins, DPoint
 			spacing = grid->GetSpacing();
 		}
 		else
+		{
 			tins++;
+			// All TINs have floating-point precision
+			floating++;
+		}
 	}
 }
 
