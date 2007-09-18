@@ -304,8 +304,17 @@ bool EnviroGUI::SaveStructures(bool bAskFilename)
 		fname = str.mb_str(wxConvUTF8);
 		sa->SetFilename(fname);
 	}
-	sa->WriteXML(fname);
-	return true;
+	bool success = false;
+	try {
+		success = sa->WriteXML(fname);
+	}
+	catch (xh_io_exception &e)
+	{
+		string str = e.getFormattedMessage();
+		VTLOG("  Error: %s\n", str.c_str());
+		wxMessageBox(wxString(str.c_str(), wxConvUTF8), _("Error"));
+	}
+	return success;
 }
 
 void EnviroGUI::ShowTable(vtFeatureSet *set)

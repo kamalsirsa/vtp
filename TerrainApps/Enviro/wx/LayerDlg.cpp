@@ -551,8 +551,14 @@ bool SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 		fname = str.mb_str(wxConvUTF8);
 		set->SetFilename(fname);
 	}
-	set->SaveToSHP(fname);
-	return true;
+	bool success = set->SaveToSHP(fname);
+
+	if (!success)
+	{
+		wxMessageBox(_("Couldn't save layer."));
+	}
+
+	return success;
 }
 
 void LayerDlg::OnLayerLoad( wxCommandEvent &event )
