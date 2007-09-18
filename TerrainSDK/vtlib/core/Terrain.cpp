@@ -1201,7 +1201,8 @@ vtStructureLayer *vtTerrain::LoadStructuresFromXML(const vtString &strFilename)
 {
 	VTLOG("LoadStructuresFromXML '%s'\n", (const char *) strFilename);
 	vtStructureLayer *structures = NewStructureLayer();
-	if (!structures->ReadXML(strFilename))
+
+	if (!structures->ReadXML(strFilename, m_progress_callback))
 	{
 		VTLOG("\tCouldn't load file.\n");
 		m_Layers.Remove(structures);
