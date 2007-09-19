@@ -1,7 +1,7 @@
 //
 // Import.cpp - MainFrame methods for importing data
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -935,14 +935,14 @@ void MainFrame::ImportFromMapSource(const char *fname)
 	vtArray<vtRawLayer *> layers;
 	char buf[200];
 	bool bUTM = false;
-	fscanf(fp, "Grid %s\n", buf);
-	if (!strcmp(buf, "UTM"))
+	bool bGotSRS = false;
+	vtProjection proj;
+
+	fgets(buf, 200, fp);
+	if (!strncmp(buf+5, "UTM", 3))
 		bUTM = true;
 	fgets(buf, 200, fp); // assume "Datum   WGS 84"
 
-	vtProjection proj;
-
-	bool bGotSRS = false;
 	char ch;
 	int i;
 	vtRawLayer *pRL=NULL;
@@ -965,22 +965,47 @@ void MainFrame::ImportFromMapSource(const char *fname)
 					break;
 				name[i-6] = ch;
 			}
-			name[i] = 0;
+			name[i-6] = 0;
 			pRL->SetLayerFilename(wxString(name, wxConvUTF8));
 		}
 		if (!strncmp(buf, "Trackpoint", 10))
 		{
-			int zone;
 			DPoint2 p;
-			sscanf(buf+10, "%d %c %lf %lf", &zone, &ch, &p.x, &p.y);
-
-			if (!bGotSRS)
+			if (bUTM)
 			{
-				proj.SetWellKnownGeogCS("WGS84");
-				if (bUTM)
-					proj.SetUTMZone(zone);
-				pRL->SetProjection(proj);
-				bGotSRS = true;
+				int zone;
+				sscanf(buf+10, "%d %c %lf %lf", &zone, &ch, &p.x, &p.y);
+
+				if (!bGotSRS)
+				{
+					proj.SetWellKnownGeogCS("WGS84");
+					if (bUTM)
+						proj.SetUTMZone(zone);
+					pRL->SetProjection(proj);
+					bGotSRS = true;
+				}
+			}
+			else
+			{
+				// Example: N20 04.319 W155 27.902
+				char east_hemi;
+				int east_degree;
+				double east_minute;
+				char nord_hemi;
+				int nord_degree;
+				double nord_minute;
+				sscanf(buf+11, "%c%d %lf %c%d %lf ",
+					&nord_hemi, &nord_degree, &nord_minute,
+					&east_hemi, &east_degree, &east_minute);
+				p.x = (east_hemi=='E'?1:-1) * (east_degree + east_minute/60.0);
+				p.y = (nord_hemi=='N'?1:-1) * (nord_degree + nord_minute/60.0);
+
+				if (!bGotSRS)
+				{
+					proj.SetWellKnownGeogCS("WGS84");
+					pRL->SetProjection(proj);
+					bGotSRS = true;
+				}
 			}
 			pRL->AddPoint(p);
 		}
