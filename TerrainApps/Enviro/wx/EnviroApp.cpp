@@ -200,6 +200,7 @@ bool EnviroApp::OnInit()
 	// Create the main frame window
 	VTLOG1("Creating the frame window.\n");
 	EnviroFrame *frame = CreateMainFrame();
+	SetTopWindow(frame);
 
 	// Also let the frame see the command-line arguments
 	for (int i = 0; i < argc; i++)
