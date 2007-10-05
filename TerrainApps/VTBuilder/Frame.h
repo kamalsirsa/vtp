@@ -20,11 +20,7 @@
 #include "Layer.h"
 #include "TilingOptions.h"
 
-#ifdef ENVIRON
-  #define APPNAME "EnvironBuilder"
-#else
-  #define APPNAME "VTBuilder"
-#endif
+#define APPNAME "VTBuilder"
 
 // some shortcuts
 #define ADD_TOOL(bar, id, bmp, label) \
