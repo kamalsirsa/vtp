@@ -1,7 +1,7 @@
 //
 // Name: BuildingDlg.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -39,7 +39,7 @@ public:
 	wxListBox* GetLevelCtrl()  { return (wxListBox*) FindWindow( ID_LEVEL ); }
 	wxListBox* GetEdgeCtrl()  { return (wxListBox*) FindWindow( ID_EDGE ); }
 	wxChoice* GetFacadeChoice()  { return (wxChoice*) FindWindow( ID_FACADE ); }
-	void Setup(vtStructureArray *pSA, vtBuilding *bld, vtHeightField *pHeightField, const vtStringArray &Datapaths);
+	void Setup(vtStructureArray *pSA, vtBuilding *bld, vtHeightField *pHeightField);
 
 	void EditColor();
 	void SetLevel(int i);
@@ -91,8 +91,6 @@ protected:
 
 	bool m_bSetting;
 	bool m_bEdges;
-
-	const vtStringArray *m_pDatapaths;
 
 protected:
 	// WDR: handler declarations for BuildingDlg

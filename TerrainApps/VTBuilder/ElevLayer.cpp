@@ -15,6 +15,7 @@
 #include "vtdata/FilePath.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
 #include "vtui/Helper.h"	// for FormatCoord
 
 #include "BuilderView.h"	// For grid marks
@@ -652,7 +653,7 @@ void vtElevLayer::RenderBitmap()
 #endif
 	ColorMap cmap;
 	vtString cmap_fname = m_draw.m_strColorMapFile;
-	vtString cmap_path = FindFileOnPaths(GetMainFrame()->m_datapaths, "GeoTypical/" + cmap_fname);
+	vtString cmap_path = FindFileOnPaths(vtGetDataPath(), "GeoTypical/" + cmap_fname);
 	bool bLoaded = false;
 	if (cmap_path != "")
 	{
@@ -1259,7 +1260,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 			return false;
 
 		vtString cmap_fname = opts.draw.m_strColorMapFile;
-		vtString cmap_path = FindFileOnPaths(GetMainFrame()->m_datapaths, "GeoTypical/" + cmap_fname);
+		vtString cmap_path = FindFileOnPaths(vtGetDataPath(), "GeoTypical/" + cmap_fname);
 		if (cmap_path == "")
 			DisplayAndLog("Couldn't find color map.");
 		else

@@ -11,6 +11,7 @@
 #include "RenderOptionsDlg.h"
 #include "vtui/Helper.h"		// for AddFilenamesToChoice
 #include "vtui/ColorMapDlg.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/FilePath.h"
 
 // WDR: class implementations
@@ -79,10 +80,10 @@ void RenderOptionsDlg::UpdateEnables()
 void RenderOptionsDlg::UpdateColorMapChoice()
 {
 	GetChoiceColors()->Clear();
-	for (unsigned int i = 0; i < m_datapaths.size(); i++)
+	for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
 	{
 		// fill the "colormap" control with available colormap files
-		AddFilenamesToChoice(GetChoiceColors(), m_datapaths[i] + "GeoTypical", "*.cmt");
+		AddFilenamesToChoice(GetChoiceColors(), vtGetDataPath()[i] + "GeoTypical", "*.cmt");
 	}
 	GetChoiceColors()->Append(_T(""));
 
@@ -127,7 +128,7 @@ void RenderOptionsDlg::OnEditColors( wxCommandEvent &event )
 	{
 		vtString name = "GeoTypical/";
 		name += m_strColorMap.mb_str(wxConvUTF8);
-		name = FindFileOnPaths(m_datapaths, name);
+		name = FindFileOnPaths(vtGetDataPath(), name);
 		if (name == "")
 		{
 			wxMessageBox(_("Couldn't locate file."));

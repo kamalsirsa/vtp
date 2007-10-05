@@ -12,10 +12,13 @@
 #include "wx/wx.h"
 #endif
 
+#include <wx/stdpaths.h>
+
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
 #include "xmlhelper/exception.hpp"
 #include <fstream>
 #include <float.h>	// for FLT_MIN
@@ -274,21 +277,21 @@ void MainFrame::SetupUI()
 	RefreshStatusBar();
 
 	// Get datapaths from Enviro
-	ReadEnviroPaths();
-	VTLOG("Datapaths:\n");
-	int i, n = m_datapaths.size();
+	ReadDataPath();
+	VTLOG("Using Datapaths:\n");
+	int i, n = vtGetDataPath().size();
 	if (n == 0)
 		VTLOG("   none.\n");
 	for (i = 0; i < n; i++)
-		VTLOG("   %s\n", (const char *) m_datapaths[i]);
+		VTLOG("   %s\n", (const char *) vtGetDataPath()[i]);
 
 	// Load structure defaults
-	bool foundmaterials = LoadGlobalMaterials(m_datapaths);
+	bool foundmaterials = LoadGlobalMaterials();
 	if (!foundmaterials)
 		DisplayAndLog("The building materials file (Culture/materials.xml) was not found\n"
 			" on your Data Path.  Without this file, materials will not be handled\n"
 			" correctly.  Please check your Data Paths to avoid this problem.");
-	SetupDefaultStructures(FindFileOnPaths(m_datapaths, "BuildingData/DefaultStructures.vtst"));
+	SetupDefaultStructures(FindFileOnPaths(vtGetDataPath(), "BuildingData/DefaultStructures.vtst"));
 
 	// Load content files, which might be referenced by structure layers
 	LookForContentFiles();
@@ -1160,15 +1163,15 @@ InstanceDlg *MainFrame::ShowInstanceDlg(bool bShow)
 void MainFrame::LookForContentFiles()
 {
 	VTLOG1("Searching data paths for content files (.vtco)\n");
-	for (unsigned int i = 0; i < m_datapaths.size(); i++)
+	for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
 	{
-		vtStringArray array;
-		AddFilenamesToStringArray(array, m_datapaths[i], "*.vtco");
+		vtStringArray fnames;
+		AddFilenamesToStringArray(fnames, vtGetDataPath()[i], "*.vtco");
 
-		for (unsigned int j = 0; j < array.size(); j++)
+		for (unsigned int j = 0; j < fnames.size(); j++)
 		{
-			vtString path = m_datapaths[i];
-			path += array[j];
+			vtString path = vtGetDataPath()[i];
+			path += fnames[j];
 
 			bool success = true;
 			vtContentManager *mng = new vtContentManager;
@@ -1188,7 +1191,7 @@ void MainFrame::LookForContentFiles()
 				m_contents.push_back(mng);
 		}
 	}
-	VTLOG(" found %d files on %d paths\n", m_contents.size(), m_datapaths.size());
+	VTLOG(" found %d files on %d paths\n", m_contents.size(), vtGetDataPath().size());
 }
 
 void MainFrame::FreeContentFiles()
@@ -2295,69 +2298,31 @@ void MainFrame::OnMouseWheel(wxMouseEvent& event)
 
 using namespace std;
 
-void MainFrame::ReadEnviroPaths()
+void MainFrame::ReadDataPath()
 {
-	VTLOG("Getting data paths from Enviro.\n");
 	wxString cwd1 = wxGetCwd();
 	vtString cwd = (const char *) cwd1.mb_str(wxConvUTF8);
 	VTLOG("  Current directory: '%s'\n", (const char *) cwd);
 
-	vtString fname = cwd + "/Enviro.xml";
-	VTLOG("  Looking for '%s'\n", (const char *) fname);
-	ifstream input;
-	input.open(fname, ios::in | ios::binary);
-	if (!input.is_open())
+	VTLOG("Looking for data path info.\n");
+
+	// Look these up, we might need them
+	wxString Dir1 = wxStandardPaths::Get().GetUserConfigDir();
+	wxString Dir2 = wxStandardPaths::Get().GetConfigDir();
+
+	vtString AppDataUser = (const char *) Dir1.mb_str(wxConvUTF8);
+	vtString AppDataCommon = (const char *) Dir2.mb_str(wxConvUTF8);
+
+	// Read the vt datapaths
+	bool bLoadedDataPaths = vtLoadDataPath(AppDataUser, AppDataCommon);
+
+	if (!bLoadedDataPaths)
 	{
-		input.clear();
-		fname = cwd + "/../Enviro/Enviro.xml";
-		VTLOG("  Not there.  Looking for '%s'\n", (const char *) fname);
-		input.open(fname, ios::in | ios::binary);
-	}
-	if (input.is_open())
-	{
-		VTLOG1(" found it.\n");
-		ReadDatapathsFromXML(input, fname);
-		return;
-	}
-	VTLOG1("  Not found, using default of '../Data/'.\n");
-	m_datapaths.push_back(vtString("../Data/"));
-}
-
-
-///////////////////////////////////////////////////////////////////////
-// XML format
-
-class EnviroOptionsVisitor : public XMLVisitor
-{
-public:
-	EnviroOptionsVisitor(vtStringArray &paths) : m_paths(paths) {}
-	void startElement(const char *name, const XMLAttributes &atts) { m_data = ""; }
-	void endElement (const char *name);
-	void data(const char *s, int length) { m_data += vtString(s, length); }
-protected:
-	vtStringArray &m_paths;
-	vtString m_data;
-};
-
-void EnviroOptionsVisitor::endElement(const char *name)
-{
-	if (!strcmp(name, "DataPath"))
-		m_paths.push_back(m_data);
-}
-
-void MainFrame::ReadDatapathsFromXML(ifstream &input, const char *path)
-{
-	EnviroOptionsVisitor visitor(m_datapaths);
-	try
-	{
-		readXML(input, visitor, path);
-	}
-	catch (xh_io_exception &ex)
-	{
-		const string msg = ex.getFormattedMessage();
-		VTLOG(" XML problem: %s\n", msg.c_str());
+		VTLOG1("  Not found, using default of '../Data/'.\n");
+		vtGetDataPath().push_back(vtString("../Data/"));
 	}
 }
+
 
 bool MainFrame::ConfirmValidCRS(vtProjection *pProj)
 {

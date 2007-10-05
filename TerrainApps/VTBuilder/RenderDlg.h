@@ -1,7 +1,7 @@
 //
 // Name: RenderDlg.h
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -52,7 +52,6 @@ public:
 	wxString m_strToFile;
 	bool m_bJPEG;
 
-	vtStringArray m_datapaths;
 	wxString   m_strColorMap;
 	bool m_bShading;
 

@@ -3,7 +3,7 @@
 //
 // Implements the vtStructure class which represents a single built structure.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file Structure.h */
@@ -188,7 +188,7 @@ public:
 		for (unsigned int i = first; i <= last; i++)
 			delete GetAt(i);
 	}
-	bool LoadExternalMaterials(const vtStringArray &paths);
+	bool LoadExternalMaterials();
 	const vtString *FindName(const char *matname) const;
 	void CreatePlain();
 
@@ -321,7 +321,7 @@ protected:
 	vtItem *m_pItem;	// If this is an instance of a content item
 };
 
-bool LoadGlobalMaterials(const vtStringArray &paths);
+bool LoadGlobalMaterials();
 void SetGlobalMaterials(vtMaterialDescriptorArray *mats);
 vtMaterialDescriptorArray *GetGlobalMaterials();
 void FreeGlobalMaterials();

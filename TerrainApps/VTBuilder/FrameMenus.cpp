@@ -2543,7 +2543,6 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 	pEL->m_pGrid->GetDimensions(cols, rows);
 
 	RenderDlg dlg(this, -1, _("Render Elevation to Bitmap"));
-	dlg.m_datapaths = m_datapaths;
 	dlg.m_iSizeX = cols;
 	dlg.m_iSizeY = rows;
 

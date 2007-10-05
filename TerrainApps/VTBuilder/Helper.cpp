@@ -95,12 +95,6 @@ void AddType(wxString &str, const wxString &filter)
 	str = output;
 }
 
-//////////////////////////////////////
-vtStringArray &GetDataPaths()
-{
-	return GetMainFrame()->m_datapaths;
-}
-
 
 //////////////////////////////////////
 

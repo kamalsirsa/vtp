@@ -10,7 +10,6 @@
 
 #include "OptionsDlg.h"
 #include "RenderOptionsDlg.h"
-#include "Helper.h"
 
 // WDR: class implementations
 
@@ -61,7 +60,6 @@ void OptionsDlg::OnRenderOptions( wxCommandEvent &event )
 	// Ask them how to render elevation layers
 	RenderOptionsDlg dlg(this, -1, _("Rendering options"));
 	dlg.SetOptions(m_opt);
-	dlg.m_datapaths = GetDataPaths();
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 	m_opt = dlg.m_opt;

@@ -16,6 +16,7 @@
 #include <wx/numdlg.h>
 #include "BuildingDlg.h"
 #include "vtui/Helper.h"
+#include "vtdata/DataPath.h"
 
 // WDR: class implementations
 
@@ -87,12 +88,11 @@ void BuildingDlg::SetupValidators()
 }
 
 void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld,
-						vtHeightField *pHeightField, const vtStringArray &Datapaths)
+						vtHeightField *pHeightField)
 {
 	m_pSA = pSA;
 	m_pBuilding = bld;
 	m_pHeightField = pHeightField;
-	m_pDatapaths = &Datapaths;
 }
 
 void BuildingDlg::EditColor()
@@ -332,9 +332,9 @@ void BuildingDlg::SetupControls()
 	if (NULL != GetFacadeChoice())
 	{
 		GetFacadeChoice()->Clear();
-		for (unsigned int i = 0; i < m_pDatapaths->size(); i++)
+		for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
 		{
-			vtString Directory = (*m_pDatapaths)[i] + "BuildingModels";
+			vtString Directory = vtGetDataPath()[i] + "BuildingModels";
 			for (dir_iter it((const char *)Directory); it != dir_iter(); ++it)
 			{
 				if (it.is_hidden() || it.is_directory())

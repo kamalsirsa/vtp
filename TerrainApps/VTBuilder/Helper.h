@@ -22,10 +22,6 @@ void AddType(wxString &str, const wxString &filter);
 
 /////
 
-vtStringArray &GetDataPaths();
-
-/////
-
 #if WIN32
 /**
  * Win32 allows us to do a real StrectBlt operation, although it still won't

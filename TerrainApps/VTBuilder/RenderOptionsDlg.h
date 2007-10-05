@@ -41,7 +41,6 @@ public:
 	void UpdateColorMapChoice();
 	void UpdateEnables();
 
-	vtStringArray m_datapaths;
 	ElevDrawOptions m_opt;
 	wxString m_strColorMap;
 	bool m_bNoShading;

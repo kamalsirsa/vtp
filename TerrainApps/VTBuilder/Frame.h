@@ -71,7 +71,7 @@ public:
 	virtual void CreateView();
 	void ZoomAll();
 
-	void ReadEnviroPaths();
+	void ReadDataPath();
 	void ReadDatapathsFromXML(ifstream &input, const char *path);
 	void SetupUI();
 	virtual void CreateMenus();
@@ -499,7 +499,6 @@ public:
 
 	// Application Data
 	DRECT		m_area;
-	vtStringArray	m_datapaths;
 
 protected:
 	// INI File

@@ -6,13 +6,15 @@
 //
 
 #include <stdio.h>
+#include "Building.h"
+#include "DataPath.h"
+#include "Fence.h"
+#include "FilePath.h"
 #include "Structure.h"
 #include "StructArray.h"
-#include "Building.h"
-#include "Fence.h"
-#include "xmlhelper/easyxml.hpp"
 #include "vtLog.h"
-#include "FilePath.h"
+
+#include "xmlhelper/easyxml.hpp"
 
 vtStructInstance::vtStructInstance() : vtStructure()
 {
@@ -383,13 +385,13 @@ const vtString *vtMaterialDescriptorArray::FindName(const char *name) const
 	return NULL;
 }
 
-bool vtMaterialDescriptorArray::LoadExternalMaterials(const vtStringArray &paths)
+bool vtMaterialDescriptorArray::LoadExternalMaterials()
 {
 	// we always need at least 1 internal material
 	CreatePlain();
 
 	const char *fname = "Culture/materials.xml";
-	vtString matfile = FindFileOnPaths(paths, fname);
+	vtString matfile = FindFileOnPaths(vtGetDataPath(), fname);
 	if (matfile == "")
 	{
 		VTLOG("Couldn't find '%s' on Data paths, building materials will "\
@@ -404,10 +406,10 @@ bool vtMaterialDescriptorArray::LoadExternalMaterials(const vtStringArray &paths
 //
 static vtMaterialDescriptorArray *g_pMaterials = NULL;
 
-bool LoadGlobalMaterials(const vtStringArray &paths)
+bool LoadGlobalMaterials()
 {
 	GetGlobalMaterials();
-	return g_pMaterials->LoadExternalMaterials(paths);
+	return g_pMaterials->LoadExternalMaterials();
 }
 
 void SetGlobalMaterials(vtMaterialDescriptorArray *mats)

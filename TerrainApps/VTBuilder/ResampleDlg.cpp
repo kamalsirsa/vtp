@@ -16,7 +16,6 @@
 #include "TileDlg.h"
 #include "FileFilters.h"
 #include "RenderOptionsDlg.h"
-#include "Helper.h"	// for GetDataPaths
 
 // WDR: class implementations
 
@@ -170,7 +169,6 @@ void ResampleDlg::OnRenderingOptions( wxCommandEvent &event )
 {
 	RenderOptionsDlg dlg(this, -1, _("Rendering options"));
 	dlg.SetOptions(m_tileopts.draw);
-	dlg.m_datapaths = GetDataPaths();
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 	m_tileopts.draw = dlg.m_opt;

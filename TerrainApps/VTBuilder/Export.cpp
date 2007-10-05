@@ -17,6 +17,7 @@
 #include "vtdata/ChunkLOD.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
 
 #include "vtui/Helper.h"
 
@@ -341,7 +342,6 @@ void MainFrame::ElevExportTiles()
 		// Ask them how to render the image tiles
 		RenderOptionsDlg dlg(this, -1, _("Rendering options"));
 		dlg.SetOptions(tileopts.draw);
-		dlg.m_datapaths = m_datapaths;
 		if (dlg.ShowModal() != wxID_OK)
 			return;
 		dlg.m_opt.m_strColorMapFile = dlg.m_strColorMap.mb_str(wxConvUTF8);
@@ -369,7 +369,7 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 
 	ColorMap cmap;
 	vtString fname = (const char *) dlg.m_strColorMap.mb_str(wxConvUTF8);
-	vtString path = FindFileOnPaths(m_datapaths, "GeoTypical/" + fname);
+	vtString path = FindFileOnPaths(vtGetDataPath(), "GeoTypical/" + fname);
 	if (path == "")
 	{
 		DisplayAndLog("Couldn't load color map.");
@@ -566,7 +566,6 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 		// Ask them how to render the image tiles
 		RenderOptionsDlg dlg(this, -1, _("Rendering options"));
 		dlg.SetOptions(m_tileopts.draw);
-		dlg.m_datapaths = m_datapaths;
 		if (dlg.ShowModal() != wxID_OK)
 			return;
 		m_tileopts.draw = dlg.m_opt;
@@ -654,7 +653,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			return false;
 
 		vtString cmap_fname = opts.draw.m_strColorMapFile;
-		vtString cmap_path = FindFileOnPaths(GetMainFrame()->m_datapaths, "GeoTypical/" + cmap_fname);
+		vtString cmap_path = FindFileOnPaths(vtGetDataPath(), "GeoTypical/" + cmap_fname);
 		if (cmap_path == "")
 			DisplayAndLog("Couldn't find color map.");
 		else
