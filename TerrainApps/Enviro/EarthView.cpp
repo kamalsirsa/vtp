@@ -173,7 +173,7 @@ void Enviro::MakeGlobe()
 
 	// fancy icosahedral globe
 	m_pIcoGlobe = new vtIcoGlobe;
-	m_pIcoGlobe->Create(5000, g_Options.m_DataPaths, g_Options.m_strEarthImage,
+	m_pIcoGlobe->Create(5000, g_Options.m_strEarthImage,
 //		vtIcoGlobe::GEODESIC);
 //		vtIcoGlobe::RIGHT_TRIANGLE);
 		vtIcoGlobe::DYMAX_UNFOLD);
@@ -298,7 +298,7 @@ if (pwdemo){
 	// create some stars around the earth
 	//
 	vtStarDome *pStars = new vtStarDome;
-	vtString bsc_file = FindFileOnPaths(g_Options.m_DataPaths, "Sky/bsc.data");
+	vtString bsc_file = FindFileOnPaths(vtGetDataPath(), "Sky/bsc.data");
 	if (bsc_file != "")
 	{
 		pStars->Create(bsc_file, 5.0f);	// brightness

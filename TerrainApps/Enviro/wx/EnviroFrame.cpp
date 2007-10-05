@@ -1898,7 +1898,6 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 	EnableContinuousRendering(false);
 
 	TextureDlg dlg(this, -1, _("Change Texture"));
-	dlg.SetDataPaths(g_Options.m_DataPaths);
 	dlg.SetParams(pTerr->GetParams());
 	if (dlg.ShowModal() == wxID_OK)
 	{
@@ -2288,8 +2287,6 @@ void EnviroFrame::OpenFenceDialog()
 {
 	// inform the dialog about the materials
 	m_pFenceDlg->SetStructureMaterials(&vtStructure3d::GetMaterialDescriptors());
-	// and the datapath
-	m_pFenceDlg->m_datapaths = g_Options.m_DataPaths;
 	m_pFenceDlg->Show(true);
 }
 

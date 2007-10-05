@@ -113,7 +113,7 @@ bool EnviroOptions::ReadINI(const char *szFilename)
 
 		if (strcmp(buf, STR_DATAPATH) == 0)
 		{
-			m_DataPaths.push_back(vtString(get_line_from_stream(input)));
+			m_oldDataPaths.push_back(vtString(get_line_from_stream(input)));
 		}
 		else if (strcmp(buf, STR_EARTHVIEW) == 0)
 			input >> m_bEarthView;
@@ -177,8 +177,8 @@ bool EnviroOptions::ReadINI(const char *szFilename)
 
 	// Bad old INI file stored its strings in the local charset, which could
 	//  vary from machine to machine.  Nowadays we always encode in utf-8.
-	for (unsigned int i = 0; i < m_DataPaths.size(); i++)
-		LocalToUTF8(m_DataPaths[i]);
+	for (unsigned int i = 0; i < m_oldDataPaths.size(); i++)
+		LocalToUTF8(m_oldDataPaths[i]);
 	LocalToUTF8(m_strEarthImage);
 	LocalToUTF8(m_strInitTerrain);
 	LocalToUTF8(m_strContentFile);
@@ -214,7 +214,7 @@ void EnviroOptionsVisitor::endElement(const char *name)
 	const char *str = m_data.c_str();
 
 	if (strcmp(name, STR_DATAPATH) == 0)
-		m_opt.m_DataPaths.push_back(str);
+		m_opt.m_oldDataPaths.push_back(str);
 
 	else if (strcmp(name, STR_EARTHVIEW) == 0)
 		s2b(m_data, m_opt.m_bEarthView);
@@ -340,8 +340,9 @@ bool EnviroOptions::WriteXML()
 	output << "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << std::endl;
 	output << "<EnviroOptions>" << std::endl;
 
-	for (unsigned int i = 0; i < m_DataPaths.size(); i++)
-		WriteElem(output, STR_DATAPATH, m_DataPaths[i]);
+	// Don't write data paths here, they are now written to vtp.xml
+	//for (unsigned int i = 0; i < m_oldDataPaths.size(); i++)
+	//	WriteElem(output, STR_DATAPATH, m_oldDataPaths[i]);
 
 	WriteElemB(output, STR_EARTHVIEW, m_bEarthView);
 	WriteElem(output, STR_EARTHIMAGE, m_strEarthImage);

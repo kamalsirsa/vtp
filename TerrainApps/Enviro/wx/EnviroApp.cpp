@@ -247,23 +247,25 @@ void EnviroApp::StartLog()
 
 void EnviroApp::LoadOptions()
 {
-	// Look for the options file.  There are two supported places for it.
+	// Look these up, we might need them
+	wxString Dir1 = wxStandardPaths::Get().GetUserConfigDir();
+	wxString Dir2 = wxStandardPaths::Get().GetConfigDir();
+
+	vtString AppDataUser = (const char *) Dir1.mb_str(wxConvUTF8);
+	vtString AppDataCommon = (const char *) Dir2.mb_str(wxConvUTF8);
+
+	// Read the vt datapaths
+	vtStringArray &dp = vtGetDataPath();
+	bool bLoadedDataPaths = vtLoadDataPath(AppDataUser, AppDataCommon);
+
+	// Now look for the Enviro options file.  There are two supported places for it.
 	//  1. In the same directory as the executable.
 	//  2. On Windows, in the user's "Application Data" folder.
 	vtString OptionsFile = STRING_APPNAME ".xml";
-	vtString AppDataUser;
-	vtString AppDataCommon;
 
-	bool bWindows = wxPlatformInfo::Get().GetPortId() == wxPORT_MSW;
 	bool bFound = FileExists(OptionsFile);
-	if (!bFound && bWindows)
+	if (!bFound && AppDataUser != "")
 	{
-		wxString Dir1 = wxStandardPaths::Get().GetUserConfigDir();
-		wxString Dir2 = wxStandardPaths::Get().GetConfigDir();
-
-		AppDataUser = (const char *) Dir1.mb_str(wxConvUTF8);
-		AppDataCommon = (const char *) Dir2.mb_str(wxConvUTF8);
-
 		OptionsFile = AppDataUser + "/" + STRING_APPNAME ".xml";
 		bFound = FileExists(OptionsFile);
 	}
@@ -271,31 +273,42 @@ void EnviroApp::LoadOptions()
 	{
 		g_Options.ReadXML(OptionsFile);
 		g_Options.m_strFilename = OptionsFile;
-
-		if (bWindows)
-		{
-			// Supply the special symbols {appdata} and {appdatacommon}
-			for (unsigned int i = 0; i < g_Options.m_DataPaths.size(); i++)
-			{
-				g_Options.m_DataPaths[i].Replace("{appdata}", AppDataUser);
-				g_Options.m_DataPaths[i].Replace("{appdatacommon}", AppDataCommon);
-			}
-		}
 	}
 	else
 	{
 		// Not found anywhere.  Default to current directory.
 		g_Options.m_strFilename = STRING_APPNAME ".xml";
-		// And to default data path
-		g_Options.m_DataPaths.push_back(vtString("../Data/"));
 	}
 
-	VTLOG("Datapaths:\n");
-	int i, n = g_Options.m_DataPaths.size();
+	if (!bLoadedDataPaths)
+	{
+		if (bFound)
+		{
+			// We have paths in Enviro.xml, but not in vtp.xml; move them
+			dp = g_Options.m_oldDataPaths;
+			g_Options.m_oldDataPaths.clear();
+		}
+		else
+		{
+			// Set default data path
+			dp.push_back(vtString("../Data/"));
+		}
+		vtSaveDataPath(AppDataUser + "/vtp.xml");
+	}
+
+	// Supply the special symbols {appdata} and {appdatacommon}
+	for (unsigned int i = 0; i < dp.size(); i++)
+	{
+		dp[i].Replace("{appdata}", AppDataUser);
+		dp[i].Replace("{appdatacommon}", AppDataCommon);
+	}
+
+	VTLOG("Using Datapaths:\n");
+	int i, n = dp.size();
 	if (n == 0)
 		VTLOG("   none.\n");
 	for (i = 0; i < n; i++)
-		VTLOG("   %s\n", (const char *) g_Options.m_DataPaths[i]);
+		VTLOG("   %s\n", (const char *) dp[i]);
 	VTLOG1("\n");
 }
 
@@ -360,7 +373,7 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 //
 void EnviroApp::RefreshTerrainList()
 {
-	vtStringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = vtGetDataPath();
 
 	VTLOG("RefreshTerrainList, %d paths:\n", paths.size());
 
@@ -461,7 +474,6 @@ int EditTerrainParameters(wxWindow *parent, const char *filename)
 	vtString fname = filename;
 
 	TParamsDlg dlg(parent, -1, _("Terrain Creation Parameters"), wxDefaultPosition);
-	dlg.SetDataPaths(g_Options.m_DataPaths);
 
 	TParams Params;
 	if (!Params.LoadFrom(fname))

@@ -131,7 +131,7 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 //
 // Set this dialog's controls from a tagarray.
 //
-void StyleDlg::SetOptions(const vtStringArray &datapaths, const vtTagArray &Layer)
+void StyleDlg::SetOptions(const vtTagArray &Layer)
 {
 	if (m_pFeatureSet)
 	{
@@ -142,12 +142,12 @@ void StyleDlg::SetOptions(const vtStringArray &datapaths, const vtTagArray &Laye
 		// without a featureset, we need the actual file location
 		vtString strFilename = Layer.GetValueString("Filename");
 		m_strResolved = strFilename;
-		m_strResolved = FindFileOnPaths(datapaths, m_strResolved);
+		m_strResolved = FindFileOnPaths(vtGetDataPath(), m_strResolved);
 		if (m_strResolved == "")
 		{
 			vtString path = "PointData/";
 			m_strResolved = path + strFilename;
-			m_strResolved = FindFileOnPaths(datapaths, m_strResolved);
+			m_strResolved = FindFileOnPaths(vtGetDataPath(), m_strResolved);
 		}
 
 		m_type = GetFeatureGeomType(m_strResolved);

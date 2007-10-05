@@ -1,7 +1,7 @@
 //
 // Name: TextureDlg.h
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -29,7 +29,6 @@ public:
 	
 	void SetParams(const TParams &Params);
 	void GetParams(TParams &Params);
-	void SetDataPaths(const vtStringArray &paths) { m_datapaths = paths; }
 	void UpdateFilenameBases();
 	void UpdateTiledTextureFilename();
 	void UpdateEnableState();
@@ -62,7 +61,6 @@ private:
 	wxString	m_strColorMap;
 
 	bool	m_bSetting;
-	vtStringArray m_datapaths;
 	vtStringArray m_TextureFiles;
 	int		m_iTilesizeIndex;
 

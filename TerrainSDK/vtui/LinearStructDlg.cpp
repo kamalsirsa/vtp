@@ -1,7 +1,7 @@
 //
 // Name: LinearStructDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@
 
 #include "LinearStructDlg.h"
 #include "Helper.h"		// for AddFilenamesToChoice
+#include "vtdata/DataPath.h"
 
 #define VALUE_MIN  0.2f
 #define VALUE_MAX  10.2f
@@ -184,10 +185,10 @@ void LinearStructureDlg::UpdateProfiles()
 {
 	wxChoice *cc = GetChoiceProfile();
 	cc->Clear();
-	for (unsigned int i = 0; i < m_datapaths.size(); i++)
+	for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
 	{
 		// fill the "profiles" control with available profile files
-		AddFilenamesToChoice(cc, m_datapaths[i] + "BuildingData", "*.shp");
+		AddFilenamesToChoice(cc, vtGetDataPath()[i] + "BuildingData", "*.shp");
 
 		wxString ws(m_param.m_ConnectProfile, wxConvUTF8);
 		int sel = cc->FindString(ws);
@@ -298,7 +299,7 @@ void LinearStructureDlg::OnProfileEdit( wxCommandEvent &event )
 	if (m_param.m_ConnectProfile != "")
 	{
 		vtString look_in = "BuildingData/";
-		vtString path = FindFileOnPaths(m_datapaths, look_in + m_param.m_ConnectProfile);
+		vtString path = FindFileOnPaths(vtGetDataPath(), look_in + m_param.m_ConnectProfile);
 		if (path != "")
 			m_pProfileEditDlg->SetFilename(path);
 	}

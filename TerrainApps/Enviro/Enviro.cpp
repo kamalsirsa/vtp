@@ -175,8 +175,8 @@ void Enviro::LoadAllTerrainDescriptions()
 {
 	VTLOG("LoadAllTerrainDescriptions...\n");
 
-	for (unsigned int i = 0; i < g_Options.m_DataPaths.size(); i++)
-		LoadTerrainDescriptions(g_Options.m_DataPaths[i]);
+	for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
+		LoadTerrainDescriptions(vtGetDataPath()[i]);
 
 	VTLOG(" Done.\n");
 }
@@ -243,7 +243,7 @@ void Enviro::LoadGlobalContent()
 {
 	// Load the global content file, if there is one
 	VTLOG("Looking for global content file '%s'\n", (const char *)g_Options.m_strContentFile);
-	vtString fname = FindFileOnPaths(g_Options.m_DataPaths, g_Options.m_strContentFile);
+	vtString fname = FindFileOnPaths(vtGetDataPath(), g_Options.m_strContentFile);
 	if (fname != "")
 	{
 		bool success = true;
@@ -730,7 +730,6 @@ void Enviro::SetupScene1()
 	VTLOG1("SetupScene1\n");
 
 	// Set some global properties
-	vtGetScene()->SetDataPath(g_Options.m_DataPaths);
 	m_fCatenaryFactor = g_Options.m_fCatenaryFactor;
 	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
 	vtNode::s_bDisableMipmaps = g_Options.m_bDisableModelMipmaps;
@@ -863,9 +862,9 @@ void Enviro::LoadSpeciesList()
 	// First look for species.xml with terrain name prepended, otherwise fall
 	//  back on just "species.xml"
 	vtString species_fname = "PlantData/" + g_Options.m_strInitTerrain + "-species.xml";
-	vtString species_path = FindFileOnPaths(g_Options.m_DataPaths, species_fname);
+	vtString species_path = FindFileOnPaths(vtGetDataPath(), species_fname);
 	if (species_path == "")
-		species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
+		species_path = FindFileOnPaths(vtGetDataPath(), "PlantData/species.xml");
 
 	if (species_path == "")
 	{

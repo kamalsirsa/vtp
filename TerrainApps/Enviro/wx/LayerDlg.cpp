@@ -613,7 +613,7 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 
 			StyleDlg dlg(NULL, -1, _("Style"));
 			dlg.SetFeatureSet(alay->pSet);
-			dlg.SetOptions(vtGetDataPath(), props);
+			dlg.SetOptions(props);
 			if (dlg.ShowModal() != wxID_OK)
 			{
 				terr->GetLayers().Remove(alay);

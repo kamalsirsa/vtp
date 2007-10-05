@@ -52,8 +52,8 @@ public:
 	vtIcoGlobe();
 	virtual ~vtIcoGlobe();
 
-	void Create(int iTriangleCount, const vtStringArray &paths,
-		const vtString &strImagePrefix, Style style = GEODESIC);
+	void Create(int iTriangleCount, const vtString &strImagePrefix,
+		Style style = GEODESIC);
 	vtTransform *GetTop() { return m_top; }
 	vtGroup *GetSurface() { return m_SurfaceGroup; }
 
@@ -105,7 +105,7 @@ protected:
 	void BuildFlatFeatures(GlobeLayer *glay, float fSize);
 	void BuildFlatPoint(GlobeLayer *glay, int i, float fSize);
 
-	void CreateMaterials(const vtStringArray &paths, const vtString &strImagePrefix);
+	void CreateMaterials(const vtString &strImagePrefix);
 
 	void FindLocalOrigin(int mface);
 	void SetMeshConnect(int mface);

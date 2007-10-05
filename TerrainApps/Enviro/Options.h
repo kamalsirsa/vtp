@@ -22,7 +22,7 @@ public:
 	// older method was .ini files
 	bool ReadINI(const char *szFilename);
 
-	vtStringArray m_DataPaths;
+	vtStringArray m_oldDataPaths;
 	bool		m_bEarthView;
 	vtString	m_strEarthImage;
 	vtString	m_strInitTerrain;

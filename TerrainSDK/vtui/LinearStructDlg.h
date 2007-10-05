@@ -1,7 +1,7 @@
 //
 // Name:		LinearStructDlg.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -69,8 +69,6 @@ public:
 	wxChoice* GetConnType()  { return (wxChoice*) FindWindow( ID_CONN_TYPE ); }
 	wxChoice* GetPostType()  { return (wxChoice*) FindWindow( ID_POST_TYPE ); }
 	wxChoice* GetStyle()  { return (wxChoice*) FindWindow( ID_LINEAR_STRUCTURE_STYLE ); }
-
-	vtStringArray m_datapaths;
 
 protected:
 	void AddConnectStringsFromDescriptors(const vtMaterialDescriptorArray *mats);

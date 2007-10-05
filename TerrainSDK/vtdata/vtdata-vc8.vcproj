@@ -247,6 +247,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DataPath.cpp"
+				>
+			</File>
+			<File
 				RelativePath="DLG.cpp"
 				>
 				<FileConfiguration
@@ -1101,6 +1105,10 @@
 			</File>
 			<File
 				RelativePath=".\CubicSpline.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DataPath.h"
 				>
 			</File>
 			<File

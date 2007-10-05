@@ -427,7 +427,7 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
 
 	StyleDlg dlg(NULL, -1, _("Style"));
 	dlg.SetFeatureSet(pSet);
-	dlg.SetOptions(vtGetDataPath(), props);
+	dlg.SetOptions(props);
 	if (dlg.ShowModal() != wxID_OK)
 	{
 		delete pSet;

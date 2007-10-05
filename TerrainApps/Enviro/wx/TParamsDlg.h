@@ -36,7 +36,6 @@ public:
 
 	void SetParams(const TParams &Params);
 	void GetParams(TParams &Params);
-	void SetDataPaths(const vtStringArray &paths) { m_datapaths = paths; }
 	void UpdateFilenameBases();
 	void UpdateTiledTextureFilename();
 	void UpdateEnableState();
@@ -213,7 +212,6 @@ public:
 
 	bool	m_bReady;
 	bool	m_bSetting;
-	vtStringArray m_datapaths;
 	vtStringArray m_TextureFiles;
 	int		m_iTilesizeIndex;
 

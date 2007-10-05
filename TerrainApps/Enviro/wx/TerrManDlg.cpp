@@ -1,7 +1,7 @@
 //
 // Name: TerrManDlg.cpp
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@
 
 #include "vtlib/core/TParams.h"
 #include "vtdata/FilePath.h"
+#include "vtdata/DataPath.h"
 #include "TerrManDlg.h"
 #include "../Options.h"
 #include "EnviroApp.h"
@@ -61,7 +62,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 {
 	m_pTree->DeleteAllItems();
 
-	vtStringArray &paths = m_DataPaths;
+	vtStringArray &paths = vtGetDataPath();
 	size_t i, num = paths.size();
 	wxString wstr;
 
@@ -199,10 +200,10 @@ void TerrainManagerDlg::OnEditParams( wxCommandEvent &event )
 
 void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 {
-	vtStringArray &paths = m_DataPaths;
 	if (m_iSelect == 1)
 	{
 		// remove path
+		vtStringArray &paths = vtGetDataPath();
 		wxString path = m_pTree->GetItemText(m_Selected);
 		vtString vpath = (const char *) path.mb_str(wxConvUTF8);
 		for (vtStringArray::iterator it = paths.begin(); it != paths.end(); it++)
@@ -213,6 +214,7 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 				break;
 			}
 		}
+		vtSaveDataPath();
 		m_pTree->Delete(m_Selected);
 	}
 	if (m_iSelect == 2)
@@ -281,7 +283,8 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 	}
 
 	vtString path(str.mb_str(wxConvUTF8));
-	m_DataPaths.push_back(path);
+	vtGetDataPath().push_back(path);
+	vtSaveDataPath();
 
     // To be helpful, also create most of the standard sub-directories
     vtString SubDirectory;
@@ -305,9 +308,6 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
     vtCreateDir(SubDirectory);
     SubDirectory = path + vtString("Terrains");
     vtCreateDir(SubDirectory);
-
-	// Also inform global data paths
-	g_Options.m_DataPaths = m_DataPaths;
 
 	RefreshTreeContents();
 }

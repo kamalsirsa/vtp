@@ -16,6 +16,7 @@
 	  #include "wx/wx.h"
 #endif
 
+#include "vtdata/DataPath.h"
 #include "vtui/Helper.h"	// for AddFilenamesToComboBox
 #include "OptionsDlg.h"
 
@@ -160,7 +161,7 @@ void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	// Populate Content files choices
 	GetContent()->Clear();
-	vtStringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = vtGetDataPath();
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
 		vtString path = paths[i];

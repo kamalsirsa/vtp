@@ -182,7 +182,7 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	ShowOGLInfo2(true);
 
 	// Populate Earth Image files choices
-	vtStringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = vtGetDataPath();
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
 		vtString path = paths[i];
@@ -213,10 +213,8 @@ void StartupDlg::OnTnameChoice( wxCommandEvent &event )
 void StartupDlg::OnTerrMan( wxCommandEvent &event )
 {
 	TerrainManagerDlg dlg(this, -1, _("Terrain Manager"), wxDefaultPosition);
-	dlg.m_DataPaths = m_opt.m_DataPaths;
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		m_opt.m_DataPaths = dlg.m_DataPaths;
 		g_Options = m_opt;
 		g_Options.WriteXML();
 		wxGetApp().RefreshTerrainList();

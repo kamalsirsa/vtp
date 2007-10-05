@@ -61,8 +61,7 @@ vtIcoGlobe::~vtIcoGlobe()
  *			on seperate geometries so that the globe can be unfolded in the
  *			Dymaxion style.
  */
-void vtIcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
-					  const vtString &strImagePrefix, Style style)
+void vtIcoGlobe::Create(int iTriangleCount, const vtString &strImagePrefix, Style style)
 {
 	VTLOG("vtIcoGlobe::Create\n");
 
@@ -112,7 +111,7 @@ void vtIcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 		m_mesh.push_back(mesh);
 	}
 
-	CreateMaterials(paths, strImagePrefix);
+	CreateMaterials(strImagePrefix);
 
 	m_top = new vtTransform;
 	m_top->SetName2("GlobeXForm");
@@ -1109,8 +1108,7 @@ void vtIcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
 }
 
 
-void vtIcoGlobe::CreateMaterials(const vtStringArray &paths,
-							   const vtString &strImagePrefix)
+void vtIcoGlobe::CreateMaterials(const vtString &strImagePrefix)
 {
 	m_mats = new vtMaterialArray;
 	bool bCulling = true;
@@ -1164,13 +1162,13 @@ void vtIcoGlobe::CreateMaterials(const vtStringArray &paths,
 		fname.Format("%s%02d%02d.jpg", (const char *)base, f1+1, f2+1);
 		VTLOG("\t texture: %s\n", (const char *)fname);
 
-		fullpath = FindFileOnPaths(paths, (const char *)fname);
+		fullpath = FindFileOnPaths(vtGetDataPath(), (const char *)fname);
 		if (fullpath == "")
 		{
 			// try again with png
 			fname.Format("%s%02d%02d.png", (const char *)base, f1+1, f2+1);
 			VTLOG("\t texture: %s\n", (const char *)fname);
-			fullpath = FindFileOnPaths(paths, (const char *)fname);
+			fullpath = FindFileOnPaths(vtGetDataPath(), (const char *)fname);
 		}
 		if (fullpath == "")
 		{

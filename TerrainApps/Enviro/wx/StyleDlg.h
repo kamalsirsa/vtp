@@ -37,7 +37,7 @@ public:
 		m_pFeatureSet = pSet;
 	}
 
-	void SetOptions(const vtStringArray &datapaths, const vtTagArray &Layer);
+	void SetOptions(const vtTagArray &Layer);
 	void GetOptions(vtTagArray &pLayer);
 
 private:

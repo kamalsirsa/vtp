@@ -764,7 +764,7 @@ void TParamsDlg::RefreshLocationFields()
 
 	vtString fname = "Locations/";
 	fname += m_strLocFile.mb_str(wxConvUTF8);
-	vtString path = FindFileOnPaths(m_datapaths, fname);
+	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 	if (path == "")
 		return;
 	vtLocationSaver saver;
@@ -790,7 +790,7 @@ void TParamsDlg::RefreshLocationFields()
 void TParamsDlg::UpdateColorMapChoice()
 {
 	m_pColorMap->Clear();
-	vtStringArray &paths = m_datapaths;
+	vtStringArray &paths = vtGetDataPath();
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
 		// fill the "colormap" control with available colormap files
@@ -867,7 +867,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	VTLOG("TParamsDlg::OnInitDialog\n");
 
-	bool bShowProgress = (m_datapaths.size() > 1);
+	bool bShowProgress = (vtGetDataPath().size() > 1);
 	if (bShowProgress)
 		OpenProgressDialog(_("Looking for files on data paths"), false, this);
 
@@ -884,7 +884,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pTextureFileSingle->Clear();
 	m_pTextureFileTileset->Clear();
 
-	vtStringArray &paths = m_datapaths;
+	vtStringArray &paths = vtGetDataPath();
 
 	for (i = 0; i < paths.size(); i++)
 	{
@@ -951,7 +951,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 			m_pTreeFile->SetSelection(sel);
 
 		// fill in Content file
-		AddFilenamesToComboBox(GetContentFile(), m_datapaths[i], "*.vtco");
+		AddFilenamesToComboBox(GetContentFile(), paths[i], "*.vtco");
 		sel = GetContentFile()->FindString(m_strContent);
 		if (sel != -1)
 			GetContentFile()->SetSelection(sel);
@@ -1172,7 +1172,7 @@ void TParamsDlg::OnEditColors( wxCommandEvent &event )
 	// Look on data paths, to give a complete path to the dialog
 	vtString name = "GeoTypical/";
 	name += m_strColorMap.mb_str(wxConvUTF8);
-	name = FindFileOnPaths(m_datapaths, name);
+	name = FindFileOnPaths(vtGetDataPath(), name);
 	if (name == "")
 	{
 		wxMessageBox(_("Couldn't locate file."));
@@ -1236,9 +1236,9 @@ void TParamsDlg::OnListDblClickStructure( wxCommandEvent &event )
 	unsigned int i;
 	wxArrayString strings;
 
-	for (i = 0; i < m_datapaths.size(); i++)
+	for (i = 0; i < vtGetDataPath().size(); i++)
 	{
-		wxString path(m_datapaths[i], wxConvUTF8);
+		wxString path(vtGetDataPath()[i], wxConvUTF8);
 		path += _T("BuildingData");
 		AddFilenamesToArray(strings, path, _T("*.vtst*"));
 	}
@@ -1262,9 +1262,9 @@ void TParamsDlg::OnListDblClickRaw( wxCommandEvent &event )
 	unsigned int i;
 	wxArrayString strings;
 
-	for (i = 0; i < m_datapaths.size(); i++)
+	for (i = 0; i < vtGetDataPath().size(); i++)
 	{
-		wxString path(m_datapaths[i], *wxConvCurrent);
+		wxString path(vtGetDataPath()[i], *wxConvCurrent);
 		path += _T("PointData");
 		AddFilenamesToArray(strings, path, _T("*.shp"));
 		AddFilenamesToArray(strings, path, _T("*.igc"));
@@ -1289,9 +1289,9 @@ void TParamsDlg::OnListDblClickAnimPaths( wxCommandEvent &event )
 	unsigned int i;
 	wxArrayString strings;
 
-	for (i = 0; i < m_datapaths.size(); i++)
+	for (i = 0; i < vtGetDataPath().size(); i++)
 	{
-		wxString path(m_datapaths[i], *wxConvCurrent);
+		wxString path(vtGetDataPath()[i], *wxConvCurrent);
 		path += _T("Locations");
 		AddFilenamesToArray(strings, path, _T("*.vtap"));
 	}
@@ -1311,9 +1311,9 @@ void TParamsDlg::OnListDblClickImage( wxCommandEvent &event )
 	unsigned int i;
 	wxArrayString strings;
 
-	for (i = 0; i < m_datapaths.size(); i++)
+	for (i = 0; i < vtGetDataPath().size(); i++)
 	{
-		wxString path(m_datapaths[i], wxConvUTF8);
+		wxString path(vtGetDataPath()[i], wxConvUTF8);
 		path += _T("GeoSpecific");
 		AddFilenamesToArray(strings, path, _T("*.bmp"));
 		AddFilenamesToArray(strings, path, _T("*.jpg"));
@@ -1382,7 +1382,7 @@ void TParamsDlg::OnStyle( wxCommandEvent &event )
 		return;
 
 	StyleDlg dlg(this, -1, _("Feature Style"));
-	dlg.SetOptions(m_datapaths, m_Layers[idx]);
+	dlg.SetOptions(m_Layers[idx]);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		dlg.GetOptions(m_Layers[idx]);

@@ -1,7 +1,7 @@
 //
 // Name: TerrManDlg.h
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -36,8 +36,6 @@ public:
 	void UpdateEnabling();
 	wxString GetCurrentPath();
 	wxString GetCurrentTerrainPath();
-
-	vtStringArray m_DataPaths;
 
 private:
 	// WDR: member variable declarations for TerrainManagerDlg

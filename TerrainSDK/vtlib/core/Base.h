@@ -8,7 +8,7 @@
 #ifndef VTLIB_BASEH
 #define VTLIB_BASEH
 
-#include "vtdata/vtString.h"
+#include "vtdata/DataPath.h"
 
 class vtNode;
 class vtMaterial;
@@ -398,8 +398,7 @@ public:
 	}
 
 	// all data will be looked for on the global data path
-	void SetDataPath(const vtStringArray &paths) { m_DataPaths = paths; }
-	vtStringArray m_DataPaths;
+	void SetDataPath(const vtStringArray &paths) { vtSetDataPath(paths); }
 
 protected:
 	void DoEngines(vtEngine *eng);
@@ -414,8 +413,6 @@ protected:
 	vtCamera	*m_pDefaultCamera;
 	vtWindow	*m_pDefaultWindow;
 };
-
-const vtStringArray &vtGetDataPath();
 
 /*@}*/	// Group sg
 

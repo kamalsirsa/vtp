@@ -1,7 +1,7 @@
 //
 // Name: TextureDlg.cpp
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/FilePath.h"	// for FindFileOnPaths
 #include "vtui/Helper.h"		// for AddFilenamesToChoice
 #include "vtui/ColorMapDlg.h"
@@ -191,7 +192,7 @@ void TextureDlg::UpdateEnableState()
 void TextureDlg::UpdateColorMapChoice()
 {
 	m_pColorMap->Clear();
-	vtStringArray &paths = m_datapaths;
+	vtStringArray &paths = vtGetDataPath();
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
 		// fill the "colormap" control with available colormap files
@@ -212,7 +213,7 @@ void TextureDlg::OnEditColors( wxCommandEvent &event )
 	// Look on data paths, to give a complete path to the dialog
 	vtString name = "GeoTypical/";
 	name += m_strColorMap.mb_str(wxConvUTF8);
-	name = FindFileOnPaths(m_datapaths, name);
+	name = FindFileOnPaths(vtGetDataPath(), name);
 	if (name == "")
 	{
 		wxMessageBox(_("Couldn't locate file."));
@@ -262,7 +263,7 @@ void TextureDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	VTLOG("TextureDlg::OnInitDialog\n");
 
-	bool bShowProgress = (m_datapaths.size() > 1);
+	bool bShowProgress = (vtGetDataPath().size() > 1);
 	if (bShowProgress)
 		OpenProgressDialog(_("Looking for files on data paths"), false, this);
 
@@ -271,7 +272,7 @@ void TextureDlg::OnInitDialog(wxInitDialogEvent& event)
 	unsigned int i;
 	int sel;
 
-	vtStringArray &paths = m_datapaths;
+	vtStringArray &paths = vtGetDataPath();
 
 	for (i = 0; i < paths.size(); i++)
 	{
