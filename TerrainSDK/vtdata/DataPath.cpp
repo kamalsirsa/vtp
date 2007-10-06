@@ -103,10 +103,10 @@ bool vtLoadDataPath(const char *user_config_dir, const char *config_dir)
 	}
 
 	VTLOG("Loaded Datapaths:\n");
-	int i, n = s_datapath.size();
+	unsigned int n = s_datapath.size();
 	if (n == 0)
 		VTLOG("   none.\n");
-	for (i = 0; i < n; i++)
+	for (unsigned int i = 0; i < n; i++)
 		VTLOG("   %s\n", (const char *) s_datapath[i]);
 	VTLOG1("\n");
 	return true;

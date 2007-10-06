@@ -1,7 +1,7 @@
 //
 // BExtractorView.h : interface of the BExtractorView class
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -47,7 +47,7 @@ public:
 
 // Operations
 public:
-	void ReadEnviroPaths(vtStringArray &paths);
+	void ReadDataPath();
 
 	void ZoomToImage(CBImage *pImage);
 	void DrawBuildings(CDC *pDC);

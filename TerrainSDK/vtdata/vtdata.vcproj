@@ -187,6 +187,9 @@
 				RelativePath=".\CubicSpline.cpp">
 			</File>
 			<File
+				RelativePath=".\DataPath.cpp">
+			</File>
+			<File
 				RelativePath="DLG.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -869,6 +872,9 @@
 			</File>
 			<File
 				RelativePath=".\CubicSpline.h">
+			</File>
+			<File
+				RelativePath=".\DataPath.h">
 			</File>
 			<File
 				RelativePath="DLG.h">

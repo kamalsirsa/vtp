@@ -207,7 +207,7 @@ BOOL CCreateDlg::OnInitDialog()
 //	unsigned int iFlags = DDL_READWRITE | DDL_READONLY;
 
 	unsigned int i;
-	vtStringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = vtGetDataPath();
 
 	for (i = 0; i < paths.size(); i++)
 	{
@@ -433,7 +433,7 @@ void CCreateDlg::DetermineTerrainSizeFromBT()
 {
 	vtString fname = "Elevation/";
 	fname += ToUTF8(m_strFilename);
-	vtString fpath = FindFileOnPaths(g_Options.m_DataPaths, fname);
+	vtString fpath = FindFileOnPaths(vtGetDataPath(), fname);
 	if (fpath == "")
 	{
 		m_iTerrainSize = 1024;
@@ -462,7 +462,7 @@ void CCreateDlg::DetermineSizeFromBMP()
 
 	vtString fname = "GeoSpecific/";
 	fname += ToUTF8(m_strTextureSingle);
-	vtString fpath = FindFileOnPaths(g_Options.m_DataPaths, fname);
+	vtString fpath = FindFileOnPaths(vtGetDataPath(), fname);
 	if (fpath == "")
 		goto ErrExit;
 

@@ -1,7 +1,7 @@
 //
 // BExtractorView.cpp : implementation of the BExtractorView class
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,6 +21,7 @@
 #include "ipl.h"			// Image Processing Library 2.1
 #include "ProgDlg.h"
 #include <fstream>
+#include "vtdata/DataPath.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 
@@ -140,8 +141,8 @@ BExtractorView::BExtractorView()
 
 	// Load structure defaults
 	vtStringArray paths;
-	ReadEnviroPaths(paths);
-	LoadGlobalMaterials(paths);
+	ReadDataPath();
+	LoadGlobalMaterials();
 	SetupDefaultStructures("");
 }
 
@@ -157,49 +158,28 @@ BOOL BExtractorView::PreCreateWindow(CREATESTRUCT& cs)
 
 //////////////////////////////
 
-using namespace std;
-
-#define STR_DATAPATH "DataPath"
-
-void BExtractorView::ReadEnviroPaths(vtStringArray &paths)
+void BExtractorView::ReadDataPath()
 {
-	ifstream input;
-	input.open("Enviro.ini", ios::in | ios::binary);
-	if (!input.is_open())
-	{
-		input.clear();
-		input.open("../Enviro/Enviro.ini", ios::in | ios::binary);
-	}
-	if (!input.is_open())
-		return;
+	char buf1[MAX_PATH];
+	SHGetFolderPathA(
+		NULL,               // parent window, not used
+		CSIDL_APPDATA,
+		NULL,               // access token (current user)
+		SHGFP_TYPE_CURRENT, // current path, not just default value
+		buf1
+		);
+	vtString AppDataUser = buf1;
+	//vtString AppDataCommon;
 
-	char buf[80];
-	while (!input.eof())
-	{
-		if (input.peek() == '\n')
-			input.ignore();
-		input >> buf;
+	// Read the vt datapaths
+	vtLoadDataPath(AppDataUser, NULL);
 
-		// data value should been separated by a tab or space
-		int next = input.peek();
-		if (next != '\t' && next != ' ')
-			continue;
-		while (input.peek() == '\t' || input.peek() == ' ')
-			input.ignore();
-
-		if (strcmp(buf, STR_DATAPATH) == 0)
-		{
-			vtString string = get_line_from_stream(input);
-			paths.push_back(vtString(string));
-		}
-	}
-	VTLOG("Datapaths:\n");
-	int i, n = paths.size();
-	if (n == 0)
-		VTLOG("   none.\n");
-	for (i = 0; i < n; i++)
+	vtStringArray &dp = vtGetDataPath();
+	// Supply the special symbols {appdata} and {appdatacommon}
+	for (unsigned int i = 0; i < dp.size(); i++)
 	{
-		VTLOG("   %s\n", (const char *) paths[i]);
+		dp[i].Replace("{appdata}", AppDataUser);
+		//dp[i].Replace("{appdatacommon}", AppDataCommon);
 	}
 }
 

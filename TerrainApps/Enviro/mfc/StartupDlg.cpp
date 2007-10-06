@@ -139,7 +139,7 @@ BOOL CStartupDlg::OnInitDialog()
 
 	CDialog::OnInitDialog();
 
-	vtStringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = vtGetDataPath();
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
 		CString path = (const char *) paths[i];
