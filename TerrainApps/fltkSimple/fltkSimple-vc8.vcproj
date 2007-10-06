@@ -64,7 +64,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib libjpeg.lib fltkd.lib fltkgld.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib"
-				OutputFile="$(OutDir)/fltkSimple.exe"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
