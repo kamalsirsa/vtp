@@ -440,7 +440,7 @@ public:
 	void GenerateVegetation(const char *vf_file, DRECT area, VegGenOptions &opt);
 	void GenerateVegetationPhase2(const char *vf_file, DRECT area, VegGenOptions &opt);
 
-	// import
+	// Import
 	void ImportData(LayerType ltype);
 	void ImportDataFromArchive(LayerType ltype, const wxString &fname_org, bool bRefresh);
 	vtLayer *ImportDataFromFile(LayerType ltype, const wxString &strFileName, bool bRefresh, bool bWarn = true);
