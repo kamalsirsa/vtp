@@ -276,7 +276,7 @@ void MainFrame::SetupUI()
 	SetProjection(proj);
 	RefreshStatusBar();
 
-	// Get datapaths from Enviro
+	// Get datapaths from the vtp.xml config file
 	ReadDataPath();
 	VTLOG("Using Datapaths:\n");
 	int i, n = vtGetDataPath().size();
