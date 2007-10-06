@@ -13,6 +13,8 @@
 #include "wx/wx.h"
 #endif
 
+#include <wx/stdpaths.h>
+
 #include "vtlib/vtlib.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtdata/vtLog.h"
@@ -137,14 +139,14 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	SetIcon(wxIcon(_T("cmanager")));
 #endif
 
-	ReadEnviroPaths();
+	ReadDataPath();
 
-	VTLOG("Datapaths:\n");
-	int i, n = m_DataPaths.size();
+	VTLOG("Using Datapaths:\n");
+	int i, n = vtGetDataPath().size();
 	if (n == 0)
 		VTLOG("   none.\n");
 	for (i = 0; i < n; i++)
-		VTLOG("   %s\n", (const char *) m_DataPaths[i]);
+		VTLOG("   %s\n", (const char *) vtGetDataPath()[i]);
 
 	m_pCurrentModel = NULL;
 	m_pCurrentItem = NULL;
@@ -267,111 +269,24 @@ void vtFrame::UseLight(vtTransform *pLight)
 
 using namespace std;
 
-void vtFrame::ReadEnviroPaths()
+void vtFrame::ReadDataPath()
 {
-	VTLOG("Getting data paths from Enviro.\n");
-	wxString cwd = wxGetCwd();
-	VTLOG("  Current directory: '%s'\n", (const char *) cwd.mb_str(wxConvUTF8));
+	// Look these up, we might need them
+	wxString Dir1 = wxStandardPaths::Get().GetUserConfigDir();
+	wxString Dir2 = wxStandardPaths::Get().GetConfigDir();
 
-	wxString IniPath = cwd + _T("/Enviro.xml");
-	vtString fname = (const char *) IniPath.mb_str(wxConvUTF8);
-	VTLOG("  Looking for '%s'\n", (const char *) fname);
-	ifstream input;
-	input.open(fname, ios::in | ios::binary);
-	if (!input.is_open())
+	vtString AppDataUser = (const char *) Dir1.mb_str(wxConvUTF8);
+	vtString AppDataCommon = (const char *) Dir2.mb_str(wxConvUTF8);
+
+	// Read the vt datapaths
+	vtLoadDataPath(AppDataUser, AppDataCommon);
+
+	vtStringArray &dp = vtGetDataPath();
+	// Supply the special symbols {appdata} and {appdatacommon}
+	for (unsigned int i = 0; i < dp.size(); i++)
 	{
-		input.clear();
-		IniPath = cwd + _T("/../Enviro/Enviro.xml");
-		fname = (const char *) IniPath.mb_str(wxConvUTF8);
-		VTLOG("  Not there.  Looking for '%s'\n", (const char *) fname);
-		input.open(fname, ios::in | ios::binary);
-	}
-	if (input.is_open())
-	{
-		VTLOG1(" found it.\n");
-		ReadDatapathsFromXML(input, (const char *) IniPath.mb_str(wxConvUTF8));
-		return;
-	}
-	VTLOG1("  Not found.\n");
-	IniPath = cwd + _T("/Enviro.ini");;
-	fname = IniPath.mb_str(wxConvUTF8);
-	input.open(fname, ios::in | ios::binary);
-	if (!input.is_open())
-	{
-		IniPath = cwd + _T("/../Enviro/Enviro.ini");
-		fname = IniPath.mb_str(wxConvUTF8);
-		input.open(fname, ios::in | ios::binary);
-	}
-	if (!input.is_open())
-	{
-		VTLOG1("  Not found.\n");
-		return;
-	}
-	ReadDatapathsFromINI(input);
-}
-
-
-///////////////////////////////////////////////////////////////////////
-// XML format
-
-class EnviroOptionsVisitor : public XMLVisitor
-{
-public:
-	EnviroOptionsVisitor(vtStringArray &paths) : m_paths(paths) {}
-	void startElement(const char *name, const XMLAttributes &atts) { m_data = ""; }
-	void endElement (const char *name);
-	void data(const char *s, int length) { m_data += vtString(s, length); }
-protected:
-	vtStringArray &m_paths;
-	vtString m_data;
-};
-
-void EnviroOptionsVisitor::endElement(const char *name)
-{
-	if (!strcmp(name, "DataPath"))
-		m_paths.push_back(m_data);
-}
-
-void vtFrame::ReadDatapathsFromXML(ifstream &input, const char *path)
-{
-	EnviroOptionsVisitor visitor(m_DataPaths);
-	try
-	{
-		readXML(input, visitor, path);
-	}
-	catch (xh_io_exception &ex)
-	{
-		const string msg = ex.getFormattedMessage();
-		VTLOG(" XML problem: %s\n", msg.c_str());
-	}
-}
-
-///////////////////////////////////////////////////////////////////////
-// INI format
-
-#define STR_DATAPATH "DataPath"
-
-void vtFrame::ReadDatapathsFromINI(ifstream &input)
-{
-	char buf[256];
-	while (!input.eof())
-	{
-		if (input.peek() == '\n')
-			input.ignore();
-		input >> buf;
-
-		// data value should been separated by a tab or space
-		int next = input.peek();
-		if (next != '\t' && next != ' ')
-			continue;
-		while (input.peek() == '\t' || input.peek() == ' ')
-			input.ignore();
-
-		if (strcmp(buf, STR_DATAPATH) == 0)
-		{
-			vtString string = get_line_from_stream(input);
-			m_DataPaths.push_back(vtString(string));
-		}
+		dp[i].Replace("{appdata}", AppDataUser);
+		dp[i].Replace("{appdatacommon}", AppDataCommon);
 	}
 }
 
