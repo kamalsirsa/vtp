@@ -395,6 +395,11 @@ enum wxLanguage GetLangFromName(const wxString &name)
 	for (lang = wxLANGUAGE_ABKHAZIAN; lang < wxLANGUAGE_USER_DEFINED; lang++)
 	{
 		const wxLanguageInfo *info = wxLocale::GetLanguageInfo(lang);
+
+		// safety check
+		if (!info)
+			continue;
+
 		if (name.CmpNoCase(info->Description) == 0)
 			return (enum wxLanguage) lang;
 		if (name.Length() == 2)
