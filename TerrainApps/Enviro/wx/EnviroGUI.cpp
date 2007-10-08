@@ -322,9 +322,9 @@ void EnviroGUI::ShowTable(vtFeatureSet *set)
 	GetFrame()->ShowTable(set);
 }
 
-vtFeatureSet *EnviroGUI::TableShown()
+void EnviroGUI::OnSetDelete(vtFeatureSet *set)
 {
-	return GetFrame()->m_pFeatureDlg->GetFeatureSet();
+	return GetFrame()->OnSetDelete(set);
 }
 
 bool EnviroGUI::IsAcceptable(vtTerrain *pTerr)

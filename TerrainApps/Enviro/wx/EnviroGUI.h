@@ -2,7 +2,7 @@
 // EnviroGUI.h
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -57,7 +57,7 @@ public:
 	bool SaveVegetation(bool bAskFilename);
 	bool SaveStructures(bool bAskFilename);
 	void ShowTable(vtFeatureSet *set);
-	vtFeatureSet *TableShown();
+	void OnSetDelete(vtFeatureSet *set);
 
 	// navigation engines
 	vtJoystickEngine	*m_pJFlyer;

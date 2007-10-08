@@ -74,6 +74,7 @@ public:
 
 	void UpdateLODInfo();
 	void ShowTable(vtFeatureSet *set);
+	void OnSetDelete(vtFeatureSet *set);
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);
@@ -101,7 +102,6 @@ public:
 	void OnViewElevLegend(wxCommandEvent& event);
 	void OnViewCompass(wxCommandEvent& event);
 	void OnViewMapOverView(wxCommandEvent& event);
-	void OnViewFeatureTable(wxCommandEvent& event);
 	void OnViewSettings(wxCommandEvent& event);
 	void OnViewLocations(wxCommandEvent& event);
 	void OnViewSnapshot(wxCommandEvent& event);
@@ -257,13 +257,15 @@ public:
 	LayerDlg			*m_pLayerDlg;
 	InstanceDlg			*m_pInstanceDlg;
 	DistanceDlg3d		*m_pDistanceDlg;
-	FeatureTableDlg3d	*m_pFeatureDlg;
 	TimeDlg				*m_pTimeDlg;
 	CScenarioSelectDialog *m_pScenarioSelectDialog;
 	LODDlg				*m_pLODDlg;
 	ProfileDlg			*m_pProfileDlg;
 	VehicleDlg			*m_pVehicleDlg;
 	MouseMode			m_ToggledMode;
+
+	// There can be any number of feature dialogs, one for each abstract layer
+	std::vector<FeatureTableDlg3d*> m_FeatureDlgs;
 
 protected:
     wxAuiManager m_mgr;

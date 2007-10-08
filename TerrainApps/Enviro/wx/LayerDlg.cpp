@@ -481,12 +481,9 @@ void LayerDlg::OnLayerRemove( wxCommandEvent &event )
 
 	if (data->m_layer != NULL)
 	{
-		// Inform table view, don't show a layer that's going away
+		// Inform table views, don't show a layer that's going away
 		if (data->m_alay)
-		{
-			if (g_App.TableShown() == data->m_alay->pSet)
-				g_App.ShowTable(NULL);
-		}
+			g_App.OnSetDelete(data->m_alay->pSet);
 
 		OpenProgressDialog(_T("Deleting layer"), false, this);
 		GetCurrentTerrain()->RemoveLayer(data->m_layer, progress_callback);
