@@ -9,9 +9,9 @@
 #define ABSTRACTLAYERH
 
 #include "TerrainLayers.h"
+#include "vtdata/Features.h"
 
 class vtTerrain;
-class vtFeatureSet;
 
 /**
  * An abstract layer is a traditional GIS-style set of geometry features with
@@ -70,14 +70,22 @@ public:
 	void SetVisible(bool vis);
 	bool GetVisible();
 
+	void SetFeatureSet(vtFeatureSet *pSet);
+	vtFeatureSet *GetFeatureSet() const { return pSet; }
+	vtGroup *GetLabelGroup() const { return pLabelGroup; }
+	vtGroup *GetContainer() const { return pContainer; }
+
 	void CreateStyledFeatures(vtTerrain *pTerr);
 	void CreateObjectGeometry(vtTerrain *pTerr);
 	void CreateLineGeometry(vtTerrain *pTerr);
 	void CreateFeatureLabels(vtTerrain *pTerr);
 	bool CreateTextureOverlay(vtTerrain *pTerr);
 
+	void CreateFeatureLabel(vtTerrain *pTerr, vtTagArray &style, unsigned int iIndex);
+
 	void ReleaseGeometry();
 
+protected:
 	/// This is the set of features which the layer contains. Style information
 	///  is associated with it, using vtFeatureSet::SetProperties() and 
 	///  vtFeatureSet::GetProperties().
@@ -86,6 +94,17 @@ public:
 	vtGroup *pGeomGroup;
 	vtGroup *pLabelGroup;
 	vtMultiTexture *pMultiTexture;
+
+	// Handy pointers to disambiguate pSet
+	vtFeatureSetPoint2D *pSetP2;
+	vtFeatureSetPoint3D *pSetP3;
+	vtFeatureSetLineString   *pSetLS2;
+	vtFeatureSetLineString3D *pSetLS3;
+	vtFeatureSetPolygon *pSetPoly;
+
+	// Used to create the visual features
+	vtFont *pFont;
+	vtMaterialArray *pLabelMats;
 };
 
 #endif // ABSTRACTLAYERH

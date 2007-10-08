@@ -190,7 +190,7 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 	if (!data)
 		return NULL;
 	if (data->m_alay)
-		return data->m_alay->pContainer;
+		return data->m_alay->GetContainer();
 	if (data->m_item == -1)
 		return NULL;
 
@@ -356,7 +356,7 @@ void LayerDlg::RefreshTreeTerrain()
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
 		if (alay)
 		{
-			vtFeatureSet *fset = alay->pSet;
+			vtFeatureSet *fset = alay->GetFeatureSet();
 
 			vs = fset->GetFilename();
 			str = wxString(vs, wxConvUTF8);
@@ -483,7 +483,7 @@ void LayerDlg::OnLayerRemove( wxCommandEvent &event )
 	{
 		// Inform table views, don't show a layer that's going away
 		if (data->m_alay)
-			g_App.OnSetDelete(data->m_alay->pSet);
+			g_App.OnSetDelete(data->m_alay->GetFeatureSet());
 
 		OpenProgressDialog(_T("Deleting layer"), false, this);
 		GetCurrentTerrain()->RemoveLayer(data->m_layer, progress_callback);
@@ -606,10 +606,10 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 		if (alay)
 		{
 			// Ask style for the newly loaded layer
-			vtTagArray &props = alay->pSet->GetProperties();
+			vtTagArray &props = alay->GetFeatureSet()->GetProperties();
 
 			StyleDlg dlg(NULL, -1, _("Style"));
-			dlg.SetFeatureSet(alay->pSet);
+			dlg.SetFeatureSet(alay->GetFeatureSet());
 			dlg.SetOptions(props);
 			if (dlg.ShowModal() != wxID_OK)
 			{
@@ -776,7 +776,7 @@ void LayerDlg::OnTable( wxCommandEvent &event )
 {
 	LayerItemData *data = GetLayerDataFromItem(m_item);
 	if (data && data->m_alay)
-		g_App.ShowTable(data->m_alay->pSet);
+		g_App.ShowTable(data->m_alay->GetFeatureSet());
 }
 
 void LayerDlg::OnUpdateVisible(wxUpdateUIEvent& event)

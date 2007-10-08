@@ -437,7 +437,7 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
 
 	// wrap the features in an abstract layer
 	vtAbstractLayer *pLay = new vtAbstractLayer;
-	pLay->pSet = pSet;
+	pLay->SetFeatureSet(pSet);
 
 	// add the new layer to the terrain
 	pTerr->GetLayers().Append(pLay);

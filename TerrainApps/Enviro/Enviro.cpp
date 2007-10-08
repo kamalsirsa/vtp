@@ -1344,7 +1344,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		if (str != "")
 		{
 			vtAbstractLayer *alay = GetLabelLayer();
-			vtFeatureSetPoint2D *pset = dynamic_cast<vtFeatureSetPoint2D*>(alay->pSet);
+			vtFeatureSetPoint2D *pset = dynamic_cast<vtFeatureSetPoint2D*>(alay->GetFeatureSet());
 			if (pset)
 			{
 				// add a single 2D point
@@ -2751,8 +2751,8 @@ vtAbstractLayer *Enviro::GetLabelLayer()
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
 		if (!alay)
 			continue;
-		if (alay->pSet->GetGeomType() == wkbPoint &&
-			alay->pSet->GetField("Label") != NULL)
+		if (alay->GetFeatureSet()->GetGeomType() == wkbPoint &&
+			alay->GetFeatureSet()->GetField("Label") != NULL)
 			return alay;
 	}
 	return NULL;

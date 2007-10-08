@@ -21,11 +21,18 @@ vtAbstractLayer::vtAbstractLayer()
 	pGeomGroup = NULL;
 	pLabelGroup = NULL;
 	pMultiTexture = NULL;
+
+	pLabelMats = NULL;
+	pFont = NULL;
 }
+
 vtAbstractLayer::~vtAbstractLayer()
 {
 	delete pSet;
+	delete pFont;
 	ReleaseGeometry();
+	if (pLabelMats)
+		pLabelMats->Release();
 	if (pContainer)
 	{
 		pContainer->GetParent()->RemoveChild(pContainer);
@@ -133,9 +140,6 @@ void vtAbstractLayer::CreateObjectGeometry(vtTerrain *pTerr)
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// We support geometry for 2D and 3D polylines
-	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(pSet);
-	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(pSet);
-	const vtFeatureSetLineString3D *pSetLS3 = dynamic_cast<const vtFeatureSetLineString3D*>(pSet);
 	if (!pSetP2 && !pSetP3 && !pSetLS3)
 		return;
 
@@ -287,10 +291,6 @@ void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr)
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// We support geometry for 2D and 3D polylines
-	const vtFeatureSetPoint3D	   *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(pSet);
-	const vtFeatureSetLineString   *pSetLS2 = dynamic_cast<const vtFeatureSetLineString*>(pSet);
-	const vtFeatureSetLineString3D *pSetLS3 = dynamic_cast<const vtFeatureSetLineString3D*>(pSet);
-	const vtFeatureSetPolygon	   *pSetPoly = dynamic_cast<const vtFeatureSetPolygon*>(pSet);
 	if (!pSetP3 && !pSetLS2 && !pSetLS3 && !pSetPoly)
 		return;
 
@@ -449,202 +449,163 @@ void vtAbstractLayer::CreateFeatureLabels(vtTerrain *pTerr)
 	VTLOG1("  CreateFeatureLabels\n");
 	vtTagArray &style = pSet->GetProperties();
 
+	// create container group
+	if (!pLabelGroup)
+	{
+		pLabelGroup = new vtGroup;
+		pLabelGroup->SetName2("Labels");
+		pContainer->AddChild(pLabelGroup);
+
+		// Create materials.
+		pLabelMats = new vtMaterialArray;
+
+		// If they specified a font name, use it
+		vtString fontfile;
+		if (!style.GetValueString("Font", fontfile))
+		{
+			// otherwise, use the default
+	#if VTLIB_OPENSG
+			fontfile = "Arial.txf";
+	#else
+			fontfile = "Arial.ttf";
+	#endif
+		}
+		// First, let the underlying scenegraph library try to find the font
+		pFont = new vtFont;
+		bool success = pFont->LoadFont(fontfile);
+		if (!success)
+		{
+			// look on VTP data paths
+			vtString vtname = "Fonts/" + fontfile;
+			fontfile = FindFileOnPaths(vtGetDataPath(), vtname);
+			if (fontfile != "")
+				success = pFont->LoadFont(fontfile);
+		}
+		if (success)
+			VTLOG("Successfully read font from '%s'\n", (const char *) fontfile);
+		else
+		{
+			VTLOG("Couldn't read font from file '%s', not creating labels.\n", (const char *) fontfile);
+			delete pFont;
+			pFont = NULL;
+			return;
+		}
+	}
+
+	unsigned int features = pSet->GetNumEntities();
+	VTLOG("Creating %d text labels\n", features);
+	for (unsigned int i = 0; i < features; i++)
+	{
+		CreateFeatureLabel(pTerr, style, i);
+		pTerr->ProgressCallback(i * 100 / features);
+	}
+}
+
+void vtAbstractLayer::CreateFeatureLabel(vtTerrain *pTerr, vtTagArray &style,
+										 unsigned int iIndex)
+{
+	// We support text labels for 2D and 3D points, and 2D polygons
+	if (!pSetP2 && !pSetP3 && !pSetPoly)
+		return;
+
+	// Must have a font to make a label
+	if (!pFont)
+		return;
+
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	// We support text labels for both 2D and 3D points, and 2D polygons
-	vtFeatureSet &feat = *(pSet);
-	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(&feat);
-	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(&feat);
-	const vtFeatureSetPolygon *pSetPG = dynamic_cast<const vtFeatureSetPolygon*>(&feat);
-	if (!pSetP2 && !pSetP3 && !pSetPG)
-		return;
-
-	// create container group
-	pLabelGroup = new vtGroup;
-	pLabelGroup->SetName2("Labels");
-	pContainer->AddChild(pLabelGroup);
-
-	// Create materials.
-	vtMaterialArray *pLabelMats = new vtMaterialArray;
-
-	unsigned int features = feat.GetNumEntities();
-	if (features == 0)
-		return;
-
-	// default case: common label color
-	RGBi label_color = style.GetValueRGBi("LabelColor");
-	int common_material_index =
-		pLabelMats->AddRGBMaterial1(label_color, false, true);
-
-#if 0
-	// It turns out that we don't have to do this, because OSG lets us
-	//  specify text color directly, rather than using materials.
-	if (field_index_color != -1)
-	{
-		// go through all the features collecting unique colors
-		for (i = 0; i < features; i++)
-		{
-			// if we have a unique color, add it
-			if (GetColorField(feat, i, field_index_color, rgba))
-			{
-				if (pLabelMats->FindByDiffuse(rgba) == -1)
-				{
-					RGBi rgb = (RGBi) (RGBf) rgba;
-					pLabelMats->AddRGBMaterial1(rgb, false, false);
-				}
-			}
-		}
-	}
-#endif
-
-	// If they specified a font name, use it
-	vtString fontfile;
-	if (!style.GetValueString("Font", fontfile))
-	{
-		// otherwise, use the default
-#if VTLIB_OPENSG
-		fontfile = "Arial.txf";
-#else
-		fontfile = "Arial.ttf";
-#endif
-	}
-	// First, let the underlying scenegraph library try to find the font
-	vtFont *font = new vtFont;
-	bool success = font->LoadFont(fontfile);
-	if (!success)
-	{
-		// look on VTP data paths
-		vtString vtname = "Fonts/" + fontfile;
-		fontfile = FindFileOnPaths(vtGetDataPath(), vtname);
-		if (fontfile != "")
-			success = font->LoadFont(fontfile);
-	}
-	if (success)
-		VTLOG("Successfully read font from '%s'\n", (const char *) fontfile);
-	else
-	{
-		VTLOG("Couldn't read font from file '%s', not creating labels.\n", (const char *) fontfile);
-		return;
-	}
-
-	int text_field_index, color_field_index;
-
-	if (!style.GetValueInt("TextFieldIndex", text_field_index))
-		text_field_index = -1;
-	if (!style.GetValueInt("ColorFieldIndex", color_field_index))
-		color_field_index = -1;
-
-	float label_elevation, label_size;
-	if (!style.GetValueFloat("LabelHeight", label_elevation))
-		label_elevation = 0.0f;
-	if (!style.GetValueFloat("LabelSize", label_size))
-		label_size = 18;
-
-	unsigned int i;
+	// Get the earth location of the label
 	DPoint2 p2;
 	DPoint3 p3;
 	FPoint3 fp3;
-	vtString str;
-	RGBAf rgba;
-
-	VTLOG("Creating %d text labels\n", features);
-	for (i = 0; i < features; i++)
+	if (pSetP2)
+		p2 = pSetP2->GetPoint(iIndex);
+	else if (pSetP3)
 	{
-		// Get the earth location of the label
-		if (pSetP2)
-			p2 = pSetP2->GetPoint(i);
-		else if (pSetP3)
-		{
-			p3 = pSetP3->GetPoint(i);
-			p2.Set(p3.x, p3.y);
-		}
-		else if (pSetPG)
-		{
-			const DPolygon2 &dp = pSetPG->GetPolygon(i);
-			p2 = dp[0].Centroid();
-		}
+		p3 = pSetP3->GetPoint(iIndex);
+		p2.Set(p3.x, p3.y);
+	}
+	else if (pSetPoly)
+	{
+		const DPolygon2 &dp = pSetPoly->GetPolygon(iIndex);
+		p2 = dp[0].Centroid();
+	}
 
-		// Don't drape on culture, but do use true elevation
-		if (!pTerr->GetHeightField()->ConvertEarthToSurfacePoint(p2, fp3, 0, true))
-			continue;
+	// Don't drape on culture, but do use true elevation
+	if (!pTerr->GetHeightField()->ConvertEarthToSurfacePoint(p2, fp3, 0, true))
+		return;
 
-		// Elevate the location by the desired vertical offset
+	float label_elevation;
+	if (!style.GetValueFloat("LabelHeight", label_elevation))
+		label_elevation = 0.0f;
+
+	// Elevate the location by the desired vertical offset
+	fp3.y += label_elevation;
+
+	// If we have a 3D point, we can use the Z component of the point
+	//  to further affect the elevation.
+	if (pSetP3)
 		fp3.y += label_elevation;
 
-		// If we have a 3D point, we can use the Z component of the point
-		//  to further affect the elevation.
-		if (pSetP3)
-			fp3.y += label_elevation;
+	float label_size;
+	if (!style.GetValueFloat("LabelSize", label_size))
+		label_size = 18;
 
-		// Create the vtTextMesh
-		if (features < 40)
-			VTLOG(" Constructing TextMesh %d\n", i);
-		vtTextMesh *text = new vtTextMesh(font, label_size, true);	// center
+	// Create the vtTextMesh
+	vtTextMesh *text = new vtTextMesh(pFont, label_size, true);	// center
 
-		feat.GetValueAsString(i, text_field_index, str);
+	// Get the label text
+	int text_field_index;
+	if (!style.GetValueInt("TextFieldIndex", text_field_index))
+		text_field_index = -1;
+	vtString str;
+	pSet->GetValueAsString(iIndex, text_field_index, str);
+
 #if SUPPORT_WSTRING
-		// Text might be UTF-8
-		wstring2 wide_string;
-		wide_string.from_utf8(str);
-		text->SetText(wide_string);
+	// Text will be UTF-8
+	wstring2 wide_string;
+	wide_string.from_utf8(str);
+	text->SetText(wide_string);
 #else
-		// Hope that it isn't
-		text->SetText(str);
+	// Hope that it isn't
+	text->SetText(str);
 #endif
 
-		// Create the vtGeom object to contain the vtTextMesh
-		vtGeom *geom = new vtGeom;
-		geom->SetName2(str);
-		geom->SetMaterials(pLabelMats);
+	// Create the vtGeom object to contain the vtTextMesh
+	vtGeom *geom = new vtGeom;
+	geom->SetName2(str);
+	geom->SetMaterials(pLabelMats);
 
-#if 0
-		// This is the material code that we don't (apparently) need.
-		int material_index;
-		if (field_index_color == -1)
-			material_index = common_material_index;
-		else
+	// Determine feature color
+	bool bGotColor = false;
+	int color_field_index;
+	if (style.GetValueInt("ColorFieldIndex", color_field_index))
+	{
+		RGBAf rgba;
+		if (GetColorField(*pSet, iIndex, color_field_index, rgba))
 		{
-			if (GetColorField(feat, i, color_field_index, rgba))
-				material_index = pLabelMats->FindByDiffuse(rgba);
-			else
-				material_index = common_material_index;
+			text->SetColor(rgba);
+			bGotColor = true;
 		}
-		geom->AddTextMesh(text, material_index);
-#else
-		bool bColorSet = false;
-		if (color_field_index != -1)
-		{
-			if (GetColorField(feat, i, color_field_index, rgba))
-			{
-				text->SetColor(rgba);
-				bColorSet = true;
-			}
-		}
-		if (!bColorSet)
-			text->SetColor(RGBf(label_color));
-		geom->AddTextMesh(text, common_material_index);
-		text->Release();	// pass ownership to geometry
-#endif
-
-		// Add to a billboarding transform so that the labels turn
-		// toward the viewer
-		vtTransform *bb = new vtTransform;
-		bb->AddChild(geom);
-		pTerr->GetBillboardEngine()->AddTarget(bb);
-
-		bb->SetTrans(fp3);
-		pLabelGroup->AddChild(bb);
-
-		pTerr->ProgressCallback(i * 100 / features);
 	}
-	// pass ownership to all the geometries
-	pLabelMats->Release();
+	if (!bGotColor)
+	{
+		RGBf rgb = style.GetValueRGBi("LabelColor");
+		text->SetColor(rgb);
+	}
 
-	// we are done with the font (hopefully it is cached by the SG)
-	delete font;
+	geom->AddTextMesh(text, -1);
+	text->Release();	// pass ownership to geometry
 
-	VTLOG("Created %d text labels\n", features);
+	// Add to a billboarding transform so that the labels turn
+	// toward the viewer
+	vtTransform *bb = new vtTransform;
+	bb->AddChild(geom);
+	pTerr->GetBillboardEngine()->AddTarget(bb);
+
+	bb->SetTrans(fp3);
+	pLabelGroup->AddChild(bb);
 }
 
 bool vtAbstractLayer::CreateTextureOverlay(vtTerrain *pTerr)
@@ -658,8 +619,7 @@ bool vtAbstractLayer::CreateTextureOverlay(vtTerrain *pTerr)
 
 	// We support texture overlay for only 2D polygons (so far)
 	vtFeatureSet &feat = *(pSet);
-	const vtFeatureSetPolygon *pSetPG = dynamic_cast<const vtFeatureSetPolygon*>(&feat);
-	if (!pSetPG)
+	if (!pSetPoly)
 		return false;
 
 	const int ALPD_RESOLUTION = 1024;
@@ -676,7 +636,7 @@ bool vtAbstractLayer::CreateTextureOverlay(vtTerrain *pTerr)
 	double DeltaX = DataExtents.Width() / (double)ALPD_RESOLUTION;
 	double DeltaY = DataExtents.Height() / (double)ALPD_RESOLUTION;
 
-	int iNumFeatures = pSetPG->GetNumEntities();
+	int iNumFeatures = pSetPoly->GetNumEntities();
 	RGBAi LayerColour = style.GetValueRGBi("GeomColor");
 	LayerColour.a = 255;
 
@@ -689,7 +649,7 @@ bool vtAbstractLayer::CreateTextureOverlay(vtTerrain *pTerr)
 			{
 				DPoint2 Point(DataExtents.left + DeltaX / 2 + DeltaX * ImageX,
 								DataExtents.top - DeltaY / 2 - DeltaY * ImageY);
-				if (pSetPG->GetPolygon(feat).ContainsPoint(Point))
+				if (pSetPoly->GetPolygon(feat).ContainsPoint(Point))
 				{
 					image->SetPixel32(ImageX, ImageY, LayerColour);
 				}
@@ -724,5 +684,17 @@ bool vtAbstractLayer::GetVisible()
 		return pMultiTexture->m_pNode->MultiTextureIsEnabled(pMultiTexture);
 
 	return false;
+}
+
+void vtAbstractLayer::SetFeatureSet(vtFeatureSet *pFeatureSet)
+{
+	pSet = pFeatureSet;
+
+	// Handy pointers to disambiguate pSet
+	pSetP2 = dynamic_cast<vtFeatureSetPoint2D*>(pSet);
+	pSetP3 = dynamic_cast<vtFeatureSetPoint3D*>(pSet);
+	pSetLS2 = dynamic_cast<vtFeatureSetLineString*>(pSet);
+	pSetLS3 = dynamic_cast<vtFeatureSetLineString3D*>(pSet);
+	pSetPoly = dynamic_cast<vtFeatureSetPolygon*>(pSet);
 }
 

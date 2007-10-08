@@ -1748,7 +1748,7 @@ void vtTerrain::_CreateAbstractLayers()
 
 		VTLOG1("  Constructing and appending layer.\n");
 		vtAbstractLayer *layer = new vtAbstractLayer;
-		layer->pSet = feat;
+		layer->SetFeatureSet(feat);
 		m_Layers.Append(layer);
 	}
 
@@ -2999,7 +2999,7 @@ vtLayer *vtTerrain::LoadLayer(const char *fname)
 		}
 		VTLOG("Successfully read features from file '%s'\n", fname);
 		vtAbstractLayer *alay = new vtAbstractLayer;
-		alay->pSet = feat;
+		alay->SetFeatureSet(feat);
 		m_Layers.Append(alay);
 		return alay;
 	}
@@ -3205,7 +3205,7 @@ vtAbstractLayer *vtTerrain::GetAbstractLayer()
 void vtTerrain::RemoveFeatureGeometry(vtAbstractLayer *alay)
 {
 	// labels might be targets of the billboard engine
-	vtGroup *labels = alay->pLabelGroup;
+	vtGroup *labels = alay->GetLabelGroup();
 	if (labels)
 	{
 		for (unsigned int i = 0; i < labels->GetNumChildren(); i++)

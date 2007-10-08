@@ -1,7 +1,7 @@
 //
 // Name:		FeatureTableDlg3d.cpp
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
