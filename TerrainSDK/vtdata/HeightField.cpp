@@ -685,7 +685,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	std::vector<RGBi> table;
 	cmap->GenerateColors(table, iGranularity, fMin, fMax);
 
-	return ColorDibFromTable(pBM, table, fMin, fMax);
+	return ColorDibFromTable(pBM, table, fMin, fMax, progress_callback);
 }
 
 /**
