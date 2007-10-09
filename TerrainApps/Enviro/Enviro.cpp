@@ -1352,8 +1352,8 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 				int field = pset->GetFieldIndex("Label");
 				pset->SetValueFromString(rec, field, str);
 
-				// recreate the 3D visuals
-				pTerr->RemoveFeatureGeometry(alay);
+				// create its 3D visual
+				pTerr->RemoveFeatureGeometries(alay);
 				alay->CreateStyledFeatures(pTerr);
 			}
 		}

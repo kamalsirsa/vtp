@@ -205,8 +205,6 @@ void vtFeatureSetPoint2D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 
 		SHPDestroyObject(pObj);
 	}
-	// allocate flag array
-	m_Flags.resize(nElems, 0);
 }
 
 
@@ -376,8 +374,6 @@ void vtFeatureSetPoint3D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 		m_Point3.SetAt(i, p3);
 		SHPDestroyObject(pObj);
 	}
-	// allocate flag array
-	m_Flags.resize(nElems, 0);
 }
 
 
@@ -564,8 +560,6 @@ void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callb
 		}
 		SHPDestroyObject(pObj);
 	}
-	// allocate flag array
-	m_Flags.resize(m_Line.size(), 0);
 }
 
 
@@ -767,8 +761,6 @@ void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_cal
 		}
 		SHPDestroyObject(pObj);
 	}
-	// allocate flag array
-	m_Flags.resize(nElems, 0);
 }
 
 
@@ -1170,7 +1162,5 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 		}
 		SHPDestroyObject(pObj);
 	}
-	// allocate flag array
-	m_Flags.resize(m_Poly.size(), 0);
 }
 

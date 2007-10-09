@@ -3,7 +3,7 @@
 //
 // Useful classes and functions for working with geometry and meshes.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -48,6 +48,8 @@ public:
 
 	void SetLineWidth(int width);
 	void SetMatIndex(int iIdx);
+
+	std::vector<vtMesh*> m_Meshes;
 
 protected:
 	void NewMesh();

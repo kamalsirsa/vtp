@@ -2966,7 +2966,7 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 	else if (alay)
 	{
 		// first remove them from the terrain
-		RemoveFeatureGeometry(alay);
+		RemoveFeatureGeometries(alay);
 		delete alay;
 
 		// If that was the current layer, deal with it
@@ -3188,6 +3188,7 @@ void vtTerrain::EnforcePageOut()
 		m_fPagingStructureDist = fStructLodDist + 50;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////
 // Abstracts
 
@@ -3202,7 +3203,7 @@ vtAbstractLayer *vtTerrain::GetAbstractLayer()
 	return m_pActiveAbstractLayer;
 }
 
-void vtTerrain::RemoveFeatureGeometry(vtAbstractLayer *alay)
+void vtTerrain::RemoveFeatureGeometries(vtAbstractLayer *alay)
 {
 	// labels might be targets of the billboard engine
 	vtGroup *labels = alay->GetLabelGroup();
@@ -3212,6 +3213,16 @@ void vtTerrain::RemoveFeatureGeometry(vtAbstractLayer *alay)
 			GetBillboardEngine()->RemoveTarget(labels->GetChild(i));
 	}
 	alay->ReleaseGeometry();
+}
+
+void vtTerrain::RemoveFeatureGeometry(vtAbstractLayer *alay, int iIndex)
+{
+	// labels might be targets of the billboard engine
+	vtGroup *labels = alay->GetLabelGroup();
+	if (labels)
+		GetBillboardEngine()->RemoveTarget(labels->GetChild(iIndex));
+
+	alay->ReleaseFeatureGeometry(iIndex);
 }
 
 

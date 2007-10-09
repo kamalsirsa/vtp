@@ -90,6 +90,10 @@ FieldType ConvertFieldType(DBFFieldType type);
 #define FF_PICKED		2
 #define FF_DELETE		4
 
+struct vtFeature {
+	unsigned char flags;
+};
+
 /**
  * vtFeatureSet contains a collection of features which are just abstract data,
  * without any specific correspondence to any aspect of the physical world.
@@ -141,13 +145,13 @@ public:
 	void Select(unsigned int iEnt, bool set = true)
 	{
 		if (set)
-			m_Flags[iEnt] |= FF_SELECTED;
+			m_Features[iEnt]->flags |= FF_SELECTED;
 		else
-			m_Flags[iEnt] &= ~FF_SELECTED;
+			m_Features[iEnt]->flags &= ~FF_SELECTED;
 	}
 	bool IsSelected(unsigned int iEnt)
 	{
-		return ((m_Flags[iEnt] & FF_SELECTED) != 0);
+		return ((m_Features[iEnt]->flags & FF_SELECTED) != 0);
 	}
 	unsigned int NumSelected() const;
 	void DeselectAll();
@@ -160,13 +164,13 @@ public:
 	void Pick(unsigned int iEnt, bool set = true)
 	{
 		if (set)
-			m_Flags[iEnt] |= FF_PICKED;
+			m_Features[iEnt]->flags |= FF_PICKED;
 		else
-			m_Flags[iEnt] &= ~FF_PICKED;
+			m_Features[iEnt]->flags &= ~FF_PICKED;
 	}
 	bool IsPicked(unsigned int iEnt)
 	{
-		return ((m_Flags[iEnt] & FF_PICKED) != 0);
+		return ((m_Features[iEnt]->flags & FF_PICKED) != 0);
 	}
 	void DePickAll();
 
@@ -203,6 +207,8 @@ public:
 	/// Get the properties for this set, which includes style.
 	vtTagArray &GetProperties() { return m_Properties; }
 
+	vtFeature *GetFeature(unsigned int iIndex) const { return m_Features[iIndex]; }
+
 protected:
 	// these must be implemented for each type of geometry
 	virtual bool IsInsideRect(int iElem, const DRECT &rect) = 0;
@@ -216,9 +222,8 @@ protected:
 
 	OGRwkbGeometryType		m_eGeomType;
 
-	// The size of the flags array will match the number of elements, and
-	//  contains bit-flags such as FF_SELECTED.
-	std::vector<unsigned char> m_Flags;
+	// The size of the features array will match the number of elements
+	std::vector<vtFeature*> m_Features;
 
 	vtArray<Field*> m_fields;
 	vtProjection	m_proj;

@@ -310,8 +310,12 @@ void vtMeshFactory::NewMesh()
 	m_pMesh = new vtMesh(m_ePrimType, m_iVertType, m_iMaxVertsPerMesh);
 	m_pGeom->AddMesh(m_pMesh, m_iMatIndex);
 	m_pMesh->Release();	// pass ownership to geometry
+
 	if (m_iLineWidth != 1)
 		m_pMesh->SetLineWidth(m_iLineWidth);
+
+	// Keep a list of all the meshes made in this factory
+	m_Meshes.push_back(m_pMesh);
 }
 
 /** Tell the factory to start a primitive. */

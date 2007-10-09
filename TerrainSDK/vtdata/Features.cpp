@@ -170,6 +170,14 @@ bool vtFeatureSet::LoadFromSHP(const char *fname, bool progress_callback(int))
 	// Read corresponding attributes (DBF fields and records)
 	LoadDataFromDBF(fname, progress_callback);
 
+	// Set up Features array
+	for (unsigned int i = 0; i < GetNumEntities(); i++)
+	{
+		vtFeature *f = new vtFeature;
+		f->flags = 0;
+		m_Features.push_back(f);
+	}
+
 	return true;
 }
 
@@ -1146,7 +1154,7 @@ bool vtFeatureSet::LoadDataFromCSV(const char *filename, bool progress_callback(
 
 /**
  * Set the number of entities.  This expands (or contracts) the number of
- * geometry entitied and corresponding records.
+ * geometry entities and corresponding records.
  */
 void vtFeatureSet::SetNumEntities(int iNum)
 {
@@ -1158,7 +1166,7 @@ void vtFeatureSet::SetNumEntities(int iNum)
 		m_fields[iField]->SetNumRecords(iNum);
 
 	// Also keep size of flag array in synch
-	m_Flags.resize(iNum, 0);
+	m_Features.resize(iNum);
 }
 
 
@@ -1225,7 +1233,10 @@ bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 			field1->GetValueAsString(i, str);
 			field2->SetValueFromString(first_appended_ent+i, str);
 		}
-		m_Flags.push_back(pFromSet->m_Flags[i]);
+		// copy flags
+		vtFeature *f = new vtFeature;
+		f->flags = pFromSet->m_Features[i]->flags;
+		m_Features.push_back(f);
 	}
 
 	// empty the source layer
@@ -1241,23 +1252,23 @@ bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 unsigned int vtFeatureSet::NumSelected() const
 {
 	unsigned int count = 0;
-	unsigned int size = m_Flags.size();
+	unsigned int size = m_Features.size();
 	for (unsigned int i = 0; i < size; i++)
-		if (m_Flags[i] & FF_SELECTED)
+		if (m_Features[i]->flags & FF_SELECTED)
 			count++;
 	return count;
 }
 
 void vtFeatureSet::DeselectAll()
 {
-	for (unsigned int i = 0; i < m_Flags.size(); i++)
-		m_Flags[i] &= ~FF_SELECTED;
+	for (unsigned int i = 0; i < m_Features.size(); i++)
+		m_Features[i]->flags &= ~FF_SELECTED;
 }
 
 void vtFeatureSet::InvertSelection()
 {
-	for (unsigned int i = 0; i < m_Flags.size(); i++)
-		m_Flags[i] ^= FF_SELECTED;
+	for (unsigned int i = 0; i < m_Features.size(); i++)
+		m_Features[i]->flags ^= FF_SELECTED;
 }
 
 int vtFeatureSet::DoBoxSelect(const DRECT &rect, SelectionType st)
@@ -1269,7 +1280,7 @@ int vtFeatureSet::DoBoxSelect(const DRECT &rect, SelectionType st)
 	bool bWas;
 	for (int i = 0; i < entities; i++)
 	{
-		bWas = (m_Flags[i] & FF_SELECTED);
+		bWas = (m_Features[i]->flags & FF_SELECTED);
 		if (st == ST_NORMAL)
 			Select(i, false);
 
@@ -1465,7 +1476,7 @@ void vtFeatureSet::DeleteSelected()
 
 void vtFeatureSet::SetToDelete(int iFeature)
 {
-	m_Flags[iFeature] |= FF_DELETE;
+	m_Features[iFeature]->flags |= FF_DELETE;
 }
 
 void vtFeatureSet::ApplyDeletion()
@@ -1476,17 +1487,20 @@ void vtFeatureSet::ApplyDeletion()
 	int newtotal = entities;
 	for (i = 0; i < entities; i++)
 	{
-		if (! (m_Flags[i] & FF_DELETE))
+		if ((m_Features[i]->flags & FF_DELETE))
+		{
+			delete m_Features[i];
+			newtotal--;
+		}
+		else
 		{
 			if (target != i)
 			{
 				CopyEntity(i, target);
-				m_Flags[target] = m_Flags[i];
+				m_Features[target] = m_Features[i];
 			}
 			target++;
 		}
-		else
-			newtotal--;
 	}
 	SetNumEntities(newtotal);
 }
@@ -1505,7 +1519,7 @@ void vtFeatureSet::DePickAll()
 {
 	int i, entities = GetNumEntities();
 	for (i = 0; i < entities; i++)
-		m_Flags[i] &= ~FF_PICKED;
+		m_Features[i]->flags &= ~FF_PICKED;
 }
 
 
@@ -1605,7 +1619,11 @@ int vtFeatureSet::AddRecord()
 	{
 		recs = m_fields[i]->AddRecord();
 	}
-	m_Flags.push_back(0);
+
+	vtFeature *f = new vtFeature;
+	f->flags = 0;
+	m_Features.push_back(f);
+
 	return recs;
 }
 

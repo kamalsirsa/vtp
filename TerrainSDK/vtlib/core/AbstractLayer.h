@@ -13,6 +13,16 @@
 
 class vtTerrain;
 
+class Visual
+{
+public:
+	Visual() : m_xform(NULL) {}
+	std::vector<vtMesh*> m_meshes;
+	vtTransform *m_xform;
+};
+
+typedef std::map<vtFeature*,Visual*> VizMap;
+
 /**
  * An abstract layer is a traditional GIS-style set of geometry features with
  * attributes.  It can be shown on the terrain in a variety of ways (styles).
@@ -74,18 +84,29 @@ public:
 	vtFeatureSet *GetFeatureSet() const { return pSet; }
 	vtGroup *GetLabelGroup() const { return pLabelGroup; }
 	vtGroup *GetContainer() const { return pContainer; }
+	void CreateContainer(vtTerrain *pTerr);
 
+	// Create for all features
 	void CreateStyledFeatures(vtTerrain *pTerr);
-	void CreateObjectGeometry(vtTerrain *pTerr);
-	void CreateLineGeometry(vtTerrain *pTerr);
-	void CreateFeatureLabels(vtTerrain *pTerr);
 	bool CreateTextureOverlay(vtTerrain *pTerr);
 
+	// Create for a single feature
+	void CreateStyledFeature(vtTerrain *pTerr, int iIndex);
+	void CreateObjectGeometry(vtTerrain *pTerr, vtTagArray &style, unsigned int iIndex);
+	void CreateLineGeometry(vtTerrain *pTerr, vtTagArray &style, unsigned int iIndex);
 	void CreateFeatureLabel(vtTerrain *pTerr, vtTagArray &style, unsigned int iIndex);
 
 	void ReleaseGeometry();
+	void ReleaseFeatureGeometry(unsigned int iIndex);
+
+	// When the underlying feature changes, we need to rebuild the visual
+	void Rebuild(vtTerrain *pTerr);
+	void RebuildFeature(vtTerrain *pTerr, unsigned int iIndex);
 
 protected:
+	void CreateGeomGroup();
+	void CreateLabelGroup();
+
 	/// This is the set of features which the layer contains. Style information
 	///  is associated with it, using vtFeatureSet::SetProperties() and 
 	///  vtFeatureSet::GetProperties().
@@ -104,7 +125,15 @@ protected:
 
 	// Used to create the visual features
 	vtFont *pFont;
-	vtMaterialArray *pLabelMats;
+	vtMaterialArray *pGeomMats;
+
+	int material_index_object;
+	int material_index_line;
+	vtGeom *pGeomObject;
+	vtGeom *pGeomLine;
+
+	VizMap m_Map;
+	Visual *GetViz(vtFeature *feat);
 };
 
 #endif // ABSTRACTLAYERH
