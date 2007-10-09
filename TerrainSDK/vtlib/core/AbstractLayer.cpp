@@ -14,8 +14,10 @@
 #include "vtdata/vtLog.h"
 
 
-vtAbstractLayer::vtAbstractLayer()
+vtAbstractLayer::vtAbstractLayer(vtTerrain *pTerr)
 {
+	m_pTerr = pTerr;
+
 	pSet = NULL;
 	pContainer = NULL;
 	pGeomGroup = NULL;
@@ -27,8 +29,6 @@ vtAbstractLayer::vtAbstractLayer()
 
 vtAbstractLayer::~vtAbstractLayer()
 {
-	delete pSet;
-	delete pFont;
 	ReleaseGeometry();
 	if (pContainer)
 	{
@@ -36,6 +36,8 @@ vtAbstractLayer::~vtAbstractLayer()
 		pContainer->Release();
 	}
 	delete pMultiTexture;
+	delete pFont;
+	delete pSet;
 }
 
 void vtAbstractLayer::SetLayerName(const vtString &fname)
@@ -97,7 +99,7 @@ bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgb
 	return true;
 }
 
-void vtAbstractLayer::CreateContainer(vtTerrain *pTerr)
+void vtAbstractLayer::CreateContainer()
 {
 	// first time
 	pContainer = new vtGroup;
@@ -105,20 +107,18 @@ void vtAbstractLayer::CreateContainer(vtTerrain *pTerr)
 
 	// Abstract geometry goes into the scale features group, so it will be
 	//  scaled up/down with the vertical exaggeration.
-	pTerr->GetScaledFeatures()->AddChild(pContainer);
+	m_pTerr->GetScaledFeatures()->AddChild(pContainer);
 }
 
 /**
  * Given a featureset and style description, create the geometry and place it
  * on the terrain.
- *
- * \param pTerr The terrain to drape on.
  */
-void vtAbstractLayer::CreateStyledFeatures(vtTerrain *pTerr)
+void vtAbstractLayer::CreateStyledFeatures()
 {
 	VTLOG1("CreateStyledFeatures\n");
 	if (!pContainer)
-		CreateContainer(pTerr);
+		CreateContainer();
 
 	vtTagArray &style = pSet->GetProperties();
 
@@ -127,31 +127,31 @@ void vtAbstractLayer::CreateStyledFeatures(vtTerrain *pTerr)
 
 	for (unsigned int i = 0; i < entities; i++)
 	{
-		CreateStyledFeature(pTerr, i);
-		pTerr->ProgressCallback(i * 100 / entities);
+		CreateStyledFeature(i);
+		m_pTerr->ProgressCallback(i * 100 / entities);
 	}
 
 	if (style.GetValueBool("TextureOverlay"))
-		CreateTextureOverlay(pTerr);
+		CreateTextureOverlay();
 
 	VTLOG1("Done.\n");
 }
 
-void vtAbstractLayer::CreateStyledFeature(vtTerrain *pTerr, int iIndex)
+void vtAbstractLayer::CreateStyledFeature(int iIndex)
 {
 	if (!pContainer)
-		CreateContainer(pTerr);
+		CreateContainer();
 
 	vtTagArray &style = pSet->GetProperties();
 
 	if (style.GetValueBool("ObjectGeometry"))
-		CreateObjectGeometry(pTerr, style, iIndex);
+		CreateObjectGeometry(style, iIndex);
 
 	if (style.GetValueBool("LineGeometry"))
-		CreateLineGeometry(pTerr, style, iIndex);
+		CreateLineGeometry(style, iIndex);
 
 	if (style.GetValueBool("Labels"))
-		CreateFeatureLabel(pTerr, style, iIndex);
+		CreateFeatureLabel(style, iIndex);
 }
 
 void vtAbstractLayer::CreateGeomGroup()
@@ -232,11 +232,8 @@ void vtAbstractLayer::CreateLabelGroup()
 	Given a featureset and style description, create a geometry object (such as
 	spheres) and place it on the terrain.
 	If 2D, they will be draped on the terrain.
-
-	\param pTerr The terrain to drape on.
 */
-void vtAbstractLayer::CreateObjectGeometry(vtTerrain *pTerr, vtTagArray &style,
-										   unsigned int iIndex)
+void vtAbstractLayer::CreateObjectGeometry(vtTagArray &style, unsigned int iIndex)
 {
 	if (!pGeomGroup)
 		CreateGeomGroup();
@@ -278,7 +275,7 @@ void vtAbstractLayer::CreateObjectGeometry(vtTerrain *pTerr, vtTagArray &style,
 	if (!style.GetValueFloat("ObjectGeomSize", fRadius))
 		fRadius = 1;
 
-	vtHeightField3d *hf = pTerr->GetHeightField();
+	vtHeightField3d *hf = m_pTerr->GetHeightField();
 	int res = 3;
 	FPoint3 p3;
 
@@ -374,11 +371,8 @@ void vtAbstractLayer::CreateObjectGeometry(vtTerrain *pTerr, vtTagArray &style,
 	If 2D, it will be draped on the terrain. Polygon features
 	(vtFeatureSetPolygon) will also be created as line geometry
 	(unfilled polygons) and draped on the ground.
-
-	\param pTerr The terrain to drape on.
 */
-void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr, vtTagArray &style,
-										   unsigned int iIndex)
+void vtAbstractLayer::CreateLineGeometry(vtTagArray &style, unsigned int iIndex)
 {
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -431,7 +425,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr, vtTagArray &style,
 		for (unsigned int j = 0; j < size; j++)
 		{
 			// preserve 3D point's elevation: don't drape
-			pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
+			m_pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
 			mf.AddVertex(f3);
 		}
 		mf.PrimEnd();
@@ -440,7 +434,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr, vtTagArray &style,
 	{
 		const DLine2 &dline = pSetLS2->GetPolyLine(iIndex);
 
-		pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve);
+		m_pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve);
 	}
 	else if (pSetLS3)
 	{
@@ -450,7 +444,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr, vtTagArray &style,
 		for (unsigned int j = 0; j < size; j++)
 		{
 			// preserve 3D point's elevation: don't drape
-			pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
+			m_pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
 			mf.AddVertex(f3);
 		}
 		mf.PrimEnd();
@@ -467,7 +461,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr, vtTagArray &style,
 			DLine2 dline = dpoly[k];
 			dline.Append(dline[0]);
 
-			pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve, true);
+			m_pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve, true);
 		}
 	}
 
@@ -499,11 +493,8 @@ void vtAbstractLayer::CreateLineGeometry(vtTerrain *pTerr, vtTagArray &style,
  * vtFeatureSetPoint3D) then the labels will be placed at those points.  If
  * the features are 2D polygons (vtFeatureSetPolygon) then the point used is
  * the centroid of the polygon.
- *
- * \param pTerr The terrain to drape on.
  */
-void vtAbstractLayer::CreateFeatureLabel(vtTerrain *pTerr, vtTagArray &style,
-										 unsigned int iIndex)
+void vtAbstractLayer::CreateFeatureLabel(vtTagArray &style, unsigned int iIndex)
 {
 	// We support text labels for 2D and 3D points, and 2D polygons
 	if (!pSetP2 && !pSetP3 && !pSetPoly)
@@ -538,7 +529,7 @@ void vtAbstractLayer::CreateFeatureLabel(vtTerrain *pTerr, vtTagArray &style,
 
 	// Don't drape on culture, but do use true elevation
 	FPoint3 fp3;
-	if (!pTerr->GetHeightField()->ConvertEarthToSurfacePoint(p2, fp3, 0, true))
+	if (!m_pTerr->GetHeightField()->ConvertEarthToSurfacePoint(p2, fp3, 0, true))
 		return;
 
 	float label_elevation;
@@ -606,7 +597,7 @@ void vtAbstractLayer::CreateFeatureLabel(vtTerrain *pTerr, vtTagArray &style,
 	// toward the viewer
 	vtTransform *bb = new vtTransform;
 	bb->AddChild(geom);
-	pTerr->GetBillboardEngine()->AddTarget(bb);
+	m_pTerr->GetBillboardEngine()->AddTarget(bb);
 
 	bb->SetTrans(fp3);
 	pLabelGroup->AddChild(bb);
@@ -616,7 +607,7 @@ void vtAbstractLayer::CreateFeatureLabel(vtTerrain *pTerr, vtTagArray &style,
 	viz->m_xform = bb;
 }
 
-bool vtAbstractLayer::CreateTextureOverlay(vtTerrain *pTerr)
+bool vtAbstractLayer::CreateTextureOverlay()
 {
 	VTLOG1("  CreateTextureOverlay\n");
 
@@ -670,7 +661,7 @@ bool vtAbstractLayer::CreateTextureOverlay(vtTerrain *pTerr)
 	if (mode == "ADD") iTextureMode = GL_ADD;
 	if (mode == "MODULATE") iTextureMode = GL_MODULATE;
 	if (mode == "DECAL") iTextureMode = GL_DECAL;
-	pMultiTexture = pTerr->AddMultiTextureOverlay(image, DataExtents, iTextureMode);
+	pMultiTexture = m_pTerr->AddMultiTextureOverlay(image, DataExtents, iTextureMode);
 	return true;
 }
 
@@ -679,6 +670,10 @@ bool vtAbstractLayer::CreateTextureOverlay(vtTerrain *pTerr)
  */
 void vtAbstractLayer::ReleaseGeometry()
 {
+	for (int i = pSet->GetNumEntities()-1; i >= 0; i--)
+	{
+		ReleaseFeatureGeometry(i);
+	}
 	if (pGeomGroup)
 	{
 		pContainer->RemoveChild(pGeomGroup);
@@ -693,20 +688,44 @@ void vtAbstractLayer::ReleaseGeometry()
 	}
 }
 
+/**
+ * Release all the 3D stuff created for a given feature.
+ */
 void vtAbstractLayer::ReleaseFeatureGeometry(unsigned int iIndex)
 {
-	// TODO
+	vtFeature *f = pSet->GetFeature(iIndex);
+	Visual *v = GetViz(f);
+
+	for (unsigned int m = 0; m < v->m_meshes.size(); m++)
+	{
+		vtMesh *mesh = v->m_meshes[m];
+
+		pGeomObject->RemoveMesh(mesh);
+		pGeomLine->RemoveMesh(mesh);
+	}
+	if (v->m_xform)
+	{
+		pLabelGroup->RemoveChild(v->m_xform);
+		v->m_xform->Release();
+
+		// labels might be targets of the billboard engine
+		vtEngine *bbe = m_pTerr->GetBillboardEngine();
+		if (bbe)
+			bbe->RemoveTarget(v->m_xform);
+	}
+	delete v;
+	m_Map.erase(f);
 }
 
 // When the underlying feature changes, we need to rebuild the visual
-void vtAbstractLayer::Rebuild(vtTerrain *pTerr)
+void vtAbstractLayer::Rebuild()
 {
 	ReleaseGeometry();
-	CreateStyledFeatures(pTerr);
+	CreateStyledFeatures();
 }
 
 // When the underlying feature changes, we need to rebuild the visual
-void vtAbstractLayer::RebuildFeature(vtTerrain *pTerr, unsigned int iIndex)
+void vtAbstractLayer::RebuildFeature(unsigned int iIndex)
 {
 	ReleaseFeatureGeometry(iIndex);
 }

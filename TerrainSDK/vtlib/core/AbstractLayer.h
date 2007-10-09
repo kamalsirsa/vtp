@@ -72,7 +72,7 @@ typedef std::map<vtFeature*,Visual*> VizMap;
 class vtAbstractLayer : public vtLayer
 {
 public:
-	vtAbstractLayer();
+	vtAbstractLayer(vtTerrain *pTerr);
 	~vtAbstractLayer();
 
 	void SetLayerName(const vtString &fname);
@@ -84,28 +84,30 @@ public:
 	vtFeatureSet *GetFeatureSet() const { return pSet; }
 	vtGroup *GetLabelGroup() const { return pLabelGroup; }
 	vtGroup *GetContainer() const { return pContainer; }
-	void CreateContainer(vtTerrain *pTerr);
+	void CreateContainer();
 
 	// Create for all features
-	void CreateStyledFeatures(vtTerrain *pTerr);
-	bool CreateTextureOverlay(vtTerrain *pTerr);
+	void CreateStyledFeatures();
+	bool CreateTextureOverlay();
 
 	// Create for a single feature
-	void CreateStyledFeature(vtTerrain *pTerr, int iIndex);
-	void CreateObjectGeometry(vtTerrain *pTerr, vtTagArray &style, unsigned int iIndex);
-	void CreateLineGeometry(vtTerrain *pTerr, vtTagArray &style, unsigned int iIndex);
-	void CreateFeatureLabel(vtTerrain *pTerr, vtTagArray &style, unsigned int iIndex);
+	void CreateStyledFeature(int iIndex);
+	void CreateObjectGeometry(vtTagArray &style, unsigned int iIndex);
+	void CreateLineGeometry(vtTagArray &style, unsigned int iIndex);
+	void CreateFeatureLabel(vtTagArray &style, unsigned int iIndex);
 
 	void ReleaseGeometry();
 	void ReleaseFeatureGeometry(unsigned int iIndex);
 
 	// When the underlying feature changes, we need to rebuild the visual
-	void Rebuild(vtTerrain *pTerr);
-	void RebuildFeature(vtTerrain *pTerr, unsigned int iIndex);
+	void Rebuild();
+	void RebuildFeature(unsigned int iIndex);
 
 protected:
 	void CreateGeomGroup();
 	void CreateLabelGroup();
+
+	vtTerrain *m_pTerr;
 
 	/// This is the set of features which the layer contains. Style information
 	///  is associated with it, using vtFeatureSet::SetProperties() and 

@@ -158,6 +158,10 @@ public:
 	void InvertSelection();
 	int SelectByCondition(int iField, int iCondition, const char *szValue);
 	void DeleteSelected();
+	bool IsDeleted(unsigned int iEnt)
+	{
+		return ((m_Features[iEnt]->flags & FF_DELETE) != 0);
+	}
 	int DoBoxSelect(const DRECT &rect, SelectionType st);
 
 	// picking (alternate form of selection)

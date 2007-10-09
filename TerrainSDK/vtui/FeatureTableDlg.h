@@ -42,6 +42,7 @@ public:
 
 	virtual void OnModified() {}
 	virtual void RefreshViz() {}
+	virtual void OnFeatureDelete(unsigned int iIndex) {}
 
 	// WDR: method declarations for FeatInfoDlg
 	wxStaticText* GetTextVertical()  { return (wxStaticText*) FindWindow( ID_TEXT_VERTICAL ); }

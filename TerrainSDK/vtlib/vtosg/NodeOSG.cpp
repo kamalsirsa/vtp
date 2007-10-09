@@ -1739,13 +1739,15 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 
 void vtGeom::RemoveMesh(vtMesh *pMesh)
 {
-	m_pGeode->removeDrawable(pMesh->m_pGeometry.get());
-
-	if (pMesh->_refCount == 2)
+	// If this geom has this mesh, remove it, and check if needs releasing
+	if (m_pGeode->removeDrawable(pMesh->m_pGeometry.get()))
 	{
-		// no more references except its default
-		// self-reference and the reflexive reference from its m_pGeometry.
-		pMesh->Release();
+		if (pMesh->_refCount == 2)
+		{
+			// no more references except its default
+			// self-reference and the reflexive reference from its m_pGeometry.
+			pMesh->Release();
+		}
 	}
 }
 

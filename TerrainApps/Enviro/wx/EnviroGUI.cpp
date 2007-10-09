@@ -317,11 +317,6 @@ bool EnviroGUI::SaveStructures(bool bAskFilename)
 	return success;
 }
 
-void EnviroGUI::ShowTable(vtFeatureSet *set)
-{
-	GetFrame()->ShowTable(set);
-}
-
 void EnviroGUI::OnSetDelete(vtFeatureSet *set)
 {
 	return GetFrame()->OnSetDelete(set);
@@ -436,7 +431,7 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
 	dlg.GetOptions(props);
 
 	// wrap the features in an abstract layer
-	vtAbstractLayer *pLay = new vtAbstractLayer;
+	vtAbstractLayer *pLay = new vtAbstractLayer(pTerr);
 	pLay->SetFeatureSet(pSet);
 
 	// add the new layer to the terrain

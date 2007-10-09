@@ -349,8 +349,17 @@ void FeatureTableDlg::OnDeleteHighlighted( wxCommandEvent &event )
 	if (iDeleted > 0)
 	{
 		OnModified();
+
+		// Delete high-level features first
+		for (unsigned int i = 0; i < m_pFeatures->GetNumEntities(); i++)
+		{
+			if (m_pFeatures->IsDeleted(i))
+				OnFeatureDelete(i);
+		}
+
+		// Then low-level
 		m_pFeatures->ApplyDeletion();
-		RefreshViz();
+
 		RefreshItems();
 	}
 }

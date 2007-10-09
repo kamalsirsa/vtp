@@ -56,7 +56,6 @@ public:
 	// The following are useful methods
 	bool SaveVegetation(bool bAskFilename);
 	bool SaveStructures(bool bAskFilename);
-	void ShowTable(vtFeatureSet *set);
 	void OnSetDelete(vtFeatureSet *set);
 
 	// navigation engines

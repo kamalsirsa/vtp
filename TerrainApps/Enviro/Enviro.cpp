@@ -1353,8 +1353,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 				pset->SetValueFromString(rec, field, str);
 
 				// create its 3D visual
-				pTerr->RemoveFeatureGeometries(alay);
-				alay->CreateStyledFeatures(pTerr);
+				alay->CreateStyledFeature(rec);
 			}
 		}
 	}

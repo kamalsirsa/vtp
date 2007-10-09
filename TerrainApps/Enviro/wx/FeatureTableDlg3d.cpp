@@ -13,15 +13,15 @@
 #endif
 
 #include "FeatureTableDlg3d.h"
-//include "BuilderView.h"
+#include "vtlib/vtlib.h"
+#include "vtlib/core/AbstractLayer.h"
 
 
 FeatureTableDlg3d::FeatureTableDlg3d( wxWindow *parent, wxWindowID id,
 	const wxString &title, const wxPoint &position, const wxSize& size, long style ) :
 	FeatureTableDlg(parent, id, title, position, size, style)
 {
-	//m_pLayer = NULL;
-	//m_pView = NULL;
+	m_pLayer = NULL;
 }
 
 void FeatureTableDlg3d::OnModified()
@@ -30,6 +30,14 @@ void FeatureTableDlg3d::OnModified()
 }
 void FeatureTableDlg3d::RefreshViz()
 {
-	//m_pView->Refresh();
+	m_pLayer->Rebuild();
 }
 
+void FeatureTableDlg3d::OnFeatureDelete(unsigned int iIndex)
+{
+	//vtFeature *f = m_pFeatures->GetFeature(iIndex);
+	if (!m_pLayer)
+		return;
+
+	m_pLayer->ReleaseFeatureGeometry(iIndex);
+}

@@ -99,14 +99,8 @@ vtTerrain::~vtTerrain()
 {
 	VTLOG("Terrain destructing: '%s'\n", (const char *) GetName());
 
-	// Remove the things this terrain has added to the scene
-	if (m_pBBEngine)
-	{
-		m_pEngineGroup->RemoveChild(m_pBBEngine);
-		delete m_pBBEngine;
-	}
-
-	// some things need to be manually deleted
+	// Remove the things this terrain has added to the scene.
+	// Some things need to be manually deleted.
 	m_Content.ReleaseContents();
 	m_Content.Empty();
 
@@ -131,6 +125,13 @@ vtTerrain::~vtTerrain()
 			delete alay;
 		else if (ilay)
 			delete ilay;
+	}
+
+	if (m_pBBEngine)
+	{
+		m_pEngineGroup->RemoveChild(m_pBBEngine);
+		delete m_pBBEngine;
+		m_pBBEngine = NULL;
 	}
 
 	// Do not delete the PlantList, the application may be sharing the same
@@ -1747,7 +1748,7 @@ void vtTerrain::_CreateAbstractLayers()
 		feat->GetProperties() = lay;
 
 		VTLOG1("  Constructing and appending layer.\n");
-		vtAbstractLayer *layer = new vtAbstractLayer;
+		vtAbstractLayer *layer = new vtAbstractLayer(this);
 		layer->SetFeatureSet(feat);
 		m_Layers.Append(layer);
 	}
@@ -1757,7 +1758,7 @@ void vtTerrain::_CreateAbstractLayers()
 	{
 		vtAbstractLayer *layer = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
 		if (layer)
-			layer->CreateStyledFeatures(this);
+			layer->CreateStyledFeatures();
 	}
 }
 
@@ -2998,7 +2999,7 @@ vtLayer *vtTerrain::LoadLayer(const char *fname)
 			return NULL;
 		}
 		VTLOG("Successfully read features from file '%s'\n", fname);
-		vtAbstractLayer *alay = new vtAbstractLayer;
+		vtAbstractLayer *alay = new vtAbstractLayer(this);
 		alay->SetFeatureSet(feat);
 		m_Layers.Append(alay);
 		return alay;
@@ -3213,16 +3214,6 @@ void vtTerrain::RemoveFeatureGeometries(vtAbstractLayer *alay)
 			GetBillboardEngine()->RemoveTarget(labels->GetChild(i));
 	}
 	alay->ReleaseGeometry();
-}
-
-void vtTerrain::RemoveFeatureGeometry(vtAbstractLayer *alay, int iIndex)
-{
-	// labels might be targets of the billboard engine
-	vtGroup *labels = alay->GetLabelGroup();
-	if (labels)
-		GetBillboardEngine()->RemoveTarget(labels->GetChild(iIndex));
-
-	alay->ReleaseFeatureGeometry(iIndex);
 }
 
 

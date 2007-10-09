@@ -237,7 +237,6 @@ public:
 	void SetAbstractLayer(vtAbstractLayer *alay);
 	vtAbstractLayer *GetAbstractLayer();
 	void RemoveFeatureGeometries(vtAbstractLayer *alay);
-	void RemoveFeatureGeometry(vtAbstractLayer *alay, int iIndex);
 
 	/// You should add your nodes to this terrain's scaled features if
 	/// they are 'flat' like GIS features or contour lines, which should

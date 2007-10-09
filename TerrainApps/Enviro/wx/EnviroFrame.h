@@ -73,7 +73,7 @@ public:
 	virtual void AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, bool tog);
 
 	void UpdateLODInfo();
-	void ShowTable(vtFeatureSet *set);
+	void ShowTable(vtAbstractLayer *alay);
 	void OnSetDelete(vtFeatureSet *set);
 
 	// command handlers
@@ -287,6 +287,9 @@ protected:
 
 DECLARE_EVENT_TABLE()
 };
+
+// Helper
+EnviroFrame *GetFrame();
 
 #endif
 

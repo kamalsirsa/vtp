@@ -2220,8 +2220,9 @@ void EnviroFrame::UpdateLODInfo()
 //
 // Show the feature table dialog for a given feature set.
 //
-void EnviroFrame::ShowTable(vtFeatureSet *set)
+void EnviroFrame::ShowTable(vtAbstractLayer *alay)
 {
+	vtFeatureSet *set = alay->GetFeatureSet();
 	FeatureTableDlg3d *table = NULL;
 	for (unsigned int i = 0; i < m_FeatureDlgs.size(); i++)
 	{
@@ -2233,6 +2234,7 @@ void EnviroFrame::ShowTable(vtFeatureSet *set)
 		table = new FeatureTableDlg3d(this, -1, _(""), wxDefaultPosition,
 			wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		table->SetFeatureSet(set);
+		table->SetLayer(alay);
 		m_FeatureDlgs.push_back(table);
 	}
 	table->Show();

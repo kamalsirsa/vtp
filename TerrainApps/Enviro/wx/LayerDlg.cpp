@@ -18,6 +18,7 @@
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for progress dialog
 #include "EnviroGUI.h"  // for GetCurrentTerrain
+#include "EnviroFrame.h"
 #include "canvas.h"		// for EnableContinuousRendering
 #include "StyleDlg.h"
 
@@ -621,7 +622,7 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 			VTLOG1("  Setting featureset properties.\n");
 			dlg.GetOptions(props);
 
-			alay->CreateStyledFeatures(terr);
+			alay->CreateStyledFeatures();
 		}
 
 		if (lay)
@@ -776,7 +777,7 @@ void LayerDlg::OnTable( wxCommandEvent &event )
 {
 	LayerItemData *data = GetLayerDataFromItem(m_item);
 	if (data && data->m_alay)
-		g_App.ShowTable(data->m_alay->GetFeatureSet());
+		GetFrame()->ShowTable(data->m_alay);
 }
 
 void LayerDlg::OnUpdateVisible(wxUpdateUIEvent& event)
