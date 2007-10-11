@@ -26,7 +26,8 @@ public:
 
 	virtual void OnModified();
 	virtual void RefreshViz();
-	virtual void OnFeatureDelete(unsigned int iIndex);
+	virtual void OnFeatureDelete(vtFeature *f);
+	virtual void OnEditEnd();
 
 protected:
 	vtAbstractLayer *m_pLayer;

@@ -33,11 +33,20 @@ void FeatureTableDlg3d::RefreshViz()
 	m_pLayer->Rebuild();
 }
 
-void FeatureTableDlg3d::OnFeatureDelete(unsigned int iIndex)
+void FeatureTableDlg3d::OnFeatureDelete(vtFeature *f)
 {
 	//vtFeature *f = m_pFeatures->GetFeature(iIndex);
 	if (!m_pLayer)
 		return;
 
-	m_pLayer->ReleaseFeatureGeometry(iIndex);
+	m_pLayer->DeleteFeature(f);
 }
+
+void FeatureTableDlg3d::OnEditEnd()
+{
+	if (!m_pLayer)
+		return;
+
+	m_pLayer->EditEnd();
+}
+

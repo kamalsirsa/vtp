@@ -89,6 +89,7 @@ public:
 	// Create for all features
 	void CreateStyledFeatures();
 	bool CreateTextureOverlay();
+	void CreateLineGeometryForPoints(vtTagArray &style);
 
 	// Create for a single feature
 	void CreateStyledFeature(int iIndex);
@@ -97,11 +98,17 @@ public:
 	void CreateFeatureLabel(vtTagArray &style, unsigned int iIndex);
 
 	void ReleaseGeometry();
-	void ReleaseFeatureGeometry(unsigned int iIndex);
+	void ReleaseFeatureGeometry(vtFeature *f);
 
 	// When the underlying feature changes, we need to rebuild the visual
 	void Rebuild();
 	void RebuildFeature(unsigned int iIndex);
+
+	// To make sure all edits are fully reflected in the visual, call these
+	//  methods around any editing of style or geometry.
+	void EditBegin();
+	void EditEnd();
+	void DeleteFeature(vtFeature *f);
 
 protected:
 	void CreateGeomGroup();
@@ -136,6 +143,10 @@ protected:
 
 	VizMap m_Map;
 	Visual *GetViz(vtFeature *feat);
+
+	// Edit tracking
+	bool CreateAtOnce();
+	bool m_bNeedRebuild;
 };
 
 #endif // ABSTRACTLAYERH

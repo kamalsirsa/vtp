@@ -270,15 +270,23 @@ vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
  *		and another mesh begun.
  * \param iMatIndex	The material index of the mesh when it is added to the
  *		geometry node.
+ * \param iExpectedVerts If you know how many vertices will be mesh ahead of
+ *		time, you can save a little time and memory by passing the number.
  */
 vtMeshFactory::vtMeshFactory(vtGeom *pGeom, vtMeshBase::PrimType ePrimType,
-							 int iVertType, int iMaxVertsPerMesh, int iMatIndex)
+							 int iVertType, int iMaxVertsPerMesh, int iMatIndex,
+							 int iExpectedVerts)
 {
 	m_pGeom = pGeom;
 	m_ePrimType = ePrimType;
 	m_iVertType = iVertType;
 	m_iMaxVertsPerMesh = iMaxVertsPerMesh;
 	m_iMatIndex = iMatIndex;
+
+	if (iExpectedVerts == -1)
+		m_iExpectedVerts = m_iMaxVertsPerMesh;
+	else
+		m_iExpectedVerts = iExpectedVerts;
 
 	m_pMesh = NULL;
 	m_iPrimStart = -1;
@@ -307,7 +315,7 @@ vtMeshFactory::vtMeshFactory(vtMesh *pMesh)
 
 void vtMeshFactory::NewMesh()
 {
-	m_pMesh = new vtMesh(m_ePrimType, m_iVertType, m_iMaxVertsPerMesh);
+	m_pMesh = new vtMesh(m_ePrimType, m_iVertType, m_iExpectedVerts);
 	m_pGeom->AddMesh(m_pMesh, m_iMatIndex);
 	m_pMesh->Release();	// pass ownership to geometry
 

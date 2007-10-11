@@ -25,6 +25,8 @@ vtAbstractLayer::vtAbstractLayer(vtTerrain *pTerr)
 	pMultiTexture = NULL;
 
 	pFont = NULL;
+
+	m_bNeedRebuild = false;
 }
 
 vtAbstractLayer::~vtAbstractLayer()
@@ -130,6 +132,15 @@ void vtAbstractLayer::CreateStyledFeatures()
 		CreateStyledFeature(i);
 		m_pTerr->ProgressCallback(i * 100 / entities);
 	}
+
+	// A few types of visuals are not strictly per-feature; they must be
+	//  created at once from all the features:
+	//
+	// 1. A line going through a point set.
+	// 2. A TextureOverlay which rasterizes all the featues.
+
+	if (style.GetValueBool("LineGeometry") && pSetP3 != NULL)
+		CreateLineGeometryForPoints(style);
 
 	if (style.GetValueBool("TextureOverlay"))
 		CreateTextureOverlay();
@@ -295,7 +306,7 @@ void vtAbstractLayer::CreateObjectGeometry(vtTagArray &style, unsigned int iInde
 		mesh->Release();
 
 		// Track
-		viz->m_meshes.push_back(mesh);
+		if (viz) viz->m_meshes.push_back(mesh);
 	}
 	else if (pSetP3)
 	{
@@ -325,7 +336,7 @@ void vtAbstractLayer::CreateObjectGeometry(vtTagArray &style, unsigned int iInde
 		mesh->Release();
 
 		// Track
-		viz->m_meshes.push_back(mesh);
+		if (viz) viz->m_meshes.push_back(mesh);
 	}
 	else if (pSetLS2)
 	{
@@ -343,7 +354,7 @@ void vtAbstractLayer::CreateObjectGeometry(vtTagArray &style, unsigned int iInde
 			mesh->Release();
 
 			// Track
-			viz->m_meshes.push_back(mesh);
+			if (viz) viz->m_meshes.push_back(mesh);
 		}
 	}
 	else if (pSetLS3)
@@ -361,7 +372,7 @@ void vtAbstractLayer::CreateObjectGeometry(vtTagArray &style, unsigned int iInde
 			mesh->Release();
 
 			// Track
-			viz->m_meshes.push_back(mesh);
+			if (viz) viz->m_meshes.push_back(mesh);
 		}
 	}
 }
@@ -377,9 +388,8 @@ void vtAbstractLayer::CreateLineGeometry(vtTagArray &style, unsigned int iIndex)
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	// We support geometry for 3D point sets (line through the points),
-	//  2D and 3D polylines, and 2D polygons
-	if (!pSetP3 && !pSetLS2 && !pSetLS3 && !pSetPoly)
+	// We support geometry for 2D and 3D polylines, and 2D polygons
+	if (!pSetLS2 && !pSetLS3 && !pSetPoly)
 		return;
 
 	// geometry group to contain all the meshes
@@ -407,30 +417,44 @@ void vtAbstractLayer::CreateLineGeometry(vtTagArray &style, unsigned int iIndex)
 	else
 		material_index = material_index_line;
 
-	vtMeshFactory mf(pGeomLine, vtMesh::LINE_STRIP, 0, 30000, material_index);
+	// Estimate number of mesh vertices we'll have
+	int iEstimatedVerts = 0;
+	if (pSetLS2)
+	{
+		const DLine2 &dline = pSetLS2->GetPolyLine(iIndex);
+		iEstimatedVerts = dline.GetSize();
+	}
+	else if (pSetLS3)
+	{
+		const DLine3 &dline = pSetLS3->GetPolyLine(iIndex);
+		iEstimatedVerts = dline.GetSize();
+	}
+	else if (pSetPoly)
+	{
+		const DPolygon2 &dpoly = pSetPoly->GetPolygon(iIndex);
+		for (unsigned int k = 0; k < dpoly.size(); k++)
+		{
+			const DLine2 &dline = dpoly[k];
+			iEstimatedVerts += dline.GetSize();
+			iEstimatedVerts ++;		// close polygon
+		}
+	}
 
-	float fHeight;
-	if (!style.GetValueFloat("LineGeomHeight", fHeight))
-		fHeight = 1;
+	vtMeshFactory mf(pGeomLine, vtMesh::LINE_STRIP, 0, 3000, material_index,
+		iEstimatedVerts);
+
+	float fHeight = 0.0f;
+	if (pSetLS2 || pSetPoly)
+	{
+		if (!style.GetValueFloat("LineGeomHeight", fHeight))
+			fHeight = 1.0f;
+	}
 	bool bTessellate = style.GetValueBool("Tessellate");
 	bool bCurve = false;
 
 	FPoint3 f3;
 	unsigned int size;
-	if (pSetP3)
-	{
-		mf.PrimStart();
-		const DLine3 &dline = pSetP3->GetAllPoints();
-		size = dline.GetSize();
-		for (unsigned int j = 0; j < size; j++)
-		{
-			// preserve 3D point's elevation: don't drape
-			m_pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
-			mf.AddVertex(f3);
-		}
-		mf.PrimEnd();
-	}
-	else if (pSetLS2)
+	if (pSetLS2)
 	{
 		const DLine2 &dline = pSetLS2->GetPolyLine(iIndex);
 
@@ -481,7 +505,56 @@ void vtAbstractLayer::CreateLineGeometry(vtTagArray &style, unsigned int iIndex)
 			mesh->SetLineWidth(fWidth);
 
 		// Track
-		viz->m_meshes.push_back(mesh);
+		if (viz) viz->m_meshes.push_back(mesh);
+	}
+}
+
+/**
+	Given a featureset and style description, create line geometry that
+	goes through all the points.
+*/
+void vtAbstractLayer::CreateLineGeometryForPoints(vtTagArray &style)
+{
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	// We support geometry for 3D point sets (line through the points),
+	if (!pSetP3)
+		return;
+
+	// geometry group to contain all the meshes
+	if (!pGeomGroup)
+		CreateGeomGroup();
+
+	int material_index = material_index_line;
+
+	// Estimate number of mesh vertices we'll have
+	const DLine3 &dline = pSetP3->GetAllPoints();
+	unsigned int size = dline.GetSize();
+	int iEstimatedVerts = size;
+
+	vtMeshFactory mf(pGeomLine, vtMesh::LINE_STRIP, 0, 30000, material_index,
+		iEstimatedVerts);
+
+	FPoint3 f3;
+	mf.PrimStart();
+	for (unsigned int j = 0; j < size; j++)
+	{
+		// preserve 3D point's elevation: don't drape
+		m_pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
+		mf.AddVertex(f3);
+	}
+	mf.PrimEnd();
+
+	// If the user specified a line width, apply it now
+	float fWidth;
+	if (style.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
+	{
+		for (unsigned int i = 0; i < mf.m_Meshes.size(); i++)
+		{
+			vtMesh *mesh = mf.m_Meshes[i];
+			mesh->SetLineWidth(fWidth);
+		}
 	}
 }
 
@@ -604,7 +677,7 @@ void vtAbstractLayer::CreateFeatureLabel(vtTagArray &style, unsigned int iIndex)
 
 	// Track what was created
 	Visual *viz = GetViz(pSet->GetFeature(iIndex));
-	viz->m_xform = bb;
+	if (viz) viz->m_xform = bb;
 }
 
 bool vtAbstractLayer::CreateTextureOverlay()
@@ -672,7 +745,8 @@ void vtAbstractLayer::ReleaseGeometry()
 {
 	for (int i = pSet->GetNumEntities()-1; i >= 0; i--)
 	{
-		ReleaseFeatureGeometry(i);
+		vtFeature *f = pSet->GetFeature(i);
+		ReleaseFeatureGeometry(f);
 	}
 	if (pGeomGroup)
 	{
@@ -691,9 +765,8 @@ void vtAbstractLayer::ReleaseGeometry()
 /**
  * Release all the 3D stuff created for a given feature.
  */
-void vtAbstractLayer::ReleaseFeatureGeometry(unsigned int iIndex)
+void vtAbstractLayer::ReleaseFeatureGeometry(vtFeature *f)
 {
-	vtFeature *f = pSet->GetFeature(iIndex);
 	Visual *v = GetViz(f);
 
 	for (unsigned int m = 0; m < v->m_meshes.size(); m++)
@@ -717,6 +790,15 @@ void vtAbstractLayer::ReleaseFeatureGeometry(unsigned int iIndex)
 	m_Map.erase(f);
 }
 
+void vtAbstractLayer::DeleteFeature(vtFeature *f)
+{
+	// Check if we need to rebuild the whole thing
+	if (CreateAtOnce())
+		m_bNeedRebuild = true;
+	else
+		ReleaseFeatureGeometry(f);
+}
+
 // When the underlying feature changes, we need to rebuild the visual
 void vtAbstractLayer::Rebuild()
 {
@@ -727,11 +809,35 @@ void vtAbstractLayer::Rebuild()
 // When the underlying feature changes, we need to rebuild the visual
 void vtAbstractLayer::RebuildFeature(unsigned int iIndex)
 {
-	ReleaseFeatureGeometry(iIndex);
+	// If we're not doing a full rebuild, we can create individual items
+	if (!m_bNeedRebuild)
+	{
+		vtFeature *f = pSet->GetFeature(iIndex);
+		ReleaseFeatureGeometry(f);
+		CreateStyledFeature(iIndex);
+	}
+}
+
+// To make sure all edits are fully reflected in the visual, call these
+//  methods around any editing of style or geometry.
+void vtAbstractLayer::EditBegin()
+{
+}
+
+void vtAbstractLayer::EditEnd()
+{
+	if (m_bNeedRebuild)
+	{
+		m_bNeedRebuild = false;
+		Rebuild();
+	}
 }
 
 Visual *vtAbstractLayer::GetViz(vtFeature *feat)
 {
+#if 0
+	return NULL;
+#else
 	Visual *v = m_Map[feat];
 	if (!v)
 	{
@@ -739,5 +845,19 @@ Visual *vtAbstractLayer::GetViz(vtFeature *feat)
 		m_Map[feat] = v;
 	}
 	return v;
+#endif
+}
+
+// A few types of visuals are not strictly per-feature; they must be
+//  created at once from all the features.
+bool vtAbstractLayer::CreateAtOnce()
+{
+	vtTagArray &style = pSet->GetProperties();
+
+	if (style.GetValueBool("LineGeometry") && pSetP3 != NULL)
+		return true;
+	if (style.GetValueBool("TextureOverlay"))
+		return true;
+	return false;
 }
 
