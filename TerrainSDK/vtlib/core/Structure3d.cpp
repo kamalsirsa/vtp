@@ -65,8 +65,14 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 	}
 	else
 	{
-		// All culture (roads and buildings) can be draped on
-		int iIncludeCulture = CE_ALL;
+		// Should we drape structure instances on all culture, including roads
+		//  and other structures?  There are some cases where this is not
+		//  desirable, such as buildings composed of multiple instance which
+		//  should intersect, not stack.  Should it be a user option, global,
+		//  per-layer, or per-structure?
+
+		//int iIncludeCulture = CE_ALL;
+		int iIncludeCulture = CE_ROADS;
 
 		// look up altitude
 		pHeightField->FindAltitudeAtPoint(point, point.y, false, iIncludeCulture);
@@ -151,9 +157,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		VTLOG("Loading Model from '%s'\n", (const char *)fullpath);
 #endif
 		m_pModel = vtNode::LoadModel(fullpath, !bForce);
-		if (m_pModel)
-			SetValueString("filename", fullpath);
-		else
+		if (!m_pModel)
 		{
 			VTLOG("Couldn't load model from file '%s'\n", filename);
 			return false;
@@ -700,7 +704,7 @@ void vtStructure3d::InitializeMaterialArrays()
 		s_MaterialDescriptors.InitializeMaterials();
 
 		// Now load external materials (user-modifiable, user-extendable)
-		s_MaterialDescriptors.LoadExternalMaterials(vtGetDataPath());
+		s_MaterialDescriptors.LoadExternalMaterials();
 
 		SetGlobalMaterials(&s_MaterialDescriptors);
 	}
