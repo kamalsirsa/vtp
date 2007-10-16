@@ -143,3 +143,19 @@ void vtSceneBase::AddEngine(vtEngine *ptr)
 		m_pRootEngine = ptr;
 }
 
+void vtSceneBase::TargetRemoved(vtTarget *tar)
+{
+	// Look at all Engines
+	vtEngineArray list(m_pRootEngine);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
+	{
+		// If this engine targets something that is no longer there
+		vtEngine *pEng = list[i];
+		for (unsigned int j = 0; j < pEng->NumTargets(); j++)
+		{
+			// Then remove it
+			if (pEng->GetTarget(j) == tar)
+				pEng->RemoveTarget(tar);
+		}
+	}
+}

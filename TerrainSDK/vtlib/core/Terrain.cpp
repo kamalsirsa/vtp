@@ -93,6 +93,8 @@ vtTerrain::vtTerrain()
 
 	m_pOverlay = NULL;
 	m_progress_callback = NULL;
+
+	m_pStructureExtension = NULL;
 }
 
 vtTerrain::~vtTerrain()
@@ -1322,6 +1324,10 @@ int vtTerrain::DeleteSelectedStructures()
 		vtStructure *str = structures->GetAt(i);
 		if (str->IsSelected())
 		{
+			// notify any structure-handling extension
+			if (m_pStructureExtension)
+				m_pStructureExtension->OnDelete(str);
+
 			// Remove it from the paging grid
 			if (m_pPagedStructGrid)
 				m_pPagedStructGrid->RemoveFromGrid(structures, i);
@@ -1331,6 +1337,9 @@ int vtTerrain::DeleteSelectedStructures()
 			if (!node)
 				node = str3d->GetGeom();
 			RemoveNodeFromStructGrid(node);
+
+			// if there are any engines pointing to this node, inform them
+			vtGetScene()->TargetRemoved(node);
 		}
 	}
 
@@ -3189,15 +3198,11 @@ void vtTerrain::EnforcePageOut()
 		m_fPagingStructureDist = fStructLodDist + 50;
 }
 
-void vtTerrain::ExtendStructure(vtStructInstance3d *s3d)
+void vtTerrain::ExtendStructure(vtStructure *s)
 {
-	if (m_extend_callback != NULL)
-		m_extend_callback(s3d);
-}
-
-void vtTerrain::SetExtendCallback(StructExtendFuncPtrType cb)
-{
-	m_extend_callback = cb;
+	// notify any structure-handling extension
+	if (m_pStructureExtension)
+		m_pStructureExtension->OnCreate(s);
 }
 
 

@@ -366,6 +366,9 @@ public:
 	/// Add an Engine to the scene. (for backward compatibility only)
 	void AddEngine(vtEngine *ptr);
 
+	/// Inform all engines in the scene that a target no longer exists
+	void TargetRemoved(vtTarget *tar);
+
 	/** Set the camera associated with this scene.  The scene has
 	 * a default camera already supplied; you can use GetCamera()
 	 * to simply use it instead of making your own.

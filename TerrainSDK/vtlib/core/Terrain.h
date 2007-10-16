@@ -68,8 +68,14 @@ enum TFType
 	TFT_ROADS
 };
 
+class vtStructureExtension
+{
+public:
+	virtual void OnCreate(vtStructure *s) {}
+	virtual void OnDelete(vtStructure *s) {}
+};
+
 typedef bool (*ProgFuncPtrType)(int);
-typedef void (*StructExtendFuncPtrType)(vtStructInstance3d*);
 
 /**
  * The vtTerrain class represents a terrain, which is a part of the surface
@@ -234,9 +240,9 @@ public:
 	float GetStructurePageOutDistance() { return m_fPagingStructureDist; }
 	void SetStructurePageOutDistance(float f);
 
-	void ExtendStructure(vtStructInstance3d *s3d);
-	void SetExtendCallback(StructExtendFuncPtrType extend_callback = NULL);
-	StructExtendFuncPtrType m_extend_callback;
+	void ExtendStructure(vtStructure *s);
+	void SetStructureExtension(vtStructureExtension *se = NULL) { m_pStructureExtension = se; }
+	vtStructureExtension *m_pStructureExtension;
 
 	// abstract layers
 	void SetAbstractLayer(vtAbstractLayer *alay);
@@ -260,6 +266,7 @@ public:
 	// manage engines specific to this terrain
 	void AddEngine(vtEngine *pE);
 	void ActivateEngines(bool bActive);
+	vtEngine *GetEngineGroup() { return m_pEngineGroup; }
 	vtSimpleBillboardEngine	*GetBillboardEngine() { return m_pBBEngine; }
 
 	// reports world coordinates
