@@ -703,6 +703,15 @@ void vtElevLayer::RenderBitmap()
 		CloseProgressDialog();
 }
 
+void vtElevLayer::ReRender()
+{
+	if (IsGrid())
+	{
+		m_bBitmapRendered = false;
+		m_bNeedsDraw = true;
+	}
+}
+
 void vtElevLayer::ReImage()
 {
 	if (m_pBitmap)
