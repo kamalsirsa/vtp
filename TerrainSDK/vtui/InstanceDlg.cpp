@@ -16,6 +16,7 @@
 
 #include "InstanceDlg.h"
 #include "vtdata/Content.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"
@@ -193,9 +194,9 @@ void InstanceDlg::OnBrowseModelFile( wxCommandEvent &event )
 	// so that paths are not stored unnecessarily
 	wxFileName TargetModel(SelectFile.GetPath());
 	TargetModel.SetPath(wxT("BuildingModels"));
-	vtString FoundModel = FindFileOnPaths(m_DataPaths, TargetModel.GetFullName().mb_str(wxConvUTF8));
+	vtString FoundModel = FindFileOnPaths(vtGetDataPath(), TargetModel.GetFullName().mb_str(wxConvUTF8));
 	if ("" == FoundModel)
-		FoundModel = FindFileOnPaths(m_DataPaths, wxString(TargetModel.GetPath(wxPATH_GET_SEPARATOR) + TargetModel.GetFullName()).mb_str(wxConvUTF8));
+		FoundModel = FindFileOnPaths(vtGetDataPath(), wxString(TargetModel.GetPath(wxPATH_GET_SEPARATOR) + TargetModel.GetFullName()).mb_str(wxConvUTF8));
 	if ("" != FoundModel)
 		GetModelFile()->SetValue(TargetModel.GetFullName());
 	else
