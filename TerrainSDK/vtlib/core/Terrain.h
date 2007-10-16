@@ -69,6 +69,7 @@ enum TFType
 };
 
 typedef bool (*ProgFuncPtrType)(int);
+typedef void (*StructExtendFuncPtrType)(vtStructInstance3d*);
 
 /**
  * The vtTerrain class represents a terrain, which is a part of the surface
@@ -232,6 +233,10 @@ public:
 	vtPagedStructureLodGrid *GetStructureLodGrid() { return m_pPagedStructGrid; }
 	float GetStructurePageOutDistance() { return m_fPagingStructureDist; }
 	void SetStructurePageOutDistance(float f);
+
+	void ExtendStructure(vtStructInstance3d *s3d);
+	void SetExtendCallback(StructExtendFuncPtrType extend_callback = NULL);
+	StructExtendFuncPtrType m_extend_callback;
 
 	// abstract layers
 	void SetAbstractLayer(vtAbstractLayer *alay);

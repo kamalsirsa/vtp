@@ -3189,6 +3189,17 @@ void vtTerrain::EnforcePageOut()
 		m_fPagingStructureDist = fStructLodDist + 50;
 }
 
+void vtTerrain::ExtendStructure(vtStructInstance3d *s3d)
+{
+	if (m_extend_callback != NULL)
+		m_extend_callback(s3d);
+}
+
+void vtTerrain::SetExtendCallback(StructExtendFuncPtrType cb)
+{
+	m_extend_callback = cb;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////
 // Abstracts

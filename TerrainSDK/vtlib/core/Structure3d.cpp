@@ -191,6 +191,11 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	if (GetValueFloat("scale", sc))
 		m_fScale = sc;
 
+	// Allow the terrain to extend the structure with custom functionality
+	const char *extend = GetValueString("extend", true);
+	if (extend)
+		pTerr->ExtendStructure(this);
+
 	UpdateTransform(pTerr->GetHeightField());
 	return true;
 }
