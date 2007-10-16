@@ -106,6 +106,7 @@ public:
 	const osg::Node *GetOsgNode() const { return m_pNode.get(); }
 	void DecorateNativeGraph();
 	void ApplyVertexRotation(const FPoint3 &axis, float angle);
+	void ApplyVertexTransform(const FMatrix4 &mat);
 	virtual vtNode *FindNativeNode(const char *pName, bool bDescend = true);
 	bool ContainsParticleSystem() const;
 
@@ -604,7 +605,7 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 				vtHitList &hitlist, bool bLocalCoords = false, bool bNativeNodes = true);
 void SetLoadModelCallback(osg::Node *callback(osg::Transform *input));
 void vtLogGraph(vtNode *node, int indent=0);
-void vtLogNativeGraph(osg::Node *node, int indent=0);
+void vtLogNativeGraph(osg::Node *node, bool bExtents = false, bool bRefCounts = false, int indent=0);
 
 /*@}*/	// Group sg
 

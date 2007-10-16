@@ -796,12 +796,23 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 	return pNode;
 }
 
-//
-// Given a node with an imported model, rotate the vertices of that model
-//  by a given axis/angle.
-//
+/**
+ * Given a node with geometry under it, rotate the vertices of that geometry
+ *  by a given axis/angle.
+ */
 void vtNode::ApplyVertexRotation(const FPoint3 &axis, float angle)
 {
+	FMatrix4 mat;
+	mat.AxisAngle(axis, angle);
+	ApplyVertexTransform(mat);
+}
+
+/**
+ * Given any node with geometry under it, transform the vertices of that geometry.
+ */
+void vtNode::ApplyVertexTransform(const FMatrix4 &mat)
+{
+#if 0
 	vtGroup *vtgroup = dynamic_cast<vtGroup*>(this);
 	if (!vtgroup)
 		return;
@@ -813,17 +824,27 @@ void vtNode::ApplyVertexRotation(const FPoint3 &axis, float angle)
 	if (!unique_group)
 		return;
 	osg::Node *node = unique_group->getChild(0);
+#else
+	osg::Node *node = GetOsgNode();
+	osg::ref_ptr<osg::Group> temp = new osg::Group;
+#endif
 	if (!node)
 		return;
 
+	osg::Matrix omat;
+	ConvertMatrix4(&mat, &omat);
+
 	osg::MatrixTransform *transform = new osg::MatrixTransform;
-	transform->setMatrix(osg::Matrix::rotate(angle, v2s(axis)));
+	transform->setMatrix(omat);
 	// it's not going to change, so tell OSG that it can be optimized
 	transform->setDataVariance(osg::Object::STATIC);
 
 	node->ref();	// avoid losing this node
+#if 0
 	unique_group->removeChild(node);
 	unique_group->addChild(transform);
+#endif
+	temp->addChild(transform);
 	transform->addChild(node);
 	node->unref();
 
@@ -837,7 +858,7 @@ void vtNode::ApplyVertexRotation(const FPoint3 &axis, float angle)
 	// I wrote the OSG list with the fix on 2006.04.12.
 	//
 	osgUtil::Optimizer optimizer;
-	optimizer.optimize(unique_group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
+	optimizer.optimize(temp.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
 }
 
 void vtNode::ClearOsgModelCache()
@@ -2390,7 +2411,7 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 
 
 // Diagnostic function to help debugging
-void vtLogNativeGraph(osg::Node *node, int indent)
+void vtLogNativeGraph(osg::Node *node, bool bExtents, bool bRefCounts, int indent)
 {
 	for (int i = 0; i < indent; i++)
 		VTLOG1(" ");
@@ -2448,9 +2469,16 @@ void vtLogNativeGraph(osg::Node *node, int indent)
 		if (node->getNodeMask() != 0xffffffff)
 			VTLOG(" mask=%x", node->getNodeMask());
 
-		const osg::BoundingSphere &bs = node->getBound();
-		if (bs._radius != -1)
-			VTLOG(" (bs: %.1f %.1f %.1f %1.f)", bs._center[0], bs._center[1], bs._center[2], bs._radius);
+		if (bExtents)
+		{
+			const osg::BoundingSphere &bs = node->getBound();
+			if (bs._radius != -1)
+				VTLOG(" (bs: %.1f %.1f %.1f %1.f)", bs._center[0], bs._center[1], bs._center[2], bs._radius);
+		}
+		if (bRefCounts)
+		{
+			VTLOG(" {rc:%d}", node->referenceCount());
+		}
 
 		VTLOG1("\n");
 	}
@@ -2469,7 +2497,7 @@ void vtLogNativeGraph(osg::Node *node, int indent)
 	if (grp)
 	{
 		for (unsigned int i = 0; i < grp->getNumChildren(); i++)
-			vtLogNativeGraph(grp->getChild(i), indent+2);
+			vtLogNativeGraph(grp->getChild(i), bExtents, bRefCounts, indent+2);
 	}
 	osg::Geode *geode = dynamic_cast<osg::Geode*>(node);
 	if (geode)
