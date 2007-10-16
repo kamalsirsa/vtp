@@ -1,7 +1,7 @@
 //
 // InstanceDlg.cpp
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -75,6 +75,9 @@ void InstanceDlg::SetLocation(const DPoint2 &pos)
 
 vtTagArray *InstanceDlg::GetTagArray()
 {
+	if (m_iItem == -1)
+		return NULL;
+
 	m_dummy.Clear();
 
 	// Return a description of the current content item
