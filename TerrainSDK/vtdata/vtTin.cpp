@@ -389,8 +389,10 @@ bool vtTin::ComputeExtents()
 		m_EarthExtents.GrowToContainPoint(m_vert[j]);
 
 		float z = m_z[j];
-		if (z > m_fMaxHeight) m_fMaxHeight = z;
-		if (z < m_fMinHeight) m_fMinHeight = z;
+		if (z > m_fMaxHeight)
+			m_fMaxHeight = z;
+		if (z < m_fMinHeight)
+			m_fMinHeight = z;
 	}
 	return true;
 }
@@ -587,6 +589,45 @@ void vtTin::CleanupClockwisdom()
 			m_tri[i*3+2] = v1;
 		}
 	}
+}
+
+/**
+ * Because the TIN triangles refer to their vertices by index, it's possible
+ * to have some vertices which are not referenced.  Find and remove those
+ * vertices.
+ * \return The number of unused vertices removed.
+ */
+int vtTin::RemoveUnusedVertices()
+{
+	size_t verts = NumVerts();
+	std::vector<bool> used;
+	used.resize(verts, false);
+
+	// Flag all the vertices that are used
+	size_t tris = NumTris();
+	for (size_t i = 0; i < tris; i++)
+	{
+		used[m_tri[i*3]] = true;
+		used[m_tri[i*3+1]] = true;
+		used[m_tri[i*3+2]] = true;
+	}
+
+	// Remove all the vertices that weren't flagged
+	int count = 0;
+	for (size_t i = 0; i < verts;)
+	{
+		if (!used[i])
+		{
+			// Remove vertex
+			RemVert(i);
+			used.erase(used.begin()+i);
+			verts--;
+			count++;
+		}
+		else
+			i++;
+	}
+	return count;
 }
 
 /**
@@ -834,12 +875,15 @@ int vtTin::RemoveTrianglesBySegment(const DPoint2 &ep1, const DPoint2 &ep2)
 		{
 			m_tri.RemoveAt(i*3, 3);
 			i--;
+			tris--;
 			count++;
 		}
 	}
 	if (count > 0)
+	{
+		RemoveUnusedVertices();
 		ComputeExtents();
-
+	}
 	return count;
 }
 

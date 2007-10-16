@@ -84,6 +84,7 @@ public:
 		FPoint3 &result) const { return false; }
 
 	void CleanupClockwisdom();
+	int RemoveUnusedVertices();
 	double GetTriMaxEdgeLength(int iTri) const;
 	void MergeSharedVerts(bool progress_callback(int) = NULL);
 	bool HasVertexNormals() { return m_vert_normal.GetSize() != 0; }
