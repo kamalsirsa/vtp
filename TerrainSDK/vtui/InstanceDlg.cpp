@@ -185,28 +185,18 @@ void InstanceDlg::OnBrowseModelFile( wxCommandEvent &event )
 	if (SelectFile.ShowModal() != wxID_OK)
 		return;
 
-	// If model file is in a BuildingModels subdirectory
-	// remove the directory part of the path
-	wxFileName path(SelectFile.GetPath());
-	wxString result = path.GetFullPath();
-	int i, count = path.GetDirCount();
-	for (i = 0; i < count; i++)
-	{
-		if (path.GetDirs().Item(i) == wxT("BuildingModels"))
-		{
-			for (int j = 0; j <= i; j++)
-				path.RemoveDir(0);
-			path.SetVolume(_T(""));
-			result = path.GetFullPath();
-			// avoid backslashes
-			result.Replace(_T("\\"), _T("/"));
-			// avoid leading slash
-			if (result.GetChar(0) == '/')
-				result = result.Right(result.Length() - 1);
-			break;;
-		}
-	}
-	GetModelFile()->SetValue(result);
+	// If model file can be found by mimicing the search strategy implemented by
+	// vtStructInstance3d::CreateNode then remove the directory part of the path
+	// so that paths are not stored unnecessarily
+	wxFileName TargetModel(SelectFile.GetPath());
+	TargetModel.SetPath(wxT("BuildingModels"));
+	vtString FoundModel = FindFileOnPaths(m_DataPaths, TargetModel.GetFullName().mb_str(wxConvUTF8));
+	if ("" == FoundModel)
+		FoundModel = FindFileOnPaths(m_DataPaths, wxString(TargetModel.GetPath(wxPATH_GET_SEPARATOR) + TargetModel.GetFullName()).mb_str(wxConvUTF8));
+	if ("" != FoundModel)
+		GetModelFile()->SetValue(TargetModel.GetFullName());
+	else
+		GetModelFile()->SetValue(TargetModel.GetFullPath());
 }
 
 void InstanceDlg::OnChoice( wxCommandEvent &event )
