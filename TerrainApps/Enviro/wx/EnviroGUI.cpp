@@ -163,6 +163,11 @@ void EnviroGUI::UpdateProgress(const char *msg, int amount1, int amount2)
 	UpdateProgressDialog2(amount1, amount2, str2);
 }
 
+void EnviroGUI::ExtendStructure(vtStructInstance *si)
+{
+	GetFrame()->ExtendStructure(si);
+}
+
 void EnviroGUI::RefreshLayerView()
 {
 	LayerDlg *dlg = GetFrame()->m_pLayerDlg;

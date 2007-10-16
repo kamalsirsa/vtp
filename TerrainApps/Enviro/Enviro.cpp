@@ -2288,6 +2288,10 @@ void Enviro::PlantInstance()
 	inst->SetPoint(DPoint2(m_EarthPos.x, m_EarthPos.y));
 	VTLOG("  at %.7g, %.7g: ", m_EarthPos.x, m_EarthPos.y);
 
+	// Allow the rest of the framework to 'ornament' this instance by
+	//  extending it as desired.
+	ExtendStructure(inst);
+
 	int index = structs->Append(inst);
 	bool success = pTerr->CreateStructure(structs, index);
 	if (success)

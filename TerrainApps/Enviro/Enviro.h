@@ -229,7 +229,7 @@ public:
 	static Enviro *s_pEnviro;
 
 	// The following can be overridden by GUI code, to handle situations
-	//  in which the GUI must be informed of what happens in this object.
+	//  in which the GUI may need to be informed of what happens.
 	virtual void ShowPopupMenu(const IPoint2 &pos) {}
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain) {}
 	virtual void ShowLayerView() {}
@@ -251,6 +251,7 @@ public:
 	virtual void ShowProgress(bool bShow) {}
 	virtual void SetProgressTerrain(vtTerrain *pTerr) {}
 	virtual void UpdateProgress(const char *msg, int amount1, int amount2) {}
+	virtual void ExtendStructure(vtStructInstance *si) {}
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;
