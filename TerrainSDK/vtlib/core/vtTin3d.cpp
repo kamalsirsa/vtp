@@ -110,7 +110,6 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	DPoint3 ep;		// earth point
 	FPoint3 wp;		// world point
 	FPoint3 p[3], norm;
-	FPoint3 light_dir(1, 1, 0);
 	RGBf color;
 	float r, g=1.0f, b=0.5f;
 
@@ -179,6 +178,9 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		else
 			acceptable = true;
 	}
+
+	FPoint3 light_dir(0.5, 1, 0);
+	light_dir.Normalize();
 
 	unsigned int in_bin;
 	int tri, vidx;
