@@ -1,7 +1,7 @@
 //
 // RoadMap.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -91,7 +91,7 @@ public:
 	// comparison
 	bool operator==(TNode &ref);
 
-	//copies internal variables from given node.
+	//copies internal variables from another node.
 	void Copy(TNode* node);
 
 	TLink *GetLink(int n);
@@ -122,7 +122,7 @@ public:
 
 	TNode *m_pNext;
 
-	// only used for reading from DLG/RMF
+	// only used while reading from DLG/RMF/OSM
 	int FindLink(int linkID);	// returns internal number of link with given ID.  -1 if not found.
 	int m_id;
 
