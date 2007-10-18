@@ -296,7 +296,8 @@ void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
 			string.Printf(_T("%i"), i);
 			GetLinkNum()->Append(string);
 		}
-		GetLinkNum()->SetSelection(0);
+		if (m_pNode->m_iLinks > 0)
+			GetLinkNum()->SetSelection(0);
 		GetIntType()->SetSelection(m_pNode->GetVisual());
 		int itype = m_pNode->GetIntersectType(0);
 		GetBehavior()->SetSelection(itype);
