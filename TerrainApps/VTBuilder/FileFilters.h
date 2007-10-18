@@ -31,6 +31,7 @@
 #define FSTRING_MEM		_T("Japanese DEM Files (*.mem)|*.mem")
 #define FSTRING_MI		_T("MapInfo Files (*.tab, *.mif)|*.tab;*.mif")
 #define FSTRING_NTF		_T("OSGB NTF Files (*.ntf)|*.ntf")
+#define FSTRING_OSM		_T("OpenStreetMap Files (*.osm)|*.osm")
 #define FSTRING_Planet	_T("Planet Files (*.txt)|*.txt")
 #define FSTRING_PGM		_T("PGM Files (*.pgm*)|*.pgm*")
 #define FSTRING_PNG		_T("PNG Files (*.png)|*.png")

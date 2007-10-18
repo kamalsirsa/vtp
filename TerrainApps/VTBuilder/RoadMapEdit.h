@@ -130,10 +130,13 @@ public:
 	void AddElementsFromSHP(const wxString &filename, const vtProjection &proj,
 		bool progress_callback(int) = NULL);
 
-	// Import from SDTS via OGR
+	// Import from OGR, for formats like SDTS
 	void AddElementsFromOGR(class OGRDataSource *datasource,
 		bool progress_callback(int) = NULL);
 	LinkEdit *AddRoadSegment(class OGRLineString *pLineString);
+
+	// Import from OpenStreetMap
+	bool ImportFromOSM(const char *fname, bool progress_callback(int) = NULL);
 
 	//cleaning functions-------------------------
 	// merge nodes that are near each other

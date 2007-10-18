@@ -527,6 +527,17 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		else
 			delete pRL;
 	}
+	if (ext.CmpNoCase(_T("osm")) == 0)
+	{
+		OpenProgressDialog(fname, false);
+		vtString fname_utf = fname.mb_str(wxConvUTF8);
+		vtRoadLayer *pRL = new vtRoadLayer;
+		if (pRL->ImportFromOSM(fname_utf, progress_callback))
+			pLayer = pRL;
+		else
+			delete pRL;
+		CloseProgressDialog();
+	}
 	if (ext.CmpNoCase(_T("bt")) == 0 ||
 		ext.CmpNoCase(_T("tin")) == 0 ||
 		ext.CmpNoCase(_T("itf")) == 0 ||

@@ -2193,6 +2193,13 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			grid.ColorDibFromTable(&bmp, table, 0, 1);
 		}
 #endif
+#if 0
+		vtRoadLayer *pR = new vtRoadLayer;
+		bool success = pR->ImportFromOSM("G:/Earth/victoria.osm");
+		bool success2 = GetMainFrame()->AddLayerWithCheck(pR, true);
+		if (!success2)
+			delete pR;
+#endif
 	}
 	else
 		event.Skip();

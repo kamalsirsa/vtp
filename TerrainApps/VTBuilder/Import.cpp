@@ -357,6 +357,14 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString &strFileN
 		{
 			pLayer = ImportVectorsWithOGR(strFileName, ltype);
 		}
+		else if (!strExt.CmpNoCase(_T("osm")))
+		{
+			vtRoadLayer *pRL = new vtRoadLayer;
+			if (pRL->ImportFromOSM(fname, progress_callback))
+				pLayer = pRL;
+			else
+				delete pRL;
+		}
 		break;
 	case LT_STRUCTURE:
 		if (!strExt.CmpNoCase(_T("shp")))
@@ -595,12 +603,13 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_TIF);
 		break;
 	case LT_ROAD:
-		// dlg, shp, sdts-dlg
-		AddType(filter, FSTRING_DLG);
-		AddType(filter, FSTRING_SHP);
-		AddType(filter, FSTRING_SDTS);
-		AddType(filter, FSTRING_MI);
+		// dlg, shp, sdts-dlg, osm
 		AddType(filter, FSTRING_COMP);
+		AddType(filter, FSTRING_DLG);
+		AddType(filter, FSTRING_MI);
+		AddType(filter, FSTRING_OSM);
+		AddType(filter, FSTRING_SDTS);
+		AddType(filter, FSTRING_SHP);
 		break;
 	case LT_STRUCTURE:
 		// dlg, shp, bcf, sdts-dlg
