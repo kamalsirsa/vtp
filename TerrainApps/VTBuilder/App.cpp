@@ -72,6 +72,9 @@ bool BuilderApp::OnInit()
 	VTLOG(" Running on: ");
 	LogWindowsVersion();
 #endif
+	VTLOG1("Build date: ");
+	VTLOG1(__DATE__);
+	VTLOG1("\n\n");
 
 	// Redirect the wxWindows log messages to our own logging stream
 	wxLog *logger = new LogCatcher;
