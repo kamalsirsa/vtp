@@ -110,6 +110,9 @@ bool EnviroApp::OnInit()
 	g_App.Startup();	// starts log
 
 	VTLOG("Application framework: MFC\n");
+
+	LoadOptions();
+
 	vtGetScene()->Init();
 	g_App.LoadAllTerrainDescriptions();
 
@@ -127,6 +130,76 @@ bool EnviroApp::OnInit()
 	g_App.StartControlEngine();
 
 	return TRUE;
+}
+
+void EnviroApp::LoadOptions()
+{
+	char buf1[MAX_PATH];
+	SHGetFolderPathA(
+		NULL,               // parent window, not used
+		CSIDL_APPDATA,
+		NULL,               // access token (current user)
+		SHGFP_TYPE_CURRENT, // current path, not just default value
+		buf1
+		);
+	vtString AppDataUser = buf1;
+
+	// Read the vt datapaths
+	vtStringArray &dp = vtGetDataPath();
+	bool bLoadedDataPaths = vtLoadDataPath(AppDataUser, NULL);
+
+	// Now look for the Enviro options file.  There are two supported places for it.
+	//  1. In the same directory as the executable.
+	//  2. On Windows, in the user's "Application Data" folder.
+	vtString OptionsFile = "Enviro.xml";
+
+	bool bFound = FileExists(OptionsFile);
+	if (!bFound && AppDataUser != "")
+	{
+		OptionsFile = AppDataUser + "/Enviro.xml";
+		bFound = FileExists(OptionsFile);
+	}
+	if (bFound)
+	{
+		g_Options.ReadXML(OptionsFile);
+		g_Options.m_strFilename = OptionsFile;
+	}
+	else
+	{
+		// Not found anywhere.  Default to current directory.
+		g_Options.m_strFilename = "Enviro.xml";
+	}
+
+	if (!bLoadedDataPaths)
+	{
+		if (bFound)
+		{
+			// We have paths in Enviro.xml, but not in vtp.xml; move them
+			dp = g_Options.m_oldDataPaths;
+			g_Options.m_oldDataPaths.clear();
+		}
+		else
+		{
+			// Set default data path
+			dp.push_back(vtString("../Data/"));
+		}
+		vtSaveDataPath(AppDataUser + "/vtp.xml");
+	}
+
+	// Supply the special symbols {appdata} and {appdatacommon}
+	for (unsigned int i = 0; i < dp.size(); i++)
+	{
+		dp[i].Replace("{appdata}", AppDataUser);
+		//dp[i].Replace("{appdatacommon}", AppDataCommon);
+	}
+
+	VTLOG("Using Datapaths:\n");
+	int n = dp.size();
+	if (n == 0)
+		VTLOG("   none.\n");
+	for (int d = 0; d < n; d++)
+		VTLOG("   %s\n", (const char *) dp[d]);
+	VTLOG1("\n");
 }
 
 

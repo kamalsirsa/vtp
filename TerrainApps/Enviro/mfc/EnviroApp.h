@@ -24,6 +24,8 @@ public:
 	EnviroView		*m_pMainView;
 	CMfcieView		*m_pHTMLView;
 
+	void LoadOptions();
+
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(EnviroApp)
 	public:
