@@ -332,6 +332,11 @@ bool EnviroGUI::IsAcceptable(vtTerrain *pTerr)
 	return GetFrame()->IsAcceptable(pTerr);
 }
 
+void EnviroGUI::OnCreateTerrain(vtTerrain *pTerr)
+{
+	GetFrame()->OnCreateTerrain(pTerr);
+}
+
 void EnviroGUI::ShowMessage(const vtString &str)
 {
 	VTLOG1("EnviroGUI::ShowMessage '");

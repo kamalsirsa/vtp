@@ -68,6 +68,7 @@ public:
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
 	virtual void Setup3DScene();
 	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
+	virtual void OnCreateTerrain(vtTerrain *pTerr) {}
 	virtual void FrameArgument(int i, const char *str) { }
 	virtual void PostConstruction() { }
 	virtual void AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, bool tog);

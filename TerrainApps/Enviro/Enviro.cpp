@@ -507,6 +507,8 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	if (m_iInitStep == 3)
 	{
+		OnCreateTerrain(pTerr);
+
 		pTerr->SetPlantList(m_pPlantList);
 		pTerr->CreateStep0();
 		if (!pTerr->CreateStep1())

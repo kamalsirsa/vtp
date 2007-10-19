@@ -245,6 +245,7 @@ public:
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
 	virtual void SetTimeEngineToGUI(vtTimeEngine *pEngine) {}
 	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
+	virtual void OnCreateTerrain(vtTerrain *pTerr) {}
 	virtual void ShowMessage(const vtString &str) {}
 	virtual void SetState(AppState s) { m_state = s; }
 	virtual vtString GetStringFromUser(const vtString &title, const vtString &msg) = 0;

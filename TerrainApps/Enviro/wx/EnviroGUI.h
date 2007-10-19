@@ -45,6 +45,7 @@ public:
 	virtual void SetupScene3();
 	virtual void SetTimeEngineToGUI(class vtTimeEngine *pEngine);
 	virtual bool IsAcceptable(vtTerrain *pTerr);
+	virtual void OnCreateTerrain(vtTerrain *pTerr);
 	virtual void ShowMessage(const vtString &str);
 	virtual void SetFlightSpeed(float speed);
 	virtual void SetState(AppState s);
