@@ -71,8 +71,8 @@ enum TFType
 class vtStructureExtension
 {
 public:
-	virtual void OnCreate(vtStructure *s) {}
-	virtual void OnDelete(vtStructure *s) {}
+	virtual void OnCreate(vtTerrain *t, vtStructure *s) {}
+	virtual void OnDelete(vtTerrain *t, vtStructure *s) {}
 };
 
 typedef bool (*ProgFuncPtrType)(int);

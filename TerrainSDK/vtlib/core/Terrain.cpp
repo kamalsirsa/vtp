@@ -1326,7 +1326,7 @@ int vtTerrain::DeleteSelectedStructures()
 		{
 			// notify any structure-handling extension
 			if (m_pStructureExtension)
-				m_pStructureExtension->OnDelete(str);
+				m_pStructureExtension->OnDelete(this, str);
 
 			// Remove it from the paging grid
 			if (m_pPagedStructGrid)
@@ -3202,7 +3202,7 @@ void vtTerrain::ExtendStructure(vtStructure *s)
 {
 	// notify any structure-handling extension
 	if (m_pStructureExtension)
-		m_pStructureExtension->OnCreate(s);
+		m_pStructureExtension->OnCreate(this, s);
 }
 
 
