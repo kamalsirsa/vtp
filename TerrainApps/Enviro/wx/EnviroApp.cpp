@@ -304,11 +304,11 @@ void EnviroApp::LoadOptions()
 	}
 
 	VTLOG("Using Datapaths:\n");
-	int i, n = dp.size();
+	int n = dp.size();
 	if (n == 0)
 		VTLOG("   none.\n");
-	for (i = 0; i < n; i++)
-		VTLOG("   %s\n", (const char *) dp[i]);
+	for (int d = 0; d < n; d++)
+		VTLOG("   %s\n", (const char *) dp[d]);
 	VTLOG1("\n");
 }
 

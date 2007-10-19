@@ -1234,9 +1234,9 @@ bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 			field2->SetValueFromString(first_appended_ent+i, str);
 		}
 		// copy flags
-		vtFeature *f = new vtFeature;
-		f->flags = pFromSet->m_Features[i]->flags;
-		m_Features.push_back(f);
+		vtFeature *feat = new vtFeature;
+		feat->flags = pFromSet->m_Features[i]->flags;
+		m_Features.push_back(feat);
 	}
 
 	// empty the source layer
