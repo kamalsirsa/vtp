@@ -1841,6 +1841,9 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 								bool progress_callback(int))
 {
+	// Time Test
+	clock_t tm1 = clock();
+
 	OGREnvelope Extent;
 	OGRFeature *pFeature = NULL;
 
@@ -1894,7 +1897,14 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 		msg = "Couldn't get spatial reference";
 		return false;
 	}
+
+	// Time Test
+	clock_t tm2 = clock();
+
 	pLayer->GetExtent(&Extent);
+
+	float time_ext = ((float)clock() - tm2)/CLOCKS_PER_SEC;
+	VTLOG("ParseNTF5 GetExtent: %.2f seconds.\n", time_ext);
 
 	// Get number of features. In this case the total number of cells
 	// in the elevation matrix
@@ -1903,7 +1913,7 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
   	pLayer->ResetReading();
 
 	// Prescan the features to calculate the x and y intervals
-	// this is a horrible kludge
+	// This is awkward, it would be better to do everything in one pass.
 	int iRowCount = 0;
 	OGRPoint *pPoint;
 	double dX = 0;	// set to avoid compiler warning
@@ -1917,12 +1927,14 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 			msg = "Couldn't get point feature";
 			return false;
 		}
-//		if (wkbPoint25D != pPoint->getGeometryType())
-		if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))	// RJ fix 03.11.21
-		{
-			msg = "Couldn't flatten point feature";
-			return false;
-		}
+
+		// Is there any need to cal wkbFlatten or check the geom type?
+		//if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))	// RJ fix 03.11.21
+		//{
+		//	msg = "Couldn't flatten point feature";
+		//	return false;
+		//}
+
 		if (0 == iRowCount)
 			dX = pPoint->getX();
 		else if (pPoint->getX() != dX)
@@ -1939,7 +1951,9 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 
 	// One online reference says of NTF elevation:
 	// "Height values are rounded to the nearest metre", hence integers.
-	m_bFloatMode = false;
+	// However, NTF dems have been seen that very definitely have good smooth
+	//  float values.  So, stay on the safe side and expect floats.
+	m_bFloatMode = true;
 	m_EarthExtents.left = Extent.MinX;
 	m_EarthExtents.top = Extent.MaxY;
 	m_EarthExtents.right = Extent.MaxX;
@@ -1949,12 +1963,16 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 	if (!_AllocateArray())
 		return false;
 
+	// Time Test
+	clock_t tm3 = clock();
+
   	pLayer->ResetReading();
 
 	int i;
 	for (i = 0; i < iTotalCells; i++)
 	{
-		if (progress_callback != NULL)
+		// Don't call progress too much, 1 time every 1000 is fine.
+		if ((i%1000)==0 && progress_callback != NULL)
 		{
 			if (progress_callback(i * 100 / iTotalCells))
 			{
@@ -1962,7 +1980,6 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 				return false;
 			}
 		}
-
 		if (NULL == (pFeature = pLayer->GetNextFeature()))
 		{
 			msg = "Couldn't get next feature";
@@ -1973,18 +1990,22 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 			msg = "Couldn't get point feature";
 			return false;
 		}
-		if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))
-		{
-			msg = "Couldn't flatten point feature";
-			return false;
-		}
-		SetValue(i / iRowCount, i % iRowCount, (short)pPoint->getZ());
+		SetFValue(i / iRowCount, i % iRowCount, (float) pPoint->getZ());
 		delete pFeature;
 		pFeature = NULL;
 	}
 
+	// Time Test
+	float time_read = ((float)clock() - tm3)/CLOCKS_PER_SEC;
+	VTLOG("ParseNTF5 read: %.2f seconds.\n", time_read);
+
 	ComputeHeightExtents();
 	msg.Format("Read %d cells (%d x %d)", iTotalCells, m_iColumns, m_iRows);
+
+	// Time Test
+	float time = ((float)clock() - tm1)/CLOCKS_PER_SEC;
+	VTLOG("ParseNTF5 total: %.2f seconds.\n", time);
+
 	return true;
 }
 
