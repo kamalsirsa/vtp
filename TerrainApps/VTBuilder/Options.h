@@ -18,6 +18,7 @@
 #define TAG_REPRO_TO_FLOAT_NEVER "ReproToFloatNever"
 #define TAG_SLOW_FILL_GAPS "SlowFillGaps"
 #define TAG_SAMPLING_N "MultiSampleN"
+#define TAG_MAX_MEGAPIXELS "MaxMegapixels"
 
 // User Preferences
 extern vtTagArray g_Options;

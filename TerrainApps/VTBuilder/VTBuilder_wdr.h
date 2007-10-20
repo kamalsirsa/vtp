@@ -307,20 +307,21 @@ const int ID_RADIO2 = 10215;
 const int ID_RADIO3 = 10216;
 const int ID_RADIO4 = 10217;
 const int ID_RADIO5 = 10218;
-const int ID_RADIO6 = 10219;
-const int ID_RADIO7 = 10220;
-const int ID_RADIO8 = 10221;
-const int ID_RADIO9 = 10222;
-const int ID_RADIO10 = 10223;
-const int ID_SAMPLING_N = 10224;
+const int ID_MAX_MEGAPIXELS = 10219;
+const int ID_RADIO6 = 10220;
+const int ID_RADIO7 = 10221;
+const int ID_RADIO8 = 10222;
+const int ID_RADIO9 = 10223;
+const int ID_RADIO10 = 10224;
+const int ID_SAMPLING_N = 10225;
 wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
 // Declare toolbar functions
 
-const int ID_VIEW_LAYER_UP = 10225;
-const int ID_VIEW_LAYER_DOWN = 10226;
+const int ID_VIEW_LAYER_UP = 10226;
+const int ID_VIEW_LAYER_DOWN = 10227;
 void MainToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

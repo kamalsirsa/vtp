@@ -910,11 +910,18 @@ bool MainFrame::ReadXML(const char *fname)
 	if (!g_Options.LoadFromXML(fname))
 		return false;
 
-	// Safety check
+	// Safety checks
 	if (g_Options.GetValueInt(TAG_SAMPLING_N) < 1)
 		g_Options.SetValueInt(TAG_SAMPLING_N, 1);
 	if (g_Options.GetValueInt(TAG_SAMPLING_N) > 32)
 		g_Options.SetValueInt(TAG_SAMPLING_N, 32);
+
+	int mp;
+	if (!g_Options.GetValueInt(TAG_MAX_MEGAPIXELS, mp))
+		mp = 16;
+	if (mp < 0) mp = 0;
+	if (mp > 300) mp = 300;
+	g_Options.SetValueInt(TAG_MAX_MEGAPIXELS, mp);
 
 	// Apply all the options, from g_Options the rest of the application
 	m_pView->SetShowMap(g_Options.GetValueBool(TAG_SHOW_MAP));

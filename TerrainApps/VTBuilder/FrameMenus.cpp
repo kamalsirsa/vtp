@@ -632,6 +632,7 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 	dlg.b9 = !g_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
 	dlg.b10 = g_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
 	dlg.i1 =  g_Options.GetValueInt(TAG_SAMPLING_N);
+	dlg.i2 =  g_Options.GetValueInt(TAG_MAX_MEGAPIXELS);
 
 	dlg.TransferDataToWindow();
 
@@ -648,6 +649,7 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 		g_Options.SetValueBool(TAG_REPRO_TO_FLOAT_NEVER, dlg.b6);
 		g_Options.SetValueBool(TAG_SLOW_FILL_GAPS, dlg.b10);
 		g_Options.SetValueInt(TAG_SAMPLING_N, dlg.i1);
+		g_Options.SetValueInt(TAG_MAX_MEGAPIXELS, dlg.i2);
 	}
 }
 

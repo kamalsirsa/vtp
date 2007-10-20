@@ -35,7 +35,7 @@ vtImage::vtImage()
 }
 
 vtImage::vtImage(const DRECT &area, int xsize, int ysize,
-						   const vtProjection &proj)
+				 const vtProjection &proj)
 {
 	SetDefaults();
 	m_Extents = area;
@@ -1003,9 +1003,10 @@ bool vtImage::LoadFromGDAL(const char *fname)
 			pBlueline = new unsigned char[xBlockSize * yBlockSize];
 		}
 
+		int iBigImage = g_Options.GetValueInt(TAG_MAX_MEGAPIXELS) * 1024 * 1024;
 		// don't try to load giant image?
 		wxString msg;
-		if (m_iXSize * m_iYSize > (4096 * 4096))
+		if (m_iXSize * m_iYSize > iBigImage)
 		{
 			if (g_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS))
 				bDefer = false;

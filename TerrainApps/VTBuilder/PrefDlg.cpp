@@ -50,6 +50,7 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_RADIO9, &b9);
 	AddValidator(ID_RADIO10, &b10);
 	AddNumValidator(ID_SAMPLING_N, &i1);
+	AddNumValidator(ID_MAX_MEGAPIXELS, &i2);
 }
 
 // WDR: handler implementations for PrefDlg
