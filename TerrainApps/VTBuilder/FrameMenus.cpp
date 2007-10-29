@@ -352,7 +352,7 @@ void MainFrame::CreateMenus()
 	layerMenu->Append(ID_LAYER_IMPORT, _("Import Data\tCtrl+I"), _("Import Data"));
 	layerMenu->Append(ID_LAYER_IMPORTTIGER, _("Import Data From TIGER"), _("Import Data From TIGER"));
 	layerMenu->Append(ID_LAYER_IMPORTNTF, _("Import Data From NTF"), _("Import Data From TIGER"));
-	layerMenu->Append(ID_LAYER_IMPORTUTIL, _("Import Utilites From SHP"), _("Import Utilites From SHP"));
+	//layerMenu->Append(ID_LAYER_IMPORTUTIL, _("Import Utilities From SHP"), _("Import Utilities From SHP"));
 	layerMenu->Append(ID_LAYER_IMPORT_MS, _("Import From MapSource File"));
 	layerMenu->Append(ID_LAYER_IMPORT_POINT, _("Import Point Data From Table"));
 	layerMenu->Append(ID_LAYER_IMPORT_XML, _("Import Point Data From XML"));
@@ -1172,8 +1172,13 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 
 void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 {
+	wxString filter = _("Tabular Data Files|");
+
+	AddType(filter, FSTRING_DBF);	// old-style database
+	AddType(filter, FSTRING_CSV);	// comma-separated values
+
 	wxFileDialog loadFile(NULL, _("Import Point Data"), _T(""), _T(""),
-		_("Tabular Data Files (*.dbf)|*.dbf"), wxFD_OPEN);
+		filter, wxFD_OPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;

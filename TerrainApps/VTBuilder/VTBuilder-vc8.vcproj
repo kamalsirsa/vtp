@@ -910,6 +910,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FileFilters.h"
+				>
+			</File>
+			<File
 				RelativePath="Frame.h"
 				>
 			</File>

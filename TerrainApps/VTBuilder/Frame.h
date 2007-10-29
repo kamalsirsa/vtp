@@ -454,6 +454,8 @@ public:
 	vtLayer *ImportVectorsWithOGR(const wxString &strFileName, LayerType ltype);
 	vtStructureLayer *ImportFromBCF(const wxString &strFileName);
 	void ImportFromMapSource(const char *fname);
+	vtFeatureSetPoint2D *ImportPointsFromDBF(const char *fname);
+	vtFeatureSet *ImportPointsFromCSV(const char *fname);
 	void ImportDataPointsFromTable(const char *fname);
 	int ImportDataFromTIGER(const wxString &strDirName);
 	int ImportDataFromSCC(const char *filename);

@@ -1060,7 +1060,48 @@ void MainFrame::ImportFromMapSource(const char *fname)
 	delete [] choices;
 }
 
-// Helper for following method
+// Helper for following methods
+double ExtractValueFromString(const char *string, int iStyle, bool bEasting,
+							  bool bFlipEasting)
+{
+	if (iStyle == 0)	// decimal
+	{
+		return atof(string);
+	}
+	else if (iStyle == 1)	// packed DMS
+	{
+		int deg, min, sec, frac;
+		if (bEasting)
+		{
+			deg  = GetIntFromString(string, 3);
+			min  = GetIntFromString(string+3, 2);
+			sec  = GetIntFromString(string+5, 2);
+			frac = GetIntFromString(string+7, 2);
+			if (deg > 180)
+			{
+				deg  = GetIntFromString(string, 2);
+				min  = GetIntFromString(string+2, 2);
+				sec  = GetIntFromString(string+4, 2);
+				frac = 0;
+			}
+		}
+		else
+		{
+			deg  = GetIntFromString(string, 2);
+			min  = GetIntFromString(string+2, 2);
+			sec  = GetIntFromString(string+4, 2);
+			frac = GetIntFromString(string+6, 2);
+		}
+		double secs = sec + (frac/100.0);
+		double val = deg + (min/60.0) + (secs/3600.0);
+		if (bFlipEasting)
+			val = -val;
+		return val;
+	}
+	return 0.0;
+}
+
+// Helper for following methods
 double ExtractValue(DBFHandle db, int iRec, int iField, DBFFieldType ftype,
 					int iStyle, bool bEasting, bool bFlipEasting)
 {
@@ -1069,41 +1110,7 @@ double ExtractValue(DBFHandle db, int iRec, int iField, DBFFieldType ftype,
 	{
 	case FTString:
 		string = DBFReadStringAttribute(db, iRec, iField);
-		if (iStyle == 0)	// decimal
-		{
-			return atof(string);
-		}
-		else if (iStyle == 1)	// packed DMS
-		{
-			int deg, min, sec, frac;
-			if (bEasting)
-			{
-				deg  = GetIntFromString(string, 3);
-				min  = GetIntFromString(string+3, 2);
-				sec  = GetIntFromString(string+5, 2);
-				frac = GetIntFromString(string+7, 2);
-				if (deg > 180)
-				{
-					deg  = GetIntFromString(string, 2);
-					min  = GetIntFromString(string+2, 2);
-					sec  = GetIntFromString(string+4, 2);
-					frac = 0;
-				}
-			}
-			else
-			{
-				deg  = GetIntFromString(string, 2);
-				min  = GetIntFromString(string+2, 2);
-				sec  = GetIntFromString(string+4, 2);
-				frac = GetIntFromString(string+6, 2);
-			}
-			double secs = sec + (frac/100.0);
-			double val = deg + (min/60.0) + (secs/3600.0);
-			if (bFlipEasting)
-				val = -val;
-			return val;
-		}
-		break;
+		return ExtractValueFromString(string, iStyle, bEasting, bFlipEasting);
 	case FTInteger:
 		return DBFReadIntegerAttribute(db, iRec, iField);
 	case FTDouble:
@@ -1114,11 +1121,7 @@ double ExtractValue(DBFHandle db, int iRec, int iField, DBFFieldType ftype,
 	return 0.0;
 }
 
-//
-// Import point data from a tabular data source such as a .dbf or .csv
-//  (Currently, only handles DBF)
-//
-void MainFrame::ImportDataPointsFromTable(const char *fname)
+vtFeatureSetPoint2D *MainFrame::ImportPointsFromDBF(const char *fname)
 {
 	// DBFOpen doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(fname);
@@ -1126,7 +1129,7 @@ void MainFrame::ImportDataPointsFromTable(const char *fname)
 	// Open DBF File
 	DBFHandle db = DBFOpen(fname_local, "rb");
 	if (db == NULL)
-		return;
+		return NULL;
 
 	ImportPointDlg dlg(this, -1, _("Point Data Import"));
 
@@ -1157,7 +1160,7 @@ void MainFrame::ImportDataPointsFromTable(const char *fname)
 	if (dlg.ShowModal() != wxID_OK)
 	{
 		DBFClose(db);
-		return;
+		return NULL;
 	}
 	int iEast = dlg.m_iEasting;
 	int iNorth = dlg.m_iNorthing;
@@ -1181,9 +1184,102 @@ void MainFrame::ImportDataPointsFromTable(const char *fname)
 	pSet->SetFilename(fname);
 	pSet->LoadDataFromDBF(fname);
 
-	vtRawLayer *pRaw = new vtRawLayer;
-	pRaw->SetFeatureSet(pSet);
-	AddLayerWithCheck(pRaw);
+	return pSet;
+}
+
+void Tokenize(char *buf, vtStringArray &tokens)
+{
+	char *p = NULL;
+	p = strtok(buf, ",");
+	while (p != NULL)
+	{
+		tokens.push_back(vtString(p));
+		p = strtok(NULL, ",");
+	}
+}
+
+vtFeatureSet *MainFrame::ImportPointsFromCSV(const char *fname)
+{
+	FILE *fp = vtFileOpen(fname, "rb");
+	if (fp == NULL)
+		return NULL;
+
+	char buf[4096];
+	vtStringArray fieldnames;
+	fgets(buf, 4096, fp);
+	Tokenize(buf, fieldnames);
+	int iFields = fieldnames.size();
+	if (iFields == 0)
+	{
+		fclose(fp);
+		return NULL;
+	}
+
+	ImportPointDlg dlg(this, -1, _("Point Data Import"));
+
+	// default to the current CRS
+	dlg.SetCRS(m_proj);
+
+	// Fill the field names into the "Use Field" controls
+	int i;
+	for (i = 0; i < iFields; i++)
+	{
+		wxString str(fieldnames[i], wxConvUTF8);
+
+		dlg.GetEasting()->Append(str);
+		dlg.GetNorthing()->Append(str);
+	}
+	if (dlg.ShowModal() != wxID_OK)
+	{
+		fclose(fp);
+		return NULL;
+	}
+	int iEast = dlg.m_iEasting;
+	int iNorth = dlg.m_iNorthing;
+	int iStyle = dlg.m_bFormat2 ? 1 : 0;
+
+	// Now import
+	vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
+	pSet->SetProjection(dlg.m_proj);
+
+	while (fgets(buf, 4096, fp))
+	{
+		vtStringArray values;
+		Tokenize(buf, values);
+
+		DPoint2 p;
+		p.x = ExtractValueFromString(values[iEast], iStyle, true, dlg.m_bLongitudeWest);
+		p.y = ExtractValueFromString(values[iNorth], iStyle, false, false);
+		pSet->AddPoint(p);
+	}
+
+	pSet->SetFilename(fname);
+
+	return pSet;
+}
+
+
+//
+// Import point data from a tabular data source such as a .dbf or .csv
+//
+void MainFrame::ImportDataPointsFromTable(const char *fname)
+{
+	vtFeatureSet *pSet = NULL;
+
+	vtString ext = GetExtension(fname);
+	if (!ext.CompareNoCase(".dbf"))
+		pSet = ImportPointsFromDBF(fname);
+	else if (!ext.CompareNoCase(".csv"))
+		pSet = ImportPointsFromCSV(fname);
+	else
+		return;
+
+	if (pSet)
+	{
+		vtRawLayer *pRaw = new vtRawLayer;
+		pRaw->SetFeatureSet(pSet);
+		AddLayerWithCheck(pRaw);
+	}
 }
 
 vtLayerPtr MainFrame::ImportRawFromOGR(const wxString &strFileName)
