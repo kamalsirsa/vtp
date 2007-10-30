@@ -2048,6 +2048,7 @@ void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 				grid->SetFValue(i, j, fValue);
 		}
 	}
+	t->SetModified(true);
 	t->ReRender();
 	m_pView->Refresh();
 }
@@ -2055,9 +2056,12 @@ void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 void MainFrame::OnFillIn(wxCommandEvent &event)
 {
 	vtElevLayer *el = GetActiveElevLayer();
-	FillElevGaps(el);
-	el->ReRender();
-	m_pView->Refresh();
+	if (FillElevGaps(el))
+	{
+		el->SetModified(true);
+		el->ReRender();
+		m_pView->Refresh();
+	}
 }
 
 void MainFrame::OnScaleElevation(wxCommandEvent &event)
@@ -3680,7 +3684,7 @@ void MainFrame::OnRawGenElevation(wxCommandEvent& event)
 	DRECT extent;
 	pSet->ComputeExtent(extent);
 
-	bool bIsGeo = m_proj.IsGeographic();
+	bool bIsGeo = (m_proj.IsGeographic() != 0);
 
 	GenGridDlg dlg(this, -1, _("Generate Grid from 3D Points"), bIsGeo);
 	dlg.m_fAreaX = extent.Width();
