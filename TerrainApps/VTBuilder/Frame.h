@@ -258,6 +258,7 @@ protected:
 	void OnRawAddPointsGPS(wxCommandEvent& event);
 	void OnRawSelectCondition(wxCommandEvent& event);
 	void OnRawExportImageMap(wxCommandEvent& event);
+	void OnRawGenElevation(wxCommandEvent& event);
 	void OnRawStyle(wxCommandEvent& event);
 	void OnRawScale(wxCommandEvent& event);
 
@@ -266,6 +267,7 @@ protected:
 	void OnUpdateRawAddPointText(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event);
 	void OnUpdateRawIsActive(wxUpdateUIEvent& event);
+	void OnUpdateRawGenElevation(wxUpdateUIEvent& event);
 
 	void OnAreaZoomAll(wxCommandEvent& event);
 	void OnAreaZoomLayer(wxCommandEvent& event);

@@ -53,6 +53,7 @@
 #include "DistribVegDlg.h"
 #include "ExtentDlg.h"
 #include "FeatInfoDlg.h"
+#include "GenGridDlg.h"
 #include "GeocodeDlg.h"
 #include "ImageMapDlg.h"
 #include "LayerPropDlg.h"
@@ -248,6 +249,7 @@ EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
 EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
 EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
+EVT_MENU(ID_RAW_GENERATE_ELEVATION,	MainFrame::OnRawGenElevation)
 EVT_MENU(ID_RAW_STYLE,				MainFrame::OnRawStyle)
 EVT_MENU(ID_RAW_SCALE,				MainFrame::OnRawScale)
 
@@ -257,6 +259,7 @@ EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnUpdateRawAddPointText)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnUpdateRawAddPointsGPS)
 EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_GENERATE_ELEVATION,MainFrame::OnUpdateRawGenElevation)
 EVT_UPDATE_UI(ID_RAW_STYLE,				MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_SCALE,				MainFrame::OnUpdateRawIsActive)
 
@@ -504,6 +507,7 @@ void MainFrame::CreateMenus()
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SELECTCONDITION, _("Select Features by Condition"));
 	rawMenu->Append(ID_RAW_EXPORT_IMAGEMAP, _("Export as HTML ImageMap"));
+	rawMenu->Append(ID_RAW_GENERATE_ELEVATION, _("Generate Grid from 3D Points"));
 	m_pMenuBar->Append(rawMenu, _("Ra&w"));
 	m_iLayerMenu[LT_RAW] = menu_num;
 	menu_num++;
@@ -3664,6 +3668,49 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 	fprintf(fp, "</body>\n");
 	fprintf(fp, "</html>\n");
 	fclose(fp);
+}
+
+void MainFrame::OnRawGenElevation(wxCommandEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	if (!pRL)
+		return;
+
+	vtFeatureSet *pSet = pRL->GetFeatureSet();
+	DRECT extent;
+	pSet->ComputeExtent(extent);
+
+	bool bIsGeo = m_proj.IsGeographic();
+
+	GenGridDlg dlg(this, -1, _("Generate Grid from 3D Points"), bIsGeo);
+	dlg.m_fAreaX = extent.Width();
+	dlg.m_fAreaY = extent.Height();
+	dlg.m_iSizeX = 512;
+	dlg.m_iSizeY = 512;
+	dlg.RecomputeSize();
+	dlg.m_fDistanceCutoff = 1.5f;
+
+	int ret = dlg.ShowModal();
+	if (ret == wxID_CANCEL)
+		return;
+
+	vtElevLayer *el = new vtElevLayer;
+
+	OpenProgressDialog(_T("Creating Grid"));
+	int xsize = 800;
+	int ysize = 300;
+	if (el->CreateFromPoints(pSet, dlg.m_iSizeX, dlg.m_iSizeY,
+			dlg.m_fDistanceCutoff))
+		AddLayerWithCheck(el);
+	else
+		delete el;
+	CloseProgressDialog();
+}
+
+void MainFrame::OnUpdateRawGenElevation(wxUpdateUIEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	event.Enable(pRL != NULL && pRL->GetGeomType() == wkbPoint25D);
 }
 
 void MainFrame::OnRawStyle(wxCommandEvent& event)

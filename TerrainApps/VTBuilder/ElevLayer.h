@@ -16,11 +16,11 @@
 
 #define SHADING_BIAS	200
 
-class vtHeightField;
-class vtElevationGrid;
-class vtDIB;
 class vtBitmap;
-class BuilderView;
+class vtDIB;
+class vtElevationGrid;
+class vtFeatureSet;
+class vtHeightField;
 
 class vtTin2d : public vtTin
 {
@@ -83,6 +83,8 @@ public:
 	float GetElevation(const DPoint2 &p);
 	bool GetHeightExtents(float &fMinHeight, float &fMaxHeight) const;
 	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
+	bool CreateFromPoints(vtFeatureSet *set, int iXSize, int iYSize,
+		float fDistanceRatio);
 
 	// grid operations
 	void Resample(int iNewWidth, int iNewHeight);

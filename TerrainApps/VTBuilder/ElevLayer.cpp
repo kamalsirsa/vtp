@@ -11,6 +11,15 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/config_vtdata.h"
+
+#if SUPPORT_QUIKGRID
+  // QuikGrid includes
+  #include "surfgrid.h"
+  #include "scatdata.h"
+  #include "xpand.h"
+#endif
+
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtDIB.h"
@@ -1050,6 +1059,84 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 		m_pGrid->SetupConversion(1.0f);
 	}
 	return true;
+}
+
+//
+// Use the QuikGrid library to generate a grid from a set of 3D points.
+//
+bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, int iXSize, int iYSize,
+								   float fDistanceRatio)
+{
+#if SUPPORT_QUIKGRID
+	vtFeatureSetPoint3D *fsp3 = dynamic_cast<vtFeatureSetPoint3D *>(set);
+	if (!fsp3)
+		return false;
+
+	DRECT extent;
+	fsp3->ComputeExtent(extent);
+
+	int iMaxSize = fsp3->GetNumEntities();
+	ScatData sdata(iMaxSize);
+	DPoint3 p;
+	for (int i = 0; i < iMaxSize; i++)
+	{
+		fsp3->GetPoint(i, p);
+		sdata.SetNext(p.x, p.y, p.z);
+	}
+
+	// Make a SurfaceGrid to hold the results
+	DPoint2 spacing(extent.Width() / (iXSize-1), extent.Height() / (iYSize-1));
+
+	SurfaceGrid Zgrid(iXSize, iYSize);
+	for (int x = 0; x < iXSize; x++)
+		Zgrid.xset(x, extent.left + spacing.x * x);
+	for (int y = 0; y < iYSize; y++)
+		Zgrid.yset(y, extent.bottom + spacing.y * y);
+
+	// "When any new points will not contributed more than 1/(scan bandwidth cutoff)
+	//   towards the value of a grid intersection scanning will cease in that
+	//   direction. "
+	int x1 = XpandScanRatio();		// default 16, valid values 1..100
+
+	// "The Distance cutoff specifies a percent of the Density Distance"
+	int x2 = XpandDensityRatio();	// default 150, valid values 1..10000
+	int x3 = XpandEdgeFactor();		// default 100, valid values 1..10000
+	float x4 = XpandUndefinedZ();
+	long x5 = XpandSample();
+
+	XpandDensityRatio((int) (fDistanceRatio * 100));
+
+	// Do the expand operation, gradually so we get progress
+	XpandInit(Zgrid, sdata);
+	int count = 0, total = iXSize * iYSize;
+	while (XpandPoint( Zgrid, sdata))
+	{
+		if ((count % 100) == 0)
+			progress_callback(count * 99 / total);
+		count++;
+	}
+
+	// copy the result to a ElevationGrid
+	m_pGrid = new vtElevationGrid(extent, iXSize, iYSize, true, set->GetAtProjection());
+
+	for (int x = 0; x < iXSize; x++)
+		for (int y = 0; y < iYSize; y++)
+		{
+			float value = Zgrid.z(x,y);
+			if (value == -99999)
+				m_pGrid->SetFValue(x, y, INVALID_ELEVATION);
+			else
+				m_pGrid->SetFValue(x, y, value);
+		}
+
+	m_pGrid->ComputeHeightExtents();
+	m_pGrid->SetupConversion();
+
+	return true;
+#else
+	// No QuikGrid
+	return false;
+#endif
 }
 
 void vtElevLayer::SetTin(vtTin2d *pTin)

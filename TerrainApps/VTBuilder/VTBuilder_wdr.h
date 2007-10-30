@@ -318,12 +318,15 @@ const int ID_RADIO10 = 10226;
 const int ID_SAMPLING_N = 10227;
 wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+const int ID_TEXT_DIST_CUTOFF = 10228;
+wxSizer *GenGridDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
 
-const int ID_VIEW_LAYER_UP = 10228;
-const int ID_VIEW_LAYER_DOWN = 10229;
+const int ID_VIEW_LAYER_UP = 10229;
+const int ID_VIEW_LAYER_DOWN = 10230;
 void MainToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions
