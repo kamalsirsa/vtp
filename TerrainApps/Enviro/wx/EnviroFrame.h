@@ -111,6 +111,9 @@ public:
 	void OnViewStatusBar(wxCommandEvent& event);
 	void OnViewScenarios(wxCommandEvent& event);
 	void OnViewProfile(wxCommandEvent& event);
+	void OnViewToolCulture(wxCommandEvent& event);
+	void OnViewToolSnapshot(wxCommandEvent& event);
+	void OnViewToolTime(wxCommandEvent& event);
 
 	void OnUpdateViewMaintain(wxUpdateUIEvent& event);
 	void OnUpdateViewWireframe(wxUpdateUIEvent& event);
@@ -123,6 +126,9 @@ public:
 	void OnUpdateViewLocations(wxUpdateUIEvent& event);
 	void OnUpdateViewStatusBar(wxUpdateUIEvent& event);
 	void OnUpdateViewProfile(wxUpdateUIEvent& event);
+	void OnUpdateViewToolCulture(wxUpdateUIEvent& event);
+	void OnUpdateViewToolSnapshot(wxUpdateUIEvent& event);
+	void OnUpdateViewToolTime(wxUpdateUIEvent& event);
 
 	void OnViewSlower(wxCommandEvent& event);
 	void OnViewFaster(wxCommandEvent& event);
@@ -140,6 +146,8 @@ public:
 
 	void OnToolsSelect(wxCommandEvent& event);
 	void OnUpdateToolsSelect(wxUpdateUIEvent& event);
+	void OnToolsSelectBox(wxCommandEvent& event);
+	void OnUpdateToolsSelectBox(wxUpdateUIEvent& event);
 	void OnToolsFences(wxCommandEvent& event);
 	void OnUpdateToolsFences(wxUpdateUIEvent& event);
 	void OnToolsBuildings(wxCommandEvent& event);

@@ -374,9 +374,11 @@ void LayerToolBarFunc( wxToolBar *parent );
 
 wxBitmap MyBitmapsFunc( size_t index );
 
-wxBitmap ToolBitmapsFunc( size_t index );
+wxBitmap LayerToolBitmapsFunc( size_t index );
 
 wxBitmap ColorBitmapsFunc( size_t index );
+
+wxBitmap ToolsFunc( size_t index );
 
 #endif
 

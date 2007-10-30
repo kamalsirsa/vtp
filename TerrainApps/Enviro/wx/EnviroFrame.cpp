@@ -119,6 +119,8 @@ EVT_IDLE(EnviroFrame::OnIdle)
 
 EVT_MENU(ID_TOOLS_SELECT,			EnviroFrame::OnToolsSelect)
 EVT_UPDATE_UI(ID_TOOLS_SELECT,		EnviroFrame::OnUpdateToolsSelect)
+EVT_MENU(ID_TOOLS_SELECT_BOX,		EnviroFrame::OnToolsSelectBox)
+EVT_UPDATE_UI(ID_TOOLS_SELECT_BOX,	EnviroFrame::OnUpdateToolsSelectBox)
 EVT_MENU(ID_TOOLS_FENCES,			EnviroFrame::OnToolsFences)
 EVT_UPDATE_UI(ID_TOOLS_FENCES,		EnviroFrame::OnUpdateToolsFences)
 EVT_MENU(ID_TOOLS_BUILDINGS,		EnviroFrame::OnToolsBuildings)
@@ -179,6 +181,13 @@ EVT_MENU(ID_NAV_GRAB_PIVOT,		EnviroFrame::OnNavGrabPivot)
 EVT_UPDATE_UI(ID_NAV_GRAB_PIVOT,EnviroFrame::OnUpdateNavGrabPivot)
 EVT_MENU(ID_NAV_PANO,			EnviroFrame::OnNavPano)
 EVT_UPDATE_UI(ID_NAV_PANO,		EnviroFrame::OnUpdateNavPano)
+
+EVT_MENU(ID_VIEW_TOOLS_CULTURE,			EnviroFrame::OnViewToolCulture)
+EVT_MENU(ID_VIEW_TOOLS_SNAPSHOT,		EnviroFrame::OnViewToolSnapshot)
+EVT_MENU(ID_VIEW_TOOLS_TIME,			EnviroFrame::OnViewToolTime)
+EVT_UPDATE_UI(ID_VIEW_TOOLS_CULTURE,	EnviroFrame::OnUpdateViewToolCulture)
+EVT_UPDATE_UI(ID_VIEW_TOOLS_SNAPSHOT,	EnviroFrame::OnUpdateViewToolSnapshot)
+EVT_UPDATE_UI(ID_VIEW_TOOLS_TIME,		EnviroFrame::OnUpdateViewToolTime)
 
 EVT_MENU(ID_SCENE_SCENEGRAPH,	EnviroFrame::OnSceneGraph)
 EVT_MENU(ID_SCENE_TERRAIN,		EnviroFrame::OnSceneTerrain)
@@ -400,6 +409,7 @@ void EnviroFrame::CreateMenus()
 
 	m_pToolsMenu = new wxMenu;
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _("Select"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_SELECT_BOX, _("Select Box"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _("Fences"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_BUILDINGS, _("Buildings"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _("Routes"));
@@ -472,6 +482,13 @@ void EnviroFrame::CreateMenus()
 	m_pViewMenu->AppendCheckItem(ID_VIEW_STATUSBAR, _("&Status Bar"));
 	m_pViewMenu->Append(ID_VIEW_SCENARIOS, _("Scenarios"));
 	m_pMenuBar->Append(m_pViewMenu, _("&View"));
+
+		// submenu
+		wxMenu *tbMenu = new wxMenu;
+		tbMenu->AppendCheckItem(ID_VIEW_TOOLS_CULTURE, _("Culture"));
+		tbMenu->AppendCheckItem(ID_VIEW_TOOLS_SNAPSHOT, _("Snapshot"));
+		tbMenu->AppendCheckItem(ID_VIEW_TOOLS_TIME, _("Time"));
+		m_pViewMenu->Append(0, _("Toolbars"), tbMenu);
 
 	m_pNavMenu = new wxMenu;
 	m_pNavMenu->Append(ID_VIEW_SLOWER, _("Fly Slower (S)"));
@@ -612,14 +629,21 @@ void EnviroFrame::RefreshToolbar()
 
 	if (bTerr)
 	{
-		AddTool(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
-		AddTool(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
-		AddTool(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
-		AddTool(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
+		AddTool(ID_TOOLS_SELECT_BOX, ToolsFunc(0), _("Select Box"), true);
+		if (g_Options.m_bShowToolsCulture)
+		{
+			AddTool(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
+			AddTool(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
+			AddTool(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
+			AddTool(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
+		}
 		AddTool(ID_TOOLS_POINTS, wxBITMAP(placemark), _("Create Points"), true);
-		AddTool(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
-		AddTool(ID_TOOLS_VEHICLES, wxBITMAP(vehicles), _("Create Vehicles"), true);
-		AddTool(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);
+		if (g_Options.m_bShowToolsCulture)
+		{
+			AddTool(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
+			AddTool(ID_TOOLS_VEHICLES, wxBITMAP(vehicles), _("Create Vehicles"), true);
+			AddTool(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);
+		}
 		AddTool(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
 	}
 	if (bTerr || bEarth)
@@ -631,9 +655,12 @@ void EnviroFrame::RefreshToolbar()
 		m_pToolbar->AddSeparator();
 		AddTool(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), true);
 	}
-	m_pToolbar->AddSeparator();
-	AddTool(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
-	AddTool(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
+	if (g_Options.m_bShowToolsSnapshot)
+	{
+		m_pToolbar->AddSeparator();
+		AddTool(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
+		AddTool(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
+	}
 	if (bTerr || bEarth)
 	{
 		m_pToolbar->AddSeparator();
@@ -662,10 +689,13 @@ void EnviroFrame::RefreshToolbar()
 			AddTool(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
 		}
 	}
-	m_pToolbar->AddSeparator();
-	AddTool(ID_TIME_DIALOG, wxBITMAP(time), _("Time"), false);
-	AddTool(ID_TIME_FASTER, wxBITMAP(faster), _("Time Faster"), false);
-	AddTool(ID_TIME_STOP, wxBITMAP(stop), _("Time Stop"), false);
+	if (g_Options.m_bShowToolsTime)
+	{
+		m_pToolbar->AddSeparator();
+		AddTool(ID_TIME_DIALOG, wxBITMAP(time), _("Time"), false);
+		AddTool(ID_TIME_FASTER, wxBITMAP(faster), _("Time Faster"), false);
+		AddTool(ID_TIME_STOP, wxBITMAP(stop), _("Time Stop"), false);
+	}
 
 	m_pToolbar->AddSeparator();
 	AddTool(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
@@ -1437,6 +1467,34 @@ void EnviroFrame::OnUpdateViewProfile(wxUpdateUIEvent& event)
 	event.Enable(g_App.m_state == AS_Terrain);
 }
 
+void EnviroFrame::OnViewToolCulture(wxCommandEvent& event)
+{
+	g_Options.m_bShowToolsCulture = !g_Options.m_bShowToolsCulture;
+	RefreshToolbar();
+}
+void EnviroFrame::OnUpdateViewToolCulture(wxUpdateUIEvent& event)
+{
+	event.Check(g_Options.m_bShowToolsCulture);
+}
+void EnviroFrame::OnViewToolSnapshot(wxCommandEvent& event)
+{
+	g_Options.m_bShowToolsSnapshot = !g_Options.m_bShowToolsSnapshot;
+	RefreshToolbar();
+}
+void EnviroFrame::OnUpdateViewToolSnapshot(wxUpdateUIEvent& event)
+{
+	event.Check(g_Options.m_bShowToolsSnapshot);
+}
+void EnviroFrame::OnViewToolTime(wxCommandEvent& event)
+{
+	g_Options.m_bShowToolsTime = !g_Options.m_bShowToolsTime;
+	RefreshToolbar();
+}
+void EnviroFrame::OnUpdateViewToolTime(wxUpdateUIEvent& event)
+{
+	event.Check(g_Options.m_bShowToolsTime);
+}
+
 
 ///////////////////// Tools menu //////////////////////////
 
@@ -1449,6 +1507,17 @@ void EnviroFrame::OnUpdateToolsSelect(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain || g_App.m_state == AS_Orbit);
 	event.Check(g_App.m_mode == MM_SELECT);
+}
+
+void EnviroFrame::OnToolsSelectBox(wxCommandEvent& event)
+{
+	SetMode(MM_SELECTBOX);
+}
+
+void EnviroFrame::OnUpdateToolsSelectBox(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_mode == MM_SELECTBOX);
 }
 
 void EnviroFrame::OnToolsFences(wxCommandEvent& event)

@@ -2851,18 +2851,18 @@ void LayerToolBarFunc( wxToolBar *parent )
 {
     parent->SetMargins( 1, 1 );
     
-    parent->AddTool( ID_LAYER_CREATE, _("Create"), ToolBitmapsFunc( 0 ), wxNullBitmap, wxITEM_NORMAL, _("Create New Layer") );
-    parent->AddTool( ID_LAYER_LOAD, _("Load"), ToolBitmapsFunc( 1 ), wxNullBitmap, wxITEM_NORMAL, _("Load Layer") );
-    parent->AddTool( ID_LAYER_SAVE, _("Save"), ToolBitmapsFunc( 2 ), wxNullBitmap, wxITEM_NORMAL, _("Save Layer") );
-    parent->AddTool( ID_LAYER_SAVE_AS, _("Save As"), ToolBitmapsFunc( 8 ), wxNullBitmap, wxITEM_NORMAL, _("Save Layer As...") );
-    parent->AddTool( ID_LAYER_DELETE, _("Delete"), ToolBitmapsFunc( 4 ), wxNullBitmap, wxITEM_NORMAL, _("Delete Layer") );
+    parent->AddTool( ID_LAYER_CREATE, _("Create"), LayerToolBitmapsFunc( 0 ), wxNullBitmap, wxITEM_NORMAL, _("Create New Layer") );
+    parent->AddTool( ID_LAYER_LOAD, _("Load"), LayerToolBitmapsFunc( 1 ), wxNullBitmap, wxITEM_NORMAL, _("Load Layer") );
+    parent->AddTool( ID_LAYER_SAVE, _("Save"), LayerToolBitmapsFunc( 2 ), wxNullBitmap, wxITEM_NORMAL, _("Save Layer") );
+    parent->AddTool( ID_LAYER_SAVE_AS, _("Save As"), LayerToolBitmapsFunc( 8 ), wxNullBitmap, wxITEM_NORMAL, _("Save Layer As...") );
+    parent->AddTool( ID_LAYER_DELETE, _("Delete"), LayerToolBitmapsFunc( 4 ), wxNullBitmap, wxITEM_NORMAL, _("Delete Layer") );
     parent->AddSeparator();
-    parent->AddTool( ID_LAYER_ZOOM_TO, _("Zoom"), ToolBitmapsFunc( 3 ), wxNullBitmap, wxITEM_NORMAL, _("Zoom to Layer") );
-    parent->AddTool( ID_LAYER_VISIBLE, _("Visible"), ToolBitmapsFunc( 5 ), wxNullBitmap, wxITEM_CHECK, _("Toggle Layer Visibility") );
-    parent->AddTool( ID_LAYER_TABLE, wxT(""), ToolBitmapsFunc( 9 ), wxNullBitmap, wxITEM_NORMAL, wxT("") );
-    parent->AddTool( ID_LAYER_SHADOW, _("Shadow"), ToolBitmapsFunc( 6 ), wxNullBitmap, wxITEM_CHECK, _("Toggle Structure Shadow") );
+    parent->AddTool( ID_LAYER_ZOOM_TO, _("Zoom"), LayerToolBitmapsFunc( 3 ), wxNullBitmap, wxITEM_NORMAL, _("Zoom to Layer") );
+    parent->AddTool( ID_LAYER_VISIBLE, _("Visible"), LayerToolBitmapsFunc( 5 ), wxNullBitmap, wxITEM_CHECK, _("Toggle Layer Visibility") );
+    parent->AddTool( ID_LAYER_TABLE, wxT(""), LayerToolBitmapsFunc( 9 ), wxNullBitmap, wxITEM_NORMAL, wxT("") );
+    parent->AddTool( ID_LAYER_SHADOW, _("Shadow"), LayerToolBitmapsFunc( 6 ), wxNullBitmap, wxITEM_CHECK, _("Toggle Structure Shadow") );
     parent->AddSeparator();
-    parent->AddTool( ID_SHOW_ALL, _("All"), ToolBitmapsFunc( 7 ), wxNullBitmap, wxITEM_CHECK, _("Show all elements of every layer") );
+    parent->AddTool( ID_SHOW_ALL, _("All"), LayerToolBitmapsFunc( 7 ), wxNullBitmap, wxITEM_CHECK, _("Show all elements of every layer") );
     
     parent->Realize();
 }
@@ -3022,7 +3022,7 @@ wxBitmap MyBitmapsFunc( size_t index )
     return wxNullBitmap;
 }
 
-wxBitmap ToolBitmapsFunc( size_t index )
+wxBitmap LayerToolBitmapsFunc( size_t index )
 {
     if (index == 0)
     {
@@ -3652,6 +3652,46 @@ wxBitmap ColorBitmapsFunc( size_t index )
         "aaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaa"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    return wxNullBitmap;
+}
+
+wxBitmap ToolsFunc( size_t index )
+{
+    if (index == 0)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 4 1",
+        "  c None",
+        "a c Black",
+        "b c #FFFFFF",
+        "c c #FFFF00",
+        /* pixels */
+        "acacacacacaca       ",
+        "c           c       ",
+        "a           a       ",
+        "c           c       ",
+        "a           a       ",
+        "c           c       ",
+        "a          aa       ",
+        "c          aa       ",
+        "a          aba      ",
+        "c          abba     ",
+        "acacacacacaabbba    ",
+        "           abbbba   ",
+        "           abbbbba  ",
+        "           abbbbbba ",
+        "           abbbbaaaa",
+        "           abbabba  ",
+        "           abaabba  ",
+        "           aa  abba ",
+        "           a   abba ",
+        "                abba"
         };
         wxBitmap bitmap( xpm_data );
         return bitmap;

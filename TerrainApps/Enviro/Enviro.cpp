@@ -1182,6 +1182,7 @@ void Enviro::SetMode(MouseMode mode)
 			EnableFlyerEngine(true);
 			break;
 		case MM_SELECT:
+		case MM_SELECTBOX:
 			m_pCursorMGeom->SetEnabled(!g_Options.m_bDirectPicking);
 			EnableFlyerEngine(false);
 			break;

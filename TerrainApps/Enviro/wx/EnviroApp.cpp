@@ -224,6 +224,10 @@ bool EnviroApp::OnInit()
 int EnviroApp::OnExit()
 {
 	VTLOG("App Exit\n");
+
+	// User might have changed some global options
+	g_Options.WriteXML();
+
 	g_App.Shutdown();
 	vtGetScene()->Shutdown();
 

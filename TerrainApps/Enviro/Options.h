@@ -58,6 +58,11 @@ public:
 	bool	m_bShowProgress;
 	bool	m_bFlyIn;
 
+	// toolbar options
+	bool m_bShowToolsCulture;
+	bool m_bShowToolsSnapshot;
+	bool m_bShowToolsTime;
+
 	// filename (with path) from which ini was read
 	vtString m_strFilename;
 

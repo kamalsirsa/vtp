@@ -42,6 +42,9 @@ EnviroOptions g_Options;
 #define STR_DIRECT_PICKING "DirectPicking"
 #define STR_SHOW_PROGRESS "ShowProgress"
 #define STR_FLY_IN "FlyIn"
+#define STR_TB_CULTURE "TBCulture"
+#define STR_TB_SNAPSHOT "TBSnapshot"
+#define STR_TB_TIME "TBTime"
 
 EnviroOptions::EnviroOptions()
 {
@@ -75,6 +78,10 @@ EnviroOptions::EnviroOptions()
 
 	m_bShowProgress = true;
 	m_bFlyIn = false;
+
+	m_bShowToolsCulture = true;
+	m_bShowToolsSnapshot = true;
+	m_bShowToolsTime = true;
 }
 
 EnviroOptions::~EnviroOptions()
@@ -269,6 +276,13 @@ void EnviroOptionsVisitor::endElement(const char *name)
 		s2b(m_data, m_opt.m_bShowProgress);
 	else if (strcmp(name, STR_FLY_IN) == 0)
 		s2b(m_data, m_opt.m_bFlyIn);
+
+	else if (strcmp(name, STR_TB_CULTURE) == 0)
+		s2b(m_data, m_opt.m_bShowToolsCulture);
+	else if (strcmp(name, STR_TB_SNAPSHOT) == 0)
+		s2b(m_data, m_opt.m_bShowToolsSnapshot);
+	else if (strcmp(name, STR_TB_TIME) == 0)
+		s2b(m_data, m_opt.m_bShowToolsTime);
 }
 
 bool EnviroOptions::ReadXML(const char *fname)
@@ -371,6 +385,9 @@ bool EnviroOptions::WriteXML()
 	WriteElemF(output, STR_MAX_INST_RADIUS, m_fMaxPickableInstanceRadius);
 	WriteElemB(output, STR_SHOW_PROGRESS, m_bShowProgress);
 	WriteElemB(output, STR_FLY_IN, m_bFlyIn);
+	WriteElemB(output, STR_TB_CULTURE, m_bShowToolsCulture);
+	WriteElemB(output, STR_TB_SNAPSHOT, m_bShowToolsSnapshot);
+	WriteElemB(output, STR_TB_TIME, m_bShowToolsTime);
 
 	output << "</EnviroOptions>" << std::endl;
 
