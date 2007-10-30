@@ -1,7 +1,7 @@
 //
 // Name: ImportPointDlg.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,6 +25,7 @@
 
 BEGIN_EVENT_TABLE(ImportPointDlg,AutoDialog)
 	EVT_BUTTON( ID_SET_CRS, ImportPointDlg::OnSetCRS )
+	EVT_CHECKBOX( ID_CHECK_ELEVATION, ImportPointDlg::OnCheck )
 END_EVENT_TABLE()
 
 ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -35,7 +36,9 @@ ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString 
 	ImportPointDialogFunc( this, TRUE );
 
 	m_iEasting = 0;
-	m_iNorthing = 0;;
+	m_iNorthing = 0;
+	m_bElevation = false;
+	m_iElevation = 0;
 	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
 	m_bFormat1 = true;
 	m_bFormat2 = false;
@@ -43,12 +46,15 @@ ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString 
 
 	AddValidator(ID_EASTING, &m_iEasting);
 	AddValidator(ID_NORTHING, &m_iNorthing);
+	AddValidator(ID_CHECK_ELEVATION, &m_bElevation);
+	AddValidator(ID_ELEVATION, &m_iElevation);
 	AddValidator(ID_CRS, &m_strCRS);
 	AddValidator(ID_FORMAT_DECIMAL, &m_bFormat1);
 	AddValidator(ID_FORMAT_DMS, &m_bFormat2);
 	AddValidator(ID_LONGITUDE_WEST, &m_bLongitudeWest);
 
 	RefreshProjString();
+	UpdateEnabling();
 }
 
 void ImportPointDlg::SetCRS(const vtProjection &proj)
@@ -67,9 +73,20 @@ void ImportPointDlg::RefreshProjString()
 	TransferDataToWindow();
 }
 
+void ImportPointDlg::UpdateEnabling()
+{
+	FindWindow(ID_ELEVATION)->Enable(m_bElevation);
+}
+
 // WDR: handler implementations for ImportPointDlg
 
-void ImportPointDlg::OnSetCRS( wxCommandEvent &event )
+void ImportPointDlg::OnCheck(wxCommandEvent &event)
+{
+	TransferDataFromWindow();
+	UpdateEnabling();
+}
+
+void ImportPointDlg::OnSetCRS(wxCommandEvent &event)
 {
 	ProjectionDlg dlg(this, -1, _("Please indicate CRS"));
 	dlg.SetProjection(m_proj);

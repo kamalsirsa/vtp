@@ -1,7 +1,7 @@
 //
 // Name: ImportPointDlg.h
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -33,6 +33,8 @@ public:
 
 	int m_iEasting;
 	int m_iNorthing;
+	bool m_bElevation;
+	int m_iElevation;
 	wxString m_strCRS;
 	vtProjection m_proj;
 	bool m_bFormat1;
@@ -48,6 +50,7 @@ public:
 	wxRadioButton* GetFormatDms()  { return (wxRadioButton*) FindWindow( ID_FORMAT_DMS ); }
 	wxRadioButton* GetFormatDecimal()  { return (wxRadioButton*) FindWindow( ID_FORMAT_DECIMAL ); }
 	wxTextCtrl* GetCrs()  { return (wxTextCtrl*) FindWindow( ID_CRS ); }
+	wxChoice* GetElevation()  { return (wxChoice*) FindWindow( ID_ELEVATION ); }
 	wxChoice* GetNorthing()  { return (wxChoice*) FindWindow( ID_NORTHING ); }
 	wxChoice* GetEasting()  { return (wxChoice*) FindWindow( ID_EASTING ); }
 
@@ -57,6 +60,9 @@ private:
 private:
 	// WDR: handler declarations for ImportPointDlg
 	void OnSetCRS( wxCommandEvent &event );
+	void OnCheck( wxCommandEvent &event );
+
+	void UpdateEnabling();
 
 private:
 	DECLARE_EVENT_TABLE()
