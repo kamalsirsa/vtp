@@ -21,6 +21,9 @@ vtFeatureSet::vtFeatureSet()
 vtFeatureSet::~vtFeatureSet()
 {
 	DeleteFields();
+
+	for (unsigned int i = 0; i < m_Features.size(); i++)
+		delete m_Features[i];
 }
 
 void vtFeatureSet::DeleteFields()
