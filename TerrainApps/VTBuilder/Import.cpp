@@ -1216,6 +1216,7 @@ vtFeatureSet *MainFrame::ImportPointsFromCSV(const char *fname)
 	}
 
 	ImportPointDlg dlg(this, -1, _("Point Data Import"));
+	dlg.m_bElevation = false;
 
 	// default to the current CRS
 	dlg.SetCRS(m_proj);
@@ -1228,6 +1229,7 @@ vtFeatureSet *MainFrame::ImportPointsFromCSV(const char *fname)
 
 		dlg.GetEasting()->Append(str);
 		dlg.GetNorthing()->Append(str);
+		dlg.GetElevation()->Append(str);
 	}
 	if (dlg.ShowModal() != wxID_OK)
 	{
@@ -1236,26 +1238,47 @@ vtFeatureSet *MainFrame::ImportPointsFromCSV(const char *fname)
 	}
 	int iEast = dlg.m_iEasting;
 	int iNorth = dlg.m_iNorthing;
+	int iElev = dlg.m_iElevation;
 	int iStyle = dlg.m_bFormat2 ? 1 : 0;
 
 	// Now import
-	vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
-	pSet->SetProjection(dlg.m_proj);
-
-	while (fgets(buf, 4096, fp))
+	if (dlg.m_bElevation)
 	{
-		vtStringArray values;
-		Tokenize(buf, values);
+		vtFeatureSetPoint3D *pSet = new vtFeatureSetPoint3D;
+		pSet->SetProjection(dlg.m_proj);
 
-		DPoint2 p;
-		p.x = ExtractValueFromString(values[iEast], iStyle, true, dlg.m_bLongitudeWest);
-		p.y = ExtractValueFromString(values[iNorth], iStyle, false, false);
-		pSet->AddPoint(p);
+		while (fgets(buf, 4096, fp))
+		{
+			vtStringArray values;
+			Tokenize(buf, values);
+
+			DPoint3 p;
+			p.x = ExtractValueFromString(values[iEast], iStyle, true, dlg.m_bLongitudeWest);
+			p.y = ExtractValueFromString(values[iNorth], iStyle, false, false);
+			p.z = atof(values[iElev]);
+			pSet->AddPoint(p);
+		}
+		pSet->SetFilename(fname);
+		return pSet;
 	}
+	else
+	{
+		vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
+		pSet->SetProjection(dlg.m_proj);
 
-	pSet->SetFilename(fname);
+		while (fgets(buf, 4096, fp))
+		{
+			vtStringArray values;
+			Tokenize(buf, values);
 
-	return pSet;
+			DPoint2 p;
+			p.x = ExtractValueFromString(values[iEast], iStyle, true, dlg.m_bLongitudeWest);
+			p.y = ExtractValueFromString(values[iNorth], iStyle, false, false);
+			pSet->AddPoint(p);
+		}
+		pSet->SetFilename(fname);
+		return pSet;
+	}
 }
 
 
