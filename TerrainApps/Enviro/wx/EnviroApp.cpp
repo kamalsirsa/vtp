@@ -292,6 +292,7 @@ void EnviroApp::LoadOptions()
 		{
 			// Set default data path
 			dp.push_back(vtString("../Data/"));
+			g_Options.m_strContentFile = "common_content.vtco";
 		}
 		vtSaveDataPath(AppDataUser + "/vtp.xml");
 	}
