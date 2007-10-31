@@ -94,6 +94,8 @@ Enviro::Enviro() : vtTerrainScene()
 	m_bSelectedPlant = false;
 	m_bSelectedVehicle = false;
 
+	// HUD
+	m_pHUDMaterials = NULL;
 	m_pLegendGeom = NULL;
 	m_bCreatedLegend = false;
 
@@ -101,6 +103,8 @@ Enviro::Enviro() : vtTerrainScene()
 	m_pCompassGeom = NULL;
 	m_bCreatedCompass = false;
 	m_bDragCompass = false;
+
+	m_pWindowBoxMesh = NULL;
 
 	m_pMapOverview = NULL;
 	m_bFlyIn = false;
@@ -137,6 +141,8 @@ void Enviro::Shutdown()
 	delete m_pPlantList;
 	if (m_pArcMats)
 		m_pArcMats->Release();
+	if (m_pHUDMaterials)
+		m_pHUDMaterials->Release();
 	if (m_pTopDownCamera)
 		m_pTopDownCamera->Release();
 
@@ -837,12 +843,14 @@ void Enviro::SetupScene2()
 	m_pHUD = new vtHUD;
 	m_pHUD->SetName2("HUD");
 	m_pRoot->AddChild(m_pHUD);
+	m_pHUDMaterials = new vtMaterialArray;
 
 	// The HUD always has a place to put status messages to the user
 	m_pArial = new vtFont;
 	m_pArial->LoadFont("Arial.ttf");
 
 	vtGeom *geom = new vtGeom;
+	geom->SetName2("Message");
 	m_pHUD->AddChild(geom);
 	m_pHUDMessage = new vtTextMesh(m_pArial, 18);
 	m_pHUDMessage->SetText("");
@@ -1182,8 +1190,11 @@ void Enviro::SetMode(MouseMode mode)
 			EnableFlyerEngine(true);
 			break;
 		case MM_SELECT:
-		case MM_SELECTBOX:
 			m_pCursorMGeom->SetEnabled(!g_Options.m_bDirectPicking);
+			EnableFlyerEngine(false);
+			break;
+		case MM_SELECTBOX:
+			m_pCursorMGeom->SetEnabled(false);
 			EnableFlyerEngine(false);
 			break;
 		case MM_FENCES:
@@ -1302,7 +1313,7 @@ bool Enviro::OnMouse(vtMouseEvent &event)
 
 void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 {
-	if (m_mode != MM_SELECT && !m_bOnTerrain)
+	if (m_mode != MM_SELECT && m_mode != MM_SELECTBOX && !m_bOnTerrain)
 		return;
 
 	vtTerrain *pTerr = GetCurrentTerrain();
@@ -1368,6 +1379,12 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 
 	if (m_mode == MM_SELECT)
 		OnMouseLeftDownTerrainSelect(event);
+
+	if (m_mode == MM_SELECTBOX)
+	{
+		m_bDragging = true;
+		m_MouseDown = event.pos;
+	}
 
 	if (m_mode == MM_MOVE)
 		OnMouseLeftDownTerrainMove(event);
@@ -1728,6 +1745,72 @@ void Enviro::OnMouseLeftUp(vtMouseEvent &event)
 
 	if (m_state == AS_Orbit && m_mode == MM_MEASURE && m_bDragging)
 		UpdateEarthArc();
+
+	if (m_mode == MM_SELECTBOX)
+		OnMouseLeftUpBox(event);
+}
+
+void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
+{
+	// Hide the rubber box
+	SetWindowBox(IPoint2(0,0), IPoint2(0,0));
+
+	// Do selection in window coordinates
+	FMatrix4 viewmat;
+	vtGetScene()->ComputeViewMatrix(viewmat);
+	IPoint2 winsize = vtGetScene()->GetWindowSize();
+
+	vtTerrain *terr = GetCurrentTerrain();
+	float fVerticalExag = terr->GetVerticalExag();
+	LayerSet &layers = terr->GetLayers();
+	for (unsigned int i = 0; i < layers.GetSize(); i++)
+	{
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
+		if (!alay)
+			continue;
+
+		vtFeatureSet *fset = alay->GetFeatureSet();
+		vtFeatureSetPoint2D *pset2 = dynamic_cast<vtFeatureSetPoint2D*>(fset);
+		vtFeatureSetPoint3D *pset3 = dynamic_cast<vtFeatureSetPoint3D*>(fset);
+		if (pset2 || pset3)
+		{
+			FBox3 box;
+			for (unsigned int j = 0; j < fset->GetNumEntities(); j++)
+			{
+				vtFeature *feat = fset->GetFeature(j);
+				Visual *viz = alay->GetViz(feat);
+				if (viz)
+				{
+					bool bSelected = false;
+					for (unsigned int k = 0; k < viz->m_meshes.size(); k++)
+					{
+						vtMesh *mesh = viz->m_meshes[k];
+						mesh->GetBoundBox(box);
+						FPoint3 center = box.Center();
+
+						// Account for potential vertical exaggeration
+						center.y *= fVerticalExag;
+
+						// Project 3d pos to 2d window pos
+						FPoint3 frustump = viewmat.PreMult(center);
+
+						// Frustum's origin is lower left, mouse origin is upper left
+						frustump.y = winsize.y-1-frustump.y;
+
+						if (frustump.x > m_MouseDown.x &&
+							frustump.x < event.pos.x &&
+							frustump.y > m_MouseDown.y &&
+							frustump.y < event.pos.y)
+						{
+							bSelected = true;
+						}
+					}
+					fset->Select(j, bSelected);
+				}
+			}
+			alay->UpdateVisualSelection();
+		}
+	}
 }
 
 void Enviro::OnMouseRightDown(vtMouseEvent &event)
@@ -1868,6 +1951,10 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 			}
 		}
 		m_EarthPosLast = m_EarthPos;
+	}
+	if (m_mode == MM_SELECTBOX && m_bDragging)
+	{
+		SetWindowBox(m_MouseDown, event.pos);
 	}
 	if (m_mode == MM_MEASURE && m_bDragging && m_bOnTerrain)
 	{
@@ -2539,19 +2626,17 @@ void Enviro::CreateElevationLegend()
 	const int cbar_right = in_base.x + in_size.x;
 
 	int i, idx;
-	vtMaterialArray *pMats = new vtMaterialArray;
-	pMats->AddRGBMaterial1(RGBf(1, 1, 1), false, false); // white
-	pMats->AddRGBMaterial1(RGBf(.2, .2, .2), false, false); // dark grey
+	int white = m_pHUDMaterials->AddRGBMaterial1(RGBf(1, 1, 1), false, false); // white
+	int grey = m_pHUDMaterials->AddRGBMaterial1(RGBf(.2, .2, .2), false, false); // dark grey
 
 	m_pLegendGeom = new vtGeom;
 	m_pLegendGeom->SetName2("Legend");
-	m_pLegendGeom->SetMaterials(pMats);
-	pMats->Release();
+	m_pLegendGeom->SetMaterials(m_pHUDMaterials);
 
 	// Solid rectangle behind it
 	vtMesh *mesh4 = new vtMesh(vtMesh::QUADS, 0, 4);
 	mesh4->AddRectangleXY(base.x, base.y, size.x, size.y, -1.0f);
-	m_pLegendGeom->AddMesh(mesh4, 1);
+	m_pLegendGeom->AddMesh(mesh4, grey);
 	mesh4->Release();
 
 	float fMin, fMax;
@@ -2570,7 +2655,7 @@ void Enviro::CreateElevationLegend()
 		mesh1->SetVtxColor(idx+1, (RGBf) table[i]);
 	}
 	mesh1->AddStrip2((in_size.y + 1)*2, 0);
-	m_pLegendGeom->AddMesh(mesh1, 0);
+	m_pLegendGeom->AddMesh(mesh1, white);
 	mesh1->Release();
 
 	// Small white tick marks
@@ -2581,7 +2666,7 @@ void Enviro::CreateElevationLegend()
 		FPoint3 p2(cbar_left,			 in_base.y + i*vert_space, 0.0f);
 		mesh2->AddLine(p1, p2);
 	}
-	m_pLegendGeom->AddMesh(mesh2, 0);
+	m_pLegendGeom->AddMesh(mesh2, white);
 	mesh2->Release();
 
 	// Text labels
@@ -2594,7 +2679,7 @@ void Enviro::CreateElevationLegend()
 		FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0.0f);
 		mesh3->SetPosition(p1);
 
-		m_pLegendGeom->AddTextMesh(mesh3, 0);
+		m_pLegendGeom->AddTextMesh(mesh3, white);
 		mesh3->Release();
 	}
 
@@ -2625,11 +2710,40 @@ void Enviro::CreateCompass()
 	m_pCompassSizer->SetName2("Sizer for Compass");
 	vtGetScene()->AddEngine(m_pCompassSizer);
 
-	m_pHUD->AddChild(CompassSprite->GetNode());
-
 	m_pCompassGeom = (vtGeom *) CompassSprite->GetNode();
 	m_pCompassGeom->SetName2("Compass");
+	m_pHUD->AddChild(m_pCompassGeom);
 	m_bCreatedCompass = true;
+}
+
+void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
+{
+	if (!m_pWindowBoxMesh)
+	{
+		// create a yellow wireframe polygon we can stretch later
+		int yellow = m_pHUDMaterials->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
+		vtGeom *geom = new vtGeom;
+		geom->SetName2("Selection Box");
+		geom->SetMaterials(m_pHUDMaterials);
+		m_pWindowBoxMesh = new vtMesh(vtMesh::POLYGON, 0, 4);
+		m_pWindowBoxMesh->AddVertex(0,0,0);
+		m_pWindowBoxMesh->AddVertex(1,0,0);
+		m_pWindowBoxMesh->AddVertex(1,1,0);
+		m_pWindowBoxMesh->AddVertex(0,1,0);
+		m_pWindowBoxMesh->AddStrip2(4, 0);
+		geom->AddMesh(m_pWindowBoxMesh, yellow);
+		m_pWindowBoxMesh->Release();	// pass ownership
+		m_pHUD->AddChild(geom);
+	}
+	// Invert the coordinates Y, because mouse origin is upper left, and
+	//  HUD origin is lower left
+	IPoint2 winsize = vtGetScene()->GetWindowSize();
+
+	m_pWindowBoxMesh->SetVtxPos(0, FPoint3(p1.x,winsize.y-1-p1.y,0));
+	m_pWindowBoxMesh->SetVtxPos(1, FPoint3(p2.x,winsize.y-1-p1.y,0));
+	m_pWindowBoxMesh->SetVtxPos(2, FPoint3(p2.x,winsize.y-1-p2.y,0));
+	m_pWindowBoxMesh->SetVtxPos(3, FPoint3(p1.x,winsize.y-1-p2.y,0));
+	m_pWindowBoxMesh->ReOptimize();
 }
 
 

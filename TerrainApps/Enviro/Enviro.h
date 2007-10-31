@@ -153,6 +153,7 @@ public:
 	void OnMouseLeftDownTerrainMove(vtMouseEvent &event);
 	void OnMouseLeftDownOrbit(vtMouseEvent &event);
 	void OnMouseLeftUp(vtMouseEvent &event);
+	void OnMouseLeftUpBox(vtMouseEvent &event);
 	void OnMouseRightDown(vtMouseEvent &event);
 	void OnMouseRightUp(vtMouseEvent &event);
 	void OnMouseMove(vtMouseEvent &event);
@@ -283,6 +284,7 @@ protected:
 	void StartFlyIn();
 	void FlyInStage1();
 	void FlyInStage2();
+	void SetWindowBox(const IPoint2 &ul, const IPoint2 &lr);
 
 	// plants
 	vtSpeciesList3d	*m_pPlantList;
@@ -355,6 +357,9 @@ protected:
 	DPoint2		m_FlyInCenter;
 	float		m_fTransitionHeight;	// in meters
 
+	// HUD UI
+	vtMaterialArray *m_pHUDMaterials;
+
 	vtGeom		*m_pLegendGeom;
 	bool		m_bCreatedLegend;
 
@@ -363,6 +368,8 @@ protected:
 	bool		m_bCreatedCompass;
 	bool		m_bDragCompass;
 	float		m_fDragAngle;
+
+	vtMesh		*m_pWindowBoxMesh;
 
 	// mapoverviewengine
 	MapOverviewEngine *m_pMapOverview;
