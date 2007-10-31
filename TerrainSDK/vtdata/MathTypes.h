@@ -795,19 +795,8 @@ public:
 	void Empty() { left = top = right = bottom = 0.0; }
 	void Sort()
 	{
-		double tmp;
-		if (left > right)
-		{
-			tmp = left;
-			left = right;
-			right = tmp;
-		}
-		if (bottom > top)
-		{
-			tmp = bottom;
-			bottom = top;
-			top = tmp;
-		}
+		if (left > right) { double tmp = left; left = right; right = tmp; }
+		if (bottom > top) { double tmp = bottom; bottom = top; top = tmp; }
 	}
 	void GetCenter(DPoint2 &p) const
 	{
@@ -938,6 +927,11 @@ public:
 	// return true if empty
 	bool IsEmpty() const { return (left == right && top == bottom); }
 	void Empty() { left = top = right = bottom = 0.0; }
+	void Sort()
+	{
+		if (left > right) { float tmp = left; left = right; right = tmp; }
+		if (bottom > top) { float tmp = bottom; bottom = top; top = tmp; }
+	}
 	bool ContainsPoint(float x, float y) const
 	{
 		return (x > left && x < right && y > bottom && y < top);
