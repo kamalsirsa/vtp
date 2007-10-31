@@ -1524,6 +1524,7 @@ void vtTerrain::_CreateCulture()
 		if (pSprite->Create(fname, true))	// blending true
 		{
 			m_pOverlay = new vtGroup;
+			m_pOverlay->SetName2("Overlay");
 			IPoint2 size = pSprite->GetSize();
 			pSprite->SetPosition((float) x, (float) y+size.y, (float) x+size.x, (float) y);
 			m_pOverlay->AddChild(pSprite->GetNode());

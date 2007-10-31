@@ -186,6 +186,9 @@ void vtAbstractLayer::CreateGeomGroup()
 	color = style.GetValueRGBi("LineGeomColor");
 	material_index_line = pGeomMats->AddRGBMaterial1(color, false, false);
 
+	// There is always a yellow highlight material
+	material_index_yellow = pGeomMats->AddRGBMaterial1(RGBf(1,1,0), false, false);
+
 	pGeomObject = new vtGeom;
 	pGeomObject->SetName2("Objects");
 	pGeomObject->SetMaterials(pGeomMats);
@@ -239,6 +242,31 @@ void vtAbstractLayer::CreateLabelGroup()
 	}
 }
 
+int vtAbstractLayer::GetObjectMaterialIndex(vtTagArray &style, unsigned int iIndex)
+{
+	int result;
+	int color_field_index;
+	if (style.GetValueInt("ObjectColorFieldIndex", color_field_index))
+	{
+		RGBAf rgba;
+		if (GetColorField(*pSet, iIndex, color_field_index, rgba))
+		{
+			result = pGeomMats->FindByDiffuse(rgba);
+			if (result == -1)
+			{
+				RGBf rgb = (RGBf) rgba;
+				result = pGeomMats->AddRGBMaterial1(rgb, true, true);
+			}
+		}
+		else
+			result = material_index_object;
+	}
+	else
+		result = material_index_object;
+	return result;
+}
+
+
 /**
 	Given a featureset and style description, create a geometry object (such as
 	spheres) and place it on the terrain.
@@ -257,25 +285,7 @@ void vtAbstractLayer::CreateObjectGeometry(vtTagArray &style, unsigned int iInde
 		return;
 
 	// Determine color and material index
-	int color_field_index;
-	int material_index;
-	if (style.GetValueInt("ObjectColorFieldIndex", color_field_index))
-	{
-		RGBAf rgba;
-		if (GetColorField(*pSet, iIndex, color_field_index, rgba))
-		{
-			material_index = pGeomMats->FindByDiffuse(rgba);
-			if (material_index == -1)
-			{
-				RGBf rgb = (RGBf) rgba;
-				material_index = pGeomMats->AddRGBMaterial1(rgb, true, true);
-			}
-		}
-		else
-			material_index = material_index_object;
-	}
-	else
-		material_index = material_index_object;
+	int material_index = GetObjectMaterialIndex(style, iIndex);
 
 	// Determine geometry size and placement
 	float fHeight = 0.0f;
@@ -296,7 +306,7 @@ void vtAbstractLayer::CreateObjectGeometry(vtTagArray &style, unsigned int iInde
 	if (pSetP2)
 	{
 		const DPoint2 &epos = pSetP2->GetPoint(iIndex);
-		hf->ConvertEarthToSurfacePoint(epos, p3);
+		hf->ConvertEarthToSurfacePoint(epos, p3, 0, true);	// use true elev
 		p3.y += fHeight;
 
 		vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals, res*res*2);
@@ -815,6 +825,32 @@ void vtAbstractLayer::RebuildFeature(unsigned int iIndex)
 		vtFeature *f = pSet->GetFeature(iIndex);
 		ReleaseFeatureGeometry(f);
 		CreateStyledFeature(iIndex);
+	}
+}
+
+void vtAbstractLayer::UpdateVisualSelection()
+{
+	vtTagArray &style = pSet->GetProperties();
+
+	// use SetMeshMatIndex to make the meshes of selected features yellow
+	for (unsigned int j = 0; j < pSet->GetNumEntities(); j++)
+	{
+		vtFeature *feat = pSet->GetFeature(j);
+		Visual *viz = GetViz(feat);
+		if (viz)
+		{
+			int material_index;
+			if (pSet->IsSelected(j))
+				material_index = material_index_yellow;
+			else
+				material_index = GetObjectMaterialIndex(style, j);
+
+			for (unsigned int k = 0; k < viz->m_meshes.size(); k++)
+			{
+				vtMesh *mesh = viz->m_meshes[k];
+				pGeomObject->SetMeshMatIndex(mesh, material_index);
+			}
+		}
 	}
 }
 

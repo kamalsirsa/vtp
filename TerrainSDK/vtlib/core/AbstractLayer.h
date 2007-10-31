@@ -84,6 +84,7 @@ public:
 	vtFeatureSet *GetFeatureSet() const { return pSet; }
 	vtGroup *GetLabelGroup() const { return pLabelGroup; }
 	vtGroup *GetContainer() const { return pContainer; }
+	Visual *GetViz(vtFeature *feat);
 	void CreateContainer();
 
 	// Create for all features
@@ -103,6 +104,7 @@ public:
 	// When the underlying feature changes, we need to rebuild the visual
 	void Rebuild();
 	void RebuildFeature(unsigned int iIndex);
+	void UpdateVisualSelection();
 
 	// To make sure all edits are fully reflected in the visual, call these
 	//  methods around any editing of style or geometry.
@@ -113,6 +115,7 @@ public:
 protected:
 	void CreateGeomGroup();
 	void CreateLabelGroup();
+	int GetObjectMaterialIndex(vtTagArray &style, unsigned int iIndex);
 
 	vtTerrain *m_pTerr;
 
@@ -138,11 +141,11 @@ protected:
 
 	int material_index_object;
 	int material_index_line;
+	int material_index_yellow;
 	vtGeom *pGeomObject;
 	vtGeom *pGeomLine;
 
 	VizMap m_Map;
-	Visual *GetViz(vtFeature *feat);
 
 	// Edit tracking
 	bool CreateAtOnce();
