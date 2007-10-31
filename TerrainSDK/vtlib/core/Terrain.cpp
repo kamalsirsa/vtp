@@ -3233,6 +3233,51 @@ void vtTerrain::RemoveFeatureGeometries(vtAbstractLayer *alay)
 	alay->ReleaseGeometry();
 }
 
+int vtTerrain::DeleteSelectedFeatures()
+{
+	int count = 0;
+
+	unsigned int i, size = m_Layers.GetSize();
+	for (i = 0; i < size; i++)
+	{
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
+		if (!alay)
+			continue;
+
+		int NumToDelete = 0;
+		vtFeatureSet *fset = alay->GetFeatureSet();
+		for (unsigned int j = 0; j < fset->GetNumEntities(); j++)
+		{
+			if (fset->IsSelected(j))
+			{
+				fset->SetToDelete(j);
+				NumToDelete++;
+			}
+		}
+		if (NumToDelete > 0)
+		{
+			VTLOG("Set %d items to delete, removing visuals..\n", NumToDelete);
+
+			// Delete high-level features first
+			for (unsigned int j = 0; j < fset->GetNumEntities(); j++)
+			{
+				if (fset->IsDeleted(j))
+				{
+					vtFeature *f = fset->GetFeature(j);
+					alay->DeleteFeature(f);
+				}
+			}
+			// Then low-level
+			fset->ApplyDeletion();
+
+			// Finish
+			alay->EditEnd();
+
+			count += NumToDelete;
+		}
+	}
+	return count;
+}
 
 ////////////////////////////////////////////////////////////////////////////
 // Scenarios
