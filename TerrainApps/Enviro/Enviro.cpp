@@ -1755,10 +1755,16 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 	// Hide the rubber box
 	SetWindowBox(IPoint2(0,0), IPoint2(0,0));
 
-	// Do selection in window coordinates
+	// Do selection in window (HUD) coordinates
+	// Frustum's origin is lower left, mouse origin is upper left
+	IPoint2 winsize = vtGetScene()->GetWindowSize();
+
+	FRECT select_box(m_MouseDown.x, winsize.y-1-m_MouseDown.y,
+					 event.pos.x, winsize.y-1-event.pos.y);
+	select_box.Sort();
+
 	FMatrix4 viewmat;
 	vtGetScene()->ComputeViewMatrix(viewmat);
-	IPoint2 winsize = vtGetScene()->GetWindowSize();
 
 	vtTerrain *terr = GetCurrentTerrain();
 	float fVerticalExag = terr->GetVerticalExag();
@@ -1794,13 +1800,10 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 						// Project 3d pos to 2d window pos
 						FPoint3 frustump = viewmat.PreMult(center);
 
-						// Frustum's origin is lower left, mouse origin is upper left
-						frustump.y = winsize.y-1-frustump.y;
-
-						if (frustump.x > m_MouseDown.x &&
-							frustump.x < event.pos.x &&
-							frustump.y > m_MouseDown.y &&
-							frustump.y < event.pos.y)
+						// If inside the window box
+						if (select_box.ContainsPoint(frustump.x, frustump.y) &&
+							frustump.z > 0 &&
+							frustump.z < 1)		// and in front of camera
 						{
 							bSelected = true;
 						}
@@ -1808,6 +1811,7 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 					fset->Select(j, bSelected);
 				}
 			}
+			// Make the selected meshes yellow
 			alay->UpdateVisualSelection();
 		}
 	}
