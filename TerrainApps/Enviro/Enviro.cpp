@@ -1764,6 +1764,8 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 					 event.pos.x, winsize.y-1-event.pos.y);
 	select_box.Sort();
 
+	// We can use the view matrix to project each 3d object onto the window,
+	//  to compare them against our box.
 	FMatrix4 viewmat;
 	vtGetScene()->ComputeViewMatrix(viewmat);
 
@@ -1781,36 +1783,41 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 		vtFeatureSetPoint3D *pset3 = dynamic_cast<vtFeatureSetPoint3D*>(fset);
 		if (pset2 || pset3)
 		{
-			FBox3 box;
+			FBox3 bbox;
 			for (unsigned int j = 0; j < fset->GetNumEntities(); j++)
 			{
 				vtFeature *feat = fset->GetFeature(j);
 				Visual *viz = alay->GetViz(feat);
-				if (viz)
+				if (!viz)
+					continue;
+
+				// Control key extends selection
+				if (!(event.flags & VT_CONTROL))
+					fset->Select(j, false);
+
+				bool bSelected = false;
+				for (unsigned int k = 0; k < viz->m_meshes.size(); k++)
 				{
-					bool bSelected = false;
-					for (unsigned int k = 0; k < viz->m_meshes.size(); k++)
+					vtMesh *mesh = viz->m_meshes[k];
+					mesh->GetBoundBox(bbox);
+					FPoint3 center = bbox.Center();
+
+					// Account for potential vertical exaggeration
+					center.y *= fVerticalExag;
+
+					// Project 3d pos to 2d window pos
+					FPoint3 frustump = viewmat.PreMult(center);
+
+					// If inside the window box
+					if (select_box.ContainsPoint(frustump.x, frustump.y) &&
+						frustump.z > 0 &&
+						frustump.z < 1)		// and in front of camera
 					{
-						vtMesh *mesh = viz->m_meshes[k];
-						mesh->GetBoundBox(box);
-						FPoint3 center = box.Center();
-
-						// Account for potential vertical exaggeration
-						center.y *= fVerticalExag;
-
-						// Project 3d pos to 2d window pos
-						FPoint3 frustump = viewmat.PreMult(center);
-
-						// If inside the window box
-						if (select_box.ContainsPoint(frustump.x, frustump.y) &&
-							frustump.z > 0 &&
-							frustump.z < 1)		// and in front of camera
-						{
-							bSelected = true;
-						}
+						bSelected = true;
 					}
-					fset->Select(j, bSelected);
 				}
+				if (bSelected)
+					fset->Select(j, true);
 			}
 			// Make the selected meshes yellow
 			alay->UpdateVisualSelection();
