@@ -1871,6 +1871,11 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 				m_Vehicles.GetSelected() != -1)
 				ShowPopupMenu(event.pos);
 		}
+		if (m_mode == MM_SELECTBOX)
+		{
+			if (NumSelectedAbstractFeatures() > 0)
+				ShowPopupMenu(event.pos);
+		}
 	}
 }
 
@@ -2889,6 +2894,22 @@ vtAbstractLayer *Enviro::GetLabelLayer()
 			return alay;
 	}
 	return NULL;
+}
+
+int Enviro::NumSelectedAbstractFeatures()
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return 0;
+	LayerSet &layers = pTerr->GetLayers();
+	int count = 0;
+	for (unsigned int i = 0; i < layers.GetSize(); i++)
+	{
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
+		if (alay)
+			count += alay->GetFeatureSet()->NumSelected();
+	}
+	return count;
 }
 
 

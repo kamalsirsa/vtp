@@ -189,6 +189,7 @@ public:
 
 	// abstract layers
 	vtAbstractLayer *GetLabelLayer();
+	int NumSelectedAbstractFeatures();
 
 	// distance tool
 	void SetDistanceToolMode(bool bPath);

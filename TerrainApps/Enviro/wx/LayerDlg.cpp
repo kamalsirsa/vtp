@@ -428,6 +428,9 @@ void LayerDlg::UpdateTreeTerrain()
 	if (!terr)
 		return;
 
+	if (!m_root.IsOk())
+		return;
+
 	wxTreeItemIdValue cookie;
 	wxTreeItemId id;
 	int count = 0;

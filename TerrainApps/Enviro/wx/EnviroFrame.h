@@ -77,6 +77,7 @@ public:
 	void UpdateLODInfo();
 	void ShowTable(vtAbstractLayer *alay);
 	void OnSetDelete(vtFeatureSet *set);
+	void DeleteAllSelected();
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);

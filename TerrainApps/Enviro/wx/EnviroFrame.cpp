@@ -961,6 +961,10 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		m_pSceneGraphDlg->Show(true);
 		break;
 
+	case WXK_DELETE:
+		DeleteAllSelected();
+		break;
+
 	default:
 		event.Skip();
 		break;
@@ -2329,6 +2333,20 @@ void EnviroFrame::OnSetDelete(vtFeatureSet *set)
 		}
 	}
 }
+void EnviroFrame::DeleteAllSelected()
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	int structs = pTerr->DeleteSelectedStructures();
+	int plants = pTerr->DeleteSelectedPlants();
+	int points = pTerr->DeleteSelectedFeatures();
+
+	// layer dialog needs to reflect the change
+	if ((plants != 0 || points != 0) && structs == 0)
+		m_pLayerDlg->UpdateTreeTerrain();		// we only need to update
+	else if (structs != 0)
+		m_pLayerDlg->RefreshTreeContents();		// we need full refresh
+}
+
 
 ///////////////////////////////////////////////////////////////////
 
@@ -2399,9 +2417,11 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 
 	wxMenu *popmenu = new wxMenu;
 	wxMenuItem *item;
-	item = popmenu->Append(ID_POPUP_PROPERTIES, _("Properties"));
 	if (sa)
 	{
+		if (sa->NumSelected() > 0)
+			item = popmenu->Append(ID_POPUP_PROPERTIES, _("Properties"));
+
 		// Can't display properties for more than one structure
 		if (sa->NumSelected() > 1)
 			item->Enable(false);
@@ -2554,15 +2574,7 @@ void EnviroFrame::OnPopupStart(wxCommandEvent& event)
 
 void EnviroFrame::OnPopupDelete(wxCommandEvent& event)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
-	int structs = pTerr->DeleteSelectedStructures();
-	int plants = pTerr->DeleteSelectedPlants();
-
-	// layer dialog needs to reflect the change
-	if (plants != 0 && structs == 0)
-		m_pLayerDlg->UpdateTreeTerrain();		// we only need to update
-	else if (structs != 0)
-		m_pLayerDlg->RefreshTreeContents();		// we need full refresh
+	DeleteAllSelected();
 }
 
 void EnviroFrame::OnPopupURL(wxCommandEvent& event)
