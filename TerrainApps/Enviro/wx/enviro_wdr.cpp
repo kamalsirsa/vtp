@@ -3699,5 +3699,70 @@ wxBitmap ToolsFunc( size_t index )
     return wxNullBitmap;
 }
 
+wxBitmap IconsFunc( size_t index )
+{
+    if (index == 0)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "16 16 3 1",
+        "  c None",
+        "a c Black",
+        "b c #808080",
+        /* pixels */
+        "                ",
+        " aaaaaaa  a  a  ",
+        " a    a  a  a   ",
+        " a   a  a  a    ",
+        " a  a  a  a     ",
+        " a a  a  a   b  ",
+        " aa  a  a   bab ",
+        " a  a  a     b  ",
+        "   a  a   b     ",
+        "  a  a   bab    ",
+        " a  a     b     ",
+        "   a   b     b  ",
+        "  a   bab   bab ",
+        " a     b     b  ",
+        "                ",
+        "                "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 1)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "16 16 3 1",
+        "a c Black",
+        "b c #808080",
+        "c c #FFFF00",
+        /* pixels */
+        "cccccccccccccccc",
+        "caaaaaaaccaccacc",
+        "caccccaccaccaccc",
+        "cacccaccaccacccc",
+        "caccaccaccaccccc",
+        "cacaccaccacccbcc",
+        "caaccaccacccbabc",
+        "caccaccacccccbcc",
+        "cccaccacccbccccc",
+        "ccaccacccbabcccc",
+        "caccacccccbccccc",
+        "cccacccbcccccbcc",
+        "ccacccbabcccbabc",
+        "cacccccbcccccbcc",
+        "cccccccccccccccc",
+        "cccccccccccccccc"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    return wxNullBitmap;
+}
+
 
 // End of generated file

@@ -380,6 +380,8 @@ wxBitmap ColorBitmapsFunc( size_t index );
 
 wxBitmap ToolsFunc( size_t index );
 
+wxBitmap IconsFunc( size_t index );
+
 #endif
 
 // End of generated file

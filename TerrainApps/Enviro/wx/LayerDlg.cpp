@@ -43,6 +43,7 @@
 #define ICON_INSTANCE	5
 #define ICON_TOP		6
 #define ICON_IMAGE		7
+#define ICON_RAW_YELLOW	8
 
 /////////////////////////////
 
@@ -151,15 +152,16 @@ void LayerDlg::CreateImageList(int size)
 	// Make an image list containing small icons
 	m_imageListNormal = new wxImageList(size, size, TRUE);
 
-	wxIcon icons[8];
+	wxIcon icons[9];
 	icons[0] = wxICON(building);
 	icons[1] = wxICON(road);
 	icons[2] = wxICON(veg1);
-	icons[3] = wxICON(raw);
+	icons[3].CopyFromBitmap(IconsFunc(0));
 	icons[4] = wxICON(fence);
 	icons[5] = wxICON(instance);
 	icons[6] = wxICON(icon8);
 	icons[7] = wxICON(image);
+	icons[8].CopyFromBitmap(IconsFunc(1));
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )
@@ -271,6 +273,33 @@ wxString MakeVegLayerString(vtPlantInstanceArray3d &pia)
 	return str;
 }
 
+// Helper
+void MakeAbsLayerString(vtAbstractLayer *alay, wxString &str,
+						unsigned int &selected)
+{
+	vtFeatureSet *fset = alay->GetFeatureSet();
+
+	vtString vs = fset->GetFilename();
+	str = wxString(vs, wxConvUTF8);
+
+	str += _T(" (");
+	str += wxString(OGRGeometryTypeToName(fset->GetGeomType()), wxConvLibc);
+
+	str += _(", Features: ");
+	vs.Format("%d", fset->GetNumEntities());
+	str += wxString(vs, wxConvLibc);
+
+	selected = fset->NumSelected();
+
+	if (selected != 0)
+	{
+		str += _(", Selected: ");
+		vs.Format("%d", selected);
+		str += wxString(vs, wxConvLibc);
+	}
+	str += _T(")");
+}
+
 void LayerDlg::RefreshTreeTerrain()
 {
 	vtTerrain *terr = GetCurrentTerrain();
@@ -357,20 +386,13 @@ void LayerDlg::RefreshTreeTerrain()
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
 		if (alay)
 		{
+			wxString str;
+			unsigned int selected;
+			MakeAbsLayerString(alay, str, selected);
+
+			int icon = (selected != 0 ? ICON_RAW_YELLOW : ICON_RAW);
+			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, icon, icon);
 			vtFeatureSet *fset = alay->GetFeatureSet();
-
-			vs = fset->GetFilename();
-			str = wxString(vs, wxConvUTF8);
-
-			str += _(" (Type: ");
-			str += wxString(OGRGeometryTypeToName(fset->GetGeomType()), wxConvLibc);
-
-			str += _(", Features: ");
-			vs.Format("%d", fset->GetNumEntities());
-			str += wxString(vs, wxConvLibc);
-			str += _T(")");
-
-			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_RAW, ICON_RAW);
 			m_pTree->SetItemData(hLayer, new LayerItemData(alay, fset));
 		}
 		vtImageLayer *ilay = dynamic_cast<vtImageLayer*>(layers[i]);
@@ -428,6 +450,18 @@ void LayerDlg::UpdateTreeTerrain()
 			{
 				vtPlantInstanceArray3d &pia = terr->GetPlantInstances();
 				m_pTree->SetItemText(id, MakeVegLayerString(pia));
+			}
+
+			// Update text and icon for abstract layers
+			if (data->m_alay)
+			{
+				wxString str;
+				unsigned int selected;
+				MakeAbsLayerString(data->m_alay, str, selected);
+				int icon = (selected != 0 ? ICON_RAW_YELLOW : ICON_RAW);
+
+				m_pTree->SetItemText(id, str);
+				m_pTree->SetItemImage(id, icon);
 			}
 		}
 		count++;

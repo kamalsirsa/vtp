@@ -1369,6 +1369,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 				// create its 3D visual
 				alay->CreateStyledFeature(rec);
 			}
+			UpdateLayerView();
 		}
 	}
 	if (m_mode == MM_INSTANCES)
@@ -1815,6 +1816,7 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 			alay->UpdateVisualSelection();
 		}
 	}
+	UpdateLayerView();
 }
 
 void Enviro::OnMouseRightDown(vtMouseEvent &event)
