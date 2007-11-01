@@ -2129,7 +2129,7 @@ wxSizer *LODDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("Target Count"), wxDefaultPosition, wxDefaultSize, 0 );
     item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxSpinCtrl *item6 = new wxSpinCtrl( parent, ID_TARGET, wxT("1000"), wxDefaultPosition, wxSize(100,-1), 0, 1000, 90000, 1000 );
+    wxSpinCtrl *item6 = new wxSpinCtrl( parent, ID_TARGET, wxT("1000"), wxDefaultPosition, wxSize(100,-1), 0, 1000, 150000, 1000 );
     item4->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Current"), wxDefaultPosition, wxDefaultSize, 0 );
