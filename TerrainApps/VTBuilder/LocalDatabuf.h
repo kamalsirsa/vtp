@@ -7,7 +7,7 @@
 #define LocalDatabuf_H
 
 #define USE_LIBMINI_DATABUF 1
-#define USE_LIBMINI_DATABUF_JPEG 1
+#define USE_LIBMINI_DATABUF_JPEG 0
 
 #include "vtdata/MiniDatabuf.h"
 
