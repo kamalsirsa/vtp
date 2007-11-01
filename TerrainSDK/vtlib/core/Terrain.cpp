@@ -2728,10 +2728,11 @@ void vtTerrain::_CreateTiledMaterials(int patches, float ambient,
 		for (int j = 0; j < patches; j++)
 		{
 			vtImage *image = m_ImageTiles.m_Tiles[i][j];
+			bool bTransp = (image->GetDepth() == 32);
 			m_pTerrMats->AddTextureMaterial(image,
 				!m_bBothSides, 	// culling
 				false,		// lighting
-				false,		// transparency
+				bTransp,	// transparency
 				false,		// additive
 				ambient, diffuse,
 				1.0f,		// alpha

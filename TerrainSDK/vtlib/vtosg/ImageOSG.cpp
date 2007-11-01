@@ -1077,33 +1077,28 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 	if (!poDataset)
 		return false;
 
-	bool mono = (poDataset->GetRasterCount() == 1);
+	int iBands = poDataset->GetRasterCount();
 
 	GDALRasterBand *poBand1;
 	GDALRasterBand *poBand2;
 	GDALRasterBand *poBand3;
+	GDALRasterBand *poBand4;
 	int xsize = poDataset->GetRasterXSize();
 	int ysize = poDataset->GetRasterYSize();
 
-	if (mono)
-		poBand1 = poDataset->GetRasterBand(1);
-	else
-	{
-		poBand1 = poDataset->GetRasterBand(1);
-		poBand2 = poDataset->GetRasterBand(2);
-		poBand3 = poDataset->GetRasterBand(3);
-	}
+	poBand1 = poDataset->GetRasterBand(1);
+	poBand2 = poDataset->GetRasterBand(2);
+	poBand3 = poDataset->GetRasterBand(3);
+	poBand4 = poDataset->GetRasterBand(4);
 
 	unsigned char *lineBuf1 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
 	unsigned char *lineBuf2 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
 	unsigned char *lineBuf3 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
+	unsigned char *lineBuf4 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
 
 	// To avoid thrashing GDAL's cache, we need one row of tiles to fit
 	int need_cache_bytes;
-	if (mono)
-		need_cache_bytes = m_iTilesize * xsize;
-	else
-		need_cache_bytes = m_iTilesize * xsize * 3;
+	need_cache_bytes = m_iTilesize * xsize * iBands;
 
 	// add a little bit for rounding up
 	need_cache_bytes += (need_cache_bytes / 20);
@@ -1128,7 +1123,8 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 			vtImage *target = m_Tiles[j][i];
 
 			RGBi rgb;
-			if (mono)
+			RGBAi rgba;
+			if (iBands == 1)
 			{
 				for (x = 0; x < m_iTilesize; x++)
 				{
@@ -1151,14 +1147,29 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 						lineBuf2,xsize,1,GDT_Byte,0,0);
 					poBand3->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
 						lineBuf3,xsize,1,GDT_Byte,0,0);
+					if (iBands == 4)
+					{
+						poBand4->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
+							lineBuf4,xsize,1,GDT_Byte,0,0);
+					}
 					
 					for (y = 0; y < m_iTilesize; y++)
 					{
 						unsigned char *targetBandVec1 = lineBuf1 + y_off + y;
 						unsigned char *targetBandVec2 = lineBuf2 + y_off + y;
 						unsigned char *targetBandVec3 = lineBuf3 + y_off + y;
-						rgb.Set(*targetBandVec1,*targetBandVec2,*targetBandVec3);
-						target->SetPixel24(y, x, rgb);
+						if (iBands == 3)
+						{
+							rgb.Set(*targetBandVec1,*targetBandVec2,*targetBandVec3);
+							target->SetPixel24(y, x, rgb);
+						}
+						else if (iBands == 4)
+						{
+							unsigned char *targetBandVec4 = lineBuf4 + y_off + y;
+							rgba.Set(*targetBandVec1,*targetBandVec2,*targetBandVec3,*targetBandVec4);
+							target->SetPixel32(y, x, rgba);
+						}
+
 					}
 				}
 			}
@@ -1167,6 +1178,7 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 	CPLFree( lineBuf1 );
 	CPLFree( lineBuf2 );
 	CPLFree( lineBuf3 );
+	CPLFree( lineBuf4 );
 	GDALClose(poDataset);
 	return true;
 }
