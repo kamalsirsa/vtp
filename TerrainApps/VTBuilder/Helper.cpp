@@ -155,8 +155,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 			DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex);
 
 			output_buf.savedata(fname);
-			free(output_buf.data);
-			output_buf.data = NULL;
+			output_buf.release();
 
 			if (output_buf.xsize == 256)
 				pCanvas->Refresh(false);
@@ -169,8 +168,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 			DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
 
 			output_buf.savedata(fname);
-			free(output_buf.data);
-			output_buf.data = NULL;
+			output_buf.release();
 #endif
 		}
 	}
@@ -180,9 +178,14 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		// Output to a plain RGB .db file
 		output_buf.type = 3;	// RGB
 		output_buf.bytes = iUncompressedSize;
-		output_buf.data = rgb_bytes;
-		output_buf.savedata(fname);
-		output_buf.data = NULL;
+    output_buf.data=malloc(iUncompressedSize);
+    memcpy(output_buf.data,rgb_bytes,iUncompressedSize);
+#if (USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_JPEG)
+		output_buf.savedata(fname,1);
+#else
+    output_buf.savedata(fname);
+#endif
+    output_buf.release();
 	}
 }
 

@@ -6,13 +6,14 @@
 #ifndef LocalDatabuf_H
 #define LocalDatabuf_H
 
-#define USE_LIBMINI_DATABUF 0
+#define USE_LIBMINI_DATABUF 1
+#define USE_LIBMINI_DATABUF_JPEG 1
 
 #include "vtdata/MiniDatabuf.h"
 
 #if USE_LIBMINI_DATABUF
 
-#include "database.hpp"	// part of libMini
+#include "database.h"	// part of libMini
 
 #ifdef _MSC_VER
   #if _MSC_VER >= 1400	// vc8

@@ -11,9 +11,9 @@
 #include "TiledGeom.h"
 
 #include "mini.h"
-#include "miniload.hpp"
-#include "minicache.hpp"
-#include "datacloud.hpp"
+#include "miniload.h"
+#include "minicache.h"
+#include "datacloud.h"
 #include "miniOGL.h"
 
 // If we use the pthreads library, we can support multithreading
@@ -88,39 +88,44 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 	  {pthread_mutex_unlock(&iomutex);}
 #endif
 #if USE_OPENTHREADS
-   const int numthreads = 1;
-   OpenThread::Thread pthread[numthreads];
-   pthread_mutex_t mutex;
-   pthread_attr_t attr;
+	const int numthreads = 1;
+	OpenThread::Thread pthread[numthreads];
+	pthread_mutex_t mutex;
+	pthread_attr_t attr;
 
-   void threadinit()
-      {
-      pthread_mutex_init(&mutex,NULL);
+	void threadinit()
+	{
+		pthread_mutex_init(&mutex,NULL);
 
-      pthread_attr_init(&attr);
-      pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
-      }
+		pthread_attr_init(&attr);
+		pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
+	}
 
-   void threadexit()
-      {
-      pthread_mutex_destroy(&mutex);
-      pthread_attr_destroy(&attr);
-      }
+	void threadexit()
+	{
+		pthread_mutex_destroy(&mutex);
+		pthread_attr_destroy(&attr);
+	}
 
-   void startthread(void *(*thread)(void *background),backarrayelem *background,void *data)
-      {pthread_create(&pthread[background->background-1],&attr,thread,background);}
+	void startthread(void *(*thread)(void *background),backarrayelem *background,void *data)
+	{
+		pthread_create(&pthread[background->background-1],
+			&attr,
+			thread,
+			background);
+	}
 
-   void jointhread(backarrayelem *background,void *data)
-      {
-      void *status;
-      pthread_join(pthread[background->background-1],&status);
-      }
+	void jointhread(backarrayelem *background,void *data)
+	{
+		void *status;
+		pthread_join(pthread[background->background-1],&status);
+	}
 
-   void lock_cs(void *data)
-      {pthread_mutex_lock(&mutex);}
+	void lock_cs(void *data)
+	{pthread_mutex_lock(&mutex);}
 
-   void unlock_cs(void *data)
-      {pthread_mutex_unlock(&mutex);}
+	void unlock_cs(void *data)
+	{pthread_mutex_unlock(&mutex);}
 #endif
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

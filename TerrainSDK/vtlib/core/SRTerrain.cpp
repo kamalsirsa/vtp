@@ -26,7 +26,7 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale) { return DTEr
 #else
 
 #include "mini.h"
-#include "ministub.hpp"
+#include "ministub.h"
 
 using namespace mini;
 

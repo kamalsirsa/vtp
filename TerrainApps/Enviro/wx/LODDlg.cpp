@@ -19,8 +19,8 @@
 #include "EnviroFrame.h"
 
 #include "mini.h"
-#include "miniload.hpp"
-#include "datacloud.hpp"
+#include "miniload.h"
+#include "datacloud.h"
 
 // WDR: class implementations
 
@@ -314,8 +314,8 @@ void LODDlg::DrawTilesetState(vtTiledGeom *tg, vtCamera *cam)
 	{
 		double mem = cloud->getmem();
 		wxString str;
-		str.Printf(_T("Mem %.1f MB, Total %d, Pending %d, Missing %d"),
-			mem, cloud->gettotal(), cloud->getpending(), cloud->getmissing());
+		str.Printf(_T("Mem %.1f MB, Total %d, Pending %d"),
+			mem, cloud->gettotal(), cloud->getpending());
 		GetTileStatus()->SetValue(str);
 	}
 
