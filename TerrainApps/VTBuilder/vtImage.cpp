@@ -29,6 +29,10 @@
 
 #include "ExtentDlg.h"
 
+// static global
+bool vtImage::bTreatBlackAsTransparent = false;
+
+
 vtImage::vtImage()
 {
 	SetDefaults();
@@ -408,6 +412,9 @@ bool vtImage::ReprojectExtents(const vtProjection &proj_new)
 
 /**
  * Sample image color at a given point, assuming that the pixels are solid.
+ *
+ * \return true if a value was found, false if the point is outside the
+ *		extent or (if the option is enabled) the value was 'nodata'.
  */
 bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb)
 {
@@ -427,7 +434,11 @@ bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb)
 		iy = m_iYSize-1;
 	if (iy < 0 || iy >= m_iYSize)
 		return false;
+
 	GetRGB(ix, iy, rgb);
+	if (bTreatBlackAsTransparent && rgb == RGBi(0,0,0))
+		return false;
+
 	return true;
 }
 

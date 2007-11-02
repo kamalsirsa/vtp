@@ -30,6 +30,7 @@ BEGIN_EVENT_TABLE(PrefDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_RADIO8, PrefDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO9, PrefDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO10, PrefDlg::OnRadio )
+	EVT_CHECKBOX( ID_BLACK_TRANSP, PrefDlg::OnCheck )
 END_EVENT_TABLE()
 
 PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -49,6 +50,7 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_RADIO8, &b8);
 	AddValidator(ID_RADIO9, &b9);
 	AddValidator(ID_RADIO10, &b10);
+	AddValidator(ID_BLACK_TRANSP, &b11);
 	AddNumValidator(ID_SAMPLING_N, &i1);
 	AddNumValidator(ID_MAX_MEGAPIXELS, &i2);
 }
@@ -56,6 +58,11 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 // WDR: handler implementations for PrefDlg
 
 void PrefDlg::OnRadio( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+}
+
+void PrefDlg::OnCheck( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 }

@@ -929,6 +929,8 @@ bool MainFrame::ReadXML(const char *fname)
 	m_pTree->SetShowPaths(g_Options.GetValueBool(TAG_SHOW_PATHS));
 	vtRoadLayer::SetDrawWidth(g_Options.GetValueBool(TAG_ROAD_DRAW_WIDTH));
 
+	vtImage::bTreatBlackAsTransparent = g_Options.GetValueBool(TAG_BLACK_TRANSP);
+
 	vtElevLayer::m_draw.SetFromTags(g_Options);
 
 	vtString str;
@@ -1563,13 +1565,17 @@ bool MainFrame::GetRGBUnderCursor(const DPoint2 &p, RGBi &rgb)
 {
 	bool success = false;
 	int layers = m_Layers.GetSize();
+	RGBi value;
 	for (int i = 0; i < layers; i++)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
 		if (l->GetType() != LT_IMAGE || !l->GetVisible()) continue;
 		vtImageLayer *pIL = (vtImageLayer *)l;
-		if (pIL->GetImage()->GetColorSolid(p, rgb))
+		if (pIL->GetImage()->GetColorSolid(p, value))
+		{
+			rgb = value;
 			success = true;
+		}
 	}
 	return success;
 }

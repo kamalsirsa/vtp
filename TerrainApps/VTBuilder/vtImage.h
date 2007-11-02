@@ -83,6 +83,9 @@ public:
 	bool WriteTile(const TilingOptions &opts, BuilderView *pView, vtString &dirname,
 		DRECT &tile_area, DPoint2 &tile_dim, int col, int row, int lod);
 
+	// global switch
+	static bool bTreatBlackAsTransparent;
+
 protected:
 	void SetDefaults();
 	void CleanupGDALUsage();

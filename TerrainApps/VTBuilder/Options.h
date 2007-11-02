@@ -19,6 +19,7 @@
 #define TAG_SLOW_FILL_GAPS "SlowFillGaps"
 #define TAG_SAMPLING_N "MultiSampleN"
 #define TAG_MAX_MEGAPIXELS "MaxMegapixels"
+#define TAG_BLACK_TRANSP "BlackAsTransparent"
 
 // User Preferences
 extern vtTagArray g_Options;
