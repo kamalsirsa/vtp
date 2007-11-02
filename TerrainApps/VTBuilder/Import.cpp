@@ -140,7 +140,13 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	if (!bTGZip && !bZip)
 	{
 		// simple case
-		ImportDataFromFile(ltype, fname, bRefresh);
+		vtLayer *pLayer = ImportDataFromFile(ltype, fname, bRefresh);
+		if (pLayer)
+		{
+			bool success = AddLayerWithCheck(pLayer, true);
+			if (!success)
+				delete pLayer;
+		}
 		return;
 	}
 
@@ -188,6 +194,12 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		vtLayer *pLayer = ImportDataFromFile(ltype, fname, bRefresh);
 		if (pLayer)
 		{
+			bool success = AddLayerWithCheck(pLayer, true);
+			if (!success)
+			{
+				delete pLayer;
+				return;
+			}
 			// use the internal filename, not the archive filename which is temporary
 			pLayer->SetLayerFilename(internal_name);
 			pLayer->SetImportedFrom(fname_in);
@@ -246,6 +258,12 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 			pLayer = ImportDataFromFile(ltype, fname, bRefresh);
 			if (pLayer)
 			{
+				bool success = AddLayerWithCheck(pLayer, true);
+				if (!success)
+				{
+					delete pLayer;
+					return;
+				}
 				pLayer->SetLayerFilename(fname2);
 				LoadedLayers.Append(pLayer);
 				layer_count++;
@@ -272,6 +290,12 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 				pLayer = ImportDataFromFile(ltype, fname, bRefresh, false);
 				if (pLayer)
 				{
+					bool success = AddLayerWithCheck(pLayer, true);
+					if (!success)
+					{
+						delete pLayer;
+						return;
+					}
 					pLayer->SetLayerFilename(fname2);
 					LoadedLayers.Append(pLayer);
 					layer_count++;
@@ -506,14 +530,7 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString &strFileN
 	if (layer_fname.IsEmpty() || !layer_fname.Cmp(_("Untitled")))
 		pLayer->SetLayerFilename(strFileName);
 
-	bool success = AddLayerWithCheck(pLayer, true);
-	if (success)
-		return pLayer;
-	else
-	{
-		delete pLayer;
-		return NULL;
-	}
+	return pLayer;
 }
 
 //

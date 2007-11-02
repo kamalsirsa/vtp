@@ -573,14 +573,22 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 	else
 		m_tileopts.bCreateDerivedImages = false;
 
-	OpenProgressDialog2(_T("Writing tiles"), true, this);
-	bool success = SampleElevationToTilePyramids(m_tileopts, bFloat);
-	GetView()->HideGridMarks();
-	CloseProgressDialog2();
+	bool success = DoSampleElevationToTilePyramids(m_tileopts, bFloat);
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
 		DisplayAndLog("Did not successfully write to '%s'", (const char *) m_tileopts.fname);
+}
+
+bool MainFrame::DoSampleElevationToTilePyramids(const TilingOptions &opts,
+												bool bFloat, bool bShowGridMarks)
+{
+	OpenProgressDialog2(_T("Writing tiles"), true, this);
+	bool success = SampleElevationToTilePyramids(opts, bFloat, bShowGridMarks);
+	if (bShowGridMarks)
+		GetView()->HideGridMarks();
+	CloseProgressDialog2();
+	return success;
 }
 
 void MainFrame::ExportAreaOptimizedImageTileset()
@@ -614,17 +622,26 @@ void MainFrame::ExportAreaOptimizedImageTileset()
 	dlg.GetTilingOptions(m_tileopts);
 	m_tileopts.bCreateDerivedImages = false;
 
-	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = SampleImageryToTilePyramids(m_tileopts);
-	GetView()->HideGridMarks();
-	CloseProgressDialog();
+	bool success = DoSampleImageryToTilePyramids(m_tileopts);
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
 		DisplayAndLog("Could not successfully write to '%s'", (const char *) m_tileopts.fname);
 }
 
-bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat)
+bool MainFrame::DoSampleImageryToTilePyramids(const TilingOptions &opts,
+											  bool bShowGridMarks)
+{
+	OpenProgressDialog(_T("Writing tiles"), true);
+	bool success = SampleImageryToTilePyramids(m_tileopts);
+	if (bShowGridMarks)
+		GetView()->HideGridMarks();
+	CloseProgressDialog();
+	return success;
+}
+
+bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat,
+											  bool bShowGridMarks)
 {
 	VTLOG1("SampleElevationToTilePyramids\n");
 
@@ -715,7 +732,8 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 		for (i = 0; i < opts.cols; i++)
 		{
 			// draw our progress in the main view
-			GetView()->ShowGridMarks(m_area, opts.cols, opts.rows, i, j);
+			if (bShowGridMarks)
+				GetView()->ShowGridMarks(m_area, opts.cols, opts.rows, i, j);
 
 			DRECT tile_area;
 			tile_area.left =	m_area.left + tile_dim.x * i;
@@ -965,7 +983,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 	return true;
 }
 
-bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
+bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts, bool bShowGridMarks)
 {
 	VTLOG1("SampleImageryToTilePyramids\n");
 
@@ -1013,7 +1031,8 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts)
 		for (i = 0; i < opts.cols; i++)
 		{
 			// draw our progress in the main view
-			GetView()->ShowGridMarks(m_area, opts.cols, opts.rows, i, j);
+			if (bShowGridMarks)
+				GetView()->ShowGridMarks(m_area, opts.cols, opts.rows, i, j);
 
 			DRECT tile_area;
 			tile_area.left =	m_area.left + tile_dim.x * i;

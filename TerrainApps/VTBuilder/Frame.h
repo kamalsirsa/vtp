@@ -489,8 +489,10 @@ public:
 	// area tool
 	void ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 &spacing);
 	void MergeResampleElevation();
-	bool SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat);
-	bool SampleImageryToTilePyramids(const TilingOptions &opts);
+	bool SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat, bool bShowGridMarks = true);
+	bool DoSampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat, bool bShowGridMarks = true);
+	bool SampleImageryToTilePyramids(const TilingOptions &opts, bool bShowGridMarks = true);
+	bool DoSampleImageryToTilePyramids(const TilingOptions &opts, bool bShowGridMarks = true);
 	void ExportImage();
 
 	// Web Access
