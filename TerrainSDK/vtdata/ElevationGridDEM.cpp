@@ -180,13 +180,83 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		}
 	}
 
-	// Set up the projection
-	bool bGeographic = false;
+	fseek(fp, 528, 0);
+	int iGUnit = IConvert(fp, 6);
+	int iVUnit = IConvert(fp, 6);
+
+	// Ground (Horizontal) Units in meters
+	double	fGMeters;
+	switch (iGUnit)
+	{
+	case 0: fGMeters = 1.0;		break;	// 0 = radians (never encountered)
+	case 1: fGMeters = 0.3048;	break;	// 1 = feet
+	case 2: fGMeters = 1.0;		break;	// 2 = meters
+	case 3: fGMeters = 30.922;	break;	// 3 = arc-seconds
+	}
+
+	// Vertical Units in meters
+	double	fVertUnits;
+	switch (iVUnit)
+	{
+	case 1:  fVertUnits = 0.3048f; break;	// feet to meter conversion
+	case 2:  fVertUnits = 1.0f;	   break;	// meters == meters
+	default: fVertUnits = 1.0f;	   break;	// anything else, assume meters
+	}
+
+	fseek(fp, 816, 0);
+	DConvert(fp, 12, DEBUG_DEM);	// dxdelta (unused)
+	double dydelta = DConvert(fp, 12, DEBUG_DEM);
+	double dzdelta = DConvert(fp, 12, DEBUG_DEM);
+
+	m_bFloatMode = false;
+
+	// Read the coordinates of the 4 corners
+	VTLOG("DEM corners:\n");
+	DPoint2	corners[4];			// SW, NW, NE, SE
+	fseek(fp, 546, 0);
+	for (i = 0; i < 4; i++)
+	{
+		corners[i].x = DConvert(fp, 24, DEBUG_DEM);
+		corners[i].y = DConvert(fp, 24, DEBUG_DEM);
+	}
+	for (i = 0; i < 4; i++)
+		VTLOG(" (%lf, %lf)", corners[i].x, corners[i].y);
+	VTLOG("\n");
+
+	// Set up the projection and corners
+	bool bGeographic = (iCoordSystem == 0);
+	if (bGeographic)
+	{
+		for (i = 0; i < 4; i++)
+		{
+			// convert arcseconds to degrees
+			m_Corners[i].x = corners[i].x / 3600.0;
+			m_Corners[i].y = corners[i].y / 3600.0;
+		}
+	}
+	else
+	{
+		// some linear coordinate system
+		for (i = 0; i < 4; i++)
+			m_Corners[i] = corners[i];
+	}
+
+	// Special case.  Some old DEMs claim to be NAD27, but they are of Hawai'i,
+	//  and Hawai'i has no NAD27, it is actually OHD.
+	if (bGeographic && iDatum == EPSG_DATUM_NAD27)
+	{
+		DRECT Hawaii(-164, 24, -152, 17);
+		for (i = 0; i < 4; i++)
+		{
+			if (Hawaii.ContainsPoint(m_Corners[i]))
+				iDatum = EPSG_DATUM_OLD_HAWAIIAN;
+		}
+	}
+
 	bool bSuccessfulCRS = true;
 	switch (iCoordSystem)
 	{
 	case 0:		// geographic (lat-lon)
-		bGeographic = true;
 		iUTMZone = -1;
 		bSuccessfulCRS = m_proj.SetProjectionSimple(false, iUTMZone, iDatum);
 		break;
@@ -243,65 +313,6 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	// We must have a functional CRS, or it will sebsequently fail
 	if (!bSuccessfulCRS)
 		return false;
-
-	fseek(fp, 528, 0);
-	int iGUnit = IConvert(fp, 6);
-	int iVUnit = IConvert(fp, 6);
-
-	// Ground (Horizontal) Units in meters
-	double	fGMeters;
-	switch (iGUnit)
-	{
-	case 0: fGMeters = 1.0;		break;	// 0 = radians (never encountered)
-	case 1: fGMeters = 0.3048;	break;	// 1 = feet
-	case 2: fGMeters = 1.0;		break;	// 2 = meters
-	case 3: fGMeters = 30.922;	break;	// 3 = arc-seconds
-	}
-
-	// Vertical Units in meters
-	double	fVertUnits;
-	switch (iVUnit)
-	{
-	case 1:  fVertUnits = 0.3048f; break;	// feet to meter conversion
-	case 2:  fVertUnits = 1.0f;	   break;	// meters == meters
-	default: fVertUnits = 1.0f;	   break;	// anything else, assume meters
-	}
-
-	fseek(fp, 816, 0);
-	DConvert(fp, 12, DEBUG_DEM);	// dxdelta (unused)
-	double dydelta = DConvert(fp, 12, DEBUG_DEM);
-	double dzdelta = DConvert(fp, 12, DEBUG_DEM);
-
-	m_bFloatMode = false;
-
-	// Read the coordinates of the 4 corners
-	VTLOG("DEM corners:\n");
-	DPoint2	corners[4];			// SW, NW, NE, SE
-	fseek(fp, 546, 0);
-	for (i = 0; i < 4; i++)
-	{
-		corners[i].x = DConvert(fp, 24, DEBUG_DEM);
-		corners[i].y = DConvert(fp, 24, DEBUG_DEM);
-	}
-	for (i = 0; i < 4; i++)
-		VTLOG(" (%lf, %lf)", corners[i].x, corners[i].y);
-	VTLOG("\n");
-
-	if (bGeographic)
-	{
-		for (i = 0; i < 4; i++)
-		{
-			// convert arcseconds to degrees
-			m_Corners[i].x = corners[i].x / 3600.0;
-			m_Corners[i].y = corners[i].y / 3600.0;
-		}
-	}
-	else
-	{
-		// some linear coordinate system
-		for (i = 0; i < 4; i++)
-			m_Corners[i] = corners[i];
-	}
 
 	double dElevMin = DConvert(fp, 24, DEBUG_DEM);
 	double dElevMax = DConvert(fp, 24, DEBUG_DEM);
