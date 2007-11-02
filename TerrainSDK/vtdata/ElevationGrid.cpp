@@ -794,7 +794,7 @@ bool vtElevationGrid::_AllocateArray()
 		m_pFData = (float *)malloc(m_iColumns * m_iRows * sizeof(float));
 		if (!m_pFData)
 		{
-			m_strError.Format("Could not allocate an floating-point elevation grid of size %d x %d (%d MB)\n",
+			m_strError.Format("Could not allocate a floating-point elevation grid of size %d x %d (%d MB)\n",
 				m_iColumns, m_iRows, (m_iColumns * m_iRows * 4) / (1024 * 1024));
 			VTLOG(m_strError);
 			return false;
@@ -806,7 +806,7 @@ bool vtElevationGrid::_AllocateArray()
 		m_pFData = NULL;
 		if (!m_pData)
 		{
-			m_strError.Format("Could not allocate an short-integer elevation grid of size %d x %d (%d MB)\n",
+			m_strError.Format("Could not allocate a short-integer elevation grid of size %d x %d (%d MB)\n",
 				m_iColumns, m_iRows, (m_iColumns * m_iRows * 2) / (1024 * 1024));
 			VTLOG(m_strError);
 			return false;
