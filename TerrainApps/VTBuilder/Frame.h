@@ -56,6 +56,11 @@ class RenderDlg;
 class ProfileDlg;
 class vtScaleBar;
 
+/**
+ * The main frame is the central class of the whole terrain builder.
+ * Not only does it represent the top window of the application, but it also
+ * contains many of the powerful methods for working with data.
+ */
 class MainFrame: public wxFrame
 {
 public:

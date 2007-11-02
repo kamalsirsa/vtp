@@ -112,6 +112,8 @@
 
 // Singletons
 DECLARE_APP(BuilderApp)
+
+/** This singleton contains all the global options for the whole application. */
 vtTagArray g_Options;
 
 ////////////////////////////////////////////////////////////////
@@ -151,10 +153,12 @@ void vtScaleBar::OnPaint(wxPaintEvent& event)
 
 //////////////////////////////////////////////////////////////////
 
+/** You can get at the main frame object from anywhere in the application. */
 MainFrame *GetMainFrame()
 {
 	return (MainFrame *) wxGetApp().GetTopWindow();
 }
+
 
 //////////////////////////////////////////////////////////////////
 // Frame constructor

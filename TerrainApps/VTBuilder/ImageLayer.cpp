@@ -166,7 +166,7 @@ DPoint2 vtImageLayer::GetSpacing() const
 	return m_pImage->GetSpacing();
 }
 
-bool vtImageLayer::ImportFromFile(const wxString &strFileName, bool progress_callback(int am))
+bool vtImageLayer::ImportFromFile(const wxString &strFileName, bool progress_callback(int))
 {
 	VTLOG("ImportFromFile '%s'\n", (const char *) strFileName.mb_str(wxConvUTF8));
 

@@ -33,6 +33,12 @@ class vtScaledView;
 class vtProjection;
 struct UIContext;
 
+/**
+ * A layer is a single blob of data, generally stored in memory and drawn in
+ * the main view.  Each layer has a type (Raw, Elevation, Image, etc.) and a CRS.
+ * vtLayer is an abstract base class for all the layer classes.
+ * It defines a set of operations which each layer class may implement.
+ */
 class vtLayer
 {
 public:
@@ -55,18 +61,24 @@ public:
 	bool Save(const wxString &filename = _T(""));
 	bool Load(const wxString &filename = _T(""));
 
-	// these must be implemented
+	// these must be implemented:
+	/// Get the extents
 	virtual bool GetExtent(DRECT &rect) = 0;
 	virtual void DrawLayer(wxDC* pDC, vtScaledView *pView) = 0;
+	/// Transform the coordinates into another CRS
 	virtual bool TransformCoords(vtProjection &proj) = 0;
 	virtual bool OnSave() = 0;
 	virtual bool OnLoad() = 0;
+	/// Merge the contents of another layer (of the same type)
 	virtual bool AppendDataFrom(vtLayer *pL) = 0;
+	/// Get the CRS
 	virtual void GetProjection(vtProjection &proj) = 0;
+	/// Set the CRS, which does not reproject
 	virtual void SetProjection(const vtProjection &proj) = 0;
+	/// Shift all the coordinates by a horizontal offset
 	virtual void Offset(const DPoint2 &p);
 
-	// these may be optionally implemented
+	// these may be optionally implemented:
 	virtual bool SetExtent(const DRECT &rect) { return false; }
 	virtual void GetPropertyText(wxString &str) {}
 	virtual wxString GetFileExtension();

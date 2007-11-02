@@ -12,6 +12,9 @@
 
 enum TextureCompressionType { TC_OPENGL, TC_SQUISH_FAST, TC_SQUISH_SLOW };
 
+/**
+ * All the options needed to describe how to create a tileset.
+ */
 struct TilingOptions
 {
 	int cols, rows;
