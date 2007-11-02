@@ -719,12 +719,14 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 	vtImage *image;
 
 	// We only support overviews for 'single' or '4x4 tiled' textures
+	int depth;
 	TextureEnum eTex = pTerr->GetParams().GetTextureEnum();
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
 		image = pTerr->GetTextureImage();
 		if (!image)
 			return;
+		depth = image->GetDepth();
 	}
 	else if (eTex == TE_TILED)
 	{
@@ -735,16 +737,26 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 		int xsize = olap->GetWidth();
 		int ysize = olap->GetHeight();
 
+		depth = olap->GetDepth();
 		image = new vtImage;
-		image->Create(256, 256, 24);
+		image->Create(256, 256, depth);
 
+		RGBi rgb;
+		RGBAi rgba;
 		for (int i = 0; i < 256; i++)
 		{
 			for (int j = 0; j < 256; j++)
 			{
-				RGBi rgb;
-				olap->GetPixel24(i * xsize / 256, j * ysize / 256, rgb);
-				image->SetPixel24(i, j, rgb);
+				if (depth == 24)
+				{
+					olap->GetPixel24(i * xsize / 256, j * ysize / 256, rgb);
+					image->SetPixel24(i, j, rgb);
+				}
+				else
+				{
+					olap->GetPixel32(i * xsize / 256, j * ysize / 256, rgba);
+					image->SetPixel32(i, j, rgba);
+				}
 			}
 		}
 		m_pOwnedImage = image;
@@ -756,7 +768,7 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 		m_pMapView->SetImage(image);	// already created
 	else
 	{
-		m_pMapView->Create(image);
+		m_pMapView->Create(image, depth == 32);
 		m_pMapView->GetNode()->SetName2("Map Overview Image Sprite");
 	}
 
