@@ -15,6 +15,7 @@
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/vtLog.h"
 
+#include "Options.h"
 #include "BuilderView.h"
 #include "Frame.h"
 #include "MenuEnum.h"
@@ -2191,6 +2192,16 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			table.push_back(RGBi(255,255,255));
 
 			grid.ColorDibFromTable(&bmp, table, 0, 1);
+		}
+#endif
+#if 0
+		{
+		#include "Example1.cpp"
+		// refresh the view
+		frm->ZoomAll();
+		frm->RefreshToolbars();
+		frm->RefreshTreeView();
+		frm->RefreshStatusBar();
 		}
 #endif
 	}
