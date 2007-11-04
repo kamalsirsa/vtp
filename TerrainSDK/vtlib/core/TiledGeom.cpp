@@ -98,10 +98,10 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 	public:
 		void run()
 		{
-			m_to_call(m_background);
+			void *result = m_function(m_param);
 		}
-		void *(*m_to_call)(void *background);
-		backarrayelem *m_background;
+		void *(*m_function)(void *background);
+		backarrayelem *m_param;
 	};
 	MyThread *pthread[numthreads];
 	OpenThreads::Mutex mutex, iomutex;
@@ -118,15 +118,13 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 	void threadexit()
 	{
 		for (int i = 0; i < numthreads; i++)
-		{
 			delete pthread[i];
-		}
 	}
 
 	void startthread(void *(*thread)(void *background),backarrayelem *background,void *data)
 	{
-		pthread[background->background-1]->m_to_call = thread;
-		pthread[background->background-1]->m_background = background;
+		pthread[background->background-1]->m_function = thread;
+		pthread[background->background-1]->m_param = background;
 		pthread[background->background-1]->start();
 	}
 
