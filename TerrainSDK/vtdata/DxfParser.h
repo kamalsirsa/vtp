@@ -3,7 +3,7 @@
 //
 // Class for parsing a DXF File.
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -38,6 +38,7 @@ public:
 	DxfEntity() {};
 	std::vector<DPoint3> m_points;
 	DxfEntityType m_iType;
+	vtString m_label;
 	int m_iLayer;
 };
 
@@ -95,6 +96,7 @@ protected:
 	void ReadEntitySection(bool progress_callback(int));
 	void ReadLayer();
 	void ReadPoint();
+	void ReadText();
 	void ReadPolyline();
 	void ReadLine();
 	void ReadVertex(std::vector<DPoint3> &);

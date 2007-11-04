@@ -2143,40 +2143,38 @@ bool MainFrame::ImportDataFromDXF(const char *filename)
 	std::vector<DxfEntity> entities;
 	std::vector<DxfLayer> layers;
 
+	OpenProgressDialog(_("Parsing DXF"), true, this);
 	DxfParser parser(filename, entities, layers);
 	bool bSuccess = parser.RetrieveEntities(progress_callback);
+	CloseProgressDialog();
 	if (!bSuccess)
 	{
 		VTLOG1(parser.GetLastError());
 		return false;
 	}
 
-	vtRawLayer *pRL_polylines = new vtRawLayer;
-	pRL_polylines->SetLayerFilename(_T("polylines"));
-	pRL_polylines->SetModified(true);
+	// We could just use vtFeatureLoader::LoadFromDXF, but that only produces
+	//  a single feature set.  A DXF might have points, polylines and polygons
+	//  in it, so that should produce multiple featuresets
+	vtFeatureSetPoint2D *fs_points = new vtFeatureSetPoint2D;
+	int f_layer = fs_points->AddField("Layer", FT_String, 40);
+	int f_color = fs_points->AddField("Color", FT_String, 16);
+	int f_label = fs_points->AddField("Label", FT_String, 80);
 
-	vtFeatureSetLineString *polylines = new vtFeatureSetLineString;
-	int f_layer = polylines->AddField("Layer", FT_String, 40);
-	int f_color = polylines->AddField("Color", FT_String, 16);
+	vtFeatureSetLineString *fs_polylines = new vtFeatureSetLineString;
+	fs_polylines->AddField("Layer", FT_String, 40);
+	fs_polylines->AddField("Color", FT_String, 16);
 
-#if 0
-	int f0 = 0, f1 = 0, f2 = 0, f3 = 0;
+	vtFeatureSet *set;
 	for (unsigned int i = 0; i < entities.size(); i++)
 	{
 		const DxfEntity &ent = entities[i];
+		int record = -1;
 		if (ent.m_iType == DET_Point)
-			f0++;
-		if (ent.m_iType == DET_Polyline)
-			f1++;
-		if (ent.m_iType == DET_Polygon)
-			f2++;
-		if (ent.m_iType == DET_3DFace)
-			f3++;
-	}
-#endif
-	for (unsigned int i = 0; i < entities.size(); i++)
-	{
-		const DxfEntity &ent = entities[i];
+		{
+			set = fs_points;
+			record = fs_points->AddPoint(DPoint2(ent.m_points[0].x, ent.m_points[0].y));
+		}
 		if (ent.m_iType == DET_Polyline)
 		{
 			DLine2 dline;
@@ -2186,24 +2184,51 @@ bool MainFrame::ImportDataFromDXF(const char *filename)
 			{
 				dline[j].Set(ent.m_points[j].x, ent.m_points[j].y);
 			}
-			int rec = polylines->AddPolyLine(dline);
-
+			set = fs_polylines;
+			record = fs_polylines->AddPolyLine(dline);
+		}
+		if (record != -1)
+		{
 			DxfLayer &dlay = layers[ent.m_iLayer];
-			polylines->SetValue(rec, f_layer, dlay.m_name);
+			set->SetValue(record, f_layer, dlay.m_name);
 
 			RGBf c = dlay.m_color;
 			vtString str;
 			str.Format("%.2f %.2f %.2f", c.r, c.g, c.b);
-			polylines->SetValue(rec, f_color, str);
+			set->SetValue(record, f_color, str);
+
+			if (ent.m_label != "")
+				set->SetValue(record, f_label, ent.m_label);
 		}
 	}
-	pRL_polylines->SetFeatureSet(polylines);
 
-	// Assume existing projection
-	pRL_polylines->SetProjection(m_proj);
+	if (fs_points->GetNumEntities() > 0)
+	{
+		vtRawLayer *pRL = new vtRawLayer;
+		pRL->SetFeatureSet(fs_points);
+		pRL->SetLayerFilename(_T("points.shp"));
+		pRL->SetModified(true);
+		// Assume existing projection
+		pRL->SetProjection(m_proj);
+		if (!AddLayerWithCheck(pRL, true))
+			delete pRL;
+	}
+	else
+		delete fs_points;
 
-	if (!AddLayerWithCheck(pRL_polylines, true))
-		delete pRL_polylines;
+	if (fs_polylines->GetNumEntities() > 0)
+	{
+		vtRawLayer *pRL = new vtRawLayer;
+		pRL->SetFeatureSet(fs_polylines);
+		pRL->SetLayerFilename(_T("polylines.shp"));
+		pRL->SetModified(true);
+		// Assume existing projection
+		pRL->SetProjection(m_proj);
+		if (!AddLayerWithCheck(pRL, true))
+			delete pRL;
+	}
+	else
+		delete fs_polylines;
 
 	return true;
 }

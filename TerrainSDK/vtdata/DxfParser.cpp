@@ -3,7 +3,7 @@
 //
 // Class for parsing a DXF File.
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -177,30 +177,27 @@ void DxfParser::ReadEntitySection(bool progress_callback(int))
 	bool bFoundEnd = false;
 	while (ReadCodeValue(pair))
 	{
-		if (pair.m_iCode == 0 && pair.m_sValue == "ENDSEC")
+		if (pair.m_iCode == 0)
 		{
-			bFoundEnd = true;
-			break;
-		}
-		if (pair.m_iCode == 0 && pair.m_sValue == "POLYLINE")
-		{
-			ReadPolyline();
-		}
-		if (pair.m_iCode == 0 && pair.m_sValue == "POINT")
-		{
-			ReadPoint();
-		}
-		if (pair.m_iCode == 0 && pair.m_sValue == "LINE")
-		{
-			ReadLine();
-		}
-		if (pair.m_iCode == 0 && pair.m_sValue == "LWPOLYLINE")
-		{
-			ReadLWPolyline();
-		}
-		if (pair.m_iCode == 0 && pair.m_sValue == "3DFACE")
-		{
-			Read3DFace();
+			if (pair.m_sValue == "ENDSEC")
+			{
+				bFoundEnd = true;
+				break;
+			}
+			else if (pair.m_sValue == "POLYLINE")
+				ReadPolyline();
+			else if (pair.m_sValue == "POINT")
+				ReadPoint();
+			else if (pair.m_sValue == "LINE")
+				ReadLine();
+			else if (pair.m_sValue == "LWPOLYLINE")
+				ReadLWPolyline();
+			else if (pair.m_sValue == "3DFACE")
+				Read3DFace();
+			else if (pair.m_sValue == "TEXT")
+				ReadText();
+			else
+				VTLOG("Unknown ent type: %s\n", pair.m_sValue);
 		}
 
 		m_iCounter++;
@@ -287,8 +284,10 @@ void DxfParser::ReadPoint()
 			bFoundEnd = true;
 
 			// save the entity off if it has everything.
-			if (bFoundLayer && bFoundX && bFoundY && bFoundZ)
+			if (bFoundLayer && bFoundX && bFoundY)
 			{
+				if (!bFoundZ)
+					pt.z = 0.0;
 				entity.m_points.push_back(pt);
 				entity.m_iType = DET_Point;
 				m_entities.push_back(entity);				
@@ -318,6 +317,70 @@ void DxfParser::ReadPoint()
 		{
 			pt.z = strtod(pair.m_sValue, NULL);
 			bFoundZ = true;
+		}
+		oldPos = ftell(m_pFile);
+	}
+	if (!bFoundEnd)
+		throw "Unable to find end of point entity.";
+}
+
+void DxfParser::ReadText()
+{
+	// A "TEXT" entity in DXF is basically a label with a point location,
+	//  treat is as a point entity with label field.
+	DxfCodeValue pair;
+	DxfEntity entity;
+
+	bool bFoundEnd = false, bFoundLayer = false, bFoundX = false;
+	bool bFoundY = false, bFoundZ = false;
+	DPoint3 pt;
+
+	long oldPos = ftell(m_pFile);
+
+	while (ReadCodeValue(pair))
+	{
+		if (pair.m_iCode == 0)
+		{
+			bFoundEnd = true;
+
+			// save the entity off if it has everything.
+			if (bFoundLayer && bFoundX && bFoundY)
+			{
+				if (!bFoundZ)
+					pt.z = 0.0;
+				entity.m_points.push_back(pt);
+				entity.m_iType = DET_Point;
+				m_entities.push_back(entity);				
+			}
+
+			// back that pointer up.
+			// don't worry, we won't be here if current line is less than 4
+			fseek(m_pFile, oldPos, SEEK_SET);
+			break;
+		}
+		else if (pair.m_iCode == 8)
+		{
+			entity.m_iLayer = GetLayerIndex(pair.m_sValue);
+			bFoundLayer = true;
+		}
+		else if (pair.m_iCode == 10)
+		{
+			pt.x = strtod(pair.m_sValue, NULL);
+			bFoundX = true;
+		}
+		else if (pair.m_iCode == 20)
+		{
+			pt.y = strtod(pair.m_sValue, NULL);
+			bFoundY = true;
+		}
+		else if (pair.m_iCode == 30)
+		{
+			pt.z = strtod(pair.m_sValue, NULL);
+			bFoundZ = true;
+		}
+		else if (pair.m_iCode == 1)
+		{
+			entity.m_label = pair.m_sValue;
 		}
 		oldPos = ftell(m_pFile);
 	}
