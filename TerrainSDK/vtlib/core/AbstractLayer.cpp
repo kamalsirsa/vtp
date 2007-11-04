@@ -418,7 +418,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTagArray &style, unsigned int iIndex)
 			if (material_index == -1)
 			{
 				RGBf rgb = (RGBf) rgba;
-				material_index = pGeomMats->AddRGBMaterial1(rgb, true, true);
+				material_index = pGeomMats->AddRGBMaterial1(rgb, false, false, true);
 			}
 		}
 		else
