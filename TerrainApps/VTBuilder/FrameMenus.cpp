@@ -94,6 +94,7 @@ EVT_MENU(ID_LAYER_IMPORTUTIL,	MainFrame::OnLayerImportUtil)
 EVT_MENU(ID_LAYER_IMPORT_MS,	MainFrame::OnLayerImportMapSource)
 EVT_MENU(ID_LAYER_IMPORT_POINT,	MainFrame::OnLayerImportPoint)
 EVT_MENU(ID_LAYER_IMPORT_XML,	MainFrame::OnLayerImportXML)
+EVT_MENU(ID_LAYER_IMPORT_DXF,	MainFrame::OnLayerImportDXF)
 EVT_MENU(ID_LAYER_PROPS,		MainFrame::OnLayerProperties)
 EVT_MENU(ID_LAYER_CONVERTPROJ,	MainFrame::OnLayerConvert)
 EVT_MENU(ID_LAYER_SETPROJ,		MainFrame::OnLayerSetProjection)
@@ -359,6 +360,7 @@ void MainFrame::CreateMenus()
 	layerMenu->Append(ID_LAYER_IMPORT_MS, _("Import From MapSource File"));
 	layerMenu->Append(ID_LAYER_IMPORT_POINT, _("Import Point Data From Table"));
 	layerMenu->Append(ID_LAYER_IMPORT_XML, _("Import Point Data From XML"));
+	layerMenu->Append(ID_LAYER_IMPORT_DXF, _("Import Raw Layers from DXF"));
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_PROPS, _("Layer Properties"), _("Layer Properties"));
 	layerMenu->Append(ID_EDIT_OFFSET, _("Offset Coordinates"), _("Offset"));
@@ -1215,6 +1217,18 @@ void MainFrame::OnLayerImportXML(wxCommandEvent &event)
 	}
 	else
 		delete pRL;
+}
+
+void MainFrame::OnLayerImportDXF(wxCommandEvent &event)
+{
+	wxFileDialog loadFile(NULL, _("Import DXF Data"), _T(""), _T(""),
+		_("DXF files (*.dxf)|*.dxf"), wxFD_OPEN);
+
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+
+	wxString str = loadFile.GetPath();
+	ImportDataFromDXF(str.mb_str(wxConvUTF8));
 }
 
 void MainFrame::OnLayerProperties(wxCommandEvent &event)

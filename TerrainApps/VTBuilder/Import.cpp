@@ -12,13 +12,14 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/Building.h"
 #include "vtdata/DLG.h"
+#include "vtdata/DxfParser.h"
 #include "vtdata/ElevationGrid.h"
+#include "vtdata/FilePath.h"
 #include "vtdata/LULC.h"
 #include "vtdata/Unarchive.h"
-#include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
-#include "vtdata/Building.h"
 #include "vtui/Helper.h"
 #include "vtui/ProjectionDlg.h"
 
@@ -2135,4 +2136,75 @@ int MainFrame::ImportDataFromSCC(const char *filename)
 	return layer_count;
 }
 
+bool MainFrame::ImportDataFromDXF(const char *filename)
+{
+	VTLOG1("ImportDataFromDXF():\n");
+
+	std::vector<DxfEntity> entities;
+	std::vector<DxfLayer> layers;
+
+	DxfParser parser(filename, entities, layers);
+	bool bSuccess = parser.RetrieveEntities(progress_callback);
+	if (!bSuccess)
+	{
+		VTLOG1(parser.GetLastError());
+		return false;
+	}
+
+	vtRawLayer *pRL_polylines = new vtRawLayer;
+	pRL_polylines->SetLayerFilename(_T("polylines"));
+	pRL_polylines->SetModified(true);
+
+	vtFeatureSetLineString *polylines = new vtFeatureSetLineString;
+	int f_layer = polylines->AddField("Layer", FT_String, 40);
+	int f_color = polylines->AddField("Color", FT_String, 16);
+
+#if 0
+	int f0 = 0, f1 = 0, f2 = 0, f3 = 0;
+	for (unsigned int i = 0; i < entities.size(); i++)
+	{
+		const DxfEntity &ent = entities[i];
+		if (ent.m_iType == DET_Point)
+			f0++;
+		if (ent.m_iType == DET_Polyline)
+			f1++;
+		if (ent.m_iType == DET_Polygon)
+			f2++;
+		if (ent.m_iType == DET_3DFace)
+			f3++;
+	}
+#endif
+	for (unsigned int i = 0; i < entities.size(); i++)
+	{
+		const DxfEntity &ent = entities[i];
+		if (ent.m_iType == DET_Polyline)
+		{
+			DLine2 dline;
+			int NumVerts = ent.m_points.size();
+			dline.SetSize(NumVerts);
+			for (int j = 0; j < NumVerts; j++)
+			{
+				dline[j].Set(ent.m_points[j].x, ent.m_points[j].y);
+			}
+			int rec = polylines->AddPolyLine(dline);
+
+			DxfLayer &dlay = layers[ent.m_iLayer];
+			polylines->SetValue(rec, f_layer, dlay.m_name);
+
+			RGBf c = dlay.m_color;
+			vtString str;
+			str.Format("%.2f %.2f %.2f", c.r, c.g, c.b);
+			polylines->SetValue(rec, f_color, str);
+		}
+	}
+	pRL_polylines->SetFeatureSet(polylines);
+
+	// Assume existing projection
+	pRL_polylines->SetProjection(m_proj);
+
+	if (!AddLayerWithCheck(pRL_polylines, true))
+		delete pRL_polylines;
+
+	return true;
+}
 

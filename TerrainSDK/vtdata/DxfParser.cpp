@@ -19,7 +19,7 @@ using std::set;
  */
 DxfParser::DxfParser(const vtString &sFileName,
 					   std::vector<DxfEntity> &entities,
-					   std::vector<vtString> &layers) :
+					   std::vector<DxfLayer> &layers) :
 	m_entities(entities),
 	m_layers(layers)
 {
@@ -76,7 +76,9 @@ bool DxfParser::RetrieveEntities(bool progress_callback(int))
 				if (pair.m_iCode != 2)
 					throw "Expecting section type, but none encountered.";
 
-				if (pair.m_sValue == "ENTITIES")
+				if (pair.m_sValue == "TABLES")
+					ReadTableSection(progress_callback);
+				else if (pair.m_sValue == "ENTITIES")
 					ReadEntitySection(progress_callback);
 				else
 					SkipSection();
@@ -151,6 +153,24 @@ void DxfParser::SkipSection()
 		throw "Unable to find end of section.";
 }
 
+void DxfParser::ReadTableSection(bool progress_callback(int))
+{
+	DxfCodeValue pair;
+	bool bFoundEnd = false;
+	while (ReadCodeValue(pair))
+	{
+		if (pair.m_iCode == 0 && pair.m_sValue == "ENDSEC")
+		{
+			bFoundEnd = true;
+			break;
+		}
+		if (pair.m_iCode == 0 && pair.m_sValue == "LAYER")
+		{
+			ReadLayer();
+		}
+	}
+}
+
 void DxfParser::ReadEntitySection(bool progress_callback(int))
 {
 	DxfCodeValue pair;
@@ -198,6 +218,55 @@ void DxfParser::ReadEntitySection(bool progress_callback(int))
 	}
 	if (!bFoundEnd)
 		throw "Unable to find end of section.";
+}
+
+void DxfParser::ReadLayer()
+{
+	DxfCodeValue pair;
+
+	DxfLayer layer;
+	long oldPos = ftell(m_pFile);
+
+	while (ReadCodeValue(pair))
+	{
+		if (pair.m_iCode == 0)
+		{
+			// save the layer.
+			m_layers.push_back(layer);				
+
+			// back that pointer up.
+			fseek(m_pFile, oldPos, SEEK_SET);
+			break;
+		}
+		else if (pair.m_iCode == 2)		// name
+		{
+			layer.m_name = pair.m_sValue;
+		}
+		else if (pair.m_iCode == 62)	// color
+		{
+			//ACAD Color Name
+			//1 RED
+			//2 YELLOW
+			//3 GREEN
+			//4 CYAN
+			//5 BLUE
+			//6 MAGENTA
+			//7 BLACK/WHITE
+			//21 = another cyan? 131 = light red?
+			switch (atoi(pair.m_sValue))
+			{
+			case 1: layer.m_color = RGBi(255,0,0); break;
+			case 2: layer.m_color = RGBi(255,255,0); break;
+			case 3: layer.m_color = RGBi(0,255,0); break;
+			case 4: layer.m_color = RGBi(0,255,255); break;
+			case 5: layer.m_color = RGBi(0,0,255); break;
+			case 6: layer.m_color = RGBi(255,0,255); break;
+			case 7: layer.m_color = RGBi(255,255,255); break;
+			default:layer.m_color = RGBi(128,128,128); break;	// grey
+			}
+		}
+		oldPos = ftell(m_pFile);
+	}
 }
 
 void DxfParser::ReadPoint()
@@ -340,7 +409,9 @@ void DxfParser::ReadPolyline()
 	DxfEntity entity;
 	bool bFoundEnd = false;
 	bool bFoundLayer = false;
-	bool bFoundType = false;
+
+	// Default type is polyline, unless a code 70 says it's actually a polygon
+	entity.m_iType = DET_Polyline;
 
 	while (ReadCodeValue(pair))
 	{
@@ -349,7 +420,7 @@ void DxfParser::ReadPolyline()
 			bFoundEnd = true;
 
 			// save the entity off if it has everything.
-			if (bFoundLayer && bFoundType && entity.m_points.size() > 0)
+			if (bFoundLayer && entity.m_points.size() > 0)
 			{
 				m_entities.push_back(entity);
 			}
@@ -364,9 +435,6 @@ void DxfParser::ReadPolyline()
 		{
 			if (atoi(pair.m_sValue) & 1)
 				entity.m_iType = DET_Polygon;
-			else
-				entity.m_iType = DET_Polyline;
-			bFoundType = true;
 		}
 		else if (pair.m_iCode == 0 && pair.m_sValue == "VERTEX")
 		{
@@ -393,8 +461,10 @@ void DxfParser::ReadVertex(std::vector<DPoint3> & points)
 			bFoundEnd = true;
 
 			// save the entity off if it has everything.
-			if (bFoundX && bFoundY && bFoundZ)
+			if (bFoundX && bFoundY)
 			{
+				if (!bFoundZ)
+					pt.z = 0.0;
 				points.push_back(pt);
 			}
 
@@ -424,16 +494,20 @@ void DxfParser::ReadVertex(std::vector<DPoint3> & points)
 		throw "Unable to find end of vertex entity.";
 }
 
-int DxfParser::GetLayerIndex(const vtString & sLayer)
+int DxfParser::GetLayerIndex(const vtString &sLayer)
 {
 	unsigned int iLayers = m_layers.size();
 	for (unsigned int i = 0; i < iLayers; ++i)
 	{
-		if (sLayer == m_layers[i])
+		if (sLayer == m_layers[i].m_name)
 			return i;
 	}
-	m_layers.push_back(sLayer);
-	return iLayers;
+	// not found, add it
+	DxfLayer lay;
+	lay.m_name = sLayer;
+	lay.m_color.Set(240, 200, 220);		// mauve
+	m_layers.push_back(lay);
+	return m_layers.size()-1;
 }
 
 

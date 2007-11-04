@@ -24,6 +24,14 @@ enum DxfEntityType
 	DET_3DFace
 };
 
+class DxfLayer
+{
+public:
+	DxfLayer() {};
+	vtString m_name;
+	RGBi m_color;
+};
+
 class DxfEntity
 {
 public:
@@ -48,7 +56,7 @@ public:
  * \par Example:
 \code
 	std::vector<DxfEntity> entities;
-	std::vector<vtString> layers;
+	std::vector<DxfLayer> layers;
 
 	DxfParser parser(fname, entities, layers);
 	bool bSuccess = parser.RetrieveEntities();
@@ -63,7 +71,7 @@ class DxfParser
 public:
 	DxfParser(const vtString &sFileName,
 		std::vector<DxfEntity> &entities,
-		std::vector<vtString> &layers);
+		std::vector<DxfLayer> &layers);
 	bool RetrieveEntities(bool progress_callback(int) = NULL);
 	vtString GetFileName() { return m_sFileName; }
 	void SetFileName(const vtString & sFileName) { m_sFileName = sFileName; }
@@ -71,7 +79,7 @@ public:
 
 protected:
 	std::vector<DxfEntity> & m_entities;
-	std::vector<vtString> & m_layers;
+	std::vector<DxfLayer> & m_layers;
 	vtString m_sFileName;
 	FILE * m_pFile;
 	size_t m_iLine;
@@ -83,7 +91,9 @@ protected:
 	bool ParseSection();
 	bool ReadCodeValue(DxfCodeValue &);
 	void SkipSection();
+	void ReadTableSection(bool progress_callback(int));
 	void ReadEntitySection(bool progress_callback(int));
+	void ReadLayer();
 	void ReadPoint();
 	void ReadPolyline();
 	void ReadLine();

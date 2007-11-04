@@ -352,7 +352,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromDXF(const char *filename,
 	VTLOG("vtFeatureLoader::LoadFromDXF():\n");
 
 	std::vector<DxfEntity> entities;
-	std::vector<vtString> layers;
+	std::vector<DxfLayer> layers;
 
 	DxfParser parser(filename, entities, layers);
 	bool bSuccess = parser.RetrieveEntities(progress_callback);

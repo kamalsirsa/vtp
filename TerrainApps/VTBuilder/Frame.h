@@ -117,6 +117,7 @@ protected:
 	void OnLayerImportMapSource(wxCommandEvent& event);
 	void OnLayerImportPoint(wxCommandEvent& event);
 	void OnLayerImportXML(wxCommandEvent& event);
+	void OnLayerImportDXF(wxCommandEvent& event);
 	void OnLayerProperties(wxCommandEvent& event);
 	void OnLayerConvert(wxCommandEvent& event);
 	void OnLayerSetProjection(wxCommandEvent& event);
@@ -465,9 +466,10 @@ public:
 	vtFeatureSet *ImportPointsFromCSV(const char *fname);
 	void ImportDataPointsFromTable(const char *fname);
 	int ImportDataFromTIGER(const wxString &strDirName);
-	int ImportDataFromSCC(const char *filename);
 	void ImportDataFromNTF(const wxString &strFileName);
 	void ImportDataFromS57(const wxString &strDirName);
+	int ImportDataFromSCC(const char *filename);
+	bool ImportDataFromDXF(const char *filename);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 	void ElevCopy();
 	void ElevPasteNew();
