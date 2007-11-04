@@ -24,8 +24,8 @@ void AddType(wxString &str, const wxString &filter);
 
 #if WIN32
 /**
- * Win32 allows us to do a real StrectBlt operation, although it still won't
- * do a StrectBlt with a mask.
+ * Win32 allows us to do a real StretchBlt operation, although it still won't
+ * do a StretchBlt with a mask.
  */
 class wxDC2 : public wxDC
 {
