@@ -16,21 +16,10 @@
 #include "datacloud.h"
 #include "miniOGL.h"
 
-// If we use the pthreads library, we can support multithreading
-#define SUPPORT_PTHREADING	1
-
-#if SUPPORT_PTHREADING
-  #include <pthread.h>
-  #ifdef _MSC_VER
-	#pragma message( "Adding link with pthreadVC2.lib" )
-	#pragma comment( lib, "pthreadVC2.lib" )
-  #endif
-#endif
-
-#define USE_OPENTHREADS	0
-#if USE_OPENTHREADS
-  #include "OpenThreads/Thread"
-#endif
+// If we use a threading library, we can support multithreading
+#define SUPPORT_THREADING	1
+#define USE_PTHREADS		0
+#define USE_OPENTHREADS		1
 
 // Set this to use the 'minicache' OpenGL primitive cache.
 //  Actually, we depend on it for adaptive resolution, so leave it at 1.
@@ -44,7 +33,12 @@
 // singleton; TODO: get rid of this to allow multiple instances
 static vtTiledGeom *s_pTiledGeom = NULL;
 
-#if SUPPORT_PTHREADING
+#if USE_PTHREADS
+  #include <pthread.h>
+  #ifdef _MSC_VER
+	#pragma message( "Adding link with pthreadVC2.lib" )
+	#pragma comment( lib, "pthreadVC2.lib" )
+  #endif
    const int numthreads = 1;
    pthread_t pthread[numthreads];
    pthread_mutex_t mutex,iomutex;
@@ -66,8 +60,11 @@ static vtTiledGeom *s_pTiledGeom = NULL;
       pthread_attr_destroy(&attr);
       }
 
-   void startthread(void *(*thread)(void *background),backarrayelem *background,void *data)
-      {pthread_create(&pthread[background->background-1],&attr,thread,background);}
+   void startthread(void *(*thread)(void *background),backarrayelem *background,
+	   void *data)
+      {
+	  pthread_create(&pthread[background->background-1],&attr,thread,background);
+      }
 
    void jointhread(backarrayelem *background,void *data)
       {
@@ -87,45 +84,68 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 	void unlock_io(void *data)
 	  {pthread_mutex_unlock(&iomutex);}
 #endif
+
 #if USE_OPENTHREADS
+  #include "OpenThreads/Thread"
+  #include "OpenThreads/Mutex"
+  #ifdef _MSC_VER
+	#pragma message( "Adding link with OpenThreads.lib" )
+	#pragma comment( lib, "OpenThreads.lib" )
+  #endif
 	const int numthreads = 1;
-	OpenThread::Thread pthread[numthreads];
-	pthread_mutex_t mutex;
-	pthread_attr_t attr;
+	class MyThread : public OpenThreads::Thread
+	{
+	public:
+		void run()
+		{
+			m_to_call(m_background);
+		}
+		void *(*m_to_call)(void *background);
+		backarrayelem *m_background;
+	};
+	MyThread *pthread[numthreads];
+	OpenThreads::Mutex mutex, iomutex;
 
 	void threadinit()
 	{
-		pthread_mutex_init(&mutex,NULL);
-
-		pthread_attr_init(&attr);
-		pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
+		for (int i = 0; i < numthreads; i++)
+		{
+			MyThread *th = new MyThread;
+			pthread[i] = th;
+		}
 	}
 
 	void threadexit()
 	{
-		pthread_mutex_destroy(&mutex);
-		pthread_attr_destroy(&attr);
+		for (int i = 0; i < numthreads; i++)
+		{
+			delete pthread[i];
+		}
 	}
 
 	void startthread(void *(*thread)(void *background),backarrayelem *background,void *data)
 	{
-		pthread_create(&pthread[background->background-1],
-			&attr,
-			thread,
-			background);
+		pthread[background->background-1]->m_to_call = thread;
+		pthread[background->background-1]->m_background = background;
+		pthread[background->background-1]->start();
 	}
 
 	void jointhread(backarrayelem *background,void *data)
 	{
-		void *status;
-		pthread_join(pthread[background->background-1],&status);
+		pthread[background->background-1]->join();
 	}
 
 	void lock_cs(void *data)
-	{pthread_mutex_lock(&mutex);}
+	{mutex.lock();}
 
 	void unlock_cs(void *data)
-	{pthread_mutex_unlock(&mutex);}
+	{mutex.unlock();}
+
+	void lock_io(void *data)
+	{iomutex.lock();}
+
+	void unlock_io(void *data)
+	{iomutex.unlock();}
 #endif
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -415,7 +435,7 @@ vtTiledGeom::vtTiledGeom()
 
 vtTiledGeom::~vtTiledGeom()
 {
-#if SUPPORT_PTHREADING
+#if SUPPORT_THREADING
 	delete m_pDataCloud;
 #endif
 	delete m_pMiniCache;
@@ -690,7 +710,7 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 
 	miniOGL::configure_compression(0);
 
-#if SUPPORT_PTHREADING
+#if SUPPORT_THREADING
 	if (bThreading)
 	{
 		// Now set up MiniCloud
