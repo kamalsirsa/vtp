@@ -1033,7 +1033,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	//  centers, which are 1/2 texel in from the grid extents.
 	DPoint2 texel_size(m_EarthExtents.Width() / w, m_EarthExtents.Height() / h);
 	DRECT texel_area = m_EarthExtents;
-	texel_area.Grow(-texel_size.x, -texel_size.y);
+	texel_area.Grow(-texel_size.x/2, -texel_size.y/2);
 	DPoint2 texel_base(texel_area.left, texel_area.bottom);
 
 	bool b8bit = (pBM->GetDepth() == 8);
@@ -1041,7 +1041,6 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 	// These values are hardcoded here but could be exposed in the GUI
 	float sun =  0.7f;
-	float amb =  fAmbient;
 
 	// If we have light that's pointing UP, rather than down at the terrain,
 	//  then it's only going to take a really long time to produce a
@@ -1053,9 +1052,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			for (j = 0; j < h; j++)
 			{
 				if (b8bit)
-					pBM->ScalePixel8(i, j, amb);
+					pBM->ScalePixel8(i, j, fAmbient);
 				else
-					pBM->ScalePixel24(i, j, amb);
+					pBM->ScalePixel24(i, j, fAmbient);
 			}
 		}
 		return;
@@ -1171,7 +1170,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				if (elevation == INVALID_ELEVATION)
 					continue;
 
-				if (elevation - shadowheight > 0)
+				if (elevation > shadowheight)
 				{
 					if (k>1)
 						Under_Out = true; // Under the terrain
@@ -1187,18 +1186,11 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 					FindAltitudeAtPoint(p3, p3.y, true, 0, &normal);
 
 					//*****************************************
-					//*****************************************
-					//The Amb .5f value was arbitrarily chosen
-					//Need to experiment more to determine the best value
-					//perhaps calculating Sun(r, g, b) and Amb(r, g, b)
-					// for a given time of day (e.g. warmer colors close to sunset)
-					//or give control to user since textures will differ
-
 					// Here the Sun(r, g, b) = 0 because we are in the shade
 					// therefore I(r, g, b) = Amb(r, g, b) * (0.5*N[z] + 0.5)
 
-				//	shade =  sun*normal.Dot(-light_direction) + amb * (0.5f*normal.y + 0.5f);
-					shade =  amb * (0.5f*normal.y + 0.5f);
+				//	shade =  sun*normal.Dot(-light_direction) + fAmbient * (0.5f*normal.y + 0.5f);
+					shade =  fAmbient * (0.5f*normal.y + 0.5f);
 					//*****************************************
 					//*****************************************
 					if (darkest_shadow > shade)
@@ -1269,7 +1261,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			shade /= .7071f;
 
 			// Now add ambient component
-			shade += amb * (0.5f*normal.y + 0.5f);
+			shade += fAmbient * (0.5f*normal.y + 0.5f);
 
 			// Maybe clipping values can be exposed to the user as well.
 			// Clip - don't shade down below lowest ambient level
