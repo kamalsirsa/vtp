@@ -318,6 +318,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Special.cpp"
+				>
+			</File>
+			<File
 				RelativePath="StatusBar.cpp"
 				>
 			</File>

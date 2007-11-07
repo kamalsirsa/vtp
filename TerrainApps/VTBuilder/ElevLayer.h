@@ -87,8 +87,8 @@ public:
 		float fDistanceRatio);
 
 	// grid operations
-	void Resample(int iNewWidth, int iNewHeight);
-	bool FillGaps();
+	int RemoveElevRange(float zmin, float zmax, const DRECT *area = NULL);
+	int SetUnknown(float fValue, const DRECT *area = NULL);
 	void DetermineMeterSpacing();
 	bool WriteGridOfElevTilePyramids(const TilingOptions &opts, BuilderView *pView);
 

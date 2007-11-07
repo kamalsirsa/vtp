@@ -45,10 +45,11 @@
 #include "UtilityLayer.h"
 #include "VegLayer.h"
 // Dialogs
+#include "DistanceDlg2d.h"
+#include "FeatInfoDlg.h"
+#include "OptionsDlg.h"
 #include "ResampleDlg.h"
 #include "SampleImageDlg.h"
-#include "FeatInfoDlg.h"
-#include "DistanceDlg2d.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/LinearStructDlg.h"
 #include "vtui/ProjectionDlg.h"
@@ -1834,6 +1835,68 @@ bool MainFrame::LoadBiotypesFile(const char *fname)
 	return true;
 }
 
+void MainFrame::ShowOptionsDialog()
+{
+	OptionsDlg dlg(this, -1, _("Options"));
+
+	dlg.m_bShowToolbar = m_pToolbar->IsShown();
+	dlg.m_bShowMinutes = m_statbar->m_bShowMinutes;
+	dlg.m_iElevUnits = (int)(m_statbar->m_ShowVertUnits) - 1;
+
+	dlg.SetElevDrawOptions(vtElevLayer::m_draw);
+
+	dlg.m_bShowRoadWidth = vtRoadLayer::GetDrawWidth();
+	dlg.m_bShowPath = m_pTree->GetShowPaths();
+
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+
+	bool bNeedRefresh = false;
+
+	if (dlg.m_bShowToolbar != m_pToolbar->IsShown())
+	{
+		m_pToolbar->Show(dlg.m_bShowToolbar);
+		// send a fake OnSize event so the frame will draw itself correctly
+		wxSizeEvent dummy;
+		wxFrame::OnSize(dummy);
+	}
+	m_statbar->m_bShowMinutes = dlg.m_bShowMinutes;
+	m_statbar->m_ShowVertUnits = (LinearUnits) (dlg.m_iElevUnits + 1);
+
+	ElevDrawOptions opt;
+	dlg.GetElevDrawOptions(opt);
+
+	if (vtElevLayer::m_draw != opt)
+	{
+		vtElevLayer::m_draw = opt;
+
+		// tell them to redraw themselves
+		for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+		{
+			vtLayer *lp = m_Layers.GetAt(i);
+			if (lp->GetType() == LT_ELEVATION)
+			{
+				vtElevLayer *elp = (vtElevLayer *)lp;
+				elp->ReRender();
+				bNeedRefresh = true;
+			}
+		}
+	}
+
+	bool bWidth = dlg.m_bShowRoadWidth;
+	if (vtRoadLayer::GetDrawWidth() != bWidth && LayersOfType(LT_ROAD) > 0)
+		bNeedRefresh = true;
+	vtRoadLayer::SetDrawWidth(bWidth);
+
+	if (dlg.m_bShowPath != m_pTree->GetShowPaths())
+	{
+		m_pTree->SetShowPaths(dlg.m_bShowPath);
+		m_pTree->RefreshTreeItems(this);
+	}
+
+	if (bNeedRefresh)
+		m_pView->Refresh();
+}
 
 #if wxUSE_DRAG_AND_DROP
 ///////////////////////////////////////////////////////////////////////

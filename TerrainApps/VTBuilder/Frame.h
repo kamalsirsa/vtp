@@ -94,6 +94,8 @@ protected:
 	void OnProjectPrefs(wxCommandEvent& event);
 	void OnDymaxTexture(wxCommandEvent &event);
 	void OnProcessBillboard(wxCommandEvent &event);
+	void OnElevCopy(wxCommandEvent& event);
+	void OnElevPasteNew(wxCommandEvent& event);
 	void OnGeocode(wxCommandEvent &event);
 	void OnQuit(wxCommandEvent& event);
 
@@ -196,8 +198,6 @@ protected:
 	void OnElevExport(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
 	void OnElevExportTiles(wxCommandEvent& event);
-	void OnElevCopy(wxCommandEvent& event);
-	void OnElevPasteNew(wxCommandEvent& event);
 	void OnElevMergeTin(wxCommandEvent& event);
 	void OnElevTrimTin(wxCommandEvent& event);
 
@@ -316,7 +316,14 @@ public:
 	// project
 	void LoadProject(const wxString &strPathName);
 	void SaveProject(const wxString &strPathName) const;
+	void ShowOptionsDialog();
+
+	// Special menu
+	void DoProcessBillboard();
+	void DoElevCopy();
+	void DoElevPasteNew();
 	void DoGeocode();
+	void DoDymaxTexture();
 
 	// Layer methods
 	int NumLayers() const { return m_Layers.GetSize(); }
@@ -491,7 +498,6 @@ public:
 	void ImageExportPPM();
 	void ExportAreaOptimizedElevTileset();
 	void ExportAreaOptimizedImageTileset();
-	void ExportDymaxTexture();
 
 	// area tool
 	void ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 &spacing);

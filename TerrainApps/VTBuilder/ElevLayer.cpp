@@ -1139,6 +1139,79 @@ bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, int iXSize, int iYSize,
 #endif
 }
 
+int vtElevLayer::RemoveElevRange(float zmin, float zmax, const DRECT *area)
+{
+	if (!m_pGrid)
+		return 0;
+
+	DRECT ext;
+	GetExtent(ext);
+	DPoint2 step = m_pGrid->GetSpacing();
+
+	int iColumns, iRows;
+	m_pGrid->GetDimensions(iColumns, iRows);
+	float val;
+	DPoint2 p;
+	int i, j;
+
+	int count = 0;
+	for (i = 0; i < iColumns; i++)
+	{
+		for (j = 0; j < iRows; j++)
+		{
+			if (area)
+			{
+				p.x = ext.left + (i * step.x);
+				p.y = ext.bottom + (j * step.y);
+				if (!area->ContainsPoint(p))
+					continue;
+			}
+
+			val = m_pGrid->GetFValue(i, j);
+			if (val >= zmin && val <= zmax)
+			{
+				m_pGrid->SetFValue(i, j, INVALID_ELEVATION);
+				count++;
+			}
+		}
+	}
+	return count;
+}
+
+int vtElevLayer::SetUnknown(float fValue, const DRECT *area)
+{
+	if (!m_pGrid)
+		return 0;
+
+	int iColumns, iRows;
+	m_pGrid->GetDimensions(iColumns, iRows);
+	DRECT ext;
+	GetExtent(ext);
+	DPoint2 p, step = m_pGrid->GetSpacing();
+	int count = 0;
+
+	for (int i = 0; i < iColumns; i++)
+	{
+		p.x = ext.left + (i * step.x);
+		for (int j = 0; j < iRows; j++)
+		{
+			p.y = ext.bottom + (j * step.y);
+			// If an area was passed, restrict ourselves to use it
+			if (area)
+			{
+				if (!area->ContainsPoint(p))
+					continue;
+			}
+			if (m_pGrid->GetFValue(i, j) == INVALID_ELEVATION)
+			{
+				m_pGrid->SetFValue(i, j, fValue);
+				count++;
+			}
+		}
+	}
+	return count;
+}
+
 void vtElevLayer::SetTin(vtTin2d *pTin)
 {
 	m_pTin = pTin;
