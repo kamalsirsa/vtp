@@ -83,12 +83,14 @@ public:
 	void OnExit(wxCommandEvent& event);
 	void OnClose(wxCloseEvent &event);
 	void OnIdle(wxIdleEvent& event);
+	void OnChar(wxKeyEvent& event);
 
 #ifdef __WXMSW__
 	// Catch special events, or calls an appropriate default window procedure
     virtual WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
 #endif
 
+protected:
 	void OnFileLayers(wxCommandEvent& event);
 
 	void OnLayerCreate(wxCommandEvent& event);
@@ -240,7 +242,7 @@ public:
 	void OnPopupDelete(wxCommandEvent& event);
 	void OnPopupURL(wxCommandEvent& event);
 
-	void OnChar(wxKeyEvent& event);
+	void DoTestCode();
 
 public:
 	class vtGLCanvas	*m_canvas;

@@ -22,10 +22,6 @@
 #define LL_COUNT	640
 #define LL_RADIUS	1.002
 
-extern int pwdemo;
-vtGeom *tg = NULL;
-
-
 void Enviro::FlyToSpace()
 {
 	VTLOG("FlyToSpace\n");
@@ -88,14 +84,9 @@ void Enviro::SetupGlobe()
 		vtLight *pLight = (vtLight *) pSunLight->GetChild(0);
 		if (pLight)
 		{
-	if (pwdemo){
-			pLight->SetDiffuse(RGBf(1, 1, 1));
-			pLight->SetAmbient(RGBf(0, 0, 0));
-	}else{
 			// standard bright sunlight
 			pLight->SetDiffuse(RGBf(3, 3, 3));
 			pLight->SetAmbient(RGBf(0.5f, 0.5f, 0.5f));
-	}
 		}
 		vtGetScene()->SetBgColor(RGBf(SPACE_DARKNESS, SPACE_DARKNESS, SPACE_DARKNESS));
 
@@ -112,11 +103,7 @@ void Enviro::SetupGlobe()
 	}
 	if (m_iInitStep == 5)
 	{
-if (pwdemo){
-		SetEarthShading(true);
-}else{
 		SetEarthShading(false);
-}
 	}
 	if (m_iInitStep == 6)
 	{
@@ -180,88 +167,7 @@ void Enviro::MakeGlobe()
 //		vtIcoGlobe::INDEPENDENT_GEODESIC);
 	m_pGlobeContainer->AddChild(m_pIcoGlobe->GetTop());
 	m_pGlobeTime->AddTarget((vtTimeTarget *)m_pIcoGlobe);
-
-if (pwdemo){
-/*	logo = new vtGroup;
-	IcoGlobe *Globe2 = new IcoGlobe;
-	Globe2->Create(1000, g_Options.m_DataPaths, vtString(""),
-		IcoGlobe::GEODESIC);
-	vtTransform *trans = new vtTransform;
-	trans->SetName2("2nd Globe Scaler");
-	m_pGlobeContainer->AddChild(logo);
-	logo->AddChild(trans);
-	trans->AddChild(Globe2->GetTop());
-	trans->Scale3(1.006f, 1.006f, 1.006f);
-	m_pGlobeTime->AddTarget((TimeTarget *)Globe2);
-
-	// Planetwork globe is around 3 PM GMT, summer over the north atlantic
-	vtTime time;
-	time.SetDate(2000, 6, 20);
-	time.SetTimeOfDay(15,0,0);
-	m_pGlobeTime->SetTime(time);
-
-	vtGeom *geom = new vtGeom;
-	vtMaterialArray *mats = new vtMaterialArray;
-	mats->AddTextureMaterial2("Planetwork/logo3.png", false, false, true);
-	mats->AddTextureMaterial2("Planetwork/logo2.png", false, false, true);
-	geom->SetMaterials(mats);
-	mats->Release();
-	float width = 1.9, height = .22;
-	FRECT rect(-width/2, height/2, width/2, -height/2);
-	GeomAddRectMesh(geom, rect, 1.15, 0);
-	rect += FPoint2(0.01, -0.01);
-	GeomAddRectMesh(geom, rect, 1.14, 1);
-	logo->AddChild(geom);
-	Globe2->SetTime(m_pGlobeTime->GetTime());
-
-	int i;
-	vtMaterialArray *rainbow = new vtMaterialArray;
-	rainbow->AddRGBMaterial1(RGBf(0.5,0,0), false, true, false, 0.5f);
-	rainbow->AddRGBMaterial1(RGBf(0.5,0.5,0), false, true, false, 0.5f);
-	rainbow->AddRGBMaterial1(RGBf(0,0.5,0), false, true, false, 0.5f);
-	rainbow->AddRGBMaterial1(RGBf(0,0.5,0.5), false, true, false, 0.5f);
-	rainbow->AddRGBMaterial1(RGBf(0,0,0.5), false, true, false, 0.5f);
-	rainbow->AddRGBMaterial1(RGBf(0.5,0,0.5), false, true, false, 0.5f);
-	for (i = 0; i < 6; i++)
-	{
-		vtMaterial *mat = rainbow->GetAt(i);
-		mat->SetTransparent(true, true);
-	}
-	tg = new vtGeom;
-	tg->SetMaterials(rainbow);
-	rainbow->Release();
-	Globe2->GetTop()->AddChild(tg);
-
-	vtFeatureLoader loader;
-	vtFeatureSet *feat1 = loader.LoadFromSHP("../Data/PointData/vtp-users-020519.shp");
-	vtFeatureSetPoint2D *ft = (vtFeatureSetPoint2D *) feat1;
-
-	int half = ft->GetNumEntities() / 2;
-	int foo = 0;
-	for (i = 0; i < half; i++)
-	{
-		DPoint2 p1 = ft->GetPoint(i);
-		DPoint2 p2 = ft->GetPoint(i+half);
-		if (p1 == DPoint2(0,0) || p2 == DPoint2(0,0))
-			continue;
-		if (p1.y > 0 && p2.y > 0)
-		{
-			foo++;
-			if ((foo%20)<19)
-				continue;
-		}
-		if (p1.y < 0 && p2.y < 0)
-			continue;
-
-		vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, 20);
-		Globe2->AddSurfaceLineToMesh(mesh, p1, p2);
-		tg->AddMesh(mesh, i%6);
-	}
-	tg->SetEnabled(false);
-*/
-}else{
-	logo = NULL;
-}
+	m_pDemoGroup = NULL;
 
 	// pass the time along once to orient the earth
 	m_pIcoGlobe->SetTime(m_pGlobeTime->GetTime());
@@ -363,6 +269,233 @@ if (pwdemo){
 	double lon = 14.1;
 	double lat = 37.5;
 	SetEarthLines(lon, lat);
+}
+
+void Enviro::MakeDemoGlobe()
+{
+	m_pDemoGroup = new vtGroup;
+	m_pDemoGroup->SetName2("DemoGroup");
+	vtIcoGlobe *Globe2 = new vtIcoGlobe;
+	Globe2->Create(1000, vtString(""), vtIcoGlobe::GEODESIC);
+	//Globe2->SetInflation(1.0f);
+	vtTransform *trans = new vtTransform;
+	trans->SetName2("2nd Globe Scaler");
+	m_pGlobeContainer->AddChild(m_pDemoGroup);
+	m_pDemoGroup->AddChild(trans);
+	trans->AddChild(Globe2->GetTop());
+	trans->Scale3(1.006f, 1.006f, 1.006f);
+	m_pGlobeTime->AddTarget((vtTimeTarget *)Globe2);
+
+	// Planetwork globe is around 3 PM GMT, summer over the north atlantic
+	vtTime time;
+	time.SetDate(2000, 6, 20);
+	time.SetTimeOfDay(15,0,0);
+	m_pGlobeTime->SetTime(time);
+
+	vtGeom *geom = new vtGeom;
+	vtMaterialArray *mats = new vtMaterialArray;
+	mats->AddTextureMaterial2("Planetwork/logo3.png", false, false, true);
+	mats->AddTextureMaterial2("Planetwork/logo2.png", false, false, true);
+	geom->SetMaterials(mats);
+	mats->Release();
+	float width = 1.9, height = .22;
+	FRECT rect(-width/2, height/2, width/2, -height/2);
+	GeomAddRectMesh(geom, rect, 1.15, 0);
+	rect += FPoint2(0.01, -0.01);
+	GeomAddRectMesh(geom, rect, 1.14, 1);
+	m_pDemoGroup->AddChild(geom);
+	Globe2->SetTime(m_pGlobeTime->GetTime());
+
+	int i;
+	vtMaterialArray *rainbow = new vtMaterialArray;
+	bool bLighting = false;
+	rainbow->AddRGBMaterial1(RGBf(0.5,0,0),		false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial1(RGBf(0.5,0.5,0),	false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial1(RGBf(0,0.5,0),		false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial1(RGBf(0,0.5,0.5),	false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial1(RGBf(0,0,0.5),		false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial1(RGBf(0.5,0,0.5),	false, bLighting, false, 0.5f);
+	for (i = 0; i < 6; i++)
+	{
+		vtMaterial *mat = rainbow->GetAt(i);
+		mat->SetTransparent(true, true);
+	}
+	m_pDemoTrails = new vtGeom;
+	m_pDemoTrails->SetName2("Trails");
+	m_pDemoTrails->SetMaterials(rainbow);
+	rainbow->Release();
+	Globe2->GetTop()->AddChild(m_pDemoTrails);
+
+	vtString users = FindFileOnPaths(vtGetDataPath(), "PointData/vtp-users-040129.shp");
+	if (users != "")
+	{
+		vtFeatureLoader loader;
+		vtFeatureSet *feat1 = loader.LoadFromSHP(users);
+		vtFeatureSetPoint2D *ft = (vtFeatureSetPoint2D *) feat1;
+
+		int half = ft->GetNumEntities() / 2;
+		int foo = 0;
+		for (i = 0; i < half; i++)
+		{
+			DPoint2 p1 = ft->GetPoint(i);
+			DPoint2 p2 = ft->GetPoint(i+half);
+			if (p1 == DPoint2(0,0) || p2 == DPoint2(0,0))
+				continue;
+			if (p1.y > 0 && p2.y > 0)
+			{
+				foo++;
+				if ((foo%20)<19)
+					continue;
+			}
+			if (p1.y < 0 && p2.y < 0)
+				continue;
+
+			vtMeshFactory mf(m_pDemoTrails, vtMesh::LINE_STRIP, 0, 7000, i%6);
+			Globe2->AddSurfaceLineToMesh(&mf, p1, p2);
+		}
+		delete feat1;
+	}
+
+	// Stark lighting, no ambient
+	vtTransform *pSunLight = GetSunLight();
+	vtLight *pLight = (vtLight *) pSunLight->GetChild(0);
+	if (pLight)
+	{
+		pLight->SetDiffuse(RGBf(1, 1, 1));
+		pLight->SetAmbient(RGBf(0, 0, 0));
+	}
+	SetEarthShading(true);
+}
+
+//
+// Create the earth globe
+//
+void Enviro::MakeOverlayGlobe()
+{
+#if 0
+	VTLOG("MakeGlobe\n");
+
+	m_pGlobeTime = new vtTimeEngine;
+	m_pGlobeTime->SetName2("GlobeTime");
+	vtGetScene()->AddEngine(m_pGlobeTime);
+
+	m_pGlobeContainer = new vtGroup;
+	m_pGlobeContainer->SetName2("Globe Container");
+
+	// simple globe
+//	m_pGlobeXForm = CreateSimpleEarth(g_Options.m_DataPaths);
+
+	// fancy icosahedral globe
+	m_pIcoGlobe = new vtIcoGlobe;
+	m_pIcoGlobe->Create(5000, g_Options.m_strEarthImage,
+//		vtIcoGlobe::GEODESIC);
+//		vtIcoGlobe::RIGHT_TRIANGLE);
+		vtIcoGlobe::DYMAX_UNFOLD);
+//		vtIcoGlobe::INDEPENDENT_GEODESIC);
+	m_pGlobeContainer->AddChild(m_pIcoGlobe->GetTop());
+	m_pGlobeTime->AddTarget((vtTimeTarget *)m_pIcoGlobe);
+
+	// pass the time along once to orient the earth
+	m_pIcoGlobe->SetTime(m_pGlobeTime->GetTime());
+
+	// use a trackball engine for navigation
+	//
+	VTLOG("\tcreating Trackball\n");
+	m_pTrackball = new vtTrackball(INITIAL_SPACE_DIST);
+	m_pTrackball->SetName2("Trackball2");
+	m_pTrackball->SetTarget(vtGetScene()->GetCamera());
+	m_pTrackball->SetRotateButton(VT_RIGHT, 0, false);
+	m_pTrackball->SetZoomButton(VT_RIGHT, VT_SHIFT);
+	vtGetScene()->AddEngine(m_pTrackball);
+
+	// stop them from going in too far (they'd see through the earth)
+	m_pTrackball->LimitPos(FPoint3(-1E9,-1E9,1.01f), FPoint3(1E9,1E9,1E9));
+
+	// determine where the terrains are, and show them as red rectangles
+	//
+	LookUpTerrainLocations();
+	VTLOG("AddTerrainRectangles\n");
+	m_pIcoGlobe->AddTerrainRectangles(vtGetTS());
+
+	// create the GlobePicker engine for picking features on the earth
+	//
+	m_pGlobePicker = new GlobePicker;
+	m_pGlobePicker->SetName2("GlobePicker");
+	m_pGlobePicker->SetGlobe(m_pIcoGlobe);
+	vtGetScene()->AddEngine(m_pGlobePicker);
+	m_pGlobePicker->SetTarget(m_pCursorMGeom);
+	m_pGlobePicker->SetRadius(1.0);
+	m_pGlobePicker->SetEnabled(false);
+
+	// create some stars around the earth
+	//
+	vtStarDome *pStars = new vtStarDome;
+	vtString bsc_file = FindFileOnPaths(vtGetDataPath(), "Sky/bsc.data");
+	if (bsc_file != "")
+	{
+		pStars->Create(bsc_file, 5.0f);	// brightness
+		vtTransform *pScale = new vtTransform;
+		pScale->SetName2("Star Scaling Transform");
+		pScale->Scale3(20, 20, 20);
+		m_pGlobeContainer->AddChild(pScale);
+		pScale->AddChild(pStars);
+	}
+
+	// create some geometry showing various astronomical axes
+	vtMaterialArray *pMats = new vtMaterialArray;
+	int yellow = pMats->AddRGBMaterial1(RGBf(1,1,0), false, false);
+	int red = pMats->AddRGBMaterial1(RGBf(1,0,0), false, false);
+	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
+
+	m_pSpaceAxes = new vtGeom;
+	m_pSpaceAxes->SetName2("Earth Axes");
+	m_pSpaceAxes->SetMaterials(pMats);
+	pMats->Release();	// pass ownership
+
+	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 6);
+	mesh->AddLine(FPoint3(0,0,200), FPoint3(0,0,0));
+	mesh->AddLine(FPoint3(0,0,1),   FPoint3(-.07f,0,1.1f));
+	mesh->AddLine(FPoint3(0,0,1),   FPoint3( .07f,0,1.1f));
+	m_pSpaceAxes->AddMesh(mesh, yellow);
+	mesh->Release();	// pass ownership
+
+	mesh = new vtMesh(vtMesh::LINES, 0, 6);
+	mesh->AddLine(FPoint3(1.5f,0,0), FPoint3(-1.5f,0,0));
+	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f, 0.07f,0));
+	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f,-0.07f,0));
+	m_pSpaceAxes->AddMesh(mesh, green);
+	mesh->Release();	// pass ownership
+
+	mesh = new vtMesh(vtMesh::LINES, 0, 6);
+	mesh->AddLine(FPoint3(0,2,0), FPoint3(0,-2,0));
+	m_pSpaceAxes->AddMesh(mesh, red);
+	mesh->Release();	// pass ownership
+
+	m_pGlobeContainer->AddChild(m_pSpaceAxes);
+	m_pSpaceAxes->SetEnabled(false);
+
+	// Lon-lat cursor lines
+	m_pEarthLines = new vtGeom;
+	m_pEarthLines->SetName2("Earth Lines");
+	int orange = pMats->AddRGBMaterial1(RGBf(1,.7,1), false, false, true, 0.6);
+	m_pEarthLines->SetMaterials(pMats);
+
+	m_pLineMesh = new vtMesh(vtMesh::LINE_STRIP, 0, 6);
+	for (int i = 0; i < LL_COUNT*3; i++)
+		m_pLineMesh->AddVertex(FPoint3(0,0,0));
+	m_pLineMesh->AddStrip2(LL_COUNT*2, 0);
+	m_pLineMesh->AddStrip2(LL_COUNT, LL_COUNT*2);
+	m_pLineMesh->AllowOptimize(false);
+
+	m_pEarthLines->AddMesh(m_pLineMesh, orange);
+	m_pLineMesh->Release();	// pass ownership
+	m_pIcoGlobe->GetSurface()->AddChild(m_pEarthLines);
+	m_pEarthLines->SetEnabled(false);
+
+	double lon = 14.1;
+	double lat = 37.5;
+	SetEarthLines(lon, lat);
+#endif
 }
 
 void Enviro::SetEarthLines(double lon, double lat)
@@ -761,9 +894,9 @@ void Enviro::DescribeCoordinatesEarth(vtString &str)
 
 // this was a quick hack for the PW conference.  if we ever need a real
 // 'logo' functionality, it should be re-done.
-void Enviro::ToggleLogo()
+void Enviro::ToggleDemo()
 {
-	if (!logo) return;
+	if (!m_pDemoGroup) return;
 	static int st = 1;
 
 	st++;
@@ -771,18 +904,18 @@ void Enviro::ToggleLogo()
 		st = 0;
 	if (st == 0)
 	{
-		logo->SetEnabled(false);
-		tg->SetEnabled(false);
+		m_pDemoGroup->SetEnabled(false);
+		m_pDemoTrails->SetEnabled(false);
 	}
 	if (st == 1)
 	{
-		logo->SetEnabled(true);
-		tg->SetEnabled(false);
+		m_pDemoGroup->SetEnabled(true);
+		m_pDemoTrails->SetEnabled(false);
 	}
 	if (st == 2)
 	{
-		logo->SetEnabled(true);
-		tg->SetEnabled(true);
+		m_pDemoGroup->SetEnabled(true);
+		m_pDemoTrails->SetEnabled(true);
 	}
 }
 

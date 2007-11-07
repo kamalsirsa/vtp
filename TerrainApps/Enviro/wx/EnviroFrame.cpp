@@ -953,8 +953,12 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		break;
 
 	case 2:	// Ctrl-B
-		// toggle logo
-		g_App.ToggleLogo();
+		// toggle demo
+		g_App.ToggleDemo();
+		break;
+
+	case WXK_F11:
+		DoTestCode();
 		break;
 
 	case WXK_F12:
@@ -969,6 +973,11 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		event.Skip();
 		break;
 	}
+}
+
+void EnviroFrame::DoTestCode()
+{
+	g_App.MakeDemoGlobe();
 }
 
 void EnviroFrame::ToggleNavigate()

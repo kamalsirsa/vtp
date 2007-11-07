@@ -257,7 +257,10 @@ public:
 	virtual void ExtendStructure(vtStructInstance *si) {}
 
 	// temporary for demo use
-	void ToggleLogo(); vtGroup *logo;
+	void MakeDemoGlobe();
+	void ToggleDemo();
+	vtGroup *m_pDemoGroup;
+	vtGeom *m_pDemoTrails;
 	void CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, float fSpeed);
 
 protected:
@@ -270,6 +273,7 @@ protected:
 	void DoCursorOnEarth();
 	void DoCursorOnTerrain();
 	void MakeGlobe();
+	void MakeOverlayGlobe();
 	void SetupGlobe();
 	void LookUpTerrainLocations();
 	void SetupTerrain(vtTerrain *pTerr);

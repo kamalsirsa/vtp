@@ -29,8 +29,6 @@
 
 #define ORTHO_HITHER	50	// 50m above highest point on terrain
 
-int pwdemo = 0;
-
 
 ///////////////////////////////////////////////////////////
 
@@ -157,10 +155,7 @@ void Enviro::StartupArgument(int i, const char *str)
 {
 	VTLOG("Command line %d: %s\n", i, str);
 
-	if (!strcmp(str, "-p"))
-		pwdemo = 1;
-
-	else if (!strcmp(str, "-fullscreen"))
+	if (!strcmp(str, "-fullscreen"))
 		g_Options.m_bFullscreen = true;
 
 	else if(!strncmp(str, "-terrain=", 9))
