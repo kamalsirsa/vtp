@@ -288,7 +288,7 @@ void ImportStructDlg::OnColorBuilding( wxCommandEvent &event )
 
 		RGBi result(m_ColorB.Red(), m_ColorB.Green(), m_ColorB.Blue());
 		m_opt.m_BuildingColor = result;
-		
+
 		UpdateColorControl(true);
 	}
 }
@@ -307,7 +307,7 @@ void ImportStructDlg::OnColorRoof( wxCommandEvent &event )
 
 		RGBi result(m_ColorR.Red(), m_ColorR.Green(), m_ColorR.Blue());
 		m_opt.m_RoofColor = result;
-		
+
 		UpdateColorControl(false);
 	}
 }

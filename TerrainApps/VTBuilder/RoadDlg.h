@@ -47,7 +47,7 @@ public:
 	wxChoice* GetSidewalk()  { return (wxChoice*) FindWindow( ID_SIDEWALK ); }
 	wxTextCtrl* GetHwyName()  { return (wxTextCtrl*) FindWindow( ID_HWYNAME ); }
 	wxTextCtrl* GetNumLanes()  { return (wxTextCtrl*) FindWindow( ID_NUMLANES ); }
-	
+
 private:
 	// WDR: member variable declarations for RoadDlg
 	LinkEdit *m_pRoad;

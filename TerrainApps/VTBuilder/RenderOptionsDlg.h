@@ -47,7 +47,7 @@ public:
 
 private:
 	// WDR: member variable declarations for RenderOptionsDlg
-	
+
 private:
 	// WDR: handler declarations for RenderOptionsDlg
 	void OnChoiceColors( wxCommandEvent &event );

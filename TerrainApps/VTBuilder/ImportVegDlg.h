@@ -41,7 +41,7 @@ public:
 	wxRadioButton* GetBiotype2()  { return (wxRadioButton*) FindWindow( ID_BIOTYPE2 ); }
 	wxRadioButton* GetBiotype1()  { return (wxRadioButton*) FindWindow( ID_BIOTYPE1 ); }
 	wxComboBox* GetField()  { return (wxComboBox*) FindWindow( ID_FIELD ); }
-	
+
 private:
 	// WDR: member variable declarations for ImportVegDlg
 	void OnInitDialog(wxInitDialogEvent& event);

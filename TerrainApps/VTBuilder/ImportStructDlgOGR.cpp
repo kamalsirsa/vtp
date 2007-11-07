@@ -142,7 +142,7 @@ void ImportStructDlgOGR::UpdateFieldNames()
 	int i;
 	int iCount;
 	wxString str;
-	
+
 	pLayer = m_pDatasource->GetLayer(GetLayername()->GetSelection());
 
 	if (NULL != pLayer)

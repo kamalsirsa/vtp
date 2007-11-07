@@ -635,9 +635,9 @@ void BuilderView::DrawScaleBar(wxDC * p_DC)
 	wxPen WMPen(wxColor(0,0,0), 1, wxSOLID);  //solid black pen
 	p_DC->SetLogicalFunction(wxCOPY);
 	p_DC->SetPen(WMPen);
-	
+
 	GetClientSize(&w,&h);
-	
+
 	//right bottom corner
 	CalcUnscrolledPosition(w, h, &ww, &hh);
 

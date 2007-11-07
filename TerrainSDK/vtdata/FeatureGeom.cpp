@@ -550,11 +550,11 @@ void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callb
 					end = pObj->panPartStart[part+1]-1;
 				else
 					end = pObj->nVertices-1;
-	
+
 				dline.SetSize(end - start + 1);
 				for (int j = start; j <= end; j++)
 					dline.SetAt(j-start, DPoint2(pObj->padfX[j], pObj->padfY[j]));
-	
+
 				m_Line.push_back(dline);
 			}
 		}
@@ -1141,7 +1141,7 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 			for (int part = 0; part < pObj->nParts; part++)
 			{
 				int start, end;
-				
+
 				start = pObj->panPartStart[part];
 				if (part+1 < pObj->nParts)
 					end = pObj->panPartStart[part+1]-1;

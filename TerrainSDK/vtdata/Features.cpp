@@ -854,7 +854,7 @@ bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 						}
 						dpoly.push_back(dline2);
 					}
-				
+
 					pSetPoly->AddPolygon(dpoly);
 				}
 			}

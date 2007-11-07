@@ -29,7 +29,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 protected:
 	// WDR: method declarations for SpeciesListDlg
 	void RefreshAppeances();
@@ -42,7 +42,7 @@ private:
 	wxListCtrl *m_PATable;
 
 	int m_idx;
-	
+
 private:
 	// WDR: handler declarations for SpeciesListDlg
 	void OnSelect( wxListEvent &event );
@@ -64,7 +64,7 @@ public:
 	{
 		RefreshContents();
 	}
-	
+
 	void RefreshContents();
 
 	wxTreeCtrl *m_BTree;

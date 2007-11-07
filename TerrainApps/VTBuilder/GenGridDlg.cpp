@@ -38,7 +38,7 @@ GenGridDlg::GenGridDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function GenGridDialogFunc for GenGridDlg
-	GenGridDialogFunc( this, TRUE ); 
+	GenGridDialogFunc(this, TRUE);
 
 	m_bSetting = false;
 

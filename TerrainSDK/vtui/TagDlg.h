@@ -25,7 +25,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for TagDlg
 	wxListCtrl* GetList()  { return (wxListCtrl*) FindWindow( ID_TAGLIST ); }
 

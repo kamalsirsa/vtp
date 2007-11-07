@@ -546,7 +546,7 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 		if (result == wxYES)
 			bFloat = true;
 	}
-	
+
 	// Also write derived image tiles?
 	int res = wxMessageBox(_("Also derive and export color-mapped image tiles?"), _("Tiled output"), wxYES_NO | wxCANCEL);
 	if (res == wxCANCEL)

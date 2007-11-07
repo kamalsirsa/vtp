@@ -669,7 +669,7 @@ void BuildingDlg::UpdateFacade()
 
 	if (wxT("") == Facade)
 		Facade = _("(None)");
-	
+
 	if (pFacadeChoice->FindString(Facade) == wxNOT_FOUND)
 		pFacadeChoice->Append(Facade);
 	pFacadeChoice->SetStringSelection(Facade);

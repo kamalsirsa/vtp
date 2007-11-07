@@ -26,7 +26,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for MatchDlg
 	wxCheckBox* GetShrink()  { return (wxCheckBox*) FindWindow( ID_SHRINK ); }
 	wxCheckBox* GetGrow()  { return (wxCheckBox*) FindWindow( ID_GROW ); }

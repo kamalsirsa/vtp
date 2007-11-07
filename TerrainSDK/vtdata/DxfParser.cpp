@@ -229,7 +229,7 @@ void DxfParser::ReadLayer()
 		if (pair.m_iCode == 0)
 		{
 			// save the layer.
-			m_layers.push_back(layer);				
+			m_layers.push_back(layer);
 
 			// back that pointer up.
 			fseek(m_pFile, oldPos, SEEK_SET);
@@ -290,7 +290,7 @@ void DxfParser::ReadPoint()
 					pt.z = 0.0;
 				entity.m_points.push_back(pt);
 				entity.m_iType = DET_Point;
-				m_entities.push_back(entity);				
+				m_entities.push_back(entity);
 			}
 
 			// back that pointer up.
@@ -350,7 +350,7 @@ void DxfParser::ReadText()
 					pt.z = 0.0;
 				entity.m_points.push_back(pt);
 				entity.m_iType = DET_Point;
-				m_entities.push_back(entity);				
+				m_entities.push_back(entity);
 			}
 
 			// back that pointer up.

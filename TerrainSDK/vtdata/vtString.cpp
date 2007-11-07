@@ -395,7 +395,6 @@ bool vtString::Matches(pcchar lpsz) const
 			string = cp++;
 		}
 	}
-	
 	while (*wild == '*')
 		wild++;
 

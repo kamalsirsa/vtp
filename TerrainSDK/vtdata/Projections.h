@@ -181,7 +181,7 @@ public:
 	bool hasGDAL_DATA;
 	bool hasPROJ_LIB;
 	bool hasPROJSO;
-	
+
 	bool Success() { return hasGDAL_DATA && hasPROJ_LIB && hasPROJSO; }
 };
 

@@ -77,7 +77,7 @@ bool vtRoadLayer::OnLoad()
 		pL->m_fLength = pL->Length();
 
 		//set the bounding box for the link
-		pL->ComputeExtent();		
+		pL->ComputeExtent();
 
 		// clean up link direction info
 		if ((pL->m_iFlags & (RF_FORWARD|RF_REVERSE)) == 0)

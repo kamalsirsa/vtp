@@ -27,7 +27,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for SelectDlg
 	wxComboBox* GetComboValue()  { return (wxComboBox*) FindWindow( ID_COMBO_VALUE ); }
 	wxChoice* GetCondition()  { return (wxChoice*) FindWindow( ID_CONDITION ); }

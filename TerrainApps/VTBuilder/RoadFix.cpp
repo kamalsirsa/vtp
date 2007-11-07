@@ -231,7 +231,7 @@ int RoadMapEdit::CleanLinkPoints()
 				pR->m_fLength = pR->Length();
 				break;
 			}
-		}	
+		}
 	}
 	return count;
 }

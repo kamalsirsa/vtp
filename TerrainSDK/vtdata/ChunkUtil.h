@@ -148,7 +148,7 @@ public:
 			} else {
 				m_buffer = (T*) malloc(sizeof(T) * m_buffer_size);
 			}
-		}			
+		}
 	}
 
 	void	transfer_members(array<T>* a)
@@ -319,7 +319,7 @@ public:
 			for (int j = 0; j < m_table[i].size(); j++) {
 				entry&	e = m_table[i][j];
 				int	hash_value = hash_functor::compute(e.key);
-				
+
 				int	index = hash_value & m_size_mask;	// % new_table.size();
 				new_table[index].push_back(e);
 			}
@@ -336,7 +336,7 @@ private:
 		T	key;
 		U	value;
 	};
-	
+
 	int	m_entry_count;
 	int	m_size_mask;
 	array< array<entry> >	m_table;

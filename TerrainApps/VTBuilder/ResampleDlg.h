@@ -91,7 +91,7 @@ private:
 	BuilderView *m_pView;
 	int		m_power;
 	bool	m_bSetting;
-	
+
 private:
 	// WDR: handler declarations for ResampleDlg
 	void OnDotDotDot2( wxCommandEvent &event );

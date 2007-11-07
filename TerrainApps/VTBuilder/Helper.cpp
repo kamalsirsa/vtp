@@ -381,7 +381,7 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 	else
 	{
 		//! Use a slow but very high quality colour compressor.
-		flags |= kColourClusterFit;	
+		flags |= kColourClusterFit;
 	}
 
 	int bytesPerBlock = ( ( flags & kDxt1 ) != 0 ) ? 8 : 16;
@@ -410,15 +410,15 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 					// get the pixel colour
 					for( int j = 0; j < 3; ++j )
 						sourceRgba[4*i + j] = *row++;
-					
+
 					// skip alpha for now
 					sourceRgba[4*i + 3] = 255;
 				}
 			}
-			
+
 			// compress this block
 			Compress( sourceRgba, targetBlock, flags );
-			
+
 			// advance
 			targetBlock += bytesPerBlock;
 		}

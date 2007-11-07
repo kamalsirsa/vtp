@@ -586,7 +586,7 @@ bool RoadMapEdit::SelectAndExtendLink(DPoint2 point, float error, DRECT &bound)
 				//find index for current link
 				for (j=0; j < node->m_iLinks; j++) {
 					if (link == node->GetLink(j)) {
-						index = j;	
+						index = j;
 					}
 				}
 

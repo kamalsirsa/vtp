@@ -464,7 +464,6 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString &strFileN
 					fclose(fp);
 				}
 			}
-		
 			if (bRaster)
 				pLayer = ImportElevation(strFileName, bWarn);
 			else
