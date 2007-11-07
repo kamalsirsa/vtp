@@ -29,7 +29,7 @@ TagDlg::TagDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	wxDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function TagDialogFunc for TagDlg
-	TagDialogFunc( this, TRUE ); 
+	TagDialogFunc(this, TRUE);
 
 	m_pList = GetList();
 

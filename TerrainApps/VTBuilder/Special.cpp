@@ -1,5 +1,5 @@
 //
-//  The Special menus functions of the VTBuilder application.
+//  The Special menu functions of the VTBuilder application.
 //
 // Copyright (c) 2003-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.

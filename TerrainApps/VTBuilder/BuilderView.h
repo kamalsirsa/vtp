@@ -253,7 +253,7 @@ protected:
 	//--------------------------------
 	void DrawScaleBar(wxDC * dc);
 	void OnBeginScroll(wxScrollWinEvent & event);
-	void OnEndScroll(wxScrollWinEvent& event); 
+	void OnEndScroll(wxScrollWinEvent& event);
 	void OnOtherScrollEvents(wxScrollWinEvent & event);
 	wxRect m_ScaleBarArea;
 

@@ -1047,7 +1047,7 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 		// Node key/value
 		if (key == "highway")
 		{
-			if (value == "traffic_signals")	// 
+			if (value == "traffic_signals")	//
 			{
 				m_nodes[m_nodes.size()-1].signal_lights = true;
 			}
@@ -1089,7 +1089,7 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 					m_pLink->m_iLanes = 4;
 				if (value == "motorway_link")	// on/offramp
 					m_pLink->m_iLanes = 1;
-				if (value == "unclassified")	// lowest form of the interconnecting grid network. 
+				if (value == "unclassified")	// lowest form of the interconnecting grid network.
 					m_pLink->m_iLanes = 1;
 				if (value == "unsurfaced")
 					m_pLink->m_Surface = SURFT_DIRT;

@@ -1980,7 +1980,7 @@ void MainFrame::MergeResampleElevation()
 
 	if (spacing == DPoint2(0, 0))
 	{
-		// There were no elevation grids to estimate spacing, so just give 
+		// There were no elevation grids to estimate spacing, so just give
 		//  a default value.
 		spacing.Set(1,1);
 	}
