@@ -36,19 +36,19 @@ using namespace mini;
 	//	developers don't need to debug into the libMini library, so they won't
 	//  need the *d version.
 	#if VTDEBUG && 0
-	  #pragma message( "Adding link with libMinid.lib" )
+	  #pragma message( "Adding link with libMinid-vc8.lib" )
 	  #pragma comment( lib, "libMinid-vc8.lib" )
 	#else
-	  #pragma message( "Adding link with libMini.lib" )
+	  #pragma message( "Adding link with libMini-vc8.lib" )
 	  #pragma comment( lib, "libMini-vc8.lib" )
 	#endif
   #else					// vc71
 	#if VTDEBUG && 0
-	  #pragma message( "Adding link with libMinid.lib" )
-	  #pragma comment( lib, "libMinid.lib" )
+	  #pragma message( "Adding link with libMinid-vc7.lib" )
+	  #pragma comment( lib, "libMinid-vc7.lib" )
 	#else
-	  #pragma message( "Adding link with libMini.lib" )
-	  #pragma comment( lib, "libMini.lib" )
+	  #pragma message( "Adding link with libMini-vc7.lib" )
+	  #pragma comment( lib, "libMini-vc7.lib" )
 	#endif
   #endif
 #endif
