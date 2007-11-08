@@ -42,6 +42,9 @@
 	#include "wx/glcanvas.h"	// needed for writing pre-compressed textures
 #endif
 
+#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_GREYC)
+#include "Helper.h"
+#endif
 
 void MainFrame::ExportASC()
 {
@@ -887,6 +890,11 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 					int tilesize = base_tilesize >> k;
 
 					vtMiniDatabuf output_buf;
+
+#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_GREYC)
+					output_buf.setconversion(conversionhook,NULL);
+#endif
+
 					output_buf.xsize = tilesize;
 					output_buf.ysize = tilesize;
 					output_buf.zsize = 1;

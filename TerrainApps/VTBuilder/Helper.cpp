@@ -25,6 +25,24 @@
 #endif
 #endif
 
+#if USE_LIBMINI_DATABUF_JPEG
+#include "jpegbase.h"
+#ifdef _MSC_VER
+  #if _MSC_VER >= 1400	// vc8
+	  #pragma message( "Adding link with libMiniSFX-vc8.lib" )
+	  #pragma comment( lib, "libMiniSFX-vc8.lib" )
+  #else					// vc71
+	  #pragma message( "Adding link with libMiniSFX-vc7.lib" )
+	  #pragma comment( lib, "libMiniSFX-vc7.lib" )
+  #endif
+#endif
+#endif
+
+#if USE_LIBMINI_DATABUF_GREYC
+#define GREYCSTORATION
+#include "greycbase.h"
+#endif
+
 //////////////////////////////////
 
 void IncreaseRect(wxRect &rect, int adjust)
@@ -426,3 +444,94 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 }
 #endif	// SUPPORT_SQUISH
 
+// conversion hook for external formats (e.g. JPEG/PNG)
+void conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
+                    unsigned char **newdata,unsigned int *newbytes,
+                    databuf *obj,void *data)
+   {
+   switch (extformat)
+      {
+      case 1: // JPEG
+
+#if USE_LIBMINI_DATABUF_JPEG
+
+         if (israwdata==0)
+            {
+            int width,height,components;
+
+            *newdata=jpegbase::decompressJPEGimage(srcdata,bytes,&width,&height,&components);
+            if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) ERRORMSG();
+
+            switch (components)
+               {
+               case 3:
+                  if (obj->type!=3) ERRORMSG();
+                  break;
+               case 4:
+                  if (obj->type!=4) ERRORMSG();
+                  break;
+               default: ERRORMSG();
+               }
+
+            *newbytes=width*height*components;
+            }
+         else
+            {
+            const float quality=0.75f;
+
+            int components;
+
+            switch (obj->type)
+               {
+               case 1:
+                  components=1;
+                  break;
+               case 3:
+                  components=3;
+                  break;
+               case 4:
+                  components=4;
+                  break;
+               default: ERRORMSG();
+               }
+
+#if USE_LIBMINI_DATABUF_GREYC
+            greycbase::denoiseGREYCimage(srcdata,obj->xsize,obj->ysize);
+#endif
+
+            jpegbase::compressJPEGimage(srcdata,obj->xsize,obj->ysize,components,quality,newdata,newbytes);
+            }
+
+#else
+         ERRORMSG();
+#endif
+
+         break;
+
+      case 2: // PNG
+
+         if (israwdata==0)
+            ERRORMSG(); //!! not yet implemented
+         else
+            switch (obj->type)
+               {
+               case 1:
+                  ERRORMSG(); //!! not yet implemented
+                  break;
+               case 2:
+                  ERRORMSG(); //!! not yet implemented
+                  break;
+               case 3:
+                  ERRORMSG(); //!! not yet implemented
+                  break;
+               case 4:
+                  ERRORMSG(); //!! not yet implemented
+                  break;
+               default: ERRORMSG();
+               }
+
+         break;
+
+      default: ERRORMSG();
+      }
+   }

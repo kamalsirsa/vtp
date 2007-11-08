@@ -8,6 +8,7 @@
 
 #define USE_LIBMINI_DATABUF 1
 #define USE_LIBMINI_DATABUF_JPEG 0
+#define USE_LIBMINI_DATABUF_GREYC 0
 
 #include "vtdata/MiniDatabuf.h"
 
@@ -20,8 +21,8 @@
 	  #pragma message( "Adding link with libMini-vc8.lib" )
 	  #pragma comment( lib, "libMini-vc8.lib" )
   #else					// vc71
-	  #pragma message( "Adding link with libMini.lib" )
-	  #pragma comment( lib, "libMini.lib" )
+	  #pragma message( "Adding link with libMini-vc7.lib" )
+	  #pragma comment( lib, "libMini-vc7.lib" )
   #endif
   #pragma comment( lib, "glu32.lib" )
 #endif

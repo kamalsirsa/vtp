@@ -11,6 +11,8 @@
 #include "vtdata/Projections.h"
 #include "vtdata/MathTypes.h"
 
+#include "database.h"
+
 /////
 
 void IncreaseRect(wxRect &rect, int adjust);
@@ -77,5 +79,8 @@ protected:
 void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool bFast);
 #endif
 
-#endif	// HELPERH
+void conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
+                                unsigned char **newdata,unsigned int *newbytes,
+                                databuf *obj,void *data);
 
+#endif	// HELPERH
