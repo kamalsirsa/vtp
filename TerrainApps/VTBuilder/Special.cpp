@@ -635,13 +635,22 @@ void MainFrame::DoDymaxTexture()
 		return;
 	wxString prefix = dlg3.GetValue();
 
+	// ask the user for a directory
+	static wxString default_path = wxEmptyString;
+	wxDirDialog getDir(this, _("Output Directory"), default_path, wxDD_DEFAULT_STYLE);
+	getDir.SetWindowStyle(getDir.GetWindowStyle() | wxDD_NEW_DIR_BUTTON);
+	if (getDir.ShowModal() != wxID_OK)
+		return;
+	wxString strDirName = getDir.GetPath();
+	default_path = strDirName;	// save it for next time
+	vtString DirName = strDirName.mb_str(wxConvUTF8);
+
 	// TODO? change this code to use vtBitmap instead of vtDIB?
 
 	wxProgressDialog prog(_("Processing"), _("Loading source bitmap.."), 100);
 	prog.Show(TRUE);
 
 	// read texture
-	int input_x, input_y;
 	vtDIB img;
 	wxString path = dlg.GetPath();
 
@@ -653,16 +662,19 @@ void MainFrame::DoDymaxTexture()
 		DisplayAndLog("File read failed");
 		return;
 	}
-	input_x = img.GetWidth();
-	input_y = img.GetHeight();
+	int input_x = img.GetWidth();
+	int input_y = img.GetHeight();
+	int depth = img.GetDepth();
 
 	DymaxIcosa ico;
 
+	unsigned char value;
 	RGBi rgb;
+	RGBAi rgba;
 	for (i = 0; i < 10; i++)
 	{
 		vtDIB out;
-		out.Create(output_size, output_size, 24);
+		out.Create(output_size, output_size, depth);
 
 		wxString msg;
 		msg.Printf(_("Creating tile %d ..."), i+1);
@@ -691,14 +703,27 @@ void MainFrame::DoDymaxTexture()
 				int source_x = (int) (lon / PI2d * input_x);
 				int source_y = (int) (lat / PId * input_y);
 
-				img.GetPixel24(source_x, source_y, rgb);
-				out.SetPixel24(x, output_size-1-y, rgb);
+				if (depth == 8)
+				{
+					value = img.GetPixel8(source_x, source_y);
+					out.SetPixel8(x, output_size-1-y, value);
+				}
+				else if (depth == 24)
+				{
+					img.GetPixel24(source_x, source_y, rgb);
+					out.SetPixel24(x, output_size-1-y, rgb);
+				}
+				else if (depth == 32)
+				{
+					img.GetPixel32(source_x, source_y, rgba);
+					out.SetPixel32(x, output_size-1-y, rgba);
+				}
 			}
 		}
 		vtString name;
 		name.Format("%s_%02d%02d.png", (const char *) prefix.mb_str(wxConvUTF8),
 			icosa_face_pairs[i][0]+1, icosa_face_pairs[i][1]+1);
-		success = out.WritePNG(name);
+		success = out.WritePNG(DirName + "/" + name);
 		if (!success)
 		{
 			DisplayAndLog("Failed to write file %s.", (const char *) name);
