@@ -101,6 +101,7 @@ public:
 
 	// these work in space
 	vtIcoGlobe *GetGlobe() { return m_pIcoGlobe; }
+	vtIcoGlobe *GetOverlayGlobe() { return m_pOverlayGlobe; }
 	void SetEarthShading(bool bShade);
 	bool GetEarthShading();
 	void SetEarthTilt(bool bTilt);
@@ -262,6 +263,7 @@ public:
 	vtGroup *m_pDemoGroup;
 	vtGeom *m_pDemoTrails;
 	void CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, float fSpeed);
+	void MakeOverlayGlobe(vtImage *image, bool progress_callback(int) = NULL);
 
 protected:
 	// startup methods
@@ -273,7 +275,6 @@ protected:
 	void DoCursorOnEarth();
 	void DoCursorOnTerrain();
 	void MakeGlobe();
-	void MakeOverlayGlobe();
 	void SetupGlobe();
 	void LookUpTerrainLocations();
 	void SetupTerrain(vtTerrain *pTerr);
@@ -331,6 +332,7 @@ protected:
 	vtTimeEngine	*m_pGlobeTime;
 	vtGroup		*m_pGlobeContainer;
 	vtIcoGlobe	*m_pIcoGlobe;
+	vtIcoGlobe	*m_pOverlayGlobe;
 	bool		m_bEarthShade;
 	bool		m_bGlobeFlat;
 	float		m_fFlattening, m_fFlattenDir;

@@ -57,6 +57,7 @@ Enviro::Enviro() : vtTerrainScene()
 	m_fFolding = 0.0f;
 	m_fFoldDir = 0.0f;
 	m_pIcoGlobe = NULL;
+	m_pOverlayGlobe = NULL;
 	m_pSpaceAxes = NULL;
 	m_pEarthLines = NULL;
 
@@ -149,6 +150,7 @@ void Enviro::Shutdown()
 	CleanupScene();
 
 	delete m_pIcoGlobe;
+	delete m_pOverlayGlobe;
 }
 
 void Enviro::StartupArgument(int i, const char *str)

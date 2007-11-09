@@ -146,7 +146,7 @@ void GeomAddRectMesh(vtGeom *pGeom, const FRECT &rect, float z, int matidx)
 //
 void Enviro::MakeGlobe()
 {
-	VTLOG("MakeGlobe\n");
+	VTLOG1("MakeGlobe\n");
 
 	m_pGlobeTime = new vtTimeEngine;
 	m_pGlobeTime->SetName2("GlobeTime");
@@ -166,7 +166,7 @@ void Enviro::MakeGlobe()
 		vtIcoGlobe::DYMAX_UNFOLD);
 //		vtIcoGlobe::INDEPENDENT_GEODESIC);
 	m_pGlobeContainer->AddChild(m_pIcoGlobe->GetTop());
-	m_pGlobeTime->AddTarget((vtTimeTarget *)m_pIcoGlobe);
+	m_pGlobeTime->AddTarget(m_pIcoGlobe);
 	m_pDemoGroup = NULL;
 
 	// pass the time along once to orient the earth
@@ -370,132 +370,92 @@ void Enviro::MakeDemoGlobe()
 //
 // Create the earth globe
 //
-void Enviro::MakeOverlayGlobe()
+void Enviro::MakeOverlayGlobe(vtImage *input, bool progress_callback(int))
 {
-#if 0
-	VTLOG("MakeGlobe\n");
+	VTLOG1("MakeOverlayGlobe\n");
 
-	m_pGlobeTime = new vtTimeEngine;
-	m_pGlobeTime->SetName2("GlobeTime");
-	vtGetScene()->AddEngine(m_pGlobeTime);
+	// Make dymaxion overlay images
+	vtImage *output[10];
 
-	m_pGlobeContainer = new vtGroup;
-	m_pGlobeContainer->SetName2("Globe Container");
+	int input_x = input->GetWidth();
+	int input_y = input->GetHeight();
+	int depth = input->GetDepth();
+	int output_size = 512;
 
-	// simple globe
-//	m_pGlobeXForm = CreateSimpleEarth(g_Options.m_DataPaths);
+	DymaxIcosa ico;
+
+	unsigned char value;
+	RGBi rgb;
+	RGBAi rgba;
+	double u, v;
+	double lon, lat;
+	DPoint3 uvw;
+	for (int i = 0; i < 10; i++)
+	{
+		output[i] = new vtImage;
+		output[i]->Create(output_size, output_size, depth);
+
+		if (progress_callback != NULL)
+			progress_callback((i+1)*10);
+
+		for (int x = 0; x < output_size; x++)
+		{
+			for (int y = 0; y < output_size; y++)
+			{
+				int face;
+				if (y < output_size-1-x)
+				{
+					face = icosa_face_pairs[i][0];
+					u = (double)x / output_size;
+					v = (double)y / output_size;
+				}
+				else
+				{
+					face = icosa_face_pairs[i][1];
+					u = (double)(output_size-1-x) / output_size;
+					v = (double)(output_size-1-y) / output_size;
+				}
+				uvw.x = u;
+				uvw.y = v;
+				ico.FaceUVToGeo(face, uvw, lon, lat);
+
+				int source_x = (int) (lon / PI2d * input_x);
+				int source_y = (int) (lat / PId * input_y);
+
+				if (depth == 8)
+				{
+					value = input->GetPixel8(source_x, source_y);
+					output[i]->SetPixel8(x, output_size-1-y, value);
+				}
+				else if (depth == 24)
+				{
+					input->GetPixel24(source_x, source_y, rgb);
+					output[i]->SetPixel24(x, output_size-1-y, rgb);
+				}
+				else if (depth == 32)
+				{
+					input->GetPixel32(source_x, source_y, rgba);
+					output[i]->SetPixel32(x, output_size-1-y, rgba);
+				}
+			}
+		}
+	}
+
 
 	// fancy icosahedral globe
-	m_pIcoGlobe = new vtIcoGlobe;
-	m_pIcoGlobe->Create(5000, g_Options.m_strEarthImage,
+	m_pOverlayGlobe = new vtIcoGlobe;
+	m_pOverlayGlobe->Create(5000, output,
 //		vtIcoGlobe::GEODESIC);
 //		vtIcoGlobe::RIGHT_TRIANGLE);
 		vtIcoGlobe::DYMAX_UNFOLD);
 //		vtIcoGlobe::INDEPENDENT_GEODESIC);
-	m_pGlobeContainer->AddChild(m_pIcoGlobe->GetTop());
-	m_pGlobeTime->AddTarget((vtTimeTarget *)m_pIcoGlobe);
 
-	// pass the time along once to orient the earth
-	m_pIcoGlobe->SetTime(m_pGlobeTime->GetTime());
+	vtTransform *trans = new vtTransform;
+	trans->SetName2("Overlay Globe Scaler");
+	trans->Scale3(1.006f, 1.005f, 1.005f);
 
-	// use a trackball engine for navigation
-	//
-	VTLOG("\tcreating Trackball\n");
-	m_pTrackball = new vtTrackball(INITIAL_SPACE_DIST);
-	m_pTrackball->SetName2("Trackball2");
-	m_pTrackball->SetTarget(vtGetScene()->GetCamera());
-	m_pTrackball->SetRotateButton(VT_RIGHT, 0, false);
-	m_pTrackball->SetZoomButton(VT_RIGHT, VT_SHIFT);
-	vtGetScene()->AddEngine(m_pTrackball);
-
-	// stop them from going in too far (they'd see through the earth)
-	m_pTrackball->LimitPos(FPoint3(-1E9,-1E9,1.01f), FPoint3(1E9,1E9,1E9));
-
-	// determine where the terrains are, and show them as red rectangles
-	//
-	LookUpTerrainLocations();
-	VTLOG("AddTerrainRectangles\n");
-	m_pIcoGlobe->AddTerrainRectangles(vtGetTS());
-
-	// create the GlobePicker engine for picking features on the earth
-	//
-	m_pGlobePicker = new GlobePicker;
-	m_pGlobePicker->SetName2("GlobePicker");
-	m_pGlobePicker->SetGlobe(m_pIcoGlobe);
-	vtGetScene()->AddEngine(m_pGlobePicker);
-	m_pGlobePicker->SetTarget(m_pCursorMGeom);
-	m_pGlobePicker->SetRadius(1.0);
-	m_pGlobePicker->SetEnabled(false);
-
-	// create some stars around the earth
-	//
-	vtStarDome *pStars = new vtStarDome;
-	vtString bsc_file = FindFileOnPaths(vtGetDataPath(), "Sky/bsc.data");
-	if (bsc_file != "")
-	{
-		pStars->Create(bsc_file, 5.0f);	// brightness
-		vtTransform *pScale = new vtTransform;
-		pScale->SetName2("Star Scaling Transform");
-		pScale->Scale3(20, 20, 20);
-		m_pGlobeContainer->AddChild(pScale);
-		pScale->AddChild(pStars);
-	}
-
-	// create some geometry showing various astronomical axes
-	vtMaterialArray *pMats = new vtMaterialArray;
-	int yellow = pMats->AddRGBMaterial1(RGBf(1,1,0), false, false);
-	int red = pMats->AddRGBMaterial1(RGBf(1,0,0), false, false);
-	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
-
-	m_pSpaceAxes = new vtGeom;
-	m_pSpaceAxes->SetName2("Earth Axes");
-	m_pSpaceAxes->SetMaterials(pMats);
-	pMats->Release();	// pass ownership
-
-	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 6);
-	mesh->AddLine(FPoint3(0,0,200), FPoint3(0,0,0));
-	mesh->AddLine(FPoint3(0,0,1),   FPoint3(-.07f,0,1.1f));
-	mesh->AddLine(FPoint3(0,0,1),   FPoint3( .07f,0,1.1f));
-	m_pSpaceAxes->AddMesh(mesh, yellow);
-	mesh->Release();	// pass ownership
-
-	mesh = new vtMesh(vtMesh::LINES, 0, 6);
-	mesh->AddLine(FPoint3(1.5f,0,0), FPoint3(-1.5f,0,0));
-	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f, 0.07f,0));
-	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f,-0.07f,0));
-	m_pSpaceAxes->AddMesh(mesh, green);
-	mesh->Release();	// pass ownership
-
-	mesh = new vtMesh(vtMesh::LINES, 0, 6);
-	mesh->AddLine(FPoint3(0,2,0), FPoint3(0,-2,0));
-	m_pSpaceAxes->AddMesh(mesh, red);
-	mesh->Release();	// pass ownership
-
-	m_pGlobeContainer->AddChild(m_pSpaceAxes);
-	m_pSpaceAxes->SetEnabled(false);
-
-	// Lon-lat cursor lines
-	m_pEarthLines = new vtGeom;
-	m_pEarthLines->SetName2("Earth Lines");
-	int orange = pMats->AddRGBMaterial1(RGBf(1,.7,1), false, false, true, 0.6);
-	m_pEarthLines->SetMaterials(pMats);
-
-	m_pLineMesh = new vtMesh(vtMesh::LINE_STRIP, 0, 6);
-	for (int i = 0; i < LL_COUNT*3; i++)
-		m_pLineMesh->AddVertex(FPoint3(0,0,0));
-	m_pLineMesh->AddStrip2(LL_COUNT*2, 0);
-	m_pLineMesh->AddStrip2(LL_COUNT, LL_COUNT*2);
-	m_pLineMesh->AllowOptimize(false);
-
-	m_pEarthLines->AddMesh(m_pLineMesh, orange);
-	m_pLineMesh->Release();	// pass ownership
-	m_pIcoGlobe->GetSurface()->AddChild(m_pEarthLines);
-	m_pEarthLines->SetEnabled(false);
-
-	double lon = 14.1;
-	double lat = 37.5;
-	SetEarthLines(lon, lat);
-#endif
+	m_pIcoGlobe->GetTop()->AddChild(trans);
+	trans->AddChild(m_pOverlayGlobe->GetTop());
 }
 
 void Enviro::SetEarthLines(double lon, double lat)
