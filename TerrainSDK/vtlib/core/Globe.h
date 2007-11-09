@@ -54,6 +54,7 @@ public:
 
 	void Create(int iTriangleCount, const vtString &strImagePrefix,
 		Style style = GEODESIC);
+	void Create(int iTriangleCount, vtImage **images, Style style);
 	vtTransform *GetTop() { return m_top; }
 	vtGroup *GetSurface() { return m_SurfaceGroup; }
 
@@ -77,6 +78,9 @@ public:
 	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, const DPoint2 &g2);
 	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line);
 
+	void SetEarthMaterials(vtMaterialArray *mats);
+	vtMaterialArray *GetEarthMaterials();
+
 protected:
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 	struct IcoVert
@@ -97,6 +101,12 @@ protected:
 	};
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
+	void CreateMeshMat(int iTriangleCount);
+	vtMaterialArray *CreateMaterialsFromFiles(const vtString &strImagePrefix);
+	vtMaterialArray *CreateMaterialsFromImages(vtImage **images);
+	void CreateCoreMaterials();
+	void CreateNodes();
+
 	int GetMFace(int face, int subface);
 	void BuildSphericalFeatures(GlobeLayer *glay, float fSize);
 	void BuildSphericalPoints(GlobeLayer *glay, float fSize);
@@ -104,8 +114,6 @@ protected:
 	void BuildSphericalPolygons(GlobeLayer *glay, float fSize);
 	void BuildFlatFeatures(GlobeLayer *glay, float fSize);
 	void BuildFlatPoint(GlobeLayer *glay, int i, float fSize);
-
-	void CreateMaterials(const vtString &strImagePrefix);
 
 	void FindLocalOrigin(int mface);
 	void SetMeshConnect(int mface);
@@ -136,7 +144,8 @@ protected:
 	vtTransform	*m_top;
 	vtGroup		*m_SurfaceGroup;
 	vtGeom		*m_pAxisGeom;
-	vtMaterialArray	*m_mats;
+	vtMaterialArray	*m_coremats;
+	vtMaterialArray	*m_earthmats;
 	std::vector<int> m_globe_mat;
 	int			m_red;
 	int			m_yellow;

@@ -26,7 +26,8 @@ vtIcoGlobe::vtIcoGlobe()
 	m_top = NULL;
 	m_SurfaceGroup = NULL;
 	m_pAxisGeom = NULL;
-	m_mats = NULL;
+	m_coremats = NULL;
+	m_earthmats = NULL;
 	m_bUnfolded = false;
 	m_bTilt = false;
 	m_cylinder = NULL;
@@ -34,7 +35,8 @@ vtIcoGlobe::vtIcoGlobe()
 
 vtIcoGlobe::~vtIcoGlobe()
 {
-	m_mats->Release();
+	m_earthmats->Release();
+	m_coremats->Release();
 	for (unsigned int i = 0; i < m_GlobeLayers.GetSize(); i++)
 		delete m_GlobeLayers[i];
 	if (m_cylinder)
@@ -66,7 +68,36 @@ void vtIcoGlobe::Create(int iTriangleCount, const vtString &strImagePrefix, Styl
 	VTLOG("vtIcoGlobe::Create\n");
 
 	m_style = style;
+	CreateMeshMat(iTriangleCount);
+	CreateCoreMaterials();
+	SetEarthMaterials(CreateMaterialsFromFiles(strImagePrefix));
+	CreateNodes();
+}
 
+void vtIcoGlobe::Create(int iTriangleCount, vtImage **images, Style style)
+{
+	VTLOG("vtIcoGlobe::Create\n");
+
+	m_style = style;
+	CreateMeshMat(iTriangleCount);
+	CreateCoreMaterials();
+	SetEarthMaterials(CreateMaterialsFromImages(images));
+	CreateNodes();
+}
+
+void vtIcoGlobe::SetEarthMaterials(vtMaterialArray *mats)
+{
+	m_earthmats = mats;
+	// TODO: set the materials on all the component earth geometries
+}
+
+vtMaterialArray *vtIcoGlobe::GetEarthMaterials()
+{
+	return m_earthmats;
+}
+
+void vtIcoGlobe::CreateMeshMat(int iTriangleCount)
+{
 	EstimateTesselation(iTriangleCount);
 
 	// Estimate number of meshes, and number of vertices per mesh
@@ -81,7 +112,7 @@ void vtIcoGlobe::Create(int iTriangleCount, const vtString &strImagePrefix, Styl
 		// 1 material per face pair
 		m_globe_mat.resize(10);
 	}
-	else if (style == INDEPENDENT_GEODESIC)
+	else if (m_style == INDEPENDENT_GEODESIC)
 	{
 		prim_type = vtMesh::TRIANGLES;
 
@@ -92,11 +123,11 @@ void vtIcoGlobe::Create(int iTriangleCount, const vtString &strImagePrefix, Styl
 		// 1 material per mesh pair
 		m_globe_mat.resize(10 * m_freq * m_freq);
 	}
-	else if (style == RIGHT_TRIANGLE || style == DYMAX_UNFOLD)
+	else if (m_style == RIGHT_TRIANGLE || m_style == DYMAX_UNFOLD)
 	{
 		prim_type = vtMesh::TRIANGLE_STRIP;
 
-		m_meshes = (style == RIGHT_TRIANGLE) ? 20 : 22;
+		m_meshes = (m_style == RIGHT_TRIANGLE) ? 20 : 22;
 		numvtx_per_mesh = 1 + 2 * ((int) pow((double)3, m_depth+1));
 
 		// 1 material per face pair
@@ -107,12 +138,124 @@ void vtIcoGlobe::Create(int iTriangleCount, const vtString &strImagePrefix, Styl
 	{
 		int vertex_type = VT_Normals | VT_TexCoords;
 		vtMesh *mesh = new vtMesh(prim_type, vertex_type, numvtx_per_mesh);
-		mesh->AllowOptimize(strImagePrefix == "");
+
+		// We will be inflating, unfolding etc. which requires disabling the
+		//  default display lists.
+		mesh->AllowOptimize(false);
 		m_mesh.push_back(mesh);
 	}
+}
 
-	CreateMaterials(strImagePrefix);
+void vtIcoGlobe::CreateCoreMaterials()
+{
+	m_coremats = new vtMaterialArray;
+	m_red = m_coremats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f),	// red
+					 false, false, true);
+	m_yellow = m_coremats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
+					 false, false, false);
+	m_white = m_coremats->AddRGBMaterial1(RGBf(0.2f, 0.2f, 0.2f),
+					 true, true, true, 1);
+	m_coremats->GetAt(m_white)->SetTransparent(true, true);
+}
 
+vtMaterialArray *vtIcoGlobe::CreateMaterialsFromFiles(const vtString &strImagePrefix)
+{
+	vtMaterialArray *mats = new vtMaterialArray;
+
+#if 0
+	if (m_style == INDEPENDENT_GEODESIC)
+	{
+		int mat = 0;
+		for (int pair = 0; pair < 10; pair++)
+		{
+			for (int j = 0; j < m_freq; j++)
+			for (int i = 0; i < m_freq; i++)
+			{
+				// TEMP for testing: pretty colors
+				float r = (pair+1) * (1.0f / 10);
+				float g = (j+1) * (1.0f / m_freq);
+				float b = (i+1) * (1.0f / m_freq);
+				m_globe_mat[mat++] = mats->AddRGBMaterial1(RGBf(r, g, b),
+						true, true);
+			}
+		}
+		return;
+	}
+#endif
+	vtString base;
+	vtString fname;
+	vtString fullpath;
+
+	bool bCulling = true;
+	bool bLighting = false;
+	int pair, index;
+	for (pair = 0; pair < 10; pair++)
+	{
+		if (strImagePrefix == "")
+		{
+			m_globe_mat[pair] = m_white;
+			continue;
+		}
+		int f1 = icosa_face_pairs[pair][0];
+		int f2 = icosa_face_pairs[pair][1];
+
+		base = "WholeEarth/";
+		base += strImagePrefix;
+		base += "_";
+
+		fname.Format("%s%02d%02d.jpg", (const char *)base, f1+1, f2+1);
+		VTLOG("\t texture: %s\n", (const char *)fname);
+
+		fullpath = FindFileOnPaths(vtGetDataPath(), (const char *)fname);
+		if (fullpath == "")
+		{
+			// try again with png
+			fname.Format("%s%02d%02d.png", (const char *)base, f1+1, f2+1);
+			VTLOG("\t texture: %s\n", (const char *)fname);
+			fullpath = FindFileOnPaths(vtGetDataPath(), (const char *)fname);
+		}
+		if (fullpath == "")
+		{
+			VTLOG("\t\tnot found on data paths.\n");
+			index = -1;
+		}
+		vtImage *img = new vtImage(fullpath);
+		index = mats->AddTextureMaterial(img,
+					 bCulling, bLighting,
+					 img->GetDepth() == 32, false,	// transp, additive
+					 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
+					 false, true, false);		// texgen, clamp, mipmap
+		if (index == -1)
+		{
+			VTLOG("\t\ttexture load failed, using red material.\n");
+			m_globe_mat[pair] = m_red;
+		}
+		else
+			m_globe_mat[pair] = index;
+	}
+	return mats;
+}
+
+vtMaterialArray *vtIcoGlobe::CreateMaterialsFromImages(vtImage **images)
+{
+	vtMaterialArray *mats = new vtMaterialArray;
+	bool bCulling = true;
+	bool bLighting = false;
+	for (int pair = 0; pair < 10; pair++)
+	{
+		vtImage *img = images[pair];
+		int index = mats->AddTextureMaterial(img,
+					 bCulling, bLighting,
+					 img->GetDepth() == 32, false,	// transp, additive
+					 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
+					 false, true, false);		// texgen, clamp, mipmap
+		m_globe_mat[pair] = index;
+	}
+	return mats;
+}
+
+void vtIcoGlobe::CreateNodes()
+{
 	m_top = new vtTransform;
 	m_top->SetName2("GlobeXForm");
 
@@ -121,9 +264,9 @@ void vtIcoGlobe::Create(int iTriangleCount, const vtString &strImagePrefix, Styl
 	m_SurfaceGroup->SetName2("SurfaceGroup");
 	m_top->AddChild(m_SurfaceGroup);
 
-	if (style == DYMAX_UNFOLD)
+	if (m_style == DYMAX_UNFOLD)
 		CreateUnfoldableDymax();
-	else if (style == INDEPENDENT_GEODESIC)
+	else if (m_style == INDEPENDENT_GEODESIC)
 		CreateIndependentGeodesicSphere();
 	else
 		CreateNormalSphere();
@@ -195,7 +338,7 @@ void vtIcoGlobe::SetCulling(bool bCull)
 	int pair;
 	for (pair = 0; pair < 10; pair++)
 	{
-		vtMaterial *mat = m_mats->GetAt(m_globe_mat[pair]);
+		vtMaterial *mat = m_earthmats->GetAt(m_globe_mat[pair]);
 		mat->SetCulling(bCull);
 	}
 }
@@ -204,7 +347,7 @@ void vtIcoGlobe::SetLighting(bool bLight)
 {
 	for (int i = 0; i < 10; i++)
 	{
-		vtMaterial *pApp = m_mats->GetAt(m_globe_mat[i]);
+		vtMaterial *pApp = m_earthmats->GetAt(m_globe_mat[i]);
 		pApp->SetLighting(bLight);
 	}
 }
@@ -416,7 +559,7 @@ void vtIcoGlobe::BuildSphericalPoints(GlobeLayer *glay, float fSize)
 			continue;
 
 		vtGeom *geom = new vtGeom;
-		geom->SetMaterials(m_mats);
+		geom->SetMaterials(m_coremats);
 		geom->AddMesh(mesh, m_yellow);
 
 		vtMovGeom *mgeom = new vtMovGeom(geom);
@@ -455,7 +598,7 @@ void vtIcoGlobe::BuildSphericalLines(GlobeLayer *glay, float fSize)
 
 	vtGeom *geom = new vtGeom;
 	geom->SetName2("spherical lines");
-	geom->SetMaterials(m_mats);
+	geom->SetMaterials(m_coremats);
 	m_SurfaceGroup->AddChild(geom);
 	glay->AddNode(geom);
 
@@ -479,7 +622,7 @@ void vtIcoGlobe::BuildSphericalPolygons(GlobeLayer *glay, float fSize)
 
 	vtGeom *geom = new vtGeom;
 	geom->SetName2("spherical lines");
-	geom->SetMaterials(m_mats);
+	geom->SetMaterials(m_coremats);
 	m_SurfaceGroup->AddChild(geom);
 	glay->AddNode(geom);
 
@@ -542,7 +685,7 @@ void vtIcoGlobe::BuildFlatPoint(GlobeLayer *glay, int i, float fSize)
 	p_out -= m_mface[mface].local_origin;
 
 	vtGeom *geom = new vtGeom;
-	geom->SetMaterials(m_mats);
+	geom->SetMaterials(m_coremats);
 	geom->AddMesh(m_cylinder, m_yellow);
 
 	vtMovGeom *mgeom = new vtMovGeom(geom);
@@ -572,7 +715,7 @@ void vtIcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 
 	m_pRectangles = new vtGeom;
 	m_pRectangles->SetName2("terrain extents");
-	m_pRectangles->SetMaterials(m_mats);
+	m_pRectangles->SetMaterials(m_coremats);
 	m_SurfaceGroup->AddChild(m_pRectangles);
 
 	vtMeshFactory mf(m_pRectangles, vtMesh::LINE_STRIP, 0, 30000, m_red);
@@ -1108,89 +1251,6 @@ void vtIcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
 }
 
 
-void vtIcoGlobe::CreateMaterials(const vtString &strImagePrefix)
-{
-	m_mats = new vtMaterialArray;
-	bool bCulling = true;
-	bool bLighting = false;
-
-	m_red = m_mats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f),	// red
-					 false, false, true);
-	m_yellow = m_mats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
-					 false, false, false);
-	m_white = m_mats->AddRGBMaterial1(RGBf(0.2f, 0.2f, 0.2f),
-					 true, true, true, 1);
-	m_mats->GetAt(m_white)->SetTransparent(true, true);
-
-	if (m_style == INDEPENDENT_GEODESIC)
-	{
-		int mat = 0;
-		for (int pair = 0; pair < 10; pair++)
-		{
-			for (int j = 0; j < m_freq; j++)
-			for (int i = 0; i < m_freq; i++)
-			{
-				// TEMP for testing: pretty colors
-				float r = (pair+1) * (1.0f / 10);
-				float g = (j+1) * (1.0f / m_freq);
-				float b = (i+1) * (1.0f / m_freq);
-				m_globe_mat[mat++] = m_mats->AddRGBMaterial1(RGBf(r, g, b),
-						true, true);
-			}
-		}
-		return;
-	}
-	vtString base;
-	vtString fname;
-	vtString fullpath;
-
-	int pair, index;
-	for (pair = 0; pair < 10; pair++)
-	{
-		if (strImagePrefix == "")
-		{
-			m_globe_mat[pair] = m_white;
-			continue;
-		}
-		int f1 = icosa_face_pairs[pair][0];
-		int f2 = icosa_face_pairs[pair][1];
-
-		base = "WholeEarth/";
-		base += strImagePrefix;
-		base += "_";
-
-		fname.Format("%s%02d%02d.jpg", (const char *)base, f1+1, f2+1);
-		VTLOG("\t texture: %s\n", (const char *)fname);
-
-		fullpath = FindFileOnPaths(vtGetDataPath(), (const char *)fname);
-		if (fullpath == "")
-		{
-			// try again with png
-			fname.Format("%s%02d%02d.png", (const char *)base, f1+1, f2+1);
-			VTLOG("\t texture: %s\n", (const char *)fname);
-			fullpath = FindFileOnPaths(vtGetDataPath(), (const char *)fname);
-		}
-		if (fullpath == "")
-		{
-			VTLOG("\t\tnot found on data paths.\n");
-			index = -1;
-		}
-		index = m_mats->AddTextureMaterial2(fullpath,
-					 bCulling, bLighting,
-					 false, false,				// transp, additive
-					 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
-					 false, true, false);		// texgen, clamp, mipmap
-
-		if (index == -1)
-		{
-			VTLOG("\t\ttexture load failed, using red material.\n");
-			m_globe_mat[pair] = m_red;
-		}
-		else
-			m_globe_mat[pair] = index;
-	}
-}
-
 void vtIcoGlobe::FindLocalOrigin(int mface)
 {
 	int parent_face = dymax_subfaces[mface].parent_face;
@@ -1267,7 +1327,7 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 
 		add_face2(m_mesh[i], face, i, subfaces, which);
 
-		m_mface[i].geom->SetMaterials(m_mats);
+		m_mface[i].geom->SetMaterials(m_earthmats);
 		m_mface[i].geom->AddMesh(m_mesh[i], m_globe_mat[mat]);
 		m_mesh[i]->Release();	// pass ownership to the Geometry
 	}
@@ -1367,7 +1427,7 @@ void vtIcoGlobe::CreateNormalSphere()
 	// Create a geom to contain the meshes
 	m_GlobeGeom = new vtGeom;
 	m_GlobeGeom->SetName2("GlobeGeom");
-	m_GlobeGeom->SetMaterials(m_mats);
+	m_GlobeGeom->SetMaterials(m_earthmats);
 	m_top->AddChild(m_GlobeGeom);
 
 	for (pair = 0; pair < 10; pair++)
@@ -1477,7 +1537,7 @@ void vtIcoGlobe::CreateIndependentGeodesicSphere()
 	// Create a geom to contain the meshes
 	m_GlobeGeom = new vtGeom;
 	m_GlobeGeom->SetName2("GlobeGeom");
-	m_GlobeGeom->SetMaterials(m_mats);
+	m_GlobeGeom->SetMaterials(m_earthmats);
 	m_top->AddChild(m_GlobeGeom);
 
 	// fill in the vertices and triangles of the meshes
