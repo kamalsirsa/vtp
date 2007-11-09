@@ -30,6 +30,7 @@
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/TiledGeom.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/TripDub.h"
 #include "vtui/Helper.h"	// for progress dialog
 
 #include "EnviroFrame.h"
@@ -245,12 +246,16 @@ EVT_MENU(ID_EARTH_SHOWAXES,		EnviroFrame::OnEarthShowAxes)
 EVT_MENU(ID_EARTH_TILT,			EnviroFrame::OnEarthTilt)
 EVT_MENU(ID_EARTH_FLATTEN,		EnviroFrame::OnEarthFlatten)
 EVT_MENU(ID_EARTH_UNFOLD,		EnviroFrame::OnEarthUnfold)
+EVT_MENU(ID_EARTH_CLOUDS,		EnviroFrame::OnEarthClouds)
+EVT_MENU(ID_EARTH_CLOUDS2,		EnviroFrame::OnEarthClouds2)
 
 EVT_UPDATE_UI(ID_EARTH_SHOWSHADING, EnviroFrame::OnUpdateEarthShowShading)
 EVT_UPDATE_UI(ID_EARTH_SHOWAXES, EnviroFrame::OnUpdateEarthShowAxes)
 EVT_UPDATE_UI(ID_EARTH_TILT,	EnviroFrame::OnUpdateEarthTilt)
 EVT_UPDATE_UI(ID_EARTH_FLATTEN, EnviroFrame::OnUpdateEarthFlatten)
 EVT_UPDATE_UI(ID_EARTH_UNFOLD,	EnviroFrame::OnUpdateEarthUnfold)
+EVT_UPDATE_UI(ID_EARTH_CLOUDS,	EnviroFrame::OnUpdateEarthClouds)
+EVT_UPDATE_UI(ID_EARTH_CLOUDS2,	EnviroFrame::OnUpdateEarthClouds)
 
 EVT_MENU(ID_HELP_ABOUT, EnviroFrame::OnHelpAbout)
 EVT_MENU(ID_HELP_DOC_LOCAL, EnviroFrame::OnHelpDocLocal)
@@ -536,6 +541,10 @@ void EnviroFrame::CreateMenus()
 		m_pEarthMenu->AppendCheckItem(ID_EARTH_TILT, _("Seasonal &Tilt"));
 		m_pEarthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _("&Flatten\tCtrl+E"));
 		m_pEarthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _("&Unfold\tCtrl+U"));
+		m_pEarthMenu->Append(ID_EARTH_CLOUDS, _T("Load Clouds..."));
+#if SUPPORT_HTTP
+		m_pEarthMenu->Append(ID_EARTH_CLOUDS2, _T("Load Clouds from URL..."));
+#endif
 		m_pMenuBar->Append(m_pEarthMenu, _("&Earth"));
 	}
 
@@ -977,7 +986,43 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 
 void EnviroFrame::DoTestCode()
 {
-	g_App.MakeDemoGlobe();
+
+}
+
+void EnviroFrame::LoadClouds(const char *fname)
+{
+	vtImage *input = new vtImage;
+	if (input->Read(fname))
+	{
+		int depth = input->GetDepth();
+		if (depth != 8)
+			DisplayAndLog("That isn't an 8-bit cloud image.");
+		else
+		{
+			// For transparency, convert the 8-bit (from black to white) to a
+			//  32-bit (RGB is white, Alpha is 0-255)
+			unsigned int w = input->GetWidth();
+			unsigned int h = input->GetHeight();
+			vtImage *img2 = new vtImage;
+			img2->Create(w, h, 32);
+			RGBAi rgba(255,255,255,0);
+			for (unsigned int i = 0; i < w; i++)
+				for (unsigned int j = 0; j < h; j++)
+				{
+					rgba.a = input->GetPixel8(i, j);
+					img2->SetPixel32(i, j, rgba);
+				}
+
+			OpenProgressDialog(_T("Processing Images"), false, this);
+			g_App.MakeOverlayGlobe(img2, progress_callback);
+			CloseProgressDialog();
+
+			img2->Release();
+		}
+	}
+	else
+		DisplayAndLog("Couldn't read input file.");
+	input->Release();
 }
 
 void EnviroFrame::ToggleNavigate()
@@ -1950,7 +1995,7 @@ void EnviroFrame::OnTerrainReshade(wxCommandEvent& event)
 		return;
 
 	EnableContinuousRendering(false);
-	OpenProgressDialog(_("Recalculating Shading"), false);
+	OpenProgressDialog(_("Recalculating Shading"), false, this);
 	pTerr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
 	CloseProgressDialog();
 	EnableContinuousRendering(true);
@@ -1976,7 +2021,7 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 	{
 		dlg.GetParams(pTerr->GetParams());
 
-		OpenProgressDialog(_("Changing Texture"), false);
+		OpenProgressDialog(_("Changing Texture"), false, this);
 		pTerr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
 		CloseProgressDialog();
 
@@ -2103,6 +2148,71 @@ void EnviroFrame::OnEarthFlatten(wxCommandEvent& event)
 void EnviroFrame::OnEarthUnfold(wxCommandEvent& event)
 {
 	g_App.SetEarthUnfold(!g_App.GetEarthUnfold());
+}
+
+void EnviroFrame::OnEarthClouds(wxCommandEvent& event)
+{
+	wxFileDialog loadFile(NULL, _("Load"), _T(""), _T(""),
+		_("JPEG Files (*.jpg)|*.jpg"), wxFD_OPEN);
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+	vtString fname = (const char *) loadFile.GetPath().mb_str(wxConvUTF8);
+	LoadClouds(fname);
+}
+
+// Helper
+vtString GetTempFolderName()
+{
+	vtString path;
+
+	const char *temp = getenv("TEMP");
+	if (temp)
+		path = temp;
+	else
+#if WIN32
+		path = "C:/TEMP";
+#else
+		path = "/tmp";
+#endif
+	return path;
+}
+
+void EnviroFrame::OnEarthClouds2(wxCommandEvent& event)
+{
+#if SUPPORT_HTTP
+	wxString defval = _T("http://xplanet.explore-the-world.net/clouds_2048.jpg");
+	wxString str = wxGetTextFromUser(_T("Enter URL of overlay image"),
+		_T("URL"), defval, this);
+
+	if (str == _T(""))
+		return;
+	vtString url = str.mb_str();
+
+	vtBytes data;
+	ReqContext cl;
+	cl.SetProgressCallback(progress_callback);
+
+	OpenProgressDialog(_T("Downloading"), false, this);
+	bool success = cl.GetURL(url, data);
+	CloseProgressDialog();
+
+	if (!success)
+		return;
+
+	vtString tfile = GetTempFolderName() + "/temp.jpg";
+	FILE *fp = vtFileOpen(tfile, "wb");
+	if (!fp)
+		return;
+	fwrite(data.Get(), data.Len(), 1, fp);
+	fclose(fp);
+
+	LoadClouds(tfile);
+#endif
+}
+
+void EnviroFrame::OnUpdateEarthClouds(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Orbit && g_App.GetOverlayGlobe() == NULL);
 }
 
 

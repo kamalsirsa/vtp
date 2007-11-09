@@ -222,6 +222,8 @@ protected:
 	void OnEarthTilt(wxCommandEvent& event);
 	void OnEarthFlatten(wxCommandEvent& event);
 	void OnEarthUnfold(wxCommandEvent& event);
+	void OnEarthClouds(wxCommandEvent& event);
+	void OnEarthClouds2(wxCommandEvent& event);
 
 	void OnUpdateEarthShowShading(wxUpdateUIEvent& event);
 	void OnUpdateEarthShowAxes(wxUpdateUIEvent& event);
@@ -230,6 +232,7 @@ protected:
 	void OnUpdateEarthUnfold(wxUpdateUIEvent& event);
 	void OnUpdateInOrbit(wxUpdateUIEvent& event);
 	void OnUpdateInOrbitOrTerrain(wxUpdateUIEvent& event);
+	void OnUpdateEarthClouds(wxUpdateUIEvent& event);
 
 	virtual void OnHelpAbout(wxCommandEvent& event);
 	virtual void OnHelpDocLocal(wxCommandEvent& event);
@@ -243,6 +246,7 @@ protected:
 	void OnPopupURL(wxCommandEvent& event);
 
 	void DoTestCode();
+	void LoadClouds(const char *fname);
 
 public:
 	class vtGLCanvas	*m_canvas;
