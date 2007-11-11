@@ -616,9 +616,9 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 	//	- the range can be calculated easily from a given screen space
 	//		error threshold using the miniload::calcrange method
 //	float prange = m_pMiniLoad->calcrange(texdim,winheight,fovy);
-	prange = sqrt(coldim*coldim+rowdim*rowdim)/8;
+	prange = sqrt(coldim*coldim+rowdim*rowdim)/4;
 	prange_min = prange / 3;
-	prange_max = prange * 2;
+	prange_max = prange * 4;
 
 	//pbasesize: specifies the maximum texture size that is paged in
 	//	- a value of zero means that texture size is not limited
