@@ -830,9 +830,10 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 							minheight = value;
 						if (value > maxheight)
 							maxheight = value;
+
+						if (value != 0)
+							bAllZero = false;
 					}
-					if (value != 0)
-						bAllZero = false;
 				}
 			}
 
@@ -1143,7 +1144,9 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts, bool bSho
 				wxString msg;
 				msg.Printf(_("Tile '%hs', size %dx%d"),
 					(const char *)fname, tilesize, tilesize);
-				UpdateProgressDialog(done*99/total, msg);
+				bool bCancel = UpdateProgressDialog(done*99/total, msg);
+				if (bCancel)
+					return false;
 
 				unsigned char *rgb_bytes = (unsigned char *) malloc(tilesize * tilesize * 3);
 				int cb = 0;	// count bytes
