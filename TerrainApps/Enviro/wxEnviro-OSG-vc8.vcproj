@@ -210,9 +210,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -223,13 +220,9 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -241,9 +234,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -254,13 +244,9 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -272,9 +258,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -285,13 +268,9 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -382,9 +361,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -395,13 +371,9 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -432,6 +404,16 @@
 			<File
 				RelativePath=".\wx\FeatureTableDlg3d.cpp"
 				>
+				<FileConfiguration
+					Name="Release Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32"
 					>
@@ -475,9 +457,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -488,13 +467,9 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -506,9 +481,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -519,13 +491,9 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -585,9 +553,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -598,13 +563,9 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -664,9 +625,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -677,13 +635,9 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -695,9 +649,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -708,13 +659,9 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -847,8 +794,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -860,8 +805,6 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
@@ -877,9 +820,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
@@ -890,13 +830,9 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1120,9 +1056,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 					/>
@@ -1132,12 +1065,8 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1149,9 +1078,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 					/>
@@ -1161,12 +1087,8 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1178,9 +1100,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 					/>
@@ -1190,12 +1109,8 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1207,9 +1122,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 					/>
@@ -1219,12 +1131,8 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1236,9 +1144,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 					/>
@@ -1248,12 +1153,8 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1265,9 +1166,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 					/>
@@ -1277,12 +1175,8 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1294,9 +1188,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 					/>
@@ -1306,12 +1197,8 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
-						BrowseInformation="1"
 					/>
 				</FileConfiguration>
 			</File>
