@@ -501,6 +501,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Special.cpp">
+			</File>
+			<File
 				RelativePath="StatusBar.cpp">
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1087,6 +1090,9 @@
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GenGridDlg.cpp">
 			</File>
 			<File
 				RelativePath=".\GeocodeDlg.cpp">
