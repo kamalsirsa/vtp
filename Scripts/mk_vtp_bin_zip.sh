@@ -71,7 +71,7 @@ zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/ro/VTBuilder.mo
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/zh/VTBuilder.mo
 
 # VTConvert
-cp VTP/TerrainApps/VTConvert/Release/VTConvert.exe VTP/TerrainApps/VTConvert
+cp VTP/TerrainApps/VTConvert/Release-vc8/VTConvert.exe VTP/TerrainApps/VTConvert
 zip $DIST_FILE3 VTP/TerrainApps/VTConvert/VTConvert.exe
 
 #deal specially with docs
