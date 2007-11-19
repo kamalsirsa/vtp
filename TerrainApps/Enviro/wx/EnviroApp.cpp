@@ -321,6 +321,8 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 {
 	wxString title(STRING_APPORG, wxConvUTF8);
 
+	// If we are building the standard VTP, instead of some other flavor, then
+	//  put the name of the scene graph library in the title.
 	if (!strcmp(STRING_ORGNAME, "VTP"))
 	{
 	#if VTLIB_PSM
