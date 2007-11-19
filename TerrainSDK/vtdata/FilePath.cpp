@@ -444,10 +444,21 @@ vtString ChangeFileExtension(const char *input, const char *extension)
 
 bool FileExists(const char *fname)
 {
+#if VTDEBUG
+	VTLOG("FileExists(%s):", fname);
+#endif
 	FILE *fp = vtFileOpen(fname, "r");
 	if (!fp)
+	{
+#if VTDEBUG
+		VTLOG1("false; ");
+#endif
 		return false;
+	}
 	fclose(fp);
+#if VTDEBUG
+	VTLOG1("true; ");
+#endif
 	return true;
 }
 
