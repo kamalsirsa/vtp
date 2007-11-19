@@ -77,7 +77,7 @@ bool vtLoadDataPath(const char *user_config_dir, const char *config_dir)
 	if (!bFound)
 		return false;
 
-	VTLOG("\tReading options from '%s'\n", FileName);
+	VTLOG("\tReading datapaths from '%s'\n", FileName);
 
 	PathsVisitor visitor;
 	try
@@ -102,7 +102,7 @@ bool vtLoadDataPath(const char *user_config_dir, const char *config_dir)
 		s_datapath[i].Replace("{appdatacommon}", AppDataCommon);
 	}
 
-	VTLOG("Loaded Datapaths:\n");
+	VTLOG1("Loaded Datapaths:\n");
 	unsigned int n = s_datapath.size();
 	if (n == 0)
 		VTLOG("   none.\n");
@@ -116,14 +116,19 @@ bool vtSaveDataPath(const char *fname)
 {
 	vtString filename;
 	if (fname)
+	{
 		filename = fname;
+
+		// Remember where we're saving it to
+		s_configfile = fname;
+	}
 	else
 		filename = s_configfile;
 
 	VTLOG("Writing datapaths to '%s'\n", (const char *) filename);
 
-	ofstream output(filename, ios::binary);
-	if (!output.is_open())
+	FILE *fp = vtFileOpen(filename, "wb");
+	if (!fp)
 	{
 		vtString msg;
 		msg = "Couldn't write settings to file \"";
@@ -134,14 +139,15 @@ bool vtSaveDataPath(const char *fname)
 	}
 
 	// write to file
-	output << "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << std::endl;
-	output << "<VTP>" << std::endl;
+	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+	fprintf(fp, "<VTP>\n");
 	for (unsigned int i = 0; i < s_datapath.size(); i++)
 	{
-		output << "\t<" << STR_DATAPATH << ">";
-		output << s_datapath[i];
-		output << "</" << STR_DATAPATH << ">\n";
+		fprintf(fp, "\t<" STR_DATAPATH ">");
+		fprintf(fp, s_datapath[i]);
+		fprintf(fp, "</" STR_DATAPATH ">\n");
 	}
-	output << "</VTP>" << std::endl;
+	fprintf(fp, "</VTP>\n");
+	fclose(fp);
 	return true;
 }
