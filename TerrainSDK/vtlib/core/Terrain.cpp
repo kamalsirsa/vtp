@@ -1057,8 +1057,6 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 		vtGeom *pOceanGeom = new vtGeom;
 		pOceanGeom->SetMaterials(pHorizonMaterials);
 
-		float fOceanPlaneLevel = m_Params.GetValueFloat(STR_OCEANPLANELEVEL);
-
 		FPoint2 tile_size = world_size / TILING;
 		for (int i = -STEPS*TILING; i < (STEPS+1)*TILING; i++)
 		{
@@ -1081,7 +1079,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 
 				vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, 4);
 				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
-					fOceanPlaneLevel, 5.0f);
+					0, 5.0f);
 
 				pOceanGeom->AddMesh(mesh, 0);	// 0 = ocean material
 				mesh->Release();	// pass ownership to the Geometry
@@ -1126,6 +1124,12 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 	pHorizonMaterials->Release();
 }
 
+void vtTerrain::SetWaterLevel(float fElev)
+{
+	m_Params.SetValueFloat(STR_OCEANPLANELEVEL, fElev);
+	if (m_pOceanGeom)
+		m_pOceanGeom->SetTrans(FPoint3(0, fElev, 0));
+}
 
 //
 // set global projection based on this terrain's heightfield
@@ -2362,6 +2366,7 @@ bool vtTerrain::CreateStep5()
 	{
 		bool bCenter = bWater;
 		CreateArtificialHorizon(minh, bWater, bHorizon, bCenter, 0.5f);
+		SetWaterLevel(m_Params.GetValueFloat(STR_OCEANPLANELEVEL));
 	}
 
 	_CreateAbstractLayers();

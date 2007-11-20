@@ -309,7 +309,8 @@ public:
 	/// Access the animation paths associated with this terrain
 	vtAnimContainer *GetAnimContainer() { return &m_AnimContainer; }
 
-	// Sky and Fog
+	// Ocean, Sky, Fog
+	void SetWaterLevel(float fElev);
 	void SetFog(bool fog);
 	void SetFogColor(const RGBf &color);
 	void SetFogDistance(float fMeters);
