@@ -2843,6 +2843,102 @@ wxSizer *TParams7Func( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxCheckBox *item1 = new wxCheckBox( parent, ID_OCEANPLANE, _("Ocean plane"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item2 = new wxBoxSizer( wxHORIZONTAL );
+
+    item2->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, _("Level (meters)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item2->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item4 = new wxTextCtrl( parent, ID_OCEANPLANEOFFSET, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item2->Add( item4, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxCheckBox *item5 = new wxCheckBox( parent, ID_SKY, _("Sky dome"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
+
+    item6->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
+
+    wxString *strs7 = (wxString*) NULL;
+    wxComboBox *item7 = new wxComboBox( parent, ID_SKYTEXTURE, wxT(""), wxDefaultPosition, wxSize(200,-1), 0, strs7, wxCB_DROPDOWN );
+    item6->Add( item7, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item0->Add( item6, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 0 );
+
+    wxCheckBox *item8 = new wxCheckBox( parent, ID_HORIZON, _("Artificial Horizon"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxCheckBox *item10 = new wxCheckBox( parent, ID_FOG, _("Fog"), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("Distance (m)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item12 = new wxTextCtrl( parent, ID_FOG_DISTANCE, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item9->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item13 = new wxSlider( parent, ID_SLIDER_FOG_DISTANCE, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item9->Add( item13, 0, wxALIGN_CENTER|wxTOP, 5 );
+
+    item0->Add( item9, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("Scene background color:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticBitmap *item16 = new wxStaticBitmap( parent, ID_COLOR3, MyBitmapsFunc( 0 ), wxDefaultPosition, wxSize(32,18) );
+    item14->Add( item16, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxButton *item17 = new wxButton( parent, ID_BGCOLOR, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item14, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxFlexGridSizer *item18 = new wxFlexGridSizer( 3, 0, 0 );
+
+    wxStaticText *item19 = new wxStaticText( parent, ID_TEXT, _("Wind Direction:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item19, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item20 = new wxTextCtrl( parent, ID_TEXT_WIND_DIRECTION, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item18->Add( item20, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+
+    wxSlider *item21 = new wxSlider( parent, ID_SLIDER_WIND_DIRECTION, 0, 0, 150, wxDefaultPosition, wxSize(150,-1), wxSL_HORIZONTAL );
+    item18->Add( item21, 0, wxALIGN_CENTER|wxTOP, 5 );
+
+    wxStaticText *item22 = new wxStaticText( parent, ID_TEXT, _("Wind Speed:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item22, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item23 = new wxTextCtrl( parent, ID_TEXT_WIND_SPEED, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item18->Add( item23, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+
+    wxSlider *item24 = new wxSlider( parent, ID_SLIDER_WIND_SPEED, 0, 0, 150, wxDefaultPosition, wxSize(150,-1), wxSL_HORIZONTAL );
+    item18->Add( item24, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxTOP, 5 );
+
+    item0->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions

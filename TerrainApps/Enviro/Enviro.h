@@ -199,6 +199,9 @@ public:
 	void ResetDistanceTool();
 	void UpdateDistanceTool();
 
+	// Wind
+	void SetWind(int iDirection, float fSpeed);
+
 	// UI
 	void PolygonSelectionAddPoint();
 	void PolygonSelectionClose();

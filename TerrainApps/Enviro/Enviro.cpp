@@ -2224,6 +2224,16 @@ void Enviro::UpdateDistanceTool()
 	}
 }
 
+// Wind
+void Enviro::SetWind(int iDirection, float fSpeed)
+{
+	// Store these properties on the terrain
+	vtTerrain *terr = GetCurrentTerrain();
+	TParams &params = terr->GetParams();
+	params.SetValueInt("WindDirection", iDirection);
+	params.SetValueFloat("WindSpeed", fSpeed);
+}
+
 //
 // Use the current cursor position as a point to add to a polygon being
 //  visually selected.

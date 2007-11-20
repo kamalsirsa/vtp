@@ -40,6 +40,7 @@
 #include "BuildingDlg3d.h"
 #include "CameraDlg.h"
 #include "DistanceDlg3d.h"
+#include "EphemDlg.h"
 #include "FeatureTableDlg3d.h"
 #include "LayerDlg.h"
 #include "LinearStructDlg3d.h"
@@ -201,6 +202,7 @@ EVT_UPDATE_UI(ID_SCENE_SPACE,	EnviroFrame::OnUpdateSceneSpace)
 #if VTLIB_OSG
 EVT_MENU(ID_SCENE_SAVE,			EnviroFrame::OnSceneSave)
 #endif
+EVT_MENU(ID_SCENE_EPHEMERIS,	EnviroFrame::OnSceneEphemeris)
 EVT_MENU(ID_TIME_DIALOG,		EnviroFrame::OnTimeDialog)
 EVT_MENU(ID_TIME_STOP,			EnviroFrame::OnTimeStop)
 EVT_MENU(ID_TIME_FASTER,		EnviroFrame::OnTimeFaster)
@@ -339,7 +341,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pBuildingDlg = new BuildingDlg3d(this, -1, _("Building Properties"));
 	m_pCameraDlg = new CameraDlg(this, -1, _("Camera-View"));
 	m_pDistanceDlg = new DistanceDlg3d(this, -1, _("Distance"));
-	m_pDistanceDlg = new DistanceDlg3d(this, -1, _("Distance"));
+	m_pEphemDlg = new EphemDlg(this, -1, _("Ephemeris"));
 	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
 	m_pInstanceDlg = new InstanceDlg(this, -1, _("Instances"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
@@ -444,7 +446,7 @@ void EnviroFrame::CreateMenus()
 	// Ctrl+I Time
 	// Ctrl+L Store/Recall Locations
 	// Ctrl+N Save Numbered Snapshot
-	// Ctrl+P Load Point Data
+	// Ctrl+P ePhemeris
 	// Ctrl+Q Terrain LOD Info
 	// Ctrl+S Camera - View Settings
 	// Ctrl+T Top-Down
@@ -457,23 +459,24 @@ void EnviroFrame::CreateMenus()
 	// S Faster
 	// W Navigate w/o mouse button
 
+	m_pSceneMenu = new wxMenu;
+	m_pSceneMenu->Append(ID_SCENE_SCENEGRAPH, _("Scene Graph"));
+	m_pSceneMenu->AppendSeparator();
+	m_pSceneMenu->Append(ID_SCENE_TERRAIN, _("Go to Terrain...\tCtrl+G"));
 	if (m_bEnableEarth)
 	{
-		m_pSceneMenu = new wxMenu;
-		m_pSceneMenu->Append(ID_SCENE_SCENEGRAPH, _("Scene Graph"));
-		m_pSceneMenu->AppendSeparator();
-		m_pSceneMenu->Append(ID_SCENE_TERRAIN, _("Go to Terrain...\tCtrl+G"));
 		m_pSceneMenu->Append(ID_SCENE_SPACE, _("Go to Space"));
-#if VTLIB_OSG
-		m_pSceneMenu->AppendSeparator();
-		m_pSceneMenu->Append(ID_SCENE_SAVE, _("Save scene graph to .osg"));
-#endif
-		m_pSceneMenu->AppendSeparator();
-		m_pSceneMenu->Append(ID_TIME_DIALOG, _("Time...\tCtrl+I"));
-		m_pSceneMenu->Append(ID_TIME_STOP, _("Time Stop"));
-		m_pSceneMenu->Append(ID_TIME_FASTER, _("Time Faster"));
-		m_pMenuBar->Append(m_pSceneMenu, _("&Scene"));
 	}
+#if VTLIB_OSG
+	m_pSceneMenu->AppendSeparator();
+	m_pSceneMenu->Append(ID_SCENE_SAVE, _("Save scene graph to .osg"));
+#endif
+	m_pSceneMenu->AppendSeparator();
+	m_pSceneMenu->Append(ID_SCENE_EPHEMERIS, _("Ephemeris...\tCtrl+P"));
+	m_pSceneMenu->Append(ID_TIME_DIALOG, _("Time...\tCtrl+I"));
+	m_pSceneMenu->Append(ID_TIME_STOP, _("Time Stop"));
+	m_pSceneMenu->Append(ID_TIME_FASTER, _("Time Faster"));
+	m_pMenuBar->Append(m_pSceneMenu, _("&Scene"));
 
 	m_pViewMenu = new wxMenu;
 	m_pViewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _("Wireframe\tCtrl+W"));
@@ -1798,6 +1801,47 @@ void EnviroFrame::OnSceneSave(wxCommandEvent& event)
 	vtGroup *pRoot = vtGetTS()->GetTop();
 	osgDB::Registry::instance()->writeNode(*pRoot->GetOsgGroup(), "scene.osg");
 #endif
+}
+
+void EnviroFrame::OnSceneEphemeris(wxCommandEvent& event)
+{
+	vtTerrainScene *ts = vtGetTS();
+	vtTerrain *terr = GetCurrentTerrain();
+	TParams &param = terr->GetParams();
+	vtSkyDome *sky = ts->GetSkyDome();
+
+	m_pEphemDlg->m_bSky = sky->GetEnabled();
+	m_pEphemDlg->m_strSkyTexture = wxString(param.GetValueString(STR_SKYTEXTURE), wxConvUTF8);
+	m_pEphemDlg->m_bOceanPlane = terr->GetFeatureVisible(TFT_OCEAN);
+	m_pEphemDlg->m_fOceanPlaneLevel = param.GetValueFloat(STR_OCEANPLANELEVEL);
+	m_pEphemDlg->m_bHorizon = terr->GetFeatureVisible(TFT_HORIZON);
+	m_pEphemDlg->m_bFog = terr->GetFog();
+	m_pEphemDlg->m_fFogDistance = param.GetValueFloat(STR_FOGDISTANCE);
+	RGBi col = terr->GetBgColor();
+	m_pEphemDlg->m_BgColor.Set(col.r, col.g, col.b);
+	m_pEphemDlg->m_iWindDir = param.GetValueInt("WindDirection");
+	m_pEphemDlg->m_fWindSpeed = param.GetValueFloat("WindSpeed");
+	m_pEphemDlg->ValuesToSliders();
+
+	m_pEphemDlg->Show();
+#if 0
+	sky->SetEnabled(dlg.m_bSky);
+	ts->UpdateSkydomeForTerrain(terr);
+	terr->SetFeatureVisible(TFT_OCEAN, dlg.m_bOceanPlane);
+	terr->SetWaterLevel(dlg.m_fOceanPlaneLevel);
+	terr->SetFeatureVisible(TFT_HORIZON, dlg.m_bHorizon);
+	terr->SetFog(dlg.m_bFog);
+	terr->SetFogDistance(dlg.m_fFogDistance);
+	col.Set(dlg.m_BgColor.Red(), dlg.m_BgColor.Green(), dlg.m_BgColor.Blue());
+	terr->SetBgColor(col);
+	vtGetScene()->SetBgColor(col);
+	g_App.SetWind(dlg.m_iWindDir, dlg.m_fWindSpeed);
+#endif
+}
+
+void EnviroFrame::OnUpdateSceneEphemeris(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
 }
 
 void EnviroFrame::OnTimeDialog(wxCommandEvent& event)

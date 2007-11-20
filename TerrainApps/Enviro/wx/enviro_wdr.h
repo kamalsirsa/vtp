@@ -354,20 +354,27 @@ wxSizer *PagingDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_size
 #define ID_CHECK_COMPASS 10250
 wxSizer *TParams7Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_SLIDER_FOG_DISTANCE 10251
+#define ID_TEXT_WIND_DIRECTION 10252
+#define ID_SLIDER_WIND_DIRECTION 10253
+#define ID_TEXT_WIND_SPEED 10254
+#define ID_SLIDER_WIND_SPEED 10255
+wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
 
-#define ID_LAYER_CREATE 10251
-#define ID_LAYER_LOAD 10252
-#define ID_LAYER_SAVE 10253
-#define ID_LAYER_SAVE_AS 10254
-#define ID_LAYER_DELETE 10255
-#define ID_LAYER_ZOOM_TO 10256
-#define ID_LAYER_VISIBLE 10257
-#define ID_LAYER_TABLE 10258
-#define ID_LAYER_SHADOW 10259
-#define ID_SHOW_ALL 10260
+#define ID_LAYER_CREATE 10256
+#define ID_LAYER_LOAD 10257
+#define ID_LAYER_SAVE 10258
+#define ID_LAYER_SAVE_AS 10259
+#define ID_LAYER_DELETE 10260
+#define ID_LAYER_ZOOM_TO 10261
+#define ID_LAYER_VISIBLE 10262
+#define ID_LAYER_TABLE 10263
+#define ID_LAYER_SHADOW 10264
+#define ID_SHOW_ALL 10265
 void LayerToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

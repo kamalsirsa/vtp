@@ -17,6 +17,7 @@
 class BuildingDlg3d;
 class CameraDlg;
 class DistanceDlg3d;
+class EphemDlg;
 class FeatureTableDlg3d;
 class InstanceDlg;
 class LODDlg;
@@ -181,6 +182,8 @@ protected:
 	void OnSceneSpace(wxCommandEvent& event);
 	void OnUpdateSceneSpace(wxUpdateUIEvent& event);
 	void OnSceneSave(wxCommandEvent& event);
+	void OnSceneEphemeris(wxCommandEvent& event);
+	void OnUpdateSceneEphemeris(wxUpdateUIEvent& event);
 
 	void OnTimeDialog(wxCommandEvent& event);
 	void OnTimeStop(wxCommandEvent& event);
@@ -277,6 +280,7 @@ public:
 	LayerDlg			*m_pLayerDlg;
 	InstanceDlg			*m_pInstanceDlg;
 	DistanceDlg3d		*m_pDistanceDlg;
+	EphemDlg			*m_pEphemDlg;
 	TimeDlg				*m_pTimeDlg;
 	CScenarioSelectDialog *m_pScenarioSelectDialog;
 	LODDlg				*m_pLODDlg;
