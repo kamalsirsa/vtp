@@ -73,6 +73,7 @@ public:
 
 	vtGroup *GetTop() { return m_pTop; }
 	vtSkyDome *GetSkyDome() { return m_pSkyDome; }
+	void UpdateSkydomeForTerrain(vtTerrain *pTerrain);
 
 	/// Access the terrains in the list.
 	unsigned int NumTerrains() { return m_Terrains.size(); }
@@ -103,8 +104,6 @@ public:
 	vtContentManager3d m_Content;
 
 protected:
-	void _UpdateSkydomeForTerrain(vtTerrain *pTerrain);
-
 	// main scene graph outline
 	vtGroup		*m_pTop;
 	vtSkyDome	*m_pSkyDome;

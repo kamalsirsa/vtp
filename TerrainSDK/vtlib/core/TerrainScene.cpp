@@ -350,7 +350,7 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 	vtTime localtime = pTerrain->GetInitialTime();
 
 	// handle the atmosphere
-	_UpdateSkydomeForTerrain(pTerrain);
+	UpdateSkydomeForTerrain(pTerrain);
 
 	m_pCurrentTerrain->SetFog(param.GetValueBool(STR_FOG));
 
@@ -397,7 +397,7 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 	}
 }
 
-void vtTerrainScene::_UpdateSkydomeForTerrain(vtTerrain *pTerrain)
+void vtTerrainScene::UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 {
 	// safety check
 	if (!m_pSkyDome)
@@ -439,7 +439,11 @@ void vtTerrainScene::_UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 	if (bDoSky)
 	{
 		vtString fname = param.GetValueString(STR_SKYTEXTURE);
-		if (fname != "")
+		if (fname == "")
+		{
+			m_pSkyDome->SetTexture(NULL);
+		}
+		else
 		{
 			vtString filename = "Sky/";
 			filename += fname;

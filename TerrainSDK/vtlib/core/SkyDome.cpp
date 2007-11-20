@@ -537,10 +537,10 @@ bool vtSkyDome::SetTexture(const char *filename)
 	if (!filename)
 	{
 		// Go back to vertex-coloured dome
+		m_bHasTexture = false;
 		int index = m_pMats->Find(m_pMat);
 		m_pDomeGeom->SetMeshMatIndex(m_pDomeMesh, index);
-		m_pDomeMesh->ReOptimize();
-		m_bHasTexture = false;
+		ApplyDomeColors();
 		return true;
 	}
 
