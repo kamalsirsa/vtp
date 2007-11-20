@@ -67,6 +67,7 @@ public:
 	void DoControlTerrain();
 	void SetTerrain(vtTerrain *pTerrain);
 	vtGroup *GetRoot() { return m_pRoot; }
+	void StoreTerrainParameters();
 
 	void ShowElevationLegend(bool bShow);
 	bool GetShowElevationLegend();
@@ -85,6 +86,7 @@ public:
 	void SetCurrentNavigator(vtTerrainFlyer *pE);
 	void EnableFlyerEngine(bool bEnable);
 	void SetNavType(NavType nav);
+	NavType GetNavType() {return m_nav; }
 	void SetMaintain(bool bOn);
 	bool GetMaintain();
 

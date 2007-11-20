@@ -11,6 +11,7 @@
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/PagedLodGrid.h"
+#include "vtlib/core/TiledGeom.h"
 #include "vtdata/vtLog.h"
 
 #include "Engines.h"
@@ -1105,6 +1106,90 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	}
 }
 
+//
+// Copy as much state as possible from the active terrain to its parameters
+//
+void Enviro::StoreTerrainParameters()
+{
+	vtTerrainScene *ts = vtGetTS();
+	vtTimeEngine *te = ts->GetTimeEngine();
+	vtTerrain *terr = GetCurrentTerrain();
+	TParams &par = terr->GetParams();
+	vtCamera *cam = vtGetScene()->GetCamera();
+	vtSkyDome *sky = ts->GetSkyDome();
+
+	par.SetValueFloat(STR_VERTICALEXAG, terr->GetVerticalExag());
+
+	par.SetValueInt(STR_NAVSTYLE, GetNavType());
+	par.SetValueFloat(STR_NAVSPEED, GetFlightSpeed());
+	//par.SetValueString(STR_LOCFILE);
+	//par.SetValueString(STR_INITLOCATION);
+	par.SetValueFloat(STR_HITHER, cam->GetHither());
+
+	if (par.GetValueInt(STR_SURFACE_TYPE) == 0)	// single grid
+	{
+		vtDynTerrainGeom *dtg = terr->GetDynTerrain();
+		par.SetValueInt(STR_TRICOUNT, dtg->GetPolygonTarget());
+	}
+	else if (par.GetValueInt(STR_SURFACE_TYPE) == 2)	// tileset
+	{
+		vtTiledGeom *tg = terr->GetTiledGeom();
+		par.SetValueInt(STR_VERTCOUNT, tg->GetVertexTarget());
+	}
+
+	par.SetValueBool(STR_TIMEON, te->GetSpeed() != 0.0f);
+	par.SetValueString(STR_INITTIME, te->GetTime().GetAsString());
+	par.SetValueFloat(STR_TIMESPEED, te->GetSpeed());
+
+	par.SetValueBool(STR_FOG, terr->GetFog());
+	//par.SetValueFloat(STR_FOGDISTANCE);	// already set dynamically
+	par.SetValueBool(STR_SKY, sky->GetEnabled());
+	// par.SetValueString(STR_SKYTEXTURE);
+
+	par.SetValueBool(STR_OCEANPLANE, terr->GetFeatureVisible(TFT_OCEAN));
+	//par.SetValueFloat(STR_OCEANPLANELEVEL);	// already set dynamically
+	//par.SetValueBool(STR_DEPRESSOCEAN);
+	//par.SetValueFloat(STR_DEPRESSOCEANLEVEL);
+	par.SetValueBool(STR_HORIZON,  terr->GetFeatureVisible(TFT_HORIZON));
+	RGBi col = terr->GetBgColor();
+	par.SetValueRGBi(STR_BGCOLOR, col);
+
+	par.SetValueFloat(STR_STRUCTDIST, terr->GetLODDistance(TFT_STRUCTURES));
+	par.SetValueFloat(STR_ROADDISTANCE, terr->GetLODDistance(TFT_ROADS));
+	par.SetValueInt(STR_VEGDISTANCE, terr->GetLODDistance(TFT_VEGETATION));
+
+	par.SetValueBool(STR_OVERVIEW, GetShowMapOverview());
+	par.SetValueBool(STR_COMPASS, GetShowCompass());
+
+	// Layers: copy back from the current set of layers to the set of
+	//  layers in the parameters.
+	LayerSet &set = terr->GetLayers();
+	par.m_Layers.clear();
+	for (unsigned int i = 0; i < set.GetSize(); i++)
+	{
+		vtLayer *lay = set[i];
+
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
+		vtImageLayer *ilay = dynamic_cast<vtImageLayer*>(lay);
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
+
+		vtTagArray newlay;
+		if (slay)
+			newlay.SetValueString("Type", TERR_LTYPE_STRUCTURE, true);
+		if (ilay)
+			newlay.SetValueString("Type", TERR_LTYPE_IMAGE, true);
+		if (alay)
+		{
+			newlay.SetValueString("Type", TERR_LTYPE_ABSTRACT, true);
+			vtTagArray &style = alay->GetFeatureSet()->GetProperties();
+			newlay.CopyTagsFrom(style);
+		}
+
+		newlay.SetValueString("Filename", lay->GetLayerName(), true);
+		//newlay->;
+		par.m_Layers.push_back(newlay);
+	}
+}
 
 //
 // Display a message as a text sprite in the middle of the window.

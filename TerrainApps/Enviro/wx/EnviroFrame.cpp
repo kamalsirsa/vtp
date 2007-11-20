@@ -114,6 +114,9 @@ EVT_MENU(ID_FILE_LAYER_CREATE,		EnviroFrame::OnLayerCreate)
 EVT_UPDATE_UI(ID_FILE_LAYER_CREATE,	EnviroFrame::OnUpdateLayerCreate)
 EVT_MENU(ID_FILE_LAYER_LOAD,		EnviroFrame::OnLayerLoad)
 EVT_UPDATE_UI(ID_FILE_LAYER_LOAD,	EnviroFrame::OnUpdateLayerLoad)
+EVT_MENU(ID_FILE_SAVE_TERRAIN,		EnviroFrame::OnSaveTerrain)
+EVT_MENU(ID_FILE_SAVE_TERRAIN_AS,	EnviroFrame::OnSaveTerrainAs)
+EVT_UPDATE_UI(ID_FILE_SAVE_TERRAIN,	EnviroFrame::OnUpdateSaveTerrain)
 EVT_MENU(wxID_EXIT,					EnviroFrame::OnExit)
 EVT_CLOSE(EnviroFrame::OnClose)
 EVT_IDLE(EnviroFrame::OnIdle)
@@ -407,7 +410,10 @@ void EnviroFrame::CreateMenus()
 	m_pFileMenu->Append(ID_FILE_LAYERS, _("Layers"), _("Layers"));
 	m_pFileMenu->AppendSeparator();
 	m_pFileMenu->Append(ID_FILE_LAYER_CREATE, _("Create Layer"), _("Create Layer"));
-	m_pFileMenu->Append(ID_FILE_LAYER_LOAD, _("Load Layer"), _("Load Layers"));
+	m_pFileMenu->Append(ID_FILE_LAYER_LOAD, _("Load Layer"), _("Load Layer"));
+	m_pFileMenu->AppendSeparator();
+	m_pFileMenu->Append(ID_FILE_SAVE_TERRAIN, _("Save Terrain State"));
+	m_pFileMenu->Append(ID_FILE_SAVE_TERRAIN_AS, _("Save Terrain State As..."));
 	m_pFileMenu->AppendSeparator();
 	m_pFileMenu->Append(wxID_EXIT, _("E&xit (Esc)"), _("Exit"));
 	m_pMenuBar->Append(m_pFileMenu, _("&File"));
@@ -1207,6 +1213,46 @@ void EnviroFrame::OnUpdateLayerLoad(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain || g_App.m_state == AS_Orbit);
 }
+
+void EnviroFrame::OnSaveTerrain(wxCommandEvent& event)
+{
+	// Copy as much state as possible from the active terrain to its parameters
+	g_App.StoreTerrainParameters();
+
+	vtTerrain *terr = GetCurrentTerrain();
+	TParams &par = terr->GetParams();
+	vtString fname = terr->GetParamFile();
+	if (!par.WriteToXML(fname, STR_TPARAMS_FORMAT_NAME))
+		DisplayAndLog("Couldn't write file '%s'", (const char *)fname);
+}
+
+void EnviroFrame::OnSaveTerrainAs(wxCommandEvent& event)
+{
+	// Copy as much state as possible from the active terrain to its parameters
+	g_App.StoreTerrainParameters();
+
+	EnableContinuousRendering(false);
+	wxFileDialog saveFile(NULL, _("Save Terrain State"), _T(""), _T(""),
+		_("Terrain Files (*.xml)|*.xml"), wxFD_SAVE);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	EnableContinuousRendering(true);
+	if (bResult)
+	{
+		vtString fname = saveFile.GetPath().mb_str(wxConvUTF8);
+
+		vtTerrain *terr = GetCurrentTerrain();
+		TParams &par = terr->GetParams();
+		terr->SetParamFile(fname);
+		if (!par.WriteToXML(fname, STR_TPARAMS_FORMAT_NAME))
+			DisplayAndLog("Couldn't write file '%s'", (const char *)fname);
+	}
+}
+
+void EnviroFrame::OnUpdateSaveTerrain(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+}
+
 
 //////////////////// View menu //////////////////////////
 

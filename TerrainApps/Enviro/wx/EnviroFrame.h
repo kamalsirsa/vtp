@@ -95,9 +95,12 @@ protected:
 
 	void OnLayerCreate(wxCommandEvent& event);
 	void OnLayerLoad(wxCommandEvent& event);
+	void OnSaveTerrain(wxCommandEvent& event);
+	void OnSaveTerrainAs(wxCommandEvent& event);
 
 	void OnUpdateLayerCreate(wxUpdateUIEvent& event);
 	void OnUpdateLayerLoad(wxUpdateUIEvent& event);
+	void OnUpdateSaveTerrain(wxUpdateUIEvent& event);
 
 	void OnViewMaintain(wxCommandEvent& event);
 	void OnViewWireframe(wxCommandEvent& event);

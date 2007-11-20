@@ -16,7 +16,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Event.h"
 #include "vtdata/vtLog.h"
-#include "EnviroGUI.h"			// for g_App, GetTerrainScene
+#include "EnviroGUI.h"			// for g_App
 #include "canvas.h"
 #include "EnviroFrame.h"		// for UpdateStatus and OnChar
 #include "EnviroApp.h"
