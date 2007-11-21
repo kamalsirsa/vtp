@@ -1441,3 +1441,15 @@ const char *wstring2::to_utf8() const
 
 #endif // SUPPORT_WSTRING
 
+/** Useful function which wraps the C standard library's strtok */
+void vtTokenize(char *buf, const char *delim, vtStringArray &tokens)
+{
+	char *p = NULL;
+	p = strtok(buf, delim);
+	while (p != NULL)
+	{
+		tokens.push_back(vtString(p));
+		p = strtok(NULL, delim);
+	}
+}
+

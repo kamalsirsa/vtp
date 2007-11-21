@@ -394,11 +394,13 @@ private:
 #endif // SUPPORT_WSTRING
 
 
-
 /**
  * vtStringArray class: an array of vtString objects.
  */
 #define vtStringArray std::vector<vtString>
+
+/** Useful function which wraps the C standard library's strtok */
+void vtTokenize(char *buf, const char *delim, vtStringArray &tokens);
 
 #endif	// VTSTRINGH
 
