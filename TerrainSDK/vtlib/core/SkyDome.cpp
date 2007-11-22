@@ -524,7 +524,7 @@ bool vtSkyDome::SetTexture(const char *filename)
 	if (filename)
 		VTLOG("   SkyDome: Set Texture to '%s'.. ", filename);
 	else
-		VTLOG("   SkyDome: Removing Texture.. ");
+		VTLOG("   SkyDome: Setting to no Texture.\n");
 
 	if (m_pTextureMat)
 	{
