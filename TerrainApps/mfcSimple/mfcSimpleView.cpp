@@ -227,15 +227,18 @@ bool CreateScene()
 	// Look up the camera
 	vtCamera *pCamera = pScene->GetCamera();
 	pCamera->SetHither(10);
-	pCamera->SetYon(100000);
+	pCamera->SetYon(150000);
 
 	// The  terrain scene will contain all the terrains that are created.
 	ts = new vtTerrainScene;
 
-	// Set the global data path
-	vtStringArray paths;
-	paths.push_back(vtString("Data/"));
-	pScene->SetDataPath(paths);
+	// Get the global data path
+	char user_config_dir[MAX_PATH];
+	SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, user_config_dir);
+	vtLoadDataPath(user_config_dir, NULL);
+
+	// And look locally too, just in case the global path isn't set yet
+	vtGetDataPath().push_back("../Data/");
 
 	// Begin creating the scene, including the sun and sky
 	vtGroup *pTopGroup = ts->BeginTerrainScene();
