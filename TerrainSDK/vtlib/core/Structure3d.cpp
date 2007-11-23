@@ -392,9 +392,11 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 		vtStructure3d *str3d = GetStructure3d(j);
 		if (str3d)
 		{
-			vtNode *pThing = str3d->GetContained();
-			if (pThing)
-				pThing->SetEnabled(bTrue);
+			// Hide the structure's whole container, which includes the node
+			//  and highlight and any other nodes associated with it.
+			vtNode *pContainer = str3d->GetContainer();
+			if (pContainer)
+				pContainer->SetEnabled(bTrue);
 		}
 	}
 	m_bEnabled = bTrue;
