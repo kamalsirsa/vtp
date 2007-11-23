@@ -1671,12 +1671,19 @@ void vtTerrain::_CreateStructures()
 			continue;
 
 		VTLOG(" Layer %d: Structure\n", i);
-		vtString building_fname = "BuildingData/";
-		building_fname += lay.GetValueString("Filename");
+		vtString building_fname = lay.GetValueString("Filename");
 
 		VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
-
 		vtString building_path = FindFileOnPaths(vtGetDataPath(), building_fname);
+		if (building_path == "")
+		{
+			VTLOG("\tNot found.\n");
+			vtString building_fname = "BuildingData/";
+			building_fname += lay.GetValueString("Filename");
+
+			VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
+			building_path = FindFileOnPaths(vtGetDataPath(), building_fname);
+		}
 		if (building_path == "")
 			VTLOG("\tNot found.\n");
 		else
@@ -2961,11 +2968,17 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 			if (progress_callback != NULL)
 				progress_callback(i * 99 / slay->GetSize());
 
+			vtStructure *str = slay->GetAt(i);
+			vtStructure3d *str3d = slay->GetStructure3d(i);
+
+			// notify any structure-handling extension
+			if (m_pStructureExtension)
+				m_pStructureExtension->OnDelete(this, str);
+
 			// Remove it from the paging grid
 			if (m_pPagedStructGrid)
 				m_pPagedStructGrid->RemoveFromGrid(slay, i);
 
-			vtStructure3d *str3d = slay->GetStructure3d(i);
 			RemoveNodeFromStructGrid(str3d->GetContainer());
 			str3d->DeleteNode();
 		}
