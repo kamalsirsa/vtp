@@ -301,7 +301,10 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 bool vtImage::WritePNG(const char *fname, bool progress_callback(int))
 {
 #if USE_OSG_FOR_PNG
-	return osgDB::writeImageFile(*(m_pOsgImage.get()), fname);
+	// fname is a UTF-8 string, but OSG only understands local charset
+	vtString fname_local = UTF8ToLocal(fname);
+
+	return osgDB::writeImageFile(*(m_pOsgImage.get()), (const char *) fname_local);
 #else
 	// TODO: native libpng code here
 	return false;
@@ -330,7 +333,10 @@ bool vtImage::WriteJPEG(const char *fname, int quality, bool progress_callback(i
 	str.Format("JPEG_QUALITY %d", quality);
 	opts->setOptionString((const char *)str);
 
-	return osgDB::writeImageFile(*(m_pOsgImage.get()), fname);
+	// fname is a UTF-8 string, but OSG only understands local charset
+	vtString fname_local = UTF8ToLocal(fname);
+
+	return osgDB::writeImageFile(*(m_pOsgImage.get()), (const char *) fname_local);
 #else
 	// TODO: native libjpeg code here
 	return false;
