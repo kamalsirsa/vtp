@@ -1837,18 +1837,18 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	if (!GetActiveElevLayer())
 		return;
 
-	wxString choices[11];
-	choices[0] = _T("ArcInfo ASCII Grid");
-	choices[1] = _T("GeoTIFF");
-	choices[2] = _T("TerraGen");
-	choices[3] = _T("BMP");
-	choices[4] = _T("STM");
+	wxString choices[12];
+	choices[0] = _T("3TX");
+	choices[1] = _T("ArcInfo ASCII Grid");
+	choices[2] = _T("BMP");
+	choices[3] = _T("ChunkLOD (.chu)");
+	choices[4] = _T("GeoTIFF");
 	choices[5] = _T("MSI Planet");
-	choices[6] = _T("VRML ElevationGrid");
+	choices[6] = _T("PNG (16-bit greyscale)");
 	choices[7] = _T("RAW/INF for MS Flight Simulator");
-	choices[8] = _T("ChunkLOD (.chu)");
-	choices[9] = _T("PNG (16-bit greyscale)");
-	choices[10] = _T("3TX");
+	choices[8] = _T("STM");
+	choices[9] = _T("TerraGen");
+	choices[10] = _T("VRML ElevationGrid");
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
 		_("Export to file format:"), 11, choices);
@@ -1857,17 +1857,17 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 
 	switch (dlg.GetSelection())
 	{
-	case 0: ExportASC(); break;
-	case 1: ExportGeoTIFF(); break;
-	case 2: ExportTerragen(); break;
-	case 3: ExportBMP(); break;
-	case 4: ExportSTM(); break;
+	case 0: Export3TX(); break;
+	case 1: ExportASC(); break;
+	case 2: ExportBMP(); break;
+	case 3: ExportChunkLOD(); break;
+	case 4: ExportGeoTIFF(); break;
 	case 5: ExportPlanet(); break;
-	case 6: ExportVRML(); break;
+	case 6: ExportPNG16(); break;
 	case 7: ExportRAWINF(); break;
-	case 8: ExportChunkLOD(); break;
-	case 9: ExportPNG16(); break;
-	case 10: Export3TX(); break;
+	case 8: ExportSTM(); break;
+	case 9: ExportTerragen(); break;
+	case 10: ExportVRML(); break;
 	}
 }
 
