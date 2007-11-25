@@ -734,6 +734,8 @@ void Enviro::SetEarthShading(bool bShade)
 
 	pMovableLight->SetEnabled(bShade);
 	m_pIcoGlobe->SetLighting(bShade);
+	if (m_pOverlayGlobe)
+		m_pOverlayGlobe->SetLighting(bShade);
 }
 
 void Enviro::SetEarthShape(bool bFlat)
