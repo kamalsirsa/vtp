@@ -2619,26 +2619,26 @@ void EnviroFrame::OpenFenceDialog()
 
 void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 {
+	// Currently, you can pop up properties on a single structure, or
+	//  a single plant.  If both are selected, the structure is used.
 	VTLOG1("Creating popup, ");
 
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructureLayer();
+	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
 
 	wxMenu *popmenu = new wxMenu;
 	wxMenuItem *item;
-	if (sa)
+
+	item = popmenu->Append(ID_POPUP_PROPERTIES, _("Properties"));
+
+	// Can't display properties for more than one structure
+	if (sa && sa->NumSelected() == 1)
 	{
-		if (sa->NumSelected() > 0)
-			item = popmenu->Append(ID_POPUP_PROPERTIES, _("Properties"));
-
-		// Can't display properties for more than one structure
-		if (sa->NumSelected() > 1)
-			item->Enable(false);
-
-		int sel = sa->GetFirstSelected();
-		if (sel != -1)
+		int first_sel = sa->GetFirstSelected();
+		if (first_sel != -1)
 		{
-			vtStructure *struc = sa->GetAt(sel);
+			vtStructure *struc = sa->GetAt(first_sel);
 			vtStructureType type = struc->GetType();
 			if (type == ST_BUILDING)
 				popmenu->Append(ID_POPUP_FLIP, _("Flip Footprint Direction"));
@@ -2654,6 +2654,13 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 			}
 		}
 	}
+	else if (plants.NumSelected() != 0)
+	{
+		// We could add some plant-specific commands here
+	}
+	else
+		// Nothing to show properties of
+		item->Enable(false);
 
 	if (g_App.m_Vehicles.GetSelected() != -1)
 	{
@@ -2670,6 +2677,9 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 
 void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 {
+	// Currently, you can pop up properties on a single structure, or
+	//  a single plant.  If both are selected, the structure is used.
+
 	VTLOG1("OnPopupProperties.\n");
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructureLayer();
