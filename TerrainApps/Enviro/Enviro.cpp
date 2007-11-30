@@ -13,6 +13,7 @@
 #include "vtlib/core/PagedLodGrid.h"
 #include "vtlib/core/TiledGeom.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/PolyChecker.h"
 
 #include "Engines.h"
 #include "Enviro.h"
@@ -1917,8 +1918,13 @@ void Enviro::OnMouseRightDown(vtMouseEvent &event)
 
 		// Close and create new building in the current structure array
 		vtTerrain *pTerr = GetCurrentTerrain();
-		vtStructureArray3d *pbuildingarray = pTerr->GetStructureLayer();
-		vtBuilding3d *pbuilding = (vtBuilding3d*) pbuildingarray->AddNewBuilding();
+		vtStructureArray3d *structures = pTerr->GetStructureLayer();
+		vtBuilding3d *pbuilding = (vtBuilding3d*) structures->AddNewBuilding();
+
+		// Force footprint anticlockwise
+		PolyChecker PolyChecker;
+		if (PolyChecker.IsClockwisePolygon(m_NewLine))
+			m_NewLine.ReverseOrder();
 		pbuilding->SetFootprint(0, m_NewLine);
 
 		// Describe the appearance of the new building
