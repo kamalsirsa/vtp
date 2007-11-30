@@ -415,6 +415,7 @@ void FeatureTableDlg::OnListRightClick( wxListEvent &event )
 			if (EditValue(iFeat, i))
 			{
 				// Refresh the display
+				OnFieldEdited(iFeat);
 				OnModified();
 				UpdateFeatureText(iItem, iFeat);
 			}
