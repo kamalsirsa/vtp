@@ -32,6 +32,8 @@ class TimeDlg;
 class UtilDlg;
 class ProfileDlg;
 class VehicleDlg;
+class vtAbstractLayer;
+class vtFeatureSet;
 class vtTerrain;
 class vtTimeEngine;
 

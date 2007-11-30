@@ -643,7 +643,7 @@ void MainFrame::DoDymaxTexture()
 		return;
 	wxString strDirName = getDir.GetPath();
 	default_path = strDirName;	// save it for next time
-	vtString DirName = strDirName.mb_str(wxConvUTF8);
+	vtString DirName = (const char*)strDirName.mb_str(wxConvUTF8);
 
 	// TODO? change this code to use vtBitmap instead of vtDIB?
 

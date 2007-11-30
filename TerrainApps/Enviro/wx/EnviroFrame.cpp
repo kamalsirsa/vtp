@@ -1241,7 +1241,7 @@ void EnviroFrame::OnSaveTerrainAs(wxCommandEvent& event)
 	EnableContinuousRendering(true);
 	if (bResult)
 	{
-		vtString fname = saveFile.GetPath().mb_str(wxConvUTF8);
+		vtString fname = (const char*)saveFile.GetPath().mb_str(wxConvUTF8);
 
 		vtTerrain *terr = GetCurrentTerrain();
 		TParams &par = terr->GetParams();
@@ -2276,7 +2276,7 @@ void EnviroFrame::OnEarthClouds2(wxCommandEvent& event)
 
 	if (str == _T(""))
 		return;
-	vtString url = str.mb_str();
+	vtString url = (const char*)str.mb_str();
 
 	vtBytes data;
 	ReqContext cl;

@@ -29,7 +29,7 @@
 #  include "road.xpm"
 #  include "veg1.xpm"
 #  include "raw.xpm"
-#  include "fence.xpm"
+#  include "icons/fence.xpm"
 #  include "instance.xpm"
 #  include "icon8.xpm"
 #  include "image.xpm"

@@ -85,7 +85,7 @@ bool vtLoadDataPath(const char *user_config_dir, const char *config_dir)
 		return false;
 	}
 
-	VTLOG("\tReading datapaths from '%s'\n", FileName);
+	VTLOG("\tReading datapaths from '%s'\n", (const char*)FileName);
 
 	PathsVisitor visitor;
 	try

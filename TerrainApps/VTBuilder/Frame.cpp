@@ -535,7 +535,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	if (ext.CmpNoCase(_T("osm")) == 0)
 	{
 		OpenProgressDialog(fname, false);
-		vtString fname_utf = fname.mb_str(wxConvUTF8);
+		vtString fname_utf = (const char*)fname.mb_str(wxConvUTF8);
 		vtRoadLayer *pRL = new vtRoadLayer;
 		if (pRL->ImportFromOSM(fname_utf, progress_callback))
 			pLayer = pRL;
