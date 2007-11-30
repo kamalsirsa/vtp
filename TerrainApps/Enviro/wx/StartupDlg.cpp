@@ -36,7 +36,7 @@ static void ShowOGLInfo2(bool bLog)
 #if 1
 	wxFrame *frame = new wxFrame(NULL, wxID_ANY, wxT(""), wxPoint(0, 0), wxSize(0, 0), 0);
 	wxGLCanvas *canvas = new wxGLCanvas(frame, wxID_ANY, wxPoint(0, 0), wxSize(0, 0));
-#ifdef __WXGTK__
+#if defined(__WXMAC__) || defined(__WXGTK__)
 		frame->Show(true);
 		canvas->SetCurrent();
 		frame->Show(false);
