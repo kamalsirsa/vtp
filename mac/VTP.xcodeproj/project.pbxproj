@@ -392,6 +392,11 @@
 		982FD8860C297D2D00364006 /* WaterLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982FD8170C297B8B00364006 /* WaterLayer.cpp */; };
 		982FD9480C29872400364006 /* libpng.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4530C244B31003001FF /* libpng.dylib */; };
 		985823DD0C514A9F00A2F19D /* PagedLodGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 985823DC0C514A9F00A2F19D /* PagedLodGrid.cpp */; };
+		985FE3520CFFD994000453AF /* DataPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 985FE3500CFFD994000453AF /* DataPath.cpp */; };
+		985FE3530CFFD994000453AF /* DataPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 985FE3510CFFD994000453AF /* DataPath.h */; };
+		985FE35A0CFFD9FF000453AF /* GenGridDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 985FE3540CFFD9FF000453AF /* GenGridDlg.cpp */; };
+		985FE35B0CFFD9FF000453AF /* Special.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 985FE3580CFFD9FF000453AF /* Special.cpp */; };
+		985FE35E0CFFDA66000453AF /* EphemDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 985FE35C0CFFDA66000453AF /* EphemDlg.cpp */; };
 		986BF2470C2448FB003001FF /* xmlhelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4362C30C1F44D400DBCF37 /* xmlhelper.framework */; };
 		986BF2480C244901003001FF /* unzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4C370C20908300F54366 /* unzip.framework */; };
 		986BF24D0C244908003001FF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
@@ -675,7 +680,6 @@
 		98EB181D0C2A297000943462 /* osgdb_tga.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C90C2A278100943462 /* osgdb_tga.so */; };
 		98EB181E0C2A297000943462 /* osgdb_tgz.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16CA0C2A278100943462 /* osgdb_tgz.so */; };
 		98EB181F0C2A297000943462 /* osgdb_trans.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16CB0C2A278100943462 /* osgdb_trans.so */; };
-		98EB18200C2A297000943462 /* osgdb_txp.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16CC0C2A278100943462 /* osgdb_txp.so */; };
 		98EB18210C2A297000943462 /* osgdb_x.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16CD0C2A278100943462 /* osgdb_x.so */; };
 		98EB18220C2A297000943462 /* osgdb_zip.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16CE0C2A278100943462 /* osgdb_zip.so */; };
 		98EB19200C2A298800943462 /* OpenThreads.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0AC7706F0C216D9E001A161E /* OpenThreads.framework */; };
@@ -1207,7 +1211,6 @@
 				98EB181D0C2A297000943462 /* osgdb_tga.so in Copy Shared Plugins Files */,
 				98EB181E0C2A297000943462 /* osgdb_tgz.so in Copy Shared Plugins Files */,
 				98EB181F0C2A297000943462 /* osgdb_trans.so in Copy Shared Plugins Files */,
-				98EB18200C2A297000943462 /* osgdb_txp.so in Copy Shared Plugins Files */,
 				98EB18210C2A297000943462 /* osgdb_x.so in Copy Shared Plugins Files */,
 				98EB18220C2A297000943462 /* osgdb_zip.so in Copy Shared Plugins Files */,
 			);
@@ -1511,7 +1514,7 @@
 		0A6A51FA0C20A3D100F54366 /* glutSimple-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "glutSimple-Info.plist"; sourceTree = "<group>"; };
 		0A6A52010C20A3F600F54366 /* app.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = app.cpp; path = ../TerrainApps/glutSimple/app.cpp; sourceTree = SOURCE_ROOT; };
 		0AC7706F0C216D9E001A161E /* OpenThreads.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenThreads.framework; path = ../../build.shared/Shared/Frameworks/OpenThreads.framework; sourceTree = SOURCE_ROOT; };
-		0AC770700C216D9E001A161E /* osg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osg.framework; path = ../../build.shared/Shared/Frameworks/osg.framework; sourceTree = SOURCE_ROOT; };
+		0AC770700C216D9E001A161E /* osg.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = osg.framework; path = ../../build.shared/Shared/Frameworks/osg.framework; sourceTree = SOURCE_ROOT; };
 		0AC7707C0C216DD5001A161E /* osgDB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgDB.framework; path = ../../build.shared/Shared/Frameworks/osgDB.framework; sourceTree = SOURCE_ROOT; };
 		0AC7707D0C216DD5001A161E /* osgGA.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgGA.framework; path = ../../build.shared/Shared/Frameworks/osgGA.framework; sourceTree = SOURCE_ROOT; };
 		0AC7707E0C216DD5001A161E /* osgText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgText.framework; path = ../../build.shared/Shared/Frameworks/osgText.framework; sourceTree = SOURCE_ROOT; };
@@ -1776,6 +1779,16 @@
 		982FD8400C297BA600364006 /* VTBuilder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VTBuilder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		982FD8420C297BA600364006 /* VTBuilder-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "VTBuilder-Info.plist"; sourceTree = "<group>"; };
 		985823DC0C514A9F00A2F19D /* PagedLodGrid.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PagedLodGrid.cpp; path = ../TerrainSDK/vtlib/core/PagedLodGrid.cpp; sourceTree = SOURCE_ROOT; };
+		985FE3500CFFD994000453AF /* DataPath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DataPath.cpp; path = ../TerrainSDK/vtdata/DataPath.cpp; sourceTree = SOURCE_ROOT; };
+		985FE3510CFFD994000453AF /* DataPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DataPath.h; path = ../TerrainSDK/vtdata/DataPath.h; sourceTree = SOURCE_ROOT; };
+		985FE3540CFFD9FF000453AF /* GenGridDlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GenGridDlg.cpp; path = ../TerrainApps/VTBuilder/GenGridDlg.cpp; sourceTree = SOURCE_ROOT; };
+		985FE3550CFFD9FF000453AF /* GenGridDlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenGridDlg.h; path = ../TerrainApps/VTBuilder/GenGridDlg.h; sourceTree = SOURCE_ROOT; };
+		985FE3560CFFD9FF000453AF /* LocalDatabuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocalDatabuf.h; path = ../TerrainApps/VTBuilder/LocalDatabuf.h; sourceTree = SOURCE_ROOT; };
+		985FE3570CFFD9FF000453AF /* Options.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Options.h; path = ../TerrainApps/VTBuilder/Options.h; sourceTree = SOURCE_ROOT; };
+		985FE3580CFFD9FF000453AF /* Special.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Special.cpp; path = ../TerrainApps/VTBuilder/Special.cpp; sourceTree = SOURCE_ROOT; };
+		985FE3590CFFD9FF000453AF /* TilingOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TilingOptions.h; path = ../TerrainApps/VTBuilder/TilingOptions.h; sourceTree = SOURCE_ROOT; };
+		985FE35C0CFFDA66000453AF /* EphemDlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EphemDlg.cpp; path = ../TerrainApps/Enviro/wx/EphemDlg.cpp; sourceTree = SOURCE_ROOT; };
+		985FE35D0CFFDA66000453AF /* EphemDlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EphemDlg.h; path = ../TerrainApps/Enviro/wx/EphemDlg.h; sourceTree = SOURCE_ROOT; };
 		986BF1DF0C2447F0003001FF /* libgdal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgdal.dylib; path = ../../build.shared/Shared/lib/libgdal.dylib; sourceTree = SOURCE_ROOT; };
 		986BF4460C2449A5003001FF /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = /sw/lib/libbz2.dylib; sourceTree = "<absolute>"; };
 		986BF4480C2449C7003001FF /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = /sw/lib/libcurl.dylib; sourceTree = "<absolute>"; };
@@ -2434,6 +2447,8 @@
 		0A6A4B370C20203600F54366 /* vtdata */ = {
 			isa = PBXGroup;
 			children = (
+				985FE3500CFFD994000453AF /* DataPath.cpp */,
+				985FE3510CFFD994000453AF /* DataPath.h */,
 				0A6A4B580C20722B00F54366 /* Array.h */,
 				0A6A4B590C20722B00F54366 /* Building.cpp */,
 				0A6A4B5A0C20722B00F54366 /* Building.h */,
@@ -2736,6 +2751,12 @@
 		982FD6CA0C29795400364006 /* VTBuilder */ = {
 			isa = PBXGroup;
 			children = (
+				985FE3540CFFD9FF000453AF /* GenGridDlg.cpp */,
+				985FE3550CFFD9FF000453AF /* GenGridDlg.h */,
+				985FE3560CFFD9FF000453AF /* LocalDatabuf.h */,
+				985FE3570CFFD9FF000453AF /* Options.h */,
+				985FE3580CFFD9FF000453AF /* Special.cpp */,
+				985FE3590CFFD9FF000453AF /* TilingOptions.h */,
 				98ACB6E30C965AE700782F70 /* ElevDrawOptions.cpp */,
 				98ACB6E40C965AE700782F70 /* ElevDrawOptions.h */,
 				98ACB6DE0C965ABA00782F70 /* vtImage.cpp */,
@@ -3169,6 +3190,8 @@
 		98A9EF0F0C2A0D3E00A3AF4C /* Enviro */ = {
 			isa = PBXGroup;
 			children = (
+				985FE35C0CFFDA66000453AF /* EphemDlg.cpp */,
+				985FE35D0CFFDA66000453AF /* EphemDlg.h */,
 				98A9EF100C2A0D5B00A3AF4C /* CarEngine.cpp */,
 				98A9EF110C2A0D5B00A3AF4C /* CarEngine.h */,
 				98A9EF370C2A0D5B00A3AF4C /* EarthView.cpp */,
@@ -3768,6 +3791,7 @@
 				0A6A4C110C20722B00F54366 /* vtTin.h in Headers */,
 				0A6A4C130C20722B00F54366 /* vtUnzip.h in Headers */,
 				0A6A4C150C20722B00F54366 /* WFSClient.h in Headers */,
+				985FE3530CFFD994000453AF /* DataPath.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4088,10 +4112,12 @@
 		0A4362B60C1F44B600DBCF37 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 0A4362B70C1F44B600DBCF37 /* Build configuration list for PBXProject "VTP" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 0;
 			mainGroup = 0A4362B40C1F44B600DBCF37;
 			productRefGroup = 0A4362C40C1F44D400DBCF37 /* Products */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				98EB19840C2A31CC00943462 /* TerrainApps */,
 				98EB19790C2A317F00943462 /* TerrainSDK */,
@@ -4369,6 +4395,7 @@
 				0A6A4C100C20722B00F54366 /* vtTin.cpp in Sources */,
 				0A6A4C120C20722B00F54366 /* vtUnzip.cpp in Sources */,
 				0A6A4C140C20722B00F54366 /* WFSClient.cpp in Sources */,
+				985FE3520CFFD994000453AF /* DataPath.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4528,6 +4555,8 @@
 				98A9EF0C0C29878000A3AF4C /* Frame.cpp in Sources */,
 				98ACB6E00C965ABA00782F70 /* vtImage.cpp in Sources */,
 				98ACB6E50C965AE700782F70 /* ElevDrawOptions.cpp in Sources */,
+				985FE35A0CFFD9FF000453AF /* GenGridDlg.cpp in Sources */,
+				985FE35B0CFFD9FF000453AF /* Special.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4584,6 +4613,7 @@
 				98A9F0E60C2A0F2300A3AF4C /* vtlib_headers.cpp in Sources */,
 				98A9F0E70C2A0F2300A3AF4C /* wx_headers.cpp in Sources */,
 				98ACB5860C964FC100782F70 /* FeatureTableDlg3d.cpp in Sources */,
+				985FE35E0CFFDA66000453AF /* EphemDlg.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
