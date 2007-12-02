@@ -18,6 +18,7 @@
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtdata/vtLog.h"
 
 #include "app.h"
 #include "frame.h"
@@ -44,6 +45,8 @@ bool vtApp::OnInit(void)
 //
 bool vtApp::CreateScene()
 {
+	VTSTARTLOG("debug.txt");
+
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
 
