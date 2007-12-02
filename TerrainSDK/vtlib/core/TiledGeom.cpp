@@ -703,8 +703,9 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 	// cache can own them and pass them again when needed, without copying.
 	m_pMiniLoad->configure_dontfree(WE_OWN_BUFFERS);
 
-	// New feature of libMini 8.3.x for faster paging
-	m_pMiniLoad->setfastinit(1);
+	// Calling setfastinit can give possibly faster startup, we don't call
+	//  it because it can result in elevtion LOD pops between LODs 1 and 0.
+	//m_pMiniLoad->setfastinit(1);
 
 	miniOGL::configure_compression(0);
 
