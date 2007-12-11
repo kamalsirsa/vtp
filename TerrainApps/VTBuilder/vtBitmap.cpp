@@ -25,6 +25,7 @@
 extern "C" {
 #ifdef WIN32
 #define XMD_H	// hack to workaround conflict between windows.h and jpeglib.h
+#undef FAR	// hack to prevent a warning due to cluttered windows.h
 #endif
 #include "jpeglib.h"
 }
