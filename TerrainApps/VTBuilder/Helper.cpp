@@ -38,6 +38,19 @@
 #endif
 #endif
 
+#if USE_LIBMINI_DATABUF_PNG
+#include "pngbase.h"
+#ifdef _MSC_VER
+  #if _MSC_VER >= 1400	// vc8
+	  #pragma message( "Adding link with libMiniSFX-vc8.lib" )
+	  #pragma comment( lib, "libMiniSFX-vc8.lib" )
+  #else					// vc71
+	  #pragma message( "Adding link with libMiniSFX-vc7.lib" )
+	  #pragma comment( lib, "libMiniSFX-vc7.lib" )
+  #endif
+#endif
+#endif
+
 #if USE_LIBMINI_DATABUF_GREYC
 #define GREYCSTORATION
 #include "greycbase.h"
@@ -199,7 +212,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
     output_buf.data=malloc(iUncompressedSize);
     memcpy(output_buf.data,rgb_bytes,iUncompressedSize);
 #if (USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_JPEG)
-		output_buf.savedata(fname,1);
+		output_buf.savedata(fname,1); // external format 1=JPEG
 #else
     output_buf.savedata(fname);
 #endif
@@ -444,11 +457,15 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 }
 #endif	// SUPPORT_SQUISH
 
-// conversion hook for external formats (e.g. JPEG/PNG)
-void conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
-                    unsigned char **newdata,unsigned int *newbytes,
-                    databuf *obj,void *data)
+// libMini conversion hook for external formats (JPEG/PNG)
+int vtb_conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
+                       unsigned char **newdata,unsigned int *newbytes,
+                       databuf *obj,void *data)
    {
+   VTP_CONVERSION_PARAMS *conversion_params=(VTP_CONVERSION_PARAMS *)data;
+
+   if (conversion_params==NULL) return(0);
+
    switch (extformat)
       {
       case 1: // JPEG
@@ -460,78 +477,109 @@ void conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsi
             int width,height,components;
 
             *newdata=jpegbase::decompressJPEGimage(srcdata,bytes,&width,&height,&components);
-            if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) ERRORMSG();
+            if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) return(0);
+
+            if (*newdata==NULL) return(0); // return failure
 
             switch (components)
                {
-               case 3:
-                  if (obj->type!=3) ERRORMSG();
-                  break;
-               case 4:
-                  if (obj->type!=4) ERRORMSG();
-                  break;
-               default: ERRORMSG();
+               case 1: if (obj->type!=0) return(0);
+               case 3: if (obj->type!=3) return(0);
+               case 4: if (obj->type!=4) return(0);
+               default: return(0);
                }
 
             *newbytes=width*height*components;
             }
          else
             {
-            const float quality=0.75f;
-
             int components;
 
             switch (obj->type)
                {
-               case 1:
-                  components=1;
-                  break;
-               case 3:
-                  components=3;
-                  break;
-               case 4:
-                  components=4;
-                  break;
-               default: ERRORMSG();
+               case 0: components=1; break;
+               case 3: components=3; break;
+               case 4: components=4; break;
+               default: return(0); // return failure
                }
 
 #if USE_LIBMINI_DATABUF_GREYC
-            greycbase::denoiseGREYCimage(srcdata,obj->xsize,obj->ysize);
+
+            if (components==1 || components==3)
+               if (conversion_params->usegreycstoration)
+                  greycbase::denoiseGREYCimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->greyc_p,conversion_params->greyc_a);
+
 #endif
 
-            jpegbase::compressJPEGimage(srcdata,obj->xsize,obj->ysize,components,quality,newdata,newbytes);
+            jpegbase::compressJPEGimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->jpeg_quality/100.0f,newdata,newbytes);
+
+            if (*newdata==NULL) return(0); // return failure
             }
 
 #else
-         ERRORMSG();
+         return(0);
 #endif
 
          break;
 
       case 2: // PNG
 
+#if USE_LIBMINI_DATABUF_PNG
+
          if (israwdata==0)
-            ERRORMSG(); //!! not yet implemented
+            {
+            int width,height,components;
+
+            *newdata=pngbase::decompressPNGimage(srcdata,bytes,&width,&height,&components);
+            if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) return(0);
+
+            if (*newdata==NULL) return(0); // return failure
+
+            switch (components)
+               {
+               case 1: if (obj->type!=0) return(0);
+               case 2: if (obj->type!=1) return(0);
+               case 3: if (obj->type!=3) return(0);
+               case 4: if (obj->type!=4) return(0);
+               default: return(0);
+               }
+
+            *newbytes=width*height*components;
+            }
          else
+            {
+            int components;
+
             switch (obj->type)
                {
-               case 1:
-                  ERRORMSG(); //!! not yet implemented
-                  break;
-               case 2:
-                  ERRORMSG(); //!! not yet implemented
-                  break;
-               case 3:
-                  ERRORMSG(); //!! not yet implemented
-                  break;
-               case 4:
-                  ERRORMSG(); //!! not yet implemented
-                  break;
-               default: ERRORMSG();
+               case 0: components=1; break;
+               case 1: components=2; break;
+               case 3: components=3; break;
+               case 4: components=4; break;
+               default: return(0); // return failure
                }
+
+#if USE_LIBMINI_DATABUF_GREYC
+
+            if (components==3) // do not denoise elevation
+               if (conversion_params->usegreycstoration)
+                  greycbase::denoiseGREYCimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->greyc_p,conversion_params->greyc_a);
+
+#endif
+
+            pngbase::compressPNGimage(srcdata,obj->xsize,obj->ysize,components,newdata,newbytes);
+
+            if (*newdata==NULL) return(0); // return failure
+            }
+
+#else
+         return(0);
+#endif
 
          break;
 
-      default: ERRORMSG();
+      default: return(0);
       }
+
+   return(1); // return success
    }
