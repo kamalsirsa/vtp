@@ -49,7 +49,7 @@ MiniDatabuf::~MiniDatabuf()
 }
 
 // set the geographic extents
-void MiniDatabuf::set_extents(float left, float right, float top, float bottom)
+void MiniDatabuf::set_extents(float left, float right, float bottom, float top)
 {
 	swx = left;
 	swy = bottom;
@@ -60,6 +60,10 @@ void MiniDatabuf::set_extents(float left, float right, float top, float bottom)
 	nex = right;
 	ney = top;
 }
+
+// set the geographic extents in LLWGS84
+// not supported in vtb::MiniDatabuf, requires subclassing from libMini::databuf
+void MiniDatabuf::set_LLWGS84extents(float left, float right, float bottom, float top) {}
 
 // allocate a new memory chunk
 void MiniDatabuf::alloc(unsigned int xs,unsigned int ys,unsigned int zs,unsigned int ts,unsigned int ty)

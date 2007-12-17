@@ -46,7 +46,8 @@ public:
 	void *data;         // pointer to raw data, null pointer indicates missing data
 	unsigned int bytes; // number of raw data bytes
 
-	void set_extents(float left, float right, float top, float bottom);
+	void set_extents(float left, float right, float bottom, float top);
+	void set_LLWGS84extents(float left, float right, float bottom, float top);
 
 	// allocate a new memory chunk
 	void alloc(unsigned int xs,unsigned int ys,unsigned int zs,unsigned int ts=1,unsigned int ty=0);
