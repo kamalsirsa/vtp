@@ -8,6 +8,7 @@
 
 #define USE_LIBMINI_DATABUF 1
 #define USE_LIBMINI_DATABUF_JPEG 0
+#define USE_LIBMINI_DATABUF_PNG 0
 #define USE_LIBMINI_DATABUF_GREYC 0
 
 #include "vtdata/MiniDatabuf.h"
@@ -27,26 +28,12 @@
   #pragma comment( lib, "glu32.lib" )
 #endif
 
-// Create our subclass to add methods 'databuf' doesn't have
-class vtMiniDatabuf: public databuf
-{
-public:
-	void set_extents(float left, float right, float top, float bottom)
-	{
-		swx = left;
-		swy = bottom;
-		nwx = left;
-		nwy = top;
-		sex = right;
-		sey = bottom;
-		nex = right;
-		ney = top;
-	}
-};
+// Directly subclass from libMini
+class vtMiniDatabuf: public databuf {};
 
 #else
 
-// Simply use the one in vtdata
+// Simply use the implementation in vtdata
 class vtMiniDatabuf: public MiniDatabuf {};
 
 #endif	// USE_LIBMINI_DATABUF
