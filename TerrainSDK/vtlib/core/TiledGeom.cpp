@@ -436,8 +436,13 @@ vtTiledGeom::~vtTiledGeom()
 #if SUPPORT_THREADING
 	delete m_pDataCloud;
 #endif
+
+#if USE_VERTEX_CACHE
+	m_pMiniCache->detach(m_pMiniTile);
 	delete m_pMiniCache;
-	delete m_pMiniLoad;
+#endif
+
+   delete m_pMiniLoad;
 
 	delete m_pPlainMaterial;
 }
@@ -594,10 +599,7 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 #if USE_VERTEX_CACHE
 	// use primitive caching with vertex arrays
 	m_pMiniCache = new minicache;
-	m_pMiniCache->setcallbacks(m_pMiniTile, // the minitile object to be cached
-						cols,rows, // number of tile columns and rows
-						coldim,rowdim, // overall extent
-						center.x,center.y,center.z); // origin with negative Z
+	m_pMiniCache->attach(m_pMiniTile);
 #endif
 
 	// Set (pre)loader parameters
