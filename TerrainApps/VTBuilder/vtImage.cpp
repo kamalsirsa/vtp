@@ -1660,7 +1660,8 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 	output_buf.ysize = tilesize;
 	output_buf.zsize = 1;
 	output_buf.tsteps = 1;
-	output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
+	output_buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
+	output_buf.set_LLWGS84extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top); //!! still needs conversion to LLWGS84
 
 	// Write and optionally compress the image
 	WriteMiniImage(fname, opts, rgb_bytes, output_buf,

@@ -42,7 +42,7 @@
 	#include "wx/glcanvas.h"	// needed for writing pre-compressed textures
 #endif
 
-#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_GREYC)
+#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG || USE_LIBMINI_DATABUF_GREYC)
 #include "Helper.h"
 #endif
 
@@ -892,15 +892,26 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 					vtMiniDatabuf output_buf;
 
-#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_GREYC)
-					output_buf.setconversion(conversionhook,NULL);
+#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG || USE_LIBMINI_DATABUF_GREYC)
+
+               // specify conversion parameters
+               VTP_CONVERSION_PARAMS conversion_params;
+               conversion_params.jpeg_quality=75.0f; // jpeg quality in percent
+               conversion_params.usegreycstoration=FALSE; // use greycstoration for image denoising
+               conversion_params.greyc_p=0.8f; // greycstoration sharpness, useful range=[0.7-0.9]
+               conversion_params.greyc_a=0.4f; // greycstoration anisotropy, useful range=[0.1-0.5]
+
+               // register libMini conversion hook (JPEG/PNG)
+               output_buf.setconversion(vtb_conversionhook,&conversion_params);
+
 #endif
 
 					output_buf.xsize = tilesize;
 					output_buf.ysize = tilesize;
 					output_buf.zsize = 1;
 					output_buf.tsteps = 1;
-					output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
+					output_buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
+					output_buf.set_LLWGS84extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top); //!! still needs conversion to LLWGS84
 
 					int iUncompressedSize = tilesize * tilesize * 3;
 					unsigned char *rgb_bytes = (unsigned char *) malloc(iUncompressedSize);
@@ -941,7 +952,8 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 					return false;
 
 				vtMiniDatabuf buf;
-				buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
+				buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
+				buf.set_LLWGS84extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top); //!! still needs conversion to LLWGS84
 				buf.alloc(tilesize+1, tilesize+1, 1, 1, bFloat ? 2 : 1);
 				float *fdata = (float *) buf.data;
 				short *sdata = (short *) buf.data;
@@ -1169,7 +1181,8 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts, bool bSho
 				output_buf.ysize = tilesize;
 				output_buf.zsize = 1;
 				output_buf.tsteps = 1;
-				output_buf.set_extents(tile_area.left, tile_area.right, tile_area.top, tile_area.bottom);
+				output_buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
+				output_buf.set_LLWGS84extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top); //!! still needs conversion to LLWGS84
 
 				// Write and optionally compress the image
 				WriteMiniImage(fname, opts, rgb_bytes, output_buf,
