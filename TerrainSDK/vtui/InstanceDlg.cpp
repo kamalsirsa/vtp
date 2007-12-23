@@ -193,14 +193,22 @@ void InstanceDlg::OnBrowseModelFile( wxCommandEvent &event )
 	// vtStructInstance3d::CreateNode then remove the directory part of the path
 	// so that paths are not stored unnecessarily
 	wxFileName TargetModel(SelectFile.GetPath());
-	TargetModel.SetPath(wxT("BuildingModels"));
-	vtString FoundModel = FindFileOnPaths(vtGetDataPath(), TargetModel.GetFullName().mb_str(wxConvUTF8));
-	if ("" == FoundModel)
-		FoundModel = FindFileOnPaths(vtGetDataPath(), wxString(TargetModel.GetPath(wxPATH_GET_SEPARATOR) + TargetModel.GetFullName()).mb_str(wxConvUTF8));
+	wxString filepart = TargetModel.GetFullName();
+	vtString FoundModel = FindFileOnPaths(vtGetDataPath(), filepart.mb_str(wxConvUTF8));
 	if ("" != FoundModel)
-		GetModelFile()->SetValue(TargetModel.GetFullName());
-	else
-		GetModelFile()->SetValue(TargetModel.GetFullPath());
+	{
+		GetModelFile()->SetValue(filepart);
+		return;
+	}
+	wxString test = wxT("BuildingModels/") + filepart;
+	FoundModel = FindFileOnPaths(vtGetDataPath(), test.mb_str(wxConvUTF8));
+	if ("" != FoundModel)
+	{
+		GetModelFile()->SetValue(filepart);
+		return;
+	}
+	// Otherwise, use the full absolute path
+	GetModelFile()->SetValue(SelectFile.GetPath());
 }
 
 void InstanceDlg::OnChoice( wxCommandEvent &event )
