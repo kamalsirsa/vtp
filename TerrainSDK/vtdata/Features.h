@@ -206,11 +206,6 @@ public:
 	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 	vtProjection &GetAtProjection() { return m_proj; }
 
-	/// Set the properties for this set, which includes style.
-	void SetProperties(vtTagArray &props) { m_Properties = props; }
-	/// Get the properties for this set, which includes style.
-	vtTagArray &GetProperties() { return m_Properties; }
-
 	vtFeature *GetFeature(unsigned int iIndex) const { return m_Features[iIndex]; }
 
 protected:
@@ -234,10 +229,6 @@ protected:
 
 	// remember the filename these feature were loaded from or saved to
 	vtString	m_strFilename;
-
-	// A set of properties that can provide additional information, such as
-	//  style information for visual display.
-	vtTagArray	m_Properties;
 };
 
 /**

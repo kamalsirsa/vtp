@@ -90,13 +90,13 @@ public:
 	// Create for all features
 	void CreateStyledFeatures();
 	bool CreateTextureOverlay();
-	void CreateLineGeometryForPoints(vtTagArray &style);
+	void CreateLineGeometryForPoints();
 
 	// Create for a single feature
 	void CreateStyledFeature(int iIndex);
-	void CreateObjectGeometry(vtTagArray &style, unsigned int iIndex);
-	void CreateLineGeometry(vtTagArray &style, unsigned int iIndex);
-	void CreateFeatureLabel(vtTagArray &style, unsigned int iIndex);
+	void CreateObjectGeometry(unsigned int iIndex);
+	void CreateLineGeometry(unsigned int iIndex);
+	void CreateFeatureLabel(unsigned int iIndex);
 
 	void ReleaseGeometry();
 	void ReleaseFeatureGeometry(vtFeature *f);
@@ -112,16 +112,23 @@ public:
 	void EditEnd();
 	void DeleteFeature(vtFeature *f);
 
+	/// Set the properties for this set, which includes style.
+	void SetProperties(const vtTagArray &props) { m_StyleProps = props; }
+	/// Get the properties for this set, which includes style.
+	vtTagArray &GetProperties() { return m_StyleProps; }
+
 protected:
 	void CreateGeomGroup();
 	void CreateLabelGroup();
 	int GetObjectMaterialIndex(vtTagArray &style, unsigned int iIndex);
 
+	// A set of properties that can provide additional information, such as
+	//  style information for visual display.
+	vtTagArray	m_StyleProps;
+
 	vtTerrain *m_pTerr;
 
-	/// This is the set of features which the layer contains. Style information
-	///  is associated with it, using vtFeatureSet::SetProperties() and 
-	///  vtFeatureSet::GetProperties().
+	/// This is the set of features which the layer contains.
 	vtFeatureSet *pSet;
 	vtGroup *pContainer;
 	vtGroup *pGeomGroup;

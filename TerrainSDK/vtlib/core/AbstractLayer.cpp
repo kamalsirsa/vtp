@@ -113,7 +113,7 @@ void vtAbstractLayer::CreateContainer()
 }
 
 /**
- * Given a featureset and style description, create the geometry and place it
+ * Given a featureset, create the geometry and place it
  * on the terrain.
  */
 void vtAbstractLayer::CreateStyledFeatures()
@@ -121,8 +121,6 @@ void vtAbstractLayer::CreateStyledFeatures()
 	VTLOG1("CreateStyledFeatures\n");
 	if (!pContainer)
 		CreateContainer();
-
-	vtTagArray &style = pSet->GetProperties();
 
 	unsigned int entities = pSet->GetNumEntities();
 	VTLOG("  Creating %d entities.. ", entities);
@@ -139,10 +137,10 @@ void vtAbstractLayer::CreateStyledFeatures()
 	// 1. A line going through a point set.
 	// 2. A TextureOverlay which rasterizes all the featues.
 
-	if (style.GetValueBool("LineGeometry") && pSetP3 != NULL)
-		CreateLineGeometryForPoints(style);
+	if (m_StyleProps.GetValueBool("LineGeometry") && pSetP3 != NULL)
+		CreateLineGeometryForPoints();
 
-	if (style.GetValueBool("TextureOverlay"))
+	if (m_StyleProps.GetValueBool("TextureOverlay"))
 		CreateTextureOverlay();
 
 	VTLOG1("Done.\n");
@@ -153,22 +151,18 @@ void vtAbstractLayer::CreateStyledFeature(int iIndex)
 	if (!pContainer)
 		CreateContainer();
 
-	vtTagArray &style = pSet->GetProperties();
+	if (m_StyleProps.GetValueBool("ObjectGeometry"))
+		CreateObjectGeometry(iIndex);
 
-	if (style.GetValueBool("ObjectGeometry"))
-		CreateObjectGeometry(style, iIndex);
+	if (m_StyleProps.GetValueBool("LineGeometry"))
+		CreateLineGeometry(iIndex);
 
-	if (style.GetValueBool("LineGeometry"))
-		CreateLineGeometry(style, iIndex);
-
-	if (style.GetValueBool("Labels"))
-		CreateFeatureLabel(style, iIndex);
+	if (m_StyleProps.GetValueBool("Labels"))
+		CreateFeatureLabel(iIndex);
 }
 
 void vtAbstractLayer::CreateGeomGroup()
 {
-	vtTagArray &style = pSet->GetProperties();
-
 	// create geometry group to contain all the meshes
 	pGeomGroup = new vtGroup;
 	pGeomGroup->SetName2("Geometry");
@@ -180,10 +174,10 @@ void vtAbstractLayer::CreateGeomGroup()
 	// common colors
 	RGBi color;
 
-	color = style.GetValueRGBi("ObjectGeomColor");
+	color = m_StyleProps.GetValueRGBi("ObjectGeomColor");
 	material_index_object = pGeomMats->AddRGBMaterial1(color, true, true);
 
-	color = style.GetValueRGBi("LineGeomColor");
+	color = m_StyleProps.GetValueRGBi("LineGeomColor");
 	material_index_line = pGeomMats->AddRGBMaterial1(color, false, false);
 
 	// There is always a yellow highlight material
@@ -204,15 +198,13 @@ void vtAbstractLayer::CreateGeomGroup()
 
 void vtAbstractLayer::CreateLabelGroup()
 {
-	vtTagArray &style = pSet->GetProperties();
-
 	pLabelGroup = new vtGroup;
 	pLabelGroup->SetName2("Labels");
 	pContainer->AddChild(pLabelGroup);
 
 	// If they specified a font name, use it
 	vtString fontfile;
-	if (!style.GetValueString("Font", fontfile))
+	if (!m_StyleProps.GetValueString("Font", fontfile))
 	{
 		// otherwise, use the default
 #if VTLIB_OPENSG
@@ -272,7 +264,7 @@ int vtAbstractLayer::GetObjectMaterialIndex(vtTagArray &style, unsigned int iInd
 	spheres) and place it on the terrain.
 	If 2D, they will be draped on the terrain.
 */
-void vtAbstractLayer::CreateObjectGeometry(vtTagArray &style, unsigned int iIndex)
+void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 {
 	if (!pGeomGroup)
 		CreateGeomGroup();
@@ -285,15 +277,15 @@ void vtAbstractLayer::CreateObjectGeometry(vtTagArray &style, unsigned int iInde
 		return;
 
 	// Determine color and material index
-	int material_index = GetObjectMaterialIndex(style, iIndex);
+	int material_index = GetObjectMaterialIndex(m_StyleProps, iIndex);
 
 	// Determine geometry size and placement
 	float fHeight = 0.0f;
 	if (pSetP2 || pSetLS2)
-		style.GetValueFloat("ObjectGeomHeight", fHeight);
+		m_StyleProps.GetValueFloat("ObjectGeomHeight", fHeight);
 
 	float fRadius;
-	if (!style.GetValueFloat("ObjectGeomSize", fRadius))
+	if (!m_StyleProps.GetValueFloat("ObjectGeomSize", fRadius))
 		fRadius = 1;
 
 	vtHeightField3d *hf = m_pTerr->GetHeightField();
@@ -393,7 +385,7 @@ void vtAbstractLayer::CreateObjectGeometry(vtTagArray &style, unsigned int iInde
 	(vtFeatureSetPolygon) will also be created as line geometry
 	(unfilled polygons) and draped on the ground.
 */
-void vtAbstractLayer::CreateLineGeometry(vtTagArray &style, unsigned int iIndex)
+void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 {
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -409,7 +401,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTagArray &style, unsigned int iIndex)
 	// Determine color and material index
 	int color_field_index;
 	int material_index;
-	if (style.GetValueInt("LineColorFieldIndex", color_field_index))
+	if (m_StyleProps.GetValueInt("LineColorFieldIndex", color_field_index))
 	{
 		RGBAf rgba;
 		if (GetColorField(*pSet, iIndex, color_field_index, rgba))
@@ -456,10 +448,10 @@ void vtAbstractLayer::CreateLineGeometry(vtTagArray &style, unsigned int iIndex)
 	float fHeight = 0.0f;
 	if (pSetLS2 || pSetPoly)
 	{
-		if (!style.GetValueFloat("LineGeomHeight", fHeight))
+		if (!m_StyleProps.GetValueFloat("LineGeomHeight", fHeight))
 			fHeight = 1.0f;
 	}
-	bool bTessellate = style.GetValueBool("Tessellate");
+	bool bTessellate = m_StyleProps.GetValueBool("Tessellate");
 	bool bCurve = false;
 
 	FPoint3 f3;
@@ -502,7 +494,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTagArray &style, unsigned int iIndex)
 	// If the user specified a line width, apply it now
 	bool bWidth = false;
 	float fWidth;
-	if (style.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
+	if (m_StyleProps.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
 		bWidth = true;
 
 	// Track what was created
@@ -523,7 +515,7 @@ void vtAbstractLayer::CreateLineGeometry(vtTagArray &style, unsigned int iIndex)
 	Given a featureset and style description, create line geometry that
 	goes through all the points.
 */
-void vtAbstractLayer::CreateLineGeometryForPoints(vtTagArray &style)
+void vtAbstractLayer::CreateLineGeometryForPoints()
 {
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -558,7 +550,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints(vtTagArray &style)
 
 	// If the user specified a line width, apply it now
 	float fWidth;
-	if (style.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
+	if (m_StyleProps.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
 	{
 		for (unsigned int i = 0; i < mf.m_Meshes.size(); i++)
 		{
@@ -577,7 +569,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints(vtTagArray &style)
  * the features are 2D polygons (vtFeatureSetPolygon) then the point used is
  * the centroid of the polygon.
  */
-void vtAbstractLayer::CreateFeatureLabel(vtTagArray &style, unsigned int iIndex)
+void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 {
 	// We support text labels for 2D and 3D points, and 2D polygons
 	if (!pSetP2 && !pSetP3 && !pSetPoly)
@@ -616,7 +608,7 @@ void vtAbstractLayer::CreateFeatureLabel(vtTagArray &style, unsigned int iIndex)
 		return;
 
 	float label_elevation;
-	if (!style.GetValueFloat("LabelHeight", label_elevation))
+	if (!m_StyleProps.GetValueFloat("LabelHeight", label_elevation))
 		label_elevation = 0.0f;
 
 	// Elevate the location by the desired vertical offset
@@ -628,7 +620,7 @@ void vtAbstractLayer::CreateFeatureLabel(vtTagArray &style, unsigned int iIndex)
 		fp3.y += label_elevation;
 
 	float label_size;
-	if (!style.GetValueFloat("LabelSize", label_size))
+	if (!m_StyleProps.GetValueFloat("LabelSize", label_size))
 		label_size = 18;
 
 	// Create the vtTextMesh
@@ -636,7 +628,7 @@ void vtAbstractLayer::CreateFeatureLabel(vtTagArray &style, unsigned int iIndex)
 
 	// Get the label text
 	int text_field_index;
-	if (!style.GetValueInt("TextFieldIndex", text_field_index))
+	if (!m_StyleProps.GetValueInt("TextFieldIndex", text_field_index))
 		text_field_index = -1;
 	vtString str;
 	pSet->GetValueAsString(iIndex, text_field_index, str);
@@ -658,7 +650,7 @@ void vtAbstractLayer::CreateFeatureLabel(vtTagArray &style, unsigned int iIndex)
 	// Determine feature color
 	bool bGotColor = false;
 	int color_field_index;
-	if (style.GetValueInt("ColorFieldIndex", color_field_index))
+	if (m_StyleProps.GetValueInt("ColorFieldIndex", color_field_index))
 	{
 		RGBAf rgba;
 		if (GetColorField(*pSet, iIndex, color_field_index, rgba))
@@ -669,7 +661,7 @@ void vtAbstractLayer::CreateFeatureLabel(vtTagArray &style, unsigned int iIndex)
 	}
 	if (!bGotColor)
 	{
-		RGBf rgb = style.GetValueRGBi("LabelColor");
+		RGBf rgb = m_StyleProps.GetValueRGBi("LabelColor");
 		text->SetColor(rgb);
 	}
 
@@ -694,8 +686,6 @@ bool vtAbstractLayer::CreateTextureOverlay()
 {
 	VTLOG1("  CreateTextureOverlay\n");
 
-	vtTagArray &style = pSet->GetProperties();
-
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
@@ -719,7 +709,7 @@ bool vtAbstractLayer::CreateTextureOverlay()
 	double DeltaY = DataExtents.Height() / (double)ALPD_RESOLUTION;
 
 	int iNumFeatures = pSetPoly->GetNumEntities();
-	RGBAi LayerColour = style.GetValueRGBi("GeomColor");
+	RGBAi LayerColour = m_StyleProps.GetValueRGBi("GeomColor");
 	LayerColour.a = 255;
 
 	for (int ImageX = 0; ImageX < ALPD_RESOLUTION; ImageX++)
@@ -740,7 +730,7 @@ bool vtAbstractLayer::CreateTextureOverlay()
 	}
 
 	int iTextureMode;
-	vtString mode = style.GetValueString("TextureMode");
+	vtString mode = m_StyleProps.GetValueString("TextureMode");
 	if (mode == "ADD") iTextureMode = GL_ADD;
 	if (mode == "MODULATE") iTextureMode = GL_MODULATE;
 	if (mode == "DECAL") iTextureMode = GL_DECAL;
@@ -830,8 +820,6 @@ void vtAbstractLayer::RebuildFeature(unsigned int iIndex)
 
 void vtAbstractLayer::UpdateVisualSelection()
 {
-	vtTagArray &style = pSet->GetProperties();
-
 	// use SetMeshMatIndex to make the meshes of selected features yellow
 	for (unsigned int j = 0; j < pSet->GetNumEntities(); j++)
 	{
@@ -843,7 +831,7 @@ void vtAbstractLayer::UpdateVisualSelection()
 			if (pSet->IsSelected(j))
 				material_index = material_index_yellow;
 			else
-				material_index = GetObjectMaterialIndex(style, j);
+				material_index = GetObjectMaterialIndex(m_StyleProps, j);
 
 			for (unsigned int k = 0; k < viz->m_meshes.size(); k++)
 			{
@@ -888,11 +876,9 @@ Visual *vtAbstractLayer::GetViz(vtFeature *feat)
 //  created at once from all the features.
 bool vtAbstractLayer::CreateAtOnce()
 {
-	vtTagArray &style = pSet->GetProperties();
-
-	if (style.GetValueBool("LineGeometry") && pSetP3 != NULL)
+	if (m_StyleProps.GetValueBool("LineGeometry") && pSetP3 != NULL)
 		return true;
-	if (style.GetValueBool("TextureOverlay"))
+	if (m_StyleProps.GetValueBool("TextureOverlay"))
 		return true;
 	return false;
 }

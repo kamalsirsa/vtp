@@ -1764,14 +1764,14 @@ void vtTerrain::_CreateAbstractLayers()
 		}
 		VTLOG("Successfully read features from file '%s'\n", (const char *) path);
 
-		// Copy all the other attributes to the new featureset
-		VTLOG1("  Setting featureset properties.\n");
-		feat->GetProperties() = lay;
-
 		VTLOG1("  Constructing and appending layer.\n");
 		vtAbstractLayer *layer = new vtAbstractLayer(this);
 		layer->SetFeatureSet(feat);
 		m_Layers.Append(layer);
+
+		// Copy all the other attributes to the new layer
+		VTLOG1("  Setting layer properties.\n");
+		layer->SetProperties(lay);
 	}
 
 	// Now for each layer that we have, create the geometry and labels
@@ -1779,7 +1779,15 @@ void vtTerrain::_CreateAbstractLayers()
 	{
 		vtAbstractLayer *layer = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
 		if (layer)
+		{
 			layer->CreateStyledFeatures();
+
+			// Show only layers which should be visible
+			if (layer->GetProperties().GetValueBool("Visible") == false)
+			{
+				layer->SetVisible(false);
+			}
+		}
 	}
 }
 
@@ -1838,7 +1846,7 @@ void vtTerrain::_CreateImageLayers()
 		}
 
 		// Copy all the other attributes to the new layer (TODO?)
-		//feat->GetProperties() = lay;
+		//feat->SetProperties(lay);
 
 		m_Layers.Append(ilayer);
 
