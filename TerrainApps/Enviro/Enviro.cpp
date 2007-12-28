@@ -1182,12 +1182,12 @@ void Enviro::StoreTerrainParameters()
 		if (alay)
 		{
 			newlay.SetValueString("Type", TERR_LTYPE_ABSTRACT, true);
-			vtTagArray &style = alay->GetFeatureSet()->GetProperties();
+			vtTagArray &style = alay->GetProperties();
 			newlay.CopyTagsFrom(style);
 		}
 
 		newlay.SetValueString("Filename", lay->GetLayerName(), true);
-		//newlay->;
+		newlay.SetValueBool("Visible", lay->GetVisible());
 		par.m_Layers.push_back(newlay);
 	}
 }

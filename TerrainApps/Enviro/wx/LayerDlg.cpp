@@ -644,7 +644,7 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 		if (alay)
 		{
 			// Ask style for the newly loaded layer
-			vtTagArray &props = alay->GetFeatureSet()->GetProperties();
+			vtTagArray &props = alay->GetProperties();
 
 			StyleDlg dlg(NULL, -1, _("Style"));
 			dlg.SetFeatureSet(alay->GetFeatureSet());

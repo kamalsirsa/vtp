@@ -419,11 +419,11 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
 {
 	// make a new abstract layer (points)
 	vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
-	vtTagArray &props = pSet->GetProperties();
 	pSet->SetFilename("Untitled.shp");
 	pSet->AddField("Label", FT_String);
 
 	// Ask style for the new point layer
+	vtTagArray props;
 	props.SetValueBool("Geometry", false, true);
 	props.SetValueBool("Labels", true, true);
 	props.SetValueRGBi("LabelColor", RGBi(255,255,0), true);
@@ -443,6 +443,7 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
 	// wrap the features in an abstract layer
 	vtAbstractLayer *pLay = new vtAbstractLayer(pTerr);
 	pLay->SetFeatureSet(pSet);
+	pLay->SetProperties(props);
 
 	// add the new layer to the terrain
 	pTerr->GetLayers().Append(pLay);
