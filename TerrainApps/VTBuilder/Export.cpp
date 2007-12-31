@@ -886,21 +886,9 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 					int tilesize = base_tilesize >> k;
 
-					vtMiniDatabuf output_buf;
+               initconvhook();
 
-#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG || USE_LIBMINI_DATABUF_GREYC)
-
-               // specify conversion parameters
-               VTP_CONVERSION_PARAMS conversion_params;
-               conversion_params.jpeg_quality=75.0f; // jpeg quality in percent
-               conversion_params.usegreycstoration=FALSE; // use greycstoration for image denoising
-               conversion_params.greyc_p=0.8f; // greycstoration sharpness, useful range=[0.7-0.9]
-               conversion_params.greyc_a=0.4f; // greycstoration anisotropy, useful range=[0.1-0.5]
-
-               // register libMini conversion hook (JPEG/PNG)
-               output_buf.setconversion(vtb_conversionhook,&conversion_params);
-
-#endif
+               vtMiniDatabuf output_buf;
 
 					output_buf.xsize = tilesize;
 					output_buf.ysize = tilesize;
@@ -947,6 +935,8 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				if (bCancel)
 					return false;
 
+            initconvhook();
+
 				vtMiniDatabuf buf;
 				buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
 				buf.set_LLWGS84extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top); //!! still needs conversion to LLWGS84
@@ -970,7 +960,13 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 						}
 					}
 				}
-				buf.savedata(fname);
+
+#if (USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_PNG)
+            bool saveasPNG=false; //!! get from GUI
+            buf.savedata(fname,saveasPNG?2:0); // external format 2=PNG
+#else
+            buf.savedata(fname);
+#endif
 			}
 		}
 	}
@@ -1172,9 +1168,13 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts, bool bSho
 				}
 				int iUncompressedSize = cb;
 
-				vtMiniDatabuf output_buf;
-				output_buf.xsize = tilesize;
-				output_buf.ysize = tilesize;
+            initconvhook();
+
+            vtMiniDatabuf output_buf;
+
+            output_buf.xsize = tilesize;
+            output_buf.ysize = tilesize;
+
 				output_buf.zsize = 1;
 				output_buf.tsteps = 1;
 				output_buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
@@ -1202,3 +1202,19 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts, bool bSho
 	return true;
 }
 
+void MainFrame::initconvhook(bool enableGREYC)
+   {
+#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG || USE_LIBMINI_DATABUF_GREYC)
+
+   // specify conversion parameters
+   static VTP_CONVERSION_PARAMS conversion_params;
+   conversion_params.jpeg_quality=75.0f; // jpeg quality in percent
+   conversion_params.usegreycstoration=enableGREYC; // use greycstoration for image denoising
+   conversion_params.greyc_p=0.8f; // greycstoration sharpness, useful range=[0.7-0.9]
+   conversion_params.greyc_a=0.4f; // greycstoration anisotropy, useful range=[0.1-0.5]
+
+   // register libMini conversion hook (JPEG/PNG)
+   databuf::setconversion(vtb_conversionhook,&conversion_params);
+
+#endif
+   }

@@ -25,14 +25,14 @@
 #endif
 #endif
 
-#if USE_LIBMINI_DATABUF_JPEG
+#if USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_JPEG
 #include "jpegbase.h"
-#endif 
-#if USE_LIBMINI_DATABUF_PNG
+#endif
+#if USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_PNG
 #include "pngbase.h"
 #endif
 
-#if USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG
+#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG)
 #ifdef _MSC_VER
   #if _MSC_VER >= 1400	// vc8
 	  #pragma message( "Adding link with libMiniSFX-vc8.lib" )
@@ -44,7 +44,7 @@
 #endif
 #endif
 
-#if USE_LIBMINI_DATABUF_GREYC
+#if USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_GREYC
 #define GREYCSTORATION
 #include "greycbase.h"
 #endif
@@ -202,14 +202,15 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		// Output to a plain RGB .db file
 		output_buf.type = 3;	// RGB
 		output_buf.bytes = iUncompressedSize;
-    output_buf.data=malloc(iUncompressedSize);
-    memcpy(output_buf.data,rgb_bytes,iUncompressedSize);
+      output_buf.data=malloc(iUncompressedSize);
+      memcpy(output_buf.data,rgb_bytes,iUncompressedSize);
 #if (USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_JPEG)
-		output_buf.savedata(fname,1); // external format 1=JPEG
+      bool saveasJPEG=false; //!! get from GUI
+      output_buf.savedata(fname,saveasJPEG?1:0); // external format 1=JPEG
 #else
-    output_buf.savedata(fname);
+      output_buf.savedata(fname);
 #endif
-    output_buf.release();
+      output_buf.release();
 	}
 }
 

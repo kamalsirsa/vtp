@@ -565,6 +565,10 @@ protected:
     wxAuiManager m_mgr;
 
 	DECLARE_EVENT_TABLE()
+
+   private:
+
+   void initconvhook(bool enableGREYC=false);
 };
 
 #if wxUSE_DRAG_AND_DROP
