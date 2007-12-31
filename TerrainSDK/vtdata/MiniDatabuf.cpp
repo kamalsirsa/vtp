@@ -270,14 +270,14 @@ bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
    OCT *LLWGS84transform=CreateCoordTransform(&proj,&proj_llwgs84);
 
    // write center point of the tileset in Lat/Lon WGS84
-   // this is helpful for libMini to construct an approximate transformation
+   // this is helpful for libMini to compute an approximate translation
    double cx=(area.left+area.right)/2;
    double cy=(area.bottom+area.top)/2;
    if (LLWGS84transform->Transform(1,&cx,&cy)==1)
       fprintf(fp, "CenterPoint_LLWGS84=(%.16lg,%.16lg)\n",cx,cy);
 
    // write north point of the tileset in Lat/Lon WGS84
-   // this is helpful for libMini to construct an approximate rotation
+   // this is helpful for libMini to compute an approximate rotation
    double nx=(area.left+area.right)/2;
    double ny=area.top;
    if (LLWGS84transform->Transform(1,&nx,&ny)==1)
