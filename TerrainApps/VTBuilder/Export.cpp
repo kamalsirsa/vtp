@@ -42,10 +42,6 @@
 	#include "wx/glcanvas.h"	// needed for writing pre-compressed textures
 #endif
 
-#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG || USE_LIBMINI_DATABUF_GREYC)
-#include "Helper.h"
-#endif
-
 void MainFrame::ExportASC()
 {
 	// check spacing

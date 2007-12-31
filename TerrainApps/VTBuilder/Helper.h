@@ -11,8 +11,6 @@
 #include "vtdata/Projections.h"
 #include "vtdata/MathTypes.h"
 
-#include "database.h"
-
 /////
 
 void IncreaseRect(wxRect &rect, int adjust);
@@ -78,23 +76,5 @@ protected:
 #if SUPPORT_SQUISH
 void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool bFast);
 #endif
-
-// parameters for converting external formats
-struct VTP_CONVERSION_HOOK_STRUCT
-   {
-   float jpeg_quality;
-
-   BOOLINT usegreycstoration;
-
-   float greyc_p;
-   float greyc_a;
-   };
-
-typedef VTP_CONVERSION_HOOK_STRUCT VTP_CONVERSION_PARAMS;
-
-// libMini conversion hook for external formats (JPEG/PNG)
-int vtb_conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
-                       unsigned char **newdata,unsigned int *newbytes,
-                       databuf *obj,void *data);
 
 #endif	// HELPERH

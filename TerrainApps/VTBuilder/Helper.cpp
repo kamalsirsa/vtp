@@ -27,19 +27,12 @@
 
 #if USE_LIBMINI_DATABUF_JPEG
 #include "jpegbase.h"
-#ifdef _MSC_VER
-  #if _MSC_VER >= 1400	// vc8
-	  #pragma message( "Adding link with libMiniSFX-vc8.lib" )
-	  #pragma comment( lib, "libMiniSFX-vc8.lib" )
-  #else					// vc71
-	  #pragma message( "Adding link with libMiniSFX-vc7.lib" )
-	  #pragma comment( lib, "libMiniSFX-vc7.lib" )
-  #endif
-#endif
-#endif
-
+#endif 
 #if USE_LIBMINI_DATABUF_PNG
 #include "pngbase.h"
+#endif
+
+#if USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG
 #ifdef _MSC_VER
   #if _MSC_VER >= 1400	// vc8
 	  #pragma message( "Adding link with libMiniSFX-vc8.lib" )
@@ -457,6 +450,8 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 }
 #endif	// SUPPORT_SQUISH
 
+#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG || USE_LIBMINI_DATABUF_GREYC)
+
 // libMini conversion hook for external formats (JPEG/PNG)
 int vtb_conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
                        unsigned char **newdata,unsigned int *newbytes,
@@ -583,3 +578,5 @@ int vtb_conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,u
 
    return(1); // return success
    }
+
+#endif // USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG || USE_LIBMINI_DATABUF_GREYC)
