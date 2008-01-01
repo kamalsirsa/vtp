@@ -184,7 +184,7 @@ void vtScene::UpdateBegin()
 void vtScene::UpdateEngines()
 {
 	if ( !m_bInitialized ) return;
-	DoEngines();
+	DoEngines(m_pRootEngine);
 }
 
 void vtScene::UpdateWindow(vtWindow *pWindow)
@@ -362,10 +362,10 @@ void vtScene::CalcCullPlanes()
 	double fov = m_pCamera->GetFOV();
 
 	double aspect = (float)m_WindowSize.y / m_WindowSize.x;
-	double hither = m_pCamera->GetHither();
+	float hither = m_pCamera->GetHither();
 
-	double a = hither * tan( fov / 2 );
-	double b = a * aspect;
+	float a = (float) (hither * tan( fov / 2 ));
+	float b = (float) (a * aspect);
 
 	FPoint3 vec_l(-a, 0, -hither);
 	FPoint3 vec_r(a, 0, -hither);
@@ -452,7 +452,7 @@ void vtScene::DrawFrameRateChart()
 
 	glBegin(GL_LINE_STRIP);
 	for ( int i = 1; i <= 100; i++ ) {
-		glVertex3f(-1.0 + i/200.0f, -1.0f + fps[(s+i)%100]/200.0f, 0.0f);
+		glVertex3f(-1.0f + i/200.0f, -1.0f + fps[(s+i)%100]/200.0f, 0.0f);
 	}
 	glEnd();
 
@@ -501,10 +501,5 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 	vtSceneBase::SetWindowSize(w, h, pWindow);
 } 
 
-///////////////////////////////////////////////////////////////////////
 
-const vtStringArray &vtGetDataPath()
-{
-	return g_Scene.m_DataPaths;
-}
 
