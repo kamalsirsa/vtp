@@ -313,7 +313,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 	else if (pSetP3)
 	{
 		const DPoint3 &epos = pSetP3->GetPoint(iIndex);
-		float original_z = epos.z;
+		float original_z = (float) epos.z;
 		hf->m_Conversion.ConvertFromEarth(epos, p3);
 
 		// If a large number of entities, make as simple geometry as possible

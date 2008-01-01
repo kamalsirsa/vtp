@@ -135,6 +135,7 @@ class PagedNativeLOD {
 public:
 	void SetCenter(const FPoint3 &center) {}
 	void GetCenter(FPoint3 &center) {}
+	void SetRadius(float r) {}
 };
 #endif // VTLIB_OSG
 
