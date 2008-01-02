@@ -215,6 +215,31 @@ void MiniDatabuf::swapbytes()
       }
    }
 
+int mapEPSG2MINI(int epsgdatum)
+   {
+   static const int NAD27=1;
+   static const int WGS72=2;
+   static const int WGS84=3;
+   static const int NAD83=4;
+   static const int SPHERE=5;
+   static const int ED50=6;
+   static const int ED79=7;
+   static const int OHD=8;
+
+   switch (epsgdatum)
+      {
+      case 6608: return(NAD27);
+      case 6322: return(WGS72);
+      case 6326: return(WGS84);
+      case 6269: return(NAD83);
+      case 6230: return(ED50);
+      case 6231: return(ED79);
+      case 6135: return(OHD);
+      }
+
+   return(SPHERE);
+   }
+
 bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 						const DRECT &area, const vtProjection &proj,
 						float minheight, float maxheight,
@@ -286,7 +311,21 @@ bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
    // delete Lat/Lon WGS84 transformation
    delete LLWGS84transform;
 
-	fclose(fp);
+   // write Lat/Lon info
+   // this is helpful for libMini to easily identify geo-graphic coordinates
+   int latlon=proj.IsGeographic();
+   int llepsgdatum=proj.GetDatum();
+   int lldatum=mapEPSG2MINI(llepsgdatum);
+   fprintf(fp, "CoordSys_LL=(%d,%d)\n",latlon,lldatum);
+
+   // write UTM zone and datum
+   // this is helpful for libMini to easily identify UTM coordinates
+   int utmzone=proj.GetUTMZone();
+   int utmepsgdatum=proj.GetDatum();
+   int utmdatum=mapEPSG2MINI(utmepsgdatum);
+   fprintf(fp, "CoordSys_UTM=(%d,%d)\n",utmzone,utmdatum);
+
+   fclose(fp);
 
 	return true;
 }
