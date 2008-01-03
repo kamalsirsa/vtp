@@ -293,7 +293,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 	FPoint3 p3;
 
 	// Track what is created
-	Visual *viz = GetViz(pSet->GetFeature(iIndex));
+	vtVisual *viz = GetViz(pSet->GetFeature(iIndex));
 
 	if (pSetP2)
 	{
@@ -498,7 +498,7 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 		bWidth = true;
 
 	// Track what was created
-	Visual *viz = GetViz(pSet->GetFeature(iIndex));
+	vtVisual *viz = GetViz(pSet->GetFeature(iIndex));
 	for (unsigned int i = 0; i < mf.m_Meshes.size(); i++)
 	{
 		vtMesh *mesh = mf.m_Meshes[i];
@@ -678,7 +678,7 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 	pLabelGroup->AddChild(bb);
 
 	// Track what was created
-	Visual *viz = GetViz(pSet->GetFeature(iIndex));
+	vtVisual *viz = GetViz(pSet->GetFeature(iIndex));
 	if (viz) viz->m_xform = bb;
 }
 
@@ -767,7 +767,7 @@ void vtAbstractLayer::ReleaseGeometry()
  */
 void vtAbstractLayer::ReleaseFeatureGeometry(vtFeature *f)
 {
-	Visual *v = GetViz(f);
+	vtVisual *v = GetViz(f);
 
 	for (unsigned int m = 0; m < v->m_meshes.size(); m++)
 	{
@@ -824,7 +824,7 @@ void vtAbstractLayer::UpdateVisualSelection()
 	for (unsigned int j = 0; j < pSet->GetNumEntities(); j++)
 	{
 		vtFeature *feat = pSet->GetFeature(j);
-		Visual *viz = GetViz(feat);
+		vtVisual *viz = GetViz(feat);
 		if (viz)
 		{
 			int material_index;
@@ -857,15 +857,15 @@ void vtAbstractLayer::EditEnd()
 	}
 }
 
-Visual *vtAbstractLayer::GetViz(vtFeature *feat)
+vtVisual *vtAbstractLayer::GetViz(vtFeature *feat)
 {
 #if 0
 	return NULL;
 #else
-	Visual *v = m_Map[feat];
+	vtVisual *v = m_Map[feat];
 	if (!v)
 	{
-		v = new Visual;
+		v = new vtVisual;
 		m_Map[feat] = v;
 	}
 	return v;

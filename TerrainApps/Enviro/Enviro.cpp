@@ -1877,7 +1877,7 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 			for (unsigned int j = 0; j < fset->GetNumEntities(); j++)
 			{
 				vtFeature *feat = fset->GetFeature(j);
-				Visual *viz = alay->GetViz(feat);
+				vtVisual *viz = alay->GetViz(feat);
 				if (!viz)
 					continue;
 

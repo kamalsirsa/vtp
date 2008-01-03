@@ -13,15 +13,15 @@
 
 class vtTerrain;
 
-class Visual
+class vtVisual
 {
 public:
-	Visual() : m_xform(NULL) {}
+	vtVisual() : m_xform(NULL) {}
 	std::vector<vtMesh*> m_meshes;
 	vtTransform *m_xform;
 };
 
-typedef std::map<vtFeature*,Visual*> VizMap;
+typedef std::map<vtFeature*,vtVisual*> VizMap;
 
 /**
  * An abstract layer is a traditional GIS-style set of geometry features with
@@ -84,7 +84,7 @@ public:
 	vtFeatureSet *GetFeatureSet() const { return pSet; }
 	vtGroup *GetLabelGroup() const { return pLabelGroup; }
 	vtGroup *GetContainer() const { return pContainer; }
-	Visual *GetViz(vtFeature *feat);
+	vtVisual *GetViz(vtFeature *feat);
 	void CreateContainer();
 
 	// Create for all features
