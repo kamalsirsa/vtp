@@ -197,7 +197,7 @@ void DxfParser::ReadEntitySection(bool progress_callback(int))
 			else if (pair.m_sValue == "TEXT")
 				ReadText();
 			else
-				VTLOG("Unknown ent type: %s\n", pair.m_sValue);
+				VTLOG("Unknown ent type: %s\n", (const char *) pair.m_sValue);
 		}
 
 		m_iCounter++;
