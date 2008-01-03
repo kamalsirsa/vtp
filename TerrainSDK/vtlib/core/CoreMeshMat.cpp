@@ -408,9 +408,9 @@ void vtMeshBase::CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
 		for (i = 0; i <= theta_res; i++)
 		{
 			float theta = i * theta_step;
-			v.x = cosf(theta) * sinf(phi);
-			v.z = sinf(theta) * sinf(phi);
+			v.x = sinf(theta) * sinf(phi);
 			v.y = cosf(phi);
+			v.z = cosf(theta) * sinf(phi);
 
 			FPoint3 p(size.x * v.x, size.y * v.y, size.z * v.z);
 			vidx = AddVertex(center + p);
@@ -550,11 +550,11 @@ void vtMeshBase::CreateCylinder(float height, float radius, int res,
 
 void vtMeshBase::CreateTetrahedron(const FPoint3 &center, float fRadius)
 {
-	float A = fRadius * 1.632993161858;
+	float A = fRadius * 1.632993161858f;
 	float B = fRadius;
-	float D = fRadius * 0.333333333333;
-	float F = fRadius * 0.9428090415834;
-	float G = fRadius * 0.4714045207904;
+	float D = fRadius * 0.333333333333f;
+	float F = fRadius * 0.9428090415834f;
+	float G = fRadius * 0.4714045207904f;
 	FPoint3 p0(-A/2, -D, G);
 	FPoint3 p1( A/2, -D, G);
 	FPoint3 p2( 0, B, 0);
@@ -671,17 +671,17 @@ void vtMeshBase::CreateConicalSurface(const FPoint3 &tip, double radial_angle,
 		theta = theta1;
 		for (j = 0; j < res; j++)
 		{
-			p.x = tip.x + cos(theta) * r;
-			p.z = tip.z - sin(theta) * r;
-			p.y = tip.y - (r / tan_cr);
+			p.x = (float) (tip.x + cos(theta) * r);
+			p.z = (float) (tip.z - sin(theta) * r);
+			p.y = (float) (tip.y - (r / tan_cr));
 			vidx = AddVertex(p);
 
 			if (GetVtxType() & VT_Normals)
 			{
 				// compute vertex normal for lighting
-				norm.x = cos(theta) * r;
+				norm.x = (float) (cos(theta) * r);
 				norm.y = 0.0f;
-				norm.z = sin(theta) * r;
+				norm.z = (float) (sin(theta) * r);
 				norm.Normalize();
 				SetVtxNormal(vidx, norm);
 			}

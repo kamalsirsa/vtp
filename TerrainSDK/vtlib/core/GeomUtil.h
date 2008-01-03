@@ -46,7 +46,7 @@ public:
 	void AddVertex(const FPoint3 &p);
 	void PrimEnd();
 
-	void SetLineWidth(int width);
+	void SetLineWidth(float width);
 	void SetMatIndex(int iIdx);
 
 	std::vector<vtMesh*> m_Meshes;
@@ -64,7 +64,7 @@ protected:
 	vtMesh *m_pMesh;
 	int m_iPrimStart;
 	int m_iPrimVerts;
-	int m_iLineWidth;
+	float m_fLineWidth;
 
 	bool m_bSimple;
 };
@@ -107,7 +107,9 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						int Axis1, int Axis2, int Axis3,
 						const FPoint2 &min1, const FPoint2 &max1,
 						float fTiling, int steps);
-
+vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
+						const FPoint3 &size);
+void AddLineMesh(vtGeom *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1);
 
 // Writing Wavefront OBJ format
 struct vtOBJFile

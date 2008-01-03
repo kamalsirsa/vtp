@@ -147,6 +147,26 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 }
 
 
+vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
+						const FPoint3 &size)
+{
+	vtGeom *pGeom = new vtGeom;
+	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 24);
+	mesh->CreateBlock(size);
+	pGeom->SetMaterials(pMats);
+	pGeom->AddMesh(mesh, iMatIdx);
+	mesh->Release();	// pass ownership
+	return pGeom;
+}
+
+void AddLineMesh(vtGeom *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1)
+{
+	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 2);
+	mesh->AddLine(p0, p1);
+	pGeom->AddMesh(mesh, iMatIdx);
+	mesh->Release();	// pass ownership
+}
+
 /**
  * Create a sphere geometry with the indicated material, radius and resolution.
  *
@@ -291,7 +311,7 @@ vtMeshFactory::vtMeshFactory(vtGeom *pGeom, vtMeshBase::PrimType ePrimType,
 	m_pMesh = NULL;
 	m_iPrimStart = -1;
 	m_iPrimVerts = -1;
-	m_iLineWidth = 1;
+	m_fLineWidth = 1;
 
 	m_bSimple = false;
 }
@@ -308,7 +328,7 @@ vtMeshFactory::vtMeshFactory(vtMesh *pMesh)
 	m_pMesh = pMesh;
 	m_iPrimStart = -1;
 	m_iPrimVerts = -1;
-	m_iLineWidth = 1;
+	m_fLineWidth = 1;
 
 	m_bSimple = true;
 }
@@ -319,8 +339,8 @@ void vtMeshFactory::NewMesh()
 	m_pGeom->AddMesh(m_pMesh, m_iMatIndex);
 	m_pMesh->Release();	// pass ownership to geometry
 
-	if (m_iLineWidth != 1)
-		m_pMesh->SetLineWidth(m_iLineWidth);
+	if (m_fLineWidth != 1)
+		m_pMesh->SetLineWidth(m_fLineWidth);
 
 	// Keep a list of all the meshes made in this factory
 	m_Meshes.push_back(m_pMesh);
@@ -366,9 +386,9 @@ void vtMeshFactory::PrimEnd()
 	m_iPrimVerts = -1;
 }
 
-void vtMeshFactory::SetLineWidth(int width)
+void vtMeshFactory::SetLineWidth(float width)
 {
-	m_iLineWidth = width;
+	m_fLineWidth = width;
 }
 
 void vtMeshFactory::SetMatIndex(int iIdx)

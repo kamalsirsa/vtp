@@ -174,7 +174,7 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 	float vertical_meters = m_Params.m_fConnectTop - m_Params.m_fConnectBottom;
 
 	float fWidthTop = m_Params.m_fConnectWidth / 2;
-	double slope = m_Params.m_iConnectSlope / 180.0f * PIf;
+	float slope = m_Params.m_iConnectSlope / 180.0f * PIf;
 
 	unsigned int i, j, npoints = p3.GetSize();
 	float u = 0.0f;
