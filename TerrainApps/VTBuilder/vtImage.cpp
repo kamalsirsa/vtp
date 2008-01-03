@@ -1084,9 +1084,17 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		if (!bDefer)
 		{
 			bRet = false;
-			vtString str = "Couldn't load Image layer: ";
+
+         vtString str = "Couldn't load Image layer ";
+
+         str += "\"";
+         str += fname;
+         str += "\"";
+
+         str += ": ";
 			str += msg;
-			DisplayAndLog(str);
+
+         DisplayAndLog(str);
 		}
 	}
 
