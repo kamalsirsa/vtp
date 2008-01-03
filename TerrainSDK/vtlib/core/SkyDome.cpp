@@ -2,7 +2,7 @@
 // SkyDome - a simple day/night skydome, should be replaced with a
 // more realistic version at some point.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -150,7 +150,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	//  colors are used to change the color of the sky.
 	m_pMat = new vtMaterial;
 	m_pMat->SetLighting(false);
-	m_pMat->SetCulling(true);	// only visible from the inside
+	m_pMat->SetCulling(false);	// visible from the inside as well as outside
 	m_pMats->Append(m_pMat);
 
 	// Create the geometry of the dome itself
@@ -473,7 +473,6 @@ void vtSkyDome::UpdateSunLight()
 	// if (m_pSunMat) m_pSunMat->vtMaterialBase::SetDiffuse1(color);
 }
 
-	
 //
 //
 void vtSkyDome::ConvertVertices()
@@ -488,7 +487,6 @@ void vtSkyDome::ConvertVertices()
 		SphVertices[i] = psph;
 	}
 }
-
 
 //
 //
@@ -506,9 +504,6 @@ void vtSkyDome::SetSunsetColor(const RGBf &sunset)
 {
 	SunsetCol = sunset;
 }
-
-
-
 
 //
 //
