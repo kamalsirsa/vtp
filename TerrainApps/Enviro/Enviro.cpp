@@ -1164,7 +1164,7 @@ void Enviro::StoreTerrainParameters()
 
 	par.SetValueFloat(STR_STRUCTDIST, terr->GetLODDistance(TFT_STRUCTURES));
 	par.SetValueFloat(STR_ROADDISTANCE, terr->GetLODDistance(TFT_ROADS));
-	par.SetValueInt(STR_VEGDISTANCE, terr->GetLODDistance(TFT_VEGETATION));
+	par.SetValueFloat(STR_VEGDISTANCE, terr->GetLODDistance(TFT_VEGETATION));
 
 	par.SetValueBool(STR_OVERVIEW, GetShowMapOverview());
 	par.SetValueBool(STR_COMPASS, GetShowCompass());
