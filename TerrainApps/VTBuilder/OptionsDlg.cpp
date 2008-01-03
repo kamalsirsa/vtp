@@ -1,5 +1,5 @@
 //
-// Name:        OptionsDlg.cpp
+// Name: OptionsDlg.cpp
 //
 // Copyright (c) 2002-2007 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -20,33 +20,33 @@
 // WDR: event table for OptionsDlg
 
 BEGIN_EVENT_TABLE(OptionsDlg, AutoDialog)
-    EVT_INIT_DIALOG (OptionsDlg::OnInitDialog)
-    EVT_RADIOBUTTON( ID_RADIO_OUTLINE_ONLY, OptionsDlg::OnRadio )
-    EVT_RADIOBUTTON( ID_RADIO_COLOR, OptionsDlg::OnRadio )
-    EVT_BUTTON( ID_RENDER_OPTIONS, OptionsDlg::OnRenderOptions )
-    EVT_CHECKBOX( ID_CHECK_HIDE_UNKNOWN, OptionsDlg::OnHideUnknown )
+	EVT_INIT_DIALOG (OptionsDlg::OnInitDialog)
+	EVT_RADIOBUTTON( ID_RADIO_OUTLINE_ONLY, OptionsDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_RADIO_COLOR, OptionsDlg::OnRadio )
+	EVT_BUTTON( ID_RENDER_OPTIONS, OptionsDlg::OnRenderOptions )
+	EVT_CHECKBOX( ID_CHECK_HIDE_UNKNOWN, OptionsDlg::OnHideUnknown )
 END_EVENT_TABLE()
 
 OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-    const wxPoint &position, const wxSize& size, long style ) :
-    AutoDialog( parent, id, title, position, size, style )
+	const wxPoint &position, const wxSize& size, long style ) :
+	AutoDialog( parent, id, title, position, size, style )
 {
-    OptionsDialogFunc( this, TRUE );
+	OptionsDialogFunc( this, TRUE );
 
-    GetElevUnit()->Append(_("Meters"));
-    GetElevUnit()->Append(_("Feet (International)"));
-    GetElevUnit()->Append(_("Feet (U.S. Survey)"));
+	GetElevUnit()->Append(_("Meters"));
+	GetElevUnit()->Append(_("Feet (International)"));
+	GetElevUnit()->Append(_("Feet (U.S. Survey)"));
 
-    AddValidator(ID_TOOLBAR, &m_bShowToolbar);
-    AddValidator(ID_MINUTES, &m_bShowMinutes);
-    AddValidator(ID_ELEVUNIT, &m_iElevUnits);
+	AddValidator(ID_TOOLBAR, &m_bShowToolbar);
+	AddValidator(ID_MINUTES, &m_bShowMinutes);
+	AddValidator(ID_ELEVUNIT, &m_iElevUnits);
 
-    AddValidator(ID_RADIO_OUTLINE_ONLY, &m_bShowOutlines);
-    AddValidator(ID_RADIO_COLOR, &m_opt.m_bShowElevation);
-    AddValidator(ID_CHECK_HIDE_UNKNOWN, &m_opt.m_bDoMask);
+	AddValidator(ID_RADIO_OUTLINE_ONLY, &m_bShowOutlines);
+	AddValidator(ID_RADIO_COLOR, &m_opt.m_bShowElevation);
+	AddValidator(ID_CHECK_HIDE_UNKNOWN, &m_opt.m_bDoMask);
 
-    AddValidator(ID_CHECK_SHOW_ROAD_WIDTH, &m_bShowRoadWidth);
-    AddValidator(ID_PATHNAMES, &m_bShowPath);
+	AddValidator(ID_CHECK_SHOW_ROAD_WIDTH, &m_bShowRoadWidth);
+	AddValidator(ID_PATHNAMES, &m_bShowPath);
 }
 
 // WDR: handler implementations for OptionsDlg
@@ -67,30 +67,30 @@ void OptionsDlg::OnRenderOptions( wxCommandEvent &event )
 
 void OptionsDlg::OnRadio( wxCommandEvent &event )
 {
-    TransferDataFromWindow();
-    UpdateEnables();
+	TransferDataFromWindow();
+	UpdateEnables();
 }
 
 void OptionsDlg::UpdateEnables()
 {
-    GetRenderOptions()->Enable(m_opt.m_bShowElevation);
-    GetCheckHideUnknown()->Enable(m_opt.m_bShowElevation);
+	GetRenderOptions()->Enable(m_opt.m_bShowElevation);
+	GetCheckHideUnknown()->Enable(m_opt.m_bShowElevation);
 }
 
 void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-    UpdateEnables();
-    wxDialog::OnInitDialog(event);
+	UpdateEnables();
+	wxDialog::OnInitDialog(event);
 }
 
 void OptionsDlg::SetElevDrawOptions(const ElevDrawOptions &opt)
 {
 	m_opt = opt;
-    m_bShowOutlines = !opt.m_bShowElevation;
+	m_bShowOutlines = !opt.m_bShowElevation;
 }
 
 void OptionsDlg::GetElevDrawOptions(ElevDrawOptions &opt)
 {
-    opt = m_opt;
+	opt = m_opt;
 }
 
