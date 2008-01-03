@@ -316,7 +316,7 @@ bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
    int latlon=proj.IsGeographic();
    int llepsgdatum=proj.GetDatum();
    int lldatum=mapEPSG2MINI(llepsgdatum);
-   fprintf(fp, "CoordSys_LL=(%d,%d)\n",latlon,lldatum);
+   fprintf(fp, "CoordSys_LL=(%d,%d)\n",latlon,(latlon!=0)?lldatum:0);
 
    // write UTM zone and datum
    // this is helpful for libMini to easily identify UTM coordinates
