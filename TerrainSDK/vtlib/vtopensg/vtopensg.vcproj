@@ -540,6 +540,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\PagedLodGrid.cpp">
+			</File>
+			<File
 				RelativePath="..\core\Roads.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -694,6 +697,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\TerrainLayers.cpp">
+			</File>
+			<File
 				RelativePath="..\core\TerrainScene.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -714,6 +720,9 @@
 						BasicRuntimeChecks="3"
 						BrowseInformation="1"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\core\TextureUnitManager.cpp">
 			</File>
 			<File
 				RelativePath="..\core\TiledGeom.cpp">
@@ -905,6 +914,9 @@
 				RelativePath="..\core\NavEngines.h">
 			</File>
 			<File
+				RelativePath="..\core\PagedLodGrid.h">
+			</File>
+			<File
 				RelativePath="..\core\Roads.h">
 			</File>
 			<File
@@ -926,7 +938,13 @@
 				RelativePath="..\core\Terrain.h">
 			</File>
 			<File
+				RelativePath="..\core\TerrainLayers.h">
+			</File>
+			<File
 				RelativePath="..\core\TerrainScene.h">
+			</File>
+			<File
+				RelativePath="..\core\TextureUnitManager.h">
 			</File>
 			<File
 				RelativePath="..\core\TiledGeom.h">
