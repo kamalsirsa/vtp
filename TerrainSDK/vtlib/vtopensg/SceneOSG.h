@@ -97,12 +97,14 @@ public:
 
 	// Experimental:
 	// Object-terrain shadow casting, only for OSG
-	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode, vtTransform *pTransform, int iRez) {};
-	void UnsetShadowedNode(vtTransform *pTransform) {};
-	void UpdateShadowLightDirection(vtTransform *pLight) {};
-	void SetShadowDarkness(float fDarkness) {};
-	//osg::ref_ptr<CreateProjectedShadowTextureCullCallback> m_pShadowVisitor;
-	void ShadowVisibleNode(vtNode *node, bool bVis){};
+	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode, vtTransform *pTransform, int iRez) {}
+	void UnsetShadowedNode(vtTransform *pTransform) {}
+	void UpdateShadowLightDirection(vtTransform *pLight) {}
+	void SetShadowDarkness(float fDarkness) {}
+	void SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw) {}
+	void ShadowVisibleNode(vtNode *node, bool bVis) {}
+	bool IsShadowVisibleNode(vtNode *node) { return false; }
+	void ComputeShadows();
 
 	//shadow handling, experimental for OpenSG
 	void SetShadowOn (bool bOn);

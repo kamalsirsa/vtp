@@ -1962,15 +1962,33 @@ bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
  * \param t Top.
  * \param r Right.
  * \param b Bottom.
+ * \param rot Rotation in radians.
  */
-void vtImageSprite::SetPosition(float l, float t, float r, float b)
+void vtImageSprite::SetPosition(float l, float t, float r, float b, float rot)
 {
 	if( !m_pMesh )	 // safety check
 		return;
-	m_pMesh->SetVtxPos(0, FPoint3(l, b, 0));
-	m_pMesh->SetVtxPos(1, FPoint3(r, b, 0));
-	m_pMesh->SetVtxPos(2, FPoint3(r, t, 0));
-	m_pMesh->SetVtxPos(3, FPoint3(l, t, 0));
+
+	FPoint2 p[4];
+	p[0].Set(l, b);
+	p[1].Set(r, b);
+	p[2].Set(r, t);
+	p[3].Set(l, t);
+
+	if (rot != 0.0f)
+	{
+		FPoint2 center((l+r)/2, (b+t)/2);
+		for (int i = 0; i < 4; i++)
+		{
+			p[i] -= center;
+			p[i].Rotate(rot);
+			p[i] += center;
+		}
+	}
+
+	for (int i = 0; i < 4; i++)
+		m_pMesh->SetVtxPos(i, FPoint3(p[i].x, p[i].y, 0));
+
 	m_pMesh->ReOptimize();
 }
 
@@ -2116,5 +2134,57 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 	return 0;
 }
 
+// Diagnostic function to help debugging
+void vtLogGraph(vtNode *node, int indent)
+{
+	for (int i = 0; i < indent; i++)
+		VTLOG1(" ");
+	if (node)
+	{
+		VTLOG("<%x>", node);
+		if (dynamic_cast<vtHUD*>(node))
+			VTLOG1(" (vtHUD)");
+
+		else if (dynamic_cast<vtCamera*>(node))
+			VTLOG1(" (vtCamera)");
+		else if (dynamic_cast<vtLOD*>(node))
+			VTLOG1(" (vtLOD)");
+		else if (dynamic_cast<vtDynGeom*>(node))
+			VTLOG1(" (vtDynGeom)");
+		else if (dynamic_cast<vtMovGeom*>(node))
+			VTLOG1(" (vtMovGeom)");
+		else if (dynamic_cast<vtGeom*>(node))
+			VTLOG1(" (vtGeom)");
+		else if (dynamic_cast<vtLight*>(node))
+			VTLOG1(" (vtLight)");
+
+		else if (dynamic_cast<vtTransform*>(node))
+			VTLOG1(" (vtTransform)");
+		else if (dynamic_cast<vtGroup*>(node))
+			VTLOG1(" (vtGroup)");
+		else if (dynamic_cast<vtNativeNode*>(node))
+			VTLOG1(" (vtNativeNode)");
+		else if (dynamic_cast<vtNode*>(node))
+			VTLOG1(" (vtNode)");
+		else
+			VTLOG1(" (non-node!)");
+
+		VTLOG(" '%s'\n", node->GetName2());
+	}
+	else
+		VTLOG1("<null>\n");
+
+	vtGroup *grp = dynamic_cast<vtGroup*>(node);
+	if (grp)
+	{
+		for (unsigned int i = 0; i < grp->GetNumChildren(); i++)
+			vtLogGraph(grp->GetChild(i), indent+2);
+	}
+}
+
+void vtLogNativeGraph(osg::NodePtr node, bool bExtents, bool bRefCounts, int indent)
+{
+	// TODO
+}
 
 

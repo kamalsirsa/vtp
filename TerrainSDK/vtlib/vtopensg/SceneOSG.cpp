@@ -502,4 +502,10 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 } 
 
 
+////////////////////////////////////////
+// Shadow methods
 
+void vtScene::ComputeShadows()
+{
+	// TODO
+}

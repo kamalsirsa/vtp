@@ -530,7 +530,7 @@ public:
 	bool Create(const char *szTextureName, bool bBlending = false);
 	bool Create(vtImage *pImage, bool bBlending = false);
 	IPoint2 GetSize() const { return m_Size;};
-	void SetPosition(float l, float t, float r, float b);
+	void SetPosition(float l, float t, float r, float b, float rot = 0.0f);
 	void SetImage(vtImage *image);
 	vtNode *GetNode() const { return m_pGeom;};
 
@@ -557,6 +557,8 @@ struct vtHit {
 typedef std::vector<vtHit> vtHitList;
 int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 				vtHitList &hitlist, bool bLocalCoords = false);
+void vtLogGraph(vtNode *node, int indent=0);
+void vtLogNativeGraph(osg::NodePtr node, bool bExtents = false, bool bRefCounts = false, int indent=0);
 
 /*@}*/	// Group sg
 
