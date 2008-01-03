@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -846,16 +846,23 @@ void Enviro::SetupScene2()
 
 	// The HUD always has a place to put status messages to the user
 	m_pArial = new vtFont;
-	m_pArial->LoadFont("Arial.ttf");
+	if (!m_pArial->LoadFont("Arial.ttf"))
+	{
+		delete m_pArial;
+		m_pArial = NULL;
+	}
 
 	vtGeom *geom = new vtGeom;
 	geom->SetName2("Message");
 	m_pHUD->AddChild(geom);
-	m_pHUDMessage = new vtTextMesh(m_pArial, 18);
-	m_pHUDMessage->SetText("");
-	m_pHUDMessage->SetPosition(FPoint3(3,3,0));
-	geom->AddTextMesh(m_pHUDMessage, 0);
-	m_pHUDMessage->Release();	// pass ownership
+	if (m_pArial)
+	{
+		m_pHUDMessage = new vtTextMesh(m_pArial, 18);
+		m_pHUDMessage->SetText("");
+		m_pHUDMessage->SetPosition(FPoint3(3,3,0));
+		geom->AddTextMesh(m_pHUDMessage, 0);
+		m_pHUDMessage->Release();	// pass ownership
+	}
 }
 
 //

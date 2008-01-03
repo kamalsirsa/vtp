@@ -657,7 +657,7 @@ void Enviro::DoCursorOnEarth()
 	//  line, slope determined empirically
 	float radius = m_pTrackball->GetRadius();
 	IPoint2 winsize = vtGetScene()->GetWindowSize();
-	m_pTrackball->SetRotScale((radius-1.0) / winsize.x * 280);
+	m_pTrackball->SetRotScale((radius-1.0f) / winsize.x * 280);
 }
 
 
@@ -903,7 +903,7 @@ void Enviro::StartFlyIn()
 	double diff_latitude = nw.y - se.y;
 	double diff_meters = diff_latitude * METERS_PER_LATITUDE;
 	double fov_y = m_pNormalCamera->GetVertFOV();
-	m_fTransitionHeight = (diff_meters/2) / tan(fov_y / 2);
+	m_fTransitionHeight = (float) ((diff_meters/2) / tan(fov_y / 2));
 
 	// We should account for the terrain's height here - zooming into the
 	//  Himalaya is significantly different - but we don't have that height
@@ -939,8 +939,8 @@ void Enviro::StartFlyIn()
 		if (center3d.x < 0) center3d.x += 360.0;
 
 	FPoint3 TrackPosEnd;
-	TrackPosEnd.x = center3d.x / 180 * PIf;
-	TrackPosEnd.y = center3d.y / 180 * PIf;
+	TrackPosEnd.x = (float) (center3d.x / 180 * PIf);
+	TrackPosEnd.y = (float) (center3d.y / 180 * PIf);
 	TrackPosEnd.z = 1.0f + (m_fTransitionHeight  / EARTH_RADIUS);
 	m_TrackPosDiff = TrackPosEnd - m_TrackStart[0];
 

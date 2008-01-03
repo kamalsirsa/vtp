@@ -253,7 +253,7 @@ void EnviroOptionsVisitor::endElement(const char *name)
 		s2b(m_data, m_opt.m_bDisableModelMipmaps);
 
 	else if (strcmp(name, STR_PLANTSIZE) == 0)
-		m_opt.m_fPlantScale = atof(str);
+		m_opt.m_fPlantScale = (float) atof(str);
 	else if (strcmp(name, STR_PLANTSHADOWS) == 0)
 		s2b(m_data, m_opt.m_bShadows);
 	else if (strcmp(name, STR_ONLY_AVAILABLE_SPECIES) == 0)
@@ -262,13 +262,13 @@ void EnviroOptionsVisitor::endElement(const char *name)
 	else if (strcmp(name, STR_DIRECT_PICKING) == 0)
 		s2b(m_data, m_opt.m_bDirectPicking);
 	else if (strcmp(name, STR_SELECTIONCUTOFF) == 0)
-		m_opt.m_fSelectionCutoff = atof(str);
+		m_opt.m_fSelectionCutoff = (float) atof(str);
 	else if (strcmp(name, STR_MAX_INST_RADIUS) == 0)
-		m_opt.m_fMaxPickableInstanceRadius = atof(str);
+		m_opt.m_fMaxPickableInstanceRadius = (float) atof(str);
 	else if (strcmp(name, STR_CURSOR_THICKNESS) == 0)
-		m_opt.m_fCursorThickness = atof(str);
+		m_opt.m_fCursorThickness = (float) atof(str);
 	else if (strcmp(name, STR_CATENARY_FACTOR) == 0)
-		m_opt.m_fCatenaryFactor = atof(str);
+		m_opt.m_fCatenaryFactor = (float) atof(str);
 
 	else if (strcmp(name, STR_CONTENT_FILE) == 0)
 		m_opt.m_strContentFile = str;
