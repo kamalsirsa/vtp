@@ -1245,8 +1245,11 @@ bool vtFont::LoadFont(const char *filename)
 	paths.push_backPath(".");
 	//need to have freetype1 for ttf support..
 	m_pFontStyle = osg::FontStyleFactory::the().create( paths, filename, 1.f );
-	m_pFontStyle->setXRes(16);
-	m_pFontStyle->setYRes(16);
+	if (m_pFontStyle)
+	{
+		m_pFontStyle->setXRes(16);
+		m_pFontStyle->setYRes(16);
+	}
 	return m_pFontStyle != 0;
 }
 
