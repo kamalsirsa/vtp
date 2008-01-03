@@ -117,29 +117,29 @@ void RoadDlg::AccumulateState(LinkEdit *pRoad)
 		m_iSurf = MULTIPLE;
 
 	if (m_fSidewalkWidth == -1.0f)
-        m_fSidewalkWidth = pRoad->m_fSidewalkWidth;
-    else if (pRoad->m_fSidewalkWidth != m_fSidewalkWidth)
-        m_fSidewalkWidth = MULTIPLE;
+		m_fSidewalkWidth = pRoad->m_fSidewalkWidth;
+	else if (pRoad->m_fSidewalkWidth != m_fSidewalkWidth)
+		m_fSidewalkWidth = MULTIPLE;
 
-    if (m_fCurbHeight == -1.0f)
-        m_fCurbHeight = pRoad->m_fCurbHeight;
-    else if (pRoad->m_fCurbHeight != m_fCurbHeight)
-        m_fCurbHeight = MULTIPLE;
+	if (m_fCurbHeight == -1.0f)
+		m_fCurbHeight = pRoad->m_fCurbHeight;
+	else if (pRoad->m_fCurbHeight != m_fCurbHeight)
+		m_fCurbHeight = MULTIPLE;
 
-    if (m_fMarginWidth == -1.0f)
-        m_fMarginWidth = pRoad->m_fMarginWidth;
-    else if (pRoad->m_fMarginWidth != m_fMarginWidth)
-        m_fMarginWidth = MULTIPLE;
+	if (m_fMarginWidth == -1.0f)
+		m_fMarginWidth = pRoad->m_fMarginWidth;
+	else if (pRoad->m_fMarginWidth != m_fMarginWidth)
+		m_fMarginWidth = MULTIPLE;
 
-    if (m_fLaneWidth == -1.0f)
-        m_fLaneWidth = pRoad->m_fLaneWidth;
-    else if (pRoad->m_fLaneWidth != m_fLaneWidth)
-        m_fLaneWidth = MULTIPLE;
+	if (m_fLaneWidth == -1.0f)
+		m_fLaneWidth = pRoad->m_fLaneWidth;
+	else if (pRoad->m_fLaneWidth != m_fLaneWidth)
+		m_fLaneWidth = MULTIPLE;
 
-    if (m_fParkingWidth == -1.0f)
-        m_fParkingWidth = pRoad->m_fParkingWidth;
-    else if (pRoad->m_fParkingWidth != m_fParkingWidth)
-        m_fParkingWidth = MULTIPLE;
+	if (m_fParkingWidth == -1.0f)
+		m_fParkingWidth = pRoad->m_fParkingWidth;
+	else if (pRoad->m_fParkingWidth != m_fParkingWidth)
+		m_fParkingWidth = MULTIPLE;
 }
 
 void RoadDlg::TransferStateToControls()
@@ -179,34 +179,34 @@ void RoadDlg::TransferStateToControls()
 		GetSurfType()->SetSelection(m_iSurf);
 
 	if (m_fSidewalkWidth == MULTIPLE)
-        str = _("(multiple)");
-    else
-        str.Printf(_T("%.02f"), m_fSidewalkWidth);
-    GetSidewalkWidth()->SetValue(str);
+		str = _("(multiple)");
+	else
+		str.Printf(_T("%.02f"), m_fSidewalkWidth);
+	GetSidewalkWidth()->SetValue(str);
 
-    if (m_fCurbHeight == MULTIPLE)
-        str = _("(multiple)");
-    else
-        str.Printf(_T("%.02f"), m_fCurbHeight);
-    GetCurbHeight()->SetValue(str);
+	if (m_fCurbHeight == MULTIPLE)
+		str = _("(multiple)");
+	else
+		str.Printf(_T("%.02f"), m_fCurbHeight);
+	GetCurbHeight()->SetValue(str);
 
-    if (m_fMarginWidth == MULTIPLE)
-        str = _("(multiple)");
-    else
-        str.Printf(_T("%.02f"), m_fMarginWidth);
-    GetMarginWidth()->SetValue(str);
+	if (m_fMarginWidth == MULTIPLE)
+		str = _("(multiple)");
+	else
+		str.Printf(_T("%.02f"), m_fMarginWidth);
+	GetMarginWidth()->SetValue(str);
 
-    if (m_fLaneWidth == MULTIPLE)
-        str = _("(multiple)");
-    else
-        str.Printf(_T("%.02f"), m_fLaneWidth);
-    GetLaneWidth()->SetValue(str);
+	if (m_fLaneWidth == MULTIPLE)
+		str = _("(multiple)");
+	else
+		str.Printf(_T("%.02f"), m_fLaneWidth);
+	GetLaneWidth()->SetValue(str);
 
-    if (m_fParkingWidth == MULTIPLE)
-        str = _("(multiple)");
-    else
-        str.Printf(_T("%.02f"), m_fParkingWidth);
-    GetParkingWidth()->SetValue(str);
+	if (m_fParkingWidth == MULTIPLE)
+		str = _("(multiple)");
+	else
+		str.Printf(_T("%.02f"), m_fParkingWidth);
+	GetParkingWidth()->SetValue(str);
 }
 
 void RoadDlg::OnInitDialog(wxInitDialogEvent& event)
@@ -280,43 +280,43 @@ void RoadDlg::ApplyState(LinkEdit *pRoad)
 	float fval;
 
 	str = GetMarginWidth()->GetValue();
-    fval = atof(str.mb_str(wxConvUTF8));
-    if (fval != 0.0f)
+	fval = atof(str.mb_str(wxConvUTF8));
+	if (fval != 0.0f)
 	{
-        pRoad->m_fMarginWidth = fval;
+		pRoad->m_fMarginWidth = fval;
 		// Force recompute of m_fWidth
 		pRoad->Dirtied();
 	}
 
-    str = GetParkingWidth()->GetValue();
-    fval = atof(str.mb_str(wxConvUTF8));
-    if (fval != 0.0f)
+	str = GetParkingWidth()->GetValue();
+	fval = atof(str.mb_str(wxConvUTF8));
+	if (fval != 0.0f)
 	{
-        pRoad->m_fParkingWidth = fval;
+		pRoad->m_fParkingWidth = fval;
 		pRoad->Dirtied();
 	}
 
-    str = GetCurbHeight()->GetValue();
-    fval = atof(str.mb_str(wxConvUTF8));
-    if (fval != 0.0f)
+	str = GetCurbHeight()->GetValue();
+	fval = atof(str.mb_str(wxConvUTF8));
+	if (fval != 0.0f)
 	{
-        pRoad->m_fCurbHeight = fval;
+		pRoad->m_fCurbHeight = fval;
 		pRoad->Dirtied();
 	}
 
-    str = GetSidewalkWidth()->GetValue();
-    fval = atof(str.mb_str(wxConvUTF8));
-    if (fval != 0.0f)
+	str = GetSidewalkWidth()->GetValue();
+	fval = atof(str.mb_str(wxConvUTF8));
+	if (fval != 0.0f)
 	{
-        pRoad->m_fSidewalkWidth = fval;
+		pRoad->m_fSidewalkWidth = fval;
 		pRoad->Dirtied();
 	}
 
-    str = GetLaneWidth()->GetValue();
-    fval = atof(str.mb_str(wxConvUTF8));
-    if (fval != 0.0f)
+	str = GetLaneWidth()->GetValue();
+	fval = atof(str.mb_str(wxConvUTF8));
+	if (fval != 0.0f)
 	{
-        pRoad->m_fLaneWidth = fval;
+		pRoad->m_fLaneWidth = fval;
 		pRoad->Dirtied();
 	}
 }

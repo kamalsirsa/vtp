@@ -170,8 +170,8 @@ wxFrame(frame, wxID_ANY, title, pos, size)
 {
 	VTLOG("  MainFrame constructor: enter\n");
 
-    // tell wxAuiManager to manage this frame
-    m_mgr.SetManagedWindow(this);
+	// tell wxAuiManager to manage this frame
+	m_mgr.SetManagedWindow(this);
 
 	// init app data
 	m_pView = NULL;
@@ -210,7 +210,7 @@ MainFrame::~MainFrame()
 	WriteXML(APPNAME ".xml");
 	DeleteContents();
 
-    m_mgr.UnInit();
+	m_mgr.UnInit();
 }
 
 void MainFrame::CreateView()
@@ -219,9 +219,9 @@ void MainFrame::CreateView()
 	m_pView = new BuilderView(this, wxID_ANY,
 			wxPoint(0, 0), wxSize(200, 400), _T("") );
 
-    m_mgr.AddPane(m_pView, wxAuiPaneInfo().
-                  Name(wxT("view")).Caption(wxT("View")).
-                  CenterPane().Show(true));
+	m_mgr.AddPane(m_pView, wxAuiPaneInfo().
+				  Name(wxT("view")).Caption(wxT("View")).
+				  CenterPane().Show(true));
 	m_mgr.Update();
 	VTLOG1(" refreshing view\n");
 	m_pView->Refresh();
@@ -255,9 +255,9 @@ void MainFrame::SetupUI()
 			wxPoint(0, 0), wxSize(200, 400),
 			wxTR_HIDE_ROOT | wxNO_BORDER);
 
-    m_mgr.AddPane(m_pTree, wxAuiPaneInfo().
-                  Name(_T("layers")).Caption(_("Layers")).
-                  Left());
+	m_mgr.AddPane(m_pTree, wxAuiPaneInfo().
+				  Name(_T("layers")).Caption(_("Layers")).
+				  Left());
 	m_mgr.Update();
 
 	// The following makes the views match, but it looks funny on Linux
@@ -305,9 +305,9 @@ void MainFrame::SetupUI()
 	long style = 0;//wxCAPTION | wxCLOSE_BOX;
 	m_pScaleBar = new vtScaleBar(this, wxID_ANY, wxPoint(0,0), wxSize(400,30), style,
 		_T("ScaleBarPanel"));
-    m_mgr.AddPane(m_pScaleBar, wxAuiPaneInfo().
-                  Name(wxT("scalebar")).Caption(wxT("Scale Bar")).
-                  Dockable(false).Float().MinSize(400,30).MaxSize(400,60).Resizable(false));
+	m_mgr.AddPane(m_pScaleBar, wxAuiPaneInfo().
+				  Name(wxT("scalebar")).Caption(wxT("Scale Bar")).
+				  Dockable(false).Float().MinSize(400,30).MaxSize(400,60).Resizable(false));
 	m_mgr.Update();
 #endif
 
@@ -360,7 +360,7 @@ void MainFrame::ManageToolbar(const wxString &name, wxToolBar *bar, bool show)
 	api.LeftDockable(false);
 	api.RightDockable(false);
 	api.Show(show);
-    m_mgr.AddPane(bar, api);
+	m_mgr.AddPane(bar, api);
 }
 
 wxToolBar *MainFrame::NewToolbar()

@@ -21,47 +21,47 @@
 class OptionsDlg: public AutoDialog
 {
 public:
-    // constructors and destructors
-    OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
+	// constructors and destructors
+	OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = wxDEFAULT_DIALOG_STYLE );
 
-    // WDR: method declarations for OptionsDlg
-    wxButton* GetRenderOptions()  { return (wxButton*) FindWindow( ID_RENDER_OPTIONS ); }
-    wxCheckBox* GetCheckHideUnknown()  { return (wxCheckBox*) FindWindow( ID_CHECK_HIDE_UNKNOWN ); }
-    wxRadioButton* GetRadioColor()  { return (wxRadioButton*) FindWindow( ID_RADIO_COLOR ); }
-    wxRadioButton* GetRadioOutlineOnly()  { return (wxRadioButton*) FindWindow( ID_RADIO_OUTLINE_ONLY ); }
-    wxChoice* GetElevUnit()  { return (wxChoice*) FindWindow( ID_ELEVUNIT ); }
+	// WDR: method declarations for OptionsDlg
+	wxButton* GetRenderOptions()  { return (wxButton*) FindWindow( ID_RENDER_OPTIONS ); }
+	wxCheckBox* GetCheckHideUnknown()  { return (wxCheckBox*) FindWindow( ID_CHECK_HIDE_UNKNOWN ); }
+	wxRadioButton* GetRadioColor()  { return (wxRadioButton*) FindWindow( ID_RADIO_COLOR ); }
+	wxRadioButton* GetRadioOutlineOnly()  { return (wxRadioButton*) FindWindow( ID_RADIO_OUTLINE_ONLY ); }
+	wxChoice* GetElevUnit()  { return (wxChoice*) FindWindow( ID_ELEVUNIT ); }
 
-    void SetElevDrawOptions(const ElevDrawOptions &opt);
-    void GetElevDrawOptions(ElevDrawOptions &opt);
+	void SetElevDrawOptions(const ElevDrawOptions &opt);
+	void GetElevDrawOptions(ElevDrawOptions &opt);
 
-    bool m_bShowToolbar;
-    bool m_bShowMinutes;
-    int  m_iElevUnits;
+	bool m_bShowToolbar;
+	bool m_bShowMinutes;
+	int  m_iElevUnits;
 
-    bool m_bShowOutlines;
+	bool m_bShowOutlines;
 	ElevDrawOptions m_opt;
-    bool m_bHideUnknown;
+	bool m_bHideUnknown;
 
-    bool m_bShowRoadWidth;
-    bool m_bShowPath;
-
-private:
-    // WDR: member variable declarations for OptionsDlg
+	bool m_bShowRoadWidth;
+	bool m_bShowPath;
 
 private:
-    void UpdateEnables();
-
-    // WDR: handler declarations for OptionsDlg
-    void OnHideUnknown( wxCommandEvent &event );
-    void OnRenderOptions( wxCommandEvent &event );
-    void OnRadio( wxCommandEvent &event );
-    void OnInitDialog(wxInitDialogEvent& event);
+	// WDR: member variable declarations for OptionsDlg
 
 private:
-    DECLARE_EVENT_TABLE()
+	void UpdateEnables();
+
+	// WDR: handler declarations for OptionsDlg
+	void OnHideUnknown( wxCommandEvent &event );
+	void OnRenderOptions( wxCommandEvent &event );
+	void OnRadio( wxCommandEvent &event );
+	void OnInitDialog(wxInitDialogEvent& event);
+
+private:
+	DECLARE_EVENT_TABLE()
 };
 
 #endif	// __OptionsDlg_H__

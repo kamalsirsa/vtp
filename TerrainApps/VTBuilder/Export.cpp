@@ -886,9 +886,9 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 
 					int tilesize = base_tilesize >> k;
 
-               initconvhook();
+					initconvhook();
 
-               vtMiniDatabuf output_buf;
+					vtMiniDatabuf output_buf;
 
 					output_buf.xsize = tilesize;
 					output_buf.ysize = tilesize;
@@ -935,7 +935,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				if (bCancel)
 					return false;
 
-            initconvhook();
+				initconvhook();
 
 				vtMiniDatabuf buf;
 				buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
@@ -962,10 +962,10 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 				}
 
 #if (USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_PNG)
-            bool saveasPNG=false; //!! get from GUI
-            buf.savedata(fname,saveasPNG?2:0); // external format 2=PNG
+				bool saveasPNG=false; //!! get from GUI
+				buf.savedata(fname,saveasPNG?2:0); // external format 2=PNG
 #else
-            buf.savedata(fname);
+				buf.savedata(fname);
 #endif
 			}
 		}
@@ -1168,12 +1168,12 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts, bool bSho
 				}
 				int iUncompressedSize = cb;
 
-            initconvhook();
+				initconvhook();
 
-            vtMiniDatabuf output_buf;
+				vtMiniDatabuf output_buf;
 
-            output_buf.xsize = tilesize;
-            output_buf.ysize = tilesize;
+				output_buf.xsize = tilesize;
+				output_buf.ysize = tilesize;
 
 				output_buf.zsize = 1;
 				output_buf.tsteps = 1;

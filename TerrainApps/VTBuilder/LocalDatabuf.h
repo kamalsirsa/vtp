@@ -46,8 +46,8 @@ typedef VTP_CONVERSION_HOOK_STRUCT VTP_CONVERSION_PARAMS;
 
 // libMini conversion hook for external formats (JPEG/PNG)
 int vtb_conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
-                       unsigned char **newdata,unsigned int *newbytes,
-                       databuf *obj,void *data);
+					   unsigned char **newdata,unsigned int *newbytes,
+					   databuf *obj,void *data);
 
 #else	// not USE_LIBMINI_DATABUF
 

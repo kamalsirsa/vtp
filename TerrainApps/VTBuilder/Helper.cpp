@@ -202,15 +202,15 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		// Output to a plain RGB .db file
 		output_buf.type = 3;	// RGB
 		output_buf.bytes = iUncompressedSize;
-      output_buf.data=malloc(iUncompressedSize);
-      memcpy(output_buf.data,rgb_bytes,iUncompressedSize);
+		output_buf.data=malloc(iUncompressedSize);
+		memcpy(output_buf.data,rgb_bytes,iUncompressedSize);
 #if (USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_JPEG)
-      bool saveasJPEG=false; //!! get from GUI
-      output_buf.savedata(fname,saveasJPEG?1:0); // external format 1=JPEG
+		bool saveasJPEG=false; //!! get from GUI
+		output_buf.savedata(fname,saveasJPEG?1:0); // external format 1=JPEG
 #else
-      output_buf.savedata(fname);
+		output_buf.savedata(fname);
 #endif
-      output_buf.release();
+		output_buf.release();
 	}
 }
 
@@ -240,44 +240,44 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 void* getGLExtensionFuncPtr(const char *funcName)
 {
 #if defined(WIN32)
-    return (void*)wglGetProcAddress(funcName);
+	return (void*)wglGetProcAddress(funcName);
 
 #elif defined(__APPLE__)
-    std::string temp( "_" );
-    temp += funcName;    // Mac OS X prepends an underscore on function names
-    if ( NSIsSymbolNameDefined( temp.c_str() ) )
-    {
-        NSSymbol symbol = NSLookupAndBindSymbol( temp.c_str() );
-        return NSAddressOfSymbol( symbol );
-    } else
-        return NULL;
+	std::string temp( "_" );
+	temp += funcName;    // Mac OS X prepends an underscore on function names
+	if ( NSIsSymbolNameDefined( temp.c_str() ) )
+	{
+		NSSymbol symbol = NSLookupAndBindSymbol( temp.c_str() );
+		return NSAddressOfSymbol( symbol );
+	} else
+		return NULL;
 
 #elif defined (__sun)
-     static void *handle = dlopen((const char *)0L, RTLD_LAZY);
-     return dlsym(handle, funcName);
+	static void *handle = dlopen((const char *)0L, RTLD_LAZY);
+	return dlsym(handle, funcName);
 
 #elif defined (__sgi)
-     static void *handle = dlopen((const char *)0L, RTLD_LAZY);
-     return dlsym(handle, funcName);
+	static void *handle = dlopen((const char *)0L, RTLD_LAZY);
+	return dlsym(handle, funcName);
 
 #elif defined (__FreeBSD__)
-    return dlsym( RTLD_DEFAULT, funcName );
+	return dlsym( RTLD_DEFAULT, funcName );
 
 #elif defined (__linux__)
-    typedef void (*__GLXextFuncPtr)(void);
-    typedef __GLXextFuncPtr (*GetProcAddressARBProc)(const char*);
-    static GetProcAddressARBProc s_glXGetProcAddressARB = (GetProcAddressARBProc)dlsym(0, "glXGetProcAddressARB");
-    if (s_glXGetProcAddressARB)
-    {
-        return (void*) (s_glXGetProcAddressARB)(funcName);
-    }
-    else
-    {
-        return dlsym(0, funcName);
-    }
+	typedef void (*__GLXextFuncPtr)(void);
+	typedef __GLXextFuncPtr (*GetProcAddressARBProc)(const char*);
+	static GetProcAddressARBProc s_glXGetProcAddressARB = (GetProcAddressARBProc)dlsym(0, "glXGetProcAddressARB");
+	if (s_glXGetProcAddressARB)
+	{
+		return (void*) (s_glXGetProcAddressARB)(funcName);
+	}
+	else
+	{
+		return dlsym(0, funcName);
+	}
 
 #else // all other unixes
-    return dlsym(0, funcName);
+	return dlsym(0, funcName);
 
 #endif
 }
@@ -455,127 +455,127 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 
 // libMini conversion hook for external formats (JPEG/PNG)
 int vtb_conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
-                       unsigned char **newdata,unsigned int *newbytes,
-                       databuf *obj,void *data)
-   {
-   VTP_CONVERSION_PARAMS *conversion_params=(VTP_CONVERSION_PARAMS *)data;
+					   unsigned char **newdata,unsigned int *newbytes,
+					   databuf *obj,void *data)
+{
+	VTP_CONVERSION_PARAMS *conversion_params=(VTP_CONVERSION_PARAMS *)data;
 
-   if (conversion_params==NULL) return(0);
+	if (conversion_params==NULL) return(0);
 
-   switch (extformat)
-      {
-      case 1: // JPEG
+	switch (extformat)
+	{
+	case 1: // JPEG
 
 #if USE_LIBMINI_DATABUF_JPEG
 
-         if (israwdata==0)
-            {
-            int width,height,components;
+	   if (israwdata==0)
+	   {
+		   int width,height,components;
 
-            *newdata=jpegbase::decompressJPEGimage(srcdata,bytes,&width,&height,&components);
-            if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) return(0);
+		   *newdata=jpegbase::decompressJPEGimage(srcdata,bytes,&width,&height,&components);
+		   if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) return(0);
 
-            if (*newdata==NULL) return(0); // return failure
+		   if (*newdata==NULL) return(0); // return failure
 
-            switch (components)
-               {
-               case 1: if (obj->type!=0) return(0);
-               case 3: if (obj->type!=3) return(0);
-               case 4: if (obj->type!=4) return(0);
-               default: return(0);
-               }
+		   switch (components)
+		   {
+		   case 1: if (obj->type!=0) return(0);
+		   case 3: if (obj->type!=3) return(0);
+		   case 4: if (obj->type!=4) return(0);
+		   default: return(0);
+		   }
 
-            *newbytes=width*height*components;
-            }
-         else
-            {
-            int components;
+		   *newbytes=width*height*components;
+	   }
+	   else
+	   {
+		   int components;
 
-            switch (obj->type)
-               {
-               case 0: components=1; break;
-               case 3: components=3; break;
-               case 4: components=4; break;
-               default: return(0); // return failure
-               }
+		   switch (obj->type)
+		   {
+		   case 0: components=1; break;
+		   case 3: components=3; break;
+		   case 4: components=4; break;
+		   default: return(0); // return failure
+		   }
 
 #if USE_LIBMINI_DATABUF_GREYC
 
-            if (components==1 || components==3)
-               if (conversion_params->usegreycstoration)
-                  greycbase::denoiseGREYCimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->greyc_p,conversion_params->greyc_a);
+		   if (components==1 || components==3)
+			   if (conversion_params->usegreycstoration)
+				   greycbase::denoiseGREYCimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->greyc_p,conversion_params->greyc_a);
 
 #endif
 
-            jpegbase::compressJPEGimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->jpeg_quality/100.0f,newdata,newbytes);
+		   jpegbase::compressJPEGimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->jpeg_quality/100.0f,newdata,newbytes);
 
-            if (*newdata==NULL) return(0); // return failure
-            }
+		   if (*newdata==NULL) return(0); // return failure
+	   }
 
 #else
-         return(0);
+	   return(0);
 #endif
 
-         break;
+	   break;
 
-      case 2: // PNG
+   case 2: // PNG
 
 #if USE_LIBMINI_DATABUF_PNG
 
-         if (israwdata==0)
-            {
-            int width,height,components;
+	   if (israwdata==0)
+	   {
+		   int width,height,components;
 
-            *newdata=pngbase::decompressPNGimage(srcdata,bytes,&width,&height,&components);
-            if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) return(0);
+		   *newdata=pngbase::decompressPNGimage(srcdata,bytes,&width,&height,&components);
+		   if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) return(0);
 
-            if (*newdata==NULL) return(0); // return failure
+		   if (*newdata==NULL) return(0); // return failure
 
-            switch (components)
-               {
-               case 1: if (obj->type!=0) return(0);
-               case 2: if (obj->type!=1) return(0);
-               case 3: if (obj->type!=3) return(0);
-               case 4: if (obj->type!=4) return(0);
-               default: return(0);
-               }
+		   switch (components)
+		   {
+		   case 1: if (obj->type!=0) return(0);
+		   case 2: if (obj->type!=1) return(0);
+		   case 3: if (obj->type!=3) return(0);
+		   case 4: if (obj->type!=4) return(0);
+		   default: return(0);
+		   }
 
-            *newbytes=width*height*components;
-            }
-         else
-            {
-            int components;
+		   *newbytes=width*height*components;
+	   }
+	   else
+	   {
+		   int components;
 
-            switch (obj->type)
-               {
-               case 0: components=1; break;
-               case 1: components=2; break;
-               case 3: components=3; break;
-               case 4: components=4; break;
-               default: return(0); // return failure
-               }
+		   switch (obj->type)
+		   {
+		   case 0: components=1; break;
+		   case 1: components=2; break;
+		   case 3: components=3; break;
+		   case 4: components=4; break;
+		   default: return(0); // return failure
+		   }
 
 #if USE_LIBMINI_DATABUF_GREYC
 
-            if (components==3) // do not denoise elevation
-               if (conversion_params->usegreycstoration)
-                  greycbase::denoiseGREYCimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->greyc_p,conversion_params->greyc_a);
+		   if (components==3) // do not denoise elevation
+			   if (conversion_params->usegreycstoration)
+				   greycbase::denoiseGREYCimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->greyc_p,conversion_params->greyc_a);
 
 #endif
 
-            pngbase::compressPNGimage(srcdata,obj->xsize,obj->ysize,components,newdata,newbytes);
+		   pngbase::compressPNGimage(srcdata,obj->xsize,obj->ysize,components,newdata,newbytes);
 
-            if (*newdata==NULL) return(0); // return failure
-            }
+		   if (*newdata==NULL) return(0); // return failure
+	   }
 
 #else
-         return(0);
+	   return(0);
 #endif
 
-         break;
+	   break;
 
-      default: return(0);
-      }
+   default: return(0);
+   }
 
    return(1); // return success
    }
