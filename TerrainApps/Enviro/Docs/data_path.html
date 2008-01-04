@@ -1,42 +1,46 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 
 <head>
-<meta http-equiv="Content-Language" content="en-us">
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<link rel="stylesheet" href="docs.css">
+<meta http-equiv="Content-Language" content="en-us" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="docs.css" />
 <title>Data in a Different Location</title>
 </head>
 
-<body bgcolor="#CCCCCC">
+<body>
 
-  <h2><i><font face="Verdana">Enviro</font></i></h2>
+  <h2><i>Enviro</i></h2>
 
   <h3>The Data Path</h3>
 
 <ul>
   <li>If you want to put your Data directory in another location, or in several 
-  different locations on your machine, then you should edit your Data Path.</li>
+	different locations on your machine, then you should edit your Data Path.</li>
   <li>The easiest way to do this is to use the <a href="startup.html">Terrain 
-  Manager Dialog</a>.</li>
+	Manager Dialog</a>.</li>
 </ul>
   
-  <h4>The Enviro.ini file</h4>
+  <h4>The vtp.xml file</h4>
 
 <ul>
-  <li>Alternately, you can edit
-    your<code> Enviro.ini </code>file and change the
-    first few lines to contain the path to the data.&nbsp; A path can be relative
-    or absolute, and should leave on a trailing slash.&nbsp; For example, the
-    default path is:<br>
-    <code>&nbsp;&nbsp;&nbsp; DataPath ../Data/</code><br>
-    You could change it to paths such as these, depending on your platform:<br>
-    <code>&nbsp;&nbsp;&nbsp; DataPath ../../Data/<br>
-    &nbsp;&nbsp;&nbsp; DataPath C:\MyData\<br>
-    &nbsp;&nbsp;&nbsp; DataPath /home/me/mydata/<br>
-    </code></li>
-  <li>If you have data in multiple places, you can simply put more than one
-    &quot;<code>DataPath</code>&quot; line into the <code>Enviro.ini</code>
-    file, and all the data on all the paths will be available to Enviro.</li>
+  <li>Alternately, you can edit your<code> vtp.xml </code>file.&nbsp; This file is 
+	created (if it does not exist) the first time you run Enviro.<br />
+	It is located in your settings folder.<br />
+	On Windows, this is typically C:\Documents and Settings\<em>User</em>\Application 
+	Data<br />
+	On Unix, it is typically your account&#39;s home folder.</li>
+	<li>If you have data in multiple places, you can simply put more than one &quot;<code>DataPath</code>&quot; 
+	element into the <code>vtp.xml</code>
+    file, and all the data on all the paths will be available to all the VTP 
+	applications.</li>
+	<li>A path can be relative or absolute, and should leave on a trailing 
+	slash.&nbsp; For example, the default path is:<br />
+    <code>&nbsp;&nbsp;&nbsp; &lt;DataPath&gt;../Data/&lt;/DataPath&gt; </code><br />
+    You could change it to paths such as these, depending on your platform:<br />
+    <code>&nbsp;&nbsp;&nbsp; &lt;DataPath&gt;../../Data/&lt;/DataPath&gt;<br />
+    &nbsp;&nbsp;&nbsp; &lt;DataPath&gt;C:\MyData\&lt;/DataPath&gt;<br />
+    &nbsp;&nbsp;&nbsp; &lt;DataPath&gt;/home/me/mydata/&lt;/DataPath&gt;</code></li>
 </ul>
   
 </body>

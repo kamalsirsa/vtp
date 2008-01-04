@@ -1,7 +1,35 @@
+﻿
+a.bt:hover {
+ color:#0000ff; background-color:#B5CBE7; 
+ font-weight:bold; font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10pt;
+ text-decoration: none;}
 
-a.bt:link, a.bt:visited, a.bt:active, a.bt:hover {
+a.bt:active {
+ color:#0000ff; background-color:#B5CBE7; 
+ font-weight:bold; font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10pt;
+ text-decoration: none;}
+
+a.bt:visited {
+ color:#0000ff; background-color:#B5CBE7; 
+ font-weight:bold; font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10pt;
+ text-decoration: none;}
+
+a.bt:link {
  color:#0000ff; background-color:#B5CBE7; 
  font-weight:bold; font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10pt;
  text-decoration: none;}
 
 body { background-color:#DFDDD9; }
+
+h1 {
+	font-family: Verdana;
+}
+h2 {
+	font-family: Verdana;
+}
+h3 {
+	font-family: Verdana;
+}
+h4 {
+	font-family: Verdana;
+}
