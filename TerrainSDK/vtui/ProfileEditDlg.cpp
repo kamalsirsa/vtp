@@ -191,21 +191,21 @@ void ProfDlgView::OnMouseEvent(wxMouseEvent &event)
 
 BEGIN_EVENT_TABLE(ProfileEditDlg,wxDialog)
 	EVT_INIT_DIALOG (ProfileEditDlg::OnInitDialog)
-    EVT_RADIOBUTTON( ID_ADD_POINT, ProfileEditDlg::OnAdd )
-    EVT_RADIOBUTTON( ID_MOVE_POINT, ProfileEditDlg::OnMove )
-    EVT_RADIOBUTTON( ID_REMOVE_POINT, ProfileEditDlg::OnRemove )
-    EVT_BUTTON( ID_SAVE_PROF, ProfileEditDlg::OnSave )
-    EVT_BUTTON( ID_SAVE_AS_PROF, ProfileEditDlg::OnSaveAs )
-    EVT_BUTTON( ID_LOAD_PROF, ProfileEditDlg::OnLoad )
-    EVT_BUTTON( wxID_OK, ProfileEditDlg::OnOK )
+	EVT_RADIOBUTTON( ID_ADD_POINT, ProfileEditDlg::OnAdd )
+	EVT_RADIOBUTTON( ID_MOVE_POINT, ProfileEditDlg::OnMove )
+	EVT_RADIOBUTTON( ID_REMOVE_POINT, ProfileEditDlg::OnRemove )
+	EVT_BUTTON( ID_SAVE_PROF, ProfileEditDlg::OnSave )
+	EVT_BUTTON( ID_SAVE_AS_PROF, ProfileEditDlg::OnSaveAs )
+	EVT_BUTTON( ID_LOAD_PROF, ProfileEditDlg::OnLoad )
+	EVT_BUTTON( wxID_OK, ProfileEditDlg::OnOK )
 END_EVENT_TABLE()
 
 ProfileEditDlg::ProfileEditDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-    const wxPoint &position, const wxSize& size, long style ) :
-    wxDialog( parent, id, title, position, size, style )
+	const wxPoint &position, const wxSize& size, long style ) :
+	wxDialog( parent, id, title, position, size, style )
 {
-    // WDR: dialog function ProfileEditDialogFunc for ProfileEditDlg
-    ProfileEditDialogFunc( this, TRUE );
+	// WDR: dialog function ProfileEditDialogFunc for ProfileEditDlg
+	ProfileEditDialogFunc( this, TRUE );
 
 	m_pView = (ProfDlgView *) FindWindow( ID_EDIT_PANEL );
 }

@@ -396,7 +396,7 @@ void ProjectionDlg::OnProjLoad( wxCommandEvent &event )
 		return;
 	wxString strPathName = loadFile.GetPath();
 	if (m_proj.ReadProjFile(strPathName.mb_str(wxConvUTF8)))
-        SetUIFromProjection();
+		SetUIFromProjection();
 	else
 		wxMessageBox(_("Couldn't load projection from that file.\n"));
 }

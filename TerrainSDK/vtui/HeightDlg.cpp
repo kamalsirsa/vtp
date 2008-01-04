@@ -215,7 +215,7 @@ void CHeightDialog::OnCancel( wxCommandEvent &event )
 	m_pBuilding->DetermineLocalFootprints();
 	((BuildingDlg*)GetParent())->Modified();
 	//Pass on to base class
-	event.Skip();	
+	event.Skip();
 }
 
 void CHeightDialog::OnBaselineOffset( wxCommandEvent &event )

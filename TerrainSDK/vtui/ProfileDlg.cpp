@@ -519,11 +519,11 @@ void ProfileDlg::ComputeGeoidSurface()
   /*
   neato trig lies beneath...
 
-                  S  (arc P1 -> P2)
-              ***
-          ****   **** P3
-       ***           ***   dist (arc P1 -> P3)
-     **            H/   **
+				  S  (arc P1 -> P2)
+			  ***
+		  ****   **** P3
+	   ***           ***   dist (arc P1 -> P3)
+	 **            H/   **
  P2 *              /      * P1
    *--------------X--------*
   *              /      .   *
@@ -531,7 +531,7 @@ void ProfileDlg::ComputeGeoidSurface()
   *            C            *
 
   Problem:  Find H (height of chord at angle) given length of arc S and radius R,
-	    and the partial arc distance between P1 and P3
+		and the partial arc distance between P1 and P3
 
   Formulas from: http://mathforum.org/dr.math/faq/faq.circle.segment.html
 

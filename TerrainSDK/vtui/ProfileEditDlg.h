@@ -28,12 +28,12 @@ public:
 	vtArray<wxPoint> m_screen;
 	wxPoint m_org;
 	float m_scale;
-    int m_mode;
+	int m_mode;
 	bool m_bDragging;
 	int m_iDragging;
 
 private:
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 //----------------------------------------------------------------------------
@@ -43,37 +43,37 @@ private:
 class ProfileEditDlg: public wxDialog
 {
 public:
-    // constructors and destructors
-    ProfileEditDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
+	// constructors and destructors
+	ProfileEditDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = wxDEFAULT_DIALOG_STYLE );
 
-    // WDR: method declarations for ProfileEditDlg
-    void UpdateEnabling();
+	// WDR: method declarations for ProfileEditDlg
+	void UpdateEnabling();
 	wxButton* GetSave()  { return (wxButton*) FindWindow( ID_SAVE_PROF ); }
 
 	void SetFilename(const char *fname);
 	void CheckClockwisdom();
 
 private:
-    // WDR: member variable declarations for ProfileEditDlg
+	// WDR: member variable declarations for ProfileEditDlg
 	ProfDlgView *m_pView;
 	wxString	m_strFilename;
 
 private:
-    // WDR: handler declarations for ProfileEditDlg
-    void OnOK( wxCommandEvent &event );
-    void OnLoad( wxCommandEvent &event );
-    void OnSaveAs( wxCommandEvent &event );
-    void OnSave( wxCommandEvent &event );
-    void OnRemove( wxCommandEvent &event );
-    void OnMove( wxCommandEvent &event );
-    void OnAdd( wxCommandEvent &event );
+	// WDR: handler declarations for ProfileEditDlg
+	void OnOK( wxCommandEvent &event );
+	void OnLoad( wxCommandEvent &event );
+	void OnSaveAs( wxCommandEvent &event );
+	void OnSave( wxCommandEvent &event );
+	void OnRemove( wxCommandEvent &event );
+	void OnMove( wxCommandEvent &event );
+	void OnAdd( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 #endif	// __ProfileEditDlg_H__
