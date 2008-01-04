@@ -751,6 +751,9 @@
 				RelativePath="LayerPropDlg.h">
 			</File>
 			<File
+				RelativePath=".\LocalDatabuf.h">
+			</File>
+			<File
 				RelativePath="MapServerDlg.h">
 			</File>
 			<File
