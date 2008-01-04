@@ -628,7 +628,7 @@ void BuilderView::DrawScaleBar(wxDC * p_DC)
 #endif //_SCALE
 
 	int xx, yy, w,  h, ww,hh;
-    int scaleLen = 180; //default scale lenght
+	int scaleLen = 180; //default scale lenght
 	wxString str;
 
 	// Set pen options

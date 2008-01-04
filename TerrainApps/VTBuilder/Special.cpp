@@ -288,7 +288,7 @@ void MainFrame::ElevCopy()
 				data		b()
 
 			coordsys
-			    geometry    ui32    (0=flat, 1=earth)
+				geometry    ui32    (0=flat, 1=earth)
 				projection
 					format	ui32	(0=wkt if geometry=earth)
 					data	b()		(the proj. string)
@@ -313,9 +313,9 @@ void MainFrame::ElevCopy()
 			]
 
 		  5-7 parent tags  +7 (12-14)
-		    1 nil tag
+			1 nil tag
 		  5-6 ui32 tags		+3 (8-9)
-		    0 double tags   +6
+			0 double tags   +6
 		  1-2 binary tags   +1 (2-3)
 
 	*/

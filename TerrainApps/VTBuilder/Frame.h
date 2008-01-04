@@ -562,7 +562,7 @@ protected:
 	// menu numbers, for each layer type that has a corresponding menu
 	int		m_iLayerMenu[LAYER_TYPES];
 
-    wxAuiManager m_mgr;
+	wxAuiManager m_mgr;
 
 	DECLARE_EVENT_TABLE()
 

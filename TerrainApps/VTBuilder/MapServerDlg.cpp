@@ -317,7 +317,7 @@ void MapServerDlg::UpdateURL()
 	url += "?REQUEST=GetMap";
 
 	// Some servers seem to insist on a VERSION element
-    url += "&VERSION=1.1.0";
+	url += "&VERSION=1.1.0";
 
 	url += "&LAYERS=";  // required, even if left blank
 	if (m_iLayer != -1)
