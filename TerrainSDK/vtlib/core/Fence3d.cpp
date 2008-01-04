@@ -77,7 +77,7 @@ float SidewaysVector(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2,
 	else
 	{
 		// factor to widen this corner is proportional to the angle
-        float angle = acos(dot);
+		float angle = acos(dot);
 		wider = (float) (1.0 / sin(angle / 2));
 		bisector *= wider;
 	}

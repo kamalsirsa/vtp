@@ -791,7 +791,7 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 			if (NULL != pMd)
 				UVScale = pMd->GetUVScale();
 			else
-				UVScale = FPoint2(1.0, 1.0);				
+				UVScale = FPoint2(1.0, 1.0);
 			FLine3 RoofSection3D;
 			FLine3 TriangulatedRoofSection3D;
 			int iTriangleCount = 0;

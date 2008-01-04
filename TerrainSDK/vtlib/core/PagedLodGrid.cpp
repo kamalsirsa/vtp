@@ -282,7 +282,7 @@ vtPagedStructureLOD *vtPagedStructureLodGrid::FindGroup(vtStructure *str)
 	}
 	return NULL;
 }
-	
+
 bool vtPagedStructureLodGrid::AppendToGrid(vtStructureArray3d *pArray, int iIndex)
 {
 	// Get 2D extents from the unbuild structure
@@ -408,7 +408,7 @@ bool operator<(const QueueEntry& a, const QueueEntry& b)
 {
 	// Reverse-sort, to put smallest values (closest points) at the end
 	//  of the list so they can be efficiently removed
-    return a.fDistance > b.fDistance;
+	return a.fDistance > b.fDistance;
 }
 
 void vtPagedStructureLodGrid::SortQueue()

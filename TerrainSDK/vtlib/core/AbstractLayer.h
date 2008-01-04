@@ -64,7 +64,7 @@ typedef std::map<vtFeature*,vtVisual*> VizMap;
 	 - "LabelSize": Size (vertical extent) of the text labels in meters.
 		Default is 18.
 	 - "Font": Filename (may include path) of the font to use for text labels.
-	    Example: "Arial.ttf"
+		Example: "Arial.ttf"
 
  When a terrain description (TParams) contains an abstract layer, these same
  style properties are encoded.  On disk, they are stored as XML elements.

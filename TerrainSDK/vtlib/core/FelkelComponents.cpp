@@ -381,7 +381,7 @@ m_advancingSkeletonLine (NULL)
 
 	// Create the associated ridgeline for this vertex
 	CNumber height = m_point.m_y;
-	
+
 	C3DPoint i = m_leftLine.Intersection (m_rightLine);
 	if (i.m_x == CN_INFINITY)
 	{

@@ -45,38 +45,38 @@ static vtTiledGeom *s_pTiledGeom = NULL;
    pthread_attr_t attr;
 
    void threadinit()
-      {
-      pthread_mutex_init(&mutex,NULL);
+	  {
+	  pthread_mutex_init(&mutex,NULL);
 	  pthread_mutex_init(&iomutex,NULL);
 
-      pthread_attr_init(&attr);
-      pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
-      }
+	  pthread_attr_init(&attr);
+	  pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
+	  }
 
    void threadexit()
-      {
-      pthread_mutex_destroy(&mutex);
+	  {
+	  pthread_mutex_destroy(&mutex);
 	  pthread_mutex_destroy(&iomutex);
-      pthread_attr_destroy(&attr);
-      }
+	  pthread_attr_destroy(&attr);
+	  }
 
    void startthread(void *(*thread)(void *background),backarrayelem *background,
 	   void *data)
-      {
+	  {
 	  pthread_create(&pthread[background->background-1],&attr,thread,background);
-      }
+	  }
 
    void jointhread(backarrayelem *background,void *data)
-      {
-      void *status;
-      pthread_join(pthread[background->background-1],&status);
-      }
+	  {
+	  void *status;
+	  pthread_join(pthread[background->background-1],&status);
+	  }
 
    void lock_cs(void *data)
-      {pthread_mutex_lock(&mutex);}
+	  {pthread_mutex_lock(&mutex);}
 
    void unlock_cs(void *data)
-      {pthread_mutex_unlock(&mutex);}
+	  {pthread_mutex_unlock(&mutex);}
 
 	void lock_io(void *data)
 	  {pthread_mutex_lock(&iomutex);}
@@ -701,7 +701,7 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 	// Minimum texture lazyness is configurable:
 	m_pMiniLoad->configure_minlazy(0.25);
 
-    // Tell the library not to free the buffers we pass to it, so that our
+	// Tell the library not to free the buffers we pass to it, so that our
 	// cache can own them and pass them again when needed, without copying.
 	m_pMiniLoad->configure_dontfree(WE_OWN_BUFFERS);
 
@@ -883,7 +883,7 @@ void vtTiledGeom::DoRender()
 			if (diff < -iRange)
 			{
 				m_fLResolution = m_fResolution;
-				
+
 				// if the high end isn't high enough, double it
 				if (m_fLResolution + 5 >= m_fHResolution)
 				{

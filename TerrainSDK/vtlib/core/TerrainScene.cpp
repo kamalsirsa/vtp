@@ -142,8 +142,8 @@ void vtTerrainScene::_CreateSky()
 
 	//sun light defaults
 	pLight->SetDiffuse(RGBf(1,1,1));
-    pLight->SetAmbient(RGBf(1,1,1));
-    pLight->SetSpecular(RGBf(1,1,1));
+	pLight->SetAmbient(RGBf(1,1,1));
+	pLight->SetSpecular(RGBf(1,1,1));
 
 #else
 	vtLight *pLight = new vtLight;

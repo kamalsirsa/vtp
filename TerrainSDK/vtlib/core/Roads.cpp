@@ -413,7 +413,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 			else
 			{
 				// factor to widen this corner is proportional to the angle
-                float angle = acos(dot);
+				float angle = acos(dot);
 				wider = (float) (1.0 / sin(angle / 2));
 				bisector *= wider;
 			}

@@ -18,9 +18,9 @@ class vtStructureArray3d;
  Implementation scene graph:
 			A
 		   / \
-	      B-C B-C
-	     /|\  |\
-        D D D D D
+		  B-C B-C
+		 /|\  |\
+		D D D D D
 
  A = vtPagedStructureLodGrid, contans an array of cells consisting of:
  B = vtPagedStructureLOD, which is paired with a:

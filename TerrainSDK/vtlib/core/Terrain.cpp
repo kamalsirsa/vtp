@@ -245,7 +245,7 @@ bool vtTerrain::LoadParams()
 void vtTerrain::SetParams(const TParams &Params)
 {
 	m_Params = Params;
-	
+
 	RGBi color;
 	if (m_Params.GetValueRGBi(STR_FOGCOLOR, color))
 	{

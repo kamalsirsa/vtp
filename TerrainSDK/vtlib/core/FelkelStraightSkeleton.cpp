@@ -367,7 +367,7 @@ void vtStraightSkeleton::FixSkeleton()
 		}
 		s1--;
 		s1--;
-	}	
+	}
 }
 
 #ifdef FELKELDEBUG

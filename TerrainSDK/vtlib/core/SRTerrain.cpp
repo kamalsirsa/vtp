@@ -392,7 +392,7 @@ void SRTerrain::RenderPass()
 		if (diff < -iRange)
 		{
 			m_fLResolution = m_fResolution;
-			
+
 			// if the high end isn't high enough, double it
 			if (m_fLResolution + 25 >= m_fHResolution)
 			{

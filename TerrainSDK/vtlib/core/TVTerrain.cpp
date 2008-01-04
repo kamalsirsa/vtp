@@ -36,10 +36,10 @@ static int b3orient[8] = {NORTH,EAST,SOUTH,WEST,SE,NW,SW,NE};
 
 /* NW,SE,NE,SW (parity of x determines row) */
 static int porient1[8] = {WEST,SOUTH,NORTH,WEST,
-			  NORTH,EAST,EAST,SOUTH};
+NORTH,EAST,EAST,SOUTH};
 /* SOUTH,WEST,NORTH,EAST (parity of x+y determines row) */
 static int porient0[8] = {SE,NW,NW,SE,
-			  SW,SW,NE,NE};
+SW,SW,NE,NE};
 
 /* SOUTH,WEST,NORTH,EAST,NW,SE,NE,SW */
 static int lxinc[8] = {0,0,1,1,0,0,0,0};
@@ -87,9 +87,9 @@ void leftChild(TriIndex *t, TriIndex *lt)
 		lt->x = t->x<<1 | lxinc[t->orient];
 		lt->y = t->y<<1 | lyinc[t->orient];
 		if (lt->x > xmax[lt->depth] || lt->y > ymax[lt->depth])
-		  lt->s = 0;
+			lt->s = 0;
 		else
-		  lt->s = S1(lt);
+			lt->s = S1(lt);
 	}
 }
 
@@ -105,9 +105,9 @@ void rightChild(TriIndex *t, TriIndex *rt)
 		rt->x = t->x<<1 | rxinc[t->orient];
 		rt->y = t->y<<1 | ryinc[t->orient];
 		if (rt->x > xmax[rt->depth] || rt->y > ymax[rt->depth])
-		  rt->s = 0;
+			rt->s = 0;
 		else
-		  rt->s = S1(rt);
+			rt->s = S1(rt);
 	}
 }
 
@@ -343,7 +343,7 @@ int TVTerrain::calcErr(const vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coo
 			{
 				eps = ABS(pGrid->GetFValue(x, y) - z);
 				if (eps > max_eps) {
-				max_eps = eps;
+					max_eps = eps;
 				}
 				z = z + deltaz;
 			}
@@ -364,8 +364,8 @@ int TVTerrain::calcErr(const vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coo
 
 
 /* A triangle is in FOV iff one of its 3 vertices is in FOV
- * or if the line of sight intersects one of its 3 segments.
- */
+* or if the line of sight intersects one of its 3 segments.
+*/
 int TVTerrain::inFOV(Coord2d p1, Coord2d p2, Coord2d p3)
 {
 #if DO_VIEW_CULLING
@@ -390,10 +390,10 @@ int TVTerrain::inFOV(Coord2d p1, Coord2d p2, Coord2d p3)
 
 int TVTerrain::triInFOV(TriIndex *t)
 {
-  Coord2d p1, p2, p3;
+	Coord2d p1, p2, p3;
 
-  getVerts(t, p1, p2, p3);
-  return inFOV(p1, p2, p3);
+	getVerts(t, p1, p2, p3);
+	return inFOV(p1, p2, p3);
 }
 
 
@@ -430,7 +430,7 @@ void midpoint(const Coord2d p1, const Coord2d p2, Coord2d m)
 {
 	m[0] = (p1[0] + p2[0]) / 2;
 	m[1] = (p1[1] + p2[1]) / 2;
-/*  m[2] = pGrid->GetFValue(m[0], m[1]); */
+	/*  m[2] = pGrid->GetFValue(m[0], m[1]); */
 }
 
 void TVTerrain::makeDFS(const vtElevationGrid *pGrid, TriIndex *t,
@@ -575,7 +575,7 @@ void TVTerrain::nbr3(TriIndex *t, TriIndex *n3)
 static int hierDepth;
 
 /* initialize ntriabove[] and return size of needed
-   physical address space */
+physical address space */
 int TVTerrain::init_ntriabove(int depth)
 {
 	int d,xm,ym;
@@ -619,69 +619,69 @@ int TVTerrain::init_ntriabove(int depth)
 
 void TVTerrain::getVerts(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 {
-  Coord2d swt,net;
-  int d;
+	Coord2d swt,net;
+	int d;
 
-  d = (hierDepth-t->depth+1)>>1;
-  swt[0] = t->x << d;
-  swt[1] = t->y << d;
-  net[0] = (t->x+1) << d;
-  net[1] = (t->y+1) << d;
+	d = (hierDepth-t->depth+1)>>1;
+	swt[0] = t->x << d;
+	swt[1] = t->y << d;
+	net[0] = (t->x+1) << d;
+	net[1] = (t->y+1) << d;
 
-  if ((t->depth&1)==0) {
-    midpoint(swt,net,p3);
-    switch(t->orient) {
-    case NORTH:
-      p1[0]=net[0]; p1[1]=net[1];
-      p2[0]=swt[0]; p2[1]=net[1];
-      break;
-    case SOUTH:
-      p1[0]=swt[0]; p1[1]=swt[1];
-      p2[0]=net[0]; p2[1]=swt[1];
-      break;
-    case EAST:
-      p1[0]=net[0]; p1[1]=swt[1];
-      p2[0]=net[0]; p2[1]=net[1];
-      break;
-    case WEST:
-      p1[0]=swt[0]; p1[1]=net[1];
-      p2[0]=swt[0]; p2[1]=swt[1];
-      break;
-    default:
-      assert(0);
-      break;
-    }
-  } else {
-    switch(t->orient) {
-    case NW:
-      p1[0]=swt[0]; p1[1]=swt[1];
-      p2[0]=net[0]; p2[1]=net[1];
-      p3[0]=swt[0]; p3[1]=net[1];
-      break;
-    case SW:
-      p1[0]=net[0]; p1[1]=swt[1];
-      p2[0]=swt[0]; p2[1]=net[1];
-      p3[0]=swt[0]; p3[1]=swt[1];
-      break;
-    case SE:
-      p1[0]=net[0]; p1[1]=net[1];
-      p2[0]=swt[0]; p2[1]=swt[1];
-      p3[0]=net[0]; p3[1]=swt[1];
-      break;
-    case NE:
-      p1[0]=swt[0]; p1[1]=net[1];
-      p2[0]=net[0]; p2[1]=swt[1];
-      p3[0]=net[0]; p3[1]=net[1];
-      break;
-    default:
-      assert(0);
-      break;
-    }
-  }
-  /*
-  printf("(%d,%d,%d,%d) ((%d,%d),(%d,%d),(%d,%d))\n",t->x,t->y,
-	 t->depth,t->orient,p1[0],p1[1],p2[0],p2[1],p3[0],p3[1]);
-	 */
+	if ((t->depth&1)==0) {
+		midpoint(swt,net,p3);
+		switch(t->orient) {
+	case NORTH:
+		p1[0]=net[0]; p1[1]=net[1];
+		p2[0]=swt[0]; p2[1]=net[1];
+		break;
+	case SOUTH:
+		p1[0]=swt[0]; p1[1]=swt[1];
+		p2[0]=net[0]; p2[1]=swt[1];
+		break;
+	case EAST:
+		p1[0]=net[0]; p1[1]=swt[1];
+		p2[0]=net[0]; p2[1]=net[1];
+		break;
+	case WEST:
+		p1[0]=swt[0]; p1[1]=net[1];
+		p2[0]=swt[0]; p2[1]=swt[1];
+		break;
+	default:
+		assert(0);
+		break;
+		}
+	} else {
+		switch(t->orient) {
+	case NW:
+		p1[0]=swt[0]; p1[1]=swt[1];
+		p2[0]=net[0]; p2[1]=net[1];
+		p3[0]=swt[0]; p3[1]=net[1];
+		break;
+	case SW:
+		p1[0]=net[0]; p1[1]=swt[1];
+		p2[0]=swt[0]; p2[1]=net[1];
+		p3[0]=swt[0]; p3[1]=swt[1];
+		break;
+	case SE:
+		p1[0]=net[0]; p1[1]=net[1];
+		p2[0]=swt[0]; p2[1]=swt[1];
+		p3[0]=net[0]; p3[1]=swt[1];
+		break;
+	case NE:
+		p1[0]=swt[0]; p1[1]=net[1];
+		p2[0]=net[0]; p2[1]=swt[1];
+		p3[0]=net[0]; p3[1]=net[1];
+		break;
+	default:
+		assert(0);
+		break;
+		}
+	}
+	/*
+	printf("(%d,%d,%d,%d) ((%d,%d),(%d,%d),(%d,%d))\n",t->x,t->y,
+	t->depth,t->orient,p1[0],p1[1],p2[0],p2[1],p3[0],p3[1]);
+	*/
 }
 
 
@@ -748,7 +748,7 @@ DTErr TVTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	m_info = (unsigned char *)malloc(m_size * sizeof(char));
 
 	fprintf(stderr, "Hierarchy uses %d bytes.\n",
-	  (int)(m_size*sizeof(short)+m_size*sizeof(char)));
+		(int)(m_size*sizeof(short)+m_size*sizeof(char)));
 
 	//  configure scaling
 	mkscale(pGrid);
@@ -768,25 +768,25 @@ DTErr TVTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 			m_pVertex[offset(i, j)] = pGrid->GetFValue(i, j);
 		}
 
-	//	Southwest point is origin
-	sw[0] = 0;
-	sw[1] = 0;
+		//	Southwest point is origin
+		sw[0] = 0;
+		sw[1] = 0;
 
-	se[0] = iDim - 1;
-	se[1] = 0;
+		se[0] = iDim - 1;
+		se[1] = 0;
 
-	ne[0] = iDim - 1;
-	ne[1] = iDim - 1;
+		ne[0] = iDim - 1;
+		ne[1] = iDim - 1;
 
-	nw[0] = 0;
-	nw[1] = iDim - 1;
+		nw[0] = 0;
+		nw[1] = iDim - 1;
 
-	makeDFS(pGrid, &rootL, sw, ne, nw);	// NW corner of square
-	makeDFS(pGrid, &rootR, ne, sw, se);	// SE corner of square
-	m_err[0] = MAXERR;
-	m_info[0] = 0;
+		makeDFS(pGrid, &rootL, sw, ne, nw);	// NW corner of square
+		makeDFS(pGrid, &rootR, ne, sw, se);	// SE corner of square
+		m_err[0] = MAXERR;
+		m_info[0] = 0;
 
-	return DTErr_OK;
+		return DTErr_OK;
 }
 
 float TVTerrain::GetElevation(int iX, int iZ, bool bTrue) const
@@ -847,98 +847,98 @@ void TVTerrain::DoRender()
 
 
 /* Triangle t is split into lt and rt.  Neighbors 1 & 2 of lt and
- * rt are known to be the same size as lt and rt.  Neighbor 3 of
- * lt is neighbor 2 of t (n3lt == n2t).  If n2t is smaller than
- * t then n3lt is same size as lt, o.w. n3lt is bigger than lt (and
- * n1n2t == lt is smaller than n2t == n3lt).
- * Similar gibberish holds for rt.
- */
+* rt are known to be the same size as lt and rt.  Neighbor 3 of
+* lt is neighbor 2 of t (n3lt == n2t).  If n2t is smaller than
+* t then n3lt is same size as lt, o.w. n3lt is bigger than lt (and
+* n1n2t == lt is smaller than n2t == n3lt).
+* Similar gibberish holds for rt.
+*/
 
 void TVTerrain::kidsOnSurf(TriIndex *t)
 /* Push the surface down to the children of t.  t must not be a leaf. */
 {
-  TriIndex lt, rt, n2t, n1t;
+	TriIndex lt, rt, n2t, n1t;
 
-  assert(!ISLEAF(t));
-  assert(t->s);
-  assert(ONSURFACE(t));
+	assert(!ISLEAF(t));
+	assert(t->s);
+	assert(ONSURFACE(t));
 
-  m_info[t->s] &= ~SURFACE;		/* take t from surface */
-  m_numSurfTri -= 1;
-  leftChild(t,&lt);			/* put t's children on surface */
-  if (lt.s) {
-    PUTONSURFACE(&lt);
-    m_numSurfTri += 1;
-  }
-  rightChild(t,&rt);
-  if (rt.s) {
-    PUTONSURFACE(&rt);
-    m_numSurfTri += 1;
-  }
+	m_info[t->s] &= ~SURFACE;		/* take t from surface */
+	m_numSurfTri -= 1;
+	leftChild(t,&lt);			/* put t's children on surface */
+	if (lt.s) {
+		PUTONSURFACE(&lt);
+		m_numSurfTri += 1;
+	}
+	rightChild(t,&rt);
+	if (rt.s) {
+		PUTONSURFACE(&rt);
+		m_numSurfTri += 1;
+	}
 
-  /* Let t's neighbors know they should point to t's children */
-  nbr2(t,&n2t);
-  if (n2t.s && lt.s) {/* n2t.s && !(lt.s) could happen, but then n2t is invalid */
-    assert(ONSURFACE(&n2t));
-    if (SMALLN2(t)) {		/* n2t is same size as lt */
-      m_info[n2t.s] &= ~BIGGER3;
-    } else {				/* n2t is bigger than lt */
-      m_info[n2t.s] |= SMALLER1;
-      m_info[lt.s] |= BIGGER3;
-    }
-  }
+	/* Let t's neighbors know they should point to t's children */
+	nbr2(t,&n2t);
+	if (n2t.s && lt.s) {/* n2t.s && !(lt.s) could happen, but then n2t is invalid */
+		assert(ONSURFACE(&n2t));
+		if (SMALLN2(t)) {		/* n2t is same size as lt */
+			m_info[n2t.s] &= ~BIGGER3;
+		} else {				/* n2t is bigger than lt */
+			m_info[n2t.s] |= SMALLER1;
+			m_info[lt.s] |= BIGGER3;
+		}
+	}
 
-  nbr1(t,&n1t);
-  if (n1t.s && rt.s) {/* n1t.s && !(rt.s) could happen, but then n1t is invalid */
-    assert(ONSURFACE(&n1t));
-    if (SMALLN1(t)) {		/* n1t is same size as rt */
-      m_info[n1t.s] &= ~BIGGER3;
-    } else {				/* n1t is bigger than lt */
-      m_info[n1t.s] |= SMALLER2;
-      m_info[rt.s] |= BIGGER3;
-    }
-  }
+	nbr1(t,&n1t);
+	if (n1t.s && rt.s) {/* n1t.s && !(rt.s) could happen, but then n1t is invalid */
+		assert(ONSURFACE(&n1t));
+		if (SMALLN1(t)) {		/* n1t is same size as rt */
+			m_info[n1t.s] &= ~BIGGER3;
+		} else {				/* n1t is bigger than lt */
+			m_info[n1t.s] |= SMALLER2;
+			m_info[rt.s] |= BIGGER3;
+		}
+	}
 
-  if (m_info[t->s] & ALLINFOV) {
-    if (lt.s) m_info[lt.s] |= ALLINFOV;
-    if (rt.s) m_info[rt.s] |= ALLINFOV;
-  } else if (m_info[t->s] & PARTINFOV) {
-    if (lt.s) m_info[lt.s] |= triInFOV(&lt);
-    if (rt.s) m_info[rt.s] |= triInFOV(&rt);
-  }
+	if (m_info[t->s] & ALLINFOV) {
+		if (lt.s) m_info[lt.s] |= ALLINFOV;
+		if (rt.s) m_info[rt.s] |= ALLINFOV;
+	} else if (m_info[t->s] & PARTINFOV) {
+		if (lt.s) m_info[lt.s] |= triInFOV(&lt);
+		if (rt.s) m_info[rt.s] |= triInFOV(&rt);
+	}
 }
 
 
 void TVTerrain::split(TriIndex *t)
 {
-  TriIndex n3t,tmp;
+	TriIndex n3t,tmp;
 
-  assert(t->s);
-  assert(ONSURFACE(t));
+	assert(t->s);
+	assert(ONSURFACE(t));
 
-  nbr3(t,&n3t);
-  if (n3t.s == 0) goto N3INVALID;
-  if (BIGN3(t)) {
+	nbr3(t,&n3t);
+	if (n3t.s == 0) goto N3INVALID;
+	if (BIGN3(t)) {
 
-    split( &n3t);	/* propagate split: t's 3-neighbor might change */
+		split( &n3t);	/* propagate split: t's 3-neighbor might change */
 
-    if (IAMLEFTCHILD(t)) {
-      rightChild(&n3t,&tmp);
-    } else {
-      leftChild(&n3t,&tmp);
-    }
-    if (tmp.s == 0) goto N3INVALID;
-    TRIEQUATE(&n3t,&tmp);
-  }
-  kidsOnSurf(&n3t);		/* t is not LEAF so n3t is not LEAF */
+		if (IAMLEFTCHILD(t)) {
+			rightChild(&n3t,&tmp);
+		} else {
+			leftChild(&n3t,&tmp);
+		}
+		if (tmp.s == 0) goto N3INVALID;
+		TRIEQUATE(&n3t,&tmp);
+	}
+	kidsOnSurf(&n3t);		/* t is not LEAF so n3t is not LEAF */
 
 N3INVALID:
-  kidsOnSurf(t);
+	kidsOnSurf(t);
 }
 
 
 #define LEFT_TURN(a, b, c) \
-(((b)[1]-(a)[1])*((c)[0]-(a)[0])-((b)[0]-(a)[0])*((c)[1]-(a)[1]) < 0)
+	(((b)[1]-(a)[1])*((c)[0]-(a)[0])-((b)[0]-(a)[0])*((c)[1]-(a)[1]) < 0)
 
 void TVTerrain::rodSplit(TriIndex *t)
 {
@@ -984,9 +984,9 @@ void TVTerrain::eyeSplit(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 }
 
 /* baseSurface --
- * calculates surface with finest level of detail around eye position
- * and no triangles spanning border of rectangle of definition.
- */
+* calculates surface with finest level of detail around eye position
+* and no triangles spanning border of rectangle of definition.
+*/
 void TVTerrain::baseSurface()
 {
 	eyeP[0] = (int)eyeEmx;
@@ -1018,36 +1018,36 @@ void TVTerrain::baseSurface()
 
 int TVTerrain::tooCoarse(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 {
-  int h;
-  double dx,dy,d;
+	int h;
+	double dx,dy,d;
 
-  assert(t->s);
+	assert(t->s);
 
-  if (!INFOV(t))		/* if not in field of view */
-    return 0;
+	if (!INFOV(t))		/* if not in field of view */
+		return 0;
 
-  /* Check distance from eye */
-  dx = (p3[0] - eyeP[0]);		/* dx and dy in grid units */
-  dy = (p3[1] - eyeP[1]);
-  d = dx * dx + dy * dy;
+	/* Check distance from eye */
+	dx = (p3[0] - eyeP[0]);		/* dx and dy in grid units */
+	dy = (p3[1] - eyeP[1]);
+	d = dx * dx + dy * dy;
 #if 0 	// doesn't seem necessary
-  if (d == 0)				/* if right below eye */
-    return 1;
+	if (d == 0)				/* if right below eye */
+		return 1;
 #endif
 
-  d = sqrt(d);		/* d in grid units */
+	d = sqrt(d);		/* d in grid units */
 #if 0	// doesn't seem necessary
-  if (d  < dtGrid * (m_depth - t->depth))
-    return 1;
+	if (d  < dtGrid * (m_depth - t->depth))
+		return 1;
 #endif
 
-  /* Check error threshold */
-  h = m_err[t->s];
+	/* Check error threshold */
+	h = m_err[t->s];
 
-  if (h > d * etGrid)
-    return 1;
+	if (h > d * etGrid)
+		return 1;
 
-  return 0;
+	return 0;
 }
 
 void TVTerrain::errSplit(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
@@ -1075,7 +1075,7 @@ void TVTerrain::errSurface()
 
 	// borrow this value from DynTerrain: it appears that 1 pixel error
 	// roughly equals .002 TopoVista error
-//	errThresh = m_fPixelError / 500.0;
+	//	errThresh = m_fPixelError / 500.0;
 	errThresh = .01;
 
 	etGrid = errThresh / err2grid;	/* set error parameters */
@@ -1105,9 +1105,9 @@ void TVTerrain::buildSurface(FPoint3 &eyepos_ogl)
 
 void TVTerrain::emitSurface()
 {
-  numDisplayTri = 0;
-  emitDFS(&rootL, sw, ne, nw);	/* NW corner of square */
-  emitDFS(&rootR, ne, sw, se);	/* SE corner of square */
+	numDisplayTri = 0;
+	emitDFS(&rootL, sw, ne, nw);	/* NW corner of square */
+	emitDFS(&rootR, ne, sw, se);	/* SE corner of square */
 }
 
 
@@ -1115,30 +1115,30 @@ void TVTerrain::emitSurface()
 
 void TVTerrain::emitDFS(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 {
-  Coord2d mid;
-  TriIndex lt,rt;
+	Coord2d mid;
+	TriIndex lt,rt;
 
-  if (t->s) {
-    if (ONSURFACE(t)) {
-      emitTri(t, p1, p2, p3);
-    } else {
+	if (t->s) {
+		if (ONSURFACE(t)) {
+			emitTri(t, p1, p2, p3);
+		} else {
 
-      /*   assert(!ISLEAF(t)); */
+			/*   assert(!ISLEAF(t)); */
 
-      midpoint(p1, p2, mid);
-      leftChild(t,&lt);
-      rightChild(t,&rt);
-      emitDFS(&lt, p3, p1, mid);
-      emitDFS(&rt, p2, p3, mid);
-    }
-  }
+			midpoint(p1, p2, mid);
+			leftChild(t,&lt);
+			rightChild(t,&rt);
+			emitDFS(&lt, p3, p1, mid);
+			emitDFS(&rt, p2, p3, mid);
+		}
+	}
 }
 
 
 
 /*
- * emitTri(t, p1, p2, p3) -- emit one triangle
- */
+* emitTri(t, p1, p2, p3) -- emit one triangle
+*/
 void TVTerrain::emitTri(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 {
 	assert(t->s);
@@ -1163,9 +1163,9 @@ void TVTerrain::emitTri(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 // this function is unused
 //
 void TVTerrain::getNormal(int x1, int y1, double sz1,
-		      int x2, int y2, double sz2,
-		      int x3, int y3, double sz3,
-		      double *nxp, double *nyp, double *nzp)
+						  int x2, int y2, double sz2,
+						  int x3, int y3, double sz3,
+						  double *nxp, double *nyp, double *nzp)
 {
 	double px, py, pz, len;
 
