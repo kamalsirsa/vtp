@@ -3,7 +3,7 @@
 //
 // Implementation animation path capabilities.
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project
+// Copyright (c) 2004-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -414,6 +414,9 @@ bool vtAnimPath::Read(const char *fname)
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	// Clear before loading
+	Empty();
 
 	AnimPathVisitor visitor(this);
 	try
