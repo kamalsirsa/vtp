@@ -24,24 +24,24 @@ unsigned short int MiniDatabuf::INTEL_CHECK=1;
 
 // default constructor
 MiniDatabuf::MiniDatabuf()
-   {
-   xsize=ysize=zsize=0;
-   tsteps=0;
-   type=0;
+{
+	xsize=ysize=zsize=0;
+	tsteps=0;
+	type=0;
 
-   swx=swy=0.0f;
-   nwx=nwy=0.0f;
-   nex=ney=0.0f;
-   sex=sey=0.0f;
-   h0=dh=0.0f;
-   t0=dt=0.0f;
+	swx=swy=0.0f;
+	nwx=nwy=0.0f;
+	nex=ney=0.0f;
+	sex=sey=0.0f;
+	h0=dh=0.0f;
+	t0=dt=0.0f;
 
-   scaling=1.0f;
-   bias=0.0f;
+	scaling=1.0f;
+	bias=0.0f;
 
-   data=NULL;
-   bytes=0;
-   }
+	data=NULL;
+	bytes=0;
+}
 
 MiniDatabuf::~MiniDatabuf()
 {
@@ -67,178 +67,178 @@ void MiniDatabuf::set_LLWGS84extents(float left, float right, float bottom, floa
 
 // allocate a new memory chunk
 void MiniDatabuf::alloc(unsigned int xs,unsigned int ys,unsigned int zs,unsigned int ts,unsigned int ty)
-   {
-   unsigned int bs,cs;
+{
+	unsigned int bs,cs;
 
-   unsigned char *byteptr;
-   short int *shortptr;
-   float *floatptr;
+	unsigned char *byteptr;
+	short int *shortptr;
+	float *floatptr;
 
-   unsigned int count;
+	unsigned int count;
 
-   if (ty==0) bs=1;
-   else if (ty==1) bs=2;
-   else if (ty==2) bs=4;
-   else if (ty==3) bs=3;
-   else if (ty==4) bs=3;
-   else if (ty==5) bs=4;
-   else if (ty==6) bs=4;
-   else ERRORMSG();
+	if (ty==0) bs=1;
+	else if (ty==1) bs=2;
+	else if (ty==2) bs=4;
+	else if (ty==3) bs=3;
+	else if (ty==4) bs=3;
+	else if (ty==5) bs=4;
+	else if (ty==6) bs=4;
+	else ERRORMSG();
 
-   cs=xs*ys*zs*ts;
-   bs*=cs;
+	cs=xs*ys*zs*ts;
+	bs*=cs;
 
-   if (ty==4 || ty==6) bs/=6;
+	if (ty==4 || ty==6) bs/=6;
 
-   if ((data=malloc(bs))==NULL) ERRORMSG();
+	if ((data=malloc(bs))==NULL) ERRORMSG();
 
-   if (ty==1)
-      for (shortptr=(short int *)data,count=0; count<cs; count++) *shortptr++=0;
-   else if (ty==2)
-      for (floatptr=(float *)data,count=0; count<cs; count++) *floatptr++=0.0f;
-   else
-      for (byteptr=(unsigned char *)data,count=0; count<bs; count++) *byteptr++=0;
+	if (ty==1)
+		for (shortptr=(short int *)data,count=0; count<cs; count++) *shortptr++=0;
+	else if (ty==2)
+		for (floatptr=(float *)data,count=0; count<cs; count++) *floatptr++=0.0f;
+	else
+		for (byteptr=(unsigned char *)data,count=0; count<bs; count++) *byteptr++=0;
 
-   bytes=bs;
+	bytes=bs;
 
-   xsize=xs;
-   ysize=ys;
-   zsize=zs;
-   tsteps=ts;
-   type=ty;
-   }
+	xsize=xs;
+	ysize=ys;
+	zsize=zs;
+	tsteps=ts;
+	type=ty;
+}
 
 // reset buffer
 void MiniDatabuf::reset()
-   {
-   data=NULL;
-   bytes=0;
-   }
+{
+	data=NULL;
+	bytes=0;
+}
 
 // release buffer
 void MiniDatabuf::release()
-   {
-   if (data!=NULL) free(data);
+{
+	if (data!=NULL) free(data);
 
-   data=NULL;
-   bytes=0;
-   }
+	data=NULL;
+	bytes=0;
+}
 
 // data is saved in MSB format
 void MiniDatabuf::savedata(const char *filename)
-   {
-   FILE *file;
+{
+	FILE *file;
 
-   if (data==NULL) return;
+	if (data==NULL) return;
 
-   if (bytes==0) ERRORMSG();
+	if (bytes==0) ERRORMSG();
 
-   if ((file=vtFileOpen(filename,"wb"))==NULL) ERRORMSG();
+	if ((file=vtFileOpen(filename,"wb"))==NULL) ERRORMSG();
 
-   // save magic identifier
-   fprintf(file,"MAGIC=%d\n",MAGIC);
+	// save magic identifier
+	fprintf(file,"MAGIC=%d\n",MAGIC);
 
-   // save mandatory metadata
-   fprintf(file,"xsize=%d\n",xsize);
-   fprintf(file,"ysize=%d\n",ysize);
-   fprintf(file,"zsize=%d\n",zsize);
-   fprintf(file,"tsteps=%d\n",tsteps);
-   fprintf(file,"type=%d\n",type);
+	// save mandatory metadata
+	fprintf(file,"xsize=%d\n",xsize);
+	fprintf(file,"ysize=%d\n",ysize);
+	fprintf(file,"zsize=%d\n",zsize);
+	fprintf(file,"tsteps=%d\n",tsteps);
+	fprintf(file,"type=%d\n",type);
 
-   // save optional metadata
-   fprintf(file,"swx=%f\n",swx);
-   fprintf(file,"swy=%f\n",swy);
-   fprintf(file,"nwx=%f\n",nwx);
-   fprintf(file,"nwy=%f\n",nwy);
-   fprintf(file,"nex=%f\n",nex);
-   fprintf(file,"ney=%f\n",ney);
-   fprintf(file,"sex=%f\n",sex);
-   fprintf(file,"sey=%f\n",sey);
-   fprintf(file,"h0=%f\n",h0);
-   fprintf(file,"dh=%f\n",dh);
-   fprintf(file,"t0=%f\n",t0);
-   fprintf(file,"dt=%f\n",dt);
+	// save optional metadata
+	fprintf(file,"swx=%f\n",swx);
+	fprintf(file,"swy=%f\n",swy);
+	fprintf(file,"nwx=%f\n",nwx);
+	fprintf(file,"nwy=%f\n",nwy);
+	fprintf(file,"nex=%f\n",nex);
+	fprintf(file,"ney=%f\n",ney);
+	fprintf(file,"sex=%f\n",sex);
+	fprintf(file,"sey=%f\n",sey);
+	fprintf(file,"h0=%f\n",h0);
+	fprintf(file,"dh=%f\n",dh);
+	fprintf(file,"t0=%f\n",t0);
+	fprintf(file,"dt=%f\n",dt);
 
-   // save optional scaling
-   fprintf(file,"scaling=%f\n",scaling);
-   fprintf(file,"bias=%f\n",bias);
+	// save optional scaling
+	fprintf(file,"scaling=%f\n",scaling);
+	fprintf(file,"bias=%f\n",bias);
 
-   // save length of data chunk
-   fprintf(file,"bytes=%u\n",bytes);
+	// save length of data chunk
+	fprintf(file,"bytes=%u\n",bytes);
 
-   // write zero byte
-   fputc(0, file);
+	// write zero byte
+	fputc(0, file);
 
-   // save data chunk
-   if (*((unsigned char *)(&INTEL_CHECK))==0)
-      {
-      if (fwrite(data,bytes,1,file)!=1) ERRORMSG();
-      fclose(file);
-      }
-   else
-      {
-      swapbytes();
-      if (fwrite(data,bytes,1,file)!=1) ERRORMSG();
-      swapbytes();
+	// save data chunk
+	if (*((unsigned char *)(&INTEL_CHECK))==0)
+	{
+		if (fwrite(data,bytes,1,file)!=1) ERRORMSG();
+		fclose(file);
+	}
+	else
+	{
+		swapbytes();
+		if (fwrite(data,bytes,1,file)!=1) ERRORMSG();
+		swapbytes();
 
-      fclose(file);
-      }
-   }
+		fclose(file);
+	}
+}
 
 // swap byte ordering between MSB and LSB
 void MiniDatabuf::swapbytes()
-   {
-   unsigned int i,b;
+{
+	unsigned int i,b;
 
-   unsigned char *ptr,tmp;
+	unsigned char *ptr,tmp;
 
-   if (type==0 || (type>=3 && type<=6)) return;
+	if (type==0 || (type>=3 && type<=6)) return;
 
-   if (type==1) b=2;
-   else if (type==2) b=4;
-   else ERRORMSG();
+	if (type==1) b=2;
+	else if (type==2) b=4;
+	else ERRORMSG();
 
-   if (bytes==0 || bytes%b!=0) ERRORMSG();
+	if (bytes==0 || bytes%b!=0) ERRORMSG();
 
-   ptr=(unsigned char *)data+bytes;
+	ptr=(unsigned char *)data+bytes;
 
-   while (ptr!=data)
-      {
-      ptr-=b;
+	while (ptr!=data)
+	{
+		ptr-=b;
 
-      for (i=0; i<(b>>1); i++)
-         {
-         tmp=ptr[i];
-         ptr[i]=ptr[b-1-i];
-         ptr[b-1-i]=tmp;
-         }
-      }
-   }
+		for (i=0; i<(b>>1); i++)
+		{
+			tmp=ptr[i];
+			ptr[i]=ptr[b-1-i];
+			ptr[b-1-i]=tmp;
+		}
+	}
+}
 
 int mapEPSG2MINI(int epsgdatum)
-   {
-   static const int NAD27=1;
-   static const int WGS72=2;
-   static const int WGS84=3;
-   static const int NAD83=4;
-   static const int SPHERE=5;
-   static const int ED50=6;
-   static const int ED79=7;
-   static const int OHD=8;
+{
+	static const int NAD27=1;
+	static const int WGS72=2;
+	static const int WGS84=3;
+	static const int NAD83=4;
+	static const int SPHERE=5;
+	static const int ED50=6;
+	static const int ED79=7;
+	static const int OHD=8;
 
-   switch (epsgdatum)
-      {
-      case 6608: return(NAD27);
-      case 6322: return(WGS72);
-      case 6326: return(WGS84);
-      case 6269: return(NAD83);
-      case 6230: return(ED50);
-      case 6231: return(ED79);
-      case 6135: return(OHD);
-      }
+	switch (epsgdatum)
+	{
+	case 6608: return(NAD27);
+	case 6322: return(WGS72);
+	case 6326: return(WGS84);
+	case 6269: return(NAD83);
+	case 6230: return(ED50);
+	case 6231: return(ED79);
+	case 6135: return(OHD);
+	}
 
-   return(SPHERE);
-   }
+	return(SPHERE);
+}
 
 bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 						const DRECT &area, const vtProjection &proj,
@@ -289,43 +289,43 @@ bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 		}
 	}
 
-   // create a transformation that will map from the current projection to Lat/Lon WGS84
-   vtProjection proj_llwgs84;
-   proj_llwgs84.SetWellKnownGeogCS("WGS84");
-   OCT *LLWGS84transform=CreateCoordTransform(&proj,&proj_llwgs84);
+	// create a transformation that will map from the current projection to Lat/Lon WGS84
+	vtProjection proj_llwgs84;
+	proj_llwgs84.SetWellKnownGeogCS("WGS84");
+	OCT *LLWGS84transform=CreateCoordTransform(&proj,&proj_llwgs84);
 
-   // write center point of the tileset in Lat/Lon WGS84
-   // this is helpful for libMini to compute an approximate translation
-   double cx=(area.left+area.right)/2;
-   double cy=(area.bottom+area.top)/2;
-   if (LLWGS84transform->Transform(1,&cx,&cy)==1)
-      fprintf(fp, "CenterPoint_LLWGS84=(%.16lg,%.16lg)\n",cx,cy);
+	// write center point of the tileset in Lat/Lon WGS84
+	// this is helpful for libMini to compute an approximate translation
+	double cx=(area.left+area.right)/2;
+	double cy=(area.bottom+area.top)/2;
+	if (LLWGS84transform->Transform(1,&cx,&cy)==1)
+		fprintf(fp, "CenterPoint_LLWGS84=(%.16lg,%.16lg)\n",cx,cy);
 
-   // write north point of the tileset in Lat/Lon WGS84
-   // this is helpful for libMini to compute an approximate rotation
-   double nx=(area.left+area.right)/2;
-   double ny=area.top;
-   if (LLWGS84transform->Transform(1,&nx,&ny)==1)
-      fprintf(fp, "NorthPoint_LLWGS84=(%.16lg,%.16lg)\n",nx,ny);
+	// write north point of the tileset in Lat/Lon WGS84
+	// this is helpful for libMini to compute an approximate rotation
+	double nx=(area.left+area.right)/2;
+	double ny=area.top;
+	if (LLWGS84transform->Transform(1,&nx,&ny)==1)
+		fprintf(fp, "NorthPoint_LLWGS84=(%.16lg,%.16lg)\n",nx,ny);
 
-   // delete Lat/Lon WGS84 transformation
-   delete LLWGS84transform;
+	// delete Lat/Lon WGS84 transformation
+	delete LLWGS84transform;
 
-   // write Lat/Lon info
-   // this is helpful for libMini to easily identify geo-graphic coordinates
-   int latlon=proj.IsGeographic();
-   int llepsgdatum=proj.GetDatum();
-   int lldatum=mapEPSG2MINI(llepsgdatum);
-   fprintf(fp, "CoordSys_LL=(%d,%d)\n",latlon,(latlon!=0)?lldatum:0);
+	// write Lat/Lon info
+	// this is helpful for libMini to easily identify geo-graphic coordinates
+	int latlon=proj.IsGeographic();
+	int llepsgdatum=proj.GetDatum();
+	int lldatum=mapEPSG2MINI(llepsgdatum);
+	fprintf(fp, "CoordSys_LL=(%d,%d)\n",latlon,(latlon!=0)?lldatum:0);
 
-   // write UTM zone and datum
-   // this is helpful for libMini to easily identify UTM coordinates
-   int utmzone=proj.GetUTMZone();
-   int utmepsgdatum=proj.GetDatum();
-   int utmdatum=mapEPSG2MINI(utmepsgdatum);
-   fprintf(fp, "CoordSys_UTM=(%d,%d)\n",utmzone,utmdatum);
+	// write UTM zone and datum
+	// this is helpful for libMini to easily identify UTM coordinates
+	int utmzone=proj.GetUTMZone();
+	int utmepsgdatum=proj.GetDatum();
+	int utmdatum=mapEPSG2MINI(utmepsgdatum);
+	fprintf(fp, "CoordSys_UTM=(%d,%d)\n",utmzone,utmdatum);
 
-   fclose(fp);
+	fclose(fp);
 
 	return true;
 }

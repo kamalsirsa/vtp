@@ -15,7 +15,7 @@ static int _days[] = {
 	-1, 30, 58, 89, 119, 150, 180, 211, 242, 272, 303, 333, 364
 };
 #define ChkAdd(dest, src1, src2)   ( ((src1 >= 0L) && (src2 >= 0L) \
-    && (dest < 0L)) || ((src1 < 0L) && (src2 < 0L) && (dest >= 0L)) )
+	&& (dest < 0L)) || ((src1 < 0L) && (src2 < 0L) && (dest >= 0L)) )
 #define ChkMul(dest, src1, src2)   ( src1 ? (dest/src1 != src2) : 0 )
 
 /*

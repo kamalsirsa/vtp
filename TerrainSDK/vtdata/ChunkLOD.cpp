@@ -1061,8 +1061,8 @@ namespace mesh {
 
 	// Utility function, to output the quantized data for a vertex.
 	static void	write_vertex(FILE* rw, heightfield& hf,
-				     int level, const FPoint3& box_center, const FPoint3& compress_factor,
-				     const vert_info& v)
+					 int level, const FPoint3& box_center, const FPoint3& compress_factor,
+					 const vert_info& v)
 	{
 		short	x, y, z;
 

@@ -832,7 +832,7 @@ public:
 			   bottom > r2.top ||
 			r2.bottom >    top)
 			 return false;
-        else
+		else
 			return true;
 	}
 	void Grow(double x, double y)

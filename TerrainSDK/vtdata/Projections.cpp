@@ -1410,7 +1410,7 @@ bool GDALWrapper::FindPROJ4SO()
 	soExtension = ".so";
 #endif
 
-    vtString fname = FindFileOnPaths(dpso, soName + soExtension);
+	vtString fname = FindFileOnPaths(dpso, soName + soExtension);
 	FILE *fp = (fname != "") ? vtFileOpen((const char *)fname, "rb") : NULL;
 	if (fp == NULL)
 		return false;
