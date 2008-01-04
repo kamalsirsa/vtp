@@ -25,7 +25,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for EphemDlg
 	wxSlider* GetSliderFogDistance()  { return (wxSlider*) FindWindow( ID_SLIDER_FOG_DISTANCE ); }
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }

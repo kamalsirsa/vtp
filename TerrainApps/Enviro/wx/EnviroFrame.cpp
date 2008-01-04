@@ -286,8 +286,8 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	VTLOG1("Frame constructor.\n");
 	m_bCloseOnIdle = false;
 
-    // tell wxAuiManager to manage this frame
-    m_mgr.SetManagedWindow(this);
+	// tell wxAuiManager to manage this frame
+	m_mgr.SetManagedWindow(this);
 
 #if WIN32
 	// Give it an icon
@@ -373,9 +373,9 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	if (m_canvas)
 		m_canvas->SetCurrent();
 
-    m_mgr.AddPane(m_canvas, wxAuiPaneInfo().
-                  Name(wxT("canvas")).Caption(wxT("Canvas")).
-                  CenterPane());
+	m_mgr.AddPane(m_canvas, wxAuiPaneInfo().
+				  Name(wxT("canvas")).Caption(wxT("Canvas")).
+				  CenterPane());
 	m_mgr.Update();
 }
 
@@ -383,7 +383,7 @@ EnviroFrame::~EnviroFrame()
 {
 	VTLOG("Deleting Frame\n");
 
-    m_mgr.UnInit();
+	m_mgr.UnInit();
 
 	delete m_canvas;
 	delete m_pSceneGraphDlg;
@@ -581,7 +581,7 @@ void EnviroFrame::CreateToolbar()
 
 	// Create
 	m_pToolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                   style);
+					               style);
 	m_pToolbar->SetMargins(1, 1);
 	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
 
@@ -607,7 +607,7 @@ void EnviroFrame::CreateToolbar()
 	wxSize best = m_pToolbar->GetBestSize();
 	api.MinSize(best);
 	api.Floatable(false);
-    m_mgr.AddPane(m_pToolbar, api);
+	m_mgr.AddPane(m_pToolbar, api);
 	m_mgr.Update();
 }
 
@@ -1447,8 +1447,8 @@ void EnviroFrame::Snapshot(bool bNumbered)
 
 	vtImage *pImage = new vtImage;
 	pImage->Create(size.x, size.y, 24);
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glReadPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glReadPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
 
 	wxString use_name;
 	if (!bNumbered || (bNumbered && m_strSnapshotFilename == _T("")))

@@ -30,7 +30,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for OptionsDlg
 	wxTextCtrl* GetSelectionRadius()  { return (wxTextCtrl*) FindWindow( ID_SELECTION_RADIUS ); }
 	wxTextCtrl* GetSelectionCutoff()  { return (wxTextCtrl*) FindWindow( ID_SELECTION_CUTOFF ); }

@@ -25,7 +25,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for CameraDlg
 	wxStaticText* GetFovText()  { return (wxStaticText*) FindWindow( ID_FOV_TEXT ); }
 	wxCheckBox* GetAccel()  { return (wxCheckBox*) FindWindow( ID_ACCEL ); }

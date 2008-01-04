@@ -25,17 +25,17 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	void OnInitDialog(wxInitDialogEvent& event);
 
 	// WDR: method declarations for UtilDlg
 	wxChoice *GetStructtype()  { return (wxChoice*) FindWindow( ID_STRUCTTYPE ); }
-	
+
 private:
 	// WDR: member variable declarations for UtilDlg
 	wxChoice *m_pChoice;
 	int m_iType;
-	
+
 private:
 	// WDR: handler declarations for UtilDlg
 	void OnStructType( wxCommandEvent &event );

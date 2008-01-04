@@ -94,7 +94,7 @@ void PlantDlg::SetLang(const wxString &strTwoLetterLangCode)
 	m_strLang = strTwoLetterLangCode.Left(2);
 }
 
-void PlantDlg::SetPlantList(vtSpeciesList3d *plants)	
+void PlantDlg::SetPlantList(vtSpeciesList3d *plants)
 {
 	VTLOG1("PlantDlg SetPlantList: ");
 	if (plants)
@@ -358,7 +358,7 @@ void PlantDlg::OnRadio( wxCommandEvent &event )
 	if (GetPlantIndividual()->GetValue()) m_opt.m_iMode = 0;
 	if (GetPlantLinear()->GetValue()) m_opt.m_iMode = 1;
 	if (GetPlantContinuous()->GetValue()) m_opt.m_iMode = 2;
-	
+
 	g_App.SetPlantOptions(m_opt);
 }
 

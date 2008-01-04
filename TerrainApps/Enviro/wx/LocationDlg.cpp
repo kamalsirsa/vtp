@@ -67,7 +67,7 @@ BEGIN_EVENT_TABLE(LocationDlg,AutoDialog)
 	EVT_CHECKBOX( ID_ACTIVE, LocationDlg::OnActive )
 	EVT_SLIDER( ID_ANIM_POS, LocationDlg::OnAnimPosSlider )
 	EVT_TREE_SEL_CHANGED( ID_ANIMTREE, LocationDlg::OnTreeSelChanged )
-    EVT_TREE_KEY_DOWN( ID_ANIMTREE, LocationDlg::OnTreeKeyDown )
+	EVT_TREE_KEY_DOWN( ID_ANIMTREE, LocationDlg::OnTreeKeyDown )
 END_EVENT_TABLE()
 
 LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title,

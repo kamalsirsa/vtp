@@ -28,7 +28,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// This dialog can operate on a featureset in memory.  If you do not give
 	//  it a featureset, it will assume the layer's filename is a SHP on disk
 	//  and use that instead.

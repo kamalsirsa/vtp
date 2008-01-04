@@ -26,7 +26,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	void SetParams(const TParams &Params);
 	void GetParams(TParams &Params);
 	void UpdateFilenameBases();
@@ -49,7 +49,7 @@ public:
 
 private:
 	// WDR: member variable declarations for TextureDlg
-	
+
 	// texture
 	int	 m_iTexture;
 	int	 m_iTilesize;

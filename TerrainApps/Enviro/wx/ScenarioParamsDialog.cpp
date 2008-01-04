@@ -49,7 +49,7 @@ void CScenarioParamsDialog::OnScenarioNameText( wxCommandEvent &event )
 
 void CScenarioParamsDialog::OnScenarioAvailableLayers( wxCommandEvent &event )
 {
-	UpdateEnableState();	
+	UpdateEnableState();
 }
 
 void CScenarioParamsDialog::OnScenarioVisibleLayers( wxCommandEvent &event )

@@ -969,7 +969,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (i = 0; i < m_TextureFiles.size(); i++)
 	{
 		wxString str(m_TextureFiles[i], wxConvUTF8);
-        m_pTextureFileSingle->Append(str);
+		m_pTextureFileSingle->Append(str);
 	}
 	sel = m_pTextureFileSingle->FindString(m_strTextureSingle);
 	if (sel != -1)
@@ -1461,7 +1461,7 @@ void TParamsDlg::OnEditScenario( wxCommandEvent &event )
 {
 	CScenarioParamsDialog ScenarioParamsDialog(this, -1, _("Scenario Parameters"));
 	int iSelected = m_pScenarioList->GetSelection();
-	
+
 	if (iSelected != wxNOT_FOUND)
 	{
 		vtStringArray lnames;

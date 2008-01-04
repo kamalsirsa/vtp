@@ -28,7 +28,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 	void AddOkCancel();
-	
+
 	void OnInitDialog(wxInitDialogEvent& event);
 
 	// WDR: method declarations for TimeDlg

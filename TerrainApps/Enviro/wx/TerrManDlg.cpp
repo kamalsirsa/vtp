@@ -118,7 +118,7 @@ void TerrainManagerDlg::RefreshTreeText()
 	wxTreeItemId i1, i2;
 	TParams params;
 
-    wxTreeItemIdValue cookie1, cookie2;
+	wxTreeItemIdValue cookie1, cookie2;
 	for (i1 = m_pTree->GetFirstChild(m_Root, cookie1); i1.IsOk(); i1 = m_pTree->GetNextChild(i1, cookie1))
 	{
 		for (i2 = m_pTree->GetFirstChild(i1, cookie2); i2.IsOk(); i2 = m_pTree->GetNextChild(i2, cookie2))
@@ -286,28 +286,28 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 	vtGetDataPath().push_back(path);
 	vtSaveDataPath();
 
-    // To be helpful, also create most of the standard sub-directories
-    vtString SubDirectory;
-    SubDirectory = path + vtString("BuildingData");
-    vtCreateDir(SubDirectory);
-    SubDirectory = path + vtString("BuildingModels");
-    vtCreateDir(SubDirectory);
-    SubDirectory = path + vtString("Culture");
-    vtCreateDir(SubDirectory);
-    SubDirectory = path + vtString("Elevation");
-    vtCreateDir(SubDirectory);
-    SubDirectory = path + vtString("GeoSpecific");
-    vtCreateDir(SubDirectory);
-    SubDirectory = path + vtString("Locations");
-    vtCreateDir(SubDirectory);
-    SubDirectory = path + vtString("PlantData");
-    vtCreateDir(SubDirectory);
-    SubDirectory = path + vtString("PointData");
-    vtCreateDir(SubDirectory);
-    SubDirectory = path + vtString("RoadData");
-    vtCreateDir(SubDirectory);
-    SubDirectory = path + vtString("Terrains");
-    vtCreateDir(SubDirectory);
+	// To be helpful, also create most of the standard sub-directories
+	vtString SubDirectory;
+	SubDirectory = path + vtString("BuildingData");
+	vtCreateDir(SubDirectory);
+	SubDirectory = path + vtString("BuildingModels");
+	vtCreateDir(SubDirectory);
+	SubDirectory = path + vtString("Culture");
+	vtCreateDir(SubDirectory);
+	SubDirectory = path + vtString("Elevation");
+	vtCreateDir(SubDirectory);
+	SubDirectory = path + vtString("GeoSpecific");
+	vtCreateDir(SubDirectory);
+	SubDirectory = path + vtString("Locations");
+	vtCreateDir(SubDirectory);
+	SubDirectory = path + vtString("PlantData");
+	vtCreateDir(SubDirectory);
+	SubDirectory = path + vtString("PointData");
+	vtCreateDir(SubDirectory);
+	SubDirectory = path + vtString("RoadData");
+	vtCreateDir(SubDirectory);
+	SubDirectory = path + vtString("Terrains");
+	vtCreateDir(SubDirectory);
 
 	RefreshTreeContents();
 }

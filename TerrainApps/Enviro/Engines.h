@@ -168,7 +168,7 @@ public:
 	MapOverviewEngine();
 	~MapOverviewEngine();
 
-    void OnMouse(vtMouseEvent &event);	
+	void OnMouse(vtMouseEvent &event);
 	void Eval();
 
 	void ShowMapOverview(bool bShow) { m_pMapGroup->SetEnabled(bShow); }

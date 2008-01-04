@@ -30,7 +30,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for LODDlg
 	wxTextCtrl* GetTileStatus()  { return (wxTextCtrl*) FindWindow( ID_TILE_STATUS ); }
 	wxSpinCtrl* GetTarget()  { return (wxSpinCtrl*) FindWindow( ID_TARGET ); }

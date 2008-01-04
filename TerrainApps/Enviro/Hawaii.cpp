@@ -86,20 +86,20 @@ class psGeodeTransform : public osg::MatrixTransform
 public:
    class psGeodeTransformCallback : public osg::NodeCallback
    {
-      virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
-      {
-         if ( psGeodeTransform* geodetrans = dynamic_cast<psGeodeTransform*>( node ) )
-         {
-            osg::NodePath fullNodePath = nv->getNodePath();
-            fullNodePath.pop_back();
+	  virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+	  {
+		 if ( psGeodeTransform* geodetrans = dynamic_cast<psGeodeTransform*>( node ) )
+		 {
+			osg::NodePath fullNodePath = nv->getNodePath();
+			fullNodePath.pop_back();
 
-            osg::Matrix localCoordMat = osg::computeLocalToWorld( fullNodePath );
-            osg::Matrix inverseOfAccum = osg::Matrix::inverse( localCoordMat );
+			osg::Matrix localCoordMat = osg::computeLocalToWorld( fullNodePath );
+			osg::Matrix inverseOfAccum = osg::Matrix::inverse( localCoordMat );
 
-            geodetrans->setMatrix( inverseOfAccum );
-         }
-         traverse(node, nv);
-      }
+			geodetrans->setMatrix( inverseOfAccum );
+		 }
+		 traverse(node, nv);
+	  }
    };
    psGeodeTransform() {setUpdateCallback( new psGeodeTransformCallback() );}
 
@@ -109,14 +109,14 @@ class findGeodeVisitor : public osg::NodeVisitor
 public:
    findGeodeVisitor() : osg::NodeVisitor(TRAVERSE_ALL_CHILDREN)
    {
-      foundGeode = NULL;
+	  foundGeode = NULL;
    }
    virtual void apply(osg::Node &searchNode)
    {
-      if (osg::Geode* g = dynamic_cast<osg::Geode*> (&searchNode) )
-         foundGeode = g;
-      else
-         traverse(searchNode);
+	  if (osg::Geode* g = dynamic_cast<osg::Geode*> (&searchNode) )
+		 foundGeode = g;
+	  else
+		 traverse(searchNode);
    }
    osg::Geode* getGeode() {return foundGeode;}
 protected:
@@ -127,21 +127,21 @@ class particleSystemHelper : public osg::Group
 public:
    particleSystemHelper(osg::Group* psGroup) : osg::Group(*psGroup)
    {
-      findGeodeVisitor* fg = new findGeodeVisitor();
-      accept(*fg);
-      osg::Geode* psGeode = fg->getGeode();
-      psGeodeXForm = new psGeodeTransform();
-      psGeodeXForm->addChild (psGeode);
-      replaceChild(psGeode,psGeodeXForm);
+	  findGeodeVisitor* fg = new findGeodeVisitor();
+	  accept(*fg);
+	  osg::Geode* psGeode = fg->getGeode();
+	  psGeodeXForm = new psGeodeTransform();
+	  psGeodeXForm->addChild (psGeode);
+	  replaceChild(psGeode,psGeodeXForm);
    }
    void addEffect(osg::Group* psGroup)
    {
-      this->addChild(psGroup);
-      findGeodeVisitor* fg = new findGeodeVisitor();
-      psGroup->accept(*fg);
-      osg::Geode* psGeode = fg->getGeode();
-      psGeodeXForm->addChild(psGeode);
-      psGroup->removeChild( psGroup->getChildIndex(psGeode) );
+	  this->addChild(psGroup);
+	  findGeodeVisitor* fg = new findGeodeVisitor();
+	  psGroup->accept(*fg);
+	  osg::Geode* psGeode = fg->getGeode();
+	  psGeodeXForm->addChild(psGeode);
+	  psGroup->removeChild( psGroup->getChildIndex(psGeode) );
    }
 protected:
    psGeodeTransform* psGeodeXForm;

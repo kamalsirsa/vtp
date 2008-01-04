@@ -22,7 +22,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for BuildingDlg
 	void Setup(vtBuilding3d *bld3d, vtHeightField3d *pHeightField);
 

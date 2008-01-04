@@ -90,7 +90,7 @@ public:
 
 #ifdef __WXMSW__
 	// Catch special events, or calls an appropriate default window procedure
-    virtual WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
+	virtual WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
 #endif
 
 protected:
@@ -294,7 +294,7 @@ public:
 	std::vector<FeatureTableDlg3d*> m_FeatureDlgs;
 
 protected:
-    wxAuiManager m_mgr;
+	wxAuiManager m_mgr;
 
 	bool m_bAlwaysMove;
 	bool m_bCulleveryframe;

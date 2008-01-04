@@ -28,7 +28,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	void GetOptionsFrom(EnviroOptions &opt);
 	void PutOptionsTo(EnviroOptions &opt);
 	void UpdateState();

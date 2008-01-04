@@ -68,7 +68,7 @@ END_MESSAGE_MAP()
 BOOL CCameraDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	
+
 	UpdateValues();
 	m_Hither.SetRange(0, 1000);
 	m_Hither.SetTicFreq((int)(1000.0f/EXP_RANGE));

@@ -34,7 +34,7 @@ public:
 	virtual bool TransferFromWindow();
 
 protected:
-	std::vector<ScenarioParams> *m_pScenarios;	
+	std::vector<ScenarioParams> *m_pScenarios;
 };
 
 //----------------------------------------------------------------------------
@@ -64,10 +64,10 @@ public:
 	wxButton* GetDeleteScenario()  { return (wxButton*) FindWindow( ID_DELETE_SCENARIO ); }
 	wxButton* GetNewScenario()  { return (wxButton*) FindWindow( ID_NEW_SCENARIO ); }
 	wxListBox* GetScenarioList()  { return (wxListBox*) FindWindow( ID_SCENARIO_LIST ); }
-	
+
 private:
 	// WDR: member variable declarations for CScenarioSelectDialog
-	
+
 private:
 	// WDR: handler declarations for CScenarioSelectDialog
 	void OnScenarioNext( wxCommandEvent &event );
@@ -88,7 +88,7 @@ private:
 
 protected:
 	void UpdateEnableState();
-	vtTerrain *m_pTerrain;	
+	vtTerrain *m_pTerrain;
 	std::vector<ScenarioParams> m_Scenarios;
 };
 

@@ -116,9 +116,9 @@ LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 				  CenterPane());
 	m_mgr.Update();
 
-    wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
+	wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
 	m_pTree = new wxTreeCtrl( m_main, ID_LAYER_TREE, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_LINES_AT_ROOT|wxSUNKEN_BORDER );
-    item0->Add( m_pTree, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	item0->Add( m_pTree, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	wxSizer *top = item0;
 
 	m_main->SetSizer( item0 );
@@ -135,7 +135,7 @@ LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 LayerDlg::~LayerDlg()
 {
-    m_mgr.UnInit();
+	m_mgr.UnInit();
 
 	delete m_imageListNormal;
 }
@@ -925,7 +925,7 @@ void LayerDlg::UpdateEnabling()
 		// We can save a structure layer if it is selected
 		if (data->m_type == LT_STRUCTURE && slay)
 			bRemovable = bSaveable = true;
-		
+
 		// We can save always save or remove an abstract layer
 		if (data->m_type == LT_ABSTRACT)
 			bRemovable = bSaveable = true;

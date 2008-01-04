@@ -105,7 +105,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 	~LayerDlg();
-	
+
 	// WDR: method declarations for LayerDlg
 	void RefreshTreeContents();
 	void RefreshTreeTerrain();
@@ -128,7 +128,7 @@ private:
 	bool	m_bShowAll;
 
 private:
-    wxAuiManager m_mgr;
+	wxAuiManager m_mgr;
 	wxPanel *m_main;
 	wxToolBar *m_pToolbar;
 

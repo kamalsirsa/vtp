@@ -26,7 +26,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for CScenarioParamsDialog
 	wxTextCtrl* GetScenarioName()  { return (wxTextCtrl*) FindWindow( ID_SCENARIO_NAME ); }
 	wxButton* GetScenarioRemoveVisibleLayer()  { return (wxButton*) FindWindow( ID_SCENARIO_REMOVE_VISIBLE_LAYER ); }
@@ -41,10 +41,10 @@ public:
 	}
 	void SetAvailableLayers(vtStringArray& Layers) { m_Layers = Layers; }
 	bool IsModified() { return m_bModified; }
-	
+
 private:
 	// WDR: member variable declarations for CScenarioParamsDialog
-	
+
 private:
 	// WDR: handler declarations for CScenarioParamsDialog
 	void OnScenarioNameText( wxCommandEvent &event );

@@ -693,11 +693,11 @@ void MapOverviewEngine::OnMouse(vtMouseEvent &event)
 		FPoint3 NewPos((position.x - MapMargin) / ratioMapTerrain, 0,
 			-(position.y - MapMargin) / ratioMapTerrain);
 		cam->SetTrans(NewPos);
-	
+
 		// Set camera direction towards previous point
 		cam->SetDirection(FPoint3((PreviousPosition.x - NewPos.x), 0,
 									PreviousPosition.z - NewPos.z));
-	}	
+	}
 	if(event.button == VT_MIDDLE)
 		m_bDown = !m_bDown;
 }
@@ -798,7 +798,7 @@ void MapOverviewEngine::CreateArrow()
 
 	int ind[7];
 	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 7);
-			
+
 	ind[0] = mesh->AddVertex( 0.0, 0.0, 0.0);
 	ind[1] = mesh->AddVertex( 0.0, 5.0, 0.0);
 	ind[2] = mesh->AddVertex( 0.0,-5.0, 0.0);
@@ -808,12 +808,12 @@ void MapOverviewEngine::CreateArrow()
 	ind[5] = mesh->AddVertex( 5.0,-7.5, 0.0);
 
 	mesh->AddLine(ind[1],ind[2]);
-	mesh->AddLine(ind[1],ind[6]);		
+	mesh->AddLine(ind[1],ind[6]);
 	mesh->AddLine(ind[2],ind[3]);
 	mesh->AddLine(ind[3],ind[6]);
 	mesh->AddLine(ind[1],ind[4]);
 	mesh->AddLine(ind[2],ind[5]);
-	
+
 	m_pArrow->AddChild(arrowGeom);
 
 	// the second argument is the indice of the RGB color added into the material array

@@ -209,7 +209,7 @@ void CScenarioSelectDialog::OnEditScenario( wxCommandEvent &event )
 	wxListBox *pScenarioList = GetScenarioList();
 	CScenarioParamsDialog ScenarioParamsDialog(this, -1, _("Scenario Parameters"));
 	int iSelected = pScenarioList->GetSelection();
-	
+
 	if (iSelected != wxNOT_FOUND)
 	{
 		vtStringArray lnames;

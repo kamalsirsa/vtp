@@ -202,7 +202,7 @@ void CameraDlg::GetValues()
 		GetAccel()->Enable(true);
 	}
 	bool bStereo = scene->IsStereo();
-    GetEyeSepSlider()->Enable(bStereo);
+	GetEyeSepSlider()->Enable(bStereo);
 	GetEyeSep()->Enable(bStereo);
 	m_fEyeSep = scene->GetStereoSeparation();
 }
