@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="wxEnviro"
+	Name="wxEnviro-OpenSG"
 	ProjectGUID="{EB511FDC-A380-4724-9A95-7FEAC5561FEA}"
 	RootNamespace="wxEnviro"
 	SccProjectName=""
@@ -42,8 +42,6 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libc.lib,MSVCRTD.lib"
-				GenerateDebugInformation="FALSE"
-				ProgramDatabaseFile=".\Release_Unicode/wxEnviro_u.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
