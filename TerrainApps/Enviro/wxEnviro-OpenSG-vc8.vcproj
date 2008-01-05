@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="wxEnviro"
-	ProjectGUID="{EB511FDC-A380-4724-9A95-7FEAC5561FEA}"
+	Name="wxEnviro-OpenSG"
+	ProjectGUID="{1A903E1E-299A-4860-BAD4-EC7ED94E6733}"
 	RootNamespace="wxEnviro"
 	>
 	<Platforms>
