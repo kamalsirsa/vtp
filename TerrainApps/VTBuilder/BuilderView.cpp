@@ -1,7 +1,7 @@
 //
 // BuilderView.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -216,7 +216,7 @@ void BuilderView::DrawDymaxionOutline(wxDC *pDC)
 
 	for (unsigned int i = 0; i < polys.size(); i++)
 	{
-		DrawLine(pDC, polys[i], true);
+		DrawPolyLine(pDC, polys[i], true);
 	}
 }
 
@@ -572,7 +572,7 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 			if (!bounds.OverlapsRect(WMPolyExtents[i]))
 				continue;
 		}
-		DrawLine(pDC, WMPolyDraw[i], true);
+		DrawPolyLine(pDC, WMPolyDraw[i], true);
 	}
 #else
 	// Draw each poly in WMPolyDraw
@@ -981,7 +981,7 @@ void BuilderView::DrawDistanceTool(wxDC *pDC)
 	{
 		// Path mode
 		// draw the polyline
-		DrawLine(pDC, m_distance_path, false);
+		DrawPolyLine(pDC, m_distance_path, false);
 
 		// draw small crosshairs
 		unsigned int i, len = m_distance_path.GetSize();

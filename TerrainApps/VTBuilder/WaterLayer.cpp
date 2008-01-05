@@ -78,7 +78,7 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	{
 		const vtWaterFeature &feat = GetFeature(i);
 
-		pView->DrawLine(pDC, feat, false);
+		pView->DrawPolyLine(pDC, feat, false);
 	}
 }
 

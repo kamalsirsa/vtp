@@ -195,139 +195,137 @@ const int ID_INSIDE_AREA = 10137;
 wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 const int ID_LAYERNAME = 10138;
-const int ID_ELEVATION_FIELDNAME = 10139;
-const int ID_ELEVATION_UNITS = 10140;
-const int ID_TYPE_BUILDING = 10141;
-const int ID_BUILD_FOUNDATIONS = 10142;
-const int ID_USE_25D = 10143;
+const int ID_TYPE_BUILDING = 10139;
+const int ID_BUILD_FOUNDATIONS = 10140;
+const int ID_USE_25D = 10141;
 wxSizer *ImportStructFuncOGR( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LEVEL_CHOICE = 10144;
+const int ID_LEVEL_CHOICE = 10142;
 wxSizer *LevelSelectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TILING = 10145;
+const int ID_TILING = 10143;
 wxSizer *SampleImageDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_BASE_URL = 10146;
-const int ID_QUERY_LAYERS = 10147;
-const int ID_LIST_LAYERS = 10148;
-const int ID_LAYER_DESC = 10149;
-const int ID_LIST_STYLES = 10150;
-const int ID_STYLE_DESC = 10151;
-const int ID_CHOICE_FORMAT = 10152;
-const int ID_QUERY = 10153;
+const int ID_BASE_URL = 10144;
+const int ID_QUERY_LAYERS = 10145;
+const int ID_LIST_LAYERS = 10146;
+const int ID_LAYER_DESC = 10147;
+const int ID_LIST_STYLES = 10148;
+const int ID_STYLE_DESC = 10149;
+const int ID_CHOICE_FORMAT = 10150;
+const int ID_QUERY = 10151;
 wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_SPLITTER1 = 10154;
+const int ID_SPLITTER1 = 10152;
 wxSizer *SpeciesListFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LISTCTRL_SPECIES = 10155;
+const int ID_LISTCTRL_SPECIES = 10153;
 wxSizer *Species1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LISTCTRL_APPEARANCES = 10156;
+const int ID_LISTCTRL_APPEARANCES = 10154;
 wxSizer *Species2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_THEME = 10157;
-const int ID_MPP = 10158;
+const int ID_THEME = 10155;
+const int ID_MPP = 10156;
 wxSizer *TSDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_GEOTIFF = 10159;
-const int ID_JPEG = 10160;
-const int ID_CHOICE_COLORS = 10161;
-const int ID_EDIT_COLORS = 10162;
-const int ID_SHADING = 10163;
+const int ID_GEOTIFF = 10157;
+const int ID_JPEG = 10158;
+const int ID_CHOICE_COLORS = 10159;
+const int ID_EDIT_COLORS = 10160;
+const int ID_SHADING = 10161;
 wxSizer *RenderBitmapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_LINK_FIELD = 10164;
+const int ID_LINK_FIELD = 10162;
 wxSizer *ImageMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_EASTING = 10165;
-const int ID_NORTHING = 10166;
-const int ID_CHECK_ELEVATION = 10167;
-const int ID_ELEVATION = 10168;
-const int ID_SET_CRS = 10169;
-const int ID_FORMAT_DECIMAL = 10170;
-const int ID_FORMAT_DMS = 10171;
-const int ID_LONGITUDE_WEST = 10172;
+const int ID_EASTING = 10163;
+const int ID_NORTHING = 10164;
+const int ID_CHECK_ELEVATION = 10165;
+const int ID_ELEVATION = 10166;
+const int ID_SET_CRS = 10167;
+const int ID_FORMAT_DECIMAL = 10168;
+const int ID_FORMAT_DMS = 10169;
+const int ID_LONGITUDE_WEST = 10170;
 wxSizer *ImportPointDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_FILE_DATA = 10173;
-const int ID_GET_FILE_DATA = 10174;
-const int ID_CHECK_USE1 = 10175;
-const int ID_CHECK_USE2 = 10176;
-const int ID_FILE_GAZ = 10177;
-const int ID_GET_FILE_GAZ = 10178;
-const int ID_FILE_ZIP = 10179;
-const int ID_GET_FILE_ZIP = 10180;
-const int ID_CHECK_USE3 = 10181;
-const int ID_FILE_GNS = 10182;
-const int ID_GET_FILE_GNS = 10183;
+const int ID_FILE_DATA = 10171;
+const int ID_GET_FILE_DATA = 10172;
+const int ID_CHECK_USE1 = 10173;
+const int ID_CHECK_USE2 = 10174;
+const int ID_FILE_GAZ = 10175;
+const int ID_GET_FILE_GAZ = 10176;
+const int ID_FILE_ZIP = 10177;
+const int ID_GET_FILE_ZIP = 10178;
+const int ID_CHECK_USE3 = 10179;
+const int ID_FILE_GNS = 10180;
+const int ID_GET_FILE_GNS = 10181;
 wxSizer *GeocodeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_DEPTH = 10184;
-const int ID_MAXERROR = 10185;
+const int ID_DEPTH = 10182;
+const int ID_MAXERROR = 10183;
 wxSizer *ChunkDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TEXT_TO_FOLDER = 10186;
-const int ID_COLUMNS = 10187;
-const int ID_ROWS = 10188;
-const int ID_CHOICE_LOD0_SIZE = 10189;
-const int ID_SPIN_NUM_LODS = 10190;
-const int ID_TOTALX = 10191;
-const int ID_TOTALY = 10192;
-const int ID_CURX = 10193;
-const int ID_CURY = 10194;
-const int ID_OMIT_FLAT = 10195;
-const int ID_TC_NONE = 10196;
-const int ID_TC_OGL = 10197;
-const int ID_TC_SQUISH_FAST = 10198;
-const int ID_TC_SQUISH_SLOW = 10199;
+const int ID_TEXT_TO_FOLDER = 10184;
+const int ID_COLUMNS = 10185;
+const int ID_ROWS = 10186;
+const int ID_CHOICE_LOD0_SIZE = 10187;
+const int ID_SPIN_NUM_LODS = 10188;
+const int ID_TOTALX = 10189;
+const int ID_TOTALY = 10190;
+const int ID_CURX = 10191;
+const int ID_CURY = 10192;
+const int ID_OMIT_FLAT = 10193;
+const int ID_TC_NONE = 10194;
+const int ID_TC_OGL = 10195;
+const int ID_TC_SQUISH_FAST = 10196;
+const int ID_TC_SQUISH_SLOW = 10197;
 wxSizer *TileDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_RADIO_SHADING_NONE = 10200;
-const int ID_RADIO_SHADING_QUICK = 10201;
-const int ID_RADIO_SHADING_DOT = 10202;
-const int ID_SPIN_CAST_ANGLE = 10203;
-const int ID_SPIN_CAST_DIRECTION = 10204;
-const int ID_AMBIENT = 10205;
-const int ID_GAMMA = 10206;
-const int ID_CHECK_SHADOWS = 10207;
+const int ID_RADIO_SHADING_NONE = 10198;
+const int ID_RADIO_SHADING_QUICK = 10199;
+const int ID_RADIO_SHADING_DOT = 10200;
+const int ID_SPIN_CAST_ANGLE = 10201;
+const int ID_SPIN_CAST_DIRECTION = 10202;
+const int ID_AMBIENT = 10203;
+const int ID_GAMMA = 10204;
+const int ID_CHECK_SHADOWS = 10205;
 wxSizer *RenderOptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_EXTENT1 = 10208;
-const int ID_EXTENT2 = 10209;
-const int ID_MATCH_LAYER = 10210;
-const int ID_LAYER_RES = 10211;
-const int ID_GROW = 10212;
-const int ID_SHRINK = 10213;
-const int ID_TILE_SIZE = 10214;
-const int ID_SIZE_SPIN = 10215;
+const int ID_EXTENT1 = 10206;
+const int ID_EXTENT2 = 10207;
+const int ID_MATCH_LAYER = 10208;
+const int ID_LAYER_RES = 10209;
+const int ID_GROW = 10210;
+const int ID_SHRINK = 10211;
+const int ID_TILE_SIZE = 10212;
+const int ID_SIZE_SPIN = 10213;
 wxSizer *MatchDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_RADIO1 = 10216;
-const int ID_RADIO2 = 10217;
-const int ID_RADIO3 = 10218;
-const int ID_RADIO4 = 10219;
-const int ID_RADIO5 = 10220;
-const int ID_MAX_MEGAPIXELS = 10221;
-const int ID_RADIO6 = 10222;
-const int ID_RADIO7 = 10223;
-const int ID_RADIO8 = 10224;
-const int ID_RADIO9 = 10225;
-const int ID_RADIO10 = 10226;
-const int ID_SAMPLING_N = 10227;
-const int ID_BLACK_TRANSP = 10228;
+const int ID_RADIO1 = 10214;
+const int ID_RADIO2 = 10215;
+const int ID_RADIO3 = 10216;
+const int ID_RADIO4 = 10217;
+const int ID_RADIO5 = 10218;
+const int ID_MAX_MEGAPIXELS = 10219;
+const int ID_RADIO6 = 10220;
+const int ID_RADIO7 = 10221;
+const int ID_RADIO8 = 10222;
+const int ID_RADIO9 = 10223;
+const int ID_RADIO10 = 10224;
+const int ID_SAMPLING_N = 10225;
+const int ID_BLACK_TRANSP = 10226;
 wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TEXT_DIST_CUTOFF = 10229;
+const int ID_TEXT_DIST_CUTOFF = 10227;
 wxSizer *GenGridDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
 // Declare toolbar functions
 
-const int ID_VIEW_LAYER_UP = 10230;
-const int ID_VIEW_LAYER_DOWN = 10231;
+const int ID_VIEW_LAYER_UP = 10228;
+const int ID_VIEW_LAYER_DOWN = 10229;
 void MainToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

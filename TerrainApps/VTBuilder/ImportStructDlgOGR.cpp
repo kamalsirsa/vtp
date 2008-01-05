@@ -1,7 +1,7 @@
 //
 // Name: ImportStructDlgOGR.cpp
 //
-// Copyright (c) 2003-2004 Virtual Terrain Project
+// Copyright (c) 2003-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -32,7 +32,6 @@ BEGIN_EVENT_TABLE(ImportStructDlgOGR, AutoDialog)
 	EVT_RADIOBUTTON( ID_TYPE_INSTANCE, ImportStructDlgOGR::OnRadio )
 	EVT_CHOICE( ID_CHOICE_HEIGHT_FIELD, ImportStructDlgOGR::OnChoiceHeightField )
 	EVT_CHOICE( ID_CHOICE_FILE_FIELD, ImportStructDlgOGR::OnChoiceFileField )
-	EVT_CHOICE( ID_ELEVATION_FIELDNAME, ImportStructDlgOGR::OnChoiceElevationFieldname )
 	EVT_CHOICE( ID_LAYERNAME, ImportStructDlgOGR::OnChoiceLayerName )
 END_EVENT_TABLE()
 
@@ -43,7 +42,6 @@ ImportStructDlgOGR::ImportStructDlgOGR( wxWindow *parent, wxWindowID id, const w
 	ImportStructFuncOGR( this, TRUE );
 
 	m_opt.m_HeightType = StructImportOptions::METERS;
-	m_opt.m_ElevationType = StructImportOptions::ETMETERS;
 	m_opt.bInsideOnly = false;
 	m_opt.bBuildFoundations = false;;
 	m_opt.bUse25DForElevation = false;
@@ -52,7 +50,6 @@ ImportStructDlgOGR::ImportStructDlgOGR( wxWindow *parent, wxWindowID id, const w
 	AddValidator(ID_BUILD_FOUNDATIONS, &m_opt.bBuildFoundations);
 	AddValidator(ID_USE_25D, &m_opt.bUse25DForElevation);
 	AddValidator(ID_CHOICE_HEIGHT_TYPE, (int *)&m_opt.m_HeightType);
-	AddValidator(ID_ELEVATION_UNITS, (int *)&m_opt.m_ElevationType);
 }
 
 bool ImportStructDlgOGR::GetRadio(int id)
@@ -72,12 +69,6 @@ void ImportStructDlgOGR::OnChoiceLayerName( wxCommandEvent &event )
 	m_opt.m_strLayerName = str.mb_str(wxConvUTF8);
 	UpdateFieldNames();
 	UpdateEnables();
-}
-
-void ImportStructDlgOGR::OnChoiceElevationFieldname( wxCommandEvent &event )
-{
-	wxString str = GetElevationFieldname()->GetStringSelection();
-	m_opt.m_strFieldNameElevation = str.mb_str(wxConvUTF8);
 }
 
 void ImportStructDlgOGR::OnChoiceFileField( wxCommandEvent &event )
@@ -158,16 +149,12 @@ void ImportStructDlgOGR::UpdateFieldNames()
 			iCount = GetChoiceHeightField()->GetCount();
 			for (i = 0; i < iCount; i++)
 				GetChoiceHeightField()->Delete(0);
-			iCount = GetElevationFieldname()->GetCount();
-			for (i = 0; i < iCount; i++)
-				GetElevationFieldname()->Delete(0);
 			iCount = GetChoiceFileField()->GetCount();
 			for (i = 0; i < iCount; i++)
 				GetChoiceFileField()->Delete(0);
 
 			GetChoiceHeightField()->Append(_("(none)"));
 			GetChoiceFileField()->Append(_("(none)"));
-			GetElevationFieldname()->Append(_("(none)"));
 
 			for (i = 0; i < iNumFields; i++)
 			{
@@ -179,8 +166,6 @@ void ImportStructDlgOGR::UpdateFieldNames()
 					{
 						str = wxString(pFieldDefn->GetNameRef(), wxConvUTF8);
 						GetChoiceHeightField()->Append(str);
-						str = wxString(pFieldDefn->GetNameRef(), wxConvUTF8);
-						GetElevationFieldname()->Append(str);
 					}
 					else if ((FieldType == OFTString) || (FieldType == OFTWideString))
 					{
@@ -199,15 +184,12 @@ void ImportStructDlgOGR::UpdateFieldNames()
 	OnChoiceFileField(wce);
 	GetChoiceHeightField()->SetSelection(0);
 	OnChoiceHeightField(wce);
-	GetElevationFieldname()->SetSelection(0);
-	OnChoiceElevationFieldname(wce);
 }
 
 void ImportStructDlgOGR::UpdateEnables()
 {
 	GetBuildFoundations()->Enable(m_iType == 1);
 	GetChoiceHeightField()->Enable(GetChoiceHeightField()->GetCount() > 1);
-	GetElevationFieldname()->Enable(GetElevationFieldname()->GetCount() > 1);
 	GetChoiceFileField()->Enable((GetChoiceFileField()->GetCount() > 1) && (m_iType == 3));
 }
 

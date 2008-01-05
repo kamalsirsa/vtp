@@ -298,13 +298,13 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	if (bShowWidth)
 		pView->DrawDoubleLine(pDC, *this, m_WidthOffset);
 	else
-		pView->DrawLine(pDC, *this, false);
+		pView->DrawPolyLine(pDC, *this, false);
 
 	if (m_bSelect)
 	{
 		pDC->SetLogicalFunction(wxINVERT);
 		pDC->SetPen(LinkPen[RP_SELECTION]);
-		pView->DrawLine(pDC, *this, false);
+		pView->DrawPolyLine(pDC, *this, false);
 	}
 	if (bShowDirection)
 	{

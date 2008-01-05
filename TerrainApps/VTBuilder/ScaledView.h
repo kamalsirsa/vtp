@@ -9,6 +9,7 @@
 #define SCALEDVIEWH
 
 #include "vtdata/MathTypes.h"
+#include "ogr_geometry.h"
 
 class vtScaledView : public wxScrolledWindow
 {
@@ -39,6 +40,11 @@ public:
 		sp.x = (int)(p.x*m_fScale - m_limits.x);
 		sp.y = (int)(-p.y*m_fScale - m_limits.y);
 	}
+	void screen(const OGRPoint *p, wxPoint &sp) const
+	{
+		sp.x = (int)(p->getX()*m_fScale - m_limits.x);
+		sp.y = (int)(-(p->getY())*m_fScale - m_limits.y);
+	}
 	// transform object space -> screen space (relative delta)
 	int	sdx(double x) { return (int)(x*m_fScale); }
 	int	sdy(double y) { return (int)(-y*m_fScale); }
@@ -64,9 +70,12 @@ public:
 	double odx(int x) { return x/m_fScale; }
 	double ody(int y) { return -y/m_fScale; }
 
-	void DrawLine(wxDC *pDC, const DLine2 &line, bool bClose);
+	void DrawPolyLine(wxDC *pDC, const DLine2 &line, bool bClose);
 	void DrawDoubleLine(wxDC *pDC, const DLine2 &line, const DLine2 &width);
 	void DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill);
+
+	void DrawOGRLinearRing(wxDC *pDC, const OGRLinearRing *line);
+	void DrawOGRPolygon(wxDC *pDC, const OGRPolygon &poly, bool bFill);
 
 protected:
 	void UpdateRanges();

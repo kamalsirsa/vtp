@@ -1,7 +1,7 @@
 //
 // StructLayer.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -193,12 +193,22 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 
 	for (i = 0; i < levs; i++)
 	{
+#if OGR_FOOTPRINT
+		const OGRPolygon &op = bld->GetAtOGRFootprint(i);
+		pView->DrawOGRPolygon(pDC, op, false);	// no fill
+
+		//const OGRLinearRing *ring = op.getExteriorRing();
+		//int points = ring->getNumPoints();
+		//for (j = 0; j < points; j++)
+		//	pDC->DrawCircle(g_screenbuf[j], 3);
+#else
 		const DLine2 &dl = bld->GetFootprint(i);
-		pView->DrawLine(pDC, dl, true);
+		pView->DrawPolyLine(pDC, dl, true);
 
 		int sides = dl.GetSize();
 		for (j = 0; j < sides; j++)
 			pDC->DrawCircle(g_screenbuf[j], 3);
+#endif
 	}
 }
 
@@ -208,7 +218,7 @@ void vtStructureLayer::DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen)
 
 	// draw the line itself
 	DLine2 &pts = fen->GetFencePoints();
-	pView->DrawLine(pDC, pts, false);
+	pView->DrawPolyLine(pDC, pts, false);
 
 	// draw a small crosshair on each vertex
 	for (j = 0; j < pts.GetSize(); j++)

@@ -1,7 +1,7 @@
 //
 // Name: ImportStructDlgOGR.h
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,8 +34,6 @@ public:
 	wxChoice* GetLayername()  { return (wxChoice*) FindWindow( ID_LAYERNAME ); }
 	wxCheckBox* GetUse25d()  { return (wxCheckBox*) FindWindow( ID_USE_25D ); }
 	wxCheckBox* GetBuildFoundations()  { return (wxCheckBox*) FindWindow( ID_BUILD_FOUNDATIONS ); }
-	wxChoice* GetElevationUnits()  { return (wxChoice*) FindWindow( ID_ELEVATION_UNITS ); }
-	wxChoice* GetElevationFieldname()  { return (wxChoice*) FindWindow( ID_ELEVATION_FIELDNAME ); }
 	wxChoice* GetChoiceHeightType()  { return (wxChoice*) FindWindow( ID_CHOICE_HEIGHT_TYPE ); }
 	wxChoice* GetChoiceHeightField()  { return (wxChoice*) FindWindow( ID_CHOICE_HEIGHT_FIELD ); }
 	wxChoice* GetChoiceFileField()  { return (wxChoice*) FindWindow( ID_CHOICE_FILE_FIELD ); }
@@ -60,7 +58,6 @@ private:
 private:
 	// WDR: handler declarations for ImportStructDlgOGR
 	void OnChoiceLayerName( wxCommandEvent &event );
-	void OnChoiceElevationFieldname( wxCommandEvent &event );
 	void OnChoiceFileField( wxCommandEvent &event );
 	void OnChoiceHeightField( wxCommandEvent &event );
 	void OnRadio( wxCommandEvent &event );

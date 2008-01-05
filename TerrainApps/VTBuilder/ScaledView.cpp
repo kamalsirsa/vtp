@@ -1,7 +1,7 @@
 //
 // ScaledView.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -214,7 +214,7 @@ void vtScaledView::GetCanvasPosition(const wxMouseEvent &event, wxPoint &pos)
 	CalcUnscrolledPosition(p.x, p.y, &pos.x, &pos.y);
 }
 
-void vtScaledView::DrawLine(wxDC *pDC, const DLine2 &dline, bool bClose)
+void vtScaledView::DrawPolyLine(wxDC *pDC, const DLine2 &dline, bool bClose)
 {
 	int i, size = dline.GetSize();
 	if (size < 2)
@@ -265,7 +265,37 @@ void vtScaledView::DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill)
 	{
 		// just draw each ring
 		for (unsigned int ring = 0; ring < poly.size(); ring++)
-			DrawLine(pDC, poly[ring], true);
+			DrawPolyLine(pDC, poly[ring], true);
+	}
+}
+
+void vtScaledView::DrawOGRLinearRing(wxDC *pDC, const OGRLinearRing *line)
+{
+	int i, size = line->getNumPoints();
+	if (size < 2)
+		return;
+
+	OGRPoint op;
+	for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
+	{
+		line->getPoint(i, &op);
+		screen(&op, g_screenbuf[i]);
+	}
+	pDC->DrawLines(i, g_screenbuf);
+}
+
+void vtScaledView::DrawOGRPolygon(wxDC *pDC, const OGRPolygon &poly, bool bFill)
+{
+	if (bFill)
+	{
+		// TODO
+	}
+	else
+	{
+		// just draw each ring
+		DrawOGRLinearRing(pDC, poly.getExteriorRing());
+		//for (int ring = 0; ring < poly.getNumInteriorRings(); ring++)
+		//	DrawOGRLinearRing(pDC, poly.getInteriorRing(ring));
 	}
 }
 

@@ -197,7 +197,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			DLine2 &dline = pSetLine->GetPolyLine(i);
 
 			bool bClosed = false;
-			pView->DrawLine(pDC, dline, bClosed);
+			pView->DrawPolyLine(pDC, dline, bClosed);
 		}
 	}
 	if (type == wkbLineString25D)
@@ -220,7 +220,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 				dline[j].Set(dline3[j].x, dline3[j].y);
 
 			bool bClosed = false;
-			pView->DrawLine(pDC, dline, bClosed);
+			pView->DrawPolyLine(pDC, dline, bClosed);
 		}
 	}
 	if (type == wkbPolygon)
