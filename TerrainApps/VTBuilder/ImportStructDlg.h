@@ -1,7 +1,7 @@
 //
 // Name: ImportStructDlg.h
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -48,6 +48,7 @@ public:
 	wxRadioButton* GetTypeFootprint()  { return (wxRadioButton*) FindWindow( ID_TYPE_FOOTPRINT ); }
 	wxRadioButton* GetTypeCenter()  { return (wxRadioButton*) FindWindow( ID_TYPE_CENTER ); }
 	void SetFileName(const wxString &str) { m_filename = str; }
+	void CopyToOptions();
 	void UpdateEnables();
 	bool GetRadio(int id);
 	void UpdateColorControl(bool select);

@@ -1,7 +1,7 @@
 //
 // Name: ImportStructDlg.cpp
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -108,9 +108,7 @@ void ImportStructDlg::OnChoiceHeightType( wxCommandEvent &event )
 void ImportStructDlg::OnChoiceRoofType( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	m_opt.m_eRoofType = (RoofType) m_iRoofType;
-	m_opt.m_iSlope = GetEdgeDeg()->GetValue();
-
+	CopyToOptions();
 	UpdateEnables();
 }
 
@@ -134,6 +132,7 @@ void ImportStructDlg::OnRadio( wxCommandEvent &event )
 	if (GetRadio(ID_RADIO_ROOF_SINGLE)) m_iRoofMode = 1;
 	if (GetRadio(ID_RADIO_ROOF_FIELD)) m_iRoofMode = 2;
 
+	CopyToOptions();
 	UpdateEnables();
 }
 
@@ -209,6 +208,40 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 	TransferDataToWindow();
 }
 
+void ImportStructDlg::CopyToOptions()
+{
+	if (m_iType == 3)		// is a footprint
+	{
+		if (m_iRoofMode == 1)	// type: single
+		{
+			m_opt.m_eRoofType = (RoofType) m_iRoofType;
+			m_opt.m_strFieldNameRoof = "";
+		}
+		else if (m_iRoofMode == 0)	// type: default
+		{
+			m_opt.m_eRoofType = ROOF_UNKNOWN;
+			m_opt.m_strFieldNameRoof = "";
+		}
+		else if (m_iRoofMode == 2)	// type: from field
+		{
+			m_opt.m_eRoofType = ROOF_UNKNOWN;
+			wxString str = GetChoiceRoofField()->GetStringSelection();
+			m_opt.m_strFieldNameRoof = str.mb_str(wxConvUTF8);
+		}
+		m_opt.m_iSlope = GetEdgeDeg()->GetValue();
+	}
+	else	// not a footprint
+	{
+		m_opt.m_eRoofType = ROOF_UNKNOWN;
+		m_opt.m_strFieldNameRoof = "";
+	}
+
+	if (m_iType == 0) m_opt.type = ST_LINEAR;
+	if (m_iType == 1) m_opt.type = ST_INSTANCE;
+	if (m_iType == 2) m_opt.type = ST_BUILDING;
+	if (m_iType == 3) m_opt.type = ST_BUILDING;
+}
+
 void ImportStructDlg::UpdateEnables()
 {
 	GetTypeCenter()->Enable(m_nShapeType == SHPT_POINT);
@@ -234,17 +267,6 @@ void ImportStructDlg::UpdateEnables()
 	GetChoiceRoofType()->Enable(m_iType == 3 && m_iRoofMode == 1);
 	GetChoiceRoofField()->Enable(m_iType == 3 && m_iRoofMode == 2);
 
-	if (m_iType != 3 || m_iRoofMode != 1)	// not footprint or not single type
-		m_opt.m_eRoofType = ROOF_UNKNOWN;
-
-	if (m_iType != 3 || m_iRoofMode != 2)	// not footprint or not from field
-		m_opt.m_strFieldNameRoof = "";
-
-	if (m_iType == 0) m_opt.type = ST_LINEAR;
-	if (m_iType == 1) m_opt.type = ST_INSTANCE;
-	if (m_iType == 2) m_opt.type = ST_BUILDING;
-	if (m_iType == 3) m_opt.type = ST_BUILDING;
-
 	GetRadioColorDefault()->Enable(m_opt.type == ST_BUILDING);
 	GetRadioColorFixed()->Enable(m_opt.type == ST_BUILDING);
 
@@ -257,13 +279,13 @@ void ImportStructDlg::UpdateEnables()
 void ImportStructDlg::OnTextRoofDegrees( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	m_opt.m_iSlope = GetEdgeDeg()->GetValue();
+	CopyToOptions();
 }
 
 void ImportStructDlg::OnSpinRoofDegrees( wxSpinEvent &event )
 {
 	TransferDataFromWindow();
-	m_opt.m_iSlope = GetEdgeDeg()->GetValue();
+	CopyToOptions();
 }
 
 void ImportStructDlg::UpdateColorControl(bool select)
