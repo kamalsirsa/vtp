@@ -3,7 +3,7 @@
 //
 // Implements the vtBuilding class which represents a single built structure.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -165,6 +165,9 @@ public:
 	void SetFootprint(const OGRPolygon *poly);
 	DLine2 GetFootprint() { return m_Footprint; }
 	const DLine2 &GetAtFootprint() const { return m_Footprint; }
+#if OGR_FOOTPRINT
+	OGRPolygon &GetAtOGRFootprint() { return m_Foot; }
+#endif
 
 	void DetermineLocalFootprint(float fHeight);
 	const FLine3 &GetLocalFootprint() { return m_LocalFootprint; }
@@ -212,8 +215,12 @@ public:
 
 	// footprint methods
 	void SetFootprint(int i, const DLine2 &dl);
+	void SetFootprint(int i, const OGRPolygon *poly);
 	DLine2 GetFootprint(int i) { return m_Levels[i]->GetFootprint(); }
 	const DLine2 &GetAtFootprint(int i) { return m_Levels[i]->GetAtFootprint(); }
+#if OGR_FOOTPRINT
+	const OGRPolygon &GetAtOGRFootprint(int i) { return m_Levels[i]->GetAtOGRFootprint(); }
+#endif
 	bool GetBaseLevelCenter(DPoint2 &p) const;
 
 	void SetRectangle(const DPoint2 &center, float fWidth, float fDepth,

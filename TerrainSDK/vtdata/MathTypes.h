@@ -740,6 +740,10 @@ typedef std::vector<DLine2> DLine2Array;
  * We represent a polygon as a collection of closed rings, each of which
  * is represented by a DLine2.  The first DLine2 is the 'outside' ring,
  * any subsequent DLine2 are 'inside' rings, which are holes.
+ *
+ * In most usage, there should be a consistency in the vertex ordering:
+ * the 'outside' ring should be counter-clockwise, and the 'inside' ring(s)
+ * should be clockwise.
  */
 class DPolygon2 : public DLine2Array
 {

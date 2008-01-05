@@ -1,7 +1,7 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1129,37 +1129,10 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 		// Get the i-th Shape in the SHP file
 		SHPObject *pObj = SHPReadObject(hSHP, i);
 
-		// Beware: it is possible for the shape to not actually have vertices, or
-		//  to have less than the minimum needed to define a polygon.  Ignore any
-		//  such degenerate cases
-		if (pObj->nVertices >= 3)
-		{
-			DPolygon2 dpoly;
-			DLine2 dline;
+		DPolygon2 dpoly;
+		SHPToDPolygon2(pObj, dpoly);
+		m_Poly.push_back(dpoly);
 
-			// Store each part
-			for (int part = 0; part < pObj->nParts; part++)
-			{
-				int start, end;
-
-				start = pObj->panPartStart[part];
-				if (part+1 < pObj->nParts)
-					end = pObj->panPartStart[part+1]-1;
-				else
-					end = pObj->nVertices-1;
-
-				// SHP files always duplicate the first point of each ring (part)
-				// which we can ignore
-				end--;
-
-				dline.SetSize(end - start + 1);
-				for (int j = start; j <= end; j++)
-					dline.SetAt(j-start, DPoint2(pObj->padfX[j], pObj->padfY[j]));
-
-				dpoly.push_back(dline);
-			}
-			m_Poly.push_back(dpoly);
-		}
 		SHPDestroyObject(pObj);
 	}
 }

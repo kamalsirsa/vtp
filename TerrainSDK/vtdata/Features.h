@@ -1,7 +1,7 @@
 //
 // Features.h
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -454,6 +454,7 @@ vtString MakeDBFName(const char *filename);
 int GetIntFromString(const char *buf, int len);
 bool GeometryTypeIs3D(OGRwkbGeometryType type);
 vtString GetShapeTypeName(int nShapeType);
+void SHPToDPolygon2(SHPObject *pObj, DPolygon2 &dpoly);
 
 #endif // VTDATA_FEATURES
 

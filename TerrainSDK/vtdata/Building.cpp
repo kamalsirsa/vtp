@@ -5,7 +5,7 @@
 // This is can be a single building, or any single artificial structure
 // such as a wall or fence.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -174,7 +174,7 @@ vtLevel::vtLevel()
 vtLevel::~vtLevel()
 {
 #if OGR_FOOTPRINT
-	m_Foot.clear();
+	m_Foot.empty();
 #endif
 	DeleteEdges();
 }
@@ -274,7 +274,7 @@ void vtLevel::SynchToOGR()
 		int oldsize = pRing->getNumPoints();
 		if (oldsize != size)
 		{
-			m_Foot.clear();
+			m_Foot.empty();
 			pRing = new OGRLinearRing;
 			pRing->setNumPoints(size);
 			m_Foot.addRingDirectly(pRing);
@@ -1017,6 +1017,24 @@ void vtBuilding::SetFootprint(int lev, const DLine2 &foot)
 		CreateLevel();
 
 	m_Levels[lev]->SetFootprint(foot);
+
+	// keep 2d and 3d in synch
+	DetermineLocalFootprints();
+}
+
+/**
+ * Set the footprintf of the given level of the building.
+ *
+ * \param lev The level, from 0 for the base level and up.
+ * \param foot The footprint.
+ */
+void vtBuilding::SetFootprint(int lev, const OGRPolygon *poly)
+{
+	int levs = GetNumLevels();
+	if (lev >= levs)
+		CreateLevel();
+
+	m_Levels[lev]->SetFootprint(poly);
 
 	// keep 2d and 3d in synch
 	DetermineLocalFootprints();

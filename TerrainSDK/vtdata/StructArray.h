@@ -1,7 +1,7 @@
 //
 // StructArray.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -32,9 +32,6 @@ public:
 	// If height is read from a field, name of that field.
 	vtString		m_strFieldNameHeight;
 	enum HeightType { STORIES, METERS, FEET, METERSNOSTORIES, FEETNOSTORIES } m_HeightType;
-
-	vtString		m_strFieldNameElevation;
-	enum ElevationType { ETMETERS, ETFEET } m_ElevationType;
 
 	/// If StructureInstance filename is taken from a field, name of that field
 	vtString		m_strFieldNameFile;

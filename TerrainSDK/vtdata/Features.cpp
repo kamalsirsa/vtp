@@ -1,7 +1,7 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -2151,5 +2151,44 @@ vtString GetShapeTypeName(int nShapeType)
 	case SHPT_MULTIPATCH:	return "MULTIPATCH"; break;
 	}
 	return "Unknown";
+}
+
+/**
+ * When using Shapelib to read a Shapefile, this method will convert
+ * a shp polygon object (SHPT_POLYGON or SHPT_POLYGONZ) into a
+ * DPolygon2.
+ */
+void SHPToDPolygon2(SHPObject *pObj, DPolygon2 &dpoly)
+{
+	// Beware: it is possible for the shape to not actually have vertices, or
+	//  to have less than the minimum needed to define a polygon.  Ignore any
+	//  such degenerate cases
+	if (pObj->nVertices < 3)
+		return;
+
+	DLine2 dline;
+
+	// Convert and store each part - each is a polyline.  The first is the
+	//  'outer' ring, any subsequent parts are 'inside' rings.
+	for (int part = 0; part < pObj->nParts; part++)
+	{
+		int start, end;
+
+		start = pObj->panPartStart[part];
+		if (part+1 < pObj->nParts)
+			end = pObj->panPartStart[part+1]-1;
+		else
+			end = pObj->nVertices-1;
+
+		// SHP files always duplicate the first point of each ring (part)
+		// which we can ignore
+		end--;
+
+		dline.SetSize(end - start + 1);
+		for (int j = start; j <= end; j++)
+			dline.SetAt(j-start, DPoint2(pObj->padfX[j], pObj->padfY[j]));
+
+		dpoly.push_back(dline);
+	}
 }
 
