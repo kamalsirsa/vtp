@@ -455,6 +455,7 @@ int GetIntFromString(const char *buf, int len);
 bool GeometryTypeIs3D(OGRwkbGeometryType type);
 vtString GetShapeTypeName(int nShapeType);
 void SHPToDPolygon2(SHPObject *pObj, DPolygon2 &dpoly);
+void DPolygon2ToOGR(DPolygon2 &dp, OGRPolygon &op);
 
 #endif // VTDATA_FEATURES
 

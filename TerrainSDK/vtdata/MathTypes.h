@@ -752,6 +752,7 @@ public:
 	void Add(const DPoint2 &p);
 	void Mult(double factor);
 	bool ComputeExtents(DRECT &rect) const;
+	void ReverseOrder();
 
 	void GetAsDLine2(DLine2 &dline) const;
 };

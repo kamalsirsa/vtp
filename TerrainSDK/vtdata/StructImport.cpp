@@ -7,6 +7,7 @@
 
 #include "shapelib/shapefil.h"
 #include "ogrsf_frmts.h"
+#include "Features.h"
 #include "StructArray.h"
 #include "Building.h"
 #include "Fence.h"
@@ -299,6 +300,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			if (nShapeType == SHPT_POLYGON || nShapeType == SHPT_POLYGONZ ||
 				nShapeType == SHPT_ARC)
 			{
+#if 0	// Old code, before we had SHPToDPolygon2
 				if (nShapeType == SHPT_POLYGON || nShapeType == SHPT_POLYGONZ)
 				{
 					// for some reason, for SHPT_POLYGON, Shapelib duplicates
@@ -312,7 +314,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 				{
 					// the ARC type is different; Shapelib doesn't duplicate
 					// the first point, but since it is closed, we still need
-					// to ignore it the first point
+					// to ignore the first point
 					num_points--;
 				}
 				// must have at least 3 points in a footprint
@@ -328,14 +330,25 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 
 				// test clockwisdom and reverse if necessary
 				if (PolyChecker.IsClockwisePolygon(foot))
-				{
-					// grab them in reverse order
-					for (j = 0; j < num_points; j++)
-					{
-						int k = num_points - 1 - j;
-						foot.SetAt(j, DPoint2(psShape->padfX[k], psShape->padfY[k]));
-					}
-				}
+					foot.ReverseOrder();
+#else
+				DPolygon2 dp;
+				SHPToDPolygon2(psShape, dp);
+
+				// test clockwisdom and reverse if necessary
+				if (PolyChecker.IsClockwisePolygon(dp[0]))
+					dp.ReverseOrder();
+#endif
+
+#if OGR_FOOTPRINT
+				// Convert to OGR's type
+				OGRPolygon footprint, *foot = &footprint;
+				DPolygon2ToOGR(dp, footprint);
+#else
+				// Convert to a single closed polyline
+				DLine2 foot;
+				dp.GetAsDLine2(foot);
+#endif
 
 				bld->SetFootprint(0, foot);
 				// Give it a flat roof with the same footprint

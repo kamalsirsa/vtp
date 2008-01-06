@@ -169,12 +169,16 @@ vtLevel::vtLevel()
 {
 	m_iStories = 1;
 	m_fStoryHeight = STORY_HEIGHT;
+#if OGR_FOOTPRINT
+	m_pFoot = NULL;
+#endif
 }
 
 vtLevel::~vtLevel()
 {
 #if OGR_FOOTPRINT
-	m_Foot.empty();
+	delete m_pFoot;
+	m_pFoot = NULL;
 #endif
 	DeleteEdges();
 }
@@ -252,32 +256,43 @@ void vtLevel::SetFootprint(const DLine2 &dl)
 void vtLevel::SetFootprint(const OGRPolygon *poly)
 {
 #if OGR_FOOTPRINT
-	m_Foot = *poly;
+	// Because of the way OGR uses dynamic allocation, we can't use the
+	//  copy operator.  Instead we must free and reallocate it.
+	delete m_pFoot;
+	m_pFoot = (OGRPolygon *) poly->clone();
 #endif
+
+	int prev = m_Footprint.GetSize();
 	SynchFromOGR();
+	int curr = m_Footprint.GetSize();
+	if (curr != prev)
+		SetWalls(curr);
 }
 
 void vtLevel::SynchToOGR()
 {
 #if OGR_FOOTPRINT
+	if (!m_pFoot)
+		return;
+
 	// keep OGR poly in synch
 	int i, size = m_Footprint.GetSize();
-	OGRLinearRing *pRing = m_Foot.getExteriorRing();
+	OGRLinearRing *pRing = m_pFoot->getExteriorRing();
 	if (pRing == NULL && size != 0)
 	{
 		pRing = new OGRLinearRing;
 		pRing->setNumPoints(size);
-		m_Foot.addRingDirectly(pRing);
+		m_pFoot->addRingDirectly(pRing);
 	}
 	else
 	{
 		int oldsize = pRing->getNumPoints();
 		if (oldsize != size)
 		{
-			m_Foot.empty();
+			m_pFoot->empty();
 			pRing = new OGRLinearRing;
 			pRing->setNumPoints(size);
-			m_Foot.addRingDirectly(pRing);
+			m_pFoot->addRingDirectly(pRing);
 		}
 	}
 
@@ -290,7 +305,10 @@ void vtLevel::SynchToOGR()
 void vtLevel::SynchFromOGR()
 {
 #if OGR_FOOTPRINT
-	OGRLinearRing *pRing = m_Foot.getExteriorRing();
+	if (!m_pFoot)
+		return;
+
+	OGRLinearRing *pRing = m_pFoot->getExteriorRing();
 	if (!pRing)
 		return;
 
@@ -300,12 +318,12 @@ void vtLevel::SynchFromOGR()
 	int num = pRing->getNumPoints();
 	total += num;
 
-	int inside = m_Foot.getNumInteriorRings();
+	int inside = m_pFoot->getNumInteriorRings();
 	int i, j;
 	for (i = 0; i < inside; i++)
 	{
 		total += 1;	// to close off the previous poly
-		total += m_Foot.getInteriorRing(i)->getNumPoints();
+		total += m_pFoot->getInteriorRing(i)->getNumPoints();
 	}
 	int count = 0;
 	m_Footprint.SetSize(total);
@@ -325,7 +343,7 @@ void vtLevel::SynchFromOGR()
 	// now copy points from the internal rings
 	for (i = 0; i < inside; i++)
 	{
-		pRing = m_Foot.getInteriorRing(i);
+		pRing = m_pFoot->getInteriorRing(i);
 		num = pRing->getNumPoints();
 		for (j = 0; j < num; j++)
 		{
@@ -1302,15 +1320,30 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 		gfprintf(out, "\t\t<Level FloorHeight=\"%f\" StoryCount=\"%d\">\n",
 			lev->m_fStoryHeight, lev->m_iStories);
 
-		const DLine2 &foot = lev->GetAtFootprint();
-		int points = foot.GetSize();
 		gfprintf(out, "\t\t\t<Footprint>\n");
 		gfprintf(out, "\t\t\t\t<gml:MultiPolygon>\n");
 		gfprintf(out, "\t\t\t\t\t<gml:polygonMember>\n");
 		gfprintf(out, "\t\t\t\t\t\t<gml:Polygon>\n");
+
+		// Every footprint polygon has at least one outer boundary
 		gfprintf(out, "\t\t\t\t\t\t\t<gml:outerBoundaryIs>\n");
 		gfprintf(out, "\t\t\t\t\t\t\t\t<gml:LinearRing>\n");
 		gfprintf(out, "\t\t\t\t\t\t\t\t\t<gml:coordinates>");
+#if OGR_FOOTPRINT
+		const OGRPolygon *pfoot = lev->GetAtOGRFootprint();
+		const OGRLinearRing *outer = pfoot->getExteriorRing();
+		int points = outer->getNumPoints();
+		for (j = 0; j < points; j++)
+		{
+			gfprintf(out, coord_format, outer->getX(j));
+			gfprintf(out, ",");
+			gfprintf(out, coord_format, outer->getY(j));
+			if (j != points-1)
+				gfprintf(out, " ");
+		}
+#else
+		const DLine2 &foot = lev->GetAtFootprint();
+		int points = foot.GetSize();
 		for (j = 0; j < points; j++)
 		{
 			DPoint2 p = foot.GetAt(j);
@@ -1320,9 +1353,36 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 			if (j != points-1)
 				gfprintf(out, " ");
 		}
+#endif
 		gfprintf(out, "</gml:coordinates>\n");
 		gfprintf(out, "\t\t\t\t\t\t\t\t</gml:LinearRing>\n");
 		gfprintf(out, "\t\t\t\t\t\t\t</gml:outerBoundaryIs>\n");
+
+#if OGR_FOOTPRINT
+		// If we have a compound footprint, write inner rings separately
+		int irings = pfoot->getNumInteriorRings();
+		for (int iring = 0; iring < irings; iring++)
+		{
+			gfprintf(out, "\t\t\t\t\t\t\t<gml:innerBoundaryIs>\n");
+			gfprintf(out, "\t\t\t\t\t\t\t\t<gml:LinearRing>\n");
+			gfprintf(out, "\t\t\t\t\t\t\t\t\t<gml:coordinates>");
+
+			const OGRLinearRing *inner = pfoot->getInteriorRing(iring);
+			int points = inner->getNumPoints();
+			for (j = 0; j < points; j++)
+			{
+				gfprintf(out, coord_format, inner->getX(j));
+				gfprintf(out, ",");
+				gfprintf(out, coord_format, inner->getY(j));
+				if (j != points-1)
+					gfprintf(out, " ");
+			}
+			gfprintf(out, "</gml:coordinates>\n");
+			gfprintf(out, "\t\t\t\t\t\t\t\t</gml:LinearRing>\n");
+			gfprintf(out, "\t\t\t\t\t\t\t</gml:innerBoundaryIs>\n");
+		}
+#endif
+
 		gfprintf(out, "\t\t\t\t\t\t</gml:Polygon>\n");
 		gfprintf(out, "\t\t\t\t\t</gml:polygonMember>\n");
 		gfprintf(out, "\t\t\t\t</gml:MultiPolygon>\n");

@@ -2192,3 +2192,25 @@ void SHPToDPolygon2(SHPObject *pObj, DPolygon2 &dpoly)
 	}
 }
 
+void DPolygon2ToOGR(DPolygon2 &dp, OGRPolygon &op)
+{
+	op.empty();
+	for (unsigned int ringnum = 0; ringnum < dp.size(); ringnum++)
+	{
+		DLine2 &ring = dp.at(ringnum);
+		OGRLinearRing *poNewRing = new OGRLinearRing;
+
+		unsigned int numpoints = ring.GetSize();
+		poNewRing->setNumPoints(numpoints);
+
+		OGRPoint p;
+		for (unsigned int i = 0; i < numpoints; i++)
+		{
+			p.setX(ring[i].x);
+			p.setY(ring[i].y);
+			poNewRing->setPoint(i, &p);
+		}
+		op.addRingDirectly(poNewRing);
+	}
+}
+

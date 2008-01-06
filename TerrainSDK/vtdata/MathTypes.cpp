@@ -646,6 +646,16 @@ bool DPolygon2::ComputeExtents(DRECT &rect) const
 	return true;
 }
 
+void DPolygon2::ReverseOrder()
+{
+	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	{
+		DLine2 &ring = at(ringnum);
+		ring.ReverseOrder();
+	}
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 // FQuat methods
