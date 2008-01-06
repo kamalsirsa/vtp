@@ -107,17 +107,17 @@
 
 ///////////////////////////////// OPENSG //////////////////////////////
 #if VTLIB_OPENSG
-    #include "GL/glext.h"
-    #ifdef _MSC_VER
-      #pragma warning(disable: 4251) // turn off warning about std::map dll-interface
-      #pragma warning(disable: 4275) // turn off warning about subclass dll-interface
-      #pragma warning(disable: 4231) // turn off warning about nonstandard 'extern'
-    #endif
-    #include "vtopensg/ImageOSG.h"
-    #include "vtopensg/MathOSG.h"
-    #include "vtopensg/MeshMat.h"
-    #include "vtopensg/NodeOSG.h"
-    #include "vtopensg/SceneOSG.h"
+	#include "GL/glext.h"
+	#ifdef _MSC_VER
+	  #pragma warning(disable: 4251) // turn off warning about std::map dll-interface
+	  #pragma warning(disable: 4275) // turn off warning about subclass dll-interface
+	  #pragma warning(disable: 4231) // turn off warning about nonstandard 'extern'
+	#endif
+	#include "vtopensg/ImageOSG.h"
+	#include "vtopensg/MathOSG.h"
+	#include "vtopensg/MeshMat.h"
+	#include "vtopensg/NodeOSG.h"
+	#include "vtopensg/SceneOSG.h"
 #endif // OSG
 
 ///////////////////////////////// NI //////////////////////////////

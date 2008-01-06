@@ -618,8 +618,8 @@ wxString StartOfFilename(const wxString &strFullPath)
  */
 wxString ToBackslash(const wxString &path)
 {
-	wxString 	result;
-	size_t 	i, len = path.length();
+	wxString	result;
+	size_t	i, len = path.length();
 	result.reserve(len);
 	for ( i = 0; i < len; i++ )
 	{

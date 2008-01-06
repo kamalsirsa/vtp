@@ -354,7 +354,7 @@ bool CStructureShadowsOSG::Initialise(osgUtil::SceneView *pSceneView,
 #else
 	osg::FBOExtensions* fbo_ext = osg::FBOExtensions::instance(0);
 #endif
-    if ((fbo_ext && fbo_ext->isSupported()) || osg::isGLExtensionSupported(0, "ARB_render_texture"))
+	if ((fbo_ext && fbo_ext->isSupported()) || osg::isGLExtensionSupported(0, "ARB_render_texture"))
 		m_bUsingLiveFrameBuffer = false;
 	else
 		m_bUsingLiveFrameBuffer = true;

@@ -50,7 +50,7 @@ public:
 	// remember this for convenience
 	vtImage	*m_pImage;
 
-   	sglMaterial *m_pMaterial;
+	sglMaterial *m_pMaterial;
 	sglTexture *m_pTexture;
 	vector<sglStatelet*> m_state;
 };

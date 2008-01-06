@@ -310,8 +310,8 @@ void vtScene::ComputeViewMatrix(FMatrix4 &mat)
 	osg::Matrix matrix( _viewMatrix * _projectionMatrix);
 
 	osg::Viewport *_viewport = m_pOsgSceneView->getViewport();
-    if (_viewport != NULL)
-        matrix.postMult(_viewport->computeWindowMatrix());
+	if (_viewport != NULL)
+		matrix.postMult(_viewport->computeWindowMatrix());
 
 	ConvertMatrix4(&matrix, &mat);
 }

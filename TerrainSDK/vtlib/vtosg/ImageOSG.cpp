@@ -501,7 +501,7 @@ void vtImage::_CreateFromDIB(vtDIB *pDIB)
 	m_pOsgImage->setImage(w, h, 1,		// s, t, r
 	   internalFormat,		// int internalFormat,
 	   pixelFormat,			// unsigned int pixelFormat,
-	   GL_UNSIGNED_BYTE, 	// unsigned int dataType,
+	   GL_UNSIGNED_BYTE,	// unsigned int dataType,
 	   image,
 	   osg::Image::USE_NEW_DELETE);
 	_ComputeRowWidth();
@@ -1158,7 +1158,7 @@ bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(i
 						poBand4->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
 							lineBuf4,xsize,1,GDT_Byte,0,0);
 					}
-					
+
 					for (y = 0; y < m_iTilesize; y++)
 					{
 						unsigned char *targetBandVec1 = lineBuf1 + y_off + y;
