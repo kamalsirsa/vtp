@@ -217,7 +217,7 @@ void vtMeshBase::AddStrip2(int iNVerts, int iStartIndex)
 void vtMeshBase::CreateBlock(const FPoint3& size)
 {
 	int i, j;
-	FPoint3 	vtx[8];			/* individual vertex values */
+	FPoint3 vtx[8];			/* individual vertex values */
 
 	for (i = 0; i < 8; i++)
 	{
@@ -252,8 +252,8 @@ void vtMeshBase::CreateBlock(const FPoint3& size)
 void vtMeshBase::CreateOptimizedBlock(const FPoint3& size)
 {
 	int i, j;
-	FPoint3 	vtx[8];			/* individual vertex values */
-	FPoint3		half = size / 2.0f;
+	FPoint3 vtx[8];			/* individual vertex values */
+	FPoint3 half = size / 2.0f;
 
 	for (i = 0; i < 8; i++)
 	{
@@ -289,7 +289,7 @@ void vtMeshBase::CreatePrism(const FPoint3 &base, const FPoint3 &vector_up,
 							 const FPoint2 &size1, const FPoint2 &size2)
 {
 	int i, j;
-	FPoint3 	vtx[8];		/* individual vertex values */
+	FPoint3 vtx[8];		/* individual vertex values */
 
 	for (i = 0; i < 8; i++)
 	{

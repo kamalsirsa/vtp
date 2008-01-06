@@ -91,7 +91,7 @@ void vtTerrainScene::CleanupScene()
 
 	// no need to do this explicitly, it is done by releasing the scenegraph
 	// if (m_pSkyDome)
-	// 	m_pSkyDome->Destroy();
+	//	m_pSkyDome->Destroy();
 
 	for (unsigned int i = 0; i < NumTerrains(); i++)
 	{

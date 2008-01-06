@@ -35,7 +35,7 @@ public:
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 	struct Star
 	{
-		float 	ra;		// Right Ascension
+		float	ra;		// Right Ascension
 		float	dec;	// Declination
 		float	mag;	// Magnitude
 		float	relmag;
@@ -90,8 +90,8 @@ public:
 
 	void	SetGeoLocation(const DPoint2 &geo) { m_geo = geo; }
 	void	SetTime(const vtTime &time);
-	void 	SetDayColors(const RGBf &horizon, const RGBf &azimuth);
-	void 	SetSunsetColor(const RGBf &sunset);
+	void	SetDayColors(const RGBf &horizon, const RGBf &azimuth);
+	void	SetSunsetColor(const RGBf &sunset);
 	void	SetInterpCutoff(float cutoff);
 	void	SetSunLight(vtTransform *light) { m_pSunLight = light; }
 	bool	SetTexture(const char *filename);
@@ -116,7 +116,7 @@ protected:
 	vtStarDome	*m_pStarDome;
 	vtTransform	*m_pSunLight;
 
-	RGBf 	DayHorizonCol, DayAzimuthCol, SunsetCol;
+	RGBf	DayHorizonCol, DayAzimuthCol, SunsetCol;
 	float	Cutoff;
 
 	int		NumVertices;

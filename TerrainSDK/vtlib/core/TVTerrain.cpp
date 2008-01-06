@@ -1030,7 +1030,7 @@ int TVTerrain::tooCoarse(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 	dx = (p3[0] - eyeP[0]);		/* dx and dy in grid units */
 	dy = (p3[1] - eyeP[1]);
 	d = dx * dx + dy * dy;
-#if 0 	// doesn't seem necessary
+#if 0	// doesn't seem necessary
 	if (d == 0)				/* if right below eye */
 		return 1;
 #endif

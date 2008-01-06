@@ -517,7 +517,7 @@ bool vtTin3d::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 			wp3 = mesh->GetVtxPos(i*3+2);
 			if (intersect_triangle(point, dir, wp1, wp2, wp3, t, u, v))
 			{
- 				if (t < closest)
+				if (t < closest)
 					closest = t;
 			}
 		}
