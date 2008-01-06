@@ -481,7 +481,7 @@ void MainFrame::ElevCopy()
 	clip.Dump();
 #endif
 
-  	::GlobalUnlock(hMem);
+	::GlobalUnlock(hMem);
 
 	if (::SetClipboardData(eFormat, hMem) == NULL)
 	{

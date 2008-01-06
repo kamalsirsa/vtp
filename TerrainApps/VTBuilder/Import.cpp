@@ -1469,7 +1469,7 @@ int MainFrame::ImportDataFromTIGER(const wxString &strDirName)
 			continue;
 
 		feature_count = pOGRLayer->GetFeatureCount();
-  		pOGRLayer->ResetReading();
+		pOGRLayer->ResetReading();
 		OGRFeatureDefn *defn = pOGRLayer->GetLayerDefn();
 		if (!defn)
 			continue;
@@ -1702,7 +1702,7 @@ void MainFrame::ImportDataFromNTF(const wxString &strFileName)
 			delete pRL;
 #else
 		int feature_count = pOGRLayer->GetFeatureCount();
-  		pOGRLayer->ResetReading();
+		pOGRLayer->ResetReading();
 		OGRFeatureDefn *defn = pOGRLayer->GetLayerDefn();
 		if (!defn)
 			continue;
@@ -1822,7 +1822,7 @@ void MainFrame::ImportDataFromS57(const wxString &strDirName)
 			continue;
 
 		feature_count = pOGRLayer->GetFeatureCount();
-  		pOGRLayer->ResetReading();
+		pOGRLayer->ResetReading();
 		OGRFeatureDefn *defn = pOGRLayer->GetLayerDefn();
 		if (!defn)
 			continue;

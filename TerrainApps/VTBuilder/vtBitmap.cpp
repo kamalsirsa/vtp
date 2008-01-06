@@ -377,13 +377,13 @@ bool vtBitmap::WriteJPEG(const char *fname, int quality)
 	jpeg_stdio_dest(&cinfo, outfile);
 
 	// set parameters for compression
-	cinfo.image_width = m_pBitmap->GetWidth(); 	// image width and height, in pixels
+	cinfo.image_width = m_pBitmap->GetWidth();	// image width and height, in pixels
 	cinfo.image_height = m_pBitmap->GetHeight();
 	cinfo.input_components = m_pBitmap->GetDepth()/8;	// # of color components per pixel
 	if (m_pBitmap->GetDepth()/8 == 1)
 		cinfo.in_color_space = JCS_GRAYSCALE;
 	else
-		cinfo.in_color_space = JCS_RGB; 	// colorspace of input image
+		cinfo.in_color_space = JCS_RGB;	// colorspace of input image
 
 	// Now use the library's routine to set default compression parameters.
 	jpeg_set_defaults(&cinfo);

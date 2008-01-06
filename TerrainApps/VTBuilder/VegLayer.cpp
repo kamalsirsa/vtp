@@ -94,9 +94,9 @@ bool vtVegLayer::CanBeSaved()
 wxString vtVegLayer::GetFileExtension()
 {
 	if (m_VLType == VLT_Instances)
-		return 	_T(".vf");
+		return _T(".vf");
 	else
-		return 	_T(".shp");
+		return _T(".shp");
 }
 
 bool vtVegLayer::OnSave()

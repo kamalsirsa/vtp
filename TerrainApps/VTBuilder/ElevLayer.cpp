@@ -1319,9 +1319,9 @@ wxString vtElevLayer::GetFileExtension()
 	else
 	{
 		if (m_bPreferGZip)
-			return 	_T(".bt.gz");
+			return _T(".bt.gz");
 		else
-			return 	_T(".bt");
+			return _T(".bt");
 	}
 }
 

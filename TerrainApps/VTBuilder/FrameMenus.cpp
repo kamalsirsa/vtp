@@ -336,7 +336,7 @@ void MainFrame::CreateMenus()
 	m_pMenuBar->Append(fileMenu, _("&Project"));
 	menu_num++;
 
- 	// Edit
+	// Edit
 	editMenu = new wxMenu;
 	editMenu->Append(ID_EDIT_DELETE, _("Delete\tDEL"), _("Delete"));
 	editMenu->AppendSeparator();

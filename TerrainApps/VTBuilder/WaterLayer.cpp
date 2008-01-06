@@ -280,7 +280,7 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 			continue;
 
 		feature_count = pLayer->GetFeatureCount();
-  		pLayer->ResetReading();
+		pLayer->ResetReading();
 		OGRFeatureDefn *defn = pLayer->GetLayerDefn();
 		if (!defn)
 			continue;

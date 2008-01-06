@@ -615,7 +615,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 	{
 		pLayer = pDatasource->GetLayer(i);
 		feature_count = pLayer->GetFeatureCount();
-  		pLayer->ResetReading();
+		pLayer->ResetReading();
 		defn = pLayer->GetLayerDefn();
 		layer_name = defn->GetName();
 
@@ -777,7 +777,7 @@ bool RoadMapEdit::AppendFromOGRLayer(OGRLayer *pLayer)
 
 	// Get basic information about the layer we're reading
 	feature_count = pLayer->GetFeatureCount();
-  	pLayer->ResetReading();
+	pLayer->ResetReading();
 	defn = pLayer->GetLayerDefn();
 	if (!defn)
 		return false;

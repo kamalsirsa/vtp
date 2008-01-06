@@ -597,7 +597,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 			pLayer = pRL;
 		else
 			delete pRL;
- 	}
+	}
 	if (ext.CmpNoCase(_T("img")) == 0)
 	{
 		vtImageLayer *pIL = new vtImageLayer;
