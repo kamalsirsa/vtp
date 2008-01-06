@@ -20,11 +20,11 @@
 //////////////////////////////////////////////////////////////
 
 float utm_points_ito[5][2] = {
-	{ 287050, 2182130}, 	// begin approach
-	{ 286820, 2182140}, 	// touchdown point
-	{ 286760, 2182194}, 	// begin takeoff point
-	{ 287450, 2182128},		// come back
-	{ 286400, 2182200}  	// end takeoff point
+	{ 287050, 2182130},	// begin approach
+	{ 286820, 2182140},	// touchdown point
+	{ 286760, 2182194},	// begin takeoff point
+	{ 287450, 2182128},	// come back
+	{ 286400, 2182200}	// end takeoff point
 };
 
 float utm_points_koa[5][2] = {

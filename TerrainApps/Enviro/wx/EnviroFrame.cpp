@@ -623,10 +623,10 @@ void EnviroFrame::RefreshToolbar()
 	// deep in wxMac, but I don't remember, nor want to repeat it :).  Can we
 	// #ifdef __WXMAC__ for the time being to revisit it after Xcode is working?
 	while (count >= 1)
- 	{
- 		m_pToolbar->DeleteToolByPos(count-1);
- 		count = m_pToolbar->GetToolsCount();
- 	}
+	{
+		m_pToolbar->DeleteToolByPos(count-1);
+		count = m_pToolbar->GetToolsCount();
+	}
 	m_pToolbar->Realize();
 	AddTool(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
 #else
@@ -2312,27 +2312,27 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	EnableContinuousRendering(false);
 
- 	wxString str(STRING_APPORG "\n\n", wxConvUTF8);
+	wxString str(STRING_APPORG "\n\n", wxConvUTF8);
 #ifdef ENVIRO_NATIVE
 	str += _("The runtime environment for the Virtual Terrain Project.\n\n");
- 	str += _("Please read the HTML documentation and license.\n\n");
- 	str += _("Send feedback to: ben@vterrain.org\n");
+	str += _("Please read the HTML documentation and license.\n\n");
+	str += _("Send feedback to: ben@vterrain.org\n");
 #else
 	str += _T("Based on the Virtual Terrain Project 3D Runtime Environment.\n");
 #endif
- 	str += _T("\nThis version was built with the ");
+	str += _T("\nThis version was built with the ");
 #if VTLIB_DSM
- 	str += _T("DSM");
+	str += _T("DSM");
 #elif VTLIB_OSG
- 	str += _T("OSG");
+	str += _T("OSG");
 #elif VTLIB_OPENSG
- 	str += _T("OpenSG");
+	str += _T("OpenSG");
 #elif VTLIB_SGL
- 	str += _T("SGL");
+	str += _T("SGL");
 #elif VTLIB_SSG
- 	str += _T("SSG");
+	str += _T("SSG");
 #endif
- 	str += _T(" Library.\n\n");
+	str += _T(" Library.\n\n");
 	str += _("Build date: ");
 	str += wxString(__DATE__, *wxConvCurrent);
 

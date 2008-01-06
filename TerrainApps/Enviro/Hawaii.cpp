@@ -395,17 +395,17 @@ void IslandTerrain::create_airports()
 	if (ITO)
 	{
 		PlantModelAtPoint(ITO, DPoint2(283575, 2181163));
- 		AddNode(ITO);
+		AddNode(ITO);
 	}
 	if (KOA)
 	{
 		PlantModelAtPoint(KOA, DPoint2(180290, 2184990));
- 		AddNode(KOA);
+		AddNode(KOA);
 	}
 	if (MUE)
 	{
 		PlantModelAtPoint(MUE, DPoint2(219990, 2213505));
- 		AddNode(MUE);
+		AddNode(MUE);
 	}
 }
 

@@ -444,7 +444,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bDepressOcean =   Params.GetValueBool(STR_DEPRESSOCEAN);
 	m_fDepressOceanLevel = Params.GetValueFloat(STR_DEPRESSOCEANLEVEL);
 	m_bHorizon =		Params.GetValueBool(STR_HORIZON);
-	RGBi col = 			Params.GetValueRGBi(STR_BGCOLOR);
+	RGBi col =			Params.GetValueRGBi(STR_BGCOLOR);
 	m_BgColor.Set(col.r, col.g, col.b);
 
 	m_bRouteEnable =	Params.GetValueBool(STR_ROUTEENABLE);
@@ -746,7 +746,7 @@ void TParamsDlg::UpdateEnableState()
 	   if (iSelected != 0)
 			GetMoveupScenario()->Enable(true);
 		else
- 			GetMoveupScenario()->Enable(false);
+			GetMoveupScenario()->Enable(false);
 	}
 	else
 	{
