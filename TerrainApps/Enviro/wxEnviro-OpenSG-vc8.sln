@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C++ Express 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro-OpenSG-vc8.vcproj", "{EB511FDC-A380-4724-9A95-7FEAC5561FEA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro-OpenSG", "wxEnviro-OpenSG-vc8.vcproj", "{1A903E1E-299A-4860-BAD4-EC7ED94E6733}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A066DCBD-132B-4A65-AF74-D7921EA64B9C} = {A066DCBD-132B-4A65-AF74-D7921EA64B9C}
 		{F35AD44A-5921-4C7F-842F-0B3138825EA6} = {F35AD44A-5921-4C7F-842F-0B3138825EA6}
@@ -16,7 +16,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtopensg", "..\..\TerrainSD
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper-vc8.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glutSimple-OpenSG", "..\glutSimple\glutSimple-OpenSG-vc8.vcproj", "{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glutSimple-OpenSG", "..\glutSimple\glutSimple-OpenSG-vc8.vcproj", "{ECD34CC1-C8CE-4257-B890-123D6EF87D0A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A066DCBD-132B-4A65-AF74-D7921EA64B9C} = {A066DCBD-132B-4A65-AF74-D7921EA64B9C}
 		{F35AD44A-5921-4C7F-842F-0B3138825EA6} = {F35AD44A-5921-4C7F-842F-0B3138825EA6}
@@ -29,10 +29,10 @@ Global
 		Release Unicode|Win32 = Release Unicode|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
-		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
-		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
-		{EB511FDC-A380-4724-9A95-7FEAC5561FEA}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
+		{1A903E1E-299A-4860-BAD4-EC7ED94E6733}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
+		{1A903E1E-299A-4860-BAD4-EC7ED94E6733}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
+		{1A903E1E-299A-4860-BAD4-EC7ED94E6733}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{1A903E1E-299A-4860-BAD4-EC7ED94E6733}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug Unicode|Win32.Build.0 = Debug|Win32
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Release Unicode|Win32.ActiveCfg = Release|Win32
@@ -49,10 +49,10 @@ Global
 		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Debug Unicode|Win32.Build.0 = Debug|Win32
 		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Release Unicode|Win32.ActiveCfg = Release|Win32
 		{F35AD44A-5921-4C7F-842F-0B3138825EA6}.Release Unicode|Win32.Build.0 = Release|Win32
-		{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
-		{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}.Debug Unicode|Win32.Build.0 = Debug|Win32
-		{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}.Release Unicode|Win32.ActiveCfg = Release|Win32
-		{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}.Release Unicode|Win32.Build.0 = Release|Win32
+		{ECD34CC1-C8CE-4257-B890-123D6EF87D0A}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{ECD34CC1-C8CE-4257-B890-123D6EF87D0A}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{ECD34CC1-C8CE-4257-B890-123D6EF87D0A}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{ECD34CC1-C8CE-4257-B890-123D6EF87D0A}.Release Unicode|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
