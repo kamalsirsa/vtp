@@ -212,7 +212,7 @@ vtFeatureSet *vtFeatureLoader::LoadFrom(const char *filename)
 OGRwkbGeometryType GetTypeFromOGR(OGRLayer *pLayer)
 {
 	// Get basic information about the layer we're reading
-  	pLayer->ResetReading();
+	pLayer->ResetReading();
 	OGRFeatureDefn *defn = pLayer->GetLayerDefn();
 	if (!defn)
 		return wkbUnknown;

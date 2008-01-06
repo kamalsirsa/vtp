@@ -1133,7 +1133,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 	for (j = j_init; j != j_final; j += j_incr)
 	{
-   		if (progress_callback != NULL)
+		if (progress_callback != NULL)
 		{
 			if ((j&7) == 0)
 				progress_callback(abs(j-j_init) * 100 / h);
@@ -1221,7 +1221,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	//  the full lighting formula to each texel that has not been shaded yet.
 	for (j = 0; j < h; j++)
 	{
-   		if (progress_callback != NULL)
+		if (progress_callback != NULL)
 		{
 			if ((j&7) == 0)
 				progress_callback(j * 100 / h);

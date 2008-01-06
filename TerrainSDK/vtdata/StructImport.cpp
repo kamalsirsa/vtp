@@ -519,7 +519,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 			continue;
 
 		feature_count = pLayer->GetFeatureCount();
-  		pLayer->ResetReading();
+		pLayer->ResetReading();
 
 		pLayerDefn = pLayer->GetLayerDefn();
 		if (!pLayerDefn)
@@ -675,7 +675,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		StructImportOptions &opt, bool progress_callback(int))
 {
 	int feature_count = pLayer->GetFeatureCount();
-  	pLayer->ResetReading();
+	pLayer->ResetReading();
 
 	OGRFeatureDefn *pLayerDefn = pLayer->GetLayerDefn();
 	if (!pLayerDefn)
@@ -967,7 +967,7 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 	vtFence *pDefaultFence;
 
 	iFeatureCount = pLayer->GetFeatureCount();
-  	pLayer->ResetReading();
+	pLayer->ResetReading();
 
 	pLayerDefn = pLayer->GetLayerDefn();
 	if (!pLayerDefn)
@@ -1077,7 +1077,7 @@ void vtStructureArray::AddInstancesFromOGR(OGRLayer *pLayer,
 	int			iFilenameIndex = -1;
 
 	iFeatureCount = pLayer->GetFeatureCount();
-  	pLayer->ResetReading();
+	pLayer->ResetReading();
 
 	OGRFeatureDefn *pLayerDefn = pLayer->GetLayerDefn();
 	if (!pLayerDefn)

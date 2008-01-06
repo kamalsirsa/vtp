@@ -402,7 +402,7 @@ bool vtDIB::ReadBMP(const char *fname, bool progress_callback(int))
 
 	if (fread(m_Hdr, sizeof(BITMAPINFOHEADER), 1, fp) == 0)
 		goto ErrExit;
-	m_Hdr->biSize		  	= SwapBytes( (long )m_Hdr->biSize		,BO_LE, BO_CPU );
+	m_Hdr->biSize			= SwapBytes( (long )m_Hdr->biSize		,BO_LE, BO_CPU );
 	m_Hdr->biWidth			= SwapBytes( (long )m_Hdr->biWidth		,BO_LE, BO_CPU );
 	m_Hdr->biHeight			= SwapBytes( (long )m_Hdr->biHeight		,BO_LE, BO_CPU );
 	m_Hdr->biPlanes			= SwapBytes( (short)m_Hdr->biPlanes		,BO_LE, BO_CPU );
@@ -657,13 +657,13 @@ bool vtDIB::WriteJPEG(const char *fname, int quality, bool progress_callback(int
 	jpeg_stdio_dest(&cinfo, outfile);
 
 	// set parameters for compression
-	cinfo.image_width = m_iWidth; 	/* image width and height, in pixels */
+	cinfo.image_width = m_iWidth;	/* image width and height, in pixels */
 	cinfo.image_height = m_iHeight;
 	cinfo.input_components = m_iByteCount;	/* # of color components per pixel */
 	if (m_iByteCount == 1)
 		cinfo.in_color_space = JCS_GRAYSCALE;
 	else
-		cinfo.in_color_space = JCS_RGB; 	/* colorspace of input image */
+		cinfo.in_color_space = JCS_RGB;	/* colorspace of input image */
 
 	// Now use the library's routine to set default compression parameters.
 	jpeg_set_defaults(&cinfo);

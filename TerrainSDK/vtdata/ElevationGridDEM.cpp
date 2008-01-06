@@ -92,7 +92,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		iDataStartOffset = 1024;	// 1024 is record length
 	else
 	{
-		fseek(fp, 1024, 0); 		// Check for New Format
+		fseek(fp, 1024, 0);		// Check for New Format
 		iRow = IConvert(fp, 6);
 		iColumn = IConvert(fp, 6);
 		if (iRow==1 && iColumn==1)	// File OK?

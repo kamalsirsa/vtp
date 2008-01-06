@@ -12,7 +12,7 @@
 //			HEADER FILE for SPA.C			//
 //											//
 //		Solar Position Algorithm (SPA)		//
-//					for	 					//
+//					for						//
 //		Solar Radiation Application			//
 //											//
 //				May 12, 2003				//
@@ -32,21 +32,21 @@
 //																	//
 // Usage:															//
 //																	//
-//	1) In calling program, include this header file, 				//
+//	1) In calling program, include this header file,				//
 //		by adding this line to the top of file:						//
 //			#include "spa.h"										//
 //																	//
 //	2) In calling program, declare the SPA structure:				//
 //			spa_data spa;											//
 //																	//
-//	3) Enter the required input values into SPA structure 			//
+//	3) Enter the required input values into SPA structure			//
 //		(input values listed in comments below)						//
 //																	//
 //	4) Call the SPA calculate function and pass the SPA structure	//
 //		(prototype is declared at the end of this header file):		//
 //			spa_calculate(&spa);									//
 //																	//
-//	All output values (listed in comments below) will be 			//
+//	All output values (listed in comments below) will be			//
 //	computed and returned in the passed SPA structure.				//
 //																	//
 //////////////////////////////////////////////////////////////////////
@@ -67,9 +67,9 @@ public:
 	int minute;			//observer local minute
 	int second;			//observer local second
 
-	float delta_t;	 	//difference between earth rotation time and terrestrial time
+	float delta_t;		//difference between earth rotation time and terrestrial time
 						//(from observation) [seconds]
-	float timezone;	 	//observer timezone (negative west of greenwich) [hours]
+	float timezone;		//observer timezone (negative west of greenwich) [hours]
 	float longitude;	//observer longitude (negative west of greenwich) [degrees]
 	float latitude;		//observer latitude (negative south of equator) [degrees]
 	float elevation;	//observer elevation [meters]

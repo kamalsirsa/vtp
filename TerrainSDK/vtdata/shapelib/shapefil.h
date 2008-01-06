@@ -371,7 +371,7 @@ int	SHPAPI_CALL
 int	SHPAPI_CALL
 		SHPTreeRemoveShapeId( SHPTree * hTree, int nShapeId );
 
-void 	SHPAPI_CALL
+void	SHPAPI_CALL
 		SHPTreeTrimExtraNodes( SHPTree * hTree );
 
 int	SHPAPI_CALL1(*)
@@ -441,9 +441,9 @@ DBFFieldType SHPAPI_CALL
 int SHPAPI_CALL
 		DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName);
 
-int 	SHPAPI_CALL
+int	SHPAPI_CALL
 		DBFReadIntegerAttribute( DBFHandle hDBF, int iShape, int iField );
-double 	SHPAPI_CALL
+double	SHPAPI_CALL
 		DBFReadDoubleAttribute( DBFHandle hDBF, int iShape, int iField );
 const char SHPAPI_CALL1(*)
 		DBFReadStringAttribute( DBFHandle hDBF, int iShape, int iField );

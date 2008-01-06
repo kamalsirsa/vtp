@@ -1910,7 +1910,7 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 	// in the elevation matrix
 	int iTotalCells = pLayer->GetFeatureCount();
 
-  	pLayer->ResetReading();
+	pLayer->ResetReading();
 
 	// Prescan the features to calculate the x and y intervals
 	// This is awkward, it would be better to do everything in one pass.
@@ -1966,7 +1966,7 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 	// Time Test
 	clock_t tm3 = clock();
 
-  	pLayer->ResetReading();
+	pLayer->ResetReading();
 
 	int i;
 	for (i = 0; i < iTotalCells; i++)

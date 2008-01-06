@@ -85,7 +85,7 @@ and distributed under a completely free <a href="../license.txt">open source lic
 		<li>dir_iter</li>
 		<li>LocaleWrap</li>
 		<li>ColorMap</li>
- 		<li>HeightfieldChunker</li>
+		<li>HeightfieldChunker</li>
 	  </ul>
 	  <p>Logging</p>
 	  <ul>

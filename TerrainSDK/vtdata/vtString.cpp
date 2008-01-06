@@ -497,7 +497,7 @@ void vtString::MakeUpper()
 {
 	CopyBeforeWrite();
 #ifdef WIN32
- 	_strupr(m_pchData);
+	_strupr(m_pchData);
 #else
 	for (char *p = m_pchData; *p; p++ )
 		*p = toupper(*p);
@@ -508,7 +508,7 @@ void vtString::MakeLower()
 {
 	CopyBeforeWrite();
 #ifdef WIN32
- 	_strlwr(m_pchData);
+	_strlwr(m_pchData);
 #else
 	for (char *p = m_pchData; *p; p++ )
 		*p = tolower(*p);
@@ -519,7 +519,7 @@ void vtString::MakeReverse()
 {
 	CopyBeforeWrite();
 #ifdef WIN32
- 	_strrev(m_pchData);
+	_strrev(m_pchData);
 #else
 	{
 		int len = strlen( m_pchData );
@@ -528,7 +528,7 @@ void vtString::MakeReverse()
 			m_pchData[  i  ] = m_pchData[len-1-i];
 			m_pchData[len-1-i] = tmp;
 		}
- 	}
+	}
 #endif
 }
 
