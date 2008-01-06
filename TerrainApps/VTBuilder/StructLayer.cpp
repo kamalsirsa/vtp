@@ -15,6 +15,7 @@
 #include "vtdata/Fence.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
+#include "vtdata/Triangulate.h"
 #include "ogrsf_frmts.h"
 
 #include "Frame.h"
@@ -173,7 +174,6 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 									vtBuilding *bld)
 {
 	DPoint2 center;
-	int i, j;
 
 	wxPoint origin;
 	bld->GetBaseLevelCenter(center);
@@ -191,23 +191,43 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 	if (pDC->GetLogicalFunction() == wxINVERT)
 		levs = 1;
 
-	for (i = 0; i < levs; i++)
+	for (int i = 0; i < levs; i++)
 	{
 #if OGR_FOOTPRINT
-		const OGRPolygon &op = bld->GetAtOGRFootprint(i);
-		pView->DrawOGRPolygon(pDC, op, false);	// no fill
-
-		//const OGRLinearRing *ring = op.getExteriorRing();
-		//int points = ring->getNumPoints();
-		//for (j = 0; j < points; j++)
-		//	pDC->DrawCircle(g_screenbuf[j], 3);
+		const OGRPolygon *op = bld->GetAtOGRFootprint(i);
+		pView->DrawOGRPolygon(pDC, *op, false, true);	// no fill, yes circles
 #else
 		const DLine2 &dl = bld->GetFootprint(i);
 		pView->DrawPolyLine(pDC, dl, true);
 
 		int sides = dl.GetSize();
-		for (j = 0; j < sides; j++)
+		for (int j = 0; j < sides; j++)
 			pDC->DrawCircle(g_screenbuf[j], 3);
+
+#if TEST
+		const DLine2 &dl = bld->GetFootprint(i);
+		DLine2 result;
+		Triangulate_d::Process(dl, result);
+
+		int tcount = result.GetSize()/3;
+		for (int j = 0; j < tcount; j++)
+		{
+			const DPoint2 &p1 = result[j*3+0];
+			const DPoint2 &p2 = result[j*3+1];
+			const DPoint2 &p3 = result[j*3+2];
+			pView->DrawLine(pDC, p1, p2);
+			pView->DrawLine(pDC, p2, p3);
+			pView->DrawLine(pDC, p3, p1);
+		}
+
+		int verts = dl.GetSize();
+		for (int j = 0; j < verts; j++)
+		{
+			wxPoint sp;
+			pView->screen(dl[j], sp);
+			pDC->DrawCircle(sp, 3);
+		}
+#endif
 #endif
 	}
 }

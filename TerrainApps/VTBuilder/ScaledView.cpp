@@ -214,6 +214,13 @@ void vtScaledView::GetCanvasPosition(const wxMouseEvent &event, wxPoint &pos)
 	CalcUnscrolledPosition(p.x, p.y, &pos.x, &pos.y);
 }
 
+void vtScaledView::DrawLine(wxDC *pDC, const DPoint2 &p0, const DPoint2 &p1)
+{
+	screen(p0, g_screenbuf[0]);
+	screen(p1, g_screenbuf[1]);
+	pDC->DrawLines(2, g_screenbuf);
+}
+
 void vtScaledView::DrawPolyLine(wxDC *pDC, const DLine2 &dline, bool bClose)
 {
 	int i, size = dline.GetSize();
@@ -269,7 +276,7 @@ void vtScaledView::DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill)
 	}
 }
 
-void vtScaledView::DrawOGRLinearRing(wxDC *pDC, const OGRLinearRing *line)
+void vtScaledView::DrawOGRLinearRing(wxDC *pDC, const OGRLinearRing *line, bool bCircles)
 {
 	int i, size = line->getNumPoints();
 	if (size < 2)
@@ -281,10 +288,21 @@ void vtScaledView::DrawOGRLinearRing(wxDC *pDC, const OGRLinearRing *line)
 		line->getPoint(i, &op);
 		screen(&op, g_screenbuf[i]);
 	}
-	pDC->DrawLines(i, g_screenbuf);
+	// Close
+	line->getPoint(0, &op);
+	screen(&op, g_screenbuf[i]);
+
+	pDC->DrawLines(i+1, g_screenbuf);
+
+	if (bCircles)
+	{
+		for (int j = 0; j < i+1; j++)
+			pDC->DrawCircle(g_screenbuf[j], 3);
+	}
 }
 
-void vtScaledView::DrawOGRPolygon(wxDC *pDC, const OGRPolygon &poly, bool bFill)
+void vtScaledView::DrawOGRPolygon(wxDC *pDC, const OGRPolygon &poly, bool bFill,
+								  bool bCircles)
 {
 	if (bFill)
 	{
@@ -293,9 +311,10 @@ void vtScaledView::DrawOGRPolygon(wxDC *pDC, const OGRPolygon &poly, bool bFill)
 	else
 	{
 		// just draw each ring
-		DrawOGRLinearRing(pDC, poly.getExteriorRing());
-		//for (int ring = 0; ring < poly.getNumInteriorRings(); ring++)
-		//	DrawOGRLinearRing(pDC, poly.getInteriorRing(ring));
+		DrawOGRLinearRing(pDC, poly.getExteriorRing(), bCircles);
+
+		for (int ring = 0; ring < poly.getNumInteriorRings(); ring++)
+			DrawOGRLinearRing(pDC, poly.getInteriorRing(ring), bCircles);
 	}
 }
 

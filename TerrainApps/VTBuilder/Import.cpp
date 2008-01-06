@@ -394,8 +394,8 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString &strFileN
 	case LT_STRUCTURE:
 		if (!strExt.CmpNoCase(_T("shp")))
 		{
-//			pLayer = ImportFromSHP(strFileName, ltype);
-			pLayer = ImportVectorsWithOGR(strFileName, ltype);
+			pLayer = ImportFromSHP(strFileName, ltype);
+//			pLayer = ImportVectorsWithOGR(strFileName, ltype);
 		}
 		else if (!strExt.CmpNoCase(_T("gml")))
 		{

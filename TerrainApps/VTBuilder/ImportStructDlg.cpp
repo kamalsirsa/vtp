@@ -206,6 +206,8 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetChoiceRoofField()->SetSelection(0);
 
 	TransferDataToWindow();
+
+	CopyToOptions();
 }
 
 void ImportStructDlg::CopyToOptions()

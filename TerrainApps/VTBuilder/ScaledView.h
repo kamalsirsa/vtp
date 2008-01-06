@@ -70,12 +70,13 @@ public:
 	double odx(int x) { return x/m_fScale; }
 	double ody(int y) { return -y/m_fScale; }
 
+	void DrawLine(wxDC *pDC, const DPoint2 &p0, const DPoint2 &p1);
 	void DrawPolyLine(wxDC *pDC, const DLine2 &line, bool bClose);
 	void DrawDoubleLine(wxDC *pDC, const DLine2 &line, const DLine2 &width);
 	void DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill);
 
-	void DrawOGRLinearRing(wxDC *pDC, const OGRLinearRing *line);
-	void DrawOGRPolygon(wxDC *pDC, const OGRPolygon &poly, bool bFill);
+	void DrawOGRLinearRing(wxDC *pDC, const OGRLinearRing *line, bool bCircles);
+	void DrawOGRPolygon(wxDC *pDC, const OGRPolygon &poly, bool bFill, bool bCircles);
 
 protected:
 	void UpdateRanges();
