@@ -37,7 +37,7 @@ LRESULT CALLBACK Capture::s_wndProc(HWND hWnd, UINT uMsg,
 	if( p == registry.end() )
 		return DefWindowProc( hWnd, uMsg, wParam, lParam );
 	else
-		return p->second->wndProc( hWnd, uMsg, wParam, lParam );        
+		return p->second->wndProc( hWnd, uMsg, wParam, lParam );
 }
 
 LRESULT CALLBACK Capture::wndProc(HWND hWnd, UINT iMsg,

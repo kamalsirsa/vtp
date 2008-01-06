@@ -30,7 +30,7 @@ void ShowErrorMessage(int error)
 {
 	LPVOID lpMsgBuf;
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-				  FORMAT_MESSAGE_FROM_SYSTEM |	
+				  FORMAT_MESSAGE_FROM_SYSTEM |
 				  FORMAT_MESSAGE_IGNORE_INSERTS,
 				  NULL,
 				  error,
@@ -516,7 +516,7 @@ void BExtractorDoc::OnRmfSaveAs()
 
 	CString str = saveAsDialog.GetPathName();
 	const char *szPathName = str;
-	
+
 	m_Links.ComputeExtents();
 	if (!m_Links.WriteRMF(szPathName))
 	{

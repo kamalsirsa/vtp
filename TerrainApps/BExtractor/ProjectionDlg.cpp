@@ -60,7 +60,7 @@ BOOL CProjectionDlg::OnInitDialog()
 	m_Projection.SetFocus();
 
 	m_Projection.SetCurSel(0);
-	
+
 	return FALSE;  // return TRUE unless you set the focus to a control
 }
 
@@ -77,5 +77,4 @@ void CProjectionDlg::OnSelchangeProjection()
 		m_pcZone.EnableWindow(FALSE);
 		break;
 	}
-	
 }

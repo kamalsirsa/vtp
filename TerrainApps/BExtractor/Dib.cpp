@@ -276,7 +276,7 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
 			}
 			if ((NULL == pRed) || (NULL == pGreen) || (NULL == pBlue))
 				throw "Couldn't find bands for Red, Green, Blue.";
-			
+
 			pRed->GetBlockSize(&xBlockSize, &yBlockSize);
 
 			nxBlocks = (iPixelWidth + xBlockSize - 1) / xBlockSize;
@@ -520,7 +520,7 @@ BOOL CDib::Draw(CDC& dc, const CRect* rcDst, const CRect* rcSrc,
 			rcSrc = &rc;
 		if (!rcDst)
 			rcDst=rcSrc;
-		if (!m_hdd)				
+		if (!m_hdd)
 			VERIFY(m_hdd = DrawDibOpen());	//should never get called here anymore
 
 		GetDIBFromSection();

@@ -36,7 +36,7 @@ public:
 
 private:
 	CString		m_roadFileName;
-	
+
 public:
 	const vtProjection &GetProjection() { return m_proj; }
 	void OnImportimage2(LPCTSTR szPathName);

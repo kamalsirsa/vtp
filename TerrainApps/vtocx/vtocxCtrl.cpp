@@ -186,7 +186,7 @@ HRESULT RegisterCLSIDInCategory(REFCLSID clsid, CATID catid)
 
 	if (pcr != NULL)
 		  pcr->Release();
-					 
+
 	return hr;
 }
 
@@ -207,7 +207,7 @@ HRESULT UnRegisterCLSIDInCategory(REFCLSID clsid, CATID catid)
 
 	if (pcr != NULL)
 	pcr->Release();
-					 
+
 	return hr;
 }
 
@@ -274,7 +274,7 @@ BOOL CvtocxCtrl::CvtocxCtrlFactory::UpdateRegistry(BOOL bRegister)
 
 		return AfxOleUnregisterClass(m_clsid, m_lpszProgID);
 	}
-	
+
 /*
 	if (bRegister)
 		return AfxOleRegisterControlClass(
@@ -338,7 +338,7 @@ CvtocxCtrl::CvtocxCtrl() :
 	DWORD size = 1024;
 	char data[1024];
 	RegQueryValueEx(key, 0, 0, &type, (LPBYTE)data, &size);
-	while (data[--size] != '\\'); data[size] = 0; 
+	while (data[--size] != '\\'); data[size] = 0;
 	osgDB::Registry *reg = osgDB::Registry::instance();
 	reg->setLibraryFilePathList(data);
 
@@ -372,7 +372,7 @@ CvtocxCtrl::~CvtocxCtrl()
 }
 
 
-void CvtocxCtrl::OnTimer(UINT_PTR nIDEvent) 
+void CvtocxCtrl::OnTimer(UINT_PTR nIDEvent)
 {
 #if FULL_LOGGING
 	VTLOG("OnTimer event: %d\n", nIDEvent);
@@ -471,7 +471,7 @@ bool CvtocxCtrl::SetupGLContext(void)
 		1,
 		PFD_DRAW_TO_WINDOW|
 		PFD_SUPPORT_OPENGL|
-		PFD_DOUBLEBUFFER,  
+		PFD_DOUBLEBUFFER,
 		PFD_TYPE_RGBA,
 		24,
 		0,0,0,0,0,0,
@@ -485,7 +485,7 @@ bool CvtocxCtrl::SetupGLContext(void)
 
 	int pixelFormat =
 		ChoosePixelFormat(m_pDC->m_hDC, &pfd);
-	BOOL success = 
+	BOOL success =
 		SetPixelFormat(m_pDC->m_hDC, pixelFormat, &pfd);
 	if (success == 0)
 	{
@@ -601,7 +601,7 @@ void CvtocxCtrl::frame(CDC *pdc)
 #endif
 }
 
-void CvtocxCtrl::resize(const long w, const long h) 
+void CvtocxCtrl::resize(const long w, const long h)
 {
 	VTLOG("resize(%d, %d)\n", w, h);
 
@@ -620,17 +620,17 @@ int CvtocxCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// We set CS_OWNDC so that we have our own DC which won't go away
 	lpCreateStruct->style |= (WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CS_OWNDC);
-	
+
 	if (COleControl::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
 	// Create progress control
 	BOOL success = m_Progress.Create(WS_CHILD|WS_VISIBLE,
 		CRect(0,0,256,30), this, 1);
-    if ( !success )
-    {
-        ::AfxMessageBox( _T("Unable to create progress render control.") );
-    }
+	if ( !success )
+	{
+		::AfxMessageBox( _T("Unable to create progress render control.") );
+	}
 	m_Progress.SetRange(0, 100);
 
 	// Safe to do this here if the client is not IE
@@ -699,14 +699,14 @@ void CvtocxCtrl::OnDestroy()
 
 	VTLOG1("calling COleControl::OnDestroy\n");
 	COleControl::OnDestroy();
-	
+
 	_rendering = false;;
 	if (m_glThread)
 	{
 		VTLOG1("calling _glThread->join\n");
 		m_glThread->join();
 		VTLOG1("calling delete _glThread\n");
-		delete m_glThread;	
+		delete m_glThread;
 	}
 
 	//if (wglGetCurrentContext() != NULL)
@@ -933,10 +933,10 @@ void CvtocxCtrl::OnContextMenu(CWnd* pWnd, CPoint point)
 	//osg::ref_ptr<osg::Group> viewPoints = _sceneView->getViewPoints();
 	//if(viewPoints.valid())
 	//{
-	//	if(viewPoints->getNumChildren()) 
+	//	if(viewPoints->getNumChildren())
 	//	{
 	//		for(unsigned int i = 0; i < viewPoints->getNumChildren(); i++)
-	//			viewMenu.AppendMenu(MF_ENABLED, ID_MENU_VIEWPOINTS + i + 1, (LPCTSTR) viewPoints->getChild(i)->getName().c_str());				
+	//			viewMenu.AppendMenu(MF_ENABLED, ID_MENU_VIEWPOINTS + i + 1, (LPCTSTR) viewPoints->getChild(i)->getName().c_str());
 	//	}
 	//}
 	//viewMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)0L);
@@ -981,8 +981,8 @@ void CvtocxCtrl::OnFullscreenChanged(void)
 		s |= WS_POPUP;
 		SetWindowLong(GetSafeHwnd(), GWL_STYLE, s);
 		SetWindowPos(&CWnd::wndTop,
-					 0, 0, 
-					 1600, 1000, 
+					 0, 0,
+					 1600, 1000,
 					 SWP_FRAMECHANGED);
 	}
 	else

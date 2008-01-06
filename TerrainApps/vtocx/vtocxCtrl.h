@@ -76,8 +76,8 @@ public:
 		dispidClearColor = 1
 	};
 
-    void frame(CDC *pdc = NULL);
-    void resize(const long w, const long h);
+	void frame(CDC *pdc = NULL);
+	void resize(const long w, const long h);
 	bool rendering() { return _rendering; }
 #if CALL_VTP
 	void Create3DScene();

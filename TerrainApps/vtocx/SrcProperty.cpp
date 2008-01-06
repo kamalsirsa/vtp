@@ -72,12 +72,12 @@ void CSrcProperty::OnDataAvailable(DWORD dwSize, DWORD bscfFlag)
 	END_CATCH_ALL
 	m_Cache.Seek(dwPos, CFile::begin);
 
-    if(bscfFlag & BSCF_LASTDATANOTIFICATION)
-    {
-        m_Cache.SeekToBegin();
+	if(bscfFlag & BSCF_LASTDATANOTIFICATION)
+	{
+		m_Cache.SeekToBegin();
 
 		// get the length (bytes) of the memory file
-		long memLen = m_Cache.GetLength();	
+		long memLen = m_Cache.GetLength();
 
 		// detach the buffer and close the file
 		char* memData = (char*) m_Cache.Detach();
@@ -86,18 +86,18 @@ void CSrcProperty::OnDataAvailable(DWORD dwSize, DWORD bscfFlag)
 		CString extension = GetPath();
 		int pos = extension.ReverseFind('.');
 		if(++pos) extension = extension.Right(extension.GetLength() - pos); // remove path and filename from extension
-		
+
 		// (Load data from stream, if desired)
 
 		free(memData);
 //		m_Cache.Attach((BYTE*)memData, memLen);
-    }
+	}
 }
 
 void CSrcProperty::OnProgress(ULONG ulProgress, ULONG ulProgressMax, ULONG ulStatusCode, LPCTSTR szStatusText)
 {
 	// Add your specialized code here and/or call the base class
-	// add code that make a progressbar available in the OpenGL window...	
+	// add code that make a progressbar available in the OpenGL window...
 	CCachedDataPathProperty::OnProgress(ulProgress, ulProgressMax, ulStatusCode, szStatusText);
 }
 

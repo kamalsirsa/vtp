@@ -2221,6 +2221,6 @@ void BExtractorView::OnActivateView(BOOL bActivate, CView* pActivateView, CView*
 		CMainFrame *pFrame = (CMainFrame *)AfxGetMainWnd();
 		pFrame->RefreshStatusBar(this);
 	}
-	
+
 	CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
 }

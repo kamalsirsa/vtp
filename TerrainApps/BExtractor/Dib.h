@@ -29,7 +29,7 @@ protected:
 	DECLARE_DYNAMIC(CDib)
 	BITMAP	m_bm;		// stored for speed
 	CPalette m_pal;		// palette
-	HDRAWDIB m_hdd;		// for DrawDib	
+	HDRAWDIB m_hdd;		// for DrawDib
 	void *m_data;
 	HBITMAP m_hbm;
 
