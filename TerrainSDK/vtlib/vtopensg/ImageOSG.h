@@ -31,7 +31,7 @@ public:
 	bool Read(const char *fname, bool bAllowCache = true, bool progress_callback(int) = NULL);
 	bool WritePNG(const char *fname, bool progress_callback(int) = NULL);
 	bool WriteJPEG(const char *fname, int quality = 99, bool progress_callback(int) = NULL);
-	bool HasData() { return m_Image != osg::NullFC;}; 
+	bool HasData() { return m_Image != osg::NullFC;};
 
 	/// Return the name of the file, if any, from which the image was loaded.
 	vtString GetFilename() { return m_strFilename;}
@@ -39,7 +39,7 @@ public:
 	/// Return the image
 	osg::ImagePtr GetImage( ) const {return m_Image;};
 	unsigned char *GetData() const { return m_Image->getData(); };
-	unsigned char *GetRowData(int row) const; 
+	unsigned char *GetRowData(int row) const;
 
 	// Provide vtBitmapBase methods
 	unsigned char GetPixel8(int x, int y) const;

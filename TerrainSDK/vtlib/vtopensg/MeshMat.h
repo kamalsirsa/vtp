@@ -79,14 +79,14 @@ public:
 	vtImage *m_pImage;
 
 	// the VT material object includes texture
-	osg::RefPtr<OSG::SimpleTexturedMaterialPtr> m_pMaterial; 
+	osg::RefPtr<OSG::SimpleTexturedMaterialPtr> m_pMaterial;
 	//osg::RefPtr<OSG::SimpleMaterialPtr> m_pMaterial;
 };
 
 /**
  * Contains an array of materials.  Provides useful methods for creating material easily.
  */
-class vtMaterialArray : public vtMaterialArrayBase// EXCEPT, public osg::Referenced 
+class vtMaterialArray : public vtMaterialArrayBase// EXCEPT, public osg::Referenced
 {
 public:
 	vtMaterialArray();
@@ -117,7 +117,7 @@ protected:
  * Most of the useful methods of this class are defined on its parent
  *	class, vtMeshBase.
  */
-class vtMesh : public vtMeshBase// EXCEPT, TODO public osg::Referenced 
+class vtMesh : public vtMeshBase// EXCEPT, TODO public osg::Referenced
 {
 	friend class vtGeom;
 
@@ -178,7 +178,7 @@ protected:
 	//} m_pGeometry
 
 	//the vertices of the mesh
-	osg::GeoPositions3fPtr m_Vert; 
+	osg::GeoPositions3fPtr m_Vert;
 	//the types of the primitives
 	osg::GeoPTypesUI8Ptr m_pPrimSet;
 	//the lengths of primitives
@@ -189,7 +189,7 @@ protected:
 	osg::GeoTexCoords2fPtr m_Tex;
 	//the normals
 	osg::GeoNormals3fPtr m_Norm;
-	//TODO should be geocolors4fptr 
+	//TODO should be geocolors4fptr
 	osg::GeoColors3fPtr m_Color;
 
 
@@ -207,7 +207,7 @@ public:
 	vtFont();
 	~vtFont();
 	bool LoadFont(const char *filename);
-	osg::FontStyle *GetFontStyle() const { return m_pFontStyle;}; 
+	osg::FontStyle *GetFontStyle() const { return m_pFontStyle;};
 
 private:
 	osg::FontStyle *m_pFontStyle;
@@ -218,7 +218,7 @@ private:
  * general geometry primitives.  vtTextMesh is used similarly with vtMesh:
  * you create them and add them to vtGeom objects to add them to the scene.
  */
-class vtTextMesh //EXCEPT: public osg::Referenced 
+class vtTextMesh //EXCEPT: public osg::Referenced
 {
 public:
 	vtTextMesh(vtFont *font, float fSize = 1, bool bCenter = false);

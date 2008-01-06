@@ -87,7 +87,7 @@ public:
 	{
 		//EXCEPT return _timer.delta_s(_lastFrameTick,_frameTick);
 		//std::cout << "frametime " <<_lastframeTick - _initialTick;
-		return( (float)(_frameTick - _lastFrameTick))/CLOCKS_PER_SEC;  
+		return( (float)(_frameTick - _lastFrameTick))/CLOCKS_PER_SEC;
 	}
 
 	// View methods
@@ -122,7 +122,7 @@ public:
 
 	bool IsStereo() const;
 	void SetStereoSeparation(float fSep);
-	float GetStereoSeparation() const; 
+	float GetStereoSeparation() const;
 	void ComputeViewMatrix(FMatrix4 &mat);
 
 	// OpenSG access

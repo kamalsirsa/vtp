@@ -70,7 +70,7 @@ public:
  * Represents a node in the vtlib scenegraph.  The scenegraph is simply
  * a tree of nodes, with a root node at the top.
  */
-class vtNode : public vtNodeBase// EXCEPT, protected osg::Referenced 
+class vtNode : public vtNodeBase// EXCEPT, protected osg::Referenced
 {
 public:
 	virtual void Release();
@@ -514,7 +514,7 @@ protected:
 	OSG::Matrix4f m_projection;
 	OSG::MatrixCameraPtr m_camera;
 	OSG::PassiveViewportPtr m_pHudViewport;
-		
+
 	virtual ~vtHUD() {};
 };
 

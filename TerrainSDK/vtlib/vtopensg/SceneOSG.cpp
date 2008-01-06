@@ -91,7 +91,7 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 
 	//not in sceneviewosg... crashes ?
 	//no stereo or passive stereo  have only ONE camera
-	if (!bStereo || GetSceneView()->GetStereoMode() == 2) 
+	if (!bStereo || GetSceneView()->GetStereoMode() == 2)
 		GetSceneView()->GetCamera()->setBeacon( m_pCamera->GetOsgNode() );
 	else {
 		GetSceneView()->GetLeftCamera()->setBeacon( m_pCamera->GetOsgNode() );
@@ -127,7 +127,7 @@ bool vtScene::CustomInit( SceneViewOSG * sceneview )
 	//the external camera controls now the vtp cam
 	//dont set the beacon...
 	if (!GetSceneView()->IsCustomSceneView() ) {
-		if (!GetSceneView()->IsStereo() || GetSceneView()->GetStereoMode() == 2) 
+		if (!GetSceneView()->IsStereo() || GetSceneView()->GetStereoMode() == 2)
 			GetSceneView()->GetCamera()->setBeacon( m_pCamera->GetOsgNode() );
 		else {
 			GetSceneView()->GetLeftCamera()->setBeacon( m_pCamera->GetOsgNode() );
@@ -194,7 +194,7 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 
 	osg::Color3f color3;
 	v2s(pWindow->GetBgColor(), color3);
-	GetSceneView()->SetBackgroundColor( color3 );   
+	GetSceneView()->SetBackgroundColor( color3 );
 
 	if ( m_pCamera->IsOrtho() ) { //no ortho for now
 		//we need to have a ortho cam in order to do this in opensg
@@ -227,9 +227,9 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 		// Not: aspect = (float) winsize.y / winsize.x;
 
 		GetSceneView()->UpdateCamera(
-									aspect, 
-									fov_y, 
-									m_pCamera->GetHither(), 
+									aspect,
+									fov_y,
+									m_pCamera->GetHither(),
 									m_pCamera->GetYon()
 									);
 	}
@@ -254,9 +254,9 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 void vtScene::ComputeViewMatrix(FMatrix4 &mat)
 {
 	osg::Matrix result;
-	GetSceneView()->GetCamera()->getViewing( result, 
-											 GetSceneView()->GetWindow()->getWidth(), 
-											 GetSceneView()->GetWindow()->getHeight() 
+	GetSceneView()->GetCamera()->getViewing( result,
+											 GetSceneView()->GetWindow()->getWidth(),
+											 GetSceneView()->GetWindow()->getHeight()
 										   );
 
 	ConvertMatrix4( &result, &mat );
@@ -274,8 +274,8 @@ void vtScene::SetRoot(vtGroup *pRoot)
 {
 	if ( pRoot ) {
 		beginEditCP(m_pOsgSceneRoot);
-		m_pOsgSceneRoot = pRoot->GetOsgNode();      
-		endEditCP(m_pOsgSceneRoot); 
+		m_pOsgSceneRoot = pRoot->GetOsgNode();
+		endEditCP(m_pOsgSceneRoot);
 	} else
 		m_pOsgSceneRoot	= osg::NullFC;
 
@@ -330,9 +330,9 @@ void vtScene::WorldToScreen(const FPoint3 &point, IPoint2 &result)
 {
 	osg::Matrix to_screen;
 	//TODO don't use index but cast to correct type of viewport, e.g. no shadowmapviewport...
-	GetSceneView()->GetCamera()->getWorldToScreen(to_screen, 
+	GetSceneView()->GetCamera()->getWorldToScreen(to_screen,
 												  *GetSceneView()->GetViewport());
-	osg::Pnt3f p; 
+	osg::Pnt3f p;
 	v2s(point, p);
 	to_screen.multMatrixPnt( p );
 	result.x = (int) p.x();
@@ -350,7 +350,7 @@ void LogCullPlanes(FPlane *planes)
 
 void vtScene::CalcCullPlanes()
 {
-#if 1 
+#if 1
 	// Non-API-Specific code - will work correctly as long as the Camera
 	// methods are fully functional.
 	FMatrix4 mat;
@@ -432,7 +432,7 @@ void vtScene::CalcCullPlanes()
 		Vec4 pvec = plane.asVec4();
 		m_cullPlanes[i++].Set(-pvec.x(), -pvec.y(), -pvec.z(), -pvec.w());
 	}
-#endif //1 
+#endif //1
 	// For debugging
 	LogCullPlanes(m_cullPlanes);
 }
@@ -499,7 +499,7 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 
 	if (!pWindow) pWindow = vtGetScene()->GetWindow(0);
 	vtSceneBase::SetWindowSize(w, h, pWindow);
-} 
+}
 
 
 ////////////////////////////////////////

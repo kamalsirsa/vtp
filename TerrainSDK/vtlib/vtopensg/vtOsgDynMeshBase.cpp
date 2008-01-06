@@ -9,18 +9,18 @@
 
 OSG_USING_NAMESPACE
 
-const OSG::BitVector  vtOsgDynMeshBase::PositionFieldMask = 
+const OSG::BitVector  vtOsgDynMeshBase::PositionFieldMask =
 (TypeTraits<BitVector>::One << vtOsgDynMeshBase::PositionFieldId);
 
-const OSG::BitVector  vtOsgDynMeshBase::LengthFieldMask = 
+const OSG::BitVector  vtOsgDynMeshBase::LengthFieldMask =
 (TypeTraits<BitVector>::One << vtOsgDynMeshBase::LengthFieldId);
 
-const OSG::BitVector  vtOsgDynMeshBase::ColorFieldMask = 
+const OSG::BitVector  vtOsgDynMeshBase::ColorFieldMask =
 (TypeTraits<BitVector>::One << vtOsgDynMeshBase::ColorFieldId);
 
-const OSG::BitVector vtOsgDynMeshBase::MTInfluenceMask = 
-(Inherited::MTInfluenceMask) | 
-(static_cast<BitVector>(0x0) << Inherited::NextFieldId); 
+const OSG::BitVector vtOsgDynMeshBase::MTInfluenceMask =
+(Inherited::MTInfluenceMask) |
+(static_cast<BitVector>(0x0) << Inherited::NextFieldId);
 
 
 // Field descriptions
@@ -37,20 +37,20 @@ const OSG::BitVector vtOsgDynMeshBase::MTInfluenceMask =
 
 //! vtOsgDynMesh description
 
-FieldDescription *vtOsgDynMeshBase::_desc[] = 
+FieldDescription *vtOsgDynMeshBase::_desc[] =
 {
-	new FieldDescription(MFPnt3f::getClassType(), 
-						 "position", 
+	new FieldDescription(MFPnt3f::getClassType(),
+						 "position",
 						 PositionFieldId, PositionFieldMask,
 						 false,
 						 (FieldAccessMethod) &vtOsgDynMeshBase::getMFPosition),
-	new FieldDescription(MFReal32::getClassType(), 
-						 "length", 
+	new FieldDescription(MFReal32::getClassType(),
+						 "length",
 						 LengthFieldId, LengthFieldMask,
 						 false,
 						 (FieldAccessMethod) &vtOsgDynMeshBase::getMFLength),
-	new FieldDescription(MFColor3f::getClassType(), 
-						 "color", 
+	new FieldDescription(MFColor3f::getClassType(),
+						 "color",
 						 ColorFieldId, ColorFieldMask,
 						 false,
 						 (FieldAccessMethod) &vtOsgDynMeshBase::getMFColor)
@@ -70,29 +70,29 @@ FieldContainerType vtOsgDynMeshBase::_type(
 
 /*------------------------------ get -----------------------------------*/
 
-FieldContainerType &vtOsgDynMeshBase::getType(void) 
-{
-	return _type; 
-} 
-
-const FieldContainerType &vtOsgDynMeshBase::getType(void) const 
+FieldContainerType &vtOsgDynMeshBase::getType(void)
 {
 	return _type;
-} 
-
-
-FieldContainerPtr vtOsgDynMeshBase::shallowCopy(void) const 
-{ 
-	vtOsgDynMeshPtr returnValue; 
-
-	newPtr(returnValue, dynamic_cast<const vtOsgDynMesh *>(this)); 
-
-	return returnValue; 
 }
 
-UInt32 vtOsgDynMeshBase::getContainerSize(void) const 
-{ 
-	return sizeof(vtOsgDynMesh); 
+const FieldContainerType &vtOsgDynMeshBase::getType(void) const
+{
+	return _type;
+}
+
+
+FieldContainerPtr vtOsgDynMeshBase::shallowCopy(void) const
+{
+	vtOsgDynMeshPtr returnValue;
+
+	newPtr(returnValue, dynamic_cast<const vtOsgDynMesh *>(this));
+
+	return returnValue;
+}
+
+UInt32 vtOsgDynMeshBase::getContainerSize(void) const
+{
+	return sizeof(vtOsgDynMesh);
 }
 
 
@@ -108,9 +108,9 @@ void vtOsgDynMeshBase::executeSync(      FieldContainer &other,
 {
 	this->executeSyncImpl((vtOsgDynMeshBase *) &other, whichField, sInfo);
 }
-void vtOsgDynMeshBase::execBeginEdit(const BitVector &whichField, 
+void vtOsgDynMeshBase::execBeginEdit(const BitVector &whichField,
 									 UInt32     uiAspect,
-									 UInt32     uiContainerSize) 
+									 UInt32     uiContainerSize)
 {
 	this->execBeginEditImpl(whichField, uiAspect, uiContainerSize);
 }
@@ -132,10 +132,10 @@ void vtOsgDynMeshBase::onDestroyAspect(UInt32 uiId, UInt32 uiAspect)
 #endif
 
 vtOsgDynMeshBase::vtOsgDynMeshBase(void) :
-_mfPosition               (), 
-_mfLength                 (), 
-_mfColor                  (), 
-Inherited() 
+_mfPosition               (),
+_mfLength                 (),
+_mfColor                  (),
+Inherited()
 {
 }
 
@@ -144,9 +144,9 @@ Inherited()
 #endif
 
 vtOsgDynMeshBase::vtOsgDynMeshBase(const vtOsgDynMeshBase &source) :
-_mfPosition               (source._mfPosition               ), 
-_mfLength                 (source._mfLength                 ), 
-_mfColor                  (source._mfColor                  ), 
+_mfPosition               (source._mfPosition               ),
+_mfLength                 (source._mfLength                 ),
+_mfColor                  (source._mfColor                  ),
 Inherited                 (source)
 {
 }
@@ -258,7 +258,7 @@ void vtOsgDynMeshBase::executeSyncImpl(      vtOsgDynMeshBase *pOther,
 
 }
 
-void vtOsgDynMeshBase::execBeginEditImpl (const BitVector &whichField, 
+void vtOsgDynMeshBase::execBeginEditImpl (const BitVector &whichField,
 										  UInt32     uiAspect,
 										  UInt32     uiContainerSize)
 {

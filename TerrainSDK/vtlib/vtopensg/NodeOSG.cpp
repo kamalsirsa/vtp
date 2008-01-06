@@ -1305,7 +1305,7 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 			beginEditCP(geo);
 			geo->setMaterial( pMat->m_pMaterial );
 			endEditCP(geo);
-		
+
 			return;
 
 	/*	osg::GeometryPtr geo = pMesh->m_pGeometryCore;
@@ -1338,7 +1338,7 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 			endEditCP(geo);
 		}
 		//} pmat-getlighting
-		
+
 		if( !pMat->GetLighting() ) {
 			//no vertex colors
 			osg::GeometryPtr geo = pMesh->m_pGeometryCore;
@@ -1351,7 +1351,7 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 				//assert it is not null, you never know
 				if (sm != osg::NullFC && mesh_sm != osg::NullFC) {
 					osg::Color3f diffuse = sm->getDiffuse();
-                    beginEditCP(mesh_sm);
+	                beginEditCP(mesh_sm);
 					//mesh_sm->setLit(false);
 					mesh_sm->setDiffuse(diffuse);
 					endEditCP(mesh_sm);
@@ -1519,7 +1519,7 @@ vtDynGeom::vtDynGeom() : vtGeom()
 	beginEditCP(m_pDynMesh);
 	//m_pDynMesh->setDynGeom( this ); //use void attachment for this
 	//TODO turn off Dlists ? i need to derive from osg::geometry to use it
-	//m_pDynMesh->setDlistCache(false);	
+	//m_pDynMesh->setDlistCache(false);
 
 	endEditCP(m_pDynMesh);
 	osg::setName(m_pDynMesh,"vtOsgDynMesh");
@@ -1535,7 +1535,7 @@ vtDynGeom::vtDynGeom() : vtGeom()
 
 	//add some dummy data for testing
 	/*beginEditCP(m_pDynMesh);
-	
+
 	for ( int i=0; i < 1; ++i )
 	{
 		m_pDynMesh->getMFPosition()->push_back( osg::Pnt3f(0,0,0) );
@@ -1547,7 +1547,7 @@ vtDynGeom::vtDynGeom() : vtGeom()
 	//osg::SimpleTexturedMaterialPtr stm = osg::SimpleTexturedMaterial::create();
 
 	/*GL_NONE, GL_EMISSION, GL_AMBIENT, GL_DIFFUSE,
-        GL_SPECULAR and  GL_AMBIENT_AND_DIFFUSE*/
+	    GL_SPECULAR and  GL_AMBIENT_AND_DIFFUSE*/
 	/*beginEditCP(stm);
 	stm->setColorMaterial(GL_MODULATE);
 	endEditCP(stm);*/
@@ -1735,16 +1735,16 @@ vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true), m_bPixelCoords(bPixelCoords)
 	endEditCP(m_pHudViewport);
 
 	m_camera = MatrixCamera::create();
-	
+
 	m_projection.setIdentity();
-		
+
 	Matrix4f modelview;
 	modelview.setIdentity();
 
 	Matrix4f rootmat;
 	rootmat.setIdentity();
 
-    if( m_bPixelCoords ) {
+	if( m_bPixelCoords ) {
 		IPoint2 winsize = vtGetScene()->GetWindowSize();
 			// safety check first, avoid /0 crash
 		if( winsize.x != 0 && winsize.y != 0 ) {
@@ -1754,7 +1754,7 @@ vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true), m_bPixelCoords(bPixelCoords)
 		// Normalized window coordinates, 0 to 1
 		m_projection = makeOrtho2D(0,1.0,0,1.0);
 	}
-	
+
 	beginEditCP(m_camera);
 	m_camera->setProjectionMatrix(m_projection);
 	m_camera->setModelviewMatrix(modelview);
@@ -1766,19 +1766,19 @@ vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true), m_bPixelCoords(bPixelCoords)
 
 	//create the light source for the overlay
 	DirectionalLightPtr dLight = DirectionalLight::create();
-    beginEditCP(dLight);
-        dLight->setDirection(Vec3f(0,0,1));
+	beginEditCP(dLight);
+	    dLight->setDirection(Vec3f(0,0,1));
 
-        //color information
-        dLight->setDiffuse(Color4f(1,0,0,0.5));
-        //dLight->setAmbient(Color4f(0.2,0.2,0.2,1));
-        //dLight->setSpecular(Color4f(1,1,1,1));
+	    //color information
+	    dLight->setDiffuse(Color4f(1,0,0,0.5));
+	    //dLight->setAmbient(Color4f(0.2,0.2,0.2,1));
+	    //dLight->setSpecular(Color4f(1,1,1,1));
 
-        //set the beacon which is the camera of the scene
+	    //set the beacon which is the camera of the scene
 		//it is only orthographic and the light isnt expected to move
 		//m_pNode = root transform node
-        dLight->setBeacon(lightBeacon);
-    endEditCP  (dLight);
+	    dLight->setBeacon(lightBeacon);
+	endEditCP  (dLight);
 
 	NodePtr lightNode = Node::create();
 	beginEditCP(lightNode);
@@ -1792,7 +1792,7 @@ vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true), m_bPixelCoords(bPixelCoords)
 	//the root will be the light node
 	m_pHudViewport->setRoot( lightNode );
 	endEditCP(m_pHudViewport);
-	
+
 
 /*testing */
 	/*OOSG::GeometryPtr spheregeo = OSG::makeSphereGeo(3, .2f);
@@ -1801,7 +1801,7 @@ vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true), m_bPixelCoords(bPixelCoords)
 	mat->setTransparency(0.5f);
 	mat->setLit(true);
 
-	
+
 	SG::NodePtr sphere = OSG::Node::create();
 	spheregeo->setMaterial(mat);
 	beginEditCP(sphere);
@@ -1815,7 +1815,7 @@ vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true), m_bPixelCoords(bPixelCoords)
 	sv->GetWindow()->addPort( m_pHudViewport );
 	endEditCP(sv->GetWindow());
 
-    vtGetScene()->SetHUD(this);
+	vtGetScene()->SetHUD(this);
 }
 
 void vtHUD::Release()
@@ -1837,10 +1837,10 @@ OSG::Matrix4f vtHUD::makeOrtho2D (float left, float right, float bottom, float t
 
 	float zNear= -1;
 	float zFar = 1;
-	
+
 	float tx = -(right+left)/(right-left);
-    float ty = -(top+bottom)/(top-bottom);
-    float tz = -(zFar+zNear)/(zFar-zNear);
+	float ty = -(top+bottom)/(top-bottom);
+	float tz = -(zFar+zNear)/(zFar-zNear);
 
 	//taken from osg implementation which is the transpose of opengl
 	mat.setValue(
@@ -1854,13 +1854,13 @@ OSG::Matrix4f vtHUD::makeOrtho2D (float left, float right, float bottom, float t
 
 	/* original osg implementation//
 	note transpose of Matrix_implementation wr.t OpenGL, since the OSG use post multiplication rather than pre.
-    double tx = -(right+left)/(right-left);
-    double ty = -(top+bottom)/(top-bottom);
-    double tz = -(zFar+zNear)/(zFar-zNear);
-    SET_ROW(0, 2.0/(right-left),               0.0,               0.0, 0.0 )
-    SET_ROW(1,              0.0,  2.0/(top-bottom),               0.0, 0.0 )
-    SET_ROW(2,              0.0,               0.0,  -2.0/(zFar-zNear), 0.0 )
-    SET_ROW(3,               tx,                ty,                 tz, 1.0 )*/
+	double tx = -(right+left)/(right-left);
+	double ty = -(top+bottom)/(top-bottom);
+	double tz = -(zFar+zNear)/(zFar-zNear);
+	SET_ROW(0, 2.0/(right-left),               0.0,               0.0, 0.0 )
+	SET_ROW(1,              0.0,  2.0/(top-bottom),               0.0, 0.0 )
+	SET_ROW(2,              0.0,               0.0,  -2.0/(zFar-zNear), 0.0 )
+	SET_ROW(3,               tx,                ty,                 tz, 1.0 )*/
 
 	return mat;
 

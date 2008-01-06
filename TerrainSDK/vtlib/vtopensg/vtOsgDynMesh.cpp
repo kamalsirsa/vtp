@@ -138,7 +138,7 @@ void vtOsgDynMesh::changed(BitVector, UInt32)
 /** \brief output the instance for debug purposes
  */
 
-void vtOsgDynMesh::dump(       UInt32    uiIndent, 
+void vtOsgDynMesh::dump(       UInt32    uiIndent,
 							   const BitVector bvFlags) const
 {
 	SLOG << "Dump vtOsgDynMesh NI" << std::endl;
@@ -158,7 +158,7 @@ Action::ResultE vtOsgDynMesh::drawPrimitives(DrawActionBase * action)
 		vtDynGeom *vtgeom = reinterpret_cast<vtDynGeom *>(m->getField().getValue());
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//glColor3f(1,1,1);	
+		//glColor3f(1,1,1);
 
 		vtgeom->m_pPlanes = pScene->GetCullPlanes();
 		vtgeom->DoCull(pCam);
@@ -175,7 +175,7 @@ Action::ResultE vtOsgDynMesh::drawPrimitives(DrawActionBase * action)
 
 
 void vtOsgDynMesh::adjustVolume(Volume & volume)
-{   
+{
 	volume.setValid();
 	volume.setEmpty();
 

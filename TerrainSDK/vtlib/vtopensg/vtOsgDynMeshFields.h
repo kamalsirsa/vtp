@@ -30,9 +30,9 @@ typedef FCPtr<MaterialDrawablePtr, vtOsgDynMesh> vtOsgDynMeshPtr;
 		#endif
 
 template <>
-struct FieldDataTraits<vtOsgDynMeshPtr> : 
+struct FieldDataTraits<vtOsgDynMeshPtr> :
 public FieldTraitsRecurseMapper<vtOsgDynMeshPtr, true> {
-	static DataType             _type;                       
+	static DataType             _type;
 
 	enum {
 		StringConvertable = 0x00

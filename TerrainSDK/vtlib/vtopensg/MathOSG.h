@@ -80,7 +80,7 @@ inline RGBf s2v(const osg::Vec4f &s)
 
 inline void ConvertMatrix4(const osg::Matrix4f *mat_osg, FMatrix4 *mat)
 {
-	const osg::Real32 *ptr = mat_osg->getValues(); 
+	const osg::Real32 *ptr = mat_osg->getValues();
 	int i, j;
 	for( i = 0; i < 4; i++ )
 		for( j = 0; j < 4; j++ ) {

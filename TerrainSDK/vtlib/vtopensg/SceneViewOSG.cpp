@@ -24,20 +24,20 @@ const bool USE_HEADLIGHT            (false);
 
 #define ANAGLYPHIC 0  //hmm i don't need the enum hack
 #define QUADBUFFER 1
-#define PASSIVE    2 
+#define PASSIVE    2
 
 
 //takes mono components for usage within VTP
 SceneViewOSG::SceneViewOSG(
-						  OSG::WindowPtr window, 
+						  OSG::WindowPtr window,
 						  OSG::ViewportPtr viewport,
 						  OSG::PerspectiveCameraPtr camera,
 						  OSG::RenderAction *renderAction,
 						  int stereoMode,
 						  OSG::SolidBackgroundPtr background
-						   ) :  
+						   ) :
 m_bStereo ( stereoMode>0 ),
-m_bUsesCustomSceneView (true), 
+m_bUsesCustomSceneView (true),
 m_WindowPtr ( window ),
 m_LeftViewportPtr ( /*OSG::ShadowMapViewportPtr::dcast(*/viewport ),
 m_LeftCameraPtr ( camera ),
@@ -46,23 +46,23 @@ m_iStereoMode ( stereoMode ),
 m_SolidBackgroundPtr ( background )
 {
 	renderAction->setFrustumCulling( true );
-    renderAction->setAutoFrustum( true );
+	renderAction->setAutoFrustum( true );
 }
 
 /**
  * Initialize the Scene Viewer.
- * 
+ *
  * \param bStereo True for a stereo display output.
  * \param iStereoMode Currently for vtosg, supported values are:
  * 0 for Anaglyphic (red-blue)
  * 1 for Quad-buffer (shutter glasses)
  * 2 for Passive Stereo (2 projectors)
- * 
+ *
  * @param bStereo
  * @param iStereoMode
  */
-SceneViewOSG::SceneViewOSG( bool bStereo, int iStereoMode ) : 
-m_bStereo(bStereo), 
+SceneViewOSG::SceneViewOSG( bool bStereo, int iStereoMode ) :
+m_bStereo(bStereo),
 m_iStereoMode (iStereoMode),
 m_bUsesCustomSceneView (false),
 m_bUsesShadow(false)
@@ -72,7 +72,7 @@ m_bUsesShadow(false)
 		case ANAGLYPHIC: break;
 		case QUADBUFFER: break;
 			/* P A S S I V E  S T E R E O */
-		case PASSIVE   : 
+		case PASSIVE   :
 
 			break;
 		default: ;
@@ -95,7 +95,7 @@ m_bUsesShadow(false)
 		m_LeftViewportPtr->setCamera( m_LeftCameraPtr );
 		m_LeftViewportPtr->setSize( 0,0,1,1 );
 		endEditCP( m_LeftViewportPtr );
-		
+
 		// Shadow viewport
 		/*m_LeftViewportPtr = OSG::ShadowMapViewport::create();
 		beginEditCP(m_LeftViewportPtr);
@@ -130,9 +130,9 @@ m_bUsesShadow(false)
 }
 
 void SceneViewOSG::UpdateCamera(
-							   float aspect, 
+							   float aspect,
 							   float fov_y,
-							   float hither, 
+							   float hither,
 							   float yon )
 {
 
@@ -176,15 +176,15 @@ void SceneViewOSG::SetShadowOn( bool bOn )
 {
 	/*if ( !IsStereo() ) {
 		beginEditCP( m_LeftViewportPtr );
-		m_LeftViewportPtr->setShadowOn(bOn); 
+		m_LeftViewportPtr->setShadowOn(bOn);
 		endEditCP( m_LeftViewportPtr );
 	} else {
 		beginEditCP( m_LeftViewportPtr );
-		m_LeftViewportPtr->setShadowOn(bOn); 
+		m_LeftViewportPtr->setShadowOn(bOn);
 		endEditCP( m_LeftViewportPtr );
 
 		beginEditCP( m_RightViewportPtr );
-		m_RightViewportPtr->setShadowOn(bOn); 
+		m_RightViewportPtr->setShadowOn(bOn);
 		endEditCP( m_RightViewportPtr );
 	}*/
 
@@ -195,7 +195,7 @@ void SceneViewOSG::SetRoot( OSG::NodePtr root )
 {
 	if ( !IsStereo() ) {
 		beginEditCP( m_LeftViewportPtr );
-		m_LeftViewportPtr->setRoot( root ); 
+		m_LeftViewportPtr->setRoot( root );
 		endEditCP( m_LeftViewportPtr );
 	} else {
 		beginEditCP( m_LeftViewportPtr );
@@ -208,7 +208,7 @@ void SceneViewOSG::SetRoot( OSG::NodePtr root )
 	}
 }
 
-OSG::DrawActionBase *SceneViewOSG::GetAction() const 
+OSG::DrawActionBase *SceneViewOSG::GetAction() const
 {
 	return m_pRenderAction;
 }
@@ -219,7 +219,7 @@ OSG::Line SceneViewOSG::CalcViewRay(OSG::UInt32 x, OSG::UInt32 y)
 		osg::Line l;
 		m_LeftCameraPtr->calcViewRay(l, x, y, *m_LeftViewportPtr);
 		return l;
-	//} 
+	//}
 
 	//shouldn't come here, but to make compiler happy
 	return OSG::Line( OSG::Pnt3f(0,0,0), OSG::Pnt3f(0,0,0) );
@@ -229,7 +229,7 @@ OSG::Line SceneViewOSG::CalcViewRay(OSG::UInt32 x, OSG::UInt32 y)
 //TODO set the field bitmasks
 void SceneViewOSG::SetBackgroundColor( OSG::Color3f backColor )
 {
-	//init 
+	//init
 	if ( m_SolidBackgroundPtr==osg::NullFC ) {
 		m_SolidBackgroundPtr = OSG::SolidBackground::create();
 		if ( !IsStereo() ) {

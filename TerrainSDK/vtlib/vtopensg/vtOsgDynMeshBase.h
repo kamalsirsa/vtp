@@ -53,16 +53,16 @@ public:
 	/*! \name                    Class Get                                 */
 	/*! \{                                                                 */
 
-	static        FieldContainerType &getClassType    (void); 
-	static        UInt32              getClassTypeId  (void); 
+	static        FieldContainerType &getClassType    (void);
+	static        UInt32              getClassTypeId  (void);
 
 	/*! \}                                                                 */
 	/*---------------------------------------------------------------------*/
 	/*! \name                FieldContainer Get                            */
 	/*! \{                                                                 */
 
-	virtual       FieldContainerType &getType  (void); 
-	virtual const FieldContainerType &getType  (void) const; 
+	virtual       FieldContainerType &getType  (void);
+	virtual const FieldContainerType &getType  (void) const;
 
 	virtual       UInt32              getContainerSize(void) const;
 
@@ -113,8 +113,8 @@ public:
 	/*! \name                   Construction                               */
 	/*! \{                                                                 */
 
-	static  vtOsgDynMeshPtr      create          (void); 
-	static  vtOsgDynMeshPtr      createEmpty     (void); 
+	static  vtOsgDynMeshPtr      create          (void);
+	static  vtOsgDynMeshPtr      createEmpty     (void);
 
 	/*! \}                                                                 */
 
@@ -122,7 +122,7 @@ public:
 	/*! \name                       Copy                                   */
 	/*! \{                                                                 */
 
-	virtual FieldContainerPtr     shallowCopy     (void) const; 
+	virtual FieldContainerPtr     shallowCopy     (void) const;
 
 	/*! \}                                                                 */
 	/*=========================  PROTECTED  ===============================*/
@@ -149,7 +149,7 @@ protected:
 	/*! \name                   Destructors                                */
 	/*! \{                                                                 */
 
-	virtual ~vtOsgDynMeshBase(void); 
+	virtual ~vtOsgDynMeshBase(void);
 
 	/*! \}                                                                 */
 	/*---------------------------------------------------------------------*/

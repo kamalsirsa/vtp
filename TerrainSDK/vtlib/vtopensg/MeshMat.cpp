@@ -31,7 +31,7 @@ bool vtMaterial::s_bTextureCompression = false;
 vtMaterial::vtMaterial() : vtMaterialBase()
 {
 	m_pMaterial = osg::SimpleTexturedMaterial::create();
-	
+
 	//if i turn this on buildings are correct, if out, the streets are correct..
 	//theres an alpha channel in the road/tree textures
 	beginEditCP(m_pMaterial);
@@ -66,7 +66,7 @@ void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 	if (a < 1.0f)
 		m_pStateSet->setMode(GL_BLEND, SA_ON);
 #endif*/
-	
+
 
 	beginEditCP(m_pMaterial);
 	m_pMaterial->setDiffuse(osg::Color3f(r,g,b));
@@ -199,7 +199,7 @@ bool vtMaterial::GetLighting() const
  */
 void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 {
-	
+
 	//all this seems to affect only the sun ?!
 	if ( !m_pMaterial->getLit() ) {
 		beginEditCP(m_pMaterial);
@@ -575,7 +575,7 @@ vtMeshBase(ePrimType, VertType, NumVertices)
 		m_pGeometryCore->setTypes    (m_pPrimSet);
 		m_pGeometryCore->setLengths  (m_Length);
 		m_pGeometryCore->setPositions(m_Vert);
-		
+
 		//do index not for polys..
 		if (ePrimType!=POLYGON) m_pGeometryCore->setIndices (m_Index);
 
@@ -583,7 +583,7 @@ vtMeshBase(ePrimType, VertType, NumVertices)
 			m_pGeometryCore->setMaterial( osg::SimpleTexturedMaterial::create() );
 		}*/
 	}
-    endEditCP  (m_pGeometryCore, osg::Geometry::TypesFieldMask     |
+	endEditCP  (m_pGeometryCore, osg::Geometry::TypesFieldMask     |
 				osg::Geometry::LengthsFieldMask   |
 				osg::Geometry::PositionsFieldMask |
 				osg::Geometry::MaterialFieldMask  |
@@ -773,7 +773,7 @@ void vtMesh::AddFan(int *idx, int iNVerts)
 		endEditCP( m_Index/*TODO osg::GeoIndices::GeoPropDataFieldMask*/ );
 	}
 
-	
+
 	//add new primitive length
 	beginEditCP(m_Length);
 	m_Length->addValue(iNVerts);
