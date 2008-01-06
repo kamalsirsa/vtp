@@ -134,6 +134,6 @@ void LightDlg::OnAmbient( wxCommandEvent &event )
 
 void LightDlg::OnLight( wxCommandEvent &event )
 {
-	
+
 }
 

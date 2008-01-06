@@ -80,7 +80,7 @@ void PropDlg::OnRemoveTag( wxCommandEvent &event )
 {
 	int sel = m_pTagList->GetNextItem(-1, wxLIST_NEXT_ALL,
 		wxLIST_STATE_SELECTED);
-		
+
 	if (sel != -1)
 	{
 		int tagnum = m_pTagList->GetItemData(sel);

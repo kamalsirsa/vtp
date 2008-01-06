@@ -249,7 +249,7 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 
 	event.flags = 0;
 	wxCoord xpos, ypos;
-    event1.GetPosition(&xpos, &ypos);
+	event1.GetPosition(&xpos, &ypos);
 	event.pos.Set(xpos, ypos);
 
 	if (event1.ControlDown())

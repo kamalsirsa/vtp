@@ -25,17 +25,17 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for TagDlg
 	wxChoice *GetTagName() { return (wxChoice *) FindWindow(ID_TAGNAME); }
 	wxTextCtrl *GetTagText() { return (wxTextCtrl *) FindWindow(ID_TAGTEXT); }
 
 	wxString m_strName;
 	wxString m_strValue;
-	
+
 private:
 	// WDR: member variable declarations for TagDlg
-	
+
 private:
 	// WDR: handler declarations for TagDlg
 	void OnInitDialog(wxInitDialogEvent& event);

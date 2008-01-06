@@ -28,7 +28,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxTAB_TRAVERSAL | wxNO_BORDER );
-	
+
 	// WDR: method declarations for PropDlg
 	wxListCtrl* GetTaglist()  { return (wxListCtrl*) FindWindow( ID_TAGLIST ); }
 	wxChoice* GetTypeChoice()  { return (wxChoice*) FindWindow( ID_TYPECHOICE ); }

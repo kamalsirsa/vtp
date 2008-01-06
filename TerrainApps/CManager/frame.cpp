@@ -55,7 +55,7 @@ public:
 	DECLARE_EVENT_TABLE()
 };
 BEGIN_EVENT_TABLE(Blank,wxWindow)
-    EVT_PAINT( Blank::OnPaint )
+	EVT_PAINT( Blank::OnPaint )
 END_EVENT_TABLE()
 
 
@@ -247,7 +247,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 #endif
 
 	SetCurrentItemAndModel(NULL, NULL);
-	
+
 	m_pTree->RefreshTreeItems(this);
 }
 

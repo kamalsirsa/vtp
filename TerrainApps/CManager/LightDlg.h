@@ -40,7 +40,7 @@ public:
 	wxBitmapButton* GetDiffuse()  { return (wxBitmapButton*) FindWindow( ID_DIFFUSE ); }
 	wxBitmapButton* GetAmbient()  { return (wxBitmapButton*) FindWindow( ID_AMBIENT ); }
 	wxChoice* GetLight()  { return (wxChoice*) FindWindow( ID_LIGHT ); }
-	
+
 private:
 	// WDR: member variable declarations for LightDlg
 	vtTransform *m_pMovLight;

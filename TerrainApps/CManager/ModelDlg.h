@@ -27,7 +27,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxTAB_TRAVERSAL | wxNO_BORDER );
-	
+
 	// WDR: method declarations for ModelDlg
 	void SetCurrentModel(vtModel *mod);
 	void SetModelStatus(const char *string);

@@ -26,7 +26,7 @@ IMPLEMENT_APP(vtApp)
 
 class LogCatcher : public wxLog
 {
-    void DoLogString(const wxChar *szString, time_t t)
+	void DoLogString(const wxChar *szString, time_t t)
 	{
 		VTLOG(" wxLog: ");
 		VTLOG(szString);
