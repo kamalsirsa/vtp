@@ -199,7 +199,11 @@ vtLevel &vtLevel::operator=(const vtLevel &v)
 		m_Edges.SetAt(i, pnew);
 	}
 
+#if COMPOUND_FOOTPRINT
+	m_Foot = v.m_Foot;
+#else
 	m_Footprint = v.m_Footprint;
+#endif
 	m_LocalFootprint = v.m_LocalFootprint;
 	return *this;
 }
@@ -208,8 +212,11 @@ void vtLevel::DeleteEdge(int iEdge)
 {
 	delete m_Edges.GetAt(iEdge);
 	m_Edges.RemoveAt(iEdge);
+#if COMPOUND_FOOTPRINT
+	m_Foot.RemovePoint(iEdge);
+#else
 	m_Footprint.RemovePoint(iEdge);
-	SetFootprint(m_Footprint);
+#endif
 }
 
 // Split an edge at the indicated point and clone into two edges
@@ -232,21 +239,28 @@ bool vtLevel::AddEdge(int iEdge, DPoint2 &Point)
 		m_Edges.SetAt(iEdge + 1, pEdge);
 	}
 
+#if COMPOUND_FOOTPRINT
+	m_Foot.InsertPointAfter(iEdge, Point);
+#else
 	m_Footprint.InsertPointAfter(iEdge, Point);
+#endif
 	return true;
 }
 
 void vtLevel::SetFootprint(const DLine2 &dl)
 {
-	int prev = m_Footprint.GetSize();
 	int curr = dl.GetSize();
-
+#if COMPOUND_FOOTPRINT
+	int prev = m_Foot[0].GetSize();
+	m_Foot[0] = dl;
+#else
+	int prev = m_Footprint.GetSize();
 	m_Footprint = dl;
+	SynchToCompound();
+#endif
 
 	if (curr != prev)
-		SetWalls(curr);
-
-	SynchToCompound();
+		RebuildEdges(curr);
 }
 
 void vtLevel::SetFootprint(const DPolygon2 &poly)
@@ -259,7 +273,7 @@ void vtLevel::SetFootprint(const DPolygon2 &poly)
 	SynchFromCompound();
 	int curr = m_Footprint.GetSize();
 	if (curr != prev)
-		SetWalls(curr);
+		RebuildEdges(curr);
 }
 
 void vtLevel::SynchToCompound()
@@ -343,7 +357,7 @@ float vtLevel::GetEdgeLength(unsigned int i)
 	return (float) (m_Footprint[j] - m_Footprint[i]).Length();
 }
 
-void vtLevel::SetWalls(unsigned int n)
+void vtLevel::RebuildEdges(unsigned int n)
 {
 	DeleteEdges();
 	for (unsigned int i = 0; i < n; i++)
@@ -522,15 +536,36 @@ void vtLevel::DetermineLocalFootprint(float fHeight)
 	DPoint2 p;
 	FPoint3 lp;
 
+#if COMPOUND_FOOTPRINT
+	unsigned int rings = m_Foot.size();
+	m_LocalFootprint.resize(rings);
+	for (unsigned ring = 0; ring < rings; ring++)
+	{
+		DLine2 &dline2 = m_Foot[ring];
+		FLine3 &fline3 = m_LocalFootprint[ring];
+
+		unsigned int edges = dline2.GetSize();
+		fline3.SetSize(edges);
+		for (unsigned i = 0; i < edges; i++)
+		{
+			p = dline2.GetAt(i);
+			vtBuilding::s_Conv.ConvertFromEarth(p, lp.x, lp.z);
+			lp.y = fHeight;
+			fline3.SetAt(i, lp);
+		}
+	}
+#else
 	int i, edges = m_Footprint.GetSize();
-	m_LocalFootprint.SetSize(edges);
+	m_LocalFootprint.resize(1);
+	m_LocalFootprint[0].SetSize(edges);
 	for (i = 0; i < edges; i++)
 	{
 		p = m_Footprint.GetAt(i);
 		vtBuilding::s_Conv.ConvertFromEarth(p, lp.x, lp.z);
 		lp.y = fHeight;
-		m_LocalFootprint.SetAt(i, lp);
+		m_LocalFootprint[0].SetAt(i, lp);
 	}
+#endif
 }
 
 void vtLevel::GetEdgePlane(unsigned int i, FPlane &plane)
@@ -543,7 +578,8 @@ void vtLevel::GetEdgePlane(unsigned int i, FPlane &plane)
 	int next = (i+1 == edges) ? 0 : i+1;
 
 	// get edge vector
-	FPoint3 vec = m_LocalFootprint[next] - m_LocalFootprint[i];
+	FLine3 &ring = m_LocalFootprint[0];
+	FPoint3 vec = ring[next] - ring[i];
 	vec.Normalize();
 
 	// get perpendicular (upward pointing) vector
@@ -559,7 +595,7 @@ void vtLevel::GetEdgePlane(unsigned int i, FPlane &plane)
 	FPoint3 norm;
 	mat.TransformVector(perp, norm);
 
-	plane.Set(m_LocalFootprint[i], norm);
+	plane.Set(ring[i], norm);
 }
 
 //
@@ -599,7 +635,7 @@ bool vtLevel::DetermineHeightFromSlopes()
 		if (valid)
 		{
 			// take this point as the height of the roof
-			float fHeight = (point.y - m_LocalFootprint[0].y);
+			float fHeight = (point.y - m_LocalFootprint[0][0].y);
 
 			if (fHeight < 0)	// shouldn't happen, but just a safety check
 				continue;
@@ -1274,14 +1310,12 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 			lev->m_fStoryHeight, lev->m_iStories);
 
 		gfprintf(out, "\t\t\t<Footprint>\n");
-		gfprintf(out, "\t\t\t\t<gml:MultiPolygon>\n");
-		gfprintf(out, "\t\t\t\t\t<gml:polygonMember>\n");
-		gfprintf(out, "\t\t\t\t\t\t<gml:Polygon>\n");
+		gfprintf(out, "\t\t\t\t<gml:Polygon>\n");
 
 		// Every footprint polygon has at least one outer boundary
-		gfprintf(out, "\t\t\t\t\t\t\t<gml:outerBoundaryIs>\n");
-		gfprintf(out, "\t\t\t\t\t\t\t\t<gml:LinearRing>\n");
-		gfprintf(out, "\t\t\t\t\t\t\t\t\t<gml:coordinates>");
+		gfprintf(out, "\t\t\t\t\t<gml:outerBoundaryIs>\n");
+		gfprintf(out, "\t\t\t\t\t\t<gml:LinearRing>\n");
+		gfprintf(out, "\t\t\t\t\t\t\t<gml:coordinates>");
 #if COMPOUND_FOOTPRINT
 		const DPolygon2 &pfoot = lev->GetAtFootprint2();
 		const DLine2 &outer = pfoot[0];
@@ -1308,17 +1342,17 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 		}
 #endif
 		gfprintf(out, "</gml:coordinates>\n");
-		gfprintf(out, "\t\t\t\t\t\t\t\t</gml:LinearRing>\n");
-		gfprintf(out, "\t\t\t\t\t\t\t</gml:outerBoundaryIs>\n");
+		gfprintf(out, "\t\t\t\t\t\t</gml:LinearRing>\n");
+		gfprintf(out, "\t\t\t\t\t</gml:outerBoundaryIs>\n");
 
 #if COMPOUND_FOOTPRINT
 		// If we have a compound footprint, write inner rings separately
 		int rings = pfoot.size();
 		for (int iring = 1; iring < rings; iring++)
 		{
-			gfprintf(out, "\t\t\t\t\t\t\t<gml:innerBoundaryIs>\n");
-			gfprintf(out, "\t\t\t\t\t\t\t\t<gml:LinearRing>\n");
-			gfprintf(out, "\t\t\t\t\t\t\t\t\t<gml:coordinates>");
+			gfprintf(out, "\t\t\t\t\t<gml:innerBoundaryIs>\n");
+			gfprintf(out, "\t\t\t\t\t\t<gml:LinearRing>\n");
+			gfprintf(out, "\t\t\t\t\t\t\t<gml:coordinates>");
 
 			const DLine2 &inner = pfoot[iring];
 			int points = inner.GetSize();
@@ -1331,14 +1365,12 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 					gfprintf(out, " ");
 			}
 			gfprintf(out, "</gml:coordinates>\n");
-			gfprintf(out, "\t\t\t\t\t\t\t\t</gml:LinearRing>\n");
-			gfprintf(out, "\t\t\t\t\t\t\t</gml:innerBoundaryIs>\n");
+			gfprintf(out, "\t\t\t\t\t\t</gml:LinearRing>\n");
+			gfprintf(out, "\t\t\t\t\t</gml:innerBoundaryIs>\n");
 		}
 #endif
 
-		gfprintf(out, "\t\t\t\t\t\t</gml:Polygon>\n");
-		gfprintf(out, "\t\t\t\t\t</gml:polygonMember>\n");
-		gfprintf(out, "\t\t\t\t</gml:MultiPolygon>\n");
+		gfprintf(out, "\t\t\t\t</gml:Polygon>\n");
 		gfprintf(out, "\t\t\t</Footprint>\n");
 
 		int edges = lev->NumEdges();

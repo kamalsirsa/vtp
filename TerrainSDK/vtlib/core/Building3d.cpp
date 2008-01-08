@@ -4,7 +4,7 @@
 // The vtBuilding3d class extends vtBuilding with the ability to procedurally
 // create 3D geometry of the buildings.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -87,67 +87,79 @@ void vtBuilding3d::AdjustHeight(vtHeightField3d *pHeightField)
 	m_pContainer->SetTrans(m_center);
 }
 
-void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2)
+void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FPolygon3 &polygon,
+									  FPolygon3 &polygon2)
 {
 	int i, prev, next;
+	int rings = polygon.size();
 
-	poly2 = poly;
-	int edges = lev->NumEdges();
-	for (i = 0; i < edges; i++)
+	polygon2 = polygon;
+
+	int base_edge = 0;
+	for (int ring = 0; ring < rings; ring++)
 	{
-		prev = (i-1 < 0) ? edges-1 : i-1;
-		next = (i+1 == edges) ? 0 : i+1;
+		FLine3 &poly = polygon[ring];
+		FLine3 &poly2 = polygon2[ring];
 
-		FPoint3 p = poly[i];
+		int edges = poly.GetSize();
 
-		int islope1 = lev->GetEdge(prev)->m_iSlope;
-		int islope2 = lev->GetEdge(i)->m_iSlope;
-		if (islope1 == 90 && islope2 == 90)
+		for (i = 0; i < edges; i++)
 		{
-			// easy case
-			p.y += lev->m_fStoryHeight;
+			prev = (i-1 < 0) ? edges-1 : i-1;
+			next = (i+1 == edges) ? 0 : i+1;
+
+			FPoint3 p = poly[i];
+
+			int islope1 = lev->GetEdge(base_edge + prev)->m_iSlope;
+			int islope2 = lev->GetEdge(base_edge + i)->m_iSlope;
+			if (islope1 == 90 && islope2 == 90)
+			{
+				// easy case
+				p.y += lev->m_fStoryHeight;
+			}
+			else
+			{
+				float slope1 = (islope1 / 180.0f * PIf);
+				float slope2 = (islope2 / 180.0f * PIf);
+
+				// get edge vectors
+				FPoint3 vec1 = poly[prev] - poly[i];
+				FPoint3 vec2 = poly[next] - poly[i];
+				vec1.Normalize();
+				vec2.Normalize();
+
+				// get perpendicular (upward pointing) vectors
+				FPoint3 perp1, perp2;
+				perp1.Set(0, 1, 0);
+				perp2.Set(0, 1, 0);
+
+				// create rotation matrices to rotate them upward
+				FMatrix4 mat1, mat2;
+				mat1.Identity();
+				mat1.AxisAngle(vec1, -slope1);
+				mat2.Identity();
+				mat2.AxisAngle(vec2, slope2);
+
+				// create normals
+				FPoint3 norm1, norm2;
+				mat1.TransformVector(perp1, norm1);
+				mat2.TransformVector(perp2, norm2);
+
+				// vector of plane intersection is cross product of their normals
+				FPoint3 inter = norm1.Cross(norm2);
+				// Test that intersection vector is pointing into the polygon
+				// need a better test if we are going to handle downward sloping roofs
+				if (inter.y < 0)
+					inter = -inter;	// Reverse vector to point upward
+
+				inter.Normalize();
+				inter *= (lev->m_fStoryHeight / inter.y);
+
+				p += inter;
+			}
+			poly2[i] = p;
 		}
-		else
-		{
-			float slope1 = (islope1 / 180.0f * PIf);
-			float slope2 = (islope2 / 180.0f * PIf);
-
-			// get edge vectors
-			FPoint3 vec1 = poly[prev] - poly[i];
-			FPoint3 vec2 = poly[next] - poly[i];
-			vec1.Normalize();
-			vec2.Normalize();
-
-			// get perpendicular (upward pointing) vectors
-			FPoint3 perp1, perp2;
-			perp1.Set(0, 1, 0);
-			perp2.Set(0, 1, 0);
-
-			// create rotation matrices to rotate them upward
-			FMatrix4 mat1, mat2;
-			mat1.Identity();
-			mat1.AxisAngle(vec1, -slope1);
-			mat2.Identity();
-			mat2.AxisAngle(vec2, slope2);
-
-			// create normals
-			FPoint3 norm1, norm2;
-			mat1.TransformVector(perp1, norm1);
-			mat2.TransformVector(perp2, norm2);
-
-			// vector of plane intersection is cross product of their normals
-			FPoint3 inter = norm1.Cross(norm2);
-			// Test that intersection vector is pointing into the polygon
-			// need a better test if we are going to handle downward sloping roofs
-			if (inter.y < 0)
-				inter = -inter;	// Reverse vector to point upward
-
-			inter.Normalize();
-			inter *= (lev->m_fStoryHeight / inter.y);
-
-			p += inter;
-		}
-		poly2[i] = p;
+		base_edge += edges;
 	}
 }
 
@@ -159,8 +171,9 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 
 	UpdateWorldLocation(pHeightField);
 
-	if (!PolyChecker.IsSimplePolygon(GetLocalFootprint(0)))
-		return false;
+	// TEMP: we can handle complex polys now - i think
+	//if (!PolyChecker.IsSimplePolygon(GetLocalFootprint(0)))
+	//	return false;
 
 	// create the edges (walls and roof)
 	float fHeight = 0.0f;
@@ -173,11 +186,11 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	for (i = 0; i < iLevels; i++)
 	{
 		vtLevel *lev = m_Levels[i];
-		const FLine3 &foot = GetLocalFootprint(i);
+		const FPolygon3 &foot = GetLocalFootprint(i);
 		unsigned int edges = lev->NumEdges();
 
 		// safety check
-		if (foot.GetSize() < 3)
+		if (foot[0].GetSize() < 3)
 			return false;
 
 		if (lev->IsHorizontal())
@@ -209,20 +222,26 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 			// 'flat roof' for the floor
 			AddFlatRoof(foot, lev);
 
-			FLine3 poly = foot;
-			FLine3 poly2;
+			FPolygon3 poly = foot;
+			FPolygon3 poly2;
 
 			for (j = 0; j < lev->m_iStories; j++)
 			{
-				for (k = 0; k < edges; k++)
+				for (unsigned int r = 0; r < poly.size(); r++)
 				{
-					poly[k].y = fHeight;
+					for (k = 0; k < poly[r].GetSize(); k++)
+					{
+						poly[r][k].y = fHeight;
+					}
 				}
 				CreateUpperPolygon(lev, poly, poly2);
-				for (k = 0; k < edges; k++)
+				for (unsigned int r = 0; r < poly.size(); r++)
 				{
-					bool bShowEdge = (level_show == i && edge_show == (int) k);
-					CreateEdgeGeometry(lev, poly, poly2, k, bShowEdge);
+					for (k = 0; k < poly[r].GetSize(); k++)
+					{
+						bool bShowEdge = (level_show == i && edge_show == (int) k);
+						CreateEdgeGeometry(lev, poly[r], poly2[r], k, bShowEdge);
+					}
 				}
 				fHeight += lev->m_fStoryHeight;
 			}
@@ -321,7 +340,7 @@ vtMesh *vtBuilding3d::FindMatMesh(const vtString &Material,
 // Edges are created from a series of features ("panels", "sections")
 //
 void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1,
-	FLine3 &poly2, int iEdge, bool bShowEdge)
+									  FLine3 &poly2, int iEdge, bool bShowEdge)
 {
 	int num_edges = pLev->NumEdges();
 	int i = iEdge, j = (i+1)%num_edges;
@@ -605,10 +624,11 @@ void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 }
 
 
-void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
+void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 {
 	FPoint3 up(0.0f, 1.0f, 0.0f);	// vector pointing up
-	int corners = pp.GetSize();
+	int rings = pp.size();
+	int outer_corners = pp[0].GetSize();
 	int i, j;
 	FPoint2 uv;
 
@@ -617,21 +637,28 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 	vtMesh *mesh = FindMatMesh(Material, pEdge->m_Color, vtMesh::TRIANGLES);
 	vtMaterialDescriptor *md = s_MaterialDescriptors.FindMaterialDescriptor(Material, pEdge->m_Color);
 
-	if (corners > 4)
+	if (outer_corners > 4 || rings > 1)
 	{
 		// roof consists of a polygon which must be split into triangles
-		FLine2 roof;
-		roof.SetMaxSize(corners);
-		for (i = 0; i < corners; i++)
-			roof.Append(FPoint2(pp[i].x, pp[i].z));
-
-		float roof_y = pp[0].y;
 
 		// allocate a polyline to hold the answer.
-		FLine2 result;
 
+#if COMPOUND_FOOTPRINT
+		DPolygon2 foot2d;
+		ProjectionXZ(pp, foot2d);
+		DLine2 result;
+		CallTriangle(foot2d, result);
+#else
 		//  Invoke the triangulator to triangulate this polygon.
+		FLine3 outer = pp[0];
+		FLine2 roof;
+		roof.SetMaxSize(outer_corners);
+		for (i = 0; i < outer_corners; i++)
+			roof.Append(FPoint2(outer[i].x, outer[i].z));
+		float roof_y = outer[0].y;
+		FLine2 result;
 		Triangulate_f::Process(roof, result);
+#endif
 
 		// use the results.
 		int tcount = result.GetSize()/3;
@@ -656,24 +683,28 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 	else
 	{
 		int idx[MAX_WALLS];
-		for (i = 0; i < corners; i++)
+		for (i = 0; i < outer_corners; i++)
 		{
-			FPoint3 p = pp[i];
+			FPoint3 p = pp[0][i];
 			uv.Set(p.x, p.z);
 			if (md)
 				uv.Div(md->GetUVScale());	// divide meters by [meters/uv] to get uv
 			idx[i] = mesh->AddVertexNUV(p, up, uv);
 		}
-		if (corners > 2)
+		if (outer_corners > 2)
 			mesh->AddTri(idx[0], idx[1], idx[2]);
-		if (corners > 3)
+		if (outer_corners > 3)
 			mesh->AddTri(idx[2], idx[3], idx[0]);
 	}
 }
 
 
-float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
+float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 {
+	// For now, just use the outer ring
+	// TODO Roger: make the code below use the inner rings too.
+	const FLine3 EavePolygon = EavePolygons[0];
+
 	PolyChecker PolyChecker;
 	vtStraightSkeleton StraightSkeleton;
 	CSkeleton Skeleton;
@@ -1007,8 +1038,12 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 	int iHighlightEdge)
 {
 	vtLevel *pLev = m_Levels[iLevel];
-	FLine3 poly1 = GetLocalFootprint(iLevel);
+#if COMPOUND_FOOTPRINT
+	// TODO
+#else
+	FLine3 poly1 = GetLocalFootprint(iLevel).at(0);
 	FLine3 poly2;
+#endif
 
 	int i;
 	int edges = pLev->NumEdges();

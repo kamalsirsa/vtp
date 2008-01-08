@@ -164,36 +164,43 @@ public:
 
 	void SetFootprint(const DLine2 &dl);
 	void SetFootprint(const DPolygon2 &poly);
-	DLine2 GetFootprint() { return m_Footprint; }
-	const DLine2 &GetAtFootprint() const { return m_Footprint; }
 #if COMPOUND_FOOTPRINT
 	DPolygon2 &GetAtFootprint2() { return m_Foot; }
 	const DPolygon2 &GetAtFootprint2() const { return m_Foot; }
+
+	// backward compatibility: outer ring
+	const DLine2 &GetAtFootprint() const { return m_Foot[0]; }
+	DLine2 GetFootprint() { return m_Foot[0]; }
+#else
+	const DLine2 &GetAtFootprint() const { return m_Footprint; }
+	DLine2 GetFootprint() { return m_Footprint; }
 #endif
 
 	void DetermineLocalFootprint(float fHeight);
-	const FLine3 &GetLocalFootprint() { return m_LocalFootprint; }
+	const FPolygon3 &GetLocalFootprint() { return m_LocalFootprint; }
 
 private:
-	void SetWalls(unsigned int n);
+	void RebuildEdges(unsigned int n);
 	void GetEdgePlane(unsigned int i, FPlane &plane);
 	bool DetermineHeightFromSlopes();
 	void DeleteEdges();
 
 	vtArray<vtEdge *> m_Edges;
 
-	// footprint of the stories in this level
-	DLine2		m_Footprint;
 
 	// alternate storage of earth-CS footprint, in development
 	void SynchToCompound();
 	void SynchFromCompound();
+
+	// footprint of the stories in this level
 #if COMPOUND_FOOTPRINT
 	DPolygon2	m_Foot;
+#else
+	DLine2		m_Footprint;
 #endif
 
 	// footprint in the local CS of this building
-	FLine3		m_LocalFootprint;
+	FPolygon3		m_LocalFootprint;
 };
 
 /**
@@ -259,7 +266,7 @@ public:
 	void WriteXML(GZOutput &out, bool bDegrees) const;
 	void AddDefaultDetails();
 	void DetermineLocalFootprints();
-	const FLine3 &GetLocalFootprint(int i) { return m_Levels[i]->GetLocalFootprint(); }
+	const FPolygon3 &GetLocalFootprint(int i) { return m_Levels[i]->GetLocalFootprint(); }
 
 	static vtLocalConversion s_Conv;
 	static const char *GetEdgeFeatureString(int edgetype);

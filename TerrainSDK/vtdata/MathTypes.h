@@ -219,7 +219,8 @@ class DPoint2;
 /**
  * A 2-component vector class, single-precision (float).
  */
-class FPoint2 {
+class FPoint2
+{
 public:
 	FPoint2() { x = y = 0.0f; }
 	FPoint2(int ix, int iy) { x=(float)ix; y=(float)iy; }
@@ -276,7 +277,8 @@ public:
 /**
  * A 2-component vector class, double-precision.
  */
-class DPoint2 {
+class DPoint2
+{
 public:
 	DPoint2() { x = y = 0.0f; }
 	DPoint2(int ix, int iy) { x=(double)ix; y=(double)iy; }
@@ -408,7 +410,6 @@ public:
 	/// Multiply all points by a given factor
 	void Mult(double factor);
 
-	void From3D(const DLine3 &input);
 	void InsertPointAfter(int iInsertAfter, const DPoint2 &Point);
 	void RemovePoint(int i);
 	bool ContainsPoint(const DPoint2 &p) const;
@@ -547,6 +548,8 @@ public:
 	// assignment
 	FLine3 &operator=(const FLine3 &v);
 //	FLine3 &operator=(const DLine3 &v);
+
+	void ReverseOrder();
 };
 
 inline DLine3 &DLine3::operator=(const DLine3 &v)
@@ -735,6 +738,7 @@ public:
 class DRECT;
 
 typedef std::vector<DLine2> DLine2Array;
+typedef std::vector<FLine3> FLine3Array;
 
 /**
  * We represent a polygon as a collection of closed rings, each of which
@@ -756,6 +760,9 @@ public:
 	unsigned int NumTotalVertices() const;
 
 	void GetAsDLine2(DLine2 &dline) const;
+
+	void InsertPointAfter(int iInsertAfter, const DPoint2 &Point);
+	void RemovePoint(int N);
 };
 
 /**
@@ -770,6 +777,24 @@ public:
 
 	// for speed, remember the polygon that we found last time
 	static int s_previous_poly;
+};
+
+/**
+ * Represent a 3D polygon as a collection of closed rings, each of which
+ * is represented by a FLine3.  The first FLine3 is the 'outside' ring,
+ * any subsequent FLine3 are 'inside' rings, which are holes.
+ *
+ * In most usage, there should be a consistency in the vertex ordering:
+ * the 'outside' ring should be counter-clockwise, and the 'inside' ring(s)
+ * should be clockwise.
+ */
+class FPolygon3 : public FLine3Array
+{
+public:
+	void Add(const FPoint3 &p);
+	void Mult(float factor);
+	void ReverseOrder();
+	unsigned int NumTotalVertices() const;
 };
 
 
@@ -1423,6 +1448,9 @@ void vtLogMatrix(const FMatrix4 &mat);
 void vtLogMatrix(const FMatrix3 &mat);
 bool RaySphereIntersection(const FPoint3 &rkOrigin, const FPoint3 &rkDirection,
 		  const FSphere& rkSphere, int& riQuantity, FPoint3 akPoint[2]);
-
+void ProjectionXZ(const FLine3 &fline3, DLine2 &dline2);
+void ProjectionXZ(const FPolygon3 &fpoly3, DPolygon2 &dpoly2);
+void ProjectionXZ(const DLine2 &dline2, float fY, FLine3 &fline3);
+void ProjectionXZ(const DPolygon2 &dpoly2, float fY, FPolygon3 &fpoly3);
 
 #endif	// VTMATHTYPESH

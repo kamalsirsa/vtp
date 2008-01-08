@@ -65,18 +65,6 @@ void DLine2::Mult(double factor)
 		GetAt(i) *= factor;
 }
 
-void DLine2::From3D(const DLine3 &input)
-{
-	unsigned int i, size = input.GetSize();
-	SetSize(size);
-	for (i = 0; i < size; i++)
-	{
-		const DPoint3 &p = input.GetAt(i);
-		m_Data[i].x = p.x;
-		m_Data[i].y = p.y;
-	}
-}
-
 void  DLine2::InsertPointAfter(int iInsertAfter, const DPoint2 &Point)
 {
 	int iNumPoints = GetSize();
@@ -504,6 +492,22 @@ bool DLine3::ContainsPoint2D(const DPoint2 &p) const
 }
 
 
+//////////////////////////////////////////////////////////////////////////
+// FLine3 methods
+
+void FLine3::ReverseOrder()
+{
+	FPoint3 p;
+	int i, size = GetSize();
+	for (i = 0; i < size/2; i++)
+	{
+		p = GetAt(i);
+		SetAt(i, GetAt(size-1-i));
+		SetAt(size-1-i, p);
+	}
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // DRECT methods
 //
@@ -604,6 +608,38 @@ void DPolygon2::Mult(double factor)
 	}
 }
 
+bool DPolygon2::ComputeExtents(DRECT &rect) const
+{
+	if (size() == 0)
+		return false;
+
+	rect.SetRect(1E9,-1E9,-1E9,1E9);
+	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	{
+		const DLine2 &ring = at(ringnum);
+		for (unsigned i = 0; i < ring.GetSize(); i++)
+			rect.GrowToContainPoint(ring[i]);
+	}
+	return true;
+}
+
+void DPolygon2::ReverseOrder()
+{
+	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	{
+		DLine2 &ring = at(ringnum);
+		ring.ReverseOrder();
+	}
+}
+
+unsigned int DPolygon2::NumTotalVertices() const
+{
+	unsigned int total = 0, r;
+	for (r = 0; r < size(); r++)
+		total += at(r).GetSize();
+	return total;
+}
+
 /**
 * Normally the polygon is stored as a series of rings.  Sometimes it is
 * necessary to access the polygon as a single array of points instead.
@@ -631,31 +667,83 @@ void DPolygon2::GetAsDLine2(DLine2 &dline) const
 	}
 }
 
-bool DPolygon2::ComputeExtents(DRECT &rect) const
+/**
+ * The insertion point can be on the outer ring, or any inner ring.
+ */
+void  DPolygon2::InsertPointAfter(int iInsertAfter, const DPoint2 &Point)
 {
-	if (size() == 0)
-		return false;
-
-	rect.SetRect(1E9,-1E9,-1E9,1E9);
-	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	for (unsigned int ring = 0; ring < size(); ring++)
 	{
-		const DLine2 &ring = at(ringnum);
-		for (unsigned i = 0; i < ring.GetSize(); i++)
-			rect.GrowToContainPoint(ring[i]);
+		unsigned int size = at(ring).GetSize();
+		if (iInsertAfter < size)
+		{
+			// remove the point from this ring
+			at(ring).InsertPointAfter(iInsertAfter, Point);
+			return;
+		}
+		iInsertAfter -= size;
 	}
-	return true;
 }
 
-void DPolygon2::ReverseOrder()
+/**
+ * The Nth point can be on the outer ring, or any inner ring.
+ */
+void DPolygon2::RemovePoint(int N)
+{
+	for (unsigned int ring = 0; ring < size(); ring++)
+	{
+		unsigned int size = at(ring).GetSize();
+		if (N < size)
+		{
+			// remove the point from this ring
+			at(ring).RemovePoint(N);
+			return;
+		}
+		N -= size;
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// FPolygon3 methods
+//
+
+/**
+* Add the given amount to all coordinates of the polygon.  Spatially, this
+* offsets the location of the polygon.
+*/
+void FPolygon3::Add(const FPoint3 &p)
 {
 	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
 	{
-		DLine2 &ring = at(ringnum);
+		FLine3 &ring = at(ringnum);
+		for (unsigned int i = 0; i < ring.GetSize(); i++)
+			ring[i] += p;
+	}
+}
+
+/**
+* Multiplies (scales) all the coordinates of the polygon.
+*/
+void FPolygon3::Mult(float factor)
+{
+	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	{
+		FLine3 &ring = at(ringnum);
+		for (unsigned int i = 0; i < ring.GetSize(); i++)
+			ring[i] *= factor;
+	}
+}
+
+void FPolygon3::ReverseOrder()
+{
+	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	{
+		FLine3 &ring = at(ringnum);
 		ring.ReverseOrder();
 	}
 }
 
-unsigned int DPolygon2::NumTotalVertices() const
+unsigned int FPolygon3::NumTotalVertices() const
 {
 	unsigned int total = 0, r;
 	for (r = 0; r < size(); r++)
@@ -1665,3 +1753,44 @@ bool RaySphereIntersection(const FPoint3 &origin, const FPoint3 &dir,
 	return iQuantity > 0;
 }
 
+/**
+ * To convert between 3D and 2D entities, project to and from the 3D
+ * coordinate system's XZ plane.
+ */
+void ProjectionXZ(const FLine3 &fline3, DLine2 &dline2)
+{
+	unsigned int size = fline3.GetSize();
+	dline2.SetSize(size);
+	for (unsigned int i = 0; i < size; i++)
+	{
+		const FPoint3 &fp3 = fline3[i];
+		dline2[i].Set(fp3.x, -fp3.z);
+	}
+}
+
+void ProjectionXZ(const FPolygon3 &fpoly3, DPolygon2 &dpoly2)
+{
+	unsigned int rings = fpoly3.size();
+	dpoly2.resize(rings);
+	for (unsigned int i = 0; i < rings; i++)
+		ProjectionXZ(fpoly3[i], dpoly2[i]);
+}
+
+void ProjectionXZ(const DLine2 &dline2, float fY, FLine3 &fline3)
+{
+	unsigned int size = dline2.GetSize();
+	fline3.SetSize(size);
+	for (unsigned int i = 0; i < size; i++)
+	{
+		const DPoint2 &dp2 = dline2[i];
+		fline3[i].Set((float) dp2.x, fY, (float) -dp2.y);
+	}
+}
+
+void ProjectionXZ(const DPolygon2 &dpoly2, float fY, FPolygon3 &fpoly3)
+{
+	unsigned int rings = dpoly2.size();
+	fpoly3.resize(rings);
+	for (unsigned int i = 0; i < rings; i++)
+		ProjectionXZ(dpoly2[i], fY, fpoly3[i]);
+}

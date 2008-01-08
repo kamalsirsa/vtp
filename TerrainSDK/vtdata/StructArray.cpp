@@ -4,7 +4,7 @@
 // It supports operations including loading and saving to a file
 // and picking of building elements.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -929,6 +929,7 @@ private:
 	vtLevel *m_pLevel;
 	vtEdge *m_pEdge;
 
+	DPolygon2 m_Footprint;
 	int m_iLevel;
 	int m_iEdge;
 };
@@ -1009,7 +1010,10 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 	if (m_state == 3)	// Level
 	{
 		if (!strcmp(name, "Footprint"))
+		{
 			m_state = 4;
+			m_Footprint.clear();
+		}
 		else if (!strcmp(name, "Edge"))
 		{
 			m_pEdge = m_pLevel->GetEdge(m_iEdge);
@@ -1049,17 +1053,30 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 					m_pEdge->m_Facade = attval;
 			}
 
-			m_state = 5;
+			m_state = 7;	// in Edge
 		}
 		return;
 	}
 
 	if (m_state == 4)	// Footprint
 	{
+		if (!strcmp(name, "gml:outerBoundaryIs"))
+			m_state = 5;
+		if (!strcmp(name, "gml:innerBoundaryIs"))
+			m_state = 6;
+	}
+
+	if (m_state == 5)	// Footprint outerBoundaryIs
+	{
 		// nothing necessary here, catch the end of element
 	}
 
-	if (m_state == 5)	// Edge
+	if (m_state == 6)	// Footprint innerBoundaryIs
+	{
+		// nothing necessary here, catch the end of element
+	}
+
+	if (m_state == 7)	// Edge
 	{
 		if (!strcmp(name, "EdgeElement"))
 		{
@@ -1176,51 +1193,83 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 	}
 }
 
+void DLine2FromString(const char *data, DLine2 &line)
+{
+	// Speed/memory optimization: quick check of how many vertices
+	//  there are, then preallocate that many
+	unsigned int verts = 0;
+	for (size_t i = 0; i < strlen(data); i++)
+		if (data[i] == ',')
+			verts++;
+	line.Empty();
+	line.SetMaxSize(verts);
+
+	double x, y;
+	while (sscanf(data, "%lf,%lf", &x, &y) == 2)
+	{
+		line.Append(DPoint2(x,y));
+		data = strchr(data, ' ');
+		if (!data)
+			break;
+		data++;
+	}
+}
+
 void StructVisitorGML::endElement(const char *name)
 {
 	bool bGrabAttribute = false;
 	const char *data = m_data.c_str();
 
-	if (m_state == 5 && !strcmp(name, "Edge"))
+	if (m_state == 7 && !strcmp(name, "Edge"))
 	{
 		m_iEdge++;
 		m_state = 3;
 	}
-
-	else if (m_state == 4)
+	else if (m_state == 6)	// inside Footprint innerBoundaryIs
 	{
 		if (!strcmp(name, "gml:coordinates"))
 		{
-			// Speed/memory optimization: quick check of how many vertices
-			//  there are, then preallocate that many
-			unsigned int verts = 0;
-			for (size_t i = 0; i < strlen(data); i++)
-				if (data[i] == ',')
-					verts++;
 			DLine2 line;
-			line.SetMaxSize(verts);
-
-			double x, y;
-			while (sscanf(data, "%lf,%lf", &x, &y) == 2)
-			{
-				line.Append(DPoint2(x,y));
-				data = strchr(data, ' ');
-				if (!data)
-					break;
-				data++;
-			}
-			m_pLevel->SetFootprint(line);
+			DLine2FromString(data, line);
+#if COMPOUND_FOOTPRINT
+			m_Footprint.push_back(line);
+#else
+			//m_pLevel->SetFootprint(line);
+#endif
 		}
-		else if (!strcmp(name, "Footprint"))
-			m_state = 3;
+		else if (!strcmp(name, "gml:innerBoundaryIs"))
+			m_state = 4;
 	}
-
+	else if (m_state == 5)	// inside Footprint outerBoundaryIs
+	{
+		if (!strcmp(name, "gml:coordinates"))
+		{
+			DLine2 line;
+			DLine2FromString(data, line);
+#if COMPOUND_FOOTPRINT
+			m_Footprint.push_back(line);
+#else
+			m_pLevel->SetFootprint(line);
+#endif
+		}
+		else if (!strcmp(name, "gml:outerBoundaryIs"))
+			m_state = 4;
+	}
+	else if (m_state == 4)	// inside Footprint
+	{
+		if (!strcmp(name, "Footprint"))
+		{
+#if COMPOUND_FOOTPRINT
+			m_pLevel->SetFootprint(m_Footprint);
+#endif
+			m_state = 3;
+		}
+	}
 	else if (m_state == 3 && !strcmp(name, "Level"))
 	{
 		m_state = 2;
 		m_iLevel ++;
 	}
-
 	else if (m_state == 2)
 	{
 		if (!strcmp(name, "Building"))

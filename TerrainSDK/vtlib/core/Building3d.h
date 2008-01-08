@@ -77,7 +77,7 @@ protected:
 	// internal methods
 	void UpdateWorldLocation(vtHeightField3d *pHeightField);
 	float GetHeightOfStories();
-	void CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2);
+	void CreateUpperPolygon(vtLevel *lev, FPolygon3 &poly, FPolygon3 &poly2);
 
 	void CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly2,
 		int iEdge, bool bShowEdge);
@@ -103,11 +103,11 @@ protected:
 	void AddWallNormal(vtEdge *pWall, vtEdgeFeature *pFeat,
 			const FLine3 &quad);
 
-	void AddFlatRoof(const FLine3 &pp, vtLevel *pLev);
+	void AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev);
 	FPoint3	Normal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2);
 
 	// Felkel straight skeleton
-	float MakeFelkelRoof(const FLine3 &pp, vtLevel *pLev);
+	float MakeFelkelRoof(const FPolygon3 &pp, vtLevel *pLev);
 	bool Collinear2d(const FPoint3& p1, const FPoint3& p2, const FPoint3& p3);
 	int FindVertex(FPoint3 Point, FLine3 &RoofSection3D, vtArray<int> &iaVertices);
 
