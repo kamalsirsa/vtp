@@ -1,3 +1,11 @@
+//
+// Triangulate.h
+//
+// Two different methods for triangulating polygons.
+//
+// Copyright (c) 2006-2008 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 // ** THIS IS A CODE SNIPPET WHICH WILL EFFICIENTLY TRIANGULATE ANY
 // ** POLYGON/CONTOUR (without holes) AS A STATIC CLASS.
@@ -71,6 +79,13 @@ public:
 private:
 	static bool Snip(const DLine2 &contour,int u,int v,int w,int n,int *V);
 };
+
+/**
+ * Another triangulation algorithm, far more powerful, is the Triangle library.
+ * Provide a convenient way to call it.
+ */
+void CallTriangle(const DLine2 &contour, DLine2 &result);
+void CallTriangle(const DPolygon2 &contour, DLine2 &result);
 
 #endif	// TRIANGULATE_H
 

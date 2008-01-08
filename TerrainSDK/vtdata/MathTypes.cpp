@@ -1,7 +1,7 @@
 //
 // Implementation of methods for the basic data classes
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -655,6 +655,13 @@ void DPolygon2::ReverseOrder()
 	}
 }
 
+unsigned int DPolygon2::NumTotalVertices() const
+{
+	unsigned int total = 0, r;
+	for (r = 0; r < size(); r++)
+		total += at(r).GetSize();
+	return total;
+}
 
 
 /////////////////////////////////////////////////////////////////////////////

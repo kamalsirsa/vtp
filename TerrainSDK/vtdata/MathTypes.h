@@ -1,7 +1,7 @@
 //
 // Basic data type definitions shared by all the VTP software.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file MathTypes.h */
@@ -753,6 +753,7 @@ public:
 	void Mult(double factor);
 	bool ComputeExtents(DRECT &rect) const;
 	void ReverseOrder();
+	unsigned int NumTotalVertices() const;
 
 	void GetAsDLine2(DLine2 &dline) const;
 };
