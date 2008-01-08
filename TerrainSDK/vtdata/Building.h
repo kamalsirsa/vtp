@@ -21,8 +21,8 @@ class vtStructureArray;
 
 ////////////////////////////////////////////////////
 
-// Set to 1 for vtLevel to use OGRPolygon for compound polygons as footprints
-#define OGR_FOOTPRINT 0
+// Set to 1 for vtLevel to use DPolygon2 for compound polygons as footprints
+#define COMPOUND_FOOTPRINT 0
 
 #define MINIMUM_BASEMENT_SIZE 0.5 // Mininum size of an automatically generated basement layer in a building
 
@@ -163,12 +163,12 @@ public:
 	float	m_fStoryHeight;
 
 	void SetFootprint(const DLine2 &dl);
-	void SetFootprint(const OGRPolygon *poly);
+	void SetFootprint(const DPolygon2 &poly);
 	DLine2 GetFootprint() { return m_Footprint; }
 	const DLine2 &GetAtFootprint() const { return m_Footprint; }
-#if OGR_FOOTPRINT
-	OGRPolygon *GetAtOGRFootprint() { return m_pFoot; }
-	const OGRPolygon *GetAtOGRFootprint() const { return m_pFoot; }
+#if COMPOUND_FOOTPRINT
+	DPolygon2 &GetAtFootprint2() { return m_Foot; }
+	const DPolygon2 &GetAtFootprint2() const { return m_Foot; }
 #endif
 
 	void DetermineLocalFootprint(float fHeight);
@@ -186,10 +186,10 @@ private:
 	DLine2		m_Footprint;
 
 	// alternate storage of earth-CS footprint, in development
-	void SynchToOGR();
-	void SynchFromOGR();
-#if OGR_FOOTPRINT
-	OGRPolygon	*m_pFoot;
+	void SynchToCompound();
+	void SynchFromCompound();
+#if COMPOUND_FOOTPRINT
+	DPolygon2	m_Foot;
 #endif
 
 	// footprint in the local CS of this building
@@ -217,11 +217,11 @@ public:
 
 	// footprint methods
 	void SetFootprint(int i, const DLine2 &dl);
-	void SetFootprint(int i, const OGRPolygon *poly);
+	void SetFootprint(int i, const DPolygon2 &poly);
 	DLine2 GetFootprint(int i) { return m_Levels[i]->GetFootprint(); }
 	const DLine2 &GetAtFootprint(int i) { return m_Levels[i]->GetAtFootprint(); }
-#if OGR_FOOTPRINT
-	const OGRPolygon *GetAtOGRFootprint(int i) { return m_Levels[i]->GetAtOGRFootprint(); }
+#if COMPOUND_FOOTPRINT
+	const DPolygon2 &GetAtFootprint2(int i) { return m_Levels[i]->GetAtFootprint2(); }
 #endif
 	bool GetBaseLevelCenter(DPoint2 &p) const;
 

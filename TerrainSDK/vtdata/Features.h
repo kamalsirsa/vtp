@@ -454,8 +454,10 @@ vtString MakeDBFName(const char *filename);
 int GetIntFromString(const char *buf, int len);
 bool GeometryTypeIs3D(OGRwkbGeometryType type);
 vtString GetShapeTypeName(int nShapeType);
+
 void SHPToDPolygon2(SHPObject *pObj, DPolygon2 &dpoly);
-void DPolygon2ToOGR(DPolygon2 &dp, OGRPolygon &op);
+void DPolygon2ToOGR(const DPolygon2 &dp, OGRPolygon &op);
+void OGRToDPolygon2(const OGRPolygon &op, DPolygon2 &dp);
 
 #endif // VTDATA_FEATURES
 

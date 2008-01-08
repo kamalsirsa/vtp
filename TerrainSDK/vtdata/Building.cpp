@@ -169,16 +169,12 @@ vtLevel::vtLevel()
 {
 	m_iStories = 1;
 	m_fStoryHeight = STORY_HEIGHT;
-#if OGR_FOOTPRINT
-	m_pFoot = NULL;
-#endif
 }
 
 vtLevel::~vtLevel()
 {
-#if OGR_FOOTPRINT
-	delete m_pFoot;
-	m_pFoot = NULL;
+#if COMPOUND_FOOTPRINT
+	m_Foot.clear();
 #endif
 	DeleteEdges();
 }
@@ -250,109 +246,66 @@ void vtLevel::SetFootprint(const DLine2 &dl)
 	if (curr != prev)
 		SetWalls(curr);
 
-	SynchToOGR();
+	SynchToCompound();
 }
 
-void vtLevel::SetFootprint(const OGRPolygon *poly)
+void vtLevel::SetFootprint(const DPolygon2 &poly)
 {
-#if OGR_FOOTPRINT
-	// Because of the way OGR uses dynamic allocation, we can't use the
-	//  copy operator.  Instead we must free and reallocate it.
-	delete m_pFoot;
-	m_pFoot = (OGRPolygon *) poly->clone();
+#if COMPOUND_FOOTPRINT
+	m_Foot = poly;
 #endif
 
 	int prev = m_Footprint.GetSize();
-	SynchFromOGR();
+	SynchFromCompound();
 	int curr = m_Footprint.GetSize();
 	if (curr != prev)
 		SetWalls(curr);
 }
 
-void vtLevel::SynchToOGR()
+void vtLevel::SynchToCompound()
 {
-#if OGR_FOOTPRINT
-	if (!m_pFoot)
-		return;
-
-	// keep OGR poly in synch
-	int i, size = m_Footprint.GetSize();
-	OGRLinearRing *pRing = m_pFoot->getExteriorRing();
-	if (pRing == NULL && size != 0)
-	{
-		pRing = new OGRLinearRing;
-		pRing->setNumPoints(size);
-		m_pFoot->addRingDirectly(pRing);
-	}
-	else
-	{
-		int oldsize = pRing->getNumPoints();
-		if (oldsize != size)
-		{
-			m_pFoot->empty();
-			pRing = new OGRLinearRing;
-			pRing->setNumPoints(size);
-			m_pFoot->addRingDirectly(pRing);
-		}
-	}
-
-	// for now, assume that there are no internal features
-	for (i = 0; i < size; i++)
-		pRing->setPoint(i, m_Footprint[i].x, m_Footprint[i].y);
+#if COMPOUND_FOOTPRINT
+	// keep compound poly in synch
+	// act as if there are no internal features
+	m_Foot.resize(1);
+	m_Foot[0] = m_Footprint;
 #endif
 }
 
-void vtLevel::SynchFromOGR()
+void vtLevel::SynchFromCompound()
 {
-#if OGR_FOOTPRINT
-	if (!m_pFoot)
+#if COMPOUND_FOOTPRINT
+	int rings = m_Foot.size();
+	if (!rings)
 		return;
-
-	OGRLinearRing *pRing = m_pFoot->getExteriorRing();
-	if (!pRing)
-		return;
-
-	int total = 0;
 
 	// first, count how many points our polygon will have
-	int num = pRing->getNumPoints();
-	total += num;
-
-	int inside = m_pFoot->getNumInteriorRings();
+	int total = 0;
 	int i, j;
-	for (i = 0; i < inside; i++)
+	for (i = 0; i < rings; i++)
 	{
-		total += 1;	// to close off the previous poly
-		total += m_pFoot->getInteriorRing(i)->getNumPoints();
+		total += m_Foot[i].GetSize();
+
+		if (i < rings-1)
+			total += 1;	// to close off this poly
 	}
 	int count = 0;
 	m_Footprint.SetSize(total);
 
-	// copy points from the external ring
-	for (j = 0; j < num; j++)
+	// now copy points from each rings
+	for (i = 0; i < rings; i++)
 	{
-		m_Footprint[count].Set(pRing->getX(j), pRing->getY(j));
-		count++;
-	}
-	// close it if there are internal rings
-	if (inside > 0)
-	{
-		m_Footprint[count].Set(pRing->getX(0), pRing->getY(0));
-		count++;
-	}
-	// now copy points from the internal rings
-	for (i = 0; i < inside; i++)
-	{
-		pRing = m_pFoot->getInteriorRing(i);
-		num = pRing->getNumPoints();
+		DLine2 &ring = m_Foot[i];
+		int num = ring.GetSize();
 		for (j = 0; j < num; j++)
 		{
-			m_Footprint[count].Set(pRing->getX(j), pRing->getY(j));
+			m_Footprint[count] = ring[j];
 			count++;
 		}
-		if (i < inside-1)	// there's more rings to come
+		// close it if there's more rings to come
+		if (i < rings-1)
 		{
-			m_Footprint[count].Set(pRing->getX(0), pRing->getY(0));
+			m_Footprint[count] = ring[0];
 			count++;
 		}
 	}
@@ -1046,7 +999,7 @@ void vtBuilding::SetFootprint(int lev, const DLine2 &foot)
  * \param lev The level, from 0 for the base level and up.
  * \param foot The footprint.
  */
-void vtBuilding::SetFootprint(int lev, const OGRPolygon *poly)
+void vtBuilding::SetFootprint(int lev, const DPolygon2 &poly)
 {
 	int levs = GetNumLevels();
 	if (lev >= levs)
@@ -1329,15 +1282,15 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 		gfprintf(out, "\t\t\t\t\t\t\t<gml:outerBoundaryIs>\n");
 		gfprintf(out, "\t\t\t\t\t\t\t\t<gml:LinearRing>\n");
 		gfprintf(out, "\t\t\t\t\t\t\t\t\t<gml:coordinates>");
-#if OGR_FOOTPRINT
-		const OGRPolygon *pfoot = lev->GetAtOGRFootprint();
-		const OGRLinearRing *outer = pfoot->getExteriorRing();
-		int points = outer->getNumPoints();
+#if COMPOUND_FOOTPRINT
+		const DPolygon2 &pfoot = lev->GetAtFootprint2();
+		const DLine2 &outer = pfoot[0];
+		int points = outer.GetSize();
 		for (j = 0; j < points; j++)
 		{
-			gfprintf(out, coord_format, outer->getX(j));
+			gfprintf(out, coord_format, outer[j].x);
 			gfprintf(out, ",");
-			gfprintf(out, coord_format, outer->getY(j));
+			gfprintf(out, coord_format, outer[j].y);
 			if (j != points-1)
 				gfprintf(out, " ");
 		}
@@ -1358,22 +1311,22 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 		gfprintf(out, "\t\t\t\t\t\t\t\t</gml:LinearRing>\n");
 		gfprintf(out, "\t\t\t\t\t\t\t</gml:outerBoundaryIs>\n");
 
-#if OGR_FOOTPRINT
+#if COMPOUND_FOOTPRINT
 		// If we have a compound footprint, write inner rings separately
-		int irings = pfoot->getNumInteriorRings();
-		for (int iring = 0; iring < irings; iring++)
+		int rings = pfoot.size();
+		for (int iring = 1; iring < rings; iring++)
 		{
 			gfprintf(out, "\t\t\t\t\t\t\t<gml:innerBoundaryIs>\n");
 			gfprintf(out, "\t\t\t\t\t\t\t\t<gml:LinearRing>\n");
 			gfprintf(out, "\t\t\t\t\t\t\t\t\t<gml:coordinates>");
 
-			const OGRLinearRing *inner = pfoot->getInteriorRing(iring);
-			int points = inner->getNumPoints();
+			const DLine2 &inner = pfoot[iring];
+			int points = inner.GetSize();
 			for (j = 0; j < points; j++)
 			{
-				gfprintf(out, coord_format, inner->getX(j));
+				gfprintf(out, coord_format, inner[j].x);
 				gfprintf(out, ",");
-				gfprintf(out, coord_format, inner->getY(j));
+				gfprintf(out, coord_format, inner[j].y);
 				if (j != points-1)
 					gfprintf(out, " ");
 			}

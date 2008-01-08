@@ -627,7 +627,7 @@ void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 	for (unsigned int ring = 0; ring < contour.size(); ring++)
 	{
 		int num_points = contour[ring].GetSize();
-		for (i = 0; i < num_points; i++)
+		for (int i = 0; i < num_points; i++)
 		{
 			in.segmentlist[counter++] = start+i;
 			in.segmentlist[counter++] = start+((i+1)%num_points);
@@ -672,7 +672,7 @@ void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 	triangulate("pz", &in, &out, &vorout );
 
 	// now copy the triangle results back into vtdata structures
-	for ( i = 0; i < out.numberoftriangles; ++i )
+	for (int i = 0; i < out.numberoftriangles; i++)
 	{
 		int n1 = out.trianglelist[i * 3];
 		int n2 = out.trianglelist[i * 3 + 1];

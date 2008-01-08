@@ -2192,12 +2192,12 @@ void SHPToDPolygon2(SHPObject *pObj, DPolygon2 &dpoly)
 	}
 }
 
-void DPolygon2ToOGR(DPolygon2 &dp, OGRPolygon &op)
+void DPolygon2ToOGR(const DPolygon2 &dp, OGRPolygon &op)
 {
 	op.empty();
 	for (unsigned int ringnum = 0; ringnum < dp.size(); ringnum++)
 	{
-		DLine2 &ring = dp.at(ringnum);
+		const DLine2 &ring = dp.at(ringnum);
 		OGRLinearRing *poNewRing = new OGRLinearRing;
 
 		unsigned int numpoints = ring.GetSize();
@@ -2214,3 +2214,26 @@ void DPolygon2ToOGR(DPolygon2 &dp, OGRPolygon &op)
 	}
 }
 
+void OGRToDPolygon2(const OGRPolygon &op, DPolygon2 &dp)
+{
+	int irings = op.getNumInteriorRings();
+	dp.resize(1 + irings);
+
+	const OGRLinearRing *outer = op.getExteriorRing();
+	DLine2 &line = dp[0];
+
+	// OGRPolygon's convention is to duplicate the first point on each ring
+	// So omit this point when we convert
+	line.SetSize(outer->getNumPoints()-1);
+	for (int i = 0; i < outer->getNumPoints()-1; i++)
+		line[i].Set(outer->getX(i), outer->getY(i));
+
+	for (int ring = 0; ring < irings; ring++)
+	{
+		const OGRLinearRing *inner = op.getInteriorRing(ring);
+		line = dp[1+ring];
+		line.SetSize(inner->getNumPoints()-1);
+		for (int i = 0; i < inner->getNumPoints()-1; i++)
+			line[i].Set(outer->getX(i), outer->getY(i));
+	}
+}
