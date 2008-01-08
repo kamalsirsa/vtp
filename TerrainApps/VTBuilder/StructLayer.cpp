@@ -193,9 +193,10 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 
 	for (int i = 0; i < levs; i++)
 	{
-#if OGR_FOOTPRINT
-		const OGRPolygon *op = bld->GetAtOGRFootprint(i);
-		pView->DrawOGRPolygon(pDC, *op, false, true);	// no fill, yes circles
+#if COMPOUND_FOOTPRINT
+		const DPolygon2 &dp = bld->GetAtFootprint2(i);
+		//pView->DrawOGRPolygon(pDC, *op, false, true);	// no fill, yes circles
+		pView->DrawDPolygon2(pDC, dp, true, true);	// yes fill, yes circles
 #else
 		const DLine2 &dl = bld->GetFootprint(i);
 		pView->DrawPolyLine(pDC, dl, true);

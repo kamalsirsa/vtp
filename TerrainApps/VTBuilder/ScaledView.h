@@ -77,6 +77,7 @@ public:
 
 	void DrawOGRLinearRing(wxDC *pDC, const OGRLinearRing *line, bool bCircles);
 	void DrawOGRPolygon(wxDC *pDC, const OGRPolygon &poly, bool bFill, bool bCircles);
+	void DrawDPolygon2(wxDC *pDC, const DPolygon2 &poly, bool bFill, bool bCircles);
 
 protected:
 	void UpdateRanges();

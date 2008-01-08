@@ -14,6 +14,7 @@
 #include "vtdata/vtLog.h"
 #include "ScaledView.h"
 #include "Frame.h"
+#include "vtdata/Triangulate.h"
 
 // global useful buffer for forming lines
 wxPoint g_screenbuf[SCREENBUF_SIZE];
@@ -315,6 +316,46 @@ void vtScaledView::DrawOGRPolygon(wxDC *pDC, const OGRPolygon &poly, bool bFill,
 
 		for (int ring = 0; ring < poly.getNumInteriorRings(); ring++)
 			DrawOGRLinearRing(pDC, poly.getInteriorRing(ring), bCircles);
+	}
+}
+
+void vtScaledView::DrawDPolygon2(wxDC *pDC, const DPolygon2 &poly, bool bFill,
+								  bool bCircles)
+{
+	if (bFill)
+	{
+		DLine2 result;
+#if OLD_TRI
+		const DLine2 &outer = poly[0];
+		Triangulate_d::Process(outer, result);
+#else
+		CallTriangle(poly, result);
+#endif
+
+		int tcount = result.GetSize()/3;
+		for (int j = 0; j < tcount; j++)
+		{
+			const DPoint2 &p1 = result[j*3+0];
+			const DPoint2 &p2 = result[j*3+1];
+			const DPoint2 &p3 = result[j*3+2];
+			DrawLine(pDC, p1, p2);
+			DrawLine(pDC, p2, p3);
+			DrawLine(pDC, p3, p1);
+		}
+	}
+	else
+	{
+		// just draw each ring
+		for (unsigned int ring = 0; ring < poly.size(); ring++)
+		{
+			DrawPolyLine(pDC, poly[ring], true);
+			if (bCircles)
+			{
+				int size = poly[ring].GetSize();
+				for (int j = 0; j < size; j++)
+					pDC->DrawCircle(g_screenbuf[j], 3);
+			}
+		}
 	}
 }
 
