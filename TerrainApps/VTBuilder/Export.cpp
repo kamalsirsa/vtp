@@ -967,6 +967,8 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 #else
 				buf.savedata(fname);
 #endif
+
+				buf.release();
 			}
 		}
 	}
