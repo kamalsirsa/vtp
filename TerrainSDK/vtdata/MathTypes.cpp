@@ -675,7 +675,7 @@ void  DPolygon2::InsertPointAfter(int iInsertAfter, const DPoint2 &Point)
 	for (unsigned int ring = 0; ring < size(); ring++)
 	{
 		unsigned int size = at(ring).GetSize();
-		if (iInsertAfter < size)
+		if ((unsigned int)iInsertAfter < size)
 		{
 			// remove the point from this ring
 			at(ring).InsertPointAfter(iInsertAfter, Point);
@@ -693,7 +693,7 @@ void DPolygon2::RemovePoint(int N)
 	for (unsigned int ring = 0; ring < size(); ring++)
 	{
 		unsigned int size = at(ring).GetSize();
-		if (N < size)
+		if ((unsigned int)N < size)
 		{
 			// remove the point from this ring
 			at(ring).RemovePoint(N);
