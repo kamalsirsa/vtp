@@ -187,7 +187,7 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 	for (int i = 0; i < levs; i++)
 	{
 		const DPolygon2 &dp = bld->GetFootprint(i);
-		pView->DrawDPolygon2(pDC, dp, true, true);	// yes fill, yes circles
+		pView->DrawDPolygon2(pDC, dp, false, true);	// yes fill, yes circles
 	}
 }
 

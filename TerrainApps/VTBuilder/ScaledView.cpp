@@ -324,14 +324,9 @@ void vtScaledView::DrawDPolygon2(wxDC *pDC, const DPolygon2 &poly, bool bFill,
 {
 	if (bFill)
 	{
+		// tessellate.  we could also draw these as solid triangles.
 		DLine2 result;
-#if OLD_TRI
-		const DLine2 &outer = poly[0];
-		Triangulate_d::Process(outer, result);
-#else
 		CallTriangle(poly, result);
-#endif
-
 		int tcount = result.GetSize()/3;
 		for (int j = 0; j < tcount; j++)
 		{
