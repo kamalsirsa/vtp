@@ -160,12 +160,14 @@ void vtStructureLayer::DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView)
 		pDC->SetLogicalFunction(wxINVERT);
 		pDC->SetPen(thickPen);
 
-		const DLine2 &dl = m_pEditBuilding->GetFootprint(m_iEditLevel);
-		int sides = dl.GetSize();
+		const DPolygon2 &dl = m_pEditBuilding->GetFootprint(m_iEditLevel);
 		int j = m_iEditEdge;
+		int ring = dl.WhichRing(j);
+		const DLine2 &dline = dl[ring];
+		int sides = dline.GetSize();
 		wxPoint p[2];
-		pView->screen(dl.GetAt(j), p[0]);
-		pView->screen(dl.GetAt((j+1)%sides), p[1]);
+		pView->screen(dline.GetAt(j), p[0]);
+		pView->screen(dline.GetAt((j+1)%sides), p[1]);
 		pDC->DrawLines(2, p);
 	}
 }
@@ -193,43 +195,8 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 
 	for (int i = 0; i < levs; i++)
 	{
-#if COMPOUND_FOOTPRINT
-		const DPolygon2 &dp = bld->GetAtFootprint2(i);
-		//pView->DrawOGRPolygon(pDC, *op, false, true);	// no fill, yes circles
+		const DPolygon2 &dp = bld->GetFootprint(i);
 		pView->DrawDPolygon2(pDC, dp, true, true);	// yes fill, yes circles
-#else
-		const DLine2 &dl = bld->GetFootprint(i);
-		pView->DrawPolyLine(pDC, dl, true);
-
-		int sides = dl.GetSize();
-		for (int j = 0; j < sides; j++)
-			pDC->DrawCircle(g_screenbuf[j], 3);
-
-#if TEST
-		const DLine2 &dl = bld->GetFootprint(i);
-		DLine2 result;
-		Triangulate_d::Process(dl, result);
-
-		int tcount = result.GetSize()/3;
-		for (int j = 0; j < tcount; j++)
-		{
-			const DPoint2 &p1 = result[j*3+0];
-			const DPoint2 &p2 = result[j*3+1];
-			const DPoint2 &p3 = result[j*3+2];
-			pView->DrawLine(pDC, p1, p2);
-			pView->DrawLine(pDC, p2, p3);
-			pView->DrawLine(pDC, p3, p1);
-		}
-
-		int verts = dl.GetSize();
-		for (int j = 0; j < verts; j++)
-		{
-			wxPoint sp;
-			pView->screen(dl[j], sp);
-			pDC->DrawCircle(sp, 3);
-		}
-#endif
-#endif
 	}
 }
 
@@ -594,7 +561,7 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 		for (i = 0; i < iNumLevels; i++)
 		{
 			pLevel = pBuilding->GetLevel(i);
-			if (pLevel->GetAtFootprint().NearestSegment(ui.m_DownLocation,
+			if (pLevel->GetFootprint().NearestSegment(ui.m_DownLocation,
 				iIndex, dClosest, Intersection))
 			{
 				pLevel->AddEdge(iIndex, Intersection);
@@ -605,7 +572,7 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 	{
 		// Add in specified level
 		pLevel = pBuilding->GetLevel(iLevel);
-		if (pLevel->GetAtFootprint().NearestSegment(ui.m_DownLocation,
+		if (pLevel->GetFootprint().NearestSegment(ui.m_DownLocation,
 			iIndex, dClosest, Intersection))
 		{
 			pLevel->AddEdge(iIndex, Intersection);
@@ -769,7 +736,7 @@ void vtStructureLayer::UpdateMove(UIContext &ui)
 	int i, levs = ui.m_pCurBuilding->GetNumLevels();
 	for (i = 0; i < levs; i++)
 	{
-		DLine2 dl = ui.m_pCurBuilding->GetFootprint(i);
+		DPolygon2 dl = ui.m_pCurBuilding->GetFootprint(i);
 		dl.Add(moved_by);
 		ui.m_EditBuilding.SetFootprint(i, dl);
 	}
@@ -789,19 +756,23 @@ void vtStructureLayer::UpdateRotate(UIContext &ui)
 	double angle_diff = angle2 - angle1;
 
 	DPoint2 p;
-	unsigned int i, j, levs = ui.m_pCurBuilding->GetNumLevels();
+	unsigned int i, j, r, levs = ui.m_pCurBuilding->GetNumLevels();
 	for (i = 0; i < levs; i++)
 	{
-		DLine2 dl = ui.m_pCurBuilding->GetFootprint(i);
-		for (j = 0; j < dl.GetSize(); j++)
+		DPolygon2 foot = ui.m_pCurBuilding->GetFootprint(i);
+		for (r = 0; r < foot.size(); r++)
 		{
-			p = dl.GetAt(j);
-			p -= origin;
-			p.Rotate(angle_diff);
-			p += origin;
-			dl.SetAt(j, p);
+			DLine2 &dl = foot[r];
+			for (j = 0; j < dl.GetSize(); j++)
+			{
+				p = dl.GetAt(j);
+				p -= origin;
+				p.Rotate(angle_diff);
+				p += origin;
+				dl.SetAt(j, p);
+			}
 		}
-		ui.m_EditBuilding.SetFootprint(i, dl);
+		ui.m_EditBuilding.SetFootprint(i, foot);
 	}
 }
 
@@ -816,7 +787,7 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 	DPoint2 diff2 = ui.m_CurLocation - origin;
 	float fScale = diff2.Length() / diff1.Length();
 
-	unsigned int i, j;
+	unsigned int i, j, r;
 	DPoint2 p;
 	if (ui.m_bShift)
 	{
@@ -824,30 +795,38 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 		unsigned int levs = ui.m_pCurBuilding->GetNumLevels();
 		for (i = 0; i < levs; i++)
 		{
-			DLine2 dl = ui.m_pCurBuilding->GetFootprint(i);
-			for (j = 0; j < dl.GetSize(); j++)
+			DPolygon2 foot = ui.m_pCurBuilding->GetFootprint(i);
+			for (r = 0; r < foot.size(); r++)
 			{
-				p = dl.GetAt(j);
-				p -= origin;
-				p *= fScale;
-				p += origin;
-				dl.SetAt(j, p);
+				DLine2 &dl = foot[r];
+				for (j = 0; j < dl.GetSize(); j++)
+				{
+					p = dl.GetAt(j);
+					p -= origin;
+					p *= fScale;
+					p += origin;
+					dl.SetAt(j, p);
+				}
 			}
-			ui.m_EditBuilding.SetFootprint(i, dl);
+			ui.m_EditBuilding.SetFootprint(i, foot);
 		}
 	}
 	else
 	{
 		// drag individual corner points
-		DLine2 foot = ui.m_pCurBuilding->GetFootprint(0);
-		p = foot.GetAt(ui.m_iCurCorner);
+		DPolygon2 footprint = ui.m_pCurBuilding->GetFootprint(0);
+
+		int vert = ui.m_iCurCorner;
+		int ring = footprint.WhichRing(vert);
+		DLine2 &foot = footprint[ring];
+		p = foot.GetAt(vert);
 
 		int points = foot.GetSize();
 		if (pView->m_bConstrain && points > 3)
 		{
 			// Maintain angles
-			DPoint2 p0 = foot.GetSafePoint(ui.m_iCurCorner - 1);
-			DPoint2 p1 = foot.GetSafePoint(ui.m_iCurCorner + 1);
+			DPoint2 p0 = foot.GetSafePoint(vert - 1);
+			DPoint2 p1 = foot.GetSafePoint(vert + 1);
 			DPoint2 vec0 = (p - p0).Normalize();
 			DPoint2 vec1 = (p - p1).Normalize();
 			DPoint2 vec2 = vec0;
@@ -859,21 +838,21 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 			double a;
 
 			a = (p - p0).Dot(vec2);
-			foot.SetSafePoint(ui.m_iCurCorner - 1, p0 + (vec2 * a));
+			foot.SetSafePoint(vert - 1, p0 + (vec2 * a));
 			a = (p - p1).Dot(vec3);
-			foot.SetSafePoint(ui.m_iCurCorner + 1, p1 + (vec3 * a));
-			foot.SetAt(ui.m_iCurCorner, p);
+			foot.SetSafePoint(vert + 1, p1 + (vec3 * a));
+			foot.SetAt(vert, p);
 		}
 		else
 		{
 			p += moved_by;
-			foot.SetAt(ui.m_iCurCorner, p);
+			foot.SetAt(vert, p);
 		}
 		// Changing only the lowest level is near useless.  For the great
 		//  majority of cases, the user will want the footprints for all
 		//  levels to remain in sync.
 		for (i = 0; i < ui.m_EditBuilding.GetNumLevels(); i++)
-			ui.m_EditBuilding.SetFootprint(i, foot);
+			ui.m_EditBuilding.SetFootprint(i, footprint);
 
 		// A better guess might be to offset the footprint points of each
 		// level by the delta change; e.g. that would preserve roof overhangs.

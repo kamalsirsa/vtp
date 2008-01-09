@@ -1,13 +1,9 @@
 //
-// Name:		BuildingDlg3d.cpp
+// Name:	BuildingDlg3d.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
-
-#ifdef __GNUG__
-	#pragma implementation "BuildingDlg3d.cpp"
-#endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
@@ -65,14 +61,14 @@ void BuildingDlg3d::Modified()
 	slay->ConstructStructure(m_pBuilding3d);
 
 	// We might also have to rebuild any linear structures around or on it
-	DLine2 foot = m_pBuilding3d->GetFootprint(0);
+	const DLine2 &foot = m_pBuilding3d->GetOuterFootprint(0);
 	for (unsigned int i = 0; i < slay->GetSize(); i++)
 	{
 		vtFence3d *fen = slay->GetFence(i);
 		if (fen)
 		{
 			bool bInside = false;
-			DLine2 &pts = fen->GetFencePoints();
+			const DLine2 &pts = fen->GetFencePoints();
 			for (unsigned int j = 0; j < pts.GetSize(); j++)
 				if (foot.ContainsPoint(pts[j]))
 					bInside = true;

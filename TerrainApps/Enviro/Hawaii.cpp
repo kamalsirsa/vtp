@@ -3,7 +3,7 @@
 //
 // Terrain implementation specific to the Big Island of Hawai'i.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -456,7 +456,9 @@ void IslandTerrain::create_building_manually()
 	dl.Append(c3);
 	dl.Append(c4);
 	dl.Append(c5);
-	pLev = bld->CreateLevel(dl);
+	DPolygon2 footprint;
+	footprint.push_back(dl);
+	pLev = bld->CreateLevel(footprint);
 	pLev->m_fStoryHeight = 2.4385f;
 	pLev->m_iStories = 1;
 
@@ -494,7 +496,9 @@ void IslandTerrain::create_building_manually()
 	dl.Append(c6);
 	dl.Append(c9);
 	dl.Append(c8);
-	pLev = bld->CreateLevel(dl);
+	DPolygon2 footprint2;
+	footprint2.push_back(dl);
+	pLev = bld->CreateLevel(footprint2);
 	pLev->m_fStoryHeight = 2.4385f;
 	pLev->m_iStories = 1;
 	pLev->SetEdgeMaterial(BMAT_NAME_WOOD);
@@ -555,7 +559,9 @@ void IslandTerrain::create_building_manually()
 	dl.Append(c3);
 	dl.Append(c4);
 	dl.Append(c6);
-	pLev = bld->CreateLevel(dl);
+	DPolygon2 footprint3;
+	footprint3.push_back(dl);
+	pLev = bld->CreateLevel(footprint3);
 	pLev->m_iStories = 1;
 	pLev->SetEdgeMaterial(BMAT_NAME_PLAIN);
 	pLev->SetEdgeColor(RGBi(90, 75, 75));
@@ -570,7 +576,9 @@ void IslandTerrain::create_building_manually()
 	dl.Append(c10);
 	dl.Append(c11);
 	dl.Append(c12);
-	pLev = bld->CreateLevel(dl);
+	DPolygon2 footprint4;
+	footprint4.push_back(dl);
+	pLev = bld->CreateLevel(footprint4);
 	pLev->m_iStories = 1;
 	pLev->SetEdgeMaterial(BMAT_NAME_PLAIN);
 	pLev->SetEdgeColor(RGBi(220, 220, 220));
