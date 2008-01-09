@@ -541,6 +541,29 @@ bool DRECT::ContainsLine(const DLine3 &line) const
 // DPolygon2 methods
 //
 
+unsigned int DPolygon2::NumTotalVertices() const
+{
+	unsigned int total = 0, r;
+	for (r = 0; r < size(); r++)
+		total += at(r).GetSize();
+	return total;
+}
+
+bool DPolygon2::ComputeExtents(DRECT &rect) const
+{
+	if (size() == 0)
+		return false;
+
+	rect.SetRect(1E9,-1E9,-1E9,1E9);
+	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	{
+		const DLine2 &ring = at(ringnum);
+		for (unsigned i = 0; i < ring.GetSize(); i++)
+			rect.GrowToContainPoint(ring[i]);
+	}
+	return true;
+}
+
 bool DPolygon2::ContainsPoint(const DPoint2 &p) const
 {
 	// We don't have a point-in-polygon test which actually takes multiple
@@ -582,9 +605,122 @@ bool DPolygon2::ContainsPoint(const DPoint2 &p) const
 }
 
 /**
-* Add the given amount to all coordinates of the polygon.  Spatially, this
-* offsets the location of the polygon.
+ * Normally the polygon is stored as a series of rings.  Sometimes it is
+ * necessary to access the polygon as a single array of points instead.
+ *
+ * This method fills a provided DLine2 with all the points of all rings
+ * of the polygon.
+ */
+void DPolygon2::GetAsDLine2(DLine2 &dline) const
+{
+	unsigned int i, total = 0, ringnum;
+
+	for (ringnum = 0; ringnum < size(); ringnum++)
+		total += (at(ringnum).GetSize() + 1);
+
+	dline.SetMaxSize(total);
+
+	for (ringnum = 0; ringnum < size(); ringnum++)
+	{
+		const DLine2 &ring = at(ringnum);
+		for (i = 0; i < ring.GetSize(); i++)
+			dline.Append(ring[i]);
+
+		// close each ring by repeating the first point of the ring
+		dline.Append(ring[0]);
+	}
+}
+
+int DPolygon2::WhichRing(int &iVtxNum) const
+{
+	for (unsigned int ring = 0; ring < size(); ring++)
+	{
+		unsigned int size = at(ring).GetSize();
+		if ((unsigned int)iVtxNum < size)
+			return ring;
+		iVtxNum -= size;
+	}
+	return -1;
+}
+
+/**
+* Return the nearest point (of the points which make up the line).
+* This is not the same as the closest place on the line, which may
+* lie between the defining points; use NearestSegment to find that.
+*
+* \param Point The input point.
+* \param iIndex Index of the first point of the nearest line segment.
+* \param dClosest Distance from the DLine2 to the input point.
 */
+void DPolygon2::NearestPoint(const DPoint2 &Point, int &iIndex, double &dClosest) const
+{
+	dClosest = 1E9;
+
+	int test_index;
+	double test_distance;
+
+	unsigned int rings = size();
+	int ring_start = 0;
+	for (unsigned int ring = 0; ring < rings; ring++)
+	{
+		const DLine2 &loop = at(ring);
+		loop.NearestPoint(Point, test_index, test_distance);
+		if (test_distance < dClosest)
+		{
+			dClosest = test_distance;
+			iIndex = ring_start + test_index;
+		}
+		ring_start += loop.GetSize();
+	}
+}
+
+/**
+* Returns the location of the closest point on the polygon to a given point.
+*
+* \param Point The input point.
+* \param iIndex Index of the first point of the nearest line segment.
+* \param dist Distance from the DPolygon2 to the input point.
+* \param Intersection The closest point on the DPolygon2.
+*
+* \return True if a closest point was found.
+*/
+bool DPolygon2::NearestSegment(const DPoint2 &Point, int &iIndex,
+							   double &dist, DPoint2 &Intersection) const
+{
+	int closest = -1;
+	double dClosest = 1E9;
+
+	int test_index;
+	double test_distance;
+	DPoint2 test_intersection;
+
+	unsigned int rings = size();
+	int ring_start = 0;
+	for (unsigned int ring = 0; ring < rings; ring++)
+	{
+		const DLine2 &loop = at(ring);
+		loop.NearestSegment(Point, test_index, test_distance, test_intersection);
+		if (test_distance < dClosest)
+		{
+			dClosest = test_distance;
+			closest = ring_start + test_index;
+			Intersection = test_intersection;
+		}
+		ring_start += loop.GetSize();
+	}
+	if (closest != -1)
+	{
+		iIndex = closest;
+		dist = dClosest;
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Add the given amount to all coordinates of the polygon.  Spatially, this
+ * offsets the location of the polygon.
+ */
 void DPolygon2::Add(const DPoint2 &p)
 {
 	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
@@ -608,62 +744,12 @@ void DPolygon2::Mult(double factor)
 	}
 }
 
-bool DPolygon2::ComputeExtents(DRECT &rect) const
-{
-	if (size() == 0)
-		return false;
-
-	rect.SetRect(1E9,-1E9,-1E9,1E9);
-	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
-	{
-		const DLine2 &ring = at(ringnum);
-		for (unsigned i = 0; i < ring.GetSize(); i++)
-			rect.GrowToContainPoint(ring[i]);
-	}
-	return true;
-}
-
 void DPolygon2::ReverseOrder()
 {
 	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
 	{
 		DLine2 &ring = at(ringnum);
 		ring.ReverseOrder();
-	}
-}
-
-unsigned int DPolygon2::NumTotalVertices() const
-{
-	unsigned int total = 0, r;
-	for (r = 0; r < size(); r++)
-		total += at(r).GetSize();
-	return total;
-}
-
-/**
-* Normally the polygon is stored as a series of rings.  Sometimes it is
-* necessary to access the polygon as a single array of points instead.
-*
-* This method fills a provided DLine2 with all the points of all rings
-* of the polygon.
-*/
-void DPolygon2::GetAsDLine2(DLine2 &dline) const
-{
-	unsigned int i, total = 0, ringnum;
-
-	for (ringnum = 0; ringnum < size(); ringnum++)
-		total += (at(ringnum).GetSize() + 1);
-
-	dline.SetMaxSize(total);
-
-	for (ringnum = 0; ringnum < size(); ringnum++)
-	{
-		const DLine2 &ring = at(ringnum);
-		for (i = 0; i < ring.GetSize(); i++)
-			dline.Append(ring[i]);
-
-		// close each ring by repeating the first point of the ring
-		dline.Append(ring[0]);
 	}
 }
 
@@ -702,6 +788,7 @@ void DPolygon2::RemovePoint(int N)
 		N -= size;
 	}
 }
+
 
 /////////////////////////////////////////////////////////////////////////////
 // FPolygon3 methods
@@ -749,6 +836,18 @@ unsigned int FPolygon3::NumTotalVertices() const
 	for (r = 0; r < size(); r++)
 		total += at(r).GetSize();
 	return total;
+}
+
+int FPolygon3::WhichRing(int &iVtxNum) const
+{
+	for (unsigned int ring = 0; ring < size(); ring++)
+	{
+		unsigned int size = at(ring).GetSize();
+		if ((unsigned int)iVtxNum < size)
+			return ring;
+		iVtxNum -= size;
+	}
+	return -1;
 }
 
 

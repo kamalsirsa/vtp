@@ -752,15 +752,19 @@ typedef std::vector<FLine3> FLine3Array;
 class DPolygon2 : public DLine2Array
 {
 public:
+	// Query
+	unsigned int NumTotalVertices() const;
+	bool ComputeExtents(DRECT &rect) const;
 	bool ContainsPoint(const DPoint2 &p) const;
+	void GetAsDLine2(DLine2 &dline) const;
+	int WhichRing(int &iVtxNum) const;
+	void NearestPoint(const DPoint2 &Point, int &iIndex, double &dist) const;
+	bool NearestSegment(const DPoint2 &Point, int &iIndex, double &dist, DPoint2 &Intersection) const;
+
+	// Modify
 	void Add(const DPoint2 &p);
 	void Mult(double factor);
-	bool ComputeExtents(DRECT &rect) const;
 	void ReverseOrder();
-	unsigned int NumTotalVertices() const;
-
-	void GetAsDLine2(DLine2 &dline) const;
-
 	void InsertPointAfter(int iInsertAfter, const DPoint2 &Point);
 	void RemovePoint(int N);
 };
@@ -795,6 +799,7 @@ public:
 	void Mult(float factor);
 	void ReverseOrder();
 	unsigned int NumTotalVertices() const;
+	int WhichRing(int &iVtxNum) const;
 };
 
 
