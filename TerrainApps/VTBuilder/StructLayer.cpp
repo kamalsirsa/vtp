@@ -88,39 +88,31 @@ bool vtStructureLayer::GetExtent(DRECT &rect)
 
 void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
-	int structs = GetSize();
-	if (!structs)
-		return;
-
-	pDC->SetPen(orangePen);
-	pDC->SetBrush(*wxTRANSPARENT_BRUSH);
-	bool bSel = false;
-
 	m_size = pView->sdx(20);
 	if (m_size > 5) m_size = 5;
 	if (m_size < 1) m_size = 1;
 
-	int i;
-	for (i = 0; i < structs; i++)
+	unsigned int structs = GetSize();
+	pDC->SetBrush(*wxTRANSPARENT_BRUSH);
+	pDC->SetPen(orangePen);
+	DrawStructures(pDC, pView, false);	// unselected
+
+	pDC->SetPen(yellowPen);
+	DrawStructures(pDC, pView, true);	// selected
+
+	DrawBuildingHighlight(pDC, pView);
+}
+
+void vtStructureLayer::DrawStructures(wxDC* pDC, vtScaledView *pView, bool bOnlySelected)
+{
+	unsigned int structs = GetSize();
+	for (unsigned i = 0; i < structs; i++)
 	{
 		// draw each building
 		vtStructure *str = GetAt(i);
-		if (str->IsSelected())
-		{
-			if (!bSel)
-			{
-				pDC->SetPen(yellowPen);
-				bSel = true;
-			}
-		}
-		else
-		{
-			if (bSel)
-			{
-				pDC->SetPen(orangePen);
-				bSel = false;
-			}
-		}
+		if (bOnlySelected && !str->IsSelected())
+			continue;
+
 		vtBuilding *bld = str->GetBuilding();
 		if (bld)
 			DrawBuilding(pDC, pView, bld);
@@ -150,7 +142,6 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			}
 		}
 	}
-	DrawBuildingHighlight(pDC, pView);
 }
 
 void vtStructureLayer::DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView)

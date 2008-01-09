@@ -1,7 +1,7 @@
 //
 // StructureLayer.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -80,7 +80,9 @@ public:
 	void ResolveInstancesOfItems();
 
 protected:
-	int m_size;	// size in pixels of the small crosshair at building center
+	void DrawStructures(wxDC* pDC, vtScaledView *pView, bool bOnlySelected);
+
+	int		m_size;	// size in pixels of the small crosshair at building center
 	bool	m_bPreferGZip;	// user wants their elevation treated as a .gz file
 };
 
