@@ -219,12 +219,13 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		}
 		else
 		{
-			// 'flat roof' for the floor
+			// Build a 'flat roof' for the floor
 			AddFlatRoof(foot, lev);
 
 			FPolygon3 poly = foot;
 			FPolygon3 poly2;
 
+			// Build a set of walls for each storey of the level
 			for (j = 0; j < lev->m_iStories; j++)
 			{
 				for (unsigned int r = 0; r < poly.size(); r++)
@@ -235,13 +236,15 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 					}
 				}
 				CreateUpperPolygon(lev, poly, poly2);
+				int edge_start = 0;
 				for (unsigned int r = 0; r < poly.size(); r++)
 				{
-					for (k = 0; k < poly[r].GetSize(); k++)
+					for (k = edge_start; k < edge_start + poly[r].GetSize(); k++)
 					{
-						bool bShowEdge = (level_show == i && edge_show == (int) k);
-						CreateEdgeGeometry(lev, poly[r], poly2[r], k, bShowEdge);
+						bool bShowEdge = (level_show == i && edge_show == k);
+						CreateEdgeGeometry(lev, poly, poly2, k, bShowEdge);
 					}
+					edge_start += poly[r].GetSize();
 				}
 				fHeight += lev->m_fStoryHeight;
 			}
@@ -339,15 +342,22 @@ vtMesh *vtBuilding3d::FindMatMesh(const vtString &Material,
 //
 // Edges are created from a series of features ("panels", "sections")
 //
-void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1,
-									  FLine3 &poly2, int iEdge, bool bShowEdge)
+void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, const FPolygon3 &polygon1,
+									  const FPolygon3 &polygon2, int iEdge, bool bShowEdge)
 {
-	int num_edges = pLev->NumEdges();
+	// Get edge from complete list
+	vtEdge	*pEdge = pLev->GetEdge(iEdge);
+
+	// Then determine which ring its on
+	int ring = polygon1.WhichRing(iEdge);
+	const FLine3 &poly1 = polygon1[ring];
+	const FLine3 &poly2 = polygon2[ring];
+
+	// number of edges in this ring
+	int num_edges = poly1.GetSize();
 	int i = iEdge, j = (i+1)%num_edges;
 
 	FLine3 quad(4);
-
-	vtEdge	*pEdge = pLev->GetEdge(iEdge);
 
 	// start with the whole wall section
 	quad[0] = poly1[i];
@@ -640,14 +650,17 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 	if (outer_corners > 4 || rings > 1)
 	{
 		// roof consists of a polygon which must be split into triangles
-
-		// allocate a polyline to hold the answer.
-
-#if COMPOUND_FOOTPRINT
+#if 1
+		const FLine3 &outer = pp[0];
+		float roof_y = outer[0].y;
 		DPolygon2 foot2d;
 		ProjectionXZ(pp, foot2d);
-		DLine2 result;
-		CallTriangle(foot2d, result);
+		// a polyline to hold the answer in sets of three points
+		DLine2 result2d;
+		CallTriangle(foot2d, result2d);
+
+		FLine3 result;
+		ProjectionXZ(result2d, roof_y, result);
 #else
 		//  Invoke the triangulator to triangulate this polygon.
 		FLine3 outer = pp[0];
@@ -670,14 +683,13 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 		{
 			for (j = 0; j < 3; j++)
 			{
-				gp = result[i*3+j];
-				p.Set(gp.x, roof_y, gp.y);
-				uv = gp;
+				p = result[i*3+j];
+				uv.Set(p.x, p.z);
 				if (md)
 					uv.Div(md->GetUVScale());	// divide meters by [meters/uv] to get uv
 				ind[j] = mesh->AddVertexNUV(p, up, uv);
 			}
-			mesh->AddTri(ind[0], ind[2], ind[1]);
+			mesh->AddTri(ind[0], ind[1], ind[2]);
 		}
 	}
 	else
@@ -702,7 +714,7 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 {
 	// For now, just use the outer ring
-	// TODO Roger: make the code below use the inner rings too.
+	// TODO Roger: make the code below use the inner rings too, not just [0].
 	const FLine3 EavePolygon = EavePolygons[0];
 
 	PolyChecker PolyChecker;
@@ -1038,65 +1050,69 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 	int iHighlightEdge)
 {
 	vtLevel *pLev = m_Levels[iLevel];
-#if COMPOUND_FOOTPRINT
-	// TODO
-#else
-	FLine3 poly1 = GetLocalFootprint(iLevel).at(0);
-	FLine3 poly2;
-#endif
+
+	const FPolygon3 &polygon1 = GetLocalFootprint(iLevel);
 
 	int i;
-	int edges = pLev->NumEdges();
-	for (i = 0; i < edges; i++)
-		poly1[i].y = fHeight;
-
-	poly2 = poly1;
-	for (i = 0; i < edges; i++)
-		poly2[i].y += pLev->m_fStoryHeight;
-
-	for (i = 0; i < edges; i++)
+	int base_edge = 0;
+	for (unsigned int ring = 0; ring < polygon1.size(); ring++)
 	{
-		int a = i, b = (a+1)%edges;
+		FLine3 poly1 = polygon1[ring];
+		FLine3 poly2;
 
-		FLine3 quad(4);
+		int edges = poly1.GetSize();
+		for (i = 0; i < edges; i++)
+			poly1[i].y = fHeight;
 
-		vtEdge	*pEdge = pLev->GetEdge(i);
+		poly2 = poly1;
+		for (i = 0; i < edges; i++)
+			poly2[i].y += pLev->m_fStoryHeight;
 
-		// do the whole wall section
-		quad[0] = poly1[a];
-		quad[1] = poly1[b];
-		quad[2] = poly2[a];
-		quad[3] = poly2[b];
-
-		if (pEdge->m_Facade != "")
+		for (i = 0; i < edges; i++)
 		{
-			float extraheight = pLev->m_fStoryHeight * (pLev->m_iStories-1);
-			quad[2].y += extraheight;
-			quad[3].y += extraheight;
-			// If we can successfully construct the facade, we don't need to
-			//  use the edge features.
-			if (MakeFacade(pEdge, quad, pLev->m_iStories))
-				continue;
-		}
-		quad[2] = poly2[a];
-		quad[3] = poly2[b];
+			int a = i, b = (a+1)%edges;
 
-		float h1 = 0.0f;
-		float h2 = (float) pLev->m_iStories;
-		float hf1 = (float) pEdge->NumFeaturesOfCode(WFC_WINDOW);
-		AddWallSection(pEdge, true, quad, h1, h2, hf1);
+			FLine3 quad(4);
 
-		if (i == iHighlightEdge)
-		{
-			for (unsigned int j = 0; j < pLev->m_iStories; j++)
+			vtEdge	*pEdge = pLev->GetEdge(base_edge+i);
+
+			// do the whole wall section
+			quad[0] = poly1[a];
+			quad[1] = poly1[b];
+			quad[2] = poly2[a];
+			quad[3] = poly2[b];
+
+			if (pEdge->m_Facade != "")
 			{
-				AddHighlightSection(pEdge, quad);
-				quad[0].y += pLev->m_fStoryHeight;
-				quad[1].y += pLev->m_fStoryHeight;
-				quad[2].y += pLev->m_fStoryHeight;
-				quad[3].y += pLev->m_fStoryHeight;
+				float extraheight = pLev->m_fStoryHeight * (pLev->m_iStories-1);
+				quad[2].y += extraheight;
+				quad[3].y += extraheight;
+				// If we can successfully construct the facade, we don't need to
+				//  use the edge features.
+				if (MakeFacade(pEdge, quad, pLev->m_iStories))
+					continue;
+			}
+			quad[2] = poly2[a];
+			quad[3] = poly2[b];
+
+			float h1 = 0.0f;
+			float h2 = (float) pLev->m_iStories;
+			float hf1 = (float) pEdge->NumFeaturesOfCode(WFC_WINDOW);
+			AddWallSection(pEdge, true, quad, h1, h2, hf1);
+
+			if (base_edge+i == iHighlightEdge)
+			{
+				for (unsigned int j = 0; j < pLev->m_iStories; j++)
+				{
+					AddHighlightSection(pEdge, quad);
+					quad[0].y += pLev->m_fStoryHeight;
+					quad[1].y += pLev->m_fStoryHeight;
+					quad[2].y += pLev->m_fStoryHeight;
+					quad[3].y += pLev->m_fStoryHeight;
+				}
 			}
 		}
+		base_edge += edges;
 	}
 }
 

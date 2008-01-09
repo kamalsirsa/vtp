@@ -434,7 +434,7 @@ void vtPagedStructureLodGrid::SortQueue()
 		vtBuilding *bld = st->GetBuilding();
 		vtStructInstance *inst = st->GetInstance();
 		if (bld)
-			p = bld->GetAtFootprint(0).Centroid();
+			p = bld->GetOuterFootprint(0).Centroid();
 		else if (inst)
 			p = inst->GetPoint();
 		else

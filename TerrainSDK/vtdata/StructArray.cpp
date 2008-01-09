@@ -105,29 +105,25 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 		return false;
 
 	building = -1;
-	double dist;
 	closest = 1E8;
 
-	unsigned int i, j;
-	for (i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 		if (str->GetType() != ST_BUILDING)
 			continue;
 		vtBuilding *bld = str->GetBuilding();
 
-		const DLine2 &dl = bld->GetAtFootprint(0);
-		for (j = 0; j < dl.GetSize(); j++)
+		const DPolygon2 &dl = bld->GetFootprint(0);
+
+		int test_index;
+		double test_distance;
+		dl.NearestPoint(point, test_index, test_distance);
+		if (test_distance < epsilon && test_distance < closest)
 		{
-			dist = (dl.GetAt(j) - point).Length();
-			if (dist > epsilon)
-				continue;
-			if (dist < closest)
-			{
-				building = i;
-				corner = j;
-				closest = dist;
-			}
+			building = i;
+			corner = test_index;
+			closest = test_distance;
 		}
 	}
 	return (building != -1);
@@ -375,9 +371,9 @@ int vtStructureArray::AddFoundations(vtHeightField *pHF)
 		if (selected > 0 && !str->IsSelected())
 			continue;
 
-		// Get the footprint of the lowest level
+		// Get the outer footprint of the lowest level
 		pLev = bld->GetLevel(0);
-		const DLine2 &foot = pLev->GetFootprint();
+		const DLine2 &foot = pLev->GetOuterFootprint();
 		pts = foot.GetSize();
 
 		float fMin = 1E9, fMax = -1E9;
@@ -1231,11 +1227,7 @@ void StructVisitorGML::endElement(const char *name)
 		{
 			DLine2 line;
 			DLine2FromString(data, line);
-#if COMPOUND_FOOTPRINT
 			m_Footprint.push_back(line);
-#else
-			//m_pLevel->SetFootprint(line);
-#endif
 		}
 		else if (!strcmp(name, "gml:innerBoundaryIs"))
 			m_state = 4;
@@ -1246,11 +1238,7 @@ void StructVisitorGML::endElement(const char *name)
 		{
 			DLine2 line;
 			DLine2FromString(data, line);
-#if COMPOUND_FOOTPRINT
 			m_Footprint.push_back(line);
-#else
-			m_pLevel->SetFootprint(line);
-#endif
 		}
 		else if (!strcmp(name, "gml:outerBoundaryIs"))
 			m_state = 4;
@@ -1259,9 +1247,7 @@ void StructVisitorGML::endElement(const char *name)
 	{
 		if (!strcmp(name, "Footprint"))
 		{
-#if COMPOUND_FOOTPRINT
 			m_pLevel->SetFootprint(m_Footprint);
-#endif
 			m_state = 3;
 		}
 	}
@@ -1525,7 +1511,7 @@ bool vtStructureArray::WriteFootprintsToSHP(const char* filename)
 		if (!bld)
 			continue;
 
-		const DLine2 &poly = bld->GetLevel(0)->GetAtFootprint();
+		const DLine2 &poly = bld->GetLevel(0)->GetOuterFootprint();
 		int total = poly.GetSize() + 1;
 
 		double *dX = new double[total];
@@ -1685,9 +1671,10 @@ bool SetupDefaultStructures(const vtString &fname)
 	// else supply some internal defaults and let the user know the load failed
 	vtBuilding *pBld = g_DefaultStructures.NewBuilding();
 	vtLevel *pLevel;
-	DLine2 DefaultFootprint; // Single edge
-	DefaultFootprint.Append(DPoint2(0.0, 0.0));
-	DefaultFootprint.Append(DPoint2(0.0, 1.0));
+	DPolygon2 DefaultFootprint; // Single edge
+	DefaultFootprint.resize(1);
+	DefaultFootprint[0].Append(DPoint2(0.0, 0.0));
+	DefaultFootprint[0].Append(DPoint2(0.0, 1.0));
 
 	// The default building is NOT a complete building
 	// Alter the code here to set different hard coded

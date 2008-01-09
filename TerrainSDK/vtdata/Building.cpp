@@ -173,9 +173,7 @@ vtLevel::vtLevel()
 
 vtLevel::~vtLevel()
 {
-#if COMPOUND_FOOTPRINT
 	m_Foot.clear();
-#endif
 	DeleteEdges();
 }
 
@@ -198,12 +196,7 @@ vtLevel &vtLevel::operator=(const vtLevel &v)
 		vtEdge *pnew = new vtEdge(*v.m_Edges[i]);
 		m_Edges.SetAt(i, pnew);
 	}
-
-#if COMPOUND_FOOTPRINT
 	m_Foot = v.m_Foot;
-#else
-	m_Footprint = v.m_Footprint;
-#endif
 	m_LocalFootprint = v.m_LocalFootprint;
 	return *this;
 }
@@ -212,11 +205,7 @@ void vtLevel::DeleteEdge(int iEdge)
 {
 	delete m_Edges.GetAt(iEdge);
 	m_Edges.RemoveAt(iEdge);
-#if COMPOUND_FOOTPRINT
 	m_Foot.RemovePoint(iEdge);
-#else
-	m_Footprint.RemovePoint(iEdge);
-#endif
 }
 
 // Split an edge at the indicated point and clone into two edges
@@ -238,93 +227,26 @@ bool vtLevel::AddEdge(int iEdge, DPoint2 &Point)
 			m_Edges.SetAt(iIndex + 1, m_Edges.GetAt(iIndex));
 		m_Edges.SetAt(iEdge + 1, pEdge);
 	}
-
-#if COMPOUND_FOOTPRINT
 	m_Foot.InsertPointAfter(iEdge, Point);
-#else
-	m_Footprint.InsertPointAfter(iEdge, Point);
-#endif
 	return true;
 }
 
 void vtLevel::SetFootprint(const DLine2 &dl)
 {
-	int curr = dl.GetSize();
-#if COMPOUND_FOOTPRINT
 	int prev = m_Foot[0].GetSize();
 	m_Foot[0] = dl;
-#else
-	int prev = m_Footprint.GetSize();
-	m_Footprint = dl;
-	SynchToCompound();
-#endif
-
+	int curr = dl.GetSize();
 	if (curr != prev)
 		RebuildEdges(curr);
 }
 
 void vtLevel::SetFootprint(const DPolygon2 &poly)
 {
-#if COMPOUND_FOOTPRINT
+	int prev = m_Foot.NumTotalVertices();
 	m_Foot = poly;
-#endif
-
-	int prev = m_Footprint.GetSize();
-	SynchFromCompound();
-	int curr = m_Footprint.GetSize();
+	int curr = m_Foot.NumTotalVertices();
 	if (curr != prev)
 		RebuildEdges(curr);
-}
-
-void vtLevel::SynchToCompound()
-{
-#if COMPOUND_FOOTPRINT
-	// keep compound poly in synch
-	// act as if there are no internal features
-	m_Foot.resize(1);
-	m_Foot[0] = m_Footprint;
-#endif
-}
-
-void vtLevel::SynchFromCompound()
-{
-#if COMPOUND_FOOTPRINT
-	int rings = m_Foot.size();
-	if (!rings)
-		return;
-
-	// first, count how many points our polygon will have
-	int total = 0;
-	int i, j;
-	for (i = 0; i < rings; i++)
-	{
-		total += m_Foot[i].GetSize();
-
-		if (i < rings-1)
-			total += 1;	// to close off this poly
-	}
-	int count = 0;
-	m_Footprint.SetSize(total);
-
-	// now copy points from each rings
-	for (i = 0; i < rings; i++)
-	{
-		DLine2 &ring = m_Foot[i];
-		int num = ring.GetSize();
-		for (j = 0; j < num; j++)
-		{
-			m_Footprint[count] = ring[j];
-			count++;
-		}
-		// close it if there's more rings to come
-		if (i < rings-1)
-		{
-			m_Footprint[count] = ring[0];
-			count++;
-		}
-	}
-	assert(count == total);
-#endif
 }
 
 void vtLevel::SetEdgeMaterial(const char *matname)
@@ -348,13 +270,18 @@ vtEdge *vtLevel::GetEdge(unsigned int i) const
 		return NULL;
 }
 
-float vtLevel::GetEdgeLength(unsigned int i)
+float vtLevel::GetEdgeLength(unsigned int iIndex) const
 {
-	int edges = NumEdges();
+	int i = iIndex;
+	int ring = m_Foot.WhichRing(i);
+	if (ring == -1)
+		return 0.0f;
+	const DLine2 &dline = m_Foot[ring];
+	int edges = dline.GetSize();
 	int j = i+1;
 	if (j == edges)
 		j = 0;
-	return (float) (m_Footprint[j] - m_Footprint[i]).Length();
+	return (float) (dline[j] - dline[i]).Length();
 }
 
 void vtLevel::RebuildEdges(unsigned int n)
@@ -489,15 +416,20 @@ bool vtLevel::IsEdgeConvex(int i)
 
 bool vtLevel::IsCornerConvex(int i)
 {
+	int ring = m_Foot.WhichRing(i);
+	if (ring == -1)
+		return false;
+	const DLine2 &dline = m_Foot[ring];
+
 	// get the 2 adjacent corner indices
-	int edges = NumEdges();
+	int edges = dline.GetSize();
 	int c1 = (i-1 < 0) ? edges-1 : i-1;
 	int c2 = i;
 	int c3 = (i+1 == edges) ? 0 : i+1;
 
 	// get edge vectors
-	DPoint2 v1 = m_Footprint[c2] - m_Footprint[c1];
-	DPoint2 v2 = m_Footprint[c3] - m_Footprint[c2];
+	DPoint2 v1 = dline[c2] - dline[c1];
+	DPoint2 v2 = dline[c3] - dline[c2];
 
 	// if dot product is positive, it's convex
 	double xprod = v1.Cross(v2);
@@ -536,7 +468,6 @@ void vtLevel::DetermineLocalFootprint(float fHeight)
 	DPoint2 p;
 	FPoint3 lp;
 
-#if COMPOUND_FOOTPRINT
 	unsigned int rings = m_Foot.size();
 	m_LocalFootprint.resize(rings);
 	for (unsigned ring = 0; ring < rings; ring++)
@@ -554,18 +485,6 @@ void vtLevel::DetermineLocalFootprint(float fHeight)
 			fline3.SetAt(i, lp);
 		}
 	}
-#else
-	int i, edges = m_Footprint.GetSize();
-	m_LocalFootprint.resize(1);
-	m_LocalFootprint[0].SetSize(edges);
-	for (i = 0; i < edges; i++)
-	{
-		p = m_Footprint.GetAt(i);
-		vtBuilding::s_Conv.ConvertFromEarth(p, lp.x, lp.z);
-		lp.y = fHeight;
-		m_LocalFootprint[0].SetAt(i, lp);
-	}
-#endif
 }
 
 void vtLevel::GetEdgePlane(unsigned int i, FPlane &plane)
@@ -734,7 +653,7 @@ RoofType vtLevel::GuessRoofType()
 
 void vtLevel::FlipFootprintDirection()
 {
-	m_Footprint.ReverseOrder();
+	m_Foot.ReverseOrder();
 }
 
 
@@ -798,7 +717,7 @@ void vtBuilding::FlipFootprintDirection()
  */
 float vtBuilding::CalculateBaseElevation(vtHeightField *pHeightField)
 {
-	const DLine2 &Footprint = m_Levels[0]->GetAtFootprint();
+	const DLine2 &Footprint = m_Levels[0]->GetOuterFootprint();
 	int iSize = Footprint.GetSize();
 	float fLowest = 1E9f;
 
@@ -825,14 +744,17 @@ void vtBuilding::TransformCoords(OCT *trans)
 	{
 		vtLevel *pLev = m_Levels[i];
 
-		DLine2 foot = pLev->GetFootprint();
-		unsigned int iSize = foot.GetSize();
-
-		for (j = 0; j < iSize; j++)
+		DPolygon2 foot = pLev->GetFootprint();
+		for (unsigned int r = 0; r < foot.size(); r++)
 		{
-			p = foot[j];
-			trans->Transform(1, &p.x, &p.y);
-			foot[j] = p;
+			DLine2 &footline = foot[r];
+			unsigned int iSize = footline.GetSize();
+			for (j = 0; j < iSize; j++)
+			{
+				p = footline[j];
+				trans->Transform(1, &p.x, &p.y);
+				footline[j] = p;
+			}
 		}
 		pLev->SetFootprint(foot);
 	}
@@ -1012,7 +934,7 @@ float vtBuilding::GetTotalHeight() const
 }
 
 /**
- * Set the footprintf of the given level of the building.
+ * Set the footprint of the given level of the building.
  *
  * \param lev The level, from 0 for the base level and up.
  * \param foot The footprint.
@@ -1141,13 +1063,11 @@ void vtBuilding::Offset(const DPoint2 &p)
 {
 	unsigned int i;
 
-	DLine2 foot;
 	for (i = 0; i < m_Levels.GetSize(); i++)
 	{
 		vtLevel *lev = m_Levels[i];
-		foot = lev->GetFootprint();
+		DPolygon2 &foot = lev->GetFootprint();
 		foot.Add(p);
-		lev->SetFootprint(foot);
 	}
 
 	// keep 2d and 3d in synch
@@ -1169,8 +1089,12 @@ bool vtBuilding::GetExtents(DRECT &rect) const
 	for (i = 0; i < levs; i++)
 	{
 		vtLevel *lev = m_Levels[i];
-		for (j = 0; j < lev->GetFootprint().GetSize(); j++)
-			rect.GrowToContainPoint(lev->GetFootprint()[j]);
+		if (lev->GetFootprint().size() != 0)	// safety check
+		{
+			const DLine2 &outer = lev->GetOuterFootprint();
+			for (j = 0; j < outer.GetSize(); j++)
+				rect.GrowToContainPoint(outer[j]);
+		}
 	}
 	return true;
 }
@@ -1186,7 +1110,7 @@ vtLevel *vtBuilding::CreateLevel()
 	return pLev;
 }
 
-vtLevel *vtBuilding::CreateLevel(const DLine2 &footprint)
+vtLevel *vtBuilding::CreateLevel(const DPolygon2 &footprint)
 {
 	vtLevel *pLev = new vtLevel;
 	pLev->SetFootprint(footprint);
@@ -1273,7 +1197,9 @@ void vtBuilding::SetRectangle(const DPoint2 &center, float fWidth,
 double vtBuilding::GetDistanceToInterior(const DPoint2 &point) const
 {
 	vtLevel *lev = m_Levels[0];
-	const DLine2 &foot = lev->GetAtFootprint();
+
+	// Ignore holes - a small shortcut, coulbe be addressed later
+	const DLine2 &foot = lev->GetOuterFootprint();
 	if (foot.ContainsPoint(point))
 		return 0.0;
 
@@ -1316,8 +1242,8 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 		gfprintf(out, "\t\t\t\t\t<gml:outerBoundaryIs>\n");
 		gfprintf(out, "\t\t\t\t\t\t<gml:LinearRing>\n");
 		gfprintf(out, "\t\t\t\t\t\t\t<gml:coordinates>");
-#if COMPOUND_FOOTPRINT
-		const DPolygon2 &pfoot = lev->GetAtFootprint2();
+
+		const DPolygon2 &pfoot = lev->GetFootprint();
 		const DLine2 &outer = pfoot[0];
 		int points = outer.GetSize();
 		for (j = 0; j < points; j++)
@@ -1328,24 +1254,11 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 			if (j != points-1)
 				gfprintf(out, " ");
 		}
-#else
-		const DLine2 &foot = lev->GetAtFootprint();
-		int points = foot.GetSize();
-		for (j = 0; j < points; j++)
-		{
-			DPoint2 p = foot.GetAt(j);
-			gfprintf(out, coord_format, p.x);
-			gfprintf(out, ",");
-			gfprintf(out, coord_format, p.y);
-			if (j != points-1)
-				gfprintf(out, " ");
-		}
-#endif
+
 		gfprintf(out, "</gml:coordinates>\n");
 		gfprintf(out, "\t\t\t\t\t\t</gml:LinearRing>\n");
 		gfprintf(out, "\t\t\t\t\t</gml:outerBoundaryIs>\n");
 
-#if COMPOUND_FOOTPRINT
 		// If we have a compound footprint, write inner rings separately
 		int rings = pfoot.size();
 		for (int iring = 1; iring < rings; iring++)
@@ -1368,7 +1281,6 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 			gfprintf(out, "\t\t\t\t\t\t</gml:LinearRing>\n");
 			gfprintf(out, "\t\t\t\t\t</gml:innerBoundaryIs>\n");
 		}
-#endif
 
 		gfprintf(out, "\t\t\t\t</gml:Polygon>\n");
 		gfprintf(out, "\t\t\t</Footprint>\n");
@@ -1537,7 +1449,7 @@ void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
 {
 	SetElevationOffset(pDefBld->GetElevationOffset());
 
-	DLine2 foot;
+	DPolygon2 foot;
 
 	unsigned int from_levels = pDefBld->GetNumLevels();
 	unsigned int copy_levels;

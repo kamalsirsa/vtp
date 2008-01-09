@@ -21,9 +21,6 @@ class vtStructureArray;
 
 ////////////////////////////////////////////////////
 
-// Set to 1 for vtLevel to use DPolygon2 for compound polygons as footprints
-#define COMPOUND_FOOTPRINT 0
-
 #define MINIMUM_BASEMENT_SIZE 0.5 // Mininum size of an automatically generated basement layer in a building
 
 #define DEFAULT_BUILDING_SIZE 10.0  // Default size for buildings imported from points
@@ -142,7 +139,7 @@ public:
 	bool AddEdge(int iEdge, DPoint2 &Point);
 	int NumEdges() const { return m_Edges.GetSize(); }
 	vtEdge *GetEdge(unsigned int i) const;
-	float GetEdgeLength(unsigned int i);
+	float GetEdgeLength(unsigned int i) const;
 	const vtString GetOverallEdgeMaterial();
 	bool GetOverallEdgeColor(RGBi &color);
 	RoofType GuessRoofType();
@@ -164,17 +161,13 @@ public:
 
 	void SetFootprint(const DLine2 &dl);
 	void SetFootprint(const DPolygon2 &poly);
-#if COMPOUND_FOOTPRINT
-	DPolygon2 &GetAtFootprint2() { return m_Foot; }
-	const DPolygon2 &GetAtFootprint2() const { return m_Foot; }
 
-	// backward compatibility: outer ring
-	const DLine2 &GetAtFootprint() const { return m_Foot[0]; }
-	DLine2 GetFootprint() { return m_Foot[0]; }
-#else
-	const DLine2 &GetAtFootprint() const { return m_Footprint; }
-	DLine2 GetFootprint() { return m_Footprint; }
-#endif
+	DPolygon2 &GetFootprint() { return m_Foot; }
+	const DPolygon2 &GetFootprint() const { return m_Foot; }
+
+	// outer ring
+	DLine2 &GetOuterFootprint() { return m_Foot[0]; }
+	const DLine2 &GetOuterFootprint() const { return m_Foot[0]; }
 
 	void DetermineLocalFootprint(float fHeight);
 	const FPolygon3 &GetLocalFootprint() { return m_LocalFootprint; }
@@ -187,20 +180,11 @@ private:
 
 	vtArray<vtEdge *> m_Edges;
 
-
-	// alternate storage of earth-CS footprint, in development
-	void SynchToCompound();
-	void SynchFromCompound();
-
 	// footprint of the stories in this level
-#if COMPOUND_FOOTPRINT
 	DPolygon2	m_Foot;
-#else
-	DLine2		m_Footprint;
-#endif
 
 	// footprint in the local CS of this building
-	FPolygon3		m_LocalFootprint;
+	FPolygon3	m_LocalFootprint;
 };
 
 /**
@@ -225,11 +209,9 @@ public:
 	// footprint methods
 	void SetFootprint(int i, const DLine2 &dl);
 	void SetFootprint(int i, const DPolygon2 &poly);
-	DLine2 GetFootprint(int i) { return m_Levels[i]->GetFootprint(); }
-	const DLine2 &GetAtFootprint(int i) { return m_Levels[i]->GetAtFootprint(); }
-#if COMPOUND_FOOTPRINT
-	const DPolygon2 &GetAtFootprint2(int i) { return m_Levels[i]->GetAtFootprint2(); }
-#endif
+
+	const DPolygon2 &GetFootprint(int i) const { return m_Levels[i]->GetFootprint(); }
+	const DLine2 &GetOuterFootprint(int i) const { return m_Levels[i]->GetOuterFootprint(); }
 	bool GetBaseLevelCenter(DPoint2 &p) const;
 
 	void SetRectangle(const DPoint2 &center, float fWidth, float fDepth,
@@ -254,7 +236,7 @@ public:
 	unsigned int GetNumLevels() const { return m_Levels.GetSize(); }
 	vtLevel *GetLevel(int i) { return (i < (int)m_Levels.GetSize()) ? m_Levels[i] : NULL; }
 	const vtLevel *GetLevel(int i) const { return (i < (int)m_Levels.GetSize()) ? m_Levels[i] : NULL; }
-	vtLevel *CreateLevel(const DLine2 &footprint);
+	vtLevel *CreateLevel(const DPolygon2 &footprint);
 	vtLevel *CreateLevel();
 	void InsertLevel(int iLev, vtLevel *pLev);
 	void DeleteLevel(int iLev);

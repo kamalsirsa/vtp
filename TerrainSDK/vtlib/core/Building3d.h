@@ -79,8 +79,8 @@ protected:
 	float GetHeightOfStories();
 	void CreateUpperPolygon(vtLevel *lev, FPolygon3 &poly, FPolygon3 &poly2);
 
-	void CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly2,
-		int iEdge, bool bShowEdge);
+	void CreateEdgeGeometry(vtLevel *pLev, const FPolygon3 &polygon1,
+		const FPolygon3 &polygon2, int iEdge, bool bShowEdge);
 
 	// create special, simple geometry for a level which is uniform
 	void CreateUniformLevel(int iLevel, float fHeight, int iHighlightEdge);

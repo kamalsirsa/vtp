@@ -300,56 +300,12 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			if (nShapeType == SHPT_POLYGON || nShapeType == SHPT_POLYGONZ ||
 				nShapeType == SHPT_ARC)
 			{
-#if 0	// Old code, before we had SHPToDPolygon2
-				if (nShapeType == SHPT_POLYGON || nShapeType == SHPT_POLYGONZ)
-				{
-					// for some reason, for SHPT_POLYGON, Shapelib duplicates
-					// the first point, so we need to ignore it
-					num_points--;
-					// Quick fix for multiple rings
-					if (psShape->nParts > 1)
-						num_points = psShape->panPartStart[1] - 1;
-				}
-				if (nShapeType == SHPT_ARC)
-				{
-					// the ARC type is different; Shapelib doesn't duplicate
-					// the first point, but since it is closed, we still need
-					// to ignore the first point
-					num_points--;
-				}
-				// must have at least 3 points in a footprint
-				if (num_points < 3)
-				{
-					SHPDestroyObject(psShape);
-					continue;
-				}
-				DLine2 foot;
-				foot.SetSize(num_points);
-				for (j = 0; j < num_points; j++)
-					foot.SetAt(j, DPoint2(psShape->padfX[j], psShape->padfY[j]));
+				DPolygon2 foot;
+				SHPToDPolygon2(psShape, foot);
 
 				// test clockwisdom and reverse if necessary
-				if (PolyChecker.IsClockwisePolygon(foot))
+				if (PolyChecker.IsClockwisePolygon(foot[0]))
 					foot.ReverseOrder();
-#else
-				DPolygon2 dp;
-				SHPToDPolygon2(psShape, dp);
-
-				// test clockwisdom and reverse if necessary
-				if (PolyChecker.IsClockwisePolygon(dp[0]))
-					dp.ReverseOrder();
-#endif
-
-#if COMPOUND_FOOTPRINT
-				// Convert to OGR's type
-				//OGRPolygon footprint, *foot = &footprint;
-				//DPolygon2ToOGR(dp, footprint);
-				DPolygon2 &foot = dp;
-#else
-				// Convert to a single closed polyline
-				DLine2 foot;
-				dp.GetAsDLine2(foot);
-#endif
 
 				bld->SetFootprint(0, foot);
 				// Give it a flat roof with the same footprint
@@ -707,8 +663,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 	float fMinZ, fMaxZ, fTotalZ;
 	float fZ;
 	float fMin, fMax, fDiff, fElev;
-	unsigned int i;
-	int			 j;
+	unsigned int i, j;
 	while( (pFeature = pLayer->GetNextFeature()) != NULL )
 	{
 		count++;
@@ -753,44 +708,18 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		}
 		OGRwkbGeometryType GeometryType = pGeom->getGeometryType();
 
-		int line_points=0;
-
-		// For the moment ignore multi polygons .. although we could
-		// treat them as multiple buildings !!
-		DLine2 footline;
-		OGRLinearRing *pRing;
+		// For the moment ignore multi polygons .. although we could treat
+		// them as multiple buildings !!
+		DPolygon2 footprint;
 		OGRPolygon	 *pPolygon;
 		OGRLineString *pLineString;
+		unsigned int line_points = 0;
+
 		switch (wkbFlatten(GeometryType))
 		{
 			case wkbPolygon:
 				pPolygon = (OGRPolygon *) pGeom;
-#if COMPOUND_FOOTPRINT
-				// just use the polygon, below
-#else
-				pRing = pPolygon->getExteriorRing();
-				line_points = pRing->getNumPoints();
-
-				// Ignore last point if it is the same as the first
-				if (DPoint2(pRing->getX(0), pRing->getY(0)) ==
-					DPoint2(pRing->getX(line_points - 1), pRing->getY(line_points - 1)))
-					line_points--;
-
-				footline.SetSize(line_points);
-				fMaxZ = -1E9;
-				fMinZ = 1E9;
-				fTotalZ = 0;
-				for (j = 0; j < line_points; j++)
-				{
-					fZ = (float)pRing->getZ(j);
-					if (fZ > fMaxZ)
-						fMaxZ = fZ;
-					if (fZ < fMinZ)
-						fMinZ = fZ;
-					fTotalZ += fZ;
-					footline.SetAt(j, DPoint2(pRing->getX(j), pRing->getY(j)));
-				}
-#endif
+				OGRToDPolygon2(*pPolygon, footprint);
 				break;
 
 			case wkbLineString:
@@ -802,7 +731,8 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 					DPoint2(pLineString->getX(line_points - 1), pLineString->getY(line_points - 1)))
 					line_points--;
 
-				footline.SetSize(line_points);
+				footprint.resize(1);
+				footprint[0].SetSize(line_points);
 				fMaxZ = -1E9;
 				fMinZ = 1E9;
 				fTotalZ = 0;
@@ -814,7 +744,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 					if (fZ < fMinZ)
 						fMinZ = fZ;
 					fTotalZ += fZ;
-					footline.SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
+					footprint[0].SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
 				}
 				break;
 
@@ -822,11 +752,11 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 				{
 				DPoint2 dPoint(((OGRPoint *)pGeom)->getX(), ((OGRPoint *)pGeom)->getY());
 
-				footline.Empty();
-				footline.Append(dPoint + DPoint2(- DEFAULT_BUILDING_SIZE / 2, - DEFAULT_BUILDING_SIZE / 2));
-				footline.Append(dPoint + DPoint2(DEFAULT_BUILDING_SIZE / 2, - DEFAULT_BUILDING_SIZE / 2));
-				footline.Append(dPoint + DPoint2(DEFAULT_BUILDING_SIZE / 2, DEFAULT_BUILDING_SIZE / 2));
-				footline.Append(dPoint + DPoint2(- DEFAULT_BUILDING_SIZE / 2, DEFAULT_BUILDING_SIZE / 2));
+				footprint.resize(1);
+				footprint[0].Append(dPoint + DPoint2(- DEFAULT_BUILDING_SIZE / 2, - DEFAULT_BUILDING_SIZE / 2));
+				footprint[0].Append(dPoint + DPoint2(DEFAULT_BUILDING_SIZE / 2, - DEFAULT_BUILDING_SIZE / 2));
+				footprint[0].Append(dPoint + DPoint2(DEFAULT_BUILDING_SIZE / 2, DEFAULT_BUILDING_SIZE / 2));
+				footprint[0].Append(dPoint + DPoint2(- DEFAULT_BUILDING_SIZE / 2, DEFAULT_BUILDING_SIZE / 2));
 				}
 				break;
 
@@ -835,40 +765,25 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 				continue;
 		}
 
-#if !COMPOUND_FOOTPRINT
-		// Ensure footprint is simple
-		if (!PolyChecker.IsSimplePolygon(footline))
-			continue;
-
-		// Ensure footprint is not degenerate
-		if (footline.GetSize() < 3)
-			continue;
+		const DLine2 &outer_ring = footprint[0];
+		unsigned int outer_ring_size = outer_ring.GetSize();
 
 		if (opt.bInsideOnly)
 		{
 			// Exclude footprints outside the indicated extents
-			for (j = 0; j < line_points; j++)
-				if (!opt.rect.ContainsPoint(footline.GetAt(j)))
+			for (j = 0; j < outer_ring_size; j++)
+				if (!opt.rect.ContainsPoint(outer_ring[j]))
 					break;
-			if (j != line_points)
+			if (j != outer_ring_size)
 				continue;
 		}
-#endif
 
-		vtBuilding	 *pBld = NewBuilding();
+		vtBuilding *pBld = NewBuilding();
 		if (!pBld)
 			return;
 
-#if COMPOUND_FOOTPRINT
-		DPolygon2 footprint;
-		OGRToDPolygon2(*pPolygon, footprint);
-		DLine2 &testpoly = footprint[0];
-#else
-		DLine2 &footprint = footline;
-		DLine2 &testpoly = footline;
-#endif
 		// Force footprint anticlockwise
-		if (PolyChecker.IsClockwisePolygon(testpoly))
+		if (PolyChecker.IsClockwisePolygon(outer_ring))
 			footprint.ReverseOrder();
 		pBld->SetFootprint(0, footprint);
 
@@ -908,22 +823,18 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		// Add foundation
 		if ((opt.bBuildFoundations) && (NULL != opt.pHeightField))
 		{
-			// Get the footprint of the lowest level
-			pLevel = pBld->GetLevel(0);
-			footline = pLevel->GetFootprint();
-			unsigned int iVertices = footline.GetSize();
-
+			// Use the outer footprint of the lowest level
 			fMin = 1E9;
 			fMax = -1E9;
-			for (i = 0; i < iVertices; i++)
+			for (unsigned int v = 0; v < outer_ring_size; v++)
 			{
-				if (!opt.pHeightField->FindAltitudeOnEarth(footline.GetAt(i), fElev))
-					continue;
-
-				if (fElev < fMin)
-					fMin = fElev;
-				if (fElev > fMax)
-					fMax = fElev;
+				if (opt.pHeightField->FindAltitudeOnEarth(outer_ring.GetAt(v), fElev))
+				{
+					if (fElev < fMin)
+						fMin = fElev;
+					if (fElev > fMax)
+						fMax = fElev;
+				}
 			}
 			fDiff = fMax - fMin;
 			if (fDiff > MINIMUM_BASEMENT_SIZE)
