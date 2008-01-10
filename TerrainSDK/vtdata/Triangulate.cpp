@@ -488,6 +488,10 @@ void main(int argc,char **argv)
 
 #endif	// Test code
 
+
+///////////////////////////////////////////////////////////////////////////
+// Interface code for the Triangle library.
+
 #define ANSI_DECLARATORS
 #define REAL double
 extern "C" {
@@ -500,7 +504,7 @@ extern "C" {
  */
 void CallTriangle(const DLine2 &contour, DLine2 &result)
 {
-	struct triangulateio in, out, vorout;
+	struct triangulateio in, out;
 	int counter;
 	int i;
 
@@ -544,15 +548,11 @@ void CallTriangle(const DLine2 &contour, DLine2 &result)
 	out.segmentmarkerlist = (int *) NULL;
 	out.edgelist = (int *) NULL;          // Needed only if -e switch used.
 	out.edgemarkerlist = (int *) NULL;    // Needed if -e used and -B not used.
-	vorout.pointlist = (REAL *) NULL;     // Needed only if -v switch used.
-	vorout.pointattributelist = (REAL *) NULL;
-	vorout.edgelist = (int *) NULL;       // Needed only if -v switch used.
-	vorout.normlist = (REAL *) NULL;      // Needed only if -v switch used.
 
 	// Triangulate the points.  Switches are chosen:
 	// to read and write a PSLG (p)
 	// number everythingfrom zero (z),
-	triangulate("pz", &in, &out, &vorout );
+	triangulate("pz", &in, &out, NULL);
 
 	// now copy the triangle results back into vtdata structures
 	for ( i = 0; i < out.numberoftriangles; ++i )
@@ -560,17 +560,14 @@ void CallTriangle(const DLine2 &contour, DLine2 &result)
 		int n1 = out.trianglelist[i * 3];
 		int n2 = out.trianglelist[i * 3 + 1];
 		int n3 = out.trianglelist[i * 3 + 2];
-
-		DPoint2 p1( out.pointlist[2*n1], out.pointlist[2*n1 + 1] );
-		DPoint2 p2( out.pointlist[2*n2], out.pointlist[2*n2 + 1] );
-		DPoint2 p3( out.pointlist[2*n3], out.pointlist[2*n3 + 1] );
-
-		result.Append(p1);
-		result.Append(p2);
-		result.Append(p3);
+		result.Append(DPoint2( out.pointlist[2*n1], out.pointlist[2*n1 + 1] ));
+		result.Append(DPoint2( out.pointlist[2*n2], out.pointlist[2*n2 + 1] ));
+		result.Append(DPoint2( out.pointlist[2*n3], out.pointlist[2*n3 + 1] ));
 	}
 	// free mem allocated to the "Triangle" structures
-	free(in.regionlist);
+	free(in.pointlist);
+	free(in.segmentlist);
+
 	free(out.pointlist);
 	free(out.pointattributelist);
 	free(out.pointmarkerlist);
@@ -581,10 +578,6 @@ void CallTriangle(const DLine2 &contour, DLine2 &result)
 	free(out.segmentmarkerlist);
 	free(out.edgelist);
 	free(out.edgemarkerlist);
-	free(vorout.pointlist);
-	free(vorout.pointattributelist);
-	free(vorout.edgelist);
-	free(vorout.normlist);
 }
 
 /**
@@ -593,7 +586,7 @@ void CallTriangle(const DLine2 &contour, DLine2 &result)
  */
 void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 {
-	struct triangulateio in, out, vorout;
+	struct triangulateio in, out;
 
 	// point list
 	in.numberofpoints = contour.NumTotalVertices();
@@ -642,7 +635,7 @@ void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 	counter = 0;
 	for (unsigned int ring = 1; ring < contour.size(); ring++)
 	{
-		//p = poly.get_point_inside( j );
+		// TODO! This is an approximation.  The centroid might not be inside.
 		DPoint2 p = contour[ring].Centroid();
 		in.holelist[counter++] = p.x;
 		in.holelist[counter++] = p.y;
@@ -661,15 +654,11 @@ void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 	out.segmentmarkerlist = (int *) NULL;
 	out.edgelist = (int *) NULL;          // Needed only if -e switch used.
 	out.edgemarkerlist = (int *) NULL;    // Needed if -e used and -B not used.
-	vorout.pointlist = (REAL *) NULL;     // Needed only if -v switch used.
-	vorout.pointattributelist = (REAL *) NULL;
-	vorout.edgelist = (int *) NULL;       // Needed only if -v switch used.
-	vorout.normlist = (REAL *) NULL;      // Needed only if -v switch used.
 
 	// Triangulate the points.  Switches are chosen:
 	// to read and write a PSLG (p)
 	// number everythingfrom zero (z),
-	triangulate("pz", &in, &out, &vorout );
+	triangulate("pz", &in, &out, NULL);
 
 	// now copy the triangle results back into vtdata structures
 	for (int i = 0; i < out.numberoftriangles; i++)
@@ -677,18 +666,16 @@ void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 		int n1 = out.trianglelist[i * 3];
 		int n2 = out.trianglelist[i * 3 + 1];
 		int n3 = out.trianglelist[i * 3 + 2];
-
-		DPoint2 p1( out.pointlist[2*n1], out.pointlist[2*n1 + 1] );
-		DPoint2 p2( out.pointlist[2*n2], out.pointlist[2*n2 + 1] );
-		DPoint2 p3( out.pointlist[2*n3], out.pointlist[2*n3 + 1] );
-
-		result.Append(p1);
-		result.Append(p2);
-		result.Append(p3);
+		result.Append(DPoint2( out.pointlist[2*n1], out.pointlist[2*n1 + 1] ));
+		result.Append(DPoint2( out.pointlist[2*n2], out.pointlist[2*n2 + 1] ));
+		result.Append(DPoint2( out.pointlist[2*n3], out.pointlist[2*n3 + 1] ));
 	}
 
 	// free mem allocated to the "Triangle" structures
-	free(in.regionlist);
+	free(in.pointlist);
+	free(in.segmentlist);
+	free(in.holelist);
+
 	free(out.pointlist);
 	free(out.pointattributelist);
 	free(out.pointmarkerlist);
@@ -699,129 +686,5 @@ void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 	free(out.segmentmarkerlist);
 	free(out.edgelist);
 	free(out.edgemarkerlist);
-	free(vorout.pointlist);
-	free(vorout.pointattributelist);
-	free(vorout.edgelist);
-	free(vorout.normlist);
 }
 
-#if 0
-/**
- * Another triangulation algorithm, far more powerful, is the Triangle library.
- * Provide a convenient way to call it.
- */
-void CallTriangle(const FPolygon2 &contour, FLine2 &result)
-{
-	struct triangulateio in, out, vorout;
-
-	// point list
-	in.numberofpoints = contour.NumTotalVertices();
-	in.pointlist = (REAL *) malloc(in.numberofpoints * 2 * sizeof(REAL));
-	int counter = 0;
-	for (unsigned int ring = 0; ring < contour.size(); ring++)
-	{
-		const FLine2 &polyline = contour[ring];
-		for (unsigned i = 0; i < polyline.GetSize(); i++)
-		{
-			in.pointlist[counter++] = polyline[i].x;
-			in.pointlist[counter++] = polyline[i].y;
-		}
-	}
-	in.numberofpointattributes = 0;
-	in.pointattributelist = (REAL *) NULL;
-	in.pointmarkerlist = (int *) NULL;
-	in.numberoftriangles = 0;
-
-	// segment list: each ring of N points has N edges, each of those
-	//  edges is a "segment" passed to Triangle
-	in.numberofsegments = 0;
-	for (unsigned int ring = 0; ring < contour.size(); ring++)
-		in.numberofsegments += contour[ring].GetSize();
-
-	in.segmentlist = (int *) malloc(in.numberofsegments * 2 * sizeof(int));
-	in.segmentmarkerlist = (int *) NULL;
-
-	counter = 0;
-	int start = 0;
-	for (unsigned int ring = 0; ring < contour.size(); ring++)
-	{
-		int num_points = contour[ring].GetSize();
-		for (int i = 0; i < num_points; i++)
-		{
-			in.segmentlist[counter++] = start+i;
-			in.segmentlist[counter++] = start+((i+1)%num_points);
-		}
-		start += num_points;
-	}
-
-	// hole list
-	in.numberofholes = contour.size() - 1;
-	in.holelist = (REAL *) malloc(in.numberofholes * 2 * sizeof(REAL));
-
-	counter = 0;
-	for (unsigned int ring = 1; ring < contour.size(); ring++)
-	{
-		//p = poly.get_point_inside( j );
-		FPoint2 p = contour[ring].Centroid();
-		in.holelist[counter++] = p.x;
-		in.holelist[counter++] = p.y;
-	}
-	in.numberofregions = 0;
-	in.regionlist = (REAL *) NULL;
-
-	// prep the output structures
-	out.pointlist = (REAL *) NULL;        // Not needed if -N switch used.
-	out.pointattributelist = (REAL *) NULL;
-	out.pointmarkerlist = (int *) NULL;   // Not needed if -N or -B switch used.
-	out.trianglelist = (int *) NULL;      // Not needed if -E switch used.
-	out.triangleattributelist = (REAL *) NULL;
-	out.neighborlist = (int *) NULL;      // Needed only if -n switch used.
-	out.segmentlist = (int *) NULL;
-	out.segmentmarkerlist = (int *) NULL;
-	out.edgelist = (int *) NULL;          // Needed only if -e switch used.
-	out.edgemarkerlist = (int *) NULL;    // Needed if -e used and -B not used.
-	vorout.pointlist = (REAL *) NULL;     // Needed only if -v switch used.
-	vorout.pointattributelist = (REAL *) NULL;
-	vorout.edgelist = (int *) NULL;       // Needed only if -v switch used.
-	vorout.normlist = (REAL *) NULL;      // Needed only if -v switch used.
-
-	// Triangulate the points.  Switches are chosen:
-	// to read and write a PSLG (p)
-	// number everythingfrom zero (z),
-	triangulate("pz", &in, &out, &vorout );
-
-	// now copy the triangle results back into vtdata structures
-	for (int i = 0; i < out.numberoftriangles; i++)
-	{
-		int n1 = out.trianglelist[i * 3];
-		int n2 = out.trianglelist[i * 3 + 1];
-		int n3 = out.trianglelist[i * 3 + 2];
-
-		FPoint2 p1( out.pointlist[2*n1], out.pointlist[2*n1 + 1] );
-		FPoint2 p2( out.pointlist[2*n2], out.pointlist[2*n2 + 1] );
-		FPoint2 p3( out.pointlist[2*n3], out.pointlist[2*n3 + 1] );
-
-		result.Append(p1);
-		result.Append(p2);
-		result.Append(p3);
-	}
-
-	// free mem allocated to the "Triangle" structures
-	free(in.regionlist);
-	free(out.pointlist);
-	free(out.pointattributelist);
-	free(out.pointmarkerlist);
-	free(out.trianglelist);
-	free(out.triangleattributelist);
-	free(out.neighborlist);
-	free(out.segmentlist);
-	free(out.segmentmarkerlist);
-	free(out.edgelist);
-	free(out.edgemarkerlist);
-	free(vorout.pointlist);
-	free(vorout.pointattributelist);
-	free(vorout.edgelist);
-	free(vorout.normlist);
-}
-
-#endif
