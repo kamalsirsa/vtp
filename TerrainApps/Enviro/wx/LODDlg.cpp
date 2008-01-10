@@ -458,8 +458,8 @@ void LODDlg::DrawStructureState(vtPagedStructureLodGrid *grid, float fPageOutDis
 
 	// Draw LOD range as blue circle
 	float lod_dist = grid->GetDistance();
-	int circle_xsize = lod_dist / csize.x * sx;
-	int circle_ysize = lod_dist / (-csize.z) * sy;
+	int circle_xsize = (int) (lod_dist / csize.x * sx);
+	int circle_ysize = (int) (lod_dist / (-csize.z) * sy);
 	dc.DrawEllipse(csx - circle_xsize, csy - circle_ysize,
 		circle_xsize*2, circle_ysize*2);
 
@@ -474,21 +474,21 @@ void LODDlg::DrawStructureState(vtPagedStructureLodGrid *grid, float fPageOutDis
 	vecrot.Rotate(fov/2);
 	int vx, vy;
 
-	vx = vecrot.x / csize.x * sx;
-	vy = vecrot.y / (-csize.z) * sy;
+	vx = (int) (vecrot.x / csize.x * sx);
+	vy = (int) (vecrot.y / (-csize.z) * sy);
 	dc.DrawLine(csx, csy, csx+vx, csy+vy);
 
 	vecrot = vec;
 	vecrot.Rotate(-fov/2);
 
-	vx = vecrot.x / csize.x * sx;
-	vy = vecrot.y / (-csize.z) * sy;
+	vx = (int) (vecrot.x / csize.x * sx);
+	vy = (int) (vecrot.y / (-csize.z) * sy);
 	dc.DrawLine(csx, csy, csx+vx, csy+vy);
 
 	// Draw page-out range as red circle
 	dc.SetPen(pred);
-	circle_xsize = fPageOutDist / csize.x * sx;
-	circle_ysize = fPageOutDist / (-csize.z) * sy;
+	circle_xsize = (int) (fPageOutDist / csize.x * sx);
+	circle_ysize = (int) (fPageOutDist / (-csize.z) * sy);
 	dc.DrawEllipse(csx - circle_xsize, csy - circle_ysize,
 		circle_xsize*2, circle_ysize*2);
 }
