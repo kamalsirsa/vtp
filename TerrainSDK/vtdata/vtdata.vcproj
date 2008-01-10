@@ -985,6 +985,16 @@
 				RelativePath=".\WFSClient.h">
 			</File>
 		</Filter>
+		<Filter
+			Name="triangle"
+			Filter="">
+			<File
+				RelativePath=".\triangle\triangle.c">
+			</File>
+			<File
+				RelativePath=".\triangle\triangle.h">
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
