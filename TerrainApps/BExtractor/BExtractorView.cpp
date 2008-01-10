@@ -1,7 +1,7 @@
 //
 // BExtractorView.cpp : implementation of the BExtractorView class
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -340,12 +340,18 @@ void BExtractorView::DrawBuilding(CDC *pDC, vtBuilding *bld)
 	pDC->MoveTo(origin.x, origin.y-size);
 	pDC->LineTo(origin.x, origin.y+size+1);
 
-	unsigned int j;
-	for (j = 0; j < bld->GetFootprint(0).GetSize() && j < 500-1; j++)
-		UTM_s(bld->GetFootprint(0).GetAt(j), array[j]);
-	array[j] = array[0];
+	const DPolygon2 &foot = bld->GetFootprint(0);
+	for (unsigned int r = 0; r < foot.size(); r++)
+	{
+		const DLine2 &line = foot[r];
 
-	pDC->Polyline(array, j+1);
+		unsigned int j;
+		for (j = 0; j < line.GetSize() && j < 500-1; j++)
+			UTM_s(line[j], array[j]);
+		array[j] = array[0];
+
+		pDC->Polyline(array, j+1);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1292,7 +1298,8 @@ void BExtractorView::UpdateResizeScale()
 
 	unsigned int i;
 	DPoint2 p;
-	DLine2 foot = m_pCurBuilding->GetFootprint(0);
+	DPolygon2 footprint = m_pCurBuilding->GetFootprint(0);
+	DLine2 &foot = footprint[0];
 	if (m_bShift)
 	{
 		// Scale evenly
@@ -1361,7 +1368,8 @@ void BExtractorView::UpdateRotate()
 	double angle_diff = angle2 - angle1;
 
 	DPoint2 p;
-	DLine2 foot = m_pCurBuilding->GetFootprint(0);
+	DPolygon2 footprint = m_pCurBuilding->GetFootprint(0);
+	DLine2 &foot = footprint[0];
 	for (unsigned int i = 0; i < foot.GetSize(); i++)
 	{
 		p = foot.GetAt(i);
@@ -1432,7 +1440,7 @@ bool BExtractorView::SelectionOnPicture(DPoint2 point)
 	return false;
 }
 
-void BExtractorView::MopRemove(DPoint2 start, DPoint2 end)
+void BExtractorView::MopRemove(const DPoint2 &start, const DPoint2 &end)
 {
 	BExtractorDoc* doc = GetDocument();
 
@@ -1479,7 +1487,7 @@ void BExtractorView::MopRemove(DPoint2 start, DPoint2 end)
 	InvalidateRect(screen_rect);
 }
 
-void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
+void BExtractorView::MopRemoveRoadNodes(const DPoint2 &start, const DPoint2 &end)
 {
 
 	BExtractorDoc* doc = GetDocument();

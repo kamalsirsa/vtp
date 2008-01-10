@@ -1,7 +1,7 @@
 //
 // BExtractorView.h : interface of the BExtractorView class
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -150,7 +150,7 @@ protected:
 	// transform UTM space -> screen space
 	int UTM_sx(double utm_x) { return (int)((utm_x / m_fScale) + m_offset.x); }
 	int UTM_sy(double utm_y) { return (int)((-utm_y / m_fScale) + m_offset.y); }
-	void UTM_s(DPoint2 &utm, CPoint &p)
+	void UTM_s(const DPoint2 &utm, CPoint &p)
 	{
 		p.x = UTM_sx((float)utm.x);
 		p.y = UTM_sy((float)utm.y);
@@ -159,14 +159,14 @@ protected:
 	// transform UTM space -> screen space
 	int UTM_sdx(double utm_x) { return (int)(utm_x / m_fScale); }
 	int UTM_sdy(double utm_y) { return (int)(-utm_y / m_fScale); }
-	CPoint UTM_sd(DPoint2 &utm)
+	CPoint UTM_sd(const DPoint2 &utm)
 	{
 		return CPoint((int)(utm.x / m_fScale),
 					  (int)(-utm.y / m_fScale));
 	}
 	double s_UTMdx(double sx) { return (sx * m_fScale); }
 	double s_UTMdy(double sy) { return (-sy * m_fScale); }
-	CRect screen(DRECT &r)
+	CRect screen(const DRECT &r)
 	{
 		CRect r2;
 		r2.left = UTM_sx(r.left);
@@ -177,8 +177,8 @@ protected:
 	}
 
 	void ChangeScale(double fFactor);
-	void MopRemove(DPoint2 start, DPoint2 end);
-	void MopRemoveRoadNodes(DPoint2 start, DPoint2 end);
+	void MopRemove(const DPoint2 &start, const DPoint2 &end);
+	void MopRemoveRoadNodes(const DPoint2 &start, const DPoint2 &end);
 	void DrawRect(CDC *pDC, CPoint one, CPoint two);
 	void ZoomToBuilding();
 	void UpdateRanges();
