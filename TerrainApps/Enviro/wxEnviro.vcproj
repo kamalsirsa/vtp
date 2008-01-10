@@ -350,7 +350,7 @@
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"/>
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
