@@ -204,6 +204,8 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
 bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 							   bool progress_callback(int))
 {
+	VTLOG("vtStructureArray::ReadSHP(%s)\n", pathname);
+
 	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(pathname);
 
@@ -434,6 +436,8 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	if (db != NULL)
 		DBFClose(db);
 	SHPClose(hSHP);
+
+	VTLOG1("\tReadSHP done.\n");
 	return true;
 }
 
@@ -459,8 +463,6 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 	DPoint2			point;
 	DLine2 foot;
 	OGRLinearRing *ring;
-	int num_points;
-	OGRFeatureDefn *pLayerDefn;
 
 	int num_layers = pDatasource->GetLayerCount();
 
@@ -478,7 +480,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 		feature_count = pLayer->GetFeatureCount();
 		pLayer->ResetReading();
 
-		pLayerDefn = pLayer->GetLayerDefn();
+		OGRFeatureDefn *pLayerDefn = pLayer->GetLayerDefn();
 		if (!pLayerDefn)
 			return;
 
@@ -570,7 +572,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 				pPolygon = (OGRPolygon *) pGeom;
 
 				ring = pPolygon->getExteriorRing();
-				num_points = ring->getNumPoints();
+				int num_points = ring->getNumPoints();
 
 				foot.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
