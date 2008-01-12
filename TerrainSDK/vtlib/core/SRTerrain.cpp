@@ -5,7 +5,7 @@
 // Utilizes: Roettger's MINI library implementation
 // http://stereofx.org/#Terrain
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -60,9 +60,9 @@ using namespace mini;
 //
 SRTerrain::SRTerrain() : vtDynTerrainGeom()
 {
-	m_fResolution	= 10000.0f;
-	m_fHResolution	= 20000.0f;
-	m_fLResolution	=     0.0f;
+	m_fResolution	= 100.0f;
+	m_fHResolution	= 200.0f;
+	m_fLResolution	=   0.0f;
 	m_pMini = NULL;
 }
 

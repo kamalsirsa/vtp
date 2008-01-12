@@ -1,7 +1,7 @@
 //
 // vtTiledGeom : Renders tiled heightfields using Roettger's libMini library
 //
-// Copyright (c) 2005-2007 Virtual Terrain Project
+// Copyright (c) 2005-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,8 +12,8 @@
 #include "vtdata/MiniDatabuf.h"
 #include <map>
 
-#define TILEDGEOM_RESOLUTION_MIN 8000.0f
-#define TILEDGEOM_RESOLUTION_MAX 8000000.0f
+#define TILEDGEOM_RESOLUTION_MIN 80.0f
+#define TILEDGEOM_RESOLUTION_MAX 80000.0f
 
 /** \addtogroup dynterr */
 /*@{*/

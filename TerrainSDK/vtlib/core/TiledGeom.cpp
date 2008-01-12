@@ -1,7 +1,7 @@
 //
 // vtTiledGeom: Renders tiled heightfields using Roettger's libMini library
 //
-// Copyright (c) 2005-2007 Virtual Terrain Project
+// Copyright (c) 2005-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -442,7 +442,7 @@ vtTiledGeom::~vtTiledGeom()
 	delete m_pMiniCache;
 #endif
 
-   delete m_pMiniLoad;
+	delete m_pMiniLoad;
 
 	delete m_pPlainMaterial;
 }
