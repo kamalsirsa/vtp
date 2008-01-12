@@ -10,6 +10,7 @@
 //
 
 #include "Building.h"
+#include "vtLog.h"
 #include "HeightField.h"
 #include "LocalConversion.h"
 
@@ -490,15 +491,17 @@ void vtLevel::DetermineLocalFootprint(float fHeight)
 void vtLevel::GetEdgePlane(unsigned int i, FPlane &plane)
 {
 	vtEdge *edge = m_Edges[i];
-	unsigned int edges = m_Edges.GetSize();
-
 	int islope = edge->m_iSlope;
 	float slope = (islope / 180.0f * PIf);
-	int next = (i+1 == edges) ? 0 : i+1;
+
+	int index = i;
+	int ring = m_LocalFootprint.WhichRing(index);
+	FLine3 &loop = m_LocalFootprint[ring];
+	unsigned int ring_edges = loop.GetSize();
+	int next = (index+1 == ring_edges) ? 0 : index+1;
 
 	// get edge vector
-	FLine3 &ring = m_LocalFootprint[0];
-	FPoint3 vec = ring[next] - ring[i];
+	FPoint3 vec = loop[next] - loop[index];
 	vec.Normalize();
 
 	// get perpendicular (upward pointing) vector
@@ -514,7 +517,7 @@ void vtLevel::GetEdgePlane(unsigned int i, FPlane &plane)
 	FPoint3 norm;
 	mat.TransformVector(perp, norm);
 
-	plane.Set(ring[i], norm);
+	plane.Set(loop[index], norm);
 }
 
 //
