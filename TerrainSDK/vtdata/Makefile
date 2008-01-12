@@ -14,6 +14,8 @@ IFLAGS = -I./shapelib \
 
 HEADERS = $(CHEAD) $(CXXHEAD) ./shapelib
 
+OBJS := $(OBJS) triangle/triangle.o
+
 ifeq ($(OS), Darwin)
 all : $(FRAMEWORK_LIB)
 else
