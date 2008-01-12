@@ -57,3 +57,5 @@ class vtMiniDatabuf: public MiniDatabuf {};
 #endif	// USE_LIBMINI_DATABUF
 
 #endif // LocalDatabuf_H
+
+
