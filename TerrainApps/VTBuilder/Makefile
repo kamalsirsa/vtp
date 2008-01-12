@@ -8,6 +8,7 @@ include $(VTP_ROOT)/Make.defs
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	  -I$(GDAL_INC)              \
+	  -I$(MINI_INC)              \
 	  -I$(TERRAIN_SDK_DIR)       \
 	  -I$(TERRAIN_APPS_DIR)/VTBuilder/bitmaps \
 	  -I$(TERRAIN_APPS_DIR)/VTBuilder/icons
@@ -51,7 +52,7 @@ all : $(OSX_APP)
 else
 # Support for all other Unix platforms
 LIBS   +=  -lGL -lX11 $(EXTRA_LIBS)   \
-	  -lxmlhelper -lvtdata -lvtui -lunzip -lcurl -lbz2
+	  -lxmlhelper -lvtdata -lvtui $(MINI_LIB) -lunzip -lcurl -lbz2
 
 LDIRS  += \
 	  $(VTDATA_INST_DIR)             \
