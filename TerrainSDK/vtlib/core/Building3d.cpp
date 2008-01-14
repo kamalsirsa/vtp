@@ -650,7 +650,9 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 	if (outer_corners > 4 || rings > 1)
 	{
 		// roof consists of a polygon which must be split into triangles
+		//  Invoke the triangulator to triangulate this polygon.
 #if 1
+		// Use 'Triangle'
 		const FLine3 &outer = pp[0];
 		float roof_y = outer[0].y;
 		DPolygon2 foot2d;
@@ -662,7 +664,7 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 		FLine3 result;
 		ProjectionXZ(result2d, roof_y, result);
 #else
-		//  Invoke the triangulator to triangulate this polygon.
+		// Use older, simpler triangulator
 		FLine3 outer = pp[0];
 		FLine2 roof;
 		roof.SetMaxSize(outer_corners);
