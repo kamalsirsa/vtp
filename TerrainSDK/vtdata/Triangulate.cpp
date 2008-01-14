@@ -635,8 +635,19 @@ void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 	counter = 0;
 	for (unsigned int ring = 1; ring < contour.size(); ring++)
 	{
-		// TODO! This is an approximation.  The centroid might not be inside.
-		DPoint2 p = contour[ring].Centroid();
+		// We must provide a 2D point inside each hole.  However, the hole itself
+		//  might have concavities, so we cannot simply use the hole's centroid.
+		// Instead, call Triangle for each potentially complex hole!
+		DPoint2 p;
+		const DLine2 &hole = contour[ring];
+		if (hole.GetSize() < 5)
+			p = hole.Centroid();
+		else
+		{
+			DLine2 result2;
+			CallTriangle(hole, result2);
+			p = (result2[0] + result2[1] + result2[2])/3;
+		}
 		in.holelist[counter++] = p.x;
 		in.holelist[counter++] = p.y;
 	}
