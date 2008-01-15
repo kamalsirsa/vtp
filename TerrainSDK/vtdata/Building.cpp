@@ -234,6 +234,10 @@ bool vtLevel::AddEdge(int iEdge, DPoint2 &Point)
 
 void vtLevel::SetFootprint(const DLine2 &dl)
 {
+	// Safety check: Make sure there is at least an outer polygon
+	if (m_Foot.size() == 0)
+		m_Foot.resize(1);
+
 	int prev = m_Foot[0].GetSize();
 	m_Foot[0] = dl;
 	int curr = dl.GetSize();
