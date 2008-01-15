@@ -50,7 +50,6 @@ vtIcoGlobe::~vtIcoGlobe()
  * \param iTriangleCount The desired triangle count of the entire globe.  The
  *		class will attempt to match this value as closely as possible with
  *		the indicated tessellation.
- * \param paths The data paths to use when looking for the surface textures
  * \param strImagePrefix The base of the filename for the set of icosahedral
  *		surface textures.  For example, if your textures have the name
  *		"geosphere_*.jpg", pass "geosphere_"

@@ -958,7 +958,7 @@ void vtBuilding::SetFootprint(int lev, const DLine2 &foot)
  * Set the footprintf of the given level of the building.
  *
  * \param lev The level, from 0 for the base level and up.
- * \param foot The footprint.
+ * \param poly The footprint.
  */
 void vtBuilding::SetFootprint(int lev, const DPolygon2 &poly)
 {

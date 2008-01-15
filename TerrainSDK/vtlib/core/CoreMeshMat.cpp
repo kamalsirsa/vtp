@@ -329,6 +329,7 @@ void vtMeshBase::CreatePrism(const FPoint3 &base, const FPoint3 &vector_up,
  *
  * \param xsize Number of vertices in the first dimension.
  * \param ysize Number of vertices in the second dimension.
+ * \param bReverseNormals Reverse the vertex order so the normals point the other way.
  */
 void vtMeshBase::CreateRectangularMesh(int xsize, int ysize, bool bReverseNormals)
 {
@@ -343,7 +344,7 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize, bool bReverseNormal
 		{
 			if (bReverseNormals)
 			{
-				// reverse the vertex order so thte normals point the other way
+				// reverse the vertex order so the normals point the other way
 				strip[len++] = start + i + xsize;
 				strip[len++] = start + i;
 			}
