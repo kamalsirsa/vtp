@@ -30,6 +30,7 @@ zip $DIST_FILE1 VTP/TerrainSDK/unzip/*
 
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/shapelib/*
+zip $DIST_FILE1 VTP/TerrainSDK/vtdata/triangle/*
 
 zip $DIST_FILE1 VTP/TerrainSDK/vtlib/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtlib/core/*
