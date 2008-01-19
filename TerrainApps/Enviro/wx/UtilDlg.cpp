@@ -1,7 +1,7 @@
 //
 // Name: UtilDlg.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,7 @@
 #include "vtlib/core/Route.h"
 #include "UtilDlg.h"
 #include "EnviroGUI.h"
+#include "vtdata/vtLog.h"
 
 
 // WDR: class implementations
@@ -55,8 +56,10 @@ void UtilDlg::OnStructType( wxCommandEvent &event )
 
 void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
 {
+	VTLOG("UtilDlg looking for items of type utility pole.\n");
 	vtContentManager &mng = vtGetContent();
 
+	int found = 0;
 	m_pChoice->Clear();
 	for (unsigned int i = 0; i < mng.NumItems(); i++)
 	{
@@ -65,10 +68,15 @@ void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (item->GetValueString("type", str))
 		{
 			if (str == "utility pole")
+			{
 				m_pChoice->Append(wxString::FromAscii(item->m_name));
+				found++;
+			}
 		}
 	}
 	TransferDataToWindow();
+
+	VTLOG("\t%d items, %d found.\n", mng.NumItems(), found);
 
 	wxString val = m_pChoice->GetStringSelection();
 	g_App.SetRouteOptions((const char *) val.mb_str(wxConvUTF8));
