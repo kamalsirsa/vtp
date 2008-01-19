@@ -1185,7 +1185,7 @@ wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxString *strs12 = (wxString*) NULL;
     wxChoice *item12 = new wxChoice( parent, ID_CHOICE_HEIGHT_FIELD, wxDefaultPosition, wxSize(100,-1), 0, strs12, 0 );
-    item10->Add( item12, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item10->Add( item12, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxString strs13[] = 
     {
@@ -1196,9 +1196,9 @@ wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit, bool set_sizer )
         _("Feet (single story)")
     };
     wxChoice *item13 = new wxChoice( parent, ID_CHOICE_HEIGHT_TYPE, wxDefaultPosition, wxSize(80,-1), 5, strs13, 0 );
-    item10->Add( item13, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item10->Add( item13, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item2->Add( item10, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    item2->Add( item10, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -1298,7 +1298,7 @@ wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item2->Add( item34, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    item0->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item37 = new wxBoxSizer( wxHORIZONTAL );
 
