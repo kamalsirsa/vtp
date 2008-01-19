@@ -1,7 +1,7 @@
 //
 // Name: PlantDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -182,6 +182,19 @@ void PlantDlg::UpdateAvailableLanguages()
 	}
 }
 
+// Helper: do an insertion sort for a wxChoice
+void AppendSorted(wxChoice *choice, const wxString &item, void *clientData)
+{
+	unsigned int pos, items = choice->GetCount();
+	for (pos = 0; pos < items; pos++)
+	{
+		wxString text = choice->GetString(pos);
+		if (item < text)
+			break;
+	}
+	choice->Insert(item, pos, clientData);
+}
+
 void PlantDlg::UpdatePlantNames()
 {
 	VTLOG1("PlantDlg UpdatePlantNames\n");
@@ -231,7 +244,10 @@ void PlantDlg::UpdatePlantNames()
 				if (cname.m_strLang == showLang)
 				{
 					str = wxString(cname.m_strName, wxConvUTF8);
-					m_pSpecies->Append(str, plant);
+
+					// Alphabetic order makes it easier for the user, with common names
+					AppendSorted(m_pSpecies, str, plant);
+					//m_pSpecies->Append(str, plant);
 				}
 			}
 		}
