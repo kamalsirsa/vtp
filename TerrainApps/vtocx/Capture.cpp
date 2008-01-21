@@ -43,7 +43,7 @@ LRESULT CALLBACK Capture::s_wndProc(HWND hWnd, UINT uMsg,
 LRESULT CALLBACK Capture::wndProc(HWND hWnd, UINT iMsg,
 								  WPARAM wParam, LPARAM lParam)
 {
-#if 1
+#if _DEBUG
 	VTLOG("Capture sees %3d (0x%04x)", iMsg, iMsg);
 	if (iMsg == WM_MOVE) VTLOG1(" (WM_MOVE)");
 	if (iMsg == WM_SETFOCUS) VTLOG1(" (WM_SETFOCUS)");
