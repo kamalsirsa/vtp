@@ -477,6 +477,8 @@
 		986BF8B60C24A76A003001FF /* crater_0513.bt in Copy Files to Elevation dir */ = {isa = PBXBuildFile; fileRef = 98D9F8A20C22E443000F9A7A /* crater_0513.bt */; };
 		986BF91F0C24AA50003001FF /* Simple.xml in Resources */ = {isa = PBXBuildFile; fileRef = 986BF91E0C24AA50003001FF /* Simple.xml */; };
 		986BF9220C24AA5C003001FF /* Simple.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 986BF91E0C24AA50003001FF /* Simple.xml */; };
+		988A00710D459D8A00783971 /* triangle.c in Sources */ = {isa = PBXBuildFile; fileRef = 988A006F0D459D8A00783971 /* triangle.c */; };
+		988A00720D459D8A00783971 /* triangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 988A00700D459D8A00783971 /* triangle.h */; };
 		98A9EF0C0C29878000A3AF4C /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9EF0B0C29878000A3AF4C /* Frame.cpp */; };
 		98A9F04D0C2A0DAD00A3AF4C /* VTBuilder.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98A9F04A0C2A0DAD00A3AF4C /* VTBuilder.icns */; };
 		98A9F0970C2A0E1500A3AF4C /* vtdata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4B2F0C20202900F54366 /* vtdata.framework */; };
@@ -1817,6 +1819,8 @@
 		986BF8670C24A295003001FF /* libwx_macud_gl-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libwx_macud_gl-2.8.0.dylib"; path = "../../build.shared/Shared/lib/libwx_macud_gl-2.8.0.dylib"; sourceTree = SOURCE_ROOT; };
 		986BF8680C24A295003001FF /* libwx_macud-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libwx_macud-2.8.0.dylib"; path = "../../build.shared/Shared/lib/libwx_macud-2.8.0.dylib"; sourceTree = SOURCE_ROOT; };
 		986BF91E0C24AA50003001FF /* Simple.xml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; name = Simple.xml; path = ../TerrainApps/wxSimple/Data/Simple.xml; sourceTree = SOURCE_ROOT; };
+		988A006F0D459D8A00783971 /* triangle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = triangle.c; sourceTree = "<group>"; };
+		988A00700D459D8A00783971 /* triangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = triangle.h; sourceTree = "<group>"; };
 		98A9EF0B0C29878000A3AF4C /* Frame.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Frame.cpp; path = ../TerrainApps/VTBuilder/Frame.cpp; sourceTree = SOURCE_ROOT; };
 		98A9EF100C2A0D5B00A3AF4C /* CarEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CarEngine.cpp; path = ../TerrainApps/Enviro/CarEngine.cpp; sourceTree = SOURCE_ROOT; };
 		98A9EF110C2A0D5B00A3AF4C /* CarEngine.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CarEngine.h; path = ../TerrainApps/Enviro/CarEngine.h; sourceTree = SOURCE_ROOT; };
@@ -2447,6 +2451,7 @@
 		0A6A4B370C20203600F54366 /* vtdata */ = {
 			isa = PBXGroup;
 			children = (
+				988A006E0D459D8A00783971 /* triangle */,
 				985FE3500CFFD994000453AF /* DataPath.cpp */,
 				985FE3510CFFD994000453AF /* DataPath.h */,
 				0A6A4B580C20722B00F54366 /* Array.h */,
@@ -3187,6 +3192,16 @@
 			name = Elevation;
 			sourceTree = "<group>";
 		};
+		988A006E0D459D8A00783971 /* triangle */ = {
+			isa = PBXGroup;
+			children = (
+				988A006F0D459D8A00783971 /* triangle.c */,
+				988A00700D459D8A00783971 /* triangle.h */,
+			);
+			name = triangle;
+			path = ../TerrainSDK/vtdata/triangle;
+			sourceTree = SOURCE_ROOT;
+		};
 		98A9EF0F0C2A0D3E00A3AF4C /* Enviro */ = {
 			isa = PBXGroup;
 			children = (
@@ -3792,6 +3807,7 @@
 				0A6A4C130C20722B00F54366 /* vtUnzip.h in Headers */,
 				0A6A4C150C20722B00F54366 /* WFSClient.h in Headers */,
 				985FE3530CFFD994000453AF /* DataPath.h in Headers */,
+				988A00720D459D8A00783971 /* triangle.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4396,6 +4412,7 @@
 				0A6A4C120C20722B00F54366 /* vtUnzip.cpp in Sources */,
 				0A6A4C140C20722B00F54366 /* WFSClient.cpp in Sources */,
 				985FE3520CFFD994000453AF /* DataPath.cpp in Sources */,
+				988A00710D459D8A00783971 /* triangle.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4883,6 +4900,7 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../../build.shared/Shared/Frameworks";
 				PREBINDING = NO;
+				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
 		};
