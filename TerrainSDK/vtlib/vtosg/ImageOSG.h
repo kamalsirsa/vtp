@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -32,7 +32,8 @@ public:
 	void Scale(int w, int h);
 
 	/// Return the name of the file, if any, from which the image was loaded.
-	vtString GetFilename() { return m_strFilename; }
+	vtString GetFilename() const { return m_strFilename; }
+	void SetFilename(const vtString &fname) { m_strFilename = fname; }
 
 	// Provide vtBitmapBase methods
 	unsigned char GetPixel8(int x, int y) const;
