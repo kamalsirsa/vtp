@@ -1,7 +1,7 @@
 //
 // vtTin3d.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -42,6 +42,8 @@ public:
 	FPoint3 FindVectorToClosestVertex(const FPoint3 &pos);
 
 protected:
+	virtual void MakeSurfaceMaterials();
+
 	vtArray<vtMesh*> m_Meshes;
 	vtMaterialArray *m_pMats;
 	vtGeom		*m_pGeom;

@@ -3,7 +3,7 @@
 //
 // Class which represents a Triangulated Irregular Network.
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -45,6 +45,33 @@ void vtTin3d::SetTextureMaterials(vtMaterialArray *pMats)
 	m_pMats = pMats;
 }
 
+void vtTin3d::MakeSurfaceMaterials()
+{
+	unsigned int iSurfTypes = m_surftypes.size();
+	bool bExplicitNormals = HasVertexNormals();
+
+	for (unsigned int i = 0; i < iSurfTypes; i++)
+	{
+		bool bLighting = bExplicitNormals;
+		float fAmbient = 0.3f;
+
+		// Might be absolute path
+		vtString path = FindFileOnPaths(vtGetDataPath(), m_surftypes[i]);
+
+		// Might be relative path
+		if (path == "")
+		{
+			vtString relpath = "GeoTypical/";
+			relpath += m_surftypes[i];
+			path = FindFileOnPaths(vtGetDataPath(), relpath);
+		}
+
+		m_pMats->AddTextureMaterial2(path, false, bLighting, false, false,
+			fAmbient, 1.0f, 1.0f, 0.0f, false, false, true);
+	}
+}
+
+
 #define MAX_CHUNK_VERTS	30000
 
 vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
@@ -56,7 +83,9 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	bool bTextured = bGeoSpecific || bUseSurfaceTypes;
 	bool bExplicitNormals = HasVertexNormals();
 
+	// The first 3 materials are hard-coded, the rest are per surface type
 	int texture_base = 3;
+
 	if (!bGeoSpecific)
 	{
 		// set up geotypical materials
@@ -73,28 +102,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		m_pMats->AddRGBMaterial1(RGBf(0, 0, 0), false, false, false);
 
 		if (bUseSurfaceTypes)
-		{
-			for (unsigned int i = 0; i < iSurfTypes; i++)
-			{
-				bool bLighting = bExplicitNormals;
-				float fAmbient = 0.3f;
-				vtString path;
-
-				// Might be absolute path
-				path = FindFileOnPaths(vtGetDataPath(), m_surftypes[i]);
-
-				// Might be relative path
-				if (path == "")
-				{
-					vtString relpath = "GeoTypical/";
-					relpath += m_surftypes[i];
-					path = FindFileOnPaths(vtGetDataPath(), relpath);
-				}
-
-				m_pMats->AddTextureMaterial2(path, false, bLighting, false, false,
-					fAmbient, 1.0f, 1.0f, 0.0f, false, false, true);
-			}
-		}
+			MakeSurfaceMaterials();
 	}
 
 	m_pGeom = new vtGeom;
