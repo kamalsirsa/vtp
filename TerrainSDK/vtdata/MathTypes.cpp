@@ -1893,3 +1893,4 @@ void ProjectionXZ(const DPolygon2 &dpoly2, float fY, FPolygon3 &fpoly3)
 	for (unsigned int i = 0; i < rings; i++)
 		ProjectionXZ(dpoly2[i], fY, fpoly3[i]);
 }
+
