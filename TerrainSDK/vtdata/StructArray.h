@@ -123,7 +123,7 @@ public:
 	void GetExtents(DRECT &ext) const;
 	void Offset(const DPoint2 &delta);
 
-	int AddFoundations(vtHeightField *pHF);
+	int AddFoundations(vtHeightField *pHF, bool progress_callback(int) = NULL);
 	void RemoveFoundations();
 
 	// selection

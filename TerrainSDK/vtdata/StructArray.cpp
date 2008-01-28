@@ -352,7 +352,7 @@ void vtStructureArray::Offset(const DPoint2 &delta)
 	}
 }
 
-int vtStructureArray::AddFoundations(vtHeightField *pHF)
+int vtStructureArray::AddFoundations(vtHeightField *pHF, bool progress_callback(int))
 {
 	vtLevel *pLev, *pNewLev;
 	int i, j, pts, built = 0;
@@ -364,6 +364,9 @@ int vtStructureArray::AddFoundations(vtHeightField *pHF)
 
 	for (i = 0; i < size; i++)
 	{
+		if (progress_callback != NULL)
+			progress_callback(i * 99 / size);
+
 		vtStructure *str = GetAt(i);
 		vtBuilding *bld = str->GetBuilding();
 		if (!bld)

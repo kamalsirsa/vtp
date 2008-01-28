@@ -2051,15 +2051,19 @@ void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 
 	if (s_bBuilt)
 	{
-		sa->AddFoundations(pTerr->GetHeightField());
+		OpenProgressDialog(_("Adding Foundations"));
+		sa->AddFoundations(pTerr->GetHeightField(), progress_callback);
 	}
 	else
 	{
+		OpenProgressDialog(_("Removing Foundations"));
 		sa->RemoveFoundations();
 	}
 	int i, size = sa->GetSize(), selected = sa->NumSelected();
 	for (i = 0; i < size; i++)
 	{
+		progress_callback(i * 99 / size);
+
 		vtStructure *s = sa->GetAt(i);
 		if (selected > 0 && !s->IsSelected())
 			continue;
@@ -2067,6 +2071,7 @@ void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 			continue;
 		sa->ConstructStructure(i);
 	}
+	CloseProgressDialog();
 }
 
 void EnviroFrame::OnUpdateFoundations(wxUpdateUIEvent& event)
