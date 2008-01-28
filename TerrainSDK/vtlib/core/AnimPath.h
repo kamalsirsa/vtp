@@ -169,17 +169,17 @@ class vtAnimPathEngine : public vtEngine
 public:
 	vtAnimPathEngine():
 		m_pAnimationPath(NULL),
+		m_bContinuous(false),
 		m_fLastTime(FLT_MAX),
 		m_fTime(0.0f),
-		m_bContinuous(false),
 		m_bPosOnly(false),
 		m_fSpeed(1.0f) {}
 
 	vtAnimPathEngine(vtAnimPath *ap):
 		m_pAnimationPath(ap),
+		m_bContinuous(false),
 		m_fLastTime(FLT_MAX),
 		m_fTime(0.0f),
-		m_bContinuous(false),
 		m_bPosOnly(false),
 		m_fSpeed(1.0f) {}
 
