@@ -84,6 +84,60 @@ void DLine2::RemovePoint(int i)
 	RemoveAt(i);
 }
 
+void DLine2::ReverseOrder()
+{
+	DPoint2 p;
+	int i, size = GetSize();
+	for (i = 0; i < size/2; i++)
+	{
+		p = GetAt(i);
+		SetAt(i, GetAt(size-1-i));
+		SetAt(size-1-i, p);
+	}
+}
+
+/**
+ * Given four points A B C D, where B and C are identical, then this
+ *  line is a triangle not a rectangle.  Remove the identical points to
+ *  produce A B D.  Points are identical if they are within dEpsilon
+ *  of each other.
+ */
+int DLine2::RemoveDegeneratePoints(double dEpsilon)
+{
+	int removed = 0;
+	for (int i = 0; i < (int) GetSize()-1; i++)
+	{
+		DPoint2 diff = GetAt(i+1) - GetAt(i);
+		if (fabs(diff.x) < dEpsilon && fabs(diff.y) < dEpsilon)
+		{
+			RemoveAt(i);
+			removed++;
+		}
+	}
+	return removed;
+}
+
+bool DLine2::IsConvex() const
+{
+	int positive = 0;
+	int negative = 0;
+	unsigned int length = GetSize();
+
+	for (unsigned int i = 0; i < length; i++)
+	{
+		DPoint2 &p0 = GetAt(i);
+		DPoint2 &p1 = GetAt((i+1) % length);
+		DPoint2 &p2 = GetAt((i+2) % length);
+		double cross = (p1-p0).Cross(p2-p1);
+
+		if ( cross < 0 )
+			negative++;
+		else
+			positive++;
+	}
+	return (negative == 0 || positive == 0);
+}
+
 /**
 * With the assumption that this set of points defines a closed polygon,
 * test whether the polygon contains a given point.  Since a simple array
@@ -244,39 +298,6 @@ DPoint2 DLine2::Centroid() const
 	pt.x /= dN;
 	pt.y /= dN;
 	return pt;
-}
-
-void DLine2::ReverseOrder()
-{
-	DPoint2 p;
-	int i, size = GetSize();
-	for (i = 0; i < size/2; i++)
-	{
-		p = GetAt(i);
-		SetAt(i, GetAt(size-1-i));
-		SetAt(size-1-i, p);
-	}
-}
-
-bool DLine2::IsConvex() const
-{
-	int positive = 0;
-	int negative = 0;
-	unsigned int length = GetSize();
-
-	for (unsigned int i = 0; i < length; i++)
-	{
-		DPoint2 &p0 = GetAt(i);
-		DPoint2 &p1 = GetAt((i+1) % length);
-		DPoint2 &p2 = GetAt((i+2) % length);
-		double cross = (p1-p0).Cross(p2-p1);
-
-		if ( cross < 0 )
-			negative++;
-		else
-			positive++;
-	}
-	return (negative == 0 || positive == 0);
 }
 
 
@@ -787,6 +808,14 @@ void DPolygon2::RemovePoint(int N)
 		}
 		N -= size;
 	}
+}
+
+int DPolygon2::RemoveDegeneratePoints(double dEpsilon)
+{
+	int removed = 0;
+	for (unsigned int ring = 0; ring < size(); ring++)
+		removed += at(ring).RemoveDegeneratePoints(dEpsilon);
+	return removed;
 }
 
 

@@ -410,15 +410,18 @@ public:
 	/// Multiply all points by a given factor
 	void Mult(double factor);
 
+	// Modify
 	void InsertPointAfter(int iInsertAfter, const DPoint2 &Point);
 	void RemovePoint(int i);
+	void ReverseOrder();
+	int RemoveDegeneratePoints(double dEpsilon);
+
+	// Query
 	bool ContainsPoint(const DPoint2 &p) const;
 	double SegmentLength(unsigned int i) const;
 	void NearestPoint(const DPoint2 &Point, int &iIndex, double &dist) const;
 	bool NearestSegment(const DPoint2 &Point, int &iIndex, double &dist, DPoint2 &Intersection) const;
-	void ReverseOrder();
 	bool IsConvex() const;
-
 	DPoint2 &GetSafePoint(int index) const;
 	void SetSafePoint(int index, const DPoint2 &p);
 	double Length() const;
@@ -767,6 +770,7 @@ public:
 	void ReverseOrder();
 	void InsertPointAfter(int iInsertAfter, const DPoint2 &Point);
 	void RemovePoint(int N);
+	int RemoveDegeneratePoints(double dEpsilon);
 };
 
 /**

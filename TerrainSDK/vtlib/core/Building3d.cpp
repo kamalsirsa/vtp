@@ -657,6 +657,13 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 		float roof_y = outer[0].y;
 		DPolygon2 foot2d;
 		ProjectionXZ(pp, foot2d);
+
+		// Triangle has been known to behave poorly with redundant vertices
+		//  We are in meters now, so we can use a centimeter epsilon.
+		int removed = foot2d.RemoveDegeneratePoints(0.02);
+		if (removed)
+			VTLOG("Skipped %d redundant vertices.\n", removed);
+
 		// a polyline to hold the answer in sets of three points
 		DLine2 result2d;
 		CallTriangle(foot2d, result2d);
