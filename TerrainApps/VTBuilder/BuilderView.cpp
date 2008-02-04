@@ -1944,6 +1944,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 
 	bool ctrl = event.ControlDown();
 	int code = event.GetKeyCode();
+	MainFrame *frm = GetMainFrame();
 
 	if (code == ' ')
 	{
@@ -2202,6 +2203,22 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		frm->RefreshToolbars();
 		frm->RefreshTreeView();
 		frm->RefreshStatusBar();
+		}
+#endif
+#if 0
+		{
+			vtStructureLayer *pL = (vtStructureLayer *)frm->FindLayerOfType(LT_STRUCTURE);
+			if (pL)
+			{
+				pL->DeselectAll();
+				pL->GetAt(3087)->Select(true);
+			}
+
+			// refresh the view
+			frm->ZoomAll();
+			frm->RefreshToolbars();
+			frm->RefreshTreeView();
+			frm->RefreshStatusBar();
 		}
 #endif
 	}
