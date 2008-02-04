@@ -660,7 +660,7 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 
 		// Triangle has been known to behave poorly with redundant vertices
 		//  We are in meters now, so we can use a centimeter epsilon.
-		int removed = foot2d.RemoveDegeneratePoints(0.02);
+		int removed = foot2d.RemoveDegeneratePoints(0.08);
 		if (removed)
 			VTLOG("Skipped %d redundant vertices.\n", removed);
 
