@@ -1,7 +1,7 @@
 //
 // Some useful standalone functions for use with wxWindows.
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -115,6 +115,10 @@ int AddFilenamesToChoice(wxChoice *choice, const char *directory,
 int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	const char *wildcard, int omit_chars)
 {
+	// safety check
+	if (!box)
+		return 0;
+
 //  VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
 
 	// This does not work on all platforms, because wxComboBox is only a subclass
