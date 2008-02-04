@@ -128,12 +128,15 @@ void PlantDlg::SetPlantOptions(PlantingOptions &opt)
 	if (m_opt.m_fHeight < 0)
 		m_opt.m_fHeight = 0;
 
-	vtPlantSpecies *ps = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
-	if (ps)
+	if (m_pPlantList)
 	{
-		float size = ps->GetMaxHeight();
-		if (m_opt.m_fHeight > size)		// safety check
-			m_opt.m_fHeight = size * 0.80f;
+		vtPlantSpecies *ps = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
+		if (ps)
+		{
+			float size = ps->GetMaxHeight();
+			if (m_opt.m_fHeight > size)		// safety check
+				m_opt.m_fHeight = size * 0.80f;
+		}
 	}
 	SpeciesIdToSpeciesIndex();
 
@@ -164,6 +167,9 @@ void PlantDlg::UpdateAvailableLanguages()
 {
 	GetLanguage()->Clear();
 	GetLanguage()->Append(_T("en"));
+
+	if (!m_pPlantList)
+		return;
 
 	// Collect every unique language string
 	wxString str;
@@ -282,6 +288,9 @@ void PlantDlg::UpdateEnabling()
 
 void PlantDlg::SpeciesIdToSpeciesIndex()
 {
+	if (!m_pPlantList)
+		return;
+
 	// look up corresponding species choice index
 	vtPlantSpecies *ps = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
 	for (unsigned int i = 0; i < m_pSpecies->GetCount(); i++)
@@ -295,6 +304,9 @@ void PlantDlg::SpeciesIdToSpeciesIndex()
 }
 void PlantDlg::SpeciesIndexToSpeciesId()
 {
+	if (!m_pPlantList)
+		return;
+
 	// convert displayed species index to a real species id
 	int count = m_pSpecies->GetCount();
 	if (m_iSpeciesChoice < count)

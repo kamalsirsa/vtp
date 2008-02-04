@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.cpp
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project
+// Copyright (c) 2004-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,7 +17,7 @@
 #endif
 
 #include "vtdata/DataPath.h"
-#include "vtui/Helper.h"	// for AddFilenamesToComboBox
+#include "vtui/Helper.h"	// for AddFilenamesToChoice
 #include "OptionsDlg.h"
 
 // WDR: class implementations
