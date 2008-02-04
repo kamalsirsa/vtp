@@ -105,13 +105,14 @@ void DLine2::ReverseOrder()
 int DLine2::RemoveDegeneratePoints(double dEpsilon)
 {
 	int removed = 0;
-	for (int i = 0; i < (int) GetSize()-1; i++)
+	for (int i = 0; i < (int) GetSize(); i++)
 	{
-		DPoint2 diff = GetAt(i+1) - GetAt(i);
+		DPoint2 diff = GetSafePoint(i+1) - GetAt(i);
 		if (fabs(diff.x) < dEpsilon && fabs(diff.y) < dEpsilon)
 		{
 			RemoveAt(i);
 			removed++;
+			i--;
 		}
 	}
 	return removed;
