@@ -1,7 +1,7 @@
 //
 // Terrain.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -123,7 +123,7 @@ public:
 	/********************** Public Methods ******************/
 
 	// parameters for terrain creation
-	bool SetParamFile(const char *fname);
+	void SetParamFile(const char *fname);
 	bool LoadParams();
 	vtString GetParamFile()  { return m_strParamFile; }
 	void SetParams(const TParams &Params);

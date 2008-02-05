@@ -1,7 +1,7 @@
 //
 // Terrain.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -216,10 +216,9 @@ vtTerrain::~vtTerrain()
  *
  * \param fname The name of a terrain parameters file, e.g. "Simple.xml".
  */
-bool vtTerrain::SetParamFile(const char *fname)
+void vtTerrain::SetParamFile(const char *fname)
 {
 	m_strParamFile = fname;
-	return LoadParams();
 }
 
 bool vtTerrain::LoadParams()
