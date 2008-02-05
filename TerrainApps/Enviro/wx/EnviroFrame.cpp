@@ -1234,21 +1234,33 @@ void EnviroFrame::OnSaveTerrainAs(wxCommandEvent& event)
 	// Copy as much state as possible from the active terrain to its parameters
 	g_App.StoreTerrainParameters();
 
+	vtTerrain *terr = GetCurrentTerrain();
+	TParams &par = terr->GetParams();
+	vtString pfile = terr->GetParamFile();
+
+	wxString defDir(ExtractPath(pfile, false), wxConvUTF8);
+	wxString defFile(StartOfFilename(pfile), wxConvUTF8);
+
 	EnableContinuousRendering(false);
-	wxFileDialog saveFile(NULL, _("Save Terrain State"), _T(""), _T(""),
+	wxFileDialog saveFile(NULL, _("Save Terrain State"), defDir, defFile,
 		_("Terrain Files (*.xml)|*.xml"), wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	EnableContinuousRendering(true);
-	if (bResult)
-	{
-		vtString fname = (const char*)saveFile.GetPath().mb_str(wxConvUTF8);
+	if (!bResult)
+		return;
 
-		vtTerrain *terr = GetCurrentTerrain();
-		TParams &par = terr->GetParams();
-		terr->SetParamFile(fname);
-		if (!par.WriteToXML(fname, STR_TPARAMS_FORMAT_NAME))
-			DisplayAndLog("Couldn't write file '%s'", (const char *)fname);
-	}
+	// Give the user an opportunity to name the new terrain
+	vtString tname = terr->GetName();
+	wxString def(tname, wxConvUTF8);
+	wxString name = wxGetTextFromUser(_("Name for new terrain:"), _("Query"), def, this);
+	if (name == _T(""))
+		return;
+	terr->SetName((const char *) name.mb_str(wxConvUTF8));
+
+	vtString fname = (const char*)saveFile.GetPath().mb_str(wxConvUTF8);
+	terr->SetParamFile(fname);
+	if (!par.WriteToXML(fname, STR_TPARAMS_FORMAT_NAME))
+		DisplayAndLog("Couldn't write file '%s'", (const char *)fname);
 }
 
 void EnviroFrame::OnUpdateSaveTerrain(wxUpdateUIEvent& event)
