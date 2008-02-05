@@ -1,3 +1,11 @@
+//
+// Nevada.h
+//
+// Terrain implementation specific to Black Rock City, Nevada.
+//
+// Copyright (c) 2001-2008 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef NEVADAH
 #define NEVADAH
@@ -71,7 +79,8 @@ public:
 	float m_fHigh;
 	float m_fWaterHeight;
 
-	vtTextMesh *m_pSprite;
+	vtGeom *m_pSprite;
+	vtTextMesh *m_pSpriteText;
 
 	vtMaterial *m_pPastMat;
 	vtMaterial *m_pPresentMat;

@@ -3,7 +3,7 @@
 //
 // Terrain implementation specific to Black Rock City, Nevada.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,7 +12,7 @@
 
 #include "Nevada.h"
 #include "Engines.h"
-#include "Enviro.h"
+#include "wx/EnviroGUI.h"	// for g_App
 
 // measured with GPS in 1999:
 // man location
@@ -495,15 +495,18 @@ EpochEngine::EpochEngine(NevadaTerrain *pNevada, float fLow, float fHigh,
 	m_fHigh = fHigh;
 	m_fWaterHeight = fLow;
 
-#if 0
 	// Make a sprite to show the text
-	m_pSprite = new vtSprite;
-	m_pSprite->SetName2("Year Sprite");
+	m_pSpriteText = new vtTextMesh(g_App.GetArial(), 32);
+	m_pSpriteText->SetText("1999 AD");
+	m_pSpriteText->SetPosition(FPoint3(280,3,0));
+	m_pSpriteText->SetColor(RGBAf(0,0.2f,0));
 
-	m_pSprite->SetWindowRect(0.4f, 0.95f, 0.6f, 1.05f);
-	m_pSprite->SetText("1999 AD");
-	m_pSprite->SetTextFont("Data/Fonts/default.txf");
-#endif
+	m_pSprite = new vtGeom;
+	m_pSprite->SetName2("Year Sprite");
+	m_pSprite->AddTextMesh(m_pSpriteText, 0);
+	m_pSpriteText->Release();
+	vtGetScene()->GetHUD()->AddChild(m_pSprite);
+	pNevada->AddNode(m_pSprite);
 
 	m_pPastMat = pastApp;
 	m_pPresentMat = presentApp;
@@ -629,7 +632,6 @@ void EpochEngine::Eval()
 		}
 	}
 
-#if 0
 	// update the displayed year
 	if (m_iShownYear != m_iYear)
 	{
@@ -639,9 +641,8 @@ void EpochEngine::Eval()
 			str.Format("%d AD", m_iShownYear);
 		else
 			str.Format("%d BC", -m_iShownYear);
-		m_pSprite->SetText(str);
+		m_pSpriteText->SetText(str);
 	}
-#endif
 }
 
 
