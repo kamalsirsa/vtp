@@ -1,7 +1,7 @@
 //
 // ElevLayer.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1282,6 +1282,14 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 		result += str;
 		str.Printf(_("Maximum elevation: %.2f\n"), fMax);
 		result += str;
+
+		int num_unknown = m_pGrid->FindNumUnknown();
+		if (num_unknown != 0)
+		{
+			str.Printf(_("Number of unknown heixels: %d (%.2f%%)\n"),
+				num_unknown, num_unknown * 100.0f / (cols*rows));
+			result += str;
+		}
 
 		str.Printf(_("Height scale (meters per vertical unit): %f\n"), m_pGrid->GetScale());
 		result += str;
