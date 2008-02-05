@@ -2,7 +2,7 @@
 // Name:	 EnviroFrame.cpp
 // Purpose:  The frame class for the wxEnviro application.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1255,12 +1255,15 @@ void EnviroFrame::OnSaveTerrainAs(wxCommandEvent& event)
 	wxString name = wxGetTextFromUser(_("Name for new terrain:"), _("Query"), def, this);
 	if (name == _T(""))
 		return;
-	terr->SetName((const char *) name.mb_str(wxConvUTF8));
 
 	vtString fname = (const char*)saveFile.GetPath().mb_str(wxConvUTF8);
 	terr->SetParamFile(fname);
+	terr->SetName((const char *) name.mb_str(wxConvUTF8));
 	if (!par.WriteToXML(fname, STR_TPARAMS_FORMAT_NAME))
 		DisplayAndLog("Couldn't write file '%s'", (const char *)fname);
+
+	// Update title
+	SetTitle(wxGetApp().MakeFrameTitle(terr));
 }
 
 void EnviroFrame::OnUpdateSaveTerrain(wxUpdateUIEvent& event)
@@ -2430,6 +2433,8 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		if (err == OGRERR_NONE)
 			m_pDistanceDlg->SetProjection(geo);
 	}
+	// Update Title
+	SetTitle(wxGetApp().MakeFrameTitle(pTerrain));
 }
 
 //

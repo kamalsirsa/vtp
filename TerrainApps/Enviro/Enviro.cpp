@@ -231,7 +231,8 @@ void Enviro::LoadTerrainDescriptions(const vtString &path)
 		else
 			pTerr = new vtTerrain;
 
-		if (pTerr->SetParamFile(directory + "/" + name))
+		pTerr->SetParamFile(directory + "/" + name);
+		if (pTerr->LoadParams())
 		{
 			//vtString sn = pTerr->GetParams().GetValueString(STR_NAME);
 			//VTLOG("Terrain name: '%s'\n", (const char *) sn);

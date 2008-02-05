@@ -2,7 +2,7 @@
 // EnviroGUI.cpp
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003-2007 Virtual Terrain Project
+// Copyright (c) 2003-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -112,6 +112,7 @@ void EnviroGUI::SetState(AppState s)
 	{
 		VTLOG("Changing app state from %s to %s\n", AppStateNames[previous],
 			AppStateNames[m_state]);
+		GetFrame()->SetTitle(wxGetApp().MakeFrameTitle(GetCurrentTerrain()));
 	}
 
 	if ((previous == AS_Terrain && m_state != AS_Terrain) ||

@@ -1,11 +1,12 @@
 //
 // Name: EnviroApp.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 class EnviroFrame;
+class vtTerrain;
 
 // Define a new application type
 class EnviroApp: public wxApp
@@ -21,6 +22,7 @@ public:
 	bool AskForTerrainName(wxWindow *pParent, wxString &strTerrainName);
 	vtString GetIniFileForTerrain(const vtString &name);
 	wxString GetLanguageCode() { return m_locale.GetCanonicalName(); }
+	wxString MakeFrameTitle(vtTerrain *terrain = NULL);
 
 	bool m_bShowStartupDialog;
 

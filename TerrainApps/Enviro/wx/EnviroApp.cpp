@@ -317,7 +317,7 @@ void EnviroApp::LoadOptions()
 	VTLOG1("\n");
 }
 
-EnviroFrame *EnviroApp::CreateMainFrame()
+wxString EnviroApp::MakeFrameTitle(vtTerrain *terrain)
 {
 	wxString title(STRING_APPORG, wxConvUTF8);
 
@@ -338,9 +338,24 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 	#endif
 	}
 
+	if (terrain)
+	{
+		title += _T(" - ");
+		title += wxString(terrain->GetName(), wxConvUTF8);
+	}
+	else if (g_App.m_state == AS_Orbit)
+	{
+		title += _T(" - ");
+		title += _("Earth View");
+	}
+	return title;
+}
+
+EnviroFrame *EnviroApp::CreateMainFrame()
+{
 	wxPoint pos(g_Options.m_WinPos.x, g_Options.m_WinPos.y);
 	wxSize size(g_Options.m_WinSize.x, g_Options.m_WinSize.y);
-	EnviroFrame *frame = new FRAME_NAME(NULL, title, pos, size);
+	EnviroFrame *frame = new FRAME_NAME(NULL, MakeFrameTitle(), pos, size);
 
 	// Now we can realize the toolbar
 	frame->CreateToolbar();
