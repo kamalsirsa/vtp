@@ -1,7 +1,7 @@
 //
 // vtHeightField.h
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -179,6 +179,7 @@ public:
 	void WorldToGrid(const FPoint3 &pos, IPoint2 &ipos);
 
 	float GetInterpolatedElevation(double findex_x, double findex_y) const;
+	int FindNumUnknown();
 
 	// all grids must be able to return the elevation at a grid point
 	virtual float GetElevation(int iX, int iZ, bool bTrue = false) const = 0;

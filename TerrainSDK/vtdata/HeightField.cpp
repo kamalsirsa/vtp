@@ -1,7 +1,7 @@
 //
 // HeightField.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -513,6 +513,19 @@ float vtHeightFieldGrid3d::GetInterpolatedElevation(double findex_x, double find
 }
 
 /**
+ * Count the number of unknown (invalid) heixels in this grid.
+ */
+int vtHeightFieldGrid3d::FindNumUnknown()
+{
+	int count = 0;
+	for (int i = 0; i < m_iColumns; i++)
+		for (int j = 0; j < m_iRows; j++)
+			if (GetElevation(i, j) == INVALID_ELEVATION)
+				count++;
+	return count;
+}
+
+/**
  * Tests a ray against a heightfield grid.
  *
  * Note: This algorithm is not guaranteed to give absolutely correct results,
@@ -709,6 +722,8 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	int gw, gh;
 	GetDimensions(gw, gh);
 
+	bool bExact = (w == gw && h == gh);
+
 	VTLOG(" ColorDibFromTable: dib size %d x %d, grid %d x %d.. ", w, h, gw, gh);
 
 	float fRange = fMax - fMin;
@@ -737,7 +752,10 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 		{
 			y = j * ratioy;
 
-			elev = GetInterpolatedElevation(x, y);
+			if (bExact)
+				elev = GetElevation(i, j);
+			else
+				elev = GetInterpolatedElevation(x, y);
 			if (elev == INVALID_ELEVATION)
 			{
 				pBM->SetPixel24(i, h-1-j, RGBi(255,0,0));

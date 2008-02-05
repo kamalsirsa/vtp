@@ -3,7 +3,7 @@
 //
 // Implementation of vtScene for the OSG library
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -93,6 +93,8 @@ int vtGetMaxTextureSize()
  */
 bool vtScene::Init(bool bStereo, int iStereoMode)
 {
+	VTLOG1("vtScene::Init\n");
+
 	// Redirect cout messages (where OSG sends its messages) to our own log
 	previous_cout =  std::cout.rdbuf(&g_Trap);
 	previous_cerr = std::cerr.rdbuf(&g_Trap);
