@@ -194,6 +194,20 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, _("Raw"));
 	SetItemData(rawId, new MyTreeItemData(LT_RAW));
 
+	// Expand the groups here, before we add items to them, so that the active
+	//  layer can be selected and kept in view, for a better user experience.
+	Expand(elevId);
+	Expand(imageId);
+	Expand(roadId);
+	Expand(buildId);
+	Expand(vegId);
+	Expand(waterId);
+#if SUPPORT_TRANSIT
+	Expand(transId);
+#endif
+	Expand(utilityId);
+	Expand(rawId);
+
 	image = TreeCtrlIcon_File;
 	imageSel = TreeCtrlIcon_FileSelected;
 	vtLayerPtr lp;
@@ -247,17 +261,6 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 		}
 	}
 
-	Expand(elevId);
-	Expand(imageId);
-	Expand(roadId);
-	Expand(buildId);
-	Expand(vegId);
-	Expand(waterId);
-#if SUPPORT_TRANSIT
-	Expand(transId);
-#endif
-	Expand(utilityId);
-	Expand(rawId);
 }
 
 void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
