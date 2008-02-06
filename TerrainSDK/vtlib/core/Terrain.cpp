@@ -443,7 +443,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		if (result)
 		{
 			int depth = m_pImageSource->GetDepth();
-			VTLOG("  Load texture: depth %d, %.3f seconds.\n", depth, (float)(clock() - r1) / CLOCKS_PER_SEC);
+			VTLOG("  Loaded texture: depth %d, %.3f seconds.\n", depth, (float)(clock() - r1) / CLOCKS_PER_SEC);
 		}
 		else
 		{

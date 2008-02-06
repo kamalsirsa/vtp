@@ -1,7 +1,7 @@
 //
 // ImageOSG.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -261,7 +261,7 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 #if LOG_IMAGE_LOAD
 			VTLOG1("  readImageFile,");
 #endif
-			m_pOsgImage = osgDB::readImageFile((const char *)fname_local);
+			pOsgImage = osgDB::readImageFile((const char *)fname_local);
 		}
 		catch (...)
 		{
@@ -271,11 +271,21 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 			/// all the way to the app.
 		}
 
-		if (!m_pOsgImage.valid())
+		if (!pOsgImage.valid())
 		{
 			VTLOG("  failed to read '%s'\n", fname);
 			return false;
 		}
+
+		// If we have no image data yet, simply take it
+		if (m_pOsgImage->data() == NULL)
+			m_pOsgImage = pOsgImage;
+		else
+		{
+			// If we already have image data, of the same size, copy it
+			m_pOsgImage->copySubImage(0,0,0, pOsgImage.get());
+		}
+
 		_ComputeRowWidth();
 	}
 #if LOG_IMAGE_LOAD
