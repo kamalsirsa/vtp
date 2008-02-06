@@ -1,7 +1,7 @@
 //
 // Frame.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -306,6 +306,8 @@ protected:
 	void OnDistanceClear(wxCommandEvent& event);
 	void OnShowAll(wxCommandEvent& event);
 	void OnHideAll(wxCommandEvent& event);
+	void OnLayerToTop(wxCommandEvent& event);
+	void OnLayerToBottom(wxCommandEvent& event);
 
 	// keys (used for shortcuts)
 	void OnChar(wxKeyEvent& event);

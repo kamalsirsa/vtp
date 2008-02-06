@@ -1,7 +1,7 @@
 //
 // TreeView.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -342,6 +342,12 @@ void MyTreeCtrl::OnItemRightClick(wxTreeEvent& event)
 			m_clicked_layer_type = data->m_type;
 
 		wxMenu *popmenu = new wxMenu;
+		if (data->m_pLayer)
+		{
+			popmenu->Append(ID_POPUP_TO_TOP, _("Move to Top (draw first)"));
+			popmenu->Append(ID_POPUP_TO_BOTTOM, _("Move to Bottom (draw last)"));
+			popmenu->AppendSeparator();
+		}
 		popmenu->Append(ID_POPUP_SHOWALL, _("Show All"));
 		popmenu->Append(ID_POPUP_HIDEALL, _("Hide All"));
 		PopupMenu(popmenu);

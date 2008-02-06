@@ -1,7 +1,7 @@
 //
 //  The menus functions of the main Frame window of the VTBuilder application.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -297,6 +297,8 @@ EVT_MENU(ID_HELP_DOC_ONLINE,	MainFrame::OnHelpDocOnline)
 EVT_MENU(ID_DISTANCE_CLEAR,		MainFrame::OnDistanceClear)
 EVT_MENU(ID_POPUP_SHOWALL,		MainFrame::OnShowAll)
 EVT_MENU(ID_POPUP_HIDEALL,		MainFrame::OnHideAll)
+EVT_MENU(ID_POPUP_TO_TOP,		MainFrame::OnLayerToTop)
+EVT_MENU(ID_POPUP_TO_BOTTOM,	MainFrame::OnLayerToBottom)
 
 EVT_CHAR(MainFrame::OnChar)
 EVT_KEY_DOWN(MainFrame::OnKeyDown)
@@ -3148,11 +3150,6 @@ void MainFrame::OnDistanceClear(wxCommandEvent &event)
 
 void MainFrame::OnShowAll(wxCommandEvent& event)
 {
-	wxTreeItemId itemId = m_pTree->GetSelection();
-	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(itemId);
-	if (!data)
-		return;
-
 	int layers = m_Layers.GetSize();
 	for (int l = 0; l < layers; l++)
 	{
@@ -3167,11 +3164,6 @@ void MainFrame::OnShowAll(wxCommandEvent& event)
 
 void MainFrame::OnHideAll(wxCommandEvent& event)
 {
-	wxTreeItemId itemId = m_pTree->GetSelection();
-	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(itemId);
-	if (!data)
-		return;
-
 	int layers = m_Layers.GetSize();
 	for (int l = 0; l < layers; l++)
 	{
@@ -3184,4 +3176,36 @@ void MainFrame::OnHideAll(wxCommandEvent& event)
 	}
 }
 
+void MainFrame::OnLayerToTop(wxCommandEvent& event)
+{
+	wxTreeItemId itemId = m_pTree->GetSelection();
+	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(itemId);
+	if (!data)
+		return;
+
+	int num = LayerNum(data->m_pLayer);
+	if (num != 0)
+	{
+		SwapLayerOrder(0, num);
+		RefreshLayerInView(data->m_pLayer);
+		m_pTree->RefreshTreeItems(this);
+	}
+}
+
+void MainFrame::OnLayerToBottom(wxCommandEvent& event)
+{
+	wxTreeItemId itemId = m_pTree->GetSelection();
+	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(itemId);
+	if (!data)
+		return;
+
+	int total = NumLayers();
+	int num = LayerNum(data->m_pLayer);
+	if (num != total-1)
+	{
+		SwapLayerOrder(num, total-1);
+		RefreshLayerInView(data->m_pLayer);
+		m_pTree->RefreshTreeItems(this);
+	}
+}
 

@@ -1,3 +1,10 @@
+//
+// MenuEnum.h
+//
+// Copyright (c) 2001-2008 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
+
 // ID for the menu commands
 enum
 {
@@ -136,6 +143,8 @@ enum
 
 	// Popup menu items
 	ID_DISTANCE_CLEAR,
+	ID_POPUP_TO_TOP,
+	ID_POPUP_TO_BOTTOM,
 	ID_POPUP_SHOWALL,
 	ID_POPUP_HIDEALL,
 
