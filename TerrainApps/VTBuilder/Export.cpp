@@ -1,7 +1,7 @@
 //
 //  The export functions of the VTBuilder application.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -371,7 +371,7 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 	vtString path = FindFileOnPaths(vtGetDataPath(), "GeoTypical/" + fname);
 	if (path == "")
 	{
-		DisplayAndLog("Couldn't load color map.");
+		DisplayAndLog("Couldn't find color map.");
 		return;
 	}
 	if (!cmap.Load(path))
@@ -405,7 +405,9 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 		pBitmap = pOutputLayer->GetImage()->GetBitmap();
 	}
 
-	pEL->m_pGrid->ColorDibFromElevation(pBitmap, &cmap, 8000, progress_callback);
+	pEL->m_pGrid->ColorDibFromElevation(pBitmap, &cmap, 8000,
+		dlg.m_ColorNODATA, progress_callback);
+
 	if (dlg.m_bShading)
 	{
 		if (vtElevLayer::m_draw.m_bShadingQuick)
@@ -865,7 +867,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 			{
 				vtDIB dib;
 				dib.Create(base_tilesize, base_tilesize, 24);
-				base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev);
+				base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBi(255,0,0));
 
 				if (opts.draw.m_bShadingQuick)
 					base_lod.ShadeQuick(&dib, SHADING_BIAS, true);

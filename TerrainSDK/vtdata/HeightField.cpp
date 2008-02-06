@@ -663,13 +663,15 @@ bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
  * \param cmap			The mapping of elevation values to colors.
  * \param iGranularity  The smoothness of the mapping, expressed as the size
  *			of the internal mapping table.  2000 is a generally good value.
+ * \param nodata		The color to use for NODATA areas, where there are no elevation values.
  * \param progress_callback If supplied, this function will be called back
  *			with a value of 0 to 100 as the operation progresses.
  *
  * \return true if any invalid elevation values were encountered.
  */
 bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
-	const ColorMap *cmap, int iGranularity, bool progress_callback(int))
+	const ColorMap *cmap, int iGranularity, const RGBi &nodata,
+	bool progress_callback(int))
 {
 	if (!pBM || !cmap)
 		return false;
@@ -698,7 +700,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	std::vector<RGBi> table;
 	cmap->GenerateColors(table, iGranularity, fMin, fMax);
 
-	return ColorDibFromTable(pBM, table, fMin, fMax, progress_callback);
+	return ColorDibFromTable(pBM, table, fMin, fMax, nodata, progress_callback);
 }
 
 /**
@@ -708,13 +710,14 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
  * \param pBM			The bitmap to be colored.
  * \param table			The table of colors.
  * \param fMin, fMax	The range of valid elevation values expect in the input.
+ * \param nodata		The color to use for NODATA areas, where there are no elevation values.
  * \param progress_callback If supplied, this function will be called back
  *			with a value of 0 to 100 as the operation progresses.
  *
  * \return true if any invalid elevation values were encountered.
  */
 bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
-	   std::vector<RGBi> &table, float fMin, float fMax,
+	   std::vector<RGBi> &table, float fMin, float fMax, const RGBi &nodata,
 	   bool progress_callback(int))
 {
 	int w = pBM->GetWidth();
@@ -758,7 +761,7 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 				elev = GetInterpolatedElevation(x, y);
 			if (elev == INVALID_ELEVATION)
 			{
-				pBM->SetPixel24(i, h-1-j, RGBi(255,0,0));
+				pBM->SetPixel24(i, h-1-j, nodata);
 				has_invalid = true;
 				continue;
 			}
@@ -947,7 +950,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 			float value = GetElevation(x + x_offset, y, bTrue);
 			if (value == INVALID_ELEVATION)
 			{
-				pBM->SetPixel24(i, j, RGBi(255, 0, 0));
+				//pBM->SetPixel24(i, j, RGBi(255, 0, 0));
 				continue;
 			}
 

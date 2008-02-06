@@ -673,7 +673,7 @@ void vtElevLayer::RenderBitmap()
 		SetupDefaultColors(cmap);
 
 	bool has_invalid = m_pGrid->ColorDibFromElevation(m_pBitmap, &cmap,
-		8000, progress_callback);
+		8000, RGBi(255,0,0), progress_callback);
 
 	UpdateProgressDialog(0, _("Shading colors..."));
 	if (m_draw.m_bShadingQuick)
@@ -1551,7 +1551,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 				vtDIB dib;
 				dib.Create(base_tilesize, base_tilesize, 24);
 				base_lod.ComputeHeightExtents();
-				base_lod.ColorDibFromElevation(&dib, &cmap, 4000);
+				base_lod.ColorDibFromElevation(&dib, &cmap, 4000, RGBi(255,0,0));
 
 				if (opts.draw.m_bShadingQuick)
 					base_lod.ShadeQuick(&dib, SHADING_BIAS, true);

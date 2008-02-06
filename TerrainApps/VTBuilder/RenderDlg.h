@@ -1,19 +1,16 @@
 //
 // Name: RenderDlg.h
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project
+// Copyright (c) 2004-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __RenderDlg_H__
 #define __RenderDlg_H__
 
-#ifndef WX_PRECOMP
-	#include "wx/wx.h"
-#endif
-
 #include "VTBuilder_wdr.h"
 #include "vtdata/vtString.h"
+#include "vtdata/MathTypes.h"
 #include "vtui/AutoDialog.h"
 
 // WDR: class declarations
@@ -43,6 +40,7 @@ public:
 	wxTextCtrl* GetSizeY()  { return (wxTextCtrl*) FindWindow( ID_SIZEY ); }
 	wxTextCtrl* GetSizeX()  { return (wxTextCtrl*) FindWindow( ID_SIZEX ); }
 	wxChoice* GetColorMap()  { return (wxChoice*) FindWindow( ID_CHOICE_COLORS ); }
+	wxBitmapButton* GetColorNodata()  { return (wxBitmapButton*) FindWindow( ID_COLOR_NODATA ); }
 
 	void RecomputeSize();
 	void UpdateEnabling();
@@ -55,11 +53,13 @@ public:
 	wxString   m_strColorMap;
 	bool m_bShading;
 
-	int	 m_iSizeX;
-	int	 m_iSizeY;
+	int  m_iSizeX;
+	int  m_iSizeY;
 	bool m_bConstraint;
 	bool m_bTiling;
-	int	 m_power;
+	int  m_power;
+
+	RGBi m_ColorNODATA;
 
 	bool m_bSetting;
 
@@ -68,6 +68,7 @@ private:
 
 private:
 	// WDR: handler declarations for RenderDlg
+	void OnColorNODATA( wxCommandEvent &event );
 	void OnEditColors( wxCommandEvent &event );
 	void OnBigger( wxCommandEvent &event );
 	void OnSmaller( wxCommandEvent &event );

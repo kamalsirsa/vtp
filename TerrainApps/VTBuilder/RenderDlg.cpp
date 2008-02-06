@@ -1,7 +1,7 @@
 //
 // Name: RenderDlg.cpp
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,7 @@
 #include "wx/wx.h"
 #endif
 
+#include <wx/colordlg.h>
 #include "RenderDlg.h"
 #include "FileFilters.h"
 #include "Helper.h"
@@ -42,6 +43,7 @@ BEGIN_EVENT_TABLE(RenderDlg, AutoDialog)
 	EVT_BUTTON( ID_SMALLER, RenderDlg::OnSmaller )
 	EVT_BUTTON( ID_BIGGER, RenderDlg::OnBigger )
 	EVT_BUTTON( ID_EDIT_COLORS, RenderDlg::OnEditColors )
+	EVT_BUTTON( ID_COLOR_NODATA, RenderDlg::OnColorNODATA )
 END_EVENT_TABLE()
 
 RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -56,6 +58,7 @@ RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bTiling = false;
 	m_bToFile = false;
 	m_bJPEG = false;
+	m_ColorNODATA.Set(255,0,0);
 
 	m_iSizeX = 256;
 	m_iSizeY = 256;
@@ -79,6 +82,7 @@ RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void RenderDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	UpdateColorMapChoice();
+	FillWithColor(GetColorNodata(), m_ColorNODATA);
 
 	m_bSetting = true;
 	wxDialog::OnInitDialog(event);
@@ -127,6 +131,27 @@ void RenderDlg::UpdateColorMapChoice()
 }
 
 // WDR: handler implementations for RenderDlg
+
+void RenderDlg::OnColorNODATA( wxCommandEvent &event )
+{
+	wxColourData ColorData;
+	ColorData.SetChooseFull(true);
+
+	// Set the existing color to the dialog
+	wxColour Color;
+	Color.Set(m_ColorNODATA.r, m_ColorNODATA.g, m_ColorNODATA.b);
+	ColorData.SetColour(Color);
+
+	wxColourDialog dlg(this, &ColorData);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		// Get the color from the dialog
+		ColorData = dlg.GetColourData();
+		Color = ColorData.GetColour();
+		m_ColorNODATA.Set(Color.Red(), Color.Green(), Color.Blue());
+		FillWithColor(GetColorNodata(), m_ColorNODATA);
+	}
+}
 
 void RenderDlg::OnEditColors( wxCommandEvent &event )
 {

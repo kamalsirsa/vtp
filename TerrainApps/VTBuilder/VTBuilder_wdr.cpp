@@ -1941,62 +1941,74 @@ wxSizer *RenderBitmapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
 
     wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
 
-    item19->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
+    item19->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
 
     wxCheckBox *item20 = new wxCheckBox( parent, ID_SHADING, _("Use view options for shading"), wxDefaultPosition, wxDefaultSize, 0 );
     item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item13->Add( item19, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    item0->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticBox *item22 = new wxStaticBox( parent, -1, _("Bitmap Size") );
-    wxStaticBoxSizer *item21 = new wxStaticBoxSizer( item22, wxVERTICAL );
+    item21->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
 
-    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item22 = new wxStaticText( parent, ID_TEXT, _("Color to use for NODATA heixels:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Image size:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item23->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_SIZEX, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item23->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item26 = new wxTextCtrl( parent, ID_SIZEY, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item23->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
-
+    wxBitmapButton *item23 = new wxBitmapButton( parent, ID_COLOR_NODATA, MyBitmapsFunc( 0 ), wxDefaultPosition, wxDefaultSize );
     item21->Add( item23, 0, wxALIGN_CENTER, 5 );
 
-    wxBoxSizer *item27 = new wxBoxSizer( wxVERTICAL );
+    item13->Add( item21, 0, wxALIGN_CENTER_VERTICAL|wxBOTTOM, 5 );
 
-    wxCheckBox *item28 = new wxCheckBox( parent, ID_CONSTRAIN, _("Size constraint: power of 2 for texture map"), wxDefaultPosition, wxDefaultSize, 0 );
-    item27->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxCheckBox *item29 = new wxCheckBox( parent, ID_TILING, _("Constrain to size for 4x4 overlap tiling"), wxDefaultPosition, wxDefaultSize, 0 );
-    item27->Add( item29, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticBox *item25 = new wxStaticBox( parent, -1, _("Bitmap Size") );
+    wxStaticBoxSizer *item24 = new wxStaticBoxSizer( item25, wxVERTICAL );
 
-    item21->Add( item27, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item30 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Image size:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item31 = new wxButton( parent, ID_SMALLER, _("<< Smaller"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_SIZEX, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item26->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item29 = new wxTextCtrl( parent, ID_SIZEY, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item26->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item24->Add( item26, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item30 = new wxBoxSizer( wxVERTICAL );
+
+    wxCheckBox *item31 = new wxCheckBox( parent, ID_CONSTRAIN, _("Size constraint: power of 2 for texture map"), wxDefaultPosition, wxDefaultSize, 0 );
     item30->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item32 = new wxButton( parent, ID_BIGGER, _(">> Bigger"), wxDefaultPosition, wxDefaultSize, 0 );
-    item30->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item32 = new wxCheckBox( parent, ID_TILING, _("Constrain to size for 4x4 overlap tiling"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item32, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item21->Add( item30, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-
-    item0->Add( item21, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item24->Add( item30, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
     wxBoxSizer *item33 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item34 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton *item34 = new wxButton( parent, ID_SMALLER, _("<< Smaller"), wxDefaultPosition, wxDefaultSize, 0 );
     item33->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item35 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton *item35 = new wxButton( parent, ID_BIGGER, _(">> Bigger"), wxDefaultPosition, wxDefaultSize, 0 );
     item33->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item33, 0, wxALIGN_CENTER|wxALL, 5 );
+    item24->Add( item33, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item0->Add( item24, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxBoxSizer *item36 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item37 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item37, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item38 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item38, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {
