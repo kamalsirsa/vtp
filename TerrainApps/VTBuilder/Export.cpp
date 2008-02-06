@@ -386,6 +386,11 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 	pEL->GetExtent(area);
 	pEL->GetProjection(proj);
 
+	// Elevation is pixel-is-point, but Imagery is pixel-is-area, so expand
+	//  the area slightly: Imagery is a half-cell larger in each direction.
+	DPoint2 spacing = pEL->m_pGrid->GetSpacing();
+	area.Grow(spacing.x/2, spacing.y/2);
+
 	vtImageLayer *pOutputLayer = NULL;
 	vtBitmapBase *pBitmap = NULL;
 	vtDIB dib;
