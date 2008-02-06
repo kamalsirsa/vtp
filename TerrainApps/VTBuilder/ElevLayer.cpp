@@ -189,7 +189,7 @@ bool vtElevLayer::OnLoad()
 	bool success = false;
 
 	wxString fname = GetLayerFilename();
-	if (fname.Contains(_T(".bt")))
+	if (fname.Contains(_T(".bt")) || fname.Contains(_T(".BT")))
 	{
 		// remember whether this layer was read from a compressed file
 		if (!fname.Right(6).CmpNoCase(_T(".bt.gz")))
