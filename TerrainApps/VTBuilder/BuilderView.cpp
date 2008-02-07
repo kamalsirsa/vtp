@@ -854,6 +854,8 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 
 void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 {
+	VTLOG1("EndBoxFeatureSelect:");
+
 	vtLayer *pL = GetMainFrame()->GetActiveLayer();
 	if (!pL) return;
 
@@ -884,12 +886,14 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 	int changed=0, selected=0;
 	if (pL->GetType() == LT_STRUCTURE)
 	{
+		VTLOG1(" Doing structure box select\n");
 		vtStructureLayer *pSL = (vtStructureLayer *)pL;
 		changed = pSL->DoBoxSelect(m_world_rect, st);
 		selected = pSL->NumSelected();
 	}
 	if (pL->GetType() == LT_RAW)
 	{
+		VTLOG1(" Doing raw box select\n");
 		vtRawLayer *pRL = (vtRawLayer *)pL;
 		changed = pRL->GetFeatureSet()->DoBoxSelect(m_world_rect, st);
 		selected = pRL->GetFeatureSet()->NumSelected();
@@ -902,6 +906,9 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 	verb += _T(" ");
 	verb += msg;
 	GetMainFrame()->SetStatusText(verb);
+
+	// Log it also
+	VTLOG((const char *)verb.mb_str(wxConvUTF8));
 
 	GetMainFrame()->OnSelectionChanged();
 	Refresh(false);

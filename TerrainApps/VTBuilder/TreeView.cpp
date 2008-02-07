@@ -152,7 +152,7 @@ wxString MyTreeCtrl::MakeItemName(vtLayerPtr lp)
 
 void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 {
-	VTLOG("Refreshing Tree Items\n");
+	VTLOG1("Refreshing Tree Items:");
 
 	// Deleting the previous items can call OnSelChanged, which can cause VTB
 	//  to forget the active layer, so indicate that this is not user input.
@@ -260,7 +260,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 				SelectItem(hItem);
 		}
 	}
-
+	VTLOG(" %d layers.\n", iLayers);
 }
 
 void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
