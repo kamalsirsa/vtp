@@ -115,6 +115,8 @@ void MainFrame::ImportData(LayerType ltype)
 void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 									  bool bRefresh)
 {
+	VTLOG("ImportDataFromArchive(type %d, '%s'\n", ltype, (const char *)fname_in.mb_str(wxConvUTF8));
+
 	// check file extension
 	wxString fname = fname_in;
 	wxString ext = fname.AfterLast('.');
@@ -154,8 +156,9 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	// try to uncompress
 	wxString path, prepend_path;
 	path = GetTempFolderName(fname_in.mb_str(wxConvUTF8));
-	int result;
-	result = vtCreateDir(path.mb_str(wxConvUTF8));
+
+	VTLOG("Creating temp dir at '%s'\n", (const char *)path.mb_str(wxConvUTF8));
+	int result = vtCreateDir(path.mb_str(wxConvUTF8));
 	if (result == 0 && errno != EEXIST)
 	{
 		DisplayAndLog("Couldn't create temporary directory to hold contents of archive.");
@@ -173,6 +176,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		result = ExpandZip(str1, str2, progress_callback);
 	CloseProgressDialog();
 
+	VTLOG(" Unarchived %d files.\n", result);
 	if (result < 1)
 	{
 		DisplayAndLog("Couldn't expand archive.");
@@ -228,11 +232,15 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		bool found_hdr = false;
 		bool found_rt1 = false;
 		wxString fname2;
-		std::string pathname = (const char *) prepend_path.mb_str(wxConvUTF8);
+
+		std::string pathname = (const char *) path.mb_str(wxConvUTF8);
+		VTLOG(" Looking at contents of folder: '%s'\n", pathname.c_str());
+
 		for (dir_iter it(pathname); it != dir_iter(); ++it)
 		{
 			if (it.is_directory()) continue;
 			fname2 = wxString(it.filename().c_str(), wxConvUTF8);
+
 			if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
 			{
 				fname = prepend_path;
