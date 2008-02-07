@@ -3,7 +3,7 @@
 //
 // Functions for helping with management of files, paths and directories.
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -116,6 +116,10 @@ dir_iter::dir_iter()
 
 dir_iter::dir_iter(std::string const &dirname)
 {
+	m_dirname = dirname;
+	if (m_dirname.at(m_dirname.length()-1) != '/')
+		m_dirname += "/";
+
 	m_handle = opendir(dirname.c_str());
 	m_stat_p = false;
 	operator++ ();
@@ -162,6 +166,20 @@ void dir_iter::operator++()
 bool dir_iter::operator!=(const dir_iter &it)
 {
 	return (m_handle == 0) != (it.m_handle == 0);
+}
+
+struct stat &dir_iter::get_stat()
+{
+	//VTLOG1("get_stat");
+	if (!m_stat_p)
+	{
+		//VTLOG(" calling lstat on '%s':", (m_dirname + m_current).c_str());
+		lstat((m_dirname + m_current).c_str(), &m_stat);
+		//VTLOG(" %d", m_stat.st_mode);
+		m_stat_p = true;
+	}
+	//VTLOG1("\n");
+	return m_stat;
 }
 
 #endif	// !WIN32

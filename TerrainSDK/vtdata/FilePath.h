@@ -1,7 +1,7 @@
 //
 // FilePath.h
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file FilePath.h */
@@ -75,18 +75,11 @@ private:
 	long               m_handle;
 #else
 	DIR         *m_handle;
+	std::string m_dirname;
 	std::string m_current;
 	struct stat m_stat;
 	bool        m_stat_p;
-	struct stat &get_stat()
-	{
-		if (!m_stat_p)
-		{
-			stat(m_current.c_str(), &m_stat);
-			m_stat_p = true;
-		}
-		return m_stat;
-	}
+	struct stat &get_stat();
 #endif
 };
 
