@@ -1032,6 +1032,10 @@ bool vtFeatureSetPolygon::IsInsideRect(int iElem, const DRECT &rect)
 {
 	// only test first, exterior ring
 	const DPolygon2 &dpoly = m_Poly[iElem];
+
+	// beware null polygons
+	if (dpoly.size() == 0)
+		return false;
 	return rect.ContainsLine(dpoly[0]);
 }
 
