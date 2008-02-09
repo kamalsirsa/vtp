@@ -1,7 +1,7 @@
 //
 // Name: PrefDlg.cpp
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -53,6 +53,7 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_BLACK_TRANSP, &b11);
 	AddNumValidator(ID_SAMPLING_N, &i1);
 	AddNumValidator(ID_MAX_MEGAPIXELS, &i2);
+	AddNumValidator(ID_ELEV_MAX_SIZE, &i3);
 }
 
 // WDR: handler implementations for PrefDlg

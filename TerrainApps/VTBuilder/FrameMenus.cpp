@@ -641,15 +641,12 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 	dlg.b11 = g_Options.GetValueBool(TAG_BLACK_TRANSP);
 	dlg.i1 =  g_Options.GetValueInt(TAG_SAMPLING_N);
 	dlg.i2 =  g_Options.GetValueInt(TAG_MAX_MEGAPIXELS);
+	dlg.i3 =  g_Options.GetValueInt(TAG_ELEV_MAX_SIZE);
 
 	dlg.TransferDataToWindow();
 
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		// Safety check
-		if (dlg.i1 < 1) dlg.i1 = 1;
-		if (dlg.i1 > 32) dlg.i1 = 32;
-
 		g_Options.SetValueBool(TAG_USE_CURRENT_CRS, dlg.b1);
 		g_Options.SetValueBool(TAG_LOAD_IMAGES_ALWAYS, dlg.b3);
 		g_Options.SetValueBool(TAG_LOAD_IMAGES_NEVER, dlg.b4);
@@ -659,8 +656,12 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 		g_Options.SetValueBool(TAG_BLACK_TRANSP, dlg.b11);
 		g_Options.SetValueInt(TAG_SAMPLING_N, dlg.i1);
 		g_Options.SetValueInt(TAG_MAX_MEGAPIXELS, dlg.i2);
+		g_Options.SetValueInt(TAG_ELEV_MAX_SIZE, dlg.i3);
 
 		vtImage::bTreatBlackAsTransparent = dlg.b11;
+
+		// safety checks
+		CheckOptionBounds();
 	}
 }
 

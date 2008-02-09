@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2007 Virtual Terrain Project.
+// Copyright (c) 2007-2008 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,6 +18,7 @@
 #define TAG_REPRO_TO_FLOAT_NEVER "ReproToFloatNever"
 #define TAG_SLOW_FILL_GAPS "SlowFillGaps"
 #define TAG_SAMPLING_N "MultiSampleN"
+#define TAG_ELEV_MAX_SIZE "ElevMaxRenderSize"
 #define TAG_MAX_MEGAPIXELS "MaxMegapixels"
 #define TAG_BLACK_TRANSP "BlackAsTransparent"
 

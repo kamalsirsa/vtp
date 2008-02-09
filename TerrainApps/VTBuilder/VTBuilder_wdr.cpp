@@ -2717,30 +2717,40 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Imagery: N > 1 for NxN multisampling"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Maximum size for rendered elevation layers:"), wxDefaultPosition, wxDefaultSize, 0 );
     item23->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_SAMPLING_N, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_ELEV_MAX_SIZE, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
     item23->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item23, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
     wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxCheckBox *item27 = new wxCheckBox( parent, ID_BLACK_TRANSP, _("Treat black as transparent when sampling images"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Imagery: N > 1 for NxN multisampling"), wxDefaultPosition, wxDefaultSize, 0 );
     item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item26, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_SAMPLING_N, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    item26->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item28 = new wxBoxSizer( wxHORIZONTAL );
+    item0->Add( item26, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxButton *item29 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item28->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item29 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item30 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item28->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item30 = new wxCheckBox( parent, ID_BLACK_TRANSP, _("Treat black as transparent when sampling images"), wxDefaultPosition, wxDefaultSize, 0 );
+    item29->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item28, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
+    item0->Add( item29, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxBoxSizer *item31 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item32 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item33 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item33, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item31, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
 
     if (set_sizer)
     {

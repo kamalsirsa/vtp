@@ -1,7 +1,7 @@
 //
 // The main Frame window of the VTBuilder application
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -916,17 +916,7 @@ bool MainFrame::ReadXML(const char *fname)
 		return false;
 
 	// Safety checks
-	if (g_Options.GetValueInt(TAG_SAMPLING_N) < 1)
-		g_Options.SetValueInt(TAG_SAMPLING_N, 1);
-	if (g_Options.GetValueInt(TAG_SAMPLING_N) > 32)
-		g_Options.SetValueInt(TAG_SAMPLING_N, 32);
-
-	int mp;
-	if (!g_Options.GetValueInt(TAG_MAX_MEGAPIXELS, mp))
-		mp = 16;
-	if (mp < 0) mp = 0;
-	if (mp > 300) mp = 300;
-	g_Options.SetValueInt(TAG_MAX_MEGAPIXELS, mp);
+	CheckOptionBounds();
 
 	// Apply all the options, from g_Options the rest of the application
 	m_pView->SetShowMap(g_Options.GetValueBool(TAG_SHOW_MAP));
@@ -963,6 +953,29 @@ bool MainFrame::WriteXML(const char *fname)
 
 	// Write it to XML
 	return g_Options.WriteToXML(fname, "Options");
+}
+
+void MainFrame::CheckOptionBounds()
+{
+	// Check the preferences, make sure they have acceptable values.
+	if (g_Options.GetValueInt(TAG_SAMPLING_N) < 1)
+		g_Options.SetValueInt(TAG_SAMPLING_N, 1);
+	if (g_Options.GetValueInt(TAG_SAMPLING_N) > 32)
+		g_Options.SetValueInt(TAG_SAMPLING_N, 32);
+
+	int mp;
+	if (!g_Options.GetValueInt(TAG_MAX_MEGAPIXELS, mp))
+		mp = 16;
+	if (mp < 0) mp = 0;
+	if (mp > 300) mp = 300;
+	g_Options.SetValueInt(TAG_MAX_MEGAPIXELS, mp);
+
+	int ems;
+	if (!g_Options.GetValueInt(TAG_ELEV_MAX_SIZE, ems))
+		ems = 4096;
+	if (ems < 16) ems = 16;
+	if (ems > 8192) ems = 8192;
+	g_Options.SetValueInt(TAG_ELEV_MAX_SIZE, ems);
 }
 
 DRECT MainFrame::GetExtents()

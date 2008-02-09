@@ -559,10 +559,13 @@ void vtElevLayer::SetupBitmap(wxDC* pDC)
 	m_iImageWidth = m_iColumns;
 	m_iImageHeight = m_iRows;
 
+	int iMax = g_Options.GetValueInt(TAG_ELEV_MAX_SIZE);
+
 	int div = 1;
-	while (m_iImageWidth * m_iImageHeight > 4096*4096)
+	while (m_iImageWidth * m_iImageHeight > 4096*4096 ||
+		m_iImageWidth > iMax || m_iImageHeight > iMax)
 	{
-		// really huge bitmap is going to fail, chop it down
+		// bitmap is too big, chop it down
 		div++;
 		m_iImageWidth = m_iColumns / div;
 		m_iImageHeight = m_iRows / div;
@@ -626,8 +629,8 @@ void vtElevLayer::RenderBitmap()
 	// flag as being rendered
 	m_bNeedsDraw = false;
 
-	// only show a progress dialog for large terrain (>300 points tall)
-	bool bProg = (m_iRows > 300);
+	// only show a progress dialog for large bitmaps (>300 points tall)
+	bool bProg = (m_iImageHeight > 300);
 
 #if WIN32
 	// mew 2002-08-17: reuse of wxProgressDialog causes SIGSEGV,

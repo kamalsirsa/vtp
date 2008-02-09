@@ -57,10 +57,10 @@ class ProfileDlg;
 class vtScaleBar;
 
 /**
- * The main frame is the central class of the whole terrain builder.
- * Not only does it represent the top window of the application, but it also
- * contains many of the powerful methods for working with data.
- */
+* The main frame is the central class of the whole terrain builder.
+* Not only does it represent the top window of the application, but it also
+* contains many of the powerful methods for working with data.
+*/
 class MainFrame: public wxFrame
 {
 public:
@@ -523,6 +523,7 @@ protected:
 	//bool WriteINI();
 	bool ReadXML(const char *fname);
 	bool WriteXML(const char *fname);
+	void CheckOptionBounds();
 	const char *m_szIniFilename;
 
 	// Application Data
@@ -559,7 +560,7 @@ protected:
 
 	vtProjection	m_proj;
 	bool	m_bAdoptFirstCRS;	// If true, silenty assume user wants to
-		// use the CRS of the first layer they create
+								// use the CRS of the first layer they create
 
 	// menu numbers, for each layer type that has a corresponding menu
 	int		m_iLayerMenu[LAYER_TYPES];
@@ -568,9 +569,9 @@ protected:
 
 	DECLARE_EVENT_TABLE()
 
-   private:
+private:
 
-   void initconvhook(bool enableGREYC=false);
+	void initconvhook(bool enableGREYC=false);
 };
 
 #if wxUSE_DRAG_AND_DROP
@@ -578,7 +579,7 @@ class DnDFile : public wxFileDropTarget
 {
 public:
 	virtual bool OnDropFiles(wxCoord x, wxCoord y,
-							 const wxArrayString& filenames);
+		const wxArrayString& filenames);
 };
 #endif
 

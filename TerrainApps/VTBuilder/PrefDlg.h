@@ -1,7 +1,7 @@
 //
 // Name: PrefDlg.h
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,7 +31,7 @@ public:
 public:
 	// WDR: member variable declarations for PrefDlg
 	bool b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11;
-	int i1, i2;
+	int i1, i2, i3;
 
 private:
 	// WDR: handler declarations for PrefDlg
