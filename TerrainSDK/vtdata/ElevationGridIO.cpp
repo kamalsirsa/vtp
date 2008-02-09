@@ -4,7 +4,7 @@
 // This modules contains the implementations of the file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project.
+// Copyright (c) 2001-2008 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -213,10 +213,13 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 	status = nc_inq_dimid(id, "xysize", &id_xysize);
 	if (status != NC_NOERR)
 	{
+		vtString msg;
 		// Error messages can be turned into strings with nc_strerror
-		VTLOG("Could not determine size of CDF file. Error: ");
-		VTLOG(nc_strerror(status));
+		msg = "Could not determine size of CDF file. Error: ";
+		msg += nc_strerror(status);
 		nc_close(id);				// close netCDF dataset
+		VTLOG1(msg);
+		m_strError = msg;
 		return false;
 	}
 
@@ -242,7 +245,23 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 	nc_get_var_double(id, id_spacing, spacing);
 	nc_get_var_int(id, id_dimension, dimension);
 
-	double *z = new double[xysize_length];
+	double *z;
+	try
+	{
+		z = new double[xysize_length];
+	}
+	catch (bad_alloc&)
+	{
+		vtString msg;
+		size_t bytes = sizeof(double)*xysize_length;
+		msg.Format("Could not allocate %d bytes (%.1f MB, %.2f GB)\n",
+			bytes, (float)bytes/1024/1024, (float)bytes/1024/1024/1024);
+		nc_close(id);				// close netCDF dataset
+		VTLOG1(msg);
+		m_strError = msg;
+		return false;
+	}
+
 	if (progress_callback != NULL) progress_callback(20);
 
 	nc_get_var_double(id, id_z, z);
