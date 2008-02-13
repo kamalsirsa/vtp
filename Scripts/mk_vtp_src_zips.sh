@@ -153,6 +153,15 @@ zip $DIST_FILE1 VTP/TerrainApps/VTConvert/VTConvert.cpp
 zip $DIST_FILE1 VTP/TerrainApps/VTConvert/VTConvert*.sln
 zip $DIST_FILE1 VTP/TerrainApps/VTConvert/VTConvert*.vcproj
 
+zip $DIST_FILE1 VTP/TerrainApps/vtocx/*.cpp
+zip $DIST_FILE1 VTP/TerrainApps/vtocx/*.h
+zip $DIST_FILE1 VTP/TerrainApps/vtocx/*.def
+zip $DIST_FILE1 VTP/TerrainApps/vtocx/*.ico
+zip $DIST_FILE1 VTP/TerrainApps/vtocx/*.idl
+zip $DIST_FILE1 VTP/TerrainApps/vtocx/*.rc
+zip $DIST_FILE1 VTP/TerrainApps/vtocx/vtocx*.sln
+zip $DIST_FILE1 VTP/TerrainApps/vtocx/vtocx*.vcproj
+
 
 # Create the archive containing the Source Help
 rm -f $DIST_FILE2
