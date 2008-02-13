@@ -1,7 +1,7 @@
 //
 // Vehicles.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -158,7 +158,8 @@ Vehicle *VehicleManager::CreateVehicle(const char *szType, const RGBf &cColor)
 	if (!node)
 		return NULL;
 	Vehicle *v = CreateVehicleFromNode(node, cColor);
-	v->SetName2(vtString("Vehicle-") + szType);
+	if (v)
+		v->SetName2(vtString("Vehicle-") + szType);
 	return v;
 }
 

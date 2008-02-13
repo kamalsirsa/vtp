@@ -3,7 +3,7 @@
 //
 // Engines used by Enviro
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,19 +20,19 @@
 //////////////////////////////////////////////////////////////
 
 float utm_points_ito[5][2] = {
-	{ 287050, 2182130},	// begin approach
-	{ 286820, 2182140},	// touchdown point
-	{ 286760, 2182194},	// begin takeoff point
-	{ 287450, 2182128},	// come back
-	{ 286400, 2182200}	// end takeoff point
+	{ 287450, 2182128 },	// come back
+	{ 287050, 2182130 },	// begin approach
+	{ 286820, 2182140 },	// touchdown point
+	{ 286760, 2182194 },	// begin takeoff point
+	{ 286400, 2182200 }	// end takeoff point
 };
 
 float utm_points_koa[5][2] = {
-	{ 180665, 2188287 },	// A 0
-	{ 180507, 2186715 },	// B 1
-	{ 180326, 2184920 },	// C 2
-	{ 181022, 2193263 },	// D 3
-	{ 179963, 2179740 }		// E 4
+	{ 181204, 2189667 },	// 0, 600m elev
+	{ 180920, 2186879 },	// 1, touchdown
+	{ 180801, 2185744 },	// 2, middle of runway
+	{ 180662, 2184397 },	// 3, liftoff
+	{ 180281, 2180278 }		// 4, 800m elev
 };
 
 PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
@@ -72,33 +72,34 @@ PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
 	// done setting initial positions and speed
 
 	// begin approach
-	utm_points[3].z = 800.0f;
-	g_Conv.ConvertFromEarth(utm_points[3], m_hoop_pos[1]);
-	m_hoop_speed[1] = 150.0f;
+	utm_points[0].z = 600.0f;
+	g_Conv.ConvertFromEarth(utm_points[0], m_hoop_pos[1]);
+	m_hoop_speed[1] = 100.0f;
 
 	// touchdown
-	// center of plane is 15m above ground + 2m airport above ground
-	// plus distance from center of plane to base of landing gear
-	double ground_offset = 17.0f + 13.5f;
+	// tarmac is 12-13m above sea level
+	// center of plane is 7?m above bottom of landing gear
+	double ground_offset1 = 16.8f + 7.0f;
+	double ground_offset = 12.5f + 7.0f;
 
-	utm_points[0].z = ground_offset;
-	g_Conv.ConvertFromEarth(utm_points[0], m_hoop_pos[2]);
+	utm_points[1].z = ground_offset1;
+	g_Conv.ConvertFromEarth(utm_points[1], m_hoop_pos[2]);
 	m_hoop_speed[2] = 25.0f;
 
 	// speeding up to takeoff point
-	utm_points[1].z = ground_offset;
-	g_Conv.ConvertFromEarth(utm_points[1], m_hoop_pos[3]);
+	utm_points[2].z = ground_offset;
+	g_Conv.ConvertFromEarth(utm_points[2], m_hoop_pos[3]);
 	m_hoop_speed[3] = 5.0f;
 
 	// takeoff to this point
-	utm_points[2].z = ground_offset;
-	g_Conv.ConvertFromEarth(utm_points[2], m_hoop_pos[4]);
-	m_hoop_speed[4] = 35.0f;
+	utm_points[3].z = ground_offset;
+	g_Conv.ConvertFromEarth(utm_points[3], m_hoop_pos[4]);
+	m_hoop_speed[4] = 25.0f;
 
 	// point to loop to
 	utm_points[4].z = 800.0f;
 	g_Conv.ConvertFromEarth(utm_points[4], m_hoop_pos[5]);
-	m_hoop_speed[5] = 150.0f;
+	m_hoop_speed[5] = 100.0f;
 
 	// saving last hoop info
 	x = 2000.0f;
@@ -161,7 +162,7 @@ void PlaneEngine::Eval()
 
 	// turn plan to point toward next frame's position
 	// Yaw the object to face the point indicated
-	Vehicle *pTarget = (Vehicle *) GetTarget();
+	vtTransform *pTarget = dynamic_cast<vtTransform *> (GetTarget());
 	if (!pTarget) return;
 
 	pTarget->Identity();

@@ -675,12 +675,18 @@ void IslandTerrain::create_airplanes(float fSpeed)
 
 void IslandTerrain::create_airplane(int i, float fSpeed)
 {
-	RGBf red(1.0f, 1.0f, 0.0f);
-	Vehicle *copy = g_App.m_VehicleManager.CreateVehicle("747", red);
+//	RGBf red(1.0f, 1.0f, 0.0f);
+//	Vehicle *copy = g_App.m_VehicleManager.CreateVehicle("Boeing 747", red);
+
+	vtContentManager3d &con = vtGetContent();
+	vtNode *copy = con.CreateNodeFromItemname("Boeing 747");
 	if (!copy)
 		return;
 
-	AddNode(copy);
+	vtTransform *trans = new vtTransform;
+	trans->SetName2("Plane xform");
+	trans->AddChild(copy);
+	AddNode(trans);
 
 	// make it faster than real life
 	float fSpeedExag = fSpeed;
@@ -691,7 +697,7 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 
 	PlaneEngine *pEng = new PlaneEngine(fSpeedExag, code);
 	pEng->SetName2("Airplane Engine");
-	pEng->SetTarget(copy);
+	pEng->SetTarget(trans);
 	pEng->SetHoop(i);
 	AddEngine(pEng);
 
