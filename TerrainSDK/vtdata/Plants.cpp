@@ -1,7 +1,7 @@
 //
 // Plants.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -937,7 +937,7 @@ bool vtPlantInstanceArray::WriteVF(const char *fname) const
 	OGRFree(wkt);
 
 	// filter out ununsed species, create table of used species
-	vector<short> index_count;
+	vector<int> index_count;
 	for (i = 0; i < numspecies; i++)
 		index_count.push_back(0);
 	for (i = 0; i < numinstances; i++)
@@ -945,7 +945,7 @@ bool vtPlantInstanceArray::WriteVF(const char *fname) const
 		GetPlant(i, size, species_id);
 		index_count[species_id]++;
 	}
-	vector<short> index_table;
+	vector<int> index_table;
 	for (i = 0; i < numspecies; i++)
 	{
 		if (index_count[i] > 0)
