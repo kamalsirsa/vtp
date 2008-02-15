@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1381,7 +1381,8 @@ void TParamsDlg::OnStyle( wxCommandEvent &event )
 	if (idx == -1)
 		return;
 
-	StyleDlg dlg(this, -1, _("Feature Style"));
+	StyleDlg dlg(this, -1, _("Feature Style"), wxDefaultPosition,
+		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	dlg.SetOptions(m_Layers[idx]);
 	if (dlg.ShowModal() == wxID_OK)
 	{

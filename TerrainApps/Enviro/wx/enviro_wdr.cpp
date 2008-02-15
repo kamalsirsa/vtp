@@ -2439,7 +2439,7 @@ wxSizer *Style1Func( wxWindow *parent, bool call_fit, bool set_sizer )
     {
         _("Item")
     };
-    wxChoice *item12 = new wxChoice( parent, ID_OBJECT_COLOR_FIELD, wxDefaultPosition, wxSize(160,-1), 1, strs12, 0 );
+    wxChoice *item12 = new wxChoice( parent, ID_OBJECT_COLOR_FIELD, wxDefaultPosition, wxSize(180,-1), 1, strs12, 0 );
     item10->Add( item12, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item6->Add( item10, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
@@ -2523,7 +2523,7 @@ wxSizer *Style2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     {
         _("Item")
     };
-    wxChoice *item12 = new wxChoice( parent, ID_LINE_COLOR_FIELD, wxDefaultPosition, wxSize(160,-1), 1, strs12, 0 );
+    wxChoice *item12 = new wxChoice( parent, ID_LINE_COLOR_FIELD, wxDefaultPosition, wxSize(180,-1), 1, strs12, 0 );
     item10->Add( item12, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item6->Add( item10, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
@@ -2614,7 +2614,7 @@ wxSizer *Style3Func( wxWindow *parent, bool call_fit, bool set_sizer )
     {
         _("Item")
     };
-    wxChoice *item12 = new wxChoice( parent, ID_TEXT_COLOR_FIELD, wxDefaultPosition, wxSize(160,-1), 1, strs12, 0 );
+    wxChoice *item12 = new wxChoice( parent, ID_TEXT_COLOR_FIELD, wxDefaultPosition, wxSize(180,-1), 1, strs12, 0 );
     item10->Add( item12, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item6->Add( item10, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
