@@ -4,7 +4,7 @@
 // This modules contains the implementations of the DEM file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project.
+// Copyright (c) 2001-2008 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -198,9 +198,9 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	double	fVertUnits;
 	switch (iVUnit)
 	{
-	case 1:  fVertUnits = 0.3048f; break;	// feet to meter conversion
-	case 2:  fVertUnits = 1.0f;	   break;	// meters == meters
-	default: fVertUnits = 1.0f;	   break;	// anything else, assume meters
+	case 1:  fVertUnits = 0.3048;  break;	// feet to meter conversion
+	case 2:  fVertUnits = 1.0;	   break;	// meters == meters
+	default: fVertUnits = 1.0;	   break;	// anything else, assume meters
 	}
 
 	fseek(fp, 816, 0);
@@ -369,7 +369,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			start.x = DConvert(fp, 24);
 			start.y = DConvert(fp, 24);
 			m_EarthExtents.GrowToContainPoint(start);
-			start.y += (iProfileRows * dydelta);
+			start.y += ((iProfileRows-1) * dydelta);
 			m_EarthExtents.GrowToContainPoint(start);
 
 			if (bFixedLength)
@@ -457,6 +457,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			if (iElev == -32767 || iElev == -32768)
 				SetValue(i, j, INVALID_ELEVATION);
 			else
+//				SetValue(i, j, (short) (dProfileMin+iElev));
 				SetValue(i, j, (short) iElev);
 		}
 	}

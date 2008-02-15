@@ -469,13 +469,13 @@ bool FileExists(const char *fname)
 	if (!fp)
 	{
 #if VTDEBUG
-		VTLOG1("false; ");
+		VTLOG1("false.\n");
 #endif
 		return false;
 	}
 	fclose(fp);
 #if VTDEBUG
-	VTLOG1("true; ");
+	VTLOG1("true.\n");
 #endif
 	return true;
 }
