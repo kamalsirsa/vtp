@@ -1286,6 +1286,7 @@ void Enviro::SetMode(MouseMode mode)
 			EnableFlyerEngine(true);
 			break;
 		case MM_SELECT:
+		case MM_SELECTMOVE:
 			m_pCursorMGeom->SetEnabled(!g_Options.m_bDirectPicking);
 			EnableFlyerEngine(false);
 			break;
@@ -1409,7 +1410,7 @@ bool Enviro::OnMouse(vtMouseEvent &event)
 
 void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 {
-	if (m_mode != MM_SELECT && m_mode != MM_SELECTBOX && !m_bOnTerrain)
+	if (m_mode != MM_SELECT && m_mode != MM_SELECTMOVE && m_mode != MM_SELECTBOX && !m_bOnTerrain)
 		return;
 
 	vtTerrain *pTerr = GetCurrentTerrain();
@@ -1474,7 +1475,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	if (m_mode == MM_VEHICLES)
 		CreateGroundVehicle(m_VehicleOpt);
 
-	if (m_mode == MM_SELECT)
+	if (m_mode == MM_SELECT || m_mode == MM_SELECTMOVE)
 		OnMouseLeftDownTerrainSelect(event);
 
 	if (m_mode == MM_SELECTBOX)
@@ -1962,7 +1963,7 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 			close_fence();
 		if (m_mode == MM_ROUTES)
 			close_route();
-		if (m_mode == MM_SELECT)
+		if (m_mode == MM_SELECT || m_mode == MM_SELECTMOVE)
 		{
 			vtTerrain *t = GetCurrentTerrain();
 			vtStructureArray3d *sa = t->GetStructureLayer();
@@ -1991,7 +1992,7 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 
 void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 {
-	if ((m_mode == MM_SELECT || m_mode == MM_MOVE) &&
+	if ((m_mode == MM_SELECTMOVE || m_mode == MM_MOVE) &&
 		(m_bDragging || m_bRotating))
 	{
 		DPoint3 delta = m_EarthPos - m_EarthPosLast;
@@ -2413,7 +2414,7 @@ void Enviro::SetRouteOptions(const vtString &sStructType)
 void Enviro::SetPlantOptions(const PlantingOptions &opt)
 {
 	m_PlantOpt = opt;
-	if (m_mode == MM_SELECT)
+	if (m_mode == MM_SELECT || m_mode == MM_SELECTMOVE)
 	{
 		vtPlantInstanceArray3d &pia = GetCurrentTerrain()->GetPlantInstances();
 		for (unsigned int i = 0; i < pia.GetNumEntities(); i++)

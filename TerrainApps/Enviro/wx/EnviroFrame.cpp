@@ -126,6 +126,8 @@ EVT_MENU(ID_TOOLS_SELECT,			EnviroFrame::OnToolsSelect)
 EVT_UPDATE_UI(ID_TOOLS_SELECT,		EnviroFrame::OnUpdateToolsSelect)
 EVT_MENU(ID_TOOLS_SELECT_BOX,		EnviroFrame::OnToolsSelectBox)
 EVT_UPDATE_UI(ID_TOOLS_SELECT_BOX,	EnviroFrame::OnUpdateToolsSelectBox)
+EVT_MENU(ID_TOOLS_SELECT_MOVE,		EnviroFrame::OnToolsSelectMove)
+EVT_UPDATE_UI(ID_TOOLS_SELECT_MOVE,	EnviroFrame::OnUpdateToolsSelectMove)
 EVT_MENU(ID_TOOLS_FENCES,			EnviroFrame::OnToolsFences)
 EVT_UPDATE_UI(ID_TOOLS_FENCES,		EnviroFrame::OnUpdateToolsFences)
 EVT_MENU(ID_TOOLS_BUILDINGS,		EnviroFrame::OnToolsBuildings)
@@ -423,6 +425,7 @@ void EnviroFrame::CreateMenus()
 	m_pToolsMenu = new wxMenu;
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _("Select"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_SELECT_BOX, _("Select Box"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_SELECT_MOVE, _("Select and Move"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _("Fences"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_BUILDINGS, _("Buildings"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _("Routes"));
@@ -650,6 +653,7 @@ void EnviroFrame::RefreshToolbar()
 		AddTool(ID_TOOLS_SELECT_BOX, ToolsFunc(0), _("Select Box"), true);
 		if (g_Options.m_bShowToolsCulture)
 		{
+			AddTool(ID_TOOLS_SELECT_MOVE, ToolsFunc(1), _("Select and Move"), true);
 			AddTool(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
 			AddTool(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
 			AddTool(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
@@ -1645,6 +1649,17 @@ void EnviroFrame::OnUpdateToolsSelectBox(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_SELECTBOX);
+}
+
+void EnviroFrame::OnToolsSelectMove(wxCommandEvent& event)
+{
+	SetMode(MM_SELECTMOVE);
+}
+
+void EnviroFrame::OnUpdateToolsSelectMove(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_mode == MM_SELECTMOVE);
 }
 
 void EnviroFrame::OnToolsFences(wxCommandEvent& event)

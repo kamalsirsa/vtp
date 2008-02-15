@@ -1,7 +1,7 @@
 //
 // Name: EnviroFrame.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -157,6 +157,8 @@ protected:
 	void OnUpdateToolsSelect(wxUpdateUIEvent& event);
 	void OnToolsSelectBox(wxCommandEvent& event);
 	void OnUpdateToolsSelectBox(wxUpdateUIEvent& event);
+	void OnToolsSelectMove(wxCommandEvent& event);
+	void OnUpdateToolsSelectMove(wxUpdateUIEvent& event);
 	void OnToolsFences(wxCommandEvent& event);
 	void OnUpdateToolsFences(wxUpdateUIEvent& event);
 	void OnToolsBuildings(wxCommandEvent& event);

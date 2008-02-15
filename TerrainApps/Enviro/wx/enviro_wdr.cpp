@@ -3792,6 +3792,41 @@ wxBitmap ToolsFunc( size_t index )
         wxBitmap bitmap( xpm_data );
         return bitmap;
     }
+    if (index == 1)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 4 1",
+        "  c None",
+        "a c Black",
+        "b c #FFFFFF",
+        "c c #808080",
+        /* pixels */
+        "             cc     ",
+        "           caaac    ",
+        "         caaaaaac   ",
+        "            ac      ",
+        "   c       ac   c   ",
+        "  ca      ac    ac  ",
+        " caaaaaaaaaaaaaaaac ",
+        " caaccccccaaccccaac ",
+        "  ca    acaba   ac  ",
+        "   c   ac abba  c   ",
+        "      ac  abbba     ",
+        "   caaaaaaabbbba    ",
+        "    caaac abbbbba   ",
+        "     cc   abbbbbba  ",
+        "          abbbbaaaa ",
+        "          abbabba   ",
+        "          abaabba   ",
+        "          aa  abba  ",
+        "          a   abba  ",
+        "               abba "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
     return wxNullBitmap;
 }
 
