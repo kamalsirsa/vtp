@@ -764,6 +764,11 @@ void EnviroFrame::SetMode(MouseMode mode)
 	if (mode == MM_PLANTS)
 	{
 		VTLOG1("Calling Plant dialog\n");
+
+		// Make sure the species file and appearances are available
+		g_App.LoadSpeciesList();
+		GetCurrentTerrain()->SetPlantList(g_App.GetPlantList());
+
 		m_pPlantDlg->SetPlantList(g_App.GetPlantList());
 		m_pPlantDlg->SetPlantOptions(g_App.GetPlantOptions());
 	}

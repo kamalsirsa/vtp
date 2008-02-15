@@ -447,8 +447,6 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 {
 	VTLOG("SwitchToTerrain %lx\n", pTerr);
 
-	// Load the species file and check which appearances are available
-	LoadSpeciesList();
 	FreeArc();
 
 	if (m_state == AS_Orbit)
@@ -514,6 +512,13 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	if (m_iInitStep == 3)
 	{
 		OnCreateTerrain(pTerr);
+
+		if (pTerr->GetParams().GetValueBool(STR_TREES))
+		{
+			// We'll need vegetation for this terrain, so load the species
+			//  file and check which appearances are available
+			LoadSpeciesList();
+		}
 
 		pTerr->SetPlantList(m_pPlantList);
 		pTerr->CreateStep0();
