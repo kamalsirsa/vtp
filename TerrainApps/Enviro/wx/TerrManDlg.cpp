@@ -1,7 +1,7 @@
 //
 // Name: TerrManDlg.cpp
 //
-// Copyright (c) 2003-2007 Virtual Terrain Project
+// Copyright (c) 2003-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -291,8 +291,6 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 	SubDirectory = path + vtString("BuildingData");
 	vtCreateDir(SubDirectory);
 	SubDirectory = path + vtString("BuildingModels");
-	vtCreateDir(SubDirectory);
-	SubDirectory = path + vtString("Culture");
 	vtCreateDir(SubDirectory);
 	SubDirectory = path + vtString("Elevation");
 	vtCreateDir(SubDirectory);
