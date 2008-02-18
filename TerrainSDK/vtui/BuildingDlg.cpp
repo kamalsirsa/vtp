@@ -1,7 +1,7 @@
 //
 // Name: BuildingDlg.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -334,7 +334,7 @@ void BuildingDlg::SetupControls()
 		GetFacadeChoice()->Clear();
 		for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
 		{
-			vtString Directory = vtGetDataPath()[i] + "BuildingModels";
+			vtString Directory = vtGetDataPath()[i] + "Facade";
 			for (dir_iter it((const char *)Directory); it != dir_iter(); ++it)
 			{
 				if (it.is_hidden() || it.is_directory())
