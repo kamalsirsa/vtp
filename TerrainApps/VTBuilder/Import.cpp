@@ -80,7 +80,7 @@ wxString GetTempFolderName(const char *base)
 //
 // Ask the user for a filename, and import data from it.
 //
-void MainFrame::ImportData(LayerType ltype)
+void Builder::ImportData(LayerType ltype)
 {
 	// make a string which contains filters for the appropriate file types
 	wxString filter = GetImportFilterString(ltype);
@@ -112,7 +112,7 @@ void MainFrame::ImportData(LayerType ltype)
  * archive file.  If it's an archive, it will be unarchived to a temporary
  * folder, and the contents will be imported.
  */
-void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
+void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 									  bool bRefresh)
 {
 	VTLOG("ImportDataFromArchive(type %d, '%s'\n", ltype, (const char *)fname_in.mb_str(wxConvUTF8));
@@ -169,7 +169,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	vtString str1 = (const char *) fname_in.mb_str(wxConvUTF8);
 	vtString str2 = (const char *) prepend_path.mb_str(wxConvUTF8);
 
-	OpenProgressDialog(_("Expanding archive"), false, this);
+	OpenProgressDialog(_("Expanding archive"), false, m_pParentWindow);
 	if (bTGZip)
 		result = ExpandTGZ(str1, str2);
 	if (bZip)
@@ -335,7 +335,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
  * \return	True if a layer was created from the given file, or false if
  *			nothing importable was found in the file.
  */
-vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString &strFileName,
+vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileName,
 								   bool bRefresh, bool bWarn)
 {
 	VTLOG1("ImportDataFromFile '");
@@ -359,7 +359,7 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString &strFileN
 	msg += strFileName;
 	VTLOG(msg.mb_str(wxConvUTF8));
 	VTLOG("...\n");
-	OpenProgressDialog(msg, true, this);
+	OpenProgressDialog(msg, true, m_pParentWindow);
 
 	// check the file extension
 	wxString strExt = strFileName.AfterLast('.');
@@ -544,7 +544,7 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString &strFileN
 //
 // type to guess layer type from a DLG file
 //
-LayerType MainFrame::GuessLayerTypeFromDLG(vtDLGFile *pDLG)
+LayerType Builder::GuessLayerTypeFromDLG(vtDLGFile *pDLG)
 {
 	LayerType ltype = LT_UNKNOWN;
 	DLGType dtype = pDLG->GuessFileType();
@@ -667,7 +667,7 @@ wxString GetImportFilterString(LayerType ltype)
 }
 
 
-vtLayerPtr MainFrame::ImportFromDLG(const wxString &fname_in, LayerType ltype)
+vtLayerPtr Builder::ImportFromDLG(const wxString &fname_in, LayerType ltype)
 {
 	vtDLGFile *pDLG = new vtDLGFile;
 	bool success = pDLG->Read(fname_in.mb_str(wxConvUTF8), progress_callback);
@@ -715,7 +715,7 @@ vtLayerPtr MainFrame::ImportFromDLG(const wxString &fname_in, LayerType ltype)
 	return pLayer;
 }
 
-vtLayerPtr MainFrame::ImportFromSHP(const wxString &strFileName, LayerType ltype)
+vtLayerPtr Builder::ImportFromSHP(const wxString &strFileName, LayerType ltype)
 {
 	bool success;
 	int nShapeType;
@@ -786,7 +786,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString &strFileName, LayerType ltype
 		vtVegLayer *pVL = (vtVegLayer *)pLayer;
 		if (nShapeType == SHPT_POLYGON)
 		{
-			ImportVegDlg dlg(this, -1, _("Import Vegetation Information"));
+			ImportVegDlg dlg(m_pParentWindow, -1, _("Import Vegetation Information"));
 			dlg.SetShapefileName(strFileName);
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return NULL;
@@ -797,7 +797,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString &strFileName, LayerType ltype
 		}
 		if (nShapeType == SHPT_POINT)
 		{
-			VegFieldsDlg dlg(this, -1, _("Map fields to attributes"));
+			VegFieldsDlg dlg(m_pParentWindow, -1, _("Map fields to attributes"));
 			dlg.SetShapefileName(strFileName);
 			dlg.SetVegLayer(pVL);
 			if (dlg.ShowModal() == wxID_CANCEL)
@@ -842,7 +842,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString &strFileName, LayerType ltype
 	return pLayer;
 }
 
-vtLayerPtr MainFrame::ImportFromDXF(const wxString &strFileName, LayerType ltype)
+vtLayerPtr Builder::ImportFromDXF(const wxString &strFileName, LayerType ltype)
 {
 	if (ltype == LT_ELEVATION)
 	{
@@ -861,7 +861,7 @@ vtLayerPtr MainFrame::ImportFromDXF(const wxString &strFileName, LayerType ltype
 
 		// We should ask for a CRS
 		vtProjection &Proj = pSet->GetAtProjection();
-		if (!GetMainFrame()->ConfirmValidCRS(&Proj))
+		if (!g_bld->ConfirmValidCRS(&Proj))
 		{
 			delete pSet;
 			return NULL;
@@ -873,7 +873,7 @@ vtLayerPtr MainFrame::ImportFromDXF(const wxString &strFileName, LayerType ltype
 	return NULL;
 }
 
-vtLayerPtr MainFrame::ImportElevation(const wxString &strFileName, bool bWarn)
+vtLayerPtr Builder::ImportElevation(const wxString &strFileName, bool bWarn)
 {
 	vtElevLayer *pElev = new vtElevLayer;
 
@@ -898,7 +898,7 @@ vtLayerPtr MainFrame::ImportElevation(const wxString &strFileName, bool bWarn)
 	}
 }
 
-vtLayerPtr MainFrame::ImportImage(const wxString &strFileName)
+vtLayerPtr Builder::ImportImage(const wxString &strFileName)
 {
 	vtImageLayer *pLayer = new vtImageLayer;
 
@@ -913,7 +913,7 @@ vtLayerPtr MainFrame::ImportImage(const wxString &strFileName)
 	}
 }
 
-vtLayerPtr MainFrame::ImportFromLULC(const wxString &strFileName, LayerType ltype)
+vtLayerPtr Builder::ImportFromLULC(const wxString &strFileName, LayerType ltype)
 {
 	// Read LULC file, check for errors
 	vtLULCFile *pLULC = new vtLULCFile(strFileName.mb_str(wxConvUTF8));
@@ -945,7 +945,7 @@ vtLayerPtr MainFrame::ImportFromLULC(const wxString &strFileName, LayerType ltyp
 	return pLayer;
 }
 
-vtStructureLayer *MainFrame::ImportFromBCF(const wxString &strFileName)
+vtStructureLayer *Builder::ImportFromBCF(const wxString &strFileName)
 {
 	vtStructureLayer *pSL = new vtStructureLayer;
 	if (pSL->ReadBCF(strFileName.mb_str(wxConvUTF8)))
@@ -960,7 +960,7 @@ vtStructureLayer *MainFrame::ImportFromBCF(const wxString &strFileName)
 //
 // Import from a Garmin MapSource GPS export file (.txt)
 //
-void MainFrame::ImportFromMapSource(const char *fname)
+void Builder::ImportFromMapSource(const char *fname)
 {
 	FILE *fp = vtFileOpen(fname, "r");
 	if (!fp)
@@ -1146,7 +1146,7 @@ double ExtractValue(DBFHandle db, int iRec, int iField, DBFFieldType ftype,
 	return 0.0;
 }
 
-vtFeatureSetPoint2D *MainFrame::ImportPointsFromDBF(const char *fname)
+vtFeatureSetPoint2D *Builder::ImportPointsFromDBF(const char *fname)
 {
 	// DBFOpen doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(fname);
@@ -1156,7 +1156,7 @@ vtFeatureSetPoint2D *MainFrame::ImportPointsFromDBF(const char *fname)
 	if (db == NULL)
 		return NULL;
 
-	ImportPointDlg dlg(this, -1, _("Point Data Import"));
+	ImportPointDlg dlg(m_pParentWindow, -1, _("Point Data Import"));
 
 	// default to the current CRS
 	dlg.SetCRS(m_proj);
@@ -1223,7 +1223,7 @@ void Tokenize(char *buf, vtStringArray &tokens)
 	}
 }
 
-vtFeatureSet *MainFrame::ImportPointsFromCSV(const char *fname)
+vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 {
 	FILE *fp = vtFileOpen(fname, "rb");
 	if (fp == NULL)
@@ -1240,7 +1240,7 @@ vtFeatureSet *MainFrame::ImportPointsFromCSV(const char *fname)
 		return NULL;
 	}
 
-	ImportPointDlg dlg(this, -1, _("Point Data Import"));
+	ImportPointDlg dlg(m_pParentWindow, -1, _("Point Data Import"));
 	dlg.m_bElevation = false;
 
 	// default to the current CRS
@@ -1310,7 +1310,7 @@ vtFeatureSet *MainFrame::ImportPointsFromCSV(const char *fname)
 //
 // Import point data from a tabular data source such as a .dbf or .csv
 //
-void MainFrame::ImportDataPointsFromTable(const char *fname)
+void Builder::ImportDataPointsFromTable(const char *fname)
 {
 	vtFeatureSet *pSet = NULL;
 
@@ -1330,7 +1330,7 @@ void MainFrame::ImportDataPointsFromTable(const char *fname)
 	}
 }
 
-vtLayerPtr MainFrame::ImportRawFromOGR(const wxString &strFileName)
+vtLayerPtr Builder::ImportRawFromOGR(const wxString &strFileName)
 {
 	// create the new layer
 	vtRawLayer *pRL = new vtRawLayer;
@@ -1345,7 +1345,7 @@ vtLayerPtr MainFrame::ImportRawFromOGR(const wxString &strFileName)
 	}
 }
 
-vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString &strFileName, LayerType ltype)
+vtLayerPtr Builder::ImportVectorsWithOGR(const wxString &strFileName, LayerType ltype)
 {
 	vtProjection Projection;
 
@@ -1382,7 +1382,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString &strFileName, LayerTyp
 	}
 	if (ltype == LT_STRUCTURE)
 	{
-		ImportStructDlgOGR ImportDialog(GetMainFrame(), -1, _("Import Structures"));
+		ImportStructDlgOGR ImportDialog(g_bld->m_pParentWindow, -1, _("Import Structures"));
 
 		ImportDialog.SetDatasource(datasource);
 
@@ -1414,7 +1414,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString &strFileName, LayerTyp
 		if (OGRERR_NONE != Projection.Validate())
 		{
 			// Get a projection
-			ProjectionDlg dlg(GetMainFrame(), -1, _("Please indicate projection"));
+			ProjectionDlg dlg(g_bld->m_pParentWindow, -1, _("Please indicate projection"));
 			dlg.SetProjection(m_proj);
 
 			if (dlg.ShowModal() == wxID_CANCEL)
@@ -1436,7 +1436,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString &strFileName, LayerTyp
 //
 //Import from TIGER, returns number of layers imported
 //
-int MainFrame::ImportDataFromTIGER(const wxString &strDirName)
+int Builder::ImportDataFromTIGER(const wxString &strDirName)
 {
 	g_GDALWrapper.RequestOGRFormats();
 
@@ -1647,7 +1647,7 @@ int MainFrame::ImportDataFromTIGER(const wxString &strDirName)
 }
 
 
-void MainFrame::ImportDataFromNTF(const wxString &strFileName)
+void Builder::ImportDataFromNTF(const wxString &strFileName)
 {
 	g_GDALWrapper.RequestOGRFormats();
 
@@ -1794,7 +1794,7 @@ void MainFrame::ImportDataFromNTF(const wxString &strFileName)
 }
 
 
-void MainFrame::ImportDataFromS57(const wxString &strDirName)
+void Builder::ImportDataFromS57(const wxString &strDirName)
 {
 	g_GDALWrapper.RequestOGRFormats();
 
@@ -1908,7 +1908,7 @@ void MainFrame::ImportDataFromS57(const wxString &strDirName)
 //
 //Import from SCC Viewer Export Format
 //
-int MainFrame::ImportDataFromSCC(const char *filename)
+int Builder::ImportDataFromSCC(const char *filename)
 {
 	FILE *fp = vtFileOpen(filename, "rb");
 	if (!fp)
@@ -2143,14 +2143,14 @@ int MainFrame::ImportDataFromSCC(const char *filename)
 	return layer_count;
 }
 
-bool MainFrame::ImportDataFromDXF(const char *filename)
+bool Builder::ImportDataFromDXF(const char *filename)
 {
 	VTLOG1("ImportDataFromDXF():\n");
 
 	std::vector<DxfEntity> entities;
 	std::vector<DxfLayer> layers;
 
-	OpenProgressDialog(_("Parsing DXF"), true, this);
+	OpenProgressDialog(_("Parsing DXF"), true, m_pParentWindow);
 	DxfParser parser(filename, entities, layers);
 	bool bSuccess = parser.RetrieveEntities(progress_callback);
 	CloseProgressDialog();

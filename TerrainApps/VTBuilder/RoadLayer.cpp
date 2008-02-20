@@ -386,14 +386,14 @@ void vtRoadLayer::OnRightUp(BuilderView *pView, UIContext &ui)
 	//if we are not clicked close to a single item, edit all selected items.
 	bool status;
 	if (ui.mode == LB_Node)
-		status = EditNodesProperties();
+		status = EditNodesProperties(pView);
 	else
-		status = EditLinksProperties();
+		status = EditLinksProperties(pView);
 	if (status)
 	{
 		SetModified(true);
 		pView->Refresh();
-		GetMainFrame()->RefreshTreeStatus();
+		g_bld->RefreshTreeStatus();
 	}
 }
 
@@ -408,7 +408,7 @@ void vtRoadLayer::OnLeftDoubleClick(BuilderView *pView, UIContext &ui)
 	if (ui.mode == LB_Node)
 	{
 		SelectNode(ui.m_DownLocation, epsilon, bound2);
-		EditNodeProperties(ui.m_DownLocation, epsilon, world_bound);
+		EditNodeProperties(pView, ui.m_DownLocation, epsilon, world_bound);
 		bRefresh = true;
 	}
 	else if (ui.mode == LB_Link)
@@ -425,7 +425,7 @@ void vtRoadLayer::OnLeftDoubleClick(BuilderView *pView, UIContext &ui)
 	}
 }
 
-bool vtRoadLayer::EditNodeProperties(const DPoint2 &point, float epsilon,
+bool vtRoadLayer::EditNodeProperties(BuilderView *pView, const DPoint2 &point, float epsilon,
 									 DRECT &bound)
 {
 	NodeEdit *node = (NodeEdit *) FindNodeAtPoint(point, epsilon);
@@ -433,7 +433,7 @@ bool vtRoadLayer::EditNodeProperties(const DPoint2 &point, float epsilon,
 	{
 		DPoint2 p = node->m_p;
 		bound.SetRect(p.x-epsilon, p.y+epsilon, p.x+epsilon, p.y-epsilon);
-		return node->EditProperties(this);
+		return node->EditProperties(pView, this);
 	}
 	return false;
 }
@@ -471,7 +471,7 @@ bool vtRoadLayer::EditLinkProperties(const DPoint2 &point, float error,
 	return false;
 }
 
-bool vtRoadLayer::EditNodesProperties()
+bool vtRoadLayer::EditNodesProperties(BuilderView *pView)
 {
 	int count = 0;
 	NodeEdit *node=NULL;
@@ -491,10 +491,14 @@ bool vtRoadLayer::EditNodesProperties()
 		dlg.SetNode(node, this);
 	else
 		dlg.SetNode(NULL, this);
+
+	float fScale = pView->GetScale();
+	dlg.SetScale(fScale);
+
 	return (dlg.ShowModal() == wxID_OK);
 }
 
-bool vtRoadLayer::EditLinksProperties()
+bool vtRoadLayer::EditLinksProperties(BuilderView *pView)
 {
 	int count = 0;
 	LinkEdit *link=NULL;

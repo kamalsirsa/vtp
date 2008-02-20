@@ -16,6 +16,7 @@
 
 class vtDLGFile;
 class vtElevLayer;
+class vtScaledView;
 
 //////////////////////////////////////////////////////////
 
@@ -54,7 +55,7 @@ public:
 	void OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui);
 	void OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &ui);
 	void OnLeftDownEditLinear(BuilderView *pView, UIContext &ui);
-	void OnLeftDownAddInstance(BuilderView *pView, UIContext &ui);
+	void OnLeftDownAddInstance(BuilderView *pView, UIContext &ui, vtTagArray *tags);
 	void UpdateMove(UIContext &ui);
 	void UpdateRotate(UIContext &ui);
 	void UpdateResizeScale(BuilderView *pView, UIContext &ui);
@@ -83,7 +84,8 @@ protected:
 	void DrawStructures(wxDC* pDC, vtScaledView *pView, bool bOnlySelected);
 
 	int		m_size;	// size in pixels of the small crosshair at building center
-	bool	m_bPreferGZip;	// user wants their elevation treated as a .gz file
+	bool	m_bPreferGZip;	// user wants their elevation treated as a .gz file};
+	vtScaledView *m_pLastView;
 };
 
 #endif	// STRUCTLAYER_H

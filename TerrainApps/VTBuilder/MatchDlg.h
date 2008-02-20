@@ -1,7 +1,7 @@
 //
 // Name: MatchDlg.h
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,8 @@
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/MathTypes.h"
+
+class BuilderView;
 
 // WDR: class declarations
 
@@ -32,6 +34,7 @@ public:
 	wxCheckBox* GetGrow()  { return (wxCheckBox*) FindWindow( ID_GROW ); }
 	void SetArea(const DRECT &area, bool bIsGeo);
 	wxChoice* GetMatchLayer()  { return (wxChoice*) FindWindow( ID_MATCH_LAYER ); }
+	void SetView(BuilderView *pView) { m_pView = pView; }
 
 public:
 	// WDR: member variable declarations for MatchDlg
@@ -48,6 +51,8 @@ public:
 	IPoint2 m_tile;
 	DRECT m_area, m_original;
 	wxString m_fs;  // Format string depends on coordinate scheme
+
+	BuilderView *m_pView;
 
 private:
 	// WDR: handler declarations for MatchDlg
@@ -66,7 +71,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+#endif	// __MatchDlg_H__
 
-
-
-#endif

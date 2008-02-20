@@ -327,7 +327,7 @@ void MyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 		lp = data->m_pLayer;
 
 	MainFrame *frame = GetMainFrame();
-	vtLayerPtr last = frame->GetActiveLayer();
+	vtLayerPtr last = g_bld->GetActiveLayer();
 	if (lp != last)
 		frame->GetView()->SetActiveLayer(lp);
 

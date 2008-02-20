@@ -42,7 +42,7 @@
 	#include "wx/glcanvas.h"	// needed for writing pre-compressed textures
 #endif
 
-void MainFrame::ExportASC()
+void Builder::ExportASC()
 {
 	// check spacing
 	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
@@ -55,7 +55,7 @@ void MainFrame::ExportASC()
 		str2.Printf(_("The spacing of this grid is %g x %g\n"), spacing.x, spacing.y);
 		str += str2;
 		str += _("The result my be stretched.  Do you want to continue anyway?");
-		int result = wxMessageBox(str, _("Warning"), wxYES_NO | wxICON_QUESTION, this);
+		int result = wxMessageBox(str, _("Warning"), wxYES_NO | wxICON_QUESTION, m_pParentWindow);
 		if (result != wxYES)
 			return;
 	}
@@ -70,7 +70,7 @@ void MainFrame::ExportASC()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::ExportTerragen()
+void Builder::ExportTerragen()
 {
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TER);
 	if (fname == "")
@@ -82,7 +82,7 @@ void MainFrame::ExportTerragen()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::ExportGeoTIFF()
+void Builder::ExportGeoTIFF()
 {
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TIF);
 	if (fname == "")
@@ -94,7 +94,7 @@ void MainFrame::ExportGeoTIFF()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::ExportBMP()
+void Builder::ExportBMP()
 {
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_BMP);
 	if (fname == "")
@@ -106,7 +106,7 @@ void MainFrame::ExportBMP()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::ExportSTM()
+void Builder::ExportSTM()
 {
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_STM);
 	if (fname == "")
@@ -118,12 +118,12 @@ void MainFrame::ExportSTM()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::ExportPlanet()
+void Builder::ExportPlanet()
 {
 	static wxString default_path = wxEmptyString;
 
 	// ask the user for a directory
-	wxDirDialog getDir(this, _("Export Planet Data to Directory"),
+	wxDirDialog getDir(m_pParentWindow, _("Export Planet Data to Directory"),
 		default_path, wxDD_DEFAULT_STYLE);
 	getDir.SetWindowStyle(getDir.GetWindowStyle() | wxDD_NEW_DIR_BUTTON);
 	bool bResult = (getDir.ShowModal() == wxID_OK);
@@ -143,7 +143,7 @@ void MainFrame::ExportPlanet()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::ExportVRML()
+void Builder::ExportVRML()
 {
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_WRL);
 	if (fname == "")
@@ -155,7 +155,7 @@ void MainFrame::ExportVRML()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::ExportRAWINF()
+void Builder::ExportRAWINF()
 {
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_RAW);
 	if (fname == "")
@@ -167,7 +167,7 @@ void MainFrame::ExportRAWINF()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::ExportChunkLOD()
+void Builder::ExportChunkLOD()
 {
 	// Check dimensions; must be 2^n+1 for .chu
 	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
@@ -189,7 +189,7 @@ void MainFrame::ExportChunkLOD()
 	if (fname == "")
 		return;
 
-	ChunkDlg dlg(this, -1, _("Export ChunkLOD"));
+	ChunkDlg dlg(m_pParentWindow, -1, _("Export ChunkLOD"));
 	dlg.m_iDepth = 6;
 	dlg.m_fMaxError = 1.0f;
 	if (dlg.ShowModal() == wxID_CANCEL)
@@ -205,7 +205,7 @@ void MainFrame::ExportChunkLOD()
 	float vertical_scale = CHUNKLOD_MAX_HEIGHT / 32767.0f;
 	float input_vertical_scale = 1.0f;
 
-	OpenProgressDialog(_T("Writing ChunkLOD"), false, this);
+	OpenProgressDialog(_T("Writing ChunkLOD"), false, m_pParentWindow);
 
 	// Process the data.
 	HeightfieldChunker hc;
@@ -261,7 +261,7 @@ void MainFrame::ExportChunkLOD()
 	}
 }
 
-void MainFrame::ExportPNG16()
+void Builder::ExportPNG16()
 {
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_PNG);
 	if (fname == "")
@@ -273,7 +273,7 @@ void MainFrame::ExportPNG16()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::Export3TX()
+void Builder::Export3TX()
 {
 	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
 	int col, row;
@@ -293,7 +293,7 @@ void MainFrame::Export3TX()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::ElevExportTiles()
+void Builder::ElevExportTiles(BuilderView *pView)
 {
 	vtElevLayer *pEL = GetActiveElevLayer();
 	vtElevationGrid *grid = pEL->m_pGrid;
@@ -307,16 +307,17 @@ void MainFrame::ElevExportTiles()
 	tileopts.lod0size = 256;
 	tileopts.numlods = 3;
 
-	TileDlg dlg(this, -1, _("Tiling Options"));
+	TileDlg dlg(m_pParentWindow, -1, _("Tiling Options"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(true);
 	dlg.SetArea(area);
 	dlg.SetTilingOptions(tileopts);
-	dlg.SetView(GetView());
+	dlg.SetView(pView);
 
 	int ret = dlg.ShowModal();
-	GetView()->HideGridMarks();
+	if (pView)
+		pView->HideGridMarks();
 	if (ret == wxID_CANCEL)
 		return;
 
@@ -339,7 +340,7 @@ void MainFrame::ElevExportTiles()
 		tileopts.fname_images = str.mb_str(wxConvUTF8);
 
 		// Ask them how to render the image tiles
-		RenderOptionsDlg dlg(this, -1, _("Rendering options"));
+		RenderOptionsDlg dlg(m_pParentWindow, -1, _("Rendering options"));
 		dlg.SetOptions(tileopts.draw);
 		if (dlg.ShowModal() != wxID_OK)
 			return;
@@ -350,8 +351,9 @@ void MainFrame::ElevExportTiles()
 		tileopts.bCreateDerivedImages = false;
 
 	OpenProgressDialog2(_T("Writing tiles"), true);
-	bool success = pEL->WriteGridOfElevTilePyramids(tileopts, GetView());
-	GetView()->HideGridMarks();
+	bool success = pEL->WriteGridOfElevTilePyramids(tileopts, pView);
+	if (pView)
+		pView->HideGridMarks();
 	CloseProgressDialog2();
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
@@ -359,7 +361,7 @@ void MainFrame::ElevExportTiles()
 		DisplayAndLog("Did not successfully write to '%s'", (const char *) tileopts.fname);
 }
 
-void MainFrame::ExportBitmap(RenderDlg &dlg)
+void Builder::ExportBitmap(RenderDlg &dlg)
 {
 	int xsize = dlg.m_iSizeX;
 	int ysize = dlg.m_iSizeY;
@@ -463,7 +465,7 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 #endif
 }
 
-void MainFrame::ImageExportTiles()
+void Builder::ImageExportTiles(BuilderView *pView)
 {
 	vtImageLayer *pIL = GetActiveImageLayer();
 	DRECT area;
@@ -474,23 +476,24 @@ void MainFrame::ImageExportTiles()
 	m_tileopts.bOmitFlatTiles = true;
 	m_tileopts.bUseTextureCompression = false;
 
-	TileDlg dlg(this, -1, _("Tiling Options"));
+	TileDlg dlg(m_pParentWindow, -1, _("Tiling Options"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(false);
 	dlg.SetArea(area);
 	dlg.SetTilingOptions(m_tileopts);
-	dlg.SetView(GetView());
+	dlg.SetView(pView);
 
 	int ret = dlg.ShowModal();
-	GetView()->HideGridMarks();
+	if (pView)
+		pView->HideGridMarks();
 	if (ret == wxID_CANCEL)
 		return;
 
 	dlg.GetTilingOptions(m_tileopts);
 
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = pIL->GetImage()->WriteGridOfTilePyramids(m_tileopts, GetView());
+	bool success = pIL->GetImage()->WriteGridOfTilePyramids(m_tileopts, pView);
 	CloseProgressDialog();
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
@@ -498,7 +501,7 @@ void MainFrame::ImageExportTiles()
 		DisplayAndLog("Did not successfully write to '%s'", (const char *) m_tileopts.fname);
 }
 
-void MainFrame::ImageExportPPM()
+void Builder::ImageExportPPM()
 {
 	vtImageLayer *pIL = GetActiveImageLayer();
 
@@ -512,7 +515,7 @@ void MainFrame::ImageExportPPM()
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::ExportAreaOptimizedElevTileset()
+void Builder::ExportAreaOptimizedElevTileset(BuilderView *pView)
 {
 	m_tileopts.numlods = 3;
 
@@ -527,17 +530,18 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 		return;
 	}
 
-	TileDlg dlg(this, -1, _("Export Optimized Elevation Tileset"));
+	TileDlg dlg(m_pParentWindow, -1, _("Export Optimized Elevation Tileset"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(true);
 	dlg.SetArea(m_area);
-	dlg.SetView(GetView());
+	dlg.SetView(pView);
 	dlg.SetTilingOptions(m_tileopts);
 
 	if (dlg.ShowModal() != wxID_OK)
 	{
-		GetView()->HideGridMarks();
+		if (pView)
+			pView->HideGridMarks();
 		return;
 	}
 	dlg.GetTilingOptions(m_tileopts);
@@ -548,7 +552,7 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 	if (floating > 0)
 	{
 		int result = wxMessageBox(_("Sample floating-point elevation values?"),
-				_("Question"), wxYES_NO | wxICON_QUESTION, this);
+				_("Question"), wxYES_NO | wxICON_QUESTION, m_pParentWindow);
 		if (result == wxYES)
 			bFloat = true;
 	}
@@ -570,7 +574,7 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 		m_tileopts.fname_images = str.mb_str(wxConvUTF8);
 
 		// Ask them how to render the image tiles
-		RenderOptionsDlg dlg(this, -1, _("Rendering options"));
+		RenderOptionsDlg dlg(m_pParentWindow, -1, _("Rendering options"));
 		dlg.SetOptions(m_tileopts.draw);
 		if (dlg.ShowModal() != wxID_OK)
 			return;
@@ -579,25 +583,26 @@ void MainFrame::ExportAreaOptimizedElevTileset()
 	else
 		m_tileopts.bCreateDerivedImages = false;
 
-	bool success = DoSampleElevationToTilePyramids(m_tileopts, bFloat);
+	bool success = DoSampleElevationToTilePyramids(pView, m_tileopts, bFloat);
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
 		DisplayAndLog("Did not successfully write to '%s'", (const char *) m_tileopts.fname);
 }
 
-bool MainFrame::DoSampleElevationToTilePyramids(const TilingOptions &opts,
-												bool bFloat, bool bShowGridMarks)
+bool Builder::DoSampleElevationToTilePyramids(BuilderView *pView,
+											  const TilingOptions &opts,
+											  bool bFloat, bool bShowGridMarks)
 {
-	OpenProgressDialog2(_T("Writing tiles"), true, this);
-	bool success = SampleElevationToTilePyramids(opts, bFloat, bShowGridMarks);
-	if (bShowGridMarks)
-		GetView()->HideGridMarks();
+	OpenProgressDialog2(_T("Writing tiles"), true, m_pParentWindow);
+	bool success = SampleElevationToTilePyramids(pView, opts, bFloat, bShowGridMarks);
+	if (bShowGridMarks && pView)
+		pView->HideGridMarks();
 	CloseProgressDialog2();
 	return success;
 }
 
-void MainFrame::ExportAreaOptimizedImageTileset()
+void Builder::ExportAreaOptimizedImageTileset(BuilderView *pView)
 {
 	m_tileopts.numlods = 3;
 
@@ -612,42 +617,45 @@ void MainFrame::ExportAreaOptimizedImageTileset()
 		}
 	}
 
-	TileDlg dlg(this, -1, _("Export Optimized Image Tileset"));
+	TileDlg dlg(m_pParentWindow, -1, _("Export Optimized Image Tileset"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(false);
 	dlg.SetArea(m_area);
 	dlg.SetTilingOptions(m_tileopts);
-	dlg.SetView(GetView());
+	dlg.SetView(pView);
 
 	if (dlg.ShowModal() != wxID_OK)
 	{
-		GetView()->HideGridMarks();
+		if (pView)
+			pView->HideGridMarks();
 		return;
 	}
 	dlg.GetTilingOptions(m_tileopts);
 	m_tileopts.bCreateDerivedImages = false;
 
-	bool success = DoSampleImageryToTilePyramids(m_tileopts);
+	bool success = DoSampleImageryToTilePyramids(pView, m_tileopts);
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
 		DisplayAndLog("Could not successfully write to '%s'", (const char *) m_tileopts.fname);
 }
 
-bool MainFrame::DoSampleImageryToTilePyramids(const TilingOptions &opts,
+bool Builder::DoSampleImageryToTilePyramids(BuilderView *pView,
+											  const TilingOptions &opts,
 											  bool bShowGridMarks)
 {
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = SampleImageryToTilePyramids(m_tileopts);
-	if (bShowGridMarks)
-		GetView()->HideGridMarks();
+	bool success = SampleImageryToTilePyramids(pView, m_tileopts);
+	if (bShowGridMarks && pView)
+		pView->HideGridMarks();
 	CloseProgressDialog();
 	return success;
 }
 
-bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bFloat,
-											  bool bShowGridMarks)
+bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
+											const TilingOptions &opts, bool bFloat,
+											bool bShowGridMarks)
 {
 	VTLOG1("SampleElevationToTilePyramids\n");
 
@@ -692,7 +700,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 	if (opts.bCreateDerivedImages && opts.bUseTextureCompression &&
 		opts.eCompressionType == TC_OPENGL)
 	{
-		frame->Create(this, -1, _T("Texture Compression OpenGL Context"),
+		frame->Create(m_pParentWindow, -1, _T("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
 		pCanvas = new ImageGLCanvas(frame);
 	}
@@ -738,8 +746,8 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 		for (i = 0; i < opts.cols; i++)
 		{
 			// draw our progress in the main view
-			if (bShowGridMarks)
-				GetView()->ShowGridMarks(m_area, opts.cols, opts.rows, i, j);
+			if (bShowGridMarks && pView)
+				pView->ShowGridMarks(m_area, opts.cols, opts.rows, i, j);
 
 			DRECT tile_area;
 			tile_area.left =	m_area.left + tile_dim.x * i;
@@ -1005,7 +1013,7 @@ bool MainFrame::SampleElevationToTilePyramids(const TilingOptions &opts, bool bF
 	return true;
 }
 
-bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts, bool bShowGridMarks)
+bool Builder::SampleImageryToTilePyramids(BuilderView *pView, const TilingOptions &opts, bool bShowGridMarks)
 {
 	VTLOG1("SampleImageryToTilePyramids\n");
 
@@ -1036,7 +1044,7 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts, bool bSho
 #if USE_OPENGL
 	if (opts.bUseTextureCompression && opts.eCompressionType == TC_OPENGL)
 	{
-		frame->Create(this, -1, _T("Texture Compression OpenGL Context"),
+		frame->Create(m_pParentWindow, -1, _T("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
 		pCanvas = new ImageGLCanvas(frame);
 	}
@@ -1053,8 +1061,8 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts, bool bSho
 		for (i = 0; i < opts.cols; i++)
 		{
 			// draw our progress in the main view
-			if (bShowGridMarks)
-				GetView()->ShowGridMarks(m_area, opts.cols, opts.rows, i, j);
+			if (bShowGridMarks && pView)
+				pView->ShowGridMarks(m_area, opts.cols, opts.rows, i, j);
 
 			DRECT tile_area;
 			tile_area.left =	m_area.left + tile_dim.x * i;
@@ -1210,3 +1218,4 @@ bool MainFrame::SampleImageryToTilePyramids(const TilingOptions &opts, bool bSho
 	}
 	return true;
 }
+

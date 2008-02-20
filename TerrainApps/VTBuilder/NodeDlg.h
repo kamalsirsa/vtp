@@ -40,6 +40,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
+	void SetScale(float fScale);
 	void SetNode(NodeEdit *pSingleLink, vtRoadLayer *pLayer);
 	void ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype);
 

@@ -109,7 +109,7 @@ void vtLayer::SetModified(bool bModified)
 	bool bNeedRefresh = (m_bModified != bModified);
 	m_bModified = bModified;
 	if (bNeedRefresh)
-		GetMainFrame()->RefreshTreeStatus();
+		g_bld->RefreshTreeStatus();
 }
 
 void vtLayer::SetLayerFilename(const wxString &fname)
@@ -118,7 +118,7 @@ void vtLayer::SetLayerFilename(const wxString &fname)
 	bool bNeedRefresh = (m_wsFilename.Cmp(fname) != 0);
 	m_wsFilename = fname;
 	if (bNeedRefresh)
-		GetMainFrame()->RefreshTreeStatus();
+		g_bld->RefreshTreeStatus();
 }
 
 wxString vtLayer::GetSaveFileDialogFilter()
@@ -194,7 +194,8 @@ wxString vtLayer::GetFileExtension()
 
 void vtLayer::SetMessageText(const wxString &msg)
 {
-	GetMainFrame()->SetStatusText(msg);
+	if (g_bld->m_pParentWindow)
+		g_bld->m_pParentWindow->SetStatusText(msg);
 }
 
 void vtLayer::GetProjection(vtProjection &proj)

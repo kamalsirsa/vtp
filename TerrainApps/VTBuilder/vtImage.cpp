@@ -883,7 +883,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		// if we still don't have it
 		if (!bHaveProj)
 		{
-			if (!GetMainFrame()->ConfirmValidCRS(&m_proj))
+			if (!g_bld->ConfirmValidCRS(&m_proj))
 				throw "Import Cancelled.";
 		}
 

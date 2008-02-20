@@ -191,7 +191,7 @@ void vtScaledView::UpdateRanges()
 	int w, h;
 	GetClientSize(&w, &h);
 
-	DRECT extents = GetMainFrame()->GetExtents();
+	DRECT extents = g_bld->GetExtents();
 
 	m_limits.x = sdx(extents.left);
 	m_limits.width = sdx(extents.right) - m_limits.x;

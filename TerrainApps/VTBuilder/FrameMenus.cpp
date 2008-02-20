@@ -2036,6 +2036,7 @@ void MainFrame::OnAreaMatch(wxCommandEvent &event)
 {
 	MatchDlg dlg(NULL, -1, _("Match Area and Tiling to Layer"));
 	dlg.SetArea(m_area, (m_proj.IsGeographic() != 0));
+	dlg.SetView(GetView());
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		m_tileopts.cols = dlg.m_tile.x;

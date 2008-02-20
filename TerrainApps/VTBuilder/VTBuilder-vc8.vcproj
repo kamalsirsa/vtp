@@ -214,6 +214,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Builder.cpp"
+				>
+			</File>
+			<File
 				RelativePath="BuilderView.cpp"
 				>
 			</File>
@@ -368,6 +372,10 @@
 			>
 			<File
 				RelativePath="app.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Builder.h"
 				>
 			</File>
 			<File

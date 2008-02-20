@@ -69,7 +69,7 @@ void vtVegLayer::GetPropertyText(wxString &str)
 		s.Printf(_("Number of Instances: %d\n"), ent);
 		str += s;
 
-		vtSpeciesList *list = GetMainFrame()->GetPlantList();
+		vtSpeciesList *list = g_bld->GetPlantList();
 		for (unsigned int i = 0; i < list->NumSpecies(); i++)
 		{
 			int num = pPIA->InstancesOfSpecies(i);
@@ -110,7 +110,7 @@ bool vtVegLayer::OnSave()
 
 bool vtVegLayer::OnLoad()
 {
-	vtSpeciesList *plants = GetMainFrame()->GetPlantList();
+	vtSpeciesList *plants = g_bld->GetPlantList();
 	if (plants->NumSpecies() == 0)
 	{
 		wxMessageBox(_("You must specify a species file (plant list) to use\n before working with vegetation files.\n"));
@@ -383,7 +383,7 @@ bool vtVegLayer::AddElementsFromSHP_Polys(const wxString &filename,
 		if (datatype == VIFT_BiotypeName)
 		{
 			const char *str = DBFReadStringAttribute(db, i, iField);
-			biotype_id = GetMainFrame()->GetBioRegion()->FindBiotypeIdByName(str);
+			biotype_id = g_bld->GetBioRegion()->FindBiotypeIdByName(str);
 			m_pSet->SetValue(record, m_field_biotype, biotype_id);
 		}
 		if (datatype == VIFT_BiotypeID)
@@ -410,8 +410,8 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString &filename,
 	// We will be creating plant instances
 	SetVegType(VLT_Instances);
 
-	vtSpeciesList *pPlantList = GetMainFrame()->GetPlantList();
-	vtBioRegion *pBioRegion = GetMainFrame()->GetBioRegion();
+	vtSpeciesList *pPlantList = g_bld->GetPlantList();
+	vtBioRegion *pBioRegion = g_bld->GetBioRegion();
 	GetPIA()->SetPlantList(pPlantList);
 
 	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert

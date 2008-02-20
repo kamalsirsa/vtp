@@ -978,7 +978,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 		dlg.m_fSpacing = 30.0f;
 		dlg.m_bBigEndian = false;
 		dlg.m_extents.Empty();
-		GetMainFrame()->GetProjection(dlg.m_original);
+		g_bld->GetProjection(dlg.m_original);
 
 		if (dlg.ShowModal() == wxID_OK)
 		{
@@ -1015,7 +1015,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 		pProj = &m_pTin->m_proj;
 
 	// We should ask for a CRS before asking for extents
-	if (!GetMainFrame()->ConfirmValidCRS(pProj))
+	if (!g_bld->ConfirmValidCRS(pProj))
 		return false;
 
 	if (m_pGrid != NULL)
@@ -1455,7 +1455,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 	wxFrame *frame = new wxFrame;
 	if (opts.bCreateDerivedImages && opts.bUseTextureCompression && opts.eCompressionType == TC_OPENGL)
 	{
-		frame->Create(GetMainFrame(), -1, _T("Texture Compression OpenGL Context"),
+		frame->Create(g_bld->m_pParentWindow, -1, _T("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
 		pCanvas = new ImageGLCanvas(frame);
 	}

@@ -39,6 +39,8 @@ MatchDlg::MatchDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// WDR: dialog function MatchDialogFunc for MatchDlg
 	MatchDialogFunc( this, TRUE );
 
+	m_pView = NULL;
+
 	AddValidator(ID_EXTENT1, &m_strExtent1);
 	AddValidator(ID_EXTENT2, &m_strExtent2);
 	AddValidator(ID_MATCH_LAYER, &m_iLayer);
@@ -89,10 +91,9 @@ void MatchDlg::UpdateLayers()
 {
 	// (Re-)fill the 'Layers' control with all available layers
 	GetMatchLayer()->Clear();
-	MainFrame *frame = GetMainFrame();
-	for (int i = 0; i < frame->NumLayers(); i++)
+	for (int i = 0; i < g_bld->NumLayers(); i++)
 	{
-		vtLayer *lay = frame->GetLayer(i);
+		vtLayer *lay = g_bld->GetLayer(i);
 
 		wxString name = StartOfFilename(lay->GetLayerFilename());
 		GetMatchLayer()->Append(name);
@@ -104,7 +105,7 @@ void MatchDlg::UpdateLayers()
 void MatchDlg::GetLayerSpacing()
 {
 	// Look at the layer selected in the dialog
-	vtLayer *lay = GetMainFrame()->GetLayer(m_iLayer);
+	vtLayer *lay = g_bld->GetLayer(m_iLayer);
 
 	m_strLayerRes = _("n/a");
 	m_spacing.Set(0,0);
@@ -180,7 +181,8 @@ void MatchDlg::UpdateGuess()
 	m_area.top	= center.y + 0.5 * new_area.y;
 
 	// Show to the user, visually
-	GetMainFrame()->GetView()->ShowGridMarks(m_area, m_tile.x, m_tile.y, -1, -1);
+	if (m_pView)
+		m_pView->ShowGridMarks(m_area, m_tile.x, m_tile.y, -1, -1);
 }
 
 // WDR: handler implementations for MatchDlg

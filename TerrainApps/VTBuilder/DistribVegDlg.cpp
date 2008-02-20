@@ -83,13 +83,12 @@ DistribVegDlg::DistribVegDlg( wxWindow *parent, wxWindowID id, const wxString &t
 void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	// Populate the Choice controls with necessary values
-	MainFrame *frame = GetMainFrame();
 	wxString str;
 	unsigned int i;
 
 	// Single species
 	GetChoiceSpecies()->Clear();
-	vtSpeciesList* pl = frame->GetPlantList();
+	vtSpeciesList* pl = g_bld->GetPlantList();
 	if (pl != NULL)
 	{
 		for (i = 0; i < pl->NumSpecies(); i++)
@@ -103,7 +102,7 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// Single biotype
 	GetChoiceBiotype()->Clear();
-	vtBioRegion *br = frame->GetBioRegion();
+	vtBioRegion *br = g_bld->GetBioRegion();
 	if (br != NULL)
 	{
 		for (i = 0; i < br->m_Types.GetSize(); i++)
@@ -119,9 +118,9 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// Biotype layers
 	GetChoiceBiotypeLayer()->Clear();
-	for (int i = 0; i < frame->NumLayers(); i++)
+	for (int i = 0; i < g_bld->NumLayers(); i++)
 	{
-		vtLayer *lp = frame->GetLayer(i);
+		vtLayer *lp = g_bld->GetLayer(i);
 		if (lp->GetType() == LT_VEG)
 		{
 			vtVegLayer *vl = (vtVegLayer *) lp;
@@ -133,9 +132,9 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// Density layers
 	GetChoiceDensityLayer()->Clear();
-	for (int i = 0; i < frame->NumLayers(); i++)
+	for (int i = 0; i < g_bld->NumLayers(); i++)
 	{
-		vtLayer *lp = frame->GetLayer(i);
+		vtLayer *lp = g_bld->GetLayer(i);
 		if (lp->GetType() == LT_VEG)
 		{
 			vtVegLayer *vl = (vtVegLayer *) lp;
@@ -149,9 +148,9 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// Count layers of each type
 	int iDensityLayers = 0, iBiotypeLayers = 0;
-	for (int i = 0; i < frame->NumLayers(); i++)
+	for (int i = 0; i < g_bld->NumLayers(); i++)
 	{
-		vtLayer *lp = frame->GetLayer(i);
+		vtLayer *lp = g_bld->GetLayer(i);
 		if (lp->GetType() == LT_VEG)
 		{
 			vtVegLayer *vl = (vtVegLayer *) lp;
@@ -164,7 +163,7 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 	bool bHaveDensityLayer = (iDensityLayers != 0);
 	bool bHaveBiotypeLayer = (iBiotypeLayers != 0);
-	bool bHaveBiotypes = (frame->GetBioRegion()->NumTypes() != 0);
+	bool bHaveBiotypes = (g_bld->GetBioRegion()->NumTypes() != 0);
 
 	// Species enabling
 	GetSpecies2()->Enable(bHaveBiotypes);

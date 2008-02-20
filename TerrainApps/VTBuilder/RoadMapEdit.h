@@ -1,7 +1,7 @@
 //
 // RoadMapEdit.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,7 @@
 #include "vtdata/RoadMap.h"
 #include "vtdata/Selectable.h"
 
+class vtScaledView;
 class vtRoadLayer;
 class vtScaledView;
 class vtDLGFile;
@@ -42,7 +43,7 @@ public:
 	//draws the node
 	bool Draw(wxDC* pDC, vtScaledView *pView);
 	//brings up a node dialog to edit road properties
-	bool EditProperties(vtRoadLayer *pLayer);
+	bool EditProperties(vtScaledView *pView, vtRoadLayer *pLayer);
 
 	//move the node
 	void Translate(const DPoint2 &offset);

@@ -308,7 +308,7 @@ bool vtRawLayer::OnLoad()
 	if (m_pSet)
 	{
 		vtProjection &proj = m_pSet->GetAtProjection();
-		if (!GetMainFrame()->ConfirmValidCRS(&proj))
+		if (!g_bld->ConfirmValidCRS(&proj))
 		{
 			delete m_pSet;
 			m_pSet = NULL;
@@ -459,17 +459,7 @@ void vtRawLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 		iEnt = pSetP2->FindClosestPoint(ui.m_DownLocation, epsilon);
 		if (iEnt != -1)
 		{
-			DPoint2 &p2 = pSetP2->GetPoint(iEnt);
-			vtArray<int> found;
-			pSetP2->FindAllPointsAtLocation(p2, found);
-
-			FeatInfoDlg	*fdlg = GetMainFrame()->ShowFeatInfoDlg();
-			fdlg->SetLayer(this);
-			fdlg->SetFeatureSet(m_pSet);
-			m_pSet->DePickAll();
-			for (unsigned int i = 0; i < found.GetSize(); i++)
-				m_pSet->Pick(found[i]);
-			fdlg->ShowPicked();
+			g_bld->UpdateFeatureDialog(this, pSetP2, iEnt);
 		}
 		break;
 	}

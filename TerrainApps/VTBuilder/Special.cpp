@@ -250,7 +250,7 @@ static bool VerifyHFclip(BYTE* pMem, size_t size)
 // Create a new elevation layer by pasting data from the clipboard, using the
 //  Daylone Leveller clipboard format for heightfields.
 //
-void MainFrame::ElevCopy()
+void Builder::ElevCopy()
 {
 #if WIN32
 	UINT eFormat = ::RegisterClipboardFormat(_T("daylon_elev"));
@@ -498,7 +498,7 @@ void MainFrame::ElevCopy()
 // Create a new elevation layer by pasting data from the clipboard, using the
 //  Daylone Leveller clipboard format for heightfields.
 //
-void MainFrame::ElevPasteNew()
+void Builder::ElevPasteNew()
 {
 #if WIN32
 	UINT eFormat = ::RegisterClipboardFormat(_T("daylon_elev"));
@@ -597,7 +597,7 @@ void MainFrame::ElevPasteNew()
 			pEL->m_pGrid->SetFValue(x, breadth-1-z, pElevs[i] * fElevScale);
 	}
 	pEL->m_pGrid->ComputeHeightExtents();
-	GetMainFrame()->AddLayerWithCheck(pEL);
+	g_bld->AddLayerWithCheck(pEL);
 
 	::GlobalUnlock(hMem);
 #endif	// WIN32

@@ -53,6 +53,7 @@ vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
 		thickPen.SetColour(255,255,255);
 		thickPen.SetWidth(3);
 	}
+	m_pLastView = NULL;
 }
 
 bool vtStructureLayer::GetExtent(DRECT &rect)
@@ -101,6 +102,9 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	DrawStructures(pDC, pView, true);	// selected
 
 	DrawBuildingHighlight(pDC, pView);
+
+	// Remember for next time
+	m_pLastView = pView;
 }
 
 void vtStructureLayer::DrawStructures(wxDC* pDC, vtScaledView *pView, bool bOnlySelected)
@@ -245,8 +249,6 @@ bool vtStructureLayer::OnLoad()
 
 void vtStructureLayer::ResolveInstancesOfItems()
 {
-	MainFrame *frame = GetMainFrame();
-
 	unsigned int structs = GetSize();
 	for (unsigned int i = 0; i < structs; i++)
 	{
@@ -254,7 +256,7 @@ void vtStructureLayer::ResolveInstancesOfItems()
 		vtStructInstance *inst = str->GetInstance();
 		if (!inst)
 			continue;
-		frame->ResolveInstanceItem(inst);
+		g_bld->ResolveInstanceItem(inst);
 	}
 }
 
@@ -379,13 +381,17 @@ void vtStructureLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	switch (ui.mode)
 	{
 	case LB_AddInstance:
-		OnLeftDownAddInstance(pView, ui);
+		if (g_bld->m_pInstanceDlg)
+		{
+			vtTagArray *tags = g_bld->m_pInstanceDlg->GetTagArray();
+			OnLeftDownAddInstance(pView, ui, tags);
+		}
 		break;
 	case LB_AddLinear:
 		if (ui.m_pCurLinear == NULL)
 		{
 			ui.m_pCurLinear = NewFence();
-			ui.m_pCurLinear->SetParams(GetMainFrame()->m_LSOptions);
+			ui.m_pCurLinear->SetParams(g_bld->m_LSOptions);
 			Append(ui.m_pCurLinear);
 			ui.m_bRubber = true;
 		}
@@ -428,7 +434,7 @@ void vtStructureLayer::OnLeftUp(BuilderView *pView, UIContext &ui)
 		// copy back from temp building to real building
 		*ui.m_pCurBuilding = ui.m_EditBuilding;
 		ui.m_bRubber = false;
-		GetMainFrame()->GetActiveLayer()->SetModified(true);
+		g_bld->GetActiveLayer()->SetModified(true);
 		ui.m_pCurBuilding = NULL;
 	}
 	if (ui.mode == LB_EditLinear && ui.m_bRubber)
@@ -445,7 +451,7 @@ void vtStructureLayer::OnLeftUp(BuilderView *pView, UIContext &ui)
 		// copy back from temp building to real building
 		*ui.m_pCurLinear = ui.m_EditLinear;
 		ui.m_bRubber = false;
-		GetMainFrame()->GetActiveLayer()->SetModified(true);
+		g_bld->GetActiveLayer()->SetModified(true);
 		ui.m_pCurLinear = NULL;
 	}
 }
@@ -647,19 +653,14 @@ void vtStructureLayer::OnLeftDownEditLinear(BuilderView *pView, UIContext &ui)
 	}
 }
 
-void vtStructureLayer::OnLeftDownAddInstance(BuilderView *pView, UIContext &ui)
+void vtStructureLayer::OnLeftDownAddInstance(BuilderView *pView, UIContext &ui, vtTagArray *tags)
 {
-	MainFrame *frame = GetMainFrame();
-	InstanceDlg *dlg = frame->m_pInstanceDlg;
-
 	vtStructInstance *inst = AddNewInstance();
 
 	inst->SetPoint(ui.m_DownLocation);
-
-	vtTagArray *tags = dlg->GetTagArray();
 	inst->CopyTagsFrom(*tags);
 
-	frame->ResolveInstanceItem(inst);
+	g_bld->ResolveInstanceItem(inst);
 
 	SetModified(true);
 	pView->Refresh();
@@ -873,19 +874,12 @@ bool vtStructureLayer::EditBuildingProperties()
 	if (count != 1)
 		return false;
 
-	// Get a heightfield.  This is for RJ's Baseline Editor" Height Dialog
-	MainFrame *pFrame = GetMainFrame();
-	vtHeightField *pHeightField = NULL;
-	vtElevLayer *pElevLayer = (vtElevLayer *) pFrame->FindLayerOfType(LT_ELEVATION);
-	if (pElevLayer)
-		pHeightField = pElevLayer->GetHeightField();
-
 	// for now, assume they will use the dialog to change something about
 	// the building (pessimistic)
 	SetModified(true);
 
 	BuildingDlg dlg(NULL, -1, _("Building Properties"));
-	dlg.Setup(this, bld_selected, pHeightField);
+	dlg.Setup(this, bld_selected);
 
 	dlg.ShowModal();
 
@@ -1012,18 +1006,20 @@ int vtStructureLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 	return affected;
 }
 
-
 void vtStructureLayer::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 {
-	vtScaledView *pView = GetMainFrame()->GetView();
-	wxClientDC dc(pView);
-	pView->PrepareDC(dc);
+	if (m_pLastView != NULL)
+	{
+		wxClientDC dc(m_pLastView);
+		m_pLastView->PrepareDC(dc);
+		DrawBuildingHighlight(&dc, m_pLastView);
 
-	DrawBuildingHighlight(&dc, pView);
+		vtStructureArray::SetEditedEdge(bld, lev, edge);
 
-	vtStructureArray::SetEditedEdge(bld, lev, edge);
-
-	DrawBuildingHighlight(&dc, pView);
+		DrawBuildingHighlight(&dc, m_pLastView);
+	}
+	else
+		vtStructureArray::SetEditedEdge(bld, lev, edge);
 
 	// Trigger re-draw of the building
 //	bound = WorldToWindow(world_bounds[n]);

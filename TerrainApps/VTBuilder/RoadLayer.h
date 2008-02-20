@@ -1,7 +1,7 @@
 //
 // RoadLayer.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -50,13 +50,13 @@ public:
 	void CarveRoadway(class vtElevLayer *pElev, float margin);
 
 	//edit a single node
-	bool EditNodeProperties(const DPoint2 &point, float error, DRECT &bound);
+	bool EditNodeProperties(BuilderView *pView, const DPoint2 &point, float error, DRECT &bound);
 	//edit a single road
 	bool EditLinkProperties(const DPoint2 &point, float error, DRECT &bound);
 	//edit all selected nodes
-	bool EditNodesProperties();
+	bool EditNodesProperties(BuilderView *pView);
 	//edit all selected roads
-	bool EditLinksProperties();
+	bool EditLinksProperties(BuilderView *pView);
 
 protected:
 	static bool	m_bDrawNodes;
