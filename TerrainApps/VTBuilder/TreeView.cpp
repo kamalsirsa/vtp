@@ -194,25 +194,12 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, _("Raw"));
 	SetItemData(rawId, new MyTreeItemData(LT_RAW));
 
-	// Expand the groups here, before we add items to them, so that the active
-	//  layer can be selected and kept in view, for a better user experience.
-	Expand(elevId);
-	Expand(imageId);
-	Expand(roadId);
-	Expand(buildId);
-	Expand(vegId);
-	Expand(waterId);
-#if SUPPORT_TRANSIT
-	Expand(transId);
-#endif
-	Expand(utilityId);
-	Expand(rawId);
-
 	image = TreeCtrlIcon_File;
 	imageSel = TreeCtrlIcon_FileSelected;
 	vtLayerPtr lp;
 	int iLayers = 0;
 	if (pFrame) iLayers = pFrame->NumLayers();
+	wxTreeItemId hSelectedItem;
 	for (int i = 0; i < iLayers; i++)
 	{
 		lp = pFrame->GetLayer(i);
@@ -257,10 +244,29 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 			SetItemData(hItem, new MyTreeItemData(lp));
 
 			if (lp == pFrame->GetActiveLayer())
-				SelectItem(hItem);
+				hSelectedItem = hItem;
 		}
 	}
 	VTLOG(" %d layers.\n", iLayers);
+
+	// Expand the groups after they have all their items.  It doesn't work
+	//  to expand before, because then not all items are shown.
+	Expand(elevId);
+	Expand(imageId);
+	Expand(roadId);
+	Expand(buildId);
+	Expand(vegId);
+	Expand(waterId);
+#if SUPPORT_TRANSIT
+	Expand(transId);
+#endif
+	Expand(utilityId);
+	Expand(rawId);
+
+	// Wait until all the groups are expanded, before highlighting the
+	//  selected item, so that it will definitely be in view.
+	if (hSelectedItem.IsOk())
+		SelectItem(hSelectedItem);
 }
 
 void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
