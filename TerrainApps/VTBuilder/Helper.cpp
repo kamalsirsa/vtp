@@ -172,6 +172,9 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 {
 	if (opts.bUseTextureCompression)
 	{
+		// Compressed
+		// Output to a compressed RGB .db file
+
 		if (opts.eCompressionType == TC_OPENGL)
 		{
 #if USE_OPENGL
@@ -190,6 +193,11 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 #if SUPPORT_SQUISH
 
 #if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
+			output_buf.type = 3;	// RGB
+			output_buf.bytes = iUncompressedSize;
+			output_buf.data = malloc(iUncompressedSize);
+			memcpy(output_buf.data, rgb_bytes, iUncompressedSize);
+
 			InitSquishHook(opts.eCompressionType == TC_SQUISH_FAST);
 			output_buf.autocompress();
 #else
@@ -206,12 +214,14 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 	{
 		// Uncompressed
 		// Output to a plain RGB .db file
+
 		output_buf.type = 3;	// RGB
 		output_buf.bytes = iUncompressedSize;
-		output_buf.data=malloc(iUncompressedSize);
-		memcpy(output_buf.data,rgb_bytes,iUncompressedSize);
+		output_buf.data = malloc(iUncompressedSize);
+		memcpy(output_buf.data, rgb_bytes, iUncompressedSize);
+
 #if USE_LIBMINI_DATABUF
-		bool saveasJPEG=false; //!! get from GUI
+		bool saveasJPEG=false;
 		output_buf.savedata(fname,saveasJPEG?1:0); // external format 1=JPEG
 #else
 		output_buf.savedata(fname);

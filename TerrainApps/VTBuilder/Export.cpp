@@ -977,7 +977,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 				}
 
 #if USE_LIBMINI_DATABUF
-				bool saveasPNG=false; //!! get from GUI
+				bool saveasPNG=false;
 				buf.savedata(fname,saveasPNG?2:0); // external format 2=PNG
 #else
 				buf.savedata(fname);
