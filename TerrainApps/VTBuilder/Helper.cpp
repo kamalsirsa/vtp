@@ -28,15 +28,15 @@
 #define USE_LIBMINI_SQUISH 0
 #define USE_LIBMINI_CONVHOOK 0
 
-#if USE_LIBMINI_SQUISH
+#if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
 #include "squishbase.h"
 #endif
 
-#if USE_LIBMINI_CONVHOOK
+#if (USE_LIBMINI_DATABUF && USE_LIBMINI_CONVHOOK)
 #include "convbase.h"
 #endif
 
-#if (USE_LIBMINI_SQUISH || USE_LIBMINI_CONVHOOK)
+#if (USE_LIBMINI_DATABUF && (USE_LIBMINI_SQUISH || USE_LIBMINI_CONVHOOK))
 #ifdef _MSC_VER
   #if _MSC_VER >= 1400	// vc8
 	  #pragma message( "Adding link with libMiniSFX-vc8.lib" )
@@ -189,7 +189,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		{
 #if SUPPORT_SQUISH
 
-#if USE_LIBMINI_SQUISH
+#if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
 			InitSquishHook(opts.eCompressionType == TC_SQUISH_FAST);
 			output_buf.autocompress();
 #else
@@ -328,7 +328,6 @@ void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 	PFNGLGETCOMPRESSEDTEXIMAGEARBPROC gctia = (PFNGLGETCOMPRESSEDTEXIMAGEARBPROC)
 		getGLExtensionFuncPtr("glGetCompressedTexImageARB");
 	gctia(target, level, output_buf.data);
-
 }
 
 
@@ -463,7 +462,7 @@ void autocompress(int isrgbadata,unsigned char *rawdata,unsigned int bytes,
 				  unsigned char **s3tcdata,unsigned int *s3tcbytes,int width,int height,
 				  void *data)
    {
-#if USE_LIBMINI_SQUISH
+#if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
 
    int mode=*((int *)data);
 
@@ -475,7 +474,7 @@ void autocompress(int isrgbadata,unsigned char *rawdata,unsigned int bytes,
 
 void InitSquishHook(bool squishFAST)
    {
-#if USE_LIBMINI_SQUISH
+#if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
 
    static int mode=squishbase::SQUISHMODE_GOOD;
 
@@ -490,7 +489,7 @@ void InitSquishHook(bool squishFAST)
 
 void InitConvHook(bool enableGREYC)
    {
-#if USE_LIBMINI_CONVHOOK
+#if (USE_LIBMINI_DATABUF && USE_LIBMINI_CONVHOOK)
 
    // specify conversion parameters
    static convbase::MINI_CONVERSION_PARAMS conversion_params;
