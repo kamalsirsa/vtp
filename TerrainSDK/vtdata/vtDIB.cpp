@@ -1,7 +1,7 @@
 //
 // vtDIB.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1094,14 +1094,16 @@ bool vtDIB::WriteTIF(const char *fname, const DRECT *area,
 	if (!pDriver)
 		return false;
 
-	char **papszParmList = NULL;
+	// GDAL doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(fname);
 
+	char **papszParmList = NULL;
 	GDALDataset *pDataset;
 	if (m_iBitCount == 8)
-		pDataset = pDriver->Create(fname, m_iWidth, m_iHeight,
+		pDataset = pDriver->Create(fname_local, m_iWidth, m_iHeight,
 			1, GDT_Byte, papszParmList );
 	else
-		pDataset = pDriver->Create(fname, m_iWidth, m_iHeight,
+		pDataset = pDriver->Create(fname_local, m_iWidth, m_iHeight,
 			3, GDT_Byte, papszParmList );
 	if (!pDataset)
 		return false;
