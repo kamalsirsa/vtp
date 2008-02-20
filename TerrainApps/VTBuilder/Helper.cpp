@@ -190,7 +190,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 #if SUPPORT_SQUISH
 
 #if USE_LIBMINI_SQUISH
-			InitSquishHook();
+			InitSquishHook(opts.eCompressionType == TC_SQUISH_FAST);
 			output_buf.autocompress();
 #else
 			DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
@@ -473,11 +473,14 @@ void autocompress(int isrgbadata,unsigned char *rawdata,unsigned int bytes,
 #endif
    }
 
-void InitSquishHook()
+void InitSquishHook(bool squishFAST)
    {
 #if USE_LIBMINI_SQUISH
 
-   static int mode=squishbase::SQUISHMODE_FAST;
+   static int mode=squishbase::SQUISHMODE_GOOD;
+
+   if (squishFAST) mode=squishbase::SQUISHMODE_FAST;
+   else mode=squishbase::SQUISHMODE_GOOD;
 
    // register auto-compression hook
    databuf::setautocompress(autocompress,&mode);
