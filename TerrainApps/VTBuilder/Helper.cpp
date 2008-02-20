@@ -25,14 +25,18 @@
 #endif
 #endif
 
-#if USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_JPEG
-#include "jpegbase.h"
-#endif
-#if USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_PNG
-#include "pngbase.h"
+#define USE_LIBMINI_SQUISH 0
+#define USE_LIBMINI_CONVHOOK 0
+
+#if USE_LIBMINI_SQUISH
+#include "squishbase.h"
 #endif
 
-#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG)
+#if USE_LIBMINI_CONVHOOK
+#include "convbase.h"
+#endif
+
+#if (USE_LIBMINI_SQUISH || USE_LIBMINI_CONVHOOK)
 #ifdef _MSC_VER
   #if _MSC_VER >= 1400	// vc8
 	  #pragma message( "Adding link with libMiniSFX-vc8.lib" )
@@ -42,11 +46,6 @@
 	  #pragma comment( lib, "libMiniSFX-vc7.lib" )
   #endif
 #endif
-#endif
-
-#if USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_GREYC
-#define GREYCSTORATION
-#include "greycbase.h"
 #endif
 
 //////////////////////////////////
@@ -189,10 +188,17 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 			opts.eCompressionType == TC_SQUISH_SLOW)
 		{
 #if SUPPORT_SQUISH
+
+#if USE_LIBMINI_SQUISH
+			InitSquishHook();
+			output_buf.autocompress();
+#else
 			DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
+#endif
 
 			output_buf.savedata(fname);
 			output_buf.release();
+
 #endif
 		}
 	}
@@ -204,7 +210,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		output_buf.bytes = iUncompressedSize;
 		output_buf.data=malloc(iUncompressedSize);
 		memcpy(output_buf.data,rgb_bytes,iUncompressedSize);
-#if (USE_LIBMINI_DATABUF && USE_LIBMINI_DATABUF_JPEG)
+#if USE_LIBMINI_DATABUF
 		bool saveasJPEG=false; //!! get from GUI
 		output_buf.savedata(fname,saveasJPEG?1:0); // external format 1=JPEG
 #else
@@ -324,6 +330,7 @@ void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 	gctia(target, level, output_buf.data);
 
 }
+
 
 //
 // ImageGLCanvas class:
@@ -451,133 +458,46 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 }
 #endif	// SUPPORT_SQUISH
 
-#if USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG || USE_LIBMINI_DATABUF_GREYC)
+// S3TC auto-compression hook
+void autocompress(int isrgbadata,unsigned char *rawdata,unsigned int bytes,
+				  unsigned char **s3tcdata,unsigned int *s3tcbytes,int width,int height,
+				  void *data)
+   {
+#if USE_LIBMINI_SQUISH
 
-// libMini conversion hook for external formats (JPEG/PNG)
-int vtb_conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
-					   unsigned char **newdata,unsigned int *newbytes,
-					   databuf *obj,void *data)
-{
-	VTP_CONVERSION_PARAMS *conversion_params=(VTP_CONVERSION_PARAMS *)data;
+   int mode=*((int *)data);
 
-	if (conversion_params==NULL) return(0);
-
-	switch (extformat)
-	{
-	case 1: // JPEG
-
-#if USE_LIBMINI_DATABUF_JPEG
-
-	   if (israwdata==0)
-	   {
-		   int width,height,components;
-
-		   *newdata=jpegbase::decompressJPEGimage(srcdata,bytes,&width,&height,&components);
-		   if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) return(0);
-
-		   if (*newdata==NULL) return(0); // return failure
-
-		   switch (components)
-		   {
-		   case 1: if (obj->type!=0) return(0);
-		   case 3: if (obj->type!=3) return(0);
-		   case 4: if (obj->type!=4) return(0);
-		   default: return(0);
-		   }
-
-		   *newbytes=width*height*components;
-	   }
-	   else
-	   {
-		   int components;
-
-		   switch (obj->type)
-		   {
-		   case 0: components=1; break;
-		   case 3: components=3; break;
-		   case 4: components=4; break;
-		   default: return(0); // return failure
-		   }
-
-#if USE_LIBMINI_DATABUF_GREYC
-
-		   if (components==1 || components==3)
-			   if (conversion_params->usegreycstoration)
-				   greycbase::denoiseGREYCimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->greyc_p,conversion_params->greyc_a);
+   squishbase::compressS3TC(isrgbadata,rawdata,bytes,
+							s3tcdata,s3tcbytes,width,height,mode);
 
 #endif
-
-		   jpegbase::compressJPEGimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->jpeg_quality/100.0f,newdata,newbytes);
-
-		   if (*newdata==NULL) return(0); // return failure
-	   }
-
-#else
-	   return(0);
-#endif
-
-	   break;
-
-   case 2: // PNG
-
-#if USE_LIBMINI_DATABUF_PNG
-
-	   if (israwdata==0)
-	   {
-		   int width,height,components;
-
-		   *newdata=pngbase::decompressPNGimage(srcdata,bytes,&width,&height,&components);
-		   if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) return(0);
-
-		   if (*newdata==NULL) return(0); // return failure
-
-		   switch (components)
-		   {
-		   case 1: if (obj->type!=0) return(0);
-		   case 2: if (obj->type!=1) return(0);
-		   case 3: if (obj->type!=3) return(0);
-		   case 4: if (obj->type!=4) return(0);
-		   default: return(0);
-		   }
-
-		   *newbytes=width*height*components;
-	   }
-	   else
-	   {
-		   int components;
-
-		   switch (obj->type)
-		   {
-		   case 0: components=1; break;
-		   case 1: components=2; break;
-		   case 3: components=3; break;
-		   case 4: components=4; break;
-		   default: return(0); // return failure
-		   }
-
-#if USE_LIBMINI_DATABUF_GREYC
-
-		   if (components==3) // do not denoise elevation
-			   if (conversion_params->usegreycstoration)
-				   greycbase::denoiseGREYCimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->greyc_p,conversion_params->greyc_a);
-
-#endif
-
-		   pngbase::compressPNGimage(srcdata,obj->xsize,obj->ysize,components,newdata,newbytes);
-
-		   if (*newdata==NULL) return(0); // return failure
-	   }
-
-#else
-	   return(0);
-#endif
-
-	   break;
-
-   default: return(0);
    }
 
-   return(1); // return success
+void InitSquishHook()
+   {
+#if USE_LIBMINI_SQUISH
+
+   static int mode=squishbase::SQUISHMODE_FAST;
+
+   // register auto-compression hook
+   databuf::setautocompress(autocompress,&mode);
+
+#endif
    }
 
-#endif // USE_LIBMINI_DATABUF && (USE_LIBMINI_DATABUF_JPEG || USE_LIBMINI_DATABUF_PNG || USE_LIBMINI_DATABUF_GREYC)
+void InitConvHook(bool enableGREYC)
+   {
+#if USE_LIBMINI_CONVHOOK
+
+   // specify conversion parameters
+   static convbase::MINI_CONVERSION_PARAMS conversion_params;
+   conversion_params.jpeg_quality=75.0f; // jpeg quality in percent
+   conversion_params.usegreycstoration=enableGREYC; // use greycstoration for image denoising
+   conversion_params.greyc_p=0.8f; // greycstoration sharpness, useful range=[0.7-0.9]
+   conversion_params.greyc_a=0.4f; // greycstoration anisotropy, useful range=[0.1-0.5]
+
+   // register libMini conversion hook (JPEG/PNG)
+   databuf::setconversion(convbase::conversionhook,&conversion_params);
+
+#endif
+   }

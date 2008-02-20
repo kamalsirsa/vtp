@@ -78,3 +78,10 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 #endif
 
 #endif	// HELPERH
+
+void autocompress(int isrgbadata,unsigned char *rawdata,unsigned int bytes,
+				  unsigned char **s3tcdata,unsigned int *s3tcbytes,int width,int height,
+				  void *data);
+
+void InitSquishHook();
+void InitConvHook(bool enableGREYC=false);
