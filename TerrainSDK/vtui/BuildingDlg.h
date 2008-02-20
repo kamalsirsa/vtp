@@ -1,7 +1,7 @@
 //
 // Name: BuildingDlg.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -39,7 +39,7 @@ public:
 	wxListBox* GetLevelCtrl()  { return (wxListBox*) FindWindow( ID_LEVEL ); }
 	wxListBox* GetEdgeCtrl()  { return (wxListBox*) FindWindow( ID_EDGE ); }
 	wxChoice* GetFacadeChoice()  { return (wxChoice*) FindWindow( ID_FACADE ); }
-	void Setup(vtStructureArray *pSA, vtBuilding *bld, vtHeightField *pHeightField);
+	void Setup(vtStructureArray *pSA, vtBuilding *bld);
 
 	void EditColor();
 	void SetLevel(int i);
@@ -72,7 +72,6 @@ protected:
 	vtBuilding  *m_pBuilding;
 	vtLevel  *m_pLevel;
 	vtEdge  *m_pEdge;
-	vtHeightField *m_pHeightField;
 
 	int  m_iLevel;
 	int  m_iEdge;
@@ -95,7 +94,6 @@ protected:
 protected:
 	// WDR: handler declarations for BuildingDlg
 	void OnChoiceFacade( wxCommandEvent &event );
-	void OnEditHeights( wxCommandEvent &event );
 	void OnVertOffset( wxCommandEvent &event );
 	void OnFeatDoor( wxCommandEvent &event );
 	void OnFeatWindow( wxCommandEvent &event );

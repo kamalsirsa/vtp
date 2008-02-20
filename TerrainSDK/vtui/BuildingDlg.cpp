@@ -53,7 +53,6 @@ BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
 	EVT_BUTTON( ID_FEAT_DOOR, BuildingDlg::OnFeatDoor )
 	EVT_CLOSE(BuildingDlg::OnCloseWindow)
 	EVT_CHAR_HOOK(BuildingDlg::OnCharHook)
-	EVT_BUTTON( ID_EDITHEIGHTS, BuildingDlg::OnEditHeights )
 	EVT_CHOICE( ID_FACADE, BuildingDlg::OnChoiceFacade )
 END_EVENT_TABLE()
 
@@ -61,7 +60,6 @@ BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	m_pHeightField = NULL;
 	m_bSetting = false;
 	m_bEdges = false;
 
@@ -87,12 +85,10 @@ void BuildingDlg::SetupValidators()
 	}
 }
 
-void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld,
-						vtHeightField *pHeightField)
+void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld)
 {
 	m_pSA = pSA;
 	m_pBuilding = bld;
-	m_pHeightField = pHeightField;
 }
 
 void BuildingDlg::EditColor()
@@ -155,16 +151,6 @@ void BuildingDlg::OnChoiceFacade( wxCommandEvent &event )
 		m_pEdge->m_Facade = Facade.mb_str(wxConvUTF8);
 		Modified();
 	}
-}
-
-void BuildingDlg::OnEditHeights( wxCommandEvent &event )
-{
-	if (!m_pHeightField)
-		return;
-
-	//CHeightDialog HeightDialog(this, -1, _("Baseline Editor"));
-	//HeightDialog.Setup(m_pBuilding, m_pHeightField);
-	//HeightDialog.ShowModal();
 }
 
 void BuildingDlg::OnFeatDoor( wxCommandEvent &event )
