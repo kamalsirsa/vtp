@@ -16,7 +16,7 @@
 #include "TileDlg.h"
 #include "FileFilters.h"
 #include "BuilderView.h"
-#include "Helper.h"
+#include "vtui/Helper.h"
 
 // WDR: class implementations
 

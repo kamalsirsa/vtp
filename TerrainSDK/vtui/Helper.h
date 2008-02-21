@@ -2,7 +2,7 @@
 // vtui Helper.h
 //  Some useful standalone functions for use with wxWindows.
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,6 +21,29 @@ int AddFilenamesToChoice(wxChoice *choice, const char *directory,
 	const char *wildcard, int omit_chars = 0);
 int AddFilenamesToStringArray(vtStringArray &array, const char *directory,
 	const char *wildcard, int omit_chars = 0);
+void AddType(wxString &str, const wxString &filter);
+
+/////
+
+void IncreaseRect(wxRect &rect, int adjust);
+void DrawRectangle(wxDC* pDC, const wxRect &rect);
+
+/////
+
+#if WIN32
+/**
+ * Win32 allows us to do a real StretchBlt operation, although it still won't
+ * do a StretchBlt with a mask.
+ */
+class wxDC2 : public wxDC
+{
+public:
+	void StretchBlit(const wxBitmap &bmp, wxCoord x, wxCoord y,
+		wxCoord width, wxCoord height, wxCoord src_x, wxCoord src_y,
+		wxCoord src_width, wxCoord src_height);
+};
+#endif	// WIN32
+
 bool LogWindowsVersion();
 vtString FormatCoord(bool bGeo, double val, bool minsec = false);
 enum wxLanguage GetLangFromName(const wxString &name);

@@ -1,7 +1,7 @@
 //
 // VTBuilder Helper.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,31 +10,6 @@
 
 #include "vtdata/Projections.h"
 #include "vtdata/MathTypes.h"
-
-/////
-
-void IncreaseRect(wxRect &rect, int adjust);
-void DrawRectangle(wxDC* pDC, const wxRect &rect);
-
-/////
-
-void AddType(wxString &str, const wxString &filter);
-
-/////
-
-#if WIN32
-/**
- * Win32 allows us to do a real StretchBlt operation, although it still won't
- * do a StretchBlt with a mask.
- */
-class wxDC2 : public wxDC
-{
-public:
-	void StretchBlit(const wxBitmap &bmp, wxCoord x, wxCoord y,
-		wxCoord width, wxCoord height, wxCoord src_x, wxCoord src_y,
-		wxCoord src_width, wxCoord src_height);
-};
-#endif	// WIN32
 
 /////////////////
 class vtMiniDatabuf;

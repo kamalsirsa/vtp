@@ -1,5 +1,5 @@
 //
-// Some useful standalone functions for use with wxWindows.
+// vtui Helper.cpp: Some useful standalone functions for use with wxWindows.
 //
 // Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -181,6 +181,132 @@ int AddFilenamesToStringArray(vtStringArray &array, const char *directory,
 	}
 	return matches;
 }
+
+//////////////////////////////////////
+
+/**
+ * Add a file format type to a directory dialog filter string.
+ *
+ * Example, to ask the user for a BT or JPEG file:
+
+	wxString filter = _("All Formats|");
+	AddType(filter, _T("BT Files (*.bt)|*.bt"));
+	AddType(filter, _T("JPEG Files (*.jpg;*.jpeg)|*.jpg;*.jpeg"));
+	wxFileDialog loadFile(NULL, _("Open file"), _T(""), _T(""), filter, wxFD_OPEN);
+ */
+void AddType(wxString &str, const wxString &filter)
+{
+	// Chop up the input string.  Expected form is "str1|str2|str3"
+	wxString str1 = str.BeforeFirst('|');
+
+	wxString str2 = str.AfterFirst('|');
+	str2 = str2.BeforeFirst('|');
+
+	wxString str3 = str.AfterFirst('|');
+	str3 = str3.AfterFirst('|');
+
+	// Chop up the filter string.  str4 is the wildcard part.
+	wxString str4 = filter.AfterFirst('|');
+
+	// Now rebuild the string, with the filter added
+	wxString output = str1 + _T("|");
+	output += str2;
+	if (str2.Len() > 1)
+		output += _T(";");
+	output += str4;
+	output += _T("|");
+	if (str3.Len() > 1)
+	{
+		output += str3;
+		output += _T("|");
+	}
+	output += filter;
+
+	str = output;
+}
+
+//////////////////////////////////
+
+void IncreaseRect(wxRect &rect, int adjust)
+{
+	rect.y -= adjust;
+	rect.height += (adjust<<1);
+	rect.x -= adjust;
+	rect.width += (adjust<<1);
+}
+
+void DrawRectangle(wxDC* pDC, const wxRect &rect)
+{
+	int left = rect.x;
+	int right = rect.x + rect.GetWidth();
+	int top = rect.y;
+	int bottom = rect.y + rect.GetHeight();
+	wxPoint p[5];
+	p[0].x = left;
+	p[0].y = bottom;
+
+	p[1].x = left;
+	p[1].y = top;
+
+	p[2].x = right;
+	p[2].y = top;
+
+	p[3].x = right;
+	p[3].y = bottom;
+
+	p[4].x = left;
+	p[4].y = bottom;
+	pDC->DrawLines(5, p);
+
+	pDC->DrawLine(left, bottom, right, top);
+	pDC->DrawLine(left, top, right, bottom);
+}
+
+
+//////////////////////////////////////
+
+#if WIN32
+
+//
+// Win32 allows us to do a real StrectBlt operation, although it still won't
+// do a StretchBlt with a mask.
+//
+void wxDC2::StretchBlit(const wxBitmap &bmp,
+						wxCoord x, wxCoord y,
+						wxCoord width, wxCoord height,
+						wxCoord src_x, wxCoord src_y,
+						wxCoord src_width, wxCoord src_height)
+{
+	wxCHECK_RET( bmp.Ok(), _T("invalid bitmap in wxDC::DrawBitmap") );
+
+	HDC cdc = ((HDC)GetHDC());
+	HDC memdc = ::CreateCompatibleDC( cdc );
+	HBITMAP hbitmap = (HBITMAP) bmp.GetHBITMAP( );
+
+	COLORREF old_textground = ::GetTextColor(cdc);
+	COLORREF old_background = ::GetBkColor(cdc);
+	if (m_textForegroundColour.Ok())
+	{
+		::SetTextColor(cdc, m_textForegroundColour.GetPixel() );
+	}
+	if (m_textBackgroundColour.Ok())
+	{
+		::SetBkColor(cdc, m_textBackgroundColour.GetPixel() );
+	}
+
+	HGDIOBJ hOldBitmap = ::SelectObject( memdc, hbitmap );
+
+//	int bwidth = bmp.GetWidth(), bheight = bmp.GetHeight();
+	::StretchBlt( cdc, x, y, width, height, memdc, src_x, src_y, src_width, src_height, SRCCOPY);
+
+	::SelectObject( memdc, hOldBitmap );
+	::DeleteDC( memdc );
+
+	::SetTextColor(cdc, old_textground);
+	::SetBkColor(cdc, old_background);
+}
+
+#endif // WIN32
 
 ///////////////////////////////////////////////////////////////////////
 
