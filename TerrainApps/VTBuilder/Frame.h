@@ -60,7 +60,6 @@ public:
 	void CreateToolbar();
 	void RefreshToolbars();
 	virtual void AddMainToolbars();
-	bool DrawDisabled() { return m_bDrawDisabled; }
 
 protected:
 	void OnClose(wxCloseEvent &event);
@@ -317,8 +316,9 @@ public:
 	void RefreshTreeView();
 	void RefreshStatusBar();
 	BuilderView *GetView() { return m_pView; }
-	void OnSelectionChanged();
 	virtual void UpdateFeatureDialog(vtRawLayer *raw, vtFeatureSetPoint2D *set, int iEntity);
+	virtual void OnSetMode(LBMode m);
+	virtual void OnSelectionChanged();
 
 	// Raw features
 	FeatInfoDlg	*ShowFeatInfoDlg();
@@ -377,7 +377,6 @@ protected:
 
 	MyTreeCtrl	*m_pTree;		// left child of splitter
 	BuilderView	*m_pView;		// right child of splitter
-	bool	m_bDrawDisabled;
 	vtScaleBar *m_pScaleBar;
 
 	// menu numbers, for each layer type that has a corresponding menu

@@ -23,7 +23,7 @@
 
 #include "BuilderView.h"
 #include "FileFilters.h"
-#include "Frame.h"
+#include "Builder.h"
 #include "Helper.h"
 #include "vtBitmap.h"
 #include "vtImage.h"
@@ -594,11 +594,13 @@ bool Builder::DoSampleElevationToTilePyramids(BuilderView *pView,
 											  const TilingOptions &opts,
 											  bool bFloat, bool bShowGridMarks)
 {
-	OpenProgressDialog2(_T("Writing tiles"), true, m_pParentWindow);
+	if (m_pParentWindow)
+		OpenProgressDialog2(_T("Writing tiles"), true, m_pParentWindow);
 	bool success = SampleElevationToTilePyramids(pView, opts, bFloat, bShowGridMarks);
 	if (bShowGridMarks && pView)
 		pView->HideGridMarks();
-	CloseProgressDialog2();
+	if (m_pParentWindow)
+		CloseProgressDialog2();
 	return success;
 }
 
@@ -696,10 +698,11 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 
 	ImageGLCanvas *pCanvas = NULL;
 #if USE_OPENGL
-	wxFrame *frame = new wxFrame;
+	wxFrame *frame = NULL;
 	if (opts.bCreateDerivedImages && opts.bUseTextureCompression &&
 		opts.eCompressionType == TC_OPENGL)
 	{
+		frame = new wxFrame;
 		frame->Create(m_pParentWindow, -1, _T("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
 		pCanvas = new ImageGLCanvas(frame);

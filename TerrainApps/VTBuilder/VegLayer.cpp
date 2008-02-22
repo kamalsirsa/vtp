@@ -15,7 +15,7 @@
 #include "vtdata/vtLog.h"
 #include "ScaledView.h"
 #include "VegLayer.h"
-#include "vtui/Helper.h"	// for DisplayAndLog
+#include "Helper.h"	// for DisplayAndLog
 
 #include "Frame.h"	// for access to the application's plants and biotypes
 

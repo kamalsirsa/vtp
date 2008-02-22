@@ -149,16 +149,15 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	if (!m_bGotFirstIdle)
 		return;
 
-	MainFrame *pFrame = GetMainFrame();
-	if (pFrame->DrawDisabled())
+	if (g_bld->DrawDisabled())
 		return;
 
 	vtLayerPtr lp;
-	int i, iLayers = pFrame->NumLayers();
+	int i, iLayers = g_bld->NumLayers();
 
 	// Draw 'interrupted projection outline' for current projection
 	vtProjection proj;
-	GetMainFrame()->GetProjection(proj);
+	g_bld->GetProjection(proj);
 	if (proj.IsDymaxion())
 	{
 		DrawDymaxionOutline(&dc);
@@ -171,7 +170,7 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	// Draw the solid layers first
 	for (i = 0; i < iLayers; i++)
 	{
-		lp = pFrame->GetLayer(i);
+		lp = g_bld->GetLayer(i);
 		if (lp->GetType() != LT_IMAGE && lp->GetType() != LT_ELEVATION)
 			continue;
 		if (lp->GetVisible())
@@ -180,13 +179,13 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	// Then the poly/vector/point layers
 	for (i = 0; i < iLayers; i++)
 	{
-		lp = pFrame->GetLayer(i);
+		lp = g_bld->GetLayer(i);
 		if (lp->GetType() == LT_IMAGE || lp->GetType() == LT_ELEVATION)
 			continue;
 		if (lp->GetVisible())
 			lp->DrawLayer(&dc, this);
 	}
-	vtLayer *curr = pFrame->GetActiveLayer();
+	vtLayer *curr = g_bld->GetActiveLayer();
 	if (curr && (curr->GetType() == LT_ELEVATION || curr->GetType() == LT_IMAGE))
 	{
 		DRECT rect;
@@ -197,7 +196,7 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	if (m_bShowUTMBounds)
 		DrawUTMBounds(&dc);
 
-	DrawAreaTool(&dc, pFrame->m_area);
+	DrawAreaTool(&dc, g_bld->m_area);
 
 	if (m_bShowGridMarks)
 		DrawGridMarks(dc);	// erase
@@ -251,11 +250,7 @@ void BuilderView::SetMode(LBMode m)
 			break;
 	}
 
-	// Show this dialog only in AddLinear mode
-	GetMainFrame()->ShowLinearStructureDlg(m_ui.mode == LB_AddLinear);
-
-	// Show this dialog only in AddInstance mode
-	GetMainFrame()->ShowInstanceDlg(m_ui.mode == LB_AddInstance);
+	g_bld->OnSetMode(m);
 
 	if (m_ui.mode != LB_LinkEdit)
 	{
@@ -275,7 +270,7 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 	pDC->SetPen(orange);
 
 	vtProjection proj;
-	GetMainFrame()->GetProjection(proj);
+	g_bld->GetProjection(proj);
 
 	int width, height;
 	GetClientSize(&width, &height);
@@ -520,7 +515,7 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 		if (ImportWorldMap())
 		{
 			vtProjection proj;
-			GetMainFrame()->GetProjection(proj);
+			g_bld->GetProjection(proj);
 			SetWMProj(proj);
 		}
 		else
@@ -539,7 +534,7 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 	//  from the current CRS to Geo, so that we can test
 	bool bHaveBounds = false;
 	DRECT bounds(1E9, -1E9, -1E9, 1E9);
-	vtProjection &proj = GetMainFrame()->GetAtProjection();
+	vtProjection &proj = g_bld->GetAtProjection();
 	if (!proj.IsGeographic() && m_pCurrentToMap != NULL)
 	{
 		wxSize size = GetClientSize();
@@ -641,7 +636,7 @@ void BuilderView::DrawScaleBar(wxDC * p_DC)
 	//right bottom corner
 	CalcUnscrolledPosition(w, h, &ww, &hh);
 
-	vtProjection &proj = GetMainFrame()->GetAtProjection();
+	vtProjection &proj = g_bld->GetAtProjection();
 	LinearUnits lu = proj.GetUnits();
 	wxString unit_str;
 
@@ -798,8 +793,6 @@ void BuilderView::BeginBox()
 
 void BuilderView::EndBox(const wxMouseEvent& event)
 {
-	MainFrame *frame = GetMainFrame();
-
 	m_bBoxing = false;
 
 	if (!m_bMouseMoved)
@@ -821,15 +814,15 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 				ZoomToRect(m_world_rect, 0.0f);
 			break;
 		case LB_Box:
-			DrawAreaTool(&dc, frame->m_area);
-			frame->m_area = m_world_rect;
-			DrawAreaTool(&dc, frame->m_area);
+			DrawAreaTool(&dc, g_bld->m_area);
+			g_bld->m_area = m_world_rect;
+			DrawAreaTool(&dc, g_bld->m_area);
 			break;
 		case LB_Node:
 		case LB_Link:
 			{
 			// select everything in the highlighted box.
-				vtRoadLayer *pRL = GetMainFrame()->GetActiveRoadLayer();
+				vtRoadLayer *pRL = g_bld->GetActiveRoadLayer();
 				if (pRL->SelectArea(m_world_rect, (m_ui.mode == LB_Node),
 							m_bCrossSelect))
 				{
@@ -856,7 +849,7 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 {
 	VTLOG1("EndBoxFeatureSelect:");
 
-	vtLayer *pL = GetMainFrame()->GetActiveLayer();
+	vtLayer *pL = g_bld->GetActiveLayer();
 	if (!pL) return;
 
 	wxString verb;
@@ -905,12 +898,13 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 		msg.Printf(_("%d entities, %d total selected"), changed, selected);
 	verb += _T(" ");
 	verb += msg;
-	GetMainFrame()->SetStatusText(verb);
+	if (g_bld->m_pParentWindow)
+		g_bld->m_pParentWindow->SetStatusText(verb);
 
 	// Log it also
 	VTLOG((const char *)verb.mb_str(wxConvUTF8));
 
-	GetMainFrame()->OnSelectionChanged();
+	g_bld->OnSelectionChanged();
 	Refresh(false);
 }
 
@@ -1035,9 +1029,9 @@ void BuilderView::ClearDistanceTool()
 void BuilderView::UpdateDistance()
 {
 	if (m_ui.m_bDistanceToolMode)
-		GetMainFrame()->UpdateDistance(m_distance_path);
+		g_bld->UpdateDistance(m_distance_path);
 	else
-		GetMainFrame()->UpdateDistance(m_distance_p1, m_distance_p2);
+		g_bld->UpdateDistance(m_distance_p1, m_distance_p2);
 }
 
 
@@ -1046,14 +1040,12 @@ void BuilderView::UpdateDistance()
 
 void BuilderView::CheckForTerrainSelect(const DPoint2 &loc)
 {
-	MainFrame *pFrame = GetMainFrame();
-
 	// perhaps the user clicked on a terrain
 	bool bFound = false;
 	DRECT rect;
-	for (int l = 0; l < pFrame->NumLayers(); l++)
+	for (int l = 0; l < g_bld->NumLayers(); l++)
 	{
-		vtLayerPtr lp = pFrame->GetLayer(l);
+		vtLayerPtr lp = g_bld->GetLayer(l);
 		if (lp->GetType() != LT_ELEVATION) continue;
 		vtElevLayer *t = (vtElevLayer *)lp;
 
@@ -1087,9 +1079,7 @@ void BuilderView::DrawInvertedLine(const DPoint2 &ep1, const DPoint2 &ep2)
 //
 void BuilderView::SetActiveLayer(vtLayerPtr lp)
 {
-	MainFrame *pFrame = GetMainFrame();
-
-	vtLayer *last = pFrame->GetActiveLayer();
+	vtLayer *last = g_bld->GetActiveLayer();
 
 	LayerType prev_type = last ? last->GetType() : LT_UNKNOWN;
 	LayerType curr_type = lp ? lp->GetType() : LT_UNKNOWN;
@@ -1111,7 +1101,7 @@ void BuilderView::SetActiveLayer(vtLayerPtr lp)
 				HighlightArea(pDC, rect);
 			}
 
-			pFrame->SetActiveLayer(lp, true);
+			g_bld->SetActiveLayer(lp, true);
 
 			if (bNeedRedraw)
 			{
@@ -1121,7 +1111,7 @@ void BuilderView::SetActiveLayer(vtLayerPtr lp)
 		}
 		else
 			// Simply change the current layer
-			pFrame->SetActiveLayer(lp, false);
+			g_bld->SetActiveLayer(lp, false);
 	}
 }
 
@@ -1220,7 +1210,7 @@ void BuilderView::BeginDistance()
 		// default: add point to the path
 		m_distance_path.Append(m_ui.m_DownLocation);
 
-		GetMainFrame()->UpdateDistance(m_distance_path);
+		g_bld->UpdateDistance(m_distance_path);
 	}
 	else
 	{
@@ -1235,7 +1225,7 @@ void BuilderView::BeginDistance()
 
 void BuilderView::BeginArea()	// in canvas coordinates
 {
-	DRECT area = GetMainFrame()->m_area;
+	DRECT area = g_bld->m_area;
 	if (area.IsEmpty())
 	{
 		BeginBox();
@@ -1274,18 +1264,16 @@ void BuilderView::DoArea(wxPoint delta)	// in canvas coordinates
 	wxClientDC dc(this);
 	PrepareDC(dc);
 
-	MainFrame *frame = GetMainFrame();
-
-	DrawAreaTool(&dc, frame->m_area);	// erase
+	DrawAreaTool(&dc, g_bld->m_area);	// erase
 	if (m_iDragSide & 1)
-		frame->m_area.left += odx(delta.x);
+		g_bld->m_area.left += odx(delta.x);
 	if (m_iDragSide & 2)
-		frame->m_area.right += odx(delta.x);
+		g_bld->m_area.right += odx(delta.x);
 	if (m_iDragSide & 4)
-		frame->m_area.top += ody(delta.y);
+		g_bld->m_area.top += ody(delta.y);
 	if (m_iDragSide & 8)
-		frame->m_area.bottom += ody(delta.y);
-	DrawAreaTool(&dc, frame->m_area);	// redraw
+		g_bld->m_area.bottom += ody(delta.y);
+	DrawAreaTool(&dc, g_bld->m_area);	// redraw
 }
 
 void BuilderView::InvertAreaTool(const DRECT &rect)
@@ -1359,7 +1347,7 @@ void BuilderView::DrawGridMarks(wxDC &dc)
 
 void BuilderView::DeselectAll()
 {
-	vtRoadLayer *pRL = GetMainFrame()->GetActiveRoadLayer();
+	vtRoadLayer *pRL = g_bld->GetActiveRoadLayer();
 	if (pRL)
 	{
 		DRECT* world_bounds;
@@ -1385,18 +1373,18 @@ void BuilderView::DeselectAll()
 		}
 		delete world_bounds;
 	}
-	vtStructureLayer *pSL = GetMainFrame()->GetActiveStructureLayer();
+	vtStructureLayer *pSL = g_bld->GetActiveStructureLayer();
 	if (pSL)
 	{
 		pSL->DeselectAll();
 		Refresh(TRUE);
 	}
-	vtRawLayer *pRawL = GetMainFrame()->GetActiveRawLayer();
+	vtRawLayer *pRawL = g_bld->GetActiveRawLayer();
 	if (pRawL)
 	{
 		pRawL->GetFeatureSet()->DeselectAll();
 		Refresh(TRUE);
-		GetMainFrame()->OnSelectionChanged();
+		g_bld->OnSelectionChanged();
 	}
 }
 
@@ -1518,7 +1506,7 @@ void BuilderView::OnLeftDown(wxMouseEvent& event)
 		m_bMouseCaptured = true;
 	}
 
-	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
+	vtLayerPtr pL = g_bld->GetActiveLayer();
 	switch (m_ui.mode)
 	{
 		case LB_TSelect:
@@ -1567,7 +1555,7 @@ void BuilderView::OnLeftUp(wxMouseEvent& event)
 	OnLButtonDragRelease(event);
 
 	// Dispatch for layer-specific handling
-	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
+	vtLayerPtr pL = g_bld->GetActiveLayer();
 	if (pL)
 		pL->OnLeftUp(this, m_ui);
 
@@ -1580,14 +1568,14 @@ void BuilderView::OnLeftDoubleClick(wxMouseEvent& event)
 	m_ui.m_CurPoint = m_ui.m_LastPoint = m_ui.m_DownPoint;
 	object(m_ui.m_DownPoint, m_ui.m_DownLocation);
 
-	vtLayer *pL = GetMainFrame()->GetActiveLayer();
+	vtLayer *pL = g_bld->GetActiveLayer();
 	if (pL)
 		pL->OnLeftDoubleClick(this, m_ui);
 }
 
 void BuilderView::OnLButtonClick(wxMouseEvent& event)
 {
-	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
+	vtLayerPtr pL = g_bld->GetActiveLayer();
 	if (!pL) return;
 
 	GetCanvasPosition(event, m_ui.m_DownPoint);
@@ -1617,7 +1605,7 @@ void BuilderView::OnLButtonDragRelease(wxMouseEvent& event)
 
 	if (m_iDragSide)
 	{
-		GetMainFrame()->m_area.Sort();
+		g_bld->m_area.Sort();
 		m_iDragSide = 0;
 	}
 }
@@ -1653,23 +1641,24 @@ void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 	else if (m_ui.mode == LB_LinkExtend)
 		returnVal = pRL->SelectAndExtendLink(m_ui.m_DownLocation, error, world_bound);
 
+	wxString str;
 	if (returnVal)
 	{
 		wxRect screen_bound = WorldToWindow(world_bound);
 		IncreaseRect(screen_bound, BOUNDADJUST);
 		Refresh(TRUE, &screen_bound);
-		wxString str;
 		if (m_ui.mode == LB_Node)
 			str.Printf(_("Selected 1 Node (%d total)"), pRL->GetSelectedNodes());
 		else
 			str.Printf(_("Selected 1 Road (%d total)"), pRL->GetSelectedLinks());
-		GetMainFrame()->SetStatusText(str);
 	}
 	else
 	{
 		DeselectAll();
-		GetMainFrame()->SetStatusText(_("Deselected all"));
+		str = _("Deselected all");
 	}
+	if (g_bld->m_pParentWindow)
+		g_bld->m_pParentWindow->SetStatusText(str);
 }
 
 
@@ -1761,7 +1750,7 @@ void BuilderView::OnRightDown(wxMouseEvent& event)
 	}
 
 	// Dispatch to the layer
-	vtLayer *pL = GetMainFrame()->GetActiveLayer();
+	vtLayer *pL = g_bld->GetActiveLayer();
 	if (pL)
 		pL->OnRightDown(this, m_ui);
 }
@@ -1786,7 +1775,7 @@ void BuilderView::OnRightUp(wxMouseEvent& event)
 		return;
 	}
 
-	vtLayer *pL = GetMainFrame()->GetActiveLayer();
+	vtLayer *pL = g_bld->GetActiveLayer();
 	if (!pL)
 		return;
 
@@ -1847,12 +1836,12 @@ void BuilderView::OnMouseMove(wxMouseEvent& event)
 	}
 
 	// Dispatch for layer-specific handling
-	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
+	vtLayerPtr pL = g_bld->GetActiveLayer();
 	if (pL)
 		pL->OnMouseMove(this, m_ui);
 
 	// update new mouse coordinates, etc. in status bar
-	GetMainFrame()->RefreshStatusBar();
+	g_bld->RefreshStatusBar();
 
 	m_ui.m_LastPoint = m_ui.m_CurPoint;
 	m_ui.m_PrevLocation = m_ui.m_CurLocation;
@@ -1868,7 +1857,7 @@ void BuilderView::OnMouseWheel(wxMouseEvent& event)
 		SetScale(GetScale() / sqrt(2.0));
 
 	// update scale in status bar
-	GetMainFrame()->RefreshStatusBar();
+	g_bld->RefreshStatusBar();
 }
 
 void BuilderView::OnIdle(wxIdleEvent& event)
@@ -1877,19 +1866,18 @@ void BuilderView::OnIdle(wxIdleEvent& event)
 	{
 		m_bGotFirstIdle = true;
 		VTLOG("First View Idle\n");
-		GetMainFrame()->ZoomAll();
+		g_bld->ZoomAll();
 		Refresh();
 		// wxGetApp().Exit();	// handy for testing memleaks
 	}
 
-	MainFrame *pFrame = GetMainFrame();
-	int i, iLayers = pFrame->NumLayers();
+	int i, iLayers = g_bld->NumLayers();
 
 	// Check to see if any elevation layers needs drawing
 	bool bDrew = false;
 	for (i = 0; i < iLayers; i++)
 	{
-		vtLayer *lp = pFrame->GetLayer(i);
+		vtLayer *lp = g_bld->GetLayer(i);
 		if (lp->GetType() == LT_ELEVATION)
 		{
 			vtElevLayer *pEL = (vtElevLayer *)lp;
@@ -1951,7 +1939,6 @@ void BuilderView::OnChar(wxKeyEvent& event)
 
 	bool ctrl = event.ControlDown();
 	int code = event.GetKeyCode();
-	MainFrame *frm = GetMainFrame();
 
 	if (code == ' ')
 	{
@@ -1970,18 +1957,18 @@ void BuilderView::OnChar(wxKeyEvent& event)
 	{
 		// a place to put quick hacks and tests
 #if 0
-		vtRawLayer *pRaw = GetMainFrame()->GetActiveRawLayer();
+		vtRawLayer *pRaw = g_bld->GetActiveRawLayer();
 		if (!pRaw) return;
 		pRaw->ReadGeoURL();
 		Refresh();
 #endif
 #if 0
-		vtRoadLayer *pR = (vtRoadLayer *)GetMainFrame()->FindLayerOfType(LT_ROAD);
-		vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
+		vtRoadLayer *pR = (vtRoadLayer *)g_bld->FindLayerOfType(LT_ROAD);
+		vtElevLayer *pE = (vtElevLayer *)g_bld->FindLayerOfType(LT_ELEVATION);
 		pR->CarveRoadway(pE, 2.0);
 #endif
 #if 0
-		vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
+		vtElevLayer *pE = (vtElevLayer *)g_bld->FindLayerOfType(LT_ELEVATION);
 		if (pE)
 		{
 			vtElevationGrid *g = pE->m_pGrid;
@@ -2130,8 +2117,8 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			// create grid of points over current layer
 			vtFeatureSetPoint2D set;
 			vtProjection proj;
-			set.SetProjection(GetMainFrame()->GetAtProjection());
-			DRECT area = GetMainFrame()->m_area;
+			set.SetProjection(g_bld->GetAtProjection());
+			DRECT area = g_bld->m_area;
 			set.AddField("filename", FT_String, 30);
 			set.AddField("rotation", FT_Float);
 
@@ -2162,7 +2149,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 #endif
 #if 0
 		{
-			vtRawLayer *ab = GetMainFrame()->GetActiveRawLayer();
+			vtRawLayer *ab = g_bld->GetActiveRawLayer();
 			vtFeatureSetLineString3D *fe3;
 			fe3 = dynamic_cast<vtFeatureSetLineString3D*>(ab->GetFeatureSet());
 			if (fe3)
@@ -2204,16 +2191,6 @@ void BuilderView::OnChar(wxKeyEvent& event)
 #endif
 #if 0
 		{
-		#include "Example1.cpp"
-		// refresh the view
-		frm->ZoomAll();
-		frm->RefreshToolbars();
-		frm->RefreshTreeView();
-		frm->RefreshStatusBar();
-		}
-#endif
-#if 0
-		{
 			vtStructureLayer *pL = (vtStructureLayer *)frm->FindLayerOfType(LT_STRUCTURE);
 			if (pL)
 			{
@@ -2242,14 +2219,13 @@ void BuilderView::OnKeyDown(wxKeyEvent& event)
 #endif
 
 	wxCommandEvent dummy;
-	MainFrame *pFrame = GetMainFrame();
 
 	// Some accelerators aren't caught properly (at least on Windows)
 	//  So, explicitly check for them here.
 	if (code == 43 && ctrl)
-		pFrame->OnViewZoomIn(dummy);
+		g_bld->OnViewZoomIn(dummy);
 	else if (code == 45 && ctrl)
-		pFrame->OnViewZoomOut(dummy);
+		g_bld->OnViewZoomOut(dummy);
 
 	else
 		event.Skip();

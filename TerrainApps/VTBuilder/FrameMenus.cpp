@@ -1161,7 +1161,11 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 	for (int i = 0; i < layers; i++)
 	{
 		vtLayer *lp = m_Layers.GetAt(i);
+
+		OpenProgressDialog(_("Reprojecting"), false, this);
 		bool success = lp->TransformCoords(proj);
+		CloseProgressDialog();
+
 		if (success)
 			succeeded++;
 	}

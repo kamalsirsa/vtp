@@ -183,7 +183,6 @@ MainFrame::MainFrame(wxFrame* frame, const wxString& title,
 	m_pProfileDlg = NULL;
 	m_pLinearStructureDlg = NULL;
 	m_pInstanceDlg = NULL;
-	m_bDrawDisabled = false;
 	m_bAdoptFirstCRS = true;
 	m_pToolbar = NULL;
 	m_pMapServerDlg = NULL;
@@ -279,15 +278,6 @@ void MainFrame::SetupUI()
 	proj.SetWellKnownGeogCS("WGS84");
 	SetProjection(proj);
 	RefreshStatusBar();
-
-	// Get datapaths from the vtp.xml config file
-	ReadDataPath();
-	VTLOG("Using Datapaths:\n");
-	int i, n = vtGetDataPath().size();
-	if (n == 0)
-		VTLOG("   none.\n");
-	for (i = 0; i < n; i++)
-		VTLOG("   %s\n", (const char *) vtGetDataPath()[i]);
 
 	// Load structure defaults
 	bool foundmaterials = LoadGlobalMaterials();
@@ -1023,6 +1013,15 @@ void MainFrame::UpdateFeatureDialog(vtRawLayer *raw,
 	for (unsigned int i = 0; i < found.GetSize(); i++)
 		pSetP2->Pick(found[i]);
 	fdlg->ShowPicked();
+}
+
+void MainFrame::OnSetMode(LBMode m)
+{
+	// Show this dialog only in AddLinear mode
+	ShowLinearStructureDlg(m == LB_AddLinear);
+
+	// Show this dialog only in AddInstance mode
+	ShowInstanceDlg(m == LB_AddInstance);
 }
 
 

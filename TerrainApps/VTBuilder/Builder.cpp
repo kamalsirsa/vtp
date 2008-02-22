@@ -20,7 +20,6 @@
 
 #include "Builder.h"
 #include "Helper.h"
-#include "BuilderView.h"
 #include "VegGenOptions.h"
 #include "vtImage.h"
 #include "Options.h"
@@ -61,6 +60,7 @@ Builder::Builder()
 	m_pParentWindow = NULL;
 	m_LSOptions.Defaults();
 	m_pInstanceDlg = NULL;
+	m_bDrawDisabled = false;
 
 	m_tileopts.cols = 4;
 	m_tileopts.rows = 4;
@@ -71,6 +71,36 @@ Builder::Builder()
 	m_tileopts.eCompressionType = TC_OPENGL;
 
 	g_bld = this;
+
+	// Get datapaths from the vtp.xml config file
+	ReadDataPath();
+	VTLOG("Using Datapaths:\n");
+	int i, n = vtGetDataPath().size();
+	if (n == 0)
+		VTLOG("   none.\n");
+	for (i = 0; i < n; i++)
+		VTLOG("   %s\n", (const char *) vtGetDataPath()[i]);
+
+	VTLOG1(" Initializing GDAL.\n");
+	CheckForGDALAndWarn();
+	g_GDALWrapper.RequestGDALFormats();
+
+	// Fill list of layer type names
+	if (vtLayer::LayerTypeNames.IsEmpty())
+	{
+		// These must correspond to the order of the LayerType enum!
+		vtLayer::LayerTypeNames.Add(_("Raw"));
+		vtLayer::LayerTypeNames.Add(_("Elevation"));
+		vtLayer::LayerTypeNames.Add(_("Image"));
+		vtLayer::LayerTypeNames.Add(_("Road"));
+		vtLayer::LayerTypeNames.Add(_("Structure"));
+		vtLayer::LayerTypeNames.Add(_("Water"));
+		vtLayer::LayerTypeNames.Add(_("Vegetation"));
+		vtLayer::LayerTypeNames.Add(_("Utility"));
+#if SUPPORT_TRANSIT
+		vtLayer::LayerTypeNames.Add(_("Transit"));
+#endif
+	}
 
 	VTLOG1("  Builder constructor: exit\n");
 }

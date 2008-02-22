@@ -11,9 +11,11 @@
 #include "vtdata/Projections.h"
 #include "vtdata/Plants.h"		// for vtSpeciesList
 #include "vtdata/Fence.h"		// for LinStructOptions
+#include "vtdata/vtLog.h"
 
 #include "Layer.h"
 #include "TilingOptions.h"
+#include "BuilderView.h"
 
 class vtDLGFile;
 class vtVegLayer;
@@ -23,7 +25,6 @@ class vtImageLayer;
 class vtRoadLayer;
 class vtStructureLayer;
 class vtUtilityLayer;
-class BuilderView;
 class vtFeatureSet;
 class VegGenOptions;
 class vtElevationGrid;
@@ -112,7 +113,16 @@ public:
 
 	// UI
 	virtual void RefreshTreeStatus() {}
+	virtual void RefreshStatusBar() {}
 	virtual void UpdateFeatureDialog(vtRawLayer *raw, vtFeatureSetPoint2D *set, int iEntity) {}
+	virtual void OnSetMode(LBMode m) {}
+	virtual void OnSelectionChanged() {}
+	virtual void UpdateDistance(const DPoint2 &p1, const DPoint2 &p2) {}
+	virtual void UpdateDistance(const DLine2 &path) {}
+	virtual void ZoomAll() {}
+	virtual void OnViewZoomIn(wxCommandEvent& event) {}
+	virtual void OnViewZoomOut(wxCommandEvent& event) {}
+	bool DrawDisabled() { return m_bDrawDisabled; }
 
 	// Projection
 	void SetProjection(const vtProjection &p);
@@ -211,6 +221,7 @@ public:
 	// Application Data
 	DRECT		m_area;
 	wxFrame *m_pParentWindow;
+	bool	m_bDrawDisabled;
 
 protected:
 	void CheckOptionBounds();

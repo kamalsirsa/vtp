@@ -1,7 +1,7 @@
 //
 // Import.cpp - MainFrame methods for importing data
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -23,7 +23,7 @@
 #include "vtui/Helper.h"
 #include "vtui/ProjectionDlg.h"
 
-#include "Frame.h"
+#include "Builder.h"
 #include "Helper.h"
 #include "FileFilters.h"
 // Layers
@@ -359,7 +359,9 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 	msg += strFileName;
 	VTLOG(msg.mb_str(wxConvUTF8));
 	VTLOG("...\n");
-	OpenProgressDialog(msg, true, m_pParentWindow);
+
+	if (m_pParentWindow)
+		OpenProgressDialog(msg, true, m_pParentWindow);
 
 	// check the file extension
 	wxString strExt = strFileName.AfterLast('.');

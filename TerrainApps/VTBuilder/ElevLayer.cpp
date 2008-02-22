@@ -268,7 +268,6 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 			// actually re-project the grid elements
 			vtElevationGrid *grid_new = new vtElevationGrid;
 
-			OpenProgressDialog(_("Converting Elevation Projection"));
 			success = grid_new->ConvertProjection(m_pGrid, proj_new,
 				bUpgradeToFloat, progress_callback);
 
@@ -288,12 +287,10 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 	}
 	if (m_pTin)
 	{
-		OpenProgressDialog(_("Converting Elevation Projection"));
 		success = m_pTin->ConvertProjection(proj_new);
 	}
 	SetModified(true);
 
-	CloseProgressDialog();
 	return success;
 }
 
