@@ -2,6 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VTBuilder", "VTBuilder.vcproj", "{16336307-8BB7-4674-B686-CDF0DFD76227}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5F06081A-A795-48D3-8336-27455E83CD8E} = {5F06081A-A795-48D3-8336-27455E83CD8E}
+		{A40F3820-F3A0-42FD-AE17-492857E09B6D} = {A40F3820-F3A0-42FD-AE17-492857E09B6D}
 		{4C64F83E-D699-475E-B1F1-7F3DA1B7A833} = {4C64F83E-D699-475E-B1F1-7F3DA1B7A833}
 		{28EEF693-A93C-4B09-B5BD-5CCFAC5ACAFF} = {28EEF693-A93C-4B09-B5BD-5CCFAC5ACAFF}
 		{47644EC5-3AB8-4447-94AF-A691215D5D3A} = {47644EC5-3AB8-4447-94AF-A691215D5D3A}
@@ -21,6 +22,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainS
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unzip", "..\..\TerrainSDK\unzip\unzip.vcproj", "{5F06081A-A795-48D3-8336-27455E83CD8E}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BuilderLib", "BuilderLib.vcproj", "{A40F3820-F3A0-42FD-AE17-492857E09B6D}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -50,6 +55,10 @@ Global
 		{5F06081A-A795-48D3-8336-27455E83CD8E}.Debug.Build.0 = Debug|Win32
 		{5F06081A-A795-48D3-8336-27455E83CD8E}.Release.ActiveCfg = Release|Win32
 		{5F06081A-A795-48D3-8336-27455E83CD8E}.Release.Build.0 = Release|Win32
+		{A40F3820-F3A0-42FD-AE17-492857E09B6D}.Debug.ActiveCfg = Debug|Win32
+		{A40F3820-F3A0-42FD-AE17-492857E09B6D}.Debug.Build.0 = Debug|Win32
+		{A40F3820-F3A0-42FD-AE17-492857E09B6D}.Release.ActiveCfg = Release|Win32
+		{A40F3820-F3A0-42FD-AE17-492857E09B6D}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

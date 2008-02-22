@@ -1,7 +1,7 @@
 //
 //  The Special menu functions of the VTBuilder application.
 //
-// Copyright (c) 2003-2007 Virtual Terrain Project
+// Copyright (c) 2003-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,7 +18,8 @@
 #include "vtdata/vtLog.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/Icosa.h"
-#include "vtui/Helper.h"
+#include "vtui/Helper.h"	// for ProgressDialog
+#include "Helper.h"			// for DisplayAndLog
 #include "Frame.h"
 #include "ElevLayer.h"
 
