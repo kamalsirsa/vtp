@@ -323,7 +323,7 @@ bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 	int utmzone=proj.GetUTMZone();
 	int utmepsgdatum=proj.GetDatum();
 	int utmdatum=mapEPSG2MINI(utmepsgdatum);
-	fprintf(fp, "CoordSys_UTM=(%d,%d)\n",utmzone,utmdatum);
+	fprintf(fp, "CoordSys_UTM=(%d,%d)\n",utmzone,(utmzone!=0)?utmdatum:0);
 
 	fclose(fp);
 
