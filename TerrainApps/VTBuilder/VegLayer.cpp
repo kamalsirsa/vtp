@@ -1,7 +1,7 @@
 //
 // VegLayer.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,7 +15,7 @@
 #include "vtdata/vtLog.h"
 #include "ScaledView.h"
 #include "VegLayer.h"
-#include "Helper.h"	// for DisplayAndLog
+#include "vtui/Helper.h"	// for DisplayAndLog
 
 #include "Frame.h"	// for access to the application's plants and biotypes
 
