@@ -1,7 +1,7 @@
 //
 // Name: BuildingDlg3d.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -24,7 +24,7 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	// WDR: method declarations for BuildingDlg
-	void Setup(vtBuilding3d *bld3d, vtHeightField3d *pHeightField);
+	void Setup(vtBuilding3d *bld3d);
 
 	// WDR: member variable declarations for BuildingDlg
 	vtBuilding3d	*m_pBuilding3d;

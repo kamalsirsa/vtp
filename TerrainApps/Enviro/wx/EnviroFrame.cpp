@@ -2733,7 +2733,7 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 			vtBuilding3d *bld = sa->GetBuilding(sel);
 			if (bld)
 			{
-				m_pBuildingDlg->Setup(bld, pTerr->GetHeightField());
+				m_pBuildingDlg->Setup(bld);
 				m_pBuildingDlg->Show(true);
 			}
 			vtFence3d *fen = sa->GetFence(sel);
