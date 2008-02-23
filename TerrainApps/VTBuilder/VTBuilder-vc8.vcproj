@@ -214,42 +214,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Builder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="BuilderView.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ElevDrawOptions.cpp"
-				>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="ElevLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Export.cpp"
-				>
-			</File>
-			<File
 				RelativePath="Frame.cpp"
 				>
 			</File>
@@ -259,22 +223,6 @@
 			</File>
 			<File
 				RelativePath=".\Geocode.cpp"
-				>
-			</File>
-			<File
-				RelativePath="Helper.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ImageLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="Import.cpp"
-				>
-			</File>
-			<File
-				RelativePath="Layer.cpp"
 				>
 			</File>
 			<File
@@ -298,27 +246,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="RawLayer.cpp"
-				>
-			</File>
-			<File
 				RelativePath="RoadFix.cpp"
-				>
-			</File>
-			<File
-				RelativePath="RoadLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="RoadMapEdit.cpp"
-				>
-			</File>
-			<File
-				RelativePath="RoadMapIO.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ScaledView.cpp"
 				>
 			</File>
 			<File
@@ -330,39 +258,11 @@
 				>
 			</File>
 			<File
-				RelativePath="StructLayer.cpp"
-				>
-			</File>
-			<File
 				RelativePath="TransitLayer.cpp"
 				>
 			</File>
 			<File
 				RelativePath="TreeView.cpp"
-				>
-			</File>
-			<File
-				RelativePath="UtilityLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="VegLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="vtBitmap.cpp"
-				>
-			</File>
-			<File
-				RelativePath="VTBuilder_wdr.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\vtImage.cpp"
-				>
-			</File>
-			<File
-				RelativePath="WaterLayer.cpp"
 				>
 			</File>
 		</Filter>
@@ -375,35 +275,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Builder.h"
-				>
-			</File>
-			<File
-				RelativePath="BuilderView.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ChunkDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\DistanceDlg2d.h"
 				>
 			</File>
 			<File
 				RelativePath="DistribVegDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ElevDrawOptions.h"
-				>
-			</File>
-			<File
-				RelativePath="ElevLayer.h"
-				>
-			</File>
-			<File
-				RelativePath="ExtentDlg.h"
 				>
 			</File>
 			<File
@@ -427,35 +303,7 @@
 				>
 			</File>
 			<File
-				RelativePath="Helper.h"
-				>
-			</File>
-			<File
-				RelativePath="ImageLayer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ImageMapDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ImportPointDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="ImportStructDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="ImportStructDlgOGR.h"
-				>
-			</File>
-			<File
-				RelativePath="ImportVegDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="Layer.h"
 				>
 			</File>
 			<File
@@ -479,14 +327,6 @@
 				>
 			</File>
 			<File
-				RelativePath="NodeDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Options.h"
-				>
-			</File>
-			<File
 				RelativePath="OptionsDlg.h"
 				>
 			</File>
@@ -495,43 +335,11 @@
 				>
 			</File>
 			<File
-				RelativePath="RawDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="RawLayer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\RenderDlg.h"
 				>
 			</File>
 			<File
-				RelativePath=".\RenderOptionsDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="ResampleDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="RoadDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="RoadLayer.h"
-				>
-			</File>
-			<File
 				RelativePath="RoadMapEdit.h"
-				>
-			</File>
-			<File
-				RelativePath="SampleImageDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="ScaledView.h"
 				>
 			</File>
 			<File
@@ -540,14 +348,6 @@
 			</File>
 			<File
 				RelativePath="StatusBar.h"
-				>
-			</File>
-			<File
-				RelativePath="StructLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TileDlg.h"
 				>
 			</File>
 			<File
@@ -567,39 +367,11 @@
 				>
 			</File>
 			<File
-				RelativePath="UtilityLayer.h"
-				>
-			</File>
-			<File
 				RelativePath="VegDlg.h"
 				>
 			</File>
 			<File
-				RelativePath="VegFieldsDlg.h"
-				>
-			</File>
-			<File
-				RelativePath="VegLayer.h"
-				>
-			</File>
-			<File
 				RelativePath="VegPointOptions.h"
-				>
-			</File>
-			<File
-				RelativePath="vtBitmap.h"
-				>
-			</File>
-			<File
-				RelativePath="VTBuilder_wdr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\vtImage.h"
-				>
-			</File>
-			<File
-				RelativePath="WaterLayer.h"
 				>
 			</File>
 		</Filter>
@@ -838,19 +610,11 @@
 			Name="Source - Dialogs"
 			>
 			<File
-				RelativePath=".\ChunkDlg.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\DistanceDlg2d.cpp"
 				>
 			</File>
 			<File
 				RelativePath="DistribVegDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ExtentDlg.cpp"
 				>
 			</File>
 			<File
@@ -867,22 +631,6 @@
 			</File>
 			<File
 				RelativePath=".\ImageMapDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ImportPointDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ImportStructDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ImportStructDlgOGR.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ImportVegDlg.cpp"
 				>
 			</File>
 			<File
@@ -910,35 +658,11 @@
 				>
 			</File>
 			<File
-				RelativePath="RawDlg.cpp"
-				>
-			</File>
-			<File
 				RelativePath="RenderDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath="RenderOptionsDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="ResampleDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="RoadDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="SampleImageDlg.cpp"
-				>
-			</File>
-			<File
 				RelativePath="SelectDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\TileDlg.cpp"
 				>
 			</File>
 			<File
@@ -947,10 +671,6 @@
 			</File>
 			<File
 				RelativePath="VegDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="VegFieldsDlg.cpp"
 				>
 			</File>
 		</Filter>
