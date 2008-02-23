@@ -792,3 +792,104 @@ void RemoveFileExtensions(wxString &fname, bool bAll)
 	}
 }
 
+/////////////////////////////////////////////////////
+
+//
+// Initialize GDAL/OGR.  If there are problems, report them with a message box and VTLOG.
+//
+void CheckForGDALAndWarn()
+{
+	// check for correctly set up environment variables and locatable files
+	g_GDALWrapper.Init();
+	GDALInitResult *gr = g_GDALWrapper.GetInitResult();
+
+	if (!gr->hasGDAL_DATA)
+	{
+		vtString msg = "Unable to locate the necessary GDAL files for full coordinate\n"
+			" system support. Without these files, many operations won't work.\n";
+		DisplayAndLog(msg);
+	}
+	if (!gr->hasPROJ_LIB)
+	{
+		vtString msg = "Unable to locate the necessary PROJ.4 files for full coordinate\n"
+			" system support. Without these files, many operations won't work.\n";
+		DisplayAndLog(msg);
+	}
+	if (!gr->hasPROJSO)
+	{
+		vtString msg = "Unable to locate the PROJ.4 shared library for full coordinate\n"
+			" system support. Without the file, many operations won't work.\n";
+		DisplayAndLog(msg);
+	}
+	else
+	{
+		// Test that PROJ4 is actually working.
+		if (!g_GDALWrapper.TestPROJ4())
+			DisplayAndLog("Unable to transform coordinates.  This may be because the shared\n"
+				"library for PROJ.4 is not found.  Without this, many operations won't work.");
+	}
+}
+
+
+//
+// Display a message to the user, and also send it to the log file.
+//
+void DisplayAndLog(const char *pFormat, ...)
+{
+	va_list va;
+	va_start(va, pFormat);
+
+	char ach[2048];
+	vsprintf(ach, pFormat, va);
+
+	wxString msg(ach, wxConvUTF8);
+
+	// Careful here: Don't try to pop up a message box if called within a
+	//  wx console app.  wxMessageBox only works if it is a full wxApp.
+	wxAppConsole *pAppCon = wxApp::GetInstance();
+	wxApp *pApp = dynamic_cast<wxApp *>(pAppCon);
+	if (pApp)
+		wxMessageBox(msg);
+
+	strcat(ach, "\n");
+	VTLOG1(ach);
+}
+
+#if SUPPORT_WSTRING
+//
+// Also wide-character version of the same function.
+//
+void DisplayAndLog(const wchar_t *pFormat, ...)
+{
+//#ifdef UNICODE
+//	// Try to translate the string
+//	wxString trans = wxGetTranslation(pFormat);
+//	pFormat = trans.c_str();
+//#endif
+
+	va_list va;
+	va_start(va, pFormat);
+
+	// Use wide characters
+	wchar_t ach[2048];
+#ifdef _MSC_VER
+	vswprintf(ach, pFormat, va);
+#else
+	// apparently on non-MSVC platforms this takes 4 arguments (safer)
+	vswprintf(ach, 2048, pFormat, va);
+#endif
+
+	wxString msg(ach);
+
+	// Careful here: Don't try to pop up a message box if called within a
+	//  wx console app.  wxMessageBox only works if it is a full wxApp.
+	wxAppConsole *pAppCon = wxApp::GetInstance();
+	wxApp *pApp = dynamic_cast<wxApp *>(pAppCon);
+	if (pApp)
+		wxMessageBox(msg);
+
+	VTLOG1(ach);
+	VTLOG1("\n");
+}
+#endif // SUPPORT_WSTRING
+

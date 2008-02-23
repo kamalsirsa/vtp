@@ -11,17 +11,6 @@
 #include "vtdata/Projections.h"
 #include "vtdata/MathTypes.h"
 
-// Display a message to the user, and also send it to the log file.
-void DisplayAndLog(const char *pFormat, ...);
-#if SUPPORT_WSTRING
-void DisplayAndLog(const wchar_t *pFormat, ...);
-#endif
-
-/////
-
-// Initialize GDAL/OGR.  If there are problems, report them with a message box and VTLOG.
-void CheckForGDALAndWarn();
-
 /////////////////
 class vtMiniDatabuf;
 class ImageGLCanvas;
