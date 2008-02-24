@@ -1907,7 +1907,7 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 		return;
 
 	OpenProgressDialog(_("Generating Bitmap"));
-	ExportBitmap(dlg);
+	ExportBitmap(GetActiveElevLayer(), dlg);
 	CloseProgressDialog();
 }
 

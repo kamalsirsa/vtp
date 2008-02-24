@@ -85,6 +85,9 @@ Builder::Builder()
 	CheckForGDALAndWarn();
 	g_GDALWrapper.RequestGDALFormats();
 
+	// set up the datum list we will use
+	SetupEPSGDatums();
+
 	// Fill list of layer type names
 	if (vtLayer::LayerTypeNames.IsEmpty())
 	{

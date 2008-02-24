@@ -58,7 +58,8 @@ public:
 
 	// operations
 	static vtLayer *CreateNewLayer(LayerType ltype);
-	bool Save(const wxString &filename = _T(""));
+	bool Save();
+	bool SaveAs(const wxString &filename = _T(""));
 	bool Load(const wxString &filename = _T(""));
 
 	// these must be implemented:

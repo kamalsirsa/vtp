@@ -15,6 +15,7 @@
 
 #include "Layer.h"
 #include "TilingOptions.h"
+#include "RenderOptions.h"
 #include "BuilderView.h"
 
 class vtDLGFile;
@@ -30,7 +31,6 @@ class VegGenOptions;
 class vtElevationGrid;
 
 // dialogs
-class RenderDlg;
 class InstanceDlg;
 
 /**
@@ -133,7 +133,7 @@ public:
 	// Elevation
 	bool SampleCurrentTerrains(vtElevLayer *pTarget);
 	float GetHeightFromTerrain(const DPoint2 &p);
-	void ExportBitmap(RenderDlg &dlg);
+	void ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt);
 	unsigned int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
 	bool FillElevGaps(vtElevLayer *el);
 

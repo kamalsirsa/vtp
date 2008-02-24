@@ -66,7 +66,7 @@ vtLayer::~vtLayer()
 {
 }
 
-bool vtLayer::Save(const wxString &filename)
+bool vtLayer::Save()
 {
 	if (!m_bNative)
 	{
@@ -85,6 +85,13 @@ bool vtLayer::Save(const wxString &filename)
 		VTLOG("Failed.\n");
 
 	return success;
+}
+
+bool vtLayer::SaveAs(const wxString &filename)
+{
+	SetLayerFilename(filename);
+	m_bNative = true;
+	return Save();
 }
 
 bool vtLayer::Load(const wxString &filename)

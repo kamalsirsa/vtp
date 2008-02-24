@@ -361,15 +361,13 @@ void Builder::ElevExportTiles(BuilderView *pView)
 		DisplayAndLog("Did not successfully write to '%s'", (const char *) tileopts.fname);
 }
 
-void Builder::ExportBitmap(RenderDlg &dlg)
+void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 {
-	int xsize = dlg.m_iSizeX;
-	int ysize = dlg.m_iSizeY;
-
-	vtElevLayer *pEL = GetActiveElevLayer();
+	int xsize = ropt.m_iSizeX;
+	int ysize = ropt.m_iSizeY;
 
 	ColorMap cmap;
-	vtString fname = (const char *) dlg.m_strColorMap.mb_str(wxConvUTF8);
+	vtString fname = (const char *) ropt.m_strColorMap.mb_str(wxConvUTF8);
 	vtString path = FindFileOnPaths(vtGetDataPath(), "GeoTypical/" + fname);
 	if (path == "")
 	{
@@ -397,7 +395,7 @@ void Builder::ExportBitmap(RenderDlg &dlg)
 	vtBitmapBase *pBitmap = NULL;
 	vtDIB dib;
 
-	if (dlg.m_bToFile)
+	if (ropt.m_bToFile)
 	{
 		if (!dib.Create(xsize, ysize, 24))
 		{
@@ -413,9 +411,9 @@ void Builder::ExportBitmap(RenderDlg &dlg)
 	}
 
 	pEL->m_pGrid->ColorDibFromElevation(pBitmap, &cmap, 8000,
-		dlg.m_ColorNODATA, progress_callback);
+		ropt.m_ColorNODATA, progress_callback);
 
-	if (dlg.m_bShading)
+	if (ropt.m_bShading)
 	{
 		if (vtElevLayer::m_draw.m_bShadingQuick)
 			pEL->m_pGrid->ShadeQuick(pBitmap, SHADING_BIAS, true, progress_callback);
@@ -435,12 +433,12 @@ void Builder::ExportBitmap(RenderDlg &dlg)
 		}
 	}
 
-	if (dlg.m_bToFile)
+	if (ropt.m_bToFile)
 	{
 		UpdateProgressDialog(1, _("Writing file"));
-		vtString fname = (const char *) dlg.m_strToFile.mb_str(wxConvUTF8);
+		vtString fname = (const char *) ropt.m_strToFile.mb_str(wxConvUTF8);
 		bool success;
-		if (dlg.m_bJPEG)
+		if (ropt.m_bJPEG)
 			success = dib.WriteJPEG(fname, 99, progress_callback);
 		else
 			success = dib.WriteTIF(fname, &area, &proj, progress_callback);

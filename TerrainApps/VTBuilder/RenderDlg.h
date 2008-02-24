@@ -12,6 +12,7 @@
 #include "vtdata/vtString.h"
 #include "vtdata/MathTypes.h"
 #include "vtui/AutoDialog.h"
+#include "RenderOptions.h"
 
 // WDR: class declarations
 
@@ -19,7 +20,7 @@
 // RenderDlg
 //----------------------------------------------------------------------------
 
-class RenderDlg: public AutoDialog
+class RenderDlg: public AutoDialog, public RenderOptions
 {
 public:
 	// constructors and destructors
@@ -46,21 +47,9 @@ public:
 	void UpdateEnabling();
 	void UpdateColorMapChoice();
 
-	bool m_bToFile;
-	wxString m_strToFile;
-	bool m_bJPEG;
-
-	wxString   m_strColorMap;
-	bool m_bShading;
-
-	int  m_iSizeX;
-	int  m_iSizeY;
 	bool m_bConstraint;
 	bool m_bTiling;
 	int  m_power;
-
-	RGBi m_ColorNODATA;
-
 	bool m_bSetting;
 
 private:
