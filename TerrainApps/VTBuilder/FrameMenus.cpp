@@ -1112,17 +1112,17 @@ void MainFrame::OnLayerProperties(wxCommandEvent &event)
 
 void MainFrame::OnAreaExportElev(wxCommandEvent &event)
 {
-	MergeResampleElevation();
+	MergeResampleElevation(m_pView);
 }
 
 void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
 {
-	ExportAreaOptimizedElevTileset();
+	ExportAreaOptimizedElevTileset(m_pView);
 }
 
 void MainFrame::OnAreaOptimizedImageTileset(wxCommandEvent &event)
 {
-	ExportAreaOptimizedImageTileset();
+	ExportAreaOptimizedImageTileset(m_pView);
 }
 
 void MainFrame::OnUpdateAreaExportElev(wxUpdateUIEvent& event)
@@ -1885,7 +1885,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 
 void MainFrame::OnElevExportTiles(wxCommandEvent& event)
 {
-	ElevExportTiles();
+	ElevExportTiles(m_pView);
 }
 
 void MainFrame::OnElevCopy(wxCommandEvent& event)
