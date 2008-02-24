@@ -1132,7 +1132,7 @@ void MainFrame::OnUpdateAreaExportElev(wxUpdateUIEvent& event)
 
 void MainFrame::OnAreaExportImage(wxCommandEvent &event)
 {
-	ExportImage();
+	ExportImage(m_pView);
 }
 
 void MainFrame::OnUpdateAreaExportImage(wxUpdateUIEvent& event)

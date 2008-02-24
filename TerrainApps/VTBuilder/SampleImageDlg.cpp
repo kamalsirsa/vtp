@@ -1,7 +1,7 @@
 //
 // Name: SampleImageDlg.cpp
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -238,10 +238,13 @@ void SampleImageDlg::OnRadioOutput( wxCommandEvent &event )
 	TransferDataToWindow();
 	m_bSetting = false;
 
-	if (m_bToTiles && m_pView)
-		m_pView->ShowGridMarks(m_area, m_tileopts.cols, m_tileopts.rows, -1, -1);
-	else
-		m_pView->HideGridMarks();
+	if (m_pView)
+	{
+		if (m_bToTiles)
+			m_pView->ShowGridMarks(m_area, m_tileopts.cols, m_tileopts.rows, -1, -1);
+		else
+			m_pView->HideGridMarks();
+	}
 }
 
 void SampleImageDlg::OnTileOptions( wxCommandEvent &event )
