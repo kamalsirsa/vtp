@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project.
+// Copyright (c) 2001-2008 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -444,13 +444,39 @@ void vtElevationGrid::ReplaceValue(float value1, float value2)
  *
  * This method uses a simple, unoptimized algorithm to move across the grid,
  * one column at a time, averaging the surrounding pixels to fill each gap.
+ *
+ * \param area Optionally, restrict the operation to a given area.
+ * \param progress_callback Provide if you want a callback on progress.
+ * \return true if successful, false if cancelled.
  */
-bool vtElevationGrid::FillGaps(bool progress_callback(int))
+bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 {
 	int i, j, ix, jx, surrounding;
 	int gaps = 1;
 	float value, value2, sum;
 	float *patch_column = new float[m_iRows];
+
+	int xmin = 0, xmax = m_iColumns, ymin = 0, ymax = m_iRows;
+	if (area)
+	{
+		// Restrict the operation to a given area.
+		DPoint2 spacing = GetSpacing();
+		xmin = (int) ((area->left - m_EarthExtents.left)/spacing.x);
+		if (xmin < 0) xmin = 0;
+		if (xmin > m_iColumns) return true;
+
+		ymin = (int) ((area->bottom - m_EarthExtents.bottom)/spacing.y);
+		if (ymin < 0) ymin = 0;
+		if (ymin > m_iRows) return true;
+
+		xmax = (int) ((area->right - m_EarthExtents.left)/spacing.x);
+		if (xmax < 0) return true;
+		if (xmax > m_iColumns) xmax = m_iColumns;
+
+		ymax = (int) ((area->top - m_EarthExtents.bottom)/spacing.y);
+		if (ymax < 0) return true;
+		if (ymax > m_iRows) ymax = m_iRows;
+	}
 
 	// For speed, remember which lines already have no gaps, so we don't have
 	// to visit them again.
@@ -468,9 +494,9 @@ bool vtElevationGrid::FillGaps(bool progress_callback(int))
 
 		// iterate through the heixels of the new elevation grid
 		int start, step;
-		if (iPass & 1) { start = 0; step = 1; }
-				  else { start = m_iColumns-1; step = -1; }
-		for (i = start; i >= 0 && i < m_iColumns; i += step)
+		if (iPass & 1) { start = xmin; step = 1; }
+				  else { start = xmax-1; step = -1; }
+		for (i = start; i >= xmin && i < xmax; i += step)
 		{
 			if (!line_gap[i])
 				continue;
@@ -479,10 +505,10 @@ bool vtElevationGrid::FillGaps(bool progress_callback(int))
 			line_gap[i] = false;
 
 			bool patches = false;
-			for (j = 0; j < m_iRows; j++)
+			for (j = ymin; j < ymax; j++)
 				patch_column[j] = INVALID_ELEVATION;
 
-			for (j = 0; j < m_iRows; j++)
+			for (j = ymin; j < ymax; j++)
 			{
 				value = GetFValue(i, j);
 				if (value != INVALID_ELEVATION)
@@ -515,7 +541,7 @@ bool vtElevationGrid::FillGaps(bool progress_callback(int))
 			}
 			if (patches)
 			{
-				for (j = 0; j < m_iRows; j++)
+				for (j = ymin; j < ymax; j++)
 				{
 					if (patch_column[j] != INVALID_ELEVATION)
 						SetFValue(i, j, patch_column[j]);
@@ -551,18 +577,42 @@ bool vtElevationGrid::FillGaps(bool progress_callback(int))
  * Fill the gaps (heixels of value INVALID_ELVATION) in this grid, by
  * interpolating from the valid values.
  *
- * This method attempts to be a little better than FillGaps by keeping an
+ * This method attempts to be a little better than FillGaps(), by keeping an
  * entire second grid for the interpolated results on each pass, to avoid
  * some cases of the results getting "smeared" left to right.  However, this
  * makes it much slower on most data.
  *
+ * \param area Optionally, restrict the operation to a given area.
+ * \param progress_callback Provide if you want a callback on progress.
  * \return true if successful, false if cancelled.
  */
-bool vtElevationGrid::FillGapsSmooth(bool progress_callback(int))
+bool vtElevationGrid::FillGapsSmooth(DRECT *area, bool progress_callback(int))
 {
 	int i, j, ix, jx;
 	int gaps = 1;
 	float value, value2, sum, surrounding;
+
+	int xmin = 0, xmax = m_iColumns, ymin = 0, ymax = m_iRows;
+	if (area)
+	{
+		// Restrict the operation to a given area.
+		DPoint2 spacing = GetSpacing();
+		xmin = (int) ((area->left - m_EarthExtents.left)/spacing.x);
+		if (xmin < 0) xmin = 0;
+		if (xmin > m_iColumns) return true;
+
+		ymin = (int) ((area->bottom - m_EarthExtents.bottom)/spacing.y);
+		if (ymin < 0) ymin = 0;
+		if (ymin > m_iRows) return true;
+
+		xmax = (int) ((area->right - m_EarthExtents.left)/spacing.x);
+		if (xmax < 0) return true;
+		if (xmax > m_iColumns) xmax = m_iColumns;
+
+		ymax = (int) ((area->top - m_EarthExtents.bottom)/spacing.y);
+		if (ymax < 0) return true;
+		if (ymax > m_iRows) ymax = m_iRows;
+	}
 
 	vtElevationGrid delta(GetAreaExtents(), m_iColumns, m_iRows, true, GetProjection());
 
@@ -586,7 +636,7 @@ bool vtElevationGrid::FillGapsSmooth(bool progress_callback(int))
 		int lines_with_gaps = 0;
 
 		// iterate through the heixels of the elevation grid
-		for (i = 0; i < m_iColumns; i++)
+		for (i = xmin; i < xmax; i++)
 		{
 			// Don't visit lines without a gap
 			if (!line_gap[i])
@@ -595,7 +645,7 @@ bool vtElevationGrid::FillGapsSmooth(bool progress_callback(int))
 			lines_with_gaps++;
 			line_gap[i] = false;	// by default
 
-			for (j = 0; j < m_iRows; j++)
+			for (j = ymin; j < ymax; j++)
 			{
 				value = GetFValue(i, j);
 				if (value != INVALID_ELEVATION)
@@ -629,11 +679,11 @@ bool vtElevationGrid::FillGapsSmooth(bool progress_callback(int))
 					delta.SetFValue(i, j, INVALID_ELEVATION);
 			}
 		}
-		for (i = 0; i < m_iColumns; i++)
+		for (i = xmin; i < xmax; i++)
 		{
 			if (has_delta[i])
 			{
-				for (j = 0; j < m_iRows; j++)
+				for (j = ymin; j < ymax; j++)
 				{
 					if (GetFValue(i, j) == INVALID_ELEVATION)
 						SetFValue(i, j, delta.GetFValue(i, j));

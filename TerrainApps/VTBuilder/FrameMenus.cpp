@@ -1795,7 +1795,12 @@ void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 void MainFrame::OnFillIn(wxCommandEvent &event)
 {
 	vtElevLayer *el = GetActiveElevLayer();
-	if (FillElevGaps(el))
+
+	DRECT *area = NULL;
+	if (!m_area.IsEmpty())
+		area = &m_area;
+
+	if (FillElevGaps(el, area))
 	{
 		el->SetModified(true);
 		el->ReRender();

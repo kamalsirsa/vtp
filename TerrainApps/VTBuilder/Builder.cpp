@@ -436,7 +436,13 @@ unsigned int Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
 	return elevs.size();
 }
 
-bool Builder::FillElevGaps(vtElevLayer *el)
+/**
+ * Fill the gaps (NODATA heixels) in an elevation layer, by interpolating
+ * from the surrounding values.
+ *
+ * \param el The elevation layer to fill the gaps on.
+ */
+bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area)
 {
 	// Create progress dialog for the slow part
 	OpenProgressDialog(_("Filling Gaps"), true);
@@ -444,10 +450,10 @@ bool Builder::FillElevGaps(vtElevLayer *el)
 	bool bGood;
 	if (g_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
 		// slow and smooth
-		bGood = el->m_pGrid->FillGapsSmooth(progress_callback);
+		bGood = el->m_pGrid->FillGapsSmooth(area, progress_callback);
 	else
 		// fast
-		bGood = el->m_pGrid->FillGaps(progress_callback);
+		bGood = el->m_pGrid->FillGaps(area, progress_callback);
 
 	CloseProgressDialog();
 	return bGood;

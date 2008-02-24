@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project.
+// Copyright (c) 2001-2008 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -60,8 +60,8 @@ public:
 	void ComputeHeightExtents();
 	void Offset(const DPoint2 &delta);
 	void ReplaceValue(float value1, float value2);
-	bool FillGaps(bool progress_callback(int) = NULL);
-	bool FillGapsSmooth(bool progress_callback(int) = NULL);
+	bool FillGaps(DRECT *area = NULL, bool progress_callback(int) = NULL);
+	bool FillGapsSmooth(DRECT *area = NULL, bool progress_callback(int) = NULL);
 
 	// Load from unknown file format
 	bool LoadFromFile( const char *szFileName, bool progress_callback(int) = NULL);

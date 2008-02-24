@@ -869,9 +869,9 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 
 				bool bGood;
 				if (g_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
-					bGood = base_lod.FillGapsSmooth(progress_callback_minor);
+					bGood = base_lod.FillGapsSmooth(NULL, progress_callback_minor);
 				else
-					bGood = base_lod.FillGaps(progress_callback_minor);
+					bGood = base_lod.FillGaps(NULL, progress_callback_minor);
 				if (!bGood)
 					return false;
 			}
