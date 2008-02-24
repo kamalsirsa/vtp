@@ -21,6 +21,15 @@
 #include "vtdata/vtLog.h"
 #include "Helper.h"
 
+bool IsGUIApp()
+{
+	// Don't try to pop up a message box or progress dialog if called within a
+	//  wx console app.  This function determines if we are a real GUI app.
+	wxAppConsole *pAppCon = wxApp::GetInstance();
+	wxApp *pApp = dynamic_cast<wxApp *>(pAppCon);
+	return pApp != NULL;
+}
+
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
 {
 	wxImage pImage(xsize, ysize);
@@ -571,6 +580,8 @@ void OpenProgressDialog(const wxString &title, bool bCancellable, wxWindow *pPar
 {
 	if (s_bOpen)
 		return;
+	if (!IsGUIApp())
+		return;
 
 	// force the window to be wider by giving a dummy string
 	wxString message = _T("___________________________________");
@@ -846,9 +857,7 @@ void DisplayAndLog(const char *pFormat, ...)
 
 	// Careful here: Don't try to pop up a message box if called within a
 	//  wx console app.  wxMessageBox only works if it is a full wxApp.
-	wxAppConsole *pAppCon = wxApp::GetInstance();
-	wxApp *pApp = dynamic_cast<wxApp *>(pAppCon);
-	if (pApp)
+	if (IsGUIApp())
 		wxMessageBox(msg);
 
 	strcat(ach, "\n");
@@ -883,9 +892,7 @@ void DisplayAndLog(const wchar_t *pFormat, ...)
 
 	// Careful here: Don't try to pop up a message box if called within a
 	//  wx console app.  wxMessageBox only works if it is a full wxApp.
-	wxAppConsole *pAppCon = wxApp::GetInstance();
-	wxApp *pApp = dynamic_cast<wxApp *>(pAppCon);
-	if (pApp)
+	if (IsGUIApp())
 		wxMessageBox(msg);
 
 	VTLOG1(ach);
