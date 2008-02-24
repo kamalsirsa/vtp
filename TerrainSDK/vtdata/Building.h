@@ -86,7 +86,7 @@ public:
 
 	void Set(int doors, int windows, const char *material);
 	void AddFeature(int code, float width = -1.0f, float vf1 = 0.0f, float vf2 = 1.0f);
-	int NumFeatures() const { return m_Features.size(); }
+	size_t NumFeatures() const { return m_Features.size(); }
 	int NumFeaturesOfCode(int code);
 	float FixedFeaturesWidth();
 	float ProportionTotal();

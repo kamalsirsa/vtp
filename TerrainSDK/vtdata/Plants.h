@@ -54,7 +54,7 @@ public:
 	struct CommonName { vtString m_strName, m_strLang; };
 
 	void AddCommonName(const char *Name, const char *Lang = NULL);
-	unsigned int NumCommonNames() const { return m_CommonNames.size(); }
+	size_t NumCommonNames() const { return m_CommonNames.size(); }
 	CommonName GetCommonName(int n = 0) const { return m_CommonNames[n]; }
 	unsigned int CommonNamesOfLanguage(const char *lang);
 
