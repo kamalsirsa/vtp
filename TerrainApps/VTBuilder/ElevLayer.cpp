@@ -1577,8 +1577,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 					output_buf.ysize = tilesize;
 					output_buf.zsize = 1;
 					output_buf.tsteps = 1;
-					output_buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
-					output_buf.set_LLWGS84extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top); //!! still needs conversion to LLWGS84
+					output_buf.SetBounds(proj, tile_area);
 
 					int iUncompressedSize = tilesize * tilesize * 3;
 					unsigned char *rgb_bytes = (unsigned char *) malloc(iUncompressedSize);
@@ -1616,8 +1615,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 				UpdateProgressDialog2(done*99/total, 0, msg);
 
 				vtMiniDatabuf buf;
-				buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
-				buf.set_LLWGS84extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top); //!! still needs conversion to LLWGS84
+				buf.SetBounds(proj, tile_area);
 				buf.alloc(tilesize+1, tilesize+1, 1, 1, bFloat ? 2 : 1);
 				float *fdata = (float *) buf.data;
 				short *sdata = (short *) buf.data;

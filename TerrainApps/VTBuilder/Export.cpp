@@ -910,8 +910,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 					output_buf.ysize = tilesize;
 					output_buf.zsize = 1;
 					output_buf.tsteps = 1;
-					output_buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
-					output_buf.set_LLWGS84extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top); //!! still needs conversion to LLWGS84
+					output_buf.SetBounds(m_proj, tile_area);
 
 					int iUncompressedSize = tilesize * tilesize * 3;
 					unsigned char *rgb_bytes = (unsigned char *) malloc(iUncompressedSize);
@@ -954,8 +953,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 				InitConvHook();
 
 				vtMiniDatabuf buf;
-				buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
-				buf.set_LLWGS84extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top); //!! still needs conversion to LLWGS84
+				buf.SetBounds(m_proj, tile_area);
 				buf.alloc(tilesize+1, tilesize+1, 1, 1, bFloat ? 2 : 1);
 				float *fdata = (float *) buf.data;
 				short *sdata = (short *) buf.data;
@@ -1195,8 +1193,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, const TilingOption
 
 				output_buf.zsize = 1;
 				output_buf.tsteps = 1;
-				output_buf.set_extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top);
-				output_buf.set_LLWGS84extents(tile_area.left, tile_area.right, tile_area.bottom, tile_area.top); //!! still needs conversion to LLWGS84
+				output_buf.SetBounds(m_proj, tile_area);
 
 				// Write and optionally compress the image
 				WriteMiniImage(fname, opts, rgb_bytes, output_buf,
