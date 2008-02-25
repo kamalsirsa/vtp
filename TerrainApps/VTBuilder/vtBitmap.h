@@ -1,7 +1,7 @@
 //
 // vtBitmap.h
 //
-// Copyright (c) 2003-2007 Virtual Terrain Project
+// Copyright (c) 2003-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,10 @@
 #define VTBITMAP_H
 
 #include "vtdata/vtDIB.h"
+
+#if WIN32
+#define USE_DIBSECTIONS 1
+#endif
 
 /**
  * This class provides an encapsulation of "bitmap" behavior, which can

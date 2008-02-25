@@ -120,8 +120,6 @@ public:
 	virtual void UpdateDistance(const DPoint2 &p1, const DPoint2 &p2) {}
 	virtual void UpdateDistance(const DLine2 &path) {}
 	virtual void ZoomAll() {}
-	virtual void OnViewZoomIn(wxCommandEvent& event) {}
-	virtual void OnViewZoomOut(wxCommandEvent& event) {}
 	bool DrawDisabled() { return m_bDrawDisabled; }
 
 	// Projection

@@ -2215,9 +2215,10 @@ void BuilderView::OnKeyDown(wxKeyEvent& event)
 	int code = event.GetKeyCode();
 	bool ctrl = event.ControlDown();
 #if VTDEBUG
-//	VTLOG("KeyDown %d (%c) ctrl:%d\n", code, event.GetKeyCode(), ctrl);
+//	VTLOG("View: KeyDown %d (%c) ctrl:%d\n", code, event.GetKeyCode(), ctrl);
 #endif
 
+#if 0
 	wxCommandEvent dummy;
 
 	// Some accelerators aren't caught properly (at least on Windows)
@@ -2229,6 +2230,7 @@ void BuilderView::OnKeyDown(wxKeyEvent& event)
 
 	else
 		event.Skip();
+#endif
 }
 
 void BuilderView::OnEraseBackground( wxEraseEvent& event )
