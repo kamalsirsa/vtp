@@ -726,23 +726,18 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	GetDimensions(gw, gh);
 
 	bool bExact = (w == gw && h == gh);
+	double ratiox = (double)(gw-1)/(w-1), ratioy = (double)(gh-1)/(h-1);
 
 	VTLOG(" ColorDibFromTable: dib size %d x %d, grid %d x %d.. ", w, h, gw, gh);
 
 	float fRange = fMax - fMin;
 	unsigned int iGranularity = table.size()-1;
+	bool has_invalid = false;
+	double x, y;
+	float elev;
 
 	// now iterate over the texels
-	float elev;
-	bool has_invalid = false;
-	RGBi c3;
-	int i, j;
-	double x, y;
-	RGBi color;
-
-	double ratiox = (double)(gw-1)/(w-1), ratioy = (double)(gh-1)/(h-1);
-
-	for (i = 0; i < w; i++)
+	for (int i = 0; i < w; i++)
 	{
 		if (progress_callback != NULL)
 		{
@@ -751,7 +746,7 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 		}
 		x = i * ratiox;		// find corresponding location in height grid
 
-		for (j = 0; j < h; j++)
+		for (int j = 0; j < h; j++)
 		{
 			y = j * ratioy;
 
@@ -768,8 +763,7 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 			unsigned int table_entry = (unsigned int) ((elev - fMin) / fRange * iGranularity);
 			if (table_entry > iGranularity-1)
 				table_entry = iGranularity-1;
-			c3 = table[table_entry];
-			pBM->SetPixel24(i, h-1-j, c3);
+			pBM->SetPixel24(i, h-1-j, table[table_entry]);
 		}
 	}
 	VTLOG("Done.\n");
@@ -792,33 +786,30 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 	float fLightFactor, float fAmbient, float fGamma, bool bTrue, bool progress_callback(int))
 {
-	// consider upward-pointing, rather than downward-pointing, normal
+	// consider upward-pointing normal vector, rather than downward-pointing
 	FPoint3 light_direction = -light_dir;
 
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
 	int gw = m_iColumns, gh = m_iRows;
 
-	float xFactor = (float)gw/w;
-	float yFactor = (float)gh/h;
+	double ratiox = (double)(gw-1)/(w-1), ratioy = (double)(gh-1)/(h-1);
 
 	// For purposes of shading, we need to look at adjacent heixels which are
 	//  at least one grid cell away:
-	int xOffset = (int)xFactor;
-	int yOffset = (int)yFactor;
+	int xOffset = (int)ratiox;
+	int yOffset = (int)ratioy;
 	if (xOffset < 1) xOffset = 1;
 	if (yOffset < 1) yOffset = 1;
 
 	int depth = pBM->GetDepth();
-	int i, j;
 	int x, y;
-	RGBi rgb;
 
 	// Center, Left, Right, Top, Bottom
 	FPoint3 c, l, r, t, b, v3;
 
 	// iterate over the texels
-	for (j = 0; j < h; j++)
+	for (int j = 0; j < h; j++)
 	{
 		if (progress_callback != NULL)
 		{
@@ -826,10 +817,10 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 				progress_callback(j * 100 / h);
 		}
 		// find corresponding location in terrain
-		y = (int) (j * yFactor);
-		for (i = 0; i < w; i++)
+		y = (int) (j * ratioy);
+		for (int i = 0; i < w; i++)
 		{
-			x = (int) (i * xFactor);
+			x = (int) (i * ratiox);
 
 			GetWorldLocation(x, y, c, bTrue);
 			if (c.y == INVALID_ELEVATION)
