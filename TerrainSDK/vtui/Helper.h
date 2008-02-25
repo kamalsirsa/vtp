@@ -9,6 +9,10 @@
 #include "vtdata/vtString.h"
 #include "vtdata/MathTypes.h"
 
+bool IsGUIApp();
+
+//////
+
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color);
 void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color);
 void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color);

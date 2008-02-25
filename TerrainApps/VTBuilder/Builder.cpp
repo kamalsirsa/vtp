@@ -124,7 +124,129 @@ void Builder::DeleteContents()
 
 
 ////////////////////////////////////////////////////////////////
-// Application Methods
+// Project Methods
+
+void trim_eol(char *buf)
+{
+	int len = strlen(buf);
+	if (len && buf[len-1] == 10) buf[len-1] = 0;
+	len = strlen(buf);
+	if (len && buf[len-1] == 13) buf[len-1] = 0;
+}
+
+bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
+{
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	// read project file
+	FILE *fp = vtFileOpen(fname, "rb");
+	if (!fp)
+	{
+		DisplayAndLog("Couldn't open project file: '%s'", (const char *) fname);
+		return false;
+	}
+
+	// even the first layer must match the project's CRS
+	m_bAdoptFirstCRS = false;
+
+	char buf[2000];
+	while (fgets(buf, 2000, fp) != NULL)
+	{
+		if (!strncmp(buf, "Projection ", 11))
+		{
+			// read projection info
+			vtProjection proj;
+			char *wkt = buf + 11;
+			OGRErr err = proj.importFromWkt(&wkt);
+			if (err != OGRERR_NONE)
+			{
+				DisplayAndLog("Had trouble parsing the projection information "
+					"from that file.");
+				fclose(fp);
+				return false;
+			}
+			SetProjection(proj);
+		}
+		if (!strncmp(buf, "PlantList ", 10))
+		{
+			trim_eol(buf);
+			LoadSpeciesFile(buf+10);
+		}
+		if (!strncmp(buf, "BioTypes ", 9))
+		{
+			trim_eol(buf);
+			LoadBiotypesFile(buf+9);
+		}
+		if (!strncmp(buf, "area ", 5))
+		{
+			sscanf(buf+5, "%lf %lf %lf %lf\n", &m_area.left, &m_area.top,
+				&m_area.right, &m_area.bottom);
+		}
+		if (!strncmp(buf, "view ", 5))
+		{
+			DRECT rect;
+			sscanf(buf+5, "%lf %lf %lf %lf\n", &rect.left, &rect.top,
+				&rect.right, &rect.bottom);
+			if (pView)
+				pView->ZoomToRect(rect, 0.0f);
+		}
+		if (!strncmp(buf, "layers", 6))
+		{
+			int count = 0;
+			LayerType ltype;
+
+			sscanf(buf+7, "%d\n", &count);
+			for (int i = 0; i < count; i++)
+			{
+				bool bShow = true, bImport = false;
+
+				char buf2[200], buf3[200];
+				fgets(buf, 200, fp);
+				int num = sscanf(buf, "type %d, %s %s", &ltype, buf2, buf3);
+
+				if (!strcmp(buf2, "import"))
+					bImport = true;
+				if (num > 2 && !strcmp(buf3, "hidden"))
+					bShow = false;
+
+				// next line is the path
+				fgets(buf, 200, fp);
+
+				// trim trailing LF character
+				trim_eol(buf);
+				wxString fname(buf, wxConvUTF8);
+
+				int numlayers = NumLayers();
+				if (bImport)
+					ImportDataFromArchive(ltype, fname, false);
+				else
+				{
+					vtLayer *lp = vtLayer::CreateNewLayer(ltype);
+					if (lp && lp->Load(fname))
+						AddLayer(lp);
+					else
+						delete lp;
+				}
+
+				// Hide any layers created, if desired
+				int newlayers = NumLayers();
+				for (int j = numlayers; j < newlayers; j++)
+					GetLayer(j)->SetVisible(bShow);
+			}
+		}
+	}
+	fclose(fp);
+
+	// reset to default behavior
+	m_bAdoptFirstCRS = true;
+
+	return true;
+}
+
+
+////////////////////////////////////////////////////////////////
+// Layer Methods
 
 void Builder::AddLayer(vtLayer *lp)
 {
@@ -147,34 +269,45 @@ bool Builder::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 		// check for Projection conflict
 		if (!(m_proj == proj))
 		{
-			char *str1, *str2;
-			m_proj.exportToProj4(&str1);
-			proj.exportToProj4(&str2);
-
+			int ret;
 			bool keep = false;
-			wxString msg;
-			msg.Printf(_("The data already loaded is in:\n   %hs\n but the layer you are attempting to add:\n   %s\n is using:\n   %hs\n Would you like to attempt to convert it now to the existing projection?"),
-				str1,
-				pLayer->GetLayerFilename().c_str(),
-				str2);
-			OGRFree(str1);
-			OGRFree(str2);
-			int ret = wxMessageBox(msg, _("Convert Coordinate System?"), wxYES_NO | wxCANCEL);
-			if (ret == wxNO)
-				keep = true;
+			if (IsGUIApp())
+			{
+				char *str1, *str2;
+				m_proj.exportToProj4(&str1);
+				proj.exportToProj4(&str2);
+
+				wxString msg;
+				msg.Printf(_("The data already loaded is in:\n   %hs\n but the layer you are attempting to add:\n   %s\n is using:\n   %hs\n Would you like to attempt to convert it now to the existing projection?"),
+					str1, pLayer->GetLayerFilename().c_str(), str2);
+				OGRFree(str1);
+				OGRFree(str2);
+				ret = wxMessageBox(msg, _("Convert Coordinate System?"), wxYES_NO | wxCANCEL);
+				if (ret == wxNO)
+					keep = true;
+			}
+			else
+			{
+				// If there is no GUI, we must always assume they want to convert
+				ret = wxYES;
+			}
 			if (ret == wxYES)
 			{
 				OpenProgressDialog(_("Reprojecting"), false, m_pParentWindow);
 				bool success = pLayer->TransformCoords(m_proj);
 				CloseProgressDialog();
+
 				if (success)
 					keep = true;
 				else
 				{
-					ret = wxMessageBox(_("Couldn't convert projection.\n Proceed anyway?"),
-						_("Warning"), wxYES_NO);
-					if (ret == wxYES)
-						keep = true;
+					if (IsGUIApp())
+					{
+						ret = wxMessageBox(_("Couldn't convert projection.\n Proceed anyway?"),
+							_("Warning"), wxYES_NO);
+						if (ret == wxYES)
+							keep = true;
+					}
 				}
 			}
 			if (!keep)
@@ -915,10 +1048,11 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 	}
 }
 
+
 //////////////////////////////////////////////////////////
 // Image ops
 
-void Builder::ExportImage(BuilderView *pView)
+void Builder::MergeResampleImages(BuilderView *pView)
 {
 	// sample spacing in meters/heixel or degrees/heixel
 	DPoint2 spacing(0, 0);

@@ -196,7 +196,7 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	if (m_bShowUTMBounds)
 		DrawUTMBounds(&dc);
 
-	DrawAreaTool(&dc, g_bld->m_area);
+	DrawAreaTool(&dc, g_bld->GetAtArea());
 
 	if (m_bShowGridMarks)
 		DrawGridMarks(dc);	// erase
@@ -814,9 +814,9 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 				ZoomToRect(m_world_rect, 0.0f);
 			break;
 		case LB_Box:
-			DrawAreaTool(&dc, g_bld->m_area);
-			g_bld->m_area = m_world_rect;
-			DrawAreaTool(&dc, g_bld->m_area);
+			DrawAreaTool(&dc, g_bld->GetAtArea());
+			g_bld->SetArea(m_world_rect);
+			DrawAreaTool(&dc, g_bld->GetAtArea());
 			break;
 		case LB_Node:
 		case LB_Link:
@@ -1225,7 +1225,7 @@ void BuilderView::BeginDistance()
 
 void BuilderView::BeginArea()	// in canvas coordinates
 {
-	DRECT area = g_bld->m_area;
+	DRECT area = g_bld->GetAtArea();
 	if (area.IsEmpty())
 	{
 		BeginBox();
@@ -1264,16 +1264,16 @@ void BuilderView::DoArea(wxPoint delta)	// in canvas coordinates
 	wxClientDC dc(this);
 	PrepareDC(dc);
 
-	DrawAreaTool(&dc, g_bld->m_area);	// erase
+	DrawAreaTool(&dc, g_bld->GetAtArea());	// erase
 	if (m_iDragSide & 1)
-		g_bld->m_area.left += odx(delta.x);
+		g_bld->GetAtArea().left += odx(delta.x);
 	if (m_iDragSide & 2)
-		g_bld->m_area.right += odx(delta.x);
+		g_bld->GetAtArea().right += odx(delta.x);
 	if (m_iDragSide & 4)
-		g_bld->m_area.top += ody(delta.y);
+		g_bld->GetAtArea().top += ody(delta.y);
 	if (m_iDragSide & 8)
-		g_bld->m_area.bottom += ody(delta.y);
-	DrawAreaTool(&dc, g_bld->m_area);	// redraw
+		g_bld->GetAtArea().bottom += ody(delta.y);
+	DrawAreaTool(&dc, g_bld->GetAtArea());	// redraw
 }
 
 void BuilderView::InvertAreaTool(const DRECT &rect)
@@ -1605,7 +1605,7 @@ void BuilderView::OnLButtonDragRelease(wxMouseEvent& event)
 
 	if (m_iDragSide)
 	{
-		g_bld->m_area.Sort();
+		g_bld->GetAtArea().Sort();
 		m_iDragSide = 0;
 	}
 }

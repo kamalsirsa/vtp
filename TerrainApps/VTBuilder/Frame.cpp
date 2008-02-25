@@ -1025,132 +1025,19 @@ void MainFrame::OnSetMode(LBMode m)
 ////////////////////////////////////////////////////////////////
 // Project operations
 
-void trim_eol(char *buf)
-{
-	int len = strlen(buf);
-	if (len && buf[len-1] == 10) buf[len-1] = 0;
-	len = strlen(buf);
-	if (len && buf[len-1] == 13) buf[len-1] = 0;
-}
-
 void MainFrame::LoadProject(const wxString &strPathName)
 {
-	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
 	vtString fname = (const char *) strPathName.mb_str(wxConvUTF8);
 	VTLOG("Loading project: '%s'\n", (const char *) fname);
-
-	// read project file
-	FILE *fp = vtFileOpen(fname, "rb");
-	if (!fp)
-	{
-		DisplayAndLog("Couldn't open project file: '%s'", (const char *) fname);
-		return;
-	}
-
-	// even the first layer must match the project's CRS
-	m_bAdoptFirstCRS = false;
 
 	// avoid trying to draw while we're loading the project
 	m_bDrawDisabled = true;
 
-	char buf[2000];
-	bool bHasView = false;
-	while (fgets(buf, 2000, fp) != NULL)
-	{
-		if (!strncmp(buf, "Projection ", 11))
-		{
-			// read projection info
-			vtProjection proj;
-			char *wkt = buf + 11;
-			OGRErr err = proj.importFromWkt(&wkt);
-			if (err != OGRERR_NONE)
-			{
-				DisplayAndLog("Had trouble parsing the projection information"
-					"from that file.");
-				fclose(fp);
-				return;
-			}
-			SetProjection(proj);
-		}
-		if (!strncmp(buf, "PlantList ", 10))
-		{
-			trim_eol(buf);
-			LoadSpeciesFile(buf+10);
-		}
-		if (!strncmp(buf, "BioTypes ", 9))
-		{
-			trim_eol(buf);
-			LoadBiotypesFile(buf+9);
-		}
-		if (!strncmp(buf, "area ", 5))
-		{
-			sscanf(buf+5, "%lf %lf %lf %lf\n", &m_area.left, &m_area.top,
-				&m_area.right, &m_area.bottom);
-		}
-		if (!strncmp(buf, "view ", 5))
-		{
-			DRECT rect;
-			sscanf(buf+5, "%lf %lf %lf %lf\n", &rect.left, &rect.top,
-				&rect.right, &rect.bottom);
-			m_pView->ZoomToRect(rect, 0.0f);
-			bHasView = true;
-		}
-		if (!strncmp(buf, "layers", 6))
-		{
-			int count = 0;
-			LayerType ltype;
-
-			sscanf(buf+7, "%d\n", &count);
-			for (int i = 0; i < count; i++)
-			{
-				bool bShow = true, bImport = false;
-
-				char buf2[200], buf3[200];
-				fgets(buf, 200, fp);
-				int num = sscanf(buf, "type %d, %s %s", &ltype, buf2, buf3);
-
-				if (!strcmp(buf2, "import"))
-					bImport = true;
-				if (num > 2 && !strcmp(buf3, "hidden"))
-					bShow = false;
-
-				// next line is the path
-				fgets(buf, 200, fp);
-
-				// trim trailing LF character
-				trim_eol(buf);
-				wxString fname(buf, wxConvUTF8);
-
-				int numlayers = NumLayers();
-				if (bImport)
-					ImportDataFromArchive(ltype, fname, false);
-				else
-				{
-					vtLayer *lp = vtLayer::CreateNewLayer(ltype);
-					if (lp && lp->Load(fname))
-						AddLayer(lp);
-					else
-						delete lp;
-				}
-
-				// Hide any layers created, if desired
-				int newlayers = NumLayers();
-				for (int j = numlayers; j < newlayers; j++)
-					GetLayer(j)->SetVisible(bShow);
-			}
-		}
-	}
-	fclose(fp);
-
-	// reset to default behavior
-	m_bAdoptFirstCRS = true;
+	Builder::LoadProject(fname, m_pView);
 
 	// refresh the view
 	m_bDrawDisabled = false;
-	if (!bHasView)
-		ZoomAll();
+
 	RefreshTreeView();
 	RefreshToolbars();
 }

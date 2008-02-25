@@ -47,10 +47,10 @@ public:
 	void ReadDataPath();
 	void ReadDatapathsFromXML(ifstream &input, const char *path);
 
-protected:
+	// Project methods
+	bool LoadProject(const vtString &fname, vtScaledView *pView = NULL);
 	void DeleteContents();
 
-public:
 	// Layer methods
 	int NumLayers() const { return m_Layers.GetSize(); }
 	vtLayer *GetLayer(int i) const { return m_Layers[i]; }
@@ -209,17 +209,21 @@ public:
 	void ExportAreaOptimizedElevTileset(BuilderView *pView = NULL);
 	void ExportAreaOptimizedImageTileset(BuilderView *pView = NULL);
 
-	// area tool
+	// Area tool
+	void SetArea(const DRECT &r) { m_area = r; }
+	void GetArea(DRECT &r) { r = m_area; }
+	DRECT &GetAtArea() { return m_area; }
+
+	// Sampling
 	void ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 &spacing);
 	void MergeResampleElevation(BuilderView *pView = NULL);
 	bool SampleElevationToTilePyramids(BuilderView *pView, const TilingOptions &opts, bool bFloat, bool bShowGridMarks = true);
 	bool DoSampleElevationToTilePyramids(BuilderView *pView, const TilingOptions &opts, bool bFloat, bool bShowGridMarks = true);
 	bool SampleImageryToTilePyramids(BuilderView *pView, const TilingOptions &opts, bool bShowGridMarks = true);
 	bool DoSampleImageryToTilePyramids(BuilderView *pView, const TilingOptions &opts, bool bShowGridMarks = true);
-	void ExportImage(BuilderView *pView = NULL);
+	void MergeResampleImages(BuilderView *pView = NULL);
 
 	// Application Data
-	DRECT		m_area;
 	wxFrame *m_pParentWindow;
 	bool	m_bDrawDisabled;
 
@@ -227,6 +231,7 @@ protected:
 	void CheckOptionBounds();
 
 	// Application Data
+	DRECT		m_area;
 	LayerArray	m_Layers;
 	vtLayerPtr	m_pActiveLayer;
 	TilingOptions m_tileopts;
