@@ -654,6 +654,7 @@ void EnviroFrame::RefreshToolbar()
 		if (g_Options.m_bShowToolsCulture)
 		{
 			AddTool(ID_TOOLS_SELECT_MOVE, ToolsFunc(1), _("Select and Move"), true);
+			AddTool(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);
 			AddTool(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
 			AddTool(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
 			AddTool(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
@@ -664,7 +665,6 @@ void EnviroFrame::RefreshToolbar()
 		{
 			AddTool(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
 			AddTool(ID_TOOLS_VEHICLES, wxBITMAP(vehicles), _("Create Vehicles"), true);
-			AddTool(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);
 		}
 		AddTool(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
 	}
