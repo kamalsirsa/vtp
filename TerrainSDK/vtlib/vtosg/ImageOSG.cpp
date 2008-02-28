@@ -698,10 +698,10 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 
 	GDALDataset *pDataset = NULL;
 	GDALRasterBand *pBand;
-	GDALRasterBand *pRed;
-	GDALRasterBand *pGreen;
-	GDALRasterBand *pBlue;
-	GDALRasterBand *pAlpha;
+	GDALRasterBand *pRed = NULL;
+	GDALRasterBand *pGreen = NULL;
+	GDALRasterBand *pBlue = NULL;
+	GDALRasterBand *pAlpha = NULL;
 	GDALColorTable *pTable;
 	unsigned char *pScanline = NULL;
 	unsigned char *pRedline = NULL;
@@ -841,6 +841,9 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 
 		if (iRasterCount == 4)
 		{
+#if VTDEBUG
+			VTLOG1("Band interpretations:");
+#endif
 			for (int i = 1; i <= 4; i++)
 			{
 				pBand = pDataset->GetRasterBand(i);
@@ -852,7 +855,11 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 					message.Format("Band is of type %s, but we support type Byte.", GDALGetDataTypeName(dtype));
 					throw (const char *)message;
 				}
-				switch (pBand->GetColorInterpretation())
+				GDALColorInterp ci = pBand->GetColorInterpretation();
+#if VTDEBUG
+				VTLOG(" %d", ci);
+#endif
+				switch (ci)
 				{
 				case GCI_RedBand:
 					pRed = pBand;
@@ -866,10 +873,19 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 				case GCI_AlphaBand:
 					pAlpha = pBand;
 					break;
+				case GCI_Undefined:
+					// If we have four bands: R,G,B,undefined, then assume that
+					//  the undefined one is actually alpha
+					if (pRed && pGreen && pBlue && !pAlpha)
+						pAlpha = pBand;
+					break;
 				}
 			}
+#if VTDEBUG
+			VTLOG1("\n");
+#endif
 			if ((NULL == pRed) || (NULL == pGreen) || (NULL == pBlue) || (NULL == pAlpha))
-				throw "Couldn't find bands for Red, Green, Blue, ALpha.";
+				throw "Couldn't find bands for Red, Green, Blue, Alpha.";
 
 			pRed->GetBlockSize(&xBlockSize, &yBlockSize);
 			nxBlocks = (iXSize + xBlockSize - 1) / xBlockSize;
