@@ -361,20 +361,26 @@ wxSizer *TParams7Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_SLIDER_WIND_SPEED 10255
 wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_TEXTCTRL 10256
+#define ID_SLIDER_RATIO 10257
+#define ID_TEXT_X 10258
+#define ID_TEXT_Y 10259
+wxSizer *SnapSizeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
 
-#define ID_LAYER_CREATE 10256
-#define ID_LAYER_LOAD 10257
-#define ID_LAYER_SAVE 10258
-#define ID_LAYER_SAVE_AS 10259
-#define ID_LAYER_DELETE 10260
-#define ID_LAYER_ZOOM_TO 10261
-#define ID_LAYER_VISIBLE 10262
-#define ID_LAYER_TABLE 10263
-#define ID_LAYER_SHADOW 10264
-#define ID_SHOW_ALL 10265
+#define ID_LAYER_CREATE 10260
+#define ID_LAYER_LOAD 10261
+#define ID_LAYER_SAVE 10262
+#define ID_LAYER_SAVE_AS 10263
+#define ID_LAYER_DELETE 10264
+#define ID_LAYER_ZOOM_TO 10265
+#define ID_LAYER_VISIBLE 10266
+#define ID_LAYER_TABLE 10267
+#define ID_LAYER_SHADOW 10268
+#define ID_SHOW_ALL 10269
 void LayerToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

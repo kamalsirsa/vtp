@@ -117,6 +117,7 @@ protected:
 	void OnViewLocations(wxCommandEvent& event);
 	void OnViewSnapshot(wxCommandEvent& event);
 	void OnViewSnapAgain(wxCommandEvent& event);
+	void OnViewSnapHigh(wxCommandEvent& event);
 	void OnViewStatusBar(wxCommandEvent& event);
 	void OnViewScenarios(wxCommandEvent& event);
 	void OnViewProfile(wxCommandEvent& event);
