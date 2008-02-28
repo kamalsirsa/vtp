@@ -1602,8 +1602,8 @@ void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 	{
 		// Warning about limitation
 		VTLOG("\tSorry, this computer doesn't support rendering to offscreen image.\n");
-		wxMessageBox(_T("Sorry, this computer doesn't support rendering to a image of a different size than the 3D view"),
-			_T("Warning"));
+		wxMessageBox(_("Sorry, this computer doesn't support rendering to a image of a different size than the 3D view"),
+			_("Warning"));
 
 		// We can't return a bitmap of a different size than requested of us
 		// (by falling through) so instead we have to return here.
