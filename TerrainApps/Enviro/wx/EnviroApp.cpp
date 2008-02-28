@@ -2,7 +2,7 @@
 // Name:	 EnviroApp.cpp
 // Purpose:  The application class for our wxWindows application.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -373,18 +373,17 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 
 	// Make sure the scene knows the size of the canvas
 	//  (on wxGTK, the first size events arrive too early before the Scene exists)
-	int width, height;
-	frame->m_canvas->GetClientSize(& width, & height);
-	vtGetScene()->SetWindowSize(width, height);
+	wxSize canvas_size = frame->m_canvas->GetClientSize();
+	vtGetScene()->SetWindowSize(canvas_size.x, canvas_size.y);
 
 	if (g_Options.m_bLocationInside)
 	{
 		// they specified the inside (client) location of the window
 		// so look at the difference between frame and client sizes
 		wxSize size1 = frame->GetSize();
-		wxSize size2 = frame->GetClientSize();
-		int dx = size1.x - size2.x;
-		int dy = size1.y - size2.y;
+		VTLOG("Frame size %d %d, canvas size %d %d\n", size1.x, size1.y, canvas_size.x, canvas_size.y);
+		int dx = size1.x - canvas_size.x;
+		int dy = size1.y - canvas_size.y;
 		frame->SetSize(-1, -1, size1.x + dx, size1.y + dy);
 	}
 	return frame;
