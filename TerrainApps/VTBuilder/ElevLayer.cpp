@@ -1002,6 +1002,10 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 	{
 		success = m_pGrid->LoadFromHGT(fname, progress_callback);
 	}
+	else if (!strExt.Left(2).CmpNoCase(_T("db")))
+	{
+		success = ImportFromDB(fname, progress_callback);
+	}
 	if (!success)
 		return false;
 
@@ -1671,3 +1675,54 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
 
 	return true;
 }
+
+/**
+ * Loads from a "DB" file, which is the format of libMini tilesets tiles.
+ *
+ * \returns \c true if the file was successfully opened and read.
+ */
+bool vtElevLayer::ImportFromDB(const char *szFileName, bool progress_callback(int))
+{
+	DRECT area;
+	bool bFloat;
+	vtProjection proj;	// Projection is always unknown
+
+	vtMiniDatabuf dbuf;
+	dbuf.loaddata(szFileName);
+
+	if (dbuf.type == 2)
+		bFloat = true;	// float
+	else if (dbuf.type == 1)
+		bFloat = false;	// signed short
+	else
+		return false;
+
+	area.SetRect(dbuf.nwx, dbuf.nwy, dbuf.sex, dbuf.sey);
+
+	if (!m_pGrid->Create(area, dbuf.xsize, dbuf.ysize, bFloat, proj))
+		return false;
+
+	int i, j;
+	for (j = 0; j < dbuf.ysize; j++)
+	{
+		//if (progress_callback != NULL)
+		//	progress_callback(j * 100 / dbuf.ysize);
+
+		for (i = 0; i < dbuf.xsize; i++)
+		{
+			if (bFloat)
+			{
+				float val = dbuf.getval(i, j, 0);
+				m_pGrid->SetFValue(i, dbuf.xsize-1-j, val);
+			}
+			else
+			{
+				short val = dbuf.getval(i, j, 0);
+				m_pGrid->SetValue(i, dbuf.xsize-1-j, val);
+			}
+		}
+	}
+	return true;
+}
+
+

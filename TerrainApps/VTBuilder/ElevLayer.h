@@ -1,7 +1,7 @@
 //
 // ElevLayer.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -91,6 +91,7 @@ public:
 	int SetUnknown(float fValue, const DRECT *area = NULL);
 	void DetermineMeterSpacing();
 	bool WriteGridOfElevTilePyramids(const TilingOptions &opts, BuilderView *pView);
+	bool ImportFromDB(const char *szFileName, bool progress_callback(int));
 
 	// TIN operations
 	void SetTin(vtTin2d *pTin);
