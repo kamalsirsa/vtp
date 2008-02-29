@@ -773,7 +773,11 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 					if (grid)
 						spacing = grid->GetSpacing();
 					else
-						spacing.Set(1,1);	// default for TINs
+					{
+						// In theory a TIN has 'infinite' resolution, but we
+						// need to use a fixed value here, so use 1 mm.
+						spacing.Set(.001,.001);
+					}
 
 					if (spacing.x < best_spacing.x ||
 						spacing.y < best_spacing.y)
