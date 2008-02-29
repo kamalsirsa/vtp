@@ -2713,7 +2713,7 @@ void EnviroFrame::ShowTable(vtAbstractLayer *alay)
 	}
 	if (!table)
 	{
-		table = new FeatureTableDlg3d(this, -1, _(""), wxDefaultPosition,
+		table = new FeatureTableDlg3d(this, -1, _T(""), wxDefaultPosition,
 			wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		table->SetFeatureSet(set);
 		table->SetLayer(alay);
