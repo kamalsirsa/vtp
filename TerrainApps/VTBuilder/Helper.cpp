@@ -56,7 +56,7 @@
 
 // A useful method to set the extents (in local CRS) and the corners
 //  (in Geo WGS84) at the same time.
-void vtMiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
+bool vtMiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
 {
 	// First, set the extent rectangle
 	set_extents(extents.left, extents.right, extents.bottom, extents.top);
@@ -66,27 +66,29 @@ void vtMiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
 	geo.SetWellKnownGeogCS("WGS84");
 	OCT *trans = CreateCoordTransform(&proj, &geo);
 
-	if (trans)
-	{
-		DPoint2 sw_corner, se_corner, nw_corner, ne_corner;
+	if (!trans)
+		return false;
 
-		sw_corner.Set(extents.left, extents.bottom);
-		trans->Transform(1, &sw_corner.x, &sw_corner.y);
+	// Convert each corner as a point
+	DPoint2 sw_corner, se_corner, nw_corner, ne_corner;
 
-		se_corner.Set(extents.right, extents.bottom);
-		trans->Transform(1, &se_corner.x, &se_corner.y);
+	sw_corner.Set(extents.left, extents.bottom);
+	trans->Transform(1, &sw_corner.x, &sw_corner.y);
 
-		nw_corner.Set(extents.left, extents.top);
-		trans->Transform(1, &nw_corner.x, &nw_corner.y);
+	se_corner.Set(extents.right, extents.bottom);
+	trans->Transform(1, &se_corner.x, &se_corner.y);
 
-		ne_corner.Set(extents.right, extents.top);
-		trans->Transform(1, &ne_corner.x, &ne_corner.y);
+	nw_corner.Set(extents.left, extents.top);
+	trans->Transform(1, &nw_corner.x, &nw_corner.y);
 
-		set_LLWGS84corners(sw_corner.x, sw_corner.y,
-                           se_corner.x, se_corner.y,
-                           nw_corner.x, nw_corner.y,
-                           ne_corner.x, ne_corner.y);
-	}
+	ne_corner.Set(extents.right, extents.top);
+	trans->Transform(1, &ne_corner.x, &ne_corner.y);
+
+	set_LLWGS84corners(sw_corner.x, sw_corner.y,
+                       se_corner.x, se_corner.y,
+                       nw_corner.x, nw_corner.y,
+                       ne_corner.x, ne_corner.y);
+	return true;
 }
 
 #endif
@@ -154,6 +156,33 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		output_buf.release();
 	}
 }
+
+void CheckCompressionMethod(TilingOptions &opts)
+{
+#if !USE_OPENGL
+	// Check if they asked for OpenGL, but it's not available
+	if (opts.eCompressionType == TC_OPENGL)
+	{
+#if SUPPORT_SQUISH
+		opts.eCompressionType = TC_SQUISH_FAST;
+#else
+		opts.bUseTextureCompression = false;
+#endif
+	}
+#endif
+#if !SUPPORT_SQUISH
+	// Check if they asked for Squish, but it's not available
+	if (opts.eCompressionType == TC_SQUISH_FAST || opts.eCompressionType == TC_SQUISH_SLOW)
+	{
+#if USE_OPENGL
+		opts.eCompressionType = TC_OPENGL;
+#else
+		opts.bUseTextureCompression = false;
+#endif
+	}
+#endif
+}
+
 
 /////////////////////////////////////////////////////
 

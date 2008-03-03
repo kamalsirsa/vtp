@@ -589,7 +589,7 @@ void Builder::ExportAreaOptimizedElevTileset(BuilderView *pView)
 }
 
 bool Builder::DoSampleElevationToTilePyramids(BuilderView *pView,
-											  const TilingOptions &opts,
+											  TilingOptions &opts,
 											  bool bFloat, bool bShowGridMarks)
 {
 	if (m_pParentWindow)
@@ -642,8 +642,8 @@ void Builder::ExportAreaOptimizedImageTileset(BuilderView *pView)
 }
 
 bool Builder::DoSampleImageryToTilePyramids(BuilderView *pView,
-											  const TilingOptions &opts,
-											  bool bShowGridMarks)
+											TilingOptions &opts,
+											bool bShowGridMarks)
 {
 	OpenProgressDialog(_T("Writing tiles"), true);
 	bool success = SampleImageryToTilePyramids(pView, m_tileopts);
@@ -654,13 +654,16 @@ bool Builder::DoSampleImageryToTilePyramids(BuilderView *pView,
 }
 
 bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
-											const TilingOptions &opts, bool bFloat,
+											TilingOptions &opts, bool bFloat,
 											bool bShowGridMarks)
 {
 	VTLOG1("SampleElevationToTilePyramids\n");
 
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	// Check that options are valid
+	CheckCompressionMethod(opts);
 
 	// Size of each rectangular tile area
 	DPoint2 tile_dim(m_area.Width()/opts.cols, m_area.Height()/opts.rows);
@@ -1016,9 +1019,12 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 	return true;
 }
 
-bool Builder::SampleImageryToTilePyramids(BuilderView *pView, const TilingOptions &opts, bool bShowGridMarks)
+bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opts, bool bShowGridMarks)
 {
 	VTLOG1("SampleImageryToTilePyramids\n");
+
+	// Check that options are valid
+	CheckCompressionMethod(opts);
 
 	// Gather array of existing image layers we will sample from
 	unsigned int l, layers = m_Layers.GetSize(), num_image = 0;

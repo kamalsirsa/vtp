@@ -1477,9 +1477,15 @@ int GetBitDepthUsingGDAL(const char *fname)
 	return bits;
 }
 
-bool vtImage::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pView)
+bool vtImage::WriteGridOfTilePyramids(TilingOptions &opts, BuilderView *pView)
 {
 	wxFrame *frame = NULL;
+
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	// Check that options are valid
+	CheckCompressionMethod(opts);
 
 #if USE_OPENGL
 	if (opts.bUseTextureCompression && opts.eCompressionType == TC_OPENGL)
@@ -1490,9 +1496,6 @@ bool vtImage::WriteGridOfTilePyramids(const TilingOptions &opts, BuilderView *pV
 		m_pCanvas = new ImageGLCanvas(frame);
 	}
 #endif
-
-	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// largest tile size
 	int base_tilesize = opts.lod0size;

@@ -90,7 +90,7 @@ public:
 	int RemoveElevRange(float zmin, float zmax, const DRECT *area = NULL);
 	int SetUnknown(float fValue, const DRECT *area = NULL);
 	void DetermineMeterSpacing();
-	bool WriteGridOfElevTilePyramids(const TilingOptions &opts, BuilderView *pView);
+	bool WriteGridOfElevTilePyramids(TilingOptions &opts, BuilderView *pView);
 	bool ImportFromDB(const char *szFileName, bool progress_callback(int));
 
 	// TIN operations

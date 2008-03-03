@@ -19,6 +19,7 @@ struct TilingOptions;
 void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 					unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 					int iUncompressedSize, ImageGLCanvas *pCanvas);
+void CheckCompressionMethod(TilingOptions &opts);
 
 #if USE_OPENGL
 #include "wx/glcanvas.h"

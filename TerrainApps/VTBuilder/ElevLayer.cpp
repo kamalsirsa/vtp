@@ -1393,11 +1393,14 @@ FPoint3 LightDirection(float angle, float direction)
 	return light_dir;
 }
 
-bool vtElevLayer::WriteGridOfElevTilePyramids(const TilingOptions &opts,
+bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 											  BuilderView *pView)
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	// Check that options are valid
+	CheckCompressionMethod(opts);
 
 	// grid size
 	int base_tilesize = opts.lod0size;

@@ -31,7 +31,7 @@ class vtMiniDatabuf: public databuf
 public:
 	// A useful method to set the extents (in local CRS) and the corners
 	//  (in Geo WGS84) at the same time.
-	void SetBounds(const vtProjection &proj, const DRECT &extents);
+	bool SetBounds(const vtProjection &proj, const DRECT &extents);
 };
 
 #else	// not USE_LIBMINI_DATABUF
