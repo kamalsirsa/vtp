@@ -1757,7 +1757,7 @@ void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
 		wxMessageBox(_("Didn't get two numbers."));
 		return;
 	}
-	int count = t->RemoveElevRange(zmin, zmax, &m_area);
+	int count = t->RemoveElevRange(zmin, zmax, m_area.IsEmpty() ? NULL : &m_area);
 	if (count)
 	{
 		wxString str;
