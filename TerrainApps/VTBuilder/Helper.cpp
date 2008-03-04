@@ -88,6 +88,7 @@ bool vtMiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
                        se_corner.x, se_corner.y,
                        nw_corner.x, nw_corner.y,
                        ne_corner.x, ne_corner.y);
+	delete trans;
 	return true;
 }
 
