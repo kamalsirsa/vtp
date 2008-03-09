@@ -819,7 +819,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 			vtElevationGrid base_lod(tile_area, base_tilesize+1, base_tilesize+1,
 				bFloat, m_proj);
 
-			bool bAllValid = true;
+			int iNumInvalid = 0;
 			bool bAllInvalid = true;
 			bool bAllZero = true;
 			DPoint2 p;
@@ -839,7 +839,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 					base_lod.SetFValue(x, y, value);
 
 					if (value == INVALID_ELEVATION)
-						bAllValid = false;
+						iNumInvalid++;
 					else
 					{
 						bAllInvalid = false;
@@ -868,7 +868,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 			int base_tile_exponent = vt_log2(base_tilesize);
 			lod_existence_map.set(col, row, base_tile_exponent, base_tile_exponent-(total_lods-1));
 
-			if (!bAllValid)
+			if (iNumInvalid > 0)
 			{
 				// We don't want any gaps at all in the output tiles, because
 				//  they will cause huge cliffs.
@@ -881,6 +881,8 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 					bGood = base_lod.FillGaps(NULL, progress_callback_minor);
 				if (!bGood)
 					return false;
+
+				opts.iNoDataFilled += iNumInvalid;
 			}
 
 			// Create a matching derived texture tileset

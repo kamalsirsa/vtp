@@ -1,7 +1,7 @@
 //
 // TilingOptions.h
 //
-// Copyright (c) 2006-2007 Virtual Terrain Project
+// Copyright (c) 2006-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,6 +34,9 @@ struct TilingOptions
 	// If imagery (or deriving imagery from elevation) then it can be compressed
 	bool bUseTextureCompression;
 	TextureCompressionType eCompressionType;
+
+	// after the sampling, will contain the number of NODATA filled in
+	int iNoDataFilled;
 };
 
 #endif // TilingOptions_H

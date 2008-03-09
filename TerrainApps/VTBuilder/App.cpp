@@ -1,7 +1,7 @@
 //
 // App.cpp - Main application class for VTBuilder
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -113,31 +113,6 @@ bool BuilderApp::OnInit()
 	}
 	VTLOG1("\n");
 
-	// Stuff for testing
-//	wxString str("E:/Earth Imagery/NASA BlueMarble/MOD09A1.E.interpol.cyl.retouched.topo.3x00054x00027-N.bmp");
-//	wxString str("E:/Data-USA/Elevation/crater_0513.bt");
-/*	vtLayer *pLayer = frame->ImportImage(str);
-	bool success = frame->AddLayerWithCheck(pLayer, true);
-	frame->LoadLayer(str);
-*/
-//	frame->LoadProject("E:/Locations/Romania/giurgiu.vtb");
-//	frame->ImportDataFromFile(LT_ELEVATION, "E:/Earth/NOAA Globe/g10g.hdr", false);
-//	wxString str("E:/Data-USA/Terrains/Hawai`i.xml");
-//	frame->LoadLayer(str);
-
-//	wxString fname("E:/VTP User's Data/Hangzhou/Data/BuildingData/a-bldgs-18dec-subset1.vtst");
-//	frame->LoadLayer(fname);
-//	vtStructureLayer *pSL = frame->GetActiveStructureLayer();
-//	vtStructure *str = pSL->GetAt(0);
-//	str->Select(true);
-//	pSL->EditBuildingProperties();
-//	wxString fname("E:/Locations-USA/Hawai`i Island Data/DRG/O19154F8.TIF");
-//	frame->ImportDataFromFile(LT_IMAGE, fname, true);
-//	frame->LoadProject("E:/Locations-USA/Hawai`i Island Content/Honoka`a/latest_temp.vtb");
-
-//	vtString fname = "E:/Locations-Hawai'i/Hawai`i Island Data/SDTS-DLG/waipahu_HI/transportation/852867.RR.sdts.tar.gz";
-//	frame->ImportDataFromArchive(LT_ROAD, fname, true);
-
 #if HEAPBUSTER
 	// Pull in the heap buster
 	g_HeapBusterDummy = -1;
@@ -212,7 +187,7 @@ void BuilderApp::SetupLocale()
 		VTLOG1("\n");
 	}
 
-	// Test it
+	// Test the local code
 //	wxString test = _("&File");
 
 	wxLog::SetVerbose(false);

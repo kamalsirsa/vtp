@@ -143,7 +143,7 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	if (!bTGZip && !bZip)
 	{
 		// simple case
-		vtLayer *pLayer = ImportDataFromFile(ltype, fname, bRefresh);
+		vtLayer *pLayer = ImportDataFromFile(ltype, fname, bRefresh, true);
 		if (pLayer)
 		{
 			bool success = AddLayerWithCheck(pLayer, true);
@@ -196,7 +196,7 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 			fname += internal_name;
 			break;
 		}
-		vtLayer *pLayer = ImportDataFromFile(ltype, fname, bRefresh);
+		vtLayer *pLayer = ImportDataFromFile(ltype, fname, bRefresh, true);
 		if (pLayer)
 		{
 			bool success = AddLayerWithCheck(pLayer, true);
@@ -264,7 +264,7 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		}
 		if (found_cat || found_hdr)
 		{
-			pLayer = ImportDataFromFile(ltype, fname, bRefresh);
+			pLayer = ImportDataFromFile(ltype, fname, bRefresh, true);
 			if (pLayer)
 			{
 				bool success = AddLayerWithCheck(pLayer, true);

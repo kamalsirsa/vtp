@@ -166,7 +166,7 @@ public:
 	// Import
 	void ImportData(LayerType ltype);
 	void ImportDataFromArchive(LayerType ltype, const wxString &fname_org, bool bRefresh);
-	vtLayer *ImportDataFromFile(LayerType ltype, const wxString &strFileName, bool bRefresh, bool bWarn = true);
+	vtLayer *ImportDataFromFile(LayerType ltype, const wxString &strFileName, bool bRefresh = false, bool bWarn = false);
 	vtLayer *ImportFromDLG(const wxString &strFileName, LayerType ltype);
 	vtLayer *ImportFromSHP(const wxString &strFileName, LayerType ltype);
 	vtLayer *ImportFromDXF(const wxString &strFileName, LayerType ltype);

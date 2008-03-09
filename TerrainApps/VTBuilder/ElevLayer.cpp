@@ -1493,9 +1493,9 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 			vtElevationGrid base_lod(tile_area, base_tilesize+1, base_tilesize+1,
 				bFloat, proj);
 
-			bool bAllValid = true;
 			bool bAllInvalid = true;
 			bool bAllZero = true;
+			int iNumInvalid = 0;
 			DPoint2 p;
 			int x, y;
 			for (y = base_tilesize; y >= 0; y--)
@@ -1509,7 +1509,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 					base_lod.SetFValue(x, y, fvalue);
 
 					if (fvalue == INVALID_ELEVATION)
-						bAllValid = false;
+						iNumInvalid++;
 					else
 					{
 						bAllInvalid = false;
@@ -1539,7 +1539,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 			int base_tile_exponent = vt_log2(base_tilesize);
 			lod_existence_map.set(i, j, base_tile_exponent, base_tile_exponent-(opts.numlods-1));
 
-			if (!bAllValid)
+			if (iNumInvalid > 0)
 			{
 				UpdateProgressDialog2(done*99/total, 0, _("Filling gaps"));
 
@@ -1550,6 +1550,8 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 					bGood = base_lod.FillGaps(NULL, progress_callback_minor);
 				if (!bGood)
 					return false;
+
+				opts.iNoDataFilled += iNumInvalid;
 			}
 
 			// Create a matching derived texture tileset
