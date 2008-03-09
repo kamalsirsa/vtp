@@ -450,6 +450,9 @@ void Builder::CheckOptionBounds()
 	if (ems < 16) ems = 16;
 	if (ems > 8192) ems = 8192;
 	g_Options.SetValueInt(TAG_ELEV_MAX_SIZE, ems);
+
+	if (!g_Options.FindTag(TAG_TIFF_COMPRESS))
+		g_Options.SetValueBool(TAG_TIFF_COMPRESS, false, true);
 }
 
 DRECT Builder::GetExtents()

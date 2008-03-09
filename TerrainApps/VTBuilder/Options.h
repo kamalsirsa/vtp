@@ -21,6 +21,7 @@
 #define TAG_ELEV_MAX_SIZE "ElevMaxRenderSize"
 #define TAG_MAX_MEGAPIXELS "MaxMegapixels"
 #define TAG_BLACK_TRANSP "BlackAsTransparent"
+#define TAG_TIFF_COMPRESS "TiffCompressDeflate"
 
 // User Preferences
 extern vtTagArray g_Options;

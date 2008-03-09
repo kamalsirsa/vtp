@@ -750,11 +750,17 @@ bool vtImage::SaveToFile(const char *fname) const
 	if (!pDriver)
 		return false;
 
-	char ** papszParmList = NULL;
+	char **papszOptions = NULL;
 	DPoint2 spacing = GetSpacing();
 
+	// COMPRESS=[JPEG/LZW/PACKBITS/DEFLATE/CCITTRLE/CCITTFAX3/CCITTFAX4/NONE]
+	if (g_Options.GetValueBool(TAG_TIFF_COMPRESS))
+	    papszOptions = CSLSetNameValue( papszOptions, "COMPRESS", "DEFLATE" );
+
 	GDALDataset *pDataset;
-	pDataset = pDriver->Create(fname, m_iXSize, m_iYSize, 3, GDT_Byte, papszParmList );
+	pDataset = pDriver->Create(fname, m_iXSize, m_iYSize, 3, GDT_Byte, papszOptions );
+    CSLDestroy(papszOptions);
+
 	if (!pDataset)
 		return false;
 

@@ -730,34 +730,8 @@ bool MainFrame::ReadINI(const char *fname)
 	return false;
 }
 
-#if 0
-bool MainFrame::WriteINI()
-{
-	fpIni = vtFileOpen(m_szIniFilename, "wb");
-	if (fpIni)
-	{
-		wxString str = m_mgr.SavePerspective();
-		vtString vs = (const char *) str.mb_str(wxConvUTF8);
-
-		rewind(fpIni);
-		fprintf(fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f\n", m_pView->GetShowMap(),
-			vtElevLayer::m_draw.m_bShowElevation,
-			vtElevLayer::m_draw.m_bShadingQuick, vtElevLayer::m_draw.m_bDoMask,
-			m_pView->m_bShowUTMBounds, m_pTree->GetShowPaths(),
-			vtRoadLayer::GetDrawWidth(), vtElevLayer::m_draw.m_bCastShadows,
-			vtElevLayer::m_draw.m_bShadingDot, vtElevLayer::m_draw.m_iCastAngle,
-			vtElevLayer::m_draw.m_iCastDirection, vtElevLayer::m_draw.m_fAmbient,
-			vtElevLayer::m_draw.m_fGamma);
-		fprintf(fpIni, "%s\n", (const char *) vs);
-		fclose(fpIni);
-		return true;
-	}
-	return false;
-}
-#endif
-
 //
-// read / write ini file
+// read / write options file
 //
 bool MainFrame::ReadXML(const char *fname)
 {
