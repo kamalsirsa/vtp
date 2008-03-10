@@ -75,7 +75,7 @@ void vtRoute::AddPoint(const DPoint2 &epos, const char *structname)
 }
 
 //
-// Builds (or rebuilds) the geometry for a fence.
+// Builds (or rebuilds) the geometry for a route.
 //
 void vtRoute::BuildGeometry(vtHeightField3d *pHeightField)
 {

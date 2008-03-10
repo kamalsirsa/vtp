@@ -1534,6 +1534,12 @@ void vtTerrain::_CreateCulture()
 		}
 	}
 
+	// create any route geometry
+	for (unsigned int i = 0; i < m_Routes.GetSize(); i++)
+	{
+		m_Routes[i]->BuildGeometry(m_pHeightField);
+	}
+
 	// Let any terrain subclasses provide their own culture
 	CreateCustomCulture();
 }
