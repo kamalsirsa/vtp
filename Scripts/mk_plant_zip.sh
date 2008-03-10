@@ -14,6 +14,9 @@ DIST_FILE1=${TARGETDIR}/vtp-plantlib-${DATE}.zip
 # Create the archive containing the Plant Library
 rm -f $DIST_FILE1
 
+cd /cygdrive/g/Data-Distro
+zip $DIST_FILE1 PlantData/species.xml
+
 cd /cygdrive/g/Data-Common
 zip $DIST_FILE1 PlantModels/*
 
