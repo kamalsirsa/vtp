@@ -187,6 +187,7 @@ bool CreateScene()
 	// Create a new vtTerrain, read its parameters from a file
 	vtTerrain *pTerr = new vtTerrain;
 	pTerr->SetParamFile("Data/Simple.xml");
+	pTerr->LoadParams();
 
 #if EXAMPLE_PLANTS
 	//Set species list

@@ -249,6 +249,7 @@ bool CreateScene()
 	// Create a new vtTerrain, read its paramters from a file
 	vtTerrain *pTerr = new vtTerrain;
 	pTerr->SetParamFile("Data/Simple.xml");
+	pTerr->LoadParams();
 
 	// Add the terrain to the scene, and contruct it
 	ts->AppendTerrain(pTerr);
