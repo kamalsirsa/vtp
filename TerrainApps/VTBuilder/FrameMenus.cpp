@@ -1979,7 +1979,7 @@ void MainFrame::OnImageReplaceRGB(wxCommandEvent& event)
 
 void MainFrame::OnImageExportTiles(wxCommandEvent& event)
 {
-	ImageExportTiles();
+	ImageExportTiles(m_pView);
 }
 
 void MainFrame::OnImageExportPPM(wxCommandEvent& event)

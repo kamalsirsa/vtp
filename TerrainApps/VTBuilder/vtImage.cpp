@@ -1485,6 +1485,8 @@ int GetBitDepthUsingGDAL(const char *fname)
 
 bool vtImage::WriteGridOfTilePyramids(TilingOptions &opts, BuilderView *pView)
 {
+	VTLOG1("vtImage::WriteGridOfTilePyramids:\n");
+
 	wxFrame *frame = NULL;
 
 	// Avoid trouble with '.' and ',' in Europe

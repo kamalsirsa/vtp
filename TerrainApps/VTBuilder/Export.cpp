@@ -465,6 +465,8 @@ void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 
 void Builder::ImageExportTiles(BuilderView *pView)
 {
+	VTLOG1("ImageExportTiles:\n");
+
 	vtImageLayer *pIL = GetActiveImageLayer();
 	DRECT area;
 	pIL->GetExtent(area);
