@@ -3,7 +3,7 @@
 //
 // Creates linear structure geometry, drapes it on a terrain.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -588,6 +588,9 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 
 void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 {
+	// Trigger the creation of any materials we may need
+	FindMatIndex("");
+
 	unsigned int i, j;
 	unsigned int numfencepts = m_pFencePts.GetSize();
 
