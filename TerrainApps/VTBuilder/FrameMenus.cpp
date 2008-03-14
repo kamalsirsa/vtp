@@ -1276,6 +1276,7 @@ void MainFrame::OnLayerShow(wxCommandEvent &event)
 		return;
 	pLayer->SetVisible(!pLayer->GetVisible());
 	RefreshLayerInView(pLayer);
+	RefreshTreeStatus();
 }
 
 void MainFrame::OnUpdateLayerShow(wxUpdateUIEvent& event)
@@ -3173,6 +3174,7 @@ void MainFrame::OnShowAll(wxCommandEvent& event)
 			RefreshLayerInView(lp);
 		}
 	}
+	RefreshTreeStatus();
 }
 
 void MainFrame::OnHideAll(wxCommandEvent& event)
@@ -3187,6 +3189,7 @@ void MainFrame::OnHideAll(wxCommandEvent& event)
 			RefreshLayerInView(lp);
 		}
 	}
+	RefreshTreeStatus();
 }
 
 void MainFrame::OnLayerToTop(wxCommandEvent& event)

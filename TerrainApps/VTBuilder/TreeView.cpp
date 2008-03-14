@@ -245,6 +245,11 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 
 			if (lp == pFrame->GetActiveLayer())
 				hSelectedItem = hItem;
+			if (!lp->GetVisible())
+			{
+				SetItemFont(hItem, *wxITALIC_FONT);
+				SetItemTextColour(hItem, wxColour(80,80,80));
+			}
 		}
 	}
 	VTLOG(" %d layers.\n", iLayers);
@@ -288,6 +293,16 @@ void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
 				SetItemText(item, MakeItemName(data->m_pLayer));
 				if (data->m_pLayer == pFrame->GetActiveLayer())
 					SelectItem(item);
+				if (data->m_pLayer->GetVisible())
+				{
+					SetItemFont(item, *wxNORMAL_FONT);
+					SetItemTextColour(item, wxColour(0,0,0));
+				}
+				else
+				{
+					SetItemFont(item, *wxITALIC_FONT);
+					SetItemTextColour(item, wxColour(80,80,80));
+				}
 			}
 		}
 	}
