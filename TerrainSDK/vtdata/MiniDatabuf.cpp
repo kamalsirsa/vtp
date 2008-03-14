@@ -1,7 +1,7 @@
 //
 // MiniDatabuf.cpp
 //
-// Copyright (c) 2006-2007 Virtual Terrain Project and Stefan Roettger
+// Copyright (c) 2006-2008 Virtual Terrain Project and Stefan Roettger
 // Free for all uses, see license.txt for details.
 //
 
@@ -61,9 +61,62 @@ void MiniDatabuf::set_extents(float left, float right, float bottom, float top)
 	ney = top;
 }
 
-// set the geographic extents in LLWGS84
-// not supported in vtb::MiniDatabuf, requires subclassing from libMini::databuf
-void MiniDatabuf::set_LLWGS84extents(float left, float right, float bottom, float top) {}
+// set LLWGS84 corners
+void MiniDatabuf::set_LLWGS84corners(float sw_corner_x,float sw_corner_y,
+									 float se_corner_x,float se_corner_y,
+									 float nw_corner_x,float nw_corner_y,
+									 float ne_corner_x,float ne_corner_y)
+{
+	LLWGS84_swx=sw_corner_x;
+	LLWGS84_swy=sw_corner_y;
+
+	LLWGS84_sex=se_corner_x;
+	LLWGS84_sey=se_corner_y;
+
+	LLWGS84_nwx=nw_corner_x;
+	LLWGS84_nwy=nw_corner_y;
+
+	LLWGS84_nex=ne_corner_x;
+	LLWGS84_ney=ne_corner_y;
+}
+
+// A useful method to set the extents (in local CRS) and the corners
+//  (in Geo WGS84) at the same time.
+bool MiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
+{
+	// First, set the extent rectangle
+	set_extents(extents.left, extents.right, extents.bottom, extents.top);
+
+	// Create transform from local to Geo-WGS84
+	vtProjection geo;
+	geo.SetWellKnownGeogCS("WGS84");
+	OCT *trans = CreateCoordTransform(&proj, &geo);
+
+	if (!trans)
+		return false;
+
+	// Convert each corner as a point
+	DPoint2 sw_corner, se_corner, nw_corner, ne_corner;
+
+	sw_corner.Set(extents.left, extents.bottom);
+	trans->Transform(1, &sw_corner.x, &sw_corner.y);
+
+	se_corner.Set(extents.right, extents.bottom);
+	trans->Transform(1, &se_corner.x, &se_corner.y);
+
+	nw_corner.Set(extents.left, extents.top);
+	trans->Transform(1, &nw_corner.x, &nw_corner.y);
+
+	ne_corner.Set(extents.right, extents.top);
+	trans->Transform(1, &ne_corner.x, &ne_corner.y);
+
+	set_LLWGS84corners(sw_corner.x, sw_corner.y,
+                       se_corner.x, se_corner.y,
+                       nw_corner.x, nw_corner.y,
+                       ne_corner.x, ne_corner.y);
+	delete trans;
+	return true;
+}
 
 // allocate a new memory chunk
 void MiniDatabuf::alloc(unsigned int xs,unsigned int ys,unsigned int zs,unsigned int ts,unsigned int ty)
@@ -162,6 +215,16 @@ void MiniDatabuf::savedata(const char *filename)
 	// save optional scaling
 	fprintf(file,"scaling=%f\n",scaling);
 	fprintf(file,"bias=%f\n",bias);
+
+	// save optional corner points in Lat/Lon
+	fprintf(file,"LLWGS84_swx=%f\n",LLWGS84_swx);
+	fprintf(file,"LLWGS84_swy=%f\n",LLWGS84_swy);
+	fprintf(file,"LLWGS84_nwx=%f\n",LLWGS84_nwx);
+	fprintf(file,"LLWGS84_nwy=%f\n",LLWGS84_nwy);
+	fprintf(file,"LLWGS84_nex=%f\n",LLWGS84_nex);
+	fprintf(file,"LLWGS84_ney=%f\n",LLWGS84_ney);
+	fprintf(file,"LLWGS84_sex=%f\n",LLWGS84_sex);
+	fprintf(file,"LLWGS84_sey=%f\n",LLWGS84_sey);
 
 	// save length of data chunk
 	fprintf(file,"bytes=%u\n",bytes);

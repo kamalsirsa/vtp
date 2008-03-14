@@ -1688,6 +1688,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
  */
 bool vtElevLayer::ImportFromDB(const char *szFileName, bool progress_callback(int))
 {
+#if USE_LIBMINI_DATABUF
 	DRECT area;
 	bool bFloat;
 	vtProjection proj;	// Projection is always unknown
@@ -1728,6 +1729,9 @@ bool vtElevLayer::ImportFromDB(const char *szFileName, bool progress_callback(in
 		}
 	}
 	return true;
+#else
+	return false;
+#endif
 }
 
 

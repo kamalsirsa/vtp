@@ -1,7 +1,7 @@
 //
 // MiniDatabuf.h
 //
-// Copyright (c) 2006-2007 Virtual Terrain Project and Stefan Roettger
+// Copyright (c) 2006-2008 Virtual Terrain Project and Stefan Roettger
 // Free for all uses, see license.txt for details.
 //
 
@@ -42,12 +42,29 @@ public:
 	float scaling; // scale factor of data values, default=1.0f
 	float bias;    // bias of data values, default=0.0f
 
+	//! optional minimum and maximum value
+	float minvalue;
+	float maxvalue;
+
+	//! optional corner points in Lat/Lon (WGS84, degrees)
+	float LLWGS84_swx,LLWGS84_swy; // SW corner of data brick
+	float LLWGS84_nwx,LLWGS84_nwy; // NW corner of data brick
+	float LLWGS84_nex,LLWGS84_ney; // NE corner of data brick
+	float LLWGS84_sex,LLWGS84_sey; // SE corner of data brick
+
 	// data chunk
 	void *data;         // pointer to raw data, null pointer indicates missing data
 	unsigned int bytes; // number of raw data bytes
 
 	void set_extents(float left, float right, float bottom, float top);
-	void set_LLWGS84extents(float left, float right, float bottom, float top);
+	void set_LLWGS84corners(float sw_corner_x,float sw_corner_y,
+							float se_corner_x,float se_corner_y,
+							float nw_corner_x,float nw_corner_y,
+							float ne_corner_x,float ne_corner_y);
+
+	// A useful method to set the extents (in local CRS) and the corners
+	//  (in Geo WGS84) at the same time.
+	bool SetBounds(const vtProjection &proj, const DRECT &extents);
 
 	// allocate a new memory chunk
 	void alloc(unsigned int xs,unsigned int ys,unsigned int zs,unsigned int ts=1,unsigned int ty=0);
