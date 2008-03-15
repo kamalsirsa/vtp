@@ -411,7 +411,7 @@ bool BuilderView::ImportWorldMap()
 	SHPClose(hSHP);
 
 	// Initialize the drawn World Map WMPolyDraw to original (latlon)
-	m_iEntities = WMPoly.size();
+	m_iEntities = (unsigned int)WMPoly.size();
 	WMPolyDraw.resize(m_iEntities);
 	for (i = 0; i < m_iEntities; i++)
 		WMPolyDraw[i] = WMPoly[i];

@@ -453,7 +453,7 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 			// To try to distinguish, look for a file called xxxxrsdf.ddf
 			// which would indicate that it is a raster.
 			bool bRaster = false;
-			int len = strFileName.Length();
+			int len = (int)strFileName.Length();
 			wxString strFileName2 = strFileName.Left(len - 8);
 			wxString strFileName3 = strFileName2 + _T("rsdf.ddf");
 			FILE *fp;
@@ -1068,7 +1068,7 @@ void Builder::ImportFromMapSource(const char *fname)
 		choices[i] += _T(")");
 	}
 
-	int nsel = wxGetMultipleChoices(selections, _("Which layers to import?"),
+	int nsel = (int)wxGetMultipleChoices(selections, _("Which layers to import?"),
 		_("Import Tracks"), n, choices);
 
 	// for each of the layers the user wants, add them to our project
@@ -1235,7 +1235,7 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 	vtStringArray fieldnames;
 	fgets(buf, 4096, fp);
 	Tokenize(buf, fieldnames);
-	int iFields = fieldnames.size();
+	int iFields = (int)fieldnames.size();
 	if (iFields == 0)
 	{
 		fclose(fp);
@@ -2187,7 +2187,7 @@ bool Builder::ImportDataFromDXF(const char *filename)
 		if (ent.m_iType == DET_Polyline)
 		{
 			DLine2 dline;
-			int NumVerts = ent.m_points.size();
+			int NumVerts = (int)ent.m_points.size();
 			dline.SetSize(NumVerts);
 			for (int j = 0; j < NumVerts; j++)
 			{

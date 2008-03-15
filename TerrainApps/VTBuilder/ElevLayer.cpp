@@ -1709,12 +1709,12 @@ bool vtElevLayer::ImportFromDB(const char *szFileName, bool progress_callback(in
 		return false;
 
 	int i, j;
-	for (j = 0; j < dbuf.ysize; j++)
+	for (j = 0; j < (int)dbuf.ysize; j++)
 	{
 		//if (progress_callback != NULL)
 		//	progress_callback(j * 100 / dbuf.ysize);
 
-		for (i = 0; i < dbuf.xsize; i++)
+		for (i = 0; i < (int)dbuf.xsize; i++)
 		{
 			if (bFloat)
 			{

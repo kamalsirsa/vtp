@@ -85,7 +85,7 @@ void MiniDatabuf::set_LLWGS84corners(float sw_corner_x,float sw_corner_y,
 bool MiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
 {
 	// First, set the extent rectangle
-	set_extents(extents.left, extents.right, extents.bottom, extents.top);
+	set_extents((float)extents.left, (float)extents.right, (float)extents.bottom, (float)extents.top);
 
 	// Create transform from local to Geo-WGS84
 	vtProjection geo;
@@ -110,10 +110,11 @@ bool MiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
 	ne_corner.Set(extents.right, extents.top);
 	trans->Transform(1, &ne_corner.x, &ne_corner.y);
 
-	set_LLWGS84corners(sw_corner.x, sw_corner.y,
-                       se_corner.x, se_corner.y,
-                       nw_corner.x, nw_corner.y,
-                       ne_corner.x, ne_corner.y);
+	set_LLWGS84corners((float)sw_corner.x, (float)sw_corner.y,
+                       (float)se_corner.x, (float)se_corner.y,
+                       (float)nw_corner.x, (float)nw_corner.y,
+                       (float)ne_corner.x, (float)ne_corner.y);
+
 	delete trans;
 	return true;
 }

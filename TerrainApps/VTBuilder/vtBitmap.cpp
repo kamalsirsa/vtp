@@ -227,7 +227,7 @@ void user_read_data(png_structp png_ptr,
 {
 	membuf *buf = (membuf *) png_get_io_ptr(png_ptr);
 	memcpy(data, buf->m_data+buf->m_offset, length);
-	buf->m_offset += length;
+	buf->m_offset += (unsigned int)length;
 }
 
 bool vtBitmap::ReadPNGFromMemory(unsigned char *buf, int len)

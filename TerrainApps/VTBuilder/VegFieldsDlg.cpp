@@ -131,7 +131,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_iFields = DBFGetFieldCount(m_db);
 	for (i = 0; i < m_iFields; i++)
 	{
-		void *clientdata = (void *) (10+i);
+		void *clientdata = (void *) (long long int)(10+i);
 		fieldtype = DBFGetFieldInfo(m_db, i,
 			pszFieldName, pnWidth, pnDecimals );
 		str = wxString(pszFieldName, wxConvUTF8);
@@ -162,7 +162,7 @@ void VegFieldsDlg::OnOK( wxCommandEvent &event )
 	m_options.bFixedSpecies = m_bUseSpecies;
 	m_options.strFixedSpeciesName = GetSpeciesChoice()->GetStringSelection();
 	int sel = GetSpeciesField()->GetSelection();
-	m_options.iSpeciesFieldIndex = ((long int) GetSpeciesField()->GetClientData(sel)) - 10;
+	m_options.iSpeciesFieldIndex = ((long long int) GetSpeciesField()->GetClientData(sel)) - 10;
 
 	if (GetSpeciesId()->GetValue())
 		m_options.iInterpretSpeciesField = 0;
@@ -184,7 +184,7 @@ void VegFieldsDlg::OnOK( wxCommandEvent &event )
 	if (m_bHeightUseField)
 	{
 		sel = GetHeightField()->GetSelection();
-		m_options.iHeightFieldIndex = ((long int) GetHeightField()->GetClientData(sel)) - 10;
+		m_options.iHeightFieldIndex = ((long long int) GetHeightField()->GetClientData(sel)) - 10;
 	}
 	else
 		m_options.iHeightFieldIndex = -1;

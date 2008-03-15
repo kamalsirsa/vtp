@@ -957,7 +957,7 @@ private:
 	{
 		for (size_t i = 0; i < m_nodes.size(); i++)
 			if (m_nodes[i].id == id)
-				return i;
+				return (int)i;
 		return -1;
 	}
 	std::vector<int> m_refs;
@@ -1146,7 +1146,7 @@ void VisitorOSM::endElement(const char *name)
 	else if (m_state == 2 && !strcmp(name, "way"))
 	{
 		// Look at the referenced nodes, turn them into a vt link
-		unsigned int refs = m_refs.size();
+		unsigned int refs = (unsigned int)m_refs.size();
 
 		// must have at least 2 refs
 		if (refs >= 2 && m_bAddLink == true)

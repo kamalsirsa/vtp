@@ -75,7 +75,7 @@ Builder::Builder()
 	// Get datapaths from the vtp.xml config file
 	ReadDataPath();
 	VTLOG("Using Datapaths:\n");
-	int i, n = vtGetDataPath().size();
+	int i, n = (int)vtGetDataPath().size();
 	if (n == 0)
 		VTLOG("   none.\n");
 	for (i = 0; i < n; i++)
@@ -128,9 +128,9 @@ void Builder::DeleteContents()
 
 void trim_eol(char *buf)
 {
-	int len = strlen(buf);
+	int len = (int)strlen(buf);
 	if (len && buf[len-1] == 10) buf[len-1] = 0;
-	len = strlen(buf);
+	len = (int)strlen(buf);
 	if (len && buf[len-1] == 13) buf[len-1] = 0;
 }
 
@@ -569,7 +569,7 @@ unsigned int Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
 		if (lp->GetType() == LT_ELEVATION && lp->GetVisible())
 			elevs.push_back((vtElevLayer *)lp);
 	}
-	return elevs.size();
+	return (unsigned int)elevs.size();
 }
 
 /**

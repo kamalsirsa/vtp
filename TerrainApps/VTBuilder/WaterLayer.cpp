@@ -48,7 +48,7 @@ bool vtWaterLayer::TransformCoords(vtProjection &proj_new)
 	if (!trans)
 		return false;		// inconvertible projections
 
-	int i, c, size, num_lines = m_Lines.size();
+	int i, c, size, num_lines = (int)m_Lines.size();
 
 	DPoint2 p;
 	for (i = 0; i < num_lines; i++)
@@ -73,7 +73,7 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	wxBrush WaterBrush(wxColor(0,200,200), wxSOLID);
 	pDC->SetBrush(WaterBrush);
 
-	int num_lines = m_Lines.size();
+	int num_lines = (int)m_Lines.size();
 	for (int i = 0; i < num_lines; i++)
 	{
 		const vtWaterFeature &feat = GetFeature(i);
@@ -84,7 +84,7 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 bool vtWaterLayer::GetExtent(DRECT &rect)
 {
-	int size = m_Lines.size();
+	int size = (int)m_Lines.size();
 	if (size == 0)
 		return false;
 
@@ -108,7 +108,7 @@ bool vtWaterLayer::AppendDataFrom(vtLayer *pL)
 
 	vtWaterLayer *pFrom = (vtWaterLayer *)pL;
 
-	int from_size = pFrom->m_Lines.size();
+	int from_size = (int)pFrom->m_Lines.size();
 	for (int i = 0; i < from_size; i++)
 	{
 		m_Lines.push_back(pFrom->m_Lines[i]);
@@ -132,7 +132,7 @@ void vtWaterLayer::SetProjection(const vtProjection &proj)
 
 void vtWaterLayer::Offset(const DPoint2 &p)
 {
-	unsigned int size = m_Lines.size();
+	unsigned int size = (unsigned int)m_Lines.size();
 	for (unsigned int i = 0; i < size; i++)
 	{
 		for (unsigned int c = 0; c < m_Lines[i].GetSize(); c++)
@@ -173,7 +173,7 @@ void vtWaterLayer::AddElementsFromDLG(vtDLGFile *pDlg)
 	for (i = 0; i < pDlg->m_iLines; i++)
 	{
 		bool bSkip = true;
-		int attribs = pDlg->m_lines[i].m_attr.size();
+		int attribs = (int)pDlg->m_lines[i].m_attr.size();
 		for (j = 0; j < attribs; j++)
 		{
 			int iMinorAttr = pDlg->m_lines[i].m_attr[j].m_iMinorAttr;
