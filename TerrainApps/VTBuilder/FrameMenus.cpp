@@ -81,6 +81,7 @@ EVT_MENU(ID_EDIT_INVERTSELECTION, MainFrame::OnEditInvertSelection)
 EVT_MENU(ID_EDIT_CROSSINGSELECTION, MainFrame::OnEditCrossingSelection)
 
 EVT_UPDATE_UI(ID_EDIT_DELETE,	MainFrame::OnUpdateEditDelete)
+EVT_UPDATE_UI(ID_EDIT_CROSSINGSELECTION,	MainFrame::OnUpdateCrossingSelection)
 
 EVT_MENU(ID_LAYER_NEW,			MainFrame::OnLayerNew)
 EVT_MENU(ID_LAYER_OPEN,			MainFrame::OnLayerOpen)

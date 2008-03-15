@@ -81,6 +81,7 @@ protected:
 	void OnEditDeselectAll(wxCommandEvent& event);
 	void OnEditInvertSelection(wxCommandEvent& event);
 	void OnEditCrossingSelection(wxCommandEvent& event);
+	void OnUpdateCrossingSelection(wxUpdateUIEvent& event);
 	void OnEditOffset(wxCommandEvent& event);
 
 	void OnUpdateEditOffset(wxUpdateUIEvent& event);
@@ -142,7 +143,6 @@ protected:
 	void OnUpdateViewToolbar(wxUpdateUIEvent& event);
 	void OnUpdateViewLayers(wxUpdateUIEvent& event);
 	void OnUpdateViewZoomToLayer(wxUpdateUIEvent& event);
-	void OnUpdateCrossingSelection(wxUpdateUIEvent& event);
 	void OnUpdateWorldMap(wxUpdateUIEvent& event);
 	void OnUpdateUTMBounds(wxUpdateUIEvent& event);
 	void OnUpdateViewProfile(wxUpdateUIEvent& event);
