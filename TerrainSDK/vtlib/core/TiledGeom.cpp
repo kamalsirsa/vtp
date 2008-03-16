@@ -8,6 +8,7 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/TripDub.h"
 #include "TiledGeom.h"
 
 #include "mini.h"
@@ -346,7 +347,17 @@ void request_callback_async(unsigned char *mapfile, databuf *map,
 							int istexture, int background, void *data)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
-	map->loaddata((char *)mapfile);
+	if (tg->m_strBaseURL != "")
+	{
+		vtBytes data;
+		vtString url = tg->m_strBaseURL + (char *)mapfile;
+		tg->m_pReqContext->GetURL(url, data);
+	}
+	else
+	{
+		// normal disk load
+		map->loaddata((char *)mapfile);
+	}
 	if (tg->m_progress_callback != NULL)
 	{
 		tg->m_iTileLoads++;
@@ -429,6 +440,8 @@ vtTiledGeom::vtTiledGeom()
 	m_pPlainMaterial->SetDiffuse(0,0,0);
 	m_pPlainMaterial->SetAmbient(1,1,1);
 	m_pPlainMaterial->SetLighting(true);
+
+	m_pReqContext = NULL;
 }
 
 vtTiledGeom::~vtTiledGeom()
@@ -445,6 +458,8 @@ vtTiledGeom::~vtTiledGeom()
 	delete m_pMiniLoad;
 
 	delete m_pPlainMaterial;
+
+	delete m_pReqContext;
 }
 
 bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev,
@@ -705,7 +720,9 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 	// cache can own them and pass them again when needed, without copying.
 	m_pMiniLoad->configure_dontfree(WE_OWN_BUFFERS);
 
-	// Calling setfastinit can give possibly faster startup with libMini-8.6 or later
+	// Calling setfastinit can give possibly faster startup.
+	//  March 2008: "setfastinit() is currently undocumented, but it works.
+	//  You can leave the call in. No need to worry about it."
 	m_pMiniLoad->setfastinit(1);
 
 	miniOGL::configure_compression(0);
@@ -820,6 +837,13 @@ bool vtTiledGeom::CheckMapFile(const char *mapfile, bool bIsTexture)
 		return (file_exists((char *)mapfile) != 0);
 	}
 	return false;
+}
+
+void vtTiledGeom::SetBaseURL(const char *url)
+{
+	if (!m_pReqContext)
+		m_pReqContext = new ReqContext;
+	m_strBaseURL = url;
 }
 
 void vtTiledGeom::DoRender()

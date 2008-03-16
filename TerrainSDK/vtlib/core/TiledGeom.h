@@ -38,6 +38,7 @@ public:
 // Simple cache of tiles loaded from disk
 typedef unsigned char *ucharptr;
 class databuf;
+class ReqContext;
 
 typedef bool (*ProgFuncPtrType)(int);
 
@@ -119,6 +120,11 @@ public:
 	void SetProgressCallback(ProgFuncPtrType progress_callback)
 	{ m_progress_callback = progress_callback; }
 	ProgFuncPtrType m_progress_callback;
+
+	// Options WWW fetch
+	void SetBaseURL(const char *url);
+	vtString m_strBaseURL;
+	ReqContext *m_pReqContext;
 
 protected:
 	// a vtlib material
