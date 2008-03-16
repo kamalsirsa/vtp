@@ -107,6 +107,9 @@ public:
 	static ElevDrawOptions m_draw;
 	static bool m_bDefaultGZip;
 
+	// only this many BT files may be loaded, the rest are paged out on an LRU basis
+	static int m_iLoadLimit;
+
 	vtElevationGrid	*m_pGrid;
 	vtTin2d *m_pTin;
 

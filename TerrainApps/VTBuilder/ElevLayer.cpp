@@ -134,6 +134,7 @@ void vtTin2d::FreeEdgeLengths()
 
 ElevDrawOptions vtElevLayer::m_draw;
 bool vtElevLayer::m_bDefaultGZip = false;
+int vtElevLayer::m_iLoadLimit = -1;
 
 vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 {
@@ -196,19 +197,28 @@ bool vtElevLayer::OnLoad()
 			m_bPreferGZip = true;
 
 		m_pGrid = new vtElevationGrid;
-
 		vtElevGridError err;
-		success = m_pGrid->LoadFromBT(fname.mb_str(wxConvUTF8), progress_callback, &err);
-		if (!success && err == EGE_READ_CRS)
+
+		if (m_iLoadLimit != -1)
 		{
-			// Missing prj file
-			wxString str = _("CRS file");
-			str += _T(" (");
-			RemoveFileExtensions(fname);
-			str += fname;
-			str += _T(".prj) ");
-			str += _("is missing or unreadable.\n");
-			wxMessageBox(str);
+			// Limit ourselves to a fixed number of BT files loaded, deferred
+			//  until needed.
+			success = m_pGrid->LoadBTHeader(fname.mb_str(wxConvUTF8), &err);
+		}
+		else
+		{
+			success = m_pGrid->LoadFromBT(fname.mb_str(wxConvUTF8), progress_callback, &err);
+			if (!success && err == EGE_READ_CRS)
+			{
+				// Missing prj file
+				wxString str = _("CRS file");
+				str += _T(" (");
+				RemoveFileExtensions(fname);
+				str += fname;
+				str += _T(".prj) ");
+				str += _("is missing or unreadable.\n");
+				wxMessageBox(str);
+			}
 		}
 		if (success)
 		{
@@ -296,6 +306,8 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 
 bool vtElevLayer::NeedsDraw()
 {
+	if (m_pGrid != NULL && m_pGrid->HasData() == false)
+		return false;
 	if (m_bNeedsDraw)
 		return true;
 	if (m_pBitmap != NULL && m_draw.m_bShowElevation && !m_bBitmapRendered)
@@ -376,14 +388,11 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 	if (m_pBitmap == NULL)
 		SetupBitmap(pDC);
 
-	if (m_pBitmap == NULL)
+	if (m_pBitmap == NULL || !m_bBitmapRendered)
 	{
 		DrawLayerOutline(pDC, pView);
 		return;
 	}
-
-	if (!m_bBitmapRendered)
-		return;
 
 	int iColumns, iRows;
 	m_pGrid->GetDimensions(iColumns, iRows);
@@ -778,7 +787,10 @@ vtHeightField *vtElevLayer::GetHeightField()
 float vtElevLayer::GetElevation(const DPoint2 &p)
 {
 	if (m_pGrid)
-		return m_pGrid->GetFilteredValue(p);
+	{
+		if (m_pGrid->HasData())
+			return m_pGrid->GetFilteredValue(p);
+	}
 	if (m_pTin)
 	{
 		float fAltitude;
