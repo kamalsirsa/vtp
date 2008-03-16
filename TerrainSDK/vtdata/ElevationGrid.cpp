@@ -421,9 +421,17 @@ void vtElevationGrid::Offset(const DPoint2 &delta)
 		m_Corners[i] += delta;
 }
 
-void vtElevationGrid::ReplaceValue(float value1, float value2)
+/**
+ * Replace one value with another.  For example, replace all heixels of value
+ * INVALID_ELEVATION with 0.0.
+ *
+ * \param value1 The heixel value to replace.
+ * \param value2 The value to replace it with.
+ * \return The number of heixels that were modified.
+ */
+int vtElevationGrid::ReplaceValue(float value1, float value2)
 {
-	bool bModified = false;
+	int replaced = 0;
 	int i, j;
 	for (i=0; i<m_iColumns; i++)
 	{
@@ -431,11 +439,12 @@ void vtElevationGrid::ReplaceValue(float value1, float value2)
 		{
 			if (GetFValue(i, j) == value1)
 				SetFValue(i, j, value2);
-			bModified = true;
+			replaced++;
 		}
 	}
-	if (bModified)
+	if (replaced > 0)
 		ComputeHeightExtents();
+	return replaced;
 }
 
 /**

@@ -59,7 +59,7 @@ public:
 	void Scale(float fScale, bool bDirect, bool bRecomputeExtents = true);
 	void ComputeHeightExtents();
 	void Offset(const DPoint2 &delta);
-	void ReplaceValue(float value1, float value2);
+	int ReplaceValue(float value1, float value2);
 	bool FillGaps(DRECT *area = NULL, bool progress_callback(int) = NULL);
 	bool FillGapsSmooth(DRECT *area = NULL, bool progress_callback(int) = NULL);
 
