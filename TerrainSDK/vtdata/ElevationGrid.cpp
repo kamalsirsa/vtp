@@ -390,6 +390,9 @@ void vtElevationGrid::ComputeHeightExtents()
 	m_fMinHeight = 100000.0f;
 	m_fMaxHeight = -100000.0f;
 
+	if (!HasData())
+		return;
+
 	int i, j;
 	for (i=0; i<m_iColumns; i++)
 	{
