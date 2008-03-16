@@ -586,6 +586,7 @@ unsigned int Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
  * from the surrounding values.
  *
  * \param el The elevation layer to fill the gaps on.
+ * \param area Optionally, restrict the operation to a given area.
  */
 bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area)
 {
