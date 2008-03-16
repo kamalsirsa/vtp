@@ -2743,7 +2743,7 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item31 = new wxCheckBox( parent, ID_DEFLATE_TIFF, _("Deflate TIFF images when writing"), wxDefaultPosition, wxDefaultSize, 0 );
     item29->Add( item31, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item32 = new wxCheckBox( parent, ID_BT_GZIP, _("Default to saving gzip-compressed BT files"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxCheckBox *item32 = new wxCheckBox( parent, ID_BT_GZIP, _("Default to gzip-compressed BT files"), wxDefaultPosition, wxDefaultSize, 0 );
     item29->Add( item32, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item0->Add( item29, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
