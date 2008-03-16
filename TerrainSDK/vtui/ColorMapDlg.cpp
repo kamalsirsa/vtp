@@ -4,7 +4,7 @@
 // This dialog is for defining a set of colors which map onto elevations,
 //  to define how the user wants an elevation dataset to be colored.
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -153,7 +153,16 @@ void ColorMapDlg::OnSaveAs( wxCommandEvent &event )
 	m_cmap.m_bRelative = m_bRelative;
 	m_cmap.m_bBlend = m_bBlend;
 
-	wxFileDialog saveFile(NULL, _("Save ColorMap"), _T(""), _T(""),
+	// If previously saved/loaded from a file, use that as the default
+	wxString default_dir, default_file;
+	vtString previous = (const char *) m_strFile.mb_str(wxConvUTF8);
+	if (previous != "")
+	{
+		default_file = wxString(StartOfFilename(previous), wxConvUTF8);
+		default_dir = wxString(ExtractPath(previous, false), wxConvUTF8);
+	}
+
+	wxFileDialog saveFile(NULL, _("Save ColorMap"), default_dir, default_file,
 		_("ColorMap Files (*.cmt)|*.cmt"), wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
