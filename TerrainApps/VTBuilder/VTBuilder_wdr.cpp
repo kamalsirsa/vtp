@@ -2743,17 +2743,20 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item31 = new wxCheckBox( parent, ID_DEFLATE_TIFF, _("Deflate TIFF images when writing"), wxDefaultPosition, wxDefaultSize, 0 );
     item29->Add( item31, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
+    wxCheckBox *item32 = new wxCheckBox( parent, ID_BT_GZIP, _("Default to saving gzip-compressed BT files"), wxDefaultPosition, wxDefaultSize, 0 );
+    item29->Add( item32, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
     item0->Add( item29, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxBoxSizer *item32 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item33 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item33 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item32->Add( item33, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item34 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item33->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item34 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item32->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item35 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item33->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item32, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
+    item0->Add( item33, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
 
     if (set_sizer)
     {

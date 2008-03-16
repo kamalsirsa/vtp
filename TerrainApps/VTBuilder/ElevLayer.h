@@ -74,6 +74,7 @@ public:
 	void ReRender();
 	void ReImage();
 	bool IsGrid() { return m_pGrid != NULL; }
+	void SetPreferGZip(bool val) { m_bPreferGZip = val; }
 
 	void SetupDefaults();
 
@@ -104,6 +105,7 @@ public:
 	static void SetupDefaultColors(ColorMap &cmap);
 
 	static ElevDrawOptions m_draw;
+	static bool m_bDefaultGZip;
 
 	vtElevationGrid	*m_pGrid;
 	vtTin2d *m_pTin;

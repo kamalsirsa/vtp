@@ -133,7 +133,7 @@ void vtTin2d::FreeEdgeLengths()
 ////////////////////////////////////////////////////////////////////
 
 ElevDrawOptions vtElevLayer::m_draw;
-
+bool vtElevLayer::m_bDefaultGZip = false;
 
 vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 {
@@ -1353,6 +1353,10 @@ bool vtElevLayer::AskForSaveFilename()
 
 	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), GetLayerFilename(),
 		filter, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+	// If user always wants to default to compressed, overwrite
+	if (m_bDefaultGZip)
+		m_bPreferGZip = true;
 	saveFile.SetFilterIndex(m_pGrid && m_bPreferGZip ? 1 : 0);
 
 	VTLOG("Asking user for elevation file name\n");

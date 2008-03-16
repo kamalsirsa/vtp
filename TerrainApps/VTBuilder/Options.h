@@ -22,6 +22,7 @@
 #define TAG_MAX_MEGAPIXELS "MaxMegapixels"
 #define TAG_BLACK_TRANSP "BlackAsTransparent"
 #define TAG_TIFF_COMPRESS "TiffCompressDeflate"
+#define TAG_DEFAULT_GZIP_BT "DefaultGzipBT"
 
 // User Preferences
 extern vtTagArray g_Options;

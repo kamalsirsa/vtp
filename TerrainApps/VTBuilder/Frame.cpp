@@ -748,7 +748,7 @@ bool MainFrame::ReadXML(const char *fname)
 	vtRoadLayer::SetDrawWidth(g_Options.GetValueBool(TAG_ROAD_DRAW_WIDTH));
 
 	vtImage::bTreatBlackAsTransparent = g_Options.GetValueBool(TAG_BLACK_TRANSP);
-
+	vtElevLayer::m_bDefaultGZip = g_Options.GetValueBool(TAG_DEFAULT_GZIP_BT);
 	vtElevLayer::m_draw.SetFromTags(g_Options);
 
 	vtString str;
