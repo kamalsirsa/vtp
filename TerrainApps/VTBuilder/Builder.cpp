@@ -215,15 +215,24 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 
 				// trim trailing LF character
 				trim_eol(buf);
-				wxString fname(buf, wxConvUTF8);
+				vtString path = buf;
+
+				// If there is a relative path, allow it to be relative to the
+				//  location of the project file.
+				if (path.Left(1) == ".")
+				{
+					path = ExtractPath(fname, true);
+					path += buf;
+				}
+				wxString layer_fname(path, wxConvUTF8);
 
 				int numlayers = NumLayers();
 				if (bImport)
-					ImportDataFromArchive(ltype, fname, false);
+					ImportDataFromArchive(ltype, layer_fname, false);
 				else
 				{
 					vtLayer *lp = vtLayer::CreateNewLayer(ltype);
-					if (lp && lp->Load(fname))
+					if (lp && lp->Load(layer_fname))
 						AddLayer(lp);
 					else
 						delete lp;
