@@ -1751,3 +1751,76 @@ bool vtElevLayer::ImportFromDB(const char *szFileName, bool progress_callback(in
 }
 
 
+/**
+ * Compute a good tiling for a given area and resolution.
+ *
+ * Based on Tile LOD0 Size and resolution, estimate how closely a set of
+ * tiles can match a given area.  This is affected by whether the area can
+ * increase or decrease slightly to be an even number of tiles.
+ *
+ * \param original_area Input.
+ * \param resolution Input: desired x and y resolution, e.g. 30 meters.
+ * \param iTileSize Input: Tile LOD0 size, e.g 512.
+ * \param bGrow Input: Allow the resulting area to be slightly larger than the original.
+ * \param bShrink Input: Allow the resulting area to be slightly smaller than the original.
+ *		Note: you must pass true for at least one of Grow and Shrink.
+ * \param new_area Output: The resulting area.
+ * \param tiling Output: N x M tiling.
+ */
+bool MatchTilingToResolution(const DRECT &original_area, const DPoint2 &resolution,
+							int &iTileSize, bool bGrow, bool bShrink, DRECT &new_area,
+							IPoint2 &tiling)
+{
+	DPoint2 tilearea;
+	bool go = true;
+	double estx, esty;
+	while (go)
+	{
+		tilearea = resolution * iTileSize;
+
+		// How many tiles would fit in the original area?
+		estx = original_area.Width() / tilearea.x;
+		esty = original_area.Height() / tilearea.y;
+
+		if (estx < 1.0 || esty < 1.0)
+		{
+			// Tiles would not fit at all, so force the tile size smaller
+			iTileSize >>= 1;
+			if (iTileSize == 1)
+				go = false;
+		}
+		else
+			go = false;
+	}
+	if (bGrow && bShrink)
+	{
+		// round to closest
+		tiling.x = (int) (estx + 0.5);
+		tiling.y = (int) (esty + 0.5);
+	}
+	else if (bGrow)
+	{
+		// grow but not shrink: round up
+		tiling.x = (int) (estx + 0.99999);
+		tiling.y = (int) (esty + 0.99999);
+	}
+	else if (bShrink)
+	{
+		// shrink but not grow: round down
+		tiling.x = (int) estx;
+		tiling.y = (int) esty;
+	}
+	else
+		return false;
+
+	// Now that we know the tile size, we can compute the new area
+	DPoint2 center = original_area.GetCenter();
+	DPoint2 new_size(tiling.x * tilearea.x, tiling.y * tilearea.y);
+	new_area.left   = center.x - 0.5 * new_size.x;
+	new_area.right  = center.x + 0.5 * new_size.x;
+	new_area.bottom = center.y - 0.5 * new_size.y;
+	new_area.top	= center.y + 0.5 * new_size.y;
+
+	return true;
+}
+

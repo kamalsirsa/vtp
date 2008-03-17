@@ -1,7 +1,7 @@
 //
 // Name: MatchDlg.cpp
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -132,53 +132,9 @@ void MatchDlg::UpdateGuess()
 	// Based on what the user specified for Tile LOD0 Size, estimate how
 	//  closely a set of tiles can match the original area.  This is affected
 	//  by whether the user allows us to increase or decrease the area.
-	DPoint2 tilearea;
-	bool go = true;
-	double estx, esty;
-	while (go)
-	{
-		tilearea = m_spacing * m_iTileSize;
 
-		// How many tiles would fit in the original area?
-		estx = m_original.Width() / tilearea.x;
-		esty = m_original.Height() / tilearea.y;
-
-		if (estx < 1.0 || esty < 1.0)
-		{
-			// Tiles would not fit at all, so force the tile size smaller
-			m_iTileSize >>= 1;
-			if (m_iTileSize == 1)
-				go = false;
-		}
-		else
-			go = false;
-	}
-	if (m_bGrow && m_bShrink)
-	{
-		// round to closest
-		m_tile.x = (int) (estx + 0.5);
-		m_tile.y = (int) (esty + 0.5);
-	}
-	else if (m_bGrow)
-	{
-		// grow but not shrink: round up
-		m_tile.x = (int) (estx + 0.99999);
-		m_tile.y = (int) (esty + 0.99999);
-	}
-	else if (m_bShrink)
-	{
-		// shrink but not grow: round down
-		m_tile.x = (int) estx;
-		m_tile.y = (int) esty;
-	}
-
-	// Now that we know the tile size, we can compute the new area
-	DPoint2 center = m_original.GetCenter();
-	DPoint2 new_area(m_tile.x * tilearea.x, m_tile.y * tilearea.y);
-	m_area.left   = center.x - 0.5 * new_area.x;
-	m_area.right  = center.x + 0.5 * new_area.x;
-	m_area.bottom = center.y - 0.5 * new_area.y;
-	m_area.top	= center.y + 0.5 * new_area.y;
+	MatchTilingToResolution(m_original, m_spacing, m_iTileSize, m_bGrow, m_bShrink,
+		m_area, m_tile);
 
 	// Show to the user, visually
 	if (m_pView)

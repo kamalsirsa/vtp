@@ -131,6 +131,9 @@ protected:
 
 // Helper
 FPoint3 LightDirection(float angle, float direction);
+bool MatchTilingToResolution(const DRECT &original_area, const DPoint2 &resolution,
+							int &iTileSize, bool bGrow, bool bShrink, DRECT &new_area,
+							IPoint2 &tiling);
 
 #endif	// ELEVLAYER_H
 
