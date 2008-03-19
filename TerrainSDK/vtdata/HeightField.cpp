@@ -670,7 +670,7 @@ bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
  * \return true if any invalid elevation values were encountered.
  */
 bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
-	const ColorMap *cmap, int iGranularity, const RGBi &nodata,
+	const ColorMap *cmap, int iGranularity, const RGBAi &nodata,
 	bool progress_callback(int))
 {
 	if (!pBM || !cmap)
@@ -717,11 +717,12 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
  * \return true if any invalid elevation values were encountered.
  */
 bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
-	   std::vector<RGBi> &table, float fMin, float fMax, const RGBi &nodata,
+	   std::vector<RGBi> &table, float fMin, float fMax, const RGBAi &nodata,
 	   bool progress_callback(int))
 {
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
+	int depth = pBM->GetDepth();
 	int gw, gh;
 	GetDimensions(gw, gh);
 
@@ -733,6 +734,7 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	float fRange = fMax - fMin;
 	unsigned int iGranularity = table.size()-1;
 	bool has_invalid = false;
+	RGBi nodata_24bit(nodata.r, nodata.g, nodata.b);
 	double x, y;
 	float elev;
 
@@ -756,14 +758,20 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 				elev = GetInterpolatedElevation(x, y);
 			if (elev == INVALID_ELEVATION)
 			{
-				pBM->SetPixel24(i, h-1-j, nodata);
+				if (depth == 32)
+					pBM->SetPixel32(i, h-1-j, nodata);
+				else
+					pBM->SetPixel24(i, h-1-j, nodata_24bit);
 				has_invalid = true;
 				continue;
 			}
 			unsigned int table_entry = (unsigned int) ((elev - fMin) / fRange * iGranularity);
 			if (table_entry > iGranularity-1)
 				table_entry = iGranularity-1;
-			pBM->SetPixel24(i, h-1-j, table[table_entry]);
+			if (depth == 32)
+				pBM->SetPixel32(i, h-1-j, table[table_entry]);
+			else
+				pBM->SetPixel24(i, h-1-j, table[table_entry]);
 		}
 	}
 	VTLOG("Done.\n");
@@ -911,6 +919,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 {
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
+	int depth = pBM->GetDepth();
 
 	int stepx = m_iColumns / w;
 	int stepy = m_iRows / h;
@@ -919,6 +928,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 	int x, y;	// indices into elevation
 
 	RGBi rgb;
+	RGBAi rgba;
 
 	for (j = 0; j < h; j++)
 	{
@@ -931,7 +941,10 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 		y = m_iRows-1 - (j * stepy);
 		for (i = 0; i < w; i++)
 		{
-			pBM->GetPixel24(i, j, rgb);
+			if (depth == 32)
+				pBM->GetPixel32(i, j, rgba);
+			else
+				pBM->GetPixel24(i, j, rgb);
 
 			int x_offset = 0;
 			if (i == w-1)
@@ -941,7 +954,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 			float value = GetElevation(x + x_offset, y, bTrue);
 			if (value == INVALID_ELEVATION)
 			{
-				//pBM->SetPixel24(i, j, RGBi(255, 0, 0));
+				// Do not touch pixels in nodata areas
 				continue;
 			}
 
@@ -955,16 +968,32 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 				diff = 128;
 			else if (diff < -128)
 				diff = -128;
-			rgb.r = rgb.r + diff;
-			rgb.g = rgb.g + diff;
-			rgb.b = rgb.b + diff;
-			if (rgb.r < 0) rgb.r = 0;
-			else if (rgb.r > 255) rgb.r = 255;
-			if (rgb.g < 0) rgb.g = 0;
-			else if (rgb.g > 255) rgb.g = 255;
-			if (rgb.b < 0) rgb.b = 0;
-			else if (rgb.b > 255) rgb.b = 255;
-			pBM->SetPixel24(i, j, rgb);
+			if (depth == 32)
+			{
+				rgba.r += diff;
+				rgba.g += diff;
+				rgba.b += diff;
+				if (rgba.r < 0) rgba.r = 0;
+				else if (rgba.r > 255) rgba.r = 255;
+				if (rgba.g < 0) rgba.g = 0;
+				else if (rgba.g > 255) rgba.g = 255;
+				if (rgba.b < 0) rgba.b = 0;
+				else if (rgba.b > 255) rgba.b = 255;
+				pBM->SetPixel32(i, j, rgba);
+			}
+			else
+			{
+				rgb.r = rgb.r + diff;
+				rgb.g = rgb.g + diff;
+				rgb.b = rgb.b + diff;
+				if (rgb.r < 0) rgb.r = 0;
+				else if (rgb.r > 255) rgb.r = 255;
+				if (rgb.g < 0) rgb.g = 0;
+				else if (rgb.g > 255) rgb.g = 255;
+				if (rgb.b < 0) rgb.b = 0;
+				else if (rgb.b > 255) rgb.b = 255;
+				pBM->SetPixel24(i, j, rgb);
+			}
 		}
 	}
 }

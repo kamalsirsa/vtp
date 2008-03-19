@@ -186,9 +186,9 @@ public:
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const = 0;
 
 	bool ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
-		int iGranularity, const RGBi &nodata, bool progress_callback(int) = NULL);
+		int iGranularity, const RGBAi &nodata, bool progress_callback(int) = NULL);
 	bool ColorDibFromTable(vtBitmapBase *pBM, std::vector<RGBi> &table,
-		float fMin, float fMax, const RGBi &nodata, bool progress_callback(int) = NULL);
+		float fMin, float fMax, const RGBAi &nodata, bool progress_callback(int) = NULL);
 
 	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 		float fLightFactor, float fAmbient = 0.1f, float fGamma = 1.0f,
