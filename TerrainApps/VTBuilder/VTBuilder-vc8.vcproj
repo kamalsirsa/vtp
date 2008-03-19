@@ -351,10 +351,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\TilingOptions.h"
-				>
-			</File>
-			<File
 				RelativePath="TransitLayer.h"
 				>
 			</File>

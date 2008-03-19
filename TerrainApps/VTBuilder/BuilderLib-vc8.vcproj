@@ -447,6 +447,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TilingOptions.h"
+				>
+			</File>
+			<File
 				RelativePath=".\UtilityLayer.h"
 				>
 			</File>
