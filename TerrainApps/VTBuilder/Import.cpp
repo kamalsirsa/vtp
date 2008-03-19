@@ -344,6 +344,9 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 	VTLOG1(GetLayerTypeName(ltype));
 	VTLOG1("'\n");
 
+	// check the file extension
+	wxString strExt = strFileName.AfterLast('.');
+
 	// check to see if the file is readable
 	vtString fname = (const char *) strFileName.mb_str(wxConvUTF8);
 	FILE *fp = vtFileOpen(fname, "rb");
@@ -352,6 +355,26 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 		// Cannot Open File
 		VTLOG("Couldn't open file %s\n", (const char *) fname);
 		return false;
+	}
+	bool bIsDB = !strExt.Left(2).CmpNoCase(_T("db"));
+	if (bIsDB)
+	{
+		// Get type from DB file
+		for (int i = 0; i < 10; i++)
+		{
+			int type;
+			char buf[80];
+			fgets(buf, 80, fp);
+			if (!strncmp(buf, "type", 4))
+			{
+				sscanf(buf, "type=%d", &type);
+				if (type == 1 || type == 2)
+					ltype = LT_ELEVATION;
+				else if (type == 3 || type == 4)
+					ltype = LT_IMAGE;
+				break;
+			}
+		}
 	}
 	fclose(fp);
 
@@ -362,9 +385,6 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 
 	if (m_pParentWindow)
 		OpenProgressDialog(msg, true, m_pParentWindow);
-
-	// check the file extension
-	wxString strExt = strFileName.AfterLast('.');
 
 	// call the appropriate reader
 	vtLayerPtr pLayer = NULL;
@@ -498,7 +518,8 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 		{
 			pLayer = ImportImage(strFileName);
 		}
-		else if (!strExt.Left(3).CmpNoCase(_T("ppm")))
+		else if (!strExt.Left(3).CmpNoCase(_T("ppm")) ||
+				 !strExt.Left(2).CmpNoCase(_T("db")))
 		{
 			pLayer = ImportImage(strFileName);
 		}
@@ -522,6 +543,11 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 			pLayer = ImportRawFromOGR(strFileName);
 		}
 		break;
+	}
+	if (bIsDB)
+	{
+		// Adopt existing CRS
+		pLayer->SetProjection(m_proj);
 	}
 
 	CloseProgressDialog();

@@ -67,6 +67,7 @@ Builder::Builder()
 	m_tileopts.numlods = 3;
 	m_tileopts.lod0size = 512;
 	m_tileopts.bCreateDerivedImages = false;
+	m_tileopts.bMaskUnknownAreas = false;
 	m_tileopts.bUseTextureCompression = true;
 	m_tileopts.eCompressionType = TC_OPENGL;
 

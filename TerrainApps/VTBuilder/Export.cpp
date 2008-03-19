@@ -870,6 +870,16 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 			int base_tile_exponent = vt_log2(base_tilesize);
 			lod_existence_map.set(col, row, base_tile_exponent, base_tile_exponent-(total_lods-1));
 
+			// TEMP TEST
+			// opts.bMaskUnknownAreas = true;
+
+			vtDIB dib;
+			if (opts.bCreateDerivedImages && opts.bMaskUnknownAreas)
+			{
+				dib.Create(base_tilesize, base_tilesize, 32);
+				base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBAi(0,0,0,0));
+			}
+
 			if (iNumInvalid > 0)
 			{
 				// We don't want any gaps at all in the output tiles, because
@@ -888,12 +898,13 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 			}
 
 			// Create a matching derived texture tileset
-			if (opts.bCreateDerivedImages)
+			if (opts.bCreateDerivedImages && !opts.bMaskUnknownAreas)
 			{
-				vtDIB dib;
 				dib.Create(base_tilesize, base_tilesize, 24);
 				base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBi(255,0,0));
-
+			}
+			if (opts.bCreateDerivedImages)
+			{
 				if (opts.draw.m_bShadingQuick)
 					base_lod.ShadeQuick(&dib, SHADING_BIAS, true);
 				else if (opts.draw.m_bShadingDot)
@@ -923,19 +934,36 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 					output_buf.tsteps = 1;
 					output_buf.SetBounds(m_proj, tile_area);
 
-					int iUncompressedSize = tilesize * tilesize * 3;
+					int depth = dib.GetDepth() / 8;
+					int iUncompressedSize = tilesize * tilesize * depth;
 					unsigned char *rgb_bytes = (unsigned char *) malloc(iUncompressedSize);
 
 					unsigned char *dst = rgb_bytes;
-					RGBi rgb;
-					for (int ro = 0; ro < base_tilesize; ro += (1<<k))
-						for (int co = 0; co < base_tilesize; co += (1<<k))
-						{
-							dib.GetPixel24(co, ro, rgb);
-							*dst++ = rgb.r;
-							*dst++ = rgb.g;
-							*dst++ = rgb.b;
-						}
+					if (opts.bMaskUnknownAreas)
+					{
+						RGBAi rgba;
+						for (int ro = 0; ro < base_tilesize; ro += (1<<k))
+							for (int co = 0; co < base_tilesize; co += (1<<k))
+							{
+								dib.GetPixel32(co, ro, rgba);
+								*dst++ = rgba.r;
+								*dst++ = rgba.g;
+								*dst++ = rgba.b;
+								*dst++ = rgba.a;
+							}
+					}
+					else
+					{
+						RGBi rgb;
+						for (int ro = 0; ro < base_tilesize; ro += (1<<k))
+							for (int co = 0; co < base_tilesize; co += (1<<k))
+							{
+								dib.GetPixel24(co, ro, rgb);
+								*dst++ = rgb.r;
+								*dst++ = rgb.g;
+								*dst++ = rgb.b;
+							}
+					}
 
 					// Write and optionally compress the image
 					WriteMiniImage(fname, opts, rgb_bytes, output_buf,

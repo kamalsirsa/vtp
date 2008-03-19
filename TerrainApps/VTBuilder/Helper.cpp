@@ -92,6 +92,33 @@ bool vtMiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
 	return true;
 }
 
+
+//! get rgb[a] color
+void vtMiniDatabuf::getrgb(const unsigned int i,const unsigned int j,const unsigned int k, float *value)
+{
+	if (type==3)
+	{
+		unsigned char *ptr=&((unsigned char *)data)[3*(i+(j+k*ysize)*xsize)];
+
+		value[0] = ptr[0];
+		value[1] = ptr[1];
+		value[2] = ptr[2];
+	}
+}
+
+void vtMiniDatabuf::getrgba(const unsigned int i,const unsigned int j,const unsigned int k, float *value)
+{
+	if (type==4)
+	{
+		unsigned char *ptr=&((unsigned char *)data)[4*(i+(j+k*ysize)*xsize)];
+
+		value[0] = ptr[0];
+		value[1] = ptr[1];
+		value[2] = ptr[2];
+		value[3] = ptr[3];
+	}
+}
+
 #endif
 
 void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
@@ -106,7 +133,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		if (opts.eCompressionType == TC_OPENGL)
 		{
 #if USE_OPENGL
-			DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex);
+			DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex, opts.bMaskUnknownAreas);
 
 			output_buf.savedata(fname);
 			output_buf.release();
@@ -141,9 +168,16 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 	else
 	{
 		// Uncompressed
-		// Output to a plain RGB .db file
-
-		output_buf.type = 3;	// RGB
+		if (opts.bMaskUnknownAreas)
+		{
+			// Output to a plain RGBA .db file
+			output_buf.type = 4;	// RGBA
+		}
+		else
+		{
+			// Output to a plain RGB .db file
+			output_buf.type = 3;	// RGB
+		}
 		output_buf.bytes = iUncompressedSize;
 		output_buf.data = malloc(iUncompressedSize);
 		memcpy(output_buf.data, rgb_bytes, iUncompressedSize);
@@ -255,14 +289,24 @@ void* getGLExtensionFuncPtr(const char *funcName)
 
 
 void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
-					   GLuint &iTex)
+					   GLuint &iTex, bool bAlpha)
 {
 	// Next, compress them to a DXT1 output file
 	GLenum target = GL_TEXTURE_2D;
 	int level = 0;
-	GLint internalformat = GL_COMPRESSED_RGB_ARB;
+	GLenum format;
+	GLint internalformat;
+	if (bAlpha)
+	{
+		format = GL_RGBA;
+		internalformat = GL_COMPRESSED_RGBA_ARB;
+	}
+	else
+	{
+		format = GL_RGB;
+		internalformat = GL_COMPRESSED_RGB_ARB;
+	}
 	int border = 0;
-	GLenum format = GL_RGB;
 	GLenum type = GL_UNSIGNED_BYTE;
 	GLvoid *pixels = rgb_bytes;
 
@@ -286,7 +330,10 @@ void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 	glGetTexLevelParameteriv(target, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &iSize);
 //	VTLOG("GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB: %d\n", iSize);
 
-	output_buf.type = 5;	// compressed RGB
+	if (bAlpha)
+		output_buf.type = 6;	// compressed RGBA (S3TC DXT1 with 1-bit alpha)
+	else
+		output_buf.type = 5;	// compressed RGB (S3TC DXT1)
 	output_buf.bytes = iSize;
 	output_buf.data = malloc(iSize);
 

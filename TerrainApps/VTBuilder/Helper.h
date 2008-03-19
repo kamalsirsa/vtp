@@ -24,7 +24,7 @@ void CheckCompressionMethod(TilingOptions &opts);
 #if USE_OPENGL
 #include "wx/glcanvas.h"
 void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
-					   GLuint &iTex);
+					   GLuint &iTex, bool bAlpha);
 
 //
 // ImageGLCanvas class:

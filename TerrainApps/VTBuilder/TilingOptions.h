@@ -25,6 +25,7 @@ struct TilingOptions
 	// If this is an elevation tileset, then optionally a corresponding
 	//  derived image tileset can be created.
 	bool bCreateDerivedImages;
+	bool bMaskUnknownAreas;
 	vtString fname_images;
 	ElevDrawOptions draw;
 

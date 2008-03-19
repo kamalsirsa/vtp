@@ -32,6 +32,10 @@ public:
 	// A useful method to set the extents (in local CRS) and the corners
 	//  (in Geo WGS84) at the same time.
 	bool SetBounds(const vtProjection &proj, const DRECT &extents);
+
+   //! get rgb[a] color
+   void getrgb(const unsigned int i,const unsigned int j,const unsigned int k, float *value);
+   void getrgba(const unsigned int i,const unsigned int j,const unsigned int k, float *value);
 };
 
 #else	// not USE_LIBMINI_DATABUF

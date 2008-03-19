@@ -1,7 +1,7 @@
 //
 // ImageLayer.h
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -40,10 +40,16 @@ public:
 	vtImage *GetImage() { return m_pImage; }
 	DPoint2 GetSpacing() const;
 	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
+	bool ImportFromDB(const char *szFileName, bool progress_callback(int) = NULL);
 	void ReplaceColor(const RGBi &rgb1, const RGBi &rgb2);
+
+	void AllocMipMaps();
+	void DrawMipMaps();
+	void FreeMipMaps();
 
 protected:
 	vtImage	*m_pImage;
+	std::vector<vtImage*> m_Mips;
 };
 
 // Helper

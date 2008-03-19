@@ -1693,3 +1693,10 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 	return true;
 }
 
+void SampleMipLevel(vtImage *bigger, vtImage *smaller)
+{
+	int xsize, ysize;
+	bigger->GetDimensions(xsize, ysize);
+	// TODO for (
+}
+

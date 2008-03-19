@@ -189,14 +189,6 @@ MainFrame::MainFrame(wxFrame* frame, const wxString& title,
 	for (int i = 0; i < LAYER_TYPES; i++)
 		m_pLayBar[i] = NULL;
 
-	m_tileopts.cols = 4;
-	m_tileopts.rows = 4;
-	m_tileopts.numlods = 3;
-	m_tileopts.lod0size = 512;
-	m_tileopts.bCreateDerivedImages = false;
-	m_tileopts.bUseTextureCompression = true;
-	m_tileopts.eCompressionType = TC_OPENGL;
-
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
 	VTLOG1("  MainFrame constructor: exit\n");

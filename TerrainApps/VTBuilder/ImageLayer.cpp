@@ -1,7 +1,7 @@
 //
 // ImageLayer.cpp
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,7 @@
 #include "ImageLayer.h"
 #include "vtImage.h"
 #include "Options.h"
+#include "LocalDatabuf.h"
 
 vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 {
@@ -173,7 +174,11 @@ bool vtImageLayer::ImportFromFile(const wxString &strFileName, bool progress_cal
 	wxString strExt = strFileName.AfterLast('.');
 
 	bool success;
-	if (!strExt.Left(3).CmpNoCase(_T("ppm")))
+	if (!strExt.Left(2).CmpNoCase(_T("db")))
+	{
+		success = ImportFromDB(strFileName.mb_str(wxConvUTF8));
+	}
+	else if (!strExt.Left(3).CmpNoCase(_T("ppm")))
 	{
 		m_pImage = new vtImage;
 		success = m_pImage->ReadPPM(strFileName.mb_str(wxConvUTF8));
@@ -196,4 +201,100 @@ void vtImageLayer::ReplaceColor(const RGBi &rgb1, const RGBi &rgb2)
 	m_pImage->ReplaceColor(rgb1, rgb2);
 	SetModified(true);
 }
+
+void vtImageLayer::AllocMipMaps()
+{
+	FreeMipMaps();
+
+	int xsize, ysize;
+	m_pImage->GetDimensions(xsize, ysize);
+	int smaller = min(xsize, ysize);
+
+	int powers = vt_log2(smaller) - 2;
+	if (powers < 1)
+		// too small, don't bother making mipmaps
+		return;
+
+	DRECT rect;
+	m_pImage->GetExtent(rect);
+	const vtProjection &proj = m_pImage->GetAtProjection();
+
+	for (int m = 0; m < powers; m++)
+		m_Mips.push_back(new vtImage(rect, xsize >> (m+1), ysize >> (m+1), proj));
+}
+
+void vtImageLayer::DrawMipMaps()
+{
+	vtImage *big = m_pImage;
+	for (size_t m = 0; m < m_Mips.size(); m++)
+	{
+		vtImage *smaller = m_Mips[m];
+		SampleMipLevel(big, smaller);
+		big = smaller;
+	}
+}
+
+void vtImageLayer::FreeMipMaps()
+{
+	for (size_t m = 0; m < m_Mips.size(); m++)
+		delete m_Mips[m];
+	m_Mips.clear();
+}
+
+/**
+ * Loads from a "DB" file, which is the format of libMini tilesets tiles.
+ *
+ * \returns \c true if the file was successfully opened and read.
+ */
+bool vtImageLayer::ImportFromDB(const char *szFileName, bool progress_callback(int))
+{
+#if USE_LIBMINI_DATABUF
+	DRECT area;
+	bool bAlpha;
+	vtProjection proj;	// Projection is always unknown
+
+	vtMiniDatabuf dbuf;
+	dbuf.loaddata(szFileName);
+
+	if (dbuf.type == 3)	// must be plain uncompressed RGB
+		bAlpha = false;
+	else if (dbuf.type == 4)
+		bAlpha = true;
+	else
+		return false;
+
+	area.SetRect(dbuf.nwx, dbuf.nwy, dbuf.sex, dbuf.sey);
+
+	m_wsFilename = _("Untitled");
+	m_pImage = new vtImage(area, dbuf.xsize, dbuf.ysize, proj);
+
+	RGBf rgb;
+	RGBAf rgba;
+
+	int i, j;
+	for (j = 0; j < (int)dbuf.ysize; j++)
+	{
+		//if (progress_callback != NULL)
+		//	progress_callback(j * 100 / dbuf.ysize);
+
+		for (i = 0; i < (int)dbuf.xsize; i++)
+		{
+			if (bAlpha)
+			{
+				dbuf.getrgba(i, j, 0, &rgba.r);
+				m_pImage->SetRGB(i, j, RGBf(rgba.r, rgba.g, rgba.b));
+			}
+			else
+			{
+				dbuf.getrgb(i, j, 0, &rgb.r);
+				m_pImage->SetRGB(i, j, rgb);
+			}
+		}
+	}
+	return true;
+#else
+	return false;
+#endif
+}
+
 

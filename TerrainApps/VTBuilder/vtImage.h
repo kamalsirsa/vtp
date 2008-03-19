@@ -124,8 +124,9 @@ protected:
 	ImageGLCanvas *m_pCanvas;
 };
 
-// Helper
+// Helpers
 int GetBitDepthUsingGDAL(const char *fname);
 void MakeSampleOffsets(const DPoint2 cellsize, unsigned int N, DLine2 &offsets);
+void SampleMipLevel(vtImage *bigger, vtImage *smaller);
 
 #endif	// VTIMAGE_H
