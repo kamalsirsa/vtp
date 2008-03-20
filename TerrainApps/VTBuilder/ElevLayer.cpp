@@ -239,6 +239,8 @@ bool vtElevLayer::OnLoad()
 
 bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 {
+	VTLOG("vtElevLayer::TransformCoords\n");
+
 	vtProjection proj_old;
 	GetProjection(proj_old);
 
@@ -265,6 +267,11 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 					bUpgradeToFloat = false;
 				else if (g_Options.GetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS))
 					bUpgradeToFloat = true;
+				else if (!IsGUIApp())
+				{
+					// Be sure not to ask, if this is not a GUI app
+					bUpgradeToFloat = false;
+				}
 				else
 				{
 					// Ask

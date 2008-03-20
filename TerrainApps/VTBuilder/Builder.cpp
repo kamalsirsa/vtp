@@ -140,6 +140,8 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
+	VTLOG1("LoadProject()\n");
+
 	// read project file
 	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
@@ -183,6 +185,8 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 		{
 			sscanf(buf+5, "%lf %lf %lf %lf\n", &m_area.left, &m_area.top,
 				&m_area.right, &m_area.bottom);
+			VTLOG(" area: %lf %lf %lf %lf\n", m_area.left, m_area.top,
+				m_area.right, m_area.bottom);
 		}
 		if (!strncmp(buf, "view ", 5))
 		{
@@ -251,6 +255,7 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 	// reset to default behavior
 	m_bAdoptFirstCRS = true;
 
+	VTLOG1(" LoadProject done.\n");
 	return true;
 }
 
@@ -265,6 +270,8 @@ void Builder::AddLayer(vtLayer *lp)
 
 bool Builder::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 {
+	VTLOG("AddLayerWithCheck(%lx)\n", pLayer);
+
 	vtProjection proj;
 	pLayer->GetProjection(proj);
 
@@ -272,11 +279,13 @@ bool Builder::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 	if (bFirst && m_bAdoptFirstCRS)
 	{
 		// if this is our first layer, adopt its projection
+		VTLOG1("  Adopting CRS from this layer.\n");
 		SetProjection(proj);
 	}
 	else
 	{
 		// check for Projection conflict
+		VTLOG1("  Checking CRS compatibility.\n");
 		if (!(m_proj == proj))
 		{
 			int ret;
@@ -303,6 +312,7 @@ bool Builder::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 			}
 			if (ret == wxYES)
 			{
+				VTLOG1("  Reprojecting..\n");
 				OpenProgressDialog(_("Reprojecting"), false, m_pParentWindow);
 				bool success = pLayer->TransformCoords(m_proj);
 				CloseProgressDialog();
