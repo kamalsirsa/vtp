@@ -347,6 +347,7 @@ void request_callback_async(unsigned char *mapfile, databuf *map,
 							int istexture, int background, void *data)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
+#if SUPPORT_HTTP
 	if (tg->m_strBaseURL != "")
 	{
 		vtBytes data;
@@ -354,6 +355,7 @@ void request_callback_async(unsigned char *mapfile, databuf *map,
 		tg->m_pReqContext->GetURL(url, data);
 	}
 	else
+#endif
 	{
 		// normal disk load
 		map->loaddata((char *)mapfile);
@@ -874,6 +876,9 @@ void vtTiledGeom::DoRender()
 				fpu);
 
 #if USE_VERTEX_CACHE
+	// TEMP TEST
+	//m_pMiniCache->setalphatest();
+
 	// render vertex arrays
 	static int last_vtx = 0;
 	// int vtx=m_pMiniCache->rendercache();
