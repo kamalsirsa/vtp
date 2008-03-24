@@ -1930,8 +1930,11 @@ wxSizer *RenderBitmapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
     wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("Colors:"), wxDefaultPosition, wxDefaultSize, 0 );
     item15->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxString *strs17 = (wxString*) NULL;
-    wxChoice *item17 = new wxChoice( parent, ID_CHOICE_COLORS, wxDefaultPosition, wxSize(180,-1), 0, strs17, 0 );
+    wxString strs17[] = 
+    {
+        _("Item")
+    };
+    wxChoice *item17 = new wxChoice( parent, ID_CHOICE_COLORS, wxDefaultPosition, wxSize(180,-1), 1, strs17, 0 );
     item15->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxButton *item18 = new wxButton( parent, ID_EDIT_COLORS, _("Edit Colors..."), wxDefaultPosition, wxDefaultSize, 0 );
