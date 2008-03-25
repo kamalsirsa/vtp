@@ -3,7 +3,7 @@
 //
 // SceneView class for OpenSG.
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -47,6 +47,11 @@ m_SolidBackgroundPtr ( background )
 {
 	renderAction->setFrustumCulling( true );
 	renderAction->setAutoFrustum( true );
+}
+
+SceneViewOSG::~SceneViewOSG()
+{
+	// destructor
 }
 
 /**

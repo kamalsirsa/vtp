@@ -3,7 +3,7 @@
 //
 // SceneView class for OpenSG.
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,6 +31,7 @@ public:
 			   int stereoMode=0,
 			   OSG::SolidBackgroundPtr background=OSG::NullFC
 			   );
+	~SceneViewOSG();
 
 	//from vtScene::Init(bStereo, iStereoMode)
 	SceneViewOSG( bool bStereo, int iStereoMode );
