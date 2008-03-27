@@ -1,7 +1,7 @@
 //
 // Name: frame.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -159,8 +159,6 @@ public:
 
 	std::map<vtItem *, ItemGroup *> m_itemmap;
 	std::map<vtModel *, vtTransform *> m_nodemap;
-
-	static vtStringArray m_DataPaths;
 
 	bool m_bShowOrigin;
 	bool m_bShowRulers;

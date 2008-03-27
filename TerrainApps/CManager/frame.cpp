@@ -2,7 +2,7 @@
 // Name:	 frame.cpp
 // Purpose:  The frame class for the Content Manager.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -79,8 +79,6 @@ void Splitter2::SizeWindows()
 //////////////////////////////////////////////////////////////////////////
 // vtFrame class implementation
 //
-
-vtStringArray vtFrame::m_DataPaths;
 
 BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_CHAR(vtFrame::OnChar)
@@ -228,7 +226,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	if (!success)
 	{
 		vtString fontname = "Fonts/" + fontfile;
-		vtString font_path = FindFileOnPaths(vtFrame::m_DataPaths, fontname);
+		vtString font_path = FindFileOnPaths(vtGetDataPath(), fontname);
 		if (font_path != "")
 			success = m_pFont->LoadFont(font_path);
 		if (!success)
@@ -516,10 +514,11 @@ void vtFrame::AddModelFromFile(const wxString &fname1)
 			fname.SetAt(j, '/');
 	}
 	// Check if its on the known data path.
-	for (unsigned int i = 0; i < m_DataPaths.size(); i++)
+	vtStringArray &paths = vtGetDataPath();
+	for (unsigned int i = 0; i < paths.size(); i++)
 	{
-		int n = m_DataPaths[i].GetLength();
-		if (SamePath(m_DataPaths[i], fname.Left(n)))
+		int n = paths[i].GetLength();
+		if (SamePath(paths[i], fname.Left(n)))
 		{
 			// found it
 			fname = fname.Right(fname.GetLength() - n);
@@ -937,16 +936,16 @@ vtModel *vtFrame::AddModel(const wxString &fname_in)
 #if 0
 	const char *fname = StartOfFilename(fname_in.mb_str());
 
-	vtString onpath = FindFileOnPaths(m_DataPaths, fname);
+	vtString onpath = FindFileOnPaths(vtGetDataPaths(), fname);
 	if (onpath == "")
 	{
 		// Warning!  May not be on the data path.
 		wxString str;
 		str.Printf(_T("That file:\n%hs\ndoes not appear to be on the data")
 			_T(" paths:"), fname);
-		for (int i = 0; i < m_DataPaths.GetSize(); i++)
+		for (int i = 0; i < vtGetDataPaths().GetSize(); i++)
 		{
-			vtString *vts = m_DataPaths[i];
+			vtString *vts = vtGetDataPaths()[i];
 			const char *cpath = (const char *) *vts;
 			wxString path = cpath;
 			str += _T("\n");
@@ -996,12 +995,14 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	wxString str(model->m_filename, wxConvUTF8);
 	UpdateProgressDialog(1, str);
 
-	vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
-	UpdateProgressDialog(5, str);
-	vtNode *pNode = vtNode::LoadModel(fullpath);
-
+	vtNode *pNode = NULL;
+	vtString fullpath = FindFileOnPaths(vtGetDataPath(), model->m_filename);
+	if (fullpath != "")
+	{
+		UpdateProgressDialog(5, str);
+		pNode = vtNode::LoadModel(fullpath);
+	}
 	CloseProgressDialog();
-
 	if (!pNode)
 	{
 		str.Printf(_T("Sorry, couldn't load model from %hs"), (const char *) model->m_filename);
