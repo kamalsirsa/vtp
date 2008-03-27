@@ -568,6 +568,25 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\SnapSizeDlg.cpp">
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="wx\StartupDlg.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -841,6 +860,9 @@
 			</File>
 			<File
 				RelativePath="wx\SceneGraphDlg.h">
+			</File>
+			<File
+				RelativePath=".\wx\SnapSizeDlg.h">
 			</File>
 			<File
 				RelativePath="wx\StartupDlg.h">
