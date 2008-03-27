@@ -2,7 +2,7 @@
 // Name:	 canvas.cpp
 // Purpose: Implements the canvas class for the wxSimple application.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -23,6 +23,10 @@
 #include "app.h"
 
 DECLARE_APP(vtApp);
+
+// Demonstrate how to use the SpaceNavigator
+#include "vtlib/core/SpaceNav.h"
+vtSpaceNav g_SpaceNav;
 
 /*
  * vtGLCanvas implementation
@@ -57,11 +61,21 @@ wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 
 	m_bPainting = false;
 	m_bRunning = true;
-}
 
+	// Initialize spacenavigator, if there is one present
+	g_SpaceNav.Init();
+}
 
 vtGLCanvas::~vtGLCanvas(void)
 {
+}
+
+WXLRESULT vtGLCanvas::MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
+{
+	// Catch SpaceNavigator messages; all others pass through
+	if (nMsg == WM_INPUT)
+		g_SpaceNav.ProcessWM_INPUTEvent(lParam, vtGetScene()->GetCamera());
+	return wxWindowMSW::MSWDefWindowProc(nMsg, wParam, lParam);
 }
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
@@ -216,3 +230,4 @@ void vtGLCanvas::OnIdle(wxIdleEvent &event)
 	if (m_bRunning)
 		Refresh(FALSE);
 }
+

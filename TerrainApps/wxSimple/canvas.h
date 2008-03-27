@@ -1,7 +1,7 @@
 //
 // Name: canvas.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,6 +25,9 @@ public:
 	  const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = _T("vtGLCanvas"),
 	  int* gl_attrib = NULL);
 	~vtGLCanvas(void);
+
+    // Hook into the default window procedure
+    virtual WXLRESULT MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
 
 	void OnPaint(wxPaintEvent& event);
 	void OnSize(wxSizeEvent& event);
