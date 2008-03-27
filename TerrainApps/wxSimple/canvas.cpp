@@ -70,6 +70,7 @@ vtGLCanvas::~vtGLCanvas(void)
 {
 }
 
+#if WIN32
 WXLRESULT vtGLCanvas::MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
 {
 	// Catch SpaceNavigator messages; all others pass through
@@ -77,6 +78,7 @@ WXLRESULT vtGLCanvas::MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lP
 		g_SpaceNav.ProcessWM_INPUTEvent(lParam, vtGetScene()->GetCamera());
 	return wxWindowMSW::MSWDefWindowProc(nMsg, wParam, lParam);
 }
+#endif
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {

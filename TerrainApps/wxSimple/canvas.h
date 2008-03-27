@@ -26,8 +26,10 @@ public:
 	  int* gl_attrib = NULL);
 	~vtGLCanvas(void);
 
+#if WIN32
     // Hook into the default window procedure
     virtual WXLRESULT MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
+#endif
 
 	void OnPaint(wxPaintEvent& event);
 	void OnSize(wxSizeEvent& event);
