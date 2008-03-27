@@ -2,7 +2,7 @@
 // Name:	 canvas.cpp
 // Purpose: Implements the canvas class for the Enviro wxWidgets application.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,6 +22,10 @@
 #include "EnviroApp.h"
 
 DECLARE_APP(EnviroApp)
+
+// Support for the SpaceNavigator
+#include "vtlib/core/SpaceNav.h"
+vtSpaceNav g_SpaceNav;
 
 #define LOG_MOUSE_CAPTURE	0
 #if LOG_MOUSE_CAPTURE
@@ -105,6 +109,9 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	// On RTL (right-to-left) system, the canvas should still be always LTR
 	SetLayoutDirection(wxLayout_LeftToRight);
 
+	// Initialize spacenavigator, if there is one present
+	g_SpaceNav.Init();
+
 	s_canvas = this;
 	VTLOG1("vtGLCanvas, leaving constructor\n");
 }
@@ -114,6 +121,15 @@ vtGLCanvas::~vtGLCanvas(void)
 	VTLOG1("Deleting Canvas\n");
 }
 
+#if WIN32
+WXLRESULT vtGLCanvas::MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
+{
+	// Catch SpaceNavigator messages; all others pass through
+	if (nMsg == WM_INPUT)
+		g_SpaceNav.ProcessWM_INPUTEvent(lParam, vtGetScene()->GetCamera());
+	return wxWindowMSW::MSWDefWindowProc(nMsg, wParam, lParam);
+}
+#endif
 
 void EnableContinuousRendering(bool bTrue)
 {

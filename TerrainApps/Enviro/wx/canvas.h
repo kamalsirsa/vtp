@@ -1,7 +1,7 @@
 //
 // Name: canvas.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -43,6 +43,11 @@ public:
 	bool m_bShowFrameRateChart;
 	bool m_bFirstPaint;
 	bool m_bCapture;
+
+#if WIN32
+    // Hook into the default window procedure
+    virtual WXLRESULT MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
+#endif
 
 protected:
 	bool m_pbKeyState[512];
