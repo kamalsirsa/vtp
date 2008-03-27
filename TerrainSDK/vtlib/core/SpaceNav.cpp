@@ -5,6 +5,13 @@
 // Copyright (c) 2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
+// Based on: WM_INPUTExample.cpp, 3Dconnexion Inc. May 2007
+//
+// Uses WM_INPUT/RawInput to get data from 3Dx devices.
+// You can disconnect and reconnect devices at will while the program is running.
+// You can connect more than one device at a time, and distinguish the arriving
+// data between the different devices.
+//
 
 #ifdef _MSC_VER
 #define _WIN32_WINNT 0x0501
