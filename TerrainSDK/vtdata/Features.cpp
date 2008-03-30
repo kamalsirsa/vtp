@@ -71,7 +71,7 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 	if (m_fields.GetSize() > 0)
 	{
 		// Save DBF File also
-		vtString dbfname = filename;
+		vtString dbfname = fname_local;
 		dbfname = dbfname.Left(dbfname.GetLength() - 4);
 		dbfname += ".dbf";
 		DBFHandle db = DBFCreate(dbfname);
