@@ -76,14 +76,14 @@ void InstanceDlg::SetLocation(const DPoint2 &pos)
 
 vtTagArray *InstanceDlg::GetTagArray()
 {
-	if (m_iItem == -1)
-		return NULL;
-
 	m_dummy.Clear();
 
 	// Return a description of the current content item
 	if (m_bContent)
 	{
+		if (m_iItem == -1)
+			return NULL;
+
 		vtContentManager *cman = Current();
 		if (!cman)
 			return NULL;
