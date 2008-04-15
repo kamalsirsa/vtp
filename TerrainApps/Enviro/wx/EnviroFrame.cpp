@@ -500,7 +500,9 @@ void EnviroFrame::CreateMenus()
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SNAPSHOT, _("Save Window Snapshot"));
 	m_pViewMenu->Append(ID_VIEW_SNAP_AGAIN, _("Save Numbered Snapshot\tCtrl+N"));
+#if WIN32
 	m_pViewMenu->Append(ID_VIEW_SNAP_HIGH, _("High-resolution Snapshot"));
+#endif
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->AppendCheckItem(ID_VIEW_STATUSBAR, _("&Status Bar"));
 	m_pViewMenu->Append(ID_VIEW_SCENARIOS, _("Scenarios"));
@@ -1566,6 +1568,7 @@ void EnviroFrame::OnViewSnapAgain(wxCommandEvent& event)
 
 void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 {
+#if WIN32
 	VTLOG1("EnviroFrame::OnViewSnapHigh\n");
 
 	// OpenGL Extension functions we'll need for OnViewSnapHigh
@@ -1709,11 +1712,12 @@ void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 		wxSetWorkingDirectory(path);	// restore
 		return;
 	}
-	vtString fname = saveFile.GetPath().mb_str(wxConvUTF8);
+	vtString fname = (const char *) saveFile.GetPath().mb_str(wxConvUTF8);
 
 	VTLOG("\tWriting '%s'\n", (const char *) fname);
 	pImage->WriteJPEG(fname);
 	pImage->Release();
+#endif	// WIN32
 }
 
 void EnviroFrame::OnViewStatusBar(wxCommandEvent& event)
