@@ -1,7 +1,7 @@
 //
 // PagedLodGrid.cpp
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -534,6 +534,12 @@ void vtPagedStructureLodGrid::ConstructByIndex(vtPagedStructureLOD *pLOD,
 		vtTransform *pTrans = str3d->GetContainer();
 		if (pTrans)
 			pLOD->AddChild(pTrans);
+		else
+		{
+			vtGeom *pGeom = str3d->GetGeom();
+			if (pGeom)
+				pLOD->AddChild(pGeom);
+		}
 		pLOD->m_iNumConstructed ++;
 
 		// Keep track of overall number of loads
