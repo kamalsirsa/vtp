@@ -3,7 +3,7 @@
 if [ $# -lt 1 ] ; then
   echo "Usage: mk_vtp_src_zips.sh date"
   echo
-  echo "Example: mk_vtp_src_zips.sh 021029"
+  echo "Example for October 29 2007: mk_vtp_src_zips.sh 071029"
   exit
 fi
 
@@ -28,13 +28,20 @@ zip $DIST_FILE1 VTP/TerrainSDK/Makefile
 
 zip $DIST_FILE1 VTP/TerrainSDK/unzip/*
 
-zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*
+zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*.h
+zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*.inl
+zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*.cpp
+zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*.cfg
+zip $DIST_FILE1 VTP/TerrainSDK/vtdata/Makefile
+zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*.vcproj
+
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/shapelib/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/triangle/*
 
 zip $DIST_FILE1 VTP/TerrainSDK/vtlib/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtlib/core/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtlib/vtosg/*
+zip $DIST_FILE1 VTP/TerrainSDK/vtlib/vtopensg/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtlib/vtsgl/*
 
 zip $DIST_FILE1 VTP/TerrainSDK/xmlhelper/*
