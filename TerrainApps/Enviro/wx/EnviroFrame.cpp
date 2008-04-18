@@ -747,6 +747,7 @@ void EnviroFrame::RefreshToolbar()
 
 void EnviroFrame::Setup3DScene()
 {
+	m_canvas->SetSpaceNavTarget(vtGetScene()->GetCamera());
 }
 
 void EnviroFrame::AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, bool tog)
@@ -1076,6 +1077,11 @@ void EnviroFrame::ChangeFlightSpeed(float factor)
 	m_pCameraDlg->ValuesToSliders();
 	m_pCameraDlg->TransferToWindow();
 	m_pCameraDlg->Refresh();
+
+	// Also set spacenavigator speed.  Scaling from mouse to spacenav is
+	//  approximate, based on the magnitude and number of INPUT events the
+	//  spacenav appears to send, 100x seems to be rough correlation.
+	m_canvas->SetSpaceNavSpeed(speed * factor / 100);
 }
 
 void EnviroFrame::SetTerrainDetail(int iMetric)

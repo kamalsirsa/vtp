@@ -121,12 +121,22 @@ vtGLCanvas::~vtGLCanvas(void)
 	VTLOG1("Deleting Canvas\n");
 }
 
+void vtGLCanvas::SetSpaceNavTarget(vtTransform *t)
+{
+	g_SpaceNav.SetTarget(t);
+}
+
+void vtGLCanvas::SetSpaceNavSpeed(float f)
+{
+	g_SpaceNav.SetSpeed(f);
+}
+
 #if WIN32
 WXLRESULT vtGLCanvas::MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
 {
 	// Catch SpaceNavigator messages; all others pass through
 	if (nMsg == WM_INPUT)
-		g_SpaceNav.ProcessWM_INPUTEvent(lParam, vtGetScene()->GetCamera());
+		g_SpaceNav.ProcessWM_INPUTEvent(lParam);
 	return wxWindowMSW::MSWDefWindowProc(nMsg, wParam, lParam);
 }
 #endif

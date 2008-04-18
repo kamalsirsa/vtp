@@ -26,6 +26,9 @@ public:
 	  int* gl_attrib = NULL);
 	~vtGLCanvas(void);
 
+	void SetSpaceNavTarget(vtTransform *t);
+	void SetSpaceNavSpeed(float f);
+
 	void OnPaint(wxPaintEvent& event);
 	void OnSize(wxSizeEvent& event);
 	void OnEraseBackground(wxEraseEvent& event);
