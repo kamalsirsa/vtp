@@ -20,6 +20,7 @@
 
 // Headers for the VTP libraries
 #include "vtlib/vtlib.h"
+#include "vtlib/core/Engine.h"
 #include "vtdata/vtLog.h"
 
 #include "SpaceNav.h"
@@ -43,6 +44,11 @@ vtSpaceNav::~vtSpaceNav()
 	if (g_pRawInputDevices)
 		free(g_pRawInputDevices);
 #endif
+}
+
+void vtSpaceNav::Eval()
+{
+	// Nothing here; the action is event-driven, not per-frame
 }
 
 bool vtSpaceNav::InitRawDevices()
@@ -129,7 +135,7 @@ bool vtSpaceNav::InitRawDevices()
 }
 
 #if WIN32
-void vtSpaceNav::ProcessWM_INPUTEvent(LPARAM lParam, vtTransform *target)
+void vtSpaceNav::ProcessWM_INPUTEvent(LPARAM lParam)
 {
 	#ifdef SHOW_DETAILS
 	VTLOG("WM_INPUT lParam=0x%x\n", lParam );
@@ -204,11 +210,29 @@ void vtSpaceNav::ProcessWM_INPUTEvent(LPARAM lParam, vtTransform *target)
 				FPoint3 trans((float) all6DOFs[0]/256*m_fSpeed,
 							  (float)-all6DOFs[2]/256*m_fSpeed,
 							  (float) all6DOFs[1]/256*m_fSpeed);
-				target->TranslateLocal(trans);
-				target->RotateLocal(FPoint3(1,0,0), (float) all6DOFs[3]/25600);
-				target->RotateLocal(FPoint3(0,1,0), (float)-all6DOFs[5]/25600);
-				if (m_bAllowRoll)
-					target->RotateLocal(FPoint3(0,0,1), (float) all6DOFs[4]/25600);
+
+				for (unsigned int t = 0; t < NumTargets(); t++)
+				{
+					vtTransform *target = dynamic_cast<vtTransform *>(GetTarget(t));
+
+					target->TranslateLocal(trans);
+
+					// Pitch is always around local X
+					target->RotateLocal(FPoint3(1,0,0), (float) all6DOFs[3]/25600);
+
+					if (m_bAllowRoll)
+					{
+						// If we allow roll, then the user can be allowed to
+						//  rotate around local Y, and use also roll directly
+						target->RotateLocal(FPoint3(0,1,0), (float)-all6DOFs[5]/25600);
+						target->RotateLocal(FPoint3(0,0,1), (float) all6DOFs[4]/25600);
+					}
+					else
+					{
+						// Otherwise, use parent Y to avoid 'creeping roll'
+						target->RotateParent(FPoint3(0,1,0), (float)-all6DOFs[5]/25600);
+					}
+				}
 			}
 		}
 	}

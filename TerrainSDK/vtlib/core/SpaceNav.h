@@ -12,7 +12,7 @@
 #endif
 #endif
 
-class vtSpaceNav
+class vtSpaceNav : public vtEngine
 {
 public:
 	vtSpaceNav();
@@ -24,10 +24,11 @@ public:
 	void SetAllowRoll(bool b) { m_bAllowRoll = b; }
 	bool GetAllowRoll() { return m_bAllowRoll; }
 	virtual void OnButtons(unsigned char b1, unsigned char b2, unsigned char b3) {}
+	virtual void Eval();
 
 #if WIN32
 	// The implementation of this class is WIN32-specfic
-	void ProcessWM_INPUTEvent(LPARAM lParam, vtTransform *target);
+	void ProcessWM_INPUTEvent(LPARAM lParam);
 
 protected:
 	// ----------------  RawInput ------------------
