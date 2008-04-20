@@ -1309,57 +1309,60 @@ wxSizer *TParams4Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item1->Add( item10, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item14 = new wxBoxSizer( wxVERTICAL );
 
     wxCheckBox *item15 = new wxCheckBox( parent, ID_ACCEL, _("Accelerate by height above ground"), wxDefaultPosition, wxDefaultSize, 0 );
     item14->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
+    wxCheckBox *item16 = new wxCheckBox( parent, ID_ALLOW_ROLL, _("Allow Roll"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
     item1->Add( item14, 0, wxALIGN_CENTER, 5 );
 
-    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item17 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item17 = new wxStaticText( parent, ID_TEXT, _("Default Locations File:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item18 = new wxStaticText( parent, ID_TEXT, _("Default Locations File:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs18 = (wxString*) NULL;
-    wxComboBox *item18 = new wxComboBox( parent, ID_LOCFILE, wxT(""), wxDefaultPosition, wxSize(140,-1), 0, strs18, wxCB_DROPDOWN|wxCB_SORT );
-    item16->Add( item18, 1, wxALIGN_CENTER|wxRIGHT|wxBOTTOM, 5 );
+    wxString *strs19 = (wxString*) NULL;
+    wxComboBox *item19 = new wxComboBox( parent, ID_LOCFILE, wxT(""), wxDefaultPosition, wxSize(140,-1), 0, strs19, wxCB_DROPDOWN|wxCB_SORT );
+    item17->Add( item19, 1, wxALIGN_CENTER|wxRIGHT|wxBOTTOM, 5 );
 
-    item1->Add( item16, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item1->Add( item17, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item20 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Initial Camera Location"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item21 = new wxStaticText( parent, ID_TEXT, _("Initial Camera Location"), wxDefaultPosition, wxDefaultSize, 0 );
+    item20->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString strs21[] = 
+    wxString strs22[] = 
     {
         _("Item")
     };
-    wxChoice *item21 = new wxChoice( parent, ID_INIT_LOCATION, wxDefaultPosition, wxSize(140,-1), 1, strs21, 0 );
-    item19->Add( item21, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+    wxChoice *item22 = new wxChoice( parent, ID_INIT_LOCATION, wxDefaultPosition, wxSize(140,-1), 1, strs22, 0 );
+    item20->Add( item22, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
-    item1->Add( item19, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item1->Add( item20, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("Near clipping (\"Hither\") distance"), wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Near clipping (\"Hither\") distance"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item24 = new wxTextCtrl( parent, ID_HITHER, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item22->Add( item24, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
+    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_HITHER, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item23->Add( item25, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
 
-    wxStaticText *item25 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item26 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item1->Add( item22, 0, wxALIGN_CENTER, 5 );
+    item1->Add( item23, 0, wxALIGN_CENTER, 5 );
 
-    wxStaticText *item26 = new wxStaticText( parent, ID_TEXT, _("Animation Paths:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item1->Add( item26, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Animation Paths:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item27, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxString *strs27 = (wxString*) NULL;
-    wxListBox *item27 = new wxListBox( parent, ID_ANIM_PATHS, wxDefaultPosition, wxSize(80,80), 0, strs27, wxLB_SINGLE );
-    item1->Add( item27, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxString *strs28 = (wxString*) NULL;
+    wxListBox *item28 = new wxListBox( parent, ID_ANIM_PATHS, wxDefaultPosition, wxSize(80,80), 0, strs28, wxLB_SINGLE );
+    item1->Add( item28, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item0->Add( item1, 0, wxGROW|wxALL, 10 );
 

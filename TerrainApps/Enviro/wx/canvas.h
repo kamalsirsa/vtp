@@ -26,8 +26,10 @@ public:
 	  int* gl_attrib = NULL);
 	~vtGLCanvas(void);
 
+	// SpaceNavigator methods
 	void SetSpaceNavTarget(vtTransform *t);
 	void SetSpaceNavSpeed(float f);
+	void SetSpaceNavAllowRoll(bool b);
 
 	void OnPaint(wxPaintEvent& event);
 	void OnSize(wxSizeEvent& event);

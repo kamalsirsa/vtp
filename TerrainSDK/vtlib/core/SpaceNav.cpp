@@ -33,7 +33,7 @@ vtSpaceNav::vtSpaceNav()
 	g_pRawInputDevices = NULL;
 #endif
 	m_fSpeed = 100.0f;
-	m_bAllowRoll = true;
+	m_bAllowRoll = false;
 }
 
 vtSpaceNav::~vtSpaceNav()

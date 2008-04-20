@@ -131,6 +131,11 @@ void vtGLCanvas::SetSpaceNavSpeed(float f)
 	g_SpaceNav.SetSpeed(f);
 }
 
+void vtGLCanvas::SetSpaceNavAllowRoll(bool b)
+{
+	g_SpaceNav.SetAllowRoll(b);
+}
+
 #if WIN32
 WXLRESULT vtGLCanvas::MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam)
 {

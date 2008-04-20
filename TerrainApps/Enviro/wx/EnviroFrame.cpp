@@ -2615,6 +2615,9 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		vtTiledGeom *geom = pTerrain->GetTiledGeom();
 		if (geom && m_pLODDlg)
 			m_pLODDlg->SetPagingRange(geom->prange_min, geom->prange_max);
+
+		bool bAllowRoll = pTerrain->GetParams().GetValueBool(STR_ALLOW_ROLL);
+		m_canvas->SetSpaceNavAllowRoll(bAllowRoll);
 	}
 	else
 	{

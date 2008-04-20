@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -68,6 +68,7 @@ public:
 	wxString   m_strInitLocation;
 	float   m_fHither;
 	bool	m_bAccel;
+	bool	m_bAllowRoll;
 
 	// LOD
 	int	 m_iLodMethod;

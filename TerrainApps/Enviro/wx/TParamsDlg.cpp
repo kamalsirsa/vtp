@@ -228,6 +228,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_INIT_LOCATION, &m_iInitLocation);
 	AddNumValidator(ID_HITHER, &m_fHither);
 	AddValidator(ID_ACCEL, &m_bAccel);
+	AddValidator(ID_ALLOW_ROLL, &m_bAllowRoll);
 
 	// LOD
 	AddValidator(ID_LODMETHOD, &m_iLodMethod);
@@ -355,6 +356,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_strInitLocation = wxString(Params.GetValueString(STR_INITLOCATION), wxConvUTF8);
 	m_fHither =			Params.GetValueFloat(STR_HITHER);
 	m_bAccel =			Params.GetValueBool(STR_ACCEL);
+	m_bAllowRoll =		Params.GetValueBool(STR_ALLOW_ROLL);
 	m_AnimPaths =		Params.m_AnimPaths;
 
 	// LOD
@@ -506,6 +508,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueString(STR_INITLOCATION, (const char *) m_strInitLocation.mb_str(wxConvUTF8));
 	Params.SetValueFloat(STR_HITHER, m_fHither);
 	Params.SetValueBool(STR_ACCEL, m_bAccel);
+	Params.SetValueBool(STR_ALLOW_ROLL, m_bAllowRoll);
 	Params.m_AnimPaths = m_AnimPaths;
 
 	// LOD
