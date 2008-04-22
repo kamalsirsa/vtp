@@ -363,7 +363,8 @@ void request_callback_async(unsigned char *mapfile, databuf *map,
 	if (tg->m_progress_callback != NULL)
 	{
 		tg->m_iTileLoads++;
-		tg->m_progress_callback(tg->m_iTileLoads * 99 / (tg->cols * tg->rows * 2));
+		int prog = tg->m_iTileLoads * 99 / (tg->cols * tg->rows * 2);
+		tg->m_progress_callback(prog < 100 ? prog : 99);
 	}
 }
 
@@ -876,8 +877,10 @@ void vtTiledGeom::DoRender()
 				fpu);
 
 #if USE_VERTEX_CACHE
-	// TEMP TEST
-	//m_pMiniCache->setalphatest();
+	// By enabling alpha test, we can support image tilesets with alpha
+	//  (RGBA).  It does not cost anything (?) to leave this enabled in all
+	//  cases.  This requires at least libMini 8.6.6.
+	m_pMiniCache->setalphatest(0);
 
 	// render vertex arrays
 	static int last_vtx = 0;
