@@ -64,6 +64,7 @@ wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 
 	// Initialize spacenavigator, if there is one present
 	g_SpaceNav.Init();
+	g_SpaceNav.SetTarget(vtGetScene()->GetCamera());
 }
 
 vtGLCanvas::~vtGLCanvas(void)
@@ -75,7 +76,7 @@ WXLRESULT vtGLCanvas::MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lP
 {
 	// Catch SpaceNavigator messages; all others pass through
 	if (nMsg == WM_INPUT)
-		g_SpaceNav.ProcessWM_INPUTEvent(lParam, vtGetScene()->GetCamera());
+		g_SpaceNav.ProcessWM_INPUTEvent(lParam);
 	return wxWindowMSW::MSWDefWindowProc(nMsg, wParam, lParam);
 }
 #endif
