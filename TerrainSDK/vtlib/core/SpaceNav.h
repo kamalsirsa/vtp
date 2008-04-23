@@ -12,6 +12,8 @@
 #endif
 #endif
 
+#include "vtlib/core/Engine.h"
+
 class vtSpaceNav : public vtEngine
 {
 public:
