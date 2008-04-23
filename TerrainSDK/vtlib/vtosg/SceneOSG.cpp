@@ -386,6 +386,10 @@ bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow
 	return true;
 }
 
+/**
+ * Convert a point in world coordinates to a window pixel coordinate, measured
+ * from the top left corner of the window: X right, Y down.
+ */
 void vtScene::WorldToScreen(const FPoint3 &point, IPoint2 &result)
 {
 	Vec3 object;
