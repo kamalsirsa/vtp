@@ -2895,6 +2895,9 @@ bool vtElevationGrid::SaveToASC(const char *szFileName,
  */
 bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(int)) const
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	FILE *fp = vtFileOpen(szFileName, "wb");
 	if (!fp)
 		return false;
