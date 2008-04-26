@@ -1,7 +1,7 @@
 //
 // RoadMapEdit.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1209,6 +1209,10 @@ void VisitorOSM::data(const char *s, int length)
 // Import from OpenStreetMap
 bool RoadMapEdit::ImportFromOSM(const char *fname, bool progress_callback(int))
 {
+	// Avoid trouble with '.' and ',' in Europe
+	//  OSM always has English punctuation
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// OSM is always in Geo WGS84
 	m_proj.SetWellKnownGeogCS("WGS84");
 
