@@ -4,7 +4,7 @@
 // contains methods of RoadMapEdit used for fixing and
 //  cleaning the roadmap topology
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -227,6 +227,7 @@ int RoadMapEdit::CleanLinkPoints()
 			{
 				// the point is redudant and should be removed
 				pR->RemovePoint(i-1);
+				pR->Dirtied();
 				count++;
 				pR->m_fLength = pR->Length();
 				break;
