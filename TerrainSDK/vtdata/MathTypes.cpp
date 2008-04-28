@@ -1493,11 +1493,11 @@ bool CrossingsTest(const DPoint3 *pgon, int numverts, const DPoint2 &point)
 bool PointInTriangle(const FPoint2 &p, const FPoint2 &p1, const FPoint2 &p2,
 					 const FPoint2 &p3)
 {
-	float fAB = (p.y-p1.y)*(p2.x-p1.x) - (p.x-p1.x)*(p2.y-p1.y);
-	float fBC = (p.y-p2.y)*(p3.x-p2.x) - (p.x-p2.x)*(p3.y-p2.y);
-	float fCA = (p.y-p3.y)*(p1.x-p3.x) - (p.x-p3.x)*(p1.y-p3.y);
+	const float fAB = (p.y-p1.y)*(p2.x-p1.x) - (p.x-p1.x)*(p2.y-p1.y);
+	const float fBC = (p.y-p2.y)*(p3.x-p2.x) - (p.x-p2.x)*(p3.y-p2.y);
+	const float fCA = (p.y-p3.y)*(p1.x-p3.x) - (p.x-p3.x)*(p1.y-p3.y);
 
-	return (fAB * fBC >= 0) && (fBC * fCA >= 0);
+	return (fAB * fBC >= 0) && (fBC * fCA >= 0) && (fAB * fCA >= 0);
 }
 
 /**
@@ -1508,11 +1508,11 @@ bool PointInTriangle(const FPoint2 &p, const FPoint2 &p1, const FPoint2 &p2,
 bool PointInTriangle(const DPoint2 &p, const DPoint2 &p1, const DPoint2 &p2,
 					 const DPoint2 &p3)
 {
-	double fAB = (p.y-p1.y)*(p2.x-p1.x) - (p.x-p1.x)*(p2.y-p1.y);
-	double fBC = (p.y-p2.y)*(p3.x-p2.x) - (p.x-p2.x)*(p3.y-p2.y);
-	double fCA = (p.y-p3.y)*(p1.x-p3.x) - (p.x-p3.x)*(p1.y-p3.y);
+	const double fAB = (p.y-p1.y)*(p2.x-p1.x) - (p.x-p1.x)*(p2.y-p1.y);
+	const double fBC = (p.y-p2.y)*(p3.x-p2.x) - (p.x-p2.x)*(p3.y-p2.y);
+	const double fCA = (p.y-p3.y)*(p1.x-p3.x) - (p.x-p3.x)*(p1.y-p3.y);
 
-	return (fAB * fBC >= 0) && (fBC * fCA >= 0);
+	return (fAB * fBC >= 0) && (fBC * fCA >= 0) && (fAB * fCA >= 0);
 }
 
 /**
