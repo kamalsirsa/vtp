@@ -200,11 +200,13 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path,
 		// FIXME: get proper error string from system
 		if (!input.good())
 		{
+			int CurrentLineNumber = XML_GetCurrentLineNumber(parser);
+			int CurrentColumnNumber = XML_GetCurrentColumnNumber(parser);
 			XML_ParserFree(parser);
 			throw xh_io_exception("Problem reading file",
 					xh_location(path,
-					XML_GetCurrentLineNumber(parser),
-					XML_GetCurrentColumnNumber(parser)),
+					CurrentLineNumber,
+					CurrentColumnNumber),
 					"XML Parser");
 		}
 
@@ -230,11 +232,13 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path,
 
 	// Verify end of document.
 	if (!XML_Parse(parser, buf, 0, true)) {
+		int CurrentLineNumber = XML_GetCurrentLineNumber(parser);
+		int CurrentColumnNumber = XML_GetCurrentColumnNumber(parser);
 		XML_ParserFree(parser);
 		throw xh_io_exception(XML_ErrorString(XML_GetErrorCode(parser)),
 				xh_location(path,
-							XML_GetCurrentLineNumber(parser),
-							XML_GetCurrentColumnNumber(parser)),
+							CurrentLineNumber,
+							CurrentColumnNumber),
 				"XML Parser");
 	}
 
@@ -279,15 +283,18 @@ void readXML (const string &path_utf8, XMLVisitor &visitor,
 		{
 			fseek(fp, 0, SEEK_END);
 			iFileLength = ftell(fp);
-			rewind(fp);
 		}
 	}
-
+	
 #ifdef _MSC_VER
 	int fd = _fileno(fp);
 #else
 	int fd = fileno(fp);
 #endif
+
+	// Ensure that underlying fd isd rewound
+	lseek(fd, 0, SEEK_SET);
+
 	gzFile gfp = gzdopen(fd, "rb");
 
 	if (!gfp)
@@ -327,7 +334,10 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
 	char buf[8192];
 	while (!gzeof(fp))
 	{
+		int iError;
+		gzerror(fp, &iError);
 		int iCount = gzread(fp, buf, BUFSIZE);
+		gzerror(fp, &iError);
 		if (iCount > 0)
 		{
 			if (!XML_Parse(parser, buf, iCount, false))
@@ -362,11 +372,13 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
 		}
 		else if (iCount < 0)
 		{
+			int CurrentLineNumber = XML_GetCurrentLineNumber(parser);
+			int CurrentColumnNumber = XML_GetCurrentColumnNumber(parser);
 			XML_ParserFree(parser);
 			throw xh_io_exception("Problem reading file",
 					xh_location(path,
-					XML_GetCurrentLineNumber(parser),
-					XML_GetCurrentColumnNumber(parser)),
+					CurrentLineNumber,
+					CurrentColumnNumber),
 					"XML Parser");
 		}
 	}
