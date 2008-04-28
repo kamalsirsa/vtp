@@ -31,7 +31,9 @@ public:
 	void SetSpaceNavSpeed(float f);
 	void SetSpaceNavAllowRoll(bool b);
 
+#ifndef __WXMAC__
 	void OnPaint(wxPaintEvent& event);
+#endif
 	void OnSize(wxSizeEvent& event);
 	void OnEraseBackground(wxEraseEvent& event);
 	void OnMouseCaptureLost(wxMouseCaptureLostEvent & event);
@@ -43,10 +45,12 @@ public:
 	void QueueRefresh(bool eraseBackground);
 	void OnIdle(wxIdleEvent &event);
 
+#ifndef __WXMAC__
 	bool m_bPainting;
+	bool m_bFirstPaint;
+#endif
 	bool m_bRunning;
 	bool m_bShowFrameRateChart;
-	bool m_bFirstPaint;
 	bool m_bCapture;
 
 #if WIN32

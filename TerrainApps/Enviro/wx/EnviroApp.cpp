@@ -209,9 +209,11 @@ bool EnviroApp::OnInit()
 		frame->FrameArgument(i, str.mb_str(wxConvUTF8));
 	}
 
+#ifndef __WXMAC__
 	bool go = true;
 	while (go)
 		go = ProcessIdle();
+#endif
 
 	g_App.StartControlEngine();
 
@@ -364,9 +366,11 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 	frame->PostConstruction();
 
 	// process some idle messages... let frame open a bit
+#ifndef __WXMAC__
 	bool go = true;
 	while (go)
 		go = ProcessIdle();
+#endif
 
 	// Initialize the VTP scene
 	vtGetScene()->Init(g_Options.m_bStereo, g_Options.m_iStereoMode);

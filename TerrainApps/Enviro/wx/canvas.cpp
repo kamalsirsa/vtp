@@ -40,7 +40,9 @@ vtSpaceNav g_SpaceNav;
 BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
 EVT_CLOSE(vtGLCanvas::OnClose)
 EVT_SIZE(vtGLCanvas::OnSize)
+#ifndef __WXMAC__
 EVT_PAINT(vtGLCanvas::OnPaint)
+#endif
 EVT_CHAR(vtGLCanvas::OnChar)
 EVT_KEY_DOWN(vtGLCanvas::OnKeyDown)
 EVT_KEY_UP(vtGLCanvas::OnKeyUp)
@@ -62,10 +64,15 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 {
 	VTLOG1("vtGLCanvas constructor\n");
 
+#ifdef __WXMAC__
+	const GLint Value = 1;
+	aglSetInteger(GetContext()->m_glContext, AGL_SWAP_INTERVAL, &Value); // Force VSYNC on
+#else
+	m_bFirstPaint = true;
 	m_bPainting = false;
+#endif
 	m_bRunning = true;
 	m_bShowFrameRateChart = false;
-	m_bFirstPaint = true;
 	m_bCapture = false;
 
 	VTLOG1("vtGLCanvas: calling Show on parent\n");
@@ -152,14 +159,19 @@ void EnableContinuousRendering(bool bTrue)
 	if (!s_canvas)
 		return;
 
+#ifdef __WXMAC__
+	s_canvas->m_bRunning = bTrue;
+#else
 	bool bNeedRefresh = (s_canvas->m_bRunning == false && bTrue == true);
 	s_canvas->m_bRunning = bTrue;
 	if (bNeedRefresh)
 		s_canvas->Refresh(FALSE);
+#endif
 
 	vtGetScene()->TimerRunning(bTrue);
 }
 
+#ifndef __WXMAC__
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
 	if (m_bFirstPaint) VTLOG1("vtGLCanvas: first OnPaint\n");
@@ -224,6 +236,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	if (m_bFirstPaint)
 		m_bFirstPaint = false;
 }
+#endif
 
 void vtGLCanvas::OnClose(wxCloseEvent& event)
 {
@@ -399,6 +412,44 @@ void vtGLCanvas::OnIdle(wxIdleEvent &event)
 {
 	// We use the "Refresh on Idle" approach to continuous rendering.
 	if (m_bRunning)
+#ifdef __WXMAC__
+	{
+		// Make sure the Graphics context of this thread is this window
+		SetCurrent();
+
+		// Render the Scene Graph
+		vtGetScene()->DoUpdate();
+
+		if (m_bShowFrameRateChart)
+			vtGetScene()->DrawFrameRateChart();
+
+		SwapBuffers();
+
+		EnviroFrame *frame = (EnviroFrame*) GetParent();
+
+		// update the status bar every 1/10 of a second
+		static float last_stat = 0.0f;
+		static vtString last_msg;
+		float cur = vtGetTime();
+		if (cur - last_stat > 0.1f || g_App.GetMessage() != last_msg)
+		{
+			last_msg = g_App.GetMessage();
+			last_stat = cur;
+			frame->UpdateStatus();
+		}
+
+		frame->UpdateLODInfo();
+
+		g_App.UpdateCompass();
+
+
+		// Reset the number of mousemoves we've gotten since last redraw
+		m_iConsecutiveMousemoves = 0;
+	
+		event.RequestMore();
+	}
+#else
 		Refresh(FALSE);
+#endif
 }
 
