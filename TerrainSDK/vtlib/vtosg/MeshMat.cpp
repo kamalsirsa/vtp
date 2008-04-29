@@ -261,7 +261,7 @@ void vtMaterial::SetTexture(vtImage *pImage)
 //	m_pTexture->setInternalFormatMode(osg::Texture::USE_S3TC_DXT1_COMPRESSION);
 	if (s_bTextureCompression)
 		//m_pTexture->setInternalFormatMode(osg::Texture::USE_ARB_COMPRESSION);
-		m_pTexture->setInternalFormatMode(osg::Texture::USE_S3TC_DXT1_COMPRESSION);
+		m_pTexture->setInternalFormatMode(osg::Texture::USE_S3TC_DXT3_COMPRESSION);
 
 	// From the OSG list: "Why doesn't the OSG deallocate image buffer right
 	// *after* a glTextImage2D?
