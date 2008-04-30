@@ -6,6 +6,10 @@
 #include <fstream>
 using namespace std;
 
+#if WIN32
+#include <io.h>
+#endif
+
 #include "easyxml.hpp"
 #include "xmlparse.h"
 #include "widestring.h"
