@@ -34,6 +34,7 @@
 #include "LightDlg.h"
 
 #if VTLIB_OSG
+#include <osg/Version>
 #include <osgDB/Registry>
 #include <osgDB/ReadFile>
 #endif
@@ -767,7 +768,11 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 
 	osg::Node *onode = node->GetOsgNode();
 	osgDB::ReaderWriter::WriteResult result;
+#if OPENSCENEGRAPH_MAJOR_VERSION>=2 && OPENSCENEGRAPH_MINOR_VERSION>=4
+	result = osgDB::Registry::instance()->writeNode(*onode, std::string((const char *)fname), NULL);
+#else
 	result = osgDB::Registry::instance()->writeNode(*onode, (const char *)fname);
+#endif
 
 	// Rotate back again
 	node->ApplyVertexRotation(FPoint3(1,0,0), -PID2f);
@@ -805,7 +810,11 @@ void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
 	osg::Node *onode = node->GetOsgNode();
 	osgDB::ReaderWriter::WriteResult result;
 	CloseProgressDialog();
+#if OPENSCENEGRAPH_MAJOR_VERSION>=2 && OPENSCENEGRAPH_MINOR_VERSION>=4
+	result = osgDB::Registry::instance()->writeNode(*onode, std::string((const char *)fname), NULL);
+#else
 	result = osgDB::Registry::instance()->writeNode(*onode, (const char *)fname);
+#endif
 
 	// Rotate back again
 	node->ApplyVertexRotation(FPoint3(1,0,0), -PID2f);
