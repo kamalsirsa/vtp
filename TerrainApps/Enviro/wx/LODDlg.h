@@ -1,7 +1,7 @@
 //
 // LODDlg.h
 //
-// Copyright (c) 2005-2007 Virtual Terrain Project
+// Copyright (c) 2005-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -59,6 +59,8 @@ private:
 	float m_fRange;
 	int m_iPageout;
 	float m_fPageout;
+	int m_iCountCur;
+	int m_iCountMax;
 
 	void SlidersToValues();
 	void ValuesToSliders();

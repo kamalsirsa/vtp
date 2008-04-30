@@ -279,6 +279,7 @@ EVT_MENU(ID_HELP_DOC_ONLINE, EnviroFrame::OnHelpDocOnline)
 EVT_MENU(ID_POPUP_PROPERTIES, EnviroFrame::OnPopupProperties)
 EVT_MENU(ID_POPUP_FLIP, EnviroFrame::OnPopupFlip)
 EVT_MENU(ID_POPUP_RELOAD, EnviroFrame::OnPopupReload)
+EVT_MENU(ID_POPUP_ADJUST, EnviroFrame::OnPopupAdjust)
 EVT_MENU(ID_POPUP_START, EnviroFrame::OnPopupStart)
 EVT_MENU(ID_POPUP_DELETE, EnviroFrame::OnPopupDelete)
 EVT_MENU(ID_POPUP_URL, EnviroFrame::OnPopupURL)
@@ -2858,7 +2859,10 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 			if (type == ST_BUILDING)
 				popmenu->Append(ID_POPUP_FLIP, _("Flip Footprint Direction"));
 			if (type == ST_INSTANCE)
+			{
 				popmenu->Append(ID_POPUP_RELOAD, _("Reload from Disk"));
+				popmenu->Append(ID_POPUP_ADJUST, _("Adjust Terrain Surface to Fit"));
+			}
 
 			// It might have a URL, also
 			vtTag *tag = struc->FindTag("url");
@@ -2998,6 +3002,94 @@ void EnviroFrame::OnPopupReload(wxCommandEvent& event)
 		if (!inst)
 			continue;
 		structures->ConstructStructure(structures->GetStructure3d(i));
+	}
+}
+
+void EnviroFrame::CarveTerrainToFitNode(vtNode *node)
+{
+	vtTerrain *terr = GetCurrentTerrain();
+	if (!terr)
+		return;
+	vtDynTerrainGeom *dyn = terr->GetDynTerrain();
+	if (!dyn)
+		return;
+
+	FSphere sph;
+	node->GetBoundSphere(sph, true);
+
+	int changed = 0;
+	int cols, rows;
+	dyn->GetDimensions(cols, rows);
+	for (int c = 0; c < cols; c++)
+	{
+		for (int r = 0; r < rows; r++)
+		{
+			FPoint3 wpos;
+			dyn->GetWorldLocation(c, r, wpos);
+
+			if (wpos.x < (sph.center.x - sph.radius))
+				continue;
+			if (wpos.x > (sph.center.x + sph.radius))
+				continue;
+			if (wpos.z < (sph.center.z - sph.radius))
+				continue;
+			if (wpos.z > (sph.center.z + sph.radius))
+				continue;
+
+			FPoint3 yvec(0,100,0);
+
+			// Shoot a ray upwards through the terrain surface point
+			vtHitList HitList;
+			int iNumHits = vtIntersect(node, wpos - yvec, wpos + yvec, HitList);
+			if (iNumHits)
+			{
+				FPoint3 pos = HitList.front().point;
+
+				dyn->SetElevation(c, r, pos.y);
+				changed++;
+			}
+		}
+	}
+	if (changed != 0)
+	{
+		wxString msg;
+		msg.Printf(_T("Adjusted %d heixels.  Re-shade the terrain?"), changed);
+		int res = wxMessageBox(msg, _T(""), wxYES_NO, this);
+
+		if (res == wxYES)
+		{
+			// Update the (entire) shading and culture
+			EnableContinuousRendering(false);
+			OpenProgressDialog(_("Recalculating Shading"), false, this);
+
+			terr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
+			DRECT area;
+			area.Empty();
+			terr->RedrapeCulture(area);
+
+			CloseProgressDialog();
+			EnableContinuousRendering(true);
+		}
+	}
+}
+
+void EnviroFrame::OnPopupAdjust(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *structures = pTerr->GetStructureLayer();
+
+	int count = structures->GetSize();
+	for (int i = 0; i < count; i++)
+	{
+		vtStructure *str = structures->GetAt(i);
+		if (str->IsSelected())
+		{
+			vtStructInstance3d *inst = structures->GetInstance(i);
+			if (inst)
+			{
+				CarveTerrainToFitNode(inst->GetContainer());
+			}
+		}
 	}
 }
 

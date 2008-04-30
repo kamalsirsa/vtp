@@ -1,7 +1,7 @@
 //
 // LODDlg.cpp
 //
-// Copyright (c) 2005-2007 Virtual Terrain Project
+// Copyright (c) 2005-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -68,6 +68,9 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddNumValidator(ID_TEXT_PAGEOUT, &m_fPageout);
 	AddValidator(ID_SLIDER_PAGEOUT, &m_iPageout);
+
+	AddNumValidator(ID_COUNT_CURRENT, &m_iCountCur);
+	AddNumValidator(ID_COUNT_MAXIMUM, &m_iCountMax);
 }
 
 float PRANGE_MIN = 0.0f;
@@ -340,9 +343,13 @@ void LODDlg::DrawStructureState(vtPagedStructureLodGrid *grid, float fPageOutDis
 	vtTerrain *pTerr = GetCurrentTerrain();
 	if (pTerr)
 	{
-		float prev = m_fPageout;
+		float prev1 = m_fPageout;
+		int prev2 = m_iCountCur;
+		int prev3 = m_iCountMax;
 		m_fPageout = pTerr->GetStructurePageOutDistance();
-		if (prev != m_fPageout)
+		m_iCountCur = grid->GetTotalConstructed();
+		m_iCountMax = pTerr->GetStructurePageMax();
+		if (prev1 != m_fPageout || prev2 != m_iCountCur || prev3 != m_iCountMax)
 		{
 			ValuesToSliders();
 			m_bSet = true;

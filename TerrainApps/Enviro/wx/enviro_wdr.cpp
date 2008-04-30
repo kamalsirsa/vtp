@@ -2744,8 +2744,24 @@ wxSizer *StructLODDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxPanel *item6 = new wxPanel( parent, ID_PANEL3, wxDefaultPosition, wxSize(300,300), 0 );
-    item0->Add( item6, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Currently constructed:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item8 = new wxTextCtrl( parent, ID_COUNT_CURRENT, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item6->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("/"), wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_COUNT_MAXIMUM, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item6->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item6, 0, wxALIGN_CENTER, 5 );
+
+    wxPanel *item11 = new wxPanel( parent, ID_PANEL3, wxDefaultPosition, wxSize(300,300), 0 );
+    item0->Add( item11, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {

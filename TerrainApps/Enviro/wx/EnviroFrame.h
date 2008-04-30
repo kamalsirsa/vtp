@@ -252,12 +252,14 @@ protected:
 	void OnPopupProperties(wxCommandEvent& event);
 	void OnPopupFlip(wxCommandEvent& event);
 	void OnPopupReload(wxCommandEvent& event);
+	void OnPopupAdjust(wxCommandEvent& event);
 	void OnPopupStart(wxCommandEvent& event);
 	void OnPopupDelete(wxCommandEvent& event);
 	void OnPopupURL(wxCommandEvent& event);
 
 	void DoTestCode();
 	void LoadClouds(const char *fname);
+	void CarveTerrainToFitNode(vtNode *node);
 
 public:
 	class vtGLCanvas	*m_canvas;

@@ -342,46 +342,48 @@ wxSizer *Style4Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TR
 
 #define ID_TEXT_PAGEOUT 10243
 #define ID_SLIDER_PAGEOUT 10244
-#define ID_PANEL3 10245
+#define ID_COUNT_CURRENT 10245
+#define ID_COUNT_MAXIMUM 10246
+#define ID_PANEL3 10247
 wxSizer *StructLODDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 wxSizer *PagingDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_OVERLAY_FILE 10246
-#define ID_OVERLAY_DOTDOTDOT 10247
-#define ID_OVERLAY_X 10248
-#define ID_OVERLAY_Y 10249
-#define ID_CHECK_OVERVIEW 10250
-#define ID_CHECK_COMPASS 10251
+#define ID_OVERLAY_FILE 10248
+#define ID_OVERLAY_DOTDOTDOT 10249
+#define ID_OVERLAY_X 10250
+#define ID_OVERLAY_Y 10251
+#define ID_CHECK_OVERVIEW 10252
+#define ID_CHECK_COMPASS 10253
 wxSizer *TParams7Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SLIDER_FOG_DISTANCE 10252
-#define ID_TEXT_WIND_DIRECTION 10253
-#define ID_SLIDER_WIND_DIRECTION 10254
-#define ID_TEXT_WIND_SPEED 10255
-#define ID_SLIDER_WIND_SPEED 10256
+#define ID_SLIDER_FOG_DISTANCE 10254
+#define ID_TEXT_WIND_DIRECTION 10255
+#define ID_SLIDER_WIND_DIRECTION 10256
+#define ID_TEXT_WIND_SPEED 10257
+#define ID_SLIDER_WIND_SPEED 10258
 wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TEXTCTRL 10257
-#define ID_SLIDER_RATIO 10258
-#define ID_TEXT_X 10259
-#define ID_TEXT_Y 10260
+#define ID_TEXTCTRL 10259
+#define ID_SLIDER_RATIO 10260
+#define ID_TEXT_X 10261
+#define ID_TEXT_Y 10262
 wxSizer *SnapSizeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
 // Declare toolbar functions
 
-#define ID_LAYER_CREATE 10261
-#define ID_LAYER_LOAD 10262
-#define ID_LAYER_SAVE 10263
-#define ID_LAYER_SAVE_AS 10264
-#define ID_LAYER_DELETE 10265
-#define ID_LAYER_ZOOM_TO 10266
-#define ID_LAYER_VISIBLE 10267
-#define ID_LAYER_TABLE 10268
-#define ID_LAYER_SHADOW 10269
-#define ID_SHOW_ALL 10270
+#define ID_LAYER_CREATE 10263
+#define ID_LAYER_LOAD 10264
+#define ID_LAYER_SAVE 10265
+#define ID_LAYER_SAVE_AS 10266
+#define ID_LAYER_DELETE 10267
+#define ID_LAYER_ZOOM_TO 10268
+#define ID_LAYER_VISIBLE 10269
+#define ID_LAYER_TABLE 10270
+#define ID_LAYER_SHADOW 10271
+#define ID_SHOW_ALL 10272
 void LayerToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

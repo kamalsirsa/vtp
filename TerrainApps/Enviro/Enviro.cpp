@@ -2503,6 +2503,8 @@ void Enviro::PlantInstance()
 	// create a new Instance object
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structs = pTerr->GetStructureLayer();
+	if (!structs)
+		return;
 	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
 	inst->CopyTagsFrom(*tags);
 	inst->SetPoint(DPoint2(m_EarthPos.x, m_EarthPos.y));
