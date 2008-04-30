@@ -73,7 +73,6 @@ protected:
 	void OnOpen(wxCommandEvent& event);
 	void OnSave(wxCommandEvent& event);
 	void OnTestXML(wxCommandEvent& event);
-	void OnSetDataPath(wxCommandEvent& event);
 	void OnItemNew(wxCommandEvent& event);
 	void OnItemDelete(wxCommandEvent& event);
 	void OnItemAddModel(wxCommandEvent& event);

@@ -90,7 +90,6 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_MENU(wxID_EXIT, vtFrame::OnExit)
 	EVT_MENU(ID_SCENE_SCENEGRAPH, vtFrame::OnSceneGraph)
 	EVT_MENU(ID_TEST_XML, vtFrame::OnTestXML)
-	EVT_MENU(ID_SET_DATA_PATH, vtFrame::OnSetDataPath)
 	EVT_MENU(ID_ITEM_NEW, vtFrame::OnItemNew)
 	EVT_MENU(ID_ITEM_DEL, vtFrame::OnItemDelete)
 	EVT_MENU(ID_ITEM_ADDMODEL, vtFrame::OnItemAddModel)
@@ -1248,6 +1247,7 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 
 void vtFrame::OnTestXML(wxCommandEvent& event)
 {
+#if 0
 	vtContentManager Man;
 	try {
 		Man.ReadXML("content3.vtco");
@@ -1259,28 +1259,21 @@ void vtFrame::OnTestXML(wxCommandEvent& event)
 		DisplayMessageBox(wxString(str.c_str(), wxConvUTF8));
 		return;
 	}
-}
+#elif 0
+	vtImage *image = new vtImage("C:/TEMP/test_transparent.png");
 
-void vtFrame::OnSetDataPath(wxCommandEvent& event)
-{
-#if 0
-	m_canvas->m_bRunning = false;
+	// Compress
+	osg::ref_ptr<osg::State> state = new osg::State;
 
-	wxDirDialog dlg(this, _T("Please indicate your data directory"), m_strDataPath);
-	if (dlg.ShowModal() == wxID_OK)
-	{
-		m_strDataPath = dlg.GetPath();
-#if WIN32
-		wxString path_separator = _T("\\");
-#else
-		wxString path_separator = _T("/");
-#endif
-		m_strDataPath += path_separator;
-		WriteINI();
-	}
-
-	m_canvas->m_bRunning = true;
-	m_canvas->Refresh(false);
+	// get OpenGL driver to create texture from image.
+	vtMaterial::s_bTextureCompression = true;
+	vtMaterial *mat = new vtMaterial;
+	mat->SetTexture(image);
+	mat->m_pTexture->apply(*state);
+	image->GetOsgImage()->readImageFromCurrentTexture(0,true);
+	osgDB::ReaderWriter::WriteResult wr;
+	osgDB::Registry *reg = osgDB::Registry::instance();
+	wr = reg->writeImage(*(image->GetOsgImage()), "C:/TEMP/test_transparent.dds");
 #endif
 }
 
