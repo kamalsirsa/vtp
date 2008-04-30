@@ -1229,9 +1229,6 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 	if (bPaging)
 	{
 		// Don't construct geometry, just add to the paged structure grid
-		m_iPagingStructureMax = m_Params.GetValueInt(STR_STRUCTURE_PAGING_MAX);
-		m_fPagingStructureDist = m_Params.GetValueFloat(STR_STRUCTURE_PAGING_DIST);
-
 		VTLOG("\tAppending %d structures to the paged grid.\n", num_structs);
 		for (int i = 0; i < num_structs; i++)
 		{
@@ -1651,6 +1648,12 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 	{
 		m_pPagedStructGrid = new vtPagedStructureLodGrid;
 		m_pStructGrid = m_pPagedStructGrid;
+
+		m_iPagingStructureMax = m_Params.GetValueInt(STR_STRUCTURE_PAGING_MAX);
+		m_fPagingStructureDist = m_Params.GetValueFloat(STR_STRUCTURE_PAGING_DIST);
+
+		VTLOG("Created paged structure LOD grid, max %d, distance %f\n",
+			m_iPagingStructureMax, m_fPagingStructureDist);
 	}
 	else
 		m_pStructGrid = new vtSimpleLodGrid;

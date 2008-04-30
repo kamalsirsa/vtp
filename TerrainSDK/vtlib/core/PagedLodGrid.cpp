@@ -357,17 +357,17 @@ void vtPagedStructureLodGrid::CullFarawayStructures(const FPoint3 &CamPos,
 													int iMaxStructures,
 													float fDistance)
 {
-	int total_constructed = 0;
+	m_iTotalConstructed = 0;
 	for (int a = 0; a < m_dim; a++)
 	{
 		for (int b = 0; b < m_dim; b++)
 		{
 			vtPagedStructureLOD *lod = m_pCells[CellIndex(a,b)];
-			if (lod) total_constructed += lod->GetNumChildren();
+			if (lod) m_iTotalConstructed += lod->GetNumChildren();
 		}
 	}
 	// If we have too many or have items in the queue
-	if (total_constructed > iMaxStructures || m_Queue.size() > 0)
+	if (m_iTotalConstructed > iMaxStructures || m_Queue.size() > 0)
 	{
 		//VTLOG("CullFarawayStructures: %d in Queue, ", m_Queue.size());
 		int total = 0, removed = 0;
@@ -387,7 +387,7 @@ void vtPagedStructureLodGrid::CullFarawayStructures(const FPoint3 &CamPos,
 
 				// If very far, delete the structures entirely
 				if (lod->m_iNumConstructed != 0 &&
-					total_constructed > iMaxStructures &&
+					m_iTotalConstructed > iMaxStructures &&
 					dist > fDistance)
 					DeconstructCell(lod);
 

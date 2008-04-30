@@ -1,7 +1,7 @@
 //
 // PagedLodGrid.h
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -184,6 +184,7 @@ public:
 
 	int GetLoadCount() { return m_iLoadCount; }
 	void ResetLoadCount() { m_iLoadCount = 0; }
+	int GetTotalConstructed() { return m_iTotalConstructed; }
 
 	vtPagedStructureLOD *FindGroup(vtStructure *str);
 	void ConstructByIndex(vtPagedStructureLOD *pLOD, vtStructureArray3d *pArray,
@@ -196,7 +197,7 @@ protected:
 	void RemoveCellFromQueue(vtPagedStructureLOD *pLOD);
 
 	vtPagedStructureLOD **m_pCells;
-	int m_iLoadCount;
+	int m_iLoadCount, m_iTotalConstructed;
 
 	vtGroup *FindCellParent(const FPoint3 &point);
 	vtPagedStructureLOD *FindPagedCellParent(const FPoint3 &point);

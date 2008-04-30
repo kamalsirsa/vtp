@@ -239,6 +239,7 @@ public:
 	vtPagedStructureLodGrid *GetStructureLodGrid() { return m_pPagedStructGrid; }
 	float GetStructurePageOutDistance() { return m_fPagingStructureDist; }
 	void SetStructurePageOutDistance(float f);
+	int GetStructurePageMax() { return m_iPagingStructureMax; }
 
 	void ExtendStructure(vtStructure *s);
 	void SetStructureExtension(vtStructureExtension *se = NULL) { m_pStructureExtension = se; }
