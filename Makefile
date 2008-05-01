@@ -8,24 +8,24 @@ include $(VTP_ROOT)/Make.defs
 
 
 all :
-	cd TerrainSDK && $(MAKE)
-	cd TerrainApps && $(MAKE)
+	@-cd TerrainSDK && $(MAKE)
+	@-cd TerrainApps && $(MAKE)
 
 install:
-	cd TerrainSDK && $(MAKE) install
-	cd TerrainApps && $(MAKE) install
+	@-cd TerrainSDK && $(MAKE) install
+	@-cd TerrainApps && $(MAKE) install
 
 clean :
-	cd TerrainSDK && $(MAKE) clean
-	cd TerrainApps && $(MAKE) clean
+	@-cd TerrainSDK && $(MAKE) clean
+	@-cd TerrainApps && $(MAKE) clean
 ifeq ($(OS),Darwin)
 	rm -rf $(OSX_APPS)/*.app
 	(cd $(FRAMEWORKS)/ && rm -rf vt*framework unzip.framework xmlhelper.framework)
 endif
 
 clobber :
-	cd TerrainSDK && $(MAKE) clobber
-	cd TerrainApps && $(MAKE) clobber
+	@-cd TerrainSDK && $(MAKE) clobber
+	@-cd TerrainApps && $(MAKE) clobber
 
 createpatch:
 	-svn diff > "patch.`date`.txt"
