@@ -2006,7 +2006,7 @@ void EnviroFrame::OnSceneSave(wxCommandEvent& event)
 {
 #if VTLIB_OSG
 	vtGroup *pRoot = vtGetTS()->GetTop();
-#if OPENSCENEGRAPH_MAJOR_VERSION>=2 && OPENSCENEGRAPH_MINOR_VERSION>=4
+#if OPENSCENEGRAPH_MAJOR_VERSION>=2 && OPENSCENEGRAPH_MINOR_VERSION>=2
 	osgDB::Registry::instance()->writeNode(*pRoot->GetOsgGroup(), std::string("scene.osg"), NULL);
 #else
 	osgDB::Registry::instance()->writeNode(*pRoot->GetOsgGroup(), "scene.osg");

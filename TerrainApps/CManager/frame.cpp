@@ -768,7 +768,7 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 
 	osg::Node *onode = node->GetOsgNode();
 	osgDB::ReaderWriter::WriteResult result;
-#if OPENSCENEGRAPH_MAJOR_VERSION>=2 && OPENSCENEGRAPH_MINOR_VERSION>=4
+#if OPENSCENEGRAPH_MAJOR_VERSION>=2 && OPENSCENEGRAPH_MINOR_VERSION>=2
 	result = osgDB::Registry::instance()->writeNode(*onode, std::string((const char *)fname), NULL);
 #else
 	result = osgDB::Registry::instance()->writeNode(*onode, (const char *)fname);
@@ -810,7 +810,7 @@ void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
 	osg::Node *onode = node->GetOsgNode();
 	osgDB::ReaderWriter::WriteResult result;
 	CloseProgressDialog();
-#if OPENSCENEGRAPH_MAJOR_VERSION>=2 && OPENSCENEGRAPH_MINOR_VERSION>=4
+#if OPENSCENEGRAPH_MAJOR_VERSION>=2 && OPENSCENEGRAPH_MINOR_VERSION>=2
 	result = osgDB::Registry::instance()->writeNode(*onode, std::string((const char *)fname), NULL);
 #else
 	result = osgDB::Registry::instance()->writeNode(*onode, (const char *)fname);
