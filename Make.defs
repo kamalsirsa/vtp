@@ -105,6 +105,8 @@ UNZIP_INST_DIR = $(UNZIP_DIR)
 
 WX_DIR		 ?= /usr/local
 
+VTP_INSTALL_DIR = /usr/local
+
 #============================================================================
 #
 # OS Specific build parameters

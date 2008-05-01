@@ -34,3 +34,9 @@ clobber :
 	cd vtlib/vtosg&& $(MAKE) clobber
 	cd vtui       && $(MAKE) clobber
 
+install :
+	cd unzip      && $(MAKE) install
+	cd xmlhelper  && $(MAKE) install
+	cd vtdata     && $(MAKE) install
+	cd vtlib/vtosg&& $(MAKE) install
+	cd vtui       && $(MAKE) install

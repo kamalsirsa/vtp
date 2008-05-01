@@ -12,8 +12,8 @@ all :
 	cd TerrainApps && $(MAKE)
 
 install:
-	cd TerrainSDK && $(MAKE)
-	cd TerrainApps && $(MAKE)
+	cd TerrainSDK && $(MAKE) install
+	cd TerrainApps && $(MAKE) install
 
 clean :
 	cd TerrainSDK && $(MAKE) clean

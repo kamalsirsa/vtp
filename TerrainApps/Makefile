@@ -9,22 +9,25 @@ include $(VTP_ROOT)/Make.defs
 APPS = glutSimple wxSimple VTBuilder Enviro CManager
 # prSimple is currently broken on OS X; per Ben. Removing it from the default targets.
 all:
-	for app in $(APPS); do              \
+	@-for app in $(APPS); do            \
 	  cd $(VTP_ROOT)/TerrainApps/$$app; \
 	  $(MAKE) all || exit 1;            \
 	  done
 
 clean:
-	for app in $(APPS); do              \
+	@-for app in $(APPS); do            \
 	  cd $(VTP_ROOT)/TerrainApps/$$app; \
 	  $(MAKE) clean || exit 1;          \
 	  done
 
 clobber:
-	for app in $(APPS); do              \
+	@-for app in $(APPS); do            \
 	  cd $(VTP_ROOT)/TerrainApps/$$app; \
 	  $(MAKE) clobber || exit 1;        \
 	  done
+
+install:
+	@-# currently nothing to do
 
 #
 # The following allows you to give the command "make VTBuilder" from the

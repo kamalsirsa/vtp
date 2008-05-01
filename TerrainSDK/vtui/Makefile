@@ -35,3 +35,5 @@ clean :
 clobber :
 	rm -rf $(OBJS) $(LIB) ii_files so_locations $(FRAMEWORK)
 
+install :
+	cp -rfp $(LIB) $(VTP_INSTALL_DIR)/lib
