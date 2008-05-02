@@ -397,7 +397,7 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, const FPolygon3 &polygon1,
 
 	// build the edge features.
 	// point[0] is the first starting point of a panel.
-	for (i = 0; i < pEdge->NumFeatures(); i++)
+	for (i = 0; i < (int)pEdge->NumFeatures(); i++)
 	{
 		vtEdgeFeature &feat = pEdge->m_Features[i];
 
