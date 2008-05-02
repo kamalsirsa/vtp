@@ -1,7 +1,7 @@
 //
 // Name: EphemDlg.cpp
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -38,6 +38,7 @@ BEGIN_EVENT_TABLE(EphemDlg,AutoDialog)
 	EVT_CHECKBOX( ID_HORIZON, EphemDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_FOG, EphemDlg::OnCheckBox )
 	EVT_BUTTON( ID_BGCOLOR, EphemDlg::OnBgColor )
+	EVT_TEXT( ID_OCEANPLANEOFFSET, EphemDlg::OnOceanPlaneOffset )
 	EVT_TEXT( ID_FOG_DISTANCE, EphemDlg::OnFogDistance )
 	EVT_TEXT( ID_TEXT_WIND_DIRECTION, EphemDlg::OnWindDirection )
 	EVT_TEXT( ID_TEXT_WIND_SPEED, EphemDlg::OnWindSpeed )
@@ -235,6 +236,14 @@ void EphemDlg::OnFogDistance( wxCommandEvent &event )
 	ValuesToSliders();
 	SetToScene();
 	SetSliderControls();
+}
+
+void EphemDlg::OnOceanPlaneOffset( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+	TransferDataFromWindow();
+	SetToScene();
 }
 
 void EphemDlg::OnBgColor( wxCommandEvent &event )

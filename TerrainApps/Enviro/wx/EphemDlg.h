@@ -1,7 +1,7 @@
 //
 // Name: EphemDlg.h
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -64,6 +64,7 @@ private:
 	// WDR: handler declarations for EphemDlg
 	void OnSkyTexture( wxCommandEvent &event );
 	void OnFogDistance( wxCommandEvent &event );
+	void OnOceanPlaneOffset( wxCommandEvent &event );
 	void OnSliderFogDistance( wxCommandEvent &event );
 	void OnSliderWindSpeed( wxCommandEvent &event );
 	void OnSliderWindDirection( wxCommandEvent &event );
