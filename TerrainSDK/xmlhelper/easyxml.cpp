@@ -8,6 +8,7 @@ using namespace std;
 
 #if WIN32
 #include <io.h>
+#define lseek _lseek
 #endif
 
 #include "easyxml.hpp"
