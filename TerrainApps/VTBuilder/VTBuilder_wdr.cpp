@@ -2403,35 +2403,38 @@ wxSizer *TileDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item34 = new wxCheckBox( parent, ID_OMIT_FLAT, _("Omit flat elevation tiles (sea level)"), wxDefaultPosition, wxDefaultSize, 0 );
     item33->Add( item34, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticBox *item36 = new wxStaticBox( parent, -1, _("Texture Compression") );
-    wxStaticBoxSizer *item35 = new wxStaticBoxSizer( item36, wxVERTICAL );
+    wxCheckBox *item35 = new wxCheckBox( parent, ID_MASK_UNKNOWN, _("Mask unknown elevation areas with texture alpha values"), wxDefaultPosition, wxDefaultSize, 0 );
+    item33->Add( item35, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item37 = new wxRadioButton( parent, ID_TC_NONE, _("None"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    item37->SetValue( TRUE );
-    item35->Add( item37, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticBox *item37 = new wxStaticBox( parent, -1, _("Texture Compression") );
+    wxStaticBoxSizer *item36 = new wxStaticBoxSizer( item37, wxVERTICAL );
 
-    wxRadioButton *item38 = new wxRadioButton( parent, ID_TC_OGL, _("OpenGL"), wxDefaultPosition, wxDefaultSize, 0 );
-    item35->Add( item38, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item38 = new wxRadioButton( parent, ID_TC_NONE, _("None"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item38->SetValue( TRUE );
+    item36->Add( item38, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item39 = new wxRadioButton( parent, ID_TC_SQUISH_FAST, _("Squish fast"), wxDefaultPosition, wxDefaultSize, 0 );
-    item35->Add( item39, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item39 = new wxRadioButton( parent, ID_TC_OGL, _("OpenGL"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item39, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item40 = new wxRadioButton( parent, ID_TC_SQUISH_SLOW, _("Squish slow (6x slower, slightly fewer artifacts)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item35->Add( item40, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item40 = new wxRadioButton( parent, ID_TC_SQUISH_FAST, _("Squish fast"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item40, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item33->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item41 = new wxRadioButton( parent, ID_TC_SQUISH_SLOW, _("Squish slow (6x slower, slightly fewer artifacts)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    item33->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item33, 0, wxALIGN_CENTER, 5 );
 
-    wxBoxSizer *item41 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item42 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item42 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item41->Add( item42, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item43 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item42->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item43 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item41->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item44 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item42->Add( item44, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item41, 0, wxALIGN_CENTER, 5 );
+    item0->Add( item42, 0, wxALIGN_CENTER, 5 );
 
     if (set_sizer)
     {

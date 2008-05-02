@@ -62,6 +62,7 @@ public:
 	double m_fCurY;
 
 	bool m_bOmitFlatTiles;
+	bool m_bMaskUnknown;
 	bool m_bCompressNone;
 	bool m_bCompressOGL;
 	bool m_bCompressSquishFast;

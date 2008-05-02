@@ -70,6 +70,7 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_CURY, &m_fCurY);
 
 	AddValidator(ID_OMIT_FLAT, &m_bOmitFlatTiles);
+	AddValidator(ID_MASK_UNKNOWN, &m_bMaskUnknown);
 
 	AddValidator(ID_TC_NONE, &m_bCompressNone);
 	AddValidator(ID_TC_OGL, &m_bCompressOGL);
@@ -119,6 +120,7 @@ void TileDlg::SetTilingOptions(TilingOptions &opt)
 	m_iLOD0Size = opt.lod0size;
 	m_iNumLODs = opt.numlods;
 	m_bOmitFlatTiles = opt.bOmitFlatTiles;
+	m_bMaskUnknown = opt.bMaskUnknownAreas;
 
 	m_bCompressNone = !opt.bUseTextureCompression;
 	if (opt.bUseTextureCompression)
@@ -141,6 +143,7 @@ void TileDlg::GetTilingOptions(TilingOptions &opt) const
 	opt.numlods = m_iNumLODs;
 	opt.fname = m_strToFile.mb_str(wxConvUTF8);
 	opt.bOmitFlatTiles = m_bOmitFlatTiles;
+	opt.bMaskUnknownAreas = m_bMaskUnknown;
 
 	opt.bUseTextureCompression = !m_bCompressNone;
 	if (m_bCompressOGL) opt.eCompressionType = TC_OPENGL;
@@ -191,6 +194,7 @@ void TileDlg::UpdateEnables()
 	FindWindow(wxID_OK)->Enable(m_strToFile != _T(""));
 
 	FindWindow(ID_OMIT_FLAT)->Enable(m_bElev);
+	FindWindow(ID_MASK_UNKNOWN)->Enable(m_bElev);
 
 	// We actually need to leave the compression options enabled even if we're
 	//  using this dialog for elevation, because they might want to write

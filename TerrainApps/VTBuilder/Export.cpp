@@ -306,6 +306,12 @@ void Builder::ElevExportTiles(BuilderView *pView)
 	tileopts.rows = 4;
 	tileopts.lod0size = 256;
 	tileopts.numlods = 3;
+	tileopts.bCreateDerivedImages = false;
+	tileopts.bMaskUnknownAreas = false;
+	tileopts.bOmitFlatTiles = false;
+	tileopts.bUseTextureCompression = false;
+	tileopts.eCompressionType = TC_OPENGL;
+	tileopts.iNoDataFilled = 0;
 
 	TileDlg dlg(m_pParentWindow, -1, _("Tiling Options"));
 	dlg.m_fEstX = spacing.x;
@@ -869,9 +875,6 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 			// Now we know this tile will be included, so note the LODs present
 			int base_tile_exponent = vt_log2(base_tilesize);
 			lod_existence_map.set(col, row, base_tile_exponent, base_tile_exponent-(total_lods-1));
-
-			// TEMP TEST
-			// opts.bMaskUnknownAreas = true;
 
 			vtDIB dib;
 			if (opts.bCreateDerivedImages && opts.bMaskUnknownAreas)
