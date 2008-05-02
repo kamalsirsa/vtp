@@ -48,6 +48,10 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bSet = false;
 	m_bHaveRange = false;
 	m_bHaveRangeVal = false;
+	m_iCountCur = 0;
+	m_iCountMax = 0;
+	m_fPageout = 0.0f;
+	m_fRange = 0.0f;
 
 	// WDR: dialog function LODDialogFunc for LODDlg
 	PagingDialogFunc(this, true);
