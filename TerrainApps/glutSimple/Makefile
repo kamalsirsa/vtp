@@ -34,24 +34,13 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 
 ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
-ifeq ($(OSG_NO_FRAMEWORKS),0)
 LIBS   = -bind_at_load -F$(FRAMEWORKS) \
 	-framework vtosg -framework vtdata -framework unzip\
-	-framework osg -framework osgGA -framework osgUtil \
-        -framework osgText -framework osgDB -framework osgParticle -framework OpenThreads \
+	$(OSG_OPTS) \
 	-L$(FINK_LIB) -lnetcdf -lgdal \
 	-framework xmlhelper $(MINI_LIB) \
         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
 	-framework Carbon -lobjc -lm
-else
-LIBS   = -bind_at_load -F$(FRAMEWORKS) \
-	-framework vtosg -framework vtdata -framework unzip\
-	-losgGA -losgDB -losgUtil -losgText -losgParticle -losg -lOpenThreads \
-	-L$(FINK_LIB) -lnetcdf -lgdal \
-	-framework xmlhelper $(MINI_LIB) \
-        $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
-	-framework Carbon -lobjc -lm
-endif
 
 all : $(OSX_APP)
 
