@@ -46,18 +46,33 @@ LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) \
 # Support of Mac OS X
 ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
+ifeq ($(OSG_NO_FRAMEWORKS),0)
 LIBS   += -F$(FRAMEWORKS) \
 	  -lobjc -framework Carbon \
 	  -framework vtdata -framework vtui -framework vtosg \
 	  -framework xmlhelper -framework unzip \
 	  -framework osg -framework osgUtil \
-	  -framework osgText -framework osgDB -framework OpenThreads \
-	  -framework OpenGL \
+	  -framework osgText -framework osgDB -framework osgParticle -framework OpenThreads \
+	  -framework OpenGL -framework AGL \
 	  -L$(FINK_LIB) -lnetcdf -L$(GDAL_LIB) -lgdal \
 	  -lX11 -L$(X11BASE)/lib \
 	  -lz -lstdc++ \
 	  -Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS \
 	  -bind_at_load
+else
+LIBS   += -F$(FRAMEWORKS) \
+	  -lobjc -framework Carbon \
+	  -framework vtdata -framework vtui -framework vtosg \
+	  -framework xmlhelper -framework unzip \
+	  -losg -losgUtil \
+	  -losgText -losgDB -losgParticle -lOpenThreads \
+	  -framework OpenGL -framework AGL \
+	  -L$(FINK_LIB) -lnetcdf -L$(GDAL_LIB) -lgdal \
+	  -lX11 -L$(X11BASE)/lib \
+	  -lz -lstdc++ \
+	  -Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS \
+	  -bind_at_load
+endif
 
 all : $(OSX_APP)
 

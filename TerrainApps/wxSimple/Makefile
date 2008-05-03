@@ -35,21 +35,31 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 
 ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
+ifeq ($(OSG_NO_FRAMEWORKS),0)
 LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) \
 	$(shell $(WX_DIR)/bin/wx-config --gl-libs) \
 	-bind_at_load -F$(FRAMEWORKS) \
 	-framework vtosg -framework vtdata \
 	-framework osg -framework osgUtil \
-	-framework osgText -framework osgDB -framework OpenThreads \
-	-lgdal \
-	-L$(FINK_LIB) -lnetcdf \
+	-framework osgText -framework osgDB -framework osgParticle -framework OpenThreads \
+	-L$(FINK_LIB) -lnetcdf -lgdal \
 	-framework xmlhelper -framework unzip $(MINI_LIB) \
         $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
 	-framework Carbon -lobjc -lm \
 	-Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS
-
-# Use these if you are not using osg frameworks
-# -losgDB -losgUtil -losgText -losg -lOpenThreads
+else
+LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) \
+	$(shell $(WX_DIR)/bin/wx-config --gl-libs) \
+	-bind_at_load -F$(FRAMEWORKS) \
+	-framework vtosg -framework vtdata \
+	-losg -losgUtil \
+	-losgText -losgDB -losgParticle -lOpenThreads \
+	-L$(FINK_LIB) -lnetcdf -lgdal \
+	-framework xmlhelper -framework unzip $(MINI_LIB) \
+        $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
+	-framework Carbon -lobjc -lm \
+	-Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS
+endif
 
 all : $(OSX_APP)
 

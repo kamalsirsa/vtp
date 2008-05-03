@@ -187,13 +187,16 @@ ifeq ($(OS),Darwin)
    AR        = ar ruv
    COPT      = -g -O3 -Dunix=1 -D__DARWIN_OSX__ -fPIC -I$(FINK_INC) -F$(FRAMEWORKS)
    LD        = $(CXX)
-   LD_SHARED = $(CXX) -dynamiclib
+   LD_SHARED = $(CXX) -dynamiclib -Wl,-single_module
    LIB_EXT   = dynlib
 
    GLUT_LIB = -framework GLUT
    GLU_LIB  = -framework OpenGL -framework Carbon
    EXTRA_LIBS = -lXi
    LDIRFLAGS = $(LDIRS:%=-L%)
+
+   # disable this if you built OSG with XCode
+   OSG_NO_FRAMEWORKS = 1
 
    # remove the "lib" string from the LIB_NAME
    NEW_LIB_NAME := $(subst lib, ,$(LIB_NAME))
@@ -219,13 +222,18 @@ ifeq ($(OS),Darwin)
    #
    # Enumerates the build flags required to use each lib/framework
    #
+ifeq ($(OSG_NO_FRAMEWORKS),0)
 # Swap these definitions if you are not using Xcode built osg frameworks
 #   OSG_OPTS = -L$(OSG_LIB) -losg -losgGA -losgUtil \
 #	      -losgText -losgDB -losgGA -losgUtil -lOpenThreads
    OSG_OPTS = -framework osg -framework osgGA -framework osgUtil \
 	      -framework osgText -framework osgDB -framework osgGA -framework OpenThreads
+else
+   OSG_OPTS = -losg -losgGA -losgUtil \
+	      -losgText -losgDB -losgGA -losgParticle -lOpenThreads
+endif
    XMLHELPER_OPTS = -framework xmlhelper
-   VTDATA_OPTS = -framework vtdata
+   VTDATA_OPTS = -framework vtdata -framework unzip -lMini
    VTUI_OPTS = -framework vtdata -framework unzip -framework unzip
    UNZIP_OPTS = -framework unzip
 
@@ -256,7 +264,7 @@ ifeq ($(OS),Darwin)
 		      $(GLU_LIB) \
 		      $(XMLHELPER_OPTS)\
 		      $(VTDATA_OPTS) \
-		      -framework osgText -lMini -lz -lbz2
+		      -lMini -lz -lbz2
 
    #
    # The default rule for building an *.app package.  Requires the
