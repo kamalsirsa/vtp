@@ -12,13 +12,13 @@
 
 #if USE_LIBMINI_DATABUF
 
-#include "database.h"	// part of libMini
+#include <mini/database.h> // part of libMini
 
 #ifdef _MSC_VER
-  #if _MSC_VER >= 1400	// vc8
+  #if _MSC_VER >= 1400 // vc8
 	  #pragma message( "Adding link with libMini-vc8.lib" )
 	  #pragma comment( lib, "libMini-vc8.lib" )
-  #else					// vc71
+  #else // vc71
 	  #pragma message( "Adding link with libMini-vc7.lib" )
 	  #pragma comment( lib, "libMini-vc7.lib" )
   #endif
