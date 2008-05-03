@@ -30,11 +30,11 @@
 #define USE_LIBMINI_CONVHOOK 0
 
 #if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
-#include "squishbase.h"
+#include <mini/squishbase.h>
 #endif
 
 #if (USE_LIBMINI_DATABUF && USE_LIBMINI_CONVHOOK)
-#include "convbase.h"
+#include <mini/convbase.h>
 #endif
 
 #if (USE_LIBMINI_DATABUF && (USE_LIBMINI_SQUISH || USE_LIBMINI_CONVHOOK))
