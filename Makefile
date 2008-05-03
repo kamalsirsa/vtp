@@ -12,8 +12,10 @@ all :
 	@-cd TerrainApps && $(MAKE)
 
 install:
+ifneq ($(OS),Darwin)
 	@-cd TerrainSDK && $(MAKE) install
 	@-cd TerrainApps && $(MAKE) install
+endif
 
 clean :
 	@-cd TerrainSDK && $(MAKE) clean
