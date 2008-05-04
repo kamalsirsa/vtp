@@ -94,7 +94,7 @@ OSG_LIB = $(OSG_BASE)/lib
 GDAL_INC = $(LOCALBASE)/include
 GDAL_LIB = $(LOCALBASE)/lib
 
-MINI_INC = $(LOCALBASE)/include
+MINI_INC = $(LOCALBASE)/include/mini
 MINI_LIB = $(LOCALBASE)/lib/libMini.a
 
 VTDATA_INST_DIR = $(VTDATA_DIR)
@@ -327,8 +327,6 @@ ifeq ($(OS),Linux)
    EXTRA_LIBS = -lXi
 
    NETCDF_INC = $(LOCALBASE)/include/netcdf-3
-   MINI_INC   = $(LOCALBASE)/include/mini
-   MINI_LIB   = $(LOCALBASE)/lib/libMini.a
 
    ARCH := $(shell uname -m)
    ifeq ($(ARCH),x86_64)
