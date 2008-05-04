@@ -25,8 +25,13 @@ void SRTerrain::SetVerticalExag(float fExag) {}
 DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale) { return DTErr_NOMEM; }
 #else
 
+/*
 #include <mini/mini.h>
 #include <mini/ministub.h>
+*/
+
+#include <mini.h>
+#include <ministub.h>
 
 using namespace mini;
 
