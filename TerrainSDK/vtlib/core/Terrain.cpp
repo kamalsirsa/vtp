@@ -602,6 +602,10 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 //
 void vtTerrain::_CreateDetailTexture()
 {
+	// We only support detail texture on certain dynamic LOD algorithms
+	if (!m_pDynGeom)
+		return;
+
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
