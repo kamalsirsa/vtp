@@ -683,7 +683,6 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_LODMETHOD)->Enable(m_bGrid);
 	FindWindow(ID_TRI_COUNT)->Enable(m_bGrid && m_iLodMethod != LM_TOPOVISTA);
 	FindWindow(ID_TRISTRIPS)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY);
-	FindWindow(ID_DETAILTEXTURE)->Enable(m_bGrid);
 	FindWindow(ID_VTX_COUNT)->Enable(m_bTileset);
 	FindWindow(ID_TILE_CACHE_SIZE)->Enable(false);
 	FindWindow(ID_TILE_THREADING)->Enable(m_bTileset);
@@ -710,10 +709,10 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_CAST_SHADOWS)->Enable(m_iTexture != TE_NONE && m_bGrid);
 	FindWindow(ID_RETAIN)->Enable(m_iTexture != TE_NONE && m_bGrid);
 
-	FindWindow(ID_DETAILTEXTURE)->Enable(m_iLodMethod == LM_MCNALLY);
-	FindWindow(ID_DT_NAME)->Enable(m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
-	FindWindow(ID_DT_SCALE)->Enable(m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
-	FindWindow(ID_DT_DISTANCE)->Enable(m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
+	FindWindow(ID_DETAILTEXTURE)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY);
+	FindWindow(ID_DT_NAME)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
+	FindWindow(ID_DT_SCALE)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
+	FindWindow(ID_DT_DISTANCE)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
 
 	FindWindow(ID_TREEFILE)->Enable(m_bPlants);
 //  FindWindow(ID_VEGDISTANCE)->Enable(m_bPlants); // user might want to adjust
