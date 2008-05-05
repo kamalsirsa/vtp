@@ -1,7 +1,7 @@
 //
 // Structure3d.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -397,6 +397,12 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 			vtNode *pContainer = str3d->GetContainer();
 			if (pContainer)
 				pContainer->SetEnabled(bTrue);
+			else
+			{
+				vtGeom *geom = str3d->GetGeom();
+				if (geom)
+					geom->SetEnabled(bTrue);
+			}
 		}
 	}
 	m_bEnabled = bTrue;
