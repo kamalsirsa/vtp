@@ -15,7 +15,7 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug Unicode|Win32"
+			Name="Debug|Win32"
 			OutputDirectory=".\Debug-Unicode-vc8"
 			IntermediateDirectory=".\Debug-Unicode-vc8"
 			ConfigurationType="4"
@@ -78,7 +78,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release Unicode|Win32"
+			Name="Release|Win32"
 			OutputDirectory=".\Release-Unicode-vc8"
 			IntermediateDirectory=".\Release-Unicode-vc8"
 			ConfigurationType="4"
@@ -246,7 +246,7 @@
 				RelativePath=".\wx_headers.cpp"
 				>
 				<FileConfiguration
-					Name="Debug Unicode|Win32"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -254,7 +254,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release Unicode|Win32"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
