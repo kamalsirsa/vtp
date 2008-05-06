@@ -9,7 +9,7 @@
 // vtPlantInstance3d
 // vtPlantInstanceArray3d
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -752,6 +752,8 @@ bool vtPlantInstanceArray3d::FindPlantFromNode(vtNode* pNode, int &iOffset)
 	for (i = 0; (i < m_Instances3d.GetSize()) & !bFound; i++)
 	{
 		vtTransform *pTransform = GetPlantNode(i);
+		if (!pTransform)	// safety check
+			continue;
 		for (j = 0; (j < pTransform->GetNumChildren()) && !bFound; j++)
 		{
 			vtNode *pPlantNode = pTransform->GetChild(j);
