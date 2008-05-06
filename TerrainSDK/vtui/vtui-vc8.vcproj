@@ -15,7 +15,7 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Release Unicode|Win32"
+			Name="Release|Win32"
 			OutputDirectory=".\Release_Unicode-vc8"
 			IntermediateDirectory=".\Release_Unicode-vc8"
 			ConfigurationType="4"
@@ -87,7 +87,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug Unicode|Win32"
+			Name="Debug|Win32"
 			OutputDirectory=".\Debug_Unicode-vc8"
 			IntermediateDirectory=".\Debug_Unicode-vc8"
 			ConfigurationType="4"
@@ -170,7 +170,7 @@
 				RelativePath="AutoDialog.cpp"
 				>
 				<FileConfiguration
-					Name="Release Unicode|Win32"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -180,7 +180,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug Unicode|Win32"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -196,7 +196,7 @@
 				RelativePath="BuildingDlg.cpp"
 				>
 				<FileConfiguration
-					Name="Release Unicode|Win32"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -206,7 +206,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug Unicode|Win32"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -250,7 +250,7 @@
 				RelativePath="LinearStructDlg.cpp"
 				>
 				<FileConfiguration
-					Name="Release Unicode|Win32"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -260,7 +260,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug Unicode|Win32"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -276,7 +276,7 @@
 				RelativePath="pre.cpp"
 				>
 				<FileConfiguration
-					Name="Release Unicode|Win32"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -287,7 +287,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug Unicode|Win32"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -324,7 +324,7 @@
 				RelativePath="vtui_wdr.cpp"
 				>
 				<FileConfiguration
-					Name="Release Unicode|Win32"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -334,7 +334,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug Unicode|Win32"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
