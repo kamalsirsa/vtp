@@ -244,7 +244,7 @@ void IncreaseRect(wxRect &rect, int adjust)
 	rect.width += (adjust<<1);
 }
 
-void DrawRectangle(wxDC* pDC, const wxRect &rect)
+void DrawRectangle(wxDC* pDC, const wxRect &rect, bool bCrossed)
 {
 	int left = rect.x;
 	int right = rect.x + rect.GetWidth();
@@ -267,8 +267,11 @@ void DrawRectangle(wxDC* pDC, const wxRect &rect)
 	p[4].y = bottom;
 	pDC->DrawLines(5, p);
 
-	pDC->DrawLine(left, bottom, right, top);
-	pDC->DrawLine(left, top, right, bottom);
+	if (bCrossed)
+	{
+		pDC->DrawLine(left, bottom, right, top);
+		pDC->DrawLine(left, top, right, bottom);
+	}
 }
 
 
