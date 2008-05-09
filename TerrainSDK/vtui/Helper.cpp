@@ -244,7 +244,7 @@ void IncreaseRect(wxRect &rect, int adjust)
 	rect.width += (adjust<<1);
 }
 
-void DrawRectangle(wxDC* pDC, const wxRect &rect, bool bCrossed)
+void DrawRectangle(wxDC *pDC, const wxRect &rect, bool bCrossed)
 {
 	int left = rect.x;
 	int right = rect.x + rect.GetWidth();

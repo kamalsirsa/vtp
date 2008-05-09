@@ -89,7 +89,7 @@ void SpeciesListDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_PATable->SetColumnWidth(5, 100);
 
 	// Read data imported from plantlist file and display in tables.
-	vtSpeciesList* pl = g_bld->GetPlantList();
+	vtSpeciesList *pl = g_bld->GetPlantList();
 
 	long item1 = m_PSTable->InsertItem(0, _T(""), 0);
 	m_PSTable->SetItem(item1, 0, _("(All species)"));
@@ -121,7 +121,7 @@ void SpeciesListDlg::RefreshAppeances()
 {
 	if (m_idx == 0)
 	{
-		vtSpeciesList* pl = g_bld->GetPlantList();
+		vtSpeciesList *pl = g_bld->GetPlantList();
 		for (unsigned int i = 0; i < pl->NumSpecies(); i++)
 			AddAppeance(i);
 	}
@@ -135,7 +135,7 @@ void SpeciesListDlg::AddAppeance(int idx)
 	vtPlantSpecies *spe = pl->GetSpecies(idx);
 	for (unsigned int j = 0; j < spe->NumAppearances(); j++)
 	{
-		vtPlantAppearance* app = spe->GetAppearance(j);
+		vtPlantAppearance *app = spe->GetAppearance(j);
 		wxString str1;
 		long item1;
 

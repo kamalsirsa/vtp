@@ -46,7 +46,7 @@ vtTin2d::vtTin2d()
 	m_bConstrain = false;
 }
 
-void vtTin2d::DrawTin(wxDC* pDC, vtScaledView *pView)
+void vtTin2d::DrawTin(wxDC *pDC, vtScaledView *pView)
 {
 	wxPen TinPen(wxColor(128,0,128), 1, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);
@@ -322,7 +322,7 @@ bool vtElevLayer::NeedsDraw()
 	return false;
 }
 
-void vtElevLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+void vtElevLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 {
 	if (m_pGrid)
 	{
@@ -387,7 +387,7 @@ void vtElevLayer::OnLeftUp(BuilderView *pView, UIContext &ui)
 	}
 }
 
-void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
+void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 {
 	if (!m_pGrid)
 		return;
@@ -495,7 +495,7 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 #endif
 }
 
-void vtElevLayer::DrawLayerOutline(wxDC* pDC, vtScaledView *pView)
+void vtElevLayer::DrawLayerOutline(wxDC *pDC, vtScaledView *pView)
 {
 	wxRect screenrect = pView->WorldToCanvas(m_pGrid->GetAreaExtents());
 
@@ -565,7 +565,7 @@ void vtElevLayer::SetupDefaults()
 }
 
 
-void vtElevLayer::SetupBitmap(wxDC* pDC)
+void vtElevLayer::SetupBitmap(wxDC *pDC)
 {
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
 

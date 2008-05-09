@@ -1,7 +1,7 @@
 //
 // TransitLayer.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,7 +20,7 @@ public:
 
 #if SUPPORT_TRANSIT
 	bool GetExtent(DRECT &rect);
-	void DrawLayer(wxDC* pDC, vtScaledView *pView);
+	void DrawLayer(wxDC *pDC, vtScaledView *pView);
 	bool TransformCoords(vtProjection &proj);
 	bool OnSave();
 	bool OnLoad();
@@ -36,7 +36,7 @@ protected:
 
 	void KludgeRefPosApply(bool bForward);
 
-	void drawSeg(wxDC* pDC, vtScaledView *pView, double x1, double y1, double x2, double y2);
+	void drawSeg(wxDC *pDC, vtScaledView *pView, double x1, double y1, double x2, double y2);
 #endif
 };
 

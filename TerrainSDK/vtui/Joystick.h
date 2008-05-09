@@ -2,7 +2,7 @@
 // Joystick.h - provide access to wxWidget's joystick capabilities for Win32
 //  if it was not compiled into the main library.
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -72,7 +72,7 @@ class wxJoystick
 
   // pollingFreq = 0 means that movement events are sent when above the threshold.
   // If pollingFreq > 0, events are received every this many milliseconds.
-  bool SetCapture(wxWindow* win, int pollingFreq = 0);
+  bool SetCapture(wxWindow *win, int pollingFreq = 0);
   bool ReleaseCapture(void);
 
 protected:

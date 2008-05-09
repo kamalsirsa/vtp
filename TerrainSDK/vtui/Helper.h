@@ -30,7 +30,7 @@ void AddType(wxString &str, const wxString &filter);
 /////
 
 void IncreaseRect(wxRect &rect, int adjust);
-void DrawRectangle(wxDC* pDC, const wxRect &rect, bool bCrossed = false);
+void DrawRectangle(wxDC *pDC, const wxRect &rect, bool bCrossed = false);
 
 /////
 

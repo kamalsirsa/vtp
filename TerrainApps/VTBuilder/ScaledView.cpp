@@ -22,7 +22,7 @@ wxPoint g_screenbuf[SCREENBUF_SIZE];
 
 ///////////////////////////////////////////////////////////////////////
 
-vtScaledView::vtScaledView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
+vtScaledView::vtScaledView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 						 const wxSize& size, long style, const wxString& name) :
 	wxScrolledWindow(parent, id, pos, size, style, name )
 {

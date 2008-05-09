@@ -120,7 +120,7 @@ DECLARE_APP(BuilderApp)
 class vtScaleBar : public wxWindow
 {
 public:
-	vtScaleBar(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition,
+	vtScaleBar(wxWindow *parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxPanelNameStr);
 
 	void OnPaint(wxPaintEvent& event);
@@ -133,7 +133,7 @@ BEGIN_EVENT_TABLE(vtScaleBar, wxWindow)
 EVT_PAINT(OnPaint)
 END_EVENT_TABLE()
 
-vtScaleBar::vtScaleBar(wxWindow* parent, wxWindowID id, const wxPoint& pos,
+vtScaleBar::vtScaleBar(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 	const wxSize& size, long style, const wxString& name) :
   wxWindow(parent, id, pos, size, style, name)
 {
@@ -161,7 +161,7 @@ MainFrame *GetMainFrame()
 //////////////////////////////////////////////////////////////////
 // Frame constructor
 //
-MainFrame::MainFrame(wxFrame* frame, const wxString& title,
+MainFrame::MainFrame(wxFrame *frame, const wxString& title,
 	const wxPoint& pos, const wxSize& size) :
 		wxFrame(frame, wxID_ANY, title, pos, size)
 {

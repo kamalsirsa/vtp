@@ -1,7 +1,7 @@
 //
 // Layer.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -65,7 +65,7 @@ public:
 	// these must be implemented:
 	/// Get the extents
 	virtual bool GetExtent(DRECT &rect) = 0;
-	virtual void DrawLayer(wxDC* pDC, vtScaledView *pView) = 0;
+	virtual void DrawLayer(wxDC *pDC, vtScaledView *pView) = 0;
 	/// Transform the coordinates into another CRS
 	virtual bool TransformCoords(vtProjection &proj) = 0;
 	virtual bool OnSave() = 0;

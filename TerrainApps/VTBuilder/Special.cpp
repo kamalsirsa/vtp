@@ -372,7 +372,7 @@ void Builder::ElevCopy()
 
 	// Allocate.
 	HGLOBAL hMem = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, clipSize);
-	BYTE* pMem = (BYTE*)::GlobalLock(hMem);
+	BYTE *pMem = (BYTE*)::GlobalLock(hMem);
 
 	// Write data to clipboard.
 	try
@@ -404,7 +404,7 @@ void Builder::ElevCopy()
 		clip.Write("fp", (unsigned __int32)1, false);
 		//clip.Dump();
 
-		float* phv = (float*)
+		float *phv = (float*)
 			clip.WriteBinary("data", false,
 			cw * cb * sizeof(float));
 
@@ -424,7 +424,7 @@ void Builder::ElevCopy()
 			clip.Write("geometry", (unsigned __int32)1, true);
 			clip.WriteParent("projection", true);
 				clip.Write("format", (unsigned __int32)0, true);
-				unsigned char* pstrproj =
+				unsigned char *pstrproj =
 					(unsigned char*)clip.WriteBinary(
 						"data", false,
 					wkt_str.GetLength());
@@ -459,7 +459,7 @@ void Builder::ElevCopy()
 			clip.WriteParent("format", true);
 			clip.Write("depth", (unsigned __int32)(sizeof(unsigned char)*8), false);
 
-			unsigned char* pa = (unsigned char*)
+			unsigned char *pa = (unsigned char*)
 				clip.WriteBinary("data", false,
 					cw * cb * sizeof(unsigned char));
 
@@ -512,14 +512,14 @@ void Builder::ElevPasteNew()
 	HANDLE hMem = ::GetClipboardData(eFormat);
 	if (hMem == NULL)
 		return;
-	void* pMem = (void*)::GlobalLock(hMem);
+	void *pMem = (void*)::GlobalLock(hMem);
 	if (pMem == NULL)
 		return;
 	size_t nbytes = ::GlobalSize(hMem);
 
 	daylon::CRootTag clip;
 
-	BYTE* pData = ((BYTE*)pMem) /*+ sizeof(kPublicHFclipID)*/;
+	BYTE *pData = ((BYTE*)pMem) /*+ sizeof(kPublicHFclipID)*/;
 	clip.SetStorage(pData, nbytes /*-
 				sizeof(kPublicHFclipID)*/);
 	if (!VerifyHFclip((BYTE*)pMem, nbytes))
@@ -547,13 +547,13 @@ void Builder::ElevPasteNew()
 		clip.ReadUINT32("body/coordsys/projection/format", 0);
 	if (geomcode == 1 && projFmt == 0)
 	{
-		void* pv = NULL;
+		void *pv = NULL;
 		size_t n =
 			clip.Read("body/coordsys/projection/data", &pv);
 
 		if (n != 0)
 		{
-			char* psz = new char[n + 1];
+			char *psz = new char[n + 1];
 			memcpy(psz, pv, n);
 			psz[n] = 0;
 			//m_georef_info.set_projection(psz);
@@ -589,7 +589,7 @@ void Builder::ElevPasteNew()
 
 	// Copy the elevations.
 	// Require packed pixel storage.
-	float* pElevs;
+	float *pElevs;
 	size_t n = clip.Read("body/heixels/data", (void**)&pElevs);
 	int i = 0;
 	for (int z = 0; z < breadth; z++)

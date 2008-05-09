@@ -49,7 +49,7 @@ bool vtRoadLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-void vtRoadLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+void vtRoadLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 {
 	Draw(pDC, pView, m_bDrawNodes);
 }

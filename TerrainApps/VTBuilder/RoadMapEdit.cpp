@@ -61,7 +61,7 @@ void NodeEdit::Copy(NodeEdit* node)
 //
 // draw a node as a circle
 //
-bool NodeEdit::Draw(wxDC* pDC, vtScaledView *pView)
+bool NodeEdit::Draw(wxDC *pDC, vtScaledView *pView)
 {
 	pDC->SetLogicalFunction(wxCOPY);
 	assert(m_iVisual >= VIT_UNKNOWN && m_iVisual <= VIT_STOPSIGN);
@@ -289,7 +289,7 @@ bool LinkEdit::PartiallyInBounds(const DRECT &bound)
 }
 
 
-bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
+bool LinkEdit::Draw(wxDC *pDC, vtScaledView *pView, bool bShowDirection,
 	bool bShowWidth)
 {
 	// base link color on type of link
@@ -459,7 +459,7 @@ RoadMapEdit::~RoadMapEdit()
 //
 // draw the road network in window, given center and size or drawing area
 //
-void RoadMapEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bNodes)
+void RoadMapEdit::Draw(wxDC *pDC, vtScaledView *pView, bool bNodes)
 {
 	if (bNodes)
 	{

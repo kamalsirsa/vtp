@@ -87,7 +87,7 @@ bool vtStructureLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+void vtStructureLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 {
 	m_size = pView->sdx(20);
 	if (m_size > 5) m_size = 5;
@@ -107,7 +107,7 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	m_pLastView = pView;
 }
 
-void vtStructureLayer::DrawStructures(wxDC* pDC, vtScaledView *pView, bool bOnlySelected)
+void vtStructureLayer::DrawStructures(wxDC *pDC, vtScaledView *pView, bool bOnlySelected)
 {
 	unsigned int structs = GetSize();
 	for (unsigned i = 0; i < structs; i++)
@@ -148,7 +148,7 @@ void vtStructureLayer::DrawStructures(wxDC* pDC, vtScaledView *pView, bool bOnly
 	}
 }
 
-void vtStructureLayer::DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView)
+void vtStructureLayer::DrawBuildingHighlight(wxDC *pDC, vtScaledView *pView)
 {
 	if (m_pEditBuilding)
 	{
@@ -167,7 +167,7 @@ void vtStructureLayer::DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView)
 	}
 }
 
-void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
+void vtStructureLayer::DrawBuilding(wxDC *pDC, vtScaledView *pView,
 									vtBuilding *bld)
 {
 	DPoint2 center;
@@ -195,7 +195,7 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 	}
 }
 
-void vtStructureLayer::DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen)
+void vtStructureLayer::DrawLinear(wxDC *pDC, vtScaledView *pView, vtFence *fen)
 {
 	unsigned int j;
 

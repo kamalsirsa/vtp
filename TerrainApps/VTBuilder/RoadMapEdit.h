@@ -41,7 +41,7 @@ public:
 	//copies this node's properties to parameter node.
 	void Copy(NodeEdit *node);
 	//draws the node
-	bool Draw(wxDC* pDC, vtScaledView *pView);
+	bool Draw(wxDC *pDC, vtScaledView *pView);
 	//brings up a node dialog to edit road properties
 	bool EditProperties(vtScaledView *pView, vtRoadLayer *pLayer);
 
@@ -87,7 +87,7 @@ public:
 	bool PartiallyInBounds(const DRECT &bound);
 
 	//draw the road
-	bool Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection = false,
+	bool Draw(wxDC *pDC, vtScaledView *pView, bool bShowDirection = false,
 		bool bShowWidth = false);
 	// prepare to draw the road (estimate the left and right edges)
 	void ComputeDisplayedLinkWidth(const DPoint2 &ToMeters);
@@ -159,7 +159,7 @@ public:
 	//----------------------------------------------
 
 	// draw the road network in window, given size of drawing area
-	void Draw(wxDC* pDC, vtScaledView *pView, bool bNodes);
+	void Draw(wxDC *pDC, vtScaledView *pView, bool bNodes);
 
 	// look at the road properties to guess what the intersections might be
 	void GuessIntersectionTypes();

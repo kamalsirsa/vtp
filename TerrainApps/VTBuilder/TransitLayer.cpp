@@ -4,7 +4,7 @@
 // This layer wraps a transit system; it is only useful to those people
 // using the 'PRTSim' package.  (If you do, set SUPPORT_TRANSIT=1).
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -125,7 +125,7 @@ bool vtTransitLayer::TransformCoords(vtProjection &proj_new)
 }
 
 
-void vtTransitLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+void vtTransitLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 {
 	wxPen TransitPen(wxColor(255,0,0), 2, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);
@@ -149,7 +149,7 @@ void vtTransitLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	}
 }
 
-void vtTransitLayer::drawSeg(wxDC* pDC, vtScaledView *pView, double x1, double y1, double x2, double y2)
+void vtTransitLayer::drawSeg(wxDC *pDC, vtScaledView *pView, double x1, double y1, double x2, double y2)
 {
 	// convert coordinates, then draw
 	pDC->DrawLine(pView->sx(x1), pView->sy(y1), pView->sx(x2), pView->sy(y2));

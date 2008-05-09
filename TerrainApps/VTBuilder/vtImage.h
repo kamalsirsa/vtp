@@ -1,7 +1,7 @@
 //
 // vtImage.h
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -41,7 +41,7 @@ public:
 
 	bool GetExtent(DRECT &rect);
 	void SetExtent(const DRECT &rect);
-	void DrawToView(wxDC* pDC, vtScaledView *pView);
+	void DrawToView(wxDC *pDC, vtScaledView *pView);
 	bool ConvertProjection(vtImage *input, vtProjection &proj_new,
 						   int iSampleN, bool progress_callback(int) = NULL);
 

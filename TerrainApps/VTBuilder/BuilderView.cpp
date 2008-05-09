@@ -72,7 +72,7 @@ END_EVENT_TABLE()
 
 /////////////////////////////////////////////////////////////////
 
-BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
+BuilderView::BuilderView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 	const wxSize& size, const wxString& name) :
 		vtScaledView(parent, id, pos, size, 0, name )
 {
@@ -1115,7 +1115,7 @@ void BuilderView::SetActiveLayer(vtLayerPtr lp)
 	}
 }
 
-void BuilderView::HighlightArea(wxDC* pDC, const DRECT &rect)
+void BuilderView::HighlightArea(wxDC *pDC, const DRECT &rect)
 {
 	wxPen bgPen(wxColor(255,255,255), 3, wxSOLID);
 	pDC->SetPen(bgPen);

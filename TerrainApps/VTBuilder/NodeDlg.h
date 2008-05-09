@@ -1,7 +1,7 @@
 //
 // Name: NodeDlg.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,7 +18,7 @@
 class NodeDlgView : public vtScaledView
 {
 public:
-	NodeDlgView(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
+	NodeDlgView(wxWindow *parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL, const wxString& name = _T("")) :
 	vtScaledView(parent, id, pos, size, style, name) {}
 

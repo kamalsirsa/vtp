@@ -2,7 +2,7 @@
 // Joystick.cpp - provide access to wxWidget's joystick capabilities for Win32
 //  if it was not compiled into the main library.
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -366,7 +366,7 @@ bool wxJoystick::HasPOVCTS() const
 // Operations
 ////////////////////////////////////////////////////////////////////////////
 
-bool wxJoystick::SetCapture(wxWindow* win, int pollingFreq)
+bool wxJoystick::SetCapture(wxWindow *win, int pollingFreq)
 {
 	BOOL changed = (pollingFreq == 0);
 	MMRESULT res = joySetCapture((HWND) win->GetHWND(), m_joystick, pollingFreq, changed);

@@ -1,7 +1,7 @@
 //
 // Name: ProfileEditDlg.cpp
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,7 +19,7 @@ BEGIN_EVENT_TABLE(ProfDlgView, wxScrolledWindow)
 	EVT_SIZE(ProfDlgView::OnSize)
 END_EVENT_TABLE()
 
-ProfDlgView::ProfDlgView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
+ProfDlgView::ProfDlgView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 	const wxSize& size, long style, const wxString& name) :
 		wxScrolledWindow(parent, id, pos, size, style, name)
 {

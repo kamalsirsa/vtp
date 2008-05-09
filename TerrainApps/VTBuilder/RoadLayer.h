@@ -21,7 +21,7 @@ public:
 
 	// implementation of vtLayer methods
 	bool GetExtent(DRECT &rect);
-	void DrawLayer(wxDC* pDC, vtScaledView *pView);
+	void DrawLayer(wxDC *pDC, vtScaledView *pView);
 	bool TransformCoords(vtProjection &proj);
 	bool OnSave();
 	bool OnLoad();

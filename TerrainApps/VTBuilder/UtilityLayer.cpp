@@ -49,7 +49,7 @@ bool vtUtilityLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+void vtUtilityLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 {
 	unsigned int i;
 	unsigned int npoles = m_Poles.GetSize();
@@ -98,7 +98,7 @@ void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 }
 
 
-void vtUtilityLayer::DrawPole(wxDC* pDC, vtScaledView *pView, vtPole *pole)
+void vtUtilityLayer::DrawPole(wxDC *pDC, vtScaledView *pView, vtPole *pole)
 {
 	wxPoint center;
 	pView->screen(pole->m_p, center);

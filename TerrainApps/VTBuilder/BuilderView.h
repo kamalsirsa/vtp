@@ -1,7 +1,7 @@
 //
 // BuilderView.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -100,7 +100,7 @@ class BuilderView : public vtScaledView
 	friend class vtRoadLayer;
 
 public:
-	BuilderView(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
+	BuilderView(wxWindow *parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, const wxString& name = _T(""));
 	virtual ~BuilderView();
 
@@ -161,7 +161,7 @@ protected:
 
 	// Elevation
 	void CheckForTerrainSelect(const DPoint2 &loc);
-	void HighlightArea(wxDC* pDC, const DRECT &rect);
+	void HighlightArea(wxDC *pDC, const DRECT &rect);
 
 	// Pan handlers
 	void BeginPan();
@@ -242,7 +242,7 @@ protected:
 	OCT		*m_pMapToCurrent, *m_pCurrentToMap;
 
 	bool ImportWorldMap();
-	void DrawWorldMap(wxDC* pDC);
+	void DrawWorldMap(wxDC *pDC);
 
 	// Grid marks
 	bool m_bShowGridMarks;

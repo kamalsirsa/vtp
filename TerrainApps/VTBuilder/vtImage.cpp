@@ -94,7 +94,7 @@ bool vtImage::GetExtent(DRECT &rect)
 	return true;
 }
 
-void vtImage::DrawToView(wxDC* pDC, vtScaledView *pView)
+void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 {
 	bool bDrawImage = true;
 	if (m_pBitmap == NULL)

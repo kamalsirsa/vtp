@@ -1,7 +1,7 @@
 //
 // ScaledView.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,7 @@
 class vtScaledView : public wxScrolledWindow
 {
 public:
-	vtScaledView(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
+	vtScaledView(wxWindow *parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL, const wxString& name = _T(""));
 
 	void SetScale(double scale);

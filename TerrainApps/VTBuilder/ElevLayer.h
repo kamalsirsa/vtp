@@ -27,7 +27,7 @@ class vtTin2d : public vtTin
 public:
 	vtTin2d();
 
-	void DrawTin(wxDC* pDC, vtScaledView *pView);
+	void DrawTin(wxDC *pDC, vtScaledView *pView);
 	void ComputeEdgeLengths();
 	void CullLongEdgeTris();
 	void FreeEdgeLengths();
@@ -50,7 +50,7 @@ public:
 
 	// overrides
 	bool GetExtent(DRECT &rect);
-	void DrawLayer(wxDC* pDC, vtScaledView *pView);
+	void DrawLayer(wxDC *pDC, vtScaledView *pView);
 	bool TransformCoords(vtProjection &proj);
 	bool OnSave();
 	bool OnLoad();
@@ -68,8 +68,8 @@ public:
 	void OnLeftUp(BuilderView *pView, UIContext &ui);
 	void OnMouseMove(BuilderView *pView, UIContext &ui);
 
-	void DrawLayerBitmap(wxDC* pDC, vtScaledView *pView);
-	void DrawLayerOutline(wxDC* pDC, vtScaledView *pView);
+	void DrawLayerBitmap(wxDC *pDC, vtScaledView *pView);
+	void DrawLayerOutline(wxDC *pDC, vtScaledView *pView);
 	bool AppendDataFrom(vtLayer *pL);
 	void ReRender();
 	void ReImage();
@@ -100,7 +100,7 @@ public:
 	void MergeSharedVerts(bool bSilent = false);
 
 	// drawing
-	void SetupBitmap(wxDC* pDC);
+	void SetupBitmap(wxDC *pDC);
 	void RenderBitmap();
 	static void SetupDefaultColors(ColorMap &cmap);
 

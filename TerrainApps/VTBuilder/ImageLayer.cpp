@@ -42,7 +42,7 @@ bool vtImageLayer::GetExtent(DRECT &rect)
 	return m_pImage->GetExtent(rect);
 }
 
-void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+void vtImageLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 {
 	m_pImage->DrawToView(pDC, pView);
 }

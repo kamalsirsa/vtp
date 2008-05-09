@@ -1,7 +1,7 @@
 //
 // WaterLayer.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -65,7 +65,7 @@ bool vtWaterLayer::TransformCoords(vtProjection &proj_new)
 	return true;
 }
 
-void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+void vtWaterLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 {
 	wxPen WaterPen(wxColor(0,40,160), 1, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);

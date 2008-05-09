@@ -1,7 +1,7 @@
 //
 // Name: ProfileEditDlg.h
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,7 +16,7 @@
 class ProfDlgView : public wxScrolledWindow
 {
 public:
-	ProfDlgView(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
+	ProfDlgView(wxWindow *parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL, const wxString& name = _T(""));
 
 	void OnSize(wxSizeEvent& event);

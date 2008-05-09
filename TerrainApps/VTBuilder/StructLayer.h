@@ -27,7 +27,7 @@ public:
 
 	// Implement vtLayer methods
 	bool GetExtent(DRECT &rect);
-	void DrawLayer(wxDC* pDC, vtScaledView *pView);
+	void DrawLayer(wxDC *pDC, vtScaledView *pView);
 	bool TransformCoords(vtProjection &proj);
 	bool OnSave();
 	bool OnLoad();
@@ -60,15 +60,15 @@ public:
 	void UpdateRotate(UIContext &ui);
 	void UpdateResizeScale(BuilderView *pView, UIContext &ui);
 
-	void DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView);
+	void DrawBuildingHighlight(wxDC *pDC, vtScaledView *pView);
 	bool AddElementsFromSHP(const wxString &filename, const vtProjection &proj, DRECT rect);
 	void AddElementsFromDLG(vtDLGFile *pDlg);
 
 	bool EditBuildingProperties();
 	void AddFoundations(vtElevLayer *pEL);
 
-	void DrawBuilding(wxDC* pDC, vtScaledView *pView, vtBuilding *bld);
-	void DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen);
+	void DrawBuilding(wxDC *pDC, vtScaledView *pView, vtBuilding *bld);
+	void DrawLinear(wxDC *pDC, vtScaledView *pView, vtFence *fen);
 
 	// inverts selection values on all structures.
 	void InvertSelection();
@@ -81,7 +81,7 @@ public:
 	void ResolveInstancesOfItems();
 
 protected:
-	void DrawStructures(wxDC* pDC, vtScaledView *pView, bool bOnlySelected);
+	void DrawStructures(wxDC *pDC, vtScaledView *pView, bool bOnlySelected);
 
 	int		m_size;	// size in pixels of the small crosshair at building center
 	bool	m_bPreferGZip;	// user wants their elevation treated as a .gz file};
