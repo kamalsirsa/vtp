@@ -185,11 +185,13 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	if (!trans)
 	{
 		// inconvertible projections
+		m_strError = "Couldn't convert between coordinate systems.";
 		return false;
 	}
 
 	// find where the extent corners are going to be in the new terrain
 	int success;
+	m_EarthExtents.SetRect(1E9, -1E9, -1E9, 1E9);
 	for (i = 0; i < 4; i++)
 	{
 		DPoint2 point = pOld->m_Corners[i];
@@ -198,11 +200,22 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 		{
 			// inconvertible projections
 			delete trans;
+			m_strError = "Couldn't convert between coordinate systems.";
 			return false;
 		}
 		m_Corners[i] = point;
+
+		// Convert a number of segments along each edge, to be certain the
+		//  new extents cover the entire area.
+		DPoint2 p1 = pOld->m_Corners[i];
+		DPoint2 p2 = pOld->m_Corners[(i+1)%4], diff = p2 - p1;
+		for (j = 0; j < 50; j++)
+		{
+			DPoint2 p = p1 + (diff / 50 * j);
+			trans->Transform(1, &p.x, &p.y);
+			m_EarthExtents.GrowToContainPoint(p);
+		}
 	}
-	ComputeExtentsFromCorners();
 	delete trans;
 
 	// now, how large an array will we need for the new terrain?
@@ -244,11 +257,11 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	m_iRows = (int)(fRows + 0.999);
 
 	// do safety checks
-	if (m_iColumns < 1 || m_iRows < 1)
+	if (m_iColumns < 1 || m_iRows < 1 || m_iColumns > 40000 || m_iRows > 40000)
+	{
+		m_strError = "Grid is too small or too large.";
 		return false;
-
-	if (m_iColumns > 40000 || m_iRows > 40000)
-		return false;
+	}
 
 	// Now we're ready to fill in the new elevationgrid.
 	// Some fields are simple to set:
