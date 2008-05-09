@@ -76,6 +76,8 @@ public:
 protected:
 	vtFeatureSet	*m_pSet;
 	DrawStyle	m_DrawStyle;
+	bool m_bExtentComputed;
+	DRECT m_Extents;
 };
 
 #endif	// RAWLAYERH

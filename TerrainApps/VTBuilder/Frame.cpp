@@ -1083,6 +1083,8 @@ void MainFrame::ShowOptionsDialog()
 	dlg.SetElevDrawOptions(vtElevLayer::m_draw);
 
 	dlg.m_bShowRoadWidth = vtRoadLayer::GetDrawWidth();
+	bool bDrawRawSimple = g_Options.GetValueBool(TAG_DRAW_RAW_SIMPLE);
+	dlg.m_bDrawRawSimple = bDrawRawSimple;
 	dlg.m_bShowPath = m_pTree->GetShowPaths();
 
 	if (dlg.ShowModal() != wxID_OK)
@@ -1124,6 +1126,10 @@ void MainFrame::ShowOptionsDialog()
 	if (vtRoadLayer::GetDrawWidth() != bWidth && LayersOfType(LT_ROAD) > 0)
 		bNeedRefresh = true;
 	vtRoadLayer::SetDrawWidth(bWidth);
+
+	g_Options.SetValueBool(TAG_DRAW_RAW_SIMPLE, dlg.m_bDrawRawSimple);
+	if (dlg.m_bDrawRawSimple != bDrawRawSimple)
+		bNeedRefresh = true;
 
 	if (dlg.m_bShowPath != m_pTree->GetShowPaths())
 	{

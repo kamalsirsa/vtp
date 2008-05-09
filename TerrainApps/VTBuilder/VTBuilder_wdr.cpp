@@ -1018,20 +1018,23 @@ wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item17 = new wxCheckBox( parent, ID_CHECK_SHOW_ROAD_WIDTH, _("Show roads with width"), wxDefaultPosition, wxDefaultSize, 0 );
     item16->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item18 = new wxCheckBox( parent, ID_PATHNAMES, _("Show full pathnames in Layer View"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item18 = new wxCheckBox( parent, ID_CHECK_DRAW_RAW_SIMPLE, _("Draw raw layers simplified"), wxDefaultPosition, wxDefaultSize, 0 );
+    item16->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxCheckBox *item19 = new wxCheckBox( parent, ID_PATHNAMES, _("Show full pathnames in Layer View"), wxDefaultPosition, wxDefaultSize, 0 );
+    item16->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item20 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item20 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item21 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item20->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item21 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item22 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item20->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

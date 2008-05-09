@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.h
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -46,6 +46,7 @@ public:
 	bool m_bHideUnknown;
 
 	bool m_bShowRoadWidth;
+	bool m_bDrawRawSimple;
 	bool m_bShowPath;
 
 private:

@@ -23,6 +23,7 @@
 #define TAG_BLACK_TRANSP "BlackAsTransparent"
 #define TAG_TIFF_COMPRESS "TiffCompressDeflate"
 #define TAG_DEFAULT_GZIP_BT "DefaultGzipBT"
+#define TAG_DRAW_RAW_SIMPLE "DrawSimpleRawLayers"
 
 // User Preferences
 extern vtTagArray g_Options;

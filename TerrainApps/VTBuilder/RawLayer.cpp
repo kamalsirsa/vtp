@@ -41,6 +41,7 @@ vtRawLayer::vtRawLayer() : vtLayer(LT_RAW)
 
 	m_DrawStyle.m_MarkerShape = 0;
 	m_DrawStyle.m_MarkerSize = 2;
+	m_bExtentComputed = false;
 }
 
 vtRawLayer::~vtRawLayer()
@@ -87,8 +88,15 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 	if (!m_pSet)
 		return false;
 
-	if (!m_pSet->ComputeExtent(rect))
-		return false;
+	if (m_bExtentComputed)
+		rect = m_Extents;
+	else 
+	{
+		if (!m_pSet->ComputeExtent(rect))
+			return false;
+		m_Extents = rect;
+		m_bExtentComputed = true;
+	}
 
 	OGRwkbGeometryType type = m_pSet->GetGeomType();
 	if (type == wkbPoint || type == wkbPoint25D)
@@ -105,10 +113,27 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+void vtRawLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 {
 	if (!m_pSet)
 		return;
+
+	// To draw simpler and faster, draw only 1/10 of the entities, with a box
+	//  around them to make the location and extent of the data clear.
+	bool bDrawSimple = g_Options.GetValueBool(TAG_DRAW_RAW_SIMPLE);
+	int iIncrement = bDrawSimple ? 10 : 1;
+	if (bDrawSimple)
+	{
+		DRECT rect;
+		GetExtent(rect);
+		wxRect screenrect = pView->WorldToCanvas(rect);
+
+		// draw a simple box with green lines
+		wxPen Pen1(wxColor(0x80, 0x00, 0x00), 1, wxLONG_DASH);
+		pDC->SetLogicalFunction(wxCOPY);
+		pDC->SetPen(Pen1);
+		DrawRectangle(pDC, screenrect);
+	}
 
 	wxColor linecolor(m_DrawStyle.m_LineColor.r, m_DrawStyle.m_LineColor.g, m_DrawStyle.m_LineColor.b);
 	bool bFill = m_DrawStyle.m_bFill;
@@ -128,7 +153,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (type == wkbPoint)
 	{
 		vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D *>(m_pSet);
-		for (i = 0; i < entities; i++)
+		for (i = 0; i < entities; i += iIncrement)
 		{
 			if (m_pSet->IsSelected(i)) {
 				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
@@ -138,7 +163,11 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			}
 			const DPoint2 &p2 = pSetP2->GetPoint(i);
 			pView->screen(p2, p);
-			if (m_DrawStyle.m_MarkerShape == 0)	// dot
+			if (bDrawSimple)
+			{
+				pDC->DrawPoint(p);
+			}
+			else if (m_DrawStyle.m_MarkerShape == 0)	// dot
 			{
 				if (m_DrawStyle.m_MarkerSize < 2)
 				{
@@ -156,7 +185,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 					pDC->DrawLine(p.x, p.y+2, p.x+2, p.y+2);
 				}
 			}
-			if (m_DrawStyle.m_MarkerShape == 1)	// crosshair
+			else if (m_DrawStyle.m_MarkerShape == 1)	// crosshair
 			{
 				int ms = m_DrawStyle.m_MarkerSize;
 				pDC->DrawLine(p.x-ms, p.y, p.x+ms+1, p.y);
@@ -167,7 +196,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (type == wkbPoint25D)
 	{
 		vtFeatureSetPoint3D *pSetP3 = dynamic_cast<vtFeatureSetPoint3D *>(m_pSet);
-		for (i = 0; i < entities; i++)
+		for (i = 0; i < entities; i += iIncrement)
 		{
 			if (m_pSet->IsSelected(i)) {
 				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
@@ -187,7 +216,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (type == wkbLineString)
 	{
 		vtFeatureSetLineString *pSetLine = dynamic_cast<vtFeatureSetLineString *>(m_pSet);
-		for (i = 0; i < entities; i++)
+		for (i = 0; i < entities; i += iIncrement)
 		{
 			if (m_pSet->IsSelected(i)) {
 				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
@@ -204,7 +233,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (type == wkbLineString25D)
 	{
 		vtFeatureSetLineString3D *pSetLine = dynamic_cast<vtFeatureSetLineString3D *>(m_pSet);
-		for (i = 0; i < entities; i++)
+		for (i = 0; i < entities; i += iIncrement)
 		{
 			if (m_pSet->IsSelected(i)) {
 				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
@@ -231,7 +260,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 		if (bFill)
 			pDC->SetPen(NoPen);
 
-		for (i = 0; i < entities; i++)
+		for (i = 0; i < entities; i += iIncrement)
 		{
 			if (bFill)
 				pDC->SetPen(NoPen);
@@ -273,6 +302,7 @@ bool vtRawLayer::TransformCoords(vtProjection &proj)
 		DisplayAndLog("Warning: Some coordinates did not transform correctly.\n");
 
 	m_pSet->SetProjection(proj);
+	m_bExtentComputed = false;
 	return true;
 }
 
@@ -317,9 +347,10 @@ bool vtRawLayer::OnLoad()
 		}
 	}
 	else
-	{
 		wxMessageBox(wxString(loader.m_strErrorMsg, wxConvUTF8));
-	}
+
+	m_bExtentComputed = false;
+
 	return (m_pSet != NULL);
 }
 
@@ -336,6 +367,8 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 	if (!m_pSet->AppendDataFrom(m_pFromSet))
 		return false;
 
+	m_bExtentComputed = false;
+
 	return true;
 }
 
@@ -351,7 +384,10 @@ void vtRawLayer::SetProjection(const vtProjection &proj)
 	{
 		const vtProjection &current = m_pSet->GetAtProjection();
 		if (proj != current)
+		{
 			SetModified(true);
+			m_bExtentComputed = false;
+		}
 		m_pSet->SetProjection(proj);
 	}
 }
@@ -365,6 +401,7 @@ void vtRawLayer::Offset(const DPoint2 &p)
 		else
 			m_pSet->Offset(p);
 	}
+	m_bExtentComputed = false;
 }
 
 void vtRawLayer::GetPropertyText(wxString &strIn)
@@ -473,6 +510,7 @@ void vtRawLayer::AddPoint(const DPoint2 &p2)
 	{
 		pPointSet->AddPoint(p2);
 		SetModified(true);
+		m_bExtentComputed = false;
 	}
 }
 
@@ -544,6 +582,7 @@ void vtRawLayer::Scale(double factor)
 			pSetPoly->GetPolygon(i).Mult(factor);
 	}
 	SetModified(true);
+	m_bExtentComputed = false;
 }
 
 ////////////////////////////////////////////////////////////////////////

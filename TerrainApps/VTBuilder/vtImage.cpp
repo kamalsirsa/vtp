@@ -198,7 +198,7 @@ void vtImage::DrawToView(wxDC* pDC, vtScaledView *pView)
 		pDC->SetLogicalFunction(wxCOPY);
 		pDC->SetPen(yellow);
 
-		DrawRectangle(pDC, screenrect);
+		DrawRectangle(pDC, screenrect, true);
 	}
 }
 

@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.cpp
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -46,6 +46,7 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_CHECK_HIDE_UNKNOWN, &m_opt.m_bDoMask);
 
 	AddValidator(ID_CHECK_SHOW_ROAD_WIDTH, &m_bShowRoadWidth);
+	AddValidator(ID_CHECK_DRAW_RAW_SIMPLE, &m_bDrawRawSimple);
 	AddValidator(ID_PATHNAMES, &m_bShowPath);
 }
 

@@ -509,7 +509,7 @@ void vtElevLayer::DrawLayerOutline(wxDC* pDC, vtScaledView *pView)
 	screenrect.width-=2;
 	screenrect.height-=2;
 
-	DrawRectangle(pDC, screenrect);
+	DrawRectangle(pDC, screenrect, true);
 }
 
 bool vtElevLayer::GetExtent(DRECT &rect)
