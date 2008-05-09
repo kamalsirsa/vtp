@@ -17,7 +17,7 @@
 
 #include "Options.h"
 #include "BuilderView.h"
-#include "Frame.h"
+#include "Builder.h"
 #include "MenuEnum.h"
 #include "Helper.h"
 #include "VTBuilder_wdr.h"

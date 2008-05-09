@@ -1,7 +1,7 @@
 //
 // vtImage.cpp
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,7 +22,7 @@
 #include "BuilderView.h"	// For grid marks
 #include "vtImage.h"
 #include "Helper.h"
-#include "Frame.h"
+#include "Builder.h"
 #include "vtBitmap.h"
 #include "LocalDatabuf.h"
 #include "Options.h"

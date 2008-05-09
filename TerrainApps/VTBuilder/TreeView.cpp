@@ -150,7 +150,7 @@ wxString MyTreeCtrl::MakeItemName(vtLayerPtr lp)
 	return str;
 }
 
-void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
+void MyTreeCtrl::RefreshTreeItems(Builder *pBuilder)
 {
 	VTLOG1("Refreshing Tree Items:");
 
@@ -198,11 +198,11 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	imageSel = TreeCtrlIcon_FileSelected;
 	vtLayerPtr lp;
 	int iLayers = 0;
-	if (pFrame) iLayers = pFrame->NumLayers();
+	if (pBuilder) iLayers = pBuilder->NumLayers();
 	wxTreeItemId hSelectedItem;
 	for (int i = 0; i < iLayers; i++)
 	{
-		lp = pFrame->GetLayer(i);
+		lp = pBuilder->GetLayer(i);
 
 		wxString str = MakeItemName(lp);
 
@@ -243,7 +243,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 		{
 			SetItemData(hItem, new MyTreeItemData(lp));
 
-			if (lp == pFrame->GetActiveLayer())
+			if (lp == pBuilder->GetActiveLayer())
 				hSelectedItem = hItem;
 			if (!lp->GetVisible())
 			{
@@ -274,7 +274,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 		SelectItem(hSelectedItem);
 }
 
-void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
+void MyTreeCtrl::RefreshTreeStatus(Builder *pBuilder)
 {
 	VTLOG("(Refreshing Tree Status)\n");
 
@@ -291,7 +291,7 @@ void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
 			if (data)
 			{
 				SetItemText(item, MakeItemName(data->m_pLayer));
-				if (data->m_pLayer == pFrame->GetActiveLayer())
+				if (data->m_pLayer == pBuilder->GetActiveLayer())
 					SelectItem(item);
 				if (data->m_pLayer->GetVisible())
 				{

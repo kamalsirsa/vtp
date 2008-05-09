@@ -13,7 +13,7 @@
 
 #include "vtdata/vtLog.h"
 #include "ScaledView.h"
-#include "Frame.h"
+#include "Builder.h"
 #include "vtdata/Triangulate.h"
 
 // global useful buffer for forming lines

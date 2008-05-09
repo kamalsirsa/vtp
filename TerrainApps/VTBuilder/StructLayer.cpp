@@ -18,7 +18,7 @@
 #include "vtdata/Triangulate.h"
 #include "ogrsf_frmts.h"
 
-#include "Frame.h"
+#include "Builder.h"
 #include "StructLayer.h"
 #include "ElevLayer.h"
 #include "BuilderView.h"

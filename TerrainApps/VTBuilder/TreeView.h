@@ -1,7 +1,7 @@
 //
 // TreeView.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,8 +9,9 @@
 #include "wx/imaglist.h"
 #include "wx/image.h"
 
-#include "Frame.h"
 #include "Layer.h"
+
+class Builder;
 
 class MyTreeItemData : public wxTreeItemData
 {
@@ -55,8 +56,8 @@ public:
 	wxString MakeItemName(vtLayerPtr lp);
 
 	wxTreeItemId AddRootItem(int image, const wxString &text);
-	void RefreshTreeItems(MainFrame *pFrame);
-	void RefreshTreeStatus(MainFrame *pFrame);
+	void RefreshTreeItems(Builder *pBuilder);
+	void RefreshTreeStatus(Builder *pBuilder);
 
 	void DoSortChildren(const wxTreeItemId& item, bool reverse = FALSE)
 		{ m_reverseSort = reverse; wxTreeCtrl::SortChildren(item); }

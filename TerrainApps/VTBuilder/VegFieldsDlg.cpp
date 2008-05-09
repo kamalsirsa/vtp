@@ -1,7 +1,7 @@
 //
 // Name:		VegFieldsDlg.cpp
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,7 @@
 #endif
 
 #include "VegFieldsDlg.h"
-#include "Frame.h"		// for Plants List
+#include "Builder.h"		// for Plants List
 
 // WDR: class implementations
 

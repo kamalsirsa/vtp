@@ -31,7 +31,7 @@
 #include "ElevLayer.h"
 #include "ExtentDlg.h"
 #include "FileFilters.h"
-#include "Frame.h"
+#include "Builder.h"
 #include "Helper.h"
 #include "RawDlg.h"
 #include "vtBitmap.h"

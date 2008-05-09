@@ -1,7 +1,7 @@
 //
 // Name: NodeDlg.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,7 +18,7 @@
 
 #include "NodeDlg.h"
 #include "RoadLayer.h"
-#include "Frame.h"
+#include "Builder.h"
 #include "BuilderView.h"
 
 #define MULTIPLE	5000

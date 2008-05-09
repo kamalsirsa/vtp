@@ -1,7 +1,7 @@
 //
 // RoadMapEdit.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,7 +16,7 @@
 #include "NodeDlg.h"
 #include "RoadDlg.h"
 #include "RoadLayer.h"
-#include "Frame.h"
+#include "Builder.h"
 #include "BuilderView.h"
 
 #define NODE_RADIUS 5

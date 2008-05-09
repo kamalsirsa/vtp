@@ -17,7 +17,7 @@
 #include "VegLayer.h"
 #include "vtui/Helper.h"	// for DisplayAndLog
 
-#include "Frame.h"	// for access to the application's plants and biotypes
+#include "Builder.h"	// for access to the application's plants and biotypes
 
 //////////////////////////////////////////////////////////////////////////
 

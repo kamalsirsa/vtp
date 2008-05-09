@@ -1,7 +1,7 @@
 //
 // Layer.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,7 @@
 
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"
-#include "Frame.h"
+#include "Builder.h"
 #include "Helper.h"
 
 // Layer headers

@@ -11,7 +11,6 @@
 #include "wx/wx.h"
 #endif
 
-//#include "Frame.h"
 #include "Builder.h"
 #include "Helper.h"
 #include "vtdata/vtLog.h"
