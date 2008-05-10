@@ -140,7 +140,7 @@ zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.ini
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.rc
-zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder*.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/*.vcproj
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder*.sln
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.wdr
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/bitmaps/*
