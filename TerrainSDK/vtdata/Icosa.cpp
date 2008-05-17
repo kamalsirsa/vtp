@@ -77,6 +77,10 @@ void CartesianToSpherical(double *lng, double *lat,
 }
 
 
+/**
+ * Geographic coordinate to 3D point.  Input in degrees, output assumes
+ * unit sphere.
+ */
 void geo_to_xyz(const DPoint2 &geo, DPoint3 &p)
 {
 	double gx = geo.x * (PId / 180.0);
@@ -353,6 +357,12 @@ double DymaxIcosa::DihedralAngle()
 	return dihedral;
 }
 
+/**
+ * Given a geographic coordinate (lon, lat), find the corresponding
+ * dymaxion map coordinate, on the classic flattened dymaxion map.
+ * The output is unit-edge triangles, which means the whole output
+ * extents are x [0, 5.5] and y [0, 2.6].
+ */
 bool DymaxIcosa::GeoToDymax(const DPoint2 &geo, DPoint2 &dymax)
 {
 	DPoint3 p3, uvw;
@@ -363,7 +373,7 @@ bool DymaxIcosa::GeoToDymax(const DPoint2 &geo, DPoint2 &dymax)
 	FindUV(p3, face, uvw);
 
 	DPoint2 uv(uvw.x, uvw.y);
-	assert(uv.x <= 1 && uv.y <= 1);
+	//assert(uv.x <= 1 && uv.y <= 1);
 
 	// Not exactly sure why we need to do this - apparently the UV are
 	//  assuming a unit-radius, rather than unit-edge icosahedron
