@@ -1,7 +1,7 @@
 //
 // AbstractLayer.h
 //
-// Copyright (c) 2006-2007 Virtual Terrain Project
+// Copyright (c) 2006-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -112,9 +112,9 @@ public:
 	void EditEnd();
 	void DeleteFeature(vtFeature *f);
 
-	/// Set the properties for this set, which includes style.
+	/// Set the properties for this layer, which includes style.
 	void SetProperties(const vtTagArray &props) { m_StyleProps = props; }
-	/// Get the properties for this set, which includes style.
+	/// Get the properties for this layer, which includes style.
 	vtTagArray &GetProperties() { return m_StyleProps; }
 
 protected:
