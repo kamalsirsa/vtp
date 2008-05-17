@@ -70,6 +70,7 @@ protected:
 	void OnProjectSave(wxCommandEvent& event);
 	void OnProjectPrefs(wxCommandEvent& event);
 	void OnDymaxTexture(wxCommandEvent &event);
+	void OnDymaxMap(wxCommandEvent &event);
 	void OnProcessBillboard(wxCommandEvent &event);
 	void OnElevCopy(wxCommandEvent& event);
 	void OnElevPasteNew(wxCommandEvent& event);
@@ -303,6 +304,7 @@ public:
 	void DoElevPasteNew();
 	void DoGeocode();
 	void DoDymaxTexture();
+	void DoDymaxMap();
 
 	// Layer methods
 	void LoadLayer(const wxString &fname);

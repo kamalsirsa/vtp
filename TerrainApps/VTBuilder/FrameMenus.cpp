@@ -71,6 +71,7 @@ EVT_MENU(ID_FILE_OPEN,		MainFrame::OnProjectOpen)
 EVT_MENU(ID_FILE_SAVE,		MainFrame::OnProjectSave)
 EVT_MENU(ID_FILE_PREFS,		MainFrame::OnProjectPrefs)
 EVT_MENU(ID_SPECIAL_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
+EVT_MENU(ID_SPECIAL_DYMAX_MAP,	MainFrame::OnDymaxMap)
 EVT_MENU(ID_SPECIAL_PROCESS_BILLBOARD,	MainFrame::OnProcessBillboard)
 EVT_MENU(ID_SPECIAL_GEOCODE,	MainFrame::OnGeocode)
 EVT_MENU(ID_FILE_EXIT,		MainFrame::OnQuit)
@@ -323,6 +324,7 @@ void MainFrame::CreateMenus()
 	fileMenu->AppendSeparator();
 	wxMenu *specialMenu = new wxMenu;
 	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, _("Create Dymaxion Textures"));
+	specialMenu->Append(ID_SPECIAL_DYMAX_MAP, _("Create Dymaxion Map"));
 	specialMenu->Append(ID_SPECIAL_PROCESS_BILLBOARD, _("Process Billboard Texture"));
 	specialMenu->Append(ID_SPECIAL_GEOCODE, _("Geocode"));
 	specialMenu->Append(ID_ELEV_COPY, _("Copy Elevation Layer to Clipboard"));
@@ -674,6 +676,11 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 {
 	DoDymaxTexture();
+}
+
+void MainFrame::OnDymaxMap(wxCommandEvent &event)
+{
+	DoDymaxMap();
 }
 
 void MainFrame::OnProcessBillboard(wxCommandEvent &event)

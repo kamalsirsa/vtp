@@ -735,3 +735,105 @@ void MainFrame::DoDymaxTexture()
 	DisplayAndLog("Successful.");
 }
 
+void MainFrame::DoDymaxMap()
+{
+	int x, y;
+	DPoint3 uvw;
+	uvw.z = 0.0f;
+
+	wxFileDialog dlg(this, _("Choose input file"), _T(""), _T(""), _T("*.bmp;*.png"));
+	if (dlg.ShowModal() == wxID_CANCEL)
+		return;
+
+	wxFileDialog dlg2(this, _("Choose output file"), _T(""), _T(""), _T("*.png"), wxFD_SAVE);
+	if (dlg2.ShowModal() == wxID_CANCEL)
+		return;
+
+	wxProgressDialog prog(_("Processing"), _("Loading source bitmap.."), 100);
+	prog.Show(TRUE);
+
+	// read texture
+	vtDIB img;
+	wxString path = dlg.GetPath();
+
+	wxString msg = _T("Reading file: ");
+	msg += path;
+	msg += _T("........................");
+	OpenProgressDialog(msg, false, this);
+	bool success = img.Read(path.mb_str(wxConvUTF8), progress_callback);
+	CloseProgressDialog();
+	if (!success)
+	{
+		DisplayAndLog("File read failed");
+		return;
+	}
+	int input_x = img.GetWidth();
+	int input_y = img.GetHeight();
+	int depth = img.GetDepth();
+
+	// Make output
+	vtDIB out;
+	int output_x = (input_x * 0.85);	// reduce slightly, to avoid gaps on forward projection
+	int output_y = (output_x / 5.5 * 2.6);
+	out.Create(output_x, output_y, depth);
+
+	DymaxIcosa ico;
+
+	DPoint2 p;
+	DPoint2 dmp;
+	unsigned char value;
+	RGBi rgb;
+	RGBAi rgba;
+
+	wxString msg;
+	msg.Printf(_T("Creating ..."));
+	prog.Update(1, msg);
+
+	for (x = 0; x < input_x; x++)
+	{
+		prog.Update(x * 99 / input_x, msg);
+
+		p.x = (((double)x / (input_x-1)) * 360.0) - 180.0;
+		for (y = 0; y < input_y; y++)
+		{
+			p.y = -((((double)y / (input_y-1)) * 180.0) - 90.0);
+
+			ico.GeoToDymax(p, dmp);
+
+			int target_x = (int) (dmp.x * output_x / 5.5);
+			int target_y = (int) (dmp.y * output_y / 2.6);
+
+			if (target_x < 0 || target_x >= output_x)
+				continue;
+			if (target_y < 0 || target_y >= output_y)
+				continue;
+
+			if (depth == 8)
+			{
+				value = img.GetPixel8(x, y);
+				out.SetPixel8(target_x, output_y-1-target_y, value);
+			}
+			else if (depth == 24)
+			{
+				img.GetPixel24(x, y, rgb);
+				out.SetPixel24(target_x, output_y-1-target_y, rgb);
+			}
+			else if (depth == 32)
+			{
+				img.GetPixel32(x, y, rgba);
+				out.SetPixel32(target_x, output_y-1-target_y, rgba);
+			}
+		}
+	}
+	wxString path2 = dlg2.GetPath();
+	vtString fname = (const char *) path2.mb_str(wxConvUTF8);
+	success = out.WritePNG(fname);
+	if (!success)
+	{
+		DisplayAndLog("Failed to write file %s.", (const char *) fname);
+		return;
+	}
+
+	DisplayAndLog("Successful.");
+}
+
