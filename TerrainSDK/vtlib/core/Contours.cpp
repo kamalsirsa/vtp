@@ -3,7 +3,7 @@
 // Purpose:  Contour-related code, which interfaces vtlib to the
 //	QuikGrid library.
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,7 @@
 #if SUPPORT_QUIKGRID
 #include "vtdata/QuikGrid.h"
 #include "Contours.h"
+#include <vtlib/core/TiledGeom.h>
 
 //
 // This callback function will receive points output from QuikGrid.
@@ -56,10 +57,25 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 	// Make a note of this terrain and its attributes
 	m_pTerrain = pTerr;
 	m_pHF = pTerr->GetHeightFieldGrid3d();
+	int tileLod0Size = 0;
 	if (!m_pHF)
-		return NULL;
-	m_ext = m_pHF->GetEarthExtents();
-	m_spacing = m_pHF->GetSpacing();
+	{
+		vtTiledGeom *tiledGeom = pTerr->GetTiledGeom();
+		m_ext = tiledGeom->GetEarthExtents();
+		//get highest LOD
+		int minLod = 0;
+		for(int i = 0; i < tiledGeom->rows * tiledGeom->rows; i++)
+			if (tiledGeom->m_elev_info.lodmap.m_min[i] > minLod)
+				minLod = tiledGeom->m_elev_info.lodmap.m_min[i];
+
+		tileLod0Size = pow(2.0, minLod);
+		m_spacing = DPoint2(m_ext.Width() / (tiledGeom->cols * tileLod0Size), m_ext.Height() / (tiledGeom->rows *tileLod0Size));
+	}
+	else
+	{
+		m_ext = m_pHF->GetEarthExtents();
+		m_spacing = m_pHF->GetSpacing();
+	}
 	m_fHeight = fHeight;
 
 	// Create material and geometry to contain the vector geometry
@@ -73,15 +89,43 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 
 	// copy data from our grid to a QuikGrid object
 	int nx, ny;
-	m_pHF->GetDimensions(nx, ny);
+	if (m_pHF)
+		m_pHF->GetDimensions(nx, ny);
+	else
+	{
+		vtTiledGeom *tiledGeom = pTerr->GetTiledGeom();
+		nx = tiledGeom->cols * tileLod0Size + 1;
+		ny = tiledGeom->rows * tileLod0Size + 1;
+	}
 	m_pGrid = new SurfaceGrid(nx,ny);
 	int i, j;
-	for (i = 0; i < nx; i++)
+	if (m_pHF)
 	{
-		for (j = 0; j < ny; j++)
+		for (i = 0; i < nx; i++)
 		{
-			// use the true elevation, for true contours
-			m_pGrid->zset(i, j, m_pHF->GetElevation(i, j, true));
+			for (j = 0; j < ny; j++)
+			{
+				// use the true elevation, for true contours
+				m_pGrid->zset(i, j, m_pHF->GetElevation(i, j, true));
+			}
+		}
+	}
+	else
+	{
+		vtTiledGeom *tiledGeom = pTerr->GetTiledGeom();
+		float topBottom = tiledGeom->m_WorldExtents.top - tiledGeom->m_WorldExtents.bottom;
+		float rightLeft = tiledGeom->m_WorldExtents.right - tiledGeom->m_WorldExtents.left;
+		float rlxwidth = rightLeft / (tiledGeom->cols * tileLod0Size + 1);
+		float tbywidth = topBottom / (tiledGeom->rows * tileLod0Size + 1);
+		float altitude;
+		for (i = 0; i < nx; i++)
+		{
+			for (j = 0; j < ny; j++)
+			{
+				// use the true elevation, for true contours
+				tiledGeom->FindAltitudeAtPoint(FPoint3(i*rlxwidth, 0, j*tbywidth),altitude, true);
+				m_pGrid->zset(i, j, altitude);
+			}
 		}
 	}
 	m_pMF = new vtMeshFactory(m_pGeom, vtMesh::LINE_STRIP, 0, 30000, 0);
@@ -111,7 +155,10 @@ void vtContourConverter::GenerateContour(float fAlt)
 void vtContourConverter::GenerateContours(float fInterval)
 {
 	float fMin, fMax;
-	m_pHF->GetHeightExtents(fMin, fMax);
+	if (m_pHF)
+		m_pHF->GetHeightExtents(fMin, fMax);
+	else
+		m_pTerrain->GetTiledGeom()->GetHeightExtents(fMin, fMax);
 
 	int start = (int) (fMin / fInterval) + 1;
 	int stop = (int) (fMax / fInterval);
