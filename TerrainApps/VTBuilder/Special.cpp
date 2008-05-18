@@ -785,7 +785,6 @@ void MainFrame::DoDymaxMap()
 	RGBi rgb;
 	RGBAi rgba;
 
-	wxString msg;
 	msg.Printf(_T("Creating ..."));
 	prog.Update(1, msg);
 
