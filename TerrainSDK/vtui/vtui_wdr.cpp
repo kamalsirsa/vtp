@@ -1208,7 +1208,7 @@ wxSizer *SizeDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxTextCtrl *item1 = new wxTextCtrl( parent, ID_TEXTCTRL, _("The size of the rendered image should be a multiple of the existing window, up to the limit of your graphics card.  If you request a size that your card does not support, the output will be blank."), wxDefaultPosition, wxSize(320,60), wxTE_MULTILINE|wxTE_READONLY );
+    wxTextCtrl *item1 = new wxTextCtrl( parent, ID_TEXTCTRL, wxT(""), wxDefaultPosition, wxSize(320,60), wxTE_MULTILINE|wxTE_READONLY );
     item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxSlider *item2 = new wxSlider( parent, ID_SLIDER_RATIO, 0, 0, 320, wxDefaultPosition, wxSize(320,-1), wxSL_HORIZONTAL );
