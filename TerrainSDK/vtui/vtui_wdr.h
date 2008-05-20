@@ -30,6 +30,7 @@
 
 // Declare window functions
 
+const int ID_TEXT = 10000;
 const int ID_LEVEL = 10001;
 const int ID_LEVEL_COPY = 10002;
 const int ID_LEVEL_DEL = 10003;
@@ -180,6 +181,12 @@ const int ID_CHOICE_VERTICAL = 10123;
 const int ID_DEL_HIGH = 10124;
 const int ID_LIST = 10125;
 wxSizer *FeatureTableDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+const int ID_TEXTCTRL = 10126;
+const int ID_SLIDER_RATIO = 10127;
+const int ID_TEXT_X = 10128;
+const int ID_TEXT_Y = 10129;
+wxSizer *SizeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 

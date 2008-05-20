@@ -236,6 +236,9 @@
 				RelativePath=".\ProjectionDlg.cpp">
 			</File>
 			<File
+				RelativePath=".\SizeDlg.cpp">
+			</File>
+			<File
 				RelativePath=".\StatePlaneDlg.cpp">
 			</File>
 			<File
@@ -304,6 +307,9 @@
 			</File>
 			<File
 				RelativePath=".\ProjectionDlg.h">
+			</File>
+			<File
+				RelativePath=".\SizeDlg.h">
 			</File>
 			<File
 				RelativePath=".\StatePlaneDlg.h">
