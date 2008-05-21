@@ -17,6 +17,7 @@ extern "C" {
 }
 
 #include "vtDIB.h"
+#include "vtLog.h"
 #include "ByteOrder.h"
 #include "FilePath.h"
 
@@ -308,7 +309,14 @@ bool vtDIB::Create(int xsize, int ysize, int bitdepth, bool create_palette)
 	int PaletteColors = create_palette ? 256 : 0;
 	m_iPaletteSize = sizeof(RGBQUAD) * PaletteColors;
 
-	m_pDIB = malloc(sizeof(BITMAPINFOHEADER) + m_iPaletteSize + ImageSize);
+	int total_size = sizeof(BITMAPINFOHEADER) + m_iPaletteSize + ImageSize;
+	m_pDIB = malloc(total_size);
+	if (!m_pDIB)
+	{
+		VTLOG("Could not allocate %d bytes\n", total_size);
+		return false;
+	}
+
 	m_Hdr = (BITMAPINFOHEADER *) m_pDIB;
 	m_Data = ((byte *)m_Hdr) + sizeof(BITMAPINFOHEADER) + m_iPaletteSize;
 
@@ -389,6 +397,9 @@ bool vtDIB::ReadBMP(const char *fname, bool progress_callback(int))
 
 	// allocate enough room for the header
 	m_pDIB = malloc(sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD));
+	if (!m_pDIB)
+		return false;
+
 	m_Hdr = (BITMAPINFOHEADER *) m_pDIB;
 
 	if (fread(&bitmapHdr, 14, 1, fp) == 0)
@@ -446,6 +457,8 @@ bool vtDIB::ReadBMP(const char *fname, bool progress_callback(int))
 	m_iPaletteSize = m_Hdr->biClrUsed * sizeof(RGBQUAD);
 	MemorySize = m_Hdr->biSize + m_iPaletteSize + m_Hdr->biSizeImage;
 	m_pDIB = realloc(m_pDIB, MemorySize);
+	if (!m_pDIB)
+		return false;
 
 	m_Hdr = (BITMAPINFOHEADER *) m_pDIB;
 	m_Data = ((byte *)m_Hdr) + sizeof(BITMAPINFOHEADER) + m_iPaletteSize;
