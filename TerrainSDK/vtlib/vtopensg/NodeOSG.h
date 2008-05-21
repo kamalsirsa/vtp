@@ -119,6 +119,9 @@ public:
 	static void ClearOsgModelCache();
 	static bool s_bDisableMipmaps;	// set to disable ALL mipmaps
 
+	void SetCastShadow(bool b) {}
+	bool GetCastShadow() { return false; }
+
 protected:
 	osg::RefPtr<osg::NodePtr> m_pNode;
 	//osg::NodePtr m_pNode;
@@ -141,9 +144,6 @@ class vtNativeNode : public vtNode
 public:
 	vtNativeNode(osg::NodePtr node) { SetOsgNode(node);};
 	vtNode *vtNativeNode::FindParentVTNode();
-
-	void SetCastShadow(bool b) {}
-	bool GetCastShadow() { return false; }
 
 protected:
 	// Destructor is protected so that people will use Release() instead,
