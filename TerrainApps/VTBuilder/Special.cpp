@@ -737,6 +737,8 @@ void MainFrame::DoDymaxTexture()
 
 void MainFrame::DoDymaxMap()
 {
+	VTLOG1("DoDymaxMap\n");
+
 	int x, y;
 	DPoint3 uvw;
 	uvw.z = 0.0f;
@@ -755,6 +757,7 @@ void MainFrame::DoDymaxMap()
 	// read texture
 	vtDIB img;
 	wxString path = dlg.GetPath();
+	VTLOG("Reading Input: %s\n", (const char *) path.mb_str());
 
 	wxString msg = _T("Reading file: ");
 	msg += path;
@@ -770,12 +773,21 @@ void MainFrame::DoDymaxMap()
 	int input_x = img.GetWidth();
 	int input_y = img.GetHeight();
 	int depth = img.GetDepth();
+	VTLOG("input: size %d %d, depth %d\n", input_x, input_y, depth);
 
 	// Make output
 	vtDIB out;
 	int output_x = (input_x * 0.85);	// reduce slightly, to avoid gaps on forward projection
 	int output_y = (output_x / 5.5 * 2.6);
-	out.Create(output_x, output_y, depth);
+	VTLOG("output: size %d %d\n", output_x, output_y);
+	if (!out.Create(output_x, output_y, depth))
+	{
+		vtString msg;
+		msg.Format("Could not allocate DIB of size %d x %d (%.1f MB)", output_x, output_y,
+			(float) output_x * output_y * depth / 8 / 1024.0f / 1024.0f);
+		DisplayAndLog(msg);
+		return;
+	}
 
 	DymaxIcosa ico;
 
