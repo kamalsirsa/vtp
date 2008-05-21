@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib libjpeg.lib fltkd.lib fltkgld.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib"
+				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgShadowd.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib libjpeg.lib fltkd.lib fltkgld.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng13-vc8.lib zlib1-vc8.lib gdal_i-vc8.lib libjpeg.lib fltk.lib fltkgl.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib"
+				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osg.lib osgDB.lib osgUtil.lib osgText.lib osgShadow.lib netcdf.lib libpng13-vc8.lib zlib1-vc8.lib gdal_i-vc8.lib libjpeg.lib fltk.lib fltkgl.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib"
 				OutputFile="$(OutDir)/fltkSimple.exe"
 				LinkIncremental="1"
 				SubSystem="1"

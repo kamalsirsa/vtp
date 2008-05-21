@@ -74,7 +74,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib opengl32.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib osgShadowd.lib opengl32.lib netcdf.lib libpng13d-vc8.lib zlib1d-vc8.lib gdal_id-vc8.lib glu32.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="C:\APIs\sgl-0.6.0\lib\platform.msvc60.i686.dbg"
@@ -168,7 +168,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgUtil.lib osgDB.lib osgText.lib opengl32.lib netcdf.lib libpng13-vc8.lib zlib1-vc8.lib gdal_i-vc8.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osg.lib osgUtil.lib osgDB.lib osgText.lib osgShadow.lib opengl32.lib netcdf.lib libpng13-vc8.lib zlib1-vc8.lib gdal_i-vc8.lib glu32.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="\APIs\libpng-1.0.8,\APIs\netcdf-3.5.0.win32bin\lib"

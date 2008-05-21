@@ -207,10 +207,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SnapSizeDlg.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\StartupDlg.cpp"
 				>
 			</File>
@@ -322,10 +318,6 @@
 			</File>
 			<File
 				RelativePath=".\SceneGraphDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SnapSizeDlg.h"
 				>
 			</File>
 			<File
