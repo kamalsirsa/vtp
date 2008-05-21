@@ -20,5 +20,10 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>LSEnvironment</key>
+	<dict>
+	  <key>DYLD_LIBRARY_PATH</key>
+	  <string>/Library/Frameworks/VTPX.framework/Versions/A/lib/osgPlugins-2.3.9</string>
+	</dict>
 </dict>
 </plist>

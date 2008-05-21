@@ -11,11 +11,8 @@
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 98EB166A0C2A272500943462 /* Build configuration list for PBXAggregateTarget "copy-dependencies" */;
 			buildPhases = (
-				98EB17D70C2A282A00943462 /* Copy Shared lib Files */,
-				98EB17DB0C2A286600943462 /* Copy Shared bin Files */,
-				98EB17DD0C2A289F00943462 /* Copy Shared Plugins Files */,
+				981E54C90DDA3ADE00C2F2DE /* Copy Shared Libraries */,
 				98EB17DF0C2A28C300943462 /* Copy Shared Frameworks Files */,
-				98EB19710C2A304400943462 /* Copy Shared gdal and proj Files */,
 			);
 			dependencies = (
 				98EB193A0C2A2A0B00943462 /* PBXTargetDependency */,
@@ -320,22 +317,107 @@
 		0A6A51A60C209E5E00F54366 /* vtui_wdr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A51870C209E5E00F54366 /* vtui_wdr.cpp */; };
 		0A6A51A70C209E5E00F54366 /* vtui_wdr.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A6A51880C209E5E00F54366 /* vtui_wdr.h */; };
 		0A6A52020C20A3F600F54366 /* app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A52010C20A3F600F54366 /* app.cpp */; };
+		981E53950DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E536E0DDA326C00C2F2DE /* libOpenThreads.dylib */; };
+		981E53980DDA326C00C2F2DE /* libosg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53710DDA326C00C2F2DE /* libosg.dylib */; };
+		981E539B0DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53740DDA326C00C2F2DE /* libosgDB.dylib */; };
+		981E539E0DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53770DDA326C00C2F2DE /* libosgFX.dylib */; };
+		981E53A10DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E537A0DDA326C00C2F2DE /* libosgGA.dylib */; };
+		981E53A70DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53800DDA326C00C2F2DE /* libosgParticle.dylib */; };
+		981E53AA0DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53830DDA326C00C2F2DE /* libosgShadow.dylib */; };
+		981E53AD0DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53860DDA326C00C2F2DE /* libosgSim.dylib */; };
+		981E53B00DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53890DDA326C00C2F2DE /* libosgTerrain.dylib */; };
+		981E53B30DDA326C00C2F2DE /* libosgText.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538C0DDA326C00C2F2DE /* libosgText.dylib */; };
+		981E53B60DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538F0DDA326C00C2F2DE /* libosgUtil.dylib */; };
+		981E53B90DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53920DDA326C00C2F2DE /* libosgViewer.dylib */; };
+		981E53BC0DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E536E0DDA326C00C2F2DE /* libOpenThreads.dylib */; };
+		981E53BF0DDA326C00C2F2DE /* libosg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53710DDA326C00C2F2DE /* libosg.dylib */; };
+		981E53C20DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53740DDA326C00C2F2DE /* libosgDB.dylib */; };
+		981E53C50DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53770DDA326C00C2F2DE /* libosgFX.dylib */; };
+		981E53C80DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E537A0DDA326C00C2F2DE /* libosgGA.dylib */; };
+		981E53CE0DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53800DDA326C00C2F2DE /* libosgParticle.dylib */; };
+		981E53D10DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53830DDA326C00C2F2DE /* libosgShadow.dylib */; };
+		981E53D40DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53860DDA326C00C2F2DE /* libosgSim.dylib */; };
+		981E53D70DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53890DDA326C00C2F2DE /* libosgTerrain.dylib */; };
+		981E53DA0DDA326C00C2F2DE /* libosgText.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538C0DDA326C00C2F2DE /* libosgText.dylib */; };
+		981E53DD0DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538F0DDA326C00C2F2DE /* libosgUtil.dylib */; };
+		981E53E00DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53920DDA326C00C2F2DE /* libosgViewer.dylib */; };
+		981E53E30DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E536E0DDA326C00C2F2DE /* libOpenThreads.dylib */; };
+		981E53E60DDA326C00C2F2DE /* libosg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53710DDA326C00C2F2DE /* libosg.dylib */; };
+		981E53E90DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53740DDA326C00C2F2DE /* libosgDB.dylib */; };
+		981E53EC0DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53770DDA326C00C2F2DE /* libosgFX.dylib */; };
+		981E53EF0DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E537A0DDA326C00C2F2DE /* libosgGA.dylib */; };
+		981E53F50DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53800DDA326C00C2F2DE /* libosgParticle.dylib */; };
+		981E53F80DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53830DDA326C00C2F2DE /* libosgShadow.dylib */; };
+		981E53FB0DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53860DDA326C00C2F2DE /* libosgSim.dylib */; };
+		981E53FE0DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53890DDA326C00C2F2DE /* libosgTerrain.dylib */; };
+		981E54010DDA326C00C2F2DE /* libosgText.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538C0DDA326C00C2F2DE /* libosgText.dylib */; };
+		981E54040DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538F0DDA326C00C2F2DE /* libosgUtil.dylib */; };
+		981E54070DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53920DDA326C00C2F2DE /* libosgViewer.dylib */; };
+		981E540A0DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E536E0DDA326C00C2F2DE /* libOpenThreads.dylib */; };
+		981E540D0DDA326C00C2F2DE /* libosg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53710DDA326C00C2F2DE /* libosg.dylib */; };
+		981E54100DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53740DDA326C00C2F2DE /* libosgDB.dylib */; };
+		981E54130DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53770DDA326C00C2F2DE /* libosgFX.dylib */; };
+		981E54160DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E537A0DDA326C00C2F2DE /* libosgGA.dylib */; };
+		981E541C0DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53800DDA326C00C2F2DE /* libosgParticle.dylib */; };
+		981E541F0DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53830DDA326C00C2F2DE /* libosgShadow.dylib */; };
+		981E54220DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53860DDA326C00C2F2DE /* libosgSim.dylib */; };
+		981E54250DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53890DDA326C00C2F2DE /* libosgTerrain.dylib */; };
+		981E54280DDA326C00C2F2DE /* libosgText.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538C0DDA326C00C2F2DE /* libosgText.dylib */; };
+		981E542B0DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538F0DDA326C00C2F2DE /* libosgUtil.dylib */; };
+		981E542E0DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53920DDA326C00C2F2DE /* libosgViewer.dylib */; };
+		981E54310DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E536E0DDA326C00C2F2DE /* libOpenThreads.dylib */; };
+		981E54340DDA326C00C2F2DE /* libosg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53710DDA326C00C2F2DE /* libosg.dylib */; };
+		981E54370DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53740DDA326C00C2F2DE /* libosgDB.dylib */; };
+		981E543A0DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53770DDA326C00C2F2DE /* libosgFX.dylib */; };
+		981E543D0DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E537A0DDA326C00C2F2DE /* libosgGA.dylib */; };
+		981E54430DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53800DDA326C00C2F2DE /* libosgParticle.dylib */; };
+		981E54460DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53830DDA326C00C2F2DE /* libosgShadow.dylib */; };
+		981E54490DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53860DDA326C00C2F2DE /* libosgSim.dylib */; };
+		981E544C0DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53890DDA326C00C2F2DE /* libosgTerrain.dylib */; };
+		981E544F0DDA326C00C2F2DE /* libosgText.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538C0DDA326C00C2F2DE /* libosgText.dylib */; };
+		981E54520DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538F0DDA326C00C2F2DE /* libosgUtil.dylib */; };
+		981E54550DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53920DDA326C00C2F2DE /* libosgViewer.dylib */; };
+		981E54580DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E536E0DDA326C00C2F2DE /* libOpenThreads.dylib */; };
+		981E545B0DDA326C00C2F2DE /* libosg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53710DDA326C00C2F2DE /* libosg.dylib */; };
+		981E545E0DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53740DDA326C00C2F2DE /* libosgDB.dylib */; };
+		981E54610DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53770DDA326C00C2F2DE /* libosgFX.dylib */; };
+		981E54640DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E537A0DDA326C00C2F2DE /* libosgGA.dylib */; };
+		981E546A0DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53800DDA326C00C2F2DE /* libosgParticle.dylib */; };
+		981E546D0DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53830DDA326C00C2F2DE /* libosgShadow.dylib */; };
+		981E54700DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53860DDA326C00C2F2DE /* libosgSim.dylib */; };
+		981E54730DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53890DDA326C00C2F2DE /* libosgTerrain.dylib */; };
+		981E54760DDA326C00C2F2DE /* libosgText.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538C0DDA326C00C2F2DE /* libosgText.dylib */; };
+		981E54790DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E538F0DDA326C00C2F2DE /* libosgUtil.dylib */; };
+		981E547C0DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 981E53920DDA326C00C2F2DE /* libosgViewer.dylib */; };
+		981E54AC0DDA354600C2F2DE /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16870C2A278100943462 /* libgdal.dylib */; };
+		981E54AF0DDA35AE00C2F2DE /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16870C2A278100943462 /* libgdal.dylib */; };
+		981E54B20DDA35BC00C2F2DE /* libMini.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16890C2A278100943462 /* libMini.a */; };
+		981E54B70DDA398400C2F2DE /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16870C2A278100943462 /* libgdal.dylib */; };
+		981E54B80DDA399000C2F2DE /* libwx_macud_gl-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */; };
+		981E54B90DDA399300C2F2DE /* libwx_macud-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */; };
+		981E54BA0DDA399700C2F2DE /* libproj.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB168D0C2A278100943462 /* libproj.dylib */; };
+		981E54F20DDA3D8F00C2F2DE /* libwx_macud-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */; };
+		981E54F30DDA3D9000C2F2DE /* libwx_macud_gl-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */; };
+		981E54F50DDA3DBD00C2F2DE /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16870C2A278100943462 /* libgdal.dylib */; };
+		981E54F80DDA3E5C00C2F2DE /* libtiff.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44E0C244A36003001FF /* libtiff.dylib */; };
+		981E54F90DDA3E5D00C2F2DE /* libnetcdf.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44C0C244A05003001FF /* libnetcdf.dylib */; };
+		981E54FA0DDA3E5E00C2F2DE /* libjpeg.62.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44A0C2449E7003001FF /* libjpeg.62.dylib */; };
+		981E54FB0DDA3E6100C2F2DE /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4460C2449A5003001FF /* libbz2.dylib */; };
+		981E54FE0DDA3E6A00C2F2DE /* libcurl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4480C2449C7003001FF /* libcurl.dylib */; };
+		981E55010DDA3F1B00C2F2DE /* libjpeg.62.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44A0C2449E7003001FF /* libjpeg.62.dylib */; };
+		981E55020DDA3F1D00C2F2DE /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4460C2449A5003001FF /* libbz2.dylib */; };
+		981E55030DDA3F1F00C2F2DE /* libtiff.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44E0C244A36003001FF /* libtiff.dylib */; };
+		981E55070DDA403800C2F2DE /* libwx_macud-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */; };
+		981E55080DDA403A00C2F2DE /* libwx_macud_gl-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */; };
+		981E55090DDA403B00C2F2DE /* libtiff.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44E0C244A36003001FF /* libtiff.dylib */; };
+		981E550C0DDA40BB00C2F2DE /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16870C2A278100943462 /* libgdal.dylib */; };
 		982FD8290C297BA600364006 /* vtdata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4B2F0C20202900F54366 /* vtdata.framework */; };
 		982FD82A0C297BA600364006 /* vtosg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4D610C2099E100F54366 /* vtosg.framework */; };
 		982FD82B0C297BA600364006 /* vtui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A51620C209E0C00F54366 /* vtui.framework */; };
 		982FD82C0C297BA600364006 /* unzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4C370C20908300F54366 /* unzip.framework */; };
 		982FD82D0C297BA600364006 /* xmlhelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4362C30C1F44D400DBCF37 /* xmlhelper.framework */; };
-		982FD82E0C297BA600364006 /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7706F0C216D9E001A161E /* OpenThreads.framework */; };
 		982FD82F0C297BA600364006 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770970C216F8C001A161E /* OpenGL.framework */; };
 		982FD8300C297BA600364006 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
-		982FD8310C297BA600364006 /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF1DF0C2447F0003001FF /* libgdal.dylib */; };
-		982FD8320C297BA600364006 /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707C0C216DD5001A161E /* osgDB.framework */; };
-		982FD8330C297BA600364006 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770700C216D9E001A161E /* osg.framework */; };
-		982FD8340C297BA600364006 /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707D0C216DD5001A161E /* osgGA.framework */; };
-		982FD8350C297BA600364006 /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707E0C216DD5001A161E /* osgText.framework */; };
-		982FD8360C297BA600364006 /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707F0C216DD5001A161E /* osgUtil.framework */; };
-		982FD8370C297BA600364006 /* libwx_macud-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF8680C24A295003001FF /* libwx_macud-2.8.0.dylib */; };
-		982FD8380C297BA600364006 /* libwx_macud_gl-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF8670C24A295003001FF /* libwx_macud_gl-2.8.0.dylib */; };
 		982FD8510C297D2D00364006 /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982FD78C0C297B8A00364006 /* App.cpp */; };
 		982FD8520C297D2D00364006 /* BuilderView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982FD78E0C297B8A00364006 /* BuilderView.cpp */; };
 		982FD8530C297D2D00364006 /* ChunkDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982FD7900C297B8A00364006 /* ChunkDlg.cpp */; };
@@ -400,26 +482,15 @@
 		986BF2470C2448FB003001FF /* xmlhelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4362C30C1F44D400DBCF37 /* xmlhelper.framework */; };
 		986BF2480C244901003001FF /* unzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4C370C20908300F54366 /* unzip.framework */; };
 		986BF24D0C244908003001FF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
-		986BF24F0C244915003001FF /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF1DF0C2447F0003001FF /* libgdal.dylib */; };
-		986BF4550C244B4B003001FF /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4500C244AE6003001FF /* libz.dylib */; };
 		986BF4560C244B50003001FF /* libnetcdf.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44C0C244A05003001FF /* libnetcdf.dylib */; };
 		986BF47C0C244C9F003001FF /* libpng.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4530C244B31003001FF /* libpng.dylib */; };
 		986BF47D0C244C9F003001FF /* libjpeg.62.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44A0C2449E7003001FF /* libjpeg.62.dylib */; };
 		986BF4840C244CBC003001FF /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4460C2449A5003001FF /* libbz2.dylib */; };
 		986BF4850C244CC1003001FF /* libcurl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4480C2449C7003001FF /* libcurl.dylib */; };
 		986BF48A0C244CDB003001FF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
-		986BF5200C244CE3003001FF /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4500C244AE6003001FF /* libz.dylib */; };
-		986BF5240C244D06003001FF /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4500C244AE6003001FF /* libz.dylib */; };
 		986BF5250C244D06003001FF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
-		986BF54A0C244D69003001FF /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707C0C216DD5001A161E /* osgDB.framework */; };
-		986BF54B0C244D69003001FF /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707D0C216DD5001A161E /* osgGA.framework */; };
-		986BF54C0C244D69003001FF /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707E0C216DD5001A161E /* osgText.framework */; };
-		986BF54D0C244D69003001FF /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707F0C216DD5001A161E /* osgUtil.framework */; };
-		986BF54E0C244D69003001FF /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770700C216D9E001A161E /* osg.framework */; };
-		986BF5500C244D7F003001FF /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7706F0C216D9E001A161E /* OpenThreads.framework */; };
 		986BF5560C244DAE003001FF /* libpng.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4530C244B31003001FF /* libpng.dylib */; };
 		986BF5570C244DAE003001FF /* libjpeg.62.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44A0C2449E7003001FF /* libjpeg.62.dylib */; };
-		986BF5580C244DAE003001FF /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4500C244AE6003001FF /* libz.dylib */; };
 		986BF56A0C244DDF003001FF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
 		986BF56B0C244DDF003001FF /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770970C216F8C001A161E /* OpenGL.framework */; };
 		986BF56D0C244DEC003001FF /* vtdata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4B2F0C20202900F54366 /* vtdata.framework */; };
@@ -428,8 +499,6 @@
 		986BF5720C244E14003001FF /* libnetcdf.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44C0C244A05003001FF /* libnetcdf.dylib */; };
 		986BF5730C244E14003001FF /* libcurl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4480C2449C7003001FF /* libcurl.dylib */; };
 		986BF5740C244E14003001FF /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4460C2449A5003001FF /* libbz2.dylib */; };
-		986BF5790C244E53003001FF /* libMini.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF5770C244E4B003001FF /* libMini.a */; };
-		986BF57E0C244ED0003001FF /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF1DF0C2447F0003001FF /* libgdal.dylib */; };
 		986BF5860C244F31003001FF /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF5850C244F31003001FF /* IOKit.framework */; };
 		986BF5890C244F40003001FF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
 		986BF58A0C244F42003001FF /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF5820C244F1A003001FF /* QuickTime.framework */; };
@@ -438,42 +507,25 @@
 		986BF5970C244FB9003001FF /* vtdata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4B2F0C20202900F54366 /* vtdata.framework */; };
 		986BF5990C244FC2003001FF /* unzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4C370C20908300F54366 /* unzip.framework */; };
 		986BF59A0C244FC5003001FF /* xmlhelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4362C30C1F44D400DBCF37 /* xmlhelper.framework */; };
-		986BF59B0C244FC9003001FF /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF1DF0C2447F0003001FF /* libgdal.dylib */; };
 		986BF5A10C24502E003001FF /* vtdata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4B2F0C20202900F54366 /* vtdata.framework */; };
 		986BF5A20C245032003001FF /* vtosg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4D610C2099E100F54366 /* vtosg.framework */; };
 		986BF5A50C24503A003001FF /* vtui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A51620C209E0C00F54366 /* vtui.framework */; };
 		986BF5A60C24503B003001FF /* unzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4C370C20908300F54366 /* unzip.framework */; };
 		986BF5A70C24503D003001FF /* xmlhelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4362C30C1F44D400DBCF37 /* xmlhelper.framework */; };
-		986BF5A90C245047003001FF /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7706F0C216D9E001A161E /* OpenThreads.framework */; };
 		986BF5AD0C245060003001FF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
-		986BF7560C2450FE003001FF /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF1DF0C2447F0003001FF /* libgdal.dylib */; };
-		986BF7570C245100003001FF /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707C0C216DD5001A161E /* osgDB.framework */; };
-		986BF7580C245101003001FF /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770700C216D9E001A161E /* osg.framework */; };
 		986BF77F0C249C48003001FF /* vtdata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4B2F0C20202900F54366 /* vtdata.framework */; };
 		986BF7800C249C48003001FF /* vtosg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4D610C2099E100F54366 /* vtosg.framework */; };
 		986BF7810C249C48003001FF /* vtui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A51620C209E0C00F54366 /* vtui.framework */; };
 		986BF7820C249C48003001FF /* unzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4C370C20908300F54366 /* unzip.framework */; };
 		986BF7830C249C48003001FF /* xmlhelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4362C30C1F44D400DBCF37 /* xmlhelper.framework */; };
-		986BF7840C249C48003001FF /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7706F0C216D9E001A161E /* OpenThreads.framework */; };
 		986BF7850C249C48003001FF /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770970C216F8C001A161E /* OpenGL.framework */; };
 		986BF7860C249C48003001FF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
-		986BF7870C249C48003001FF /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF1DF0C2447F0003001FF /* libgdal.dylib */; };
-		986BF7880C249C48003001FF /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707C0C216DD5001A161E /* osgDB.framework */; };
-		986BF7890C249C48003001FF /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770700C216D9E001A161E /* osg.framework */; };
 		986BF7970C249CCB003001FF /* app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 986BF75C0C249BEE003001FF /* app.cpp */; };
 		986BF7980C249CCB003001FF /* canvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 986BF75E0C249BEE003001FF /* canvas.cpp */; };
 		986BF79C0C249CCF003001FF /* frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 986BF7600C249BEE003001FF /* frame.cpp */; };
 		986BF7A00C249CD2003001FF /* wx_headers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 986BF7640C249BEE003001FF /* wx_headers.cpp */; };
-		986BF7CF0C249E70003001FF /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707D0C216DD5001A161E /* osgGA.framework */; };
-		986BF7D00C249E71003001FF /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707E0C216DD5001A161E /* osgText.framework */; };
-		986BF7D10C249E72003001FF /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707F0C216DD5001A161E /* osgUtil.framework */; };
 		986BF7E40C249EEF003001FF /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770970C216F8C001A161E /* OpenGL.framework */; };
 		986BF8010C249F9D003001FF /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF8000C249F9D003001FF /* GLUT.framework */; };
-		986BF85A0C24A1C3003001FF /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707D0C216DD5001A161E /* osgGA.framework */; };
-		986BF85B0C24A1C3003001FF /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707E0C216DD5001A161E /* osgText.framework */; };
-		986BF85C0C24A1C4003001FF /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707F0C216DD5001A161E /* osgUtil.framework */; };
-		986BF86B0C24A299003001FF /* libwx_macud-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF8680C24A295003001FF /* libwx_macud-2.8.0.dylib */; };
-		986BF86C0C24A29A003001FF /* libwx_macud_gl-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF8670C24A295003001FF /* libwx_macud_gl-2.8.0.dylib */; };
 		986BF8B60C24A76A003001FF /* crater_0513.bt in Copy Files to Elevation dir */ = {isa = PBXBuildFile; fileRef = 98D9F8A20C22E443000F9A7A /* crater_0513.bt */; };
 		986BF91F0C24AA50003001FF /* Simple.xml in Resources */ = {isa = PBXBuildFile; fileRef = 986BF91E0C24AA50003001FF /* Simple.xml */; };
 		986BF9220C24AA5C003001FF /* Simple.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 986BF91E0C24AA50003001FF /* Simple.xml */; };
@@ -486,15 +538,8 @@
 		98A9F0990C2A0E1500A3AF4C /* vtui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A51620C209E0C00F54366 /* vtui.framework */; };
 		98A9F09A0C2A0E1500A3AF4C /* unzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4C370C20908300F54366 /* unzip.framework */; };
 		98A9F09B0C2A0E1500A3AF4C /* xmlhelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4362C30C1F44D400DBCF37 /* xmlhelper.framework */; };
-		98A9F09C0C2A0E1500A3AF4C /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7706F0C216D9E001A161E /* OpenThreads.framework */; };
 		98A9F09D0C2A0E1500A3AF4C /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770970C216F8C001A161E /* OpenGL.framework */; };
 		98A9F09E0C2A0E1500A3AF4C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
-		98A9F09F0C2A0E1500A3AF4C /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF1DF0C2447F0003001FF /* libgdal.dylib */; };
-		98A9F0A00C2A0E1500A3AF4C /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707C0C216DD5001A161E /* osgDB.framework */; };
-		98A9F0A10C2A0E1500A3AF4C /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770700C216D9E001A161E /* osg.framework */; };
-		98A9F0A20C2A0E1500A3AF4C /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707D0C216DD5001A161E /* osgGA.framework */; };
-		98A9F0A30C2A0E1500A3AF4C /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707E0C216DD5001A161E /* osgText.framework */; };
-		98A9F0A40C2A0E1500A3AF4C /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707F0C216DD5001A161E /* osgUtil.framework */; };
 		98A9F0A70C2A0E1500A3AF4C /* libpng.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4530C244B31003001FF /* libpng.dylib */; };
 		98A9F0B50C2A0F2300A3AF4C /* BuildingDlg3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9EFC60C2A0D5C00A3AF4C /* BuildingDlg3d.cpp */; };
 		98A9F0B70C2A0F2300A3AF4C /* CameraDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9EFC90C2A0D5C00A3AF4C /* CameraDlg.cpp */; };
@@ -534,26 +579,15 @@
 		98A9F0E60C2A0F2300A3AF4C /* vtlib_headers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9EF800C2A0D5B00A3AF4C /* vtlib_headers.cpp */; };
 		98A9F0E70C2A0F2300A3AF4C /* wx_headers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9F03D0C2A0D5C00A3AF4C /* wx_headers.cpp */; };
 		98A9F0F20C2A0F9D00A3AF4C /* Enviro.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98A9EF760C2A0D5B00A3AF4C /* Enviro.icns */; };
-		98A9F0F40C2A102100A3AF4C /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4500C244AE6003001FF /* libz.dylib */; };
 		98A9F0F50C2A102B00A3AF4C /* libnetcdf.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44C0C244A05003001FF /* libnetcdf.dylib */; };
 		98A9F13F0C2A128100A3AF4C /* vtdata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4B2F0C20202900F54366 /* vtdata.framework */; };
 		98A9F1400C2A128100A3AF4C /* vtosg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4D610C2099E100F54366 /* vtosg.framework */; };
 		98A9F1410C2A128100A3AF4C /* vtui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A51620C209E0C00F54366 /* vtui.framework */; };
 		98A9F1420C2A128100A3AF4C /* unzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6A4C370C20908300F54366 /* unzip.framework */; };
 		98A9F1430C2A128100A3AF4C /* xmlhelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A4362C30C1F44D400DBCF37 /* xmlhelper.framework */; };
-		98A9F1440C2A128100A3AF4C /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7706F0C216D9E001A161E /* OpenThreads.framework */; };
 		98A9F1450C2A128100A3AF4C /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770970C216F8C001A161E /* OpenGL.framework */; };
 		98A9F1460C2A128100A3AF4C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770950C216F8C001A161E /* Carbon.framework */; };
-		98A9F1470C2A128100A3AF4C /* libgdal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF1DF0C2447F0003001FF /* libgdal.dylib */; };
-		98A9F1480C2A128100A3AF4C /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707C0C216DD5001A161E /* osgDB.framework */; };
-		98A9F1490C2A128100A3AF4C /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC770700C216D9E001A161E /* osg.framework */; };
-		98A9F14A0C2A128100A3AF4C /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707D0C216DD5001A161E /* osgGA.framework */; };
-		98A9F14B0C2A128100A3AF4C /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707E0C216DD5001A161E /* osgText.framework */; };
-		98A9F14C0C2A128100A3AF4C /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AC7707F0C216DD5001A161E /* osgUtil.framework */; };
-		98A9F14D0C2A128100A3AF4C /* libwx_macud-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF8680C24A295003001FF /* libwx_macud-2.8.0.dylib */; };
-		98A9F14E0C2A128100A3AF4C /* libwx_macud_gl-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF8670C24A295003001FF /* libwx_macud_gl-2.8.0.dylib */; };
 		98A9F14F0C2A128100A3AF4C /* libpng.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4530C244B31003001FF /* libpng.dylib */; };
-		98A9F1500C2A128100A3AF4C /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF4500C244AE6003001FF /* libz.dylib */; };
 		98A9F1510C2A128100A3AF4C /* libnetcdf.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 986BF44C0C244A05003001FF /* libnetcdf.dylib */; };
 		98A9F19D0C2A12DF00A3AF4C /* app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9F15B0C2A12DF00A3AF4C /* app.cpp */; };
 		98A9F19E0C2A12DF00A3AF4C /* app.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98A9F15C0C2A12DF00A3AF4C /* app.h */; };
@@ -597,25 +631,15 @@
 		98A9F1D80C2A12DF00A3AF4C /* tags.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98A9F1990C2A12DF00A3AF4C /* tags.txt */; };
 		98A9F1D90C2A12DF00A3AF4C /* TreeView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98A9F19A0C2A12DF00A3AF4C /* TreeView.cpp */; };
 		98A9F1DA0C2A12DF00A3AF4C /* TreeView.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98A9F19B0C2A12DF00A3AF4C /* TreeView.h */; };
-		98ACB4E40C9648D200782F70 /* osgParticle.framework in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98ACB4E10C9648D200782F70 /* osgParticle.framework */; };
-		98ACB4E50C9648D200782F70 /* osgParticle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98ACB4E10C9648D200782F70 /* osgParticle.framework */; };
-		98ACB4E90C96495E00782F70 /* osgParticle.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 98ACB4E10C9648D200782F70 /* osgParticle.framework */; };
-		98ACB52C0C964ABE00782F70 /* osgParticle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98ACB4E10C9648D200782F70 /* osgParticle.framework */; };
-		98ACB5330C964B9400782F70 /* osgParticle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98ACB4E10C9648D200782F70 /* osgParticle.framework */; };
 		98ACB56F0C964F0E00782F70 /* FeatureTableDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98ACB56D0C964F0E00782F70 /* FeatureTableDlg.cpp */; };
 		98ACB5700C964F0E00782F70 /* FeatureTableDlg.h in Headers */ = {isa = PBXBuildFile; fileRef = 98ACB56E0C964F0E00782F70 /* FeatureTableDlg.h */; };
 		98ACB5730C964F3000782F70 /* TagDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98ACB5710C964F3000782F70 /* TagDlg.cpp */; };
 		98ACB5740C964F3000782F70 /* TagDlg.h in Headers */ = {isa = PBXBuildFile; fileRef = 98ACB5720C964F3000782F70 /* TagDlg.h */; };
 		98ACB5860C964FC100782F70 /* FeatureTableDlg3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98ACB5840C964FC100782F70 /* FeatureTableDlg3d.cpp */; };
-		98ACB5870C964FC100782F70 /* FeatureTableDlg3d.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98ACB5850C964FC100782F70 /* FeatureTableDlg3d.h */; };
-		98ACB6D10C965A6800782F70 /* osgParticle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98ACB4E10C9648D200782F70 /* osgParticle.framework */; };
 		98ACB6E00C965ABA00782F70 /* vtImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98ACB6DE0C965ABA00782F70 /* vtImage.cpp */; };
 		98ACB6E10C965ABA00782F70 /* vtImage.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98ACB6DF0C965ABA00782F70 /* vtImage.h */; };
 		98ACB6E50C965AE700782F70 /* ElevDrawOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98ACB6E30C965AE700782F70 /* ElevDrawOptions.cpp */; };
 		98ACB6E60C965AE700782F70 /* ElevDrawOptions.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98ACB6E40C965AE700782F70 /* ElevDrawOptions.h */; };
-		98BAEE110C544484001112BA /* libwx_macud-2.8.0.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */; };
-		98BAEE120C544484001112BA /* libwx_macud_gl-2.8.0.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */; };
-		98BAEE190C544554001112BA /* libgdal.1.11.0.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB16840C2A278100943462 /* libgdal.1.11.0.dylib */; };
 		98BAEE500C544CFA001112BA /* libwx_macud-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */; };
 		98BAEE510C544CFA001112BA /* libwx_macud_gl-2.8.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */; };
 		98D9F46A0C22E2EB000F9A7A /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98D9F4680C22E2EB000F9A7A /* README.txt */; };
@@ -624,77 +648,18 @@
 		98D9F8A30C22E443000F9A7A /* crater_0513.bt in Resources */ = {isa = PBXBuildFile; fileRef = 98D9F8A20C22E443000F9A7A /* crater_0513.bt */; };
 		98D9F8A40C22E454000F9A7A /* crater_0513.bt in Copy Files to Elevation dir */ = {isa = PBXBuildFile; fileRef = 98D9F8A20C22E443000F9A7A /* crater_0513.bt */; };
 		98EB164C0C2A259000943462 /* vtlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 98EB164B0C2A259000943462 /* vtlib.h */; };
-		98EB17E40C2A291400943462 /* cs2cs in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB166E0C2A278100943462 /* cs2cs */; };
-		98EB17E50C2A291400943462 /* gdal-config in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB166F0C2A278100943462 /* gdal-config */; };
-		98EB17E60C2A291400943462 /* gdal_contour in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16700C2A278100943462 /* gdal_contour */; };
-		98EB17E70C2A291400943462 /* gdal_rasterize in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16710C2A278100943462 /* gdal_rasterize */; };
-		98EB17E80C2A291400943462 /* gdal_translate in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16720C2A278100943462 /* gdal_translate */; };
-		98EB17E90C2A291400943462 /* gdaladdo in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16730C2A278100943462 /* gdaladdo */; };
-		98EB17EA0C2A291400943462 /* gdalinfo in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16740C2A278100943462 /* gdalinfo */; };
-		98EB17EB0C2A291400943462 /* gdaltindex in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16750C2A278100943462 /* gdaltindex */; };
-		98EB17EC0C2A291400943462 /* gdalwarp in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16760C2A278100943462 /* gdalwarp */; };
-		98EB17ED0C2A291400943462 /* invgeod in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16780C2A278100943462 /* invgeod */; };
-		98EB17EE0C2A291400943462 /* nad2bin in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB167A0C2A278100943462 /* nad2bin */; };
-		98EB17EF0C2A291400943462 /* nad2nad in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB167B0C2A278100943462 /* nad2nad */; };
-		98EB17F00C2A291400943462 /* ogr2ogr in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB167C0C2A278100943462 /* ogr2ogr */; };
-		98EB17F10C2A291400943462 /* ogrinfo in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB167D0C2A278100943462 /* ogrinfo */; };
-		98EB17F20C2A291400943462 /* ogrtindex in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB167E0C2A278100943462 /* ogrtindex */; };
-		98EB17F30C2A291400943462 /* proj in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB167F0C2A278100943462 /* proj */; };
-		98EB17F40C2A291400943462 /* wx-config in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16800C2A278100943462 /* wx-config */; };
-		98EB17F50C2A291400943462 /* wxrc-2.8 in Copy Shared bin Files */ = {isa = PBXBuildFile; fileRef = 98EB16820C2A278100943462 /* wxrc-2.8 */; };
-		98EB17F60C2A294C00943462 /* libgdal.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB16870C2A278100943462 /* libgdal.dylib */; };
-		98EB17F70C2A294C00943462 /* libproj.dylib in Copy Shared lib Files */ = {isa = PBXBuildFile; fileRef = 98EB168D0C2A278100943462 /* libproj.dylib */; };
-		98EB17FA0C2A297000943462 /* osgdb_3dc.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16A60C2A278100943462 /* osgdb_3dc.so */; };
-		98EB17FB0C2A297000943462 /* osgdb_3ds.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16A70C2A278100943462 /* osgdb_3ds.so */; };
-		98EB17FC0C2A297000943462 /* osgdb_ac.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16A80C2A278100943462 /* osgdb_ac.so */; };
-		98EB17FD0C2A297000943462 /* osgdb_bmp.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16A90C2A278100943462 /* osgdb_bmp.so */; };
-		98EB17FE0C2A297000943462 /* osgdb_bsp.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16AA0C2A278100943462 /* osgdb_bsp.so */; };
-		98EB17FF0C2A297000943462 /* osgdb_dds.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16AB0C2A278100943462 /* osgdb_dds.so */; };
-		98EB18000C2A297000943462 /* osgdb_dw.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16AC0C2A278100943462 /* osgdb_dw.so */; };
-		98EB18010C2A297000943462 /* osgdb_dxf.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16AD0C2A278100943462 /* osgdb_dxf.so */; };
-		98EB18020C2A297000943462 /* osgdb_flt.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16AE0C2A278100943462 /* osgdb_flt.so */; };
-		98EB18030C2A297000943462 /* osgdb_freetype.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16AF0C2A278100943462 /* osgdb_freetype.so */; };
-		98EB18040C2A297000943462 /* osgdb_geo.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16B00C2A278100943462 /* osgdb_geo.so */; };
-		98EB18050C2A297000943462 /* osgdb_hdr.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16B10C2A278100943462 /* osgdb_hdr.so */; };
-		98EB18060C2A297000943462 /* osgdb_ive.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16B20C2A278100943462 /* osgdb_ive.so */; };
-		98EB18070C2A297000943462 /* osgdb_logo.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16B30C2A278100943462 /* osgdb_logo.so */; };
-		98EB18080C2A297000943462 /* osgdb_lwo.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16B40C2A278100943462 /* osgdb_lwo.so */; };
-		98EB18090C2A297000943462 /* osgdb_lws.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16B50C2A278100943462 /* osgdb_lws.so */; };
-		98EB180A0C2A297000943462 /* osgdb_md2.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16B60C2A278100943462 /* osgdb_md2.so */; };
-		98EB180B0C2A297000943462 /* osgdb_net.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16B70C2A278100943462 /* osgdb_net.so */; };
-		98EB180C0C2A297000943462 /* osgdb_normals.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16B80C2A278100943462 /* osgdb_normals.so */; };
-		98EB180D0C2A297000943462 /* osgdb_obj.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16B90C2A278100943462 /* osgdb_obj.so */; };
-		98EB180E0C2A297000943462 /* osgdb_osg.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16BA0C2A278100943462 /* osgdb_osg.so */; };
-		98EB180F0C2A297000943462 /* osgdb_osga.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16BB0C2A278100943462 /* osgdb_osga.so */; };
-		98EB18100C2A297000943462 /* osgdb_osgFX.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16BC0C2A278100943462 /* osgdb_osgFX.so */; };
-		98EB18110C2A297000943462 /* osgdb_osgParticle.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16BD0C2A278100943462 /* osgdb_osgParticle.so */; };
-		98EB18120C2A297000943462 /* osgdb_osgSim.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16BE0C2A278100943462 /* osgdb_osgSim.so */; };
-		98EB18130C2A297000943462 /* osgdb_osgText.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16BF0C2A278100943462 /* osgdb_osgText.so */; };
-		98EB18140C2A297000943462 /* osgdb_osgtgz.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C00C2A278100943462 /* osgdb_osgtgz.so */; };
-		98EB18150C2A297000943462 /* osgdb_pic.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C10C2A278100943462 /* osgdb_pic.so */; };
-		98EB18160C2A297000943462 /* osgdb_pnm.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C20C2A278100943462 /* osgdb_pnm.so */; };
-		98EB18170C2A297000943462 /* osgdb_qt.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C30C2A278100943462 /* osgdb_qt.so */; };
-		98EB18180C2A297000943462 /* osgdb_rgb.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C40C2A278100943462 /* osgdb_rgb.so */; };
-		98EB18190C2A297000943462 /* osgdb_rot.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C50C2A278100943462 /* osgdb_rot.so */; };
-		98EB181A0C2A297000943462 /* osgdb_scale.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C60C2A278100943462 /* osgdb_scale.so */; };
-		98EB181B0C2A297000943462 /* osgdb_shp.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C70C2A278100943462 /* osgdb_shp.so */; };
-		98EB181C0C2A297000943462 /* osgdb_stl.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C80C2A278100943462 /* osgdb_stl.so */; };
-		98EB181D0C2A297000943462 /* osgdb_tga.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16C90C2A278100943462 /* osgdb_tga.so */; };
-		98EB181E0C2A297000943462 /* osgdb_tgz.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16CA0C2A278100943462 /* osgdb_tgz.so */; };
-		98EB181F0C2A297000943462 /* osgdb_trans.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16CB0C2A278100943462 /* osgdb_trans.so */; };
-		98EB18210C2A297000943462 /* osgdb_x.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16CD0C2A278100943462 /* osgdb_x.so */; };
-		98EB18220C2A297000943462 /* osgdb_zip.so in Copy Shared Plugins Files */ = {isa = PBXBuildFile; fileRef = 98EB16CE0C2A278100943462 /* osgdb_zip.so */; };
-		98EB19200C2A298800943462 /* OpenThreads.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0AC7706F0C216D9E001A161E /* OpenThreads.framework */; };
-		98EB19210C2A298800943462 /* osgDB.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0AC7707C0C216DD5001A161E /* osgDB.framework */; };
-		98EB19220C2A298800943462 /* osgGA.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0AC7707D0C216DD5001A161E /* osgGA.framework */; };
-		98EB19230C2A298800943462 /* osgText.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0AC7707E0C216DD5001A161E /* osgText.framework */; };
-		98EB19240C2A298800943462 /* osgUtil.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0AC7707F0C216DD5001A161E /* osgUtil.framework */; };
-		98EB19250C2A298800943462 /* osg.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0AC770700C216D9E001A161E /* osg.framework */; };
 		98EB19320C2A29B500943462 /* vtdata.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0A6A4B2F0C20202900F54366 /* vtdata.framework */; };
 		98EB19330C2A29B500943462 /* unzip.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0A6A4C370C20908300F54366 /* unzip.framework */; };
 		98EB19340C2A29B500943462 /* xmlhelper.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0A4362C30C1F44D400DBCF37 /* xmlhelper.framework */; };
 		98EB19350C2A29B500943462 /* vtosg.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0A6A4D610C2099E100F54366 /* vtosg.framework */; };
 		98EB19360C2A29B500943462 /* vtui.framework in Copy Shared Frameworks Files */ = {isa = PBXBuildFile; fileRef = 0A6A51620C209E0C00F54366 /* vtui.framework */; };
+		EF315CB50DB3B468008FB961 /* SpaceNav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF315CB30DB3B468008FB961 /* SpaceNav.cpp */; };
+		EF315CB60DB3B468008FB961 /* SpaceNav.h in Headers */ = {isa = PBXBuildFile; fileRef = EF315CB40DB3B468008FB961 /* SpaceNav.h */; };
+		EF315CBC0DB3C09D008FB961 /* Builder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF315CBA0DB3C09D008FB961 /* Builder.cpp */; };
+		EF6644090DBB86F30081EE66 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF6644050DBB86DD0081EE66 /* AGL.framework */; };
+		EF7376E20DC1F5E7001DCD69 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EF7376E10DC1F5E7001DCD69 /* libz.dylib */; };
+		EF7376E30DC1F5E7001DCD69 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EF7376E10DC1F5E7001DCD69 /* libz.dylib */; };
+		EF7376E40DC1F5E7001DCD69 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EF7376E10DC1F5E7001DCD69 /* libz.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1027,6 +992,13 @@
 			remoteGlobalIDString = 98EB19480C2A2A7400943462;
 			remoteInfo = "copy-vtp-data";
 		};
+		EF7376C80DC1EF6B001DCD69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A4362B60C1F44B600DBCF37 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 98A9F10E0C2A128100A3AF4C;
+			remoteInfo = CManager;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1125,130 +1097,19 @@
 			name = "Copy Files to Elevation dir";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		98EB17D70C2A282A00943462 /* Copy Shared lib Files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = Shared/lib;
-			dstSubfolderSpec = 16;
-			files = (
-				98BAEE190C544554001112BA /* libgdal.1.11.0.dylib in Copy Shared lib Files */,
-				98BAEE110C544484001112BA /* libwx_macud-2.8.0.dylib in Copy Shared lib Files */,
-				98BAEE120C544484001112BA /* libwx_macud_gl-2.8.0.dylib in Copy Shared lib Files */,
-				98EB17F60C2A294C00943462 /* libgdal.dylib in Copy Shared lib Files */,
-				98EB17F70C2A294C00943462 /* libproj.dylib in Copy Shared lib Files */,
-				98ACB4E40C9648D200782F70 /* osgParticle.framework in Copy Shared lib Files */,
-			);
-			name = "Copy Shared lib Files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		98EB17DB0C2A286600943462 /* Copy Shared bin Files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = Shared/bin;
-			dstSubfolderSpec = 16;
-			files = (
-				98EB17E40C2A291400943462 /* cs2cs in Copy Shared bin Files */,
-				98EB17E50C2A291400943462 /* gdal-config in Copy Shared bin Files */,
-				98EB17E60C2A291400943462 /* gdal_contour in Copy Shared bin Files */,
-				98EB17E70C2A291400943462 /* gdal_rasterize in Copy Shared bin Files */,
-				98EB17E80C2A291400943462 /* gdal_translate in Copy Shared bin Files */,
-				98EB17E90C2A291400943462 /* gdaladdo in Copy Shared bin Files */,
-				98EB17EA0C2A291400943462 /* gdalinfo in Copy Shared bin Files */,
-				98EB17EB0C2A291400943462 /* gdaltindex in Copy Shared bin Files */,
-				98EB17EC0C2A291400943462 /* gdalwarp in Copy Shared bin Files */,
-				98EB17ED0C2A291400943462 /* invgeod in Copy Shared bin Files */,
-				98EB17EE0C2A291400943462 /* nad2bin in Copy Shared bin Files */,
-				98EB17EF0C2A291400943462 /* nad2nad in Copy Shared bin Files */,
-				98EB17F00C2A291400943462 /* ogr2ogr in Copy Shared bin Files */,
-				98EB17F10C2A291400943462 /* ogrinfo in Copy Shared bin Files */,
-				98EB17F20C2A291400943462 /* ogrtindex in Copy Shared bin Files */,
-				98EB17F30C2A291400943462 /* proj in Copy Shared bin Files */,
-				98EB17F40C2A291400943462 /* wx-config in Copy Shared bin Files */,
-				98EB17F50C2A291400943462 /* wxrc-2.8 in Copy Shared bin Files */,
-			);
-			name = "Copy Shared bin Files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		98EB17DD0C2A289F00943462 /* Copy Shared Plugins Files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = Shared/Plugins;
-			dstSubfolderSpec = 16;
-			files = (
-				98EB17FA0C2A297000943462 /* osgdb_3dc.so in Copy Shared Plugins Files */,
-				98EB17FB0C2A297000943462 /* osgdb_3ds.so in Copy Shared Plugins Files */,
-				98EB17FC0C2A297000943462 /* osgdb_ac.so in Copy Shared Plugins Files */,
-				98EB17FD0C2A297000943462 /* osgdb_bmp.so in Copy Shared Plugins Files */,
-				98EB17FE0C2A297000943462 /* osgdb_bsp.so in Copy Shared Plugins Files */,
-				98EB17FF0C2A297000943462 /* osgdb_dds.so in Copy Shared Plugins Files */,
-				98EB18000C2A297000943462 /* osgdb_dw.so in Copy Shared Plugins Files */,
-				98EB18010C2A297000943462 /* osgdb_dxf.so in Copy Shared Plugins Files */,
-				98EB18020C2A297000943462 /* osgdb_flt.so in Copy Shared Plugins Files */,
-				98EB18030C2A297000943462 /* osgdb_freetype.so in Copy Shared Plugins Files */,
-				98EB18040C2A297000943462 /* osgdb_geo.so in Copy Shared Plugins Files */,
-				98EB18050C2A297000943462 /* osgdb_hdr.so in Copy Shared Plugins Files */,
-				98EB18060C2A297000943462 /* osgdb_ive.so in Copy Shared Plugins Files */,
-				98EB18070C2A297000943462 /* osgdb_logo.so in Copy Shared Plugins Files */,
-				98EB18080C2A297000943462 /* osgdb_lwo.so in Copy Shared Plugins Files */,
-				98EB18090C2A297000943462 /* osgdb_lws.so in Copy Shared Plugins Files */,
-				98EB180A0C2A297000943462 /* osgdb_md2.so in Copy Shared Plugins Files */,
-				98EB180B0C2A297000943462 /* osgdb_net.so in Copy Shared Plugins Files */,
-				98EB180C0C2A297000943462 /* osgdb_normals.so in Copy Shared Plugins Files */,
-				98EB180D0C2A297000943462 /* osgdb_obj.so in Copy Shared Plugins Files */,
-				98EB180E0C2A297000943462 /* osgdb_osg.so in Copy Shared Plugins Files */,
-				98EB180F0C2A297000943462 /* osgdb_osga.so in Copy Shared Plugins Files */,
-				98EB18100C2A297000943462 /* osgdb_osgFX.so in Copy Shared Plugins Files */,
-				98EB18110C2A297000943462 /* osgdb_osgParticle.so in Copy Shared Plugins Files */,
-				98EB18120C2A297000943462 /* osgdb_osgSim.so in Copy Shared Plugins Files */,
-				98EB18130C2A297000943462 /* osgdb_osgText.so in Copy Shared Plugins Files */,
-				98EB18140C2A297000943462 /* osgdb_osgtgz.so in Copy Shared Plugins Files */,
-				98EB18150C2A297000943462 /* osgdb_pic.so in Copy Shared Plugins Files */,
-				98EB18160C2A297000943462 /* osgdb_pnm.so in Copy Shared Plugins Files */,
-				98EB18170C2A297000943462 /* osgdb_qt.so in Copy Shared Plugins Files */,
-				98EB18180C2A297000943462 /* osgdb_rgb.so in Copy Shared Plugins Files */,
-				98EB18190C2A297000943462 /* osgdb_rot.so in Copy Shared Plugins Files */,
-				98EB181A0C2A297000943462 /* osgdb_scale.so in Copy Shared Plugins Files */,
-				98EB181B0C2A297000943462 /* osgdb_shp.so in Copy Shared Plugins Files */,
-				98EB181C0C2A297000943462 /* osgdb_stl.so in Copy Shared Plugins Files */,
-				98EB181D0C2A297000943462 /* osgdb_tga.so in Copy Shared Plugins Files */,
-				98EB181E0C2A297000943462 /* osgdb_tgz.so in Copy Shared Plugins Files */,
-				98EB181F0C2A297000943462 /* osgdb_trans.so in Copy Shared Plugins Files */,
-				98EB18210C2A297000943462 /* osgdb_x.so in Copy Shared Plugins Files */,
-				98EB18220C2A297000943462 /* osgdb_zip.so in Copy Shared Plugins Files */,
-			);
-			name = "Copy Shared Plugins Files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		98EB17DF0C2A28C300943462 /* Copy Shared Frameworks Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = Shared/Frameworks;
-			dstSubfolderSpec = 7;
+			dstPath = /Library/Frameworks;
+			dstSubfolderSpec = 0;
 			files = (
 				98EB19320C2A29B500943462 /* vtdata.framework in Copy Shared Frameworks Files */,
 				98EB19330C2A29B500943462 /* unzip.framework in Copy Shared Frameworks Files */,
 				98EB19340C2A29B500943462 /* xmlhelper.framework in Copy Shared Frameworks Files */,
 				98EB19350C2A29B500943462 /* vtosg.framework in Copy Shared Frameworks Files */,
 				98EB19360C2A29B500943462 /* vtui.framework in Copy Shared Frameworks Files */,
-				98EB19200C2A298800943462 /* OpenThreads.framework in Copy Shared Frameworks Files */,
-				98EB19210C2A298800943462 /* osgDB.framework in Copy Shared Frameworks Files */,
-				98EB19220C2A298800943462 /* osgGA.framework in Copy Shared Frameworks Files */,
-				98EB19230C2A298800943462 /* osgText.framework in Copy Shared Frameworks Files */,
-				98EB19240C2A298800943462 /* osgUtil.framework in Copy Shared Frameworks Files */,
-				98EB19250C2A298800943462 /* osg.framework in Copy Shared Frameworks Files */,
-				98ACB4E90C96495E00782F70 /* osgParticle.framework in Copy Shared Frameworks Files */,
 			);
 			name = "Copy Shared Frameworks Files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		98EB19640C2A2CF600943462 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 16;
-			files = (
-				98ACB5870C964FC100782F70 /* FeatureTableDlg3d.h in CopyFiles */,
-			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -1515,14 +1376,20 @@
 		0A6A51F80C20A3D100F54366 /* glutSimple.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = glutSimple.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A6A51FA0C20A3D100F54366 /* glutSimple-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "glutSimple-Info.plist"; sourceTree = "<group>"; };
 		0A6A52010C20A3F600F54366 /* app.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = app.cpp; path = ../TerrainApps/glutSimple/app.cpp; sourceTree = SOURCE_ROOT; };
-		0AC7706F0C216D9E001A161E /* OpenThreads.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenThreads.framework; path = ../../build.shared/Shared/Frameworks/OpenThreads.framework; sourceTree = SOURCE_ROOT; };
-		0AC770700C216D9E001A161E /* osg.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = osg.framework; path = ../../build.shared/Shared/Frameworks/osg.framework; sourceTree = SOURCE_ROOT; };
-		0AC7707C0C216DD5001A161E /* osgDB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgDB.framework; path = ../../build.shared/Shared/Frameworks/osgDB.framework; sourceTree = SOURCE_ROOT; };
-		0AC7707D0C216DD5001A161E /* osgGA.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgGA.framework; path = ../../build.shared/Shared/Frameworks/osgGA.framework; sourceTree = SOURCE_ROOT; };
-		0AC7707E0C216DD5001A161E /* osgText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgText.framework; path = ../../build.shared/Shared/Frameworks/osgText.framework; sourceTree = SOURCE_ROOT; };
-		0AC7707F0C216DD5001A161E /* osgUtil.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgUtil.framework; path = ../../build.shared/Shared/Frameworks/osgUtil.framework; sourceTree = SOURCE_ROOT; };
 		0AC770950C216F8C001A161E /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		0AC770970C216F8C001A161E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		981E536E0DDA326C00C2F2DE /* libOpenThreads.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libOpenThreads.dylib; sourceTree = "<group>"; };
+		981E53710DDA326C00C2F2DE /* libosg.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosg.dylib; sourceTree = "<group>"; };
+		981E53740DDA326C00C2F2DE /* libosgDB.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosgDB.dylib; sourceTree = "<group>"; };
+		981E53770DDA326C00C2F2DE /* libosgFX.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosgFX.dylib; sourceTree = "<group>"; };
+		981E537A0DDA326C00C2F2DE /* libosgGA.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosgGA.dylib; sourceTree = "<group>"; };
+		981E53800DDA326C00C2F2DE /* libosgParticle.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosgParticle.dylib; sourceTree = "<group>"; };
+		981E53830DDA326C00C2F2DE /* libosgShadow.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosgShadow.dylib; sourceTree = "<group>"; };
+		981E53860DDA326C00C2F2DE /* libosgSim.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosgSim.dylib; sourceTree = "<group>"; };
+		981E53890DDA326C00C2F2DE /* libosgTerrain.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosgTerrain.dylib; sourceTree = "<group>"; };
+		981E538C0DDA326C00C2F2DE /* libosgText.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosgText.dylib; sourceTree = "<group>"; };
+		981E538F0DDA326C00C2F2DE /* libosgUtil.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosgUtil.dylib; sourceTree = "<group>"; };
+		981E53920DDA326C00C2F2DE /* libosgViewer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosgViewer.dylib; sourceTree = "<group>"; };
 		982FD6D80C297A5C00364006 /* basic.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = basic.html; path = ../TerrainApps/VTBuilder/Docs/basic.html; sourceTree = SOURCE_ROOT; };
 		982FD6D90C297A5C00364006 /* buildings.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; name = buildings.html; path = ../TerrainApps/VTBuilder/Docs/buildings.html; sourceTree = SOURCE_ROOT; };
 		982FD6DA0C297A5C00364006 /* docs.css */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = docs.css; path = ../TerrainApps/VTBuilder/Docs/docs.css; sourceTree = SOURCE_ROOT; };
@@ -1791,15 +1658,12 @@
 		985FE3590CFFD9FF000453AF /* TilingOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TilingOptions.h; path = ../TerrainApps/VTBuilder/TilingOptions.h; sourceTree = SOURCE_ROOT; };
 		985FE35C0CFFDA66000453AF /* EphemDlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EphemDlg.cpp; path = ../TerrainApps/Enviro/wx/EphemDlg.cpp; sourceTree = SOURCE_ROOT; };
 		985FE35D0CFFDA66000453AF /* EphemDlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EphemDlg.h; path = ../TerrainApps/Enviro/wx/EphemDlg.h; sourceTree = SOURCE_ROOT; };
-		986BF1DF0C2447F0003001FF /* libgdal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgdal.dylib; path = ../../build.shared/Shared/lib/libgdal.dylib; sourceTree = SOURCE_ROOT; };
 		986BF4460C2449A5003001FF /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = /sw/lib/libbz2.dylib; sourceTree = "<absolute>"; };
 		986BF4480C2449C7003001FF /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = /sw/lib/libcurl.dylib; sourceTree = "<absolute>"; };
 		986BF44A0C2449E7003001FF /* libjpeg.62.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjpeg.62.dylib; path = /sw/lib/libjpeg.62.dylib; sourceTree = "<absolute>"; };
 		986BF44C0C244A05003001FF /* libnetcdf.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libnetcdf.dylib; path = /sw/lib/libnetcdf.dylib; sourceTree = "<absolute>"; };
 		986BF44E0C244A36003001FF /* libtiff.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtiff.dylib; path = /sw/lib/libtiff.dylib; sourceTree = "<absolute>"; };
-		986BF4500C244AE6003001FF /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = /usr/lib/libz.dylib; sourceTree = "<absolute>"; };
 		986BF4530C244B31003001FF /* libpng.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpng.dylib; path = /sw/lib/libpng.dylib; sourceTree = "<absolute>"; };
-		986BF5770C244E4B003001FF /* libMini.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMini.a; path = ../../build.shared/Shared/lib/libMini.a; sourceTree = SOURCE_ROOT; };
 		986BF5820C244F1A003001FF /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		986BF5850C244F31003001FF /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 		986BF58C0C244F5C003001FF /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -1816,8 +1680,6 @@
 		986BF76D0C249C2F003001FF /* wxSimple-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "wxSimple-Info.plist"; sourceTree = "<group>"; };
 		986BF7920C249C48003001FF /* wxSimple.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wxSimple.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		986BF8000C249F9D003001FF /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
-		986BF8670C24A295003001FF /* libwx_macud_gl-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libwx_macud_gl-2.8.0.dylib"; path = "../../build.shared/Shared/lib/libwx_macud_gl-2.8.0.dylib"; sourceTree = SOURCE_ROOT; };
-		986BF8680C24A295003001FF /* libwx_macud-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libwx_macud-2.8.0.dylib"; path = "../../build.shared/Shared/lib/libwx_macud-2.8.0.dylib"; sourceTree = SOURCE_ROOT; };
 		986BF91E0C24AA50003001FF /* Simple.xml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; name = Simple.xml; path = ../TerrainApps/wxSimple/Data/Simple.xml; sourceTree = SOURCE_ROOT; };
 		988A006F0D459D8A00783971 /* triangle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = triangle.c; sourceTree = "<group>"; };
 		988A00700D459D8A00783971 /* triangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = triangle.h; sourceTree = "<group>"; };
@@ -2054,7 +1916,6 @@
 		98A9F1990C2A12DF00A3AF4C /* tags.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = tags.txt; path = ../TerrainApps/CManager/tags.txt; sourceTree = SOURCE_ROOT; };
 		98A9F19A0C2A12DF00A3AF4C /* TreeView.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TreeView.cpp; path = ../TerrainApps/CManager/TreeView.cpp; sourceTree = SOURCE_ROOT; };
 		98A9F19B0C2A12DF00A3AF4C /* TreeView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TreeView.h; path = ../TerrainApps/CManager/TreeView.h; sourceTree = SOURCE_ROOT; };
-		98ACB4E10C9648D200782F70 /* osgParticle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgParticle.framework; path = ../../build.shared/Shared/Frameworks/osgParticle.framework; sourceTree = SOURCE_ROOT; };
 		98ACB56D0C964F0E00782F70 /* FeatureTableDlg.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FeatureTableDlg.cpp; path = ../TerrainSDK/vtui/FeatureTableDlg.cpp; sourceTree = SOURCE_ROOT; };
 		98ACB56E0C964F0E00782F70 /* FeatureTableDlg.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FeatureTableDlg.h; path = ../TerrainSDK/vtui/FeatureTableDlg.h; sourceTree = SOURCE_ROOT; };
 		98ACB5710C964F3000782F70 /* TagDlg.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TagDlg.cpp; path = ../TerrainSDK/vtui/TagDlg.cpp; sourceTree = SOURCE_ROOT; };
@@ -2069,120 +1930,19 @@
 		98D9F4690C22E2EB000F9A7A /* Simple.xml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = Simple.xml; sourceTree = "<group>"; };
 		98D9F8A20C22E443000F9A7A /* crater_0513.bt */ = {isa = PBXFileReference; lastKnownFileType = file; name = crater_0513.bt; path = "../../vtp-data/Data/Elevation/crater_0513.bt"; sourceTree = SOURCE_ROOT; };
 		98EB164B0C2A259000943462 /* vtlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = vtlib.h; path = ../TerrainSDK/vtlib/vtlib.h; sourceTree = SOURCE_ROOT; };
-		98EB166E0C2A278100943462 /* cs2cs */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cs2cs; sourceTree = "<group>"; };
-		98EB166F0C2A278100943462 /* gdal-config */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = "gdal-config"; sourceTree = "<group>"; };
-		98EB16700C2A278100943462 /* gdal_contour */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = gdal_contour; sourceTree = "<group>"; };
-		98EB16710C2A278100943462 /* gdal_rasterize */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = gdal_rasterize; sourceTree = "<group>"; };
-		98EB16720C2A278100943462 /* gdal_translate */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = gdal_translate; sourceTree = "<group>"; };
-		98EB16730C2A278100943462 /* gdaladdo */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = gdaladdo; sourceTree = "<group>"; };
-		98EB16740C2A278100943462 /* gdalinfo */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = gdalinfo; sourceTree = "<group>"; };
-		98EB16750C2A278100943462 /* gdaltindex */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = gdaltindex; sourceTree = "<group>"; };
-		98EB16760C2A278100943462 /* gdalwarp */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = gdalwarp; sourceTree = "<group>"; };
-		98EB16770C2A278100943462 /* geod */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = geod; sourceTree = "<group>"; };
-		98EB16780C2A278100943462 /* invgeod */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = invgeod; sourceTree = "<group>"; };
-		98EB16790C2A278100943462 /* invproj */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = invproj; sourceTree = "<group>"; };
-		98EB167A0C2A278100943462 /* nad2bin */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = nad2bin; sourceTree = "<group>"; };
-		98EB167B0C2A278100943462 /* nad2nad */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = nad2nad; sourceTree = "<group>"; };
-		98EB167C0C2A278100943462 /* ogr2ogr */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ogr2ogr; sourceTree = "<group>"; };
-		98EB167D0C2A278100943462 /* ogrinfo */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ogrinfo; sourceTree = "<group>"; };
-		98EB167E0C2A278100943462 /* ogrtindex */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ogrtindex; sourceTree = "<group>"; };
-		98EB167F0C2A278100943462 /* proj */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = proj; sourceTree = "<group>"; };
-		98EB16800C2A278100943462 /* wx-config */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = "wx-config"; sourceTree = "<group>"; };
-		98EB16810C2A278100943462 /* wxrc */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = wxrc; sourceTree = "<group>"; };
-		98EB16820C2A278100943462 /* wxrc-2.8 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "wxrc-2.8"; sourceTree = "<group>"; };
-		98EB16840C2A278100943462 /* libgdal.1.11.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libgdal.1.11.0.dylib; sourceTree = "<group>"; };
-		98EB16850C2A278100943462 /* libgdal.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libgdal.1.dylib; sourceTree = "<group>"; };
-		98EB16860C2A278100943462 /* libgdal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgdal.a; sourceTree = "<group>"; };
-		98EB16870C2A278100943462 /* libgdal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libgdal.dylib; sourceTree = "<group>"; };
-		98EB16880C2A278100943462 /* libgdal.la */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = libgdal.la; sourceTree = "<group>"; };
+		98EB16870C2A278100943462 /* libgdal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgdal.dylib; path = /Library/Frameworks/VTPX.framework/Versions/A/lib/libgdal.dylib; sourceTree = "<absolute>"; };
 		98EB16890C2A278100943462 /* libMini.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMini.a; sourceTree = "<group>"; };
-		98EB168A0C2A278100943462 /* libproj.0.5.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libproj.0.5.0.dylib; sourceTree = "<group>"; };
-		98EB168B0C2A278100943462 /* libproj.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libproj.0.dylib; sourceTree = "<group>"; };
-		98EB168C0C2A278100943462 /* libproj.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libproj.a; sourceTree = "<group>"; };
 		98EB168D0C2A278100943462 /* libproj.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libproj.dylib; sourceTree = "<group>"; };
-		98EB168E0C2A278100943462 /* libproj.la */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = libproj.la; sourceTree = "<group>"; };
 		98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud-2.8.0.dylib"; sourceTree = "<group>"; };
-		98EB16930C2A278100943462 /* libwx_macud_gizmos-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gizmos-2.8.0.dylib"; sourceTree = "<group>"; };
-		98EB16960C2A278100943462 /* libwx_macud_gizmos_xrc-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gizmos_xrc-2.8.0.dylib"; sourceTree = "<group>"; };
 		98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_gl-2.8.0.dylib"; sourceTree = "<group>"; };
-		98EB169C0C2A278100943462 /* libwx_macud_stc-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud_stc-2.8.0.dylib"; sourceTree = "<group>"; };
 		98EB16A00C2A278100943462 /* mac-unicode-debug-2.8 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = "mac-unicode-debug-2.8"; sourceTree = "<group>"; };
 		98EB16A40C2A278100943462 /* setup.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = setup.h; sourceTree = "<group>"; };
-		98EB16A60C2A278100943462 /* osgdb_3dc.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3dc.so; sourceTree = "<group>"; };
-		98EB16A70C2A278100943462 /* osgdb_3ds.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3ds.so; sourceTree = "<group>"; };
-		98EB16A80C2A278100943462 /* osgdb_ac.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_ac.so; sourceTree = "<group>"; };
-		98EB16A90C2A278100943462 /* osgdb_bmp.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_bmp.so; sourceTree = "<group>"; };
-		98EB16AA0C2A278100943462 /* osgdb_bsp.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_bsp.so; sourceTree = "<group>"; };
-		98EB16AB0C2A278100943462 /* osgdb_dds.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_dds.so; sourceTree = "<group>"; };
-		98EB16AC0C2A278100943462 /* osgdb_dw.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_dw.so; sourceTree = "<group>"; };
-		98EB16AD0C2A278100943462 /* osgdb_dxf.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_dxf.so; sourceTree = "<group>"; };
-		98EB16AE0C2A278100943462 /* osgdb_flt.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_flt.so; sourceTree = "<group>"; };
-		98EB16AF0C2A278100943462 /* osgdb_freetype.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_freetype.so; sourceTree = "<group>"; };
-		98EB16B00C2A278100943462 /* osgdb_geo.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_geo.so; sourceTree = "<group>"; };
-		98EB16B10C2A278100943462 /* osgdb_hdr.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_hdr.so; sourceTree = "<group>"; };
-		98EB16B20C2A278100943462 /* osgdb_ive.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_ive.so; sourceTree = "<group>"; };
-		98EB16B30C2A278100943462 /* osgdb_logo.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_logo.so; sourceTree = "<group>"; };
-		98EB16B40C2A278100943462 /* osgdb_lwo.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_lwo.so; sourceTree = "<group>"; };
-		98EB16B50C2A278100943462 /* osgdb_lws.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_lws.so; sourceTree = "<group>"; };
-		98EB16B60C2A278100943462 /* osgdb_md2.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_md2.so; sourceTree = "<group>"; };
-		98EB16B70C2A278100943462 /* osgdb_net.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_net.so; sourceTree = "<group>"; };
-		98EB16B80C2A278100943462 /* osgdb_normals.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_normals.so; sourceTree = "<group>"; };
-		98EB16B90C2A278100943462 /* osgdb_obj.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_obj.so; sourceTree = "<group>"; };
-		98EB16BA0C2A278100943462 /* osgdb_osg.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_osg.so; sourceTree = "<group>"; };
-		98EB16BB0C2A278100943462 /* osgdb_osga.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_osga.so; sourceTree = "<group>"; };
-		98EB16BC0C2A278100943462 /* osgdb_osgFX.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_osgFX.so; sourceTree = "<group>"; };
-		98EB16BD0C2A278100943462 /* osgdb_osgParticle.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_osgParticle.so; sourceTree = "<group>"; };
-		98EB16BE0C2A278100943462 /* osgdb_osgSim.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_osgSim.so; sourceTree = "<group>"; };
-		98EB16BF0C2A278100943462 /* osgdb_osgText.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_osgText.so; sourceTree = "<group>"; };
-		98EB16C00C2A278100943462 /* osgdb_osgtgz.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_osgtgz.so; sourceTree = "<group>"; };
-		98EB16C10C2A278100943462 /* osgdb_pic.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_pic.so; sourceTree = "<group>"; };
-		98EB16C20C2A278100943462 /* osgdb_pnm.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_pnm.so; sourceTree = "<group>"; };
-		98EB16C30C2A278100943462 /* osgdb_qt.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_qt.so; sourceTree = "<group>"; };
-		98EB16C40C2A278100943462 /* osgdb_rgb.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_rgb.so; sourceTree = "<group>"; };
-		98EB16C50C2A278100943462 /* osgdb_rot.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_rot.so; sourceTree = "<group>"; };
-		98EB16C60C2A278100943462 /* osgdb_scale.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_scale.so; sourceTree = "<group>"; };
-		98EB16C70C2A278100943462 /* osgdb_shp.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_shp.so; sourceTree = "<group>"; };
-		98EB16C80C2A278100943462 /* osgdb_stl.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_stl.so; sourceTree = "<group>"; };
-		98EB16C90C2A278100943462 /* osgdb_tga.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_tga.so; sourceTree = "<group>"; };
-		98EB16CA0C2A278100943462 /* osgdb_tgz.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_tgz.so; sourceTree = "<group>"; };
-		98EB16CB0C2A278100943462 /* osgdb_trans.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_trans.so; sourceTree = "<group>"; };
-		98EB16CC0C2A278100943462 /* osgdb_txp.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_txp.so; sourceTree = "<group>"; };
-		98EB16CD0C2A278100943462 /* osgdb_x.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_x.so; sourceTree = "<group>"; };
-		98EB16CE0C2A278100943462 /* osgdb_zip.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_zip.so; sourceTree = "<group>"; };
-		98EB16D80C2A278200943462 /* cubewerx_extra.wkt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cubewerx_extra.wkt; sourceTree = "<group>"; };
-		98EB16D90C2A278200943462 /* ecw_cs.dat */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = ecw_cs.dat; sourceTree = "<group>"; };
-		98EB16DA0C2A278200943462 /* ellipsoid.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = ellipsoid.csv; sourceTree = "<group>"; };
-		98EB16DB0C2A278200943462 /* epsg.wkt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = epsg.wkt; sourceTree = "<group>"; };
-		98EB16DC0C2A278200943462 /* esri_extra.wkt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = esri_extra.wkt; sourceTree = "<group>"; };
-		98EB16DD0C2A278200943462 /* gcs.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = gcs.csv; sourceTree = "<group>"; };
-		98EB16DE0C2A278200943462 /* gdal_datum.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = gdal_datum.csv; sourceTree = "<group>"; };
-		98EB16DF0C2A278200943462 /* gdalicon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gdalicon.png; sourceTree = "<group>"; };
-		98EB16E00C2A278200943462 /* GDALLogoBW.svg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = GDALLogoBW.svg; sourceTree = "<group>"; };
-		98EB16E10C2A278200943462 /* GDALLogoColor.svg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = GDALLogoColor.svg; sourceTree = "<group>"; };
-		98EB16E20C2A278200943462 /* GDALLogoGS.svg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = GDALLogoGS.svg; sourceTree = "<group>"; };
-		98EB16E30C2A278200943462 /* pcs.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pcs.csv; sourceTree = "<group>"; };
-		98EB16E40C2A278200943462 /* prime_meridian.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = prime_meridian.csv; sourceTree = "<group>"; };
-		98EB16E50C2A278200943462 /* projop_wparm.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = projop_wparm.csv; sourceTree = "<group>"; };
-		98EB16E60C2A278200943462 /* s57agencies.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = s57agencies.csv; sourceTree = "<group>"; };
-		98EB16E70C2A278200943462 /* s57attributes.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = s57attributes.csv; sourceTree = "<group>"; };
-		98EB16E80C2A278200943462 /* s57attributes_aml.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = s57attributes_aml.csv; sourceTree = "<group>"; };
-		98EB16E90C2A278200943462 /* s57attributes_iw.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = s57attributes_iw.csv; sourceTree = "<group>"; };
-		98EB16EA0C2A278200943462 /* s57expectedinput.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = s57expectedinput.csv; sourceTree = "<group>"; };
-		98EB16EB0C2A278200943462 /* s57objectclasses.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = s57objectclasses.csv; sourceTree = "<group>"; };
-		98EB16EC0C2A278200943462 /* s57objectclasses_aml.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = s57objectclasses_aml.csv; sourceTree = "<group>"; };
-		98EB16ED0C2A278200943462 /* s57objectclasses_iw.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = s57objectclasses_iw.csv; sourceTree = "<group>"; };
-		98EB16EE0C2A278200943462 /* seed_2d.dgn */ = {isa = PBXFileReference; lastKnownFileType = file; path = seed_2d.dgn; sourceTree = "<group>"; };
-		98EB16EF0C2A278200943462 /* seed_3d.dgn */ = {isa = PBXFileReference; lastKnownFileType = file; path = seed_3d.dgn; sourceTree = "<group>"; };
-		98EB16F00C2A278200943462 /* stateplane.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = stateplane.csv; sourceTree = "<group>"; };
-		98EB16F10C2A278200943462 /* unit_of_measure.csv */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = unit_of_measure.csv; sourceTree = "<group>"; };
-		98EB17360C2A278200943462 /* epsg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = epsg; sourceTree = "<group>"; };
-		98EB17370C2A278200943462 /* esri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = esri; sourceTree = "<group>"; };
-		98EB17380C2A278200943462 /* GL27 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = GL27; sourceTree = "<group>"; };
-		98EB17390C2A278200943462 /* nad.lst */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = nad.lst; sourceTree = "<group>"; };
-		98EB173A0C2A278200943462 /* nad27 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = nad27; sourceTree = "<group>"; };
-		98EB173B0C2A278200943462 /* nad83 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = nad83; sourceTree = "<group>"; };
-		98EB173C0C2A278200943462 /* proj_def.dat */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = proj_def.dat; sourceTree = "<group>"; };
-		98EB173D0C2A278200943462 /* world */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = world; sourceTree = "<group>"; };
+		EF315CB30DB3B468008FB961 /* SpaceNav.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpaceNav.cpp; path = ../TerrainSDK/vtlib/core/SpaceNav.cpp; sourceTree = SOURCE_ROOT; };
+		EF315CB40DB3B468008FB961 /* SpaceNav.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpaceNav.h; path = ../TerrainSDK/vtlib/core/SpaceNav.h; sourceTree = SOURCE_ROOT; };
+		EF315CBA0DB3C09D008FB961 /* Builder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Builder.cpp; path = ../TerrainApps/VTBuilder/Builder.cpp; sourceTree = SOURCE_ROOT; };
+		EF315CBB0DB3C09D008FB961 /* Builder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Builder.h; path = ../TerrainApps/VTBuilder/Builder.h; sourceTree = SOURCE_ROOT; };
+		EF6644050DBB86DD0081EE66 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
+		EF7376E10DC1F5E7001DCD69 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = /usr/lib/libz.dylib; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2190,8 +1950,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				986BF5200C244CE3003001FF /* libz.dylib in Frameworks */,
 				986BF48A0C244CDB003001FF /* Carbon.framework in Frameworks */,
+				EF7376E30DC1F5E7001DCD69 /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2203,12 +1963,12 @@
 				986BF4840C244CBC003001FF /* libbz2.dylib in Frameworks */,
 				986BF47C0C244C9F003001FF /* libpng.dylib in Frameworks */,
 				986BF47D0C244C9F003001FF /* libjpeg.62.dylib in Frameworks */,
-				986BF24F0C244915003001FF /* libgdal.dylib in Frameworks */,
-				986BF4550C244B4B003001FF /* libz.dylib in Frameworks */,
 				986BF4560C244B50003001FF /* libnetcdf.dylib in Frameworks */,
 				986BF24D0C244908003001FF /* Carbon.framework in Frameworks */,
 				986BF2480C244901003001FF /* unzip.framework in Frameworks */,
 				986BF2470C2448FB003001FF /* xmlhelper.framework in Frameworks */,
+				EF7376E20DC1F5E7001DCD69 /* libz.dylib in Frameworks */,
+				981E54AC0DDA354600C2F2DE /* libgdal.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2216,8 +1976,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				986BF5240C244D06003001FF /* libz.dylib in Frameworks */,
 				986BF5250C244D06003001FF /* Carbon.framework in Frameworks */,
+				EF7376E40DC1F5E7001DCD69 /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2225,7 +1985,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				986BF5790C244E53003001FF /* libMini.a in Frameworks */,
 				986BF5720C244E14003001FF /* libnetcdf.dylib in Frameworks */,
 				986BF5730C244E14003001FF /* libcurl.dylib in Frameworks */,
 				986BF5740C244E14003001FF /* libbz2.dylib in Frameworks */,
@@ -2236,15 +1995,20 @@
 				986BF56B0C244DDF003001FF /* OpenGL.framework in Frameworks */,
 				986BF5560C244DAE003001FF /* libpng.dylib in Frameworks */,
 				986BF5570C244DAE003001FF /* libjpeg.62.dylib in Frameworks */,
-				986BF5580C244DAE003001FF /* libz.dylib in Frameworks */,
-				986BF5500C244D7F003001FF /* OpenThreads.framework in Frameworks */,
-				986BF54A0C244D69003001FF /* osgDB.framework in Frameworks */,
-				986BF54B0C244D69003001FF /* osgGA.framework in Frameworks */,
-				986BF54C0C244D69003001FF /* osgText.framework in Frameworks */,
-				986BF54D0C244D69003001FF /* osgUtil.framework in Frameworks */,
-				986BF54E0C244D69003001FF /* osg.framework in Frameworks */,
-				986BF57E0C244ED0003001FF /* libgdal.dylib in Frameworks */,
-				98ACB4E50C9648D200782F70 /* osgParticle.framework in Frameworks */,
+				981E53950DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */,
+				981E53980DDA326C00C2F2DE /* libosg.dylib in Frameworks */,
+				981E539B0DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */,
+				981E539E0DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */,
+				981E53A10DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */,
+				981E53A70DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */,
+				981E53AA0DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */,
+				981E53AD0DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */,
+				981E53B00DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */,
+				981E53B30DDA326C00C2F2DE /* libosgText.dylib in Frameworks */,
+				981E53B60DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */,
+				981E53B90DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */,
+				981E54AF0DDA35AE00C2F2DE /* libgdal.dylib in Frameworks */,
+				981E54B20DDA35BC00C2F2DE /* libMini.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2260,7 +2024,6 @@
 				986BF5970C244FB9003001FF /* vtdata.framework in Frameworks */,
 				986BF5990C244FC2003001FF /* unzip.framework in Frameworks */,
 				986BF59A0C244FC5003001FF /* xmlhelper.framework in Frameworks */,
-				986BF59B0C244FC9003001FF /* libgdal.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2268,22 +2031,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				986BF7560C2450FE003001FF /* libgdal.dylib in Frameworks */,
 				986BF5A10C24502E003001FF /* vtdata.framework in Frameworks */,
 				986BF5A20C245032003001FF /* vtosg.framework in Frameworks */,
 				986BF5A50C24503A003001FF /* vtui.framework in Frameworks */,
 				986BF5A60C24503B003001FF /* unzip.framework in Frameworks */,
 				986BF5A70C24503D003001FF /* xmlhelper.framework in Frameworks */,
-				986BF5A90C245047003001FF /* OpenThreads.framework in Frameworks */,
 				986BF5AD0C245060003001FF /* Carbon.framework in Frameworks */,
-				986BF7570C245100003001FF /* osgDB.framework in Frameworks */,
-				986BF7580C245101003001FF /* osg.framework in Frameworks */,
-				986BF7CF0C249E70003001FF /* osgGA.framework in Frameworks */,
-				986BF7D00C249E71003001FF /* osgText.framework in Frameworks */,
-				986BF7D10C249E72003001FF /* osgUtil.framework in Frameworks */,
 				986BF7E40C249EEF003001FF /* OpenGL.framework in Frameworks */,
 				986BF8010C249F9D003001FF /* GLUT.framework in Frameworks */,
-				98ACB52C0C964ABE00782F70 /* osgParticle.framework in Frameworks */,
+				981E54310DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */,
+				981E54340DDA326C00C2F2DE /* libosg.dylib in Frameworks */,
+				981E54370DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */,
+				981E543A0DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */,
+				981E543D0DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */,
+				981E54430DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */,
+				981E54460DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */,
+				981E54490DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */,
+				981E544C0DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */,
+				981E544F0DDA326C00C2F2DE /* libosgText.dylib in Frameworks */,
+				981E54520DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */,
+				981E54550DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2296,19 +2063,29 @@
 				982FD82B0C297BA600364006 /* vtui.framework in Frameworks */,
 				982FD82C0C297BA600364006 /* unzip.framework in Frameworks */,
 				982FD82D0C297BA600364006 /* xmlhelper.framework in Frameworks */,
-				982FD82E0C297BA600364006 /* OpenThreads.framework in Frameworks */,
 				982FD82F0C297BA600364006 /* OpenGL.framework in Frameworks */,
 				982FD8300C297BA600364006 /* Carbon.framework in Frameworks */,
-				982FD8310C297BA600364006 /* libgdal.dylib in Frameworks */,
-				982FD8320C297BA600364006 /* osgDB.framework in Frameworks */,
-				982FD8330C297BA600364006 /* osg.framework in Frameworks */,
-				982FD8340C297BA600364006 /* osgGA.framework in Frameworks */,
-				982FD8350C297BA600364006 /* osgText.framework in Frameworks */,
-				982FD8360C297BA600364006 /* osgUtil.framework in Frameworks */,
-				982FD8370C297BA600364006 /* libwx_macud-2.8.0.dylib in Frameworks */,
-				982FD8380C297BA600364006 /* libwx_macud_gl-2.8.0.dylib in Frameworks */,
 				982FD9480C29872400364006 /* libpng.dylib in Frameworks */,
-				98ACB6D10C965A6800782F70 /* osgParticle.framework in Frameworks */,
+				981E540A0DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */,
+				981E540D0DDA326C00C2F2DE /* libosg.dylib in Frameworks */,
+				981E54100DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */,
+				981E54130DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */,
+				981E54160DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */,
+				981E541C0DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */,
+				981E541F0DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */,
+				981E54220DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */,
+				981E54250DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */,
+				981E54280DDA326C00C2F2DE /* libosgText.dylib in Frameworks */,
+				981E542B0DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */,
+				981E542E0DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */,
+				981E54F20DDA3D8F00C2F2DE /* libwx_macud-2.8.0.dylib in Frameworks */,
+				981E54F30DDA3D9000C2F2DE /* libwx_macud_gl-2.8.0.dylib in Frameworks */,
+				981E54F50DDA3DBD00C2F2DE /* libgdal.dylib in Frameworks */,
+				981E54F80DDA3E5C00C2F2DE /* libtiff.dylib in Frameworks */,
+				981E54F90DDA3E5D00C2F2DE /* libnetcdf.dylib in Frameworks */,
+				981E54FA0DDA3E5E00C2F2DE /* libjpeg.62.dylib in Frameworks */,
+				981E54FB0DDA3E6100C2F2DE /* libbz2.dylib in Frameworks */,
+				981E54FE0DDA3E6A00C2F2DE /* libcurl.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2321,17 +2098,24 @@
 				986BF7810C249C48003001FF /* vtui.framework in Frameworks */,
 				986BF7820C249C48003001FF /* unzip.framework in Frameworks */,
 				986BF7830C249C48003001FF /* xmlhelper.framework in Frameworks */,
-				986BF7840C249C48003001FF /* OpenThreads.framework in Frameworks */,
 				986BF7850C249C48003001FF /* OpenGL.framework in Frameworks */,
 				986BF7860C249C48003001FF /* Carbon.framework in Frameworks */,
-				986BF7870C249C48003001FF /* libgdal.dylib in Frameworks */,
-				986BF7880C249C48003001FF /* osgDB.framework in Frameworks */,
-				986BF7890C249C48003001FF /* osg.framework in Frameworks */,
-				986BF85A0C24A1C3003001FF /* osgGA.framework in Frameworks */,
-				986BF85B0C24A1C3003001FF /* osgText.framework in Frameworks */,
-				986BF85C0C24A1C4003001FF /* osgUtil.framework in Frameworks */,
-				986BF86B0C24A299003001FF /* libwx_macud-2.8.0.dylib in Frameworks */,
-				986BF86C0C24A29A003001FF /* libwx_macud_gl-2.8.0.dylib in Frameworks */,
+				981E54580DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */,
+				981E545B0DDA326C00C2F2DE /* libosg.dylib in Frameworks */,
+				981E545E0DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */,
+				981E54610DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */,
+				981E54640DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */,
+				981E546A0DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */,
+				981E546D0DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */,
+				981E54700DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */,
+				981E54730DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */,
+				981E54760DDA326C00C2F2DE /* libosgText.dylib in Frameworks */,
+				981E54790DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */,
+				981E547C0DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */,
+				981E54B70DDA398400C2F2DE /* libgdal.dylib in Frameworks */,
+				981E54B80DDA399000C2F2DE /* libwx_macud_gl-2.8.0.dylib in Frameworks */,
+				981E54B90DDA399300C2F2DE /* libwx_macud-2.8.0.dylib in Frameworks */,
+				981E54BA0DDA399700C2F2DE /* libproj.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2344,21 +2128,29 @@
 				98A9F0990C2A0E1500A3AF4C /* vtui.framework in Frameworks */,
 				98A9F09A0C2A0E1500A3AF4C /* unzip.framework in Frameworks */,
 				98A9F09B0C2A0E1500A3AF4C /* xmlhelper.framework in Frameworks */,
-				98A9F09C0C2A0E1500A3AF4C /* OpenThreads.framework in Frameworks */,
 				98A9F09D0C2A0E1500A3AF4C /* OpenGL.framework in Frameworks */,
 				98A9F09E0C2A0E1500A3AF4C /* Carbon.framework in Frameworks */,
-				98A9F09F0C2A0E1500A3AF4C /* libgdal.dylib in Frameworks */,
-				98A9F0A00C2A0E1500A3AF4C /* osgDB.framework in Frameworks */,
-				98A9F0A10C2A0E1500A3AF4C /* osg.framework in Frameworks */,
-				98A9F0A20C2A0E1500A3AF4C /* osgGA.framework in Frameworks */,
-				98A9F0A30C2A0E1500A3AF4C /* osgText.framework in Frameworks */,
-				98A9F0A40C2A0E1500A3AF4C /* osgUtil.framework in Frameworks */,
 				98A9F0A70C2A0E1500A3AF4C /* libpng.dylib in Frameworks */,
-				98A9F0F40C2A102100A3AF4C /* libz.dylib in Frameworks */,
 				98A9F0F50C2A102B00A3AF4C /* libnetcdf.dylib in Frameworks */,
 				98BAEE500C544CFA001112BA /* libwx_macud-2.8.0.dylib in Frameworks */,
 				98BAEE510C544CFA001112BA /* libwx_macud_gl-2.8.0.dylib in Frameworks */,
-				98ACB5330C964B9400782F70 /* osgParticle.framework in Frameworks */,
+				EF6644090DBB86F30081EE66 /* AGL.framework in Frameworks */,
+				981E53E30DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */,
+				981E53E60DDA326C00C2F2DE /* libosg.dylib in Frameworks */,
+				981E53E90DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */,
+				981E53EC0DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */,
+				981E53EF0DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */,
+				981E53F50DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */,
+				981E53F80DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */,
+				981E53FB0DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */,
+				981E53FE0DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */,
+				981E54010DDA326C00C2F2DE /* libosgText.dylib in Frameworks */,
+				981E54040DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */,
+				981E54070DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */,
+				981E55010DDA3F1B00C2F2DE /* libjpeg.62.dylib in Frameworks */,
+				981E55020DDA3F1D00C2F2DE /* libbz2.dylib in Frameworks */,
+				981E55030DDA3F1F00C2F2DE /* libtiff.dylib in Frameworks */,
+				981E550C0DDA40BB00C2F2DE /* libgdal.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2371,20 +2163,25 @@
 				98A9F1410C2A128100A3AF4C /* vtui.framework in Frameworks */,
 				98A9F1420C2A128100A3AF4C /* unzip.framework in Frameworks */,
 				98A9F1430C2A128100A3AF4C /* xmlhelper.framework in Frameworks */,
-				98A9F1440C2A128100A3AF4C /* OpenThreads.framework in Frameworks */,
 				98A9F1450C2A128100A3AF4C /* OpenGL.framework in Frameworks */,
 				98A9F1460C2A128100A3AF4C /* Carbon.framework in Frameworks */,
-				98A9F1470C2A128100A3AF4C /* libgdal.dylib in Frameworks */,
-				98A9F1480C2A128100A3AF4C /* osgDB.framework in Frameworks */,
-				98A9F1490C2A128100A3AF4C /* osg.framework in Frameworks */,
-				98A9F14A0C2A128100A3AF4C /* osgGA.framework in Frameworks */,
-				98A9F14B0C2A128100A3AF4C /* osgText.framework in Frameworks */,
-				98A9F14C0C2A128100A3AF4C /* osgUtil.framework in Frameworks */,
-				98A9F14D0C2A128100A3AF4C /* libwx_macud-2.8.0.dylib in Frameworks */,
-				98A9F14E0C2A128100A3AF4C /* libwx_macud_gl-2.8.0.dylib in Frameworks */,
 				98A9F14F0C2A128100A3AF4C /* libpng.dylib in Frameworks */,
-				98A9F1500C2A128100A3AF4C /* libz.dylib in Frameworks */,
 				98A9F1510C2A128100A3AF4C /* libnetcdf.dylib in Frameworks */,
+				981E53BC0DDA326C00C2F2DE /* libOpenThreads.dylib in Frameworks */,
+				981E53BF0DDA326C00C2F2DE /* libosg.dylib in Frameworks */,
+				981E53C20DDA326C00C2F2DE /* libosgDB.dylib in Frameworks */,
+				981E53C50DDA326C00C2F2DE /* libosgFX.dylib in Frameworks */,
+				981E53C80DDA326C00C2F2DE /* libosgGA.dylib in Frameworks */,
+				981E53CE0DDA326C00C2F2DE /* libosgParticle.dylib in Frameworks */,
+				981E53D10DDA326C00C2F2DE /* libosgShadow.dylib in Frameworks */,
+				981E53D40DDA326C00C2F2DE /* libosgSim.dylib in Frameworks */,
+				981E53D70DDA326C00C2F2DE /* libosgTerrain.dylib in Frameworks */,
+				981E53DA0DDA326C00C2F2DE /* libosgText.dylib in Frameworks */,
+				981E53DD0DDA326C00C2F2DE /* libosgUtil.dylib in Frameworks */,
+				981E53E00DDA326C00C2F2DE /* libosgViewer.dylib in Frameworks */,
+				981E55070DDA403800C2F2DE /* libwx_macud-2.8.0.dylib in Frameworks */,
+				981E55080DDA403A00C2F2DE /* libwx_macud_gl-2.8.0.dylib in Frameworks */,
+				981E55090DDA403B00C2F2DE /* libtiff.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2395,11 +2192,11 @@
 			isa = PBXGroup;
 			children = (
 				0A6A51E90C20A38700F54366 /* TerrainSDK */,
+				98EB17D40C2A279400943462 /* VTP Dependencies */,
+				986BF5AE0C24506E003001FF /* OSX Frameworks */,
 				0A6A51EE0C20A3A400F54366 /* TerrainApps */,
 				0A4362C40C1F44D400DBCF37 /* Products */,
 				986BF2500C24491D003001FF /* Project Info.plists */,
-				0A6A4E5B0C209B7100F54366 /* External Frameworks */,
-				98EB17D40C2A279400943462 /* External Shared */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2570,6 +2367,8 @@
 		0A6A4D4B0C20997C00F54366 /* vtosg */ = {
 			isa = PBXGroup;
 			children = (
+				EF315CB40DB3B468008FB961 /* SpaceNav.h */,
+				EF315CB30DB3B468008FB961 /* SpaceNav.cpp */,
 				98EB164B0C2A259000943462 /* vtlib.h */,
 				0A6A4D7E0C209AD200F54366 /* AbstractLayer.cpp */,
 				0A6A4D7F0C209AD200F54366 /* AbstractLayer.h */,
@@ -2711,15 +2510,6 @@
 			name = vtui;
 			sourceTree = "<group>";
 		};
-		0A6A4E5B0C209B7100F54366 /* External Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				986BF7420C2450A1003001FF /* 3rd party */,
-				986BF5AE0C24506E003001FF /* OS X */,
-			);
-			name = "External Frameworks";
-			sourceTree = "<group>";
-		};
 		0A6A51E90C20A38700F54366 /* TerrainSDK */ = {
 			isa = PBXGroup;
 			children = (
@@ -2756,7 +2546,9 @@
 		982FD6CA0C29795400364006 /* VTBuilder */ = {
 			isa = PBXGroup;
 			children = (
+				EF315CBA0DB3C09D008FB961 /* Builder.cpp */,
 				985FE3540CFFD9FF000453AF /* GenGridDlg.cpp */,
+				EF315CBB0DB3C09D008FB961 /* Builder.h */,
 				985FE3550CFFD9FF000453AF /* GenGridDlg.h */,
 				985FE3560CFFD9FF000453AF /* LocalDatabuf.h */,
 				985FE3570CFFD9FF000453AF /* Options.h */,
@@ -3087,20 +2879,6 @@
 			name = "Project Info.plists";
 			sourceTree = "<group>";
 		};
-		986BF2770C244966003001FF /* osg */ = {
-			isa = PBXGroup;
-			children = (
-				98ACB4E10C9648D200782F70 /* osgParticle.framework */,
-				0AC7706F0C216D9E001A161E /* OpenThreads.framework */,
-				0AC7707C0C216DD5001A161E /* osgDB.framework */,
-				0AC7707D0C216DD5001A161E /* osgGA.framework */,
-				0AC7707E0C216DD5001A161E /* osgText.framework */,
-				0AC7707F0C216DD5001A161E /* osgUtil.framework */,
-				0AC770700C216D9E001A161E /* osg.framework */,
-			);
-			name = osg;
-			sourceTree = "<group>";
-		};
 		986BF4450C244986003001FF /* fink */ = {
 			isa = PBXGroup;
 			children = (
@@ -3122,11 +2900,12 @@
 			name = image;
 			sourceTree = "<group>";
 		};
-		986BF5AE0C24506E003001FF /* OS X */ = {
+		986BF5AE0C24506E003001FF /* OSX Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EF7376E10DC1F5E7001DCD69 /* libz.dylib */,
+				EF6644050DBB86DD0081EE66 /* AGL.framework */,
 				986BF8000C249F9D003001FF /* GLUT.framework */,
-				986BF4500C244AE6003001FF /* libz.dylib */,
 				0AC770970C216F8C001A161E /* OpenGL.framework */,
 				0AC770950C216F8C001A161E /* Carbon.framework */,
 				986BF5820C244F1A003001FF /* QuickTime.framework */,
@@ -3134,19 +2913,7 @@
 				986BF58C0C244F5C003001FF /* Cocoa.framework */,
 				986BF5920C244F7D003001FF /* System.framework */,
 			);
-			name = "OS X";
-			sourceTree = "<group>";
-		};
-		986BF7420C2450A1003001FF /* 3rd party */ = {
-			isa = PBXGroup;
-			children = (
-				986BF7A90C249D8F003001FF /* wx */,
-				986BF2770C244966003001FF /* osg */,
-				986BF5770C244E4B003001FF /* libMini.a */,
-				986BF1DF0C2447F0003001FF /* libgdal.dylib */,
-				986BF4450C244986003001FF /* fink */,
-			);
-			name = "3rd party";
+			name = "OSX Frameworks";
 			sourceTree = "<group>";
 		};
 		986BF75B0C249B8E003001FF /* wxSimple */ = {
@@ -3164,15 +2931,6 @@
 				986BF7640C249BEE003001FF /* wx_headers.cpp */,
 			);
 			name = wxSimple;
-			sourceTree = "<group>";
-		};
-		986BF7A90C249D8F003001FF /* wx */ = {
-			isa = PBXGroup;
-			children = (
-				986BF8670C24A295003001FF /* libwx_macud_gl-2.8.0.dylib */,
-				986BF8680C24A295003001FF /* libwx_macud-2.8.0.dylib */,
-			);
-			name = wx;
 			sourceTree = "<group>";
 		};
 		986BF8B00C24A70B003001FF /* Data */ = {
@@ -3517,59 +3275,31 @@
 			path = Elevation;
 			sourceTree = "<group>";
 		};
-		98EB166D0C2A278100943462 /* bin */ = {
-			isa = PBXGroup;
-			children = (
-				98EB166E0C2A278100943462 /* cs2cs */,
-				98EB166F0C2A278100943462 /* gdal-config */,
-				98EB16700C2A278100943462 /* gdal_contour */,
-				98EB16710C2A278100943462 /* gdal_rasterize */,
-				98EB16720C2A278100943462 /* gdal_translate */,
-				98EB16730C2A278100943462 /* gdaladdo */,
-				98EB16740C2A278100943462 /* gdalinfo */,
-				98EB16750C2A278100943462 /* gdaltindex */,
-				98EB16760C2A278100943462 /* gdalwarp */,
-				98EB16770C2A278100943462 /* geod */,
-				98EB16780C2A278100943462 /* invgeod */,
-				98EB16790C2A278100943462 /* invproj */,
-				98EB167A0C2A278100943462 /* nad2bin */,
-				98EB167B0C2A278100943462 /* nad2nad */,
-				98EB167C0C2A278100943462 /* ogr2ogr */,
-				98EB167D0C2A278100943462 /* ogrinfo */,
-				98EB167E0C2A278100943462 /* ogrtindex */,
-				98EB167F0C2A278100943462 /* proj */,
-				98EB16800C2A278100943462 /* wx-config */,
-				98EB16810C2A278100943462 /* wxrc */,
-				98EB16820C2A278100943462 /* wxrc-2.8 */,
-			);
-			name = bin;
-			path = ../../build.shared/Shared/bin;
-			sourceTree = SOURCE_ROOT;
-		};
 		98EB16830C2A278100943462 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				98EB16840C2A278100943462 /* libgdal.1.11.0.dylib */,
-				98EB16850C2A278100943462 /* libgdal.1.dylib */,
-				98EB16860C2A278100943462 /* libgdal.a */,
+				981E536E0DDA326C00C2F2DE /* libOpenThreads.dylib */,
+				981E53710DDA326C00C2F2DE /* libosg.dylib */,
+				981E53740DDA326C00C2F2DE /* libosgDB.dylib */,
+				981E53770DDA326C00C2F2DE /* libosgFX.dylib */,
+				981E537A0DDA326C00C2F2DE /* libosgGA.dylib */,
+				981E53800DDA326C00C2F2DE /* libosgParticle.dylib */,
+				981E53830DDA326C00C2F2DE /* libosgShadow.dylib */,
+				981E53860DDA326C00C2F2DE /* libosgSim.dylib */,
+				981E53890DDA326C00C2F2DE /* libosgTerrain.dylib */,
+				981E538C0DDA326C00C2F2DE /* libosgText.dylib */,
+				981E538F0DDA326C00C2F2DE /* libosgUtil.dylib */,
+				981E53920DDA326C00C2F2DE /* libosgViewer.dylib */,
 				98EB16870C2A278100943462 /* libgdal.dylib */,
-				98EB16880C2A278100943462 /* libgdal.la */,
 				98EB16890C2A278100943462 /* libMini.a */,
-				98EB168A0C2A278100943462 /* libproj.0.5.0.dylib */,
-				98EB168B0C2A278100943462 /* libproj.0.dylib */,
-				98EB168C0C2A278100943462 /* libproj.a */,
 				98EB168D0C2A278100943462 /* libproj.dylib */,
-				98EB168E0C2A278100943462 /* libproj.la */,
 				98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */,
-				98EB16930C2A278100943462 /* libwx_macud_gizmos-2.8.0.dylib */,
-				98EB16960C2A278100943462 /* libwx_macud_gizmos_xrc-2.8.0.dylib */,
 				98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */,
-				98EB169C0C2A278100943462 /* libwx_macud_stc-2.8.0.dylib */,
 				98EB169E0C2A278100943462 /* wx */,
 			);
 			name = lib;
-			path = ../../build.shared/Shared/lib;
-			sourceTree = SOURCE_ROOT;
+			path = /Library/Frameworks/VTPX.framework/Versions/A/lib;
+			sourceTree = "<absolute>";
 		};
 		98EB169E0C2A278100943462 /* wx */ = {
 			isa = PBXGroup;
@@ -3612,122 +3342,13 @@
 			path = wx;
 			sourceTree = "<group>";
 		};
-		98EB16A50C2A278100943462 /* Plugins */ = {
+		98EB17D40C2A279400943462 /* VTP Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				98EB16A60C2A278100943462 /* osgdb_3dc.so */,
-				98EB16A70C2A278100943462 /* osgdb_3ds.so */,
-				98EB16A80C2A278100943462 /* osgdb_ac.so */,
-				98EB16A90C2A278100943462 /* osgdb_bmp.so */,
-				98EB16AA0C2A278100943462 /* osgdb_bsp.so */,
-				98EB16AB0C2A278100943462 /* osgdb_dds.so */,
-				98EB16AC0C2A278100943462 /* osgdb_dw.so */,
-				98EB16AD0C2A278100943462 /* osgdb_dxf.so */,
-				98EB16AE0C2A278100943462 /* osgdb_flt.so */,
-				98EB16AF0C2A278100943462 /* osgdb_freetype.so */,
-				98EB16B00C2A278100943462 /* osgdb_geo.so */,
-				98EB16B10C2A278100943462 /* osgdb_hdr.so */,
-				98EB16B20C2A278100943462 /* osgdb_ive.so */,
-				98EB16B30C2A278100943462 /* osgdb_logo.so */,
-				98EB16B40C2A278100943462 /* osgdb_lwo.so */,
-				98EB16B50C2A278100943462 /* osgdb_lws.so */,
-				98EB16B60C2A278100943462 /* osgdb_md2.so */,
-				98EB16B70C2A278100943462 /* osgdb_net.so */,
-				98EB16B80C2A278100943462 /* osgdb_normals.so */,
-				98EB16B90C2A278100943462 /* osgdb_obj.so */,
-				98EB16BA0C2A278100943462 /* osgdb_osg.so */,
-				98EB16BB0C2A278100943462 /* osgdb_osga.so */,
-				98EB16BC0C2A278100943462 /* osgdb_osgFX.so */,
-				98EB16BD0C2A278100943462 /* osgdb_osgParticle.so */,
-				98EB16BE0C2A278100943462 /* osgdb_osgSim.so */,
-				98EB16BF0C2A278100943462 /* osgdb_osgText.so */,
-				98EB16C00C2A278100943462 /* osgdb_osgtgz.so */,
-				98EB16C10C2A278100943462 /* osgdb_pic.so */,
-				98EB16C20C2A278100943462 /* osgdb_pnm.so */,
-				98EB16C30C2A278100943462 /* osgdb_qt.so */,
-				98EB16C40C2A278100943462 /* osgdb_rgb.so */,
-				98EB16C50C2A278100943462 /* osgdb_rot.so */,
-				98EB16C60C2A278100943462 /* osgdb_scale.so */,
-				98EB16C70C2A278100943462 /* osgdb_shp.so */,
-				98EB16C80C2A278100943462 /* osgdb_stl.so */,
-				98EB16C90C2A278100943462 /* osgdb_tga.so */,
-				98EB16CA0C2A278100943462 /* osgdb_tgz.so */,
-				98EB16CB0C2A278100943462 /* osgdb_trans.so */,
-				98EB16CC0C2A278100943462 /* osgdb_txp.so */,
-				98EB16CD0C2A278100943462 /* osgdb_x.so */,
-				98EB16CE0C2A278100943462 /* osgdb_zip.so */,
-			);
-			name = Plugins;
-			path = ../../build.shared/Shared/Plugins;
-			sourceTree = SOURCE_ROOT;
-		};
-		98EB16CF0C2A278100943462 /* share */ = {
-			isa = PBXGroup;
-			children = (
-				98EB16D70C2A278200943462 /* gdal */,
-				98EB17350C2A278200943462 /* proj */,
-			);
-			name = share;
-			path = ../../build.shared/Shared/share;
-			sourceTree = SOURCE_ROOT;
-		};
-		98EB16D70C2A278200943462 /* gdal */ = {
-			isa = PBXGroup;
-			children = (
-				98EB16D80C2A278200943462 /* cubewerx_extra.wkt */,
-				98EB16D90C2A278200943462 /* ecw_cs.dat */,
-				98EB16DA0C2A278200943462 /* ellipsoid.csv */,
-				98EB16DB0C2A278200943462 /* epsg.wkt */,
-				98EB16DC0C2A278200943462 /* esri_extra.wkt */,
-				98EB16DD0C2A278200943462 /* gcs.csv */,
-				98EB16DE0C2A278200943462 /* gdal_datum.csv */,
-				98EB16DF0C2A278200943462 /* gdalicon.png */,
-				98EB16E00C2A278200943462 /* GDALLogoBW.svg */,
-				98EB16E10C2A278200943462 /* GDALLogoColor.svg */,
-				98EB16E20C2A278200943462 /* GDALLogoGS.svg */,
-				98EB16E30C2A278200943462 /* pcs.csv */,
-				98EB16E40C2A278200943462 /* prime_meridian.csv */,
-				98EB16E50C2A278200943462 /* projop_wparm.csv */,
-				98EB16E60C2A278200943462 /* s57agencies.csv */,
-				98EB16E70C2A278200943462 /* s57attributes.csv */,
-				98EB16E80C2A278200943462 /* s57attributes_aml.csv */,
-				98EB16E90C2A278200943462 /* s57attributes_iw.csv */,
-				98EB16EA0C2A278200943462 /* s57expectedinput.csv */,
-				98EB16EB0C2A278200943462 /* s57objectclasses.csv */,
-				98EB16EC0C2A278200943462 /* s57objectclasses_aml.csv */,
-				98EB16ED0C2A278200943462 /* s57objectclasses_iw.csv */,
-				98EB16EE0C2A278200943462 /* seed_2d.dgn */,
-				98EB16EF0C2A278200943462 /* seed_3d.dgn */,
-				98EB16F00C2A278200943462 /* stateplane.csv */,
-				98EB16F10C2A278200943462 /* unit_of_measure.csv */,
-			);
-			path = gdal;
-			sourceTree = "<group>";
-		};
-		98EB17350C2A278200943462 /* proj */ = {
-			isa = PBXGroup;
-			children = (
-				98EB17360C2A278200943462 /* epsg */,
-				98EB17370C2A278200943462 /* esri */,
-				98EB17380C2A278200943462 /* GL27 */,
-				98EB17390C2A278200943462 /* nad.lst */,
-				98EB173A0C2A278200943462 /* nad27 */,
-				98EB173B0C2A278200943462 /* nad83 */,
-				98EB173C0C2A278200943462 /* proj_def.dat */,
-				98EB173D0C2A278200943462 /* world */,
-			);
-			path = proj;
-			sourceTree = "<group>";
-		};
-		98EB17D40C2A279400943462 /* External Shared */ = {
-			isa = PBXGroup;
-			children = (
-				98EB166D0C2A278100943462 /* bin */,
+				986BF4450C244986003001FF /* fink */,
 				98EB16830C2A278100943462 /* lib */,
-				98EB16A50C2A278100943462 /* Plugins */,
-				98EB16CF0C2A278100943462 /* share */,
 			);
-			name = "External Shared";
+			name = "VTP Dependencies";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -3875,6 +3496,7 @@
 				0A6A4E220C209AD200F54366 /* vtTin3d.h in Headers */,
 				0A6A4E230C209AD200F54366 /* winglue.h in Headers */,
 				98EB164C0C2A259000943462 /* vtlib.h in Headers */,
+				EF315CB60DB3B468008FB961 /* SpaceNav.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4081,11 +3703,11 @@
 				98A9F05D0C2A0E1500A3AF4C /* ShellScript */,
 				98A9F05E0C2A0E1500A3AF4C /* Sources */,
 				98A9F0960C2A0E1500A3AF4C /* Frameworks */,
-				98EB19640C2A2CF600943462 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				EF7376C90DC1EF6B001DCD69 /* PBXTargetDependency */,
 				98A9F0550C2A0E1500A3AF4C /* PBXTargetDependency */,
 				98A9F0570C2A0E1500A3AF4C /* PBXTargetDependency */,
 				98A9F0590C2A0E1500A3AF4C /* PBXTargetDependency */,
@@ -4251,6 +3873,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		981E54C90DDA3ADE00C2F2DE /* Copy Shared Libraries */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Shared Libraries";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo rsync -uar --exclude \"include/*\" --exclude \"man/*\" /Library/Frameworks/VTPX.framework/Versions/A $BUILT_PRODUCTS_DIR\n";
+		};
 		982FD8220C297BA600364006 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4288,7 +3924,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH\nln -sf ../../Shared\nln -sf ../../Shared/Frameworks\nln -sf ../../Shared/lib\n";
+			shellScript = "#cd $BUILT_PRODUCTS_DIR/$CONTENTS_FOLDER_PATH\n#ln -sf ../../Shared\n#ln -sf ../../Shared/Frameworks\n#ln -sf ../../Shared/lib\n";
 		};
 		98A9F1170C2A128100A3AF4C /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4328,20 +3964,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "rsync -uar $SRCROOT/../../vtp-data/Data $BUILT_PRODUCTS_DIR\nrsync -uar $SRCROOT/../../vtp-data/WorldMap $BUILT_PRODUCTS_DIR";
-		};
-		98EB19710C2A304400943462 /* Copy Shared gdal and proj Files */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Shared gdal and proj Files";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "mkdir -p $BUILT_PRODUCTS_DIR/Shared/share\nrsync -aur $SRCROOT/../../build.shared/Shared/share/proj $BUILT_PRODUCTS_DIR/Shared/share\nrsync -aur $SRCROOT/../../build.shared/Shared/share/gdal $BUILT_PRODUCTS_DIR/Shared/share";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -4476,6 +4098,7 @@
 				0A6A4E1F0C209AD200F54366 /* vtSOG.cpp in Sources */,
 				0A6A4E210C209AD200F54366 /* vtTin3d.cpp in Sources */,
 				985823DD0C514A9F00A2F19D /* PagedLodGrid.cpp in Sources */,
+				EF315CB50DB3B468008FB961 /* SpaceNav.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4574,6 +4197,7 @@
 				98ACB6E50C965AE700782F70 /* ElevDrawOptions.cpp in Sources */,
 				985FE35A0CFFD9FF000453AF /* GenGridDlg.cpp in Sources */,
 				985FE35B0CFFD9FF000453AF /* Special.cpp in Sources */,
+				EF315CBC0DB3C09D008FB961 /* Builder.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4891,6 +4515,11 @@
 			target = 98EB19480C2A2A7400943462 /* copy-vtp-data */;
 			targetProxy = 98EB19CE0C2A35F500943462 /* PBXContainerItemProxy */;
 		};
+		EF7376C90DC1EF6B001DCD69 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 98A9F10E0C2A128100A3AF4C /* CManager */;
+			targetProxy = EF7376C80DC1EF6B001DCD69 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -4898,19 +4527,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../../build.shared/Shared/Frameworks";
+				FRAMEWORK_SEARCH_PATHS = "";
+				OSG_FRAMEWORK_PATH = "\"$SRCROOT/../../../OpenScenegraph-2.3.8/Xcode/OpenSceneGraph/build/Development\"";
 				PREBINDING = NO;
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
-		};
-		0A4362B90C1F44B600DBCF37 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				PREBINDING = NO;
-			};
-			name = Release;
 		};
 		0A4362C80C1F44D600DBCF37 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -4939,8 +4561,12 @@
 					"SUPPORT_PYTHON=0",
 				);
 				INFOPLIST_FILE = "xmlhelper-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = /sw/lib;
+				INSTALL_PATH = /Library/Frameworks;
+				LIBRARY_SEARCH_PATHS = (
+					/sw/lib,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../zlib-1.2.3\"";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = xmlhelper;
@@ -4949,41 +4575,6 @@
 			};
 			name = Debug;
 		};
-		0A4362C90C1F44D600DBCF37 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEPLOYMENT_LOCATION = NO;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"unix=1",
-					__DARWIN_OSX__,
-					UNIX,
-					"SUPPORT_QUIKGRID=0",
-					"SUPPORT_NETCDF=1",
-					"SUPPORT_HTTP=1",
-					"SUPPORT_BZIP2=1",
-					"VTLIB_OSG=1",
-					"SUPPORT_PYTHON=0",
-				);
-				INFOPLIST_FILE = "xmlhelper-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = /sw/lib;
-				OTHER_LDFLAGS = "";
-				PREBINDING = NO;
-				PRODUCT_NAME = xmlhelper;
-				SKIP_INSTALL = YES;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		0A6A4B330C20202900F54366 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4991,6 +4582,7 @@
 				DEPLOYMENT_LOCATION = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = "";
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -5012,15 +4604,17 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
+					/Library/Frameworks/VTPX.framework/Versions/A/include,
 					$SRCROOT/../TerrainSDK,
 				);
 				INFOPLIST_FILE = "vtdata-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = /Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
+					/Library/Frameworks/VTPX.framework/Versions/A/lib,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../zlib-1.2.3\"";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
@@ -5029,50 +4623,6 @@
 				ZERO_LINK = NO;
 			};
 			name = Debug;
-		};
-		0A6A4B340C20202900F54366 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEPLOYMENT_LOCATION = NO;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"unix=1",
-					__DARWIN_OSX__,
-					UNIX,
-					"SUPPORT_QUIKGRID=0",
-					"SUPPORT_NETCDF=1",
-					"SUPPORT_HTTP=1",
-					"SUPPORT_BZIP2=1",
-					"VTLIB_OSG=1",
-					"SUPPORT_PYTHON=0",
-				);
-				HEADER_SEARCH_PATHS = (
-					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					$SRCROOT/../TerrainSDK,
-				);
-				INFOPLIST_FILE = "vtdata-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
-				);
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				PREBINDING = NO;
-				PRODUCT_NAME = vtdata;
-				SKIP_INSTALL = YES;
-				ZERO_LINK = NO;
-			};
-			name = Release;
 		};
 		0A6A4C3A0C20908400F54366 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -5091,11 +4641,13 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
 				GCC_PREPROCESSOR_DEFINITIONS = NOUNCRYPT;
 				INFOPLIST_FILE = "unzip-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = /Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/sw/lib,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../zlib-1.2.3\"";
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "";
@@ -5105,36 +4657,6 @@
 				ZERO_LINK = NO;
 			};
 			name = Debug;
-		};
-		0A6A4C3B0C20908400F54366 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEPLOYMENT_LOCATION = NO;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				GCC_PREPROCESSOR_DEFINITIONS = NOUNCRYPT;
-				INFOPLIST_FILE = "unzip-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/sw/lib,
-				);
-				OTHER_CFLAGS = "";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = "";
-				PREBINDING = NO;
-				PRODUCT_NAME = unzip;
-				SKIP_INSTALL = YES;
-				ZERO_LINK = NO;
-			};
-			name = Release;
 		};
 		0A6A4D640C2099E200F54366 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -5144,14 +4666,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_3)",
+					$OSG_FRAMEWORK_PATH,
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../osg/OpenSceneGraph/Xcode/OpenSceneGraph/build/Development\"";
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -5173,15 +4691,17 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
+					/Library/Frameworks/VTPX.framework/Versions/A/include,
 					$SRCROOT/../TerrainSDK,
 				);
 				INFOPLIST_FILE = "vtosg-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = /Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
+					/Library/Frameworks/VTPX.framework/Versions/A/lib,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../zlib-1.2.3\"";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
@@ -5190,59 +4710,6 @@
 				ZERO_LINK = NO;
 			};
 			name = Debug;
-		};
-		0A6A4D650C2099E200F54366 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEPLOYMENT_LOCATION = NO;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_3)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				FRAMEWORK_VERSION = A;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"unix=1",
-					__DARWIN_OSX__,
-					UNIX,
-					"SUPPORT_QUIKGRID=0",
-					"SUPPORT_NETCDF=1",
-					"SUPPORT_HTTP=1",
-					"SUPPORT_BZIP2=1",
-					"VTLIB_OSG=1",
-					"SUPPORT_PYTHON=0",
-				);
-				HEADER_SEARCH_PATHS = (
-					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					$SRCROOT/../TerrainSDK,
-				);
-				INFOPLIST_FILE = "vtosg-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
-				);
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				PREBINDING = NO;
-				PRODUCT_NAME = vtosg;
-				SKIP_INSTALL = YES;
-				ZERO_LINK = NO;
-			};
-			name = Release;
 		};
 		0A6A51660C209E0C00F54366 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -5251,11 +4718,7 @@
 				DEPLOYMENT_LOCATION = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = "";
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -5281,16 +4744,16 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
+					/Library/Frameworks/VTPX.framework/Versions/A/include,
 					$SRCROOT/../TerrainSDK,
-					"$(SRCROOT)/../../build.shared/Shared/include/wx-2.8",
-					"$(SRCROOT)/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
+					"/Library/Frameworks/VTPX.framework/Versions/A/include/wx-2.8",
+					"/Library/Frameworks/VTPX.framework/Versions/A/lib/wx/include/mac-unicode-debug-2.8",
 				);
 				INFOPLIST_FILE = "vtui-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = /Library/Frameworks;
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
+					/Library/Frameworks/VTPX.framework/Versions/A/lib,
 				);
 				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
 				OTHER_LDFLAGS = (
@@ -5321,92 +4784,12 @@
 				ZERO_LINK = NO;
 			};
 			name = Debug;
-		};
-		0A6A51670C209E0C00F54366 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEPLOYMENT_LOCATION = NO;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				FRAMEWORK_VERSION = A;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"_FILE_OFFSET_BITS=64",
-					_LARGE_FILES,
-					__WXDEBUG__,
-					__WXMAC__,
-					"unix=1",
-					__DARWIN_OSX__,
-					UNIX,
-					"SUPPORT_QUIKGRID=0",
-					"SUPPORT_NETCDF=1",
-					"SUPPORT_HTTP=1",
-					"SUPPORT_BZIP2=1",
-					"VTLIB_OSG=1",
-					"SUPPORT_PYTHON=0",
-				);
-				HEADER_SEARCH_PATHS = (
-					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					$SRCROOT/../TerrainSDK,
-					"$(SRCROOT)/../../build.shared/Shared/include/wx-2.8",
-					"$(SRCROOT)/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
-				);
-				INFOPLIST_FILE = "vtui-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
-				);
-				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
-				OTHER_LDFLAGS = (
-					"-framework",
-					QuickTime,
-					"-framework",
-					IOKit,
-					"-framework",
-					Carbon,
-					"-framework",
-					Cocoa,
-					"-framework",
-					System,
-					"-lwx_macud-2.8",
-					"-framework",
-					vtdata,
-					"-framework",
-					xmlhelper,
-					"-framework",
-					unzip,
-					"-framework",
-					Carbon,
-					"-lgdal",
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = vtui;
-				SKIP_INSTALL = YES;
-				ZERO_LINK = NO;
-			};
-			name = Release;
 		};
 		0A6A51FC0C20A3D200F54366 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../build.shared/Shared/Frameworks",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = $OSG_FRAMEWORK_PATH;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -5416,14 +4799,14 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
+					/Library/Frameworks/VTPX.framework/Versions/A/include,
 					$SRCROOT/../TerrainSDK,
 				);
 				INFOPLIST_FILE = "glutSimple-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
+					/Library/Frameworks/VTPX.framework/Versions/A/lib,
 				);
 				OTHER_CFLAGS = (
 					"-Dunix=1",
@@ -5443,58 +4826,11 @@
 			};
 			name = Debug;
 		};
-		0A6A51FD0C20A3D200F54366 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../build.shared/Shared/Frameworks",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				HEADER_SEARCH_PATHS = (
-					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					$SRCROOT/../TerrainSDK,
-				);
-				INFOPLIST_FILE = "glutSimple-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
-				);
-				OTHER_CFLAGS = (
-					"-Dunix=1",
-					"-D__DARWIN_OSX__",
-					"-DUNIX",
-					"-DSUPPORT_NETCDF=1",
-					"-DSUPPORT_HTTP=1",
-					"-DSUPPORT_BZIP2=1",
-					"-DVTLIB_OSG=1",
-					"-DSUPPORT_PYTHON=0",
-				);
-				OTHER_LDFLAGS = "";
-				PREBINDING = NO;
-				PRODUCT_NAME = glutSimple;
-				WRAPPER_EXTENSION = app;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		982FD83E0C297BA600364006 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../build.shared/Shared/Frameworks",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -5520,9 +4856,9 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					"$SRCROOT/../../build.shared/Shared/include/wx-2.8",
-					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
+					/Library/Frameworks/VTPX.framework/Versions/A/include,
+					"/Library/Frameworks/VTPX.framework/Versions/A/include/wx-2.8",
+					"/Library/Frameworks/VTPX.framework/Versions/A/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
 					$SRCROOT/../TerrainApps/VTBuilder/icons,
 					$SRCROOT/../TerrainApps/VTBuilder/bitmaps,
@@ -5532,7 +4868,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
+					/Library/Frameworks/VTPX.framework/Versions/A/lib,
 				);
 				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -5548,75 +4884,11 @@
 			};
 			name = Debug;
 		};
-		982FD83F0C297BA600364006 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../build.shared/Shared/Frameworks",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"_FILE_OFFSET_BITS=64",
-					_LARGE_FILES,
-					__WXDEBUG__,
-					__WXMAC__,
-					"unix=1",
-					__DARWIN_OSX__,
-					UNIX,
-					"SUPPORT_QUIKGRID=0",
-					"SUPPORT_NETCDF=1",
-					"SUPPORT_HTTP=1",
-					"SUPPORT_BZIP2=1",
-					"VTLIB_OSG=1",
-					"SUPPORT_PYTHON=0",
-					"SUPPORT_SQUISH=0",
-				);
-				HEADER_SEARCH_PATHS = (
-					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					"$SRCROOT/../../build.shared/Shared/include/wx-2.8",
-					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
-					$SRCROOT/../TerrainSDK,
-					$SRCROOT/../TerrainApps/VTBuilder/icons,
-					$SRCROOT/../TerrainApps/VTBuilder/bitmaps,
-					$SRCROOT/../TerrainApps/VTBuilder/icons,
-				);
-				INFOPLIST_FILE = "VTBuilder-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
-				);
-				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = (
-					"-bind_at_load",
-					"-Wl,-executable_path",
-					"-Wl,$BUILT_PRODUCTS_DIR/${PRODUCT_NAME}.app/Contents/MacOS",
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = VTBuilder;
-				WRAPPER_EXTENSION = app;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		986BF7900C249C48003001FF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../build.shared/Shared/Frameworks",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = $OSG_FRAMEWORK_PATH;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -5641,16 +4913,16 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					"$SRCROOT/../../build.shared/Shared/include/wx-2.8",
-					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
+					/Library/Frameworks/VTPX.framework/Versions/A/include,
+					"/Library/Frameworks/VTPX.framework/Versions/A/include/wx-2.8",
+					"/Library/Frameworks/VTPX.framework/Versions/A/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
 				);
 				INFOPLIST_FILE = "wxSimple-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
+					/Library/Frameworks/VTPX.framework/Versions/A/lib,
 				);
 				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -5665,72 +4937,13 @@
 				ZERO_LINK = NO;
 			};
 			name = Debug;
-		};
-		986BF7910C249C48003001FF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../build.shared/Shared/Frameworks",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"_FILE_OFFSET_BITS=64",
-					_LARGE_FILES,
-					__WXDEBUG__,
-					__WXMAC__,
-					"unix=1",
-					__DARWIN_OSX__,
-					UNIX,
-					"SUPPORT_QUIKGRID=0",
-					"SUPPORT_NETCDF=1",
-					"SUPPORT_HTTP=1",
-					"SUPPORT_BZIP2=1",
-					"VTLIB_OSG=1",
-					"SUPPORT_PYTHON=0",
-				);
-				HEADER_SEARCH_PATHS = (
-					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					"$SRCROOT/../../build.shared/Shared/include/wx-2.8",
-					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
-					$SRCROOT/../TerrainSDK,
-				);
-				INFOPLIST_FILE = "wxSimple-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
-				);
-				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = (
-					"-bind_at_load",
-					"-Wl,-executable_path",
-					"-Wl,$BUILT_PRODUCTS_DIR/${PRODUCT_NAME}.app/Contents/MacOS",
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = wxSimple;
-				WRAPPER_EXTENSION = app;
-				ZERO_LINK = NO;
-			};
-			name = Release;
 		};
 		98A9F0AB0C2A0E1500A3AF4C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../build.shared/Shared/Frameworks",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = $OSG_FRAMEWORK_PATH;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -5756,9 +4969,9 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					"$SRCROOT/../../build.shared/Shared/include/wx-2.8",
-					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
+					/Library/Frameworks/VTPX.framework/Versions/A/include,
+					"/Library/Frameworks/VTPX.framework/Versions/A/include/wx-2.8",
+					"/Library/Frameworks/VTPX.framework/Versions/A/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
 					$SRCROOT/../TerrainApps/VTBuilder/icons,
 					$SRCROOT/../TerrainApps/Enviro/wx/bitmap,
@@ -5768,7 +4981,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
+					/Library/Frameworks/VTPX.framework/Versions/A/lib,
 				);
 				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -5783,76 +4996,13 @@
 				ZERO_LINK = NO;
 			};
 			name = Debug;
-		};
-		98A9F0AC0C2A0E1500A3AF4C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../build.shared/Shared/Frameworks",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"_FILE_OFFSET_BITS=64",
-					_LARGE_FILES,
-					__WXDEBUG__,
-					__WXMAC__,
-					"unix=1",
-					__DARWIN_OSX__,
-					UNIX,
-					"SUPPORT_QUIKGRID=0",
-					"SUPPORT_NETCDF=1",
-					"SUPPORT_HTTP=1",
-					"SUPPORT_BZIP2=1",
-					"VTLIB_OSG=1",
-					"SUPPORT_PYTHON=0",
-					"SUPPORT_SQUISH=0",
-				);
-				HEADER_SEARCH_PATHS = (
-					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					"$SRCROOT/../../build.shared/Shared/include/wx-2.8",
-					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
-					$SRCROOT/../TerrainSDK,
-					$SRCROOT/../TerrainApps/VTBuilder/icons,
-					$SRCROOT/../TerrainApps/Enviro/wx/bitmap,
-					$SRCROOT/../TerrainApps/Enviro/wx/icons,
-				);
-				INFOPLIST_FILE = "Enviro-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
-				);
-				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = (
-					"-bind_at_load",
-					"-Wl,-executable_path",
-					"-Wl,$BUILT_PRODUCTS_DIR/${PRODUCT_NAME}.app/Contents/MacOS",
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = Enviro;
-				WRAPPER_EXTENSION = app;
-				ZERO_LINK = NO;
-			};
-			name = Release;
 		};
 		98A9F1550C2A128100A3AF4C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../build.shared/Shared/Frameworks",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = $OSG_FRAMEWORK_PATH;
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "/Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -5878,9 +5028,9 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					"$SRCROOT/../../build.shared/Shared/include/wx-2.8",
-					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
+					/Library/Frameworks/VTPX.framework/Versions/A/include,
+					"/Library/Frameworks/VTPX.framework/Versions/A/include/wx-2.8",
+					"/Library/Frameworks/VTPX.framework/Versions/A/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
 					$SRCROOT/../TerrainApps/CManager/icons,
 				);
@@ -5888,7 +5038,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
+					/Library/Frameworks/VTPX.framework/Versions/A/lib,
 				);
 				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -5904,85 +5054,17 @@
 			};
 			name = Debug;
 		};
-		98A9F1560C2A128100A3AF4C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../build.shared/Shared/Frameworks",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../build.shared/Shared/Frameworks\"";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"_FILE_OFFSET_BITS=64",
-					_LARGE_FILES,
-					__WXDEBUG__,
-					__WXMAC__,
-					"unix=1",
-					__DARWIN_OSX__,
-					UNIX,
-					"SUPPORT_QUIKGRID=0",
-					"SUPPORT_NETCDF=1",
-					"SUPPORT_HTTP=1",
-					"SUPPORT_BZIP2=1",
-					"VTLIB_OSG=1",
-					"SUPPORT_PYTHON=0",
-					"SUPPORT_SQUISH=0",
-				);
-				HEADER_SEARCH_PATHS = (
-					/sw/include,
-					$SRCROOT/../../build.shared/Shared/include,
-					"$SRCROOT/../../build.shared/Shared/include/wx-2.8",
-					"$SRCROOT/../../build.shared/Shared/lib/wx/include/mac-unicode-debug-2.8",
-					$SRCROOT/../TerrainSDK,
-					$SRCROOT/../TerrainApps/CManager/icons,
-				);
-				INFOPLIST_FILE = "CManager-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					/sw/lib,
-					"$(SRCROOT)/../../build.shared/Shared/lib",
-				);
-				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = (
-					"-bind_at_load",
-					"-Wl,-executable_path",
-					"-Wl,$BUILT_PRODUCTS_DIR/${PRODUCT_NAME}.app/Contents/MacOS",
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = CManager;
-				WRAPPER_EXTENSION = app;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		98EB166B0C2A272500943462 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = "vtp-data";
 			};
 			name = Debug;
-		};
-		98EB166C0C2A272500943462 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				PRODUCT_NAME = "vtp-data";
-				ZERO_LINK = NO;
-			};
-			name = Release;
 		};
 		98EB194A0C2A2A9200943462 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -5995,17 +5077,6 @@
 			};
 			name = Debug;
 		};
-		98EB194B0C2A2A9200943462 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				PRODUCT_NAME = "copy-vtp-data";
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		98EB199B0C2A325000943462 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -6016,17 +5087,6 @@
 				PRODUCT_NAME = TerrainSDK;
 			};
 			name = Debug;
-		};
-		98EB199C0C2A325000943462 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				PRODUCT_NAME = TerrainSDK;
-				ZERO_LINK = NO;
-			};
-			name = Release;
 		};
 		98EB199E0C2A325000943462 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -6039,17 +5099,6 @@
 			};
 			name = Debug;
 		};
-		98EB199F0C2A325000943462 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				PRODUCT_NAME = TerrainApps;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -6057,136 +5106,121 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A4362B80C1F44B600DBCF37 /* Debug */,
-				0A4362B90C1F44B600DBCF37 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		0A4362C70C1F44D600DBCF37 /* Build configuration list for PBXNativeTarget "xmlhelper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A4362C80C1F44D600DBCF37 /* Debug */,
-				0A4362C90C1F44D600DBCF37 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		0A6A4B320C20202900F54366 /* Build configuration list for PBXNativeTarget "vtdata" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A6A4B330C20202900F54366 /* Debug */,
-				0A6A4B340C20202900F54366 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		0A6A4C390C20908400F54366 /* Build configuration list for PBXNativeTarget "unzip" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A6A4C3A0C20908400F54366 /* Debug */,
-				0A6A4C3B0C20908400F54366 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		0A6A4D630C2099E200F54366 /* Build configuration list for PBXNativeTarget "vtosg" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A6A4D640C2099E200F54366 /* Debug */,
-				0A6A4D650C2099E200F54366 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		0A6A51650C209E0C00F54366 /* Build configuration list for PBXNativeTarget "vtui" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A6A51660C209E0C00F54366 /* Debug */,
-				0A6A51670C209E0C00F54366 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		0A6A51FB0C20A3D200F54366 /* Build configuration list for PBXNativeTarget "glutSimple" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A6A51FC0C20A3D200F54366 /* Debug */,
-				0A6A51FD0C20A3D200F54366 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		982FD83D0C297BA600364006 /* Build configuration list for PBXNativeTarget "VTBuilder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				982FD83E0C297BA600364006 /* Debug */,
-				982FD83F0C297BA600364006 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		986BF78F0C249C48003001FF /* Build configuration list for PBXNativeTarget "wxSimple" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				986BF7900C249C48003001FF /* Debug */,
-				986BF7910C249C48003001FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		98A9F0AA0C2A0E1500A3AF4C /* Build configuration list for PBXNativeTarget "Enviro" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				98A9F0AB0C2A0E1500A3AF4C /* Debug */,
-				98A9F0AC0C2A0E1500A3AF4C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		98A9F1540C2A128100A3AF4C /* Build configuration list for PBXNativeTarget "CManager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				98A9F1550C2A128100A3AF4C /* Debug */,
-				98A9F1560C2A128100A3AF4C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		98EB166A0C2A272500943462 /* Build configuration list for PBXAggregateTarget "copy-dependencies" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				98EB166B0C2A272500943462 /* Debug */,
-				98EB166C0C2A272500943462 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		98EB19490C2A2A9200943462 /* Build configuration list for PBXAggregateTarget "copy-vtp-data" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				98EB194A0C2A2A9200943462 /* Debug */,
-				98EB194B0C2A2A9200943462 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		98EB199A0C2A325000943462 /* Build configuration list for PBXAggregateTarget "TerrainSDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				98EB199B0C2A325000943462 /* Debug */,
-				98EB199C0C2A325000943462 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		98EB199D0C2A325000943462 /* Build configuration list for PBXAggregateTarget "TerrainApps" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				98EB199E0C2A325000943462 /* Debug */,
-				98EB199F0C2A325000943462 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
