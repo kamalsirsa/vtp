@@ -30,7 +30,6 @@
 
 // Declare window functions
 
-const int ID_TEXT = 10000;
 const int ID_LEVEL = 10001;
 const int ID_LEVEL_COPY = 10002;
 const int ID_LEVEL_DEL = 10003;
