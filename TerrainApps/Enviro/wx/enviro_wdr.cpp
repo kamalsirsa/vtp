@@ -2958,44 +2958,6 @@ wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
-wxSizer *SnapSizeDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
-{
-    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
-
-    wxTextCtrl *item1 = new wxTextCtrl( parent, ID_TEXTCTRL, _("The size of the rendered image should be a multiple of the existing window, up to the limit of your graphics card.  If you request a size that your card does not support, the output will be blank."), wxDefaultPosition, wxSize(320,60), wxTE_MULTILINE|wxTE_READONLY );
-    item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxSlider *item2 = new wxSlider( parent, ID_SLIDER_RATIO, 0, 0, 320, wxDefaultPosition, wxSize(320,-1), wxSL_HORIZONTAL );
-    item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
-
-    wxBoxSizer *item3 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxTextCtrl *item4 = new wxTextCtrl( parent, ID_TEXT_X, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item3->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item5 = new wxTextCtrl( parent, ID_TEXT_Y, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item3->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item3->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxButton *item6 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item3->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxButton *item7 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item3->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item0->Add( item3, 0, wxALIGN_CENTER, 5 );
-
-    if (set_sizer)
-    {
-        parent->SetSizer( item0 );
-        if (call_fit)
-            item0->SetSizeHints( parent );
-    }
-    
-    return item0;
-}
-
 // Implement menubar functions
 
 // Implement toolbar functions

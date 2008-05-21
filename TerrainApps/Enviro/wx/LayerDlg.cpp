@@ -754,12 +754,14 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 {
 	bool bVis = event.IsChecked();
 
+#if OLD_OSG_SHADOWS
 	vtNode *pThing = GetNodeFromItem(m_item);
 	if (pThing)
 	{
 		vtGetScene()->ShadowVisibleNode(pThing, bVis);
 		vtGetScene()->ComputeShadows();
 	}
+#endif
 }
 
 void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
@@ -767,6 +769,7 @@ void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 	if (!IsShown())
 		return;
 
+#if OLD_OSG_SHADOWS
 	bool bShadows = false;
 	vtNode *pThing = NULL;
 #if VTLIB_OSG
@@ -783,6 +786,7 @@ void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 
 	if (pThing)
 		event.Check(vtGetScene()->IsShadowVisibleNode(pThing));
+#endif
 }
 
 void LayerDlg::OnVisible( wxCommandEvent &event )

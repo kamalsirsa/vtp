@@ -37,6 +37,7 @@ using namespace std;
 #  include "icon8.xpm"
 #  include "icon9.xpm"
 #  include "icon10.xpm"
+#  include "icon11.xpm"
 #endif
 
 /////////////////////////////
@@ -107,7 +108,7 @@ void SceneGraphDlg::CreateImageList(int size)
 	// Make an image list containing small icons
 	m_imageListNormal = new wxImageList(size, size, TRUE);
 
-	wxIcon icons[10];
+	wxIcon icons[11];
 	icons[0] = wxICON(icon1);
 	icons[1] = wxICON(icon2);
 	icons[2] = wxICON(icon3);
@@ -118,6 +119,7 @@ void SceneGraphDlg::CreateImageList(int size)
 	icons[7] = wxICON(icon8);
 	icons[8] = wxICON(icon9);
 	icons[9] = wxICON(icon10);
+	icons[10] = wxICON(icon11);
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )
@@ -185,6 +187,11 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	{
 		str = _T("XForm");
 		nImage = 9;
+	}
+	else if (dynamic_cast<vtFog*>(pNode))
+	{
+		str = _("Fog");
+		nImage = 10;
 	}
 	else if (dynamic_cast<vtGroupBase*>(pNode))
 	{

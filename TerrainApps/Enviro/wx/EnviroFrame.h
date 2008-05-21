@@ -252,6 +252,7 @@ protected:
 	void OnPopupProperties(wxCommandEvent& event);
 	void OnPopupFlip(wxCommandEvent& event);
 	void OnPopupReload(wxCommandEvent& event);
+	void OnPopupShadow(wxCommandEvent& event);
 	void OnPopupAdjust(wxCommandEvent& event);
 	void OnPopupStart(wxCommandEvent& event);
 	void OnPopupDelete(wxCommandEvent& event);

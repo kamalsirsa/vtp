@@ -54,13 +54,13 @@
 #include "PlantDlg.h"
 #include "ScenarioSelectDialog.h"
 #include "SceneGraphDlg.h"
-#include "SnapSizeDlg.h"
 #include "TextureDlg.h"
 #include "TimeDlg.h"
 #include "UtilDlg.h"
 #include "VehicleDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/ProfileDlg.h"
+#include "vtui/SizeDlg.h"
 #include "vtui/TagDlg.h"
 
 #include "../Engines.h"
@@ -280,6 +280,7 @@ EVT_MENU(ID_HELP_DOC_ONLINE, EnviroFrame::OnHelpDocOnline)
 EVT_MENU(ID_POPUP_PROPERTIES, EnviroFrame::OnPopupProperties)
 EVT_MENU(ID_POPUP_FLIP, EnviroFrame::OnPopupFlip)
 EVT_MENU(ID_POPUP_RELOAD, EnviroFrame::OnPopupReload)
+EVT_MENU(ID_POPUP_SHADOW, EnviroFrame::OnPopupShadow)
 EVT_MENU(ID_POPUP_ADJUST, EnviroFrame::OnPopupAdjust)
 EVT_MENU(ID_POPUP_START, EnviroFrame::OnPopupStart)
 EVT_MENU(ID_POPUP_DELETE, EnviroFrame::OnPopupDelete)
@@ -1015,9 +1016,67 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 	}
 }
 
+#if VTLIB_OSG
+#include <osgShadow/ShadowedScene>
+#include <osgShadow/ShadowMap>
+#include <osgShadow/ShadowTexture>
+#include <osgDB/ReadFile>
+#endif
+
 void EnviroFrame::DoTestCode()
 {
+#if VTLIB_OSG
+	const int ReceivesShadowTraversalMask = 0x1;
+	const int CastsShadowTraversalMask = 0x2;
 
+	osg::ref_ptr<osgShadow::ShadowedScene> shadowedScene = new osgShadow::ShadowedScene;
+
+	shadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
+	shadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
+
+#if 0
+	osg::ref_ptr<osgShadow::ShadowMap> sm = new osgShadow::ShadowMap;
+	shadowedScene->setShadowTechnique(sm.get());
+	int mapres = 1024;
+	sm->setTextureSize(osg::Vec2s(mapres,mapres));
+#else
+	osg::ref_ptr<osgShadow::ShadowTexture> sm = new osgShadow::ShadowTexture;
+	shadowedScene->setShadowTechnique(sm.get());
+#endif
+
+	osg::Group* cessna1 = (osg::Group*) osgDB::readNodeFile("cessna.osg");
+	if (!cessna1)
+		return;
+	cessna1->setNodeMask(CastsShadowTraversalMask);
+	cessna1->getChild(0)->setNodeMask(CastsShadowTraversalMask);
+
+	osg::Group* cessna2 = (osg::Group*) osgDB::readNodeFile("cessna.osg");
+	if (!cessna2)
+		return;
+	int not = ~(CastsShadowTraversalMask | ReceivesShadowTraversalMask);
+	cessna2->setNodeMask(not);
+	cessna2->getChild(0)->setNodeMask(not);
+
+	osg::MatrixTransform* positioned = new osg::MatrixTransform;
+	positioned->setDataVariance(osg::Object::STATIC);
+	positioned->setMatrix(osg::Matrix::rotate(osg::inDegrees(-90.0f),0.0f,1.0f,0.0f)
+		*osg::Matrix::translate(40,40,0));
+	positioned->addChild(cessna1);
+
+//osg::ref_ptr<osg::Group> shadowedScene = new osg::Group;
+	shadowedScene->addChild(positioned);
+	shadowedScene->addChild(cessna2);
+
+	//	osg::ref_ptr<osg::Group> container = new osg::Group;
+	//	container->addChild(positioned);
+	//    container->addChild(cessna2);
+
+	vtGroup *vtg = GetCurrentTerrain()->GetTerrainGroup();
+	vtg->GetOsgGroup()->addChild(shadowedScene.get());
+	//	vtg->GetOsgGroup()->addChild(container.get());
+
+	vtLogNativeGraph(shadowedScene.get());
+#endif
 }
 
 void EnviroFrame::LoadClouds(const char *fname)
@@ -1626,8 +1685,10 @@ void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 	vtScene *scene = vtGetScene();
 	IPoint2 original_size = scene->GetWindowSize();
 
-	SnapSizeDlg dlg(this, -1, _("High-resolution Snapshot"));
+	SizeDlg dlg(this, -1, _("High-resolution Snapshot"));
 	dlg.SetBase(original_size);
+	dlg.SetRatioRange(1.0f, 4.0f);
+	dlg.GetTextCtrl()->SetValue(_("The size of the rendered image should be a multiple of the existing window, up to the limit of your graphics card.  If you request a size that your card does not support, the output will be blank."));
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -2866,6 +2927,7 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 			if (type == ST_INSTANCE)
 			{
 				popmenu->Append(ID_POPUP_RELOAD, _("Reload from Disk"));
+				popmenu->Append(ID_POPUP_SHADOW, _("Toggle Shadow"));
 				popmenu->Append(ID_POPUP_ADJUST, _("Adjust Terrain Surface to Fit"));
 			}
 
@@ -3007,6 +3069,27 @@ void EnviroFrame::OnPopupReload(wxCommandEvent& event)
 		if (!inst)
 			continue;
 		structures->ConstructStructure(structures->GetStructure3d(i));
+	}
+}
+
+void EnviroFrame::OnPopupShadow(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *structures = pTerr->GetStructureLayer();
+
+	int count = structures->GetSize();
+	vtStructure *str;
+	vtStructInstance3d *inst;
+	for (int i = 0; i < count; i++)
+	{
+		str = structures->GetAt(i);
+		if (!str->IsSelected())
+			continue;
+
+		inst = structures->GetInstance(i);
+		if (!inst)
+			continue;
+		inst->SetCastShadow(!inst->GetCastShadow());
 	}
 }
 

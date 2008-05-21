@@ -46,6 +46,7 @@ icon7   ICON "icons/mesh.ico"
 icon8   ICON "icons/top.ico"
 icon9   ICON "icons/unknown.ico"
 icon10  ICON "icons/xform.ico"
+icon11  ICON "icons/fog.ico"
 
 building  ICON "icons/building.ico"
 road	  ICON "icons/road.ico"
