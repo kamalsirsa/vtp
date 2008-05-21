@@ -188,6 +188,9 @@ void TestDEMToTileset(Builder &bld)
 	lay1->GetExtent(area);
 	bld.SetArea(area);
 
+	// Or, this is how to set the area to full extents of all the data loaded:
+	// bld.SetArea(bld.GetExtents());
+
 	// Set all the desired sampling parameters
 	// ---------------------------------------
 
