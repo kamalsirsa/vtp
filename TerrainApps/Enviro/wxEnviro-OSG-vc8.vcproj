@@ -73,7 +73,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng13-vc8.lib zlib1-vc8.lib netcdf.lib gdal_i-vc8.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib osgShadow.lib opengl32.lib libpng13-vc8.lib zlib1-vc8.lib netcdf.lib gdal_i-vc8.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,MSVCRTD.lib"
@@ -163,7 +163,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d-vc8.lib zlib1d-vc8.lib netcdf.lib gdal_id-vc8.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgShadowd.lib opengl32.lib libpng13d-vc8.lib zlib1d-vc8.lib netcdf.lib gdal_id-vc8.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,libcmt.lib,msvcrt.lib,libcd.lib,libcmtd.lib"
 				GenerateDebugInformation="true"

@@ -393,6 +393,7 @@ void Enviro::DoControlTerrain()
 	}
 	if (plg)
 	{
+#if OLD_OSG_SHADOWS
 		// Periodically re-render the shadows
 		static FPoint3 previous_shadow_center(0,0,0);
 
@@ -421,6 +422,7 @@ void Enviro::DoControlTerrain()
 			if (pslg)
 				pslg->ResetLoadCount();
 		}
+#endif // #if OLD_OSG_SHADOWS
 	}
 }
 

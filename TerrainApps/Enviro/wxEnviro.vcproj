@@ -41,7 +41,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng13.lib zlib1.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib Winmm.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib osgShadow.lib opengl32.lib libpng13.lib zlib1.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib Winmm.lib"
 				OutputFile="Release_Unicode/wxEnviro_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -107,7 +107,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d.lib zlib1d.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib Winmm.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgShadowd.lib opengl32.lib libpng13d.lib zlib1d.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib Winmm.lib"
 				OutputFile="Debug_Unicode/wxEnviro_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -578,25 +578,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\wx\SnapSizeDlg.cpp">
-				<FileConfiguration
-					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="wx\StartupDlg.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -870,9 +851,6 @@
 			</File>
 			<File
 				RelativePath="wx\SceneGraphDlg.h">
-			</File>
-			<File
-				RelativePath=".\wx\SnapSizeDlg.h">
 			</File>
 			<File
 				RelativePath="wx\StartupDlg.h">
