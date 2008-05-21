@@ -8,7 +8,9 @@
 //
 
 #include "vtlib/vtlib.h"
+#if OLD_OSG_SHADOWS
 #include "StructureShadowsOSG.h"
+#endif
 
 #include <osg/PolygonMode>	// SetGlobalWireframe
 #include <osgDB/Registry>	// for clearObjectCache
@@ -285,6 +287,11 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	m_pOsgSceneView->setFrameStamp(frameStamp.get());
 #endif
 
+	// We use bits 1 and 2 of the node mask as shadow flags.  The rest of
+	//  the bits are used to control visibility (cull) of a node.  So, the
+	//  cull node mask does not contain bits 1 and 2.
+    m_pOsgSceneView->setCullMask(0xfffffffc);
+
 #if USE_OSG_UPDATE
 	m_pOsgSceneView->update();
 #endif
@@ -335,8 +342,10 @@ void vtScene::SetRoot(vtGroup *pRoot)
 	else
 		m_pOsgSceneRoot = NULL;
 
+#if OLD_OSG_SHADOWS
 	// Clear out any shadow stuff
 	m_pStructureShadowsOSG = NULL;
+#endif
 
 	if (m_pOsgSceneView != NULL)
 		m_pOsgSceneView->setSceneData(m_pOsgSceneRoot.get());
@@ -554,6 +563,7 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 ////////////////////////////////////////
 // Shadow methods
 
+#if OLD_OSG_SHADOWS
 void vtScene::ShadowVisibleNode(vtNode *node, bool bVis)
 {
 	if (m_pStructureShadowsOSG.valid())
@@ -610,6 +620,7 @@ void vtScene::ComputeShadows()
 	if (m_pStructureShadowsOSG.valid())
 		m_pStructureShadowsOSG->ComputeShadows();
 }
+#endif // OLD_OSG_SHADOWS
 
 
 ////////////////////////////////////////

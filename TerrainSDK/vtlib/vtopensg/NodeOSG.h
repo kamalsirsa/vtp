@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OpenSG scene graph nodes.
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -104,7 +104,7 @@ public:
 	void EnableMultiTexture(vtMultiTexture *mt, bool bEnable);
 	bool MultiTextureIsEnabled(vtMultiTexture *mt);
 
-	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
+	void SetFog(bool bOn, float start, float end, const RGBf &color, enum FogType Type = FM_LINEAR);
 
 	// OSG access
 	void SetOsgNode(osg::NodePtr n);
@@ -136,10 +136,14 @@ protected:
  * This class represents a node which is native to the underlying scene graph
  * libraries, e.g. OSG.
  */
-class vtNativeNode : public vtNode {
+class vtNativeNode : public vtNode
+{
 public:
 	vtNativeNode(osg::NodePtr node) { SetOsgNode(node);};
 	vtNode *vtNativeNode::FindParentVTNode();
+
+	void SetCastShadow(bool b) {}
+	bool GetCastShadow() { return false; }
 
 protected:
 	// Destructor is protected so that people will use Release() instead,
@@ -150,7 +154,8 @@ protected:
 /**
  * Represents a Group (a node that can have children) in the vtlib Scene Graph.
  */
-class vtGroup : public vtNode, public vtGroupBase {
+class vtGroup : public vtNode, public vtGroupBase
+{
 public:
 	vtGroup(bool suppress = false);
 	virtual vtNode *Clone(bool bDeep = false);
@@ -189,7 +194,8 @@ protected:
  * A Transform node allows you to apply a transform (scale, rotate, translate)
  * to all its child nodes.
  */
-class vtTransform : public vtGroup, public vtTransformBase {
+class vtTransform : public vtGroup, public vtTransformBase
+{
 public:
 	vtTransform();
 	virtual vtNode *Clone(bool bDeep = false);
@@ -261,11 +267,55 @@ protected:
 	virtual ~vtTransform() {};
 };
 
+
+/**
+ * A Fog node.
+ */
+class vtFog : public vtGroup
+{
+public:
+	vtFog();
+	virtual vtNode *Clone(bool bDeep = false);
+	void CopyFrom(const vtFog *rhs);
+	void Release();
+
+	static RGBf s_white;
+	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
+
+protected:
+	// TODO: OpenSG fog state
+
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
+	virtual ~vtFog() {}
+};
+
+
+/**
+ * A Shadow node.
+ */
+class vtShadow : public vtGroup
+{
+public:
+	vtShadow();
+	virtual vtNode *Clone(bool bDeep = false);
+	void CopyFrom(const vtShadow *rhs);
+	void Release();
+
+protected:
+	// TODO: OpenSG shadow state
+
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
+	virtual ~vtShadow() {}
+};
+
 /**
  * A Light node is placed into the scene graph to illumninate all
  * lit geometry with vertex normals.
  */
-class vtLight : public vtGroup {
+class vtLight : public vtGroup
+{
 public:
 	vtLight();
 	virtual vtNode *Clone(bool bDeep = false);
@@ -308,7 +358,8 @@ class vtTextMesh;
 	permits a large number of visual instances (each with potentially different
 	material and transform) with very little memory cost.
  */
-class vtGeom : public vtNode {
+class vtGeom : public vtNode
+{
 public:
 	vtGeom();
 	virtual vtNode *Clone(bool bDeep = false);
@@ -388,7 +439,8 @@ public:
  * \par
  * \see vtDynTerrainGeom
  */
-class vtDynGeom : public vtGeom {
+class vtDynGeom : public vtGeom
+{
 public:
 	vtDynGeom();
 
@@ -434,7 +486,8 @@ protected:
  * You should set a distance value (range) for each child, which determines
  * at what distance from the camera a node should be rendered.
  */
-class vtLOD : public vtGroup {
+class vtLOD : public vtGroup
+{
 public:
 	vtLOD();
 	void Release();
@@ -462,7 +515,8 @@ protected:
  * however, tell your scene (vtScene) which camera to use.  The scene
  * produces a default camera which is used unless you tell it otherwise.
  */
-class vtCamera : public vtTransform {
+class vtCamera : public vtTransform
+{
 public:
 	vtCamera();
 	virtual vtNode *Clone(bool bDeep = false);
@@ -498,7 +552,8 @@ protected:
  * A HUD ("heads-up display") is a group whose whose children are transformed
  * to be drawn in window coordinates, rather than world coordinates.
  */
-class vtHUD : public vtGroup {
+class vtHUD : public vtGroup
+{
 public:
 	vtHUD(bool bPixelCoords = true);
 	virtual vtNode *Clone(bool bDeep = false);
@@ -523,7 +578,8 @@ protected:
  *  mesh.  It is particularly useful in conjunction with vtHUD, for
  *  superimposing a single image on the window.
  */
-class vtImageSprite {
+class vtImageSprite
+{
 public:
 	vtImageSprite();
 	~vtImageSprite();

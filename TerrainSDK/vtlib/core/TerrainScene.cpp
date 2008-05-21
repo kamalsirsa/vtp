@@ -1,7 +1,7 @@
 //
 // vtTerrainScene - Container class for all of the terrains loaded
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -362,11 +362,11 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 		m_pTimeEngine->SetSpeed(0.0f);
 	m_pTimeEngine->SetEnabled(true);
 
+#if VTLIB_OSG && OLD_OSG_SHADOWS
 	if (param.GetValueBool(STR_STRUCT_SHADOWS))
 	{
 		int iRez = param.GetValueInt(STR_SHADOW_REZ);
 		// Experimental OSG-specific code!
-#if VTLIB_OSG
 		// Set up cull callback on the dynamic geometry transform node
 		vtLodGrid *pStructures = m_pCurrentTerrain->GetStructureGrid();
 		vtNode *pShadowed = m_pCurrentTerrain->GetTopGroup()->GetChild(0);
@@ -393,8 +393,8 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 			//  to set the correct sunlight direction
 			m_pTimeEngine->SetTime(localtime);
 		}
-#endif
 	}
+#endif
 }
 
 void vtTerrainScene::UpdateSkydomeForTerrain(vtTerrain *pTerrain)
@@ -462,7 +462,7 @@ void vtTerrainScene::SetTime(const vtTime &time)
 		m_pSkyDome->SetTime(time);
 		// TODO? Update the fog color to match the color of the horizon.
 
-#if VTLIB_OSG
+#if VTLIB_OSG && OLD_OSG_SHADOWS
 		// Experimental OSG-specific code!
 		vtGetScene()->UpdateShadowLightDirection(m_pSunLight);
 #endif

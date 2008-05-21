@@ -1,7 +1,7 @@
 //
 // Base.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -70,9 +70,6 @@ public:
 	virtual vtGroup* GetParent(int iParent = 0) = 0;
 
 	enum FogType { FM_LINEAR, FM_EXP, FM_EXP2 };
-
-	static RGBf s_white;
-	virtual void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR) = 0;
 };
 
 /** Virtual Base class for a Group node (scene graph node that can have children). */

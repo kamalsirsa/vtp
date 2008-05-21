@@ -42,13 +42,18 @@ vtTerrain::vtTerrain()
 	m_ocean_color.Set(40.0f/255, 75.0f/255, 124.0f/255);	// unshaded color
 	m_fog_color.Set(1.0f, 1.0f, 1.0f);
 
+	m_pContainerGroup = NULL;
 	m_pTerrainGroup = NULL;
+	m_pFog = NULL;
+	m_pShadow = NULL;
 	m_pImage = NULL;
 	m_pImageSource = NULL;
 	m_pTerrMats = NULL;
 	m_bBothSides = false;
 	m_bTextureInitialized = false;
+#if OLD_OSG_SHADOWS
 	m_iShadowTextureUnit = -1;
+#endif
 
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
@@ -196,8 +201,8 @@ vtTerrain::~vtTerrain()
 	}
 
 	// This will mop up anything remaining in the terrain's scenegraph
-	if (m_pTerrainGroup != (vtGroup*) NULL)
-		m_pTerrainGroup->Release();
+	if (m_pContainerGroup != NULL)
+		m_pContainerGroup->Release();
 
 	if (m_pTerrMats)
 		m_pTerrMats->Release();
@@ -1928,15 +1933,22 @@ void vtTerrain::SetFog(bool fog)
 	m_bFog = fog;
 	if (m_bFog)
 	{
-		float dist = m_Params.GetValueFloat(STR_FOGDISTANCE) * 1000;
+		if (!m_pFog)
+			m_pFog = new vtFog;
 
+		ConnectFogShadow(true, false);	// true for Fog
+
+		float dist = m_Params.GetValueFloat(STR_FOGDISTANCE) * 1000;
 		if (m_fog_color.r != -1)
-			m_pTerrainGroup->SetFog(true, 0, dist, m_fog_color);
+			m_pFog->SetFog(true, 0, dist, m_fog_color);
 		else
-			m_pTerrainGroup->SetFog(true, 0, dist);
+			m_pFog->SetFog(true, 0, dist);
 	}
 	else
-		m_pTerrainGroup->SetFog(false);
+	{
+		if (m_pFog)
+			m_pFog->SetFog(false);
+	}
 }
 
 void vtTerrain::SetFogColor(const RGBf &color)
@@ -1958,6 +1970,29 @@ void vtTerrain::SetBgColor(const RGBf &color)
 	m_background_color = color;
 }
 
+void vtTerrain::ConnectFogShadow(bool bFog, bool bShadow)
+{
+	// Add the fog into the scene graph between container and terrain
+	if (m_pContainerGroup->GetNumChildren() > 0)
+		m_pContainerGroup->RemoveChild(m_pContainerGroup->GetChild(0));
+	if (m_pShadow && m_pShadow->GetNumChildren() > 0)
+		m_pShadow->RemoveChild(m_pShadow->GetChild(0));
+	if (m_pFog && m_pFog->GetNumChildren() > 0)
+		m_pFog->RemoveChild(m_pFog->GetChild(0));
+
+	if (bFog && m_pFog)
+	{
+		m_pContainerGroup->AddChild(m_pFog);
+		m_pFog->AddChild(m_pTerrainGroup);
+	}
+	else if (bShadow && m_pShadow)
+	{
+		m_pContainerGroup->AddChild(m_pShadow);
+		m_pShadow->AddChild(m_pTerrainGroup);
+	}
+	else
+		m_pContainerGroup->AddChild(m_pTerrainGroup);
+}
 
 ///////////////////////////////////////////////////////////////////////
 //////////////////////////// Time Methods /////////////////////////////
@@ -2048,8 +2083,21 @@ void vtTerrain::CreateStep0()
 		return;
 
 	// create terrain group - this holds all surfaces for the terrain
+	m_pContainerGroup = new vtGroup;
+	m_pContainerGroup->SetName2("Terrain Container");
 	m_pTerrainGroup = new vtGroup;
 	m_pTerrainGroup->SetName2("Terrain Group");
+
+#if 1
+	// TEST new shadow functionality
+	m_pShadow = new vtShadow;
+	m_pShadow->SetName2("Shadow Group");
+	ConnectFogShadow(false, true);
+#else
+	// Initially, there is no fog or shadow
+	ConnectFogShadow(false, false);
+#endif
+
 #ifdef VTLIB_PSM
 	m_pTerrainGroup->IncUse();
 #endif
@@ -2726,12 +2774,14 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
 	return false;
 }
 
+#if OLD_OSG_SHADOWS
 int vtTerrain::GetShadowTextureUnit()
 {
 	if (m_iShadowTextureUnit == -1)
 		m_iShadowTextureUnit = m_TextureUnits.ReserveTextureUnit();
 	return m_iShadowTextureUnit;
 }
+#endif
 
 /*
  * Creates an array of materials for the dynamic LOD terrain geometry.
@@ -3249,6 +3299,7 @@ void vtTerrain::ExtendStructure(vtStructure *s)
 ////////////////////////////////////////////////////////////////////////////
 // Abstracts
 
+/** Set the currently active abstract layer for this terrain. */
 void vtTerrain::SetAbstractLayer(vtAbstractLayer *alay)
 {
 	m_pActiveAbstractLayer = alay;

@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,15 +21,25 @@
 #include <osg/TexGen>
 #include <osgParticle/ModularEmitter>
 #include <osgParticle/ParticleSystemUpdater>
+#include <osgShadow/ShadowMap>
+#include <osgShadow/ShadowTexture>
 
 using namespace osg;
 
 #define DEBUG_NODE_LOAD	0
 
+// We use bits 1 and 2 of the node mask as shadow flags.
+const int ReceivesShadowTraversalMask = 0x1;
+const int CastsShadowTraversalMask = 0x2;
+
 
 ///////////////////////////////////////////////////////////////////////
 // vtNode
 //
+
+vtNode::vtNode()
+{
+}
 
 /**
  * Releases a node.  Use this method instead of C++'s delete operator when
@@ -44,9 +54,6 @@ void vtNode::Release()
 
 	if (m_pNode->referenceCount() == 1)
 	{
-		m_pFogStateSet = NULL;
-		m_pFog = NULL;
-
 #if DEBUG_NODE_LOAD
 		VTLOG("Deleting vtNode: %lx (\"%s\") (osg %lx, rc %d", this,
 			m_pNode->getName().c_str(), m_pNode, m_pNode->referenceCount());
@@ -89,7 +96,11 @@ void vtNode::SetOsgNode(osg::Node *n)
  */
 void vtNode::SetEnabled(bool bOn)
 {
-	m_pNode->setNodeMask(bOn ? 0xffffffff : 0);
+	osg::Node::NodeMask nm = m_pNode->getNodeMask();
+	if (bOn)
+		m_pNode->setNodeMask(nm | 0xfffffffc);
+	else
+		m_pNode->setNodeMask(nm & ~0xfffffffc);
 }
 
 /**
@@ -388,59 +399,6 @@ vtNode *vtNode::Clone(bool bDeep)
 	// We should never get here, because only subclasses of vtNode are
 	//  ever instantiated.
 	return NULL;
-}
-
-RGBf vtNodeBase::s_white(1, 1, 1);
-
-/**
- * Set the Fog state for a node.
- *
- * You can turn fog on or off.  When you turn fog on, it affects this node
- * and all others below it in the scene graph.
- *
- * \param bOn True to turn fog on, false to turn it off.
- * \param start The distance from the camera at which fog starts, in meters.
- * \param end The distance from the camera at which fog end, in meters.  This
- *		is the point at which it becomes totally opaque.
- * \param color The color of the fog.  All geometry will be faded toward this
- *		color.
- * \param Type Can be GL_LINEAR, GL_EXP or GL_EXP2 for linear or exponential
- *		increase of the fog density.
- */
-void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, enum FogType Type)
-{
-	osg::StateSet *set = GetOsgNode()->getStateSet();
-	if (!set)
-	{
-		m_pFogStateSet = new osg::StateSet;
-		set = m_pFogStateSet.get();
-		GetOsgNode()->setStateSet(set);
-	}
-
-	if (bOn)
-	{
-		Fog::Mode eType;
-		switch (Type)
-		{
-		case FM_LINEAR: eType = Fog::LINEAR; break;
-		case FM_EXP: eType = Fog::EXP; break;
-		case FM_EXP2: eType = Fog::EXP2; break;
-		default: return;
-		}
-		m_pFog = new Fog;
-		m_pFog->setMode(eType);
-		m_pFog->setDensity(0.25f);	// not used for linear
-		m_pFog->setStart(start);
-		m_pFog->setEnd(end);
-		m_pFog->setColor(osg::Vec4(color.r, color.g, color.b, 1));
-
-		set->setAttributeAndModes(m_pFog.get(), StateAttribute::OVERRIDE | StateAttribute::ON);
-	}
-	else
-	{
-		// turn fog off
-		set->setMode(GL_FOG, StateAttribute::OFF);
-	}
 }
 
 class CFindNodeVisitor : public osg::NodeVisitor
@@ -766,8 +724,6 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 			osg::Node *node_new = s_NodeCallback(transform);
 			node = node_new;
 		}
-
-
 		//VTLOG1("--------------\n");
 		//vtLogNativeGraph(node);
 
@@ -785,6 +741,11 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 
 	// The final resulting node is the container of that operation
 	vtNativeNode *pNode = new vtNativeNode(container_group);
+
+	// All loaded models, by default, do not cast a shadow
+	pNode->SetCastShadow(false);
+
+	// Use the filename as the node's name
 	pNode->SetName2(fname);
 
 #if DEBUG_NODE_LOAD
@@ -991,7 +952,45 @@ bool vtNode::MultiTextureIsEnabled(vtMultiTexture *mt)
 	return (attr != NULL);
 }
 
+void vtNode::SetCastShadow(bool b)
+{
+	unsigned int m = m_pNode->getNodeMask();
+	if (b)
+		m_pNode->setNodeMask(m | CastsShadowTraversalMask);
+	else
+		m_pNode->setNodeMask(m & ~CastsShadowTraversalMask);
+}
+
+bool vtNode::GetCastShadow()
+{
+	unsigned int m = m_pNode->getNodeMask();
+	return ((m & CastsShadowTraversalMask) != 0);
+}
+
+
 ///////////////////////////////////////////////////////////////////////
+
+vtNativeNode::vtNativeNode(osg::Node *node)
+{
+	SetOsgNode(node);
+}
+
+vtNode *vtNativeNode::Clone(bool bDeep)
+{
+	if (bDeep)
+	{
+		// 'Deep' copies all the nodes, but not the geometry inside them
+		osg::CopyOp deep_op(osg::CopyOp::DEEP_COPY_OBJECTS |
+							osg::CopyOp::DEEP_COPY_NODES |
+							osg::CopyOp::DEEP_COPY_DRAWABLES |
+							osg::CopyOp::DEEP_COPY_STATESETS);
+		osg::Node *newnode = (osg::Node *) m_pNode->clone(deep_op);
+		return new vtNativeNode(newnode);
+	}
+	else
+		// A shallow copy of a native node is just a second reference
+		return this;
+}
 
 vtNode *vtNativeNode::FindParentVTNode()
 {
@@ -1013,23 +1012,6 @@ vtNode *vtNativeNode::FindParentVTNode()
 		}
 	}
 	return NULL;
-}
-
-vtNode *vtNativeNode::Clone(bool bDeep)
-{
-	if (bDeep)
-	{
-		// 'Deep' copies all the nodes, but not the geometry inside them
-		osg::CopyOp deep_op(osg::CopyOp::DEEP_COPY_OBJECTS |
-							osg::CopyOp::DEEP_COPY_NODES |
-							osg::CopyOp::DEEP_COPY_DRAWABLES |
-							osg::CopyOp::DEEP_COPY_STATESETS);
-		osg::Node *newnode = (osg::Node *) m_pNode->clone(deep_op);
-		return new vtNativeNode(newnode);
-	}
-	else
-		// A shallow copy of a native node is just a second reference
-		return this;
 }
 
 
@@ -1371,6 +1353,153 @@ void vtTransform::PointTowards(const FPoint3 &point, bool bPitch)
 
 
 ///////////////////////////////////////////////////////////////////////
+// vtFog
+//
+
+RGBf vtFog::s_white(1, 1, 1);
+
+vtFog::vtFog() : vtGroup(false)
+{
+}
+
+vtNode *vtFog::Clone(bool bDeep)
+{
+	vtFog *newfog = new vtFog;
+	newfog->CloneFrom(this, bDeep);
+	return newfog;
+}
+
+void vtFog::CloneFrom(vtFog *fog, bool bDeep)
+{
+	// copy
+	// TODO
+
+	// and the parent members
+	vtGroup::CloneFrom(fog, bDeep);
+}
+
+void vtFog::Release()
+{
+	if (m_pNode->referenceCount() == 1)
+	{
+		m_pFogStateSet = NULL;
+		m_pFog = NULL;
+	}
+	vtGroup::Release();
+}
+
+/**
+ * Set the Fog state.
+ *
+ * You can turn fog on or off.  When you turn fog on, it affects all others
+ * below it in the scene graph.
+ *
+ * \param bOn True to turn fog on, false to turn it off.
+ * \param start The distance from the camera at which fog starts, in meters.
+ * \param end The distance from the camera at which fog end, in meters.  This
+ *		is the point at which it becomes totally opaque.
+ * \param color The color of the fog.  All geometry will be faded toward this
+ *		color.
+ * \param Type Can be GL_LINEAR, GL_EXP or GL_EXP2 for linear or exponential
+ *		increase of the fog density.
+ */
+void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, enum FogType Type)
+{
+	osg::StateSet *set = GetOsgNode()->getStateSet();
+	if (!set)
+	{
+		m_pFogStateSet = new osg::StateSet;
+		set = m_pFogStateSet.get();
+		GetOsgNode()->setStateSet(set);
+	}
+
+	if (bOn)
+	{
+		Fog::Mode eType;
+		switch (Type)
+		{
+		case FM_LINEAR: eType = Fog::LINEAR; break;
+		case FM_EXP: eType = Fog::EXP; break;
+		case FM_EXP2: eType = Fog::EXP2; break;
+		default: return;
+		}
+		m_pFog = new Fog;
+		m_pFog->setMode(eType);
+		m_pFog->setDensity(0.25f);	// not used for linear
+		m_pFog->setStart(start);
+		m_pFog->setEnd(end);
+		m_pFog->setColor(osg::Vec4(color.r, color.g, color.b, 1));
+
+		set->setAttributeAndModes(m_pFog.get(), StateAttribute::OVERRIDE | StateAttribute::ON);
+	}
+	else
+	{
+		// turn fog off
+		set->setMode(GL_FOG, StateAttribute::OFF);
+	}
+}
+
+
+//////////////////////////////////////////////////////////////////////
+// vtFog
+//
+
+vtShadow::vtShadow() : vtGroup(true)
+{
+	m_pShadowedScene = new osgShadow::ShadowedScene;
+
+	m_pShadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
+	m_pShadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
+
+#if 1
+	// Use ShadowMap
+	osg::ref_ptr<osgShadow::ShadowMap> pShadowMap = new osgShadow::ShadowMap;
+	m_pShadowedScene->setShadowTechnique(pShadowMap.get());
+	int mapres = 1024;
+	pShadowMap->setTextureSize(osg::Vec2s(mapres,mapres));
+#else
+	// ShadowTexture does not seem to behave properly; some or all nodes
+	//  in the shadowed graph are not rendered at all!
+	osg::ref_ptr<osgShadow::ShadowTexture> pShadowTexture = new osgShadow::ShadowTexture;
+	m_pShadowedScene->setShadowTechnique(pShadowTexture.get());
+#endif
+
+	SetOsgGroup(m_pShadowedScene);
+}
+
+vtNode *vtShadow::Clone(bool bDeep)
+{
+	vtShadow *newshadow = new vtShadow;
+	newshadow->CloneFrom(this, bDeep);
+	return newshadow;
+}
+
+void vtShadow::CloneFrom(vtShadow *shadow, bool bDeep)
+{
+	// copy
+	// TODO
+
+	// and the parent members
+	vtGroup::CloneFrom(shadow, bDeep);
+}
+
+void vtShadow::Release()
+{
+	if (m_pNode->referenceCount() == 1)
+		m_pShadowedScene = NULL;
+
+	vtGroup::Release();
+}
+
+/**
+ * Set the Shadow.
+ */
+void vtShadow::SetShadow()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////
 // vtLight
 //
 
@@ -1606,8 +1735,11 @@ float vtCamera::GetWidth() const
 
 vtGeom::vtGeom() : vtNode()
 {
-	m_pGeode = new Geode();
+	m_pGeode = new Geode;
 	SetOsgNode(m_pGeode);
+
+	// All geometry, by default, does not cast a shadow
+	SetCastShadow(false);
 }
 
 vtNode *vtGeom::Clone(bool bDeep)
@@ -1825,7 +1957,7 @@ vtMaterial *vtGeom::GetMaterial(int idx)
 
 vtLOD::vtLOD() : vtGroup(true)
 {
-	m_pLOD = new osg::LOD();
+	m_pLOD = new osg::LOD;
 	m_pLOD->setCenter(osg::Vec3(0, 0, 0));
 	SetOsgGroup(m_pLOD);
 }

@@ -119,6 +119,20 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 	}
 }
 
+void vtStructInstance3d::SetCastShadow(bool b)
+{
+	if (!m_pModel)
+		return;
+	m_pModel->SetCastShadow(b);
+}
+
+bool vtStructInstance3d::GetCastShadow()
+{
+	if (!m_pModel)
+		return false;
+	return m_pModel->GetCastShadow();
+}
+
 // implement vtStructure3d methods
 bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 {

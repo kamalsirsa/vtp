@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OpenSG scene graph nodes.
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -227,60 +227,6 @@ vtNode *vtNode::Clone(bool bDeep)
 	// we should never get here, because you can't instantiate a plain vtNode
 	return NULL;
 }
-
-RGBf vtNodeBase::s_white(1, 1, 1);
-
-/**
- * Set the Fog state for a node.
- *
- * You can turn fog on or off.  When you turn fog on, it affects this node
- * and all others below it in the scene graph.
- *
- * \param bOn True to turn fog on, false to turn it off.
- * \param start The distance from the camera at which fog starts, in meters.
- * \param end The distance from the camera at which fog end, in meters.  This
- *		is the point at which it becomes totally opaque.
- * \param color The color of the fog.  All geometry will be faded toward this
- *		color.
- * \param Type Can be GL_LINEAR, GL_EXP or GL_EXP2 for linear or exponential
- *		increase of the fog density.
- */
-void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, enum FogType Type)
-{
-#if EXCEPT
-	osg::StateSet *set = GetOsgNode()->getStateSet();
-	if( !set ) {
-		m_pFogStateSet = new osg::StateSet;
-		set = m_pFogStateSet.get();
-		GetOsgNode()->setStateSet(set);
-	}
-
-	if( bOn ) {
-		Fog::Mode eType;
-		switch( Type ) {
-			case FM_LINEAR: eType = Fog::LINEAR; break;
-			case FM_EXP: eType = Fog::EXP; break;
-			case FM_EXP2: eType = Fog::EXP2; break;
-			default: return;
-		}
-		m_pFog = new Fog;
-		m_pFog->setMode(eType);
-		m_pFog->setDensity(0.25f);	// not used for linear
-		m_pFog->setStart(start);
-		m_pFog->setEnd(end);
-		m_pFog->setColor(osg::Vec4(color.r, color.g, color.b, 1));
-
-		set->setAttributeAndModes(m_pFog.get(), StateAttribute::OVERRIDE | StateAttribute::ON);
-	} else {
-		// turn fog off
-		set->setMode(GL_FOG, StateAttribute::OFF);
-	}
-#endif //EXCEPT
-}
-
-
-
-
 
 // Our own cache of models loaded from OSG
 static std::map<vtString, osg::RefPtr<osg::NodePtr> > m_ModelCache;
@@ -918,6 +864,121 @@ void vtTransform::PointTowards(const FPoint3 &point, bool bPitch)
 {
 	SetDirection(point - GetTrans(), bPitch);
 }
+
+
+///////////////////////////////////////////////////////////////////////
+// vtFog
+//
+
+RGBf vtFog::s_white(1, 1, 1);
+
+vtFog::vtFog() : vtGroup(true)
+{
+	//osg::NodePtr node = osg::makeCoredNode<osg::Transform>(&m_pTransform);
+	//SetOsgNode(node);
+}
+
+vtNode *vtFog::Clone(bool bDeep)
+{
+	vtFog *fog = new vtFog;
+	fog->CopyFrom(this);
+	return fog;
+}
+
+void vtFog::CopyFrom(const vtFog *rhs)
+{
+	//const osg::TransformPtr tfp = rhs->GetOsgTransform();
+	//beginEditCP(m_pTransform);
+	//m_pTransform->setMatrix(tfp->getMatrix());
+	//endEditCP(m_pTransform);
+}
+
+void vtFog::Release()
+{
+	//osg::subRefCP( m_pNode );
+	vtGroup::Release();
+}
+
+/**
+ * Set the Fog state for a node.
+ *
+ * You can turn fog on or off.  When you turn fog on, it affects this node
+ * and all others below it in the scene graph.
+ *
+ * \param bOn True to turn fog on, false to turn it off.
+ * \param start The distance from the camera at which fog starts, in meters.
+ * \param end The distance from the camera at which fog end, in meters.  This
+ *		is the point at which it becomes totally opaque.
+ * \param color The color of the fog.  All geometry will be faded toward this
+ *		color.
+ * \param Type Can be GL_LINEAR, GL_EXP or GL_EXP2 for linear or exponential
+ *		increase of the fog density.
+ */
+void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, enum FogType Type)
+{
+#if EXCEPT
+	osg::StateSet *set = GetOsgNode()->getStateSet();
+	if( !set ) {
+		m_pFogStateSet = new osg::StateSet;
+		set = m_pFogStateSet.get();
+		GetOsgNode()->setStateSet(set);
+	}
+
+	if( bOn ) {
+		Fog::Mode eType;
+		switch( Type ) {
+			case FM_LINEAR: eType = Fog::LINEAR; break;
+			case FM_EXP: eType = Fog::EXP; break;
+			case FM_EXP2: eType = Fog::EXP2; break;
+			default: return;
+		}
+		m_pFog = new Fog;
+		m_pFog->setMode(eType);
+		m_pFog->setDensity(0.25f);	// not used for linear
+		m_pFog->setStart(start);
+		m_pFog->setEnd(end);
+		m_pFog->setColor(osg::Vec4(color.r, color.g, color.b, 1));
+
+		set->setAttributeAndModes(m_pFog.get(), StateAttribute::OVERRIDE | StateAttribute::ON);
+	} else {
+		// turn fog off
+		set->setMode(GL_FOG, StateAttribute::OFF);
+	}
+#endif //EXCEPT
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// vtShadow
+//
+
+vtShadow::vtShadow() : vtGroup(true)
+{
+	//osg::NodePtr node = osg::makeCoredNode<osg::Transform>(&m_pTransform);
+	//SetOsgNode(node);
+}
+
+vtNode *vtShadow::Clone(bool bDeep)
+{
+	vtShadow *sh = new vtShadow;
+	sh->CopyFrom(this);
+	return sh;
+}
+
+void vtShadow::CopyFrom(const vtShadow *rhs)
+{
+	//const osg::TransformPtr tfp = rhs->GetOsgTransform();
+	//beginEditCP(m_pTransform);
+	//m_pTransform->setMatrix(tfp->getMatrix());
+	//endEditCP(m_pTransform);
+}
+
+void vtShadow::Release()
+{
+	//osg::subRefCP( m_pNode );
+	vtGroup::Release();
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////

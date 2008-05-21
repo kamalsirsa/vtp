@@ -11,7 +11,9 @@
 #include <osgUtil/SceneView>
 #include <osg/Timer>
 
+#if OLD_OSG_SHADOWS
 class CStructureShadowsOSG;
+#endif
 
 /** \addtogroup sg */
 /*@{*/
@@ -79,6 +81,7 @@ public:
 	void WorldToScreen(const FPoint3 &point, IPoint2 &result);
 	FPlane *GetCullPlanes() { return m_cullPlanes; }
 
+#if OLD_OSG_SHADOWS
 	// Experimental:
 	// Object-terrain shadow casting, only for OSG
 	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowerNode,
@@ -91,6 +94,7 @@ public:
 	void ShadowVisibleNode(vtNode *node, bool bVis);
 	bool IsShadowVisibleNode(vtNode *node);
 	void ComputeShadows();
+#endif
 
 	void SetHUD(vtHUD *hud) { m_pHUD = hud; }
 	vtHUD *GetHUD() { return m_pHUD; }
@@ -131,7 +135,9 @@ protected:
 	bool	m_bWinInfo;
 	bool	m_bInitialized;
 	bool	m_bWireframe;
+#if OLD_OSG_SHADOWS
 	osg::ref_ptr<CStructureShadowsOSG> m_pStructureShadowsOSG;
+#endif
 	vtHUD	*m_pHUD;
 };
 

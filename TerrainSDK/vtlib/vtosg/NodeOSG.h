@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,7 @@
 #include <osg/Fog>
 #include <osg/Geode>
 #include <osg/Version>
+#include <osgShadow/ShadowedScene>
 
 /** \addtogroup sg */
 /*@{*/
@@ -93,8 +94,6 @@ public:
 	vtGroup *GetParent(int iParent = 0);
 	virtual vtNode *Clone(bool bDeep = false);
 
-	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
-
 	vtMultiTexture *AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
 										const FPoint2 &scale, const FPoint2 &offset);
 	void EnableMultiTexture(vtMultiTexture *mt, bool bEnable);
@@ -116,14 +115,15 @@ public:
 	static void ClearOsgModelCache();
 	static bool s_bDisableMipmaps;	// set to disable ALL mipmaps
 
+	void SetCastShadow(bool b);
+	bool GetCastShadow();
+
 protected:
 	osg::ref_ptr<osg::Node> m_pNode;
-	osg::ref_ptr<osg::StateSet> m_pFogStateSet;
-	osg::ref_ptr<osg::Fog> m_pFog;
 
 	// Constructor is protected because vtNode is an abstract base class,
 	//  not to be instantiated directly.
-	vtNode() {}
+	vtNode();
 
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
@@ -137,8 +137,9 @@ protected:
 class vtNativeNode : public vtNode
 {
 public:
-	vtNativeNode(osg::Node *node) { SetOsgNode(node); }
+	vtNativeNode(osg::Node *node);
 	virtual vtNode *Clone(bool bDeep = false);
+
 	vtNode *FindParentVTNode();
 
 protected:
@@ -271,6 +272,51 @@ protected:
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
 	virtual ~vtTransform() {}
+};
+
+/**
+ * A Fog node allows you to apply a fog to all its child nodes.
+ */
+class vtFog : public vtGroup
+{
+public:
+	vtFog();
+	virtual vtNode *Clone(bool bDeep = false);
+	void CloneFrom(vtFog *xform, bool bDeep);
+	void Release();
+
+	static RGBf s_white;
+	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
+
+protected:
+	osg::ref_ptr<osg::StateSet> m_pFogStateSet;
+	osg::ref_ptr<osg::Fog> m_pFog;
+
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
+	virtual ~vtFog() {}
+};
+
+/**
+ * A Shadow node allows you to apply shadows within all its child nodes.
+ */
+class vtShadow : public vtGroup
+{
+public:
+	vtShadow();
+	virtual vtNode *Clone(bool bDeep = false);
+	void CloneFrom(vtShadow *xform, bool bDeep);
+	void Release();
+
+	// TODO
+	void SetShadow();
+
+protected:
+	osgShadow::ShadowedScene *m_pShadowedScene;
+
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
+	virtual ~vtShadow() {}
 };
 
 /**

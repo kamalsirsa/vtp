@@ -6,6 +6,9 @@
 //
 
 #include "vtlib/vtlib.h"
+
+#if OLD_OSG_SHADOWS
+
 #include "vtdata/HeightField.h"
 #include "vtlib/core/LodGrid.h"
 #include "vtlib/core/PagedLodGrid.h"
@@ -616,3 +619,5 @@ bool CStructureShadowsOSG::IsExcludedFromShadower(osg::Node *pNode)
 }
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
+
+#endif // OLD_OSG_SHADOWS

@@ -93,9 +93,9 @@ typedef bool (*ProgFuncPtrType)(int);
 	- Elevation TIN: use SetTin().
 	- Structures: use NewStructureLayer(), then fill it with your structures.
 	- Vegetation: call SetPlantList(), then GetPlantInstances().
-	- Abstract layers: use GetAbstractLayers(), then create and append
+	- Abstract layers: use GetLayers() to get the LayerSet, then create and append
 	  your vtAbstractLayer objects. The features will be created
-	  according to the properties you have set with vtFeatureSet::SetProperties().
+	  according to the properties you have set with vtAbstractLayer::SetProperties().
 	  The properties you can set are documented with the class TParams.
 	- Animation paths: use GetAnimContainer(), then add your own animpaths.
  *
@@ -113,6 +113,22 @@ typedef bool (*ProgFuncPtrType)(int);
  * GetScaledFeatures()->AddChild(), if they are 'flat' like GIS features
  * or contour lines, which should be scaled up/down with the vertical
  * exaggeration of the terrain.
+ *
+ * <h3>How it works</h3>
+ *
+ * The terrain is implemented with a scene graph with the following structure.
+ * - vtGroup "Terrain Group"
+ *  - vtTransform "Dynamic Geometry"
+ *   - A vtDynGeom for the CLOD terrain surface.
+ *  - vtTransform "Scaled Features"
+ *   - Abstract layers, which may need scaling in order to remain draped
+ *		on the ground as the user changes the vertical exaggeration.
+ *  - vtGroup "Structure LOD Grid"
+ *   - many vtLOD objects, for efficient culling of large number of structures.
+ *  - vtGroup "Roads"
+ *   - many vtLOD objects, for efficient culling of large number of roads.
+ *  - vtGroup "Vegetation"
+ *   - many vtLOD objects, for efficient culling of large number of plants.
  */
 class vtTerrain : public CultureExtension
 {
@@ -206,6 +222,7 @@ public:
 	vtRouteMap &GetRouteMap() { return m_Routes; }
 
 	// Layers
+	/// Get at the container for all the layers
 	LayerSet &GetLayers() { return m_Layers; }
 	void RemoveLayer(vtLayer *lay, bool progress_callback(int) = NULL);
 	vtLayer *LoadLayer(const char *fname);
@@ -289,12 +306,15 @@ public:
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
 	const vtDynTerrainGeom *GetDynTerrain() const { return m_pDynGeom; }
 	vtTiledGeom *GetTiledGeom() { return m_pTiledGeom; }
-	vtGroup *GetTopGroup() { return m_pTerrainGroup; }
+	vtGroup *GetTopGroup() { return m_pContainerGroup; }
+	vtGroup *GetTerrainGroup() { return m_pTerrainGroup; }
 	vtHeightField3d *GetHeightField();
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
 	vtProjection &GetProjection() { return m_proj; }
 	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, bool bTrue, int iCultureFlags) const;
+#if OLD_OSG_SHADOWS
 	int GetShadowTextureUnit();
+#endif
 
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
@@ -378,11 +398,17 @@ protected:
 	void _ComputeCenterLocation();
 	void GetTerrainBounds();
 	void EnforcePageOut();
+	void ConnectFogShadow(bool bFog, bool bShadow);
 
 	/********************** Protected Data ******************/
 
 	// main scene graph outline
+	vtGroup		*m_pContainerGroup;
 	vtGroup		*m_pTerrainGroup;
+
+	// optional components
+	vtFog		*m_pFog;
+	vtShadow	*m_pShadow;
 
 	// dynamic terrain (CLOD)
 	vtDynTerrainGeom *m_pDynGeom;
@@ -457,7 +483,9 @@ protected:
 	ColorMap		*m_pTextureColors;
 	bool			m_bTextureInitialized;
 	vtTextureUnitManager m_TextureUnits;
+#if OLD_OSG_SHADOWS
 	int				m_iShadowTextureUnit;
+#endif
 
 	FSphere			m_bound_sphere;	// bounding sphere of terrain
 									// (without surrounding ocean)
