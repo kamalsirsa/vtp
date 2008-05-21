@@ -19,9 +19,11 @@
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/Icosa.h"
 #include "vtui/Helper.h"	// for ProgressDialog
+#include "vtui/SizeDlg.h"
 #include "Helper.h"			// for DisplayAndLog
 #include "Frame.h"
 #include "ElevLayer.h"
+#include "FileFilters.h"
 
 bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 							 const RGBi &bg, bool progress_callback(int) = NULL)
@@ -743,20 +745,32 @@ void MainFrame::DoDymaxMap()
 	DPoint3 uvw;
 	uvw.z = 0.0f;
 
-	wxFileDialog dlg(this, _("Choose input file"), _T(""), _T(""), _T("*.bmp;*.png"));
+	wxString filter = _("Image Formats|");
+	AddType(filter, FSTRING_BMP);
+	AddType(filter, FSTRING_PNG);
+	AddType(filter, FSTRING_JPEG);
+
+	wxFileDialog dlg(this, _("Choose input file"), _T(""), _T(""), filter);
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
+	wxString path = dlg.GetPath();
 
 	wxFileDialog dlg2(this, _("Choose output file"), _T(""), _T(""), _T("*.png"), wxFD_SAVE);
 	if (dlg2.ShowModal() == wxID_CANCEL)
 		return;
 
-	wxProgressDialog prog(_("Processing"), _("Loading source bitmap.."), 100);
+	int style = wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT | wxPD_SMOOTH;
+	wxString title = _("Processing");
+	title += _T(" ");
+	title += path;
+	wxString message = _("Loading");
+	message += _T(" ");
+	message += path;
+	wxProgressDialog prog(title, message, 100, this, style);
 	prog.Show(TRUE);
 
 	// read texture
 	vtDIB img;
-	wxString path = dlg.GetPath();
 	VTLOG("Reading Input: %s\n", (const char *) path.mb_str());
 
 	wxString msg = _T("Reading file: ");
@@ -775,10 +789,21 @@ void MainFrame::DoDymaxMap()
 	int depth = img.GetDepth();
 	VTLOG("input: size %d %d, depth %d\n", input_x, input_y, depth);
 
-	// Make output
-	vtDIB out;
 	int output_x = (input_x * 0.85);	// reduce slightly, to avoid gaps on forward projection
 	int output_y = (output_x / 5.5 * 2.6);
+
+	SizeDlg dlg3(this, -1, _("Output size"));
+	dlg3.SetBase(IPoint2(output_x/4, output_y/4));
+	dlg3.SetRatioRange(1.0f, 4.0f);
+	dlg3.GetTextCtrl()->SetValue(_T("The size of the rendered image should be, at most, slightly less than the input."));
+	if (dlg3.ShowModal() != wxID_OK)
+		return;
+
+	output_x = dlg3.m_Current.x;
+    output_y = dlg3.m_Current.y;
+
+	// Make output
+	vtDIB out;
 	VTLOG("output: size %d %d\n", output_x, output_y);
 	if (!out.Create(output_x, output_y, depth))
 	{
@@ -797,12 +822,17 @@ void MainFrame::DoDymaxMap()
 	RGBi rgb;
 	RGBAi rgba;
 
-	msg.Printf(_T("Creating ..."));
-	prog.Update(1, msg);
+	prog.Update(1, _T(""));
 
 	for (x = 0; x < input_x; x++)
 	{
-		prog.Update(x * 99 / input_x, msg);
+		msg.Printf(_T("Projecting %d/%d"), x, input_x);
+		if (prog.Update(x * 99 / input_x, msg) == false)
+		{
+			// cancelled
+			DisplayAndLog("Cancelled.");
+			return;
+		}
 
 		p.x = (((double)x / (input_x-1)) * 360.0) - 180.0;
 		for (y = 0; y < input_y; y++)
@@ -819,24 +849,28 @@ void MainFrame::DoDymaxMap()
 			if (target_y < 0 || target_y >= output_y)
 				continue;
 
-			if (depth == 8)
+			switch (depth)
 			{
+			case 8:
 				value = img.GetPixel8(x, y);
 				out.SetPixel8(target_x, output_y-1-target_y, value);
-			}
-			else if (depth == 24)
-			{
+				break;
+			case 24:
 				img.GetPixel24(x, y, rgb);
 				out.SetPixel24(target_x, output_y-1-target_y, rgb);
-			}
-			else if (depth == 32)
-			{
+				break;
+			case 32:
 				img.GetPixel32(x, y, rgba);
 				out.SetPixel32(target_x, output_y-1-target_y, rgba);
+				break;
 			}
 		}
 	}
 	wxString path2 = dlg2.GetPath();
+	msg = _("Saving to ");
+	msg += path2;
+	prog.Update(99, msg);
+
 	vtString fname = (const char *) path2.mb_str(wxConvUTF8);
 	success = out.WritePNG(fname);
 	if (!success)
