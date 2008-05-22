@@ -1053,9 +1053,9 @@ void EnviroFrame::DoTestCode()
 	osg::Group* cessna2 = (osg::Group*) osgDB::readNodeFile("cessna.osg");
 	if (!cessna2)
 		return;
-	int not = ~(CastsShadowTraversalMask | ReceivesShadowTraversalMask);
-	cessna2->setNodeMask(not);
-	cessna2->getChild(0)->setNodeMask(not);
+	int flags_off = ~(CastsShadowTraversalMask | ReceivesShadowTraversalMask);
+	cessna2->setNodeMask(flags_off);
+	cessna2->getChild(0)->setNodeMask(flags_off);
 
 	osg::MatrixTransform* positioned = new osg::MatrixTransform;
 	positioned->setDataVariance(osg::Object::STATIC);
