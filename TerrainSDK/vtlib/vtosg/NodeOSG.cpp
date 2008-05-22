@@ -1491,11 +1491,24 @@ void vtShadow::Release()
 	vtGroup::Release();
 }
 
-/**
- * Set the Shadow.
- */
-void vtShadow::SetShadow()
+void vtShadow::SetDarkness(float bias)
 {
+	osgShadow::ShadowMap *pShadowMap = dynamic_cast<osgShadow::ShadowMap *>(m_pShadowedScene->getShadowTechnique());
+
+	if (pShadowMap)
+		pShadowMap->setAmbientBias(osg::Vec2(1.0f-bias, bias));
+}
+
+float vtShadow::GetDarkness()
+{
+	osgShadow::ShadowMap *pShadowMap = dynamic_cast<osgShadow::ShadowMap *>(m_pShadowedScene->getShadowTechnique());
+
+	if (pShadowMap)
+	{
+		osg::Vec2 ab = pShadowMap->getAmbientBias();
+		return ab.y();
+	}
+	return 0.5f;
 }
 
 

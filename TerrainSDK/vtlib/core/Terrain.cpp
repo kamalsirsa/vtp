@@ -44,8 +44,6 @@ vtTerrain::vtTerrain()
 
 	m_pContainerGroup = NULL;
 	m_pTerrainGroup = NULL;
-	m_pFog = NULL;
-	m_pShadow = NULL;
 	m_pImage = NULL;
 	m_pImageSource = NULL;
 	m_pTerrMats = NULL;
@@ -54,6 +52,11 @@ vtTerrain::vtTerrain()
 #if OLD_OSG_SHADOWS
 	m_iShadowTextureUnit = -1;
 #endif
+
+	m_pFog = NULL;
+	m_pShadow = NULL;
+	m_bFog = false;
+	m_bShadows = false;
 
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
@@ -1965,6 +1968,35 @@ void vtTerrain::SetFogDistance(float fMeters)
 		SetFog(true);
 }
 
+void vtTerrain::SetShadows(bool shadows)
+{
+	m_bShadows = shadows;
+	if (shadows)
+	{
+		if (!m_pShadow)
+		{
+			m_pShadow = new vtShadow;
+			m_pShadow->SetName2("Shadow Group");
+		}
+		ConnectFogShadow(false, true);
+	}
+	else
+		ConnectFogShadow(m_bFog, false);
+}
+
+void vtTerrain::SetShadowDarkness(float bias)
+{
+	if (m_pShadow)
+		m_pShadow->SetDarkness(bias);
+}
+
+float vtTerrain::GetShadowDarkness()
+{
+	if (m_pShadow)
+		return m_pShadow->GetDarkness();
+	return 0.5f;
+}
+
 void vtTerrain::SetBgColor(const RGBf &color)
 {
 	m_background_color = color;
@@ -2088,7 +2120,7 @@ void vtTerrain::CreateStep0()
 	m_pTerrainGroup = new vtGroup;
 	m_pTerrainGroup->SetName2("Terrain Group");
 
-#if 1
+#if 0
 	// TEST new shadow functionality
 	m_pShadow = new vtShadow;
 	m_pShadow->SetName2("Shadow Group");

@@ -308,8 +308,8 @@ public:
 	void CloneFrom(vtShadow *xform, bool bDeep);
 	void Release();
 
-	// TODO
-	void SetShadow();
+	void SetDarkness(float bias);
+	float GetDarkness();
 
 protected:
 	osgShadow::ShadowedScene *m_pShadowedScene;

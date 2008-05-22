@@ -330,14 +330,18 @@ public:
 	/// Access the animation paths associated with this terrain
 	vtAnimContainer *GetAnimContainer() { return &m_AnimContainer; }
 
-	// Ocean, Sky, Fog
+	// Ocean, Sky, Fog, Shadows
 	void SetWaterLevel(float fElev);
 	void SetFog(bool fog);
+	bool GetFog() { return m_bFog; }
 	void SetFogColor(const RGBf &color);
 	void SetFogDistance(float fMeters);
-	bool GetFog() { return m_bFog; }
 	void SetBgColor(const RGBf &color);
 	RGBf GetBgColor() { return m_background_color; }
+	void SetShadows(bool shadows);
+	bool GetShadows() { return m_bShadows; }
+	void SetShadowDarkness(float bias);
+	float GetShadowDarkness();
 
 	// Time
 	vtTime GetInitialTime();
@@ -406,10 +410,6 @@ protected:
 	vtGroup		*m_pContainerGroup;
 	vtGroup		*m_pTerrainGroup;
 
-	// optional components
-	vtFog		*m_pFog;
-	vtShadow	*m_pShadow;
-
 	// dynamic terrain (CLOD)
 	vtDynTerrainGeom *m_pDynGeom;
 	vtTransform		 *m_pDynGeomScale;
@@ -439,11 +439,14 @@ protected:
 	vtAnimContainer m_AnimContainer;
 
 	// horizon, ocean and fog
-	vtMovGeom		*m_pHorizonGeom;
-	vtMovGeom		*m_pOceanGeom;
-	bool			m_bFog;
-	RGBf			m_fog_color;
-	RGBf			m_background_color;
+	vtFog		*m_pFog;
+	vtShadow	*m_pShadow;
+	vtMovGeom	*m_pHorizonGeom;
+	vtMovGeom	*m_pOceanGeom;
+	bool		m_bFog;
+	RGBf		m_fog_color;
+	RGBf		m_background_color;
+	bool		m_bShadows;
 
 	// Layers
 	LayerSet		m_Layers;
