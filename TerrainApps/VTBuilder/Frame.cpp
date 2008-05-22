@@ -261,6 +261,12 @@ void MainFrame::SetupUI()
 		ReadINI(APPNAME ".ini");
 	}
 
+	// Safety checks
+	CheckOptionBounds();
+
+	// Apply all the options, from g_Options the rest of the application
+	ApplyOptions();
+
 	RefreshToolbars();
 
 	vtProjection proj;
@@ -686,40 +692,39 @@ bool MainFrame::ReadINI(const char *fname)
 {
 	FILE *fpIni = vtFileOpen(fname, "rb+");
 
-	if (fpIni)
+	if (!fpIni)
+		return false;
+
+	int ShowMap, ShowElev, ShadeQuick, DoMask, DoUTM, ShowPaths, DrawWidth,
+		CastShadows, ShadeDot=0, Angle=30, Direction=45;
+	float Ambient = 0.1f;
+	float Gamma = 0.8f;
+	fscanf(fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f", &ShowMap,
+		&ShowElev, &ShadeQuick, &DoMask, &DoUTM, &ShowPaths, &DrawWidth,
+		&CastShadows, &ShadeDot, &Angle, &Direction, &Ambient, &Gamma);
+
+	vtElevLayer::m_draw.m_bShowElevation = (ShowElev != 0);
+	vtElevLayer::m_draw.m_bShadingQuick = (ShadeQuick != 0);
+	vtElevLayer::m_draw.m_bShadingDot = (ShadeDot != 0);
+	vtElevLayer::m_draw.m_bDoMask = (DoMask != 0);
+	vtElevLayer::m_draw.m_bCastShadows = (CastShadows != 0);
+	vtElevLayer::m_draw.m_iCastAngle = Angle;
+	vtElevLayer::m_draw.m_iCastDirection = Direction;
+	vtElevLayer::m_draw.m_fAmbient = Ambient;
+	vtElevLayer::m_draw.m_fGamma = Gamma;
+	m_pView->SetShowMap(ShowMap != 0);
+	m_pView->m_bShowUTMBounds = (DoUTM != 0);
+	m_pTree->SetShowPaths(ShowPaths != 0);
+	vtRoadLayer::SetDrawWidth(DrawWidth != 0);
+
+	char buf[4000];
+	if (fscanf(fpIni, "\n%s\n", buf) == 1)
 	{
-		int ShowMap, ShowElev, ShadeQuick, DoMask, DoUTM, ShowPaths, DrawWidth,
-			CastShadows, ShadeDot=0, Angle=30, Direction=45;
-		float Ambient = 0.1f;
-		float Gamma = 0.8f;
-		fscanf(fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f", &ShowMap,
-			&ShowElev, &ShadeQuick, &DoMask, &DoUTM, &ShowPaths, &DrawWidth,
-			&CastShadows, &ShadeDot, &Angle, &Direction, &Ambient, &Gamma);
-
-		vtElevLayer::m_draw.m_bShowElevation = (ShowElev != 0);
-		vtElevLayer::m_draw.m_bShadingQuick = (ShadeQuick != 0);
-		vtElevLayer::m_draw.m_bShadingDot = (ShadeDot != 0);
-		vtElevLayer::m_draw.m_bDoMask = (DoMask != 0);
-		vtElevLayer::m_draw.m_bCastShadows = (CastShadows != 0);
-		vtElevLayer::m_draw.m_iCastAngle = Angle;
-		vtElevLayer::m_draw.m_iCastDirection = Direction;
-		vtElevLayer::m_draw.m_fAmbient = Ambient;
-		vtElevLayer::m_draw.m_fGamma = Gamma;
-		m_pView->SetShowMap(ShowMap != 0);
-		m_pView->m_bShowUTMBounds = (DoUTM != 0);
-		m_pTree->SetShowPaths(ShowPaths != 0);
-		vtRoadLayer::SetDrawWidth(DrawWidth != 0);
-
-		char buf[4000];
-		if (fscanf(fpIni, "\n%s\n", buf) == 1)
-		{
-			wxString str(buf, wxConvUTF8);
-			m_mgr.LoadPerspective(str, false);
-		}
-
-		return true;
+		wxString str(buf, wxConvUTF8);
+		m_mgr.LoadPerspective(str, false);
 	}
-	return false;
+
+	return true;
 }
 
 //
@@ -727,12 +732,11 @@ bool MainFrame::ReadINI(const char *fname)
 //
 bool MainFrame::ReadXML(const char *fname)
 {
-	if (!g_Options.LoadFromXML(fname))
-		return false;
+	return g_Options.LoadFromXML(fname);
+}
 
-	// Safety checks
-	CheckOptionBounds();
-
+void MainFrame::ApplyOptions()
+{
 	// Apply all the options, from g_Options the rest of the application
 	m_pView->SetShowMap(g_Options.GetValueBool(TAG_SHOW_MAP));
 	m_pView->m_bShowUTMBounds = g_Options.GetValueBool(TAG_SHOW_UTM);
@@ -749,8 +753,6 @@ bool MainFrame::ReadXML(const char *fname)
 		wxString str2(str, wxConvUTF8);
 		m_mgr.LoadPerspective(str2, false);
 	}
-
-	return true;
 }
 
 bool MainFrame::WriteXML(const char *fname)

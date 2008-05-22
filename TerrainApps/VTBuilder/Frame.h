@@ -354,6 +354,7 @@ protected:
 	//bool WriteINI();
 	bool ReadXML(const char *fname);
 	bool WriteXML(const char *fname);
+	void ApplyOptions();
 
 	MapServerDlg *m_pMapServerDlg;
 
