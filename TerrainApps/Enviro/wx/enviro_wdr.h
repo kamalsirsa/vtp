@@ -358,26 +358,29 @@ wxSizer *PagingDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_size
 wxSizer *TParams7Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 #define ID_SLIDER_FOG_DISTANCE 10254
-#define ID_TEXT_WIND_DIRECTION 10255
-#define ID_SLIDER_WIND_DIRECTION 10256
-#define ID_TEXT_WIND_SPEED 10257
-#define ID_SLIDER_WIND_SPEED 10258
+#define ID_SHADOWS 10255
+#define ID_AMBIENT_BIAS 10256
+#define ID_SLIDER_AMBIENT_BIAS 10257
+#define ID_TEXT_WIND_DIRECTION 10258
+#define ID_SLIDER_WIND_DIRECTION 10259
+#define ID_TEXT_WIND_SPEED 10260
+#define ID_SLIDER_WIND_SPEED 10261
 wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
 // Declare toolbar functions
 
-#define ID_LAYER_CREATE 10259
-#define ID_LAYER_LOAD 10260
-#define ID_LAYER_SAVE 10261
-#define ID_LAYER_SAVE_AS 10262
-#define ID_LAYER_DELETE 10263
-#define ID_LAYER_ZOOM_TO 10264
-#define ID_LAYER_VISIBLE 10265
-#define ID_LAYER_TABLE 10266
-#define ID_LAYER_SHADOW 10267
-#define ID_SHOW_ALL 10268
+#define ID_LAYER_CREATE 10262
+#define ID_LAYER_LOAD 10263
+#define ID_LAYER_SAVE 10264
+#define ID_LAYER_SAVE_AS 10265
+#define ID_LAYER_DELETE 10266
+#define ID_LAYER_ZOOM_TO 10267
+#define ID_LAYER_VISIBLE 10268
+#define ID_LAYER_TABLE 10269
+#define ID_LAYER_SHADOW 10270
+#define ID_SHOW_ALL 10271
 void LayerToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

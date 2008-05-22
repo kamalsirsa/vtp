@@ -27,9 +27,13 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	// WDR: method declarations for EphemDlg
+	wxSlider* GetSliderDarkness()  { return (wxSlider*) FindWindow( ID_SLIDER_AMBIENT_BIAS ); }
+	wxTextCtrl* GetDarkness()  { return (wxTextCtrl*) FindWindow( ID_AMBIENT_BIAS ); }
+	wxCheckBox* GetShadows()  { return (wxCheckBox*) FindWindow( ID_SHADOWS ); }
 	wxSlider* GetSliderFogDistance()  { return (wxSlider*) FindWindow( ID_SLIDER_FOG_DISTANCE ); }
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
 	wxComboBox* GetSkyTexture()  { return (wxComboBox*) FindWindow( ID_SKYTEXTURE ); }
+	wxCheckBox* GetFog()  { return (wxCheckBox*) FindWindow( ID_FOG ); }
 	wxTextCtrl* GetOceanPlaneOffset()  { return (wxTextCtrl*) FindWindow( ID_OCEANPLANEOFFSET ); }
 	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR3 ); }
 
@@ -47,6 +51,8 @@ public:
 	bool m_bHorizon;
 	bool m_bFog;
 	float m_fFogDistance;
+	bool m_bShadows;
+	float m_fDarkness;
 	wxColor m_BgColor;
 
 	int m_iWindDir;
@@ -57,6 +63,7 @@ private:
 	bool m_bSetting;
 
 	int m_iFogDistance;
+	int m_iDarkness;
 	int m_iWindDirSlider;
 	int m_iWindSpeedSlider;
 
@@ -64,8 +71,10 @@ private:
 	// WDR: handler declarations for EphemDlg
 	void OnSkyTexture( wxCommandEvent &event );
 	void OnFogDistance( wxCommandEvent &event );
+	void OnDarkness( wxCommandEvent &event );
 	void OnOceanPlaneOffset( wxCommandEvent &event );
 	void OnSliderFogDistance( wxCommandEvent &event );
+	void OnSliderDarkness( wxCommandEvent &event );
 	void OnSliderWindSpeed( wxCommandEvent &event );
 	void OnSliderWindDirection( wxCommandEvent &event );
 	void OnWindSpeed( wxCommandEvent &event );
