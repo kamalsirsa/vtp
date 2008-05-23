@@ -383,24 +383,24 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 
 	int ncols, nrows;
 	double xllcorner, yllcorner, cellsize, nodata;
-	int result = sscanf(buf, "ncols %d", &ncols);
-	if (result != 1)
+	int result = sscanf(buf, "%s %d", token, &ncols);
+	if (result != 2 || stricmp(token, "ncols"))
 		return false;	// not an ASC file
 
 	fgets(buf, 4000, fp);
-	sscanf(buf, "nrows %d", &nrows);
+	sscanf(buf, "%s %d", token, &nrows);
 
 	fgets(buf, 4000, fp);
-	sscanf(buf, "xllcorner %lf", &xllcorner);
+	sscanf(buf, "%s %lf", token, &xllcorner);
 
 	fgets(buf, 4000, fp);
-	sscanf(buf, "yllcorner %lf", &yllcorner);
+	sscanf(buf, "%s %lf", token, &yllcorner);
 
 	fgets(buf, 4000, fp);
-	sscanf(buf, "cellsize %lf", &cellsize);
+	sscanf(buf, "%s %lf", token, &cellsize);
 
 	fgets(buf, 4000, fp);
-	sscanf(buf, "%s %lf", token, &nodata);
+	sscanf(buf, "%s %lf", token, &nodata); // nodata_value
 
 	m_iColumns = ncols;
 	m_iRows = nrows;
