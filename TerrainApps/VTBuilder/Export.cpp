@@ -890,10 +890,13 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 				UpdateProgressDialog2(done*99/total, -1, _("Filling gaps"));
 
 				bool bGood;
-				if (g_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
-					bGood = base_lod.FillGapsSmooth(NULL, progress_callback_minor);
-				else
+				int method = g_Options.GetValueInt(TAG_GAP_FILL_METHOD);
+				if (method == 1)
 					bGood = base_lod.FillGaps(NULL, progress_callback_minor);
+				else if (method == 2)
+					bGood = base_lod.FillGapsSmooth(NULL, progress_callback_minor);
+				else if (method == 3)
+					bGood = (base_lod.FillGapsByRegionGrowing(2, 5, progress_callback_minor) != -1);
 				if (!bGood)
 					return false;
 

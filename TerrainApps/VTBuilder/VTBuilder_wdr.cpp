@@ -2719,53 +2719,56 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxRadioButton *item21 = new wxRadioButton( parent, ID_RADIO9, _("Fast"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
     item19->Add( item21, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item22 = new wxRadioButton( parent, ID_RADIO10, _("Slow and smooth"), wxDefaultPosition, wxSize(220,-1), 0 );
+    wxRadioButton *item22 = new wxRadioButton( parent, ID_RADIO10, _("Slow and smooth"), wxDefaultPosition, wxDefaultSize, 0 );
     item19->Add( item22, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxRadioButton *item23 = new wxRadioButton( parent, ID_RADIO11, _("Extrapolation via partial derivatives"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item23, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item0->Add( item19, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item24 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Maximum size for rendered elevation layers:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item23->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item25 = new wxStaticText( parent, ID_TEXT, _("Maximum size for rendered elevation layers:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item24->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_ELEV_MAX_SIZE, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
-    item23->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item26 = new wxTextCtrl( parent, ID_ELEV_MAX_SIZE, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    item24->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item23, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    item0->Add( item24, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item27 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Imagery: N > 1 for NxN multisampling"), wxDefaultPosition, wxDefaultSize, 0 );
-    item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item28 = new wxStaticText( parent, ID_TEXT, _("Imagery: N > 1 for NxN multisampling"), wxDefaultPosition, wxDefaultSize, 0 );
+    item27->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_SAMPLING_N, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
-    item26->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item29 = new wxTextCtrl( parent, ID_SAMPLING_N, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    item27->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item26, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    item0->Add( item27, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxBoxSizer *item29 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item30 = new wxBoxSizer( wxVERTICAL );
 
-    wxCheckBox *item30 = new wxCheckBox( parent, ID_BLACK_TRANSP, _("Treat black as transparent when sampling images"), wxDefaultPosition, wxDefaultSize, 0 );
-    item29->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item31 = new wxCheckBox( parent, ID_BLACK_TRANSP, _("Treat black as transparent when sampling images"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxCheckBox *item31 = new wxCheckBox( parent, ID_DEFLATE_TIFF, _("Deflate TIFF images when writing"), wxDefaultPosition, wxDefaultSize, 0 );
-    item29->Add( item31, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item32 = new wxCheckBox( parent, ID_DEFLATE_TIFF, _("Deflate TIFF images when writing"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item32, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item32 = new wxCheckBox( parent, ID_BT_GZIP, _("Default to gzip-compressed BT files"), wxDefaultPosition, wxDefaultSize, 0 );
-    item29->Add( item32, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item33 = new wxCheckBox( parent, ID_BT_GZIP, _("Default to gzip-compressed BT files"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item33, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item29, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item0->Add( item30, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxBoxSizer *item33 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item34 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item34 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item33->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item35 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item35 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item33->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item36 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item33, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
+    item0->Add( item34, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
 
     if (set_sizer)
     {

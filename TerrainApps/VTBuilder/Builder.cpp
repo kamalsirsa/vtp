@@ -473,6 +473,20 @@ void Builder::CheckOptionBounds()
 
 	if (!g_Options.FindTag(TAG_TIFF_COMPRESS))
 		g_Options.SetValueBool(TAG_TIFF_COMPRESS, false, true);
+
+	// deal with deprecated tag
+	if (g_Options.FindTag(TAG_SLOW_FILL_GAPS))
+	{
+		bool bSlow = g_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
+		g_Options.RemoveTag(TAG_SLOW_FILL_GAPS);
+		if (bSlow)
+			g_Options.SetValueInt(TAG_GAP_FILL_METHOD, 2, true);
+		else
+			g_Options.SetValueInt(TAG_GAP_FILL_METHOD, 1, true);
+	}
+
+	if (!g_Options.FindTag(TAG_GAP_FILL_METHOD))
+		g_Options.SetValueInt(TAG_GAP_FILL_METHOD, 1, true);
 }
 
 DRECT Builder::GetExtents()
@@ -599,18 +613,26 @@ unsigned int Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
  * \param el The elevation layer to fill the gaps on.
  * \param area Optionally, restrict the operation to a given area.
  */
-bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area)
+bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
 {
 	// Create progress dialog for the slow part
 	OpenProgressDialog(_("Filling Gaps"), true);
 
 	bool bGood;
-	if (g_Options.GetValueBool(TAG_SLOW_FILL_GAPS))
-		// slow and smooth
-		bGood = el->m_pGrid->FillGapsSmooth(area, progress_callback);
-	else
+
+	if (iMethod == -1)
+		iMethod = g_Options.GetValueInt(TAG_GAP_FILL_METHOD);
+	if (iMethod == 1)
 		// fast
 		bGood = el->m_pGrid->FillGaps(area, progress_callback);
+	else if (iMethod == 2)
+		// slow and smooth
+		bGood = el->m_pGrid->FillGapsSmooth(area, progress_callback);
+	else if (iMethod == 3)
+	{
+		int result = el->m_pGrid->FillGapsByRegionGrowing(2, 5, progress_callback);
+		bGood = (result != -1);
+	}
 
 	CloseProgressDialog();
 	return bGood;

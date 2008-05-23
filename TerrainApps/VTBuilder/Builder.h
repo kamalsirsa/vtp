@@ -133,7 +133,7 @@ public:
 	float GetHeightFromTerrain(const DPoint2 &p);
 	void ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt);
 	unsigned int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
-	bool FillElevGaps(vtElevLayer *el, DRECT *area = NULL);
+	bool FillElevGaps(vtElevLayer *el, DRECT *area = NULL, int iMethod = -1);
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);

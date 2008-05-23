@@ -63,6 +63,7 @@ public:
 
 protected:
 	void OnClose(wxCloseEvent &event);
+	void OnFillIn(int method);
 
 	// Menu commands
 	void OnProjectNew(wxCommandEvent& event);
@@ -171,7 +172,9 @@ protected:
 	void OnElevSelect(wxCommandEvent& event);
 	void OnRemoveElevRange(wxCommandEvent& event);
 	void OnElevSetUnknown(wxCommandEvent& event);
-	void OnFillIn(wxCommandEvent& event);
+	void OnFillFast(wxCommandEvent& event);
+	void OnFillSlow(wxCommandEvent& event);
+	void OnFillRegions(wxCommandEvent& event);
 	void OnScaleElevation(wxCommandEvent& event);
 	void OnElevExport(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);

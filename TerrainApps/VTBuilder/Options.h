@@ -16,7 +16,6 @@
 #define TAG_LOAD_IMAGES_NEVER "LoadImagesNever"
 #define TAG_REPRO_TO_FLOAT_ALWAYS "ReproToFloatAlways"
 #define TAG_REPRO_TO_FLOAT_NEVER "ReproToFloatNever"
-#define TAG_SLOW_FILL_GAPS "SlowFillGaps"
 #define TAG_SAMPLING_N "MultiSampleN"
 #define TAG_ELEV_MAX_SIZE "ElevMaxRenderSize"
 #define TAG_MAX_MEGAPIXELS "MaxMegapixels"
@@ -24,6 +23,9 @@
 #define TAG_TIFF_COMPRESS "TiffCompressDeflate"
 #define TAG_DEFAULT_GZIP_BT "DefaultGzipBT"
 #define TAG_DRAW_RAW_SIMPLE "DrawSimpleRawLayers"
+
+#define TAG_SLOW_FILL_GAPS "SlowFillGaps"	// deprecated
+#define TAG_GAP_FILL_METHOD "GapFillMethod"		// 1 fast, 2 slow, 3 region-growing
 
 // User Preferences
 extern vtTagArray g_Options;

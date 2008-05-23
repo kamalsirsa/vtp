@@ -316,22 +316,23 @@ const int ID_RADIO7 = 10224;
 const int ID_RADIO8 = 10225;
 const int ID_RADIO9 = 10226;
 const int ID_RADIO10 = 10227;
-const int ID_ELEV_MAX_SIZE = 10228;
-const int ID_SAMPLING_N = 10229;
-const int ID_BLACK_TRANSP = 10230;
-const int ID_DEFLATE_TIFF = 10231;
-const int ID_BT_GZIP = 10232;
+const int ID_RADIO11 = 10228;
+const int ID_ELEV_MAX_SIZE = 10229;
+const int ID_SAMPLING_N = 10230;
+const int ID_BLACK_TRANSP = 10231;
+const int ID_DEFLATE_TIFF = 10232;
+const int ID_BT_GZIP = 10233;
 wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TEXT_DIST_CUTOFF = 10233;
+const int ID_TEXT_DIST_CUTOFF = 10234;
 wxSizer *GenGridDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
 // Declare toolbar functions
 
-const int ID_VIEW_LAYER_UP = 10234;
-const int ID_VIEW_LAYER_DOWN = 10235;
+const int ID_VIEW_LAYER_UP = 10235;
+const int ID_VIEW_LAYER_DOWN = 10236;
 void MainToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

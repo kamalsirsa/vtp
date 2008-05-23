@@ -168,7 +168,9 @@ EVT_UPDATE_UI(ID_ROAD_FLATTEN,		MainFrame::OnUpdateRoadFlatten)
 EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
 EVT_MENU(ID_ELEV_REMOVERANGE,		MainFrame::OnRemoveElevRange)
 EVT_MENU(ID_ELEV_SETUNKNOWN,		MainFrame::OnElevSetUnknown)
-EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
+EVT_MENU(ID_ELEV_FILL_FAST,			MainFrame::OnFillFast)
+EVT_MENU(ID_ELEV_FILL_SLOW,			MainFrame::OnFillSlow)
+EVT_MENU(ID_ELEV_FILL_REGIONS,		MainFrame::OnFillRegions)
 EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
 EVT_MENU(ID_ELEV_EXPORT,			MainFrame::OnElevExport)
 EVT_MENU(ID_ELEV_EXPORT_TILES,		MainFrame::OnElevExportTiles)
@@ -181,7 +183,9 @@ EVT_MENU(ID_ELEV_TRIMTIN,			MainFrame::OnElevTrimTin)
 EVT_UPDATE_UI(ID_ELEV_SELECT,		MainFrame::OnUpdateElevSelect)
 EVT_UPDATE_UI(ID_ELEV_REMOVERANGE,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SETUNKNOWN,	MainFrame::OnUpdateIsGrid)
-EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_FILL_FAST,	MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_FILL_SLOW,	MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_FILL_REGIONS,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateScaleElevation)
 EVT_UPDATE_UI(ID_ELEV_EXPORT,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_EXPORT_TILES,	MainFrame::OnUpdateIsGrid)
@@ -442,7 +446,14 @@ void MainFrame::CreateMenus()
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_SCALE, _("Sc&ale Elevation"));
 	elevMenu->Append(ID_ELEV_REMOVERANGE, _("&Remove Elevation Range..."));
-	elevMenu->Append(ID_ELEV_FILLIN, _("&Fill In Unknown Areas"));
+
+	wxMenu *fillMenu = new wxMenu;
+	fillMenu->Append(ID_ELEV_FILL_FAST, _("Fast"));
+	fillMenu->Append(ID_ELEV_FILL_SLOW, _("Slow and smooth"));
+	fillMenu->Append(ID_ELEV_FILL_REGIONS, _("Extrapolation via partial derivatives"));
+
+	elevMenu->Append(0, _("&Fill In Unknown Areas"), fillMenu);
+
 	elevMenu->Append(ID_ELEV_SETUNKNOWN, _("&Set Unknown Areas"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_EXPORT, _("E&xport To..."));
@@ -639,11 +650,13 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 	dlg.b8 = (!g_Options.GetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS) &&
 			  !g_Options.GetValueBool(TAG_REPRO_TO_FLOAT_NEVER));
 
-	dlg.b9 = !g_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
-	dlg.b10 = g_Options.GetValueBool(TAG_SLOW_FILL_GAPS);
-	dlg.b11 = g_Options.GetValueBool(TAG_BLACK_TRANSP);
-	dlg.b12 = g_Options.GetValueBool(TAG_TIFF_COMPRESS);
-	dlg.b13 = g_Options.GetValueBool(TAG_DEFAULT_GZIP_BT);
+	dlg.b9 =  (g_Options.GetValueInt(TAG_GAP_FILL_METHOD) == 1);
+	dlg.b10 = (g_Options.GetValueInt(TAG_GAP_FILL_METHOD) == 2);
+	dlg.b11 = (g_Options.GetValueInt(TAG_GAP_FILL_METHOD) == 3);
+
+	dlg.b12 = g_Options.GetValueBool(TAG_BLACK_TRANSP);
+	dlg.b13 = g_Options.GetValueBool(TAG_TIFF_COMPRESS);
+	dlg.b14 = g_Options.GetValueBool(TAG_DEFAULT_GZIP_BT);
 	dlg.i1 =  g_Options.GetValueInt(TAG_SAMPLING_N);
 	dlg.i2 =  g_Options.GetValueInt(TAG_MAX_MEGAPIXELS);
 	dlg.i3 =  g_Options.GetValueInt(TAG_ELEV_MAX_SIZE);
@@ -657,10 +670,14 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 		g_Options.SetValueBool(TAG_LOAD_IMAGES_NEVER, dlg.b4);
 		g_Options.SetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS, dlg.b7);
 		g_Options.SetValueBool(TAG_REPRO_TO_FLOAT_NEVER, dlg.b6);
-		g_Options.SetValueBool(TAG_SLOW_FILL_GAPS, dlg.b10);
-		g_Options.SetValueBool(TAG_BLACK_TRANSP, dlg.b11);
-		g_Options.SetValueBool(TAG_TIFF_COMPRESS, dlg.b12);
-		g_Options.SetValueBool(TAG_DEFAULT_GZIP_BT, dlg.b13);
+
+		if (dlg.b9)  g_Options.SetValueInt(TAG_GAP_FILL_METHOD, 1);
+		if (dlg.b10) g_Options.SetValueInt(TAG_GAP_FILL_METHOD, 2);
+		if (dlg.b11) g_Options.SetValueInt(TAG_GAP_FILL_METHOD, 3);
+
+		g_Options.SetValueBool(TAG_BLACK_TRANSP, dlg.b12);
+		g_Options.SetValueBool(TAG_TIFF_COMPRESS, dlg.b13);
+		g_Options.SetValueBool(TAG_DEFAULT_GZIP_BT, dlg.b14);
 		g_Options.SetValueInt(TAG_SAMPLING_N, dlg.i1);
 		g_Options.SetValueInt(TAG_MAX_MEGAPIXELS, dlg.i2);
 		g_Options.SetValueInt(TAG_ELEV_MAX_SIZE, dlg.i3);
@@ -1806,7 +1823,7 @@ void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 	}
 }
 
-void MainFrame::OnFillIn(wxCommandEvent &event)
+void MainFrame::OnFillIn(int method)
 {
 	vtElevLayer *el = GetActiveElevLayer();
 
@@ -1814,12 +1831,27 @@ void MainFrame::OnFillIn(wxCommandEvent &event)
 	if (!m_area.IsEmpty())
 		area = &m_area;
 
-	if (FillElevGaps(el, area))
+	if (FillElevGaps(el, area, method))
 	{
 		el->SetModified(true);
 		el->ReRender();
 		m_pView->Refresh();
 	}
+}
+
+void MainFrame::OnFillFast(wxCommandEvent &event)
+{
+	OnFillIn(1);
+}
+
+void MainFrame::OnFillSlow(wxCommandEvent &event)
+{
+	OnFillIn(2);
+}
+
+void MainFrame::OnFillRegions(wxCommandEvent &event)
+{
+	OnFillIn(3);
 }
 
 void MainFrame::OnScaleElevation(wxCommandEvent &event)
