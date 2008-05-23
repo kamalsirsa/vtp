@@ -50,6 +50,10 @@ public:
 
 	vtElevationGrid &operator=(const vtElevationGrid &rhs);
 
+	bool CopyFrom(const vtElevationGrid &rhs);
+	bool CopyHeaderFrom(const vtElevationGrid &rhs);
+	bool CopyDataFrom(const vtElevationGrid &rhs);
+
 	bool Create(const DRECT &area, int iColumns, int iRows, bool bFloat,
 		const vtProjection &proj);
 	void FreeData();
@@ -62,6 +66,9 @@ public:
 	int ReplaceValue(float value1, float value2);
 	bool FillGaps(DRECT *area = NULL, bool progress_callback(int) = NULL);
 	bool FillGapsSmooth(DRECT *area = NULL, bool progress_callback(int) = NULL);
+
+	int FillGapsByRegionGrowing(int radius_start=2, int radius_stop=5, bool progress_callback(int) = NULL);
+	int FillGapsByRegionGrowing(int radius, bool progress_callback(int) = NULL);
 
 	// Load from unknown file format
 	bool LoadFromFile( const char *szFileName, bool progress_callback(int) = NULL);

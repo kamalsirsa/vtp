@@ -63,10 +63,23 @@ vtElevationGrid::vtElevationGrid(const vtElevationGrid &rhs)
  */
 vtElevationGrid & vtElevationGrid::operator=(const vtElevationGrid &rhs)
 {
-	if (this == &rhs)
-		return *this;
+	if (this != &rhs)
+		CopyFrom(rhs);
+	return *this;
+}
 
-	// Free data first before copying over data from other grid
+bool vtElevationGrid::CopyFrom(const vtElevationGrid &rhs)
+{
+	if (!CopyHeaderFrom(rhs))
+		return false;
+	if (!CopyDataFrom(rhs))
+		return false;
+	return true;
+}
+
+bool vtElevationGrid::CopyHeaderFrom(const vtElevationGrid &rhs)
+{
+	// Free data first before copying from other grid
 	FreeData();
 
 	// Copy each member individually
@@ -86,25 +99,29 @@ vtElevationGrid & vtElevationGrid::operator=(const vtElevationGrid &rhs)
 
 	m_strOriginalDEMName = rhs.m_strOriginalDEMName;
 
-	if ( m_bFloatMode )
+	return _AllocateArray();
+}
+
+bool vtElevationGrid::CopyDataFrom(const vtElevationGrid &rhs)
+{
+	int rx, ry;
+	rhs.GetDimensions(rx, ry);
+	if (m_iColumns != rx || m_iRows != ry)
+		return false;
+
+	if (m_bFloatMode && rhs.m_pFData)
 	{
-		if ( rhs.m_pFData )
-		{
-			size_t Size = m_iColumns * m_iRows * sizeof(float);
-			m_pFData = (float *)malloc( Size );
-			memcpy( m_pFData, rhs.m_pFData, Size );
-		}
+		size_t Size = m_iColumns * m_iRows * sizeof(float);
+		memcpy(m_pFData, rhs.m_pFData, Size );
 	}
-	else
+	else if (!m_bFloatMode && rhs.m_pData)
 	{
-		if ( rhs.m_pData )
-		{
-			size_t Size = m_iColumns * m_iRows * sizeof(short);
-			m_pData = (short *)malloc(Size);
-			memcpy( m_pData, rhs.m_pData, Size );
-		}
+		size_t Size = m_iColumns * m_iRows * sizeof(short);
+		memcpy(m_pData, rhs.m_pData, Size );
 	}
-	return *this;
+	else return false;
+
+	return true;
 }
 
 
@@ -736,6 +753,277 @@ bool vtElevationGrid::FillGapsSmooth(DRECT *area, bool progress_callback(int))
 	// recompute what has likely changed
 	ComputeHeightExtents();
 	return true;
+}
+
+/**
+ * Fill-in algorithm.
+ * Replaces no-data values by repeated region growing.
+ * Smoothly extrapolates the filled-in value via partial derivatives.
+ * Restricts the fill-in operation to concavities with a diameter of less than radius^2+1 pixels.
+ *
+ * \return The number of no-data heixels that were filled.
+ *		Returns -1 on error, for example if there was not enought memory to
+ *		create the temporary buffers.
+ */
+int vtElevationGrid::FillGapsByRegionGrowing(int radius_start, int radius_stop, bool progress_callback(int))
+{
+	unsigned int count = 0;
+
+	for (int r=radius_start; r<=radius_stop; r++)
+	{
+		 int result = FillGapsByRegionGrowing(r, progress_callback);
+
+		 VTLOG("FillGapsByRegionGrowing(%d): %d filled\n", r, result);
+
+		 if (result == -1)
+			 return -1;
+		 count += result;
+	}
+	return count;
+}
+
+/**
+ * Fill-in algorithm.
+ * Replaces no-data values by repeated region growing.
+ * Smoothly extrapolates the filled-in value via partial derivatives.
+ * Restricts the fill-in operation to concavities with a diameter of less than radius^2+1 pixels.
+ *
+ * Adapted subset from original code by: Stefan Roettger.
+ * 
+ * \return The number of no-data heixels that were filled.
+ *		Returns -1 on error, for example if there was not enought memory to
+ *		create the temporary buffers.
+ */
+int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(int))
+{
+	unsigned int count = 0;
+
+	int i,j;
+	int m,n;
+
+	vtElevationGrid buf;
+	vtElevationGrid cnt;
+	vtElevationGrid tmp;
+
+	int size;
+	int sizex,sizey;
+
+	float v1,v2;
+	float dx,dy;
+	int dxnum,dynum;
+
+	// don't do anything unless there are gaps to fill
+	int unknown = FindNumUnknown();
+	if (unknown==0)
+		return 0;
+
+	// copy working buffer
+	if (!buf.CopyFrom(*this))
+		return -1;
+
+	// allocate counting buffer
+	if (!cnt.Create(m_EarthExtents, m_iColumns, m_iRows, false, m_proj))
+		return -1;
+	if (!tmp.Create(m_EarthExtents, m_iColumns, m_iRows, false, m_proj))
+		return -1;
+
+	// calculate foot print size
+	size=2*radius+1;
+	if (size<3) size=3;
+
+	bool done = false;
+	while (!done)
+	{
+		done = true;
+
+		// calculate foot print size in x/y/z-direction
+		if (m_iColumns<2)
+		{
+			sizex=1;
+			sizey=1;
+		}
+		else if (m_iRows<2)
+		{
+			sizex=size;
+			sizey=1;
+		}
+		else
+		{
+			sizex=size;
+			sizey=size;
+		}
+
+		// calculate growing threshold
+		int thres=(sizex*sizey+1)/2;
+
+		// clear counting buffer
+		cnt.FillWithSingleValue(0);
+
+		// search for no-data values
+		for (i=0; i<(int)m_iColumns; i++)
+			for (j=0; j<(int)m_iRows; j++)
+				if (GetFValue(i,j)!=INVALID_ELEVATION)
+					cnt.SetValue(i, j, 1);
+
+		// accumulate no-data values in x-direction
+		if (m_iColumns>1)
+		{
+			for (j=0; j<(int)m_iRows; j++)
+			{
+				int cells=0;
+				for (i=-sizex/2; i<(int)m_iColumns; i++)
+				{
+					if (i-sizex/2-1 >= 0)
+						cells -= cnt.GetValue(i-sizex/2-1, j);
+					if (i+sizex/2 < m_iColumns)
+						cells += cnt.GetValue(i+sizex/2, j);
+					if (i>=0)
+						tmp.SetValue(i, j, cells);
+				}
+			}
+		}
+
+		// copy counting buffer back
+		cnt.CopyDataFrom(tmp);
+
+		// accumulate no-data values in y-direction
+		if (m_iRows>1)
+			for (i=0; i<(int)m_iColumns; i++)
+			{
+				int cells=0;
+				for (j=-sizey/2; j<(int)m_iRows; j++)
+				{
+					if (j-sizey/2-1 >= 0)
+						cells -= cnt.GetValue(i, j-sizey/2-1);
+					if (j+sizey/2 < m_iRows)
+						cells += cnt.GetValue(i, j+sizey/2);
+					if (j>=0)
+						tmp.SetValue(i,j,cells);
+				}
+			}
+
+		// copy counting buffer back
+		cnt.CopyDataFrom(tmp);
+
+		// search for no-data values
+		for (i = 0; i < m_iColumns; i++)
+		{
+			for (j = 0; j < m_iRows; j++)
+			{
+				if (GetFValue(i,j) != INVALID_ELEVATION)
+					continue;
+
+				// check number of foot print cells against growing threshold
+				if (cnt.GetValue(i,j) < thres)
+					continue;
+
+				dx=dy=0.0f;
+				dxnum=dynum=0;
+
+				// average partial derivatives
+				for (m=-sizex/2; m<=sizex/2; m++)
+				{
+					for (n=-sizey/2; n<=sizey/2; n++)
+					{
+						if (i+m>=0 && i+m < m_iColumns &&
+							j+n>=0 && j+n < m_iRows)
+						{
+							v1=GetFValue(i+m,j+n);
+
+							if (v1==INVALID_ELEVATION)
+								continue;
+
+							if (i+m-1>=0 && m>-sizex/2)
+							{
+								v2=GetFValue(i+m-1,j+n);
+								if (v2!=INVALID_ELEVATION)
+								{
+									dx+=v1-v2;
+									dxnum++;
+								}
+							}
+							if (j+n-1>=0 && n>-sizey/2)
+							{
+								v2=GetFValue(i+m,j+n-1);
+								if (v2!=INVALID_ELEVATION)
+								{
+									dy+=v1-v2;
+									dynum++;
+								}
+							}
+						}
+					}
+				}
+
+				if (dxnum>0) dx/=dxnum;
+				if (dynum>0) dy/=dynum;
+
+				float val=0.0f;
+				float sum=0.0f;
+
+				// extrapolate partial derivatives
+				for (m=-sizex/2; m<=sizex/2; m++)
+				{
+					for (n=-sizey/2; n<=sizey/2; n++)
+					{
+						if (i+m>=0 && i+m < m_iColumns && 
+							j+n>=0 && j+n < m_iRows)
+						{
+							v1=GetFValue(i+m,j+n);
+
+							if (v1!=INVALID_ELEVATION)
+							{
+								v2=v1-m*dx-n*dy;
+								float weight = (float) (m*m+n*n);
+
+								if (weight>0.0f)
+								{
+									val+=v2/weight;
+									sum+=1.0f/weight;
+								}
+							}
+						}
+					}
+				}
+
+				// fill-in extrapolated value
+				if (sum>0.0f)
+				{
+					val/=sum;
+					if (val==INVALID_ELEVATION) val+=1.0f;
+
+					buf.SetFValue(i,j,val);
+					count++;
+
+					done=false;
+				}
+			}
+		}
+
+		// copy working buffer back
+		CopyDataFrom(buf);
+
+		int remaining = FindNumUnknown();
+		if (progress_callback != NULL)
+		{
+			if (progress_callback((unknown-remaining) * 99 / unknown))
+			{
+				// cancelled by user, but we've already modified the buffer,
+				//  so report how many we've already done.  This is more of a
+				//  'stop work' than a 'cancel'.
+				return count;
+			}
+		}
+	}
+
+	// free working buffer
+	buf.FreeData();
+
+	// free counting buffer
+	cnt.FreeData();
+	tmp.FreeData();
+
+	return(count);
 }
 
 /** Set an elevation value to the grid.
