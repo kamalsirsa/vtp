@@ -1156,6 +1156,90 @@ bool vtFeatureSet::LoadDataFromCSV(const char *filename, bool progress_callback(
 
 
 /**
+ * Export a featureset to a KML file.  This is still very limited and experimental.
+ *
+ * \param filename	Filename in UTF-8 encoding.
+ * \param progress_callback Provide a callback function if you want to receive
+ *		progress indication.
+ *
+ * \return true if successful.
+ */
+bool vtFeatureSet::SaveToKML(const char *filename, bool progress_callback(int)) const
+{
+	// Must use "C" locale in case we write any floating-point fields
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	const vtFeatureSetPoint2D *P2D = dynamic_cast<const vtFeatureSetPoint2D*>(this);
+	const vtFeatureSetPoint3D *P3D = dynamic_cast<const vtFeatureSetPoint3D*>(this);
+
+	if (P2D || P3D)
+	{
+		FILE *fp = vtFileOpen(filename, "wb");
+		if (!fp)
+			return false;
+
+		fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		fprintf(fp, "<kml xmlns=\"http://earth.google.com/kml/2.2\">\n");
+		fprintf(fp, "<Document>\n");
+		fprintf(fp, "\t<name>%s</name>\n", filename);
+		fprintf(fp, "\t<Style id=\"sn_icon12\">\n");
+		fprintf(fp, "\t\t<IconStyle>\n");
+		fprintf(fp, "\t\t\t<Icon>\n");
+		fprintf(fp, "\t\t\t\t<href>http://maps.google.com/mapfiles/kml/pal2/icon12.png</href>\n");
+		fprintf(fp, "\t\t\t</Icon>\n");
+		fprintf(fp, "\t\t</IconStyle>\n");
+		fprintf(fp, "\t\t<LabelStyle>\n");
+		fprintf(fp, "\t\t\t<scale>0.8</scale>\n");
+		fprintf(fp, "\t\t</LabelStyle>\n");
+		fprintf(fp, "\t</Style>\n");
+
+		// Write entities
+		DPoint2 p2;
+		DPoint3 p3;
+		unsigned int entities = GetNumEntities();
+		for (unsigned int i = 0; i < entities; i++)
+		{
+			if (progress_callback && ((i%16)==0))
+				progress_callback(i * 100 / entities);
+
+			fprintf(fp, "\t<Placemark>\n");
+
+			vtString str;
+			for (unsigned int j = 0; j < m_fields.GetSize(); j++)
+			{
+				GetValueAsString(i, j, str);
+				Field *field = m_fields[j];
+
+				fprintf(fp, "\t\t<%s>%s</%s>\n", (const char *) field->m_name,
+					(const char *) str, (const char *) field->m_name);
+			}
+			fprintf(fp, "\t\t<styleUrl>#sn_icon12</styleUrl>\n");
+			fprintf(fp, "\t\t<Point>\n");
+			fprintf(fp, "\t\t\t<coordinates>");
+			if (P2D)
+			{
+				P2D->GetPoint(i, p2);
+				fprintf(fp, "%lf,%lf,0", p2.x, p2.y);
+			}
+			if (P3D)
+			{
+				P3D->GetPoint(i, p3);
+				fprintf(fp, "%lf,%lf,%.2lf", p3.x, p3.y, p3.z);
+			}
+			fprintf(fp, "</coordinates>\n");
+			fprintf(fp, "\t\t</Point>\n");
+			fprintf(fp, "\t</Placemark>\n");
+		}
+		fprintf(fp, "\t</Document>\n");
+		fprintf(fp, "\t</kml>\n");
+		fclose(fp);
+		return true;
+	}
+	return false;
+}
+
+
+/**
  * Set the number of entities.  This expands (or contracts) the number of
  * geometry entities and corresponding records.
  */
