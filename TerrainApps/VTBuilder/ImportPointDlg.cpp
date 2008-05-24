@@ -1,7 +1,7 @@
 //
 // Name: ImportPointDlg.cpp
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project
+// Copyright (c) 2004-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -42,6 +42,7 @@ ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString 
 	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
 	m_bFormat1 = true;
 	m_bFormat2 = false;
+	m_bFormat3 = false;
 	m_bLongitudeWest = false;
 
 	AddValidator(ID_EASTING, &m_iEasting);
@@ -51,6 +52,7 @@ ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString 
 	AddValidator(ID_CRS, &m_strCRS);
 	AddValidator(ID_FORMAT_DECIMAL, &m_bFormat1);
 	AddValidator(ID_FORMAT_DMS, &m_bFormat2);
+	AddValidator(ID_FORMAT_HDM, &m_bFormat3);
 	AddValidator(ID_LONGITUDE_WEST, &m_bLongitudeWest);
 
 	RefreshProjString();

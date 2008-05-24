@@ -1151,6 +1151,21 @@ double ExtractValueFromString(const char *string, int iStyle, bool bEasting,
 			val = -val;
 		return val;
 	}
+	else if (iStyle == 2)	// HMD: Hemisphere, Degrees, Minutes
+	{
+		// Example string: "E144 53.621"
+		char hemi = string[0];
+		int degrees;
+		double minutes;
+		sscanf(string+1, "%d %lf", &degrees, &minutes);
+		double val = degrees + (minutes/60.0);
+
+		// southern and western hemispheres: negative values
+		if (hemi == 'W' || hemi == 'S')
+			val = -val;
+
+		return val;
+	}
 	return 0.0;
 }
 
@@ -1217,7 +1232,10 @@ vtFeatureSetPoint2D *Builder::ImportPointsFromDBF(const char *fname)
 	}
 	int iEast = dlg.m_iEasting;
 	int iNorth = dlg.m_iNorthing;
-	int iStyle = dlg.m_bFormat2 ? 1 : 0;
+	int iStyle;
+	if (dlg.m_bFormat1) iStyle = 0;
+	if (dlg.m_bFormat2) iStyle = 1;
+	if (dlg.m_bFormat3) iStyle = 2;
 
 	// Now import
 	vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
@@ -1292,7 +1310,10 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 	int iEast = dlg.m_iEasting;
 	int iNorth = dlg.m_iNorthing;
 	int iElev = dlg.m_iElevation;
-	int iStyle = dlg.m_bFormat2 ? 1 : 0;
+	int iStyle;
+	if (dlg.m_bFormat1) iStyle = 0;
+	if (dlg.m_bFormat2) iStyle = 1;
+	if (dlg.m_bFormat3) iStyle = 2;
 
 	// Now import
 	if (dlg.m_bElevation)

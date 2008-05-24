@@ -1,7 +1,7 @@
 //
 // Name: ImportPointDlg.h
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project
+// Copyright (c) 2004-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -39,6 +39,7 @@ public:
 	vtProjection m_proj;
 	bool m_bFormat1;
 	bool m_bFormat2;
+	bool m_bFormat3;
 	bool m_bLongitudeWest;
 
 	void SetCRS(const vtProjection &proj);
