@@ -2113,47 +2113,58 @@ wxSizer *ImportPointDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer 
 
     wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("CRS:"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxCheckBox *item11 = new wxCheckBox( parent, ID_CHECK_IMPORT_FIELD, _("Import field directly:"), wxDefaultPosition, wxDefaultSize, 0 );
     item10->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item12 = new wxTextCtrl( parent, ID_CRS, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
-    item10->Add( item12, 1, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs12 = (wxString*) NULL;
+    wxChoice *item12 = new wxChoice( parent, ID_IMPORT_FIELD, wxDefaultPosition, wxSize(160,-1), 0, strs12, 0 );
+    item10->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item13 = new wxButton( parent, ID_SET_CRS, _("Set"), wxDefaultPosition, wxSize(40,-1), 0 );
-    item10->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item10, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    item0->Add( item10, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticBox *item15 = new wxStaticBox( parent, -1, _("Number format:") );
-    wxStaticBoxSizer *item14 = new wxStaticBoxSizer( item15, wxVERTICAL );
+    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("CRS:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item13->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxRadioButton *item16 = new wxRadioButton( parent, ID_FORMAT_DECIMAL, _("Decimal"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    item14->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_CRS, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
+    item13->Add( item15, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    wxRadioButton *item17 = new wxRadioButton( parent, ID_FORMAT_DMS, _("Packed degrees: DDDMMSSSS"), wxDefaultPosition, wxDefaultSize, 0 );
-    item14->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxButton *item16 = new wxButton( parent, ID_SET_CRS, _("Set"), wxDefaultPosition, wxSize(40,-1), 0 );
+    item13->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxRadioButton *item18 = new wxRadioButton( parent, ID_FORMAT_HDM, _("Hemisphere Degrees Minutes: HDDD MM.MMM"), wxDefaultPosition, wxDefaultSize, 0 );
-    item14->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    item0->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticBox *item18 = new wxStaticBox( parent, -1, _("Number format:") );
+    wxStaticBoxSizer *item17 = new wxStaticBoxSizer( item18, wxVERTICAL );
 
-    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+    wxRadioButton *item19 = new wxRadioButton( parent, ID_FORMAT_DECIMAL, _("Decimal"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item17->Add( item19, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item20 = new wxCheckBox( parent, ID_LONGITUDE_WEST, _("Longitude is west"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item20, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item20 = new wxRadioButton( parent, ID_FORMAT_DMS, _("Packed degrees: DDDMMSSSS"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item20, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item19, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxRadioButton *item21 = new wxRadioButton( parent, ID_FORMAT_HDM, _("Hemisphere Degrees Minutes: HDDD MM.MMM"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item21, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
+    item0->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item22 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item21->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item23 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item21->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item23 = new wxCheckBox( parent, ID_LONGITUDE_WEST, _("Longitude is west"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item23, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item22, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxBoxSizer *item24 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item25 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item24->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item26 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item24->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

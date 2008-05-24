@@ -35,6 +35,8 @@ public:
 	int m_iNorthing;
 	bool m_bElevation;
 	int m_iElevation;
+	bool m_bImportField;
+	int m_iImportField;
 	wxString m_strCRS;
 	vtProjection m_proj;
 	bool m_bFormat1;
@@ -51,6 +53,7 @@ public:
 	wxRadioButton* GetFormatDms()  { return (wxRadioButton*) FindWindow( ID_FORMAT_DMS ); }
 	wxRadioButton* GetFormatDecimal()  { return (wxRadioButton*) FindWindow( ID_FORMAT_DECIMAL ); }
 	wxTextCtrl* GetCrs()  { return (wxTextCtrl*) FindWindow( ID_CRS ); }
+	wxChoice* GetImportField()  { return (wxChoice*) FindWindow( ID_IMPORT_FIELD ); }
 	wxChoice* GetElevation()  { return (wxChoice*) FindWindow( ID_ELEVATION ); }
 	wxChoice* GetNorthing()  { return (wxChoice*) FindWindow( ID_NORTHING ); }
 	wxChoice* GetEasting()  { return (wxChoice*) FindWindow( ID_EASTING ); }

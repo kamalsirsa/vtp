@@ -47,8 +47,13 @@ ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString 
 
 	AddValidator(ID_EASTING, &m_iEasting);
 	AddValidator(ID_NORTHING, &m_iNorthing);
+
 	AddValidator(ID_CHECK_ELEVATION, &m_bElevation);
 	AddValidator(ID_ELEVATION, &m_iElevation);
+
+	AddValidator(ID_CHECK_IMPORT_FIELD, &m_bImportField);
+	AddValidator(ID_IMPORT_FIELD, &m_iImportField);
+
 	AddValidator(ID_CRS, &m_strCRS);
 	AddValidator(ID_FORMAT_DECIMAL, &m_bFormat1);
 	AddValidator(ID_FORMAT_DMS, &m_bFormat2);

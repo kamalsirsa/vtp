@@ -1218,6 +1218,8 @@ vtFeatureSetPoint2D *Builder::ImportPointsFromDBF(const char *fname)
 
 		dlg.GetEasting()->Append(str);
 		dlg.GetNorthing()->Append(str);
+		dlg.GetElevation()->Append(str);
+		dlg.GetImportField()->Append(str);
 
 		m_fieldtypes.Append(fieldtype);
 		//if (fieldtype == FTString)
@@ -1301,6 +1303,7 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 		dlg.GetEasting()->Append(str);
 		dlg.GetNorthing()->Append(str);
 		dlg.GetElevation()->Append(str);
+		dlg.GetImportField()->Append(str);
 	}
 	if (dlg.ShowModal() != wxID_OK)
 	{
@@ -1321,6 +1324,11 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 		vtFeatureSetPoint3D *pSet = new vtFeatureSetPoint3D;
 		pSet->SetProjection(dlg.m_proj);
 
+		if (dlg.m_bImportField)
+		{
+			pSet->AddField(fieldnames[dlg.m_iImportField], FT_String, 40);
+		}
+
 		while (fgets(buf, 4096, fp))
 		{
 			vtStringArray values;
@@ -1330,7 +1338,12 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 			p.x = ExtractValueFromString(values[iEast], iStyle, true, dlg.m_bLongitudeWest);
 			p.y = ExtractValueFromString(values[iNorth], iStyle, false, false);
 			p.z = atof(values[iElev]);
-			pSet->AddPoint(p);
+			int record = pSet->AddPoint(p);
+
+			if (dlg.m_bImportField)
+			{
+				pSet->SetValueFromString(record, 0, values[dlg.m_iImportField]);
+			}
 		}
 		pSet->SetFilename(fname);
 		return pSet;
