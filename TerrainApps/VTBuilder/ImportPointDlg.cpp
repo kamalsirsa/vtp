@@ -39,6 +39,8 @@ ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString 
 	m_iNorthing = 0;
 	m_bElevation = false;
 	m_iElevation = 0;
+	m_bImportField = false;
+	m_iImportField = 0;
 	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
 	m_bFormat1 = true;
 	m_bFormat2 = false;

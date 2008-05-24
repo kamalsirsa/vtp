@@ -29,6 +29,7 @@
 #define FSTRING_IMG		_T("IMG Files (*.img)|*.img")
 #define FSTRING_INI		_T("INI Files (*.ini)|*.ini")
 #define FSTRING_JPEG	_T("JPEG Files (*.jpg, *.jpeg)|*.jpg;*.jpeg")
+#define FSTRING_KML		_T("KML Files (*.kml)|*.kml")
 #define FSTRING_LULC	_T("LULC Files (*.gir)|*.gir")
 #define FSTRING_MEM		_T("Japanese DEM Files (*.mem)|*.mem")
 #define FSTRING_MI		_T("MapInfo Files (*.tab, *.mif)|*.tab;*.mif")

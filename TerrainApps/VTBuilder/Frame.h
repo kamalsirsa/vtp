@@ -245,6 +245,7 @@ protected:
 	void OnRawAddPointsGPS(wxCommandEvent& event);
 	void OnRawSelectCondition(wxCommandEvent& event);
 	void OnRawExportImageMap(wxCommandEvent& event);
+	void OnRawExportKML(wxCommandEvent& event);
 	void OnRawGenElevation(wxCommandEvent& event);
 	void OnRawStyle(wxCommandEvent& event);
 	void OnRawScale(wxCommandEvent& event);

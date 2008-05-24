@@ -255,6 +255,7 @@ EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
 EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
 EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
+EVT_MENU(ID_RAW_EXPORT_KML,			MainFrame::OnRawExportKML)
 EVT_MENU(ID_RAW_GENERATE_ELEVATION,	MainFrame::OnRawGenElevation)
 EVT_MENU(ID_RAW_STYLE,				MainFrame::OnRawStyle)
 EVT_MENU(ID_RAW_SCALE,				MainFrame::OnRawScale)
@@ -265,6 +266,7 @@ EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnUpdateRawAddPointText)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnUpdateRawAddPointsGPS)
 EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_EXPORT_KML,		MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_GENERATE_ELEVATION,MainFrame::OnUpdateRawGenElevation)
 EVT_UPDATE_UI(ID_RAW_STYLE,				MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_SCALE,				MainFrame::OnUpdateRawIsActive)
@@ -524,6 +526,7 @@ void MainFrame::CreateMenus()
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SELECTCONDITION, _("Select Features by Condition"));
 	rawMenu->Append(ID_RAW_EXPORT_IMAGEMAP, _("Export as HTML ImageMap"));
+	rawMenu->Append(ID_RAW_EXPORT_KML, _("Export as KML"));
 	rawMenu->Append(ID_RAW_GENERATE_ELEVATION, _("Generate Grid from 3D Points"));
 	m_pMenuBar->Append(rawMenu, _("Ra&w"));
 	m_iLayerMenu[LT_RAW] = menu_num;
@@ -3066,6 +3069,26 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 	fprintf(fp, "</body>\n");
 	fprintf(fp, "</html>\n");
 	fclose(fp);
+}
+
+void MainFrame::OnRawExportKML(wxCommandEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	if (!pRL)
+		return;
+
+	vtFeatureSet *fset = pRL->GetFeatureSet();
+
+	//ImageMapDlg dlg(this, -1, _("Export Image Map"));
+	//dlg.SetFields(fset);
+	//if (dlg.ShowModal() != wxID_OK)
+	//	return;
+
+	wxFileDialog loadFile(NULL, _("Save to KML File"), _T(""), _T(""),
+		FSTRING_KML, wxFD_SAVE);
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+	fset->SaveToKML(loadFile.GetPath().mb_str(wxConvUTF8));
 }
 
 void MainFrame::OnRawGenElevation(wxCommandEvent& event)
