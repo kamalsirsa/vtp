@@ -1100,7 +1100,7 @@
 		98EB17DF0C2A28C300943462 /* Copy Shared Frameworks Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = /Library/Frameworks;
+			dstPath = $VTP_FRAMEWORK_INSTALL_DIR;
 			dstSubfolderSpec = 0;
 			files = (
 				98EB19320C2A29B500943462 /* vtdata.framework in Copy Shared Frameworks Files */,
@@ -1930,7 +1930,7 @@
 		98D9F4690C22E2EB000F9A7A /* Simple.xml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = Simple.xml; sourceTree = "<group>"; };
 		98D9F8A20C22E443000F9A7A /* crater_0513.bt */ = {isa = PBXFileReference; lastKnownFileType = file; name = crater_0513.bt; path = "../../vtp-data/Data/Elevation/crater_0513.bt"; sourceTree = SOURCE_ROOT; };
 		98EB164B0C2A259000943462 /* vtlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = vtlib.h; path = ../TerrainSDK/vtlib/vtlib.h; sourceTree = SOURCE_ROOT; };
-		98EB16870C2A278100943462 /* libgdal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgdal.dylib; path = /Library/Frameworks/VTPX.framework/Versions/A/lib/libgdal.dylib; sourceTree = "<absolute>"; };
+		98EB16870C2A278100943462 /* libgdal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libgdal.dylib; sourceTree = "<group>"; };
 		98EB16890C2A278100943462 /* libMini.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMini.a; sourceTree = "<group>"; };
 		98EB168D0C2A278100943462 /* libproj.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libproj.dylib; sourceTree = "<group>"; };
 		98EB16900C2A278100943462 /* libwx_macud-2.8.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libwx_macud-2.8.0.dylib"; sourceTree = "<group>"; };
@@ -3297,6 +3297,7 @@
 				98EB16990C2A278100943462 /* libwx_macud_gl-2.8.0.dylib */,
 				98EB169E0C2A278100943462 /* wx */,
 			);
+			includeInIndex = 1;
 			name = lib;
 			path = /Library/Frameworks/VTPX.framework/Versions/A/lib;
 			sourceTree = "<absolute>";
@@ -3885,7 +3886,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo rsync -uar --exclude \"include/*\" --exclude \"man/*\" /Library/Frameworks/VTPX.framework/Versions/A $BUILT_PRODUCTS_DIR\n";
+			shellScript = "echo rsync -uar --exclude \"include/*\" --exclude \"man/*\" $VTP_DEPENDENCY_DIR $BUILT_PRODUCTS_DIR\n";
 		};
 		982FD8220C297BA600364006 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4528,9 +4529,13 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
+				LD_DYLIB_INSTALL_NAME = $VTP_INSTALL_NAME_PREFIX;
 				OSG_FRAMEWORK_PATH = "\"$SRCROOT/../../../OpenScenegraph-2.3.8/Xcode/OpenSceneGraph/build/Development\"";
 				PREBINDING = NO;
 				VALID_ARCHS = "i386 x86_64";
+				VTP_DEPENDENCY_DIR = /Library/Frameworks/VTPX.framework/Versions/A;
+				VTP_FRAMEWORK_INSTALL_DIR = /Library/Frameworks;
+				VTP_INSTALL_NAME_PREFIX = /Library/Frameworks;
 			};
 			name = Debug;
 		};
@@ -4561,7 +4566,7 @@
 					"SUPPORT_PYTHON=0",
 				);
 				INFOPLIST_FILE = "xmlhelper-Info.plist";
-				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_PATH = $VTP_FRAMEWORK_INSTALL_DIR;
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -4604,14 +4609,14 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					/Library/Frameworks/VTPX.framework/Versions/A/include,
+					$VTP_DEPENDENCY_DIR/include,
 					$SRCROOT/../TerrainSDK,
 				);
 				INFOPLIST_FILE = "vtdata-Info.plist";
-				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_PATH = $VTP_FRAMEWORK_INSTALL_DIR;
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					/Library/Frameworks/VTPX.framework/Versions/A/lib,
+					$VTP_DEPENDENCY_DIR/lib,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../zlib-1.2.3\"";
@@ -4641,7 +4646,7 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
 				GCC_PREPROCESSOR_DEFINITIONS = NOUNCRYPT;
 				INFOPLIST_FILE = "unzip-Info.plist";
-				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_PATH = $VTP_FRAMEWORK_INSTALL_DIR;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/sw/lib,
@@ -4691,14 +4696,14 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					/Library/Frameworks/VTPX.framework/Versions/A/include,
+					$VTP_DEPENDENCY_DIR/include,
 					$SRCROOT/../TerrainSDK,
 				);
 				INFOPLIST_FILE = "vtosg-Info.plist";
-				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_PATH = $VTP_FRAMEWORK_INSTALL_DIR;
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					/Library/Frameworks/VTPX.framework/Versions/A/lib,
+					$VTP_DEPENDENCY_DIR/lib,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../zlib-1.2.3\"";
@@ -4744,16 +4749,16 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					/Library/Frameworks/VTPX.framework/Versions/A/include,
+					$VTP_DEPENDENCY_DIR/include,
 					$SRCROOT/../TerrainSDK,
-					"/Library/Frameworks/VTPX.framework/Versions/A/include/wx-2.8",
-					"/Library/Frameworks/VTPX.framework/Versions/A/lib/wx/include/mac-unicode-debug-2.8",
+					"$VTP_DEPENDENCY_DIR/include/wx-2.8",
+					"$VTP_DEPENDENCY_DIR/lib/wx/include/mac-unicode-debug-2.8",
 				);
 				INFOPLIST_FILE = "vtui-Info.plist";
-				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_PATH = $VTP_FRAMEWORK_INSTALL_DIR;
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					/Library/Frameworks/VTPX.framework/Versions/A/lib,
+					$VTP_DEPENDENCY_DIR/lib,
 				);
 				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
 				OTHER_LDFLAGS = (
@@ -4799,14 +4804,14 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					/Library/Frameworks/VTPX.framework/Versions/A/include,
+					$VTP_DEPENDENCY_DIR/include,
 					$SRCROOT/../TerrainSDK,
 				);
 				INFOPLIST_FILE = "glutSimple-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					/Library/Frameworks/VTPX.framework/Versions/A/lib,
+					$VTP_DEPENDENCY_DIR/lib,
 				);
 				OTHER_CFLAGS = (
 					"-Dunix=1",
@@ -4856,9 +4861,9 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					/Library/Frameworks/VTPX.framework/Versions/A/include,
-					"/Library/Frameworks/VTPX.framework/Versions/A/include/wx-2.8",
-					"/Library/Frameworks/VTPX.framework/Versions/A/lib/wx/include/mac-unicode-debug-2.8",
+					$VTP_DEPENDENCY_DIR/include,
+					"$VTP_DEPENDENCY_DIR/include/wx-2.8",
+					"$VTP_DEPENDENCY_DIR/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
 					$SRCROOT/../TerrainApps/VTBuilder/icons,
 					$SRCROOT/../TerrainApps/VTBuilder/bitmaps,
@@ -4868,7 +4873,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					/Library/Frameworks/VTPX.framework/Versions/A/lib,
+					$VTP_DEPENDENCY_DIR/lib,
 				);
 				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -4913,16 +4918,16 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					/Library/Frameworks/VTPX.framework/Versions/A/include,
-					"/Library/Frameworks/VTPX.framework/Versions/A/include/wx-2.8",
-					"/Library/Frameworks/VTPX.framework/Versions/A/lib/wx/include/mac-unicode-debug-2.8",
+					$VTP_DEPENDENCY_DIR/include,
+					"$VTP_DEPENDENCY_DIR/include/wx-2.8",
+					"$VTP_DEPENDENCY_DIR/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
 				);
 				INFOPLIST_FILE = "wxSimple-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					/Library/Frameworks/VTPX.framework/Versions/A/lib,
+					$VTP_DEPENDENCY_DIR/lib,
 				);
 				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -4969,9 +4974,9 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					/Library/Frameworks/VTPX.framework/Versions/A/include,
-					"/Library/Frameworks/VTPX.framework/Versions/A/include/wx-2.8",
-					"/Library/Frameworks/VTPX.framework/Versions/A/lib/wx/include/mac-unicode-debug-2.8",
+					$VTP_DEPENDENCY_DIR/include,
+					"$VTP_DEPENDENCY_DIR/include/wx-2.8",
+					"$VTP_DEPENDENCY_DIR/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
 					$SRCROOT/../TerrainApps/VTBuilder/icons,
 					$SRCROOT/../TerrainApps/Enviro/wx/bitmap,
@@ -4981,7 +4986,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					/Library/Frameworks/VTPX.framework/Versions/A/lib,
+					$VTP_DEPENDENCY_DIR/lib,
 				);
 				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
@@ -5002,7 +5007,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = $OSG_FRAMEWORK_PATH;
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "/Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "$VTP_FRAMEWORK_INSTALL_DIR\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -5028,9 +5033,9 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/sw/include,
-					/Library/Frameworks/VTPX.framework/Versions/A/include,
-					"/Library/Frameworks/VTPX.framework/Versions/A/include/wx-2.8",
-					"/Library/Frameworks/VTPX.framework/Versions/A/lib/wx/include/mac-unicode-debug-2.8",
+					$VTP_DEPENDENCY_DIR/include,
+					"$VTP_DEPENDENCY_DIR/include/wx-2.8",
+					"$VTP_DEPENDENCY_DIR/lib/wx/include/mac-unicode-debug-2.8",
 					$SRCROOT/../TerrainSDK,
 					$SRCROOT/../TerrainApps/CManager/icons,
 				);
@@ -5038,7 +5043,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					/sw/lib,
-					/Library/Frameworks/VTPX.framework/Versions/A/lib,
+					$VTP_DEPENDENCY_DIR/lib,
 				);
 				OTHER_CFLAGS = "-finput-charset=ISO-8859-1";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
