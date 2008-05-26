@@ -72,6 +72,7 @@ void vtBitmapBase::BlitTo(vtBitmapBase &target, int x, int y)
 
 	unsigned int i, j;
 	RGBi rgb;
+	RGBAi rgba;
 	for (i = 0; i < w; i++)
 	{
 		for (j = 0; j < h; j++)
@@ -89,6 +90,11 @@ void vtBitmapBase::BlitTo(vtBitmapBase &target, int x, int y)
 			{
 				GetPixel24(i, j, rgb);
 				target.SetPixel24(tx, ty, rgb);
+			}
+			else if (tdepth == 32)
+			{
+				GetPixel32(i, j, rgba);
+				target.SetPixel32(tx, ty, rgba);
 			}
 		}
 	}
