@@ -287,7 +287,7 @@ bool vtImageLayer::ImportFromDB(const char *szFileName, bool progress_callback(i
 			else
 			{
 				dbuf.getrgb(i, j, 0, &rgb.r);
-				m_pImage->SetRGB(i, j, rgb);
+				m_pImage->SetRGB(i, j, RGBi((int) rgb.r, (int) rgb.g, (int) rgb.b));
 			}
 		}
 	}
