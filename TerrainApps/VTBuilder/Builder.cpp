@@ -828,9 +828,13 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 			images[num_image++] = ((vtImageLayer *)lp)->GetImage();
 	}
 
+	double dRes = step.x;
+
 	// Get ready to multisample
 	DLine2 offsets;
-	MakeSampleOffsets(step, g_Options.GetValueInt(TAG_SAMPLING_N), offsets);
+	int iNSampling = g_Options.GetValueInt(TAG_SAMPLING_N);
+	MakeSampleOffsets(step, iNSampling, offsets);
+	dRes /= iNSampling;
 
 	// iterate through the pixels of the new image
 	DPoint2 p;
@@ -857,7 +861,7 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 			for (g = 0; g < num_image; g++)
 			{
 				// take image that's on top (last in list)
-				if (images[g]->GetMultiSample(p, offsets, sampled))
+				if (images[g]->GetMultiSample(p, offsets, sampled, dRes))
 				{
 					rgb = sampled;
 					count++;

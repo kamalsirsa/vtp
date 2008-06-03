@@ -751,6 +751,9 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 		cmap.GenerateColors(color_table, 4000, color_min_elev, color_max_elev);
 	}
 
+	// Time the operation
+	clock_t tm1 = clock();
+
 	int i, j;
 	int total = opts.rows * opts.cols, done = 0;
 	for (j = 0; j < opts.rows; j++)
@@ -1100,6 +1103,10 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 	// make a note of which lods exist
 	LODMap lod_existence_map(opts.cols, opts.rows);
 
+	// Time the operation
+	clock_t tm1 = clock();
+	int tiles_written = 0;
+
 	int i, j;
 	unsigned int im;
 	int total = opts.rows * opts.cols, done = 0;
@@ -1182,24 +1189,26 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 				vtImage Target(image_area, tilesize, tilesize, m_proj);
 
 				// Get ready to multisample
+				DPoint2 step = tile_dim / (tilesize-1);
 				DLine2 offsets;
-				MakeSampleOffsets(tile_dim / (tilesize-1),
-					g_Options.GetValueInt(TAG_SAMPLING_N), offsets);
+				int iNSampling = g_Options.GetValueInt(TAG_SAMPLING_N);
+				MakeSampleOffsets(step, iNSampling, offsets);
+				double dRes = step.x;
 
 				DPoint2 p;
 				RGBi pixel, rgb;
 				for (int y = tilesize-1; y >= 0; y--)
 				{
-					p.y = tile_area.bottom + ((double)y / (tilesize-1) * tile_dim.y);
+					p.y = tile_area.bottom + (y * step.y);
 					for (int x = 0; x < tilesize; x++)
 					{
-						p.x = tile_area.left + ((double)x / (tilesize-1) * tile_dim.x);
+						p.x = tile_area.left + (x * step.x);
 
 						// find some data for this point
 						rgb.Set(0,0,0);
 						for (unsigned int im = 0; im < overlapping_images.size(); im++)
 //							if (overlapping_images[im]->GetColorSolid(p, pixel))
-							if (overlapping_images[im]->GetMultiSample(p, offsets, pixel))
+							if (overlapping_images[im]->GetMultiSample(p, offsets, pixel, dRes))
 								rgb = pixel;
 
 						Target.SetRGB(x, y, rgb);
@@ -1249,6 +1258,8 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 
 				// Free the uncompressed image
 				free(rgb_bytes);
+
+				tiles_written ++;
 			}
 		}
 	}
@@ -1256,6 +1267,23 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 	// Write .ini file
 	WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
 		m_area, m_proj, INVALID_ELEVATION, INVALID_ELEVATION, &lod_existence_map);
+
+	clock_t tm2 = clock();
+	float elapsed = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
+	wxString str;
+	str.Printf(_("Wrote %d tiles (%d cells) in %.1f seconds (%.2f seconds per cell)"),
+		tiles_written, (opts.rows * opts.cols), elapsed, elapsed/(opts.rows * opts.cols));
+	VTLOG1(str.mb_str(wxConvUTF8));
+	VTLOG1("\n");
+	wxMessageBox(str);
+
+	// Statistics
+	for (im = 0; im < num_image; im++)
+	{
+		LineBufferGDAL &buf = images[im]->GetImage()->m_linebuf;
+		VTLOG(" Image %d (size %d x %d): %d line reads, %d block reads\n", im,
+			buf.m_iXSize, buf.m_iYSize, buf.m_linereads, buf.m_blockreads);
+	}
 
 	if (frame)
 	{

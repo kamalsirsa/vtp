@@ -33,6 +33,356 @@
 bool vtImage::bTreatBlackAsTransparent = false;
 
 
+///////////////////////////////////////////////////////////////////////
+
+LineBufferGDAL::LineBufferGDAL()
+{
+	m_pBlock = NULL;
+	m_pRedBlock = NULL;
+	m_pGreenBlock = NULL;
+	m_pBlueBlock = NULL;
+	m_pBand = NULL;
+	m_pRed = NULL;
+	m_pGreen = NULL;
+	m_pBlue = NULL;
+
+	for (int i = 0; i < BUF_SCANLINES; i++)
+		m_row[i].m_data = NULL;
+}
+
+void LineBufferGDAL::Setup(GDALDataset *pDataset)
+{
+	m_iXSize = pDataset->GetRasterXSize();
+	m_iYSize = pDataset->GetRasterYSize();
+
+	// Prepare scanline buffers
+	for (int i = 0; i < BUF_SCANLINES; i++)
+	{
+		m_row[i].m_data = new RGBi[m_iXSize];
+		m_row[i].m_y = -1;
+	}
+	m_use_next = 0;
+	m_found_last = -1;
+	m_linereads = 0;
+	m_blockreads = 0;
+
+	// Raster count should be 3 for colour images (assume RGB)
+	m_iRasterCount = pDataset->GetRasterCount();
+
+	vtString message;
+
+	if (m_iRasterCount != 1 && m_iRasterCount != 3)
+	{
+		message.Format("Image has %d bands (not 1 or 3).", m_iRasterCount);
+		throw (const char *)message;
+	}
+
+	FindMaxBlockSize(pDataset);
+
+	if (m_iRasterCount == 1)
+	{
+		m_pBand = pDataset->GetRasterBand(1);
+		m_iViewCount = m_pBand->GetOverviewCount()+1;
+
+		// Check data type - it's either integer or float
+		if (GDT_Byte != m_pBand->GetRasterDataType())
+			throw "Raster is not of type byte.";
+		GDALColorInterp ci = m_pBand->GetColorInterpretation();
+		if (ci == GCI_PaletteIndex)
+		{
+			if (NULL == (m_pTable = m_pBand->GetColorTable()))
+				throw "Couldn't get color table.";
+		}
+		else if (ci == GCI_GrayIndex)
+		{
+			// we will assume 0-255 is black to white
+		}
+		else
+			throw "Unsupported color interpretation.";
+
+		if (NULL == (m_pBlock = new unsigned char[m_MaxBlockSize]))
+			throw "Couldnt allocate scan line.";
+	}
+
+	if (m_iRasterCount == 3)
+	{
+		int num_undefined = 0;
+		for (int i = 1; i <= 3; i++)
+		{
+			GDALRasterBand *pBand = pDataset->GetRasterBand(i);
+			// Check data type - it's either integer or float
+			if (GDT_Byte != pBand->GetRasterDataType())
+				throw "Three rasters, but not of type byte.";
+			// I assume that the bands are in order RGB
+			// I know "could do better"... but
+			switch(pBand->GetColorInterpretation())
+			{
+			case GCI_RedBand:
+				m_pRed = pBand;
+				break;
+			case GCI_GreenBand:
+				m_pGreen = pBand;
+				break;
+			case GCI_BlueBand:
+				m_pBlue = pBand;
+				break;
+			case GCI_Undefined:
+				num_undefined++;
+				break;
+			}
+		}
+		if (num_undefined == 3)
+		{
+			// All three are undefined, assume they are R,G,B
+			m_pRed = pDataset->GetRasterBand(1);
+			m_pGreen = pDataset->GetRasterBand(2);
+			m_pBlue = pDataset->GetRasterBand(3);
+		}
+		if ((NULL == m_pRed) || (NULL == m_pGreen) || (NULL == m_pBlue))
+			throw "Couldn't find bands for Red, Green, Blue.";
+
+		// Get overview count from Red band; assumes others match
+		m_iViewCount = m_pRed->GetOverviewCount()+1;
+
+		//m_pRed->GetBlockSize(&m_xBlockSize, &m_yBlockSize);
+		//m_nxBlocks = (m_iXSize + m_xBlockSize - 1) / m_xBlockSize;
+		//m_nyBlocks = (m_iYSize + m_yBlockSize - 1) / m_yBlockSize;
+
+		m_pRedBlock = new unsigned char[m_MaxBlockSize];
+		m_pGreenBlock = new unsigned char[m_MaxBlockSize];
+		m_pBlueBlock = new unsigned char[m_MaxBlockSize];
+	}
+}
+
+void LineBufferGDAL::FindMaxBlockSize(GDALDataset *pDataset)
+{
+	m_MaxBlockSize = -1;
+
+	int rasters = pDataset->GetRasterCount();
+	for (int i = 1; i <= rasters; i++)
+	{
+		GDALRasterBand *band = pDataset->GetRasterBand(i);
+		int xblocksize, yblocksize;
+		band->GetBlockSize(&xblocksize, &yblocksize);
+		if (xblocksize * yblocksize > m_MaxBlockSize)
+			m_MaxBlockSize = xblocksize * yblocksize;
+
+		for (int j = 0; j < band->GetOverviewCount(); j++)
+		{
+			GDALRasterBand *ovrband = band->GetOverview(j);
+			ovrband->GetBlockSize(&xblocksize, &yblocksize);
+			if (xblocksize * yblocksize > m_MaxBlockSize)
+				m_MaxBlockSize = xblocksize * yblocksize;
+		}
+	}
+}
+
+void LineBufferGDAL::SetupResolution(const DPoint2 &spacing)
+{
+	// Remember resolution of each view
+	double dRes = spacing.x;
+	for (int i = 0; i < m_iViewCount; i++)
+	{
+		m_fViewPixelSize.push_back(dRes);
+		dRes *= 2.0;
+	}
+}
+
+void LineBufferGDAL::Cleanup()
+{
+	if (NULL != m_pBlock)
+		delete m_pBlock;
+	if (NULL != m_pRedBlock)
+		delete m_pRedBlock;
+	if (NULL != m_pGreenBlock)
+		delete m_pGreenBlock;
+	if (NULL != m_pBlueBlock)
+		delete m_pBlueBlock;
+
+	m_pBlock = NULL;
+	m_pRedBlock = NULL;
+	m_pGreenBlock = NULL;
+	m_pBlueBlock = NULL;
+	m_pBand = NULL;
+	m_pRed = NULL;
+	m_pGreen = NULL;
+	m_pBlue = NULL;
+
+	for (int i = 0; i < BUF_SCANLINES; i++)
+	{
+		if (m_row[i].m_data)
+			delete m_row[i].m_data;
+		m_row[i].m_data = NULL;
+	}
+}
+
+void LineBufferGDAL::GetRGB(int x, int y, RGBi &rgb, double dRes)
+{
+	int closest_overview = 0;
+	double diff = 1E9;
+
+	if (dRes != 0.0 && m_iViewCount > 0)
+	{
+		// What overview resolution is most appropriate
+		for (int i = 0; i < m_iViewCount; i++)
+		{
+			double d2 = fabs(dRes - m_fViewPixelSize[i]);
+			if (d2 < diff)
+			{
+				diff = d2;
+				closest_overview = i;
+			}
+		}
+	}
+	if (closest_overview != 0)
+	{
+		// get smaller coordinates from subsampled view
+		x >>= closest_overview;
+		y >>= closest_overview;
+	}
+
+	RGBi *data = GetScanlineFromBuffer(y, closest_overview);
+	rgb = data[x];
+}
+
+void LineBufferGDAL::ReadScanline(int iYRequest, int bufrow, int overview)
+{
+	m_linereads++;	// statistics
+
+	CPLErr Err;
+	GDALColorEntry Ent;
+	int nxValid;
+
+	if (m_iRasterCount == 1)
+	{
+		int xBlockSize, yBlockSize;
+		m_pBand->GetBlockSize(&xBlockSize, &yBlockSize);
+		int nxBlocks = (m_pBand->GetXSize() + xBlockSize - 1) / xBlockSize;
+		int nyBlocks = (m_pBand->GetYSize() + yBlockSize - 1) / yBlockSize;
+
+		int iyBlock = iYRequest / yBlockSize;
+		int iY = iYRequest - (iyBlock * yBlockSize);
+
+		// Convert to rgb and write to image
+		for(int ixBlock = 0; ixBlock < nxBlocks; ixBlock++)
+		{
+			m_blockreads++;	// statistics
+
+			Err = m_pBand->ReadBlock(ixBlock, iyBlock, m_pBlock);
+			if (Err != CE_None)
+				throw "Readblock failed.";
+
+			// Compute the portion of the block that is valid
+			// for partial edge blocks.
+			if ((ixBlock+1) * xBlockSize > m_iXSize)
+				nxValid = m_iXSize - ixBlock * xBlockSize;
+			else
+				nxValid = xBlockSize;
+
+			for( int iX = 0; iX < nxValid; iX++ )
+			{
+				int val = m_pBlock[iY * xBlockSize + iX];
+				if (m_pTable)
+				{
+					m_pTable->GetColorEntryAsRGB(val, &Ent);
+					m_row[bufrow].m_data[iX].Set(Ent.c1, Ent.c2, Ent.c3);
+				}
+				else
+				{
+					// greyscale
+					m_row[bufrow].m_data[iX].Set(val, val, val);
+				}
+			}
+		}
+	}
+	else if (m_iRasterCount == 3)
+	{
+		GDALRasterBand *band1, *band2, *band3;
+		if (m_iViewCount > 0 && overview > 0)
+		{
+			band1 = m_pRed->GetOverview(overview-1);
+			band2 = m_pGreen->GetOverview(overview-1);
+			band3 = m_pBlue->GetOverview(overview-1);
+		}
+		else
+		{
+			band1 = m_pRed;
+			band2 = m_pGreen;
+			band3 = m_pBlue;
+		}
+
+		int xBlockSize, yBlockSize;
+		band1->GetBlockSize(&xBlockSize, &yBlockSize);
+		int nxBlocks = (band1->GetXSize() + xBlockSize - 1) / xBlockSize;
+		int nyBlocks = (band1->GetYSize() + yBlockSize - 1) / yBlockSize;
+
+		int iyBlock = iYRequest / yBlockSize;
+		int iY = iYRequest - (iyBlock * yBlockSize);
+
+		RGBi rgb;
+		for(int ixBlock = 0; ixBlock < nxBlocks; ixBlock++)
+		{
+			Err = band1->ReadBlock(ixBlock, iyBlock, m_pRedBlock);
+			if (Err != CE_None)
+				throw "Readblock failed.";
+			Err = band2->ReadBlock(ixBlock, iyBlock, m_pGreenBlock);
+			if (Err != CE_None)
+				throw "Readblock failed.";
+			Err = band3->ReadBlock(ixBlock, iyBlock, m_pBlueBlock);
+			if (Err != CE_None)
+				throw "Readblock failed.";
+
+			m_blockreads += 3;	// statistics
+
+			// Compute the portion of the block that is valid
+			// for partial edge blocks.
+			if ((ixBlock+1) * xBlockSize > m_iXSize)
+				nxValid = m_iXSize - ixBlock * xBlockSize;
+			else
+				nxValid = xBlockSize;
+
+			for( int iX = 0; iX < nxValid; iX++ )
+			{
+				rgb.Set(m_pRedBlock[iY * xBlockSize + iX],
+					m_pGreenBlock[iY * xBlockSize + iX],
+					m_pBlueBlock[iY * xBlockSize + iX]);
+				m_row[bufrow].m_data[ixBlock*xBlockSize + iX] = rgb;
+			}
+		}
+	}
+}
+
+RGBi *LineBufferGDAL::GetScanlineFromBuffer(int y, int overview)
+{
+	// first check if the row is already in memory
+	int i;
+	for (i = 0; i < BUF_SCANLINES; i++)
+	{
+		if (m_row[i].m_y == y && m_row[i].m_overview == overview)
+		{
+			// yes it is
+			return m_row[i].m_data;
+		}
+	}
+
+	// ok, it isn't. load it into the next appropriate slot.
+	ReadScanline(y, m_use_next, overview);
+	m_row[m_use_next].m_y = y;
+	m_row[m_use_next].m_overview = overview;
+	m_row[m_use_next].m_data;
+	RGBi *data = m_row[m_use_next].m_data;
+
+	// increment which buffer row we'll use next
+	m_use_next++;
+	if (m_use_next == BUF_SCANLINES)
+		m_use_next = 0;
+
+	return data;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+
 vtImage::vtImage()
 {
 	SetDefaults();
@@ -56,13 +406,6 @@ vtImage::~vtImage()
 {
 	if (NULL != m_pBitmap)
 		delete m_pBitmap;
-	CleanupGDALUsage();
-
-	for (int i = 0; i < BUF_SCANLINES; i++)
-	{
-		if (m_row[i].m_data)
-			delete m_row[i].m_data;
-	}
 }
 
 void vtImage::SetDefaults()
@@ -70,20 +413,6 @@ void vtImage::SetDefaults()
 	m_iXSize = 0;
 	m_iYSize = 0;
 	m_pBitmap = NULL;
-
-	// GDAL stuff
-	pScanline = NULL;
-	pRedline = NULL;
-	pGreenline = NULL;
-	pBlueline = NULL;
-	pDataset = NULL;
-	pTable = NULL;
-	iRasterCount = 0;
-
-	// scanline buffers
-	for (int i = 0; i < BUF_SCANLINES; i++)
-		m_row[i].m_data = NULL;
-	m_use_next = 0;
 
 	m_pCanvas = NULL;
 }
@@ -416,7 +745,7 @@ bool vtImage::ReprojectExtents(const vtProjection &proj_new)
  * \return true if a value was found, false if the point is outside the
  *		extent or (if the option is enabled) the value was 'nodata'.
  */
-bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb)
+bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb, double dRes)
 {
 	// could speed this up by keeping these values around
 	DPoint2 spacing = GetSpacing();
@@ -435,7 +764,7 @@ bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb)
 	if (iy < 0 || iy >= m_iYSize)
 		return false;
 
-	GetRGB(ix, iy, rgb);
+	GetRGB(ix, iy, rgb, dRes);
 	if (bTreatBlackAsTransparent && rgb == RGBi(0,0,0))
 		return false;
 
@@ -456,14 +785,14 @@ void MakeSampleOffsets(const DPoint2 cellsize, unsigned int N, DLine2 &offsets)
  * The area to test is given by center and offsets, use MakeSampleOffsets()
  * to make a set if N x N offsets.
  */
-bool vtImage::GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb)
+bool vtImage::GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb, double dRes)
 {
 	RGBi color;
 	rgb.Set(0,0,0);
 	int count = 0;
 	for (unsigned int i = 0; i < offsets.GetSize(); i++)
 	{
-		if (GetColorSolid(p+offsets[i], color))
+		if (GetColorSolid(p+offsets[i], color, dRes))
 		{
 			rgb += color;
 			count++;
@@ -477,19 +806,17 @@ bool vtImage::GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb)
 	return false;
 }
 
-void vtImage::GetRGB(int x, int y, RGBi &rgb)
+void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 {
 	if (m_pBitmap)
 	{
-		// TODO: real filtering (interpolation)
-		// for now, just grab closest pixel
+		// get pixel from bitmap in memory
 		m_pBitmap->GetPixel24(x, y, rgb);
 	}
 	else
 	{
 		// support for out-of-memory image here
-		RGBi *data = GetScanlineFromBuffer(y);
-		rgb = data[x];
+		m_linebuf.GetRGB(x, y, rgb, dRes);
 	}
 }
 
@@ -828,32 +1155,22 @@ bool vtImage::ReadPNGFromMemory(unsigned char *buf, int len)
 
 bool vtImage::LoadFromGDAL(const char *fname)
 {
+	bool bRet = true;
+
 	double affineTransform[6];
 	const char *pProjectionString;
 	OGRErr err;
-	bool bRet = true;
 	bool bDefer = false;
-	int i;
 	vtString message;
 
 	g_GDALWrapper.RequestGDALFormats();
 
-	pDataset = NULL;
-	pScanline = NULL;
-	pRedline = NULL;
-	pGreenline = NULL;
-	pBlueline = NULL;
-	pBand = NULL;
-	pRed = NULL;
-	pGreen = NULL;
-	pBlue = NULL;
+	// GDAL doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(fname);
 
 	try
 	{
-		// GDAL doesn't yet support utf-8 or wide filenames, so convert
-		vtString fname_local = UTF8ToLocal(fname);
-
-		pDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
+		GDALDataset *pDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
 		if(pDataset == NULL )
 			throw "Couldn't open that file.";
 
@@ -931,94 +1248,8 @@ bool vtImage::LoadFromGDAL(const char *fname)
 				throw "Import Cancelled.";
 		}
 
-		// Prepare scanline buffers
-		for (i = 0; i < BUF_SCANLINES; i++)
-		{
-			m_row[i].m_data = new RGBi[m_iXSize];
-			m_row[i].m_y = -1;
-		}
-		m_use_next = 0;
-
-		// Raster count should be 3 for colour images (assume RGB)
-		iRasterCount = pDataset->GetRasterCount();
-
-		if (iRasterCount != 1 && iRasterCount != 3)
-		{
-			message.Format("Image has %d bands (not 1 or 3).", iRasterCount);
-			throw (const char *)message;
-		}
-
-		if (iRasterCount == 1)
-		{
-			pBand = pDataset->GetRasterBand(1);
-			// Check data type - it's either integer or float
-			if (GDT_Byte != pBand->GetRasterDataType())
-				throw "Raster is not of type byte.";
-			GDALColorInterp ci = pBand->GetColorInterpretation();
-			if (ci == GCI_PaletteIndex)
-			{
-				if (NULL == (pTable = pBand->GetColorTable()))
-					throw "Couldn't get color table.";
-			}
-			else if (ci == GCI_GrayIndex)
-			{
-				// we will assume 0-255 is black to white
-			}
-			else
-				throw "Unsupported color interpretation.";
-
-			pBand->GetBlockSize(&xBlockSize, &yBlockSize);
-			nxBlocks = (OriginalSize.x + xBlockSize - 1) / xBlockSize;
-			nyBlocks = (OriginalSize.y + yBlockSize - 1) / yBlockSize;
-			if (NULL == (pScanline = new unsigned char[xBlockSize * yBlockSize]))
-				throw "Couldnt allocate scan line.";
-		}
-
-		if (iRasterCount == 3)
-		{
-			int num_undefined = 0;
-			for (i = 1; i <= 3; i++)
-			{
-				pBand = pDataset->GetRasterBand(i);
-				// Check data type - it's either integer or float
-				if (GDT_Byte != pBand->GetRasterDataType())
-					throw "Three rasters, but not of type byte.";
-				// I assume that the bands are in order RGB
-				// I know "could do better"... but
-				switch(pBand->GetColorInterpretation())
-				{
-				case GCI_RedBand:
-					pRed = pBand;
-					break;
-				case GCI_GreenBand:
-					pGreen = pBand;
-					break;
-				case GCI_BlueBand:
-					pBlue = pBand;
-					break;
-				case GCI_Undefined:
-					num_undefined++;
-					break;
-				}
-			}
-			if (num_undefined == 3)
-			{
-				// All three are undefined, assume they are R,G,B
-				pRed = pDataset->GetRasterBand(1);
-				pGreen = pDataset->GetRasterBand(2);
-				pBlue = pDataset->GetRasterBand(3);
-			}
-			if ((NULL == pRed) || (NULL == pGreen) || (NULL == pBlue))
-				throw "Couldn't find bands for Red, Green, Blue.";
-
-			pRed->GetBlockSize(&xBlockSize, &yBlockSize);
-			nxBlocks = (OriginalSize.x + xBlockSize - 1) / xBlockSize;
-			nyBlocks = (OriginalSize.y + yBlockSize - 1) / yBlockSize;
-
-			pRedline = new unsigned char[xBlockSize * yBlockSize];
-			pGreenline = new unsigned char[xBlockSize * yBlockSize];
-			pBlueline = new unsigned char[xBlockSize * yBlockSize];
-		}
+		m_linebuf.Setup(pDataset);
+		m_linebuf.SetupResolution(GetSpacing());
 
 		int iBigImage = g_Options.GetValueInt(TAG_MAX_MEGAPIXELS) * 1024 * 1024;
 		// don't try to load giant image?
@@ -1063,20 +1294,20 @@ bool vtImage::LoadFromGDAL(const char *fname)
 			{
 				// Read the data
 				VTLOG("Reading the image data (%d x %d pixels)\n", m_iXSize, m_iYSize);
+				RGBi rgb;
 				for (int iy = 0; iy < m_iYSize; iy++ )
 				{
 					if (progress_callback != NULL)
 						progress_callback(iy * 100 / m_iYSize);
 
-					ReadScanline(iy, 0);
 					if (UpdateProgressDialog(iy * 99 / m_iYSize))
 					{
 						// cancel
 						throw "Cancelled";
 					}
-					for(int iX = 0; iX < m_iXSize; iX++ )
+					for (int iX = 0; iX < m_iXSize; iX++ )
 					{
-						RGBi rgb = m_row[0].m_data[iX];
+						m_linebuf.GetRGB(iX, iy, rgb);
 						m_pBitmap->SetPixel24(iX, iy, rgb);
 					}
 				}
@@ -1110,124 +1341,6 @@ bool vtImage::LoadFromGDAL(const char *fname)
 //	GDALClose(pDataset);
 
 	return bRet;
-}
-
-void vtImage::CleanupGDALUsage()
-{
-	if (NULL != pDataset)
-		GDALClose(pDataset);
-	if (NULL != pScanline)
-		delete pScanline;
-	if (NULL != pRedline)
-		delete pRedline;
-	if (NULL != pGreenline)
-		delete pGreenline;
-	if (NULL != pBlueline)
-		delete pBlueline;
-}
-
-RGBi *vtImage::GetScanlineFromBuffer(int y)
-{
-	// first check if the row is already in memory
-	int i;
-	for (i = 0; i < BUF_SCANLINES; i++)
-	{
-		if (m_row[i].m_y == y)
-		{
-			// yes it is
-			return m_row[i].m_data;
-		}
-	}
-
-	// ok, it isn't. load it into the next appropriate slot.
-	RGBi *data;
-	ReadScanline(y, m_use_next);
-	m_row[m_use_next].m_y = y;
-	data = m_row[m_use_next].m_data;
-
-	// increment which buffer row we'll use next
-	m_use_next++;
-	if (m_use_next == BUF_SCANLINES)
-		m_use_next = 0;
-
-	return data;
-}
-
-void vtImage::ReadScanline(int iYRequest, int bufrow)
-{
-//	VTLOG("readscanline %d\n", iYRequest);
-
-	CPLErr Err;
-	GDALColorEntry Ent;
-	int ixBlock;
-	int nxValid;
-
-	int iyBlock = iYRequest / yBlockSize;
-	int iY = iYRequest - (iyBlock * yBlockSize);
-
-	if (iRasterCount == 1)
-	{
-		// Convert to rgb and write to image
-		for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
-		{
-			Err = pBand->ReadBlock(ixBlock, iyBlock, pScanline);
-			if (Err != CE_None)
-				throw "Readblock failed.";
-
-			// Compute the portion of the block that is valid
-			// for partial edge blocks.
-			if ((ixBlock+1) * xBlockSize > m_iXSize)
-				nxValid = m_iXSize - ixBlock * xBlockSize;
-			else
-				nxValid = xBlockSize;
-
-			for( int iX = 0; iX < nxValid; iX++ )
-			{
-				int val = pScanline[iY * xBlockSize + iX];
-				if (pTable)
-				{
-					pTable->GetColorEntryAsRGB(val, &Ent);
-					m_row[bufrow].m_data[iX].Set(Ent.c1, Ent.c2, Ent.c3);
-				}
-				else
-				{
-					// greyscale
-					m_row[bufrow].m_data[iX].Set(val, val, val);
-				}
-			}
-		}
-	}
-	else if (iRasterCount == 3)
-	{
-		RGBi rgb;
-		for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
-		{
-			Err = pRed->ReadBlock(ixBlock, iyBlock, pRedline);
-			if (Err != CE_None)
-				throw "Readblock failed.";
-			Err = pGreen->ReadBlock(ixBlock, iyBlock, pGreenline);
-			if (Err != CE_None)
-				throw "Readblock failed.";
-			Err = pBlue->ReadBlock(ixBlock, iyBlock, pBlueline);
-			if (Err != CE_None)
-				throw "Readblock failed.";
-
-			// Compute the portion of the block that is valid
-			// for partial edge blocks.
-			if ((ixBlock+1) * xBlockSize > m_iXSize)
-				nxValid = m_iXSize - ixBlock * xBlockSize;
-			else
-				nxValid = xBlockSize;
-
-			for( int iX = 0; iX < nxValid; iX++ )
-			{
-				rgb.Set(pRedline[iY * xBlockSize + iX],
-					pGreenline[iY * xBlockSize + iX],
-					pBlueline[iY * xBlockSize + iX]);
-				m_row[bufrow].m_data[ixBlock*xBlockSize + iX] = rgb;
-			}
-		}
-	}
 }
 
 #if SUPPORT_HTTP
@@ -1534,7 +1647,7 @@ bool vtImage::WriteGridOfTilePyramids(TilingOptions &opts, BuilderView *pView)
 
 	if (!m_pBitmap)
 	{
-		// If we're dealing with an out-of-core imge, consider how many rows
+		// If we're dealing with an out-of-core image, consider how many rows
 		//  we need to cache to avoid reading the file more than once during
 		//  the generation of the tiles
 		int need_cache_rows = (m_iYSize + (opts.rows-1)) / opts.rows;
