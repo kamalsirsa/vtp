@@ -197,6 +197,9 @@ EVT_UPDATE_UI(ID_ELEV_TRIMTIN,		MainFrame::OnUpdateElevTrimTin)
 EVT_MENU(ID_IMAGE_REPLACE_RGB,		MainFrame::OnImageReplaceRGB)
 EVT_UPDATE_UI(ID_IMAGE_REPLACE_RGB,	MainFrame::OnUpdateHaveImageLayer)
 
+EVT_MENU(ID_IMAGE_CREATE_OVERVIEWS,	MainFrame::OnImageCreateOverviews)
+EVT_UPDATE_UI(ID_IMAGE_REPLACE_RGB,	MainFrame::OnUpdateHaveImageLayer)
+
 EVT_MENU(ID_IMAGE_EXPORT_TILES,		MainFrame::OnImageExportTiles)
 EVT_UPDATE_UI(ID_IMAGE_EXPORT_TILES,MainFrame::OnUpdateHaveImageLayer)
 
@@ -471,6 +474,7 @@ void MainFrame::CreateMenus()
 	// Imagery
 	imgMenu = new wxMenu;
 	imgMenu->Append(ID_IMAGE_REPLACE_RGB, _("Replace RGB..."));
+	imgMenu->Append(ID_IMAGE_CREATE_OVERVIEWS, _("Create Overviews"));
 	imgMenu->AppendSeparator();
 	imgMenu->Append(ID_IMAGE_EXPORT_TILES, _("Export to Tiles..."));
 	imgMenu->Append(ID_IMAGE_EXPORT_PPM, _("Export to PPM"));
@@ -2022,6 +2026,17 @@ void MainFrame::OnImageReplaceRGB(wxCommandEvent& event)
 	}
 	GetActiveImageLayer()->ReplaceColor(rgb1, rgb2);
 	RefreshLayerInView(GetActiveImageLayer());
+}
+
+void MainFrame::OnImageCreateOverviews(wxCommandEvent& event)
+{
+	vtImageLayer *pIL = GetActiveImageLayer();
+
+	OpenProgressDialog(_("Creating Overviews"), false, this);
+
+	pIL->GetImage()->CreateOverviews();
+
+	CloseProgressDialog();
 }
 
 void MainFrame::OnImageExportTiles(wxCommandEvent& event)

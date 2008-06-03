@@ -62,7 +62,7 @@ public:
 
 	// Overviews
 	int m_iViewCount;
-	std::vector<double> m_fViewPixelSize;
+	DLine2 m_ViewPixelSize;
 
 	Scanline m_row[BUF_SCANLINES];
 	int m_use_next;
@@ -121,6 +121,7 @@ public:
 	bool SaveToFile(const char *fname) const;
 	bool ReadPNGFromMemory(unsigned char *buf, int len);
 	bool LoadFromGDAL(const char *fname);
+	bool CreateOverviews();
 
 	bool ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 		int iMetersPerPixel, int iUTMZone, const char *filename);
@@ -132,6 +133,7 @@ public:
 	static bool bTreatBlackAsTransparent;
 
 	// used when reading from a file with GDAL
+	GDALDataset *m_pDataset;
 	LineBufferGDAL m_linebuf;
 
 protected:

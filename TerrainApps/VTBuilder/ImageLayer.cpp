@@ -160,6 +160,32 @@ void vtImageLayer::GetPropertyText(wxString &strIn)
 	str += wxString(FormatCoord(bGeo, spacing.y), wxConvUTF8);
 	str += _T("\n");
 	strIn += str;
+
+	if (m_pImage->IsAllocated())
+	{
+		strIn += _("In memory.");
+		strIn += _T("\n");
+	}
+	else
+	{
+		strIn += _("Not in memory.");
+		strIn += _T("\n");
+		LineBufferGDAL &buf = m_pImage->m_linebuf;
+		if (buf.m_iViewCount > 1)
+		{
+			strIn += _("Overviews:\n");
+			for (int i = 1; i < buf.m_iViewCount; i++)
+			{
+				str.Printf(_T("  %d: "), i);
+				DPoint2 spacing = buf.m_ViewPixelSize[i];
+				str += wxString(FormatCoord(bGeo, spacing.x), wxConvUTF8);
+				str += _T(" x ");
+				str += wxString(FormatCoord(bGeo, spacing.y), wxConvUTF8);
+				str += _T("\n");
+				strIn += str;
+			}
+		}
+	}
 }
 
 DPoint2 vtImageLayer::GetSpacing() const

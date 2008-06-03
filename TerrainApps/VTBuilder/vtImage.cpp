@@ -180,11 +180,11 @@ void LineBufferGDAL::FindMaxBlockSize(GDALDataset *pDataset)
 void LineBufferGDAL::SetupResolution(const DPoint2 &spacing)
 {
 	// Remember resolution of each view
-	double dRes = spacing.x;
+	DPoint2 res = spacing;
 	for (int i = 0; i < m_iViewCount; i++)
 	{
-		m_fViewPixelSize.push_back(dRes);
-		dRes *= 2.0;
+		m_ViewPixelSize.Append(res);
+		res *= 2.0;
 	}
 }
 
@@ -226,7 +226,7 @@ void LineBufferGDAL::GetRGB(int x, int y, RGBi &rgb, double dRes)
 		// What overview resolution is most appropriate
 		for (int i = 0; i < m_iViewCount; i++)
 		{
-			double d2 = fabs(dRes - m_fViewPixelSize[i]);
+			double d2 = fabs(dRes - m_ViewPixelSize[i].x);
 			if (d2 < diff)
 			{
 				diff = d2;
@@ -406,6 +406,9 @@ vtImage::~vtImage()
 {
 	if (NULL != m_pBitmap)
 		delete m_pBitmap;
+
+	if (NULL != m_pDataset)
+		GDALClose(m_pDataset);
 }
 
 void vtImage::SetDefaults()
@@ -413,7 +416,7 @@ void vtImage::SetDefaults()
 	m_iXSize = 0;
 	m_iYSize = 0;
 	m_pBitmap = NULL;
-
+	m_pDataset = NULL;
 	m_pCanvas = NULL;
 }
 
@@ -1170,12 +1173,12 @@ bool vtImage::LoadFromGDAL(const char *fname)
 
 	try
 	{
-		GDALDataset *pDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
-		if(pDataset == NULL )
+		m_pDataset = (GDALDataset *) GDALOpen(fname_local, GA_Update);
+		if (m_pDataset == NULL )
 			throw "Couldn't open that file.";
 
-		m_iXSize = pDataset->GetRasterXSize();
-		m_iYSize = pDataset->GetRasterYSize();
+		m_iXSize = m_pDataset->GetRasterXSize();
+		m_iYSize = m_pDataset->GetRasterYSize();
 
 		IPoint2 OriginalSize;
 		OriginalSize.x = m_iXSize;
@@ -1183,7 +1186,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 
 		vtProjection temp;
 		bool bHaveProj = false;
-		pProjectionString = pDataset->GetProjectionRef();
+		pProjectionString = m_pDataset->GetProjectionRef();
 		if (pProjectionString)
 		{
 			err = temp.importFromWkt((char**)&pProjectionString);
@@ -1213,7 +1216,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		if (m_iXSize * m_iYSize > 512*512)
 			OpenProgressDialog(_("Reading file"), false);
 
-		if (pDataset->GetGeoTransform(affineTransform) == CE_None)
+		if (m_pDataset->GetGeoTransform(affineTransform) == CE_None)
 		{
 			m_Extents.left = affineTransform[0];
 			m_Extents.right = m_Extents.left + affineTransform[1] * m_iXSize;
@@ -1248,7 +1251,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 				throw "Import Cancelled.";
 		}
 
-		m_linebuf.Setup(pDataset);
+		m_linebuf.Setup(m_pDataset);
 		m_linebuf.SetupResolution(GetSpacing());
 
 		int iBigImage = g_Options.GetValueInt(TAG_MAX_MEGAPIXELS) * 1024 * 1024;
@@ -1342,6 +1345,35 @@ bool vtImage::LoadFromGDAL(const char *fname)
 
 	return bRet;
 }
+
+int CPL_STDCALL GDALProgress(double amount, const char *message, void *context)
+{
+	static int lastamount = -1;
+	int newamount = amount * 99;
+	if (newamount != lastamount)
+	{
+		lastamount = newamount;
+		progress_callback(newamount);
+	}
+	return 1;
+}
+
+bool vtImage::CreateOverviews()
+{
+	if (!m_pDataset)
+		return false;
+
+	int panOverviewList[4] = { 2, 4, 8, 16 };
+	int nOverviews = 4;
+	CPLErr err = m_pDataset->BuildOverviews("AVERAGE", nOverviews, panOverviewList,
+		0, NULL, GDALProgress, this);
+
+	m_linebuf.Setup(m_pDataset);
+	m_linebuf.SetupResolution(GetSpacing());
+
+	return (err == CE_None);
+}
+
 
 #if SUPPORT_HTTP
 #include "vtdata/TripDub.h"

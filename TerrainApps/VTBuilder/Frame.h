@@ -191,6 +191,7 @@ protected:
 	void OnUpdateIsGrid(wxUpdateUIEvent& event);
 
 	void OnImageReplaceRGB(wxCommandEvent& event);
+	void OnImageCreateOverviews(wxCommandEvent& event);
 	void OnImageExportTiles(wxCommandEvent& event);
 	void OnImageExportPPM(wxCommandEvent& event);
 	void OnUpdateHaveImageLayer(wxUpdateUIEvent& event);
