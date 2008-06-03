@@ -237,7 +237,7 @@ wxSizer *LayerPropDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxTextCtrl *item1 = new wxTextCtrl( parent, ID_PROPS, wxT(""), wxDefaultPosition, wxSize(300,100), wxTE_MULTILINE );
+    wxTextCtrl *item1 = new wxTextCtrl( parent, ID_PROPS, wxT(""), wxDefaultPosition, wxSize(300,120), wxTE_MULTILINE );
     item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxStaticBox *item3 = new wxStaticBox( parent, -1, _("Extents") );
