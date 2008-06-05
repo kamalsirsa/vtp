@@ -109,7 +109,7 @@ void vtNode::SetEnabled(bool bOn)
 bool vtNode::GetEnabled() const
 {
 	int mask = m_pNode->getNodeMask();
-	return (mask != 0);
+	return ((mask&0x80000000) != 0);
 }
 
 void vtNode::SetName2(const char *name)
