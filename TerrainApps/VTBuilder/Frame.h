@@ -289,6 +289,7 @@ protected:
 	void OnDistanceClear(wxCommandEvent& event);
 	void OnShowAll(wxCommandEvent& event);
 	void OnHideAll(wxCommandEvent& event);
+	void OnLayerPropsPopup(wxCommandEvent& event);
 	void OnLayerToTop(wxCommandEvent& event);
 	void OnLayerToBottom(wxCommandEvent& event);
 
@@ -317,6 +318,7 @@ public:
 	virtual void RemoveLayer(vtLayer *lp);
 	virtual void SetActiveLayer(vtLayer *lp, bool refresh = false);
 	void RefreshLayerInView(vtLayer *pLayer);
+	void ShowLayerProperties(vtLayer *lp);
 
 	// UI
 	virtual void RefreshTreeStatus();

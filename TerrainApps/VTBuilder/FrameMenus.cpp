@@ -308,6 +308,7 @@ EVT_MENU(ID_HELP_DOC_ONLINE,	MainFrame::OnHelpDocOnline)
 EVT_MENU(ID_DISTANCE_CLEAR,		MainFrame::OnDistanceClear)
 EVT_MENU(ID_POPUP_SHOWALL,		MainFrame::OnShowAll)
 EVT_MENU(ID_POPUP_HIDEALL,		MainFrame::OnHideAll)
+EVT_MENU(ID_POPUP_PROPS,		MainFrame::OnLayerPropsPopup)
 EVT_MENU(ID_POPUP_TO_TOP,		MainFrame::OnLayerToTop)
 EVT_MENU(ID_POPUP_TO_BOTTOM,	MainFrame::OnLayerToBottom)
 
@@ -1104,9 +1105,12 @@ void MainFrame::OnLayerImportDXF(wxCommandEvent &event)
 void MainFrame::OnLayerProperties(wxCommandEvent &event)
 {
 	vtLayer *lp = GetActiveLayer();
-	if (!lp)
-		return;
+	if (lp)
+		ShowLayerProperties(lp);
+}
 
+void MainFrame::ShowLayerProperties(vtLayer *lp)
+{
 	// All layers have some common properties, others are specific to the
 	//  type of layer.
 	LayerType ltype = lp->GetType();
@@ -3271,6 +3275,15 @@ void MainFrame::OnHideAll(wxCommandEvent& event)
 		}
 	}
 	RefreshTreeStatus();
+}
+
+void MainFrame::OnLayerPropsPopup(wxCommandEvent& event)
+{
+	wxTreeItemId itemId = m_pTree->GetSelection();
+	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(itemId);
+	if (!data)
+		return;
+	ShowLayerProperties(data->m_pLayer);
 }
 
 void MainFrame::OnLayerToTop(wxCommandEvent& event)

@@ -368,6 +368,7 @@ void MyTreeCtrl::OnItemRightClick(wxTreeEvent& event)
 		wxMenu *popmenu = new wxMenu;
 		if (data->m_pLayer)
 		{
+			popmenu->Append(ID_POPUP_PROPS, _("Properties"));
 			popmenu->Append(ID_POPUP_TO_TOP, _("Move to Top (draw first)"));
 			popmenu->Append(ID_POPUP_TO_BOTTOM, _("Move to Bottom (draw last)"));
 			popmenu->AppendSeparator();
