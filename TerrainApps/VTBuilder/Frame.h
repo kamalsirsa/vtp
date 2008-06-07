@@ -192,6 +192,8 @@ protected:
 
 	void OnImageReplaceRGB(wxCommandEvent& event);
 	void OnImageCreateOverviews(wxCommandEvent& event);
+	void OnImageCreateOverviewsAll(wxCommandEvent& event);
+	void OnImageCreateMipMaps(wxCommandEvent& event);
 	void OnImageExportTiles(wxCommandEvent& event);
 	void OnImageExportPPM(wxCommandEvent& event);
 	void OnUpdateHaveImageLayer(wxUpdateUIEvent& event);

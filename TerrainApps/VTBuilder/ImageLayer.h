@@ -43,13 +43,8 @@ public:
 	bool ImportFromDB(const char *szFileName, bool progress_callback(int) = NULL);
 	void ReplaceColor(const RGBi &rgb1, const RGBi &rgb2);
 
-	void AllocMipMaps();
-	void DrawMipMaps();
-	void FreeMipMaps();
-
 protected:
 	vtImage	*m_pImage;
-	std::vector<vtImage*> m_Mips;
 };
 
 // Helper

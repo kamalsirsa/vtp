@@ -161,30 +161,34 @@ void vtImageLayer::GetPropertyText(wxString &strIn)
 	str += _T("\n");
 	strIn += str;
 
-	if (m_pImage->IsAllocated())
+	strIn += _("Bitmaps:");
+	strIn += _T("\n");
+	for (int i = 0; i < m_pImage->NumBitmaps(); i++)
 	{
-		strIn += _("In memory.");
-		strIn += _T("\n");
-	}
-	else
-	{
-		strIn += _("Not in memory.");
-		strIn += _T("\n");
-		LineBufferGDAL &buf = m_pImage->m_linebuf;
-		if (buf.m_iViewCount > 1)
+		BitmapInfo &bmi = m_pImage->GetBitmapInfo(i);
+
+		IPoint2 size = bmi.m_Size;
+		str.Printf(_T("  %d: %d x %d"), i, size.x, size.y);
+
+		//DPoint2 spacing = bmi.m_Spacing;
+		//str += wxString(FormatCoord(bGeo, spacing.x), wxConvUTF8);
+		//str += _T(" x ");
+		//str += wxString(FormatCoord(bGeo, spacing.y), wxConvUTF8);
+
+		if (bmi.m_pBitmap != NULL)
 		{
-			strIn += _("Overviews:\n");
-			for (int i = 1; i < buf.m_iViewCount; i++)
-			{
-				str.Printf(_T("  %d: "), i);
-				DPoint2 spacing = buf.m_ViewPixelSize[i];
-				str += wxString(FormatCoord(bGeo, spacing.x), wxConvUTF8);
-				str += _T(" x ");
-				str += wxString(FormatCoord(bGeo, spacing.y), wxConvUTF8);
-				str += _T("\n");
-				strIn += str;
-			}
+			str += _T(", ");
+			str += _("in memory");
 		}
+
+		if (bmi.m_bOverlay != NULL)
+		{
+			str += _T(", ");
+			str += _("overlay on disk");
+		}
+
+		str += _T("\n");
+		strIn += str;
 	}
 }
 
@@ -226,45 +230,6 @@ void vtImageLayer::ReplaceColor(const RGBi &rgb1, const RGBi &rgb2)
 {
 	m_pImage->ReplaceColor(rgb1, rgb2);
 	SetModified(true);
-}
-
-void vtImageLayer::AllocMipMaps()
-{
-	FreeMipMaps();
-
-	int xsize, ysize;
-	m_pImage->GetDimensions(xsize, ysize);
-	int smaller = min(xsize, ysize);
-
-	int powers = vt_log2(smaller) - 2;
-	if (powers < 1)
-		// too small, don't bother making mipmaps
-		return;
-
-	DRECT rect;
-	m_pImage->GetExtent(rect);
-	const vtProjection &proj = m_pImage->GetAtProjection();
-
-	for (int m = 0; m < powers; m++)
-		m_Mips.push_back(new vtImage(rect, xsize >> (m+1), ysize >> (m+1), proj));
-}
-
-void vtImageLayer::DrawMipMaps()
-{
-	vtImage *big = m_pImage;
-	for (size_t m = 0; m < m_Mips.size(); m++)
-	{
-		vtImage *smaller = m_Mips[m];
-		SampleMipLevel(big, smaller);
-		big = smaller;
-	}
-}
-
-void vtImageLayer::FreeMipMaps()
-{
-	for (size_t m = 0; m < m_Mips.size(); m++)
-		delete m_Mips[m];
-	m_Mips.clear();
 }
 
 /**

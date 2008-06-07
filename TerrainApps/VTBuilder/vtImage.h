@@ -37,10 +37,9 @@ public:
 	~LineBufferGDAL() { Cleanup(); }
 
 	void Setup(GDALDataset *pDataset);
-	void SetupResolution(const DPoint2 &spacing);
 	void Cleanup();
 
-	void GetRGB(int x, int y, RGBi &rgb, double dRes = 0.0);
+	//void GetRGB(int x, int y, RGBi &rgb, double dRes = 0.0);
 	void ReadScanline(int y, int bufrow, int overlay);
 	RGBi *GetScanlineFromBuffer(int y, int overlay);
 	void FindMaxBlockSize(GDALDataset *pDataset);
@@ -62,7 +61,6 @@ public:
 
 	// Overviews
 	int m_iViewCount;
-	DLine2 m_ViewPixelSize;
 
 	Scanline m_row[BUF_SCANLINES];
 	int m_use_next;
@@ -71,6 +69,18 @@ public:
 	// Statistics
 	int m_linereads;
 	int m_blockreads;
+};
+
+class BitmapInfo
+{
+public:
+	BitmapInfo() { m_pBitmap = NULL; m_bOverlay = false; }
+
+	int number;				// 0, 1, 2..
+	vtBitmap *m_pBitmap;	// non-NULL if in memory
+	bool m_bOverlay;		// true if GDAL overlay exists on disk
+	IPoint2 m_Size;			// size in pixels
+	DPoint2 m_Spacing;		// spatial resolution in earth units/pixel
 };
 
 //////////////////////////////////////////////////////////
@@ -89,9 +99,8 @@ public:
 	bool ConvertProjection(vtImage *input, vtProjection &proj_new,
 						   int iSampleN, bool progress_callback(int) = NULL);
 
-	bool IsAllocated() const;
-	DPoint2 GetSpacing() const;
-	vtBitmap *GetBitmap() { return m_pBitmap; }
+	DPoint2 GetSpacing(int bitmap = 0) const;
+	vtBitmap *GetBitmap() { return m_Bitmaps[0].m_pBitmap; }
 	bool HasOverviews() { return m_linebuf.m_iViewCount > 0; }
 
 	void GetProjection(vtProjection &proj);
@@ -101,12 +110,12 @@ public:
 
 	void GetDimensions(int &xsize, int &ysize)
 	{
-		xsize = m_iXSize;
-		ysize = m_iYSize;
+		xsize = m_Bitmaps[0].m_Size.x;
+		ysize = m_Bitmaps[0].m_Size.y;
 	}
 	IPoint2 GetDimensions()
 	{
-		return IPoint2(m_iXSize, m_iYSize);
+		return m_Bitmaps[0].m_Size;
 	}
 	bool GetColorSolid(const DPoint2 &p, RGBi &rgb, double dRes = 0.0);
 	bool GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb, double dRes = 0.0);
@@ -114,6 +123,7 @@ public:
 	void SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b);
 	void SetRGB(int x, int y, const RGBi &rgb);
 	void ReplaceColor(const RGBi &rgb1, const RGBi &rgb2);
+	void SetupBitmapInfo(int iXSize, int iYSize);
 
 	// File IO
 	bool ReadPPM(const char *fname, bool progress_callback(int) = NULL);
@@ -136,6 +146,14 @@ public:
 	GDALDataset *m_pDataset;
 	LineBufferGDAL m_linebuf;
 
+	int NumBitmaps() { return m_Bitmaps.size(); }
+	BitmapInfo &GetBitmapInfo(int i) { return m_Bitmaps[i]; }
+	int NumBitmapsInMemory();
+
+	void AllocMipMaps();
+	void DrawMipMaps();
+	void FreeMipMaps();
+
 protected:
 	void SetDefaults();
 	void CleanupGDALUsage();
@@ -143,10 +161,8 @@ protected:
 	vtProjection	m_proj;
 
 	DRECT   m_Extents;
-	int		m_iXSize;
-	int		m_iYSize;
 
-	vtBitmap	*m_pBitmap;
+	std::vector<BitmapInfo> m_Bitmaps;
 
 	// Used during writing of tilesets
 	int m_iTotal, m_iCompleted;
@@ -156,6 +172,6 @@ protected:
 // Helpers
 int GetBitDepthUsingGDAL(const char *fname);
 void MakeSampleOffsets(const DPoint2 cellsize, unsigned int N, DLine2 &offsets);
-void SampleMipLevel(vtImage *bigger, vtImage *smaller);
+void SampleMipLevel(vtBitmap *bigger, vtBitmap *smaller);
 
 #endif	// VTIMAGE_H

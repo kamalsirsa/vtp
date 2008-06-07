@@ -177,17 +177,6 @@ void LineBufferGDAL::FindMaxBlockSize(GDALDataset *pDataset)
 	}
 }
 
-void LineBufferGDAL::SetupResolution(const DPoint2 &spacing)
-{
-	// Remember resolution of each view
-	DPoint2 res = spacing;
-	for (int i = 0; i < m_iViewCount; i++)
-	{
-		m_ViewPixelSize.Append(res);
-		res *= 2.0;
-	}
-}
-
 void LineBufferGDAL::Cleanup()
 {
 	if (NULL != m_pBlock)
@@ -214,35 +203,6 @@ void LineBufferGDAL::Cleanup()
 			delete m_row[i].m_data;
 		m_row[i].m_data = NULL;
 	}
-}
-
-void LineBufferGDAL::GetRGB(int x, int y, RGBi &rgb, double dRes)
-{
-	int closest_overview = 0;
-	double diff = 1E9;
-
-	if (dRes != 0.0 && m_iViewCount > 0)
-	{
-		// What overview resolution is most appropriate
-		for (int i = 0; i < m_iViewCount; i++)
-		{
-			double d2 = fabs(dRes - m_ViewPixelSize[i].x);
-			if (d2 < diff)
-			{
-				diff = d2;
-				closest_overview = i;
-			}
-		}
-	}
-	if (closest_overview != 0)
-	{
-		// get smaller coordinates from subsampled view
-		x >>= closest_overview;
-		y >>= closest_overview;
-	}
-
-	RGBi *data = GetScanlineFromBuffer(y, closest_overview);
-	rgb = data[x];
 }
 
 void LineBufferGDAL::ReadScanline(int iYRequest, int bufrow, int overview)
@@ -393,29 +353,28 @@ vtImage::vtImage(const DRECT &area, int xsize, int ysize,
 {
 	SetDefaults();
 	m_Extents = area;
-	m_iXSize = xsize;
-	m_iYSize = ysize;
 	m_proj = proj;
 
 	// yes, we could use some error-checking here
-	m_pBitmap = new vtBitmap;
-	m_pBitmap->Allocate(m_iXSize, m_iYSize);
+	vtBitmap *pBitmap = new vtBitmap;
+	pBitmap->Allocate(xsize, ysize);
+	SetupBitmapInfo(xsize, ysize);
+	m_Bitmaps[0].m_pBitmap = pBitmap;
 }
 
 vtImage::~vtImage()
 {
-	if (NULL != m_pBitmap)
-		delete m_pBitmap;
-
+	for (unsigned int i = 0; i < m_Bitmaps.size(); i++)
+	{
+		if (m_Bitmaps[i].m_pBitmap != NULL)
+			delete m_Bitmaps[i].m_pBitmap;
+	}
 	if (NULL != m_pDataset)
 		GDALClose(m_pDataset);
 }
 
 void vtImage::SetDefaults()
 {
-	m_iXSize = 0;
-	m_iYSize = 0;
-	m_pBitmap = NULL;
 	m_pDataset = NULL;
 	m_pCanvas = NULL;
 }
@@ -429,15 +388,30 @@ bool vtImage::GetExtent(DRECT &rect)
 void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 {
 	bool bDrawImage = true;
-	if (m_pBitmap == NULL)
+
+	// If there are mipmaps in memory, choose the appropriate one to draw
+	vtBitmap *pBitmap = NULL;
+
+	// Determine which overview resolution (with an in-memory bitmap) is
+	//  most appropriate to draw
+	double dRes = 1.0 / pView->GetScale();
+	DPoint2 spacing = GetSpacing();
+	double diff = 1E9;
+	for (unsigned int i = 0; i < m_Bitmaps.size(); i++)
+	{
+		double d2 = fabs(dRes - m_Bitmaps[i].m_Spacing.x);
+		if (d2 < diff && m_Bitmaps[i].m_pBitmap)
+		{
+			diff = d2;
+			pBitmap = m_Bitmaps[i].m_pBitmap;
+		}
+	}
+
+	if (pBitmap == NULL)
 		bDrawImage = false;
 
 	wxRect screenrect = pView->WorldToCanvas(m_Extents);
 	wxRect destRect = screenrect;
-	wxRect srcRect(0, 0, m_iXSize, m_iYSize);
-
-	double ratio_x = (double) srcRect.width / destRect.width;
-	double ratio_y = (double) srcRect.height / destRect.height;
 
 	//clip stuff, so we only blit what we need
 	int client_width, client_height;
@@ -455,6 +429,10 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 
 	if (bDrawImage)
 	{
+		wxRect srcRect(0, 0, pBitmap->GetWidth(), pBitmap->GetHeight());
+		double ratio_x = (double) srcRect.width / destRect.width;
+		double ratio_y = (double) srcRect.height / destRect.height;
+
 		int diff, diff_source;
 
 		// clip left
@@ -507,7 +485,7 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 		::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
 
 		wxDC2 *pDC2 = (wxDC2 *) pDC;
-		pDC2->StretchBlit(*m_pBitmap->m_pBitmap, destRect.x, destRect.y,
+		pDC2->StretchBlit(*pBitmap->m_pBitmap, destRect.x, destRect.y,
 			destRect.width, destRect.height, srcRect.x, srcRect.y,
 			srcRect.width, srcRect.height);
 #else
@@ -516,7 +494,7 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 		double scale_x = 1.0/ratio_x;
 		double scale_y = 1.0/ratio_y;
 		pDC->SetUserScale(scale_x, scale_y);
-		pDC->DrawBitmap(*m_pBitmap->m_pBitmap, (int) (destRect.x/scale_x),
+		pDC->DrawBitmap(*pBitmap->m_pBitmap, (int) (destRect.x/scale_x),
 			(int) (destRect.y/scale_y), false);
 
 		// restore
@@ -611,21 +589,22 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	double fRows = m_Extents.Height() / new_step.y;
 
 	// round up to the nearest integer
-	m_iXSize = (int)(fColumns + 0.999);
-	m_iYSize = (int)(fRows + 0.999);
+	int iXSize = (int)(fColumns + 0.999);
+	int iYSize = (int)(fRows + 0.999);
 
 	// do safety checks
-	if (m_iXSize < 1 || m_iYSize < 1)
+	if (iXSize < 1 || iYSize < 1)
 		return false;
-
-	if (m_iXSize > 40000 || m_iYSize > 40000)
+	if (iXSize > 40000 || iYSize > 40000)
 		return false;
 
 	// Now we're ready to fill in the new image.
 	m_proj = NewProj;
-	m_pBitmap = new vtBitmap;
-	if (!m_pBitmap->Allocate(m_iXSize, m_iYSize))
+	vtBitmap *pBitmap = new vtBitmap;
+	if (!pBitmap->Allocate(iXSize, iYSize))
 		return false;
+	SetupBitmapInfo(iXSize, iYSize);
+	m_Bitmaps[0].m_pBitmap = pBitmap;
 
 	// Convert each bit of data from the old array to the new
 	// Transformation points backwards, from the target to the source
@@ -645,12 +624,12 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	DPoint2 p, mp;
 	RGBi value, sum;
 	int count;
-	for (i = 0; i < m_iXSize; i++)
+	for (i = 0; i < iXSize; i++)
 	{
 		if (progress_callback != NULL)
-			progress_callback(i*99/m_iXSize);
+			progress_callback(i*99/iXSize);
 
-		for (j = 0; j < m_iYSize; j++)
+		for (j = 0; j < iYSize; j++)
 		{
 			// Sample at pixel centers
 			p.x = m_Extents.left + (step.x/2) + (i * step.x);
@@ -673,9 +652,9 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 				}
 			}
 			if (count > 0)
-				SetRGB(i, m_iYSize-1-j, sum / count);
+				SetRGB(i, iYSize-1-j, sum / count);
 			else
-				SetRGB(i, m_iYSize-1-j, RGBi(0,0,0));	// nodata
+				SetRGB(i, iYSize-1-j, RGBi(0,0,0));	// nodata
 		}
 	}
 	delete trans;
@@ -698,15 +677,10 @@ void vtImage::SetExtent(const DRECT &rect)
 	m_Extents = rect;
 }
 
-bool vtImage::IsAllocated() const
+DPoint2 vtImage::GetSpacing(int bitmap) const
 {
-	return (m_pBitmap != NULL && m_pBitmap->IsAllocated());
-}
-
-DPoint2 vtImage::GetSpacing() const
-{
-	return DPoint2(m_Extents.Width() / (m_iXSize),
-		m_Extents.Height() / (m_iYSize));
+	return DPoint2(m_Extents.Width() / m_Bitmaps[bitmap].m_Size.x,
+		m_Extents.Height() / m_Bitmaps[bitmap].m_Size.y);
 }
 
 /**
@@ -751,20 +725,21 @@ bool vtImage::ReprojectExtents(const vtProjection &proj_new)
 bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb, double dRes)
 {
 	// could speed this up by keeping these values around
-	DPoint2 spacing = GetSpacing();
+	const DPoint2 &spacing = m_Bitmaps[0].m_Spacing;
+	const IPoint2 &size = m_Bitmaps[0].m_Size;
 
 	double u = (p.x - m_Extents.left) / spacing.x;
 	int ix = (int) u;				// round to closest pixel
-	if (u == (double) m_iXSize)		// check for exact far edge
-		ix = m_iXSize-1;
-	if (ix < 0 || ix >= m_iXSize)
+	if (u == (double) size.x)		// check for exact far edge
+		ix = size.x-1;
+	if (ix < 0 || ix >= size.x)
 		return false;
 
 	double v = (m_Extents.top - p.y) / spacing.y;
 	int iy = (int) v;				// round to closest pixel
-	if (v == (double) m_iYSize)		// check for exact far edge
-		iy = m_iYSize-1;
-	if (iy < 0 || iy >= m_iYSize)
+	if (v == (double) size.y)		// check for exact far edge
+		iy = size.y-1;
+	if (iy < 0 || iy >= size.y)
 		return false;
 
 	GetRGB(ix, iy, rgb, dRes);
@@ -809,47 +784,145 @@ bool vtImage::GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb,
 	return false;
 }
 
+int vtImage::NumBitmapsInMemory()
+{
+	int count = 0;
+	for (unsigned int i = 0; i < m_Bitmaps.size(); i++)
+		if (m_Bitmaps[i].m_pBitmap != NULL)
+			count++;
+	return count;
+}
+
 void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 {
-	if (m_pBitmap)
+	int closest_bitmap = 0;
+	double diff = 1E9;
+
+	if (dRes != 0.0)
+	{
+		// What overview resolution is most appropriate
+		for (int i = 0; i < m_Bitmaps.size(); i++)
+		{
+			double d2 = fabs(dRes - m_Bitmaps[i].m_Spacing.x);
+			if (d2 < diff)
+			{
+				diff = d2;
+				closest_bitmap = i;
+			}
+		}
+	}
+	if (closest_bitmap != 0)
+	{
+		// get smaller coordinates from subsampled view
+		x >>= closest_bitmap;
+		y >>= closest_bitmap;
+	}
+	const BitmapInfo &bm = m_Bitmaps[closest_bitmap];
+	if (bm.m_pBitmap)
 	{
 		// get pixel from bitmap in memory
-		m_pBitmap->GetPixel24(x, y, rgb);
+		bm.m_pBitmap->GetPixel24(x, y, rgb);
 	}
-	else
+	else if (bm.m_bOverlay)
 	{
 		// support for out-of-memory image here
-		m_linebuf.GetRGB(x, y, rgb, dRes);
+		RGBi *data = m_linebuf.GetScanlineFromBuffer(y, closest_bitmap);
+		rgb = data[x];
 	}
 }
 
 void vtImage::SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b)
 {
 	// this method clearly only works for in-memory images
-	if (m_pBitmap)
-		m_pBitmap->SetPixel24(x, y, r, g, b);
+	if (m_Bitmaps[0].m_pBitmap)
+		m_Bitmaps[0].m_pBitmap->SetPixel24(x, y, r, g, b);
 }
 
 void vtImage::SetRGB(int x, int y, const RGBi &rgb)
 {
 	// this method clearly only works for in-memory images
-	if (m_pBitmap)
-		m_pBitmap->SetPixel24(x, y, rgb);
+	if (m_Bitmaps[0].m_pBitmap)
+		m_Bitmaps[0].m_pBitmap->SetPixel24(x, y, rgb);
 }
 
 void vtImage::ReplaceColor(const RGBi &rgb1, const RGBi &rgb2)
 {
 	// this method only works for in-memory images
-	if (!m_pBitmap)
+	BitmapInfo &bmi = m_Bitmaps[0];
+	if (!bmi.m_pBitmap)
 		return;
 	RGBi color;
-	for (int i = 0; i < m_iXSize; i++)
-		for (int j = 0; j < m_iYSize; j++)
+	for (int i = 0; i < bmi.m_Size.x; i++)
+		for (int j = 0; j < bmi.m_Size.y; j++)
 		{
-			m_pBitmap->GetPixel24(i, j, color);
+			bmi.m_pBitmap->GetPixel24(i, j, color);
 			if (color == rgb1)
-				m_pBitmap->SetPixel24(i, j, rgb2);
+				bmi.m_pBitmap->SetPixel24(i, j, rgb2);
 		}
+}
+
+void vtImage::SetupBitmapInfo(int iXSize, int iYSize)
+{
+	DPoint2 spacing(m_Extents.Width() / iXSize, m_Extents.Height() / iYSize);
+	int smaller = min(iXSize, iYSize);
+
+	// How many mipmaps to consider?
+	int powers = vt_log2(smaller) - 3;
+
+	m_Bitmaps.resize(powers);
+	for (int m = 0; m < powers; m++)
+	{
+		m_Bitmaps[m].number = m;
+		m_Bitmaps[m].m_pBitmap = NULL;
+		m_Bitmaps[m].m_bOverlay = false;
+		m_Bitmaps[m].m_Size.Set(iXSize, iYSize);
+		m_Bitmaps[m].m_Spacing = spacing;
+
+		iXSize /= 2;
+		iYSize /= 2;
+		spacing *= 2;
+	}
+}
+
+void vtImage::AllocMipMaps()
+{
+	FreeMipMaps();
+
+	if (m_Bitmaps[0].m_pBitmap == NULL)
+		return;
+
+	IPoint2 size = m_Bitmaps[0].m_Size;
+	int depth = m_Bitmaps[0].m_pBitmap->GetDepth();
+
+	for (int m = 1; m < m_Bitmaps.size(); m++)
+	{
+		if (!m_Bitmaps[m].m_pBitmap)
+		{
+			vtBitmap *bm = new vtBitmap;
+			bm->Allocate(size.x >> m, size.y >> m, depth);
+			m_Bitmaps[m].m_pBitmap = bm;
+		}
+	}
+}
+
+void vtImage::DrawMipMaps()
+{
+	vtBitmap *big = m_Bitmaps[0].m_pBitmap;
+	for (int m = 1; m < m_Bitmaps.size(); m++)
+	{
+		vtBitmap *smaller = m_Bitmaps[m].m_pBitmap;
+		SampleMipLevel(big, smaller);
+		big = smaller;
+	}
+}
+
+void vtImage::FreeMipMaps()
+{
+	for (size_t m = 1; m < m_Bitmaps.size(); m++)
+	{
+		delete m_Bitmaps[m].m_pBitmap;
+		m_Bitmaps[m].m_pBitmap = NULL;
+	}
 }
 
 bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
@@ -929,9 +1002,9 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 		}
 	}
 
-	m_iXSize = atoi(sbuf);		// store xsize of array
+	int iXSize = atoi(sbuf);		// store xsize of array
 	fscanf(fp,"%s",sbuf);		// read ysize of array
-	m_iYSize = atoi(sbuf);
+	int iYSize = atoi(sbuf);
 	fscanf(fp,"%s\n",sbuf);		// read maxval of array
 	int maxval = atoi(sbuf);
 
@@ -973,12 +1046,15 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 		m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
 
 		ext.left = 0;
-		ext.top = m_iYSize-1;
-		ext.right = m_iXSize-1;
+		ext.top = iYSize-1;
+		ext.right = iXSize-1;
 		ext.bottom = 0;
 	}
 	m_Extents = ext;
-	m_pBitmap->Allocate(m_iXSize, m_iYSize, 24);
+	vtBitmap *pBitmap = new vtBitmap;
+	pBitmap->Allocate(iXSize, iYSize, 24);
+	SetupBitmapInfo(iXSize, iYSize);
+	m_Bitmaps[0].m_pBitmap = pBitmap;
 
 	// read PPM binary
 	int offset_start = ftell(fp);
@@ -987,19 +1063,20 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 	fseek(fp, offset_start, SEEK_SET);	// go back again
 
 	int data_length = offset_end - offset_start;
-	int data_size = data_length / (m_iXSize*m_iYSize);
+	int data_size = data_length / (iXSize*iYSize);
 
-	int line_length = 3 * m_iXSize;
+	int line_length = 3 * iXSize;
 	unsigned char *line = new unsigned char[line_length];
 
-	for (int j = 0; j < m_iYSize; j++)
+	for (int j = 0; j < iYSize; j++)
 	{
-		if (progress_callback != NULL) progress_callback(j * 100 / m_iYSize);
+		if (progress_callback != NULL)
+			progress_callback(j * 100 / iYSize);
 
 		fread(line, line_length, 1, fp);
 
-		for (int i = 0; i < m_iXSize; i++)
-			m_pBitmap->SetPixel24(i, j, line[i*3+0], line[i*3+1], line[i*3+2]);
+		for (int i = 0; i < iXSize; i++)
+			pBitmap->SetPixel24(i, j, line[i*3+0], line[i*3+1], line[i*3+2]);
 	}
 	delete [] line;
 	fclose(fp);
@@ -1008,22 +1085,26 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 
 bool vtImage::WritePPM(const char *fname)
 {
+	vtBitmap *bm = m_Bitmaps[0].m_pBitmap;
+	if (!bm)
+		return false;
+
 	// open input file
 	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)		// Could not open output file
 		return false;
 
 	fprintf(fp, "P6\n");		// PGM binary format
-	fprintf(fp, "%d %d\n", m_iXSize, m_iYSize);
+	fprintf(fp, "%d %d\n", bm->GetWidth(), bm->GetHeight());
 	fprintf(fp, "255\n");		// PGM standard value
 
-	int line_length = 3 * m_iXSize;
+	int line_length = 3 * bm->GetWidth();
 	unsigned char *line = new unsigned char[line_length];
 
 	RGBi rgb;
-	for (int j = 0; j < m_iYSize; j++)
+	for (int j = 0; j < bm->GetHeight(); j++)
 	{
-		for (int i = 0; i < m_iXSize; i++)
+		for (int i = 0; i < bm->GetWidth(); i++)
 		{
 			GetRGB(i, j, rgb);
 			line[i*3+0] = rgb.r;
@@ -1039,17 +1120,19 @@ bool vtImage::WritePPM(const char *fname)
 
 bool vtImage::SaveToFile(const char *fname) const
 {
-	if (!m_pBitmap)
+	vtBitmap *bm = m_Bitmaps[0].m_pBitmap;
+	if (!bm)
 		return false;
+	IPoint2 size = m_Bitmaps[0].m_Size;
 
+	DPoint2 spacing = GetSpacing();
 	vtString sExt = GetExtension(fname, false); //get extension type
 	if (sExt.CompareNoCase(".jpg") == 0)
 	{
-		if (m_pBitmap->WriteJPEG(fname, 90))
+		if (bm->WriteJPEG(fname, 90))
 		{
 			// Also write JPEG world file
 			vtString sJGWFile = ChangeFileExtension(fname, ".jgw");
-			DPoint2 spacing = GetSpacing();
 
 			FILE *fout = vtFileOpen(sJGWFile, "w");
 			if (fout)
@@ -1081,14 +1164,13 @@ bool vtImage::SaveToFile(const char *fname) const
 		return false;
 
 	char **papszOptions = NULL;
-	DPoint2 spacing = GetSpacing();
 
 	// COMPRESS=[JPEG/LZW/PACKBITS/DEFLATE/CCITTRLE/CCITTFAX3/CCITTFAX4/NONE]
 	if (g_Options.GetValueBool(TAG_TIFF_COMPRESS))
 	    papszOptions = CSLSetNameValue( papszOptions, "COMPRESS", "DEFLATE" );
 
 	GDALDataset *pDataset;
-	pDataset = pDriver->Create(fname, m_iXSize, m_iYSize, 3, GDT_Byte, papszOptions );
+	pDataset = pDriver->Create(fname, size.x, size.y, 3, GDT_Byte, papszOptions );
     CSLDestroy(papszOptions);
 
 	if (!pDataset)
@@ -1097,14 +1179,14 @@ bool vtImage::SaveToFile(const char *fname) const
 	double adfGeoTransform[6] = { m_Extents.left, spacing.x, 0, m_Extents.top, 0, -spacing.y };
 	pDataset->SetGeoTransform(adfGeoTransform);
 
-	GByte *raster = new GByte[m_iXSize*m_iYSize];
+	GByte *raster = new GByte[size.x*size.y];
 
 	char *pszSRS_WKT = NULL;
 	m_proj.exportToWkt( &pszSRS_WKT );
 	pDataset->SetProjection(pszSRS_WKT);
 	CPLFree( pszSRS_WKT );
 
-	if (m_iXSize * m_iYSize > 512*512)
+	if (size.x * size.y > 512*512)
 		OpenProgressDialog(_("Writing file"), false);
 
 	// TODO: ask Frank if there is a way to gave GDAL write the file without
@@ -1116,20 +1198,20 @@ bool vtImage::SaveToFile(const char *fname) const
 	{
 		pBand = pDataset->GetRasterBand(i);
 
-		for (x = 0; x < m_iXSize; x++)
+		for (y = 0; y < size.y; y++)
 		{
-			progress_callback((i-1)*33 + (x * 33 / m_iXSize));
+			progress_callback((i-1)*33 + (y * 33 / size.y));
 
-			for (y = 0; y < m_iYSize; y++)
+			for (x = 0; x < size.x; x++)
 			{
-				m_pBitmap->GetPixel24(x, y, rgb);
-				if (i == 1) raster[y*m_iXSize + x] = rgb.r;
-				if (i == 2) raster[y*m_iXSize + x] = rgb.g;
-				if (i == 3) raster[y*m_iXSize + x] = rgb.b;
+				bm->GetPixel24(x, y, rgb);
+				if (i == 1) raster[y*size.x + x] = rgb.r;
+				if (i == 2) raster[y*size.x + x] = rgb.g;
+				if (i == 3) raster[y*size.x + x] = rgb.b;
 			}
 		}
-		pBand->RasterIO( GF_Write, 0, 0, m_iXSize, m_iYSize,
-			raster, m_iXSize, m_iYSize, GDT_Byte, 0, 0 );
+		pBand->RasterIO( GF_Write, 0, 0, size.x, size.y,
+			raster, size.x, size.y, GDT_Byte, 0, 0 );
 	}
 	delete [] raster;
 	GDALClose(pDataset);
@@ -1141,17 +1223,16 @@ bool vtImage::SaveToFile(const char *fname) const
 
 bool vtImage::ReadPNGFromMemory(unsigned char *buf, int len)
 {
-	m_pBitmap = new vtBitmap;
-	if (m_pBitmap->ReadPNGFromMemory(buf, len))
+	vtBitmap *pBitmap = new vtBitmap;
+	if (pBitmap->ReadPNGFromMemory(buf, len))
 	{
-		m_iXSize = m_pBitmap->GetWidth();
-		m_iYSize = m_pBitmap->GetHeight();
+		SetupBitmapInfo(pBitmap->GetWidth(), pBitmap->GetHeight());
+		m_Bitmaps[0].m_pBitmap = pBitmap;
 		return true;
 	}
 	else
 	{
-		delete m_pBitmap;
-		m_pBitmap = NULL;
+		delete pBitmap;
 		return false;
 	}
 }
@@ -1177,12 +1258,12 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		if (m_pDataset == NULL )
 			throw "Couldn't open that file.";
 
-		m_iXSize = m_pDataset->GetRasterXSize();
-		m_iYSize = m_pDataset->GetRasterYSize();
+		int iXSize = m_pDataset->GetRasterXSize();
+		int iYSize = m_pDataset->GetRasterYSize();
 
 		IPoint2 OriginalSize;
-		OriginalSize.x = m_iXSize;
-		OriginalSize.y = m_iYSize;
+		OriginalSize.x = iXSize;
+		OriginalSize.y = iYSize;
 
 		vtProjection temp;
 		bool bHaveProj = false;
@@ -1213,15 +1294,12 @@ bool vtImage::LoadFromGDAL(const char *fname)
 				throw "Import Cancelled.";
 		}
 
-		if (m_iXSize * m_iYSize > 512*512)
-			OpenProgressDialog(_("Reading file"), false);
-
 		if (m_pDataset->GetGeoTransform(affineTransform) == CE_None)
 		{
 			m_Extents.left = affineTransform[0];
-			m_Extents.right = m_Extents.left + affineTransform[1] * m_iXSize;
+			m_Extents.right = m_Extents.left + affineTransform[1] * iXSize;
 			m_Extents.top = affineTransform[3];
-			m_Extents.bottom = m_Extents.top + affineTransform[5] * m_iYSize;
+			m_Extents.bottom = m_Extents.top + affineTransform[5] * iYSize;
 		}
 		else
 		{
@@ -1251,13 +1329,19 @@ bool vtImage::LoadFromGDAL(const char *fname)
 				throw "Import Cancelled.";
 		}
 
+		SetupBitmapInfo(iXSize, iYSize);
+
+		if (iXSize * iYSize > 512*512)
+			OpenProgressDialog(_("Reading file"), false);
+
 		m_linebuf.Setup(m_pDataset);
-		m_linebuf.SetupResolution(GetSpacing());
+		for (int i = 0; i < m_linebuf.m_iViewCount; i++)
+			m_Bitmaps[i].m_bOverlay = true;
 
 		int iBigImage = g_Options.GetValueInt(TAG_MAX_MEGAPIXELS) * 1024 * 1024;
 		// don't try to load giant image?
 		wxString msg;
-		if (m_iXSize * m_iYSize > iBigImage)
+		if (iXSize * iYSize > iBigImage)
 		{
 			if (g_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS))
 				bDefer = false;
@@ -1266,7 +1350,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 			else
 			{
 				// Ask
-				msg.Printf(_("Image is very large (%d x %d).\n"), m_iXSize, m_iYSize);
+				msg.Printf(_("Image is very large (%d x %d).\n"), iXSize, iYSize);
 				msg += _("Would you like to create the layer using out-of-memory access to the image?"),
 				VTLOG(msg.mb_str(wxConvUTF8));
 				int result = wxMessageBox(msg, _("Question"), wxYES_NO);
@@ -1277,13 +1361,12 @@ bool vtImage::LoadFromGDAL(const char *fname)
 
 		if (!bDefer)
 		{
-			m_pBitmap = new vtBitmap;
-			if (!m_pBitmap->Allocate(m_iXSize, m_iYSize))
+			vtBitmap *pBitmap = new vtBitmap;
+			if (!pBitmap->Allocate(iXSize, iYSize))
 			{
-				delete m_pBitmap;
-				m_pBitmap = NULL;
+				delete pBitmap;
 				msg.Printf(_("Couldn't allocate bitmap of size %d x %d.\n"),
-					m_iXSize, m_iYSize);
+					iXSize, iYSize);
 				msg += _("Would you like to create the layer using out-of-memory access to the image?"),
 				VTLOG(msg.mb_str(wxConvUTF8));
 				int result = wxMessageBox(msg, _("Question"), wxYES_NO);
@@ -1296,25 +1379,25 @@ bool vtImage::LoadFromGDAL(const char *fname)
 			if (!bDefer)
 			{
 				// Read the data
-				VTLOG("Reading the image data (%d x %d pixels)\n", m_iXSize, m_iYSize);
+				VTLOG("Reading the image data (%d x %d pixels)\n", iXSize, iYSize);
 				RGBi rgb;
-				for (int iy = 0; iy < m_iYSize; iy++ )
+				for (int iY = 0; iY < iYSize; iY++ )
 				{
-					if (progress_callback != NULL)
-						progress_callback(iy * 100 / m_iYSize);
-
-					if (UpdateProgressDialog(iy * 99 / m_iYSize))
+					if (UpdateProgressDialog(iY * 99 / iYSize))
 					{
 						// cancel
 						throw "Cancelled";
 					}
-					for (int iX = 0; iX < m_iXSize; iX++ )
+					for (int iX = 0; iX < iXSize; iX++ )
 					{
-						m_linebuf.GetRGB(iX, iy, rgb);
-						m_pBitmap->SetPixel24(iX, iy, rgb);
+//						m_linebuf.GetRGB(iX, iy, rgb);
+						RGBi *data = m_linebuf.GetScanlineFromBuffer(iY, 0);
+						rgb = data[iX];
+						pBitmap->SetPixel24(iX, iY, rgb);
 					}
 				}
-				m_pBitmap->ContentsChanged();
+				pBitmap->ContentsChanged();
+				m_Bitmaps[0].m_pBitmap = pBitmap;
 			}
 		}
 	}
@@ -1369,7 +1452,6 @@ bool vtImage::CreateOverviews()
 		0, NULL, GDALProgress, this);
 
 	m_linebuf.Setup(m_pDataset);
-	m_linebuf.SetupResolution(GetSpacing());
 
 	return (err == CE_None);
 }
@@ -1590,13 +1672,15 @@ bool vtImage::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 	if (!DownloadAllTiles())
 		return false;
 
-	m_iXSize = (TerrainEastingE - TerrainEastingW) / MetersPerPixel;
-	m_iYSize = (TerrainNorthingN - TerrainNorthingS) / MetersPerPixel;
-	m_pBitmap = new vtBitmap;
-	m_pBitmap->Allocate(m_iXSize, m_iYSize);
+	int iXSize = (TerrainEastingE - TerrainEastingW) / MetersPerPixel;
+	int iYSize = (TerrainNorthingN - TerrainNorthingS) / MetersPerPixel;
+	vtBitmap *pBitmap = new vtBitmap;
+	pBitmap->Allocate(iXSize, iYSize);
+	SetupBitmapInfo(iXSize, iYSize);
+	m_Bitmaps[0].m_pBitmap = pBitmap;
 
 	vtDIB dib;
-	dib.Create(m_iXSize, m_iYSize, 8, true);
+	dib.Create(iXSize, iYSize, 8, true);
 	if (!MosaicAllTiles(dib))
 		return false;
 
@@ -1677,13 +1761,15 @@ bool vtImage::WriteGridOfTilePyramids(TilingOptions &opts, BuilderView *pView)
 	// make a note of which lods exist
 	LODMap lod_existence_map(opts.cols, opts.rows);
 
-	if (!m_pBitmap)
+	if (!m_Bitmaps[0].m_pBitmap)
 	{
+		IPoint2 size = m_Bitmaps[0].m_Size;
+
 		// If we're dealing with an out-of-core image, consider how many rows
 		//  we need to cache to avoid reading the file more than once during
 		//  the generation of the tiles
-		int need_cache_rows = (m_iYSize + (opts.rows-1)) / opts.rows;
-		int need_cache_bytes = need_cache_rows * m_iXSize * 3;
+		int need_cache_rows = (size.y + (opts.rows-1)) / opts.rows;
+		int need_cache_bytes = need_cache_rows * size.x * 3;
 		// add a little bit for rounding up
 		need_cache_bytes += (need_cache_bytes / 10);
 
@@ -1838,10 +1924,36 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 	return true;
 }
 
-void SampleMipLevel(vtImage *bigger, vtImage *smaller)
+void SampleMipLevel(vtBitmap *bigger, vtBitmap *smaller)
 {
-	int xsize, ysize;
-	bigger->GetDimensions(xsize, ysize);
-	// TODO for (
+	int xsize = bigger->GetWidth();
+	int ysize = bigger->GetHeight();
+
+	int xsmall = xsize / 2;
+	int ysmall = ysize / 2;
+
+	RGBi rgb, sum;
+
+	for (int y = 0; y < ysmall; y++)
+	{
+		if ((y%32)==0)
+			progress_callback(y * 99 / ysmall);
+
+		for (int x = 0; x < xsmall; x++)
+		{
+			sum.Set(0,0,0);
+
+			bigger->GetPixel24(x*2, y*2, rgb);
+			sum += rgb;
+			bigger->GetPixel24(x*2+1, y*2, rgb);
+			sum += rgb;
+			bigger->GetPixel24(x*2, y*2+1, rgb);
+			sum += rgb;
+			bigger->GetPixel24(x*2, y*2, rgb);
+			sum += rgb;
+
+			smaller->SetPixel24(x, y, sum/4);
+		}
+	}
 }
 

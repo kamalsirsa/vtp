@@ -1141,7 +1141,7 @@ void Builder::MergeResampleImages(BuilderView *pView)
 			dlg.m_iSizeY, m_proj);
 	vtImage *pOutput = pOutputLayer->GetImage();
 
-	if (!pOutput->IsAllocated())
+	if (!pOutput->GetBitmap())
 	{
 		DisplayAndLog(_("Sorry, could not allocate an image of that size."));
 		delete pOutputLayer;

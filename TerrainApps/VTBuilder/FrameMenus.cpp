@@ -195,15 +195,17 @@ EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 EVT_UPDATE_UI(ID_ELEV_TRIMTIN,		MainFrame::OnUpdateElevTrimTin)
 
 EVT_MENU(ID_IMAGE_REPLACE_RGB,		MainFrame::OnImageReplaceRGB)
-EVT_UPDATE_UI(ID_IMAGE_REPLACE_RGB,	MainFrame::OnUpdateHaveImageLayer)
-
 EVT_MENU(ID_IMAGE_CREATE_OVERVIEWS,	MainFrame::OnImageCreateOverviews)
-EVT_UPDATE_UI(ID_IMAGE_REPLACE_RGB,	MainFrame::OnUpdateHaveImageLayer)
-
+EVT_MENU(ID_IMAGE_CREATE_OVER_ALL,	MainFrame::OnImageCreateOverviewsAll)
+EVT_MENU(ID_IMAGE_CREATE_MIPMAPS,	MainFrame::OnImageCreateMipMaps)
 EVT_MENU(ID_IMAGE_EXPORT_TILES,		MainFrame::OnImageExportTiles)
-EVT_UPDATE_UI(ID_IMAGE_EXPORT_TILES,MainFrame::OnUpdateHaveImageLayer)
-
 EVT_MENU(ID_IMAGE_EXPORT_PPM,		MainFrame::OnImageExportPPM)
+
+EVT_UPDATE_UI(ID_IMAGE_REPLACE_RGB,	MainFrame::OnUpdateHaveImageLayer)
+EVT_UPDATE_UI(ID_IMAGE_CREATE_OVERVIEWS, MainFrame::OnUpdateHaveImageLayer)
+EVT_UPDATE_UI(ID_IMAGE_CREATE_OVER_ALL, MainFrame::OnUpdateHaveImageLayer)
+EVT_UPDATE_UI(ID_IMAGE_CREATE_MIPMAPS,	MainFrame::OnUpdateHaveImageLayer)
+EVT_UPDATE_UI(ID_IMAGE_EXPORT_TILES,MainFrame::OnUpdateHaveImageLayer)
 EVT_UPDATE_UI(ID_IMAGE_EXPORT_PPM,	MainFrame::OnUpdateHaveImageLayer)
 
 EVT_MENU(ID_TOWER_ADD,				MainFrame::OnTowerAdd)
@@ -475,7 +477,9 @@ void MainFrame::CreateMenus()
 	// Imagery
 	imgMenu = new wxMenu;
 	imgMenu->Append(ID_IMAGE_REPLACE_RGB, _("Replace RGB..."));
-	imgMenu->Append(ID_IMAGE_CREATE_OVERVIEWS, _("Create Overviews"));
+	imgMenu->Append(ID_IMAGE_CREATE_OVERVIEWS, _("Create Overviews on Disk"));
+	imgMenu->Append(ID_IMAGE_CREATE_OVER_ALL, _("Create Overviews on Disk for All Images"));
+	imgMenu->Append(ID_IMAGE_CREATE_MIPMAPS, _("Create Overviews in Memory"));
 	imgMenu->AppendSeparator();
 	imgMenu->Append(ID_IMAGE_EXPORT_TILES, _("Export to Tiles..."));
 	imgMenu->Append(ID_IMAGE_EXPORT_PPM, _("Export to PPM"));
@@ -2039,6 +2043,30 @@ void MainFrame::OnImageCreateOverviews(wxCommandEvent& event)
 	OpenProgressDialog(_("Creating Overviews"), false, this);
 
 	pIL->GetImage()->CreateOverviews();
+
+	CloseProgressDialog();
+}
+
+void MainFrame::OnImageCreateOverviewsAll(wxCommandEvent& event)
+{
+	OpenProgressDialog(_("Creating Overviews"), false, this);
+	for (int i = 0; i < NumLayers(); i++)
+	{
+		vtImageLayer *pIL = dynamic_cast<vtImageLayer *>(GetLayer(i));
+		if (pIL)
+			pIL->GetImage()->CreateOverviews();
+	}
+	CloseProgressDialog();
+}
+
+void MainFrame::OnImageCreateMipMaps(wxCommandEvent& event)
+{
+	vtImageLayer *pIL = GetActiveImageLayer();
+
+	OpenProgressDialog(_("Creating MipMaps"), false, this);
+
+	pIL->GetImage()->AllocMipMaps();
+	pIL->GetImage()->DrawMipMaps();
 
 	CloseProgressDialog();
 }
