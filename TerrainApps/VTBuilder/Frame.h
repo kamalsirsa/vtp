@@ -294,6 +294,8 @@ protected:
 	void OnLayerPropsPopup(wxCommandEvent& event);
 	void OnLayerToTop(wxCommandEvent& event);
 	void OnLayerToBottom(wxCommandEvent& event);
+	void OnLayerOverviewDisk(wxCommandEvent& event);
+	void OnLayerOverviewMem(wxCommandEvent& event);
 
 	// keys (used for shortcuts)
 	void OnChar(wxKeyEvent& event);

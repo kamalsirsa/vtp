@@ -313,6 +313,8 @@ EVT_MENU(ID_POPUP_HIDEALL,		MainFrame::OnHideAll)
 EVT_MENU(ID_POPUP_PROPS,		MainFrame::OnLayerPropsPopup)
 EVT_MENU(ID_POPUP_TO_TOP,		MainFrame::OnLayerToTop)
 EVT_MENU(ID_POPUP_TO_BOTTOM,	MainFrame::OnLayerToBottom)
+EVT_MENU(ID_POPUP_OVR_DISK,		MainFrame::OnLayerOverviewDisk)
+EVT_MENU(ID_POPUP_OVR_MEM,		MainFrame::OnLayerOverviewMem)
 
 EVT_CHAR(MainFrame::OnChar)
 EVT_KEY_DOWN(MainFrame::OnKeyDown)
@@ -3345,5 +3347,36 @@ void MainFrame::OnLayerToBottom(wxCommandEvent& event)
 		RefreshLayerInView(data->m_pLayer);
 		m_pTree->RefreshTreeItems(this);
 	}
+}
+
+void MainFrame::OnLayerOverviewDisk(wxCommandEvent& event)
+{
+	wxTreeItemId itemId = m_pTree->GetSelection();
+	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(itemId);
+	if (!data)
+		return;
+	vtImageLayer *pIL = (vtImageLayer *) data->m_pLayer;
+
+	OpenProgressDialog(_("Creating Overviews"), false, this);
+
+	pIL->GetImage()->CreateOverviews();
+
+	CloseProgressDialog();
+}
+
+void MainFrame::OnLayerOverviewMem(wxCommandEvent& event)
+{
+	wxTreeItemId itemId = m_pTree->GetSelection();
+	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(itemId);
+	if (!data)
+		return;
+	vtImageLayer *pIL = (vtImageLayer *) data->m_pLayer;
+
+	OpenProgressDialog(_("Creating MipMaps"), false, this);
+
+	pIL->GetImage()->AllocMipMaps();
+	pIL->GetImage()->DrawMipMaps();
+
+	CloseProgressDialog();
 }
 

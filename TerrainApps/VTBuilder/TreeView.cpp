@@ -20,6 +20,8 @@
 #include "MenuEnum.h"	// for LayerTree_Ctrl
 #include "Frame.h"
 #include "BuilderView.h"
+#include "ImageLayer.h"
+#include "vtImage.h"
 #include "vtui/Helper.h"
 
 DECLARE_APP(BuilderApp)
@@ -371,6 +373,14 @@ void MyTreeCtrl::OnItemRightClick(wxTreeEvent& event)
 			popmenu->Append(ID_POPUP_PROPS, _("Properties"));
 			popmenu->Append(ID_POPUP_TO_TOP, _("Move to Top (draw first)"));
 			popmenu->Append(ID_POPUP_TO_BOTTOM, _("Move to Bottom (draw last)"));
+
+			vtImageLayer *pIL = dynamic_cast<vtImageLayer*>(data->m_pLayer);
+			if (pIL && pIL->GetImage()->GetBitmap() != NULL)
+			{
+				popmenu->AppendSeparator();
+				popmenu->Append(ID_POPUP_OVR_DISK, _("Create Overviews on Disk"));
+				popmenu->Append(ID_POPUP_OVR_MEM, _("Create Overviews in Memory"));
+			}
 			popmenu->AppendSeparator();
 		}
 		popmenu->Append(ID_POPUP_SHOWALL, _("Show All"));
