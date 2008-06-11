@@ -11,13 +11,15 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/ElevationGrid.h"
+
 #include "Builder.h"
 #include "Options.h"
 #include "Helper.h"
 #include "ElevLayer.h"
 #include "ImageLayer.h"
-#include "vtdata/ElevationGrid.h"
 #include "RenderOptions.h"
+#include "vtImage.h"
 
 void TestProjectLoad(Builder &bld)
 {
@@ -226,6 +228,21 @@ void TestDEMToTileset(Builder &bld)
 	bld.RemoveLayer(lay2);
 }
 
+void TestOverviews(Builder &bld)
+{
+	vtImageLayer *ilay = new vtImageLayer;
+	bool success = ilay->Load(_T("./Data/30_rendered.tif"));
+	if (!success)
+		return;
+
+	// If the image does not already have overviews, add them
+	vtImage *im = ilay->GetImage();
+	if (im->NumBitmapsOnDisk() == 1)
+	{
+		bool success = im->CreateOverviews();
+	}
+}
+
 void main(int argc, char **argv)
 {
 	// Any program that links with wxWidgets must call this
@@ -249,14 +266,15 @@ void main(int argc, char **argv)
 	g_Options.SetValueBool(TAG_BLACK_TRANSP, true, true);
 
 	// Call each test
-	TestProjectLoad(bld);
-	TestDEMToBT(bld);
-	TestElevationReproject(bld);
-	TestReplaceInvalid(bld);
-	TestRemoveRange(bld);
-	TestRenderToBitmap(bld);
-	TestReplaceRGB(bld);
-	TestDEMToTileset(bld);
+	//TestProjectLoad(bld);
+	//TestDEMToBT(bld);
+	//TestElevationReproject(bld);
+	//TestReplaceInvalid(bld);
+	//TestRemoveRange(bld);
+	//TestRenderToBitmap(bld);
+	//TestReplaceRGB(bld);
+	//TestDEMToTileset(bld);
+	TestOverviews(bld);
 
 	wxUninitialize();
 }
