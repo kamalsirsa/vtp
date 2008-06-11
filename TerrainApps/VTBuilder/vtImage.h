@@ -39,7 +39,6 @@ public:
 	void Setup(GDALDataset *pDataset);
 	void Cleanup();
 
-	//void GetRGB(int x, int y, RGBi &rgb, double dRes = 0.0);
 	void ReadScanline(int y, int bufrow, int overlay);
 	RGBi *GetScanlineFromBuffer(int y, int overlay);
 	void FindMaxBlockSize(GDALDataset *pDataset);
@@ -59,7 +58,7 @@ public:
 	GDALColorTable *m_pTable;
 	int m_MaxBlockSize;
 
-	// Overviews
+	// Total views, including Overviews
 	int m_iViewCount;
 
 	Scanline m_row[BUF_SCANLINES];
@@ -93,7 +92,7 @@ public:
 		const vtProjection &proj);
 	virtual ~vtImage();
 
-	bool GetExtent(DRECT &rect);
+	bool GetExtent(DRECT &rect) const;
 	void SetExtent(const DRECT &rect);
 	void DrawToView(wxDC *pDC, vtScaledView *pView);
 	bool ConvertProjection(vtImage *input, vtProjection &proj_new,
@@ -101,19 +100,18 @@ public:
 
 	DPoint2 GetSpacing(int bitmap = 0) const;
 	vtBitmap *GetBitmap() { return m_Bitmaps[0].m_pBitmap; }
-	bool HasOverviews() { return m_linebuf.m_iViewCount > 0; }
 
-	void GetProjection(vtProjection &proj);
+	void GetProjection(vtProjection &proj) const;
 	vtProjection &GetAtProjection() { return m_proj; }
 	void SetProjection(const vtProjection &proj);
 	bool ReprojectExtents(const vtProjection &proj_new);
 
-	void GetDimensions(int &xsize, int &ysize)
+	void GetDimensions(int &xsize, int &ysize) const
 	{
 		xsize = m_Bitmaps[0].m_Size.x;
 		ysize = m_Bitmaps[0].m_Size.y;
 	}
-	IPoint2 GetDimensions()
+	IPoint2 GetDimensions() const
 	{
 		return m_Bitmaps[0].m_Size;
 	}
@@ -127,7 +125,7 @@ public:
 
 	// File IO
 	bool ReadPPM(const char *fname, bool progress_callback(int) = NULL);
-	bool WritePPM(const char *fname);
+	bool WritePPM(const char *fname) const;
 	bool SaveToFile(const char *fname) const;
 	bool ReadPNGFromMemory(unsigned char *buf, int len);
 	bool LoadFromGDAL(const char *fname);
@@ -146,9 +144,10 @@ public:
 	GDALDataset *m_pDataset;
 	LineBufferGDAL m_linebuf;
 
-	int NumBitmaps() { return m_Bitmaps.size(); }
+	int NumBitmaps() const { return m_Bitmaps.size(); }
 	BitmapInfo &GetBitmapInfo(int i) { return m_Bitmaps[i]; }
 	int NumBitmapsInMemory();
+	int NumBitmapsOnDisk();
 
 	void AllocMipMaps();
 	void DrawMipMaps();

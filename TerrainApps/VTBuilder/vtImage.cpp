@@ -379,7 +379,7 @@ void vtImage::SetDefaults()
 	m_pCanvas = NULL;
 }
 
-bool vtImage::GetExtent(DRECT &rect)
+bool vtImage::GetExtent(DRECT &rect) const
 {
 	rect = m_Extents;
 	return true;
@@ -662,7 +662,7 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	return true;
 }
 
-void vtImage::GetProjection(vtProjection &proj)
+void vtImage::GetProjection(vtProjection &proj) const
 {
 	proj = m_proj;
 }
@@ -789,6 +789,15 @@ int vtImage::NumBitmapsInMemory()
 	int count = 0;
 	for (unsigned int i = 0; i < m_Bitmaps.size(); i++)
 		if (m_Bitmaps[i].m_pBitmap != NULL)
+			count++;
+	return count;
+}
+
+int vtImage::NumBitmapsOnDisk()
+{
+	int count = 0;
+	for (unsigned int i = 0; i < m_Bitmaps.size(); i++)
+		if (m_Bitmaps[i].m_bOverlay)
 			count++;
 	return count;
 }
@@ -1083,7 +1092,7 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 	return true;
 }
 
-bool vtImage::WritePPM(const char *fname)
+bool vtImage::WritePPM(const char *fname) const
 {
 	vtBitmap *bm = m_Bitmaps[0].m_pBitmap;
 	if (!bm)
@@ -1106,7 +1115,7 @@ bool vtImage::WritePPM(const char *fname)
 	{
 		for (int i = 0; i < bm->GetWidth(); i++)
 		{
-			GetRGB(i, j, rgb);
+			bm->GetPixel24(i, j, rgb);
 			line[i*3+0] = rgb.r;
 			line[i*3+1] = rgb.g;
 			line[i*3+2] = rgb.b;
@@ -1335,7 +1344,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 			OpenProgressDialog(_("Reading file"), false);
 
 		m_linebuf.Setup(m_pDataset);
-		for (int i = 0; i < m_linebuf.m_iViewCount; i++)
+		for (int i = 0; i < m_linebuf.m_iViewCount && i < m_Bitmaps.size(); i++)
 			m_Bitmaps[i].m_bOverlay = true;
 
 		int iBigImage = g_Options.GetValueInt(TAG_MAX_MEGAPIXELS) * 1024 * 1024;
@@ -1390,7 +1399,6 @@ bool vtImage::LoadFromGDAL(const char *fname)
 					}
 					for (int iX = 0; iX < iXSize; iX++ )
 					{
-//						m_linebuf.GetRGB(iX, iy, rgb);
 						RGBi *data = m_linebuf.GetScanlineFromBuffer(iY, 0);
 						rgb = data[iX];
 						pBitmap->SetPixel24(iX, iY, rgb);
