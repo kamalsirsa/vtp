@@ -60,6 +60,7 @@ public:
 	void CreateToolbar();
 	void RefreshToolbars();
 	virtual void AddMainToolbars();
+	virtual void SetProjection(const vtProjection &p);
 
 protected:
 	void OnClose(wxCloseEvent &event);

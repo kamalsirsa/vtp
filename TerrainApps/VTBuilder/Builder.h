@@ -123,7 +123,7 @@ public:
 	bool DrawDisabled() { return m_bDrawDisabled; }
 
 	// Projection
-	void SetProjection(const vtProjection &p);
+	virtual void SetProjection(const vtProjection &p);
 	void GetProjection(vtProjection &p) { p = m_proj; }
 	vtProjection &GetAtProjection() { return m_proj; }
 	bool ConfirmValidCRS(vtProjection *pProj);

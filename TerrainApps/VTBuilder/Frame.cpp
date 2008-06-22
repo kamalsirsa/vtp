@@ -612,6 +612,22 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 
 }
 
+void MainFrame::SetProjection(const vtProjection &p)
+{
+	Builder::SetProjection(p);
+
+	// inform the world map view
+	GetView()->SetWMProj(p);
+
+	// inform the dialogs that care, if they're open
+	if (m_pDistanceDlg)
+		m_pDistanceDlg->SetProjection(m_proj);
+	if (m_pInstanceDlg)
+		m_pInstanceDlg->SetProjection(m_proj);
+	if (m_pProfileDlg)
+		m_pProfileDlg->SetProjection(m_proj);
+}
+
 bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 {
 	bool result = Builder::AddLayerWithCheck(pLayer, bRefresh);
