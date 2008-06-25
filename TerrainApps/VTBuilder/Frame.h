@@ -177,6 +177,7 @@ protected:
 	void OnFillSlow(wxCommandEvent& event);
 	void OnFillRegions(wxCommandEvent& event);
 	void OnScaleElevation(wxCommandEvent& event);
+	void OnVertOffsetElevation(wxCommandEvent& event);
 	void OnElevExport(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
 	void OnElevExportTiles(wxCommandEvent& event);
@@ -186,9 +187,9 @@ protected:
 	void OnUpdateElevSelect(wxUpdateUIEvent& event);
 	void OnUpdateViewSetArea(wxUpdateUIEvent& event);
 	void OnUpdateElevSetUnknown(wxUpdateUIEvent& event);
-	void OnUpdateScaleElevation(wxUpdateUIEvent& event);
 	void OnUpdateElevMergeTin(wxUpdateUIEvent& event);
 	void OnUpdateElevTrimTin(wxUpdateUIEvent& event);
+	void OnUpdateIsElevation(wxUpdateUIEvent& event);
 	void OnUpdateIsGrid(wxUpdateUIEvent& event);
 
 	void OnImageReplaceRGB(wxCommandEvent& event);

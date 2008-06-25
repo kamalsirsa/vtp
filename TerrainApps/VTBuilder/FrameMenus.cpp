@@ -172,6 +172,7 @@ EVT_MENU(ID_ELEV_FILL_FAST,			MainFrame::OnFillFast)
 EVT_MENU(ID_ELEV_FILL_SLOW,			MainFrame::OnFillSlow)
 EVT_MENU(ID_ELEV_FILL_REGIONS,		MainFrame::OnFillRegions)
 EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
+EVT_MENU(ID_ELEV_VERT_OFFSET,		MainFrame::OnVertOffsetElevation)
 EVT_MENU(ID_ELEV_EXPORT,			MainFrame::OnElevExport)
 EVT_MENU(ID_ELEV_EXPORT_TILES,		MainFrame::OnElevExportTiles)
 EVT_MENU(ID_ELEV_COPY,				MainFrame::OnElevCopy)
@@ -186,7 +187,8 @@ EVT_UPDATE_UI(ID_ELEV_SETUNKNOWN,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILL_FAST,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILL_SLOW,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILL_REGIONS,	MainFrame::OnUpdateIsGrid)
-EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateScaleElevation)
+EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateIsElevation)
+EVT_UPDATE_UI(ID_ELEV_VERT_OFFSET,	MainFrame::OnUpdateIsElevation)
 EVT_UPDATE_UI(ID_ELEV_EXPORT,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_EXPORT_TILES,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_COPY,			MainFrame::OnUpdateIsGrid)
@@ -455,6 +457,7 @@ void MainFrame::CreateMenus()
 	elevMenu->AppendCheckItem(ID_ELEV_SELECT, _("Se&lect Elevation Layer"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_SCALE, _("Sc&ale Elevation"));
+	elevMenu->Append(ID_ELEV_VERT_OFFSET, _("Offset Elevation Vertically"));
 	elevMenu->Append(ID_ELEV_REMOVERANGE, _("&Remove Elevation Range..."));
 
 	wxMenu *fillMenu = new wxMenu;
@@ -1773,6 +1776,11 @@ void MainFrame::OnUpdateRoadFlatten(wxUpdateUIEvent& event)
 //////////////////////////
 // Elevation
 
+void MainFrame::OnUpdateIsElevation(wxUpdateUIEvent& event)
+{
+	event.Enable(GetActiveElevLayer() != NULL);
+}
+
 void MainFrame::OnUpdateIsGrid(wxUpdateUIEvent& event)
 {
 	vtElevLayer *pEL = GetActiveElevLayer();
@@ -1876,9 +1884,6 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	vtElevLayer *el = GetActiveElevLayer();
 	if (!el)
 		return;
-	vtElevationGrid *grid = el->m_pGrid;
-	if (!grid)
-		return;
 
 	wxString str = wxGetTextFromUser(_("Please enter a scale factor"),
 		_("Scale Elevation"), _T("1.0"), this);
@@ -1895,16 +1900,53 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	if (fScale == 1.0f)
 		return;
 
-	grid->Scale(fScale, true);
+	vtElevationGrid *grid = el->m_pGrid;
+	if (grid)
+	{
+		grid->Scale(fScale, true);
+		el->ReRender();
+	}
+	vtTin2d *tin = el->m_pTin;
+	if (tin)
+	{
+		tin->Scale(fScale);
+	}
 	el->SetModified(true);
-	el->ReRender();
-
 	m_pView->Refresh();
 }
 
-void MainFrame::OnUpdateScaleElevation(wxUpdateUIEvent& event)
+void MainFrame::OnVertOffsetElevation(wxCommandEvent &event)
 {
-	event.Enable(GetActiveElevLayer() != NULL);
+	vtElevLayer *el = GetActiveElevLayer();
+	if (!el)
+		return;
+
+	wxString str = wxGetTextFromUser(_("Please enter an amout to offset"),
+		_("Offset Elevation Vertically"), _T("0.0"), this);
+	if (str == _T(""))
+		return;
+
+	float fValue;
+	fValue = atof(str.mb_str(wxConvUTF8));
+	if (fValue == 0.0f)
+	{
+		wxMessageBox(_("Couldn't parse the number you typed."));
+		return;
+	}
+
+	vtElevationGrid *grid = el->m_pGrid;
+	if (grid)
+	{
+		grid->VertOffset(fValue);
+		el->ReRender();
+	}
+	vtTin2d *tin = el->m_pTin;
+	if (tin)
+	{
+		tin->VertOffset(fValue);
+	}
+	el->SetModified(true);
+	m_pView->Refresh();
 }
 
 void MainFrame::OnElevExport(wxCommandEvent &event)
