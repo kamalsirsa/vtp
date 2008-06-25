@@ -396,29 +396,11 @@ void vtHeightFieldGrid3d::WorldToGrid(const FPoint3 &pos, IPoint2 &ipos)
  */
 float vtHeightFieldGrid3d::GetInterpolatedElevation(double findex_x, double findex_y) const
 {
-#if 0
-	// Allow the test point to fall 1/2 grid cell outside the grid, clamp to
-	//  edge, which effectively does a nearest-neighbor interpolation in that area.
-	if (findex_x < -0.5 || findex_x > m_iColumns-0.5)
-		return INVALID_ELEVATION;
-	if (findex_y < -0.5 || findex_y > m_iRows-0.5)
-		return INVALID_ELEVATION;
-
-	if (findex_x < 0)
-		findex_x = 0;
-	else if (findex_x > m_iColumns-1)
-		findex_x = m_iColumns-1;
-	if (findex_y < 0)
-		findex_y = 0;
-	else if (findex_y > m_iRows-1)
-		findex_y = m_iRows-1;
-#else
 	// Require the point to be inside the grid
 	if (findex_x < 0 || findex_x > m_iColumns-1)
 		return INVALID_ELEVATION;
 	if (findex_y < 0 || findex_y > m_iRows-1)
 		return INVALID_ELEVATION;
-#endif
 
 	int index_x = (int) findex_x;
 	int index_y = (int) findex_y;
