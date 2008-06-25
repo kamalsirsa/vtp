@@ -181,6 +181,15 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(
 	if (!LoadBTHeader(szFileName, err))
 		return false;
 
+	if (!LoadBTData(szFileName, progress_callback, err))
+		return false;
+
+	return true;
+}
+
+bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(int),
+								 vtElevGridError *err)
+{
 	gzFile fp = vtGZOpen(szFileName, "rb");
 	if (!fp)
 	{

@@ -3,7 +3,7 @@
 //
 // Class which represents a Triangulated Irregular Network.
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -399,11 +399,25 @@ bool vtTin::ComputeExtents()
 
 void vtTin::Offset(const DPoint2 &p)
 {
-	int size = m_vert.GetSize();
-	for (int j = 0; j < size; j++)
-	{
+	unsigned int size = m_vert.GetSize();
+	for (unsigned int j = 0; j < size; j++)
 		m_vert[j] += p;
-	}
+	ComputeExtents();
+}
+
+void vtTin::Scale(float fFactor)
+{
+	unsigned int size = m_z.GetSize();
+	for (unsigned int j = 0; j < size; j++)
+		m_z[j] *= fFactor;
+	ComputeExtents();
+}
+
+void vtTin::VertOffset(float fAmount)
+{
+	unsigned int size = m_z.GetSize();
+	for (unsigned int j = 0; j < size; j++)
+		m_z[j] += fAmount;
 	ComputeExtents();
 }
 

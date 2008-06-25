@@ -1,7 +1,7 @@
 //
 // vtTin.h
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -71,6 +71,8 @@ public:
 
 	bool ComputeExtents();
 	void Offset(const DPoint2 &p);
+	void Scale(float fFactor);
+	void VertOffset(float fAmount);
 	bool ConvertProjection(const vtProjection &proj_new);
 
 	// Implement required vtHeightField methods

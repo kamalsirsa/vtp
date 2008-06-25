@@ -61,6 +61,7 @@ public:
 		float bUpgradeToFloat, bool progress_callback(int) = NULL);
 	bool ReprojectExtents(const vtProjection &proj_new);
 	void Scale(float fScale, bool bDirect, bool bRecomputeExtents = true);
+	void VertOffset(float fAmount);
 	void ComputeHeightExtents();
 	void Offset(const DPoint2 &delta);
 	int ReplaceValue(float value1, float value2);
@@ -95,6 +96,8 @@ public:
 	bool LoadFromBT(const char *szFileName, bool progress_callback(int) = NULL,
 		vtElevGridError *err = NULL);
 	bool LoadBTHeader(const char *szFileName, vtElevGridError *err = NULL);
+	bool LoadBTData(const char *szFileName, bool progress_callback(int) = NULL,
+		vtElevGridError *err = NULL);
 
 	// Use GDAL to read a file
 	bool LoadWithGDAL(const char *szFileName, bool progress_callback(int) = NULL);
@@ -159,7 +162,7 @@ public:
 	void SetScale(float sc) { m_fVMeters = sc; }
 	float GetScale() const { return m_fVMeters; }
 
-	bool HasData() { return (m_pData != NULL || m_pFData != NULL); }
+	bool HasData() const { return (m_pData != NULL || m_pFData != NULL); }
 
 	// Implement vtHeightField methods
 	bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;

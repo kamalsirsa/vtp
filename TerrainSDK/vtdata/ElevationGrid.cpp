@@ -410,6 +410,24 @@ void vtElevationGrid::Scale(float fScale, bool bDirect, bool bRecomputeExtents)
 		ComputeHeightExtents();
 }
 
+/**
+ * Vertically offset the valid elevation values in the grid by a given amount.
+ *
+ * \param fAmount	The amount to be added to every elevation value.
+ */
+void vtElevationGrid::VertOffset(float fAmount)
+{
+	float f;
+	for (int i = 0; i < m_iColumns; i++)
+	{
+		for (int j = 0; j < m_iRows; j++)
+		{
+			f = GetFValue(i, j);
+			if (f != INVALID_ELEVATION)
+				SetFValue(i, j, f + fAmount);
+		}
+	}
+}
 
 /**
  * Scans the grid to compute the minimum and maximum height values.
@@ -1321,11 +1339,6 @@ float vtElevationGrid::GetFValueSafe(int i, int j) const
  */
 float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 {
-	// Quickly reject points well outside the greatest possible extents of
-	//  this grid, for speed.
-	//if (GetAreaExtents().ContainsPoint(p) == false)
-	//	return INVALID_ELEVATION;
-
 	// what data point in t is closest to (x,y)?
 	double local_x = (p.x - m_EarthExtents.left) / (m_EarthExtents.Width());
 	double local_y = (p.y - m_EarthExtents.bottom) / (m_EarthExtents.Height());
