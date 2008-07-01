@@ -1,7 +1,7 @@
 //
 // SceneOSG.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -109,6 +109,8 @@ public:
 	bool IsStereo() const;;
 	void SetStereoSeparation(float fSep);
 	float GetStereoSeparation() const;
+	void SetStereoFusionDistance(float fDist);
+	float GetStereoFusionDistance();
 
 	void ComputeViewMatrix(FMatrix4 &mat);
 

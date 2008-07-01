@@ -129,6 +129,17 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 
 	m_pOsgSceneView = new osgUtil::SceneView(displaySettings);
 
+	if (bStereo)
+	{
+		// displaySettings->getScreenDistance(); default is 0.5
+		// m_pOsgSceneView->getFusionDistanceMode(); default is PROPORTIONAL_TO_SCREEN_DISTANCE
+		// m_pOsgSceneView->getFusionDistanceValue(); default is 1.0
+		// The FusionDistanceValue is only used for USE_FUSION_DISTANCE_VALUE & PROPORTIONAL_TO_SCREEN_DISTANCE modes.
+
+		// We use real-world units for fusion distance value
+		m_pOsgSceneView->setFusionDistance(osgUtil::SceneView::USE_FUSION_DISTANCE_VALUE, 100.0f);
+	}
+
 	// From the OSG mailing list: You must specify the lighting mode in
 	// setDefaults() and override the default options. If you call
 	// setDefaults() with the default options, a headlight is added to the
@@ -368,6 +379,16 @@ float vtScene::GetStereoSeparation() const
 {
 	const osg::DisplaySettings* displaySettings = m_pOsgSceneView->getDisplaySettings();
 	return displaySettings->getEyeSeparation();
+}
+
+void vtScene::SetStereoFusionDistance(float fDist)
+{
+	m_pOsgSceneView->setFusionDistance(osgUtil::SceneView::USE_FUSION_DISTANCE_VALUE, fDist);
+}
+
+float vtScene::GetStereoFusionDistance()
+{
+	return m_pOsgSceneView->getFusionDistanceValue();
 }
 
 /**
