@@ -1,7 +1,7 @@
 //
 // Name: CameraDlg.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -41,6 +41,7 @@ BEGIN_EVENT_TABLE(CameraDlg,AutoDialog)
 	EVT_TEXT( ID_NEAR, CameraDlg::OnText )
 	EVT_TEXT( ID_FAR, CameraDlg::OnText )
 	EVT_TEXT( ID_EYE_SEP, CameraDlg::OnText )
+	EVT_TEXT( ID_FUSION_DIST, CameraDlg::OnText )
 	EVT_TEXT( ID_SPEED, CameraDlg::OnText )
 
 	EVT_TEXT( ID_LOD_VEG, CameraDlg::OnText )
@@ -51,6 +52,7 @@ BEGIN_EVENT_TABLE(CameraDlg,AutoDialog)
 	EVT_SLIDER( ID_NEARSLIDER, CameraDlg::OnNearSlider )
 	EVT_SLIDER( ID_FARSLIDER, CameraDlg::OnFarSlider )
 	EVT_SLIDER( ID_EYE_SEPSLIDER, CameraDlg::OnEyeSepSlider )
+	EVT_SLIDER( ID_FUSION_DIST_SLIDER, CameraDlg::OnFusionDistSlider )
 	EVT_SLIDER( ID_SPEEDSLIDER, CameraDlg::OnSpeedSlider )
 
 	EVT_SLIDER( ID_SLIDER_VEG, CameraDlg::OnSliderVeg )
@@ -76,6 +78,7 @@ CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_NEAR, &m_fNear);
 	AddNumValidator(ID_FAR, &m_fFar);
 	AddNumValidator(ID_EYE_SEP, &m_fEyeSep);
+	AddNumValidator(ID_FUSION_DIST, &m_fFusionDist);
 	AddNumValidator(ID_SPEED, &m_fSpeed);
 
 	GetSpeedUnits()->Append(_("Meters/sec"));
@@ -92,6 +95,7 @@ CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_NEARSLIDER, &m_iNear);
 	AddValidator(ID_FARSLIDER, &m_iFar);
 	AddValidator(ID_EYE_SEPSLIDER, &m_iEyeSep);
+	AddValidator(ID_FUSION_DIST_SLIDER, &m_iFusionDist);
 	AddValidator(ID_SPEEDSLIDER, &m_iSpeed);
 
 	AddValidator(ID_SLIDER_VEG, &m_iDistVeg);
@@ -129,6 +133,7 @@ void CameraDlg::SlidersToValues(int id)
 	if (id == ID_NEAR)	 m_fNear =   powf(10, (CLIP_MIN + m_iNear * CLIP_RANGE / 100));
 	if (id == ID_FAR)	 m_fFar =	 powf(10, (CLIP_MIN + m_iFar * CLIP_RANGE / 100));
 	if (id == ID_EYE_SEP)m_fEyeSep = powf(10, (SEP_MIN + m_iEyeSep * SEP_RANGE / 100));
+	if (id == ID_FUSION_DIST)m_fFusionDist = powf(10, (DIST_MIN + m_iFusionDist * DIST_RANGE / 100));
 	if (id == ID_SPEED)	 m_fSpeed =  powf(10, (SPEED_MIN + m_iSpeed * SPEED_RANGE / 100));
 
 	if (id == ID_LOD_VEG)	 m_fDistVeg =	 powf(10, (DIST_MIN + m_iDistVeg * DIST_RANGE / 100));
@@ -147,10 +152,11 @@ void CameraDlg::ValuesToSliders()
 	else
 		m_iFov =	(int) ((m_fFov - FOV_MIN) / FOV_RANGE * 100);
 
-	m_iNear =   (int) ((log10f(m_fNear) - CLIP_MIN) / CLIP_RANGE * 100);
-	m_iFar =	(int) ((log10f(m_fFar) - CLIP_MIN) / CLIP_RANGE * 100);
-	m_iEyeSep =	(int) ((log10f(m_fEyeSep) - SEP_MIN) / SEP_RANGE * 100);
-	m_iSpeed =  (int) ((log10f(m_fSpeed) - SPEED_MIN) / SPEED_RANGE * 100);
+	m_iNear =		(int) ((log10f(m_fNear) - CLIP_MIN) / CLIP_RANGE * 100);
+	m_iFar =		(int) ((log10f(m_fFar) - CLIP_MIN) / CLIP_RANGE * 100);
+	m_iEyeSep =		(int) ((log10f(m_fEyeSep) - SEP_MIN) / SEP_RANGE * 100);
+	m_iFusionDist =	(int) ((log10f(m_fFusionDist) - DIST_MIN) / DIST_RANGE * 100);
+	m_iSpeed =		(int) ((log10f(m_fSpeed) - SPEED_MIN) / SPEED_RANGE * 100);
 
 	m_iDistVeg =	(int) ((log10f(m_fDistVeg) - DIST_MIN) / DIST_RANGE * 100);
 	m_iDistStruct = (int) ((log10f(m_fDistStruct) - DIST_MIN) / DIST_RANGE * 100);
@@ -204,7 +210,10 @@ void CameraDlg::GetValues()
 	bool bStereo = scene->IsStereo();
 	GetEyeSepSlider()->Enable(bStereo);
 	GetEyeSep()->Enable(bStereo);
+	GetFusionDistSlider()->Enable(bStereo);
+	GetFusionDist()->Enable(bStereo);
 	m_fEyeSep = scene->GetStereoSeparation();
+	m_fFusionDist = scene->GetStereoFusionDistance();
 }
 
 void CameraDlg::SetValues()
@@ -245,6 +254,7 @@ void CameraDlg::SetValues()
 		t->SetLODDistance(TFT_ROADS, m_fDistRoad);
 	}
 	vtGetScene()->SetStereoSeparation(m_fEyeSep);
+	vtGetScene()->SetStereoFusionDistance(m_fFusionDist);
 }
 
 void CameraDlg::CameraChanged()
@@ -369,6 +379,16 @@ void CameraDlg::OnEyeSepSlider( wxCommandEvent &event )
 		return;
 	TransferDataFromWindow();
 	SlidersToValues(ID_EYE_SEP);
+	SetValues();
+	TransferToWindow();
+}
+
+void CameraDlg::OnFusionDistSlider( wxCommandEvent &event )
+{
+	if (!m_bSet)
+		return;
+	TransferDataFromWindow();
+	SlidersToValues(ID_FUSION_DIST);
 	SetValues();
 	TransferToWindow();
 }

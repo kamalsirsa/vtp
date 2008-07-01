@@ -1,7 +1,7 @@
 //
 // Name: CameraDlg.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -29,6 +29,8 @@ public:
 	// WDR: method declarations for CameraDlg
 	wxStaticText* GetFovText()  { return (wxStaticText*) FindWindow( ID_FOV_TEXT ); }
 	wxCheckBox* GetAccel()  { return (wxCheckBox*) FindWindow( ID_ACCEL ); }
+	wxSlider* GetFusionDistSlider()  { return (wxSlider*) FindWindow( ID_FUSION_DIST_SLIDER ); }
+	wxTextCtrl* GetFusionDist()  { return (wxTextCtrl*) FindWindow( ID_FUSION_DIST ); }
 	wxSlider* GetEyeSepSlider()  { return (wxSlider*) FindWindow( ID_EYE_SEPSLIDER ); }
 	wxTextCtrl* GetEyeSep()  { return (wxTextCtrl*) FindWindow( ID_EYE_SEP ); }
 	wxSlider* GetFovSlider()  { return (wxSlider*) FindWindow( ID_FOVSLIDER ); }
@@ -52,6 +54,7 @@ private:
 	int m_iNear;
 	int m_iFar;
 	int m_iEyeSep;
+	int m_iFusionDist;
 	int m_iSpeed;
 	int m_iDistVeg;
 	int m_iDistStruct;
@@ -64,6 +67,7 @@ private:
 	float m_fNear;
 	float m_fFar;
 	float m_fEyeSep;
+	float m_fFusionDist;
 	float m_fSpeed;
 	float m_fDistVeg;
 	float m_fDistStruct;
@@ -80,6 +84,7 @@ private:
 	void OnSpeedSlider( wxCommandEvent &event );
 	void OnFarSlider( wxCommandEvent &event );
 	void OnEyeSepSlider( wxCommandEvent &event );
+	void OnFusionDistSlider( wxCommandEvent &event );
 	void OnNearSlider( wxCommandEvent &event );
 	void OnFovSlider( wxCommandEvent &event );
 
