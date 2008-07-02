@@ -1533,13 +1533,17 @@ void vtTerrain::_CreateCulture()
 	if (m_Params.GetOverlay(fname, x, y))
 	{
 		vtImageSprite *pSprite = new vtImageSprite;
-		if (pSprite->Create(fname, true))	// blending true
+		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
+		if (path != "")
 		{
-			m_pOverlay = new vtGroup;
-			m_pOverlay->SetName2("Overlay");
-			IPoint2 size = pSprite->GetSize();
-			pSprite->SetPosition((float) x, (float) y+size.y, (float) x+size.x, (float) y);
-			m_pOverlay->AddChild(pSprite->GetNode());
+			if (pSprite->Create(fname, true))	// blending true
+			{
+				m_pOverlay = new vtGroup;
+				m_pOverlay->SetName2("Overlay");
+				IPoint2 size = pSprite->GetSize();
+				pSprite->SetPosition((float) x, (float) y+size.y, (float) x+size.x, (float) y);
+				m_pOverlay->AddChild(pSprite->GetNode());
+			}
 		}
 	}
 
