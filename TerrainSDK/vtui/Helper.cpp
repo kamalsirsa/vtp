@@ -515,7 +515,7 @@ vtString FormatCoord(bool bGeo, double val, bool minsec)
 			double min = (degree - (int)degree) * 60.0f;
 			double sec = (min - (int)min) * 60.0f;
 
-			str.Format("%d° %d' %.1f\"", (int)degree, (int)min, sec);
+			str.Format("%dÂ° %d' %.1f\"", (int)degree, (int)min, sec);
 		}
 		else
 			str.Format("%3.6lf", val);	// decimal degrees
