@@ -176,16 +176,13 @@ void BuilderApp::SetupLocale()
 	else
 		VTLOG(" failed.\n");
 
-	if (lang != wxLANGUAGE_ENGLISH_US)
-	{
-		VTLOG1("Attempting to load the 'VTBuilder.mo' catalog for the current locale.\n");
-		bSuccess = m_locale.AddCatalog(wxT("VTBuilder"));
-		if (bSuccess)
-			VTLOG(" succeeded.\n");
-		else
-			VTLOG(" not found.\n");
-		VTLOG1("\n");
-	}
+	VTLOG1("Attempting to load the 'VTBuilder.mo' catalog for the current locale.\n");
+	bSuccess = m_locale.AddCatalog(wxT("VTBuilder"));
+	if (bSuccess)
+		VTLOG(" succeeded.\n");
+	else
+		VTLOG(" not found.\n");
+	VTLOG1("\n");
 
 	// Test the local code
 //	wxString test = _("&File");
