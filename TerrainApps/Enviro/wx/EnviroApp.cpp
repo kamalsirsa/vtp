@@ -117,16 +117,13 @@ void EnviroApp::SetupLocale()
 	else
 		VTLOG(" failed.\n");
 
-	if (lang != wxLANGUAGE_ENGLISH_US)
-	{
-		VTLOG("Attempting to load the 'Enviro.mo' catalog for the current locale.\n");
-		bSuccess = m_locale.AddCatalog(wxT("Enviro"));
-		if (bSuccess)
-			VTLOG(" succeeded.\n");
-		else
-			VTLOG(" not found.\n");
-		VTLOG("\n");
-	}
+	VTLOG("Attempting to load the 'Enviro.mo' catalog for the current locale.\n");
+	bSuccess = m_locale.AddCatalog(wxT("Enviro"));
+	if (bSuccess)
+		VTLOG(" succeeded.\n");
+	else
+		VTLOG(" not found.\n");
+	VTLOG("\n");
 
 	// Load any other catalogs which may be specific to this application.
 	LoadAppCatalog(m_locale);
