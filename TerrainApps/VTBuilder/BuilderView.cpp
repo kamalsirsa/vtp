@@ -644,7 +644,7 @@ void BuilderView::DrawScaleBar(wxDC * p_DC)
 	if (lu == LU_DEGREES)
 	{
 		str.Printf(_T("%.6lg"), val);
-		unit_str = _T("°");
+		unit_str = wxString("Â°", wxConvUTF8);
 	}
 	else if (lu == LU_FEET_INT || lu == LU_FEET_US)
 	{
