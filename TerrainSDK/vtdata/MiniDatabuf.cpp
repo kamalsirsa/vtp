@@ -16,6 +16,11 @@
 #include <math.h>
 #include <float.h>
 
+// Headers for JPEG support, which uses the library "libjpeg"
+extern "C" {
+#include "jpeglib.h"
+}
+
 #define ERRORMSG() VTLOG1("Error!")
 
 int MiniDatabuf::MAGIC=12640;
@@ -249,6 +254,57 @@ void MiniDatabuf::savedata(const char *filename)
 	}
 }
 
+//
+// data is saved in JPEG format
+// \param quality	JPEG quality in the range of 0..100.
+//
+bool MiniDatabuf::savedataJPEG(const char *filename, int quality)
+{
+	struct jpeg_compress_struct cinfo;
+	struct jpeg_error_mgr jerr;
+
+	FILE *outfile = vtFileOpen(filename, "wb");
+	if (outfile == NULL)
+		return false;
+
+	/* Initialize the JPEG decompression object with default error handling. */
+	cinfo.err = jpeg_std_error(&jerr);
+	jpeg_create_compress(&cinfo);
+
+	/* Specify data source for decompression */
+	jpeg_stdio_dest(&cinfo, outfile);
+
+	// set parameters for compression
+	cinfo.image_width = xsize;	/* image width and height, in pixels */
+	cinfo.image_height = ysize;
+	cinfo.input_components = 3;	/* # of color components per pixel */
+	cinfo.in_color_space = JCS_RGB;	/* colorspace of input image */
+
+	// Now use the library's routine to set default compression parameters.
+	jpeg_set_defaults(&cinfo);
+
+	jpeg_set_quality(&cinfo, quality, TRUE /* limit to baseline-JPEG values */);
+
+	/* Start compressor */
+	jpeg_start_compress(&cinfo, TRUE);
+
+	/* Process each scanline */
+	int row_stride = cinfo.image_width * cinfo.input_components;
+	while (cinfo.next_scanline < cinfo.image_height)
+	{
+		JSAMPROW row_buffer = (JSAMPROW)data + cinfo.next_scanline * row_stride;
+		jpeg_write_scanlines(&cinfo, &row_buffer, 1);
+	}
+	jpeg_finish_compress(&cinfo);
+
+	/* After finish_compress, we can close the output file. */
+	fclose(outfile);
+
+	jpeg_destroy_compress(&cinfo);
+
+	return true;
+}
+
 // swap byte ordering between MSB and LSB
 void MiniDatabuf::swapbytes()
 {
@@ -307,7 +363,7 @@ int mapEPSG2MINI(int epsgdatum)
 bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 						const DRECT &area, const vtProjection &proj,
 						float minheight, float maxheight,
-						LODMap *lodmap)
+						LODMap *lodmap, bool bJPEG)
 {
 	FILE *fp = vtFileOpen(filename, "wb");
 	if (!fp)
@@ -388,6 +444,11 @@ bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 	int utmepsgdatum=proj.GetDatum();
 	int utmdatum=mapEPSG2MINI(utmepsgdatum);
 	fprintf(fp, "CoordSys_UTM=(%d,%d)\n",utmzone,(utmzone!=0)?utmdatum:0);
+
+	if (bJPEG)
+		fprintf(fp, "Format=JPEG\n");
+	else
+		fprintf(fp, "Format=DB\n");
 
 	fclose(fp);
 

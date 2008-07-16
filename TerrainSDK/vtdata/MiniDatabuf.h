@@ -78,6 +78,9 @@ public:
 	// native input/output
 	void savedata(const char *filename); // data is saved in MSB format
 
+	// JPEG output
+	bool savedataJPEG(const char *filename, int quality);
+
 protected:
 	static int MAGIC;
 
@@ -133,6 +136,6 @@ public:
 bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 						const DRECT &area, const vtProjection &proj,
 						float minheight=INVALID_ELEVATION, float maxheight=INVALID_ELEVATION,
-						LODMap *lodmap = NULL);
+						LODMap *lodmap = NULL, bool bJPEG = false);
 
 #endif
