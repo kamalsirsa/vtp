@@ -157,11 +157,18 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 #else
 			DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
 #endif
-
 			output_buf.savedata(fname);
 			output_buf.release();
-
 #endif
+		}
+		else if (opts.eCompressionType == TC_JPEG)
+		{
+			output_buf.type = 3;	// RGB
+			output_buf.bytes = iUncompressedSize;
+			output_buf.data = malloc(iUncompressedSize);
+			memcpy(output_buf.data, rgb_bytes, iUncompressedSize);
+			output_buf.savedata(fname, 1); // external format 1=JPEG
+			output_buf.release();
 		}
 	}
 	else

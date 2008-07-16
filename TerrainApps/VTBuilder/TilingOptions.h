@@ -10,7 +10,7 @@
 
 #include "ElevDrawOptions.h"
 
-enum TextureCompressionType { TC_OPENGL, TC_SQUISH_FAST, TC_SQUISH_SLOW };
+enum TextureCompressionType { TC_OPENGL, TC_SQUISH_FAST, TC_SQUISH_SLOW, TC_JPEG };
 
 /**
  * All the options needed to describe how to create a tileset.

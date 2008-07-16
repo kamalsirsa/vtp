@@ -67,6 +67,7 @@ public:
 	bool m_bCompressOGL;
 	bool m_bCompressSquishFast;
 	bool m_bCompressSquishSlow;
+	bool m_bCompressJPEG;
 
 	DRECT m_area;
 	bool m_bSetting;

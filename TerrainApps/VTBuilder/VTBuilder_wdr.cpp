@@ -2439,19 +2439,22 @@ wxSizer *TileDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxRadioButton *item41 = new wxRadioButton( parent, ID_TC_SQUISH_SLOW, _("Squish slow (6x slower, slightly fewer artifacts)"), wxDefaultPosition, wxDefaultSize, 0 );
     item36->Add( item41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
+    wxRadioButton *item42 = new wxRadioButton( parent, ID_TC_JPEG, _("JPEG"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item42, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
     item33->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item33, 0, wxALIGN_CENTER, 5 );
 
-    wxBoxSizer *item42 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item43 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item43 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item42->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item44 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item43->Add( item44, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item44 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item42->Add( item44, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item45 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item43->Add( item45, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item42, 0, wxALIGN_CENTER, 5 );
+    item0->Add( item43, 0, wxALIGN_CENTER, 5 );
 
     if (set_sizer)
     {

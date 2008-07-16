@@ -49,6 +49,7 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bCompressOGL = false;
 	m_bCompressSquishFast = false;
 	m_bCompressSquishSlow = false;
+	m_bCompressJPEG = false;
 
 	AddValidator(ID_TEXT_TO_FOLDER, &m_strToFile);
 	AddNumValidator(ID_COLUMNS, &m_iColumns);
@@ -76,6 +77,7 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_TC_OGL, &m_bCompressOGL);
 	AddValidator(ID_TC_SQUISH_FAST, &m_bCompressSquishFast);
 	AddValidator(ID_TC_SQUISH_SLOW, &m_bCompressSquishSlow);
+	AddValidator(ID_TC_JPEG, &m_bCompressJPEG);
 
 	UpdateEnables();
 
@@ -128,6 +130,7 @@ void TileDlg::SetTilingOptions(TilingOptions &opt)
 		m_bCompressOGL = (opt.eCompressionType == TC_OPENGL);
 		m_bCompressSquishFast = (opt.eCompressionType == TC_SQUISH_FAST);
 		m_bCompressSquishSlow = (opt.eCompressionType == TC_SQUISH_SLOW);
+		m_bCompressJPEG = (opt.eCompressionType == TC_JPEG);
 	}
 
 	m_iLODChoice = vt_log2(m_iLOD0Size)-5;
@@ -149,6 +152,7 @@ void TileDlg::GetTilingOptions(TilingOptions &opt) const
 	if (m_bCompressOGL) opt.eCompressionType = TC_OPENGL;
 	if (m_bCompressSquishFast) opt.eCompressionType = TC_SQUISH_FAST;
 	if (m_bCompressSquishSlow) opt.eCompressionType = TC_SQUISH_SLOW;
+	if (m_bCompressJPEG) opt.eCompressionType = TC_JPEG;
 }
 
 void TileDlg::SetArea(const DRECT &area)
