@@ -32,6 +32,7 @@ public:
 	float minheight, maxheight;	// for elevation tilesets only
 	vtProjection proj;
 	LODMap lodmap;
+	bool bJPEG;
 };
 #endif
 

@@ -164,6 +164,7 @@ TiledDatasetDescription::TiledDatasetDescription()
 	cols = rows = lod0size = 0;
 	earthextents.Empty();
 	minheight = maxheight = INVALID_ELEVATION;
+	bJPEG = false;
 }
 
 bool TiledDatasetDescription::Read(const char *dataset_fname)
@@ -219,6 +220,11 @@ bool TiledDatasetDescription::Read(const char *dataset_fname)
 				lodmap.set(i, rownum, mmin, mmax);
 				while (*c != 0 && *c != ' ' && *c != '\n') c++;
 			}
+		}
+		if (!strncmp(buf, "Format", 6))
+		{
+			if (*(buf+7) == 'J')
+				bJPEG = true;
 		}
 	}
 	fclose(fp);
@@ -365,6 +371,12 @@ void request_callback_async(unsigned char *mapfile, databuf *map,
 	else
 #endif
 	{
+		if (istexture && tg->m_image_info.bJPEG)
+		{
+			vtString fname = tg->m_folder_image + "/tile." + mapfile + ".jpg";
+//			map->loaddataJPEG(fname);
+			map->loaddata(fname);
+		}
 		// normal disk load
 		map->loaddata((char *)mapfile);
 	}
@@ -549,9 +561,17 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev,
 				hfields[i+cols*j] = NULL;
 
 			// Set up image LOD0 filename
-			str = m_folder_image;
-			str += str2;
-			str += ".db";
+			if (m_image_info.bJPEG)
+			{
+				str.Format("%d-%d-", i, j);
+			}
+			else
+			{
+				str = m_folder_image;
+				str += str2;
+				str += ".db";
+			}
+
 			if (m_image_info.lodmap.exists())
 			{
 				m_image_info.lodmap.get(i, j, mmin, mmax);
@@ -828,7 +848,12 @@ bool vtTiledGeom::CheckMapFile(const char *mapfile, bool bIsTexture)
 		if (bIsTexture)
 		{
 			// checking an image tile
-			sscanf((char *)mapfile + m_folder_image.GetLength(), "/tile.%d-%d.db%d", &col, &row, &lod);
+			if (m_image_info.bJPEG)
+				sscanf((char *)mapfile,
+				"%d-%d-%d", &col, &row, &lod);
+			else
+				sscanf((char *)mapfile + m_folder_image.GetLength(),
+				"/tile.%d-%d.db%d", &col, &row, &lod);
 			m_image_info.lodmap.get(col, row, mmin, mmax);
 			int num_lods = mmin-mmax+1;
 			return (lod < num_lods);
