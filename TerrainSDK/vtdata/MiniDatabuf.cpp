@@ -23,7 +23,14 @@ extern "C" {
 
 #define ERRORMSG() VTLOG1("Error!")
 
-int MiniDatabuf::MAGIC=12640;
+// magic identifier history
+// MAGIC1=12640; // original magic identifier of DB version 1
+// MAGIC2=13048; // backwards compatibility for DB version 2
+// MAGIC3=13091; // backwards compatibility for DB version 3
+// MAGIC4=13269; // backwards compatibility for DB version 4
+// MAGIC5=13398; // actual magic identifier of DB version 5
+
+int MiniDatabuf::MAGIC=13269;
 
 unsigned short int MiniDatabuf::INTEL_CHECK=1;
 
@@ -221,6 +228,10 @@ void MiniDatabuf::savedata(const char *filename)
 	// save optional scaling
 	fprintf(file,"scaling=%f\n",scaling);
 	fprintf(file,"bias=%f\n",bias);
+
+	// libmini format stuff
+	fprintf(file,"extformat=0\n");
+	fprintf(file,"implformat=0\n");
 
 	// save optional corner points in Lat/Lon
 	fprintf(file,"LLWGS84_swx=%f\n",LLWGS84_swx);
