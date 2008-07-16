@@ -144,7 +144,7 @@ public:
 	GDALDataset *m_pDataset;
 	LineBufferGDAL m_linebuf;
 
-	int NumBitmaps() const { return m_Bitmaps.size(); }
+	size_t NumBitmaps() const { return m_Bitmaps.size(); }
 	BitmapInfo &GetBitmapInfo(int i) { return m_Bitmaps[i]; }
 	int NumBitmapsInMemory();
 	int NumBitmapsOnDisk();
