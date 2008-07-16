@@ -231,6 +231,10 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 				}
 				wxString layer_fname(path, wxConvUTF8);
 
+				// Catch older projects that might not be correct UTF8
+				if (layer_fname == _T(""))
+					layer_fname = wxString(path, *wxConvCurrent);
+
 				int numlayers = NumLayers();
 				if (bImport)
 					ImportDataFromArchive(ltype, layer_fname, false);
@@ -638,6 +642,8 @@ bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
 	return bGood;
 }
 
+std::vector<vtElevationGrid*> g_GridMRU;
+
 /**
  * From a set of elevation layers, pick the valid elevation that occurs latest
  *  in the set.
@@ -653,6 +659,31 @@ float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 		vtTin2d *tin = elev->m_pTin;
 		if (grid)
 		{
+			// The bounds-test would occur later, but we need to excluse this
+			//  grid early to avoid paging it in unnecessarily.
+			if (!grid->GetEarthExtents().ContainsPoint(p))
+				continue;
+
+			// Check if grid is in memory
+			if (!grid->HasData())
+			{
+				size_t num_loaded = g_GridMRU.size();
+				unsigned int limit = vtElevLayer::m_iLoadLimit;
+				if (num_loaded > 1 && num_loaded == limit)
+				{
+					// Unload the least recently used (LRU) at the start of list
+					vtElevationGrid *oldgrid = g_GridMRU[0];
+					oldgrid->FreeData();
+					g_GridMRU.erase(g_GridMRU.begin());
+				}
+
+				//OpenProgressDialog(_T("Reading BT file"));
+				wxString &fname = elev->GetLayerFilename();
+				grid->LoadBTData((const char *)fname.mb_str(wxConvUTF8), progress_callback);
+				//CloseProgressDialog()
+
+				g_GridMRU.push_back(grid);
+			}
 			fData = grid->GetFilteredValue(p);
 			if (fData != INVALID_ELEVATION)
 				fBestData = fData;
@@ -724,9 +755,9 @@ void ElevLayerArrayRange(std::vector<vtElevLayer*> &elevs,
 	maxval = fMax;
 }
 
-//
-// sample all elevation layers into this one
-//
+/**
+ * Sample all elevation layers into a target layer.
+ */
 bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 {
 	VTLOG1(" SampleCurrentTerrains\n");
@@ -767,7 +798,7 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 		}
 	}
 
-	// iterate through the vertices of the new terrain
+	// iterate through the heixels of the new terrain
 	DPoint2 p;
 	wxString str;
 	for (i = 0; i < iColumns; i++)
