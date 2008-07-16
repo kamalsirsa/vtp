@@ -810,7 +810,7 @@ void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 	if (dRes != 0.0)
 	{
 		// What overview resolution is most appropriate
-		for (int i = 0; i < m_Bitmaps.size(); i++)
+		for (size_t i = 0; i < m_Bitmaps.size(); i++)
 		{
 			double d2 = fabs(dRes - m_Bitmaps[i].m_Spacing.x);
 			if (d2 < diff)
@@ -903,7 +903,7 @@ void vtImage::AllocMipMaps()
 	IPoint2 size = m_Bitmaps[0].m_Size;
 	int depth = m_Bitmaps[0].m_pBitmap->GetDepth();
 
-	for (int m = 1; m < m_Bitmaps.size(); m++)
+	for (size_t m = 1; m < m_Bitmaps.size(); m++)
 	{
 		if (!m_Bitmaps[m].m_pBitmap)
 		{
@@ -917,7 +917,7 @@ void vtImage::AllocMipMaps()
 void vtImage::DrawMipMaps()
 {
 	vtBitmap *big = m_Bitmaps[0].m_pBitmap;
-	for (int m = 1; m < m_Bitmaps.size(); m++)
+	for (size_t m = 1; m < m_Bitmaps.size(); m++)
 	{
 		vtBitmap *smaller = m_Bitmaps[m].m_pBitmap;
 		SampleMipLevel(big, smaller);
@@ -1111,9 +1111,9 @@ bool vtImage::WritePPM(const char *fname) const
 	unsigned char *line = new unsigned char[line_length];
 
 	RGBi rgb;
-	for (int j = 0; j < bm->GetHeight(); j++)
+	for (unsigned int j = 0; j < bm->GetHeight(); j++)
 	{
-		for (int i = 0; i < bm->GetWidth(); i++)
+		for (unsigned int i = 0; i < bm->GetWidth(); i++)
 		{
 			bm->GetPixel24(i, j, rgb);
 			line[i*3+0] = rgb.r;
@@ -1731,6 +1731,7 @@ bool vtImage::WriteGridOfTilePyramids(TilingOptions &opts, BuilderView *pView)
 
 	// Check that options are valid
 	CheckCompressionMethod(opts);
+	bool bJPEG = (opts.bUseTextureCompression && opts.eCompressionType == TC_JPEG);
 
 #if USE_OPENGL
 	if (opts.bUseTextureCompression && opts.eCompressionType == TC_OPENGL)
@@ -1825,7 +1826,7 @@ bool vtImage::WriteGridOfTilePyramids(TilingOptions &opts, BuilderView *pView)
 		// Write .ini file
 		WriteTilesetHeader(opts.fname, opts.cols, opts.rows,
 			opts.lod0size, area, m_proj, INVALID_ELEVATION, INVALID_ELEVATION,
-			&lod_existence_map);
+			&lod_existence_map, bJPEG);
 
 		clock_t tm2 = clock();
 		float elapsed = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
@@ -1861,7 +1862,8 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 	DPoint2 spacing = tile_dim / (tilesize-1);
 
 	// Write DB file (libMini's databuf format)
-	vtString fname = MakeFilenameDB(dirname, col, row, lod);
+	bool bJPEG = (opts.bUseTextureCompression && opts.eCompressionType == TC_JPEG);
+	vtString fname = MakeFilenameDB(dirname, col, row, lod, bJPEG);
 
 	// make a message for the progress dialog
 	wxString msg;

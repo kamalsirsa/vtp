@@ -167,7 +167,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 			output_buf.bytes = iUncompressedSize;
 			output_buf.data = malloc(iUncompressedSize);
 			memcpy(output_buf.data, rgb_bytes, iUncompressedSize);
-			output_buf.savedata(fname, 1); // external format 1=JPEG
+			output_buf.savedataJPEG(fname, 99); // quality=99
 			output_buf.release();
 		}
 	}

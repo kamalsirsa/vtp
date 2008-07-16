@@ -163,7 +163,7 @@ void vtImageLayer::GetPropertyText(wxString &strIn)
 
 	strIn += _("Bitmaps:");
 	strIn += _T("\n");
-	for (int i = 0; i < m_pImage->NumBitmaps(); i++)
+	for (size_t i = 0; i < m_pImage->NumBitmaps(); i++)
 	{
 		BitmapInfo &bmi = m_pImage->GetBitmapInfo(i);
 

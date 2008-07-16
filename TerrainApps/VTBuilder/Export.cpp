@@ -672,6 +672,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 
 	// Check that options are valid
 	CheckCompressionMethod(opts);
+	bool bJPEG = (opts.bUseTextureCompression && opts.eCompressionType == TC_JPEG);
 
 	// Size of each rectangular tile area
 	DPoint2 tile_dim(m_area.Width()/opts.cols, m_area.Height()/opts.rows);
@@ -929,7 +930,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 
 				for (int k = 0; k < total_lods; k++)
 				{
-					vtString fname = MakeFilenameDB(dirname_image, col, row, k);
+					vtString fname = MakeFilenameDB(dirname_image, col, row, k, bJPEG);
 
 					int tilesize = base_tilesize >> k;
 
@@ -988,7 +989,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 				int lod = start_lod + k;
 				int tilesize = base_tilesize >> k;
 
-				vtString fname = MakeFilenameDB(dirname, col, row, k);
+				vtString fname = MakeFilenameDB(dirname, col, row, k, false);
 
 				// make a message for the progress dialog
 				wxString msg;
@@ -1037,7 +1038,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 
 	// Write .ini file
 	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
-		m_area, m_proj, minheight, maxheight, &lod_existence_map))
+		m_area, m_proj, minheight, maxheight, &lod_existence_map, false))
 	{
 		vtDestroyDir(dirname);
 		return false;
@@ -1047,7 +1048,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 	if (opts.bCreateDerivedImages)
 		WriteTilesetHeader(opts.fname_images, opts.cols, opts.rows,
 			opts.lod0size, m_area, m_proj, INVALID_ELEVATION, INVALID_ELEVATION,
-			&lod_existence_map);
+			&lod_existence_map, bJPEG);
 
 #if USE_OPENGL
 	if (frame)
@@ -1066,6 +1067,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 
 	// Check that options are valid
 	CheckCompressionMethod(opts);
+	bool bJPEG = (opts.bUseTextureCompression && opts.eCompressionType == TC_JPEG);
 
 	// Gather array of existing image layers we will sample from
 	unsigned int l, layers = m_Layers.GetSize(), num_image = 0;
@@ -1215,7 +1217,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 					}
 				}
 
-				vtString fname = MakeFilenameDB(dirname, col, row, k);
+				vtString fname = MakeFilenameDB(dirname, col, row, k, bJPEG);
 
 				// make a message for the progress dialog
 				wxString msg;
@@ -1266,7 +1268,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 
 	// Write .ini file
 	WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
-		m_area, m_proj, INVALID_ELEVATION, INVALID_ELEVATION, &lod_existence_map);
+		m_area, m_proj, INVALID_ELEVATION, INVALID_ELEVATION, &lod_existence_map, bJPEG);
 
 	clock_t tm2 = clock();
 	float elapsed = ((float)tm2 - tm1)/CLOCKS_PER_SEC;

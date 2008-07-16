@@ -1502,6 +1502,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 	LODMap lod_existence_map(opts.cols, opts.rows);
 
 	bool bFloat = m_pGrid->IsFloatMode();
+	bool bJPEG = (opts.bUseTextureCompression && opts.eCompressionType == TC_JPEG);
 
 	int i, j, lod;
 	int total = opts.rows * opts.cols, done = 0;
@@ -1613,7 +1614,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 
 				for (int k = 0; k < opts.numlods; k++)
 				{
-					vtString fname = MakeFilenameDB(dirname_image, col, row, k);
+					vtString fname = MakeFilenameDB(dirname_image, col, row, k, bJPEG);
 
 					int tilesize = base_tilesize >> k;
 
@@ -1651,7 +1652,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 			{
 				int tilesize = base_tilesize >> lod;
 
-				vtString fname = MakeFilenameDB(dirname, col, row, lod);
+				vtString fname = MakeFilenameDB(dirname, col, row, lod, false);
 
 				// make a message for the progress dialog
 				wxString msg;
@@ -1693,7 +1694,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 
 	// Write .ini file
 	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
-		area, proj, minheight, maxheight, &lod_existence_map))
+		area, proj, minheight, maxheight, &lod_existence_map, false))
 	{
 		vtDestroyDir(dirname);
 		return false;
@@ -1703,7 +1704,8 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 	{
 		// Write .ini file for images
 		WriteTilesetHeader(opts.fname_images, opts.cols, opts.rows,
-			opts.lod0size, area, proj, INVALID_ELEVATION, INVALID_ELEVATION, &lod_existence_map);
+			opts.lod0size, area, proj, INVALID_ELEVATION, INVALID_ELEVATION,
+			&lod_existence_map, bJPEG);
 	}
 
 #if USE_OPENGL

@@ -6,7 +6,7 @@
 #ifndef LocalDatabuf_H
 #define LocalDatabuf_H
 
-#define USE_LIBMINI_DATABUF 1
+#define USE_LIBMINI_DATABUF 0
 
 #include "vtdata/MiniDatabuf.h"
 
