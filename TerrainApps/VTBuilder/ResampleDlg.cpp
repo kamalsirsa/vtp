@@ -196,7 +196,10 @@ void ResampleDlg::OnTileOptions( wxCommandEvent &event )
 		dlg.GetTilingOptions(m_tileopts);
 		FormatTilingString();
 		RecomputeSize();
+
+		m_bSetting = true;
 		TransferDataToWindow();
+		m_bSetting = false;
 	}
 }
 
