@@ -78,7 +78,8 @@ int GuessZoneFromGeo(const DPoint2 &pos);
 
 /////
 
-vtString MakeFilenameDB(const vtString &base, int col, int row, int relative_lod);
+vtString MakeFilenameDB(const vtString &base, int col, int row,
+						int relative_lod, bool bJPEG);
 
 /////
 wxString StartOfFilename(const wxString &strFullPath);

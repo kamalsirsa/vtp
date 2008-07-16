@@ -722,15 +722,21 @@ int GuessZoneFromGeo(const DPoint2 &pos)
 
 //////////////////////////////////////
 
-// Assemble the filepath for a libMini .db file
-vtString MakeFilenameDB(const vtString &base, int col, int row, int relative_lod)
+// Assemble the filepath for a libMini .db file (or .jpg file)
+vtString MakeFilenameDB(const vtString &base, int col, int row,
+						int relative_lod, bool bJPEG)
 {
 	vtString fname = base, str;
 	fname += '/';
-	if (relative_lod == 0)
-		str.Format("tile.%d-%d.db", col, row);
+	if (bJPEG)
+		str.Format("tile.%d-%d-%d.jpg", col, row, relative_lod);
 	else
-		str.Format("tile.%d-%d.db%d", col, row, relative_lod);
+	{
+		if (relative_lod == 0)
+			str.Format("tile.%d-%d.db", col, row);
+		else
+			str.Format("tile.%d-%d.db%d", col, row, relative_lod);
+	}
 	fname += str;
 	return fname;
 }
