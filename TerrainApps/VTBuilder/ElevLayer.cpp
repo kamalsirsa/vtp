@@ -499,10 +499,20 @@ void vtElevLayer::DrawLayerOutline(wxDC *pDC, vtScaledView *pView)
 {
 	wxRect screenrect = pView->WorldToCanvas(m_pGrid->GetAreaExtents());
 
-	// draw a simple crossed box with green lines
-	wxPen Pen1(wxColor(0x00, 0x80, 0x00), 1, wxSOLID);
+	if (m_pGrid && !m_pGrid->HasData())
+	{
+		// draw darker, dotted lines for a grid not in memory
+		wxPen Pen1(wxColor(0x00, 0x40, 0x00), 1, wxDOT);
+		pDC->SetPen(Pen1);
+	}
+	else
+	{
+		// draw a simple crossed box with green lines
+		wxPen Pen1(wxColor(0x00, 0x80, 0x00), 1, wxSOLID);
+		pDC->SetPen(Pen1);
+	}
+
 	pDC->SetLogicalFunction(wxCOPY);
-	pDC->SetPen(Pen1);
 
 	screenrect.x++;
 	screenrect.y++;
