@@ -642,8 +642,6 @@ bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
 	return bGood;
 }
 
-std::vector<vtElevationGrid*> g_GridMRU;
-
 /**
  * From a set of elevation layers, pick the valid elevation that occurs latest
  *  in the set.
@@ -666,24 +664,8 @@ float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 
 			// Check if grid is in memory
 			if (!grid->HasData())
-			{
-				size_t num_loaded = g_GridMRU.size();
-				unsigned int limit = vtElevLayer::m_iLoadLimit;
-				if (num_loaded > 1 && num_loaded == limit)
-				{
-					// Unload the least recently used (LRU) at the start of list
-					vtElevationGrid *oldgrid = g_GridMRU[0];
-					oldgrid->FreeData();
-					g_GridMRU.erase(g_GridMRU.begin());
-				}
+				CacheLoadGridData(elev);
 
-				//OpenProgressDialog(_T("Reading BT file"));
-				wxString &fname = elev->GetLayerFilename();
-				grid->LoadBTData((const char *)fname.mb_str(wxConvUTF8), progress_callback);
-				//CloseProgressDialog()
-
-				g_GridMRU.push_back(grid);
-			}
 			fData = grid->GetFilteredValue(p);
 			if (fData != INVALID_ELEVATION)
 				fBestData = fData;

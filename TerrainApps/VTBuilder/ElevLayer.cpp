@@ -199,26 +199,18 @@ bool vtElevLayer::OnLoad()
 		m_pGrid = new vtElevationGrid;
 		vtElevGridError err;
 
-		if (m_iLoadLimit != -1)
+		vtString fname_utf = fname.mb_str(wxConvUTF8);
+		success = CacheOpenGrid(m_pGrid, fname_utf, &err);
+		if (!success && err == EGE_READ_CRS)
 		{
-			// Limit ourselves to a fixed number of BT files loaded, deferred
-			//  until needed.
-			success = m_pGrid->LoadBTHeader(fname.mb_str(wxConvUTF8), &err);
-		}
-		else
-		{
-			success = m_pGrid->LoadFromBT(fname.mb_str(wxConvUTF8), progress_callback, &err);
-			if (!success && err == EGE_READ_CRS)
-			{
-				// Missing prj file
-				wxString str = _("CRS file");
-				str += _T(" (");
-				RemoveFileExtensions(fname);
-				str += fname;
-				str += _T(".prj) ");
-				str += _("is missing or unreadable.\n");
-				wxMessageBox(str);
-			}
+			// Missing prj file
+			wxString str = _("CRS file");
+			str += _T(" (");
+			RemoveFileExtensions(fname);
+			str += fname;
+			str += _T(".prj) ");
+			str += _("is missing or unreadable.\n");
+			wxMessageBox(str);
 		}
 		if (success)
 		{
@@ -1842,6 +1834,47 @@ bool MatchTilingToResolution(const DRECT &original_area, const DPoint2 &resoluti
 	new_area.right  = center.x + 0.5 * new_size.x;
 	new_area.bottom = center.y - 0.5 * new_size.y;
 	new_area.top	= center.y + 0.5 * new_size.y;
+
+	return true;
+}
+
+std::vector<vtElevationGrid*> g_GridMRU;
+
+bool CacheOpenGrid(vtElevationGrid *pGrid, const char *fname, vtElevGridError *err)
+{
+	if (vtElevLayer::m_iLoadLimit != -1)
+	{
+		// Limit ourselves to a fixed number of BT files loaded, deferred
+		//  until needed.
+		return pGrid->LoadBTHeader(fname, err);
+	}
+	else
+	{
+		return pGrid->LoadFromBT(fname, progress_callback, err);
+	}
+}
+
+bool CacheLoadGridData(vtElevLayer *elev)
+{
+	vtElevationGrid *grid = elev->m_pGrid;
+
+	size_t num_loaded = g_GridMRU.size();
+	unsigned int limit = vtElevLayer::m_iLoadLimit;
+	if (num_loaded > 0 && num_loaded == limit)
+	{
+		// Unload the least recently used (LRU) at the start of list
+		vtElevationGrid *oldgrid = g_GridMRU[0];
+		oldgrid->FreeData();
+		g_GridMRU.erase(g_GridMRU.begin());
+	}
+
+	//OpenProgressDialog(_T("Reading BT file"));
+	wxString &fname = elev->GetLayerFilename();
+	if (!grid->LoadBTData((const char *)fname.mb_str(wxConvUTF8), progress_callback))
+		return false;
+	//CloseProgressDialog()
+
+	g_GridMRU.push_back(grid);
 
 	return true;
 }

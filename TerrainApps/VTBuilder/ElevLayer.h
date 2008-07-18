@@ -134,6 +134,8 @@ FPoint3 LightDirection(float angle, float direction);
 bool MatchTilingToResolution(const DRECT &original_area, const DPoint2 &resolution,
 							int &iTileSize, bool bGrow, bool bShrink, DRECT &new_area,
 							IPoint2 &tiling);
+bool CacheOpenGrid(vtElevationGrid *pGrid, const char *fname, enum vtElevGridError *err);
+bool CacheLoadGridData(vtElevLayer *elev);
 
 #endif	// ELEVLAYER_H
 
