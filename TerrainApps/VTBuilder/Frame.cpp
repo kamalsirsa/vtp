@@ -762,6 +762,10 @@ void MainFrame::ApplyOptions()
 	vtImage::bTreatBlackAsTransparent = g_Options.GetValueBool(TAG_BLACK_TRANSP);
 	vtElevLayer::m_bDefaultGZip = g_Options.GetValueBool(TAG_DEFAULT_GZIP_BT);
 	vtElevLayer::m_draw.SetFromTags(g_Options);
+	if (g_Options.GetValueBool(TAG_DELAY_LOAD_GRID))
+		vtElevLayer::m_iLoadLimit = g_Options.GetValueInt(TAG_MAX_LOAD_GRID);
+	else
+		vtElevLayer::m_iLoadLimit = -1;
 
 	vtString str;
 	if (g_Options.GetValueString("UI_Layout", str))

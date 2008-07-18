@@ -27,14 +27,16 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	// WDR: method declarations for PrefDlg
+	void UpdateEnable();
 
 public:
 	// WDR: member variable declarations for PrefDlg
-	bool b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14;
-	int i1, i2, i3;
+	bool b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15;
+	int i1, i2, i3, i4;
 
 private:
 	// WDR: handler declarations for PrefDlg
+	void OnInitDialog(wxInitDialogEvent& event);
 	void OnCheck( wxCommandEvent &event );
 	void OnRadio( wxCommandEvent &event );
 	void OnOK( wxCommandEvent &event );

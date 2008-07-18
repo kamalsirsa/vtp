@@ -19,6 +19,7 @@
 // WDR: event table for PrefDlg
 
 BEGIN_EVENT_TABLE(PrefDlg,AutoDialog)
+	EVT_INIT_DIALOG (PrefDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, PrefDlg::OnOK )
 	EVT_RADIOBUTTON( ID_RADIO1, PrefDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO2, PrefDlg::OnRadio )
@@ -33,6 +34,7 @@ BEGIN_EVENT_TABLE(PrefDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_RADIO11, PrefDlg::OnRadio )
 	EVT_CHECKBOX( ID_BLACK_TRANSP, PrefDlg::OnCheck )
 	EVT_CHECKBOX( ID_DEFLATE_TIFF, PrefDlg::OnCheck )
+	EVT_CHECKBOX( ID_DELAY_LOAD, PrefDlg::OnCheck )
 END_EVENT_TABLE()
 
 PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -56,12 +58,25 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_BLACK_TRANSP, &b12);
 	AddValidator(ID_DEFLATE_TIFF, &b13);
 	AddValidator(ID_BT_GZIP, &b14);
+	AddValidator(ID_DELAY_LOAD, &b15);
 	AddNumValidator(ID_SAMPLING_N, &i1);
 	AddNumValidator(ID_MAX_MEGAPIXELS, &i2);
 	AddNumValidator(ID_ELEV_MAX_SIZE, &i3);
+	AddNumValidator(ID_MAX_LOAD_GRID, &i4);
 }
 
+void PrefDlg::UpdateEnable()
+{
+	FindWindow(ID_MAX_LOAD_GRID)->Enable(b15);
+}
+
+
 // WDR: handler implementations for PrefDlg
+
+void PrefDlg::OnInitDialog(wxInitDialogEvent& event)
+{
+	UpdateEnable();
+}
 
 void PrefDlg::OnRadio( wxCommandEvent &event )
 {
@@ -71,6 +86,8 @@ void PrefDlg::OnRadio( wxCommandEvent &event )
 void PrefDlg::OnCheck( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
+
+	UpdateEnable();
 }
 
 void PrefDlg::OnOK( wxCommandEvent &event )

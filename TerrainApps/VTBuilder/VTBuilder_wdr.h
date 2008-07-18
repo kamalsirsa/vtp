@@ -315,28 +315,30 @@ const int ID_RADIO3 = 10223;
 const int ID_RADIO4 = 10224;
 const int ID_RADIO5 = 10225;
 const int ID_MAX_MEGAPIXELS = 10226;
-const int ID_RADIO6 = 10227;
-const int ID_RADIO7 = 10228;
-const int ID_RADIO8 = 10229;
-const int ID_RADIO9 = 10230;
-const int ID_RADIO10 = 10231;
-const int ID_RADIO11 = 10232;
-const int ID_ELEV_MAX_SIZE = 10233;
-const int ID_SAMPLING_N = 10234;
-const int ID_BLACK_TRANSP = 10235;
-const int ID_DEFLATE_TIFF = 10236;
+const int ID_SAMPLING_N = 10227;
+const int ID_BLACK_TRANSP = 10228;
+const int ID_DEFLATE_TIFF = 10229;
+const int ID_RADIO6 = 10230;
+const int ID_RADIO7 = 10231;
+const int ID_RADIO8 = 10232;
+const int ID_RADIO9 = 10233;
+const int ID_RADIO10 = 10234;
+const int ID_RADIO11 = 10235;
+const int ID_ELEV_MAX_SIZE = 10236;
 const int ID_BT_GZIP = 10237;
+const int ID_DELAY_LOAD = 10238;
+const int ID_MAX_LOAD_GRID = 10239;
 wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-const int ID_TEXT_DIST_CUTOFF = 10238;
+const int ID_TEXT_DIST_CUTOFF = 10240;
 wxSizer *GenGridDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
 // Declare toolbar functions
 
-const int ID_VIEW_LAYER_UP = 10239;
-const int ID_VIEW_LAYER_DOWN = 10240;
+const int ID_VIEW_LAYER_UP = 10241;
+const int ID_VIEW_LAYER_DOWN = 10242;
 void MainToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

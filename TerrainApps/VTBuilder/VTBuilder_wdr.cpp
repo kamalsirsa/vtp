@@ -2678,114 +2678,139 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("When importing data that lacks a CRS:") );
-    wxStaticBoxSizer *item1 = new wxStaticBoxSizer( item2, wxVERTICAL );
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxRadioButton *item3 = new wxRadioButton( parent, ID_RADIO1, _("Use the current CRS"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    item1->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item2 = new wxBoxSizer( wxVERTICAL );
 
-    wxRadioButton *item4 = new wxRadioButton( parent, ID_RADIO2, _("Ask"), wxDefaultPosition, wxDefaultSize, 0 );
-    item1->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticBox *item4 = new wxStaticBox( parent, -1, _("When importing data that lacks a CRS:") );
+    wxStaticBoxSizer *item3 = new wxStaticBoxSizer( item4, wxVERTICAL );
 
-    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item5 = new wxRadioButton( parent, ID_RADIO1, _("Use the current CRS"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item3->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticBox *item6 = new wxStaticBox( parent, -1, _("When loading an image which is very large:") );
-    wxStaticBoxSizer *item5 = new wxStaticBoxSizer( item6, wxVERTICAL );
+    wxRadioButton *item6 = new wxRadioButton( parent, ID_RADIO2, _("Ask"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item6, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item7 = new wxRadioButton( parent, ID_RADIO3, _("Load it into memory"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    item5->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item2->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item8 = new wxRadioButton( parent, ID_RADIO4, _("Use out-of-core access"), wxDefaultPosition, wxSize(220,-1), 0 );
-    item5->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticBox *item8 = new wxStaticBox( parent, -1, _("When loading an image which is very large:") );
+    wxStaticBoxSizer *item7 = new wxStaticBoxSizer( item8, wxVERTICAL );
 
-    wxRadioButton *item9 = new wxRadioButton( parent, ID_RADIO5, _("Ask"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item9 = new wxRadioButton( parent, ID_RADIO3, _("Load it into memory"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item7->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
+    wxRadioButton *item10 = new wxRadioButton( parent, ID_RADIO4, _("Use out-of-core access"), wxDefaultPosition, wxSize(220,-1), 0 );
+    item7->Add( item10, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("Large image is more than:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item10->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item11 = new wxRadioButton( parent, ID_RADIO5, _("Ask"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item12 = new wxTextCtrl( parent, ID_MAX_MEGAPIXELS, wxT(""), wxDefaultPosition, wxSize(32,-1), 0 );
-    item10->Add( item12, 0, wxALIGN_CENTER|wxTOP|wxBOTTOM, 5 );
+    wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("megapixels"), wxDefaultPosition, wxDefaultSize, 0 );
-    item10->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("Large image is more than:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item12->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item5->Add( item10, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxTextCtrl *item14 = new wxTextCtrl( parent, ID_MAX_MEGAPIXELS, wxT(""), wxDefaultPosition, wxSize(32,-1), 0 );
+    item12->Add( item14, 0, wxALIGN_CENTER|wxTOP|wxBOTTOM, 5 );
 
-    item0->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("megapixels"), wxDefaultPosition, wxDefaultSize, 0 );
+    item12->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticBox *item15 = new wxStaticBox( parent, -1, _("When reprojecting an integer elevation grid:") );
-    wxStaticBoxSizer *item14 = new wxStaticBoxSizer( item15, wxVERTICAL );
+    item7->Add( item12, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    wxRadioButton *item16 = new wxRadioButton( parent, ID_RADIO6, _("Leave it as integer"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    item14->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item2->Add( item7, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item17 = new wxRadioButton( parent, ID_RADIO7, _("Upgrade it to floating-point values"), wxDefaultPosition, wxSize(220,-1), 0 );
-    item14->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxRadioButton *item18 = new wxRadioButton( parent, ID_RADIO8, _("Ask"), wxDefaultPosition, wxDefaultSize, 0 );
-    item14->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item17 = new wxStaticText( parent, ID_TEXT, _("Imagery: N > 1 for NxN multisampling"), wxDefaultPosition, wxDefaultSize, 0 );
+    item16->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item14, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxTextCtrl *item18 = new wxTextCtrl( parent, ID_SAMPLING_N, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    item16->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticBox *item20 = new wxStaticBox( parent, -1, _("Filling unknown areas of elevation grids:") );
-    wxStaticBoxSizer *item19 = new wxStaticBoxSizer( item20, wxVERTICAL );
+    item2->Add( item16, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxRadioButton *item21 = new wxRadioButton( parent, ID_RADIO9, _("Fast"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    wxBoxSizer *item19 = new wxBoxSizer( wxVERTICAL );
+
+    wxCheckBox *item20 = new wxCheckBox( parent, ID_BLACK_TRANSP, _("Treat black as transparent when sampling images"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxCheckBox *item21 = new wxCheckBox( parent, ID_DEFLATE_TIFF, _("Deflate TIFF images when writing"), wxDefaultPosition, wxDefaultSize, 0 );
     item19->Add( item21, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item22 = new wxRadioButton( parent, ID_RADIO10, _("Slow and smooth"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item22, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item2->Add( item19, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxRadioButton *item23 = new wxRadioButton( parent, ID_RADIO11, _("Extrapolation via partial derivatives"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item23, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item1->Add( item2, 0, wxALIGN_CENTER, 5 );
 
-    item0->Add( item19, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item22 = new wxBoxSizer( wxVERTICAL );
 
-    wxBoxSizer *item24 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBox *item24 = new wxStaticBox( parent, -1, _("When reprojecting an integer elevation grid:") );
+    wxStaticBoxSizer *item23 = new wxStaticBoxSizer( item24, wxVERTICAL );
 
-    wxStaticText *item25 = new wxStaticText( parent, ID_TEXT, _("Maximum size for rendered elevation layers:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item24->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item25 = new wxRadioButton( parent, ID_RADIO6, _("Leave it as integer"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item23->Add( item25, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item26 = new wxTextCtrl( parent, ID_ELEV_MAX_SIZE, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
-    item24->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item26 = new wxRadioButton( parent, ID_RADIO7, _("Upgrade it to floating-point values"), wxDefaultPosition, wxSize(220,-1), 0 );
+    item23->Add( item26, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item24, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    wxRadioButton *item27 = new wxRadioButton( parent, ID_RADIO8, _("Ask"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item27, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item27 = new wxBoxSizer( wxHORIZONTAL );
+    item22->Add( item23, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item28 = new wxStaticText( parent, ID_TEXT, _("Imagery: N > 1 for NxN multisampling"), wxDefaultPosition, wxDefaultSize, 0 );
-    item27->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticBox *item29 = new wxStaticBox( parent, -1, _("Filling unknown areas of elevation grids:") );
+    wxStaticBoxSizer *item28 = new wxStaticBoxSizer( item29, wxVERTICAL );
 
-    wxTextCtrl *item29 = new wxTextCtrl( parent, ID_SAMPLING_N, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
-    item27->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item30 = new wxRadioButton( parent, ID_RADIO9, _("Fast"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item28->Add( item30, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item27, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    wxRadioButton *item31 = new wxRadioButton( parent, ID_RADIO10, _("Slow and smooth"), wxDefaultPosition, wxDefaultSize, 0 );
+    item28->Add( item31, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item30 = new wxBoxSizer( wxVERTICAL );
+    wxRadioButton *item32 = new wxRadioButton( parent, ID_RADIO11, _("Extrapolation via partial derivatives"), wxDefaultPosition, wxDefaultSize, 0 );
+    item28->Add( item32, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item31 = new wxCheckBox( parent, ID_BLACK_TRANSP, _("Treat black as transparent when sampling images"), wxDefaultPosition, wxDefaultSize, 0 );
-    item30->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
+    item22->Add( item28, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item32 = new wxCheckBox( parent, ID_DEFLATE_TIFF, _("Deflate TIFF images when writing"), wxDefaultPosition, wxDefaultSize, 0 );
-    item30->Add( item32, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item33 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxCheckBox *item33 = new wxCheckBox( parent, ID_BT_GZIP, _("Default to gzip-compressed BT files"), wxDefaultPosition, wxDefaultSize, 0 );
-    item30->Add( item33, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item34 = new wxStaticText( parent, ID_TEXT, _("Maximum size for rendered elevation layers:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item33->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item30, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxTextCtrl *item35 = new wxTextCtrl( parent, ID_ELEV_MAX_SIZE, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    item33->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item34 = new wxBoxSizer( wxHORIZONTAL );
+    item22->Add( item33, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxButton *item35 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item36 = new wxCheckBox( parent, ID_BT_GZIP, _("Default to gzip-compressed BT files"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item36, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item36 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item37 = new wxCheckBox( parent, ID_DELAY_LOAD, _("Delay loading elevation grids until needed for sampling"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item37, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    item0->Add( item34, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
+    wxBoxSizer *item38 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item39 = new wxStaticText( parent, ID_TEXT, _("Maximum number of grids in memory:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item38->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item40 = new wxTextCtrl( parent, ID_MAX_LOAD_GRID, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    item38->Add( item40, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item22->Add( item38, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+
+    item1->Add( item22, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item41 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item42 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item41->Add( item42, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item43 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item41->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item41, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

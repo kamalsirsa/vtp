@@ -674,9 +674,14 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 	dlg.b12 = g_Options.GetValueBool(TAG_BLACK_TRANSP);
 	dlg.b13 = g_Options.GetValueBool(TAG_TIFF_COMPRESS);
 	dlg.b14 = g_Options.GetValueBool(TAG_DEFAULT_GZIP_BT);
+	dlg.b15 = g_Options.GetValueBool(TAG_DELAY_LOAD_GRID);
 	dlg.i1 =  g_Options.GetValueInt(TAG_SAMPLING_N);
 	dlg.i2 =  g_Options.GetValueInt(TAG_MAX_MEGAPIXELS);
 	dlg.i3 =  g_Options.GetValueInt(TAG_ELEV_MAX_SIZE);
+	if (dlg.b15)
+		dlg.i4 =  g_Options.GetValueInt(TAG_MAX_LOAD_GRID);
+	else
+		dlg.i4 =  8;
 
 	dlg.TransferDataToWindow();
 
@@ -695,12 +700,18 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 		g_Options.SetValueBool(TAG_BLACK_TRANSP, dlg.b12);
 		g_Options.SetValueBool(TAG_TIFF_COMPRESS, dlg.b13);
 		g_Options.SetValueBool(TAG_DEFAULT_GZIP_BT, dlg.b14);
+		g_Options.SetValueBool(TAG_DELAY_LOAD_GRID, dlg.b15);
 		g_Options.SetValueInt(TAG_SAMPLING_N, dlg.i1);
 		g_Options.SetValueInt(TAG_MAX_MEGAPIXELS, dlg.i2);
 		g_Options.SetValueInt(TAG_ELEV_MAX_SIZE, dlg.i3);
+		g_Options.SetValueInt(TAG_MAX_LOAD_GRID, dlg.i4);
 
 		vtImage::bTreatBlackAsTransparent = dlg.b11;
 		vtElevLayer::m_bDefaultGZip = dlg.b13;
+		if (dlg.b15)
+			vtElevLayer::m_iLoadLimit = dlg.i4;
+		else
+			vtElevLayer::m_iLoadLimit = -1;
 
 		// safety checks
 		CheckOptionBounds();
