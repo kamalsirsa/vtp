@@ -163,6 +163,10 @@ public:
 	float GetScale() const { return m_fVMeters; }
 
 	bool HasData() const { return (m_pData != NULL || m_pFData != NULL); }
+	int MemoryNeeded() const { return m_iColumns * m_iRows * (m_bFloatMode ? 4 : 2); }
+	int MemoryUsed() const { if (m_pData) return m_iColumns * m_iRows * 2;
+						 else if (m_pFData) return m_iColumns * m_iRows * 4;
+						 else return 0; }
 
 	// Implement vtHeightField methods
 	bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
