@@ -238,11 +238,23 @@ vtString FindFileOnPaths(const vtStringArray &paths, const char *filename)
 	return vtString("");
 }
 
+int vtMkdir(const char *dirname)
+{
+#ifdef _MSC_VER
+	// convert utf-8 to widechar
+	wstring2 name;
+	name.from_utf8(dirname);
+	return _wmkdir(name.c_str());
+#else
+	return mkdir(dirname, 0775);
+#endif
+}
 
 /**
  * Recursive make directory.
  * Aborts if there is an ENOENT error somewhere in the middle.
  *
+ * \param dirname The full page to directory to be created, in utf-8 encoding.
  * \return true if OK, false on error
  */
 bool vtCreateDir(const char *dirname)
@@ -258,10 +270,10 @@ bool vtCreateDir(const char *dirname)
 	if (buffer[len-1] == '/') {
 		buffer[len-1] = '\0';
 	}
-	if (mkdir(buffer, 0775) == 0)
+	if (vtMkdir(buffer) == 0)	// 0 means success
 	{
 		free(buffer);
-		return 1;
+		return true;
 	}
 
 	p = buffer+1;
@@ -273,9 +285,9 @@ bool vtCreateDir(const char *dirname)
 			p++;
 		hold = *p;
 		*p = 0;
-		if ((mkdir(buffer, 0775) == -1) && (errno == ENOENT))
+		if ((vtMkdir(buffer) == -1) && (errno == ENOENT))
 		{
-//			fprintf(stderr,"%s: couldn't create directory %s\n",prog,buffer);
+			VTLOG("Error: couldn't create directory '%s'\n", buffer);
 			free(buffer);
 			return false;
 		}
