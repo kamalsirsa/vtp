@@ -2790,13 +2790,15 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item38 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item39 = new wxStaticText( parent, ID_TEXT, _("Maximum number of grids in memory:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item38->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
+
+    wxStaticText *item39 = new wxStaticText( parent, ID_TEXT, _("Maximum memory used for grids (MB):"), wxDefaultPosition, wxDefaultSize, 0 );
     item38->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item40 = new wxTextCtrl( parent, ID_MAX_LOAD_GRID, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    wxTextCtrl *item40 = new wxTextCtrl( parent, ID_MAX_MEM_GRID, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
     item38->Add( item40, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item22->Add( item38, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    item22->Add( item38, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 
     item1->Add( item22, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
 

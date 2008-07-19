@@ -134,7 +134,7 @@ void vtTin2d::FreeEdgeLengths()
 
 ElevDrawOptions vtElevLayer::m_draw;
 bool vtElevLayer::m_bDefaultGZip = false;
-int vtElevLayer::m_iLoadLimit = -1;
+int vtElevLayer::m_iGridMemLimit = -1;
 
 vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 {
@@ -1300,20 +1300,27 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 			str.Printf(_("Floating point: No\n"));
 		result += str;
 
-		m_pGrid->ComputeHeightExtents();
-		float fMin, fMax;
-		m_pGrid->GetHeightExtents(fMin, fMax);
-		str.Printf(_("Minimum elevation: %.2f\n"), fMin);
-		result += str;
-		str.Printf(_("Maximum elevation: %.2f\n"), fMax);
-		result += str;
-
-		int num_unknown = m_pGrid->FindNumUnknown();
-		if (num_unknown != 0)
+		if (m_pGrid->HasData())
 		{
-			str.Printf(_("Number of unknown heixels: %d (%.2f%%)\n"),
-				num_unknown, num_unknown * 100.0f / (cols*rows));
+			m_pGrid->ComputeHeightExtents();
+			float fMin, fMax;
+			m_pGrid->GetHeightExtents(fMin, fMax);
+			str.Printf(_("Minimum elevation: %.2f\n"), fMin);
 			result += str;
+			str.Printf(_("Maximum elevation: %.2f\n"), fMax);
+			result += str;
+
+			int num_unknown = m_pGrid->FindNumUnknown();
+			if (num_unknown != 0)
+			{
+				str.Printf(_("Number of unknown heixels: %d (%.2f%%)\n"),
+					num_unknown, num_unknown * 100.0f / (cols*rows));
+				result += str;
+			}
+		}
+		else
+		{
+			result += _("Not in memory.\n");
 		}
 
 		str.Printf(_("Height scale (meters per vertical unit): %f\n"), m_pGrid->GetScale());
@@ -1842,7 +1849,7 @@ std::vector<vtElevationGrid*> g_GridMRU;
 
 bool CacheOpenGrid(vtElevationGrid *pGrid, const char *fname, vtElevGridError *err)
 {
-	if (vtElevLayer::m_iLoadLimit != -1)
+	if (vtElevLayer::m_iGridMemLimit != -1)
 	{
 		// Limit ourselves to a fixed number of BT files loaded, deferred
 		//  until needed.
@@ -1857,13 +1864,27 @@ bool CacheOpenGrid(vtElevationGrid *pGrid, const char *fname, vtElevGridError *e
 bool CacheLoadGridData(vtElevLayer *elev)
 {
 	vtElevationGrid *grid = elev->m_pGrid;
+	VTLOG("Adding %lx: \n", grid);
 
 	size_t num_loaded = g_GridMRU.size();
-	unsigned int limit = vtElevLayer::m_iLoadLimit;
-	if (num_loaded > 0 && num_loaded == limit)
+
+	int mem = 0;
+	for (size_t i = 0; i < num_loaded; i++)
+		mem += g_GridMRU[i]->MemoryUsed();
+
+	// Consider memory needs of new grid
+	mem += grid->MemoryNeeded();
+
+	VTLOG("  Need %d bytes (%d MB)\n", mem, mem / (1024*1024));
+
+	while (mem > (vtElevLayer::m_iGridMemLimit * 1024 * 1024))
 	{
 		// Unload the least recently used (LRU) at the start of list
 		vtElevationGrid *oldgrid = g_GridMRU[0];
+		mem -= oldgrid->MemoryUsed();
+
+		VTLOG("  Freed %lx, Need %d bytes (%d MB)\n", oldgrid, mem, mem / (1024*1024));
+
 		oldgrid->FreeData();
 		g_GridMRU.erase(g_GridMRU.begin());
 	}
@@ -1874,6 +1895,7 @@ bool CacheLoadGridData(vtElevLayer *elev)
 		return false;
 	//CloseProgressDialog()
 
+	// most recently used goes to the end of the list
 	g_GridMRU.push_back(grid);
 
 	return true;

@@ -679,9 +679,9 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 	dlg.i2 =  g_Options.GetValueInt(TAG_MAX_MEGAPIXELS);
 	dlg.i3 =  g_Options.GetValueInt(TAG_ELEV_MAX_SIZE);
 	if (dlg.b15)
-		dlg.i4 =  g_Options.GetValueInt(TAG_MAX_LOAD_GRID);
+		dlg.i4 =  g_Options.GetValueInt(TAG_MAX_MEM_GRID);
 	else
-		dlg.i4 =  8;
+		dlg.i4 =  128;
 
 	dlg.TransferDataToWindow();
 
@@ -704,14 +704,14 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 		g_Options.SetValueInt(TAG_SAMPLING_N, dlg.i1);
 		g_Options.SetValueInt(TAG_MAX_MEGAPIXELS, dlg.i2);
 		g_Options.SetValueInt(TAG_ELEV_MAX_SIZE, dlg.i3);
-		g_Options.SetValueInt(TAG_MAX_LOAD_GRID, dlg.i4);
+		g_Options.SetValueInt(TAG_MAX_MEM_GRID, dlg.i4);
 
 		vtImage::bTreatBlackAsTransparent = dlg.b11;
 		vtElevLayer::m_bDefaultGZip = dlg.b13;
 		if (dlg.b15)
-			vtElevLayer::m_iLoadLimit = dlg.i4;
+			vtElevLayer::m_iGridMemLimit = dlg.i4;
 		else
-			vtElevLayer::m_iLoadLimit = -1;
+			vtElevLayer::m_iGridMemLimit = -1;
 
 		// safety checks
 		CheckOptionBounds();

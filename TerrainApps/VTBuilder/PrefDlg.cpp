@@ -62,12 +62,12 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_SAMPLING_N, &i1);
 	AddNumValidator(ID_MAX_MEGAPIXELS, &i2);
 	AddNumValidator(ID_ELEV_MAX_SIZE, &i3);
-	AddNumValidator(ID_MAX_LOAD_GRID, &i4);
+	AddNumValidator(ID_MAX_MEM_GRID, &i4);
 }
 
 void PrefDlg::UpdateEnable()
 {
-	FindWindow(ID_MAX_LOAD_GRID)->Enable(b15);
+	FindWindow(ID_MAX_MEM_GRID)->Enable(b15);
 }
 
 

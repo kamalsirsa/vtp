@@ -491,6 +491,13 @@ void Builder::CheckOptionBounds()
 
 	if (!g_Options.FindTag(TAG_GAP_FILL_METHOD))
 		g_Options.SetValueInt(TAG_GAP_FILL_METHOD, 1, true);
+
+	int mmg;
+	if (!g_Options.GetValueInt(TAG_MAX_MEM_GRID, mmg))
+		mmg = 128;
+	if (mmg < 1) mmg = 1;
+	if (mmg > 8192) mmg = 8192;
+	g_Options.SetValueInt(TAG_MAX_MEM_GRID, mmg);
 }
 
 DRECT Builder::GetExtents()

@@ -23,7 +23,7 @@
 #define TAG_TIFF_COMPRESS "TiffCompressDeflate"
 #define TAG_DEFAULT_GZIP_BT "DefaultGzipBT"
 #define TAG_DELAY_LOAD_GRID "ElevDelayLoadGrid"
-#define TAG_MAX_LOAD_GRID "ElevMaxLoadGrid"
+#define TAG_MAX_MEM_GRID "ElevMaxMemGrid"
 #define TAG_DRAW_RAW_SIMPLE "DrawSimpleRawLayers"
 
 #define TAG_SLOW_FILL_GAPS "SlowFillGaps"	// deprecated

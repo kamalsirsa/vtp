@@ -327,7 +327,7 @@ const int ID_RADIO11 = 10235;
 const int ID_ELEV_MAX_SIZE = 10236;
 const int ID_BT_GZIP = 10237;
 const int ID_DELAY_LOAD = 10238;
-const int ID_MAX_LOAD_GRID = 10239;
+const int ID_MAX_MEM_GRID = 10239;
 wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 const int ID_TEXT_DIST_CUTOFF = 10240;
