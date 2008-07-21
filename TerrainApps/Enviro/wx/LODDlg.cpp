@@ -18,15 +18,9 @@
 #include "LODDlg.h"
 #include "EnviroFrame.h"
 
-/*
 #include <mini/mini.h>
 #include <mini/miniload.h>
 #include <mini/datacloud.h>
-*/
-
-#include <mini.h>
-#include <miniload.h>
-#include <datacloud.h>
 
 // WDR: class implementations
 

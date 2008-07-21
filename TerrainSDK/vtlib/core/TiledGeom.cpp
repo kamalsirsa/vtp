@@ -11,19 +11,11 @@
 #include "vtdata/TripDub.h"
 #include "TiledGeom.h"
 
-/*
 #include <mini/mini.h>
 #include <mini/miniload.h>
 #include <mini/minicache.h>
 #include <mini/datacloud.h>
 #include <mini/miniOGL.h>
-*/
-
-#include <mini.h>
-#include <miniload.h>
-#include <minicache.h>
-#include <datacloud.h>
-#include <miniOGL.h>
 
 // If we use a threading library, we can support multithreading
 #define SUPPORT_THREADING	1

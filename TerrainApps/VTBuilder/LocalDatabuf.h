@@ -12,11 +12,7 @@
 
 #if USE_LIBMINI_DATABUF
 
-/*
 #include <mini/database.h> // part of libMini
-*/
-
-#include <database.h> // part of libMini
 
 #ifdef _MSC_VER
   #if _MSC_VER >= 1400 // vc8
