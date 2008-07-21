@@ -306,12 +306,6 @@ void Builder::ElevExportTiles(BuilderView *pView)
 	tileopts.rows = 4;
 	tileopts.lod0size = 256;
 	tileopts.numlods = 3;
-	tileopts.bCreateDerivedImages = false;
-	tileopts.bMaskUnknownAreas = false;
-	tileopts.bOmitFlatTiles = false;
-	tileopts.bUseTextureCompression = false;
-	tileopts.eCompressionType = TC_OPENGL;
-	tileopts.iNoDataFilled = 0;
 
 	TileDlg dlg(m_pParentWindow, -1, _("Tiling Options"));
 	dlg.m_fEstX = spacing.x;
@@ -766,6 +760,10 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 	int total = opts.rows * opts.cols, done = 0;
 	for (j = 0; j < opts.rows; j++)
 	{
+		// We might want to skip certain rows
+		if (opts.iMinRow != -1 && (j < opts.iMinRow || j > opts.iMaxRow)
+			continue;
+
 		for (i = 0; i < opts.cols; i++)
 		{
 			// draw our progress in the main view
@@ -1121,6 +1119,10 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 	int total = opts.rows * opts.cols, done = 0;
 	for (j = 0; j < opts.rows; j++)
 	{
+		// We might want to skip certain rows
+		if (opts.iMinRow != -1 && (j < opts.iMinRow || j > opts.iMaxRow)
+			continue;
+
 		for (i = 0; i < opts.cols; i++)
 		{
 			// draw our progress in the main view

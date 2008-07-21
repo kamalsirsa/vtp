@@ -15,8 +15,21 @@ enum TextureCompressionType { TC_OPENGL, TC_SQUISH_FAST, TC_SQUISH_SLOW, TC_JPEG
 /**
  * All the options needed to describe how to create a tileset.
  */
-struct TilingOptions
+class TilingOptions
 {
+public:
+	TilingOptions()
+	{
+		bCreateDerivedImages = false;
+		bMaskUnknownAreas = false;
+		bOmitFlatTiles = false;
+		bUseTextureCompression = false;
+		eCompressionType = TC_OPENGL;
+		iNoDataFilled = 0;
+		iMinRow = -1;
+		iMaxRow = -1;
+	}
+
 	int cols, rows;
 	int lod0size;
 	int numlods;
@@ -36,7 +49,10 @@ struct TilingOptions
 	bool bUseTextureCompression;
 	TextureCompressionType eCompressionType;
 
-	// after the sampling, will contain the number of NODATA filled in
+	// These can be set to restrict the output to certain (tile) rows only
+	int iMinRow, iMaxRow;
+
+	// after the sampling, will contain the number of NODATA heixels filled in
 	int iNoDataFilled;
 };
 

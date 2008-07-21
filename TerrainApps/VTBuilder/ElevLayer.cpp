@@ -1507,6 +1507,10 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 	int total = opts.rows * opts.cols, done = 0;
 	for (j = 0; j < opts.rows; j++)
 	{
+		// We might want to skip certain rows
+		if (opts.iMinRow != -1 && (j < opts.iMinRow || j > opts.iMaxRow)
+			continue;
+
 		for (i = 0; i < opts.cols; i++)
 		{
 			DRECT tile_area;
