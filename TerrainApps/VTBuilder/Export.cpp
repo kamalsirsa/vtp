@@ -365,6 +365,9 @@ void Builder::ElevExportTiles(BuilderView *pView)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) tileopts.fname);
 	else
 		DisplayAndLog("Did not successfully write to '%s'", (const char *) tileopts.fname);
+
+	if (tileopts.iNoDataFilled != 0)
+		DisplayAndLog("Filled %d unknown heixels in output tiles.", tileopts.iNoDataFilled);
 }
 
 void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
@@ -542,6 +545,7 @@ void Builder::ExportAreaOptimizedElevTileset(BuilderView *pView)
 	dlg.SetElevation(true);
 	dlg.SetArea(m_area);
 	dlg.SetView(pView);
+	m_tileopts.iNoDataFilled = 0;
 	dlg.SetTilingOptions(m_tileopts);
 
 	if (dlg.ShowModal() != wxID_OK)
@@ -594,6 +598,9 @@ void Builder::ExportAreaOptimizedElevTileset(BuilderView *pView)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
 		DisplayAndLog("Did not successfully write to '%s'", (const char *) m_tileopts.fname);
+
+	if (m_tileopts.iNoDataFilled != 0)
+		DisplayAndLog("Filled %d unknown heixels in output tiles.", m_tileopts.iNoDataFilled);
 }
 
 bool Builder::DoSampleElevationToTilePyramids(BuilderView *pView,

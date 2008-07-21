@@ -1007,6 +1007,7 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 	dlg.m_area = m_area;
 	dlg.m_bFloats = floatmode;
 	dlg.m_tileopts = m_tileopts;
+	dlg.m_tileopts.iNoDataFilled = 0;
 	dlg.SetView(pView);
 	dlg.FormatTilingString();
 
@@ -1076,6 +1077,9 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 			DisplayAndLog("Successfully wrote to '%s'", (const char *) dlg.m_tileopts.fname);
 		else
 			DisplayAndLog("Did not successfully write to '%s'", (const char *) dlg.m_tileopts.fname);
+
+		if (dlg.m_tileopts.iNoDataFilled != 0)
+			DisplayAndLog("Filled %d unknown heixels in output tiles.", dlg.m_tileopts.iNoDataFilled);
 	}
 }
 
