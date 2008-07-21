@@ -112,7 +112,7 @@ void Builder::ImportData(LayerType ltype)
  * archive file.  If it's an archive, it will be unarchived to a temporary
  * folder, and the contents will be imported.
  */
-void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
+int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 									  bool bRefresh)
 {
 	VTLOG("ImportDataFromArchive(type %d, '%s'\n", ltype, (const char *)fname_in.mb_str(wxConvUTF8));
@@ -144,13 +144,17 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	{
 		// simple case
 		vtLayer *pLayer = ImportDataFromFile(ltype, fname, bRefresh, true);
-		if (pLayer)
+		if (!pLayer)
+			return 0;	// no layers created
+
+		bool success = AddLayerWithCheck(pLayer, true);
+		if (success)
+			return 1;	// 1 layer created
+		else
 		{
-			bool success = AddLayerWithCheck(pLayer, true);
-			if (!success)
-				delete pLayer;
+			delete pLayer;
+			return 0;	// no layers created
 		}
-		return;
 	}
 
 	// try to uncompress
@@ -162,7 +166,7 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	if (result == 0 && errno != EEXIST)
 	{
 		DisplayAndLog("Couldn't create temporary directory to hold contents of archive.");
-		return;
+		return 0;	// no layers created
 	}
 	prepend_path = path + _T("/");
 
@@ -176,6 +180,7 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		result = ExpandZip(str1, str2, progress_callback);
 	CloseProgressDialog();
 
+	int layer_count = 0;
 	VTLOG(" Unarchived %d files.\n", result);
 	if (result < 1)
 	{
@@ -200,10 +205,12 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		if (pLayer)
 		{
 			bool success = AddLayerWithCheck(pLayer, true);
-			if (!success)
+			if (success)
+				layer_count = 1;
+			else
 			{
 				delete pLayer;
-				return;
+				return 0;	// no layers created
 			}
 			// use the internal filename, not the archive filename which is temporary
 			pLayer->SetLayerFilename(internal_name);
@@ -212,7 +219,6 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	}
 	else if (result > 1)
 	{
-		int layer_count = 0;
 		vtArray<vtLayer *> LoadedLayers;
 		vtLayer *pLayer;
 
@@ -271,7 +277,7 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 				if (!success)
 				{
 					delete pLayer;
-					return;
+					return 0;	// no layers created
 				}
 				pLayer->SetLayerFilename(fname2);
 				LoadedLayers.Append(pLayer);
@@ -303,7 +309,7 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 					if (!success)
 					{
 						delete pLayer;
-						return;
+						return 0;	// no layers loaded
 					}
 					pLayer->SetLayerFilename(fname2);
 					LoadedLayers.Append(pLayer);
@@ -322,6 +328,8 @@ void Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	// clean up after ourselves
 	prepend_path = GetTempFolderName(fname_in.mb_str(wxConvUTF8));
 	vtDestroyDir(prepend_path.mb_str(wxConvUTF8));
+
+	return layer_count;
 }
 
 /**

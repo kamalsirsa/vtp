@@ -153,6 +153,8 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 	// even the first layer must match the project's CRS
 	m_bAdoptFirstCRS = false;
 
+	int iNumLayersFailed = 0;
+
 	char buf[2000];
 	while (fgets(buf, 2000, fp) != NULL)
 	{
@@ -237,14 +239,21 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 
 				int numlayers = NumLayers();
 				if (bImport)
-					ImportDataFromArchive(ltype, layer_fname, false);
+				{
+					int num_loaded = ImportDataFromArchive(ltype, layer_fname, false);
+					if (num_loaded == 0)
+						iNumLayersFailed++;
+				}
 				else
 				{
 					vtLayer *lp = vtLayer::CreateNewLayer(ltype);
 					if (lp && lp->Load(layer_fname))
 						AddLayer(lp);
 					else
+					{
 						delete lp;
+						iNumLayersFailed++;
+					}
 				}
 
 				// Hide any layers created, if desired
@@ -258,6 +267,9 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 
 	// reset to default behavior
 	m_bAdoptFirstCRS = true;
+
+	if (iNumLayersFailed > 0)
+		DisplayAndLog("%d of the project's layers could not be loaded.", iNumLayersFailed);
 
 	VTLOG1(" LoadProject done.\n");
 	return true;
