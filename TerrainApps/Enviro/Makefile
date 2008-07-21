@@ -100,6 +100,16 @@ update-pot:
 	xgettext --from-code=iso-8859-1 -k_ -o Enviro.pot $(I18N_SOURCES)
 
 #----------
+publish-en:
+	cp en/Enviro.pox en/Enviro.po
+	msgfmt en/Enviro.po -o en/Enviro.mo
+
+#----------
+publish-engb:
+	cp en_GB/Enviro.pox en_GB/Enviro.po
+	msgfmt en_GB/Enviro.po -o en_GB/Enviro.mo
+
+#----------
 publish-af:
 	cp af/Enviro.pox af/Enviro.po
 	msgfmt af/Enviro.po -o af/Enviro.mo
