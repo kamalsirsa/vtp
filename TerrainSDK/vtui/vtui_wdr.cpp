@@ -930,7 +930,7 @@ wxSizer *ProfileDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item21->Add( item23, 0, wxALIGN_CENTER, 5 );
 
-    item1->Add( item21, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL, 5 );
+    item1->Add( item21, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL, 5 );
 
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 

@@ -1,7 +1,7 @@
 //
 // Name: ProfileDlg.cpp
 //
-// Copyright (c) 2005-2007 Virtual Terrain Project
+// Copyright (c) 2005-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -236,9 +236,6 @@ void ProfileDlg::GetValues()
 
 	for (int i = 0; i < m_xrange; i++)
 	{
-		//double ratio = (double)i / (m_xrange-1);
-		//p = m_p1 + (m_p2 - m_p1) * ratio;
-
 		float f = m_callback->GetElevation(p);
 		m_values[i] = f;
 
@@ -251,13 +248,13 @@ void ProfileDlg::GetValues()
 			{
 				m_fMin = f;
 				m_iMin = i;
-				m_fMinDist = fDist;
+				m_fMinDist = (float)i / (m_xrange-1) * m_fGeodesicDistance;
 			}
 			if (f > m_fMax)
 			{
 				m_fMax = f;
 				m_iMax = i;
-				m_fMaxDist = fDist;
+				m_fMaxDist = (float)i / (m_xrange-1) * m_fGeodesicDistance;
 			}
 			if (f < m_fDrawMin) m_fDrawMin = f;
 			if (f > m_fDrawMax) m_fDrawMax = f;
@@ -374,14 +371,11 @@ void ProfileDlg::ComputeLineOfSight()
 	for (int i = 0; i < m_xrange; i++)
 	{
 		float fLineHeight = m_fHeightAtStart + diff * i / m_xrange;
-
-		if (m_bHaveGeoidSurface && m_iCurvature == 2)
-			fLineHeight -= m_GeoidSurface[i];
-
 		float fGroundHeight = m_values[i];
 
-		if (m_bHaveGeoidSurface && m_iCurvature == 1)
-			fGroundHeight += m_GeoidSurface[i];
+		// adjust for curvature
+		fLineHeight = ApplyGeoid(fLineHeight, i, 2);
+		fGroundHeight = ApplyGeoid(fGroundHeight, i, 1);
 
 		m_LineOfSight[i] = fLineHeight;
 
@@ -448,7 +442,7 @@ void ProfileDlg::ComputeVisibility()
 	{
 		// forward visibility
 		bool vis = true;
-		diff = m_values[j] + (apply_geoid>0 ? m_GeoidSurface[j] : 0) - m_fHeightAtStart;
+		diff = m_values[j] + (apply_geoid==1 ? m_GeoidSurface[j] : 0) - m_fHeightAtStart;
 		for (i = 0; i < j; i++)
 		{
 			float fLineHeight = m_fHeightAtStart + diff * i / j;
@@ -462,7 +456,7 @@ void ProfileDlg::ComputeVisibility()
 
 		// reverse visibility
 		vis = true;
-		diff = m_values[j] + (apply_geoid>0 ? m_GeoidSurface[j] : 0) - m_fHeightAtEnd;
+		diff = m_values[j] + (apply_geoid==1 ? m_GeoidSurface[j] : 0) - m_fHeightAtEnd;
 		for (i = m_xrange-1; i > j; i--)
 		{
 			float fLineHeight = m_fHeightAtEnd + diff * (m_xrange-i) / (m_xrange-j);
@@ -520,15 +514,15 @@ void ProfileDlg::ComputeGeoidSurface()
   neato trig lies beneath...
 
 				  S  (arc P1 -> P2)
-			  ***
-		  ****   **** P3
-	   ***           ***   dist (arc P1 -> P3)
-	 **            H/   **
- P2 *              /      * P1
-   *--------------X--------*
-  *              /      .   *
-  *             /  .  R     *
-  *            C            *
+			  *****
+		  ****     **** P3
+	   ***             ***   dist (arc P1 -> P3)
+	 **             H/    **
+ P2 *               /       * P1
+   *---------------X---------*
+  *               /       .   *
+  *              /   .  R     *
+  *             C             *
 
   Problem:  Find H (height of chord at angle) given length of arc S and radius R,
 		and the partial arc distance between P1 and P3
@@ -553,10 +547,10 @@ void ProfileDlg::ComputeGeoidSurface()
 
   H = R - ( (R * sin( (PI-(S/R))/2 )) / sin(PI - angle_at_P1 - (dist/R)) )
 
-  NOTE: It may be more appropriate to compute the length of the normal from the chord
-	through P3 (ie a line perpendicular to the chord P1, P2, passing through P3
-	but as the heights are drawn as perpendicular to the surface, I think the surface
-	should be drawn in the same manner.
+  NOTE: It may be more appropriate to compute the length of the normal from
+    the chord through P3 (ie a line perpendicular to the chord P1, P2, passing
+	through P3 but as the heights are drawn as perpendicular to the surface,
+	I think the surface should be drawn in the same manner.
 
   The code optimises by calculating some values that do not change once only.
 */
@@ -566,21 +560,20 @@ void ProfileDlg::ComputeGeoidSurface()
 #define ER             6366.000		// accepted average
 
 #define EER (ER * 4.0/3.0)		// Effective earth radius (radio signals bend)
-#define PI  3.141592654
 
 	// TODO: Obtain R from the projection, if possible
 
-	float S, dist, h, P1angle, RsinP1angle, PIminusP1angle;
-	float R = (m_bUseEffectiveRadius ? EER : ER) * 1000; // everything in metres.
+	double S, dist, h, P1angle, RsinP1angle, PIminusP1angle;
+	double R = (m_bUseEffectiveRadius ? EER : ER) * 1000; // everything in meters.
 	m_GeoidSurface.resize(m_xrange);
 
 	S = m_fGeodesicDistance;
 
-	P1angle			= (PI-(S/R))/2;
+	P1angle			= (PIf-(S/R))/2;
 	RsinP1angle		= R*sin( P1angle );
-	PIminusP1angle	= PI - P1angle;
+	PIminusP1angle	= PIf - P1angle;
 
-	if (S<10 || S >= (PI*R))
+	if (S<10 || S >= (PIf*R))
 	{
 		// more than half way around the world, this will break, so don't bother...
 		// less than 10m or so, and it breaks due to rounding error.
@@ -598,6 +591,17 @@ void ProfileDlg::ComputeGeoidSurface()
 	// maximum - We assume it's in the middle, like all good chords should be.
 	m_fGeoidCurvature = m_GeoidSurface[m_xrange/2];
 	m_bHaveGeoidSurface = true;
+
+	// It might affect the range of values we'll draw
+	for (int i = 0; i < m_xrange; i++)
+	{
+		float f = m_values[i];
+		if (f != INVALID_ELEVATION && m_iCurvature == 1)
+		{
+			f += m_GeoidSurface[i];
+			if (f > m_fDrawMax) m_fDrawMax = f;
+		}
+	}
 }
 
 
@@ -608,8 +612,8 @@ float ProfileDlg::ApplyGeoid(float h, int i, char t)
 		switch (t)
 		{
 		case 0: break;			// don't apply
-		case 1: h+=m_GeoidSurface[i];	// apply to heights relative to surface
-		case 2: h-=m_GeoidSurface[i];	// apply to heights relative to line of sight
+		case 1: h+=m_GeoidSurface[i]; break;	// apply to heights relative to surface
+		case 2: h-=m_GeoidSurface[i]; break;	// apply to heights relative to line of sight
 		}
 	}
 	return h;
@@ -646,7 +650,6 @@ void ProfileDlg::DrawChart(wxDC& dc)
 	float DrawMax = m_fDrawMax;
 	if (m_bValidStart) DrawMax = std::max(DrawMax, m_fHeightAtStart);
 	if (m_bValidLine) DrawMax = std::max(DrawMax, m_fHeightAtEnd);
-	if (m_bHaveGeoidSurface && m_iCurvature!=0) DrawMax += m_fGeoidCurvature;
 	m_fDrawRange = DrawMax - m_fDrawMin;
 
 	wxPen pen1(*wxMEDIUM_GREY_PEN);
@@ -665,10 +668,10 @@ void ProfileDlg::DrawChart(wxDC& dc)
 	m_base.x = MARGIN_LEFT;
 	m_base.y = m_clientsize.y - MARGIN_BOTTOM;
 
+	// Draw X and Y axes
 	dc.SetPen(pen1);
 	dc.DrawLine(m_base.x, m_base.y, m_base.x + m_xrange, m_base.y);
 	dc.DrawLine(m_base.x, m_base.y, m_base.x, m_base.y - m_yrange);
-//  dc.DrawLine(m_base.x + m_xrange, m_base.y, m_base.x + m_xrange, m_base.y - m_yrange);
 
 	if (!m_bHaveValidData)
 	{
@@ -741,9 +744,8 @@ void ProfileDlg::DrawChart(wxDC& dc)
 			float v1 = m_values[i];
 			if (v1 == INVALID_ELEVATION)
 				continue;
-
-			if (apply_geoid==1)
-				v1 += m_GeoidSurface[i];
+			// adjust for curvature
+			v1 = ApplyGeoid(v1, i, 1);
 
 			MakePoint(p1, i, v1);
 			p2 = p1;
