@@ -1097,15 +1097,21 @@ vtString vtString::UTF8ToLocal()
 
 vtString UTF8ToLocal(const char *string_utf8)
 {
-	// safety check
+	// Safety check
 	if (!string_utf8)
 		return vtString("");
 
-	// first make wide string
+	// First make wide string
 	wstring2 ws;
 	ws.from_utf8(string_utf8);
 
-	// get ready for conversion
+	// Then use mb_str to convert to local encoding
+	vtString str = ws.mb_str();
+
+#if 0
+	// In theory, this code should be better, because it does not rely on 
+	//  the fixed-size static buffer in wstring2::mb_str(), but wcsrtombs
+	//  does not behave well.
 	int len = ws.length();
 	const wchar_t *cstr = ws.c_str();
 	mbstate_t       mbstate;
@@ -1114,8 +1120,8 @@ vtString UTF8ToLocal(const char *string_utf8)
 	// then convert it to a (local encoding) multi-byte string
 	vtString str;
 	char *target = str.GetBufferSetLength(len);
-	//VTLOG("Calling wcsrtombs(dst=%lx, src=%lx, len=%d, mbstate=%lx\n", target, cstr, len+1, &mbstate);
 	int count = wcsrtombs(target, &cstr, len+1, &mbstate);
+#endif
 	return str;
 }
 
@@ -1279,7 +1285,7 @@ wstring2::wstring2(const char *__s)
 const char *wstring2::mb_str() const
 {
 	const wchar_t *guts = c_str();
-	wcstombs(s_buffer, guts, MAX_WSTRING2_SIZE);
+	size_t result = wcstombs(s_buffer, guts, MAX_WSTRING2_SIZE);
 	return s_buffer;
 }
 
