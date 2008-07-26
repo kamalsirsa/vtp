@@ -146,6 +146,7 @@ private:
 	void OnZoomTo( wxCommandEvent &event );
 	void OnVisible( wxCommandEvent &event );
 	void OnTable( wxCommandEvent &event );
+	void OnRefresh( wxCommandEvent &event );
 	void OnShadowVisible( wxCommandEvent &event );
 	void OnShowAll( wxCommandEvent &event );
 	void OnSelChanged( wxTreeEvent &event );
@@ -153,6 +154,7 @@ private:
 
 	void OnUpdateCreate(wxUpdateUIEvent& event);
 	void OnUpdateVisible(wxUpdateUIEvent& event);
+	void OnUpdateRefresh(wxUpdateUIEvent& event);
 	void OnUpdateShadow(wxUpdateUIEvent& event);
 	void OnUpdateShowAll(wxUpdateUIEvent& event);
 

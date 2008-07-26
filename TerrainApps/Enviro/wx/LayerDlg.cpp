@@ -75,10 +75,12 @@ BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 	EVT_MENU( ID_LAYER_VISIBLE, LayerDlg::OnVisible )
 	EVT_MENU( ID_LAYER_TABLE, LayerDlg::OnTable )
 	EVT_MENU( ID_LAYER_SHADOW, LayerDlg::OnShadowVisible )
+	EVT_MENU( ID_LAYER_REFRESH, LayerDlg::OnRefresh )
 	EVT_MENU( ID_SHOW_ALL, LayerDlg::OnShowAll )
 
 	EVT_UPDATE_UI(ID_LAYER_CREATE,	LayerDlg::OnUpdateCreate)
 	EVT_UPDATE_UI(ID_LAYER_VISIBLE,	LayerDlg::OnUpdateVisible)
+	EVT_UPDATE_UI(ID_LAYER_REFRESH,	LayerDlg::OnUpdateRefresh)
 	EVT_UPDATE_UI(ID_LAYER_SHADOW, LayerDlg::OnUpdateShadow)
 	EVT_UPDATE_UI(ID_SHOW_ALL,	LayerDlg::OnUpdateShowAll)
 
@@ -821,6 +823,29 @@ void LayerDlg::OnTable( wxCommandEvent &event )
 		GetFrame()->ShowTable(data->m_alay);
 }
 
+void LayerDlg::OnRefresh( wxCommandEvent &event )
+{
+	bool bVis = event.IsChecked();
+
+	if (g_App.m_state == AS_Terrain)
+	{
+		vtLayer *lay = GetLayerFromItem(m_item);
+		if (lay)
+		{
+			vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
+			if (alay)
+				alay->Reload();
+		}
+	}
+	else if (g_App.m_state == AS_Orbit)
+	{
+		// TODO
+		//LayerItemData *data = GetLayerDataFromItem(m_item);
+		//if (data && data->m_glay)
+		//	data->m_glay->SetEnabled(bVis);
+	}
+}
+
 void LayerDlg::OnUpdateVisible(wxUpdateUIEvent& event)
 {
 	if (!IsShown())
@@ -849,6 +874,20 @@ void LayerDlg::OnUpdateVisible(wxUpdateUIEvent& event)
 			event.Check(data->m_glay->GetEnabled());
 		event.Enable(data && data->m_glay);
 	}
+}
+
+void LayerDlg::OnUpdateRefresh(wxUpdateUIEvent& event)
+{
+	if (!IsShown())
+		return;
+	if (g_App.m_state == AS_Terrain)
+	{
+		vtLayer *lay = GetLayerFromItem(m_item);
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
+		event.Enable(alay != NULL);
+	}
+	else
+		event.Enable(false);
 }
 
 void LayerDlg::OnUpdateCreate(wxUpdateUIEvent& event)

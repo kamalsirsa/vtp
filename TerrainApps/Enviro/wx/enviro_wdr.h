@@ -382,7 +382,8 @@ wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer
 #define ID_LAYER_VISIBLE 10270
 #define ID_LAYER_TABLE 10271
 #define ID_LAYER_SHADOW 10272
-#define ID_SHOW_ALL 10273
+#define ID_LAYER_REFRESH 10273
+#define ID_SHOW_ALL 10274
 void LayerToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions
