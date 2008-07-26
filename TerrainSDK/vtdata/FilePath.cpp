@@ -16,6 +16,9 @@
 #ifdef unix
 # include <unistd.h>
 # include <sys/stat.h>
+#if __GNUC__ == 4 && __GNUC_MINOR__ >= 3
+  #include <cstdlib>
+#endif
 #else
 # include <direct.h>
 # include <io.h>

@@ -3,7 +3,7 @@
 //
 // Module for Double-You-Double-You-Double-You support (WWW)
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,10 @@
 #define VTDATA_TRIPDUB_H
 
 #include "vtString.h"
+
+#if __GNUC__ == 4 && __GNUC_MINOR__ >= 3
+  #include <cstdlib>
+#endif
 
 // The dependency on LibCURL is optional.  If not desired, skip this file.
 #if SUPPORT_HTTP

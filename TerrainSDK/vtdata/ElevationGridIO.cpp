@@ -12,6 +12,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <fstream>
+#include <memory>
 using namespace std;
 
 #include "config_vtdata.h"
