@@ -640,11 +640,14 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 		opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() & ~(osgDB::ReaderWriter::Options::CACHE_NODES))));
 		reg->setOptions(opts);
 
+		// OSG doesn't yet support utf-8 or wide filenames, so convert
+		vtString fname_local = UTF8ToLocal(fname);
+
 		// Now actually request the node from OSG
 #if VTDEBUG
 		VTLOG("[");
 #endif
-		node = osgDB::readNodeFile((const char *)fname);
+		node = osgDB::readNodeFile((const char *)fname_local);
 #if VTDEBUG
 		VTLOG("]");
 #endif
