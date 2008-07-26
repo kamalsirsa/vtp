@@ -16,6 +16,7 @@
 #ifdef _MSC_VER
 #define _WIN32_WINNT 0x0501
 #include <windows.h>	// unfortunately
+#include <tchar.h>
 #endif
 
 // Headers for the VTP libraries
@@ -25,7 +26,6 @@
 
 #include "SpaceNav.h"
 
-
 vtSpaceNav::vtSpaceNav()
 {
 #if WIN32
@@ -34,6 +34,7 @@ vtSpaceNav::vtSpaceNav()
 #endif
 	m_fSpeed = 100.0f;
 	m_bAllowRoll = false;
+	m_hUser32Dll = NULL;
 }
 
 vtSpaceNav::~vtSpaceNav()
@@ -43,6 +44,8 @@ vtSpaceNav::~vtSpaceNav()
 		free(g_pRawInputDeviceList);
 	if (g_pRawInputDevices)
 		free(g_pRawInputDevices);
+	if (NULL != m_hUser32Dll)
+		FreeLibrary(m_hUser32Dll);
 #endif
 }
 
@@ -54,10 +57,32 @@ void vtSpaceNav::Eval()
 bool vtSpaceNav::InitRawDevices()
 {
 #if WIN32
+	GetRawInputDeviceList_t pfnGetRawInputDeviceList;
+	GetRawInputDeviceInfo_t pfnGetRawInputDeviceInfo;
+	RegisterRawInputDevices_t pfnRegisterRawInputDevices;
+
+	// Don't assume that the version of Windows has the method 'getRawInputData'
+	//  in User32.dll.  Older OS (like Win2000) does not have it.  We use
+	//  LoadLibrary and GetProcAddress to test.
+	if (NULL == (m_hUser32Dll = LoadLibrary(_T("user32.dll"))))
+		return false;
+	if (NULL == (pfnGetRawInputDeviceList = (GetRawInputDeviceList_t)GetProcAddress(m_hUser32Dll, _T("GetRawInputDeviceList"))))
+		return false;
+	if (NULL == (pfnRegisterRawInputDevices = (RegisterRawInputDevices_t)GetProcAddress(m_hUser32Dll, _T("RegisterRawInputDevices"))))
+		return false;
+	if (NULL == (m_pfnGetRawInputData = (GetRawInputData_t)GetProcAddress(m_hUser32Dll, _T("GetRawInputData"))))
+		return false;
+#ifdef UNICODE
+	if (NULL == (pfnGetRawInputDeviceInfo = (GetRawInputDeviceInfo_t)GetProcAddress(m_hUser32Dll, _T("GetRawInputDeviceInfoW"))))
+		return false;
+#else
+	if (NULL == (pfnGetRawInputDeviceInfo = (GetRawInputDeviceInfo_t)GetProcAddress(m_hUser32Dll, _T("GetRawInputDeviceInfoA"))))
+		return false;
+#endif
 	// Find the Raw Devices
 	UINT nDevices;
 	// Get Number of devices attached
-	if (GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0)
+	if (pfnGetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0)
 	{ 
 		VTLOG("No RawInput devices attached\n");
 		return false;
@@ -69,7 +94,7 @@ bool vtSpaceNav::InitRawDevices()
 		return false;
 	}
 	// Now get the data on the attached devices
-	if (GetRawInputDeviceList(g_pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == -1) 
+	if (pfnGetRawInputDeviceList(g_pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == -1) 
 	{
 		VTLOG("Error from GetRawInputDeviceList\n");
 		return false;
@@ -85,14 +110,18 @@ bool vtSpaceNav::InitRawDevices()
 		{
 			UINT nchars = 300;
 			TCHAR deviceName[300];
-			if (GetRawInputDeviceInfo(g_pRawInputDeviceList[i].hDevice,
+			if (pfnGetRawInputDeviceInfo(g_pRawInputDeviceList[i].hDevice,
 									  RIDI_DEVICENAME, deviceName, &nchars) >= 0)
+#ifdef UNICODE
 				VTLOG("Device[%d]: handle=0x%x name = %S\n", i,
+#else
+				VTLOG("Device[%d]: handle=0x%x name = %s\n", i,
+#endif
 					g_pRawInputDeviceList[i].hDevice, deviceName);
 			RID_DEVICE_INFO dinfo;
 			UINT sizeofdinfo = sizeof(dinfo);
 			dinfo.cbSize = sizeofdinfo;
-			if (GetRawInputDeviceInfo(g_pRawInputDeviceList[i].hDevice,
+			if (pfnGetRawInputDeviceInfo(g_pRawInputDeviceList[i].hDevice,
 									  RIDI_DEVICEINFO, &dinfo, &sizeofdinfo ) >= 0)
 			{
 				if (dinfo.dwType == RIM_TYPEHID)
@@ -121,11 +150,14 @@ bool vtSpaceNav::InitRawDevices()
 			}
 		}
 	}
-	// Register for input from the devices in the list
-	if (RegisterRawInputDevices( g_pRawInputDevices, g_nUsagePage1Usage8Devices, sizeof(RAWINPUTDEVICE) ) == FALSE )
+	if (g_nUsagePage1Usage8Devices > 0)
 	{
-		VTLOG("Error calling RegisterRawInputDevices\n");
-		return false;
+		// Register for input from the devices in the list
+		if (pfnRegisterRawInputDevices( g_pRawInputDevices, g_nUsagePage1Usage8Devices, sizeof(RAWINPUTDEVICE) ) == FALSE )
+		{
+			VTLOG("Error calling RegisterRawInputDevices\n");
+			return false;
+		}
 	}
 	return true;
 #else
@@ -143,7 +175,7 @@ void vtSpaceNav::ProcessWM_INPUTEvent(LPARAM lParam)
 
 	RAWINPUTHEADER header;
 	UINT size = sizeof(header);
-	if ( GetRawInputData( (HRAWINPUT)lParam, RID_HEADER, &header,  &size, sizeof(RAWINPUTHEADER) ) == -1)
+	if ( m_pfnGetRawInputData( (HRAWINPUT)lParam, RID_HEADER, &header,  &size, sizeof(RAWINPUTHEADER) ) == -1)
 	{
 		VTLOG("Error from GetRawInputData(RID_HEADER)\n");
 		return;
@@ -154,7 +186,7 @@ void vtSpaceNav::ProcessWM_INPUTEvent(LPARAM lParam)
 	// Set aside enough memory for the full event
 	size = header.dwSize;
 	LPRAWINPUT evt = (LPRAWINPUT)malloc(size);
-	if (GetRawInputData( (HRAWINPUT)lParam, RID_INPUT, evt, &size, sizeof(RAWINPUTHEADER) ) == -1)
+	if (m_pfnGetRawInputData( (HRAWINPUT)lParam, RID_INPUT, evt, &size, sizeof(RAWINPUTHEADER) ) == -1)
 	{
 		VTLOG("Error from GetRawInputData(RID_INPUT)\n");
 		free(evt);

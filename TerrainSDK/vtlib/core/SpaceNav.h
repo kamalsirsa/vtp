@@ -34,6 +34,13 @@ public:
 
 protected:
 	// ----------------  RawInput ------------------
+	HMODULE				m_hUser32Dll;
+	typedef UINT (WINAPI *GetRawInputDeviceList_t)(PRAWINPUTDEVICELIST, PUINT, UINT);
+	typedef UINT (WINAPI *GetRawInputDeviceInfo_t)(HANDLE, UINT, LPVOID, PUINT);
+	typedef BOOL (WINAPI *RegisterRawInputDevices_t)(PCRAWINPUTDEVICE, UINT, UINT);
+	typedef UINT (WINAPI *GetRawInputData_t)(HRAWINPUT, UINT, LPVOID, PUINT, UINT);
+	GetRawInputData_t	m_pfnGetRawInputData;
+
 	PRAWINPUTDEVICELIST g_pRawInputDeviceList;
 	PRAWINPUTDEVICE     g_pRawInputDevices;
 	int                 g_nUsagePage1Usage8Devices;
