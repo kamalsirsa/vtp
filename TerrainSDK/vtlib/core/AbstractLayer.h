@@ -105,6 +105,7 @@ public:
 	void Rebuild();
 	void RebuildFeature(unsigned int iIndex);
 	void UpdateVisualSelection();
+	void Reload();
 
 	// To make sure all edits are fully reflected in the visual, call these
 	//  methods around any editing of style or geometry.

@@ -799,10 +799,34 @@ void vtAbstractLayer::DeleteFeature(vtFeature *f)
 		ReleaseFeatureGeometry(f);
 }
 
-// When the underlying feature changes, we need to rebuild the visual
+// When the underlying feature changes (in memory), we need to rebuild the visual
 void vtAbstractLayer::Rebuild()
 {
 	ReleaseGeometry();
+	CreateStyledFeatures();
+}
+
+// When the feature set changes (on disk), we can reload it and rebuild the visual
+void vtAbstractLayer::Reload()
+{
+	// We must release the geometry before changing the featureset
+	ReleaseGeometry();
+
+	vtString fname = pSet->GetFilename();
+
+	// Now we can remove the previous featureset
+	delete pSet;
+
+	vtFeatureLoader loader;
+	vtFeatureSet *newset = loader.LoadFrom(fname);
+	if (!newset)
+	{
+		VTLOG("Couldn't read features from file '%s'\n", fname);
+		return;
+	}
+	VTLOG("Successfully read features from file '%s'\n", fname);
+	SetFeatureSet(newset);
+
 	CreateStyledFeatures();
 }
 
