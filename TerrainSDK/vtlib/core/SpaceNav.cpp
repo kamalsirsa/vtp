@@ -31,10 +31,10 @@ vtSpaceNav::vtSpaceNav()
 #if WIN32
 	g_pRawInputDeviceList = NULL;
 	g_pRawInputDevices = NULL;
+	m_hUser32Dll = NULL;
 #endif
 	m_fSpeed = 100.0f;
 	m_bAllowRoll = false;
-	m_hUser32Dll = NULL;
 }
 
 vtSpaceNav::~vtSpaceNav()

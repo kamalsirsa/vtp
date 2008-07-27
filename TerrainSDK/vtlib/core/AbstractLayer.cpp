@@ -821,10 +821,10 @@ void vtAbstractLayer::Reload()
 	vtFeatureSet *newset = loader.LoadFrom(fname);
 	if (!newset)
 	{
-		VTLOG("Couldn't read features from file '%s'\n", fname);
+		VTLOG("Couldn't read features from file '%s'\n", (const char *)fname);
 		return;
 	}
-	VTLOG("Successfully read features from file '%s'\n", fname);
+	VTLOG("Successfully read features from file '%s'\n", (const char *)fname);
 	SetFeatureSet(newset);
 
 	CreateStyledFeatures();
