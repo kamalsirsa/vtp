@@ -14,7 +14,7 @@
 /////////////////
 class vtMiniDatabuf;
 class ImageGLCanvas;
-struct TilingOptions;
+class TilingOptions;
 
 void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 					unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,

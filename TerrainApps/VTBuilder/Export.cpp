@@ -761,7 +761,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 	for (j = 0; j < opts.rows; j++)
 	{
 		// We might want to skip certain rows
-		if (opts.iMinRow != -1 && (j < opts.iMinRow || j > opts.iMaxRow)
+		if (opts.iMinRow != -1 && (j < opts.iMinRow || j > opts.iMaxRow))
 			continue;
 
 		for (i = 0; i < opts.cols; i++)
@@ -1120,7 +1120,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 	for (j = 0; j < opts.rows; j++)
 	{
 		// We might want to skip certain rows
-		if (opts.iMinRow != -1 && (j < opts.iMinRow || j > opts.iMaxRow)
+		if (opts.iMinRow != -1 && (j < opts.iMinRow || j > opts.iMaxRow))
 			continue;
 
 		for (i = 0; i < opts.cols; i++)

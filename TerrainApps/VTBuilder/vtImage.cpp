@@ -1797,7 +1797,7 @@ bool vtImage::WriteGridOfTilePyramids(TilingOptions &opts, BuilderView *pView)
 	for (j = opts.rows-1; j >= 0 && !bCancelled; j--)
 	{
 		// We might want to skip certain rows
-		if (opts.iMinRow != -1 && (j < opts.iMinRow || j > opts.iMaxRow)
+		if (opts.iMinRow != -1 && (j < opts.iMinRow || j > opts.iMaxRow))
 			continue;
 
 		for (i = 0; i < opts.cols && !bCancelled; i++)
