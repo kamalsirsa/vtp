@@ -262,6 +262,7 @@ protected:
 	void OnUpdateRawIsActive(wxUpdateUIEvent& event);
 	void OnUpdateRawGenElevation(wxUpdateUIEvent& event);
 
+	void OnAreaClear(wxCommandEvent& event);
 	void OnAreaZoomAll(wxCommandEvent& event);
 	void OnAreaZoomLayer(wxCommandEvent& event);
 	void OnAreaTypeIn(wxCommandEvent& event);

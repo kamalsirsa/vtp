@@ -278,6 +278,7 @@ EVT_UPDATE_UI(ID_RAW_GENERATE_ELEVATION,MainFrame::OnUpdateRawGenElevation)
 EVT_UPDATE_UI(ID_RAW_STYLE,				MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_SCALE,				MainFrame::OnUpdateRawIsActive)
 
+EVT_MENU(ID_AREA_CLEAR,				MainFrame::OnAreaClear)
 EVT_MENU(ID_AREA_ZOOM_ALL,			MainFrame::OnAreaZoomAll)
 EVT_MENU(ID_AREA_ZOOM_LAYER,		MainFrame::OnAreaZoomLayer)
 EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
@@ -548,6 +549,7 @@ void MainFrame::CreateMenus()
 
 	// Area
 	areaMenu = new wxMenu;
+	areaMenu->Append(ID_AREA_CLEAR, _("Clear (Set to zero)"));
 	areaMenu->Append(ID_AREA_ZOOM_ALL, _("Set to Full Extents"),
 		_("Set the Area Tool rectangle to the combined extent of all layers."));
 	areaMenu->Append(ID_AREA_ZOOM_LAYER, _("Set to Layer Extents"),
@@ -2146,6 +2148,13 @@ void MainFrame::OnUpdateHaveImageLayer(wxUpdateUIEvent& event)
 //////////////////////////////////////////////////////////////////////////
 // Area Menu
 //
+
+void MainFrame::OnAreaClear(wxCommandEvent &event)
+{
+	m_pView->InvertAreaTool(m_area);
+	m_area.SetRect(0, 0, 0, 0);
+	m_pView->InvertAreaTool(m_area);
+}
 
 void MainFrame::OnAreaZoomAll(wxCommandEvent &event)
 {
