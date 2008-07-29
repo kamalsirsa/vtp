@@ -804,7 +804,7 @@ int vtImage::NumBitmapsOnDisk()
 
 void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 {
-	int closest_bitmap = 0;
+	size_t closest_bitmap = 0;
 	double diff = 1E9;
 
 	if (dRes != 0.0)

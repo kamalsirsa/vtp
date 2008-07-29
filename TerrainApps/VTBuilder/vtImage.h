@@ -145,7 +145,7 @@ public:
 	LineBufferGDAL m_linebuf;
 
 	size_t NumBitmaps() const { return m_Bitmaps.size(); }
-	BitmapInfo &GetBitmapInfo(int i) { return m_Bitmaps[i]; }
+	BitmapInfo &GetBitmapInfo(size_t i) { return m_Bitmaps[i]; }
 	int NumBitmapsInMemory();
 	int NumBitmapsOnDisk();
 
