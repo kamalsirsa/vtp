@@ -223,6 +223,12 @@ void vtStructInstance3d::DeleteNode()
 {
 	if (m_pContainer)
 	{
+		if (m_pHighlight)
+		{
+			m_pContainer->RemoveChild(m_pHighlight);
+			m_pHighlight->Release();
+			m_pHighlight = NULL;
+		}
 		if (m_pModel)
 		{
 			m_pContainer->RemoveChild(m_pModel);

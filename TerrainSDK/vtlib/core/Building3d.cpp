@@ -1254,6 +1254,12 @@ void vtBuilding3d::DeleteNode()
 {
 	if (m_pContainer)
 	{
+		if (m_pHighlight)
+		{
+			m_pContainer->RemoveChild(m_pHighlight);
+			m_pHighlight->Release();
+			m_pHighlight = NULL;
+		}
 		DestroyGeometry();
 		m_pContainer->Release();
 		m_pContainer = NULL;
