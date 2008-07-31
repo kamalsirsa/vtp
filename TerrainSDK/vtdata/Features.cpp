@@ -2242,13 +2242,13 @@ vtString GetShapeTypeName(int nShapeType)
  * a shp polygon object (SHPT_POLYGON or SHPT_POLYGONZ) into a
  * DPolygon2.
  */
-void SHPToDPolygon2(SHPObject *pObj, DPolygon2 &dpoly)
+bool SHPToDPolygon2(SHPObject *pObj, DPolygon2 &dpoly)
 {
 	// Beware: it is possible for the shape to not actually have vertices, or
 	//  to have less than the minimum needed to define a polygon.  Ignore any
 	//  such degenerate cases
 	if (pObj->nVertices < 3)
-		return;
+		return false;
 
 	DLine2 dline;
 
@@ -2274,6 +2274,7 @@ void SHPToDPolygon2(SHPObject *pObj, DPolygon2 &dpoly)
 
 		dpoly.push_back(dline);
 	}
+	return true;
 }
 
 void DPolygon2ToOGR(const DPolygon2 &dp, OGRPolygon &op)

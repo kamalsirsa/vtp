@@ -269,12 +269,18 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			return false;
 	}
 
+	int iEmptyEntities = 0;
 	for (i = 0; i < nEntities; i++)
 	{
 		if (progress_callback != NULL && (i & 0xff) == 0)
 			progress_callback(i * 100 / nEntities);
 
 		SHPObject *psShape = SHPReadObject(hSHP, i);
+		if (!psShape)
+		{
+			iEmptyEntities++;
+			continue;
+		}
 
 		if (opt.bInsideOnly)
 		{
@@ -436,6 +442,9 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	if (db != NULL)
 		DBFClose(db);
 	SHPClose(hSHP);
+
+	if (iEmptyEntities)
+		VTLOG("\t Warning: %d of %d entities were empty.\n", iEmptyEntities, nEntities);
 
 	VTLOG1("\tReadSHP done.\n");
 	return true;

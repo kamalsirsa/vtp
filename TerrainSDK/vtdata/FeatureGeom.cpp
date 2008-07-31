@@ -1125,6 +1125,7 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 	m_Poly.reserve(nElems);
 
 	// Read Data from SHP into memory
+	int iFailed = 0;
 	for (int i = 0; i < nElems; i++)
 	{
 		if (progress_callback && ((i%16)==0))
@@ -1134,10 +1135,14 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 		SHPObject *pObj = SHPReadObject(hSHP, i);
 
 		DPolygon2 dpoly;
-		SHPToDPolygon2(pObj, dpoly);
+		bool success = SHPToDPolygon2(pObj, dpoly);
+		if (!success)
+			iFailed ++;
 		m_Poly.push_back(dpoly);
 
 		SHPDestroyObject(pObj);
 	}
+	if (iFailed > 0)
+		VTLOG("  %d of the %d entities were bad.\n", iFailed, nElems);
 }
 
