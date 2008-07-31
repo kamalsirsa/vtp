@@ -788,7 +788,7 @@ void EnviroFrame::SetMode(MouseMode mode)
 		GetCurrentTerrain()->SetPlantList(g_App.GetPlantList());
 
 		m_pPlantDlg->SetPlantList(g_App.GetPlantList());
-		m_pPlantDlg->SetPlantOptions(g_App.GetPlantOptions());
+		m_pPlantDlg->SetDlgPlantOptions(g_App.GetPlantOptions());
 	}
 	m_pPlantDlg->Show(mode == MM_PLANTS);
 }
@@ -3025,7 +3025,7 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 			opt.m_fHeight = size;
 
 			m_pPlantDlg->SetPlantList(g_App.GetPlantList());
-			m_pPlantDlg->SetPlantOptions(opt);
+			m_pPlantDlg->SetDlgPlantOptions(opt);
 			m_pPlantDlg->Show(true);
 		}
 	}

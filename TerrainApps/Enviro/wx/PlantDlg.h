@@ -33,7 +33,7 @@ public:
 	~PlantDlg();
 
 	void SetPlantList(vtSpeciesList3d *plants);
-	void SetPlantOptions(PlantingOptions &opt);
+	void SetDlgPlantOptions(PlantingOptions &opt);
 	void ShowOnlyAvailableSpecies(bool bFlag) { m_bOnlyAvailableSpecies = bFlag; }
 	void SetLang(const wxString &strTwoLetterLangCode);
 

@@ -109,9 +109,9 @@ void PlantDlg::SetPlantList(vtSpeciesList3d *plants)
 	UpdatePlantNames();
 }
 
-void PlantDlg::SetPlantOptions(PlantingOptions &opt)
+void PlantDlg::SetDlgPlantOptions(PlantingOptions &opt)
 {
-	VTLOG1("PlantDlg SetPlantOptions\n");
+	VTLOG1("PlantDlg SetDlgPlantOptions\n");
 	m_opt = opt;
 
 	if (m_opt.m_iSpecies == -1)
@@ -492,8 +492,5 @@ void PlantDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_bSetting = false;
 
 	UpdateEnabling();
-
-	// also keep main Enviro object in synch
-	g_App.SetPlantOptions(m_opt);
 }
 
