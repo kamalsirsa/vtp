@@ -533,13 +533,17 @@ void vtPlantInstance3d::ReleaseContents()
 {
 	if (!m_pContainer)	// safety check
 		return;
-	vtNode *node;
-	while (node = m_pContainer->GetChild(0))
+
+	int ch = m_pContainer->GetNumChildren();
+	for (int i = 0; i < ch; i++)
 	{
-		m_pContainer->RemoveChild(node);
-		node->Release();
+		vtNode *node = m_pContainer->GetChild(ch-1-i);
+		if (node != m_pHighlight)	// don't delete the highlight
+		{
+			m_pContainer->RemoveChild(node);
+			node->Release();
+		}
 	}
-	m_pHighlight = NULL;
 	m_pContainer->Identity();
 }
 
