@@ -1,7 +1,7 @@
 //
 // EnviroView.cpp : The 3d view window of the Enviro application
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -77,6 +77,7 @@ BEGIN_MESSAGE_MAP(EnviroView, CView)
 	ON_WM_MBUTTONDOWN()
 	ON_WM_MBUTTONUP()
 	ON_WM_SIZE()
+	ON_WM_ERASEBKGND()
 	ON_WM_MOUSEMOVE()
 	ON_WM_PAINT()
 	//}}AFX_MSG_MAP
@@ -589,6 +590,12 @@ int EnviroView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void EnviroView::OnSize(UINT nType, int cx, int cy)
 {
 	vtGetScene()->SetWindowSize(cx, cy);
+}
+
+BOOL EnviroView::OnEraseBkgnd(CDC *pDC)
+{
+    UNUSED_ALWAYS(pDC);
+    return TRUE;
 }
 
 void EnviroView::OnPaint()
