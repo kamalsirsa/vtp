@@ -6,7 +6,7 @@
 #ifndef LocalDatabuf_H
 #define LocalDatabuf_H
 
-#define USE_LIBMINI_DATABUF 0
+#define USE_LIBMINI_DATABUF 1
 
 #include "vtdata/MiniDatabuf.h"
 
@@ -16,8 +16,8 @@
 
 #ifdef _MSC_VER
   #if _MSC_VER >= 1400 // vc8
-	  #pragma message( "Adding link with libMini-vc8.lib" )
-	  #pragma comment( lib, "libMini-vc8.lib" )
+	  #pragma message( "Adding link with libMinid-vc8.lib" )
+	  #pragma comment( lib, "libMinid-vc8.lib" )
   #else // vc71
 	  #pragma message( "Adding link with libMini-vc7.lib" )
 	  #pragma comment( lib, "libMini-vc7.lib" )
