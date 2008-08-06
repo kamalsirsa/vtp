@@ -6,10 +6,10 @@
 //
 
 #include "MiniDatabuf.h"
-#include "vtLog.h"
-#include "Projections.h"
-#include "MathTypes.h"
-#include "FilePath.h"
+#include "vtdata/vtLog.h"
+#include "vtdata/Projections.h"
+#include "vtdata/MathTypes.h"
+#include "vtdata/FilePath.h"
 
 #include <stdlib.h>
 #include <string.h>
