@@ -1,7 +1,7 @@
 //
 // MeshMat.cpp - Meshes and Materials for vtlib-OSG
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1003,10 +1003,10 @@ void vtMesh::_AddQuadNormals()
 
 	for (int i = 0; i < quads; i++)
 	{
-		v0 = m_Index->at(i*3);
-		v1 = m_Index->at(i*3+1);
-		v2 = m_Index->at(i*3+2);
-		v3 = m_Index->at(i*3+3);
+		v0 = m_Index->at(i*4);
+		v1 = m_Index->at(i*4+1);
+		v2 = m_Index->at(i*4+2);
+		v3 = m_Index->at(i*4+3);
 		p0 = m_Vert->at(v0);
 		p1 = m_Vert->at(v1);
 		p2 = m_Vert->at(v2);
