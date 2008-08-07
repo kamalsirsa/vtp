@@ -2,6 +2,9 @@
 // LocalDatabuf.h: a wrapper for the Databuf class which is found either in
 //  in vtdata or libMini.
 //
+// Copyright (c) 2008 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef LocalDatabuf_H
 #define LocalDatabuf_H
