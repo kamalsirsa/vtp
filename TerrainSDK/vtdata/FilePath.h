@@ -21,7 +21,7 @@
 
 #include <fstream>
 
-#if WIN32
+#ifdef WIN32
   #include <io.h>
 #else
   #include <sys/stat.h>

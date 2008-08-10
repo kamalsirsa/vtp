@@ -1,7 +1,7 @@
 //
 // Array.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file Array.h */
@@ -12,11 +12,10 @@
 #ifdef _MSC_VER
   #pragma warning(disable: 4786)
   #pragma warning(disable: 4100)
-#endif
-
-#if WIN32 && defined(_MSC_VER) && _DEBUG
-  #define CRTDBG_MAP_ALLOC
-  #include <crtdbg.h>
+	#if _DEBUG
+	  #define CRTDBG_MAP_ALLOC
+	  #include <crtdbg.h>
+	#endif
 #endif
 
 #include <stdlib.h>	// for free()
