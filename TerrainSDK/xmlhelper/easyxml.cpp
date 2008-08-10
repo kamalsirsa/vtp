@@ -297,7 +297,7 @@ void readXML (const string &path_utf8, XMLVisitor &visitor,
 	int fd = fileno(fp);
 #endif
 
-	// Ensure that underlying fd isd rewound
+	// Ensure that underlying file descriptor (fd) is rewound
 	lseek(fd, 0, SEEK_SET);
 
 	gzFile gfp = gzdopen(fd, "rb");
