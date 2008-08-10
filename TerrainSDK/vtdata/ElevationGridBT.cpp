@@ -391,7 +391,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 	else
 	{
 		// Use GZip IO
-		gzFile fp = gzopen(szFileName, "wb");
+		gzFile fp = vtGZOpen(szFileName, "wb");
 		if (!fp)
 			return false;
 
