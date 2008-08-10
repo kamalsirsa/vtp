@@ -134,6 +134,7 @@ public:
 	void ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt);
 	unsigned int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
 	bool FillElevGaps(vtElevLayer *el, DRECT *area = NULL, int iMethod = -1);
+	void FlagStickyLayers(const std::vector<vtElevLayer*> &elevs);
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);

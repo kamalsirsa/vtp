@@ -665,60 +665,15 @@ bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
 	return bGood;
 }
 
-/**
- * From a set of elevation layers, pick the valid elevation that occurs latest
- *  in the set.
- */
-float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
+void Builder::FlagStickyLayers(const std::vector<vtElevLayer*> &elevs)
 {
-	float fData, fBestData = INVALID_ELEVATION;
-	for (unsigned int g = 0; g < elevs.size(); g++)
-	{
-		vtElevLayer *elev = elevs[g];
+	// Clear sticky flag for all layers
+	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+		m_Layers[i]->SetSticky(false);
 
-		vtElevationGrid *grid = elev->m_pGrid;
-		vtTin2d *tin = elev->m_pTin;
-		if (grid)
-		{
-			// The bounds-test would occur later, but we need to excluse this
-			//  grid early to avoid paging it in unnecessarily.
-			if (!grid->GetEarthExtents().ContainsPoint(p))
-				continue;
-
-			// Check if grid is in memory
-			if (!grid->HasData())
-				CacheLoadGridData(elev);
-
-			fData = grid->GetFilteredValue(p);
-			if (fData != INVALID_ELEVATION)
-				fBestData = fData;
-		}
-		else if (tin)
-		{
-			if (tin->FindAltitudeOnEarth(p, fData))
-				fBestData = fData;
-		}
-	}
-	return fBestData;
-}
-
-void ElevLayerArrayRange(std::vector<vtElevLayer*> &elevs,
-						 float &minval, float &maxval)
-{
-	float fMin = 1E9;
-	float fMax = -1E9;
-	for (unsigned int g = 0; g < elevs.size(); g++)
-	{
-		float LayerMin, LayerMax;
-		elevs[g]->GetHeightField()->GetHeightExtents(LayerMin, LayerMax);
-
-		if (LayerMin != INVALID_ELEVATION && LayerMin < fMin)
-			fMin = LayerMin;
-		if (LayerMax != INVALID_ELEVATION && LayerMax  > fMax)
-			fMax = LayerMax;
-	}
-	minval = fMin;
-	maxval = fMax;
+	// Set sticky flag for the desired layers
+	for (size_t e = 0; e < elevs.size(); e++)
+		elevs[e]->SetSticky(true);
 }
 
 /**
@@ -734,7 +689,7 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 	pTarget->GetExtent(area);
 	DPoint2 step = pTarget->m_pGrid->GetSpacing();
 
-	int i, j, layers = m_Layers.GetSize();
+	int layers = m_Layers.GetSize();
 	float fData=0, fBestData;
 	int iColumns, iRows;
 	pTarget->m_pGrid->GetDimensions(iColumns, iRows);
@@ -742,8 +697,18 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 	// Create progress dialog for the slow part
 	OpenProgressDialog(_("Merging and Resampling Elevation Layers"), true);
 
+	// Determine which source elevation layers overlap our desired area
 	std::vector<vtElevLayer*> elevs;
-	ElevLayerArray(elevs);
+	std::vector<vtElevLayer*> relevant_elevs;
+	unsigned int elev_layers = ElevLayerArray(elevs);
+	for (unsigned int e = 0; e < elev_layers; e++)
+	{
+		DRECT layer_extent;
+		elevs[e]->GetExtent(layer_extent);
+		if (area.OverlapsRect(layer_extent))
+			relevant_elevs.push_back(elevs[e]);
+	}
+	FlagStickyLayers(relevant_elevs);
 
 	// Setup TINs for speedy picking
 	for (int l = 0; l < NumLayers(); l++)
@@ -767,7 +732,7 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 	// iterate through the heixels of the new terrain
 	DPoint2 p;
 	wxString str;
-	for (i = 0; i < iColumns; i++)
+	for (int i = 0; i < iColumns; i++)
 	{
 		if ((i % 5) == 0)
 		{
@@ -779,12 +744,12 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 			}
 		}
 		p.x = area.left + (i * step.x);
-		for (j = 0; j < iRows; j++)
+		for (int j = 0; j < iRows; j++)
 		{
 			p.y = area.bottom + (j * step.y);
 
 			// find some data for this point
-			fBestData = ElevLayerArrayValue(elevs, p);
+			fBestData = ElevLayerArrayValue(relevant_elevs, p);
 			pTarget->m_pGrid->SetFValue(i, j, fBestData);
 		}
 	}
@@ -1465,5 +1430,62 @@ bool Builder::ConfirmValidCRS(vtProjection *pProj)
 			return false;
 	}
 	return true;
+}
+
+
+/**
+ * From a set of elevation layers, pick the valid elevation that occurs latest
+ *  in the set.
+ */
+float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
+{
+	float fData, fBestData = INVALID_ELEVATION;
+	for (unsigned int g = 0; g < elevs.size(); g++)
+	{
+		vtElevLayer *elev = elevs[g];
+
+		vtElevationGrid *grid = elev->m_pGrid;
+		vtTin2d *tin = elev->m_pTin;
+		if (grid)
+		{
+			// The bounds-test would occur later, but we need to exclude this
+			//  grid early to avoid paging it in unnecessarily.
+			if (!grid->GetEarthExtents().ContainsPoint(p))
+				continue;
+
+			// Check if grid is in memory
+			if (!grid->HasData())
+				ElevCacheLoadData(elev);
+
+			fData = grid->GetFilteredValue(p);
+			if (fData != INVALID_ELEVATION)
+				fBestData = fData;
+		}
+		else if (tin)
+		{
+			if (tin->FindAltitudeOnEarth(p, fData))
+				fBestData = fData;
+		}
+	}
+	return fBestData;
+}
+
+void ElevLayerArrayRange(std::vector<vtElevLayer*> &elevs,
+						 float &minval, float &maxval)
+{
+	float fMin = 1E9;
+	float fMax = -1E9;
+	for (unsigned int g = 0; g < elevs.size(); g++)
+	{
+		float LayerMin, LayerMax;
+		elevs[g]->GetHeightField()->GetHeightExtents(LayerMin, LayerMax);
+
+		if (LayerMin != INVALID_ELEVATION && LayerMin < fMin)
+			fMin = LayerMin;
+		if (LayerMax != INVALID_ELEVATION && LayerMax  > fMax)
+			fMax = LayerMax;
+	}
+	minval = fMin;
+	maxval = fMax;
 }
 

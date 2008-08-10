@@ -812,6 +812,9 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 			if (relevant_elevs.size() == 0)
 				continue;
 
+			// If we are paging, don't page out any of the necessary layers
+			FlagStickyLayers(relevant_elevs);
+
 			// Estimate what tile resolution is appropriate.
 			//  If we can produce a lower resolution, then we can produce fewer lods.
 			int total_lods = 1;
@@ -1027,7 +1030,9 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 
 #if USE_LIBMINI_DATABUF
 				bool saveasPNG=false;
-				buf.savedata(fname,saveasPNG?2:0); // external format 2=PNG
+				// libMini can't handle utf8
+				vtString fname_local = UTF8ToLocal(fname);
+				buf.savedata(fname_local, saveasPNG?2:0); // external format 2=PNG
 #else
 				buf.savedata(fname);
 #endif

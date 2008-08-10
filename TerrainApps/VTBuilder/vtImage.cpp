@@ -1344,7 +1344,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 			OpenProgressDialog(_("Reading file"), false);
 
 		m_linebuf.Setup(m_pDataset);
-		for (int i = 0; i < m_linebuf.m_iViewCount && i < m_Bitmaps.size(); i++)
+		for (int i = 0; i < m_linebuf.m_iViewCount && i < (int) m_Bitmaps.size(); i++)
 			m_Bitmaps[i].m_bOverlay = true;
 
 		int iBigImage = g_Options.GetValueInt(TAG_MAX_MEGAPIXELS) * 1024 * 1024;

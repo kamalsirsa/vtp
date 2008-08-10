@@ -171,6 +171,9 @@ vtElevLayer::~vtElevLayer()
 		delete m_pGrid;
 	if (m_pTin)
 		delete m_pTin;
+
+	// Make sure we don't have it in the cache
+	ElevCacheRemove(this);
 }
 
 bool vtElevLayer::OnSave()
@@ -200,7 +203,7 @@ bool vtElevLayer::OnLoad()
 		vtElevGridError err;
 
 		vtString fname_utf = fname.mb_str(wxConvUTF8);
-		success = CacheOpenGrid(m_pGrid, fname_utf, &err);
+		success = ElevCacheOpen(this, fname_utf, &err);
 		if (!success && err == EGE_READ_CRS)
 		{
 			// Missing prj file
@@ -1317,6 +1320,10 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 					num_unknown, num_unknown * 100.0f / (cols*rows));
 				result += str;
 			}
+			int mem = m_pGrid->MemoryUsed();
+			str.Printf(_("Size in memory: %d bytes (%.1f MB)\n"),
+				mem, (float)mem / 1024 / 1024);
+			result += str;
 		}
 		else
 		{
@@ -1849,59 +1856,97 @@ bool MatchTilingToResolution(const DRECT &original_area, const DPoint2 &resoluti
 	return true;
 }
 
-std::vector<vtElevationGrid*> g_GridMRU;
+std::vector<vtElevLayer*> g_GridMRU;
 
-bool CacheOpenGrid(vtElevationGrid *pGrid, const char *fname, vtElevGridError *err)
+bool ElevCacheOpen(vtElevLayer *pLayer, const char *fname, vtElevGridError *err)
 {
 	if (vtElevLayer::m_iGridMemLimit != -1)
 	{
 		// Limit ourselves to a fixed number of BT files loaded, deferred
 		//  until needed.
-		return pGrid->LoadBTHeader(fname, err);
+		return pLayer->m_pGrid->LoadBTHeader(fname, err);
 	}
 	else
 	{
-		return pGrid->LoadFromBT(fname, progress_callback, err);
+		return pLayer->m_pGrid->LoadFromBT(fname, progress_callback, err);
 	}
 }
 
-bool CacheLoadGridData(vtElevLayer *elev)
+bool ElevCacheLoadData(vtElevLayer *elev)
 {
+	wxString &fname = elev->GetLayerFilename();
+	vtString fname_utf8 = (const char *)fname.mb_str(wxConvUTF8);
 	vtElevationGrid *grid = elev->m_pGrid;
-	VTLOG("Adding %lx: \n", grid);
+
+	VTLOG("Need '%s': \n", StartOfFilename(fname_utf8));
 
 	size_t num_loaded = g_GridMRU.size();
 
 	int mem = 0;
 	for (size_t i = 0; i < num_loaded; i++)
-		mem += g_GridMRU[i]->MemoryUsed();
+		mem += g_GridMRU[i]->m_pGrid->MemoryUsed();
 
 	// Consider memory needs of new grid
 	mem += grid->MemoryNeeded();
 
-	VTLOG("  Need %d bytes (%d MB)\n", mem, mem / (1024*1024));
+	VTLOG("  Need %d bytes (%.1f MB, limit is %d MB)\n", mem,
+		(float)mem / (1024*1024), vtElevLayer::m_iGridMemLimit);
 
-	while (mem > (vtElevLayer::m_iGridMemLimit * 1024 * 1024))
+	bool bGo = true;
+	while (bGo && mem > (vtElevLayer::m_iGridMemLimit * 1024 * 1024))
 	{
-		// Unload the least recently used (LRU) at the start of list
-		vtElevationGrid *oldgrid = g_GridMRU[0];
-		mem -= oldgrid->MemoryUsed();
+		// Look for a layer we can unload, starting with the least recently
+		// used (LRU) at the start of list
+		size_t i;
+		for (i = 0; i < g_GridMRU.size(); i++)
+		{
+			vtElevLayer *lay = g_GridMRU[i];
+			if (!lay->GetSticky())
+			{
+				// Found one
+				vtElevationGrid *oldgrid = lay->m_pGrid;
+				mem -= oldgrid->MemoryUsed();
 
-		VTLOG("  Freed %lx, Need %d bytes (%d MB)\n", oldgrid, mem, mem / (1024*1024));
+				VTLOG("  Freeing '%s', Need %d bytes (%.1f MB)\n",
+					(const char *) StartOfFilename(lay->GetLayerFilename().mb_str(wxConvUTF8)),
+					mem, (float)mem / (1024*1024));
 
-		oldgrid->FreeData();
-		g_GridMRU.erase(g_GridMRU.begin());
+				oldgrid->FreeData();
+				g_GridMRU.erase(g_GridMRU.begin() + i);
+				break;
+			}
+		}
+		// If we went all the way through the list without finding a layer
+		//  we can unload, then give up
+		if (i == g_GridMRU.size())
+		{
+			VTLOG(" No more unloadable layers, will now exceed cache size.\n");
+			bGo = false;
+		}
 	}
 
 	//OpenProgressDialog(_T("Reading BT file"));
-	wxString &fname = elev->GetLayerFilename();
-	if (!grid->LoadBTData((const char *)fname.mb_str(wxConvUTF8), progress_callback))
+	VTLOG1("  Loading.\n");
+	if (!grid->LoadBTData(fname_utf8, progress_callback))
 		return false;
 	//CloseProgressDialog()
 
 	// most recently used goes to the end of the list
-	g_GridMRU.push_back(grid);
+	//  (to be precise, it is the most recently loaded)
+	g_GridMRU.push_back(elev);
 
 	return true;
+}
+
+void ElevCacheRemove(vtElevLayer *elev)
+{
+	for (size_t i = 0; i < g_GridMRU.size(); i++)
+	{
+		if (g_GridMRU[i] == elev)
+		{
+			g_GridMRU.erase(g_GridMRU.begin() + i);
+			return;
+		}
+	}
 }
 

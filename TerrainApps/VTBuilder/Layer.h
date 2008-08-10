@@ -51,6 +51,8 @@ public:
 	bool GetVisible() { return m_bVisible; }
 	void SetModified(bool bModified);
 	bool GetModified() { return m_bModified; }
+	void SetSticky(bool bSticky) { m_bSticky = bSticky; }
+	bool GetSticky() { return m_bSticky; }
 	bool IsNative() { return m_bNative; }
 
 	wxString GetImportedFrom() { return m_wsImportedFrom; }
@@ -115,6 +117,7 @@ protected:
 	bool		m_bVisible;
 	bool		m_bModified;
 	bool		m_bNative;
+	bool		m_bSticky;		// If sticky, don't page out the layer
 };
 
 typedef vtLayer *vtLayerPtr;
