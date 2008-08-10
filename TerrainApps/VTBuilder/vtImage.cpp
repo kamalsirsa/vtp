@@ -24,7 +24,7 @@
 #include "Helper.h"
 #include "Builder.h"
 #include "vtBitmap.h"
-#include "LocalDatabuf.h"
+#include "minidata/LocalDatabuf.h"
 #include "Options.h"
 
 #include "ExtentDlg.h"
@@ -1867,7 +1867,7 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 
 	// Write DB file (libMini's databuf format)
 	bool bJPEG = (opts.bUseTextureCompression && opts.eCompressionType == TC_JPEG);
-	vtString fname = MakeFilenameDB(dirname, col, row, lod, bJPEG);
+	vtString fname = MakeFilenameDB(dirname, col, row, lod);
 
 	// make a message for the progress dialog
 	wxString msg;

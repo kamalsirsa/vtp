@@ -489,9 +489,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\MiniDatabuf.cpp">
-			</File>
-			<File
 				RelativePath="Plants.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -917,9 +914,6 @@
 			</File>
 			<File
 				RelativePath="MathTypes.h">
-			</File>
-			<File
-				RelativePath=".\MiniDatabuf.h">
 			</File>
 			<File
 				RelativePath="Plants.h">

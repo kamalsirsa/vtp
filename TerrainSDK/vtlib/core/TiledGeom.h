@@ -9,7 +9,7 @@
 #define TILEDGEOMH
 
 #include "vtdata/HeightField.h"
-#include "vtdata/MiniDatabuf.h"
+#include "minidata/MiniDatabuf.h"
 #include <map>
 
 #define TILEDGEOM_RESOLUTION_MIN 80.0f

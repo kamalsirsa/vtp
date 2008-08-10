@@ -14,7 +14,7 @@
 #include "Builder.h"
 #include "Helper.h"
 #include "vtdata/vtLog.h"
-#include "LocalDatabuf.h"
+#include "minidata/LocalDatabuf.h"
 #include "TilingOptions.h"
 
 #if SUPPORT_SQUISH
@@ -26,16 +26,17 @@
 #endif
 
 #define USE_LIBMINI_SQUISH 0
-#define USE_LIBMINI_CONVHOOK 0
+#define USE_LIBMINI_CONVHOOK 1
 
 #if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
 #include <mini/squishbase.h>
 #endif
 
 #if (USE_LIBMINI_DATABUF && USE_LIBMINI_CONVHOOK)
-#include <mini/convbase.h>
+#include "minidata/convbase.h"
 #endif
 
+/*
 #if (USE_LIBMINI_DATABUF && (USE_LIBMINI_SQUISH || USE_LIBMINI_CONVHOOK))
 #ifdef _MSC_VER
   #if _MSC_VER >= 1400	// vc8
@@ -47,78 +48,7 @@
   #endif
 #endif
 #endif
-
-
-/////////////////////////////////////////////////////
-
-#if USE_LIBMINI_DATABUF
-
-// A useful method to set the extents (in local CRS) and the corners
-//  (in Geo WGS84) at the same time.
-bool vtMiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
-{
-	// First, set the extent rectangle
-	set_extents(extents.left, extents.right, extents.bottom, extents.top);
-
-	// Create transform from local to Geo-WGS84
-	vtProjection geo;
-	geo.SetWellKnownGeogCS("WGS84");
-	OCT *trans = CreateCoordTransform(&proj, &geo);
-
-	if (!trans)
-		return false;
-
-	// Convert each corner as a point
-	DPoint2 sw_corner, se_corner, nw_corner, ne_corner;
-
-	sw_corner.Set(extents.left, extents.bottom);
-	trans->Transform(1, &sw_corner.x, &sw_corner.y);
-
-	se_corner.Set(extents.right, extents.bottom);
-	trans->Transform(1, &se_corner.x, &se_corner.y);
-
-	nw_corner.Set(extents.left, extents.top);
-	trans->Transform(1, &nw_corner.x, &nw_corner.y);
-
-	ne_corner.Set(extents.right, extents.top);
-	trans->Transform(1, &ne_corner.x, &ne_corner.y);
-
-	set_LLWGS84corners(sw_corner.x, sw_corner.y,
-                       se_corner.x, se_corner.y,
-                       nw_corner.x, nw_corner.y,
-                       ne_corner.x, ne_corner.y);
-	delete trans;
-	return true;
-}
-
-
-//! get rgb[a] color
-void vtMiniDatabuf::getrgb(const unsigned int i,const unsigned int j,const unsigned int k, float *value)
-{
-	if (type==3)
-	{
-		unsigned char *ptr=&((unsigned char *)data)[3*(i+(j+k*ysize)*xsize)];
-
-		value[0] = ptr[0];
-		value[1] = ptr[1];
-		value[2] = ptr[2];
-	}
-}
-
-void vtMiniDatabuf::getrgba(const unsigned int i,const unsigned int j,const unsigned int k, float *value)
-{
-	if (type==4)
-	{
-		unsigned char *ptr=&((unsigned char *)data)[4*(i+(j+k*ysize)*xsize)];
-
-		value[0] = ptr[0];
-		value[1] = ptr[1];
-		value[2] = ptr[2];
-		value[3] = ptr[3];
-	}
-}
-
-#endif
+*/
 
 void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 					unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
@@ -145,18 +75,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 			opts.eCompressionType == TC_SQUISH_SLOW)
 		{
 #if SUPPORT_SQUISH
-
-#if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
-			output_buf.type = 3;	// RGB
-			output_buf.bytes = iUncompressedSize;
-			output_buf.data = malloc(iUncompressedSize);
-			memcpy(output_buf.data, rgb_bytes, iUncompressedSize);
-
-			InitSquishHook(opts.eCompressionType == TC_SQUISH_FAST);
-			output_buf.autocompress();
-#else
 			DoTextureSquish(rgb_bytes, output_buf, opts.eCompressionType == TC_SQUISH_FAST);
-#endif
 			output_buf.savedata(fname);
 			output_buf.release();
 #endif
@@ -167,7 +86,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 			output_buf.bytes = iUncompressedSize;
 			output_buf.data = malloc(iUncompressedSize);
 			memcpy(output_buf.data, rgb_bytes, iUncompressedSize);
-			output_buf.savedataJPEG(fname, 99); // quality=99
+			output_buf.savedata(fname, databuf::DATABUF_EXTFMT_JPEG);
 			output_buf.release();
 		}
 	}
@@ -187,13 +106,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		output_buf.bytes = iUncompressedSize;
 		output_buf.data = malloc(iUncompressedSize);
 		memcpy(output_buf.data, rgb_bytes, iUncompressedSize);
-
-#if USE_LIBMINI_DATABUF
-		bool saveasJPEG=false;
-		output_buf.savedata(fname,saveasJPEG?1:0); // external format 1=JPEG
-#else
 		output_buf.savedata(fname);
-#endif
 		output_buf.release();
 	}
 }
@@ -475,49 +388,3 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 }
 #endif	// SUPPORT_SQUISH
 
-// S3TC auto-compression hook
-void autocompress(int isrgbadata,unsigned char *rawdata,unsigned int bytes,
-				  unsigned char **s3tcdata,unsigned int *s3tcbytes,int width,int height,
-				  void *data)
-   {
-#if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
-
-   int mode=*((int *)data);
-
-   squishbase::compressS3TC(isrgbadata,rawdata,bytes,
-							s3tcdata,s3tcbytes,width,height,mode);
-
-#endif
-   }
-
-void InitSquishHook(bool squishFAST)
-   {
-#if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
-
-   static int mode=squishbase::SQUISHMODE_GOOD;
-
-   if (squishFAST) mode=squishbase::SQUISHMODE_FAST;
-   else mode=squishbase::SQUISHMODE_GOOD;
-
-   // register auto-compression hook
-   databuf::setautocompress(autocompress,&mode);
-
-#endif
-   }
-
-void InitConvHook(bool enableGREYC)
-   {
-#if (USE_LIBMINI_DATABUF && USE_LIBMINI_CONVHOOK)
-
-   // specify conversion parameters
-   static convbase::MINI_CONVERSION_PARAMS conversion_params;
-   conversion_params.jpeg_quality=75.0f; // jpeg quality in percent
-   conversion_params.usegreycstoration=enableGREYC; // use greycstoration for image denoising
-   conversion_params.greyc_p=0.8f; // greycstoration sharpness, useful range=[0.7-0.9]
-   conversion_params.greyc_a=0.4f; // greycstoration anisotropy, useful range=[0.1-0.5]
-
-   // register libMini conversion hook (JPEG/PNG)
-   databuf::setconversion(convbase::conversionhook,&conversion_params);
-
-#endif
-   }

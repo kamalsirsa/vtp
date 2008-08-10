@@ -35,7 +35,7 @@
 #include "Helper.h"
 #include "RawDlg.h"
 #include "vtBitmap.h"
-#include "LocalDatabuf.h"
+#include "minidata/LocalDatabuf.h"
 #include "Options.h"
 
 ////////////////////////////////////////////////////////////////////
@@ -1617,7 +1617,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 
 				for (int k = 0; k < opts.numlods; k++)
 				{
-					vtString fname = MakeFilenameDB(dirname_image, col, row, k, bJPEG);
+					vtString fname = MakeFilenameDB(dirname_image, col, row, k);
 
 					int tilesize = base_tilesize >> k;
 
@@ -1655,7 +1655,7 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 			{
 				int tilesize = base_tilesize >> lod;
 
-				vtString fname = MakeFilenameDB(dirname, col, row, lod, false);
+				vtString fname = MakeFilenameDB(dirname, col, row, lod);
 
 				// make a message for the progress dialog
 				wxString msg;

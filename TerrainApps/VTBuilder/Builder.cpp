@@ -16,6 +16,7 @@
 
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
+#include "minidata/convhook.h"
 #include <float.h>	// for FLT_MIN
 
 #include "Builder.h"
@@ -105,6 +106,9 @@ Builder::Builder()
 		vtLayer::LayerTypeNames.Add(_("Transit"));
 #endif
 	}
+
+	// We might need libMini's conversion hook, so set that up
+	InitMiniConvHook();
 
 	VTLOG1("  Builder constructor: exit\n");
 }

@@ -625,10 +625,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\MiniDatabuf.cpp"
-				>
-			</File>
-			<File
 				RelativePath="Plants.cpp"
 				>
 				<FileConfiguration
@@ -1165,10 +1161,6 @@
 			</File>
 			<File
 				RelativePath="MathTypes.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MiniDatabuf.h"
 				>
 			</File>
 			<File

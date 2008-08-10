@@ -27,7 +27,7 @@
 #include "Helper.h"
 #include "vtBitmap.h"
 #include "vtImage.h"
-#include "LocalDatabuf.h"
+#include "minidata/LocalDatabuf.h"
 #include "Options.h"
 // Layers
 #include "ElevLayer.h"
@@ -935,11 +935,9 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 
 				for (int k = 0; k < total_lods; k++)
 				{
-					vtString fname = MakeFilenameDB(dirname_image, col, row, k, bJPEG);
+					vtString fname = MakeFilenameDB(dirname_image, col, row, k);
 
 					int tilesize = base_tilesize >> k;
-
-					InitConvHook();
 
 					vtMiniDatabuf output_buf;
 
@@ -994,7 +992,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 				int lod = start_lod + k;
 				int tilesize = base_tilesize >> k;
 
-				vtString fname = MakeFilenameDB(dirname, col, row, k, false);
+				vtString fname = MakeFilenameDB(dirname, col, row, k);
 
 				// make a message for the progress dialog
 				wxString msg;
@@ -1003,8 +1001,6 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 				bool bCancel = UpdateProgressDialog2(done*99/total, 0, msg);
 				if (bCancel)
 					return false;
-
-				InitConvHook();
 
 				vtMiniDatabuf buf;
 				buf.SetBounds(m_proj, tile_area);
@@ -1226,7 +1222,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 					}
 				}
 
-				vtString fname = MakeFilenameDB(dirname, col, row, k, bJPEG);
+				vtString fname = MakeFilenameDB(dirname, col, row, k);
 
 				// make a message for the progress dialog
 				wxString msg;
@@ -1251,8 +1247,6 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 					}
 				}
 				int iUncompressedSize = cb;
-
-				InitConvHook();
 
 				vtMiniDatabuf output_buf;
 

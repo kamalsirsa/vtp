@@ -17,6 +17,8 @@
 #include <mini/datacloud.h>
 #include <mini/miniOGL.h>
 
+#include "minidata/convhook.h"
+
 // If we use a threading library, we can support multithreading
 #define SUPPORT_THREADING	1
 #define USE_PTHREADS		0
@@ -275,9 +277,9 @@ int file_exists(const char *filename)
 
 ///////////////////////////////////////////////////////////////////////
 
-int request_callback(int col,int row,unsigned char *mapfile,int hlod,
-					 unsigned char *texfile,int tlod,
-					  unsigned char *fogfile, void *data,
+int request_callback(int col,int row,const unsigned char *mapfile,int hlod,
+					 const unsigned char *texfile,int tlod,
+					  const unsigned char *fogfile, void *data,
 					  databuf *hfield, databuf *texture, databuf *fogmap)
 {
 	vtTiledGeom *tg = (vtTiledGeom *) data;
@@ -344,12 +346,12 @@ int request_callback(int col,int row,unsigned char *mapfile,int hlod,
 	return 1;
 }
 
-void mini_error_handler(char *file, int line, int fatal)
+void mini_error_handler(const char *file, int line, int fatal)
 {
 	VTLOG("libMini error: file '%s', line %d, fatal %d\n", file, line, fatal);
 }
 
-void request_callback_async(unsigned char *mapfile, databuf *map,
+void request_callback_async(const unsigned char *mapfile, databuf *map,
 							int istexture, int background, void *data)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
@@ -363,12 +365,12 @@ void request_callback_async(unsigned char *mapfile, databuf *map,
 	else
 #endif
 	{
-		if (istexture && tg->m_image_info.bJPEG)
-		{
-			vtString fname = tg->m_folder_image + "/tile." + mapfile + ".jpg";
-//			map->loaddataJPEG(fname);
-			map->loaddata(fname);
-		}
+//		if (istexture && tg->m_image_info.bJPEG)
+//		{
+//			vtString fname = tg->m_folder_image + "/tile." + mapfile + ".jpg";
+////			map->loaddataJPEG(fname);
+//			map->loaddata(fname);
+//		}
 		// normal disk load
 		map->loaddata((char *)mapfile);
 	}
@@ -380,13 +382,13 @@ void request_callback_async(unsigned char *mapfile, databuf *map,
 	}
 }
 
-int check_callback(unsigned char *mapfile, int istexture, void *data)
+int check_callback(const unsigned char *mapfile, int istexture, void *data)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
 	return tg->CheckMapFile((char *)mapfile, istexture != 0);
 }
 
-int inquiry_callback(int col, int row, unsigned char *mapfile, int hlod,
+int inquiry_callback(int col, int row, const unsigned char *mapfile, int hlod,
 					  void *data, float *minvalue, float *maxvalue)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
@@ -395,7 +397,7 @@ int inquiry_callback(int col, int row, unsigned char *mapfile, int hlod,
 	return 1;
 }
 
-void query_callback(int col, int row, unsigned char *texfile, int tlod,
+void query_callback(int col, int row, const unsigned char *texfile, int tlod,
 					void *data, int *tsizex, int *tsizey)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
@@ -457,6 +459,9 @@ vtTiledGeom::vtTiledGeom()
 	m_pPlainMaterial->SetLighting(true);
 
 	m_pReqContext = NULL;
+
+	// register libMini conversion hook (JPEG/PNG)
+	InitMiniConvHook();
 }
 
 vtTiledGeom::~vtTiledGeom()
@@ -553,11 +558,11 @@ bool vtTiledGeom::ReadTileList(const char *dataset_fname_elev,
 				hfields[i+cols*j] = NULL;
 
 			// Set up image LOD0 filename
-			if (m_image_info.bJPEG)
-			{
-				str.Format("%d-%d-", i, j);
-			}
-			else
+			//if (m_image_info.bJPEG)
+			//{
+			//	str.Format("%d-%d-", i, j);
+			//}
+			//else
 			{
 				str = m_folder_image;
 				str += str2;
@@ -840,10 +845,10 @@ bool vtTiledGeom::CheckMapFile(const char *mapfile, bool bIsTexture)
 		if (bIsTexture)
 		{
 			// checking an image tile
-			if (m_image_info.bJPEG)
-				sscanf((char *)mapfile,
-				"%d-%d-%d", &col, &row, &lod);
-			else
+			//if (m_image_info.bJPEG)
+			//	sscanf((char *)mapfile,
+			//	"%d-%d-%d", &col, &row, &lod);
+			//else
 				sscanf((char *)mapfile + m_folder_image.GetLength(),
 				"/tile.%d-%d.db%d", &col, &row, &lod);
 			m_image_info.lodmap.get(col, row, mmin, mmax);

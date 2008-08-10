@@ -16,7 +16,7 @@
 #include "ImageLayer.h"
 #include "vtImage.h"
 #include "Options.h"
-#include "LocalDatabuf.h"
+#include "minidata/LocalDatabuf.h"
 
 vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 {
