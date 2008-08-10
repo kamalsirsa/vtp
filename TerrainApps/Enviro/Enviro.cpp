@@ -1305,6 +1305,7 @@ void Enviro::SetMode(MouseMode mode)
 		case MM_VEHICLES:
 		case MM_MOVE:
 		case MM_MEASURE:
+		case MM_SLOPE:
 			m_pCursorMGeom->SetEnabled(true);
 			EnableFlyerEngine(false);
 			break;
@@ -1517,6 +1518,11 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 			SetTerrainMeasure(g1, g1);
 		}
 		UpdateDistanceTool();
+	}
+	if (m_mode == MM_SLOPE)
+	{
+		// TODO
+		//pTerr->AddFencepoint(m_pCurFence, DPoint2(m_EarthPos.x, m_EarthPos.y));
 	}
 }
 
@@ -2096,6 +2102,10 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 			SetTerrainMeasure(g1, g2);
 		}
 		UpdateDistanceTool();
+	}
+	if (m_mode == MM_SLOPE && m_bDragging && m_bOnTerrain)
+	{
+		// Optional TODO
 	}
 }
 

@@ -1025,6 +1025,9 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 
 void EnviroFrame::DoTestCode()
 {
+	SetMode(MM_SLOPE);
+
+/*
 #if VTLIB_OSG
 	const int ReceivesShadowTraversalMask = 0x1;
 	const int CastsShadowTraversalMask = 0x2;
@@ -1077,6 +1080,7 @@ void EnviroFrame::DoTestCode()
 
 	vtLogNativeGraph(shadowedScene.get());
 #endif
+	*/
 }
 
 void EnviroFrame::LoadClouds(const char *fname)

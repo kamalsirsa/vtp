@@ -40,6 +40,7 @@ enum MouseMode
 	MM_VEHICLES,
 	MM_MOVE,
 	MM_MEASURE,
+	MM_SLOPE,
 
 	MM_NONE
 };
