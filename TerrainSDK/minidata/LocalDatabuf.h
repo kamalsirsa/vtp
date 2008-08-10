@@ -17,17 +17,6 @@
 
 #include <mini/database.h> // part of libMini
 
-#ifdef _MSC_VER
-  #if _MSC_VER >= 1400 // vc8
-	  #pragma message( "Adding link with libMinid-vc8.lib" )
-	  #pragma comment( lib, "libMinid-vc8.lib" )
-  #else // vc71
-	  #pragma message( "Adding link with libMini-vc7.lib" )
-	  #pragma comment( lib, "libMini-vc7.lib" )
-  #endif
-  #pragma comment( lib, "glu32.lib" )
-#endif
-
 // Directly subclass from libMini
 class vtMiniDatabuf: public databuf
 {
