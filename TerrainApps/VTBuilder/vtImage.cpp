@@ -1796,12 +1796,14 @@ bool vtImage::WriteGridOfTilePyramids(TilingOptions &opts, BuilderView *pView)
 	bool bCancelled = false;
 	for (j = opts.rows-1; j >= 0 && !bCancelled; j--)
 	{
-		// We might want to skip certain rows
-		if (opts.iMinRow != -1 && (j < opts.iMinRow || j > opts.iMaxRow))
-			continue;
-
 		for (i = 0; i < opts.cols && !bCancelled; i++)
 		{
+			// We might want to skip certain rows
+			if (opts.iMinRow != -1 &&
+				(i < opts.iMinCol || i > opts.iMaxCol ||
+				 j < opts.iMinRow || j > opts.iMaxRow))
+				continue;
+
 			DRECT tile_area;
 			tile_area.left = area.left + tile_dim.x * i;
 			tile_area.right = area.left + tile_dim.x * (i+1);

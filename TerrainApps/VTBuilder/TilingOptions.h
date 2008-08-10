@@ -26,6 +26,8 @@ public:
 		bUseTextureCompression = false;
 		eCompressionType = TC_OPENGL;
 		iNoDataFilled = 0;
+		iMinCol = -1;
+		iMaxCol = -1;
 		iMinRow = -1;
 		iMaxRow = -1;
 	}
@@ -50,6 +52,7 @@ public:
 	TextureCompressionType eCompressionType;
 
 	// These can be set to restrict the output to certain (tile) rows only
+	int iMinCol, iMaxCol;
 	int iMinRow, iMaxRow;
 
 	// after the sampling, will contain the number of NODATA heixels filled in
