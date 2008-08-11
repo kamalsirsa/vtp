@@ -302,6 +302,9 @@ public:
 	void CopyFrom(const vtShadow *rhs);
 	void Release();
 
+	void SetDarkness(float bias) {}	// TODO
+	float GetDarkness() { return 0.5f; } // TODO
+
 protected:
 	// TODO: OpenSG shadow state
 

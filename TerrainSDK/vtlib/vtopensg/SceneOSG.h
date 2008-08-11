@@ -123,6 +123,8 @@ public:
 	bool IsStereo() const;
 	void SetStereoSeparation(float fSep);
 	float GetStereoSeparation() const;
+	void SetStereoFusionDistance(float fDist) {}	// TODO
+	float GetStereoFusionDistance() { return 1.0f; }	// TODO
 	void ComputeViewMatrix(FMatrix4 &mat);
 
 	// OpenSG access
