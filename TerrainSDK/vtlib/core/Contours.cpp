@@ -68,7 +68,7 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 			if (tiledGeom->m_elev_info.lodmap.m_min[i] > minLod)
 				minLod = tiledGeom->m_elev_info.lodmap.m_min[i];
 
-		tileLod0Size = pow(2.0, minLod);
+		tileLod0Size = 1 << minLod;
 		m_spacing = DPoint2(m_ext.Width() / (tiledGeom->cols * tileLod0Size), m_ext.Height() / (tiledGeom->rows *tileLod0Size));
 	}
 	else
