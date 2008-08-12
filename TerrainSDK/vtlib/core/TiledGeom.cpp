@@ -632,7 +632,8 @@ void vtTiledGeom::SetVertexTarget(int iVertices)
 void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 {
 	VTLOG("Calling miniload constructor(%d,%d,..)\n", cols, rows);
-	m_pMiniLoad = new miniload(hfields, textures,
+	m_pMiniLoad = new miniload((const unsigned char **)hfields,
+		(const unsigned char **)textures,
 		cols, rows,
 		coldim, rowdim,
 		m_fMaximumScale, center.x, center.y, center.z);
