@@ -11,6 +11,8 @@
 #include "wx/wx.h"
 #endif
 
+#include <memory>	// for auto_ptr
+
 #include "vtdata/shapelib/shapefil.h"
 #include "vtdata/vtString.h"
 #include "vtdata/vtLog.h"

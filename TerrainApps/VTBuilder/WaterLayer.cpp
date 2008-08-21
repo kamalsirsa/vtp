@@ -11,6 +11,8 @@
 #include "wx/wx.h"
 #endif
 
+#include <memory>	// for auto_ptr
+
 #include "WaterLayer.h"
 #include "ScaledView.h"
 #include "Helper.h"

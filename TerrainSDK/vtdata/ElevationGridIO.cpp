@@ -12,7 +12,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <fstream>
-#include <memory>
+#include <memory>	// for auto_ptr
 using namespace std;
 
 #include "config_vtdata.h"

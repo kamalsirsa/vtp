@@ -12,6 +12,8 @@
 #include "wx/wx.h"
 #endif
 
+#include <memory>	// for auto_ptr
+
 #include "vtdata/Building.h"
 #include "vtdata/DLG.h"
 #include "vtdata/DxfParser.h"
