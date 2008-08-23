@@ -192,10 +192,16 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 		DPoint2 p = GetAt(i);
 		if (i < size-1)
 		{
-			DPoint2 vec = GetAt(i+1) - p;
-			norm.x = -vec.y;
-			norm.y = vec.x;
-			norm.Normalize();
+			// beware duplicate points, which can cause bad normals; if we
+			//  encounter them, just use the existing normal
+			const DPoint2 &next = GetAt(i+1);
+			if (p != next)
+			{
+				DPoint2 vec = next - p;
+				norm.x = -vec.y;
+				norm.y = vec.x;
+				norm.Normalize();
+			}
 		}
 		if (i == 0)		// first point
 			offset = norm * half_width;
