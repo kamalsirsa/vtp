@@ -54,7 +54,6 @@ zip $DIST_FILE1 VTP/TerrainSDK/vtui/*
 zip $DIST_FILE1 VTP/TerrainApps/install-sh
 zip $DIST_FILE1 VTP/TerrainApps/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/README.sgi
-zip $DIST_FILE1 VTP/TerrainApps/BExtractor/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/*.h
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/BExtractor*.vcproj
@@ -80,7 +79,6 @@ mv VTP/TerrainApps/Enviro/Enviro_dev.xml VTP/TerrainApps/Enviro/Enviro.xml
 
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/*.h
-zip $DIST_FILE1 VTP/TerrainApps/Enviro/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wxEnviro*.vcproj
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wxEnviro*.sln
@@ -88,6 +86,7 @@ zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfcEnviro*.vcproj
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfcEnviro*.sln
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/*.h
+zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/*.vcproj
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/enviro-wx.rc
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/enviro.wdr
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/bitmap/*
@@ -129,16 +128,13 @@ zip $DIST_FILE1 VTP/TerrainApps/prSimple/Data/Elevation/README.txt
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/app.cpp
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/sdlSimple*.vcproj
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/sdlSimple*.sln
-zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/Data/Simple.xml
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/Data/Elevation/README.txt
 
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/*.h
-zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/Makefile
-zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.ini
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.rc
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/*.vcproj
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder*.sln
