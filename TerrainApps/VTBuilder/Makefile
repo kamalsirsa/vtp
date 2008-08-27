@@ -40,10 +40,10 @@ ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS   += -F$(FRAMEWORKS) \
 	  -lobjc -framework Carbon \
-	  -framework vtdata -framework vtui \
+	  -framework vtdata -framework minidata -framework vtui \
 	  -framework xmlhelper -framework unzip \
 	  -L$(FINK_LIB) -lpng \
-	  -lz -lMini -framework OpenGL\
+	  -lz -lMini -framework OpenGL -losg -losgGA -losgUtil -losgText -losgDB -losgParticle -losgShadow -lOpenThreads \
 	  -Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS
 
 all : $(OSX_APP)

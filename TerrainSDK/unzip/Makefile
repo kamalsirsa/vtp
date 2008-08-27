@@ -22,7 +22,7 @@ $(LIB) : $(OBJS)
 
 $(FRAMEWORK_LIB) : $(OBJS) $(FRAMEWORK)
 	$(LD_SHARED) -o $(FRAMEWORK_LIB) -install_name $(FRAMEWORK_INSTALL_NAME) $(XMLHELPER_LINK_OPTS) $(OBJS) 
-	(cd $(shell dirname $(FRAMEWORK_EXE)) && ln -sf Versions/A/$(LIB_NAME) $(LIB_NAME))
+	@-(cd $(shell dirname $(FRAMEWORK_EXE)) && ln -sf Versions/A/$(LIB_NAME) $(LIB_NAME))
 
 clean :
 	rm -rf $(OBJS) ii_files so_locations

@@ -278,44 +278,43 @@ endif
    # etc.
    #
    %.app: $(OSX_APPS) 
-	-mkdir -p $(OSX_APPS)/$(EXEC).app/Contents/MacOS
-	-mkdir -p $(OSX_APPS)/$(EXEC).app/Contents/Resources
-	if [ -e osx/$(EXEC).plist ]; then \
+	@-mkdir -p $(OSX_APPS)/$(EXEC).app/Contents/MacOS
+	@-mkdir -p $(OSX_APPS)/$(EXEC).app/Contents/Resources
+	@-if [ -e osx/$(EXEC).plist ]; then \
 		cp osx/$(EXEC).plist $(OSX_APPS)/$(EXEC).app/Contents/Info.plist; \
 	fi
-	echo -n "APPL????" > $(OSX_APPS)/$(EXEC).app/Contents/PkgInfo
-	if [ ! -h $(OSX_APPS)/$(EXEC).app/Contents/Frameworks ] ; then \
-	       (cd $(OSX_APPS)/$(EXEC).app/Contents && \
+	@-echo -n "APPL????" > $(OSX_APPS)/$(EXEC).app/Contents/PkgInfo
+	@-if [ ! -h $(OSX_APPS)/$(EXEC).app/Contents/Frameworks ] ; then \
+		(cd $(OSX_APPS)/$(EXEC).app/Contents && \
 		ln -s ../../Shared/Frameworks Frameworks ); \
-	fi 
-	if [ ! -h $(OSX_APPS)/$(EXEC).app/Contents/Plugins ] ; then \
-	       (cd $(OSX_APPS)/$(EXEC).app/Contents && \
+	fi
+	@-if [ ! -h $(OSX_APPS)/$(EXEC).app/Contents/Plugins ] ; then \
+		(cd $(OSX_APPS)/$(EXEC).app/Contents && \
 		ln -s ../../Shared/Plugins Plugins ); \
-	fi 
-	if [ ! -h $(OSX_APPS)/$(EXEC).app/Contents/Shared ] ; then \
-	       (cd $(OSX_APPS)/$(EXEC).app/Contents && \
+	fi
+	@-if [ ! -h $(OSX_APPS)/$(EXEC).app/Contents/Shared ] ; then \
+		(cd $(OSX_APPS)/$(EXEC).app/Contents && \
 		ln -s ../../Shared Shared ); \
 	fi 
-	if [ -e osx/$(EXEC).rsrc ]; then \
+	@-if [ -e osx/$(EXEC).rsrc ]; then \
 		cp osx/$(EXEC).rsrc $(OSX_APPS)/$(EXEC).app/Contents/Resources/$(EXEC).rsrc; \
 	fi
-	if [ -e osx/$(EXEC).icns ]; then \
+	@-if [ -e osx/$(EXEC).icns ]; then \
 		cp osx/$(EXEC).icns $(OSX_APPS)/$(EXEC).app/Contents/Resources/; \
 	fi
 
    %.framework: $(HEADERS)
-	-mkdir -p $(FRAMEWORKS)
-	-mkdir -p $*.framework/Versions/A 
-	-mkdir -p $*.framework/Headers
-	-if [ ! -h $*.framework/Versions/Current ] ; then \
+	@-mkdir -p $(FRAMEWORKS)
+	@-mkdir -p $*.framework/Versions/A 
+	@-mkdir -p $*.framework/Headers
+	@-if [ ! -h $*.framework/Versions/Current ] ; then \
 		(cd $*.framework/Versions && \
 		 ln -s A Current) ; fi
-	if [ ! -h $*.framework/Versions/Current/Shared ] ; then \
-	       (cd $*.framework/Versions/Current && \
+	@-if [ ! -h $*.framework/Versions/Current/Shared ] ; then \
+		(cd $*.framework/Versions/Current && \
 		ln -s ../../../../../Shared Shared ); \
 	fi 
-	-cp -r $(HEADERS) $*.framework/Headers/
-
+	@-cp -r $(HEADERS) $*.framework/Headers/
 endif
 
 #------------------------------------------------------------------------------

@@ -12,7 +12,7 @@ include $(VTP_ROOT)/Make.defs
 
 all :
 ifeq ($(OS),Darwin)
-	mkdir -p $(FRAMEWORKS)
+	@-mkdir -p $(FRAMEWORKS)
 endif
 	@-cd unzip      && $(MAKE) all
 	@-cd xmlhelper  && $(MAKE) all
