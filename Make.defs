@@ -75,6 +75,7 @@ APIS_DIR         = /usr/local
 TERRAIN_SDK_DIR  = $(VTP_ROOT)/TerrainSDK
 TERRAIN_APPS_DIR = $(VTP_ROOT)/TerrainApps
 VTDATA_DIR       = $(TERRAIN_SDK_DIR)/vtdata
+MINIDATA_DIR     = $(TERRAIN_SDK_DIR)/minidata
 VTLIB_DIR        = $(TERRAIN_SDK_DIR)/vtlib
 VTUI_DIR         = $(TERRAIN_SDK_DIR)/vtui
 VTOSG_DIR        = $(VTLIB_DIR)/vtosg
