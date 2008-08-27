@@ -87,10 +87,10 @@ int conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsig
 
             switch (components)
                {
-               case 1: if (obj->type!=0) return(0);
-               case 2: if (obj->type!=1) return(0);
-               case 3: if (obj->type!=3) return(0);
-               case 4: if (obj->type!=4) return(0);
+               case 1: if (obj->type!=0) return(0); break;
+               case 2: if (obj->type!=1) return(0); break;
+               case 3: if (obj->type!=3) return(0); break;
+               case 4: if (obj->type!=4) return(0); break;
                default: return(0);
                }
 
