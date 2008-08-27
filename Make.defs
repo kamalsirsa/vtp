@@ -234,8 +234,8 @@ else
 	      -losgText -losgDB -losgGA -losgParticle -losgShadow -lOpenThreads
 endif
    XMLHELPER_OPTS = -framework xmlhelper
-   VTDATA_OPTS = -framework vtdata -framework unzip -lMini
-   MINIDATA_OPTS = -framework vtdata -framework unzip -lMini -framework OpenGL
+   VTDATA_OPTS = -framework vtdata -framework unzip -lMini -framework OpenGL
+   MINIDATA_OPTS = -framework minidata -framework unzip -lMini -framework OpenGL
    VTUI_OPTS = -framework vtdata -framework unzip -framework unzip
    UNZIP_OPTS = -framework unzip
 
@@ -253,7 +253,7 @@ endif
    MINIDATA_LINK_OPTS =  $(COMMON_OPTS) \
 		       $(XMLHELPER_OPTS) \
 		       $(UNZIP_OPTS) \
-		       $(MINIDATA_OPTS)
+		       $(VTDATA_OPTS)
 
    VTUI_LINK_OPTS = $(shell $(WX_DIR)/bin/wx-config --libs) \
 		    $(COMMON_OPTS) \
@@ -271,6 +271,7 @@ endif
 		      $(GLU_LIB) \
 		      $(XMLHELPER_OPTS)\
 		      $(VTDATA_OPTS) \
+		      $(MINIDATA_OPTS) \
 		      -lMini -lz -lbz2
 
    #
