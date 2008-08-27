@@ -230,7 +230,7 @@ ifeq ($(OSG_NO_FRAMEWORKS),0)
 	      -framework osgText -framework osgDB -framework osgGA -framework OpenThreads
 else
    OSG_OPTS = -losg -losgGA -losgUtil \
-	      -losgText -losgDB -losgGA -losgParticle -lOpenThreads
+	      -losgText -losgDB -losgGA -losgParticle -losgShadow -lOpenThreads
 endif
    XMLHELPER_OPTS = -framework xmlhelper
    VTDATA_OPTS = -framework vtdata -framework unzip -lMini
