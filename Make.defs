@@ -235,6 +235,7 @@ else
 endif
    XMLHELPER_OPTS = -framework xmlhelper
    VTDATA_OPTS = -framework vtdata -framework unzip -lMini
+   MINIDATA_OPTS = -framework vtdata -framework unzip -lMini -framework OpenGL
    VTUI_OPTS = -framework vtdata -framework unzip -framework unzip
    UNZIP_OPTS = -framework unzip
 
@@ -248,6 +249,11 @@ endif
    VTDATA_LINK_OPTS =  $(COMMON_OPTS) \
 		       $(XMLHELPER_OPTS) \
 		       $(UNZIP_OPTS)
+
+   MINIDATA_LINK_OPTS =  $(COMMON_OPTS) \
+		       $(XMLHELPER_OPTS) \
+		       $(UNZIP_OPTS) \
+		       $(MINIDATA_OPTS)
 
    VTUI_LINK_OPTS = $(shell $(WX_DIR)/bin/wx-config --libs) \
 		    $(COMMON_OPTS) \
