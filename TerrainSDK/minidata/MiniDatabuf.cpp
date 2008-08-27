@@ -5,12 +5,7 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include "MiniDatabuf.h"
-#include "vtdata/vtLog.h"
-#include "vtdata/Projections.h"
-#include "vtdata/MathTypes.h"
-#include "vtdata/FilePath.h"
-
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -20,6 +15,12 @@
 extern "C" {
 #include "jpeglib.h"
 }
+
+#include "MiniDatabuf.h"
+#include "vtdata/vtLog.h"
+#include "vtdata/Projections.h"
+#include "vtdata/MathTypes.h"
+#include "vtdata/FilePath.h"
 
 #define ERRORMSG() VTLOG1("Error!")
 
