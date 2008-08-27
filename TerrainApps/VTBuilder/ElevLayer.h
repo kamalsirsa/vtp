@@ -10,7 +10,7 @@
 
 #include "wx/image.h"
 #include "Layer.h"
-#include "ElevationGrid.h"
+#include "vtdata/ElevationGrid.h"
 #include "vtdata/vtTin.h"
 #include "ElevDrawOptions.h"
 #include "TilingOptions.h"

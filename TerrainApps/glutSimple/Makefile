@@ -35,7 +35,7 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS   = -bind_at_load -F$(FRAMEWORKS) \
-	-framework vtosg -framework vtdata -framework unzip\
+	-framework vtosg -framework vtdata -framework minidata -framework unzip\
 	$(OSG_OPTS) \
 	-L$(FINK_LIB) -lnetcdf -lgdal \
 	-framework xmlhelper $(MINI_LIB) \

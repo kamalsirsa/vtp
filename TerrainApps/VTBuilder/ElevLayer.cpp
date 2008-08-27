@@ -1876,7 +1876,7 @@ bool ElevCacheOpen(vtElevLayer *pLayer, const char *fname, vtElevGridError *err)
 
 bool ElevCacheLoadData(vtElevLayer *elev)
 {
-	wxString &fname = elev->GetLayerFilename();
+	wxString fname = elev->GetLayerFilename();
 	vtString fname_utf8 = (const char *)fname.mb_str(wxConvUTF8);
 	vtElevationGrid *grid = elev->m_pGrid;
 
