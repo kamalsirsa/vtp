@@ -205,14 +205,11 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path,
 		// FIXME: get proper error string from system
 		if (!input.good())
 		{
-			int CurrentLineNumber = XML_GetCurrentLineNumber(parser);
-			int CurrentColumnNumber = XML_GetCurrentColumnNumber(parser);
+			int line = XML_GetCurrentLineNumber(parser);
+			int col = XML_GetCurrentColumnNumber(parser);
 			XML_ParserFree(parser);
 			throw xh_io_exception("Problem reading file",
-					xh_location(path,
-					CurrentLineNumber,
-					CurrentColumnNumber),
-					"XML Parser");
+					xh_location(path, line, col), "XML Parser");
 		}
 
 		input.read(buf,16384);
@@ -222,8 +219,7 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path,
 			int line = XML_GetCurrentLineNumber(parser);
 			int col = XML_GetCurrentColumnNumber(parser);
 			XML_ParserFree(parser);
-			throw xh_io_exception(message,
-					xh_location(path, line, col),
+			throw xh_io_exception(message, xh_location(path, line, col),
 					"XML Parser");
 		}
 		if (progress_callback != NULL)
@@ -236,15 +232,13 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path,
 	}
 
 	// Verify end of document.
-	if (!XML_Parse(parser, buf, 0, true)) {
-		int CurrentLineNumber = XML_GetCurrentLineNumber(parser);
-		int CurrentColumnNumber = XML_GetCurrentColumnNumber(parser);
+	if (!XML_Parse(parser, buf, 0, true))
+	{
+		int line = XML_GetCurrentLineNumber(parser);
+		int col = XML_GetCurrentColumnNumber(parser);
 		XML_ParserFree(parser);
 		throw xh_io_exception(XML_ErrorString(XML_GetErrorCode(parser)),
-				xh_location(path,
-							CurrentLineNumber,
-							CurrentColumnNumber),
-				"XML Parser");
+			xh_location(path, line, col), "XML Parser");
 	}
 
 	XML_ParserFree(parser);
@@ -351,9 +345,8 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
 				int line = XML_GetCurrentLineNumber(parser);
 				int col = XML_GetCurrentColumnNumber(parser);
 				XML_ParserFree(parser);
-				throw xh_io_exception(message,
-						xh_location(path, line, col),
-						"XML Parser");
+				throw xh_io_exception(message, xh_location(path, line, col),
+					"XML Parser");
 			}
 			if (progress_callback != NULL)
 			{
@@ -377,14 +370,11 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
 		}
 		else if (iCount < 0)
 		{
-			int CurrentLineNumber = XML_GetCurrentLineNumber(parser);
-			int CurrentColumnNumber = XML_GetCurrentColumnNumber(parser);
+			int line = XML_GetCurrentLineNumber(parser);
+			int col = XML_GetCurrentColumnNumber(parser);
 			XML_ParserFree(parser);
 			throw xh_io_exception("Problem reading file",
-					xh_location(path,
-					CurrentLineNumber,
-					CurrentColumnNumber),
-					"XML Parser");
+					xh_location(path, line, col), "XML Parser");
 		}
 	}
 
@@ -399,10 +389,7 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
 		XML_ParserFree(parser);
 
 		throw xh_io_exception(errstr,
-				xh_location(path,
-							line,
-							column),
-				"XML Parser");
+			xh_location(path, line, column), "XML Parser");
 	}
 
 	XML_ParserFree(parser);
