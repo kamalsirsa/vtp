@@ -202,7 +202,7 @@ bool vtElevLayer::OnLoad()
 		m_pGrid = new vtElevationGrid;
 		vtElevGridError err;
 
-		vtString fname_utf = fname.mb_str(wxConvUTF8);
+		vtString fname_utf = (const char *) fname.mb_str(wxConvUTF8);
 		success = ElevCacheOpen(this, fname_utf, &err);
 		if (!success && err == EGE_READ_CRS)
 		{
