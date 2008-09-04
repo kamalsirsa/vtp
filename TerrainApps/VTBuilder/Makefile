@@ -44,7 +44,8 @@ LIBS   += -F$(FRAMEWORKS) \
 	  -framework xmlhelper -framework unzip \
 	  -L$(FINK_LIB) -lpng \
 	  -lz -lMini -framework OpenGL \
-	  -Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS
+	  -Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS \
+	  -bind_at_load
 
 all : $(OSX_APP)
 
