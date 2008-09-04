@@ -241,10 +241,10 @@ ifeq ($(OS),Darwin)
    # Enumerates the build flags required to use each lib/framework
    #
 ifeq ($(OSG_NO_FRAMEWORKS),0)
-   OSG_OPTS = -framework osg -framework osgGA -framework osgUtil \
-	      -framework osgText -framework osgDB -framework osgGA -framework OpenThreads
+   OSG_OPTS = -framework osg -framework osgUtil \
+	      -framework osgText -framework osgDB -framework osgGA -framework osgParticle -framework osgShadow -framework OpenThreads
 else
-   OSG_OPTS = -L$(OSG_LIB) -losg -losgGA -losgUtil \
+   OSG_OPTS = -L$(OSG_LIB) -losg -losgUtil \
 	      -losgText -losgDB -losgGA -losgParticle -losgShadow -lOpenThreads
 endif
    XMLHELPER_OPTS = -framework xmlhelper

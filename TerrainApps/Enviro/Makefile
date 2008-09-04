@@ -75,7 +75,7 @@ ifeq ($(SUPPORT_BZIP2),1)
 	LIBS += -lbz2
 endif
 
-LDIR   +=\
+LDIRS   +=\
 	  $(VTDATA_INST_DIR)             \
 	  $(VTUI_INST_DIR)               \
 	  $(VTOSG_INST_DIR)              \
