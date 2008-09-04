@@ -17,7 +17,7 @@
 #include "wx/progdlg.h"
 #include "wx/numdlg.h"
 
-#ifdef UNIX
+#ifdef VTUNIX
 #include <unistd.h>
 #endif
 

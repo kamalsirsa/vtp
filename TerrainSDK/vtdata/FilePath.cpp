@@ -511,7 +511,7 @@ int GetFileSize(const char *fname)
 
 void SetEnvironmentVar(const vtString &var, const vtString &value)
 {
-#if UNIX
+#if VTUNIX
 	setenv(var, value, 1);	// 1 means overwrite
 #elif WIN32
 	vtString msg = var + "=" + value;

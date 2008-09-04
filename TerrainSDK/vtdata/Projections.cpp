@@ -1337,7 +1337,7 @@ bool GDALWrapper::FindGDALData()
 		dpg.push_back(vtString(gdalenv)+"/");
 
 	dpg.push_back(vtString(DEFAULT_LOCATION_GDAL_DATA));
-#if UNIX
+#if VTUNIX
 	// add the usual unix paths
 	dpg.push_back(vtString("/usr/local/share/gdal/"));
 #endif
@@ -1367,7 +1367,7 @@ bool GDALWrapper::FindPROJ4Data()
 		dpp.push_back(vtString(proj4)+"/");
 
 	dpp.push_back(vtString(DEFAULT_LOCATION_PROJ_LIB));
-#if UNIX
+#if VTUNIX
 	// add the usual unix paths
 	dpp.push_back(vtString("/usr/local/share/proj/"));
 #endif

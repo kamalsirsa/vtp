@@ -11,7 +11,7 @@
 #include <string.h>
 #include <time.h>
 
-#ifdef UNIX
+#ifdef VTUNIX
 # include <unistd.h>
 # include <utime.h>
 #endif
