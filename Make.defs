@@ -5,9 +5,23 @@
 -include $(HOME)/.vtp-user.defs
 
 #----------------------------------------------------------------------------
-# Here you can turn various build options on and off
+# Here you can indicate the usage of various dependencies
 #----------------------------------------------------------------------------
-SWITCHES = -DUNIX -DSUPPORT_QUIKGRID=0 -DSUPPORT_NETCDF=0 -DSUPPORT_HTTP=0 -DSUPPORT_BZIP2=0 -DSUPPORT_SQUISH=0
+SUPPORT_QUIKGRID = 0
+SUPPORT_NETCDF = 1
+SUPPORT_HTTP = 1
+SUPPORT_BZIP2 = 1
+SUPPORT_SQUISH = 0
+
+#----------------------------------------------------------------------------
+# Set the compiler switches from the above
+#----------------------------------------------------------------------------
+SWITCHES = -DVTUNIX
+SWITCHES += -DSUPPORT_QUIKGRID=$(SUPPORT_QUIKGRID)
+SWITCHES += -DSUPPORT_NETCDF=$(SUPPORT_NETCDF)
+SWITCHES += -DSUPPORT_HTTP=$(SUPPORT_HTTP)
+SWITCHES += -DSUPPORT_BZIP2=$(SUPPORT_BZIP2)
+SWITCHES += -DSUPPORT_SQUISH=$(SUPPORT_SQUISH)
 
 #----------------------------------------------------------------------------
 # define the OS to dynamically figure out the configuration
@@ -101,10 +115,11 @@ MINI_LIB = $(LOCALBASE)/lib/libMini.a
 VTDATA_INST_DIR = $(VTDATA_DIR)
 VTUI_INST_DIR = $(VTUI_DIR)
 VTOSG_INST_DIR  = $(VTOSG_DIR)
+MINIDATA_INST_DIR  = $(MINIDATA_DIR)
 XMLHELPER_INST_DIR = $(XMLHELPER_DIR)
 UNZIP_INST_DIR = $(UNZIP_DIR)
 
-WX_DIR		 ?= /usr/local
+WX_DIR		 ?= /usr
 
 VTP_INSTALL_DIR = /usr/local
 

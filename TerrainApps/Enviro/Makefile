@@ -62,9 +62,18 @@ all : $(OSX_APP)
 
 else
 # Support for all other Unix platforms
-LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg $(MINI_LIB) -lGL $(GLU_LIB) -lX11 \
-	 -losg -losgDB -losgUtil -losgText -losgParticle -lOpenThreads \
-	  -lnetcdf                
+LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg -lminidata $(MINI_LIB) -lGL $(GLU_LIB) -lX11 \
+	 -losg -losgDB -losgUtil -losgText -losgParticle -losgShadow -lOpenThreads
+
+ifeq ($(SUPPORT_NETCDF),1)
+	LIBS += -lnetcdf
+endif
+ifeq ($(SUPPORT_HTTP),1)
+	LIBS += -lcurl
+endif
+ifeq ($(SUPPORT_BZIP2),1)
+	LIBS += -lbz2
+endif
 
 LDIR   +=\
 	  $(VTDATA_INST_DIR)             \
