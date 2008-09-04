@@ -189,7 +189,7 @@ struct MatEntry
 {
 	const char *bmat;
 	short words;
-	char *name;
+	const char *name;
 };
 
 MatEntry MatEntries[] = {
