@@ -1,7 +1,7 @@
 //
 // Name: DistribVegDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -66,6 +66,8 @@ private:
 	void OnInitDialog(wxInitDialogEvent& event);
 	void OnRadio( wxCommandEvent &event );
 	void OnOK( wxCommandEvent &event );
+
+	bool TransferDataFromWindow();
 
 private:
 	DECLARE_EVENT_TABLE()

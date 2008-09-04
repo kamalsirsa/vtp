@@ -231,6 +231,11 @@ void DistribVegDlg::OnOK( wxCommandEvent &event )
 {
 	// pass through
 	event.Skip();
+}
+
+bool DistribVegDlg::TransferDataFromWindow()
+{
+	bool value = wxDialog::TransferDataFromWindow();
 
 	// species
 	if (m_bSpecies1)
@@ -269,5 +274,7 @@ void DistribVegDlg::OnOK( wxCommandEvent &event )
 		m_opt.m_fRandomFrom = m_iRandomFrom / 100.0f;
 		m_opt.m_fRandomTo = m_iRandomTo / 100.0f;
 	}
+
+	return value;
 }
 
