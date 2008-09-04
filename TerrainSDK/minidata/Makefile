@@ -10,6 +10,7 @@ include $(VTP_ROOT)/Make.defs
 OBJS := $(OBJS)
 
 IFLAGS = -I$(GDAL_INC) \
+	-I$(MINI_INC) \
 	-I$(TERRAIN_SDK_DIR)
 
 

@@ -7,6 +7,8 @@ EXEC = CManager
 include $(VTP_ROOT)/Make.defs
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
+	  -I$(GDAL_INC) \
+	  -I$(OSG_INC) \
 	  -I$(TERRAIN_SDK_DIR)
 
 LDIRS  = \

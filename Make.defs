@@ -102,14 +102,15 @@ NETCDF_LIB = $(LOCALBASE)/lib
 PNG_INC = $(LOCALBASE)/include
 PNG_LIB = $(LOCALBASE)/lib
 
+GDAL_BASE = $(LOCALBASE)
+GDAL_INC = $(GDAL_BASE)/include
+GDAL_LIB = $(GDAL_BASE)/lib
+
 OSG_BASE = $(LOCALBASE)
 OSG_INC = $(OSG_BASE)/include
 OSG_LIB = $(OSG_BASE)/lib
 
-GDAL_INC = $(LOCALBASE)/include
-GDAL_LIB = $(LOCALBASE)/lib
-
-MINI_INC = $(LOCALBASE)/include/mini
+MINI_INC = $(LOCALBASE)/include
 MINI_LIB = $(LOCALBASE)/lib/libMini.a
 
 VTDATA_INST_DIR = $(VTDATA_DIR)
@@ -119,7 +120,11 @@ MINIDATA_INST_DIR  = $(MINIDATA_DIR)
 XMLHELPER_INST_DIR = $(XMLHELPER_DIR)
 UNZIP_INST_DIR = $(UNZIP_DIR)
 
+ifeq ($(OS),Darwin)
+WX_DIR		 ?= /usr/local
+else
 WX_DIR		 ?= /usr
+endif
 
 VTP_INSTALL_DIR = /usr/local
 
@@ -135,7 +140,6 @@ VTP_INSTALL_DIR = /usr/local
 #
 #----------------------------------------------------------------------------
 ifeq ($(OS),IRIX)
-
    CXX = CC
    ifeq ($(CXX),CC) 
        #--------------------------------------------------------------------
@@ -237,13 +241,10 @@ ifeq ($(OS),Darwin)
    # Enumerates the build flags required to use each lib/framework
    #
 ifeq ($(OSG_NO_FRAMEWORKS),0)
-# Swap these definitions if you are not using Xcode built osg frameworks
-#   OSG_OPTS = -L$(OSG_LIB) -losg -losgGA -losgUtil \
-#	      -losgText -losgDB -losgGA -losgUtil -lOpenThreads
    OSG_OPTS = -framework osg -framework osgGA -framework osgUtil \
 	      -framework osgText -framework osgDB -framework osgGA -framework OpenThreads
 else
-   OSG_OPTS = -losg -losgGA -losgUtil \
+   OSG_OPTS = -L$(OSG_LIB) -losg -losgGA -losgUtil \
 	      -losgText -losgDB -losgGA -losgParticle -losgShadow -lOpenThreads
 endif
    XMLHELPER_OPTS = -framework xmlhelper
