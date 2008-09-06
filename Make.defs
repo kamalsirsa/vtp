@@ -272,7 +272,7 @@ endif
    VTUI_LINK_OPTS = $(shell $(WX_DIR)/bin/wx-config --libs) \
 		    $(COMMON_OPTS) \
 		    $(GLU_LIB)  \
-		    $(OSG_OPTS) \
+		    $(GDAL_OPTS) \
 		    $(XMLHELPER_OPTS) \
 		    $(VTDATA_OPTS) \
 		    $(VTUI_OPTS)
