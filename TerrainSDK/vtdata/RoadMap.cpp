@@ -1,7 +1,7 @@
 //
 // RoadMap.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -906,8 +906,12 @@ bool vtRoadMap::ReadRMF(const char *filename,
 
 		//set the end points
 		fread(&nodeNum, intSize, 1, fp);
+		if (nodeNum < 1 || nodeNum > numNodes)
+			return false;
 		tmpLink->SetNode(0, pNodeLookup[nodeNum]);
 		fread(&nodeNum, intSize, 1, fp);
+		if (nodeNum < 1 || nodeNum > numNodes)
+			return false;
 		tmpLink->SetNode(1, pNodeLookup[nodeNum]);
 
 		// check for inclusion
