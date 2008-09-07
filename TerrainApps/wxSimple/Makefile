@@ -50,15 +50,24 @@ all : $(OSX_APP)
 
 else
 LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
-	 -lvtosg -lvtdata \
-	 -lgdal -losgDB -losgUtil -losgText -losgParticle -losg -lOpenThreads -lnetcdf \
-	 -lxmlhelper -lunzip $(MINI_LIB) \
-	 $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lcurl -lbz2 -lm
+	 -lvtosg -lvtdata -lxmlhelper -lunzip -lminidata \
+	 -lgdal -losg -losgDB -losgUtil -losgText -losgParticle -losgShadow -lOpenThreads \
+	  $(MINI_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm
+
+ifeq ($(SUPPORT_NETCDF),1)
+	LIBS += -lnetcdf
+endif
+ifeq ($(SUPPORT_HTTP),1)
+	LIBS += -lcurl
+endif
+ifeq ($(SUPPORT_BZIP2),1)
+	LIBS += -lbz2
+endif
 
 LDIRS += \
-	 $(XMLHELPER_INST_DIR)          \
+	 $(XMLHELPER_INST_DIR)      \
 	 $(UNZIP_INST_DIR)          \
-	 $(VTDATA_INST_DIR)             \
+	 $(VTDATA_INST_DIR)         \
 	 $(VTOSG_INST_DIR)
 
 all : $(EXEC)

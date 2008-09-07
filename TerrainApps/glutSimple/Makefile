@@ -9,19 +9,19 @@ include $(VTP_ROOT)/Make.defs
 IFLAGS = -I$(X_INC)                 \
          -I$(TERRAIN_SDK_DIR)       \
          -I$(VTLIB_DIR)             \
-	 -I$(OSG_INC)               \
-	 -I$(GDAL_INC)              \
-	 -I$(X_INC)
+         -I$(OSG_INC)               \
+         -I$(GDAL_INC)              \
+         -I$(X_INC)
 
-LDIRS  = $(OSG_LIB)                     \
-	 $(VTDATA_INST_DIR)             \
-	 $(XMLHELPER_INST_DIR)          \
-	 $(UNZIP_INST_DIR)              \
-	 $(VTOSG_INST_DIR)              \
-         $(PNG_LIB)                     \
-         $(NETCDF_LIB)                  \
-         $(GDAL_LIB)                    \
-	 $(X_LIB)                       \
+LDIRS  = $(OSG_LIB)            \
+	 $(VTDATA_INST_DIR)        \
+	 $(XMLHELPER_INST_DIR)     \
+	 $(UNZIP_INST_DIR)         \
+	 $(VTOSG_INST_DIR)         \
+	 $(PNG_LIB)                \
+	 $(NETCDF_LIB)             \
+	 $(GDAL_LIB)               \
+	 $(X_LIB)                  \
 	 $(EXTRA_LDIRS)
 
 SWITCHES := $(SWITCHES) -DUNIX -DVTLIB_OSG=1
@@ -45,10 +45,20 @@ LIBS   = -bind_at_load -F$(FRAMEWORKS) \
 all : $(OSX_APP)
 
 else
-LIBS   = -lvtosg -lvtdata -lunzip \
-         -lgdal -losgDB -losgUtil -losgText -losgParticle -losg -lOpenThreads \
-		 -lxmlhelper $(MINI_LIB) \
-         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lcurl -lbz2 -lm 
+LIBS  = -lvtosg -lvtdata -lunzip -lminidata \
+        -lgdal -losg -losgDB -losgUtil -losgText -losgParticle -losgShadow -lOpenThreads \
+		-lxmlhelper $(MINI_LIB) \
+         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
+
+ifeq ($(SUPPORT_NETCDF),1)
+	LIBS += -lnetcdf
+endif
+ifeq ($(SUPPORT_HTTP),1)
+	LIBS += -lcurl
+endif
+ifeq ($(SUPPORT_BZIP2),1)
+	LIBS += -lbz2
+endif
 
 all : $(EXEC)
 endif
