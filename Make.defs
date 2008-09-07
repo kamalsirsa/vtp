@@ -203,7 +203,7 @@ ifeq ($(OS),Darwin)
    CC        = gcc
    CXX       = g++
    AR        = ar ruv
-   COPT      = -g -O3 -Dunix=1 -D__DARWIN_OSX__ -fPIC -I$(FINK_INC) -F$(FRAMEWORKS)
+   COPT      = -g -O3 -D__DARWIN_OSX__ -fPIC -I$(FINK_INC) -F$(FRAMEWORKS)
    LD        = $(CXX)
    LD_SHARED = $(CXX) -dynamiclib -Wl,-single_module
    LIB_EXT   = dynlib

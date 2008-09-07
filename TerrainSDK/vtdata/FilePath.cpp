@@ -13,7 +13,7 @@
 #include "FilePath.h"
 #include "vtLog.h"
 
-#ifdef unix
+#ifdef VTUNIX
 # include <unistd.h>
 # include <sys/stat.h>
 #if __GNUC__ == 4 && __GNUC_MINOR__ >= 3
@@ -824,4 +824,3 @@ FILE *vtFileOpen(const wstring &fname_ws, const char *mode)
 }
 
 #endif // SUPPORT_WSTRING
-
