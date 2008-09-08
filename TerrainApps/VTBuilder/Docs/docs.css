@@ -4,7 +4,19 @@ a.bt:link, a.bt:visited, a.bt:active, a.bt:hover {
  font-weight:bold; font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10pt;
  text-decoration: none;}
 
-body { background-color:#DFDDD9; }
+body
+{
+	background-color:#DFDDD9;
+}
 .smaller {
 	font-size:65%;
+}
+h1 {
+	font-family: Verdana, Arial, sans-serif; 
+}
+h2 {
+	font-family: Verdana, Arial, sans-serif; 
+}
+h3 {
+	font-family: Verdana, Arial, sans-serif; 
 }
