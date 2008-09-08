@@ -97,3 +97,5 @@ void DisplayAndLog(const char *pFormat, ...);
 void DisplayAndLog(const wchar_t *pFormat, ...);
 #endif
 
+void LaunchAppDocumentation(const vtString &appname,
+							const vtString &local_lang_code);

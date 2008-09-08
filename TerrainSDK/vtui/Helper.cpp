@@ -905,3 +905,51 @@ void DisplayAndLog(const wchar_t *pFormat, ...)
 }
 #endif // SUPPORT_WSTRING
 
+/**
+ * Example: to launch the enviro documentation in Italian:
+ * LaunchAppDocumentation("Enviro", "it");
+ */
+void LaunchAppDocumentation(const vtString &appname,
+							const vtString &local_lang_code)
+{
+	// Launch default web browser with documentation pages
+	wxString wxcwd = wxGetCwd();
+	vtString cwd = (const char *) wxcwd.mb_str(wxConvUTF8);
+
+	VTLOG("LaunchAppDocumentation: cwd is '%s'\n", (const char *) cwd);
+	vtString cwd_up = PathLevelUp(cwd);
+
+	vtStringArray paths;
+
+	// If the app is using a language other than English, look for docs
+	//  in that language first.
+	if (local_lang_code != "en")
+		paths.push_back(cwd_up + "/Docs/" + appname + "/" + local_lang_code + "/");
+	if (local_lang_code != "en")
+		paths.push_back(cwd + "/Docs/" + local_lang_code + "/");
+
+	// Always fall back on English if the other language isn't found
+	paths.push_back(cwd_up + "/Docs/" + appname + "/en/");
+	paths.push_back(cwd + "/Docs/en/");
+
+	VTLOG1("Looking for index.html on paths:\n");
+	for (size_t i = 0; i < paths.size(); i++)
+	{
+		VTLOG1("\t");
+		VTLOG1(paths[i]);
+		VTLOG1("\n");
+	}
+
+	vtString result = FindFileOnPaths(paths, "index.html");
+	if (result == "")
+	{
+		DisplayAndLog("Couldn't find local documentation files");
+		return;
+	}
+	vtString url;
+	url.FormatForURL(result);
+	url = "file:///" + url;
+	VTLOG("Launching URL: %s\n", (const char *) url);
+	wxLaunchDefaultBrowser(wxString(url, wxConvUTF8));
+}
+
