@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+  
+  <meta http-equiv="Content-Language" content="en-us">
+
+
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+
+  
+  <link rel="stylesheet" href="docs.css">
+
+
+  
+  <title>Where to Put Your Data</title>
+</head>
+
+
+<body>
+
+
+
+<h2><i><font face="Verdana">Enviro</font></i></h2>
+
+
+
+<h3>Dove inserire i Vostri Dati</h3>
+
+
+
+  
+<blockquote>
+    
+  
+  <p>I dati vanno posti nelle seguenti directory: </p>
+
+
+      
+  
+  <table style="border-collapse: collapse;" bgcolor="#c2c7d6" border="1" bordercolor="#111111" cellpadding="4" cellspacing="0" height="249">
+
+
+        <tbody>
+
+      <tr>
+
+
+          <td height="19" width="50%"><b>Dati</b></td>
+
+
+          <td height="19" width="50%"><span style="font-weight: bold;">Posizione</span></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">Dati delle strutture edificate (i file VTST)<br>
+
+
+&nbsp;e delle strutture lineari (SHP)</td>
+
+
+          <td height="19" width="50%"><code>Data/BuildingData</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">Modelli Edifici e texture, <br>
+
+incluse le texture delle facciate (JPG, PNG, ecc.)</td>
+
+
+          <td height="19" width="50%"><code>Data/BuildingModels</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">Dati dell'Elevatione (file BT e PRJ)<br>
+
+
+&nbsp;ed anche .ini per mattonelle di elevatione ("tileset")</td>
+
+
+          <td height="19" width="50%"><code>Data/Elevation</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">Immagini Geospecifiche (file JPG, TIF, BMP)<br>
+
+
+&nbsp;ed anche&nbsp;.ini per le mattonelle di immagini<br>
+
+
+          Vedere <a href="imagery.html">Usare le proprie Immagini</a></td>
+
+
+          <td height="19" width="50%"><code>Data/GeoSpecific</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">Posizioni (LOC e VTAP)</td>
+
+
+          <td height="19" width="50%"><code>Data/Locations</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">Vegetazione (specie.xml ed i file VF)</td>
+
+
+          <td height="19" width="50%"><code>Data/PlantData</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">Immagini da usare per la Vegetazione</td>
+
+
+          <td height="19" width="50%"><code>Data/PlantModels</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">File GIS astratti ("Raw")</td>
+
+
+          <td height="19" width="50%"><code>Data/PointData</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">Dati delle Strade (i file RMF)</td>
+
+
+          <td height="19" width="50%"><code>Data/RoadData</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">Texture del cielo (emisferica)</td>
+
+
+          <td height="19" width="50%"><code>Data/Sky</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="19" width="50%">Definizioni del Terreno (XML)</td>
+
+
+          <td height="19" width="50%"><code>Data/Terrains</code></td>
+
+
+        </tr>
+
+
+        <tr>
+
+
+          <td height="17" width="50%">Immagini per la visualizzazione dell'intera Terra</td>
+
+
+          <td height="17" width="50%"><code>Data/WholeEarth</code></td>
+
+
+        </tr>
+
+
+      
+    
+    </tbody>
+  
+  </table>
+
+
+    
+  
+  <p>Ci sono poche altre cartelle usate internamente dal software VTP, 
+    inclusi <code>Data/Culture</code> per i modelli e texture delle culture standard, <code>Data/Fonts</code> per i font di caratteri, <code>Data/GeoTypical</code> 
+    per le texture geotipiche come oceani e strade.&nbsp; Non e' necesario aggiungere o modificare queste cartelle.</p>
+
+
+    
+  
+  <p>Non dimenticate che per usare il render LOD continuo,
+      i file di elevazione devono essere dei quadrati potenza di due piu' 1 come dimensione.&nbsp; Per esempio: </p>
+
+
+      
+  
+  <table style="border-collapse: collapse;" bgcolor="#c2c7d6" border="1" bordercolor="#111111" cellpadding="4" cellspacing="0">
+
+
+        <tbody>
+
+      <tr>
+
+
+          <td>513 x 513</td>
+
+
+          <td>1025 x 1025</td>
+
+
+          <td>2049 x 2049</td>
+
+
+          <td>4097 x 4097</td>
+
+
+          <td>8193 x 8193</td>
+
+
+        </tr>
+
+
+        
+    
+    </tbody>
+  
+  </table>
+
+
+    
+  
+  <p>Se avete modelli 3D da importare, essi possono essere ovunque
+sulla propria macchina (se usate un path assoluto) oppure ovunque sotto
+il Data path (per indirizzamenti relativi.)</p>
+
+
+    
+  
+  <h4>Creare un proprio Settaggio del Terreno</h4>
+
+  
+  <p>Per far si che il Vostro terreno sia mostrato come un nuovo
+terreno nel pannello di dialogo iniziale di Enviro, dovete creare un
+altro file&nbsp;.xml nella cartella Terrain sotto il data path.&nbsp;
+La facile maniera per fare questo e' attraverso il pannello di dialogo
+di <a href="startup.html">Gestione &nbsp;del Terreno</a>.&nbsp;
+Alternativamente, potete copiare un file .xml gia' esistente (per
+eseempio, Generic.xml) ed editarlo, sia con un text editor che con
+Enviro, per inserire i settaggi che volete.&nbsp; Il primo elemento nel
+file ("Name") e' il nome che apparira'&nbsp; in Enviro.</p>
+
+
+</blockquote>
+
+
+
+</body>
+</html>

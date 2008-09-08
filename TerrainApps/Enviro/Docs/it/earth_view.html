@@ -1,0 +1,653 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <meta http-equiv="Content-Language" content="en-us">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="docs.css">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <title>Enviro - Earth View</title>
+</head>
+
+
+<body>
+
+
+
+
+
+
+
+<h2><i><font face="Verdana">Enviro</font></i></h2>
+
+
+
+
+
+
+
+<h2>Vista della Terra</h2>
+
+
+
+
+
+
+
+<blockquote>
+  
+  
+  
+  
+  
+  
+  <p>Alla partenza, selezionate "Vista della Terra" e premete OK.&nbsp; Vedrete ora il pianeta dallo spazio.</p>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <h4>Come Navigare:</h4>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+    <li>Per far ruotare il punto di vista intorno alla Terra, tenete premuto il bottone&nbsp;<b>destro&nbsp;</b>del mouse.</li>
+
+
+
+
+
+
+    <li>Per uno zoom in oppure out, premete il tasto <b>shift&nbsp;</b> ed il bottone <b>destro&nbsp;</b>del mouse per scorrere su e giu'.</li>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <p>Ogni area di terreno conosciuta sar&agrave; mostrata con un
+piccolo rettangolo rosso sulla Terra. &nbsp;Per andare sull'area di
+terreno, semplicemente cliccate nel suo rettangolo con il tasto&nbsp;<b>sinistro</b><span style="font-weight: bold;"> </span>del mouse, che vi porter&agrave; in <a href="terrain_view.html">Terrain View</a>.</p>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <h4>Menu dei Comandi per Vista della Terra:</h4>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+    <li>Terra - <b>Visualizza Ombreggiatura</b>
+      
+      
+      
+      
+      
+      <ul>
+
+
+
+
+
+
+        <li>Mostra la Terra illuminata dal Sole basandosi sull'ora e sulla data reali del vostro orologio del computer.&nbsp; 
+        In alternativa, potete mostrare la Terra completamente illuminata, senza ombra.</li>
+
+
+
+
+      
+      
+      
+      
+      </ul>
+
+
+
+
+    </li>
+
+
+
+
+    <li>Terra - <b>Visualizza Assi</b>
+      
+      
+      
+      
+      
+      <ul>
+
+
+
+
+
+
+        <li>Accende o spegne&nbsp;la vista di alcune linee informative nello spazio:<br>
+
+
+
+
+
+
+        Giallo mostra la direzione della luce del Sole,<br>
+
+
+
+
+
+
+        Verde e' l'asse verticale di rotazione della Terra,&nbsp;<br>
+
+
+
+
+Rosso e' l'asse verticale perpendicolare al piano dell'orbita della
+Terra, &nbsp;(BEN &nbsp; ERROR: IS GREEN IN wxEnviro !)<br>
+
+
+
+
+
+
+        Verde e' la griglia che mostra la direzione del movimento della Terra intorno al Sole. </li>
+
+
+
+
+
+
+      
+      
+      
+      
+      
+      
+      </ul>
+
+
+
+
+
+
+    </li>
+
+
+
+
+
+
+    <li>Terra -&nbsp;<b>Inversione Stagioni</b>
+      
+      
+      
+      
+      
+      <ul>
+
+
+
+
+
+
+    <li>Attiva l'inclinazione degli assi della Terra dovuta al giorno dell'anno</li>
+
+
+
+
+
+
+  
+      
+      
+      
+      
+      
+      </ul>
+
+
+
+
+
+
+    </li>
+
+
+
+
+
+
+    <li>Terra -&nbsp;<b>Appiattisci</b>
+      
+      
+      
+      
+      
+      <ul>
+
+
+
+
+
+
+    <li>Attiva la vista della Terra appiattita in un Icosaedro -
+utile principalmente ad illustrare la proiezione su icosaedro usata per
+la texture del globo</li>
+
+
+
+
+
+
+  
+      
+      
+      
+      
+      
+      </ul>
+
+
+
+
+
+
+    </li>
+
+
+
+
+
+
+    <li>Terra -&nbsp;<b>Dispiega</b>
+      
+      
+      
+      
+      
+      <ul>
+
+
+
+
+
+
+    <li>Attiva l'apertura della Terra a raggiungere la proiezione Dymaxion (<b>Flat Earth View</b>)</li>
+
+
+
+
+
+
+  
+      
+      
+      
+      
+      
+      </ul>
+
+
+
+
+
+
+    </li>
+
+
+
+
+
+
+    <li>Terra - <b>Aggiungi Dati Puntuali</b> 
+      
+      
+      
+      
+      
+      
+      <ul>
+
+
+
+
+
+
+        <li>Permette di visualizzare un gruppo di dati puntuali&nbsp;
+      (da uno Shapefile) sulla Terra come piccoli punti gialli.</li>
+
+
+
+
+
+
+        <li>Provate il file <b>Data/PointData/vtp-users.shp</b> per vedere le posizioni dei primi 2260 recipienti VTP.</li>
+
+
+
+
+
+
+      
+      
+      
+      
+      
+      
+      </ul>
+
+
+
+
+
+
+    </li>
+
+
+
+
+
+
+    <li>Terra - <b>Aggiungi Dati Lineari</b>
+      
+      
+      
+      
+      
+      <ul>
+
+
+
+
+
+
+    <li>Permette di visualizzare, uno per volta, livelli
+lineari sul globo.&nbsp; La distanza geodetica viene visualizzata nella
+barra di stato.&nbsp; Questo &eacute; utile per illustrare rotte di
+percorso minimo sulla Terra.</li>
+
+
+
+
+
+
+  
+      
+      
+      
+      
+      
+      </ul>
+
+
+
+
+
+
+    </li>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <h4>Scorciatoie di tastiera:</h4>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+    <li>'e' accende e spegne la visualizzazione delle linee di latitudine-longitudine che seguono il cursore.</li>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+</blockquote>
+
+
+
+
+
+
+<h3>Vista Piatta della Terra</h3>
+
+
+
+
+
+
+<blockquote>
+  
+  
+  
+  
+  
+  
+  <p>Quando la terra e' dispiegata (con Terra: Dispiega) e' visualizzata la proiezione 
+  Dymaxion.&nbsp; In questa vista, la navigazione e' differente:</p>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <ul>
+
+
+
+
+
+
+    <li>Usa il tasto Destro del mouse per il Pan</li>
+
+
+
+
+
+
+    <li>Usa <b>entrambi</b> i tasti Destro e Sinistro del mouse insieme per lo Zoom</li>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  </ul>
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <p>Correntemente, i dati puntuali sono mostrati in entrambe le viste, quella regolare e quella della terra piatta.</p>
+
+
+
+
+
+
+</blockquote>
+
+
+
+
+
+
+
+</body>
+</html>
