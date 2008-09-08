@@ -411,6 +411,28 @@ bool PathIsAbsolute(const char *szPath)
 	return false;
 }
 
+/** Given a path like "C:/bar/foo", returns the path a level up, like "C:/bar"
+ */
+vtString PathLevelUp(const char *src)
+{
+	vtString up = src;
+
+	const char *tmp = NULL;
+	const char *tmp1 = strrchr(src, '/');
+	if (tmp1)
+		tmp = tmp1;
+	const char *tmp2 = strrchr(src, '\\');
+	if (tmp2 && tmp2 > tmp)
+		tmp = tmp2;
+	const char *tmp3 = strrchr(src, ':');
+	if (tmp3 && tmp3 > tmp)
+		tmp = tmp3;
+	if (tmp)
+		return vtString(src, (tmp-src));
+	else
+		return vtString("");
+}
+
 /**
  * Given a filename (which may include a path), remove any file extension(s)
  * which it may have.

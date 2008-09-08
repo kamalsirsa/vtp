@@ -90,6 +90,7 @@ void vtDeleteFile(const char *filename);
 const char *StartOfFilename(const char *szFullPath);
 vtString ExtractPath(const char *szFullPath, bool bTrailingSlash);
 bool PathIsAbsolute(const char *szPath);
+vtString PathLevelUp(const char *src);
 vtString get_line_from_stream(std::ifstream &input);
 void RemoveFileExtensions(vtString &fname, bool bAll = true);
 vtString GetExtension(const vtString &fname, bool bFull = true);
