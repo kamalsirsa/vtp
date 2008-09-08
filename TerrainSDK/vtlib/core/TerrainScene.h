@@ -120,8 +120,9 @@ protected:
 	vtTerrain	*m_pCurrentTerrain;
 
 	// engines
-	vtTimeEngine		 *m_pTimeEngine;
-	vtSkyTrackEngine *m_pSkyTrack;
+	vtEngine			*m_pTerrainEngines;
+	vtTimeEngine		*m_pTimeEngine;
+	vtSkyTrackEngine	*m_pSkyTrack;
 
 	// Utility structures, created on demand from global content file
 	vtArray<vtUtilStruct*>	m_StructObjs;

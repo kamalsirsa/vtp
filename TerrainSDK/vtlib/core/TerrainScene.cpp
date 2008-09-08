@@ -211,6 +211,11 @@ void vtTerrainScene::_CreateEngines()
 	m_pTimeEngine->SetName2("Terrain Time");
 	m_pTimeEngine->SetEnabled(false);
 	vtGetScene()->AddEngine(m_pTimeEngine);
+
+	// Create engine group for all terrain engines
+	m_pTerrainEngines = new vtEngine;
+	m_pTerrainEngines->SetName2("Terrain Engines");
+	vtGetScene()->AddEngine(m_pTerrainEngines);
 }
 
 
@@ -256,6 +261,9 @@ vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 {
 	pTerrain->CreateStep0();
 
+	// connect the terrain's engines
+	m_pTerrainEngines->AddChild(pTerrain->GetEngineGroup());
+
 	if (!pTerrain->CreateStep1())
 		return NULL;
 
@@ -291,6 +299,11 @@ void vtTerrainScene::RemoveTerrain(vtTerrain *pTerrain)
 		// remove from scene graph
 		vtGroup *group = pTerrain->GetTopGroup();
 		m_pTop->RemoveChild(group);
+
+		// remove from engine graph
+		vtEngine *eng = pTerrain->GetEngineGroup();
+		if (eng)
+			m_pTerrainEngines->RemoveChild(eng);
 
 		m_Terrains.erase(m_Terrains.begin()+i);
 		return;
@@ -458,7 +471,6 @@ void vtTerrainScene::SetTime(const vtTime &time)
 {
 	if (m_pSkyDome)
 	{
-		// TODO? Convert to local time?
 		m_pSkyDome->SetTime(time);
 		// TODO? Update the fog color to match the color of the horizon.
 

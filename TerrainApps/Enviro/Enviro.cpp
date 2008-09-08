@@ -524,6 +524,10 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		pTerr->SetPlantList(m_pPlantList);
 		pTerr->CreateStep0();
+
+		// connect the terrain's engines
+		m_pTerrainEngines->AddChild(pTerr->GetEngineGroup());
+
 		if (!pTerr->CreateStep1())
 		{
 			SetState(AS_Error);

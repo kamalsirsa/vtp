@@ -2143,7 +2143,6 @@ void vtTerrain::CreateStep0()
 	vtString name = "Engines for ";
 	name += GetName();
 	m_pEngineGroup->SetName2(name);
-	vtGetScene()->AddEngine(m_pEngineGroup);
 	m_AnimContainer.SetEngineContainer(m_pEngineGroup);
 }
 
