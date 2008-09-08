@@ -30,6 +30,7 @@
 
 #include "gdal_priv.h"
 
+#include "App.h"
 #include "Frame.h"
 #include "MenuEnum.h"
 #include "BuilderView.h"
@@ -64,6 +65,8 @@
 #include "SelectDlg.h"
 #include "TSDlg.h"
 #include "VegDlg.h"
+
+DECLARE_APP(BuilderApp)
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
@@ -3303,26 +3306,11 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 
 void MainFrame::OnHelpDocLocal(wxCommandEvent &event)
 {
+	vtString local_lang_code = (const char *) wxGetApp().GetLanguageCode().mb_str(wxConvUTF8);
+	local_lang_code = local_lang_code.Left(2);
+
 	// Launch default web browser with documentation pages
-	wxString wxcwd = wxGetCwd();
-	vtString cwd = (const char *) wxcwd.mb_str(wxConvUTF8);
-
-	VTLOG("OnHelpDocLocal: cwd is '%s'\n", (const char *) cwd);
-
-	vtStringArray paths;
-	paths.push_back(cwd + "/../Docs/VTBuilder/");
-	paths.push_back(cwd + "/Docs/");
-	vtString result = FindFileOnPaths(paths, "index.html");
-	if (result == "")
-	{
-		wxMessageBox(_("Couldn't find local documentation files"));
-		return;
-	}
-	vtString url;
-	url.FormatForURL(result);
-	url = "file:///" + url;
-	VTLOG("Launching URL: %s\n", (const char *) url);
-	wxLaunchDefaultBrowser(wxString(url, wxConvUTF8));
+	LaunchAppDocumentation("VTBuilder", local_lang_code);
 }
 
 void MainFrame::OnHelpDocOnline(wxCommandEvent &event)

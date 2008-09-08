@@ -11,6 +11,7 @@ public:
 	void Args(int argc, wxChar **argv);
 	bool OnInit();
 	int OnExit();
+	wxString GetLanguageCode() { return m_locale.GetCanonicalName(); }
 
 protected:
 	void SetupLocale();

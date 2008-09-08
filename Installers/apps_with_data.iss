@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2008.05.06
+AppVerName=VTP Software 2008.09.08
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -45,8 +45,7 @@ Source: "C:\VTP\TerrainApps\CManager\Release-Unicode-vc8\CManager.exe"; DestDir:
 ;Source: "C:\VTP\TerrainApps\CManager\Release-Unicode-vc8\*.manifest"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\CManager\itemtypes.txt"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\CManager\tags.txt"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
-Source: "C:\VTP\TerrainApps\CManager\Docs\index.html"; DestDir: "{app}/Docs/CManager"; Flags: ignoreversion; Components: docs
-Source: "C:\VTP\TerrainApps\CManager\Docs\images\*.png"; DestDir: "{app}/Docs/CManager/images"; Flags: ignoreversion; Components: docs
+Source: "C:\VTP\TerrainApps\CManager\Docs\*"; DestDir: "{app}/Docs/CManager"; Flags: ignoreversion recursesubdirs; Components: docs
 
 Source: "C:\VTP\TerrainApps\Enviro\Release-Unicode-vc8\wxEnviro.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 ;Source: "C:\VTP\TerrainApps\Enviro\Release-Unicode-vc8\*.manifest"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main

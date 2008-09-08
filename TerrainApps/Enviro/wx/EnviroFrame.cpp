@@ -2628,26 +2628,11 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 
 void EnviroFrame::OnHelpDocLocal(wxCommandEvent &event)
 {
+	vtString local_lang_code = (const char *) wxGetApp().GetLanguageCode().mb_str(wxConvUTF8);
+	local_lang_code = local_lang_code.Left(2);
+
 	// Launch default web browser with documentation pages
-	wxString wxcwd = wxGetCwd();
-	vtString cwd = (const char *) wxcwd.mb_str(wxConvUTF8);
-
-	VTLOG("OnHelpDocLocal: cwd is '%s'\n", (const char *) cwd);
-
-	vtStringArray paths;
-	paths.push_back(cwd + "/../Docs/Enviro/");
-	paths.push_back(cwd + "/Docs/");
-	vtString result = FindFileOnPaths(paths, "index.html");
-	if (result == "")
-	{
-		wxMessageBox(_("Couldn't find local documentation files"));
-		return;
-	}
-	vtString url;
-	url.FormatForURL(result);
-	url = "file:///" + url;
-	VTLOG("Launching URL: %s\n", (const char *) url);
-	wxLaunchDefaultBrowser(wxString(url, wxConvUTF8));
+	LaunchAppDocumentation("Enviro", local_lang_code);
 }
 
 void EnviroFrame::OnHelpDocOnline(wxCommandEvent &event)
