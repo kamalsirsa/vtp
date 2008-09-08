@@ -778,10 +778,10 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 	MapRatio = fabs(terrainSize.x / terrainSize.y);
 
 	ratioMapTerrain = (float)MapWidth / (float)terrainSize.x;
-	m_pMapView->SetPosition(MapMargin,
-							MapMargin - terrainSize.y * ratioMapTerrain,
-							MapMargin + MapWidth,
-							MapMargin);
+	m_pMapView->SetPosition((float) MapMargin,
+							(float) MapMargin - terrainSize.y * ratioMapTerrain,
+							(float) MapMargin + MapWidth,
+							(float) MapMargin);
 	RefreshMapView();
 }
 

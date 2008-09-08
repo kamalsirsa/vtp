@@ -1697,7 +1697,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	// Check Structures
 	int structure;		// index of closest structure
 	bool result1 = pTerr->FindClosestStructure(gpos, epsilon, structure, dist1,
-		g_Options.m_fMaxPickableInstanceRadius, linear_buffer);
+		g_Options.m_fMaxPickableInstanceRadius, (float) linear_buffer);
 	if (result1)
 		VTLOG("structure at dist %lf, ", dist1);
 	m_bSelectedStruct = false;
@@ -1869,8 +1869,8 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 	// Frustum's origin is lower left, mouse origin is upper left
 	IPoint2 winsize = vtGetScene()->GetWindowSize();
 
-	FRECT select_box(m_MouseDown.x, winsize.y-1-m_MouseDown.y,
-					 event.pos.x, winsize.y-1-event.pos.y);
+	FRECT select_box((float) m_MouseDown.x, (float) winsize.y-1-m_MouseDown.y,
+					 (float) event.pos.x,	(float) winsize.y-1-event.pos.y);
 	select_box.Sort();
 
 	// We can use the view matrix to project each 3d object onto the window,
@@ -2783,7 +2783,7 @@ void Enviro::CreateElevationLegend()
 
 	// Solid rectangle behind it
 	vtMesh *mesh4 = new vtMesh(vtMesh::QUADS, 0, 4);
-	mesh4->AddRectangleXY(base.x, base.y, size.x, size.y, -1.0f);
+	mesh4->AddRectangleXY((float) base.x, (float) base.y, (float) size.x, (float) size.y, -1.0f);
 	m_pLegendGeom->AddMesh(mesh4, grey);
 	mesh4->Release();
 
@@ -2796,8 +2796,8 @@ void Enviro::CreateElevationLegend()
 	vtMesh *mesh1 = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
 	for (i = 0; i < in_size.y + 1; i++)
 	{
-		FPoint3 p1(cbar_left,  in_base.y + i, 0.0f);
-		FPoint3 p2(cbar_right, in_base.y + i, 0.0f);
+		FPoint3 p1((float) cbar_left,  (float) in_base.y + i, 0.0f);
+		FPoint3 p2((float) cbar_right, (float) in_base.y + i, 0.0f);
 		idx = mesh1->AddLine(p1, p2);
 		mesh1->SetVtxColor(idx, (RGBf) table[i]);
 		mesh1->SetVtxColor(idx+1, (RGBf) table[i]);
@@ -2810,8 +2810,8 @@ void Enviro::CreateElevationLegend()
 	vtMesh *mesh2 = new vtMesh(vtMesh::LINES, 0, ticks*2);
 	for (i = 0; i < ticks; i++)
 	{
-		FPoint3 p1(cbar_left-border.x*2, in_base.y + i*vert_space, 0.0f);
-		FPoint3 p2(cbar_left,			 in_base.y + i*vert_space, 0.0f);
+		FPoint3 p1((float) cbar_left-border.x*2, (float) in_base.y + i*vert_space, 0.0f);
+		FPoint3 p2((float) cbar_left,			 (float) in_base.y + i*vert_space, 0.0f);
 		mesh2->AddLine(p1, p2);
 	}
 	m_pLegendGeom->AddMesh(mesh2, white);
@@ -2820,11 +2820,11 @@ void Enviro::CreateElevationLegend()
 	// Text labels
 	for (i = 0; i < ticks; i++)
 	{
-		vtTextMesh *mesh3 = new vtTextMesh(m_pArial, fontsize, false);
+		vtTextMesh *mesh3 = new vtTextMesh(m_pArial, (float) fontsize, false);
 		vtString str;
 		str.Format("%4.1f", fMin + (fMax - fMin) / (ticks-1) * i);
 		mesh3->SetText(str);
-		FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0.0f);
+		FPoint3 p1((float) in_base.x, (float) in_base.y + i*vert_space - (fontsize*1/3), 0.0f);
 		mesh3->SetPosition(p1);
 
 		m_pLegendGeom->AddTextMesh(mesh3, white);
@@ -2887,10 +2887,10 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 	//  HUD origin is lower left
 	IPoint2 winsize = vtGetScene()->GetWindowSize();
 
-	m_pWindowBoxMesh->SetVtxPos(0, FPoint3(p1.x,winsize.y-1-p1.y,0));
-	m_pWindowBoxMesh->SetVtxPos(1, FPoint3(p2.x,winsize.y-1-p1.y,0));
-	m_pWindowBoxMesh->SetVtxPos(2, FPoint3(p2.x,winsize.y-1-p2.y,0));
-	m_pWindowBoxMesh->SetVtxPos(3, FPoint3(p1.x,winsize.y-1-p2.y,0));
+	m_pWindowBoxMesh->SetVtxPos(0, FPoint3((float) p1.x, (float) winsize.y-1-p1.y, 0.0f));
+	m_pWindowBoxMesh->SetVtxPos(1, FPoint3((float) p2.x, (float) winsize.y-1-p1.y, 0.0f));
+	m_pWindowBoxMesh->SetVtxPos(2, FPoint3((float) p2.x, (float) winsize.y-1-p2.y, 0.0f));
+	m_pWindowBoxMesh->SetVtxPos(3, FPoint3((float) p1.x, (float) winsize.y-1-p2.y, 0.0f));
 	m_pWindowBoxMesh->ReOptimize();
 }
 
