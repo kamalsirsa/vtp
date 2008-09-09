@@ -1556,6 +1556,209 @@ bool vtStructureArray::WriteFootprintsToSHP(const char* filename)
 	return true;
 }
 
+/**
+ * Write footprints to a Canoma file.
+ * Author of this code: BobMaX (Roberto Angeletti)
+ */
+bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DRECT *area)
+{
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	FILE *fp3DV;
+	double x1, y1, x2, y2;
+	double minX, minY, maxX, maxY;
+	double centerX, centerY, centerZ;
+	double deltaX, deltaY;
+	double alpha, beta, gamma, focale;
+	double CX, CY, EX, EY, EZ;
+	double numPixelX, numPixelY, PixelRapp; 	
+	int groupName =1, numero =-1;
+	int iii;
+
+	const float SCALE = 10.0f;
+	const float IMAGEFIXEDY = 800.0f;
+
+	VTLOG1("WriteFootprintsToCanoma3DV\n");
+
+	fp3DV = vtFileOpen(filename, "wt");
+	if (fp3DV == NULL) {
+		VTLOG(" couldn't open file.\n");
+		return false;
+	}
+
+	x1 = area->left; 
+	y1 = area->bottom;
+	x2 = area->right;
+	y2 = area->top;
+
+	fprintf(fp3DV, "version 1\n");	
+
+	unsigned int i, j, count = GetSize(), record = 0;
+	for (i = 0; i < count; i++)	//for each coordinate
+	{
+		vtBuilding *bld = GetAt(i)->GetBuilding();
+		if (!bld)
+			continue;
+
+		const DLine2 &poly = bld->GetLevel(0)->GetOuterFootprint();
+		int total = poly.GetSize() + 1;
+
+		double *dX = new double[total];
+		double *dY = new double[total];
+
+		minX =  1E9; 
+		minY =  1E9;
+		maxX = -1E9;
+		maxY = -1E9;
+
+		int vert = 0;
+		for (j=0; j < poly.GetSize(); j++) //for each vertex
+		{
+			DPoint2 pt = poly.GetAt(j);
+
+			if (pt.x < minX){minX = pt.x;}
+			if (pt.y < minY){minY = pt.y;}
+			if (pt.x > maxX){maxX = pt.x;}
+			if (pt.y > maxY){maxY = pt.y;}
+
+			dX[vert] = pt.x;
+			dY[vert] = pt.y;
+			vert++;
+		}
+		// duplicate first vertex, it's just what SHP files do.
+		DPoint2 pt = poly.GetAt(0);
+		dX[vert] = pt.x;
+		dY[vert] = pt.y;
+		vert++;
+
+		//	float h = bld->GetHeight();		
+		float h = bld->GetTotalHeight();
+
+		double Hight = h;
+
+		//    WriteTranslationSweep();  quello che segue
+		centerX = (maxX + minX)/2.; 
+		centerY = (maxY + minY)/2.; 
+		centerZ = 0.00; 
+
+		//VTLOG("EXPORTTOCANOMA center %lf %lf\n", centerX, centerY);
+		numero++;
+
+		if (centerX > x1 &&
+			centerY > y1 &&
+			centerX < x2 &&
+			centerY < y2 )
+		{ 
+			//    	VTLOG("EXPORTTOCANOMA building contained\n"); 
+			fprintf(fp3DV, "translationsweep TSW_%d 2 %d { \n",  numero, vert-1);
+			fprintf(fp3DV, "	state { \n");
+			fprintf(fp3DV, "		alpha { 0.00000 f } \n");
+			fprintf(fp3DV, "		beta { 0.00000 f } \n");
+			fprintf(fp3DV, "		gamma { 0.00000 f } \n");
+			fprintf(fp3DV, "		X0 { %lf f } \n", (centerX - x1) / SCALE); 
+			fprintf(fp3DV, "		Y0 { %lf f } \n", (centerY - y1) / SCALE);
+			fprintf(fp3DV, "		Z0 { %lf f } \n", 0.);
+			fprintf(fp3DV, "		majorAxis { %lf f }\n", Hight /SCALE); 
+
+			for (iii = 0; iii < vert-1; iii++)
+			{
+				fprintf(fp3DV, "		u%d { %lf f }\n", iii, (centerX - dX[iii]  ) / SCALE ); 
+				fprintf(fp3DV, "		v%d { %lf f }\n", iii, (dY[iii] - centerY  ) / SCALE ); 
+			}  // End For
+
+			fprintf(fp3DV, "		} \n");
+			fprintf(fp3DV, "	} \n");
+
+		} // If CONTAINED
+
+		delete [] dY;
+		delete [] dX;
+
+		// Because not every structure may be a building, there may be fewer
+		//  records than structures.
+		record++;
+	}
+	deltaX = x2-x1;
+	deltaY = y2-y1;
+
+	EX = deltaX/2.; //((x2 - x1) /2.); //+ x1; 
+	EX = EX / SCALE;
+	EY = deltaY/2.; //((y2 - y1) /2.); //+ y1;  
+	EY = EY / SCALE; 
+	EZ = 202.020865;
+
+	alpha = -3.14159; //0.000000; // -2.85841;  // 0.000000; 
+	beta = 0.000000;  // 0.03926;    // 1.110737; 
+	gamma = -3.14159; // 3.14159;   // 0.000000; 
+	focale = 60.343804;
+	CX = 0.000000; 
+	CY = 0.000000; 		   
+
+	fprintf(fp3DV, "rectangle Floor {\n"); 
+	fprintf(fp3DV, "	state { \n");
+	fprintf(fp3DV, "		alpha { 0.00000 f } \n");
+	fprintf(fp3DV, "		beta { 0.00000 f } \n");
+	fprintf(fp3DV, "		gamma { 0.00000 f } \n");
+	fprintf(fp3DV, "		X0 { %lf f }\n", deltaX/2. /SCALE); 
+	fprintf(fp3DV, "		Y0 { %lf f }\n", deltaY/2. /SCALE);  
+	fprintf(fp3DV, "		Z0 { 0.00000 f }\n");  
+	fprintf(fp3DV, "		L { %lf f }\n",deltaX /SCALE); 
+	fprintf(fp3DV, "		W { %lf f }\n",deltaY /SCALE); 
+	fprintf(fp3DV, "		}\n");  
+	fprintf(fp3DV, "	} \n"); 
+
+	fprintf(fp3DV, "camera { \n");
+	fprintf(fp3DV, "	state { \n");
+	fprintf(fp3DV, "		EX { %lf } \n", EX);
+	fprintf(fp3DV, "		EY { %lf } \n", EY);
+	fprintf(fp3DV, "		EZ { %lf } \n", EZ);
+	fprintf(fp3DV, "		alpha { %lf } \n", alpha);
+	fprintf(fp3DV, "		beta { %lf } \n", beta);
+	fprintf(fp3DV, "		gamma { %lf } \n", gamma);
+	fprintf(fp3DV, "		f { %lf } \n", focale);
+	fprintf(fp3DV, "		CX { %lf } \n", CX);
+	fprintf(fp3DV, "		CY { %lf } \n", CY);
+	fprintf(fp3DV, "		} \n");
+	fprintf(fp3DV, "	} \n");
+
+	numPixelY = IMAGEFIXEDY;
+	PixelRapp = deltaY / numPixelY;
+	numPixelX = deltaX / PixelRapp;
+
+	fprintf(fp3DV, "controls {\n"); 
+	fprintf(fp3DV, "	Point Floor 0 0.00000 0.00000 GEImage.jpg ;\n");
+	fprintf(fp3DV, "	Point Floor 6 %lf 0.00000 GEImage.jpg ;\n", numPixelX);
+	fprintf(fp3DV, "	Point Floor 9 %lf %lf GEImage.jpg ;\n", numPixelX, numPixelY);
+	fprintf(fp3DV, "	Point Floor 3 0.00000 %lf GEImage.jpg ;\n", numPixelY);
+	fprintf(fp3DV, "	}\n");
+
+	fprintf(fp3DV, "image GEImage.jpg { \n");
+	fprintf(fp3DV, "	camera { \n");
+	fprintf(fp3DV, "		state { \n");
+	fprintf(fp3DV, "			EX { %lf } \n", EX);
+	fprintf(fp3DV, "			EY { %lf } \n", EY);
+	fprintf(fp3DV, "			EZ { %lf } \n", EZ);
+	fprintf(fp3DV, "			alpha { %lf } \n", alpha);
+	fprintf(fp3DV, "			beta { %lf } \n", beta);
+	fprintf(fp3DV, "			gamma { %lf } \n", gamma);
+	fprintf(fp3DV, "			f { %lf } \n", focale);
+	fprintf(fp3DV, "			CX { %lf } \n", CX);
+	fprintf(fp3DV, "			CY { %lf } \n", CY);
+	fprintf(fp3DV, "		      } \n");
+	fprintf(fp3DV, "	        } \n");
+	fprintf(fp3DV, "	{ %lf %lf } \n", numPixelX, numPixelY);
+	fprintf(fp3DV, "	} \n");
+	fprintf(fp3DV, "selection GEImage.jpg Floor n \n");
+	fprintf(fp3DV, "calibration 1.00000 \n");	
+
+	fclose(fp3DV);
+
+	return true;
+}
+
+//  BobMaX ExportToCanoma End --------------------------------------------
+
+
 vtBuilding *vtStructureArray::AddBuildingFromLineString(OGRLineString *pLineString)
 {
 	int num_points = pLineString->getNumPoints();
