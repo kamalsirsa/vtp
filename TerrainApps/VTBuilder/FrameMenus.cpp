@@ -243,6 +243,7 @@ EVT_MENU(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnStructureConstrain)
 EVT_MENU(ID_STRUCTURE_SELECT_USING_POLYGONS, MainFrame::OnStructureSelectUsingPolygons)
 EVT_MENU(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, MainFrame::OnStructureColourSelectedRoofs)
 EVT_MENU(ID_STRUCTURE_EXPORT_FOOTPRINTS, MainFrame::OnStructureExportFootprints)
+EVT_MENU(ID_STRUCTURE_EXPORT_CANOMA, MainFrame::OnStructureExportCanoma)
 
 EVT_UPDATE_UI(ID_FEATURE_SELECT,		MainFrame::OnUpdateFeatureSelect)
 EVT_UPDATE_UI(ID_FEATURE_PICK,			MainFrame::OnUpdateFeaturePick)
@@ -258,6 +259,7 @@ EVT_UPDATE_UI(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnUpdateStructureConstrain)
 EVT_UPDATE_UI(ID_STRUCTURE_SELECT_USING_POLYGONS, MainFrame::OnUpdateStructureSelectUsingPolygons)
 EVT_UPDATE_UI(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, MainFrame::OnUpdateStructureColourSelectedRoofs)
 EVT_UPDATE_UI(ID_STRUCTURE_EXPORT_FOOTPRINTS, MainFrame::OnUpdateStructureExportFootprints)
+EVT_UPDATE_UI(ID_STRUCTURE_EXPORT_CANOMA, MainFrame::OnUpdateStructureExportFootprints)
 
 EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
 EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
@@ -522,6 +524,7 @@ void MainFrame::CreateMenus()
 	bldMenu->Append(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, _("Colour Selected Roofs"), _("Set roof colour on selected buildings"));
 	bldMenu->AppendSeparator();
 	bldMenu->Append(ID_STRUCTURE_EXPORT_FOOTPRINTS, _("Export footprints to SHP"));
+	bldMenu->Append(ID_STRUCTURE_EXPORT_CANOMA, _("Export footprints to Canoma3DV"));
 
 	bldMenu->AppendSeparator();
 	bldMenu->AppendCheckItem(ID_STRUCTURE_CONSTRAIN, _("Constrain angles on footprint edit"));
@@ -2914,6 +2917,26 @@ void MainFrame::OnStructureExportFootprints(wxCommandEvent& event)
 
 	vtStructureLayer *pLayer = GetActiveStructureLayer();
 	pLayer->WriteFootprintsToSHP(strPathName.mb_str(wxConvUTF8));
+}
+
+void MainFrame::OnStructureExportCanoma(wxCommandEvent& event)
+{
+	// Open File Save Dialog
+	wxFileDialog saveFile(NULL, _("Export footprints to Canoma3DV"), _T(""), _T(""),
+		_("Canoma3DV Files (*.3dv)|*.3dv"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+	if (saveFile.ShowModal() == wxID_CANCEL)
+		return;
+	wxString strPathName = saveFile.GetPath();
+
+	vtStructureLayer *pLayer = GetActiveStructureLayer();
+	DRECT area;
+	if (m_area.IsEmpty())
+		// If the area tool isn't set, use the whole layer extents
+		pLayer->GetExtents(area);
+	else
+		area = m_area;
+	pLayer->WriteFootprintsToCanoma3DV(strPathName.mb_str(wxConvUTF8), &area);
 }
 
 void MainFrame::OnUpdateStructureExportFootprints(wxUpdateUIEvent& event)
