@@ -160,6 +160,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 		Success = LoadFromHGT(szFileName, progress_callback);
 	}
 	else if (!FileExt.CompareNoCase(".ddf") ||
+			 !FileExt.CompareNoCase(".ecw") ||
 			 !FileExt.CompareNoCase(".tif") ||
 			 !FileExt.CompareNoCase(".tiff") ||
 			 !FileExt.CompareNoCase(".png") ||
