@@ -272,6 +272,7 @@ void SampleImageDlg::OnDotDotDot( wxCommandEvent &event )
 	wxString filter = _("All Files|*.*");
 	AddType(filter, FSTRING_TIF);
 	AddType(filter, FSTRING_JPEG);
+	AddType(filter, FSTRING_ECW);
 
 	// ask the user for a filename
 	wxFileDialog saveFile(NULL, _("Save Imagery"), _T(""), _T(""), filter, wxFD_SAVE);
