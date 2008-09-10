@@ -434,7 +434,7 @@ protected:
 class vtFeatureLoader
 {
 public:
-	vtFeatureSet *LoadFrom(const char *filename);
+	virtual vtFeatureSet *LoadFrom(const char *filename);
 	vtFeatureSet *LoadFromSHP(const char *filename);
 	vtFeatureSet *LoadHeaderFromSHP(const char *filename);
 	vtFeatureSet *LoadWithOGR(const char *filename, bool progress_callback(int) = NULL);

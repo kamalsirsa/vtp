@@ -66,6 +66,7 @@ vtTerrain::vtTerrain()
 	m_pTextureColors = NULL;
 	m_pDetailMats = NULL;
 	m_pScaledFeatures = NULL;
+	m_pFeatureLoader = NULL;
 
 	m_pHorizonGeom = NULL;
 	m_pOceanGeom = NULL;
@@ -1766,6 +1767,8 @@ void vtTerrain::_CreateAbstractLayers()
 			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
 		}
 
+		// Load the features: use the loader we are provided, or the default
+		vtFeatureSet *feat = NULL;
 		vtString fname = lay.GetValueString("Filename");
 		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 		if (path == "")
@@ -1775,12 +1778,20 @@ void vtTerrain::_CreateAbstractLayers()
 		}
 		if (path == "")
 		{
-			VTLOG("Couldn't find features file '%s'\n", (const char *) fname);
-			continue;
+			// If it's not a file, perhaps it's a virtual data source
+			if (m_pFeatureLoader)
+				feat = m_pFeatureLoader->LoadFrom(fname);
+			if (!feat)
+			{
+				VTLOG("Couldn't find features file '%s'\n", (const char *) fname);
+				continue;
+			}
 		}
-
-		vtFeatureLoader loader;
-		vtFeatureSet *feat = loader.LoadFrom(path);
+		if (!feat)
+		{
+			vtFeatureLoader loader;
+			feat = loader.LoadFrom(path);
+		}
 		if (!feat)
 		{
 			VTLOG("Couldn't read features from file '%s'\n", (const char *) path);

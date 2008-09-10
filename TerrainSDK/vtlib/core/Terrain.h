@@ -267,6 +267,7 @@ public:
 	vtAbstractLayer *GetAbstractLayer();
 	void RemoveFeatureGeometries(vtAbstractLayer *alay);
 	int DeleteSelectedFeatures();
+	void SetFeatureLoader(vtFeatureLoader *loader) { m_pFeatureLoader = loader; }
 
 	/// You should add your nodes to this terrain's scaled features if
 	/// they are 'flat' like GIS features or contour lines, which should
@@ -465,6 +466,7 @@ protected:
 	// abstract layers
 	vtAbstractLayer *m_pActiveAbstractLayer;
 	vtTransform		*m_pScaledFeatures;
+	vtFeatureLoader *m_pFeatureLoader;
 
 	// roads
 	vtGroup			*m_pRoadGroup;
