@@ -1454,7 +1454,7 @@ vtShadow::vtShadow() : vtGroup(true)
 	m_pShadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
 	m_pShadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
 
-#if 1
+#if (OSG_VERSION_MAJOR==2 && OSG_VERSION_MINOR>0) || OSG_VERSION_MAJOR>2
 	// Use ShadowMap
 	osg::ref_ptr<osgShadow::ShadowMap> pShadowMap = new osgShadow::ShadowMap;
 	m_pShadowedScene->setShadowTechnique(pShadowMap.get());
