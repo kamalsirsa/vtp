@@ -31,7 +31,7 @@ void user_read_fn(png_structp png_ptr,png_bytep ptr,png_size_t size)
    else
       {
       memcpy(ptr,&params->data[params->ptr],size);
-      params->ptr+=size;
+      params->ptr+=(unsigned int)size;
       }
    }
 
@@ -199,7 +199,7 @@ void user_write_fn(png_structp png_ptr,png_bytep ptr,png_size_t size)
       }
 
    memcpy(&params->data[params->bytes],ptr,size);
-   params->bytes+=size;
+   params->bytes+=(unsigned int)size;
    }
 
 // user flush function
