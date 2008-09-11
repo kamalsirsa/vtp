@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2008.05.06
+AppVerName=VTP Software 2008.09.10
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -45,24 +45,21 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 Source: "C:\VTP\TerrainApps\CManager\Release-Unicode-vc8\CManager.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\CManager\itemtypes.txt"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\CManager\tags.txt"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
-Source: "C:\VTP\TerrainApps\CManager\Docs\index.html"; DestDir: "{app}/Docs/CManager"; Flags: ignoreversion; Components: docs
-Source: "C:\VTP\TerrainApps\CManager\Docs\images\*.png"; DestDir: "{app}/Docs/CManager/images"; Flags: ignoreversion; Components: docs
+Source: "C:\VTP\TerrainApps\CManager\Docs\*"; DestDir: "{app}/Docs/CManager"; Flags: ignoreversion recursesubdirs; Components: docs
 
 Source: "C:\VTP\TerrainApps\Enviro\Release-Unicode-vc8\wxEnviro.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\Ship\Enviro.xml"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
-Source: "C:\VTP\TerrainApps\Enviro\Docs\*.html"; DestDir: "{app}\Docs\Enviro"; Flags: ignoreversion; Components: docs
-Source: "C:\VTP\TerrainApps\Enviro\Docs\Navigation\*"; DestDir: "{app}\Docs\Enviro\Navigation"; Flags: ignoreversion; Components: docs
-Source: "C:\VTP\TerrainApps\Enviro\Docs\images\*"; DestDir: "{app}\Docs\Enviro\images"; Flags: ignoreversion; Components: docs
+Source: "C:\VTP\TerrainApps\Enviro\Docs\*"; DestDir: "{app}\Docs\Enviro"; Flags: ignoreversion recursesubdirs; Components: docs
 
 Source: "C:\VTP\TerrainApps\VTBuilder\Release-Unicode-vc8\VTBuilder.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
-Source: "C:\VTP\TerrainApps\VTBuilder\VTBuilder.ini"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
-Source: "C:\VTP\TerrainApps\VTBuilder\Docs\*.html"; DestDir: "{app}\Docs\VTBuilder"; Flags: ignoreversion; Components: docs
-Source: "C:\VTP\TerrainApps\VTBuilder\Docs\images\*"; DestDir: "{app}\Docs\VTBuilder\images"; Flags: ignoreversion; Components: docs
+Source: "C:\VTP\TerrainApps\VTBuilder\VTBuilder.xml"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\VTBuilder\Docs\*"; DestDir: "{app}\Docs\VTBuilder"; Flags: ignoreversion recursesubdirs; Components: docs
 
 ; Translation files
 Source: "C:\VTP\TerrainApps\Enviro\af\Enviro.mo"; DestDir: "{app}\Apps\af"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\ar\Enviro.mo"; DestDir: "{app}\Apps\ar"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\de\Enviro.mo"; DestDir: "{app}\Apps\de"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\en\Enviro.mo"; DestDir: "{app}\Apps\en"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\en_GB\Enviro.mo"; DestDir: "{app}\Apps\en_GB"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\es\Enviro.mo"; DestDir: "{app}\Apps\es"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\fr\Enviro.mo"; DestDir: "{app}\Apps\fr"; Flags: ignoreversion; Components: main
@@ -74,6 +71,7 @@ Source: "C:\VTP\TerrainApps\Enviro\sv\Enviro.mo"; DestDir: "{app}\Apps\sv"; Flag
 Source: "C:\VTP\TerrainApps\Enviro\tr\Enviro.mo"; DestDir: "{app}\Apps\tr"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\zh\Enviro.mo"; DestDir: "{app}\Apps\zh"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\ar\VTBuilder.mo"; DestDir: "{app}\Apps\ar"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\VTBuilder\en\VTBuilder.mo"; DestDir: "{app}\Apps\en"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\fr\VTBuilder.mo"; DestDir: "{app}\Apps\fr"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\ro\VTBuilder.mo"; DestDir: "{app}\Apps\ro"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\zh\VTBuilder.mo"; DestDir: "{app}\Apps\zh"; Flags: ignoreversion; Components: main
@@ -105,7 +103,7 @@ Source: "G:\Data-USA\Data-Hawaii\RoadData\honoka`a4_wgs84.rmf"; DestDir: "{app}\
 Source: "G:\Data-USA\Data-Hawaii\Terrains\Distrib\*.xml"; DestDir: "{app}\Data\Terrains"; Flags: ignoreversion; Components: hawa
 
 ; overview docs
-Source: "C:\VTP\Docs\*.html"; DestDir: "{app}\Docs"; Flags: ignoreversion; Components: docs
+Source: "C:\VTP\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs; Components: docs
 
 ; Projection Stuff
 Source: "C:\APIs\gdal-1.5.1\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
