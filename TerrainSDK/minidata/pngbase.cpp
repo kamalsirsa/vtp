@@ -2,7 +2,7 @@
 
 #include <mini/minibase.h>
 
-#include <mini/pngbase.h>
+#include "pngbase.h"
 
 namespace pngbase {
 

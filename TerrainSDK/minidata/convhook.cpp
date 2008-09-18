@@ -5,7 +5,7 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include <mini/convbase.h>
+#include "convbase.h"
 
 void InitMiniConvHook(int iJpegQuality)
 {

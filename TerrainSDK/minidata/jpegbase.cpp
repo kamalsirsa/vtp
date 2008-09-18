@@ -2,7 +2,7 @@
 
 #include <mini/minibase.h>
 
-#include <mini/jpegbase.h>
+#include "jpegbase.h"
 
 namespace jpegbase {
 
