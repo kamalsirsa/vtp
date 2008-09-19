@@ -996,6 +996,12 @@ bool Enviro::GetMaintain()
 	return m_pHeightEngine->GetMaintain();
 }
 
+void Enviro::ResetCamera()
+{
+	VTLOG1("ResetCamera\n");
+	if (m_pCurrentTerrain)
+		m_pNormalCamera->SetTransform1(m_pCurrentTerrain->GetCamLocation());
+}
 
 void Enviro::SetTerrain(vtTerrain *pTerrain)
 {

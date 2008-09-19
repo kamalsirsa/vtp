@@ -175,6 +175,7 @@ EVT_UPDATE_UI(ID_VIEW_MAP_OVERVIEW,	EnviroFrame::OnUpdateViewMapOverView)
 EVT_MENU(ID_VIEW_SETTINGS,			EnviroFrame::OnViewSettings)
 EVT_MENU(ID_VIEW_LOCATIONS,			EnviroFrame::OnViewLocations)
 EVT_UPDATE_UI(ID_VIEW_LOCATIONS,	EnviroFrame::OnUpdateViewLocations)
+EVT_MENU(ID_VIEW_RESET,				EnviroFrame::OnViewReset)
 EVT_MENU(ID_VIEW_SNAPSHOT,			EnviroFrame::OnViewSnapshot)
 EVT_MENU(ID_VIEW_SNAP_AGAIN,		EnviroFrame::OnViewSnapAgain)
 EVT_MENU(ID_VIEW_SNAP_HIGH,			EnviroFrame::OnViewSnapHigh)
@@ -461,6 +462,7 @@ void EnviroFrame::CreateMenus()
 	// Ctrl+N Save Numbered Snapshot
 	// Ctrl+P ePhemeris
 	// Ctrl+Q Terrain LOD Info
+	// Ctrl+R Reset Camera
 	// Ctrl+S Camera - View Settings
 	// Ctrl+T Top-Down
 	// Ctrl+U Unfold
@@ -502,6 +504,7 @@ void EnviroFrame::CreateMenus()
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SETTINGS, _("Camera - View Settings\tCtrl+S"));
 	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _("Store/Recall Locations\tCtrl+L"));
+	m_pViewMenu->Append(ID_VIEW_RESET, _("Reset to Terrain Center\tCtrl+R"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SNAPSHOT, _("Save Window Snapshot"));
 	m_pViewMenu->Append(ID_VIEW_SNAP_AGAIN, _("Save Numbered Snapshot\tCtrl+N"));
@@ -1536,6 +1539,11 @@ void EnviroFrame::OnViewSettings(wxCommandEvent& event)
 void EnviroFrame::OnViewLocations(wxCommandEvent& event)
 {
 	m_pLocationDlg->Show(true);
+}
+
+void EnviroFrame::OnViewReset(wxCommandEvent& event)
+{
+	g_App.ResetCamera();
 }
 
 void EnviroFrame::OnUpdateViewLocations(wxUpdateUIEvent& event)

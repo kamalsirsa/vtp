@@ -90,6 +90,7 @@ public:
 	NavType GetNavType() {return m_nav; }
 	void SetMaintain(bool bOn);
 	bool GetMaintain();
+	void ResetCamera();
 
 	void SetMode(MouseMode mode);
 	void DumpCameraInfo();
