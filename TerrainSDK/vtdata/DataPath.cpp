@@ -99,6 +99,7 @@ bool vtLoadDataPath(const char *user_config_dir, const char *config_dir)
 		VTLOG(" XML problem: %s\n", msg.c_str());
 		return false;
 	}
+	VTLOG("\tSuccessfully read.\n");
 
 	// Remember where we loaded it from
 	s_configfile = FileName;

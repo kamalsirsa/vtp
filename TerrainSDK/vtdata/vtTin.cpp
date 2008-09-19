@@ -325,6 +325,53 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 	return true;
 }
 
+bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
+{
+	FILE *fp = vtFileOpen(fname, "rb");
+	if (!fp)
+		return false;
+
+	char tnam[256];
+	int id;
+	int num_points;
+	fscanf(fp, "TIN\n");
+	fscanf(fp, "BEGT\n");
+	fscanf(fp, "ID %d\n", &id);
+	fscanf(fp, "TNAM %s\n", tnam);
+	fscanf(fp, "VERT %d\n", &num_points);
+	DPoint2 p;
+	float z;
+	for (int i = 0; i < num_points; i++)
+	{
+		if ((i%200) == 0 && progress_callback != NULL)
+			progress_callback(i * 40 / num_points);
+
+		fscanf(fp, "%lf %lf %f\n", &p.x, &p.y, &z);
+		AddVert(p, z);
+	}
+
+	int num_faces;
+	fscanf(fp, "TRI %d\n", &num_faces);
+	int v[3];
+	for (int i = 0; i < num_faces; i++)
+	{
+		if ((i%200) == 0 && progress_callback != NULL)
+			progress_callback(40 + i * 40 / num_faces);
+
+		fscanf(fp, "%d %d %d\n", v, v+1, v+2);
+		AddTri(v[0]-1, v[1]-1, v[2]-1);
+	}
+
+	fclose(fp);
+
+	// Test each triangle for clockwisdom, fix if needed
+	//CleanupClockwisdom();
+
+	ComputeExtents();
+
+	return true;
+}
+
 /**
  * Write the TIN to a new-style .tin file (custom VTP format).
  */
