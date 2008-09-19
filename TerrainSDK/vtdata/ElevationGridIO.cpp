@@ -379,36 +379,61 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	if (progress_callback != NULL) progress_callback(0);
 	char buf[4000];
 	char token[40];
+	int ncols, nrows;
+	double xllcorner, yllcorner, dCellsize, nodata;
+	DPoint2 cellsize;
 
 	// get dimension IDs
-	fgets(buf, 4000, fp);
+	bool bGo = true;
+	while (bGo)
+	{
+		fgets(buf, 4000, fp);
+		vtString four(buf, 4);
 
-	int ncols, nrows;
-	double xllcorner, yllcorner, cellsize, nodata;
-	int result = sscanf(buf, "%s %d", token, &ncols);
-	if (result != 2 || stricmp(token, "ncols"))
-		return false;	// not an ASC file
+		if (four.CompareNoCase("ncol") == 0)
+			sscanf(buf, "%s %d", token, &ncols);
 
-	fgets(buf, 4000, fp);
-	sscanf(buf, "%s %d", token, &nrows);
+		else if (four.CompareNoCase("nrow") == 0)
+			sscanf(buf, "%s %d", token, &nrows);
 
-	fgets(buf, 4000, fp);
-	sscanf(buf, "%s %lf", token, &xllcorner);
+		else if (four.CompareNoCase("xllc") == 0)
+			sscanf(buf, "%s %lf", token, &xllcorner);
 
-	fgets(buf, 4000, fp);
-	sscanf(buf, "%s %lf", token, &yllcorner);
+		else if (four.CompareNoCase("yllc") == 0)
+			sscanf(buf, "%s %lf", token, &yllcorner);
 
-	fgets(buf, 4000, fp);
-	sscanf(buf, "%s %lf", token, &cellsize);
+		else if (four.CompareNoCase("cell") == 0)
+		{
+			sscanf(buf, "%s %lf", token, &dCellsize);
+			cellsize.x = dCellsize;
+			cellsize.y = dCellsize;
+		}
 
-	fgets(buf, 4000, fp);
-	sscanf(buf, "%s %lf", token, &nodata); // nodata_value
+		else if (four.CompareNoCase("xdim") == 0)
+			sscanf(buf, "%s %lf", token, &cellsize.x);
+
+		else if (four.CompareNoCase("ydim") == 0)
+			sscanf(buf, "%s %lf", token, &cellsize.y);
+
+		else if (four.CompareNoCase("noda") == 0)
+		{
+			sscanf(buf, "%s %lf", token, &nodata); // nodata_value
+			bGo = false;
+		}
+		else
+		{
+			VTLOG1("Couldn't parse line in ASC file: ");
+			VTLOG1(buf);
+			VTLOG1("\n");
+			return false;
+		}
+	}	
 
 	m_iColumns = ncols;
 	m_iRows = nrows;
 
 	// There is no projection info in a ASC file, but there might be
-	//  an accompanying .prj file, in the old ESRI .prj format.
+	//  an accompanying .prj file, usually in the old ESRI .prj format.
 	if (!m_proj.ReadProjFile(szFileName))
 		m_proj.Clear();
 
@@ -417,8 +442,8 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	m_bFloatMode = true;
 
 	m_EarthExtents.left = xllcorner;
-	m_EarthExtents.right = xllcorner + (ncols - 1) * cellsize;
-	m_EarthExtents.top = yllcorner + (nrows - 1) * cellsize;
+	m_EarthExtents.right = xllcorner + (ncols - 1) * cellsize.x;
+	m_EarthExtents.top = yllcorner + (nrows - 1) * cellsize.y;
 	m_EarthExtents.bottom = yllcorner;
 
 	ComputeCornersFromExtents();
@@ -441,6 +466,8 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 		for (j = 0; j < ncols; j++)
 		{
 			fscanf(fp, "%f", &z);
+			if (i == 0)
+				VTLOG("(%f)", z);
 			if (z == nodata)
 				SetFValue(j, nrows-1-i, INVALID_ELEVATION);
 			else
