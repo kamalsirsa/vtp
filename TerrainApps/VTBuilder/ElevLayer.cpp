@@ -896,6 +896,12 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 		success = m_pTin->ReadADF(fname, progress_callback);
 	}
 	else
+	if (!strFileName.Right(4).CmpNoCase(_T(".tin")))
+	{
+		m_pTin = new vtTin2d;
+		success = m_pTin->ReadGMS(fname, progress_callback);
+	}
+	else
 	{
 		if (m_pGrid == NULL)
 			m_pGrid = new vtElevationGrid;
@@ -1218,6 +1224,8 @@ int vtElevLayer::SetUnknown(float fValue, const DRECT *area)
 	DPoint2 p, step = m_pGrid->GetSpacing();
 	int count = 0;
 
+	bool bUseArea = (area && !area->IsEmpty());
+
 	for (int i = 0; i < iColumns; i++)
 	{
 		p.x = ext.left + (i * step.x);
@@ -1225,11 +1233,12 @@ int vtElevLayer::SetUnknown(float fValue, const DRECT *area)
 		{
 			p.y = ext.bottom + (j * step.y);
 			// If an area was passed, restrict ourselves to use it
-			if (area)
+			if (bUseArea)
 			{
 				if (!area->ContainsPoint(p))
 					continue;
 			}
+			if (j == 0) VTLOG(" val %f ", m_pGrid->GetFValue(i, j));
 			if (m_pGrid->GetFValue(i, j) == INVALID_ELEVATION)
 			{
 				m_pGrid->SetFValue(i, j, fValue);
