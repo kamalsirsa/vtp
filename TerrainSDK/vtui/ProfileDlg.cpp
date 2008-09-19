@@ -204,6 +204,8 @@ void ProfileDlg::GetValues()
 	// We can use the same logic for two points or a polyline
 	if (m_bHavePoints)
 	{
+		if (m_p1 == m_p2)
+			return;
 		m_path.Empty();
 		m_path.Append(m_p1);
 		m_path.Append(m_p2);
