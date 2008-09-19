@@ -12,6 +12,7 @@
 #endif
 
 #include "vtdata/shapelib/shapefil.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/vtLog.h"
 
@@ -352,11 +353,12 @@ bool BuilderView::ImportWorldMap()
 	unsigned int i;
 	int j, k;
 
-	const char *filename = "WorldMap/gnv19.shp";
-	VTLOG(" Attempting to open %s\n", (const char *) filename);
+	vtString fname = FindFileOnPaths(vtGetDataPath(), "WorldMap/gnv19.shp");
+	if (fname == "")
+		return false;
 
 	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
-	vtString fname_local = UTF8ToLocal(filename);
+	vtString fname_local = UTF8ToLocal(fname);
 
 	// Open SHP file
 	hSHP = SHPOpen(fname_local, "rb");
