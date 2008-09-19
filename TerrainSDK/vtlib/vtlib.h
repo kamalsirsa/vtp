@@ -93,7 +93,6 @@
 
 ///////////////////////////////// OSG //////////////////////////////
 #if VTLIB_OSG
-	#define OSG_USE_FLOAT_MATRIX
 	#ifdef _MSC_VER
 	  #pragma warning(disable: 4511) // turn off warning about copy constructors
 	  #pragma warning(disable: 4512) // turn off warning about assignment operators

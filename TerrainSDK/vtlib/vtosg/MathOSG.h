@@ -15,11 +15,10 @@
 #include <osg/BoundingSphere>
 #include <osg/Matrix>
 
-#if OSG_USE_DOUBLE_MATRICES
-#error "You should build OSG to use float, not double, for matrices.  If you REALLY want to, you can bypass this error, but it's not recommended."
-typedef double osg_matrix_value;
-#else
+#ifdef OSG_USE_FLOAT_MATRIX
 typedef float osg_matrix_value;
+#else
+typedef double osg_matrix_value;
 #endif
 
 ///////////////////////
