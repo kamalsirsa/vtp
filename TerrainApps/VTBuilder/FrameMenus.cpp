@@ -2936,7 +2936,13 @@ void MainFrame::OnStructureExportCanoma(wxCommandEvent& event)
 		pLayer->GetExtents(area);
 	else
 		area = m_area;
-	pLayer->WriteFootprintsToCanoma3DV(strPathName.mb_str(wxConvUTF8), &area);
+
+	vtHeightField *pHF = NULL;
+	vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
+	if (pE)
+		pHF = pE->GetHeightField();
+
+	pLayer->WriteFootprintsToCanoma3DV(strPathName.mb_str(wxConvUTF8), &area, pHF);
 }
 
 void MainFrame::OnUpdateStructureExportFootprints(wxUpdateUIEvent& event)
