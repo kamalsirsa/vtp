@@ -1560,7 +1560,8 @@ bool vtStructureArray::WriteFootprintsToSHP(const char* filename)
  * Write footprints to a Canoma file.
  * Author of this code: BobMaX (Roberto Angeletti)
  */
-bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DRECT *area)
+bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DRECT *area,
+												  const vtHeightField *pHF)
 {
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
@@ -1574,6 +1575,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 	double numPixelX, numPixelY, PixelRapp; 	
 	int groupName =1, numero =-1;
 	int iii;
+	float fElev;
 
 	const float SCALE = 10.0f;
 	const float IMAGEFIXEDY = 800.0f;
@@ -1616,6 +1618,11 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 		{
 			DPoint2 pt = poly.GetAt(j);
 
+			if (pHF != NULL)		
+				pHF->FindAltitudeOnEarth(pt, fElev);			
+			else
+				fElev = 0.00;
+
 			if (pt.x < minX){minX = pt.x;}
 			if (pt.y < minY){minY = pt.y;}
 			if (pt.x > maxX){maxX = pt.x;}
@@ -1657,7 +1664,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 			fprintf(fp3DV, "		gamma { 0.00000 f } \n");
 			fprintf(fp3DV, "		X0 { %lf f } \n", (centerX - x1) / SCALE); 
 			fprintf(fp3DV, "		Y0 { %lf f } \n", (centerY - y1) / SCALE);
-			fprintf(fp3DV, "		Z0 { %lf f } \n", 0.);
+			fprintf(fp3DV, "		Z0 { %lf f } \n", fElev);
 			fprintf(fp3DV, "		majorAxis { %lf f }\n", Hight /SCALE); 
 
 			for (iii = 0; iii < vert-1; iii++)

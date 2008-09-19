@@ -105,7 +105,8 @@ public:
 
 	bool WriteXML(const char *pathname, bool bGZip = false) const;
 	bool WriteFootprintsToSHP(const char *pathname);
-	bool WriteFootprintsToCanoma3DV(const char *pathname, const DRECT *area);	
+	bool WriteFootprintsToCanoma3DV(const char *pathname, const DRECT *area,
+		const vtHeightField *pHF);	
 
 	bool FindClosestBuildingCorner(const DPoint2 &point, double epsilon,
 						   int &building, int &corner, double &distance);
