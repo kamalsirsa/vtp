@@ -161,6 +161,7 @@ public:
 
 	void SetFootprint(const DLine2 &dl);
 	void SetFootprint(const DPolygon2 &poly);
+	void ResizeEdgesToMatchFootprint();
 
 	DPolygon2 &GetFootprint() { return m_Foot; }
 	const DPolygon2 &GetFootprint() const { return m_Foot; }

@@ -300,6 +300,12 @@ void vtLevel::RebuildEdges(unsigned int n)
 	}
 }
 
+void vtLevel::ResizeEdgesToMatchFootprint()
+{
+	int curr = m_Foot.NumTotalVertices();
+	m_Edges.SetSize(curr);
+}
+
 bool vtLevel::HasSlopedEdges()
 {
 	for (unsigned int i = 0; i < m_Edges.GetSize(); i++)
