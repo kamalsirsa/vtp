@@ -2193,18 +2193,19 @@ void BuilderView::OnChar(wxKeyEvent& event)
 #endif
 #if 0
 		{
-			vtStructureLayer *pL = (vtStructureLayer *)frm->FindLayerOfType(LT_STRUCTURE);
+			vtStructureLayer *pL = (vtStructureLayer *)g_bld->FindLayerOfType(LT_STRUCTURE);
 			if (pL)
 			{
 				pL->DeselectAll();
-				pL->GetAt(3087)->Select(true);
+				vtStructure *str = pL->GetAt(868);
+				if (str)
+				{
+					str->Select(true);
+					DRECT r;
+					str->GetExtents(r);
+					ZoomToRect(r, 0.1f);
+				}
 			}
-
-			// refresh the view
-			frm->ZoomAll();
-			frm->RefreshToolbars();
-			frm->RefreshTreeView();
-			frm->RefreshStatusBar();
 		}
 #endif
 	}

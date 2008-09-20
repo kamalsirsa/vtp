@@ -242,6 +242,7 @@ EVT_MENU(ID_STRUCTURE_ADD_FOUNDATION, MainFrame::OnStructureAddFoundation)
 EVT_MENU(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnStructureConstrain)
 EVT_MENU(ID_STRUCTURE_SELECT_USING_POLYGONS, MainFrame::OnStructureSelectUsingPolygons)
 EVT_MENU(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, MainFrame::OnStructureColourSelectedRoofs)
+EVT_MENU(ID_STRUCTURE_CLEAN_FOOTPRINTS, MainFrame::OnStructureCleanFootprints)
 EVT_MENU(ID_STRUCTURE_EXPORT_FOOTPRINTS, MainFrame::OnStructureExportFootprints)
 EVT_MENU(ID_STRUCTURE_EXPORT_CANOMA, MainFrame::OnStructureExportCanoma)
 
@@ -522,6 +523,7 @@ void MainFrame::CreateMenus()
 	bldMenu->Append(ID_STRUCTURE_ADD_FOUNDATION, _("Add Foundation Levels to Buildings"), _T(""));
 	bldMenu->Append(ID_STRUCTURE_SELECT_USING_POLYGONS, _("Select Using Polygons"), _("Select buildings using selected raw layer polygons"));
 	bldMenu->Append(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, _("Colour Selected Roofs"), _("Set roof colour on selected buildings"));
+	bldMenu->Append(ID_STRUCTURE_CLEAN_FOOTPRINTS, _("Clean Footprints"), _("Clean up degenerate footprint geometry"));
 	bldMenu->AppendSeparator();
 	bldMenu->Append(ID_STRUCTURE_EXPORT_FOOTPRINTS, _("Export footprints to SHP"));
 	bldMenu->Append(ID_STRUCTURE_EXPORT_CANOMA, _("Export footprints to Canoma3DV"));
@@ -1769,7 +1771,7 @@ void MainFrame::OnRoadFlatten(wxCommandEvent &event)
 
 	float margin = 2.0;
 	wxString str;
-	str.Printf(_("%g"), margin);
+	str.Printf(_T("%g"), margin);
 	str = wxGetTextFromUser(_("How many meters for the margin at the edge of each road?"),
 		_("Flatten elevation grid under roads"), str, this);
 	if (str == _T(""))
@@ -1851,7 +1853,7 @@ void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 
 	static float fValue = 1.0f;
 	wxString str;
-	str.Printf(_("%g"), fValue);
+	str.Printf(_T("%g"), fValue);
 	str = wxGetTextFromUser(_("Set unknown areas to what value?"),
 		_("Set Unknown Areas"), str, this);
 	if (str == _T(""))
@@ -2876,28 +2878,109 @@ void MainFrame::OnUpdateStructureSelectUsingPolygons(wxUpdateUIEvent &event)
 void MainFrame::OnStructureColourSelectedRoofs(wxCommandEvent& event)
 {
 	vtStructureLayer *pLayer = GetActiveStructureLayer();
-	if (NULL != pLayer)
+	if (!pLayer)
+		return;
+
+	wxColour Colour = wxGetColourFromUser(this);
+	if (Colour.Ok())
 	{
-		int iNumSelected = pLayer->NumSelected();
-		if (iNumSelected > 0)
+		RGBi RoofColour(Colour.Red(), Colour.Green(), Colour.Blue());
+		for (unsigned int i = 0; i < pLayer->GetSize(); i++)
 		{
-			wxColour Colour = wxGetColourFromUser(this);
-			if (Colour.Ok())
+			vtStructure *pStructure = pLayer->GetAt(i);
+			if (!pStructure->IsSelected())
+				continue;
+
+			vtBuilding* pBuilding = pStructure->GetBuilding();
+			if (pBuilding)
+				pBuilding->GetLevel(pBuilding->GetNumLevels() - 1)->SetEdgeColor(RoofColour);
+		}
+	}
+}
+
+void MainFrame::OnStructureCleanFootprints(wxCommandEvent& event)
+{
+	vtStructureLayer *pLayer = GetActiveStructureLayer();
+	if (!pLayer)
+		return;
+
+	double dEpsilon;
+	if (m_proj.GetUnits() == LU_DEGREES)
+		dEpsilon = 1E-7;
+	else
+		dEpsilon = 1E-2;
+
+	wxString str;
+	str.Printf(_T("%g"), dEpsilon);
+	str = wxGetTextFromUser(_("How close are degenerate points? (epsilon)"),
+		_("Clean Footprints"), str, this);
+	if (str == _T(""))
+		return;
+
+	dEpsilon = atof(str.mb_str(wxConvUTF8));
+
+	int degen = 0;
+	int olap = 0;
+	for (unsigned int i = 0; i < pLayer->GetSize(); i++)
+	{
+		vtStructure *pStructure = pLayer->GetAt(i);
+		vtBuilding *bld = pStructure->GetBuilding();
+		if (!bld)
+			continue;
+		for (unsigned int j = 0; j < bld->GetNumLevels(); j++)
+		{
+			vtLevel *lev = bld->GetLevel(j);
+			DPolygon2 &dp = lev->GetFootprint();
+			int rem = dp.RemoveDegeneratePoints(dEpsilon);
+			degen += rem;
+
+			// Also try to catch the case of the polygon looping around
+			// over the same points more than once.
+			for (unsigned int r = 0; r < dp.size(); r++)
 			{
-				RGBi RoofColour(Colour.Red(), Colour.Green(), Colour.Blue());
-				for (int i = 0; i < iNumSelected; i++)
+				DLine2 &ring = dp[r];
+				for (unsigned int k2 = 1; k2 < ring.GetSize(); k2++)
 				{
-					vtStructure *pStructure = pLayer->GetAt(i);
-					if (pStructure->IsSelected())
+					DPoint2 &p2 = ring.GetAt(k2);
+					for (unsigned int k1 = 0; k1 < k2; k1++)
 					{
-						vtBuilding* pBuilding = pStructure->GetBuilding();
-						if (NULL != pBuilding)
-							pBuilding->GetLevel(pBuilding->GetNumLevels() - 1)->SetEdgeColor(RoofColour);
+						DPoint2 &p1 = ring.GetAt(k1);
+						DPoint2 diff = p1 - p2;
+						if (fabs(diff.x) < dEpsilon && fabs(diff.y) < dEpsilon)
+						{
+							ring.RemoveAt(k2);
+							k2--;
+							olap++;
+							rem++;
+							break;
+						}
 					}
 				}
 			}
+			if (rem)
+			{
+				// Must size down the edge arrays
+				lev->ResizeEdgesToMatchFootprint();
+			}
 		}
 	}
+	if (degen)
+		DisplayAndLog("%d degenerate points were removed.", degen);
+	if (olap)
+		DisplayAndLog("%d overlapping points were removed.", olap);
+
+#if 0
+	// useful test code for isolating problem buildings
+	pLayer->DeselectAll();
+	vtStructure *stru = pLayer->GetAt(6464);
+	if (stru)
+	{
+		stru->Select(true);
+		DRECT r;
+		stru->GetExtents(r);
+		m_pView->ZoomToRect(r, 0.1f);
+	}
+#endif
 }
 
 void MainFrame::OnUpdateStructureColourSelectedRoofs(wxUpdateUIEvent& event)

@@ -227,6 +227,7 @@ protected:
 	void OnStructureConstrain(wxCommandEvent& event);
 	void OnStructureSelectUsingPolygons(wxCommandEvent& event);
 	void OnStructureColourSelectedRoofs(wxCommandEvent& event);
+	void OnStructureCleanFootprints(wxCommandEvent& event);
 	void OnStructureExportFootprints(wxCommandEvent& event);
 	void OnStructureExportCanoma(wxCommandEvent& event);
 
