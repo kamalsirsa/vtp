@@ -1577,7 +1577,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 	int iii;
 	float fElev;
 
-	const float SCALE = 10.0f;
+	const float SCALE = 1.0f;
 	const float IMAGEFIXEDY = 800.0f;
 
 	VTLOG1("WriteFootprintsToCanoma3DV\n");
@@ -1664,7 +1664,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 			fprintf(fp3DV, "		gamma { 0.00000 f } \n");
 			fprintf(fp3DV, "		X0 { %lf f } \n", (centerX - x1) / SCALE); 
 			fprintf(fp3DV, "		Y0 { %lf f } \n", (centerY - y1) / SCALE);
-			fprintf(fp3DV, "		Z0 { %lf f } \n", fElev);
+			fprintf(fp3DV, "		Z0 { %lf f } \n", fElev / SCALE);
 			fprintf(fp3DV, "		majorAxis { %lf f }\n", Hight /SCALE); 
 
 			for (iii = 0; iii < vert-1; iii++)
