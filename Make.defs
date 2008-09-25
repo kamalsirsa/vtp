@@ -3,13 +3,23 @@
 #
 
 #----------------------------------------------------------------------------
+# Override defs (set by ?=) with user defs
+#    here are some examples:
+#       SUPPORT_SQUISH = 1
+#       OSG_BASE = /usr/local/osg-2.6
+#       MINI_INC = $(VTP_ROOT)/../deps"
+#       MINI_LIB = $(VTP_ROOT)/../deps/mini/libMini.a
+#----------------------------------------------------------------------------
+-include $(HOME)/.vtp-user.defs
+
+#----------------------------------------------------------------------------
 # Here you can indicate the usage of various dependencies
 #----------------------------------------------------------------------------
-SUPPORT_QUIKGRID = 0
-SUPPORT_NETCDF = 1
-SUPPORT_HTTP = 1
-SUPPORT_BZIP2 = 1
-SUPPORT_SQUISH = 0
+SUPPORT_QUIKGRID ?= 0
+SUPPORT_NETCDF ?= 1
+SUPPORT_HTTP ?= 1
+SUPPORT_BZIP2 ?= 1
+SUPPORT_SQUISH ?= 0
 
 #----------------------------------------------------------------------------
 # Set the compiler switches from the above
@@ -22,68 +32,66 @@ SWITCHES += -DSUPPORT_BZIP2=$(SUPPORT_BZIP2)
 SWITCHES += -DSUPPORT_SQUISH=$(SUPPORT_SQUISH)
 
 #----------------------------------------------------------------------------
-# define the OS to dynamically figure out the configuration
+# Define the OS to dynamically figure out the configuration
 #----------------------------------------------------------------------------
 OS := $(shell uname)
 
 ## We don't care about architectural distinguishers in the OS
 ## such as IRIX64, IRIX32, etc. so we truncate IRIX?? to IRIX
 ifeq ($(findstring IRIX,$(OS)),IRIX)
-OS := IRIX
+   OS := IRIX
 endif
 
 ## Make CYGWIN_XXXX CYGWIN so it's "Windows cross platform" :)
 ifeq ($(findstring CYGWIN,$(OS)),CYGWIN)
 OS := CYGWIN
-#OS := MINGW
+   #OS := MINGW
 endif
 
 ## Make MINGW_XXXX MINGW so it's "Windows cross platform" :)
 ifeq ($(findstring MINGW,$(OS)),MINGW)
-OS := MINGW
+   OS := MINGW
 endif
 
-#==============================================================================
+#============================================================================
 #
-#                                DIRECTORIES
+# General build parameters
 #
-#==============================================================================
+#============================================================================
 
 #----------------------------------------------------------------------------
 # General Unix systems will use these values
 #----------------------------------------------------------------------------
 LOCALBASE ?= /usr/local
-X11BASE   = /usr/X11R6
-X_INC = $(X11BASE)/include
-X_LIB = $(X11BASE)/lib
+X11BASE    = /usr/X11R6
+X_INC      = $(X11BASE)/include
+X_LIB      = $(X11BASE)/lib
 
 # Mac OS X users only
-FINK_LIB   	 ?= /sw/lib
-FINK_INC	 = /sw/include
-OSX_APPS   = $(VTP_ROOT)/OSX
+FINK_LIB ?= /sw/lib
+FINK_INC ?= /sw/include
+OSX_APPS  = $(VTP_ROOT)/OSX
 
 #----------------------------------------------------------------------------
-# Common Build variables
+# Common build variables
 #----------------------------------------------------------------------------
-
-CSRC   = $(wildcard *.c)
-CXXSRC = $(wildcard *.cpp)
-CHEAD =  $(wildcard *.h)
+CSRC    = $(wildcard *.c)
+CXXSRC  = $(wildcard *.cpp)
+CHEAD   = $(wildcard *.h)
 CXXHEAD = $(wildcard *.hpp)
 HEADERS = $(CHEAD) $(CXXHEAD)
-OBJS   = $(CSRC:%.c=%.o) $(CXXSRC:%.cpp=%.o)
+OBJS    = $(CSRC:%.c=%.o) $(CXXSRC:%.cpp=%.o)
 LIB_EXT = so
 
 CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS) -finput-charset=ISO-8859-1
 CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS) -finput-charset=ISO-8859-1
-LIB = $(LIB_NAME).$(LIB_EXT)
-#----------------------------------------------------------------------------
-#                                DIRECTORIES
-#----------------------------------------------------------------------------
+LIB      = $(LIB_NAME).$(LIB_EXT)
 
+#----------------------------------------------------------------------------
+# VTP directories
+#----------------------------------------------------------------------------
 # NOTE: VTP_ROOT is set in each Makefile
-
-APIS_DIR         = /usr/local
+APIS_DIR         = $(LOCALBASE)
 TERRAIN_SDK_DIR  = $(VTP_ROOT)/TerrainSDK
 TERRAIN_APPS_DIR = $(VTP_ROOT)/TerrainApps
 VTDATA_DIR       = $(TERRAIN_SDK_DIR)/vtdata
@@ -94,61 +102,54 @@ VTOSG_DIR        = $(VTLIB_DIR)/vtosg
 XMLHELPER_DIR    = $(TERRAIN_SDK_DIR)/xmlhelper
 UNZIP_DIR        = $(TERRAIN_SDK_DIR)/unzip
 
-ifeq ($(OS),Darwin)
-WX_DIR		 ?= /usr/local
-else
-WX_DIR		 ?= /usr
-endif
-
-MINI_INC = $(LOCALBASE)/include
-MINI_LIB = $(LOCALBASE)/lib/libMini.a
-
-GDAL_BASE = $(LOCALBASE)
-OSG_BASE = $(LOCALBASE)
-
-VTP_INSTALL_DIR = /usr/local
-
-# override previous defs with user defs
--include $(HOME)/.vtp-user.defs
+PNG_INC = $(LOCALBASE)/include
+PNG_LIB = $(LOCALBASE)/lib
 
 NETCDF_INC = $(LOCALBASE)/include
 NETCDF_LIB = $(LOCALBASE)/lib
 
-PNG_INC = $(LOCALBASE)/include
-PNG_LIB = $(LOCALBASE)/lib
+MINI_INC ?= $(LOCALBASE)/include
+MINI_LIB ?= $(LOCALBASE)/lib/libMini.a
 
-GDAL_INC = $(GDAL_BASE)/include
-GDAL_LIB = $(GDAL_BASE)/lib
+GDAL_BASE ?= $(LOCALBASE)
+GDAL_INC   = $(GDAL_BASE)/include
+GDAL_LIB   = $(GDAL_BASE)/lib
 
-OSG_INC = $(OSG_BASE)/include
-OSG_LIB = $(OSG_BASE)/lib
+OSG_BASE ?= $(LOCALBASE)
+OSG_INC   = $(OSG_BASE)/include
+OSG_LIB   = $(OSG_BASE)/lib
 
-VTDATA_INST_DIR = $(VTDATA_DIR)
-VTUI_INST_DIR = $(VTUI_DIR)
-VTOSG_INST_DIR  = $(VTOSG_DIR)
+VTDATA_INST_DIR    = $(VTDATA_DIR)
+VTUI_INST_DIR      = $(VTUI_DIR)
+VTOSG_INST_DIR     = $(VTOSG_DIR)
 MINIDATA_INST_DIR  = $(MINIDATA_DIR)
 XMLHELPER_INST_DIR = $(XMLHELPER_DIR)
-UNZIP_INST_DIR = $(UNZIP_DIR)
+UNZIP_INST_DIR     = $(UNZIP_DIR)
+
+ifeq ($(OS),Darwin)
+   WX_DIR ?= /usr/local
+else
+   WX_DIR ?= /usr
+endif
+
+VTP_INSTALL_DIR ?= $(LOCALBASE)
 
 #============================================================================
 #
-# OS Specific build parameters
+# OS specific build parameters
 #
 #============================================================================
 
 #----------------------------------------------------------------------------
-#
 # IRIX Specific definitions
-#
 #----------------------------------------------------------------------------
 ifeq ($(OS),IRIX)
    CXX = CC
    ifeq ($(CXX),CC) 
-       #--------------------------------------------------------------------
-       # SGI IRIX with MIPSPro compilers  (tested with ver. 7.3.1.1m)
-       #   (IRIX Folks:  Read TerrainApps/README.sgi!)
-       #--------------------------------------------------------------------
-
+        #--------------------------------------------------------------------
+        # SGI IRIX with MIPSPro compilers  (tested with ver. 7.3.1.1m)
+        #   (IRIX Folks:  Read TerrainApps/README.sgi!)
+        #--------------------------------------------------------------------
 	CC        = cc -n32 -mips4 -w
 	CXX       = CC -n32 -mips4 -w -LANG:std -exceptions -prelink -ptnone
 	AR        = CC -n32 -mips4 -ar -WR,-v -o
@@ -156,15 +157,15 @@ ifeq ($(OS),IRIX)
 	LD        = $(CXX)
 	LD_SHARED = $(CXX) -shared
 	 
-	GLUT_LIB = -lglut
-	GLU_LIB  = -lGLU
+	GLUT_LIB  = -lglut
+	GLU_LIB   = -lGLU
 	LDIRFLAGS = $(LDIRS:%=-L%)                \
 	              -Wl,-rpath,$(subst $(space),$(colon),$(LDIRS))
    else  
-	 #--------------------------------------------------------------------
+	 #-------------------------------------------------------------------
 	 # SGI IRIX with GCC  (tested with ver. 2.95.3-test2)
 	 #   (IRIX Folks:  Read TerrainApps/README.sgi!)
-	 #--------------------------------------------------------------------
+	 #-------------------------------------------------------------------
 	 CC        = gcc
 	 CXX       = g++
 	 AR        = ar ruv
@@ -172,16 +173,16 @@ ifeq ($(OS),IRIX)
 	 LD        = $(CXX)
 	 LD_SHARED = $(CXX) -shared
 
-	 GLUT_LIB = $(HOME)/software/Mesa-3.4.1/lib/libglut.a
-	 GLU_LIB  = $(HOME)/software/Mesa-3.4.1/lib/libGLU.a
-	 LDIRFLAGS = $(LDIRS:%=-L%)                \
+	 GLUT_LIB  = $(HOME)/software/Mesa-3.4.1/lib/libglut.a
+	 GLU_LIB   = $(HOME)/software/Mesa-3.4.1/lib/libGLU.a
+	 LDIRFLAGS = $(LDIRS:%=-L%) \
 	             -Wl,-rpath,$(subst $(space),$(colon),$(LDIRS))
    endif
 endif
 
-#------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # FreeBSD with GCC (tested with ver. 2.95.2)
-#------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 ifeq ($(OS),FreeBSD)
    CC        = gcc
    CXX       = g++
@@ -194,13 +195,13 @@ ifeq ($(OS),FreeBSD)
    GLUT_LIB = -lglut
    GLU_LIB  = -lGLU
    EXTRA_LIBS = -lXi $(PTHREAD_LIBS)
-   LDIRFLAGS = $(LDIRS:%=-L%)                \
+   LDIRFLAGS  = $(LDIRS:%=-L%) \
                 -rpath $(subst $(space),$(colon),$(LDIRS))
 endif
 
-#------------------------------------------------------------------------------
-# Mac OS X (10.2.6) with GCC (OSX)
-#------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
+# MacOS X with GCC (OSX)
+#----------------------------------------------------------------------------
 ifeq ($(OS),Darwin)
    CC        = gcc
    CXX       = g++
@@ -213,18 +214,18 @@ ifeq ($(OS),Darwin)
    GLUT_LIB = -framework GLUT
    GLU_LIB  = -framework OpenGL -framework Carbon
    EXTRA_LIBS = -lXi
-   LDIRFLAGS = $(LDIRS:%=-L%)
+   LDIRFLAGS  = $(LDIRS:%=-L%)
 
-   # disable this if you built OSG with XCode
+   # Disable this if you built OSG with XCode
    OSG_NO_FRAMEWORKS = 1
 
-   # remove the "lib" string from the LIB_NAME
+   # Remove the "lib" string from the LIB_NAME
    NEW_LIB_NAME := $(subst lib, ,$(LIB_NAME))
    LIB_NAME := $(strip $(NEW_LIB_NAME))
 
    LIB_EXT = dylib
    FRAMEWORKS = $(VTP_ROOT)/OSX/Shared/Frameworks
-   FRAMEWORK =  $(FRAMEWORKS)/$(LIB_NAME).framework
+   FRAMEWORK  = $(FRAMEWORKS)/$(LIB_NAME).framework
    FRAMEWORK_LIB = $(FRAMEWORK)/Versions/A/$(LIB_NAME)
    # Most frameworks, including osg, are built either with:
    # @executable_path/../Frameworks/*.framework
@@ -236,28 +237,27 @@ ifeq ($(OS),Darwin)
    FRAMEWORK_INSTALL_NAME = @executable_path/../Frameworks/$(LIB_NAME).framework/Versions/A/$(LIB_NAME)
    FRAMEWORK_EXE = $(FRAMEWORK)/$(LIB_NAME)
 
-   # flags 
+   # Flags
    COMMON_OPTS = -F$(OSX_APPS)/Shared/Frameworks -compatibility_version 1.2 -current_version 1.2.1 -L$(GDAL_LIB) -lgdal -L/sw/lib -lnetcdf -lpng -ljpeg -lcurl -lbz2 -lz -F$(FRAMEWORKS)
 
-   #
    # Enumerates the build flags required to use each lib/framework
-   #
-ifeq ($(OSG_NO_FRAMEWORKS),0)
-   OSG_OPTS = -framework osg -framework osgUtil \
-	      -framework osgText -framework osgDB -framework osgGA -framework osgParticle -framework osgShadow -framework OpenThreads
-else
-   OSG_OPTS = -L$(OSG_LIB) -losg -losgUtil \
-	      -losgText -losgDB -losgGA -losgParticle -losgShadow -lOpenThreads
-endif
+   ifeq ($(OSG_NO_FRAMEWORKS),0)
+      OSG_OPTS = -framework osg -framework osgUtil \
+	         -framework osgText -framework osgDB -framework osgGA -framework osgParticle -framework osgShadow -framework OpenThreads
+   else
+      OSG_OPTS = -L$(OSG_LIB) -losg -losgUtil \
+	         -losgText -losgDB -losgGA -losgParticle -losgShadow -lOpenThreads
+   endif
+
    XMLHELPER_OPTS = -framework xmlhelper
-   VTDATA_OPTS = -framework vtdata -framework unzip $(MINI_LIB) -framework OpenGL
-   MINIDATA_OPTS = -framework minidata -framework unzip $(MINI_LIB) -framework OpenGL
-   VTUI_OPTS = -framework vtdata -framework unzip -framework unzip
-   UNZIP_OPTS = -framework unzip
+   VTDATA_OPTS    = -framework vtdata -framework unzip $(MINI_LIB) -framework OpenGL
+   MINIDATA_OPTS  = -framework minidata -framework unzip $(MINI_LIB) -framework OpenGL
+   VTUI_OPTS      = -framework vtdata -framework unzip -framework unzip
+   UNZIP_OPTS     = -framework unzip
 
    #
-   # options used by individual make files to build their respective packages.
-   # E.g. if you need to modify the build opts for XmlHelper, modify the 
+   # Options used by individual make files to build their respective packages.
+   # E.g. if you need to modify the build opts for XmlHelper, modify the
    # XMLHELPER_LINK_OPTS variable.
    #
    XMLHELPER_LINK_OPTS = -lstdc++ -lz   
@@ -266,10 +266,10 @@ endif
 		       $(XMLHELPER_OPTS) \
 		       $(UNZIP_OPTS)
 
-   MINIDATA_LINK_OPTS =  $(COMMON_OPTS) \
-		       $(XMLHELPER_OPTS) \
-		       $(UNZIP_OPTS) \
-		       $(VTDATA_OPTS)
+   MINIDATA_LINK_OPTS = $(COMMON_OPTS) \
+		        $(XMLHELPER_OPTS) \
+		        $(UNZIP_OPTS) \
+		        $(VTDATA_OPTS)
 
    VTUI_LINK_OPTS = $(shell $(WX_DIR)/bin/wx-config --libs) \
 		    $(COMMON_OPTS) \
@@ -278,9 +278,6 @@ endif
 		    $(XMLHELPER_OPTS) \
 		    $(VTDATA_OPTS) \
 		    $(VTUI_OPTS)
-#		    -undefined dynamic_lookup
-#		    -flat_namespace \
-#		    -undefined suppress \
 
    VTOSG_LINK_OPTS =  $(OSG_OPTS) \
                       $(COMMON_OPTS) \
@@ -313,7 +310,7 @@ endif
 	@-if [ ! -h $(OSX_APPS)/$(EXEC).app/Contents/Shared ] ; then \
 		(cd $(OSX_APPS)/$(EXEC).app/Contents && \
 		ln -s ../../Shared Shared ); \
-	fi 
+	fi
 	@-if [ -e osx/$(EXEC).rsrc ]; then \
 		cp osx/$(EXEC).rsrc $(OSX_APPS)/$(EXEC).app/Contents/Resources/$(EXEC).rsrc; \
 	fi
@@ -323,11 +320,12 @@ endif
 
    %.framework: $(HEADERS)
 	@-mkdir -p $(FRAMEWORKS)
-	@-mkdir -p $*.framework/Versions/A 
+	@-mkdir -p $*.framework/Versions/A
 	@-mkdir -p $*.framework/Headers
 	@-if [ ! -h $*.framework/Versions/Current ] ; then \
 		(cd $*.framework/Versions && \
-		 ln -s A Current) ; fi
+		 ln -s A Current); \
+        fi
 	@-if [ ! -h $*.framework/Versions/Current/Shared ] ; then \
 		(cd $*.framework/Versions/Current && \
 		ln -s ../../../../../Shared Shared ); \
@@ -335,9 +333,9 @@ endif
 	@-cp -r $(HEADERS) $*.framework/Headers/
 endif
 
-#------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Linux with GCC (tested with ver. 2.95.3)
-#------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 ifeq ($(OS),Linux)
    CC        = gcc
    CXX       = g++
@@ -345,36 +343,36 @@ ifeq ($(OS),Linux)
    LD        = $(CXX)
    LD_SHARED = $(CXX) -shared
 
-   GLUT_LIB = -lglut
-   GLU_LIB  = -lGLU
+   GLUT_LIB   = -lglut
+   GLU_LIB    = -lGLU
    EXTRA_LIBS = -lXi
 
    NETCDF_INC = $(LOCALBASE)/include/netcdf-3
 
    ARCH := $(shell uname -m)
    ifeq ($(ARCH),x86_64)
-      COPT      = -O -g -fPIC
-      LDIRFLAGS = -L/usr/lib64 $(LDIRS:%=-L%)
-      X_LIB     = $(X11BASE)/lib64
-      MINI_LIB = $(LOCALBASE)/lib64/libMini.a
+      COPT       = -O -g -fPIC
+      LDIRFLAGS  = -L/usr/lib64 $(LDIRS:%=-L%)
+      X_LIB      = $(X11BASE)/lib64
+      MINI_LIB   = $(LOCALBASE)/lib64/libMini.a
       NETCDF_LIB = $(LOCALBASE)/lib64/netcdf-3
    else
-      COPT      = -O -g
-      LDIRFLAGS = $(LDIRS:%=-L%)
+      COPT       = -O -g
+      LDIRFLAGS  = $(LDIRS:%=-L%)
       NETCDF_LIB = $(LOCALBASE)/lib/netcdf-3
    endif
 endif
 
-#------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Cygwin with GCC (tested with ver. 2.95.3)
-#------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 ifeq ($(OS),CYGWIN)
    CC        = gcc-2
    CXX       = c++-2
    AR        = ar ruv
    COPT      = -O2 -W -Wall -Wno-unused -g -DWIN32 -DNOMINMAX
    ### -fvtable-thunks
-   SO_EXT	  = dll
+   SO_EXT    = dll
    SO_PREFIX = cyg
 
    LD        = $(CXX) $(COPT)
@@ -394,16 +392,18 @@ ifeq ($(OS),CYGWIN)
     LDIRFLAGS = $(LDIRS:%=-L%)
 endif
 
-#------------------------------------------------------------------------------
-# End System specific defs
-#------------------------------------------------------------------------------
+#============================================================================
+#
+# Debugging parameters
+#
+#============================================================================
 
 # Turns on debugging: to enable run "make -DDEBUG=1"
 ifeq ($(DEBUG),1)
-COPT += -DDEBUG=1
+   COPT += -DDEBUG=1
 endif
 
-#------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 
 colon:= :
 empty:=  
