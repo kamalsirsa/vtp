@@ -918,15 +918,21 @@ wxSizer *ProfileDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item21 = new wxBoxSizer( wxVERTICAL );
 
     wxTextCtrl *item22 = new wxTextCtrl( parent, ID_STATUS_TEXT, wxT(""), wxDefaultPosition, wxSize(210,-1), wxTE_MULTILINE );
-    item21->Add( item22, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item21->Add( item22, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item24 = new wxButton( parent, ID_EXPORT_DXF, _("Export Profile"), wxDefaultPosition, wxDefaultSize, 0 );
-    item23->Add( item24, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Export:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item24, 0, wxALIGN_CENTER|wxLEFT|wxTOP|wxBOTTOM, 5 );
 
-    wxButton *item25 = new wxButton( parent, ID_EXPORT_TRACE, _("Export Trace"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton *item25 = new wxButton( parent, ID_EXPORT_DXF, _("Profile"), wxDefaultPosition, wxSize(50,-1), 0 );
     item23->Add( item25, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxButton *item26 = new wxButton( parent, ID_EXPORT_TRACE, _("Trace"), wxDefaultPosition, wxSize(50,-1), 0 );
+    item23->Add( item26, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxButton *item27 = new wxButton( parent, ID_EXPORT_CSV, _("CSV"), wxDefaultPosition, wxSize(50,-1), 0 );
+    item23->Add( item27, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item21->Add( item23, 0, wxALIGN_CENTER, 5 );
 
