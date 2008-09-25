@@ -2,8 +2,6 @@
 # GNU Makefile Global Variable Defs
 #
 
--include $(HOME)/.vtp-user.defs
-
 #----------------------------------------------------------------------------
 # Here you can indicate the usage of various dependencies
 #----------------------------------------------------------------------------
@@ -96,22 +94,34 @@ VTOSG_DIR        = $(VTLIB_DIR)/vtosg
 XMLHELPER_DIR    = $(TERRAIN_SDK_DIR)/xmlhelper
 UNZIP_DIR        = $(TERRAIN_SDK_DIR)/unzip
 
+ifeq ($(OS),Darwin)
+WX_DIR		 ?= /usr/local
+else
+WX_DIR		 ?= /usr
+endif
+
+MINI_INC = $(LOCALBASE)/include
+MINI_LIB = $(LOCALBASE)/lib/libMini.a
+
+GDAL_BASE = $(LOCALBASE)
+OSG_BASE = $(LOCALBASE)
+
+VTP_INSTALL_DIR = /usr/local
+
+# override previous defs with user defs
+-include $(HOME)/.vtp-user.defs
+
 NETCDF_INC = $(LOCALBASE)/include
 NETCDF_LIB = $(LOCALBASE)/lib
 
 PNG_INC = $(LOCALBASE)/include
 PNG_LIB = $(LOCALBASE)/lib
 
-GDAL_BASE = $(LOCALBASE)
 GDAL_INC = $(GDAL_BASE)/include
 GDAL_LIB = $(GDAL_BASE)/lib
 
-OSG_BASE = $(LOCALBASE)
 OSG_INC = $(OSG_BASE)/include
 OSG_LIB = $(OSG_BASE)/lib
-
-MINI_INC = $(LOCALBASE)/include
-MINI_LIB = $(LOCALBASE)/lib/libMini.a
 
 VTDATA_INST_DIR = $(VTDATA_DIR)
 VTUI_INST_DIR = $(VTUI_DIR)
@@ -119,14 +129,6 @@ VTOSG_INST_DIR  = $(VTOSG_DIR)
 MINIDATA_INST_DIR  = $(MINIDATA_DIR)
 XMLHELPER_INST_DIR = $(XMLHELPER_DIR)
 UNZIP_INST_DIR = $(UNZIP_DIR)
-
-ifeq ($(OS),Darwin)
-WX_DIR		 ?= /usr/local
-else
-WX_DIR		 ?= /usr
-endif
-
-VTP_INSTALL_DIR = /usr/local
 
 #============================================================================
 #
@@ -248,8 +250,8 @@ else
 	      -losgText -losgDB -losgGA -losgParticle -losgShadow -lOpenThreads
 endif
    XMLHELPER_OPTS = -framework xmlhelper
-   VTDATA_OPTS = -framework vtdata -framework unzip -lMini -framework OpenGL
-   MINIDATA_OPTS = -framework minidata -framework unzip -lMini -framework OpenGL
+   VTDATA_OPTS = -framework vtdata -framework unzip $(MINI_LIB) -framework OpenGL
+   MINIDATA_OPTS = -framework minidata -framework unzip $(MINI_LIB) -framework OpenGL
    VTUI_OPTS = -framework vtdata -framework unzip -framework unzip
    UNZIP_OPTS = -framework unzip
 
@@ -286,7 +288,7 @@ endif
 		      $(XMLHELPER_OPTS)\
 		      $(VTDATA_OPTS) \
 		      $(MINIDATA_OPTS) \
-		      -lMini -lz -lbz2
+		      $(MINI_LIB) -lz -lbz2
 
    #
    # The default rule for building an *.app package.  Requires the

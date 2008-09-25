@@ -43,7 +43,7 @@ LIBS   += -F$(FRAMEWORKS) \
 	  -framework vtdata -framework minidata -framework vtui \
 	  -framework xmlhelper -framework unzip \
 	  -L$(FINK_LIB) -lpng \
-	  -lz -lMini -framework OpenGL \
+	  -lz $(MINI_LIB) -framework OpenGL \
 	  -Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS \
 	  -bind_at_load
 
