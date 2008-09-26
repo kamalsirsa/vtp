@@ -76,6 +76,7 @@ public:
 
 	void WriteProfileToDXF(const char *filename);
 	void WriteTraceToDXF(const char *filename);
+	void WriteProfileToCSV(const char *filename);
 
 private:
 	// WDR: member variable declarations for ProfileDlg
@@ -140,6 +141,7 @@ private:
 
 private:
 	// WDR: handler declarations for ProfileDlg
+	void OnExportCSV( wxCommandEvent &event );
 	void OnExportTrace( wxCommandEvent &event );
 	void OnExportDXF( wxCommandEvent &event );
 	void OnCurvature( wxCommandEvent &event );

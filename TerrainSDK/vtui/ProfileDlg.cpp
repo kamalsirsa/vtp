@@ -43,6 +43,7 @@ BEGIN_EVENT_TABLE(ProfileDlg, AutoDialog)
 	EVT_CHOICE( ID_CURVATURE, ProfileDlg::OnCurvature )
 	EVT_BUTTON( ID_EXPORT_DXF, ProfileDlg::OnExportDXF )
 	EVT_BUTTON( ID_EXPORT_TRACE, ProfileDlg::OnExportTrace )
+	EVT_BUTTON( ID_EXPORT_CSV, ProfileDlg::OnExportCSV )
 END_EVENT_TABLE()
 
 
@@ -790,6 +791,28 @@ void ProfileDlg::DrawChart(wxDC& dc)
 		}
 	}
 
+	// Draw vertical lines for multi-point paths
+	unsigned int len = m_path.GetSize();
+	if (len > 2)
+	{
+		dc.SetPen(pen7);
+
+		// Iterate over the polyline (linearly in map coordinates)
+		double fTotalDistance = 0.0;
+		unsigned int seg = 0, total_segments = len-1;
+		for (seg = 0; seg < total_segments; seg++)
+			fTotalDistance += (m_path[seg+1] - m_path[seg]).Length();
+		double fStep = fTotalDistance / (m_xrange - 1);
+
+		float dist = 0.0f;
+		for (seg = 0; seg < total_segments; seg++)
+		{
+			dist += (m_path[seg+1] - m_path[seg]).Length();
+			dc.DrawLine(m_base.x + dist/fStep, m_base.y,
+						m_base.x + dist/fStep, m_base.y - m_yrange);
+		}
+	}
+
 	// Draw the fresnel zones
 	if (m_bUseFresnel && m_bHaveFresnel && m_bHaveLOS)
 	{
@@ -1183,6 +1206,20 @@ void ProfileDlg::OnExportTrace( wxCommandEvent &event )
 	}
 }
 
+void ProfileDlg::OnExportCSV( wxCommandEvent &event )
+{
+	wxFileDialog saveFile(this, _("Export Trace to CSV"),
+		_T(""), _T(""), _("CSV Files (*.csv)|*.csv"),
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (bResult)
+	{
+		wxString str = saveFile.GetPath();
+		vtString fname = (const char *) str.mb_str(wxConvUTF8);
+		WriteProfileToCSV(fname);
+	}
+}
+
 void WriteLine(FILE *fp, const char *layer, float x1, float y1, float x2, float y2)
 {
 	fprintf(fp, "  0\nLINE\n");
@@ -1348,6 +1385,26 @@ void ProfileDlg::WriteTraceToDXF(const char *filename)
 	fprintf(fp, "  0\nENDSEC\n");
 
 	fprintf(fp, "  0\nEOF\n");
+	fclose(fp);
+}
+
+void ProfileDlg::WriteProfileToCSV(const char *filename)
+{
+	FILE *fp = fopen(filename, "wb");
+	if (!fp)
+		return;
+
+	fprintf(fp, "Index, Elevation\n");
+
+	// one datapoint at a time
+	for (int i = 0; i < m_xrange; i++)
+	{
+		float v1 = m_values[i];
+		if (v1 == INVALID_ELEVATION)
+			continue;
+
+		fprintf(fp, "%d, %.2f\n", i+1, v1);
+	}
 	fclose(fp);
 }
 
