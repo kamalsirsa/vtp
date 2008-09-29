@@ -394,10 +394,11 @@ int inquiry_callback(int col, int row, const unsigned char *mapfile, int hlod,
 	vtTiledGeom *tg = (vtTiledGeom*) data;
 	*minvalue = tg->m_elev_info.minheight;
 	*maxvalue = tg->m_elev_info.maxheight;
-	return 1;
+
+	return tg->CheckMapFile((char *)mapfile, false);
 }
 
-void query_callback(int col, int row, const unsigned char *texfile, int tlod,
+int query_callback(int col, int row, const unsigned char *texfile, int tlod,
 					void *data, int *tsizex, int *tsizey)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
@@ -419,6 +420,8 @@ void query_callback(int col, int row, const unsigned char *texfile, int tlod,
 			tbasesize/=2;
 		*tsizex = *tsizey = tbasesize;
 	}
+
+	return tg->CheckMapFile((char *)texfile, true);
 }
 
 ///////////////////////////////////////////////////////////////////////
