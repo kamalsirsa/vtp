@@ -313,9 +313,8 @@ public:
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
 	vtProjection &GetProjection() { return m_proj; }
 	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, bool bTrue, int iCultureFlags) const;
-#if OLD_OSG_SHADOWS
 	int GetShadowTextureUnit();
-#endif
+
 
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
@@ -488,9 +487,7 @@ protected:
 	ColorMap		*m_pTextureColors;
 	bool			m_bTextureInitialized;
 	vtTextureUnitManager m_TextureUnits;
-#if OLD_OSG_SHADOWS
 	int				m_iShadowTextureUnit;
-#endif
 
 	FSphere			m_bound_sphere;	// bounding sphere of terrain
 									// (without surrounding ocean)

@@ -298,10 +298,9 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	m_pOsgSceneView->setFrameStamp(frameStamp.get());
 #endif
 
-	// We use bits 1 and 2 of the node mask as shadow flags.  The rest of
-	//  the bits are used to control visibility (cull) of a node.  So, the
-	//  cull node mask does not contain bits 1 and 2.
-    m_pOsgSceneView->setCullMask(0xfffffffc);
+	// We currently use only the least significant two bits of the node mask.
+	// Set the cull traversal mask so that other bits are ignored
+	m_pOsgSceneView->setCullMask(0x3);
 
 #if USE_OSG_UPDATE
 	m_pOsgSceneView->update();

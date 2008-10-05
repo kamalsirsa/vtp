@@ -39,6 +39,8 @@ const int CastsShadowTraversalMask = 0x2;
 
 vtNode::vtNode()
 {
+	m_bCastShadow = true; // osg nodes default to all mask bits set
+						  // so set this true to match
 }
 
 /**
@@ -96,11 +98,41 @@ void vtNode::SetOsgNode(osg::Node *n)
  */
 void vtNode::SetEnabled(bool bOn)
 {
+	// OSG controls traversal of the scene node tree using
+	// a traversal mask which the node visitor applies to the inappropriately named
+	// NodeMask of a node. NodeFlagBits would probably be a more descriptive name.
+	// The traversal mask is applied using a bitwise and (& operator) and a none zero result will
+	// cause the node to be traversed. A zero result will cause the node and all its children
+	// to be skipped. The important consequence of this is that all the unmasked bits need to be unset
+	// for the node to "disabled" or skipped. This means that when we disable a node and subsequently
+	// enable it we need to have the correct information to set any bits that we set to zero back
+	// to one. i.e. we have to have sufficent state elsewhere in the node to do this.
+	//
+	// We use the least significant two bits of the node mask to
+	// control both the node enabled state and the shadow rendering.
+	// At the moment all the nodes in our tree receive shadows so we dont have
+	// to separately store the "receive shadows" bit, we just unconditionally turn it on
+	// when we enable the node. Not all nodes cast shadows so we have to store the required state
+	// of that bit elsewhere in the node so that we can set it to the correct state when we enable the node.
+	// If we ever decide to have some nodes not receiving shadows (and the osg shadowers implement this)
+	// we will need to store the state of the "receive shadows" bit as well. We will also have to use another
+	// bit in the NodeMask(NodeFlagBits!) to cover the case for enabled nodes that neither cast nor receive shadows.
+	// I will leave you to work out why we do not need to store the state of this bit :-)
+	//
+	// For the time being valid values for the bottom bits are
+	// 0x0 Node is disabled
+	// 0x1 Node is enabled and will receive shadows
+	// 0x3 Node is enabled and will cast and receive shadows
 	osg::Node::NodeMask nm = m_pNode->getNodeMask();
 	if (bOn)
-		m_pNode->setNodeMask(nm | 0xfffffffc);
+	{
+		if (m_bCastShadow)
+			m_pNode->setNodeMask(nm | 3);
+		else
+			m_pNode->setNodeMask(nm & ~3 | 1);
+	}
 	else
-		m_pNode->setNodeMask(nm & ~0xfffffffc);
+		m_pNode->setNodeMask(nm & ~3);
 }
 
 /**
@@ -109,7 +141,7 @@ void vtNode::SetEnabled(bool bOn)
 bool vtNode::GetEnabled() const
 {
 	int mask = m_pNode->getNodeMask();
-	return ((mask&0x80000000) != 0);
+	return ((mask&0x3) != 0);
 }
 
 void vtNode::SetName2(const char *name)
@@ -957,19 +989,15 @@ bool vtNode::MultiTextureIsEnabled(vtMultiTexture *mt)
 
 void vtNode::SetCastShadow(bool b)
 {
-	unsigned int m = m_pNode->getNodeMask();
-	if (b)
-		m_pNode->setNodeMask(m | CastsShadowTraversalMask);
-	else
-		m_pNode->setNodeMask(m & ~CastsShadowTraversalMask);
+	m_bCastShadow = b;
+	if (GetEnabled())
+		SetEnabled(true);
 }
 
 bool vtNode::GetCastShadow()
 {
-	unsigned int m = m_pNode->getNodeMask();
-	return ((m & CastsShadowTraversalMask) != 0);
+	return m_bCastShadow;
 }
-
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -1447,8 +1475,21 @@ void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, enum Fog
 // vtFog
 //
 
-vtShadow::vtShadow() : vtGroup(true)
+vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowTextureUnit), vtGroup(true)
+
 {
+	std::string MyFragmentShaderSource(
+		"uniform sampler2D osgShadow_baseTexture; \n"
+		"uniform sampler2DShadow osgShadow_shadowTexture; \n"
+		"uniform vec2 osgShadow_ambientBias; \n"
+		"\n"
+		"void main(void) \n"
+		"{ \n"
+		"    vec4 color = gl_Color * texture2D( osgShadow_baseTexture, gl_TexCoord[0].xy ); \n"
+		"    gl_FragColor = color * (osgShadow_ambientBias.x + shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[XXXX] ) * osgShadow_ambientBias.y); \n"
+		"}\n");
+
+
 	m_pShadowedScene = new osgShadow::ShadowedScene;
 
 	m_pShadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
@@ -1460,6 +1501,14 @@ vtShadow::vtShadow() : vtGroup(true)
 	m_pShadowedScene->setShadowTechnique(pShadowMap.get());
 	int mapres = 1024;
 	pShadowMap->setTextureSize(osg::Vec2s(mapres,mapres));
+	std::string::size_type Offset = MyFragmentShaderSource.find("XXXX");
+	MyFragmentShaderSource.erase(Offset, 4);
+	char TempBuff[5];
+	_itoa(m_ShadowTextureUnit, TempBuff, 10);
+	MyFragmentShaderSource.insert(Offset, TempBuff);
+	pShadowMap->addShader(new osg::Shader(osg::Shader::FRAGMENT, MyFragmentShaderSource));
+	pShadowMap->setTextureUnit(m_ShadowTextureUnit);
+	//pShadowMap->init(); // Need to call this if the OSG update visitor not being used or ShadowMap::setDebugHUD is not called
 #else
 	// ShadowTexture does not seem to behave properly; some or all nodes
 	//  in the shadowed graph are not rendered at all!
@@ -1472,7 +1521,7 @@ vtShadow::vtShadow() : vtGroup(true)
 
 vtNode *vtShadow::Clone(bool bDeep)
 {
-	vtShadow *newshadow = new vtShadow;
+	vtShadow *newshadow = new vtShadow(m_ShadowTextureUnit);
 	newshadow->CloneFrom(this, bDeep);
 	return newshadow;
 }
@@ -1514,6 +1563,18 @@ float vtShadow::GetDarkness()
 	return 0.5f;
 }
 
+
+void vtShadow::SetDebugHUD(vtGroup *pGroup)
+{
+	osgShadow::ShadowMap *pShadowMap = dynamic_cast<osgShadow::ShadowMap *>(m_pShadowedScene->getShadowTechnique());
+
+	if (pShadowMap)
+	{
+		osg::ref_ptr<osg::Camera> pCamera = pShadowMap->makeDebugHUD();
+		pCamera->setName("Shadow DEBUG HUD camera");
+		pGroup->GetOsgGroup()->addChild(pCamera.get());
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////
 // vtLight

@@ -49,10 +49,7 @@ vtTerrain::vtTerrain()
 	m_pTerrMats = NULL;
 	m_bBothSides = false;
 	m_bTextureInitialized = false;
-#if OLD_OSG_SHADOWS
 	m_iShadowTextureUnit = -1;
-#endif
-
 	m_pFog = NULL;
 	m_pShadow = NULL;
 	m_bFog = false;
@@ -1990,10 +1987,13 @@ void vtTerrain::SetShadows(bool shadows)
 	{
 		if (!m_pShadow)
 		{
-			m_pShadow = new vtShadow;
+			m_pShadow = new vtShadow(GetShadowTextureUnit());
 			m_pShadow->SetName2("Shadow Group");
 		}
 		ConnectFogShadow(false, true);
+#if defined (VTDEBUG) && defined (VTDEBUGSHADOWS)
+		m_pShadow->SetDebugHUD(m_pContainerGroup);
+#endif
 	}
 	else
 		ConnectFogShadow(m_bFog, false);
@@ -2820,14 +2820,12 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
 	return false;
 }
 
-#if OLD_OSG_SHADOWS
 int vtTerrain::GetShadowTextureUnit()
 {
 	if (m_iShadowTextureUnit == -1)
 		m_iShadowTextureUnit = m_TextureUnits.ReserveTextureUnit();
 	return m_iShadowTextureUnit;
 }
-#endif
 
 /*
  * Creates an array of materials for the dynamic LOD terrain geometry.

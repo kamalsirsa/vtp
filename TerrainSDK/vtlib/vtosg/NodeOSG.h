@@ -120,6 +120,7 @@ public:
 
 protected:
 	osg::ref_ptr<osg::Node> m_pNode;
+	bool m_bCastShadow;
 
 	// Constructor is protected because vtNode is an abstract base class,
 	//  not to be instantiated directly.
@@ -303,7 +304,8 @@ protected:
 class vtShadow : public vtGroup
 {
 public:
-	vtShadow();
+	vtShadow(const int ShadowTextureUnit);
+
 	virtual vtNode *Clone(bool bDeep = false);
 	void CloneFrom(vtShadow *xform, bool bDeep);
 	void Release();
@@ -311,12 +313,15 @@ public:
 	void SetDarkness(float bias);
 	float GetDarkness();
 
+	void SetDebugHUD(vtGroup *pGroup);
+
 protected:
 	osgShadow::ShadowedScene *m_pShadowedScene;
 
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
 	virtual ~vtShadow() {}
+	const int m_ShadowTextureUnit;
 };
 
 /**
