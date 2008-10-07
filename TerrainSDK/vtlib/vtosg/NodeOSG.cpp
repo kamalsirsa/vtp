@@ -1568,12 +1568,14 @@ void vtShadow::SetDebugHUD(vtGroup *pGroup)
 {
 	osgShadow::ShadowMap *pShadowMap = dynamic_cast<osgShadow::ShadowMap *>(m_pShadowedScene->getShadowTechnique());
 
+#if (OSG_MAJOR_VERSION==2 && OSG_MINOR_VERSION>=6) || OSG_MAJOR_VERSION>3
 	if (pShadowMap)
 	{
 		osg::ref_ptr<osg::Camera> pCamera = pShadowMap->makeDebugHUD();
 		pCamera->setName("Shadow DEBUG HUD camera");
 		pGroup->GetOsgGroup()->addChild(pCamera.get());
 	}
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////
