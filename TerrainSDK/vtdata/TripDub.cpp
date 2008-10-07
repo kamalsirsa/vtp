@@ -11,7 +11,7 @@
 #include "config_vtdata.h"
 
 // The dependency on LibCURL is optional.  If not desired, skip this file.
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 
 #include "TripDub.h"
 #include "vtdata/vtLog.h"
@@ -200,4 +200,4 @@ void ReqContext::InitializeLibrary()
 	}
 }
 
-#endif	// SUPPORT_HTTP
+#endif	// SUPPORT_CURL

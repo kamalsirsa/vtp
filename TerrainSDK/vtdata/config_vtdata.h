@@ -8,14 +8,23 @@
 #ifndef CONFIG_VTDATA_H
 #define CONFIG_VTDATA_H
 
-// Use the QuikGrid library, which adds support for operations such as
-// generating contour lines.
+// Use the bzip2 library, which adds support for reading from .bz2 files
 //
-// The QuikGrid library is LGPL and available from:
-//		http://www.perspectiveedge.com/
+// The library is free (BSD-style license) and available from:
+// http://www.bzip.org/
 //
-#ifndef SUPPORT_QUIKGRID
-#define SUPPORT_QUIKGRID	1
+#ifndef SUPPORT_BZIP2
+#define SUPPORT_BZIP2	1
+#endif
+
+// Use the Curl library, which adds cross-platform support for HTTP
+// operations such as reading from WFS (Web Feature Servers).
+//
+// The Curl library is available from:
+//		http://curl.haxx.se/libcurl/
+//
+#ifndef SUPPORT_CURL
+#define SUPPORT_CURL	1
 #endif
 
 // Use the NetCDF library, which adds support for the "CDF" file format,
@@ -28,23 +37,23 @@
 #define SUPPORT_NETCDF	1
 #endif
 
-// Use the Curl library, which adds cross-platform support for HTTP
-// operations such as reading from WFS (Web Feature Servers).
+// Use the QuikGrid library, which adds support for operations such as
+// generating contour lines.
 //
-// The Curl library is available from:
-//		http://curl.haxx.se/libcurl/
+// The QuikGrid library is LGPL and available from:
+//		http://www.perspectiveedge.com/
 //
-#ifndef SUPPORT_HTTP
-#define SUPPORT_HTTP	1
+#ifndef SUPPORT_QUIKGRID
+#define SUPPORT_QUIKGRID	1
 #endif
 
-// Use the bzip2 library, which adds support for reading from .bz2 files
+// Use the 'squish' texture compression library,
 //
-// The library is free (BSD-style license) and available from:
-// http://www.bzip.org/
+// The library is free (MIT license) and available from:
+// http://sjbrown.co.uk/?code=squish
 //
-#ifndef SUPPORT_BZIP2
-#define SUPPORT_BZIP2	1
+#ifndef SUPPORT_SQUISH
+#define SUPPORT_SQUISH	1
 #endif
 
 // Set to 1 if your C++ compiler supports wide strings (std::wstring)
@@ -55,15 +64,6 @@
 //
 #ifndef SUPPORT_WSTRING
 #define SUPPORT_WSTRING	1
-#endif
-
-// Use the 'squish' texture compression library,
-//
-// The library is free (MIT license) and available from:
-// http://sjbrown.co.uk/?code=squish
-//
-#ifndef SUPPORT_SQUISH
-#define SUPPORT_SQUISH	1
 #endif
 
 #endif // CONFIG_VTDATA_H

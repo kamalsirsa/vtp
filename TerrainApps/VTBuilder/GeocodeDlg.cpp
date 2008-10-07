@@ -42,7 +42,7 @@ GeocodeDlg::GeocodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_FILE_GNS, &m_strGNS);
 
 	// If no web, then no Geocode.us
-	GetCheckUse1()->Enable(SUPPORT_HTTP);
+	GetCheckUse1()->Enable(SUPPORT_CURL);
 }
 
 // WDR: handler implementations for GeocodeDlg

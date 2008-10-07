@@ -575,11 +575,11 @@ void MainFrame::CreateMenus()
 		_("Generate Vegetation File (*.vf) containing plant distribution."));
 	areaMenu->Append(ID_AREA_VEG_DENSITY, _("Compute Vegetation Density"),
 		_("Compute and display the density of each species of vegetation in the given area."));
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 	areaMenu->Append(ID_AREA_REQUEST_WFS, _("Request Layer from WFS"));
 	areaMenu->Append(ID_AREA_REQUEST_WMS, _("Request Image from WMS"));
 	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _("Request Image from Terraserver"));
-#endif // SUPPORT_HTTP
+#endif // SUPPORT_CURL
 	areaMenu->AppendSeparator();
 	areaMenu->Append(ID_AREA_EXPORT_ELEV_SPARSE, _("Optimized Resample Elevation to Tileset"),
 		_("Sample all elevation data within the Area Tool efficiently to produce an elevation tileset."));
@@ -2227,7 +2227,7 @@ void MainFrame::OnAreaMatch(wxCommandEvent &event)
 
 void MainFrame::OnAreaRequestWFS(wxCommandEvent& event)
 {
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 	bool success;
 
 	wxTextEntryDialog dlg(this, _T("WFS Server address"),
@@ -2275,7 +2275,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		m_wms_servers.push_back(s);
 	}
 
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 	// Ask the user for what server and layer they want
 	if (!m_pMapServerDlg)
 		m_pMapServerDlg = new MapServerDlg(this, -1, _T("WMS Request"));
@@ -2364,7 +2364,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 
 void MainFrame::OnUpdateAreaRequestWMS(wxUpdateUIEvent& event)
 {
-	event.Enable(!m_area.IsEmpty() && SUPPORT_HTTP);
+	event.Enable(!m_area.IsEmpty() && SUPPORT_CURL);
 }
 
 void MainFrame::OnAreaRequestTServe(wxCommandEvent& event)

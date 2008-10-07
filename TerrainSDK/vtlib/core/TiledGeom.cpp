@@ -355,7 +355,7 @@ void request_callback_async(const unsigned char *mapfile, databuf *map,
 							int istexture, int background, void *data)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 	if (tg->m_strBaseURL != "")
 	{
 		vtBytes data;

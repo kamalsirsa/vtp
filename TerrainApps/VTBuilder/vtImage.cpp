@@ -1465,7 +1465,7 @@ bool vtImage::CreateOverviews()
 }
 
 
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 #include "vtdata/TripDub.h"
 
 /*
@@ -1622,7 +1622,7 @@ bool vtImage::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 											   int iMetersPerPixel, int iUTMZone,
 											   const char *filename)
 {
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 
 	// The cache directory needs to exist; test if it's already there.
 	const char *testname = TileDownloadDir "/test.txt";

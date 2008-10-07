@@ -11,7 +11,7 @@
 #include "Features.h"
 
 // The dependency on Libwww is optional.  If not desired, skip this file.
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 
 #include "FilePath.h"
 #include "vtLog.h"
@@ -209,4 +209,4 @@ vtFeatureSet *vtFeatureLoader::ReadFeaturesFromWFS(const char *szServerURL, cons
 {
 	return NULL;
 }
-#endif	// SUPPORT_HTTP
+#endif	// SUPPORT_CURL

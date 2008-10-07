@@ -13,7 +13,7 @@
 #endif
 
 #include "MapServerDlg.h"
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 #include "vtdata/WFSClient.h"
 #endif
 #include "vtui/Helper.h"	// for progress dialog
@@ -141,7 +141,7 @@ void MapServerDlg::OnRadio( wxCommandEvent &event )
 
 void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 {
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 	OpenProgressDialog(_("Querying server..."), false, this);
 
 	wxString val = GetBaseUrl()->GetValue();
@@ -163,7 +163,7 @@ void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 		wxString str(msg, wxConvUTF8);
 		wxMessageBox(str);
 	}
-#endif // SUPPORT_HTTP
+#endif // SUPPORT_CURL
 }
 
 void MapServerDlg::OnServer( wxCommandEvent &event )

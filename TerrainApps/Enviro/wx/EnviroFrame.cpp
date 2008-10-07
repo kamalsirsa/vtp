@@ -570,7 +570,7 @@ void EnviroFrame::CreateMenus()
 		m_pEarthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _("&Flatten\tCtrl+E"));
 		m_pEarthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _("&Unfold\tCtrl+U"));
 		m_pEarthMenu->Append(ID_EARTH_CLOUDS, _T("Load Clouds..."));
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 		m_pEarthMenu->Append(ID_EARTH_CLOUDS2, _T("Load Clouds from URL..."));
 #endif
 		m_pMenuBar->Append(m_pEarthMenu, _("&Earth"));
@@ -2560,7 +2560,7 @@ vtString GetTempFolderName()
 
 void EnviroFrame::OnEarthClouds2(wxCommandEvent& event)
 {
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 	wxString defval = _T("http://xplanet.explore-the-world.net/clouds_2048.jpg");
 	wxString str = wxGetTextFromUser(_T("Enter URL of overlay image"),
 		_T("URL"), defval, this);

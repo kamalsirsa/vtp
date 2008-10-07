@@ -17,7 +17,7 @@
 #endif
 
 // The dependency on LibCURL is optional.  If not desired, skip this file.
-#if SUPPORT_HTTP
+#if SUPPORT_CURL
 
 class vtBytes
 {
@@ -91,7 +91,7 @@ public:
 	bool GetURL(const char *url, vtString &str) { return false; }
 };
 
-#endif // SUPPORT_HTTP
+#endif // SUPPORT_CURL
 
 #endif // VTDATA_TRIPDUB_H
 
