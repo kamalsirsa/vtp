@@ -1205,7 +1205,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 				vtImage Target(image_area, tilesize, tilesize, m_proj);
 
 				// Get ready to multisample
-				DPoint2 step = tile_dim / (tilesize-1);
+				DPoint2 step = tile_dim / tilesize;
 				DLine2 offsets;
 				int iNSampling = g_Options.GetValueInt(TAG_SAMPLING_N);
 				MakeSampleOffsets(step, iNSampling, offsets);
@@ -1215,10 +1215,10 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 				RGBi pixel, rgb;
 				for (int y = tilesize-1; y >= 0; y--)
 				{
-					p.y = tile_area.bottom + (y * step.y);
+					p.y = tile_area.bottom + ((y + 0.5) * step.y);
 					for (int x = 0; x < tilesize; x++)
 					{
-						p.x = tile_area.left + (x * step.x);
+						p.x = tile_area.left + ((x + 0.5) * step.x);
 
 						// find some data for this point
 						rgb.Set(0,0,0);
