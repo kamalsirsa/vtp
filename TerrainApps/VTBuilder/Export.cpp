@@ -1205,25 +1205,25 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 				vtImage Target(image_area, tilesize, tilesize, m_proj);
 
 				// Get ready to multisample
-				DPoint2 step = tile_dim / tilesize;
+				DPoint2 step = tile_dim / (tilesize-1);
 				DLine2 offsets;
 				int iNSampling = g_Options.GetValueInt(TAG_SAMPLING_N);
 				MakeSampleOffsets(step, iNSampling, offsets);
-				double dRes = step.x;
+				double dRes = (step.x<step.y)?step.x:step.y;
 
 				DPoint2 p;
 				RGBi pixel, rgb;
 				for (int y = tilesize-1; y >= 0; y--)
 				{
-					p.y = tile_area.bottom + ((y + 0.5) * step.y);
+					p.y = tile_area.bottom + (y * step.y);
 					for (int x = 0; x < tilesize; x++)
 					{
-						p.x = tile_area.left + ((x + 0.5) * step.x);
+						p.x = tile_area.left + (x * step.x);
 
 						// find some data for this point
 						rgb.Set(0,0,0);
 						for (unsigned int im = 0; im < overlapping_images.size(); im++)
-#ifdef VTP_GETCOLORSOLID
+#ifdef VTBUILDER_GETCOLORSOLID
 							if (overlapping_images[im]->GetColorSolid(p, pixel)) rgb = pixel;
 #else
 							if (overlapping_images[im]->GetMultiSample(p, offsets, pixel, dRes)) rgb = pixel;
