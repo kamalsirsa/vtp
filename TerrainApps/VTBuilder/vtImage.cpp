@@ -729,18 +729,16 @@ bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb, double dRes)
 	const IPoint2 &size = m_Bitmaps[0].m_Size;
 
 	double u = (p.x - m_Extents.left) / spacing.x;
-	int ix = (int) u;				// round to closest pixel
-	if (u == (double) size.x)		// check for exact far edge
-		ix = size.x-1;
-	if (ix < 0 || ix >= size.x)
-		return false;
+	if (u < -0.5 || u > size.x+0.5) return false; // check extents
+        if (u < 0.0) u = 0.0; // adjust left edge
+        if (u >= size.x) u = size.x-1; // adjust right edge
+	int ix = (int) u; // round to closest pixel
 
 	double v = (m_Extents.top - p.y) / spacing.y;
-	int iy = (int) v;				// round to closest pixel
-	if (v == (double) size.y)		// check for exact far edge
-		iy = size.y-1;
-	if (iy < 0 || iy >= size.y)
-		return false;
+	if (v < -0.5 || v > size.y+0.5) return false; // check extents
+        if (v < 0.0) v = 0.0; // adjust top edge
+        if (v >= size.y) v = size.y-1; // adjust bottom edge
+	int iy = (int) v; // round to closest pixel
 
 	GetRGB(ix, iy, rgb, dRes);
 	if (bTreatBlackAsTransparent && rgb == RGBi(0,0,0))
@@ -761,7 +759,7 @@ void MakeSampleOffsets(const DPoint2 cellsize, unsigned int N, DLine2 &offsets)
 /**
  * Get image color by sampling several points and averaging them.
  * The area to test is given by center and offsets, use MakeSampleOffsets()
- * to make a set if N x N offsets.
+ * to make a set of N x N offsets.
  */
 bool vtImage::GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb, double dRes)
 {

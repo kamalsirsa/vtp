@@ -1209,7 +1209,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 				DLine2 offsets;
 				int iNSampling = g_Options.GetValueInt(TAG_SAMPLING_N);
 				MakeSampleOffsets(step, iNSampling, offsets);
-				double dRes = (step.x<step.y)?step.x:step.y;
+				double dRes = (step.x+step.y)/2;
 
 				DPoint2 p;
 				RGBi pixel, rgb;
@@ -1266,7 +1266,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 
 				output_buf.zsize = 1;
 				output_buf.tsteps = 1;
-				output_buf.SetBounds(m_proj, tile_area);
+				output_buf.SetBounds(m_proj, image_area);
 
 				// Write and optionally compress the image
 				WriteMiniImage(fname, opts, rgb_bytes, output_buf,
