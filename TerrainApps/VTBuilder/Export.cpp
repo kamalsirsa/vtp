@@ -1223,9 +1223,11 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 						// find some data for this point
 						rgb.Set(0,0,0);
 						for (unsigned int im = 0; im < overlapping_images.size(); im++)
-//							if (overlapping_images[im]->GetColorSolid(p, pixel))
-							if (overlapping_images[im]->GetMultiSample(p, offsets, pixel, dRes))
-								rgb = pixel;
+#ifdef VTP_GETCOLORSOLID
+							if (overlapping_images[im]->GetColorSolid(p, pixel)) rgb = pixel;
+#else
+							if (overlapping_images[im]->GetMultiSample(p, offsets, pixel, dRes)) rgb = pixel;
+#endif
 
 						Target.SetRGB(x, y, rgb);
 					}
@@ -1306,4 +1308,3 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 	}
 	return true;
 }
-
