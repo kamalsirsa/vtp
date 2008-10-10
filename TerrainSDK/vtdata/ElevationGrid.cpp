@@ -1252,77 +1252,85 @@ float vtElevationGrid::GetClosestValue(const DPoint2 &p) const
  */
 float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 {
-	// what data point in t is closest to (x,y)?
-	double local_x = (p.x - m_EarthExtents.left) / (m_EarthExtents.Width());
-	double local_y = (p.y - m_EarthExtents.bottom) / (m_EarthExtents.Height());
+  double local_x = (p.x - m_EarthExtents.left) / (m_EarthExtents.Width());
+  double local_y = (p.y - m_EarthExtents.bottom) / (m_EarthExtents.Height());
 
-	int index_x = (int) floor(local_x * (m_iColumns-1));
-	if (index_x < 0 || index_x >= m_iColumns)
-		return INVALID_ELEVATION;
+  double findex_x = local_x * (m_iColumns-1);
+  double findex_y = local_y * (m_iRows-1);
 
-	int index_y = (int) floor(local_y * (m_iRows-1));
-	if (index_y < 0 || index_y >= m_iRows)
-		return INVALID_ELEVATION;
+  if (findex_x < -0.5 || findex_x > m_iColumns - 0.5 ||
+      findex_y < -0.5 || findex_y > m_iRows -0.5)
+    return INVALID_ELEVATION;
 
-	double findex_x = local_x * (m_iColumns-1);
-	double findex_y = local_y * (m_iRows-1);
+  int index_x = (int) floor(findex_x);
+  int index_y = (int) floor(findex_y);
 
-	double fData;
-	float fDataBL, fDataTL, fDataTR, fDataBR;
-	if (index_x == m_iColumns-1)
-	{
-		if (index_y == m_iRows-1)
-		{
-			// far corner, no interpolation
-			fData = GetFValue(index_x, index_y);
-		}
-		else
-		{
-			// right edge - interpolate north-south
-			fDataBL = GetFValue(index_x, index_y);
-			fDataTL = GetFValue(index_x, index_y+1);
-			if (fDataBL == INVALID_ELEVATION || fDataTL == INVALID_ELEVATION)
-				return INVALID_ELEVATION;
-			double diff_y = findex_y - index_y;
-			fData = fDataBL + (fDataTL - fDataBL) * diff_y;
-		}
-	}
-	else if (index_y == m_iRows-1)
-	{
-		// top edge - interpolate east-west
-		fDataBL = GetFValue(index_x, index_y);
-		fDataBR = GetFValue(index_x+1, index_y);
-		if (fDataBL == INVALID_ELEVATION || fDataBR == INVALID_ELEVATION)
-			return INVALID_ELEVATION;
-		double diff_x = findex_x - index_x;
-		fData = fDataBL + (fDataBR - fDataBL) * diff_x;
-	}
-	else // do bilinear filtering
-	{
-		double diff_x = findex_x - index_x;
-		double diff_y = findex_y - index_y;
-		// catch numerical roundoff, diff must be [0..1]
-		if (diff_x < 0)
-			diff_x = 0;
-		if (diff_y < 0)
-			diff_y = 0;
-		fDataBL = GetFValue(index_x, index_y);
-		fDataBR = GetFValue(index_x+1, index_y);
-		fDataTL = GetFValue(index_x, index_y+1);
-		fDataTR = GetFValue(index_x+1, index_y+1);
-		if ((fDataBL != INVALID_ELEVATION) &&
-				(fDataBR != INVALID_ELEVATION) &&
-				(fDataTL != INVALID_ELEVATION) &&
-				(fDataTR != INVALID_ELEVATION))
-		{
-			fData = fDataBL + (fDataBR-fDataBL)*diff_x +
-				(fDataTL-fDataBL)*diff_y +
-				(fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y;
-		}
-		else
-			fData = INVALID_ELEVATION;
-	}
-	return (float) fData;
+  float diff_x = (float) (findex_x - index_x);
+  float diff_y = (float) (findex_y - index_y);
+
+  // clamp the near edges
+
+  if (findex_x < 0.0)
+  {
+    index_x = 0;
+    diff_x = 0.0f;
+  }
+
+  if (findex_x > m_iColumns-1)
+  {
+    index_x = m_iColumns-1;
+    diff_x = 0.0f;
+  }
+
+  if (findex_y < 0.0)
+  {
+    index_y = 0;
+    diff_y = 0.0f;
+  }
+
+  if (findex_y > m_iRows-1)
+  {
+    index_y = m_iRows-1;
+    diff_y = 0.0f;
+  }
+
+  // shift back the left/top edges
+  
+  if (index_x == m_iColumns-1)
+  {
+    index_x = m_iColumns-2;
+    diff_x = 1.0f;
+  }
+
+  if (index_y == m_iRows-1)
+  {
+    index_y = m_iRows-2;
+    diff_y = 1.0f;
+  }
+
+  float fData;
+  float fDataBL, fDataTL, fDataTR, fDataBR;
+
+  fDataBL = GetFValue(index_x, index_y);
+  fDataBR = GetFValue(index_x+1, index_y);
+  fDataTL = GetFValue(index_x, index_y+1);
+  fDataTR = GetFValue(index_x+1, index_y+1);
+
+  if ((fDataBL != INVALID_ELEVATION) &&
+      (fDataBR != INVALID_ELEVATION) &&
+      (fDataTL != INVALID_ELEVATION) &&
+      (fDataTR != INVALID_ELEVATION))
+  {
+    fData = 
+         fDataBL +
+        (fDataBR-fDataBL)*diff_x +
+        (fDataTL-fDataBL)*diff_y +
+        (fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y;
+  }
+  else
+    fData = INVALID_ELEVATION;
+
+  return fData;
 }
 #endif
 
@@ -1339,7 +1347,6 @@ float vtElevationGrid::GetFValueSafe(int i, int j) const
  */
 float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 {
-	// what data point in t is closest to (x,y)?
 	double local_x = (p.x - m_EarthExtents.left) / (m_EarthExtents.Width());
 	double local_y = (p.y - m_EarthExtents.bottom) / (m_EarthExtents.Height());
 
