@@ -1252,29 +1252,29 @@ float vtElevationGrid::GetClosestValue(const DPoint2 &p) const
  */
 float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 {
-  double local_x = (p.x - m_EarthExtents.left) / m_EarthExtents.Width();
-  double local_y = (p.y - m_EarthExtents.bottom) / m_EarthExtents.Height();
+	double local_x = (p.x - m_EarthExtents.left) / m_EarthExtents.Width();
+	double local_y = (p.y - m_EarthExtents.bottom) / m_EarthExtents.Height();
 
-  double findex_x = local_x * (m_iColumns-1);
-  double findex_y = local_y * (m_iRows-1);
+	double findex_x = local_x * (m_iColumns-1);
+	double findex_y = local_y * (m_iRows-1);
 
 #ifndef VTDATA_GETFILTEREDVALUE_WO_SAFETY_BOUNDARY
 
-  if (findex_x < -0.5 || findex_x > m_iColumns - 0.5 ||
-      findex_y < -0.5 || findex_y > m_iRows -0.5)
+	if (findex_x < -0.5 || findex_x > m_iColumns - 0.5 ||
+		findex_y < -0.5 || findex_y > m_iRows -0.5)
     return INVALID_ELEVATION;
 
-  // clamp the near edges
-  if (findex_x < 0.0) findex_x = 0.0;
-  if (findex_x > m_iColumns-1) findex_x = m_iColumns-1;
+	// clamp the near edges
+	if (findex_x < 0.0) findex_x = 0.0;
+	if (findex_x > m_iColumns-1) findex_x = m_iColumns-1;
 
-  // clamp the far edges
-  if (findex_y < 0.0) findex_y = 0.0;
-  if (findex_y > m_iRows-1) findex_y = m_iRows-1;
+	// clamp the far edges
+	if (findex_y < 0.0) findex_y = 0.0;
+	if (findex_y > m_iRows-1) findex_y = m_iRows-1;
 
 #endif
 
-  return GetInterpolatedElevation(findex_x, findex_y);
+	return GetInterpolatedElevation(findex_x, findex_y);
 }
 
 /**
@@ -1568,4 +1568,3 @@ bool vtElevationGrid::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 
 	return true;
 }
-
