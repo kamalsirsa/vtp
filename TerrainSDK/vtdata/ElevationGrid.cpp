@@ -1242,167 +1242,40 @@ float vtElevationGrid::GetClosestValue(const DPoint2 &p) const
 		return INVALID_ELEVATION;
 }
 
-#ifndef VTDATA_GETFILTEREDVALUE_UNSAFE
-
 /**
  * Get the interpolated height of the grid at a specific world coordinate.
  *
  * The value is linearly interpolated between the surrounding gridpoints.
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
- * The height field has a 0.5 pixel safety zone to catch all samples on the boundary.
+ * The height field has a 0.5 pixel safety boundary to catch all samples on the edges.
  * \param p	The point to query.
  */
 float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 {
-  double local_x = (p.x - m_EarthExtents.left) / (m_EarthExtents.Width());
-  double local_y = (p.y - m_EarthExtents.bottom) / (m_EarthExtents.Height());
+  double local_x = (p.x - m_EarthExtents.left) / m_EarthExtents.Width();
+  double local_y = (p.y - m_EarthExtents.bottom) / m_EarthExtents.Height();
 
   double findex_x = local_x * (m_iColumns-1);
   double findex_y = local_y * (m_iRows-1);
+
+#ifndef VTDATA_GETFILTEREDVALUE_WO_SAFETY_BOUNDARY
 
   if (findex_x < -0.5 || findex_x > m_iColumns - 0.5 ||
       findex_y < -0.5 || findex_y > m_iRows -0.5)
     return INVALID_ELEVATION;
 
-  int index_x = (int) floor(findex_x);
-  int index_y = (int) floor(findex_y);
-
-  float diff_x = (float) (findex_x - index_x);
-  float diff_y = (float) (findex_y - index_y);
-
   // clamp the near edges
+  if (findex_x < 0.0) findex_x = 0.0;
+  if (findex_x > m_iColumns-1) findex_x = m_iColumns-1;
 
-  if (findex_x < 0.0)
-  {
-    index_x = 0;
-    diff_x = 0.0f;
-  }
-
-  if (findex_x > m_iColumns-1)
-  {
-    index_x = m_iColumns-1;
-    diff_x = 0.0f;
-  }
-
-  if (findex_y < 0.0)
-  {
-    index_y = 0;
-    diff_y = 0.0f;
-  }
-
-  if (findex_y > m_iRows-1)
-  {
-    index_y = m_iRows-1;
-    diff_y = 0.0f;
-  }
-
-  // shift back the left/top edges
-  
-  if (index_x == m_iColumns-1)
-  {
-    index_x = m_iColumns-2;
-    diff_x = 1.0f;
-  }
-
-  if (index_y == m_iRows-1)
-  {
-    index_y = m_iRows-2;
-    diff_y = 1.0f;
-  }
-
-  float fDataBL, fDataTL, fDataTR, fDataBR;
-
-  fDataBL = GetFValue(index_x, index_y);
-  fDataBR = GetFValue(index_x+1, index_y);
-  fDataTL = GetFValue(index_x, index_y+1);
-  fDataTR = GetFValue(index_x+1, index_y+1);
-
-  int valid = 0;
-  if (fDataBL != INVALID_ELEVATION)
-    valid++;
-  if (fDataBR != INVALID_ELEVATION)
-    valid++;
-  if (fDataTL != INVALID_ELEVATION)
-    valid++;
-  if (fDataTR != INVALID_ELEVATION)
-    valid++;
-
-  float fData;
-  if (valid == 4)	// all valid
-  {
-    // bilinear filtering
-    fData = fDataBL +
-            (fDataBR-fDataBL)*diff_x +
-            (fDataTL-fDataBL)*diff_y +
-            (fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y);
-  }
-  else if (valid > 0)
-  {
-    // look for closest valid nearest neighbor
-    float dist[4];
-    float value[4];
-
-    value[0] = fDataBL;
-    value[1] = fDataBR;
-    value[2] = fDataTL;
-    value[3] = fDataTR;
-
-    if (fDataBL != INVALID_ELEVATION)
-      dist[0] = fabs(diff_x*diff_x) + fabs(diff_y*diff_y);
-    else
-      dist[0] = 3;	// not valid, use a value > 2
-
-    if (fDataBR != INVALID_ELEVATION)
-      dist[1] = fabs((1-diff_x)*(1-diff_x)) + fabs(diff_y*diff_y);
-    else
-      dist[1] = 3;
-
-    if (fDataTL != INVALID_ELEVATION)
-      dist[2] = fabs(diff_x*diff_x) + fabs((1-diff_y)*(1-diff_y));
-    else
-      dist[2] = 3;
-
-    if (fDataTR != INVALID_ELEVATION)
-      dist[3] = fabs((1-diff_x)*(1-diff_x)) + fabs((1-diff_y)*(1-diff_y));
-    else
-      dist[3] = 3;
-
-    float closest = 4;
-    int closest_index;
-    for (int i = 0; i < 4; i++)
-    {
-      if (dist[i] < closest)
-      {
-        closest = dist[i];
-        closest_index = i;
-      }
-    }
-    fData = value[closest_index];
-  }
-  else
-    fData = INVALID_ELEVATION;
-
-  return fData;
-}
-
-#else
-
-/**
- * Get the interpolated height of the grid at a specific world coordinate.
- * This method is _not_ generous in allowing points 1/2 grid cell outside the grid.
- */
-float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
-{
-	double local_x = (p.x - m_EarthExtents.left) / (m_EarthExtents.Width());
-	double local_y = (p.y - m_EarthExtents.bottom) / (m_EarthExtents.Height());
-
-	double findex_x = local_x * (m_iColumns-1);
-	double findex_y = local_y * (m_iRows-1);
-
-	return GetInterpolatedElevation(findex_x, findex_y);
-}
+  // clamp the far edges
+  if (findex_y < 0.0) findex_y = 0.0;
+  if (findex_y > m_iRows-1) findex_y = m_iRows-1;
 
 #endif
+
+  return GetInterpolatedElevation(findex_x, findex_y);
+}
 
 /**
  * The standard extents of an elevation grid are the min and max of its data
