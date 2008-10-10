@@ -1242,12 +1242,14 @@ float vtElevationGrid::GetClosestValue(const DPoint2 &p) const
 		return INVALID_ELEVATION;
 }
 
-#if 0
+#ifndef VTDATA_GETFILTEREDVALUE_UNSAFE
+
 /**
  * Get the interpolated height of the grid at a specific world coordinate.
  *
  * The value is linearly interpolated between the surrounding gridpoints.
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
+ * The height field has a 0.5 pixel safety zone to catch all samples on the boundary.
  * \param p	The point to query.
  */
 float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
@@ -1308,7 +1310,6 @@ float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
     diff_y = 1.0f;
   }
 
-  float fData;
   float fDataBL, fDataTL, fDataTR, fDataBR;
 
   fDataBL = GetFValue(index_x, index_y);
@@ -1316,34 +1317,79 @@ float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
   fDataTL = GetFValue(index_x, index_y+1);
   fDataTR = GetFValue(index_x+1, index_y+1);
 
-  if ((fDataBL != INVALID_ELEVATION) &&
-      (fDataBR != INVALID_ELEVATION) &&
-      (fDataTL != INVALID_ELEVATION) &&
-      (fDataTR != INVALID_ELEVATION))
+  int valid = 0;
+  if (fDataBL != INVALID_ELEVATION)
+    valid++;
+  if (fDataBR != INVALID_ELEVATION)
+    valid++;
+  if (fDataTL != INVALID_ELEVATION)
+    valid++;
+  if (fDataTR != INVALID_ELEVATION)
+    valid++;
+
+  float fData;
+  if (valid == 4)	// all valid
   {
-    fData = 
-         fDataBL +
-        (fDataBR-fDataBL)*diff_x +
-        (fDataTL-fDataBL)*diff_y +
-        (fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y;
+    // bilinear filtering
+    fData = fDataBL +
+            (fDataBR-fDataBL)*diff_x +
+            (fDataTL-fDataBL)*diff_y +
+            (fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y);
+  }
+  else if (valid > 0)
+  {
+    // look for closest valid nearest neighbor
+    float dist[4];
+    float value[4];
+
+    value[0] = fDataBL;
+    value[1] = fDataBR;
+    value[2] = fDataTL;
+    value[3] = fDataTR;
+
+    if (fDataBL != INVALID_ELEVATION)
+      dist[0] = fabs(diff_x*diff_x) + fabs(diff_y*diff_y);
+    else
+      dist[0] = 3;	// not valid, use a value > 2
+
+    if (fDataBR != INVALID_ELEVATION)
+      dist[1] = fabs((1-diff_x)*(1-diff_x)) + fabs(diff_y*diff_y);
+    else
+      dist[1] = 3;
+
+    if (fDataTL != INVALID_ELEVATION)
+      dist[2] = fabs(diff_x*diff_x) + fabs((1-diff_y)*(1-diff_y));
+    else
+      dist[2] = 3;
+
+    if (fDataTR != INVALID_ELEVATION)
+      dist[3] = fabs((1-diff_x)*(1-diff_x)) + fabs((1-diff_y)*(1-diff_y));
+    else
+      dist[3] = 3;
+
+    float closest = 4;
+    int closest_index;
+    for (int i = 0; i < 4; i++)
+    {
+      if (dist[i] < closest)
+      {
+        closest = dist[i];
+        closest_index = i;
+      }
+    }
+    fData = value[closest_index];
   }
   else
     fData = INVALID_ELEVATION;
 
   return fData;
 }
-#endif
 
-float vtElevationGrid::GetFValueSafe(int i, int j) const
-{
-	if (i < 0 || i > m_iColumns-1 || j < 0 || j > m_iRows-1)
-		return INVALID_ELEVATION;
-	return GetFValue(i, j);
-}
+#else
 
 /**
  * Get the interpolated height of the grid at a specific world coordinate.
- * This method is generous in allowing points 1/2 grid cell outside the grid.
+ * This method is _not_ generous in allowing points 1/2 grid cell outside the grid.
  */
 float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 {
@@ -1355,6 +1401,8 @@ float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 
 	return GetInterpolatedElevation(findex_x, findex_y);
 }
+
+#endif
 
 /**
  * The standard extents of an elevation grid are the min and max of its data
@@ -1369,6 +1417,13 @@ DRECT vtElevationGrid::GetAreaExtents() const
 		m_EarthExtents.top + (m_dYStep / 2.0f),
 		m_EarthExtents.right + (m_dXStep / 2.0f),
 		m_EarthExtents.bottom - (m_dYStep / 2.0f));
+}
+
+float vtElevationGrid::GetFValueSafe(int i, int j) const
+{
+	if (i < 0 || i > m_iColumns-1 || j < 0 || j > m_iRows-1)
+		return INVALID_ELEVATION;
+	return GetFValue(i, j);
 }
 
 void vtElevationGrid::SetProjection(const vtProjection &proj)
