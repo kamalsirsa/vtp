@@ -1258,11 +1258,9 @@ float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 	double findex_x = local_x * (m_iColumns-1);
 	double findex_y = local_y * (m_iRows-1);
 
-#ifndef VTDATA_GETFILTEREDVALUE_WO_SAFETY_BOUNDARY
-
 	if (findex_x < -0.5 || findex_x > m_iColumns - 0.5 ||
 		findex_y < -0.5 || findex_y > m_iRows -0.5)
-    return INVALID_ELEVATION;
+		return INVALID_ELEVATION;
 
 	// clamp the near edges
 	if (findex_x < 0.0) findex_x = 0.0;
@@ -1271,8 +1269,6 @@ float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 	// clamp the far edges
 	if (findex_y < 0.0) findex_y = 0.0;
 	if (findex_y > m_iRows-1) findex_y = m_iRows-1;
-
-#endif
 
 	return GetInterpolatedElevation(findex_x, findex_y);
 }
