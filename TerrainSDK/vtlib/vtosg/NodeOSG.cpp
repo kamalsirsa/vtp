@@ -9,6 +9,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
+#include "SimpleInterimShadowTechnique.h"
 
 #include <osg/Polytope>
 #include <osg/Projection>
@@ -777,9 +778,6 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 	// The final resulting node is the container of that operation
 	vtNativeNode *pNode = new vtNativeNode(container_group);
 
-	// All loaded models, by default, do not cast a shadow
-	pNode->SetCastShadow(false);
-
 	// Use the filename as the node's name
 	pNode->SetName2(fname);
 
@@ -1478,43 +1476,14 @@ void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, enum Fog
 vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowTextureUnit), vtGroup(true)
 
 {
-	std::string MyFragmentShaderSource(
-		"uniform sampler2D osgShadow_baseTexture; \n"
-		"uniform sampler2DShadow osgShadow_shadowTexture; \n"
-		"uniform vec2 osgShadow_ambientBias; \n"
-		"\n"
-		"void main(void) \n"
-		"{ \n"
-		"    vec4 color = gl_Color * texture2D( osgShadow_baseTexture, gl_TexCoord[0].xy ); \n"
-		"    gl_FragColor = color * (osgShadow_ambientBias.x + shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[XXXX] ) * osgShadow_ambientBias.y); \n"
-		"}\n");
-
-
 	m_pShadowedScene = new osgShadow::ShadowedScene;
 
 	m_pShadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
 	m_pShadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
 
-#if (OSG_VERSION_MAJOR==2 && OSG_VERSION_MINOR>0) || OSG_VERSION_MAJOR>2
-	// Use ShadowMap
-	osg::ref_ptr<osgShadow::ShadowMap> pShadowMap = new osgShadow::ShadowMap;
-	m_pShadowedScene->setShadowTechnique(pShadowMap.get());
-	int mapres = 1024;
-	pShadowMap->setTextureSize(osg::Vec2s(mapres,mapres));
-	std::string::size_type Offset = MyFragmentShaderSource.find("XXXX");
-	MyFragmentShaderSource.erase(Offset, 4);
-	char TempBuff[5];
-	_itoa(m_ShadowTextureUnit, TempBuff, 10);
-	MyFragmentShaderSource.insert(Offset, TempBuff);
-	pShadowMap->addShader(new osg::Shader(osg::Shader::FRAGMENT, MyFragmentShaderSource));
-	pShadowMap->setTextureUnit(m_ShadowTextureUnit);
-	//pShadowMap->init(); // Need to call this if the OSG update visitor not being used or ShadowMap::setDebugHUD is not called
-#else
-	// ShadowTexture does not seem to behave properly; some or all nodes
-	//  in the shadowed graph are not rendered at all!
-	osg::ref_ptr<osgShadow::ShadowTexture> pShadowTexture = new osgShadow::ShadowTexture;
-	m_pShadowedScene->setShadowTechnique(pShadowTexture.get());
-#endif
+	osg::ref_ptr<CSimpleInterimShadowTechnique> pShadowTechnique = new CSimpleInterimShadowTechnique;
+	pShadowTechnique->SetShadowTextureUnit(m_ShadowTextureUnit);
+	m_pShadowedScene->setShadowTechnique(pShadowTechnique.get());
 
 	SetOsgGroup(m_pShadowedScene);
 }
@@ -1545,33 +1514,28 @@ void vtShadow::Release()
 
 void vtShadow::SetDarkness(float bias)
 {
-	osgShadow::ShadowMap *pShadowMap = dynamic_cast<osgShadow::ShadowMap *>(m_pShadowedScene->getShadowTechnique());
-
-	if (pShadowMap)
-		pShadowMap->setAmbientBias(osg::Vec2(1.0f-bias, bias));
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->SetShadowDarkness(bias);
 }
 
 float vtShadow::GetDarkness()
 {
-	osgShadow::ShadowMap *pShadowMap = dynamic_cast<osgShadow::ShadowMap *>(m_pShadowedScene->getShadowTechnique());
-
-	if (pShadowMap)
-	{
-		osg::Vec2 ab = pShadowMap->getAmbientBias();
-		return ab.y();
-	}
-	return 0.5f;
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		return pTechnique->GetShadowDarkness();
+	else
+		return 1.0f;
 }
 
 
 void vtShadow::SetDebugHUD(vtGroup *pGroup)
 {
-	osgShadow::ShadowMap *pShadowMap = dynamic_cast<osgShadow::ShadowMap *>(m_pShadowedScene->getShadowTechnique());
-
-#if (OSG_MAJOR_VERSION==2 && OSG_MINOR_VERSION>=6) || OSG_MAJOR_VERSION>3
-	if (pShadowMap)
+#if defined (VTDEBUG) && defined (VTDEBUGSHADOWS)
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
 	{
-		osg::ref_ptr<osg::Camera> pCamera = pShadowMap->makeDebugHUD();
+		osg::ref_ptr<osg::Camera> pCamera = pTechnique->makeDebugHUD();
 		pCamera->setName("Shadow DEBUG HUD camera");
 		pGroup->GetOsgGroup()->addChild(pCamera.get());
 	}
@@ -1816,9 +1780,6 @@ vtGeom::vtGeom() : vtNode()
 {
 	m_pGeode = new Geode;
 	SetOsgNode(m_pGeode);
-
-	// All geometry, by default, does not cast a shadow
-	SetCastShadow(false);
 }
 
 vtNode *vtGeom::Clone(bool bDeep)

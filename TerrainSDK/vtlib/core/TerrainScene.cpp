@@ -375,9 +375,10 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 		m_pTimeEngine->SetSpeed(0.0f);
 	m_pTimeEngine->SetEnabled(true);
 
-#if VTLIB_OSG && OLD_OSG_SHADOWS
+#ifdef VTLIB_OSG
 	if (param.GetValueBool(STR_STRUCT_SHADOWS))
 	{
+#ifdef OLD_OSG_SHADOWS
 		int iRez = param.GetValueInt(STR_SHADOW_REZ);
 		// Experimental OSG-specific code!
 		// Set up cull callback on the dynamic geometry transform node
@@ -406,6 +407,16 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 			//  to set the correct sunlight direction
 			m_pTimeEngine->SetTime(localtime);
 		}
+#else
+		m_pCurrentTerrain->SetShadows(true);
+		{
+			LocaleWrap normal_numbers(LC_NUMERIC, "C");
+			float fDarkness;
+			if (!param.GetValueFloat(STR_SHADOW_DARKNESS, fDarkness))
+				fDarkness = 0.8f;
+			m_pCurrentTerrain->SetShadowDarkness(fDarkness);
+		}
+#endif
 	}
 #endif
 }

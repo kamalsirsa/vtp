@@ -2926,9 +2926,9 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 			if (type == ST_INSTANCE)
 			{
 				popmenu->Append(ID_POPUP_RELOAD, _("Reload from Disk"));
-				popmenu->Append(ID_POPUP_SHADOW, _("Toggle Shadow"));
 				popmenu->Append(ID_POPUP_ADJUST, _("Adjust Terrain Surface to Fit"));
 			}
+			popmenu->Append(ID_POPUP_SHADOW, _("Toggle Shadow"));
 
 			// It might have a URL, also
 			vtTag *tag = struc->FindTag("url");
@@ -3078,17 +3078,12 @@ void EnviroFrame::OnPopupShadow(wxCommandEvent& event)
 
 	int count = structures->GetSize();
 	vtStructure *str;
-	vtStructInstance3d *inst;
 	for (int i = 0; i < count; i++)
 	{
 		str = structures->GetAt(i);
 		if (!str->IsSelected())
 			continue;
-
-		inst = structures->GetInstance(i);
-		if (!inst)
-			continue;
-		inst->SetCastShadow(!inst->GetCastShadow());
+		structures->GetStructure3d(i)->SetCastShadow(!structures->GetStructure3d(i)->GetCastShadow());
 	}
 }
 

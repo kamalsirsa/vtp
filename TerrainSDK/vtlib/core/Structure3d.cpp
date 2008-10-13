@@ -119,20 +119,6 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 	}
 }
 
-void vtStructInstance3d::SetCastShadow(bool b)
-{
-	if (!m_pModel)
-		return;
-	m_pModel->SetCastShadow(b);
-}
-
-bool vtStructInstance3d::GetCastShadow()
-{
-	if (!m_pModel)
-		return false;
-	return m_pModel->GetCastShadow();
-}
-
 // implement vtStructure3d methods
 bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 {
@@ -747,6 +733,20 @@ void vtStructure3d::ReleaseSharedMaterials()
 {
 	VTLOG1("ReleaseSharedMaterials\n");
 	s_MaterialDescriptors.ReleaseMaterials();
+}
+
+void vtStructure3d::SetCastShadow(bool b)
+{
+	if (NULL != m_pContainer)
+		m_pContainer->SetCastShadow(b);
+}
+
+bool vtStructure3d::GetCastShadow()
+{
+	if (NULL != m_pContainer)
+		return m_pContainer->GetCastShadow();
+	else
+		return false;
 }
 
 //

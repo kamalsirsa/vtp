@@ -88,7 +88,8 @@ public:
 	/// Pass true to turn on a wireframe hightlight geometry for this instance
 	virtual void ShowBounds(bool bShow) {}
 
-	virtual void SetCastShadow(bool b) {}
+	void SetCastShadow(bool b);
+	bool GetCastShadow();
 
 	// Get the material descriptors
 	static vtMaterialDescriptorArray3d& GetMaterialDescriptors()
@@ -141,8 +142,6 @@ public:
 	virtual void DeleteNode();
 	virtual void ShowBounds(bool bShow);
 	virtual vtNode *GetContained() { return m_pModel; }
-	virtual void SetCastShadow(bool b);
-	virtual bool GetCastShadow();
 
 	/// (Re-)position the instance on the indicated heightfield
 	void UpdateTransform(vtHeightField3d *pHeightField);

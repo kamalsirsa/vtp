@@ -73,10 +73,6 @@ bool vtItem3d::LoadModels()
 			return false;
 		}
 
-		// Shadow control will be higher in the scene graph, so enable it by
-		//  default for each loaded node
-		pNode->SetCastShadow(true);
-
 		if (model->m_scale != 1.0f)
 		{
 			// Wrap in a transform node so that we can scale/rotate the node
@@ -98,9 +94,6 @@ bool vtItem3d::LoadModels()
 	}
 	if (models > 1)
 		pLod->SetRanges(ranges, models+1);
-
-	// Shadow control is here at the top node in the sub-graph
-	m_pNode->SetCastShadow(false);
 
 	return true;
 }

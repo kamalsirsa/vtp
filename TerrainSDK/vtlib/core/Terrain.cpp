@@ -350,6 +350,7 @@ void vtTerrain::_CreateRoads()
 
 	bool bDoTexture = m_Params.GetValueBool(STR_TEXROADS);
 	m_pRoadGroup = m_pRoadMap->GenerateGeometry(bDoTexture, m_progress_callback);
+	m_pRoadGroup->SetCastShadow(false);
 	m_pTerrainGroup->AddChild(m_pRoadGroup);
 
 	if (m_Params.GetValueBool(STR_ROADCULTURE))
@@ -878,6 +879,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 
 	// build heirarchy (add terrain to scene graph)
 	m_pDynGeomScale = new vtTransform;
+	m_pDynGeomScale->SetCastShadow(false);
 	m_pDynGeomScale->SetName2("Dynamic Geometry Scaling Container");
 
 	FPoint2 spacing = m_pElevGrid->GetWorldSpacing();
@@ -1096,6 +1098,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 		}
 		m_pOceanGeom = new vtMovGeom(pOceanGeom);
 		m_pOceanGeom->SetName2("Ocean plane");
+		m_pOceanGeom->SetCastShadow(false);
 		m_pTerrainGroup->AddChild(m_pOceanGeom);
 	}
 	if (bHorizon)
@@ -1127,6 +1130,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 		}
 		m_pHorizonGeom = new vtMovGeom(pHorizonGeom);
 		m_pHorizonGeom->SetName2("Horizon plane");
+		m_pHorizonGeom->SetCastShadow(false);
 		m_pTerrainGroup->AddChild(m_pHorizonGeom);
 	}
 	// pass ownership
@@ -1574,6 +1578,7 @@ void vtTerrain::_SetupVegGrid(float fLODDistance)
 	m_pVegGrid = new vtSimpleLodGrid;
 	m_pVegGrid->Setup(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
 	m_pVegGrid->SetName2("Vegetation LOD Grid");
+	m_pVegGrid->SetCastShadow(false);
 	m_pTerrainGroup->AddChild(m_pVegGrid);
 }
 
@@ -1671,6 +1676,7 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 	}
 	else
 		m_pStructGrid = new vtSimpleLodGrid;
+	m_pStructGrid->SetCastShadow(false);
 
 	m_pStructGrid->Setup(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
 	m_pStructGrid->SetName2("Structures LOD Grid");
@@ -1994,9 +2000,13 @@ void vtTerrain::SetShadows(bool shadows)
 #if defined (VTDEBUG) && defined (VTDEBUGSHADOWS)
 		m_pShadow->SetDebugHUD(m_pContainerGroup);
 #endif
+		m_pStructGrid->SetCastShadow(true);
 	}
 	else
+	{
 		ConnectFogShadow(m_bFog, false);
+		m_pStructGrid->SetCastShadow(false);
+	}
 }
 
 void vtTerrain::SetShadowDarkness(float bias)
@@ -2020,7 +2030,7 @@ void vtTerrain::SetBgColor(const RGBf &color)
 void vtTerrain::ConnectFogShadow(bool bFog, bool bShadow)
 {
 	// Add the fog into the scene graph between container and terrain
-	if (m_pContainerGroup->GetNumChildren() > 0)
+	while (m_pContainerGroup->GetNumChildren() > 0)
 		m_pContainerGroup->RemoveChild(m_pContainerGroup->GetChild(0));
 	if (m_pShadow && m_pShadow->GetNumChildren() > 0)
 		m_pShadow->RemoveChild(m_pShadow->GetChild(0));
