@@ -313,6 +313,9 @@ public:
 	void SetDarkness(float bias);
 	float GetDarkness();
 
+	void AddMainSceneTextureUnit(const unsigned int Unit, const unsigned int Mode);
+	void RemoveMainSceneTextureUnit(const unsigned int Unit);
+
 	void SetDebugHUD(vtGroup *pGroup);
 
 protected:

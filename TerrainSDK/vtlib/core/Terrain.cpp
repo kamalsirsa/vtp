@@ -1995,6 +1995,13 @@ void vtTerrain::SetShadows(bool shadows)
 		{
 			m_pShadow = new vtShadow(GetShadowTextureUnit());
 			m_pShadow->SetName2("Shadow Group");
+			// When we connect up multitexturing it should probably be set up
+			// here intitially. But at the moment we have not stored the texture
+			// units used anywhere. So we cannot do it yet. Therefore any
+			// multitexturing will be ignored when shadows are turned on and a
+			// fragment shader is used. A fragment shader will be used if the
+			// shadow darkness is less than one and the ARB_shadow_ambient
+			// extension cannot be found.
 		}
 		ConnectFogShadow(false, true);
 #if defined (VTDEBUG) && defined (VTDEBUGSHADOWS)

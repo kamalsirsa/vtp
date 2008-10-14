@@ -1528,6 +1528,19 @@ float vtShadow::GetDarkness()
 		return 1.0f;
 }
 
+void vtShadow::AddMainSceneTextureUnit(const unsigned int Unit, const unsigned int Mode)
+{
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->AddMainSceneTextureUnit(Unit, Mode);
+}
+
+void vtShadow::RemoveMainSceneTextureUnit(const unsigned int Unit)
+{
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->RemoveMainSceneTextureUnit(Unit);
+}
 
 void vtShadow::SetDebugHUD(vtGroup *pGroup)
 {

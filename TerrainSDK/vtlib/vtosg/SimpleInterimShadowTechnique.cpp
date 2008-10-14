@@ -28,7 +28,7 @@ CSimpleInterimShadowTechnique::CSimpleInterimShadowTechnique():
 	m_PolygonOffsetUnits(-1.0f),
 	m_ShadowDarkness(1.0f)
 {
-	m_MainSceneTextureUnits.insert(0);
+	m_MainSceneTextureUnits[0] = GL_MODULATE;
 }
 
 CSimpleInterimShadowTechnique::CSimpleInterimShadowTechnique(const CSimpleInterimShadowTechnique& copy, const osg::CopyOp& copyop):
@@ -59,12 +59,14 @@ void CSimpleInterimShadowTechnique::SetShadowDarkness(const float Darkness)
 	}
 }
 
-void CSimpleInterimShadowTechnique::AddMainSceneTextureUnit(const unsigned int Unit)
+void CSimpleInterimShadowTechnique::AddMainSceneTextureUnit(const unsigned int Unit, const unsigned int Mode)
 {
+	m_MainSceneTextureUnits[Unit] = Mode;
 }
 
 void CSimpleInterimShadowTechnique::RemoveMainSceneTextureUnit(const unsigned int Unit)
 {
+	m_MainSceneTextureUnits.erase(Unit);
 }
 
 void CSimpleInterimShadowTechnique::init()
@@ -144,21 +146,22 @@ void CSimpleInterimShadowTechnique::init()
 			pFakeTex->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
 			pFakeTex->setImage(pImage);
 
-			osg::ref_ptr<osg::IntArray> TempArray = new osg::IntArray;
-			for (std::set<const unsigned int>::iterator iTr = m_MainSceneTextureUnits.begin(); iTr != m_MainSceneTextureUnits.end(); iTr++)
+			osg::ref_ptr<osg::IntArray> UnitArray = new osg::IntArray;
+			for (std::map<unsigned int, unsigned int>::iterator iTr = m_MainSceneTextureUnits.begin(); iTr != m_MainSceneTextureUnits.end(); iTr++)
 			{
-				TempArray->push_back(*iTr);
-				m_pStateset->setTextureAttribute(*iTr, pFakeTex, osg::StateAttribute::ON);
-				m_pStateset->setTextureMode(*iTr,GL_TEXTURE_1D, osg::StateAttribute::OFF);
-				m_pStateset->setTextureMode(*iTr,GL_TEXTURE_2D, osg::StateAttribute::ON);
-				m_pStateset->setTextureMode(*iTr,GL_TEXTURE_3D, osg::StateAttribute::OFF);
+				unsigned int Unit = (*iTr).first;
+				UnitArray->push_back(Unit);
+				m_pStateset->setTextureAttribute(Unit, pFakeTex, osg::StateAttribute::ON);
+				m_pStateset->setTextureMode(Unit,GL_TEXTURE_1D, osg::StateAttribute::OFF);
+				m_pStateset->setTextureMode(Unit,GL_TEXTURE_2D, osg::StateAttribute::ON);
+				m_pStateset->setTextureMode(Unit,GL_TEXTURE_3D, osg::StateAttribute::OFF);
 			}
 			osg::Program *pProgram = new osg::Program;
 			osg::Shader *pFragmentShader = new osg::Shader(osg::Shader::FRAGMENT, GenerateFragmentShaderSource());
 			pProgram->addShader(pFragmentShader);
 			m_pStateset->setAttribute(pProgram);
 			osg::Uniform *pUniform = new osg::Uniform(osg::Uniform::INT, "SimpleInterimShadow_baseTextures", m_MainSceneTextureUnits.size());
-			pUniform->setArray(TempArray.get());
+			pUniform->setArray(UnitArray.get());
 			m_pStateset->addUniform(pUniform);
 			m_pStateset->addUniform(new osg::Uniform("SimpleInterimShadow_shadowTexture", (int)m_ShadowTextureUnit));
 			m_pStateset->addUniform(new osg::Uniform("SimpleInterimShadow_shadowDarkness", m_ShadowDarkness));
@@ -298,13 +301,50 @@ std::string CSimpleInterimShadowTechnique::GenerateFragmentShaderSource()
 		<< std::endl
 		<< "void main(void)" << std::endl
 		<< "{" << std::endl
-		<< "    vec4 Colour = gl_Color;" << std::endl;
-	for (std::set<const unsigned int>::iterator iTr = m_MainSceneTextureUnits.begin(); iTr != m_MainSceneTextureUnits.end(); iTr++)
+		<< "    vec4 Colour = gl_Color;" << std::endl
+		<< "    vec4 TexColour;" << std::endl;
+	for (std::map<unsigned int, unsigned int>::iterator iTr = m_MainSceneTextureUnits.begin(); iTr != m_MainSceneTextureUnits.end(); iTr++)
 	{
-		ShaderSource
-			<< "    Colour = Colour * texture2D(SimpleInterimShadow_baseTextures["
-			<< *iTr << "], gl_TexCoord["
-			<< *iTr << "].xy);" << std::endl;
+		int Unit = (*iTr).first;
+		int Mode = (*iTr).second;
+		switch (Mode)
+		{
+		case GL_ADD:
+			ShaderSource
+				<< "    TexColour = texture2D(SimpleInterimShadow_baseTextures["
+				<< Unit << "], gl_TexCoord["
+				<< Unit << "].xy);" << std::endl
+				<< "    Colour.rgb = Colour.rgb + TexColour.rgb;" << std::endl
+				<< "    Colour.a = Colour.a *  TexColour.a;" << std::endl;
+			break;
+		case GL_BLEND:
+			ShaderSource
+				<< "    TexColour = texture2D(SimpleInterimShadow_baseTextures["
+				<< Unit << "], gl_TexCoord["
+				<< Unit << "].xy);" << std::endl
+				<< "    Colour.rgb = Colour.rgb * (1 - TexColour.rgb) + TexColour.rgb;" << std::endl
+				<< "    Colour.a = Colour.a *  TexColour.a;" << std::endl;
+			break;
+		case GL_REPLACE:
+			ShaderSource
+				<< "    Colour = texture2D(SimpleInterimShadow_baseTextures["
+				<< Unit << "], gl_TexCoord["
+				<< Unit << "].xy);" << std::endl;
+			break;
+		case GL_MODULATE:
+			ShaderSource
+				<< "    Colour = Colour * texture2D(SimpleInterimShadow_baseTextures["
+				<< Unit << "], gl_TexCoord["
+				<< Unit << "].xy);" << std::endl;
+			break;
+		case GL_DECAL:
+			ShaderSource
+				<< "    TexColour = texture2D(SimpleInterimShadow_baseTextures["
+				<< Unit << "], gl_TexCoord["
+				<< Unit << "].xy);" << std::endl
+				<< "    Colour.rgb = Colour.rgb * (1 - TexColour.a) + TexColour.rgb * TexColour.a;" << std::endl;
+			break;
+		}
 	}
 	ShaderSource
 		<< "    gl_FragColor = Colour * (1.0 - SimpleInterimShadow_shadowDarkness + shadow2DProj(SimpleInterimShadow_shadowTexture, gl_TexCoord["

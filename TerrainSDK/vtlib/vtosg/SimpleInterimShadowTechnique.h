@@ -26,7 +26,7 @@ public:
 	void SetShadowTextureUnit(const unsigned int Unit);
 	void SetShadowDarkness(const float Darkness);
 	float GetShadowDarkness() { return m_ShadowDarkness; }
-	void AddMainSceneTextureUnit(const unsigned int Unit);
+	void AddMainSceneTextureUnit(const unsigned int Unit, const unsigned int Mode);
 	void RemoveMainSceneTextureUnit(const unsigned int Unit);
 
 	virtual void init();
@@ -52,6 +52,6 @@ protected :
 	float							m_PolygonOffsetFactor;
 	float							m_PolygonOffsetUnits;
 	float							m_ShadowDarkness;
-	std::set<const unsigned int>	m_MainSceneTextureUnits;
+	std::map<unsigned int, unsigned int>	m_MainSceneTextureUnits;
 };
 #endif
