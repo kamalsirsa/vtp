@@ -2840,7 +2840,7 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
 int vtTerrain::GetShadowTextureUnit()
 {
 	if (m_iShadowTextureUnit == -1)
-		m_iShadowTextureUnit = m_TextureUnits.ReserveTextureUnit();
+		m_iShadowTextureUnit = m_TextureUnits.ReserveTextureUnit(true);
 	return m_iShadowTextureUnit;
 }
 

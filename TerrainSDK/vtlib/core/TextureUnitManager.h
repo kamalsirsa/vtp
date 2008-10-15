@@ -15,7 +15,7 @@ class vtTextureUnitManager
 public:
 	vtTextureUnitManager(void);
 	~vtTextureUnitManager(void);
-	int ReserveTextureUnit();
+	int ReserveTextureUnit(bool bHighest = false);
 	void FreeTextureUnit(int iUnit);
 
 private:

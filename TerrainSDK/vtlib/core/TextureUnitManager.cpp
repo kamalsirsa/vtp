@@ -46,18 +46,33 @@ void vtTextureUnitManager::Initialise()
 	m_bInitialised = true;
 }
 
-int vtTextureUnitManager::ReserveTextureUnit()
+int vtTextureUnitManager::ReserveTextureUnit(bool bHighest)
 {
 	int iUnit = -1;
 	if (!m_bInitialised)
 		Initialise();
-	for (int i = 0; i < m_iNumTextureUnits; i++)
+	if (bHighest)
 	{
-		if (m_pAllocationArray[i] == false)
+		for (int i = m_iNumTextureUnits - 1; i >= 0; i--)
 		{
-			m_pAllocationArray[i] = true;
-			iUnit = i;
-			break;
+			if (m_pAllocationArray[i] == false)
+			{
+				m_pAllocationArray[i] = true;
+				iUnit = i;
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < m_iNumTextureUnits; i++)
+		{
+			if (m_pAllocationArray[i] == false)
+			{
+				m_pAllocationArray[i] = true;
+				iUnit = i;
+				break;
+			}
 		}
 	}
 	return iUnit;
