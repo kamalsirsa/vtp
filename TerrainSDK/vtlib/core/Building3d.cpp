@@ -722,22 +722,16 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 
 float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 {
-	// For now, just use the outer ring
-	// TODO Roger: make the code below use the inner rings too, not just [0].
-	const FLine3 EavePolygon = EavePolygons[0];
-
-	PolyChecker PolyChecker;
 	vtStraightSkeleton StraightSkeleton;
 	CSkeleton Skeleton;
 	float fMaxHeight = 0.0;
-	ContourVector RoofEaves;
-	int iVertices = EavePolygon.GetSize();
+	ContourVector RoofEaves(EavePolygons.size());
 	int i;
 	CSkeletonLine *pStartEdge;
 	CSkeletonLine *pEdge;
 	CSkeletonLine *pNextEdge;
 	bool bEdgeReversed;
-	float EaveY = EavePolygon[0].y;
+	float EaveY = EavePolygons[0][0].y;
 #ifdef FELKELDEBUG
 	float DebugX;
 	float DebugY;
@@ -747,18 +741,15 @@ float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 	// Make a roof using felkels straight skeleton algorithm
 
 	// First of all build the eave footprint.
-	// The algorithm can handle buildings with holes in them (i.e. a courtyard)
-	// but at the moment I assume the EavePolygon passed in is the the single
-	// outer polygon the roof edges. It must be clockwise oriented!
-	RoofEaves.push_back(Contour());
-
-	if (PolyChecker.IsClockwisePolygon(EavePolygon))
+	ContourVector::iterator itV = RoofEaves.begin();
+	for (FPolygon3::const_iterator itP = EavePolygons.begin(); itP != EavePolygons.end(); itP++, itV++)
 	{
+		int iVertices = (*itP).GetSize();
 		for (i = 0; i < iVertices; i++)
 		{
-			FPoint3 CurrentPoint = EavePolygon[i];
-			FPoint3 NextPoint = EavePolygon[(i+1)%iVertices];
-			FPoint3 PreviousPoint = EavePolygon[(iVertices+i-1)%iVertices];
+			FPoint3 CurrentPoint = (*itP)[i];
+			FPoint3 NextPoint = (*itP)[(i+1)%iVertices];
+			FPoint3 PreviousPoint = (*itP)[(iVertices+i-1)%iVertices];
 			int iSlope = pLev->GetEdge(i)->m_iSlope;
 			if (iSlope > 89)
 				iSlope = 90;
@@ -798,18 +789,14 @@ float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 				NewEdge.Normalize();
 				NewEdge = NewEdge/100.0f;
 				NewEdge += CurrentPoint;
-				RoofEaves[0].push_back(CEdge(NewEdge.x, 0, NewEdge.z,
+				(*itV).push_back(CEdge(NewEdge.x, 0, NewEdge.z,
 					iNewSlope / 180.0f * PIf, pLev->GetEdge(i)->m_pMaterial,
 					pLev->GetEdge(i)->m_Color));
 			}
-			RoofEaves[0].push_back(CEdge(CurrentPoint.x, 0, CurrentPoint.z,
+			(*itV).push_back(CEdge(CurrentPoint.x, 0, CurrentPoint.z,
 				iSlope / 180.0f * PIf, pLev->GetEdge(i)->m_pMaterial,
 				pLev->GetEdge(i)->m_Color));
 		}
-	}
-	else
-	{
-		return -1.0;
 	}
 
 	// Now build the skeleton
