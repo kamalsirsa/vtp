@@ -952,7 +952,7 @@ void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, enum Fog
 // vtShadow
 //
 
-vtShadow::vtShadow() : vtGroup(true)
+vtShadow::vtShadow(const int ShadowTextureUnit) : vtGroup(true)
 {
 	//osg::NodePtr node = osg::makeCoredNode<osg::Transform>(&m_pTransform);
 	//SetOsgNode(node);
@@ -960,7 +960,7 @@ vtShadow::vtShadow() : vtGroup(true)
 
 vtNode *vtShadow::Clone(bool bDeep)
 {
-	vtShadow *sh = new vtShadow;
+	vtShadow *sh = new vtShadow(0);	// TODO: fix this 0
 	sh->CopyFrom(this);
 	return sh;
 }

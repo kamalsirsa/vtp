@@ -297,7 +297,7 @@ protected:
 class vtShadow : public vtGroup
 {
 public:
-	vtShadow();
+	vtShadow(const int ShadowTextureUnit);
 	virtual vtNode *Clone(bool bDeep = false);
 	void CopyFrom(const vtShadow *rhs);
 	void Release();

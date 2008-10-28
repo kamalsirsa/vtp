@@ -1363,6 +1363,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SimpleInterimShadowTechnique.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\StructureShadowsOSG.cpp"
 				>
 			</File>
