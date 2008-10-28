@@ -4,7 +4,7 @@
 // High-level representation of a utility network, currently supporting
 // power networks (poles and lines).
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -50,6 +50,7 @@ public:
 
 	void GetPoleExtents(DRECT &rect);
 	bool ImportFromSHP(const char *filename, const vtProjection &proj);
+//	bool ReadXML(const char *pathname, bool progress_callback(int));
 
 protected:
 	bool ImportPolesFromSHP(const char *fname);
