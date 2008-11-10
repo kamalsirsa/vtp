@@ -516,13 +516,12 @@ void vtSkyDome::SetInterpCutoff(float cutoff)
 //
 bool vtSkyDome::SetTexture(const char *filename)
 {
-	if (filename)
-		VTLOG("   SkyDome: Set Texture to '%s'.. ", filename);
-	else
-		VTLOG("   SkyDome: Setting to no Texture.\n");
-
 	if (m_pTextureMat)
 	{
+		// if it hasn't changed, return
+		if (filename && m_pTextureMat->GetTexture()->GetFilename() == filename)
+			return true;
+
 		// Already textured; remove previous material
 		m_pMats->RemoveMaterial(m_pTextureMat);
 		delete m_pTextureMat;
@@ -531,14 +530,19 @@ bool vtSkyDome::SetTexture(const char *filename)
 
 	if (!filename)
 	{
-		// Go back to vertex-coloured dome
-		m_bHasTexture = false;
-		int index = m_pMats->Find(m_pMat);
-		m_pDomeGeom->SetMeshMatIndex(m_pDomeMesh, index);
-		ApplyDomeColors();
+		if (m_bHasTexture)
+		{
+			VTLOG("   SkyDome: Setting to no Texture.\n");
+			// Go back to vertex-coloured dome
+			m_bHasTexture = false;
+			int index = m_pMats->Find(m_pMat);
+			m_pDomeGeom->SetMeshMatIndex(m_pDomeMesh, index);
+			ApplyDomeColors();
+		}
 		return true;
 	}
 
+	VTLOG("   SkyDome: Set Texture to '%s'.. ", filename);
 	vtImage *pImage = vtImageRead(filename);
 	if (!pImage)
 	{
