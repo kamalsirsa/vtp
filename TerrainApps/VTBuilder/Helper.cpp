@@ -25,30 +25,11 @@
 #endif
 #endif
 
-#define USE_LIBMINI_SQUISH 0
 #define USE_LIBMINI_CONVHOOK 1
-
-#if (USE_LIBMINI_DATABUF && USE_LIBMINI_SQUISH)
-#include <mini/squishbase.h>
-#endif
 
 #if (USE_LIBMINI_DATABUF && USE_LIBMINI_CONVHOOK)
 #include "minidata/convbase.h"
 #endif
-
-/*
-#if (USE_LIBMINI_DATABUF && (USE_LIBMINI_SQUISH || USE_LIBMINI_CONVHOOK))
-#ifdef _MSC_VER
-  #if _MSC_VER >= 1400	// vc8
-	  #pragma message( "Adding link with libMiniSFX-vc8.lib" )
-	  #pragma comment( lib, "libMiniSFX-vc8.lib" )
-  #else					// vc71
-	  #pragma message( "Adding link with libMiniSFX-vc7.lib" )
-	  #pragma comment( lib, "libMiniSFX-vc7.lib" )
-  #endif
-#endif
-#endif
-*/
 
 void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 					unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
@@ -387,4 +368,3 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 	}
 }
 #endif	// SUPPORT_SQUISH
-
