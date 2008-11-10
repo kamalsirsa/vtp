@@ -1039,6 +1039,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\SimpleInterimShadowTechnique.cpp">
+			</File>
+			<File
 				RelativePath=".\StructureShadowsOSG.cpp">
 			</File>
 		</Filter>
@@ -1059,6 +1062,9 @@
 			</File>
 			<File
 				RelativePath="SceneOSG.h">
+			</File>
+			<File
+				RelativePath=".\SimpleInterimShadowTechnique.h">
 			</File>
 			<File
 				RelativePath=".\StructureShadowsOSG.h">
