@@ -833,7 +833,7 @@ void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 	else if (bm.m_bOverlay)
 	{
 		// support for out-of-memory image here
-		RGBi *data = m_linebuf.GetScanlineFromBuffer(y, closest_bitmap);
+		RGBi *data = m_linebuf.GetScanlineFromBuffer(y, (int)closest_bitmap);
 		rgb = data[x];
 	}
 }
