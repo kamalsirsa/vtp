@@ -181,10 +181,10 @@ void vtImageLayer::GetPropertyText(wxString &strIn)
 			str += _("in memory");
 		}
 
-		if (bmi.m_bOverlay)
+		if (bmi.m_bOnDisk)
 		{
 			str += _T(", ");
-			str += _("overlay on disk");
+			str += _("overview on disk");
 		}
 
 		str += _T("\n");

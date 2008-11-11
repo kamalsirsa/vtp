@@ -39,8 +39,8 @@ public:
 	void Setup(GDALDataset *pDataset);
 	void Cleanup();
 
-	void ReadScanline(int y, int bufrow, int overlay);
-	RGBi *GetScanlineFromBuffer(int y, int overlay);
+	void ReadScanline(int y, int bufrow, int overview);
+	RGBi *GetScanlineFromBuffer(int y, int overview);
 	void FindMaxBlockSize(GDALDataset *pDataset);
 
 	int		m_iXSize;
@@ -73,11 +73,11 @@ public:
 class BitmapInfo
 {
 public:
-	BitmapInfo() { m_pBitmap = NULL; m_bOverlay = false; }
+	BitmapInfo() { m_pBitmap = NULL; m_bOnDisk = false; }
 
 	int number;				// 0, 1, 2..
 	vtBitmap *m_pBitmap;	// non-NULL if in memory
-	bool m_bOverlay;		// true if GDAL overlay exists on disk
+	bool m_bOnDisk;		// true if GDAL overview exists on disk
 	IPoint2 m_Size;			// size in pixels
 	DPoint2 m_Spacing;		// spatial resolution in earth units/pixel
 };

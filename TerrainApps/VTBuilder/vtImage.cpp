@@ -795,7 +795,7 @@ int vtImage::NumBitmapsOnDisk()
 {
 	int count = 0;
 	for (unsigned int i = 0; i < m_Bitmaps.size(); i++)
-		if (m_Bitmaps[i].m_bOverlay)
+		if (m_Bitmaps[i].m_bOnDisk)
 			count++;
 	return count;
 }
@@ -810,11 +810,15 @@ void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 		// What overview resolution is most appropriate
 		for (size_t i = 0; i < m_Bitmaps.size(); i++)
 		{
-			double d2 = fabs(dRes - m_Bitmaps[i].m_Spacing.x);
-			if (d2 < diff)
+			// if it is available
+			if (m_Bitmaps[i].m_pBitmap || m_Bitmaps[i].m_bOnDisk)
 			{
-				diff = d2;
-				closest_bitmap = i;
+				double d2 = fabs(dRes - m_Bitmaps[i].m_Spacing.x);
+				if (d2 < diff)
+				{
+					diff = d2;
+					closest_bitmap = i;
+				}
 			}
 		}
 	}
@@ -830,7 +834,7 @@ void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 		// get pixel from bitmap in memory
 		bm.m_pBitmap->GetPixel24(x, y, rgb);
 	}
-	else if (bm.m_bOverlay)
+	else if (bm.m_bOnDisk)
 	{
 		// support for out-of-memory image here
 		RGBi *data = m_linebuf.GetScanlineFromBuffer(y, (int)closest_bitmap);
@@ -881,7 +885,7 @@ void vtImage::SetupBitmapInfo(int iXSize, int iYSize)
 	{
 		m_Bitmaps[m].number = m;
 		m_Bitmaps[m].m_pBitmap = NULL;
-		m_Bitmaps[m].m_bOverlay = false;
+		m_Bitmaps[m].m_bOnDisk = false;
 		m_Bitmaps[m].m_Size.Set(iXSize, iYSize);
 		m_Bitmaps[m].m_Spacing = spacing;
 
@@ -1343,7 +1347,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 
 		m_linebuf.Setup(m_pDataset);
 		for (int i = 0; i < m_linebuf.m_iViewCount && i < (int) m_Bitmaps.size(); i++)
-			m_Bitmaps[i].m_bOverlay = true;
+			m_Bitmaps[i].m_bOnDisk = true;
 
 		int iBigImage = g_Options.GetValueInt(TAG_MAX_MEGAPIXELS) * 1024 * 1024;
 		// don't try to load giant image?
