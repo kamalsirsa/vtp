@@ -54,4 +54,3 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 #endif
 
 #endif	// HELPERH
-

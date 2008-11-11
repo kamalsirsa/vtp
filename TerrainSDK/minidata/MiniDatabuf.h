@@ -132,6 +132,7 @@ public:
 	int m_cols, m_rows;
 	int *m_min, *m_max;
 };
+
 bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 						const DRECT &area, const vtProjection &proj,
 						float minheight=INVALID_ELEVATION, float maxheight=INVALID_ELEVATION,

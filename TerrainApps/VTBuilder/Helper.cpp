@@ -48,6 +48,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 			output_buf.savedata(fname);
 			output_buf.release();
 
+			// the following looks very suspicious, what is that meant for?
 			if (output_buf.xsize == 256)
 				pCanvas->Refresh(false);
 #endif
@@ -63,7 +64,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		}
 		else if (opts.eCompressionType == TC_JPEG)
 		{
-			output_buf.type = 3;	// RGB
+			output_buf.type = databuf::DATABUF_TYPE_RGB;
 			output_buf.bytes = iUncompressedSize;
 			output_buf.data = malloc(iUncompressedSize);
 			memcpy(output_buf.data, rgb_bytes, iUncompressedSize);
@@ -77,12 +78,12 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		if (opts.bMaskUnknownAreas)
 		{
 			// Output to a plain RGBA .db file
-			output_buf.type = 4;	// RGBA
+			output_buf.type = databuf::DATABUF_TYPE_RGBA;
 		}
 		else
 		{
 			// Output to a plain RGB .db file
-			output_buf.type = 3;	// RGB
+			output_buf.type = databuf::DATABUF_TYPE_RGB;
 		}
 		output_buf.bytes = iUncompressedSize;
 		output_buf.data = malloc(iUncompressedSize);

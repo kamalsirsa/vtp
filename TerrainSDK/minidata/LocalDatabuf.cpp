@@ -63,34 +63,9 @@ bool vtMiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
                        se_corner.x, se_corner.y,
                        nw_corner.x, nw_corner.y,
                        ne_corner.x, ne_corner.y);
+
 	delete trans;
 	return true;
-}
-
-//! get rgb[a] color
-void vtMiniDatabuf::getrgb(const unsigned int i,const unsigned int j,const unsigned int k, float *value)
-{
-	if (type==3)
-	{
-		unsigned char *ptr=&((unsigned char *)data)[3*(i+(j+k*ysize)*xsize)];
-
-		value[0] = ptr[0];
-		value[1] = ptr[1];
-		value[2] = ptr[2];
-	}
-}
-
-void vtMiniDatabuf::getrgba(const unsigned int i,const unsigned int j,const unsigned int k, float *value)
-{
-	if (type==4)
-	{
-		unsigned char *ptr=&((unsigned char *)data)[4*(i+(j+k*ysize)*xsize)];
-
-		value[0] = ptr[0];
-		value[1] = ptr[1];
-		value[2] = ptr[2];
-		value[3] = ptr[3];
-	}
 }
 
 #endif
