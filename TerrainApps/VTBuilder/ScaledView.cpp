@@ -38,20 +38,23 @@ void vtScaledView::ZoomToRect(const DRECT &geo_rect, float margin)
 	wxRect client;
 	GetClientSize(&client.width, &client.height);
 
-	// safety check
-	if (geo_rect.Width() == 0 || geo_rect.Height() == 0)
-		return;
+	// safety check: if the data is a single point, back out slightly
+	DRECT rect = geo_rect;
+	if (rect.Width() == 0)
+		rect.Grow(0.25, 0);
+	if (rect.Height() == 0)
+		rect.Grow(0, 0.25);
 
 	// scale is pixels/coordinate unit
 	DPoint2 scale;
-	scale.x = (float) client.GetWidth() / geo_rect.Width();
-	scale.y = (float) client.GetHeight() / geo_rect.Height();
+	scale.x = (float) client.GetWidth() / rect.Width();
+	scale.y = (float) client.GetHeight() / rect.Height();
 	m_fScale = (scale.x < scale.y ? scale.x : scale.y);		// min
 	m_fScale *= (1.0f - margin);
 	UpdateRanges();
 
 	DPoint2 center;
-	geo_rect.GetCenter(center);
+	rect.GetCenter(center);
 	ZoomToPoint(center);
 }
 
