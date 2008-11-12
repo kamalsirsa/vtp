@@ -470,7 +470,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 			min = GetMinutes(buf+18);
 			if (buf[23] == 'E')
 				p.x = deg + (min / 60.0);
-			else if (buf[14] == 'W')
+			else if (buf[23] == 'W')
 				p.x = -(deg + (min / 60.0));
 
 			// Pressure altitude
