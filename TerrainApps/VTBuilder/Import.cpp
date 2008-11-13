@@ -548,6 +548,12 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 			pLayer = ImportFromSHP(strFileName, ltype);
 		else if (!strExt.CmpNoCase(_T("dxf")))
 			pLayer = ImportFromDXF(strFileName, ltype);
+		else if (!strExt.CmpNoCase(_T("igc")))
+		{
+			vtRawLayer *pRL = new vtRawLayer;
+			if (pRL->Load(wxString(fname, wxConvUTF8)))
+				pLayer = pRL;
+		}
 		else
 		{
 			pLayer = ImportRawFromOGR(strFileName);

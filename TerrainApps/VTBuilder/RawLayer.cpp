@@ -321,18 +321,21 @@ bool vtRawLayer::OnLoad()
 
 	wxString fname = GetLayerFilename();
 	vtString fname_utf8 = (const char *) fname.mb_str(wxConvUTF8);
-	if (!fname.Right(4).CmpNoCase(_T(".gml")) ||
-		!fname.Right(4).CmpNoCase(_T(".xml")) ||
-		!fname.Right(4).CmpNoCase(_T(".ntf")))
+	vtString ext = fname_utf8.Right(4);
+	VTLOG("vtRawLayer::OnLoad, extension is '%s'\n", (const char *) ext);
+
+	if (!ext.CompareNoCase(".gml") ||
+		!ext.CompareNoCase(".xml") ||
+		!ext.CompareNoCase(".ntf"))
 	{
 		m_pSet = loader.LoadWithOGR(fname_utf8, progress_callback);
 	}
-	else if (!fname.Right(4).CmpNoCase(_T(".shp")))
+	else if (!ext.CompareNoCase(".shp"))
 	{
 		m_pSet = loader.LoadFromSHP(fname_utf8);
 //		return LoadWithOGR(fname.mb_str(wxConvUTF8));
 	}
-	else if (!fname.Right(4).CmpNoCase(_T(".igc")))
+	else if (!ext.CompareNoCase(".igc"))
 	{
 		m_pSet = loader.LoadFromIGC(fname_utf8);
 	}
