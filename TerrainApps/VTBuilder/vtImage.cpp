@@ -802,32 +802,43 @@ int vtImage::NumBitmapsOnDisk()
 
 void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 {
-	size_t closest_bitmap = 0;
+	int closest_bitmap = -1;
 	double diff = 1E9;
 
 	if (dRes != 0.0)
 	{
 		// What overview resolution is most appropriate
-		for (size_t i = 0; i < m_Bitmaps.size(); i++)
+		for (int i = 0; i < (int)m_Bitmaps.size(); i++)
 		{
 			// if it is available
 			if (m_Bitmaps[i].m_pBitmap || m_Bitmaps[i].m_bOnDisk)
 			{
-				double d2 = fabs(dRes - m_Bitmaps[i].m_Spacing.x);
-				if (d2 < diff)
+				double spc = (m_Bitmaps[i].m_Spacing.x + m_Bitmaps[i].m_Spacing.y)/2.0;
+				double rel_spc = fabs(dRes - spc);
+
+				if (rel_spc < diff)
 				{
-					diff = d2;
+					diff = rel_spc;
 					closest_bitmap = i;
 				}
 			}
 		}
 	}
+
+	if (closest_bitmap < 0)
+	{
+		// safety measure for missing overviews
+		rgb=RGBi(255,0,0);
+		return;
+	}
+
 	if (closest_bitmap != 0)
 	{
 		// get smaller coordinates from subsampled view
 		x >>= closest_bitmap;
 		y >>= closest_bitmap;
 	}
+
 	const BitmapInfo &bm = m_Bitmaps[closest_bitmap];
 	if (bm.m_pBitmap)
 	{
@@ -836,8 +847,8 @@ void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 	}
 	else if (bm.m_bOnDisk)
 	{
-		// support for out-of-memory image here
-		RGBi *data = m_linebuf.GetScanlineFromBuffer(y, (int)closest_bitmap);
+		// support for out-of-memory image
+		RGBi *data = m_linebuf.GetScanlineFromBuffer(y, closest_bitmap);
 		rgb = data[x];
 	}
 }
@@ -1974,4 +1985,3 @@ void SampleMipLevel(vtBitmap *bigger, vtBitmap *smaller)
 		}
 	}
 }
-
