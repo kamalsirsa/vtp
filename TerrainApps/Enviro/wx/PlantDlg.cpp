@@ -78,8 +78,8 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_SPECIES, &m_iSpeciesChoice);
 	AddValidator(ID_COMMON_NAMES, &m_bCommonNames);
 	AddValidator(ID_LANGUAGE, &m_iLanguage);
-	AddNumValidator(ID_PLANT_HEIGHT_EDIT, &m_opt.m_fHeight);
-	AddNumValidator(ID_PLANT_SPACING_EDIT, &m_opt.m_fSpacing);
+	AddNumValidator(ID_PLANT_HEIGHT_EDIT, &m_opt.m_fHeight, 2);		// 2 digits = cm
+	AddNumValidator(ID_PLANT_SPACING_EDIT, &m_opt.m_fSpacing, 2);
 
 	AddNumValidator(ID_PLANT_VARIANCE_EDIT, &m_opt.m_iVariance);
 	AddValidator(ID_PLANT_VARIANCE_SLIDER, &m_iVarianceSlider);
