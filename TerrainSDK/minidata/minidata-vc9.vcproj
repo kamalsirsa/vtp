@@ -142,19 +142,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\convbase.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\convhook.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\jpegbase.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\LocalDatabuf.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\minidata.cpp"
 				>
 			</File>
 			<File

@@ -68,4 +68,5 @@ bool vtMiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
 	return true;
 }
 
-#endif
+#endif	// USE_LIBMINI_DATABUF
+
