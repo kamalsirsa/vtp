@@ -16,7 +16,6 @@
 
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
-#include "minidata/convhook.h"
 #include <float.h>	// for FLT_MIN
 
 #include "Builder.h"
@@ -47,6 +46,9 @@ vtTagArray g_Options;
 
 /** Global pointer to builder object, of which there is only one */
 Builder *g_bld;
+
+// external hook to glue code
+void InitMiniConvHook(int iJpegQuality = 95);
 
 //////////////////////////////////////////////////////////////////
 // Builder constructor

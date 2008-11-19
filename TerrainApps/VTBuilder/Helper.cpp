@@ -25,12 +25,6 @@
 #endif
 #endif
 
-#define USE_LIBMINI_CONVHOOK 1
-
-#if (USE_LIBMINI_DATABUF && USE_LIBMINI_CONVHOOK)
-#include "minidata/convbase.h"
-#endif
-
 void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 					unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 					int iUncompressedSize, ImageGLCanvas *pCanvas)

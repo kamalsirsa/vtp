@@ -16,16 +16,6 @@ struct MINI_CONVERSION_PARAMS
 	float jpeg_quality;
 };
 
-void InitMiniConvHook(int iJpegQuality)
-{
-	// specify conversion parameters
-	static MINI_CONVERSION_PARAMS conversion_params;
-	conversion_params.jpeg_quality = (float) iJpegQuality; // jpeg quality in percent
-
-	// register libMini conversion hook (JPEG/PNG)
-	databuf::setconversion(conversionhook,&conversion_params);
-}
-
 // libMini conversion hook for external formats (JPEG/PNG)
 int conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
 				   unsigned char **newdata,unsigned int *newbytes,
@@ -124,3 +114,14 @@ int conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsig
 
 	return(1); // return success
 }
+
+void InitMiniConvHook(int iJpegQuality)
+{
+	// specify conversion parameters
+	static MINI_CONVERSION_PARAMS conversion_params;
+	conversion_params.jpeg_quality = (float) iJpegQuality; // jpeg quality in percent
+
+	// register libMini conversion hook (JPEG/PNG)
+	databuf::setconversion(conversionhook,&conversion_params);
+}
+
