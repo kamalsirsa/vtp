@@ -396,7 +396,19 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 bool vtTin3d::FindAltitudeAtPoint(const FPoint3 &input, float &fAltitude,
 								  bool bTrue, int iCultureFlags, FPoint3 *vNormal) const
 {
-	// First try to identify which triangle
+	// Look on culture first
+	if (iCultureFlags != 0 && m_pCulture != NULL)
+	{
+		if (m_pCulture->FindAltitudeOnCulture(input, fAltitude, bTrue, iCultureFlags))
+			return true;
+	}
+	return vtTin::FindAltitudeAtPoint(input, fAltitude, bTrue, iCultureFlags, vNormal);
+
+#if 0
+	// We could test against the 3D triangles with the code below, but in
+	//  practice, i found it is actually faster to just use the parent class
+	//  (vtTin) to test against the 2D triangles.
+
 	FPoint2 p(input.x, input.z);
 
 	FPoint3 wp1, wp2, wp3;
@@ -437,6 +449,7 @@ bool vtTin3d::FindAltitudeAtPoint(const FPoint3 &input, float &fAltitude,
 	}
 	fAltitude = 0;
 	return false;
+#endif
 }
 
 

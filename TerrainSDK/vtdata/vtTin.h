@@ -78,11 +78,11 @@ public:
 
 	// Implement required vtHeightField methods
 	virtual bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
+	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
+		bool bTrue = false, int iCultureFlags=0,
+		FPoint3 *vNormal = NULL) const;
 
 	// Avoid implementing HeightField3d virtual methods
-	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		bool bTrue = false, int iCultureFlags=0,
-		FPoint3 *vNormal = NULL) const { return false; }
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const { return false; }
 

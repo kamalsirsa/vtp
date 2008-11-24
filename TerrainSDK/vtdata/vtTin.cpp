@@ -577,25 +577,22 @@ bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) 
 		return false;
 	}
 
-#if 0
-	static int last_hit = -1;
-	if (last_hit >= 0 && last_hit < tris)
-	{
-		if (TestTriangle(last_hit, p, fAltitude))
-			return true;
-		last_hit = -1;
-	}
-#endif
 	for (unsigned int i = 0; i < tris; i++)
 	{
 		if (TestTriangle(i, p, fAltitude))
-		{
-			//last_hit = i;
 			return true;
-		}
 	}
-	//last_hit = -1;
 	return false;
+}
+
+bool vtTin::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
+		bool bTrue, int iCultureFlags, FPoint3 *vNormal) const
+{
+	// Convert to 2D earth point, and test vs. TIN triangles
+	DPoint3 earth;
+	m_Conversion.ConvertToEarth(p3, earth);
+
+	return FindAltitudeOnEarth(DPoint2(earth.x, earth.y), fAltitude, bTrue);
 }
 
 
