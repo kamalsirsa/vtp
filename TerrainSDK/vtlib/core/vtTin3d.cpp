@@ -387,6 +387,11 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		m_pGeom->AddMesh(pBaseMesh, 1);
 		pBaseMesh->Release();	// Pass ownership
 	}
+
+	// The TIN is a large geometry which should not attempt to cast a shadow,
+	//  because shadow algos tend to support only small regions of casters.
+	m_pGeom->SetCastShadow(false);
+
 	return m_pGeom;
 }
 
