@@ -17,8 +17,6 @@
 #include <mini/datacloud.h>
 #include <mini/miniOGL.h>
 
-#include "minidata/convhook.h"
-
 // If we use a threading library, we can support multithreading
 #define SUPPORT_THREADING	1
 #define USE_PTHREADS		0
@@ -31,6 +29,9 @@
 #define WE_OWN_BUFFERS		0
 
 #define LOG_TILE_LOADS		0
+
+// libMini helper
+void InitMiniConvHook(int iJpegQuality = 99);
 
 /////////////
 // singleton; TODO: get rid of this to allow multiple instances
