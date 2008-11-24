@@ -61,6 +61,9 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 	if (!m_pHF)
 	{
 		vtTiledGeom *tiledGeom = pTerr->GetTiledGeom();
+		if (!tiledGeom)
+			return NULL;
+
 		m_ext = tiledGeom->GetEarthExtents();
 		//get highest LOD
 		int minLod = 0;
@@ -155,11 +158,15 @@ void vtContourConverter::GenerateContour(float fAlt)
 void vtContourConverter::GenerateContours(float fInterval)
 {
 	float fMin, fMax;
+	vtHeightField *hf;
 	if (m_pHF)
-		m_pHF->GetHeightExtents(fMin, fMax);
+		hf = m_pHF;
 	else
-		m_pTerrain->GetTiledGeom()->GetHeightExtents(fMin, fMax);
+		hf = m_pTerrain->GetTiledGeom();
+	if (hf)
+		return;
 
+	hf->GetHeightExtents(fMin, fMax);
 	int start = (int) (fMin / fInterval) + 1;
 	int stop = (int) (fMax / fInterval);
 

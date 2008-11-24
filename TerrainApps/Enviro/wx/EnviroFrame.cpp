@@ -891,9 +891,11 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		if (pTerr)
 		{
 			vtContourConverter cc;
-			cc.Setup(pTerr, RGBf(1,1,0), 10);
-			cc.GenerateContours(500);
-			cc.Finish();
+			if (cc.Setup(pTerr, RGBf(1,1,0), 10))
+			{
+				cc.GenerateContours(500);
+				cc.Finish();
+			}
 		}
 #endif
 		break;
