@@ -105,7 +105,7 @@ vtTerrain::vtTerrain()
 
 vtTerrain::~vtTerrain()
 {
-	VTLOG("Terrain destructing: '%s'\n", (const char *) GetName());
+	VTLOG("Terrain destructing: '%s' ..", (const char *) GetName());
 
 	// Remove the things this terrain has added to the scene.
 	// Some things need to be manually deleted.
@@ -208,10 +208,14 @@ vtTerrain::~vtTerrain()
 	if (m_pTerrMats)
 		m_pTerrMats->Release();
 
+	if (m_pTextureColors != NULL) VTLOG(" TextureColors %lx,", m_pTextureColors);
 	delete m_pTextureColors;
 
+	if (m_pDetailMats) VTLOG("DetailMats %lx, ", m_pDetailMats);
 	if (m_pDetailMats)
 		m_pDetailMats->Release();
+
+	VTLOG1(" done.\n");
 }
 
 
