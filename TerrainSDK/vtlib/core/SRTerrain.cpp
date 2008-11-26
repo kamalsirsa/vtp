@@ -37,7 +37,7 @@ using namespace mini;
   #elif _MSC_VER == 1400 // vc8
 	#pragma message( "Adding link with libMini-vc8.lib" )
 	#pragma comment( lib, "libMini-vc8.lib" )
-  #elif					// vc71
+  #else					// vc71
 	#pragma message( "Adding link with libMini-vc7.lib" )
 	#pragma comment( lib, "libMini-vc7.lib" )
   #endif
