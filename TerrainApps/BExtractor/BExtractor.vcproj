@@ -24,7 +24,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\TerrainSDK,\APIs"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_IPL=0"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
@@ -41,7 +41,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ipl.lib vfw32.lib gdal_i.lib zlib1.lib libjpeg.lib libpng13.lib"
+				AdditionalDependencies="vfw32.lib gdal_i.lib zlib1.lib libjpeg.lib libpng13.lib"
 				OutputFile=".\Release/BExtractor.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -90,7 +90,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\TerrainSDK,\APIs"
-				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS"
+				PreprocessorDefinitions="WIN32;_DEBUG;VTDEBUG;_WINDOWS;USE_IPL=0"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
@@ -107,12 +107,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="vfw32.lib gdal_id.lib ipl.lib zlib1d.lib libjpeg.lib libpng13d.lib"
+				AdditionalDependencies="vfw32.lib gdal_id.lib zlib1d.lib libjpeg.lib libpng13d.lib"
 				OutputFile=".\Debug/BExtractor.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="\APIs\GBM"
-				IgnoreDefaultLibraryNames="libcmtd.lib,libcd.lib,msvcrt.lib"
+				IgnoreDefaultLibraryNames="libcmtd.lib,libcd.lib,msvcrt.lib,oldnames.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/BExtractor.pdb"
 				SubSystem="2"

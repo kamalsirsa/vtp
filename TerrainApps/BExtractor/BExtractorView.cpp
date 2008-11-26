@@ -18,12 +18,16 @@
 #include "gdal_priv.h"
 #include "BImage.h"
 #include "Dib.h"
-#include "ipl.h"			// Image Processing Library 2.1
 #include "ProgDlg.h"
 #include <fstream>
 #include "vtdata/DataPath.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
+
+#if USE_IPL
+#include "ipl.h"			// Intel's old Image Processing Library 2.1
+#pragma comment(lib, "ipl.lib")
+#endif
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -1544,6 +1548,7 @@ void BExtractorView::MopRemoveRoadNodes(const DPoint2 &start, const DPoint2 &end
 
 void BExtractorView::OnFunctionsConvolve()
 {
+#if USE_IPL
 	BExtractorDoc* doc = GetDocument();
 	if (!doc->m_picLoaded)
 		return;
@@ -1777,13 +1782,17 @@ void BExtractorView::OnFunctionsConvolve()
 	AfxMessageBox(NumberBuildings, MB_ICONINFORMATION);
 
 	Invalidate(); //redraw picture
-
+#endif // USE_IPL
 }
 
 void BExtractorView::OnUpdateFunctionsConvolve(CCmdUI* pCmdUI)
 {
+#if USE_IPL
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
+#else
+	pCmdUI->Enable(false);
+#endif
 }
 
 

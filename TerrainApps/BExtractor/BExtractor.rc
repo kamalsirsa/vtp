@@ -139,7 +139,8 @@ BEGIN
     END
     POPUP "Functions"
     BEGIN
-        MENUITEM "&Extract Buildings\tCtrl+E",  ID_FUNCTIONS_CONVOLVE
+        MENUITEM "&Auto-Extract USGS DRG Buildings\tCtrl+E", 
+                                                ID_FUNCTIONS_CONVOLVE
     END
     POPUP "&View"
     BEGIN
