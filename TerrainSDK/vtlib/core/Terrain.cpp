@@ -2329,6 +2329,7 @@ bool vtTerrain::CreateStep1()
 		m_pTiledGeom->SetVerticalExag(m_fVerticalExag);
 		m_pTiledGeom->SetVertexTarget(m_Params.GetValueInt(STR_VERTCOUNT));
 		m_pTiledGeom->SetProgressCallback(m_progress_callback);
+		m_pTiledGeom->SetCastShadow(false);
 
 		// tile cache size is in MB for the user, but bytes for the class
 		int tile_cache_mb = m_Params.GetValueInt(STR_TILE_CACHE_SIZE);
@@ -2409,6 +2410,7 @@ bool vtTerrain::CreateFromTIN()
 	if (tex == 1)
 		m_pTin->SetTextureMaterials(m_pTerrMats);
 	vtGeom *geom = m_pTin->CreateGeometry(bDropShadow);
+	geom->SetCastShadow(false);
 	m_pTerrainGroup->AddChild(geom);
 
 	return true;
