@@ -1278,7 +1278,12 @@ bool vtImage::LoadFromGDAL(const char *fname)
 	{
 		m_pDataset = (GDALDataset *) GDALOpen(fname_local, GA_Update);
 		if (m_pDataset == NULL )
-			throw "Couldn't open that file.";
+		{
+			m_pDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
+			if (m_pDataset == NULL )
+				throw "Couldn't open that file.";
+		}
+
 
 		int iXSize = m_pDataset->GetRasterXSize();
 		int iYSize = m_pDataset->GetRasterYSize();
