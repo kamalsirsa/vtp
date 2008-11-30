@@ -132,6 +132,10 @@ public:
 	bool	m_bStructureShadows;
 	int		m_iStructureRez;
 	float	m_fDarkness;
+	bool	m_bShadowsDefaultOn;
+	bool	m_bShadowsEveryFrame;
+	bool	m_bLimitShadowArea;
+	float	m_fShadowRadius;
 	bool	m_bPagingStructures;
 	int		m_iPagingStructureMax;
 	float	m_fPagingStructureDist;

@@ -1204,58 +1204,83 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item47 = new wxBoxSizer( wxHORIZONTAL );
 
-    item47->Add( 15, 10, 0, wxALIGN_CENTER|wxALL, 5 );
+    item47->Add( 20, 20, 0, wxALIGN_CENTER|wxLEFT, 5 );
 
-    wxStaticText *item48 = new wxStaticText( parent, ID_TEXT, _("Resolution:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item47->Add( item48, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item48 = new wxBoxSizer( wxVERTICAL );
 
-    wxString *strs49 = (wxString*) NULL;
-    wxChoice *item49 = new wxChoice( parent, ID_CHOICE_SHADOW_REZ, wxDefaultPosition, wxSize(100,-1), 0, strs49, 0 );
-    item47->Add( item49, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxBoxSizer *item49 = new wxBoxSizer( wxHORIZONTAL );
 
-    item45->Add( item47, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticText *item50 = new wxStaticText( parent, ID_TEXT, _("Resolution:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item49->Add( item50, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item50 = new wxBoxSizer( wxHORIZONTAL );
+    wxString *strs51 = (wxString*) NULL;
+    wxChoice *item51 = new wxChoice( parent, ID_CHOICE_SHADOW_REZ, wxDefaultPosition, wxSize(100,-1), 0, strs51, 0 );
+    item49->Add( item51, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item50->Add( 15, 10, 0, wxALIGN_CENTER|wxALL, 5 );
+    item48->Add( item49, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxStaticText *item51 = new wxStaticText( parent, ID_TEXT, _("Darkness:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item50->Add( item51, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item52 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item52 = new wxTextCtrl( parent, ID_DARKNESS, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item50->Add( item52, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxStaticText *item53 = new wxStaticText( parent, ID_TEXT, _("Darkness:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item52->Add( item53, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item45->Add( item50, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxTextCtrl *item54 = new wxTextCtrl( parent, ID_DARKNESS, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item52->Add( item54, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxCheckBox *item53 = new wxCheckBox( parent, ID_CHECK_STRUCTURE_PAGING, _("Paging"), wxDefaultPosition, wxDefaultSize, 0 );
-    item45->Add( item53, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item48->Add( item52, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxBoxSizer *item54 = new wxBoxSizer( wxHORIZONTAL );
+    wxCheckBox *item55 = new wxCheckBox( parent, ID_SHADOWS_DEFAULT_ON, _("All structures cast shadows by default"), wxDefaultPosition, wxDefaultSize, 0 );
+    item48->Add( item55, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item54->Add( 15, 10, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxStaticText *item55 = new wxStaticText( parent, ID_TEXT, _("Maximum structures:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item54->Add( item55, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item56 = new wxTextCtrl( parent, ID_PAGING_MAX_STRUCTURES, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item54->Add( item56, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-
-    item45->Add( item54, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxCheckBox *item56 = new wxCheckBox( parent, ID_SHADOWS_EVERY_FRAME, _("Recompute shadows every frame"), wxDefaultPosition, wxDefaultSize, 0 );
+    item48->Add( item56, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item57 = new wxBoxSizer( wxHORIZONTAL );
 
-    item57->Add( 15, 10, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxStaticText *item58 = new wxStaticText( parent, ID_TEXT, _("Page-out distance:"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxCheckBox *item58 = new wxCheckBox( parent, ID_SHADOW_LIMIT, _("Limit shadow area:"), wxDefaultPosition, wxDefaultSize, 0 );
     item57->Add( item58, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item59 = new wxTextCtrl( parent, ID_PAGE_OUT_DISTANCE, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item57->Add( item59, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxTextCtrl *item59 = new wxTextCtrl( parent, ID_SHADOW_LIMIT_DIST, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
+    item57->Add( item59, 0, wxALIGN_CENTER|wxALL, 0 );
 
     wxStaticText *item60 = new wxStaticText( parent, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
     item57->Add( item60, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item45->Add( item57, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    item48->Add( item57, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    item47->Add( item48, 0, wxALIGN_CENTER, 5 );
+
+    item45->Add( item47, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxCheckBox *item61 = new wxCheckBox( parent, ID_CHECK_STRUCTURE_PAGING, _("Paging"), wxDefaultPosition, wxDefaultSize, 0 );
+    item45->Add( item61, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item62 = new wxBoxSizer( wxHORIZONTAL );
+
+    item62->Add( 15, 10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item63 = new wxStaticText( parent, ID_TEXT, _("Maximum structures:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item62->Add( item63, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item64 = new wxTextCtrl( parent, ID_PAGING_MAX_STRUCTURES, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item62->Add( item64, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item45->Add( item62, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item65 = new wxBoxSizer( wxHORIZONTAL );
+
+    item65->Add( 15, 10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item66 = new wxStaticText( parent, ID_TEXT, _("Page-out distance:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item65->Add( item66, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item67 = new wxTextCtrl( parent, ID_PAGE_OUT_DISTANCE, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item65->Add( item67, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxStaticText *item68 = new wxStaticText( parent, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
+    item65->Add( item68, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item45->Add( item65, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     item38->Add( item45, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 

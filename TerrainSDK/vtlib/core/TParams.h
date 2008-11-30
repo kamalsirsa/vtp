@@ -476,6 +476,12 @@ protected:
 #define STR_STRUCT_SHADOWS "Structure_Shadows"
 #define STR_SHADOW_REZ	"Shadow_Resolution"
 #define STR_SHADOW_DARKNESS "Shadow_Darkness"
+
+#define STR_SHADOWS_DEFAULT_ON "Shadows_Default_On"
+#define STR_SHADOWS_EVERY_FRAME "Shadows_Every_Frame"
+#define STR_LIMIT_SHADOW_AREA	"Limit_Shadow_Area"
+#define STR_SHADOW_RADIUS	"Shadow_Radius"
+
 #define STR_STRUCTURE_PAGING		"PagingStructures"
 #define STR_STRUCTURE_PAGING_MAX	"PagingStructureMax"
 #define STR_STRUCTURE_PAGING_DIST	"PagingStructureDist"
