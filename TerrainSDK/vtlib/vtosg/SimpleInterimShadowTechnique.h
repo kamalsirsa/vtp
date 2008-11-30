@@ -16,6 +16,8 @@
 #include <osg/Material>
 #include <osgShadow/ShadowTechnique>
 
+class vtHeightField3d;
+
 /** CSimpleInterimShadowTechnique provides an implementation of a depth map shadow tuned to the needs of VTP.*/
 class CSimpleInterimShadowTechnique : public osgShadow::ShadowTechnique
 {
@@ -24,10 +26,18 @@ public:
 	CSimpleInterimShadowTechnique(const CSimpleInterimShadowTechnique& es, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY);
 	META_Object(osgShadow, CSimpleInterimShadowTechnique);
 	void SetShadowTextureUnit(const unsigned int Unit);
+	void SetShadowTextureResolution(const unsigned int ShadowTextureResolution) { m_ShadowTextureResolution = ShadowTextureResolution; }
+	unsigned int GetShadowTextureResolution() { return m_ShadowTextureResolution; }
+	void SetRecalculateEveryFrame(const bool RecalculateEveryFrame) { m_RecalculateEveryFrame = RecalculateEveryFrame; }
+	bool GetRecalculateEveryFrame() { return m_RecalculateEveryFrame; }
 	void SetShadowDarkness(const float Darkness);
 	float GetShadowDarkness() { return m_ShadowDarkness; }
+	void SetShadowSphereRadius(const float ShadowSphereRadius) { m_ShadowSphereRadius = ShadowSphereRadius; }
+	float GetShadowSphereRadius() { return m_ShadowSphereRadius; }
+	void SetHeightField3d(vtHeightField3d *pHeightField3d) { m_pHeightField3d = pHeightField3d; }
 	void AddMainSceneTextureUnit(const unsigned int Unit, const unsigned int Mode);
 	void RemoveMainSceneTextureUnit(const unsigned int Unit);
+	void ForceShadowUpdate();
 
 	virtual void init();
 	virtual void update(osg::NodeVisitor& nv);
@@ -47,11 +57,16 @@ protected :
 	osg::ref_ptr<osg::Texture2D>	m_pTexture;
 	osg::ref_ptr<osg::StateSet>		m_pStateset;
 	osg::ref_ptr<osg::Material>		m_pMaterial;
-	unsigned int					m_ShadowTextureUnit;
-	unsigned int					m_ShadowTexureResolution;
-	float							m_PolygonOffsetFactor;
-	float							m_PolygonOffsetUnits;
-	float							m_ShadowDarkness;
+	unsigned int					m_ShadowTextureUnit;// Must be set before init is called
+	unsigned int					m_ShadowTextureResolution; // Must be set before init is called
+	bool							m_RecalculateEveryFrame; // Can be set any time
+	float							m_PolygonOffsetFactor; // Must be set before init is called
+	float							m_PolygonOffsetUnits; // Must be set before init is called
+	float							m_ShadowDarkness; // Must be set before init is called
+	float							m_ShadowSphereRadius; // Must be set before init is called
 	std::map<unsigned int, unsigned int>	m_MainSceneTextureUnits;
+	vtHeightField3d					*m_pHeightField3d;
+	osg::Vec3						m_OldBoundingSphereCentre;
+	osg::Vec3						m_OldSunPos;
 };
 #endif

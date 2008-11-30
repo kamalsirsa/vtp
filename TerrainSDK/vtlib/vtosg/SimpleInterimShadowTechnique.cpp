@@ -8,6 +8,8 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtdata/LocalConversion.h"
+#include "vtdata/HeightField.h"
 #include "SimpleInterimShadowTechnique.h"
 
 #include <osgShadow/ShadowTexture>
@@ -23,10 +25,13 @@ using namespace osgShadow;
 
 CSimpleInterimShadowTechnique::CSimpleInterimShadowTechnique():
     m_ShadowTextureUnit(1),
-	m_ShadowTexureResolution(1024),
+	m_ShadowTextureResolution(1024),
 	m_PolygonOffsetFactor(-1.0f),
 	m_PolygonOffsetUnits(-1.0f),
-	m_ShadowDarkness(1.0f)
+	m_ShadowDarkness(1.0f),
+	m_ShadowSphereRadius(0.0f),
+	m_RecalculateEveryFrame(false),
+	m_pHeightField3d(NULL)
 {
 	m_MainSceneTextureUnits[0] = GL_MODULATE;
 }
@@ -69,12 +74,18 @@ void CSimpleInterimShadowTechnique::RemoveMainSceneTextureUnit(const unsigned in
 	m_MainSceneTextureUnits.erase(Unit);
 }
 
+void CSimpleInterimShadowTechnique::ForceShadowUpdate()
+{
+	m_OldBoundingSphereCentre = osg::Vec3();
+	m_OldSunPos = osg::Vec3();
+}
+
 void CSimpleInterimShadowTechnique::init()
 {
     if (!_shadowedScene) return;
 
     m_pTexture = new osg::Texture2D;
-    m_pTexture->setTextureSize(m_ShadowTexureResolution, m_ShadowTexureResolution);
+    m_pTexture->setTextureSize(m_ShadowTextureResolution, m_ShadowTextureResolution);
     m_pTexture->setInternalFormat(GL_DEPTH_COMPONENT);
     m_pTexture->setShadowComparison(true);
     m_pTexture->setShadowTextureMode(osg::Texture2D::LUMINANCE);
@@ -95,7 +106,7 @@ void CSimpleInterimShadowTechnique::init()
 		m_pCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
 		m_pCamera->setClearColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
 		m_pCamera->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
-		m_pCamera->setViewport(0, 0, m_ShadowTexureResolution, m_ShadowTexureResolution);
+		m_pCamera->setViewport(0, 0, m_ShadowTextureResolution, m_ShadowTextureResolution);
         m_pCamera->setRenderOrder(osg::Camera::PRE_RENDER);
         m_pCamera->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER_OBJECT);
         m_pCamera->attach(osg::Camera::DEPTH_BUFFER, m_pTexture.get());
@@ -181,9 +192,6 @@ void CSimpleInterimShadowTechnique::update(osg::NodeVisitor& nv)
 
 void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
 {
-    // record the traversal mask on entry so we can reapply it later.
-    unsigned int traversalMask = cv.getTraversalMask();
-
     osgUtil::RenderStage* orig_rs = cv.getRenderStage();
 
     // Do traversal of shadow receiving scene.
@@ -204,7 +212,7 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
     // 1) get the light position
     // 2) get the center and extents of the view frustum
 
-    const osg::Light* selectLight = 0;
+    const osg::Light* pSunLight = NULL;
     osg::Vec4 lightpos;
 
     osgUtil::PositionalStateContainer::AttrMatrixList& aml = orig_rs->getPositionalStateContainer()->getAttrMatrixList();
@@ -212,79 +220,117 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
         itr != aml.end();
         ++itr)
     {
-        const osg::Light* light = dynamic_cast<const osg::Light*>(itr->first.get());
-        if (light)
+        pSunLight = dynamic_cast<const osg::Light*>(itr->first.get());
+        if (NULL != pSunLight)
         {
-            osg::RefMatrix* matrix = itr->second.get();
-            if (matrix) lightpos = light->getPosition() * (*matrix);
-            else lightpos = light->getPosition();
-
-            selectLight = light;
-			// We should only have one light (sun) in the scene
+            osg::RefMatrix* pMatrix = itr->second.get();
+            if (pMatrix)
+				lightpos = pSunLight->getPosition() * (*pMatrix);
+            else
+				lightpos = pSunLight->getPosition();
 			break;
         }
     }
     
-    osg::Matrix eyeToWorld;
-    eyeToWorld.invert(*cv.getModelViewMatrix());
-    
-    lightpos = lightpos * eyeToWorld;
 
-    if (selectLight)
+    if (NULL != pSunLight)
     {
+		osg::Vec3 EyeLocal = cv.getEyeLocal();
+		osg::Matrix eyeToWorld;
+		eyeToWorld.invert(*cv.getModelViewMatrix());
+	    
+		lightpos = lightpos * eyeToWorld;
 
-        // get the bounds of the model.    
-        osg::ComputeBoundsVisitor cbbv(osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN);
-        cbbv.setTraversalMask(getShadowedScene()->getCastsShadowTraversalMask());
-        
-        _shadowedScene->osg::Group::traverse(cbbv);
-        
-        osg::BoundingBox bb = cbbv.getBoundingBox();
+		osg::Vec3 BoundingSphereCentre;
+		osg::Vec3 SunPos(lightpos.x(), lightpos.y(), lightpos.z());
+		SunPos.normalize();
+		if (m_ShadowSphereRadius > 0.0)
+		{
+			// If I can find the intersections of the camera look vector with the terrain
+			// then use that as the centre of ShadowSphere otherwise use the camera position
+			if (NULL != m_pHeightField3d)
+			{
+				vtCamera *pCamera = vtGetScene()->GetCamera();
+				FPoint3 Intersection;
+				if (m_pHeightField3d->CastRayToSurface(pCamera->GetTrans(), pCamera->GetDirection(), Intersection))
+					v2s(Intersection, BoundingSphereCentre);
+				else
+					BoundingSphereCentre = EyeLocal;
+			}
+			else
+					BoundingSphereCentre = EyeLocal;
+		}
 
-		// make an orthographic projection
-		osg::Vec3 lightDir(lightpos.x(), lightpos.y(), lightpos.z());
-		lightDir.normalize();
+		if (m_RecalculateEveryFrame || (0 == m_ShadowSphereRadius) ||
+				((m_OldBoundingSphereCentre - BoundingSphereCentre).length() > m_ShadowSphereRadius / 10) ||
+				(acos(m_OldSunPos * SunPos) > 0.09)) // About 5 degrees
+		{
+			m_OldBoundingSphereCentre = BoundingSphereCentre;
+			m_OldSunPos = SunPos;
 
-		// set the position far away along the light direction
-		osg::Vec3 position = bb.center() + lightDir * bb.radius() * 2.0;
+			// get the bounds of the model.
+			osg::ComputeBoundsVisitor cbbv(osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN);
+			cbbv.setTraversalMask(getShadowedScene()->getCastsShadowTraversalMask());
+	        
+			_shadowedScene->osg::Group::traverse(cbbv);
+	        
+			osg::BoundingBox bb = cbbv.getBoundingBox();
 
-		float centerDistance = (position-bb.center()).length();
+			if (m_ShadowSphereRadius > 0.0)
+			{
+				osg::BoundingBox bb2;
+				bb2.expandBy(osg::BoundingSphere(BoundingSphereCentre, m_ShadowSphereRadius));
+				bb = bb.intersect(bb2);
+			}
 
-		float znear = centerDistance-bb.radius();
-		float zfar  = centerDistance+bb.radius();
-		float zNearRatio = 0.001f;
-		if (znear<zfar*zNearRatio) znear = zfar*zNearRatio;
+			// make an orthographic projection
+			osg::Vec3 lightDir(lightpos.x(), lightpos.y(), lightpos.z());
+			lightDir.normalize();
 
-		float top   = bb.radius();
-		float right = top;
+			// set the position far away along the light direction
+			osg::Vec3 position = bb.center() + lightDir * bb.radius() * 2.0;
 
-		m_pCamera->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
-		m_pCamera->setProjectionMatrixAsOrtho(-right, right, -top, top, znear, zfar);
-		m_pCamera->setViewMatrixAsLookAt(position, bb.center(), osg::Vec3(0.0f,1.0f,0.0f));
+			float centerDistance = (position-bb.center()).length();
 
+			float znear = centerDistance-bb.radius();
+			float zfar  = centerDistance+bb.radius();
+			float zNearRatio = 0.001f;
+			if (znear<zfar*zNearRatio) znear = zfar*zNearRatio;
 
-		// compute the matrix which takes a vertex from local coords into tex coords
-		// will use this later to specify osg::TexGen..
-		osg::Matrix VPT = m_pCamera->getViewMatrix() * 
-						   m_pCamera->getProjectionMatrix() *
-						   osg::Matrix::translate(1.0,1.0,1.0) *
-						   osg::Matrix::scale(0.5f,0.5f,0.5f);
-		                   
-		m_pTexgen->setMode(osg::TexGen::EYE_LINEAR);
-		m_pTexgen->setPlanesFromMatrix(VPT);
+			float top   = bb.radius();
+			float right = top;
+
+			m_pCamera->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
+			m_pCamera->setProjectionMatrixAsOrtho(-right, right, -top, top, znear, zfar);
+			m_pCamera->setViewMatrixAsLookAt(position, bb.center(), osg::Vec3(0.0f,1.0f,0.0f));
 
 
-        cv.setTraversalMask( traversalMask & 
-                             getShadowedScene()->getCastsShadowTraversalMask() );
+			// compute the matrix which takes a vertex from local coords into tex coords
+			// will use this later to specify osg::TexGen..
+			osg::Matrix VPT = m_pCamera->getViewMatrix() * 
+							   m_pCamera->getProjectionMatrix() *
+							   osg::Matrix::translate(1.0,1.0,1.0) *
+							   osg::Matrix::scale(0.5f,0.5f,0.5f);
+			                   
+			m_pTexgen->setMode(osg::TexGen::EYE_LINEAR);
+			m_pTexgen->setPlanesFromMatrix(VPT);
 
-        // do RTT camera traversal
-        m_pCamera->accept(cv);
+
+			unsigned int traversalMask = cv.getTraversalMask();
+
+			cv.setTraversalMask( traversalMask & 
+								 getShadowedScene()->getCastsShadowTraversalMask() );
+
+			// do RTT camera traversal
+			m_pCamera->accept(cv);
+
+			// reapply the original traversal mask
+			cv.setTraversalMask( traversalMask );
+		}
 
         orig_rs->getPositionalStateContainer()->addPositionedTextureAttribute(m_ShadowTextureUnit, cv.getModelViewMatrix(), m_pTexgen.get());
     }
 
-	// reapply the original traversal mask
-	cv.setTraversalMask( traversalMask );
 }
 
 void CSimpleInterimShadowTechnique::cleanSceneGraph()
@@ -396,7 +442,7 @@ osg::ref_ptr<osg::Camera> CSimpleInterimShadowTechnique::makeDebugHUD()
 		<< std::endl
 		<< "void main(void)" << std::endl
 		<< "{" << std::endl
-		<< "   vec4 texResult = texture2D(osgShadow_shadowTexture, gl_TexCoord[" << m_ShadowTextureUnit << "].st );" << std::endl
+		<< "   vec4 texResult = texture2D(osgShadow_shadowTexture, gl_TexCoord[" << (*m_MainSceneTextureUnits.begin()).first << "].st );" << std::endl
 		<< "   float value = texResult.r;" << std::endl
 		<< "   gl_FragColor = vec4( value, value, value, 0.8 );" << std::endl
 		<< "}" << std::endl;

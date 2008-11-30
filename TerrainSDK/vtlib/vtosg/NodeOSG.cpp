@@ -1474,7 +1474,6 @@ void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, enum Fog
 //
 
 vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowTextureUnit), vtGroup(true)
-
 {
 	m_pShadowedScene = new osgShadow::ShadowedScene;
 
@@ -1483,6 +1482,7 @@ vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowText
 
 	osg::ref_ptr<CSimpleInterimShadowTechnique> pShadowTechnique = new CSimpleInterimShadowTechnique;
 	pShadowTechnique->SetShadowTextureUnit(m_ShadowTextureUnit);
+	pShadowTechnique->SetShadowSphereRadius(50.0);
 	m_pShadowedScene->setShadowTechnique(pShadowTechnique.get());
 
 	SetOsgGroup(m_pShadowedScene);
@@ -1540,6 +1540,41 @@ void vtShadow::RemoveMainSceneTextureUnit(const unsigned int Unit)
 	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
 	if (pTechnique)
 		pTechnique->RemoveMainSceneTextureUnit(Unit);
+}
+
+void vtShadow::SetShadowTextureResolution(const unsigned int ShadowTextureResolution)
+{
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->SetShadowTextureResolution(ShadowTextureResolution);
+}
+
+void vtShadow::SetRecalculateEveryFrame(const bool RecalculateEveryFrame)
+{
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->SetRecalculateEveryFrame(RecalculateEveryFrame);
+}
+
+void vtShadow::SetShadowSphereRadius(const float ShadowSphereRadius)
+{
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->SetShadowSphereRadius(ShadowSphereRadius);
+}
+
+void vtShadow::SetHeightField3d(vtHeightField3d *pHeightField3d)
+{
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->SetHeightField3d(pHeightField3d);
+}
+
+void vtShadow::ForceShadowUpdate()
+{
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->ForceShadowUpdate();
 }
 
 void vtShadow::SetDebugHUD(vtGroup *pGroup)

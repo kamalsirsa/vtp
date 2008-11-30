@@ -342,6 +342,7 @@ public:
 	bool GetShadows() { return m_bShadows; }
 	void SetShadowDarkness(float bias);
 	float GetShadowDarkness();
+	void ForceShadowUpdate();
 
 	// Time
 	vtTime GetInitialTime();

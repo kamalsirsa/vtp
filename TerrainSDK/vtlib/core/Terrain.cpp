@@ -1296,6 +1296,9 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 		VTLOG("\tWarning: Structure %d apparently not within bounds of terrain grid.\n", index);
 		structures->DestroyStructure(index);
 	}
+	else
+		if (!m_Params.GetValueBool(STR_SHADOWS_DEFAULT_ON))
+			str3d->SetCastShadow(false);
 
 	return bSuccess;
 }
@@ -1998,6 +2001,14 @@ void vtTerrain::SetShadows(bool shadows)
 		if (!m_pShadow)
 		{
 			m_pShadow = new vtShadow(GetShadowTextureUnit());
+			m_pShadow->SetHeightField3d(GetHeightField());
+			m_pShadow->SetDarkness(m_Params.GetValueFloat(STR_SHADOW_DARKNESS));
+			m_pShadow->SetShadowTextureResolution(m_Params.GetValueInt(STR_SHADOW_REZ));
+			if (m_Params.GetValueBool(STR_LIMIT_SHADOW_AREA))
+				m_pShadow->SetShadowSphereRadius(m_Params.GetValueFloat(STR_SHADOW_RADIUS));
+			else
+				m_pShadow->SetShadowSphereRadius(GetLODDistance(TFT_STRUCTURES));
+			m_pShadow->SetRecalculateEveryFrame(m_Params.GetValueBool(STR_SHADOWS_EVERY_FRAME));
 			m_pShadow->SetName2("Shadow Group");
 			// When we connect up multitexturing it should probably be set up
 			// here intitially. But at the moment we have not stored the texture
@@ -2031,6 +2042,12 @@ float vtTerrain::GetShadowDarkness()
 	if (m_pShadow)
 		return m_pShadow->GetDarkness();
 	return 0.5f;
+}
+
+void vtTerrain::ForceShadowUpdate()
+{
+	if (m_pShadow)
+		m_pShadow->ForceShadowUpdate();
 }
 
 void vtTerrain::SetBgColor(const RGBf &color)

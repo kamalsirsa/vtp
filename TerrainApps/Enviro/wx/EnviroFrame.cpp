@@ -3087,6 +3087,7 @@ void EnviroFrame::OnPopupShadow(wxCommandEvent& event)
 			continue;
 		structures->GetStructure3d(i)->SetCastShadow(!structures->GetStructure3d(i)->GetCastShadow());
 	}
+	pTerr->ForceShadowUpdate();
 }
 
 void EnviroFrame::CarveTerrainToFitNode(vtNode *node)
