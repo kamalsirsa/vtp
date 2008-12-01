@@ -122,12 +122,12 @@ void CSimpleInterimShadowTechnique::init()
 		polygon_offset->setUnits(m_PolygonOffsetUnits);
 		stateset->setAttribute(polygon_offset.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
 		stateset->setMode(GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
-        
+
     }
- 
+
 	// Set up the shadowed scene state
     {
-        m_pStateset = new osg::StateSet;        
+        m_pStateset = new osg::StateSet;
         m_pStateset->setTextureAttributeAndModes(m_ShadowTextureUnit, m_pTexture.get(),osg::StateAttribute::ON);
         m_pStateset->setTextureMode(m_ShadowTextureUnit,GL_TEXTURE_GEN_S,osg::StateAttribute::ON);
         m_pStateset->setTextureMode(m_ShadowTextureUnit,GL_TEXTURE_GEN_T,osg::StateAttribute::ON);
@@ -139,7 +139,7 @@ void CSimpleInterimShadowTechnique::init()
 			m_pStateset->setTextureAttributeAndModes(m_ShadowTextureUnit, pTexEnv, osg::StateAttribute::ON);
 		}
 
- 
+
 		if ((m_ShadowDarkness != 1.0f) && !osg::Texture::getExtensions(0, true)->isShadowAmbientSupported())
 		{
 			// Set up dummy texture
@@ -180,7 +180,7 @@ void CSimpleInterimShadowTechnique::init()
 
         m_pTexgen = new osg::TexGen;
     }
-    
+
     _dirty = false;
 
 #if VTDEBUGSHADOWS
@@ -211,12 +211,10 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
 	// to conditionally apply it to each node that needs it.
     {
         cv.pushStateSet(m_pStateset.get());
-    
         _shadowedScene->osg::Group::traverse(cv);
-        
         cv.popStateSet();
     }
-    
+
     // need to compute view frustum for RTT camera.
     // 1) get the light position
     // 2) get the center and extents of the view frustum
@@ -240,14 +238,13 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
 			break;
         }
     }
-    
 
     if (NULL != pSunLight)
     {
 		osg::Vec3 EyeLocal = cv.getEyeLocal();
 		osg::Matrix eyeToWorld;
 		eyeToWorld.invert(*cv.getModelViewMatrix());
-	    
+
 		lightpos = lightpos * eyeToWorld;
 
 		osg::Vec3 BoundingSphereCentre;
@@ -271,18 +268,16 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
 		}
 
 		if (m_RecalculateEveryFrame || (0 == m_ShadowSphereRadius) ||
-				((m_OldBoundingSphereCentre - BoundingSphereCentre).length() > m_ShadowSphereRadius / 10) ||
-				(acos(m_OldSunPos * SunPos) > 0.09)) // About 5 degrees
+			((m_OldBoundingSphereCentre - BoundingSphereCentre).length() > m_ShadowSphereRadius / 10) ||
+			(acos(m_OldSunPos * SunPos) > 0.09)) // About 5 degrees
 		{
 			m_OldBoundingSphereCentre = BoundingSphereCentre;
 			m_OldSunPos = SunPos;
 
-			// get the bounds of the model.
+			// get the bounds of the shadow-casting nodes in the model.
 			osg::ComputeBoundsVisitor cbbv(osg::NodeVisitor::TRAVERSE_ACTIVE_CHILDREN);
 			cbbv.setTraversalMask(getShadowedScene()->getCastsShadowTraversalMask());
-	        
 			_shadowedScene->osg::Group::traverse(cbbv);
-	        
 			osg::BoundingBox bb = cbbv.getBoundingBox();
 
 #if VTDEBUGSHADOWS
@@ -290,10 +285,14 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
 			s2v(bb, vtbb);
 			Box1->SetBox(vtbb);
 #endif
+			// If the user want to further restrict shadows to a limited area
 			if (m_ShadowSphereRadius > 0.0)
 			{
+				// Make a box at the view center, with the desired size
 				osg::BoundingBox bb2;
 				bb2.expandBy(osg::BoundingSphere(BoundingSphereCentre, m_ShadowSphereRadius));
+
+				// Use the intersection of the node's extents and the limited box
 				bb = bb.intersect(bb2);
 #if VTDEBUGSHADOWS
 				s2v(bb2, vtbb);
@@ -303,8 +302,6 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
 				vtbb.max -= FPoint3(0.4f,0.4f,0.4f);
 				Box3->SetBox(vtbb);
 #endif
-				// TEMP TEST:
-				//bb = bb2;
 			}
 
 			// make an orthographic projection
@@ -328,21 +325,20 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
 			m_pCamera->setProjectionMatrixAsOrtho(-right, right, -top, top, znear, zfar);
 			m_pCamera->setViewMatrixAsLookAt(position, bb.center(), osg::Vec3(0.0f,1.0f,0.0f));
 
-
 			// compute the matrix which takes a vertex from local coords into tex coords
 			// will use this later to specify osg::TexGen..
-			osg::Matrix VPT = m_pCamera->getViewMatrix() * 
+			osg::Matrix VPT = m_pCamera->getViewMatrix() *
 							   m_pCamera->getProjectionMatrix() *
 							   osg::Matrix::translate(1.0,1.0,1.0) *
 							   osg::Matrix::scale(0.5f,0.5f,0.5f);
-			                   
+
 			m_pTexgen->setMode(osg::TexGen::EYE_LINEAR);
 			m_pTexgen->setPlanesFromMatrix(VPT);
 
 
 			unsigned int traversalMask = cv.getTraversalMask();
 
-			cv.setTraversalMask( traversalMask & 
+			cv.setTraversalMask( traversalMask &
 								 getShadowedScene()->getCastsShadowTraversalMask() );
 
 			// do RTT camera traversal
@@ -426,8 +422,8 @@ std::string CSimpleInterimShadowTechnique::GenerateFragmentShaderSource()
 class DrawableDrawWithDepthShadowComparisonOffCallback: public osg::Drawable::DrawCallback
 {
 public:
-// 
-	DrawableDrawWithDepthShadowComparisonOffCallback(osg::Texture2D * texture, unsigned stage = 0) 
+//
+	DrawableDrawWithDepthShadowComparisonOffCallback(osg::Texture2D * texture, unsigned stage = 0)
 														: _texture(texture), _stage(stage)
 {
 }
@@ -448,7 +444,7 @@ virtual void drawImplementation(osg::RenderInfo & ri,const osg::Drawable* drawab
 		if( _texture.valid() )
 		{
 			// Turn it back on
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, 
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB,
 			GL_COMPARE_R_TO_TEXTURE_ARB );
 		}
 	}
@@ -481,7 +477,7 @@ osg::ref_ptr<osg::Camera> CSimpleInterimShadowTechnique::makeDebugHUD()
 	// set the projection matrix
 	pCamera->setProjectionMatrix(osg::Matrix::ortho2D(0, size.x(), 0, size.y()));
 
-	// set the view matrix    
+	// set the view matrix
 	pCamera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 	pCamera->setViewMatrix(osg::Matrix::identity());
 
@@ -498,7 +494,7 @@ osg::ref_ptr<osg::Camera> CSimpleInterimShadowTechnique::makeDebugHUD()
 	osg::Geode* pGeode = new osg::Geode;
 
 	osg::Vec3 position(10.0f,size.y()-100.0f,0.0f);
-	osg::Vec3 delta(0.0f,-120.0f,0.0f); 
+	osg::Vec3 delta(0.0f,-120.0f,0.0f);
 	float length = 300.0f;
 
 	osg::Vec3 widthVec(length, 0.0f, 0.0f);

@@ -16,7 +16,7 @@
 #include <osg/Material>
 #include <osgShadow/ShadowTechnique>
 
-#if VTDEBUG
+#if VTDEBUGSHADOWS
 #include "vtlib/core/GeomUtil.h"
 #endif
 
@@ -50,7 +50,7 @@ public:
 
 	osg::ref_ptr<osg::Camera> makeDebugHUD();
 
-#if VTDEBUG
+#if VTDEBUGSHADOWS
 	// instrumentation
 	vtGroup *m_pParent;
 	vtDynBoundBox *Box1, *Box2, *Box3;
