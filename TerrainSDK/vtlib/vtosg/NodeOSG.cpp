@@ -1481,6 +1481,12 @@ vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowText
 	m_pShadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
 
 	osg::ref_ptr<CSimpleInterimShadowTechnique> pShadowTechnique = new CSimpleInterimShadowTechnique;
+
+#if VTDEBUGSHADOWS
+	// add some instrumentation
+	pShadowTechnique->m_pParent = this;
+#endif
+
 	pShadowTechnique->SetShadowTextureUnit(m_ShadowTextureUnit);
 	pShadowTechnique->SetShadowSphereRadius(50.0);
 	m_pShadowedScene->setShadowTechnique(pShadowTechnique.get());
@@ -1554,6 +1560,15 @@ void vtShadow::SetRecalculateEveryFrame(const bool RecalculateEveryFrame)
 	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
 	if (pTechnique)
 		pTechnique->SetRecalculateEveryFrame(RecalculateEveryFrame);
+}
+
+bool vtShadow::GetRecalculateEveryFrame() const
+{
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		return pTechnique->GetRecalculateEveryFrame();
+	else 
+		return false;
 }
 
 void vtShadow::SetShadowSphereRadius(const float ShadowSphereRadius)

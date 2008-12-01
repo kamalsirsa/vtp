@@ -75,6 +75,14 @@ public:
 	virtual void OnDelete(vtTerrain *t, vtStructure *s) {}
 };
 
+struct vtShadowOptions
+{
+	float fDarkness;
+	bool bShadowsEveryFrame;
+	bool bShadowLimit;
+	float fShadowRadius;
+};
+
 typedef bool (*ProgFuncPtrType)(int);
 
 /**
@@ -340,8 +348,8 @@ public:
 	RGBf GetBgColor() { return m_background_color; }
 	void SetShadows(bool shadows);
 	bool GetShadows() { return m_bShadows; }
-	void SetShadowDarkness(float bias);
-	float GetShadowDarkness();
+	void SetShadowOptions(const vtShadowOptions &opt);
+	void GetShadowOptions(vtShadowOptions &opt);
 	void ForceShadowUpdate();
 
 	// Time

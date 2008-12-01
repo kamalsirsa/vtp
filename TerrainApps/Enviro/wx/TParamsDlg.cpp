@@ -109,6 +109,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_CHECKBOX( ID_PLANTS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_CHECK_STRUCTURE_SHADOWS, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_SHADOW_LIMIT, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_CHECK_STRUCTURE_PAGING, TParamsDlg::OnCheckBox )
 
 	// Ephemeris
@@ -281,11 +282,17 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddValidator(ID_CONTENT_FILE, &m_strContent);
 	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
+
+	// shadows
 	AddValidator(ID_CHECK_STRUCTURE_SHADOWS, &m_bStructureShadows);
-	AddValidator(ID_CHOICE_SHADOW_REZ, &m_iStructureRez);
+	AddValidator(ID_CHOICE_SHADOW_REZ, &m_iShadowRez);
 	AddNumValidator(ID_DARKNESS, &m_fDarkness, 2);
 	AddValidator(ID_SHADOWS_DEFAULT_ON, &m_bShadowsDefaultOn);
 	AddValidator(ID_SHADOWS_EVERY_FRAME, &m_bShadowsEveryFrame);
+	AddValidator(ID_SHADOW_LIMIT, &m_bLimitShadowArea);
+	AddNumValidator(ID_SHADOW_LIMIT_RADIUS, &m_fShadowRadius);
+
+	// paging
 	AddValidator(ID_CHECK_STRUCTURE_PAGING, &m_bPagingStructures);
 	AddNumValidator(ID_PAGING_MAX_STRUCTURES, &m_iPagingStructureMax);
 	AddNumValidator(ID_PAGE_OUT_DISTANCE, &m_fPagingStructureDist, 1);
@@ -430,13 +437,15 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_strContent = wxString(Params.GetValueString(STR_CONTENT_FILE), wxConvUTF8);
 	m_Layers = Params.m_Layers;
 	m_iStructDistance = Params.GetValueInt(STR_STRUCTDIST);
+	// shadows
 	m_bStructureShadows =	 Params.GetValueBool(STR_STRUCT_SHADOWS);
-	m_iStructureRez = vt_log2(Params.GetValueInt(STR_SHADOW_REZ))-8;
+	m_iShadowRez =	 vt_log2(Params.GetValueInt(STR_SHADOW_REZ))-8;
 	m_fDarkness =			 Params.GetValueFloat(STR_SHADOW_DARKNESS);
 	m_bShadowsDefaultOn =	 Params.GetValueBool(STR_SHADOWS_DEFAULT_ON);
 	m_bShadowsEveryFrame =	 Params.GetValueBool(STR_SHADOWS_EVERY_FRAME);
 	m_bLimitShadowArea =	 Params.GetValueBool(STR_LIMIT_SHADOW_AREA);
 	m_fShadowRadius =		 Params.GetValueFloat(STR_SHADOW_RADIUS);
+	// paging
 	m_bPagingStructures =	 Params.GetValueBool(STR_STRUCTURE_PAGING);
 	m_iPagingStructureMax =	 Params.GetValueInt(STR_STRUCTURE_PAGING_MAX);
 	m_fPagingStructureDist = Params.GetValueFloat(STR_STRUCTURE_PAGING_DIST);
@@ -588,12 +597,14 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	Params.SetValueInt(STR_STRUCTDIST, m_iStructDistance);
 	Params.SetValueBool(STR_STRUCT_SHADOWS, m_bStructureShadows);
-	Params.SetValueInt(STR_SHADOW_REZ, 1 << (m_iStructureRez+8));
+	// shadows
+	Params.SetValueInt(STR_SHADOW_REZ, 1 << (m_iShadowRez+8));
 	Params.SetValueFloat(STR_SHADOW_DARKNESS, m_fDarkness);
 	Params.SetValueBool(STR_SHADOWS_DEFAULT_ON, m_bShadowsDefaultOn);
 	Params.SetValueBool(STR_SHADOWS_EVERY_FRAME, m_bShadowsEveryFrame);
-	Params.GetValueBool(STR_LIMIT_SHADOW_AREA, m_bLimitShadowArea);
+	Params.SetValueBool(STR_LIMIT_SHADOW_AREA, m_bLimitShadowArea);
 	Params.SetValueFloat(STR_SHADOW_RADIUS, m_fShadowRadius);
+	// paging
 	Params.SetValueBool(STR_STRUCTURE_PAGING, m_bPagingStructures);
 	Params.SetValueInt(STR_STRUCTURE_PAGING_MAX, m_iPagingStructureMax);
 	Params.SetValueFloat(STR_STRUCTURE_PAGING_DIST, m_fPagingStructureDist);
@@ -740,6 +751,8 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_DARKNESS)->Enable(m_bStructureShadows);
 	FindWindow(ID_SHADOWS_DEFAULT_ON)->Enable(m_bStructureShadows);
 	FindWindow(ID_SHADOWS_EVERY_FRAME)->Enable(m_bStructureShadows);
+	FindWindow(ID_SHADOW_LIMIT)->Enable(m_bStructureShadows);
+	FindWindow(ID_SHADOW_LIMIT_RADIUS)->Enable(m_bStructureShadows && m_bLimitShadowArea);
 	FindWindow(ID_PAGING_MAX_STRUCTURES)->Enable(m_bPagingStructures);
 	FindWindow(ID_PAGE_OUT_DISTANCE)->Enable(m_bPagingStructures);
 

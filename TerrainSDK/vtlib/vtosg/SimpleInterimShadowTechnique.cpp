@@ -1,9 +1,9 @@
 //
 // SimpleInterimShadowTechnique.cpp
 //
-// Encapsulate behavior for OSG scene graph nodes.
+// Implement an OSG shadow technique for vtosg.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -182,6 +182,15 @@ void CSimpleInterimShadowTechnique::init()
     }
     
     _dirty = false;
+
+#if VTDEBUGSHADOWS
+	Box1 = new vtDynBoundBox(RGBf(1,0,0));	// red box: bounds of shadow-casting nodes
+	Box2 = new vtDynBoundBox(RGBf(0,1,0));	// green box: bounds of shadow limit
+	Box3 = new vtDynBoundBox(RGBf(0,0,1));	// blue box: their intersection, use to render
+	m_pParent->AddChild(Box1->pGeom);
+	m_pParent->AddChild(Box2->pGeom);
+	m_pParent->AddChild(Box3->pGeom);
+#endif
 }
 
 
@@ -276,11 +285,26 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
 	        
 			osg::BoundingBox bb = cbbv.getBoundingBox();
 
+#if VTDEBUGSHADOWS
+			FBox3 vtbb;
+			s2v(bb, vtbb);
+			Box1->SetBox(vtbb);
+#endif
 			if (m_ShadowSphereRadius > 0.0)
 			{
 				osg::BoundingBox bb2;
 				bb2.expandBy(osg::BoundingSphere(BoundingSphereCentre, m_ShadowSphereRadius));
 				bb = bb.intersect(bb2);
+#if VTDEBUGSHADOWS
+				s2v(bb2, vtbb);
+				Box2->SetBox(vtbb);
+				s2v(bb, vtbb);
+				vtbb.min += FPoint3(0.4f,0.4f,0.4f);
+				vtbb.max -= FPoint3(0.4f,0.4f,0.4f);
+				Box3->SetBox(vtbb);
+#endif
+				// TEMP TEST:
+				//bb = bb2;
 			}
 
 			// make an orthographic projection

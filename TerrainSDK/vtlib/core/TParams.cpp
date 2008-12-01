@@ -125,7 +125,13 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_STRUCTDIST, "1000");		// 1 km
 	AddTag(STR_STRUCT_SHADOWS, "false");
 	AddTag(STR_SHADOW_REZ, "1024");
-	AddTag(STR_SHADOW_DARKNESS, "0.8");
+	AddTag(STR_SHADOW_DARKNESS, "0.5");
+
+	AddTag(STR_SHADOWS_DEFAULT_ON, "true");
+	AddTag(STR_SHADOWS_EVERY_FRAME, "true");
+	AddTag(STR_LIMIT_SHADOW_AREA, "false");
+	AddTag(STR_SHADOW_RADIUS, "300");
+
 	AddTag(STR_STRUCTURE_PAGING, "false");
 	AddTag(STR_STRUCTURE_PAGING_MAX, "2000");	// 2000 structures
 	AddTag(STR_STRUCTURE_PAGING_DIST, "2000");	// 2 km

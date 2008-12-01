@@ -2104,8 +2104,15 @@ void EnviroFrame::OnSceneEphemeris(wxCommandEvent& event)
 	m_pEphemDlg->m_bFog = terr->GetFog();
 	m_pEphemDlg->m_fFogDistance = param.GetValueFloat(STR_FOGDISTANCE);
 	RGBi col = terr->GetBgColor();
+	// shadows
 	m_pEphemDlg->m_bShadows = terr->GetShadows();
-	m_pEphemDlg->m_fDarkness = terr->GetShadowDarkness();
+	vtShadowOptions opt;
+	terr->GetShadowOptions(opt);
+	m_pEphemDlg->m_fDarkness = opt.fDarkness;
+	m_pEphemDlg->m_bShadowsEveryFrame = opt.bShadowsEveryFrame;
+	m_pEphemDlg->m_bShadowLimit = opt.bShadowLimit;
+	m_pEphemDlg->m_fShadowRadius = opt.fShadowRadius;
+
 	m_pEphemDlg->m_BgColor.Set(col.r, col.g, col.b);
 	m_pEphemDlg->m_iWindDir = param.GetValueInt("WindDirection");
 	m_pEphemDlg->m_fWindSpeed = param.GetValueFloat("WindSpeed");

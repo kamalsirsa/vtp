@@ -95,6 +95,13 @@ public:
 vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha = 0.5f);
 vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res = 24);
 vtMesh *CreateSphereMesh(const FSphere &sphere, int res = 24);
+vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
+						int Axis1, int Axis2, int Axis3,
+						const FPoint2 &min1, const FPoint2 &max1,
+						float fTiling, int steps);
+vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
+						const FPoint3 &size);
+void AddLineMesh(vtGeom *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1);
 vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res);
 vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
@@ -103,13 +110,15 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
 						   bool bCentered = true, int direction = 1);
 vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 					   const FPoint3 &min1, const FPoint3 &max1, int steps);
-vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
-						int Axis1, int Axis2, int Axis3,
-						const FPoint2 &min1, const FPoint2 &max1,
-						float fTiling, int steps);
-vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
-						const FPoint3 &size);
-void AddLineMesh(vtGeom *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1);
+
+class vtDynBoundBox
+{
+public:
+	vtDynBoundBox(const RGBf &color);
+	void SetBox(const FBox3 &box);
+	vtGeom *pGeom;
+	vtMesh *pMesh;
+};
 
 // Writing Wavefront OBJ format
 struct vtOBJFile

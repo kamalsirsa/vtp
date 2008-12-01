@@ -416,14 +416,14 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
  *
  * \param ePrimType The type of primitive this mesh will contain.  Allowed
  *		values are:
- *		- GL_POINTS
- *		- GL_LINES
- *		- GL_LINE_STRIP
- *		- GL_TRIANGLES
- *		- GL_TRIANGLE_STRIP
- *		- GL_TRIANGLE_FAN
- *		- GL_QUADS
- *		- GL_POLYGON
+ *		- vtMesh::POINTS
+ *		- vtMesh::LINES
+ *		- vtMesh::LINE_STRIP
+ *		- vtMesh::TRIANGLES
+ *		- vtMesh::TRIANGLE_STRIP
+ *		- vtMesh::TRIANGLE_FAN
+ *		- vtMesh::QUADS
+ *		- vtMesh::POLYGON
  *
  * \param VertType Flags which indicate what type of information is stored
  *		with each vertex.  This can be any combination of the following bit

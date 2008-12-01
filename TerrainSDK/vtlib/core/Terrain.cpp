@@ -2007,7 +2007,7 @@ void vtTerrain::SetShadows(bool shadows)
 			if (m_Params.GetValueBool(STR_LIMIT_SHADOW_AREA))
 				m_pShadow->SetShadowSphereRadius(m_Params.GetValueFloat(STR_SHADOW_RADIUS));
 			else
-				m_pShadow->SetShadowSphereRadius(GetLODDistance(TFT_STRUCTURES));
+				m_pShadow->SetShadowSphereRadius(GetLODDistance(TFT_STRUCTURES)/2);
 			m_pShadow->SetRecalculateEveryFrame(m_Params.GetValueBool(STR_SHADOWS_EVERY_FRAME));
 			m_pShadow->SetName2("Shadow Group");
 			// When we connect up multitexturing it should probably be set up
@@ -2031,17 +2031,40 @@ void vtTerrain::SetShadows(bool shadows)
 	}
 }
 
-void vtTerrain::SetShadowDarkness(float bias)
+void vtTerrain::SetShadowOptions(const vtShadowOptions &opt)
 {
+	//param.SetValueBool(STR_STRUCT_SHADOWS);
+	m_Params.SetValueFloat(STR_SHADOW_DARKNESS, opt.fDarkness);
+	m_Params.SetValueBool(STR_SHADOWS_EVERY_FRAME, opt.bShadowsEveryFrame);
+	m_Params.SetValueBool(STR_LIMIT_SHADOW_AREA, opt.bShadowLimit);
+	m_Params.SetValueFloat(STR_SHADOW_RADIUS, opt.fShadowRadius);
+
 	if (m_pShadow)
-		m_pShadow->SetDarkness(bias);
+	{
+		m_pShadow->SetDarkness(opt.fDarkness);
+		m_pShadow->SetRecalculateEveryFrame(opt.bShadowsEveryFrame);
+		if (opt.bShadowLimit)
+			m_pShadow->SetShadowSphereRadius(opt.fShadowRadius);
+		else
+			m_pShadow->SetShadowSphereRadius(GetLODDistance(TFT_STRUCTURES)/2);
+	}
 }
 
-float vtTerrain::GetShadowDarkness()
+void vtTerrain::GetShadowOptions(vtShadowOptions &opt)
 {
+	m_Params.GetValueBool(STR_LIMIT_SHADOW_AREA, opt.bShadowLimit);
+	m_Params.GetValueFloat(STR_SHADOW_RADIUS, opt.fShadowRadius);
+
 	if (m_pShadow)
-		return m_pShadow->GetDarkness();
-	return 0.5f;
+	{
+		opt.fDarkness = m_pShadow->GetDarkness();
+		opt.bShadowsEveryFrame = m_pShadow->GetRecalculateEveryFrame();
+	}
+	else
+	{
+		m_Params.GetValueFloat(STR_SHADOW_DARKNESS, opt.fDarkness);
+		m_Params.GetValueBool(STR_SHADOWS_EVERY_FRAME, opt.bShadowsEveryFrame);
+	}
 }
 
 void vtTerrain::ForceShadowUpdate()
@@ -2057,13 +2080,13 @@ void vtTerrain::SetBgColor(const RGBf &color)
 
 void vtTerrain::ConnectFogShadow(bool bFog, bool bShadow)
 {
-	// Add the fog into the scene graph between container and terrain
+	// Add the fog, or shadow, into the scene graph between container and terrain
 	while (m_pContainerGroup->GetNumChildren() > 0)
 		m_pContainerGroup->RemoveChild(m_pContainerGroup->GetChild(0));
-	if (m_pShadow && m_pShadow->GetNumChildren() > 0)
-		m_pShadow->RemoveChild(m_pShadow->GetChild(0));
-	if (m_pFog && m_pFog->GetNumChildren() > 0)
-		m_pFog->RemoveChild(m_pFog->GetChild(0));
+	if (m_pShadow)
+		m_pShadow->RemoveChild(m_pTerrainGroup);
+	if (m_pFog)
+		m_pFog->RemoveChild(m_pTerrainGroup);
 
 	if (bFog && m_pFog)
 	{
@@ -2761,6 +2784,8 @@ void vtTerrain::SetLODDistance(TFType ftype, float fDistance)
 			if (fDistance != m_pStructGrid->GetDistance())
 				VTLOG("Structure LOD dist = %.1f\n", fDistance);
 			m_pStructGrid->SetDistance(fDistance);
+			if (m_pShadow && !m_Params.GetValueBool(STR_LIMIT_SHADOW_AREA))
+				m_pShadow->SetShadowSphereRadius(fDistance);
 			EnforcePageOut();
 		}
 		break;

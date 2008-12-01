@@ -37,15 +37,20 @@ EVT_CHECKBOX( ID_SKY, EphemDlg::OnCheckBox )
 EVT_COMBOBOX( ID_SKYTEXTURE, EphemDlg::OnSkyTexture )
 EVT_CHECKBOX( ID_HORIZON, EphemDlg::OnCheckBox )
 EVT_CHECKBOX( ID_FOG, EphemDlg::OnCheckBox )
+
 EVT_CHECKBOX( ID_SHADOWS, EphemDlg::OnCheckBox )
+EVT_TEXT( ID_AMBIENT_BIAS, EphemDlg::OnDarkness )
+EVT_SLIDER( ID_SLIDER_AMBIENT_BIAS, EphemDlg::OnSliderDarkness )
+EVT_CHECKBOX( ID_SHADOWS_EVERY_FRAME, EphemDlg::OnCheckBox )
+EVT_CHECKBOX( ID_SHADOW_LIMIT, EphemDlg::OnCheckBox )
+EVT_TEXT( ID_SHADOW_LIMIT_RADIUS, EphemDlg::OnDarkness )
+
 EVT_BUTTON( ID_BGCOLOR, EphemDlg::OnBgColor )
 EVT_TEXT( ID_OCEANPLANEOFFSET, EphemDlg::OnOceanPlaneOffset )
 EVT_TEXT( ID_FOG_DISTANCE, EphemDlg::OnFogDistance )
-EVT_TEXT( ID_AMBIENT_BIAS, EphemDlg::OnDarkness )
 EVT_TEXT( ID_TEXT_WIND_DIRECTION, EphemDlg::OnWindDirection )
 EVT_TEXT( ID_TEXT_WIND_SPEED, EphemDlg::OnWindSpeed )
 EVT_SLIDER( ID_SLIDER_FOG_DISTANCE, EphemDlg::OnSliderFogDistance )
-EVT_SLIDER( ID_SLIDER_AMBIENT_BIAS, EphemDlg::OnSliderDarkness )
 EVT_SLIDER( ID_SLIDER_WIND_DIRECTION, EphemDlg::OnSliderWindDirection )
 EVT_SLIDER( ID_SLIDER_WIND_SPEED, EphemDlg::OnSliderWindSpeed)
 END_EVENT_TABLE()
@@ -70,13 +75,18 @@ AutoDialog( parent, id, title, position, size, style )
 	AddNumValidator(ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
 	AddValidator(ID_HORIZON, &m_bHorizon);
 
+	// fog
 	AddValidator(ID_FOG, &m_bFog);
 	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
 	AddValidator(ID_SLIDER_FOG_DISTANCE, &m_iFogDistance);
 
+	// shadows
 	AddValidator(ID_SHADOWS, &m_bShadows);
 	AddNumValidator(ID_AMBIENT_BIAS, &m_fDarkness);
 	AddValidator(ID_SLIDER_AMBIENT_BIAS, &m_iDarkness);
+	AddValidator(ID_SHADOWS_EVERY_FRAME, &m_bShadowsEveryFrame);
+	AddValidator(ID_SHADOW_LIMIT, &m_bShadowLimit);
+	AddNumValidator(ID_SHADOW_LIMIT_RADIUS, &m_fShadowRadius);
 
 	AddNumValidator(ID_TEXT_WIND_DIRECTION, &m_iWindDir);
 	AddValidator(ID_SLIDER_WIND_DIRECTION, &m_iWindDirSlider);
@@ -150,8 +160,16 @@ void EphemDlg::SetToScene()
 	terr->SetFeatureVisible(TFT_HORIZON, m_bHorizon);
 	terr->SetFog(m_bFog);
 	terr->SetFogDistance(m_fFogDistance);
+	// shadows
 	terr->SetShadows(m_bShadows);
-	terr->SetShadowDarkness(m_fDarkness);
+	vtShadowOptions opt;
+	terr->GetShadowOptions(opt);
+	opt.fDarkness = m_fDarkness;
+	opt.bShadowsEveryFrame = m_bShadowsEveryFrame;
+	opt.bShadowLimit = m_bShadowLimit;
+	opt.fShadowRadius = m_fShadowRadius;
+	terr->SetShadowOptions(opt);
+
 	RGBi col(m_BgColor.Red(), m_BgColor.Green(), m_BgColor.Blue());
 	terr->SetBgColor(col);
 	vtGetScene()->SetBgColor(col);

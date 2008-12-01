@@ -147,6 +147,14 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 }
 
 
+/**
+ * Create a block geometry with the indicated material and size.
+ * See vtMeshBase::CreateBlock for how the block is constructed.
+ *
+ * \param pMats   The array of materials to use.
+ * \param iMatIdx The index of the material to use.
+ * \param size	  The dimensions of the block in x, y, z.
+ */
 vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 						const FPoint3 &size)
 {
@@ -275,6 +283,50 @@ vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 	return pGeom;
 }
 
+
+vtDynBoundBox::vtDynBoundBox(const RGBf &color)
+{
+	pGeom = new vtGeom;
+
+	vtMaterialArray *mats = new vtMaterialArray;
+	mats->AddRGBMaterial1(color, false, false, true);	// wire material
+	pGeom->SetMaterials(mats);
+
+	pMesh = new vtMesh(vtMesh::LINES, 0, 8);
+	for (int i = 0; i < 8; i++)
+		pMesh->AddVertex(0,0,0);
+	pMesh->AddLine(0, 1);
+	pMesh->AddLine(1, 3);
+	pMesh->AddLine(3, 2);
+	pMesh->AddLine(2, 0);
+
+	pMesh->AddLine(0, 4);
+	pMesh->AddLine(1, 5);
+	pMesh->AddLine(3, 7);
+	pMesh->AddLine(2, 6);
+
+	pMesh->AddLine(4, 5);
+	pMesh->AddLine(5, 7);
+	pMesh->AddLine(7, 6);
+	pMesh->AddLine(6, 4);
+	pGeom->AddMesh(pMesh, 0);
+	pGeom->SetCastShadow(false);
+}
+
+void vtDynBoundBox::SetBox(const FBox3 &box)
+{
+	pMesh->SetVtxPos(0, FPoint3(box.min.x, box.min.y, box.min.z));
+	pMesh->SetVtxPos(1, FPoint3(box.max.x, box.min.y, box.min.z));
+	pMesh->SetVtxPos(2, FPoint3(box.min.x, box.min.y, box.max.z));
+	pMesh->SetVtxPos(3, FPoint3(box.max.x, box.min.y, box.max.z));
+
+	pMesh->SetVtxPos(4, FPoint3(box.min.x, box.max.y, box.min.z));
+	pMesh->SetVtxPos(5, FPoint3(box.max.x, box.max.y, box.min.z));
+	pMesh->SetVtxPos(6, FPoint3(box.min.x, box.max.y, box.max.z));
+	pMesh->SetVtxPos(7, FPoint3(box.max.x, box.max.y, box.max.z));
+
+	pMesh->ReOptimize();
+}
 
 //////////////////////////////////////////////////////////////
 

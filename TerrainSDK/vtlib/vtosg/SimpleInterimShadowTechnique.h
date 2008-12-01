@@ -5,7 +5,7 @@
 // It's interim because it should be replaced with something better.
 // It's a shadow technique.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2008 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,10 @@
 #include <osg/Camera>
 #include <osg/Material>
 #include <osgShadow/ShadowTechnique>
+
+#if VTDEBUG
+#include "vtlib/core/GeomUtil.h"
+#endif
 
 class vtHeightField3d;
 
@@ -46,6 +50,12 @@ public:
 
 	osg::ref_ptr<osg::Camera> makeDebugHUD();
 
+#if VTDEBUG
+	// instrumentation
+	vtGroup *m_pParent;
+	vtDynBoundBox *Box1, *Box2, *Box3;
+#endif
+
 protected :
 
 	virtual ~CSimpleInterimShadowTechnique() {}
@@ -69,4 +79,6 @@ protected :
 	osg::Vec3						m_OldBoundingSphereCentre;
 	osg::Vec3						m_OldSunPos;
 };
-#endif
+
+#endif	// VTOSG_SIMPLEINTERIMSHADOWTECHNIQUEH
+

@@ -130,7 +130,7 @@ public:
 	vtStringArray m_AnimPaths;
 	int		m_iStructDistance;
 	bool	m_bStructureShadows;
-	int		m_iStructureRez;
+	int		m_iShadowRez;
 	float	m_fDarkness;
 	bool	m_bShadowsDefaultOn;
 	bool	m_bShadowsEveryFrame;

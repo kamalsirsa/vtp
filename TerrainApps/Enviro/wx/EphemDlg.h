@@ -49,12 +49,18 @@ public:
 	bool m_bOceanPlane;
 	float m_fOceanPlaneLevel;
 	bool m_bHorizon;
+	// fog
 	bool m_bFog;
 	float m_fFogDistance;
+	// shadows
 	bool m_bShadows;
 	float m_fDarkness;
-	wxColor m_BgColor;
+	int m_iDarkness;
+	bool m_bShadowsEveryFrame;
+	bool m_bShadowLimit;
+	float m_fShadowRadius;
 
+	wxColor m_BgColor;
 	int m_iWindDir;
 	float m_fWindSpeed;
 
@@ -63,7 +69,6 @@ private:
 	bool m_bSetting;
 
 	int m_iFogDistance;
-	int m_iDarkness;
 	int m_iWindDirSlider;
 	int m_iWindSpeedSlider;
 
@@ -72,6 +77,7 @@ private:
 	void OnSkyTexture( wxCommandEvent &event );
 	void OnFogDistance( wxCommandEvent &event );
 	void OnDarkness( wxCommandEvent &event );
+	void OnShadowLimit( wxCommandEvent &event );
 	void OnOceanPlaneOffset( wxCommandEvent &event );
 	void OnSliderFogDistance( wxCommandEvent &event );
 	void OnSliderDarkness( wxCommandEvent &event );

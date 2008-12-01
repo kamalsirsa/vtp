@@ -409,13 +409,6 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 		}
 #else
 		m_pCurrentTerrain->SetShadows(true);
-		{
-			LocaleWrap normal_numbers(LC_NUMERIC, "C");
-			float fDarkness;
-			if (!param.GetValueFloat(STR_SHADOW_DARKNESS, fDarkness))
-				fDarkness = 0.8f;
-			m_pCurrentTerrain->SetShadowDarkness(fDarkness);
-		}
 #endif
 	}
 #endif

@@ -1240,7 +1240,7 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item58 = new wxCheckBox( parent, ID_SHADOW_LIMIT, _("Limit shadow area:"), wxDefaultPosition, wxDefaultSize, 0 );
     item57->Add( item58, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item59 = new wxTextCtrl( parent, ID_SHADOW_LIMIT_DIST, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
+    wxTextCtrl *item59 = new wxTextCtrl( parent, ID_SHADOW_LIMIT_RADIUS, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
     item57->Add( item59, 0, wxALIGN_CENTER|wxALL, 0 );
 
     wxStaticText *item60 = new wxStaticText( parent, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -2956,51 +2956,81 @@ wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item15 = new wxCheckBox( parent, ID_SHADOWS, _("Shadows"), wxDefaultPosition, wxDefaultSize, 0 );
     item14->Add( item15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("Darkness:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item14->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_AMBIENT_BIAS, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item14->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxSlider *item18 = new wxSlider( parent, ID_SLIDER_AMBIENT_BIAS, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
-    item14->Add( item18, 0, wxALIGN_CENTER|wxTOP, 5 );
-
     item0->Add( item14, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Scene background color:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    item16->Add( 20, 20, 0, wxALIGN_CENTER|wxLEFT, 5 );
 
-    wxStaticBitmap *item21 = new wxStaticBitmap( parent, ID_COLOR3, MyBitmapsFunc( 0 ), wxDefaultPosition, wxSize(32,18) );
-    item19->Add( item21, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+    wxBoxSizer *item17 = new wxBoxSizer( wxVERTICAL );
 
-    wxButton *item22 = new wxButton( parent, ID_BGCOLOR, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item18 = new wxBoxSizer( wxHORIZONTAL );
 
-    item0->Add( item19, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticText *item19 = new wxStaticText( parent, ID_TEXT, _("Darkness:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxFlexGridSizer *item23 = new wxFlexGridSizer( 3, 0, 0 );
+    wxTextCtrl *item20 = new wxTextCtrl( parent, ID_AMBIENT_BIAS, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item18->Add( item20, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Wind Direction:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item23->Add( item24, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxSlider *item21 = new wxSlider( parent, ID_SLIDER_AMBIENT_BIAS, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item18->Add( item21, 0, wxALIGN_CENTER, 5 );
 
-    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_TEXT_WIND_DIRECTION, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item23->Add( item25, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    item17->Add( item18, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxSlider *item26 = new wxSlider( parent, ID_SLIDER_WIND_DIRECTION, 0, 0, 150, wxDefaultPosition, wxSize(150,-1), wxSL_HORIZONTAL );
-    item23->Add( item26, 0, wxALIGN_CENTER|wxTOP, 5 );
+    wxCheckBox *item22 = new wxCheckBox( parent, ID_SHADOWS_EVERY_FRAME, _("Recompute shadows every frame"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item22, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Wind Speed:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item23->Add( item27, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_TEXT_WIND_SPEED, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item23->Add( item28, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    wxCheckBox *item24 = new wxCheckBox( parent, ID_SHADOW_LIMIT, _("Limit shadow area:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxSlider *item29 = new wxSlider( parent, ID_SLIDER_WIND_SPEED, 0, 0, 150, wxDefaultPosition, wxSize(150,-1), wxSL_HORIZONTAL );
-    item23->Add( item29, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxTOP, 5 );
+    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_SHADOW_LIMIT_RADIUS, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
+    item23->Add( item25, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    item0->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item26 = new wxStaticText( parent, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item17->Add( item23, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    item16->Add( item17, 0, wxALIGN_CENTER, 5 );
+
+    item0->Add( item16, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item27 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item28 = new wxStaticText( parent, ID_TEXT, _("Scene background color:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item27->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticBitmap *item29 = new wxStaticBitmap( parent, ID_COLOR3, MyBitmapsFunc( 0 ), wxDefaultPosition, wxSize(32,18) );
+    item27->Add( item29, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxButton *item30 = new wxButton( parent, ID_BGCOLOR, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+    item27->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item27, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxFlexGridSizer *item31 = new wxFlexGridSizer( 3, 0, 0 );
+
+    wxStaticText *item32 = new wxStaticText( parent, ID_TEXT, _("Wind Direction:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item32, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item33 = new wxTextCtrl( parent, ID_TEXT_WIND_DIRECTION, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item31->Add( item33, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+
+    wxSlider *item34 = new wxSlider( parent, ID_SLIDER_WIND_DIRECTION, 0, 0, 150, wxDefaultPosition, wxSize(150,-1), wxSL_HORIZONTAL );
+    item31->Add( item34, 0, wxALIGN_CENTER|wxTOP, 5 );
+
+    wxStaticText *item35 = new wxStaticText( parent, ID_TEXT, _("Wind Speed:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item35, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item36 = new wxTextCtrl( parent, ID_TEXT_WIND_SPEED, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item31->Add( item36, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+
+    wxSlider *item37 = new wxSlider( parent, ID_SLIDER_WIND_SPEED, 0, 0, 150, wxDefaultPosition, wxSize(150,-1), wxSL_HORIZONTAL );
+    item31->Add( item37, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxTOP, 5 );
+
+    item0->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

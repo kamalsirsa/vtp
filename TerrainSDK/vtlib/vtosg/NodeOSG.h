@@ -320,6 +320,7 @@ public:
 
 	void SetShadowTextureResolution(const unsigned int ShadowTextureResolution);
 	void SetRecalculateEveryFrame(const bool RecalculateEveryFrame);
+	bool GetRecalculateEveryFrame() const;
 	void SetShadowSphereRadius(const float ShadowSphereRadius);
 	void SetHeightField3d(vtHeightField3d *pHeightField3d);
 	void ForceShadowUpdate();
