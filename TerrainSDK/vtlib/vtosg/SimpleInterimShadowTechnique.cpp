@@ -8,6 +8,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "core/PagedLodGrid.h"
 #include "vtdata/LocalConversion.h"
 #include "vtdata/HeightField.h"
 #include "SimpleInterimShadowTechnique.h"
@@ -335,6 +336,22 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
 			m_pTexgen->setMode(osg::TexGen::EYE_LINEAR);
 			m_pTexgen->setPlanesFromMatrix(VPT);
 
+			// Ignore Lod grids
+			std::deque<float> OriginalLodDistances;
+			std::deque<bool> OriginalLoadingEnableds;
+			for (std::vector<vtLodGrid*>::iterator iTr = m_LodGridsToIgnore.begin(); iTr != m_LodGridsToIgnore.end(); iTr++)
+			{
+				vtLodGrid *pGrid = *iTr;
+				vtPagedStructureLodGrid *pPagedGrid = dynamic_cast<vtPagedStructureLodGrid*>(pGrid);
+				OriginalLodDistances.push_back(pGrid->GetDistance());
+				pGrid->SetDistance(1E9);
+				if (NULL != pPagedGrid)
+				{
+					OriginalLoadingEnableds.push_back(pPagedGrid->m_LoadingEnabled);
+					pPagedGrid->EnableLoading(false);
+				}
+			}
+
 
 			unsigned int traversalMask = cv.getTraversalMask();
 
@@ -346,6 +363,20 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
 
 			// reapply the original traversal mask
 			cv.setTraversalMask( traversalMask );
+
+			// Restore the lod grids
+			for (std::vector<vtLodGrid*>::iterator iTr = m_LodGridsToIgnore.begin(); iTr != m_LodGridsToIgnore.end(); iTr++)
+			{
+				vtLodGrid *pGrid = *iTr;
+				vtPagedStructureLodGrid *pPagedGrid = dynamic_cast<vtPagedStructureLodGrid*>(pGrid);
+				pGrid->SetDistance(OriginalLodDistances.front());
+				OriginalLodDistances.pop_front();
+				if (NULL != pPagedGrid)
+				{
+					pPagedGrid->EnableLoading(OriginalLoadingEnableds.front());
+					OriginalLoadingEnableds.pop_front();
+				}
+			}
 		}
 
         orig_rs->getPositionalStateContainer()->addPositionedTextureAttribute(m_ShadowTextureUnit, cv.getModelViewMatrix(), m_pTexgen.get());

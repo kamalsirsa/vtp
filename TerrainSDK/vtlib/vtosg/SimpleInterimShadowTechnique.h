@@ -21,6 +21,7 @@
 #endif
 
 class vtHeightField3d;
+class vtLodGrid;
 
 /** CSimpleInterimShadowTechnique provides an implementation of a depth map shadow tuned to the needs of VTP.*/
 class CSimpleInterimShadowTechnique : public osgShadow::ShadowTechnique
@@ -42,6 +43,7 @@ public:
 	void AddMainSceneTextureUnit(const unsigned int Unit, const unsigned int Mode);
 	void RemoveMainSceneTextureUnit(const unsigned int Unit);
 	void ForceShadowUpdate();
+	void AddLodGridToIgnore(vtLodGrid* pLodGrid) { m_LodGridsToIgnore.push_back(pLodGrid); }
 
 	virtual void init();
 	virtual void update(osg::NodeVisitor& nv);
@@ -74,6 +76,7 @@ protected :
 	float							m_PolygonOffsetUnits; // Must be set before init is called
 	float							m_ShadowDarkness; // Must be set before init is called
 	float							m_ShadowSphereRadius; // Must be set before init is called
+	std::vector<vtLodGrid*>			m_LodGridsToIgnore; // Can be set any time
 	std::map<unsigned int, unsigned int>	m_MainSceneTextureUnits;
 	vtHeightField3d					*m_pHeightField3d;
 	osg::Vec3						m_OldBoundingSphereCentre;

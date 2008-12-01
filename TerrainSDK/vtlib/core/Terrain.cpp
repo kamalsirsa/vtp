@@ -2009,6 +2009,7 @@ void vtTerrain::SetShadows(bool shadows)
 			else
 				m_pShadow->SetShadowSphereRadius(GetLODDistance(TFT_STRUCTURES)/2);
 			m_pShadow->SetRecalculateEveryFrame(m_Params.GetValueBool(STR_SHADOWS_EVERY_FRAME));
+			m_pShadow->AddLodGridToIgnore(GetStructureGrid());
 			m_pShadow->SetName2("Shadow Group");
 			// When we connect up multitexturing it should probably be set up
 			// here intitially. But at the moment we have not stored the texture

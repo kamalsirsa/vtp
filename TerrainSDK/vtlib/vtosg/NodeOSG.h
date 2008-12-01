@@ -302,6 +302,7 @@ protected:
  * A Shadow node allows you to apply shadows within all its child nodes.
  */
 class vtHeightField3d;
+class vtLodGrid;
 
 class vtShadow : public vtGroup
 {
@@ -323,6 +324,7 @@ public:
 	bool GetRecalculateEveryFrame() const;
 	void SetShadowSphereRadius(const float ShadowSphereRadius);
 	void SetHeightField3d(vtHeightField3d *pHeightField3d);
+	void AddLodGridToIgnore(vtLodGrid* pLodGrid);
 	void ForceShadowUpdate();
 
 	void SetDebugHUD(vtGroup *pGroup);

@@ -1585,6 +1585,13 @@ void vtShadow::SetHeightField3d(vtHeightField3d *pHeightField3d)
 		pTechnique->SetHeightField3d(pHeightField3d);
 }
 
+void vtShadow::AddLodGridToIgnore(vtLodGrid* pLodGrid)
+{
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->AddLodGridToIgnore(pLodGrid);
+}
+
 void vtShadow::ForceShadowUpdate()
 {
 	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
