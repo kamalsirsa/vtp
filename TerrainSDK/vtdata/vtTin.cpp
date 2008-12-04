@@ -358,7 +358,7 @@ bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
 		if ((i%200) == 0 && progress_callback != NULL)
 			progress_callback(40 + i * 40 / num_faces);
 
-		fscanf(fp, "%d %d %d\n", v, v+1, v+2);
+		fscanf(fp, "%d %d %d\n", v, v+2, v+1);
 		AddTri(v[0]-1, v[1]-1, v[2]-1);
 	}
 
