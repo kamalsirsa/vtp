@@ -19,7 +19,7 @@ ColorMap::ColorMap()
 	m_bRelative = true;
 }
 
-bool ColorMap::Save(const char *fname)
+bool ColorMap::Save(const char *fname) const
 {
 	// watch out for %f
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -110,6 +110,12 @@ void ColorMap::RemoveAt(int num)
 {
 	m_elev.erase(m_elev.begin()+num);
 	m_color.erase(m_color.begin()+num);
+}
+
+void ColorMap::Clear()
+{
+	m_elev.clear();
+	m_color.clear();
 }
 
 int ColorMap::Num() const

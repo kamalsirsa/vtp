@@ -22,10 +22,11 @@ class ColorMap
 {
 public:
 	ColorMap();
-	bool Save(const char *fname);
+	bool Save(const char *fname) const;
 	bool Load(const char *fname);
 	void Add(float elev, const RGBi &color);
 	void RemoveAt(int num);
+	void Clear();
 	int Num() const;
 	void GenerateColors(std::vector<RGBi> &table, int iTableSize, float fMin, float fMax) const;
 
