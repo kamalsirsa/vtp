@@ -200,6 +200,7 @@ public:
 	void ExportTIN();
 	void ExportPlanet();
 	void ExportVRML();
+	void ExportXYZ();
 	void ExportRAWINF();
 	void ExportChunkLOD();
 	void ExportPNG16();

@@ -169,6 +169,18 @@ void Builder::ExportVRML()
 		DisplayAndLog("Error writing file.");
 }
 
+void Builder::ExportXYZ()
+{
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TXT);
+	if (fname == "")
+		return;
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToXYZ(fname);
+	if (success)
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+	else
+		DisplayAndLog("Error writing file.");
+}
+
 void Builder::ExportRAWINF()
 {
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_RAW);

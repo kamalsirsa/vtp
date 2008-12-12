@@ -1978,7 +1978,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	if (!GetActiveElevLayer())
 		return;
 
-	wxString choices[12];
+	wxString choices[13];
 	choices[0] = _T("3TX");
 	choices[1] = _T("ArcInfo ASCII Grid");
 	choices[2] = _T("BMP");
@@ -1991,9 +1991,10 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	choices[9] = _T("TIN (.itf)");
 	choices[10] = _T("TerraGen");
 	choices[11] = _T("VRML ElevationGrid");
+	choices[12] = _T("XYZ ASCII Points");
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
-		_("Export to file format:"), 12, choices);
+		_("Export to file format:"), 13, choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -2011,6 +2012,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	case 9: ExportTIN(); break;
 	case 10: ExportTerragen(); break;
 	case 11: ExportVRML(); break;
+	case 12: ExportXYZ(); break;
 	}
 }
 

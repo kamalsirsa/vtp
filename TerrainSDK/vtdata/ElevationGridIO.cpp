@@ -2573,13 +2573,17 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
 	if (bColumnOrder)
 	{
 		// column-first ordering
-		iRows = (int) (extents.Height() / fabs(diff.y)) + 1;
+		double est = extents.Height() / fabs(diff.y);
+		int rounded = (int) (est + 0.5);	// round to nearest
+		iRows = rounded + 1;
 		iColumns = iNum / iRows;
 	}
 	else
 	{
 		// row-first ordering
-		iColumns = (int) (extents.Width() / fabs(diff.x)) + 1;
+		double est = extents.Width() / fabs(diff.x);
+		int rounded = (int) (est + 0.5);	// round to nearest
+		iColumns = rounded + 1;
 		iRows = iNum / iColumns;
 	}
 
@@ -2607,8 +2611,8 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
 
 		GetXYZLine(buf, pattern, format, components, &x, &y, &z);
 		p.Set(x, y);
-		xpos = (int) ((x - base.x) / spacing.x);
-		ypos = (int) ((y - base.y) / spacing.y);
+		xpos = (int) ((x - base.x) / spacing.x + 0.5);	// round to nearest
+		ypos = (int) ((y - base.y) / spacing.y + 0.5);
 		SetFValue(xpos, ypos, (float) z);
 		i++;
 	}
@@ -3016,6 +3020,39 @@ bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(
 	fprintf(fp, "\t] # children\n");
 	fprintf(fp, "} # Group\n");
 
+	fclose(fp);
+
+	return true;
+}
+
+/**
+ * Write elevation to a text file which contains an XYZ for each point.
+ *
+ * \returns \c true if the file was successfully opened and written.
+ */
+bool vtElevationGrid::SaveToXYZ(const char *szFileName, bool progress_callback(int)) const
+{
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	FILE *fp = vtFileOpen(szFileName, "wb");
+	if (!fp)
+		return false;
+
+	bool bGeo = (m_proj.IsGeographic() != 0);
+
+	DPoint3 loc;
+	for (int i = 0; i < m_iRows; i++)
+	{
+		for (int j = 0; j < m_iColumns; j++)
+		{
+			GetEarthLocation(i, j, loc);
+			if (bGeo)
+				fprintf(fp, "%.9f %.9f %.3f\n", loc.x, loc.y, loc.z);
+			else
+				fprintf(fp, "%.6f %.6f %.6f\n", loc.x, loc.y, loc.z);
+		}
+	}
 	fclose(fp);
 
 	return true;
