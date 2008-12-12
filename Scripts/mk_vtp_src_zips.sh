@@ -26,6 +26,8 @@ zip $DIST_FILE1 VTP/Makefile
 zip $DIST_FILE1 VTP/TerrainSDK/install-sh
 zip $DIST_FILE1 VTP/TerrainSDK/Makefile
 
+zip $DIST_FILE1 VTP/TerrainSDK/minidata/*
+
 zip $DIST_FILE1 VTP/TerrainSDK/unzip/*
 
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*.h
