@@ -11,6 +11,8 @@
 #include "wx/wx.h"
 #endif
 
+#include <wx/file.h>
+
 #include "vtdata/config_vtdata.h"
 
 #if SUPPORT_QUIKGRID
@@ -1421,7 +1423,16 @@ bool vtElevLayer::AskForSaveFilename()
 	else
 		filter = _("BT File (.bt)|*.bt|GZipped BT File (.bt.gz)|*.bt.gz");
 
-	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), GetLayerFilename(),
+	wxString defaultFilename = GetLayerFilename();
+
+	// Beware: if the default filename is on a path that is no longer valid,
+	//  then (at leats on Win32) the file dialog won't open.  Avoid this by
+	//  checking for validity first, and strip the path if needed.
+	bool valid = wxFile::Access(defaultFilename, wxFile::read);
+	if (!valid)
+		defaultFilename = StartOfFilename(defaultFilename);
+
+	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), defaultFilename,
 		filter, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	// If user always wants to default to compressed, overwrite

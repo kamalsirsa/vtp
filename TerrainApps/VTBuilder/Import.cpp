@@ -203,20 +203,29 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 			fname += internal_name;
 			break;
 		}
-		vtLayer *pLayer = ImportDataFromFile(ltype, fname, bRefresh, true);
+
+		// try to load, or import it
+		vtLayer *pLayer = LoadLayer(fname);
 		if (pLayer)
+			layer_count = 1;
+		else
 		{
-			bool success = AddLayerWithCheck(pLayer, true);
-			if (success)
-				layer_count = 1;
-			else
+			// Otherwise, try importing
+			pLayer = ImportDataFromFile(ltype, fname, bRefresh, true);
+			if (pLayer)
 			{
-				delete pLayer;
-				return 0;	// no layers created
+				bool success = AddLayerWithCheck(pLayer, true);
+				if (success)
+					layer_count = 1;
+				else
+				{
+					delete pLayer;
+					return 0;	// no layers created
+				}
+				// use the internal filename, not the archive filename which is temporary
+				pLayer->SetLayerFilename(internal_name);
+				pLayer->SetImportedFrom(fname_in);
 			}
-			// use the internal filename, not the archive filename which is temporary
-			pLayer->SetLayerFilename(internal_name);
-			pLayer->SetImportedFrom(fname_in);
 		}
 	}
 	else if (result > 1)

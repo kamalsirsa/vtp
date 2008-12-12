@@ -244,8 +244,10 @@ int ExpandTGZ(const char *archive_fname, const char *prepend_path)
 int ExpandZip(const char *archive_fname, const char *prepend_path,
 			  bool progress_callback(int))
 {
+	// vtUnzip doesn't handle utf8 paths, so convert to local
+	vtString local_fname = UTF8ToLocal(archive_fname);
 	vtUnzip uz;
-	bool success = uz.Open(archive_fname);
+	bool success = uz.Open(local_fname);
 	if (!success)
 		return -1;
 	return uz.Extract(true, true, prepend_path, progress_callback);

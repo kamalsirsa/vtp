@@ -323,7 +323,6 @@ public:
 	void DoDymaxMap();
 
 	// Layer methods
-	void LoadLayer(const wxString &fname);
 	virtual bool AddLayerWithCheck(vtLayer *pLayer, bool bRefresh = true);
 	virtual void RemoveLayer(vtLayer *lp);
 	virtual void SetActiveLayer(vtLayer *lp, bool refresh = false);

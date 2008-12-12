@@ -488,130 +488,6 @@ void MainFrame::AddMainToolbars()
 ////////////////////////////////////////////////////////////////
 // Application Methods
 
-//
-// Load a layer from a file without knowing its type
-//
-void MainFrame::LoadLayer(const wxString &fname_in)
-{
-	LayerType ltype = LT_UNKNOWN;
-
-	// check file extension
-	wxString fname = fname_in;
-	wxString ext = fname.AfterLast('.');
-
-	vtLayer *pLayer = NULL;
-	if (ext.CmpNoCase(_T("rmf")) == 0)
-	{
-		vtRoadLayer *pRL = new vtRoadLayer;
-		if (pRL->Load(fname))
-			pLayer = pRL;
-		else
-			delete pRL;
-	}
-	if (ext.CmpNoCase(_T("osm")) == 0)
-	{
-		OpenProgressDialog(fname, false);
-		vtString fname_utf = (const char*)fname.mb_str(wxConvUTF8);
-		vtRoadLayer *pRL = new vtRoadLayer;
-		if (pRL->ImportFromOSM(fname_utf, progress_callback))
-			pLayer = pRL;
-		else
-			delete pRL;
-		CloseProgressDialog();
-	}
-	if (ext.CmpNoCase(_T("bt")) == 0 ||
-		ext.CmpNoCase(_T("tin")) == 0 ||
-		ext.CmpNoCase(_T("itf")) == 0 ||
-		fname.Right(6).CmpNoCase(_T(".bt.gz")) == 0)
-	{
-		vtElevLayer *pEL = new vtElevLayer;
-		if (pEL->Load(fname))
-			pLayer = pEL;
-		else
-			delete pEL;
-	}
-#if SUPPORT_TRANSIT
-	if (ext.CmpNoCase(_T("xml")) == 0)
-	{
-		vtTransitLayer *pTL = new vtTransitLayer;
-		if (pTL->Load(fname))
-			pLayer = pTL;
-	}
-#endif
-	if (ext.CmpNoCase(_T("vtst")) == 0 ||
-		fname.Right(8).CmpNoCase(_T(".vtst.gz")) == 0)
-	{
-		vtStructureLayer *pSL = new vtStructureLayer;
-		if (pSL->Load(fname))
-			pLayer = pSL;
-		else
-			delete pSL;
-	}
-	if (ext.CmpNoCase(_T("vf")) == 0)
-	{
-		vtVegLayer *pVL = new vtVegLayer;
-		if (pVL->Load(fname))
-			pLayer = pVL;
-		else
-			delete pVL;
-	}
-	if (ext.CmpNoCase(_T("utl")) == 0)
-	{
-		vtUtilityLayer *pTR = new vtUtilityLayer;
-		if(pTR->Load(fname))
-			pLayer = pTR;
-		else
-			delete pTR;
-	}
-	if (ext.CmpNoCase(_T("shp")) == 0 ||
-		ext.CmpNoCase(_T("gml")) == 0 ||
-		ext.CmpNoCase(_T("xml")) == 0 ||
-		ext.CmpNoCase(_T("igc")) == 0)
-	{
-		vtRawLayer *pRL = new vtRawLayer;
-		if (pRL->Load(fname))
-			pLayer = pRL;
-		else
-			delete pRL;
-	}
-	if (ext.CmpNoCase(_T("img")) == 0)
-	{
-		vtImageLayer *pIL = new vtImageLayer;
-		if (pIL->Load(fname))
-			pLayer = pIL;
-		else
-			delete pIL;
-	}
-	if (ext.CmpNoCase(_T("tif")) == 0)
-	{
-		// If it's a 8-bit or 24-bit TIF, then it's likely to be an image.
-		// If it's a 16-bit TIF, then it's likely to be elevation.
-		int depth = GetBitDepthUsingGDAL(fname_in.mb_str(wxConvUTF8));
-		if (depth == 8 || depth == 24 || depth == 32)
-		{
-			vtImageLayer *pIL = new vtImageLayer;
-			if (pIL->Load(fname))
-				pLayer = pIL;
-			else
-				delete pIL;
-		}
-		else if (depth == 16)
-			ltype = LT_ELEVATION;
-	}
-	if (pLayer)
-	{
-		bool success = AddLayerWithCheck(pLayer, true);
-		if (!success)
-			delete pLayer;
-	}
-	else
-	{
-		// try importing
-		ImportDataFromArchive(ltype, fname, true);
-	}
-
-}
-
 void MainFrame::SetProjection(const vtProjection &p)
 {
 	Builder::SetProjection(p);
@@ -1177,7 +1053,14 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 		if (!str.Right(3).CmpNoCase(_T("vtb")))
 			GetMainFrame()->LoadProject(str);
 		else
-			GetMainFrame()->LoadLayer(str);
+		{
+			vtLayer *layer = GetMainFrame()->LoadLayer(str);
+			if (!layer)
+			{
+				// try importing
+				GetMainFrame()->ImportDataFromArchive(LT_UNKNOWN, str, true);
+			}
+		}
 	}
 	return TRUE;
 }

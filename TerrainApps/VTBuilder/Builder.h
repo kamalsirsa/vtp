@@ -54,8 +54,9 @@ public:
 	// Layer methods
 	int NumLayers() const { return m_Layers.GetSize(); }
 	vtLayer *GetLayer(int i) const { return m_Layers[i]; }
-	virtual bool AddLayerWithCheck(vtLayer *pLayer, bool bRefresh = true);
+	vtLayer *LoadLayer(const wxString &fname);
 	void AddLayer(vtLayer *lp);
+	virtual bool AddLayerWithCheck(vtLayer *pLayer, bool bRefresh = true);
 	virtual void RemoveLayer(vtLayer *lp);
 	void DeleteLayer(vtLayer *lp);
 	virtual void SetActiveLayer(vtLayer *lp, bool refresh = false);
