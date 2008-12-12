@@ -181,6 +181,7 @@ EVT_MENU(ID_ELEV_EXPORT_TILES,		MainFrame::OnElevExportTiles)
 EVT_MENU(ID_ELEV_COPY,				MainFrame::OnElevCopy)
 EVT_MENU(ID_ELEV_PASTE_NEW,			MainFrame::OnElevPasteNew)
 EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
+EVT_MENU(ID_ELEV_TOTIN,				MainFrame::OnElevToTin)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
 EVT_MENU(ID_ELEV_TRIMTIN,			MainFrame::OnElevTrimTin)
 
@@ -196,6 +197,7 @@ EVT_UPDATE_UI(ID_ELEV_EXPORT,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_EXPORT_TILES,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_COPY,			MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_TOTIN,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 EVT_UPDATE_UI(ID_ELEV_TRIMTIN,		MainFrame::OnUpdateElevTrimTin)
 
@@ -479,6 +481,7 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_EXPORT, _("E&xport To..."));
 	elevMenu->Append(ID_ELEV_EXPORT_TILES, _("Export to Tiles..."));
 	elevMenu->Append(ID_ELEV_BITMAP, _("Re&nder to Bitmap..."));
+	elevMenu->Append(ID_ELEV_TOTIN, _("Convert Grid to TIN"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, _("&Merge shared TIN vertices"));
 	elevMenu->AppendCheckItem(ID_ELEV_TRIMTIN, _("Trim TIN triangles by line segment"));
@@ -890,7 +893,7 @@ void MainFrame::OnLayerNew(wxCommandEvent &event)
 	SetActiveLayer(pL);
 	m_pView->SetActiveLayer(pL);
 	AddLayer(pL);
-	m_pTree->RefreshTreeItems(this);
+	RefreshTreeView();
 	RefreshToolbars();
 	RefreshLayerInView(pL);
 }
@@ -1366,7 +1369,7 @@ void MainFrame::OnLayerUp(wxCommandEvent &event)
 		SwapLayerOrder(num, num+1);
 
 	RefreshLayerInView(pLayer);
-	m_pTree->RefreshTreeItems(this);
+	RefreshTreeView();
 }
 
 void MainFrame::OnUpdateLayerUp(wxUpdateUIEvent& event)
@@ -1385,7 +1388,7 @@ void MainFrame::OnLayerDown(wxCommandEvent &event)
 		SwapLayerOrder(num-1, num);
 
 	RefreshLayerInView(pLayer);
-	m_pTree->RefreshTreeItems(this);
+	RefreshTreeView();
 }
 
 void MainFrame::OnUpdateLayerDown(wxUpdateUIEvent& event)
@@ -1985,11 +1988,12 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	choices[6] = _T("PNG (16-bit greyscale)");
 	choices[7] = _T("RAW/INF for MS Flight Simulator");
 	choices[8] = _T("STM");
-	choices[9] = _T("TerraGen");
-	choices[10] = _T("VRML ElevationGrid");
+	choices[9] = _T("TIN (.itf)");
+	choices[10] = _T("TerraGen");
+	choices[11] = _T("VRML ElevationGrid");
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
-		_("Export to file format:"), 11, choices);
+		_("Export to file format:"), 12, choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -2004,8 +2008,9 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	case 6: ExportPNG16(); break;
 	case 7: ExportRAWINF(); break;
 	case 8: ExportSTM(); break;
-	case 9: ExportTerragen(); break;
-	case 10: ExportVRML(); break;
+	case 9: ExportTIN(); break;
+	case 10: ExportTerragen(); break;
+	case 11: ExportVRML(); break;
 	}
 }
 
@@ -2040,6 +2045,21 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 	OpenProgressDialog(_("Generating Bitmap"));
 	ExportBitmap(GetActiveElevLayer(), dlg);
 	CloseProgressDialog();
+}
+
+void MainFrame::OnElevToTin(wxCommandEvent& event)
+{
+	vtElevLayer *pEL1 = GetActiveElevLayer();
+	vtElevationGrid *grid = pEL1->m_pGrid;
+
+	vtTin2d *tin = new vtTin2d(grid);
+	vtElevLayer *pEL = new vtElevLayer;
+	pEL->SetTin(tin);
+	AddLayer(pEL);
+	SetActiveLayer(pEL);
+
+	m_pView->Refresh();
+	RefreshTreeView();
 }
 
 void MainFrame::OnElevMergeTin(wxCommandEvent& event)
@@ -3490,7 +3510,7 @@ void MainFrame::OnLayerToTop(wxCommandEvent& event)
 	{
 		SwapLayerOrder(0, num);
 		RefreshLayerInView(data->m_pLayer);
-		m_pTree->RefreshTreeItems(this);
+		RefreshTreeView();
 	}
 }
 
@@ -3507,7 +3527,7 @@ void MainFrame::OnLayerToBottom(wxCommandEvent& event)
 	{
 		SwapLayerOrder(num, total-1);
 		RefreshLayerInView(data->m_pLayer);
-		m_pTree->RefreshTreeItems(this);
+		RefreshTreeView();
 	}
 }
 

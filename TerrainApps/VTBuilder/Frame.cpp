@@ -656,7 +656,7 @@ void MainFrame::RemoveLayer(vtLayer *lp)
 		m_pFeatInfoDlg->SetFeatureSet(NULL);
 	}
 	m_pView->Refresh();
-	m_pTree->RefreshTreeItems(this);
+	RefreshTreeView();
 	RefreshToolbars();
 }
 
@@ -1156,7 +1156,7 @@ void MainFrame::ShowOptionsDialog()
 	if (dlg.m_bShowPath != m_pTree->GetShowPaths())
 	{
 		m_pTree->SetShowPaths(dlg.m_bShowPath);
-		m_pTree->RefreshTreeItems(this);
+		RefreshTreeView();
 	}
 
 	if (bNeedRefresh)

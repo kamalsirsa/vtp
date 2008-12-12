@@ -1217,11 +1217,16 @@ void vtElevationGrid::FillWithSingleValue(float fValue)
 	m_fMaxHeight = fValue;
 }
 
+void vtElevationGrid::GetEarthPoint(int i, int j, DPoint2 &p) const
+{
+	p.Set(m_EarthExtents.left + i * m_dXStep,
+		m_EarthExtents.bottom + j * m_dYStep);
+}
+
 void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
 {
-	DPoint2 spacing = GetSpacing();
-	loc.Set(m_EarthExtents.left + i * spacing.x,
-		m_EarthExtents.bottom + j * spacing.y,
+	loc.Set(m_EarthExtents.left + i * m_dXStep,
+		m_EarthExtents.bottom + j * m_dYStep,
 		GetFValue(i, j));
 }
 

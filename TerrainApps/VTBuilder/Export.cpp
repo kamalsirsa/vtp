@@ -118,6 +118,20 @@ void Builder::ExportSTM()
 		DisplayAndLog("Error writing file.");
 }
 
+void Builder::ExportTIN()
+{
+	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TIN);
+	if (fname == "")
+		return;
+	vtTin2d *tin = new vtTin2d(GetActiveElevLayer()->m_pGrid);
+	bool success = tin->Write(fname);
+	if (success)
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+	else
+		DisplayAndLog("Error writing file.");
+	delete tin;
+}
+
 void Builder::ExportPlanet()
 {
 	static wxString default_path = wxEmptyString;

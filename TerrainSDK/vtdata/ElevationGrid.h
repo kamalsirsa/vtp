@@ -144,6 +144,7 @@ public:
 	bool  IsFloatMode()	const { return m_bFloatMode; }
 
 	void FillWithSingleValue(float fValue);
+	void GetEarthPoint(int i, int j, DPoint2 &p) const;
 	void GetEarthLocation(int i, int j, DPoint3 &loc) const;
 
 	vtProjection &GetProjection() { return m_proj; }

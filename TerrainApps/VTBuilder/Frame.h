@@ -180,6 +180,7 @@ protected:
 	void OnVertOffsetElevation(wxCommandEvent& event);
 	void OnElevExport(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
+	void OnElevToTin(wxCommandEvent& event);
 	void OnElevExportTiles(wxCommandEvent& event);
 	void OnElevMergeTin(wxCommandEvent& event);
 	void OnElevTrimTin(wxCommandEvent& event);

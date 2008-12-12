@@ -46,6 +46,32 @@ vtTin2d::vtTin2d()
 	m_bConstrain = false;
 }
 
+vtTin2d::vtTin2d(vtElevationGrid *grid)
+{
+	m_fEdgeLen = NULL;
+	m_bConstrain = false;
+
+	int cols, rows;
+	grid->GetDimensions(cols, rows);
+	m_proj = grid->GetProjection();
+
+	DPoint2 p;
+	for (int x = 0; x < cols; x++)
+		for (int y = 0; y < rows; y++)
+		{
+			grid->GetEarthPoint(x, y, p);
+			AddVert(p, grid->GetFValue(x, y));
+		}
+	for (int x = 0; x < cols-1; x++)
+		for (int y = 0; y < rows-1; y++)
+		{
+			int base = y * cols + x;
+			AddTri(base, base+1, base + cols);
+			AddTri(base + cols, base+1, base + cols+1);
+		}
+	ComputeExtents();
+}
+
 void vtTin2d::DrawTin(wxDC *pDC, vtScaledView *pView)
 {
 	wxPen TinPen(wxColor(128,0,128), 1, wxSOLID);

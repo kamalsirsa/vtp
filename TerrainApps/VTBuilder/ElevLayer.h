@@ -27,6 +27,7 @@ class vtTin2d : public vtTin
 {
 public:
 	vtTin2d();
+	vtTin2d(vtElevationGrid *grid);
 
 	void DrawTin(wxDC *pDC, vtScaledView *pView);
 	void ComputeEdgeLengths();

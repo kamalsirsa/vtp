@@ -196,6 +196,7 @@ public:
 	void ExportTerragen();
 	void ExportBMP();
 	void ExportSTM();
+	void ExportTIN();
 	void ExportPlanet();
 	void ExportVRML();
 	void ExportRAWINF();
