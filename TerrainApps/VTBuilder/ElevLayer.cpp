@@ -67,9 +67,9 @@ vtTin2d::vtTin2d(vtElevationGrid *grid)
 	for (int x = 0; x < cols-1; x++)
 		for (int y = 0; y < rows-1; y++)
 		{
-			int base = y * cols + x;
-			AddTri(base, base+1, base + cols);
-			AddTri(base + cols, base+1, base + cols+1);
+			int base = x * rows + y;
+			AddTri(base, base + rows, base+1);
+			AddTri(base+1, base + rows, base + rows+1);
 		}
 	ComputeExtents();
 }
