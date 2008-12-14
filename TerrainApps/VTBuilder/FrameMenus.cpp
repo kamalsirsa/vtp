@@ -1090,6 +1090,7 @@ void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 
 	AddType(filter, FSTRING_DBF);	// old-style database
 	AddType(filter, FSTRING_CSV);	// comma-separated values
+	AddType(filter, FSTRING_XYZ);	// space-separated X Y Z
 
 	wxFileDialog loadFile(NULL, _("Import Point Data"), _T(""), _T(""),
 		filter, wxFD_OPEN);
@@ -1097,8 +1098,12 @@ void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
+	OpenProgressDialog(_T("Importing"));
+
 	wxString str = loadFile.GetPath();
-	ImportDataPointsFromTable(str.mb_str(wxConvUTF8));
+	ImportDataPointsFromTable(str.mb_str(wxConvUTF8), progress_callback);
+
+	CloseProgressDialog();
 }
 
 void MainFrame::OnLayerImportXML(wxCommandEvent &event)

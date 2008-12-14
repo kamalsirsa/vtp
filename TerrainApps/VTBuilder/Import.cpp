@@ -1287,14 +1287,14 @@ vtFeatureSetPoint2D *Builder::ImportPointsFromDBF(const char *fname)
 	return pSet;
 }
 
-void Tokenize(char *buf, vtStringArray &tokens)
+void Tokenize(char *buf, char *delim, vtStringArray &tokens)
 {
 	char *p = NULL;
-	p = strtok(buf, ",");
+	p = strtok(buf, delim);
 	while (p != NULL)
 	{
 		tokens.push_back(vtString(p));
-		p = strtok(NULL, ",");
+		p = strtok(NULL, delim);
 	}
 }
 
@@ -1307,7 +1307,7 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 	char buf[4096];
 	vtStringArray fieldnames;
 	fgets(buf, 4096, fp);
-	Tokenize(buf, fieldnames);
+	Tokenize(buf, ",", fieldnames);
 	int iFields = (int)fieldnames.size();
 	if (iFields == 0)
 	{
@@ -1359,7 +1359,7 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 		while (fgets(buf, 4096, fp))
 		{
 			vtStringArray values;
-			Tokenize(buf, values);
+			Tokenize(buf, ",", values);
 
 			DPoint3 p;
 			p.x = ExtractValueFromString(values[iEast], iStyle, true, dlg.m_bLongitudeWest);
@@ -1383,7 +1383,7 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 		while (fgets(buf, 4096, fp))
 		{
 			vtStringArray values;
-			Tokenize(buf, values);
+			Tokenize(buf, ",", values);
 
 			DPoint2 p;
 			p.x = ExtractValueFromString(values[iEast], iStyle, true, dlg.m_bLongitudeWest);
@@ -1395,11 +1395,44 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 	}
 }
 
+vtFeatureSet *Builder::ImportPointsFromXYZ(const char *fname, bool progress_callback(int))
+{
+	FILE *fp = vtFileOpen(fname, "rb");
+	if (fp == NULL)
+		return NULL;
+
+	int line = 0, count = 0;
+	char buf[4096];
+
+	// Now import
+	vtFeatureSetPoint3D *pSet = new vtFeatureSetPoint3D;
+
+	while (fgets(buf, 4096, fp))
+	{
+		line++;
+		if ((line % 1024) == 0)
+		{
+			progress_callback(count);
+			if (++count > 99) count = 0;
+		}
+
+		vtStringArray values;
+		Tokenize(buf, " ", values);
+
+		DPoint3 p;
+		p.x = atof(values[0]);
+		p.y = atof(values[1]);
+		p.z = atof(values[2]);
+		int record = pSet->AddPoint(p);
+	}
+	pSet->SetFilename(fname);
+	return pSet;
+}
 
 //
 // Import point data from a tabular data source such as a .dbf or .csv
 //
-void Builder::ImportDataPointsFromTable(const char *fname)
+void Builder::ImportDataPointsFromTable(const char *fname, bool progress_callback(int))
 {
 	vtFeatureSet *pSet = NULL;
 
@@ -1408,6 +1441,8 @@ void Builder::ImportDataPointsFromTable(const char *fname)
 		pSet = ImportPointsFromDBF(fname);
 	else if (!ext.CompareNoCase(".csv"))
 		pSet = ImportPointsFromCSV(fname);
+	else if (!ext.CompareNoCase(".xyz"))
+		pSet = ImportPointsFromXYZ(fname, progress_callback);
 	else
 		return;
 

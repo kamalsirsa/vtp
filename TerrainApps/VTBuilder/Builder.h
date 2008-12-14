@@ -181,7 +181,8 @@ public:
 	void ImportFromMapSource(const char *fname);
 	vtFeatureSetPoint2D *ImportPointsFromDBF(const char *fname);
 	vtFeatureSet *ImportPointsFromCSV(const char *fname);
-	void ImportDataPointsFromTable(const char *fname);
+	vtFeatureSet *ImportPointsFromXYZ(const char *fname, bool progress_callback(int) = NULL);
+	void ImportDataPointsFromTable(const char *fname, bool progress_callback(int) = NULL);
 	int ImportDataFromTIGER(const wxString &strDirName);
 	void ImportDataFromNTF(const wxString &strFileName);
 	void ImportDataFromS57(const wxString &strDirName);
