@@ -10,6 +10,9 @@ IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	  -I$(GDAL_INC) \
 	  -I$(OSG_INC) \
 	  -I$(TERRAIN_SDK_DIR)
+ifneq ($(OS),Darwin)
+IFLAGS += -I$(X_INC)
+endif
 
 LDIRS  = \
 	  $(VTDATA_INST_DIR)     \
@@ -21,8 +24,10 @@ LDIRS  = \
 	  $(SHAPE_LIB)           \
 	  $(PNG_LIB)             \
 	  $(GDAL_LIB)            \
-	  $(X_LIB)               \
 	  $(EXTRA_LDIRS)
+ifneq ($(OS),Darwin)
+LDIRS += $(X_LIB)
+endif
 
 SWITCHES := $(SWITCHES) -DUNIX -DVTLIB_OSG=1
 CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS)
@@ -38,30 +43,27 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) \
 	 $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
 	 -lgdal \
-	 -lbz2 -lcurl -lm $(EXTRA_LIBS)
+	 -lm
 
-# Support of Mac OS X
 ifeq ($(OS),Darwin)
+# Support for Mac OS X
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS   += -F$(FRAMEWORKS) \
-	  -lobjc -framework Carbon \
+	  -lobjc \
 	  -framework vtdata -framework vtui -framework vtosg \
 	  -framework xmlhelper -framework unzip \
 	  $(OSG_OPTS) \
 	  -framework OpenGL \
-	  -L$(FINK_LIB) -lnetcdf \
-	  -lX11 -L$(X11BASE)/lib \
+	  -L$(FINK_LIB) \
 	  -lz -lstdc++ \
 	  -Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS \
 	  -bind_at_load
-
-all : $(OSX_APP)
-
 else
 # Support for all other Unix platforms
 LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg \
-	$(MINI_LIB) -lGL $(GLU_LIB) -lX11 \
-	-losg -losgDB -losgUtil -losgText -losgParticle -lOpenThreads                
+	$(MINI_LIB) -lGL $(GLU_LIB) -lX11 $(EXTRA_LIBS) \
+	-losg -losgDB -losgUtil -losgText -losgParticle -lOpenThreads
+endif
 
 LDIR   +=\
 	  $(VTDATA_INST_DIR)             \
@@ -69,6 +71,10 @@ LDIR   +=\
 	  $(VTOSG_INST_DIR)              \
 	  $(XMLHELPER_INST_DIR)
 
+
+ifeq ($(OS),Darwin)
+all : $(OSX_APP)
+else
 all : $(EXEC)
 endif
 
