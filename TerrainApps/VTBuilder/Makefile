@@ -69,6 +69,9 @@ endif
 ifeq ($(SUPPORT_SQUISH),1)
 	LIBS += -lsquish
 endif
+ifeq ($(SUPPORT_QUIKGRID),1)
+	LIBS += -lquikgrid
+endif
 
 LDIRS  += \
 	  $(VTDATA_INST_DIR)             \

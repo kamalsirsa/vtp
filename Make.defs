@@ -5,7 +5,9 @@
 #----------------------------------------------------------------------------
 # Override defs (set by ?=) with user defs
 #    here are some examples:
+#       SUPPORT_NETCDF = 0
 #       SUPPORT_SQUISH = 1
+#       GDAL_BASE = /usr/local/gdal
 #       OSG_BASE = /usr/local/osg
 #       MINI_INC = $(VTP_ROOT)/../deps
 #       MINI_LIB = $(VTP_ROOT)/../deps/mini/libMini.a
