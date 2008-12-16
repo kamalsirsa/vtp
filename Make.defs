@@ -6,8 +6,8 @@
 # Override defs (set by ?=) with user defs
 #    here are some examples:
 #       SUPPORT_SQUISH = 1
-#       OSG_BASE = /usr/local/osg-2.6
-#       MINI_INC = $(VTP_ROOT)/../deps"
+#       OSG_BASE = /usr/local/osg
+#       MINI_INC = $(VTP_ROOT)/../deps
 #       MINI_LIB = $(VTP_ROOT)/../deps/mini/libMini.a
 #----------------------------------------------------------------------------
 -include $(HOME)/.vtp-user.defs
