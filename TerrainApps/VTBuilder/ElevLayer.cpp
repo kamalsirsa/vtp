@@ -95,8 +95,8 @@ vtTin2d::vtTin2d(vtFeatureSetPoint3D *set)
 	// point list
 	in.numberofpoints = set->GetNumEntities();
 	in.pointlist = (REAL *) malloc(in.numberofpoints * 2 * sizeof(REAL));
-	in.numberofpointattributes = set->GetNumEntities();
-	in.pointattributelist = (REAL *) malloc(in.numberofpointattributes * sizeof(REAL));
+	in.numberofpointattributes = 1;
+	in.pointattributelist = (REAL *) malloc(in.numberofpoints * sizeof(REAL));
 
 	for ( i = 0; i < in.numberofpoints; ++i )
 	{

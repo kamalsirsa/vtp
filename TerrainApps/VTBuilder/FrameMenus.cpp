@@ -553,10 +553,10 @@ void MainFrame::CreateMenus()
 	rawMenu->Append(ID_RAW_SCALE, _("Scale"));
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SELECTCONDITION, _("Select Features by Condition"));
-	rawMenu->Append(ID_RAW_CONVERT_TOTIN, _("Convert 3D points to TIN"));
 	rawMenu->Append(ID_RAW_EXPORT_IMAGEMAP, _("Export as HTML ImageMap"));
 	rawMenu->Append(ID_RAW_EXPORT_KML, _("Export as KML"));
 	rawMenu->Append(ID_RAW_GENERATE_ELEVATION, _("Generate Grid from 3D Points"));
+	rawMenu->Append(ID_RAW_CONVERT_TOTIN, _("Generate TIN from 3D points"));
 	m_pMenuBar->Append(rawMenu, _("Ra&w"));
 	m_iLayerMenu[LT_RAW] = menu_num;
 	menu_num++;
