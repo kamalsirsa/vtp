@@ -269,6 +269,7 @@ EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
 EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
 EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
+EVT_MENU(ID_RAW_CONVERT_TOTIN,		MainFrame::OnRawConvertToTIN)
 EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
 EVT_MENU(ID_RAW_EXPORT_KML,			MainFrame::OnRawExportKML)
 EVT_MENU(ID_RAW_GENERATE_ELEVATION,	MainFrame::OnRawGenElevation)
@@ -280,6 +281,7 @@ EVT_UPDATE_UI(ID_RAW_ADDPOINTS,			MainFrame::OnUpdateRawAddPoints)
 EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnUpdateRawAddPointText)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnUpdateRawAddPointsGPS)
 EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_CONVERT_TOTIN,		MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_EXPORT_KML,		MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_GENERATE_ELEVATION,MainFrame::OnUpdateRawGenElevation)
@@ -551,6 +553,7 @@ void MainFrame::CreateMenus()
 	rawMenu->Append(ID_RAW_SCALE, _("Scale"));
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SELECTCONDITION, _("Select Features by Condition"));
+	rawMenu->Append(ID_RAW_CONVERT_TOTIN, _("Convert 3D points to TIN"));
 	rawMenu->Append(ID_RAW_EXPORT_IMAGEMAP, _("Export as HTML ImageMap"));
 	rawMenu->Append(ID_RAW_EXPORT_KML, _("Export as KML"));
 	rawMenu->Append(ID_RAW_GENERATE_ELEVATION, _("Generate Grid from 3D Points"));
@@ -3194,6 +3197,23 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 		m_pView->Refresh(false);
 		OnSelectionChanged();
 	}
+}
+
+void MainFrame::OnRawConvertToTIN(wxCommandEvent& event)
+{
+	vtRawLayer *pRaw = GetActiveRawLayer();
+	vtFeatureSetPoint3D *set = dynamic_cast<vtFeatureSetPoint3D *>(pRaw->GetFeatureSet());
+	if (!set)
+		return;
+
+	vtTin2d *tin = new vtTin2d(set);
+	vtElevLayer *pEL = new vtElevLayer;
+	pEL->SetTin(tin);
+	AddLayer(pEL);
+	SetActiveLayer(pEL);
+
+	m_pView->Refresh();
+	RefreshTreeView();
 }
 
 void CapWords(vtString &str)

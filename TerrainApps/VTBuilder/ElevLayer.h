@@ -21,6 +21,7 @@ class vtBitmap;
 class vtDIB;
 class vtElevationGrid;
 class vtFeatureSet;
+class vtFeatureSetPoint3D;
 class vtHeightField;
 
 class vtTin2d : public vtTin
@@ -28,6 +29,7 @@ class vtTin2d : public vtTin
 public:
 	vtTin2d();
 	vtTin2d(vtElevationGrid *grid);
+	vtTin2d(vtFeatureSetPoint3D *set);
 
 	void DrawTin(wxDC *pDC, vtScaledView *pView);
 	void ComputeEdgeLengths();

@@ -74,6 +74,100 @@ vtTin2d::vtTin2d(vtElevationGrid *grid)
 	ComputeExtents();
 }
 
+#define ANSI_DECLARATORS
+#define REAL double
+extern "C" {
+#include "vtdata/triangle/triangle.h"
+}
+
+/**
+ * Call 'Triangle' to triangulate a Dline2 containing a simple polygon.
+ */
+vtTin2d::vtTin2d(vtFeatureSetPoint3D *set)
+{
+	m_fEdgeLen = NULL;
+	m_bConstrain = false;
+
+	struct triangulateio in, out;
+	int i;
+	DPoint3 p3;
+
+	// point list
+	in.numberofpoints = set->GetNumEntities();
+	in.pointlist = (REAL *) malloc(in.numberofpoints * 2 * sizeof(REAL));
+	in.numberofpointattributes = set->GetNumEntities();
+	in.pointattributelist = (REAL *) malloc(in.numberofpointattributes * sizeof(REAL));
+
+	for ( i = 0; i < in.numberofpoints; ++i )
+	{
+		set->GetPoint(i, p3);
+		in.pointlist[2*i] = p3.x;
+		in.pointlist[2*i + 1] = p3.y;
+
+		in.pointattributelist[i] = p3.z;
+	}
+
+	in.pointmarkerlist = (int *) NULL;
+	in.numberoftriangles = 0;
+
+	// no segment list
+	in.numberofsegments = 0;
+	in.segmentlist = (int *) NULL;
+	in.segmentmarkerlist = (int *) NULL;
+
+	// no holes or regions
+	in.numberofholes = 0;
+	in.holelist = (REAL *) NULL;
+	in.numberofregions = 0;
+	in.regionlist = (REAL *) NULL;
+
+	// prep the output structures
+	out.pointlist = (REAL *) NULL;        // Not needed if -N switch used.
+	out.pointattributelist = (REAL *) NULL;
+	out.pointmarkerlist = (int *) NULL;   // Not needed if -N or -B switch used.
+	out.trianglelist = (int *) NULL;      // Not needed if -E switch used.
+	out.triangleattributelist = (REAL *) NULL;
+	out.neighborlist = (int *) NULL;      // Needed only if -n switch used.
+	out.segmentlist = (int *) NULL;
+	out.segmentmarkerlist = (int *) NULL;
+	out.edgelist = (int *) NULL;          // Needed only if -e switch used.
+	out.edgemarkerlist = (int *) NULL;    // Needed if -e used and -B not used.
+
+	// Triangulate the points.  Switches are chosen:
+	// number everything from zero (z),
+	triangulate("z", &in, &out, NULL);
+
+	// now copy the triangle results back into vtdata structures
+	for ( i = 0; i < out.numberofpoints; ++i )
+	{
+		float z = out.pointattributelist[i];
+		AddVert(DPoint2(out.pointlist[2*i], out.pointlist[2*i + 1]), z);
+	}
+	for ( i = 0; i < out.numberoftriangles; ++i )
+	{
+		int n1 = out.trianglelist[i * 3];
+		int n2 = out.trianglelist[i * 3 + 1];
+		int n3 = out.trianglelist[i * 3 + 2];
+		AddTri(n1, n2, n3);
+	}
+	// free mem allocated to the "Triangle" structures
+	free(in.pointlist);
+	free(in.segmentlist);
+
+	free(out.pointlist);
+	free(out.pointattributelist);
+	free(out.pointmarkerlist);
+	free(out.trianglelist);
+	free(out.triangleattributelist);
+	free(out.neighborlist);
+	free(out.segmentlist);
+	free(out.segmentmarkerlist);
+	free(out.edgelist);
+	free(out.edgemarkerlist);
+
+	ComputeExtents();
+}
+
 void vtTin2d::DrawTin(wxDC *pDC, vtScaledView *pView)
 {
 	wxPen TinPen(wxColor(128,0,128), 1, wxSOLID);
