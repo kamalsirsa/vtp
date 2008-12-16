@@ -1,5 +1,5 @@
 //
-// LocalDatabuf.cpp: a wrapper for the Databuf class which is found either in
+// LocalDatabuf.cpp: a wrapper for the Databuf class which is found either
 //  in vtdata or libMini.
 //
 // Copyright (c) 2008 Virtual Terrain Project
@@ -69,4 +69,3 @@ bool vtMiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
 }
 
 #endif	// USE_LIBMINI_DATABUF
-

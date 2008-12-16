@@ -351,6 +351,17 @@ void MiniDatabuf::swapbytes()
 
 #endif // !USE_LIBMINI_DATABUF
 
+int mapCRS2MINI(const vtProjection &proj)
+{
+    const char *crsname=proj.GetAttrValue("PROJECTION");
+
+    if (proj.IsGeographic()) return(1);
+    else if (proj.GetUTMZone()!=0) return(2);
+    else if (EQUAL(crsname,SRS_PT_MERCATOR_1SP)) return(3);
+
+    return(0);
+}
+
 int mapEPSG2MINI(int epsgdatum)
 {
 	static const int NAD27=1;
@@ -447,19 +458,13 @@ bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 	// delete Lat/Lon WGS84 transformation
 	delete LLWGS84transform;
 
-	// write Lat/Lon info
-	// this is helpful for libMini to easily identify geo-graphic coordinates
-	int latlon=proj.IsGeographic();
-	int llepsgdatum=proj.GetDatum();
-	int lldatum=mapEPSG2MINI(llepsgdatum);
-	fprintf(fp, "CoordSys_LL=(%d,%d)\n",latlon,(latlon!=0)?lldatum:0);
-
-	// write UTM zone and datum
-	// this is helpful for libMini to easily identify UTM coordinates
-	int utmzone=proj.GetUTMZone();
-	int utmepsgdatum=proj.GetDatum();
-	int utmdatum=mapEPSG2MINI(utmepsgdatum);
-	fprintf(fp, "CoordSys_UTM=(%d,%d)\n",utmzone,(utmzone!=0)?utmdatum:0);
+	// write CRS info
+	// this is helpful for libMini to easily identify the coordinate reference system
+	// supported CRS are: Geographic, UTM, Mercator
+	const int crs=mapCRS2MINI(proj);
+	const int datum=mapEPSG2MINI(proj.GetDatum());
+	const int utmzone=proj.GetUTMZone();
+	fprintf(fp, "CoordSys=(%d,%d,%d)\n",crs,datum,utmzone);
 
 	if (bJPEG)
 		fprintf(fp, "Format=JPEG\n");
