@@ -1377,7 +1377,7 @@ void Builder::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 			if (opt.m_pDensityLayer)
 			{
 				density_scale = opt.m_pDensityLayer->FindDensity(p2);
-				if (density_scale == 0.0f)
+				if (density_scale <= 0.0f)
 					continue;
 			}
 			else
@@ -1483,6 +1483,9 @@ void Builder::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 		else
 			msg += _(": None.\n");
 	}
+	str.Printf(_("  Total: %d\n"), pia.GetNumEntities());
+	msg += str;
+
 	DisplayAndLog(msg.mb_str(wxConvUTF8));
 
 	if (unplanted > 0)
