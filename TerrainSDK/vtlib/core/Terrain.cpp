@@ -1830,10 +1830,10 @@ void vtTerrain::_CreateAbstractLayers()
 			layer->CreateStyledFeatures();
 
 			// Show only layers which should be visible
-			if (layer->GetProperties().GetValueBool("Visible") == false)
-			{
-				layer->SetVisible(false);
-			}
+			bool bVis;
+			bool has_value = layer->GetProperties().GetValueBool("Visible", bVis);
+			if (has_value)
+				layer->SetVisible(bVis);
 		}
 	}
 }
