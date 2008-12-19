@@ -26,17 +26,6 @@ vtFeatureSet::~vtFeatureSet()
 		delete m_Features[i];
 }
 
-void vtFeatureSet::DeleteFields()
-{
-	int count = m_fields.GetSize();
-	for (int i = 0; i < count; i++)
-	{
-		Field *field = m_fields[i];
-		delete field;
-	}
-	m_fields.SetSize(0);
-}
-
 /**
  * Save a featureset from a SHP (ESRI Shapefile) with corresponding DBF file
  *
@@ -173,13 +162,7 @@ bool vtFeatureSet::LoadFromSHP(const char *fname, bool progress_callback(int))
 	// Read corresponding attributes (DBF fields and records)
 	LoadDataFromDBF(fname, progress_callback);
 
-	// Set up Features array
-	for (unsigned int i = 0; i < GetNumEntities(); i++)
-	{
-		vtFeature *f = new vtFeature;
-		f->flags = 0;
-		m_Features.push_back(f);
-	}
+	AllocateFeatures();
 
 	return true;
 }
@@ -1245,6 +1228,8 @@ bool vtFeatureSet::SaveToKML(const char *filename, bool progress_callback(int)) 
  */
 void vtFeatureSet::SetNumEntities(int iNum)
 {
+	int previous = GetNumEntities();
+
 	// First set the number of geometries
 	SetNumGeometries(iNum);
 
@@ -1254,8 +1239,24 @@ void vtFeatureSet::SetNumEntities(int iNum)
 
 	// Also keep size of flag array in synch
 	m_Features.resize(iNum);
+	for (int i = 0; i < (iNum - previous); i++)
+	{
+		vtFeature *f = new vtFeature;
+		f->flags = 0;
+		m_Features[i] = f;
+	}
 }
 
+void vtFeatureSet::AllocateFeatures()
+{
+	// Set up Features array
+	for (unsigned int i = 0; i < GetNumEntities(); i++)
+	{
+		vtFeature *f = new vtFeature;
+		f->flags = 0;
+		m_Features.push_back(f);
+	}
+}
 
 /**
  * Returns the type of geometry that each feature has.
@@ -1712,6 +1713,17 @@ int vtFeatureSet::AddRecord()
 	m_Features.push_back(f);
 
 	return recs;
+}
+
+void vtFeatureSet::DeleteFields()
+{
+	int count = m_fields.GetSize();
+	for (int i = 0; i < count; i++)
+	{
+		Field *field = m_fields[i];
+		delete field;
+	}
+	m_fields.SetSize(0);
 }
 
 void vtFeatureSet::SetValue(unsigned int record, unsigned int field, const char *value)

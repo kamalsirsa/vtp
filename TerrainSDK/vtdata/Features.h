@@ -124,6 +124,7 @@ public:
 	// feature (entity) operations
 	virtual unsigned int GetNumEntities() const = 0;
 	void SetNumEntities(int iNum);
+	void AllocateFeatures();
 	OGRwkbGeometryType GetGeomType() const;
 	void SetGeomType(OGRwkbGeometryType eGeomType);
 	bool AppendDataFrom(vtFeatureSet *pFromSet);

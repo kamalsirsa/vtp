@@ -490,7 +490,10 @@ void main(int argc,char **argv)
 
 
 ///////////////////////////////////////////////////////////////////////////
-// Interface code for the Triangle library.
+/**
+ * Another triangulation algorithm, far more powerful, is the Triangle library.
+ * Provide a convenient way to call it.
+ */
 
 #define ANSI_DECLARATORS
 #define REAL double
@@ -499,8 +502,7 @@ extern "C" {
 }
 
 /**
- * Another triangulation algorithm, far more powerful, is the Triangle library.
- * Provide a convenient way to call it.
+ * Call 'Triangle' to triangulate a Dline2 containing a simple polygon.
  */
 void CallTriangle(const DLine2 &contour, DLine2 &result)
 {
@@ -551,7 +553,7 @@ void CallTriangle(const DLine2 &contour, DLine2 &result)
 
 	// Triangulate the points.  Switches are chosen:
 	// to read and write a PSLG (p)
-	// number everythingfrom zero (z),
+	// number everything from zero (z),
 	triangulate("pz", &in, &out, NULL);
 
 	// now copy the triangle results back into vtdata structures
@@ -581,8 +583,8 @@ void CallTriangle(const DLine2 &contour, DLine2 &result)
 }
 
 /**
- * Another triangulation algorithm, far more powerful, is the Triangle library.
- * Provide a convenient way to call it.
+ * Call 'Triangle' to triangulate a DPolygon2 which can be a complex polygon
+ * with holes.
  */
 void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 {
@@ -668,7 +670,7 @@ void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 
 	// Triangulate the points.  Switches are chosen:
 	// to read and write a PSLG (p)
-	// number everythingfrom zero (z),
+	// number everything from zero (z),
 	triangulate("pz", &in, &out, NULL);
 
 	// now copy the triangle results back into vtdata structures
