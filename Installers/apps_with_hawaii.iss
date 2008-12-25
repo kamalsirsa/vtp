@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2008.09.10
+AppVerName=VTP Software 2008.12.24
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -11,7 +11,7 @@ AppUpdatesURL=http://vterrain.org/
 DefaultDirName={pf}\VTP
 DefaultGroupName=VTP
 AllowNoIcons=yes
-LicenseFile=C:\VTP\Installers\license.txt
+LicenseFile=C:\VTP\license.txt
 OutputBaseFilename=setup_vtp_hawaii
 OutputDir=C:\Distrib
 ; We need the following because Windows won't turn Registry settings into Enviroment variables w/o a reboot
@@ -42,16 +42,16 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 ;Source: "C:\VTP\TerrainApps\BExtractor\BE.ini"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 ;Source: "C:\VTP\TerrainApps\BExtractor\Docs\index.html"; DestDir: "{app}/Docs/BExtractor"; Flags: ignoreversion; Components: docs
 
-Source: "C:\VTP\TerrainApps\CManager\Release-Unicode-vc8\CManager.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\CManager\Release-Unicode-vc9\CManager.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\CManager\itemtypes.txt"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\CManager\tags.txt"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\CManager\Docs\*"; DestDir: "{app}/Docs/CManager"; Flags: ignoreversion recursesubdirs; Components: docs
 
-Source: "C:\VTP\TerrainApps\Enviro\Release-Unicode-vc8\wxEnviro.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\Release-Unicode-vc9\wxEnviro.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\Ship\Enviro.xml"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\Docs\*"; DestDir: "{app}\Docs\Enviro"; Flags: ignoreversion recursesubdirs; Components: docs
 
-Source: "C:\VTP\TerrainApps\VTBuilder\Release-Unicode-vc8\VTBuilder.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\VTBuilder\Release-Unicode-vc9\VTBuilder.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\VTBuilder.xml"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\Docs\*"; DestDir: "{app}\Docs\VTBuilder"; Flags: ignoreversion recursesubdirs; Components: docs
 
@@ -77,7 +77,6 @@ Source: "C:\VTP\TerrainApps\VTBuilder\ro\VTBuilder.mo"; DestDir: "{app}\Apps\ro"
 Source: "C:\VTP\TerrainApps\VTBuilder\zh\VTBuilder.mo"; DestDir: "{app}\Apps\zh"; Flags: ignoreversion; Components: main
 
 ; Core Data
-Source: "C:\VTP\TerrainApps\VTBuilder\WorldMap\gnv19.*"; DestDir: "{app}\Apps\WorldMap"; Flags: ignoreversion; Components: data
 Source: "G:\Data-Distro\*"; DestDir: "{app}\Data"; Flags: ignoreversion recursesubdirs; Components: data
 
 ; Hawai'i Data
@@ -106,29 +105,30 @@ Source: "G:\Data-USA\Data-Hawaii\Terrains\Distrib\*.xml"; DestDir: "{app}\Data\T
 Source: "C:\VTP\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs; Components: docs
 
 ; Projection Stuff
-Source: "C:\APIs\gdal-1.5.1\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
-Source: "C:\VTP\PROJ4-data\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
+Source: "C:\APIs\gdal-1.5.3\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
+Source: "C:\VTP\proj-4.5.0\nad\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
 
 ; DLLs
-Source: "C:\APIs\bzip2-1.0.3-bin\bzip2.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal151-vc8\bin\gdal15-vc8.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal151-vc8\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal151-vc8\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\osg-2.4-bin-vc8\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: dlls
+Source: "C:\APIs\bzip2-1.0.3-bin-vc9\bzip2.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal153-vc9\bin\gdal15-vc8.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal153-vc9\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal153-vc9\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\libcurl-7.15.0\libcurl.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\libpng-1.2.12\libpng13-vc8.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\libpng-1.2.12\zlib1-vc8.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\libpng-1.2.12\libpng13-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\libpng-1.2.12\zlib1-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\osg-2.61-bin-vc9\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib\vc_dll\wxbase28u_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib\vc_dll\wxmsw28u_core_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib\vc_dll\wxmsw28u_gl_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib\vc_dll\wxbase28u_net_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib\vc_dll\wxmsw28u_aui_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\Program Files (x86)\Expat 2.0.1\Bin\libexpat.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 
-; Microsoft DLLs
-Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\msvcp80.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\msvcr80.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+; Microsoft DLLs (not useful, since vc8 they don't work if installed this way)
+;Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+;Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\msvcp80.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+;Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\msvcr80.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

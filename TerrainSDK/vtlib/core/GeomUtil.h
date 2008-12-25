@@ -111,6 +111,20 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
 vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 					   const FPoint3 &min1, const FPoint3 &max1, int steps);
 
+/**
+	A dynamic visual display of a wireframe bounding box, which can be very
+	useful for debugging things involving extents in the 3D scene.  To use:
+\code
+	// Create
+	vtDynBoundBox *box = new vtDynBoundBox(RGBf(0,0,1));	// blue box
+	parent->AddChild(box->pGeom);
+
+	// Use it to show a node's bounding box
+	FBox3 bb;
+	node->GetBoundBox(bb);
+	box->SetBox(bb);
+\endcode
+ */
 class vtDynBoundBox
 {
 public:

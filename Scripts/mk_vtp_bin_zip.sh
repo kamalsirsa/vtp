@@ -17,19 +17,19 @@ cd $SOURCEDIR
 # Create the archive containing the App Binaries
 rm -f $DIST_FILE3
 
-#cp VTP/TerrainApps/BExtractor/Release-vc8/BExtractor.exe VTP/TerrainApps/BExtractor
+#cp VTP/TerrainApps/BExtractor/Release-vc9/BExtractor.exe VTP/TerrainApps/BExtractor
 #zip $DIST_FILE3 VTP/TerrainApps/BExtractor/BE.ini
 #zip $DIST_FILE3 VTP/TerrainApps/BExtractor/BExtractor.exe
 #zip $DIST_FILE3 VTP/TerrainApps/BExtractor/license.txt
 #zip $DIST_FILE3 VTP/TerrainApps/BExtractor/Docs/*
 
-cp VTP/TerrainApps/CManager/Release-Unicode-vc8/CManager.exe VTP/TerrainApps/CManager
+cp VTP/TerrainApps/CManager/Release-Unicode-vc9/CManager.exe VTP/TerrainApps/CManager
 zip $DIST_FILE3 VTP/TerrainApps/CManager/CManager.exe
 zip $DIST_FILE3 VTP/TerrainApps/CManager/itemtypes.txt
 zip $DIST_FILE3 VTP/TerrainApps/CManager/tags.txt
 zip $DIST_FILE3 VTP/TerrainApps/CManager/Docs/*
 
-cp VTP/TerrainApps/Enviro/Release-Unicode-vc8/wxEnviro.exe VTP/TerrainApps/Enviro
+cp VTP/TerrainApps/Enviro/Release-Unicode-vc9/wxEnviro.exe VTP/TerrainApps/Enviro
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/wxEnviro.exe
 zip -r $DIST_FILE3 VTP/TerrainApps/Enviro/Docs -x *.svn
 
@@ -56,7 +56,7 @@ zip $DIST_FILE3 VTP/TerrainApps/Enviro/sv/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/tr/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/zh/Enviro.mo
 
-cp VTP/TerrainApps/VTBuilder/Release-Unicode-vc8/VTBuilder.exe VTP/TerrainApps/VTBuilder
+cp VTP/TerrainApps/VTBuilder/Release-Unicode-vc9/VTBuilder.exe VTP/TerrainApps/VTBuilder
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/VTBuilder.exe
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/VTBuilder.xml
 zip -r $DIST_FILE3 VTP/TerrainApps/VTBuilder/Docs -x *.svn
@@ -69,7 +69,7 @@ zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/ro/VTBuilder.mo
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/zh/VTBuilder.mo
 
 # VTConvert
-cp VTP/TerrainApps/VTConvert/Release-vc8/VTConvert.exe VTP/TerrainApps/VTConvert
+cp VTP/TerrainApps/VTConvert/Release-vc9/VTConvert.exe VTP/TerrainApps/VTConvert
 zip $DIST_FILE3 VTP/TerrainApps/VTConvert/VTConvert.exe
 
 #deal specially with docs

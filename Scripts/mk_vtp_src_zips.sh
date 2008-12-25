@@ -100,7 +100,6 @@ zip $DIST_FILE1 VTP/TerrainApps/fltkSimple/appfltk.cpp
 zip $DIST_FILE1 VTP/TerrainApps/fltkSimple/fltkSimple*.vcproj
 zip $DIST_FILE1 VTP/TerrainApps/fltkSimple/fltkSimple*.sln
 zip $DIST_FILE1 VTP/TerrainApps/fltkSimple/Data/Simple.xml
-zip $DIST_FILE1 VTP/TerrainApps/fltkSimple/Data/Elevation/README.txt
 
 zip $DIST_FILE1 VTP/TerrainApps/glutSimple/app.cpp
 zip $DIST_FILE1 VTP/TerrainApps/glutSimple/glutSimple*.vcproj

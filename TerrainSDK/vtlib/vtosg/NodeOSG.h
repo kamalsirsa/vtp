@@ -115,7 +115,9 @@ public:
 	static void ClearOsgModelCache();
 	static bool s_bDisableMipmaps;	// set to disable ALL mipmaps
 
+	/// Set this node to cast a shadow, if it is under a vtShadow node.  Default is false.
 	void SetCastShadow(bool b);
+	/// Get whether this node casts a shadow.
 	bool GetCastShadow();
 
 protected:
@@ -298,12 +300,16 @@ protected:
 	virtual ~vtFog() {}
 };
 
-/**
- * A Shadow node allows you to apply shadows within all its child nodes.
- */
+
 class vtHeightField3d;
 class vtLodGrid;
 
+/**
+	A Shadow node allows you to apply shadows within all its child nodes.
+	Add it to your scene graph, and all descendents will receive a cast
+	shadow.  Only certain nodes, which are set with vtNode::SetCastShadow,
+	will cast a shadow.
+ */
 class vtShadow : public vtGroup
 {
 public:
@@ -313,15 +319,21 @@ public:
 	void CloneFrom(vtShadow *xform, bool bDeep);
 	void Release();
 
+	/// Set the darkness of the shadow, from 0 to 1.  Only supported on newer 3D cards.
 	void SetDarkness(float bias);
+	/// Get the darkness, from 0 to 1.
 	float GetDarkness();
 
 	void AddMainSceneTextureUnit(const unsigned int Unit, const unsigned int Mode);
 	void RemoveMainSceneTextureUnit(const unsigned int Unit);
 
+	/// A single texture is used for the shadow.  It's resolution defaults to 1024.
 	void SetShadowTextureResolution(const unsigned int ShadowTextureResolution);
+
+	/// The shadow may be recalculated every frame, or for improved performance, only when desired
 	void SetRecalculateEveryFrame(const bool RecalculateEveryFrame);
 	bool GetRecalculateEveryFrame() const;
+
 	void SetShadowSphereRadius(const float ShadowSphereRadius);
 	void SetHeightField3d(vtHeightField3d *pHeightField3d);
 	void AddLodGridToIgnore(vtLodGrid* pLodGrid);
