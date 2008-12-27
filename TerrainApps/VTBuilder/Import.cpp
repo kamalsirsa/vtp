@@ -1287,7 +1287,7 @@ vtFeatureSetPoint2D *Builder::ImportPointsFromDBF(const char *fname)
 	return pSet;
 }
 
-void Tokenize(char *buf, char *delim, vtStringArray &tokens)
+void Tokenize(char *buf, const char *delim, vtStringArray &tokens)
 {
 	char *p = NULL;
 	p = strtok(buf, delim);

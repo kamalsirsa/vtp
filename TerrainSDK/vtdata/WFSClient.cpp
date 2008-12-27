@@ -156,7 +156,7 @@ bool GetLayersFromWFS(const char *szServerURL, OGCLayerArray &layers)
 }
 
 
-#include <strstream>
+#include <sstream>
 
 //
 // for now, handle WMS in this module as well
@@ -188,7 +188,7 @@ bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers,
 	fclose(fp);
 #endif
 
-	std::istrstream buf((const char *)str);
+	std::istringstream buf((const char *)str);
 	LayerListVisitor visitor(layers);
 	try
 	{
