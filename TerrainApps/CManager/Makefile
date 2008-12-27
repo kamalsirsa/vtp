@@ -7,9 +7,9 @@ EXEC = CManager
 include $(VTP_ROOT)/Make.defs
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
-	  -I$(GDAL_INC) \
+	  -I$(TERRAIN_SDK_DIR) \
 	  -I$(OSG_INC) \
-	  -I$(TERRAIN_SDK_DIR)
+	  -I$(GDAL_INC)
 ifneq ($(OS),Darwin)
 IFLAGS += -I$(X_INC)
 endif
@@ -60,9 +60,22 @@ LIBS   += -F$(FRAMEWORKS) \
 	  -bind_at_load
 else
 # Support for all other Unix platforms
-LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg \
+LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg -lminidata \
 	$(MINI_LIB) -lGL $(GLU_LIB) -lX11 $(EXTRA_LIBS) \
-	-losg -losgDB -losgUtil -losgText -losgParticle -lOpenThreads
+	-losg -losgDB -losgUtil -losgText -losgParticle -lOpenThreads -losgShadow
+endif
+
+ifeq ($(SUPPORT_NETCDF),1)
+	LIBS += -lnetcdf
+endif
+ifeq ($(SUPPORT_HTTP),1)
+	LIBS += -lcurl
+endif
+ifeq ($(SUPPORT_BZIP2),1)
+	LIBS += -lbz2
+endif
+ifeq ($(SUPPORT_SQUISH),1)
+	LIBS += -lsquish
 endif
 
 LDIR   +=\

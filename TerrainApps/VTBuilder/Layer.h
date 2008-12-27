@@ -101,7 +101,7 @@ public:
 	virtual void OnMouseMove(BuilderView *pView, UIContext &ui) {}
 
 	static wxArrayString LayerTypeNames;
-	static wxChar *LayerFileExtension[];
+	static const wxChar *LayerFileExtension[];
 
 protected:
 	wxString GetSaveFileDialogFilter();

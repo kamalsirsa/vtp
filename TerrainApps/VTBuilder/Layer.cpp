@@ -28,7 +28,7 @@
 #include "RawLayer.h"
 
 wxArrayString vtLayer::LayerTypeNames;
-wxChar *vtLayer::LayerFileExtension[LAYER_TYPES] =
+const wxChar *vtLayer::LayerFileExtension[LAYER_TYPES] =
 {
 	_T(".shp"),
 	_T(".bt"),
