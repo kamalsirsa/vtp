@@ -62,7 +62,7 @@ else
 # Support for all other Unix platforms
 LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg -lminidata \
 	$(MINI_LIB) -lGL $(GLU_LIB) -lX11 $(EXTRA_LIBS) \
-	-losg -losgDB -losgUtil -losgText -losgParticle -lOpenThreads -losgShadow
+	-losg -losgDB -losgUtil -losgText -losgParticle -losgShadow -lOpenThreads
 endif
 
 ifeq ($(SUPPORT_NETCDF),1)
