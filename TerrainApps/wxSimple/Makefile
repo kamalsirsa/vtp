@@ -41,11 +41,10 @@ ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) \
 	$(shell $(WX_DIR)/bin/wx-config --gl-libs) \
-	-bind_at_load -F$(FRAMEWORKS) \
-	-framework vtosg -framework vtdata \
+	-bind_at_load -F$(FRAMEWORKS) $(call _VLF,vtosg) $(call _VLF,vtdata) $(call _VLF,unzip) $(call _VLF,xmlhelper) \
 	$(OSG_OPTS) \
 	-L$(FINK_LIB) -lgdal \
-	-framework xmlhelper -framework unzip $(MINI_LIB) \
+	$(MINI_LIB) \
         $(GLU_LIB) \
 	-lobjc -lm \
 	-Wl,-executable_path -Wl,$(OSX_APPS)/$(EXEC).app/Contents/MacOS

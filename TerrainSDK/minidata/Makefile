@@ -15,7 +15,7 @@ IFLAGS = -I$(GDAL_INC) \
 
 
 ifeq ($(OS), Darwin)
-all : $(FRAMEWORK_LIB)
+all : $(OSX_LIB_TARGET)
 else
 all : $(LIB)
 endif
@@ -36,3 +36,5 @@ clobber :
 
 install :
 	cp -rfp $(LIB) $(VTP_INSTALL_DIR)/lib
+	mkdir -p $(VTP_INSTALL_DIR)/include/minidata
+	cp -rfp $(HEADERS) $(VTP_INSTALL_DIR)/include/minidata

@@ -17,14 +17,13 @@ HEADERS = $(CHEAD) $(CXXHEAD) ./shapelib
 OBJS := $(OBJS) triangle/triangle.o
 
 ifeq ($(OS), Darwin)
-all : $(FRAMEWORK_LIB)
+all : $(OSX_LIB_TARGET)
 else
 all : $(LIB)
 endif
 
 $(LIB) : $(OBJS)
 	$(LD_SHARED) -o $(LIB) $(VTDATA_LINK_OPTS) $(OBJS) 
-
 
 $(FRAMEWORK_LIB) : $(OBJS) $(FRAMEWORK)
 	$(LD_SHARED) -o $(FRAMEWORK_LIB) -install_name $(FRAMEWORK_INSTALL_NAME) $(VTDATA_LINK_OPTS) $(OBJS) 
@@ -38,3 +37,5 @@ clobber :
 
 install :
 	cp -rfp $(LIB) $(VTP_INSTALL_DIR)/lib
+	mkdir -p $(VTP_INSTALL_DIR)/include/vtdata
+	cp -rfp $(HEADERS) $(VTP_INSTALL_DIR)/include/vtdata

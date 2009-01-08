@@ -16,7 +16,7 @@ IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 
 
 ifeq ($(OS), Darwin)
-all : $(FRAMEWORK_LIB)
+all : $(OSX_LIB_TARGET)
 else
 all : $(LIB)
 endif
@@ -37,3 +37,5 @@ clobber :
 
 install :
 	cp -rfp $(LIB) $(VTP_INSTALL_DIR)/lib
+	mkdir -p $(VTP_INSTALL_DIR)/include/vtui
+	cp -rfp $(HEADERS) $(VTP_INSTALL_DIR)/include/vtui

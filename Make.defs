@@ -208,54 +208,83 @@ ifeq ($(OS),Darwin)
    CC        = gcc
    CXX       = g++
    AR        = ar ruv
-   COPT      = -g -O3 -D__DARWIN_OSX__ -fPIC -I$(FINK_INC) -F$(FRAMEWORKS)
+   COPT      = -g -O3 -D__DARWIN_OSX__ -fPIC -I$(FINK_INC)
    LD        = $(CXX)
    LD_SHARED = $(CXX) -dynamiclib -Wl,-single_module
-   LIB_EXT   = dynlib
 
    GLUT_LIB = -framework GLUT
    GLU_LIB  = -framework OpenGL -framework Carbon
    EXTRA_LIBS = -lXi
    LDIRFLAGS  = $(LDIRS:%=-L%)
 
+   # Flags
+   COMMON_OPTS = -compatibility_version 1.2 -current_version 1.2.1 -L$(GDAL_LIB) -lgdal -L/sw/lib -lnetcdf -lpng -ljpeg -lcurl -lbz2 -lz 
+
+
    # Disable this if you built OSG with XCode
-   OSG_NO_FRAMEWORKS = 1
+   OSG_NO_FRAMEWORKS ?= 1
+
+   # If build_frameworks, then build frameworks, else build simple dylibs for $(VTP_INSTALL_DIR)/lib
+   BUILD_FRAMEWORKS ?= 1
+   # If build_local_frameworks, then set the install name to @executable_path/..., instead of /Library/Frameworks/... 
+   BUILD_LOCAL_FRAMEWORKS ?= 1
 
    # Remove the "lib" string from the LIB_NAME
-   NEW_LIB_NAME := $(subst lib, ,$(LIB_NAME))
-   LIB_NAME := $(strip $(NEW_LIB_NAME))
+   SHORT_LIB_NAME := $(subst lib, ,$(LIB_NAME))
+
+   ifeq ($(BUILD_FRAMEWORKS),1)
+	OSX_LIB_TARGET=$(FRAMEWORK_LIB)
+
+        # Flags	
+	COMMON_OPTS += -F$(FRAMEWORKS)
+        # Function to simplify dependency linking
+	_VLF = -framework $(1)
+
+   else
+	OSX_LIB_TARGET=$(LIB)
+	LD_SHARED := $(LD_SHARED) -install_name $(VTP_INSTALL_DIR)/lib/$(LIB_NAME).dylib
+	COMMON_OPTS += -L$(VTP_INSTALL_DIR)/lib
+        # Function to simplify dependency linking
+	_VLF = -l$(1)
+   endif
+
 
    LIB_EXT = dylib
+
+   #LIB_INSTALL_NAME = $(VTP_INSTALL_DIR)/lib
    FRAMEWORKS = $(VTP_ROOT)/OSX/Shared/Frameworks
    FRAMEWORK  = $(FRAMEWORKS)/$(LIB_NAME).framework
    FRAMEWORK_LIB = $(FRAMEWORK)/Versions/A/$(LIB_NAME)
+
    # Most frameworks, including osg, are built either with:
    # @executable_path/../Frameworks/*.framework
    # if they are expected to be local to only the application 
    # (e.g. VTP specific osg and OpenThreads), or:
    # /Library/Frameworks/*.framework if they are global.  
-   # We build everything to be local, and applications use relative symlinks to
-   # the $FRAMEWORKS directory to share the libraries.
-   FRAMEWORK_INSTALL_NAME = @executable_path/../Frameworks/$(LIB_NAME).framework/Versions/A/$(LIB_NAME)
-   FRAMEWORK_EXE = $(FRAMEWORK)/$(LIB_NAME)
-
-   # Flags
-   COMMON_OPTS = -F$(OSX_APPS)/Shared/Frameworks -compatibility_version 1.2 -current_version 1.2.1 -L$(GDAL_LIB) -lgdal -L/sw/lib -lnetcdf -lpng -ljpeg -lcurl -lbz2 -lz -F$(FRAMEWORKS)
-
-   # Enumerates the build flags required to use each lib/framework
-   ifeq ($(OSG_NO_FRAMEWORKS),0)
-      OSG_OPTS = -framework osg -framework osgUtil \
-	         -framework osgText -framework osgDB -framework osgGA -framework osgParticle -framework osgShadow -framework OpenThreads
+   ifeq ($(BUILD_GLOBAL_FRAMEWORKS),0)
+	FRAMEWORK_INSTALL_NAME = /Library/Frameworks/$(LIB_NAME).framework/Versions/A/$(LIB_NAME)
    else
-      OSG_OPTS = -L$(OSG_LIB) -losg -losgUtil \
-	         -losgText -losgDB -losgGA -losgParticle -losgShadow -lOpenThreads
+        # build everything to be local, and applications use relative symlinks to
+        # the $FRAMEWORKS directory to share the libraries.
+	FRAMEWORK_INSTALL_NAME = @executable_path/../Frameworks/$(LIB_NAME).framework/Versions/A/$(LIB_NAME)
    endif
 
-   XMLHELPER_OPTS = -framework xmlhelper
-   VTDATA_OPTS    = -framework vtdata -framework unzip $(MINI_LIB) -framework OpenGL
-   MINIDATA_OPTS  = -framework minidata -framework unzip $(MINI_LIB) -framework OpenGL
-   VTUI_OPTS      = -framework vtdata -framework unzip -framework unzip
-   UNZIP_OPTS     = -framework unzip
+   FRAMEWORK_EXE = $(FRAMEWORK)/$(LIB_NAME)
+
+
+   # Enumerates the build flags required to use each lib/framework
+   OSG_LIBS=osg osgUtil osgText osgDB osgGA osgParticle osgShadow OpenThreads
+   ifeq ($(OSG_NO_FRAMEWORKS),0)
+      OSG_OPTS = $(patsubst %, -framework %, $(OSG_LIBS))
+   else
+      OSG_OPTS = $(patsubst %, -l%, $(OSG_LIBS))
+   endif
+
+   XMLHELPER_OPTS = $(call _VLF,xmlhelper)
+   VTDATA_OPTS    = $(call _VLF,unzip) $(call _VLF,vtdata) $(call _VLF,xmlhelper) $(MINI_LIB) -framework OpenGL
+   MINIDATA_OPTS  = $(call _VLF,minidata) $(call _VLF,unzip) $(MINI_LIB) -framework OpenGL
+   VTUI_OPTS      = $(call _VLF,unzip) $(call _VLF,vtdata) 
+   UNZIP_OPTS     = $(call _VLF,unzip) 
 
    #
    # Options used by individual make files to build their respective packages.

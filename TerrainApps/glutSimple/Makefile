@@ -38,10 +38,10 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS   = -bind_at_load -F$(FRAMEWORKS) \
-	-framework vtosg -framework vtdata -framework minidata -framework unzip\
+	 $(call _VLF,vtosg) $(call _VLF,vtdata) $(call _VLF,minidata) $(call _VLF,xmlhelper) $(call _VLF,unzip) \
 	$(OSG_OPTS) \
 	-L$(FINK_LIB) -lgdal \
-	-framework xmlhelper $(MINI_LIB) \
+	$(MINI_LIB) \
         $(GLUT_LIB) $(GLU_LIB) \
 	-lobjc -lm
 else
