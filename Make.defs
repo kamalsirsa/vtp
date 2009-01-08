@@ -277,7 +277,7 @@ ifeq ($(OS),Darwin)
    ifeq ($(OSG_NO_FRAMEWORKS),0)
       OSG_OPTS = $(patsubst %, -framework %, $(OSG_LIBS))
    else
-      OSG_OPTS = $(patsubst %, -l%, $(OSG_LIBS))
+      OSG_OPTS = -L$(OSG_LIB) $(patsubst %, -l%, $(OSG_LIBS))
    endif
 
    XMLHELPER_OPTS = $(call _VLF,xmlhelper)
