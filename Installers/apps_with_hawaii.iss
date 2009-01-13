@@ -106,16 +106,16 @@ Source: "C:\VTP\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubd
 
 ; Projection Stuff
 Source: "C:\APIs\gdal-1.5.3\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
-Source: "C:\VTP\proj-4.5.0\nad\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
+Source: "C:\APIs\proj-4.5.0\nad\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
 
 ; DLLs
 Source: "C:\APIs\bzip2-1.0.3-bin-vc9\bzip2.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal153-vc9\bin\gdal15-vc8.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal153-vc9\bin\gdal15-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\gdal153-vc9\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\gdal153-vc9\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\libcurl-7.15.0\libcurl.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\libpng-1.2.12\libpng13-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\libpng-1.2.12\zlib1-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\libpng-1.2.32\libpng13-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\libpng-1.2.32\zlib1-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\osg-2.61-bin-vc9\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib\vc_dll\wxbase28u_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
