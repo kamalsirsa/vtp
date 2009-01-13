@@ -1839,7 +1839,10 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 						}
 					}
 				}
-				buf.savedata(fname);
+				if (buf.savedata(fname) == 0)
+				{
+					// what should we do if writing a tile fails?
+				}
 			}
 		}
 	}

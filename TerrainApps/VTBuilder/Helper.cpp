@@ -39,7 +39,10 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 #if USE_OPENGL
 			DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex, opts.bMaskUnknownAreas);
 
-			output_buf.savedata(fname);
+			if (output_buf.savedata(fname) == 0)
+			{
+				// what should we do if writing a tile fails?
+			}
 			output_buf.release();
 
 			// When we process a tile that is 256 in size, call back the canvas
