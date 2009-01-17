@@ -13,7 +13,7 @@
 //  not expose whether it was built with OSG_USE_FLOAT_MATRIX or not, so we
 //  must assume.  From OSG 2.6 onwards, OSG exposes it in include/osg/Config.
 #include <osg/Version>
-#if (OSG_MAJOR_VERSION==2 && OSG_MINOR_VERSION<6) || OSG_MAJOR_VERSION<2
+#if (OSG_VERSION_MAJOR==2 && OSG_VERSION_MINOR<6) || OSG_VERSION_MAJOR<2
 #define OSG_USE_FLOAT_MATRIX
 #endif
 
