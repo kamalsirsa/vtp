@@ -2537,6 +2537,7 @@ bool vtTerrain::CreateStep5()
 	m_pScaledFeatures = new vtTransform;
 	m_pScaledFeatures->SetName2("Scaled Features");
 	m_pScaledFeatures->Scale3(1.0f, m_fVerticalExag, 1.0f);
+	m_pScaledFeatures->SetCastShadow(false);
 	m_pTerrainGroup->AddChild(m_pScaledFeatures);
 
 	_CreateCulture();
