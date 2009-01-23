@@ -28,6 +28,7 @@
 using namespace osg;
 
 #define DEBUG_NODE_LOAD	0
+#define VTLISPSM		0
 
 // We use bits 1 and 2 of the node mask as shadow flags.
 const int ReceivesShadowTraversalMask = 0x1;
@@ -1481,7 +1482,15 @@ vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowText
 	m_pShadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
 	m_pShadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
 
+#if VTLISPSM
+	// osg::ref_ptr<CComplexShadowTechnique> pShadowTechnique = new CComplexShadowTechnique;
+	osg::ref_ptr<CLightSpacePerspectiveShadowTechnique> pShadowTechnique = new CLightSpacePerspectiveShadowTechnique;
+	pShadowTechnique->setShadowTextureCoordIndex(m_ShadowTextureUnit);
+	pShadowTechnique->setShadowTextureUnit(m_ShadowTextureUnit);
+	// pShadowTechnique->setDebugDraw( true );
+#else
 	osg::ref_ptr<CSimpleInterimShadowTechnique> pShadowTechnique = new CSimpleInterimShadowTechnique;
+#endif
 
 #if VTDEBUGSHADOWS
 	// add some instrumentation
@@ -2170,6 +2179,10 @@ vtDynGeom::vtDynGeom() : vtGeom()
 	m_pDynMesh = new OsgDynMesh();
 	m_pDynMesh->m_pDynGeom = this;
 	m_pDynMesh->setSupportsDisplayList(false);
+
+#if VTLISPSM
+	m_pGeode->getOrCreateStateSet()->addUniform( new osg::Uniform( "renderingVTPBaseTexture", int( 1 ) ) );
+#endif
 
 	m_pGeode->addDrawable(m_pDynMesh);
 }

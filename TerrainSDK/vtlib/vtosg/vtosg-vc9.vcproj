@@ -1283,6 +1283,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\LightSpacePerspectiveShadowTechnique.cpp"
+				>
+			</File>
+			<File
 				RelativePath="MeshMat.cpp"
 				>
 				<FileConfiguration
@@ -1377,6 +1381,10 @@
 			>
 			<File
 				RelativePath="ImageOSG.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LightSpacePerspectiveShadowTechnique.h"
 				>
 			</File>
 			<File
