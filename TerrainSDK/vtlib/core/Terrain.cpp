@@ -2388,6 +2388,7 @@ bool vtTerrain::CreateStep1()
 			_SetErrorMessage("Tile list load failed.");
 			return false;
 		}
+		m_pTiledGeom->SetTexLODFactor(m_Params.GetValueFloat(STR_TEXURE_LOD_FACTOR));
 		m_pHeightField = m_pTiledGeom;
 		g_Conv = m_pHeightField->m_Conversion;
 		m_proj = m_pTiledGeom->m_proj;

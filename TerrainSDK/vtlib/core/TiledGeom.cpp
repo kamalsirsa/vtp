@@ -1171,3 +1171,10 @@ FPoint2 vtTiledGeom::GetWorldSpacingAtPoint(const DPoint2 &p)
 	m_pMiniLoad->getdim(x, z, &dimx, &dimz);
 	return FPoint2(dimx, dimz);
 }
+
+void vtTiledGeom::SetTexLODFactor(float factor)
+{
+	float diagonal = sqrt(coldim*coldim+rowdim*rowdim);
+	SetPagingRange(diagonal * factor);
+}
+

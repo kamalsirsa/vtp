@@ -251,6 +251,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_TFILENAME, &m_strTexture4x4);
 	AddValidator(ID_TFILE_TILESET, &m_strTextureTileset);
 	AddValidator(ID_TEXTURE_GRADUAL, &m_bTextureGradual);
+	AddNumValidator(ID_TEX_LOD, &m_fTextureLODFactor);
 	AddValidator(ID_MIPMAP, &m_bMipmap);
 	AddValidator(ID_16BIT, &m_b16bit);
 	AddValidator(ID_PRELIGHT, &m_bPreLight);
@@ -402,6 +403,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 		m_strTextureTileset = wxString(Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
 
 	m_bTextureGradual =	Params.GetValueBool(STR_TEXTURE_GRADUAL);
+	m_fTextureLODFactor =	Params.GetValueFloat(STR_TEXURE_LOD_FACTOR);
 	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
 	m_b16bit =			Params.GetValueBool(STR_REQUEST16BIT);
 	m_bPreLight =		Params.GetValueBool(STR_PRELIGHT);
@@ -477,11 +479,13 @@ void TParamsDlg::SetParams(const TParams &Params)
 
 	// Scenarios
 	m_strInitScenario = wxString(Params.GetValueString(STR_INIT_SCENARIO), wxConvUTF8);
+	m_Scenarios = Params.m_Scenarios;
 
-	// Safety check
+	// Safety checks
 	if (m_iTriCount < 500 || m_iTriCount > 100000)
 		m_iTriCount = 10000;
-	m_Scenarios = Params.m_Scenarios;
+	if (m_fTextureLODFactor < .1f) m_fTextureLODFactor = .1f;
+	if (m_fTextureLODFactor > 1) m_fTextureLODFactor = 1;
 
 	VTLOG("   Finished SetParams\n");
 }
@@ -559,6 +563,7 @@ void TParamsDlg::GetParams(TParams &Params)
 		Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureTileset.mb_str(wxConvUTF8));
 
 	Params.SetValueBool(STR_TEXTURE_GRADUAL, m_bTextureGradual);
+	Params.SetValueFloat(STR_TEXURE_LOD_FACTOR, m_fTextureLODFactor);
 	Params.SetValueBool(STR_MIPMAP, m_bMipmap);
 	Params.SetValueBool(STR_REQUEST16BIT, m_b16bit);
 	Params.SetValueBool(STR_PRELIGHT, m_bPreLight);
@@ -722,6 +727,7 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_TFILENAME)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILE_TILESET)->Enable(m_iTexture == TE_TILESET);
 	FindWindow(ID_TEXTURE_GRADUAL)->Enable(m_iTexture == TE_TILESET && m_bTileThreading);
+	FindWindow(ID_TEX_LOD)->Enable(m_iTexture == TE_TILESET);
 
 	FindWindow(ID_MIPMAP)->Enable(m_iTexture != TE_NONE && !m_bTileset);
 	FindWindow(ID_16BIT)->Enable(m_iTexture != TE_NONE && !m_bTileset);

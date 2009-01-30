@@ -438,6 +438,7 @@ protected:
 #define STR_TEXTURE4BY4 "Texture_4by4"
 //#define STR_TEXTUREFORMAT "Texture_Format"	// 0=bmp, 1=jpg; obsolete
 #define STR_TEXTURE_GRADUAL "Texture_Gradual"
+#define STR_TEXURE_LOD_FACTOR "Texture_LOD_Factor"
 #define STR_MIPMAP "MIP_Map"
 #define STR_REQUEST16BIT "Request_16_Bit"
 #define STR_PRELIGHT "Pre-Light"

@@ -62,6 +62,7 @@ public:
 	void SetVertexTarget(int iVertices);
 	int GetVertexTarget() { return m_iVertexTarget; }
 	FPoint2 GetWorldSpacingAtPoint(const DPoint2 &p);
+	void SetTexLODFactor(float factor);
 
 	// overrides for vtDynGeom
 	void DoRender();

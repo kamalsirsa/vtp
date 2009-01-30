@@ -92,6 +92,7 @@ public:
 	wxString   m_strTextureFilename;
 	wxString   m_strTextureTileset;
 	bool	m_bTextureGradual;
+	float	m_fTextureLODFactor;
 	bool	m_bMipmap;
 	bool	m_b16bit;
 	bool	m_bPreLight;
