@@ -164,6 +164,14 @@ bool EnviroApp::OnInit()
 	Args(argc, argv);
 	SetupLocale();
 
+	// If gdal and proj are not set with environment variables, try to set them
+	const char *gdalenv = getenv("GDAL_DATA");
+	if (!gdalenv)
+		SetEnvironmentVar("GDAL_DATA", "./GDAL-data");
+	const char *proj4 = getenv("PROJ_LIB");
+	if (!proj4)
+		SetEnvironmentVar("PROJ_LIB", "./PROJ4-data");
+
 	CheckForGDALAndWarn();
 
 	// Create and show the Startup Dialog
