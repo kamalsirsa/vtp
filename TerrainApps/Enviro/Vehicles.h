@@ -16,9 +16,16 @@ class Vehicle : public vtTransform
 {
 public:
 	Vehicle();
+	~Vehicle();
+
 	void ShowBounds(bool bShow);
 
 	vtGeom	*m_pHighlight;	// The wireframe highlight
+
+	vtNode *m_pFrontLeft;
+	vtNode *m_pFrontRight;
+	vtNode *m_pRearLeft;
+	vtNode *m_pRearRight;
 };
 
 class VehicleManager
