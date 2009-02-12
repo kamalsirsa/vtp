@@ -258,6 +258,10 @@ void EnviroApp::StartLog()
 
 void EnviroApp::LoadOptions()
 {
+#ifndef ENVIRO_NATIVE
+	SetupCustomOptions();
+#endif
+
 	// Look these up, we might need them
 	wxString Dir1 = wxStandardPaths::Get().GetUserConfigDir();
 	wxString Dir2 = wxStandardPaths::Get().GetConfigDir();
