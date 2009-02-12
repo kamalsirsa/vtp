@@ -1228,7 +1228,8 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 				image_area.Grow(texel.x/2, texel.y/2);
 
 				// Sample the images we found to the exact LOD we need
-				vtImage Target(image_area, tilesize, tilesize, m_proj);
+				vtBitmap Target;
+				Target.Allocate(tilesize, tilesize);
 
 				// Get ready to multisample
 				DPoint2 step = tile_dim / (tilesize-1);
@@ -1251,7 +1252,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 						for (unsigned int im = 0; im < overlapping_images.size(); im++)
 							if (overlapping_images[im]->GetMultiSample(p, offsets, pixel, dRes)) rgb = pixel;
 
-						Target.SetRGB(x, y, rgb);
+						Target.SetPixel24(x, y, rgb);
 					}
 				}
 
@@ -1273,7 +1274,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 				{
 					for (int x = 0; x < tilesize; x++)
 					{
-						Target.GetRGB(x, y, rgb);
+						Target.GetPixel24(x, y, rgb);
 						rgb_bytes[cb++] = rgb.r;
 						rgb_bytes[cb++] = rgb.g;
 						rgb_bytes[cb++] = rgb.b;

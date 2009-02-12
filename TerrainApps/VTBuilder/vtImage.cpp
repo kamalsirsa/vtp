@@ -1911,6 +1911,12 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 	int x, y;
 	RGBi rgb;
 
+	// Get ready to multisample
+	DLine2 offsets;
+	int iNSampling = g_Options.GetValueInt(TAG_SAMPLING_N);
+	MakeSampleOffsets(spacing, iNSampling, offsets);
+	double dRes = (spacing.x+spacing.y)/2;
+
 	for (y = tilesize-1; y >= 0; y--)
 	{
 		p.y = tile_area.bottom + y * spacing.y;
@@ -1918,7 +1924,7 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 		{
 			p.x = tile_area.left + x * spacing.x;
 
-			GetColorSolid(p, rgb);
+			GetMultiSample(p, offsets, rgb, dRes);
 #if 0 // LOD Stripes
 			// For testing, add stripes to indicate LOD
 			if (lod == 3 && x == y) rgb.Set(255,0,0);
