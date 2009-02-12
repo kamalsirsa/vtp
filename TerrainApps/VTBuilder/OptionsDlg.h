@@ -37,7 +37,6 @@ public:
 	void SetElevDrawOptions(const ElevDrawOptions &opt);
 	void GetElevDrawOptions(ElevDrawOptions &opt);
 
-	bool m_bShowToolbar;
 	bool m_bShowMinutes;
 	int  m_iElevUnits;
 

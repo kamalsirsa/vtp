@@ -37,7 +37,6 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetElevUnit()->Append(_("Feet (International)"));
 	GetElevUnit()->Append(_("Feet (U.S. Survey)"));
 
-	AddValidator(ID_TOOLBAR, &m_bShowToolbar);
 	AddValidator(ID_MINUTES, &m_bShowMinutes);
 	AddValidator(ID_ELEVUNIT, &m_iElevUnits);
 

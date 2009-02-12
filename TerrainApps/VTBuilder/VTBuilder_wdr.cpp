@@ -962,79 +962,72 @@ wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("Status Bar") );
+    wxStaticBoxSizer *item1 = new wxStaticBoxSizer( item2, wxVERTICAL );
 
-    wxCheckBox *item2 = new wxCheckBox( parent, ID_TOOLBAR, _("Show toolbar"), wxDefaultPosition, wxDefaultSize, 0 );
-    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item3 = new wxCheckBox( parent, ID_MINUTES, _("Show minutes and seconds for degree values"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticBox *item4 = new wxStaticBox( parent, -1, _("Status Bar") );
-    wxStaticBoxSizer *item3 = new wxStaticBoxSizer( item4, wxVERTICAL );
+    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("Show elevation values as:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxCheckBox *item5 = new wxCheckBox( parent, ID_MINUTES, _("Show minutes and seconds for degree values"), wxDefaultPosition, wxDefaultSize, 0 );
-    item3->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs6 = (wxString*) NULL;
+    wxChoice *item6 = new wxChoice( parent, ID_ELEVUNIT, wxDefaultPosition, wxSize(100,-1), 0, strs6, 0 );
+    item4->Add( item6, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
+    item1->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Show elevation values as:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxString *strs8 = (wxString*) NULL;
-    wxChoice *item8 = new wxChoice( parent, ID_ELEVUNIT, wxDefaultPosition, wxSize(100,-1), 0, strs8, 0 );
-    item6->Add( item8, 1, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticBox *item8 = new wxStaticBox( parent, -1, _("Elevation") );
+    wxStaticBoxSizer *item7 = new wxStaticBoxSizer( item8, wxVERTICAL );
 
-    item3->Add( item6, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxRadioButton *item9 = new wxRadioButton( parent, ID_RADIO_OUTLINE_ONLY, _("Show outline only (faster, saves memory)"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item7->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item10 = new wxRadioButton( parent, ID_RADIO_COLOR, _("Artificial color by elevation value"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item10, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticBox *item10 = new wxStaticBox( parent, -1, _("Elevation") );
-    wxStaticBoxSizer *item9 = new wxStaticBoxSizer( item10, wxVERTICAL );
+    wxFlexGridSizer *item11 = new wxFlexGridSizer( 2, 0, 0 );
 
-    wxRadioButton *item11 = new wxRadioButton( parent, ID_RADIO_OUTLINE_ONLY, _("Show outline only (faster, saves memory)"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    item9->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item11->Add( 20, 5, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxRadioButton *item12 = new wxRadioButton( parent, ID_RADIO_COLOR, _("Artificial color by elevation value"), wxDefaultPosition, wxDefaultSize, 0 );
-    item9->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxButton *item12 = new wxButton( parent, ID_RENDER_OPTIONS, _("Rendering options..."), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxFlexGridSizer *item13 = new wxFlexGridSizer( 2, 0, 0 );
+    item11->Add( 20, 5, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item13->Add( 20, 5, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item13 = new wxCheckBox( parent, ID_CHECK_HIDE_UNKNOWN, _("Hide areas of unknown elevation"), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item13, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item14 = new wxButton( parent, ID_RENDER_OPTIONS, _("Rendering options..."), wxDefaultPosition, wxDefaultSize, 0 );
-    item13->Add( item14, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item7->Add( item11, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    item13->Add( 20, 5, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item7, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item15 = new wxCheckBox( parent, ID_CHECK_HIDE_UNKNOWN, _("Hide areas of unknown elevation"), wxDefaultPosition, wxDefaultSize, 0 );
-    item13->Add( item15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item14 = new wxBoxSizer( wxVERTICAL );
 
-    item9->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxCheckBox *item15 = new wxCheckBox( parent, ID_CHECK_SHOW_ROAD_WIDTH, _("Show roads with width"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item9, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item16 = new wxCheckBox( parent, ID_CHECK_DRAW_RAW_SIMPLE, _("Draw raw layers simplified"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item16 = new wxBoxSizer( wxVERTICAL );
+    wxCheckBox *item17 = new wxCheckBox( parent, ID_PATHNAMES, _("Show full pathnames in Layer View"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxCheckBox *item17 = new wxCheckBox( parent, ID_CHECK_SHOW_ROAD_WIDTH, _("Show roads with width"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item14, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item18 = new wxCheckBox( parent, ID_CHECK_DRAW_RAW_SIMPLE, _("Draw raw layers simplified"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item18 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxCheckBox *item19 = new wxCheckBox( parent, ID_PATHNAMES, _("Show full pathnames in Layer View"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item19 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxButton *item20 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item20 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxButton *item21 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item20->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxButton *item22 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item20->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item0->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

@@ -972,9 +972,8 @@ void MainFrame::SaveProject(const wxString &strPathName) const
 
 void MainFrame::ShowOptionsDialog()
 {
-	OptionsDlg dlg(this, -1, _("Options"));
+	OptionsDlg dlg(this, -1, _("View Options"));
 
-	dlg.m_bShowToolbar = m_pToolbar->IsShown();
 	dlg.m_bShowMinutes = m_statbar->m_bShowMinutes;
 	dlg.m_iElevUnits = (int)(m_statbar->m_ShowVertUnits) - 1;
 
@@ -990,13 +989,6 @@ void MainFrame::ShowOptionsDialog()
 
 	bool bNeedRefresh = false;
 
-	if (dlg.m_bShowToolbar != m_pToolbar->IsShown())
-	{
-		m_pToolbar->Show(dlg.m_bShowToolbar);
-		// send a fake OnSize event so the frame will draw itself correctly
-		wxSizeEvent dummy;
-		wxFrame::OnSize(dummy);
-	}
 	m_statbar->m_bShowMinutes = dlg.m_bShowMinutes;
 	m_statbar->m_ShowVertUnits = (LinearUnits) (dlg.m_iElevUnits + 1);
 
