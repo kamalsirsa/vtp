@@ -1,7 +1,7 @@
 //
 // Trees.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -51,6 +51,7 @@ protected:
 	void _Defaults();
 
 	vtMaterialArray	*m_pMats;
+	vtGeom			*m_pGeom;
 	vtMesh			*m_pMesh;
 	int				m_iMatIdx;
 	vtNode			*m_pExternal;

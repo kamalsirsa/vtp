@@ -9,7 +9,7 @@
 // vtPlantInstance3d
 // vtPlantInstanceArray3d
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -40,6 +40,8 @@ vtPlantAppearance3d::~vtPlantAppearance3d()
 {
 	if (m_pMesh)
 		m_pMesh->Release();
+	if (m_pGeom)
+		m_pGeom->Release();
 	if (m_pMats)
 		m_pMats->Release();
 	if (m_pExternal)
@@ -64,6 +66,7 @@ vtPlantAppearance3d::vtPlantAppearance3d(const vtPlantAppearance &v)
 
 void vtPlantAppearance3d::_Defaults()
 {
+	m_pGeom = NULL;
 	m_pMats = NULL;
 	m_pMesh = NULL;
 #if SUPPORT_XFROG
@@ -139,6 +142,9 @@ void vtPlantAppearance3d::LoadAndCreate()
 
 		// create a surface object to represent the tree
 		m_pMesh = CreateTreeMesh(s_fPlantScale, s_bPlantShadows);
+		m_pGeom = new vtGeom;
+		m_pGeom->SetMaterials(m_pMats);
+		m_pGeom->AddMesh(m_pMesh, m_iMatIdx);
 	}
 	else if (m_eType == AT_XFROG)
 	{
@@ -239,10 +245,7 @@ bool vtPlantAppearance3d::GenerateGeom(vtTransform *container)
 {
 	if (m_eType == AT_BILLBOARD)
 	{
-		vtGeom *pGeom = new vtGeom;
-		pGeom->SetMaterials(m_pMats);
-		pGeom->AddMesh(m_pMesh, m_iMatIdx);
-		container->AddChild(pGeom);
+		container->AddChild(m_pGeom);
 		return true;
 	}
 	else if (m_eType == AT_XFROG)
@@ -541,7 +544,9 @@ void vtPlantInstance3d::ReleaseContents()
 		if (node != m_pHighlight)	// don't delete the highlight
 		{
 			m_pContainer->RemoveChild(node);
-			node->Release();
+
+			// Don't remove the Geom either, as it now belongs to the appearance
+			//node->Release();
 		}
 	}
 	m_pContainer->Identity();
