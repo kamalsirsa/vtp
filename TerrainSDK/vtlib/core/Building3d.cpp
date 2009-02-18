@@ -4,7 +4,7 @@
 // The vtBuilding3d class extends vtBuilding with the ability to procedurally
 // create 3D geometry of the buildings.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1268,6 +1268,7 @@ void vtBuilding3d::ShowBounds(bool bShow)
 			m_pGeom->GetBoundSphere(sphere);
 
 			m_pHighlight = CreateBoundSphereGeom(sphere);
+			m_pHighlight->SetCastShadow(false);		// no shadow
 			m_pContainer->AddChild(m_pHighlight);
 		}
 		m_pHighlight->SetEnabled(true);

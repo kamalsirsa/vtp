@@ -1,7 +1,7 @@
 //
 // Structure3d.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -107,6 +107,7 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 				m_pModel->GetBoundSphere(sphere);
 
 				m_pHighlight = CreateBoundSphereGeom(sphere);
+				m_pHighlight->SetCastShadow(false);		// no shadow
 				m_pContainer->AddChild(m_pHighlight);
 			}
 			m_pHighlight->SetEnabled(true);
