@@ -1,7 +1,7 @@
 //
 // vtString.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1458,4 +1458,15 @@ void vtTokenize(char *buf, const char *delim, vtStringArray &tokens)
 		p = strtok(NULL, delim);
 	}
 }
+
+int vtFindString(const vtStringArray &array, const char *find)
+{
+	for (size_t i = 0; i < array.size(); i++)
+	{
+		if (array[i].Compare(find) == 0)
+			return (int) i;
+	}
+	return -1;
+}
+
 

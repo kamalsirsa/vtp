@@ -1,7 +1,7 @@
 //
 // vtString.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -401,6 +401,9 @@ private:
 
 /** Useful function which wraps the C standard library's strtok */
 void vtTokenize(char *buf, const char *delim, vtStringArray &tokens);
+
+/** Find a string in a string array, return index or -1 if not found */
+int vtFindString(const vtStringArray &array, const char *find);
 
 #endif	// VTSTRINGH
 
