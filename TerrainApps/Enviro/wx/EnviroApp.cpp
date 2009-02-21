@@ -258,10 +258,6 @@ void EnviroApp::StartLog()
 
 void EnviroApp::LoadOptions()
 {
-#ifndef ENVIRO_NATIVE
-	SetupCustomOptions();
-#endif
-
 	// Look these up, we might need them
 	wxString Dir1 = wxStandardPaths::Get().GetUserConfigDir();
 	wxString Dir2 = wxStandardPaths::Get().GetConfigDir();
@@ -277,6 +273,10 @@ void EnviroApp::LoadOptions()
 	//  1. In the same directory as the executable.
 	//  2. On Windows, in the user's "Application Data" folder.
 	vtString OptionsFile = STRING_APPNAME ".xml";
+
+#ifndef ENVIRO_NATIVE
+	SetupCustomOptions();
+#endif
 
 	bool bFound = FileExists(OptionsFile);
 	if (!bFound && AppDataUser != "")
