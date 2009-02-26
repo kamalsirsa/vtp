@@ -117,12 +117,14 @@ public:
 	// OSG access
 	osgUtil::SceneView *getSceneView() { return m_pOsgSceneView.get(); }
 
+	// for culling
+	void CalcCullPlanes();
+
 protected:
 	// OSG-specific implementation
 	osg::ref_ptr<osgUtil::SceneView>	m_pOsgSceneView;
 
 	// for culling
-	void CalcCullPlanes();
 	FPlane		m_cullPlanes[6];
 
 	osg::ref_ptr<osg::Group>	m_pOsgSceneRoot;
