@@ -1,0 +1,61 @@
+set(VTLIB_OSG_SOURCE_FILES ImageOSG.cpp MeshMat.cpp NodeOSG.cpp SceneOSG.cpp SimpleInterimShadowTechnique.cpp StructureShadowsOSG.cpp)
+set(VTLIB_OSG_HEADER_FILES ImageOSG.h MathOSG.h MeshMat.h NodeOSG.h SceneOSG.h SimpleInterimShadowTechnique.h StructureShadowsOSG.h)
+
+
+# Add a library target called vtlib_osg
+
+if(MSVC)
+	add_library(vtlib_osg ${VTLIB_CORE_SOURCE_FILES} ${VTLIB_CORE_SOURCE_FILES_NON_PCH} ${VTLIB_CORE_HEADER_FILES}
+			${VTLIB_OSG_SOURCE_FILES} ${VTLIB_OSG_HEADER_FILES} ../pre.cpp)
+	set_source_files_properties(${VTLIB_CORE_SOURCE_FILES} ${VTLIB_OSG_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuvtlib/vtlib.h)
+	set_source_files_properties(../pre.cpp PROPERTIES COMPILE_FLAGS /Ycvtlib/vtlib.h)
+else(MSVC)
+	add_library(vtlib_osg ${VTLIB_CORE_SOURCE_FILES} ${VTLIB_CORE_HEADER_FILES} ${VTLIB_OSG_SOURCE_FILES} ${VTLIB_OSG_HEADER_FILES})
+endif(MSVC)
+
+include_directories(${TERRAIN_SDK_ROOT} ${TERRAIN_SDK_ROOT}/vtlib)
+
+# Find the directory containing gdal.h
+find_path(GDAL_INCLUDE_PATH gdal.h DOC "Directory containing gdal.h")
+if (GDAL_INCLUDE_PATH)
+	# Add the gdal include directory to the compilers search path 
+	include_directories(${GDAL_INCLUDE_PATH})
+endif (GDAL_INCLUDE_PATH)
+
+# Find the directory containing surfgrid.h
+find_path(QUIKGRID_INCLUDE_PATH surfgrid.h DOC "Directory containing surfgrid.h")
+if (QUIKGRID_INCLUDE_PATH)
+	# Add the QuikGrid include directory to the compilers search path 
+	include_directories(${QUIKGRID_INCLUDE_PATH})
+endif (QUIKGRID_INCLUDE_PATH)
+
+find_path(ZLIB_INCLUDE_PATH zlib.h DOC "Directory containing zlib.h")
+if (ZLIB_INCLUDE_PATH)
+	# Add the zlib include directory to the compilers search path 
+	include_directories(${ZLIB_INCLUDE_PATH})
+endif (ZLIB_INCLUDE_PATH)
+
+find_path(OSG_INCLUDE_PATH zlib.h DOC "Directory containing osg/osg")
+if (OSG_INCLUDE_PATH)
+	# Add the osg include directory to the compilers search path 
+	include_directories(${OSG_INCLUDE_PATH})
+endif (OSG_INCLUDE_PATH)
+
+# Find the directory containing mini/mini.h
+find_path(MINI_INCLUDE_PATH mini/min.h DOC "Directory containing mini/mini.h")
+if (MINI_INCLUDE_PATH)
+	# Add the mini include directory to the compilers search path 
+	include_directories(${MINI_INCLUDE_PATH})
+endif (MINI_INCLUDE_PATH)
+
+# Windows specific stuff
+if (WIN32)
+	set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
+endif (WIN32)
+
+# Specify normal preprocessor definition for this target
+	set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
+
+# Specify debug preprocessor definitions for this target
+set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
+
