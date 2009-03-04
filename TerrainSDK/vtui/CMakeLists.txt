@@ -17,36 +17,17 @@ endif(MSVC)
 
 include_directories(${TERRAIN_SDK_ROOT})
 
-# Find the directory containing wx/setup.h
-find_path(WX_SETUP_PATH wx/setup.h DOC "Directory containing wx/setup.h")
-if (WX_SETUP_PATH)
-	# Add the wx setup include directory to the compilers search path 
-	include_directories(${WX_SETUP_PATH})
-endif (WX_SETUP_PATH)
+if(wxWidgets_FOUND)
+	include_directories(${wxWidgets_INCLUDE_DIRS})
+endif(wxWidgets_FOUND)
 
-# Find the directory containing wx/wx.h
-find_path(WX_INCLUDE_PATH wx/wx.h DOC "Directory containing wx/wx.h")
-if (WX_INCLUDE_PATH)
-	# Add the wx setup include directory to the compilers search path 
-	include_directories(${WX_INCLUDE_PATH})
-endif (WX_INCLUDE_PATH)
+if(GDAL_FOUND)
+	include_directories(${GDAL_INCLUDE_DIR})
+endif (GDAL_FOUND)
 
-# Find the directory containing gdal.h
-find_path(GDAL_INCLUDE_PATH gdal.h DOC "Directory containing gdal.h")
-if (GDAL_INCLUDE_PATH)
-	# Add the gdal include directory to the compilers search path 
-	include_directories(${GDAL_INCLUDE_PATH})
-endif (GDAL_INCLUDE_PATH)
-
-# Find the directory containing zlib.h
-find_path(ZLIB_INCLUDE_PATH zlib.h DOC "Directory containing zlib.h")
-# N.B. You cannot use ${xxxx} in an if (or other expression) to test if xxxx has been set
-# if CMake cannot find the variable named xxxx it will use the direct value ${xxxx} which will never be a boolean true
-# Enclose the include_directories command in a conditional to stop cmake complaing when it has not been set
-if (ZLIB_INCLUDE_PATH)
-	# Add the zlib include directory to the compilers search path 
-	include_directories(${ZLIB_INCLUDE_PATH})
-endif (ZLIB_INCLUDE_PATH)
+if(ZLIB_FOUND)
+	include_directories(${ZLIB_INCLUDE_DIR})
+endif (ZLIB_FOUND)
 
 # Find the directory containing surfgrid.h
 find_path(QUIKGRID_INCLUDE_PATH surfgrid.h DOC "Directory containing surfgrid.h")

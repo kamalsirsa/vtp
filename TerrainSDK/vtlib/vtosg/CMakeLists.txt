@@ -15,12 +15,9 @@ endif(MSVC)
 
 include_directories(${TERRAIN_SDK_ROOT} ${TERRAIN_SDK_ROOT}/vtlib)
 
-# Find the directory containing gdal.h
-find_path(GDAL_INCLUDE_PATH gdal.h DOC "Directory containing gdal.h")
-if (GDAL_INCLUDE_PATH)
-	# Add the gdal include directory to the compilers search path 
-	include_directories(${GDAL_INCLUDE_PATH})
-endif (GDAL_INCLUDE_PATH)
+if(GDAL_FOUND)
+	include_directories(${GDAL_INCLUDE_DIR})
+endif (GDAL_FOUND)
 
 # Find the directory containing surfgrid.h
 find_path(QUIKGRID_INCLUDE_PATH surfgrid.h DOC "Directory containing surfgrid.h")
@@ -29,11 +26,9 @@ if (QUIKGRID_INCLUDE_PATH)
 	include_directories(${QUIKGRID_INCLUDE_PATH})
 endif (QUIKGRID_INCLUDE_PATH)
 
-find_path(ZLIB_INCLUDE_PATH zlib.h DOC "Directory containing zlib.h")
-if (ZLIB_INCLUDE_PATH)
-	# Add the zlib include directory to the compilers search path 
-	include_directories(${ZLIB_INCLUDE_PATH})
-endif (ZLIB_INCLUDE_PATH)
+if(ZLIB_FOUND)
+	include_directories(${ZLIB_INCLUDE_DIR})
+endif (ZLIB_FOUND)
 
 find_path(OSG_INCLUDE_PATH zlib.h DOC "Directory containing osg/osg")
 if (OSG_INCLUDE_PATH)
