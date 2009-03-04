@@ -12,7 +12,7 @@ if (ZLIB_INCLUDE_PATH)
 endif (ZLIB_INCLUDE_PATH)
 
 # Find the directory containing mini/mini.h
-find_path(MINI_INCLUDE_PATH mini/min.h DOC "Directory containing mini/mini.h")
+find_path(MINI_INCLUDE_PATH mini/mini.h DOC "Directory containing mini/mini.h")
 if (MINI_INCLUDE_PATH)
 	# Add the mini include directory to the compilers search path 
 	include_directories(${MINI_INCLUDE_PATH})
