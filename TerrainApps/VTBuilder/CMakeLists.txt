@@ -62,7 +62,8 @@ set_property(TARGET vtbuilder APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANSI
 # Windows specific stuff
 if (WIN32)
 	set_property(TARGET vtbuilder APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1)
-	set_property(TARGET vtbuilder APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt)
+	set_property(TARGET vtbuilder APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
+	set_property(TARGET vtbuilder APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
 endif (WIN32)
 
 # Specify debug preprocessor definitions for this target
@@ -81,6 +82,15 @@ endif(BZIP2_FOUND)
 if(CURL_FOUND)
 	target_link_libraries(vtbuilder ${CURL_LIBRARIES})
 endif(CURL_FOUND)
+if(ZLIB_FOUND)
+	target_link_libraries(vtbuilder ${ZLIB_LIBRARY})
+endif(ZLIB_FOUND)
+if(JPEG_FOUND)
+	target_link_libraries(vtbuilder ${JPEG_LIBRARY})
+endif(JPEG_FOUND)
+if(PNG_FOUND)
+	target_link_libraries(vtbuilder ${PNG_LIBRARY})
+endif(PNG_FOUND)
 find_library(SQUISH_LIBRARY squish DOC "Path to squish library")
 if(SQUISH_LIBRARY)
 	target_link_libraries(vtbuilder ${SQUISH_LIBRARY})
@@ -107,11 +117,11 @@ endif(wxWidgets_FOUND)
 
 if(GDAL_FOUND)
 	include_directories(${GDAL_INCLUDE_DIR})
-endif (GDAL_FOUND)
+endif(GDAL_FOUND)
 
 if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})
-endif (ZLIB_FOUND)
+endif(ZLIB_FOUND)
 
 # Find the directory containing mini/mini.h
 find_path(MINI_INCLUDE_PATH mini/mini.h DOC "Directory containing mini/mini.h")
@@ -120,12 +130,10 @@ if (MINI_INCLUDE_PATH)
 	include_directories(${MINI_INCLUDE_PATH})
 endif (MINI_INCLUDE_PATH)
 
-# Find the directory containing png.h
-find_path(PNG_INCLUDE_PATH png.h DOC "Directory containing png.h")
-if (PNG_INCLUDE_PATH)
+if(PNG_FOUND)
 	# Add the png include directory to the compilers search path 
-	include_directories(${PNG_INCLUDE_PATH})
-endif (PNG_INCLUDE_PATH)
+	include_directories(${PNG_PNG_INCLUDE_DIR})
+endif(PNG_FOUND)
 
 # Find the directory containing surfgrid.h
 find_path(QUIKGRID_INCLUDE_PATH surfgrid.h DOC "Directory containing surfgrid.h")
@@ -134,12 +142,9 @@ if (QUIKGRID_INCLUDE_PATH)
 	include_directories(${QUIKGRID_INCLUDE_PATH})
 endif (QUIKGRID_INCLUDE_PATH)
 
-# Find the directory containing jpeglib.h
-find_path(JPEG_INCLUDE_PATH jpeglib.h DOC "Directory containing jpeglib.h")
-if (JPEG_INCLUDE_PATH)
-	# Add the jpeg include directory to the compilers search path 
-	include_directories(${JPEG_INCLUDE_PATH})
-endif (JPEG_INCLUDE_PATH)
+if(JPEG_FOUND)
+	include_directories(${JPEG_INCLUDE_DIR})
+endif(JPEG_FOUND)
 
 # Find the directory containing squish.h
 find_path(SQUISH_INCLUDE_PATH squish.h DOC "Directory containing squish.h")

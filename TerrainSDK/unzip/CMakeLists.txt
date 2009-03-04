@@ -6,7 +6,7 @@ set_target_properties(unzip PROPERTIES DEBUG_POSTFIX "d")
 
 if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})
-endif (ZLIB_FOUND)
+endif(ZLIB_FOUND)
 
 # Specify precprocessor definitions for this target
 set_target_properties(unzip PROPERTIES COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS} NOUNCRYPT")

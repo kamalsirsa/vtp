@@ -28,9 +28,9 @@ endif (QUIKGRID_INCLUDE_PATH)
 
 if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})
-endif (ZLIB_FOUND)
+endif(ZLIB_FOUND)
 
-find_path(OSG_INCLUDE_PATH zlib.h DOC "Directory containing osg/osg")
+find_path(OSG_INCLUDE_PATH osg/osg DOC "Directory containing osg/osg")
 if (OSG_INCLUDE_PATH)
 	# Add the osg include directory to the compilers search path 
 	include_directories(${OSG_INCLUDE_PATH})

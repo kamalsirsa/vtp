@@ -12,19 +12,13 @@ if (MINI_INCLUDE_PATH)
 	include_directories(${MINI_INCLUDE_PATH})
 endif (MINI_INCLUDE_PATH)
 
-# Find the directory containing jpeglib.h
-find_path(JPEG_INCLUDE_PATH jpeglib.h DOC "Directory containing jpeglib.h")
-if (JPEG_INCLUDE_PATH)
-	# Add the jpeg include directory to the compilers search path 
-	include_directories(${JPEG_INCLUDE_PATH})
-endif (JPEG_INCLUDE_PATH)
+if(JPEG_FOUND)
+	include_directories(${JPEG_INCLUDE_DIR})
+endif(JPEG_FOUND)
 
-# Find the directory containing png.h
-find_path(PNG_INCLUDE_PATH png.h DOC "Directory containing png.h")
-if (PNG_INCLUDE_PATH)
-	# Add the png include directory to the compilers search path 
-	include_directories(${PNG_INCLUDE_PATH})
-endif (PNG_INCLUDE_PATH)
+if(PNG_FOUND)
+	include_directories(${PNG_PNG_INCLUDE_DIR})
+endif(PNG_FOUND)
 
 if(GDAL_FOUND)
 	include_directories(${GDAL_INCLUDE_DIR})

@@ -6,7 +6,7 @@ set_target_properties(xmlhelper PROPERTIES DEBUG_POSTFIX "d")
 
 if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})
-endif (ZLIB_FOUND)
+endif(ZLIB_FOUND)
 
 # Windows specific stuff
 if (WIN32)
