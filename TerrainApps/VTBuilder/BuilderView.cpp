@@ -110,7 +110,7 @@ BuilderView::BuilderView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 	m_distance_p2.Set(0,0);
 
 	// Cursors are a little messy, since support is not even across platforms
-#if __WXMSW__
+#if defined(__WXMSW__)
 	m_pCursorPan = new wxCursor(_T("cursors/panhand.cur"), wxBITMAP_TYPE_CUR);
 //#elif __WXMOTIF__
 //	m_pCursorPan = new wxCursor("cursors/panhand.xbm", wxBITMAP_TYPE_XBM);
