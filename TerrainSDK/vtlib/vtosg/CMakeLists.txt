@@ -30,11 +30,9 @@ if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})
 endif(ZLIB_FOUND)
 
-find_path(OSG_INCLUDE_PATH osg/osg DOC "Directory containing osg/osg")
-if (OSG_INCLUDE_PATH)
-	# Add the osg include directory to the compilers search path 
-	include_directories(${OSG_INCLUDE_PATH})
-endif (OSG_INCLUDE_PATH)
+if(OSG_FOUND)
+	include_directories(${OSG_INCLUDE_DIR})
+endif(OSG_FOUND)
 
 # Find the directory containing mini/mini.h
 find_path(MINI_INCLUDE_PATH mini/mini.h DOC "Directory containing mini/mini.h")

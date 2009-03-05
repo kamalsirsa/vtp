@@ -93,8 +93,13 @@ static vtTiledGeom *s_pTiledGeom = NULL;
   #include "OpenThreads/Thread"
   #include "OpenThreads/Mutex"
   #ifdef _MSC_VER
-	#pragma message( "Adding link with OpenThreads.lib" )
-	#pragma comment( lib, "OpenThreads.lib" )
+	#ifdef VTDEBUG
+		#pragma message( "Adding link with OpenThreadsd.lib" )
+		#pragma comment( lib, "OpenThreadsd.lib" )
+	#else
+		#pragma message( "Adding link with OpenThreads.lib" )
+		#pragma comment( lib, "OpenThreads.lib" )
+	#endif
   #endif
 	const int numthreads = 1;
 	class MyThread : public OpenThreads::Thread

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(VTerrain)
 
+option(BUILD_ENVIRO_OSG "Build the OSG variant of Enviro" ON)
+
 set(TERRAIN_SDK_ROOT "${VTerrain_SOURCE_DIR}/TerrainSDK")
 set(CMAKE_MODULE_PATH "${VTerrain_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 
@@ -12,6 +14,7 @@ find_package(CURL)
 find_package(ZLIB)
 find_package(JPEG)
 find_package(PNG)
+find_package(OSG)
 
 add_subdirectory(TerrainSDK)
 add_subdirectory(TerrainApps)

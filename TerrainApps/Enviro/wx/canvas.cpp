@@ -82,7 +82,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	m_glContext = new wxGLContext(this);
 #endif
 
-#if __WXMSW__
+#if defined(__WXMSW__)
 	HGLRC hContext = m_glContext->GetGLRC();
 	if (NULL == hContext)
 	{
