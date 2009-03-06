@@ -44,7 +44,7 @@ if(BUILD_ENVIRO_OSG)
 	endif (WIN32)
 
 	# Specify debug preprocessor definitions for this target
-	set_property(TARGET enviro_osgr APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
+	set_property(TARGET enviro_osg APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 
 	# External libraries for this target
 	if(wxWidgets_FOUND)
