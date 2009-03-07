@@ -21,10 +21,13 @@ if(BUILD_ENVIRO_OSG)
 	if(MSVC)
 		add_executable(enviro_osg WIN32 ${ENVIRO_SOURCE_FILES} ${ENVIRO_SOURCE_FILES_WX} ${ENVIRO_HEADER_FILES}
 			${ENVIRO_HEADER_FILES_WX} ${ENVIRO_RC_FILES} vtlib_headers.cpp wx/wx_headers.cpp)
-		set_source_files_properties(${ENVIRO_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuvtlib/vtlib.h)
-		set_source_files_properties(vtlib_headers.cpp PROPERTIES COMPILE_FLAGS /Ycvtlib/vtlib.h)
-		set_source_files_properties(${ENVIRO_SOURCE_FILES_WX} PROPERTIES COMPILE_FLAGS "/Yuwx/wxprec.h /Fpwxprec.pch")
-		set_source_files_properties(wx/wx_headers.cpp PROPERTIES COMPILE_FLAGS "/Ycwx/wxprec.h /Fpwxprec.pch")
+		# When I can find a way of having telling CMake to pch files in the build directories (Debug Release etc.)
+		# then I can have more than pch file. One possible way round thnis would be to force vtlib_headers.cpp
+		# to be recompiled on every build
+		#set_source_files_properties(${ENVIRO_SOURCE_FILES} PROPERTIES COMPILE_FLAGS "/Yuvtlib/vtlib.h /Fpvtlib.pch")
+		#set_source_files_properties(vtlib_headers.cpp PROPERTIES COMPILE_FLAGS "/Ycvtlib/vtlib.h /Fpvtlib.pch")
+		set_source_files_properties(${ENVIRO_SOURCE_FILES_WX} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
+		set_source_files_properties(wx/wx_headers.cpp PROPERTIES COMPILE_FLAGS /Ycwx/wxprec.h)
 	else(MSVC)
 		add_executable(enviro_osg WIN32 ${ENVIRO_SOURCE_FILES} ${ENVIRO_SOURCE_FILES_WX} ${ENVIRO_HEADER_FILES}
 			${ENVIRO_HEADER_FILES_WX} ${ENVIRO_RC_FILES})

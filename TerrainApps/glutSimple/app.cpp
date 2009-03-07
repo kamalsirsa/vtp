@@ -10,6 +10,12 @@
 #  include <ieeefp.h>
 #endif
 
+#ifdef __DARWIN_OSX__
+ #import <GLUT/glut.h>
+#else
+ #include <GL/glut.h>
+#endif
+
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
@@ -24,12 +30,6 @@
 #if EXAMPLE_SNOW
 #include <osgParticle/PrecipitationEffect>
 #pragma comment(lib, "osgParticled.lib")
-#endif
-
-#ifdef __DARWIN_OSX__
- #import <GLUT/glut.h>
-#else
- #include <GL/glut.h>
 #endif
 
 void redraw();

@@ -1,8 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 project(VTerrain)
 
-option(BUILD_ENVIRO_OSG "Build the OSG variant of Enviro" ON)
-option(BUILD_CMANAGER_OSG "Build the OSG variant of CManager" ON)
+option(BUILD_OSG_VERSIONS "Build OSG versions of the applications" ON)
+
+if(BUILD_OSG_VERSIONS)
+	set(BUILD_ENVIRO_OSG ON)
+	set(BUILD_CMANAGER_OSG ON)
+	set(BUILD_GLUTSIMPLE_OSG ON)
+	set(BUILD_WXSIMPLE_OSG ON)
+endif(BUILD_OSG_VERSIONS)
 
 set(TERRAIN_SDK_ROOT "${VTerrain_SOURCE_DIR}/TerrainSDK")
 set(CMAKE_MODULE_PATH "${VTerrain_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
