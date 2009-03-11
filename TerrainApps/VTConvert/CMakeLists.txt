@@ -1,5 +1,5 @@
 
-add_executable(VTConvert ${ENVIRO_SOURCE_FILES} VTConvert.cpp)
+add_executable(VTConvert VTConvert.cpp)
 
 # Internal dependencies for this target
 add_dependencies(VTConvert vtdata)
