@@ -729,15 +729,15 @@ bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb, double dRes)
 	const IPoint2 &size = m_Bitmaps[0].m_Size;
 
 	double u = (p.x - m_Extents.left) / spacing.x;
-	if (u < -0.5 || u > size.x+0.5) return false; // check extents
+	if (u < -0.5 || u > size.x-0.5) return false; // check extents
 	if (u < 0.0) u = 0.0; // adjust left edge
-	if (u >= size.x) u = size.x-1; // adjust right edge
+	if (u >= size.x-1) u = size.x-1; // adjust right edge
 	int ix = (int) u; // round to closest pixel
 
 	double v = (m_Extents.top - p.y) / spacing.y;
-	if (v < -0.5 || v > size.y+0.5) return false; // check extents
+	if (v < -0.5 || v > size.y-0.5) return false; // check extents
 	if (v < 0.0) v = 0.0; // adjust top edge
-	if (v >= size.y) v = size.y-1; // adjust bottom edge
+	if (v >= size.y-1) v = size.y-1; // adjust bottom edge
 	int iy = (int) v; // round to closest pixel
 
 	GetRGB(ix, iy, rgb, dRes);
