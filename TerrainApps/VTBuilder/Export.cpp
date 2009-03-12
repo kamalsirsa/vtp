@@ -1215,11 +1215,16 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 			   total_lods++;
 			}
 
+			int base_tile_exponent = vt_log2(base_tilesize);
+			if( total_lods > base_tile_exponent )
+			{
+				total_lods = base_tile_exponent;
+			}
+
 			int col = i;
 			int row = opts.rows-1-j;
 
 			// Now we know this tile will be included, so note the LODs present
-			int base_tile_exponent = vt_log2(base_tilesize);
 			lod_existence_map.set(col, row, base_tile_exponent, base_tile_exponent-(total_lods-1));
 
 			for (int k = 0; k < total_lods; k++)
