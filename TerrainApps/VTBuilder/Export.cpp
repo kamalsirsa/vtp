@@ -1242,7 +1242,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 				Target.Allocate(tilesize, tilesize);
 
 				// Get ready to multisample
-				DPoint2 step = tile_dim / tilesize;
+				DPoint2 step = tile_dim / (tilesize-1);
 				DLine2 offsets;
 				int iNSampling = g_Options.GetValueInt(TAG_SAMPLING_N);
 				MakeSampleOffsets(step, iNSampling, offsets);
