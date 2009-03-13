@@ -40,7 +40,7 @@ if(BUILD_CMANAGER_OSG)
 	endif(wxWidgets_FOUND)
 
 	if(GDAL_FOUND)
-		target_link_libraries(cmanager_osg ${GDAL_LIBRARY})
+		target_link_libraries(cmanager_osg ${GDAL_LIBRARIES})
 	endif (GDAL_FOUND)
 
 	if(OSG_FOUND)

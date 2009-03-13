@@ -31,7 +31,7 @@ if(BUILD_GLUTSIMPLE_OSG)
 	endif(CURL_FOUND)
 
 	if(GDAL_FOUND)
-		target_link_libraries(glutSimple_osg ${GDAL_LIBRARY})
+		target_link_libraries(glutSimple_osg ${GDAL_LIBRARIES})
 	endif (GDAL_FOUND)
 
 	if(ZLIB_FOUND)

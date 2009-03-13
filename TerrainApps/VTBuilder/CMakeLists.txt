@@ -75,7 +75,7 @@ if(wxWidgets_FOUND)
 endif(wxWidgets_FOUND)
 
 if(GDAL_FOUND)
-	target_link_libraries(vtbuilder ${GDAL_LIBRARY})
+	target_link_libraries(vtbuilder ${GDAL_LIBRARIES})
 endif (GDAL_FOUND)
 
 if(BZIP2_FOUND)
@@ -103,10 +103,9 @@ if(SQUISH_LIBRARY)
 	target_link_libraries(vtbuilder ${SQUISH_LIBRARY})
 endif(SQUISH_LIBRARY)
 
-find_library(QUIKGRID_LIBRARY QuikGrid DOC "Path to QuikGrid library")
-if(QUIKGRID_LIBRARY)
-	target_link_libraries(vtbuilder ${QUIKGRID_LIBRARY})
-endif(QUIKGRID_LIBRARY)
+if(QUIKGRID_FOUND)
+	target_link_libraries(vtbuilder ${QUIKGRID_LIBRARIES})
+endif(QUIKGRID_FOUND)
 
 find_library(MINI_LIBRARY libMini DOC "Path to libMini")
 if(MINI_LIBRARY)
@@ -145,12 +144,9 @@ if(PNG_FOUND)
 	include_directories(${PNG_PNG_INCLUDE_DIR})
 endif(PNG_FOUND)
 
-# Find the directory containing surfgrid.h
-find_path(QUIKGRID_INCLUDE_PATH surfgrid.h DOC "Directory containing surfgrid.h")
-if (QUIKGRID_INCLUDE_PATH)
-	# Add the QuikGrid include directory to the compilers search path 
-	include_directories(${QUIKGRID_INCLUDE_PATH})
-endif (QUIKGRID_INCLUDE_PATH)
+if(QUIKGRID_FOUND)
+	include_directories(${QUIKGRID_INCLUDE_DIR})
+endif(QUIKGRID_FOUND)
 
 if(JPEG_FOUND)
 	include_directories(${JPEG_INCLUDE_DIR})

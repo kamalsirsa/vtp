@@ -2110,7 +2110,7 @@ void MainFrame::OnImageReplaceRGB(wxCommandEvent& event)
 	if (str == _T(""))
 		return;
 	RGBi rgb1, rgb2;
-	int count = sscanf(str.mb_str(), "%d %d %d", &rgb1.r, &rgb1.g, &rgb1.b);
+	int count = sscanf(str.mb_str(), "%hd %hd %hd", &rgb1.r, &rgb1.g, &rgb1.b);
 	if (count != 3 || rgb1.r < 0 || rgb1.r > 255 || rgb1.g < 0 ||
 		rgb1.g > 255 || rgb1.b < 0 || rgb1.b > 255)
 	{
@@ -2120,7 +2120,7 @@ void MainFrame::OnImageReplaceRGB(wxCommandEvent& event)
 	str = wxGetTextFromUser(msg, _("With color:"));
 	if (str == _T(""))
 		return;
-	count = sscanf(str.mb_str(), "%d %d %d", &rgb2.r, &rgb2.g, &rgb2.b);
+	count = sscanf(str.mb_str(), "%hd %hd %hd", &rgb2.r, &rgb2.g, &rgb2.b);
 	if (count != 3 || rgb2.r < 0 || rgb2.r > 255 || rgb2.g < 0 ||
 		rgb2.g > 255 || rgb2.b < 0 || rgb2.b > 255)
 	{

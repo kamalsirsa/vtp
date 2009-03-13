@@ -22,6 +22,7 @@ find_package(ZLIB)
 find_package(JPEG)
 find_package(PNG)
 find_package(OSG)
+find_package(QuikGrid)
 
 add_subdirectory(TerrainSDK)
 add_subdirectory(TerrainApps)

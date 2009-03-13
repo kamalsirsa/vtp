@@ -22,7 +22,7 @@ if(BZIP2_FOUND)
 endif(BZIP2_FOUND)
 
 if(GDAL_FOUND)
-	target_link_libraries(VTConvert ${GDAL_LIBRARY})
+	target_link_libraries(VTConvert ${GDAL_LIBRARIES})
 endif (GDAL_FOUND)
 
 if(ZLIB_FOUND)

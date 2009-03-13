@@ -46,12 +46,9 @@ if (NETCDF_INCLUDE_PATH)
 	include_directories(${NETCDF_INCLUDE_PATH})
 endif (NETCDF_INCLUDE_PATH)
 
-# Find the directory containing surfgrid.h
-find_path(QUIKGRID_INCLUDE_PATH surfgrid.h DOC "Directory containing surfgrid.h")
-if (QUIKGRID_INCLUDE_PATH)
-	# Add the QuikGrid include directory to the compilers search path 
-	include_directories(${QUIKGRID_INCLUDE_PATH})
-endif (QUIKGRID_INCLUDE_PATH)
+if(QUIKGRID_FOUND)
+	include_directories(${QUIKGRID_INCLUDE_DIR})
+endif(QUIKGRID_FOUND)
 
 include_directories(${TERRAIN_SDK_ROOT})
 

@@ -32,7 +32,7 @@ if(BUILD_WXSIMPLE_OSG)
 	endif(wxWidgets_FOUND)
 
 	if(GDAL_FOUND)
-		target_link_libraries(wxSimple_osg ${GDAL_LIBRARY})
+		target_link_libraries(wxSimple_osg ${GDAL_LIBRARIES})
 	endif (GDAL_FOUND)
 
 	if(OSG_FOUND)
@@ -59,10 +59,9 @@ if(BUILD_WXSIMPLE_OSG)
 		target_link_libraries(wxSimple_osg ${PNG_LIBRARY})
 	endif(PNG_FOUND)
 	
-	find_library(QUIKGRID_LIBRARY QuikGrid DOC "Path to QuikGrid library")
-	if(QUIKGRID_LIBRARY)
-		target_link_libraries(wxSimple_osg ${QUIKGRID_LIBRARY})
-	endif(QUIKGRID_LIBRARY)
+	if(QUIKGRID_FOUND)
+		target_link_libraries(wxSimple_osg ${QUIKGRID_LIBRARIES})
+	endif(QUIKGRID_FOUND)
 
 	find_library(MINI_LIBRARY libMini DOC "Path to libMini")
 	if(MINI_LIBRARY)

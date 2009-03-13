@@ -1,0 +1,29 @@
+# Defines
+# QUIKGRID_FOUND
+# QUIKGRID_INCLUDE_DIR
+# QUIKGRID_LIBRARIES
+
+
+if(QUIKGRID_INCLUDE_DIR AND QUIKGRID_LIBRARY AND QUIKGRID_LIBRARY_DEBUG)
+    set(QuikGrid_FIND_QUIETLY TRUE)
+endif(QUIKGRID_INCLUDE_DIR AND QUIKGRID_LIBRARY AND QUIKGRID_LIBRARY_DEBUG)
+
+find_path(QUIKGRID_INCLUDE_DIR surfgrid.h DOC "Directory containing surfgrid.h")
+
+find_library(QUIKGRID_LIBRARY NAMES QuikGrid DOC "Path to QuikGrid library")
+find_library(QUIKGRID_LIBRARY_DEBUG NAMES QuikGridd DOC "Path to QuikGridd library")
+
+# handle the QUIETLY and REQUIRED arguments and set QUIKGRID_FOUND to TRUE if 
+# all listed variables are TRUE
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(QuikGrid DEFAULT_MSG QUIKGRID_LIBRARY QUIKGRID_INCLUDE_DIR)
+
+if(QUIKGRID_FOUND)
+   if(NOT QUIKGRID_LIBRARY_DEBUG)
+      set(QUIKGRID_LIBRARY_DEBUG ${QUIKGRID_LIBRARY})
+   endif(NOT QUIKGRID_LIBRARY_DEBUG)
+   set(QUIKGRID_LIBRARIES debug ${QUIKGRID_LIBRARY_DEBUG} optimized ${QUIKGRID_LIBRARY})
+else(QUIKGRID_FOUND)
+   SET(QUIKGRID_LIBRARIES )
+endif(QUIKGRID_FOUND)
+

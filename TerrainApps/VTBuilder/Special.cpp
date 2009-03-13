@@ -173,7 +173,7 @@ void MainFrame::DoProcessBillboard()
 	RGBi bg;
 	wxString str = dlg1.GetValue();
 	vtString color = (const char *) str.mb_str(wxConvUTF8);
-	int res = sscanf(color, "%d %d %d", &bg.r, &bg.g, &bg.b);
+	int res = sscanf(color, "%hd %hd %hd", &bg.r, &bg.g, &bg.b);
 	if (res != 3)
 	{
 		DisplayAndLog("Couldn't parse color.");
