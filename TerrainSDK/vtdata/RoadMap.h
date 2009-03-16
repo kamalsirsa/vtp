@@ -1,7 +1,7 @@
 //
 // RoadMap.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -191,11 +191,6 @@ protected:
 
 typedef TLink *LinkPtr;
 typedef TNode *TNodePtr;
-
-#define shortSize 4
-#define intSize 4
-#define floatSize 4
-#define doubleSize 8
 
 /**
  * vtRoadMap contains a sets of nodes (TNode) and links (TLink) which define

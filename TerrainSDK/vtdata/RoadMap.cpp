@@ -1,7 +1,7 @@
 //
 // RoadMap.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,10 @@
 #include "RoadMap.h"
 #include "vtLog.h"
 #include "FilePath.h"
+
+#define intSize 4
+#define floatSize 4
+#define doubleSize 8
 
 
 //
@@ -762,8 +766,8 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	}
 	else
 	{
-		short length;
-		fread(&length, shortSize, 1, fp);
+		fread(&dummy, 4, 1, fp);
+		short length = (short) dummy;
 		char wkt_buf[2000], *wkt = wkt_buf;
 		fread(wkt_buf, length, 1, fp);
 		OGRErr err = m_proj.importFromWkt((char **) &wkt);
@@ -842,7 +846,6 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	// Read the links
 	float ftmp;
 	int itmp;
-	short stmp;
 	int reject1 = 0, reject2 = 0, reject3 = 0;
 	for (i = 1; i <= numLinks; i++)
 	{
@@ -862,12 +865,15 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		}
 		else
 		{
-			fread(&(tmpLink->m_iHwy), shortSize, 1, fp);	//highway number
+			fread(&(dummy), 4, 1, fp);			//highway number
+			tmpLink->m_iHwy = (short) dummy;
 			fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
-			fread(&(tmpLink->m_iLanes), shortSize, 1, fp);	//number of lanes
-			fread(&stmp, shortSize, 1, fp);					//surface type
-			tmpLink->m_Surface =  (SurfaceType) stmp;
-			fread(&(tmpLink->m_iFlags), shortSize, 1, fp);	//FLAG
+			fread(&(dummy), 4, 1, fp);			//number of lanes
+			tmpLink->m_iLanes = (short) dummy;
+			fread(&dummy, 4, 1, fp);			//surface type
+			tmpLink->m_Surface =  (SurfaceType) dummy;
+			fread(&(dummy), 4, 1, fp);			//FLAG
+			tmpLink->m_iFlags = dummy;
 		}
 
 		if (version < 1.89)
@@ -1059,7 +1065,7 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	if (err != OGRERR_NONE)
 		return false;
 	short len = (short) strlen(wkt);
-	FWrite(&len, shortSize);
+	FWrite(&len, 4);
 	FWrite(wkt, len);
 	OGRFree(wkt);
 
@@ -1084,11 +1090,11 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	while (curLink)
 	{
 		FWrite(&(curLink->m_id), intSize);			//id
-		FWrite(&(curLink->m_iHwy), shortSize);		//highway number
+		FWrite(&(curLink->m_iHwy), 4);				//highway number
 		FWrite(&(curLink->m_fWidth), floatSize);	//width
-		FWrite(&(curLink->m_iLanes), shortSize);	//number of lanes
-		FWrite(&(curLink->m_Surface), shortSize);	//surface type
-		FWrite(&(curLink->m_iFlags), shortSize);	//FLAG
+		FWrite(&(curLink->m_iLanes), 4);			//number of lanes
+		FWrite(&(curLink->m_Surface), 4);			//surface type
+		FWrite(&(curLink->m_iFlags), 4);			//FLAG
 		FWrite(&(curLink->m_fSidewalkWidth), floatSize);	// sidewalk width
 		FWrite(&(curLink->m_fCurbHeight), floatSize);	// curb height
 		FWrite(&(curLink->m_fMarginWidth), floatSize);	// margin width
