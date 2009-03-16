@@ -1,7 +1,7 @@
 //
 // Projections.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Parts of the code are derived from public-domain USGS software.
@@ -1198,6 +1198,8 @@ static const char *papszDatumEquiv[] =
 	"European_Reference_System_1989",
 	"Nouvelle_Triangulation_Francaise_(Paris)",
 	"Nouvelle_Triangulation_Francaise_Paris",
+	"Rikets_koordinatsystem_1990",
+	"RT90",
 	NULL
 };
 
