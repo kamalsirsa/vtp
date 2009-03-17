@@ -945,6 +945,9 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 				if (!bGood)
 					return false;
 
+				// Some methods may not fill all gaps, so replace the remainder as a safety measure
+				base_lod.ReplaceValue(INVALID_ELEVATION,0.0);
+
 				opts.iNoDataFilled += iNumInvalid;
 			}
 
