@@ -1,7 +1,7 @@
 //
 // Terrain.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -44,6 +44,7 @@ vtTerrain::vtTerrain()
 
 	m_pContainerGroup = NULL;
 	m_pTerrainGroup = NULL;
+	m_pUnshadowedGroup = NULL;
 	m_pImage = NULL;
 	m_pImageSource = NULL;
 	m_pTerrMats = NULL;
@@ -2103,6 +2104,9 @@ void vtTerrain::ConnectFogShadow(bool bFog, bool bShadow)
 	}
 	else
 		m_pContainerGroup->AddChild(m_pTerrainGroup);
+
+	// re-attach
+	m_pContainerGroup->AddChild(m_pUnshadowedGroup);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -2198,6 +2202,8 @@ void vtTerrain::CreateStep0()
 	m_pContainerGroup->SetName2("Terrain Container");
 	m_pTerrainGroup = new vtGroup;
 	m_pTerrainGroup->SetName2("Terrain Group");
+	m_pUnshadowedGroup = new vtGroup;
+	m_pUnshadowedGroup->SetName2("Unshadowed Group");
 
 #if 0
 	// TEST new shadow functionality
@@ -2539,7 +2545,7 @@ bool vtTerrain::CreateStep5()
 	m_pScaledFeatures->SetName2("Scaled Features");
 	m_pScaledFeatures->Scale3(1.0f, m_fVerticalExag, 1.0f);
 	m_pScaledFeatures->SetCastShadow(false);
-	m_pTerrainGroup->AddChild(m_pScaledFeatures);
+	m_pUnshadowedGroup->AddChild(m_pScaledFeatures);
 
 	_CreateCulture();
 
@@ -2638,7 +2644,7 @@ bool vtTerrain::IsCreated()
 
 void vtTerrain::Enable(bool bVisible)
 {
-	m_pTerrainGroup->SetEnabled(bVisible);
+	m_pContainerGroup->SetEnabled(bVisible);
 }
 
 /**

@@ -1,7 +1,7 @@
 //
 // Terrain.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -418,6 +418,7 @@ protected:
 	// main scene graph outline
 	vtGroup		*m_pContainerGroup;
 	vtGroup		*m_pTerrainGroup;
+	vtGroup		*m_pUnshadowedGroup;
 
 	// dynamic terrain (CLOD)
 	vtDynTerrainGeom *m_pDynGeom;
