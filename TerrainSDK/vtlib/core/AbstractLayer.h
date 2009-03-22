@@ -85,6 +85,7 @@ public:
 	vtGroup *GetLabelGroup() const { return pLabelGroup; }
 	vtGroup *GetContainer() const { return pContainer; }
 	vtVisual *GetViz(vtFeature *feat);
+	vtMultiTexture *GetMultiTexture() const { return pMultiTexture; }
 	void CreateContainer();
 
 	// Create for all features

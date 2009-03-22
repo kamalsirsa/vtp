@@ -9,6 +9,9 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
+#if VTLISPSM
+#include "LightSpacePerspectiveShadowTechnique.h"
+#endif
 #include "SimpleInterimShadowTechnique.h"
 
 #include <osg/Polytope>
@@ -28,7 +31,6 @@
 using namespace osg;
 
 #define DEBUG_NODE_LOAD	0
-#define VTLISPSM		0
 
 // We use bits 1 and 2 of the node mask as shadow flags.
 const int ReceivesShadowTraversalMask = 0x1;
@@ -918,6 +920,9 @@ vtMultiTexture *vtNode::AddMultiTexture(int iTextureUnit, vtImage *pImage, int i
 	vtMultiTexture *mt = new vtMultiTexture;
 	mt->m_pNode = this;
 	mt->m_iTextureUnit = iTextureUnit;
+#if VTLISPSM
+	mt->m_iMode = iTextureMode;
+#endif
 
 	// Currently, multi-texture support is OSG-only
 	osg::Node *onode = GetOsgNode();
@@ -1483,15 +1488,15 @@ vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowText
 	m_pShadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
 
 #if VTLISPSM
-	// osg::ref_ptr<CComplexShadowTechnique> pShadowTechnique = new CComplexShadowTechnique;
 	osg::ref_ptr<CLightSpacePerspectiveShadowTechnique> pShadowTechnique = new CLightSpacePerspectiveShadowTechnique;
-	pShadowTechnique->setShadowTextureCoordIndex(m_ShadowTextureUnit);
+	// No need to set the BaseTextureUnit as the default of zero is OK for us
+	// But the ShadowTextureUnit might be different (default 1)
 	pShadowTechnique->setShadowTextureUnit(m_ShadowTextureUnit);
-	// pShadowTechnique->setDebugDraw( true );
 #else
 	osg::ref_ptr<CSimpleInterimShadowTechnique> pShadowTechnique = new CSimpleInterimShadowTechnique;
 #endif
 
+#if !VTLISPSM
 #if VTDEBUGSHADOWS
 	// add some instrumentation
 	pShadowTechnique->m_pParent = this;
@@ -1499,6 +1504,7 @@ vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowText
 
 	pShadowTechnique->SetShadowTextureUnit(m_ShadowTextureUnit);
 	pShadowTechnique->SetShadowSphereRadius(50.0);
+#endif
 	m_pShadowedScene->setShadowTechnique(pShadowTechnique.get());
 
 	SetOsgGroup(m_pShadowedScene);
@@ -1544,25 +1550,52 @@ float vtShadow::GetDarkness()
 		return 1.0f;
 }
 
-void vtShadow::AddMainSceneTextureUnit(const unsigned int Unit, const unsigned int Mode)
+void vtShadow::AddAdditionalTerrainTextureUnit(const unsigned int Unit, const unsigned int Mode)
 {
+#if VTLISPSM
+	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->AddAdditionalTerrainTextureUnit(Unit, Mode);
+#else
 	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
 	if (pTechnique)
 		pTechnique->AddMainSceneTextureUnit(Unit, Mode);
+#endif
 }
 
-void vtShadow::RemoveMainSceneTextureUnit(const unsigned int Unit)
+void vtShadow::RemoveAdditionalTerrainTextureUnit(const unsigned int Unit)
 {
+#if VTLISPSM
+	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->RemoveAdditionalTerrainTextureUnit(Unit);
+#else
 	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
 	if (pTechnique)
 		pTechnique->RemoveMainSceneTextureUnit(Unit);
+#endif
+}
+
+void vtShadow::RemoveAllAdditionalTerrainTextureUnits()
+{
+#if VTLISPSM
+	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->RemoveAllAdditionalTerrainTextureUnits();
+#endif
 }
 
 void vtShadow::SetShadowTextureResolution(const unsigned int ShadowTextureResolution)
 {
+#if VTLISPSM
+	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->setTextureSize(osg::Vec2s(ShadowTextureResolution,ShadowTextureResolution));
+#else
 	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
 	if (pTechnique)
 		pTechnique->SetShadowTextureResolution(ShadowTextureResolution);
+#endif
 }
 
 void vtShadow::SetRecalculateEveryFrame(const bool RecalculateEveryFrame)
@@ -1583,9 +1616,15 @@ bool vtShadow::GetRecalculateEveryFrame() const
 
 void vtShadow::SetShadowSphereRadius(const float ShadowSphereRadius)
 {
+#if VTLISPSM
+	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	if (pTechnique)
+		pTechnique->setMaxFarPlane(ShadowSphereRadius);
+#else
 	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
 	if (pTechnique)
 		pTechnique->SetShadowSphereRadius(ShadowSphereRadius);
+#endif
 }
 
 void vtShadow::SetHeightField3d(vtHeightField3d *pHeightField3d)

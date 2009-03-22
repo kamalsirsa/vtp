@@ -2014,6 +2014,7 @@ void vtTerrain::SetShadows(bool shadows)
 			m_pShadow->SetRecalculateEveryFrame(m_Params.GetValueBool(STR_SHADOWS_EVERY_FRAME));
 			m_pShadow->AddLodGridToIgnore(GetStructureGrid());
 			m_pShadow->SetName2("Shadow Group");
+#if !VTLISPSM
 			// When we connect up multitexturing it should probably be set up
 			// here intitially. But at the moment we have not stored the texture
 			// units used anywhere. So we cannot do it yet. Therefore any
@@ -2021,10 +2022,32 @@ void vtTerrain::SetShadows(bool shadows)
 			// fragment shader is used. A fragment shader will be used if the
 			// shadow darkness is less than one and the ARB_shadow_ambient
 			// extension cannot be found.
+#endif
 		}
 		ConnectFogShadow(false, true);
 #if defined (VTDEBUG) && defined (VTDEBUGSHADOWS)
 		m_pShadow->SetDebugHUD(m_pContainerGroup);
+#endif
+#if VTLISPSM
+		m_pShadow->RemoveAllAdditionalTerrainTextureUnits();
+		unsigned int NumLayers = m_Layers.GetSize();
+		for (unsigned int i = 0; i < NumLayers; i++)
+		{
+			vtAbstractLayer *pAbstractLayer = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
+			vtImageLayer *pImageLayer = dynamic_cast<vtImageLayer*>(m_Layers[i]);
+			if (NULL != pAbstractLayer)
+			{
+				vtMultiTexture *pMultiTexture = pAbstractLayer->GetMultiTexture();
+				if (NULL != pMultiTexture)
+					m_pShadow->AddAdditionalTerrainTextureUnit(pMultiTexture->m_iTextureUnit, pMultiTexture->m_iMode);
+			}
+			else if (NULL != pImageLayer)
+			{
+				vtMultiTexture *pMultiTexture = pImageLayer->m_pMultiTexture;
+				if (NULL != pMultiTexture)
+					m_pShadow->AddAdditionalTerrainTextureUnit(pMultiTexture->m_iTextureUnit, pMultiTexture->m_iMode);
+			}
+		}
 #endif
 		m_pStructGrid->SetCastShadow(true);
 	}

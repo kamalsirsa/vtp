@@ -17,6 +17,8 @@
 #include <osg/Version>
 #include <osgShadow/ShadowedScene>
 
+#define VTLISPSM 0
+
 /** \addtogroup sg */
 /*@{*/
 
@@ -56,6 +58,9 @@ class vtMultiTexture
 {
 public:
 	int	m_iTextureUnit;
+#if VTLISPSM
+	int	m_iMode;
+#endif
 	vtNode *m_pNode;
 	osg::ref_ptr<osg::Texture2D> m_pTexture;
 };
@@ -324,8 +329,9 @@ public:
 	/// Get the darkness, from 0 to 1.
 	float GetDarkness();
 
-	void AddMainSceneTextureUnit(const unsigned int Unit, const unsigned int Mode);
-	void RemoveMainSceneTextureUnit(const unsigned int Unit);
+	void AddAdditionalTerrainTextureUnit(const unsigned int Unit, const unsigned int Mode);
+	void RemoveAdditionalTerrainTextureUnit(const unsigned int Unit);
+	void RemoveAllAdditionalTerrainTextureUnits();
 
 	/// A single texture is used for the shadow.  It's resolution defaults to 1024.
 	void SetShadowTextureResolution(const unsigned int ShadowTextureResolution);
