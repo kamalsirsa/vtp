@@ -40,11 +40,11 @@ if(CURL_FOUND)
 endif (CURL_FOUND)
 
 # Find the directory containing curl/curl.h
-find_path(NETCDF_INCLUDE_PATH netcdf.h.h DOC "Directory containing netcdf.h")
-if (NETCDF_INCLUDE_PATH)
+find_path(NETCDF_INCLUDE_DIR netcdf.h.h DOC "Directory containing netcdf.h")
+if (NETCDF_INCLUDE_DIR)
 	# Add the netcdf include directory to the compilers search path 
-	include_directories(${NETCDF_INCLUDE_PATH})
-endif (NETCDF_INCLUDE_PATH)
+	include_directories(${NETCDF_INCLUDE_DIR})
+endif (NETCDF_INCLUDE_DIR)
 
 if(QUIKGRID_FOUND)
 	include_directories(${QUIKGRID_INCLUDE_DIR})

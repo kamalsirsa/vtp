@@ -34,11 +34,11 @@ if(OSG_FOUND)
 endif(OSG_FOUND)
 
 # Find the directory containing mini/mini.h
-find_path(MINI_INCLUDE_PATH mini/mini.h DOC "Directory containing mini/mini.h")
-if (MINI_INCLUDE_PATH)
+find_path(MINI_INCLUDE_DIR mini/mini.h DOC "Directory containing mini/mini.h")
+if (MINI_INCLUDE_DIR)
 	# Add the mini include directory to the compilers search path 
-	include_directories(${MINI_INCLUDE_PATH})
-endif (MINI_INCLUDE_PATH)
+	include_directories(${MINI_INCLUDE_DIR})
+endif (MINI_INCLUDE_DIR)
 
 # Windows specific stuff
 if (WIN32)

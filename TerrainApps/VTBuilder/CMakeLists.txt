@@ -133,11 +133,11 @@ if(ZLIB_FOUND)
 endif(ZLIB_FOUND)
 
 # Find the directory containing mini/mini.h
-find_path(MINI_INCLUDE_PATH mini/mini.h DOC "Directory containing mini/mini.h")
-if (MINI_INCLUDE_PATH)
+find_path(MINI_INCLUDE_DIR mini/mini.h DOC "Directory containing mini/mini.h")
+if (MINI_INCLUDE_DIR)
 	# Add the mini include directory to the compilers search path 
-	include_directories(${MINI_INCLUDE_PATH})
-endif (MINI_INCLUDE_PATH)
+	include_directories(${MINI_INCLUDE_DIR})
+endif (MINI_INCLUDE_DIR)
 
 if(PNG_FOUND)
 	# Add the png include directory to the compilers search path 
@@ -153,16 +153,16 @@ if(JPEG_FOUND)
 endif(JPEG_FOUND)
 
 # Find the directory containing squish.h
-find_path(SQUISH_INCLUDE_PATH squish.h DOC "Directory containing squish.h")
-if (SQUISH_INCLUDE_PATH)
+find_path(SQUISH_INCLUDE_DIR squish.h DOC "Directory containing squish.h")
+if (SQUISH_INCLUDE_DIR)
 	# Add the squish include directory to the compilers search path 
-	include_directories(${SQUISH_INCLUDE_PATH})
-endif (SQUISH_INCLUDE_PATH)
+	include_directories(${SQUISH_INCLUDE_DIR})
+endif (SQUISH_INCLUDE_DIR)
 
 # Find the directory containing GL/glext.h
-find_path(GLEXT_INCLUDE_PATH GL/glext.h DOC "Directory containing GL/glext.h")
-if (GLEXT_INCLUDE_PATH)
+find_path(GLEXT_INCLUDE_DIR GL/glext.h DOC "Directory containing GL/glext.h")
+if (GLEXT_INCLUDE_DIR)
 	# Add the glext include directory to the compilers search path 
-	include_directories(${GLEXT_INCLUDE_PATH})
-endif (GLEXT_INCLUDE_PATH)
+	include_directories(${GLEXT_INCLUDE_DIR})
+endif (GLEXT_INCLUDE_DIR)
 
