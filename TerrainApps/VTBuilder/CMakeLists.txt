@@ -141,7 +141,7 @@ endif (MINI_INCLUDE_DIR)
 
 if(PNG_FOUND)
 	# Add the png include directory to the compilers search path 
-	include_directories(${PNG_PNG_INCLUDE_DIR})
+	include_directories(${PNG_INCLUDE_DIR})
 endif(PNG_FOUND)
 
 if(QUIKGRID_FOUND)

@@ -17,7 +17,7 @@ if(JPEG_FOUND)
 endif(JPEG_FOUND)
 
 if(PNG_FOUND)
-	include_directories(${PNG_PNG_INCLUDE_DIR})
+	include_directories(${PNG_INCLUDE_DIR})
 endif(PNG_FOUND)
 
 if(GDAL_FOUND)

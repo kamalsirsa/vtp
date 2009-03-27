@@ -24,7 +24,7 @@ if(JPEG_FOUND)
 endif(JPEG_FOUND)
 
 if(PNG_FOUND)
-	include_directories(${PNG_PNG_INCLUDE_DIR})
+	include_directories(${PNG_INCLUDE_DIR})
 endif(PNG_FOUND)
 
 if(GDAL_FOUND)
@@ -36,7 +36,7 @@ if(BZIP2_FOUND)
 endif(BZIP2_FOUND)
 
 if(CURL_FOUND)
-	include_directories(${CURL_INCLUDE_DIRS})
+	include_directories(${CURL_INCLUDE_DIR})
 endif (CURL_FOUND)
 
 # Find the directory containing curl/curl.h
