@@ -83,7 +83,7 @@ if(BZIP2_FOUND)
 endif(BZIP2_FOUND)
 
 if(CURL_FOUND)
-	target_link_libraries(vtbuilder ${CURL_LIBRARIES})
+	target_link_libraries(vtbuilder ${CURL_LIBRARY})
 endif(CURL_FOUND)
 
 if(ZLIB_FOUND)

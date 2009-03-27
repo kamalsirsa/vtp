@@ -67,7 +67,7 @@ if(BUILD_ENVIRO_OSG)
 	endif(BZIP2_FOUND)
 
 	if(CURL_FOUND)
-		target_link_libraries(enviro_osg ${CURL_LIBRARIES})
+		target_link_libraries(enviro_osg ${CURL_LIBRARY})
 	endif(CURL_FOUND)
 
 	if(ZLIB_FOUND)

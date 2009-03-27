@@ -27,7 +27,7 @@ if(BUILD_GLUTSIMPLE_OSG)
 	endif(BZIP2_FOUND)
 
 	if(CURL_FOUND)
-		target_link_libraries(glutSimple_osg ${CURL_LIBRARIES})
+		target_link_libraries(glutSimple_osg ${CURL_LIBRARY})
 	endif(CURL_FOUND)
 
 	if(GDAL_FOUND)
