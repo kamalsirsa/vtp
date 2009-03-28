@@ -4,7 +4,7 @@
 // This modules contains the implementations of the file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project.
+// Copyright (c) 2001-2009 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -3042,9 +3042,9 @@ bool vtElevationGrid::SaveToXYZ(const char *szFileName, bool progress_callback(i
 	bool bGeo = (m_proj.IsGeographic() != 0);
 
 	DPoint3 loc;
-	for (int i = 0; i < m_iRows; i++)
+	for (int i = 0; i < m_iColumns; i++)
 	{
-		for (int j = 0; j < m_iColumns; j++)
+		for (int j = 0; j < m_iRows; j++)
 		{
 			GetEarthLocation(i, j, loc);
 			if (bGeo)
