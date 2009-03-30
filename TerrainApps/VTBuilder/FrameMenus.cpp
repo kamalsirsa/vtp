@@ -1,7 +1,7 @@
 //
 //  The menus functions of the main Frame window of the VTBuilder application.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -211,7 +211,7 @@ EVT_MENU(ID_IMAGE_EXPORT_PPM,		MainFrame::OnImageExportPPM)
 EVT_UPDATE_UI(ID_IMAGE_REPLACE_RGB,	MainFrame::OnUpdateHaveImageLayer)
 EVT_UPDATE_UI(ID_IMAGE_CREATE_OVERVIEWS, MainFrame::OnUpdateHaveImageLayer)
 EVT_UPDATE_UI(ID_IMAGE_CREATE_OVER_ALL, MainFrame::OnUpdateHaveImageLayer)
-EVT_UPDATE_UI(ID_IMAGE_CREATE_MIPMAPS,	MainFrame::OnUpdateHaveImageLayer)
+EVT_UPDATE_UI(ID_IMAGE_CREATE_MIPMAPS,	MainFrame::OnUpdateHaveImageLayerInMem)
 EVT_UPDATE_UI(ID_IMAGE_EXPORT_TILES,MainFrame::OnUpdateHaveImageLayer)
 EVT_UPDATE_UI(ID_IMAGE_EXPORT_PPM,	MainFrame::OnUpdateHaveImageLayer)
 
@@ -2180,6 +2180,18 @@ void MainFrame::OnUpdateHaveImageLayer(wxUpdateUIEvent& event)
 {
 	vtImageLayer *pIL = GetActiveImageLayer();
 	event.Enable(pIL != NULL);
+}
+
+void MainFrame::OnUpdateHaveImageLayerInMem(wxUpdateUIEvent& event)
+{
+	vtImageLayer *pIL = GetActiveImageLayer();
+	if (pIL)
+	{
+		vtImage *im = pIL->GetImage();
+		event.Enable(im && im->GetBitmap());
+	}
+	else
+		event.Enable(false);
 }
 
 

@@ -1,7 +1,7 @@
 //
 // Frame.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -200,6 +200,7 @@ protected:
 	void OnImageExportTiles(wxCommandEvent& event);
 	void OnImageExportPPM(wxCommandEvent& event);
 	void OnUpdateHaveImageLayer(wxUpdateUIEvent& event);
+	void OnUpdateHaveImageLayerInMem(wxUpdateUIEvent& event);
 
 	void OnTowerSelect(wxCommandEvent& event);
 	void OnTowerEdit(wxCommandEvent& event);
