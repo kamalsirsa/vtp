@@ -1,7 +1,7 @@
 //
 // vtImage.cpp
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1284,7 +1284,6 @@ bool vtImage::LoadFromGDAL(const char *fname)
 				throw "Couldn't open that file.";
 		}
 
-
 		int iXSize = m_pDataset->GetRasterXSize();
 		int iYSize = m_pDataset->GetRasterYSize();
 
@@ -1298,7 +1297,9 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		if (pProjectionString)
 		{
 			err = temp.importFromWkt((char**)&pProjectionString);
-			if (err == OGRERR_NONE)
+
+			// we must have a valid CRS, and it must not be local
+			if (err == OGRERR_NONE && !temp.IsLocal())
 			{
 				m_proj = temp;
 				bHaveProj = true;
