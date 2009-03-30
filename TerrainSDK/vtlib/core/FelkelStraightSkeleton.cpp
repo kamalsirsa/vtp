@@ -1,7 +1,7 @@
 //
 // FelkelStraightSkeleton.cpp: implementation of the vtStraightSkeleton class.
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -178,7 +178,7 @@ CSkeleton& vtStraightSkeleton::MakeSkeleton(ContourVector &contours)
 				else
 					i.ApplyConvexIntersection(m_skeleton, m_vl, m_iq);
 			if (i.m_type == CIntersection :: NONCONVEX)
-				i.ApplyNonconvexIntersection(m_skeleton, m_vl, m_iq);
+				i.ApplyNonconvexIntersection(m_skeleton, m_vl, m_iq, cn == 1);
 		}
 
 #ifdef FELKELDEBUG
@@ -217,14 +217,8 @@ CSkeleton vtStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contour
 	int i;
 	CSkeleton::iterator si;
 
-	// Will this work for holes !!!!!!!
-	// for time being I will assert
-	assert(contours.size() == 1);
-
 	for (size_t ci = 0; ci < contours.size(); ci++)
 	{
-		// Will this work for holes !!!!!!!
-		// for time being I will assert
 		Contour& points = contours[ci];
 		for (size_t pi = 0; pi < points.size(); pi++)
 		{

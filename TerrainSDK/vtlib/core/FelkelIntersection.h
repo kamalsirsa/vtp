@@ -1,7 +1,7 @@
 //
 // FelkelIntersection.h: interface for the CIntersection class.
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -28,7 +28,7 @@ public:
 	CIntersection (void) { };
 	CIntersection (CVertexList &vl, CVertex &v);
 
-	void ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq);
+	void ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq, bool bCheckVertexinCurrentContour);
 	void ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq);
 	void ApplyLast3(CSkeleton &skeleton, CVertexList &vl);
 

@@ -1,7 +1,7 @@
 //
 // FelkelIntersection.cpp: implementation of the CIntersection class.
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -151,7 +151,7 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 #endif
 }
 
-void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq)
+void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq, bool bCheckVertexinCurrentContour)
 {
 #ifdef FELKELDEBUG
 	VTLOG("ApplyNonconvexIntersection\n");
@@ -178,10 +178,20 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 		return;
 
 	if (!m_leftVertex->VertexInCurrentContour(*leftPointer))
-		return;
-
+	{
+		if (bCheckVertexinCurrentContour) // Temporary hack to disable checking in multiple contour buildings !!!! NEEDS FIXING
+			return;
+		else
+			VTLOG("Vertex in current contour check failed - needs to be fixed - this check is not valid if one (or both?) of the contours is clockwise\n");
+	}
+// Left and right vertex are actually the same in this case
 	if (!m_rightVertex->VertexInCurrentContour(*rightPointer))
-		return;
+	{
+		if (bCheckVertexinCurrentContour) // Temporary hack to disable checking in multiple contour buildings !!!! NEEDS FIXING
+			return;
+		else
+			VTLOG("Vertex in current contour check failed - needs to be fixed - this check is not valid if one (or both?) of the contours is clockwise\n");
+	}
 
 #ifdef FELKELDEBUG
 	VTLOG("left vertex %d left ptr %d right ptr %d right vertex %d\n",
