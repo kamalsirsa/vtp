@@ -976,6 +976,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\LightSpacePerspectiveShadowTechnique.cpp">
+			</File>
+			<File
 				RelativePath="MeshMat.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1050,6 +1053,9 @@
 			Filter="">
 			<File
 				RelativePath="ImageOSG.h">
+			</File>
+			<File
+				RelativePath=".\LightSpacePerspectiveShadowTechnique.h">
 			</File>
 			<File
 				RelativePath="MathOSG.h">
