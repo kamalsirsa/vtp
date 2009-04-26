@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project.
+// Copyright (c) 2001-2009 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -694,6 +694,7 @@ bool vtElevationGrid::FillGapsSmooth(DRECT *area, bool progress_callback(int))
 	{
 		gaps = 0;
 		int lines_with_gaps = 0;
+		int num_filled = 0;
 
 		// iterate through the heixels of the elevation grid
 		for (i = xmin; i < xmax; i++)
@@ -734,6 +735,7 @@ bool vtElevationGrid::FillGapsSmooth(DRECT *area, bool progress_callback(int))
 				{
 					delta.SetFValue(i, j, sum / surrounding);
 					has_delta[i] = true;
+					num_filled++;
 				}
 				else
 					delta.SetFValue(i, j, INVALID_ELEVATION);
@@ -766,6 +768,10 @@ bool vtElevationGrid::FillGapsSmooth(DRECT *area, bool progress_callback(int))
 					return false;
 			}
 		}
+		// If we reach a point where no gaps are filled on a pass, then exit so
+		//  we are not stuck forever
+		if (num_filled == 0)
+			return true;
 	}
 
 	// recompute what has likely changed
