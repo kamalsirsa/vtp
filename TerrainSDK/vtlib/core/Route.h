@@ -1,7 +1,7 @@
 //
 // Route.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 //////////////////////////////////////////////////////////////////////
@@ -67,6 +67,7 @@ protected:
 	// bool _WireReader(const char *filename, vtUtilStruct *st);
 	void _ComputeStructureRotations();
 	void _CreateStruct(int iNode);
+	void _DeleteStruct(int iNode);
 	void _AddRouteMeshes(vtHeightField3d *pHeightField);
 	void _StringWires(long lTowerIndex, vtHeightField3d *pHeightField);
 	void _DrawCat(FPoint3 p0, FPoint3 p1,

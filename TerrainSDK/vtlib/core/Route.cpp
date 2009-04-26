@@ -4,7 +4,7 @@
 // Creates a route (a series of utility structures, e.g. an electrical
 // transmission line), creates geometry, drapes on a terrain
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 //////////////////////////////////////////////////////////////////////
@@ -200,6 +200,16 @@ void vtRoute::_CreateStruct(int iNode)
 		m_pTheTerrain->AddNodeToStructGrid(node->m_pTrans);
 }
 
+void vtRoute::_DeleteStruct(int iNode)
+{
+	vtUtilNode *node =  m_Nodes.GetAt(iNode);
+	if (node->m_pTrans)
+	{
+		m_pTheTerrain->RemoveNodeFromStructGrid(node->m_pTrans);
+		node->m_pTrans->Release();
+		node->m_pTrans = NULL;
+	}
+}
 
 void vtRoute::_AddRouteMeshes(vtHeightField3d *pHeightField)
 {
