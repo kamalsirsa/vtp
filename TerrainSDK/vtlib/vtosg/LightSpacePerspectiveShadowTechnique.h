@@ -12,6 +12,9 @@
 #ifndef VTOSG_LIGHTSPACEPERSPECTIVESHADOWTECHNIQUEH
 #define VTOSG_LIGHTSPACEPERSPECTIVESHADOWTECHNIQUEH
 
+#include <osg/Version>
+#if (OSG_VERSION_MAJOR==2 && OSG_VERSION_MINOR>6) || OSG_VERSION_MAJOR>2
+
 #include <osgShadow/LightSpacePerspectiveShadowMap>
 
 // Define one of these to select the area for which shadows will be calculated
@@ -71,5 +74,6 @@ protected:
 	META_ViewDependentShadowTechniqueData( ThisClass, ThisClass::ViewData )
 };
 
+#endif
 
 #endif	// VTOSG_LIGHTSPACEPERSPECTIVESHADOWTECHNIQUEH

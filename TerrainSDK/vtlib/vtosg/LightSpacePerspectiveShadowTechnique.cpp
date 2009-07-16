@@ -7,6 +7,8 @@
 // Free for all uses, see license.txt for details.
 //
 
+#if (OSG_VERSION_MAJOR==2 && OSG_VERSION_MINOR>6) || OSG_VERSION_MAJOR>2
+
 #include "vtlib/vtlib.h"
 #include "LightSpacePerspectiveShadowTechnique.h"
 #include <osg/Texture3D>
@@ -282,3 +284,4 @@ void CLightSpacePerspectiveShadowTechnique::RemoveAllAdditionalTerrainTextureUni
 	dirty();
 }
 
+#endif
