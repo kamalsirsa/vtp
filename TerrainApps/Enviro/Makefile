@@ -52,8 +52,8 @@ ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS   += -F$(FRAMEWORKS) \
 	  -lobjc \
-	  -framework vtdata -framework vtui -framework vtosg \
-	  -framework xmlhelper -framework unzip \
+	  $(call _VLF,vtdata) $(call _VLF,vtui) $(call _VLF,vtosg) \
+	  $(call _VLF,xmlhelper) $(call _VLF,unzip) \
 	  $(OSG_OPTS) \
 	  -framework OpenGL -framework AGL \
 	  -L$(FINK_LIB) \

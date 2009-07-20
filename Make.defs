@@ -238,7 +238,7 @@ ifeq ($(OS),Darwin)
         # Flags	
 	COMMON_OPTS += -F$(FRAMEWORKS)
         # Function to simplify dependency linking
-	_VLF = -framework $(1)
+	_VLF = -framework lib$(1)
 
    else
 	OSX_LIB_TARGET=$(LIB)

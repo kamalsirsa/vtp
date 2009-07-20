@@ -22,7 +22,7 @@ clean :
 	@-cd TerrainApps && $(MAKE) clean
 ifeq ($(OS),Darwin)
 	rm -rf $(OSX_APPS)/*.app
-	(cd $(FRAMEWORKS)/ && rm -rf vt*framework unzip.framework xmlhelper.framework)
+	(cd $(FRAMEWORKS)/ && rm -rf *.framework)
 endif
 
 clobber :
@@ -41,6 +41,6 @@ applypatch:
 
 ifeq ($(OS),Darwin)
 cleanosx:
-	(cd $(FRAMEWORKS)/ && rm -rf vt*framework unzip.* xmlhelper.framework)
+	(cd $(FRAMEWORKS)/ && rm -rf *.framework)
 	rm -rf $(OSX_APPS)/*.app
 endif
