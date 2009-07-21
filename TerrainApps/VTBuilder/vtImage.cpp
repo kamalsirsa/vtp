@@ -45,6 +45,7 @@ LineBufferGDAL::LineBufferGDAL()
 	m_pRed = NULL;
 	m_pGreen = NULL;
 	m_pBlue = NULL;
+	m_pTable = NULL;
 
 	for (int i = 0; i < BUF_SCANLINES; i++)
 		m_row[i].m_data = NULL;
