@@ -806,7 +806,19 @@ void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 	int closest_bitmap = -1;
 	double diff = 1E9;
 
-	if (dRes != 0.0)
+	if (dRes == 0.0)
+	{
+		// no resolution to match, take first available in memory
+		for (int i = 0; i < (int)m_Bitmaps.size(); i++)
+		{
+			if (m_Bitmaps[i].m_pBitmap)
+			{
+				closest_bitmap = i;
+				break;
+			}
+		}
+	}
+	else
 	{
 		// What overview resolution is most appropriate
 		for (int i = 0; i < (int)m_Bitmaps.size(); i++)
