@@ -1,7 +1,7 @@
 //
 // Builder.cpp: The main Builder class of the VTBuilder
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1576,7 +1576,7 @@ float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 		{
 			// The bounds-test would occur later, but we need to exclude this
 			//  grid early to avoid paging it in unnecessarily.
-			if (!grid->GetEarthExtents().ContainsPoint(p))
+			if (!grid->GetEarthExtents().ContainsPoint(p, true))
 				continue;
 
 			// Check if grid is in memory
