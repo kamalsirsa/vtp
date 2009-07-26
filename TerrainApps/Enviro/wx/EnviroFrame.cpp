@@ -239,6 +239,7 @@ EVT_MENU(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnToggleFoundations)
 EVT_MENU(ID_TERRAIN_RESHADE,	EnviroFrame::OnTerrainReshade)
 EVT_MENU(ID_TERRAIN_CHANGE_TEXTURE,	EnviroFrame::OnTerrainChangeTexture)
 EVT_MENU(ID_TERRAIN_DISTRIB_VEHICLES,	EnviroFrame::OnTerrainDistribVehicles)
+EVT_MENU(ID_TERRAIN_WRITE_ELEVATION,	EnviroFrame::OnTerrainWriteElevation)
 
 EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, EnviroFrame::OnUpdateCullEvery)
@@ -256,6 +257,7 @@ EVT_UPDATE_UI(ID_TERRAIN_LOD,		EnviroFrame::OnUpdateLOD)
 EVT_UPDATE_UI(ID_TERRAIN_FOUNDATIONS, EnviroFrame::OnUpdateFoundations)
 EVT_UPDATE_UI(ID_TERRAIN_RESHADE,	EnviroFrame::OnUpdateIsDynTerrain)
 EVT_UPDATE_UI(ID_TERRAIN_CHANGE_TEXTURE, EnviroFrame::OnUpdateIsDynTerrain)
+EVT_UPDATE_UI(ID_TERRAIN_WRITE_ELEVATION,	EnviroFrame::OnUpdateIsDynTerrain)
 
 EVT_MENU(ID_EARTH_SHOWSHADING,	EnviroFrame::OnEarthShowShading)
 EVT_MENU(ID_EARTH_SHOWAXES,		EnviroFrame::OnEarthShowAxes)
@@ -559,6 +561,7 @@ void EnviroFrame::CreateMenus()
 	m_pTerrainMenu->Append(ID_TERRAIN_RESHADE, _("&Recalculate Shading\tCtrl+R"));
 	m_pTerrainMenu->Append(ID_TERRAIN_CHANGE_TEXTURE, _("&Change Texture"));
 	m_pTerrainMenu->Append(ID_TERRAIN_DISTRIB_VEHICLES, _("&Distribute Vehicles (test)"));
+	m_pTerrainMenu->Append(ID_TERRAIN_WRITE_ELEVATION, _("Write Elevation to BT"));
 	m_pMenuBar->Append(m_pTerrainMenu, _("Te&rrain"));
 
 	if (m_bEnableEarth)
@@ -2464,6 +2467,51 @@ void EnviroFrame::OnTerrainDistribVehicles(wxCommandEvent& event)
 		return;
 
 	g_App.CreateSomeTestVehicles(pTerr, num, 1.0f);
+}
+
+void EnviroFrame::OnTerrainWriteElevation(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return;
+
+	EnableContinuousRendering(false);
+	wxFileDialog saveFile(NULL, _("Write Elevation to BT"), _T(""), _T(""),
+		_T("BT Files (*.bt)|*.bt"), wxFD_SAVE);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	EnableContinuousRendering(true);
+	if (!bResult)
+		return;
+
+	EnableContinuousRendering(false);
+	OpenProgressDialog(_("Write Elevation to BT"), false, this);
+
+	// Get the properties of the dynamic terrain, make an elevation grid like it
+	vtDynTerrainGeom *dtg = pTerr->GetDynTerrain();
+	int iCols, iRows;
+	vtProjection proj = pTerr->GetProjection();
+	dtg->GetDimensions(iCols, iRows);
+	DRECT area = dtg->GetEarthExtents();
+	bool bFloat = true;
+	vtElevationGrid grid(area, iCols, iRows, bFloat, proj);
+
+	// Copy the data to the (temporary) elevation grid
+	for (int i = 0; i < iCols; i++)
+	{
+		progress_callback(i * 99 / iCols);
+		for (int j = 0; j < iRows; j++)
+		{
+			float val = dtg->GetElevation(i, j, true);
+			grid.SetFValue(i, j, val);
+		}
+	}
+
+	// Write to disk, the temporary is freed when it goes out of scope
+	vtString fname = (const char*)saveFile.GetPath().mb_str(wxConvUTF8);
+	grid.SaveToBT(fname, progress_callback);
+
+	CloseProgressDialog();
+	EnableContinuousRendering(true);
 }
 
 void EnviroFrame::OnUpdateIsDynTerrain(wxUpdateUIEvent& event)

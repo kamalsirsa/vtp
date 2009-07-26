@@ -212,6 +212,7 @@ protected:
 	void OnTerrainReshade(wxCommandEvent& event);
 	void OnTerrainChangeTexture(wxCommandEvent& event);
 	void OnTerrainDistribVehicles(wxCommandEvent& event);
+	void OnTerrainWriteElevation(wxCommandEvent& event);
 
 	void OnUpdateDynamic(wxUpdateUIEvent& event);
 	void OnUpdateCullEvery(wxUpdateUIEvent& event);
