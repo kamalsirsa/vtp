@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -898,7 +898,7 @@ void TParamsDlg::OnTileSize( wxCommandEvent &event )
 
 void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	VTLOG("TParamsDlg::OnInitDialog\n");
+	VTLOG1("TParamsDlg::OnInitDialog\n");
 
 	bool bShowProgress = (vtGetDataPath().size() > 1);
 	if (bShowProgress)
@@ -1066,6 +1066,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		CloseProgressDialog();
 
 	m_bReady = true;
+	VTLOG1("TParamsDlg::OnInitDialog done.\n");
 }
 
 bool TParamsDlg::TransferDataToWindow()
