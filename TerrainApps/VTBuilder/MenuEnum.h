@@ -1,7 +1,7 @@
 //
 // MenuEnum.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -121,6 +121,7 @@ enum
 	ID_STRUCTURE_SELECT_USING_POLYGONS,
 	ID_STRUCTURE_COLOUR_SELECTED_ROOFS,
 	ID_STRUCTURE_CLEAN_FOOTPRINTS,
+	ID_STRUCTURE_SELECT_INDEX,
 	ID_STRUCTURE_EXPORT_FOOTPRINTS,
 	ID_STRUCTURE_EXPORT_CANOMA,
 

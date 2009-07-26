@@ -15,6 +15,7 @@
 #include <wx/progdlg.h>
 #include <wx/choicdlg.h>
 #include <wx/colordlg.h>
+#include <wx/numdlg.h>
 
 #include "vtdata/config_vtdata.h"
 #include "vtdata/ChunkLOD.h"
@@ -245,6 +246,7 @@ EVT_MENU(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnStructureConstrain)
 EVT_MENU(ID_STRUCTURE_SELECT_USING_POLYGONS, MainFrame::OnStructureSelectUsingPolygons)
 EVT_MENU(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, MainFrame::OnStructureColourSelectedRoofs)
 EVT_MENU(ID_STRUCTURE_CLEAN_FOOTPRINTS, MainFrame::OnStructureCleanFootprints)
+EVT_MENU(ID_STRUCTURE_SELECT_INDEX, MainFrame::OnStructureSelectIndex)
 EVT_MENU(ID_STRUCTURE_EXPORT_FOOTPRINTS, MainFrame::OnStructureExportFootprints)
 EVT_MENU(ID_STRUCTURE_EXPORT_CANOMA, MainFrame::OnStructureExportCanoma)
 
@@ -529,6 +531,7 @@ void MainFrame::CreateMenus()
 	bldMenu->Append(ID_STRUCTURE_SELECT_USING_POLYGONS, _("Select Using Polygons"), _("Select buildings using selected raw layer polygons"));
 	bldMenu->Append(ID_STRUCTURE_COLOUR_SELECTED_ROOFS, _("Colour Selected Roofs"), _("Set roof colour on selected buildings"));
 	bldMenu->Append(ID_STRUCTURE_CLEAN_FOOTPRINTS, _("Clean Footprints"), _("Clean up degenerate footprint geometry"));
+	bldMenu->Append(ID_STRUCTURE_SELECT_INDEX, _("Select structure by index"));
 	bldMenu->AppendSeparator();
 	bldMenu->Append(ID_STRUCTURE_EXPORT_FOOTPRINTS, _("Export footprints to SHP"));
 	bldMenu->Append(ID_STRUCTURE_EXPORT_CANOMA, _("Export footprints to Canoma3DV"));
@@ -3010,6 +3013,8 @@ void MainFrame::OnStructureCleanFootprints(wxCommandEvent& event)
 		DisplayAndLog("%d degenerate points were removed.", degen);
 	if (olap)
 		DisplayAndLog("%d overlapping points were removed.", olap);
+	if (!degen && !olap)
+		DisplayAndLog("No degenerate or overlapping points were found.");
 
 #if 0
 	// useful test code for isolating problem buildings
@@ -3023,6 +3028,31 @@ void MainFrame::OnStructureCleanFootprints(wxCommandEvent& event)
 		m_pView->ZoomToRect(r, 0.1f);
 	}
 #endif
+}
+
+void MainFrame::OnStructureSelectIndex(wxCommandEvent& event)
+{
+	vtStructureLayer *pLayer = GetActiveStructureLayer();
+	if (!pLayer)
+		return;
+	int num = pLayer->GetSize();
+	if (num == 0)
+		return;
+	wxString msg;
+	msg.Printf(_("Index (0 .. %d)"), num-1);
+	int idx = wxGetNumberFromUser(msg, _T(""), _("Index"), 0, 0, num-1);
+	if (idx == -1)
+		return;
+
+	pLayer->DeselectAll();
+	vtStructure *stru = pLayer->GetAt(idx);
+	if (stru)
+	{
+		stru->Select(true);
+		DRECT r;
+		stru->GetExtents(r);
+		m_pView->ZoomToRect(r, 0.1f);
+	}
 }
 
 void MainFrame::OnUpdateStructureColourSelectedRoofs(wxUpdateUIEvent& event)
