@@ -1,7 +1,7 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -265,7 +265,7 @@ OGRwkbGeometryType GetFeatureGeomType(const char *filename)
  *
  * \return a new vtFeatureSet if successful, otherwise NULL.
  */
-vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
+vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename, bool progress_callback(int))
 {
 	VTLOG(" FeatureLoader LoadFromSHP\n");
 
@@ -313,7 +313,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 	SHPClose(hSHP);
 
 	// Read SHP header and geometry from SHP into memory
-	pSet->LoadFromSHP(filename);
+	pSet->LoadFromSHP(filename, progress_callback);
 
 	return pSet;
 }

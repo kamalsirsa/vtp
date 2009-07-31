@@ -1,7 +1,7 @@
 //
 // Features.h
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -436,7 +436,7 @@ class vtFeatureLoader
 {
 public:
 	virtual vtFeatureSet *LoadFrom(const char *filename);
-	vtFeatureSet *LoadFromSHP(const char *filename);
+	vtFeatureSet *LoadFromSHP(const char *filename, bool progress_callback(int) = NULL);
 	vtFeatureSet *LoadHeaderFromSHP(const char *filename);
 	vtFeatureSet *LoadWithOGR(const char *filename, bool progress_callback(int) = NULL);
 	vtFeatureSet *LoadWithOGR(OGRLayer *pLayer, bool progress_callback(int) = NULL);

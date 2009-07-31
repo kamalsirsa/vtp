@@ -1,7 +1,7 @@
 //
 // RawLayer.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // A 'raw' layer is just abstract data, without any specific correspondence
@@ -324,6 +324,8 @@ bool vtRawLayer::OnLoad()
 	vtString ext = fname_utf8.Right(4);
 	VTLOG("vtRawLayer::OnLoad, extension is '%s'\n", (const char *) ext);
 
+	OpenProgressDialog(_("Loading"), false);
+
 	if (!ext.CompareNoCase(".gml") ||
 		!ext.CompareNoCase(".xml") ||
 		!ext.CompareNoCase(".ntf"))
@@ -332,13 +334,16 @@ bool vtRawLayer::OnLoad()
 	}
 	else if (!ext.CompareNoCase(".shp"))
 	{
-		m_pSet = loader.LoadFromSHP(fname_utf8);
+		m_pSet = loader.LoadFromSHP(fname_utf8, progress_callback);
 //		return LoadWithOGR(fname.mb_str(wxConvUTF8));
 	}
 	else if (!ext.CompareNoCase(".igc"))
 	{
 		m_pSet = loader.LoadFromIGC(fname_utf8);
 	}
+
+	CloseProgressDialog();
+
 	if (m_pSet)
 	{
 		vtProjection &proj = m_pSet->GetAtProjection();
