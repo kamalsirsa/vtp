@@ -1252,7 +1252,10 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 		CloseProgressDialog();
 
 		if (success)
+		{
 			succeeded++;
+			lp->SetModified(true);
+		}
 	}
 	if (succeeded < layers)
 	{
