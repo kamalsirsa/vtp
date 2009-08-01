@@ -1,7 +1,7 @@
 //
 // vtui Helper.cpp: Some useful standalone functions for use with wxWindows.
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -568,6 +568,7 @@ enum wxLanguage GetLangFromName(const wxString &name)
 
 static bool s_bOpen = false;
 wxProgressDialog *g_pProg = NULL;
+wxWindow *g_pProgParent = NULL;
 
 bool progress_callback(int amount)
 {
@@ -579,12 +580,19 @@ bool progress_callback(int amount)
 	return value;
 }
 
+void SetProgressDialogParent(wxWindow *pParent)
+{
+	g_pProgParent = pParent;
+}
+
 void OpenProgressDialog(const wxString &title, bool bCancellable, wxWindow *pParent)
 {
 	if (s_bOpen)
 		return;
 	if (!IsGUIApp())
 		return;
+	if (!pParent)
+		pParent = g_pProgParent;
 
 	// force the window to be wider by giving a dummy string
 	wxString message = _T("___________________________________");
@@ -650,7 +658,9 @@ bool progress_callback_major(int amount)
 	// Update() returns false if the Cancel button has been pushed
 	// but this functions return _true_ if user wants to cancel
 	if (g_pProg2)
+	{
 		value = (g_pProg2->Update(amount, -1) == false);
+	}
 	return value;
 }
 
@@ -660,7 +670,9 @@ bool progress_callback_minor(int amount)
 	// Update() returns false if the Cancel button has been pushed
 	// but this functions return _true_ if user wants to cancel
 	if (g_pProg2)
+	{
 		value = (g_pProg2->Update(-1, amount) == false);
+	}
 	return value;
 }
 
@@ -668,6 +680,8 @@ void OpenProgressDialog2(const wxString &title, bool bCancellable, wxWindow *pPa
 {
 	if (s_bOpen2)
 		return;
+	if (!pParent)
+		pParent = g_pProgParent;
 
 	// force the window to be wider by giving a dummy string
 	wxString message = _T("___________________________________");
@@ -705,7 +719,9 @@ bool UpdateProgressDialog2(int amount1, int amount2, const wxString& newmsg)
 {
 	bool value = false;
 	if (g_pProg2)
+	{
 		value = (g_pProg2->Update(amount1, amount2, newmsg) == false);
+	}
 	return value;
 }
 

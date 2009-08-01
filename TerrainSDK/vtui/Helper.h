@@ -2,7 +2,7 @@
 // vtui Helper.h
 //  Some useful standalone functions for use with wxWindows.
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -57,6 +57,7 @@ enum wxLanguage GetLangFromName(const wxString &name);
 
 extern bool progress_callback(int amount);
 void OpenProgressDialog(const wxString &title, bool bCancellable = false, wxWindow *pParent = NULL);
+void SetProgressDialogParent(wxWindow *pParent);
 void CloseProgressDialog();
 bool UpdateProgressDialog(int amount, const wxString& newmsg = wxT(""));
 void ResumeProgressDialog();
