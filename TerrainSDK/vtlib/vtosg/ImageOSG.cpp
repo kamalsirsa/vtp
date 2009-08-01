@@ -1,7 +1,7 @@
 //
 // ImageOSG.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,8 +14,10 @@
 #include "vtdata/Projections.h"
 
 #ifndef LOG_IMAGE_LOAD
-#define LOG_IMAGE_LOAD 0
+#define LOG_IMAGE_LOAD 1
 #endif
+
+#define USE_IMAGE_CACHE	0
 
 //
 // Set any of these definitions to use OSG's own support for the various
@@ -26,6 +28,7 @@
 #define USE_OSG_FOR_JPG		1
 #define USE_OSG_FOR_TIF		0
 
+#if USE_IMAGE_CACHE
 // Simple cache
 typedef std::map< vtString, osg::ref_ptr<vtImage> > ImageCache;
 ImageCache s_ImageCache;
@@ -48,10 +51,10 @@ void vtImageCacheClear()
 #endif
 	}
 	s_ImageCache.clear();
-
-	// We must also clear the OSG cache, otherwise things can get out of synch
-	osgDB::Registry::instance()->clearObjectCache();
 }
+#else
+void vtImageCacheClear() {}
+#endif
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -129,8 +132,9 @@ bool vtImage::Create(int width, int height, int bitdepth, bool create_palette)
 
 vtImage *vtImageRead(const char *fname, bool bAllowCache, bool progress_callback(int))
 {
-	ImageCache::iterator iter;
+#if USE_IMAGE_CACHE
 	vtImage *image;
+	ImageCache::iterator iter;
 
 	iter = s_ImageCache.find(vtString(fname));
 	if (iter == s_ImageCache.end())
@@ -156,6 +160,14 @@ vtImage *vtImageRead(const char *fname, bool bAllowCache, bool progress_callback
 		image->ref();
 		return image;
 	}
+#else
+	vtImage *image = new vtImage;
+	if (image->Read(fname, bAllowCache, progress_callback))
+		return image;
+	else
+		image->Release();
+	return NULL;
+#endif
 }
 
 osg::ref_ptr<osgDB::ReaderWriter::Options> s_options;
