@@ -1,7 +1,7 @@
 //
 // HeightField.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -57,11 +57,18 @@ bool ColorMap::Load(const char *fname)
 
 	while (fgets(buf, 80, fp) != NULL)
 	{
+		int ival;
 		if (!strncmp(buf, "blend", 5))
-			sscanf(buf, "blend: %d\n", &m_bBlend);
+		{
+			sscanf(buf, "blend: %d\n", &ival);
+			m_bBlend = (ival != 0);
+		}
 
 		else if (!strncmp(buf, "relative", 8))
-			sscanf(buf, "relative: %d\n", &m_bRelative);
+		{
+			sscanf(buf, "relative: %d\n", &ival);
+			m_bRelative = (ival != 0);
+		}
 
 		else if (!strncmp(buf, "size", 4))
 		{
@@ -664,7 +671,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	if (!pBM || !cmap)
 		return false;
 
-	VTLOG("ColorDibFromElevation: ");
+	VTLOG1("ColorDibFromElevation:");
 
 	float fMin, fMax;
 	GetHeightExtents(fMin, fMax);
@@ -678,7 +685,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 		fRange = fMax - fMin;
 	}
 
-	VTLOG("table of %d values, first [%d %d %d],\n",
+	VTLOG(" table of %d values, first [%d %d %d],\n",
 		cmap->Num(), cmap->m_color[0].r, cmap->m_color[0].g, cmap->m_color[0].b);
 	VTLOG("\tmin %g, max %g, range %g, granularity %d\n",
 		fMin, fMax, fRange, iGranularity);
@@ -708,16 +715,17 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	   std::vector<RGBi> &table, float fMin, float fMax, const RGBAi &nodata,
 	   bool progress_callback(int))
 {
+	VTLOG1(" ColorDibFromTable:");
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
 	int depth = pBM->GetDepth();
 	int gw, gh;
 	GetDimensions(gw, gh);
 
+	VTLOG(" dib size %d x %d, grid %d x %d.. ", w, h, gw, gh);
+
 	bool bExact = (w == gw && h == gh);
 	double ratiox = (double)(gw-1)/(w-1), ratioy = (double)(gh-1)/(h-1);
-
-	VTLOG(" ColorDibFromTable: dib size %d x %d, grid %d x %d.. ", w, h, gw, gh);
 
 	float fRange = fMax - fMin;
 	unsigned int iGranularity = table.size()-1;
