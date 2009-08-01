@@ -1,7 +1,7 @@
 //
 // The main Frame window of the VTBuilder application
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -297,6 +297,8 @@ void MainFrame::SetupUI()
 
 	// Again, for good measure
 	m_mgr.Update();
+
+	SetProgressDialogParent(this);
 
 	SetStatusText(_("Ready"));
 }
