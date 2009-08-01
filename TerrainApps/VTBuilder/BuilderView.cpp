@@ -1,7 +1,7 @@
 //
 // BuilderView.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1876,6 +1876,7 @@ void BuilderView::OnIdle(wxIdleEvent& event)
 	int i, iLayers = g_bld->NumLayers();
 
 	// Check to see if any elevation layers needs drawing
+	bool bNeedDraw = false;
 	bool bDrew = false;
 	for (i = 0; i < iLayers; i++)
 	{
@@ -1884,14 +1885,28 @@ void BuilderView::OnIdle(wxIdleEvent& event)
 		{
 			vtElevLayer *pEL = (vtElevLayer *)lp;
 			if (pEL->m_draw.m_bShowElevation && pEL->NeedsDraw())
-			{
-				pEL->RenderBitmap();
-				bDrew = true;
-			}
+				bNeedDraw = true;
 		}
 	}
-	if (bDrew)
+	if (bNeedDraw)
+	{
+		OpenProgressDialog2(_("Rendering elevation layers"), false);
+		for (i = 0; i < iLayers; i++)
+		{
+			vtLayer *lp = g_bld->GetLayer(i);
+			UpdateProgressDialog2(i * 99 / iLayers, 0, lp->GetLayerFilename());
+			if (lp->GetType() == LT_ELEVATION)
+			{
+				vtElevLayer *pEL = (vtElevLayer *)lp;
+				if (pEL->m_draw.m_bShowElevation && pEL->NeedsDraw())
+				{
+					pEL->RenderBitmap();
+				}
+			}
+		}
+		CloseProgressDialog2();
 		Refresh(true);
+	}
 }
 
 void BuilderView::OnSize(wxSizeEvent& event)

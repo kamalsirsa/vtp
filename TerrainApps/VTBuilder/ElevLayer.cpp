@@ -1,7 +1,7 @@
 //
 // ElevLayer.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -769,21 +769,10 @@ void vtElevLayer::RenderBitmap()
 	// flag as being rendered
 	m_bNeedsDraw = false;
 
-	// only show a progress dialog for large bitmaps (>300 points tall)
-	bool bProg = (m_iImageHeight > 300);
-
-#if WIN32
-	// mew 2002-08-17: reuse of wxProgressDialog causes SIGSEGV,
-	// so just disable for now. (wxGTK 2.2.9 on Linux Mandrake 8.1)
-	if (bProg)
-		OpenProgressDialog(_("Rendering Bitmap"), true);
-#endif
-
 	// safety check
 	if (m_iImageWidth == 0 || m_iImageHeight == 0)
 		return;
 
-	UpdateProgressDialog(0, _("Generating colors from elevation..."));
 	DetermineMeterSpacing();
 
 	clock_t tm1 = clock();
@@ -816,11 +805,10 @@ void vtElevLayer::RenderBitmap()
 		SetupDefaultColors(cmap);
 
 	bool has_invalid = m_pGrid->ColorDibFromElevation(m_pBitmap, &cmap,
-		8000, RGBi(255,0,0), progress_callback);
+		8000, RGBi(255,0,0), progress_callback_minor);
 
-	UpdateProgressDialog(0, _("Shading colors..."));
 	if (m_draw.m_bShadingQuick)
-		m_pGrid->ShadeQuick(m_pBitmap, SHADING_BIAS, true, progress_callback);
+		m_pGrid->ShadeQuick(m_pBitmap, SHADING_BIAS, true, progress_callback_minor);
 	else if (m_draw.m_bShadingDot)
 	{
 		// Quick and simple sunlight vector
@@ -828,15 +816,14 @@ void vtElevLayer::RenderBitmap()
 
 		if (m_draw.m_bCastShadows)
 			m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0f,
-				m_draw.m_fAmbient, progress_callback);
+				m_draw.m_fAmbient, progress_callback_minor);
 		else
 			m_pGrid->ShadeDibFromElevation(m_pBitmap, light_dir, 1.0f,
-				m_draw.m_fAmbient, m_draw.m_fGamma, true, progress_callback);
+				m_draw.m_fAmbient, m_draw.m_fGamma, true, progress_callback_minor);
 	}
 
 	if (has_invalid && m_draw.m_bDoMask)
 	{
-		UpdateProgressDialog(90, _("Hiding unknown areas..."));
 		m_pMask = new wxMask(*m_pBitmap->m_pBitmap, wxColour(255, 0, 0));
 		m_pBitmap->m_pBitmap->SetMask(m_pMask);
 		m_bHasMask = true;
@@ -850,9 +837,6 @@ void vtElevLayer::RenderBitmap()
 
 	m_pBitmap->ContentsChanged();
 	m_bBitmapRendered = true;
-
-	if (bProg)
-		CloseProgressDialog();
 }
 
 void vtElevLayer::ReRender()
