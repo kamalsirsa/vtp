@@ -975,9 +975,9 @@ float Builder::GetHeightFromTerrain(const DPoint2 &p)
 		vtLayer *l = m_Layers.GetAt(i);
 		if (l->GetType() != LT_ELEVATION || !l->GetVisible()) continue;
 		vtElevLayer *pEL = (vtElevLayer *)l;
-		height = pEL->GetElevation(p);
-		if (height != INVALID_ELEVATION)
-			break;
+		float val = pEL->GetElevation(p);
+		if (val != INVALID_ELEVATION)
+			height = val;
 	}
 	return height;
 }
