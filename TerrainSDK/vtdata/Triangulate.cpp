@@ -503,6 +503,8 @@ extern "C" {
 
 /**
  * Call 'Triangle' to triangulate a Dline2 containing a simple polygon.
+ * The result is an array of N*3 points, where N is the resulting number of
+ * triangles.
  */
 void CallTriangle(const DLine2 &contour, DLine2 &result)
 {
@@ -584,7 +586,8 @@ void CallTriangle(const DLine2 &contour, DLine2 &result)
 
 /**
  * Call 'Triangle' to triangulate a DPolygon2 which can be a complex polygon
- * with holes.
+ * with holes.  The result is an array of N*3 points, where N is the resulting
+ * number of triangles.
  */
 void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 {
