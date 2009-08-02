@@ -2082,6 +2082,7 @@ void MainFrame::OnElevMergeTin(wxCommandEvent& event)
 {
 	vtElevLayer *pEL = GetActiveElevLayer();
 	pEL->MergeSharedVerts();
+	RefreshTreeStatus();
 }
 
 void MainFrame::OnUpdateElevMergeTin(wxUpdateUIEvent& event)

@@ -1407,6 +1407,9 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 	m_pTin->MergeSharedVerts(progress_callback);
 	int after = m_pTin->NumVerts();
 
+	if (after != before)
+		SetModified(true);
+
 	CloseProgressDialog();
 
 	if (!bSilent)
