@@ -27,6 +27,7 @@
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
+#include "vtdata/Triangulate.h"
 #include "vtui/Helper.h"	// for FormatCoord
 
 #include "BuilderView.h"	// For grid marks
@@ -81,7 +82,8 @@ extern "C" {
 }
 
 /**
- * Call 'Triangle' to triangulate a Dline2 containing a simple polygon.
+ * Create a TIN from a set of 3D points, using the Triangle library to derive
+ *  the set of triangles from the points.
  */
 vtTin2d::vtTin2d(vtFeatureSetPoint3D *set)
 {
@@ -166,6 +168,39 @@ vtTin2d::vtTin2d(vtFeatureSetPoint3D *set)
 	free(out.edgemarkerlist);
 
 	ComputeExtents();
+	// Adopt CRS from the featureset
+	m_proj = set->GetAtProjection();
+}
+
+vtTin2d::vtTin2d(vtFeatureSetPolygon *set)
+{
+	m_fEdgeLen = NULL;
+	m_bConstrain = false;
+
+	int num = set->GetNumEntities();
+	for (int i = 0; i < num; ++i)
+	{
+		DPolygon2 &dpoly = set->GetPolygon(i);
+
+		// Get z value from field 0
+		float z = set->GetFloatValue(i, 0);
+
+		DLine2 result;
+		CallTriangle(dpoly, result);
+		int res = result.GetSize();
+		int base = NumVerts();
+		for (int j = 0; j < res; j++)
+		{
+			AddVert(result[j], z);
+		}
+		for (int j = 0; j < res/3; j++)
+		{
+			AddTri(base + j*3, base + j*3+1, base + j*3+2);
+		}
+	}
+	ComputeExtents();
+	// Adopt CRS from the featureset
+	m_proj = set->GetAtProjection();
 }
 
 void vtTin2d::DrawTin(wxDC *pDC, vtScaledView *pView)

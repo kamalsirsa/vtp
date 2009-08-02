@@ -559,7 +559,7 @@ void MainFrame::CreateMenus()
 	rawMenu->Append(ID_RAW_EXPORT_IMAGEMAP, _("Export as HTML ImageMap"));
 	rawMenu->Append(ID_RAW_EXPORT_KML, _("Export as KML"));
 	rawMenu->Append(ID_RAW_GENERATE_ELEVATION, _("Generate Grid from 3D Points"));
-	rawMenu->Append(ID_RAW_CONVERT_TOTIN, _("Generate TIN from 3D points"));
+	rawMenu->Append(ID_RAW_CONVERT_TOTIN, _("Generate TIN"));
 	m_pMenuBar->Append(rawMenu, _("Ra&w"));
 	m_iLayerMenu[LT_RAW] = menu_num;
 	menu_num++;
@@ -3247,11 +3247,20 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 void MainFrame::OnRawConvertToTIN(wxCommandEvent& event)
 {
 	vtRawLayer *pRaw = GetActiveRawLayer();
-	vtFeatureSetPoint3D *set = dynamic_cast<vtFeatureSetPoint3D *>(pRaw->GetFeatureSet());
-	if (!set)
+	vtFeatureSet *pSet = pRaw->GetFeatureSet();
+	vtTin2d *tin;
+	vtFeatureSetPoint3D *setpo3 = dynamic_cast<vtFeatureSetPoint3D *>(pSet);
+	vtFeatureSetPolygon *setpg = dynamic_cast<vtFeatureSetPolygon *>(pSet);
+	if (setpo3)
+		tin = new vtTin2d(setpo3);
+	else if (setpg)
+		tin = new vtTin2d(setpg);
+	else
+	{
+		DisplayAndLog("Must be polygons with height attribute, or 3D points");
 		return;
+	}
 
-	vtTin2d *tin = new vtTin2d(set);
 	vtElevLayer *pEL = new vtElevLayer;
 	pEL->SetTin(tin);
 	AddLayer(pEL);
