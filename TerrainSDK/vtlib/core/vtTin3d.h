@@ -28,7 +28,7 @@ public:
 
 	bool Read(const char *fname);
 
-	vtGeom *CreateGeometry(bool bDropShadowMesh);
+	vtGeom *CreateGeometry(bool bDropShadowMesh, int m_matidx = 0);
 	vtGeom *GetGeometry() { return m_pGeom; }
 	void SetTextureMaterials(vtMaterialArray *pMats);
 

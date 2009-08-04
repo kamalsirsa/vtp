@@ -74,7 +74,7 @@ void vtTin3d::MakeSurfaceMaterials()
 
 #define MAX_CHUNK_VERTS	30000
 
-vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
+vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 {
 	bool bGeoSpecific = (m_pMats != NULL);
 
@@ -302,7 +302,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		else
 		{
 			// Simple case
-			m_pGeom->AddMesh(pMesh, 0);
+			m_pGeom->AddMesh(pMesh, m_matidx);
 			pMesh->Release();	// pass ownership to Geometry
 			m_Meshes.Append(pMesh);
 		}

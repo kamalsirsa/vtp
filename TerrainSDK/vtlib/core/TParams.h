@@ -3,7 +3,7 @@
 //
 // defines all the construction parameters for a terrain
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -498,6 +498,8 @@ protected:
 #define STR_SKYTEXTURE "Sky_Texture"
 #define STR_OCEANPLANE "Ocean_Plane"
 #define STR_OCEANPLANELEVEL "Ocean_Plane_Level"
+#define STR_WATER "Water"
+#define STR_WATERFILE "Water_File"
 #define STR_DEPRESSOCEAN "Depress_Ocean"
 #define STR_DEPRESSOCEANLEVEL "Depress_Ocean_Level"
 #define STR_HORIZON "Horizon"

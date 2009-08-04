@@ -47,8 +47,6 @@ vtTerrain::vtTerrain()
 	m_pUnshadowedGroup = NULL;
 	m_pImage = NULL;
 	m_pImageSource = NULL;
-	m_pTerrMats = NULL;
-	m_bBothSides = false;
 	m_bTextureInitialized = false;
 	m_iShadowTextureUnit = -1;
 	m_pFog = NULL;
@@ -56,18 +54,25 @@ vtTerrain::vtTerrain()
 	m_bFog = false;
 	m_bShadows = false;
 
+	m_pTerrMats = new vtMaterialArray;
+	m_pDetailMats = new vtMaterialArray;
+	m_pEphemMats = new vtMaterialArray;
+	m_idx_water = -1;
+	m_idx_horizon = -1;
+	m_bBothSides = false;
+
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
 	m_pHeightField = NULL;
 	m_bPreserveInputGrid = false;
 	m_pElevGrid = NULL;
 	m_pTextureColors = NULL;
-	m_pDetailMats = NULL;
 	m_pScaledFeatures = NULL;
 	m_pFeatureLoader = NULL;
 
 	m_pHorizonGeom = NULL;
 	m_pOceanGeom = NULL;
+	m_pWaterTin3d = NULL;
 	m_pRoadGroup = NULL;
 
 	// vegetation
@@ -172,6 +177,8 @@ vtTerrain::~vtTerrain()
 		m_pTerrainGroup->RemoveChild(m_pOceanGeom);
 		m_pOceanGeom->Release();
 	}
+	if (m_pWaterTin3d)
+		delete m_pWaterTin3d;
 	if (m_pStructGrid)
 	{
 		m_pTerrainGroup->RemoveChild(m_pStructGrid);
@@ -206,15 +213,12 @@ vtTerrain::~vtTerrain()
 	if (m_pContainerGroup != NULL)
 		m_pContainerGroup->Release();
 
-	if (m_pTerrMats)
-		m_pTerrMats->Release();
+	m_pTerrMats->Release();
+	m_pDetailMats->Release();
+	m_pEphemMats->Release();
 
 	if (m_pTextureColors != NULL) VTLOG(" TextureColors %lx,", m_pTextureColors);
 	delete m_pTextureColors;
-
-	if (m_pDetailMats) VTLOG("DetailMats %lx, ", m_pDetailMats);
-	if (m_pDetailMats)
-		m_pDetailMats->Release();
 
 	VTLOG1(" done.\n");
 }
@@ -391,9 +395,6 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 
 	int iTiles = 4;		// fixed for now
 	TextureEnum eTex = m_Params.GetTextureEnum();
-
-	if (!m_pTerrMats)
-		m_pTerrMats = new vtMaterialArray;
 
 	float ambient, diffuse, emmisive;
 	diffuse = 1.0f;
@@ -634,7 +635,6 @@ void vtTerrain::_CreateDetailTexture()
 	if (!dib.Read(path))
 		return;
 
-	m_pDetailMats = new vtMaterialArray;
 	vtImage *pDetailTexture = new vtImage(&dib);
 
 	int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
@@ -1034,34 +1034,12 @@ void vtTerrain::SaveRoute()
  * \param fTransparency A value from 0 (tranparent) to 1 (opaque)
  */
 void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHorizon,
-										  bool bCenter, float fTransparency)
+										bool bCenter)
 {
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	int VtxType;
-
-	vtMaterialArray *pHorizonMaterials = new vtMaterialArray;
-
-	// Ocean material: texture waves
-	vtString fname = FindFileOnPaths(vtGetDataPath(), "GeoTypical/ocean1_256.jpg");
-	pHorizonMaterials->AddTextureMaterial2(fname,
-		false, false,		// culling, lighting
-		false,				// the texture itself has no alpha
-		false,				// additive
-		TERRAIN_AMBIENT,	// ambient
-		1.0f,				// diffuse
-		fTransparency,		// alpha
-		TERRAIN_EMISSIVE,	// emissive
-		false,				// texgen
-		false,				// clamp
-		false);				// don't mipmap: allowing texture aliasing to
-							// occur, it actually looks more water-like
-		VtxType = VT_Normals;
-
-	// Ground plane (horizon) material
-	pHorizonMaterials->AddRGBMaterial1(RGBf(1.0f, 0.8f, 0.6f),
-		false, true, false);		// cull, light, wire
+	int VtxType = VT_Normals;
 
 	FRECT world_extents = m_pHeightField->m_WorldExtents;
 	FPoint2 world_size(world_extents.Width(), world_extents.Height());
@@ -1073,7 +1051,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 	if (bWater)
 	{
 		vtGeom *pOceanGeom = new vtGeom;
-		pOceanGeom->SetMaterials(pHorizonMaterials);
+		pOceanGeom->SetMaterials(m_pEphemMats);
 
 		FPoint2 tile_size = world_size / TILING;
 		for (int i = -STEPS*TILING; i < (STEPS+1)*TILING; i++)
@@ -1099,7 +1077,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
 					0, 5.0f);
 
-				pOceanGeom->AddMesh(mesh, 0);	// 0 = ocean material
+				pOceanGeom->AddMesh(mesh, m_idx_water);
 				mesh->Release();	// pass ownership to the Geometry
 			}
 		}
@@ -1111,7 +1089,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 	if (bHorizon)
 	{
 		vtGeom *pHorizonGeom = new vtGeom;
-		pHorizonGeom->SetMaterials(pHorizonMaterials);
+		pHorizonGeom->SetMaterials(m_pEphemMats);
 
 		FPoint2 tile_size = world_size;
 		for (int i = -STEPS; i < (STEPS+1); i++)
@@ -1131,7 +1109,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
 					fAltitude, 5.0f);
 
-				pHorizonGeom->AddMesh(mesh, 1);	// 1 = land material
+				pHorizonGeom->AddMesh(mesh, m_idx_horizon);
 				mesh->Release();	// pass ownership to the Geometry
 			}
 		}
@@ -1140,8 +1118,6 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 		m_pHorizonGeom->SetCastShadow(false);
 		m_pTerrainGroup->AddChild(m_pHorizonGeom);
 	}
-	// pass ownership
-	pHorizonMaterials->Release();
 }
 
 void vtTerrain::SetWaterLevel(float fElev)
@@ -2572,19 +2548,68 @@ bool vtTerrain::CreateStep5()
 
 	_CreateCulture();
 
-	bool bWater = m_Params.GetValueBool(STR_OCEANPLANE);
+	bool bOcean = m_Params.GetValueBool(STR_OCEANPLANE);
 	bool bHorizon = m_Params.GetValueBool(STR_HORIZON);
+	bool bWater = m_Params.GetValueBool(STR_WATER);
+
+	// Water material: texture waves
+	vtString fname = FindFileOnPaths(vtGetDataPath(), "GeoTypical/ocean1_256.jpg");
+	m_idx_water = m_pEphemMats->AddTextureMaterial2(fname,
+		false, false,		// culling, lighting
+		false,				// the texture itself has no alpha
+		false,				// additive
+		TERRAIN_AMBIENT,	// ambient
+		1.0f,				// diffuse
+		0.5,				// alpha
+		TERRAIN_EMISSIVE,	// emissive
+		false,				// texgen
+		false,				// clamp
+		false);				// don't mipmap: allowing texture aliasing to
+							// occur, it actually looks more water-like
+
+	// Ground plane (horizon) material
+	m_idx_horizon = m_pEphemMats->AddRGBMaterial1(RGBf(1.0f, 0.8f, 0.6f),
+		false, true, false);		// cull, light, wire
 
 	float minh, maxh;
 	m_pHeightField->GetHeightExtents(minh, maxh);
 	if (minh == INVALID_ELEVATION)
 		minh = 0.0f;
 
-	if (bWater || bHorizon)
+	if (bOcean || bHorizon)
 	{
-		bool bCenter = bWater;
-		CreateArtificialHorizon(minh, bWater, bHorizon, bCenter, 0.5f);
+		bool bCenter = bOcean;
+		CreateArtificialHorizon(minh, bOcean, bHorizon, bCenter);
 		SetWaterLevel(m_Params.GetValueFloat(STR_OCEANPLANELEVEL));
+	}
+
+	if (bWater)
+	{
+		vtString prefix = "Elevation/";
+		vtString wfile = m_Params.GetValueString(STR_WATERFILE);
+		vtString wpath = FindFileOnPaths(vtGetDataPath(), prefix + wfile);
+		if (wpath == "")
+		{
+			VTLOG("Couldn't find  water file: %s\n", (const char *) wfile);
+		}
+		else
+		{
+			// add water surface to scene graph
+			m_pWaterTin3d = new vtTin3d;
+			bool status = m_pWaterTin3d->Read(wpath);
+			if (status)
+			{
+				m_pWaterTin3d->SetTextureMaterials(m_pEphemMats);
+				vtGeom *wsgeom = m_pWaterTin3d->CreateGeometry(false, m_idx_water);
+				wsgeom->SetName2("Water surface");
+				wsgeom->SetCastShadow(false);
+				m_pTerrainGroup->AddChild(wsgeom);
+			}
+			else
+			{
+				VTLOG("Couldn't read  water file: %s\n", (const char *) wpath);
+			}
+		}
 	}
 
 	_CreateAbstractLayers();

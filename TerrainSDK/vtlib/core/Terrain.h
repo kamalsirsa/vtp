@@ -323,7 +323,6 @@ public:
 	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, bool bTrue, int iCultureFlags) const;
 	int GetShadowTextureUnit();
 
-
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
 		float fOffset, bool bInterp = true, bool bCurve = false, bool bTrue = false);
@@ -369,17 +368,17 @@ public:
 	void UpdateElevation();
 	void RedrapeCulture(const DRECT &area);
 
-	/********************** Public Data ******************/
-
-	// polygon containing geo corners of terrain area
-	DLine2		m_Corners_geo;
-
 	// Texture
 	void RecreateTextures(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 	vtImage *GetTextureImage();
 	vtOverlappedTiledImage	*GetOverlappedImage() { return &m_ImageTiles; }
 	vtMultiTexture *AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents, int TextureMode);
 	vtNode *GetTerrainSurfaceNode();
+
+	/********************** Public Data ******************/
+
+	// polygon containing geo corners of terrain area
+	DLine2		m_Corners_geo;
 
 protected:
 	/********************** Protected Methods ******************/
@@ -402,7 +401,7 @@ protected:
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
 	void _SetErrorMessage(const vtString &msg);
 	void CreateArtificialHorizon(float fAltitude, bool bWater, bool bHorizon,
-		bool bCenter, float fTransparency);
+		bool bCenter);
 
 	void _CreateSingleMaterial(float ambient, float diffuse, float emmisive);
 	void _CreateTiledMaterials(int patches, float ambient, float diffuse, float emmisive);
@@ -448,7 +447,7 @@ protected:
 	vtLocationSaver	m_LocSaver;
 	vtAnimContainer m_AnimContainer;
 
-	// horizon, ocean and fog
+	// horizon, water and fog
 	vtFog		*m_pFog;
 	vtShadow	*m_pShadow;
 	vtMovGeom	*m_pHorizonGeom;
@@ -457,6 +456,7 @@ protected:
 	RGBf		m_fog_color;
 	RGBf		m_background_color;
 	bool		m_bShadows;
+	vtTin3d		*m_pWaterTin3d;
 
 	// Layers
 	LayerSet		m_Layers;
@@ -469,8 +469,11 @@ protected:
 	float	m_fPagingStructureDist;
 
 	vtMaterialArray	*m_pTerrMats;	// materials for the LOD terrain
-	vtMaterialArray *m_pDetailMats;
-	bool			m_bBothSides;
+	vtMaterialArray *m_pDetailMats;	// and detail texture
+	vtMaterialArray *m_pEphemMats;	// and ephemeris
+	int				m_idx_water;
+	int				m_idx_horizon;
+	bool			m_bBothSides;	// show both sides of terrain materials
 
 	// abstract layers
 	vtAbstractLayer *m_pActiveAbstractLayer;
