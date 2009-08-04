@@ -141,10 +141,13 @@ public:
 	int		m_iPagingStructureMax;
 	float	m_fPagingStructureDist;
 
+	// ephemeris
 	bool	m_bSky;
 	wxString   m_strSkyTexture;
 	bool	m_bOceanPlane;
 	float   m_fOceanPlaneLevel;
+	bool	m_bWater;
+	wxString   m_strFilenameWater;
 	bool	m_bDepressOcean;
 	float   m_fDepressOceanLevel;
 	bool	m_bHorizon;
@@ -209,12 +212,11 @@ public:
 	wxComboBox* GetFilenameTileset()  { return (wxComboBox*) FindWindow( ID_FILENAME_TILES ); }
 	wxComboBox* GetSkytexture()  { return (wxComboBox*) FindWindow( ID_SKYTEXTURE ); }
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
-	wxTextCtrl* GetDepressOceanOffset()  { return (wxTextCtrl*) FindWindow( ID_DEPRESSOCEANOFFSET ); }
-	wxTextCtrl* GetOceanPlaneOffset()  { return (wxTextCtrl*) FindWindow( ID_OCEANPLANEOFFSET ); }
 	wxChoice* GetLocField()  { return (wxChoice*) FindWindow( ID_INIT_LOCATION ); }
 	wxListBox* GetStructFiles()  { return (wxListBox*) FindWindow( ID_STRUCTFILES ); }
 	wxListBox* GetRawFiles()  { return (wxListBox*) FindWindow( ID_RAWFILES ); }
 	wxListBox* GetImageFiles()  { return (wxListBox*) FindWindow( ID_IMAGEFILES ); }
+	wxComboBox* GetFilenameWater()  { return (wxComboBox*) FindWindow( ID_FILENAME_WATER ); }
 
 	bool	m_bReady;
 	bool	m_bSetting;
@@ -249,6 +251,7 @@ private:
 	wxChoice* m_pShadowRez;
 	wxChoice* m_pColorMap;
 	wxListBox* m_pScenarioList;
+	wxComboBox* m_pFilenameWater;
 
 private:
 	// WDR: handler declarations for TParamsDlg

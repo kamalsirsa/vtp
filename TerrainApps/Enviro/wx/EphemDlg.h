@@ -34,7 +34,6 @@ public:
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
 	wxComboBox* GetSkyTexture()  { return (wxComboBox*) FindWindow( ID_SKYTEXTURE ); }
 	wxCheckBox* GetFog()  { return (wxCheckBox*) FindWindow( ID_FOG ); }
-	wxTextCtrl* GetOceanPlaneOffset()  { return (wxTextCtrl*) FindWindow( ID_OCEANPLANEOFFSET ); }
 	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR3 ); }
 
 	void UpdateEnableState();

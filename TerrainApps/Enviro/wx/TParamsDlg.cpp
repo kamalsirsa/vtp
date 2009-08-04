@@ -114,6 +114,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 
 	// Ephemeris
 	EVT_CHECKBOX( ID_OCEANPLANE, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_WATER, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_DEPRESSOCEAN, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_SKY, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_FOG, TParamsDlg::OnCheckBox )
@@ -183,6 +184,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pSkyTexture = GetSkytexture();
 	m_pLocField = GetLocField();
 	m_pNavStyle = GetNavStyle();
+	m_pFilenameWater = GetFilenameWater();
 
 	m_pNone = GetNone();
 	m_pSingle = GetSingle();
@@ -299,11 +301,13 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_PAGE_OUT_DISTANCE, &m_fPagingStructureDist, 1);
 //	AddValidator(ID_VEHICLES, &m_bVehicles);
 
-	// Ephemeric
+	// Ephemeris
 	AddValidator(ID_SKY, &m_bSky);
 	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
 	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
 	AddNumValidator(ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
+	AddValidator(ID_WATER, &m_bWater);
+	AddValidator(ID_FILENAME_WATER, &m_strFilenameWater);
 	AddValidator(ID_DEPRESSOCEAN, &m_bDepressOcean);
 	AddNumValidator(ID_DEPRESSOCEANOFFSET, &m_fDepressOceanLevel);
 	AddValidator(ID_HORIZON, &m_bHorizon);
@@ -460,6 +464,8 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_strSkyTexture = wxString(Params.GetValueString(STR_SKYTEXTURE), wxConvUTF8);
 	m_bOceanPlane =	 Params.GetValueBool(STR_OCEANPLANE);
 	m_fOceanPlaneLevel = Params.GetValueFloat(STR_OCEANPLANELEVEL);
+	m_bWater =	 Params.GetValueBool(STR_WATER);
+	m_strFilenameWater =	 wxString(Params.GetValueString(STR_WATERFILE), wxConvUTF8);
 	m_bDepressOcean =   Params.GetValueBool(STR_DEPRESSOCEAN);
 	m_fDepressOceanLevel = Params.GetValueFloat(STR_DEPRESSOCEANLEVEL);
 	m_bHorizon =		Params.GetValueBool(STR_HORIZON);
@@ -623,6 +629,8 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	Params.SetValueBool(STR_OCEANPLANE, m_bOceanPlane);
 	Params.SetValueFloat(STR_OCEANPLANELEVEL, m_fOceanPlaneLevel);
+	Params.SetValueBool(STR_WATER, m_bWater);
+	Params.SetValueString(STR_WATERFILE, (const char *) m_strFilenameWater.mb_str(wxConvUTF8));
 	Params.SetValueBool(STR_DEPRESSOCEAN, m_bDepressOcean);
 	Params.SetValueFloat(STR_DEPRESSOCEANLEVEL, m_fDepressOceanLevel);
 	Params.SetValueBool(STR_HORIZON, m_bHorizon);
@@ -762,11 +770,12 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_PAGING_MAX_STRUCTURES)->Enable(m_bPagingStructures);
 	FindWindow(ID_PAGE_OUT_DISTANCE)->Enable(m_bPagingStructures);
 
-	GetOceanPlaneOffset()->Enable(m_bOceanPlane);
-	GetDepressOceanOffset()->Enable(m_bDepressOcean);
-	GetSkytexture()->Enable(m_bSky);
+	FindWindow(ID_OCEANPLANEOFFSET)->Enable(m_bOceanPlane);
+	FindWindow(ID_FILENAME_WATER)->Enable(m_bWater);
+	FindWindow(ID_DEPRESSOCEANOFFSET)->Enable(m_bDepressOcean);
 	GetSkytexture()->Enable(m_bSky);
 	GetFogDistance()->Enable(m_bFog);
+
 	int iSelected = m_pScenarioList->GetSelection();
 	if (iSelected != wxNOT_FOUND)
 	{
@@ -916,6 +925,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pFilenameTileset->Clear();
 	m_pTextureFileSingle->Clear();
 	m_pTextureFileTileset->Clear();
+	m_pFilenameWater->Clear();
 
 	vtStringArray &paths = vtGetDataPath();
 
@@ -988,6 +998,12 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		sel = GetContentFile()->FindString(m_strContent);
 		if (sel != -1)
 			GetContentFile()->SetSelection(sel);
+
+		// fill in Water (TIN) files
+		AddFilenamesToComboBox(m_pFilenameWater, paths[i] + "Elevation", "*.itf");
+		sel = m_pFilenameWater->FindString(m_strFilenameWater);
+		if (sel != -1)
+			m_pFilenameWater->SetSelection(sel);
 
 		// fill in Sky files
 		AddFilenamesToComboBox(m_pSkyTexture, paths[i] + "Sky", "*.bmp");

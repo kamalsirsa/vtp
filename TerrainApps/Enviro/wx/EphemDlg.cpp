@@ -97,7 +97,7 @@ AutoDialog( parent, id, title, position, size, style )
 
 void EphemDlg::UpdateEnableState()
 {
-	GetOceanPlaneOffset()->Enable(m_bOceanPlane);
+	FindWindow(ID_OCEANPLANEOFFSET)->Enable(m_bOceanPlane);
 	GetSkyTexture()->Enable(m_bSky);
 	GetFogDistance()->Enable(m_bFog);
 	GetSliderFogDistance()->Enable(m_bFog);
