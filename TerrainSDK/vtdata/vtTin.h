@@ -1,7 +1,7 @@
 //
 // vtTin.h
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -69,6 +69,7 @@ public:
 	bool ReadGMS(const char *fname, bool progress_callback(int) = NULL);
 
 	unsigned int AddSurfaceType(const vtString &surface_texture, bool bTiled = false);
+	void SetSurfaceType(int iTri, int surface_type);
 
 	bool ComputeExtents();
 	void Offset(const DPoint2 &p);

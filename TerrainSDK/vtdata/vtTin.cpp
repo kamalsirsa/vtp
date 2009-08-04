@@ -3,7 +3,7 @@
 //
 // Class which represents a Triangulated Irregular Network.
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -89,6 +89,14 @@ unsigned int vtTin::AddSurfaceType(const vtString &surface_texture, bool bTiled)
 	m_surftypes.push_back(surface_texture);
 	m_surftype_tiled.Append(bTiled);
 	return m_surftypes.size()-1;
+}
+
+void vtTin::SetSurfaceType(int iTri, int surface_type)
+{
+	if (m_surfidx.GetSize() != m_tri.GetSize()/3)
+		m_surfidx.SetSize(m_tri.GetSize()/3);
+
+	m_surfidx[iTri] = surface_type;
 }
 
 bool vtTin::_ReadTinOld(FILE *fp)
