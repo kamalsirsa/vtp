@@ -693,6 +693,9 @@ void MainFrame::OnProjectSave(wxCommandEvent &event)
 	wxString strPathName = saveFile.GetPath();
 
 	SaveProject(strPathName);
+
+	// Add saved projects to the MRU list
+	AddToMRU(m_ProjectFiles, (const char *) strPathName.mb_str(wxConvUTF8));
 }
 
 void MainFrame::OnProjectPrefs(wxCommandEvent &event)
@@ -965,11 +968,8 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 
 	for (size_t i = 0; i < Paths.GetCount(); i++)
 	{
-		if (LoadLayer(Paths[i]))
-		{
-			// succeeded, so add to the MRU
-			AddToMRU(m_LayerFiles, (const char *) Paths[i].mb_str(wxConvUTF8));
-		}
+		// if succeeded, will be added to the MRU
+		LoadLayer(Paths[i]);
 	}
 }
 
@@ -1008,7 +1008,8 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	if (!lp->AskForSaveFilename())
 		return;
 
-	wxString msg = _("Saving layer to file as ") + lp->GetLayerFilename();
+	wxString fname = lp->GetLayerFilename();
+	wxString msg = _("Saving layer to file as ") + fname;
 	SetStatusText(msg);
 
 	VTLOG1(msg.mb_str(wxConvUTF8));
@@ -1018,11 +1019,14 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	if (success)
 	{
 		lp->SetModified(false);
-		msg = _("Saved layer to file as ") + lp->GetLayerFilename();
+		msg = _("Saved layer to file as ") + fname;
+
+		// Add newly-saved layers to the MRU list
+		AddToMRU(m_LayerFiles, (const char *) fname.mb_str(wxConvUTF8));
 	}
 	else
 	{
-		msg = _("Failed to save layer to ") + lp->GetLayerFilename();
+		msg = _("Failed to save layer to ") + fname;
 		wxMessageBox(msg, _("Problem"));
 	}
 	SetStatusText(msg);
@@ -3694,11 +3698,9 @@ void MainFrame::OnMRUFileLayer(wxCommandEvent& event)
 {
     int n = event.GetId() - ID_FIRST_MRU_LAYER;  // the index in MRU list
 	wxString fname(m_LayerFiles[n], wxConvUTF8);
-	if (LoadLayer(fname))
-	{
-		// succeeded, bring to the top of the MRU
-		AddToMRU(m_LayerFiles, (const char *) fname.mb_str(wxConvUTF8));
-	}
+
+	// this method will update the MRU if successful
+	LoadLayer(fname);
 }
 
 void MainFrame::OnMRUFileImport(wxCommandEvent& event)

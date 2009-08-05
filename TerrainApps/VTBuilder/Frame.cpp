@@ -917,15 +917,16 @@ bool MainFrame::LoadProject(const wxString &strPathName)
 	return success;
 }
 
-void MainFrame::SaveProject(const wxString &strPathName) const
+bool MainFrame::SaveProject(const wxString &strPathName) const
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// write project file
-	FILE *fp = vtFileOpen(strPathName.mb_str(wxConvUTF8), "wb");
+	vtString fname = (const char *) strPathName.mb_str(wxConvUTF8);
+	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
-		return;
+		return false;
 
 	// write projection info
 	char *wkt;
@@ -979,6 +980,8 @@ void MainFrame::SaveProject(const wxString &strPathName) const
 
 	// done
 	fclose(fp);
+
+	return true;
 }
 
 void MainFrame::ShowOptionsDialog()
@@ -1042,6 +1045,25 @@ void MainFrame::ShowOptionsDialog()
 		m_pView->Refresh();
 }
 
+void MainFrame::OnDrop(const wxString &str)
+{
+	if (!str.Right(3).CmpNoCase(_T("vtb")))
+		LoadProject(str);
+	else
+	{
+		vtLayer *layer = LoadLayer(str);
+		if (!layer)
+		{
+			// try importing
+			if (ImportDataFromArchive(LT_UNKNOWN, str, true))
+			{
+				// succeeded, bring to the top of the MRU
+				AddToMRU(m_ImportFiles, (const char *) str.mb_str(wxConvUTF8));
+			}
+		}
+	}
+}
+
 #if wxUSE_DRAG_AND_DROP
 ///////////////////////////////////////////////////////////////////////
 // Drag-and-drop functionality
@@ -1050,25 +1072,15 @@ void MainFrame::ShowOptionsDialog()
 bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 {
 	size_t nFiles = filenames.GetCount();
+	MainFrame *frame = GetMainFrame();
 	for ( size_t n = 0; n < nFiles; n++ )
 	{
 		wxString str = filenames[n];
-		if (!str.Right(3).CmpNoCase(_T("vtb")))
-			GetMainFrame()->LoadProject(str);
-		else
-		{
-			vtLayer *layer = GetMainFrame()->LoadLayer(str);
-			if (!layer)
-			{
-				// try importing
-				GetMainFrame()->ImportDataFromArchive(LT_UNKNOWN, str, true);
-			}
-		}
+		frame->OnDrop(str);
 	}
 	return TRUE;
 }
 #endif
-
 
 //////////////////
 // Keyboard shortcuts

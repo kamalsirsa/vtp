@@ -401,7 +401,10 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 	{
 		bool success = AddLayerWithCheck(pLayer, true);
 		if (success)
+		{
+			AddToMRU(m_LayerFiles, (const char *) fname_in.mb_str(wxConvUTF8));
 			return pLayer;
+		}
 		else
 			delete pLayer;
 	}

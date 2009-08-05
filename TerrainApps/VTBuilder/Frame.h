@@ -324,8 +324,9 @@ protected:
 public:
 	// project
 	bool LoadProject(const wxString &strPathName);
-	void SaveProject(const wxString &strPathName) const;
+	bool SaveProject(const wxString &strPathName) const;
 	void ShowOptionsDialog();
+	void OnDrop(const wxString &str);
 
 	// Special menu
 	void DoProcessBillboard();

@@ -122,6 +122,7 @@ public:
 	virtual void UpdateDistance(const DLine2 &path) {}
 	virtual void ZoomAll() {}
 	bool DrawDisabled() { return m_bDrawDisabled; }
+	void AddToMRU(vtStringArray &arr, const vtString &fname);
 
 	// Projection
 	virtual void SetProjection(const vtProjection &p);
@@ -232,7 +233,6 @@ public:
 
 protected:
 	void CheckOptionBounds();
-	void AddToMRU(vtStringArray &arr, const vtString &fname);
 
 	// Application Data
 	DRECT		m_area;
