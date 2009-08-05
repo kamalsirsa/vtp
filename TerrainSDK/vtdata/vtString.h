@@ -403,7 +403,13 @@ private:
 void vtTokenize(char *buf, const char *delim, vtStringArray &tokens);
 
 /** Find a string in a string array, return index or -1 if not found */
-int vtFindString(const vtStringArray &array, const char *find);
+int vtFindString(const vtStringArray &arr, const char *find);
+
+/** Concatenate a string array into a string, with a divider character */
+vtString vtConcatArray(const vtStringArray &arr, const char delim);
+
+/** Extract a string array from a string by divider (ie. tokenize) */
+void vtExtractArray(const vtString &input, vtStringArray &arr, const char delim);
 
 #endif	// VTSTRINGH
 

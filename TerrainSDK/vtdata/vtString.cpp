@@ -1459,14 +1459,39 @@ void vtTokenize(char *buf, const char *delim, vtStringArray &tokens)
 	}
 }
 
-int vtFindString(const vtStringArray &array, const char *find)
+int vtFindString(const vtStringArray &arr, const char *find)
 {
-	for (size_t i = 0; i < array.size(); i++)
+	for (size_t i = 0; i < arr.size(); i++)
 	{
-		if (array[i].Compare(find) == 0)
+		if (arr[i].Compare(find) == 0)
 			return (int) i;
 	}
 	return -1;
 }
 
+vtString vtConcatArray(const vtStringArray &arr, const char delim)
+{
+	vtString cat;
+	for (size_t i = 0; i < arr.size(); i++)
+	{
+		cat += arr[i];
+		if (i < arr.size()-1)
+			cat += delim;
+	}
+	return cat;
+}
+
+/** Extract a string array (ie. tokenize) with the messy non-const of strtok */
+void vtExtractArray(const vtString &input, vtStringArray &arr, const char delim)
+{
+	int curr = 0, next, len = input.GetLength();
+	while ((next = input.Find(delim, curr)) != -1)
+	{
+		arr.push_back(vtString((const char *)input+curr, next-curr));
+		curr = next+1;
+	}
+	// and remainder after last delim
+	if (curr != len)
+		arr.push_back(vtString((const char *)input+curr, len-curr));
+}
 
