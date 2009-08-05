@@ -626,7 +626,14 @@ bool MainFrame::ReadINI(const char *fname)
 //
 bool MainFrame::ReadXML(const char *fname)
 {
-	return g_Options.LoadFromXML(fname);
+	bool success = g_Options.LoadFromXML(fname);
+	if (success)
+	{
+		vtExtractArray(g_Options.GetValueString("ProjectMRU"), m_ProjectFiles, '|');
+		vtExtractArray(g_Options.GetValueString("LayerMRU"), m_LayerFiles, '|');
+		vtExtractArray(g_Options.GetValueString("ImportMRU"), m_ImportFiles, '|');
+	}
+	return success;
 }
 
 void MainFrame::ApplyOptions()
@@ -891,7 +898,7 @@ void MainFrame::OnSetMode(LBMode m)
 ////////////////////////////////////////////////////////////////
 // Project operations
 
-void MainFrame::LoadProject(const wxString &strPathName)
+bool MainFrame::LoadProject(const wxString &strPathName)
 {
 	vtString fname = (const char *) strPathName.mb_str(wxConvUTF8);
 	VTLOG("Loading project: '%s'\n", (const char *) fname);
@@ -899,13 +906,15 @@ void MainFrame::LoadProject(const wxString &strPathName)
 	// avoid trying to draw while we're loading the project
 	m_bDrawDisabled = true;
 
-	Builder::LoadProject(fname, m_pView);
+	bool success = Builder::LoadProject(fname, m_pView);
 
 	// refresh the view
 	m_bDrawDisabled = false;
 
 	RefreshTreeView();
 	RefreshToolbars();
+
+	return success;
 }
 
 void MainFrame::SaveProject(const wxString &strPathName) const

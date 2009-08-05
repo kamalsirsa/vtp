@@ -1,7 +1,7 @@
 //
 // Builder.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -232,12 +232,16 @@ public:
 
 protected:
 	void CheckOptionBounds();
+	void AddToMRU(vtStringArray &arr, const vtString &fname);
 
 	// Application Data
 	DRECT		m_area;
 	LayerArray	m_Layers;
 	vtLayerPtr	m_pActiveLayer;
 	TilingOptions m_tileopts;
+
+	// Most-recently-used files
+	vtStringArray m_ProjectFiles, m_LayerFiles, m_ImportFiles;
 
 	vtProjection	m_proj;
 	bool	m_bAdoptFirstCRS;	// If true, silenty assume user wants to

@@ -277,6 +277,8 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 	if (iNumLayersFailed > 0)
 		DisplayAndLog("%d of the project's layers could not be loaded.", iNumLayersFailed);
 
+	AddToMRU(m_ProjectFiles, fname);
+
 	VTLOG1(" LoadProject done.\n");
 	return true;
 }
@@ -637,6 +639,26 @@ void Builder::CheckOptionBounds()
 	if (mmg < 1) mmg = 1;
 	if (mmg > 8192) mmg = 8192;
 	g_Options.SetValueInt(TAG_MAX_MEM_GRID, mmg);
+}
+
+void Builder::AddToMRU(vtStringArray &arr, const vtString &fname)
+{
+	// if it's already in the list, remove it
+	int idx = vtFindString(arr, fname);
+	if (idx != -1)
+		arr.erase(arr.begin() + idx);
+
+	// push it on the front
+	arr.insert(arr.begin(), fname);
+
+	// crop at 10 items
+	if (arr.size() > 10)
+		arr.resize(10);
+
+	// Store all changes to global options
+	g_Options.SetValueString("ProjectMRU", vtConcatArray(m_ProjectFiles, '|'));
+	g_Options.SetValueString("LayerMRU", vtConcatArray(m_LayerFiles, '|'));
+	g_Options.SetValueString("ImportMRU", vtConcatArray(m_ImportFiles, '|'));
 }
 
 DRECT Builder::GetExtents()

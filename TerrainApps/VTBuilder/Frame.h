@@ -55,6 +55,7 @@ public:
 
 	void SetupUI();
 	virtual void CreateMenus();
+	void UpdateMRU(wxMenu *menu, const vtStringArray &files, int first_id);
 	void ManageToolbar(const wxString &name, wxToolBar *bar, bool show);
 	wxToolBar *NewToolbar();
 	void CreateToolbar();
@@ -78,6 +79,8 @@ protected:
 	void OnElevPasteNew(wxCommandEvent& event);
 	void OnGeocode(wxCommandEvent &event);
 	void OnQuit(wxCommandEvent& event);
+
+	void OnUpdateFileMRU(wxUpdateUIEvent& event);
 
 	void OnEditDelete(wxCommandEvent& event);
 	void OnUpdateEditDelete(wxUpdateUIEvent& event);
@@ -108,6 +111,8 @@ protected:
 
 	void OnUpdateLayerSave(wxUpdateUIEvent& event);
 	void OnUpdateLayerSaveAs(wxUpdateUIEvent& event);
+	void OnUpdateMRULayer(wxUpdateUIEvent& event);
+	void OnUpdateMRUImport(wxUpdateUIEvent& event);
 	void OnUpdateLayerProperties(wxUpdateUIEvent& event);
 	void OnUpdateLayerConvert(wxUpdateUIEvent& event);
 	void OnUpdateLayerFlatten(wxUpdateUIEvent& event);
@@ -306,6 +311,11 @@ protected:
 	void OnLayerOverviewDisk(wxCommandEvent& event);
 	void OnLayerOverviewMem(wxCommandEvent& event);
 
+	// MRU dynamic menus
+	void OnMRUFileProject(wxCommandEvent& event);
+	void OnMRUFileLayer(wxCommandEvent& event);
+	void OnMRUFileImport(wxCommandEvent& event);
+
 	// keys (used for shortcuts)
 	void OnChar(wxKeyEvent& event);
 	void OnKeyDown(wxKeyEvent& event);
@@ -313,7 +323,7 @@ protected:
 
 public:
 	// project
-	void LoadProject(const wxString &strPathName);
+	bool LoadProject(const wxString &strPathName);
 	void SaveProject(const wxString &strPathName) const;
 	void ShowOptionsDialog();
 
@@ -379,8 +389,11 @@ protected:
 
 	// UI members
 	wxMenu *fileMenu;
+	wxMenu *mruMenu;
 	wxMenu *editMenu;
 	wxMenu *layerMenu;
+	wxMenu *mruLayerMenu;
+	wxMenu *mruImportMenu;
 	wxMenu *viewMenu;
 	wxMenu *elevMenu;
 	wxMenu *imgMenu;

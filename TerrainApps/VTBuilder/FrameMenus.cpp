@@ -80,6 +80,8 @@ EVT_MENU(ID_SPECIAL_PROCESS_BILLBOARD,	MainFrame::OnProcessBillboard)
 EVT_MENU(ID_SPECIAL_GEOCODE,	MainFrame::OnGeocode)
 EVT_MENU(ID_FILE_EXIT,		MainFrame::OnQuit)
 
+EVT_UPDATE_UI(ID_FILE_MRU,	MainFrame::OnUpdateFileMRU)
+
 EVT_MENU(ID_EDIT_DELETE, MainFrame::OnEditDelete)
 EVT_MENU(ID_EDIT_DESELECTALL, MainFrame::OnEditDeselectAll)
 EVT_MENU(ID_EDIT_INVERTSELECTION, MainFrame::OnEditInvertSelection)
@@ -108,6 +110,8 @@ EVT_MENU(ID_EDIT_OFFSET,		MainFrame::OnEditOffset)
 
 EVT_UPDATE_UI(ID_LAYER_SAVE,	MainFrame::OnUpdateLayerSave)
 EVT_UPDATE_UI(ID_LAYER_SAVE_AS,	MainFrame::OnUpdateLayerSaveAs)
+EVT_UPDATE_UI(ID_MRU_LAYER,		MainFrame::OnUpdateMRULayer)
+EVT_UPDATE_UI(ID_MRU_IMPORT,	MainFrame::OnUpdateMRUImport)
 EVT_UPDATE_UI(ID_LAYER_PROPS,	MainFrame::OnUpdateLayerProperties)
 EVT_UPDATE_UI(ID_LAYER_FLATTEN,	MainFrame::OnUpdateLayerFlatten)
 EVT_UPDATE_UI(ID_EDIT_OFFSET,	MainFrame::OnUpdateEditOffset)
@@ -331,6 +335,11 @@ EVT_MENU(ID_POPUP_TO_BOTTOM,	MainFrame::OnLayerToBottom)
 EVT_MENU(ID_POPUP_OVR_DISK,		MainFrame::OnLayerOverviewDisk)
 EVT_MENU(ID_POPUP_OVR_MEM,		MainFrame::OnLayerOverviewMem)
 
+// MRU dynamic menus
+EVT_MENU_RANGE(ID_FIRST_MRU_FILE, ID_FIRST_MRU_FILE+40, MainFrame::OnMRUFileProject)
+EVT_MENU_RANGE(ID_FIRST_MRU_LAYER, ID_FIRST_MRU_LAYER+40, MainFrame::OnMRUFileLayer)
+EVT_MENU_RANGE(ID_FIRST_MRU_IMPORT, ID_FIRST_MRU_IMPORT+40, MainFrame::OnMRUFileImport)
+
 EVT_CHAR(MainFrame::OnChar)
 EVT_KEY_DOWN(MainFrame::OnKeyDown)
 EVT_MOUSEWHEEL(MainFrame::OnMouseWheel)
@@ -350,6 +359,8 @@ void MainFrame::CreateMenus()
 	fileMenu->Append(ID_FILE_NEW, _("&New\tCtrl+N"), _("New Project"));
 	fileMenu->Append(ID_FILE_OPEN, _("Open Project\tCtrl+O"), _("Open Project"));
 	fileMenu->Append(ID_FILE_SAVE, _("Save Project\tCtrl+S"), _("Save Project As"));
+	mruMenu = new wxMenu;
+	fileMenu->Append(ID_FILE_MRU, _("Recent Projects"), mruMenu);
 	fileMenu->AppendSeparator();
 	wxMenu *specialMenu = new wxMenu;
 	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, _("Create Dymaxion Textures"));
@@ -387,6 +398,11 @@ void MainFrame::CreateMenus()
 	layerMenu->Append(ID_LAYER_SAVE, _("Save Layer"), _("Save Active Layer"));
 	layerMenu->Append(ID_LAYER_SAVE_AS, _("Save Layer As..."), _("Save Active Layer As"));
 	layerMenu->Append(ID_LAYER_IMPORT, _("Import Data\tCtrl+I"), _("Import Data"));
+	mruLayerMenu = new wxMenu;
+	mruImportMenu = new wxMenu;
+	layerMenu->Append(ID_MRU_LAYER, _("Recent Layers"), mruLayerMenu);
+	layerMenu->Append(ID_MRU_IMPORT, _("Recent Imports"), mruImportMenu);
+	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_IMPORTTIGER, _("Import Data From TIGER"), _("Import Data From TIGER"));
 	layerMenu->Append(ID_LAYER_IMPORTNTF, _("Import Data From NTF"), _("Import Data From TIGER"));
 	//layerMenu->Append(ID_LAYER_IMPORTUTIL, _("Import Utilities From SHP"), _("Import Utilities From SHP"));
@@ -616,6 +632,15 @@ void MainFrame::CreateMenus()
 	SetMenuBar(m_pMenuBar);
 }
 
+void MainFrame::UpdateMRU(wxMenu *menu, const vtStringArray &files, int first_id)
+{
+	while (menu->GetMenuItemCount() > 0)
+		menu->Delete(menu->FindItemByPosition(0));
+	for (size_t i = 0; i < files.size(); i++)
+		menu->Append(first_id+i, wxString(files.at(i), wxConvUTF8), wxEmptyString);
+}
+
+
 ////////////////////////////////////////////////////////////////
 // Project menu
 
@@ -761,6 +786,13 @@ void MainFrame::OnQuit(wxCommandEvent &event)
 {
 	Close(FALSE);
 }
+
+void MainFrame::OnUpdateFileMRU(wxUpdateUIEvent& event)
+{
+	UpdateMRU(mruMenu, m_ProjectFiles, ID_FIRST_MRU_FILE);
+	event.Enable(m_ProjectFiles.size() > 0);
+}
+
 
 //////////////////////////////////////////////////
 // Edit menu
@@ -932,7 +964,13 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	loadFile.GetPaths(Paths);
 
 	for (size_t i = 0; i < Paths.GetCount(); i++)
-		LoadLayer(Paths[i]);
+	{
+		if (LoadLayer(Paths[i]))
+		{
+			// succeeded, so add to the MRU
+			AddToMRU(m_LayerFiles, (const char *) Paths[i].mb_str(wxConvUTF8));
+		}
+	}
 }
 
 void MainFrame::OnLayerSave(wxCommandEvent &event)
@@ -999,6 +1037,18 @@ void MainFrame::OnUpdateLayerSaveAs(wxUpdateUIEvent& event)
 	event.Enable(lp != NULL && lp->CanBeSaved());
 }
 
+void MainFrame::OnUpdateMRULayer(wxUpdateUIEvent& event)
+{
+	UpdateMRU(mruLayerMenu, m_LayerFiles, ID_FIRST_MRU_LAYER);
+	event.Enable(m_LayerFiles.size() > 0);
+}
+
+void MainFrame::OnUpdateMRUImport(wxUpdateUIEvent& event)
+{
+	UpdateMRU(mruImportMenu, m_ImportFiles, ID_FIRST_MRU_IMPORT);
+	event.Enable(m_ImportFiles.size() > 0);
+}
+	
 void MainFrame::OnUpdateLayerProperties(wxUpdateUIEvent& event)
 {
 	event.Enable(GetActiveLayer() != NULL);
@@ -3019,19 +3069,6 @@ void MainFrame::OnStructureCleanFootprints(wxCommandEvent& event)
 		DisplayAndLog("%d overlapping points were removed.", olap);
 	if (!degen && !olap)
 		DisplayAndLog("No degenerate or overlapping points were found.");
-
-#if 0
-	// useful test code for isolating problem buildings
-	pLayer->DeselectAll();
-	vtStructure *stru = pLayer->GetAt(6464);
-	if (stru)
-	{
-		stru->Select(true);
-		DRECT r;
-		stru->GetExtents(r);
-		m_pView->ZoomToRect(r, 0.1f);
-	}
-#endif
 }
 
 void MainFrame::OnStructureSelectIndex(wxCommandEvent& event)
@@ -3644,3 +3681,34 @@ void MainFrame::OnLayerOverviewMem(wxCommandEvent& event)
 	CloseProgressDialog();
 }
 
+void MainFrame::OnMRUFileProject(wxCommandEvent& event)
+{
+    int n = event.GetId() - ID_FIRST_MRU_FILE;  // the index in MRU list
+	wxString fname(m_ProjectFiles[n], wxConvUTF8);
+
+	// this method will update the MRU if successful
+	LoadProject(fname);
+}
+
+void MainFrame::OnMRUFileLayer(wxCommandEvent& event)
+{
+    int n = event.GetId() - ID_FIRST_MRU_LAYER;  // the index in MRU list
+	wxString fname(m_LayerFiles[n], wxConvUTF8);
+	if (LoadLayer(fname))
+	{
+		// succeeded, bring to the top of the MRU
+		AddToMRU(m_LayerFiles, (const char *) fname.mb_str(wxConvUTF8));
+	}
+}
+
+void MainFrame::OnMRUFileImport(wxCommandEvent& event)
+{
+    int n = event.GetId() - ID_FIRST_MRU_IMPORT;  // the index in MRU list
+	wxString fname(m_ImportFiles[n], wxConvUTF8);
+
+	if (ImportDataFromArchive(LT_UNKNOWN, fname, true) != 0)
+	{
+		// succeeded, bring to the top of the MRU
+		AddToMRU(m_ImportFiles, (const char *) fname.mb_str(wxConvUTF8));
+	}
+}

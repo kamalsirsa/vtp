@@ -1,7 +1,7 @@
 //
 // Import.cpp - MainFrame methods for importing data
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -106,16 +106,25 @@ void Builder::ImportData(LayerType ltype)
 //	ImportDataFromS57(strFileName);
 
 	for (unsigned int i=0; i<strFileNameArray.GetCount(); ++i)
-		ImportDataFromArchive(ltype, strFileNameArray.Item(i), true);
+	{
+		const wxString &fname = strFileNameArray.Item(i);
+		if (ImportDataFromArchive(ltype, fname, true) != 0)
+		{
+			// succeeded, so add to the MRU
+			AddToMRU(m_ImportFiles, (const char *) fname.mb_str(wxConvUTF8));
+		}
+	}
 }
 
 /**
  * Import data of a given type from a file, which can potentially be an
  * archive file.  If it's an archive, it will be unarchived to a temporary
  * folder, and the contents will be imported.
+ *
+ * \return Number of layers created during the import.
  */
 int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
-									  bool bRefresh)
+								   bool bRefresh)
 {
 	VTLOG("ImportDataFromArchive(type %d, '%s'\n", ltype, (const char *)fname_in.mb_str(wxConvUTF8));
 
