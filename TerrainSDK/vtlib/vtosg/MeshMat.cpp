@@ -1,7 +1,7 @@
 //
 // MeshMat.cpp - Meshes and Materials for vtlib-OSG
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,7 +22,6 @@ bool vtMaterial::s_bTextureCompression = false;
 
 vtMaterial::vtMaterial() : vtMaterialBase()
 {
-	m_pImage = NULL;
 	m_pStateSet = new StateSet;
 	m_pMaterial = new Material;
 	m_pStateSet->setAttributeAndModes(m_pMaterial.get());
@@ -40,8 +39,8 @@ vtMaterial::~vtMaterial()
 	m_pBlendFunc = NULL;
 	m_pAlphaFunc = NULL;
 
-	// remove convenience pointer: this is not a dereference
-	m_pImage = NULL;
+	// remove pointer: this is a dereference
+	m_Image = NULL;
 }
 
 /**
@@ -252,8 +251,8 @@ void vtMaterial::SetTexture(vtImage *pImage)
 	// this stores a reference so that it won't get deleted without this material's permission
 	m_pTexture->setImage(pImage->GetOsgImage());
 
-	// also store a convenience pointer
-	m_pImage = pImage;
+	// also store a reference pointer
+	m_Image = pImage;
 
 	/** "Note, If the mode is set USE_IMAGE_DATA_FORMAT, USE_ARB_COMPRESSION,
 	 * USE_S3TC_COMPRESSION the internalFormat is automatically selected, and
@@ -299,7 +298,7 @@ vtImage	*vtMaterial::GetTexture() const
 {
 	// It is valid to return a non-const pointer to the image, since the image
 	//  can be modified entirely independently of the material.
-	return const_cast<vtImage*>(m_pImage);
+	return const_cast<vtImage*>(m_Image.get());
 }
 
 /**

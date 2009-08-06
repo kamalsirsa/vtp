@@ -1,7 +1,7 @@
 //
 // MeshMat.h for OSG
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -77,8 +77,8 @@ public:
 	// global option
 	static bool s_bTextureCompression;
 
-	// remember this for convenience
-	vtImage *m_pImage;
+	// remember this for convenience and referencing
+	osg::ref_ptr<vtImage> m_Image;
 
 	// the VT material object includes texture
 	osg::ref_ptr<osg::Material>		m_pMaterial;
