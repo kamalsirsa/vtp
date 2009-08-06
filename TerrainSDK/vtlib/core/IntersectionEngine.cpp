@@ -38,6 +38,11 @@ vtIntersectionEngine::vtIntersectionEngine(NodeGeom *node) {
 	}
 }
 
+vtIntersectionEngine::~vtIntersectionEngine()
+{
+	delete m_Lights;
+}
+
 //changes the light colors at a node.
 void vtIntersectionEngine::Eval() {
 	float t = vtGetTime();

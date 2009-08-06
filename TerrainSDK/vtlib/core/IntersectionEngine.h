@@ -1,7 +1,7 @@
 //
 // IntersectionEngine.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -32,6 +32,7 @@ class vtIntersectionEngine : public vtEngine
 public:
 	//builds the intersection engine.  links it to the node.
 	vtIntersectionEngine(NodeGeom *node);
+	~vtIntersectionEngine();
 	void Eval();
 
 protected:
