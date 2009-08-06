@@ -4,7 +4,7 @@
 // This library has a concept of current conversion from earth to world
 // coordinates which is represented by the vtLocalConversion class.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -38,6 +38,7 @@ public:
 
 	void ConvertFromEarth(const DPoint2 &earth, float &x, float &z) const;
 	void ConvertFromEarth(const DPoint3 &earth, FPoint3 &world) const;
+	void ConvertFromEarth(const DRECT &earth, FRECT &world) const;
 
 	void ConvertVectorToEarth(float x, float z, DPoint2 &earth) const;
 	void ConvertVectorFromEarth(const DPoint2 &earth, float &x, float &z) const;

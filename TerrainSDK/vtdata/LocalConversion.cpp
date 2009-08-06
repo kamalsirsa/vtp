@@ -4,7 +4,7 @@
 // This library has a concept of current conversion from earth to world
 // coordinates which is represented by the vtLocalConversion class.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -76,16 +76,6 @@ void vtLocalConversion::ConvertToEarth(const FPoint3 &world, DPoint3 &earth) con
 }
 
 /**
- * Convert from earth coodinates (map coordinates, altitude in meters) to
- * the coordinate system of the virtual world (x,y,z)
- */
-void vtLocalConversion::ConvertFromEarth(const DPoint3 &earth, FPoint3 &world) const
-{
-	convert_earth_to_local_xz(earth.x, earth.y, world.x, world.z);
-	world.y = (float) earth.z;
-}
-
-/**
  * Convert from the coordinate system of the virtual world (x,y,z) to actual
  * earth coodinates (map coordinates, altitude in meters)
  */
@@ -101,6 +91,26 @@ void vtLocalConversion::ConvertToEarth(float x, float z, DPoint2 &earth) const
 void vtLocalConversion::ConvertFromEarth(const DPoint2 &earth, float &x, float &z) const
 {
 	convert_earth_to_local_xz(earth.x, earth.y, x, z);
+}
+
+/**
+ * Convert from earth coodinates (map coordinates, altitude in meters) to
+ * the coordinate system of the virtual world (x,y,z)
+ */
+void vtLocalConversion::ConvertFromEarth(const DPoint3 &earth, FPoint3 &world) const
+{
+	convert_earth_to_local_xz(earth.x, earth.y, world.x, world.z);
+	world.y = (float) earth.z;
+}
+
+/**
+ * Convert from earth coodinates (map coordinates, altitude in meters) to
+ * the coordinate system of the virtual world (x,y,z)
+ */
+void vtLocalConversion::ConvertFromEarth(const DRECT &earth, FRECT &world) const
+{
+	convert_earth_to_local_xz(earth.left, earth.bottom, world.left, world.bottom);
+	convert_earth_to_local_xz(earth.right, earth.top, world.right, world.top);
 }
 
 /**
