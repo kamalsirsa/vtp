@@ -519,7 +519,8 @@ bool vtSkyDome::SetTexture(const char *filename)
 	if (m_pTextureMat)
 	{
 		// if it hasn't changed, return
-		if (filename && m_pTextureMat->GetTexture()->GetFilename() == filename)
+		vtImage *image = m_pTextureMat->GetTexture();
+		if (filename && image->GetFilename() == filename)
 			return true;
 
 		// Already textured; remove previous material
