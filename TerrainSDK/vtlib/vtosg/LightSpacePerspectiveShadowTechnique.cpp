@@ -7,9 +7,10 @@
 // Free for all uses, see license.txt for details.
 //
 
-#if (OSG_VERSION_MAJOR==2 && OSG_VERSION_MINOR>6) || OSG_VERSION_MAJOR>2
-
 #include "vtlib/vtlib.h"
+
+#if (OPENSCENEGRAPH_MAJOR_VERSION==2 && OPENSCENEGRAPH_MINOR_VERSION>6) || OPENSCENEGRAPH_MAJOR_VERSION>2
+
 #include "LightSpacePerspectiveShadowTechnique.h"
 #include <osg/Texture3D>
 #include <sstream>
