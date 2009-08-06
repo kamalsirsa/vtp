@@ -1885,7 +1885,7 @@ void vtTerrain::_CreateImageLayers()
 vtMultiTexture *vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
 									   int TextureMode)
 {
-	DRECT TerrainExtents = GetHeightField()->GetEarthExtents();
+	DRECT EarthExtents = GetHeightField()->GetEarthExtents();
 
 	int iTextureUnit = m_TextureUnits.ReserveTextureUnit();
 	if (iTextureUnit == -1)
@@ -1906,18 +1906,21 @@ vtMultiTexture *vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &
 		scale.Set(1.0/(iCols - 1), 1.0/(iRows - 1));
 
 		// stretch the (0-1) over the data extents
-		scale.x *= (TerrainExtents.Width() / extents.Width());
-		scale.y *= (TerrainExtents.Height() / extents.Height());
+		scale.x *= (EarthExtents.Width() / extents.Width());
+		scale.y *= (EarthExtents.Height() / extents.Height());
 	}
 	else	// might be a TiledGeom, or a TIN
 	{
+		FRECT worldExtents;
+		g_Conv.ConvertFromEarth(extents, worldExtents);
+
 		// Map input values (0-terrain size in world coords) to 0-1
-		scale.Set(1.0/extents.Width(), -1.0/extents.Height());
+		scale.Set(1.0/worldExtents.Width(), 1.0/worldExtents.Height());
 	}
 
 	// and offset it to place it at the right place
-	offset.x = (float) ((extents.left - TerrainExtents.left) / extents.Width());
-	offset.y = (float) ((extents.bottom - TerrainExtents.bottom) / extents.Height());
+	offset.x = (float) ((extents.left - EarthExtents.left) / extents.Width());
+	offset.y = (float) ((extents.bottom - EarthExtents.bottom) / extents.Height());
 
 	// apply it to the node that is above the terrain surface
 	return GetTerrainSurfaceNode()->AddMultiTexture(iTextureUnit, pImage,
