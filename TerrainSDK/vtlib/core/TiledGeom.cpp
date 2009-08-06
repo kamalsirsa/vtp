@@ -476,6 +476,11 @@ vtTiledGeom::vtTiledGeom()
 vtTiledGeom::~vtTiledGeom()
 {
 #if SUPPORT_THREADING
+	// We should exit the thread here, but there might be more than one
+	//  vtTiledGeom, so we aren't handling thread deletion correctly yet.
+	// TODO: fix this so that threads are correctly exited and freed.
+	//threadexit();
+
 	delete m_pDataCloud;
 #endif
 
