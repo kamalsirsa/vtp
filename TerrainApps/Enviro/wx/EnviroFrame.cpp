@@ -2,7 +2,7 @@
 // Name:	 EnviroFrame.cpp
 // Purpose:  The frame class for the wxEnviro application.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -2105,7 +2105,7 @@ void EnviroFrame::OnSceneEphemeris(wxCommandEvent& event)
 	m_pEphemDlg->m_fOceanPlaneLevel = param.GetValueFloat(STR_OCEANPLANELEVEL);
 	m_pEphemDlg->m_bHorizon = terr->GetFeatureVisible(TFT_HORIZON);
 	m_pEphemDlg->m_bFog = terr->GetFog();
-	m_pEphemDlg->m_fFogDistance = param.GetValueFloat(STR_FOGDISTANCE);
+	m_pEphemDlg->m_fFogDistance = param.GetValueFloat(STR_FOGDISTANCE) * 1000;
 	RGBi col = terr->GetBgColor();
 	// shadows
 	m_pEphemDlg->m_bShadows = terr->GetShadows();
