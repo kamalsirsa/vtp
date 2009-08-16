@@ -3,7 +3,7 @@
 // Purpose:  Contour-related code, which interfaces vtlib to the
 //	QuikGrid library.
 //
-// Copyright (c) 2004-2008 Virtual Terrain Project
+// Copyright (c) 2004-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -163,7 +163,7 @@ void vtContourConverter::GenerateContours(float fInterval)
 		hf = m_pHF;
 	else
 		hf = m_pTerrain->GetTiledGeom();
-	if (hf)
+	if (!hf)
 		return;
 
 	hf->GetHeightExtents(fMin, fMax);
