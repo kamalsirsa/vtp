@@ -19,6 +19,7 @@
 #include "vtdata/FilePath.h"	// for dir_iter
 #include "vtdata/Projections.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/vtDIB.h"
 #include "Helper.h"
 
 bool IsGUIApp()
@@ -42,6 +43,22 @@ wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
 
 	wxBitmap *pBitmap = new wxBitmap(pImage);
 	return pBitmap;
+}
+
+wxBitmap *DibToBitmap(vtDIB *dib)
+{
+	int xsize = dib->GetWidth();
+	int ysize = dib->GetHeight();
+	wxImage image(xsize, ysize);
+	int i, j;
+	RGBi rgb;
+	for (i = 0; i < xsize; i++)
+		for (j = 0; j < ysize; j++)
+		{
+			dib->GetPixel24(i, j, rgb);
+			image.SetRGB(i, j, rgb.r, rgb.g, rgb.b);
+		}
+	return new wxBitmap(image);
 }
 
 void FillWithColor(wxStaticBitmap *pStaticBitmap, const wxColour &color)

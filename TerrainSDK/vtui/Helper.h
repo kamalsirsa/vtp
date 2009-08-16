@@ -11,9 +11,12 @@
 
 bool IsGUIApp();
 
+class vtDIB;
+
 //////
 
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color);
+wxBitmap *DibToBitmap(vtDIB *dib);
 void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color);
 void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color);
 void FillWithColor(wxStaticBitmap *pStaticBitmap, const wxColour &color);
