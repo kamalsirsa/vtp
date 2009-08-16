@@ -1,7 +1,7 @@
 //
 // Name: ScenarioSelectDialog.cpp
 //
-// Copyright (c) 2005-2007 Virtual Terrain Project
+// Copyright (c) 2005-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,7 @@
 
 #include "ScenarioSelectDialog.h"
 #include "ScenarioParamsDialog.h"
+#include "EnviroGUI.h"
 
 // WDR: class implementations
 
@@ -93,6 +94,14 @@ bool CScenarioSelectDialog::TransferDataToWindow()
 	return bRet;
 }
 
+void CScenarioSelectDialog::ActivateCurrent()
+{
+	int sel = GetScenarioList()->GetSelection();
+	if (sel < 0)
+		return;
+	m_pTerrain->ActivateScenario(sel);
+	g_App.SetScenario(sel);
+}
 
 void CScenarioSelectDialog::UpdateEnableState()
 {
@@ -145,7 +154,7 @@ void CScenarioSelectDialog::OnScenarioNext( wxCommandEvent &event )
 	if (!m_bModified)
 	{
 		pScenarioList->SetSelection((pScenarioList->GetSelection() + 1) % iCount);
-		m_pTerrain->ActivateScenario(GetScenarioList()->GetSelection());
+		ActivateCurrent();
 		UpdateEnableState();
 	}
 }
@@ -157,7 +166,7 @@ void CScenarioSelectDialog::OnScenarioPrevious( wxCommandEvent &event )
 	if (!m_bModified)
 	{
 		pScenarioList->SetSelection((pScenarioList->GetSelection() + iCount - 1) % iCount);
-		m_pTerrain->ActivateScenario(GetScenarioList()->GetSelection());
+		ActivateCurrent();
 		UpdateEnableState();
 	}
 }
@@ -280,7 +289,7 @@ void CScenarioSelectDialog::OnScenarioList( wxCommandEvent &event )
 	if (!m_bModified)
 	{
 		// Activate the selected scenario
-		m_pTerrain->ActivateScenario(GetScenarioList()->GetSelection());
+		ActivateCurrent();
 	}
 }
 

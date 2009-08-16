@@ -52,7 +52,7 @@ public:
 
 	void SetTerrain(vtTerrain *pTerrain);
 	virtual bool TransferDataToWindow();
-
+	void ActivateCurrent();
 
 	// WDR: method declarations for CScenarioSelectDialog
 	wxButton* GetApply()  { return (wxButton*) FindWindow( wxID_APPLY ); }

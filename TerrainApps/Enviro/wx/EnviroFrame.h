@@ -76,6 +76,7 @@ public:
 	virtual void PostConstruction() { }
 	virtual void AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, bool tog);
 	virtual void ExtendStructure(vtStructInstance *si) {}
+	virtual void SetScenario(int num) {}
 
 	void UpdateLODInfo();
 	void ShowTable(vtAbstractLayer *alay);

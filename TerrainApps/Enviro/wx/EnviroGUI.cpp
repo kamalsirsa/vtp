@@ -169,6 +169,11 @@ void EnviroGUI::ExtendStructure(vtStructInstance *si)
 	GetFrame()->ExtendStructure(si);
 }
 
+void EnviroGUI::SetScenario(int num)
+{
+	GetFrame()->SetScenario(num);
+}
+
 void EnviroGUI::RefreshLayerView()
 {
 	LayerDlg *dlg = GetFrame()->m_pLayerDlg;

@@ -54,6 +54,7 @@ public:
 	virtual void SetProgressTerrain(vtTerrain *pTerr);
 	virtual void UpdateProgress(const char *msg, int amount1, int amount2);
 	virtual void ExtendStructure(vtStructInstance *si);
+	virtual void SetScenario(int num);
 
 	// The following are useful methods
 	bool SaveVegetation(bool bAskFilename);
