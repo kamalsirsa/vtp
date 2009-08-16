@@ -282,6 +282,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		FSphere sphere;
 		m_pGeom->GetBoundSphere(sphere);
 		m_pHighlight = CreateBoundSphereGeom(sphere);
+		m_pHighlight->SetCastShadow(false);		// no shadow
 		m_pContainer->AddChild(m_pHighlight);
 
 		m_pHighlight->SetEnabled(bEnabled);
