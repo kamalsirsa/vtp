@@ -913,6 +913,9 @@ void vtTiledGeom::DoRender()
 	last_res = m_fResolution;
 
 	// update vertex arrays
+#if USE_VERTEX_CACHE
+	m_pMiniCache->makecurrent();
+#endif
 	m_pMiniLoad->draw(m_fResolution,
 				m_eyepos_ogl.x, m_eyepos_ogl.y, m_eyepos_ogl.z,
 				eye_forward.x, eye_forward.y, eye_forward.z,
