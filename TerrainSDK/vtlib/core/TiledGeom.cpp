@@ -1,7 +1,7 @@
 //
 // vtTiledGeom: Renders tiled heightfields using Roettger's libMini library
 //
-// Copyright (c) 2005-2008 Virtual Terrain Project
+// Copyright (c) 2005-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -912,6 +912,14 @@ void vtTiledGeom::DoRender()
 		fpu=1;
 	last_res = m_fResolution;
 
+	// If we have an orthographic camera, then fov is negative, and we cannot
+	//  use update (fpu) greater than 0.
+	// "If you have a vertex cache that's updated only partially then you would
+	// see the culled frustums of previous frames. For the same reason the
+	// ortho mode is disabled as well."
+	if (m_fFOVY < 0)
+		fpu = 0;
+
 	// update vertex arrays
 #if USE_VERTEX_CACHE
 	m_pMiniCache->makecurrent();
@@ -1075,7 +1083,7 @@ bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 			return true;
 	}
 
-	// TODO: support other arguments?
+	// Ask libmini for the height
 	float alt = m_pMiniLoad->getheight(p3.x, p3.z);
 
 	// This is what libMini returns if the point isn't on the terrain
@@ -1088,6 +1096,10 @@ bool vtTiledGeom::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 	else
 		// convert stored value to drawn value
 		fAltitude = alt;
+
+	// If caller wants the normal, ask libmini for that also
+	if (vNormal)
+		m_pMiniLoad->getnormal(p3.x, p3.z, &vNormal->x, &vNormal->y, &vNormal->z);
 
 	return true;
 }
