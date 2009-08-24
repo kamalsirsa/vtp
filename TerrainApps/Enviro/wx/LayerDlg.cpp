@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.cpp
 //
-// Copyright (c) 2003-2007 Virtual Terrain Project
+// Copyright (c) 2003-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -754,7 +754,7 @@ void LayerDlg::OnZoomTo( wxCommandEvent &event )
 
 void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 {
-	bool bVis = event.IsChecked();
+	bool bShow = event.IsChecked();
 
 #if OLD_OSG_SHADOWS
 	vtNode *pThing = GetNodeFromItem(m_item);
@@ -763,14 +763,38 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 		vtGetScene()->ShadowVisibleNode(pThing, bVis);
 		vtGetScene()->ComputeShadows();
 	}
+#else
+	LayerItemData *data = GetLayerDataFromItem(m_item);
+	if (!data)
+		return;
+	vtStructureLayer *slay = data->m_slay;
+	if (slay != NULL)
+	{
+		if (data->m_item != -1)
+		{
+			// individual item is selected
+			vtStructure3d *str3d = slay->GetStructure3d(data->m_item);
+			str3d->SetCastShadow(bShow);
+
+			vtStructure *str = slay->GetAt(data->m_item);
+			// remember state
+			if (!bShow)
+				str->SetValueBool("shadow", false);
+			else
+				// shadows are on by default, so don't store shadow=true
+				str->RemoveTag("shadow");
+				
+			return;
+		}
+		else
+			// whole layer is selected
+			slay->SetShadows(bShow);
+	}
 #endif
 }
 
 void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 {
-	if (!IsShown())
-		return;
-
 #if OLD_OSG_SHADOWS
 	bool bShadows = false;
 	vtNode *pThing = NULL;
@@ -788,6 +812,41 @@ void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 
 	if (pThing)
 		event.Check(vtGetScene()->IsShadowVisibleNode(pThing));
+#else
+	LayerItemData *data = GetLayerDataFromItem(m_item);
+	if (!data)
+	{
+		event.Enable(false);
+		return;
+	}
+	vtStructureLayer *slay = data->m_slay;
+	if (!slay)
+	{
+		// only structures cast shadows
+		event.Enable(false);
+		return;
+	}
+	if (data->m_item != -1)
+	{
+		// individual item is selected
+		vtStructure3d *str3d = slay->GetStructure3d(data->m_item);
+		event.Enable(true);
+		event.Check(str3d->GetCastShadow());
+	}
+	else
+	{
+		// whole layer is selected
+		int count = slay->GetSize();
+		if (count)
+		{
+			// just use first item
+			vtStructure3d *str3d = slay->GetStructure3d(0);
+			event.Enable(true);
+			event.Check(str3d->GetCastShadow());
+		}
+		else
+			event.Enable(false);
+	}
 #endif
 }
 

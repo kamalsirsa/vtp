@@ -3140,7 +3140,17 @@ void EnviroFrame::OnPopupShadow(wxCommandEvent& event)
 		str = structures->GetAt(i);
 		if (!str->IsSelected())
 			continue;
-		structures->GetStructure3d(i)->SetCastShadow(!structures->GetStructure3d(i)->GetCastShadow());
+
+		// toggle
+		bool bShow = !structures->GetStructure3d(i)->GetCastShadow();
+		structures->GetStructure3d(i)->SetCastShadow(bShow);
+
+		// remember state
+		if (!bShow)
+			str->SetValueBool("shadow", false);
+		else
+			// shadows are on by default, so don't store shadow=true
+			str->RemoveTag("shadow");
 	}
 	pTerr->ForceShadowUpdate();
 }
