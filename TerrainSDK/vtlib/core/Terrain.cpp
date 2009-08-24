@@ -1250,6 +1250,7 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 
 bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 {
+	vtStructure *str = structures->GetAt(index);
 	vtStructure3d *str3d = structures->GetStructure3d(index);
 
 	// Construct
@@ -1276,8 +1277,14 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 		structures->DestroyStructure(index);
 	}
 	else
-		if (!m_Params.GetValueBool(STR_SHADOWS_DEFAULT_ON))
-			str3d->SetCastShadow(false);
+	{
+		bool bShow;
+		// If the structure has shadow state stored, use it
+		if (!str->GetValueBool("shadow", bShow))
+			// otherwise use the app default
+			bShow = m_Params.GetValueBool(STR_SHADOWS_DEFAULT_ON);
+		str3d->SetCastShadow(bShow);
+	}
 
 	return bSuccess;
 }

@@ -428,6 +428,21 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 	}
 }
 
+void vtStructureArray3d::SetShadows(bool bTrue)
+{
+	for (unsigned int j = 0; j < GetSize(); j++)
+	{
+		vtStructure3d *str3d = GetStructure3d(j);
+		if (str3d)
+		{
+			// Set shadow
+			vtNode *pContainer = str3d->GetContainer();
+			if (pContainer)
+				pContainer->SetCastShadow(bTrue);
+		}
+	}
+}
+
 //
 // Be informed of edit hightlighting
 //

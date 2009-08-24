@@ -4,7 +4,7 @@
 // Implements the vtStructure3d class which extends vtStructure with the
 // ability to create 3D geometry.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -187,6 +187,9 @@ public:
 
 	/// Enable (set visibility of) the structures
 	void SetEnabled(bool bTrue);
+
+	/// Set shadows on/off for all structures
+	void SetShadows(bool bTrue);
 
 	// Be informed of edit hightlighting
 	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
