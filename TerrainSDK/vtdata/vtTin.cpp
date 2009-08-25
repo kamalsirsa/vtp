@@ -349,12 +349,24 @@ bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
 	fscanf(fp, "VERT %d\n", &num_points);
 	DPoint2 p;
 	float z;
+	int locked;	// Locked / unlocked flag for vertex (optional)
 	for (int i = 0; i < num_points; i++)
 	{
 		if ((i%200) == 0 && progress_callback != NULL)
-			progress_callback(i * 40 / num_points);
+		{
+			if (progress_callback(i * 40 / num_points))
+			{
+				fclose(fp);
+				return false;	// user cancelled
+			}
+		}
 
-		fscanf(fp, "%lf %lf %f\n", &p.x, &p.y, &z);
+		// 'locked' may not be present, but that's OK as we don't use it
+		fscanf(fp, "%lf %lf %f %d\n", &p.x, &p.y, &z, &locked);
+
+		// Temporary test for flipped Y/-Z
+		//double temp = p.y; p.y = -z; z = temp;
+
 		AddVert(p, z);
 	}
 
@@ -364,9 +376,16 @@ bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
 	for (int i = 0; i < num_faces; i++)
 	{
 		if ((i%200) == 0 && progress_callback != NULL)
-			progress_callback(40 + i * 40 / num_faces);
+		{
+			if (progress_callback(40 + i * 40 / num_faces))
+			{
+				fclose(fp);
+				return false;	// user cancelled
+			}
+		}
 
 		fscanf(fp, "%d %d %d\n", v, v+2, v+1);
+		// the indices in the file are 1-based, so subtract 1
 		AddTri(v[0]-1, v[1]-1, v[2]-1);
 	}
 
