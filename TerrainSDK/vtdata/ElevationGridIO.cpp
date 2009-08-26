@@ -1180,7 +1180,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 	  return false;
 
 	// read GRD header data
-	short nx, ny;
+	int nx, ny;
 	double xlo, xhi, ylo, yhi, zlo, zhi;
 
 	// Parse the file, determine what kind of GRD it is
