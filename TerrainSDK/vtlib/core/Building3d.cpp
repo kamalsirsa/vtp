@@ -959,14 +959,19 @@ float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 				iaVertices.Append(pMesh->AddVertexNUV(Vertex, PanelNormal, UV));
 			}
 
-			for (i = 0; i < j; i++)
+			if ((PanelNormal.x != 0) && (PanelNormal.z != 0))
 			{
-				// Source and dest cannot be the same
-				FPoint3 Temp = RoofSection3D[i];
-				Transform.Transform(Temp, RoofSection3D[i]);
+				for (i = 0; i < j; i++)
+				{
+					// Source and dest cannot be the same
+					FPoint3 Temp = RoofSection3D[i];
+					Transform.Transform(Temp, RoofSection3D[i]);
+				}
 			}
 
-			Triangulate_f::Process(RoofSection3D, TriangulatedRoofSection3D);
+			if (!Triangulate_f::Process(RoofSection3D, TriangulatedRoofSection3D))
+				return -1.0;
+
 			iTriangleCount = TriangulatedRoofSection3D.GetSize() / 3;
 
 			for (i = 0; i < iTriangleCount; i++)
