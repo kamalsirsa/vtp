@@ -67,10 +67,10 @@ endif
 
 LDIRS += \
 	 $(XMLHELPER_INST_DIR)      \
+	 $(MINIDATA_INST_DIR)      \
 	 $(UNZIP_INST_DIR)          \
 	 $(VTDATA_INST_DIR)         \
 	 $(VTOSG_INST_DIR)
-
 
 ifeq ($(OS),Darwin)
 all : $(OSX_APP)

@@ -80,6 +80,7 @@ ifeq ($(SUPPORT_SQUISH),1)
 endif
 
 LDIRS   +=\
+	  $(MINIDATA_INST_DIR)           \
 	  $(VTDATA_INST_DIR)             \
 	  $(VTUI_INST_DIR)               \
 	  $(VTOSG_INST_DIR)              \
