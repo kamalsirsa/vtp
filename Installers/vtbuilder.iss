@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTBuilder
-AppVerName=2009.07.25
+AppVerName=2009.08.26
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -12,7 +12,7 @@ DefaultDirName={pf}\VTP
 DefaultGroupName=VTP
 AllowNoIcons=yes
 LicenseFile=C:\VTP\license.txt
-OutputBaseFilename=VTBuilder_090725
+OutputBaseFilename=VTBuilder_090826
 OutputDir=C:\Distrib
 ; We need the following because some Windows machines won't turn Registry settings into Environment variables w/o a reboot
 AlwaysRestart=yes
