@@ -1,7 +1,7 @@
 //
 // Name: UtilDlg.cpp
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -51,7 +51,7 @@ void UtilDlg::OnStructType( wxCommandEvent &event )
 	TransferDataFromWindow();
 	wxString val = m_pChoice->GetStringSelection();
 	g_App.SetRouteOptions((const char *) val.mb_str(wxConvUTF8));
-	g_App.start_new_fence();
+	g_App.start_new_route();
 }
 
 void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
