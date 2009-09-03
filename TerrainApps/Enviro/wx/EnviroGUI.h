@@ -66,7 +66,8 @@ public:
 };
 
 // Helper
-vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr);
+vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr, bool bAskStyle = true);
+vtAbstractLayer *CreateNewAbstractLineLayer(vtTerrain *pTerr, bool bAskStyle = true);
 
 // global singleton
 extern EnviroGUI g_App;

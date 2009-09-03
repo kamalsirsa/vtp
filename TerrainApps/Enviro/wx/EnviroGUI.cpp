@@ -421,7 +421,7 @@ void vtJoystickEngine::Eval()
 ///////////////////////////////////////////////////////////////////////
 // Helpers
 
-vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
+vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr, bool bAskStyle)
 {
 	// make a new abstract layer (points)
 	vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
@@ -430,21 +430,66 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr)
 
 	// Ask style for the new point layer
 	vtTagArray props;
-	props.SetValueBool("Geometry", false, true);
+	props.SetValueBool("ObjectGeometry", false, true);
 	props.SetValueBool("Labels", true, true);
 	props.SetValueRGBi("LabelColor", RGBi(255,255,0), true);
 	props.SetValueFloat("LabelHeight", 10.0f, true);
 	props.SetValueInt("TextFieldIndex", 0, true);
 
-	StyleDlg dlg(NULL, -1, _("Style"));
-	dlg.SetFeatureSet(pSet);
-	dlg.SetOptions(props);
-	if (dlg.ShowModal() != wxID_OK)
+	if (bAskStyle)
 	{
-		delete pSet;
-		return NULL;
+		StyleDlg dlg(NULL, -1, _("Style"));
+		dlg.SetFeatureSet(pSet);
+		dlg.SetOptions(props);
+		if (dlg.ShowModal() != wxID_OK)
+		{
+			delete pSet;
+			return NULL;
+		}
+		dlg.GetOptions(props);
 	}
-	dlg.GetOptions(props);
+
+	// wrap the features in an abstract layer
+	vtAbstractLayer *pLay = new vtAbstractLayer(pTerr);
+	pLay->SetFeatureSet(pSet);
+	pLay->SetProperties(props);
+
+	// add the new layer to the terrain
+	pTerr->GetLayers().Append(pLay);
+	pTerr->SetAbstractLayer(pLay);
+
+	// and show it in the layers dialog
+	GetFrame()->m_pLayerDlg->RefreshTreeContents();	// full refresh
+
+	return pLay;
+}
+
+vtAbstractLayer *CreateNewAbstractLineLayer(vtTerrain *pTerr, bool bAskStyle)
+{
+	// make a new abstract layer (points)
+	vtFeatureSetLineString *pSet = new vtFeatureSetLineString;
+	pSet->SetFilename("Untitled.shp");
+	pSet->AddField("Elevation", FT_Float);
+
+	// Ask style for the new point layer
+	vtTagArray props;
+	props.SetValueBool("LineGeometry", true, true);
+	props.SetValueRGBi("LineGeomColor", RGBi(255,255,0), true);
+	props.SetValueFloat("LineGeomHeight", 10.0f, true);
+	props.SetValueBool("Labels", false, true);
+
+	if (bAskStyle)
+	{
+		StyleDlg dlg(NULL, -1, _("Style"));
+		dlg.SetFeatureSet(pSet);
+		dlg.SetOptions(props);
+		if (dlg.ShowModal() != wxID_OK)
+		{
+			delete pSet;
+			return NULL;
+		}
+		dlg.GetOptions(props);
+	}
 
 	// wrap the features in an abstract layer
 	vtAbstractLayer *pLay = new vtAbstractLayer(pTerr);
