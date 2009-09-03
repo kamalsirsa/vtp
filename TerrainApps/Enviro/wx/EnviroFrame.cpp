@@ -44,6 +44,7 @@
 // dialogs
 #include "BuildingDlg3d.h"
 #include "CameraDlg.h"
+#include "ContourDlg.h"
 #include "DistanceDlg3d.h"
 #include "EphemDlg.h"
 #include "FeatureTableDlg3d.h"
@@ -240,6 +241,7 @@ EVT_MENU(ID_TERRAIN_RESHADE,	EnviroFrame::OnTerrainReshade)
 EVT_MENU(ID_TERRAIN_CHANGE_TEXTURE,	EnviroFrame::OnTerrainChangeTexture)
 EVT_MENU(ID_TERRAIN_DISTRIB_VEHICLES,	EnviroFrame::OnTerrainDistribVehicles)
 EVT_MENU(ID_TERRAIN_WRITE_ELEVATION,	EnviroFrame::OnTerrainWriteElevation)
+EVT_MENU(ID_TERRAIN_ADD_CONTOUR,	EnviroFrame::OnTerrainAddContour)
 
 EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, EnviroFrame::OnUpdateCullEvery)
@@ -562,6 +564,7 @@ void EnviroFrame::CreateMenus()
 	m_pTerrainMenu->Append(ID_TERRAIN_CHANGE_TEXTURE, _("&Change Texture"));
 	m_pTerrainMenu->Append(ID_TERRAIN_DISTRIB_VEHICLES, _("&Distribute Vehicles (test)"));
 	m_pTerrainMenu->Append(ID_TERRAIN_WRITE_ELEVATION, _("Write Elevation to BT"));
+	m_pTerrainMenu->Append(ID_TERRAIN_ADD_CONTOUR, _("Add Contour"));
 	m_pMenuBar->Append(m_pTerrainMenu, _("Te&rrain"));
 
 	if (m_bEnableEarth)
@@ -2512,6 +2515,64 @@ void EnviroFrame::OnTerrainWriteElevation(wxCommandEvent& event)
 
 	CloseProgressDialog();
 	EnableContinuousRendering(true);
+}
+
+void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return;
+
+	EnableContinuousRendering(false);
+	ContourDlg dlg(this, -1, _("Add Contour"));
+
+	dlg.GetChoiceLayer()->Clear();
+	LayerSet &layers = pTerr->GetLayers();
+	for (unsigned int i = 0; i < layers.GetSize(); i++)
+	{
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
+		if (!alay)
+			continue;
+		vtString vname = alay->GetLayerName();
+		if (alay->GetFeatureSet()->GetGeomType() == wkbLineString)
+			dlg.GetChoiceLayer()->Append(wxString(vname, wxConvUTF8));
+	}
+	dlg.m_fElev = 1000;
+
+	bool bResult = (dlg.ShowModal() == wxID_OK);
+	EnableContinuousRendering(true);
+	if (!bResult)
+		return;
+
+	vtAbstractLayer *alay;
+	if (dlg.m_bCreate)
+	{
+		// create new (abstract polyline) layer to receive contour lines
+		alay = CreateNewAbstractLineLayer(pTerr, true);
+	}
+	else
+	{
+		// get the existing layer from the dialog's choice, by name
+		wxString wname = dlg.m_strLayer;
+		vtLayer *lay = layers.FindByName((const char *)wname.mb_str(wxConvUTF8));
+		if (!lay) return;
+		alay = dynamic_cast<vtAbstractLayer*>(lay);
+		if (!alay) return;
+	}
+	vtFeatureSetLineString *pSet = (vtFeatureSetLineString *) alay->GetFeatureSet();
+
+	vtContourConverter cc;
+	if (!cc.Setup(pTerr, pSet))
+		return;
+
+	cc.GenerateContour(dlg.m_fElev);
+	cc.Finish();
+
+	// show the geometry
+	alay->CreateStyledFeatures();
+
+	// and show it in the layers dialog
+	m_pLayerDlg->RefreshTreeContents();	// full refresh
 }
 
 void EnviroFrame::OnUpdateIsDynTerrain(wxUpdateUIEvent& event)

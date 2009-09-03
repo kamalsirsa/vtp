@@ -3064,6 +3064,64 @@ wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *ContourDlgFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Contour at elevation:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item3 = new wxTextCtrl( parent, ID_ELEV, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item5 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item6 = new wxRadioButton( parent, ID_RADIO_CREATE, _("Create new layer"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item5->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item5, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item8 = new wxRadioButton( parent, ID_RADIO_ADD, _("Add to layer:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString strs9[] = 
+    {
+        _("ChoiceItem")
+    };
+    wxChoice *item9 = new wxChoice( parent, ID_CHOICE_LAYER, wxDefaultPosition, wxSize(100,-1), 1, strs9, 0 );
+    item7->Add( item9, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item7, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item11 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item12 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item10, 0, wxALIGN_CENTER, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions
@@ -3080,9 +3138,9 @@ void LayerToolBarFunc( wxToolBar *parent )
     parent->AddSeparator();
     parent->AddTool( ID_LAYER_ZOOM_TO, _("Zoom"), LayerToolBitmapsFunc( 3 ), wxNullBitmap, wxITEM_NORMAL, _("Zoom to Layer") );
     parent->AddTool( ID_LAYER_VISIBLE, _("Visible"), LayerToolBitmapsFunc( 5 ), wxNullBitmap, wxITEM_CHECK, _("Toggle Layer Visibility") );
-    parent->AddTool( ID_LAYER_TABLE, wxT(""), LayerToolBitmapsFunc( 9 ), wxNullBitmap, wxITEM_NORMAL, wxT("") );
+    parent->AddTool( ID_LAYER_TABLE, wxT(""), LayerToolBitmapsFunc( 9 ), wxNullBitmap, wxITEM_NORMAL, _("Table of Attributes") );
     parent->AddTool( ID_LAYER_SHADOW, _("Shadow"), LayerToolBitmapsFunc( 6 ), wxNullBitmap, wxITEM_CHECK, _("Toggle Structure Shadow") );
-    parent->AddTool( ID_LAYER_REFRESH, wxT(""), LayerToolBitmapsFunc( 10 ), wxNullBitmap, wxITEM_NORMAL, wxT("") );
+    parent->AddTool( ID_LAYER_REFRESH, _("Refresh"), LayerToolBitmapsFunc( 10 ), wxNullBitmap, wxITEM_NORMAL, _("Refresh") );
     parent->AddSeparator();
     parent->AddTool( ID_SHOW_ALL, _("All"), LayerToolBitmapsFunc( 7 ), wxNullBitmap, wxITEM_CHECK, _("Show all elements of every layer") );
     

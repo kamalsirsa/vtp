@@ -214,6 +214,7 @@ protected:
 	void OnTerrainChangeTexture(wxCommandEvent& event);
 	void OnTerrainDistribVehicles(wxCommandEvent& event);
 	void OnTerrainWriteElevation(wxCommandEvent& event);
+	void OnTerrainAddContour(wxCommandEvent& event);
 
 	void OnUpdateDynamic(wxUpdateUIEvent& event);
 	void OnUpdateCullEvery(wxUpdateUIEvent& event);

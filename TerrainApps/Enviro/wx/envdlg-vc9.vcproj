@@ -158,6 +158,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ContourDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DistanceDlg3d.cpp"
 				>
 			</File>
@@ -269,6 +273,10 @@
 			</File>
 			<File
 				RelativePath=".\CameraDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ContourDlg.h"
 				>
 			</File>
 			<File
