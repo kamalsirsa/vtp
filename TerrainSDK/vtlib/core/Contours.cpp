@@ -31,6 +31,8 @@ vtContourConverter::vtContourConverter()
 {
 	m_pMF = NULL;
 	m_pGrid = NULL;
+	m_pGeom = NULL;
+	m_pLS = NULL;
 }
 
 vtContourConverter::~vtContourConverter()
@@ -39,21 +41,8 @@ vtContourConverter::~vtContourConverter()
 	delete m_pGrid;
 }
 
-/**
- * Set up the class to do draping on a terrain.
- *
- * \param pTerr The terrain you will generate the contour lines on.
- * \param color The colors of the generated lines.
- * \param fHeight The height above the terrain to drape the lines.  Generally
- *		you will want to use a small offset value here, to keep the lines from
- *		colliding with the terrain itself.
- * \return A geometry node which contains the contours.
- */
-vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
+bool vtContourConverter::SetupTerrain(vtTerrain *pTerr)
 {
-	if (!pTerr)
-		return NULL;
-
 	// Make a note of this terrain and its attributes
 	m_pTerrain = pTerr;
 	m_pHF = pTerr->GetHeightFieldGrid3d();
@@ -62,7 +51,7 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 	{
 		vtTiledGeom *tiledGeom = pTerr->GetTiledGeom();
 		if (!tiledGeom)
-			return NULL;
+			return false;
 
 		m_ext = tiledGeom->GetEarthExtents();
 		//get highest LOD
@@ -79,16 +68,6 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 		m_ext = m_pHF->GetEarthExtents();
 		m_spacing = m_pHF->GetSpacing();
 	}
-	m_fHeight = fHeight;
-
-	// Create material and geometry to contain the vector geometry
-	vtMaterialArray *pMats = new vtMaterialArray;
-	pMats->AddRGBMaterial1(color, false, false, true);
-
-	m_pGeom = new vtGeom;
-	m_pGeom->SetName2("Contour Geometry");
-	m_pGeom->SetMaterials(pMats);
-	pMats->Release();		// pass ownership
 
 	// copy data from our grid to a QuikGrid object
 	int nx, ny;
@@ -131,9 +110,61 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 			}
 		}
 	}
+	return true;
+}
+
+/**
+ * Set up the class to create geometry on a terrain.
+ *
+ * \param pTerr The terrain you will generate the contour lines on.
+ * \param color The colors of the generated lines.
+ * \param fHeight The height above the terrain to drape the lines.  Generally
+ *		you will want to use a small offset value here, to keep the lines from
+ *		colliding with the terrain itself.
+ * \return A geometry node which contains the contours.
+ */
+vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
+{
+	if (!pTerr)
+		return NULL;
+
+	if (!SetupTerrain(pTerr))
+		return NULL;
+
+	m_fHeight = fHeight;
+
+	// Create material and geometry to contain the vector geometry
+	vtMaterialArray *pMats = new vtMaterialArray;
+	pMats->AddRGBMaterial1(color, false, false, true);
+
+	m_pGeom = new vtGeom;
+	m_pGeom->SetName2("Contour Geometry");
+	m_pGeom->SetMaterials(pMats);
+	pMats->Release();		// pass ownership
+
 	m_pMF = new vtMeshFactory(m_pGeom, vtMesh::LINE_STRIP, 0, 30000, 0);
 
 	return m_pGeom;
+}
+
+
+/**
+ * Set up the class to create line features on a terrain.
+ *
+ * \param pTerr The terrain you will generate the contour lines on.
+ * \param fset The featureset to receive the polylines.
+ * \return True if successful.
+ */
+bool vtContourConverter::Setup(vtTerrain *pTerr, vtFeatureSetLineString *fset)
+{
+	if (!pTerr)
+		return false;
+
+	if (!SetupTerrain(pTerr))
+		return false;
+
+	m_pLS = fset;
+	return true;
 }
 
 
@@ -145,6 +176,7 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 void vtContourConverter::GenerateContour(float fAlt)
 {
 	SetQuikGridCallbackFunction(ReceiveContourPoint, this);
+	m_fAltitude = fAlt;
 	Contour(*m_pGrid, fAlt);
 }
 
@@ -172,7 +204,10 @@ void vtContourConverter::GenerateContours(float fInterval)
 
 	SetQuikGridCallbackFunction(ReceiveContourPoint, this);
 	for (int i = start; i <= stop; i++)
+	{
+		m_fAltitude = i * fInterval;
 		Contour(*m_pGrid, i * fInterval);
+	}
 }
 
 void vtContourConverter::Coord(float x, float y, bool bStart)
@@ -194,21 +229,47 @@ void vtContourConverter::Finish()
 {
 	Flush();
 
-	// Add the geometry to the terrain's scaled features, so that it will scale
-	//  up/down with the terrain's vertical exaggeration.
-	m_pTerrain->GetScaledFeatures()->AddChild(m_pGeom);
+	if (m_pMF)
+	{
+		// Add the geometry to the terrain's scaled features, so that it will scale
+		//  up/down with the terrain's vertical exaggeration.
+		m_pTerrain->GetScaledFeatures()->AddChild(m_pGeom);
+	}
 }
 
 void vtContourConverter::Flush()
 {
+	// we may have some degenerate geometry; we need at least three points
 	if (m_line.GetSize() > 2)
 	{
-		bool bInterpolate = false;		// no need; it already hugs the ground
-		bool bCurve = false;			// no need; it's already quite smooth
-		bool bUseTrueElevation = true;	// use true elevation, not scaled
+		// confirm they are not all the same
+		DPoint2 p2 = m_line[0];
+		bool same = true;
+		for (unsigned int i = 1; i < m_line.GetSize(); i++)
+		{
+			if (m_line[i] != p2)
+			{
+				same = false;
+				break;
+			}
+		}
+		if (!same)
+		{
+			if (m_pMF)
+			{
+				bool bInterpolate = false;		// no need; it already hugs the ground
+				bool bCurve = false;			// no need; it's already quite smooth
+				bool bUseTrueElevation = true;	// use true elevation, not scaled
 
-		m_pTerrain->AddSurfaceLineToMesh(m_pMF, m_line, m_fHeight,
-			bInterpolate, bCurve, bUseTrueElevation);
+				m_pTerrain->AddSurfaceLineToMesh(m_pMF, m_line, m_fHeight,
+					bInterpolate, bCurve, bUseTrueElevation);
+			}
+			else if (m_pLS)
+			{
+				int record = m_pLS->AddPolyLine(m_line);
+				m_pLS->SetValue(record, 0, m_fAltitude);
+			}
+		}
 	}
 	m_line.Empty();
 }

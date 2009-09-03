@@ -1,7 +1,7 @@
 //
 // Contours.h
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -58,13 +58,19 @@ public:
 	vtContourConverter();
 	~vtContourConverter();
 
+	// There are two ways to use the converter:
+	/// Setup to generate geometry directly on a terrain
 	vtGeom *Setup(vtTerrain *pTerr, const RGBf &color, float fHeight);
+	/// Setup to generate line features
+	bool Setup(vtTerrain *pTerr, vtFeatureSetLineString *fset);
+
 	void GenerateContour(float fAlt);
 	void GenerateContours(float fAInterval);
 	void Finish();
 	void Coord(float x, float y, bool bStart);
 
 protected:
+	bool SetupTerrain(vtTerrain *pTerr);
 	void Flush();
 
 	SurfaceGrid *m_pGrid;
@@ -73,11 +79,16 @@ protected:
 	vtHeightFieldGrid3d *m_pHF;
 	DRECT m_ext;
 	DPoint2 m_spacing;
+	float m_fAltitude;
 	float m_fHeight;
-
 	DLine2	m_line;
+
+	// These are used if building geometry directly
 	vtGeom *m_pGeom;
 	vtMeshFactory *m_pMF;
+
+	// This is used if building line features
+	vtFeatureSetLineString *m_pLS;
 };
 
 /*@}*/  // utility
