@@ -1031,7 +1031,6 @@ void vtTerrain::SaveRoute()
  *		to the horizon.
  * \param bCenter If true, create a tile in the center (covering the terrain
  *		extents).
- * \param fTransparency A value from 0 (tranparent) to 1 (opaque)
  */
 void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHorizon,
 										bool bCenter)
