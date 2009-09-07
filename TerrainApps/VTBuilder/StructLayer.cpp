@@ -1,7 +1,7 @@
 //
 // StructLayer.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -233,7 +233,7 @@ bool vtStructureLayer::OnLoad()
 		bShowProgress = (size > 1024*50);	// 50 KB
 
 	if (bShowProgress)
-		OpenProgressDialog(_T("Loading Structures"), false);
+		OpenProgressDialog(_("Loading Structures"), false);
 
 	bool success = ReadXML(fname, progress_callback);
 
@@ -1063,9 +1063,9 @@ void vtStructureLayer::AddElementsFromDLG(vtDLGFile *pDlg)
 bool vtStructureLayer::AskForSaveFilename()
 {
 	wxString filter;
-	filter += _T("VTST File (.vtst)|*.vtst");
+	filter += _("VTST File (.vtst)|*.vtst");
 	filter += _T("|");
-	filter += _T("GZipped VTST File (.vtst.gz)|*.vtst.gz");
+	filter += _("GZipped VTST File (.vtst.gz)|*.vtst.gz");
 
 	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), GetLayerFilename(),
 		filter, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);

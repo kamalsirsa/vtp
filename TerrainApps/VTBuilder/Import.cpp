@@ -1792,7 +1792,7 @@ void Builder::ImportDataFromNTF(const wxString &strFileName)
 		return;
 
 	// Progress Dialog
-	OpenProgressDialog(_T("Importing from NTF..."));
+	OpenProgressDialog(_("Importing from NTF..."));
 
 	OGRFeature *pFeature;
 	OGRGeometry		*pGeom;
@@ -1992,7 +1992,7 @@ void Builder::ImportDataFromS57(const wxString &strDirName)
 		}
 
 		// Progress Dialog
-		OpenProgressDialog(_T("Importing from S-57..."));
+		OpenProgressDialog(_("Importing from S-57..."));
 
 		// Get line features
 		const char *layer_name = defn->GetName();

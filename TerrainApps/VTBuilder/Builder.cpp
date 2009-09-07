@@ -1179,7 +1179,7 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 		AddLayerWithCheck(pOutput);
 	else if (dlg.m_bToFile)
 	{
-		OpenProgressDialog(_T("Writing file"), true);
+		OpenProgressDialog(_("Writing file"), true);
 
 		wxString fname = dlg.m_strToFile;
 		bool gzip = (fname.Right(3).CmpNoCase(_T(".gz")) == 0);
@@ -1196,7 +1196,7 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 	}
 	else if (dlg.m_bToTiles)
 	{
-		OpenProgressDialog2(_T("Writing tiles"), true);
+		OpenProgressDialog2(_("Writing tiles"), true);
 		bool success = pOutput->WriteGridOfElevTilePyramids(dlg.m_tileopts, pView);
 		if (pView)
 			pView->HideGridMarks();
@@ -1274,7 +1274,7 @@ void Builder::MergeResampleImages(BuilderView *pView)
 		AddLayerWithCheck(pOutputLayer);
 	else if (dlg.m_bToFile)
 	{
-		OpenProgressDialog(_T("Writing file"), true);
+		OpenProgressDialog(_("Writing file"), true);
 		vtString fname = (const char *) dlg.m_strToFile.mb_str(wxConvUTF8);
 		success = pOutput->SaveToFile(fname);
 		delete pOutput;
@@ -1286,7 +1286,7 @@ void Builder::MergeResampleImages(BuilderView *pView)
 	}
 	else if (dlg.m_bToTiles)
 	{
-		OpenProgressDialog(_T("Writing tiles"), true);
+		OpenProgressDialog(_("Writing tiles"), true);
 		bool success = pOutput->WriteGridOfTilePyramids(dlg.m_tileopts, pView);
 		if (pView)
 			pView->HideGridMarks();

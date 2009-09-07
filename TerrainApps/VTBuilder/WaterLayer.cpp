@@ -1,7 +1,7 @@
 //
 // WaterLayer.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -23,7 +23,7 @@
 
 vtWaterLayer::vtWaterLayer() : vtLayer(LT_WATER)
 {
-	SetLayerFilename(_T("Untitled"));
+	SetLayerFilename(_("Untitled"));
 }
 
 vtWaterLayer::~vtWaterLayer()

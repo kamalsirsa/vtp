@@ -1,7 +1,7 @@
 //
 // Name: TileDlg.cpp
 //
-// Copyright (c) 2005-2007 Virtual Terrain Project
+// Copyright (c) 2005-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -259,7 +259,7 @@ void TileDlg::OnDotDotDot( wxCommandEvent &event )
 	// ask the user for a filename
 	wxString filter;
 	filter += FSTRING_INI;
-	wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxFD_SAVE);
+	wxFileDialog saveFile(NULL, _(".Ini file"), _T(""), _T(""), filter, wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;

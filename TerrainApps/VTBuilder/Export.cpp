@@ -1,7 +1,7 @@
 //
 //  The export functions of the VTBuilder application.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -376,7 +376,7 @@ void Builder::ElevExportTiles(BuilderView *pView)
 	else
 		tileopts.bCreateDerivedImages = false;
 
-	OpenProgressDialog2(_T("Writing tiles"), true);
+	OpenProgressDialog2(_("Writing tiles"), true);
 	bool success = pEL->WriteGridOfElevTilePyramids(tileopts, pView);
 	if (pView)
 		pView->HideGridMarks();
@@ -521,7 +521,7 @@ void Builder::ImageExportTiles(BuilderView *pView)
 
 	dlg.GetTilingOptions(m_tileopts);
 
-	OpenProgressDialog(_T("Writing tiles"), true);
+	OpenProgressDialog(_("Writing tiles"), true);
 	bool success = pIL->GetImage()->WriteGridOfTilePyramids(m_tileopts, pView);
 	CloseProgressDialog();
 	if (success)
@@ -596,7 +596,7 @@ void Builder::ExportAreaOptimizedElevTileset(BuilderView *pView)
 		// Ask them where to write the image tiles
 		m_tileopts.bCreateDerivedImages = true;
 		wxString filter = FSTRING_INI;
-		wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxFD_SAVE);
+		wxFileDialog saveFile(NULL, _(".Ini file"), _T(""), _T(""), filter, wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		if (!bResult)
 			return;
@@ -628,7 +628,7 @@ bool Builder::DoSampleElevationToTilePyramids(BuilderView *pView,
 											  bool bFloat, bool bShowGridMarks)
 {
 	if (m_pParentWindow)
-		OpenProgressDialog2(_T("Writing tiles"), true, m_pParentWindow);
+		OpenProgressDialog2(_("Writing tiles"), true, m_pParentWindow);
 	bool success = SampleElevationToTilePyramids(pView, opts, bFloat, bShowGridMarks);
 	if (bShowGridMarks && pView)
 		pView->HideGridMarks();
@@ -740,7 +740,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 		opts.eCompressionType == TC_OPENGL)
 	{
 		frame = new wxFrame;
-		frame->Create(m_pParentWindow, -1, _T("Texture Compression OpenGL Context"),
+		frame->Create(m_pParentWindow, -1, _("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
 		pCanvas = new ImageGLCanvas(frame);
 	}
@@ -762,7 +762,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 			int bins = (int) sqrt((double) tris / 50);
 			if (bins < 10)
 				bins = 10;
-			UpdateProgressDialog2(1, -1, _T("Binning TIN"));
+			UpdateProgressDialog2(1, -1, _("Binning TIN"));
 			el->m_pTin->SetupTriangleBins(bins, progress_callback_minor);
 		}
 	}
@@ -1138,7 +1138,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 #if USE_OPENGL
 	if (opts.bUseTextureCompression && opts.eCompressionType == TC_OPENGL)
 	{
-		frame->Create(m_pParentWindow, -1, _T("Texture Compression OpenGL Context"),
+		frame->Create(m_pParentWindow, -1, _("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
 		pCanvas = new ImageGLCanvas(frame);
 	}

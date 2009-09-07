@@ -184,7 +184,7 @@ void InstanceDlg::OnBrowseModelFile( wxCommandEvent &event )
 	filter += _T(" (*.3ds;*.obj;*.lwo;*.flt;*.osg;*.ive)|*.3ds;*.obj;*.lwo;*.flt;*.osg;*.ive|");
 	filter += _("All files");
 	filter += _T(" (*.*)|*.*");
-	wxFileDialog SelectFile(this, _T("Choose model file"),
+	wxFileDialog SelectFile(this, _("Choose model file"),
 							_T(""), _T(""), filter, wxFD_OPEN);
 	if (SelectFile.ShowModal() != wxID_OK)
 		return;
