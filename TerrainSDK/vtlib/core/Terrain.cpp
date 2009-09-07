@@ -2612,7 +2612,20 @@ bool vtTerrain::CreateStep5()
 				vtGeom *wsgeom = m_pWaterTin3d->CreateGeometry(false, m_idx_water);
 				wsgeom->SetName2("Water surface");
 				wsgeom->SetCastShadow(false);
-				m_pTerrainGroup->AddChild(wsgeom);
+
+				// We require that the TIN has a compatible CRS with the base
+				//  terrain, but the extents may be different.  If they are,
+				//  we may need to offset the TIN to be in the correct place.
+				DRECT ext1 = m_pHeightField->GetEarthExtents();
+				DRECT ext2 = m_pWaterTin3d->GetEarthExtents();
+				DPoint2 offset = ext2.LowerLeft() - ext1.LowerLeft();
+				float x, z;
+				g_Conv.ConvertVectorFromEarth(offset, x, z);
+				vtTransform *xform = new vtTransform;
+				xform->Translate1(FPoint3(x, 0, z));
+
+				xform->AddChild(wsgeom);
+				m_pTerrainGroup->AddChild(xform);
 			}
 			else
 			{
