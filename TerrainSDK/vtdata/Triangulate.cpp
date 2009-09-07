@@ -3,7 +3,7 @@
 //
 // Two different methods for triangulating polygons.
 //
-// Copyright (c) 2006-2008 Virtual Terrain Project
+// Copyright (c) 2006-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -645,10 +645,12 @@ void CallTriangle(const DPolygon2 &contour, DLine2 &result)
 		// Instead, call Triangle for each potentially complex hole!
 		DPoint2 p;
 		const DLine2 &hole = contour[ring];
-		if (hole.GetSize() < 5)
-			p = hole.Centroid();
+		if (hole.GetSize() < 4)
+			p = hole.Centroid2();	// For triangles, use simple average center
 		else
 		{
+			// Triangulate the hole, then use the center of the first triangle
+			//  returned, which is guaranteed to be inside the hole polygon
 			DLine2 result2;
 			CallTriangle(hole, result2);
 			p = (result2[0] + result2[1] + result2[2])/3;

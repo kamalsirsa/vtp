@@ -426,6 +426,7 @@ public:
 	void SetSafePoint(int index, const DPoint2 &p);
 	double Length() const;
 	DPoint2 Centroid() const;
+	DPoint2 Centroid2() const;
 	double Area() const
 	{
 		int n = (int) GetSize();

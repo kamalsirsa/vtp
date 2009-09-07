@@ -280,7 +280,13 @@ double DLine2::Length() const
 	return length;
 }
 
-// Centroid (centre of gravity/mass) of the polygon
+/** Centroid (centre of gravity/mass) of the polygon
+ * 
+ * Note: I've observed some numerical precision issues with this method.
+ * With 7-digit coordinates (e.g. x=2388836, y=4690396) the centroid computed
+ * may be several units away from its correct location, in fact even outside
+ * the polygon for a convex shape.
+ */
 DPoint2 DLine2::Centroid() const
 {
 	DPoint2 pt(0,0);
@@ -301,6 +307,18 @@ DPoint2 DLine2::Centroid() const
 	return pt;
 }
 
+/** (Approximate) centroid of a polygon, using simple averaging of the
+ * vertices.
+ */
+DPoint2 DLine2::Centroid2() const
+{
+	DPoint2 result(0,0);
+	unsigned int n = GetSize();
+	for (unsigned int i=0; i<n; ++i)
+		result += m_Data[i];
+	result /= n;
+	return result;
+}
 
 //////////////////////////////////////////////////////////////////////////
 // FLine2 methods
