@@ -1,7 +1,7 @@
 //
 // ElevLayer.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,7 +31,7 @@ public:
 	vtTin2d();
 	vtTin2d(vtElevationGrid *grid);
 	vtTin2d(vtFeatureSetPoint3D *set);
-	vtTin2d(vtFeatureSetPolygon *set);
+	vtTin2d(vtFeatureSetPolygon *set, int iFieldNum);
 
 	void DrawTin(wxDC *pDC, vtScaledView *pView);
 	void ComputeEdgeLengths();

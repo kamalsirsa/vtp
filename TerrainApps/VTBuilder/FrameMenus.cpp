@@ -2599,13 +2599,13 @@ void MainFrame::OnVegRemap(wxCommandEvent& event)
 		choices.Add(str);
 	}
 
-	wxString result1 = wxGetSingleChoice(_("Remap FROM Species"), _T("Species"),
+	wxString result1 = wxGetSingleChoice(_("Remap FROM Species"), _("Species"),
 		choices, this);
 	if (result1 == _T(""))	// cancelled
 		return;
 	short species_from = list->GetSpeciesIdByName(result1.mb_str(wxConvUTF8));
 
-	wxString result2 = wxGetSingleChoice(_("Remap TO Species"), _T("Species"),
+	wxString result2 = wxGetSingleChoice(_("Remap TO Species"), _("Species"),
 		choices, this);
 	if (result2 == _T(""))	// cancelled
 		return;
@@ -3296,7 +3296,19 @@ void MainFrame::OnRawConvertToTIN(wxCommandEvent& event)
 	if (setpo3)
 		tin = new vtTin2d(setpo3);
 	else if (setpg)
-		tin = new vtTin2d(setpg);
+	{
+		wxArrayString choices;
+		unsigned int i, n = setpg->GetNumFields();
+		for (i = 0; i < n; i++)
+			choices.Add(wxString(setpg->GetField(i)->m_name, wxConvUTF8));
+
+		// We need to know which field contains height
+		int res = wxGetSingleChoiceIndex(_("Height Field"), _("Species"),
+			choices, this);
+		if (res == -1)
+			return;
+		tin = new vtTin2d(setpg, res);
+	}
 	else
 	{
 		DisplayAndLog("Must be polygons with height attribute, or 3D points");

@@ -172,7 +172,7 @@ vtTin2d::vtTin2d(vtFeatureSetPoint3D *set)
 	m_proj = set->GetAtProjection();
 }
 
-vtTin2d::vtTin2d(vtFeatureSetPolygon *set)
+vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum)
 {
 	m_fEdgeLen = NULL;
 	m_bConstrain = false;
@@ -183,7 +183,7 @@ vtTin2d::vtTin2d(vtFeatureSetPolygon *set)
 		DPolygon2 &dpoly = set->GetPolygon(i);
 
 		// Get z value from field 0
-		float z = set->GetFloatValue(i, 0);
+		float z = set->GetFloatValue(i, iFieldNum);
 
 		DLine2 result;
 		CallTriangle(dpoly, result);
