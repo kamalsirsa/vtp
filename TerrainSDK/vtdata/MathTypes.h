@@ -1,7 +1,7 @@
 //
 // Basic data type definitions shared by all the VTP software.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file MathTypes.h */
@@ -847,6 +847,10 @@ public:
 	DPoint2 GetCenter() const
 	{
 		return DPoint2((left + right) / 2.0, (bottom + top) / 2);
+	}
+	DPoint2 LowerLeft() const
+	{
+		return DPoint2(left, bottom);
 	}
 	bool ContainsPoint(const DPoint2 &p, bool bInclusive = false) const
 	{
