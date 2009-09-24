@@ -2519,6 +2519,8 @@ void EnviroFrame::OnTerrainWriteElevation(wxCommandEvent& event)
 
 void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 {
+#if SUPPORT_QUIKGRID
+
 	vtTerrain *pTerr = GetCurrentTerrain();
 	if (!pTerr)
 		return;
@@ -2573,6 +2575,8 @@ void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 
 	// and show it in the layers dialog
 	m_pLayerDlg->RefreshTreeContents();	// full refresh
+
+#endif
 }
 
 void EnviroFrame::OnUpdateIsDynTerrain(wxUpdateUIEvent& event)

@@ -95,4 +95,3 @@ protected:
 
 #endif // SUPPORT_QUIKGRID
 #endif // CONTOURSH
-
