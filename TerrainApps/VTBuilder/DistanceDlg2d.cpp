@@ -1,7 +1,7 @@
 //
 // Name: DistanceDlg2d.cpp
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -42,6 +42,12 @@ void DistanceDlg2d::OnMode(bool bPath)
 		m_pFrame->ClearDistance();
 
 	m_pFrame->GetView()->SetDistanceToolMode(bPath);
+}
+
+void DistanceDlg2d::SetPathToBase(const DLine2 &path)
+{
+	m_pFrame->GetView()->SetDistancePath(path);
+	m_pFrame->GetView()->UpdateDistance();
 }
 
 void DistanceDlg2d::Reset()

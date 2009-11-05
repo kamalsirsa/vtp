@@ -1,7 +1,7 @@
 //
 // Name: DistanceDlg2d.h
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -30,6 +30,7 @@ public:
 	void SetFrame(MainFrame *frame) { m_pFrame = frame; }
 
 	virtual void OnMode(bool bPath);
+	virtual void SetPathToBase(const DLine2 &path);
 	virtual void Reset();
 
 	MainFrame *m_pFrame;
