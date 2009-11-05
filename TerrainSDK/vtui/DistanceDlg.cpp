@@ -1,7 +1,7 @@
 //
 // Name: DistanceDlg.cpp
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,10 @@
 
 #include "DistanceDlg.h"
 #include "Helper.h" // for FormatCoord
+#include "vtdata/Features.h"
+#include "vtdata/FilePath.h"
 #include <float.h>  // for FLT_MIN
+#include <wx/tokenzr.h>
 
 // WDR: class implementations
 
@@ -34,6 +37,7 @@ BEGIN_EVENT_TABLE(DistanceDlg, AutoDialog)
 	EVT_RADIOBUTTON( ID_RADIO_LINE, DistanceDlg::OnRadioLine )
 	EVT_RADIOBUTTON( ID_RADIO_PATH, DistanceDlg::OnRadioPath )
 	EVT_BUTTON( ID_DIST_TOOL_CLEAR, DistanceDlg::OnClear )
+	EVT_BUTTON( ID_DIST_LOAD_PATH, DistanceDlg::OnLoadPath )
 END_EVENT_TABLE()
 
 DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -358,6 +362,47 @@ void DistanceDlg::UpdateAvailableUnits()
 void DistanceDlg::OnClear( wxCommandEvent &event )
 {
 	Reset();
+}
+
+void DistanceDlg::OnLoadPath( wxCommandEvent &event )
+{
+	wxString str = wxGetTextFromUser(_("Enter the path to a SHP file containing a polyline, or a series of points in the form X Y X Y .."), _("Input Path"), _T(""), this);
+	if (str != _T(""))
+	{
+		DPoint2 p;
+		DLine2 line;
+
+		vtString vs = str.mb_str(wxConvUTF8);
+		FILE *fp = vtFileOpen(vs, "rb");
+		if (fp != NULL)
+		{
+			fclose(fp);
+			vtFeatureSetLineString fs;
+			if (fs.LoadFromSHP(vs))
+				line = fs.GetPolyLine(0);
+		}
+		else
+		{
+			// try to parse as a series of X Y values
+			wxStringTokenizer tkz(str);
+			while ( tkz.HasMoreTokens() )
+			{
+				tkz.GetNextToken().ToDouble(&p.x);
+				tkz.GetNextToken().ToDouble(&p.y);
+				line.Append(p);
+			}
+		}
+		if (line.GetSize() > 0)
+		{
+			m_bPathMode = true;
+			GetRadioPath()->SetValue(true);
+			OnMode(m_bPathMode);
+			UpdateAvailableUnits();
+			SetPathToBase(line);
+		}
+		else
+			DisplayAndLog("Couldn't read as file or as a series of points.");
+	}
 }
 
 void DistanceDlg::OnRadioPath( wxCommandEvent &event )

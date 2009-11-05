@@ -17,8 +17,6 @@
 // Include private header
 #include "vtui_wdr.h"
 
-const int ID_TEXT = 10000;
-
 #include <wx/intl.h>
 
 // Euro sign hack of the year
@@ -683,64 +681,67 @@ wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item1->Add( 20, 10, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item4 = new wxButton( parent, ID_DIST_TOOL_CLEAR, _("Clear"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton *item4 = new wxButton( parent, ID_DIST_LOAD_PATH, _("Load Path..."), wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item5 = new wxButton( parent, ID_DIST_TOOL_CLEAR, _("Clear"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxFlexGridSizer *item5 = new wxFlexGridSizer( 3, 0, 0 );
+    wxFlexGridSizer *item6 = new wxFlexGridSizer( 3, 0, 0 );
 
-    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("Map Offset"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item6, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Map Offset"), wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item7, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item7 = new wxTextCtrl( parent, ID_MAP_OFFSET, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
-    item5->Add( item7, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxTextCtrl *item8 = new wxTextCtrl( parent, ID_MAP_OFFSET, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
+    item6->Add( item8, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxString *strs8 = (wxString*) NULL;
-    wxChoice *item8 = new wxChoice( parent, ID_UNITS1, wxDefaultPosition, wxSize(100,-1), 0, strs8, 0 );
-    item5->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs9 = (wxString*) NULL;
+    wxChoice *item9 = new wxChoice( parent, ID_UNITS1, wxDefaultPosition, wxSize(100,-1), 0, strs9, 0 );
+    item6->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Map Distance"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item9, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Map Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item10, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_MAP_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
-    item5->Add( item10, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_MAP_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
+    item6->Add( item11, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxString *strs11 = (wxString*) NULL;
-    wxChoice *item11 = new wxChoice( parent, ID_UNITS2, wxDefaultPosition, wxSize(100,-1), 0, strs11, 0 );
-    item5->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs12 = (wxString*) NULL;
+    wxChoice *item12 = new wxChoice( parent, ID_UNITS2, wxDefaultPosition, wxSize(100,-1), 0, strs12, 0 );
+    item6->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("Geodesic Distance"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item12, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("Geodesic Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item13, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_GEOD_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
-    item5->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item14 = new wxTextCtrl( parent, ID_GEOD_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
+    item6->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs14 = (wxString*) NULL;
-    wxChoice *item14 = new wxChoice( parent, ID_UNITS3, wxDefaultPosition, wxSize(100,-1), 0, strs14, 0 );
-    item5->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs15 = (wxString*) NULL;
+    wxChoice *item15 = new wxChoice( parent, ID_UNITS3, wxDefaultPosition, wxSize(100,-1), 0, strs15, 0 );
+    item6->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("Approximate Ground"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item15, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("Approximate Ground"), wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item16, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item16 = new wxTextCtrl( parent, ID_GROUND_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
-    item5->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_GROUND_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
+    item6->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs17 = (wxString*) NULL;
-    wxChoice *item17 = new wxChoice( parent, ID_UNITS4, wxDefaultPosition, wxSize(100,-1), 0, strs17, 0 );
-    item5->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs18 = (wxString*) NULL;
+    wxChoice *item18 = new wxChoice( parent, ID_UNITS4, wxDefaultPosition, wxSize(100,-1), 0, strs18, 0 );
+    item6->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item18 = new wxStaticText( parent, ID_TEXT, _("Vertical Difference"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item18, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item19 = new wxStaticText( parent, ID_TEXT, _("Vertical Difference"), wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item19, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item19 = new wxTextCtrl( parent, ID_VERTICAL, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
-    item5->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item20 = new wxTextCtrl( parent, ID_VERTICAL, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
+    item6->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs20 = (wxString*) NULL;
-    wxChoice *item20 = new wxChoice( parent, ID_UNITS5, wxDefaultPosition, wxSize(100,-1), 0, strs20, 0 );
-    item5->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs21 = (wxString*) NULL;
+    wxChoice *item21 = new wxChoice( parent, ID_UNITS5, wxDefaultPosition, wxSize(100,-1), 0, strs21, 0 );
+    item6->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item5, 0, wxALIGN_CENTER, 5 );
+    item0->Add( item6, 0, wxALIGN_CENTER, 5 );
 
     if (set_sizer)
     {

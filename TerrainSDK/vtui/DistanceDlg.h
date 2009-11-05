@@ -1,7 +1,7 @@
 //
 // Name: DistanceDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -53,6 +53,7 @@ public:
 	void Zero();
 
 	virtual void OnMode(bool bPath) = 0;
+	virtual void SetPathToBase(const DLine2 &path) = 0;
 	virtual void Reset() = 0;
 
 private:
@@ -71,6 +72,7 @@ private:
 
 private:
 	// WDR: handler declarations for DistanceDlg
+	void OnLoadPath( wxCommandEvent &event );
 	void OnClear( wxCommandEvent &event );
 	void OnRadioPath( wxCommandEvent &event );
 	void OnRadioLine( wxCommandEvent &event );
