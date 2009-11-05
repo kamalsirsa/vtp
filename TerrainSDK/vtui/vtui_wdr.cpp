@@ -17,6 +17,8 @@
 // Include private header
 #include "vtui_wdr.h"
 
+const int ID_TEXT = 10000;
+
 #include <wx/intl.h>
 
 // Euro sign hack of the year
