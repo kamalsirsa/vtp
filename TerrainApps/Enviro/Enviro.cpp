@@ -2241,6 +2241,13 @@ void Enviro::SetDistanceToolMode(bool bPath)
 		ResetDistanceTool();
 }
 
+void Enviro::SetDistanceTool(const DLine2 &line)
+{
+	m_distance_path = line;
+	SetTerrainMeasure(m_distance_path);
+	ShowDistance(m_distance_path, m_fArcLength, FLT_MIN);
+}
+
 void Enviro::ResetDistanceTool()
 {
 	m_distance_path.Empty();

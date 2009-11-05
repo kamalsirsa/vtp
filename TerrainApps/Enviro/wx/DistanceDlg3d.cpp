@@ -1,7 +1,7 @@
 //
 // Name:		DistanceDlg3d.cpp
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -38,3 +38,7 @@ void DistanceDlg3d::Reset()
 	g_App.ResetDistanceTool();
 }
 
+void DistanceDlg3d::SetPathToBase(const DLine2 &path)
+{
+	g_App.SetDistanceTool(path);
+}

@@ -198,6 +198,7 @@ public:
 
 	// distance tool
 	void SetDistanceToolMode(bool bPath);
+	void SetDistanceTool(const DLine2 &line);
 	void ResetDistanceTool();
 	void UpdateDistanceTool();
 

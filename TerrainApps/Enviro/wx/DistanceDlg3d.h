@@ -1,7 +1,7 @@
 //
 // Name: DistanceDlg3d.h
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -24,6 +24,7 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	virtual void OnMode(bool bPath);
+	virtual void SetPathToBase(const DLine2 &path);
 	virtual void Reset();
 };
 
