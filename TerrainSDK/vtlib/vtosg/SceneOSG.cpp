@@ -173,11 +173,22 @@ void vtScene::Shutdown()
 {
 	VTLOG("vtScene::Shutdown\n");
 	m_pDefaultCamera->Release();
+	m_pDefaultCamera = NULL;
+	m_pCamera = NULL;
+
 	delete m_pDefaultWindow;
+	m_pDefaultWindow = NULL;
+	m_Windows.Empty();
+
 	vtNode::ClearOsgModelCache();
 	vtImageCacheClear();
 	// Also clear the OSG cache
 	osgDB::Registry::instance()->clearObjectCache();
+
+	m_pRoot = NULL;
+	m_pRootEngine = NULL;
+	m_pRootEnginePostDraw = NULL;
+	m_piKeyState = NULL;
 
 	// restore
 	std::cout.rdbuf(previous_cout);
