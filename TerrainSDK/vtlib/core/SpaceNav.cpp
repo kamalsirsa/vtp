@@ -57,6 +57,8 @@ void vtSpaceNav::Eval()
 bool vtSpaceNav::InitRawDevices()
 {
 #if WIN32
+	VTLOG1("Looking for a SpaceNav: ");
+
 	GetRawInputDeviceList_t pfnGetRawInputDeviceList;
 	GetRawInputDeviceInfo_t pfnGetRawInputDeviceInfo;
 	RegisterRawInputDevices_t pfnRegisterRawInputDevices;
@@ -159,6 +161,7 @@ bool vtSpaceNav::InitRawDevices()
 			return false;
 		}
 	}
+	VTLOG1("Found and connected.\n");
 	return true;
 #else
 	// not implemented
@@ -174,19 +177,28 @@ void vtSpaceNav::ProcessWM_INPUTEvent(LPARAM lParam)
 	#endif
 
 	RAWINPUTHEADER header;
+	UINT size_rawinputheader = sizeof(RAWINPUTHEADER);
+
 	UINT size = sizeof(header);
-	if ( m_pfnGetRawInputData( (HRAWINPUT)lParam, RID_HEADER, &header,  &size, sizeof(RAWINPUTHEADER) ) == -1)
+	if (m_pfnGetRawInputData( (HRAWINPUT)lParam, RID_HEADER, &header, &size, size_rawinputheader ) == -1)
 	{
 		VTLOG("Error from GetRawInputData(RID_HEADER)\n");
 		return;
 	}
-	//else
-		//VTLOG("rawEvent.header: hDevice = 0x%x\n", header.hDevice );
+	// Ask Windows for the size of the event, because it is different on 32-bit
+	//  vs. 64-bit versions of the OS
+	UINT required_size;
+	if (m_pfnGetRawInputData( (HRAWINPUT)lParam, RID_INPUT, NULL, &required_size, size_rawinputheader ) == -1)
+	{
+		VTLOG("Error from GetRawInputData(RID_INPUT)\n");
+		return;
+	}
+	size = required_size;
 
 	// Set aside enough memory for the full event
-	size = header.dwSize;
-	LPRAWINPUT evt = (LPRAWINPUT)malloc(size);
-	if (m_pfnGetRawInputData( (HRAWINPUT)lParam, RID_INPUT, evt, &size, sizeof(RAWINPUTHEADER) ) == -1)
+	LPRAWINPUT evt = (LPRAWINPUT)malloc(required_size);
+
+	if (m_pfnGetRawInputData( (HRAWINPUT)lParam, RID_INPUT, evt, &size, size_rawinputheader ) == -1)
 	{
 		VTLOG("Error from GetRawInputData(RID_INPUT)\n");
 		free(evt);
