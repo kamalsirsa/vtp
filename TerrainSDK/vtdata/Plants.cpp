@@ -404,22 +404,26 @@ bool vtBioRegion::Read(const char *fname, const vtSpeciesList &species)
 	int num = 0;
 	char buf[80];
 
-	fread(buf, 13, 1, fp);
+	if (fread(buf, 13, 1, fp) != 1)
+		return false;
 	if (strncmp(buf, "bioregion1.0\n", 12))
 		return false;
 
-	fscanf(fp, "types: %d\n", &num);
+	if (fscanf(fp, "types: %d\n", &num) != 1)
+		return false;
 
 	for (int i = 0; i < num; i++)
 	{
 		vtBioType *bt = new vtBioType;
 		int num2;
-		fscanf(fp, "species: %d\n", &num2);
+		if (fscanf(fp, "species: %d\n", &num2) != 1)
+			return false;
 		for (int j = 0; j < num2; j++)
 		{
 			char common_name[80];
 			float plant_per_m2;
-			fscanf(fp, "\t%s %f\n", common_name, &plant_per_m2);
+			if (fscanf(fp, "\t%s %f\n", common_name, &plant_per_m2) != 2)
+				return false;
 			int snum = species.GetSpeciesIdByCommonName(common_name);
 			if (snum != -1)
 				bt->AddPlant(species.GetSpecies(snum), plant_per_m2);
@@ -744,7 +748,8 @@ bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 		return false;
 
 	char buf[6];
-	fread(buf, 6, 1, fp);
+	if (fread(buf, 6, 1, fp) != 1)
+		return false;
 	if (strncmp(buf, "vf", 2))
 	{
 		fclose(fp);
@@ -753,22 +758,23 @@ bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 	float version = (float) atof(buf+2);
 	bool utm;
 	int zone, datum;
-	fread(&utm, 1, 1, fp);
+	int quiet;
+	quiet = fread(&utm, 1, 1, fp);
 	/* FIXME:  Ahoy, there be byte order issues here. See below in this routine. */
-	fread(&zone, 4, 1, fp);
-	fread(&datum, 4, 1, fp);
+	quiet = fread(&zone, 4, 1, fp);
+	quiet = fread(&datum, 4, 1, fp);
 	if (utm)
 		m_proj.SetUTMZone(zone);
 	m_proj.SetDatum(datum);
 
 	int i, size;
-	fread(&size, 4, 1, fp);
+	quiet = fread(&size, 4, 1, fp);
 	Reserve(size);
 
 	if (version == 1.0f)
 	{
 		vtPlantInstance10 *pOld = new vtPlantInstance10[size];
-		fread(pOld, sizeof(vtPlantInstance10), size, fp);
+		quiet = fread(pOld, sizeof(vtPlantInstance10), size, fp);
 		vtPlantInstance20 pi;
 		for (i = 0; i < size; i++)
 			AddPlant(DPoint2(pOld[i].x, pOld[i].y), pOld[i].size, pOld[i].species_id);
@@ -778,7 +784,7 @@ bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 	else if (version == 1.1f)
 	{
 		vtPlantInstance11 *pTemp = new vtPlantInstance11[size];
-		fread(pTemp, sizeof(vtPlantInstance11), size, fp);
+		quiet = fread(pTemp, sizeof(vtPlantInstance11), size, fp);
 
 		for (i = 0; i < size; i++)
 			AddPlant(pTemp[i].m_p, pTemp[i].size, pTemp[i].species_id);
@@ -809,7 +815,8 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 		return false;
 
 	char buf[6];
-	fread(buf, 6, 1, fp);
+	if (fread(buf, 6, 1, fp) != 1)
+		return false;
 	if (strncmp(buf, "vf", 2))
 	{
 		fclose(fp);
@@ -822,14 +829,14 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 		return ReadVF_version11(fname);
 	}
 
-	int i, numinstances, numspecies;
+	int i, numinstances, numspecies, quiet;
 
 	// read WKT SRS
 	short len;
-	fread(&len, sizeof(short), 1, fp);
+	quiet = fread(&len, sizeof(short), 1, fp);
 
 	char wkt_buf[2000], *wkt = wkt_buf;
-	fread(wkt, len, 1, fp);
+	quiet = fread(wkt, len, 1, fp);
 	OGRErr err = m_proj.importFromWkt(&wkt);
 	if (err != OGRERR_NONE)
 	{
@@ -838,7 +845,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	}
 
 	// read number of species
-	fread(&numspecies, sizeof(int), 1, fp);
+	quiet = fread(&numspecies, sizeof(int), 1, fp);
 
 	// read species binomial strings, creating lookup table of new IDs
 	int unknown = 0;
@@ -847,8 +854,8 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	char name[200];
 	for (i = 0; i < numspecies; i++)
 	{
-		fread(&len, sizeof(short), 1, fp);
-		fread(name, len, 1, fp);
+		quiet = fread(&len, sizeof(short), 1, fp);
+		quiet = fread(name, len, 1, fp);
 		name[len] = 0;
 		species_id = m_pPlantList->GetSpeciesIdByName(name);
 		if (species_id == -1)
@@ -862,12 +869,12 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 		VTLOG("Warning: %d unknown species encountered in VF table\n", unknown);
 
 	// read number of instances
-	fread(&numinstances, sizeof(int), 1, fp);
+	quiet = fread(&numinstances, sizeof(int), 1, fp);
 	Reserve(numinstances);
 
 	// read local origin (center of exents) as double-precision coordinates
 	DPoint2 origin;
-	fread(&origin, sizeof(double), 2, fp);
+	quiet = fread(&origin, sizeof(double), 2, fp);
 
 	// read instances
 	short height;
@@ -877,15 +884,15 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	for (i = 0; i < numinstances; i++)
 	{
 		// location
-		fread(&local_offset, sizeof(float), 2, fp);
+		quiet = fread(&local_offset, sizeof(float), 2, fp);
 		DPoint2 pos = origin + DPoint2(local_offset);
 
 		// height in centimeters
-		fread(&height, sizeof(short), 1, fp);
+		quiet = fread(&height, sizeof(short), 1, fp);
 		float size = (float) height / 100.0f;
 
 		// species id
-		fread(&local_species_id, sizeof(short), 1, fp);
+		quiet = fread(&local_species_id, sizeof(short), 1, fp);
 
 		// convert from file-local id to new id
 		if (local_species_id < 0 || local_species_id > numspecies-1)

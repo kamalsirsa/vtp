@@ -276,7 +276,7 @@ vtMaterialDescriptor::~vtMaterialDescriptor()
 void vtMaterialDescriptor::WriteToFile(FILE *fp)
 {
 	fprintf(fp, "\t<MaterialDescriptor Name=\"");
-	fprintf(fp, (pcchar) (*m_pName));
+	fprintf(fp, "%s", (pcchar) (*m_pName));
 	fprintf(fp, "\"");
 
 	if (m_Type != 0)
@@ -285,7 +285,7 @@ void vtMaterialDescriptor::WriteToFile(FILE *fp)
 	fprintf(fp, " Colorable=\"%s\"", m_Colorable == VT_MATERIAL_COLOURABLE_TEXTURE ? "true" : "false");
 
 	fprintf(fp, " Source=\"");
-	fprintf(fp, (pcchar) m_SourceName);
+	fprintf(fp, "%s", (pcchar) m_SourceName);
 	fprintf(fp, "\"");
 
 	fprintf(fp, " Scale=\"%f, %f\"", m_UVScale.x, m_UVScale.y);

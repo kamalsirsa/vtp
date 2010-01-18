@@ -44,7 +44,8 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	char buf[4];
-	fread(buf, 3, 1, fp);
+	if (fread(buf, 3, 1, fp) != 1)
+		return false;
 	if (strncmp(buf, "bcf", 3))
 	{
 		// not current bcf, try reading old format
@@ -53,7 +54,8 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 	}
 
 	float version;
-	fscanf(fp, "%f\n", &version);
+	if (fscanf(fp, "%f\n", &version) != 1)
+		return false;
 
 	if (version < BCFVERSION_SUPPORTED)
 	{
@@ -62,10 +64,11 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 		return false;
 	}
 
+	int quiet;
 	int zone = 1;
 	if (version == 1.2f)
 	{
-		fscanf(fp, "utm_zone %d\n", &zone);
+		quiet = fscanf(fp, "utm_zone %d\n", &zone);
 	}
 	m_proj.SetUTMZone(zone);
 
@@ -76,13 +79,13 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 	RGBi color;
 	float fRotation;
 
-	fscanf(fp, "buildings %d\n", &count);
+	quiet = fscanf(fp, "buildings %d\n", &count);
 	for (i = 0; i < count; i++)	//for each building
 	{
 		vtBuilding *bld = NewBuilding();
 
 		int type;
-		fscanf(fp, "type %d\n", &type);
+		quiet = fscanf(fp, "type %d\n", &type);
 
 		int stories = 1;
 		DPoint2 loc;
@@ -102,16 +105,16 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 			}
 			if (!strcmp(key, "loc"))
 			{
-				fscanf(fp, "%lf %lf\n", &loc.x, &loc.y);
+				quiet = fscanf(fp, "%lf %lf\n", &loc.x, &loc.y);
 				bld->SetRectangle(loc, 10, 10);
 			}
 			else if (!strcmp(key, "rot"))
 			{
-				fscanf(fp, "%f\n", &fRotation);
+				quiet = fscanf(fp, "%f\n", &fRotation);
 			}
 			else if (!strcmp(key, "stories"))
 			{
-				fscanf(fp, "%d\n", &stories);
+				quiet = fscanf(fp, "%d\n", &stories);
 
 				// Fix bad values that might be encountered
 				if (stories < 1 || stories > 20) stories = 1;
@@ -119,49 +122,49 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 			}
 			else if (!strcmp(key, "color"))
 			{
-				fscanf(fp, "%hd %hd %hd\n", &color.r, &color.g, &color.b);
+				quiet = fscanf(fp, "%hd %hd %hd\n", &color.r, &color.g, &color.b);
 				bld->SetColor(BLD_BASIC, color);
 			}
 			else if (!strcmp(key, "color_roof"))
 			{
-				fscanf(fp, "%hd %hd %hd\n", &color.r, &color.g, &color.b);
+				quiet = fscanf(fp, "%hd %hd %hd\n", &color.r, &color.g, &color.b);
 				bld->SetColor(BLD_ROOF, color);
 			}
 			else if (!strcmp(key, "size"))
 			{
 				float w, d;
-				fscanf(fp, "%f %f\n", &w, &d);
+				quiet = fscanf(fp, "%f %f\n", &w, &d);
 				bld->SetRectangle(loc, w, d, fRotation);
 			}
 			else if (!strcmp(key, "radius"))
 			{
 				float rad;
-				fscanf(fp, "%f\n", &rad);
+				quiet = fscanf(fp, "%f\n", &rad);
 				bld->SetCircle(loc, rad);
 			}
 			else if (!strcmp(key, "footprint"))
 			{
 				DLine2 dl;
-				fscanf(fp, "%d", &points);
+				quiet = fscanf(fp, "%d", &points);
 				dl.SetSize(points);
 
 				for (j = 0; j < points; j++)
 				{
-					fscanf(fp, " %lf %lf", &p.x, &p.y);
+					quiet = fscanf(fp, " %lf %lf", &p.x, &p.y);
 					dl.SetAt(j, p);
 				}
-				fscanf(fp, "\n");
+				quiet = fscanf(fp, "\n");
 				bld->SetFootprint(0, dl);
 			}
 			else if (!strcmp(key, "trim"))
 			{
 				int trim;
-				fscanf(fp, "%d\n", &trim);
+				quiet = fscanf(fp, "%d\n", &trim);
 			}
 			else if (!strcmp(key, "roof_type"))
 			{
 				int rt;
-				fscanf(fp, "%d\n", &rt);
+				quiet = fscanf(fp, "%d\n", &rt);
 				bld->SetRoofType((RoofType) rt);
 			}
 		}
@@ -181,7 +184,7 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
 	DPoint2 point;
 	for (int i = 0; i < ncoords; i++)
 	{
-		fscanf(fp, "%lf %lf\n", &point.x, &point.y);
+		int quiet = fscanf(fp, "%lf %lf\n", &point.x, &point.y);
 		vtBuilding *bld = NewBuilding();
 		bld->SetRectangle(point, 10, 10);
 		Append(bld);

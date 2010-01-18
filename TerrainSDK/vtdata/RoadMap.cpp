@@ -17,20 +17,6 @@
 #define doubleSize 8
 
 
-//
-// Helpers
-//
-void fwriteIP2(FPoint2 &p, FILE *fp)
-{
-	/*  FIXME:  Ahoy, there be byte order issues here.  See below in this routine.  */
-	fwrite(&p, 8, 1, fp);
-}
-void freadIP2(FPoint2 &p, FILE *fp)
-{
-	/*  FIXME:  Ahoy, there be byte order issues here.  See below in this routine.  */
-	fread(&p, 8, 1, fp);
-}
-
 //diff a - b.  result between PI and -PI.
 float diffAngle(float a, float b)
 {
@@ -717,12 +703,13 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		return false;
 	}
 
-	int numNodes, numLinks, i, j, nodeNum, dummy;
+	int numNodes, numLinks, i, j, nodeNum, dummy, quiet;
 	TNode *tmpNode;
 	TLink *tmpLink;
 
 	// Is it a RMF File? and check version number
-	fread(buffer,11,1,fp);
+	if (fread(buffer,11,1,fp) != 1)
+		return false;
 	buffer[11] = 0;
 
 	if (strncmp(buffer, RMFVERSION_STRING, 7))
@@ -754,22 +741,22 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		if (version >= 1.8f)
 		{
 			int iUTM;
-			fread(&iUTM, intSize, 1, fp);
+			quiet = fread(&iUTM, intSize, 1, fp);
 			proj_type = (iUTM != 0);
 		}
-		fread(&iUTMZone, intSize, 1, fp);
+		quiet = fread(&iUTMZone, intSize, 1, fp);
 		if (version >= 1.8f)
 		{
-			fread(&iDatum, intSize, 1, fp);
+			quiet = fread(&iDatum, intSize, 1, fp);
 		}
 		m_proj.SetProjectionSimple(proj_type == 1, iUTMZone, iDatum);
 	}
 	else
 	{
-		fread(&dummy, 4, 1, fp);
+		quiet = fread(&dummy, 4, 1, fp);
 		short length = (short) dummy;
 		char wkt_buf[2000], *wkt = wkt_buf;
-		fread(wkt_buf, length, 1, fp);
+		quiet = fread(wkt_buf, length, 1, fp);
 		OGRErr err = m_proj.importFromWkt((char **) &wkt);
 		if (err != OGRERR_NONE)
 			return false;
@@ -779,10 +766,10 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	if (version < 1.9)
 	{
 		int le, ri, to, bo;
-		fread(&ri, intSize, 1, fp);
-		fread(&to, intSize, 1, fp);
-		fread(&le, intSize, 1, fp);
-		fread(&bo, intSize, 1, fp);
+		quiet = fread(&ri, intSize, 1, fp);
+		quiet = fread(&to, intSize, 1, fp);
+		quiet = fread(&le, intSize, 1, fp);
+		quiet = fread(&bo, intSize, 1, fp);
 		m_extents.left = le;
 		m_extents.right = ri;
 		m_extents.top = to;
@@ -790,18 +777,18 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	}
 	else
 	{
-		fread(&m_extents.left, doubleSize, 1, fp);
-		fread(&m_extents.right, doubleSize, 1, fp);
-		fread(&m_extents.bottom, doubleSize, 1, fp);
-		fread(&m_extents.top, doubleSize, 1, fp);
+		quiet = fread(&m_extents.left, doubleSize, 1, fp);
+		quiet = fread(&m_extents.right, doubleSize, 1, fp);
+		quiet = fread(&m_extents.bottom, doubleSize, 1, fp);
+		quiet = fread(&m_extents.top, doubleSize, 1, fp);
 	}
 	m_bValidExtents = true;
 
 	//get number of nodes and links
-	fread(&numNodes, intSize, 1, fp);
-	fread(&numLinks, intSize, 1, fp);
+	quiet = fread(&numNodes, intSize, 1, fp);
+	quiet = fread(&numLinks, intSize, 1, fp);
 
-	fread(buffer,7,1,fp);
+	quiet = fread(buffer,7,1,fp);
 	if (strcmp(buffer, "Nodes:"))
 	{
 		fclose(fp);
@@ -816,18 +803,18 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	for (i = 1; i <= numNodes; i++)
 	{
 		tmpNode = NewNode();
-		fread(&(tmpNode->m_id), intSize, 1, fp);
+		quiet = fread(&(tmpNode->m_id), intSize, 1, fp);
 		if (version < 1.8f)
 		{
-			fread(&ivalue, intSize, 1, fp);
+			quiet = fread(&ivalue, intSize, 1, fp);
 			tmpNode->m_p.x = ivalue;
-			fread(&ivalue, intSize, 1, fp);
+			quiet = fread(&ivalue, intSize, 1, fp);
 			tmpNode->m_p.y = ivalue;
 		}
 		else
 		{
-			fread(&tmpNode->m_p.x, doubleSize, 1, fp);
-			fread(&tmpNode->m_p.y, doubleSize, 1, fp);
+			quiet = fread(&tmpNode->m_p.x, doubleSize, 1, fp);
+			quiet = fread(&tmpNode->m_p.y, doubleSize, 1, fp);
 		}
 		//add node to list
 		AddNode(tmpNode);
@@ -836,7 +823,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		pNodeLookup[i] = tmpNode;
 	}
 
-	fread(buffer,7,1,fp);
+	quiet = fread(buffer,7,1,fp);
 	if (strcmp(buffer, "Roads:"))
 	{
 		fclose(fp);
@@ -850,72 +837,72 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	for (i = 1; i <= numLinks; i++)
 	{
 		tmpLink = NewLink();
-		fread(&(tmpLink->m_id), intSize, 1, fp);	//id
+		quiet = fread(&(tmpLink->m_id), intSize, 1, fp);	//id
 		if (version < 1.89)
 		{
-			fread(&itmp, intSize, 1, fp);			//highway number
+			quiet = fread(&itmp, intSize, 1, fp);			//highway number
 			tmpLink->m_iHwy = (short) itmp;
-			fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
-			fread(&itmp, intSize, 1, fp);			//number of lanes
+			quiet = fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
+			quiet = fread(&itmp, intSize, 1, fp);			//number of lanes
 			tmpLink->m_iLanes = (unsigned short) itmp;
-			fread(&itmp, intSize, 1, fp);			//surface type
+			quiet = fread(&itmp, intSize, 1, fp);			//surface type
 			tmpLink->m_Surface =  (SurfaceType) itmp;
-			fread(&itmp, intSize, 1, fp);			//FLAG
+			quiet = fread(&itmp, intSize, 1, fp);			//FLAG
 			tmpLink->m_iFlags = (short) (itmp >> 16);
 		}
 		else
 		{
-			fread(&(dummy), 4, 1, fp);			//highway number
+			quiet = fread(&(dummy), 4, 1, fp);			//highway number
 			tmpLink->m_iHwy = (short) dummy;
-			fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
-			fread(&(dummy), 4, 1, fp);			//number of lanes
+			quiet = fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
+			quiet = fread(&(dummy), 4, 1, fp);			//number of lanes
 			tmpLink->m_iLanes = (short) dummy;
-			fread(&dummy, 4, 1, fp);			//surface type
+			quiet = fread(&dummy, 4, 1, fp);			//surface type
 			tmpLink->m_Surface =  (SurfaceType) dummy;
-			fread(&(dummy), 4, 1, fp);			//FLAG
+			quiet = fread(&(dummy), 4, 1, fp);			//FLAG
 			tmpLink->m_iFlags = dummy;
 		}
 
 		if (version < 1.89)
 		{
-			fread(&ftmp, floatSize, 1, fp);		//height of link at node 0
-			fread(&ftmp, floatSize, 1, fp);		//height of link at node 1
+			quiet = fread(&ftmp, floatSize, 1, fp);		//height of link at node 0
+			quiet = fread(&ftmp, floatSize, 1, fp);		//height of link at node 1
 		}
 
 		if (version >= 2.0)
 		{
-			fread(&(tmpLink->m_fSidewalkWidth), floatSize, 1, fp);	// sidewalk width
-			fread(&(tmpLink->m_fCurbHeight), floatSize, 1, fp);		// curb height
-			fread(&(tmpLink->m_fMarginWidth), floatSize, 1, fp);	// margin width
-			fread(&(tmpLink->m_fLaneWidth), floatSize, 1, fp);		// lane width
-			fread(&(tmpLink->m_fParkingWidth), floatSize, 1, fp);	// parking width
+			quiet = fread(&(tmpLink->m_fSidewalkWidth), floatSize, 1, fp);	// sidewalk width
+			quiet = fread(&(tmpLink->m_fCurbHeight), floatSize, 1, fp);		// curb height
+			quiet = fread(&(tmpLink->m_fMarginWidth), floatSize, 1, fp);	// margin width
+			quiet = fread(&(tmpLink->m_fLaneWidth), floatSize, 1, fp);		// lane width
+			quiet = fread(&(tmpLink->m_fParkingWidth), floatSize, 1, fp);	// parking width
 		}
 		int size;
-		fread(&size, intSize, 1, fp);	// number of coordinates making the link
+		quiet = fread(&size, intSize, 1, fp);	// number of coordinates making the link
 		tmpLink->SetSize(size);
 
 		for (j = 0; j < size; j++)
 		{
 			if (version < 1.8f)
 			{
-				fread(&ivalue, intSize, 1, fp);
+				quiet = fread(&ivalue, intSize, 1, fp);
 				(*tmpLink)[j].x = ivalue;
-				fread(&ivalue, intSize, 1, fp);
+				quiet = fread(&ivalue, intSize, 1, fp);
 				(*tmpLink)[j].y = ivalue;
 			}
 			else
 			{
-				fread(&((*tmpLink)[j].x), doubleSize, 1, fp);
-				fread(&((*tmpLink)[j].y), doubleSize, 1, fp);
+				quiet = fread(&((*tmpLink)[j].x), doubleSize, 1, fp);
+				quiet = fread(&((*tmpLink)[j].y), doubleSize, 1, fp);
 			}
 		}
 
 		//set the end points
-		fread(&nodeNum, intSize, 1, fp);
+		quiet = fread(&nodeNum, intSize, 1, fp);
 		if (nodeNum < 1 || nodeNum > numNodes)
 			return false;
 		tmpLink->SetNode(0, pNodeLookup[nodeNum]);
-		fread(&nodeNum, intSize, 1, fp);
+		quiet = fread(&nodeNum, intSize, 1, fp);
 		if (nodeNum < 1 || nodeNum > numNodes)
 			return false;
 		tmpLink->SetNode(1, pNodeLookup[nodeNum]);
@@ -964,7 +951,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	}
 
 	// Read traffic control information
-	fread(buffer,9, 1, fp);
+	quiet = fread(buffer,9, 1, fp);
 	if (strcmp(buffer, "Traffic:"))
 	{
 		fclose(fp);
@@ -975,7 +962,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	{
 		int id, numLinks;
 
-		fread(&id, intSize, 1, fp);  //node ID
+		quiet = fread(&id, intSize, 1, fp);  //node ID
 		// safety check
 		if (id < 1 || id > numNodes)
 		{
@@ -984,8 +971,8 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		}
 
 		tmpNode = pNodeLookup[id];
-		fread(&dummy, intSize, 1, fp);
-		fread(&numLinks, intSize, 1, fp);
+		quiet = fread(&dummy, intSize, 1, fp);
+		quiet = fread(&numLinks, intSize, 1, fp);
 
 		//get specifics for each link at the intersection:
 		for (j = 0; j < numLinks; j++)
@@ -994,9 +981,9 @@ bool vtRoadMap::ReadRMF(const char *filename,
 			IntersectionType type;
 			LightStatus lStatus;
 			//read in data
-			fread(&id, intSize, 1, fp);  //link ID
-			fread(&type, intSize, 1, fp);
-			fread(&lStatus, intSize, 1, fp);
+			quiet = fread(&id, intSize, 1, fp);  //link ID
+			quiet = fread(&type, intSize, 1, fp);
+			quiet = fread(&lStatus, intSize, 1, fp);
 			//now figure out which links at the node get what behavior
 			id = tmpNode->FindLink(id);
 			if (id >= 0)
@@ -1011,7 +998,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	delete [] pNodeLookup;
 
 	//are we at end of file?
-	fread(buffer,8, 1, fp);
+	quiet = fread(buffer,8, 1, fp);
 	fclose(fp);
 	if (strcmp(buffer, "End RMF"))
 		return false;
