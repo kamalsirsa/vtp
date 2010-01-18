@@ -20,11 +20,12 @@
 
 // ************** DConvert - DEM Helper function ****************
 
-double DConvert(FILE *fp, int length, bool bDebug=false)
+bool DConvert(FILE *fp, int length, double &value, bool bDebug=false)
 {
 	char szCharString[64];
 
-	fread(szCharString, length, 1, fp);
+	if (fread(szCharString, length, 1, fp) != 1)
+		return false;
 	szCharString[length] = 0;
 
 #ifndef _MSC_VER
@@ -36,22 +37,24 @@ double DConvert(FILE *fp, int length, bool bDebug=false)
 			szCharString[i] = 'E';
 #endif
 
-	double value = atof(szCharString);
+	value = atof(szCharString);
 
 	if (bDebug)
 		VTLOG(" DConvert '%s' -> %lf\n", szCharString, value);
 
-	return value;
+	return true;
 }
 
-int IConvert(FILE *fp, int length)
+bool IConvert(FILE *fp, int length, int &value)
 {
 	char szCharString[64];
 
-	fread(szCharString, length, 1, fp);
+	if (fread(szCharString, length, 1, fp) != 1)
+		return false;
 	szCharString[length] = 0;
 
-	return atoi(szCharString);
+	value = atoi(szCharString);
+	return true;
 }
 
 /**
@@ -81,7 +84,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	char buffer[158];
 
 	fseek(fp, 864, 0);
-	fread(buffer, 144, 1, fp);
+	if (fread(buffer, 144, 1, fp) != 1)
+		return false;
 	bool bOldFormat = (strncmp(buffer, "     1     1", 12) == 0);
 	bool bNewFormat = false;
 	bool bFixedLength = true;
@@ -93,8 +97,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	else
 	{
 		fseek(fp, 1024, 0);		// Check for New Format
-		iRow = IConvert(fp, 6);
-		iColumn = IConvert(fp, 6);
+		IConvert(fp, 6, iRow);
+		IConvert(fp, 6, iColumn);
 		if (iRow==1 && iColumn==1)	// File OK?
 		{
 			bNewFormat = true;
@@ -107,7 +111,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			// Record B is identified by starting with the row/column
 			//  of its first profile, "     1     1"
 			fseek(fp, 865, 0);
-			fread(buffer, 158, 1, fp);
+			if (fread(buffer, 158, 1, fp) != 1)
+				return false;
 			for (i = 0; i < 158-12; i++)
 			{
 				if (!strncmp(buffer+i, "     1     1", 12))
@@ -130,7 +135,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	// Read the embedded DEM name
 	char szName[41];
 	fseek(fp, 0, 0);
-	fgets(szName, 41, fp);
+	if (fgets(szName, 41, fp) == NULL)
+		return false;
 	int len = strlen(szName);	// trim trailing whitespace
 	while (len > 0 && szName[len-1] == ' ')
 	{
@@ -140,13 +146,17 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	m_strOriginalDEMName = szName;
 
 	fseek(fp, 156, 0);
-	int iCoordSystem = IConvert(fp, 6);
-	int iUTMZone = IConvert(fp, 6);
+	int iCoordSystem, iUTMZone;
+	IConvert(fp, 6, iCoordSystem);
+	IConvert(fp, 6, iUTMZone);
 
 	fseek(fp, 168, 0);
 	double dProjParams[15];
 	for (i = 0; i < 15; i++)
-		dProjParams[i] = DConvert(fp, 24, DEBUG_DEM);
+	{
+		if (!DConvert(fp, 24, dProjParams[i], DEBUG_DEM))
+			return false;
+	}
 
 	int iDatum = EPSG_DATUM_NAD27;	// default
 
@@ -156,7 +166,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		// year of data compilation
 		char szDateBuffer[5];
 		fseek(fp, 876, 0);		// 0x36C
-		fread(szDateBuffer, 4, 1, fp);
+		if (fread(szDateBuffer, 4, 1, fp) != 1)
+			return false;
 		szDateBuffer[4] = 0;
 
 		// Horizontal datum
@@ -167,7 +178,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		// 5=Old Hawaii Datum
 		// 6=Puerto Rico Datum
 		fseek(fp, 890, 0);	// 0x37A
-		int datum = IConvert(fp, 2);
+		int datum;
+		IConvert(fp, 2, datum);
 		VTLOG("DEM Reader: Read Datum Value %d\n", datum);
 		switch (datum)
 		{
@@ -181,8 +193,9 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	fseek(fp, 528, 0);
-	int iGUnit = IConvert(fp, 6);
-	int iVUnit = IConvert(fp, 6);
+	int iGUnit, iVUnit;
+	IConvert(fp, 6, iGUnit);
+	IConvert(fp, 6, iVUnit);
 
 	// Ground (Horizontal) Units in meters
 	double	fGMeters;
@@ -204,9 +217,10 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	fseek(fp, 816, 0);
-	DConvert(fp, 12, DEBUG_DEM);	// dxdelta (unused)
-	double dydelta = DConvert(fp, 12, DEBUG_DEM);
-	double dzdelta = DConvert(fp, 12, DEBUG_DEM);
+	double dxdelta, dydelta, dzdelta;
+	DConvert(fp, 12, dxdelta, DEBUG_DEM);	// dxdelta (unused)
+	DConvert(fp, 12, dydelta, DEBUG_DEM);
+	DConvert(fp, 12, dzdelta, DEBUG_DEM);
 
 	m_bFloatMode = false;
 
@@ -216,8 +230,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	fseek(fp, 546, 0);
 	for (i = 0; i < 4; i++)
 	{
-		corners[i].x = DConvert(fp, 24, DEBUG_DEM);
-		corners[i].y = DConvert(fp, 24, DEBUG_DEM);
+		DConvert(fp, 24, corners[i].x, DEBUG_DEM);
+		DConvert(fp, 24, corners[i].y, DEBUG_DEM);
 	}
 	for (i = 0; i < 4; i++)
 		VTLOG(" (%lf, %lf)", corners[i].x, corners[i].y);
@@ -314,12 +328,14 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	if (!bSuccessfulCRS)
 		return false;
 
-	double dElevMin = DConvert(fp, 24, DEBUG_DEM);
-	double dElevMax = DConvert(fp, 24, DEBUG_DEM);
+	double dElevMin, dElevMax;
+	DConvert(fp, 24, dElevMin, DEBUG_DEM);
+	DConvert(fp, 24, dElevMax, DEBUG_DEM);
 
 	fseek(fp, 852, 0);
-	IConvert(fp, 6);	// This "Rows" value will always be 1
-	int iProfiles = IConvert(fp, 6);
+	int iRows, iProfiles;
+	IConvert(fp, 6, iRows);	// This "Rows" value will always be 1
+	IConvert(fp, 6, iProfiles);
 	VTLOG("DEM profiles: %d\n", iProfiles);
 
 	m_iColumns = iProfiles;
@@ -360,14 +376,15 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 			// We cannot use IConvert here, because there *might* be a spurious LF
 			// after the number - seen in some rare files.
-			fscanf(fp, "%d", &iRow);
-			iColumn = IConvert(fp, 6);
+			if (fscanf(fp, "%d", &iRow) != 1)
+				return false;
+			IConvert(fp, 6, iColumn);
 			// assert(iColumn == i+1);
-			iProfileRows = IConvert(fp, 6);
-			iProfileCols = IConvert(fp, 6);
+			IConvert(fp, 6, iProfileRows);
+			IConvert(fp, 6, iProfileCols);
 
-			start.x = DConvert(fp, 24);
-			start.y = DConvert(fp, 24);
+			DConvert(fp, 24, start.x);
+			DConvert(fp, 24, start.y);
 			m_EarthExtents.GrowToContainPoint(start);
 			start.y += ((iProfileRows-1) * dydelta);
 			m_EarthExtents.GrowToContainPoint(start);
@@ -384,14 +401,15 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			}
 			else
 			{
-				dLocalDatumElev = DConvert(fp, 24);
-				dProfileMin = DConvert(fp, 24);
-				dProfileMax = DConvert(fp, 24);
+				DConvert(fp, 24, dLocalDatumElev);
+				DConvert(fp, 24, dProfileMin);
+				DConvert(fp, 24, dProfileMax);
 				for (j = 0; j < iProfileRows; j++)
 				{
 					// We cannot use IConvert here, because there *might* be a spurious LF
 					// after the number - seen in some rare files.
-					fscanf(fp, "%d", &iElev);
+					if (fscanf(fp, "%d", &iElev) != 1)
+						return false;
 				}
 			}
 		}
@@ -432,18 +450,19 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 		// We cannot use IConvert here, because there *might* be a spurious LF
 		// after the number - seen in some rare files.
-		fscanf(fp, "%d", &iRow);
-		iColumn = IConvert(fp, 6);
+		if (fscanf(fp, "%d", &iRow) != 1)
+			return false;
+		IConvert(fp, 6, iColumn);
 		//assert(iColumn == i+1);
 
-		iProfileRows = IConvert(fp, 6);
-		iProfileCols = IConvert(fp, 6);
+		IConvert(fp, 6, iProfileRows);
+		IConvert(fp, 6, iProfileCols);
 
-		start.x = DConvert(fp, 24);
-		start.y = DConvert(fp, 24);
-		dLocalDatumElev = DConvert(fp, 24);
-		dProfileMin = DConvert(fp, 24);
-		dProfileMax = DConvert(fp, 24);
+		DConvert(fp, 24, start.x);
+		DConvert(fp, 24, start.y);
+		DConvert(fp, 24, dLocalDatumElev);
+		DConvert(fp, 24, dProfileMin);
+		DConvert(fp, 24, dProfileMax);
 
 		ygap = (int)((start.y - dMinY)/dydelta);
 
@@ -453,7 +472,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 			// We cannot use IConvert here, because there *might* be a spurious LF
 			// after the number - seen in some rare files.
-			fscanf(fp, "%d", &iElev);
+			if (fscanf(fp, "%d", &iElev) != 1)
+				return false;
 			if (iElev == -32767 || iElev == -32768)
 				SetValue(i, j, INVALID_ELEVATION);
 			else
