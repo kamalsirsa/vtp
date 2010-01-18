@@ -330,7 +330,8 @@ bool vtElevationGrid::LoadFrom3TX(const char *szFileName,
 
 	// SW origin in integer degrees
 	int lon, lat;
-	fscanf(fp, "%d %d\n", &lat, &lon);
+	if (fscanf(fp, "%d %d\n", &lat, &lon) != 2)
+		return false;
 	DRECT ext(lon, lat+1, lon+1, lat);
 	SetEarthExtents(ext);
 
@@ -350,7 +351,8 @@ bool vtElevationGrid::LoadFrom3TX(const char *szFileName,
 			progress_callback(i * 100 / 1201);
 		for (int j = 0; j < 1201; j++)
 		{
-			fscanf(fp, "%d\n", &val);
+			if (fscanf(fp, "%hd\n", &val) != 1)
+				return false;
 			SetValue(i, j, val);
 		}
 	}
@@ -387,37 +389,51 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	bool bGo = true;
 	while (bGo)
 	{
-		fgets(buf, 4000, fp);
+		if (fgets(buf, 4000, fp) == NULL)
+			return false;
 		vtString four(buf, 4);
 
 		if (four.CompareNoCase("ncol") == 0)
-			sscanf(buf, "%s %d", token, &ncols);
-
+		{
+			if (sscanf(buf, "%s %d", token, &ncols) != 2)
+				return false;
+		}
 		else if (four.CompareNoCase("nrow") == 0)
-			sscanf(buf, "%s %d", token, &nrows);
-
+		{
+			if (sscanf(buf, "%s %d", token, &nrows) != 2)
+				return false;
+		}
 		else if (four.CompareNoCase("xllc") == 0)
-			sscanf(buf, "%s %lf", token, &xllcorner);
-
+		{
+			if (sscanf(buf, "%s %lf", token, &xllcorner) != 2)
+				return false;
+		}
 		else if (four.CompareNoCase("yllc") == 0)
-			sscanf(buf, "%s %lf", token, &yllcorner);
-
+		{
+			if (sscanf(buf, "%s %lf", token, &yllcorner) != 2)
+				return false;
+		}
 		else if (four.CompareNoCase("cell") == 0)
 		{
-			sscanf(buf, "%s %lf", token, &dCellsize);
+			if (sscanf(buf, "%s %lf", token, &dCellsize) != 2)
+				return false;
 			cellsize.x = dCellsize;
 			cellsize.y = dCellsize;
 		}
-
 		else if (four.CompareNoCase("xdim") == 0)
-			sscanf(buf, "%s %lf", token, &cellsize.x);
-
+		{
+			if (sscanf(buf, "%s %lf", token, &cellsize.x) != 2)
+				return false;
+		}
 		else if (four.CompareNoCase("ydim") == 0)
-			sscanf(buf, "%s %lf", token, &cellsize.y);
-
+		{
+			if (sscanf(buf, "%s %lf", token, &cellsize.y) != 2)
+				return false;
+		}
 		else if (four.CompareNoCase("noda") == 0)
 		{
-			sscanf(buf, "%s %lf", token, &nodata); // nodata_value
+			if (sscanf(buf, "%s %lf", token, &nodata) != 2) // nodata_value
+				return false;
 			bGo = false;
 		}
 		else
@@ -465,7 +481,8 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 		}
 		for (j = 0; j < ncols; j++)
 		{
-			fscanf(fp, "%f", &z);
+			if (fscanf(fp, "%f", &z) != 1)
+				return false;
 			if (i == 0)
 				VTLOG("(%f)", z);
 			if (z == nodata)
@@ -498,13 +515,15 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 		return false;
 
 	// get file identifier
-	fread(buf, 8, 1, fp);
+	if (fread(buf, 8, 1, fp) != 1)
+		return false;
 	if (strncmp(buf, "TERRAGEN", 8))
 	{
 		fclose(fp);
 		return false;
 	}
-	fread(buf, 8, 1, fp);
+	if (fread(buf, 8, 1, fp) != 1)
+		return false;
 	if (strncmp(buf, "TERRAIN ", 8))
 	{
 		fclose(fp);
@@ -526,45 +545,45 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 	{
 		if (!strncmp(buf, "SIZE", 4))
 		{
-			fread(&svalue, 2, 1, fp);
-			fread(&dummy, 2, 1, fp);
+			if (fread(&svalue, 2, 1, fp) != 1) return false;
+			if (fread(&dummy, 2, 1, fp) != 1) return false;
 			m_iRows = m_iColumns = svalue + 1;
 		}
 		else if (!strncmp(buf, "XPTS", 4))
 		{
-			fread(&svalue, 2, 1, fp);
-			fread(&dummy, 2, 1, fp);
+			if (fread(&svalue, 2, 1, fp) != 1) return false;
+			if (fread(&dummy, 2, 1, fp) != 1) return false;
 			m_iColumns = svalue;
 		}
 		else if (!strncmp(buf, "YPTS", 4))
 		{
-			fread(&svalue, 2, 1, fp);
-			fread(&dummy, 2, 1, fp);
+			if (fread(&svalue, 2, 1, fp) != 1) return false;
+			if (fread(&dummy, 2, 1, fp) != 1) return false;
 			m_iRows = svalue;
 		}
 		else if (!strncmp(buf, "SCAL", 4))
 		{
-			fread(&scale.x, 4, 1, fp);
-			fread(&scale.y, 4, 1, fp);
-			fread(&scale.z, 4, 1, fp);
+			if (fread(&scale.x, 4, 1, fp) != 1) return false;
+			if (fread(&scale.y, 4, 1, fp) != 1) return false;
+			if (fread(&scale.z, 4, 1, fp) != 1) return false;
 		}
 		else if (!strncmp(buf, "CRAD", 4))
 		{
 			// radius of planet
-			fread(&fvalue, 4, 1, fp);
+			if (fread(&fvalue, 4, 1, fp) != 1) return false;
 		}
 		else if (!strncmp(buf, "CRVM", 4))
 		{
 			// "curve mode"
-			fread(&svalue, 2, 1, fp);
-			fread(&dummy, 2, 1, fp);
+			if (fread(&svalue, 2, 1, fp) != 1) return false;
+			if (fread(&dummy, 2, 1, fp) != 1) return false;
 		}
 		else if (!strncmp(buf, "ALTW", 4))
 		{
 			short HeightScale;
 			short BaseHeight;
-			fread(&HeightScale, 2, 1, fp);
-			fread(&BaseHeight, 2, 1, fp);
+			if (fread(&HeightScale, 2, 1, fp) != 1) return false;
+			if (fread(&BaseHeight, 2, 1, fp) != 1) return false;
 
 			if (!_AllocateArray())
 				return false;
@@ -573,7 +592,7 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 				if (progress_callback != NULL) progress_callback(j*100/m_iRows);
 				for (i = 0; i < m_iColumns; i++)
 				{
-					fread(&svalue, 2, 1, fp);
+					if (fread(&svalue, 2, 1, fp) != 1) return false;
 					SetFValue(i, j, scale.z * (BaseHeight + ((float)svalue * HeightScale / 65536.0f)));
 				}
 			}
@@ -600,36 +619,39 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 // Helper for DTED reader: read an 8-byte number in the
 // form DDDMMSSH, degrees-minute-seconds-hemisphere
 //
-float get_dms8(FILE *fp)
+bool get_dms8(FILE *fp, double &value)
 {
 	char buf[8];
-	fread(buf, 8, 1, fp);
+	if (fread(buf, 8, 1, fp) != 1)
+		return false;
 
 	char hem = buf[7];
 	buf[7] = '\0';
-	float seconds = (float)atof(buf + 5);
+	double seconds = (double)atof(buf + 5);
 	buf[5] = '\0';
-	float minutes = (float)atof(buf + 3);
+	double minutes = (double)atof(buf + 3);
 	buf[3] = '\0';
-	float degrees = (float)atof(buf);
+	double degrees = (double)atof(buf);
 
-	float f = degrees + minutes/60 + seconds/3600;
-	if (hem == 'W') f = -f;
-	if (hem == 'S') f = -f;
+	value = degrees + minutes/60 + seconds/3600;
+	if (hem == 'W' || hem == 'S')
+		value = -value;
 
-	return f;
+	return true;
 }
 
 //
 // Helper for DTED reader: read an 4-byte number in the
 // return as integer
 //
-int get_dddd(FILE *fp)
+bool get_dddd(FILE *fp, int &value)
 {
 	char buf[5];
 	buf[4] = '\0';
-	fread(buf, 4, 1, fp);
-	return atoi(buf);
+	if (fread(buf, 4, 1, fp) != 1)
+		return false;
+	value = atoi(buf);
+	return true;
 }
 
 //
@@ -637,10 +659,12 @@ int get_dddd(FILE *fp)
 // form SSSS, decimal seconds
 // return as decimal degree
 //
-double get_ssss(FILE *fp)
+bool get_ssss(FILE *fp, double &value)
 {
-	double f = get_dddd(fp);
-	return f/36000;
+	int i;
+	if (!get_dddd(fp, i)) return false;
+	value = (double)i / 36000;
+	return true;
 }
 
 
@@ -684,7 +708,8 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 	// check for correct format
 	char buf[80];
 	int header = 0;
-	fread(buf, 4, 1, fp);
+	if (fread(buf, 4, 1, fp) != 1)
+		return false;
 	buf[4] = 0;
 	if (!strncmp(buf, "HDR1", 4))
 		header = 1;
@@ -702,10 +727,12 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 	if (header == 1)
 	{
 		// 4 bytes for 'HDR1'
-		fread(buf, 4, 1, fp);
+		if (fread(buf, 4, 1, fp) != 1)
+			return false;
 
 		// 17 bytes for 'Filename'
-		fread(buf, 17, 1, fp);
+		if (fread(buf, 17, 1, fp) != 1)
+			return false;
 		buf[17] = 0;
 
 		// 6 bytes always 'UNIVAC'
@@ -725,13 +752,14 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 	if (header == 2)
 	{
 		// 4 bytes for 'UHL1'
-		fread(buf, 4, 1, fp);
+		if (fread(buf, 4, 1, fp) != 1) return false;
 
-		m_Corners[0].x = get_dms8(fp);
-		m_Corners[0].y = get_dms8(fp);
+		get_dms8(fp, m_Corners[0].x);
+		get_dms8(fp, m_Corners[0].y);
 
-		double xInterval = get_ssss(fp);
-		double yInterval = get_ssss(fp);
+		double xInterval, yInterval;
+		get_ssss(fp, xInterval);
+		get_ssss(fp, yInterval);
 
 		// Skip over:
 		// 4 bytes Absolute Vertical Accuracy
@@ -740,8 +768,8 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 		fseek(fp, 4+3+12, SEEK_CUR);
 
 		// get dimensions
-		m_iColumns = get_dddd(fp);
-		m_iRows = get_dddd(fp);
+		get_dddd(fp, m_iColumns);
+		get_dddd(fp, m_iRows);
 
 		// imply other corners
 		m_Corners[1].x = m_Corners[0].x;
@@ -778,7 +806,8 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 		if (progress_callback != NULL)
 			progress_callback(i * 100 / m_iColumns);
 
-		fread(linebuf, line_length, 1, fp);
+		if (fread(linebuf, line_length, 1, fp) != 1)
+			return false;
 		if (*linebuf != 0252)	// sentinel = 252 base 8
 			break;
 
@@ -937,7 +966,8 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 		for (i = 0; i < m_iColumns; i++)
 		{
 			/*  FIXME:  there be byte order issues here.  See below in this routine.  */
-			fread(&z, sizeof(short), 1, fp);
+			if (fread(&z, sizeof(short), 1, fp) != 1)
+				return false;
 			if (gh.ByteOrder[0] == 'M')
 			{
 				// must swap byte order
@@ -1073,7 +1103,8 @@ bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
 		if (progress_callback != NULL) progress_callback(10 + j * 90 / m_iRows);
 		for (i = 0; i < m_iColumns; i++)
 		{
-			fread(&z, sizeof(short), 1, fp);
+			if (fread(&z, sizeof(short), 1, fp) != 1)
+				return false;
 			if (z == -500)	// 'unknown' generally used for ocean surface
 				z = 0;
 			SetValue(i, m_iRows-1-j, z);
@@ -1103,11 +1134,11 @@ bool vtElevationGrid::LoadFromDSAA(const char* szFileName, bool progress_callbac
 	double xlo, xhi, ylo, yhi, zlo, zhi;
 
 	char ch[100];
-	fscanf(fp, "%s\n", ch); // DSAA
-	fscanf(fp, "%d%d\n", &nx, &ny);
-	fscanf(fp, "%lf%lf\n", &xlo, &xhi);
-	fscanf(fp, "%lf%lf\n", &ylo, &yhi);
-	fscanf(fp, "%lf%lf\n", &zlo, &zhi);
+	if (fscanf(fp, "%s\n", ch) != 1) return false; // DSAA
+	if (fscanf(fp, "%d%d\n", &nx, &ny) != 2) return false;
+	if (fscanf(fp, "%lf%lf\n", &xlo, &xhi) != 2) return false;
+	if (fscanf(fp, "%lf%lf\n", &ylo, &yhi) != 2) return false;
+	if (fscanf(fp, "%lf%lf\n", &zlo, &zhi) != 2) return false;
 
 	// Set the projection (actually we don't know it)
 	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
@@ -1141,7 +1172,8 @@ bool vtElevationGrid::LoadFromDSAA(const char* szFileName, bool progress_callbac
 		}
 		for (x = 0; x < nx; x++)
 		{
-			fscanf(fp, "%f", &z);
+			if (fscanf(fp, "%f", &z) != 1)
+				return false;
 			if(z < zlo || z > zhi)
 				SetFValue(x,y,INVALID_ELEVATION);
 			else
@@ -1184,8 +1216,9 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 	double xlo, xhi, ylo, yhi, zlo, zhi;
 
 	// Parse the file, determine what kind of GRD it is
+	int quiet;
 	char szHeader[5];
-	fread(szHeader, 4, 1, fp);
+	quiet = fread(szHeader, 4, 1, fp);
 	bool bDSBB = !strncmp(szHeader, "DSBB", 4);
 	bool bDSRB = !strncmp(szHeader, "DSRB", 4);
 	bool bDSAA = !strncmp(szHeader, "DSAA", 4);
@@ -1196,49 +1229,49 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 		short nx2, ny2;
 
 		/*  FIXME:  there be byte order issues here.  See below in this routine.  */
-		fread(&nx2, 2, 1, fp);
-		fread(&ny2, 2, 1, fp);
+		quiet = fread(&nx2, 2, 1, fp);
+		quiet = fread(&ny2, 2, 1, fp);
 		nx = nx2;
 		ny = ny2;
 
-		fread(&xlo, 8, 1, fp);
-		fread(&xhi, 8, 1, fp);
-		fread(&ylo, 8, 1, fp);
-		fread(&yhi, 8, 1, fp);
-		fread(&zlo, 8, 1, fp);
-		fread(&zhi, 8, 1, fp);
+		quiet = fread(&xlo, 8, 1, fp);
+		quiet = fread(&xhi, 8, 1, fp);
+		quiet = fread(&ylo, 8, 1, fp);
+		quiet = fread(&yhi, 8, 1, fp);
+		quiet = fread(&zlo, 8, 1, fp);
+		quiet = fread(&zhi, 8, 1, fp);
 	}
 	else if (bDSRB) //DSRB format, Surfer 7
 	{
 		int size = 0L; // size of header
-		fread(&size, 4, 1, fp); //needs to be 4
+		quiet = fread(&size, 4, 1, fp); //needs to be 4
 		long id = 0L;
-		fread(&id, 4, 1, fp); //needs to be 1
+		quiet = fread(&id, 4, 1, fp); //needs to be 1
 		char tag[5];
-		fread(&tag, 4, 1, fp); //nedds to be "GRID"
-		fread(&size, 4, 1, fp); // size in bytes of grid section
+		quiet = fread(&tag, 4, 1, fp); //nedds to be "GRID"
+		quiet = fread(&size, 4, 1, fp); // size in bytes of grid section
 
-		fread(&ny, 4, 1, fp);	// Yes, the Y coordinate *does* come first!
-		fread(&nx, 4, 1, fp);
-		fread(&xlo, 8, 1, fp);
-		fread(&ylo, 8, 1, fp);
+		quiet = fread(&ny, 4, 1, fp);	// Yes, the Y coordinate *does* come first!
+		quiet = fread(&nx, 4, 1, fp);
+		quiet = fread(&xlo, 8, 1, fp);
+		quiet = fread(&ylo, 8, 1, fp);
 
 		double xsize;
-		fread(&xsize, 8, 1, fp);
+		quiet = fread(&xsize, 8, 1, fp);
 		xhi = xlo + xsize*nx;
 		double ysize;
-		fread(&ysize, 8, 1, fp);
+		quiet = fread(&ysize, 8, 1, fp);
 		yhi = ylo + ysize*ny;
 
-		fread(&zlo, 8, 1, fp);
-		fread(&zhi, 8, 1, fp);
+		quiet = fread(&zlo, 8, 1, fp);
+		quiet = fread(&zhi, 8, 1, fp);
 
 		double rotation;
-		fread(&rotation, 8, 1, fp);
+		quiet = fread(&rotation, 8, 1, fp);
 		double blankValue;
-		fread(&blankValue, 8, 1, fp);
-		fread(&tag, 4, 1, fp); // should be "DATA"
-		fread(&size, 4, 1, fp);
+		quiet = fread(&blankValue, 8, 1, fp);
+		quiet = fread(&tag, 4, 1, fp); // should be "DATA"
+		quiet = fread(&size, 4, 1, fp);
 		assert(size/sizeof(double) == nx*ny);
 	}
 	else if (bDSAA) //DSAA format
@@ -1288,7 +1321,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 			if (bDSRB) //DSRB format
 			{
 				double dz;
-				fread(&dz, 8, 1, fp);
+				quiet = fread(&dz, 8, 1, fp);
 				z = (float)dz;
 
 				if(z < zlo || z > zhi)
@@ -1298,7 +1331,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 			}
 			else
 			{
-				fread(&z, 4, 1, fp);
+				quiet = fread(&z, 4, 1, fp);
 
 				if(z < zlo || z > zhi)
 					z = INVALID_ELEVATION;
@@ -1367,11 +1400,12 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 	DRECT ext;
 	double x, y;
 	bool bArcSeconds = false;
+	int quiet;
 	while ((fscanf(fp, "%s", sbuf) != EOF) && sbuf[0] == '#')
 	{
 		// comment
-		fscanf(fp,"%[^\n]", sbuf);  // read comment beyond '#'
-		fscanf(fp,"%[\n]", dummy);  // read newline
+		quiet = fscanf(fp,"%[^\n]", sbuf);  // read comment beyond '#'
+		quiet = fscanf(fp,"%[\n]", dummy);  // read newline
 		char *buf = sbuf+1;	// skip leading space after '#'
 		if (!strncmp(buf, "DEM", 3) || !strncmp(buf, "BOX", 3))
 		{
@@ -1397,7 +1431,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 		else if (!strncmp(buf, "SW corner", 9))
 		{
 			char units[99];
-			sscanf(buf+10, "%lf/%lf %s", &x, &y, units);
+			quiet = sscanf(buf+10, "%lf/%lf %s", &x, &y, units);
 			ext.left = x;
 			ext.bottom = y;
 			// check units, might be arcseconds or degrees
@@ -1406,7 +1440,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 		}
 		else if (!strncmp(buf, "NE corner", 9))
 		{
-			sscanf(buf+10, "%lf/%lf", &x, &y);
+			quiet = sscanf(buf+10, "%lf/%lf", &x, &y);
 			ext.right = x;
 			ext.top = y;
 		}
@@ -1418,8 +1452,8 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 
 	int xsize, ysize, maxval;
 	xsize = atoi(sbuf);		// store xsize of array
-	fscanf(fp,"%d\n",&ysize);		// read ysize of array
-	fscanf(fp,"%d",&maxval);		// read maxval of array
+	quiet = fscanf(fp,"%d\n",&ysize);		// read ysize of array
+	quiet = fscanf(fp,"%d",&maxval);		// read maxval of array
 	// Be careful here with the last LF!
 	// Simply calling fscanf(fp,"\n") sometimes eats 2 characters.
 	int cr = fgetc(fp);
@@ -1499,7 +1533,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 			{
 				if (maxval == 32767 || maxval == 65535)
 				{
-					fread(&twob, sizeof(short), 1, fp);
+					quiet = fread(&twob, sizeof(short), 1, fp);
 					twob = SwapShort(twob);
 					if (twob == missing_value)
 						twob = INVALID_ELEVATION;
@@ -1507,7 +1541,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 				}
 				else
 				{
-					fread(&oneb, sizeof(unsigned char), 1, fp);
+					quiet = fread(&oneb, sizeof(unsigned char), 1, fp);
 					SetFValue(i, ysize-1-j, oneb);
 				}
 			}
@@ -1523,7 +1557,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 			if (progress_callback != NULL) progress_callback(j * 100 / ysize);
 			for (int i = 0; i < xsize; i++)
 			{
-				fscanf(fp, "%s", sbuf);
+				quiet = fscanf(fp, "%s", sbuf);
 				a = strtod(sbuf, &junk);
 				SetFValue(i, ysize-1-j, (float)a);
 			}
@@ -2161,6 +2195,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 
 	int i, j, z;
 	void *data = &z;
+	int quiet;
 	for (j = 0; j < m_iRows; j++)
 	{
 		if (progress_callback != NULL)
@@ -2176,7 +2211,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 		{
 			if (bytes_per_element == 1)
 			{
-				fread(data, 1, 1, fp);
+				quiet = fread(data, 1, 1, fp);
 				SetValue(i, m_iRows-1-j, *((unsigned char *)data));
 			}
 			if (bytes_per_element == 2)
@@ -2221,7 +2256,8 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_cal
 		return false;
 
 	char buf[40];
-	fread(buf, 9, 1, fp);
+	if (fread(buf, 9, 1, fp) != 1)
+		return false;
 	if (strncmp(buf, "*MICRODEM", 9))
 	{
 		// not MicroDEM format
@@ -2230,12 +2266,13 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_cal
 	}
 
 	// Find offsets to header and data
+	int quiet;
 	fseek(fp, 14, SEEK_SET);
-	fread(buf, 5, 1, fp);
+	quiet = fread(buf, 5, 1, fp);
 	buf[5] = '\0';
 	int offset_to_header = atoi(buf);
 	fseek(fp, 36, SEEK_SET);
-	fread(buf, 5, 1, fp);
+	quiet = fread(buf, 5, 1, fp);
 	buf[5] = '\0';
 	int offset_to_data = atoi(buf);
 
@@ -2256,28 +2293,28 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_cal
 	int i, j;
 
 	fseek(fp, offset_to_header, SEEK_SET);
-	fread(&xsize, 2, 1, fp);
-	fread(&ysize, 2, 1, fp);
-	fread(buf, 3, 1, fp);			// "OSquareID"
-	fread(&max_elev, 2, 1, fp);
-	fread(&min_elev, 2, 1, fp);
-	fread(&yspacing, 1, 1, fp);		// N-S data point spacing, in sec, min, or m
-	fread(&xspacing, 1, 1, fp);		// E-W data point spacing, in sec, min, or m
-	fread(buf, 20, 1, fp);			// unused
-	fread(&utm_x_lowerleft, 4, 1, fp);
-	fread(&utm_y_lowerleft, 4, 1, fp);
-	fread(&elev_unit_type, 1, 1, fp);	// (Meters, Feet, TenthMgal,
+	quiet = fread(&xsize, 2, 1, fp);
+	quiet = fread(&ysize, 2, 1, fp);
+	quiet = fread(buf, 3, 1, fp);			// "OSquareID"
+	quiet = fread(&max_elev, 2, 1, fp);
+	quiet = fread(&min_elev, 2, 1, fp);
+	quiet = fread(&yspacing, 1, 1, fp);		// N-S data point spacing, in sec, min, or m
+	quiet = fread(&xspacing, 1, 1, fp);		// E-W data point spacing, in sec, min, or m
+	quiet = fread(buf, 20, 1, fp);			// unused
+	quiet = fread(&utm_x_lowerleft, 4, 1, fp);
+	quiet = fread(&utm_y_lowerleft, 4, 1, fp);
+	quiet = fread(&elev_unit_type, 1, 1, fp);	// (Meters, Feet, TenthMgal,
 		// Milligal, TenthGamma, Decimeters, Gammas, HundredthMGal, DeciFeet,
 		// Centimeters, OtherElev, HundredthMa, HundredthPercentSlope,
 		// Undefined, zDegrees, UndefinedHundredth
-	fread(buf, 8, 1, fp);			// unused
-	fread(&utm_zone, 1, 1, fp);
-	fread(&dem_type, 1, 1, fp);		// 0 = UTM DEM, 1 = ArcSecond DEM
-	fread(&spacing_unit, 1, 1, fp);	// Meters,Seconds,Minutes,KM,100m,Feet
+	quiet = fread(buf, 8, 1, fp);			// unused
+	quiet = fread(&utm_zone, 1, 1, fp);
+	quiet = fread(&dem_type, 1, 1, fp);		// 0 = UTM DEM, 1 = ArcSecond DEM
+	quiet = fread(&spacing_unit, 1, 1, fp);	// Meters,Seconds,Minutes,KM,100m,Feet
 		// KFeet,Degrees,HundredthSecond,MercProj100m,PolarStereo100m,100
-	fread(&digitize_datum, 1, 1, fp);	// (WGS72, WGS84, NAD27, NAD83, Spherical, Local)
-	fread(buf, 12, 1, fp);			// unused
-	fread(&hemi, 1, 1, fp);			// hemisphere 'N' or 'S'
+	quiet = fread(&digitize_datum, 1, 1, fp);	// (WGS72, WGS84, NAD27, NAD83, Spherical, Local)
+	quiet = fread(buf, 12, 1, fp);			// unused
+	quiet = fread(&hemi, 1, 1, fp);			// hemisphere 'N' or 'S'
 	// rest of header unused
 
 	// Read data
@@ -2371,7 +2408,8 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_cal
 		if (progress_callback != NULL) progress_callback(i * 100 / xsize);
 		for (j = 0; j < ysize; j++)
 		{
-			fread(&elev, 2, 1, fp);
+			if (fread(&elev, 2, 1, fp) != 1)
+				return false;
 			if (elev == 32767)
 				SetValue(i, j, INVALID_ELEVATION);
 			else
@@ -2428,7 +2466,8 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 
 	// first, test if we are comma or space delimited
 	char firstline[256];
-	fgets(firstline, 256, fp);
+	if (fgets(firstline, 256, fp) == NULL)
+		return false;
 	float a, b, c, d;
 	int count1 = sscanf(firstline, "%f,%f,%f,%f\n", &a, &b, &c, &d);
 	int count2 = sscanf(firstline, "%f %f %f %f\n", &a, &b, &c, &d);
@@ -3002,7 +3041,7 @@ bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(
 
 			z = GetFValue(j, m_iRows-1-i);
 			if (z == INVALID_ELEVATION)
-				fprintf(fp, " %d", nodata);
+				fprintf(fp, " %d", (int) nodata);
 			else
 			{
 				if (bWriteIntegers)
