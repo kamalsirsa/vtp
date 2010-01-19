@@ -1,5 +1,5 @@
 /* XPM */
-static char *view_options_xpm[] = {
+static const char *view_options_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "21 21 13 1",
 "  c black",

@@ -1,5 +1,5 @@
 /* XPM */
-static char *proj_save_xpm[] = {
+static const char *proj_save_xpm[] = {
 /* width height num_colors chars_per_pixel */
 "    20    20       16            1",
 /* colors */

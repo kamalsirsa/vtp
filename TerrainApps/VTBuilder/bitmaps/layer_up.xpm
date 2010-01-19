@@ -1,5 +1,5 @@
 /* XPM */
-static char *layer_up_xpm[] = {
+static const char *layer_up_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "20 20 16 1",
 "  c black",

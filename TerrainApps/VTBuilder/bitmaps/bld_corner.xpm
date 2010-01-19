@@ -1,5 +1,5 @@
 /* XPM */
-static char *bld_corner_xpm[] = {
+static const char *bld_corner_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "20 20 16 1",
 "  c black",
