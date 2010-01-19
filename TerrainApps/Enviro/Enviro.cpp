@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2010 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1945,8 +1945,15 @@ void Enviro::OnMouseRightDown(vtMouseEvent &event)
 {
 	if (m_mode == MM_BUILDINGS && m_bLineDrawing)
 	{
+		VTLOG1("OnMouseRightDown, closing building polygon\n");
+
 		// Hide the temporary markers which showed the vertices
 		PolygonSelectionClose();
+
+		VTLOG1(" Polygon:");
+		for (unsigned int i = 0; i < m_NewLine.GetSize(); i++)
+			VTLOG(" (%lf %lf)", m_NewLine[i].x, m_NewLine[i].y);
+		VTLOG1("\n");
 
 		// Close and create new building in the current structure array
 		vtTerrain *pTerr = GetCurrentTerrain();
@@ -2343,8 +2350,10 @@ void Enviro::PolygonSelectionClose()
 
 void Enviro::start_new_fence()
 {
+	VTLOG1("start_new_fence");
 	vtFence3d *fence = new vtFence3d;
 	fence->SetParams(m_FenceParams);
+	VTLOG1(" calling AddFence\n");
 	if (GetCurrentTerrain()->AddFence(fence))
 	{
 		m_pCurFence = fence;
@@ -2358,11 +2367,13 @@ void Enviro::start_new_fence()
 
 void Enviro::finish_fence()
 {
+	VTLOG1("finish_fence\n");
 	m_bActiveFence = false;
 }
 
 void Enviro::close_fence()
 {
+	VTLOG1("close_fence\n");
 	if (m_bActiveFence && m_pCurFence)
 	{
 		DLine2 &pts = m_pCurFence->GetFencePoints();
@@ -2378,6 +2389,7 @@ void Enviro::close_fence()
 
 void Enviro::SetFenceOptions(const vtLinearParams &param, bool bProfileChanged)
 {
+	VTLOG1("SetFenceOptions\n");
 	m_FenceParams = param;
 
 	vtTerrain *pTerr = GetCurrentTerrain();

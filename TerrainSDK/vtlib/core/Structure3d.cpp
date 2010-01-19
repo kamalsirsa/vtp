@@ -1,7 +1,7 @@
 //
 // Structure3d.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2010 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -528,7 +528,7 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 
 void vtMaterialDescriptorArray3d::CreateMaterials()
 {
-	VTLOG("Creating Materials:\n");
+	VTLOG1("Creating Materials:\n");
 	clock_t clock1 = clock();
 
 	m_bMaterialsCreated = true;
