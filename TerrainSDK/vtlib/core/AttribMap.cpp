@@ -4,7 +4,7 @@
 // This class gives you the ability to load in a colored bitmap representating
 // a geographical coverage, and query it for attribute given a world coordinate.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2010 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -44,21 +44,21 @@ bool AttribMap::Load(const char *fname_att, const char *fname_bmp)
 	if (!fp)
 		return false;
 
-	fscanf(fp, "west: %d\n", &m_xmin);
-	fscanf(fp, "east: %d\n", &m_xmax);
-	fscanf(fp, "south: %d\n", &m_ymin);
-	fscanf(fp, "north: %d\n", &m_ymax);
+	if (fscanf(fp, "west: %d\n", &m_xmin) != 1) return false;
+	if (fscanf(fp, "east: %d\n", &m_xmax) != 1) return false;
+	if (fscanf(fp, "south: %d\n", &m_ymin) != 1) return false;
+	if (fscanf(fp, "north: %d\n", &m_ymax) != 1) return false;
 
 	char buf[80];
 	int att;
 	unsigned int rgb;
 
-	fscanf(fp, "types: %d\n", &m_iNumAttribs);
+	if (fscanf(fp, "types: %d\n", &m_iNumAttribs) != 1) return false;
 	m_AttribTable = new AttribTableEntry[m_iNumAttribs];
 	for (int i = 0; i < m_iNumAttribs; i++)
 	{
-		fgets(buf, 80, fp);
-		sscanf(buf, "type %d %x ", &att, &rgb);
+		if (fgets(buf, 80, fp) == NULL) return false;
+		if (sscanf(buf, "type %d %x ", &att, &rgb) != 2) return false;
 		m_AttribTable[i].attrib = att-1;
 		m_AttribTable[i].rgb = rgb;
 	}

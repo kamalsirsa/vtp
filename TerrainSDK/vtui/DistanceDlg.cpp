@@ -372,7 +372,7 @@ void DistanceDlg::OnLoadPath( wxCommandEvent &event )
 		DPoint2 p;
 		DLine2 line;
 
-		vtString vs = str.mb_str(wxConvUTF8);
+		vtString vs = (const char *) str.mb_str(wxConvUTF8);
 		FILE *fp = vtFileOpen(vs, "rb");
 		if (fp != NULL)
 		{

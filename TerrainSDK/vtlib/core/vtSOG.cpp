@@ -340,7 +340,7 @@ bool InputSOG::Read(FILE *fp, short &token, short &len)
 bool InputSOG::ReadBool(FILE *fp)
 {
 	char c;
-	fread(&c, 1, 1, fp);
+	int quiet = fread(&c, 1, 1, fp);
 	return (c == 1);
 }
 
@@ -352,11 +352,12 @@ vtMaterial *InputSOG::ReadMaterial(FILE *fp)
 	RGBf rgb;
 	bool b;
 	int i;
+	int quiet;
 
 	Read(fp, token, len);
 
 	assert(token == FT_MATERIAL);
-	fread(&components, 2, 1, fp);
+	quiet = fread(&components, 2, 1, fp);
 	vtMaterial *pMat = new vtMaterial;
 
 	for (i = 0; i < components; i++)
@@ -367,19 +368,19 @@ vtMaterial *InputSOG::ReadMaterial(FILE *fp)
 		switch (token)
 		{
 		case FT_DIFFUSE:
-			fread(&rgba, sizeof(RGBAf), 1, fp);
+			quiet = fread(&rgba, sizeof(RGBAf), 1, fp);
 			pMat->SetDiffuse1(rgba);
 			break;
 		case FT_SPECULAR:
-			fread(&rgb, sizeof(RGBf), 1, fp);
+			quiet = fread(&rgb, sizeof(RGBf), 1, fp);
 			pMat->SetSpecular1(rgb);
 			break;
 		case FT_AMBIENT:
-			fread(&rgb, sizeof(RGBf), 1, fp);
+			quiet = fread(&rgb, sizeof(RGBf), 1, fp);
 			pMat->SetAmbient1(rgb);
 			break;
 		case FT_EMISSION:
-			fread(&rgb, sizeof(RGBf), 1, fp);
+			quiet = fread(&rgb, sizeof(RGBf), 1, fp);
 			pMat->SetEmission1(rgb);
 			break;
 		case FT_CULLING:
@@ -414,27 +415,28 @@ vtMesh *InputSOG::ReadMesh(FILE *fp)
 	RGBf rgb;
 	FPoint2 uv;
 	vtArray<short> Index;
+	int quiet;
 
 	Read(fp, token, len);
 	assert(token == FT_MESH);
-	fread(&components, 2, 1, fp);
+	quiet = fread(&components, 2, 1, fp);
 
 	// first 8 components are required
 	Read(fp, token, len);
 	assert(token == FT_VTX_FLAGS);
-	fread(&vtype, 2, 1, fp);
+	quiet = fread(&vtype, 2, 1, fp);
 
 	Read(fp, token, len);
 	assert(token == FT_PRIM_TYPE);
-	fread(&ptype, 2, 1, fp);
+	quiet = fread(&ptype, 2, 1, fp);
 
 	Read(fp, token, len);
 	assert(token == FT_MAT_INDEX);
-	fread(&matidx, 2, 1, fp);
+	quiet = fread(&matidx, 2, 1, fp);
 
 	Read(fp, token, len);
 	assert(token == FT_NUM_VERTICES);
-	fread(&verts, 2, 1, fp);
+	quiet = fread(&verts, 2, 1, fp);
 
 	// we now have enough information to start mesh construction
 	vtMesh *pMesh = new vtMesh((vtMesh::PrimType)ptype, vtype, verts);
@@ -442,16 +444,16 @@ vtMesh *InputSOG::ReadMesh(FILE *fp)
 
 	Read(fp, token, len);
 	assert(token == FT_NUM_INDICES);
-	fread(&indices, 2, 1, fp);
+	quiet = fread(&indices, 2, 1, fp);
 	Index.SetSize(indices);
 
 	Read(fp, token, len);
 	assert(token == FT_NUM_PRIMITIVES);
-	fread(&prims, 2, 1, fp);
+	quiet = fread(&prims, 2, 1, fp);
 
 	Read(fp, token, len);
 	assert(token == FT_VTX_COMPONENTS);
-	fread(&vcomponents, 2, 1, fp);
+	quiet = fread(&vcomponents, 2, 1, fp);
 
 	Read(fp, token, len);
 	assert(token == FT_VTX_ARRAY);
@@ -464,19 +466,19 @@ vtMesh *InputSOG::ReadMesh(FILE *fp)
 			switch (token)
 			{
 			case FT_VTX_POS:
-				fread(&p, sizeof(FPoint3), 1, fp);
+				quiet = fread(&p, sizeof(FPoint3), 1, fp);
 				pMesh->SetVtxPos(i, p);
 				break;
 			case FT_VTX_NORMAL:
-				fread(&p, sizeof(FPoint3), 1, fp);
+				quiet = fread(&p, sizeof(FPoint3), 1, fp);
 				pMesh->SetVtxNormal(i, p);
 				break;
 			case FT_VTX_COLOR:
-				fread(&rgb, sizeof(RGBf), 1, fp);
+				quiet = fread(&rgb, sizeof(RGBf), 1, fp);
 				pMesh->SetVtxColor(i, rgb);
 				break;
 			case FT_VTX_COORD1:
-				fread(&uv, sizeof(FPoint2), 1, fp);
+				quiet = fread(&uv, sizeof(FPoint2), 1, fp);
 				pMesh->SetVtxTexCoord(i, uv);
 				break;
 			default:
@@ -493,14 +495,14 @@ vtMesh *InputSOG::ReadMesh(FILE *fp)
 		switch (token)
 		{
 		case FT_INDEX_ARRAY:
-			fread(Index.GetData(), 2, indices, fp);
+			quiet = fread(Index.GetData(), 2, indices, fp);
 			break;
 
 		case FT_PRIM_LEN_ARRAY:
 			unsigned short *indices = (unsigned short *)Index.GetData();
 			for (j = 0; j < prims; j++)
 			{
-				fread(&len, 2, 1, fp);
+				quiet = fread(&len, 2, 1, fp);
 				pMesh->AddStrip(len, indices);
 				indices += len;
 			}
@@ -516,9 +518,10 @@ bool InputSOG::ReadContents(FILE *fp, vtGroup *Parent)
 	int j;
 	char buf[5];
 	short num_mat, num_geom, version;
+	int quiet;
 
 	// read file type identifier
-	fread(buf, 4, 1, fp);
+	quiet = fread(buf, 4, 1, fp);
 	buf[4] = 0;
 	if (strcmp(buf, SOG_HEADER))
 		return false;
@@ -527,13 +530,13 @@ bool InputSOG::ReadContents(FILE *fp, vtGroup *Parent)
 	Read(fp, token, len);
 	if (token != FT_VERSION)
 		return false;
-	fread(&version, 2, 1, fp);
+	quiet = fread(&version, 2, 1, fp);
 
 	// read materials
 	Read(fp, token, len);
 	if (token != FT_NUM_MATERIALS)
 		return false;
-	fread(&num_mat, 2, 1, fp);
+	quiet = fread(&num_mat, 2, 1, fp);
 
 	vtMaterialArray	*pMats = new vtMaterialArray;
 	vtMaterial *pMat;
@@ -548,7 +551,7 @@ bool InputSOG::ReadContents(FILE *fp, vtGroup *Parent)
 	Read(fp, token, len);
 	if (token != FT_NUM_GEOMETRIES)
 		return false;
-	fread(&num_geom, 2, 1, fp);
+	quiet = fread(&num_geom, 2, 1, fp);
 	for (j = 0; j < num_geom; j++)
 	{
 		vtGeom *pGeom = ReadGeometry(fp, pMats);
@@ -564,10 +567,11 @@ vtGeom *InputSOG::ReadGeometry(FILE *fp, vtMaterialArray *pMats)
 	short num_mesh, components;
 	short token, len, i, j;
 //	bool eof = false;
+	int quiet;
 
 	Read(fp, token, len);
 	assert(token == FT_GEOMETRY);
-	fread(&components, 2, 1, fp);
+	quiet = fread(&components, 2, 1, fp);
 
 	vtGeom *pGeom = new vtGeom;
 	vtMesh *pMesh;
@@ -581,7 +585,7 @@ vtGeom *InputSOG::ReadGeometry(FILE *fp, vtMaterialArray *pMats)
 		switch (token)
 		{
 		case FT_NUM_MESHES:
-			fread(&num_mesh, 2, 1, fp);
+			quiet = fread(&num_mesh, 2, 1, fp);
 			for (j = 0; j < num_mesh; j++)
 			{
 				pMesh = ReadMesh(fp);

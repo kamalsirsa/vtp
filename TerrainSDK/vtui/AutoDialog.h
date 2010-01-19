@@ -8,6 +8,10 @@
 #ifndef AUTODIALOGH
 #define AUTODIALOGH
 
+#if wxUSE_VALIDATORS != 1
+#error "wx was not configured with support for validators"
+#endif
+
 #include <wx/valgen.h>
 
 #ifndef NUMERIC_VALIDATOR
