@@ -1,7 +1,7 @@
 //
 // Import.cpp - MainFrame methods for importing data
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2010 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -390,17 +390,19 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 		// Get type from DB file
 		for (int i = 0; i < 10; i++)
 		{
-			int type;
 			char buf[80];
-			fgets(buf, 80, fp);
-			if (!strncmp(buf, "type", 4))
+			if (fgets(buf, 80, fp) != NULL)
 			{
-				sscanf(buf, "type=%d", &type);
-				if (type == 1 || type == 2)
-					ltype = LT_ELEVATION;
-				else if (type == 3 || type == 4)
-					ltype = LT_IMAGE;
-				break;
+				if (!strncmp(buf, "type", 4))
+				{
+					int type;
+					sscanf(buf, "type=%d", &type);
+					if (type == 1 || type == 2)
+						ltype = LT_ELEVATION;
+					else if (type == 3 || type == 4)
+						ltype = LT_IMAGE;
+					break;
+				}
 			}
 		}
 	}
@@ -1036,10 +1038,12 @@ void Builder::ImportFromMapSource(const char *fname)
 	bool bGotSRS = false;
 	vtProjection proj;
 
-	fgets(buf, 200, fp);
+	if (fgets(buf, 200, fp) == NULL)
+		return;
 	if (!strncmp(buf+5, "UTM", 3))
 		bUTM = true;
-	fgets(buf, 200, fp); // assume "Datum   WGS 84"
+	if (fgets(buf, 200, fp) == NULL) // assume "Datum   WGS 84"
+		return;
 
 	char ch;
 	int i;
@@ -1315,7 +1319,8 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 
 	char buf[4096];
 	vtStringArray fieldnames;
-	fgets(buf, 4096, fp);
+	if (fgets(buf, 4096, fp) == NULL)
+		return NULL;
 	Tokenize(buf, ",", fieldnames);
 	int iFields = (int)fieldnames.size();
 	if (iFields == 0)

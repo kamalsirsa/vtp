@@ -1,7 +1,7 @@
 //
 // vtImage.cpp
 //
-// Copyright (c) 2002-2009 Virtual Terrain Project
+// Copyright (c) 2002-2010 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -992,11 +992,12 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 	int coord_datum = 0;
 	DRECT ext;
 	double x, y;
+	int quiet;
 	while ((fscanf(fp, "%s", sbuf) != EOF) && sbuf[0] == '#')
 	{
 		// comment
-		fscanf(fp,"%[^\n]", sbuf);  // read comment beyond '#'
-		fscanf(fp,"%[\n]", dummy);  // read newline
+		quiet = fscanf(fp,"%[^\n]", sbuf);  // read comment beyond '#'
+		quiet = fscanf(fp,"%[\n]", dummy);  // read newline
 		char *buf = sbuf+1;	// skip leading space after '#'
 		if (!strncmp(buf, "DEM", 3))
 		{
@@ -1038,9 +1039,9 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 	}
 
 	int iXSize = atoi(sbuf);		// store xsize of array
-	fscanf(fp,"%s",sbuf);		// read ysize of array
+	quiet = fscanf(fp,"%s",sbuf);		// read ysize of array
 	int iYSize = atoi(sbuf);
-	fscanf(fp,"%s\n",sbuf);		// read maxval of array
+	quiet = fscanf(fp,"%s\n",sbuf);		// read maxval of array
 	int maxval = atoi(sbuf);
 
 	// set the corresponding vtElevationGrid info
@@ -1108,7 +1109,7 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 		if (progress_callback != NULL)
 			progress_callback(j * 100 / iYSize);
 
-		fread(line, line_length, 1, fp);
+		quiet = fread(line, line_length, 1, fp);
 
 		for (int i = 0; i < iXSize; i++)
 			pBitmap->SetPixel24(i, j, line[i*3+0], line[i*3+1], line[i*3+2]);

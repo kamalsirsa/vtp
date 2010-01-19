@@ -1,7 +1,7 @@
 //
 // The main Frame window of the VTBuilder application
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2010 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -593,7 +593,7 @@ bool MainFrame::ReadINI(const char *fname)
 		CastShadows, ShadeDot=0, Angle=30, Direction=45;
 	float Ambient = 0.1f;
 	float Gamma = 0.8f;
-	fscanf(fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f", &ShowMap,
+	int quiet = fscanf(fpIni, "%d %d %d %d %d %d %d %d %d %d %d %f %f", &ShowMap,
 		&ShowElev, &ShadeQuick, &DoMask, &DoUTM, &ShowPaths, &DrawWidth,
 		&CastShadows, &ShadeDot, &Angle, &Direction, &Ambient, &Gamma);
 

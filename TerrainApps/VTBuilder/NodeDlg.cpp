@@ -1,19 +1,15 @@
 //
 // Name: NodeDlg.cpp
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2010 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
-
-#ifdef __GNUG__
-	#pragma implementation "NodeDlg.cpp"
-#endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#ifdef __BORLANDC__
-	#pragma hdrstop
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
 #endif
 
 #include "NodeDlg.h"

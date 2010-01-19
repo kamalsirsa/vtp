@@ -1,7 +1,7 @@
 //
 // Builder.cpp: The main Builder class of the VTBuilder
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2010 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -213,10 +213,13 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 			for (int i = 0; i < count; i++)
 			{
 				bool bShow = true, bImport = false;
+				int iType;
 
 				char buf2[200], buf3[200];
-				fgets(buf, 200, fp);
-				int num = sscanf(buf, "type %d, %s %s", &ltype, buf2, buf3);
+				if (fgets(buf, 200, fp) == NULL)
+					return false;
+				int num = sscanf(buf, "type %d, %s %s", &iType, buf2, buf3);
+				ltype = (LayerType)iType;
 
 				if (!strcmp(buf2, "import"))
 					bImport = true;
@@ -224,7 +227,8 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 					bShow = false;
 
 				// next line is the path
-				fgets(buf, 200, fp);
+				if (fgets(buf, 200, fp) == NULL)
+					return false;
 
 				// trim trailing LF character
 				trim_eol(buf);
