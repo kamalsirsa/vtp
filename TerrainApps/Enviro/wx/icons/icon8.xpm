@@ -1,5 +1,5 @@
 /* XPM */
-static char *icon8_xpm[] = {
+static const char *icon8_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "16 16 3 1",
 "  c black",

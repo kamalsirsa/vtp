@@ -1,5 +1,5 @@
 /* XPM */
-static char *sgraph_xpm[] = {
+static const char *sgraph_xpm[] = {
 /* width height ncolors chars_per_pixel */
 "20 20 3 1",
 /* colors */

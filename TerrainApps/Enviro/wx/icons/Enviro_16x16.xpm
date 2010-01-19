@@ -1,5 +1,5 @@
 /* XPM */
-static char *Enviro_xpm[] = {
+static const char *Enviro_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "16 16 6 1",
 "  c navy",

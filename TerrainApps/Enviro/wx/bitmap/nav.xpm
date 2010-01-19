@@ -1,5 +1,5 @@
 /* XPM */
-static char *nav_xpm[] = {
+static const char *nav_xpm[] = {
 /* width height ncolors chars_per_pixel */
 "20 20 2 1",
 /* colors */
