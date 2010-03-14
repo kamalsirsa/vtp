@@ -24,7 +24,7 @@
 //		http://curl.haxx.se/libcurl/
 //
 #ifndef SUPPORT_CURL
-#define SUPPORT_CURL	0
+#define SUPPORT_CURL	1
 #endif
 
 // Use the NetCDF library, which adds support for the "CDF" file format,
