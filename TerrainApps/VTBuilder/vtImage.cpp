@@ -283,15 +283,27 @@ void LineBufferGDAL::ReadScanline(int iYRequest, int bufrow, int overview)
 		RGBi rgb;
 		for(int ixBlock = 0; ixBlock < nxBlocks; ixBlock++)
 		{
-			Err = band1->ReadBlock(ixBlock, iyBlock, m_pRedBlock);
-			if (Err != CE_None)
-				throw "Readblock failed.";
-			Err = band2->ReadBlock(ixBlock, iyBlock, m_pGreenBlock);
-			if (Err != CE_None)
-				throw "Readblock failed.";
-			Err = band3->ReadBlock(ixBlock, iyBlock, m_pBlueBlock);
-			if (Err != CE_None)
-				throw "Readblock failed.";
+			try {
+				Err = band1->ReadBlock(ixBlock, iyBlock, m_pRedBlock);
+				if (Err != CE_None)
+					throw "Readblock (red) failed";
+				Err = band2->ReadBlock(ixBlock, iyBlock, m_pGreenBlock);
+				if (Err != CE_None)
+					throw "Readblock (green) failed";
+				Err = band3->ReadBlock(ixBlock, iyBlock, m_pBlueBlock);
+				if (Err != CE_None)
+					throw "Readblock (blue) failed";
+			}
+			catch (const char *msg)
+			{
+				VTLOG1(msg);
+				VTLOG(" in ReadScanline(y=%d) (XSize %d, YSize %d, yBlock %d, yBlockSize %d, yBlocks %d)\n",
+					iYRequest, m_iXSize, m_iYSize, iyBlock, yBlockSize, nyBlocks);
+
+				// Posible TODO: Fill the buffer with some fixed value, like
+				//  black, before returning
+				return;
+			}
 
 			m_blockreads += 3;	// statistics
 
