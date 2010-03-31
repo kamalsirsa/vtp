@@ -1151,6 +1151,7 @@ void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 	AddType(filter, FSTRING_DBF);	// old-style database
 	AddType(filter, FSTRING_CSV);	// comma-separated values
 	AddType(filter, FSTRING_XYZ);	// space-separated X Y Z
+	AddType(filter, FSTRING_ENZI);	// space-separated East North Z i
 
 	wxFileDialog loadFile(NULL, _("Import Point Data"), _T(""), _T(""),
 		filter, wxFD_OPEN);

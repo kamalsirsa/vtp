@@ -540,6 +540,20 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 				pLayer = NULL;
 			}
 		}
+		else if (!strExt.CmpNoCase(_T("xyz")) ||
+				 !strExt.CmpNoCase(_T("enzi")))
+		{
+			vtFeatureSet *pSet = ImportPointsFromXYZ(fname, progress_callback);
+			if (pSet)
+			{
+				vtRawLayer *pRaw = new vtRawLayer;
+				pRaw->SetLayerFilename(strFileName);
+				pRaw->SetFeatureSet(pSet);
+				// Adopt existing CRS
+				pRaw->SetProjection(m_proj);
+				pLayer = pRaw;
+			}
+		}
 		else if (!strExt.CmpNoCase(_T("bcf")))
 		{
 			pLayer = ImportFromBCF(strFileName);
@@ -1439,6 +1453,7 @@ vtFeatureSet *Builder::ImportPointsFromXYZ(const char *fname, bool progress_call
 		p.z = atof(values[2]);
 		int record = pSet->AddPoint(p);
 	}
+	fclose(fp);
 	pSet->SetFilename(fname);
 	return pSet;
 }
@@ -1455,7 +1470,7 @@ void Builder::ImportDataPointsFromTable(const char *fname, bool progress_callbac
 		pSet = ImportPointsFromDBF(fname);
 	else if (!ext.CompareNoCase(".csv"))
 		pSet = ImportPointsFromCSV(fname);
-	else if (!ext.CompareNoCase(".xyz"))
+	else if (!ext.CompareNoCase(".xyz") || !ext.CompareNoCase(".enzi"))
 		pSet = ImportPointsFromXYZ(fname, progress_callback);
 	else
 		return;
