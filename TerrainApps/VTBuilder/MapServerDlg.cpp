@@ -1,7 +1,7 @@
 //
 // Name: MapServerDlg.cpp
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2010 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,7 @@
 #if SUPPORT_CURL
 #include "vtdata/WFSClient.h"
 #endif
+#include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for progress dialog
 #include "FileFilters.h"	// for FSTRING filters
 #include "Helper.h"
@@ -142,10 +143,14 @@ void MapServerDlg::OnRadio( wxCommandEvent &event )
 void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 {
 #if SUPPORT_CURL
+	VTLOG1("OnQueryLayers\n");
 	OpenProgressDialog(_("Querying server..."), false, this);
 
 	wxString val = GetBaseUrl()->GetValue();
 	vtString url = (const char *) val.mb_str(wxConvUTF8);
+
+	VTLOG("  from URL: %s\n", (const char *)url);
+
 	vtString msg;
 	bool success = GetLayersFromWMS(url, m_pServers->at(m_iServer).m_layers,
 		msg, progress_callback);
@@ -160,6 +165,7 @@ void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 	}
 	else
 	{
+		VTLOG("Error: '%s'\n", (const char *)msg);
 		wxString str(msg, wxConvUTF8);
 		wxMessageBox(str);
 	}

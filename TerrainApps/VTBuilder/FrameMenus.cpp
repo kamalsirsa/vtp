@@ -2369,6 +2369,8 @@ void MainFrame::OnAreaRequestWFS(wxCommandEvent& event)
 
 void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 {
+	VTLOG1("OnAreaRequestWMS\n");
+
 	if (m_wms_servers.empty())
 	{
 		// supply some hardcoded well-known servers
@@ -2400,10 +2402,12 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 	}
 	FILE *fp;
 	wxString str;
+	vtString fname;
 	if (m_pMapServerDlg->m_bToFile)
 	{
 		// Very simple: just write the buffer to disk
-		fp = vtFileOpen(m_pMapServerDlg->m_strToFile.mb_str(wxConvUTF8), "wb");
+		fname = m_pMapServerDlg->m_strToFile.mb_str(wxConvUTF8);
+		fp = vtFileOpen(fname, "wb");
 		if (!fp)
 		{
 			str = _("Could not open file");
@@ -2416,11 +2420,16 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 	}
 
 	// Bring down the WMS data
+	VTLOG1("  Requesting data\n");
 	OpenProgressDialog(_("Requesting data"), false, this);
+
+	vtString url = m_pMapServerDlg->m_strQueryURL.mb_str(wxConvUTF8);
+	VTLOG("  URL: %s\n", (const char *)url);
+
 	ReqContext rc;
 	rc.SetProgressCallback(progress_callback);
 	vtBytes data;
-	bool success = rc.GetURL(m_pMapServerDlg->m_strQueryURL.mb_str(wxConvUTF8), data);
+	bool success = rc.GetURL(url, data);
 	CloseProgressDialog();
 
 	if (!success)
@@ -2439,6 +2448,8 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		// So show it to the user.
 		unsigned char ch = 0;
 		data.Append(&ch, 1);
+		VTLOG1("  Got response: ");
+		VTLOG1((const char*) data.Get());
 		str = wxString((const char*) data.Get(), wxConvUTF8);
 		wxMessageBox(str);
 		return;
@@ -2446,6 +2457,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 
 	if (m_pMapServerDlg->m_bNewLayer)
 	{
+		VTLOG1("  Creating new layer\n");
 		// Now data contains the PNG file in memory, so parse it.
 		vtImageLayer *pIL = new vtImageLayer;
 		success = pIL->GetImage()->ReadPNGFromMemory(data.Get(), data.Len());
@@ -2460,6 +2472,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 	}
 	if (m_pMapServerDlg->m_bToFile)
 	{
+		VTLOG("  Writing %d bytes to file '%s'\n", data.Len(), (const char *)fname);
 		fwrite(data.Get(), data.Len(), 1, fp);
 		fclose(fp);
 	}
