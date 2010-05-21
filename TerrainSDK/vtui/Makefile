@@ -11,8 +11,9 @@ include $(VTP_ROOT)/Make.defs
 OBJS := $(filter-out HeightDlg.o,$(OBJS))
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
-	-I$(GDAL_INC) \
-	-I$(TERRAIN_SDK_DIR)
+	 -I$(GDAL_INC) \
+	 -I$(QUIKGRID_INC) \
+	 -I$(TERRAIN_SDK_DIR)
 
 
 ifeq ($(OS), Darwin)

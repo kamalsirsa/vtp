@@ -8,8 +8,9 @@ LIB_NAME = libvtdata
 include $(VTP_ROOT)/Make.defs
 
 IFLAGS = -I./shapelib \
-         -I$(NETCDF_INC) \
-         -I$(GDAL_INC) \
+	 -I$(NETCDF_INC) \
+	 -I$(GDAL_INC) \
+	 -I$(QUIKGRID_INC) \
 	 -I$(VTP_ROOT)/TerrainSDK/
 
 HEADERS = $(CHEAD) $(CXXHEAD) ./shapelib

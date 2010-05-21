@@ -7,24 +7,23 @@ EXEC = CManager
 include $(VTP_ROOT)/Make.defs
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
-	  -I$(TERRAIN_SDK_DIR) \
-	  -I$(OSG_INC) \
-	  -I$(GDAL_INC)
+	 -I$(TERRAIN_SDK_DIR) \
+	 -I$(OSG_INC) \
+	 -I$(GDAL_INC)
 ifneq ($(OS),Darwin)
 IFLAGS += -I$(X_INC)
 endif
 
-LDIRS  = \
-	  $(VTDATA_INST_DIR)     \
-	  $(VTOSG_INST_DIR)      \
-	  $(VTUI_INST_DIR)       \
-	  $(XMLHELPER_INST_DIR)  \
-	  $(UNZIP_INST_DIR)      \
-	  $(OSG_LIB)             \
-	  $(SHAPE_LIB)           \
-	  $(PNG_LIB)             \
-	  $(GDAL_LIB)            \
-	  $(EXTRA_LDIRS)
+LDIRS  = $(VTDATA_INST_DIR)     \
+	 $(VTOSG_INST_DIR)      \
+	 $(VTUI_INST_DIR)       \
+	 $(XMLHELPER_INST_DIR)  \
+	 $(UNZIP_INST_DIR)      \
+	 $(OSG_LIB)             \
+	 $(SHAPE_LIB)           \
+	 $(PNG_LIB)             \
+	 $(GDAL_LIB)            \
+	 $(EXTRA_LDIRS)
 ifneq ($(OS),Darwin)
 LDIRS += $(X_LIB)
 endif
@@ -64,17 +63,11 @@ LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg -lminidata \
 	-losg -losgDB -losgUtil -losgText -losgParticle -losgShadow -lOpenThreads
 endif
 
-ifeq ($(SUPPORT_NETCDF),1)
-	LIBS += -lnetcdf
-endif
 ifeq ($(SUPPORT_HTTP),1)
 	LIBS += -lcurl
 endif
 ifeq ($(SUPPORT_BZIP2),1)
 	LIBS += -lbz2
-endif
-ifeq ($(SUPPORT_SQUISH),1)
-	LIBS += -lsquish
 endif
 
 LDIR   +=\

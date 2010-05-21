@@ -7,10 +7,16 @@
 #    here are some examples:
 #       SUPPORT_NETCDF = 0
 #       SUPPORT_SQUISH = 1
+#       SUPPORT_QUIKGRID = 1
+#       LOCALBASE = /usr/local
 #       GDAL_BASE = /usr/local/gdal
 #       OSG_BASE = /usr/local/osg
 #       MINI_INC = $(VTP_ROOT)/../deps
 #       MINI_LIB = $(VTP_ROOT)/../deps/mini/libMini.a
+#       SQUISH_INC = $(VTP_ROOT)/../deps/squish
+#       SQUISH_LIB = $(VTP_ROOT)/../deps/squish
+#       QUIKGRID_INC = $(VTP_ROOT)/../deps/quikgrid/core
+#       QUIKGRID_LIB = $(VTP_ROOT)/../deps/quikgrid/core
 #----------------------------------------------------------------------------
 -include $(HOME)/.vtp-user.defs
 
@@ -112,6 +118,9 @@ NETCDF_LIB = $(LOCALBASE)/lib
 
 MINI_INC ?= $(LOCALBASE)/include
 MINI_LIB ?= $(LOCALBASE)/lib/libMini.a
+
+SQUISH_INC ?= $(LOCALBASE)/include
+SQUISH_LIB ?= $(LOCALBASE)/lib/
 
 GDAL_BASE ?= $(LOCALBASE)
 GDAL_INC   = $(GDAL_BASE)/include
@@ -309,6 +318,9 @@ ifeq ($(OS),Darwin)
 		    $(XMLHELPER_OPTS) \
 		    $(VTDATA_OPTS) \
 		    $(VTUI_OPTS)
+   ifeq ($(SUPPORT_QUIKGRID),1)
+        VTUI_LINK_OPTS += -L$(QUIKGRID_LIB) -lquikgrid
+   endif
 
    VTOSG_LINK_OPTS =  $(OSG_OPTS) \
                       $(COMMON_OPTS) \
@@ -316,7 +328,11 @@ ifeq ($(OS),Darwin)
 		      $(XMLHELPER_OPTS)\
 		      $(VTDATA_OPTS) \
 		      $(MINIDATA_OPTS) \
-		      $(MINI_LIB) -lz -lbz2
+		      $(MINI_LIB) \
+		      -lz -lbz2
+   ifeq ($(SUPPORT_QUIKGRID),1)
+        VTOSG_LINK_OPTS += -L$(QUIKGRID_LIB) -lquikgrid
+   endif
 
    #
    # The default rule for building an *.app package.  Requires the

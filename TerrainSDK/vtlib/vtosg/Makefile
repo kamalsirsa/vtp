@@ -13,10 +13,12 @@ override OBJS = $(CXXSRC:%.cpp=%.o)
 HEADERS += $(wildcard ../core/*.h) $(wildcard ../core/*.hpp)
 
 IFLAGS = -I$(TERRAIN_SDK_DIR) \
-         -I$(VTLIB_DIR)       \
-         -I$(PNG_INC)         \
+	 -I$(VTLIB_DIR)       \
+	 -I$(PNG_INC)         \
 	 -I$(OSG_INC)         \
 	 -I$(MINI_INC)        \
+	 -I$(SQUISH_INC)      \
+	 -I$(QUIKGRID_INC)    \
 	 -I$(GDAL_INC)        \
 	 -I$(APIS_DIR)        \
 	 -I$(X_INC)

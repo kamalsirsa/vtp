@@ -7,28 +7,27 @@ EXEC = Enviro
 include $(VTP_ROOT)/Make.defs
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
-	  -I$(TERRAIN_SDK_DIR)       \
-	  -I$(OSG_INC)               \
-	  -I$(GDAL_INC)              \
-	  -I$(MINI_INC)              \
-	  -I$(TERRAIN_APPS_DIR)/Enviro/wx/bitmap \
-	  -I$(TERRAIN_APPS_DIR)/Enviro/wx/icons
+	 -I$(TERRAIN_SDK_DIR)       \
+	 -I$(OSG_INC)               \
+	 -I$(GDAL_INC)              \
+	 -I$(MINI_INC)              \
+	 -I$(SQUISH_INC)            \
+	 -I$(TERRAIN_APPS_DIR)/Enviro/wx/bitmap \
+	 -I$(TERRAIN_APPS_DIR)/Enviro/wx/icons
 ifneq ($(OS),Darwin)
 IFLAGS += -I$(X_INC)
 endif
 
-LDIRS  = \
-	  $(VTDATA_INST_DIR)     \
-	  $(VTOSG_INST_DIR)      \
-	  $(VTUI_INST_DIR)       \
-	  $(XMLHELPER_INST_DIR)  \
-	  $(UNZIP_INST_DIR)      \
-	  $(OSG_LIB)             \
-	  $(SHAPE_LIB)           \
-	  $(PNG_LIB)             \
-	  $(GDAL_LIB)            \
-	  $(NETCDF_LIB)          \
-	  $(EXTRA_LDIRS)
+LDIRS  = $(VTDATA_INST_DIR)         \
+	 $(VTOSG_INST_DIR)          \
+	 $(VTUI_INST_DIR)           \
+	 $(XMLHELPER_INST_DIR)      \
+	 $(UNZIP_INST_DIR)          \
+	 $(OSG_LIB)                 \
+	 $(SHAPE_LIB)               \
+	 $(PNG_LIB)                 \
+	 $(GDAL_LIB)                \
+	 $(EXTRA_LDIRS)
 ifneq ($(OS),Darwin)
 LDIRS += $(X_LIB)
 endif
@@ -66,17 +65,11 @@ LIBS   +=  -lxmlhelper -lunzip -lvtdata -lvtui -lvtosg -lminidata $(MINI_LIB) -l
 	 -losg -losgDB -losgUtil -losgText -losgParticle -losgShadow -lOpenThreads
 endif
 
-ifeq ($(SUPPORT_NETCDF),1)
-	LIBS += -lnetcdf
-endif
 ifeq ($(SUPPORT_HTTP),1)
 	LIBS += -lcurl
 endif
 ifeq ($(SUPPORT_BZIP2),1)
 	LIBS += -lbz2
-endif
-ifeq ($(SUPPORT_SQUISH),1)
-	LIBS += -lsquish
 endif
 
 LDIRS   +=\

@@ -7,20 +7,21 @@ EXEC   = VTBuilder
 include $(VTP_ROOT)/Make.defs
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
-	  -I$(GDAL_INC)              \
-	  -I$(MINI_INC)              \
-	  -I$(TERRAIN_SDK_DIR)       \
-	  -I$(TERRAIN_APPS_DIR)/VTBuilder/bitmaps \
-	  -I$(TERRAIN_APPS_DIR)/VTBuilder/icons
+	 -I$(GDAL_INC)              \
+	 -I$(MINI_INC)              \
+	 -I$(SQUISH_INC)            \
+	 -I$(QUIKGRID_INC)          \
+	 -I$(TERRAIN_SDK_DIR)       \
+	 -I$(TERRAIN_APPS_DIR)/VTBuilder/bitmaps \
+	 -I$(TERRAIN_APPS_DIR)/VTBuilder/icons
 ifneq ($(OS),Darwin)
 IFLAGS += -I$(X_INC)
 endif
 
-LDIRS  = \
-	  $(SHAPE_LIB)                   \
-	  $(GDAL_LIB)                    \
-	  $(PNG_LIB)                     \
-	  $(EXTRA_LDIRS)
+LDIRS  = $(SHAPE_LIB)               \
+	 $(GDAL_LIB)                \
+	 $(PNG_LIB)                 \
+	 $(EXTRA_LDIRS)
 ifneq ($(OS),Darwin)
 LDIRS += $(X_LIB)
 endif
@@ -57,7 +58,7 @@ LIBS   +=  -lGL -lX11 $(EXTRA_LIBS) \
 endif
 
 ifeq ($(SUPPORT_NETCDF),1)
-	LIBS += -lnetcdf
+	LIBS += -L(NETCDF_LIB) -lnetcdf
 endif
 ifeq ($(SUPPORT_HTTP),1)
 	LIBS += -lcurl
@@ -66,10 +67,10 @@ ifeq ($(SUPPORT_BZIP2),1)
 	LIBS += -lbz2
 endif
 ifeq ($(SUPPORT_SQUISH),1)
-	LIBS += -lsquish
+	LIBS += -L$(SQUISH_LIB) -lsquish
 endif
 ifeq ($(SUPPORT_QUIKGRID),1)
-	LIBS += -lquikgrid
+	LIBS += -L$(QUIKGRID_LIB) -lquikgrid
 endif
 
 LDIRS  += \
