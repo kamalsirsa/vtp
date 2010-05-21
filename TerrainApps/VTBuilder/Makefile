@@ -58,7 +58,7 @@ LIBS   +=  -lGL -lX11 $(EXTRA_LIBS) \
 endif
 
 ifeq ($(SUPPORT_NETCDF),1)
-	LIBS += -L(NETCDF_LIB) -lnetcdf
+	LIBS += -L$(NETCDF_LIB) -lnetcdf
 endif
 ifeq ($(SUPPORT_HTTP),1)
 	LIBS += -lcurl
