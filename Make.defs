@@ -122,6 +122,9 @@ MINI_LIB ?= $(LOCALBASE)/lib/libMini.a
 SQUISH_INC ?= $(LOCALBASE)/include
 SQUISH_LIB ?= $(LOCALBASE)/lib/
 
+QUIKGRID_INC ?= $(LOCALBASE)/include
+QUIKGRID_LIB ?= $(LOCALBASE)/lib/
+
 GDAL_BASE ?= $(LOCALBASE)
 GDAL_INC   = $(GDAL_BASE)/include
 GDAL_LIB   = $(GDAL_BASE)/lib
