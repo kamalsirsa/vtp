@@ -8,7 +8,7 @@ set(ENVIRO_SOURCE_FILES_WX
 	wx/canvas.cpp wx/enviro_wdr.cpp wx/EnviroApp.cpp wx/EnviroFrame.cpp wx/EnviroGUI.cpp wx/StatusBar.cpp)
 	
 set(ENVIRO_HEADER_FILES
-	CarEngine.h Engines.h Enviro.h enviroenum.h Hawaii.h Nevada.h Options.h PlantingOptions.h SpecificTerrain.h Vehicles.h)
+	CarEngine.h Engines.h Enviro.h EnviroEnum.h Hawaii.h Nevada.h Options.h PlantingOptions.h SpecificTerrain.h Vehicles.h)
 	
 set(ENVIRO_HEADER_FILES_WX
 	wx/canvas.h wx/enviro_wdr.h wx/EnviroApp.h wx/EnviroFrame.h wx/EnviroGUI.h wx/menu_id.h wx/StatusBar.h wx/TextureDlg.h
@@ -34,7 +34,7 @@ if(BUILD_ENVIRO_OSG)
 	endif(MSVC)
 
 	# Internal dependencies for this target
-	add_dependencies(enviro_osg envdlg minidata vtdata vtlib_osg vtui xmlhelper)
+	target_link_libraries(enviro_osg envdlg vtlib_osg vtui minidata vtdata xmlhelper)
 
 	# Specify common preprocessor definitions for this target
 	set_property(TARGET enviro_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
@@ -94,11 +94,8 @@ if(BUILD_ENVIRO_OSG)
 endif(BUILD_ENVIRO_OSG)
 
 # Set up include directories for all targets at this level
-include_directories(${TERRAIN_SDK_ROOT})
-
-if(wxWidgets_FOUND)
-	include_directories(${wxWidgets_INCLUDE_DIRS})
-endif(wxWidgets_FOUND)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/wx/icons)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/wx/bitmap)
 
 if(GDAL_FOUND)
 	include_directories(${GDAL_INCLUDE_DIR})
@@ -118,3 +115,8 @@ find_path(GLEXT_INCLUDE_DIR GL/glext.h DOC "Directory containing GL/glext.h")
 if (GLEXT_INCLUDE_DIR)
 	include_directories(${GLEXT_INCLUDE_DIR})
 endif (GLEXT_INCLUDE_DIR)
+
+if(wxWidgets_FOUND)
+	include(${wxWidgets_USE_FILE})
+endif(wxWidgets_FOUND)
+

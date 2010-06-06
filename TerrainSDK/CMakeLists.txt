@@ -1,3 +1,5 @@
+include_directories(${TERRAIN_SDK_ROOT} ${TERRAIN_SDK_ROOT}/vtlib)
+
 add_subdirectory(xmlhelper)
 add_subdirectory(unzip)
 add_subdirectory(minidata)

@@ -18,7 +18,7 @@ endif(MSVC)
 include_directories(${TERRAIN_SDK_ROOT})
 
 if(wxWidgets_FOUND)
-	include_directories(${wxWidgets_INCLUDE_DIRS})
+	include(${wxWidgets_USE_FILE})
 endif(wxWidgets_FOUND)
 
 if(GDAL_FOUND)
@@ -35,9 +35,7 @@ endif(QUIKGRID_FOUND)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET vtui APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1)
+	set_property(TARGET vtui APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 endif (WIN32)
 
-# Specify debug preprocessor definitions for this target
-set_property(TARGET vtui APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 

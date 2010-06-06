@@ -2,14 +2,12 @@
 if(BUILD_GLUTSIMPLE_OSG)
 	add_executable(glutSimple_osg ${ENVIRO_SOURCE_FILES} app.cpp)
 
-	# Internal dependencies for this target
-	add_dependencies(glutSimple_osg minidata vtdata vtlib_osg xmlhelper)
+	# Internal library dependencies for this target
+	target_link_libraries(glutSimple_osg minidata vtdata vtlib_osg xmlhelper)
 
 	# Specify common preprocessor definitions for this target
 	set_property(TARGET glutSimple_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
 
-	# Specify debug preprocessor definitions for this target
-	set_property(TARGET glutSimple_osg APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 
 	# Windows specific stuff
 	if (WIN32)
@@ -54,13 +52,11 @@ if(BUILD_GLUTSIMPLE_OSG)
 endif(BUILD_GLUTSIMPLE_OSG)
 
 # Set up include directories for all targets at this level
-include_directories(${TERRAIN_SDK_ROOT})
-
-if(BUILD_ENVIRO_OSG) 
+if(BUILD_GLUTSIMPLE_OSG) 
 	if(OSG_FOUND)
 		include_directories(${OSG_INCLUDE_DIR})
 	endif(OSG_FOUND)
-endif(BUILD_ENVIRO_OSG)
+endif(BUILD_GLUTSIMPLE_OSG)
 
 find_path(GLUT_INCLUDE_DIR GL/glut.h DOC "Directory containing GL/glut.h")
 if (GLUT_INCLUDE_DIR)

@@ -14,28 +14,27 @@ if(BUILD_CMANAGER_OSG)
 		set_source_files_properties(${CMANAGER_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 		set_source_files_properties(pre.cpp PROPERTIES COMPILE_FLAGS /Ycwx/wxprec.h)
 	else(MSVC)
-		add_executable(cmanager_osg WIN32 ${ENVIRO_SOURCE_FILES} ${ENVIRO_SOURCE_FILES_WX} ${ENVIRO_HEADER_FILES}
-			${ENVIRO_HEADER_FILES_WX} ${ENVIRO_RC_FILES})
+		add_executable(cmanager_osg WIN32 ${CMANAGER_SOURCE_FILES} ${CMANAGER_HEADER_FILES}
+			${CMANAGER_RC_FILES})
 	endif(MSVC)
 
-	# Internal dependencies for this target
-	add_dependencies(cmanager_osg vtlib_osg vtdata vtui xmlhelper)
+	# Internal library dependencies for this target
+	target_link_libraries(cmanager_osg vtlib_osg vtdata vtui xmlhelper minidata)
 
 	# Specify common preprocessor definitions for this target
 	set_property(TARGET cmanager_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
 
 	# Windows specific stuff
 	if (WIN32)
-		set_property(TARGET cmanager_osg APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1 wxUSE_NO_MANIFEST=1)
+		set_property(TARGET cmanager_osg APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 		set_property(TARGET cmanager_osg APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
 		set_property(TARGET cmanager_osg APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
 	endif (WIN32)
 
-	# Specify debug preprocessor definitions for this target
-	set_property(TARGET cmanager_osg APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 
 	# External libraries for this target
 	if(wxWidgets_FOUND)
+		include(${wxWidgets_USE_FILE})
 		target_link_libraries(cmanager_osg ${wxWidgets_LIBRARIES})
 	endif(wxWidgets_FOUND)
 
@@ -63,15 +62,18 @@ if(BUILD_CMANAGER_OSG)
 		target_link_libraries(cmanager_osg ${PNG_LIBRARY})
 	endif(PNG_FOUND)
 	
+	find_library(MINI_LIBRARY libMini DOC "Path to libMini")
+	if(MINI_LIBRARY)
+		target_link_libraries(cmanager_osg ${MINI_LIBRARY})
+	endif(MINI_LIBRARY)
+
+	if(CURL_FOUND)
+		target_link_libraries(cmanager_osg ${CURL_LIBRARY})
+	endif(CURL_FOUND)
+
 endif(BUILD_CMANAGER_OSG)
 
 # Set up include directories for all targets at this level
-include_directories(${TERRAIN_SDK_ROOT})
-
-if(wxWidgets_FOUND)
-	include_directories(${wxWidgets_INCLUDE_DIRS})
-endif(wxWidgets_FOUND)
-
 if(GDAL_FOUND)
 	include_directories(${GDAL_INCLUDE_DIR})
 endif(GDAL_FOUND)

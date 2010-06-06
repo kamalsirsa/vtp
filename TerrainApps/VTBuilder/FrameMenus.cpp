@@ -1052,7 +1052,7 @@ void MainFrame::OnUpdateMRUImport(wxUpdateUIEvent& event)
 	UpdateMRU(mruImportMenu, m_ImportFiles, ID_FIRST_MRU_IMPORT);
 	event.Enable(m_ImportFiles.size() > 0);
 }
-	
+
 void MainFrame::OnUpdateLayerProperties(wxUpdateUIEvent& event)
 {
 	event.Enable(GetActiveLayer() != NULL);
@@ -2423,7 +2423,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 	VTLOG1("  Requesting data\n");
 	OpenProgressDialog(_("Requesting data"), false, this);
 
-	vtString url = m_pMapServerDlg->m_strQueryURL.mb_str(wxConvUTF8);
+	vtString url = (const char*)m_pMapServerDlg->m_strQueryURL.mb_str(wxConvUTF8);
 	VTLOG("  URL: %s\n", (const char *)url);
 
 	ReqContext rc;

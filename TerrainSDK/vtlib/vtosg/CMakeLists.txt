@@ -12,10 +12,10 @@ if(MSVC)
 	set_source_files_properties(${VTLIB_CORE_SOURCE_FILES} ${VTLIB_OSG_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuvtlib/vtlib.h)
 	set_source_files_properties(../pre.cpp PROPERTIES COMPILE_FLAGS /Ycvtlib/vtlib.h)
 else(MSVC)
-	add_library(vtlib_osg ${VTLIB_CORE_SOURCE_FILES} ${VTLIB_CORE_HEADER_FILES} ${VTLIB_OSG_SOURCE_FILES} ${VTLIB_OSG_HEADER_FILES})
+	add_library(vtlib_osg ${VTLIB_CORE_SOURCE_FILES} ${VTLIB_CORE_SOURCE_FILES_NON_PCH} ${VTLIB_CORE_HEADER_FILES}
+	${VTLIB_OSG_SOURCE_FILES} ${VTLIB_OSG_HEADER_FILES})
 endif(MSVC)
 
-include_directories(${TERRAIN_SDK_ROOT} ${TERRAIN_SDK_ROOT}/vtlib)
 
 if(GDAL_FOUND)
 	include_directories(${GDAL_INCLUDE_DIR})
@@ -40,14 +40,17 @@ if (MINI_INCLUDE_DIR)
 	include_directories(${MINI_INCLUDE_DIR})
 endif (MINI_INCLUDE_DIR)
 
+# Find the directory containing GL/glext.h
+find_path(GLEXT_INCLUDE_DIR GL/glext.h DOC "Directory containing GL/glext.h")
+if (GLEXT_INCLUDE_DIR)
+	# Add the glext include directory to the compilers search path 
+	include_directories(${GLEXT_INCLUDE_DIR})
+endif (GLEXT_INCLUDE_DIR)
+
 # Windows specific stuff
 if (WIN32)
 	set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 endif (WIN32)
 
 # Specify normal preprocessor definition for this target
-	set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
-
-# Specify debug preprocessor definitions for this target
-set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
-
+set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)

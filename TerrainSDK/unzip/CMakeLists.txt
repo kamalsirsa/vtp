@@ -8,8 +8,8 @@ if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})
 endif(ZLIB_FOUND)
 
-# Specify precprocessor definitions for this target
-set_target_properties(unzip PROPERTIES COMPILE_DEFINITIONS "${COMPILE_DEFINITIONS} NOUNCRYPT")
+# Specify preprocessor definitions for this target
+set_property(TARGET unzip APPEND PROPERTY COMPILE_DEFINITIONS NOUNCRYPT)
 
 # Windows specific stuff
 if (WIN32)

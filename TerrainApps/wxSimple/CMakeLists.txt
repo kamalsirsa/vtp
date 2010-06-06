@@ -10,14 +10,12 @@ if(BUILD_WXSIMPLE_OSG)
 		add_executable(wxSimple_osg WIN32 ${WXSIMPLE_SOURCE_FILES} ${WX_SIMPLE_HEADER_FILES})
 	endif(MSVC)
 
-	# Internal dependencies for this target
-	add_dependencies(wxSimple_osg minidata vtdata vtlib_osg xmlhelper)
+	# Internal library dependencies for this target
+	target_link_libraries(wxSimple_osg minidata vtdata vtlib_osg xmlhelper)
 
 	# Specify common preprocessor definitions for this target
 	set_property(TARGET wxSimple_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
 
-	# Specify debug preprocessor definitions for this target
-	set_property(TARGET wxSimple_osg APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 
 	# Windows specific stuff
 	if (WIN32)
@@ -28,6 +26,7 @@ if(BUILD_WXSIMPLE_OSG)
 
 	# External libraries for this target
 	if(wxWidgets_FOUND)
+		include(${wxWidgets_USE_FILE})
 		target_link_libraries(wxSimple_osg ${wxWidgets_LIBRARIES})
 	endif(wxWidgets_FOUND)
 
@@ -71,21 +70,15 @@ if(BUILD_WXSIMPLE_OSG)
 endif(BUILD_WXSIMPLE_OSG)
 
 # Set up include directories for all targets at this level
-include_directories(${TERRAIN_SDK_ROOT})
-
-if(wxWidgets_FOUND)
-	include_directories(${wxWidgets_INCLUDE_DIRS})
-endif(wxWidgets_FOUND)
-
 if(GDAL_FOUND)
 	include_directories(${GDAL_INCLUDE_DIR})
 endif(GDAL_FOUND)
 
-if(BUILD_ENVIRO_OSG) 
+if(BUILD_WXSIMPLE_OSG) 
 	if(OSG_FOUND)
 		include_directories(${OSG_INCLUDE_DIR})
 	endif(OSG_FOUND)
-endif(BUILD_ENVIRO_OSG)
+endif(BUILD_WXSIMPLE_OSG)
 
 if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})

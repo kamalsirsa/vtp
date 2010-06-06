@@ -24,4 +24,3 @@ if(GDAL_FOUND)
 	include_directories(${GDAL_INCLUDE_DIR})
 endif (GDAL_FOUND)
 
-include_directories(${TERRAIN_SDK_ROOT})

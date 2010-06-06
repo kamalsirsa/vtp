@@ -50,13 +50,9 @@ if(QUIKGRID_FOUND)
 	include_directories(${QUIKGRID_INCLUDE_DIR})
 endif(QUIKGRID_FOUND)
 
-include_directories(${TERRAIN_SDK_ROOT})
-
 # Windows specific stuff
 if (WIN32)
 	set_property(TARGET vtdata APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 endif (WIN32)
 
-# Specify debug preprocessor definitions for this target
-set_property(TARGET vtdata APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 

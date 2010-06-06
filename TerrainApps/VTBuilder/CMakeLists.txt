@@ -1,6 +1,6 @@
 # Add a library target called builderlib
 set(BUILDERLIB_SOURCE_FILES
-	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp Helper.cpp ImageLayer.cpp
+	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevDrawOptions.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp Helper.cpp ImageLayer.cpp
 	Import.cpp ImportPointDlg.cpp ImportStructDlg.cpp ImportStructDlgOGR.cpp ImportVegDlg.cpp Layer.cpp NodeDlg.cpp RawDlg.cpp
 	RawLayer.cpp RenderOptionsDlg.cpp ResampleDlg.cpp RoadDlg.cpp RoadLayer.cpp RoadMapEdit.cpp RoadMapIO.cpp SampleImageDlg.cpp
 	ScaledView.cpp StructLayer.cpp TileDlg.cpp UtilityLayer.cpp VegFieldsDlg.cpp VegLayer.cpp vtBitmap.cpp VTBuilder_wdr.cpp
@@ -25,11 +25,9 @@ set_property(TARGET builderlib APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANS
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET builderlib APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1)
+	set_property(TARGET builderlib APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 endif (WIN32)
 
-# Specify debug preprocessor definitions for this target
-set_property(TARGET builderlib APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 
 set(VTBUILDER_SOURCE_FILES
 	App.cpp Frame.cpp FrameMenus.cpp Geocode.cpp RoadFix.cpp Special.cpp StatusBar.cpp TransitLayer.cpp TreeView.cpp)
@@ -38,7 +36,7 @@ set(VTBUILDER_DIALOG_SOURCE_FILES
 	MapServerDlg.cpp MatchDlg.cpp NodeDlg.cpp OptionsDlg.cpp PrefDlg.cpp RenderDlg.cpp SelectDlg.cpp
 	TSDlg.cpp VegDlg.cpp)
 set(VTBUILDER_HEADER_FILES
-	app.h DistanceDlg2d.h DistribVegDlg.h FeatInfoDlg.h FileFilters.h Frame.h GenGridDlg.h GeocodeDlg.h ImageMapDlg.h
+	App.h DistanceDlg2d.h DistribVegDlg.h FeatInfoDlg.h FileFilters.h Frame.h GenGridDlg.h GeocodeDlg.h ImageMapDlg.h
 	LayerPropDlg.h MapServerDlg.h MatchDlg.h MenuEnum.h OptionsDlg.h PrefDlg.h RenderDlg.h RoadMapEdit.h
 	SelectDlg.h StatusBar.h TransitLayer.h TreeView.h TSDlg.h VegDlg.h VegPointOptions.h)
 set(VTBUILDER_RC_FILES
@@ -54,23 +52,22 @@ else(MSVC)
 endif(MSVC)
 
 # Internal dependencies for this target
-add_dependencies(vtbuilder builderlib vtdata vtui xmlhelper minidata unzip)
+target_link_libraries(vtbuilder builderlib vtui vtdata xmlhelper minidata unzip)
 
 # Specify common preprocessor definitions for this target
 set_property(TARGET vtbuilder APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANSIT=0 USE_OPENGL=1)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET vtbuilder APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1 wxUSE_NO_MANIFEST=1)
+	set_property(TARGET vtbuilder APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 	set_property(TARGET vtbuilder APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
 	set_property(TARGET vtbuilder APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
 endif (WIN32)
 
-# Specify debug preprocessor definitions for this target
-set_property(TARGET vtbuilder APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 
 # External libraries for this target
 if(wxWidgets_FOUND)
+	include(${wxWidgets_USE_FILE})
 	target_link_libraries(vtbuilder ${wxWidgets_LIBRARIES})
 endif(wxWidgets_FOUND)
 
@@ -118,11 +115,9 @@ if(NETCDF_LIBRARY)
 endif(NETCDF_LIBRARY)
 
 # Set up include directories for all targets at this level
-include_directories(${TERRAIN_SDK_ROOT})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/bitmaps)
 
-if(wxWidgets_FOUND)
-	include_directories(${wxWidgets_INCLUDE_DIRS})
-endif(wxWidgets_FOUND)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/icons)
 
 if(GDAL_FOUND)
 	include_directories(${GDAL_INCLUDE_DIR})

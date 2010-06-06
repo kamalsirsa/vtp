@@ -1,13 +1,13 @@
 # Add a library target called envdlg_xxx
 set(ENVDLG_SOURCE_FILES
-	BuildingDlg3d.cpp CameraDlg.cpp DistanceDlg3d.cpp EphemDlg.cpp FeatureTableDlg3d.cpp LayerDlg.cpp LinearStructDlg3d.cpp LocationDlg.cpp
+	BuildingDlg3d.cpp CameraDlg.cpp ContourDlg.cpp DistanceDlg3d.cpp EphemDlg.cpp FeatureTableDlg3d.cpp LayerDlg.cpp LinearStructDlg3d.cpp LocationDlg.cpp
 	LODDlg.cpp OptionsDlg.cpp PlantDlg.cpp ScenarioParamsDialog.cpp ScenarioSelectDialog.cpp SceneGraphDlg.cpp StartupDlg.cpp StyleDlg.cpp
 	TerrManDlg.cpp TextureDlg.cpp TimeDlg.cpp TParamsDlg.cpp UtilDlg.cpp VehicleDlg.cpp)
 
 set(ENVDLG_HEADER_FILES
-	BuildingDlg3d.h CameraDlg.h DistanceDlg3d.h EphemDlg.h FeatureTableDlg3d.h LayerDlg.h LinearStructDlg3d.h LocationDlg.h LODDlg.h
-	OptionsDlg.h PlantDlg.h ScenarioParamsDialog.h ScenarioSelectDialog.h SceneGraphDlg.h StartupDlg.h StyleDlg.h TerrManDlg.h TParamsDlg.h
-	UtilDlg.h)
+	BuildingDlg3d.h CameraDlg.h ContourDlg.h DistanceDlg3d.h EphemDlg.h FeatureTableDlg3d.h LayerDlg.h LinearStructDlg3d.h LocationDlg.h
+	LODDlg.h OptionsDlg.h PlantDlg.h ScenarioParamsDialog.h ScenarioSelectDialog.h SceneGraphDlg.h StartupDlg.h StyleDlg.h
+	TerrManDlg.h TParamsDlg.h TextureDlg.h TimeDlg.h UtilDlg.h VehicleDlg.h)
 
 if(BUILD_ENVIRO_OSG)
 	if(MSVC)
@@ -19,22 +19,16 @@ if(BUILD_ENVIRO_OSG)
 	endif(MSVC)
 
 	# Specify common preprocessor definitions for this target
-	# set_property(TARGET envdlg APPEND PROPERTY COMPILE_DEFINITIONS)
+	set_property(TARGET envdlg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
 
-	# Windows specific stuff
-	if (WIN32)
-		set_property(TARGET envdlg APPEND PROPERTY COMPILE_DEFINITIONS _UNICODE UNICODE WXUSINGDLL=1 VTLIB_OSG=1)
-	endif (WIN32)
-
-	# Specify debug preprocessor definitions for this target
-	set_property(TARGET envdlg APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
-endif(BUILD_ENVIRO_OSG)
+	endif(BUILD_ENVIRO_OSG)
 
 # Set up include directories for all targets at this level
-include_directories(${TERRAIN_SDK_ROOT})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/icons)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/bitmap)
 
 if(wxWidgets_FOUND)
-	include_directories(${wxWidgets_INCLUDE_DIRS})
+	include(${wxWidgets_USE_FILE})
 endif(wxWidgets_FOUND)
 
 if(GDAL_FOUND)

@@ -1,6 +1,10 @@
+include_directories(${TERRAIN_SDK_ROOT})
+include_directories(${TERRAIN_SDK_ROOT}/vtlib)
+include_directories(${CMAKE_SOURCE_DIR})
+
 add_subdirectory(VTBuilder)
 add_subdirectory(Enviro)
 add_subdirectory(CManager)
-add_subdirectory(glutSimple)
-add_subdirectory(VTConvert)
-add_subdirectory(wxSimple)
+#add_subdirectory(glutSimple)
+#add_subdirectory(VTConvert)
+#add_subdirectory(wxSimple)
