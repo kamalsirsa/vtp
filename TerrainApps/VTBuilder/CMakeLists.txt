@@ -1,6 +1,6 @@
 # Add a library target called builderlib
 set(BUILDERLIB_SOURCE_FILES
-	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevDrawOptions.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp Helper.cpp ImageLayer.cpp
+	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp Helper.cpp ImageLayer.cpp
 	Import.cpp ImportPointDlg.cpp ImportStructDlg.cpp ImportStructDlgOGR.cpp ImportVegDlg.cpp Layer.cpp NodeDlg.cpp RawDlg.cpp
 	RawLayer.cpp RenderOptionsDlg.cpp ResampleDlg.cpp RoadDlg.cpp RoadLayer.cpp RoadMapEdit.cpp RoadMapIO.cpp SampleImageDlg.cpp
 	ScaledView.cpp StructLayer.cpp TileDlg.cpp UtilityLayer.cpp VegFieldsDlg.cpp VegLayer.cpp vtBitmap.cpp VTBuilder_wdr.cpp
@@ -17,7 +17,7 @@ if(MSVC)
 	set_source_files_properties(${BUILDERLIB_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 	set_source_files_properties(pre.cpp PROPERTIES COMPILE_FLAGS /Ycwx/wxprec.h)
 else(MSVC)
-	add_library(builderlib ${BUILDERLIB_SOURCE_FILES} ${BUILDERLIB_HEADER_FILES})
+	add_library(builderlib ${BUILDERLIB_SOURCE_FILES} ${BUILDERLIB_SOURCE_FILES_NO_PCH} ${BUILDERLIB_HEADER_FILES})
 endif(MSVC)
 
 # Specify common preprocessor definitions for this target
