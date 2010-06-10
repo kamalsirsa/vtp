@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
 project(VTerrain)
 
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+		FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
+
 option(BUILD_OSG_VERSIONS "Build OSG versions of the applications" ON)
 
 if(BUILD_OSG_VERSIONS)
@@ -14,7 +20,6 @@ set(TERRAIN_SDK_ROOT "${CMAKE_SOURCE_DIR}/TerrainSDK")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 
 # Top level preprocessor definitions
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ENVIRON FOR_INTEGRATION)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 if(UNIX)
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS VTUNIX=1)
