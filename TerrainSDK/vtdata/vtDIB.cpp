@@ -11,6 +11,11 @@
 // Headers for PNG support, which uses the library "libpng"
 #include "png.h"
 
+// compatibility with libpng 1.4
+#if ((PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR>=4) || PNG_LIBPNG_VER_MAJOR>1)
+#define png_infopp_NULL NULL
+#endif
+
 // Headers for JPEG support, which uses the library "libjpeg"
 extern "C" {
 #include "jpeglib.h"
