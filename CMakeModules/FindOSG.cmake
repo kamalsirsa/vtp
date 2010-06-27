@@ -25,6 +25,7 @@ SET(OSG_LIBRARY_NAMES
     osgViewer
     osgVolume
     osgShadow
+    osgParticle
     OpenThreads)
 
 FIND_PATH(OSG_INCLUDE_DIR osg/Node
