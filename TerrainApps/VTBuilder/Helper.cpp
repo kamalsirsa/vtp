@@ -236,7 +236,12 @@ void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 		output_buf.type = 5;	// compressed RGB (S3TC DXT1)
 	output_buf.bytes = iSize;
 	output_buf.data = malloc(iSize);
+	
+	
 
+#ifdef __DARWIN_OSX__
+	typedef void (* PFNGLGETCOMPRESSEDTEXIMAGEARBPROC) (GLenum, GLint, GLvoid *);
+#endif
 	PFNGLGETCOMPRESSEDTEXIMAGEARBPROC gctia = (PFNGLGETCOMPRESSEDTEXIMAGEARBPROC)
 		getGLExtensionFuncPtr("glGetCompressedTexImageARB");
 	gctia(target, level, output_buf.data);
