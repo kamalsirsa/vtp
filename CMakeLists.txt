@@ -24,6 +24,9 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 if(UNIX)
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS VTUNIX=1)
 endif(UNIX)
+if(APPLE)
+	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS __DARWIN_OSX__=1)
+endif(APPLE)
 
 # Find packages - most of these modules hide their include and library properties behind the advanced flag
 find_package(wxWidgets COMPONENTS base core net xml adv html gl qa xrc aui richtext media)
