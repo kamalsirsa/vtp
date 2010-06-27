@@ -194,7 +194,7 @@ class CRootTag
 		void Dump(void);
 		void DumpTag(const char*);
 		static const char* TypeString(int);
-		static char* CRootTag::ValueString(const TAG&, char*);
+		static char* ValueString(const TAG&, char*);
 #endif
 
 	private:
