@@ -79,7 +79,9 @@ void vtGLCanvas::UpdateStatusText()
 	float fps = scene->GetFrameRate();
 
 	// get camera distance
-	float dist = wxGetApp().m_pTrackball->GetRadius();
+	float dist = 0;
+	if (NULL != wxGetApp().m_pTrackball)
+        dist = wxGetApp().m_pTrackball->GetRadius();
 
 	wxString str;
 	str.Printf(_T("fps %.3g, camera distance %.2f meters"), fps, dist);
