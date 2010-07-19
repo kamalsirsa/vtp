@@ -1,8 +1,8 @@
 
 add_executable(VTConvert VTConvert.cpp)
 
-# Internal dependencies for this target
-add_dependencies(VTConvert vtdata)
+# Internal library dependencies for this target
+target_link_libraries(VTConvert vtdata)
 
 # Specify common preprocessor definitions for this target
 set_property(TARGET VTConvert APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
@@ -12,7 +12,7 @@ set_property(TARGET VTConvert APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET VTConvert APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE)
+	set_property(TARGET VTConvert APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 	set_property(TARGET VTConvert APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt)
 endif (WIN32)
 
