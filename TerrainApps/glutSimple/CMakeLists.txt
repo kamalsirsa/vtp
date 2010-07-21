@@ -5,7 +5,7 @@ if(BUILD_GLUTSIMPLE_OSG AND GLUT_FOUND)
 	add_executable(glutSimple_osg ${ENVIRO_SOURCE_FILES} app.cpp)
 
 	# Internal library dependencies for this target
-	target_link_libraries(glutSimple_osg minidata vtdata vtlib_osg xmlhelper)
+	target_link_libraries(glutSimple_osg vtlib_osg minidata vtdata  xmlhelper)
 
 	# Specify common preprocessor definitions for this target
 	set_property(TARGET glutSimple_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1 FREEGLUT_LIB_PRAGMAS=0)
