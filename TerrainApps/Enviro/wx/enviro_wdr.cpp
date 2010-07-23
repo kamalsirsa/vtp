@@ -3124,17 +3124,105 @@ wxSizer *ContourDlgFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
 wxSizer *PerformanceMonitorDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item1 = new wxBoxSizer( wxVERTICAL );
 
-    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Frames per second"), wxDefaultPosition, wxDefaultSize, 0 );
-    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("OGL FPS"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item3 = new wxStaticText( parent, ID_FPS, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
-    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, _("OGL % driver waiting"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("gpu_idle"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("pixel_shader_busy"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("shader_waits_for_texture"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item6, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("shader_waits_for_rop"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("rop_busy"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("fast_z_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("vertex_attribute_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item10, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("vertex_shader_busy"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("shaded_pixel_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("vertex_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item13, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("triangle_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item14, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("primitive_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("culled_primitive_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBoxSizer *item17 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticText *item18 = new wxStaticText( parent, ID_FPS, _("OGL_FPS"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item19 = new wxStaticText( parent, ID_PM_OGL_DRIVER_WAIT_PERCENT, _("OGL_DRIVER_WAITING"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item20 = new wxStaticText( parent, ID_PM_GPU_IDLE_PERCENT, _("GPU_IDLE"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item21 = new wxStaticText( parent, ID_PM_pixel_shader_busy, _("pixel_shader_busy"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item22 = new wxStaticText( parent, ID_PM_shader_waits_for_texture, _("shader_waits_for_texture"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item23 = new wxStaticText( parent, ID_PM_shader_waits_for_rop, _("shader_waits_for_rop"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item24 = new wxStaticText( parent, ID_PM_rop_busy, _("rop_busy"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item25 = new wxStaticText( parent, ID_PM_fast_z_count, _("fast_z_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item26 = new wxStaticText( parent, ID_PM_vertex_attribute_count, _("vertex_attribute_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item27 = new wxStaticText( parent, ID_PM_vertex_shader_busy, _("vertex_shader_busy"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item28 = new wxStaticText( parent, ID_PM_shaded_pixel_count, _("shaded_pixel_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item29 = new wxStaticText( parent, ID_PM_vertex_count, _("vertex_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item30 = new wxStaticText( parent, ID_PM_triangle_count, _("triangle_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item31 = new wxStaticText( parent, ID_PM_primitive_count, _("primitive_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item32 = new wxStaticText( parent, ID_PM_culled_primitive_count, _("culled_primitive_count"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item17, 0, wxALL, 5 );
 
     if (set_sizer)
     {

@@ -51,35 +51,35 @@ CPerformanceMonitorDialog::CPerformanceMonitorDialog( wxWindow *parent, wxWindow
 
 void CPerformanceMonitorDialog::NVPM_init()
 {
-	NVPMRESULT Result;
+    NVPMRESULT Result;
 
-	if (NVPM_OK != NVPMInit())
-		return;
-	m_NVPMInitialised = true;
-	Result = NVPMAddCounterByName("OGL FPS");
+    if (NVPM_OK != NVPMInit())
+        return;
+    m_NVPMInitialised = true;
+    Result = NVPMAddCounterByName("OGL FPS");
 }
 
 void CPerformanceMonitorDialog::NVPM_shutdown()
 {
-	m_NVPMInitialised = false;
-	NVPMShutdown();
+    m_NVPMInitialised = false;
+    NVPMShutdown();
 }
 
 void CPerformanceMonitorDialog::NVPM_frame()
 {
-	NVPMRESULT Result;
-	UINT Count = 20;
+    NVPMRESULT Result;
+    UINT Count = 20;
 
-	if (m_NVPMInitialised)
-	{
-	    CPerformanceMonitorDialog *pPM = GetFrame()->m_pPerformanceMonitorDlg;
+    if (m_NVPMInitialised)
+    {
+        CPerformanceMonitorDialog *pPM = GetFrame()->m_pPerformanceMonitorDlg;
 
-		Result = NVPMSample(PMSamples, &Count);
-		if (NULL != pPM)
-		{
-		    pPM->UpdateCounters();
-		}
-	}
+        Result = NVPMSample(PMSamples, &Count);
+        if (NULL != pPM)
+        {
+            pPM->UpdateCounters();
+        }
+    }
 }
 
 void CPerformanceMonitorDialog::UpdateCounters()

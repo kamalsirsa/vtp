@@ -383,23 +383,37 @@ wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer
 wxSizer *ContourDlgFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 #define ID_FPS 10275
+#define ID_PM_OGL_DRIVER_WAIT_PERCENT 10276
+#define ID_PM_GPU_IDLE_PERCENT 10277
+#define ID_PM_pixel_shader_busy 10278
+#define ID_PM_shader_waits_for_texture 10279
+#define ID_PM_shader_waits_for_rop 10280
+#define ID_PM_rop_busy 10281
+#define ID_PM_fast_z_count 10282
+#define ID_PM_vertex_attribute_count 10283
+#define ID_PM_vertex_shader_busy 10284
+#define ID_PM_shaded_pixel_count 10285
+#define ID_PM_vertex_count 10286
+#define ID_PM_triangle_count 10287
+#define ID_PM_primitive_count 10288
+#define ID_PM_culled_primitive_count 10289
 wxSizer *PerformanceMonitorDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
 // Declare toolbar functions
 
-#define ID_LAYER_CREATE 10276
-#define ID_LAYER_LOAD 10277
-#define ID_LAYER_SAVE 10278
-#define ID_LAYER_SAVE_AS 10279
-#define ID_LAYER_DELETE 10280
-#define ID_LAYER_ZOOM_TO 10281
-#define ID_LAYER_VISIBLE 10282
-#define ID_LAYER_TABLE 10283
-#define ID_LAYER_SHADOW 10284
-#define ID_LAYER_REFRESH 10285
-#define ID_SHOW_ALL 10286
+#define ID_LAYER_CREATE 10290
+#define ID_LAYER_LOAD 10291
+#define ID_LAYER_SAVE 10292
+#define ID_LAYER_SAVE_AS 10293
+#define ID_LAYER_DELETE 10294
+#define ID_LAYER_ZOOM_TO 10295
+#define ID_LAYER_VISIBLE 10296
+#define ID_LAYER_TABLE 10297
+#define ID_LAYER_SHADOW 10298
+#define ID_LAYER_REFRESH 10299
+#define ID_SHOW_ALL 10300
 void LayerToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

@@ -34,12 +34,26 @@ public:
         long style = wxDEFAULT_DIALOG_STYLE );
 
     // WDR: method declarations for CPerformanceMonitorDailog
+    wxStaticText* GetPmCulledPrimitiveCount()  { return (wxStaticText*) FindWindow( ID_PM_culled_primitive_count ); }
+    wxStaticText* GetPmPrimitiveCount()  { return (wxStaticText*) FindWindow( ID_PM_primitive_count ); }
+    wxStaticText* GetPmTriangleCount()  { return (wxStaticText*) FindWindow( ID_PM_triangle_count ); }
+    wxStaticText* GetPmVertexCount()  { return (wxStaticText*) FindWindow( ID_PM_vertex_count ); }
+    wxStaticText* GetPmShadedPixelCount()  { return (wxStaticText*) FindWindow( ID_PM_shaded_pixel_count ); }
+    wxStaticText* GetPmVertexShaderBusy()  { return (wxStaticText*) FindWindow( ID_PM_vertex_shader_busy ); }
+    wxStaticText* GetPmVertexAttributeCount()  { return (wxStaticText*) FindWindow( ID_PM_vertex_attribute_count ); }
+    wxStaticText* GetPmFastZCount()  { return (wxStaticText*) FindWindow( ID_PM_fast_z_count ); }
+    wxStaticText* GetPmRopBusy()  { return (wxStaticText*) FindWindow( ID_PM_rop_busy ); }
+    wxStaticText* GetPmShaderWaitsForRop()  { return (wxStaticText*) FindWindow( ID_PM_shader_waits_for_rop ); }
+    wxStaticText* GetPmShaderWaitsForTexture()  { return (wxStaticText*) FindWindow( ID_PM_shader_waits_for_texture ); }
+    wxStaticText* GetPmPixelShaderBusy()  { return (wxStaticText*) FindWindow( ID_PM_pixel_shader_busy ); }
+    wxStaticText* GetPmGpuIdlePercent()  { return (wxStaticText*) FindWindow( ID_PM_GPU_IDLE_PERCENT ); }
+    wxStaticText* GetPmOglDriverWaitPercent()  { return (wxStaticText*) FindWindow( ID_PM_OGL_DRIVER_WAIT_PERCENT ); }
     wxStaticText* GetFps()  { return (wxStaticText*) FindWindow( ID_FPS ); }
 
-	// Static functions
-	static void NVPM_init();
-	static void NVPM_shutdown();
-	static void NVPM_frame();
+    // Static functions
+    static void NVPM_init();
+    static void NVPM_shutdown();
+    static void NVPM_frame();
 
 private:
     // WDR: member variable declarations for CPerformanceMonitorDialog
@@ -50,7 +64,7 @@ private:
 
 private:
     void UpdateCounters();
-	static bool m_NVPMInitialised;
+    static bool m_NVPMInitialised;
     DECLARE_EVENT_TABLE()
 };
 
