@@ -4,10 +4,18 @@ set(ENVDLG_SOURCE_FILES
 	LODDlg.cpp OptionsDlg.cpp PlantDlg.cpp ScenarioParamsDialog.cpp ScenarioSelectDialog.cpp SceneGraphDlg.cpp StartupDlg.cpp StyleDlg.cpp
 	TerrManDlg.cpp TextureDlg.cpp TimeDlg.cpp TParamsDlg.cpp UtilDlg.cpp VehicleDlg.cpp)
 
+if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
+	set(ENVDLG_SOURCE_FILES ${ENVDLG_SOURCE_FILES} PerformanceMonitor.cpp)
+endif(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
+
 set(ENVDLG_HEADER_FILES
 	BuildingDlg3d.h CameraDlg.h ContourDlg.h DistanceDlg3d.h EphemDlg.h FeatureTableDlg3d.h LayerDlg.h LinearStructDlg3d.h LocationDlg.h
 	LODDlg.h OptionsDlg.h PlantDlg.h ScenarioParamsDialog.h ScenarioSelectDialog.h SceneGraphDlg.h StartupDlg.h StyleDlg.h
 	TerrManDlg.h TParamsDlg.h TextureDlg.h TimeDlg.h UtilDlg.h VehicleDlg.h)
+
+if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
+	set(ENVDLG_HEADER_FILES ${ENVDLG_HEADER_FILES} PerformanceMonitor.h)
+endif(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
 
 if(BUILD_ENVIRO_OSG)
 	if(MSVC)
@@ -21,7 +29,12 @@ if(BUILD_ENVIRO_OSG)
 	# Specify common preprocessor definitions for this target
 	set_property(TARGET envdlg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
 
-	endif(BUILD_ENVIRO_OSG)
+	# Performance monitoring
+	if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
+		set_property(TARGET envdlg APPEND PROPERTY COMPILE_DEFINITIONS NVIDIA_PERFORMANCE_MONITORING=1)
+	endif(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
+
+endif(BUILD_ENVIRO_OSG)
 
 # Set up include directories for all targets at this level
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/icons)
@@ -50,5 +63,10 @@ if (MINI_INCLUDE_DIR)
 	# Add the mini include directory to the compilers search path 
 	include_directories(${MINI_INCLUDE_DIR})
 endif (MINI_INCLUDE_DIR)
+
+if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
+	include_directories(${NVPERFSDK_INCLUDE_DIR})
+endif(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
+
 
 

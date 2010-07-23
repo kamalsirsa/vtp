@@ -337,6 +337,13 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pStatusBar->UpdateText();
 	PositionStatusBar();
 
+#ifdef NVIDIA_PERFORMANCE_MONITORING
+	// Stop crash in update toolbar
+	m_pCameraDlg = NULL;
+	m_pLocationDlg = NULL;
+	m_pLODDlg = NULL;
+#endif
+
 	// We definitely want full color and a 24-bit Z-buffer!
 	int gl_attrib[8] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
 		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0, 0 };

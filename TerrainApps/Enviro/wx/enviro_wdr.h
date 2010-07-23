@@ -382,21 +382,24 @@ wxSizer *EphemDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer
 #define ID_CHOICE_LAYER 10274
 wxSizer *ContourDlgFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_FPS 10275
+wxSizer *PerformanceMonitorDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
 
-#define ID_LAYER_CREATE 10275
-#define ID_LAYER_LOAD 10276
-#define ID_LAYER_SAVE 10277
-#define ID_LAYER_SAVE_AS 10278
-#define ID_LAYER_DELETE 10279
-#define ID_LAYER_ZOOM_TO 10280
-#define ID_LAYER_VISIBLE 10281
-#define ID_LAYER_TABLE 10282
-#define ID_LAYER_SHADOW 10283
-#define ID_LAYER_REFRESH 10284
-#define ID_SHOW_ALL 10285
+#define ID_LAYER_CREATE 10276
+#define ID_LAYER_LOAD 10277
+#define ID_LAYER_SAVE 10278
+#define ID_LAYER_SAVE_AS 10279
+#define ID_LAYER_DELETE 10280
+#define ID_LAYER_ZOOM_TO 10281
+#define ID_LAYER_VISIBLE 10282
+#define ID_LAYER_TABLE 10283
+#define ID_LAYER_SHADOW 10284
+#define ID_LAYER_REFRESH 10285
+#define ID_SHOW_ALL 10286
 void LayerToolBarFunc( wxToolBar *parent );
 
 // Declare bitmap functions

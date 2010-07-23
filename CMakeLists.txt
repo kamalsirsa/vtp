@@ -39,5 +39,15 @@ find_package(PNG)
 find_package(OSG)
 find_package(QuikGrid)
 
+# Optionally use NVidia performance monitoring if present
+find_path(NVPERFSDK_INCLUDE_DIR NVPerfSDK.h PATHS "c:/Program Files/NVIDIA Corporation/NVIDIA PerfSDK/inc")
+if(NVPERFSDK_INCLUDE_DIR)
+	find_library(NVPERFSDK_LIBRARY NVPerfSDK.lib PATHS "c:/Program Files/NVIDIA Corporation/NVIDIA PerfSDK/lib/winxp_x86")
+	if(NVPERFSDK_LIBRARY)
+		set(NVPERFSDK_FOUND 1)
+		option(NVIDIA_PERFORMANCE_MONITORING "Enable NVIDIA peformance monitoring dialog")
+	endif(NVPERFSDK_LIBRARY)
+endif(NVPERFSDK_INCLUDE_DIR)
+
 add_subdirectory(TerrainSDK)
 add_subdirectory(TerrainApps)

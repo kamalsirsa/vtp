@@ -20,6 +20,9 @@
 #include "canvas.h"
 #include "EnviroFrame.h"		// for UpdateStatus and OnChar
 #include "EnviroApp.h"
+#ifdef NVIDIA_PERFORMANCE_MONITORING
+#include "PerformanceMonitor.h"
+#endif
 
 DECLARE_APP(EnviroApp)
 
@@ -120,11 +123,17 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	g_SpaceNav.Init();
 
 	s_canvas = this;
+#ifdef NVIDIA_PERFORMANCE_MONITORING
+	NVIDIA_PERFORMANCE_MONITOR_INIT
+#endif
 	VTLOG1("vtGLCanvas, leaving constructor\n");
 }
 
 vtGLCanvas::~vtGLCanvas(void)
 {
+#ifdef NVIDIA_PERFORMANCE_MONITORING
+	NVIDIA_PERFORMANCE_MONITOR_SHUTDOWN
+#endif
 	VTLOG1("Deleting Canvas\n");
 }
 
@@ -235,6 +244,9 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 	if (m_bFirstPaint)
 		m_bFirstPaint = false;
+#ifdef NVIDIA_PERFORMANCE_MONITORING
+	NVIDIA_PERFORMANCE_MONITOR_FRAME
+#endif
 }
 #endif
 

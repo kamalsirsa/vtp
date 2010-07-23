@@ -3122,6 +3122,30 @@ wxSizer *ContourDlgFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *PerformanceMonitorDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Frames per second"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item3 = new wxStaticText( parent, ID_FPS, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions
