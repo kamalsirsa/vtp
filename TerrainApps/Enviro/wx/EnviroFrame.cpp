@@ -64,6 +64,10 @@
 #include "vtui/SizeDlg.h"
 #include "vtui/TagDlg.h"
 
+#ifdef NVIDIA_PERFORMANCE_MONITORING
+#include "PerformanceMonitor.h"
+#endif
+
 #include "../Engines.h"
 #include "../Options.h"
 #include "EnviroGUI.h"	// for GetCurrentTerrain
@@ -215,6 +219,9 @@ EVT_UPDATE_UI(ID_SCENE_SPACE,	EnviroFrame::OnUpdateSceneSpace)
 EVT_MENU(ID_SCENE_SAVE,			EnviroFrame::OnSceneSave)
 #endif
 EVT_MENU(ID_SCENE_EPHEMERIS,	EnviroFrame::OnSceneEphemeris)
+#ifdef NVIDIA_PERFORMANCE_MONITORING
+EVT_MENU(ID_SCENE_PERFMON,	    EnviroFrame::OnPerformanceMonitor)
+#endif
 EVT_MENU(ID_TIME_DIALOG,		EnviroFrame::OnTimeDialog)
 EVT_MENU(ID_TIME_STOP,			EnviroFrame::OnTimeStop)
 EVT_MENU(ID_TIME_FASTER,		EnviroFrame::OnTimeFaster)
@@ -342,6 +349,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pCameraDlg = NULL;
 	m_pLocationDlg = NULL;
 	m_pLODDlg = NULL;
+	m_pPerformanceMonitorDlg = NULL;
 #endif
 
 	// We definitely want full color and a 24-bit Z-buffer!
@@ -393,6 +401,9 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pScenarioSelectDialog = new CScenarioSelectDialog(this, -1, _("Scenarios"));
 	m_pVehicleDlg = new VehicleDlg(this, -1, _("Vehicles"));
 	m_pProfileDlg = NULL;
+	#ifdef NVIDIA_PERFORMANCE_MONITORING
+    m_pPerformanceMonitorDlg = new CPerformanceMonitorDialog(this, wxID_ANY, _("Performance Monitor"));
+    #endif
 
 	if (m_canvas)
 		m_canvas->SetCurrent();
@@ -419,6 +430,9 @@ EnviroFrame::~EnviroFrame()
 	delete m_pLocationDlg;
 	delete m_pInstanceDlg;
 	delete m_pLayerDlg;
+	#ifdef NVIDIA_PERFORMANCE_MONITORING
+    delete m_pPerformanceMonitorDlg;
+    #endif
 
 	delete m_pStatusBar;
 	delete m_pToolbar;
@@ -487,6 +501,9 @@ void EnviroFrame::CreateMenus()
 
 	m_pSceneMenu = new wxMenu;
 	m_pSceneMenu->Append(ID_SCENE_SCENEGRAPH, _("Scene Graph"));
+    #ifdef NVIDIA_PERFORMANCE_MONITORING
+    m_pSceneMenu->Append(ID_SCENE_PERFMON, _("Performance Monitor"));
+    #endif
 	m_pSceneMenu->AppendSeparator();
 	m_pSceneMenu->Append(ID_SCENE_TERRAIN, _("Go to Terrain...\tCtrl+G"));
 	if (m_bEnableEarth)
@@ -502,7 +519,7 @@ void EnviroFrame::CreateMenus()
 	m_pSceneMenu->Append(ID_TIME_DIALOG, _("Time...\tCtrl+I"));
 	m_pSceneMenu->Append(ID_TIME_STOP, _("Time Stop"));
 	m_pSceneMenu->Append(ID_TIME_FASTER, _("Time Faster"));
-	m_pMenuBar->Append(m_pSceneMenu, _("&Scene"));
+    m_pMenuBar->Append(m_pSceneMenu, _("&Scene"));
 
 	m_pViewMenu = new wxMenu;
 	m_pViewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _("Wireframe\tCtrl+W"));
@@ -1763,7 +1780,7 @@ void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 		return;
 	}
 
-	// Bind the frame-buffer object and attach to it a render-buffer object 
+	// Bind the frame-buffer object and attach to it a render-buffer object
 	// set up as a depth-buffer.
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, g_frameBuffer );
 	glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, g_drawRenderBuffer );
@@ -2044,6 +2061,13 @@ void EnviroFrame::OnSceneGraph(wxCommandEvent& event)
 {
 	m_pSceneGraphDlg->Show(true);
 }
+
+#ifdef NVIDIA_PERFORMANCE_MONITORING
+void EnviroFrame::OnPerformanceMonitor(wxCommandEvent& event)
+{
+	m_pPerformanceMonitorDlg->Show(true);
+}
+#endif
 
 void EnviroFrame::OnSceneTerrain(wxCommandEvent& event)
 {

@@ -32,7 +32,7 @@ public:
         const wxPoint& pos = wxDefaultPosition,
         const wxSize& size = wxDefaultSize,
         long style = wxDEFAULT_DIALOG_STYLE );
-    
+
     // WDR: method declarations for CPerformanceMonitorDailog
     wxStaticText* GetFps()  { return (wxStaticText*) FindWindow( ID_FPS ); }
 
@@ -40,14 +40,16 @@ public:
 	static void NVPM_init();
 	static void NVPM_shutdown();
 	static void NVPM_frame();
-    
+
 private:
     // WDR: member variable declarations for CPerformanceMonitorDialog
-    
+    wxString m_FPS;
+
 private:
     // WDR: handler declarations for CPerformanceMonitorDialog
 
 private:
+    void UpdateCounters();
 	static bool m_NVPMInitialised;
     DECLARE_EVENT_TABLE()
 };

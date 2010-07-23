@@ -18,6 +18,13 @@
 
 #include "PerformanceMonitor.h"
 #include "NVPerfSDK.h"
+#include "vtlib/vtlib.h"
+class vtStructInstance;
+#include "EnviroFrame.h"
+#include "wx/valgen.h"
+
+static NVPMSampleValue PMSamples[20];
+
 
 // WDR: class implementations
 
@@ -38,7 +45,8 @@ CPerformanceMonitorDialog::CPerformanceMonitorDialog( wxWindow *parent, wxWindow
     wxDialog( parent, id, title, position, size, style )
 {
     // WDR: dialog function PerformanceMonitorDialogFunc for CPerformanceMonitorDialog
-    PerformanceMonitorDialogFunc( this, TRUE ); 
+    PerformanceMonitorDialogFunc( this, TRUE );
+    GetFps()->SetValidator(wxGenericValidator(&m_FPS));
 }
 
 void CPerformanceMonitorDialog::NVPM_init()
@@ -60,13 +68,25 @@ void CPerformanceMonitorDialog::NVPM_shutdown()
 void CPerformanceMonitorDialog::NVPM_frame()
 {
 	NVPMRESULT Result;
-	NVPMSampleValue Samples[20];
 	UINT Count = 20;
-	
+
 	if (m_NVPMInitialised)
 	{
-		Result = NVPMSample(Samples, &Count);
+	    CPerformanceMonitorDialog *pPM = GetFrame()->m_pPerformanceMonitorDlg;
+
+		Result = NVPMSample(PMSamples, &Count);
+		if (NULL != pPM)
+		{
+		    pPM->UpdateCounters();
+		}
 	}
+}
+
+void CPerformanceMonitorDialog::UpdateCounters()
+{
+    m_FPS.Empty();
+    m_FPS << PMSamples[0].ulValue;
+    TransferDataToWindow();
 }
 
 // WDR: handler implementations for CPerformanceMonitorDialog

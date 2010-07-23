@@ -36,6 +36,9 @@ class vtAbstractLayer;
 class vtFeatureSet;
 class vtTerrain;
 class vtTimeEngine;
+#ifdef NVIDIA_PERFORMANCE_MONITORING
+class CPerformanceMonitorDialog;
+#endif
 
 // some shortcuts
 #define ADD_TOOL2(bar, id, bmp, label, type) \
@@ -184,6 +187,9 @@ protected:
 	void OnUpdateToolsMeasure(wxUpdateUIEvent& event);
 
 	void OnSceneGraph(wxCommandEvent& event);
+	#ifdef NVIDIA_PERFORMANCE_MONITORING
+	void OnPerformanceMonitor(wxCommandEvent& event);
+	#endif
 	void OnSceneTerrain(wxCommandEvent& event);
 	void OnUpdateSceneTerrain(wxUpdateUIEvent& event);
 	void OnSceneSpace(wxCommandEvent& event);
@@ -298,6 +304,9 @@ public:
 	LODDlg				*m_pLODDlg;
 	ProfileDlg			*m_pProfileDlg;
 	VehicleDlg			*m_pVehicleDlg;
+	#ifdef NVIDIA_PERFORMANCE_MONITORING
+    CPerformanceMonitorDialog *m_pPerformanceMonitorDlg;
+    #endif
 	MouseMode			m_ToggledMode;
 
 	// There can be any number of feature dialogs, one for each abstract layer
