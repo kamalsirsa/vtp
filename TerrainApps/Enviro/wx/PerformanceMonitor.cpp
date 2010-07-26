@@ -23,8 +23,14 @@ class vtStructInstance;
 #include "EnviroFrame.h"
 #include "wx/valgen.h"
 
-static NVPMSampleValue PMSamples[20];
-
+typedef struct _CounterInfo
+{
+    UINT CounterIndex;
+    NVPMCOUNTERTYPE CounterType;
+    NVPMCOUNTERVALUE CounterValue;
+    NVPMCOUNTERDISPLAYHINT CounterDisplayHint;
+    UINT64 CounterMax;
+} CounterInfo;
 
 // WDR: class implementations
 
@@ -38,25 +44,78 @@ bool CPerformanceMonitorDialog::m_NVPMInitialised = false;
 // WDR: event table for CPerformanceMonitorDialog
 
 BEGIN_EVENT_TABLE(CPerformanceMonitorDialog,wxDialog)
+    EVT_LIST_ITEM_RIGHT_CLICK( ID_PM_LISTCTRL, CPerformanceMonitorDialog::OnListItemRightClick )
 END_EVENT_TABLE()
 
 CPerformanceMonitorDialog::CPerformanceMonitorDialog( wxWindow *parent, wxWindowID id, const wxString &title,
     const wxPoint &position, const wxSize& size, long style ) :
     wxDialog( parent, id, title, position, size, style )
 {
+    UINT NumCounters;
+
     // WDR: dialog function PerformanceMonitorDialogFunc for CPerformanceMonitorDialog
     PerformanceMonitorDialogFunc( this, TRUE );
-    GetFps()->SetValidator(wxGenericValidator(&m_FPS));
+
+    wxListCtrl *pList = GetPmListctrl();
+
+    pList->InsertColumn(0, _("Value"));
+    pList->InsertColumn(1, _("Status"));
+    pList->InsertColumn(2, _("Description"));
+    pList->SetColumnWidth(2, wxLIST_AUTOSIZE);
+
+    if (m_NVPMInitialised)
+    {
+        if (NVPM_OK == NVPMGetNumCounters(&NumCounters))
+        {
+            UINT CounterIndex;
+            UINT StringBufferLength = 1023;
+            char StringBuffer[1024];
+            UINT64 AttributeValue;
+            for (CounterIndex = 0; CounterIndex < NumCounters; CounterIndex++)
+            {
+                StringBufferLength = 1023;
+                if (NVPM_OK == NVPMGetCounterAttribute(CounterIndex, NVPMA_COUNTER_TYPE, &AttributeValue))
+                {
+                    if ((NVPM_CT_GPU == AttributeValue) || (NVPM_CT_OGL == AttributeValue))
+                    {
+                        if (NVPM_OK == NVPMGetCounterDescription(CounterIndex, StringBuffer, &StringBufferLength))
+                        {
+                            // Put this counter in the List
+                            // Cosmetic memory leak here !!
+                            CounterInfo *pInfo = new CounterInfo;
+                            pInfo->CounterType = (NVPMCOUNTERTYPE)AttributeValue;
+                            pInfo->CounterIndex = CounterIndex;
+                            NVPMGetCounterAttribute(CounterIndex, NVPMA_COUNTER_VALUE, (UINT64*)&pInfo->CounterValue);
+                            NVPMGetCounterAttribute(CounterIndex, NVPMA_COUNTER_DISPLAY_HINT, (UINT64*)&pInfo->CounterDisplayHint);
+                            NVPMGetCounterAttribute(CounterIndex, NVPMA_COUNTER_MAX, &pInfo->CounterMax);
+                            wxString Description(StringBuffer, wxConvUTF8);
+                            wxListItem ListItem;
+                            ListItem.SetMask(wxLIST_MASK_TEXT);
+                            ListItem.SetId(pList->GetItemCount());
+                            ListItem.SetColumn(2);
+                            ListItem.SetText(Description);
+                            pList->InsertItem(ListItem);
+                            pList->SetItemPtrData(ListItem.GetId(), (wxUIntPtr)pInfo);
+                            ListItem.SetColumn(1);
+                            ListItem.SetText(wxString(_("Off")));
+                            pList->SetItem(ListItem);
+                        }
+                    }
+                }
+            }
+            if (NumCounters > 0)
+                pList->SetColumnWidth(2, wxLIST_AUTOSIZE);
+        }
+    }
 }
 
 void CPerformanceMonitorDialog::NVPM_init()
 {
-    NVPMRESULT Result;
 
     if (NVPM_OK != NVPMInit())
         return;
     m_NVPMInitialised = true;
-    Result = NVPMAddCounterByName("OGL FPS");
+
 }
 
 void CPerformanceMonitorDialog::NVPM_shutdown()
@@ -67,14 +126,10 @@ void CPerformanceMonitorDialog::NVPM_shutdown()
 
 void CPerformanceMonitorDialog::NVPM_frame()
 {
-    NVPMRESULT Result;
-    UINT Count = 20;
-
     if (m_NVPMInitialised)
     {
         CPerformanceMonitorDialog *pPM = GetFrame()->m_pPerformanceMonitorDlg;
 
-        Result = NVPMSample(PMSamples, &Count);
         if (NULL != pPM)
         {
             pPM->UpdateCounters();
@@ -84,12 +139,106 @@ void CPerformanceMonitorDialog::NVPM_frame()
 
 void CPerformanceMonitorDialog::UpdateCounters()
 {
-    m_FPS.Empty();
-    m_FPS << PMSamples[0].ulValue;
-    TransferDataToWindow();
+    NVPMRESULT Result = NVPM_OK;
+    if (m_NVPMInitialised)
+    {
+        wxListCtrl *pList = GetPmListctrl();
+        UINT Count = pList->GetItemCount();
+        NVPMSampleValue Values[Count];
+        if (NVPM_OK == (Result = NVPMSample(Values, &Count)))
+        {
+            UINT Index;
+
+            for (Index = 0; Index < Count; Index++)
+            {
+                long ListIndex;
+                long ItemCount = pList->GetItemCount();
+                // This could probably be made quicker with a wrap search
+                CounterInfo *pInfo;
+                UINT TargetCounterIndex = Values[Index].unCounterIndex;
+                for (ListIndex = 0; ListIndex < ItemCount; ListIndex++)
+                {
+                    pInfo = (CounterInfo*)pList->GetItemData(ListIndex);
+                    CounterInfo TestInfo = *pInfo;
+                    if (pInfo->CounterIndex == TargetCounterIndex)
+                        break;
+                }
+                if (ListIndex < ItemCount)
+                {
+                    wxListItem ListItem;
+                    wxString Value;
+                    switch(pInfo->CounterValue)
+                    {
+                        case NVPM_CV_PERCENT:
+                            switch(pInfo->CounterDisplayHint)
+                            {
+                                case NVPM_CDH_PERCENT:
+                                    Value << Values[Index].ulValue << _("%");
+                                    break;
+                                case NVPM_CDH_RAW:
+                                    Value << Values[Index].ulValue << _("%");
+                                    break;
+                            }
+                            break;
+                        case NVPM_CV_RAW:
+                            switch(pInfo->CounterDisplayHint)
+                            {
+                                case NVPM_CDH_PERCENT:
+                                    if (0 == Values[Index].ulCycles)
+                                        Values[Index].ulCycles = 1;
+                                    Value << Values[Index].ulValue * 100 / Values[Index].ulCycles << _("%");
+                                    break;
+                                case NVPM_CDH_RAW:
+                                    Value << Values[Index].ulValue;
+                                    break;
+                            }
+                            break;
+                    }
+
+                    ListItem.SetMask(wxLIST_MASK_TEXT);
+                    ListItem.SetId(ListIndex);
+                    ListItem.SetColumn(0);
+                    ListItem.SetText(Value);
+                    pList->SetItem(ListItem);
+                }
+            }
+        }
+    }
 }
 
 // WDR: handler implementations for CPerformanceMonitorDialog
+
+void CPerformanceMonitorDialog::OnListItemRightClick( wxListEvent &event )
+{
+    NVPMRESULT Result = NVPM_OK;
+    if (m_NVPMInitialised)
+    {
+        wxListCtrl *pList = GetPmListctrl();
+        wxListItem ListItem;
+        UINT CounterIndex = ((CounterInfo*)pList->GetItemData(event.GetIndex()))->CounterIndex;
+
+        ListItem.SetId(event.GetIndex());
+        ListItem.SetColumn(1);
+        ListItem.SetMask(wxLIST_MASK_TEXT);
+        pList->GetItem(ListItem);
+        if (ListItem.GetText().IsSameAs(_("On")))
+        {
+            ListItem.SetText(_("Off"));
+            pList->SetItem(ListItem);
+            ListItem.SetColumn(0);
+            ListItem.SetText(_(""));
+            pList->SetItem(ListItem);
+            Result = NVPMRemoveCounter(CounterIndex);
+        }
+        else
+        {
+
+            ListItem.SetText(_("On"));
+            pList->SetItem(ListItem);
+            Result = NVPMAddCounter(CounterIndex);
+        }
+    }
+}
 
 
 

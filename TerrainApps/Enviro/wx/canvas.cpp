@@ -124,7 +124,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 
 	s_canvas = this;
 #ifdef NVIDIA_PERFORMANCE_MONITORING
-	NVIDIA_PERFORMANCE_MONITOR_INIT
+	CPerformanceMonitorDialog::NVPM_init();
 #endif
 	VTLOG1("vtGLCanvas, leaving constructor\n");
 }
@@ -132,7 +132,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 vtGLCanvas::~vtGLCanvas(void)
 {
 #ifdef NVIDIA_PERFORMANCE_MONITORING
-	NVIDIA_PERFORMANCE_MONITOR_SHUTDOWN
+	CPerformanceMonitorDialog::NVPM_shutdown();
 #endif
 	VTLOG1("Deleting Canvas\n");
 }
@@ -245,7 +245,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	if (m_bFirstPaint)
 		m_bFirstPaint = false;
 #ifdef NVIDIA_PERFORMANCE_MONITORING
-	NVIDIA_PERFORMANCE_MONITOR_FRAME
+	CPerformanceMonitorDialog::NVPM_frame();
 #endif
 }
 #endif
@@ -457,7 +457,7 @@ void vtGLCanvas::OnIdle(wxIdleEvent &event)
 
 		// Reset the number of mousemoves we've gotten since last redraw
 		m_iConsecutiveMousemoves = 0;
-	
+
 		event.RequestMore();
 	}
 #else
