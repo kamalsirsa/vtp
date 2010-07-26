@@ -144,7 +144,12 @@ void CPerformanceMonitorDialog::UpdateCounters()
     {
         wxListCtrl *pList = GetPmListctrl();
         UINT Count = pList->GetItemCount();
+#ifdef _MSC_VER
+		// Stupid broken compiler
+		NVPMSampleValue *Values = new NVPMSampleValue[Count];
+#else
         NVPMSampleValue Values[Count];
+#endif
         if (NVPM_OK == (Result = NVPMSample(Values, &Count)))
         {
             UINT Index;
@@ -203,6 +208,10 @@ void CPerformanceMonitorDialog::UpdateCounters()
                 }
             }
         }
+#ifdef _MSC_VER
+		// Stupid broken compiler
+		delete Values;
+#endif
     }
 }
 
