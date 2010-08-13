@@ -986,3 +986,52 @@ void LaunchAppDocumentation(const vtString &appname,
 	wxLaunchDefaultBrowser(wxString(url, wxConvUTF8));
 }
 
+#ifdef USE_OSG_VIEWER
+// Convert wxWidgets argc argv to char format
+class MyLocalArgs
+{
+public:
+	MyLocalArgs()
+	{
+		m_Argv = NULL;
+		m_Argc = 0;
+	}
+	~MyLocalArgs()
+	{
+		Cleanup();
+	}
+	void Cleanup()
+	{
+		if (NULL != m_Argv)
+		{
+			for (int i = 0; NULL != m_Argv[i]; i++)
+				delete m_Argv[i];
+			delete m_Argv;
+		}
+	}
+	void ConvertArgcArgv(int wxArgc, wxChar** wxArgv, int* pArgc, char*** pArgv)
+	{
+		Cleanup();
+		*pArgc = m_Argc = wxArgc;
+		*pArgv = m_Argv = new char*[m_Argc + 1];
+		m_Argv[m_Argc] = NULL;
+		for (int i = 0; i < m_Argc; i++)
+		{
+			const wxWX2MBbuf tmp_buf = wxConvCurrent->cWX2MB(wxArgv[i]);
+			m_Argv[i] = new char[strlen((const char*)tmp_buf) + 1];
+			strcpy(m_Argv[i], (const char*)tmp_buf);
+		}
+	}
+private:
+	char** m_Argv;
+	int m_Argc;
+};
+
+static MyLocalArgs s_LocalArgs;
+
+void ConvertArgcArgv(int wxArgc, wxChar** wxArgv, int* pArgc, char*** pArgv)
+{
+	return s_LocalArgs.ConvertArgcArgv(wxArgc, wxArgv, pArgc, pArgv);
+}
+
+#endif

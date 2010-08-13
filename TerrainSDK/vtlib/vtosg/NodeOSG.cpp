@@ -1674,7 +1674,11 @@ vtLight::vtLight()
 
 	// However, because lighting is also a 'state', we need to inform
 	// the whole scene graph that we have another light.
+#ifdef USE_OSG_VIEWER
+	osgUtil::SceneView *sv = dynamic_cast<osgViewer::Renderer*>(vtGetScene()->getViewer()->getCamera()->getRenderer())->getSceneView(0);
+#else
 	osgUtil::SceneView *sv = vtGetScene()->getSceneView();
+#endif
 	osg::StateSet *ss = sv->getGlobalStateSet();
 	osg::Light *light = m_pLightSource->getLight();
 	ss->setAssociatedModes(light, osg::StateAttribute::ON);

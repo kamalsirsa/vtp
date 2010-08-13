@@ -103,3 +103,7 @@ void DisplayAndLog(const wchar_t *pFormat, ...);
 
 void LaunchAppDocumentation(const vtString &appname,
 							const vtString &local_lang_code);
+
+#ifdef USE_OSG_VIEWER
+void ConvertArgcArgv(int wxArgc, wxChar** wxArgv, int* pArgc, char*** pArgv);
+#endif

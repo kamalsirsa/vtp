@@ -93,7 +93,11 @@ int vtGetMaxTextureSize()
  * \param iStereoMode Currently for vtosg, supported values are 0 for
  *		Anaglyphic (red-blue) and 1 for Quad-buffer (shutter glasses).
  */
+#ifdef USE_OSG_VIEWER
+bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
+#else
 bool vtScene::Init(bool bStereo, int iStereoMode)
+#endif
 {
 	VTLOG1("vtScene::Init\n");
 
@@ -112,6 +116,26 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 	SetCamera(m_pDefaultCamera);
 	AddWindow(m_pDefaultWindow);
 
+#ifdef USE_OSG_VIEWER
+    // use an ArgumentParser object to manage the program arguments.
+    osg::ArgumentParser arguments(&argc,argv);
+
+	if (bStereo)
+	{
+		osg::DisplaySettings* displaySettings = osg::DisplaySettings::instance();
+		displaySettings->setStereo(true);
+		osg::DisplaySettings::StereoMode mode;
+		if (iStereoMode == 0) mode = osg::DisplaySettings::ANAGLYPHIC;
+		if (iStereoMode == 1) mode = osg::DisplaySettings::QUAD_BUFFER;
+		displaySettings->setStereoMode(mode);
+	}
+
+	m_pOsgViewer = new osgViewer::Viewer(arguments);
+	m_pOsgViewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
+	// Kill the event visitor (saves a scenegraph traversal)
+	// This will need to be restored if we need to use FRAME events etc. in the scenegraph
+	m_pOsgViewer->setEventVisitor(NULL);
+#else
 	// OSG's display setting include stereo
 	osg::DisplaySettings* displaySettings = new osg::DisplaySettings;
 	if (bStereo)
@@ -128,6 +152,7 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 	displaySettings->readEnvironmentalVariables();
 
 	m_pOsgSceneView = new osgUtil::SceneView(displaySettings);
+#endif
 
 	if (bStereo)
 	{
@@ -137,7 +162,11 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 		// The FusionDistanceValue is only used for USE_FUSION_DISTANCE_VALUE & PROPORTIONAL_TO_SCREEN_DISTANCE modes.
 
 		// We use real-world units for fusion distance value
+#ifdef USE_OSG_VIEWER
+		m_pOsgViewer->setFusionDistance(osgUtil::SceneView::USE_FUSION_DISTANCE_VALUE, 100.0f);
+#else
 		m_pOsgSceneView->setFusionDistance(osgUtil::SceneView::USE_FUSION_DISTANCE_VALUE, 100.0f);
+#endif
 	}
 
 	// From the OSG mailing list: You must specify the lighting mode in
@@ -146,6 +175,11 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 	// global state set of the SceneView.  With the default options applied,
 	// I have tried subsequently calling setLightingMode(NO_SCENE_LIGHT)
 	// and setLight(NULL), but I still get a headlight.
+#ifdef USE_OSG_VIEWER
+	m_pOsgViewer->setLightingMode(osg::View::SKY_LIGHT);
+	m_pOsgViewer->getCamera()->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
+	m_pOsgViewer->getCamera()->setCullingMode(m_pOsgViewer->getCamera()->getCullingMode() & ~osg::CullSettings::SMALL_FEATURE_CULLING);
+#else
 	m_pOsgSceneView->setDefaults(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
 
 	// OSG 0.9.0 and newer
@@ -160,6 +194,7 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 	// enable lighting by default.
 	osg::StateSet *ss = m_pOsgSceneView->getGlobalStateSet();
 	ss->setMode(GL_LIGHTING, osg::StateAttribute::ON);
+#endif
 
 	m_bInitialized = true;
 
@@ -245,13 +280,21 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	// window background color
 	Vec4 color2;
 	v2s(pWindow->GetBgColor(), color2);
+#ifdef USE_OSG_VIEWER
+	m_pOsgViewer->getCamera()->setClearColor(color2);
+#else
 	m_pOsgSceneView->setClearColor(color2);
+#endif
 
 	// window size
 	IPoint2 winsize = pWindow->GetSize();
 	if (winsize.x == 0 || winsize.y == 0)
 		VTLOG("Warning: winsize %d %d\n", winsize.x, winsize.y);
+#ifdef USE_OSG_VIEWER
+	m_pOsgViewer->getCamera()->setViewport(0, 0, winsize.x, winsize.y);
+#else
 	m_pOsgSceneView->setViewport(0, 0, winsize.x, winsize.y);
+#endif
 
 	// As of OSG 0.9.5, we need to store our own camera params and recreate
 	//  the projection matrix each frame.
@@ -266,8 +309,13 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 		// Arguments are left, right, bottom, top, zNear, zFar
 		float w2 = m_pCamera->GetWidth() /2;
 		float h2 = w2 / aspect;
+#ifdef USE_OSG_VIEWER
+		m_pOsgViewer->getCamera()->setProjectionMatrixAsOrtho(-w2, w2, -h2, h2,
+			m_pCamera->GetHither(), m_pCamera->GetYon());
+#else
 		m_pOsgSceneView->setProjectionMatrixAsOrtho(-w2, w2, -h2, h2,
 			m_pCamera->GetHither(), m_pCamera->GetYon());
+#endif
 	}
 	else
 	{
@@ -277,15 +325,24 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 		float fov_y_div2 = atan(b);
 		float fov_y_deg = RadiansToDegrees(fov_y_div2 * 2);
 
+#ifdef USE_OSG_VIEWER
+		m_pOsgViewer->getCamera()->setProjectionMatrixAsPerspective(fov_y_deg,
+			aspect, m_pCamera->GetHither(), m_pCamera->GetYon());
+#else
 		m_pOsgSceneView->setProjectionMatrixAsPerspective(fov_y_deg,
 			aspect, m_pCamera->GetHither(), m_pCamera->GetYon());
+#endif
 	}
 
 	// And apply the rotation and translation of the camera itself
 	const osg::Matrix &mat2 = m_pCamera->GetOsgTransform()->getMatrix();
 	osg::Matrix imat;
 	imat.invert(mat2);
+#ifdef USE_OSG_VIEWER
+	m_pOsgViewer->getCamera()->setViewMatrix(imat);
+#else
 	m_pOsgSceneView->setViewMatrix(imat);
+#endif
 
 	CalcCullPlanes();
 
@@ -294,7 +351,7 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	//  OSG file with particle effects in it.
 #define USE_OSG_UPDATE 1
 
-#if USE_OSG_UPDATE
+#if USE_OSG_UPDATE && !defined(USE_OSG_VIEWER)
 	// record the timer tick at the start of rendering.
 	static osg::Timer_t start_tick = osg::Timer::instance()->tick();
 	static unsigned int frameNum = 0;
@@ -310,6 +367,10 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	m_pOsgSceneView->setFrameStamp(frameStamp.get());
 #endif
 
+#ifdef USE_OSG_VIEWER
+	m_pOsgViewer->getCamera()->setCullMask(0x3);
+	m_pOsgViewer->frame();
+#else
 	// We currently use only the least significant two bits of the node mask.
 	// Set the cull traversal mask so that other bits are ignored
 	m_pOsgSceneView->setCullMask(0x3);
@@ -320,6 +381,7 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 
 	m_pOsgSceneView->cull();
 	m_pOsgSceneView->draw();
+#endif
 }
 
 /**
@@ -336,11 +398,18 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
  */
 void vtScene::ComputeViewMatrix(FMatrix4 &mat)
 {
+#ifdef USE_OSG_VIEWER
+	osg::Matrix _viewMatrix = m_pOsgViewer->getCamera()->getViewMatrix();
+	osg::Matrix _projectionMatrix = m_pOsgViewer->getCamera()->getProjectionMatrix();
+	osg::Viewport *_viewport = m_pOsgViewer->getCamera()->getViewport();
+#else
 	osg::Matrix _viewMatrix = m_pOsgSceneView->getViewMatrix();
 	osg::Matrix _projectionMatrix = m_pOsgSceneView->getProjectionMatrix();
+	osg::Viewport *_viewport = m_pOsgSceneView->getViewport();
+#endif
+
 	osg::Matrix matrix( _viewMatrix * _projectionMatrix);
 
-	osg::Viewport *_viewport = m_pOsgSceneView->getViewport();
 	if (_viewport != NULL)
 		matrix.postMult(_viewport->computeWindowMatrix());
 
@@ -369,37 +438,62 @@ void vtScene::SetRoot(vtGroup *pRoot)
 	m_pStructureShadowsOSG = NULL;
 #endif
 
+#ifdef USE_OSG_VIEWER
+	if (m_pOsgViewer != NULL)
+		m_pOsgViewer->setSceneData(m_pOsgSceneRoot.get());
+#else
 	if (m_pOsgSceneView != NULL)
 		m_pOsgSceneView->setSceneData(m_pOsgSceneRoot.get());
+#endif
 	m_pRoot = pRoot;
 }
 
 bool vtScene::IsStereo() const
 {
+#ifdef USE_OSG_VIEWER
+	const osg::DisplaySettings* displaySettings = m_pOsgViewer->getDisplaySettings();
+#else
 	const osg::DisplaySettings* displaySettings = m_pOsgSceneView->getDisplaySettings();
+#endif
 	return displaySettings->getStereo();
 }
 
 void vtScene::SetStereoSeparation(float fSep)
 {
+#ifdef USE_OSG_VIEWER
+	osg::DisplaySettings* displaySettings = m_pOsgViewer->getDisplaySettings();
+#else
 	osg::DisplaySettings* displaySettings = m_pOsgSceneView->getDisplaySettings();
+#endif
 	displaySettings->setEyeSeparation(fSep);
 }
 
 float vtScene::GetStereoSeparation() const
 {
+#ifdef USE_OSG_VIEWER
+	const osg::DisplaySettings* displaySettings = m_pOsgViewer->getDisplaySettings();
+#else
 	const osg::DisplaySettings* displaySettings = m_pOsgSceneView->getDisplaySettings();
+#endif
 	return displaySettings->getEyeSeparation();
 }
 
 void vtScene::SetStereoFusionDistance(float fDist)
 {
+#ifdef USE_OSG_VIEWER
+	m_pOsgViewer->setFusionDistance(osgUtil::SceneView::USE_FUSION_DISTANCE_VALUE, fDist);
+#else
 	m_pOsgSceneView->setFusionDistance(osgUtil::SceneView::USE_FUSION_DISTANCE_VALUE, fDist);
+#endif
 }
 
 float vtScene::GetStereoFusionDistance()
 {
+#ifdef USE_OSG_VIEWER
+	return m_pOsgViewer->getFusionDistanceValue();
+#else
 	return m_pOsgSceneView->getFusionDistanceValue();
+#endif
 }
 
 /**
@@ -416,7 +510,11 @@ bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow
 
 	// call the handy OSG function
 	IPoint2 winsize = pWindow->GetSize();
+#ifdef USE_OSG_VIEWER
+	dynamic_cast<osgViewer::Renderer*>(m_pOsgViewer->getCamera()->getRenderer())->getSceneView(0)->projectWindowXYIntoObject(win.x, winsize.y-1-win.y, near_point, far_point);
+#else
 	m_pOsgSceneView->projectWindowXYIntoObject(win.x, winsize.y-1-win.y, near_point, far_point);
+#endif
 
 	diff = far_point - near_point;
 	diff.normalize();
@@ -436,7 +534,11 @@ void vtScene::WorldToScreen(const FPoint3 &point, IPoint2 &result)
 	Vec3 object;
 	v2s(point, object);
 	Vec3 window;
+#ifdef USE_OSG_VIEWER
+	dynamic_cast<osgViewer::Renderer*>(m_pOsgViewer->getCamera()->getRenderer())->getSceneView(0)->projectObjectIntoWindow(object, window);
+#else
 	m_pOsgSceneView->projectObjectIntoWindow(object, window);
+#endif
 	result.x = (int) window.x();
 	result.y = (int) window.y();
 }
@@ -511,8 +613,13 @@ void vtScene::CalcCullPlanes()
 	//  includes the funny modelview matrix used to scale the
 	//  heightfield.  We must get it from the 'scene' instead.
 
+#ifdef USE_OSG_VIEWER
+	const osg::Matrixd &_projection = m_pOsgViewer->getCamera()->getProjectionMatrix();
+	const osg::Matrixd &_modelView = m_pOsgViewer->getCamera()->getViewMatrix();
+#else
 	const osg::Matrixd &_projection = m_pOsgSceneView->getProjectionMatrix();
 	const osg::Matrixd &_modelView = m_pOsgSceneView->getViewMatrix();
+#endif
 
 	Polytope tope;
 	tope.setToUnitFrustum();
@@ -569,7 +676,11 @@ void vtScene::SetGlobalWireframe(bool bWire)
 	// Set the scene's global PolygonMode attribute, which will affect all
 	// other materials in the scene, except those which explicitly override
 	// the attribute themselves.
+#ifdef USE_OSG_VIEWER
+	StateSet *global_state = dynamic_cast<osgViewer::Renderer*>(m_pOsgViewer->getCamera()->getRenderer())->getSceneView(0)->getGlobalStateSet();
+#else
 	StateSet *global_state = m_pOsgSceneView->getGlobalStateSet();
+#endif
 	PolygonMode *npm = new PolygonMode();
 	if (m_bWireframe)
 		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
@@ -654,6 +765,18 @@ void vtScene::ComputeShadows()
 }
 #endif // OLD_OSG_SHADOWS
 
+#ifdef USE_OSG_VIEWER
+void vtScene::SetGraphicsContext(osg::GraphicsContext* pGraphicsContext)
+{
+	m_pGraphicsContext = pGraphicsContext;
+	m_pOsgViewer->getCamera()->setGraphicsContext(pGraphicsContext);
+}
+
+osg::GraphicsContext* vtScene::GetGraphicsContext()
+{
+	return m_pGraphicsContext.get();
+}
+#endif
 
 ////////////////////////////////////////
 

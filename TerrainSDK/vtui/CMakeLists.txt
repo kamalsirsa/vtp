@@ -7,6 +7,14 @@ set(VTUI_HEADER_FILES
 		AutoDialog.h BuildingDlg.h ColorMapDlg.h DistanceDlg.h DoubleProgDlg.h FeatureTableDlg.h Helper.h InstanceDlg.h
 		Joystick.h LinearStructDlg.h ProfileDlg.h ProfileEditDlg.h ProjectionDlg.h SizeDlg.h StatePlaneDlg.h
 		TagDlg.h vtui_wdr.h)
+
+if(BUILD_OSG_VERSIONS)
+	if(USE_OSG_VIEWER)
+		set(VTUI_SOURCE_FILES ${VTUI_SOURCE_FILES} GraphicsWindowWX.cpp)
+		set(VTUI_HEADER_FILES ${VTUI_HEADER_FILES} GraphicsWindowWX.h) 
+	endif(USE_OSG_VIEWER)
+endif(BUILD_OSG_VERSIONS)
+
 if(MSVC)
 	add_library(vtui ${VTUI_SOURCE_FILES} ${VTUI_HEADER_FILES} pre.cpp)
 	set_source_files_properties(${VTUI_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
@@ -37,5 +45,14 @@ endif(QUIKGRID_FOUND)
 if (WIN32)
 	set_property(TARGET vtui APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 endif (WIN32)
+
+if(BUILD_OSG_VERSIONS)
+	if(USE_OSG_VIEWER)
+		set_property(TARGET vtui APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
+		if(OSG_FOUND)
+			include_directories(${OSG_INCLUDE_DIR})
+		endif(OSG_FOUND)
+	endif(USE_OSG_VIEWER)
+endif(BUILD_OSG_VERSIONS)
 
 

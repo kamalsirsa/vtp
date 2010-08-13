@@ -32,7 +32,11 @@ bool vtApp::OnInit(void)
 {
 	m_pTerrainScene = NULL;
 
+#ifdef USE_OSG_VIEWER
+	vtGetScene()->Init(0, NULL);
+#else
 	vtGetScene()->Init();
+#endif
 
 	// Create the main frame window
 	m_pFrame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));

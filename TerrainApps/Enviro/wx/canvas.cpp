@@ -23,6 +23,9 @@
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 #include "PerformanceMonitor.h"
 #endif
+#ifdef USE_OSG_VIEWER
+#include "vtui/GraphicsWindowWX.h"
+#endif
 
 DECLARE_APP(EnviroApp)
 
@@ -134,6 +137,9 @@ vtGLCanvas::~vtGLCanvas(void)
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 	CPerformanceMonitorDialog::NVPM_shutdown();
 #endif
+#ifdef USE_OSG_VIEWER
+	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->InvalidateCanvas();
+#endif
 	VTLOG1("Deleting Canvas\n");
 }
 
@@ -207,7 +213,9 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	m_bPainting = true;
 
 	// Make sure the Graphics context of this thread is this window
+#ifndef USE_OSG_VIEWER
 	SetCurrent();
+#endif
 
 	// Render the Scene Graph
 	if (m_bFirstPaint) VTLOG1("vtGLCanvas: DoUpdate\n");
@@ -217,7 +225,9 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		vtGetScene()->DrawFrameRateChart();
 
 	if (m_bFirstPaint) VTLOG1("vtGLCanvas: SwapBuffers\n");
+#ifndef USE_OSG_VIEWER
 	SwapBuffers();
+#endif
 
 	if (m_bFirstPaint) VTLOG1("vtGLCanvas: update status bar\n");
 	EnviroFrame *frame = (EnviroFrame*) GetParent();

@@ -49,7 +49,11 @@ bool vtApp::OnInit(void)
 
 	VTLOG("Setup scene\n");
 	vtScene *pScene = vtGetScene();
+#ifdef USE_OSG_VIEWER
+	pScene->Init(0, NULL);
+#else
 	pScene->Init();
+#endif
 	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));		// grey
 
 	//
