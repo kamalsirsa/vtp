@@ -10,11 +10,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 option(BUILD_OSG_VERSIONS "Build OSG versions of the applications" ON)
 
 if(BUILD_OSG_VERSIONS)
-	if(NOT USE_OSG_VIEWER)
-		set(USE_OSG_VIEWER TRUE CACHE BOOL
-			"Use Viewer class instead of SceneView."
-			FORCE)
-	endif(NOT USE_OSG_VIEWER)
+	option(USE_OSG_VIEWER "Use Viewer class instead of SceneView" OFF)
 	if(USE_OSG_VIEWER)
 		set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS USE_OSG_VIEWER)
 	endif(USE_OSG_VIEWER)
