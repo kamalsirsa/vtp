@@ -12,6 +12,10 @@
 #include "StructureShadowsOSG.h"
 #endif
 
+#ifdef USE_OSG_VIEWER
+#include <osgViewer/ViewerEventHandlers>
+#endif
+
 #include <osg/PolygonMode>	// SetGlobalWireframe
 #include <osgDB/Registry>	// for clearObjectCache
 
@@ -120,18 +124,25 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
     // use an ArgumentParser object to manage the program arguments.
     osg::ArgumentParser arguments(&argc,argv);
 
+
+	m_pOsgViewer = new osgViewer::Viewer(arguments);
+	m_pOsgViewer->setDisplaySettings(osg::DisplaySettings::instance());
 	if (bStereo)
 	{
-		osg::DisplaySettings* displaySettings = osg::DisplaySettings::instance();
+		osg::DisplaySettings* displaySettings = m_pOsgViewer->getDisplaySettings();
 		displaySettings->setStereo(true);
 		osg::DisplaySettings::StereoMode mode;
 		if (iStereoMode == 0) mode = osg::DisplaySettings::ANAGLYPHIC;
 		if (iStereoMode == 1) mode = osg::DisplaySettings::QUAD_BUFFER;
 		displaySettings->setStereoMode(mode);
 	}
-
-	m_pOsgViewer = new osgViewer::Viewer(arguments);
 	m_pOsgViewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
+#ifdef USE_OSG_STATS
+	osgViewer::StatsHandler* pStatsHandler = new osgViewer::StatsHandler;
+	pStatsHandler->setKeyEventPrintsOutStats(0);
+	pStatsHandler->setKeyEventTogglesOnScreenStats('x'); // I dont think this is used for anything else at the moment
+	m_pOsgViewer->addEventHandler(pStatsHandler);
+#endif
 	// Kill the event visitor (saves a scenegraph traversal)
 	// This will need to be restored if we need to use FRAME events etc. in the scenegraph
 	m_pOsgViewer->setEventVisitor(NULL);
@@ -700,6 +711,14 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 	if (m_pHUD)
 		m_pHUD->SetWindowSize(w, h);
 	vtSceneBase::SetWindowSize(w, h, pWindow);
+#ifdef USE_OSG_VIEWER
+	osgViewer::GraphicsWindow* pGW = (osgViewer::GraphicsWindow*)GetGraphicsContext();
+	if ((NULL != pGW) && pGW->valid())
+	{
+		pGW->getEventQueue()->windowResize(0, 0, w, h);
+		pGW->resized(0, 0, w, h);
+	}
+#endif
 }
 
 
