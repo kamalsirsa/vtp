@@ -23,6 +23,12 @@
 #include "app.h"
 #include "frame.h"
 
+#ifdef USE_OSG_VIEWER
+#include "vtui/Helper.h"
+#include "vtui/GraphicsWindowWX.h"
+#include "canvas.h"
+#endif
+
 IMPLEMENT_APP(vtApp);
 
 //
@@ -33,13 +39,20 @@ bool vtApp::OnInit(void)
 	m_pTerrainScene = NULL;
 
 #ifdef USE_OSG_VIEWER
-	vtGetScene()->Init(0, NULL);
+	int MyArgc;
+	char** MyArgv;
+	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
+	vtGetScene()->Init(MyArgc, MyArgv);
 #else
 	vtGetScene()->Init();
 #endif
 
 	// Create the main frame window
 	m_pFrame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));
+
+#ifdef USE_OSG_VIEWER
+	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(m_pFrame->m_canvas));
+#endif
 
 	return CreateScene();
 }

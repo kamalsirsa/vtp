@@ -12,6 +12,9 @@ if(BUILD_WXSIMPLE_OSG)
 
 	# Internal library dependencies for this target
 	target_link_libraries(wxSimple_osg vtlib_osg minidata vtdata xmlhelper)
+	if(USE_OSG_VIEWER)
+		target_link_libraries(wxSimple_osg vtui)
+	endif(USE_OSG_VIEWER)
 
 	# Specify common preprocessor definitions for this target
 	set_property(TARGET wxSimple_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
