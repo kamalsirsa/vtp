@@ -3,11 +3,11 @@ set(WXSIMPLE_HEADER_FILES app.h canvas.h frame.h)
 
 if(BUILD_WXSIMPLE_OSG)
 	if(MSVC)
-		add_executable(wxSimple_osg WIN32 ${WXSIMPLE_SOURCE_FILES} ${WX_SIMPLE_HEADER_FILES} wx_headers.cpp)
+		add_executable(wxSimple_osg WIN32 ${WXSIMPLE_SOURCE_FILES} ${WXSIMPLE_HEADER_FILES} wx_headers.cpp)
 		set_source_files_properties(${WXSIMPLE_SOURCE_FILES} PROPERTIES COMPILE_FLAGS "/Yuwx/wxprec.h")
 		set_source_files_properties(wx_headers.cpp PROPERTIES COMPILE_FLAGS "/Ycwx/wxprec.h")
 	else(MSVC)
-		add_executable(wxSimple_osg WIN32 ${WXSIMPLE_SOURCE_FILES} ${WX_SIMPLE_HEADER_FILES})
+		add_executable(wxSimple_osg WIN32 ${WXSIMPLE_SOURCE_FILES} ${WXSIMPLE_HEADER_FILES})
 	endif(MSVC)
 
 	# Internal library dependencies for this target

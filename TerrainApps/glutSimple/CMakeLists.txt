@@ -2,7 +2,7 @@ find_package(GLUT)
 find_package(OpenGL)
 
 if(BUILD_GLUTSIMPLE_OSG AND GLUT_FOUND)
-	add_executable(glutSimple_osg ${ENVIRO_SOURCE_FILES} app.cpp)
+	add_executable(glutSimple_osg app.cpp)
 
 	# Internal library dependencies for this target
 	target_link_libraries(glutSimple_osg vtlib_osg minidata vtdata  xmlhelper)
