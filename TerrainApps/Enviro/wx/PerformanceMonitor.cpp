@@ -17,12 +17,17 @@
 #endif
 
 #include "PerformanceMonitor.h"
+
+#if NVPERFSDK_FOUND
 #include "NVPerfSDK.h"
+#endif
+
 #include "vtlib/vtlib.h"
 class vtStructInstance;
 #include "EnviroFrame.h"
 #include "wx/valgen.h"
 
+#if NVPERFSDK_FOUND
 typedef struct _CounterInfo
 {
     UINT CounterIndex;
@@ -31,6 +36,7 @@ typedef struct _CounterInfo
     NVPMCOUNTERDISPLAYHINT CounterDisplayHint;
     UINT64 CounterMax;
 } CounterInfo;
+#endif
 
 // WDR: class implementations
 
@@ -51,6 +57,8 @@ CPerformanceMonitorDialog::CPerformanceMonitorDialog( wxWindow *parent, wxWindow
     const wxPoint &position, const wxSize& size, long style ) :
     wxDialog( parent, id, title, position, size, style )
 {
+#if NVPERFSDK_FOUND
+
     UINT NumCounters;
 
     // WDR: dialog function PerformanceMonitorDialogFunc for CPerformanceMonitorDialog
@@ -107,25 +115,35 @@ CPerformanceMonitorDialog::CPerformanceMonitorDialog( wxWindow *parent, wxWindow
                 pList->SetColumnWidth(2, wxLIST_AUTOSIZE);
         }
     }
+
+#endif
 }
 
 void CPerformanceMonitorDialog::NVPM_init()
 {
+#if NVPERFSDK_FOUND
 
     if (NVPM_OK != NVPMInit())
         return;
     m_NVPMInitialised = true;
 
+#endif
 }
 
 void CPerformanceMonitorDialog::NVPM_shutdown()
 {
+#if NVPERFSDK_FOUND
+
     m_NVPMInitialised = false;
     NVPMShutdown();
+
+#endif
 }
 
 void CPerformanceMonitorDialog::NVPM_frame()
 {
+#if NVPERFSDK_FOUND
+
     if (m_NVPMInitialised)
     {
         CPerformanceMonitorDialog *pPM = GetFrame()->m_pPerformanceMonitorDlg;
@@ -135,10 +153,14 @@ void CPerformanceMonitorDialog::NVPM_frame()
             pPM->UpdateCounters();
         }
     }
+
+#endif
 }
 
 void CPerformanceMonitorDialog::UpdateCounters()
 {
+#if NVPERFSDK_FOUND
+
     NVPMRESULT Result = NVPM_OK;
     if (m_NVPMInitialised)
     {
@@ -213,12 +235,16 @@ void CPerformanceMonitorDialog::UpdateCounters()
 		delete Values;
 #endif
     }
+
+#endif
 }
 
 // WDR: handler implementations for CPerformanceMonitorDialog
 
 void CPerformanceMonitorDialog::OnListItemRightClick( wxListEvent &event )
 {
+#if NVPERFSDK_FOUND
+
     NVPMRESULT Result = NVPM_OK;
     if (m_NVPMInitialised)
     {
@@ -247,8 +273,6 @@ void CPerformanceMonitorDialog::OnListItemRightClick( wxListEvent &event )
             Result = NVPMAddCounter(CounterIndex);
         }
     }
+
+#endif
 }
-
-
-
-
