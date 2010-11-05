@@ -45,6 +45,7 @@ if(MSVC)
 	add_executable(VTBuilder WIN32 ${VTBUILDER_SOURCE_FILES} ${VTBUILDER_DIALOG_SOURCE_FILES} ${VTBUILDER_HEADER_FILES} pre.cpp
 		${VTBUILDER_RC_FILES})
 	set_source_files_properties(${VTBUILDER_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
+	set_source_files_properties(${VTBUILDER_DIALOG_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 	# already handled pre.cpp earlier on
 else(MSVC)
 	add_executable(VTBuilder WIN32 ${VTBUILDER_SOURCE_FILES} ${VTBUILDER_DIALOG_SOURCE_FILES} ${VTBUILDER_HEADER_FILES}
