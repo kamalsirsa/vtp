@@ -1,4 +1,4 @@
-# Add a library target called builderlib
+# Add a library target called BuilderLib
 set(BUILDERLIB_SOURCE_FILES
 	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp Helper.cpp ImageLayer.cpp
 	Import.cpp ImportPointDlg.cpp ImportStructDlg.cpp ImportStructDlgOGR.cpp ImportVegDlg.cpp Layer.cpp NodeDlg.cpp RawDlg.cpp
@@ -13,19 +13,19 @@ set(BUILDERLIB_HEADER_FILES
 	RoadLayer.h RoadMapEdit.h SampleImageDlg.h ScaledView.h StructLayer.h TileDlg.h UtilityLayer.h VegFieldsDlg.h VegLayer.h
 	vtBitmap.h VTBuilder_wdr.h vtImage.h WaterLayer.h)
 if(MSVC)
-	add_library(builderlib ${BUILDERLIB_SOURCE_FILES} ${BUILDERLIB_SOURCE_FILES_NO_PCH} ${BUILDERLIB_HEADER_FILES} pre.cpp)
+	add_library(BuilderLib ${BUILDERLIB_SOURCE_FILES} ${BUILDERLIB_SOURCE_FILES_NO_PCH} ${BUILDERLIB_HEADER_FILES} pre.cpp)
 	set_source_files_properties(${BUILDERLIB_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 	set_source_files_properties(pre.cpp PROPERTIES COMPILE_FLAGS /Ycwx/wxprec.h)
 else(MSVC)
-	add_library(builderlib ${BUILDERLIB_SOURCE_FILES} ${BUILDERLIB_SOURCE_FILES_NO_PCH} ${BUILDERLIB_HEADER_FILES})
+	add_library(BuilderLib ${BUILDERLIB_SOURCE_FILES} ${BUILDERLIB_SOURCE_FILES_NO_PCH} ${BUILDERLIB_HEADER_FILES})
 endif(MSVC)
 
 # Specify common preprocessor definitions for this target
-set_property(TARGET builderlib APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANSIT=0 USE_OPENGL=1)
+set_property(TARGET BuilderLib APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANSIT=0 USE_OPENGL=1)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET builderlib APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
+	set_property(TARGET BuilderLib APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 endif (WIN32)
 
 
@@ -42,76 +42,76 @@ set(VTBUILDER_HEADER_FILES
 set(VTBUILDER_RC_FILES
 	VTBuilder.rc)
 if(MSVC)
-	add_executable(vtbuilder WIN32 ${VTBUILDER_SOURCE_FILES} ${VTBUILDER_DIALOG_SOURCE_FILES} ${VTBUILDER_HEADER_FILES} pre.cpp
+	add_executable(VTBuilder WIN32 ${VTBUILDER_SOURCE_FILES} ${VTBUILDER_DIALOG_SOURCE_FILES} ${VTBUILDER_HEADER_FILES} pre.cpp
 		${VTBUILDER_RC_FILES})
 	set_source_files_properties(${VTBUILDER_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 	# already handled pre.cpp earlier on
 else(MSVC)
-	add_executable(vtbuilder WIN32 ${VTBUILDER_SOURCE_FILES} ${VTBUILDER_DIALOG_SOURCE_FILES} ${VTBUILDER_HEADER_FILES}
+	add_executable(VTBuilder WIN32 ${VTBUILDER_SOURCE_FILES} ${VTBUILDER_DIALOG_SOURCE_FILES} ${VTBUILDER_HEADER_FILES}
 		${VTBUILDER_RC_FILES})
 endif(MSVC)
 
 # Internal dependencies for this target
-target_link_libraries(vtbuilder builderlib vtui vtdata xmlhelper minidata unzip)
+target_link_libraries(VTBuilder BuilderLib vtui vtdata xmlhelper minidata unzip)
 
 # Specify common preprocessor definitions for this target
-set_property(TARGET vtbuilder APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANSIT=0 USE_OPENGL=1)
+set_property(TARGET VTBuilder APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANSIT=0 USE_OPENGL=1)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET vtbuilder APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
-	set_property(TARGET vtbuilder APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
-	set_property(TARGET vtbuilder APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
+	set_property(TARGET VTBuilder APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
+	set_property(TARGET VTBuilder APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
+	set_property(TARGET VTBuilder APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
 endif (WIN32)
 
 
 # External libraries for this target
 if(wxWidgets_FOUND)
 	include(${wxWidgets_USE_FILE})
-	target_link_libraries(vtbuilder ${wxWidgets_LIBRARIES})
+	target_link_libraries(VTBuilder ${wxWidgets_LIBRARIES})
 endif(wxWidgets_FOUND)
 
 if(GDAL_FOUND)
-	target_link_libraries(vtbuilder ${GDAL_LIBRARIES})
+	target_link_libraries(VTBuilder ${GDAL_LIBRARIES})
 endif (GDAL_FOUND)
 
 if(BZIP2_FOUND)
-	target_link_libraries(vtbuilder ${BZIP2_LIBRARIES})
+	target_link_libraries(VTBuilder ${BZIP2_LIBRARIES})
 endif(BZIP2_FOUND)
 
 if(CURL_FOUND)
-	target_link_libraries(vtbuilder ${CURL_LIBRARY})
+	target_link_libraries(VTBuilder ${CURL_LIBRARY})
 endif(CURL_FOUND)
 
 if(ZLIB_FOUND)
-	target_link_libraries(vtbuilder ${ZLIB_LIBRARIES})
+	target_link_libraries(VTBuilder ${ZLIB_LIBRARIES})
 endif(ZLIB_FOUND)
 
 if(JPEG_FOUND)
-	target_link_libraries(vtbuilder ${JPEG_LIBRARY})
+	target_link_libraries(VTBuilder ${JPEG_LIBRARY})
 endif(JPEG_FOUND)
 
 if(PNG_FOUND)
-	target_link_libraries(vtbuilder ${PNG_LIBRARY})
+	target_link_libraries(VTBuilder ${PNG_LIBRARY})
 endif(PNG_FOUND)
 
 find_library(SQUISH_LIBRARY squish DOC "Path to squish library")
 if(SQUISH_LIBRARY)
-	target_link_libraries(vtbuilder ${SQUISH_LIBRARY})
+	target_link_libraries(VTBuilder ${SQUISH_LIBRARY})
 endif(SQUISH_LIBRARY)
 
 if(QUIKGRID_FOUND)
-	target_link_libraries(vtbuilder ${QUIKGRID_LIBRARIES})
+	target_link_libraries(VTBuilder ${QUIKGRID_LIBRARIES})
 endif(QUIKGRID_FOUND)
 
 find_library(MINI_LIBRARY libMini DOC "Path to libMini")
 if(MINI_LIBRARY)
-	target_link_libraries(vtbuilder ${MINI_LIBRARY})
+	target_link_libraries(VTBuilder ${MINI_LIBRARY})
 endif(MINI_LIBRARY)
 
 find_library(NETCDF_LIBRARY netcdf DOC "Path to netcdf library")
 if(NETCDF_LIBRARY)
-	target_link_libraries(vtbuilder ${NETCDF_LIBRARY})
+	target_link_libraries(VTBuilder ${NETCDF_LIBRARY})
 endif(NETCDF_LIBRARY)
 
 # Set up include directories for all targets at this level
