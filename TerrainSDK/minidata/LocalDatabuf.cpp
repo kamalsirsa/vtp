@@ -8,26 +8,13 @@
 
 #include "LocalDatabuf.h"
 
+#if USE_LIBMINI_DATABUF
+
 /////////////////////////////////////////////////////
 
 #ifdef _MSC_VER
-  #if _MSC_VER == 1500 // vc9
-	  #pragma message( "Adding link with libMini-vc9.lib" )
-	  #pragma comment( lib, "libMini-vc9.lib" )
-  #elif _MSC_VER == 1400 // vc8
-	  #pragma message( "Adding link with libMini-vc8.lib" )
-	  #pragma comment( lib, "libMini-vc8.lib" )
-  #else // vc71
-	  #pragma message( "Adding link with libMini-vc7.lib" )
-	  #pragma comment( lib, "libMini-vc7.lib" )
-  #endif
   #pragma comment( lib, "glu32.lib" )
 #endif
-
-/////////////////////////////////////////////////////
-
-
-#if USE_LIBMINI_DATABUF
 
 // A useful method to set the extents (in local CRS) and the corners
 //  (in Geo WGS84) at the same time.
