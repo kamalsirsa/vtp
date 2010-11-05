@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxSimple", "wxSimple.vcproj", "{B1480DEC-ED63-4C74-9411-A852A7184513}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mfcSimple", "mfcSimple-vc7.vcproj", "{2277C66F-45BF-4DEE-BCFD-81A92A58286D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1045CA3D-3526-482B-B4BA-ACBF57404E9B} = {1045CA3D-3526-482B-B4BA-ACBF57404E9B}
 		{F35AD44A-5921-4C7F-842F-0B3138825EA6} = {F35AD44A-5921-4C7F-842F-0B3138825EA6}
@@ -7,15 +7,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxSimple", "wxSimple.vcproj
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98} = {C2715AAA-C99B-438E-BF57-8357BD21AE98}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata-vc7.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg.vcproj", "{1045CA3D-3526-482B-B4BA-ACBF57404E9B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg-vc7.vcproj", "{1045CA3D-3526-482B-B4BA-ACBF57404E9B}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper-vc7.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -29,10 +29,10 @@ Global
 		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{B1480DEC-ED63-4C74-9411-A852A7184513}.Debug.ActiveCfg = Debug|Win32
-		{B1480DEC-ED63-4C74-9411-A852A7184513}.Debug.Build.0 = Debug|Win32
-		{B1480DEC-ED63-4C74-9411-A852A7184513}.Release.ActiveCfg = Release|Win32
-		{B1480DEC-ED63-4C74-9411-A852A7184513}.Release.Build.0 = Release|Win32
+		{2277C66F-45BF-4DEE-BCFD-81A92A58286D}.Debug.ActiveCfg = Debug|Win32
+		{2277C66F-45BF-4DEE-BCFD-81A92A58286D}.Debug.Build.0 = Debug|Win32
+		{2277C66F-45BF-4DEE-BCFD-81A92A58286D}.Release.ActiveCfg = Release|Win32
+		{2277C66F-45BF-4DEE-BCFD-81A92A58286D}.Release.Build.0 = Release|Win32
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug.ActiveCfg = Debug|Win32
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Debug.Build.0 = Debug|Win32
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98}.Release.ActiveCfg = Release|Win32

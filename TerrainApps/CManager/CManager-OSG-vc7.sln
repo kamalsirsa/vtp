@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CManager", "CManager.vcproj", "{B04668EA-4E34-4C2E-84B0-06AEDD22AC5D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CManager", "CManager-OSG-vc7.vcproj", "{B04668EA-4E34-4C2E-84B0-06AEDD22AC5D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1045CA3D-3526-482B-B4BA-ACBF57404E9B} = {1045CA3D-3526-482B-B4BA-ACBF57404E9B}
 		{F35AD44A-5921-4C7F-842F-0B3138825EA6} = {F35AD44A-5921-4C7F-842F-0B3138825EA6}
@@ -7,19 +7,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CManager", "CManager.vcproj
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98} = {C2715AAA-C99B-438E-BF57-8357BD21AE98}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata-vc7.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg.vcproj", "{1045CA3D-3526-482B-B4BA-ACBF57404E9B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg-vc7.vcproj", "{1045CA3D-3526-482B-B4BA-ACBF57404E9B}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtui", "..\..\TerrainSDK\vtui\vtui.vcproj", "{7C827991-8AEF-4B89-A980-DC2BDFC93955}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtui", "..\..\TerrainSDK\vtui\vtui-vc7.vcproj", "{7C827991-8AEF-4B89-A980-DC2BDFC93955}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper-vc7.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject

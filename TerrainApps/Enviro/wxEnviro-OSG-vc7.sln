@@ -1,13 +1,13 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg.vcproj", "{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg-vc7.vcproj", "{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtui", "..\..\TerrainSDK\vtui\vtui.vcproj", "{1182B805-A4E1-4E20-AED3-C535DC09F2DD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtui", "..\..\TerrainSDK\vtui\vtui-vc7.vcproj", "{1182B805-A4E1-4E20-AED3-C535DC09F2DD}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro.vcproj", "{13E5F4CD-63ED-454D-A086-1545C79E2552}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro-OSG-vc7.vcproj", "{13E5F4CD-63ED-454D-A086-1545C79E2552}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1182B805-A4E1-4E20-AED3-C535DC09F2DD} = {1182B805-A4E1-4E20-AED3-C535DC09F2DD}
 		{945DEB8C-5D7D-4CAC-9E5D-9FB69BF5A7D4} = {945DEB8C-5D7D-4CAC-9E5D-9FB69BF5A7D4}
@@ -16,11 +16,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro.vcproj
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D} = {15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper.vcproj", "{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper-vc7.vcproj", "{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata-vc7.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject

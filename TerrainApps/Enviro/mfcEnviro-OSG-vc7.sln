@@ -1,20 +1,20 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mfcEnviro", "mfcEnviro.vcproj", "{F611F2BD-5B1F-4BC6-AE54-3F35FD821C1F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mfcEnviro", "mfcEnviro-OSG-vc7.vcproj", "{F611F2BD-5B1F-4BC6-AE54-3F35FD821C1F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1045CA3D-3526-482B-B4BA-ACBF57404E9B} = {1045CA3D-3526-482B-B4BA-ACBF57404E9B}
 		{F35AD44A-5921-4C7F-842F-0B3138825EA6} = {F35AD44A-5921-4C7F-842F-0B3138825EA6}
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98} = {C2715AAA-C99B-438E-BF57-8357BD21AE98}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata-vc7.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper-vc7.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg.vcproj", "{1045CA3D-3526-482B-B4BA-ACBF57404E9B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg-vc7.vcproj", "{1045CA3D-3526-482B-B4BA-ACBF57404E9B}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject

@@ -1,10 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VTConvert", "VTConvert.vcproj", "{9FA039E2-39E8-45E9-9648-790ABF5B269F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VTConvert", "VTConvert-vc7.vcproj", "{9FA039E2-39E8-45E9-9648-790ABF5B269F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98} = {C2715AAA-C99B-438E-BF57-8357BD21AE98}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata-vc7.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
