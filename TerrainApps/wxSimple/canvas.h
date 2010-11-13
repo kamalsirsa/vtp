@@ -14,6 +14,7 @@
 #include "wx/glcanvas.h"
 
 class vtGLCanvas;
+class LocalGLContext;
 
 //
 // A Canvas for the main view area.
@@ -25,6 +26,10 @@ public:
 	  const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = _T("vtGLCanvas"),
 	  int* gl_attrib = NULL);
 	~vtGLCanvas(void);
+
+#ifdef USE_OSG_VIEWER
+	LocalGLContext* GetGLContext() { return m_pGLContext; }
+#endif
 
 #if WIN32
     // Hook into the default window procedure
@@ -40,6 +45,12 @@ public:
 
 	bool m_bPainting;
 	bool m_bRunning;
+
+#ifdef USE_OSG_VIEWER
+	LocalGLContext *m_pGLContext; // Note this is different than wxGLCanvas::m_glContext
+#else
+	wxGLContext *m_pGLContext; // Note this is different than wxGLCanvas::m_glContext
+#endif
 
 protected:
 	DECLARE_EVENT_TABLE()

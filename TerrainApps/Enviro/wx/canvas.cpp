@@ -85,11 +85,15 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	parent->Show();
 
 #ifndef __WXMAC__
-	m_glContext = new wxGLContext(this);
+#ifdef USE_OSG_VIEWER
+	m_pGLContext = new LocalGLContext(this);
+#else
+	m_pGLContext = new wxGLContext(this);
+#endif
 #endif
 
 #if defined(__WXMSW__)
-	HGLRC hContext = m_glContext->GetGLRC();
+	HGLRC hContext = m_pGLContext->GetGLRC();
 	if (NULL == hContext)
 	{
 		wxMessageBox(_("No OpenGL support found") , _("Error"), wxICON_ERROR | wxOK);
@@ -102,7 +106,11 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	// Documentation says about SetCurrent:
 	// "Note that this function may only be called after the window has been shown."
 	VTLOG1("vtGLCanvas: calling SetCurrent\n");
+#ifdef __WXMAC__
 	SetCurrent();
+#else
+	SetCurrent(*m_pGLContext);
+#endif
 
 	VTLOG1("OpenGL version: ");
 	VTLOG1((const char *) glGetString(GL_VERSION));
@@ -113,6 +121,10 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	VTLOG1("OpenGL renderer: ");
 	VTLOG1((const char *) glGetString(GL_RENDERER));
 	VTLOG1("\n");
+
+#ifdef USE_OSG_VIEWER
+	m_pGLContext->ReleaseContext(*this);
+#endif
 
 	for (int i = 0; i < 512; i++)
 		m_pbKeyState[i] = false;

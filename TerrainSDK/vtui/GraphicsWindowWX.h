@@ -2,13 +2,22 @@
 
 #ifdef USE_OSG_VIEWER
 
+#include "wx/glcanvas.h"
 #include <osgViewer/GraphicsWindow>
+
+
+class LocalGLContext : public wxGLContext
+{
+public:
+    LocalGLContext(wxGLCanvas *win, const wxGLContext* other=NULL /* for sharing display lists */ );
+	void ReleaseContext(const wxGLCanvas& win);
+};
 
 class wxGLCanvas;
 class GraphicsWindowWX : public osgViewer::GraphicsWindow
 {
 public:
-	GraphicsWindowWX(wxGLCanvas* pCanvas);
+	GraphicsWindowWX(wxGLCanvas* pCanvas, LocalGLContext *pContext);
 
 
 	void InvalidateCanvas() { m_bCanvasValid = false; }
@@ -16,20 +25,20 @@ public:
     bool makeCurrentImplementation();
     void swapBuffersImplementation();
 
-	// No portable way to do this on wxWidgets
-    virtual bool releaseContextImplementation() { return true; }
+    virtual bool releaseContextImplementation();
 	
     // Cannot think of anything to do here at the moment
     virtual void closeImplementation() {}
 
-	// We pass in an already realized context on construction so can just return true here
-    virtual bool realizeImplementation() { return true; }
-	// and here
-    virtual bool valid() const { return true; }
+    virtual bool realizeImplementation();
 
-    virtual bool isRealizedImplementation() const  { return m_bCanvasValid; }
+	virtual bool valid() const { return true; }
+
+    virtual bool isRealizedImplementation() const  { return m_bCanvasValid && m_bIsRealized; }
 private:
 	wxGLCanvas* m_pCanvas;
+	LocalGLContext *m_pGLContext;
 	bool m_bCanvasValid;
+	bool m_bIsRealized;
 };
 #endif

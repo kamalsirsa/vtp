@@ -22,6 +22,10 @@
 #include "frame.h"
 #include "app.h"
 
+#ifdef USE_OSG_VIEWER
+#include "vtui/GraphicsWindowWX.h"
+#endif
+
 DECLARE_APP(vtApp);
 
 // Demonstrate how to use the SpaceNavigator
@@ -42,25 +46,61 @@ END_EVENT_TABLE()
 
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
-wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
+wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
 {
 	VTLOG("vtGLCanvas constructor\n");
 
-	parent->Show(TRUE);
-	SetCurrent();
-
-	wxGLContext *context = GetContext();
-	if (context)
-		VTLOG("OpenGL context: %lx\n", context);
-	else
-	{
-		VTLOG("No OpenGL context.\n");
-		return;
-	}
-	VTLOG("OpenGL version: %s\n", (const char *) glGetString(GL_VERSION));
-
+#ifdef __WXMAC__
+	const GLint Value = 1;
+	aglSetInteger(GetContext()->m_glContext, AGL_SWAP_INTERVAL, &Value); // Force VSYNC on
+#else
 	m_bPainting = false;
+#endif
 	m_bRunning = true;
+
+	parent->Show();
+
+#ifndef __WXMAC__
+#ifdef USE_OSG_VIEWER
+	m_pGLContext = new LocalGLContext(this);
+#else
+	m_pGLContext = new wxGLContext(this);
+#endif
+#endif
+
+#if defined(__WXMSW__)
+	HGLRC hContext = m_pGLContext->GetGLRC();
+	if (NULL == hContext)
+	{
+		wxMessageBox(_("No OpenGL support found") , _("Error"), wxICON_ERROR | wxOK);
+		exit(-1);
+	}
+	else
+		VTLOG("OpenGL context: %lx\n", hContext);
+#endif
+
+	// Documentation says about SetCurrent:
+	// "Note that this function may only be called after the window has been shown."
+	VTLOG1("vtGLCanvas: calling SetCurrent\n");
+#ifdef __WXMAC__
+	SetCurrent();
+#else
+	SetCurrent(*m_pGLContext);
+#endif
+
+	VTLOG1("OpenGL version: ");
+	VTLOG1((const char *) glGetString(GL_VERSION));
+	VTLOG1("\n");
+	VTLOG1("OpenGL vendor: ");
+	VTLOG1((const char *) glGetString(GL_VENDOR));
+	VTLOG1("\n");
+	VTLOG1("OpenGL renderer: ");
+	VTLOG1((const char *) glGetString(GL_RENDERER));
+	VTLOG1("\n");
+
+#ifdef USE_OSG_VIEWER
+	m_pGLContext->ReleaseContext(*this);
+#endif
 
 	// Initialize spacenavigator, if there is one present
 	g_SpaceNav.Init();

@@ -14,6 +14,7 @@
 #include "wx/glcanvas.h"
 
 class vtGLCanvas;
+class LocalGLContext;
 
 //
 // A Canvas for the main view area.
@@ -25,6 +26,10 @@ public:
 	  const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = _T("vtGLCanvas"),
 	  int* gl_attrib = NULL);
 	~vtGLCanvas(void);
+
+#ifdef USE_OSG_VIEWER
+	LocalGLContext* GetGLContext() { return m_pGLContext; }
+#endif
 
 	// SpaceNavigator methods
 	void SetSpaceNavTarget(vtTransform *t);
@@ -63,6 +68,12 @@ protected:
 
 	// The number of mousemoves we've gotten since last redraw
 	int m_iConsecutiveMousemoves;
+
+#ifdef USE_OSG_VIEWER
+	LocalGLContext *m_pGLContext; // Note this is different than wxGLCanvas::m_glContext
+#else
+	wxGLContext *m_pGLContext; // Note this is different than wxGLCanvas::m_glContext
+#endif
 
 	DECLARE_EVENT_TABLE()
 };

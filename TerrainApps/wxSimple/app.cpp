@@ -51,7 +51,7 @@ bool vtApp::OnInit(void)
 	m_pFrame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));
 
 #ifdef USE_OSG_VIEWER
-	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(m_pFrame->m_canvas));
+	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(m_pFrame->m_canvas, m_pFrame->m_canvas->GetGLContext()));
 #endif
 
 	return CreateScene();

@@ -136,7 +136,6 @@ bool vtScene::Init(bool bStereo, int iStereoMode)
 		if (iStereoMode == 1) mode = osg::DisplaySettings::QUAD_BUFFER;
 		displaySettings->setStereoMode(mode);
 	}
-	m_pOsgViewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
 #ifdef USE_OSG_STATS
 	osgViewer::StatsHandler* pStatsHandler = new osgViewer::StatsHandler;
 	pStatsHandler->setKeyEventPrintsOutStats(0);
