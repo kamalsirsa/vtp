@@ -391,7 +391,7 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 	char** MyArgv;
 	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
 	vtGetScene()->Init(MyArgc, MyArgv, g_Options.m_bStereo, g_Options.m_iStereoMode);
-	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas, frame->m_canvas->GetGLContext()));
+	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
 #else
 	vtGetScene()->Init(g_Options.m_bStereo, g_Options.m_iStereoMode);
 #endif

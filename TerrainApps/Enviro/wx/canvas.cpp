@@ -84,16 +84,13 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	VTLOG1("vtGLCanvas: calling Show on parent\n");
 	parent->Show();
 
+#ifndef USE_OSG_VIEWER
 #ifndef __WXMAC__
-#ifdef USE_OSG_VIEWER
-	m_pGLContext = new LocalGLContext(this);
-#else
-	m_pGLContext = new wxGLContext(this);
-#endif
+	wxGLContext *pGLContext = new wxGLContext(this);
 #endif
 
 #if defined(__WXMSW__)
-	HGLRC hContext = m_pGLContext->GetGLRC();
+	HGLRC hContext = pGLContext->GetGLRC();
 	if (NULL == hContext)
 	{
 		wxMessageBox(_("No OpenGL support found") , _("Error"), wxICON_ERROR | wxOK);
@@ -109,7 +106,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 #ifdef __WXMAC__
 	SetCurrent();
 #else
-	SetCurrent(*m_pGLContext);
+	SetCurrent(*pGLContext);
 #endif
 
 	VTLOG1("OpenGL version: ");
@@ -121,9 +118,6 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	VTLOG1("OpenGL renderer: ");
 	VTLOG1((const char *) glGetString(GL_RENDERER));
 	VTLOG1("\n");
-
-#ifdef USE_OSG_VIEWER
-	m_pGLContext->ReleaseContext(*this);
 #endif
 
 	for (int i = 0; i < 512; i++)
@@ -150,7 +144,7 @@ vtGLCanvas::~vtGLCanvas(void)
 	CPerformanceMonitorDialog::NVPM_shutdown();
 #endif
 #ifdef USE_OSG_VIEWER
-	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->InvalidateCanvas();
+	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->CloseOsgContext();
 #endif
 	VTLOG1("Deleting Canvas\n");
 }

@@ -8,17 +8,39 @@
 
 #include "wx/glcanvas.h"
 #include "GraphicsWindowWX.h"
+#include <osgViewer/Viewer>
 
-GraphicsWindowWX::GraphicsWindowWX(wxGLCanvas* pCanvas, LocalGLContext *pContext)
+class LocalGLContext : public wxGLContext
+{
+public:
+    LocalGLContext(wxGLCanvas *win, const wxGLContext* other=NULL /* for sharing display lists */ )
+	: wxGLContext(win, other)
+	{
+	}
+
+	void ReleaseContext(const wxGLCanvas& win)
+	{
+#if defined(__WXMSW__)
+		wglMakeCurrent((HDC) win.GetHDC(), NULL);
+#endif
+	}
+};
+
+GraphicsWindowWX::GraphicsWindowWX(wxGLCanvas* pCanvas)
 {
 	m_pCanvas = pCanvas;
-	m_pGLContext = pContext;
+	m_pGLContext = NULL;
+	m_bValid = true;
+	m_bIsRealized = false;
+}
+
+bool GraphicsWindowWX::realizeImplementation()
+{
+	m_pGLContext = new LocalGLContext(m_pCanvas);
 	wxPoint pos = m_pCanvas->GetPosition();
 	wxSize  size = m_pCanvas->GetSize();
-	m_bCanvasValid = true;
-	m_bIsRealized = false;
 
-	// Set up traits to match the passed in window
+	// Set up traits to match the canvas
 	_traits = new GraphicsContext::Traits;
 	_traits->x = pos.x;
 	_traits->y = pos.y;
@@ -29,12 +51,7 @@ GraphicsWindowWX::GraphicsWindowWX(wxGLCanvas* pCanvas, LocalGLContext *pContext
 	setState( new osg::State );
 	getState()->setGraphicsContext(this);
 	getState()->setContextID( osg::GraphicsContext::createNewContextID() );
-}
-
-bool GraphicsWindowWX::realizeImplementation()
-{
 	m_bIsRealized = true;
-	// We pass in an already realized context on construction so can just return true here
 	return true;
 }
 
@@ -55,16 +72,26 @@ void GraphicsWindowWX::swapBuffersImplementation()
     m_pCanvas->SwapBuffers();
 }
 
-LocalGLContext::LocalGLContext(wxGLCanvas *win, const wxGLContext* other /* for sharing display lists */ )
-	: wxGLContext(win, other)
+bool GraphicsWindowWX::isRealizedImplementation() const  
 {
+	return m_bIsRealized;
 }
 
-void LocalGLContext::ReleaseContext(const wxGLCanvas& win)
+void GraphicsWindowWX::closeImplementation()
 {
-#if defined(__WXMSW__)
-    wglMakeCurrent((HDC) win.GetHDC(), NULL);
-#endif
+	m_bValid = false;
+}
+
+bool GraphicsWindowWX::valid() const
+{
+	return m_bValid;
+}
+
+void GraphicsWindowWX::CloseOsgContext()
+{
+	getEventQueue()->closeWindow(0);
+	// Force handling of event before the idle loop can call frame();
+	dynamic_cast<osgViewer::View*>(getCameras().front()->getView())->getViewerBase()->eventTraversal();
 }
 
 #endif

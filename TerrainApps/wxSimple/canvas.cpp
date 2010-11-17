@@ -60,16 +60,13 @@ wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
 
 	parent->Show();
 
+#ifndef USE_OSG_VIEWER
 #ifndef __WXMAC__
-#ifdef USE_OSG_VIEWER
-	m_pGLContext = new LocalGLContext(this);
-#else
-	m_pGLContext = new wxGLContext(this);
-#endif
+	wxGLContext *pGLContext = new wxGLContext(this);
 #endif
 
 #if defined(__WXMSW__)
-	HGLRC hContext = m_pGLContext->GetGLRC();
+	HGLRC hContext = pGLContext->GetGLRC();
 	if (NULL == hContext)
 	{
 		wxMessageBox(_("No OpenGL support found") , _("Error"), wxICON_ERROR | wxOK);
@@ -85,7 +82,7 @@ wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
 #ifdef __WXMAC__
 	SetCurrent();
 #else
-	SetCurrent(*m_pGLContext);
+	SetCurrent(*pGLContext);
 #endif
 
 	VTLOG1("OpenGL version: ");
@@ -97,9 +94,6 @@ wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
 	VTLOG1("OpenGL renderer: ");
 	VTLOG1((const char *) glGetString(GL_RENDERER));
 	VTLOG1("\n");
-
-#ifdef USE_OSG_VIEWER
-	m_pGLContext->ReleaseContext(*this);
 #endif
 
 	// Initialize spacenavigator, if there is one present
@@ -109,6 +103,9 @@ wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
 
 vtGLCanvas::~vtGLCanvas(void)
 {
+#ifdef USE_OSG_VIEWER
+	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->CloseOsgContext();
+#endif
 }
 
 #if WIN32
