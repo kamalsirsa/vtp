@@ -603,8 +603,9 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 
 		vtMesh::PrimType ptype = mesh->GetPrimType();
 
-		// For now, this method only does tristrips and fans
-		if (ptype != vtMesh::TRIANGLE_STRIP && ptype != vtMesh::TRIANGLE_FAN)
+		// For now, this method only does tristrips, fans, and individual triangles
+		if (ptype != vtMesh::TRIANGLE_STRIP && ptype != vtMesh::TRIANGLE_FAN
+			 && ptype != vtMesh::TRIANGLES)
 			continue;
 
 		// First write the vertices
@@ -639,17 +640,29 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 		matname.Format("mat%03d", matidx);
 		fprintf(file->fp, "usemtl %s\n", (const char *) matname);
 
+		unsigned int num_prims = mesh->GetNumPrims();
+		int idx0, idx1, idx2;
+		if (ptype == vtMesh::TRIANGLES)
+		{
+			for (k = 0; k < num_prims; k++)
+			{
+				idx0 = mesh->GetIndex(k*3);
+				idx1 = mesh->GetIndex(k*3+1);
+				idx2 = mesh->GetIndex(k*3+2);
+				fprintf(file->fp, "f %d %d %d\n",
+					idx0+1, idx1+1, idx2+1);	// Wavefront indices are actually 1-based!
+
+			}
+		}
 		if (ptype == vtMesh::TRIANGLE_STRIP || ptype == vtMesh::TRIANGLE_FAN)
 		{
 			// OBJ doesn't do strips, so break them into individual triangles
-			unsigned int num_prims = mesh->GetNumPrims();
 			int prim_start = 0;
 			for (k = 0; k < num_prims; k++)
 			{
 				int len = mesh->GetPrimLen(k);
 				for (int t = 0; t < len-2; t++)
 				{
-					int idx0, idx1, idx2;
 					if (ptype == vtMesh::TRIANGLE_STRIP)
 					{
 						idx0 = mesh->GetIndex(prim_start + t);
