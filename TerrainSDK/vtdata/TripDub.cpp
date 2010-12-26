@@ -164,6 +164,7 @@ bool ReqContext::Fetch(const char *url)
 	}
 	else
 	{
+		VTLOG("ReqContext::Fetch curl error: %d\n", result);
 		m_strErrorMsg = errorbuf;
 		return false;
 	}

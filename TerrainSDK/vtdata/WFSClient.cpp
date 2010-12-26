@@ -164,10 +164,12 @@ bool GetLayersFromWFS(const char *szServerURL, OGCLayerArray &layers)
 bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers,
 					  vtString &msg, bool (*progress_callback)(int))
 {
-	VTLOG1("GetLayersFromWMS\n");
-
 	vtString url = szServerURL;
 	url += "?REQUEST=GetCapabilities";
+
+	VTLOG1("GetLayersFromWMS, URL: ");
+	VTLOG1(url);
+	VTLOG1("\n");
 
 	ReqContext cl;
 	cl.SetProgressCallback(progress_callback);
@@ -180,7 +182,7 @@ bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers,
 		return false;
 	}
 
-#if 1
+#if 0
 	// write to file for debugging
 	const char *temp_fname = "C:/temp/wms.xml";
 	FILE *fp = vtFileOpen(temp_fname, "wb");
