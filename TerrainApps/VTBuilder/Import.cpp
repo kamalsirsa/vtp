@@ -567,6 +567,11 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 		{
 			pLayer = ImportImage(strFileName);
 		}
+		else if (!strExt.CmpNoCase(_T("mif")) ||
+				 !strExt.CmpNoCase(_T("tab")))
+		{
+			pLayer = ImportRawFromOGR(strFileName);
+		}
 		else
 		{
 			// Many other Elevation formats are supported
