@@ -46,7 +46,11 @@ END_EVENT_TABLE()
 
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
+#ifdef __WXMAC__
+wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
+#else
 wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
+#endif
 {
 	VTLOG("vtGLCanvas constructor\n");
 
