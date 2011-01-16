@@ -194,6 +194,7 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 	if (!fp)
 	{
 		if (err) *err = EGE_FILE_OPEN;
+		VTLOG(" LoadBTData: can't open '%s'\n", szFileName);
 		return false;		// Cannot Open File
 	}
 

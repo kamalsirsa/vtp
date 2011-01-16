@@ -1610,7 +1610,14 @@ float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 
 			// Check if grid is in memory
 			if (!grid->HasData())
-				ElevCacheLoadData(elev);
+			{
+				bool success = ElevCacheLoadData(elev);
+
+				// Safety check; we should never fail to read a BT, but just in case anything
+				//  goes wrong, don't crash.
+				if (!success)
+					return INVALID_ELEVATION;
+			}
 
 			fData = grid->GetFilteredValue(p);
 			if (fData != INVALID_ELEVATION)

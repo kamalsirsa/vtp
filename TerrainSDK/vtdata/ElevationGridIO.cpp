@@ -1882,7 +1882,7 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 
 				// check for several different commonly used values meaning
 				// "no data at this location"
-				if (fElev == -9999 || fElev == -32766 || fElev == 32767 || fElev < -100000)
+				if (fElev == -9999 || fElev == -32766 || fElev == 32767 || fElev == -32767 || fElev < -100000)
 					SetValue(i, m_iRows-1-j, INVALID_ELEVATION);
 				else
 					SetFValue(i, m_iRows-1-j, fElev * fScale);

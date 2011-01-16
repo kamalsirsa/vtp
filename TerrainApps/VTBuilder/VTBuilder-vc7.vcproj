@@ -109,7 +109,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdal_i.lib ws2_32.lib netcdf.lib libpng13.lib zlib1.lib libjpeg.lib squish.lib"
+				AdditionalDependencies="gdal_i.lib ws2_32.lib netcdf.lib libpng13.lib zlib1.lib libjpeg.lib squish.lib libMini.lib"
 				OutputFile="Release_Unicode/VTBuilder_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

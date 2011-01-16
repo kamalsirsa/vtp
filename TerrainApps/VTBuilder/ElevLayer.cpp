@@ -544,7 +544,8 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 	if (!m_pGrid)
 		return;
 
-	if (m_pBitmap == NULL)
+	// If we have grid data, but we don't yet have a bitmap to render it, then allocate
+	if (m_pGrid->HasData() && m_pBitmap == NULL)
 		SetupBitmap(pDC);
 
 	if (m_pBitmap == NULL || !m_bBitmapRendered)
@@ -2045,7 +2046,7 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 	vtString fname_utf8 = (const char *)fname.mb_str(wxConvUTF8);
 	vtElevationGrid *grid = elev->m_pGrid;
 
-	VTLOG("Need '%s': \n", StartOfFilename(fname_utf8));
+	VTLOG("ElevCache needs '%s': \n", StartOfFilename(fname_utf8));
 
 	size_t num_loaded = g_GridMRU.size();
 
@@ -2056,7 +2057,7 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 	// Consider memory needs of new grid
 	mem += grid->MemoryNeeded();
 
-	VTLOG("  Need %d bytes (%.1f MB, limit is %d MB)\n", mem,
+	VTLOG("  ElevCache needs %d bytes (%.1f MB, limit is %d MB)\n", mem,
 		(float)mem / (1024*1024), vtElevLayer::m_iGridMemLimit);
 
 	bool bGo = true;
@@ -2093,9 +2094,12 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 	}
 
 	//OpenProgressDialog(_T("Reading BT file"));
-	VTLOG1("  Loading.\n");
+	VTLOG1("  ElevCache loading.\n");
 	if (!grid->LoadBTData(fname_utf8, progress_callback))
+	{
+		VTLOG("Major error!  Couldn't load file '%s' in the elevation cache.\n", fname_utf8);
 		return false;
+	}
 	//CloseProgressDialog()
 
 	// most recently used goes to the end of the list
