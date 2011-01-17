@@ -784,9 +784,10 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 
 	int i, j;
 	int total = opts.rows * opts.cols, done = 0;
-	for (j = 0; j < opts.rows; j++)
+	bool bCancelled = false;
+	for (j = 0; j < opts.rows && !bCancelled; j++)
 	{
-		for (i = 0; i < opts.cols; i++)
+		for (i = 0; i < opts.cols && !bCancelled; i++)
 		{
 			// We might want to skip certain rows
 			if (opts.iMinRow != -1 &&
@@ -943,7 +944,10 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 				else if (method == 3)
 					bGood = (base_lod.FillGapsByRegionGrowing(2, 5, progress_callback_minor) != -1);
 				if (!bGood)
-					return false;
+				{
+					bCancelled = true;
+					break;
+				}
 
 				// Some methods may not fill all gaps, so replace the remainder as a safety measure
 				base_lod.ReplaceValue(INVALID_ELEVATION,0.0);
@@ -1039,7 +1043,10 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 					(const char *)fname, tilesize, tilesize);
 				bool bCancel = UpdateProgressDialog2(done*99/total, 0, msg);
 				if (bCancel)
-					return false;
+				{
+					bCancelled = true;
+					break;
+				}
 
 				vtMiniDatabuf buf;
 				buf.SetBounds(m_proj, tile_area);
@@ -1078,6 +1085,14 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 		}
 	}
 
+#if USE_OPENGL
+	if (frame)
+	{
+		frame->Close();
+		delete frame;
+	}
+#endif
+
 	// Write .ini file
 	if (!WriteTilesetHeader(opts.fname, opts.cols, opts.rows, opts.lod0size,
 		m_area, m_proj, minheight, maxheight, &lod_existence_map, false))
@@ -1091,14 +1106,6 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 		WriteTilesetHeader(opts.fname_images, opts.cols, opts.rows,
 			opts.lod0size, m_area, m_proj, INVALID_ELEVATION, INVALID_ELEVATION,
 			&lod_existence_map, bJPEG);
-
-#if USE_OPENGL
-	if (frame)
-	{
-		frame->Close();
-		delete frame;
-	}
-#endif
 
 	return true;
 }

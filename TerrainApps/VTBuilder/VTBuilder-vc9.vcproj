@@ -74,7 +74,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Advapi32.lib User32.lib Gdi32.lib gdal_id-vc9.lib ws2_32.lib netcdf.lib libpng13d-vc9.lib zlib1d-vc9.lib libjpeg.lib"
+				AdditionalDependencies="Advapi32.lib User32.lib Gdi32.lib gdal_id-vc9.lib ws2_32.lib netcdf.lib libpng15d-vc9.lib zlib1d-vc9.lib libjpeg.lib libMinid.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="oldnames.lib,MSVCRT.lib"
@@ -167,7 +167,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Advapi32.lib User32.lib Gdi32.lib gdal_i-vc9.lib ws2_32.lib netcdf.lib libpng13-vc9.lib zlib1-vc9.lib libjpeg.lib"
+				AdditionalDependencies="Advapi32.lib User32.lib Gdi32.lib gdal_i-vc9.lib ws2_32.lib netcdf.lib libpng15-vc9.lib zlib1-vc9.lib libjpeg.lib libMini.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="oldnames.lib, msvcrtd.lib"

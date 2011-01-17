@@ -774,7 +774,13 @@ FILE *vtFileOpen(const char *fname_utf8, const char *mode)
 	// Windows
 	wstring2 fn, mo(mode);
 	fn.from_utf8(fname_utf8);
-	return _wfopen(fn.c_str(), mo.c_str());
+	FILE *fp = _wfopen(fn.c_str(), mo.c_str());
+	if (!fp)
+	{
+		VTLOG("_wfopen failed, errno is %d\n", errno);
+		return NULL;
+	}
+	return fp;
 #elif __DARWIN_OSX__
 	// Mac OS X
 	return fopen(fname_utf8, mode);
