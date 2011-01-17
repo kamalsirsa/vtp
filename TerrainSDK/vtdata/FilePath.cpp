@@ -777,7 +777,8 @@ FILE *vtFileOpen(const char *fname_utf8, const char *mode)
 	FILE *fp = _wfopen(fn.c_str(), mo.c_str());
 	if (!fp)
 	{
-		VTLOG("_wfopen failed, errno is %d\n", errno);
+		if (errno != ENOENT)
+			VTLOG("_wfopen failed, errno is %d\n", errno);
 		return NULL;
 	}
 	return fp;

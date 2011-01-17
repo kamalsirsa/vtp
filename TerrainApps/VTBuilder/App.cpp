@@ -76,6 +76,12 @@ bool BuilderApp::OnInit()
 	VTLOG1(__DATE__);
 	VTLOG1("\n\n");
 
+#if WIN32
+	// To work around the _wfopen/gzclose problem, increase the limit on number of open files
+	int newmax = _setmaxstdio(2048);
+	VTLOG("_setmaxstdio to %d\n", newmax);
+#endif
+
 	// Redirect the wxWindows log messages to our own logging stream
 	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);

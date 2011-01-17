@@ -387,6 +387,8 @@ const vtString *vtMaterialDescriptorArray::FindName(const char *name) const
 
 bool vtMaterialDescriptorArray::LoadExternalMaterials()
 {
+	VTLOG1("vtMaterialDescriptorArray::LoadExternalMaterials:\n");
+
 	// we always need at least 1 internal material
 	CreatePlain();
 
@@ -398,6 +400,7 @@ bool vtMaterialDescriptorArray::LoadExternalMaterials()
 			"not be available.\n", fname);
 		return false;
 	}
+	VTLOG1("   found, loading.\n");
 	return Load(matfile);
 }
 
