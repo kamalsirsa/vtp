@@ -61,12 +61,6 @@ bool ReqContext::DoQuery(vtBytes &data, int redirects)
 
 #include "curl/curl.h"
 
-#ifdef _MSC_VER
-// We will need to link with the LibCurl library.  This can be done
-// automatically with MSVC as follows:
-#pragma comment(lib, "libcurl.lib")
-#endif
-
 size_t write_as_string( void *ptr, size_t size, size_t nmemb, void *stream)
 {
 	ReqContext *context = (ReqContext *)stream;

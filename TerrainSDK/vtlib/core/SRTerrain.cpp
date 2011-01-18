@@ -30,6 +30,7 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale) { return DTEr
 
 using namespace mini;
 
+#if 0
 #ifdef _MSC_VER
   #if _MSC_VER == 1500	// vc9
 	#pragma message( "Adding link with libMini-vc9.lib" )
@@ -41,6 +42,7 @@ using namespace mini;
 	#pragma message( "Adding link with libMini-vc7.lib" )
 	#pragma comment( lib, "libMini-vc7.lib" )
   #endif
+#endif
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
