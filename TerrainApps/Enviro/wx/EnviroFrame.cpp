@@ -903,33 +903,6 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		g_App.ShowEarthLines(m_bEarthLines);
 		break;
 
-	case 'z':
-		// A handy place to put test code
-#if 0
-		if (pTerr && g_App.m_bSelectedStruct)
-		{
-			vtStructureArray3d *sa = pTerr->GetStructureLayer();
-			int i = 0;
-			while (!sa->GetAt(i)->IsSelected())
-				i++;
-			vtBuilding3d *bld = sa->GetBuilding(i);
-			// (Do something to the building as a test)
-			sa->ConstructStructure(bld);
-		}
-#endif
-#if SUPPORT_QUIKGRID
-		if (pTerr)
-		{
-			vtContourConverter cc;
-			if (cc.Setup(pTerr, RGBf(1,1,0), 10))
-			{
-				cc.GenerateContours(500);
-				cc.Finish();
-			}
-		}
-#endif
-		break;
-
 	case 'y':
 		// Example code: modify the terrain by using the (slow) approach of using
 		//  vtTerrain methods GetInitialGrid and UpdateElevation.
@@ -1062,8 +1035,8 @@ void EnviroFrame::DoTestCode()
 {
 	SetMode(MM_SLOPE);
 
-/*
-#if VTLIB_OSG
+#if VTLIB_OSG && 0
+	// Shadow tests
 	const int ReceivesShadowTraversalMask = 0x1;
 	const int CastsShadowTraversalMask = 0x2;
 
@@ -1115,7 +1088,106 @@ void EnviroFrame::DoTestCode()
 
 	vtLogNativeGraph(shadowedScene.get());
 #endif
-	*/
+#if 0
+		if (pTerr && g_App.m_bSelectedStruct)
+		{
+			vtStructureArray3d *sa = pTerr->GetStructureLayer();
+			int i = 0;
+			while (!sa->GetAt(i)->IsSelected())
+				i++;
+			vtBuilding3d *bld = sa->GetBuilding(i);
+			// (Do something to the building as a test)
+			sa->ConstructStructure(bld);
+		}
+#endif
+#if SUPPORT_QUIKGRID && 0
+		// Create 500m contours
+		if (pTerr)
+		{
+			vtContourConverter cc;
+			if (cc.Setup(pTerr, RGBf(1,1,0), 10))
+			{
+				cc.GenerateContours(500);
+				cc.Finish();
+			}
+		}
+#endif
+#if 0
+		{
+			// Read points from a text file, create OBJ file with geometry at that locations
+			FILE *fp = fopen("test.txt", "r");
+			if (!fp) return;
+
+			char buf[80];
+			float depth, x, y;
+
+			// Add the geometry and materials to the shape
+			vtGeom *pGeom = new vtGeom;
+			vtMaterialArray *pMats = new vtMaterialArray;
+			pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
+			pGeom->SetMaterials(pMats);
+
+			vtMesh *mesh = new vtMesh(vtMesh::TRIANGLES, VT_Normals | VT_Colors, 4000);
+
+			int line = 0;
+			fgets(buf, 80, fp);	// skip first
+			while (fgets(buf, 80, fp) != NULL)
+			{
+				sscanf(buf, "%f\t%f\t%f", &depth, &x, &y);
+				int idx = mesh->GetNumVertices();
+				for (int i = 0; i < 20; i++)
+				{
+					double angle = (double)i / 20.0 * PI2d;
+					FPoint3 vec;
+					vec.x = x/2 * cos(angle);
+					vec.y = 0.0f;
+					vec.z = y/2 * sin(angle);
+
+					// normal
+					FPoint3 norm = vec;
+					norm.Normalize();
+
+					// color
+					RGBAf col(1.0f, 1.0f, 1.0f, 1.0f);
+					if (x > y)
+					{
+						float frac = (x-y)/1.5f;	// typical: 0 - 1.2
+						col.g -= frac;
+						col.b -= frac;
+					}
+					else if (y > x)
+					{
+						float frac = (y-x)/1.5f;	// typical: 0 - 1.2
+						col.r -= frac;
+						col.g -= frac;
+					}
+
+					int add = mesh->AddVertexN(vec.x, /*650*/-depth, vec.z,
+						norm.x, norm.y, norm.z);
+					mesh->SetVtxColor(add, col);
+				}
+				if (line != 0)
+				{
+					for (int i = 0; i < 20; i++)
+					{
+						int next = (i+1)%20;
+						mesh->AddTri(idx-20 + i, idx + i,    idx-20 + next);
+						mesh->AddTri(idx    + i, idx + next, idx-20 + next);
+					}
+				}
+				line++;
+			}
+			pGeom->AddMesh(mesh, 0);
+			WriteGeomToOBJ(pGeom, "bore.obj");
+
+			vtTransform *model = new vtTransform;
+			model->AddChild(pGeom);
+			DPoint3 pos;
+			g_App.m_pTerrainPicker->GetCurrentEarthPos(pos);
+			GetCurrentTerrain()->AddNode(model);
+			GetCurrentTerrain()->PlantModelAtPoint(model, DPoint2(pos.x, pos.y));
+		}
+#endif
 }
 
 void EnviroFrame::LoadClouds(const char *fname)
