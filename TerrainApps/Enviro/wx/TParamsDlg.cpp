@@ -804,8 +804,12 @@ void TParamsDlg::RefreshLocationFields()
 	m_pLocField->Clear();
 	m_pLocField->Append(_("(default)"));
 
+	vtString locfile = m_strLocFile.mb_str(wxConvUTF8);
+	if (locfile == "")
+		return;
+
 	vtString fname = "Locations/";
-	fname += m_strLocFile.mb_str(wxConvUTF8);
+	fname += locfile;
 	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 	if (path == "")
 		return;

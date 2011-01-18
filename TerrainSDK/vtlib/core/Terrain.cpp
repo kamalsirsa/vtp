@@ -2642,13 +2642,17 @@ bool vtTerrain::CreateStep5()
 	ActivateEngines(false);
 
 	// Read stored locations
-	vtString loc = "Locations/";
-	loc += m_Params.GetValueString(STR_LOCFILE);
-	vtString path = FindFileOnPaths(vtGetDataPath(), loc);
-	if (path != "")
+	vtString locfile = m_Params.GetValueString(STR_LOCFILE);
+	if (locfile != "")
 	{
-		VTLOG("Reading locations file: %s.\n", (const char *) path);
-		m_LocSaver.Read(path);
+		vtString loc = "Locations/";
+		loc += locfile;
+		vtString path = FindFileOnPaths(vtGetDataPath(), loc);
+		if (path != "")
+		{
+			VTLOG("Reading locations file: %s.\n", (const char *) path);
+			m_LocSaver.Read(path);
+		}
 	}
 	VTLOG1("Setup location saver coordinate conversion.\n");
 	m_LocSaver.SetConversion(m_pHeightField->m_Conversion);
