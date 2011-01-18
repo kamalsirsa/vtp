@@ -2331,6 +2331,6 @@ void OGRToDPolygon2(const OGRPolygon &op, DPolygon2 &dp)
 		line = dp[1+ring];
 		line.SetSize(inner->getNumPoints()-1);
 		for (int i = 0; i < inner->getNumPoints()-1; i++)
-			line[i].Set(outer->getX(i), outer->getY(i));
+			line[i].Set(inner->getX(i), inner->getY(i));
 	}
 }
