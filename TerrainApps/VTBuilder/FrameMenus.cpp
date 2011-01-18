@@ -78,6 +78,7 @@ EVT_MENU(ID_SPECIAL_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
 EVT_MENU(ID_SPECIAL_DYMAX_MAP,	MainFrame::OnDymaxMap)
 EVT_MENU(ID_SPECIAL_PROCESS_BILLBOARD,	MainFrame::OnProcessBillboard)
 EVT_MENU(ID_SPECIAL_GEOCODE,	MainFrame::OnGeocode)
+EVT_MENU(ID_SPECIAL_RUN_TEST,	MainFrame::OnRunTest)
 EVT_MENU(ID_FILE_EXIT,		MainFrame::OnQuit)
 
 EVT_UPDATE_UI(ID_FILE_MRU,	MainFrame::OnUpdateFileMRU)
@@ -367,6 +368,7 @@ void MainFrame::CreateMenus()
 	specialMenu->Append(ID_SPECIAL_DYMAX_MAP, _("Create Dymaxion Map"));
 	specialMenu->Append(ID_SPECIAL_PROCESS_BILLBOARD, _("Process Billboard Texture"));
 	specialMenu->Append(ID_SPECIAL_GEOCODE, _("Geocode"));
+	specialMenu->Append(ID_SPECIAL_RUN_TEST, _("Run test"));
 	specialMenu->Append(ID_ELEV_COPY, _("Copy Elevation Layer to Clipboard"));
 	specialMenu->Append(ID_ELEV_PASTE_NEW, _("New Elevation Layer from Clipboard"));
 	fileMenu->Append(0, _("Special"), specialMenu);
@@ -783,6 +785,11 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 void MainFrame::OnGeocode(wxCommandEvent &event)
 {
 	DoGeocode();
+}
+
+void MainFrame::OnRunTest(wxCommandEvent &event)
+{
+	m_pView->RunTest();
 }
 
 void MainFrame::OnQuit(wxCommandEvent &event)
@@ -3331,6 +3338,12 @@ void MainFrame::OnRawConvertToTIN(wxCommandEvent& event)
 
 	vtElevLayer *pEL = new vtElevLayer;
 	pEL->SetTin(tin);
+
+	// inherit name
+	wxString lname = pRaw->GetLayerFilename();
+	RemoveFileExtensions(lname);
+	pEL->SetLayerFilename(lname + wxString(".itf", wxConvUTF8));
+
 	AddLayer(pEL);
 	SetActiveLayer(pEL);
 

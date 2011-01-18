@@ -1970,28 +1970,32 @@ void BuilderView::OnChar(wxKeyEvent& event)
 	{
 		SetScale(GetScale() / sqrt(2.0));
 	}
-	else if (code == WXK_F10)
+	else
+		event.Skip();
+}
+
+void BuilderView::RunTest()
+{
+	// a place to put quick hacks and tests
+#if 0
+	vtRawLayer *pRaw = g_bld->GetActiveRawLayer();
+	if (!pRaw) return;
+	pRaw->ReadGeoURL();
+	Refresh();
+#endif
+#if 0
+	vtRoadLayer *pR = (vtRoadLayer *)g_bld->FindLayerOfType(LT_ROAD);
+	vtElevLayer *pE = (vtElevLayer *)g_bld->FindLayerOfType(LT_ELEVATION);
+	pR->CarveRoadway(pE, 2.0);
+#endif
+#if 0
+	vtElevLayer *pE = (vtElevLayer *)g_bld->FindLayerOfType(LT_ELEVATION);
+	if (pE)
 	{
-		// a place to put quick hacks and tests
-#if 0
-		vtRawLayer *pRaw = g_bld->GetActiveRawLayer();
-		if (!pRaw) return;
-		pRaw->ReadGeoURL();
-		Refresh();
-#endif
-#if 0
-		vtRoadLayer *pR = (vtRoadLayer *)g_bld->FindLayerOfType(LT_ROAD);
-		vtElevLayer *pE = (vtElevLayer *)g_bld->FindLayerOfType(LT_ELEVATION);
-		pR->CarveRoadway(pE, 2.0);
-#endif
-#if 0
-		vtElevLayer *pE = (vtElevLayer *)g_bld->FindLayerOfType(LT_ELEVATION);
-		if (pE)
-		{
-			vtElevationGrid *g = pE->m_pGrid;
-			int xs, zs;
-			g->GetDimensions(xs, zs);
-			for (int i = 0; i < xs; i++)
+		vtElevationGrid *g = pE->m_pGrid;
+		int xs, zs;
+		g->GetDimensions(xs, zs);
+		for (int i = 0; i < xs; i++)
 			for (int j = 0; j < zs; j++)
 			{
 				float val = g->GetFValue(i, j);
@@ -2001,231 +2005,257 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			g->ComputeHeightExtents();
 			pE->SetModified(true);
 			pE->ReRender();
-		}
+	}
 #endif
 #if 0
-		vtString dir = "E:/Data-Distro/Culture/UtilityStructures";
-		for (dir_iter it((const char *)dir); it != dir_iter(); ++it)
+	vtString dir = "E:/Data-Distro/Culture/UtilityStructures";
+	for (dir_iter it((const char *)dir); it != dir_iter(); ++it)
+	{
+		if (it.is_directory())
+			continue;
+		vtString name = it.filename().c_str();
+		if (name.Find(".obj") == -1)
+			continue;
+		FILE *in = vtFileOpen(dir + "/" + name, "rb");
+		FILE *out = vtFileOpen(dir + "/" + name+"2", "wb");
+		if (!in || !out)
+			continue;
+		char buf[99];
+		double x, y, z;
+		while (fgets(buf, 99, in))
 		{
-			if (it.is_directory())
-				continue;
-			vtString name = it.filename().c_str();
-			if (name.Find(".obj") == -1)
-				continue;
-			FILE *in = vtFileOpen(dir + "/" + name, "rb");
-			FILE *out = vtFileOpen(dir + "/" + name+"2", "wb");
-			if (!in || !out)
-				continue;
-			char buf[99];
-			double x, y, z;
-			while (fgets(buf, 99, in))
+			if (buf[0] == 'v')
 			{
-				if (buf[0] == 'v')
-				{
-					sscanf(buf, "v %lf %lf %lf", &x, &y, &z);
-					fprintf(out, "v %lf %lf %lf\n", x, z, -y);
-				}
-				else
-					fputs(buf, out);
+				sscanf(buf, "v %lf %lf %lf", &x, &y, &z);
+				fprintf(out, "v %lf %lf %lf\n", x, z, -y);
 			}
-			fclose(out);
-			fclose(in);
+			else
+				fputs(buf, out);
 		}
+		fclose(out);
+		fclose(in);
+	}
 #endif
 #if 0
+	{
+		// create grid of polygons
+		vtFeatureSetPolygon set;
+		vtProjection proj;
+		proj.SetWellKnownGeogCS("NAD83");
+		proj.SetUTMZone(5);
+		set.SetProjection(proj);
+		DPoint2 base(215500, 2213000), spacing(1000,1000);
+		for (int i = 0; i < 12; i++)
 		{
-			// create grid of polygons
-			vtFeatureSetPolygon set;
-			vtProjection proj;
-			proj.SetWellKnownGeogCS("NAD83");
-			proj.SetUTMZone(5);
-			set.SetProjection(proj);
-			DPoint2 base(215500, 2213000), spacing(1000,1000);
-			for (int i = 0; i < 12; i++)
+			for (int j = 0; j < 6; j++)
 			{
-				for (int j = 0; j < 6; j++)
-				{
-					DLine2 dline;
-					dline.Append(base + DPoint2(i*spacing.x, j*spacing.y));
-					dline.Append(base + DPoint2((i+1)*spacing.x, j*spacing.y));
-					dline.Append(base + DPoint2((i+1)*spacing.x, (j+1)*spacing.y));
-					dline.Append(base + DPoint2(i*spacing.x, (j+1)*spacing.y));
-					DPolygon2 poly;
-					poly.push_back(dline);
-					set.AddPolygon(poly);
-				}
+				DLine2 dline;
+				dline.Append(base + DPoint2(i*spacing.x, j*spacing.y));
+				dline.Append(base + DPoint2((i+1)*spacing.x, j*spacing.y));
+				dline.Append(base + DPoint2((i+1)*spacing.x, (j+1)*spacing.y));
+				dline.Append(base + DPoint2(i*spacing.x, (j+1)*spacing.y));
+				DPolygon2 poly;
+				poly.push_back(dline);
+				set.AddPolygon(poly);
 			}
-			set.SaveToSHP("C:/Temp/waimea_quads.shp");
 		}
+		set.SaveToSHP("C:/Temp/waimea_quads.shp");
+	}
 #endif
 #if 0
-		DLine2 dline;
-		dline.Append(DPoint2(0,0));
-		dline.Append(DPoint2(1,0));
-		dline.Append(DPoint2(1,1));
-		dline.Append(DPoint2(0,1));
-		vtStructureArray str;
-		vtBuilding *bld = str.NewBuilding();
-		bld->SetFootprint(0, dline);
-		bld->SetStories(2);
-		bld->SetRoofType(RT_HIP);
-		bld->SetColor(BLD_BASIC, RGBi(255,0,0))
+	DLine2 dline;
+	dline.Append(DPoint2(0,0));
+	dline.Append(DPoint2(1,0));
+	dline.Append(DPoint2(1,1));
+	dline.Append(DPoint2(0,1));
+	vtStructureArray str;
+	vtBuilding *bld = str.NewBuilding();
+	bld->SetFootprint(0, dline);
+	bld->SetStories(2);
+	bld->SetRoofType(RT_HIP);
+	bld->SetColor(BLD_BASIC, RGBi(255,0,0))
 		bld->SetColor(BLD_ROOF, RGBi(255,255,255))
 #endif
 #if 0
 		double left=0.00000000000000000;
-		double top=0.0052590002305805683;
-		double right=0.0070670000277459621;
-		double bottom=0.00000000000000000;
+	double top=0.0052590002305805683;
+	double right=0.0070670000277459621;
+	double bottom=0.00000000000000000;
 
-		double ScaleX = vtProjection::GeodesicDistance(DPoint2(left,bottom),DPoint2(right,bottom));
-		double foo = ScaleX;
+	double ScaleX = vtProjection::GeodesicDistance(DPoint2(left,bottom),DPoint2(right,bottom));
+	double foo = ScaleX;
 #endif
 #if 0
-		wxString pname = _T("G:/Data-Charsettest/Temp");
-		wxString filename;
-		wxDir dir(pname);
-		dir.GetFirst(&filename);
-		bool result = wxFile::Access(pname + _T("/") + filename, wxFile::read);
-		if (result)
-			VTLOG("success\n");
+	wxString pname = _T("G:/Data-Charsettest/Temp");
+	wxString filename;
+	wxDir dir(pname);
+	dir.GetFirst(&filename);
+	bool result = wxFile::Access(pname + _T("/") + filename, wxFile::read);
+	if (result)
+		VTLOG("success\n");
 #endif
 #if 0
-		ReqContext con;
+	ReqContext con;
 
-		IPoint2 base(8838, 7430);
-		IPoint2 size(50, 30);
-		vtDIB output;
-		output.Create(size.x*258, size.y*258, 24);
-		for (int x = 0; x < size.x; x++)
+	IPoint2 base(8838, 7430);
+	IPoint2 size(50, 30);
+	vtDIB output;
+	output.Create(size.x*258, size.y*258, 24);
+	for (int x = 0; x < size.x; x++)
+	{
+		for (int y = 0; y < size.y; y++)
 		{
-			for (int y = 0; y < size.y; y++)
-			{
-				int xx = base.x + x;
-				int yy = base.y + y;
-				vtBytes data;
-				vtString url;
-				url.Format("http://us.maps3.yimg.com/aerial.maps.yimg.com/tile?v=1.4&t=a&x=%d&y=%d&z=1",
-					xx, yy);
-				VTLOG1(url + "\n");
-				bool result = con.GetURL(url, data);
-				if (!result)
-					continue;
+			int xx = base.x + x;
+			int yy = base.y + y;
+			vtBytes data;
+			vtString url;
+			url.Format("http://us.maps3.yimg.com/aerial.maps.yimg.com/tile?v=1.4&t=a&x=%d&y=%d&z=1",
+				xx, yy);
+			VTLOG1(url + "\n");
+			bool result = con.GetURL(url, data);
+			if (!result)
+				continue;
 
-				vtString fname;
-				fname.Format("c:/temp/tile_%04d_%04d.jpg", xx, yy);
-				FILE *fp = fopen(fname, "wb");
-				fwrite(data.Get(), data.Len(), 1, fp);
-				fclose(fp);
+			vtString fname;
+			fname.Format("c:/temp/tile_%04d_%04d.jpg", xx, yy);
+			FILE *fp = fopen(fname, "wb");
+			fwrite(data.Get(), data.Len(), 1, fp);
+			fclose(fp);
 
-				vtDIB tile;
-				if (tile.ReadJPEG(fname))
-					tile.BlitTo(output, x * 258, (size.y - 1 - y) * 258);
-			}
+			vtDIB tile;
+			if (tile.ReadJPEG(fname))
+				tile.BlitTo(output, x * 258, (size.y - 1 - y) * 258);
 		}
-		VTLOG1("Writing output\n");
-		output.WriteBMP("c:/temp/output.bmp");
+	}
+	VTLOG1("Writing output\n");
+	output.WriteBMP("c:/temp/output.bmp");
 #endif
 #if 0
 	#include "C:/Dev/TMK-Process/TMK.cpp"
 #endif
 #if 0
-		{
-			// create grid of points over current layer
-			vtFeatureSetPoint2D set;
-			vtProjection proj;
-			set.SetProjection(g_bld->GetAtProjection());
-			DRECT area = g_bld->m_area;
-			set.AddField("filename", FT_String, 30);
-			set.AddField("rotation", FT_Float);
+	{
+		// create grid of points over current layer
+		vtFeatureSetPoint2D set;
+		vtProjection proj;
+		set.SetProjection(g_bld->GetAtProjection());
+		DRECT area = g_bld->m_area;
+		set.AddField("filename", FT_String, 30);
+		set.AddField("rotation", FT_Float);
 
-			DPoint2 spacing(area.Width()/21, area.Height()/21);
-			for (int i = 0; i < 22; i++)
-			{
-				for (int j = 0; j < 22; j++)
-				{
-					DPoint2 p;
-					p.x = area.left + i*spacing.x;
-					p.y = area.bottom + j*spacing.y;
-					int rec = set.AddPoint(p);
-					set.SetValue(rec, 0, "C:/temp/triangle.osg");
-					set.SetValue(rec, 1, 110 + (i * 5) - (j * 2));
-				}
-			}
-			set.SaveToSHP("C:/Temp/PearlRiverPoints.shp");
-		}
-#endif
-#if 0
+		DPoint2 spacing(area.Width()/21, area.Height()/21);
+		for (int i = 0; i < 22; i++)
 		{
-			vtStructureArray *sa = new vtStructureArray();
-			sa->m_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
-			// 1557 buildings
-			sa->ReadXML("G:/Data-USA/Data-Hawaii/BuildingData/stage5.vtst");
-			//sa->ReadXML("G:/Data-USA/Data-Hawaii/BuildingData/one_building.vtst");
-		}
-#endif
-#if 0
-		{
-			vtRawLayer *ab = g_bld->GetActiveRawLayer();
-			vtFeatureSetLineString3D *fe3;
-			fe3 = dynamic_cast<vtFeatureSetLineString3D*>(ab->GetFeatureSet());
-			if (fe3)
+			for (int j = 0; j < 22; j++)
 			{
-				DLine3 &line = fe3->GetPolyLine(0);
-				for (int i = 0; i < line.GetSize(); i++)
-				{
-					DPoint3 p = line[i];
-					p.z -= 2000;
-					line[i] = p;
-				}
+				DPoint2 p;
+				p.x = area.left + i*spacing.x;
+				p.y = area.bottom + j*spacing.y;
+				int rec = set.AddPoint(p);
+				set.SetValue(rec, 0, "C:/temp/triangle.osg");
+				set.SetValue(rec, 1, 110 + (i * 5) - (j * 2));
 			}
 		}
-#endif
-#if 0
-		{
-			vtProjection proj;
-			vtElevationGrid grid(DRECT(0, 1, 1, 0), 5, 5, true, proj);
-			for (int i = 0; i < 5; i++)
-			{
-				for (int j = 0; j < 5; j++)
-				{
-					if (i == 4 || j == 4)
-						grid.SetFValue(i, j, 1);
-					else
-						grid.SetFValue(i, j, 0);
-				}
-			}
-
-			vtBitmap bmp;
-			bmp.Allocate(4, 4, 24);
-
-			std::vector<RGBi> table;
-			table.push_back(RGBi(0,0,0));
-			table.push_back(RGBi(255,255,255));
-
-			grid.ColorDibFromTable(&bmp, table, 0, 1);
-		}
-#endif
-#if 0
-		{
-			vtStructureLayer *pL = (vtStructureLayer *)g_bld->FindLayerOfType(LT_STRUCTURE);
-			if (pL)
-			{
-				pL->DeselectAll();
-				vtStructure *str = pL->GetAt(868);
-				if (str)
-				{
-					str->Select(true);
-					DRECT r;
-					str->GetExtents(r);
-					ZoomToRect(r, 0.1f);
-				}
-			}
-		}
-#endif
+		set.SaveToSHP("C:/Temp/PearlRiverPoints.shp");
 	}
-	else
-		event.Skip();
+#endif
+#if 0
+	{
+		vtStructureArray *sa = new vtStructureArray();
+		sa->m_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+		// 1557 buildings
+		sa->ReadXML("G:/Data-USA/Data-Hawaii/BuildingData/stage5.vtst");
+		//sa->ReadXML("G:/Data-USA/Data-Hawaii/BuildingData/one_building.vtst");
+	}
+#endif
+#if 0
+	{
+		vtRawLayer *ab = g_bld->GetActiveRawLayer();
+		vtFeatureSetLineString3D *fe3;
+		fe3 = dynamic_cast<vtFeatureSetLineString3D*>(ab->GetFeatureSet());
+		if (fe3)
+		{
+			DLine3 &line = fe3->GetPolyLine(0);
+			for (int i = 0; i < line.GetSize(); i++)
+			{
+				DPoint3 p = line[i];
+				p.z -= 2000;
+				line[i] = p;
+			}
+		}
+	}
+#endif
+#if 0
+	{
+		vtProjection proj;
+		vtElevationGrid grid(DRECT(0, 1, 1, 0), 5, 5, true, proj);
+		for (int i = 0; i < 5; i++)
+		{
+			for (int j = 0; j < 5; j++)
+			{
+				if (i == 4 || j == 4)
+					grid.SetFValue(i, j, 1);
+				else
+					grid.SetFValue(i, j, 0);
+			}
+		}
+
+		vtBitmap bmp;
+		bmp.Allocate(4, 4, 24);
+
+		std::vector<RGBi> table;
+		table.push_back(RGBi(0,0,0));
+		table.push_back(RGBi(255,255,255));
+
+		grid.ColorDibFromTable(&bmp, table, 0, 1);
+	}
+#endif
+#if 0
+	{
+		vtStructureLayer *pL = (vtStructureLayer *)g_bld->FindLayerOfType(LT_STRUCTURE);
+		if (pL)
+		{
+			pL->DeselectAll();
+			vtStructure *str = pL->GetAt(868);
+			if (str)
+			{
+				str->Select(true);
+				DRECT r;
+				str->GetExtents(r);
+				ZoomToRect(r, 0.1f);
+			}
+		}
+	}
+#endif
+#if 0
+	OpenProgressDialog(_T("Converting"));
+
+	std::string path = "G:/xyz";
+	for (dir_iter it(path); it != dir_iter(); ++it)
+	{
+		if (it.is_hidden() || it.is_directory())
+			continue;
+		std::string name1 = path + "/" + it.filename();
+		vtFeatureSet *pSet = g_bld->ImportPointsFromXYZ(name1.c_str(), progress_callback);
+		if (!pSet)
+			continue;
+		vtFeatureSetPoint3D *setpo3 = dynamic_cast<vtFeatureSetPoint3D *>(pSet);
+		if (!setpo3)
+			continue;
+		vtTin2d *tin = new vtTin2d(setpo3);
+
+		vtElevLayer *pEL = new vtElevLayer;
+		pEL->SetTin(tin);
+
+		// inherit name
+		wxString lname(name1.c_str(), wxConvUTF8);
+		RemoveFileExtensions(lname);
+		pEL->SaveAs(lname + _(".itf"));
+		delete pEL;
+		delete pSet;
+	}
+	CloseProgressDialog();
+#endif
 }
 
 void BuilderView::OnKeyDown(wxKeyEvent& event)

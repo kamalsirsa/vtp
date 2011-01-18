@@ -149,6 +149,8 @@ public:
 	void UpdateDistance();
 	void DrawInvertedLine(const DPoint2 &ep1, const DPoint2 &ep2);
 
+	void RunTest();
+
 	bool	m_bCrossSelect;
 	bool	m_bShowUTMBounds;
 	bool	m_bConstrain;

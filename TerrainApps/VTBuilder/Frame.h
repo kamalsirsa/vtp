@@ -78,6 +78,7 @@ protected:
 	void OnElevCopy(wxCommandEvent& event);
 	void OnElevPasteNew(wxCommandEvent& event);
 	void OnGeocode(wxCommandEvent &event);
+	void OnRunTest(wxCommandEvent &event);
 	void OnQuit(wxCommandEvent& event);
 
 	void OnUpdateFileMRU(wxUpdateUIEvent& event);
