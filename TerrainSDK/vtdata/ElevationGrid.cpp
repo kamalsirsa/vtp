@@ -514,7 +514,9 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 	int i, j, ix, jx, surrounding;
 	int gaps = 1;
 	float value, value2, sum;
+
 	float *patch_column = new float[m_iRows];
+	float *patch_row = new float[m_iColumns];
 
 	int xmin = 0, xmax = m_iColumns, ymin = 0, ymax = m_iRows;
 	if (area)
@@ -540,9 +542,12 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 
 	// For speed, remember which lines already have no gaps, so we don't have
 	// to visit them again.
-	bool *line_gap = new bool[m_iColumns];
+	bool *line_gap_columns = new bool[m_iColumns];
+	bool *line_gap_rows = new bool[m_iRows];
 	for (i = 0; i < m_iColumns; i++)
-		line_gap[i] = true;
+		line_gap_columns[i] = true;
+	for (i = 0; i < m_iRows; i++)
+		line_gap_rows[i] = true;
 
 	int iPass = 0;
 	int iTotalGaps;
@@ -550,19 +555,18 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 	while (gaps > 0)
 	{
 		gaps = 0;
-		int lines_with_gaps = 0;
 
 		// iterate through the heixels of the new elevation grid
 		int start, step;
 		if (iPass & 1) { start = xmin; step = 1; }
 				  else { start = xmax-1; step = -1; }
+
 		for (i = start; i >= xmin && i < xmax; i += step)
 		{
-			if (!line_gap[i])
+			if (!line_gap_columns[i])
 				continue;
 
-			lines_with_gaps++;
-			line_gap[i] = false;
+			line_gap_columns[i] = false;
 
 			bool patches = false;
 			for (j = ymin; j < ymax; j++)
@@ -576,7 +580,7 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 
 				// else gap
 				gaps++;
-				line_gap[i] = true;
+				line_gap_columns[i] = true;
 
 				// look at surrounding pixels
 				sum = 0;
@@ -608,6 +612,63 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 				}
 			}
 		}
+
+		// Now the other way
+		if (iPass & 1) { start = ymin; step = 1; }
+				  else { start = ymax-1; step = -1; }
+
+		for (j = start; j >= ymin && j < ymax; j += step)
+		{
+			if (!line_gap_rows[j])
+				continue;
+
+			line_gap_rows[j] = false;
+
+			bool patches = false;
+			for (i = xmin; i < xmax; i++)
+				patch_row[i] = INVALID_ELEVATION;
+
+			for (i = xmin; i < xmax; i++)
+			{
+				value = GetFValue(i, j);
+				if (value != INVALID_ELEVATION)
+					continue;
+
+				// else gap
+				gaps++;
+				line_gap_rows[j] = true;
+
+				// look at surrounding pixels
+				sum = 0;
+				surrounding = 0;
+				for (ix = -1; ix <= 1; ix++)
+				{
+					for (jx = -1; jx <= 1; jx++)
+					{
+						value2 = GetFValueSafe(i+ix, j+jx);
+						if (value2 != INVALID_ELEVATION)
+						{
+							sum += value2;
+							surrounding++;
+						}
+					}
+				}
+				if (surrounding > 1)
+				{
+					patch_row[i] = sum / surrounding;
+					patches = true;
+				}
+			}
+			if (patches)
+			{
+				for (i = xmin; i < xmax; i++)
+				{
+					if (patch_row[i] != INVALID_ELEVATION)
+						SetFValue(i, j, patch_row[i]);
+				}
+			}
+		}
+
 		if (iPass == 0)
 		{
 			iTotalGaps = gaps;
@@ -624,8 +685,10 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 		}
 		iPass++;
 	}
-	delete [] line_gap;
+	delete [] line_gap_columns;
+	delete [] line_gap_rows;
 	delete [] patch_column;
+	delete [] patch_row;
 
 	// recompute what has likely changed
 	ComputeHeightExtents();
@@ -693,7 +756,6 @@ bool vtElevationGrid::FillGapsSmooth(DRECT *area, bool progress_callback(int))
 	while (gaps > 0)
 	{
 		gaps = 0;
-		int lines_with_gaps = 0;
 		int num_filled = 0;
 
 		// iterate through the heixels of the elevation grid
@@ -703,7 +765,6 @@ bool vtElevationGrid::FillGapsSmooth(DRECT *area, bool progress_callback(int))
 			if (!line_gap[i])
 				continue;
 
-			lines_with_gaps++;
 			line_gap[i] = false;	// by default
 
 			for (j = ymin; j < ymax; j++)
