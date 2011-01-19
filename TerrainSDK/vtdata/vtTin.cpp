@@ -134,13 +134,16 @@ bool vtTin::_ReadTin(FILE *fp)
 	if (proj_len > 2000)
 		return false;
 
-	char wkt_buf[2000], *wkt = wkt_buf;
-	fread(wkt, proj_len, 1, fp);
-	wkt_buf[proj_len] = 0;
+	if (proj_len)
+	{
+		char wkt_buf[2000], *wkt = wkt_buf;
+		fread(wkt, proj_len, 1, fp);
+		wkt_buf[proj_len] = 0;
 
-	OGRErr err = m_proj.importFromWkt((char **) &wkt);
-	if (err != OGRERR_NONE)
-		return false;
+		OGRErr err = m_proj.importFromWkt((char **) &wkt);
+		if (err != OGRERR_NONE)
+			return false;
+	}
 
 	fseek(fp, data_start, SEEK_SET);
 

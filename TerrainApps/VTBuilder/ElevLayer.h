@@ -15,6 +15,8 @@
 #include "ElevDrawOptions.h"
 #include "TilingOptions.h"
 
+#include <set>
+
 #define SHADING_BIAS	200
 
 class vtBitmap;
@@ -24,6 +26,43 @@ class vtFeatureSet;
 class vtFeatureSetPoint3D;
 class vtFeatureSetPolygon;
 class vtHeightField;
+
+struct IntPair
+{
+	IntPair() {}
+	bool operator <(const IntPair &b) const
+	{
+		if (v0 < b.v0)
+			return true;
+		else if (v0 > b.v0)
+			return false;
+		else
+		{
+			if (v1 < b.v1)
+				return true;
+			else
+				return false;
+		}
+	}
+	bool operator==(const IntPair &b)
+	{
+		return (v0 == b.v0 && v1 == b.v1);
+	}
+	IntPair(int i0, int i1) { v0 = i0; v1 = i1; }
+	int v0, v1;
+};
+
+struct Outline : public std::set<IntPair>
+{
+	void AddUniqueEdge(const IntPair &b)
+	{
+		iterator it = find(b);
+		if (it != end())
+			erase(it);
+		else
+			insert(b);
+	}
+};
 
 class vtTin2d : public vtTin
 {
@@ -38,10 +77,14 @@ public:
 	void CullLongEdgeTris();
 	void FreeEdgeLengths();
 	void SetConstraint(bool bConstrain, double fMaxEdge);
+	void MakeOutline();
+	int GetMemoryUsed() const;
 
 	double *m_fEdgeLen;
 	bool m_bConstrain;
 	double m_fMaxEdge;
+
+	Outline m_edges;
 };
 
 //////////////////////////////////////////////////////////

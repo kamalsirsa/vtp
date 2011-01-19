@@ -25,6 +25,7 @@
 #define TAG_DELAY_LOAD_GRID "ElevDelayLoadGrid"
 #define TAG_MAX_MEM_GRID "ElevMaxMemGrid"
 #define TAG_DRAW_RAW_SIMPLE "DrawSimpleRawLayers"
+#define TAG_DRAW_TIN_SIMPLE "DrawSimpleTinLayers"
 
 #define TAG_SLOW_FILL_GAPS "SlowFillGaps"	// deprecated
 #define TAG_GAP_FILL_METHOD "GapFillMethod"		// 1 fast, 2 slow, 3 region-growing

@@ -33,6 +33,14 @@ public:
 		if (row < 0 || row >= iRows) return NULL;
 		return iData + iCols*row + col;
 	}
+	int GetMemoryUsed() const
+	{
+		int bins = iCols * iRows;
+		int bytes = sizeof(BinArray) + sizeof(Bin*) * bins;
+		for (int i = 0; i < bins; i++)
+			bytes += (sizeof(int) * iData[i].GetSize());
+		return bytes;
+	}
 private:
 	Bin *iData;
 	int	iCols, iRows;

@@ -993,8 +993,11 @@ void MainFrame::ShowOptionsDialog()
 
 	dlg.SetElevDrawOptions(vtElevLayer::m_draw);
 
-	dlg.m_bShowRoadWidth = vtRoadLayer::GetDrawWidth();
+	bool bDrawTinSimple = g_Options.GetValueBool(TAG_DRAW_TIN_SIMPLE);
 	bool bDrawRawSimple = g_Options.GetValueBool(TAG_DRAW_RAW_SIMPLE);
+
+	dlg.m_bShowRoadWidth = vtRoadLayer::GetDrawWidth();
+	dlg.m_bDrawTinSimple = bDrawTinSimple;
 	dlg.m_bDrawRawSimple = bDrawRawSimple;
 	dlg.m_bShowPath = m_pTree->GetShowPaths();
 
@@ -1031,8 +1034,14 @@ void MainFrame::ShowOptionsDialog()
 		bNeedRefresh = true;
 	vtRoadLayer::SetDrawWidth(bWidth);
 
+	g_Options.SetValueBool(TAG_DRAW_TIN_SIMPLE, dlg.m_bDrawTinSimple);
 	g_Options.SetValueBool(TAG_DRAW_RAW_SIMPLE, dlg.m_bDrawRawSimple);
-	if (dlg.m_bDrawRawSimple != bDrawRawSimple)
+
+	// If settings changed, redraw the view
+	if (dlg.m_bDrawTinSimple != bDrawTinSimple && LayersOfType(LT_ELEVATION) > 0)
+		bNeedRefresh = true;
+
+	if (dlg.m_bDrawRawSimple != bDrawRawSimple && LayersOfType(LT_RAW) > 0)
 		bNeedRefresh = true;
 
 	if (dlg.m_bShowPath != m_pTree->GetShowPaths())

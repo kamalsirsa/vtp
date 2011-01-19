@@ -41,6 +41,7 @@
 #include "minidata/LocalDatabuf.h"
 #include "Options.h"
 
+
 ////////////////////////////////////////////////////////////////////
 
 vtTin2d::vtTin2d()
@@ -203,31 +204,94 @@ vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum)
 	m_proj = set->GetAtProjection();
 }
 
+void vtTin2d::MakeOutline()
+{
+	// Find all the unique edges (all internal edges appear twice)
+	for (unsigned int i = 0; i < NumTris(); i++)
+	{
+		int v0 = m_tri[i*3+0];
+		int v1 = m_tri[i*3+1];
+		int v2 = m_tri[i*3+2];
+		if (v0 < v1)
+			m_edges.AddUniqueEdge(IntPair(v0, v1));
+		else
+			m_edges.AddUniqueEdge(IntPair(v1, v0));
+		if (v1 < v2)
+			m_edges.AddUniqueEdge(IntPair(v1, v2));
+		else
+			m_edges.AddUniqueEdge(IntPair(v2, v1));
+		if (v2 < v0)
+			m_edges.AddUniqueEdge(IntPair(v2, v0));
+		else
+			m_edges.AddUniqueEdge(IntPair(v0, v2));
+	}
+}
+
+int vtTin2d::GetMemoryUsed() const
+{
+	int bytes = 0;
+
+	bytes += sizeof(vtTin2d);
+	bytes += sizeof(DPoint2) * m_vert.GetSize();
+	bytes += sizeof(int) * m_tri.GetSize();
+	bytes += sizeof(float) * m_z.GetSize();
+
+	if (m_fEdgeLen)
+		bytes += sizeof(double) * NumTris();
+
+	if (m_trianglebins)
+		bytes += m_trianglebins->GetMemoryUsed();
+
+	return bytes;
+}
+
 void vtTin2d::DrawTin(wxDC *pDC, vtScaledView *pView)
 {
+	bool bDrawSimple = g_Options.GetValueBool(TAG_DRAW_TIN_SIMPLE);
+
+	// Dark purple lines
 	wxPen TinPen(wxColor(128,0,128), 1, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(TinPen);
 
-	FPoint2 p2;
-	unsigned int i, tris = NumTris();
-	for (i = 0; i < tris; i++)
+	if (bDrawSimple)
 	{
-		if (m_bConstrain)
+		if (!m_edges.size())
 		{
-			if (m_fEdgeLen[i] > m_fMaxEdge)
-				continue;
+			// extract an outline
+			MakeOutline();
 		}
-		int v0 = m_tri[i*3+0];
-		int v1 = m_tri[i*3+1];
-		int v2 = m_tri[i*3+2];
+		// Just draw the online
+		for (Outline::iterator it = m_edges.begin(); it != m_edges.end(); it++)
+		{
+			pView->screen(m_vert[it->v0], g_screenbuf[0]);
+			pView->screen(m_vert[it->v1], g_screenbuf[1]);
+			pDC->DrawLines(2, g_screenbuf);
+		}
+	}
+	else
+	{
+		// Draw every triangle
+		FPoint2 p2;
+		unsigned int tris = NumTris();
+		for (unsigned int i = 0; i < tris; i++)
+		{
+			if (m_bConstrain)
+			{
+				if (m_fEdgeLen[i] > m_fMaxEdge)
+					continue;
+			}
+			int v0 = m_tri[i*3+0];
+			int v1 = m_tri[i*3+1];
+			int v2 = m_tri[i*3+2];
 
-		pView->screen(m_vert[v0], g_screenbuf[0]);
-		pView->screen(m_vert[v1], g_screenbuf[1]);
-		pView->screen(m_vert[v2], g_screenbuf[2]);
+			pView->screen(m_vert[v0], g_screenbuf[0]);
+			pView->screen(m_vert[v1], g_screenbuf[1]);
+			pView->screen(m_vert[v2], g_screenbuf[2]);
 
-		g_screenbuf[3] = g_screenbuf[0];
-		pDC->DrawLines(4, g_screenbuf);
+			g_screenbuf[3] = g_screenbuf[0];
+			pDC->DrawLines(4, g_screenbuf);
+		}
 	}
 #if 0
 	// For testing purposes, draw the vertices as well
@@ -278,7 +342,6 @@ void vtTin2d::CullLongEdgeTris()
 	}
 	m_tri.SetSize(kept*3);
 }
-
 
 void vtTin2d::FreeEdgeLengths()
 {
@@ -989,7 +1052,13 @@ void vtElevLayer::SetProjection(const vtProjection &proj)
 			ReRender();
 	}
 	if (m_pTin)
+	{
+		const vtProjection &current = m_pTin->m_proj;
+		if (proj != current)
+			SetModified(true);
+
 		m_pTin->m_proj = proj;
+	}
 }
 
 bool vtElevLayer::ImportFromFile(const wxString &strFileName,
@@ -1508,6 +1577,11 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 			str = _("None\n");
 		else
 			str.Printf(_T("%.2f, %.2f\n"), minh, maxh);
+		result += str;
+
+		int mem_bytes = m_pTin->GetMemoryUsed();
+		str.Printf(_T("Size in memory: %d bytes (%0.1f Kb, %0.1f Mb)\n"),
+			mem_bytes, (float)mem_bytes/1024, (float)mem_bytes/1024/1024);
 		result += str;
 	}
 	strIn = result;

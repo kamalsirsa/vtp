@@ -1004,30 +1004,33 @@ wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item7->Add( item11, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
+    wxCheckBox *item14 = new wxCheckBox( parent, ID_CHECK_DRAW_TIN_SIMPLE, _("Draw TIN elevation simplified"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item14, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
     item0->Add( item7, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item14 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item15 = new wxBoxSizer( wxVERTICAL );
 
-    wxCheckBox *item15 = new wxCheckBox( parent, ID_CHECK_SHOW_ROAD_WIDTH, _("Show roads with width"), wxDefaultPosition, wxDefaultSize, 0 );
-    item14->Add( item15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item16 = new wxCheckBox( parent, ID_CHECK_SHOW_ROAD_WIDTH, _("Show roads with width"), wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item16 = new wxCheckBox( parent, ID_CHECK_DRAW_RAW_SIMPLE, _("Draw raw layers simplified"), wxDefaultPosition, wxDefaultSize, 0 );
-    item14->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item17 = new wxCheckBox( parent, ID_CHECK_DRAW_RAW_SIMPLE, _("Draw raw layers simplified"), wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item17 = new wxCheckBox( parent, ID_PATHNAMES, _("Show full pathnames in Layer View"), wxDefaultPosition, wxDefaultSize, 0 );
-    item14->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item18 = new wxCheckBox( parent, ID_PATHNAMES, _("Show full pathnames in Layer View"), wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item14, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item18 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item19 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item18->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item20 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item20 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item18->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item21 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

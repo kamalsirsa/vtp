@@ -43,6 +43,7 @@ public:
 	bool m_bShowOutlines;
 	ElevDrawOptions m_opt;
 	bool m_bHideUnknown;
+	bool m_bDrawTinSimple;
 
 	bool m_bShowRoadWidth;
 	bool m_bDrawRawSimple;
