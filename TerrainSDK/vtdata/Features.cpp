@@ -574,7 +574,7 @@ bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 {
 	VTLOG(" LoadFromOGR\n");
 
-	// get informnation from the datasource
+	// get information from the datasource
 	OGRFeatureDefn *defn = pLayer->GetLayerDefn();
 	int feature_count = pLayer->GetFeatureCount();
 	int num_fields = defn->GetFieldCount();
