@@ -183,7 +183,7 @@ FPoint3 LightDirection(float angle, float direction);
 bool MatchTilingToResolution(const DRECT &original_area, const DPoint2 &resolution,
 							int &iTileSize, bool bGrow, bool bShrink, DRECT &new_area,
 							IPoint2 &tiling);
-bool ElevCacheOpen(vtElevLayer *pLayer, const char *fname, enum vtElevGridError *err);
+bool ElevCacheOpen(vtElevLayer *pLayer, const char *fname, enum vtElevError *err);
 bool ElevCacheLoadData(vtElevLayer *elev);
 void ElevCacheRemove(vtElevLayer *elev);
 

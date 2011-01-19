@@ -17,7 +17,7 @@
 class vtDIB;
 class OGRDataSource;
 
-enum vtElevGridError {
+enum vtElevError {
 	EGE_FILE_OPEN,			/// Could not open file.
 	EGE_NOT_FORMAT,			/// Not the correct file format.
 	EGE_UNSUPPORTED_VERSION,/// File is an unsupported version.
@@ -94,10 +94,10 @@ public:
 	bool LoadFromXYZ(FILE *fp, const char *format, bool progress_callback(int) = NULL);
 	bool LoadFromHGT(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromBT(const char *szFileName, bool progress_callback(int) = NULL,
-		vtElevGridError *err = NULL);
-	bool LoadBTHeader(const char *szFileName, vtElevGridError *err = NULL);
+		vtElevError *err = NULL);
+	bool LoadBTHeader(const char *szFileName, vtElevError *err = NULL);
 	bool LoadBTData(const char *szFileName, bool progress_callback(int) = NULL,
-		vtElevGridError *err = NULL);
+		vtElevError *err = NULL);
 
 	// Use GDAL to read a file
 	bool LoadWithGDAL(const char *szFileName, bool progress_callback(int) = NULL);

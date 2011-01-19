@@ -420,7 +420,7 @@ bool vtElevLayer::OnLoad()
 			m_bPreferGZip = true;
 
 		m_pGrid = new vtElevationGrid;
-		vtElevGridError err;
+		vtElevError err;
 
 		vtString fname_utf = (const char *) fname.mb_str(wxConvUTF8);
 		success = ElevCacheOpen(this, fname_utf, &err);
@@ -2098,9 +2098,9 @@ bool MatchTilingToResolution(const DRECT &original_area, const DPoint2 &resoluti
 	return true;
 }
 
-std::vector<vtElevLayer*> g_GridMRU;
+std::vector<vtElevLayer*> g_ElevMRU;
 
-bool ElevCacheOpen(vtElevLayer *pLayer, const char *fname, vtElevGridError *err)
+bool ElevCacheOpen(vtElevLayer *pLayer, const char *fname, vtElevError *err)
 {
 	if (vtElevLayer::m_iGridMemLimit != -1)
 	{
@@ -2122,11 +2122,11 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 
 	VTLOG("ElevCache needs '%s': \n", StartOfFilename(fname_utf8));
 
-	size_t num_loaded = g_GridMRU.size();
+	size_t num_loaded = g_ElevMRU.size();
 
 	int mem = 0;
 	for (size_t i = 0; i < num_loaded; i++)
-		mem += g_GridMRU[i]->m_pGrid->MemoryUsed();
+		mem += g_ElevMRU[i]->m_pGrid->MemoryUsed();
 
 	// Consider memory needs of new grid
 	mem += grid->MemoryNeeded();
@@ -2140,9 +2140,9 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 		// Look for a layer we can unload, starting with the least recently
 		// used (LRU) at the start of list
 		size_t i;
-		for (i = 0; i < g_GridMRU.size(); i++)
+		for (i = 0; i < g_ElevMRU.size(); i++)
 		{
-			vtElevLayer *lay = g_GridMRU[i];
+			vtElevLayer *lay = g_ElevMRU[i];
 			if (!lay->GetSticky())
 			{
 				// Found one
@@ -2154,13 +2154,13 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 					mem, (float)mem / (1024*1024));
 
 				oldgrid->FreeData();
-				g_GridMRU.erase(g_GridMRU.begin() + i);
+				g_ElevMRU.erase(g_ElevMRU.begin() + i);
 				break;
 			}
 		}
 		// If we went all the way through the list without finding a layer
 		//  we can unload, then give up
-		if (i == g_GridMRU.size())
+		if (i == g_ElevMRU.size())
 		{
 			VTLOG(" No more unloadable layers, will now exceed cache size.\n");
 			bGo = false;
@@ -2178,18 +2178,18 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 
 	// most recently used goes to the end of the list
 	//  (to be precise, it is the most recently loaded)
-	g_GridMRU.push_back(elev);
+	g_ElevMRU.push_back(elev);
 
 	return true;
 }
 
 void ElevCacheRemove(vtElevLayer *elev)
 {
-	for (size_t i = 0; i < g_GridMRU.size(); i++)
+	for (size_t i = 0; i < g_ElevMRU.size(); i++)
 	{
-		if (g_GridMRU[i] == elev)
+		if (g_ElevMRU[i] == elev)
 		{
-			g_GridMRU.erase(g_GridMRU.begin() + i);
+			g_ElevMRU.erase(g_ElevMRU.begin() + i);
 			return;
 		}
 	}

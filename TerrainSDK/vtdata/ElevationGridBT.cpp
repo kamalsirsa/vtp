@@ -22,7 +22,7 @@
  * has been compressed with gzip.
  * \returns \c true if the header was successfully parsed.
  */
-bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevGridError *err)
+bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevError *err)
 {
 	// The gz functions (gzopen etc.) behave exactly like the stdlib
 	//  functions (fopen etc.) in the case where the input file is not in
@@ -172,7 +172,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevGridError *err)
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(int),
-								 vtElevGridError *err)
+								 vtElevError *err)
 {
 	// Free buffers to prepare to receive new data
 	FreeData();
@@ -188,7 +188,7 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(
 }
 
 bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(int),
-								 vtElevGridError *err)
+								 vtElevError *err)
 {
 	gzFile fp = vtGZOpen(szFileName, "rb");
 	if (!fp)
