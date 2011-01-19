@@ -3,7 +3,7 @@
 //
 // Class which represents a Triangulated Irregular Network.
 //
-// Copyright (c) 2002-2009 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -123,13 +123,22 @@ bool vtTin::_ReadTinOld(FILE *fp)
 
 bool vtTin::_ReadTin(FILE *fp)
 {
-	int i, verts, tris, data_start, proj_len;
+	if (!_ReadTinHeader(fp))
+		return false;
+	if (!_ReadTinBody(fp))
+		return false;
+	return true;
+}
+
+bool vtTin::_ReadTinHeader(FILE *fp)
+{
+	int proj_len;
 
 	char marker[5];
 	fread(marker, 5, 1, fp);
-	fread(&verts, 4, 1, fp);
-	fread(&tris, 4, 1, fp);
-	fread(&data_start, 4, 1, fp);
+	fread(&m_file_verts, 4, 1, fp);
+	fread(&m_file_tris, 4, 1, fp);
+	fread(&m_file_data_start, 4, 1, fp);
 	fread(&proj_len, 4, 1, fp);
 	if (proj_len > 2000)
 		return false;
@@ -144,13 +153,21 @@ bool vtTin::_ReadTin(FILE *fp)
 		if (err != OGRERR_NONE)
 			return false;
 	}
+	return true;
+}
 
-	fseek(fp, data_start, SEEK_SET);
+bool vtTin::_ReadTinBody(FILE *fp)
+{
+	fseek(fp, m_file_data_start, SEEK_SET);
+
+	// pre-allocate for efficiency
+	m_vert.SetMaxSize(m_file_verts);
+	m_tri.SetMaxSize(m_file_tris * 3);
 
 	// read verts
 	DPoint2 p;
 	float z;
-	for (i = 0; i < verts; i++)
+	for (int i = 0; i < m_file_verts; i++)
 	{
 		fread(&p.x, 8, 2, fp);	// 2 doubles
 		fread(&z, 4, 1, fp);	// 1 float
@@ -158,7 +175,7 @@ bool vtTin::_ReadTin(FILE *fp)
 	}
 	// read tris
 	int tribuf[3];
-	for (i = 0; i < tris; i++)
+	for (int i = 0; i < m_file_tris; i++)
 	{
 		fread(tribuf, 4, 3, fp);	// 3 ints
 		AddTri(tribuf[0], tribuf[1], tribuf[2]);
@@ -184,6 +201,44 @@ bool vtTin::Read(const char *fname)
 		return false;
 
 	ComputeExtents();
+	return true;
+}
+
+/**
+ * Read the TIN header from a file.
+ */
+bool vtTin::ReadHeader(const char *fname)
+{
+	// first read the point from the .tin file
+	FILE *fp = vtFileOpen(fname, "rb");
+	if (!fp)
+		return false;
+
+	bool success = _ReadTinHeader(fp);
+	fclose(fp);
+
+	if (!success)
+		return false;
+
+	return true;
+}
+
+/**
+ * Read the TIN body from a file.
+ */
+bool vtTin::ReadBody(const char *fname)
+{
+	// first read the point from the .tin file
+	FILE *fp = vtFileOpen(fname, "rb");
+	if (!fp)
+		return false;
+
+	bool success = _ReadTinBody(fp);
+	fclose(fp);
+
+	if (!success)
+		return false;
+
 	return true;
 }
 
@@ -402,6 +457,12 @@ bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
 	return true;
 }
 
+void vtTin::FreeData()
+{
+	m_vert.FreeData();
+	m_tri.FreeData();
+}
+
 /**
  * Write the TIN to a new-style .tin file (custom VTP format).
  */
@@ -576,13 +637,23 @@ void vtTin::SetupTriangleBins(int bins, bool progress_callback(int))
 		bin_end.y = (unsigned int)	 ((fmaxrange.y-rect.bottom) / m_BinSize.y);
 
 		for (int j = bin_start.x; j <= bin_end.x; j++)
+		{
 			for (int k = bin_start.y; k <= bin_end.y; k++)
 			{
 				Bin *bin = m_trianglebins->GetBin(j, k);
 				if (bin)
 					bin->Append(i);
 			}
+		}
 	}
+}
+
+int vtTin::MemoryNeededToLoad() const
+{
+	int bytes = m_file_verts * sizeof(DPoint2);	// xy 
+	bytes += m_file_verts * sizeof(float);		// z
+	bytes += sizeof(int) * 3 * m_file_tris;		// triangles
+	return bytes;
 }
 
 bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) const

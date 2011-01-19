@@ -59,6 +59,7 @@ vtLayer::vtLayer(LayerType type)
 	m_type = type;
 	m_bVisible = true;
 	m_bModified = false;
+	m_bSticky = false;
 	m_bNative = false;
 }
 

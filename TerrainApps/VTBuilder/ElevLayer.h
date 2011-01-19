@@ -1,7 +1,7 @@
 //
 // ElevLayer.h
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -113,6 +113,10 @@ public:
 	bool AskForSaveFilename();
 	bool GetAreaExtent(DRECT &rect);
 
+	int GetMemoryUsed() const;
+	int MemoryNeededToLoad() const;
+	void FreeData();
+
 	void OnLeftDown(BuilderView *pView, UIContext &ui);
 	void OnLeftUp(BuilderView *pView, UIContext &ui);
 	void OnMouseMove(BuilderView *pView, UIContext &ui);
@@ -156,8 +160,8 @@ public:
 	static ElevDrawOptions m_draw;
 	static bool m_bDefaultGZip;
 
-	// only this many BT files may be loaded, the rest are paged out on an LRU basis
-	static int m_iGridMemLimit;
+	// only this many elevation files may be loaded, the rest are paged out on an LRU basis
+	static int m_iElevMemLimit;
 
 	vtElevationGrid	*m_pGrid;
 	vtTin2d *m_pTin;

@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project.
+// Copyright (c) 2001-2011 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -165,7 +165,7 @@ public:
 	float GetScale() const { return m_fVMeters; }
 
 	bool HasData() const { return (m_pData != NULL || m_pFData != NULL); }
-	int MemoryNeeded() const { return m_iColumns * m_iRows * (m_bFloatMode ? 4 : 2); }
+	int MemoryNeededToLoad() const { return m_iColumns * m_iRows * (m_bFloatMode ? 4 : 2); }
 	int MemoryUsed() const { if (m_pData) return m_iColumns * m_iRows * 2;
 						 else if (m_pFData) return m_iColumns * m_iRows * 4;
 						 else return 0; }

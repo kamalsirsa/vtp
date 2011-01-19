@@ -71,10 +71,13 @@ public:
 	void RemTri(int t);
 
 	bool Read(const char *fname);
+	bool ReadHeader(const char *fname);
+	bool ReadBody(const char *fname);
 	bool Write(const char *fname) const;
 	bool ReadDXF(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadADF(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadGMS(const char *fname, bool progress_callback(int) = NULL);
+	void FreeData();
 
 	unsigned int AddSurfaceType(const vtString &surface_texture, bool bTiled = false);
 	void SetSurfaceType(int iTri, int surface_type);
@@ -102,12 +105,15 @@ public:
 	bool HasVertexNormals() { return m_vert_normal.GetSize() != 0; }
 	int RemoveTrianglesBySegment(const DPoint2 &ep1, const DPoint2 &ep2);
 	void SetupTriangleBins(int bins, bool progress_callback(int) = NULL);
+	int MemoryNeededToLoad() const;
 
 	vtProjection	m_proj;
 
 protected:
 	bool TestTriangle(int tri, const DPoint2 &p, float &fAltitude) const;
 	bool _ReadTin(FILE *fp);
+	bool _ReadTinHeader(FILE *fp);
+	bool _ReadTinBody(FILE *fp);
 	bool _ReadTinOld(FILE *fp);
 
 	void _UpdateIndicesInInBin(int bin);
@@ -131,6 +137,8 @@ protected:
 	// This is used to speed up FindAltitudeOnEarth
 	BinArray *m_trianglebins;
 	DPoint2 m_BinSize;
+
+	int m_file_data_start, m_file_verts, m_file_tris;	// Used while reading ITF
 };
 
 

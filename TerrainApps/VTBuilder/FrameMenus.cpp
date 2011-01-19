@@ -758,9 +758,9 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 		vtImage::bTreatBlackAsTransparent = dlg.b11;
 		vtElevLayer::m_bDefaultGZip = dlg.b13;
 		if (dlg.b15)
-			vtElevLayer::m_iGridMemLimit = dlg.i4;
+			vtElevLayer::m_iElevMemLimit = dlg.i4;
 		else
-			vtElevLayer::m_iGridMemLimit = -1;
+			vtElevLayer::m_iElevMemLimit = -1;
 
 		// safety checks
 		CheckOptionBounds();

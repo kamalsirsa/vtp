@@ -68,6 +68,7 @@ public:
 	bool		SetMaxSize(unsigned int);
 	unsigned int	GetElemSize() const;
 	E*			GetData() const;
+	void		FreeData();
 	bool		IsEmpty() const;
 	E&			GetAt(unsigned int i) const;
 	bool		SetAt(unsigned int i, E);
@@ -117,6 +118,18 @@ template <class E> vtArray<E>::vtArray(unsigned int size)
 	m_Data = NULL;
 	if (size > 0)			// make room for <size> elements
 		Grow(size);
+}
+
+/**
+ * Complete free the data held by this array's data.
+ */
+template <class E> void vtArray<E>::FreeData()
+{
+	Empty();
+	if (m_Data)
+		free(m_Data);
+	m_Data = NULL;
+	m_MaxSize = 0;
 }
 
 /**

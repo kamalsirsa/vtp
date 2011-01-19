@@ -1,7 +1,7 @@
 //
 // ElevLayer.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -247,13 +247,12 @@ int vtTin2d::GetMemoryUsed() const
 
 void vtTin2d::DrawTin(wxDC *pDC, vtScaledView *pView)
 {
-	bool bDrawSimple = g_Options.GetValueBool(TAG_DRAW_TIN_SIMPLE);
-
 	// Dark purple lines
 	wxPen TinPen(wxColor(128,0,128), 1, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(TinPen);
 
+	bool bDrawSimple = g_Options.GetValueBool(TAG_DRAW_TIN_SIMPLE);
 	if (bDrawSimple)
 	{
 		if (!m_edges.size())
@@ -354,7 +353,7 @@ void vtTin2d::FreeEdgeLengths()
 
 ElevDrawOptions vtElevLayer::m_draw;
 bool vtElevLayer::m_bDefaultGZip = false;
-int vtElevLayer::m_iGridMemLimit = -1;
+int vtElevLayer::m_iElevMemLimit = -1;
 
 vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 {
@@ -411,8 +410,11 @@ bool vtElevLayer::OnLoad()
 	OpenProgressDialog(_("Loading Elevation Layer"));
 
 	bool success = false;
+	vtElevError err;
 
 	wxString fname = GetLayerFilename();
+	vtString fname_utf8 = (const char *) fname.mb_str(wxConvUTF8);
+
 	if (fname.Contains(_T(".bt")) || fname.Contains(_T(".BT")))
 	{
 		// remember whether this layer was read from a compressed file
@@ -420,21 +422,8 @@ bool vtElevLayer::OnLoad()
 			m_bPreferGZip = true;
 
 		m_pGrid = new vtElevationGrid;
-		vtElevError err;
 
-		vtString fname_utf = (const char *) fname.mb_str(wxConvUTF8);
-		success = ElevCacheOpen(this, fname_utf, &err);
-		if (!success && err == EGE_READ_CRS)
-		{
-			// Missing prj file
-			wxString str = _("CRS file");
-			str += _T(" (");
-			RemoveFileExtensions(fname);
-			str += fname;
-			str += _T(".prj) ");
-			str += _("is missing or unreadable.\n");
-			wxMessageBox(str);
-		}
+		success = ElevCacheOpen(this, fname_utf8, &err);
 		if (success)
 		{
 			m_pGrid->GetDimensions(m_iColumns, m_iRows);
@@ -445,7 +434,18 @@ bool vtElevLayer::OnLoad()
 			 !fname.Right(4).CmpNoCase(_T(".itf")))
 	{
 		m_pTin = new vtTin2d;
-		success = m_pTin->Read(fname.mb_str(wxConvUTF8));
+		success = ElevCacheOpen(this, fname_utf8, &err);
+	}
+	if (!success && err == EGE_READ_CRS)
+	{
+		// Missing prj file
+		wxString str = _("CRS file");
+		str += _T(" (");
+		RemoveFileExtensions(fname);
+		str += fname;
+		str += _T(".prj) ");
+		str += _("is missing or unreadable.\n");
+		wxMessageBox(str);
 	}
 
 	CloseProgressDialog();
@@ -548,7 +548,11 @@ void vtElevLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 	}
 	if (m_pTin)
 	{
-		m_pTin->DrawTin(pDC, pView);
+		if (m_pTin->NumTris() > 0)
+			m_pTin->DrawTin(pDC, pView);
+		else
+			// If we have no data, just draw an outline
+			DrawLayerOutline(pDC, pView);
 	}
 }
 
@@ -566,6 +570,34 @@ bool vtElevLayer::GetAreaExtent(DRECT &rect)
 		return true;
 	}
 	return false;
+}
+
+int vtElevLayer::GetMemoryUsed() const
+{
+	if (m_pGrid)
+		return m_pGrid->MemoryUsed();
+	else if (m_pTin)
+		return m_pTin->GetMemoryUsed();
+
+	return 0;
+}
+
+int vtElevLayer::MemoryNeededToLoad() const
+{
+	if (m_pGrid)
+		return m_pGrid->MemoryNeededToLoad();
+	else if (m_pTin)
+		return m_pTin->MemoryNeededToLoad();
+
+	return 0;
+}
+
+void vtElevLayer::FreeData()
+{
+	if (m_pGrid)
+		return m_pGrid->FreeData();
+	else if (m_pTin)
+		return m_pTin->FreeData();
 }
 
 void vtElevLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
@@ -713,7 +745,9 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 
 void vtElevLayer::DrawLayerOutline(wxDC *pDC, vtScaledView *pView)
 {
-	wxRect screenrect = pView->WorldToCanvas(m_pGrid->GetAreaExtents());
+	DRECT ext;
+	GetExtent(ext);
+	wxRect screenrect = pView->WorldToCanvas(ext);
 
 	if (m_pGrid && !m_pGrid->HasData())
 	{
@@ -2098,19 +2132,26 @@ bool MatchTilingToResolution(const DRECT &original_area, const DPoint2 &resoluti
 	return true;
 }
 
+// Pool of most-recently-used elevation layers, to keep in memory when paging
 std::vector<vtElevLayer*> g_ElevMRU;
 
 bool ElevCacheOpen(vtElevLayer *pLayer, const char *fname, vtElevError *err)
 {
-	if (vtElevLayer::m_iGridMemLimit != -1)
+	if (vtElevLayer::m_iElevMemLimit != -1)
 	{
-		// Limit ourselves to a fixed number of BT files loaded, deferred
+		// Limit ourselves to a fixed number of elevation files loaded, deferred
 		//  until needed.
-		return pLayer->m_pGrid->LoadBTHeader(fname, err);
+		if (pLayer->m_pGrid)
+			return pLayer->m_pGrid->LoadBTHeader(fname, err);
+		else
+			return pLayer->m_pTin->ReadHeader(fname);
 	}
 	else
 	{
-		return pLayer->m_pGrid->LoadFromBT(fname, progress_callback, err);
+		if (pLayer->m_pGrid)
+			return pLayer->m_pGrid->LoadFromBT(fname, progress_callback, err);
+		else
+			return pLayer->m_pTin->Read(fname);
 	}
 }
 
@@ -2118,42 +2159,40 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 {
 	wxString fname = elev->GetLayerFilename();
 	vtString fname_utf8 = (const char *)fname.mb_str(wxConvUTF8);
-	vtElevationGrid *grid = elev->m_pGrid;
 
-	VTLOG("ElevCache needs '%s': \n", StartOfFilename(fname_utf8));
+	VTLOG("ElevCache needs '%s':\n", StartOfFilename(fname_utf8));
 
 	size_t num_loaded = g_ElevMRU.size();
 
 	int mem = 0;
 	for (size_t i = 0; i < num_loaded; i++)
-		mem += g_ElevMRU[i]->m_pGrid->MemoryUsed();
+		mem += g_ElevMRU[i]->GetMemoryUsed();
 
-	// Consider memory needs of new grid
-	mem += grid->MemoryNeeded();
+	// Consider memory needs of new layer's data
+	mem += elev->MemoryNeededToLoad();
 
 	VTLOG("  ElevCache needs %d bytes (%.1f MB, limit is %d MB)\n", mem,
-		(float)mem / (1024*1024), vtElevLayer::m_iGridMemLimit);
+		(float)mem / (1024*1024), vtElevLayer::m_iElevMemLimit);
 
 	bool bGo = true;
-	while (bGo && mem > (vtElevLayer::m_iGridMemLimit * 1024 * 1024))
+	while (bGo && mem > (vtElevLayer::m_iElevMemLimit * 1024 * 1024))
 	{
 		// Look for a layer we can unload, starting with the least recently
 		// used (LRU) at the start of list
 		size_t i;
 		for (i = 0; i < g_ElevMRU.size(); i++)
 		{
-			vtElevLayer *lay = g_ElevMRU[i];
-			if (!lay->GetSticky())
+			vtElevLayer *elay = g_ElevMRU[i];
+			if (!elay->GetSticky())
 			{
 				// Found one
-				vtElevationGrid *oldgrid = lay->m_pGrid;
-				mem -= oldgrid->MemoryUsed();
+				mem -= elay->GetMemoryUsed();
 
 				VTLOG("  Freeing '%s', Need %d bytes (%.1f MB)\n",
-					(const char *) StartOfFilename(lay->GetLayerFilename().mb_str(wxConvUTF8)),
+					(const char *) StartOfFilename(elay->GetLayerFilename().mb_str(wxConvUTF8)),
 					mem, (float)mem / (1024*1024));
 
-				oldgrid->FreeData();
+				elay->FreeData();
 				g_ElevMRU.erase(g_ElevMRU.begin() + i);
 				break;
 			}
@@ -2167,14 +2206,23 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 		}
 	}
 
-	//OpenProgressDialog(_T("Reading BT file"));
 	VTLOG1("  ElevCache loading.\n");
-	if (!grid->LoadBTData(fname_utf8, progress_callback))
+	if (elev->m_pGrid)
 	{
-		VTLOG("Major error!  Couldn't load file '%s' in the elevation cache.\n", fname_utf8);
-		return false;
+		if (!elev->m_pGrid->LoadBTData(fname_utf8, progress_callback))
+		{
+			VTLOG("Major error!  Couldn't load file '%s' in the elevation cache.\n", fname_utf8);
+			return false;
+		}
 	}
-	//CloseProgressDialog()
+	else if (elev->m_pTin)
+	{
+		if (!elev->m_pTin->ReadBody(fname_utf8))
+		{
+			VTLOG("Major error!  Couldn't load file '%s' in the elevation cache.\n", fname_utf8);
+			return false;
+		}
+	}
 
 	// most recently used goes to the end of the list
 	//  (to be precise, it is the most recently loaded)
