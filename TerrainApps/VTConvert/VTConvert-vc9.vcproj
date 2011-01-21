@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdal_id-vc9.lib ws2_32.lib netcdf.lib libpng13-vc9.lib libjpeg.lib zlib1-vc9.lib"
+				AdditionalDependencies="gdal_id-vc9.lib ws2_32.lib netcdf.lib libpng15d-vc9.lib libjpeg.lib zlib1d-vc9.lib"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="MSVCRT.lib"
 				GenerateDebugInformation="true"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdal_i-vc9.lib ws2_32.lib netcdf.lib libpng13-vc9.lib libjpeg.lib zlib1-vc9.lib"
+				AdditionalDependencies="gdal_i-vc9.lib ws2_32.lib netcdf.lib libpng15-vc9.lib libjpeg.lib zlib1-vc9.lib"
 				OutputFile="$(OutDir)/VTConvert.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="false"
