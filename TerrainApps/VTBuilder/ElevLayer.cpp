@@ -50,6 +50,11 @@ vtTin2d::vtTin2d()
 	m_bConstrain = false;
 }
 
+vtTin2d::~vtTin2d()
+{
+	FreeEdgeLengths();
+}
+
 vtTin2d::vtTin2d(vtElevationGrid *grid)
 {
 	m_fEdgeLen = NULL;
@@ -598,6 +603,19 @@ void vtElevLayer::FreeData()
 		return m_pGrid->FreeData();
 	else if (m_pTin)
 		return m_pTin->FreeData();
+}
+
+/**
+ * If an elevation layer is waiting to be paged in, then it has some basic information
+ * like extents, but no data yet.
+ */
+bool vtElevLayer::HasData()
+{
+	if (m_pGrid)
+		return m_pGrid->HasData();
+	else if (m_pTin)
+		return (m_pTin->NumTris() > 0);
+	return false;
 }
 
 void vtElevLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
@@ -1522,6 +1540,19 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 			DisplayAndLog(_("Reduced vertices from %d to %d"), before, after);
 		else
 			DisplayAndLog(_("There are %d vertices, unable to merge any."), before);
+	}
+}
+
+void vtElevLayer::SetupTinTriangleBins(int target_triangles_per_bin)
+{
+	if (m_pTin && m_pTin->NumTris())
+	{
+		int tris = m_pTin->NumTris();
+		// Aim for a given number of triangles in a bin
+		int bins = (int) sqrt((double) tris / target_triangles_per_bin);
+		if (bins < 10)
+			bins = 10;
+		m_pTin->SetupTriangleBins(bins, progress_callback);
 	}
 }
 

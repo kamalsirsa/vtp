@@ -863,23 +863,8 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 	FlagStickyLayers(relevant_elevs);
 
 	// Setup TINs for speedy picking
-	for (int l = 0; l < NumLayers(); l++)
-	{
-		vtLayer *lp = m_Layers.GetAt(l);
-		if (lp->GetType() == LT_ELEVATION && lp->GetVisible())
-		{
-			vtElevLayer *el = (vtElevLayer *)lp;
-			if (el->m_pTin)
-			{
-				int tris = el->m_pTin->NumTris();
-				// Aim for no more than 50 triangles in a bin
-				int bins = (int) sqrt((double) tris / 50);
-				if (bins < 10)
-					bins = 10;
-				el->m_pTin->SetupTriangleBins(bins, progress_callback);
-			}
-		}
-	}
+	for (size_t lay = 0; lay < relevant_elevs.size(); lay++)
+		relevant_elevs[lay]->SetupTinTriangleBins(50);	// target 50 tris per bin
 
 	// iterate through the heixels of the new terrain
 	DPoint2 p;
@@ -1599,26 +1584,32 @@ float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 	{
 		vtElevLayer *elev = elevs[g];
 
+		// The bounds-test would occur later, but we need to exclude this
+		//  grid early to avoid paging it in unnecessarily.
+		DRECT ext;
+		elev->GetExtent(ext);
+		if (!ext.ContainsPoint(p, true))
+			continue;
+
+		// Check if elevation data is in memory
+		if (!elev->HasData())
+		{
+			bool success = ElevCacheLoadData(elev);
+
+			// Safety check; we should never fail to read a BT or ITF, but just in
+			//  case anything goes wrong, don't crash.
+			if (!success)
+				return INVALID_ELEVATION;
+
+			// If it's a TIN, set it up for speedy picking
+			elev->SetupTinTriangleBins(50);	// target 50 tris per bin
+		}
+
 		vtElevationGrid *grid = elev->m_pGrid;
 		vtTin2d *tin = elev->m_pTin;
+
 		if (grid)
 		{
-			// The bounds-test would occur later, but we need to exclude this
-			//  grid early to avoid paging it in unnecessarily.
-			if (!grid->GetEarthExtents().ContainsPoint(p, true))
-				continue;
-
-			// Check if grid is in memory
-			if (!grid->HasData())
-			{
-				bool success = ElevCacheLoadData(elev);
-
-				// Safety check; we should never fail to read a BT, but just in case anything
-				//  goes wrong, don't crash.
-				if (!success)
-					return INVALID_ELEVATION;
-			}
-
 			fData = grid->GetFilteredValue(p);
 			if (fData != INVALID_ELEVATION)
 				fBestData = fData;

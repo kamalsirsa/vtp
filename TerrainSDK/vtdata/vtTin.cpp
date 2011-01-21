@@ -21,6 +21,7 @@ vtTin::vtTin()
 
 vtTin::~vtTin()
 {
+	FreeData();
 	if (m_trianglebins)
 		delete m_trianglebins;
 }
@@ -136,6 +137,10 @@ bool vtTin::_ReadTinHeader(FILE *fp)
 
 	char marker[5];
 	fread(marker, 5, 1, fp);
+	if (strncmp(marker, "tin", 3))
+		return false;	// Not a Tin
+	int version = marker[4] - '0';
+
 	fread(&m_file_verts, 4, 1, fp);
 	fread(&m_file_tris, 4, 1, fp);
 	fread(&m_file_data_start, 4, 1, fp);
@@ -153,6 +158,15 @@ bool vtTin::_ReadTinHeader(FILE *fp)
 		if (err != OGRERR_NONE)
 			return false;
 	}
+
+	if (version > 1)
+	{
+		// version 2 of the format has extents: left, top, right, bottom, min z, max h
+		fread(&m_EarthExtents.left, sizeof(double), 4, fp);
+		fread(&m_fMinHeight, sizeof(float), 1, fp);
+		fread(&m_fMaxHeight, sizeof(float), 1, fp);
+	}
+
 	return true;
 }
 
@@ -480,19 +494,25 @@ bool vtTin::Write(const char *fname) const
 		return false;
 	}
 	int proj_len = strlen(wkt);
-	int data_start = 5 + 4 + 4 + 4 + + 4 + proj_len;
+	int data_start = 5 + 4 + 4 + 4 + + 4 + proj_len + 32 + 4 + 4;
 
 	int i;
 	int verts = NumVerts();
 	int tris = NumTris();
 
-	fwrite("tin01", 5, 1, fp);
+	fwrite("tin02", 5, 1, fp);	// version 2
 	fwrite(&verts, 4, 1, fp);
 	fwrite(&tris, 4, 1, fp);
 	fwrite(&data_start, 4, 1, fp);
 	fwrite(&proj_len, 4, 1, fp);
 	fwrite(wkt, proj_len, 1, fp);
 	OGRFree(wkt);
+
+	// version 2 of the format has extents: left, top, right, bottom, min z, max h
+	fwrite(&m_EarthExtents.left, sizeof(double), 4, fp);
+	fwrite(&m_fMinHeight, sizeof(float), 1, fp);
+	fwrite(&m_fMaxHeight, sizeof(float), 1, fp);
+
 	// room for future extention: you can add fields here, as long as you
 	// increase the data_start offset above accordingly
 

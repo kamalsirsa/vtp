@@ -2231,6 +2231,7 @@ void BuilderView::RunTest()
 	OpenProgressDialog(_T("Converting"));
 
 	std::string path = "G:/xyz";
+	int count = 0;
 	for (dir_iter it(path); it != dir_iter(); ++it)
 	{
 		if (it.is_hidden() || it.is_directory())
@@ -2244,6 +2245,11 @@ void BuilderView::RunTest()
 			continue;
 		vtTin2d *tin = new vtTin2d(setpo3);
 
+		// inherit CRS from application
+		vtProjection proj;
+		g_bld->GetProjection(proj);
+		tin->m_proj = proj;
+
 		vtElevLayer *pEL = new vtElevLayer;
 		pEL->SetTin(tin);
 
@@ -2253,6 +2259,11 @@ void BuilderView::RunTest()
 		pEL->SaveAs(lname + _(".itf"));
 		delete pEL;
 		delete pSet;
+
+		count++;
+		wxString msg;
+		msg.Printf(_("%d"), count);
+		UpdateProgressDialog(count / 500, msg);
 	}
 	CloseProgressDialog();
 #endif

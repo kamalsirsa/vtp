@@ -79,6 +79,18 @@ bool vtContourConverter::SetupTerrain(vtTerrain *pTerr)
 		nx = tiledGeom->cols * tileLod0Size + 1;
 		ny = tiledGeom->rows * tileLod0Size + 1;
 	}
+	// we can't allocate too much memory, so reduce the resolution if too large
+	DPoint2 scale(1.0, 1.0);
+	while ((nx/scale.x) > 8192)
+		scale.x *= 2.0;
+	while ((ny/scale.y) > 8192)
+		scale.y *= 2.0;
+
+	m_spacing.x *= scale.x;
+	m_spacing.y *= scale.y;
+	nx /= scale.x;
+	ny /= scale.y;
+
 	m_pGrid = new SurfaceGrid(nx,ny);
 	int i, j;
 	if (m_pHF)
@@ -97,15 +109,15 @@ bool vtContourConverter::SetupTerrain(vtTerrain *pTerr)
 		vtTiledGeom *tiledGeom = pTerr->GetTiledGeom();
 		float topBottom = tiledGeom->m_WorldExtents.top - tiledGeom->m_WorldExtents.bottom;
 		float rightLeft = tiledGeom->m_WorldExtents.right - tiledGeom->m_WorldExtents.left;
-		float rlxwidth = rightLeft / (tiledGeom->cols * tileLod0Size + 1);
-		float tbywidth = topBottom / (tiledGeom->rows * tileLod0Size + 1);
+		float xwidth = rightLeft / nx;
+		float ywidth = topBottom / ny;
 		float altitude;
 		for (i = 0; i < nx; i++)
 		{
 			for (j = 0; j < ny; j++)
 			{
 				// use the true elevation, for true contours
-				tiledGeom->FindAltitudeAtPoint(FPoint3(i*rlxwidth, 0, j*tbywidth),altitude, true);
+				tiledGeom->FindAltitudeAtPoint(FPoint3(i*xwidth, 0, j*ywidth),altitude, true);
 				m_pGrid->zset(i, j, altitude);
 			}
 		}

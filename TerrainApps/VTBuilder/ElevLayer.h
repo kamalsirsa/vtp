@@ -68,6 +68,8 @@ class vtTin2d : public vtTin
 {
 public:
 	vtTin2d();
+	~vtTin2d();
+
 	vtTin2d(vtElevationGrid *grid);
 	vtTin2d(vtFeatureSetPoint3D *set);
 	vtTin2d(vtFeatureSetPolygon *set, int iFieldNum);
@@ -116,6 +118,7 @@ public:
 	int GetMemoryUsed() const;
 	int MemoryNeededToLoad() const;
 	void FreeData();
+	bool HasData();
 
 	void OnLeftDown(BuilderView *pView, UIContext &ui);
 	void OnLeftUp(BuilderView *pView, UIContext &ui);
@@ -151,6 +154,7 @@ public:
 	void SetTin(vtTin2d *pTin);
 	vtTin2d *GetTin() { return m_pTin; }
 	void MergeSharedVerts(bool bSilent = false);
+	void SetupTinTriangleBins(int target_triangles_per_bin);
 
 	// drawing
 	void SetupBitmap(wxDC *pDC);

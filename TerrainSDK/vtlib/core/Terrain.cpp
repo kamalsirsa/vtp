@@ -2296,7 +2296,7 @@ bool vtTerrain::CreateStep1()
 		// Elevation input is a single grid; load it
 		m_pElevGrid = new vtElevationGrid;
 
-		vtElevGridError err;
+		vtElevError err;
 		bool status = m_pElevGrid->LoadFromBT(elev_path, m_progress_callback, &err);
 		if (status == false)
 		{
