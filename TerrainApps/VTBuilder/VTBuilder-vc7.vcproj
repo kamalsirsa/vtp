@@ -91,7 +91,7 @@
 				Optimization="1"
 				InlineFunctionExpansion="2"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="NDEBUG;UNICODE;WIN32;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;SUPPORT_TRANSIT=0;USE_DIBSECTIONS=1;USE_OPENGL=1"
+				PreprocessorDefinitions="NDEBUG;UNICODE;WIN32;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;SUPPORT_TRANSIT=0;USE_DIBSECTIONS=1;USE_OPENGL=1;SUPPORT_CURL=0"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
@@ -109,7 +109,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdal_i.lib ws2_32.lib netcdf.lib libpng15-vc7.lib zlib1-vc7.lib libjpeg.lib squish.lib libMini.lib"
+				AdditionalDependencies="gdal_i-vc7.lib ws2_32.lib netcdf.lib libpng15-vc7.lib zlib1-vc7.lib libjpeg.lib squish.lib libMini.lib"
 				OutputFile="Release_Unicode/VTBuilder_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

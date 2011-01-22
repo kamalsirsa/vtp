@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="../../TerrainSDK"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;USE_OPENGL=1"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_WINDOWS;__WINDOWS__;__WXMSW__;__WIN95__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;USE_OPENGL=1;SUPPORT_CURL=0"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="3"
