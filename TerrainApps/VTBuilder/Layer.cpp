@@ -67,7 +67,7 @@ vtLayer::~vtLayer()
 {
 }
 
-bool vtLayer::Save()
+bool vtLayer::Save(bool progress_callback(int))
 {
 	if (!m_bNative)
 	{
@@ -75,7 +75,7 @@ bool vtLayer::Save()
 			return false;
 	}
 	VTLOG("Saving data...");
-	bool success = OnSave();
+	bool success = OnSave(progress_callback);
 	if (success)
 	{
 		VTLOG("OK.\n");
@@ -88,11 +88,11 @@ bool vtLayer::Save()
 	return success;
 }
 
-bool vtLayer::SaveAs(const wxString &filename)
+bool vtLayer::SaveAs(const wxString &filename, bool progress_callback(int))
 {
 	SetLayerFilename(filename);
 	m_bNative = true;
-	return Save();
+	return Save(progress_callback);
 }
 
 bool vtLayer::Load(const wxString &filename)

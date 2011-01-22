@@ -73,7 +73,7 @@ public:
 	bool Read(const char *fname);
 	bool ReadHeader(const char *fname);
 	bool ReadBody(const char *fname);
-	bool Write(const char *fname) const;
+	bool Write(const char *fname, bool progress_callback(int) = NULL) const;
 	bool ReadDXF(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadADF(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadGMS(const char *fname, bool progress_callback(int) = NULL);

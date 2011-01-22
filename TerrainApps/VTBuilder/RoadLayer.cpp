@@ -54,7 +54,7 @@ void vtRoadLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 	Draw(pDC, pView, m_bDrawNodes);
 }
 
-bool vtRoadLayer::OnSave()
+bool vtRoadLayer::OnSave(bool progress_callback(int))
 {
 	return WriteRMF(GetLayerFilename().mb_str(wxConvUTF8));
 }

@@ -1440,6 +1440,7 @@ vtFeatureSet *Builder::ImportPointsFromXYZ(const char *fname, bool progress_call
 	// Now import
 	vtFeatureSetPoint3D *pSet = new vtFeatureSetPoint3D;
 
+	vtStringArray values;
 	while (fgets(buf, 4096, fp))
 	{
 		line++;
@@ -1449,7 +1450,7 @@ vtFeatureSet *Builder::ImportPointsFromXYZ(const char *fname, bool progress_call
 			if (++count > 99) count = 0;
 		}
 
-		vtStringArray values;
+		values.clear();
 		Tokenize(buf, " ", values);
 
 		DPoint3 p;

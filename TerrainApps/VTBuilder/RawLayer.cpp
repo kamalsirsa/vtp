@@ -306,11 +306,11 @@ bool vtRawLayer::TransformCoords(vtProjection &proj)
 	return true;
 }
 
-bool vtRawLayer::OnSave()
+bool vtRawLayer::OnSave(bool progress_callback(int))
 {
 	if (!m_pSet)
 		return false;
-	return m_pSet->SaveToSHP(m_pSet->GetFilename());
+	return m_pSet->SaveToSHP(m_pSet->GetFilename(), progress_callback);
 }
 
 bool vtRawLayer::OnLoad()

@@ -27,7 +27,7 @@ public:
 	bool GetExtent(DRECT &rect);
 	void DrawLayer(wxDC *pDC, vtScaledView *pView);
 	bool TransformCoords(vtProjection &proj);
-	bool OnSave();
+	bool OnSave(bool progress_callback(int) = NULL);
 	bool OnLoad();
 	bool AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);

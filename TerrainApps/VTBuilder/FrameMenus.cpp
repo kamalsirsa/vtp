@@ -74,6 +74,7 @@ EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
 EVT_MENU(ID_FILE_OPEN,		MainFrame::OnProjectOpen)
 EVT_MENU(ID_FILE_SAVE,		MainFrame::OnProjectSave)
 EVT_MENU(ID_FILE_PREFS,		MainFrame::OnProjectPrefs)
+EVT_MENU(ID_SPECIAL_BATCH,	MainFrame::OnBatchConvert)
 EVT_MENU(ID_SPECIAL_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
 EVT_MENU(ID_SPECIAL_DYMAX_MAP,	MainFrame::OnDymaxMap)
 EVT_MENU(ID_SPECIAL_PROCESS_BILLBOARD,	MainFrame::OnProcessBillboard)
@@ -364,6 +365,7 @@ void MainFrame::CreateMenus()
 	fileMenu->Append(ID_FILE_MRU, _("Recent Projects"), mruMenu);
 	fileMenu->AppendSeparator();
 	wxMenu *specialMenu = new wxMenu;
+	specialMenu->Append(ID_SPECIAL_BATCH, _("Batch Conversion of Elevation"));
 	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, _("Create Dymaxion Textures"));
 	specialMenu->Append(ID_SPECIAL_DYMAX_MAP, _("Create Dymaxion Map"));
 	specialMenu->Append(ID_SPECIAL_PROCESS_BILLBOARD, _("Process Billboard Texture"));
@@ -765,6 +767,104 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 		// safety checks
 		CheckOptionBounds();
 	}
+}
+
+void MainFrame::OnBatchConvert(wxCommandEvent &event)
+{
+	wxArrayString aChoices;
+	aChoices.push_back(_("Import elevation grid data, write BT"));
+	aChoices.push_back(_("Import 3D point data, produce a TIN and write ITF"));
+
+	int result = wxGetSingleChoiceIndex(_("Choose operation:"),
+		_T("Batch processing"), aChoices, this);
+
+	if (result == -1)
+		return;
+
+	wxString dir1 = wxDirSelector(_("Choose directory that has the input files"),
+		_(""), 0, wxDefaultPosition, this);
+	if (dir1 == _T(""))
+		return;
+
+	wxString dir2 = wxDirSelector(_("Choose directory for output files"),
+		dir1, 0, wxDefaultPosition, this);
+	if (dir2 == _T(""))
+		return;
+
+	OpenProgressDialog2(_T("Processing"), true, this);
+	if (result == 0)
+	{
+	}
+	else if (result == 1)
+	{
+		std::string path1 = (const char *) dir1.mb_str(wxConvUTF8);
+		wxString msg;
+		int succeeded = 0;
+
+		int count = 0, total = 0;
+		for (dir_iter it(path1); it != dir_iter(); ++it)
+			total ++;
+
+		for (dir_iter it(path1); it != dir_iter(); ++it)
+		{
+			if (it.is_hidden() || it.is_directory())
+				continue;
+			std::string name1 = path1 + "/" + it.filename();
+
+			// progress
+			count++;
+			msg.Printf(_T("%d: Read "), count);
+			msg += wxString(name1.c_str(), wxConvUTF8);
+			if (UpdateProgressDialog2(count * 99 / total, 0, msg))
+				break;	// cancel
+
+			vtFeatureSet *pSet = g_bld->ImportPointsFromXYZ(name1.c_str(), progress_callback_minor);
+			if (!pSet)
+				continue;
+			vtFeatureSetPoint3D *setpo3 = dynamic_cast<vtFeatureSetPoint3D *>(pSet);
+			if (!setpo3)
+				continue;
+
+			msg.Printf(_T("%d: Creating TIN"), count);
+			if (UpdateProgressDialog2(count * 99 / total, 0, msg))
+				break;	// cancel
+
+			// points -> TIN algorithm -> TIN
+			vtTin2d *tin = new vtTin2d(setpo3);
+
+			// inherit CRS from application
+			vtProjection proj;
+			g_bld->GetProjection(proj);
+			tin->m_proj = proj;
+
+			vtElevLayer *pEL = new vtElevLayer;
+			pEL->SetTin(tin);
+
+			// inherit name
+			wxString layname = dir2;
+			layname += _T("/");
+			layname += wxString(it.filename().c_str(), wxConvUTF8);
+			RemoveFileExtensions(layname);
+			layname += _T(".itf");
+
+			// progress
+			msg.Printf(_T("%d: Write "), count);
+			msg += layname;
+			if (UpdateProgressDialog2(count * 99 / total, 0, msg))
+				break;	// cancel
+
+			bool success = pEL->SaveAs(layname, progress_callback_minor);
+			if (success)
+				succeeded ++;
+
+			// clean up
+			delete pEL;
+			delete pSet;
+		}
+		msg.Printf(_T("Successfully wrote %d files"), succeeded);
+		wxMessageBox(msg, _(""), 4|wxCENTRE, this);
+	}
+	CloseProgressDialog2();
 }
 
 void MainFrame::OnDymaxTexture(wxCommandEvent &event)

@@ -39,7 +39,7 @@ public:
 	vtProjection m_proj;
 
 	// Basics to overwrite vtLayer / vtRawLayer
-	bool OnSave();
+	bool OnSave(bool progress_callback(int) = NULL);
 	bool OnLoad();
 	bool AppendDataFrom(vtLayer *pL);
 	void GetPropertyText(wxString &str);

@@ -29,7 +29,7 @@ public:
 	bool GetExtent(DRECT &rect);
 	void DrawLayer(wxDC *pDC, vtScaledView *pView);
 	bool TransformCoords(vtProjection &proj);
-	bool OnSave();
+	bool OnSave(bool progress_callback(int) = NULL);
 	bool OnLoad();
 	void GetProjection(vtProjection &proj);
 	void SetProjection(const vtProjection &proj);

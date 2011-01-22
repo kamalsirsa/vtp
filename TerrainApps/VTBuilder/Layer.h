@@ -60,8 +60,8 @@ public:
 
 	// operations
 	static vtLayer *CreateNewLayer(LayerType ltype);
-	bool Save();
-	bool SaveAs(const wxString &filename = _T(""));
+	bool Save(bool progress_callback(int) = NULL);
+	bool SaveAs(const wxString &filename = _T(""), bool progress_callback(int) = NULL);
 	bool Load(const wxString &filename = _T(""));
 
 	// these must be implemented:
@@ -70,7 +70,7 @@ public:
 	virtual void DrawLayer(wxDC *pDC, vtScaledView *pView) = 0;
 	/// Transform the coordinates into another CRS
 	virtual bool TransformCoords(vtProjection &proj) = 0;
-	virtual bool OnSave() = 0;
+	virtual bool OnSave(bool progress_callback(int) = NULL) = 0;
 	virtual bool OnLoad() = 0;
 	/// Merge the contents of another layer (of the same type)
 	virtual bool AppendDataFrom(vtLayer *pL) = 0;

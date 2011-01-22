@@ -33,7 +33,7 @@ vtTransitLayer::~vtTransitLayer()
 {
 }
 
-bool vtTransitLayer::OnSave()
+bool vtTransitLayer::OnSave(bool progress_callback(int))
 {
 	char *errMsg = NULL;
 

@@ -2228,44 +2228,6 @@ void BuilderView::RunTest()
 	}
 #endif
 #if 0
-	OpenProgressDialog(_T("Converting"));
-
-	std::string path = "G:/xyz";
-	int count = 0;
-	for (dir_iter it(path); it != dir_iter(); ++it)
-	{
-		if (it.is_hidden() || it.is_directory())
-			continue;
-		std::string name1 = path + "/" + it.filename();
-		vtFeatureSet *pSet = g_bld->ImportPointsFromXYZ(name1.c_str(), progress_callback);
-		if (!pSet)
-			continue;
-		vtFeatureSetPoint3D *setpo3 = dynamic_cast<vtFeatureSetPoint3D *>(pSet);
-		if (!setpo3)
-			continue;
-		vtTin2d *tin = new vtTin2d(setpo3);
-
-		// inherit CRS from application
-		vtProjection proj;
-		g_bld->GetProjection(proj);
-		tin->m_proj = proj;
-
-		vtElevLayer *pEL = new vtElevLayer;
-		pEL->SetTin(tin);
-
-		// inherit name
-		wxString lname(name1.c_str(), wxConvUTF8);
-		RemoveFileExtensions(lname);
-		pEL->SaveAs(lname + _(".itf"));
-		delete pEL;
-		delete pSet;
-
-		count++;
-		wxString msg;
-		msg.Printf(_("%d"), count);
-		UpdateProgressDialog(count / 500, msg);
-	}
-	CloseProgressDialog();
 #endif
 }
 

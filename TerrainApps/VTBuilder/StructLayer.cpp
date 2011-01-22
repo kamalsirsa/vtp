@@ -213,7 +213,7 @@ void vtStructureLayer::DrawLinear(wxDC *pDC, vtScaledView *pView, vtFence *fen)
 	}
 }
 
-bool vtStructureLayer::OnSave()
+bool vtStructureLayer::OnSave(bool progress_callback(int))
 {
 	return WriteXML(GetFilename(), m_bPreferGZip);
 }

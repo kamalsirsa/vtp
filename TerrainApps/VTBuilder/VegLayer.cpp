@@ -99,13 +99,13 @@ wxString vtVegLayer::GetFileExtension()
 		return _T(".shp");
 }
 
-bool vtVegLayer::OnSave()
+bool vtVegLayer::OnSave(bool progress_callback(int))
 {
 	// currently we can load and save VF files (Plant Instances)
 	if (m_VLType == VLT_Instances)
 		return GetPIA()->WriteVF(GetLayerFilename().mb_str(wxConvUTF8));
 	else
-		return vtRawLayer::OnSave();
+		return vtRawLayer::OnSave(progress_callback);
 }
 
 bool vtVegLayer::OnLoad()

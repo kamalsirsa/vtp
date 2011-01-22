@@ -31,7 +31,7 @@ vtWaterLayer::~vtWaterLayer()
 }
 
 
-bool vtWaterLayer::OnSave()
+bool vtWaterLayer::OnSave(bool progress_callback(int))
 {
 	// unimplemented
 	return true;

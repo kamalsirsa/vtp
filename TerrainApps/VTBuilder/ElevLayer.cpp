@@ -160,7 +160,7 @@ vtTin2d::vtTin2d(vtFeatureSetPoint3D *set)
 	}
 	// free mem allocated to the "Triangle" structures
 	free(in.pointlist);
-	free(in.segmentlist);
+	free(in.pointattributelist);
 
 	free(out.pointlist);
 	free(out.pointattributelist);
@@ -400,13 +400,13 @@ vtElevLayer::~vtElevLayer()
 	ElevCacheRemove(this);
 }
 
-bool vtElevLayer::OnSave()
+bool vtElevLayer::OnSave(bool progress_callback(int))
 {
 	vtString fname = (const char *) GetLayerFilename().mb_str(wxConvUTF8);
 	if (m_pGrid)
-		return m_pGrid->SaveToBT(fname, NULL, m_bPreferGZip);
+		return m_pGrid->SaveToBT(fname, progress_callback, m_bPreferGZip);
 	if (m_pTin)
-		return m_pTin->Write(fname);
+		return m_pTin->Write(fname, progress_callback);
 	return false;
 }
 

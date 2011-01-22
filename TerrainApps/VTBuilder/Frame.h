@@ -72,6 +72,7 @@ protected:
 	void OnProjectOpen(wxCommandEvent& event);
 	void OnProjectSave(wxCommandEvent& event);
 	void OnProjectPrefs(wxCommandEvent& event);
+	void OnBatchConvert(wxCommandEvent &event);
 	void OnDymaxTexture(wxCommandEvent &event);
 	void OnDymaxMap(wxCommandEvent &event);
 	void OnProcessBillboard(wxCommandEvent &event);

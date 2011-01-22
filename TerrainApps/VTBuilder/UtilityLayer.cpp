@@ -107,7 +107,7 @@ void vtUtilityLayer::DrawPole(wxDC *pDC, vtScaledView *pView, vtPole *pole)
 	pDC->DrawLine(center.x, center.y-m_size, center.x, center.y+m_size+1);
 }
 
-bool vtUtilityLayer::OnSave()
+bool vtUtilityLayer::OnSave(bool progress_callback(int))
 {
 	wxString strExt = GetLayerFilename().AfterLast('.');
 

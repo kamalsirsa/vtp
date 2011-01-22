@@ -95,7 +95,7 @@ bool vtImageLayer::TransformCoords(vtProjection &proj_new)
 	return success;
 }
 
-bool vtImageLayer::OnSave()
+bool vtImageLayer::OnSave(bool progress_callback(int))
 {
 	return m_pImage->SaveToFile(GetLayerFilename().mb_str(wxConvUTF8));
 }

@@ -485,7 +485,7 @@ void vtTin::FreeData()
 /**
  * Write the TIN to a new-style .tin file (custom VTP format).
  */
-bool vtTin::Write(const char *fname) const
+bool vtTin::Write(const char *fname, bool progress_callback(int)) const
 {
 	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
@@ -521,16 +521,25 @@ bool vtTin::Write(const char *fname) const
 	// room for future extention: you can add fields here, as long as you
 	// increase the data_start offset above accordingly
 
+	// count progress
+	int count = 0, total = verts + tris;
+
 	// write verts
 	for (i = 0; i < verts; i++)
 	{
 		fwrite(&m_vert[i].x, 8, 2, fp);	// 2 doubles
 		fwrite(&m_z[i], 4, 1, fp);		// 1 float
+
+		if (progress_callback && (++count % 100) == 0)
+			progress_callback(count * 99 / total);
 	}
 	// write tris
-	for (i = 0; i < tris*3; i++)
+	for (i = 0; i < tris; i++)
 	{
-		fwrite(&m_tri[i], 4, 1, fp);	// 1 int
+		fwrite(&m_tri[i*3], 4, 3, fp);	// 3 ints
+
+		if (progress_callback && (++count % 100) == 0)
+			progress_callback(count * 99 / total);
 	}
 
 	fclose(fp);
