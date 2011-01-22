@@ -22,8 +22,6 @@ vtTin::vtTin()
 vtTin::~vtTin()
 {
 	FreeData();
-	if (m_trianglebins)
-		delete m_trianglebins;
 }
 
 void vtTin::AddVert(const DPoint2 &p, float z)
@@ -475,6 +473,13 @@ void vtTin::FreeData()
 {
 	m_vert.FreeData();
 	m_tri.FreeData();
+
+	// The bins must be cleared when the triangles are freed
+	if (m_trianglebins)
+	{
+		delete m_trianglebins;
+		m_trianglebins = NULL;
+	}
 }
 
 /**

@@ -860,7 +860,6 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 		if (area.OverlapsRect(layer_extent))
 			relevant_elevs.push_back(elevs[e]);
 	}
-	FlagStickyLayers(relevant_elevs);
 
 	// Setup TINs for speedy picking
 	for (size_t lay = 0; lay < relevant_elevs.size(); lay++)
