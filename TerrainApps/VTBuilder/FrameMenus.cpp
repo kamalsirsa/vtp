@@ -791,33 +791,54 @@ void MainFrame::OnBatchConvert(wxCommandEvent &event)
 	if (dir2 == _T(""))
 		return;
 
+	std::string path1 = (const char *) dir1.mb_str(wxConvUTF8);
+	std::string path2 = (const char *) dir2.mb_str(wxConvUTF8);
+	wxString msg;
+	int succeeded = 0;
+
+	int count = 0, total = 0;
+	for (dir_iter it(path1); it != dir_iter(); ++it)
+		total ++;
+
 	OpenProgressDialog2(_T("Processing"), true, this);
-	if (result == 0)
-	{
-	}
-	else if (result == 1)
-	{
-		std::string path1 = (const char *) dir1.mb_str(wxConvUTF8);
-		wxString msg;
-		int succeeded = 0;
+	// some paths are long, and the progress dialog doesn't automatically widen
+	SetProgressDialog2Width(600);
 
-		int count = 0, total = 0;
-		for (dir_iter it(path1); it != dir_iter(); ++it)
-			total ++;
+	for (dir_iter it(path1); it != dir_iter(); ++it)
+	{
+		if (it.is_hidden() || it.is_directory())
+			continue;
+		std::string name1 = path1 + "/" + it.filename();
 
-		for (dir_iter it(path1); it != dir_iter(); ++it)
+		// progress
+		count++;
+		msg.Printf(_T("%d: Read "), count);
+		msg += wxString(name1.c_str(), wxConvUTF8);
+		if (UpdateProgressDialog2(count * 99 / total, 0, msg))
+			break;	// cancel
+
+		if (result == 0)
 		{
-			if (it.is_hidden() || it.is_directory())
-				continue;
-			std::string name1 = path1 + "/" + it.filename();
+			bool bGZip = false;
 
-			// progress
-			count++;
-			msg.Printf(_T("%d: Read "), count);
-			msg += wxString(name1.c_str(), wxConvUTF8);
+			msg.Printf(_T("%d: Import from %hs"), count, name1.c_str());
 			if (UpdateProgressDialog2(count * 99 / total, 0, msg))
 				break;	// cancel
 
+			vtElevationGrid grid;
+			if (!grid.LoadFromFile(name1.c_str(), progress_callback_minor))
+				break;
+
+			vtString name2 = path2.c_str();
+			name2 += "/";
+			name2 += it.filename().c_str();
+			RemoveFileExtensions(name2);
+			name2 += ".bt";
+
+			grid.SaveToBT(name2, progress_callback_minor, bGZip);
+		}
+		else if (result == 1)
+		{
 			vtFeatureSet *pSet = g_bld->ImportPointsFromXYZ(name1.c_str(), progress_callback_minor);
 			if (!pSet)
 				continue;
@@ -841,19 +862,19 @@ void MainFrame::OnBatchConvert(wxCommandEvent &event)
 			pEL->SetTin(tin);
 
 			// inherit name
-			wxString layname = dir2;
-			layname += _T("/");
-			layname += wxString(it.filename().c_str(), wxConvUTF8);
-			RemoveFileExtensions(layname);
-			layname += _T(".itf");
+			wxString output_name = dir2;
+			output_name += _T("/");
+			output_name += wxString(it.filename().c_str(), wxConvUTF8);
+			RemoveFileExtensions(output_name);
+			output_name += _T(".itf");
 
 			// progress
 			msg.Printf(_T("%d: Write "), count);
-			msg += layname;
+			msg += output_name;
 			if (UpdateProgressDialog2(count * 99 / total, 0, msg))
 				break;	// cancel
 
-			bool success = pEL->SaveAs(layname, progress_callback_minor);
+			bool success = pEL->SaveAs(output_name, progress_callback_minor);
 			if (success)
 				succeeded ++;
 
@@ -861,9 +882,10 @@ void MainFrame::OnBatchConvert(wxCommandEvent &event)
 			delete pEL;
 			delete pSet;
 		}
-		msg.Printf(_T("Successfully wrote %d files"), succeeded);
-		wxMessageBox(msg, _(""), 4|wxCENTRE, this);
 	}
+	msg.Printf(_T("Successfully wrote %d files"), succeeded);
+	wxMessageBox(msg, _(""), 4|wxCENTRE, this);
+
 	CloseProgressDialog2();
 }
 

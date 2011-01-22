@@ -72,6 +72,7 @@ extern bool progress_callback2(int amount1, int amount2);
 extern bool progress_callback_major(int amount);
 extern bool progress_callback_minor(int amount);
 void OpenProgressDialog2(const wxString &title, bool bCancellable = false, wxWindow *pParent = NULL);
+void SetProgressDialog2Width(int width);
 void CloseProgressDialog2();
 bool UpdateProgressDialog2(int amount1, int amount2, const wxString& newmsg = wxT(""));
 void ResumeProgressDialog2();

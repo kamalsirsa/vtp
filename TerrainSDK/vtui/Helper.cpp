@@ -713,6 +713,16 @@ void OpenProgressDialog2(const wxString &title, bool bCancellable, wxWindow *pPa
 	g_pProg2->Update(0, 0, _T(" "));
 }
 
+void SetProgressDialog2Width(int width)
+{
+	if (g_pProg2)
+	{
+		wxSize s = g_pProg2->GetSize();
+		s.SetWidth(width);
+		g_pProg2->SetSize(s);
+	}
+}
+
 void CloseProgressDialog2()
 {
 	if (g_pProg2)

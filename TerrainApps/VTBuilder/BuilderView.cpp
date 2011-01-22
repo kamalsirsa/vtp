@@ -2227,8 +2227,6 @@ void BuilderView::RunTest()
 		}
 	}
 #endif
-#if 0
-#endif
 }
 
 void BuilderView::OnKeyDown(wxKeyEvent& event)
