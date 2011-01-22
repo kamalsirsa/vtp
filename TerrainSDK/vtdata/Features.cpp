@@ -171,7 +171,7 @@ bool vtFeatureSet::LoadFromSHP(const char *fname, bool progress_callback(int))
 /**
  * Load a featureset from a file.  It may be SHP, IGC, or DXF format.
  *
- * \param fname	filename in UTF-8 encoding.
+ * \param filename	Filename in UTF-8 encoding.
  *
  * \return a new vtFeatureSet if successful, otherwise NULL;
  */
@@ -261,7 +261,8 @@ OGRwkbGeometryType GetFeatureGeomType(const char *filename)
 /**
  * Load a featureset from a SHP (ESRI Shapefile).
  *
- * \param fname	filename in UTF-8 encoding.
+ * \param filename	Filename in UTF-8 encoding.
+ * \param progress_callback	Provide if you want a callback on progress.
  *
  * \return a new vtFeatureSet if successful, otherwise NULL.
  */
@@ -323,7 +324,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename, bool progress_c
 /**
  * Load a featureset from a SHP (ESRI Shapefile).
  *
- * \param fname	filename in UTF-8 encoding.
+ * \param filename	Filename in UTF-8 encoding.
  * \param progress_callback Provide a callback function if you want to receive
  *		progress indication.
  *
@@ -405,7 +406,7 @@ double GetMinutes(const char *buf)
 /**
  * Load a featureset from an IGC file.
  *
- * \param fname	filename in UTF-8 encoding.
+ * \param filename	Filename in UTF-8 encoding.
  *
  * \return a new vtFeatureSet if successful, otherwise NULL.
  */
@@ -526,7 +527,7 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(OGRLayer *pLayer,
  * Load a featureset from a file using the OGR library.  It can be in any
  *  file format that OGR supports.
  *
- * \param fname	filename in UTF-8 encoding.
+ * \param filename	Filename in UTF-8 encoding.
  * \param progress_callback Provide a callback function if you want to receive
  *		progress indication.
  *
