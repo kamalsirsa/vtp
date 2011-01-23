@@ -1,7 +1,7 @@
 //
 // vtString.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1008,13 +1008,17 @@ int vtString::Delete(int iIndex, int nCount)
 		nCount = nLength-iIndex;
 	}
 
-	// now actuall remove characters
+	// now actually remove characters
 	if (nCount > 0)
 	{
 		CopyBeforeWrite();
 
 		int nCharsToCopy = nLength-(iIndex+nCount)+1;
 		memmove( m_pchData+iIndex, m_pchData+iIndex+nCount, nCharsToCopy );
+
+		// BD added to fix a bug where the end of string is moved in, but vtString 
+		//  still thinks the string is full length.
+		GetData()->nDataLength -= nCount;
 	}
 	return GetLength();
 }

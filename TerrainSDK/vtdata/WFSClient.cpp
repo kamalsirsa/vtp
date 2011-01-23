@@ -3,7 +3,7 @@
 //
 // Web Feature Server Client
 //
-// Copyright (c) 2002-2010 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -165,7 +165,13 @@ bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers,
 					  vtString &msg, bool (*progress_callback)(int))
 {
 	vtString url = szServerURL;
-	url += "?REQUEST=GetCapabilities";
+
+	int has_qmark = (url.Find("?") != -1);
+
+	if (has_qmark)
+		url += "&REQUEST=GetCapabilities";
+	else
+		url += "?REQUEST=GetCapabilities";
 
 	VTLOG1("GetLayersFromWMS, URL: ");
 	VTLOG1(url);

@@ -1,7 +1,7 @@
 //
 // Name: MapServerDlg.cpp
 //
-// Copyright (c) 2003-2010 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -149,7 +149,7 @@ void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 	wxString val = GetBaseUrl()->GetValue();
 	vtString url = (const char *) val.mb_str(wxConvUTF8);
 
-	VTLOG("  from URL: %s\n", (const char *)url);
+	VTLOG("  from base URL: %s\n", (const char *)url);
 
 	vtString msg;
 	bool success = GetLayersFromWMS(url, m_pServers->at(m_iServer).m_layers,
@@ -184,8 +184,22 @@ void MapServerDlg::OnServer( wxCommandEvent &event )
 void MapServerDlg::OnBaseUrlText( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	wxString urlvalue = GetBaseUrl()->GetValue();
-	m_pServers->at(m_iServer).m_url = urlvalue.mb_str(wxConvUTF8);
+	wxString val = GetBaseUrl()->GetValue();
+
+	// Remove "GetCaps" so we have the base URL
+	vtString url = (const char *) val.mb_str(wxConvUTF8);
+
+	// If it already has the "GetCapabilties", remove it
+	int getcaps = url.Find("&request=GetCapabilities");
+	if (getcaps == -1)
+		getcaps = url.Find("?request=GetCapabilities");
+	if (getcaps != -1)
+	{
+		url.Delete(getcaps, strlen("&request=GetCapabilities"));
+		GetBaseUrl()->SetValue(wxString(url, wxConvUTF8));
+	}
+
+	m_pServers->at(m_iServer).m_url = url;
 	UpdateURL();
 }
 
@@ -324,7 +338,13 @@ void MapServerDlg::UpdateURL()
 
 	OGCServer &server = m_pServers->at(m_iServer);
 	vtString url = server.m_url;
-	url += "?REQUEST=GetMap";
+
+	int has_qmark = (url.Find("?") != -1);
+
+	if (has_qmark)
+		url += "&REQUEST=GetMap";
+	else
+		url += "?REQUEST=GetMap";
 
 	// Some servers seem to insist on a VERSION element
 	url += "&VERSION=1.1.0";
