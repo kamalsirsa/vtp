@@ -10,7 +10,7 @@
 #include "config_vtdata.h"
 #include "Features.h"
 
-// The dependency on Libwww is optional.  If not desired, skip this file.
+// The dependency on curl for http is optional.  If not desired, skip this file.
 #if SUPPORT_CURL
 
 #include "FilePath.h"

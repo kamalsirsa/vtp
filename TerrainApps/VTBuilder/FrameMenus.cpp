@@ -503,7 +503,7 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_SETUNKNOWN, _("&Set Unknown Areas"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_EXPORT, _("E&xport To..."));
-	elevMenu->Append(ID_ELEV_EXPORT_TILES, _("Export to Tiles..."));
+	elevMenu->Append(ID_ELEV_EXPORT_TILES, _("Export to libMini tileset..."));
 	elevMenu->Append(ID_ELEV_BITMAP, _("Re&nder to Bitmap..."));
 	elevMenu->Append(ID_ELEV_TOTIN, _("Convert Grid to TIN"));
 	elevMenu->AppendSeparator();
@@ -520,7 +520,7 @@ void MainFrame::CreateMenus()
 	imgMenu->Append(ID_IMAGE_CREATE_OVER_ALL, _("Create Overviews on Disk for All Images"));
 	imgMenu->Append(ID_IMAGE_CREATE_MIPMAPS, _("Create Overviews in Memory"));
 	imgMenu->AppendSeparator();
-	imgMenu->Append(ID_IMAGE_EXPORT_TILES, _("Export to Tiles..."));
+	imgMenu->Append(ID_IMAGE_EXPORT_TILES, _("Export to libMini tileset..."));
 	imgMenu->Append(ID_IMAGE_EXPORT_PPM, _("Export to PPM"));
 	m_pMenuBar->Append(imgMenu, _("Imagery"));
 	m_iLayerMenu[LT_IMAGE] = menu_num;

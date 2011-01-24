@@ -1631,6 +1631,7 @@ wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item0->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxFlexGridSizer *item4 = new wxFlexGridSizer( 2, 0, 0 );
+    item4->AddGrowableCol( 0 );
     item4->AddGrowableCol( 1 );
     item4->AddGrowableRow( 1 );
 
@@ -1641,15 +1642,16 @@ wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item4->Add( item6, 0, wxALL, 5 );
 
     wxString *strs7 = (wxString*) NULL;
-    wxListBox *item7 = new wxListBox( parent, ID_LIST_LAYERS, wxDefaultPosition, wxSize(130,-1), 0, strs7, wxLB_SINGLE );
+    wxListBox *item7 = new wxListBox( parent, ID_LIST_LAYERS, wxDefaultPosition, wxSize(-1,100), 0, strs7, wxLB_SINGLE );
     item4->Add( item7, 0, wxGROW|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxTextCtrl *item8 = new wxTextCtrl( parent, ID_LAYER_DESC, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
+    wxTextCtrl *item8 = new wxTextCtrl( parent, ID_LAYER_DESC, wxT(""), wxDefaultPosition, wxSize(-1,100), wxTE_MULTILINE );
     item4->Add( item8, 1, wxGROW|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item0->Add( item4, 2, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxFlexGridSizer *item9 = new wxFlexGridSizer( 2, 0, 0 );
+    item9->AddGrowableCol( 0 );
     item9->AddGrowableCol( 1 );
     item9->AddGrowableRow( 1 );
 
@@ -1660,10 +1662,10 @@ wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item9->Add( item11, 0, wxALL, 5 );
 
     wxString *strs12 = (wxString*) NULL;
-    wxListBox *item12 = new wxListBox( parent, ID_LIST_STYLES, wxDefaultPosition, wxSize(130,20), 0, strs12, wxLB_SINGLE );
+    wxListBox *item12 = new wxListBox( parent, ID_LIST_STYLES, wxDefaultPosition, wxSize(-1,40), 0, strs12, wxLB_SINGLE );
     item9->Add( item12, 0, wxGROW|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_STYLE_DESC, wxT(""), wxDefaultPosition, wxSize(-1,20), wxTE_MULTILINE );
+    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_STYLE_DESC, wxT(""), wxDefaultPosition, wxSize(-1,40), wxTE_MULTILINE );
     item9->Add( item13, 1, wxGROW|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item0->Add( item9, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
@@ -2781,14 +2783,14 @@ wxSizer *PrefDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item36 = new wxCheckBox( parent, ID_BT_GZIP, _("Default to gzip-compressed BT files"), wxDefaultPosition, wxDefaultSize, 0 );
     item22->Add( item36, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item37 = new wxCheckBox( parent, ID_DELAY_LOAD, _("Delay loading elevation grids until needed for sampling"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxCheckBox *item37 = new wxCheckBox( parent, ID_DELAY_LOAD, _("Delay loading elevation from BT and ITF until needed for sampling"), wxDefaultPosition, wxDefaultSize, 0 );
     item22->Add( item37, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxBoxSizer *item38 = new wxBoxSizer( wxHORIZONTAL );
 
     item38->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
 
-    wxStaticText *item39 = new wxStaticText( parent, ID_TEXT, _("Maximum memory used for grids (MB):"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item39 = new wxStaticText( parent, ID_TEXT, _("Maximum memory used for elevation (MB):"), wxDefaultPosition, wxDefaultSize, 0 );
     item38->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item40 = new wxTextCtrl( parent, ID_MAX_MEM_GRID, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
