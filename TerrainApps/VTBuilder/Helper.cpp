@@ -199,12 +199,12 @@ void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
 	if (bAlpha)
 	{
 		format = GL_RGBA;
-		internalformat = GL_COMPRESSED_RGBA_ARB;
+		internalformat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 	}
 	else
 	{
 		format = GL_RGB;
-		internalformat = GL_COMPRESSED_RGB_ARB;
+		internalformat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 	}
 	int border = 0;
 	GLenum type = GL_UNSIGNED_BYTE;
