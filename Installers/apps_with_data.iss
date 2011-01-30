@@ -51,7 +51,7 @@ Source: "C:\VTP\TerrainApps\Enviro\Ship\Enviro.xml"; DestDir: "{app}\Apps"; Flag
 Source: "C:\VTP\TerrainApps\Enviro\Docs\*"; DestDir: "{app}\Docs\Enviro"; Flags: ignoreversion recursesubdirs; Components: docs
 
 Source: "C:\VTP\TerrainApps\VTBuilder\Release-Unicode-vc9\VTBuilder.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
-Source: "C:\VTP\TerrainApps\VTBuilder\VTBuilder.xml"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\VTBuilder\Ship\VTBuilder.xml"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\Docs\*"; DestDir: "{app}\Docs\VTBuilder"; Flags: ignoreversion recursesubdirs; Components: docs
 
 ; Translation files
@@ -94,7 +94,7 @@ Source: "C:\APIs\gdal-1.7.3\distro\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ign
 Source: "C:\APIs\lpng150\projects\visualc9\Win32_DLL_Release\libpng15-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\lpng150\projects\visualc9\Win32_DLL_Release\ZLib\zlib1-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\osg-2.80-bin-vc9\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: dlls
+Source: "C:\APIs\osg-2.83-bin-vc9\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxbase28u_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxmsw28u_core_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxmsw28u_gl_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
