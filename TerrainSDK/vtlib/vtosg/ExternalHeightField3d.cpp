@@ -69,26 +69,31 @@ bool vtExternalHeightField3d::Initialize(const char *external_data)
 		osgEarth::MapFrame MapFrame(pMap, osgEarth::Map::ELEVATION_LAYERS);
 
 		MapFrame.sync();
-		int TileSize = 0;
+		int TileSizeInHeixels = 0;
+		unsigned int MaxLOD = 0;
 
         for( osgEarth::ElevationLayerVector::const_iterator i = MapFrame.elevationLayers().begin();
             i != MapFrame.elevationLayers().end();
             ++i )
         {
-            // I need the maximum tile size
+            // I need the maximum tile size in heixels
             int layerTileSize = i->get()->getTileSize();
-            if ( layerTileSize > TileSize)
-                TileSize = layerTileSize;
+            if ( layerTileSize > TileSizeInHeixels)
+                TileSizeInHeixels = layerTileSize;
+
+            // we also need the maximum available data level.
+            unsigned int layerMaxDataLevel = i->get()->getMaxDataLevel();
+            if ( layerMaxDataLevel > MaxLOD )
+                MaxLOD = layerMaxDataLevel;
         }
 		unsigned int tiles_wide, tiles_high;
-		double tile_width, tile_height;
         pProfile->getNumTiles(0, tiles_wide, tiles_high);
-        pProfile->getTileDimensions(0, tile_width, tile_height);
-        double WidthResolution = GeoExtent.width() / (double)tiles_wide / (double)TileSize / FUDGE_FACTOR;
-        double HeightResolution = GeoExtent.height() / (double)tiles_high / (double)TileSize / FUDGE_FACTOR;
+        double WidthResolution = GeoExtent.width() / (double)tiles_wide / (double)TileSizeInHeixels;
+        double HeightResolution = GeoExtent.height() / (double)tiles_high / (double)TileSizeInHeixels;
 
 
-        m_Smallest = (float)std::min(WidthResolution, HeightResolution);
+        m_ResolutionAtLevel0 = (float)(std::min(WidthResolution, HeightResolution) + 0.00001);
+        m_CompromiseResolution = (float)(std::min(WidthResolution, HeightResolution) / (2 ^ (MaxLOD / 2)) + 0.00001);
 
 		return true;
     }
@@ -204,7 +209,8 @@ bool vtExternalHeightField3d::FindAltitudeAtPoint(const FPoint3 &p3, float &fAlt
 #ifdef USE_OSGEARTH
         double Resolution;
         double Elevation;
-		bool bRet = m_pElevationManager->getElevation(Model.x(), Model.y(), 0, NULL, Elevation, Resolution);
+        double Requested_Resolution = bTrue ? 0 : m_CompromiseResolution;
+		bool bRet = m_pElevationManager->getElevation(Model.x(), Model.y(), Requested_Resolution, NULL, Elevation, Resolution);
 		fAltitude = (float)Elevation;
 		return bRet;
 #else
@@ -267,7 +273,7 @@ bool vtExternalHeightField3d::CastRayToSurface(const FPoint3 &point, const FPoin
 	if (m_bOsgEarth)
 	{
 #ifdef USE_OSGEARTH
-		smallest = m_Smallest;
+		smallest = m_CompromiseResolution;
 #else
 		return false;
 #endif

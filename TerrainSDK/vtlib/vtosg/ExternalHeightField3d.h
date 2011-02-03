@@ -47,8 +47,8 @@ private:
 	bool m_bOsgEarth;
 #ifdef USE_OSGEARTH
 	osg::ref_ptr<osgEarth::Util::ElevationManager> m_pElevationManager;
-	float m_Smallest;
-	static const double FUDGE_FACTOR = 128; // For cast ray to surface
+	float m_ResolutionAtLevel0;
+	float m_CompromiseResolution;
 #endif
 
 };
