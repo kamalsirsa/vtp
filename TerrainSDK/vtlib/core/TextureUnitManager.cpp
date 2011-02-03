@@ -23,7 +23,7 @@ vtTextureUnitManager::vtTextureUnitManager(void)
 vtTextureUnitManager::~vtTextureUnitManager(void)
 {
 	if (NULL != m_pAllocationArray)
-		delete m_pAllocationArray;
+		delete[] m_pAllocationArray;
 }
 
 void vtTextureUnitManager::Initialise()

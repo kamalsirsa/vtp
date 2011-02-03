@@ -22,9 +22,7 @@
 #include "frame.h"
 #include "app.h"
 
-#ifdef USE_OSG_VIEWER
 #include "vtui/GraphicsWindowWX.h"
-#endif
 
 DECLARE_APP(vtApp);
 
@@ -64,42 +62,6 @@ wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
 
 	parent->Show();
 
-#ifndef USE_OSG_VIEWER
-#ifndef __WXMAC__
-	wxGLContext *pGLContext = new wxGLContext(this);
-#endif
-
-#if defined(__WXMSW__)
-	HGLRC hContext = pGLContext->GetGLRC();
-	if (NULL == hContext)
-	{
-		wxMessageBox(_("No OpenGL support found") , _("Error"), wxICON_ERROR | wxOK);
-		exit(-1);
-	}
-	else
-		VTLOG("OpenGL context: %lx\n", hContext);
-#endif
-
-	// Documentation says about SetCurrent:
-	// "Note that this function may only be called after the window has been shown."
-	VTLOG1("vtGLCanvas: calling SetCurrent\n");
-#ifdef __WXMAC__
-	SetCurrent();
-#else
-	SetCurrent(*pGLContext);
-#endif
-
-	VTLOG1("OpenGL version: ");
-	VTLOG1((const char *) glGetString(GL_VERSION));
-	VTLOG1("\n");
-	VTLOG1("OpenGL vendor: ");
-	VTLOG1((const char *) glGetString(GL_VENDOR));
-	VTLOG1("\n");
-	VTLOG1("OpenGL renderer: ");
-	VTLOG1((const char *) glGetString(GL_RENDERER));
-	VTLOG1("\n");
-#endif
-
 	// Initialize spacenavigator, if there is one present
 	g_SpaceNav.Init();
 	g_SpaceNav.SetTarget(vtGetScene()->GetCamera());
@@ -107,9 +69,7 @@ wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
 
 vtGLCanvas::~vtGLCanvas(void)
 {
-#ifdef USE_OSG_VIEWER
 	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->CloseOsgContext();
-#endif
 }
 
 #if WIN32
@@ -243,6 +203,13 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 		event.type = VT_MOVE;
 		event.button = VT_NONE;
 	}
+#ifdef __WXGTK__
+    // wxGTK does not automatically set keyboard focus on to an OpenGL canvas window
+	else if (type == wxEVT_ENTER_WINDOW)
+	{
+	    SetFocus();
+	}
+#endif
 	else
 	{
 		// ignore other mouse events, such as wxEVT_LEAVE_WINDOW

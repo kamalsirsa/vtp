@@ -136,7 +136,7 @@ public:
 	vtLevel &operator=(const vtLevel &v);
 
 	void DeleteEdge(int iEdge);
-	bool AddEdge(int iEdge, DPoint2 &Point);
+	bool AddEdge(const int iEdge, const DPoint2 &Point);
 	int NumEdges() const { return m_Edges.GetSize(); }
 	vtEdge *GetEdge(unsigned int i) const;
 	float GetEdgeLength(unsigned int i) const;

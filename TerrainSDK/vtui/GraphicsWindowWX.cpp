@@ -4,12 +4,13 @@
 #include "wx/wx.h"
 #endif
 
-#ifdef USE_OSG_VIEWER
 
 #include "wx/glcanvas.h"
 #include "GraphicsWindowWX.h"
 #include <osgViewer/Viewer>
 
+
+#ifndef __WXMAC__
 class LocalGLContext : public wxGLContext
 {
 public:
@@ -25,18 +26,23 @@ public:
 #endif
 	}
 };
+#endif
 
 GraphicsWindowWX::GraphicsWindowWX(wxGLCanvas* pCanvas)
 {
 	m_pCanvas = pCanvas;
+#ifndef __WXMAC__
 	m_pGLContext = NULL;
+#endif
 	m_bValid = true;
 	m_bIsRealized = false;
 }
 
 bool GraphicsWindowWX::realizeImplementation()
 {
+#ifndef __WXMAC__
 	m_pGLContext = new LocalGLContext(m_pCanvas);
+#endif
 	wxPoint pos = m_pCanvas->GetPosition();
 	wxSize  size = m_pCanvas->GetSize();
 
@@ -57,13 +63,19 @@ bool GraphicsWindowWX::realizeImplementation()
 
 bool GraphicsWindowWX::makeCurrentImplementation()
 {
+#ifdef __WXMAC__
+    m_pCanvas->SetCurrent();
+#else
     m_pCanvas->SetCurrent(*m_pGLContext);
+#endif
     return true;
 }
 
 bool GraphicsWindowWX::releaseContextImplementation()
 {
+#ifndef __WXMAC__
 	m_pGLContext->ReleaseContext(*m_pCanvas);
+#endif
 	return true;
 }
 
@@ -93,5 +105,3 @@ void GraphicsWindowWX::CloseOsgContext()
 	// Force handling of event before the idle loop can call frame();
 	dynamic_cast<osgViewer::View*>(getCameras().front()->getView())->getViewerBase()->eventTraversal();
 }
-
-#endif

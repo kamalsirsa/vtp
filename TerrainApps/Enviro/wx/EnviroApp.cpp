@@ -30,9 +30,7 @@
 #include "StartupDlg.h"
 #include "TParamsDlg.h"
 
-#ifdef USE_OSG_VIEWER
 #include "vtui/GraphicsWindowWX.h"
-#endif
 
 // Allow customized versions of Enviro to provide their own Frame
 #ifdef FRAME_NAME
@@ -386,15 +384,11 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 #endif
 
 	// Initialize the VTP scene
-#ifdef USE_OSG_VIEWER
 	int MyArgc;
 	char** MyArgv;
 	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
 	vtGetScene()->Init(MyArgc, MyArgv, g_Options.m_bStereo, g_Options.m_iStereoMode);
 	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
-#else
-	vtGetScene()->Init(g_Options.m_bStereo, g_Options.m_iStereoMode);
-#endif
 
 	// Make sure the scene knows the size of the canvas
 	//  (on wxGTK, the first size events arrive too early before the Scene exists)

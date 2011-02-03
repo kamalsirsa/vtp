@@ -233,7 +233,7 @@ bool Triangulate_f::Process(const FLine3 &contour,FLine3 &result)
 			count = 2*nv;
 		}
 	}
-	delete V;
+	delete[] V;
 	return true;
 }
 

@@ -1,7 +1,8 @@
 set(VTLIB_OSG_SOURCE_FILES ImageOSG.cpp MeshMat.cpp NodeOSG.cpp SceneOSG.cpp SimpleInterimShadowTechnique.cpp StructureShadowsOSG.cpp
-					LightSpacePerspectiveShadowTechnique.cpp)
+					LightSpacePerspectiveShadowTechnique.cpp ExternalHeightField3d.cpp)
 set(VTLIB_OSG_HEADER_FILES ImageOSG.h MathOSG.h MeshMat.h NodeOSG.h SceneOSG.h SimpleInterimShadowTechnique.h StructureShadowsOSG.h
-					LightSpacePerspectiveShadowTechnique.h)
+					LightSpacePerspectiveShadowTechnique.h ExternalHeightField3d.h)
+
 
 
 # Add a library target called vtlib_osg
@@ -33,17 +34,21 @@ if(OSG_FOUND)
 	include_directories(${OSG_INCLUDE_DIR})
 endif(OSG_FOUND)
 
+if(OSGEARTH_FOUND)
+	include_directories(${OSGEARTH_INCLUDE_DIR})
+endif(OSGEARTH_FOUND)
+
 # Find the directory containing mini/mini.h
 find_path(MINI_INCLUDE_DIR mini/mini.h DOC "Directory containing mini/mini.h")
 if (MINI_INCLUDE_DIR)
-	# Add the mini include directory to the compilers search path 
+	# Add the mini include directory to the compilers search path
 	include_directories(${MINI_INCLUDE_DIR})
 endif (MINI_INCLUDE_DIR)
 
 # Find the directory containing GL/glext.h
 find_path(GLEXT_INCLUDE_DIR GL/glext.h DOC "Directory containing GL/glext.h")
 if (GLEXT_INCLUDE_DIR)
-	# Add the glext include directory to the compilers search path 
+	# Add the glext include directory to the compilers search path
 	include_directories(${GLEXT_INCLUDE_DIR})
 endif (GLEXT_INCLUDE_DIR)
 
@@ -54,3 +59,6 @@ endif (WIN32)
 
 # Specify normal preprocessor definition for this target
 set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
+if(OSGEARTH_FOUND)
+	set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS USE_OSGEARTH=1)
+endif(OSGEARTH_FOUND)

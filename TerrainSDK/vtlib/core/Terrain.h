@@ -35,6 +35,7 @@ class vtSimpleLodGrid;
 class vtTiledGeom;
 class vtTin;
 class vtTin3d;
+class vtExternalHeightField3d;
 
 /** \addtogroup terrain */
 /*@{*/
@@ -387,6 +388,7 @@ protected:
 	bool CreateFromTIN();
 	bool CreateFromGrid();
 	bool CreateFromTiles();
+	bool CreateFromExternal();
 	void _CreateCulture();
 	void _CreateVegetation();
 	void _CreateStructures();
@@ -429,6 +431,8 @@ protected:
 
 	// tiled geometry
 	vtTiledGeom	*m_pTiledGeom;
+
+	vtExternalHeightField3d *m_pExternalHeightField;
 
 	// construction parameters used to create this terrain
 	TParams		m_Params;

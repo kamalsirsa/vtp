@@ -23,9 +23,7 @@
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 #include "PerformanceMonitor.h"
 #endif
-#ifdef USE_OSG_VIEWER
 #include "vtui/GraphicsWindowWX.h"
-#endif
 
 DECLARE_APP(EnviroApp)
 
@@ -84,42 +82,6 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	VTLOG1("vtGLCanvas: calling Show on parent\n");
 	parent->Show();
 
-#ifndef USE_OSG_VIEWER
-#ifndef __WXMAC__
-	wxGLContext *pGLContext = new wxGLContext(this);
-#endif
-
-#if defined(__WXMSW__)
-	HGLRC hContext = pGLContext->GetGLRC();
-	if (NULL == hContext)
-	{
-		wxMessageBox(_("No OpenGL support found") , _("Error"), wxICON_ERROR | wxOK);
-		exit(-1);
-	}
-	else
-		VTLOG("OpenGL context: %lx\n", hContext);
-#endif
-
-	// Documentation says about SetCurrent:
-	// "Note that this function may only be called after the window has been shown."
-	VTLOG1("vtGLCanvas: calling SetCurrent\n");
-#ifdef __WXMAC__
-	SetCurrent();
-#else
-	SetCurrent(*pGLContext);
-#endif
-
-	VTLOG1("OpenGL version: ");
-	VTLOG1((const char *) glGetString(GL_VERSION));
-	VTLOG1("\n");
-	VTLOG1("OpenGL vendor: ");
-	VTLOG1((const char *) glGetString(GL_VENDOR));
-	VTLOG1("\n");
-	VTLOG1("OpenGL renderer: ");
-	VTLOG1((const char *) glGetString(GL_RENDERER));
-	VTLOG1("\n");
-#endif
-
 	for (int i = 0; i < 512; i++)
 		m_pbKeyState[i] = false;
 	vtGetScene()->SetKeyStates(m_pbKeyState);
@@ -143,9 +105,7 @@ vtGLCanvas::~vtGLCanvas(void)
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 	CPerformanceMonitorDialog::NVPM_shutdown();
 #endif
-#ifdef USE_OSG_VIEWER
 	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->CloseOsgContext();
-#endif
 	VTLOG1("Deleting Canvas\n");
 }
 
@@ -218,22 +178,12 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 	m_bPainting = true;
 
-	// Make sure the Graphics context of this thread is this window
-#ifndef USE_OSG_VIEWER
-	SetCurrent();
-#endif
-
 	// Render the Scene Graph
 	if (m_bFirstPaint) VTLOG1("vtGLCanvas: DoUpdate\n");
 	vtGetScene()->DoUpdate();
 
 	if (m_bShowFrameRateChart)
 		vtGetScene()->DrawFrameRateChart();
-
-	if (m_bFirstPaint) VTLOG1("vtGLCanvas: SwapBuffers\n");
-#ifndef USE_OSG_VIEWER
-	SwapBuffers();
-#endif
 
 	if (m_bFirstPaint) VTLOG1("vtGLCanvas: update status bar\n");
 	EnviroFrame *frame = (EnviroFrame*) GetParent();
@@ -333,6 +283,7 @@ void vtGLCanvas::OnKeyUp(wxKeyEvent& event)
 
 void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 {
+    event1.Skip(); // Ensure that the default handler is called - this improves focus handling
 	// turn WX mouse event into a VT mouse event
 	vtMouseEvent event;
 	wxEventType  ev = event1.GetEventType();
@@ -361,6 +312,11 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	} else if (ev == wxEVT_MOUSEWHEEL) {
 		event.type = VT_WHEEL;
 		event.button = event1.GetWheelRotation() / event1.GetWheelDelta();
+#ifdef __WXGTK__
+    // wxGTK does not automatically set keyboard focus on to an OpenGL canvas window
+	} else if (ev == wxEVT_ENTER_WINDOW) {
+	    SetFocus();
+#endif
 	} else {
 		// ignored mouse events, such as wxEVT_LEAVE_WINDOW
 		return;

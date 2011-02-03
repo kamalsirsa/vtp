@@ -22,6 +22,10 @@
 #define MAKE_XYZ1_TRUE(x,y) m_fXLookup[(x)], m_pData[offset((x),(y))], m_fZLookup[(y)]
 #define MAKE_XYZ2(x,y) (float)(x), m_pData[offset((x),(y))], (float)(y)
 
+#ifdef USE_OSGEARTH
+using namespace VTP;
+#endif
+
 
 //
 // Constructor/destructor

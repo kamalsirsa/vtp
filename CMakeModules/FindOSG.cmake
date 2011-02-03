@@ -21,6 +21,7 @@ SET(OSG_LIBRARY_NAMES
     osgText
     osgWidget
     osgTerrain
+    osgSim
     osgFX
     osgViewer
     osgVolume

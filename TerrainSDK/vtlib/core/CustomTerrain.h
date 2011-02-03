@@ -13,6 +13,10 @@
 
 #include "DynTerrain.h"
 
+#ifdef USE_OSGEARTH
+namespace VTP {
+#endif
+
 /**
  * This class provides an example of how to add a CLOD implementation to
  * the vtlib library.  It contains the bare skeleton of a terrain rendering
@@ -50,6 +54,10 @@ private:
 	float *m_pData;			// the elevation height array
 	float m_fZScale;
 };
+
+#ifdef USE_OSGEARTH
+}
+#endif
 
 /*@}*/	// Group dynterr
 

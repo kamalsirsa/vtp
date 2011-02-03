@@ -2242,7 +2242,7 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 	{
 		if (!elev->m_pGrid->LoadBTData(fname_utf8, progress_callback))
 		{
-			VTLOG("Major error!  Couldn't load file '%s' in the elevation cache.\n", fname_utf8);
+			VTLOG("Major error!  Couldn't load file '%s' in the elevation cache.\n", (const char *)fname_utf8);
 			return false;
 		}
 	}
@@ -2250,7 +2250,7 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 	{
 		if (!elev->m_pTin->ReadBody(fname_utf8))
 		{
-			VTLOG("Major error!  Couldn't load file '%s' in the elevation cache.\n", fname_utf8);
+			VTLOG("Major error!  Couldn't load file '%s' in the elevation cache.\n", (const char *)fname_utf8);
 			return false;
 		}
 	}

@@ -210,7 +210,7 @@ void vtLevel::DeleteEdge(int iEdge)
 }
 
 // Split an edge at the indicated point and clone into two edges
-bool vtLevel::AddEdge(int iEdge, DPoint2 &Point)
+bool vtLevel::AddEdge(const int iEdge, const DPoint2 &Point)
 {
 	int iNumEdges = m_Edges.GetSize();
 	int iIndex;
@@ -737,7 +737,7 @@ float vtBuilding::CalculateBaseElevation(vtHeightField *pHeightField)
 	float fAltitude;
 	for (int i = 0; i < iSize; i++)
 	{
-		pHeightField->FindAltitudeOnEarth(Footprint[i], fAltitude);
+		pHeightField->FindAltitudeOnEarth(Footprint[i], fAltitude, true);
 		if (fAltitude < fLowest)
 			fLowest = fAltitude;
 	}

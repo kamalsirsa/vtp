@@ -24,6 +24,9 @@
 #include "SRTerrain.h"
 #include "DemeterTerrain.h"
 #include "TiledGeom.h"
+#ifdef VTLIB_OSG
+#include "vtlib/vtosg/ExternalHeightField3d.h"
+#endif
 // add your own LOD method header here!
 
 
@@ -107,6 +110,9 @@ vtTerrain::vtTerrain()
 	m_progress_callback = NULL;
 
 	m_pStructureExtension = NULL;
+
+	m_pExternalHeightField = NULL;
+
 }
 
 vtTerrain::~vtTerrain()
@@ -208,6 +214,9 @@ vtTerrain::~vtTerrain()
 		//m_pDynGeomScale->RemoveChild(m_pTiledGeom);
 		m_pTiledGeom->Release();
 	}
+
+	if (NULL != m_pExternalHeightField)
+		delete m_pExternalHeightField;
 
 	// This will mop up anything remaining in the terrain's scenegraph
 	if (m_pContainerGroup != NULL)
@@ -830,7 +839,11 @@ bool vtTerrain::_CreateDynamicTerrain()
 	}
 	else if (method == LM_CUSTOM)
 	{
+#ifdef USE_OSGEARTH
+		m_pDynGeom = new VTP::CustomTerrain;
+#else
 		m_pDynGeom = new CustomTerrain;
+#endif
 		m_pDynGeom->SetName2("CustomTerrain Geom");
 	}
 	else if (method == LM_ROETTGER)
@@ -1188,6 +1201,10 @@ bool vtTerrain::GetGeoExtentsFromMetadata()
 			VTLOG("\tCouldn't get terrain corners.\n");
 			return false;
 		}
+	}
+	else if (type == 3)	// External
+	{
+		return false;	// TODO
 	}
 	return true;
 }
@@ -2274,6 +2291,7 @@ bool vtTerrain::CreateStep1()
 
 	vtString fname;
 	vtString elev_file = m_Params.GetValueString(STR_ELEVFILE);
+	int surface_type = m_Params.GetValueInt(STR_SURFACE_TYPE);
 	fname = "Elevation/";
 	fname += elev_file;
 	VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
@@ -2282,15 +2300,19 @@ bool vtTerrain::CreateStep1()
 	if (elev_path == "")
 	{
 		VTLOG("\t\tNot found.\n");
-
-		vtString msg;
-		msg.Format("Couldn't find elevation '%s'", (const char *) elev_file);
-		_SetErrorMessage(msg);
-		return false;
+		if (surface_type != 3)
+		{
+			vtString msg;
+			msg.Format("Couldn't find elevation '%s'", (const char *) elev_file);
+			_SetErrorMessage(msg);
+			return false;
+		}
+		// Try raw value for external terrain
+		elev_path = elev_file;
 	}
 
 	VTLOG("\tFound elevation at: %s\n", (const char *) elev_path);
-	int surface_type = m_Params.GetValueInt(STR_SURFACE_TYPE);
+
 	if (surface_type == 0)
 	{
 		// Elevation input is a single grid; load it
@@ -2410,6 +2432,19 @@ bool vtTerrain::CreateStep1()
 		// The tiled geometry base texture will always use texture unit 0
 		m_TextureUnits.ReserveTextureUnit();
 	}
+	else if (surface_type == 3)
+	{
+
+		m_pExternalHeightField = new vtExternalHeightField3d;
+		if (!m_pExternalHeightField->Initialize(elev_path))
+		{
+			_SetErrorMessage("Failed to initialise external heightfield.");
+			return false;
+		}
+		m_pHeightField = m_pExternalHeightField;
+		g_Conv = m_pExternalHeightField->m_Conversion;
+		m_proj = m_pExternalHeightField->GetProjection();
+	}
 	char type[10], value[2048];
 	m_proj.GetTextDescription(type, value);
 	VTLOG(" Projection of the terrain: %s, '%s'\n", type, value);
@@ -2456,6 +2491,8 @@ bool vtTerrain::CreateStep3()
 		return CreateFromTIN();
 	else if (m_Params.GetValueInt(STR_SURFACE_TYPE) == 2)	// tiles
 		return CreateFromTiles();
+	else if (m_Params.GetValueInt(STR_SURFACE_TYPE) == 3)	// external
+		return CreateFromExternal();
 	return true;
 }
 
@@ -2511,6 +2548,12 @@ bool vtTerrain::CreateFromTiles()
 	//  it with the terrain's culture
 	m_pTiledGeom->SetCulture(this);
 
+	return true;
+}
+
+bool vtTerrain::CreateFromExternal()
+{
+	m_pTerrainGroup->AddChild(m_pExternalHeightField->CreateGeometry());
 	return true;
 }
 

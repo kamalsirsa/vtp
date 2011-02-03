@@ -838,18 +838,33 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item18, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 10 );
 
-    wxBoxSizer *item29 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBox *item30 = new wxStaticBox( parent, -1, _("External") );
+    wxStaticBoxSizer *item29 = new wxStaticBoxSizer( item30, wxVERTICAL );
 
-    wxStaticText *item30 = new wxStaticText( parent, ID_TEXT, _("Vertical Exaggeration:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item29->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item31 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item31 = new wxTextCtrl( parent, ID_VERTEXAG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item29->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item32 = new wxRadioButton( parent, ID_USE_EXTERNAL, _("External Data:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item32 = new wxStaticText( parent, ID_TEXT, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
-    item29->Add( item32, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxTextCtrl *item33 = new wxTextCtrl( parent, ID_TT_EXTERNAL_DATA, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item31->Add( item33, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item29, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item29->Add( item31, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    item0->Add( item29, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item34 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item35 = new wxStaticText( parent, ID_TEXT, _("Vertical Exaggeration:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item36 = new wxTextCtrl( parent, ID_VERTEXAG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item34->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item37 = new wxStaticText( parent, ID_TEXT, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item37, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    item0->Add( item34, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     if (set_sizer)
     {

@@ -120,10 +120,7 @@ void redraw()
 void InitGLUT()
 {
 	int   fake_argc = 1;
-	char *fake_argv[3];
-	fake_argv[0] = "glutSimple";
-	fake_argv[1] = "Example Program";
-	fake_argv[2] = NULL;
+	char *fake_argv[3] = { (char *)"glutSimple", (char *)"Example Program", NULL };
 
 	/*
 	Initialise GLUT
@@ -148,11 +145,7 @@ bool CreateScene()
 {
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
-#ifdef USE_OSG_VIEWER
 	vtGetScene()->Init(0, NULL);
-#else
-	pScene->Init();
-#endif
 
 	// Log messages to make troubleshooting easier
 	VTSTARTLOG("debug.txt");

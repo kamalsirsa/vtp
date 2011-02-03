@@ -199,6 +199,8 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 {
 	static bool bCapture = false;
 
+    event1.Skip(); // Ensure that the default handler is called - this improves focus handling
+
 	// turn WX mouse event into a VT mouse event
 	vtMouseEvent event;
 	wxEventType  ev = event1.GetEventType();
@@ -223,6 +225,11 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	} else if (ev == wxEVT_MOTION) {
 		event.type = VT_MOVE;
 		event.button = VT_NONE;
+#ifdef __WXGTK__
+    // wxGTK does not automatically set keyboard focus on to an OpenGL canvas window
+	} else if (ev == wxEVT_ENTER_WINDOW) {
+	    SetFocus();
+#endif
 	} else {
 		// ignored mouse events, such as wxEVT_LEAVE_WINDOW
 		return;

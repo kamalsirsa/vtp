@@ -54,6 +54,8 @@ public:
 	bool	m_bGrid;
 	bool	m_bTin;
 	bool	m_bTileset;
+	bool	m_bExternal;
+	wxString	m_strExternalData;
 	wxString   m_strFilename;
 	wxString   m_strFilenameTin;
 	wxString   m_strFilenameTileset;
@@ -176,6 +178,8 @@ public:
 	std::vector<ScenarioParams> m_Scenarios;
 
 	// WDR: method declarations for TParamsDlg
+	wxTextCtrl* GetTtExternalData()  { return (wxTextCtrl*) FindWindow( ID_TT_EXTERNAL_DATA ); }
+	wxRadioButton* GetUseExternal()  { return (wxRadioButton*) FindWindow( ID_USE_EXTERNAL ); }
 	wxChoice* GetScenarios()  { return (wxChoice*) FindWindow( ID_CHOICE_SCENARIO ); }
 	wxChoice* GetTilesize()  { return (wxChoice*) FindWindow( ID_CHOICE_TILESIZE ); }
 	wxChoice* GetTFileBase()  { return (wxChoice*) FindWindow( ID_TFILE_BASE ); }

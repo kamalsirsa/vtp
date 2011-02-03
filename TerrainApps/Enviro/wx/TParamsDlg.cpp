@@ -88,6 +88,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_USE_GRID, TParamsDlg::OnCheckBoxElevType )
 	EVT_RADIOBUTTON( ID_USE_TIN, TParamsDlg::OnCheckBoxElevType )
 	EVT_RADIOBUTTON( ID_USE_TILESET, TParamsDlg::OnCheckBoxElevType )
+	EVT_RADIOBUTTON( ID_USE_EXTERNAL, TParamsDlg::OnCheckBoxElevType )
 	EVT_CHOICE( ID_LODMETHOD, TParamsDlg::OnCheckBox )
 
 	// Texture
@@ -218,6 +219,8 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_USE_GRID, &m_bGrid);
 	AddValidator(ID_USE_TIN, &m_bTin);
 	AddValidator(ID_USE_TILESET, &m_bTileset);
+	AddValidator(ID_USE_EXTERNAL, &m_bExternal);
+	AddValidator(ID_TT_EXTERNAL_DATA, &m_strExternalData);
 	AddValidator(ID_FILENAME, &m_strFilename);
 	AddValidator(ID_FILENAME_TIN, &m_strFilenameTin);
 	AddValidator(ID_FILENAME_TILES, &m_strFilenameTileset);
@@ -354,6 +357,9 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bGrid =			Params.GetValueInt(STR_SURFACE_TYPE) == 0;
 	m_bTin =			Params.GetValueInt(STR_SURFACE_TYPE) == 1;
 	m_bTileset =		Params.GetValueInt(STR_SURFACE_TYPE) == 2;
+	m_bExternal =		Params.GetValueInt(STR_SURFACE_TYPE) == 3;
+	if (m_bExternal)
+		m_strExternalData = wxString(Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
 	if (m_bGrid)
 		m_strFilename = wxString(Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
 	if (m_bTin)
@@ -522,6 +528,11 @@ void TParamsDlg::GetParams(TParams &Params)
 	{
 		Params.SetValueInt(STR_SURFACE_TYPE, 2);
 		Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilenameTileset.mb_str(wxConvUTF8));
+	}
+	if (m_bExternal)
+	{
+		Params.SetValueInt(STR_SURFACE_TYPE, 3);
+		Params.SetValueString(STR_ELEVFILE, (const char *) m_strExternalData.mb_str(wxConvUTF8));
 	}
 	Params.SetValueFloat(STR_VERTICALEXAG, m_fVerticalExag);
 
@@ -710,6 +721,7 @@ void TParamsDlg::UpdateTiledTextureFilename()
 
 void TParamsDlg::UpdateEnableState()
 {
+	GetTtExternalData()->Enable(m_bExternal);
 	GetFilename()->Enable(m_bGrid);
 	GetFilenameTin()->Enable(m_bTin);
 	GetFilenameTileset()->Enable(m_bTileset);
@@ -804,7 +816,7 @@ void TParamsDlg::RefreshLocationFields()
 	m_pLocField->Clear();
 	m_pLocField->Append(_("(default)"));
 
-	vtString locfile = (const char *) m_strLocFile.mb_str(wxConvUTF8);
+	vtString locfile = (const char *)m_strLocFile.mb_str(wxConvUTF8);
 	if (locfile == "")
 		return;
 
@@ -1067,6 +1079,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetUseGrid()->SetValue(m_bGrid);
 	GetUseTin()->SetValue(m_bTin);
 	GetUseTileset()->SetValue(m_bTileset);
+	GetUseExternal()->SetValue(m_bExternal);
 
 	UpdateTimeString();
 
@@ -1325,7 +1338,7 @@ void TParamsDlg::OnListDblClickRaw( wxCommandEvent &event )
 		AddFilenamesToArray(strings, path, _T("*.dxf"));
 	}
 
-	wxString result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a structure file"),
+	wxString result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a feature file"),
 		strings, this);
 
 	if (result.Cmp(_T(""))) // user selected something

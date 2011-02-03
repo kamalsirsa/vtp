@@ -46,6 +46,10 @@ if(BUILD_CMANAGER_OSG)
 		target_link_libraries(cmanager_osg ${OSG_ALL_LIBRARIES})
 	endif (OSG_FOUND)
 	
+	if (OSGEARTH_FOUND)
+		target_link_libraries(cmanager_osg ${OSGEARTH_ALL_LIBRARIES})
+	endif(OSGEARTH_FOUND)
+	
 	if(BZIP2_FOUND)
 		target_link_libraries(cmanager_osg ${BZIP2_LIBRARIES})
 	endif(BZIP2_FOUND)

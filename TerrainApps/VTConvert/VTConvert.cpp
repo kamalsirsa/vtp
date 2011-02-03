@@ -153,7 +153,10 @@ int main(int argc, char **argv)
 			fname_out = fname_in;
 			RemoveFileExtensions(fname_out);
 
-			Convert(dirname_in + fname_in, dirname_out + fname_out, bGZip);
+			vtString TempIn = dirname_in + fname_in;
+			vtString TempOut = dirname_out + fname_out;
+
+			Convert(TempIn, TempOut, bGZip);
 		}
 	}
 	else

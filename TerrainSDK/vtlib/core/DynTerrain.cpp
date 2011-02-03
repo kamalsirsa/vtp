@@ -25,8 +25,8 @@ vtDynTerrainGeom::vtDynTerrainGeom() : vtDynGeom(), vtHeightFieldGrid3d()
 
 vtDynTerrainGeom::~vtDynTerrainGeom()
 {
-	delete m_fXLookup;
-	delete m_fZLookup;
+	delete[] m_fXLookup;
+	delete[] m_fZLookup;
 }
 
 /**

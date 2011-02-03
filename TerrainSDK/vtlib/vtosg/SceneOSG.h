@@ -8,12 +8,8 @@
 #ifndef VTOSG_SCENEH
 #define VTOSG_SCENEH
 
-#ifdef USE_OSG_VIEWER
 #include <osgViewer/Viewer>
 #include <osgViewer/Renderer>
-#else
-#include <osgUtil/SceneView>
-#endif
 #include <osg/Timer>
 
 #if OLD_OSG_SHADOWS
@@ -49,13 +45,9 @@ public:
 	bool GetGlobalWireframe();
 
 	/// Call this method once before calling any other vtlib methods.
-#ifdef USE_OSG_VIEWER
 	bool Init(int argc, char** argv, bool bStereo = false, int iStereoMode = 0);
 	void SetGraphicsContext(osg::GraphicsContext* pGraphicsContext);
 	osg::GraphicsContext* GetGraphicsContext();
-#else
-	bool Init(bool bStereo = false, int iStereoMode = 0);
-#endif
 
 	/// Call this method after all other vtlib methods, to free memory.
 	void Shutdown();
@@ -126,23 +118,15 @@ public:
 	void ComputeViewMatrix(FMatrix4 &mat);
 
 	// OSG access
-#ifdef USE_OSG_VIEWER
 	osgViewer::Viewer *getViewer() { return m_pOsgViewer.get(); }
-#else
-	osgUtil::SceneView *getSceneView() { return m_pOsgSceneView.get(); }
-#endif
 
 	// for culling
 	void CalcCullPlanes();
 
 protected:
 	// OSG-specific implementation
-#ifdef USE_OSG_VIEWER
 	osg::ref_ptr<osgViewer::Viewer>	m_pOsgViewer;
 	osg::ref_ptr<osg::GraphicsContext>	m_pGraphicsContext;
-#else
-	osg::ref_ptr<osgUtil::SceneView>	m_pOsgSceneView;
-#endif
 
 	// for culling
 	FPlane		m_cullPlanes[6];

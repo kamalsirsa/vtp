@@ -60,6 +60,10 @@ if(BUILD_GLUTSIMPLE_OSG AND GLUT_FOUND)
 		include_directories(${OSG_INCLUDE_DIR})
 	endif(OSG_FOUND)
 
+	if (OSGEARTH_FOUND)
+		target_link_libraries(glutSimple_osg ${OSGEARTH_ALL_LIBRARIES})
+	endif(OSGEARTH_FOUND)
+	
 	if(GDAL_FOUND)
 		include_directories(${GDAL_INCLUDE_DIR})
 	endif(GDAL_FOUND)
