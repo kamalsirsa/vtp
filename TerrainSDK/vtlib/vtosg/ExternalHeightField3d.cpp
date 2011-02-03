@@ -8,6 +8,7 @@
 #include <osgEarth/MapNode>
 #endif
 
+
 vtExternalHeightField3d::vtExternalHeightField3d(void)
 {
 	m_pHat = NULL;
