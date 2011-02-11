@@ -388,9 +388,19 @@ bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow
 
 	Vec3 near_point, far_point, diff;
 
-	// call the handy OSG function
+	// There used to be a handy function for this
+	osg::Matrix MVPW;
+	osg::Matrix InverseMVPW;
+	osg::Camera *pCamera = m_pOsgViewer->getCamera();
+	MVPW = pCamera->getViewMatrix() * pCamera->getProjectionMatrix();
+	if (pCamera->getViewport())
+		MVPW.postMult(pCamera->getViewport()->computeWindowMatrix());
+	InverseMVPW.invert(MVPW);
+
 	IPoint2 winsize = pWindow->GetSize();
-	dynamic_cast<osgViewer::Renderer*>(m_pOsgViewer->getCamera()->getRenderer())->getSceneView(0)->projectWindowXYIntoObject(win.x, winsize.y-1-win.y, near_point, far_point);
+
+	near_point = osg::Vec3d(win.x, winsize.y - 1 - win.y, 0.0) * InverseMVPW;
+	far_point = osg::Vec3d(win.x, winsize.y - 1 - win.y, 1.0) * InverseMVPW;
 
 	diff = far_point - near_point;
 	diff.normalize();
@@ -410,7 +420,16 @@ void vtScene::WorldToScreen(const FPoint3 &point, IPoint2 &result)
 	Vec3 object;
 	v2s(point, object);
 	Vec3 window;
-	dynamic_cast<osgViewer::Renderer*>(m_pOsgViewer->getCamera()->getRenderer())->getSceneView(0)->projectObjectIntoWindow(object, window);
+
+
+	osg::Matrix MVPW;
+	osg::Camera *pCamera = m_pOsgViewer->getCamera();
+	MVPW = pCamera->getViewMatrix() * pCamera->getProjectionMatrix();
+	if (pCamera->getViewport())
+		MVPW.postMult(pCamera->getViewport()->computeWindowMatrix());
+
+	window = object * MVPW;
+
 	result.x = (int) window.x();
 	result.y = (int) window.y();
 }
@@ -543,7 +562,7 @@ void vtScene::SetGlobalWireframe(bool bWire)
 	// Set the scene's global PolygonMode attribute, which will affect all
 	// other materials in the scene, except those which explicitly override
 	// the attribute themselves.
-	StateSet *global_state = dynamic_cast<osgViewer::Renderer*>(m_pOsgViewer->getCamera()->getRenderer())->getSceneView(0)->getGlobalStateSet();
+	StateSet *global_state = m_pOsgViewer->getCamera()->getOrCreateStateSet();
 	PolygonMode *npm = new PolygonMode();
 	if (m_bWireframe)
 		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
