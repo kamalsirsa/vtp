@@ -1330,15 +1330,53 @@ void Tokenize(char *buf, const char *delim, vtStringArray &tokens)
 	}
 }
 
+int ReadLine(char *buf, int max_count, FILE *fp, bool bExpectCR, bool bExpectLF)
+{
+	int count = 0;
+	while (1)
+	{
+		char ch = fgetc(fp);
+		if (ch == EOF)
+			break;
+		else if (ch == 10 || ch == 13)
+		{
+			if (bExpectCR && !bExpectLF && ch == 13)
+				break;
+			if (bExpectLF && ch == 10)
+				break;
+		}
+		else
+		{
+			buf[count++] = ch;
+			if (count == max_count)
+				break;
+		}
+	}
+	buf[count] = 0;	// terminate
+	return count;
+}
+
 vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 {
 	FILE *fp = vtFileOpen(fname, "rb");
 	if (fp == NULL)
 		return NULL;
 
+	// First, try to guess the line ending.
+	// It is probably LF, or CR LR, but it might just be CR.
+	bool bHaveCR = false, bHaveLF = false;
 	char buf[4096];
+	int count = fread(buf, 1, 4096, fp);
+	for (int i = 0; i < count; i++)
+	{
+		if (buf[i] == 10) bHaveLF = true;
+		if (buf[i] == 13) bHaveCR = true;
+	}
+	rewind(fp);
+
+	// Assume that the first line contains field names
 	vtStringArray fieldnames;
-	if (fgets(buf, 4096, fp) == NULL)
+	if (ReadLine(buf, 4096, fp, bHaveCR, bHaveLF) == 0)
 		return NULL;
 	Tokenize(buf, ",", fieldnames);
 	int iFields = (int)fieldnames.size();
@@ -1358,7 +1396,11 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 	int i;
 	for (i = 0; i < iFields; i++)
 	{
-		wxString str(fieldnames[i], wxConvUTF8);
+		wxString str;
+		str.sprintf(_T("%d"), i);
+		str += _T(" (");
+		str += wxString(fieldnames[i], wxConvUTF8);
+		str += _T(")");
 
 		dlg.GetEasting()->Append(str);
 		dlg.GetNorthing()->Append(str);
@@ -1389,7 +1431,7 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 			pSet->AddField(fieldnames[dlg.m_iImportField], FT_String, 40);
 		}
 
-		while (fgets(buf, 4096, fp))
+		while (ReadLine(buf, 4096, fp, bHaveCR, bHaveLF))
 		{
 			vtStringArray values;
 			Tokenize(buf, ",", values);
@@ -1413,7 +1455,7 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 		vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D;
 		pSet->SetProjection(dlg.m_proj);
 
-		while (fgets(buf, 4096, fp))
+		while (ReadLine(buf, 4096, fp, bHaveCR, bHaveLF))
 		{
 			vtStringArray values;
 			Tokenize(buf, ",", values);
