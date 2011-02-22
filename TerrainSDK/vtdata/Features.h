@@ -356,6 +356,7 @@ public:
 	DLine3 &GetPolyLine(unsigned int num) { return m_Line[num]; }
 	bool ComputeHeightRange(float &fmin, float &fmax);
 	int NumTotalVertices() const;
+	bool FindClosest(const DPoint2 &p, int &close_feature, DPoint3 &close_point);
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);

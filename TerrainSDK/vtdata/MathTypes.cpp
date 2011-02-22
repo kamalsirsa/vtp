@@ -488,6 +488,59 @@ void DLine3::Add(const DPoint2 &p)
 }
 
 /**
+* Returns the location of the horizontally closest point on the line to a given 2D point.
+*
+* \param Point The input point.
+* \param iIndex Index of the first point of the nearest line segment.
+* \param dist Distance from the DLine2 to the input point.
+* \param Intersection The closest point on the DLine2.
+*
+* \return True if a closest point was found.
+*/
+bool DLine3::NearestSegment2D(const DPoint2 &Point, int &iIndex,
+							double &dist, DPoint3 &Intersection) const
+{
+	int iNumPoints = GetSize();
+	int i, closest = -1;
+	double dMagnitude;
+	double dDistance;
+	double dMinDistance = 1E9;
+	double dU;
+	DPoint2 p0, p1, p2;
+
+	for (i = 0; i < iNumPoints; i++)
+	{
+		DPoint3 p3_0 = GetAt(i);
+		DPoint3 p3_1 = GetAt((i + 1) % iNumPoints);
+
+		p0.Set(p3_0.x, p3_0.y);
+		p1.Set(p3_1.x, p3_1.y);
+		dMagnitude = (p1 - p0).Length();
+		// Calculate U for standard line equation:
+		// values of U between 0.0 and +1.0 mean normal intersects segment
+		dU = (((Point.x - p0.x) * (p1.x - p0.x)) +
+			((Point.y - p0.y) * (p1.y - p0.y))) / (dMagnitude * dMagnitude);
+		if ((dU < 0.0) || (dU > 1.0))
+			continue;
+		p2 = p0 + (p1 - p0) * dU;
+		dDistance = (Point - p2).Length();
+		if (dDistance < dMinDistance)
+		{
+			dMinDistance = dDistance;
+			closest = i;
+			Intersection = p3_0 + (p3_1 - p3_0) * dU;
+		}
+	}
+	if (closest != -1)
+	{
+		iIndex = closest;
+		dist = dMinDistance;
+		return true;
+	}
+	return false;
+}
+
+/**
 * Return the nearest (2D distance) point (of the points which make up the
 * line). This is not the same as the closest place on the line, which may
 * lie between the defining points.

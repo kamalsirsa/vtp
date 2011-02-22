@@ -533,6 +533,8 @@ public:
 //	DLine3 &operator=(const FLine3 &v);
 
 	void Add(const DPoint2 &p);
+	bool NearestSegment2D(const DPoint2 &Point, int &iIndex,
+						  double &dist, DPoint3 &Intersection) const;
 	void NearestPoint2D(const DPoint2 &Point, int &iIndex, double &dist) const;
 	bool ContainsPoint2D(const DPoint2 &p) const;
 };

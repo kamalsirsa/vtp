@@ -482,6 +482,7 @@ void vtRawLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 
 	vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D*>(m_pSet);
 	vtFeatureSetPoint3D *pSetP3 = dynamic_cast<vtFeatureSetPoint3D*>(m_pSet);
+	vtFeatureSetLineString3D *pSetL3 = dynamic_cast<vtFeatureSetLineString3D*>(m_pSet);
 
 	OGRwkbGeometryType type = m_pSet->GetGeomType();
 	switch (ui.mode)
@@ -499,13 +500,31 @@ void vtRawLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 		pView->Refresh();
 		break;
 	case LB_FeatInfo:
-		if (type != wkbPoint)
-			return;
-
-		iEnt = pSetP2->FindClosestPoint(ui.m_DownLocation, epsilon);
-		if (iEnt != -1)
+		if (type == wkbPoint)
 		{
-			g_bld->UpdateFeatureDialog(this, pSetP2, iEnt);
+			iEnt = pSetP2->FindClosestPoint(ui.m_DownLocation, epsilon);
+			if (iEnt != -1)
+			{
+				g_bld->UpdateFeatureDialog(this, pSetP2, iEnt);
+			}
+		}
+		//if (type == wkbPoint25D)
+		//{
+		//	iEnt = pSetP3->FindClosestPoint(ui.m_DownLocation, epsilon);
+		//	if (iEnt != -1)
+		//	{
+		//		g_bld->UpdateFeatureDialog(this, pSetP3, iEnt);
+		//	}
+		//}
+		if (type == wkbLineString25D)
+		{
+			int close_feature;
+			DPoint3 close_point;
+			if (pSetL3->FindClosest(ui.m_DownLocation, close_feature, close_point))
+			{
+				//g_bld->UpdateFeatureDialog(this, pSetL3, close_feature);
+				VTLOG("Close 3D point: %lf, %lf, %lf\n", close_point.x, close_point.y, close_point.z);
+			}
 		}
 		break;
 	}
