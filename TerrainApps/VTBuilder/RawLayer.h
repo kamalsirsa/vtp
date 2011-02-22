@@ -2,7 +2,7 @@
 // A raw data layer, suitable for storing and displaying the type of
 // generic spatial data contained in a Shapefile.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -40,7 +40,10 @@ public:
 	bool CreateFromOGRLayer(OGRLayer *pOGRLayer);
 	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
 	bool LoadWithOGR(const char *filename, bool progress_callback(int) = NULL);
-	void Scale(double factor);
+
+	void ScaleHorizontally(double factor);
+	void ScaleVertically(double factor);
+	void OffsetVertically(double amount);
 
 	void SetDrawStyle(const DrawStyle &style) { m_DrawStyle = style; }
 	DrawStyle GetDrawStyle() { return m_DrawStyle; }

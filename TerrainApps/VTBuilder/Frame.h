@@ -1,7 +1,7 @@
 //
 // Frame.h
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -266,13 +266,16 @@ protected:
 	void OnRawExportKML(wxCommandEvent& event);
 	void OnRawGenElevation(wxCommandEvent& event);
 	void OnRawStyle(wxCommandEvent& event);
-	void OnRawScale(wxCommandEvent& event);
+	void OnRawScaleH(wxCommandEvent& event);
+	void OnRawScaleV(wxCommandEvent& event);
+	void OnRawOffsetV(wxCommandEvent& event);
 
 	void OnUpdateRawSetType(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPoints(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPointText(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event);
 	void OnUpdateRawIsActive(wxUpdateUIEvent& event);
+	void OnUpdateRawIsActive3D(wxUpdateUIEvent& event);
 	void OnUpdateRawGenElevation(wxUpdateUIEvent& event);
 
 	void OnAreaClear(wxCommandEvent& event);

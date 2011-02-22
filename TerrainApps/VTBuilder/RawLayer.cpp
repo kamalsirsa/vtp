@@ -1,7 +1,7 @@
 //
 // RawLayer.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // A 'raw' layer is just abstract data, without any specific correspondence
@@ -561,7 +561,7 @@ bool vtRawLayer::LoadWithOGR(const char *filename, bool progress_callback(int))
 	return (pSet != NULL);
 }
 
-void vtRawLayer::Scale(double factor)
+void vtRawLayer::ScaleHorizontally(double factor)
 {
 	if (!m_pSet)
 		return;
@@ -607,6 +607,66 @@ void vtRawLayer::Scale(double factor)
 		vtFeatureSetPolygon *pSetPoly = dynamic_cast<vtFeatureSetPolygon *>(m_pSet);
 		for (i = 0; i < entities; i++)
 			pSetPoly->GetPolygon(i).Mult(factor);
+	}
+	SetModified(true);
+	m_bExtentComputed = false;
+}
+
+void vtRawLayer::ScaleVertically(double factor)
+{
+	if (!m_pSet)
+		return;
+
+	unsigned int i, j, entities = m_pSet->GetNumEntities();
+	OGRwkbGeometryType type = m_pSet->GetGeomType();
+	if (type == wkbPoint25D)
+	{
+		vtFeatureSetPoint3D *pSetP3 = dynamic_cast<vtFeatureSetPoint3D *>(m_pSet);
+		for (i = 0; i < entities; i++)
+		{
+			const DPoint3 &p3 = pSetP3->GetPoint(i);
+			pSetP3->SetPoint(i, DPoint3(p3.x, p3.y, p3.z * factor));
+		}
+	}
+	if (type == wkbLineString25D)
+	{
+		vtFeatureSetLineString3D *pSetLine = dynamic_cast<vtFeatureSetLineString3D *>(m_pSet);
+		for (i = 0; i < entities; i++)
+		{
+			DLine3 &dline3 = pSetLine->GetPolyLine(i);
+			for (j = 0; j < dline3.GetSize(); j++)
+				dline3[j].z *= factor;
+		}
+	}
+	SetModified(true);
+	m_bExtentComputed = false;
+}
+
+void vtRawLayer::OffsetVertically(double amount)
+{
+	if (!m_pSet)
+		return;
+
+	unsigned int i, j, entities = m_pSet->GetNumEntities();
+	OGRwkbGeometryType type = m_pSet->GetGeomType();
+	if (type == wkbPoint25D)
+	{
+		vtFeatureSetPoint3D *pSetP3 = dynamic_cast<vtFeatureSetPoint3D *>(m_pSet);
+		for (i = 0; i < entities; i++)
+		{
+			const DPoint3 &p3 = pSetP3->GetPoint(i);
+			pSetP3->SetPoint(i, DPoint3(p3.x, p3.y, p3.z + amount));
+		}
+	}
+	if (type == wkbLineString25D)
+	{
+		vtFeatureSetLineString3D *pSetLine = dynamic_cast<vtFeatureSetLineString3D *>(m_pSet);
+		for (i = 0; i < entities; i++)
+		{
+			DLine3 &dline3 = pSetLine->GetPolyLine(i);
+			for (j = 0; j < dline3.GetSize(); j++)
+				dline3[j].z += amount;
+		}
 	}
 	SetModified(true);
 	m_bExtentComputed = false;

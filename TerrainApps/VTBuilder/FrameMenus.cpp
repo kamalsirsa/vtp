@@ -1,7 +1,7 @@
 //
 //  The menus functions of the main Frame window of the VTBuilder application.
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -282,7 +282,9 @@ EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
 EVT_MENU(ID_RAW_EXPORT_KML,			MainFrame::OnRawExportKML)
 EVT_MENU(ID_RAW_GENERATE_ELEVATION,	MainFrame::OnRawGenElevation)
 EVT_MENU(ID_RAW_STYLE,				MainFrame::OnRawStyle)
-EVT_MENU(ID_RAW_SCALE,				MainFrame::OnRawScale)
+EVT_MENU(ID_RAW_SCALE_H,			MainFrame::OnRawScaleH)
+EVT_MENU(ID_RAW_SCALE_V,			MainFrame::OnRawScaleV)
+EVT_MENU(ID_RAW_OFFSET_V,			MainFrame::OnRawOffsetV)
 
 EVT_UPDATE_UI(ID_RAW_SETTYPE,			MainFrame::OnUpdateRawSetType)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS,			MainFrame::OnUpdateRawAddPoints)
@@ -294,7 +296,9 @@ EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_EXPORT_KML,		MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_GENERATE_ELEVATION,MainFrame::OnUpdateRawGenElevation)
 EVT_UPDATE_UI(ID_RAW_STYLE,				MainFrame::OnUpdateRawIsActive)
-EVT_UPDATE_UI(ID_RAW_SCALE,				MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_SCALE_H,			MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_SCALE_V,			MainFrame::OnUpdateRawIsActive3D)
+EVT_UPDATE_UI(ID_RAW_OFFSET_V,			MainFrame::OnUpdateRawIsActive3D)
 
 EVT_MENU(ID_AREA_CLEAR,				MainFrame::OnAreaClear)
 EVT_MENU(ID_AREA_ZOOM_ALL,			MainFrame::OnAreaZoomAll)
@@ -573,7 +577,9 @@ void MainFrame::CreateMenus()
 	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, _("Add Point with Text\tCtrl+T"), _("Add point"));
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, _("Add Points with GPS"), _("Add points with GPS"));
 	rawMenu->Append(ID_RAW_STYLE, _("Style..."));
-	rawMenu->Append(ID_RAW_SCALE, _("Scale"));
+	rawMenu->Append(ID_RAW_SCALE_H, _("Scale horizontally"));
+	rawMenu->Append(ID_RAW_SCALE_V, _("Scale vertically"));
+	rawMenu->Append(ID_RAW_OFFSET_V, _("Offset vertically"));
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SELECTCONDITION, _("Select Features by Condition"));
 	rawMenu->Append(ID_RAW_EXPORT_IMAGEMAP, _("Export as HTML ImageMap"));
@@ -3303,6 +3309,14 @@ void MainFrame::OnUpdateRawIsActive(wxUpdateUIEvent& event)
 	event.Enable(pRL != NULL);
 }
 
+void MainFrame::OnUpdateRawIsActive3D(wxUpdateUIEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	event.Enable(pRL != NULL &&
+		// if the current layer is a 3D type
+		(pRL->GetGeomType() == wkbPoint25D || pRL->GetGeomType() == wkbLineString25D));
+}
+
 void MainFrame::OnRawSetType(wxCommandEvent& event)
 {
 	static OGRwkbGeometryType types[5] = {
@@ -3673,7 +3687,7 @@ void MainFrame::OnRawStyle(wxCommandEvent& event)
 	pRL->SetDrawStyle(style);
 }
 
-void MainFrame::OnRawScale(wxCommandEvent& event)
+void MainFrame::OnRawScaleH(wxCommandEvent& event)
 {
 	vtRawLayer *pRL = GetActiveRawLayer();
 
@@ -3684,7 +3698,37 @@ void MainFrame::OnRawScale(wxCommandEvent& event)
 		return;
 
 	double value = atof(str.mb_str(wxConvUTF8));
-	pRL->Scale(value);
+	pRL->ScaleHorizontally(value);
+	m_pView->Refresh();
+}
+
+void MainFrame::OnRawScaleV(wxCommandEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+
+	wxString str = _T("1");
+	str = wxGetTextFromUser(_("Scale factor?"),	_("Scale Raw Layer"),
+		str, this);
+	if (str == _T(""))
+		return;
+
+	double value = atof(str.mb_str(wxConvUTF8));
+	pRL->ScaleVertically(value);
+	m_pView->Refresh();
+}
+
+void MainFrame::OnRawOffsetV(wxCommandEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+
+	wxString str = _T("0");
+	str = wxGetTextFromUser(_("Vertical offset?"),	_("Offset Raw Layer"),
+		str, this);
+	if (str == _T(""))
+		return;
+
+	double value = atof(str.mb_str(wxConvUTF8));
+	pRL->OffsetVertically(value);
 	m_pView->Refresh();
 }
 

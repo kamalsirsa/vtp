@@ -1,7 +1,7 @@
 //
 // MenuEnum.h
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -140,7 +140,9 @@ enum
 	ID_RAW_EXPORT_KML,
 	ID_RAW_GENERATE_ELEVATION,
 	ID_RAW_STYLE,
-	ID_RAW_SCALE,
+	ID_RAW_SCALE_H,
+	ID_RAW_SCALE_V,
+	ID_RAW_OFFSET_V,
 
 	ID_AREA_CLEAR,
 	ID_AREA_ZOOM_ALL,
