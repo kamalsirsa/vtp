@@ -409,54 +409,100 @@ bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
 	if (!fp)
 		return false;
 
-	char tnam[256];
-	int id;
+	char buf[256];
+	vtString tin_name;
+	int material_id;
 	int num_points;
-	fscanf(fp, "TIN\n");
-	fscanf(fp, "BEGT\n");
-	fscanf(fp, "ID %d\n", &id);
-	fscanf(fp, "TNAM %s\n", tnam);
-	fscanf(fp, "VERT %d\n", &num_points);
-	DPoint2 p;
-	float z;
-	int locked;	// Locked / unlocked flag for vertex (optional)
-	for (int i = 0; i < num_points; i++)
+
+	// first line is file identifier
+	if (fgets(buf, 256, fp) == NULL)
+		return false;
+
+	if (strncmp(buf, "TIN", 3) != 0)
+		return false;
+
+	while (1)
 	{
-		if ((i%200) == 0 && progress_callback != NULL)
+		if (fgets(buf, 256, fp) == NULL)
+			break;
+
+		// trim trailing EOL characters
+		vtString vstr = buf;
+		vstr.Remove('\r');
+		vstr.Remove('\n');
+		const char *str = (const char *)vstr;
+
+		if (!strncmp(str, "BEGT", 4))	// beginning of TIN block
+			continue;
+
+		if (!strncmp(str, "ID", 2))	// material ID
 		{
-			if (progress_callback(i * 40 / num_points))
+			sscanf(str, "ID %d", &material_id);
+		}
+		else if (!strncmp(str, "MAT", 3))	// material ID
+		{
+			sscanf(str, "MAT %d", &material_id);
+		}
+		else if (!strncmp(str, "TCOL", 4))	// material ID
+		{
+			sscanf(str, "TCOL %d", &material_id);
+		}
+		else if (!strncmp(str, "TNAM", 4))	// TIN name
+		{
+			tin_name = str + 5;
+		}
+		else if (!strncmp(str, "VERT", 4))	// Beginning of vertices
+		{
+			sscanf(buf, "VERT %d\n", &num_points);
+			DPoint2 p;
+			float z;
+			int optional;
+			for (int i = 0; i < num_points; i++)
 			{
-				fclose(fp);
-				return false;	// user cancelled
+				if (fgets(buf, 256, fp) == NULL)
+					break;
+
+				// First three are X, Y, Z.  Optional fourth is "ID" or "locked".
+				sscanf(buf, "%lf %lf %f %d", &p.x, &p.y, &z, &optional);
+
+#if 0
+				// Some files have Y/-Z flipped (but they are non-standard)
+				double temp = p.y; p.y = -z; z = temp;
+#endif
+
+				AddVert(p, z);
+
+				if ((i%200) == 0 && progress_callback != NULL)
+				{
+					if (progress_callback(i * 49 / num_points))
+					{
+						fclose(fp);
+						return false;	// user cancelled
+					}
+				}
 			}
 		}
-
-		// 'locked' may not be present, but that's OK as we don't use it
-		fscanf(fp, "%lf %lf %f %d\n", &p.x, &p.y, &z, &locked);
-
-		// Temporary test for flipped Y/-Z
-		//double temp = p.y; p.y = -z; z = temp;
-
-		AddVert(p, z);
-	}
-
-	int num_faces;
-	fscanf(fp, "TRI %d\n", &num_faces);
-	int v[3];
-	for (int i = 0; i < num_faces; i++)
-	{
-		if ((i%200) == 0 && progress_callback != NULL)
+		else if (!strncmp(str, "TRI", 3))	// Beginning of triangles
 		{
-			if (progress_callback(40 + i * 40 / num_faces))
+			int num_faces;
+			sscanf(str, "TRI %d\n", &num_faces);
+			int v[3];
+			for (int i = 0; i < num_faces; i++)
 			{
-				fclose(fp);
-				return false;	// user cancelled
+				fscanf(fp, "%d %d %d\n", v, v+2, v+1);
+				// the indices in the file are 1-based, so subtract 1
+				AddTri(v[0]-1, v[1]-1, v[2]-1);
+
+				if ((i%200) == 0 && progress_callback != NULL)
+				{
+					if (progress_callback(49 + i * 50 / num_faces))
+					{
+						fclose(fp);
+						return false;	// user cancelled
+					}
+				}
 			}
 		}
-
-		fscanf(fp, "%d %d %d\n", v, v+2, v+1);
-		// the indices in the file are 1-based, so subtract 1
-		AddTri(v[0]-1, v[1]-1, v[2]-1);
 	}
 
 	fclose(fp);
