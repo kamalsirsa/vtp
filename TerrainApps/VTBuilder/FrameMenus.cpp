@@ -3661,7 +3661,7 @@ void MainFrame::OnRawGenElevation(wxCommandEvent& event)
 
 	vtElevLayer *el = new vtElevLayer;
 
-	OpenProgressDialog(_T("Creating Grid"));
+	OpenProgressDialog(_T("Creating Grid"), true);
 	int xsize = 800;
 	int ysize = 300;
 	if (el->CreateFromPoints(pSet, dlg.m_iSizeX, dlg.m_iSizeY,

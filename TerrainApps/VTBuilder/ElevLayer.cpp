@@ -1409,7 +1409,13 @@ bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, int iXSize, int iYSize,
 	while (XpandPoint( Zgrid, sdata))
 	{
 		if ((count % 100) == 0)
-			progress_callback(count * 99 / total);
+		{
+			if (progress_callback(count * 99 / total))
+			{
+				// user cancelled
+				return false;
+			}
+		}
 		count++;
 	}
 
