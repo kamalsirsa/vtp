@@ -349,6 +349,9 @@ void MapServerDlg::UpdateURL()
 	// Some servers seem to insist on a VERSION element
 	url += "&VERSION=1.1.0";
 
+	// some severs need the following to clarify we want WMS
+	url += "&SERVICE=WMS";
+
 	url += "&LAYERS=";  // required, even if left blank
 	if (m_iLayer != -1)
 	{

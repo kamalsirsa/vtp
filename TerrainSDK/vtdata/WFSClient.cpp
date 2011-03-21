@@ -173,6 +173,9 @@ bool GetLayersFromWMS(const char *szServerURL, OGCLayerArray &layers,
 	else
 		url += "?REQUEST=GetCapabilities";
 
+	// some severs need the following to clarify we want WMS
+	url += "&SERVICE=WMS";
+
 	VTLOG1("GetLayersFromWMS, URL: ");
 	VTLOG1(url);
 	VTLOG1("\n");
