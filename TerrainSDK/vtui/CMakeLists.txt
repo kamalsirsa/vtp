@@ -2,7 +2,7 @@
 set(VTUI_SOURCE_FILES 
 		AutoDialog.cpp BuildingDlg.cpp ColorMapDlg.cpp DistanceDlg.cpp DoubleProgDlg.cpp FeatureTableDlg.cpp Helper.cpp
 		InstanceDlg.cpp Joystick.cpp LinearStructDlg.cpp ProfileDlg.cpp ProfileEditDlg.cpp ProjectionDlg.cpp
-		SizeDlg.cpp StatePlaneDlg.cpp TagDlg.cpp vtui_wdr.cpp GraphicsWindowWX.cpp)
+		SizeDlg.cpp StatePlaneDlg.cpp TagDlg.cpp vtui_wdr.cpp)
 set(VTUI_HEADER_FILES 
 		AutoDialog.h BuildingDlg.h ColorMapDlg.h DistanceDlg.h DoubleProgDlg.h FeatureTableDlg.h Helper.h InstanceDlg.h
 		Joystick.h LinearStructDlg.h ProfileDlg.h ProfileEditDlg.h ProjectionDlg.h SizeDlg.h StatePlaneDlg.h

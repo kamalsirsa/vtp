@@ -145,7 +145,6 @@ bool CreateScene()
 {
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
-	vtGetScene()->Init(0, NULL);
 
 	// Log messages to make troubleshooting easier
 	VTSTARTLOG("debug.txt");
@@ -254,7 +253,7 @@ bool CreateScene()
 /*
   The works.
 */
-int main(int, char ** )
+int main(int argc, char ** argv)
 {
 #ifdef __FreeBSD__
 	/*  FreeBSD is more stringent with FP ops by default, and OSG is doing  */
@@ -266,6 +265,14 @@ int main(int, char ** )
 
 	printf("Initializing GLUT..\n");
 	InitGLUT();
+
+#if VTLIB_OSG
+	vtGetScene()->Init(argc, argv);
+    vtGetScene()->getViewer()->setThreadingModel(osgViewer::Viewer::SingleThreaded);
+    vtGetScene()->SetGraphicsContext(new osgViewer::GraphicsWindowEmbedded(0, 0, 800, 600));
+#else
+	vtGetScene()->Init();
+#endif
 
 	printf("Creating the terrain..\n");
 	CreateScene();

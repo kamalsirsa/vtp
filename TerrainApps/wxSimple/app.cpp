@@ -45,8 +45,18 @@ bool vtApp::OnInit(void)
 	m_pFrame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));
 
 	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(m_pFrame->m_canvas));
+	wxSize canvas_size = m_pFrame->m_canvas->GetClientSize();
+	vtGetScene()->SetWindowSize(canvas_size.x, canvas_size.y);
 
-	return CreateScene();
+	// Force graphics context to be realised
+	vtGetScene()->DoUpdate();
+
+	// Need a valid graphics context to for the the texture unit manager to initialise properly
+	vtGetScene()->GetGraphicsContext()->makeCurrent();
+	bool bReturn = CreateScene();
+	vtGetScene()->GetGraphicsContext()->releaseContext();
+
+	return bReturn;
 }
 
 //

@@ -97,7 +97,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		// OnPaint handlers must always create a wxPaintDC.
 		wxPaintDC dc(this);
 
-		if (!GetContext() || m_bPainting || !m_bRunning)
+		if (m_bPainting || !m_bRunning)
 		{
 			bInside = false;
 			return;
@@ -105,12 +105,9 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 		m_bPainting = true;
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Updated and render the scene
 		vtGetScene()->DoUpdate();
-
-		SwapBuffers();
 
 		// We use refresh-on-idle, so we don't explicitly send ourselves
 		//  another Paint message here.
