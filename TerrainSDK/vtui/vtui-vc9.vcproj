@@ -236,6 +236,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\vtlib\vtosg\GraphicsWindowWX.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Helper.cpp"
 				>
 			</File>

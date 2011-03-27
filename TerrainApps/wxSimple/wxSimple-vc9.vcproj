@@ -75,7 +75,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib osgShadowd.lib opengl32.lib netcdf.lib libpng15d-vc9.lib zlib1d-vc9.lib gdal_id-vc9.lib glu32.lib libjpeg.lib libMinid.lib libcurl-staticd.lib"
+				AdditionalDependencies="Ws2_32.lib osgd.lib osgGAd.lib osgSimd.lib osgViewerd.lib osgTerraind.lib osgUtild.lib osgDBd.lib osgTextd.lib osgShadowd.lib opengl32.lib netcdf.lib libpng15d-vc9.lib zlib1d-vc9.lib gdal_id-vc9.lib glu32.lib libjpeg.lib libMinid.lib libcurl-staticd.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="C:\APIs\sgl-0.6.0\lib\platform.msvc60.i686.dbg"

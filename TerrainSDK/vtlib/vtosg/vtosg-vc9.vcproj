@@ -1256,6 +1256,10 @@
 			Name="OSG Source"
 			>
 			<File
+				RelativePath=".\ExternalHeightField3d.cpp"
+				>
+			</File>
+			<File
 				RelativePath="ImageOSG.cpp"
 				>
 				<FileConfiguration
@@ -1379,6 +1383,10 @@
 		<Filter
 			Name="OSG Headers"
 			>
+			<File
+				RelativePath=".\ExternalHeightField3d.h"
+				>
+			</File>
 			<File
 				RelativePath="ImageOSG.h"
 				>
