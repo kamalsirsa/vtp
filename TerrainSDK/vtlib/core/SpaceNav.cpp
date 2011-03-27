@@ -129,10 +129,10 @@ bool vtSpaceNav::InitRawDevices()
 				if (dinfo.dwType == RIM_TYPEHID)
 				{
 					RID_DEVICE_INFO_HID *phidInfo = &dinfo.hid;
-					VTLOG("VID = 0x%x\n", phidInfo->dwVendorId);
-					VTLOG("PID = 0x%x\n", phidInfo->dwProductId);
-					VTLOG("Version = 0x%x\n", phidInfo->dwVersionNumber);
-					VTLOG("UsagePage = 0x%x\n", phidInfo->usUsagePage);
+					VTLOG("  VID = 0x%x, ", phidInfo->dwVendorId);
+					VTLOG("PID = 0x%x, ", phidInfo->dwProductId);
+					VTLOG("Version = 0x%x, ", phidInfo->dwVersionNumber);
+					VTLOG("UsagePage = 0x%x, ", phidInfo->usUsagePage);
 					VTLOG("Usage = 0x%x\n", phidInfo->usUsage);
 
 					// Add this one to the list of interesting devices?
@@ -154,6 +154,7 @@ bool vtSpaceNav::InitRawDevices()
 	}
 	if (g_nUsagePage1Usage8Devices > 0)
 	{
+		VTLOG("  Found %d matching devices, registering.\n", g_nUsagePage1Usage8Devices);
 		// Register for input from the devices in the list
 		if (pfnRegisterRawInputDevices( g_pRawInputDevices, g_nUsagePage1Usage8Devices, sizeof(RAWINPUTDEVICE) ) == FALSE )
 		{
@@ -161,7 +162,8 @@ bool vtSpaceNav::InitRawDevices()
 			return false;
 		}
 	}
-	VTLOG1("Found and connected.\n");
+	else
+		VTLOG1("  No matching devices found.\n");
 	return true;
 #else
 	// not implemented

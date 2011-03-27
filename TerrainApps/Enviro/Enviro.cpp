@@ -94,6 +94,7 @@ Enviro::Enviro() : vtTerrainScene()
 	m_bSelectedStruct = false;
 	m_bSelectedPlant = false;
 	m_bSelectedVehicle = false;
+	m_pControlEng = NULL;
 
 	// HUD
 	m_pHUDMaterials = NULL;
