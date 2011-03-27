@@ -39,6 +39,13 @@ public:
 		m_bIsRealized = false;
 	}
 
+	~GraphicsWindowWX()
+	{
+#ifndef __WXMAC__
+		delete m_pGLContext;
+#endif
+	}
+
 	void CloseOsgContext()
 	{
 		getEventQueue()->closeWindow(0);
