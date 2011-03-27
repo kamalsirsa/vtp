@@ -188,7 +188,6 @@ void vtScene::Shutdown()
 	osgDB::Registry::instance()->clearObjectCache();
 
 	m_pRoot = NULL;
-	m_pRootEngine = NULL;
 	m_pRootEnginePostDraw = NULL;
 	m_piKeyState = NULL;
 
