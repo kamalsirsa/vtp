@@ -42,7 +42,6 @@ public:
 	void OnKeyUp(wxKeyEvent& event);
 	void OnMouseEvent(wxMouseEvent& event);
 	void OnClose(wxCloseEvent& event);
-	void QueueRefresh(bool eraseBackground);
 	void OnIdle(wxIdleEvent &event);
 
 #ifndef __WXMAC__

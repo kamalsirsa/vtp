@@ -31,14 +31,19 @@ public:
     virtual WXLRESULT MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
 #endif
 
+#ifndef __WXMAC__
 	void OnPaint(wxPaintEvent& event);
+#endif
 	void OnSize(wxSizeEvent& event);
 	void OnEraseBackground(wxEraseEvent& event);
 	void OnChar(wxKeyEvent& event);
 	void OnMouseEvent(wxMouseEvent& event);
+	void OnClose(wxCloseEvent& event);
 	void OnIdle(wxIdleEvent &event);
 
+#ifndef __WXMAC__
 	bool m_bPainting;
+#endif
 	bool m_bRunning;
 
 protected:

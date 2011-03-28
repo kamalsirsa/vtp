@@ -214,7 +214,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	CPerformanceMonitorDialog::NVPM_frame();
 #endif
 }
-#endif
+#endif	// not __WXMAC__
 
 void vtGLCanvas::OnClose(wxCloseEvent& event)
 {
@@ -232,9 +232,7 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 	SetCurrent();
 	int width, height;
 	GetClientSize(& width, & height);
-
 	vtGetScene()->SetWindowSize(width, height);
-
 	wxGLCanvas::OnSize(event);
 }
 

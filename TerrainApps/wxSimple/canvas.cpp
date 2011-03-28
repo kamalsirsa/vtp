@@ -34,8 +34,11 @@ vtSpaceNav g_SpaceNav;
  * vtGLCanvas implementation
  */
 BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
+EVT_CLOSE(vtGLCanvas::OnClose)
 EVT_SIZE(vtGLCanvas::OnSize)
+#ifndef __WXMAC__
 EVT_PAINT(vtGLCanvas::OnPaint)
+#endif
 EVT_CHAR(vtGLCanvas::OnChar)
 EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
 EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
@@ -45,9 +48,9 @@ END_EVENT_TABLE()
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
 #ifdef __WXMAC__
-wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
+		wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 #else
-wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
+		wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
 #endif
 {
 	VTLOG("vtGLCanvas constructor\n");
@@ -82,6 +85,7 @@ WXLRESULT vtGLCanvas::MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lP
 }
 #endif
 
+#ifndef __WXMAC__
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
 	// Prevent this function from ever being called nested, it is not re-entrant
@@ -96,24 +100,23 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		// This is a dummy, to avoid an endless succession of paint messages.
 		// OnPaint handlers must always create a wxPaintDC.
 		wxPaintDC dc(this);
-
-		if (m_bPainting || !m_bRunning)
-		{
-			bInside = false;
-			return;
-		}
-
-		m_bPainting = true;
-
-
-		// Updated and render the scene
-		vtGetScene()->DoUpdate();
-
-		// We use refresh-on-idle, so we don't explicitly send ourselves
-		//  another Paint message here.
-
-		m_bPainting = false;
 	}
+
+	if (m_bPainting || !m_bRunning)
+	{
+		bInside = false;
+		return;
+	}
+
+	m_bPainting = true;
+
+	// Update and render the scene
+	vtGetScene()->DoUpdate();
+
+	// We use refresh-on-idle, so we don't explicitly send ourselves
+	//  another Paint message here.
+
+	m_bPainting = false;
 
 	// Must allow some idle processing to occur - or the toolbars will not
 	// update, and the close box will not respond!
@@ -121,13 +124,12 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 	bInside = false;
 }
+#endif	// not __WXMAC__
 
-static void Reshape(int width, int height)
+void vtGLCanvas::OnClose(wxCloseEvent& event)
 {
-	printf("Reshape: %d, %d\n", width, height);
-	glViewport(0, 0, (GLint)width, (GLint)height);
+	m_bRunning = false;
 }
-
 
 void vtGLCanvas::OnSize(wxSizeEvent& event)
 {
@@ -137,15 +139,20 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 	//   when we get it so it (and derived values such as aspect ratio and
 	//   viewport parms) are computed correctly.
 #ifdef __WXMSW__
-	if (!GetContext()) return;
+	//if (!GetContext()) return;
 #endif
 
+	static int count = 0;
+	if (count < 3)
+	{
+		VTLOG("Canvas  OnSize: %d %d\n", event.GetSize().x, event.GetSize().y);
+		count++;
+	}
 	SetCurrent();
 	int width, height;
 	GetClientSize(& width, & height);
-	Reshape(width, height);
-
 	vtGetScene()->SetWindowSize(width, height);
+	wxGLCanvas::OnSize(event);
 }
 
 void vtGLCanvas::OnChar(wxKeyEvent& event)
@@ -236,6 +243,44 @@ void vtGLCanvas::OnIdle(wxIdleEvent &event)
 {
 	// We use the "Refresh on Idle" approach to continuous rendering.
 	if (m_bRunning)
+#ifdef __WXMAC__
+	{
+		// Make sure the Graphics context of this thread is this window
+		SetCurrent();
+
+		// Render the Scene Graph
+		vtGetScene()->DoUpdate();
+
+		if (m_bShowFrameRateChart)
+			vtGetScene()->DrawFrameRateChart();
+
+		SwapBuffers();
+
+		EnviroFrame *frame = (EnviroFrame*) GetParent();
+
+		// update the status bar every 1/10 of a second
+		static float last_stat = 0.0f;
+		static vtString last_msg;
+		float cur = vtGetTime();
+		if (cur - last_stat > 0.1f || g_App.GetMessage() != last_msg)
+		{
+			last_msg = g_App.GetMessage();
+			last_stat = cur;
+			frame->UpdateStatus();
+		}
+
+		frame->UpdateLODInfo();
+
+		g_App.UpdateCompass();
+
+
+		// Reset the number of mousemoves we've gotten since last redraw
+		m_iConsecutiveMousemoves = 0;
+
+		event.RequestMore();
+	}
+#else
 		Refresh(FALSE);
+#endif
 }
 

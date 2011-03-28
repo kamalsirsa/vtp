@@ -288,6 +288,9 @@
 				RelativePath=".\FeatureTableDlg.h">
 			</File>
 			<File
+				RelativePath=".\GraphicsWindowWX.h">
+			</File>
+			<File
 				RelativePath=".\Helper.h">
 			</File>
 			<File

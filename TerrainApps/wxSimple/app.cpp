@@ -29,6 +29,25 @@
 
 IMPLEMENT_APP(vtApp);
 
+// An engine to wait for frame 5 before building the 3D scene
+struct StartupEngine : public vtEngine
+{
+	StartupEngine(vtApp *a) { app = a; count = 0; }
+	void Eval()
+	{
+		count ++;
+		if (count <= 5)
+			VTLOG("%d\n", count);
+		if (count == 5)
+		{
+		    const char* version = (const char*) glGetString( GL_VERSION );
+			app->CreateScene();
+		}
+	}
+	int count;
+	vtApp *app;
+};
+
 //
 // Initialize the app object
 //
@@ -36,27 +55,35 @@ bool vtApp::OnInit(void)
 {
 	m_pTerrainScene = NULL;
 
+	// Create the main frame window
+	m_pFrame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));
+
 	int MyArgc;
 	char** MyArgv;
 	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
 	vtGetScene()->Init(MyArgc, MyArgv);
 
-	// Create the main frame window
-	m_pFrame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));
-
 	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(m_pFrame->m_canvas));
+
+	// Make sure the scene knows the size of the canvas
+	//  (on wxGTK, the first size events arrive too early before the Scene exists)
 	wxSize canvas_size = m_pFrame->m_canvas->GetClientSize();
 	vtGetScene()->SetWindowSize(canvas_size.x, canvas_size.y);
 
+#if 0
 	// Force graphics context to be realised
 	vtGetScene()->DoUpdate();
 
 	// Need a valid graphics context to for the the texture unit manager to initialise properly
 	vtGetScene()->GetGraphicsContext()->makeCurrent();
+    const char* version = (const char*) glGetString( GL_VERSION );
 	bool bReturn = CreateScene();
 	vtGetScene()->GetGraphicsContext()->releaseContext();
-
 	return bReturn;
+#else
+	vtGetScene()->AddEngine(new StartupEngine(this));
+	return true;
+#endif
 }
 
 //
