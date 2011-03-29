@@ -29,25 +29,6 @@
 
 IMPLEMENT_APP(vtApp);
 
-// An engine to wait for frame 5 before building the 3D scene
-struct StartupEngine : public vtEngine
-{
-	StartupEngine(vtApp *a) { app = a; count = 0; }
-	void Eval()
-	{
-		count ++;
-		if (count <= 5)
-			VTLOG("%d\n", count);
-		if (count == 5)
-		{
-		    const char* version = (const char*) glGetString( GL_VERSION );
-			app->CreateScene();
-		}
-	}
-	int count;
-	vtApp *app;
-};
-
 //
 // Initialize the app object
 //
@@ -70,20 +51,7 @@ bool vtApp::OnInit(void)
 	wxSize canvas_size = m_pFrame->m_canvas->GetClientSize();
 	vtGetScene()->SetWindowSize(canvas_size.x, canvas_size.y);
 
-#if 0
-	// Force graphics context to be realised
-	vtGetScene()->DoUpdate();
-
-	// Need a valid graphics context to for the the texture unit manager to initialise properly
-	vtGetScene()->GetGraphicsContext()->makeCurrent();
-    const char* version = (const char*) glGetString( GL_VERSION );
-	bool bReturn = CreateScene();
-	vtGetScene()->GetGraphicsContext()->releaseContext();
-	return bReturn;
-#else
-	vtGetScene()->AddEngine(new StartupEngine(this));
-	return true;
-#endif
+	return CreateScene();
 }
 
 //
