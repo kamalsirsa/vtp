@@ -40,16 +40,17 @@ osg::TexGenNode *CStructureShadowsOSG::m_pStructureTexGenNode = NULL;
 
 CStructureShadowsOSG::CStructureShadowsOSG(bool bDepthShadow, bool bStructureOnStructureShadows)
 {
-	static const unsigned int ContextID = 0;
 //	bDepthShadow = true;
 //	bStructureOnStructureShadows = true;
 
 	// Check if depth shadows supported
 #if USE_FRAGMENT_SHADER
-	osg::ref_ptr<osg::FragmentProgram::Extensions> pFragmentExtensions = osg::FragmentProgram::getExtensions(ContextID, true);
+	osg::ref_ptr<osg::FragmentProgram::Extensions> pFragmentExtensions
+		= osg::FragmentProgram::getExtensions(vtGetScene()->GetGraphicsContext()->getState()->getContextID(), true);
 	if (bDepthShadow && pTextureExtensions->isShadowSupported() && pFragmentExtensions->isFragmentProgramSupported())
 #else
-	osg::ref_ptr<osg::Texture::Extensions> pTextureExtensions = osg::Texture::getExtensions(ContextID, true);
+	osg::ref_ptr<osg::Texture::Extensions> pTextureExtensions =
+		osg::Texture::getExtensions(vtGetScene()->GetGraphicsContext()->getState()->getContextID(), true);
 	if (bDepthShadow && pTextureExtensions->isShadowSupported())
 #endif
 		m_bDepthShadow = true;
