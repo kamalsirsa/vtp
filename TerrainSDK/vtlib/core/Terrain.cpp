@@ -2304,7 +2304,7 @@ bool vtTerrain::CreateStep1()
 		fname += elev_file;
 		VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
 
-		vtString elev_path = FindFileOnPaths(vtGetDataPath(), fname);
+		elev_path = FindFileOnPaths(vtGetDataPath(), fname);
 		if (elev_path == "")
 		{
 			VTLOG("\t\tNot found.\n");
@@ -2316,8 +2316,6 @@ bool vtTerrain::CreateStep1()
 				return false;
 			}
 		}
-		// Try raw value for external terrain
-		elev_path = elev_file;
 	}
 
 	VTLOG("\tFound elevation at: %s\n", (const char *) elev_path);
