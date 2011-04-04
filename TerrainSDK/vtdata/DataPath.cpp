@@ -153,7 +153,7 @@ bool vtSaveDataPath(const char *fname)
 	for (unsigned int i = 0; i < s_datapath.size(); i++)
 	{
 		fprintf(fp, "\t<" STR_DATAPATH ">");
-		fprintf(fp, s_datapath[i]);
+		fputs(s_datapath[i], fp);
 		fprintf(fp, "</" STR_DATAPATH ">\n");
 	}
 	fprintf(fp, "</VTP>\n");
