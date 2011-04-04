@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2010 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -166,6 +166,9 @@ void Enviro::StartupArgument(int i, const char *str)
 	else if(!strncmp(str, "-terrain=", 9))
 		g_Options.m_strInitTerrain = str+9;
 
+	else if(!strncmp(str, "-elev=", 6))
+		g_Options.m_strUseElevation = str+6;
+
 	else if(!strncmp(str, "-location=", 10))
 	{
 		g_Options.m_strInitLocation = str+10;
@@ -321,6 +324,15 @@ void Enviro::DoControl()
 		else if (g_Options.m_bEarthView)
 		{
 			FlyToSpace();
+			return;
+		}
+		else if (g_Options.m_strUseElevation != "")
+		{
+			// Make a default terrain with a specific elevation TIN
+			vtTerrain *pTerr = new vtTerrain;
+			pTerr->GetParams().SetValueString(STR_ELEVFILE, g_Options.m_strUseElevation);
+			pTerr->GetParams().SetValueInt(STR_SURFACE_TYPE, 1);	// 1 = tin
+			SwitchToTerrain(pTerr);
 			return;
 		}
 		else

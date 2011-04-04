@@ -1,7 +1,7 @@
 //
 // Terrain.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -2292,20 +2292,29 @@ bool vtTerrain::CreateStep1()
 	vtString fname;
 	vtString elev_file = m_Params.GetValueString(STR_ELEVFILE);
 	int surface_type = m_Params.GetValueInt(STR_SURFACE_TYPE);
-	fname = "Elevation/";
-	fname += elev_file;
-	VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
 
-	vtString elev_path = FindFileOnPaths(vtGetDataPath(), fname);
-	if (elev_path == "")
+	// May be absolute path
+	vtString elev_path;
+	if (FileExists(elev_file))
+		elev_path = elev_file;
+	else
 	{
-		VTLOG("\t\tNot found.\n");
-		if (surface_type != 3)
+		// filename may be relative to any Elevation folder on the data path
+		fname = "Elevation/";
+		fname += elev_file;
+		VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
+
+		vtString elev_path = FindFileOnPaths(vtGetDataPath(), fname);
+		if (elev_path == "")
 		{
-			vtString msg;
-			msg.Format("Couldn't find elevation '%s'", (const char *) elev_file);
-			_SetErrorMessage(msg);
-			return false;
+			VTLOG("\t\tNot found.\n");
+			if (surface_type != 3)
+			{
+				vtString msg;
+				msg.Format("Couldn't find elevation '%s'", (const char *) elev_file);
+				_SetErrorMessage(msg);
+				return false;
+			}
 		}
 		// Try raw value for external terrain
 		elev_path = elev_file;

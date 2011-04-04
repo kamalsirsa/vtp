@@ -74,7 +74,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib osgShadow.lib opengl32.lib libpng15-vc9.lib zlib1-vc9.lib netcdf.lib gdal_i-vc9.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib libMini.lib libcurl-static.lib Ws2_32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib osgUtil.lib osgShadow.lib osgSim.lib osgText.lib osgTerrain.lib osgViewer.lib opengl32.lib libpng15-vc9.lib zlib1-vc9.lib netcdf.lib gdal_i-vc9.lib glu32.lib libjpeg.lib Winmm.lib Advapi32.lib libMini.lib libcurl-static.lib Ws2_32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,MSVCRTD.lib"

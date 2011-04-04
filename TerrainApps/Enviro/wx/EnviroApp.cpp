@@ -2,7 +2,7 @@
 // Name:	 EnviroApp.cpp
 // Purpose:  The application class for our wxWindows application.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -56,6 +56,8 @@ void EnviroApp::Args(int argc, wxChar **argv)
 		wxString str1 = argv[i];
 		vtString str = (const char *) str1.mb_str(wxConvUTF8);
 		if (str == "-no_startup_dialog")
+			m_bShowStartupDialog = false;
+		else if (str.Left(6) == "-elev=")
 			m_bShowStartupDialog = false;
 		else if (str.Left(9) == "-terrain=")
 			m_bShowStartupDialog = false;
