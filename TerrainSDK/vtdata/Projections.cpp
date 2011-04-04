@@ -1409,7 +1409,7 @@ bool GDALWrapper::FindPROJ4SO()
 #if __APPLE__
 	soExtension = ".dylib";
 #else // other unixes
-	soExtension = ".so";
+	soExtension = ".so.0";
 #endif
 
 	vtString fname = FindFileOnPaths(dpso, soName + soExtension);
