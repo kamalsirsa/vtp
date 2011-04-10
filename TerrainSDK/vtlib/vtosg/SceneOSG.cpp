@@ -343,7 +343,12 @@ void vtScene::SetRoot(vtGroup *pRoot)
 #endif
 
 	if (m_pOsgViewer != NULL)
-		m_pOsgViewer->setSceneData(m_pOsgSceneRoot.get());
+	{
+		if (NULL != m_pOsgSceneRoot)
+			m_pOsgViewer->setSceneData(m_pOsgSceneRoot.get());
+		else
+			m_pOsgViewer->setSceneData(NULL);
+	}
 	m_pRoot = pRoot;
 }
 
