@@ -2315,6 +2315,8 @@ bool vtTerrain::CreateStep1()
 				_SetErrorMessage(msg);
 				return false;
 			}
+			// Try raw value for external terrain
+			elev_path = elev_file;
 		}
 	}
 
