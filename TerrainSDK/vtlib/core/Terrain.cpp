@@ -2293,9 +2293,16 @@ bool vtTerrain::CreateStep1()
 	vtString elev_file = m_Params.GetValueString(STR_ELEVFILE);
 	int surface_type = m_Params.GetValueInt(STR_SURFACE_TYPE);
 
-	// May be absolute path
+	// Look for the elevation data source
 	vtString elev_path;
-	if (FileExists(elev_file))
+
+	// The path might be a URL (for 'external terrain')
+	if (elev_file.Left(5).CompareNoCase("http:") == 0)
+	{
+		// It's a URL, so we can't check for its validity yet; just pass it on
+		elev_path = elev_file;
+	}
+	else if (FileExists(elev_file))		// Might be an absolute path
 		elev_path = elev_file;
 	else
 	{
@@ -2315,8 +2322,6 @@ bool vtTerrain::CreateStep1()
 				_SetErrorMessage(msg);
 				return false;
 			}
-			// Try raw value for external terrain
-			elev_path = elev_file;
 		}
 	}
 
