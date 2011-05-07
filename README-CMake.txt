@@ -1,6 +1,8 @@
 Instructions for CMake
 ======================
 
+N.B. These instructions are for the windows GUI. On Linux you should follow a similar process using ccmake etc.
+
 1. You need at least CMake vesion 2.6.
 
 2. Drag the CMakeLists.txt file from the root of your VTP source tree and drop it onto CMake.
