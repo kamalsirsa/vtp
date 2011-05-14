@@ -737,7 +737,7 @@ float vtBuilding::CalculateBaseElevation(vtHeightField *pHeightField)
 	float fAltitude;
 	for (int i = 0; i < iSize; i++)
 	{
-		pHeightField->FindAltitudeOnEarth(Footprint[i], fAltitude, true);
+		pHeightField->FindAltitudeOnEarth(Footprint[i], fAltitude);
 		if (fAltitude < fLowest)
 			fLowest = fAltitude;
 	}
