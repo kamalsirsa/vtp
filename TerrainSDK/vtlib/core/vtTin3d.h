@@ -45,7 +45,7 @@ protected:
 	virtual void MakeSurfaceMaterials();
 
 	vtArray<vtMesh*> m_Meshes;
-	vtMaterialArray *m_pMats;
+	vtMaterialArrayPtr m_pMats;
 	vtGeom		*m_pGeom;
 	vtGeom		*m_pDropGeom;
 };

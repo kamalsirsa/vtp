@@ -100,12 +100,12 @@ void OutputSOG::WriteHeader(FILE *fp)
 void OutputSOG::WriteMaterials(FILE *fp, const vtMaterialArray *pMats)
 {
 	int i;
-	short num_mat = pMats->GetSize();
+	short num_mat = (short) pMats->size();
 	Write(fp, FT_NUM_MATERIALS, num_mat);
 
 	for (i = 0; i < num_mat; i++)
 	{
-		vtMaterial *pMat = pMats->GetAt(i);
+		vtMaterial *pMat = pMats->at(i).get();
 		WriteMaterial(fp, pMat);
 	}
 }
@@ -538,7 +538,7 @@ bool InputSOG::ReadContents(FILE *fp, vtGroup *Parent)
 		return false;
 	quiet = fread(&num_mat, 2, 1, fp);
 
-	vtMaterialArray	*pMats = new vtMaterialArray;
+	vtMaterialArrayPtr	pMats = new vtMaterialArray;
 	vtMaterial *pMat;
 
 	for (j = 0; j < num_mat; j++)
@@ -557,7 +557,6 @@ bool InputSOG::ReadContents(FILE *fp, vtGroup *Parent)
 		vtGeom *pGeom = ReadGeometry(fp, pMats);
 		Parent->AddChild(pGeom);
 	}
-	pMats->Release();
 
 	return true;
 }

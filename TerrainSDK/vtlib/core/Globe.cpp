@@ -35,12 +35,8 @@ vtIcoGlobe::vtIcoGlobe()
 
 vtIcoGlobe::~vtIcoGlobe()
 {
-	m_earthmats->Release();
-	m_coremats->Release();
 	for (unsigned int i = 0; i < m_GlobeLayers.GetSize(); i++)
 		delete m_GlobeLayers[i];
-	if (m_cylinder)
-		m_cylinder->Release();
 }
 
 
@@ -154,7 +150,7 @@ void vtIcoGlobe::CreateCoreMaterials()
 					 false, false, false);
 	m_white = m_coremats->AddRGBMaterial1(RGBf(0.2f, 0.2f, 0.2f),
 					 true, true, true, 1);
-	m_coremats->GetAt(m_white)->SetTransparent(true, true);
+	m_coremats->at(m_white)->SetTransparent(true, true);
 }
 
 vtMaterialArray *vtIcoGlobe::CreateMaterialsFromFiles(const vtString &strImagePrefix)
@@ -337,7 +333,7 @@ void vtIcoGlobe::SetCulling(bool bCull)
 	int pair;
 	for (pair = 0; pair < 10; pair++)
 	{
-		vtMaterial *mat = m_earthmats->GetAt(m_globe_mat[pair]);
+		vtMaterial *mat = m_earthmats->at(m_globe_mat[pair]);
 		mat->SetCulling(bCull);
 	}
 }
@@ -346,7 +342,7 @@ void vtIcoGlobe::SetLighting(bool bLight)
 {
 	for (int i = 0; i < 10; i++)
 	{
-		vtMaterial *pApp = m_earthmats->GetAt(m_globe_mat[i]);
+		vtMaterial *pApp = m_earthmats->at(m_globe_mat[i]);
 		pApp->SetLighting(bLight);
 	}
 }
@@ -581,8 +577,6 @@ void vtIcoGlobe::BuildSphericalPoints(GlobeLayer *glay, float fSize)
 		m_SurfaceGroup->AddChild(mgeom);
 		glay->AddNode(mgeom);
 	}
-	// pass mesh ownership to the geom containers
-	mesh->Release();
 }
 
 void vtIcoGlobe::BuildSphericalLines(GlobeLayer *glay, float fSize)
@@ -1328,7 +1322,6 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 
 		m_mface[i].geom->SetMaterials(m_earthmats);
 		m_mface[i].geom->AddMesh(m_mesh[i], m_globe_mat[mat]);
-		m_mesh[i]->Release();	// pass ownership to the Geometry
 	}
 	m_top->AddChild(m_mface[0].xform);
 
@@ -1385,14 +1378,12 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 	m_pAxisGeom->SetName2("AxisGeom");
 	m_pAxisGeom->SetMaterials(pMats);
 	m_pAxisGeom->SetEnabled(false);
-	pMats->Release();
 
 	vtMesh *pMesh = new vtMesh(vtMesh::LINES, 0, 6);
 	pMesh->AddVertex(FPoint3(0,2,0));
 	pMesh->AddVertex(FPoint3(0,-2,0));
 	pMesh->AddLine(0,1);
 	m_pAxisGeom->AddMesh(pMesh, green);
-	pMesh->Release();		// pass ownership to Geometry
 	m_top->AddChild(m_pAxisGeom);
 
 #if 0
@@ -1435,8 +1426,6 @@ void vtIcoGlobe::CreateNormalSphere()
 		int f2 = icosa_face_pairs[pair][1];
 		m_GlobeGeom->AddMesh(m_mesh[f1], m_globe_mat[pair]);
 		m_GlobeGeom->AddMesh(m_mesh[f2], m_globe_mat[pair]);
-		m_mesh[f1]->Release();
-		m_mesh[f2]->Release();
 	}
 }
 
@@ -1570,13 +1559,11 @@ void vtIcoGlobe::add_face_independent_meshes(int pair, int face, bool second)
 				mat = (m_freq-1-j) * m_freq + (m_freq-1-i);
 
 			m_GlobeGeom->AddMesh(m_mesh[mesh_base + mesh], m_globe_mat[mat_base + mat]);
-			m_mesh[mesh_base + mesh]->Release();
 			mesh++;
 
 			if (i < (m_freq-j-1))
 			{
 				m_GlobeGeom->AddMesh(m_mesh[mesh_base + mesh], m_globe_mat[mat_base + mat]);
-				m_mesh[mesh_base + mesh]->Release();
 				mesh++;
 			}
 		}
@@ -1688,7 +1675,6 @@ vtTransform *WireAxis(RGBf color, float len)
 	vtMaterialArray *pMats = new vtMaterialArray;
 	int index = pMats->AddRGBMaterial1(color, false, false);
 	geom->SetMaterials(pMats);
-	pMats->Release();
 
 	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 6);
 	mesh->AddVertex(FPoint3(-len,0,0));
@@ -1701,7 +1687,6 @@ vtTransform *WireAxis(RGBf color, float len)
 	mesh->AddLine(2,3);
 	mesh->AddLine(4,5);
 	geom->AddMesh(mesh, index);
-	mesh->Release();
 	vtTransform *trans = new vtTransform;
 	trans->AddChild(geom);
 	return trans;
@@ -1736,10 +1721,8 @@ vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
 	pMats->AddTextureMaterial2(strDataPath + "WholeEarth/earth2k_free.jpg",
 						 bCulling, bLighting, bTransp);
 	geom->SetMaterials(pMats);
-	pMats->Release();
 
 	geom->AddMesh(mesh, 0);
-	mesh->Release();	// pass ownership
 
 	return mgeom;
 }

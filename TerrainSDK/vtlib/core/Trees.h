@@ -50,9 +50,9 @@ protected:
 	vtMesh *CreateTreeMesh(float fTreeScale, bool bShadows);
 	void _Defaults();
 
-	vtMaterialArray	*m_pMats;
+	osg::ref_ptr<vtMaterialArray> m_pMats;
 	vtGeom			*m_pGeom;
-	vtMesh			*m_pMesh;
+	osg::ref_ptr<vtMesh> m_pMesh;
 	int				m_iMatIdx;
 	vtNode			*m_pExternal;
 #if SUPPORT_XFROG

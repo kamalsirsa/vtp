@@ -1184,10 +1184,13 @@ bool progress_callback(int pos)
 //
 void CvtocxCtrl::Create3DScene()
 {
+	int argc = 0;
+	char **argv = 0;
+
 	VTLOG1("CreateScene\n");
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
-	pScene->Init();
+	pScene->Init(argc, argv);
 
 	// Look up the camera
 	vtCamera *pCamera = pScene->GetCamera();

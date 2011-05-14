@@ -274,49 +274,6 @@ protected:
 };
 
 /**
- * Contains an array of materials.  Provides useful methods for creating
- * material easily.
- * This is the base class for vtMaterialArray, and provides most of the
- * functionality for that class.
- */
-class vtMaterialArrayBase : public vtArray<vtMaterial *>
-{
-public:
-	~vtMaterialArrayBase();
-
-	void DestructItems(unsigned int first, unsigned int last);
-
-	int AddTextureMaterial(class vtImage *pImage,
-						 bool bCulling, bool bLighting,
-						 bool bTransp = false, bool bAdditive = false,
-						 float fAmbient = 0.0f, float fDiffuse = 1.0f,
-						 float fAlpha = 1.0f, float fEmissive = 0.0f,
-						 bool bTexGen = false, bool bClamp = false,
-						 bool bMipMap = false);
-	int AddTextureMaterial2(const char *fname,
-						 bool bCulling, bool bLighting,
-						 bool bTransp = false, bool bAdditive = false,
-						 float fAmbient = 0.0f, float fDiffuse = 1.0f,
-						 float fAlpha = 1.0f, float fEmissive = 0.0f,
-						 bool bTexGen = false, bool bClamp = false,
-						 bool bMipMap = false);
-	int AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient,
-					 bool bCulling = true, bool bLighting= true, bool bWireframe = false,
-					 float fAlpha = 1.0f, float fEmissive = 0.0f);
-	int AddRGBMaterial1(const RGBf &diffuse,
-					 bool bCulling = true, bool bLighting= true, bool bWireframe = false,
-					 float fAlpha = 1.0f, float fEmissive = 0.0f);
-	void AddShadowMaterial(float fOpacity);
-	int FindByDiffuse(const RGBAf &rgba) const;
-	int FindByImage(const vtImage *image) const;
-
-	void CopyFrom(vtMaterialArrayBase *pFromMats);
-
-	virtual int AppendMaterial(vtMaterial *pMat) = 0;
-	void RemoveMaterial(vtMaterial *pMat);
-};
-
-/**
  * This class represents a window, an area of the display which corresponds
  * to an OpenGL drawing surface and has the potential to receive UI events.
  */

@@ -268,7 +268,6 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		vtMesh *mesh = m_Mesh[j].m_pMesh;
 		int index = m_Mesh[j].m_iMatIdx;
 		m_pGeom->AddMesh(mesh, index);
-		mesh->Release();	// pass ownership
 	}
 
 	// resize bounding box

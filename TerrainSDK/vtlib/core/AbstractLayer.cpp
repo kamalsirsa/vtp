@@ -192,8 +192,6 @@ void vtAbstractLayer::CreateGeomGroup()
 	pGeomLine->SetName2("Lines");
 	pGeomLine->SetMaterials(pGeomMats);
 	pGeomGroup->AddChild(pGeomLine);
-
-	pGeomMats->Release();	// pass ownership
 }
 
 void vtAbstractLayer::CreateLabelGroup()
@@ -305,7 +303,6 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 		mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 
 		pGeomObject->AddMesh(mesh, material_index);
-		mesh->Release();
 
 		// Track
 		if (viz) viz->m_meshes.push_back(mesh);
@@ -335,7 +332,6 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 		}
 
 		pGeomObject->AddMesh(mesh, material_index);
-		mesh->Release();
 
 		// Track
 		if (viz) viz->m_meshes.push_back(mesh);
@@ -353,7 +349,6 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 
 			pGeomObject->AddMesh(mesh, material_index);
-			mesh->Release();
 
 			// Track
 			if (viz) viz->m_meshes.push_back(mesh);
@@ -371,7 +366,6 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 
 			pGeomObject->AddMesh(mesh, material_index);
-			mesh->Release();
 
 			// Track
 			if (viz) viz->m_meshes.push_back(mesh);
@@ -666,7 +660,6 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 	}
 
 	geom->AddTextMesh(text, -1);
-	text->Release();	// pass ownership to geometry
 
 	// Add to a billboarding transform so that the labels turn
 	// toward the viewer

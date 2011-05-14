@@ -141,10 +141,7 @@ void Enviro::Shutdown()
 
 	delete m_pArial;
 	delete m_pPlantList;
-	if (m_pArcMats)
-		m_pArcMats->Release();
-	if (m_pHUDMaterials)
-		m_pHUDMaterials->Release();
+
 	if (m_pTopDownCamera)
 		m_pTopDownCamera->Release();
 
@@ -886,7 +883,6 @@ void Enviro::SetupScene2()
 		m_pHUDMessage->SetText("");
 		m_pHUDMessage->SetPosition(FPoint3(3,3,0));
 		geom->AddTextMesh(m_pHUDMessage, 0);
-		m_pHUDMessage->Release();	// pass ownership
 	}
 }
 
@@ -2823,7 +2819,6 @@ void Enviro::CreateElevationLegend()
 	vtMesh *mesh4 = new vtMesh(vtMesh::QUADS, 0, 4);
 	mesh4->AddRectangleXY((float) base.x, (float) base.y, (float) size.x, (float) size.y, -1.0f);
 	m_pLegendGeom->AddMesh(mesh4, grey);
-	mesh4->Release();
 
 	float fMin, fMax;
 	GetCurrentTerrain()->GetHeightField()->GetHeightExtents(fMin, fMax);
@@ -2842,7 +2837,6 @@ void Enviro::CreateElevationLegend()
 	}
 	mesh1->AddStrip2((in_size.y + 1)*2, 0);
 	m_pLegendGeom->AddMesh(mesh1, white);
-	mesh1->Release();
 
 	// Small white tick marks
 	vtMesh *mesh2 = new vtMesh(vtMesh::LINES, 0, ticks*2);
@@ -2853,7 +2847,6 @@ void Enviro::CreateElevationLegend()
 		mesh2->AddLine(p1, p2);
 	}
 	m_pLegendGeom->AddMesh(mesh2, white);
-	mesh2->Release();
 
 	// Text labels
 	for (i = 0; i < ticks; i++)
@@ -2866,7 +2859,6 @@ void Enviro::CreateElevationLegend()
 		mesh3->SetPosition(p1);
 
 		m_pLegendGeom->AddTextMesh(mesh3, white);
-		mesh3->Release();
 	}
 
 	m_pHUD->AddChild(m_pLegendGeom);
@@ -2887,7 +2879,7 @@ void Enviro::CreateCompass()
 		return;
 	}
 
-	vtImageSprite *CompassSprite = new vtImageSprite;
+	osg::ref_ptr<vtImageSprite> CompassSprite = new vtImageSprite;
 	bool success = CompassSprite->Create(path, true);	// blending = true
 	if (!success)
 		return;
@@ -2918,7 +2910,6 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 		m_pWindowBoxMesh->AddVertex(0,1,0);
 		m_pWindowBoxMesh->AddStrip2(4, 0);
 		geom->AddMesh(m_pWindowBoxMesh, yellow);
-		m_pWindowBoxMesh->Release();	// pass ownership
 		m_pHUD->AddChild(geom);
 	}
 	// Invert the coordinates Y, because mouse origin is upper left, and

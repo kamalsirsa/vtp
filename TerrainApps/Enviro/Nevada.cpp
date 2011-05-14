@@ -48,8 +48,6 @@ NevadaTerrain::~NevadaTerrain()
 		m_pDetailTexture->Release();
 	if (m_pDetailTexture2)
 		m_pDetailTexture2->Release();
-	if (m_pMats)
-		m_pMats->Release();
 }
 
 //
@@ -165,7 +163,7 @@ void NevadaTerrain::CreateDetailTextures()
 						 0.3f, 0.6f,	// ambient, diffuse
 						 1.0f, 0.1f,	// alpha, emmisive
 						 true);			// texgen
-	m_pDetailMat = m_pMats->GetAt(id);
+	m_pDetailMat = m_pMats->at(id);
 	m_pDetailMat->SetMipMap(true);
 
 	//initally, make partly transparent
@@ -177,7 +175,7 @@ void NevadaTerrain::CreateDetailTextures()
 					 0.3f, 0.6f,	// ambient, diffuse
 					 1.0f, 0.1f,	// alpha, emmisive
 					 true);			// texgen
-	m_pDetailMat2 = m_pMats->GetAt(id);
+	m_pDetailMat2 = m_pMats->at(id);
 	m_pDynGeom->SetDetailMaterial(m_pDetailMat,
 		DETAIL_TILING, DETAIL_DISTANCE);
 }
@@ -504,7 +502,7 @@ EpochEngine::EpochEngine(NevadaTerrain *pNevada, float fLow, float fHigh,
 	m_pSprite = new vtGeom;
 	m_pSprite->SetName2("Year Sprite");
 	m_pSprite->AddTextMesh(m_pSpriteText, 0);
-	m_pSpriteText->Release();
+
 	vtGetScene()->GetHUD()->AddChild(m_pSprite);
 	pNevada->AddNode(m_pSprite);
 

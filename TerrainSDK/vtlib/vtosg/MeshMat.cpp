@@ -20,14 +20,13 @@ bool vtMaterial::s_bTextureCompression = false;
 #define SA_ON	StateAttribute::ON
 #define SA_OFF	StateAttribute::OFF
 
-vtMaterial::vtMaterial() : vtMaterialBase()
+vtMaterial::vtMaterial() : vtMaterialBase(), osg::StateSet()
 {
-	m_pStateSet = new StateSet;
 	m_pMaterial = new Material;
-	m_pStateSet->setAttributeAndModes(m_pMaterial.get());
+	setAttributeAndModes(m_pMaterial.get());
 
 	// Not sure why this is required (should be the default!)
-	m_pStateSet->setMode(GL_DEPTH_TEST, SA_ON);
+	setMode(GL_DEPTH_TEST, SA_ON);
 }
 
 vtMaterial::~vtMaterial()
@@ -35,7 +34,6 @@ vtMaterial::~vtMaterial()
 	// do these dereferences manually, although it's not really required
 	m_pMaterial = NULL;
 	m_pTexture = NULL;
-	m_pStateSet = NULL;
 	m_pBlendFunc = NULL;
 	m_pAlphaFunc = NULL;
 
@@ -57,7 +55,7 @@ void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 	m_pMaterial->setDiffuse(FAB, Vec4(r, g, b, a));
 
 	if (a < 1.0f)
-		m_pStateSet->setMode(GL_BLEND, SA_ON);
+		setMode(GL_BLEND, SA_ON);
 }
 /**
  * Get the diffuse color of this material.
@@ -121,7 +119,7 @@ RGBf vtMaterial::GetEmission() const
  */
 void vtMaterial::SetCulling(bool bCulling)
 {
-	m_pStateSet->setMode(GL_CULL_FACE, bCulling ? SA_ON : SA_OFF);
+	setMode(GL_CULL_FACE, bCulling ? SA_ON : SA_OFF);
 }
 /**
  * Get the backface culling property of this material.
@@ -129,7 +127,7 @@ void vtMaterial::SetCulling(bool bCulling)
 bool vtMaterial::GetCulling() const
 {
 	StateAttribute::GLModeValue m;
-	m = m_pStateSet->getMode(GL_CULL_FACE);
+	m = getMode(GL_CULL_FACE);
 	return (m == SA_ON);
 }
 
@@ -138,7 +136,7 @@ bool vtMaterial::GetCulling() const
  */
 void vtMaterial::SetLighting(bool bLighting)
 {
-	m_pStateSet->setMode(GL_LIGHTING, bLighting ? SA_ON : SA_OFF);
+	setMode(GL_LIGHTING, bLighting ? SA_ON : SA_OFF);
 }
 /**
  * Get the lighting property of this material.
@@ -146,7 +144,7 @@ void vtMaterial::SetLighting(bool bLighting)
 bool vtMaterial::GetLighting() const
 {
 	StateAttribute::GLModeValue m;
-	m = m_pStateSet->getMode(GL_LIGHTING);
+	m = getMode(GL_LIGHTING);
 	return (m == SA_ON);
 }
 
@@ -158,17 +156,17 @@ bool vtMaterial::GetLighting() const
  */
 void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 {
-//	m_pStateSet->setMode(GL_BLEND, bOn ? SA_ON : SA_OFF);
+//	setMode(GL_BLEND, bOn ? SA_ON : SA_OFF);
 	if (bOn)
 	{
 		if (!m_pBlendFunc.valid())
 			m_pBlendFunc = new BlendFunc;
-		m_pStateSet->setAttributeAndModes(m_pBlendFunc.get(), SA_ON);
+		setAttributeAndModes(m_pBlendFunc.get(), SA_ON);
 		if (!m_pAlphaFunc.valid())
 			m_pAlphaFunc = new AlphaFunc;
 		m_pAlphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
-		m_pStateSet->setAttributeAndModes(m_pAlphaFunc.get(), SA_ON );
-		m_pStateSet->setRenderingHint(StateSet::TRANSPARENT_BIN);
+		setAttributeAndModes(m_pAlphaFunc.get(), SA_ON );
+		setRenderingHint(StateSet::TRANSPARENT_BIN);
 
 #if MAYBE_SOMEDAY
 		// RJ says he needed this to make multiple transparent surfaces work
@@ -177,13 +175,13 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 		//  in the wrong order.
 		ref_ptr<Depth> pDepth  = new osg::Depth;
 		pDepth->setWriteMask(false);
-		m_pStateSet->setAttribute(pDepth.get());
+		setAttribute(pDepth.get());
 #endif
 	}
 	else
 	{
-		m_pStateSet->setMode(GL_BLEND, SA_OFF);
-		m_pStateSet->setRenderingHint( StateSet::OPAQUE_BIN );
+		setMode(GL_BLEND, SA_OFF);
+		setRenderingHint( StateSet::OPAQUE_BIN );
 	}
 
 	if (bAdd)
@@ -193,7 +191,7 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 //		m_pBlendFunc->setFunction(GL_ONE, GL_ONE);
 //		m_pBlendFunc->setFunction(GL_SRC_COLOR, GL_DST_COLOR);
 		m_pBlendFunc->setFunction(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		m_pStateSet->setAttribute(m_pBlendFunc.get());
+		setAttribute(m_pBlendFunc.get());
 	}
 }
 /**
@@ -202,10 +200,10 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 bool vtMaterial::GetTransparent() const
 {
 	// OSG 0.8.45 and before
-//	StateAttribute::GLModeValue m = m_pStateSet->getMode(StateAttribute::TRANSPARENCY);
+//	StateAttribute::GLModeValue m = getMode(StateAttribute::TRANSPARENCY);
 	// OSG 0.9.0 onwards
 	StateAttribute::GLModeValue m;
-	m = m_pStateSet->getMode(GL_BLEND);
+	m = getMode(GL_BLEND);
 	return (m == SA_ON);
 }
 
@@ -221,12 +219,12 @@ void vtMaterial::SetWireframe(bool bOn)
 	{
 		PolygonMode *pm = new PolygonMode();
 		pm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
-		m_pStateSet->setAttributeAndModes(pm, StateAttribute::OVERRIDE | SA_ON);
+		setAttributeAndModes(pm, StateAttribute::OVERRIDE | SA_ON);
 	}
 	else
 	{
 		// turn wireframe off
-		m_pStateSet->setMode(GL_POLYGON_MODE, StateAttribute::OFF);
+		setMode(GL_POLYGON_MODE, StateAttribute::OFF);
 	}
 }
 /**
@@ -236,7 +234,7 @@ bool vtMaterial::GetWireframe() const
 {
 	// OSG 0.9.0
 	StateAttribute::GLModeValue m;
-	m = m_pStateSet->getMode(StateAttribute::POLYGONMODE);
+	m = getMode(StateAttribute::POLYGONMODE);
 	return (m == SA_ON);
 }
 
@@ -273,7 +271,7 @@ void vtMaterial::SetTexture(vtImage *pImage)
 	//  footprint:
 //	m_pTexture->setUnRefImageDataAfterApply(true);
 
-	m_pStateSet->setTextureAttributeAndModes(0, m_pTexture.get(), SA_ON);
+	setTextureAttributeAndModes(0, m_pTexture.get(), SA_ON);
 }
 
 /**
@@ -381,16 +379,296 @@ bool vtMaterial::GetMipMap() const
 
 vtMaterialArray::vtMaterialArray()
 {
-	ref();		// artficially set refcount to 1
 }
 
 vtMaterialArray::~vtMaterialArray()
 {
 }
 
-void vtMaterialArray::Release()
+int vtMaterialArray::Find(vtMaterial *mat)
 {
-	unref();	// trigger self-deletion if no more references
+	for (size_t i = 0; i < size(); i++)
+		if (at(i).get() == mat)
+			return i;
+	return -1;
+}
+
+/**
+ * Create and add a simple textured material.  This method takes a vtImage
+ * and let you control many other aspects of the material.  Only the first
+ * three parameters are required, the rest will be assumed with default
+ * values if desired.
+ *
+ * \param pImage  A valid image (bitmap) which you have created.
+ *
+ * \param bCulling  true to cull backfaces (only the front side
+ *		of each polygon is rendered.)
+ *
+ * \param bLighting  true to "light" the material.  This means it will
+ *		use the material's color values, and any active lights to
+ *		determine the color of the drawn geometry.  If false, then
+ *		only the material's diffuse color is used, and it is not affected
+ *		by any lights.
+ *
+ * \param bTransp  true for a material with some transparency (default
+ *		is false).
+ *
+ * \param bAdditive  true for an additive material (default is false).
+ *		This means that the rendered color will be added to, rather than
+ *		replace, the rendering surface.  This is useful for some effects
+ *		such as drawing stars against a twilight sky, in which the light
+ *		of a dim star should be added to the background sky.
+ *
+ * \param fAmbient  Ambient material value, ranges from 0 to 1 (default 0).
+ *		If lighting is enabled, this determines how this material is affected
+ *		by the Ambient component of each existing light.
+ *
+ * \param fDiffuse  Diffuse material value, ranges from 0 to 1 (default 1).
+ *		If lighting is enabled, this determines how this material is affected
+ *		by the Diffuse component of each existing light.  If lighting is
+ *		not enabled, this indicates the exact lighting value to use for the
+ *		material.
+ *
+ * \param fAlpha	Alpha value (opacity), ranges from 0 (completely
+ *		transparent) to 1 (opaque).  Default is 1.  If transparency is
+ *		not enabled, this value is ignored.
+ *
+ * \param fEmissive  Emmisive material value, ranges from 0 to 1 (default 0).
+ *		If lighting is enabled, this value is added to the combined
+ *		effect of each existing light.  This is useful for geometry which
+ *		is brighter than the existing light level, such as illuminated
+ *		objects at night.
+ *
+ * \param bTexGen	true for materials whose texture mapping will be generated
+ *		automatically.  false if you will provide explicit UV values to
+ *		drape your texture.  Default is false.
+ *
+ * \param bClamp	true for Texture Clamping, which prevents sub-texel
+ *		interpolation at the edge of the texture.  Default is false.
+ *
+ * \param bMipMap	true for Mip-mapping, which provided smoother interpolation
+ *		of the textured geometry when it is under-sampled (generally when it
+ *		is in the distance.)  Useful for avoiding unpleasant aliasing artifacts,
+ *		but costs 1/3 more texture memory.
+ *
+ * \return The index of the added material.
+ */
+int vtMaterialArray::AddTextureMaterial(vtImage *pImage,
+						 bool bCulling, bool bLighting,
+						 bool bTransp, bool bAdditive,
+						 float fAmbient, float fDiffuse,
+						 float fAlpha, float fEmissive,
+						 bool bTexGen, bool bClamp,
+						 bool bMipMap)
+{
+	vtMaterial *pMat = new vtMaterial;
+	pMat->SetTexture(pImage);
+	pMat->SetCulling(bCulling);
+	pMat->SetLighting(bLighting);
+	pMat->SetTransparent(bTransp, bAdditive);
+	pMat->SetAmbient(fAmbient, fAmbient, fAmbient);
+	pMat->SetDiffuse(fDiffuse, fDiffuse, fDiffuse, fAlpha);
+	pMat->SetEmission(fEmissive, fEmissive, fEmissive);
+	pMat->SetClamp(bClamp);
+	pMat->SetMipMap(bMipMap);
+
+	return AppendMaterial(pMat);
+}
+
+/**
+ * Create and add a simple textured material.  This method takes a a filename
+ * of the texture image to use.
+ *
+ * See AddTextureMaterial() for a description of the parameters, which
+ * lets you control many other aspects of the material.
+ *
+ * \return The index of the added material if successful, or -1 on failure.
+ */
+int vtMaterialArray::AddTextureMaterial2(const char *fname,
+						 bool bCulling, bool bLighting,
+						 bool bTransp, bool bAdditive,
+						 float fAmbient, float fDiffuse,
+						 float fAlpha, float fEmissive,
+						 bool bTexGen, bool bClamp,
+						 bool bMipMap)
+{
+	// check for common mistake
+	if (*fname == 0)
+		return -1;
+
+	vtImage *pImage = vtImageRead(fname);
+	if (!pImage)
+		return -1;
+
+	int index = AddTextureMaterial(pImage, bCulling, bLighting,
+		bTransp, bAdditive, fAmbient, fDiffuse, fAlpha, fEmissive, bTexGen,
+		bClamp, bMipMap);
+	pImage->Release();	// pass ownership to the material
+	return index;
+}
+
+/**
+ * Create and add a simple colored material.  This method takes diffuse
+ * and ambient color and let you control several other aspects of the material.
+ *
+ * \param diffuse The Diffuse color component of the material.
+ *
+ * \param ambient The Ambient color component of the material.
+ *
+ * \param bCulling  true to cull backfaces (only the front side
+ *		of each polygon is rendered.)
+ *
+ * \param bLighting  true to "light" the material.  This means it will
+ *		use the material's color values, and any active lights to
+ *		determine the color of the drawn geometry.  If false, then
+ *		only the material's diffuse color is used, and it is not affected
+ *		by any lights.
+ *
+ * \param bWireframe True for a material which will render only the edges
+ *		of polygons.
+ *
+ * \param fAlpha	Alpha value (opacity), ranges from 0 (completely
+ *		transparent) to 1 (opaque).  Default is 1.  If transparency is
+ *		not enabled, this value is ignored.
+ *
+ * \param fEmissive  Emmisive material value, ranges from 0 to 1 (default 0).
+ *		If lighting is enabled, this value is added to the combined
+ *		effect of each existing light.  This is useful for geometry which
+ *		is brighter than the existing light level, such as illuminated
+ *		objects at night.
+ *
+ * \return The index of the added material.
+ */
+int vtMaterialArray::AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient,
+					 bool bCulling, bool bLighting, bool bWireframe,
+					 float fAlpha, float fEmissive)
+{
+	vtMaterial *pMat = new vtMaterial;
+	pMat->SetCulling(bCulling);
+	pMat->SetLighting(bLighting);
+	pMat->SetWireframe(bWireframe);
+	pMat->SetDiffuse(diffuse.r, diffuse.g, diffuse.b, fAlpha);
+	pMat->SetSpecular(0.0f, 0.0f, 0.0f);
+	pMat->SetAmbient(ambient.r, ambient.g, ambient.b);
+	pMat->SetEmission(fEmissive, fEmissive, fEmissive);
+	return AppendMaterial(pMat);
+}
+
+/**
+ * Create and add a simple colored material.  This method takes diffuse
+ * color and let you control several other aspects of the material.
+ * Ambient color will be assumed to a be a dimmer shade of the supplied
+ * diffuse color (diffuse / 4).
+ *
+ * \param diffuse The Diffuse color component of the material.
+ *
+ * \param bCulling  true to cull backfaces (only the front side
+ *		of each polygon is rendered.)
+ *
+ * \param bLighting  true to "light" the material.  This means it will
+ *		use the material's color values, and any active lights to
+ *		determine the color of the drawn geometry.  If false, then
+ *		only the material's diffuse color is used, and it is not affected
+ *		by any lights.
+ *
+ * \param bWireframe True for a material which will render only the edges
+ *		of polygons.
+ *
+ * \param fAlpha	Alpha value (opacity), ranges from 0 (completely
+ *		transparent) to 1 (opaque).  Default is 1.  If transparency is
+ *		not enabled, this value is ignored.
+ *
+ * \param fEmissive  Emmisive material value, ranges from 0 to 1 (default 0).
+ *		If lighting is enabled, this value is added to the combined
+ *		effect of each existing light.  This is useful for geometry which
+ *		is brighter than the existing light level, such as illuminated
+ *		objects at night.
+ *
+ * \return The index of the added material.
+ */
+int vtMaterialArray::AddRGBMaterial1(const RGBf &diffuse,
+				 bool bCulling, bool bLighting, bool bWireframe,
+				 float fAlpha, float fEmissive)
+{
+	return AddRGBMaterial(diffuse, diffuse/4, bCulling, bLighting, bWireframe,
+		fAlpha, fEmissive);
+}
+
+/**
+ * Create and add a "shadow" material, which is a black material with
+ * transparency, suitable for drawing a shadow under an object.
+ *
+ * \param fOpacity Ranges from 0 (fully transparent) to 1 (fully opaque).
+ */
+void vtMaterialArray::AddShadowMaterial(float fOpacity)
+{
+	vtMaterial *pMat = new vtMaterial;
+	pMat->SetCulling(true);
+	pMat->SetLighting(false);
+	pMat->SetTransparent(true);
+	pMat->SetDiffuse(0.0f, 0.0f, 0.0f, fOpacity);
+	AppendMaterial(pMat);
+}
+
+/**
+ * Copies all the materials from one vtMaterialArray to another.
+ *
+ * The materials copied from the source are simply appending to this
+ * array.
+ */
+void vtMaterialArray::CopyFrom(vtMaterialArray *pFrom)
+{
+	int num = pFrom->size();
+	for (int i = 0; i < num; i++)
+	{
+		vtMaterial *pMat1 = pFrom->at(i).get();
+		vtMaterial *pMat2 = new vtMaterial;
+		pMat2->CopyFrom(pMat1);
+		AppendMaterial(pMat2);
+	}
+}
+
+void vtMaterialArray::RemoveMaterial(vtMaterial *pMat)
+{
+	for (size_t i = 0; i < size(); i++)
+	{
+		if (at(i).get() == pMat)
+		{
+			erase(begin() + i);
+			return;
+		}
+	}
+}
+
+/**
+ * Find a material in an array by looking for a specific diffuse color.
+ *
+ * \return The index of the material if found, otherwise -1.
+ */
+int vtMaterialArray::FindByDiffuse(const RGBAf &rgba) const
+{
+	for (unsigned int i = 0; i < size(); i++)
+	{
+		if (rgba == at(i)->GetDiffuse())
+			return i;
+	}
+	return -1;
+}
+
+/**
+ * Find a material in an array by looking for a specific texture image.
+ *
+ * \return The index of the material if found, otherwise -1.
+ */
+int vtMaterialArray::FindByImage(const vtImage *image) const
+{
+	for (unsigned int i = 0; i < size(); i++)
+	{
+		const vtImage *tex = at(i)->GetTexture();
+		if (tex == image)
+			return i;
+	}
+	return -1;
 }
 
 /**
@@ -401,7 +679,8 @@ void vtMaterialArray::Release()
 int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 {
 	// nothing special to do
-	return Append(pMat);
+	push_back(pMat);
+	return (int) size() - 1;
 }
 
 
@@ -440,44 +719,36 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 vtMesh::vtMesh(enum PrimType ePrimType, int VertType, int NumVertices) :
 	vtMeshBase(ePrimType, VertType, NumVertices)
 {
-	ref();		// artficially set refcount to 1
-
-	m_pGeometry = new Geometry();
-
-	// set backpointer so we can find ourselves later
-	// also increases our own refcount
-	m_pGeometry->setUserData(this);
-
 	m_Vert = new Vec3Array;
 	m_Vert->reserve(NumVertices);
-	m_pGeometry->setVertexArray(m_Vert.get());
+	setVertexArray(m_Vert.get());
 
 	m_Index = new UIntArray;
 	m_Index->reserve(NumVertices);
-	m_pGeometry->setVertexIndices(m_Index.get());
+	setVertexIndices(m_Index.get());
 
 	if (VertType & VT_Normals)
 	{
 		m_Norm = new Vec3Array;
 		m_Norm->reserve(NumVertices);
-		m_pGeometry->setNormalArray(m_Norm.get());
-		m_pGeometry->setNormalIndices(m_Index.get());
-		m_pGeometry->setNormalBinding(Geometry::BIND_PER_VERTEX);
+		setNormalArray(m_Norm.get());
+		setNormalIndices(m_Index.get());
+		setNormalBinding(Geometry::BIND_PER_VERTEX);
 	}
 	if (VertType & VT_Colors)
 	{
 		m_Color = new Vec4Array;
 		m_Color->reserve(NumVertices);
-		m_pGeometry->setColorArray(m_Color.get());
-		m_pGeometry->setColorIndices(m_Index.get());
-		m_pGeometry->setColorBinding(Geometry::BIND_PER_VERTEX);
+		setColorArray(m_Color.get());
+		setColorIndices(m_Index.get());
+		setColorBinding(Geometry::BIND_PER_VERTEX);
 	}
 	if (VertType & VT_TexCoords)
 	{
 		m_Tex = new Vec2Array;
 		m_Tex->reserve(NumVertices);
-		m_pGeometry->setTexCoordArray(0, m_Tex.get());
-		m_pGeometry->setTexCoordIndices(0, m_Index.get());
+		setTexCoordArray(0, m_Tex.get());
+		setTexCoordIndices(0, m_Index.get());
 	}
 
 	switch (ePrimType)
@@ -507,23 +778,14 @@ vtMesh::vtMesh(enum PrimType ePrimType, int VertType, int NumVertices) :
 		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::POLYGON);
 		break;
 	}
-	m_pGeometry->addPrimitiveSet(m_pPrimSet.get());
-}
-
-void vtMesh::Release()
-{
-	unref();	// trigger self-deletion if no more references
-	if (_refCount == 1)	// no more references except from m_pGeometry
-		// explicit dereference. if Release is not called, this dereference should
-		//  also occur implicitly in the destructor
-		m_pGeometry = NULL;
+	addPrimitiveSet(m_pPrimSet.get());
 }
 
 
 // Override with ability to get OSG bounding box
 void vtMesh::GetBoundBox(FBox3 &box) const
 {
-	const BoundingBox &osg_box = m_pGeometry->getBound();
+	const BoundingBox &osg_box = getBound();
 	s2v(osg_box, box);
 }
 
@@ -824,7 +1086,7 @@ int vtMesh::GetNumPrims() const
  */
 void vtMesh::AllowOptimize(bool bAllow)
 {
-	m_pGeometry->setUseDisplayList(bAllow);
+	setUseDisplayList(bAllow);
 }
 
 /**
@@ -833,8 +1095,8 @@ void vtMesh::AllowOptimize(bool bAllow)
  */
 void vtMesh::ReOptimize()
 {
-	m_pGeometry->dirtyDisplayList();
-	m_pGeometry->dirtyBound();
+	dirtyDisplayList();
+	dirtyBound();
 }
 
 /**
@@ -847,7 +1109,7 @@ void vtMesh::ReOptimize()
 void vtMesh::SetLineWidth(float fWidth)
 {
 	osg::LineWidth *lws = new osg::LineWidth;
-	osg::StateSet *ss = m_pGeometry->getOrCreateStateSet();
+	osg::StateSet *ss = getOrCreateStateSet();
 
 	lws->setWidth(fWidth);
 	ss->setAttributeAndModes(lws,
@@ -1063,67 +1325,49 @@ bool vtFont::LoadFont(const char *filename)
  */
 vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
 {
-	ref();		// artficially set refcount to 1
-
-	// OSG 0.9.3
-//	m_pOsgText = new osgText::Text(font->m_pOsgFont.get());
-
-	// OSG 0.9.4
-	m_pOsgText = new osgText::Text;
-	m_pOsgText->setFont(font->m_pOsgFont.get());
+	// OSG 0.9.4 and later
+	setFont(font->m_pOsgFont.get());
 
 	// set backpointer so we can find ourselves later
-	m_pOsgText->setUserData(this);
+	setUserData(this);
 
 	// Set the Font reference width and height resolution in texels.
-	m_pOsgText->setFontResolution(32,32);
+	setFontResolution(32,32);
 
 	// Set the rendered character size in object coordinates.
-	m_pOsgText->setCharacterSize(fSize);
+	setCharacterSize(fSize);
 
 	if (bCenter)
-		m_pOsgText->setAlignment(osgText::Text::CENTER_BOTTOM);
+		setAlignment(osgText::Text::CENTER_BOTTOM);
 
 	// We'd like to turn off lighting for the text, but we can't, because
 	//  the OSG Text object fiddles with its own StateSet.  Instead, we do
 	//  it in vtGeom::AddTextMesh().
 }
 
-vtTextMesh::~vtTextMesh()
-{
-}
-
-void vtTextMesh::Release()
-{
-	unref();
-	if (_refCount == 1)	// no more references except from m_pGeometry
-		// explicit dereference. if Release is not called, this dereference should
-		//  also occur implicitly in the destructor
-		m_pOsgText = NULL;
-}
 
 // Override with ability to get OSG bounding box
 void vtTextMesh::GetBoundBox(FBox3 &box) const
 {
-	const BoundingBox &osg_box = m_pOsgText->getBound();
+	const BoundingBox &osg_box = getBound();
 	s2v(osg_box, box);
 }
 
 
 void vtTextMesh::SetText(const char *text)
 {
-	m_pOsgText->setText(text);
+	setText(text);
 }
 
 void vtTextMesh::SetText(const wchar_t *text)
 {
-	m_pOsgText->setText(text);
+	setText(text);
 }
 
 #if SUPPORT_WSTRING
 void vtTextMesh::SetText(const std::wstring &text)
 {
-	m_pOsgText->setText(text.c_str());
+	setText(text.c_str());
 }
 #endif
 
@@ -1131,13 +1375,13 @@ void vtTextMesh::SetPosition(const FPoint3 &pos)
 {
 	Vec3 s;
 	v2s(pos, s);
-	m_pOsgText->setPosition(s);
+	setPosition(s);
 }
 
 void vtTextMesh::SetRotation(const FQuat &rot)
 {
 	Quat q(rot.x, rot.y, rot.z, rot.w);
-	m_pOsgText->setRotation(q);
+	setRotation(q);
 }
 
 void vtTextMesh::SetAlignment(int align)
@@ -1152,11 +1396,11 @@ void vtTextMesh::SetAlignment(int align)
 		osga = osgText::Text::YZ_PLANE;
 	else return;
 
-	m_pOsgText->setAxisAlignment(osga);
+	setAxisAlignment(osga);
 }
 
 void vtTextMesh::SetColor(const RGBAf &rgba)
 {
 	osg::Vec4 color = v2s(rgba);
-	m_pOsgText->setColor(color);
+	setColor(color);
 }

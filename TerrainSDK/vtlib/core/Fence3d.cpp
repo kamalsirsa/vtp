@@ -44,7 +44,6 @@ void vtFence3d::AddFencepost(const FPoint3 &p1, int iMatIdx)
 	pPostMesh->TransformVertices(t);
 
 	m_pFenceGeom->AddMesh(pPostMesh, iMatIdx);
-	pPostMesh->Release();	// pass ownership
 }
 
 FPoint3 SidewaysVector(const FPoint3 &p0, const FPoint3 &p1)
@@ -107,7 +106,6 @@ void vtFence3d::AddWireMeshes(const FLine3 &p3)
 			pWireMesh->AddStrip2(npoints, start);
 		}
 		m_pFenceGeom->AddMesh(pWireMesh, FindMatIndex("Wire"));
-		pWireMesh->Release();	// pass ownership
 	}
 }
 
@@ -154,7 +152,6 @@ void vtFence3d::AddFlatConnectionMesh(const FLine3 &p3)
 	pMesh->AddStrip2(npoints * 2, 0);
 
 	m_pFenceGeom->AddMesh(pMesh, desc->GetMaterialIndex());
-	pMesh->Release();	// pass ownership
 }
 
 void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
@@ -317,7 +314,6 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 	pMesh->AddStrip2(4, start);
 
 	m_pFenceGeom->AddMesh(pMesh, desc->GetMaterialIndex());
-	pMesh->Release();	// pass ownership
 }
 
 void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
@@ -502,7 +498,6 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 	}
 
 	m_pFenceGeom->AddMesh(pMesh, desc->GetMaterialIndex());
-	pMesh->Release();	// pass ownership
 }
 
 void vtFence3d::AddPostExtensions(const FLine3 &p3)
@@ -566,7 +561,6 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 		}
 	}
 	m_pFenceGeom->AddMesh(pMesh, FindMatIndex("Steel"));
-	pMesh->Release();	// pass ownership
 
 	if (bLeft && bWires)
 	{
@@ -574,7 +568,6 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 		pWiresLeft->AddStrip2(npoints, npoints);
 		pWiresLeft->AddStrip2(npoints, npoints*2);
 		m_pFenceGeom->AddMesh(pWiresLeft, FindMatIndex("Wire"));
-		pWiresLeft->Release();	// pass ownership
 	}
 	if (bRight && bWires)
 	{
@@ -582,7 +575,6 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 		pWiresRight->AddStrip2(npoints, npoints);
 		pWiresRight->AddStrip2(npoints, npoints*2);
 		m_pFenceGeom->AddMesh(pWiresRight, FindMatIndex("Wire"));
-		pWiresRight->Release();	// pass ownership
 	}
 }
 
@@ -829,7 +821,6 @@ void vtFence3d::ShowBounds(bool bShow)
 		int highlight_matidx = FindMatIndex("Highlight", RGBf(1,1,0));
 
 		m_pFenceGeom->AddMesh(m_pHighlightMesh, highlight_matidx);
-		m_pHighlightMesh->Release();	// pass ownership
 	}
 }
 

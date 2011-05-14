@@ -200,10 +200,9 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 	int i, j;
 
 	vtGeom *pGeom = new vtGeom;
-	vtMaterialArray *pMats = new vtMaterialArray;
+	vtMaterialArrayPtr pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
 	pGeom->SetMaterials(pMats);
-	pMats->Release();
 
 	int up = 0;
 	float interval = 0.001f;
@@ -250,7 +249,6 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 			mesh->AddLine(start, start+1);
 		}
 		pGeom->AddMesh(mesh, 0);
-		mesh->Release();
 	}
 
 	// then the text labels on each tick
@@ -281,7 +279,6 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 					text->SetAlignment(0);
 				text->SetText(str);
 				pGeom->AddTextMesh(text, 0);
-				text->Release();
 			}
 		}
 	}

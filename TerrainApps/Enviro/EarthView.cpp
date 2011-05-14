@@ -224,26 +224,22 @@ void Enviro::MakeGlobe()
 	m_pSpaceAxes = new vtGeom;
 	m_pSpaceAxes->SetName2("Earth Axes");
 	m_pSpaceAxes->SetMaterials(pMats);
-	pMats->Release();	// pass ownership
 
 	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 6);
 	mesh->AddLine(FPoint3(0,0,200), FPoint3(0,0,0));
 	mesh->AddLine(FPoint3(0,0,1),   FPoint3(-.07f,0,1.1f));
 	mesh->AddLine(FPoint3(0,0,1),   FPoint3( .07f,0,1.1f));
 	m_pSpaceAxes->AddMesh(mesh, yellow);
-	mesh->Release();	// pass ownership
 
 	mesh = new vtMesh(vtMesh::LINES, 0, 6);
 	mesh->AddLine(FPoint3(1.5f,0,0), FPoint3(-1.5f,0,0));
 	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f, 0.07f,0));
 	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f,-0.07f,0));
 	m_pSpaceAxes->AddMesh(mesh, green);
-	mesh->Release();	// pass ownership
 
 	mesh = new vtMesh(vtMesh::LINES, 0, 6);
 	mesh->AddLine(FPoint3(0,2,0), FPoint3(0,-2,0));
 	m_pSpaceAxes->AddMesh(mesh, red);
-	mesh->Release();	// pass ownership
 
 	m_pGlobeContainer->AddChild(m_pSpaceAxes);
 	m_pSpaceAxes->SetEnabled(false);
@@ -262,7 +258,6 @@ void Enviro::MakeGlobe()
 	m_pLineMesh->AllowOptimize(false);
 
 	m_pEarthLines->AddMesh(m_pLineMesh, orange);
-	m_pLineMesh->Release();	// pass ownership
 	m_pIcoGlobe->GetSurface()->AddChild(m_pEarthLines);
 	m_pEarthLines->SetEnabled(false);
 
@@ -297,7 +292,7 @@ void Enviro::MakeDemoGlobe()
 	mats->AddTextureMaterial2("Planetwork/logo3.png", false, false, true);
 	mats->AddTextureMaterial2("Planetwork/logo2.png", false, false, true);
 	geom->SetMaterials(mats);
-	mats->Release();
+
 	float width = 1.9, height = .22;
 	FRECT rect(-width/2, height/2, width/2, -height/2);
 	GeomAddRectMesh(geom, rect, 1.15, 0);
@@ -317,13 +312,12 @@ void Enviro::MakeDemoGlobe()
 	rainbow->AddRGBMaterial1(RGBf(0.5,0,0.5),	false, bLighting, false, 0.5f);
 	for (i = 0; i < 6; i++)
 	{
-		vtMaterial *mat = rainbow->GetAt(i);
+		vtMaterial *mat = rainbow->at(i);
 		mat->SetTransparent(true, true);
 	}
 	m_pDemoTrails = new vtGeom;
 	m_pDemoTrails->SetName2("Trails");
 	m_pDemoTrails->SetMaterials(rainbow);
-	rainbow->Release();
 	Globe2->GetTop()->AddChild(m_pDemoTrails);
 
 	vtString users = FindFileOnPaths(vtGetDataPath(), "PointData/vtp-users-040129.shp");

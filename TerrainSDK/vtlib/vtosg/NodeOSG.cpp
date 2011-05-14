@@ -1934,43 +1934,12 @@ void vtGeom::CloneFrom(const vtGeom *rhs)
 
 void vtGeom::Release()
 {
-	if (m_pNode->referenceCount() == 1)
-	{
-		// Clean up this geom, it is going away.
-		// Release the meshes we contain, which will delete them if there
-		//  are no other references to them.
-		int i, num = m_pGeode->getNumDrawables();
-		for (i = 0; i < num; i++)
-		{
-			vtMesh *mesh = GetMesh(i);
-			if (mesh)
-				mesh->Release();
-			else
-			{
-				vtTextMesh *textmesh = GetTextMesh(i);
-				if (textmesh)
-					textmesh->Release();
-			}
-		}
-#if OSG_VERSION_MAJOR == 1 && OSG_VERSION_MINOR > 0 || OSG_VERSION_MAJOR > 1
-		// We are probably OSG 1.1 or newer
-		m_pGeode->removeDrawables(0, num);
-#else
-		m_pGeode->removeDrawable(0, num);
-#endif
-
-		m_pGeode = NULL;
-		m_pMaterialArray = NULL;		// dereference
-	}
 	vtNode::Release();
 }
 
 void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
 {
-	m_pGeode->addDrawable(pMesh->m_pGeometry.get());
-
-	// The vtGeom owns/references the meshes it contains
-	pMesh->ref();
+	m_pGeode->addDrawable(pMesh);
 
 	SetMeshMatIndex(pMesh, iMatIdx);
 }
@@ -1978,10 +1947,7 @@ void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
 void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 {
 	// connect the underlying OSG objects
-	m_pGeode->addDrawable(pTextMesh->m_pOsgText.get());
-
-	// The vtGeom owns/references the meshes it contains
-	pTextMesh->ref();
+	m_pGeode->addDrawable(pTextMesh);
 
 	// Normally, we would assign the material state to the drawable.
 	// However, OSG treats Text specially, it cannot be affected by normal
@@ -2010,26 +1976,24 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 	vtMaterial *pMat = GetMaterial(iMatIdx);
 	if (pMat)
 	{
-		StateSet *pState = pMat->m_pStateSet.get();
-
 #if 0
 		// Beware: the mesh may already have its own stateset?
 		//  In what case would this arise?  The user might be calling this
 		//   method on a mesh which already has a material.  In that case,
 		//	 we want to cleanly switch to the new material, not merge into
 		//	 the old one.
-		StateSet *pStateMesh = pMesh->m_pGeometry->getStateSet();
+		StateSet *pStateMesh = pMesh->getStateSet();
 		if (pStateMesh)
 			pStateMesh->merge(*pState);
 		else
 #endif
-			pMesh->m_pGeometry->setStateSet(pState);
+		pMesh->setStateSet(pMat);
 
 		// Try to provide color for un-lit meshes
 		if (!pMat->GetLighting())
 		{
 			// unless it's using vertex colors...
-			Geometry::AttributeBinding bd = pMesh->m_pGeometry->getColorBinding();
+			Geometry::AttributeBinding bd = pMesh->getColorBinding();
 			if (bd != Geometry::BIND_PER_VERTEX)
 			{
 				// not lit, not vertex colors
@@ -2039,8 +2003,8 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 				// This will leave the original color array alllocated in the vtMesh
 				Vec4Array *pColors = new Vec4Array;
 				pColors->push_back(pMat->m_pMaterial->getDiffuse(FAB));
-				pMesh->m_pGeometry->setColorArray(pColors);
-				pMesh->m_pGeometry->setColorBinding(Geometry::BIND_OVERALL);
+				pMesh->setColorArray(pColors);
+				pMesh->setColorBinding(Geometry::BIND_OVERALL);
 			}
 		}
 	}
@@ -2049,16 +2013,8 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 
 void vtGeom::RemoveMesh(vtMesh *pMesh)
 {
-	// If this geom has this mesh, remove it, and check if needs releasing
-	if (m_pGeode->removeDrawable(pMesh->m_pGeometry.get()))
-	{
-		if (pMesh->_refCount == 2)
-		{
-			// no more references except its default
-			// self-reference and the reflexive reference from its m_pGeometry.
-			pMesh->Release();
-		}
-	}
+	// If this geom has this mesh, remove it
+	m_pGeode->removeDrawable(pMesh);
 }
 
 unsigned int vtGeom::GetNumMeshes() const
@@ -2102,9 +2058,9 @@ vtMaterial *vtGeom::GetMaterial(int idx)
 {
 	if (!m_pMaterialArray.valid())
 		return NULL;
-	if (idx < 0 || idx >= (int) m_pMaterialArray->GetSize())
+	if (idx < 0 || idx >= (int) m_pMaterialArray->size())
 		return NULL;
-	return m_pMaterialArray->GetAt(idx);
+	return m_pMaterialArray->at(idx).get();
 }
 
 
@@ -2351,7 +2307,7 @@ void vtDynGeom::ApplyMaterial(vtMaterial *mat)
 {
 	if (m_pDynMesh && m_pDynMesh->m_pDrawState)
 	{
-		m_pDynMesh->m_pDrawState->apply(mat->m_pStateSet.get());
+		m_pDynMesh->m_pDrawState->apply(mat);
 		// Dynamic terrain assumes texture unit 0
 		m_pDynMesh->m_pDrawState->setActiveTextureUnit(0);
 	}
@@ -2482,14 +2438,6 @@ bool vtImageSprite::Create(const char *szTextureName, bool bBlending)
 /**
  * Create a vtImageSprite.
  *
- * Note that if you are not using the image for anything else, you should give
- * ownership to the imagesprite.  Example:
- \code
- vtImage *image = vtImageRead("foo.png");
- vtImageSprite *sprite = new vtImageSprite(image, false);
- image->Release();	// pass ownership
- \endcode
- *
  * \param pImage A texture image.
  * \param bBlending Set to true for alpha-blending, which produces smooth
  *		edges on transparent textures.
@@ -2503,7 +2451,6 @@ bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
 	m_pMats = new vtMaterialArray;
 	m_pGeom = new vtGeom;
 	m_pGeom->SetMaterials(m_pMats);
-	m_pMats->Release();	// pass ownership
 
 	m_pMats->AddTextureMaterial(pImage, false, false, bBlending);
 
@@ -2515,7 +2462,6 @@ bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
 	m_pMesh->AddVertexUV(FPoint3(0,1,0), FPoint2(0,1));
 	m_pMesh->AddQuad(0, 1, 2, 3);
 	m_pGeom->AddMesh(m_pMesh, 0);
-	m_pMesh->Release();
 	return true;
 }
 
@@ -2566,7 +2512,7 @@ void vtImageSprite::SetImage(vtImage *pImage)
 	// Sprite must already be created
 	if (!m_pMats)
 		return;
-	vtMaterial *mat = m_pMats->GetAt(0);
+	vtMaterial *mat = m_pMats->at(0).get();
 	mat->SetTexture(pImage);
 }
 

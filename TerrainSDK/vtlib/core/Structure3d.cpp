@@ -512,7 +512,7 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 	}
 
 	m_pMaterials = new vtMaterialArray;
-	m_pMaterials->SetMaxSize(500);
+	m_pMaterials->reserve(500);
 
 	// Create internal materials (only needed by vtlib, not vtdata)
 	m_hightlight1 = m_pMaterials->AddRGBMaterial1(RGBf(1,1,1), false, false, true);
@@ -716,7 +716,6 @@ void vtMaterialDescriptorArray3d::ReleaseMaterials()
 	VTLOG(" vtMaterialDescriptorArray3d::ReleaseMaterials (%lx)\n", m_pMaterials);
 	if (m_pMaterials)
 	{
-		m_pMaterials->Release();
 		m_pMaterials = NULL;
 		// do not free them - they were not dynamically allocated
 		// FreeGlobalMaterials();

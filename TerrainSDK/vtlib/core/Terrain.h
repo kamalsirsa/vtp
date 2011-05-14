@@ -472,9 +472,9 @@ protected:
 	int		m_iPagingStructureMax;
 	float	m_fPagingStructureDist;
 
-	vtMaterialArray	*m_pTerrMats;	// materials for the LOD terrain
-	vtMaterialArray *m_pDetailMats;	// and detail texture
-	vtMaterialArray *m_pEphemMats;	// and ephemeris
+	vtMaterialArrayPtr m_pTerrMats;		// materials for the LOD terrain
+	vtMaterialArrayPtr m_pDetailMats;	// and detail texture
+	vtMaterialArrayPtr m_pEphemMats;	// and ephemeris
 	int				m_idx_water;
 	int				m_idx_horizon;
 	bool			m_bBothSides;	// show both sides of terrain materials

@@ -38,12 +38,8 @@ vtPlantAppearance3d::vtPlantAppearance3d(AppearType type, const char *filename,
 
 vtPlantAppearance3d::~vtPlantAppearance3d()
 {
-	if (m_pMesh)
-		m_pMesh->Release();
 	if (m_pGeom)
 		m_pGeom->Release();
-	if (m_pMats)
-		m_pMats->Release();
 	if (m_pExternal)
 		m_pExternal->Release();
 

@@ -295,8 +295,6 @@ void App::run()
 */
 int App::main()
 {
-	vtGetScene()->Init();
-
 #ifdef __FreeBSD__
 	/*  FreeBSD is more stringent with FP ops by default, and OSG is	*/
 	/*	doing silly things sqrt(Inf) (computing lengths of MAXFLOAT		*/
@@ -325,12 +323,14 @@ int App::main()
 	return 0;
 }
 
-int main(int, char ** )
+int main(int argc, char **argv)
 {
 #if WIN32 && defined(_MSC_VER) && DEBUG
 	// sometimes, MSVC seems to need to be told to show unfreed memory on exit
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+	vtGetScene()->Init(argc, argv);
 
 	App app;
 	return app.main();

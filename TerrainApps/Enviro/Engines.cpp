@@ -652,7 +652,6 @@ MapOverviewEngine::MapOverviewEngine()
 	ratioMapTerrain = 0.0;
 	MapWidth = 256;
 	MapMargin = 10;
-	m_pMapView = NULL;
 	m_pOwnedImage = NULL;
 
 	m_pMapGroup = new vtGroup;
@@ -666,8 +665,6 @@ MapOverviewEngine::~MapOverviewEngine()
 {
 	if (m_pOwnedImage)
 		m_pOwnedImage->Release();
-	if (m_pMapView)
-		delete m_pMapView;
 }
 
 void MapOverviewEngine::Eval()
@@ -795,7 +792,6 @@ void MapOverviewEngine::CreateArrow()
 	pMats->AddRGBMaterial1(RGBf(1, 0, 0), false, false); // red
 	pMats->AddRGBMaterial1(RGBf(0, 0, 0), false, false); // black
 	arrowGeom->SetMaterials(pMats);
-	pMats->Release();
 
 	int ind[7];
 	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 7);
@@ -819,7 +815,6 @@ void MapOverviewEngine::CreateArrow()
 
 	// the second argument is the indice of the RGB color added into the material array
 	arrowGeom->AddMesh(mesh, 1);
-	mesh->Release();
 
 	mesh = new vtMesh(vtMesh::QUADS, 0, 4);
 
@@ -831,7 +826,6 @@ void MapOverviewEngine::CreateArrow()
 	mesh->AddQuad(ind[2],ind[3],ind[1],ind[0]);
 
 	arrowGeom->AddMesh(mesh,0);
-	mesh->Release();
 
 	m_pMapGroup->AddChild(m_pArrow);
 }

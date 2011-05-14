@@ -649,7 +649,7 @@ protected:
  *  mesh.  It is particularly useful in conjunction with vtHUD, for
  *  superimposing a single image on the window.
  */
-class vtImageSprite
+class vtImageSprite : public osg::Referenced
 {
 public:
 	vtImageSprite();
@@ -662,7 +662,7 @@ public:
 	vtNode *GetNode() const { return m_pGeom; }
 
 protected:
-	vtMaterialArray *m_pMats;
+	vtMaterialArrayPtr m_pMats;
 	vtGeom *m_pGeom;
 	vtMesh *m_pMesh;
 	IPoint2 m_Size;

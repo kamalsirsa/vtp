@@ -79,7 +79,6 @@ vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color)
 	geom->SetName2("sky marker");
 	geom->SetMaterials(pMats);
 	geom->AddMesh(mesh, matidx);
-	mesh->Release();	// pass ownership to Geometry
 	vtTransform *trans = new vtTransform;
 	trans->AddChild(geom);
 	return trans;
@@ -120,8 +119,6 @@ vtSkyDome::~vtSkyDome()
 	if (SphVertices) delete[] SphVertices;
 	if (m_pSunImage)
 		m_pSunImage->Release();
-	if (m_pMats)
-		m_pMats->Release();
 }
 
 /**
@@ -151,7 +148,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	m_pMat = new vtMaterial;
 	m_pMat->SetLighting(false);
 	m_pMat->SetCulling(false);	// visible from the inside as well as outside
-	m_pMats->Append(m_pMat);
+	m_pMats->push_back(m_pMat);
 
 	// Create the geometry of the dome itself
 	VTLOG("   Creating Dome Mesh\n");
@@ -168,7 +165,6 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		res, bHemisphere, bNormalsIn);
 
 	m_pDomeGeom->AddMesh(m_pDomeMesh, 0);
-	m_pDomeMesh->Release();	// pass ownership to Geometry
 
 	// Extra graphics on the dome, to help with development and testing.
 	VTLOG("   Creating Markers\n");
@@ -203,7 +199,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 							 1.0f, 1.0f);	// alpha, emmisive
 
 		// Create sun
-		m_pSunMat = m_pMats->GetAt(idx);
+		m_pSunMat = m_pMats->at(idx);
 
 		VTLOG("   Creating Sun Geom\n");
 		vtGeom *pGeom = new vtGeom;
@@ -217,7 +213,6 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		SunMesh->AddRectangleXZ(0.50f, 0.50f);
 		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(SunMesh, idx);
-		SunMesh->Release();	// pass ownership to Geometry
 
 		// Z translation, to face us at the topographic north (horizon)
 		FMatrix4 trans;
@@ -259,7 +254,6 @@ void vtSkyDome::CreateMarkers()
 	m_pTicks->SetName2("Ticks");
 	m_pTicks->SetMaterials(m_pMats);
 	m_pTicks->AddMesh(tics, yellow);
-	tics->Release();	// pass ownership to Geometry
 	AddChild(m_pTicks);
 
 	// Put green marker on alt-axi location of sun.
@@ -525,7 +519,6 @@ bool vtSkyDome::SetTexture(const char *filename)
 
 		// Already textured; remove previous material
 		m_pMats->RemoveMaterial(m_pTextureMat);
-		delete m_pTextureMat;
 		m_pTextureMat = NULL;
 	}
 
@@ -536,6 +529,7 @@ bool vtSkyDome::SetTexture(const char *filename)
 			VTLOG("   SkyDome: Setting to no Texture.\n");
 			// Go back to vertex-coloured dome
 			m_bHasTexture = false;
+
 			int index = m_pMats->Find(m_pMat);
 			m_pDomeGeom->SetMeshMatIndex(m_pDomeMesh, index);
 			ApplyDomeColors();
@@ -559,7 +553,7 @@ bool vtSkyDome::SetTexture(const char *filename)
 	int index = m_pMats->AddTextureMaterial(pImage, false, false);
 	pImage->Release();	// pass ownership to the Material
 
-	m_pTextureMat = m_pMats->GetAt(index);
+	m_pTextureMat = m_pMats->at(index);
 
 	// set the vertices to initially white
 	int verts = m_pDomeMesh->GetNumVertices();
@@ -674,8 +668,6 @@ vtStarDome::~vtStarDome()
 		delete[] Starfield;
 	if (m_pMoonImage)
 		m_pMoonImage->Release();
-	if (m_pMats)
-		m_pMats->Release();
 }
 
 void vtStarDome::Create(const char *starfile, float brightness,
@@ -695,7 +687,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 
 	m_pMats = new vtMaterialArray;
 	int star_mat = m_pMats->AddRGBMaterial1(RGBf(0,0,0), false, false);
-	vtMaterial *pMat = m_pMats->GetAt(star_mat);
+	vtMaterial *pMat = m_pMats->at(star_mat);
 	pMat->SetTransparent(true, true);
 
 	// Need a material?
@@ -704,7 +696,6 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	m_pStarMesh = new vtMesh(vtMesh::POINTS, VT_Colors, NumStars);
 	AddStars(m_pStarMesh);
 	m_pStarGeom->AddMesh(m_pStarMesh, star_mat);
-	m_pStarMesh->Release();		// pass ownership to Geometry
 	AddChild(m_pStarGeom);
 
 	if (moon_texture && *moon_texture)
@@ -733,7 +724,6 @@ void vtStarDome::Create(const char *starfile, float brightness,
 		MoonMesh->AddRectangleXZ(0.1f, 0.1f);
 		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(MoonMesh, idx);
-		MoonMesh->Release();	// pass ownership to Geometry
 
 		// Y translation
 		FMatrix4 trans;

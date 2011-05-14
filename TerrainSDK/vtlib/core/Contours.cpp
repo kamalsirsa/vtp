@@ -146,13 +146,12 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 	m_fHeight = fHeight;
 
 	// Create material and geometry to contain the vector geometry
-	vtMaterialArray *pMats = new vtMaterialArray;
+	vtMaterialArrayPtr pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(color, false, false, true);
 
 	m_pGeom = new vtGeom;
 	m_pGeom->SetName2("Contour Geometry");
 	m_pGeom->SetMaterials(pMats);
-	pMats->Release();		// pass ownership
 
 	m_pMF = new vtMeshFactory(m_pGeom, vtMesh::LINE_STRIP, 0, 30000, 0);
 

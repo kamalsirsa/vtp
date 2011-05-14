@@ -51,7 +51,7 @@ protected:
 	// There is a single array of materials, shared by all buildings.
 	// This is done to save memory.  For a list of 16000+ buildings, this can
 	//  save about 200MB of RAM.
-	vtMaterialArray *m_pMaterials;
+	vtMaterialArrayPtr m_pMaterials;
 
 	bool m_bMaterialsCreated;
 

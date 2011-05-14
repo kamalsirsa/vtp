@@ -37,7 +37,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgShadowd.lib netcdf.lib libpng13d.lib zlib1d.lib gdal_id.lib SDLmain.lib SDL.lib opengl32.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib osgSimd.lib osgShadowd.lib osgTerraind.lib osgTextd.lib osgUtild.lib osgViewerd.lib netcdf.lib libpng15d-vc7.lib zlib1d-vc7.lib gdal_id-vc7.lib libMinid.lib SDLmain.lib SDL.lib opengl32.lib glu32.lib libjpeg.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libc.lib,msvcrt.lib"

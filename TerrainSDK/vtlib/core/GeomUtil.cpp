@@ -41,7 +41,7 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 
 	// Add the geometry and materials to the shape
 	vtGeom *pGeom = new vtGeom;
-	vtMaterialArray *pMats = new vtMaterialArray;
+	vtMaterialArrayPtr pMats = new vtMaterialArray;
 
 	pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true, true, false, fAlpha);
 	pMats->AddRGBMaterial1(RGBf(0.0f, 1.0f, 0.0f), true, true, false, fAlpha);
@@ -50,16 +50,8 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	pGeom->SetMaterials(pMats);
 	pGeom->SetName2("3D Crosshair");
 
-	// release material array here, so that it will be automatically deleted
-	// later when it's no longer needed.
-	pMats->Release();
-
 	for (i = 0; i < 3; i++)
 		pGeom->AddMesh(mesh[i], i);
-
-	// Pass ownership of the meshes to the geometry
-	for (i = 0; i < 3; i++)
-		mesh[i]->Release();
 
 	return pGeom;
 }
@@ -71,14 +63,12 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 {
 	vtGeom *pGeom = new vtGeom;
-	vtMaterialArray *pMats = new vtMaterialArray;
+	vtMaterialArrayPtr pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f), false, false, true);
 	pGeom->SetMaterials(pMats);
-	pMats->Release();	// pass ownership to the geom
 
 	vtMesh *pMesh = CreateSphereMesh(sphere, res);
 	pGeom->AddMesh(pMesh, 0);
-	pMesh->Release();	// pass ownership to the geometry
 
 	return pGeom;
 }
@@ -142,7 +132,6 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
-	mesh->Release();	// pass ownership
 	return pGeom;
 }
 
@@ -163,7 +152,6 @@ vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 	mesh->CreateBlock(size);
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
-	mesh->Release();	// pass ownership
 	return pGeom;
 }
 
@@ -172,7 +160,6 @@ void AddLineMesh(vtGeom *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1)
 	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 2);
 	mesh->AddLine(p0, p1);
 	pGeom->AddMesh(mesh, iMatIdx);
-	mesh->Release();	// pass ownership
 }
 
 /**
@@ -197,7 +184,6 @@ vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertTyp
 	mesh->CreateEllipsoid(FPoint3(0,0,0), FPoint3(fRadius, fRadius, fRadius), res);
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
-	mesh->Release();	// pass ownership to the Geometry
 	return pGeom;
 }
 
@@ -240,7 +226,6 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
 	mesh->CreateCylinder(fHeight, fRadius, res, bTop, bBottom, bCentered);
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
-	mesh->Release();	// pass ownership to the Geometry
 	return pGeom;
 }
 
@@ -279,7 +264,6 @@ vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 	}
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
-	mesh->Release();	// pass ownership to the Geometry
 	return pGeom;
 }
 
@@ -288,7 +272,7 @@ vtDynBoundBox::vtDynBoundBox(const RGBf &color)
 {
 	pGeom = new vtGeom;
 
-	vtMaterialArray *mats = new vtMaterialArray;
+	vtMaterialArrayPtr mats = new vtMaterialArray;
 	mats->AddRGBMaterial1(color, false, false, true);	// wire material
 	pGeom->SetMaterials(mats);
 
@@ -389,7 +373,6 @@ void vtMeshFactory::NewMesh()
 {
 	m_pMesh = new vtMesh(m_ePrimType, m_iVertType, m_iExpectedVerts);
 	m_pGeom->AddMesh(m_pMesh, m_iMatIndex);
-	m_pMesh->Release();	// pass ownership to geometry
 
 	if (m_fLineWidth != 1)
 		m_pMesh->SetLineWidth(m_fLineWidth);
@@ -471,11 +454,9 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 	m_pMats = new vtMaterialArray;
 	m_pMats->AddRGBMaterial1(line_color, false, false);	// plain, no culling
 	m_pGeom->SetMaterials(m_pMats);
-	m_pMats->Release();
 
 	m_pLines = new vtMesh(vtMesh::LINES, 0, 12);
 	m_pGeom->AddMesh(m_pLines, 0);
-	m_pLines->Release();
 
 	// Now determine the points in space which define the geometry.
 	FPoint3 diff = p2 - p1;
@@ -498,7 +479,6 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 	// add the text object.
 	m_pLabel = new vtTextMesh(font, height, true);
 	m_pGeom->AddTextMesh(m_pLabel, 0);
-	m_pLabel->Release();
 
 	m_pLabel->SetColor(text_color);
 	m_pLabel->SetAlignment(2);	// YZ plane
@@ -509,7 +489,6 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 	// and a second text object, facing the other way
 	m_pLabel2 = new vtTextMesh(font, height, true);
 	m_pGeom->AddTextMesh(m_pLabel2, 0);
-	m_pLabel2->Release();
 
 	m_pLabel2->SetColor(text_color);
 	m_pLabel2->SetAlignment(2);	// YZ plane
@@ -545,7 +524,7 @@ vtOBJFile *OBJFileBegin(vtGeom *geom, const char *filename)
 	const vtMaterialArray *mats = geom->GetMaterials();
 	unsigned int num_mats = 0;
 	if (mats)
-		num_mats = mats->GetSize();
+		num_mats = mats->size();
 	if (num_mats > 0)
 	{
 		// Write corresponding material file
@@ -563,7 +542,7 @@ vtOBJFile *OBJFileBegin(vtGeom *geom, const char *filename)
 
 		for (i = 0; i < num_mats; i++)
 		{
-			const vtMaterial *mat = mats->GetAt(i);
+			const vtMaterial *mat = mats->at(i).get();
 			vtString matname;
 			matname.Format("mat%03d", i);
 			fprintf(fp2, "\nnewmtl %s\n", (const char *) matname);

@@ -222,10 +222,6 @@ vtTerrain::~vtTerrain()
 	if (m_pContainerGroup != NULL)
 		m_pContainerGroup->Release();
 
-	m_pTerrMats->Release();
-	m_pDetailMats->Release();
-	m_pEphemMats->Release();
-
 	if (m_pTextureColors != NULL) VTLOG(" TextureColors %lx,", m_pTextureColors);
 	delete m_pTextureColors;
 
@@ -600,7 +596,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		else
 		{
 			VTLOG("Marking texture image as modified.\n");
-			vtMaterial *mat = m_pTerrMats->GetAt(0);
+			vtMaterial *mat = m_pTerrMats->at(0);
 			mat->ModifiedTexture();
 		}
 	}
@@ -612,8 +608,8 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		{
 			// we don't need to re-create the materials, but we do have to
 			//  let the scenegraph know the texture contents have changed.
-			for (unsigned int i = 0; i < m_pTerrMats->GetSize(); i++)
-				m_pTerrMats->GetAt(i)->ModifiedTexture();
+			for (unsigned int i = 0; i < m_pTerrMats->size(); i++)
+				m_pTerrMats->at(i)->ModifiedTexture();
 		}
 	}
 	VTLOG("  Total CreateTextures: %.3f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
@@ -655,7 +651,7 @@ void vtTerrain::_CreateDetailTexture()
 					 0.5f, 0.0f,	// alpha, emmisive
 					 true, false,	// texgen, clamp
 					 true);			// mipmap
-	vtMaterial *pDetailMat = m_pDetailMats->GetAt(index);
+	vtMaterial *pDetailMat = m_pDetailMats->at(index);
 
 	// pass ownership to the material
 	pDetailTexture->Release();
@@ -885,7 +881,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 	//
 	if (m_Params.GetTextureEnum() == TE_SINGLE)
 	{
-		vtMaterial *mat = m_pTerrMats->GetAt(0);
+		vtMaterial *mat = m_pTerrMats->at(0);
 		if (mat->GetTransparent())
 		{
 			osg::StateSet *sset = m_pDynGeom->GetOsgNode()->getOrCreateStateSet();
@@ -1090,7 +1086,6 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 					0, 5.0f);
 
 				pOceanGeom->AddMesh(mesh, m_idx_water);
-				mesh->Release();	// pass ownership to the Geometry
 			}
 		}
 		m_pOceanGeom = new vtMovGeom(pOceanGeom);
@@ -1122,7 +1117,6 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 					fAltitude, 5.0f);
 
 				pHorizonGeom->AddMesh(mesh, m_idx_horizon);
-				mesh->Release();	// pass ownership to the Geometry
 			}
 		}
 		m_pHorizonGeom = new vtMovGeom(pHorizonGeom);

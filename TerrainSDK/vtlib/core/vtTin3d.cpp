@@ -108,10 +108,6 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 	m_pGeom = new vtGeom;
 	m_pGeom->SetMaterials(m_pMats);
 
-	// If textured, ownership of the textures is with the terrain
-	if (!bTextured)
-		m_pMats->Release();	// Pass ownership to geometry
-
 	// Break it up into a series of meshes - this is good for both
 	// culling and memory management
 
@@ -294,7 +290,6 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 				if (pTypeMeshes[j] != NULL)
 				{
 					m_pGeom->AddMesh(pTypeMeshes[j], texture_base + j);
-					pTypeMeshes[j]->Release();	// pass ownership to Geometry
 					m_Meshes.Append(pTypeMeshes[j]);
 				}
 			}
@@ -303,7 +298,6 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 		{
 			// Simple case
 			m_pGeom->AddMesh(pMesh, m_matidx);
-			pMesh->Release();	// pass ownership to Geometry
 			m_Meshes.Append(pMesh);
 		}
 	}
@@ -385,7 +379,6 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 
 		pBaseMesh->AddFan(0, 1, 2, 3);
 		m_pGeom->AddMesh(pBaseMesh, 1);
-		pBaseMesh->Release();	// Pass ownership
 	}
 
 	// The TIN is a large geometry which should not attempt to cast a shadow,

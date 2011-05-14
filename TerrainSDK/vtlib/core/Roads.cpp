@@ -752,8 +752,6 @@ vtRoadMap3d::vtRoadMap3d()
 
 vtRoadMap3d::~vtRoadMap3d()
 {
-	if (m_pMats)
-		m_pMats->Release();
 }
 
 void vtRoadMap3d::BuildIntersections()
@@ -822,7 +820,6 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 		clusters_used++;
 	}
 	pGeom->AddMesh(pMesh, iMatIdx);
-	pMesh->Release();	// pass ownership
 }
 
 

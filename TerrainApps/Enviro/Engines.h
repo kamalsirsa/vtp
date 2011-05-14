@@ -181,7 +181,7 @@ protected:
 	void CreateArrow();
 
 	vtGroup			*m_pMapGroup;
-	vtImageSprite	*m_pMapView;
+	osg::ref_ptr<vtImageSprite>	m_pMapView;
 	vtTransform		*m_pArrow;
 	vtImage			*m_pOwnedImage;
 
@@ -216,7 +216,7 @@ protected:
 	FRECT m_rect;
 	FRECT m_window_rect;
 	float m_fRotation;
-	vtImageSprite *m_pSprite;
+	osg::ref_ptr<vtImageSprite> m_pSprite;
 };
 
 #endif	// ENVIRO_ENGINESH

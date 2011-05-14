@@ -210,9 +210,12 @@ int VTPWindow::handle(int event)
 //
 bool VTPWindow::CreateScene()
 {
+	int argc = 0;
+	char **argv = 0;
+
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
-	pScene->Init();
+	pScene->Init(argc, argv);
 
 	// Log messages to make troubleshooting easier
 	VTSTARTLOG("debug.txt");

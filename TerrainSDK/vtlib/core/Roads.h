@@ -201,7 +201,7 @@ protected:
 	void _GatherExtents();
 
 	vtGroup	*m_pGroup;
-	vtMaterialArray *m_pMats;
+	vtMaterialArrayPtr m_pMats;
 
 	vtLOD		*m_pRoads[ROAD_CLUSTER][ROAD_CLUSTER];
 	FBox3		m_extents;

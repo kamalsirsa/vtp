@@ -62,6 +62,8 @@ vtScene::vtScene() : vtSceneBase()
 
 vtScene::~vtScene()
 {
+	m_pOsgViewer = NULL;	// derefs
+
 	// Do not release camera or window, that is left for the application.
 }
 
@@ -141,7 +143,7 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
 #endif
 
 	// Of the four OSG threading options, only "SingleThreaded" works.  This is because
-	//  libMini tilesets can't be rendered at queied (getheight) at the same time.  We could
+	//  libMini tilesets can't be rendered at queried (getheight) at the same time.  We could
 	//  work around it by putting locks around our usage of libMini, but until then, we
 	//  must be "single" threaded.
 	m_pOsgViewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
@@ -355,7 +357,7 @@ void vtScene::SetRoot(vtGroup *pRoot)
 
 	if (m_pOsgViewer != NULL)
 	{
-		if (NULL != m_pOsgSceneRoot)
+		if (m_pOsgSceneRoot.valid())
 			m_pOsgViewer->setSceneData(m_pOsgSceneRoot.get());
 		else
 			m_pOsgViewer->setSceneData(NULL);

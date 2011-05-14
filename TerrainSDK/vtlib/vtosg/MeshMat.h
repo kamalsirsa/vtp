@@ -33,7 +33,7 @@ class vtImage;
  * Much of the functionality of vtMaterial is inherited from its base class,
  * vtMaterialBase.
  */
-class vtMaterial : public vtMaterialBase
+class vtMaterial : public osg::StateSet, public vtMaterialBase
 {
 public:
 	vtMaterial();
@@ -83,31 +83,53 @@ public:
 	// the VT material object includes texture
 	osg::ref_ptr<osg::Material>		m_pMaterial;
 	osg::ref_ptr<osg::Texture2D>	m_pTexture;
-	osg::ref_ptr<osg::StateSet>		m_pStateSet;
 	osg::ref_ptr<osg::BlendFunc>	m_pBlendFunc;
 	osg::ref_ptr<osg::AlphaFunc>	m_pAlphaFunc;
 };
+typedef osg::ref_ptr<vtMaterial> vtMaterialPtr;
 
 /**
  * Contains an array of materials.  Provides useful methods for creating material easily.
  */
-class vtMaterialArray : public vtMaterialArrayBase, public osg::Referenced
+class vtMaterialArray : public std::vector<vtMaterialPtr>, public osg::Referenced
 {
 public:
 	vtMaterialArray();
+	~vtMaterialArray();
 
-	/// Use this method instead of delete, when you are done with this object.
-	void Release();
+	int Find(vtMaterial *mat);
+	int AddTextureMaterial(class vtImage *pImage,
+						 bool bCulling, bool bLighting,
+						 bool bTransp = false, bool bAdditive = false,
+						 float fAmbient = 0.0f, float fDiffuse = 1.0f,
+						 float fAlpha = 1.0f, float fEmissive = 0.0f,
+						 bool bTexGen = false, bool bClamp = false,
+						 bool bMipMap = false);
+	int AddTextureMaterial2(const char *fname,
+						 bool bCulling, bool bLighting,
+						 bool bTransp = false, bool bAdditive = false,
+						 float fAmbient = 0.0f, float fDiffuse = 1.0f,
+						 float fAlpha = 1.0f, float fEmissive = 0.0f,
+						 bool bTexGen = false, bool bClamp = false,
+						 bool bMipMap = false);
+	int AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient,
+					 bool bCulling = true, bool bLighting= true, bool bWireframe = false,
+					 float fAlpha = 1.0f, float fEmissive = 0.0f);
+	int AddRGBMaterial1(const RGBf &diffuse,
+					 bool bCulling = true, bool bLighting= true, bool bWireframe = false,
+					 float fAlpha = 1.0f, float fEmissive = 0.0f);
+	void AddShadowMaterial(float fOpacity);
+	int FindByDiffuse(const RGBAf &rgba) const;
+	int FindByImage(const vtImage *image) const;
+
+	void CopyFrom(vtMaterialArray *pFromMats);
+
+	void RemoveMaterial(vtMaterial *pMat);
 
 	/// Adds a material to this material array.
 	int AppendMaterial(vtMaterial *pMat);
-
-protected:
-	// Destructor is protected so that people will use Release() instead,
-	//  to ensure that reference counting is respected.
-	virtual ~vtMaterialArray();
 };
-
+typedef osg::ref_ptr<vtMaterialArray> vtMaterialArrayPtr;
 
 /////////////////////////////////////////////
 
@@ -122,15 +144,12 @@ protected:
  * Most of the useful methods of this class are defined on its parent
  *	class, vtMeshBase.
  */
-class vtMesh : public vtMeshBase, public osg::Referenced
+class vtMesh : public vtMeshBase, public osg::Geometry
 {
 	friend class vtGeom;
 
 public:
 	vtMesh(enum PrimType ePrimType, int VertType, int NumVertices);
-
-	/// Use this method instead of delete, when you are done with this object.
-	void Release();
 
 	// Override with ability to get OSG bounding box
 	void GetBoundBox(FBox3 &box) const;
@@ -180,9 +199,6 @@ protected:
 	void _AddTriangleNormals();
 	void _AddQuadNormals();
 
-	// Holder for all osg geometry information
-	osg::ref_ptr<osg::Geometry> m_pGeometry;
-
 	// The vertex co-ordinates array
 	osg::ref_ptr<osg::Vec3Array>	m_Vert;
 	// The vertex normals array
@@ -196,10 +212,6 @@ protected:
 	osg::ref_ptr<osg::UIntArray>	m_Index;
 
 	osg::ref_ptr<osg::PrimitiveSet>	m_pPrimSet;
-
-	// Destructor is protected so that people will use Release() instead,
-	//  to ensure that reference counting is respected.
-	virtual ~vtMesh() {}
 };
 
 /**
@@ -222,13 +234,10 @@ public:
  * general geometry primitives.  vtTextMesh is used similarly with vtMesh:
  * you create them and add them to vtGeom objects to add them to the scene.
  */
-class vtTextMesh : public osg::Referenced
+class vtTextMesh : public osgText::Text
 {
 public:
 	vtTextMesh(vtFont *font, float fSize = 1, bool bCenter = false);
-
-	/// Use this method instead of delete, when you are done with this object.
-	void Release();
 
 	// Override with ability to get OSG bounding box
 	void GetBoundBox(FBox3 &box) const;
@@ -254,18 +263,11 @@ public:
 	/// Set the color
 	void SetColor(const RGBAf &rgba);
 
-	// Implementation
-	osg::ref_ptr<osgText::Text> m_pOsgText;
-
 	void SetMatIndex(int i) { m_iMatIdx = i; }
 	int GetMatIndex() const { return m_iMatIdx; }
 
 protected:
 	int	m_iMatIdx;
-
-	// Destructor is protected so that people will use Release() instead,
-	//  to ensure that reference counting is respected.
-	~vtTextMesh();
 };
 
 /*@}*/	// Group sg

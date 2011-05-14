@@ -160,11 +160,7 @@ void vtRoute::_CreateMaterials()
 
 void vtRoute::ReleaseMaterials()
 {
-	if (m_pRouteMats)
-	{
-		m_pRouteMats->Release();
-		m_pRouteMats = NULL;
-	}
+	m_pRouteMats = NULL;
 }
 
 void vtRoute::_CreateStruct(int iNode)
@@ -278,7 +274,6 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 
 		pWireMesh->AddStrip2(numiterations+1, 0);
 		m_pWireGeom->AddMesh(pWireMesh, m_mi_wire);
-		pWireMesh->Release();		// pass ownership to geometry
 	}
 }
 

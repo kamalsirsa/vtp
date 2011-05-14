@@ -47,7 +47,7 @@ private:
 	vtGeom		*m_pStarGeom;
 	vtMesh		*m_pStarMesh;
 	vtMovGeom	*m_pMoonGeom;
-	vtMaterialArray *m_pMats;
+	vtMaterialArrayPtr m_pMats;
 	vtImage		*m_pMoonImage;
 
 	vtTime	m_time;
@@ -125,7 +125,7 @@ protected:
 	vtTransform		*m_pCelestial;
 	vtGeom			*m_pDomeGeom;
 
-	vtMaterialArray *m_pMats;
+	vtMaterialArrayPtr m_pMats;
 	vtMaterial		*m_pMat;
 	vtMaterial		*m_pTextureMat;
 	vtMesh			*m_pDomeMesh;

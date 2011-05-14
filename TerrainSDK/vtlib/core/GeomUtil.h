@@ -85,7 +85,7 @@ public:
 	void SetText(const char *text);
 
 	vtGeom *m_pGeom;
-	vtMaterialArray *m_pMats;
+	vtMaterialArrayPtr m_pMats;
 	vtMesh *m_pLines;
 	vtTextMesh *m_pLabel, *m_pLabel2;
 };

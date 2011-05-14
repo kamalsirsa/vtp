@@ -146,7 +146,7 @@ protected:
 
 	// Used to create the visual features
 	vtFont *pFont;
-	vtMaterialArray *pGeomMats;
+	vtMaterialArrayPtr pGeomMats;
 
 	int material_index_object;
 	int material_index_line;
