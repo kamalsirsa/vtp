@@ -381,6 +381,17 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 	if (!pGeomGroup)
 		CreateGeomGroup();
 
+	// We may need to convert from the CRS of the featureset to the CRS of the
+	//  terrain (before converting from terrain to world coordinates)
+	vtProjection &proj_feat = pSet->GetAtProjection();
+	vtProjection &proj_terr = m_pTerr->GetProjection();
+	auto_ptr<OCT> octransform;
+	if (proj_feat.GetRoot() && proj_terr.GetRoot() && !proj_feat.IsSame(&proj_terr))
+	{
+		// If we have two valid CRSs, and they are not the same, then we need a transform
+		octransform.reset(CreateCoordTransform(&proj_feat, &proj_terr, true));
+	}
+
 	// Determine color and material index
 	int color_field_index;
 	int material_index;
@@ -453,7 +464,10 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 		for (unsigned int j = 0; j < size; j++)
 		{
 			// preserve 3D point's elevation: don't drape
-			m_pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
+			DPoint3 p = dline[j];
+			if (octransform.get())
+				octransform->Transform(1, &p.x, &p.y);
+			m_pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(p, f3);
 			mf.AddVertex(f3);
 		}
 		mf.PrimEnd();

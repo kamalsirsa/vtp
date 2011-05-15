@@ -21,6 +21,9 @@
 
 #define VTLISPSM 0
 
+class vtGroup;
+class vtCamera;
+
 /** \addtogroup sg */
 /*@{*/
 

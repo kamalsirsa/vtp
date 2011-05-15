@@ -1707,6 +1707,7 @@ void vtTerrain::_CreateAbstractLayers()
 		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 		if (path == "")
 		{
+			// For historical reasons, also search a "PointData" folder on the data path
 			vtString prefix = "PointData/";
 			path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
 		}

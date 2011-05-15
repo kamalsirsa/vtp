@@ -9,6 +9,7 @@
 #define VTENGINEH
 
 #include "vtdata/vtString.h"
+#include "Event.h"
 
 class vtWindow;
 

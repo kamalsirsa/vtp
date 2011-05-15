@@ -300,8 +300,6 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 	vtCreateDir(SubDirectory);
 	SubDirectory = path + vtString("PlantData");
 	vtCreateDir(SubDirectory);
-	SubDirectory = path + vtString("PointData");
-	vtCreateDir(SubDirectory);
 	SubDirectory = path + vtString("RoadData");
 	vtCreateDir(SubDirectory);
 	SubDirectory = path + vtString("Terrains");

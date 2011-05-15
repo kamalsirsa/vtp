@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1327,23 +1327,21 @@ void TParamsDlg::OnListDblClickStructure( wxCommandEvent &event )
 
 void TParamsDlg::OnListDblClickRaw( wxCommandEvent &event )
 {
-	unsigned int i;
-	wxArrayString strings;
+	// Ask user for Raw feature file
+	//  Default to the data path
+	wxString defdir;
+	if (vtGetDataPath().size() > 0)
+		defdir = wxString((const char *) vtGetDataPath().at(0), wxConvUTF8);
 
-	for (i = 0; i < vtGetDataPath().size(); i++)
+	wxFileDialog loadFile(NULL, _("Load features"), defdir, _T(""),
+		_("Feature files (*.shp,*.igc,*.dxf)|*.shp;*.igc;*.dxf"), wxFD_OPEN);
+
+	bool bResult = (loadFile.ShowModal() == wxID_OK);
+
+	if (bResult) // user selected something
 	{
-		wxString path(vtGetDataPath()[i], *wxConvCurrent);
-		path += _T("PointData");
-		AddFilenamesToArray(strings, path, _T("*.shp"));
-		AddFilenamesToArray(strings, path, _T("*.igc"));
-		AddFilenamesToArray(strings, path, _T("*.dxf"));
-	}
+		wxString result = loadFile.GetPath();
 
-	wxString result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a feature file"),
-		strings, this);
-
-	if (result.Cmp(_T(""))) // user selected something
-	{
 		vtTagArray lay;
 		lay.SetValueString("Type", TERR_LTYPE_ABSTRACT, true);
 		lay.SetValueString("Filename", (const char *) result.mb_str(wxConvUTF8), true);

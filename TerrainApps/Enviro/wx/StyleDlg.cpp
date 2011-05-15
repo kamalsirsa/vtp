@@ -142,13 +142,13 @@ void StyleDlg::SetOptions(const vtTagArray &Layer)
 	{
 		// without a featureset, we need the actual file location
 		vtString strFilename = Layer.GetValueString("Filename");
-		m_strResolved = strFilename;
-		m_strResolved = FindFileOnPaths(vtGetDataPath(), m_strResolved);
+		m_strResolved = FindFileOnPaths(vtGetDataPath(), strFilename);
+
 		if (m_strResolved == "")
 		{
+			// for historical reasons, also look in a "PointData" folder on the path
 			vtString path = "PointData/";
-			m_strResolved = path + strFilename;
-			m_strResolved = FindFileOnPaths(vtGetDataPath(), m_strResolved);
+			m_strResolved = FindFileOnPaths(vtGetDataPath(), path + strFilename);
 		}
 
 		m_type = GetFeatureGeomType(m_strResolved);

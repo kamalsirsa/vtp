@@ -1641,7 +1641,7 @@ wxSizer *TParams6Func( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
 
-    item0->Add( 5, 20, 1, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( 5, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxStaticBox *item2 = new wxStaticBox( parent, -1, _("Abstract Layers") );
     wxStaticBoxSizer *item1 = new wxStaticBoxSizer( item2, wxHORIZONTAL );
@@ -1657,7 +1657,7 @@ wxSizer *TParams6Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item1->Add( item4, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 0 );
 
-    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item1, 3, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxStaticBox *item7 = new wxStaticBox( parent, -1, _("Image Layers") );
     wxStaticBoxSizer *item6 = new wxStaticBoxSizer( item7, wxHORIZONTAL );
@@ -1666,9 +1666,9 @@ wxSizer *TParams6Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxListBox *item8 = new wxListBox( parent, ID_IMAGEFILES, wxDefaultPosition, wxSize(180,-1), 0, strs8, wxLB_SINGLE );
     item6->Add( item8, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item6, 0, wxGROW|wxALL, 5 );
+    item0->Add( item6, 2, wxGROW|wxALL, 5 );
 
-    item0->Add( 5, 20, 1, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( 5, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {
