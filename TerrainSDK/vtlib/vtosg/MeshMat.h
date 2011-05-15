@@ -228,20 +228,8 @@ protected:
 	osg::ref_ptr<osg::PrimitiveSet>	m_pPrimSet;
 };
 
-/**
- * A Font for use with vtTextMesh.  vtFont can be constructed from any
- * TrueType font on your computer.
- */
-class vtFont
-{
-public:
-	vtFont();
-	~vtFont();
-	bool LoadFont(const char *filename);
-
-	// Implementation
-	osg::ref_ptr<osgText::Font> m_pOsgFont;
-};
+/** A Font for use with vtTextMesh. */
+typedef osg::ref_ptr<osgText::Font> vtFontPtr;
 
 /**
  * A Text Mesh is a special kind of Mesh which contains text instead of
@@ -251,7 +239,7 @@ public:
 class vtTextMesh : public osgText::Text
 {
 public:
-	vtTextMesh(vtFont *font, float fSize = 1, bool bCenter = false);
+	vtTextMesh(osgText::Font *font, float fSize = 1, bool bCenter = false);
 
 	// Override with ability to get OSG bounding box
 	void GetBoundBox(FBox3 &box) const;

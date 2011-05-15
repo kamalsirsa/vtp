@@ -2,7 +2,7 @@
 // Name:	 frame.cpp
 // Purpose:  The frame class for the Content Manager.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -221,20 +221,17 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 #else
 	vtString fontfile = "Arial.ttf";
 #endif
-	m_pFont = new vtFont;
-	bool success = m_pFont->LoadFont(fontfile);
-	if (!success)
+	m_pFont = osgText::readFontFile((const char *)fontfile);
+	if (!m_pFont.valid())
 	{
 		vtString fontname = "Fonts/" + fontfile;
 		vtString font_path = FindFileOnPaths(vtGetDataPath(), fontname);
 		if (font_path != "")
-			success = m_pFont->LoadFont(font_path);
-		if (!success)
+			m_pFont = osgText::readFontFile((const char *)font_path);
+		if (!m_pFont.valid())
 		{
 			VTLOG("Couldn't find or read font from file '%s'\n",
 				(const char *) fontname);
-			delete m_pFont;
-			m_pFont = NULL;
 		}
 	}
 
@@ -252,7 +249,6 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 vtFrame::~vtFrame()
 {
 	VTLOG(" destructing Frame\n");
-	delete m_pFont;
 	delete m_canvas;
 	delete m_pSceneGraphDlg;
 	delete m_pLightDlg;

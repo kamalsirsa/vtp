@@ -139,7 +139,6 @@ void Enviro::Shutdown()
 {
 	VTLOG1("Shutdown.\n");
 
-	delete m_pArial;
 	delete m_pPlantList;
 
 	if (m_pTopDownCamera)
@@ -867,12 +866,7 @@ void Enviro::SetupScene2()
 	m_pHUDMaterials = new vtMaterialArray;
 
 	// The HUD always has a place to put status messages to the user
-	m_pArial = new vtFont;
-	if (!m_pArial->LoadFont("Arial.ttf"))
-	{
-		delete m_pArial;
-		m_pArial = NULL;
-	}
+	m_pArial = osgText::readFontFile("Arial.ttf");
 
 	vtGeom *geom = new vtGeom;
 	geom->SetName2("Message");

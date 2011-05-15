@@ -1307,31 +1307,6 @@ void vtMesh::_AddQuadNormals()
 /////////////////////////////////////////////////////////////////////////////
 // Text
 
-vtFont::vtFont()
-{
-}
-
-vtFont::~vtFont()
-{
-	// no need to free m_pOsgFont, it is a ref_ptr
-}
-
-bool vtFont::LoadFont(const char *filename)
-{
-	// OSG 0.9.3
-//	m_pOsgFont = new osgText::Font(filename, 24, 3);
-
-	// OSG 0.9.4
-	m_pOsgFont = osgText::readFontFile(filename);
-
-	if (m_pOsgFont == NULL)
-		return false;
-
-	return true;
-}
-
-////
-
 /**
  * Construct a TextMesh object.
  *
@@ -1340,10 +1315,10 @@ bool vtFont::LoadFont(const char *filename)
  * \param bCenter If true, the origin of the text rectangle is at
  *			it's bottom center.  Otherwise, bottom left.
  */
-vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
+vtTextMesh::vtTextMesh(osgText::Font *font, float fSize, bool bCenter)
 {
 	// OSG 0.9.4 and later
-	setFont(font->m_pOsgFont.get());
+	setFont(font);
 
 	// set backpointer so we can find ourselves later
 	setUserData(this);

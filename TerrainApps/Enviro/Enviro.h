@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -68,7 +68,7 @@ public:
 	void SetTerrain(vtTerrain *pTerrain);
 	vtGroup *GetRoot() { return m_pRoot; }
 	void StoreTerrainParameters();
-	vtFont *GetArial() { return m_pArial; }
+	osgText::Font *GetArial() { return m_pArial; }
 
 	void ShowElevationLegend(bool bShow);
 	bool GetShowElevationLegend();
@@ -359,7 +359,7 @@ protected:
 	ControlEngine	*m_pControlEng;
 	vtHUD		*m_pHUD;
 	vtTextMesh	*m_pHUDMessage;
-	vtFont		*m_pArial;
+	vtFontPtr	 m_pArial;
 
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to

@@ -3,7 +3,7 @@
 //
 // Useful classes and functions for working with geometry and meshes.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -80,7 +80,7 @@ class vtDimension : public vtTransform
 public:
 	vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 		const RGBf &line_color, const RGBf &text_color,
-		vtFont *font, const char *message);
+		osgText::Font *font, const char *message);
 
 	void SetText(const char *text);
 

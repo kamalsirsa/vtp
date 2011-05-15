@@ -17,6 +17,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/vtSOG.h"
+#include "vtui/Helper.h"	// for ConvertArgcArgv
 #include "vtdata/vtLog.h"
 
 #include "app.h"
@@ -49,7 +50,12 @@ bool vtApp::OnInit(void)
 
 	VTLOG("Setup scene\n");
 	vtScene *pScene = vtGetScene();
-	pScene->Init(0, NULL);
+
+	int MyArgc;
+	char** MyArgv;
+	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
+
+	pScene->Init(MyArgc, MyArgv);
 	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));		// grey
 
 	//

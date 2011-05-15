@@ -1,7 +1,7 @@
 //
 // AbstractLayer.cpp
 //
-// Copyright (c) 2006-2007 Virtual Terrain Project
+// Copyright (c) 2006-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -24,8 +24,6 @@ vtAbstractLayer::vtAbstractLayer(vtTerrain *pTerr)
 	pLabelGroup = NULL;
 	pMultiTexture = NULL;
 
-	pFont = NULL;
-
 	m_bNeedRebuild = false;
 }
 
@@ -38,7 +36,6 @@ vtAbstractLayer::~vtAbstractLayer()
 		pContainer->Release();
 	}
 	delete pMultiTexture;
-	delete pFont;
 	delete pSet;
 }
 
@@ -212,24 +209,19 @@ void vtAbstractLayer::CreateLabelGroup()
 #endif
 	}
 	// First, let the underlying scenegraph library try to find the font
-	pFont = new vtFont;
-	bool success = pFont->LoadFont(fontfile);
-	if (!success)
+	m_pFont = osgText::readFontFile((const char *)fontfile);
+	if (!m_pFont.valid())
 	{
 		// look on VTP data paths
 		vtString vtname = "Fonts/" + fontfile;
 		fontfile = FindFileOnPaths(vtGetDataPath(), vtname);
 		if (fontfile != "")
-			success = pFont->LoadFont(fontfile);
+			m_pFont = osgText::readFontFile((const char *)fontfile);
 	}
-	if (success)
+	if (m_pFont.valid())
 		VTLOG("Successfully read font from '%s'\n", (const char *) fontfile);
 	else
-	{
 		VTLOG("Couldn't read font from file '%s', not creating labels.\n", (const char *) fontfile);
-		delete pFont;
-		pFont = NULL;
-	}
 }
 
 int vtAbstractLayer::GetObjectMaterialIndex(vtTagArray &style, unsigned int iIndex)
@@ -574,7 +566,7 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 		CreateLabelGroup();
 
 	// Must have a font to make a label
-	if (!pFont)
+	if (!m_pFont.valid())
 		return;
 
 	// for GetValueFloat below
@@ -618,7 +610,7 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 		label_size = 18;
 
 	// Create the vtTextMesh
-	vtTextMesh *text = new vtTextMesh(pFont, label_size, true);	// center
+	vtTextMesh *text = new vtTextMesh(m_pFont, label_size, true);	// center
 
 	// Get the label text
 	int text_field_index;

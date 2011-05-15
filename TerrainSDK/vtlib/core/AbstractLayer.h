@@ -1,7 +1,7 @@
 //
 // AbstractLayer.h
 //
-// Copyright (c) 2006-2008 Virtual Terrain Project
+// Copyright (c) 2006-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -145,7 +145,7 @@ protected:
 	vtFeatureSetPolygon *pSetPoly;
 
 	// Used to create the visual features
-	vtFont *pFont;
+	vtFontPtr m_pFont;
 	vtMaterialArrayPtr pGeomMats;
 
 	int material_index_object;

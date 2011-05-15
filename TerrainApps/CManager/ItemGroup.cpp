@@ -1,7 +1,7 @@
 //
 // Name:	 ItemGroup.cpp
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -54,7 +54,7 @@ void ItemGroup::AttemptToLoadModels()
 	}
 }
 
-void ItemGroup::AttachModels(vtFont *font)
+void ItemGroup::AttachModels(osgText::Font *font)
 {
 	// Undo previous attachments
 	vtNode *pNode;
@@ -111,7 +111,7 @@ void ItemGroup::UpdateCrosshair(const FSphere &sph)
 	m_pTop->AddChild(m_pAxes);
 }
 
-void ItemGroup::UpdateRulers(vtFont *font, const FSphere &sph)
+void ItemGroup::UpdateRulers(osgText::Font *font, const FSphere &sph)
 {
 	// Update rulers
 	if (m_pRulers)
@@ -195,7 +195,7 @@ void ItemGroup::ShowLOD(bool bTrue)
 ///////////////////////////////////////////////////////////////////////
 // Ruler geometry
 
-vtGeom *CreateRulers(vtFont *font, float fSize)
+vtGeom *CreateRulers(osgText::Font *font, float fSize)
 {
 	int i, j;
 

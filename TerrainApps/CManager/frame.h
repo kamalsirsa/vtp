@@ -1,7 +1,7 @@
 //
 // Name: frame.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,7 +27,6 @@ class vtLOD;
 class vtGeom;
 class vtTransform;
 class ItemGroup;
-class vtFont;
 
 class Splitter2 : public wxSplitterWindow
 {
@@ -154,7 +153,7 @@ public:
 	vtContentManager3d	m_Man;
 	vtItem				*m_pCurrentItem;
 	vtModel				*m_pCurrentModel;
-	vtFont				*m_pFont;
+	vtFontPtr			 m_pFont;
 
 	std::map<vtItem *, ItemGroup *> m_itemmap;
 	std::map<vtModel *, vtTransform *> m_nodemap;
