@@ -1192,8 +1192,8 @@ void EnviroFrame::DoTestCode()
 
 void EnviroFrame::LoadClouds(const char *fname)
 {
-	vtImage *input = new vtImage;
-	if (input->Read(fname))
+	vtImagePtr input = vtImageRead(fname);
+	if (input.valid())
 	{
 		int depth = input->GetDepth();
 		if (depth != 8)
@@ -1204,7 +1204,7 @@ void EnviroFrame::LoadClouds(const char *fname)
 			//  32-bit (RGB is white, Alpha is 0-255)
 			unsigned int w = input->GetWidth();
 			unsigned int h = input->GetHeight();
-			vtImage *img2 = new vtImage;
+			vtImagePtr img2 = new vtImage;
 			img2->Create(w, h, 32);
 			RGBAi rgba(255,255,255,0);
 			for (unsigned int i = 0; i < w; i++)
@@ -1217,13 +1217,10 @@ void EnviroFrame::LoadClouds(const char *fname)
 			OpenProgressDialog(_T("Processing Images"), false, this);
 			g_App.MakeOverlayGlobe(img2, progress_callback);
 			CloseProgressDialog();
-
-			img2->Release();
 		}
 	}
 	else
 		DisplayAndLog("Couldn't read input file.");
-	input->Release();
 }
 
 void EnviroFrame::ToggleNavigate()
@@ -1662,7 +1659,7 @@ void EnviroFrame::Snapshot(bool bNumbered)
 	vtScene *scene = vtGetScene();
 	IPoint2 size = scene->GetWindowSize();
 
-	vtImage *pImage = new vtImage;
+	vtImagePtr pImage = new vtImage;
 	pImage->Create(size.x, size.y, 24);
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	glReadPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
@@ -1738,7 +1735,6 @@ void EnviroFrame::Snapshot(bool bNumbered)
 		dib.WriteTIF(use_name.mb_str(wxConvUTF8));
 		break;
 	}
-	pImage->Release();
 }
 
 void EnviroFrame::OnViewSnapshot(wxCommandEvent& event)
@@ -1872,7 +1868,7 @@ void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 	glViewport(0, 0, original_size.x, original_size.y);
 
 	// grab contents of the framebuffer
-	vtImage *pImage = new vtImage;
+	vtImagePtr pImage = new vtImage;
 	pImage->Create(aPixWidth, aPixHeight, 24);
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	glReadPixels(0, 0, aPixWidth, aPixHeight, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
@@ -1903,7 +1899,6 @@ void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 
 	VTLOG("\tWriting '%s'\n", (const char *) fname);
 	pImage->WriteJPEG(fname);
-	pImage->Release();
 #endif	// WIN32
 }
 

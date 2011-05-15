@@ -196,7 +196,7 @@ void vtScene::Shutdown()
 	m_Windows.Empty();
 
 	vtNode::ClearOsgModelCache();
-	vtImageCacheClear();
+
 	// Also clear the OSG cache
 	osgDB::Registry::instance()->clearObjectCache();
 

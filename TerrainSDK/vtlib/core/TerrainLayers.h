@@ -55,11 +55,11 @@ public:
 	~vtImageLayer();
 
 	void SetLayerName(const vtString &fname) { /* not applicable */ }
-	vtString GetLayerName() { return m_pImage->GetFilename(); }
+	vtString GetLayerName() { return m_pImage->GetFilename().c_str(); }
 	void SetVisible(bool vis);
 	bool GetVisible();
 
-	vtImage *m_pImage;
+	vtImageGeoPtr m_pImage;
 	vtMultiTexture *m_pMultiTexture;
 };
 

@@ -557,7 +557,7 @@ vtOBJFile *OBJFileBegin(vtGeom *geom, const char *filename)
 			vtImage *tex = mat->GetTexture();
 			if (tex)
 			{
-				vtString texfname = tex->GetFilename();
+				vtString texfname = tex->GetFilename().c_str();
 				fprintf(fp2, "map_Kd %s\n", (const char *) texfname);
 			}
 		}

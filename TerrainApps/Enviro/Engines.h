@@ -183,7 +183,7 @@ protected:
 	vtGroup			*m_pMapGroup;
 	osg::ref_ptr<vtImageSprite>	m_pMapView;
 	vtTransform		*m_pArrow;
-	vtImage			*m_pOwnedImage;
+	vtImagePtr		 m_pOwnedImage;
 
 	float	anglePrec;
 	int		MapWidth;

@@ -247,7 +247,7 @@ void vtMaterial::SetTexture(vtImage *pImage)
 		m_pTexture = new Texture2D;
 
 	// this stores a reference so that it won't get deleted without this material's permission
-	m_pTexture->setImage(pImage->GetOsgImage());
+	m_pTexture->setImage(pImage);
 
 	// also store a reference pointer
 	m_Image = pImage;
@@ -279,13 +279,13 @@ void vtMaterial::SetTexture(vtImage *pImage)
  */
 bool vtMaterial::SetTexture2(const char *szFilename)
 {
-	vtImage *image = vtImageRead(szFilename);
-	if (image)
+	vtImagePtr image = vtImageRead(szFilename);
+	if (image.valid())
 	{
 		SetTexture(image);
-		image->Release();	// don't hold on to it; pass ownership to the material
+		return true;
 	}
-	return (image != NULL);
+	return false;
 }
 
 
@@ -496,14 +496,14 @@ int vtMaterialArray::AddTextureMaterial2(const char *fname,
 	if (*fname == 0)
 		return -1;
 
-	vtImage *pImage = vtImageRead(fname);
-	if (!pImage)
+	vtImagePtr image = vtImageRead(fname);
+	if (!image.valid())
 		return -1;
 
-	int index = AddTextureMaterial(pImage, bCulling, bLighting,
+	int index = AddTextureMaterial(image, bCulling, bLighting,
 		bTransp, bAdditive, fAmbient, fDiffuse, fAlpha, fEmissive, bTexGen,
 		bClamp, bMipMap);
-	pImage->Release();	// pass ownership to the material
+
 	return index;
 }
 

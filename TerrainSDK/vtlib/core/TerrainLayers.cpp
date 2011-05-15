@@ -72,15 +72,13 @@ vtStructureLayer *LayerSet::FindStructureFromNode(vtNode* pNode, int &iOffset)
 
 vtImageLayer::vtImageLayer()
 {
-	m_pImage = new vtImage;
+	m_pImage = new vtImageGeo;
 	m_pMultiTexture = NULL;
 }
 
 vtImageLayer::~vtImageLayer()
 {
 	delete m_pMultiTexture;
-	if (m_pImage)
-		m_pImage->Release();
 }
 
 void vtImageLayer::SetVisible(bool vis)

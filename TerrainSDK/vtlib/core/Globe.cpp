@@ -214,7 +214,7 @@ vtMaterialArray *vtIcoGlobe::CreateMaterialsFromFiles(const vtString &strImagePr
 			VTLOG("\t\tnot found on data paths.\n");
 			index = -1;
 		}
-		vtImage *img = new vtImage(fullpath);
+		vtImagePtr img = vtImageRead(fullpath);
 		index = mats->AddTextureMaterial(img,
 					 bCulling, bLighting,
 					 img->GetDepth() == 32, false,	// transp, additive

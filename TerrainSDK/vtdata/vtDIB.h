@@ -13,8 +13,7 @@
 class vtProjection;
 
 /**
- * A highly virtual class which defines the basic functionality that any
- * bitmap must expose.
+ * An abstract class which defines the basic functionality that any bitmap must expose.
  */
 class vtBitmapBase
 {

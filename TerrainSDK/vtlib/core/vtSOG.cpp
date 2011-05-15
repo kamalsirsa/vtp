@@ -213,7 +213,7 @@ void OutputSOG::WriteMaterial(FILE *fp, const vtMaterial *pMat)
 		b = pMat->GetClamp();
 		Write(fp, FT_CLAMP, b);
 
-		vtString fname = pImage->GetFilename();
+		vtString fname = pImage->GetFilename().c_str();
 		Write(fp, FT_IMAGEFNAME, fname);
 	}
 }

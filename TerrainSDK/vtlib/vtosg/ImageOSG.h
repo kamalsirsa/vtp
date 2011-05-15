@@ -15,25 +15,22 @@
  * file formats, and used as a texture map for a textured material, by
  * passing it to vtMaterial::SetTexture()
  */
-class vtImage: public vtBitmapBase, public osg::Referenced
+class vtImage: public vtBitmapBase, public osg::Image
 {
 public:
 	vtImage();
-	vtImage(const char *fname, bool bAllowCache = true);
+//	vtImage(const char *fname, bool bAllowCache = true);
 	vtImage(class vtDIB *pDIB);
 	vtImage(vtImage *copyfrom);
-	void Release();
 
 	bool Create(int width, int height, int bitdepth, bool create_palette = false);
-	bool Read(const char *fname, bool bAllowCache = true, bool progress_callback(int) = NULL);
 	bool WritePNG(const char *fname, bool progress_callback(int) = NULL);
 	bool WriteJPEG(const char *fname, int quality = 99, bool progress_callback(int) = NULL);
-	bool HasData() { return m_pOsgImage.valid() && m_pOsgImage->data() != NULL; }
+	bool HasData() { return valid() && data() != NULL; }
 	void Scale(int w, int h);
 
 	/// Return the name of the file, if any, from which the image was loaded.
-	vtString GetFilename() const { return m_strFilename; }
-	void SetFilename(const vtString &fname) { m_strFilename = fname; }
+	std::string GetFilename() const { return getFileName(); }
 
 	// Provide vtBitmapBase methods
 	unsigned char GetPixel8(int x, int y) const;
@@ -48,59 +45,54 @@ public:
 	unsigned int GetHeight() const;
 	unsigned int GetDepth() const;
 
-	unsigned char *GetData() { return m_pOsgImage->data(); }
-	unsigned char *GetRowData(int row) { return m_pOsgImage->data(0, row); }
+	unsigned char *GetData() { return data(); }
+	unsigned char *GetRowData(int row) { return data(0, row); }
 	void Set16Bit(bool bFlag);
+
+protected:
+//	bool _Read(const char *fname, bool bAllowCache = true, bool progress_callback(int) = NULL);
+	void _BasicInit();
+	void _CreateFromDIB(vtDIB *pDIB, bool b16bit = false);
+	bool _ReadPNG(const char *filename);
+};
+typedef osg::ref_ptr<vtImage> vtImagePtr;
+
+class vtImageGeo : public vtImage
+{
+public:
+	vtImageGeo();
+	vtImageGeo(const vtImageGeo *copyfrom);
+
+	bool ReadTIF(const char *filename, bool progress_callback(int) = NULL);
+	void ReadExtents(const char *filename);
 
 	// In case the image was loaded from a georeferenced format (such as
 	//  GeoTIFF), provide access to the georef
 	vtProjection &GetProjection() { return m_proj; }
 	DRECT &GetExtents() { return m_extents; }
 
-	osg::Image *GetOsgImage() { return m_pOsgImage.get(); }
-
 protected:
-	void _BasicInit();
-	void _CreateFromDIB(vtDIB *pDIB);
-	bool _ReadPNG(const char *filename);
-	bool _ReadTIF(const char *filename, bool progress_callback(int) = NULL);
-	void _ComputeRowWidth();
-
-protected:
-	// Destructor is protected so that people will use Release() instead,
-	//  to ensure that reference counting is respected.
-	// (Could be private, but that causes an annoying gcc warning.)
-	virtual ~vtImage();
-
-protected:
-	bool m_b16bit;
-	vtString m_strFilename;
-	int m_iRowSize;		// in bytes
-	osg::ref_ptr<osg::Image> m_pOsgImage;
-
-	// These two fields are rarely used, and increase size of this object
-	//  from 168 to 256 bytes.
+	// These two fields are rarely used
 	vtProjection m_proj;
 	DRECT m_extents;
 };
+typedef osg::ref_ptr<vtImageGeo> vtImageGeoPtr;
 
 class vtOverlappedTiledImage : public vtOverlappedTiledBitmap
 {
 public:
 	vtOverlappedTiledImage();
 	bool Create(int iTileSize, int iBitDepth);
-	void Release();
 	bool Load(const char *filename, bool progress_callback(int) = NULL);
 
 	vtBitmapBase *GetTile(int i, int j) { return m_Tiles[i][j]; }
 	const vtBitmapBase *GetTile(int i, int j) const { return m_Tiles[i][j]; }
 
-	vtImage *m_Tiles[4][4];
+	vtImagePtr m_Tiles[4][4];
 };
 
 bool vtImageInfo(const char *filename, int &width, int &height, int &depth);
-vtImage *vtImageRead(const char *fname, bool bAllowCache = true, bool progress_callback(int) = NULL);
-void vtImageCacheClear();
+vtImagePtr vtImageRead(const char *fname);
 
 #endif	// VTOSG_IMAGEH
 

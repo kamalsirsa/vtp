@@ -48,7 +48,7 @@ private:
 	vtMesh		*m_pStarMesh;
 	vtMovGeom	*m_pMoonGeom;
 	vtMaterialArrayPtr m_pMats;
-	vtImage		*m_pMoonImage;
+	vtImagePtr	 m_pMoonImage;
 
 	vtTime	m_time;
 	float	RelativeBrightness;
@@ -132,7 +132,7 @@ protected:
 
 	vtMovGeom		*m_pSunGeom;
 	vtMaterial		*m_pSunMat;
-	vtImage			*m_pSunImage;
+	vtImagePtr		 m_pSunImage;
 
 	bool		m_bHasTexture;
 

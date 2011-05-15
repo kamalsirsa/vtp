@@ -558,14 +558,13 @@ public:
 
 			// Read image from window
 			IPoint2 size = scene->GetWindowSize();
-			vtImage *pImage = new vtImage;
+			vtImagePtr pImage = new vtImage;
 			pImage->Create(size.x, size.y, 24);
 			glPixelStorei(GL_PACK_ALIGNMENT, 1);
 			glReadPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
 
 			// Write to disk
 			pImage->WriteJPEG((const char *)(directory+fname), 98);
-			pImage->Release();
 		}
 		// Show the next frame time
 		engine->SetTime(fStep * step);

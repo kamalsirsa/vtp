@@ -37,17 +37,12 @@ NevadaTerrain::NevadaTerrain()
 {
 	m_pPast = m_pPresent = m_pFuture = NULL;
 	m_pWaterShape =		m_pWaterShape2 = NULL;
-	m_pDetailTexture =	m_pDetailTexture2 = NULL;
 	m_pDetailMat =		m_pDetailMat2 = NULL;
 	m_pMats = NULL;
 }
 
 NevadaTerrain::~NevadaTerrain()
 {
-	if (m_pDetailTexture)
-		m_pDetailTexture->Release();
-	if (m_pDetailTexture2)
-		m_pDetailTexture2->Release();
 }
 
 //
@@ -148,11 +143,11 @@ void NevadaTerrain::CreateDetailTextures()
 	str = FindFileOnPaths(vtGetDataPath(), "Nevada/playa3.png");
 	if (str == "")
 		return;
-	m_pDetailTexture = new vtImage(str);
+	m_pDetailTexture = vtImageRead(str);
 	str = FindFileOnPaths(vtGetDataPath(), "Nevada/green3.png");
 	if (str == "")
 		return;
-	m_pDetailTexture2 = new vtImage(str);
+	m_pDetailTexture2 = vtImageRead(str);
 
 	int id;
 	id = m_pMats->AddTextureMaterial(m_pDetailTexture,

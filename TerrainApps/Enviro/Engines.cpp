@@ -663,8 +663,6 @@ MapOverviewEngine::MapOverviewEngine()
 
 MapOverviewEngine::~MapOverviewEngine()
 {
-	if (m_pOwnedImage)
-		m_pOwnedImage->Release();
 }
 
 void MapOverviewEngine::Eval()
@@ -728,9 +726,6 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 	}
 	else if (eTex == TE_TILED)
 	{
-		if (m_pOwnedImage)
-			m_pOwnedImage->Release();
-
 		vtOverlappedTiledImage	*olap = pTerr->GetOverlappedImage();
 		int xsize = olap->GetWidth();
 		int ysize = olap->GetHeight();

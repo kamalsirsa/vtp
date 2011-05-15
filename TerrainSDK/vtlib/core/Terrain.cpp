@@ -161,12 +161,6 @@ vtTerrain::~vtTerrain()
 	if (!m_bPreserveInputGrid)
 		delete m_pElevGrid;
 
-	if (m_pImage)
-		m_pImage->Release();
-	if (m_pImageSource != m_pImage)
-		m_pImageSource->Release();
-	m_ImageTiles.Release();
-
 	delete m_pRoadMap;
 	if (m_pRoadGroup)
 	{
@@ -457,8 +451,8 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	{
 		// Load a DIB of the whole, large texture
 		clock_t r1 = clock();
-		bool result = m_pImageSource->Read(texture_path, false, progress_callback);
-		if (result)
+		m_pImageSource = vtImageRead(texture_path);
+		if (m_pImageSource.valid())
 		{
 			int depth = m_pImageSource->GetDepth();
 			VTLOG("  Loaded texture: depth %d, %.3f seconds.\n", depth, (float)(clock() - r1) / CLOCKS_PER_SEC);
@@ -640,7 +634,7 @@ void vtTerrain::_CreateDetailTexture()
 	if (!dib.Read(path))
 		return;
 
-	vtImage *pDetailTexture = new vtImage(&dib);
+	vtImagePtr pDetailTexture = new vtImage(&dib);
 
 	int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
 					 true,	// culling
@@ -652,9 +646,6 @@ void vtTerrain::_CreateDetailTexture()
 					 true, false,	// texgen, clamp
 					 true);			// mipmap
 	vtMaterial *pDetailMat = m_pDetailMats->at(index);
-
-	// pass ownership to the material
-	pDetailTexture->Release();
 
 	float scale = m_Params.GetValueFloat(STR_DTEXTURE_SCALE);
 	float dist = m_Params.GetValueFloat(STR_DTEXTURE_DISTANCE);
@@ -1872,7 +1863,7 @@ void vtTerrain::_CreateImageLayers()
 		}
 
 		vtImageLayer *ilayer = new vtImageLayer;
-		if (!ilayer->m_pImage->Read(path, true, m_progress_callback))
+		if (!ilayer->m_pImage->ReadTIF(path, m_progress_callback))
 		{
 			VTLOG("Couldn't read image from file '%s'\n", (const char *) path);
 			continue;

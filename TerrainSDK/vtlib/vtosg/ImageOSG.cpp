@@ -17,8 +17,6 @@
 #define LOG_IMAGE_LOAD 1
 #endif
 
-#define USE_IMAGE_CACHE	0
-
 //
 // Set any of these definitions to use OSG's own support for the various
 // image file formats instead of our own.
@@ -26,82 +24,27 @@
 #define USE_OSG_FOR_PNG		1
 #define USE_OSG_FOR_BMP		1
 #define USE_OSG_FOR_JPG		1
-#define USE_OSG_FOR_TIF		0
 
-#if USE_IMAGE_CACHE
-// Simple cache
-typedef std::map< vtString, osg::ref_ptr<vtImage> > ImageCache;
-ImageCache s_ImageCache;
-
-void vtImageCacheClear()
-{
-	VTLOG1("Clearing image cache");
-#if LOG_IMAGE_LOAD
-	VTLOG1(", contents:");
-#endif
-	VTLOG1("\n");
-	for (ImageCache::iterator iter = s_ImageCache.begin();
-		iter != s_ImageCache.end(); iter++)
-	{
-		vtString str = iter->first;
-		vtImage *im = iter->second.get();
-#if LOG_IMAGE_LOAD
-		VTLOG("  Image '%s', refcount %d\n", (const char *) str,
-			im->referenceCount());
-#endif
-	}
-	s_ImageCache.clear();
-}
-#else
-void vtImageCacheClear() {}
-#endif
 
 ////////////////////////////////////////////////////////////////////////
 
-vtImage::vtImage()
+vtImage::vtImage() : osg::Image()
 {
-	_BasicInit();
-	m_pOsgImage = new osg::Image;
 }
 
-vtImage::vtImage(const char *fname, bool bAllowCache)
+//vtImage::vtImage(const char *fname, bool bAllowCache) : osg::Image()
+//{
+//	Read(fname, bAllowCache);
+//}
+
+vtImage::vtImage(vtDIB *pDIB) : osg::Image()
 {
-	_BasicInit();
-	m_pOsgImage = new osg::Image;
-
-	Read(fname, bAllowCache);
-}
-
-vtImage::vtImage(vtDIB *pDIB)
-{
-	_BasicInit();
-	m_pOsgImage = new osg::Image;
-
 	_CreateFromDIB(pDIB);
 }
 
-vtImage::vtImage(vtImage *copyfrom)
+vtImage::vtImage(vtImage *copyfrom) :
+	osg::Image(*(copyfrom), osg::CopyOp::DEEP_COPY_ALL)
 {
-	_BasicInit();
-	m_pOsgImage = new osg::Image(*(copyfrom->GetOsgImage()), osg::CopyOp::DEEP_COPY_ALL);
-
-	m_b16bit = copyfrom->m_b16bit;
-	m_proj = copyfrom->m_proj;
-	m_extents = copyfrom->m_extents;
-	_ComputeRowWidth();
-}
-
-
-vtImage::~vtImage()
-{
-	m_pOsgImage = NULL;	// unreferences OSG image
-}
-
-void vtImage::_BasicInit()
-{
-	ref();
-	m_b16bit = false;
-	m_extents.Empty();
 }
 
 bool vtImage::Create(int width, int height, int bitdepth, bool create_palette)
@@ -124,61 +67,57 @@ bool vtImage::Create(int width, int height, int bitdepth, bool create_palette)
 	else
 		return false;
 
-	m_pOsgImage->allocateImage(width, height, 1, pixelFormat, dataType);
-	_ComputeRowWidth();
+	allocateImage(width, height, 1, pixelFormat, dataType);
 
 	return true;
 }
 
-vtImage *vtImageRead(const char *fname, bool bAllowCache, bool progress_callback(int))
+vtImagePtr vtImageRead(const char *fname)
 {
-#if USE_IMAGE_CACHE
-	vtImage *image;
-	ImageCache::iterator iter;
+	osg::ref_ptr<osg::Image> img;
+	try
+	{
+		// OSG doesn't yet support utf-8 or wide filenames, so convert
+		vtString fname_local = UTF8ToLocal(fname);
 
-	iter = s_ImageCache.find(vtString(fname));
-	if (iter == s_ImageCache.end())
-	{
-		// not found.  must try loading;
-		image = new vtImage;
-		if (image->Read(fname, bAllowCache, progress_callback))
-		{
-			s_ImageCache[fname] = image; // store in cache
-			return image;
-		}
-		else
-		{
-			image->Release();
-			return NULL;
-		}
-	}
-	else
-	{
-		image = iter->second.get();
-		// because we don't use 'smart pointers', we must pretend that this is a
-		//  unique instance with its own self-possessed refcount
-		image->ref();
-		return image;
-	}
-#else
-	vtImage *image = new vtImage;
-	if (image->Read(fname, bAllowCache, progress_callback))
-		return image;
-	else
-		image->Release();
-	return NULL;
+#if LOG_IMAGE_LOAD
+		VTLOG1("  readImageFile,");
 #endif
+		img = osgDB::readImageFile((const char *)fname_local);
+	}
+	catch (...)
+	{
+		// Don't do anything because the (!pOsgImage.valid() below will
+		//  test to see if the pointer is any good. However, we need the
+		//  catch or else if osgdb throws an exception, it will be passed
+		/// all the way to the app.
+	}
+	if (img.valid())
+	{
+		vtImagePtr vtimg = new vtImage;
+
+		// Take the data?
+		// Maybe this can work:
+		img->setAllocationMode(osg::Image::NO_DELETE);
+		vtimg->setImage(img->s(),img->t(),img->r(),
+				img->getInternalTextureFormat(),
+				img->getPixelFormat(),
+				img->getDataType(),
+				img->data(),
+				osg::Image::USE_NEW_DELETE);
+		return vtimg;
+	}
+	else
+		return vtImagePtr(NULL);
 }
 
-osg::ref_ptr<osgDB::ReaderWriter::Options> s_options;
-
-bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(int))
+#if 0
+bool vtImage::_Read(const char *fname, bool bAllowCache, bool progress_callback(int))
 {
 #if LOG_IMAGE_LOAD
 	VTLOG(" vtImage::Read(%s)\n", fname);
 #endif
-	m_b16bit = false;
-	m_strFilename = fname;
+	setName(fname);
 
 #if !USE_OSG_FOR_BMP
 	if (!stricmp(fname + strlen(fname) - 3, "bmp"))
@@ -231,22 +170,7 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 #endif
 	// try to load with OSG (osgPlugins libraries)
 	{
-		// important for efficiency: use OSG's cache
-#define OPTS osgDB::ReaderWriter::Options
-#define HINT OPTS::CacheHintOptions
-		osgDB::Registry *reg = osgDB::Registry::instance();
-		OPTS *opts;
-
-		opts = reg->getOptions();
-		if (!opts)
-		{
-#if LOG_IMAGE_LOAD
-			VTLOG1("  creating osgDB::ReaderWriter::Options\n");
-#endif
-			s_options = new OPTS;
-			opts = s_options.get();
-		}
-		int before = (int) opts->getObjectCacheHint();
+#if 0
 		if (bAllowCache)
 		{
 			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint()) |
@@ -257,14 +181,9 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint()) &
 				~(OPTS::CACHE_IMAGES)));
 		}
-		int after = (int) opts->getObjectCacheHint();
-#if LOG_IMAGE_LOAD
-		VTLOG1("  calling SetOptions,");
 #endif
-		reg->setOptions(opts);
-
 		// Call OSG to attempt image load.
-		osg::ref_ptr<osg::Image> pOsgImage;
+		osg::ref_ptr<osg::Image> img;
 		try
 		{
 			// OSG doesn't yet support utf-8 or wide filenames, so convert
@@ -273,7 +192,7 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 #if LOG_IMAGE_LOAD
 			VTLOG1("  readImageFile,");
 #endif
-			pOsgImage = osgDB::readImageFile((const char *)fname_local);
+			img = osgDB::readImageFile((const char *)fname_local);
 		}
 		catch (...)
 		{
@@ -283,42 +202,27 @@ bool vtImage::Read(const char *fname, bool bAllowCache, bool progress_callback(i
 			/// all the way to the app.
 		}
 
-		if (!pOsgImage.valid())
+		if (!img.valid())
 		{
 			VTLOG("  failed to read '%s'\n", fname);
 			return false;
 		}
 
-		// If we have no image data yet, simply take it
-		if (m_pOsgImage->data() == NULL)
-			m_pOsgImage = pOsgImage;
-		else
-		{
-			// If we already have image data, of the same size, copy it
-			m_pOsgImage->copySubImage(0,0,0, pOsgImage.get());
-		}
-
-		_ComputeRowWidth();
+		// Take the data?
+		// Maybe this can work:
+		img->setAllocationMode(NO_DELETE);
+		setImage(img->s(),img->t(),img->r(),
+				img->getInternalTextureFormat(),
+				img->getPixelFormat(),
+				img->getDataType(),
+                img->data(),
+                osg::Image::USE_NEW_DELETE);
 	}
 #if LOG_IMAGE_LOAD
 	VTLOG("  succeeded.\n");
 #endif
-
-	// This might be a geospecific image.  If we did not get extents, look
-	//  a world file.
-	if (m_extents.IsEmpty())
-	{
-		double params[6];
-		if (ReadAssociatedWorldFile(fname, params))
-		{
-			m_extents.left = params[4];
-			m_extents.right = params[4] + params[0] * GetWidth();
-			m_extents.top = params[5];
-			m_extents.bottom = params[5] + params[3] * GetHeight();
-		}
-	}
-	return true;
 }
+#endif
 
 bool vtImage::WritePNG(const char *fname, bool progress_callback(int))
 {
@@ -326,7 +230,7 @@ bool vtImage::WritePNG(const char *fname, bool progress_callback(int))
 	// fname is a UTF-8 string, but OSG only understands local charset
 	vtString fname_local = UTF8ToLocal(fname);
 
-	return osgDB::writeImageFile(*(m_pOsgImage.get()), (const char *) fname_local);
+	return osgDB::writeImageFile(*this, (const char *) fname_local);
 #else
 	// TODO: native libpng code here
 	return false;
@@ -358,34 +262,31 @@ bool vtImage::WriteJPEG(const char *fname, int quality, bool progress_callback(i
 	// fname is a UTF-8 string, but OSG only understands local charset
 	vtString fname_local = UTF8ToLocal(fname);
 
-	return osgDB::writeImageFile(*(m_pOsgImage.get()), (const char *) fname_local);
+	return osgDB::writeImageFile(*this, (const char *) fname_local);
 #else
 	// TODO: native libjpeg code here
 	return false;
 #endif
 }
 
-void vtImage::Release()
-{
-	unref();
-}
-
 unsigned char vtImage::GetPixel8(int x, int y) const
 {
-	unsigned char *buf = m_pOsgImage->data() + x + (m_pOsgImage->t()-1-y)*m_iRowSize;
+	// OSG appears to reference y=0 as the bottom of the image
+	const unsigned char *buf = data(x, _t-1-y);
 	return *buf;
 }
 
 void vtImage::SetPixel8(int x, int y, unsigned char color)
 {
-	unsigned char *buf = m_pOsgImage->data() + x + (m_pOsgImage->t()-1-y)*m_iRowSize;
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = data(x, _t-1-y);
 	*buf = color;
 }
 
 void vtImage::GetPixel24(int x, int y, RGBi &rgb) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = m_pOsgImage->data() + x*3 + (m_pOsgImage->t()-1-y)*m_iRowSize;
+	const unsigned char *buf = data(x, _t-1-y);
 	rgb.r = buf[0];
 	rgb.g = buf[1];
 	rgb.b = buf[2];
@@ -394,7 +295,7 @@ void vtImage::GetPixel24(int x, int y, RGBi &rgb) const
 void vtImage::SetPixel24(int x, int y, const RGBi &rgb)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = m_pOsgImage->data() + x*3 + (m_pOsgImage->t()-1-y)*m_iRowSize;
+	unsigned char *buf = data(x, _t-1-y);
 	buf[0] = rgb.r;
 	buf[1] = rgb.g;
 	buf[2] = rgb.b;
@@ -403,7 +304,7 @@ void vtImage::SetPixel24(int x, int y, const RGBi &rgb)
 void vtImage::GetPixel32(int x, int y, RGBAi &rgba) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = m_pOsgImage->data() + x*4 + (m_pOsgImage->t()-1-y)*m_iRowSize;
+	const unsigned char *buf = data(x, _t-1-y);
 	rgba.r = buf[0];
 	rgba.g = buf[1];
 	rgba.b = buf[2];
@@ -413,7 +314,7 @@ void vtImage::GetPixel32(int x, int y, RGBAi &rgba) const
 void vtImage::SetPixel32(int x, int y, const RGBAi &rgba)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = m_pOsgImage->data() + x*4 + (m_pOsgImage->t()-1-y)*m_iRowSize;
+	unsigned char *buf = data(x, _t-1-y);
 	buf[0] = rgba.r;
 	buf[1] = rgba.g;
 	buf[2] = rgba.b;
@@ -422,17 +323,17 @@ void vtImage::SetPixel32(int x, int y, const RGBAi &rgba)
 
 unsigned int vtImage::GetWidth() const
 {
-	return m_pOsgImage->s();
+	return s();
 }
 
 unsigned int vtImage::GetHeight() const
 {
-	return m_pOsgImage->t();
+	return t();
 }
 
 unsigned int vtImage::GetDepth() const
 {
-	return m_pOsgImage->getPixelSizeInBits();
+	return getPixelSizeInBits();
 }
 
 /**
@@ -441,20 +342,20 @@ unsigned int vtImage::GetDepth() const
  */
 void vtImage::Set16Bit(bool bFlag)
 {
-	GLenum pixf = m_pOsgImage->getPixelFormat();
+	GLenum pixf = getPixelFormat();
 	if (bFlag)
 	{
 		// use a 16-bit internal
 		if (pixf == GL_RGB)
-			m_pOsgImage->setInternalTextureFormat(GL_RGB5);
+			setInternalTextureFormat(GL_RGB5);
 		if (pixf == GL_RGBA)
-			m_pOsgImage->setInternalTextureFormat(GL_RGB5_A1);
+			setInternalTextureFormat(GL_RGB5_A1);
 	}
 	else
-		m_pOsgImage->setInternalTextureFormat(pixf);
+		setInternalTextureFormat(pixf);
 }
 
-void vtImage::_CreateFromDIB(vtDIB *pDIB)
+void vtImage::_CreateFromDIB(vtDIB *pDIB, bool b16bit)
 {
 	int i, w, h, bpp;
 	char *data;
@@ -515,30 +416,24 @@ void vtImage::_CreateFromDIB(vtDIB *pDIB)
 	}
 
 	int internalFormat;
-	if (m_b16bit)
+	if (b16bit)
 		internalFormat = GL_RGB5;		// use specific
 	else
 		internalFormat = pixelFormat;	// use default
 
-	m_pOsgImage->setImage(w, h, 1,		// s, t, r
+	setImage(w, h, 1,		// s, t, r
 	   internalFormat,		// int internalFormat,
 	   pixelFormat,			// unsigned int pixelFormat,
 	   GL_UNSIGNED_BYTE,	// unsigned int dataType,
 	   image,
 	   osg::Image::USE_NEW_DELETE);
-	_ComputeRowWidth();
 }
 
 void vtImage::Scale(int w, int h)
 {
-	m_pOsgImage->scaleImage(w, h, 1);
-	_ComputeRowWidth();
+	scaleImage(w, h, 1);
 }
 
-void vtImage::_ComputeRowWidth()
-{
-	m_iRowSize = m_pOsgImage->getRowSizeInBytes();
-}
 
 //////////////////////////
 
@@ -690,16 +585,7 @@ bool vtImage::_ReadPNG(const char *filename)
 
 //////////////////////////
 
-#if USE_OSG_FOR_TIF
-
-bool vtImage::_ReadTIF(const char *filename)
-{
-	return false;
-}
-
-#else
-
-bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
+bool vtImageGeo::ReadTIF(const char *filename, bool progress_callback(int))
 {
 	// Use GDAL to read a TIF file (or any other format that GDAL is
 	//  configured to read) into this OSG image.
@@ -1067,7 +953,36 @@ bool vtImage::_ReadTIF(const char *filename, bool progress_callback(int))
 	return bRet;
 }
 
-#endif	// USE_OSG_FOR_TIF
+
+///////////////////////////////////////////////////////////////////////
+
+vtImageGeo::vtImageGeo()
+{
+	m_extents.Empty();
+}
+
+vtImageGeo::vtImageGeo(const vtImageGeo *copyfrom) : vtImage(*copyfrom)
+{
+	m_proj = copyfrom->m_proj;
+	m_extents = copyfrom->m_extents;
+}
+
+void vtImageGeo::ReadExtents(const char *filename)
+{
+	// This might be a geospecific image.  If we did not get extents, look
+	//  a world file.
+	if (m_extents.IsEmpty())
+	{
+		double params[6];
+		if (ReadAssociatedWorldFile(filename, params))
+		{
+			m_extents.left = params[4];
+			m_extents.right = params[4] + params[0] * GetWidth();
+			m_extents.top = params[5];
+			m_extents.bottom = params[5] + params[3] * GetHeight();
+		}
+	}
+}
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -1100,17 +1015,6 @@ bool vtOverlappedTiledImage::Create(int iTilesize, int iBitDepth)
 			m_Tiles[r][c] = image;
 		}
 	return true;
-}
-
-void vtOverlappedTiledImage::Release()
-{
-	int r, c;
-	for (r = 0; r < 4; r++)
-		for (c = 0; c < 4; c++)
-		{
-			if (m_Tiles[r][c] != NULL)
-				m_Tiles[r][c]->Release();
-		}
 }
 
 bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(int))

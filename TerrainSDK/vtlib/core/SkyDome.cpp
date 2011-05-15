@@ -116,9 +116,8 @@ vtSkyDome::vtSkyDome()
 
 vtSkyDome::~vtSkyDome()
 {
-	if (SphVertices) delete[] SphVertices;
-	if (m_pSunImage)
-		m_pSunImage->Release();
+	if (SphVertices)
+		delete[] SphVertices;
 }
 
 /**
@@ -188,8 +187,8 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	if (sun_texture && *sun_texture)
 	{
 		VTLOG("   Loading Sun Image\n");
-		m_pSunImage = new vtImage;
-		if (!m_pSunImage->Read(sun_texture))
+		m_pSunImage = vtImageRead(sun_texture);
+		if (!m_pSunImage.valid())
 			return;		// could not load texture, cannot have sun
 
 		int idx = m_pMats->AddTextureMaterial(m_pSunImage,
@@ -538,8 +537,8 @@ bool vtSkyDome::SetTexture(const char *filename)
 	}
 
 	VTLOG("   SkyDome: Set Texture to '%s'.. ", filename);
-	vtImage *pImage = vtImageRead(filename);
-	if (!pImage)
+	vtImagePtr pImage = vtImageRead(filename);
+	if (!pImage.valid())
 	{
 		VTLOG("failed.\n");
 		return false;
@@ -551,7 +550,6 @@ bool vtSkyDome::SetTexture(const char *filename)
 
 	// create and apply the texture material
 	int index = m_pMats->AddTextureMaterial(pImage, false, false);
-	pImage->Release();	// pass ownership to the Material
 
 	m_pTextureMat = m_pMats->at(index);
 
@@ -666,8 +664,6 @@ vtStarDome::~vtStarDome()
 {
 	if (Starfield)
 		delete[] Starfield;
-	if (m_pMoonImage)
-		m_pMoonImage->Release();
 }
 
 void vtStarDome::Create(const char *starfile, float brightness,
@@ -701,8 +697,8 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	if (moon_texture && *moon_texture)
 	{
 		int idx = -1;
-		m_pMoonImage = new vtImage(moon_texture);
-		if (m_pMoonImage->HasData())
+		m_pMoonImage = vtImageRead(moon_texture);
+		if (m_pMoonImage->valid())
 		{
 			idx = m_pMats->AddTextureMaterial(m_pMoonImage,
 								 false, false,	// culling, lighting

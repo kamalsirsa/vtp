@@ -74,6 +74,7 @@ bool vtApp::CreateScene()
 
 	// Set the global data path
 	vtStringArray paths;
+	paths.push_back(vtString("G:/Data-Distro/"));
 	paths.push_back(vtString("../Data/"));
 	paths.push_back(vtString("Data/"));
 	pScene->SetDataPath(paths);

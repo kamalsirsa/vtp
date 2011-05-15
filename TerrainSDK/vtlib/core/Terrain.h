@@ -498,8 +498,8 @@ protected:
 	vtRouteMap		m_Routes;
 
 	// ground texture
-	vtImage			*m_pImageSource;
-	vtImage			*m_pImage;
+	vtImagePtr		m_pImageSource;
+	vtImagePtr		m_pImage;
 	vtOverlappedTiledImage	m_ImageTiles;
 	ColorMap		*m_pTextureColors;
 	bool			m_bTextureInitialized;
