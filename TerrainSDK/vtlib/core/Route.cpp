@@ -44,7 +44,7 @@ vtRoute::vtRoute(vtTerrain* pT)
 	m_pTheTerrain = pT;
 
 	m_pWireGeom = new vtGeom;
-	m_pWireGeom->SetName2("Route Wires");
+	m_pWireGeom->setName("Route Wires");
 
 	if (m_pRouteMats == NULL)
 		_CreateMaterials();
@@ -180,7 +180,7 @@ void vtRoute::_CreateStruct(int iNode)
 			node->m_pTrans = new vtTransform;
 			vtString name;
 			name.Format("RouteNode %d", iNode);
-			node->m_pTrans->SetName2(name);
+			node->m_pTrans->setName(name);
 			node->m_pTrans->AddChild(tower);
 			add = true;
 		}

@@ -18,6 +18,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
 #include "vtui/Helper.h"	// for ProgressDialog
 
 #include "xmlhelper/easyxml.hpp"
@@ -1023,7 +1024,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 
 	// Wrap in a transform node so that we can scale/rotate the node
 	vtTransform *pTrans = new vtTransform;
-	pTrans->SetName2("Scaling Transform");
+	pTrans->setName("Scaling Transform");
 	pTrans->AddChild(pNode);
 
 	// Add to map of model -> nodes

@@ -2,7 +2,7 @@
 // EnviroGUI.cpp
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003-2008 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -238,7 +238,7 @@ void EnviroGUI::SetupScene3()
 
 #if wxUSE_JOYSTICK || WIN32
 	m_pJFlyer = new vtJoystickEngine;
-	m_pJFlyer->SetName2("Joystick");
+	m_pJFlyer->setName("Joystick");
 	vtGetScene()->AddEngine(m_pJFlyer);
 	m_pJFlyer->SetTarget(m_pNormalCamera);
 #endif

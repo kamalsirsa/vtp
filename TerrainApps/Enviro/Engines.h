@@ -8,6 +8,7 @@
 
 #include "vtlib/core/Engine.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtlib/core/ImageSprite.h"
 
 class NodeGeom;
 class LinkGeom;

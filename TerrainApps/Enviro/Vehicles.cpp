@@ -1,7 +1,7 @@
 //
 // Vehicles.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -108,10 +108,10 @@ Vehicle *VehicleManager::CreateVehicleFromNode(vtNode *node, const RGBf &cColor)
 	if (dynamic_cast<vtTransform*>(pNewVehicle->m_pFrontLeft))
 	{
 		// They are already transforms, no need to insert any
-		pNewVehicle->m_pFrontLeft->SetName2("front_left_xform");
-		pNewVehicle->m_pFrontRight->SetName2("front_right_xform");
-		pNewVehicle->m_pRearLeft->SetName2("rear_left_xform");
-		pNewVehicle->m_pRearRight->SetName2("rear_right_xform");
+		pNewVehicle->m_pFrontLeft->setName("front_left_xform");
+		pNewVehicle->m_pFrontRight->setName("front_right_xform");
+		pNewVehicle->m_pRearLeft->setName("rear_left_xform");
+		pNewVehicle->m_pRearRight->setName("rear_right_xform");
 	}
 	else
 	{
@@ -120,28 +120,28 @@ Vehicle *VehicleManager::CreateVehicleFromNode(vtNode *node, const RGBf &cColor)
 		vtTransform *pTransform;
 
 		pTransform = new vtTransform;
-		pTransform->SetName2("front_left_xform");
+		pTransform->setName("front_left_xform");
 		pTransform->AddChild(pNewVehicle->m_pFrontLeft);
 		pNewVehicle->m_pFrontLeft->GetParent()->RemoveChild(pNewVehicle->m_pFrontLeft);
 		pNewVehicle->m_pFrontLeft->Release();
 		pNewVehicle->m_pFrontLeft = pTransform;
 
 		pTransform = new vtTransform;
-		pTransform->SetName2("front_right_xform");
+		pTransform->setName("front_right_xform");
 		pTransform->AddChild(pNewVehicle->m_pFrontRight);
 		pNewVehicle->m_pFrontRight->GetParent()->RemoveChild(pNewVehicle->m_pFrontRight);
 		pNewVehicle->m_pFrontRight->Release();
 		pNewVehicle->m_pFrontRight = pTransform;
 
 		pTransform = new vtTransform;
-		pTransform->SetName2("rear_left_xform");
+		pTransform->setName("rear_left_xform");
 		pTransform->AddChild(pNewVehicle->m_pRearLeft);
 		pNewVehicle->m_pRearLeft->GetParent()->RemoveChild(pNewVehicle->m_pRearLeft);
 		pNewVehicle->m_pRearLeft->Release();
 		pNewVehicle->m_pRearLeft = pTransform;
 
 		pTransform = new vtTransform;
-		pTransform->SetName2("rear_right_xform");
+		pTransform->setName("rear_right_xform");
 		pTransform->AddChild(pNewVehicle->m_pRearRight);
 		pNewVehicle->m_pRearRight->GetParent()->RemoveChild(pNewVehicle->m_pRearRight);
 		pNewVehicle->m_pRearRight->Release();
@@ -164,7 +164,7 @@ Vehicle *VehicleManager::CreateVehicle(const char *szType, const RGBf &cColor)
 		return NULL;
 	Vehicle *v = CreateVehicleFromNode(node, cColor);
 	if (v)
-		v->SetName2(vtString("Vehicle-") + szType);
+		v->setName(vtString("Vehicle-") + szType);
 	return v;
 }
 

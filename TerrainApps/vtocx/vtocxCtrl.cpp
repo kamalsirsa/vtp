@@ -38,6 +38,7 @@
 #include "vtlib/core/NavEngines.h"
 #endif
 
+#include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
 
 #include "vtocxCtrl.h"

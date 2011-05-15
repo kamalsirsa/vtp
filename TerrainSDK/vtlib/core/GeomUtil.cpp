@@ -48,7 +48,7 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	pMats->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), true, true, false, fAlpha);
 
 	pGeom->SetMaterials(pMats);
-	pGeom->SetName2("3D Crosshair");
+	pGeom->setName("3D Crosshair");
 
 	for (i = 0; i < 3; i++)
 		pGeom->AddMesh(mesh[i], i);

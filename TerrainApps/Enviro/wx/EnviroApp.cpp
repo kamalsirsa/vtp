@@ -18,19 +18,22 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
-#include "../Options.h"
-#include "EnviroGUI.h"		// for g_App
-#include "vtui/Helper.h"	// for LogWindowsVersion, ProgressDialog
+
+#include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
+
+#include "vtui/Helper.h"	// for LogWindowsVersion, ProgressDialog
+#include "vtui/GraphicsWindowWX.h"
+
 #include "xmlhelper/easyxml.hpp"
 
+#include "../Options.h"
+#include "EnviroGUI.h"		// for g_App
 #include "EnviroApp.h"
 #include "EnviroFrame.h"
 #include "canvas.h"
 #include "StartupDlg.h"
 #include "TParamsDlg.h"
-
-#include "vtui/GraphicsWindowWX.h"
 
 // Allow customized versions of Enviro to provide their own Frame
 #ifdef FRAME_NAME

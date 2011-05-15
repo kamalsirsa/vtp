@@ -10,6 +10,7 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/Triangulate.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
 
 #include "Light.h"
 #include "Terrain.h"
@@ -726,7 +727,7 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 	else
 	{
 		m_pFenceGeom = new vtGeom;
-		m_pFenceGeom->SetName2("Fence");
+		m_pFenceGeom->setName("Fence");
 		m_pFenceGeom->SetMaterials(GetSharedMaterialArray());
 	}
 

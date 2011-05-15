@@ -21,6 +21,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Location.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/FilePath.h"		// for FindFileOnPaths
 #include "vtdata/vtLog.h"
 #include "vtui/ColorMapDlg.h"

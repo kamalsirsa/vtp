@@ -1,13 +1,14 @@
 //
 // Structure3d.cpp
 //
-// Copyright (c) 2001-2010 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
 
 #include "Structure3d.h"
 #include "Building3d.h"
@@ -184,7 +185,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	{
 		// constructing for the first time
 		m_pContainer = new vtTransform;
-		m_pContainer->SetName2("instance container");
+		m_pContainer->setName("instance container");
 	}
 	m_pContainer->AddChild(m_pModel);
 
@@ -564,7 +565,7 @@ void vtMaterialDescriptorArray3d::CreateMaterials()
 			break;
 
 		case VT_MATERIAL_COLOURABLE_TEXTURE:
-			CreateColorableMaterial(descriptor);
+			CreateColorableTextureMaterial(descriptor);
 			break;
 		}
 	}
@@ -578,7 +579,7 @@ void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor
 	vtMaterial *pMat = MakeMaterial(descriptor, color);
 
 	vtString path = FindFileOnPaths(vtGetDataPath(), descriptor->GetSourceName());
-	pMat->SetTexture2(path);
+	pMat->SetTexture(vtImageRead(path));
 	pMat->SetClamp(false);	// material needs to repeat
 
 	if (descriptor->GetBlending())
@@ -587,7 +588,7 @@ void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor
 	descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
 }
 
-void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *descriptor)
+void vtMaterialDescriptorArray3d::CreateColorableTextureMaterial(vtMaterialDescriptor *descriptor)
 {
 	vtString source = descriptor->GetSourceName();
 	vtString path = FindFileOnPaths(vtGetDataPath(), source);
@@ -596,11 +597,12 @@ void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *
 		VTLOG("\n\tMissing texture: %s\n", (const char *) source);
 		return;
 	}
+	vtImagePtr img = vtImageRead(path);
 
 	for (int i = 0; i < COLOR_SPREAD; i++)
 	{
 		vtMaterial *pMat = MakeMaterial(descriptor, m_Colors[i]);
-		pMat->SetTexture2(path);
+		pMat->SetTexture(img);
 		pMat->SetMipMap(true);
 		pMat->SetClamp(false);
 		int index = m_pMaterials->AppendMaterial(pMat);
@@ -654,7 +656,7 @@ int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
 	if (Type == VT_MATERIAL_SELFCOLOURED_TEXTURE)
 		return iIndex;
 
-	// otherwise, it is of type VT_MATERIAL_COLOURED or VT_MATERIAL_COLOURABLE_TEXTURE
+	// otherwise, it is of type VT_MATERIAL_COLOURABLE or VT_MATERIAL_COLOURABLE_TEXTURE
 	// match the closest color.
 	float bestError = 1E8;
 	int bestMatch = -1;

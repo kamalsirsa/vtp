@@ -18,6 +18,7 @@
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
 
 #include "app.h"
@@ -77,7 +78,7 @@ bool vtApp::CreateScene()
 	paths.push_back(vtString("G:/Data-Distro/"));
 	paths.push_back(vtString("../Data/"));
 	paths.push_back(vtString("Data/"));
-	pScene->SetDataPath(paths);
+	vtSetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
 	vtGroup *pTopGroup = m_pTerrainScene->BeginTerrainScene();

@@ -431,6 +431,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\ImageSprite.cpp">
+			</File>
+			<File
 				RelativePath="..\core\IntersectionEngine.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -877,6 +880,9 @@
 			</File>
 			<File
 				RelativePath="..\core\Globe.h">
+			</File>
+			<File
+				RelativePath="..\core\ImageSprite.h">
 			</File>
 			<File
 				RelativePath="..\core\IntersectionEngine.h">

@@ -9,6 +9,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/FilePath.h"	// for FindFileOnPaths
+#include "vtdata/DataPath.h"
 #include "vtTin3d.h"
 
 vtTin3d::vtTin3d()

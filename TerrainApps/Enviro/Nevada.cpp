@@ -3,12 +3,13 @@
 //
 // Terrain implementation specific to Black Rock City, Nevada.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Light.h"	// for TERRAIN_AMBIENT etc.
+#include "vtdata/DataPath.h"
 
 #include "Nevada.h"
 #include "Engines.h"
@@ -74,7 +75,7 @@ void NevadaTerrain::CreateCustomCulture()
 	// create Epoch engine
 	EpochEngine *pEE = new EpochEngine(this, m_fLow, m_fHigh,
 		m_pDetailMat2, m_pDetailMat);
-	pEE->SetName2("Epoch Engine");
+	pEE->setName("Epoch Engine");
 	pEE->SetTarget(vtGetScene()->GetCamera());
 	AddEngine(pEE);
 //	AddNode(pEE->m_pSprite);
@@ -117,7 +118,7 @@ void NevadaTerrain::CreateWater()
 	// create water plane
 	geom = CreatePlaneGeom(m_pMats, id, 0, 2, 1, org, org+size, 125.0f, 10);
 	m_pWaterShape = new vtMovGeom(geom);
-	m_pWaterShape->SetName2("WaterSurface");
+	m_pWaterShape->setName("WaterSurface");
 	AddNode(m_pWaterShape);
 
 	id = m_pMats->AddTextureMaterial2(str,
@@ -128,7 +129,7 @@ void NevadaTerrain::CreateWater()
 	// and another plane
 	geom = CreatePlaneGeom(m_pMats, id,  0, 2, 1, org, org+size, 260.3f, 10);
 	m_pWaterShape2 = new vtMovGeom(geom);
-	m_pWaterShape2->SetName2("WaterSurface2");
+	m_pWaterShape2->setName("WaterSurface2");
 	m_pWaterShape2->Translate1(FPoint3(0.0f, .01f, 0.0f));
 	AddNode(m_pWaterShape2);
 }
@@ -182,7 +183,7 @@ void NevadaTerrain::CreatePast()
 {
 	m_pPast = new vtGroup();
 	AddNode(m_pPast);
-	m_pPast->SetName2("Past");
+	m_pPast->setName("Past");
 	m_pPast->SetEnabled(false);
 
 	FPoint3 center;
@@ -243,7 +244,7 @@ void NevadaTerrain::CreatePast()
 
 	// use a 12x12 grid of LOD cells
 	m_pTreeGrid = new vtLodGrid(origin, size, 12, fLODDistance);
-	m_pTreeGrid->SetName2("Tree Grid");
+	m_pTreeGrid->setName("Tree Grid");
 	m_pPast->AddChild(m_pTreeGrid);
 
 	//populate with trees.  set initial size to zero?
@@ -312,7 +313,7 @@ void NevadaTerrain::CreatePresent()
 	m_pPresent = new vtGroup();
 
 	AddNode(m_pPresent);
-	m_pPresent->SetName2("Present");
+	m_pPresent->setName("Present");
 	m_pPresent->SetEnabled(false);
 
 #if 0
@@ -396,7 +397,7 @@ void NevadaTerrain::CreateFuture()
 	m_pFuture = new vtGroup();
 
 	AddNode(m_pFuture);
-	m_pFuture->SetName2("Future");
+	m_pFuture->setName("Future");
 	m_pFuture->SetEnabled(false);
 }
 
@@ -495,7 +496,7 @@ EpochEngine::EpochEngine(NevadaTerrain *pNevada, float fLow, float fHigh,
 	m_pSpriteText->SetColor(RGBAf(0,0.2f,0));
 
 	m_pSprite = new vtGeom;
-	m_pSprite->SetName2("Year Sprite");
+	m_pSprite->setName("Year Sprite");
 	m_pSprite->AddTextMesh(m_pSpriteText, 0);
 
 	vtGetScene()->GetHUD()->AddChild(m_pSprite);

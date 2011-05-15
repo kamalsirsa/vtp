@@ -1,7 +1,7 @@
 //
 // Name:		StyleDlg.cpp
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project.
+// Copyright (c) 2004-2011 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,6 +18,7 @@
 
 #include "StyleDlg.h"
 #include "vtlib/vtlib.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/Features.h"
 #include "vtdata/FilePath.h"
 #include "vtui/Helper.h"

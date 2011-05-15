@@ -30,10 +30,10 @@ void ItemGroup::CreateNodes()
 	m_pRulers = NULL;
 	m_pGroup = new vtGroup;
 	m_pLOD = new vtLOD;
-	m_pLOD->SetName2("LOD Container");
+	m_pLOD->setName("LOD Container");
 	m_pTop = new vtGroup;
-	m_pLOD->SetName2("Individual Container");
-	m_pTop->SetName2("ItemGroupTop");
+	m_pLOD->setName("Individual Container");
+	m_pTop->setName("ItemGroupTop");
 	m_pTop->AddChild(m_pLOD);
 	m_pTop->AddChild(m_pGroup);
 }
@@ -107,7 +107,7 @@ void ItemGroup::UpdateCrosshair(const FSphere &sph)
 	}
 	float size = sph.radius * 2;
 	m_pAxes = Create3DCursor(size, size/100, 0.4f);
-	m_pAxes->SetName2("Origin Axes");
+	m_pAxes->setName("Origin Axes");
 	m_pTop->AddChild(m_pAxes);
 }
 
@@ -121,7 +121,7 @@ void ItemGroup::UpdateRulers(osgText::Font *font, const FSphere &sph)
 	}
 	float size = sph.radius * 2;
 	m_pRulers = CreateRulers(font, size);
-	m_pRulers->SetName2("Rulers");
+	m_pRulers->setName("Rulers");
 	m_pTop->AddChild(m_pRulers);
 }
 

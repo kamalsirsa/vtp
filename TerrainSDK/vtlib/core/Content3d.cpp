@@ -10,6 +10,7 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
 #include "Content3d.h"
 
 vtItem3d::vtItem3d()
@@ -77,7 +78,7 @@ bool vtItem3d::LoadModels()
 		{
 			// Wrap in a transform node so that we can scale/rotate the node
 			vtTransform *pTrans = new vtTransform;
-			pTrans->SetName2("scaling xform");
+			pTrans->setName("scaling xform");
 			pTrans->AddChild(pNode);
 			pTrans->Identity();
 			pTrans->Scale3(model->m_scale, model->m_scale, model->m_scale);
@@ -164,7 +165,7 @@ vtNode *vtContentManager3d::CreateNodeFromItemname(const char *itemname)
 		if (!m_pGroup)
 		{
 			m_pGroup = new vtGroup;
-			m_pGroup->SetName2("Content Manager Container Group");
+			m_pGroup->setName("Content Manager Container Group");
 		}
 
 		// Add to content container: must keep a reference to each item's

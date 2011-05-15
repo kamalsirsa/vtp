@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -81,9 +81,9 @@ public:
 	bool GetEnabled() const;
 
 	/** Set the name of the node. */
-	void SetName2(const char *str);
+	void setName(const char *str) { m_pNode->setName(str); }
 	/** Get the name of the node. */
-	const char *GetName2() const;
+	const char *getName() const { return m_pNode->getName().c_str(); }
 
 	/// Get the Bounding Box of the node, in world coordinates
 	void GetBoundBox(FBox3 &box);
@@ -639,30 +639,6 @@ protected:
 	bool m_bPixelCoords;
 
 	virtual ~vtHUD() {}
-};
-
-/**
- * This class which contains a geometry with a single textured rectangle
- *  mesh.  It is particularly useful in conjunction with vtHUD, for
- *  superimposing a single image on the window.
- */
-class vtImageSprite : public osg::Referenced
-{
-public:
-	vtImageSprite();
-	~vtImageSprite();
-	bool Create(const char *szTextureName, bool bBlending = false);
-	bool Create(vtImage *pImage, bool bBlending = false);
-	IPoint2 GetSize() const { return m_Size; }
-	void SetPosition(float l, float t, float r, float b, float rot = 0.0f);
-	void SetImage(vtImage *image);
-	vtNode *GetNode() const { return m_pGeom; }
-
-protected:
-	vtMaterialArrayPtr m_pMats;
-	vtGeom *m_pGeom;
-	vtMesh *m_pMesh;
-	IPoint2 m_Size;
 };
 
 /* Intersection method */

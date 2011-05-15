@@ -150,7 +150,7 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 	pMats->AddRGBMaterial1(color, false, false, true);
 
 	m_pGeom = new vtGeom;
-	m_pGeom->SetName2("Contour Geometry");
+	m_pGeom->setName("Contour Geometry");
 	m_pGeom->SetMaterials(pMats);
 
 	m_pMF = new vtMeshFactory(m_pGeom, vtMesh::LINE_STRIP, 0, 30000, 0);

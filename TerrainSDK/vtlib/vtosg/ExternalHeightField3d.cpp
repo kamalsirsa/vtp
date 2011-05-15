@@ -1,4 +1,5 @@
 #include "vtlib/vtlib.h"
+#include "vtdata/vtString.h"
 #include <osgDB/ReadFile>
 #include <osg/PagedLOD>
 #include <osgTerrain/TerrainTile>

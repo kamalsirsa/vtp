@@ -292,21 +292,6 @@ void vtMaterial::SetTexture(vtImage *pImage)
 }
 
 /**
- * Loads and sets the texture for a material.
- */
-bool vtMaterial::SetTexture2(const char *szFilename)
-{
-	vtImagePtr image = vtImageRead(szFilename);
-	if (image.valid())
-	{
-		SetTexture(image);
-		return true;
-	}
-	return false;
-}
-
-
-/**
  * Returns the texture (image) associated with a material.
  */
 vtImage	*vtMaterial::GetTexture() const
@@ -394,14 +379,7 @@ bool vtMaterial::GetMipMap() const
 // vtMaterialArray
 //
 
-vtMaterialArray::vtMaterialArray()
-{
-}
-
-vtMaterialArray::~vtMaterialArray()
-{
-}
-
+/** Find a material in this array, by pointer */
 int vtMaterialArray::Find(vtMaterial *mat)
 {
 	for (size_t i = 0; i < size(); i++)

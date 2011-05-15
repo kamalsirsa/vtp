@@ -16,6 +16,7 @@
 // Headers for the VTP libraries
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Event.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
 
 #include "canvas.h"

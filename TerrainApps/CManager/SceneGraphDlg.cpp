@@ -196,10 +196,10 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		str = _("Other");
 		nImage = 8;
 	}
-	if (pNode->GetName2())
+	if (pNode->getName())
 	{
 		str += _T(" \"");
-		str += wxString::FromAscii(pNode->GetName2());
+		str += wxString::FromAscii(pNode->getName());
 		str += _T("\"");
 	}
 
@@ -284,7 +284,7 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 
 	if (!pEng) return;
 
-	wxString str(pEng->GetName2(), wxConvUTF8);
+	wxString str(pEng->getName(), wxConvUTF8);
 	if (str == _T(""))
 		str = _T("unnamed");
 
@@ -297,7 +297,7 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 		if (node)
 		{
 			str += _T("\"");
-			str += wxString::FromAscii(node->GetName2());
+			str += wxString::FromAscii(node->getName());
 			str += _T("\"");
 		}
 		else

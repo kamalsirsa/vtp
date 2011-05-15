@@ -9,14 +9,16 @@
 
 #include "vtdata/vtLog.h"
 #include "vtdata/CubicSpline.h"
+#include "vtdata/DataPath.h"
 
 #include "Terrain.h"
 #include "Light.h"
 #include "Building3d.h"
 #include "IntersectionEngine.h"
 #include "Fence3d.h"
-#include "vtTin3d.h"
 #include "PagedLodGrid.h"
+#include "vtTin3d.h"
+#include "ImageSprite.h"
 
 #include "TVTerrain.h"
 #include "SMTerrain.h"
@@ -376,7 +378,7 @@ void vtTerrain::_CreateRoads()
 				// add an traffic control engine
 				lightEngine = new vtIntersectionEngine(node);
 				sprintf(string, "Traffic Control: Node %i", node->m_id);
-				lightEngine->SetName2(string);
+				lightEngine->setName(string);
 				AddEngine(lightEngine);
 			}
 			node = (NodeGeom*)node->m_pNext;
@@ -810,18 +812,18 @@ bool vtTerrain::_CreateDynamicTerrain()
 	if (method == LM_TOPOVISTA)
 	{
 		m_pDynGeom = new TVTerrain;
-		m_pDynGeom->SetName2("TV Geom");
+		m_pDynGeom->setName("TV Geom");
 	}
 	else if (method == LM_MCNALLY)
 	{
 		m_pDynGeom = new SMTerrain;
-		m_pDynGeom->SetName2("Seumas Geom");
+		m_pDynGeom->setName("Seumas Geom");
 	}
 	else if (method == LM_DEMETER)
 	{
 #if 0	// disabled until its working
 		m_pDynGeom = new DemeterTerrain();
-		m_pDynGeom->SetName2("Demeter Geom");
+		m_pDynGeom->setName("Demeter Geom");
 #endif
 	}
 	else if (method == LM_CUSTOM)
@@ -831,12 +833,12 @@ bool vtTerrain::_CreateDynamicTerrain()
 #else
 		m_pDynGeom = new CustomTerrain;
 #endif
-		m_pDynGeom->SetName2("CustomTerrain Geom");
+		m_pDynGeom->setName("CustomTerrain Geom");
 	}
 	else if (method == LM_ROETTGER)
 	{
 		m_pDynGeom = new SRTerrain;
-		m_pDynGeom->SetName2("Roettger Geom");
+		m_pDynGeom->setName("Roettger Geom");
 	}
 	// else if (method == LM_YOURMETHOD)
 	// {
@@ -885,7 +887,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 	// build heirarchy (add terrain to scene graph)
 	m_pDynGeomScale = new vtTransform;
 	m_pDynGeomScale->SetCastShadow(false);
-	m_pDynGeomScale->SetName2("Dynamic Geometry Scaling Container");
+	m_pDynGeomScale->setName("Dynamic Geometry Scaling Container");
 
 	FPoint2 spacing = m_pElevGrid->GetWorldSpacing();
 	m_pDynGeomScale->Scale3(spacing.x, m_fVerticalExag, -spacing.y);
@@ -1078,7 +1080,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 			}
 		}
 		m_pOceanGeom = new vtMovGeom(pOceanGeom);
-		m_pOceanGeom->SetName2("Ocean plane");
+		m_pOceanGeom->setName("Ocean plane");
 		m_pOceanGeom->SetCastShadow(false);
 		m_pTerrainGroup->AddChild(m_pOceanGeom);
 	}
@@ -1109,7 +1111,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 			}
 		}
 		m_pHorizonGeom = new vtMovGeom(pHorizonGeom);
-		m_pHorizonGeom->SetName2("Horizon plane");
+		m_pHorizonGeom->setName("Horizon plane");
 		m_pHorizonGeom->SetCastShadow(false);
 		m_pTerrainGroup->AddChild(m_pHorizonGeom);
 	}
@@ -1509,7 +1511,7 @@ void vtTerrain::_CreateCulture()
 		_CreateRoads();
 
 	m_pBBEngine = new vtSimpleBillboardEngine(PID2f);
-	m_pBBEngine->SetName2("Billboard Engine");
+	m_pBBEngine->setName("Billboard Engine");
 	m_pEngineGroup->AddChild(m_pBBEngine);
 
 	_CreateVegetation();
@@ -1533,7 +1535,7 @@ void vtTerrain::_CreateCulture()
 			if (pSprite->Create(fname, true))	// blending true
 			{
 				m_pOverlay = new vtGroup;
-				m_pOverlay->SetName2("Overlay");
+				m_pOverlay->setName("Overlay");
 				IPoint2 size = pSprite->GetSize();
 				pSprite->SetPosition((float) x, (float) y+size.y, (float) x+size.x, (float) y);
 				m_pOverlay->AddChild(pSprite->GetNode());
@@ -1569,7 +1571,7 @@ void vtTerrain::_SetupVegGrid(float fLODDistance)
 
 	m_pVegGrid = new vtSimpleLodGrid;
 	m_pVegGrid->Setup(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
-	m_pVegGrid->SetName2("Vegetation LOD Grid");
+	m_pVegGrid->setName("Vegetation LOD Grid");
 	m_pVegGrid->SetCastShadow(false);
 	m_pTerrainGroup->AddChild(m_pVegGrid);
 }
@@ -1671,7 +1673,7 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 	m_pStructGrid->SetCastShadow(false);
 
 	m_pStructGrid->Setup(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
-	m_pStructGrid->SetName2("Structures LOD Grid");
+	m_pStructGrid->setName("Structures LOD Grid");
 	m_pTerrainGroup->AddChild(m_pStructGrid);
 }
 
@@ -1998,7 +2000,7 @@ void vtTerrain::SetShadows(bool shadows)
 				m_pShadow->SetShadowSphereRadius(GetLODDistance(TFT_STRUCTURES)/2);
 			m_pShadow->SetRecalculateEveryFrame(m_Params.GetValueBool(STR_SHADOWS_EVERY_FRAME));
 			m_pShadow->AddLodGridToIgnore(GetStructureGrid());
-			m_pShadow->SetName2("Shadow Group");
+			m_pShadow->setName("Shadow Group");
 #if !VTLISPSM
 			// When we connect up multitexturing it should probably be set up
 			// here intitially. But at the moment we have not stored the texture
@@ -2207,16 +2209,16 @@ void vtTerrain::CreateStep0()
 
 	// create terrain group - this holds all surfaces for the terrain
 	m_pContainerGroup = new vtGroup;
-	m_pContainerGroup->SetName2("Terrain Container");
+	m_pContainerGroup->setName("Terrain Container");
 	m_pTerrainGroup = new vtGroup;
-	m_pTerrainGroup->SetName2("Terrain Group");
+	m_pTerrainGroup->setName("Terrain Group");
 	m_pUnshadowedGroup = new vtGroup;
-	m_pUnshadowedGroup->SetName2("Unshadowed Group");
+	m_pUnshadowedGroup->setName("Unshadowed Group");
 
 #if 0
 	// TEST new shadow functionality
 	m_pShadow = new vtShadow;
-	m_pShadow->SetName2("Shadow Group");
+	m_pShadow->setName("Shadow Group");
 	ConnectFogShadow(false, true);
 #else
 	// Initially, there is no fog or shadow
@@ -2231,7 +2233,7 @@ void vtTerrain::CreateStep0()
 	m_pEngineGroup = new vtEngine;
 	vtString name = "Engines for ";
 	name += GetName();
-	m_pEngineGroup->SetName2(name);
+	m_pEngineGroup->setName(name);
 	m_AnimContainer.SetEngineContainer(m_pEngineGroup);
 }
 
@@ -2401,7 +2403,7 @@ bool vtTerrain::CreateStep1()
 
 		// Elevation input is a set of tiles, which will be loaded later as needed
 		m_pTiledGeom = new vtTiledGeom;
-		m_pTiledGeom->SetName2("Tiled Geometry Container");
+		m_pTiledGeom->setName("Tiled Geometry Container");
 		m_pTiledGeom->SetVerticalExag(m_fVerticalExag);
 		m_pTiledGeom->SetVertexTarget(m_Params.GetValueInt(STR_VERTCOUNT));
 		m_pTiledGeom->SetProgressCallback(m_progress_callback);
@@ -2590,7 +2592,7 @@ bool vtTerrain::CreateStep5()
 
 	// Node to put all the scale features under
 	m_pScaledFeatures = new vtTransform;
-	m_pScaledFeatures->SetName2("Scaled Features");
+	m_pScaledFeatures->setName("Scaled Features");
 	m_pScaledFeatures->Scale3(1.0f, m_fVerticalExag, 1.0f);
 	m_pScaledFeatures->SetCastShadow(false);
 	m_pUnshadowedGroup->AddChild(m_pScaledFeatures);
@@ -2650,7 +2652,7 @@ bool vtTerrain::CreateStep5()
 			{
 				m_pWaterTin3d->SetTextureMaterials(m_pEphemMats);
 				vtGeom *wsgeom = m_pWaterTin3d->CreateGeometry(false, m_idx_water);
-				wsgeom->SetName2("Water surface");
+				wsgeom->setName("Water surface");
 				wsgeom->SetCastShadow(false);
 
 				// We require that the TIN has a compatible CRS with the base
@@ -2722,7 +2724,7 @@ bool vtTerrain::CreateStep5()
 			continue;
 		}
 		vtAnimPathEngine *engine = new vtAnimPathEngine(anim);
-		engine->SetName2("AnimPathEngine");
+		engine->setName("AnimPathEngine");
 		engine->SetTarget(vtGetScene()->GetCamera());
 		engine->SetEnabled(false);
 		AddEngine(engine);
@@ -2996,7 +2998,7 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
 	if (hlist.size() > 0)
 	{
 		// take first match encountered
-		vtString name = hlist[0].node->GetName2();
+		vtString name = hlist[0].node->getName();
 		fAltitude =  hlist[0].point.y;
 
 		if (bTrue)

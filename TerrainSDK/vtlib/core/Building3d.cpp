@@ -4,14 +4,15 @@
 // The vtBuilding3d class extends vtBuilding with the ability to procedurally
 // create 3D geometry of the buildings.
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/HeightField.h"
-#include "vtdata/Triangulate.h"
 #include "vtdata/PolyChecker.h"
+#include "vtdata/Triangulate.h"
 
 #include "Light.h"
 #include "Terrain.h"
@@ -259,7 +260,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 
 	// wrap in a shape and set materials
 	m_pGeom = new vtGeom;
-	m_pGeom->SetName2("building-geom");
+	m_pGeom->setName("building-geom");
 	vtMaterialArray *pShared = GetSharedMaterialArray();
 	m_pGeom->SetMaterials(pShared);
 
@@ -1228,7 +1229,7 @@ bool vtBuilding3d::CreateNode(vtTerrain *pTerr)
 	{
 		// constructing for the first time
 		m_pContainer = new vtTransform;
-		m_pContainer->SetName2("building container");
+		m_pContainer->setName("building container");
 	}
 	if (!CreateGeometry(pTerr->GetHeightField()))
 		return false;

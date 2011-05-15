@@ -54,8 +54,8 @@ public:
 	/// Return the number of targets for this engine.
 	unsigned int NumTargets() { return m_Targets.GetSize(); }
 
-	void SetName2(const char *str) { m_strName = str; }
-	const char *GetName2() { return m_strName; }
+	void setName(const char *str) { m_strName = str; }
+	const char *getName() { return m_strName; }
 
 	/// Virtual handler, to catch mouse events, can be overridden by your engine class.
 	virtual void OnMouse(vtMouseEvent &event);

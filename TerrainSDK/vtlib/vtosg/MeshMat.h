@@ -63,7 +63,6 @@ public:
 	bool GetWireframe() const;
 
 	void SetTexture(vtImage *pImage);
-	bool SetTexture2(const char *szFilename);
 	vtImage	*GetTexture() const;
 	void ModifiedTexture();
 
@@ -85,9 +84,6 @@ public:
 	void SetEmission1(const RGBf &c) { SetEmission(c.r, c.g, c.b); }
 	void SetEmission2(float f) { SetEmission(f, f, f); }
 
-	void SetName(const vtString &name) { setName(name); }
-	const vtString GetName() const { return getName().c_str(); }
-
 	// global option
 	static bool s_bTextureCompression;
 
@@ -108,9 +104,6 @@ typedef osg::ref_ptr<vtMaterial> vtMaterialPtr;
 class vtMaterialArray : public std::vector<vtMaterialPtr>, public osg::Referenced
 {
 public:
-	vtMaterialArray();
-	~vtMaterialArray();
-
 	int Find(vtMaterial *mat);
 	int AddTextureMaterial(class vtImage *pImage,
 						 bool bCulling, bool bLighting,

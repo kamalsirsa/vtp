@@ -1,7 +1,7 @@
 //
 // Name: StartupDlg.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,6 +18,7 @@
 
 #include "vtlib/vtlib.h"	// mostly for gl.h
 #include "vtlib/core/TParams.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for AddFilenamesToComboBox
 

@@ -8,6 +8,8 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/LocalConversion.h"
 #include "vtdata/HeightField.h"
+#include "vtdata/vtString.h"
+
 #include "LodGrid.h"
 
 #define CellIndex(a,b) ((a*m_dim)+b)
@@ -159,7 +161,7 @@ void vtSimpleLodGrid::AllocateCell(int a, int b)
 	m_pCells[i] = new vtLOD;
 	vtString name;
 	name.Format("LOD cell %d %d", a, b);
-	m_pCells[i]->SetName2(name);
+	m_pCells[i]->setName(name);
 
 	float ranges[2];
 	ranges[0] = 0.0f;
@@ -175,7 +177,7 @@ void vtSimpleLodGrid::AllocateCell(int a, int b)
 		m_pHeightField->FindAltitudeAtPoint(lod_center, lod_center.y);
 
 	vtGroup *group = new vtGroup;
-	group->SetName2("LOD group");
+	group->setName("LOD group");
 	m_pCells[i]->SetCenter(lod_center);
 	m_pCells[i]->AddChild(group);
 

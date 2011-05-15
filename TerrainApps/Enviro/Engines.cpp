@@ -3,7 +3,7 @@
 //
 // Engines used by Enviro
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -24,7 +24,7 @@ float utm_points_ito[5][2] = {
 	{ 287050, 2182130 },	// begin approach
 	{ 286820, 2182140 },	// touchdown point
 	{ 286760, 2182194 },	// begin takeoff point
-	{ 286400, 2182200 }	// end takeoff point
+	{ 286400, 2182200 }		// end takeoff point
 };
 
 float utm_points_koa[5][2] = {
@@ -655,7 +655,7 @@ MapOverviewEngine::MapOverviewEngine()
 	m_pOwnedImage = NULL;
 
 	m_pMapGroup = new vtGroup;
-	m_pMapGroup->SetName2("MapOverview group");
+	m_pMapGroup->setName("MapOverview group");
 
 	vtGetScene()->GetHUD()->AddChild(m_pMapGroup);
 	CreateMapView();
@@ -762,7 +762,7 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 	else
 	{
 		m_pMapView->Create(image, depth == 32);
-		m_pMapView->GetNode()->SetName2("Map Overview Image Sprite");
+		m_pMapView->GetNode()->setName("Map Overview Image Sprite");
 	}
 
 	FPoint2 terrainSize(pTerr->GetHeightField()->m_WorldExtents.Width(),

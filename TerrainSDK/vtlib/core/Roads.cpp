@@ -9,6 +9,8 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
+
 #include "Light.h"
 #include "Roads.h"
 #include "TerrainScene.h"	// content manager for sign models
@@ -813,7 +815,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 #endif
 
 		pGeom = new vtGeom;
-		pGeom->SetName2("road");
+		pGeom->setName("road");
 		m_pRoads[a][b]->AddChild(pGeom);
 		pGeom->SetMaterials(m_pMats);
 
@@ -831,7 +833,7 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture, bool progress_callback(i
 	_CreateMaterials(do_texture);
 
 	m_pGroup = new vtGroup;
-	m_pGroup->SetName2("Roads");
+	m_pGroup->setName("Roads");
 
 	// wrap with an array of simple LOD nodes
 	int a, b;

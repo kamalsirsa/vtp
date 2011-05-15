@@ -15,6 +15,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
 #include "Trees.h"
 #include "Terrain.h"
 #include "Light.h"

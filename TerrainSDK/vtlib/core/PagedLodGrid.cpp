@@ -192,7 +192,7 @@ void vtPagedStructureLodGrid::AllocateCell(int a, int b)
 	m_pCells[i] = new vtPagedStructureLOD;
 	vtString name;
 	name.Format("LOD cell %d %d", a, b);
-	m_pCells[i]->SetName2(name);
+	m_pCells[i]->setName(name);
 
 	m_pCells[i]->SetRange(m_fLODDistance);
 

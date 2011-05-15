@@ -14,6 +14,7 @@
 #include "vtlib/core/TiledGeom.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/PolyChecker.h"
+#include "vtdata/DataPath.h"
 
 #include "Engines.h"
 #include "Enviro.h"
@@ -278,7 +279,7 @@ void Enviro::StartControlEngine()
 	VTLOG1("StartControlEngine\n");
 
 	m_pControlEng = new ControlEngine();
-	m_pControlEng->SetName2("Control Engine");
+	m_pControlEng->setName("Control Engine");
 	vtGetScene()->AddEngine(m_pControlEng);
 }
 
@@ -764,7 +765,7 @@ void Enviro::SetupScene1()
 
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCamera = pScene->GetCamera();
-	if (pCamera) pCamera->SetName2("Standard Camera");
+	if (pCamera) pCamera->setName("Standard Camera");
 
 	m_pRoot = BeginTerrainScene();
 	pScene->SetRoot(m_pRoot);
@@ -775,42 +776,42 @@ void Enviro::SetupScene2()
 	VTLOG1("SetupScene2\n");
 
 	m_pNavEngines = new vtEngine;
-	m_pNavEngines->SetName2("Navigation Engines");
+	m_pNavEngines->setName("Navigation Engines");
 	vtGetScene()->GetRootEngine()->AddChild(m_pNavEngines);
 
 	// Make navigation engines
 	m_pOrthoFlyer = new vtOrthoFlyer(1.0f);
-	m_pOrthoFlyer->SetName2("Orthographic View Flyer");
+	m_pOrthoFlyer->setName("Orthographic View Flyer");
 	m_pOrthoFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pOrthoFlyer);
 
 	m_pQuakeFlyer = new QuakeFlyer(1.0f);
-	m_pQuakeFlyer->SetName2("Quake-Style Flyer");
+	m_pQuakeFlyer->setName("Quake-Style Flyer");
 	m_pQuakeFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pQuakeFlyer);
 
 	m_pVFlyer = new VFlyer(1.0f);
-	m_pVFlyer->SetName2("Velocity-Gravity Flyer");
+	m_pVFlyer->setName("Velocity-Gravity Flyer");
 	m_pVFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pVFlyer);
 
 	m_pTFlyer = new vtTerrainFlyer(1.0f);
-	m_pTFlyer->SetName2("Terrain-following Flyer");
+	m_pTFlyer->setName("Terrain-following Flyer");
 	m_pTFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pTFlyer);
 
 	m_pGFlyer = new GrabFlyer(1.0f);
-	m_pGFlyer->SetName2("Grab-Pivot Flyer");
+	m_pGFlyer->setName("Grab-Pivot Flyer");
 	m_pGFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pGFlyer);
 
 	m_pFlatFlyer = new FlatFlyer();
-	m_pFlatFlyer->SetName2("Flat Flyer");
+	m_pFlatFlyer->setName("Flat Flyer");
 	m_pFlatFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pFlatFlyer);
 
 	m_pPanoFlyer = new vtPanoFlyer(1.0f);
-	m_pPanoFlyer->SetName2("Panoramic Flyer");
+	m_pPanoFlyer->setName("Panoramic Flyer");
 	m_pPanoFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pPanoFlyer);
 
@@ -819,11 +820,11 @@ void Enviro::SetupScene2()
 	// create picker object and picker engine
 	vtGeom *pCursor = Create3DCursor(1.0, g_Options.m_fCursorThickness);
 	m_pCursorMGeom = new vtMovGeom(pCursor);
-	m_pCursorMGeom->SetName2("Cursor");
+	m_pCursorMGeom->setName("Cursor");
 
 	GetTop()->AddChild(m_pCursorMGeom);
 	m_pTerrainPicker = new TerrainPicker();
-	m_pTerrainPicker->SetName2("TerrainPicker");
+	m_pTerrainPicker->setName("TerrainPicker");
 	vtGetScene()->AddEngine(m_pTerrainPicker);
 
 	m_pTerrainPicker->SetTarget(m_pCursorMGeom);
@@ -841,7 +842,7 @@ void Enviro::SetupScene2()
 		VTLOG("Creating Top-Down Camera\n");
 		m_pTopDownCamera = new vtCamera;
 		m_pTopDownCamera->SetOrtho(true);
-		m_pTopDownCamera->SetName2("Top-Down Camera");
+		m_pTopDownCamera->setName("Top-Down Camera");
 		m_pOrthoFlyer->SetTarget(m_pTopDownCamera);
 	}
 
@@ -855,13 +856,13 @@ void Enviro::SetupScene2()
 	// An engine to keep the camera above the terrain, comes after the other
 	//  engines which could move the camera.
 	m_pHeightEngine = new vtHeightConstrain(1.0f);
-	m_pHeightEngine->SetName2("Height Constrain Engine");
+	m_pHeightEngine->setName("Height Constrain Engine");
 	m_pHeightEngine->SetTarget(m_pNormalCamera);
 	vtGetScene()->GetRootEngine()->AddChild(m_pHeightEngine);
 
 	// This HUD group will contain geometry such as the legend
 	m_pHUD = new vtHUD;
-	m_pHUD->SetName2("HUD");
+	m_pHUD->setName("HUD");
 	m_pRoot->AddChild(m_pHUD);
 	m_pHUDMaterials = new vtMaterialArray;
 
@@ -869,7 +870,7 @@ void Enviro::SetupScene2()
 	m_pArial = osgText::readFontFile("Arial.ttf");
 
 	vtGeom *geom = new vtGeom;
-	geom->SetName2("Message");
+	geom->setName("Message");
 	m_pHUD->AddChild(geom);
 	if (m_pArial)
 	{
@@ -934,7 +935,7 @@ void Enviro::SetCurrentNavigator(vtTerrainFlyer *pE)
 {
 	if (m_pCurrentFlyer != NULL)
 	{
-		const char *name = m_pCurrentFlyer->GetName2();
+		const char *name = m_pCurrentFlyer->getName();
 		VTLOG("Disabling '%s'\n", name);
 
 		m_pCurrentFlyer->SetEnabled(false);
@@ -944,7 +945,7 @@ void Enviro::SetCurrentNavigator(vtTerrainFlyer *pE)
 		VTLOG1("No navigator now enabled.\n");
 	else
 	{
-		const char *name = m_pCurrentFlyer->GetName2();
+		const char *name = m_pCurrentFlyer->getName();
 		VTLOG(" Enabling '%s'\n", name);
 
 		m_pCurrentFlyer->SetEnabled(true);
@@ -1234,7 +1235,7 @@ void Enviro::SetMessage(const vtString &msg, float fTime)
 	if (m_pMessageSprite == NULL)
 	{
 		m_pMessageSprite = new vtSprite;
-		m_pMessageSprite->SetName2("MessageSprite");
+		m_pMessageSprite->setName("MessageSprite");
 		m_pRoot->AddChild(m_pMessageSprite);
 	}
 	if (msg == "")
@@ -2721,7 +2722,7 @@ void Enviro::CreateMapOverview()
 	if (!m_pMapOverview)
 	{
 		m_pMapOverview = new MapOverviewEngine;
-		m_pMapOverview->SetName2("Map overview engine");
+		m_pMapOverview->setName("Map overview engine");
 		vtGetScene()->AddEngine(m_pMapOverview);
 	}
 }
@@ -2806,7 +2807,7 @@ void Enviro::CreateElevationLegend()
 	int grey = m_pHUDMaterials->AddRGBMaterial1(RGBf(.2, .2, .2), false, false); // dark grey
 
 	m_pLegendGeom = new vtGeom;
-	m_pLegendGeom->SetName2("Legend");
+	m_pLegendGeom->setName("Legend");
 	m_pLegendGeom->SetMaterials(m_pHUDMaterials);
 
 	// Solid rectangle behind it
@@ -2879,11 +2880,11 @@ void Enviro::CreateCompass()
 		return;
 
 	m_pCompassSizer = new vtSpriteSizer(CompassSprite, -133, -5, -5, -133);
-	m_pCompassSizer->SetName2("Sizer for Compass");
+	m_pCompassSizer->setName("Sizer for Compass");
 	vtGetScene()->AddEngine(m_pCompassSizer);
 
 	m_pCompassGeom = (vtGeom *) CompassSprite->GetNode();
-	m_pCompassGeom->SetName2("Compass");
+	m_pCompassGeom->setName("Compass");
 	m_pHUD->AddChild(m_pCompassGeom);
 	m_bCreatedCompass = true;
 }
@@ -2895,7 +2896,7 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 		// create a yellow wireframe polygon we can stretch later
 		int yellow = m_pHUDMaterials->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
 		vtGeom *geom = new vtGeom;
-		geom->SetName2("Selection Box");
+		geom->setName("Selection Box");
 		geom->SetMaterials(m_pHUDMaterials);
 		m_pWindowBoxMesh = new vtMesh(vtMesh::POLYGON, 0, 4);
 		m_pWindowBoxMesh->AddVertex(0,0,0);
@@ -2945,7 +2946,7 @@ void Enviro::CreateGroundVehicle(const VehicleOptions &opt)
 	float speed = 0.0f;		// kmph
 	float wheel_radius = 0.25f;
 	CarEngine *pE1 = new CarEngine(pTerr->GetHeightField(), speed, wheel_radius, car->GetTrans());
-	pE1->SetName2("drive");
+	pE1->setName("drive");
 	pE1->SetTarget(car);
 	if (pE1->FindWheelTransforms())
 	{
@@ -3014,7 +3015,7 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, floa
 				pE1 = new CarEngine(pTerrain->GetHeightField(), fSpeed, .25f,
 					road_node, 1);
 			}
-			pE1->SetName2("drive");
+			pE1->setName("drive");
 			pE1->SetTarget(car);
 			if (pE1->FindWheelTransforms())
 				pTerrain->AddEngine(pE1);

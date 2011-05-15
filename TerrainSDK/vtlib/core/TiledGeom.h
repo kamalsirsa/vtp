@@ -1,7 +1,7 @@
 //
 // vtTiledGeom : Renders tiled heightfields using Roettger's libMini library
 //
-// Copyright (c) 2005-2008 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,7 @@
 #define TILEDGEOMH
 
 #include "vtdata/HeightField.h"
+#include "vtdata/vtString.h"
 #include "minidata/MiniDatabuf.h"
 #include <map>
 

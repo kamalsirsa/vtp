@@ -4,7 +4,7 @@
 // Implements the vtStructure3d class which extends vtStructure with the
 // ability to create 3D geometry.
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -56,7 +56,7 @@ protected:
 	bool m_bMaterialsCreated;
 
 	void CreateSelfColoredMaterial(vtMaterialDescriptor *descriptor);
-	void CreateColorableMaterial(vtMaterialDescriptor *descriptor);
+	void CreateColorableTextureMaterial(vtMaterialDescriptor *descriptor);
 
 	RGBf m_Colors[COLOR_SPREAD];
 

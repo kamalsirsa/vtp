@@ -1,7 +1,7 @@
 //
 // Name: PropDlg.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,7 @@
 
 #include "cmanager_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "vtdata/vtString.h"
 
 class vtItem;
 class vtModel;

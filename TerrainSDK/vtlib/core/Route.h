@@ -9,6 +9,8 @@
 #ifndef ROUTEH
 #define ROUTEH
 
+#include "vtdata/vtString.h"
+
 class vtHeightField3d;
 class vtTerrain;
 class vtMesh;

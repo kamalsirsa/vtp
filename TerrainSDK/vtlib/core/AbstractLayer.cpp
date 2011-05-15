@@ -6,10 +6,11 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "Terrain.h"
 
 #include "AbstractLayer.h"
+#include "Terrain.h"
 
+#include "vtdata/DataPath.h"
 #include "vtdata/Features.h"	// for vtFeatureSet
 #include "vtdata/vtLog.h"
 
@@ -102,7 +103,7 @@ void vtAbstractLayer::CreateContainer()
 {
 	// first time
 	pContainer = new vtGroup;
-	pContainer->SetName2("Abstract Layer");
+	pContainer->setName("Abstract Layer");
 
 	// Abstract geometry goes into the scale features group, so it will be
 	//  scaled up/down with the vertical exaggeration.
@@ -162,7 +163,7 @@ void vtAbstractLayer::CreateGeomGroup()
 {
 	// create geometry group to contain all the meshes
 	pGeomGroup = new vtGroup;
-	pGeomGroup->SetName2("Geometry");
+	pGeomGroup->setName("Geometry");
 	pContainer->AddChild(pGeomGroup);
 
 	// Create materials.
@@ -181,12 +182,12 @@ void vtAbstractLayer::CreateGeomGroup()
 	material_index_yellow = pGeomMats->AddRGBMaterial1(RGBf(1,1,0), false, false);
 
 	pGeomObject = new vtGeom;
-	pGeomObject->SetName2("Objects");
+	pGeomObject->setName("Objects");
 	pGeomObject->SetMaterials(pGeomMats);
 	pGeomGroup->AddChild(pGeomObject);
 
 	pGeomLine = new vtGeom;
-	pGeomLine->SetName2("Lines");
+	pGeomLine->setName("Lines");
 	pGeomLine->SetMaterials(pGeomMats);
 	pGeomGroup->AddChild(pGeomLine);
 }
@@ -194,7 +195,7 @@ void vtAbstractLayer::CreateGeomGroup()
 void vtAbstractLayer::CreateLabelGroup()
 {
 	pLabelGroup = new vtGroup;
-	pLabelGroup->SetName2("Labels");
+	pLabelGroup->setName("Labels");
 	pContainer->AddChild(pLabelGroup);
 
 	// If they specified a font name, use it
@@ -631,7 +632,7 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 
 	// Create the vtGeom object to contain the vtTextMesh
 	vtGeom *geom = new vtGeom;
-	geom->SetName2(str);
+	geom->setName(str);
 
 	// Determine feature color
 	bool bGotColor = false;

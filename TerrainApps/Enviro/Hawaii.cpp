@@ -207,7 +207,7 @@ void IslandTerrain::CreateCustomCulture()
 		vtGeom *thebox = make_red_cube();
 		vtGeom *thecone = make_test_cone();
 		vtTransform *container = new vtTransform;
-		container->SetName2("Test Shape");
+		container->setName("Test Shape");
 		container->AddChild(thebox);
 		container->AddChild(thecone);
 		AddNode(container);
@@ -251,7 +251,7 @@ void IslandTerrain::create_state_park()
 		PlantModelAtPoint(table, park_location);
 //		AddNodeToStructGrid(table);
 		AddNode(table);
-		table->SetName2("Placement for Picnic Table");
+		table->setName("Placement for Picnic Table");
 
 #if 0
 		// TEMP TEST CODE
@@ -680,7 +680,7 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 		return;
 
 	vtTransform *trans = new vtTransform;
-	trans->SetName2("Plane xform");
+	trans->setName("Plane xform");
 	trans->AddChild(copy);
 	AddNode(trans);
 
@@ -692,7 +692,7 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 	code = KOA;
 
 	PlaneEngine *pEng = new PlaneEngine(fSpeedExag, code);
-	pEng->SetName2("Airplane Engine");
+	pEng->setName("Airplane Engine");
 	pEng->SetTarget(trans);
 	pEng->SetHoop(i);
 	AddEngine(pEng);
@@ -703,7 +703,7 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 		//sound stuff
 		vtSound3D* plane = new vtSound3D(m_strDataPath + "Vehicles/Airport-trim1.wav");
 		plane->Initialize();
-		plane->SetName2("Plane Sound");
+		plane->setName("Plane Sound");
 		plane->SetModel(1,1,200,200);	//set limit of how far away sound can be heard
 		plane->SetTarget(copy);			//set target
 		plane->SetMute(true);			//mute the sound until later

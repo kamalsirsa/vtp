@@ -2,7 +2,7 @@
 // Name:     app.cpp
 // Purpose:  The application class the CManager application.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -66,10 +66,10 @@ bool vtApp::OnInit(void)
 
 	VTLOG(" creating camera\n");
 	vtCamera *pCamera = pScene->GetCamera();
-	pCamera->SetName2("Default Camera");
+	pCamera->setName("Default Camera");
 
 	m_pRoot = new vtGroup;
-	m_pRoot->SetName2("Root");
+	m_pRoot->setName("Root");
 	pScene->SetRoot(m_pRoot);
 
 #if VTLIB_SGL
@@ -79,10 +79,10 @@ bool vtApp::OnInit(void)
 	// make a simple directional light
 	VTLOG(" creating light\n");
 	vtLight *pLight = new vtLight;
-	pLight->SetName2("Light");
+	pLight->setName("Light");
 	vtTransform *pMovLight = new vtTransform;
 	pMovLight->AddChild(pLight);
-	pMovLight->SetName2("Movable Light");
+	pMovLight->setName("Movable Light");
 	pLight->SetAmbient(RGBf(1, 1, 1));
 	pLight->SetDiffuse(RGBf(1, 1, 1));
 	pLight->SetSpecular(RGBf(1, 1, 1));
@@ -98,7 +98,7 @@ bool vtApp::OnInit(void)
 	vtMaterialArray *pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f), RGBf(0.0f, 0.0f, 1.0f));
 	vtGeom *pGeom = CreateSphereGeom(pMats, 0, VT_Normals, 0.5, 16);
-	pGeom->SetName2("Yellow Sphere");
+	pGeom->setName("Yellow Sphere");
 	pMats->Release();
 
 	OutputSOG osog;
@@ -123,7 +123,7 @@ bool vtApp::OnInit(void)
 	VTLOG(" creating trackball\n");
 	m_pTrackball = new vtTrackball(3.0f);
 	m_pTrackball->SetTarget(pScene->GetCamera());
-	m_pTrackball->SetName2("Trackball");
+	m_pTrackball->setName("Trackball");
 	m_pTrackball->SetRotateButton(VT_LEFT, 0);
 	m_pTrackball->SetZoomButton(VT_LEFT|VT_RIGHT, 0);
 	m_pTrackball->SetZoomScale(3000.0f);

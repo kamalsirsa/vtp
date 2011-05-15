@@ -151,7 +151,7 @@ void OutputSOG::WriteGeometry(FILE *fp, const vtGeom *pGeom, short id)
 	short components = 4;
 	Write(fp, FT_GEOMETRY, components);
 
-	vtString gname = pGeom->GetName2();
+	vtString gname = pGeom->getName();
 	Write(fp, FT_GEOMNAME, gname);
 
 	Write(fp, FT_GEOMID, id);

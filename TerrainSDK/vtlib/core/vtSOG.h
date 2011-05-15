@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include "vtdata/SOG.h"
+#include "vtdata/vtString.h"
 
 /**
  * A class to support reading vtlib scene graphs from .sog files.

@@ -1,7 +1,7 @@
 //
 // Name: EphemDlg.cpp
 //
-// Copyright (c) 2007-2008 Virtual Terrain Project
+// Copyright (c) 2007-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,6 +17,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/SkyDome.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
 #include "EphemDlg.h"
 #include "EnviroGUI.h"    // for g_App

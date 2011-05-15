@@ -1,12 +1,13 @@
 //
 // vtTerrainScene - Container class for all of the terrains loaded
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/DataPath.h"
 #include "TerrainScene.h"
 #include "Light.h"
 #include "SkyDome.h"
@@ -127,10 +128,10 @@ void vtTerrainScene::_CreateSky()
 	//m_pTop is a light group!
 	//the actual light node (m_pTop) is now parent to all nodes to be lit.
 
-	m_pTop->SetName2("Main Light");
+	m_pTop->setName("Main Light");
 	//m_pSunLight holds now only(!) the transform, which acts as the beacon node
 	m_pSunLight = new vtTransform;
-	m_pSunLight->SetName2("SunLight");
+	m_pSunLight->setName("SunLight");
 
 	//store like previously, but this time only the transform
 	m_pTop->AddChild(m_pSunLight);
@@ -147,16 +148,16 @@ void vtTerrainScene::_CreateSky()
 
 #else
 	vtLight *pLight = new vtLight;
-	pLight->SetName2("Main Light");
+	pLight->setName("Main Light");
 	m_pSunLight = new vtTransform;
 	m_pSunLight->AddChild(pLight);
-	m_pSunLight->SetName2("SunLight");
+	m_pSunLight->setName("SunLight");
 	m_pTop->AddChild(m_pSunLight);
 #endif
 
 	VTLOG(" Creating SkyDome\n");
 	m_pAtmosphereGroup = new vtGroup;
-	m_pAtmosphereGroup->SetName2("Atmosphere Group");
+	m_pAtmosphereGroup->setName("Atmosphere Group");
 	m_pTop->AddChild(m_pAtmosphereGroup);
 
 	// 'bsc' is the Bright Star Catalog
@@ -172,12 +173,12 @@ void vtTerrainScene::_CreateSky()
 	m_pSkyDome = new vtSkyDome;
 	m_pSkyDome->Create(bsc, 3, 1.0f, sun, moon);	// initially unit radius
 	m_pSkyDome->SetDayColors(horizon_color, azimuth_color);
-	m_pSkyDome->SetName2("The Sky");
+	m_pSkyDome->setName("The Sky");
 	m_pSkyDome->SetSunLight(GetSunLight());
 	m_pAtmosphereGroup->AddChild(m_pSkyDome);
 
 	m_pSkyTrack = new vtSkyTrackEngine;
-	m_pSkyTrack->SetName2("Sky-Camera-Following");
+	m_pSkyTrack->setName("Sky-Camera-Following");
 	m_pSkyTrack->m_pCamera = vtGetScene()->GetCamera();
 	m_pSkyTrack->SetTarget(m_pSkyDome);
 	vtGetScene()->AddEngine(m_pSkyTrack);
@@ -208,13 +209,13 @@ void vtTerrainScene::_CreateEngines()
 	// Set Time in motion
 	m_pTimeEngine = new vtTimeEngine;
 	m_pTimeEngine->SetTarget((vtTimeTarget *)this);
-	m_pTimeEngine->SetName2("Terrain Time");
+	m_pTimeEngine->setName("Terrain Time");
 	m_pTimeEngine->SetEnabled(false);
 	vtGetScene()->AddEngine(m_pTimeEngine);
 
 	// Create engine group for all terrain engines
 	m_pTerrainEngines = new vtEngine;
-	m_pTerrainEngines->SetName2("Terrain Engines");
+	m_pTerrainEngines->setName("Terrain Engines");
 	vtGetScene()->AddEngine(m_pTerrainEngines);
 }
 
@@ -234,7 +235,7 @@ vtGroup *vtTerrainScene::BeginTerrainScene()
 	m_pTop = new vtGroup;
 #endif
 
-	m_pTop->SetName2("All Terrain");
+	m_pTop->setName("All Terrain");
 
 	// create sky group - this holds all celestial objects
 	_CreateSky();
@@ -510,7 +511,7 @@ vtUtilStruct *vtTerrainScene::LoadUtilStructure(const vtString &name)
 	// create new util structure
 	vtUtilStruct *stnew = new vtUtilStruct;
 	stnew->m_pTower = node;
-	stnew->m_pTower->SetName2(name);
+	stnew->m_pTower->setName(name);
 	stnew->m_sStructName = name;
 
 	// Avoid trouble with '.' and ',' in Europe

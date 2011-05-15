@@ -27,6 +27,7 @@
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
 
 // handy definitions for FLTK mouse buttons
@@ -233,7 +234,7 @@ bool VTPWindow::CreateScene()
 	vtStringArray paths;
 	paths.push_back(vtString("Data/"));
 	paths.push_back(vtString("../Data/"));
-	pScene->SetDataPath(paths);
+	vtSetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
 	vtGroup *pTopGroup = ts->BeginTerrainScene();

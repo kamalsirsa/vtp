@@ -1,7 +1,7 @@
 //
 // Earth View functionality of the Enviro class.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,7 @@
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/Globe.h"
 #include "vtlib/core/SkyDome.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
 
 #include "Enviro.h"
@@ -149,11 +150,11 @@ void Enviro::MakeGlobe()
 	VTLOG1("MakeGlobe\n");
 
 	m_pGlobeTime = new vtTimeEngine;
-	m_pGlobeTime->SetName2("GlobeTime");
+	m_pGlobeTime->setName("GlobeTime");
 	vtGetScene()->AddEngine(m_pGlobeTime);
 
 	m_pGlobeContainer = new vtGroup;
-	m_pGlobeContainer->SetName2("Globe Container");
+	m_pGlobeContainer->setName("Globe Container");
 
 	// simple globe
 //	m_pGlobeXForm = CreateSimpleEarth(g_Options.m_DataPaths);
@@ -176,7 +177,7 @@ void Enviro::MakeGlobe()
 	//
 	VTLOG("\tcreating Trackball\n");
 	m_pTrackball = new vtTrackball(INITIAL_SPACE_DIST);
-	m_pTrackball->SetName2("Trackball2");
+	m_pTrackball->setName("Trackball2");
 	m_pTrackball->SetTarget(vtGetScene()->GetCamera());
 	m_pTrackball->SetRotateButton(VT_RIGHT, 0, false);
 	m_pTrackball->SetZoomButton(VT_RIGHT, VT_SHIFT);
@@ -194,7 +195,7 @@ void Enviro::MakeGlobe()
 	// create the GlobePicker engine for picking features on the earth
 	//
 	m_pGlobePicker = new GlobePicker;
-	m_pGlobePicker->SetName2("GlobePicker");
+	m_pGlobePicker->setName("GlobePicker");
 	m_pGlobePicker->SetGlobe(m_pIcoGlobe);
 	vtGetScene()->AddEngine(m_pGlobePicker);
 	m_pGlobePicker->SetTarget(m_pCursorMGeom);
@@ -209,7 +210,7 @@ void Enviro::MakeGlobe()
 	{
 		pStars->Create(bsc_file, 5.0f);	// brightness
 		vtTransform *pScale = new vtTransform;
-		pScale->SetName2("Star Scaling Transform");
+		pScale->setName("Star Scaling Transform");
 		pScale->Scale3(20, 20, 20);
 		m_pGlobeContainer->AddChild(pScale);
 		pScale->AddChild(pStars);
@@ -222,7 +223,7 @@ void Enviro::MakeGlobe()
 	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
 
 	m_pSpaceAxes = new vtGeom;
-	m_pSpaceAxes->SetName2("Earth Axes");
+	m_pSpaceAxes->setName("Earth Axes");
 	m_pSpaceAxes->SetMaterials(pMats);
 
 	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 6);
@@ -246,7 +247,7 @@ void Enviro::MakeGlobe()
 
 	// Lon-lat cursor lines
 	m_pEarthLines = new vtGeom;
-	m_pEarthLines->SetName2("Earth Lines");
+	m_pEarthLines->setName("Earth Lines");
 	int orange = pMats->AddRGBMaterial1(RGBf(1,.7,1), false, false, true, 0.6);
 	m_pEarthLines->SetMaterials(pMats);
 
@@ -269,12 +270,12 @@ void Enviro::MakeGlobe()
 void Enviro::MakeDemoGlobe()
 {
 	m_pDemoGroup = new vtGroup;
-	m_pDemoGroup->SetName2("DemoGroup");
+	m_pDemoGroup->setName("DemoGroup");
 	vtIcoGlobe *Globe2 = new vtIcoGlobe;
 	Globe2->Create(1000, vtString(""), vtIcoGlobe::GEODESIC);
 	//Globe2->SetInflation(1.0f);
 	vtTransform *trans = new vtTransform;
-	trans->SetName2("2nd Globe Scaler");
+	trans->setName("2nd Globe Scaler");
 	m_pGlobeContainer->AddChild(m_pDemoGroup);
 	m_pDemoGroup->AddChild(trans);
 	trans->AddChild(Globe2->GetTop());
@@ -316,7 +317,7 @@ void Enviro::MakeDemoGlobe()
 		mat->SetTransparent(true, true);
 	}
 	m_pDemoTrails = new vtGeom;
-	m_pDemoTrails->SetName2("Trails");
+	m_pDemoTrails->setName("Trails");
 	m_pDemoTrails->SetMaterials(rainbow);
 	Globe2->GetTop()->AddChild(m_pDemoTrails);
 
@@ -445,7 +446,7 @@ void Enviro::MakeOverlayGlobe(vtImage *input, bool progress_callback(int))
 //		vtIcoGlobe::INDEPENDENT_GEODESIC);
 
 	vtTransform *trans = new vtTransform;
-	trans->SetName2("Overlay Globe Scaler");
+	trans->setName("Overlay Globe Scaler");
 	trans->Scale3(1.006f, 1.005f, 1.005f);
 
 	m_pIcoGlobe->GetTop()->AddChild(trans);
