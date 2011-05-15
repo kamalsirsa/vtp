@@ -66,33 +66,24 @@ vtTerrain::vtTerrain()
 	m_idx_horizon = -1;
 	m_bBothSides = false;
 
-	m_pRoadMap = NULL;
-	m_pInputGrid = NULL;
 	m_pHeightField = NULL;
 	m_bPreserveInputGrid = false;
-	m_pElevGrid = NULL;
-	m_pTextureColors = NULL;
 	m_pScaledFeatures = NULL;
 	m_pFeatureLoader = NULL;
 
 	m_pHorizonGeom = NULL;
 	m_pOceanGeom = NULL;
-	m_pWaterTin3d = NULL;
 	m_pRoadGroup = NULL;
 
 	// vegetation
 	m_pVegGrid = NULL;
 	m_pPlantList = NULL;
 
-	m_pBBEngine = NULL;
-	m_pEngineGroup = NULL;
-
 	m_bShowPOI = true;
 	m_pPOIGroup = NULL;
 
 	m_pDynGeom = NULL;
 	m_pDynGeomScale = NULL;
-	m_pTin = NULL;
 	m_pTiledGeom = NULL;
 	m_pPagedStructGrid = NULL;
 
@@ -126,44 +117,16 @@ vtTerrain::~vtTerrain()
 	m_Content.ReleaseContents();
 	m_Content.Empty();
 
-	m_AnimContainer.Empty();
+	m_AnimContainer.clear();
 
-	unsigned int i, size = m_PointsOfInterest.GetSize();
-	for (i = 0; i < size; i++)
-	{
-		POIPtr p = m_PointsOfInterest.GetAt(i);
-		delete p;
-	}
-
-	size = m_Layers.GetSize();
-	for (i = 0; i < size; i++)
-	{
-		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i]);
-		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
-		vtImageLayer *ilay = dynamic_cast<vtImageLayer*>(m_Layers[i]);
-		if (slay)
-			delete slay;
-		else if (alay)
-			delete alay;
-		else if (ilay)
-			delete ilay;
-	}
-
-	if (m_pBBEngine)
-	{
-		m_pEngineGroup->RemoveChild(m_pBBEngine);
-		delete m_pBBEngine;
-		m_pBBEngine = NULL;
-	}
+	m_Layers.clear();
 
 	// Do not delete the PlantList, the application may be sharing the same
 	// list with several different terrains.
-//	delete m_pPlantList;
 
-	if (!m_bPreserveInputGrid)
-		delete m_pElevGrid;
+	if (m_bPreserveInputGrid)
+		m_pElevGrid.release();
 
-	delete m_pRoadMap;
 	if (m_pRoadGroup)
 	{
 		m_pTerrainGroup->RemoveChild(m_pRoadGroup);
@@ -179,8 +142,6 @@ vtTerrain::~vtTerrain()
 		m_pTerrainGroup->RemoveChild(m_pOceanGeom);
 		m_pOceanGeom->Release();
 	}
-	if (m_pWaterTin3d)
-		delete m_pWaterTin3d;
 	if (m_pStructGrid)
 	{
 		m_pTerrainGroup->RemoveChild(m_pStructGrid);
@@ -191,7 +152,6 @@ vtTerrain::~vtTerrain()
 		m_pTerrainGroup->RemoveChild(m_pVegGrid);
 		m_pVegGrid->Release();
 	}
-//	delete m_pInputGrid;	// don't delete, copied to m_pElevGrid
 	if (m_pDynGeom)
 	{
 		m_pDynGeomScale->RemoveChild(m_pDynGeom);
@@ -202,24 +162,15 @@ vtTerrain::~vtTerrain()
 		m_pTerrainGroup->RemoveChild(m_pDynGeomScale);
 		m_pDynGeomScale->Release();
 	}
-
-	delete m_pTin;
-
 	if (m_pTiledGeom)
 	{
 		//m_pDynGeomScale->RemoveChild(m_pTiledGeom);
 		m_pTiledGeom->Release();
 	}
 
-	if (NULL != m_pExternalHeightField)
-		delete m_pExternalHeightField;
-
 	// This will mop up anything remaining in the terrain's scenegraph
 	if (m_pContainerGroup != NULL)
 		m_pContainerGroup->Release();
-
-	if (m_pTextureColors != NULL) VTLOG(" TextureColors %lx,", m_pTextureColors);
-	delete m_pTextureColors;
 
 	VTLOG1(" done.\n");
 }
@@ -304,7 +255,7 @@ TParams &vtTerrain::GetParams()
  */
 void vtTerrain::SetLocalGrid(vtElevationGrid *pGrid, bool bPreserve)
 {
-	m_pInputGrid = pGrid;
+	m_pElevGrid.reset(pGrid);
 	m_bPreserveInputGrid = bPreserve;
 }
 
@@ -342,7 +293,6 @@ void vtTerrain::_CreateRoads()
 	if (!success)
 	{
 		VTLOG("	read failed.\n");
-		delete m_pRoadMap;
 		m_pRoadMap = NULL;
 		return;
 	}
@@ -366,7 +316,7 @@ void vtTerrain::_CreateRoads()
 	if (m_Params.GetValueBool(STR_ROADCULTURE))
 		m_pRoadMap->GenerateSigns(m_pStructGrid);
 
-	if (m_pRoadMap && m_Params.GetValueBool(STR_ROADCULTURE))
+	if (m_pRoadMap.get() && m_Params.GetValueBool(STR_ROADCULTURE))
 	{
 		NodeGeom* node = m_pRoadMap->GetFirstNode();
 		vtIntersectionEngine *lightEngine;
@@ -659,18 +609,14 @@ void vtTerrain::_CreateDetailTexture()
 
 //
 // This is the default implementation for PaintDib.  It colors from elevation.
-// Developer might override it.
+// Developer can override it.
 //
 void vtTerrain::PaintDib(bool progress_callback(int))
 {
-	if (m_pTextureColors)
-		m_pTextureColors->Clear();
-	else
-		m_pTextureColors = new ColorMap;
+	m_pTextureColors.reset(new ColorMap);
 
 	// If this member hasn't been set by a subclass, then we can go ahead
 	//  and use the info from the terrain parameters
-	ColorMap cmap;
 	vtString name = m_Params.GetValueString(STR_COLOR_MAP);
 	if (name != "")
 	{
@@ -697,7 +643,7 @@ void vtTerrain::PaintDib(bool progress_callback(int))
 	}
 
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
-	pHFGrid->ColorDibFromElevation(m_pImageSource, m_pTextureColors, 4000,
+	pHFGrid->ColorDibFromElevation(m_pImageSource, m_pTextureColors.get(), 4000,
 		RGBi(255,0,0), progress_callback);
 }
 
@@ -722,7 +668,7 @@ void vtTerrain::PaintDib(bool progress_callback(int))
  */
 void vtTerrain::SetTextureColors(ColorMap *colors)
 {
-	m_pTextureColors = colors;
+	m_pTextureColors.reset(colors);
 }
 
 /**
@@ -773,7 +719,7 @@ void vtTerrain::SetTextureContours(float fInterval, float fSize)
 	}
 
 	// Set these as the desired color bands for the next PainDib
-	m_pTextureColors = cmap;
+	m_pTextureColors.reset(cmap);
 }
 
 
@@ -853,13 +799,13 @@ bool vtTerrain::_CreateDynamicTerrain()
 	m_pDynGeom->SetOptions(m_Params.GetValueBool(STR_TRISTRIPS),
 		texture_patches, m_Params.GetValueInt(STR_TILESIZE));
 
-	DTErr result = m_pDynGeom->Init(m_pElevGrid, m_fVerticalExag);
+	DTErr result = m_pDynGeom->Init(m_pElevGrid.get(), m_fVerticalExag);
 	if (result != DTErr_OK)
 	{
 		m_pDynGeom->Release();
 		m_pDynGeom = NULL;
 
-		_CreateErrorMessage(result, m_pElevGrid);
+		_CreateErrorMessage(result, m_pElevGrid.get());
 		VTLOG(" Could not initialize CLOD: %s\n", (const char *) m_strErrorMsg);
 		return false;
 	}
@@ -1314,7 +1260,7 @@ vtStructureLayer *vtTerrain::NewStructureLayer()
 	slay->SetTerrain(this);
 	slay->m_proj = m_proj;
 
-	m_Layers.Append(slay);
+	m_Layers.push_back(slay);
 	m_pActiveStructLayer = slay;
 	return slay;
 }
@@ -1367,10 +1313,10 @@ bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
 		return false;
 
 	double dist;
-	int i, index, layers = m_Layers.GetSize();
+	int i, index, layers = m_Layers.size();
 	for (i = 0; i < layers; i++)
 	{
-		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i]);
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i].get());
 		if (!slay)
 			continue;
 		if (!slay->GetEnabled())
@@ -1722,9 +1668,9 @@ void vtTerrain::_CreateStructures()
 		}
 	}
 	int created = 0;
-	for (i = 0; i < m_Layers.GetSize(); i++)
+	for (i = 0; i < m_Layers.size(); i++)
 	{
-		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i]);
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i].get());
 		if (slay)
 		{
 			CreateStructures(slay);
@@ -1799,7 +1745,7 @@ void vtTerrain::_CreateAbstractLayers()
 		VTLOG1("  Constructing and appending layer.\n");
 		vtAbstractLayer *layer = new vtAbstractLayer(this);
 		layer->SetFeatureSet(feat);
-		m_Layers.Append(layer);
+		m_Layers.push_back(layer);
 
 		// Copy all the other attributes to the new layer
 		VTLOG1("  Setting layer properties.\n");
@@ -1807,9 +1753,9 @@ void vtTerrain::_CreateAbstractLayers()
 	}
 
 	// Now for each layer that we have, create the geometry and labels
-	for (i = 0; i < m_Layers.GetSize(); i++)
+	for (i = 0; i < m_Layers.size(); i++)
 	{
-		vtAbstractLayer *layer = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
+		vtAbstractLayer *layer = dynamic_cast<vtAbstractLayer*>(m_Layers[i].get());
 		if (layer)
 		{
 			layer->CreateStyledFeatures();
@@ -1880,7 +1826,7 @@ void vtTerrain::_CreateImageLayers()
 		// Copy all the other attributes to the new layer (TODO?)
 		//feat->SetProperties(lay);
 
-		m_Layers.Append(ilayer);
+		m_Layers.push_back(ilayer);
 
 		ilayer->m_pMultiTexture = AddMultiTextureOverlay(ilayer->m_pImage,
 			ilayer->m_pImage->GetExtents(), GL_DECAL);
@@ -2252,11 +2198,10 @@ bool vtTerrain::CreateStep1()
 	m_fVerticalExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
 
 	// User may have have supplied a grid directly, via SetLocalGrid
-	if (m_pInputGrid)
+	if (m_pElevGrid.get())
 	{
-		m_pElevGrid = m_pInputGrid;
 		m_pElevGrid->SetupConversion(m_Params.GetValueFloat(STR_VERTICALEXAG));
-		m_pHeightField = m_pElevGrid;
+		m_pHeightField = m_pElevGrid.get();
 		m_proj = m_pElevGrid->GetProjection();
 		// set global projection based on this terrain
 		g_Conv = m_pElevGrid->m_Conversion;
@@ -2315,7 +2260,7 @@ bool vtTerrain::CreateStep1()
 	if (surface_type == 0)
 	{
 		// Elevation input is a single grid; load it
-		m_pElevGrid = new vtElevationGrid;
+		m_pElevGrid.reset(new vtElevationGrid);
 
 		vtElevError err;
 		bool status = m_pElevGrid->LoadFromBT(elev_path, m_progress_callback, &err);
@@ -2351,7 +2296,7 @@ bool vtTerrain::CreateStep1()
 		VTLOG("\t\tWorld Extents LRTB: %g %g %g %g\n",
 			frect.left, frect.right, frect.top, frect.bottom);
 
-		m_pHeightField = m_pElevGrid;
+		m_pHeightField = m_pElevGrid.get();
 
 		// Apply ocean depth
 		if (m_Params.GetValueBool(STR_DEPRESSOCEAN))
@@ -2363,7 +2308,7 @@ bool vtTerrain::CreateStep1()
 	else if (surface_type == 1)
 	{
 		// Elevation input is a single TIN
-		if (!m_pTin)
+		if (!m_pTin.valid())
 		{
 			// if they did not provide us with a TIN, try to load it
 			m_pTin = new vtTin3d;
@@ -2532,8 +2477,7 @@ bool vtTerrain::CreateFromGrid()
 	if (!m_bPreserveInputGrid && !m_Params.GetValueBool(STR_ALLOW_GRID_SCULPTING))
 	{
 		// we don't need the original grid any more
-		delete m_pElevGrid;
-		m_pElevGrid = NULL;
+		m_pElevGrid.reset();
 	}
 	return true;
 }
@@ -2729,12 +2673,11 @@ bool vtTerrain::CreateStep5()
 		engine->SetEnabled(false);
 		AddEngine(engine);
 
-		vtAnimEntry *entry = new vtAnimEntry;
-		entry->m_pAnim = anim;
-		entry->m_pEngine = engine;
-		entry->m_Name = fname1;
-
-		m_AnimContainer.Append(entry);
+		vtAnimEntry entry;
+		entry.m_pAnim = anim;
+		entry.m_pEngine = engine;
+		entry.m_Name = fname1;
+		m_AnimContainer.AppendEntry(entry);
 	}
 
 	return true;
@@ -2917,7 +2860,7 @@ void vtTerrain::SetLODDistance(TFType ftype, float fDistance)
 		}
 		break;
 	case TFT_ROADS:
-		if (m_pRoadMap)
+		if (m_pRoadMap.get())
 			m_pRoadMap->SetLodDistance(fDistance);
 		break;
 	}
@@ -2939,7 +2882,7 @@ float vtTerrain::GetLODDistance(TFType ftype)
 			return m_pStructGrid->GetDistance();
 		break;
 	case TFT_ROADS:
-		if (m_pRoadMap)
+		if (m_pRoadMap.get())
 			return m_pRoadMap->GetLodDistance();
 		break;
 	}
@@ -2965,8 +2908,8 @@ vtHeightField3d *vtTerrain::GetHeightField()
 vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()
 {
 	// if we still have the source elevation, use it
-	if (m_pElevGrid)
-		return m_pElevGrid;
+	if (m_pElevGrid.get())
+		return m_pElevGrid.get();
 
 	// otherwise, later on, we might only have the runtime (CLOD) grid
 	else if (m_pDynGeom)
@@ -3336,7 +3279,7 @@ vtLayer *vtTerrain::LoadLayer(const char *fname)
 		VTLOG("Successfully read features from file '%s'\n", fname);
 		vtAbstractLayer *alay = new vtAbstractLayer(this);
 		alay->SetFeatureSet(feat);
-		m_Layers.Append(alay);
+		m_Layers.push_back(alay);
 		return alay;
 	}
 	return NULL;
@@ -3563,10 +3506,10 @@ int vtTerrain::DeleteSelectedFeatures()
 {
 	int count = 0;
 
-	unsigned int i, size = m_Layers.GetSize();
+	unsigned int i, size = m_Layers.size();
 	for (i = 0; i < size; i++)
 	{
-		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(m_Layers[i].get());
 		if (!alay)
 			continue;
 
@@ -3615,7 +3558,7 @@ void vtTerrain::ActivateScenario(int iScenario)
 
 	unsigned int iNumActiveLayers = ActiveLayers.size();
 
-	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Layers.size(); i++)
 	{
 		vtLayer *lay = m_Layers[i];
 		vtString Name = StartOfFilename(lay->GetLayerName());
@@ -3646,7 +3589,7 @@ void vtTerrain::UpdateElevation()
 	SRTerrain *sr = dynamic_cast<SRTerrain*>(m_pDynGeom);
 	if (!sr)
 		return;
-	sr->ReInit(m_pElevGrid);
+	sr->ReInit(m_pElevGrid.get());
 }
 
 /**
@@ -3660,9 +3603,9 @@ void vtTerrain::UpdateElevation()
 void vtTerrain::RedrapeCulture(const DRECT &area)
 {
 	// Tell the terrain to re-drape all its structure instances.
-	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Layers.size(); i++)
 	{
-		vtStructureLayer *slay = dynamic_cast<vtStructureLayer *>(m_Layers[i]);
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer *>(m_Layers[i].get());
 		if (slay)
 		{
 			for (unsigned int j = 0; j < slay->GetSize(); j++)

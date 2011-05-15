@@ -9,16 +9,18 @@
 // vtPlantInstance3d
 // vtPlantInstanceArray3d
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
+#include "vtdata/FilePath.h"
+#include "vtdata/HeightField.h"
 #include "Trees.h"
-#include "Terrain.h"
 #include "Light.h"
+#include "GeomUtil.h"	// for CreateBoundSphereGeom
 
 #define SHADOW_HEIGHT		0.1f	// distance above groundpoint in meters
 

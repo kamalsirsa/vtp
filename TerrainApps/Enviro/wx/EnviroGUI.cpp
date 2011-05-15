@@ -455,7 +455,7 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr, bool bAskStyle)
 	pLay->SetProperties(props);
 
 	// add the new layer to the terrain
-	pTerr->GetLayers().Append(pLay);
+	pTerr->GetLayers().push_back(pLay);
 	pTerr->SetAbstractLayer(pLay);
 
 	// and show it in the layers dialog
@@ -497,7 +497,7 @@ vtAbstractLayer *CreateNewAbstractLineLayer(vtTerrain *pTerr, bool bAskStyle)
 	pLay->SetProperties(props);
 
 	// add the new layer to the terrain
-	pTerr->GetLayers().Append(pLay);
+	pTerr->GetLayers().push_back(pLay);
 	pTerr->SetAbstractLayer(pLay);
 
 	// and show it in the layers dialog

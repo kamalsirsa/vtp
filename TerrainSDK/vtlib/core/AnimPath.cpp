@@ -543,28 +543,10 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 /* Convenience classes for organizing a set of animation paths. */
-vtAnimContainer::vtAnimContainer()
+void vtAnimContainer::AppendEntry(const vtAnimEntry &entry)
 {
-}
-
-vtAnimContainer::~vtAnimContainer()
-{
-}
-
-void vtAnimContainer::DestructItems(unsigned int first, unsigned int last)
-{
-	for (unsigned int i = first; i <= last; i++)
-	{
-		vtAnimEntry *ent = GetAt(i);
-		m_pParentEngine->RemoveChild(ent->m_pEngine);
-		delete ent;
-	}
-}
-
-void vtAnimContainer::AppendEntry(vtAnimEntry *pEntry)
-{
-	m_pParentEngine->AddChild(pEntry->m_pEngine);
-	Append(pEntry);
+	m_pParentEngine->AddChild(entry.m_pEngine);
+	push_back(entry);
 }
 
 #endif	// DOXYGEN_SHOULD_SKIP_THIS

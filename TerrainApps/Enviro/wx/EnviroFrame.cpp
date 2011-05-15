@@ -2,7 +2,7 @@
 // Name:	 EnviroFrame.cpp
 // Purpose:  The frame class for the wxEnviro application.
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -2618,9 +2618,9 @@ void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 
 	dlg.GetChoiceLayer()->Clear();
 	LayerSet &layers = pTerr->GetLayers();
-	for (unsigned int i = 0; i < layers.GetSize(); i++)
+	for (unsigned int i = 0; i < layers.size(); i++)
 	{
-		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i].get());
 		if (!alay)
 			continue;
 		vtString vname = alay->GetLayerName();

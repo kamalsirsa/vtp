@@ -318,7 +318,6 @@ void vtDynTerrainGeom::DoCull(const vtCamera *pCam)
 
 void vtDynTerrainGeom::SetupTexGen(float fTiling)
 {
-#if !VTLIB_NI
 	GLfloat sPlane[4] = { fTiling * 1.0f / (m_iColumns-1), 0.0f, 0.0f, 0.0f };
 	GLfloat tPlane[4] = { 0.0f, 0.0f, fTiling * 1.0f / (m_iRows-1), 0.0f };
 
@@ -329,12 +328,10 @@ void vtDynTerrainGeom::SetupTexGen(float fTiling)
 	glEnable(GL_TEXTURE_GEN_S);
 	glEnable(GL_TEXTURE_GEN_T);
 	glEnable(GL_TEXTURE_2D);
-#endif
 }
 
 void vtDynTerrainGeom::SetupBlockTexGen(int a, int b)
 {
-#if !VTLIB_NI
 	// carefully determine the right u,v offset, leaving a
 	// half-texel of buffer at the edge of each patch
 	float uv_offset = 1.0f / m_iTPatchSize / 2.0f;
@@ -355,35 +352,18 @@ void vtDynTerrainGeom::SetupBlockTexGen(int a, int b)
 	glEnable(GL_TEXTURE_GEN_S);
 	glEnable(GL_TEXTURE_GEN_T);
 	glEnable(GL_TEXTURE_2D);
-#endif
 }
 
 void vtDynTerrainGeom::DisableTexGen()
 {
-#if !VTLIB_NI
 	glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
-#endif
 }
 
 //GLboolean ca, va, na, ia, ta;
 
 void vtDynTerrainGeom::PreRender() const
 {
-#if VTLIB_DSM || 0
-	// preserve
-	ca = glIsEnabled(GL_COLOR_ARRAY);
-	va = glIsEnabled(GL_VERTEX_ARRAY);
-	na = glIsEnabled(GL_NORMAL_ARRAY);
-	ia = glIsEnabled(GL_INDEX_ARRAY);
-	ta = glIsEnabled(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_INDEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-#endif
-
 	// get ready to count drawn triangles
 	vtDynTerrainGeom *pHack = (vtDynTerrainGeom *)this;
 	pHack->m_iDrawnTriangles = 0;
@@ -391,13 +371,5 @@ void vtDynTerrainGeom::PreRender() const
 
 void vtDynTerrainGeom::PostRender() const
 {
-#if VTLIB_DSM || 0
-	// restore
-	if (ca) glEnableClientState(GL_COLOR_ARRAY);
-	if (va) glEnableClientState(GL_VERTEX_ARRAY);
-	if (na) glEnableClientState(GL_NORMAL_ARRAY);
-	if (ia) glEnableClientState(GL_INDEX_ARRAY);
-	if (ta) glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-#endif
 }
 

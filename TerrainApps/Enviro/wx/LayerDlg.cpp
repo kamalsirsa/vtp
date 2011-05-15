@@ -314,9 +314,9 @@ void LayerDlg::RefreshTreeTerrain()
 	vtString vs;
 	unsigned int i, j;
 	LayerSet &layers = terr->GetLayers();
-	for (i = 0; i < layers.GetSize(); i++)
+	for (i = 0; i < layers.size(); i++)
 	{
-		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(layers[i]);
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(layers[i].get());
 		if (slay)
 		{
 			str = wxString(slay->GetFilename(), wxConvUTF8);
@@ -385,7 +385,7 @@ void LayerDlg::RefreshTreeTerrain()
 		}
 
 		// Now, abstract layers
-		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i].get());
 		if (alay)
 		{
 			wxString str;
@@ -397,7 +397,7 @@ void LayerDlg::RefreshTreeTerrain()
 			vtFeatureSet *fset = alay->GetFeatureSet();
 			m_pTree->SetItemData(hLayer, new LayerItemData(alay, fset));
 		}
-		vtImageLayer *ilay = dynamic_cast<vtImageLayer*>(layers[i]);
+		vtImageLayer *ilay = dynamic_cast<vtImageLayer*>(layers[i].get());
 		if (ilay)
 		{
 			vs = ilay->GetLayerName();
@@ -968,9 +968,9 @@ void LayerDlg::OnShowAll( wxCommandEvent &event )
 		if (!terr)
 			return;
 		LayerSet &layers = terr->GetLayers();
-		for (unsigned int i = 0; i < layers.GetSize(); i++)
+		for (unsigned int i = 0; i < layers.size(); i++)
 		{
-			vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(layers[i]);
+			vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(layers[i].get());
 			if (slay)
 				total += slay->GetSize();
 		}

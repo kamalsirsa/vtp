@@ -53,7 +53,7 @@ struct ControlPoint
  * to earth coordinates in GCS(WGS84) so that the result is interoperable and
  * terrain-independent.
  */
-class vtAnimPath
+class vtAnimPath : public osg::Referenced
 {
 public:
 	vtAnimPath();
@@ -149,6 +149,7 @@ protected:
 	OCT			*m_pConvertFromWGS;
 	friend class AnimPathVisitor;
 };
+typedef osg::ref_ptr<vtAnimPath> vtAnimPathPtr;
 
 /**
  * This class connects a path (vtAnimPath) to any number of targets.  The
@@ -182,11 +183,6 @@ public:
 		m_fTime(0.0f),
 		m_bPosOnly(false),
 		m_fSpeed(1.0f) {}
-
-	~vtAnimPathEngine()
-	{
-		delete m_pAnimationPath;
-	}
 
 	/// Set the animation path for this engine to use.
 	void SetAnimationPath(vtAnimPath* path) { m_pAnimationPath = path; }
@@ -229,7 +225,7 @@ public:
 	float GetTime() { return m_fTime; }
 
 public:
-	vtAnimPath *m_pAnimationPath;
+	vtAnimPathPtr m_pAnimationPath;		// the engine owns the animpath
 	bool	m_bContinuous;
 	float	m_fLastTime;
 	float	m_fTime;
@@ -239,33 +235,25 @@ public:
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-/* Convenience classes for organizing a set of animation paths. */
-class vtAnimEntry
+/* Convenience classes for organizing a set of animation paths with their engines. */
+struct vtAnimEntry
 {
-public:
-	vtAnimEntry() { m_pAnim = NULL; m_pEngine = NULL; }
-	~vtAnimEntry() {
-		delete m_pEngine; } // engine owns path
 	vtAnimPath *m_pAnim;
 	vtAnimPathEngine *m_pEngine;
 	vtString m_Name;
 };
 
-class vtAnimContainer : public vtArray<vtAnimEntry*>
+class vtAnimContainer : public std::vector<vtAnimEntry>
 {
 public:
-	vtAnimContainer();
-	~vtAnimContainer();
-
 	void SetEngineContainer(vtEngine *pContainer)
 	{
 		m_pParentEngine = pContainer;
 	}
-	void DestructItems(unsigned int first, unsigned int last);
-	void AppendEntry(vtAnimEntry *pEntry);
+	void AppendEntry(const vtAnimEntry &pEntry);
 
 protected:
-	vtEngine *m_pParentEngine;
+	vtEnginePtr m_pParentEngine;
 };
 
 #endif	// DOXYGEN_SHOULD_SKIP_THIS

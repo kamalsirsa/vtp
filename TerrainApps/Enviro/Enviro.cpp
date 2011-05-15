@@ -1195,7 +1195,7 @@ void Enviro::StoreTerrainParameters()
 	//  layers in the parameters.
 	LayerSet &set = terr->GetLayers();
 	par.m_Layers.clear();
-	for (unsigned int i = 0; i < set.GetSize(); i++)
+	for (unsigned int i = 0; i < set.size(); i++)
 	{
 		vtLayer *lay = set[i];
 
@@ -1891,9 +1891,9 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 	vtTerrain *terr = GetCurrentTerrain();
 	float fVerticalExag = terr->GetVerticalExag();
 	LayerSet &layers = terr->GetLayers();
-	for (unsigned int i = 0; i < layers.GetSize(); i++)
+	for (unsigned int i = 0; i < layers.size(); i++)
 	{
-		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i].get());
 		if (!alay)
 			continue;
 
@@ -3038,9 +3038,9 @@ vtAbstractLayer *Enviro::GetLabelLayer()
 	if (!pTerr)
 		return false;
 	LayerSet &layers = pTerr->GetLayers();
-	for (unsigned int i = 0; i < layers.GetSize(); i++)
+	for (unsigned int i = 0; i < layers.size(); i++)
 	{
-		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i].get());
 		if (!alay)
 			continue;
 		if (alay->GetFeatureSet()->GetGeomType() == wkbPoint &&
@@ -3057,9 +3057,9 @@ int Enviro::NumSelectedAbstractFeatures()
 		return 0;
 	LayerSet &layers = pTerr->GetLayers();
 	int count = 0;
-	for (unsigned int i = 0; i < layers.GetSize(); i++)
+	for (unsigned int i = 0; i < layers.size(); i++)
 	{
-		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i]);
+		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i].get());
 		if (alay)
 			count += alay->GetFeatureSet()->NumSelected();
 	}

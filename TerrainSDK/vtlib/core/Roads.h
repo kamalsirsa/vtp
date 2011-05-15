@@ -1,7 +1,7 @@
 //
 // Roads.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -158,7 +158,7 @@ public:
 /**
  * vtRoadMap3d extents vtRoadMap with 3D geometry.
  */
-class vtRoadMap3d : public vtRoadMap
+class vtRoadMap3d : public vtRoadMap, public osg::Referenced
 {
 public:
 	vtRoadMap3d();
@@ -208,6 +208,7 @@ protected:
 	FPoint3		m_extent_range;
 	float		m_fLodDistance;		// in meters
 };
+typedef osg::ref_ptr<vtRoadMap3d> vtRoadMap3dPtr;
 
 // Useful typedefs
 typedef NodeGeom *NodeGeomPtr;

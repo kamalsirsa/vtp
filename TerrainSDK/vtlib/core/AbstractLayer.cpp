@@ -203,11 +203,7 @@ void vtAbstractLayer::CreateLabelGroup()
 	if (!m_StyleProps.GetValueString("Font", fontfile))
 	{
 		// otherwise, use the default
-#if VTLIB_OPENSG
-		fontfile = "Arial.txf";
-#else
 		fontfile = "Arial.ttf";
-#endif
 	}
 	// First, let the underlying scenegraph library try to find the font
 	m_pFont = osgText::readFontFile((const char *)fontfile);

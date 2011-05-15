@@ -91,8 +91,8 @@ private:
 
 	vtAnimContainer *m_pAnimPaths;
 
-	vtAnimPath *GetAnim(int i) { return m_pAnimPaths->GetAt(i)->m_pAnim; }
-	vtAnimPathEngine *GetEngine(int i) { return m_pAnimPaths->GetAt(i)->m_pEngine; }
+	vtAnimPath *GetAnim(int i) { return m_pAnimPaths->at(i).m_pAnim; }
+	vtAnimPathEngine *GetEngine(int i) { return m_pAnimPaths->at(i).m_pEngine; }
 
 	bool m_bActive;
 	bool m_bLoop;

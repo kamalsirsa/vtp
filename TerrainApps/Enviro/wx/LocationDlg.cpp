@@ -163,7 +163,7 @@ void LocationDlg::RefreshAnims()
 		return;
 
 	wxString str;
-	unsigned int i, num = m_pAnimPaths->GetSize();
+	unsigned int i, num = m_pAnimPaths->size();
 
 	for (i = 0; i < num; i++)
 	{
@@ -191,10 +191,10 @@ void LocationDlg::RefreshAnimsText()
 	wxTreeItemIdValue cookie;
 	wxTreeItemId id;
 
-	unsigned int i, num = m_pAnimPaths->GetSize();
+	unsigned int i, num = m_pAnimPaths->size();
 	for (i = 0; i < num; i++)
 	{
-		vtAnimEntry *entry = m_pAnimPaths->GetAt(i);
+		vtAnimEntry &entry = m_pAnimPaths->at(i);
 		vtAnimPath *anim = GetAnim(i);
 		vtAnimPathEngine *eng = GetEngine(i);
 
@@ -203,7 +203,7 @@ void LocationDlg::RefreshAnimsText()
 		else
 			id = GetAnimTree()->GetFirstChild(m_root, cookie);
 
-		wxString str(entry->m_Name, wxConvUTF8);
+		wxString str(entry.m_Name, wxConvUTF8);
 		wxString str2;
 		str2.Printf(_T(" (%.1f/%.1f, %d)"), eng->GetTime(),
 			(float) anim->GetLastTime(), anim->GetNumPoints());
@@ -253,10 +253,10 @@ void LocationDlg::AppendAnimPath(vtAnimPath *anim, const char *name)
 	engine->SetTarget(m_pSaver->GetTransform());
 	engine->SetEnabled(false);
 
-	vtAnimEntry *entry = new vtAnimEntry();
-	entry->m_pAnim = anim;
-	entry->m_pEngine = engine;
-	entry->m_Name = name;
+	vtAnimEntry entry;
+	entry.m_pAnim = anim;
+	entry.m_pEngine = engine;
+	entry.m_Name = name;
 	m_pAnimPaths->AppendEntry(entry);
 }
 
@@ -343,7 +343,7 @@ void LocationDlg::OnTreeKeyDown( wxTreeEvent &event )
 	if (parent == m_root)
 	{
 		// delete anim
-		m_pAnimPaths->RemoveAt(m_iAnim);
+		m_pAnimPaths->erase(m_pAnimPaths->begin() + m_iAnim);
 		m_iAnim = -1;
 		RefreshAnims();
 		UpdateEnabling();

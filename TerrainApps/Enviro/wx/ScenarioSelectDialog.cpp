@@ -225,7 +225,7 @@ void CScenarioSelectDialog::OnEditScenario( wxCommandEvent &event )
 		if (m_pTerrain->IsCreated())
 		{
 			LayerSet &layers = m_pTerrain->GetLayers();
-			for (unsigned int i = 0; i < layers.GetSize(); i++)
+			for (unsigned int i = 0; i < layers.size(); i++)
 				lnames.push_back(layers[i]->GetLayerName());
 		}
 		else

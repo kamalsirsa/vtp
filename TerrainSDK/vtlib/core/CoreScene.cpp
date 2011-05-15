@@ -57,10 +57,13 @@ vtSceneBase::vtSceneBase()
 
 vtSceneBase::~vtSceneBase()
 {
-	// cleanup engines
-	vtEngineArray list(m_pRootEngine, false);	// ALL engines
-	for (unsigned int i = 0; i < list.GetSize(); i++)
-		delete list[i];
+	// Cleanup engines.  They are in a tree, connected by ref_ptr, so we only need
+	//  to release the top of the tree.
+
+	//vtEngineArray list(m_pRootEngine, false);	// ALL engines
+	//for (unsigned int i = 0; i < list.GetSize(); i++)
+	//	delete list[i];
+
 	m_pRootEngine = NULL;
 }
 

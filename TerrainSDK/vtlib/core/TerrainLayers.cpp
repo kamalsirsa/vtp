@@ -13,11 +13,11 @@
 
 void LayerSet::Remove(vtLayer *lay)
 {
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (size_t i = 0; i < size(); i++)
 	{
-		if (lay == GetAt(i))
+		if (lay == at(i))
 		{
-			RemoveAt(i);
+			erase(begin()+i);
 			return;
 		}
 	}
@@ -25,10 +25,10 @@ void LayerSet::Remove(vtLayer *lay)
 
 vtLayer *LayerSet::FindByName(const vtString &name)
 {
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (size_t i = 0; i < size(); i++)
 	{
-		if (GetAt(i)->GetLayerName() == name)
-			return GetAt(i);
+		if (at(i)->GetLayerName() == name)
+			return at(i);
 	}
 	return NULL;
 }
@@ -36,7 +36,7 @@ vtLayer *LayerSet::FindByName(const vtString &name)
 vtStructureLayer *LayerSet::FindStructureFromNode(vtNode* pNode, int &iOffset)
 {
 	iOffset = -1;
-	int iNumLayers = GetSize();
+	size_t iNumLayers = size();
 	bool bFound = false;
 
 	// We might have a low-level native scenegraph node; we want the higher-level
@@ -48,9 +48,9 @@ vtStructureLayer *LayerSet::FindStructureFromNode(vtNode* pNode, int &iOffset)
 			return false;
 	}
 
-	for (int i = 0; i < iNumLayers && !bFound; i++)
+	for (size_t i = 0; i < iNumLayers && !bFound; i++)
 	{
-		vtStructureLayer *slay = dynamic_cast<vtStructureLayer *>(GetAt(i));
+		vtStructureLayer *slay = dynamic_cast<vtStructureLayer *>(at(i).get());
 		if (!slay)
 			continue;
 		int iNumStructures = slay->GetSize();

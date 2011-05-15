@@ -38,7 +38,7 @@ void vtEngine::RemoveChild(vtEngine *pEngine)
 	for (unsigned int i = 0; i < NumChildren(); i++)
 	{
 		if (m_Children[i] == pEngine)
-			m_Children.RemoveAt(i);
+			m_Children.erase(m_Children.begin()+i);
 	}
 }
 

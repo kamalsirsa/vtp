@@ -17,10 +17,12 @@
 #include "DynTerrain.h"
 #include "GeomUtil.h"	// for MeshFactory
 #include "Location.h"
+#include "Roads.h"
 #include "Route.h"
 #include "TextureUnitManager.h"
 #include "TParams.h"
 #include "Trees.h"	// for vtSpeciesList3d, vtPlantInstanceArray3d
+#include "vtTin3d.h"
 
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
@@ -29,7 +31,6 @@ class vtFeatureSet;
 class vtFence3d;
 class vtLodGrid;
 class vtPagedStructureLodGrid;
-class vtRoadMap3d;
 class vtSimpleBillboardEngine;
 class vtSimpleLodGrid;
 class vtTiledGeom;
@@ -40,23 +41,6 @@ class vtExternalHeightField3d;
 /** \addtogroup terrain */
 /*@{*/
 
-
-/**
- * Defines a Point of Interest, which is a rectangular area of the terrain
- * which can have addition attributes associated with it, such as a name
- * and URL.
- */
-class vtPointOfInterest
-{
-public:
-	vtPointOfInterest() { m_pGeom = NULL; }
-
-	DRECT m_rect;
-	vtString m_name;
-	vtString m_url;
-	vtGeom *m_pGeom;
-};
-typedef class vtPointOfInterest *POIPtr;
 
 // Terrain Feature Types
 enum TFType
@@ -84,6 +68,7 @@ struct vtShadowOptions
 	float fShadowRadius;
 };
 
+/// Type of a progress callback function
 typedef bool (*ProgFuncPtrType)(int);
 
 /**
@@ -183,7 +168,7 @@ public:
 
 	/// Set the colors to be used in a derived texture.
 	void SetTextureColors(ColorMap *colors);
-	ColorMap *GetTextureColors() { return m_pTextureColors; }
+	ColorMap *GetTextureColors() { return m_pTextureColors.get(); }
 
 	/// Sets the texture colors to be a set of black contour stripes.
 	void SetTextureContours(float fInterval, float fSize);
@@ -284,7 +269,7 @@ public:
 	vtTransform *GetScaledFeatures() { return m_pScaledFeatures; }
 
 	// roads
-	vtRoadMap3d *GetRoadMap() { return m_pRoadMap; }
+	vtRoadMap3d *GetRoadMap() { return m_pRoadMap.get(); }
 
 	// Terrain-specific content
 	vtContentManager3d m_Content;
@@ -296,7 +281,7 @@ public:
 	void AddEngine(vtEngine *pE);
 	void ActivateEngines(bool bActive);
 	vtEngine *GetEngineGroup() { return m_pEngineGroup; }
-	vtSimpleBillboardEngine	*GetBillboardEngine() { return m_pBBEngine; }
+	vtEngine *GetBillboardEngine() { return m_pBBEngine; }
 
 	// reports world coordinates
 	FPoint3 GetCenter();
@@ -365,7 +350,7 @@ public:
 	void ActivateScenario(int iScenario);
 
 	// Dynamic elevation
-	vtElevationGrid	*GetInitialGrid() { return m_pElevGrid; }
+	vtElevationGrid	*GetInitialGrid() { return m_pElevGrid.get(); }
 	void UpdateElevation();
 	void RedrapeCulture(const DRECT &area);
 
@@ -427,18 +412,17 @@ protected:
 	float			m_fVerticalExag;
 
 	// triangulated irregular network (TIN)
-	vtTin3d		*m_pTin;
+	vtTin3dPtr		m_pTin;
 
 	// tiled geometry
 	vtTiledGeom	*m_pTiledGeom;
 
-	vtExternalHeightField3d *m_pExternalHeightField;
+	osg::ref_ptr<vtExternalHeightField3d> m_pExternalHeightField;
 
 	// construction parameters used to create this terrain
 	TParams		m_Params;
 
 	// elevation data
-	vtElevationGrid	*m_pInputGrid;	// if non-NULL, use instead of BT
 	vtHeightField3d	*m_pHeightField;
 	bool			m_bPreserveInputGrid;
 
@@ -460,7 +444,7 @@ protected:
 	RGBf		m_fog_color;
 	RGBf		m_background_color;
 	bool		m_bShadows;
-	vtTin3d		*m_pWaterTin3d;
+	vtTin3dPtr	m_pWaterTin3d;
 
 	// Layers
 	LayerSet		m_Layers;
@@ -486,7 +470,7 @@ protected:
 
 	// roads
 	vtGroup			*m_pRoadGroup;
-	vtRoadMap3d		*m_pRoadMap;
+	vtRoadMap3dPtr	m_pRoadMap;
 
 	// plants
 	vtPlantInstanceArray3d	m_PIA;
@@ -501,7 +485,7 @@ protected:
 	vtImagePtr		m_pImageSource;
 	vtImagePtr		m_pImage;
 	vtOverlappedTiledImage	m_ImageTiles;
-	ColorMap		*m_pTextureColors;
+	auto_ptr<ColorMap>		m_pTextureColors;
 	bool			m_bTextureInitialized;
 	vtTextureUnitManager m_TextureUnits;
 	int				m_iShadowTextureUnit;
@@ -512,15 +496,14 @@ protected:
 	vtString		m_strParamFile;
 
 	// contain the engines specific to this terrain
-	vtEngine		*m_pEngineGroup;
-	vtSimpleBillboardEngine	*m_pBBEngine;
+	vtEnginePtr		m_pEngineGroup;
+	vtEnginePtr		m_pBBEngine;
 
-	vtArray<POIPtr>	m_PointsOfInterest;
 	bool			m_bShowPOI;
 	vtGroup			*m_pPOIGroup;
 
 	// only used during initialization
-	vtElevationGrid	*m_pElevGrid;
+	auto_ptr<vtElevationGrid>	m_pElevGrid;
 
 	// A useful value for computing "local time", the location of the
 	//  center of the terrain in Geographic coords.

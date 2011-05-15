@@ -1,7 +1,7 @@
 //
 // TerrainLayers.h
 //
-// Copyright (c) 2006-2007 Virtual Terrain Project
+// Copyright (c) 2006-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,7 +16,7 @@
 /**
  * Simple abstraction class to describe all vtlib terrain layers.
  */
-class vtLayer
+class vtLayer : public osg::Referenced
 {
 public:
 	virtual ~vtLayer() {}
@@ -26,6 +26,7 @@ public:
 	virtual void SetVisible(bool vis) = 0;
 	virtual bool GetVisible() = 0;
 };
+typedef osg::ref_ptr<vtLayer> vtLayerPtr;
 
 /**
  * This class encapsulates vtStructureArray3d as a terrain layer.
@@ -64,7 +65,7 @@ public:
 };
 
 /** The set of all structure arrays which are on a terrain. */
-class LayerSet : public vtArray<vtLayer *>
+class LayerSet : public std::vector<vtLayerPtr>
 {
 public:
 	void Remove(vtLayer *lay);

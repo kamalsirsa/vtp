@@ -1,7 +1,7 @@
 //
 // vtTin3d.h
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,7 +21,7 @@
  * geometry for the TIN.  It also subclasses vtHeightField so it provides
  * the ability to do height-testing and ray-picking.
  */
-class vtTin3d : public vtTin
+class vtTin3d : public vtTin, public osg::Referenced
 {
 public:
 	vtTin3d();
@@ -49,6 +49,7 @@ protected:
 	vtGeom		*m_pGeom;
 	vtGeom		*m_pDropGeom;
 };
+typedef osg::ref_ptr<vtTin3d> vtTin3dPtr;
 
 /*@}*/	// Group tin
 

@@ -1,7 +1,7 @@
 //
 // Engine.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,6 +19,7 @@ class vtWindow;
  */
 /*@{*/
 
+typedef osg::ref_ptr<class vtEngine> vtEnginePtr;
 
 /**
  * The vtEngine class represents an Engine, which is a convenient way to
@@ -32,7 +33,7 @@ class vtWindow;
  * which simulates the behavior of a fish.  For each fish you create, you would
  * also create a FishEngine and set the Engine's target to be the fish.
  */
-class vtEngine : public vtEnabledBase
+class vtEngine : public vtEnabledBase, public osg::Referenced
 {
 public:
 	vtEngine();
@@ -76,16 +77,16 @@ public:
 	vtWindow *GetWindow() { return m_pWindow; }
 
 	// Engine tree methods
-	void AddChild(vtEngine *pEngine) { m_Children.Append(pEngine); }
+	void AddChild(vtEngine *pEngine) { m_Children.push_back(pEngine); }
 	void RemoveChild(vtEngine *pEngine);
-	vtEngine *GetChild(unsigned int i) { return m_Children[i]; }
-	unsigned int NumChildren() { return m_Children.GetSize(); }
+	vtEngine *GetChild(unsigned int i) { return m_Children[i].get(); }
+	unsigned int NumChildren() { return m_Children.size(); }
 
 	void AddChildrenToList(vtArray<vtEngine*> &list, bool bEnabledOnly);
 
 protected:
 	vtArray<vtTarget*> m_Targets;
-	vtArray<vtEngine*> m_Children;
+	std::vector<vtEnginePtr> m_Children;
 	vtString		 m_strName;
 	vtWindow		*m_pWindow;
 };
