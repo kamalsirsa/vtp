@@ -1,7 +1,7 @@
 //
 // Base.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,9 +10,6 @@
 
 #include "vtdata/DataPath.h"
 
-class vtNode;
-class vtMaterial;
-class vtMaterialArray;
 class vtCamera;
 class vtGroup;
 class vtEngine;
@@ -52,62 +49,7 @@ public:
 	virtual void PlaceHolder() {}
 };
 
-/** Virtual base class for vtNode implementation. */
-class vtNodeBase : public vtTarget
-{
-public:
-	virtual void		Release() = 0;
-
-	virtual void		SetEnabled(bool bOn) = 0;
-	virtual bool		GetEnabled() const = 0;
-
-	virtual void		SetName2(const char *str) = 0;
-	virtual const char*	GetName2() const = 0;
-
-	virtual void	GetBoundBox(FBox3 &box) = 0;
-	virtual void	GetBoundSphere(FSphere &sphere, bool bGlobal = false) = 0;
-
-	virtual vtGroup* GetParent(int iParent = 0) = 0;
-
-	enum FogType { FM_LINEAR, FM_EXP, FM_EXP2 };
-};
-
-/** Virtual Base class for a Group node (scene graph node that can have children). */
-class vtGroupBase
-{
-public:
-	virtual void		AddChild(vtNode* pChild) = 0;
-	virtual void		RemoveChild(vtNode* pChild) = 0;
-	virtual vtNode*		GetChild(unsigned int num) const = 0;
-	virtual unsigned int GetNumChildren() const = 0;
-	virtual bool		ContainsChild(vtNode *pNode) const = 0;
-	virtual const vtNode*	FindDescendantByName(const char *name) const = 0;
-};
-
-/** Abstract base class for a scene graph node that can move. */
-class vtTransformBase
-{
-public:
-	virtual void Identity() = 0;
-
-	// translation
-	virtual FPoint3 GetTrans() const = 0;
-	virtual void SetTrans(const FPoint3 &pos) = 0;
-	virtual void Translate1(const FPoint3 &pos) = 0;
-	virtual void TranslateLocal(const FPoint3 &pos) = 0;
-
-	// rotation
-	virtual void Rotate2(const FPoint3 &axis, double angle) = 0;
-	virtual void RotateLocal(const FPoint3 &axis, double angle) = 0;
-	virtual void RotateParent(const FPoint3 &axis, double angle) = 0;
-	virtual FPoint3 GetDirection() const = 0;
-
-	// other
-	virtual void Scale3(float x, float y, float z) = 0;
-	virtual void SetTransform1(const FMatrix4 &mat) = 0;
-	virtual void GetTransform1(FMatrix4 &mat) const = 0;
-};
-
+// Vertex values
 #define VT_Normals		1
 #define VT_Colors		2
 #define VT_TexCoords	4
@@ -222,55 +164,6 @@ protected:
 	enum PrimType m_ePrimType;
 	int m_iVtxType;
 	int m_iMatIdx;
-};
-
-/**
- * This class provides the base methods for vtMaterial.
- */
-class vtMaterialBase
-{
-public:
-	vtMaterialBase();
-	virtual ~vtMaterialBase() {}
-
-	void CopyFrom(vtMaterial *pFrom);
-
-	virtual void SetDiffuse(float r, float g, float b, float a = 1.0f) = 0;
-	virtual RGBAf GetDiffuse() const = 0;
-	void SetDiffuse1(const RGBAf &c) { SetDiffuse(c.r, c.g, c.b, c.a); }
-	void SetDiffuse2(float f) { SetDiffuse(f, f, f); }
-
-	virtual void SetSpecular(float r, float g, float b) = 0;
-	virtual RGBf GetSpecular() const = 0;
-	void SetSpecular1(const RGBf &c) { SetSpecular(c.r, c.g, c.b); }
-	void SetSpecular2(float f) { SetSpecular(f, f, f); }
-
-	virtual void SetAmbient(float r, float g, float b) = 0;
-	virtual RGBf GetAmbient() const = 0;
-	void SetAmbient1(const RGBf &c) { SetAmbient(c.r, c.g, c.b); }
-	void SetAmbient2(float f) { SetAmbient(f, f, f); }
-
-	virtual void SetEmission(float r, float g, float b) = 0;
-	virtual RGBf GetEmission() const = 0;
-	void SetEmission1(const RGBf &c) { SetEmission(c.r, c.g, c.b); }
-	void SetEmission2(float f) { SetEmission(f, f, f); }
-
-	virtual void SetCulling(bool bCulling) = 0;
-	virtual bool GetCulling() const = 0;
-
-	virtual void SetLighting(bool bLighting) = 0;
-	virtual bool GetLighting() const = 0;
-
-	virtual void SetTexture(class vtImage *pImage) = 0;
-
-	virtual void SetTransparent(bool bOn, bool bAdd = false) = 0;
-	virtual bool GetTransparent() const = 0;
-
-	void SetName(const vtString &name) { m_Name = name; }
-	const vtString &GetName() const { return m_Name; }
-
-protected:
-	vtString m_Name;
 };
 
 /**

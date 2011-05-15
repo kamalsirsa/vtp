@@ -24,9 +24,9 @@
 #include "SRTerrain.h"
 #include "DemeterTerrain.h"
 #include "TiledGeom.h"
-#ifdef VTLIB_OSG
+
 #include "vtlib/vtosg/ExternalHeightField3d.h"
-#endif
+
 // add your own LOD method header here!
 
 
@@ -862,7 +862,6 @@ bool vtTerrain::_CreateDynamicTerrain()
 		return false;
 	}
 
-#if VTLIB_OSG
 	//
 	// This is a hack to allow a transparent terrain surface.
 	//  In order for OSG to draw the transparent surface correctly, it needs
@@ -879,7 +878,6 @@ bool vtTerrain::_CreateDynamicTerrain()
 			sset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 		}
 	}
-#endif
 
 	m_pDynGeom->SetPolygonTarget(m_Params.GetValueInt(STR_TRICOUNT));
 	m_pDynGeom->SetMaterials(m_pTerrMats);

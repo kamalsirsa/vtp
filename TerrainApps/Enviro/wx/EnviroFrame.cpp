@@ -113,10 +113,8 @@
 #  include "view_profile.xpm"
 #endif
 
-#if VTLIB_OSG
 #include <osg/Version>
-#include <osgDB/Registry>
-#endif
+#include <osgDB/Registry>	// for "scene save"
 
 DECLARE_APP(EnviroApp);
 
@@ -215,9 +213,7 @@ EVT_MENU(ID_SCENE_TERRAIN,		EnviroFrame::OnSceneTerrain)
 EVT_UPDATE_UI(ID_SCENE_TERRAIN,	EnviroFrame::OnUpdateSceneTerrain)
 EVT_MENU(ID_SCENE_SPACE,		EnviroFrame::OnSceneSpace)
 EVT_UPDATE_UI(ID_SCENE_SPACE,	EnviroFrame::OnUpdateSceneSpace)
-#if VTLIB_OSG
 EVT_MENU(ID_SCENE_SAVE,			EnviroFrame::OnSceneSave)
-#endif
 EVT_MENU(ID_SCENE_EPHEMERIS,	EnviroFrame::OnSceneEphemeris)
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 EVT_MENU(ID_SCENE_PERFMON,	    EnviroFrame::OnPerformanceMonitor)
@@ -510,10 +506,8 @@ void EnviroFrame::CreateMenus()
 	{
 		m_pSceneMenu->Append(ID_SCENE_SPACE, _("Go to Space"));
 	}
-#if VTLIB_OSG
 	m_pSceneMenu->AppendSeparator();
 	m_pSceneMenu->Append(ID_SCENE_SAVE, _("Save scene graph to .osg"));
-#endif
 	m_pSceneMenu->AppendSeparator();
 	m_pSceneMenu->Append(ID_SCENE_EPHEMERIS, _("Ephemeris...\tCtrl+P"));
 	m_pSceneMenu->Append(ID_TIME_DIALOG, _("Time...\tCtrl+I"));
@@ -1024,18 +1018,16 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 	}
 }
 
-#if VTLIB_OSG
 #include <osgShadow/ShadowedScene>
 #include <osgShadow/ShadowMap>
 #include <osgShadow/ShadowTexture>
 #include <osgDB/ReadFile>
-#endif
 
 void EnviroFrame::DoTestCode()
 {
 	SetMode(MM_SLOPE);
 
-#if VTLIB_OSG && 0
+#if 0
 	// Shadow tests
 	const int ReceivesShadowTraversalMask = 0x1;
 	const int CastsShadowTraversalMask = 0x2;
@@ -2183,13 +2175,11 @@ void EnviroFrame::OnUpdateSceneSpace(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnSceneSave(wxCommandEvent& event)
 {
-#if VTLIB_OSG
 	vtGroup *pRoot = vtGetTS()->GetTop();
 #if (OPENSCENEGRAPH_MAJOR_VERSION==2 && OPENSCENEGRAPH_MINOR_VERSION>=2) || OPENSCENEGRAPH_MAJOR_VERSION>2
 	osgDB::Registry::instance()->writeNode(*pRoot->GetOsgGroup(), std::string("scene.osg"), NULL);
 #else
 	osgDB::Registry::instance()->writeNode(*pRoot->GetOsgGroup(), "scene.osg");
-#endif
 #endif
 }
 
@@ -2831,19 +2821,7 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 #else
 	str += _T("Based on the Virtual Terrain Project 3D Runtime Environment.\n");
 #endif
-	str += _T("\nThis version was built with the ");
-#if VTLIB_DSM
-	str += _T("DSM");
-#elif VTLIB_OSG
-	str += _T("OSG");
-#elif VTLIB_OPENSG
-	str += _T("OpenSG");
-#elif VTLIB_SGL
-	str += _T("SGL");
-#elif VTLIB_SSG
-	str += _T("SSG");
-#endif
-	str += _T(" Library.\n\n");
+	str += _T("\nThis version was built with the OSG Library.\n\n");
 	str += _("Build date: ");
 	str += wxString(__DATE__, *wxConvCurrent);
 

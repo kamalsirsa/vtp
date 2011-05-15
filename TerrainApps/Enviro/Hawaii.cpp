@@ -79,7 +79,7 @@ class SpinEngine: public vtEngine
 	}
 };
 
-#if VTLIB_OSG && 0
+#if 0
 // Test particle effects
 class psGeodeTransform : public osg::MatrixTransform
 {
@@ -151,7 +151,7 @@ protected:
 
 void IslandTerrain::CreateCustomCulture()
 {
-#if VTLIB_OSG && 0
+#if 0
 	osg::Group *cessna = (osg::Group*) osgDB::readNodeFile("C:/Dev/OSGParticleDirt/cessnafire.osg");
 	if (cessna)
 	{

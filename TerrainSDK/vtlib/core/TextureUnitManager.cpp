@@ -28,7 +28,6 @@ vtTextureUnitManager::~vtTextureUnitManager(void)
 
 void vtTextureUnitManager::Initialise()
 {
-#if VTLIB_OSG
 	// Ensure this thread has a valid graphics context
 	// The following code will create
 	// 1. A OSG Traits object
@@ -49,10 +48,7 @@ void vtTextureUnitManager::Initialise()
 		// got a bogus value, probably because there is no OpenGL context yet.
 		m_iNumTextureUnits = 4;
 	}
-#else
-	// Assume four.
-	m_iNumTextureUnits = 4;
-#endif
+
 	m_pAllocationArray = new bool[m_iNumTextureUnits];
 	for (int i = 0; i < m_iNumTextureUnits; i++)
 		m_pAllocationArray[i] = false;

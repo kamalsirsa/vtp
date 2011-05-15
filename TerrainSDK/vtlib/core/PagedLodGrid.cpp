@@ -23,18 +23,16 @@ vtPagedStructureLOD::vtPagedStructureLOD() : vtGroup(true)
 
 	m_pNativeLOD = new PagedNativeLOD;
 	m_pNativeLOD->SetCenter(FPoint3(0, 0, 0));
-#if VTLIB_OSG
+
 	SetOsgGroup(m_pNativeLOD);
-#endif
 }
 
 void vtPagedStructureLOD::Release()
 {
-#if VTLIB_OSG
 	// Check if this node is no longer referenced.
 	if (m_pNode->referenceCount() == 1)
 		m_pNativeLOD = NULL;
-#endif
+
 	vtGroup::Release();
 }
 

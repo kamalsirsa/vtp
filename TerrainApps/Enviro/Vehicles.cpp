@@ -16,7 +16,6 @@
 ///////////////////////////////
 // helpers
 
-#if VTLIB_OSG
 // Walk an OSG scenegraph looking for geodes with statesets, change the color
 //  of any materials found.
 class RemapDiffuseVisitor : public osg::NodeVisitor
@@ -58,15 +57,12 @@ public:
 	}
 	RGBf c;
 };
-#endif
 
 void ConvertPurpleToColor(vtNode *pModel, RGBf replace)
 {
-#if VTLIB_OSG
 	RemapDiffuseVisitor viz;
 	viz.c = replace;
 	pModel->GetOsgNode()->accept(viz);
-#endif
 }
 
 /////////////////////////////////////////

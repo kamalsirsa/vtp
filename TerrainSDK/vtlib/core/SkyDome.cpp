@@ -463,7 +463,7 @@ void vtSkyDome::UpdateSunLight()
 		pLight->SetSpecular(color);
 	}
 	// Don't actually color the sun geometry, because we use a sun texture now.
-	// if (m_pSunMat) m_pSunMat->vtMaterialBase::SetDiffuse1(color);
+	// if (m_pSunMat) m_pSunMat->SetDiffuse1(color);
 }
 
 //

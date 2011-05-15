@@ -773,26 +773,3 @@ void vtMeshBase::TransformVertices(const FMatrix4 &mat)
 	}
 }
 
-///////////////////////////////////////////////////////////
-
-vtMaterialBase::vtMaterialBase()
-{
-}
-
-/**
- * Copy this material from another.
- */
-void vtMaterialBase::CopyFrom(vtMaterial *pFrom)
-{
-	SetDiffuse1(pFrom->GetDiffuse());
-	SetSpecular1(pFrom->GetSpecular());
-	SetAmbient1(pFrom->GetAmbient());
-	SetEmission1(pFrom->GetEmission());
-
-	SetCulling(pFrom->GetCulling());
-	SetLighting(pFrom->GetLighting());
-
-//	SetTexture(pFrom->GetTexture());
-	SetTransparent(pFrom->GetTransparent());
-}
-

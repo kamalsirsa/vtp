@@ -20,7 +20,7 @@ bool vtMaterial::s_bTextureCompression = false;
 #define SA_ON	StateAttribute::ON
 #define SA_OFF	StateAttribute::OFF
 
-vtMaterial::vtMaterial() : vtMaterialBase(), osg::StateSet()
+vtMaterial::vtMaterial() : osg::StateSet()
 {
 	m_pMaterial = new Material;
 	setAttributeAndModes(m_pMaterial.get());
@@ -39,6 +39,23 @@ vtMaterial::~vtMaterial()
 
 	// remove pointer: this is a dereference
 	m_Image = NULL;
+}
+
+/**
+ * Copy this material from another.
+ */
+void vtMaterial::CopyFrom(vtMaterial *pFrom)
+{
+	SetDiffuse1(pFrom->GetDiffuse());
+	SetSpecular1(pFrom->GetSpecular());
+	SetAmbient1(pFrom->GetAmbient());
+	SetEmission1(pFrom->GetEmission());
+
+	SetCulling(pFrom->GetCulling());
+	SetLighting(pFrom->GetLighting());
+
+//	SetTexture(pFrom->GetTexture());
+	SetTransparent(pFrom->GetTransparent());
 }
 
 /**

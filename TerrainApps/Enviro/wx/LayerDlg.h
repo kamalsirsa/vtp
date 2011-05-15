@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.h
 //
-// Copyright (c) 2003-2007 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,7 +16,7 @@
 #include "vtlib/core/TerrainLayers.h"
 #include "vtlib/core/Globe.h"
 
-class vtNodeBase;
+class vtNode;
 
 enum LayerType
 {

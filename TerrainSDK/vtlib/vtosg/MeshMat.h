@@ -29,15 +29,14 @@ class vtImage;
  * A material is a description of how a surface should be rendered.  For a
  * good description of how Materials work, see the opengl.org website or
  * the OpenGL Red Book.
- *
- * Much of the functionality of vtMaterial is inherited from its base class,
- * vtMaterialBase.
  */
-class vtMaterial : public osg::StateSet, public vtMaterialBase
+class vtMaterial : public osg::StateSet
 {
 public:
 	vtMaterial();
 	~vtMaterial();
+
+	void CopyFrom(vtMaterial *pFrom);
 
 	void SetDiffuse(float r, float g, float b, float a = 1.0f);
 	RGBAf GetDiffuse() const;
@@ -73,6 +72,21 @@ public:
 
 	void SetMipMap(bool bMipMap);
 	bool GetMipMap() const;
+
+	void SetDiffuse1(const RGBAf &c) { SetDiffuse(c.r, c.g, c.b, c.a); }
+	void SetDiffuse2(float f) { SetDiffuse(f, f, f); }
+
+	void SetSpecular1(const RGBf &c) { SetSpecular(c.r, c.g, c.b); }
+	void SetSpecular2(float f) { SetSpecular(f, f, f); }
+
+	void SetAmbient1(const RGBf &c) { SetAmbient(c.r, c.g, c.b); }
+	void SetAmbient2(float f) { SetAmbient(f, f, f); }
+
+	void SetEmission1(const RGBf &c) { SetEmission(c.r, c.g, c.b); }
+	void SetEmission2(float f) { SetEmission(f, f, f); }
+
+	void SetName(const vtString &name) { setName(name); }
+	const vtString GetName() const { return getName().c_str(); }
 
 	// global option
 	static bool s_bTextureCompression;

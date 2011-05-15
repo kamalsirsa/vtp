@@ -1,7 +1,7 @@
 //
 // Name:		SceneGraphDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -44,12 +44,12 @@ using namespace std;
 class MyTreeItemData : public wxTreeItemData
 {
 public:
-	MyTreeItemData(vtNodeBase *pNode, vtEngine *pEngine)
+	MyTreeItemData(vtNode *pNode, vtEngine *pEngine)
 	{
 		m_pNode = pNode;
 		m_pEngine = pEngine;
 	}
-	vtNodeBase *m_pNode;
+	vtNode *m_pNode;
 	vtEngine *m_pEngine;
 };
 
@@ -156,7 +156,7 @@ void SceneGraphDlg::RefreshTreeContents()
 
 
 void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
-										vtNodeBase *pNode, int depth)
+										vtNode *pNode, int depth)
 {
 	wxString str;
 	int nImage;
@@ -184,7 +184,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		str = _T("XForm");
 		nImage = 9;
 	}
-	else if (dynamic_cast<vtGroupBase*>(pNode))
+	else if (dynamic_cast<vtGroup*>(pNode))
 	{
 		// must be just a group for grouping's sake
 		str = _("Group");
@@ -251,7 +251,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	m_pTree->SetItemData(hNewItem, new MyTreeItemData(pNode, NULL));
 
 	wxTreeItemId hSubItem;
-	vtGroupBase *pGroup = dynamic_cast<vtGroupBase*>(pNode);
+	vtGroup *pGroup = dynamic_cast<vtGroup*>(pNode);
 	if (pGroup)
 	{
 		int num_children = pGroup->GetNumChildren();
@@ -293,7 +293,7 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 	if (target)
 	{
 		str += _T(" -> ");
-		vtNodeBase *node = dynamic_cast<vtNodeBase*>(target);
+		vtNode *node = dynamic_cast<vtNode*>(target);
 		if (node)
 		{
 			str += _T("\"");

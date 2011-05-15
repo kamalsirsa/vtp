@@ -798,7 +798,7 @@ void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 #if OLD_OSG_SHADOWS
 	bool bShadows = false;
 	vtNode *pThing = NULL;
-#if VTLIB_OSG
+
 	LayerItemData *data = GetLayerDataFromItem(m_item);
 	if (data && data->m_slay)
 	{
@@ -807,7 +807,7 @@ void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 		bShadows = (terr && terr->GetParams().GetValueBool(STR_STRUCT_SHADOWS) &&
 			pThing != NULL);
 	}
-#endif
+
 	event.Enable(bShadows);
 
 	if (pThing)

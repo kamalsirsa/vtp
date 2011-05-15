@@ -1,7 +1,7 @@
 //
 // Name: SceneGraphDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -37,7 +37,7 @@ protected:
 
 	void CreateImageList(int size = 16);
 	void AddNodeItemsRecursively(wxTreeItemId hParentItem,
-								 vtNodeBase *pNode, int depth);
+								 vtNode *pNode, int depth);
 	void AddEnginesRecursively(wxTreeItemId hParentItem,
 							   vtEngine *pEng, int depth);
 private:
@@ -47,7 +47,7 @@ private:
 	wxCheckBox  *m_pEnabled;
 	wxTreeCtrl  *m_pTree;
 	vtEngine *m_pSelectedEngine;
-	vtNodeBase *m_pSelectedNode;
+	vtNode	 *m_pSelectedNode;
 
 private:
 	// WDR: handler declarations for SceneGraphDlg

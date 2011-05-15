@@ -193,7 +193,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		str = _("Fog");
 		nImage = 10;
 	}
-	else if (dynamic_cast<vtGroupBase*>(pNode))
+	else if (dynamic_cast<vtGroup*>(pNode))
 	{
 		// must be just a group for grouping's sake
 		str = _("Group");
@@ -260,7 +260,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	m_pTree->SetItemData(hNewItem, new MyTreeItemData(pNode, NULL));
 
 	wxTreeItemId hSubItem;
-	vtGroupBase *pGroup = dynamic_cast<vtGroupBase*>(pNode);
+	vtGroup *pGroup = dynamic_cast<vtGroup*>(pNode);
 	if (pGroup)
 	{
 		int num_children = pGroup->GetNumChildren();
@@ -302,7 +302,7 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 	if (target)
 	{
 		str += _T(" -> ");
-		vtNodeBase *node = dynamic_cast<vtNodeBase*>(target);
+		vtNode *node = dynamic_cast<vtNode*>(target);
 		if (node)
 		{
 			str += _T("\"");

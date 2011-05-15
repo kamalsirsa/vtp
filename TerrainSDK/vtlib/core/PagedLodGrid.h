@@ -75,7 +75,6 @@ protected:
 	vtPagedStructureLodGrid *m_pGrid;
 };
 
-#if VTLIB_OSG
 #include "osg/LOD"
 class PagedNativeLOD : public osg::LOD
 {
@@ -129,15 +128,6 @@ public:
 		}
 	}
 };
-#else
-// dummy
-class PagedNativeLOD {
-public:
-	void SetCenter(const FPoint3 &center) {}
-	void GetCenter(FPoint3 &center) {}
-	void SetRadius(float r) {}
-};
-#endif // VTLIB_OSG
 
 struct QueueEntry {
 	vtPagedStructureLOD *pLOD;

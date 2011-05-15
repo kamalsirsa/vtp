@@ -1054,7 +1054,7 @@ vtNode *vtNativeNode::FindParentVTNode()
 // vtGroup
 //
 
-vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
+vtGroup::vtGroup(bool suppress) : vtNode()
 {
 	if (!suppress)
 	{
@@ -1157,7 +1157,7 @@ vtNode *FindNodeByName(vtNode *node, const char *name)
 	if (!strcmp(node->GetName2(), name))
 		return node;
 
-	const vtGroupBase *pGroup = dynamic_cast<const vtGroupBase *>(node);
+	const vtGroup *pGroup = dynamic_cast<const vtGroup *>(node);
 	if (pGroup)
 	{
 		unsigned int children = pGroup->GetNumChildren();
@@ -1233,13 +1233,13 @@ bool vtGroup::ContainsChild(vtNode *pNode) const
 // vtTransform
 //
 
-vtTransform::vtTransform() : vtGroup(true), vtTransformBase()
+vtTransform::vtTransform() : vtGroup(true)
 {
 	m_pTransform = new osg::MatrixTransform;
 	SetOsgGroup(m_pTransform);
 }
 
-vtTransform::vtTransform(osg::MatrixTransform *mt) : vtGroup(true), vtTransformBase()
+vtTransform::vtTransform(osg::MatrixTransform *mt) : vtGroup(true)
 {
 	m_pTransform = mt;
 	SetOsgGroup(m_pTransform);

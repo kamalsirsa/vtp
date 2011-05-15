@@ -340,17 +340,7 @@ wxString EnviroApp::MakeFrameTitle(vtTerrain *terrain)
 	//  put the name of the scene graph library in the title.
 	if (!strcmp(STRING_ORGNAME, "VTP"))
 	{
-	#if VTLIB_PSM
-		title += _T(" PSM");
-	#elif VTLIB_OSG
 		title += _T(" OSG");
-	#elif VTLIB_OPENSG
-		title += _T(" OpenSG");
-	#elif VTLIB_SGL
-		title += _T(" SGL");
-	#elif VTLIB_SSG
-		title += _T(" SSG");
-	#endif
 	}
 
 	if (terrain)

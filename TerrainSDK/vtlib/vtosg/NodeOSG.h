@@ -70,12 +70,13 @@ public:
  * Represents a node in the vtlib scenegraph.  The scenegraph is simply
  * a tree of nodes, with a root node at the top.
  */
-class vtNode : public vtNodeBase, public osg::Referenced
+class vtNode : public osg::Referenced, public vtTarget
 {
 public:
+	enum FogType { FM_LINEAR, FM_EXP, FM_EXP2 };
+
 	virtual void Release();
 
-	// implement vtNodeBase methods
 	void SetEnabled(bool bOn);
 	bool GetEnabled() const;
 
@@ -159,15 +160,13 @@ protected:
 /**
  * Represents a Group (a node that can have children) in the vtlib Scene Graph.
  */
-class vtGroup : public vtNode, public vtGroupBase
+class vtGroup : public vtNode
 {
 public:
 	vtGroup(bool suppress = false);
 	virtual vtNode *Clone(bool bDeep = false);
 	void CloneFrom(vtGroup *group, bool bDeep);
 	virtual void Release();
-
-	// implement vtGroupBase methods
 
 	/** Add a node as a child of this Group. */
 	void AddChild(vtNode *pChild);
@@ -206,7 +205,7 @@ protected:
  * A Transform node allows you to apply a transform (scale, rotate, translate)
  * to all its child nodes.
  */
-class vtTransform : public vtGroup, public vtTransformBase
+class vtTransform : public vtGroup
 {
 public:
 	vtTransform();
@@ -214,8 +213,6 @@ public:
 	virtual vtNode *Clone(bool bDeep = false);
 	void CloneFrom(vtTransform *xform, bool bDeep);
 	void Release();
-
-	// implement vtTransformBase methods
 
 	/** Set this transform to identity (no scale, rotation, or translation). */
 	void Identity();
