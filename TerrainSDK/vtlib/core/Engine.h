@@ -19,6 +19,35 @@ class vtWindow;
  */
 /*@{*/
 
+/**
+ * This class simply provides the ability to store whether an object is
+ * "enabled" or not.  This is generally useful, such as for Nodes or Engines
+ * which can be turned on and off.
+ */
+class vtEnabledBase
+{
+public:
+	vtEnabledBase() { m_bEnabled = true; }
+
+	virtual void SetEnabled(bool bOn) { m_bEnabled = bOn; }
+	bool GetEnabled() { return m_bEnabled; }
+
+protected:
+	bool m_bEnabled;
+};
+
+/** This class is a placeholder parent class for all objects which can
+ * be the target of an Engine (vtEngine).  Given a vtTarget point, you
+ * can use dynamic_cast<> to downcast safely to any specific child class.
+ */
+class vtTarget
+{
+public:
+	// need at least one method to make this class polymorphic
+	virtual void PlaceHolder() {}
+};
+
+
 typedef osg::ref_ptr<class vtEngine> vtEnginePtr;
 
 /**

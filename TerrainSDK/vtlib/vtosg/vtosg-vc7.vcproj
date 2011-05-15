@@ -146,6 +146,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\BruteTerrain.cpp">
+			</File>
+			<File
 				RelativePath="..\core\Building3d.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -191,49 +194,7 @@
 				RelativePath="..\core\Contours.cpp">
 			</File>
 			<File
-				RelativePath="..\core\CoreMeshMat.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\core\CoreScene.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\core\CustomTerrain.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
@@ -834,7 +795,7 @@
 				RelativePath="..\core\AttribMap.h">
 			</File>
 			<File
-				RelativePath="..\core\Base.h">
+				RelativePath="..\core\BruteTerrain.h">
 			</File>
 			<File
 				RelativePath="..\core\Building3d.h">
@@ -844,9 +805,6 @@
 			</File>
 			<File
 				RelativePath="..\core\Contours.h">
-			</File>
-			<File
-				RelativePath="..\core\CustomTerrain.h">
 			</File>
 			<File
 				RelativePath="..\core\DemeterTerrain.h">

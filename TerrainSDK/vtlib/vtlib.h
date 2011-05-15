@@ -24,12 +24,6 @@
 	#include <GL/gl.h>
 #endif
 
-//
-// Base classes from which the API-specific implementation
-// classes are derived.
-//
-#include "core/Base.h"
-
 // MSVC warnings can be obnoxious
 #ifdef _MSC_VER
 	#pragma warning(disable: 4511) // turn off warning about copy constructors
@@ -38,6 +32,7 @@
 #endif
 
 ///////////////////////////////// OSG //////////////////////////////
+
 #include "vtosg/Mesh.h"
 #include "vtosg/Material.h"
 #include "vtosg/ImageOSG.h"

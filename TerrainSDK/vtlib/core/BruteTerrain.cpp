@@ -1,12 +1,12 @@
 //
-// CustomTerrain class : an generic implementation of vtDynTerrainGeom
+// BruteTerrain class : a generic, brute-force implementation of vtDynTerrainGeom
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
-#include "CustomTerrain.h"
+#include "BruteTerrain.h"
 
 //
 // Macro used to determine the index of a vertex (element of the height
@@ -30,12 +30,12 @@ using namespace VTP;
 //
 // Constructor/destructor
 //
-CustomTerrain::CustomTerrain() : vtDynTerrainGeom()
+BruteTerrain::BruteTerrain() : vtDynTerrainGeom()
 {
 	m_pData = NULL;
 }
 
-CustomTerrain::~CustomTerrain()
+BruteTerrain::~BruteTerrain()
 {
 	if (m_pData)
 		delete m_pData;
@@ -46,7 +46,7 @@ CustomTerrain::~CustomTerrain()
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-DTErr CustomTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
+DTErr BruteTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 {
 	// Initializes necessary field of the parent class
 	DTErr err = BasicInit(pGrid);
@@ -76,7 +76,7 @@ DTErr CustomTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 //
 // This will be called once per frame, during the culling pass.
 //
-void CustomTerrain::DoCulling(const vtCamera *pCam)
+void BruteTerrain::DoCulling(const vtCamera *pCam)
 {
 	// Do your visibility testing here.
 	// (Compute which detail will actually gets drawn)
@@ -101,7 +101,7 @@ void CustomTerrain::DoCulling(const vtCamera *pCam)
 }
 
 
-void CustomTerrain::DoRender()
+void BruteTerrain::DoRender()
 {
 	// Prepare the render state for our OpenGL usage
 	PreRender();
@@ -114,7 +114,7 @@ void CustomTerrain::DoRender()
 }
 
 
-void CustomTerrain::LoadSingleMaterial()
+void BruteTerrain::LoadSingleMaterial()
 {
 	// single texture for the whole terrain
 	vtMaterial *pMat = GetMaterial(0);
@@ -126,7 +126,7 @@ void CustomTerrain::LoadSingleMaterial()
 }
 
 
-void CustomTerrain::RenderSurface()
+void BruteTerrain::RenderSurface()
 {
 	LoadSingleMaterial();
 	RenderPass();
@@ -150,17 +150,17 @@ void CustomTerrain::RenderSurface()
 }
 
 
-void CustomTerrain::RenderPass()
+void BruteTerrain::RenderPass()
 {
 	//
 	// Very naive code which draws the grid as immediate-mode
 	// triangle strips.  (Replace with your own algorithm.)
 	//
 	int i, j;
-	for (i = 0; i < m_iColumns-3; i+=2)
+	for (i = 0; i < m_iColumns-2; i++)
 	{
 		glBegin(GL_TRIANGLE_STRIP);
-		for (j = 0; j < m_iRows; j+=2)
+		for (j = 0; j < m_iRows; j++)
 		{
 			glVertex3f(MAKE_XYZ2(i, j));
 			glVertex3f(MAKE_XYZ2(i+2, j));
@@ -175,7 +175,7 @@ void CustomTerrain::RenderPass()
 // position of the terrain at a given grid point.  Supply the height
 // value from your own data structures.
 //
-float CustomTerrain::GetElevation(int iX, int iZ, bool bTrue) const
+float BruteTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
 	float f = m_pData[offset(iX,iZ)];
 	if (bTrue)
@@ -183,7 +183,7 @@ float CustomTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 	return f;
 }
 
-void CustomTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue) const
+void BruteTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue) const
 {
 	if (bTrue)
 		p.Set(MAKE_XYZ1_TRUE(iX, iZ));

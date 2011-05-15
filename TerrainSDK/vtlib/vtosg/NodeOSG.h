@@ -17,6 +17,8 @@
 #include <osg/Version>
 #include <osgShadow/ShadowedScene>
 
+#include "../core/Engine.h"	// for vtTarget
+
 #define VTLISPSM 0
 
 /** \addtogroup sg */
@@ -501,6 +503,11 @@ protected:
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
+
+// Visibility return codes from vtDynGeom::IsVisible
+#define	VT_Visible		1
+#define	VT_AllVisible	2
+
 /**
  * vtDynGeom extends the vtGeom class with the ability to have dynamic geometry
  * which changes every frame.  The most prominent use of this feature is to do
@@ -552,6 +559,7 @@ public:
 protected:
 	OsgDynMesh	*m_pDynMesh;
 };
+
 
 //////////////////////////////////////////////////
 

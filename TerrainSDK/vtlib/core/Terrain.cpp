@@ -22,7 +22,7 @@
 
 #include "TVTerrain.h"
 #include "SMTerrain.h"
-#include "CustomTerrain.h"
+#include "BruteTerrain.h"
 #include "SRTerrain.h"
 #include "DemeterTerrain.h"
 #include "TiledGeom.h"
@@ -767,14 +767,10 @@ bool vtTerrain::_CreateDynamicTerrain()
 		m_pDynGeom->setName("Demeter Geom");
 #endif
 	}
-	else if (method == LM_CUSTOM)
+	else if (method == LM_BRUTE)
 	{
-#ifdef USE_OSGEARTH
-		m_pDynGeom = new VTP::CustomTerrain;
-#else
-		m_pDynGeom = new CustomTerrain;
-#endif
-		m_pDynGeom->setName("CustomTerrain Geom");
+		m_pDynGeom = new BruteTerrain;
+		m_pDynGeom->setName("Brute-force Terrain Geom");
 	}
 	else if (method == LM_ROETTGER)
 	{

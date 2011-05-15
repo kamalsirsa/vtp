@@ -1,7 +1,7 @@
 //
-// CustomTerrain class : Dynamically rendering terrain
+// BruteTerrain class : A brute-force rendered terrain
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,24 +13,20 @@
 
 #include "DynTerrain.h"
 
-#ifdef USE_OSGEARTH
-namespace VTP {
-#endif
-
 /**
- * This class provides an example of how to add a CLOD implementation to
- * the vtlib library.  It contains the bare skeleton of a terrain rendering
- * algorithm, taking an elevation grid as input and rendering all the
- * geometry via OpenGL each frame.
- *
- * To add, or wrap, your own terrain rendering algorithm, simply make a
- * copy of CustomTerrain and rename it, then fill in the methods with your
- * own functionality.
+ This class provides a simplistic example of how to add a terrain-rendering
+ implementation to the vtlib library.  It contains the bare skeleton of
+ terrain rendering code, taking an elevation grid as input and doing a
+ naive, brute-force rendering all the geometry via OpenGL each frame.
+
+ To add, or wrap, your own terrain rendering algorithm, simply make a
+ copy of BruteTerrain and rename it, then fill in the methods with your
+ own functionality.
  */
-class CustomTerrain : public vtDynTerrainGeom
+class BruteTerrain : public vtDynTerrainGeom
 {
 public:
-	CustomTerrain();
+	BruteTerrain();
 
 	// initialization
 	DTErr Init(const vtElevationGrid *pGrid, float fZScale);
@@ -43,7 +39,7 @@ public:
 	float GetVerticalExag() const { return m_fZScale; }
 
 protected:
-	virtual ~CustomTerrain();
+	virtual ~BruteTerrain();
 
 	// rendering
 	void RenderSurface();
@@ -54,10 +50,6 @@ private:
 	float *m_pData;			// the elevation height array
 	float m_fZScale;
 };
-
-#ifdef USE_OSGEARTH
-}
-#endif
 
 /*@}*/	// Group dynterr
 
