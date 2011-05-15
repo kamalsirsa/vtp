@@ -991,25 +991,7 @@
 				RelativePath=".\Material.cpp">
 			</File>
 			<File
-				RelativePath="MeshMat.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
+				RelativePath=".\Mesh.cpp">
 			</File>
 			<File
 				RelativePath="NodeOSG.cpp">
@@ -1073,10 +1055,13 @@
 				RelativePath=".\LightSpacePerspectiveShadowTechnique.h">
 			</File>
 			<File
+				RelativePath=".\Material.h">
+			</File>
+			<File
 				RelativePath="MathOSG.h">
 			</File>
 			<File
-				RelativePath="MeshMat.h">
+				RelativePath=".\Mesh.h">
 			</File>
 			<File
 				RelativePath="NodeOSG.h">

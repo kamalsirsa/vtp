@@ -38,9 +38,10 @@
 #endif
 
 ///////////////////////////////// OSG //////////////////////////////
+#include "vtosg/Mesh.h"
+#include "vtosg/Material.h"
 #include "vtosg/ImageOSG.h"
 #include "vtosg/MathOSG.h"
-#include "vtosg/MeshMat.h"
 #include "vtosg/NodeOSG.h"
 #include "vtosg/SceneOSG.h"
 
