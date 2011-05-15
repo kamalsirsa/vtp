@@ -8,8 +8,6 @@
 #include "vtlib/vtlib.h"
 #include <osg/PolygonMode>
 
-using namespace osg;
-
 
 ///////////////////////////////////
 

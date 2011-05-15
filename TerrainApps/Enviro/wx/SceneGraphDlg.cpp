@@ -235,19 +235,19 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 				int iNumPrim = pMesh->GetNumPrims();
 				int iNumVert = pMesh->GetNumVertices();
 
-				vtMesh::PrimType ptype = pMesh->GetPrimType();
+				vtMesh::PrimType ptype = pMesh->getPrimType();
 				const char *mtype="";
 				switch (ptype)
 				{
-				case vtMesh::POINTS: mtype = "Points"; break;
-				case vtMesh::LINES: mtype = "Lines"; break;
-				case vtMesh::LINE_STRIP: mtype = "LineStrip"; break;
-				case vtMesh::TRIANGLES: mtype = "Triangles"; break;
-				case vtMesh::TRIANGLE_STRIP: mtype = "TriStrip"; break;
-				case vtMesh::TRIANGLE_FAN: mtype = "TriFan"; break;
-				case vtMesh::QUADS: mtype = "Quads"; break;
-				case vtMesh::QUAD_STRIP: mtype = "QuadStrip"; break;
-				case vtMesh::POLYGON: mtype = "Polygon"; break;
+				case PrimitiveSet::POINTS: mtype = "Points"; break;
+				case PrimitiveSet::LINES: mtype = "Lines"; break;
+				case PrimitiveSet::LINE_STRIP: mtype = "LineStrip"; break;
+				case PrimitiveSet::TRIANGLES: mtype = "Triangles"; break;
+				case PrimitiveSet::TRIANGLE_STRIP: mtype = "TriStrip"; break;
+				case PrimitiveSet::TRIANGLE_FAN: mtype = "TriFan"; break;
+				case PrimitiveSet::QUADS: mtype = "Quads"; break;
+				case PrimitiveSet::QUAD_STRIP: mtype = "QuadStrip"; break;
+				case PrimitiveSet::POLYGON: mtype = "Polygon"; break;
 				}
 				str.Printf(_("Mesh %d, %hs, %d verts, %d prims"), i, mtype, iNumVert, iNumPrim);
 				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);

@@ -1013,7 +1013,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 				base.x = world_extents.left + (i * tile_size.x);
 				base.y = world_extents.top - ((j+1) * tile_size.y);
 
-				vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, 4);
+				vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, 4);
 				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
 					0, 5.0f);
 
@@ -1044,7 +1044,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 				base.x = world_extents.left + (i * tile_size.x);
 				base.y = world_extents.top - ((j+1) * tile_size.y);
 
-				vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals, 4);
+				vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals, 4);
 				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
 					fAltitude, 5.0f);
 
@@ -3058,7 +3058,7 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bit
 	vtTerrain *pTerr = ...;
 	vtGeom *pLineGeom = new vtGeom;
 	pTerr->AddNode(pLineGeom);
-	vtMeshFactory mf(pLineGeom, vtMesh::LINE_STRIP, 0, 30000, 1);
+	vtMeshFactory mf(pLineGeom, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	float length = pTerr->AddSurfaceLineToMesh(&mf, dline, 10, true);
 	\endcode
  */

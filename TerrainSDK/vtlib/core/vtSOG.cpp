@@ -226,20 +226,20 @@ void OutputSOG::WriteMesh(FILE *fp, const vtMesh *pMesh)
 	FPoint2 uv;
 
 	bool need_prim_lengths = false;
-	switch (pMesh->GetPrimType())
+	switch (pMesh->getPrimType())
 	{
-	case vtMesh::POINTS:
-	case vtMesh::LINES:
-	case vtMesh::TRIANGLES:
-	case vtMesh::QUADS:
+	case PrimitiveSet::POINTS:
+	case PrimitiveSet::LINES:
+	case PrimitiveSet::TRIANGLES:
+	case PrimitiveSet::QUADS:
 		need_prim_lengths = false;
 		break;
 
-	case vtMesh::LINE_STRIP:
-	case vtMesh::TRIANGLE_STRIP:
-	case vtMesh::TRIANGLE_FAN:
-	case vtMesh::QUAD_STRIP:
-	case vtMesh::POLYGON:
+	case PrimitiveSet::LINE_STRIP:
+	case PrimitiveSet::TRIANGLE_STRIP:
+	case PrimitiveSet::TRIANGLE_FAN:
+	case PrimitiveSet::QUAD_STRIP:
+	case PrimitiveSet::POLYGON:
 		need_prim_lengths = true;
 		break;
 	}
@@ -250,11 +250,14 @@ void OutputSOG::WriteMesh(FILE *fp, const vtMesh *pMesh)
 	Write(fp, FT_MESH, components);
 
 	// write vertex flags (normals, colors, texcoords)
-	short vtype = pMesh->GetVtxType();
+	short vtype = 0;
+	if (pMesh->hasVertexNormals()) vtype |= VT_Normals;
+	if (pMesh->hasVertexColors()) vtype |= VT_Colors;
+	if (pMesh->hasVertexTexCoords()) vtype |= VT_TexCoords;
 	Write(fp, FT_VTX_FLAGS, vtype);
 
 	// write primitive type (line, triangles, strip..)
-	short ptype = pMesh->GetPrimType();
+	short ptype = pMesh->getPrimType();
 	Write(fp, FT_PRIM_TYPE, ptype);
 
 	// write material index

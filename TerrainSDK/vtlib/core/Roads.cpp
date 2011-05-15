@@ -299,7 +299,7 @@ vtMesh *NodeGeom::GenerateGeometry()
 	int j;
 	FPoint3 p, upvector(0.0f, 1.0f, 0.0f);
 
-	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_TexCoords | VT_Normals, m_iLinks*2 + 1);
+	vtMesh *pMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords | VT_Normals, m_iLinks*2 + 1);
 	int verts = 0;
 
 	// find the approximate center of the junction
@@ -517,7 +517,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	if (do_roadside)
 		total_vertices += (GetSize() * 2 * 2);		// 2 roadside strips
 
-	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_TexCoords | VT_Normals,
+	vtMesh *pMesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords | VT_Normals,
 		total_vertices);
 
 	RoadBuildInfo bi(GetSize());

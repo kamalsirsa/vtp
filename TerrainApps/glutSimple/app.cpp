@@ -238,10 +238,10 @@ bool CreateScene()
 	pMats->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), true, false, true);
 	vtGeom *pGeom = CreateLineGridGeom(pMats, 0,
 						   box.min, box.max, 32);
-	vtMesh *mesh1 = new vtMesh(vtMesh::LINES, 0, 6);
+	vtMesh *mesh1 = new vtMesh(PrimitiveSet::LINES, 0, 6);
 	mesh1->AddLine(FPoint3(0,0,0), FPoint3(0,maxh,0));
 	pGeom->AddMesh(mesh1, 1);
-	vtMesh *mesh2 = new vtMesh(vtMesh::LINES, 0, 6);
+	vtMesh *mesh2 = new vtMesh(PrimitiveSet::LINES, 0, 6);
 	mesh2->AddLine(FPoint3(-1000,0,0), FPoint3(1000,0,0));
 	pGeom->AddMesh(mesh2, 2);
 	pTopGroup->AddChild(pGeom);

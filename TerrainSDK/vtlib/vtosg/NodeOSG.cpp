@@ -29,8 +29,6 @@
 #include <osgShadow/ShadowMap>
 #include <osgShadow/ShadowTexture>
 
-using namespace osg;
-
 #define DEBUG_NODE_LOAD	0
 
 // We use bits 1 and 2 of the node mask as shadow flags.

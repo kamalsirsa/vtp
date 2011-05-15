@@ -1393,8 +1393,7 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 	dlg.SetCRS(m_proj);
 
 	// Fill the field names into the "Use Field" controls
-	int i;
-	for (i = 0; i < iFields; i++)
+	for (int i = 0; i < iFields; i++)
 	{
 		wxString str;
 		str.sprintf(_T("%d"), i);

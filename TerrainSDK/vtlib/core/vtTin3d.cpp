@@ -218,7 +218,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 		else
 		{
 			// simple case: this whole bin goes into one mesh
-			pMesh = new vtMesh(vtMesh::TRIANGLES, vert_type, in_bin * 3);
+			pMesh = new vtMesh(PrimitiveSet::TRIANGLES, vert_type, in_bin * 3);
 		}
 
 		for (j = 0; j < in_bin; j++)
@@ -244,7 +244,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 				// We mush pick a mesh based on surface type
 				int surftype = m_surfidx[tri];
 				if (pTypeMeshes[surftype] == NULL)
-					pTypeMeshes[surftype] = new vtMesh(vtMesh::TRIANGLES, vert_type, in_bin * 3);
+					pTypeMeshes[surftype] = new vtMesh(PrimitiveSet::TRIANGLES, vert_type, in_bin * 3);
 				pMesh = pTypeMeshes[surftype];
 				bTiled = m_surftype_tiled[surftype];
 			}
@@ -360,7 +360,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 
 	if (bDropShadowMesh)
 	{
-		vtMesh *pBaseMesh = new vtMesh(vtMesh::TRIANGLE_FAN, 0, 4);
+		vtMesh *pBaseMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, 0, 4);
 
 		ep.Set(m_EarthExtents.left - 10, m_EarthExtents.bottom - 10, m_fMinHeight - 5);
 		m_Conversion.ConvertFromEarth(ep, wp);

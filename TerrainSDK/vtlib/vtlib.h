@@ -45,6 +45,8 @@
 #include "vtosg/NodeOSG.h"
 #include "vtosg/SceneOSG.h"
 
+using namespace osg;
+
 #if defined(_MSC_VER) && _DEBUG && !defined(_STDAFX_H_INCLUDED_) && 0
 #pragma message("(Including MemTracker)")
 #include "vtlib/core/MemoryTracker.h"

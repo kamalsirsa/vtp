@@ -2225,7 +2225,7 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 	dline.Append(g2);
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 1);
+	vtMeshFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	mf.SetLineWidth(2);
 	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, dline, m_fDistToolHeight, true);
 }
@@ -2236,7 +2236,7 @@ void Enviro::SetTerrainMeasure(const DLine2 &path)
 	SetupArcMesh();
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 1);
+	vtMeshFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	mf.SetLineWidth(2);
 	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, path, m_fDistToolHeight, true);
 }
@@ -2322,7 +2322,7 @@ void Enviro::PolygonSelectionAddPoint()
 		m_NewLine.Append(g1);
 
 		vtTerrain *pTerr = GetCurrentTerrain();
-		vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 1);
+		vtMeshFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 		pTerr->AddSurfaceLineToMesh(&mf, m_NewLine, m_fDistToolHeight, true);
 	}
 	else
@@ -2811,7 +2811,7 @@ void Enviro::CreateElevationLegend()
 	m_pLegendGeom->SetMaterials(m_pHUDMaterials);
 
 	// Solid rectangle behind it
-	vtMesh *mesh4 = new vtMesh(vtMesh::QUADS, 0, 4);
+	vtMesh *mesh4 = new vtMesh(PrimitiveSet::QUADS, 0, 4);
 	mesh4->AddRectangleXY((float) base.x, (float) base.y, (float) size.x, (float) size.y, -1.0f);
 	m_pLegendGeom->AddMesh(mesh4, grey);
 
@@ -2821,7 +2821,7 @@ void Enviro::CreateElevationLegend()
 	// Big band of color
 	std::vector<RGBi> table;
 	cmap->GenerateColors(table, in_size.y, fMin, fMax);
-	vtMesh *mesh1 = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
+	vtMesh *mesh1 = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
 	for (i = 0; i < in_size.y + 1; i++)
 	{
 		FPoint3 p1((float) cbar_left,  (float) in_base.y + i, 0.0f);
@@ -2834,7 +2834,7 @@ void Enviro::CreateElevationLegend()
 	m_pLegendGeom->AddMesh(mesh1, white);
 
 	// Small white tick marks
-	vtMesh *mesh2 = new vtMesh(vtMesh::LINES, 0, ticks*2);
+	vtMesh *mesh2 = new vtMesh(PrimitiveSet::LINES, 0, ticks*2);
 	for (i = 0; i < ticks; i++)
 	{
 		FPoint3 p1((float) cbar_left-border.x*2, (float) in_base.y + i*vert_space, 0.0f);
@@ -2898,7 +2898,7 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 		vtGeom *geom = new vtGeom;
 		geom->setName("Selection Box");
 		geom->SetMaterials(m_pHUDMaterials);
-		m_pWindowBoxMesh = new vtMesh(vtMesh::POLYGON, 0, 4);
+		m_pWindowBoxMesh = new vtMesh(PrimitiveSet::POLYGON, 0, 4);
 		m_pWindowBoxMesh->AddVertex(0,0,0);
 		m_pWindowBoxMesh->AddVertex(1,0,0);
 		m_pWindowBoxMesh->AddVertex(1,1,0);

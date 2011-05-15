@@ -47,11 +47,6 @@ public:
 	virtual void PlaceHolder() {}
 };
 
-// Vertex values
-#define VT_Normals		1
-#define VT_Colors		2
-#define VT_TexCoords	4
-
 // Visibility return codes
 #define	VT_Visible	1
 #define	VT_AllVisible	2

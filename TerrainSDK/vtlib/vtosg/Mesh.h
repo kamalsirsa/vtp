@@ -17,6 +17,11 @@
 // Shorthand
 #define FAB		osg::Material::FRONT_AND_BACK
 
+// Vertex values
+#define VT_Normals		1
+#define VT_Colors		2
+#define VT_TexCoords	4
+
 class vtImage;
 
 /** \addtogroup sg */
@@ -36,20 +41,9 @@ class vtMesh : public osg::Geometry
 	friend class vtGeom;
 
 public:
-	enum PrimType
-	{
-		POINTS,
-		LINES,
-		LINE_STRIP,
-		TRIANGLES,
-		TRIANGLE_STRIP,
-		TRIANGLE_FAN,
-		QUADS,
-		QUAD_STRIP,
-		POLYGON
-	};
+	typedef osg::PrimitiveSet::Mode PrimType;
 
-	vtMesh(enum PrimType ePrimType, int VertType, int NumVertices);
+	vtMesh(PrimType ePrimType, int VertType, int NumVertices);
 
 	// Get bounding box
 	void GetBoundBox(FBox3 &box) const;
@@ -64,8 +58,7 @@ public:
 	void AddQuad(int p0, int p1, int p2, int p3);
 
 	// Accessors
-	PrimType GetPrimType() const { return m_ePrimType; }
-	int GetVtxType() const { return m_iVtxType; }
+	PrimType getPrimType() const { return (PrimType) getPrimSet()->getMode(); }
 
 	void SetMatIndex(int i) { m_iMatIdx = i; }
 	int GetMatIndex() const { return m_iMatIdx; }
@@ -143,11 +136,15 @@ public:
 
 	// Access values
 	int GetNumPrims() const;
-	int GetNumIndices() const { return m_Index->size(); }
-	short GetIndex(int i) const { return m_Index->at(i); }
-	int GetPrimLen(int i) const { return dynamic_cast<const osg::DrawArrayLengths*>(m_pPrimSet.get())->at(i); }
+	int GetNumIndices() const { return getVertexIndices()->getNumElements(); }
+	short GetIndex(int i) const { return getIndices()->at(i); }
+	int GetPrimLen(int i) const { return dynamic_cast<const osg::DrawArrayLengths*>(getPrimitiveSet(0))->at(i); }
 
 	void SetNormalsFromPrimitives();
+
+	bool hasVertexNormals() const { return getNormalArray() != NULL; }
+	bool hasVertexColors() const { return getColorArray() != NULL; }
+	bool hasVertexTexCoords() const { return getTexCoordArray(0) != NULL; }
 
 protected:
 	// Implementation
@@ -156,23 +153,32 @@ protected:
 	void _AddTriangleNormals();
 	void _AddQuadNormals();
 
-	enum PrimType m_ePrimType;
-	int m_iVtxType;
+	osg::PrimitiveSet *getPrimSet() { return getPrimitiveSet(0); }
+	const osg::PrimitiveSet *getPrimSet() const { return getPrimitiveSet(0); }
+
+	// might not need dynamic_cast here; could be simpler/faster with static cast?
+	osg::DrawArrays *getDrawArrays() { return dynamic_cast<osg::DrawArrays*>(getPrimitiveSet(0)); }
+	osg::DrawArrayLengths *getDrawArrayLengths() { return dynamic_cast<osg::DrawArrayLengths*>(getPrimitiveSet(0)); }
+
+	const osg::DrawArrays *getDrawArrays() const { return dynamic_cast<const osg::DrawArrays*>(getPrimitiveSet(0)); }
+	const osg::DrawArrayLengths *getDrawArrayLengths() const { return dynamic_cast<const osg::DrawArrayLengths*>(getPrimitiveSet(0)); }
+
+	osg::UIntArray *getIndices() { return (osg::UIntArray*) getVertexIndices(); }
+	const osg::UIntArray *getIndices() const { return (const osg::UIntArray*) getVertexIndices(); }
+
+	osg::Vec3Array *getVerts() { return (osg::Vec3Array*) getVertexArray(); }
+	const osg::Vec3Array *getVerts() const { return (const osg::Vec3Array*) getVertexArray(); }
+
+	osg::Vec3Array *getNormals() { return (osg::Vec3Array*) getNormalArray(); }
+	const osg::Vec3Array *getNormals() const { return (const osg::Vec3Array*) getNormalArray(); }
+
+	osg::Vec4Array *getColors() { return (osg::Vec4Array*) getColorArray(); }
+	const osg::Vec4Array *getColors() const { return (const osg::Vec4Array*) getColorArray(); }
+
+	osg::Vec2Array *getTexCoords() { return (osg::Vec2Array*) getTexCoordArray(0); }
+	const osg::Vec2Array *getTexCoords() const { return (const osg::Vec2Array*) getTexCoordArray(0); }
+
 	int m_iMatIdx;
-
-	// The vertex co-ordinates array
-	osg::ref_ptr<osg::Vec3Array>	m_Vert;
-	// The vertex normals array
-	osg::ref_ptr<osg::Vec3Array>	m_Norm;
-	// The vetex colors array
-	osg::ref_ptr<osg::Vec4Array>	m_Color;
-	//  The vertex texture co-ordinates array
-	osg::ref_ptr<osg::Vec2Array>	m_Tex;
-
-	// The vertex index array
-	osg::ref_ptr<osg::UIntArray>	m_Index;
-
-	osg::ref_ptr<osg::PrimitiveSet>	m_pPrimSet;
 };
 
 /** A Font for use with vtTextMesh. */

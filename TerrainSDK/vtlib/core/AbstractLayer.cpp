@@ -288,7 +288,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 		hf->ConvertEarthToSurfacePoint(epos, p3, 0, true);	// use true elev
 		p3.y += fHeight;
 
-		vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals, res*res*2);
+		vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res*2);
 		mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 
 		pGeomObject->AddMesh(mesh, material_index);
@@ -309,14 +309,14 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 		vtMesh *mesh;
 		if (bTetrahedra)
 		{
-			mesh = new vtMesh(vtMesh::TRIANGLES, bShaded ? VT_Normals : 0, 12);
+			mesh = new vtMesh(PrimitiveSet::TRIANGLES, bShaded ? VT_Normals : 0, 12);
 			mesh->CreateTetrahedron(p3, fRadius);
 			if (bShaded)
 				mesh->SetNormalsFromPrimitives();
 		}
 		else
 		{
-			mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, bShaded ? VT_Normals : 0, res*res*2);
+			mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, bShaded ? VT_Normals : 0, res*res*2);
 			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 		}
 
@@ -334,7 +334,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 			hf->ConvertEarthToSurfacePoint(dline[j], p3);
 			p3.y += fHeight;
 
-			vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals, res*res*2);
+			vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res*2);
 			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 
 			pGeomObject->AddMesh(mesh, material_index);
@@ -351,7 +351,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 			// preserve 3D point's elevation: don't drape
 			hf->m_Conversion.ConvertFromEarth(dline[j], p3);
 
-			vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals, res*res*2);
+			vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res*2);
 			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 
 			pGeomObject->AddMesh(mesh, material_index);
@@ -425,7 +425,7 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 		}
 	}
 
-	vtMeshFactory mf(pGeomLine, vtMesh::LINE_STRIP, 0, 3000, material_index,
+	vtMeshFactory mf(pGeomLine, PrimitiveSet::LINE_STRIP, 0, 3000, material_index,
 		iEstimatedVerts);
 
 	float fHeight = 0.0f;
@@ -518,7 +518,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
 	unsigned int size = dline.GetSize();
 	int iEstimatedVerts = size;
 
-	vtMeshFactory mf(pGeomLine, vtMesh::LINE_STRIP, 0, 30000, material_index,
+	vtMeshFactory mf(pGeomLine, PrimitiveSet::LINE_STRIP, 0, 30000, material_index,
 		iEstimatedVerts);
 
 	FPoint3 f3;

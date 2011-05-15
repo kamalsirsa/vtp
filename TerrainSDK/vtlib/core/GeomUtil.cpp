@@ -26,7 +26,7 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	vtMesh *mesh[3];
 
 	for (i = 0; i < 3; i++)
-		mesh[i] = new vtMesh(vtMesh::TRIANGLE_FAN, VT_Normals, 24);
+		mesh[i] = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_Normals, 24);
 
 	mesh[0]->CreateBlock(FPoint3(fSize, fSmall, fSmall));
 	mesh[1]->CreateBlock(FPoint3(fSmall, fSize, fSmall));
@@ -79,7 +79,7 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
  */
 vtMesh *CreateSphereMesh(const FSphere &sphere, int res)
 {
-	vtMesh *pMesh = new vtMesh(vtMesh::LINE_STRIP, 0, (res+1)*3*2);
+	vtMesh *pMesh = new vtMesh(PrimitiveSet::LINE_STRIP, 0, (res+1)*3*2);
 
 	float radius = sphere.radius * 0.9f;
 
@@ -126,7 +126,7 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						float fTiling, int steps)
 {
 	vtGeom *pGeom = new vtGeom;
-	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, steps * steps);
+	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, steps * steps);
 
 	mesh->CreateRectangle(steps, steps, Axis1, Axis2, Axis3, min1, max1, 0.0f, fTiling);
 
@@ -148,7 +148,7 @@ vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 						const FPoint3 &size)
 {
 	vtGeom *pGeom = new vtGeom;
-	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 24);
+	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 24);
 	mesh->CreateBlock(size);
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
@@ -157,7 +157,7 @@ vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 
 void AddLineMesh(vtGeom *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1)
 {
-	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 2);
+	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, 2);
 	mesh->AddLine(p0, p1);
 	pGeom->AddMesh(mesh, iMatIdx);
 }
@@ -180,7 +180,7 @@ vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertTyp
 						 float fRadius, int res)
 {
 	vtGeom *pGeom = new vtGeom;
-	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, iVertType, res*res*2);
+	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, iVertType, res*res*2);
 	mesh->CreateEllipsoid(FPoint3(0,0,0), FPoint3(fRadius, fRadius, fRadius), res);
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
@@ -222,7 +222,7 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
 		verts = res * 2;
 
 	vtGeom *pGeom = new vtGeom;
-	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, iVertType, res*2);
+	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, iVertType, res*2);
 	mesh->CreateCylinder(fHeight, fRadius, res, bTop, bBottom, bCentered);
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
@@ -237,7 +237,7 @@ vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 						   const FPoint3 &min1, const FPoint3 &max1, int steps)
 {
 	vtGeom *pGeom = new vtGeom;
-	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, (steps+1)*4);
+	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, (steps+1)*4);
 
 	FPoint3 p, diff = max1 - min1, step = diff / (float)steps;
 	p.y = min1.y;
@@ -276,7 +276,7 @@ vtDynBoundBox::vtDynBoundBox(const RGBf &color)
 	mats->AddRGBMaterial1(color, false, false, true);	// wire material
 	pGeom->SetMaterials(mats);
 
-	pMesh = new vtMesh(vtMesh::LINES, 0, 8);
+	pMesh = new vtMesh(PrimitiveSet::LINES, 0, 8);
 	for (int i = 0; i < 8; i++)
 		pMesh->AddVertex(0,0,0);
 	pMesh->AddLine(0, 1);
@@ -455,7 +455,7 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 	m_pMats->AddRGBMaterial1(line_color, false, false);	// plain, no culling
 	m_pGeom->SetMaterials(m_pMats);
 
-	m_pLines = new vtMesh(vtMesh::LINES, 0, 12);
+	m_pLines = new vtMesh(PrimitiveSet::LINES, 0, 12);
 	m_pGeom->AddMesh(m_pLines, 0);
 
 	// Now determine the points in space which define the geometry.
@@ -580,16 +580,16 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 		if (!mesh)
 			continue;
 
-		vtMesh::PrimType ptype = mesh->GetPrimType();
+		vtMesh::PrimType ptype = mesh->getPrimType();
 
 		// For now, this method only does tristrips, fans, and individual triangles
-		if (ptype != vtMesh::TRIANGLE_STRIP && ptype != vtMesh::TRIANGLE_FAN
-			 && ptype != vtMesh::TRIANGLES)
+		if (ptype != PrimitiveSet::TRIANGLE_STRIP && ptype != PrimitiveSet::TRIANGLE_FAN
+			 && ptype != PrimitiveSet::TRIANGLES)
 			continue;
 
 		// First write the vertices
 		int base_vert = file->verts_written;
-		int vtype = mesh->GetVtxType();
+
 		unsigned int num_vert = mesh->GetNumVertices();
 		fprintf(file->fp, "# %d vertices\n", num_vert);
 		for (j = 0; j < num_vert; j++)
@@ -597,7 +597,7 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 			FPoint3 pos = mesh->GetVtxPos(j);
 			fprintf(file->fp, "v %f %f %f\n", pos.x, pos.y, pos.z);
 		}
-		if (vtype & VT_TexCoords)
+		if (mesh->hasVertexTexCoords())
 		{
 			for (j = 0; j < num_vert; j++)
 			{
@@ -605,7 +605,7 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 				fprintf(file->fp, "vt %f %f\n", uv.x, uv.y);
 			}
 		}
-		if (vtype & VT_Normals)
+		if (mesh->hasVertexNormals())
 		{
 			for (j = 0; j < num_vert; j++)
 			{
@@ -621,7 +621,7 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 
 		unsigned int num_prims = mesh->GetNumPrims();
 		int idx0, idx1, idx2;
-		if (ptype == vtMesh::TRIANGLES)
+		if (ptype == PrimitiveSet::TRIANGLES)
 		{
 			for (k = 0; k < num_prims; k++)
 			{
@@ -633,7 +633,7 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 
 			}
 		}
-		if (ptype == vtMesh::TRIANGLE_STRIP || ptype == vtMesh::TRIANGLE_FAN)
+		if (ptype == PrimitiveSet::TRIANGLE_STRIP || ptype == PrimitiveSet::TRIANGLE_FAN)
 		{
 			// OBJ doesn't do strips, so break them into individual triangles
 			int prim_start = 0;
@@ -642,7 +642,7 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 				int len = mesh->GetPrimLen(k);
 				for (int t = 0; t < len-2; t++)
 				{
-					if (ptype == vtMesh::TRIANGLE_STRIP)
+					if (ptype == PrimitiveSet::TRIANGLE_STRIP)
 					{
 						idx0 = mesh->GetIndex(prim_start + t);
 						// unwind strip: even and odd faces
@@ -657,7 +657,7 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 							idx1 = mesh->GetIndex(prim_start + t+2);
 						}
 					}
-					else if (ptype == vtMesh::TRIANGLE_FAN)
+					else if (ptype == PrimitiveSet::TRIANGLE_FAN)
 					{
 						idx0 = mesh->GetIndex(prim_start);
 						idx1 = mesh->GetIndex(prim_start + t+1);
@@ -667,10 +667,10 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 					idx0 = idx0 + base_vert + 1;
 					idx1 = idx1 + base_vert + 1;
 					idx2 = idx2 + base_vert + 1;
-					if ((vtype & VT_Normals) && (vtype & VT_TexCoords))
+					if (mesh->hasVertexNormals() && mesh->hasVertexTexCoords())
 						fprintf(file->fp, "f %d/%d/%d %d/%d/%d %d/%d/%d\n",
 						idx0, idx0, idx0, idx1, idx1, idx1, idx2, idx2, idx2);
-					else if ((vtype & VT_Normals) || (vtype & VT_TexCoords))
+					else if (mesh->hasVertexNormals() || mesh->hasVertexTexCoords())
 						fprintf(file->fp, "f %d/%d %d/%d %d/%d\n",
 						idx0, idx0, idx1, idx1, idx2, idx2);
 					else

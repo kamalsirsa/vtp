@@ -26,8 +26,6 @@
 #include <iostream>			// For redirecting OSG's stdout messages
 #include "vtdata/vtLog.h"	// to the VTP log.
 
-using namespace osg;
-
 /** A way to catch OSG messages */
 class OsgMsgTrap : public std::streambuf
 {
