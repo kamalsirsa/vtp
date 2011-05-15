@@ -3,7 +3,7 @@
 //
 // Implementation of vtScene for the OSG library
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -28,10 +28,7 @@
 
 using namespace osg;
 
-///////////////////////////////////////////////////////////////
-// Trap for OSG messages
-//
-
+/** A way to catch OSG messages */
 class OsgMsgTrap : public std::streambuf
 {
 public:
@@ -52,8 +49,19 @@ static std::streambuf *previous_cerr;
 // There is always and only one global vtScene object
 vtScene g_Scene;
 
-vtScene::vtScene() : vtSceneBase()
+
+///////////////////////////////////////////////////////////////////////
+
+vtScene::vtScene()
 {
+	m_pCamera = NULL;
+	m_pRoot = NULL;
+	m_pRootEngine = NULL;
+	m_pRootEnginePostDraw = NULL;
+	m_piKeyState = NULL;
+	m_pDefaultCamera = NULL;
+	m_pDefaultWindow = NULL;
+
 	m_bInitialized = false;
 	m_bWireframe = false;
 	m_bWinInfo = false;
@@ -62,6 +70,10 @@ vtScene::vtScene() : vtSceneBase()
 
 vtScene::~vtScene()
 {
+	// Cleanup engines.  They are in a tree, connected by ref_ptr, so we only need
+	//  to release the top of the tree.
+	m_pRootEngine = NULL;
+
 	m_pOsgViewer = NULL;	// derefs
 
 	// Do not release camera or window, that is left for the application.
@@ -207,6 +219,85 @@ void vtScene::Shutdown()
 	// restore
 	std::cout.rdbuf(previous_cout);
 	std::cerr.rdbuf(previous_cerr);
+}
+
+void vtScene::OnMouse(vtMouseEvent &event, vtWindow *pWindow)
+{
+	// Pass event to Engines
+	vtEngineArray list(m_pRootEngine);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
+	{
+		vtEngine *pEng = list[i];
+		if (pEng->GetEnabled() &&
+			(pEng->GetWindow() == NULL || pEng->GetWindow() == pWindow))
+			pEng->OnMouse(event);
+	}
+}
+
+void vtScene::OnKey(int key, int flags, vtWindow *pWindow)
+{
+	// Pass event to Engines
+	vtEngineArray list(m_pRootEngine);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
+	{
+		vtEngine *pEng = list[i];
+		if (pEng->GetEnabled() &&
+			(pEng->GetWindow() == NULL || pEng->GetWindow() == pWindow))
+			pEng->OnKey(key, flags);
+	}
+}
+
+bool vtScene::GetKeyState(int key)
+{
+	if (m_piKeyState)
+		return m_piKeyState[key];
+	else
+		return false;
+}
+
+IPoint2 vtScene::GetWindowSize(vtWindow *pWindow)
+{
+	if (!pWindow)
+		pWindow = GetWindow(0);
+	return pWindow->GetSize();
+}
+
+void vtScene::DoEngines(vtEngine *eng)
+{
+	// Evaluate Engines
+	vtEngineArray list(eng);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
+	{
+		vtEngine *pEng = list[i];
+		if (pEng->GetEnabled())
+			pEng->Eval();
+	}
+}
+
+// (for backward compatibility only)
+void vtScene::AddEngine(vtEngine *ptr)
+{
+	if (m_pRootEngine)
+		m_pRootEngine->AddChild(ptr);
+	else
+		m_pRootEngine = ptr;
+}
+
+void vtScene::TargetRemoved(vtTarget *tar)
+{
+	// Look at all Engines
+	vtEngineArray list(m_pRootEngine);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
+	{
+		// If this engine targets something that is no longer there
+		vtEngine *pEng = list[i];
+		for (unsigned int j = 0; j < pEng->NumTargets(); j++)
+		{
+			// Then remove it
+			if (pEng->GetTarget(j) == tar)
+				pEng->RemoveTarget(tar);
+		}
+	}
 }
 
 void vtScene::TimerRunning(bool bRun)
@@ -598,7 +689,21 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 	if (!m_bInitialized) return;
 	if (m_pHUD)
 		m_pHUD->SetWindowSize(w, h);
-	vtSceneBase::SetWindowSize(w, h, pWindow);
+
+	if (!pWindow)
+		pWindow = GetWindow(0);
+	pWindow->SetSize(w, h);
+
+	// Pass event to Engines
+	vtEngineArray list(m_pRootEngine);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
+	{
+		vtEngine *pEng = list[i];
+		if (pEng->GetEnabled() &&
+			(pEng->GetWindow() == NULL || pEng->GetWindow() == pWindow))
+			pEng->OnWindowSize(w, h);
+	}
+
 	osgViewer::GraphicsWindow* pGW = (osgViewer::GraphicsWindow*)GetGraphicsContext();
 	if ((NULL != pGW) && pGW->valid())
 	{

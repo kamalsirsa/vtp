@@ -138,7 +138,7 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 
 /**
  * Create a block geometry with the indicated material and size.
- * See vtMeshBase::CreateBlock for how the block is constructed.
+ * See vtMesh::CreateBlock for how the block is constructed.
  *
  * \param pMats   The array of materials to use.
  * \param iMatIdx The index of the material to use.
@@ -329,7 +329,7 @@ void vtDynBoundBox::SetBox(const FBox3 &box)
  * \param iExpectedVerts If you know how many vertices will be mesh ahead of
  *		time, you can save a little time and memory by passing the number.
  */
-vtMeshFactory::vtMeshFactory(vtGeom *pGeom, vtMeshBase::PrimType ePrimType,
+vtMeshFactory::vtMeshFactory(vtGeom *pGeom, vtMesh::PrimType ePrimType,
 							 int iVertType, int iMaxVertsPerMesh, int iMatIndex,
 							 int iExpectedVerts)
 {

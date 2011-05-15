@@ -38,7 +38,7 @@
 class vtMeshFactory
 {
 public:
-	vtMeshFactory(vtGeom *pGeom, vtMeshBase::PrimType ePrimType,
+	vtMeshFactory(vtGeom *pGeom, vtMesh::PrimType ePrimType,
 		int iVertType, int iMaxVertsPerMesh, int iMatIndex, int iExpectedVerts = -1);
 	vtMeshFactory(vtMesh *pMesh);
 

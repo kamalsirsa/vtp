@@ -1,7 +1,7 @@
 //
 // SceneOSG.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,77 +22,24 @@ class CStructureShadowsOSG;
 /*@{*/
 
 /**
- * vtSceneBase provides the Scene methods that are common across all
- * 3D libraries supported by vtlib.
- * See vtScene for an overview of the Scene class.
+ * This class represents a window, an area of the display which corresponds
+ * to an OpenGL drawing surface and has the potential to receive UI events.
  */
-class vtSceneBase
+class vtWindow
 {
 public:
-	vtSceneBase();
-	virtual ~vtSceneBase();
+	vtWindow();
 
-	/// Set the top engine in the Engine graph
-	void SetRootEngine(vtEngine *ptr) { m_pRootEngine = ptr; }
+	/// Set the background color for the window.
+	void SetBgColor(const RGBf &color) { m_BgColor = color; }
+	RGBf GetBgColor() { return m_BgColor; }
 
-	/// Get the top engine in the Engine graph
-	vtEngine *GetRootEngine() { return m_pRootEngine; }
-
-	/// Set the top engine in the Engine graph
-	void SetPostDrawEngine(vtEngine *ptr) { m_pRootEnginePostDraw = ptr; }
-
-	/// Get the top engine in the Engine graph
-	vtEngine *GetPostDrawEngine() { return m_pRootEnginePostDraw; }
-
-	/// Add an Engine to the scene. (for backward compatibility only)
-	void AddEngine(vtEngine *ptr);
-
-	/// Inform all engines in the scene that a target no longer exists
-	void TargetRemoved(vtTarget *tar);
-
-	/** Set the camera associated with this scene.  The scene has
-	 * a default camera already supplied; you can use GetCamera()
-	 * to simply use it instead of making your own.
-	 */
-	void SetCamera(vtCamera *cam) { m_pCamera = cam; }
-	/// Get the camera associated with the scene.
-	vtCamera *GetCamera() { return m_pCamera; }
-
-	void OnMouse(vtMouseEvent &event, vtWindow *pWindow = NULL);
-	void OnKey(int key, int flags, vtWindow *pWindow = NULL);
-	void SetKeyStates(bool *piKeyState) { m_piKeyState = piKeyState; }
-	bool GetKeyState(int key);
-
-	virtual void SetWindowSize(int w, int h, vtWindow *pWindow = NULL);
-	IPoint2 GetWindowSize(vtWindow *pWindow = NULL);
-
-	virtual void SetRoot(vtGroup *pRoot) = 0;
-	/// Get the root node, which is the top of the scene graph.
-	vtGroup *GetRoot() { return m_pRoot; }
-
-	// Windows
-	void AddWindow(vtWindow *pWindow) {
-		m_Windows.Append(pWindow);
-	}
-	vtWindow *GetWindow(unsigned int i) {
-		if (m_Windows.GetSize() > i)
-			return m_Windows[i];
-		else
-			return NULL;
-	}
+	void SetSize(int w, int h);
+	IPoint2 GetSize() { return m_Size; }
 
 protected:
-	void DoEngines(vtEngine *eng);
-
-	vtArray<vtWindow*> m_Windows;
-	vtCamera	*m_pCamera;
-	vtGroup		*m_pRoot;
-	vtEnginePtr	m_pRootEngine;
-	vtEngine	*m_pRootEnginePostDraw;
-	bool		*m_piKeyState;
-
-	vtCamera	*m_pDefaultCamera;
-	vtWindow	*m_pDefaultWindow;
+	RGBf m_BgColor;
+	IPoint2 m_Size;
 };
 
 /**
@@ -106,7 +53,7 @@ protected:
 	- A window
 	- A current camera (vtCamera)
  */
-class vtScene : public vtSceneBase
+class vtScene
 {
 public:
 	vtScene();
@@ -160,6 +107,54 @@ public:
 	void WorldToScreen(const FPoint3 &point, IPoint2 &result);
 	FPlane *GetCullPlanes() { return m_cullPlanes; }
 
+	/// Set the top engine in the Engine graph
+	void SetRootEngine(vtEngine *ptr) { m_pRootEngine = ptr; }
+
+	/// Get the top engine in the Engine graph
+	vtEngine *GetRootEngine() { return m_pRootEngine; }
+
+	/// Set the top engine in the Engine graph
+	void SetPostDrawEngine(vtEngine *ptr) { m_pRootEnginePostDraw = ptr; }
+
+	/// Get the top engine in the Engine graph
+	vtEngine *GetPostDrawEngine() { return m_pRootEnginePostDraw; }
+
+	/// Add an Engine to the scene. (for backward compatibility only)
+	void AddEngine(vtEngine *ptr);
+
+	/// Inform all engines in the scene that a target no longer exists
+	void TargetRemoved(vtTarget *tar);
+
+	/** Set the camera associated with this scene.  The scene has
+	 * a default camera already supplied; you can use GetCamera()
+	 * to simply use it instead of making your own.
+	 */
+	void SetCamera(vtCamera *cam) { m_pCamera = cam; }
+	/// Get the camera associated with the scene.
+	vtCamera *GetCamera() { return m_pCamera; }
+
+	void OnMouse(vtMouseEvent &event, vtWindow *pWindow = NULL);
+	void OnKey(int key, int flags, vtWindow *pWindow = NULL);
+	void SetKeyStates(bool *piKeyState) { m_piKeyState = piKeyState; }
+	bool GetKeyState(int key);
+
+	void SetWindowSize(int w, int h, vtWindow *pWindow = NULL);
+	IPoint2 GetWindowSize(vtWindow *pWindow = NULL);
+
+	/// Get the root node, which is the top of the scene graph.
+	vtGroup *GetRoot() { return m_pRoot; }
+
+	// Windows
+	void AddWindow(vtWindow *pWindow) {
+		m_Windows.Append(pWindow);
+	}
+	vtWindow *GetWindow(unsigned int i) {
+		if (m_Windows.GetSize() > i)
+			return m_Windows[i];
+		else
+			return NULL;
+	}
+
 #if OLD_OSG_SHADOWS
 	// Experimental:
 	// Object-terrain shadow casting, only for OSG
@@ -177,7 +172,6 @@ public:
 
 	void SetHUD(vtHUD *hud) { m_pHUD = hud; }
 	vtHUD *GetHUD() { return m_pHUD; }
-	void SetWindowSize(int w, int h, vtWindow *pWindow = NULL);
 
 	// For backward compatibility
 	void SetBgColor(const RGBf &color) {
@@ -198,6 +192,19 @@ public:
 
 	// for culling
 	void CalcCullPlanes();
+
+protected:
+	void DoEngines(vtEngine *eng);
+
+	vtArray<vtWindow*> m_Windows;
+	vtCamera	*m_pCamera;
+	vtGroup		*m_pRoot;
+	vtEnginePtr	m_pRootEngine;
+	vtEngine	*m_pRootEnginePostDraw;
+	bool		*m_piKeyState;
+
+	vtCamera	*m_pDefaultCamera;
+	vtWindow	*m_pDefaultWindow;
 
 protected:
 	// OSG-specific implementation

@@ -988,6 +988,9 @@
 				RelativePath=".\LightSpacePerspectiveShadowTechnique.cpp">
 			</File>
 			<File
+				RelativePath=".\Material.cpp">
+			</File>
+			<File
 				RelativePath="MeshMat.cpp">
 				<FileConfiguration
 					Name="Release|Win32">

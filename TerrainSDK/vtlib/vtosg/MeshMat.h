@@ -26,15 +26,18 @@ class vtImage;
 /*@{*/
 
 /**
- * A material is a description of how a surface should be rendered.  For a
- * good description of how Materials work, see the opengl.org website or
- * the OpenGL Red Book.
+ A material is a description of how geometry (typically, a surface) should be
+ rendered.  For a good description of how Materials work, see the opengl.org
+ website or the OpenGL Red Book.
+
+ vtlib's concept of a material is slightly more broad than OpenGL's, because
+ it includes texture and transparency (alpha).  It maps closely to OSG's "state
+ set", though that is even broader in scope.
  */
 class vtMaterial : public osg::StateSet
 {
 public:
 	vtMaterial();
-	~vtMaterial();
 
 	void CopyFrom(vtMaterial *pFrom);
 
@@ -148,17 +151,28 @@ typedef osg::ref_ptr<vtMaterialArray> vtMaterialArrayPtr;
  * functions useful for creating and dynamically changing Meshes.
  * To add the vtMesh to the visible scene graph, add it to a vtGeom node.
  * \par
- * Most of the useful methods of this class are defined on its parent
- *	class, vtMeshBase.
  */
-class vtMesh : public vtMeshBase, public osg::Geometry
+class vtMesh : public osg::Geometry
 {
 	friend class vtGeom;
 
 public:
+	enum PrimType
+	{
+		POINTS,
+		LINES,
+		LINE_STRIP,
+		TRIANGLES,
+		TRIANGLE_STRIP,
+		TRIANGLE_FAN,
+		QUADS,
+		QUAD_STRIP,
+		POLYGON
+	};
+
 	vtMesh(enum PrimType ePrimType, int VertType, int NumVertices);
 
-	// Override with ability to get OSG bounding box
+	// Get bounding box
 	void GetBoundBox(FBox3 &box) const;
 
 	// Adding primitives
@@ -169,6 +183,52 @@ public:
 	void AddLine(int p0, int p1);
 	int  AddLine(const FPoint3 &pos1, const FPoint3 &pos2);
 	void AddQuad(int p0, int p1, int p2, int p3);
+
+	// Accessors
+	PrimType GetPrimType() const { return m_ePrimType; }
+	int GetVtxType() const { return m_iVtxType; }
+
+	void SetMatIndex(int i) { m_iMatIdx = i; }
+	int GetMatIndex() const { return m_iMatIdx; }
+
+	// Adding vertices
+	int AddVertex(float x, float y, float z);
+	int AddVertexN(float x, float y, float z, float nx, float ny, float nz);
+	int AddVertexUV(float x, float y, float z, float u, float v);
+
+	int AddVertex(const FPoint3 &p);
+	int AddVertexN(const FPoint3 &p, const FPoint3 &n);
+	int AddVertexUV(const FPoint3 &p, float u, float v);
+	int AddVertexUV(const FPoint3 &p, const FPoint2 &uv);
+	int AddVertexNUV(const FPoint3 &p, const FPoint3 &n, const FPoint2 &uv);
+
+	// Adding primitives
+	void AddStrip2(int iNVerts, int iStartIndex);
+
+	void TransformVertices(const FMatrix4 &mat);
+
+	void CreateEllipsoid(const FPoint3 &center, const FPoint3 &size,
+		int res, bool hemi = false, bool bNormalsIn = false);
+	void CreateBlock(const FPoint3& size);
+	void CreateOptimizedBlock(const FPoint3& size);
+	void CreatePrism(const FPoint3 &base, const FPoint3 &vector_up,
+					 const FPoint2 &size1, const FPoint2 &size2);
+	void CreateRectangularMesh(int xsize, int ysize, bool bReverseNormals = false);
+	void CreateCylinder(float height, float radius, int res,
+		bool bTop = true, bool bBottom = true, bool bCentered = true,
+		int direction = 1);
+	void CreateTetrahedron(const FPoint3 &center, float fRadius);
+
+	void AddRectangleXZ(float xsize, float zsize);
+	void AddRectangleXY(float x, float y, float xsize, float ysize,
+		float z=0.0f, bool bCentered=false);
+
+	void CreateConicalSurface(const FPoint3 &tip, double radial_angle,
+							  double theta1, double theta2,
+							  double r1, double r2, int res = 40);
+	void CreateRectangle(int iQuads1, int iQuads2,
+		int Axis1, int Axis2, int Axis3,
+		const FPoint2 &min1, const FPoint2 &max1, float fLevel, float fTiling);
 
 	// Access vertex properties
 	unsigned int GetNumVertices() const;
@@ -186,6 +246,17 @@ public:
 	FPoint2 GetVtxTexCoord(unsigned int i) const;
 
 	void SetLineWidth(float fWidth);
+
+	void SetVtxPUV(unsigned int i, const FPoint3 &pos, float u, float v)
+	{
+		SetVtxPos(i, pos);
+		SetVtxTexCoord(i, FPoint2(u, v));
+	}
+	void SetVtxPN(unsigned int i, const FPoint3 &pos, const FPoint3 &norm)
+	{
+		SetVtxPos(i, pos);
+		SetVtxNormal(i, norm);
+	}
 
 	// Control rendering optimization ("display lists")
 	void ReOptimize();
@@ -205,6 +276,10 @@ protected:
 	void _AddPolyNormals();
 	void _AddTriangleNormals();
 	void _AddQuadNormals();
+
+	enum PrimType m_ePrimType;
+	int m_iVtxType;
+	int m_iMatIdx;
 
 	// The vertex co-ordinates array
 	osg::ref_ptr<osg::Vec3Array>	m_Vert;

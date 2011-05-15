@@ -1,7 +1,7 @@
 //
 // Terrain.h
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,8 +34,6 @@ class vtPagedStructureLodGrid;
 class vtSimpleBillboardEngine;
 class vtSimpleLodGrid;
 class vtTiledGeom;
-class vtTin;
-class vtTin3d;
 class vtExternalHeightField3d;
 
 /** \addtogroup terrain */
@@ -498,9 +496,6 @@ protected:
 	// contain the engines specific to this terrain
 	vtEnginePtr		m_pEngineGroup;
 	vtEnginePtr		m_pBBEngine;
-
-	bool			m_bShowPOI;
-	vtGroup			*m_pPOIGroup;
 
 	// only used during initialization
 	auto_ptr<vtElevationGrid>	m_pElevGrid;

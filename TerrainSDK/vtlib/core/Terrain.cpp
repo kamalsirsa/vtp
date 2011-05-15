@@ -79,9 +79,6 @@ vtTerrain::vtTerrain()
 	m_pVegGrid = NULL;
 	m_pPlantList = NULL;
 
-	m_bShowPOI = true;
-	m_pPOIGroup = NULL;
-
 	m_pDynGeom = NULL;
 	m_pDynGeomScale = NULL;
 	m_pTiledGeom = NULL;
@@ -105,15 +102,13 @@ vtTerrain::vtTerrain()
 	m_pStructureExtension = NULL;
 
 	m_pExternalHeightField = NULL;
-
 }
 
 vtTerrain::~vtTerrain()
 {
 	VTLOG("Terrain destructing: '%s' ..", (const char *) GetName());
 
-	// Remove the things this terrain has added to the scene.
-	// Some things need to be manually deleted.
+	// Remove/release the things this terrain has added to the scene.
 	m_Content.ReleaseContents();
 	m_Content.Empty();
 
