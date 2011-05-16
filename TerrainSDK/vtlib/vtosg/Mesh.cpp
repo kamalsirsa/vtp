@@ -1396,9 +1396,6 @@ vtTextMesh::vtTextMesh(osgText::Font *font, float fSize, bool bCenter)
 	// OSG 0.9.4 and later
 	setFont(font);
 
-	// set backpointer so we can find ourselves later
-	setUserData(this);
-
 	// Set the Font reference width and height resolution in texels.
 	setFontResolution(32,32);
 

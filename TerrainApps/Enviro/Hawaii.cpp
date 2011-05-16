@@ -24,21 +24,6 @@ IslandTerrain::IslandTerrain()
 {
 	m_pSA = NULL;
 	m_pTelescopes = NULL;
-
-#if 0
-	// Points of Interest
-	// bottom left (x,y) then top right (x,y)
-	AddPointOfInterest(283376, 2181205, 287025, 2182614, "Hilo Airport",
-		"http://www.hawaii.gov/dot/hilo.htm");
-	AddPointOfInterest(237000, 2188779, 247000, 2202455, "Mauna Kea",
-		"/Html/maunakea.htm");
-	AddPointOfInterest(223000, 2150000, 233000, 2159000, "Mauna Loa",
-		"http://www.yahoo.com");
-	AddPointOfInterest(190000, 2153953, 194500, 2157500, "Kealakekua bay",
-		"/Html/kealakekua.htm");
-	AddPointOfInterest(253500, 2080000, 282500, 2103500, "Lo`ihi",
-		"/Html/loihi_seamount.htm");
-#endif
 }
 
 void IslandTerrain::PaintDib(bool progress_callback(int))

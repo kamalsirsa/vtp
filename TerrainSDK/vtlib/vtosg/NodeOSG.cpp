@@ -2014,9 +2014,7 @@ vtMesh *vtGeom::GetMesh(int i) const
 	// It is valid to return a non-const pointer to the mesh, since the mesh
 	//  can be modified entirely independently of the geometry.
 	Drawable *draw = const_cast<Drawable *>( m_pGeode->getDrawable(i) );
-	osg::Referenced *ref = draw->getUserData();
-
-	vtMesh *mesh = dynamic_cast<vtMesh*>(ref);
+	vtMesh *mesh = dynamic_cast<vtMesh*>(draw);
 	return mesh;
 }
 
@@ -2025,9 +2023,7 @@ vtTextMesh *vtGeom::GetTextMesh(int i) const
 	// It is valid to return a non-const pointer to the mesh, since the mesh
 	//  can be modified entirely independently of the geometry.
 	Drawable *draw = const_cast<Drawable *>( m_pGeode->getDrawable(i) );
-	osg::Referenced *ref = draw->getUserData();
-
-	vtTextMesh *mesh = dynamic_cast<vtTextMesh*>(ref);
+	vtTextMesh *mesh = dynamic_cast<vtTextMesh*>(draw);
 	return mesh;
 }
 

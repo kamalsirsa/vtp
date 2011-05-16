@@ -794,6 +794,7 @@ LinearStructureDlg *MainFrame::ShowLinearStructureDlg(bool bShow)
 			_("Linear Structures"), wxPoint(120, 80), wxSize(600, 200),
 			wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pLinearStructureDlg->m_pFrame = this;
+		m_pLinearStructureDlg->SetStructureMaterials(GetGlobalMaterials());
 	}
 	if (m_pLinearStructureDlg)
 		m_pLinearStructureDlg->Show(bShow);
