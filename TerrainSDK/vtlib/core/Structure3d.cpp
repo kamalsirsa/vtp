@@ -605,6 +605,10 @@ void vtMaterialDescriptorArray3d::CreateColorableTextureMaterial(vtMaterialDescr
 		pMat->SetTexture(img);
 		pMat->SetMipMap(true);
 		pMat->SetClamp(false);
+
+		if (descriptor->GetBlending())
+			pMat->SetTransparent(true);
+
 		int index = m_pMaterials->AppendMaterial(pMat);
 		if (i == 0)
 			descriptor->SetMaterialIndex(index);

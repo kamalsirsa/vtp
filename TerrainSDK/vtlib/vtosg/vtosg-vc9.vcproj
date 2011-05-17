@@ -265,33 +265,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\core\CoreMeshMat.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\core\CoreScene.cpp"
 				>
 				<FileConfiguration
@@ -570,6 +543,10 @@
 						BrowseInformation="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\core\ImageSprite.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\core\IntersectionEngine.cpp"
@@ -1088,10 +1065,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\core\Base.h"
-				>
-			</File>
-			<File
 				RelativePath="..\core\Building3d.h"
 				>
 			</File>
@@ -1149,6 +1122,10 @@
 			</File>
 			<File
 				RelativePath="..\core\Globe.h"
+				>
+			</File>
+			<File
+				RelativePath="..\core\ImageSprite.h"
 				>
 			</File>
 			<File
@@ -1291,31 +1268,12 @@
 				>
 			</File>
 			<File
-				RelativePath="MeshMat.cpp"
+				RelativePath=".\Material.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"
-					/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Mesh.cpp"
+				>
 			</File>
 			<File
 				RelativePath="NodeOSG.cpp"
@@ -1396,11 +1354,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Material.h"
+				>
+			</File>
+			<File
 				RelativePath="MathOSG.h"
 				>
 			</File>
 			<File
-				RelativePath="MeshMat.h"
+				RelativePath=".\Mesh.h"
 				>
 			</File>
 			<File
