@@ -1121,7 +1121,7 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 		if (progress_callback != NULL)
 			progress_callback(j * 100 / iYSize);
 
-		quiet = fread(line, line_length, 1, fp);
+		quiet = (int) fread(line, line_length, 1, fp);
 
 		for (int i = 0; i < iXSize; i++)
 			pBitmap->SetPixel24(i, j, line[i*3+0], line[i*3+1], line[i*3+2]);

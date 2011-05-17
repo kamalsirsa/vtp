@@ -313,7 +313,7 @@ bool vtBitmap::ReadPNGFromMemory(unsigned char *buf, int len)
 
 	Allocate24(width, height);
 
-	int png_stride = png_get_rowbytes(png, info);
+	size_t png_stride = png_get_rowbytes(png, info);
 	unsigned int row, col;
 	for (row = 0; row < height; row++)
 	{

@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTBuilder
-AppVerName=2011.01.23
+AppVerName=2011.05.16
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -12,7 +12,7 @@ DefaultDirName={pf}\VTP
 DefaultGroupName=VTP
 AllowNoIcons=yes
 LicenseFile=C:\VTP\license.txt
-OutputBaseFilename=VTBuilder_110123
+OutputBaseFilename=VTBuilder_110516
 OutputDir=C:\Distrib
 ; We need the following because some Windows machines won't turn Registry settings into Environment variables w/o a reboot
 AlwaysRestart=yes
@@ -70,7 +70,7 @@ Source: "C:\APIs\wx2.8.7-bin-vc9\lib\vc_dll\wxmsw28u_core_vc_custom.dll"; DestDi
 Source: "C:\APIs\wx2.8.7-bin-vc9\lib\vc_dll\wxmsw28u_gl_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7-bin-vc9\lib\vc_dll\wxbase28u_net_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7-bin-vc9\lib\vc_dll\wxmsw28u_aui_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\Program Files (x86)\Expat 2.0.1\Bin\libexpat.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\expat-2.0.1\win32\bin\release\libexpat-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 
 ; Microsoft DLLs (not useful, since vc8 they don't work if installed this way)
 ;Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest"; DestDir: "{app}"; Flags: ignoreversion; Components: dlls

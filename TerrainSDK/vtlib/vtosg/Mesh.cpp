@@ -1393,10 +1393,8 @@ void vtMesh::_AddQuadNormals()
  */
 vtTextMesh::vtTextMesh(osgText::Font *font, float fSize, bool bCenter)
 {
-	// OSG 0.9.4 and later
-	setFont(font);
-
 	// Set the Font reference width and height resolution in texels.
+	setFont(font);
 	setFontResolution(32,32);
 
 	// Set the rendered character size in object coordinates.
@@ -1410,14 +1408,12 @@ vtTextMesh::vtTextMesh(osgText::Font *font, float fSize, bool bCenter)
 	//  it in vtGeom::AddTextMesh().
 }
 
-
 // Override with ability to get OSG bounding box
 void vtTextMesh::GetBoundBox(FBox3 &box) const
 {
 	const BoundingBox &osg_box = getBound();
 	s2v(osg_box, box);
 }
-
 
 void vtTextMesh::SetText(const char *text)
 {

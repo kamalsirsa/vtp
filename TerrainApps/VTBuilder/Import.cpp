@@ -1366,8 +1366,8 @@ vtFeatureSet *Builder::ImportPointsFromCSV(const char *fname)
 	// It is probably LF, or CR LR, but it might just be CR.
 	bool bHaveCR = false, bHaveLF = false;
 	char buf[4096];
-	int count = fread(buf, 1, 4096, fp);
-	for (int i = 0; i < count; i++)
+	size_t count = fread(buf, 1, 4096, fp);
+	for (size_t i = 0; i < count; i++)
 	{
 		if (buf[i] == 10) bHaveLF = true;
 		if (buf[i] == 13) bHaveCR = true;
