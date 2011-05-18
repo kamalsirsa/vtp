@@ -1,6 +1,6 @@
-set(VTLIB_OSG_SOURCE_FILES ImageOSG.cpp MeshMat.cpp NodeOSG.cpp SceneOSG.cpp SimpleInterimShadowTechnique.cpp StructureShadowsOSG.cpp
+set(VTLIB_OSG_SOURCE_FILES ImageOSG.cpp Material.cpp Mesh.cpp NodeOSG.cpp SceneOSG.cpp SimpleInterimShadowTechnique.cpp StructureShadowsOSG.cpp
 					LightSpacePerspectiveShadowTechnique.cpp ExternalHeightField3d.cpp)
-set(VTLIB_OSG_HEADER_FILES ImageOSG.h MathOSG.h MeshMat.h NodeOSG.h SceneOSG.h SimpleInterimShadowTechnique.h StructureShadowsOSG.h
+set(VTLIB_OSG_HEADER_FILES ImageOSG.h MathOSG.h Material.h Mesh.h NodeOSG.h SceneOSG.h SimpleInterimShadowTechnique.h StructureShadowsOSG.h
 					LightSpacePerspectiveShadowTechnique.h ExternalHeightField3d.h)
 
 

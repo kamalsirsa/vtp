@@ -34,7 +34,7 @@ endif(APPLE)
 
 # Find packages - most of these modules hide their include and library properties behind the advanced flag
 set(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
-find_package(wxWidgets COMPONENTS base core net gl aui adv)
+find_package(wxWidgets COMPONENTS base core net gl aui)
 find_package(GDAL)
 find_package(BZip2)
 find_package(CURL)
