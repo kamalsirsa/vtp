@@ -82,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib osgShadow.lib netcdf.lib libpng13.lib zlib1.lib gdal_i.lib libjpeg.lib fltk.lib fltkgl.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib osgShadow.lib osgSim.lib osgTerrain.lib osgText.lib osgUtil.lib osgViewer.lib netcdf.lib libpng15-vc7.lib zlib1-vc7.lib gdal_i-vc7.lib libjpeg.lib fltk.lib fltkgl.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib libMini.lib"
 				OutputFile="$(OutDir)/fltkSimple.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"

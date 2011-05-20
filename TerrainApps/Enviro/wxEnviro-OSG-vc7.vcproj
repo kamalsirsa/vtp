@@ -25,7 +25,7 @@
 				Optimization="1"
 				InlineFunctionExpansion="2"
 				AdditionalIncludeDirectories="..\..\TerrainSDK"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;__WXMSW__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;VTLIB_OSG=1"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;__WXMSW__;__WIN32__;WINVER=0x0400;STRICT;WXUSINGDLL=1;SUPPORT_CURL=0;CURL_STATICLIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
@@ -41,7 +41,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib osgShadow.lib opengl32.lib libpng13.lib zlib1.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib Winmm.lib libMini.lib libcurl-static.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib osgShadow.lib osgSim.lib osgTerrain.lib osgText.lib osgUtil.lib osgViewer.lib opengl32.lib libpng15-vc7.lib zlib1-vc7.lib gdal_i-vc7.lib netcdf.lib glu32.lib libjpeg.lib Winmm.lib libMini.lib libcurl-static.lib"
 				OutputFile="Release_Unicode/wxEnviro_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

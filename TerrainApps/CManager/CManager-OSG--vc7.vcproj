@@ -112,7 +112,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib osgShadow.lib netcdf.lib libpng13.lib zlib1.lib gdal_i.lib opengl32.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib osgShadow.lib osgSim.lib osgTerrain.lib osgText.lib osgUtil.lib osgViewer.lib netcdf.lib libpng13.lib zlib1.lib gdal_i.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile="Release_Unicode/CManager_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
