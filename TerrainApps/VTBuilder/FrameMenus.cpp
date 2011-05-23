@@ -234,6 +234,7 @@ EVT_MENU(ID_VEG_PLANTS,				MainFrame::OnVegPlants)
 EVT_MENU(ID_VEG_BIOREGIONS,			MainFrame::OnVegBioregions)
 EVT_MENU(ID_VEG_REMAP,				MainFrame::OnVegRemap)
 EVT_MENU(ID_VEG_EXPORTSHP,			MainFrame::OnVegExportSHP)
+EVT_MENU(ID_VEG_HTML,				MainFrame::OnVegHTML)
 
 EVT_UPDATE_UI(ID_VEG_REMAP,			MainFrame::OnUpdateVegExportSHP)
 EVT_UPDATE_UI(ID_VEG_EXPORTSHP,		MainFrame::OnUpdateVegExportSHP)
@@ -537,6 +538,7 @@ void MainFrame::CreateMenus()
 	vegMenu->AppendSeparator();
 	vegMenu->Append(ID_VEG_REMAP, _("Remap Species"));
 	vegMenu->Append(ID_VEG_EXPORTSHP, _("Export SHP"));
+	vegMenu->Append(ID_VEG_HTML, _("Write species to HTML"));
 	m_pMenuBar->Append(vegMenu, _("Veg&etation"));
 	m_iLayerMenu[LT_VEG] = menu_num;
 	menu_num++;
@@ -2701,7 +2703,6 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 	m_SpeciesListDlg->Show(true);
 }
 
-
 void MainFrame::OnVegBioregions(wxCommandEvent& event)
 {
 	// if data isn't there, get the data first
@@ -2797,6 +2798,68 @@ void MainFrame::OnVegExportSHP(wxCommandEvent& event)
 	wxString strPathName = saveFile.GetPath();
 
 	pVeg->ExportToSHP(strPathName.mb_str(wxConvUTF8));
+}
+
+void MainFrame::OnVegHTML(wxCommandEvent& event)
+{
+	vtSpeciesList *list = GetPlantList();
+	if (list->NumSpecies() == 0)
+		return;
+
+	// Open File Save Dialog
+	wxFileDialog saveFile(NULL, _("Export vegetation to SHP"), _T(""), _T("plant_list.html"),
+		_("Vegetation Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	if (saveFile.ShowModal() == wxID_CANCEL)
+		return;
+	wxString strPathName = saveFile.GetPath();
+
+	FILE *fp = fopen(strPathName.mb_str(), "wb");
+	fprintf(fp, "<html>\n\
+<head>\n\
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n\
+<title>VTP Plant Library: List of species</title>\n\
+<link rel=\"stylesheet\" href=\"../../vtp.css\">\n\
+</head>\n\
+\n\
+<body>\n\
+<script language=\"JavaScript\" type=\"text/javascript\" src=\"../../header3.js\"></script>\n\
+<h2>VTP Plant Library: List of species</h2>\n\
+\n");
+	fprintf(fp, "<blockquote>\n\
+<p><a href=\"index.html\">About the VTP Plant Library</a></p>\n\
+");
+	time_t t = time(NULL);
+	fprintf(fp, "<p>Generated on %s GMT</p>\n", asctime(gmtime(&t)));
+
+	int total = 0;
+	for (unsigned int i = 0; i < list->NumSpecies(); i++)
+		total += list->GetSpecies(i)->NumAppearances();
+
+	fprintf(fp, "<p>Total: %d species with %d appearances</p>\n", list->NumSpecies(), total);
+	fprintf(fp, "</blockquote>\n\n");
+
+	fprintf(fp, "<ul>\n");
+	for (unsigned int i = 0; i < list->NumSpecies(); i++)
+	{
+		vtPlantSpecies *sp = list->GetSpecies(i);
+		fprintf(fp, "  <li><i><font size=\"4\">%s</font></i>\n    <ul>\n", sp->GetSciName());
+		fprintf(fp, "      <li>Common names: ");
+		for (unsigned int j = 0; j < sp->NumCommonNames(); j++)
+		{
+			if (j > 0)
+				fprintf(fp, ", ");
+			vtPlantSpecies::CommonName cn = sp->GetCommonName(j);
+			fprintf(fp, "%s", (const char *) cn.m_strName);
+			if (cn.m_strLang != "" && cn.m_strLang != "en")
+				fprintf(fp, " (%s)", (const char *) cn.m_strLang);
+		}
+		fprintf(fp, "</li>\n");
+		fprintf(fp, "      <li>Appearances: %d images</li>\n", sp->NumAppearances());
+		fprintf(fp, "    </ul>\n");
+	}
+	fprintf(fp, "  </ul>\n  </li>\n");
+	fprintf(fp, "</ul>\n</body>\n</html>\n");
+	fclose(fp);
 }
 
 void MainFrame::OnUpdateVegExportSHP(wxUpdateUIEvent& event)
