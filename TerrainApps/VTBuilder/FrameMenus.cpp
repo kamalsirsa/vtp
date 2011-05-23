@@ -3058,49 +3058,49 @@ void MainFrame::OnStructureSelectUsingPolygons(wxCommandEvent &event)
 {
 	vtStructureLayer *pStructureLayer = GetActiveStructureLayer();
 
-	if (NULL != pStructureLayer)
-	{
-		pStructureLayer->DeselectAll();
+	if (!pStructureLayer)
+		return;
 
-		int iNumLayers = m_Layers.GetSize();
-		for (int i = 0; i < iNumLayers; i++)
+	pStructureLayer->DeselectAll();
+
+	int iNumLayers = m_Layers.GetSize();
+	for (int i = 0; i < iNumLayers; i++)
+	{
+		vtLayer *pLayer = m_Layers.GetAt(i);
+		if (LT_RAW != pLayer->GetType())
+			continue;
+
+		vtRawLayer* pRawLayer = dynamic_cast<vtRawLayer*>(pLayer);
+		if ((NULL != pRawLayer) && (wkbPolygon == wkbFlatten(pRawLayer->GetGeomType())))
 		{
-			vtLayer *pLayer = m_Layers.GetAt(i);
-			if (LT_RAW == pLayer->GetType())
+			vtFeatureSetPolygon *pFeatureSetPolygon = dynamic_cast<vtFeatureSetPolygon*>(pRawLayer->GetFeatureSet());
+			if (NULL != pFeatureSetPolygon)
 			{
-				vtRawLayer* pRawLayer = dynamic_cast<vtRawLayer*>(pLayer);
-				if ((NULL != pRawLayer) && (wkbPolygon == wkbFlatten(pRawLayer->GetGeomType())))
+				unsigned int iNumEntities = pFeatureSetPolygon->GetNumEntities();
+				unsigned int iIndex;
+				for (iIndex = 0; iIndex < iNumEntities; iIndex++)
 				{
-					vtFeatureSetPolygon *pFeatureSetPolygon = dynamic_cast<vtFeatureSetPolygon*>(pRawLayer->GetFeatureSet());
-					if (NULL != pFeatureSetPolygon)
+					if (pFeatureSetPolygon->IsSelected(iIndex))
 					{
-						unsigned int iNumEntities = pFeatureSetPolygon->GetNumEntities();
-						unsigned int iIndex;
-						for (iIndex = 0; iIndex < iNumEntities; iIndex++)
+						unsigned int iIndex2;
+						const DPolygon2 Polygon = pFeatureSetPolygon->GetPolygon(iIndex);
+						unsigned int iNumStructures = pStructureLayer->GetSize();
+						for (iIndex2 = 0; iIndex2 < iNumStructures; iIndex2++)
 						{
-							if (pFeatureSetPolygon->IsSelected(iIndex))
+							DRECT Extents;
+							if (pStructureLayer->GetAt(iIndex2)->GetExtents(Extents))
 							{
-								unsigned int iIndex2;
-								const DPolygon2 Polygon = pFeatureSetPolygon->GetPolygon(iIndex);
-								unsigned int iNumStructures = pStructureLayer->GetSize();
-								for (iIndex2 = 0; iIndex2 < iNumStructures; iIndex2++)
-								{
-									DRECT Extents;
-									if (pStructureLayer->GetAt(iIndex2)->GetExtents(Extents))
-									{
-										DPoint2 Point((Extents.left + Extents.right)/2, (Extents.bottom + Extents.top)/2);
-										if (Polygon.ContainsPoint(Point))
-											pStructureLayer->GetAt(iIndex2)->Select(true);
-									}
-								}
+								DPoint2 Point((Extents.left + Extents.right)/2, (Extents.bottom + Extents.top)/2);
+								if (Polygon.ContainsPoint(Point))
+									pStructureLayer->GetAt(iIndex2)->Select(true);
 							}
 						}
 					}
 				}
 			}
 		}
-		m_pView->Refresh();
 	}
+	m_pView->Refresh();
 }
 
 void MainFrame::OnUpdateStructureSelectUsingPolygons(wxUpdateUIEvent &event)
@@ -3172,55 +3172,14 @@ void MainFrame::OnStructureCleanFootprints(wxCommandEvent& event)
 	dEpsilon = atof(str.mb_str(wxConvUTF8));
 
 	int degen = 0;
-	int olap = 0;
-	for (unsigned int i = 0; i < pLayer->GetSize(); i++)
-	{
-		vtStructure *pStructure = pLayer->GetAt(i);
-		vtBuilding *bld = pStructure->GetBuilding();
-		if (!bld)
-			continue;
-		for (unsigned int j = 0; j < bld->GetNumLevels(); j++)
-		{
-			vtLevel *lev = bld->GetLevel(j);
-			DPolygon2 &dp = lev->GetFootprint();
-			int rem = dp.RemoveDegeneratePoints(dEpsilon);
-			degen += rem;
+	int overlap = 0;
+	pLayer->CleanFootprints(dEpsilon, degen, overlap);
 
-			// Also try to catch the case of the polygon looping around
-			// over the same points more than once.
-			for (unsigned int r = 0; r < dp.size(); r++)
-			{
-				DLine2 &ring = dp[r];
-				for (unsigned int k2 = 1; k2 < ring.GetSize(); k2++)
-				{
-					DPoint2 &p2 = ring.GetAt(k2);
-					for (unsigned int k1 = 0; k1 < k2; k1++)
-					{
-						DPoint2 &p1 = ring.GetAt(k1);
-						DPoint2 diff = p1 - p2;
-						if (fabs(diff.x) < dEpsilon && fabs(diff.y) < dEpsilon)
-						{
-							ring.RemoveAt(k2);
-							k2--;
-							olap++;
-							rem++;
-							break;
-						}
-					}
-				}
-			}
-			if (rem)
-			{
-				// Must size down the edge arrays
-				lev->ResizeEdgesToMatchFootprint();
-			}
-		}
-	}
 	if (degen)
 		DisplayAndLog("%d degenerate points were removed.", degen);
-	if (olap)
-		DisplayAndLog("%d overlapping points were removed.", olap);
-	if (!degen && !olap)
+	if (overlap)
+		DisplayAndLog("%d overlapping points were removed.", overlap);
+	if (!degen && !overlap)
 		DisplayAndLog("No degenerate or overlapping points were found.");
 }
 

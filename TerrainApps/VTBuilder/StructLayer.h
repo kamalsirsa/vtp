@@ -79,6 +79,7 @@ public:
 	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
 
 	void ResolveInstancesOfItems();
+	void CleanFootprints(double epsilon, int &degenerate, int &overlapping);
 
 protected:
 	void DrawStructures(wxDC *pDC, vtScaledView *pView, bool bOnlySelected);

@@ -260,6 +260,55 @@ void vtStructureLayer::ResolveInstancesOfItems()
 	}
 }
 
+void vtStructureLayer::CleanFootprints(double epsilon, int &degenerate, int &overlapping)
+{
+	degenerate = 0;
+	overlapping = 0;
+	for (unsigned int i = 0; i < GetSize(); i++)
+	{
+		vtStructure *pStructure = GetAt(i);
+		vtBuilding *bld = pStructure->GetBuilding();
+		if (!bld)
+			continue;
+		for (unsigned int j = 0; j < bld->GetNumLevels(); j++)
+		{
+			vtLevel *lev = bld->GetLevel(j);
+			DPolygon2 &dp = lev->GetFootprint();
+			int rem = dp.RemoveDegeneratePoints(epsilon);
+			degenerate += rem;
+
+			// Also try to catch the case of the polygon looping around
+			// over the same points more than once.
+			for (unsigned int r = 0; r < dp.size(); r++)
+			{
+				DLine2 &ring = dp[r];
+				for (unsigned int k2 = 1; k2 < ring.GetSize(); k2++)
+				{
+					DPoint2 &p2 = ring.GetAt(k2);
+					for (unsigned int k1 = 0; k1 < k2; k1++)
+					{
+						DPoint2 &p1 = ring.GetAt(k1);
+						DPoint2 diff = p1 - p2;
+						if (fabs(diff.x) < epsilon && fabs(diff.y) < epsilon)
+						{
+							ring.RemoveAt(k2);
+							k2--;
+							overlapping++;
+							rem++;
+							break;
+						}
+					}
+				}
+			}
+			if (rem)
+			{
+				// Must size down the edge arrays
+				lev->ResizeEdgesToMatchFootprint();
+			}
+		}
+	}
+}
+
 void vtStructureLayer::GetProjection(vtProjection &proj)
 {
 	proj = m_proj;
