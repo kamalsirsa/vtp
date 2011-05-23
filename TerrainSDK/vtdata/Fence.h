@@ -1,7 +1,7 @@
 //
 // Fences.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +16,7 @@ enum vtLinearStyle
 {
 	FS_WOOD_POSTS_WIRE,
 	FS_METAL_POSTS_WIRE,
+	FS_METAL_POSTS_HOGWIRE,
 	FS_CHAINLINK,
 	FS_SECURITY,
 	FS_DRYSTONE,

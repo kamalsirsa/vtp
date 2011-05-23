@@ -1,7 +1,7 @@
 //
 // Name: LinearStructDlg.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -109,6 +109,7 @@ void LinearStructureDlg::UpdateChoices()
 	GetStyle()->Clear();
 	GetStyle()->Append(_("Wooden posts, wire"));
 	GetStyle()->Append(_("Metal posts, wire"));
+	GetStyle()->Append(_("Metal posts, hog wire"));
 	GetStyle()->Append(_("Metal poles, chain-link"));
 	GetStyle()->Append(_("Security fence"));
 	GetStyle()->Append(_("Dry-stone wall"));

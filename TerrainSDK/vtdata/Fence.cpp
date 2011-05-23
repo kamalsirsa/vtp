@@ -3,7 +3,7 @@
 //
 // Implemented vtFence;
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -66,6 +66,20 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 		m_iConnectType = 1;
 		m_fConnectTop = 1.1f;
 		m_fConnectBottom = 0.5f;
+		m_fConnectWidth = 0.0f;
+		break;
+	case FS_METAL_POSTS_HOGWIRE:
+		//
+		m_PostType = "steel";
+		m_fPostSpacing = 2.5f;
+		m_fPostHeight = 1.2f;
+		m_fPostWidth = 0.05f;
+		m_fPostDepth = 0.05f;
+		//
+		m_iConnectType = 2;
+		m_ConnectMaterial = "Woven wire";
+		m_fConnectTop = 1.2f;
+		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.0f;
 		break;
 	case FS_CHAINLINK:
