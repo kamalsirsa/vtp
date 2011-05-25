@@ -325,10 +325,18 @@ void Enviro::DoControl()
 		}
 		else if (g_Options.m_strUseElevation != "")
 		{
-			// Make a default terrain with a specific elevation TIN
+			// Make a default terrain with a specific elevation grid or TIN
 			vtTerrain *pTerr = new vtTerrain;
 			pTerr->GetParams().SetValueString(STR_ELEVFILE, g_Options.m_strUseElevation);
-			pTerr->GetParams().SetValueInt(STR_SURFACE_TYPE, 1);	// 1 = tin
+			pTerr->GetParams().SetValueInt(STR_TEXTURE, 3);		//  3=derived
+			pTerr->GetParams().SetValueString(STR_COLOR_MAP, "default_absolute.cmt");
+			pTerr->GetParams().SetValueString(STR_INITTIME, "104 2 21 9 0 0");
+
+			vtString &s = g_Options.m_strUseElevation;
+			if (s.Find(".itf") != -1 || s.Find(".ITF") != -1)
+				pTerr->GetParams().SetValueInt(STR_SURFACE_TYPE, 1);	// 1 = tin
+			else
+				pTerr->GetParams().SetValueInt(STR_SURFACE_TYPE, 0);	// 0 = grid
 			SwitchToTerrain(pTerr);
 			return;
 		}
