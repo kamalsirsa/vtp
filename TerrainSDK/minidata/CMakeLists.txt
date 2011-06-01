@@ -5,12 +5,9 @@ if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})
 endif (ZLIB_FOUND)
 
-# Find the directory containing mini/mini.h
-find_path(MINI_INCLUDE_DIR mini/mini.h DOC "Directory containing mini/mini.h")
-if (MINI_INCLUDE_DIR)
-	# Add the mini include directory to the compilers search path 
+if(MINI_FOUND)
 	include_directories(${MINI_INCLUDE_DIR})
-endif (MINI_INCLUDE_DIR)
+endif(MINI_FOUND)
 
 if(JPEG_FOUND)
 	include_directories(${JPEG_INCLUDE_DIR})

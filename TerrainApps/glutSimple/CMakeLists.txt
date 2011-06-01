@@ -30,7 +30,7 @@ if(BUILD_GLUTSIMPLE_OSG AND GLUT_FOUND)
 	endif(BZIP2_FOUND)
 
 	if(CURL_FOUND)
-		target_link_libraries(glutSimple_osg ${CURL_LIBRARY})
+		target_link_libraries(glutSimple_osg ${CURL_LIBRARIES})
 	endif(CURL_FOUND)
 
 	if(GDAL_FOUND)
@@ -46,13 +46,12 @@ if(BUILD_GLUTSIMPLE_OSG AND GLUT_FOUND)
 	endif(JPEG_FOUND)
 
 	if(PNG_FOUND)
-		target_link_libraries(glutSimple_osg ${PNG_LIBRARY})
+		target_link_libraries(glutSimple_osg ${PNG_LIBRARIES})
 	endif(PNG_FOUND)
 	
-	find_library(MINI_LIBRARY libMini DOC "Path to libMini")
-	if(MINI_LIBRARY)
-		target_link_libraries(glutSimple_osg ${MINI_LIBRARY})
-	endif(MINI_LIBRARY)
+	if(MINI_FOUND)
+		target_link_libraries(glutSimple_osg ${MINI_LIBRARIES})
+	endif(MINI_FOUND)
 
 	# Set up include directories for all targets at this level
 	include_directories(${GLUT_INCLUDE_DIR})

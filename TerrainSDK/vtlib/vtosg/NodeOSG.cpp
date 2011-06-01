@@ -2100,6 +2100,9 @@ OsgDynMesh::OsgDynMesh()
 	// create an empty stateset, to force the traversers
 	// to nest any state above it in the inheritance path.
 	setStateSet(new StateSet);
+	// Stop osgViewer::Frame from returning before this node
+	// was been fully rendered
+	setDataVariance(osg::Object::DYNAMIC);
 }
 
 osg::BoundingBox OsgDynMesh::computeBound() const

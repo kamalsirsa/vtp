@@ -58,11 +58,9 @@ if(BUILD_ENVIRO_OSG)
 	endif(OSG_FOUND)
 endif(BUILD_ENVIRO_OSG)
 
-find_path(MINI_INCLUDE_DIR mini/mini.h DOC "Directory containing mini/mini.h")
-if (MINI_INCLUDE_DIR)
-	# Add the mini include directory to the compilers search path 
+if(MINI_FOUND)
 	include_directories(${MINI_INCLUDE_DIR})
-endif (MINI_INCLUDE_DIR)
+endif(MINI_FOUND)
 
 if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
 	include_directories(${NVPERFSDK_INCLUDE_DIR})

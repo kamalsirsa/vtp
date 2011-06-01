@@ -1,32 +1,42 @@
-# - Find zlib
-# Find the native ZLIB includes and library
-#
-#  ZLIB_INCLUDE_DIR - where to find zlib.h, etc.
-#  ZLIB_LIBRARIES   - List of libraries when using zlib.
-#  ZLIB_FOUND       - True if zlib found.
+# Defines
+# ZLIB_FOUND
+# ZLIB_INCLUDE_DIR
+# ZLIB_LIBRARIES
 
+set(ZLIB_FIND_DEBUG TRUE CACHE BOOL "Also search for the debug version of the ZLIB library")
+mark_as_advanced(ZLIB_FIND_DEBUG)
 
-IF (ZLIB_INCLUDE_DIR)
-  # Already in cache, be silent
-  SET(ZLIB_FIND_QUIETLY TRUE)
-ENDIF (ZLIB_INCLUDE_DIR)
+if(ZLIB_FIND_DEBUG)
+	if(ZLIB_INCLUDE_DIR AND ZLIB_LIBRARY AND ZLIB_LIBRARY_DEBUG)
+		set(ZLIB_FIND_QUIETLY TRUE)
+	endif(ZLIB_INCLUDE_DIR AND ZLIB_LIBRARY AND ZLIB_LIBRARY_DEBUG)
+else(ZLIB_FIND_DEBUG)
+	if(ZLIB_INCLUDE_DIR AND ZLIB_LIBRARY)
+		set(ZLIB_FIND_QUIETLY TRUE)
+	endif(ZLIB_INCLUDE_DIR AND ZLIB_LIBRARY)
+endif(ZLIB_FIND_DEBUG)
 
-FIND_PATH(ZLIB_INCLUDE_DIR zlib.h)
+find_path(ZLIB_INCLUDE_DIR NAMES zlib.h DOC "Directory containing zlib.h")
 
-SET(ZLIB_NAMES z zlib zdll zlib1)
-FIND_LIBRARY(ZLIB_LIBRARY NAMES ${ZLIB_NAMES} )
-
-SET(ZLIB_NAMES_DEBUG zlib1d)
-FIND_LIBRARY(ZLIB_LIBRARY_DEBUG NAMES ${ZLIB_NAMES_DEBUG} )
+find_library(ZLIB_LIBRARY NAMES z zlib zdll zlib1 DOC "Path to zlib library")
+if(ZLIB_FIND_DEBUG)
+	find_library(ZLIB_LIBRARY_DEBUG NAMES zd zlibd zdlld zlib1d DOC "Path to zlib debug library")
+endif(ZLIB_FIND_DEBUG)
 
 # handle the QUIETLY and REQUIRED arguments and set ZLIB_FOUND to TRUE if 
 # all listed variables are TRUE
-# TODO !!!!!! I do not know if I have to modiy this for the debug library stuff
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(ZLIB DEFAULT_MSG ZLIB_LIBRARY ZLIB_INCLUDE_DIR)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(ZLIB DEFAULT_MSG ZLIB_LIBRARY ZLIB_INCLUDE_DIR)
 
-IF(ZLIB_FOUND)
-  SET( ZLIB_LIBRARIES debug ${ZLIB_LIBRARY_DEBUG} optimized ${ZLIB_LIBRARY} )
-ELSE(ZLIB_FOUND)
-  SET( ZLIB_LIBRARIES )
-ENDIF(ZLIB_FOUND)
+if(ZLIB_FOUND)
+	if(ZLIB_FIND_DEBUG)
+		if(NOT ZLIB_LIBRARY_DEBUG)
+			set(ZLIB_LIBRARY_DEBUG ${ZLIB_LIBRARY})
+		endif(NOT ZLIB_LIBRARY_DEBUG)
+		set(ZLIB_LIBRARIES debug ${ZLIB_LIBRARY_DEBUG} optimized ${ZLIB_LIBRARY})
+	else(ZLIB_FIND_DEBUG)
+		set(ZLIB_LIBRARIES ${ZLIB_LIBRARY})
+	endif(ZLIB_FIND_DEBUG)
+else(ZLIB_FOUND)
+	SET(ZLIB_LIBRARIES )
+endif(ZLIB_FOUND)

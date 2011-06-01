@@ -3,7 +3,7 @@
 # QUIKGRID_INCLUDE_DIR
 # QUIKGRID_LIBRARIES
 
-set(QuikGrid_FIND_DEBUG FALSE CACHE BOOL "Also search for the debug version of the QuikGrid library")
+set(QuikGrid_FIND_DEBUG TRUE CACHE BOOL "Also search for the debug version of the QuikGrid library")
 mark_as_advanced(QuikGrid_FIND_DEBUG)
 
 if(QuikGrid_FIND_DEBUG)
@@ -38,6 +38,6 @@ if(QUIKGRID_FOUND)
 		set(QUIKGRID_LIBRARIES ${QUIKGRID_LIBRARY})
 	endif(QuikGrid_FIND_DEBUG)
 else(QUIKGRID_FOUND)
-   SET(QUIKGRID_LIBRARIES )
+	SET(QUIKGRID_LIBRARIES )
 endif(QUIKGRID_FOUND)
 

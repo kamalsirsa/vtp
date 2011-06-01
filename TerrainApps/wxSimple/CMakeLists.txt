@@ -47,7 +47,7 @@ if(BUILD_WXSIMPLE_OSG)
 	endif(BZIP2_FOUND)
 
 	if(CURL_FOUND)
-		target_link_libraries(wxSimple_osg ${CURL_LIBRARY})
+		target_link_libraries(wxSimple_osg ${CURL_LIBRARIES})
 	endif(CURL_FOUND)
 
 	if(ZLIB_FOUND)
@@ -59,17 +59,16 @@ if(BUILD_WXSIMPLE_OSG)
 	endif(JPEG_FOUND)
 
 	if(PNG_FOUND)
-		target_link_libraries(wxSimple_osg ${PNG_LIBRARY})
+		target_link_libraries(wxSimple_osg ${PNG_LIBRARIES})
 	endif(PNG_FOUND)
 	
 	if(QUIKGRID_FOUND)
 		target_link_libraries(wxSimple_osg ${QUIKGRID_LIBRARIES})
 	endif(QUIKGRID_FOUND)
 
-	find_library(MINI_LIBRARY libMini DOC "Path to libMini")
-	if(MINI_LIBRARY)
-		target_link_libraries(wxSimple_osg ${MINI_LIBRARY})
-	endif(MINI_LIBRARY)
+	if(MINI_FOUND)
+		target_link_libraries(wxSimple_osg ${MINI_LIBRARIES})
+	endif(MINI_FOUND)
 
 endif(BUILD_WXSIMPLE_OSG)
 

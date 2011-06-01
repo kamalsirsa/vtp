@@ -81,7 +81,7 @@ if(BZIP2_FOUND)
 endif(BZIP2_FOUND)
 
 if(CURL_FOUND)
-	target_link_libraries(VTBuilder ${CURL_LIBRARY})
+	target_link_libraries(VTBuilder ${CURL_LIBRARIES})
 endif(CURL_FOUND)
 
 if(ZLIB_FOUND)
@@ -93,7 +93,7 @@ if(JPEG_FOUND)
 endif(JPEG_FOUND)
 
 if(PNG_FOUND)
-	target_link_libraries(VTBuilder ${PNG_LIBRARY})
+	target_link_libraries(VTBuilder ${PNG_LIBRARIES})
 endif(PNG_FOUND)
 
 find_library(SQUISH_LIBRARY squish DOC "Path to squish library")
@@ -105,10 +105,9 @@ if(QUIKGRID_FOUND)
 	target_link_libraries(VTBuilder ${QUIKGRID_LIBRARIES})
 endif(QUIKGRID_FOUND)
 
-find_library(MINI_LIBRARY libMini DOC "Path to libMini")
-if(MINI_LIBRARY)
-	target_link_libraries(VTBuilder ${MINI_LIBRARY})
-endif(MINI_LIBRARY)
+if(MINI_FOUND)
+	target_link_libraries(VTBuilder ${MINI_LIBRARIES})
+endif(MINI_FOUND)
 
 find_library(NETCDF_LIBRARY netcdf DOC "Path to netcdf library")
 if(NETCDF_LIBRARY)
@@ -128,12 +127,9 @@ if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})
 endif(ZLIB_FOUND)
 
-# Find the directory containing mini/mini.h
-find_path(MINI_INCLUDE_DIR mini/mini.h DOC "Directory containing mini/mini.h")
-if (MINI_INCLUDE_DIR)
-	# Add the mini include directory to the compilers search path 
+if(MINI_FOUND)
 	include_directories(${MINI_INCLUDE_DIR})
-endif (MINI_INCLUDE_DIR)
+endif(MINI_FOUND)
 
 if(PNG_FOUND)
 	# Add the png include directory to the compilers search path 

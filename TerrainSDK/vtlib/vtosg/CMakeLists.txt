@@ -38,12 +38,9 @@ if(OSGEARTH_FOUND)
 	include_directories(${OSGEARTH_INCLUDE_DIR})
 endif(OSGEARTH_FOUND)
 
-# Find the directory containing mini/mini.h
-find_path(MINI_INCLUDE_DIR mini/mini.h DOC "Directory containing mini/mini.h")
-if (MINI_INCLUDE_DIR)
-	# Add the mini include directory to the compilers search path
+if(MINI_FOUND)
 	include_directories(${MINI_INCLUDE_DIR})
-endif (MINI_INCLUDE_DIR)
+endif(MINI_FOUND)
 
 # Find the directory containing GL/glext.h
 find_path(GLEXT_INCLUDE_DIR GL/glext.h DOC "Directory containing GL/glext.h")

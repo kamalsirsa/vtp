@@ -34,7 +34,7 @@ if(JPEG_FOUND)
 endif(JPEG_FOUND)
 
 if(PNG_FOUND)
-	target_link_libraries(VTConvert ${PNG_LIBRARY})
+	target_link_libraries(VTConvert ${PNG_LIBRARIES})
 endif(PNG_FOUND)
 
 find_library(NETCDF_LIBRARY netcdf DOC "Path to netcdf library")
