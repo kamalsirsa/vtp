@@ -188,9 +188,9 @@ void CSimpleInterimShadowTechnique::init()
 	Box1 = new vtDynBoundBox(RGBf(1,0,0));	// red box: bounds of shadow-casting nodes
 	Box2 = new vtDynBoundBox(RGBf(0,1,0));	// green box: bounds of shadow limit
 	Box3 = new vtDynBoundBox(RGBf(0,0,1));	// blue box: their intersection, use to render
-	m_pParent->AddChild(Box1->pGeom);
-	m_pParent->AddChild(Box2->pGeom);
-	m_pParent->AddChild(Box3->pGeom);
+	m_pParent->addChild(Box1->pGeom);
+	m_pParent->addChild(Box2->pGeom);
+	m_pParent->addChild(Box3->pGeom);
 #endif
 }
 

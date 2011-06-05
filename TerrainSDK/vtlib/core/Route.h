@@ -55,7 +55,7 @@ public:
 	void Dirty();
 	static void ReleaseMaterials();
 
-	vtGeom *GetGeom() { return m_pWireGeom; }
+	vtGeode *GetGeom() { return m_pWireGeom; }
 
 	// Station set readers.
 	vtUtilNode *GetAt(unsigned int iter)
@@ -80,7 +80,7 @@ protected:
 	static void _CreateMaterials();
 	static int m_mi_wire;
 
-	vtGeom		*m_pWireGeom;
+	vtGeode		*m_pWireGeom;
 	vtTerrain	*m_pTheTerrain;
 	vtArray<vtUtilNode*>		m_Nodes;
 
@@ -104,7 +104,7 @@ public:
 	bool FindClosestUtilNode(const DPoint2 &point, double error,
 					   vtRoute* &route, vtUtilNode* &node, double &closest);
 	void BuildGeometry(vtHeightField3d *pHeightField);
-	bool FindRouteFromNode(vtNode* pNode, int &iOffset);
+	bool FindRouteFromNode(osg::Node *pNode, int &iOffset);
 };
 
 #endif //ROUTEH

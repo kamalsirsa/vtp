@@ -109,6 +109,7 @@ protected:
 protected:
 	~vtDynTerrainGeom();
 };
+typedef osg::ref_ptr<vtDynTerrainGeom> vtDynTerrainGeomPtr;
 
 /*@}*/	// Group dynterr
 

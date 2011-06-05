@@ -76,8 +76,7 @@ void vtBuilding3d::DestroyGeometry()
 	if (!m_pGeom)	// safety check
 		return;
 
-	m_pContainer->RemoveChild(m_pGeom);
-	m_pGeom->Release();
+	m_pContainer->removeChild(m_pGeom);
 	m_pGeom = NULL;
 	m_Mesh.Empty();
 }
@@ -259,7 +258,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 #endif
 
 	// wrap in a shape and set materials
-	m_pGeom = new vtGeom;
+	m_pGeom = new vtGeode;
 	m_pGeom->setName("building-geom");
 	vtMaterialArray *pShared = GetSharedMaterialArray();
 	m_pGeom->SetMaterials(pShared);
@@ -276,14 +275,13 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	{
 		bool bEnabled = m_pHighlight->GetEnabled();
 
-		m_pContainer->RemoveChild(m_pHighlight);
-		m_pHighlight->Release();
+		m_pContainer->removeChild(m_pHighlight);
 
 		FSphere sphere;
-		m_pGeom->GetBoundSphere(sphere);
+		s2v(m_pGeom->getBound(), sphere);
 		m_pHighlight = CreateBoundSphereGeom(sphere);
 		m_pHighlight->SetCastShadow(false);		// no shadow
-		m_pContainer->AddChild(m_pHighlight);
+		m_pContainer->addChild(m_pHighlight);
 
 		m_pHighlight->SetEnabled(bEnabled);
 	}
@@ -1233,7 +1231,7 @@ bool vtBuilding3d::CreateNode(vtTerrain *pTerr)
 	}
 	if (!CreateGeometry(pTerr->GetHeightField()))
 		return false;
-	m_pContainer->AddChild(m_pGeom);
+	m_pContainer->addChild(m_pGeom);
 	m_pContainer->SetTrans(m_center);
 	return true;
 }
@@ -1249,8 +1247,7 @@ void vtBuilding3d::DeleteNode()
 	{
 		if (m_pHighlight)
 		{
-			m_pContainer->RemoveChild(m_pHighlight);
-			m_pHighlight->Release();
+			m_pContainer->removeChild(m_pHighlight);
 			m_pHighlight = NULL;
 		}
 		DestroyGeometry();
@@ -1271,11 +1268,11 @@ void vtBuilding3d::ShowBounds(bool bShow)
 			// the highlight geometry doesn't exist, so create it
 			// get bounding sphere
 			FSphere sphere;
-			m_pGeom->GetBoundSphere(sphere);
+			s2v(m_pGeom->getBound(), sphere);
 
 			m_pHighlight = CreateBoundSphereGeom(sphere);
 			m_pHighlight->SetCastShadow(false);		// no shadow
-			m_pContainer->AddChild(m_pHighlight);
+			m_pContainer->addChild(m_pHighlight);
 		}
 		m_pHighlight->SetEnabled(true);
 	}

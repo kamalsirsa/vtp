@@ -284,7 +284,7 @@ void LayerDlg::SetShowAll(bool bTrue)
 // For an item in the tree which corresponds to an actual structure,
 //  return the node associated with that structure.
 //
-vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
+osg::Node *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 {
 	if (!item.IsOk())
 		return NULL;
@@ -293,7 +293,7 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 	if (!data)
 		return NULL;
 	if (data->m_alay)
-		return data->m_alay->GetContainer();
+		return data->m_alay->GetContainer()->GetOsgNode();
 	if (data->m_item == -1)
 		return NULL;
 
@@ -302,7 +302,7 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 	vtStructureType typ = str->GetType();
 
 	if (bContainer && typ != ST_LINEAR)
-		return str3d->GetContainer();
+		return str3d->GetContainer()->GetOsgNode();
 	else
 		// always get contained geometry for linears; they have no container
 		return str3d->GetContained();
@@ -832,11 +832,10 @@ void LayerDlg::OnZoomTo( wxCommandEvent &event )
 {
 	VTLOG1("LayerDlg::OnZoomTo\n");
 
-	vtNode *pThing = GetNodeFromItem(m_item, true);	// get container
+	osg::Node *pThing = GetNodeFromItem(m_item, true);	// get container
 	if (pThing)
 	{
-		FSphere sphere;
-		pThing->GetBoundSphere(sphere, true);   // get global bounds
+		FSphere sphere = GetGlobalBoundSphere(pThing);   // get global bounds
 		vtCamera *pCam = vtGetScene()->GetCamera();
 
 		// Put the camera a bit back from the sphere; sufficiently so that
@@ -856,7 +855,7 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 	bool bShow = event.IsChecked();
 
 #if OLD_OSG_SHADOWS
-	vtNode *pThing = GetNodeFromItem(m_item);
+	osg::Node *pThing = GetNodeFromItem(m_item);
 	if (pThing)
 	{
 		vtGetScene()->ShadowVisibleNode(pThing, bVis);
@@ -956,10 +955,10 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 	if (g_App.m_state == AS_Terrain)
 	{
 		vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
-		vtNode *pThing = GetNodeFromItem(m_item);
+		osg::Node *pThing = GetNodeFromItem(m_item);
 		if (pThing && slay != NULL)
 		{
-			pThing->SetEnabled(bVis);
+			SetEnabled(pThing, bVis);
 			return;
 		}
 		vtLayer *lay = GetLayerFromItem(m_item);
@@ -1012,10 +1011,10 @@ void LayerDlg::OnUpdateVisible(wxUpdateUIEvent& event)
 	if (g_App.m_state == AS_Terrain)
 	{
 		vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
-		vtNode *pThing = GetNodeFromItem(m_item);
+		osg::Node *pThing = GetNodeFromItem(m_item);
 		if (pThing && slay != NULL)
 		{
-			event.Check(pThing->GetEnabled());
+			event.Check(GetEnabled(pThing));
 			return;
 		}
 		vtLayer *lay = GetLayerFromItem(m_item);
@@ -1118,7 +1117,7 @@ void LayerDlg::UpdateEnabling()
 	bool bRemovable = false, bSaveable = false;
 
 	LayerItemData *data = GetLayerDataFromItem(m_item);
-	vtNode *pThing = GetNodeFromItem(m_item);
+	osg::Node *pThing = GetNodeFromItem(m_item);
 	vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
 
 	if (data != NULL)

@@ -60,7 +60,7 @@ void vtAbstractLayer::SetVisible(bool bVis)
 		pContainer->SetEnabled(bVis);
 
 	if (pMultiTexture)
-		pMultiTexture->m_pNode->EnableMultiTexture(pMultiTexture, bVis);
+		EnableMultiTexture(pMultiTexture->m_pNode, pMultiTexture, bVis);
 }
 
 bool vtAbstractLayer::GetVisible()
@@ -69,7 +69,7 @@ bool vtAbstractLayer::GetVisible()
 		return pContainer->GetEnabled();
 
 	else if (pMultiTexture)
-		return pMultiTexture->m_pNode->MultiTextureIsEnabled(pMultiTexture);
+		return MultiTextureIsEnabled(pMultiTexture->m_pNode, pMultiTexture);
 
 	return false;
 }
@@ -181,15 +181,15 @@ void vtAbstractLayer::CreateGeomGroup()
 	// There is always a yellow highlight material
 	material_index_yellow = pGeomMats->AddRGBMaterial1(RGBf(1,1,0), false, false);
 
-	pGeomObject = new vtGeom;
+	pGeomObject = new vtGeode;
 	pGeomObject->setName("Objects");
 	pGeomObject->SetMaterials(pGeomMats);
-	pGeomGroup->AddChild(pGeomObject);
+	pGeomGroup->addChild(pGeomObject);
 
-	pGeomLine = new vtGeom;
+	pGeomLine = new vtGeode;
 	pGeomLine->setName("Lines");
 	pGeomLine->SetMaterials(pGeomMats);
-	pGeomGroup->AddChild(pGeomLine);
+	pGeomGroup->addChild(pGeomLine);
 }
 
 void vtAbstractLayer::CreateLabelGroup()
@@ -640,8 +640,8 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 	text->SetText(str);
 #endif
 
-	// Create the vtGeom object to contain the vtTextMesh
-	vtGeom *geom = new vtGeom;
+	// Create the vtGeode object to contain the vtTextMesh
+	vtGeode *geom = new vtGeode;
 	geom->setName(str);
 
 	// Determine feature color
@@ -667,7 +667,7 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 	// Add to a billboarding transform so that the labels turn
 	// toward the viewer
 	vtTransform *bb = new vtTransform;
-	bb->AddChild(geom);
+	bb->addChild(geom);
 	m_pTerr->GetBillboardEngine()->AddTarget(bb);
 
 	bb->SetTrans(fp3);

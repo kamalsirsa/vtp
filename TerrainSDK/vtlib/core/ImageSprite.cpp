@@ -53,7 +53,7 @@ bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
 
 	// set up material and geometry container
 	m_pMats = new vtMaterialArray;
-	m_pGeom = new vtGeom;
+	m_pGeom = new vtGeode;
 	m_pGeom->SetMaterials(m_pMats);
 
 	m_pMats->AddTextureMaterial(pImage, false, false, bBlending);

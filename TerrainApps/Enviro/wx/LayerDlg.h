@@ -132,7 +132,7 @@ private:
 	wxPanel *m_main;
 	wxToolBar *m_pToolbar;
 
-	vtNode *GetNodeFromItem(wxTreeItemId item, bool bContainer = false);
+	osg::Node *GetNodeFromItem(wxTreeItemId item, bool bContainer = false);
 	vtStructureLayer *GetStructureLayerFromItem(wxTreeItemId item);
 	vtLayer *GetLayerFromItem(wxTreeItemId item);
 	LayerItemData *GetLayerDataFromItem(wxTreeItemId item);

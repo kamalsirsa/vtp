@@ -70,7 +70,7 @@ class LayerSet : public std::vector<vtLayerPtr>
 public:
 	void Remove(vtLayer *lay);
 	vtLayer *FindByName(const vtString &name);
-	vtStructureLayer *FindStructureFromNode(vtNode* pNode, int &iOffset);
+	vtStructureLayer *FindStructureFromNode(osg::Node *pNode, int &iOffset);
 };
 
 /*@}*/	// Group terrain

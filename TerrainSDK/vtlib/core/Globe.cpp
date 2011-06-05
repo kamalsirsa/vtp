@@ -1,7 +1,7 @@
 //
 // Globe.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -554,7 +554,7 @@ void vtIcoGlobe::BuildSphericalPoints(GlobeLayer *glay, float fSize)
 		if (spheres[i].radius == 0.0f)
 			continue;
 
-		vtGeom *geom = new vtGeom;
+		vtGeode *geom = new vtGeode;
 		geom->SetMaterials(m_coremats);
 		geom->AddMesh(mesh, m_yellow);
 
@@ -576,7 +576,7 @@ void vtIcoGlobe::BuildSphericalPoints(GlobeLayer *glay, float fSize)
 			mgeom->Scale3(0.002f, (float)area*1000, 0.002f);
 		}
 		m_SurfaceGroup->AddChild(mgeom);
-		glay->AddNode(mgeom);
+		glay->addChild(mgeom->GetOsgNode());
 	}
 }
 
@@ -590,11 +590,11 @@ void vtIcoGlobe::BuildSphericalLines(GlobeLayer *glay, float fSize)
 	int i, size;
 	size = feat->GetNumEntities();
 
-	vtGeom *geom = new vtGeom;
+	vtGeode *geom = new vtGeode;
 	geom->setName("spherical lines");
 	geom->SetMaterials(m_coremats);
-	m_SurfaceGroup->AddChild(geom);
-	glay->AddNode(geom);
+	m_SurfaceGroup->addChild(geom);
+	glay->addChild(geom);
 
 	vtMeshFactory mf(geom, PrimitiveSet::LINE_STRIP, 0, 30000, m_yellow);
 	for (i = 0; i < size; i++)
@@ -614,11 +614,11 @@ void vtIcoGlobe::BuildSphericalPolygons(GlobeLayer *glay, float fSize)
 	int i, size;
 	size = feat->GetNumEntities();
 
-	vtGeom *geom = new vtGeom;
+	vtGeode *geom = new vtGeode;
 	geom->setName("spherical lines");
 	geom->SetMaterials(m_coremats);
-	m_SurfaceGroup->AddChild(geom);
-	glay->AddNode(geom);
+	m_SurfaceGroup->addChild(geom);
+	glay->addChild(geom);
 
 	vtMeshFactory mf(geom, PrimitiveSet::LINE_STRIP, 0, 30000, m_yellow);
 	for (i = 0; i < size; i++)
@@ -678,7 +678,7 @@ void vtIcoGlobe::BuildFlatPoint(GlobeLayer *glay, int i, float fSize)
 
 	p_out -= m_mface[mface].local_origin;
 
-	vtGeom *geom = new vtGeom;
+	vtGeode *geom = new vtGeode;
 	geom->SetMaterials(m_coremats);
 	geom->AddMesh(m_cylinder, m_yellow);
 
@@ -700,17 +700,17 @@ void vtIcoGlobe::BuildFlatPoint(GlobeLayer *glay, int i, float fSize)
 	mgeom->Scale3(fSize, 0.001f, fSize);
 
 	m_mface[mface].surfgroup->AddChild(mgeom);
-	glay->AddNode(mgeom);
+	glay->addChild(mgeom->GetOsgNode());
 }
 
 void vtIcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 {
 	FPoint3 p;
 
-	m_pRectangles = new vtGeom;
+	m_pRectangles = new vtGeode;
 	m_pRectangles->setName("terrain extents");
 	m_pRectangles->SetMaterials(m_coremats);
-	m_SurfaceGroup->AddChild(m_pRectangles);
+	m_SurfaceGroup->addChild(m_pRectangles);
 
 	vtMeshFactory mf(m_pRectangles, PrimitiveSet::LINE_STRIP, 0, 30000, m_red);
 	for (unsigned int a = 0; a < pTerrainScene->NumTerrains(); a++)
@@ -1305,8 +1305,8 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 		m_mface[i].xform = new vtTransform;
 		m_mface[i].surfgroup = new vtGroup;
 		m_mface[i].surfgroup->SetEnabled(false);
-		m_mface[i].geom = new vtGeom;
-		m_mface[i].xform->AddChild(m_mface[i].geom);
+		m_mface[i].geom = new vtGeode;
+		m_mface[i].xform->addChild(m_mface[i].geom);
 		m_mface[i].xform->AddChild(m_mface[i].surfgroup);
 
 		vtString str;
@@ -1375,7 +1375,7 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 	// Show axis of rotation (north and south poles)
 	vtMaterialArray *pMats = new vtMaterialArray;
 	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
-	m_pAxisGeom = new vtGeom;
+	m_pAxisGeom = new vtGeode;
 	m_pAxisGeom->setName("AxisGeom");
 	m_pAxisGeom->SetMaterials(pMats);
 	m_pAxisGeom->SetEnabled(false);
@@ -1385,7 +1385,7 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 	pMesh->AddVertex(FPoint3(0,-2,0));
 	pMesh->AddLine(0,1);
 	m_pAxisGeom->AddMesh(pMesh, green);
-	m_top->AddChild(m_pAxisGeom);
+	m_top->addChild(m_pAxisGeom);
 
 #if 0
 	axis = WireAxis(RGBf(1,1,1), 1.1f);
@@ -1416,10 +1416,10 @@ void vtIcoGlobe::CreateNormalSphere()
 	}
 
 	// Create a geom to contain the meshes
-	m_GlobeGeom = new vtGeom;
+	m_GlobeGeom = new vtGeode;
 	m_GlobeGeom->setName("GlobeGeom");
 	m_GlobeGeom->SetMaterials(m_earthmats);
-	m_top->AddChild(m_GlobeGeom);
+	m_top->addChild(m_GlobeGeom);
 
 	for (pair = 0; pair < 10; pair++)
 	{
@@ -1524,10 +1524,10 @@ void vtIcoGlobe::create_independent_face(int face, bool second)
 void vtIcoGlobe::CreateIndependentGeodesicSphere()
 {
 	// Create a geom to contain the meshes
-	m_GlobeGeom = new vtGeom;
+	m_GlobeGeom = new vtGeode;
 	m_GlobeGeom->setName("GlobeGeom");
 	m_GlobeGeom->SetMaterials(m_earthmats);
-	m_top->AddChild(m_GlobeGeom);
+	m_top->addChild(m_GlobeGeom);
 
 	// fill in the vertices and triangles of the meshes
 	for (int pair = 0; pair < 10; pair++)
@@ -1578,23 +1578,7 @@ void vtIcoGlobe::add_face_independent_meshes(int pair, int face, bool second)
 
 void GlobeLayer::DestructGeometry()
 {
-	for (unsigned int i = 0; i < m_GeomNodes.GetSize(); i++)
-	{
-		vtNode *node = m_GeomNodes[i];
-		vtGroup *parent = dynamic_cast<vtGroup*>(node->GetParent());
-		if (parent)
-			parent->RemoveChild(node);
-		node->Release();
-	}
-	m_GeomNodes.Empty();
-}
-
-void GlobeLayer::SetEnabled(bool bOn)
-{
-	for (unsigned int i = 0; i < m_GeomNodes.GetSize(); i++)
-		m_GeomNodes[i]->SetEnabled(bOn);
-
-	m_bEnabled = bOn;
+	GetOsgGroup()->removeChildren(0, GetOsgGroup()->getNumChildren());
 }
 
 
@@ -1670,7 +1654,7 @@ void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo)
 //
 vtTransform *WireAxis(RGBf color, float len)
 {
-	vtGeom *geom = new vtGeom;
+	vtGeode *geom = new vtGeode;
 	geom->setName("axis");
 
 	vtMaterialArray *pMats = new vtMaterialArray;
@@ -1689,7 +1673,7 @@ vtTransform *WireAxis(RGBf color, float len)
 	mesh->AddLine(4,5);
 	geom->AddMesh(mesh, index);
 	vtTransform *trans = new vtTransform;
-	trans->AddChild(geom);
+	trans->addChild(geom);
 	return trans;
 }
 
@@ -1711,7 +1695,7 @@ vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
 		mesh->SetVtxTexCoord(i, coord);
 	}
 
-	vtGeom *geom = new vtGeom;
+	vtGeode *geom = new vtGeode;
 	vtMovGeom *mgeom = new vtMovGeom(geom);
 	mgeom->setName("GlobeGeom");
 

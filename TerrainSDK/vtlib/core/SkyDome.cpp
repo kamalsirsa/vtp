@@ -75,12 +75,12 @@ vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color)
 	mesh->AddVertex(FPoint3(0,  0.07, -0.94));
 	mesh->AddLine(0, 1);
 	mesh->AddLine(2, 3);
-	vtGeom *geom = new vtGeom;
+	vtGeode *geom = new vtGeode;
 	geom->setName("sky marker");
 	geom->SetMaterials(pMats);
 	geom->AddMesh(mesh, matidx);
 	vtTransform *trans = new vtTransform;
-	trans->AddChild(geom);
+	trans->addChild(geom);
 	return trans;
 }
 void PlaceMarker(vtTransform *trans, float alt, float azi)
@@ -134,9 +134,9 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	m_pCelestial->setName("Celestial Sphere");
 	AddChild(m_pCelestial);
 
-	m_pDomeGeom = new vtGeom;
+	m_pDomeGeom = new vtGeode;
 	m_pDomeGeom->setName("SkyDomeGeom");
-	AddChild(m_pDomeGeom);		// dome geometry does not rotate
+	addChild(m_pDomeGeom);		// dome geometry does not rotate
 
 	VTLOG("   Creating Dome Materials\n");
 	m_pMats = new vtMaterialArray;
@@ -201,7 +201,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		m_pSunMat = m_pMats->at(idx);
 
 		VTLOG("   Creating Sun Geom\n");
-		vtGeom *pGeom = new vtGeom;
+		vtGeode *pGeom = new vtGeode;
 		pGeom->setName("Sun geom");
 		m_pSunGeom = new vtMovGeom(pGeom);
 		m_pSunGeom->setName("Sun xform");
@@ -249,11 +249,11 @@ void vtSkyDome::CreateMarkers()
 		tics->AddLine(FPoint3(-0.05, sint, cost), FPoint3(0.05, sint, cost));
 		tics->AddLine(FPoint3(cost, sint, -0.05), FPoint3(cost, sint, 0.05));
 	}
-	m_pTicks = new vtGeom;
+	m_pTicks = new vtGeode;
 	m_pTicks->setName("Ticks");
 	m_pTicks->SetMaterials(m_pMats);
 	m_pTicks->AddMesh(tics, yellow);
-	AddChild(m_pTicks);
+	addChild(m_pTicks);
 
 	// Put green marker on alt-axi location of sun.
 	m_pGreenMarker = CreateMarker(m_pMats, RGBf(0,1,0));
@@ -269,7 +269,7 @@ void vtSkyDome::CreateMarkers()
 	FSphere sph(FPoint3(0,0,0), 0.99);
 	m_pWireSphere = CreateBoundSphereGeom(sph, 60);
 	m_pWireSphere->setName("Celestial Sphere wireframe");
-	m_pCelestial->AddChild(m_pWireSphere);
+	m_pCelestial->addChild(m_pWireSphere);
 }
 
 void vtSkyDome::ShowMarkers(bool bShow)
@@ -672,7 +672,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	VTLOG("  vtStarDome::Create\n");
 
 	setName("StarDome");
-	m_pStarGeom = new vtGeom;
+	m_pStarGeom = new vtGeode;
 	m_pStarGeom->setName("StarDomeGeom");
 
 	NumStars = 0;
@@ -692,7 +692,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	m_pStarMesh = new vtMesh(PrimitiveSet::POINTS, VT_Colors, NumStars);
 	AddStars(m_pStarMesh);
 	m_pStarGeom->AddMesh(m_pStarMesh, star_mat);
-	AddChild(m_pStarGeom);
+	addChild(m_pStarGeom);
 
 	if (moon_texture && *moon_texture)
 	{
@@ -710,7 +710,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 			return;		// could not load texture, cannot have sun
 
 		// Create moon
-		vtGeom *pGeom = new vtGeom;
+		vtGeode *pGeom = new vtGeode;
 		pGeom->setName("Moon geom");
 		m_pMoonGeom = new vtMovGeom(pGeom);
 		m_pMoonGeom->setName("Moon xform");

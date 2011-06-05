@@ -155,6 +155,7 @@ protected:
 
 	void SetupMiniLoad(bool bThreading, bool bGradual);
 };
+typedef osg::ref_ptr<vtTiledGeom> vtTiledGeomPtr;
 
 /*@}*/	// Group dynterr
 

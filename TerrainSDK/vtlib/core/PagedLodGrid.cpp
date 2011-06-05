@@ -318,12 +318,12 @@ void vtPagedStructureLodGrid::DeconstructCell(vtPagedStructureLOD *pLOD)
 	{
 		StructureRef &ref = refs[i];
 		vtStructure3d *str3d = ref.pArray->GetStructure3d(ref.iIndex);
-		vtNode *node = str3d->GetContainer();
+		osg::Node *node = str3d->GetContainer()->GetOsgNode();
 		if (!node)
 			node = str3d->GetGeom();
 		if (!node)
 			continue;
-		pLOD->RemoveChild(node);
+		pLOD->removeChild(node);
 		str3d->DeleteNode();
 		count++;
 	}
@@ -534,9 +534,9 @@ void vtPagedStructureLodGrid::ConstructByIndex(vtPagedStructureLOD *pLOD,
 			pLOD->AddChild(pTrans);
 		else
 		{
-			vtGeom *pGeom = str3d->GetGeom();
+			vtGeode *pGeom = str3d->GetGeom();
 			if (pGeom)
-				pLOD->AddChild(pGeom);
+				pLOD->addChild(pGeom);
 		}
 		pLOD->m_iNumConstructed ++;
 

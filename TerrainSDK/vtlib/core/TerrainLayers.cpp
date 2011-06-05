@@ -33,20 +33,11 @@ vtLayer *LayerSet::FindByName(const vtString &name)
 	return NULL;
 }
 
-vtStructureLayer *LayerSet::FindStructureFromNode(vtNode* pNode, int &iOffset)
+vtStructureLayer *LayerSet::FindStructureFromNode(osg::Node *pNode, int &iOffset)
 {
 	iOffset = -1;
 	size_t iNumLayers = size();
 	bool bFound = false;
-
-	// We might have a low-level native scenegraph node; we want the higher-level
-	vtNativeNode *native = dynamic_cast<vtNativeNode *>(pNode);
-	if (native)
-	{
-		pNode = native->FindParentVTNode();
-		if (!pNode)
-			return false;
-	}
 
 	for (size_t i = 0; i < iNumLayers && !bFound; i++)
 	{
@@ -57,10 +48,9 @@ vtStructureLayer *LayerSet::FindStructureFromNode(vtNode* pNode, int &iOffset)
 		for (int j = 0; (j < iNumStructures) && !bFound; j++)
 		{
 			vtStructure3d *pStructure3d = slay->GetStructure3d(j);
-			if ((pNode == pStructure3d->GetContainer()) ||
-				(pNode == pStructure3d->GetContained()) ||
-				(pNode->GetParent() == pStructure3d->GetContained()) ||
-				(pNode == pStructure3d->GetGeom()))
+			if (FindAncestor(pNode, pStructure3d->GetContainer()->GetOsgNode()) ||
+				FindAncestor(pNode, pStructure3d->GetContained()) ||
+				FindAncestor(pNode, pStructure3d->GetGeom()))
 			{
 				iOffset = j;
 				return slay;
@@ -84,11 +74,11 @@ vtImageLayer::~vtImageLayer()
 void vtImageLayer::SetVisible(bool vis)
 {
 	if (m_pMultiTexture)
-		m_pMultiTexture->m_pNode->EnableMultiTexture(m_pMultiTexture, vis);
+		EnableMultiTexture(m_pMultiTexture->m_pNode, m_pMultiTexture, vis);
 }
 bool vtImageLayer::GetVisible()
 {
 	if (m_pMultiTexture)
-		return m_pMultiTexture->m_pNode->MultiTextureIsEnabled(m_pMultiTexture);
+		return MultiTextureIsEnabled(m_pMultiTexture->m_pNode, m_pMultiTexture);
 	return false;
 }

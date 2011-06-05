@@ -135,7 +135,7 @@ bool vtContourConverter::SetupTerrain(vtTerrain *pTerr)
  *		colliding with the terrain itself.
  * \return A geometry node which contains the contours.
  */
-vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
+vtGeode *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
 {
 	if (!pTerr)
 		return NULL;
@@ -149,7 +149,7 @@ vtGeom *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHe
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(color, false, false, true);
 
-	m_pGeom = new vtGeom;
+	m_pGeom = new vtGeode;
 	m_pGeom->setName("Contour Geometry");
 	m_pGeom->SetMaterials(pMats);
 
@@ -244,7 +244,7 @@ void vtContourConverter::Finish()
 	{
 		// Add the geometry to the terrain's scaled features, so that it will scale
 		//  up/down with the terrain's vertical exaggeration.
-		m_pTerrain->GetScaledFeatures()->AddChild(m_pGeom);
+		m_pTerrain->GetScaledFeatures()->addChild(m_pGeom);
 	}
 }
 

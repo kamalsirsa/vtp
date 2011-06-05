@@ -41,8 +41,6 @@ vtPlantAppearance3d::vtPlantAppearance3d(AppearType type, const char *filename,
 
 vtPlantAppearance3d::~vtPlantAppearance3d()
 {
-	if (m_pGeom)
-		m_pGeom->Release();
 	if (m_pExternal)
 		m_pExternal->Release();
 
@@ -145,7 +143,7 @@ void vtPlantAppearance3d::LoadAndCreate()
 
 		// create a surface object to represent the tree
 		m_pMesh = CreateTreeMesh(s_fPlantScale, s_bPlantShadows);
-		m_pGeom = new vtGeom;
+		m_pGeom = new vtGeode;
 		m_pGeom->SetMaterials(m_pMats);
 		m_pGeom->AddMesh(m_pMesh, m_iMatIdx);
 	}
@@ -248,7 +246,7 @@ bool vtPlantAppearance3d::GenerateGeom(vtTransform *container)
 {
 	if (m_eType == AT_BILLBOARD)
 	{
-		container->AddChild(m_pGeom);
+		container->addChild(m_pGeom);
 		return true;
 	}
 	else if (m_eType == AT_XFROG)
@@ -523,7 +521,7 @@ void vtPlantInstance3d::ShowBounds(bool bShow)
 				contents->GetBoundSphere(sphere);
 
 				m_pHighlight = CreateBoundSphereGeom(sphere);
-				m_pContainer->AddChild(m_pHighlight);
+				m_pContainer->addChild(m_pHighlight);
 			}
 		}
 		m_pHighlight->SetEnabled(true);
@@ -543,14 +541,9 @@ void vtPlantInstance3d::ReleaseContents()
 	int ch = m_pContainer->GetNumChildren();
 	for (int i = 0; i < ch; i++)
 	{
-		vtNode *node = m_pContainer->GetChild(ch-1-i);
+		osg::Node *node = m_pContainer->getChild(ch-1-i);
 		if (node != m_pHighlight)	// don't delete the highlight
-		{
-			m_pContainer->RemoveChild(node);
-
-			// Don't remove the Geom either, as it now belongs to the appearance
-			//node->Release();
-		}
+			m_pContainer->removeChild(node);
 	}
 	m_pContainer->Identity();
 }
@@ -756,7 +749,7 @@ void vtPlantInstanceArray3d::DeletePlant(unsigned int i)
 	delete inst3d;
 }
 
-bool vtPlantInstanceArray3d::FindPlantFromNode(vtNode* pNode, int &iOffset)
+bool vtPlantInstanceArray3d::FindPlantFromNode(osg::Node *pNode, int &iOffset)
 {
 	bool bFound = false;
 	unsigned int i, j;
@@ -768,7 +761,7 @@ bool vtPlantInstanceArray3d::FindPlantFromNode(vtNode* pNode, int &iOffset)
 			continue;
 		for (j = 0; (j < pTransform->GetNumChildren()) && !bFound; j++)
 		{
-			vtNode *pPlantNode = pTransform->GetChild(j);
+			osg::Node *pPlantNode = pTransform->getChild(j);
 			if (pPlantNode != GetInstance3d(i)->m_pHighlight)
 			{
 				if (pPlantNode == pNode)

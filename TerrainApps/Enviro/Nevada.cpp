@@ -113,7 +113,7 @@ void NevadaTerrain::CreateWater()
 		false, false,	// transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
 
-	vtGeom *geom;
+	vtGeode *geom;
 
 	// create water plane
 	geom = CreatePlaneGeom(m_pMats, id, 0, 2, 1, org, org+size, 125.0f, 10);
@@ -193,17 +193,17 @@ void NevadaTerrain::CreatePast()
 	//butterfly: circle radius, speed, height above ground, center, size_exag
 	float height = 80.0f;
 
-	vtGeom *bfly = new Butterfly(this, 0.2f, 50.0f, height, center, 200.0);
+	vtGeode *bfly = new Butterfly(this, 0.2f, 50.0f, height, center, 200.0);
 	m_pPast->AddChild(bfly);
-	vtGeom *bfly2 = new Butterfly(this, 0.3f, 50.0f, height, center, 200.0);
+	vtGeode *bfly2 = new Butterfly(this, 0.3f, 50.0f, height, center, 200.0);
 	m_pPast->AddChild(bfly2);
-	vtGeom *bfly3 = new Butterfly(this, 0.4f, 50.0f, height, center, 200.0);
+	vtGeode *bfly3 = new Butterfly(this, 0.4f, 50.0f, height, center, 200.0);
 	m_pPast->AddChild(bfly3);
 #endif
 
 #if 0
 	{
-		typedef vtGeom *shapeptr;
+		typedef vtGeode *shapeptr;
 		int x, y;
 		FPoint3 location;
 		for (x = 0; x < 8; x++)
@@ -495,12 +495,12 @@ EpochEngine::EpochEngine(NevadaTerrain *pNevada, float fLow, float fHigh,
 	m_pSpriteText->SetPosition(FPoint3(280,3,0));
 	m_pSpriteText->SetColor(RGBAf(0,0.2f,0));
 
-	m_pSprite = new vtGeom;
+	m_pSprite = new vtGeode;
 	m_pSprite->setName("Year Sprite");
 	m_pSprite->AddTextMesh(m_pSpriteText, 0);
 
-	vtGetScene()->GetHUD()->AddChild(m_pSprite);
-	pNevada->AddNode(m_pSprite);
+	vtGetScene()->GetHUD()->addChild(m_pSprite);
+	pNevada->addNode(m_pSprite);
 
 	m_pPastMat = pastApp;
 	m_pPresentMat = presentApp;

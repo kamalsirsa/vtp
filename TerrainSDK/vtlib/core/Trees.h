@@ -51,7 +51,7 @@ protected:
 	void _Defaults();
 
 	osg::ref_ptr<vtMaterialArray> m_pMats;
-	vtGeom			*m_pGeom;
+	vtGeodePtr		m_pGeom;
 	osg::ref_ptr<vtMesh> m_pMesh;
 	int				m_iMatIdx;
 	vtNode			*m_pExternal;
@@ -104,7 +104,7 @@ public:
 	// override / replace a few methods of vtSpeciesList
 	vtPlantSpecies3d *GetSpecies(unsigned int i) const;
 
-//	vtGeom *plant_nursery(vtHeightField *pHeightField, float lat, float lon);
+//	vtGeode *plant_nursery(vtHeightField *pHeightField, float lat, float lon);
 };
 
 /**
@@ -122,7 +122,7 @@ public:
 	void ReleaseContents();
 
 	vtTransform *m_pContainer;
-	vtGeom		*m_pHighlight;	// The wireframe highlight
+	vtGeode		*m_pHighlight;	// The wireframe highlight
 };
 
 /**
@@ -163,7 +163,7 @@ public:
 
 	void UpdateTransform(unsigned int i);
 
-	bool FindPlantFromNode(vtNode* pNode, int &iOffset);
+	bool FindPlantFromNode(osg::Node *pNode, int &iOffset);
 
 protected:
 	vtArray<vtPlantInstance3d*>	m_Instances3d;

@@ -1185,7 +1185,7 @@ void vtMesh::ReOptimize()
  * Set the line width, in pixels, for this mesh's geometry.
  *
  * You should call this method _after_ the mesh has been added to some
- *  geometry with vtGeom::AddMesh()
+ *  geometry with vtGeode::AddMesh()
  * (this requirement was found with the OSG flavor of vtlib.)
  */
 void vtMesh::SetLineWidth(float fWidth)
@@ -1405,7 +1405,7 @@ vtTextMesh::vtTextMesh(osgText::Font *font, float fSize, bool bCenter)
 
 	// We'd like to turn off lighting for the text, but we can't, because
 	//  the OSG Text object fiddles with its own StateSet.  Instead, we do
-	//  it in vtGeom::AddTextMesh().
+	//  it in vtGeode::AddTextMesh().
 }
 
 // Override with ability to get OSG bounding box

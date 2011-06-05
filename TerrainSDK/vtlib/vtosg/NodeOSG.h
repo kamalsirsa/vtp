@@ -66,10 +66,40 @@ public:
 #if VTLISPSM
 	int	m_iMode;
 #endif
-	vtNode *m_pNode;
+	osg::Node *m_pNode;
 	osg::ref_ptr<osg::Texture2D> m_pTexture;
 };
 
+struct NodeExtension
+{
+	NodeExtension();
+	void SetOsgNode(osg::Node *n);
+
+	void SetEnabled(bool bOn);
+	bool GetEnabled() const;
+
+	/// Set this node to cast a shadow, if it is under a vtShadow node.  Default is false.
+	void SetCastShadow(bool b);
+	/// Get whether this node casts a shadow.
+	bool GetCastShadow();
+
+	osg::Node *m_pNode;
+	bool m_bCastShadow;
+};
+
+bool FindAncestor(osg::Node *node, osg::Node *parent);
+
+vtMultiTexture *AddMultiTexture(osg::Node *onode, int iTextureUnit, vtImage *pImage,
+								int iTextureMode, const FPoint2 &scale, const FPoint2 &offset);
+void EnableMultiTexture(osg::Node *node, vtMultiTexture *mt, bool bEnable);
+bool MultiTextureIsEnabled(osg::Node *node, vtMultiTexture *mt);
+
+void LocalToWorld(osg::Node *node, FPoint3 &point);
+FSphere GetGlobalBoundSphere(osg::Node *node);
+bool ContainsParticleSystem(osg::Node *node);
+
+void SetEnabled(osg::Node *node, bool bOn);
+bool GetEnabled(osg::Node *node);
 
 /**
  * Represents a node in the vtlib scenegraph.  The scenegraph is simply
@@ -105,10 +135,10 @@ public:
 	vtGroup *GetParent(int iParent = 0);
 	virtual vtNode *Clone(bool bDeep = false);
 
-	vtMultiTexture *AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
-										const FPoint2 &scale, const FPoint2 &offset);
-	void EnableMultiTexture(vtMultiTexture *mt, bool bEnable);
-	bool MultiTextureIsEnabled(vtMultiTexture *mt);
+	//vtMultiTexture *AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
+	//									const FPoint2 &scale, const FPoint2 &offset);
+	//void EnableMultiTexture(vtMultiTexture *mt, bool bEnable);
+	//bool MultiTextureIsEnabled(vtMultiTexture *mt);
 
 	// OSG access
 	void SetOsgNode(osg::Node *n);
@@ -176,12 +206,22 @@ public:
 	/** Add a node as a child of this Group. */
 	void AddChild(vtNode *pChild);
 
+	/** Add a node as a child of this Group. */
+	void addChild(osg::Node *pChild);
+
 	/** Remove a node as a child of this Group.  If the indicated node is not
 	 a child, then this method has no effect. */
 	void RemoveChild(vtNode *pChild);
 
+	/** Remove a node as a child of this Group.  If the indicated node is not
+	 a child, then this method has no effect. */
+	void removeChild(osg::Node *pChild);
+
 	/** Return a child node, by index. */
 	vtNode *GetChild(unsigned int num) const;
+
+	/** Return a child node, by index. */
+	osg::Node *getChild(unsigned int num) const;
 
 	/** Return the number of child nodes */
 	unsigned int GetNumChildren() const;
@@ -397,24 +437,24 @@ protected:
 
 class vtTextMesh;
 
-/** The vtGeom class represents a Geometry Node which can contain any number
+/** The vtGeode class represents a Geometry Node which can contain any number
 	of visible vtMesh objects.
 	\par
-	A vtGeom also manages a set of Materials (vtMaterial).  Each contained
+	A vtGeode also manages a set of Materials (vtMaterial).  Each contained
 	mesh is assigned one of these materials, by index.
 	\par
 	This separation (Group/Mesh) provides the useful ability to define a vtMesh
-	once in memory, and have multiple vtGeom nodes which contain it, which
+	once in memory, and have multiple vtGeode nodes which contain it, which
 	permits a large number of visual instances (each with potentially different
 	material and transform) with very little memory cost.
  */
-class vtGeom : public vtNode
+class vtGeode : public osg::Geode, public NodeExtension
 {
 public:
-	vtGeom();
-	virtual vtNode *Clone(bool bDeep = false);
-	void CloneFrom(const vtGeom *rhs);
-	void Release();
+	vtGeode();
+
+	vtGeode *CloneGeode();
+	void CloneFromGeode(const vtGeode *rhs);
 
 	/** Add a mesh to this geometry.
 		\param pMesh The mesh to add
@@ -450,27 +490,27 @@ public:
 
 	// OSG implementation
 	osg::ref_ptr<const vtMaterialArray> m_pMaterialArray;
-	osg::Geode *m_pGeode;	// the Geode is a container for Drawables
 
 protected:
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
-	virtual ~vtGeom() {}
+	virtual ~vtGeode() {}
 };
+typedef osg::ref_ptr<vtGeode> vtGeodePtr;
 
 /**
- * A utility class which simply wraps a geometry (vtGeom) inside a
+ * A utility class which simply wraps a geometry (vtGeode) inside a
  * transform (vtTransform) so that you can move it.
  */
 class vtMovGeom : public vtTransform
 {
 public:
-	vtMovGeom(vtGeom *pContained) : vtTransform()
+	vtMovGeom(vtGeode *pContained) : vtTransform()
 	{
 		m_pGeom = pContained;
-		AddChild(m_pGeom);
+		addChild(m_pGeom);
 	}
-	vtGeom	*m_pGeom;
+	vtGeode	*m_pGeom;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -512,7 +552,7 @@ protected:
 #define	VT_AllVisible	2
 
 /**
- * vtDynGeom extends the vtGeom class with the ability to have dynamic geometry
+ * vtDynGeom extends the vtGeode class with the ability to have dynamic geometry
  * which changes every frame.  The most prominent use of this feature is to do
  * Continuous Level of Detail (CLOD) for terrain.
  * \par
@@ -529,7 +569,7 @@ protected:
  * \par
  * \see vtDynTerrainGeom
  */
-class vtDynGeom : public vtGeom
+class vtDynGeom : public vtGeode
 {
 public:
 	vtDynGeom();
@@ -562,7 +602,7 @@ public:
 protected:
 	OsgDynMesh	*m_pDynMesh;
 };
-
+typedef osg::ref_ptr<vtDynGeom> vtDynGeomPtr;
 
 //////////////////////////////////////////////////
 

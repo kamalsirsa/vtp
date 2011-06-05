@@ -109,7 +109,7 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 
 				m_pHighlight = CreateBoundSphereGeom(sphere);
 				m_pHighlight->SetCastShadow(false);		// no shadow
-				m_pContainer->AddChild(m_pHighlight);
+				m_pContainer->addChild(m_pHighlight);
 			}
 			m_pHighlight->SetEnabled(true);
 		}
@@ -213,8 +213,7 @@ void vtStructInstance3d::DeleteNode()
 	{
 		if (m_pHighlight)
 		{
-			m_pContainer->RemoveChild(m_pHighlight);
-			m_pHighlight->Release();
+			m_pContainer->removeChild(m_pHighlight);
 			m_pHighlight = NULL;
 		}
 		if (m_pModel)
@@ -407,7 +406,7 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 				pContainer->SetEnabled(bTrue);
 			else
 			{
-				vtGeom *geom = str3d->GetGeom();
+				vtGeode *geom = str3d->GetGeom();
 				if (geom)
 					geom->SetEnabled(bTrue);
 			}

@@ -13,7 +13,7 @@
 #include <osgEarthUtil/ElevationManager>
 #endif
 
-class vtGeom;
+class vtGeode;
 class vtNode;
 class vtProjection;
 namespace osgTerrain

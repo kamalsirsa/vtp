@@ -26,7 +26,7 @@
 	geometry node.
 	\code
 	{
-		vtGeom *pLineGeom = new vtGeom;
+		vtGeode *pLineGeom = new vtGeode;
 		vtMeshFactory mf(pLineGeom, PrimitiveSet::LINE_STRIP, 0, 3000, 1);
 		mf.PrimStart();
 		for (int i = 0; i < 10000; i++)
@@ -38,7 +38,7 @@
 class vtMeshFactory
 {
 public:
-	vtMeshFactory(vtGeom *pGeom, vtMesh::PrimType ePrimType,
+	vtMeshFactory(vtGeode *pGeom, vtMesh::PrimType ePrimType,
 		int iVertType, int iMaxVertsPerMesh, int iMatIndex, int iExpectedVerts = -1);
 	vtMeshFactory(vtMesh *pMesh);
 
@@ -54,7 +54,7 @@ public:
 protected:
 	void NewMesh();
 
-	vtGeom *m_pGeom;
+	vtGeode *m_pGeom;
 	vtMesh::PrimType m_ePrimType;
 	int m_iVertType;
 	int m_iMaxVertsPerMesh;
@@ -84,7 +84,7 @@ public:
 
 	void SetText(const char *text);
 
-	vtGeom *m_pGeom;
+	vtGeode *m_pGeom;
 	vtMaterialArrayPtr m_pMats;
 	vtMesh *m_pLines;
 	vtTextMesh *m_pLabel, *m_pLabel2;
@@ -92,23 +92,23 @@ public:
 
 
 // helper functions
-vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha = 0.5f);
-vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res = 24);
+vtGeode *Create3DCursor(float fSize, float fSmall, float fAlpha = 0.5f);
+vtGeode *CreateBoundSphereGeom(const FSphere &sphere, int res = 24);
 vtMesh *CreateSphereMesh(const FSphere &sphere, int res = 24);
-vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
+vtGeode *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						int Axis1, int Axis2, int Axis3,
 						const FPoint2 &min1, const FPoint2 &max1,
 						float fTiling, int steps);
-vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
+vtGeode *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 						const FPoint3 &size);
-void AddLineMesh(vtGeom *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1);
-vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
+void AddLineMesh(vtGeode *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1);
+vtGeode *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res);
-vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
+vtGeode *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						   float hHeight, float fRadius, int res,
 						   bool bTop = true, bool bBottom = true,
 						   bool bCentered = true, int direction = 1);
-vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
+vtGeode *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 					   const FPoint3 &min1, const FPoint3 &max1, int steps);
 
 /**
@@ -130,7 +130,7 @@ class vtDynBoundBox
 public:
 	vtDynBoundBox(const RGBf &color);
 	void SetBox(const FBox3 &box);
-	vtGeom *pGeom;
+	vtGeode *pGeom;
 	vtMesh *pMesh;
 };
 
@@ -140,9 +140,9 @@ struct vtOBJFile
 	FILE *fp;
 	int verts_written;
 };
-vtOBJFile *OBJFileBegin(vtGeom *geom, const char *filename);
-void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom);
-bool WriteGeomToOBJ(vtGeom *geom, const char *filename);
+vtOBJFile *OBJFileBegin(vtGeode *geom, const char *filename);
+void OBJFileWriteGeom(vtOBJFile *file, vtGeode *geom);
+bool WriteGeomToOBJ(vtGeode *geom, const char *filename);
 
 /*@}*/	// Group sg
 

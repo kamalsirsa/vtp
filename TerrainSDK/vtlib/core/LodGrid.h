@@ -8,7 +8,7 @@
 #ifndef LODGRIDH
 #define LODGRIDH
 
-class vtGeom;
+class vtGeode;
 class vtTransform;
 class vtHeightField3d;
 
@@ -42,9 +42,9 @@ public:
 
 	// methods
 	bool AppendToGrid(vtTransform *pTrans);
-	bool AppendToGrid(vtGeom *pGeom);
+	bool AppendToGrid(vtGeode *pGeom);
 	void RemoveFromGrid(vtTransform *pTNode);
-	void RemoveFromGrid(vtGeom *pModel);
+	void RemoveFromGrid(vtGeode *pModel);
 	void RemoveNodeFromGrid(vtNode *pNode);
 
 	virtual void SetDistance(float fLODDistance) = 0;

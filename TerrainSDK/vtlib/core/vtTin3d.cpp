@@ -75,7 +75,7 @@ void vtTin3d::MakeSurfaceMaterials()
 
 #define MAX_CHUNK_VERTS	30000
 
-vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
+vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 {
 	bool bGeoSpecific = (m_pMats != NULL);
 
@@ -106,7 +106,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 			MakeSurfaceMaterials();
 	}
 
-	m_pGeom = new vtGeom;
+	m_pGeom = new vtGeode;
 	m_pGeom->SetMaterials(m_pMats);
 
 	// Break it up into a series of meshes - this is good for both

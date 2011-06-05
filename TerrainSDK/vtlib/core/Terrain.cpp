@@ -148,20 +148,15 @@ vtTerrain::~vtTerrain()
 		m_pVegGrid->Release();
 	}
 	if (m_pDynGeom)
-	{
-		m_pDynGeomScale->RemoveChild(m_pDynGeom);
-		m_pDynGeom->Release();
-	}
+		m_pDynGeomScale->removeChild(m_pDynGeom);
+
 	if (m_pDynGeomScale)
 	{
 		m_pTerrainGroup->RemoveChild(m_pDynGeomScale);
 		m_pDynGeomScale->Release();
 	}
 	if (m_pTiledGeom)
-	{
-		//m_pDynGeomScale->RemoveChild(m_pTiledGeom);
-		m_pTiledGeom->Release();
-	}
+		m_pDynGeomScale->removeChild(m_pTiledGeom);
 
 	// This will mop up anything remaining in the terrain's scenegraph
 	if (m_pContainerGroup != NULL)
@@ -793,7 +788,6 @@ bool vtTerrain::_CreateDynamicTerrain()
 	DTErr result = m_pDynGeom->Init(m_pElevGrid.get(), m_fVerticalExag);
 	if (result != DTErr_OK)
 	{
-		m_pDynGeom->Release();
 		m_pDynGeom = NULL;
 
 		_CreateErrorMessage(result, m_pElevGrid.get());
@@ -813,7 +807,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 		vtMaterial *mat = m_pTerrMats->at(0);
 		if (mat->GetTransparent())
 		{
-			osg::StateSet *sset = m_pDynGeom->GetOsgNode()->getOrCreateStateSet();
+			osg::StateSet *sset = m_pDynGeom->getOrCreateStateSet();
 			sset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 		}
 	}
@@ -829,7 +823,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 	FPoint2 spacing = m_pElevGrid->GetWorldSpacing();
 	m_pDynGeomScale->Scale3(spacing.x, m_fVerticalExag, -spacing.y);
 
-	m_pDynGeomScale->AddChild(m_pDynGeom);
+	m_pDynGeomScale->addChild(m_pDynGeom);
 	m_pTerrainGroup->AddChild(m_pDynGeomScale);
 
 	// the Dynamic terrain will be the heightfield used at runtime, so extend
@@ -935,7 +929,7 @@ void vtTerrain::AddRoute(vtRoute *f)
 	m_Routes.Append(f);
 
 	// Add directly
-	m_pTerrainGroup->AddChild(f->GetGeom());
+	m_pTerrainGroup->addChild(f->GetGeom());
 }
 
 void vtTerrain::add_routepoint_earth(vtRoute *route, const DPoint2 &epos,
@@ -986,7 +980,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 
 	if (bWater)
 	{
-		vtGeom *pOceanGeom = new vtGeom;
+		vtGeode *pOceanGeom = new vtGeode;
 		pOceanGeom->SetMaterials(m_pEphemMats);
 
 		FPoint2 tile_size = world_size / TILING;
@@ -1023,7 +1017,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 	}
 	if (bHorizon)
 	{
-		vtGeom *pHorizonGeom = new vtGeom;
+		vtGeode *pHorizonGeom = new vtGeode;
 		pHorizonGeom->SetMaterials(m_pEphemMats);
 
 		FPoint2 tile_size = world_size;
@@ -1205,7 +1199,7 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 		bSuccess = AddNodeToStructGrid(pTrans);
 	else
 	{
-		vtGeom *pGeom = str3d->GetGeom();
+		vtGeode *pGeom = str3d->GetGeom();
 		if (pGeom)
 			bSuccess = AddNodeToStructGrid(pGeom);
 	}
@@ -1279,9 +1273,12 @@ int vtTerrain::DeleteSelectedStructures()
 
 			vtStructure3d *str3d = structures->GetStructure3d(i);
 			vtNode *node = str3d->GetContainer();
-			if (!node)
-				node = str3d->GetGeom();
-			RemoveNodeFromStructGrid(node);
+			if (node)
+				RemoveNodeFromStructGrid(node);
+			else
+			{
+				vtGeode *geode = str3d->GetGeom();
+			}
 
 			// if there are any engines pointing to this node, inform them
 			vtGetScene()->TargetRemoved(node);
@@ -1475,7 +1472,7 @@ void vtTerrain::_CreateCulture()
 				m_pOverlay->setName("Overlay");
 				IPoint2 size = pSprite->GetSize();
 				pSprite->SetPosition((float) x, (float) y+size.y, (float) x+size.x, (float) y);
-				m_pOverlay->AddChild(pSprite->GetNode());
+				m_pOverlay->addChild(pSprite->GetGeode());
 			}
 		}
 	}
@@ -1869,11 +1866,11 @@ vtMultiTexture *vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &
 	offset.y = (float) ((extents.bottom - EarthExtents.bottom) / extents.Height());
 
 	// apply it to the node that is above the terrain surface
-	return GetTerrainSurfaceNode()->AddMultiTexture(iTextureUnit, pImage,
+	return AddMultiTexture(GetTerrainSurfaceNode(), iTextureUnit, pImage,
 		TextureMode, scale, offset);
 }
 
-vtNode *vtTerrain::GetTerrainSurfaceNode()
+osg::Node *vtTerrain::GetTerrainSurfaceNode()
 {
 	if (GetDynTerrain())
 		return GetDynTerrain();
@@ -2440,9 +2437,9 @@ bool vtTerrain::CreateFromTIN()
 	int tex = m_Params.GetValueInt(STR_TEXTURE);
 	if (tex == 1)
 		m_pTin->SetTextureMaterials(m_pTerrMats);
-	vtGeom *geom = m_pTin->CreateGeometry(bDropShadow);
+	vtGeode *geom = m_pTin->CreateGeometry(bDropShadow);
 	geom->SetCastShadow(false);
-	m_pTerrainGroup->AddChild(geom);
+	m_pTerrainGroup->addChild(geom);
 
 	return true;
 }
@@ -2477,7 +2474,7 @@ bool vtTerrain::CreateFromGrid()
 bool vtTerrain::CreateFromTiles()
 {
 	// m_pTiledGeom already exists (although probably should be unbundled)
-	m_pTerrainGroup->AddChild(m_pTiledGeom);
+	m_pTerrainGroup->addChild(m_pTiledGeom);
 
 	// the tileset will be the heightfield used at runtime, so extend
 	//  it with the terrain's culture
@@ -2587,7 +2584,7 @@ bool vtTerrain::CreateStep5()
 			if (status)
 			{
 				m_pWaterTin3d->SetTextureMaterials(m_pEphemMats);
-				vtGeom *wsgeom = m_pWaterTin3d->CreateGeometry(false, m_idx_water);
+				vtGeode *wsgeom = m_pWaterTin3d->CreateGeometry(false, m_idx_water);
 				wsgeom->setName("Water surface");
 				wsgeom->SetCastShadow(false);
 
@@ -2602,7 +2599,7 @@ bool vtTerrain::CreateStep5()
 				vtTransform *xform = new vtTransform;
 				xform->Translate1(FPoint3(x, 0, z));
 
-				xform->AddChild(wsgeom);
+				xform->addChild(wsgeom);
 				m_pTerrainGroup->AddChild(xform);
 			}
 			else
@@ -3053,7 +3050,7 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bit
 	\code
 	DLine2 line = ...;
 	vtTerrain *pTerr = ...;
-	vtGeom *pLineGeom = new vtGeom;
+	vtGeode *pLineGeom = new vtGeode;
 	pTerr->AddNode(pLineGeom);
 	vtMeshFactory mf(pLineGeom, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	float length = pTerr->AddSurfaceLineToMesh(&mf, dline, 10, true);
@@ -3350,9 +3347,9 @@ void vtTerrain::SetPlantList(vtSpeciesList3d *pPlantList)
  *
  * \sa AddNodeToVegGrid, AddNodeToStructGrid
  */
-void vtTerrain::AddNode(vtNode *pNode)
+void vtTerrain::addNode(osg::Node *pNode)
 {
-	m_pTerrainGroup->AddChild(pNode);
+	m_pTerrainGroup->addChild(pNode);
 }
 
 /**
@@ -3377,7 +3374,7 @@ bool vtTerrain::AddNodeToVegGrid(vtTransform *pTrans)
  * culled when it is far from the viewer.  This is usually desirable when
  * the models are complicated or there are lot of them.
  *
- * There is another form of this method which takes a vtGeom node instead.
+ * There is another form of this method which takes a vtGeode node instead.
  *
  * \sa AddNode
  */
@@ -3398,7 +3395,7 @@ bool vtTerrain::AddNodeToStructGrid(vtTransform *pTrans)
  *
  * \sa AddNode
  */
-bool vtTerrain::AddNodeToStructGrid(vtGeom *pGeom)
+bool vtTerrain::AddNodeToStructGrid(vtGeode *pGeom)
 {
 	if (!m_pStructGrid)
 		return false;
@@ -3411,9 +3408,9 @@ bool vtTerrain::AddNodeToStructGrid(vtGeom *pGeom)
  *
  * \sa RemoveNodeFromStructGrid
  */
-void vtTerrain::RemoveNode(vtNode *pNode)
+void vtTerrain::removeNode(osg::Node *pNode)
 {
-	m_pTerrainGroup->RemoveChild(pNode);
+	m_pTerrainGroup->removeChild(pNode);
 }
 
 /**
@@ -3578,7 +3575,7 @@ void vtTerrain::UpdateElevation()
 {
 	if (!m_pDynGeom)
 		return;
-	SRTerrain *sr = dynamic_cast<SRTerrain*>(m_pDynGeom);
+	SRTerrain *sr = dynamic_cast<SRTerrain*>(m_pDynGeom.get());
 	if (!sr)
 		return;
 	sr->ReInit(m_pElevGrid.get());

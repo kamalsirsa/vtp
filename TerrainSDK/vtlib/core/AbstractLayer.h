@@ -151,8 +151,8 @@ protected:
 	int material_index_object;
 	int material_index_line;
 	int material_index_yellow;
-	vtGeom *pGeomObject;
-	vtGeom *pGeomLine;
+	vtGeode *pGeomObject;
+	vtGeode *pGeomLine;
 
 	VizMap m_Map;
 

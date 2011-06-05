@@ -36,6 +36,245 @@ const int ReceivesShadowTraversalMask = 0x1;
 const int CastsShadowTraversalMask = 0x2;
 
 
+//
+// This visitor looks in a node tree for any instance of ModularEmitter.
+//
+#include <osgParticle/ModularEmitter>
+class findParticlesVisitor : public osg::NodeVisitor
+{
+public:
+	findParticlesVisitor() : osg::NodeVisitor(TRAVERSE_ALL_CHILDREN) {
+		bFound = false;
+	}
+	virtual void apply(osg::Node &searchNode) {
+		if (osgParticle::ModularEmitter* me = dynamic_cast<osgParticle::ModularEmitter*> (&searchNode) )
+			bFound = true;
+		else
+			traverse(searchNode);
+	}
+	bool bFound;
+};
+
+
+///////////////////////////////////////////////////////////////////////
+// NodeExtension
+//
+
+NodeExtension::NodeExtension()
+{
+	m_bCastShadow = true; // osg nodes default to all mask bits set
+						  // so set this true to match
+}
+
+void NodeExtension::SetOsgNode(osg::Node *n)
+{
+	// observer pointer to ourselves
+	m_pNode = n;
+}
+
+/**
+ * Set the enabled state of this node.  When the node is not enabled, it
+ * is not rendered.  If it is a group node, all of the nodes children are
+ * also not rendered.
+ */
+void NodeExtension::SetEnabled(bool bOn)
+{
+	osg::Node::NodeMask nm = m_pNode->getNodeMask();
+	if (bOn)
+	{
+		if (m_bCastShadow)
+			m_pNode->setNodeMask(nm | 3);
+		else
+			m_pNode->setNodeMask(nm & ~3 | 1);
+	}
+	else
+		m_pNode->setNodeMask(nm & ~3);
+}
+
+/**
+ * Return the enabled state of a node.
+ */
+bool NodeExtension::GetEnabled() const
+{
+	int mask = m_pNode->getNodeMask();
+	return ((mask&0x3) != 0);
+}
+
+void NodeExtension::SetCastShadow(bool b)
+{
+	m_bCastShadow = b;
+	if (GetEnabled())
+		SetEnabled(true);
+}
+
+bool NodeExtension::GetCastShadow()
+{
+	return m_bCastShadow;
+}
+
+bool FindAncestor(osg::Node *node, osg::Node *parent)
+{
+	for (unsigned int i = 0; i < node->getNumParents(); i++)
+	{
+		if (node->getParent(i) == parent)
+			return true;
+		// recurse upwards
+		if (FindAncestor(node->getParent(i), parent))
+			return true;
+	}
+	return false;
+}
+
+vtMultiTexture *AddMultiTexture(osg::Node *onode, int iTextureUnit, vtImage *pImage,
+								int iTextureMode, const FPoint2 &scale, const FPoint2 &offset)
+{
+	vtMultiTexture *mt = new vtMultiTexture;
+	mt->m_pNode = onode;
+	mt->m_iTextureUnit = iTextureUnit;
+#if VTLISPSM
+	mt->m_iMode = iTextureMode;
+#endif
+
+	mt->m_pTexture = new osg::Texture2D(pImage);
+
+	mt->m_pTexture->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
+	mt->m_pTexture->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::LINEAR);
+	mt->m_pTexture->setWrap(osg::Texture2D::WRAP_S, osg::Texture2D::CLAMP_TO_BORDER);
+	mt->m_pTexture->setWrap(osg::Texture2D::WRAP_T, osg::Texture2D::CLAMP_TO_BORDER);
+
+	// Set up the texgen
+	osg::ref_ptr<osg::TexGen> pTexgen = new osg::TexGen;
+	pTexgen->setMode(osg::TexGen::EYE_LINEAR);
+	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(scale.x, 0.0f, 0.0f, -offset.x));
+	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, scale.y, -offset.y));
+
+	osg::TexEnv::Mode mode;
+	if (iTextureMode == GL_ADD) mode = osg::TexEnv::ADD;
+	if (iTextureMode == GL_BLEND) mode = osg::TexEnv::BLEND;
+	if (iTextureMode == GL_REPLACE) mode = osg::TexEnv::REPLACE;
+	if (iTextureMode == GL_MODULATE) mode = osg::TexEnv::MODULATE;
+	if (iTextureMode == GL_DECAL) mode = osg::TexEnv::DECAL;
+	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(mode);
+
+	// Apply state
+	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
+
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, mt->m_pTexture.get(), osg::StateAttribute::ON);
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexgen.get(), osg::StateAttribute::ON);
+	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
+	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_T,  osg::StateAttribute::ON);
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexEnv.get(), osg::StateAttribute::ON);
+
+	// If texture mode is DECAL and intenal texture format does not have an alpha channel then
+	// force the format to be converted on texture binding
+	if ((GL_DECAL == iTextureMode) &&
+		(pImage->getInternalTextureFormat() != GL_RGBA))
+	{
+		// Force the internal format to RGBA
+		pImage->setInternalTextureFormat(GL_RGBA);
+	}
+
+	return mt;
+}
+
+void EnableMultiTexture(osg::Node *onode, vtMultiTexture *mt, bool bEnable)
+{
+	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
+	if (bEnable)
+		pStateSet->setTextureAttributeAndModes(mt->m_iTextureUnit, mt->m_pTexture.get(), osg::StateAttribute::ON);
+	else
+	{
+		osg::StateAttribute *attr = pStateSet->getTextureAttribute(mt->m_iTextureUnit, osg::StateAttribute::TEXTURE);
+		if (attr != NULL)
+			pStateSet->removeTextureAttribute(mt->m_iTextureUnit, attr);
+	}
+}
+
+bool MultiTextureIsEnabled(osg::Node *onode, vtMultiTexture *mt)
+{
+	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
+	osg::StateAttribute *attr = pStateSet->getTextureAttribute(mt->m_iTextureUnit, osg::StateAttribute::TEXTURE);
+	return (attr != NULL);
+}
+
+/**
+ * Transform a 3D point from a node's local frame of reference to world
+ * coordinates.  This is done by walking the scene graph upwards, applying
+ * all transforms that are encountered.
+ *
+ * \param point A reference to the input point is modified in-place with
+ *	world coordinate result.
+ */
+void LocalToWorld(osg::Node *node, FPoint3 &point)
+{
+	// Suport any OSG nodes
+	osg::Vec3 pos = v2s(point);
+	while (node = node->getParent(0))
+	{
+		osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform *>(node);
+		if (mt != NULL)
+		{
+			const osg::Matrix &mat = mt->getMatrix();
+			pos = mat.preMult(pos);
+		}
+		if (node->getNumParents() == 0)
+			break;
+	}
+	s2v(pos, point);
+}
+
+FSphere GetGlobalBoundSphere(osg::Node *node)
+{
+	// Try to just get the bounds normally
+	BoundingSphere bs = node->getBound();
+
+	// Hack to support particle systems, which do not return a reliably
+	//  correct bounding sphere, because of the extra transform inside which
+	//  provides the particle effects with an absolute position
+	if (ContainsParticleSystem(node))
+	{
+		osg::Group *grp = dynamic_cast<osg::Group*>(node);
+		for (int i = 0; i < 3; i++)
+		{
+			grp = dynamic_cast<osg::Group*>(grp->getChild(0));
+			if (grp)
+				bs = grp->getBound();
+			else
+				break;
+		}
+	}
+
+	FSphere sphere;
+	s2v(bs, sphere);
+
+	// Note that this isn't 100% complete; we should be
+	//  transforming the radius as well, with scale.
+	LocalToWorld(node, sphere.center);
+	return sphere;
+}
+
+bool ContainsParticleSystem(osg::Node *node)
+{
+	osg::ref_ptr<findParticlesVisitor> fp = new findParticlesVisitor;
+	findParticlesVisitor *fpp = fp.get();
+	node->accept(*fpp);
+	return fp->bFound;
+}
+
+void SetEnabled(osg::Node *node, bool bOn)
+{
+	NodeExtension *ne = dynamic_cast<NodeExtension*>(node);
+	if (ne)
+		ne->SetEnabled(bOn);
+}
+
+bool GetEnabled(osg::Node *node)
+{
+	int mask = node->getNodeMask();
+	return ((mask&0x3) != 0);
+}
+
+
 ///////////////////////////////////////////////////////////////////////
 // vtNode
 //
@@ -104,22 +343,26 @@ void vtNode::SetEnabled(bool bOn)
 	// OSG controls traversal of the scene node tree using
 	// a traversal mask which the node visitor applies to the inappropriately named
 	// NodeMask of a node. NodeFlagBits would probably be a more descriptive name.
-	// The traversal mask is applied using a bitwise and (& operator) and a none zero result will
-	// cause the node to be traversed. A zero result will cause the node and all its children
-	// to be skipped. The important consequence of this is that all the unmasked bits need to be unset
-	// for the node to "disabled" or skipped. This means that when we disable a node and subsequently
-	// enable it we need to have the correct information to set any bits that we set to zero back
-	// to one. i.e. we have to have sufficent state elsewhere in the node to do this.
+	// The traversal mask is applied using a bitwise and (& operator) and a non-zero
+	// result will cause the node to be traversed. A zero result will cause the node
+	// and all its children to be skipped. The important consequence of this is that
+	// all the unmasked bits need to be unset for the node to "disabled" or skipped.
+	// This means that when we disable a node and subsequently enable it we need to
+	// have the correct information to set any bits that we set to zero back to one.
+	// i.e. we have to have sufficent state elsewhere in the node to do this.
 	//
-	// We use the least significant two bits of the node mask to
-	// control both the node enabled state and the shadow rendering.
-	// At the moment all the nodes in our tree receive shadows so we dont have
-	// to separately store the "receive shadows" bit, we just unconditionally turn it on
-	// when we enable the node. Not all nodes cast shadows so we have to store the required state
-	// of that bit elsewhere in the node so that we can set it to the correct state when we enable the node.
-	// If we ever decide to have some nodes not receiving shadows (and the osg shadowers implement this)
-	// we will need to store the state of the "receive shadows" bit as well. We will also have to use another
-	// bit in the NodeMask(NodeFlagBits!) to cover the case for enabled nodes that neither cast nor receive shadows.
+	// We use the least significant two bits of the node mask to control both the
+	// node enabled state and the shadow rendering.
+	// At the moment all the nodes in our tree receive shadows so we dont have to
+	// separately store the "receive shadows" bit, we just unconditionally turn
+	// it on when we enable the node. Not all nodes cast shadows so we have to
+	// store the required state of that bit elsewhere in the node so that we can
+	// set it to the correct state when we enable the node.
+	// If we ever decide to have some nodes not receiving shadows (and the osg
+	// shadowers implement this) we will need to store the state of the "receive
+	// shadows" bit as well. We will also have to use another bit in the NodeMask
+	// (NodeFlagBits!) to cover the case for enabled nodes that neither cast nor
+	// receive shadows.
 	// I will leave you to work out why we do not need to store the state of this bit :-)
 	//
 	// For the time being valid values for the bottom bits are
@@ -497,25 +740,6 @@ vtNode *vtNode::FindNativeNode(const char *pName, bool bDescend)
 	// Otherwise we have to use the opaque wrapper "Native Node"
 	return new vtNativeNode(pNode.get());
 }
-
-//
-// This visitor looks in a node tree for any instance of ModularEmitter.
-//
-#include <osgParticle/ModularEmitter>
-class findParticlesVisitor : public osg::NodeVisitor
-{
-public:
-	findParticlesVisitor() : osg::NodeVisitor(TRAVERSE_ALL_CHILDREN) {
-		bFound = false;
-	}
-	virtual void apply(osg::Node &searchNode) {
-		if (osgParticle::ModularEmitter* me = dynamic_cast<osgParticle::ModularEmitter*> (&searchNode) )
-			bFound = true;
-		else
-			traverse(searchNode);
-	}
-	bool bFound;
-};
 
 bool vtNode::ContainsParticleSystem() const
 {
@@ -900,83 +1124,6 @@ void vtNode::DecorateNativeGraph()
 	DecorateVisit(m_pNode.get());
 }
 
-vtMultiTexture *vtNode::AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
-										const FPoint2 &scale, const FPoint2 &offset)
-{
-	vtMultiTexture *mt = new vtMultiTexture;
-	mt->m_pNode = this;
-	mt->m_iTextureUnit = iTextureUnit;
-#if VTLISPSM
-	mt->m_iMode = iTextureMode;
-#endif
-
-	// Currently, multi-texture support is OSG-only
-	osg::Node *onode = GetOsgNode();
-
-	mt->m_pTexture = new osg::Texture2D(pImage);
-
-	mt->m_pTexture->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
-	mt->m_pTexture->setFilter(osg::Texture2D::MAG_FILTER, osg::Texture2D::LINEAR);
-	mt->m_pTexture->setWrap(osg::Texture2D::WRAP_S, osg::Texture2D::CLAMP_TO_BORDER);
-	mt->m_pTexture->setWrap(osg::Texture2D::WRAP_T, osg::Texture2D::CLAMP_TO_BORDER);
-
-	// Set up the texgen
-	osg::ref_ptr<osg::TexGen> pTexgen = new osg::TexGen;
-	pTexgen->setMode(osg::TexGen::EYE_LINEAR);
-	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(scale.x, 0.0f, 0.0f, -offset.x));
-	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, scale.y, -offset.y));
-
-	osg::TexEnv::Mode mode;
-	if (iTextureMode == GL_ADD) mode = osg::TexEnv::ADD;
-	if (iTextureMode == GL_BLEND) mode = osg::TexEnv::BLEND;
-	if (iTextureMode == GL_REPLACE) mode = osg::TexEnv::REPLACE;
-	if (iTextureMode == GL_MODULATE) mode = osg::TexEnv::MODULATE;
-	if (iTextureMode == GL_DECAL) mode = osg::TexEnv::DECAL;
-	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(mode);
-
-	// Apply state
-	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
-
-	pStateSet->setTextureAttributeAndModes(iTextureUnit, mt->m_pTexture.get(), osg::StateAttribute::ON);
-	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexgen.get(), osg::StateAttribute::ON);
-	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
-	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_T,  osg::StateAttribute::ON);
-	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexEnv.get(), osg::StateAttribute::ON);
-
-	// If texture mode is DECAL and intenal texture format does not have an alpha channel then
-	// force the format to be converted on texture binding
-	if ((GL_DECAL == iTextureMode) &&
-		(pImage->getInternalTextureFormat() != GL_RGBA))
-	{
-		// Force the internal format to RGBA
-		pImage->setInternalTextureFormat(GL_RGBA);
-	}
-
-	return mt;
-}
-
-void vtNode::EnableMultiTexture(vtMultiTexture *mt, bool bEnable)
-{
-	osg::Node *onode = GetOsgNode();
-	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
-	if (bEnable)
-		pStateSet->setTextureAttributeAndModes(mt->m_iTextureUnit, mt->m_pTexture.get(), osg::StateAttribute::ON);
-	else
-	{
-		osg::StateAttribute *attr = pStateSet->getTextureAttribute(mt->m_iTextureUnit, osg::StateAttribute::TEXTURE);
-		if (attr != NULL)
-			pStateSet->removeTextureAttribute(mt->m_iTextureUnit, attr);
-	}
-}
-
-bool vtNode::MultiTextureIsEnabled(vtMultiTexture *mt)
-{
-	osg::Node *onode = GetOsgNode();
-	osg::ref_ptr<osg::StateSet> pStateSet = onode->getOrCreateStateSet();
-	osg::StateAttribute *attr = pStateSet->getTextureAttribute(mt->m_iTextureUnit, osg::StateAttribute::TEXTURE);
-	return (attr != NULL);
-}
-
 void vtNode::SetCastShadow(bool b)
 {
 	m_bCastShadow = b;
@@ -1169,10 +1316,22 @@ void vtGroup::AddChild(vtNode *pChild)
 		m_pGroup->addChild(pChild->GetOsgNode());
 }
 
+void vtGroup::addChild(osg::Node *pChild)
+{
+	if (pChild)
+		m_pGroup->addChild(pChild);
+}
+
 void vtGroup::RemoveChild(vtNode *pChild)
 {
 	if (pChild)
 		m_pGroup->removeChild(pChild->GetOsgNode());
+}
+
+void vtGroup::removeChild(osg::Node *pChild)
+{
+	if (pChild)
+		m_pGroup->removeChild(pChild);
 }
 
 vtNode *vtGroup::GetChild(unsigned int num) const
@@ -1193,6 +1352,11 @@ vtNode *vtGroup::GetChild(unsigned int num) const
 	}
 	else
 		return NULL;
+}
+
+osg::Node *vtGroup::getChild(unsigned int num) const
+{
+	return m_pGroup->getChild(num);
 }
 
 unsigned int vtGroup::GetNumChildren() const
@@ -1877,23 +2041,22 @@ float vtCamera::GetWidth() const
 
 
 ///////////////////////////////////////////////////////////////////////
-// vtGeom
+// vtGeode
 //
 
-vtGeom::vtGeom() : vtNode()
+vtGeode::vtGeode()
 {
-	m_pGeode = new Geode;
-	SetOsgNode(m_pGeode);
+	SetOsgNode(this);
 }
 
-vtNode *vtGeom::Clone(bool bDeep)
+vtGeode *vtGeode::CloneGeode()
 {
-	vtGeom *newgeom = new vtGeom;
-	newgeom->CloneFrom(this);
+	vtGeode *newgeom = new vtGeode;
+	newgeom->CloneFromGeode(this);
 	return newgeom;
 }
 
-void vtGeom::CloneFrom(const vtGeom *rhs)
+void vtGeode::CloneFromGeode(const vtGeode *rhs)
 {
 	// Shallow copy: just reference the meshes and materials of the
 	//  geometry that we are copying from.
@@ -1919,22 +2082,16 @@ void vtGeom::CloneFrom(const vtGeom *rhs)
 	}
 }
 
-void vtGeom::Release()
+void vtGeode::AddMesh(vtMesh *pMesh, int iMatIdx)
 {
-	vtNode::Release();
-}
-
-void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
-{
-	m_pGeode->addDrawable(pMesh);
-
+	addDrawable(pMesh);
 	SetMeshMatIndex(pMesh, iMatIdx);
 }
 
-void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
+void vtGeode::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 {
 	// connect the underlying OSG objects
-	m_pGeode->addDrawable(pTextMesh);
+	addDrawable(pTextMesh);
 
 	// Normally, we would assign the material state to the drawable.
 	// However, OSG treats Text specially, it cannot be affected by normal
@@ -1952,13 +2109,13 @@ void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 
 	// In fact, we need to avoid lighting the text, yet text messes with
 	//  own StateSet, so we can't set it there.  We set it here.
-	StateSet *sset = m_pGeode->getOrCreateStateSet();
+	StateSet *sset = getOrCreateStateSet();
 	sset->setMode(GL_LIGHTING, StateAttribute::OFF);
 	// also not useful to see the back of text (mirror writing)
 	sset->setMode(GL_CULL_FACE, StateAttribute::ON);
 }
 
-void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
+void vtGeode::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 {
 	vtMaterial *pMat = GetMaterial(iMatIdx);
 	if (pMat)
@@ -1998,46 +2155,46 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 	pMesh->SetMatIndex(iMatIdx);
 }
 
-void vtGeom::RemoveMesh(vtMesh *pMesh)
+void vtGeode::RemoveMesh(vtMesh *pMesh)
 {
 	// If this geom has this mesh, remove it
-	m_pGeode->removeDrawable(pMesh);
+	removeDrawable(pMesh);
 }
 
-unsigned int vtGeom::GetNumMeshes() const
+unsigned int vtGeode::GetNumMeshes() const
 {
-	return m_pGeode->getNumDrawables();
+	return getNumDrawables();
 }
 
-vtMesh *vtGeom::GetMesh(int i) const
+vtMesh *vtGeode::GetMesh(int i) const
 {
 	// It is valid to return a non-const pointer to the mesh, since the mesh
 	//  can be modified entirely independently of the geometry.
-	Drawable *draw = const_cast<Drawable *>( m_pGeode->getDrawable(i) );
+	Drawable *draw = const_cast<Drawable *>( getDrawable(i) );
 	vtMesh *mesh = dynamic_cast<vtMesh*>(draw);
 	return mesh;
 }
 
-vtTextMesh *vtGeom::GetTextMesh(int i) const
+vtTextMesh *vtGeode::GetTextMesh(int i) const
 {
 	// It is valid to return a non-const pointer to the mesh, since the mesh
 	//  can be modified entirely independently of the geometry.
-	Drawable *draw = const_cast<Drawable *>( m_pGeode->getDrawable(i) );
+	Drawable *draw = const_cast<Drawable *>( getDrawable(i) );
 	vtTextMesh *mesh = dynamic_cast<vtTextMesh*>(draw);
 	return mesh;
 }
 
-void vtGeom::SetMaterials(const class vtMaterialArray *mats)
+void vtGeode::SetMaterials(const class vtMaterialArray *mats)
 {
 	m_pMaterialArray = mats;	// increases reference count
 }
 
-const vtMaterialArray *vtGeom::GetMaterials() const
+const vtMaterialArray *vtGeode::GetMaterials() const
 {
 	return m_pMaterialArray.get();
 }
 
-vtMaterial *vtGeom::GetMaterial(int idx)
+vtMaterial *vtGeode::GetMaterial(int idx)
 {
 	if (!m_pMaterialArray.valid())
 		return NULL;
@@ -2153,17 +2310,19 @@ void OsgDynMesh::drawImplementation(State& state) const
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-vtDynGeom::vtDynGeom() : vtGeom()
+vtDynGeom::vtDynGeom() : vtGeode()
 {
-	m_pDynMesh = new OsgDynMesh();
+	m_pDynMesh = new OsgDynMesh;
 	m_pDynMesh->m_pDynGeom = this;
 	m_pDynMesh->setSupportsDisplayList(false);
+
+	SetOsgNode(this);
 
 #if VTLISPSM
 	m_pGeode->getOrCreateStateSet()->addUniform( new osg::Uniform( "renderingVTPBaseTexture", int( 1 ) ) );
 #endif
 
-	m_pGeode->addDrawable(m_pDynMesh);
+	addDrawable(m_pDynMesh);
 }
 
 
@@ -2657,8 +2816,8 @@ void vtLogGraph(vtNode *node, int indent)
 			VTLOG1(" (vtDynGeom)");
 		else if (dynamic_cast<vtMovGeom*>(node))
 			VTLOG1(" (vtMovGeom)");
-		else if (dynamic_cast<vtGeom*>(node))
-			VTLOG1(" (vtGeom)");
+		else if (dynamic_cast<vtGeode*>(node))
+			VTLOG1(" (vtGeode)");
 		else if (dynamic_cast<vtLight*>(node))
 			VTLOG1(" (vtLight)");
 

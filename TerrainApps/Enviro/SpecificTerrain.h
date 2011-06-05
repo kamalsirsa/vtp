@@ -17,7 +17,7 @@ class TransitTerrain : public vtTerrain
 {
 public:
 	void CreateCustomCulture();
-	vtGeom *MakeBlockGeom(FPoint3 size);
+	vtGeode *MakeBlockGeom(FPoint3 size);
 };
 
 #endif	// SPECIFICTERRAINH

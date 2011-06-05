@@ -20,6 +20,7 @@
 #include "Roads.h"
 #include "Route.h"
 #include "TextureUnitManager.h"
+#include "TiledGeom.h"
 #include "TParams.h"
 #include "Trees.h"	// for vtSpeciesList3d, vtPlantInstanceArray3d
 #include "vtTin3d.h"
@@ -33,7 +34,6 @@ class vtLodGrid;
 class vtPagedStructureLodGrid;
 class vtSimpleBillboardEngine;
 class vtSimpleLodGrid;
-class vtTiledGeom;
 class vtExternalHeightField3d;
 
 /** \addtogroup terrain */
@@ -185,9 +185,10 @@ public:
 	vtTransform *LoadModel(const char *filename, bool bAllowCache = true);
 
 	/// Add a model (or any node) to the terrain.
-	void AddNode(vtNode *pNode);
+	void addNode(osg::Node *pNode);
+	void AddNode(vtNode *pNode) { return addNode(pNode->GetOsgNode()); }
 	/// Remove a node from the terrain's scene graph.
-	void RemoveNode(vtNode *pNode);
+	void removeNode(osg::Node *pNode);
 
 	/// Place a model on the terrain.
 	void PlantModel(vtTransform *model);
@@ -241,7 +242,7 @@ public:
 							  int &structure, double &closest, float fMaxInstRadius,
 							  float fLinearWidthBuffer);
 	bool AddNodeToStructGrid(vtTransform *pTrans);
-	bool AddNodeToStructGrid(vtGeom *pGeom);
+	bool AddNodeToStructGrid(vtGeode *pGeom);
 	void RemoveNodeFromStructGrid(vtNode *pNode);
 	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
 	int DoStructurePaging();
@@ -298,7 +299,7 @@ public:
 	// query
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
 	const vtDynTerrainGeom *GetDynTerrain() const { return m_pDynGeom; }
-	vtTiledGeom *GetTiledGeom() { return m_pTiledGeom; }
+	vtTiledGeom *GetTiledGeom() { return m_pTiledGeom.get(); }
 	vtGroup *GetTopGroup() { return m_pContainerGroup; }
 	vtGroup *GetTerrainGroup() { return m_pTerrainGroup; }
 	vtHeightField3d *GetHeightField();
@@ -357,7 +358,7 @@ public:
 	vtImage *GetTextureImage();
 	vtOverlappedTiledImage	*GetOverlappedImage() { return &m_ImageTiles; }
 	vtMultiTexture *AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents, int TextureMode);
-	vtNode *GetTerrainSurfaceNode();
+	osg::Node *GetTerrainSurfaceNode();
 
 	/********************** Public Data ******************/
 
@@ -405,7 +406,7 @@ protected:
 	vtGroup		*m_pUnshadowedGroup;
 
 	// dynamic terrain (CLOD)
-	vtDynTerrainGeom *m_pDynGeom;
+	vtDynTerrainGeomPtr m_pDynGeom;
 	vtTransform		 *m_pDynGeomScale;
 	float			m_fVerticalExag;
 
@@ -413,7 +414,7 @@ protected:
 	vtTin3dPtr		m_pTin;
 
 	// tiled geometry
-	vtTiledGeom	*m_pTiledGeom;
+	vtTiledGeomPtr	m_pTiledGeom;
 
 	osg::ref_ptr<vtExternalHeightField3d> m_pExternalHeightField;
 

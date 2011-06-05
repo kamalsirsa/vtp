@@ -32,8 +32,8 @@ public:
 	// override for texture tests
 	void PaintDib(bool progress_callback(int) = NULL);
 
-	vtGeom *make_test_cone();
-	vtGeom *make_red_cube();
+	vtGeode *make_test_cone();
+	vtGeode *make_red_cube();
 	void create_state_park();
 	void create_airports();
 	void create_telescopes();

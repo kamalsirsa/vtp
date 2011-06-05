@@ -7,7 +7,7 @@
 //	Hawaii.cpp, Nevada.cpp).  You can put your own implementation here, in
 //	a file by itself, or wherever you like.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -32,8 +32,8 @@ void TransitTerrain::CreateCustomCulture()
 	//
 	// TODO
 	//
-	vtGeom *pblock = MakeBlockGeom(FPoint3(1.0f, 4.0f, 9.0f));
-	AddNode(pblock);
+	vtGeode *pblock = MakeBlockGeom(FPoint3(1.0f, 4.0f, 9.0f));
+	addNode(pblock);
 
 #if 0
 	AddNode(campus);
@@ -45,7 +45,7 @@ void TransitTerrain::CreateCustomCulture()
 #endif
 }
 
-vtGeom *TransitTerrain::MakeBlockGeom(FPoint3 size)
+vtGeode *TransitTerrain::MakeBlockGeom(FPoint3 size)
 {
 	// create a Mesh
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_Normals, 24);
@@ -60,7 +60,7 @@ vtGeom *TransitTerrain::MakeBlockGeom(FPoint3 size)
 	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f));
 
 	// create a Geometry and add the mesh and material
-	vtGeom *thebox = new vtGeom;
+	vtGeode *thebox = new vtGeode;
 	thebox->SetMaterials(looks);
 	thebox->AddMesh(mesh, 0);
 

@@ -75,14 +75,14 @@ public:
 	vtStructure3d() { m_pContainer = NULL; }
 
 	vtTransform *GetContainer() { return m_pContainer; }
-	virtual vtNode *GetContained() = 0;
+	virtual osg::Node *GetContained() = 0;
 
 	/// Create the node(s) and position them on the indicated heightfield
 	virtual bool CreateNode(vtTerrain *pTerr) = 0;
 	virtual bool IsCreated() = 0;
 
 	/// Access the Geometry node for this structure, if it has one
-	virtual vtGeom *GetGeom() { return NULL; }
+	virtual vtGeode *GetGeom() { return NULL; }
 	virtual void DeleteNode() = 0;
 
 	/// Pass true to turn on a wireframe hightlight geometry for this instance
@@ -141,7 +141,7 @@ public:
 	virtual bool IsCreated();
 	virtual void DeleteNode();
 	virtual void ShowBounds(bool bShow);
-	virtual vtNode *GetContained() { return m_pModel; }
+	virtual osg::Node *GetContained() { return m_pModel->GetOsgNode(); }
 
 	/// (Re-)position the instance on the indicated heightfield
 	void UpdateTransform(vtHeightField3d *pHeightField);
@@ -150,7 +150,7 @@ public:
 	void Reload();
 
 protected:
-	vtGeom		*m_pHighlight;	// The wireframe highlight
+	vtGeode		*m_pHighlight;	// The wireframe highlight
 	vtNode		*m_pModel; // the contained model
 };
 

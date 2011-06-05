@@ -209,7 +209,7 @@ void Vehicle::ShowBounds(bool bShow)
 				sphere.center.Set(0,0,0);
 
 				m_pHighlight = CreateBoundSphereGeom(sphere);
-				AddChild(m_pHighlight);
+				addChild(m_pHighlight);
 			}
 		}
 		m_pHighlight->SetEnabled(true);

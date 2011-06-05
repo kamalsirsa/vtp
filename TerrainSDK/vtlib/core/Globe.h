@@ -1,7 +1,7 @@
 //
 // Globe.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,15 +16,12 @@
 
 class vtTerrainScene;
 
-class GlobeLayer : public vtEnabledBase
+class GlobeLayer : public vtGroup
 {
 public:
-	void AddNode(vtNode *node) { m_GeomNodes.Append(node); }
 	void DestructGeometry();
-	void SetEnabled(bool bOn);
 
 	vtFeatureSet *m_pSet;
-	vtArray<vtNode*> m_GeomNodes;
 };
 
 typedef vtArray<GlobeLayer*> GlobeLayerArray;
@@ -94,7 +91,7 @@ protected:
 	struct MFace
 	{
 		vtTransform *xform;
-		vtGeom *geom;
+		vtGeode *geom;
 		vtGroup *surfgroup;
 		FPoint3 local_origin;
 		FPoint3 axis;		// axis of rotation ("hinge") for each face
@@ -143,7 +140,7 @@ protected:
 	// Common to all globe styles
 	vtTransform	*m_top;
 	vtGroup		*m_SurfaceGroup;
-	vtGeom		*m_pAxisGeom;
+	vtGeode		*m_pAxisGeom;
 	vtMaterialArray	*m_coremats;
 	vtMaterialArray	*m_earthmats;
 	std::vector<int> m_globe_mat;
@@ -159,10 +156,10 @@ protected:
 	vtMesh		*m_cylinder;
 
 	// TEMP- replace with feature layer soon
-	vtGeom *m_pRectangles;
+	vtGeode *m_pRectangles;
 
 	// for GEODESIC
-	vtGeom	*m_GlobeGeom;
+	vtGeode	*m_GlobeGeom;
 	int		m_freq;		// tesselation frequency
 	int		m_subfreq;	// tesselation subfrequency
 

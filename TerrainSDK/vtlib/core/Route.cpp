@@ -43,7 +43,7 @@ vtRoute::vtRoute(vtTerrain* pT)
 
 	m_pTheTerrain = pT;
 
-	m_pWireGeom = new vtGeom;
+	m_pWireGeom = new vtGeode;
 	m_pWireGeom->setName("Route Wires");
 
 	if (m_pRouteMats == NULL)
@@ -370,17 +370,19 @@ void vtRouteMap::BuildGeometry(vtHeightField3d *pHeightField)
 	}
 }
 
-bool vtRouteMap::FindRouteFromNode(vtNode* pNode, int &iOffset)
+bool vtRouteMap::FindRouteFromNode(osg::Node *pNode, int &iOffset)
 {
 	bool bFound = false;
 	unsigned int i;
 
 	for (i = 0; (i < GetSize()) & !bFound; i++)
-		if (pNode == GetAt(i)->GetGeom())
+	{
+		if (FindAncestor(pNode, GetAt(i)->GetGeom()))
 		{
 			iOffset = i;
 			bFound = true;
 		}
+	}
 	return bFound;
 }
 

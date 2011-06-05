@@ -707,7 +707,7 @@ void MapOverviewEngine::CreateMapView()
 
 	// Set terrain-related aspects
 	SetTerrain(GetCurrentTerrain());
-	m_pMapGroup->AddChild(m_pMapView->GetNode());
+	m_pMapGroup->addChild(m_pMapView->GetGeode());
 }
 
 void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
@@ -757,12 +757,12 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 	else
 		return;		// not supported
 
-	if (m_pMapView->GetNode())
+	if (m_pMapView->GetGeode())
 		m_pMapView->SetImage(image);	// already created
 	else
 	{
 		m_pMapView->Create(image, depth == 32);
-		m_pMapView->GetNode()->setName("Map Overview Image Sprite");
+		m_pMapView->GetGeode()->setName("Map Overview Image Sprite");
 	}
 
 	FPoint2 terrainSize(pTerr->GetHeightField()->m_WorldExtents.Width(),
@@ -781,7 +781,7 @@ void MapOverviewEngine::CreateArrow()
 {
 	// Create the "arrow"
 	m_pArrow = new vtTransform;
-	vtGeom * arrowGeom = new vtGeom;
+	vtGeode * arrowGeom = new vtGeode;
 
 	vtMaterialArray *pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(RGBf(1, 0, 0), false, false); // red
@@ -806,7 +806,7 @@ void MapOverviewEngine::CreateArrow()
 	mesh->AddLine(ind[1],ind[4]);
 	mesh->AddLine(ind[2],ind[5]);
 
-	m_pArrow->AddChild(arrowGeom);
+	m_pArrow->addChild(arrowGeom);
 
 	// the second argument is the indice of the RGB color added into the material array
 	arrowGeom->AddMesh(mesh, 1);

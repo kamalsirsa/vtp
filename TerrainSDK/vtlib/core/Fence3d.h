@@ -27,8 +27,8 @@ public:
 	// implement vtStructure3d methods
 	virtual bool CreateNode(vtTerrain *pTerr);
 	virtual bool IsCreated();
-	virtual vtGeom *GetGeom() { return m_pFenceGeom; }
-	virtual vtNode *GetContained() { return m_pFenceGeom; }
+	virtual vtGeode *GetGeom() { return m_pFenceGeom; }
+	virtual osg::Node *GetContained() { return m_pFenceGeom; }
 	virtual void DeleteNode();
 	virtual void ShowBounds(bool bShow);
 
@@ -51,7 +51,7 @@ protected:
 
 	void	AddFenceMeshes(vtHeightField3d *pHeightField);
 
-	vtGeom		*m_pFenceGeom;
+	vtGeode		*m_pFenceGeom;
 	vtMesh		*m_pHighlightMesh;	// The wireframe highlight
 	bool		m_bBuilt;
 	FLine3		m_Posts3d;

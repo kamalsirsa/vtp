@@ -44,7 +44,7 @@ public:
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 private:
-	vtGeom		*m_pStarGeom;
+	vtGeode		*m_pStarGeom;
 	vtMesh		*m_pStarMesh;
 	vtMovGeom	*m_pMoonGeom;
 	vtMaterialArrayPtr m_pMats;
@@ -123,7 +123,7 @@ protected:
 	FPoint3	*SphVertices;
 
 	vtTransform		*m_pCelestial;
-	vtGeom			*m_pDomeGeom;
+	vtGeode			*m_pDomeGeom;
 
 	vtMaterialArrayPtr m_pMats;
 	vtMaterial		*m_pMat;
@@ -137,8 +137,8 @@ protected:
 	bool		m_bHasTexture;
 
 	// Test markers:
-	vtGeom			*m_pTicks;
-	vtGeom			*m_pWireSphere;
+	vtGeode			*m_pTicks;
+	vtGeode			*m_pWireSphere;
 	vtTransform		*m_pGreenMarker;
 	vtTransform		*m_pRedMarker;
 };

@@ -189,12 +189,12 @@ void IslandTerrain::CreateCustomCulture()
 	DPoint2 mauna_loa(227611, 2155222);
 	if (PointIsInTerrain(mauna_loa)) // if area includes top of Mauna Loa
 	{
-		vtGeom *thebox = make_red_cube();
-		vtGeom *thecone = make_test_cone();
+		vtGeode *thebox = make_red_cube();
+		vtGeode *thecone = make_test_cone();
 		vtTransform *container = new vtTransform;
 		container->setName("Test Shape");
-		container->AddChild(thebox);
-		container->AddChild(thecone);
+		container->addChild(thebox);
+		container->addChild(thecone);
 		AddNode(container);
 		PlantModelAtPoint(container, mauna_loa);
 	}
@@ -323,7 +323,7 @@ void IslandTerrain::create_state_park()
 #endif
 }
 
-vtGeom *IslandTerrain::make_test_cone()
+vtGeode *IslandTerrain::make_test_cone()
 {
 	vtMaterialArray *looks = new vtMaterialArray;
 	looks->AddRGBMaterial1(RGBf(1.0f, 0.5f, 0.0f), false);	// orange
@@ -341,16 +341,16 @@ vtGeom *IslandTerrain::make_test_cone()
 
 	pMesh->CreateConicalSurface(tip, cone_radius, theta1, theta2, r1, r2, res);
 
-	vtGeom *pGeom = new vtGeom;
+	vtGeode *pGeom = new vtGeode;
 	pGeom->SetMaterials(looks);
 	pGeom->AddMesh(pMesh, 0);
 
 	return pGeom;
 }
 
-vtGeom *IslandTerrain::make_red_cube()
+vtGeode *IslandTerrain::make_red_cube()
 {
-	vtGeom *thebox = new vtGeom;
+	vtGeode *thebox = new vtGeode;
 	float ws = 100.0f;	// meters
 
 	//code to make it a Shape

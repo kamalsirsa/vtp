@@ -269,7 +269,7 @@ public:
 	void MakeDemoGlobe();
 	void ToggleDemo();
 	vtGroup *m_pDemoGroup;
-	vtGeom *m_pDemoTrails;
+	vtGeode *m_pDemoTrails;
 	void CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, float fSpeed);
 	void MakeOverlayGlobe(vtImage *image, bool progress_callback(int) = NULL);
 
@@ -321,7 +321,7 @@ protected:
 	vtString	m_sStructType;
 
 	// linear arc on Earth (or Distance Tool on the Terrain)
-	vtGeom		*m_pArc;
+	vtGeode		*m_pArc;
 	vtMaterialArray *m_pArcMats;
 	double		m_fArcLength;
 	float		m_fDistToolHeight;
@@ -347,8 +347,8 @@ protected:
 	bool		m_bGlobeUnfolded;
 	float		m_fFolding, m_fFoldDir;
 	vtTrackball	*m_pTrackball;
-	vtGeom		*m_pSpaceAxes;
-	vtGeom		*m_pEarthLines;
+	vtGeode		*m_pSpaceAxes;
+	vtGeode		*m_pEarthLines;
 	vtMesh		*m_pLineMesh;
 
 	// flattened globe view
@@ -375,11 +375,11 @@ protected:
 	// HUD UI
 	vtMaterialArray *m_pHUDMaterials;
 
-	vtGeom		*m_pLegendGeom;
+	vtGeode		*m_pLegendGeom;
 	bool		m_bCreatedLegend;
 
 	vtSpriteSizer	*m_pCompassSizer;
-	vtGeom		*m_pCompassGeom;
+	vtGeode		*m_pCompassGeom;
 	bool		m_bCreatedCompass;
 	bool		m_bDragCompass;
 	float		m_fDragAngle;

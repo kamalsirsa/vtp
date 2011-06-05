@@ -174,7 +174,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		str = _("Light");
 		nImage = 4;
 	}
-	else if (dynamic_cast<vtGeom*>(pNode))
+	else if (dynamic_cast<vtGeode*>(pNode))
 	{
 		str = _("Geometry");
 		nImage = 2;
@@ -222,9 +222,9 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		hNewItem = m_pTree->AppendItem(hParentItem, str, nImage, nImage);
 
 	const std::type_info &t1 = typeid(*pNode);
-	if (t1 == typeid(vtGeom))
+	if (t1 == typeid(vtGeode))
 	{
-		vtGeom *pGeom = dynamic_cast<vtGeom*>(pNode);
+		vtGeode *pGeom = dynamic_cast<vtGeode*>(pNode);
 		int num_mesh = pGeom->GetNumMeshes();
 		wxTreeItemId	hGeomItem;
 

@@ -20,7 +20,7 @@ public:
 
 	void ShowBounds(bool bShow);
 
-	vtGeom	*m_pHighlight;	// The wireframe highlight
+	vtGeode	*m_pHighlight;	// The wireframe highlight
 
 	vtNode *m_pFrontLeft;
 	vtNode *m_pFrontRight;

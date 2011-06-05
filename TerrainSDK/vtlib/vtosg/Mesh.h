@@ -33,12 +33,12 @@ class vtImage;
  * \par
  * The vtMesh class allows you to define and access a Mesh, including many
  * functions useful for creating and dynamically changing Meshes.
- * To add the vtMesh to the visible scene graph, add it to a vtGeom node.
+ * To add the vtMesh to the visible scene graph, add it to a vtGeode node.
  * \par
  */
 class vtMesh : public osg::Geometry
 {
-	friend class vtGeom;
+	friend class vtGeode;
 
 public:
 	typedef osg::PrimitiveSet::Mode PrimType;
@@ -187,7 +187,7 @@ typedef osg::ref_ptr<osgText::Font> vtFontPtr;
 /**
  * A Text Mesh is a special kind of Mesh which contains text instead of
  * general geometry primitives.  vtTextMesh is used similarly with vtMesh:
- * you create them and add them to vtGeom objects to add them to the scene.
+ * you create them and add them to vtGeode objects to add them to the scene.
  */
 class vtTextMesh : public osgText::Text
 {

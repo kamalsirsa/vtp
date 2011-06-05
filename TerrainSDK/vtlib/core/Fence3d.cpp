@@ -3,7 +3,7 @@
 //
 // Creates linear structure geometry, drapes it on a terrain.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -726,7 +726,7 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 	}
 	else
 	{
-		m_pFenceGeom = new vtGeom;
+		m_pFenceGeom = new vtGeode;
 		m_pFenceGeom->setName("Fence");
 		m_pFenceGeom->SetMaterials(GetSharedMaterialArray());
 	}
@@ -749,7 +749,6 @@ bool vtFence3d::IsCreated()
 void vtFence3d::DeleteNode()
 {
 	DestroyGeometry();
-	m_pFenceGeom->Release();
 	m_pFenceGeom = NULL;
 }
 

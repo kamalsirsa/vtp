@@ -79,7 +79,7 @@ public:
 	float m_fHigh;
 	float m_fWaterHeight;
 
-	vtGeom *m_pSprite;
+	vtGeode *m_pSprite;
 	vtTextMesh *m_pSpriteText;
 
 	vtMaterial *m_pPastMat;

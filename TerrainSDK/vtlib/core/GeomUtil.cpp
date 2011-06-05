@@ -20,7 +20,7 @@
  * \param fSmall The width of the blocks (generally much smaller than fSize)
  * \param fAlpha The alpha value to use, from 0 (transparent) to 1 (opaque)
  */
-vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
+vtGeode *Create3DCursor(float fSize, float fSmall, float fAlpha)
 {
 	int i, j;
 	vtMesh *mesh[3];
@@ -40,7 +40,7 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	}
 
 	// Add the geometry and materials to the shape
-	vtGeom *pGeom = new vtGeom;
+	vtGeode *pGeom = new vtGeode;
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
 
 	pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true, true, false, fAlpha);
@@ -60,9 +60,9 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
  * Create a wireframe sphere which is very useful for visually representing
  * the bounding sphere of an object in the scene.
  */
-vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
+vtGeode *CreateBoundSphereGeom(const FSphere &sphere, int res)
 {
-	vtGeom *pGeom = new vtGeom;
+	vtGeode *pGeom = new vtGeode;
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f), false, false, true);
 	pGeom->SetMaterials(pMats);
@@ -120,12 +120,12 @@ vtMesh *CreateSphereMesh(const FSphere &sphere, int res)
 	return pMesh;
 }
 
-vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
+vtGeode *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						int Axis1, int Axis2, int Axis3,
 						const FPoint2 &min1, const FPoint2 &max1,
 						float fTiling, int steps)
 {
-	vtGeom *pGeom = new vtGeom;
+	vtGeode *pGeom = new vtGeode;
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, steps * steps);
 
 	mesh->CreateRectangle(steps, steps, Axis1, Axis2, Axis3, min1, max1, 0.0f, fTiling);
@@ -144,10 +144,10 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
  * \param iMatIdx The index of the material to use.
  * \param size	  The dimensions of the block in x, y, z.
  */
-vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
+vtGeode *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 						const FPoint3 &size)
 {
-	vtGeom *pGeom = new vtGeom;
+	vtGeode *pGeom = new vtGeode;
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 24);
 	mesh->CreateBlock(size);
 	pGeom->SetMaterials(pMats);
@@ -155,7 +155,7 @@ vtGeom *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 	return pGeom;
 }
 
-void AddLineMesh(vtGeom *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1)
+void AddLineMesh(vtGeode *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1)
 {
 	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, 2);
 	mesh->AddLine(p0, p1);
@@ -176,10 +176,10 @@ void AddLineMesh(vtGeom *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1)
  * \param res	  The resolution (tesselation) of the sphere.  The number of
  *		vertices in the result will be res*res*2.
  */
-vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
+vtGeode *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res)
 {
-	vtGeom *pGeom = new vtGeom;
+	vtGeode *pGeom = new vtGeode;
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, iVertType, res*res*2);
 	mesh->CreateEllipsoid(FPoint3(0,0,0), FPoint3(fRadius, fRadius, fRadius), res);
 	pGeom->SetMaterials(pMats);
@@ -209,7 +209,7 @@ vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertTyp
  *		false for a cylinder with its base at the origin that extends outward.
  * \param direction An orientation, 0-2 corresponds to X, Y, Z.  Default is 1 (Y).
  */
-vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
+vtGeode *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						   float fHeight, float fRadius, int res, bool bTop,
 						   bool bBottom, bool bCentered, int direction)
 {
@@ -221,7 +221,7 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
 	else
 		verts = res * 2;
 
-	vtGeom *pGeom = new vtGeom;
+	vtGeode *pGeom = new vtGeode;
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, iVertType, res*2);
 	mesh->CreateCylinder(fHeight, fRadius, res, bTop, bBottom, bCentered);
 	pGeom->SetMaterials(pMats);
@@ -233,10 +233,10 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
  * Create a grid of lines in the XZ plane.  This can be useful as a reference
  * object, like a sheet of graph paper.
  */
-vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
+vtGeode *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 						   const FPoint3 &min1, const FPoint3 &max1, int steps)
 {
-	vtGeom *pGeom = new vtGeom;
+	vtGeode *pGeom = new vtGeode;
 	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, (steps+1)*4);
 
 	FPoint3 p, diff = max1 - min1, step = diff / (float)steps;
@@ -270,7 +270,7 @@ vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 
 vtDynBoundBox::vtDynBoundBox(const RGBf &color)
 {
-	pGeom = new vtGeom;
+	pGeom = new vtGeode;
 
 	vtMaterialArrayPtr mats = new vtMaterialArray;
 	mats->AddRGBMaterial1(color, false, false, true);	// wire material
@@ -329,7 +329,7 @@ void vtDynBoundBox::SetBox(const FBox3 &box)
  * \param iExpectedVerts If you know how many vertices will be mesh ahead of
  *		time, you can save a little time and memory by passing the number.
  */
-vtMeshFactory::vtMeshFactory(vtGeom *pGeom, vtMesh::PrimType ePrimType,
+vtMeshFactory::vtMeshFactory(vtGeode *pGeom, vtMesh::PrimType ePrimType,
 							 int iVertType, int iMaxVertsPerMesh, int iMatIndex,
 							 int iExpectedVerts)
 {
@@ -447,8 +447,8 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 {
 	// We can't orient the text message in space without a transform, so that's
 	//  why we're subclassed from vtTransform.
-	m_pGeom = new vtGeom;
-	AddChild(m_pGeom);
+	m_pGeom = new vtGeode;
+	addChild(m_pGeom);
 
 	// create materials and meshes
 	m_pMats = new vtMaterialArray;
@@ -512,7 +512,7 @@ void vtDimension::SetText(const char *text)
 
 ///////////////////////////////////////////////////////////////////////
 
-vtOBJFile *OBJFileBegin(vtGeom *geom, const char *filename)
+vtOBJFile *OBJFileBegin(vtGeode *geom, const char *filename)
 {
 	FILE *fp = vtFileOpen(filename, "wb");
 	if (!fp)
@@ -570,7 +570,7 @@ vtOBJFile *OBJFileBegin(vtGeom *geom, const char *filename)
 	return file;
 }
 
-void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
+void OBJFileWriteGeom(vtOBJFile *file, vtGeode *geom)
 {
 	unsigned int i, j, k;
 	unsigned int num_mesh = geom->GetNumMeshes();
@@ -687,7 +687,7 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeom *geom)
 /**
  * Write a geometry node to a old-fashioned Wavefront OBJ file.
  */
-bool WriteGeomToOBJ(vtGeom *geom, const char *filename)
+bool WriteGeomToOBJ(vtGeode *geom, const char *filename)
 {
 	vtOBJFile *file = OBJFileBegin(geom, filename);
 	if (!file)

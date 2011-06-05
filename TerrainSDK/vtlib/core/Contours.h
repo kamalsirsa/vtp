@@ -44,7 +44,7 @@ class SurfaceGrid;
  * \par If you keep a pointer to the geometry, you can toggle or delete it later:
 	\code
 	vtContourConverter cc;
-	vtGeom *geom = cc.Setup(pTerrain, RGBf(1,1,0), 10);
+	vtGeode *geom = cc.Setup(pTerrain, RGBf(1,1,0), 10);
 	[...]
 	geom->SetEnabled(bool);	// set visibility
 	[...]
@@ -60,7 +60,7 @@ public:
 
 	// There are two ways to use the converter:
 	/// Setup to generate geometry directly on a terrain
-	vtGeom *Setup(vtTerrain *pTerr, const RGBf &color, float fHeight);
+	vtGeode *Setup(vtTerrain *pTerr, const RGBf &color, float fHeight);
 	/// Setup to generate line features
 	bool Setup(vtTerrain *pTerr, vtFeatureSetLineString *fset);
 
@@ -84,7 +84,7 @@ protected:
 	DLine2	m_line;
 
 	// These are used if building geometry directly
-	vtGeom *m_pGeom;
+	vtGeode *m_pGeom;
 	vtMeshFactory *m_pMF;
 
 	// This is used if building line features

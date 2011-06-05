@@ -130,7 +130,7 @@ void Enviro::SetupGlobe()
 }
 
 // Helper
-void GeomAddRectMesh(vtGeom *pGeom, const FRECT &rect, float z, int matidx)
+void GeomAddRectMesh(vtGeode *pGeom, const FRECT &rect, float z, int matidx)
 {
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
 	mesh->AddVertexUV(FPoint3(rect.left, rect.bottom, z), 0, 0);
@@ -222,7 +222,7 @@ void Enviro::MakeGlobe()
 	int red = pMats->AddRGBMaterial1(RGBf(1,0,0), false, false);
 	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
 
-	m_pSpaceAxes = new vtGeom;
+	m_pSpaceAxes = new vtGeode;
 	m_pSpaceAxes->setName("Earth Axes");
 	m_pSpaceAxes->SetMaterials(pMats);
 
@@ -242,11 +242,11 @@ void Enviro::MakeGlobe()
 	mesh->AddLine(FPoint3(0,2,0), FPoint3(0,-2,0));
 	m_pSpaceAxes->AddMesh(mesh, red);
 
-	m_pGlobeContainer->AddChild(m_pSpaceAxes);
+	m_pGlobeContainer->addChild(m_pSpaceAxes);
 	m_pSpaceAxes->SetEnabled(false);
 
 	// Lon-lat cursor lines
-	m_pEarthLines = new vtGeom;
+	m_pEarthLines = new vtGeode;
 	m_pEarthLines->setName("Earth Lines");
 	int orange = pMats->AddRGBMaterial1(RGBf(1,.7,1), false, false, true, 0.6);
 	m_pEarthLines->SetMaterials(pMats);
@@ -259,7 +259,7 @@ void Enviro::MakeGlobe()
 	m_pLineMesh->AllowOptimize(false);
 
 	m_pEarthLines->AddMesh(m_pLineMesh, orange);
-	m_pIcoGlobe->GetSurface()->AddChild(m_pEarthLines);
+	m_pIcoGlobe->GetSurface()->addChild(m_pEarthLines);
 	m_pEarthLines->SetEnabled(false);
 
 	double lon = 14.1;
@@ -288,7 +288,7 @@ void Enviro::MakeDemoGlobe()
 	time.SetTimeOfDay(15,0,0);
 	m_pGlobeTime->SetTime(time);
 
-	vtGeom *geom = new vtGeom;
+	vtGeode *geom = new vtGeode;
 	vtMaterialArray *mats = new vtMaterialArray;
 	mats->AddTextureMaterial2("Planetwork/logo3.png", false, false, true);
 	mats->AddTextureMaterial2("Planetwork/logo2.png", false, false, true);
@@ -299,7 +299,7 @@ void Enviro::MakeDemoGlobe()
 	GeomAddRectMesh(geom, rect, 1.15, 0);
 	rect += FPoint2(0.01, -0.01);
 	GeomAddRectMesh(geom, rect, 1.14, 1);
-	m_pDemoGroup->AddChild(geom);
+	m_pDemoGroup->addChild(geom);
 	Globe2->SetTime(m_pGlobeTime->GetTime());
 
 	int i;
@@ -316,10 +316,10 @@ void Enviro::MakeDemoGlobe()
 		vtMaterial *mat = rainbow->at(i);
 		mat->SetTransparent(true, true);
 	}
-	m_pDemoTrails = new vtGeom;
+	m_pDemoTrails = new vtGeode;
 	m_pDemoTrails->setName("Trails");
 	m_pDemoTrails->SetMaterials(rainbow);
-	Globe2->GetTop()->AddChild(m_pDemoTrails);
+	Globe2->GetTop()->addChild(m_pDemoTrails);
 
 	vtString users = FindFileOnPaths(vtGetDataPath(), "PointData/vtp-users-040129.shp");
 	if (users != "")

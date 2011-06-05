@@ -826,7 +826,7 @@ void Enviro::SetupScene2()
 	m_nav = NT_Normal;
 
 	// create picker object and picker engine
-	vtGeom *pCursor = Create3DCursor(1.0, g_Options.m_fCursorThickness);
+	vtGeode *pCursor = Create3DCursor(1.0, g_Options.m_fCursorThickness);
 	m_pCursorMGeom = new vtMovGeom(pCursor);
 	m_pCursorMGeom->setName("Cursor");
 
@@ -877,9 +877,9 @@ void Enviro::SetupScene2()
 	// The HUD always has a place to put status messages to the user
 	m_pArial = osgText::readFontFile("Arial.ttf");
 
-	vtGeom *geom = new vtGeom;
+	vtGeode *geom = new vtGeode;
 	geom->setName("Message");
-	m_pHUD->AddChild(geom);
+	m_pHUD->addChild(geom);
 	if (m_pArial)
 	{
 		m_pHUDMessage = new vtTextMesh(m_pArial, 18);
@@ -1594,7 +1594,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 	// Check for structures
 	int iOffset;
 	vtStructureLayer *slay;
-	slay = pTerr->GetLayers().FindStructureFromNode(HitList.front().node, iOffset);
+	slay = pTerr->GetLayers().FindStructureFromNode(HitList.front().node->GetOsgNode(), iOffset);
 	if (slay)
 	{
 		VTLOG("  Found structure ");
@@ -1661,7 +1661,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 			m_bSelectedStruct = false;
 	}
 	// Check for plants
-	else if (Plants.FindPlantFromNode(HitList.front().node, iOffset))
+	else if (Plants.FindPlantFromNode(HitList.front().node->GetOsgNode(), iOffset))
 	{
 		VTLOG("  Found plant\n");
 		Plants.VisualSelect(iOffset);
@@ -1669,7 +1669,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		m_bSelectedPlant = true;
 	}
 	// Check for routes
-	else if (Routes.FindRouteFromNode(HitList.front().node, iOffset))
+	else if (Routes.FindRouteFromNode(HitList.front().node->GetOsgNode(), iOffset))
 	{
 		VTLOG("  Found route\n");
 		m_bDragging = true;
@@ -2192,11 +2192,11 @@ void Enviro::SetupArcMesh()
 	// create geometry container, if needed
 	if (!m_pArc)
 	{
-		m_pArc = new vtGeom;
+		m_pArc = new vtGeode;
 		if (m_state == AS_Orbit)
-			m_pIcoGlobe->GetTop()->AddChild(m_pArc);
+			m_pIcoGlobe->GetTop()->addChild(m_pArc);
 		else if (m_state == AS_Terrain)
-			GetCurrentTerrain()->GetTopGroup()->AddChild(m_pArc);
+			GetCurrentTerrain()->GetTopGroup()->addChild(m_pArc);
 		m_pArc->SetMaterials(m_pArcMats);
 	}
 
@@ -2208,10 +2208,7 @@ void Enviro::FreeArc()
 {
 	FreeArcMesh();
 	if (m_pArc)
-	{
-		m_pArc->Release();
 		m_pArc = NULL;
-	}
 }
 
 void Enviro::FreeArcMesh()
@@ -2315,10 +2312,10 @@ void Enviro::PolygonSelectionAddPoint()
 	int matidx = 2;
 	float fHeight = 10.0f;
 	float fRadius = 0.2f;
-	vtGeom *geom = CreateCylinderGeom(m_pArcMats, matidx, VT_Normals, fHeight,
+	vtGeode *geom = CreateCylinderGeom(m_pArcMats, matidx, VT_Normals, fHeight,
 		fRadius, 10, true, false, false, 1);
 	vtTransform *trans = new vtTransform;
-	trans->AddChild(geom);
+	trans->addChild(geom);
 	m_Markers.push_back(trans);
 	vtTerrain *pTerr = GetCurrentTerrain();
 	pTerr->PlantModelAtPoint(trans, g1);
@@ -2350,7 +2347,7 @@ void Enviro::PolygonSelectionClose()
 	SetupArcMesh();
 	for (unsigned int i = 0; i < m_Markers.size(); i++)
 	{
-		GetCurrentTerrain()->RemoveNode(m_Markers[i]);
+		GetCurrentTerrain()->removeNode(m_Markers[i]->GetOsgNode());
 		m_Markers[i]->Release();
 	}
 	m_Markers.clear();
@@ -2814,7 +2811,7 @@ void Enviro::CreateElevationLegend()
 	int white = m_pHUDMaterials->AddRGBMaterial1(RGBf(1, 1, 1), false, false); // white
 	int grey = m_pHUDMaterials->AddRGBMaterial1(RGBf(.2, .2, .2), false, false); // dark grey
 
-	m_pLegendGeom = new vtGeom;
+	m_pLegendGeom = new vtGeode;
 	m_pLegendGeom->setName("Legend");
 	m_pLegendGeom->SetMaterials(m_pHUDMaterials);
 
@@ -2864,7 +2861,7 @@ void Enviro::CreateElevationLegend()
 		m_pLegendGeom->AddTextMesh(mesh3, white);
 	}
 
-	m_pHUD->AddChild(m_pLegendGeom);
+	m_pHUD->addChild(m_pLegendGeom);
 	m_bCreatedLegend = true;
 }
 
@@ -2891,9 +2888,9 @@ void Enviro::CreateCompass()
 	m_pCompassSizer->setName("Sizer for Compass");
 	vtGetScene()->AddEngine(m_pCompassSizer);
 
-	m_pCompassGeom = (vtGeom *) CompassSprite->GetNode();
+	m_pCompassGeom = CompassSprite->GetGeode();
 	m_pCompassGeom->setName("Compass");
-	m_pHUD->AddChild(m_pCompassGeom);
+	m_pHUD->addChild(m_pCompassGeom);
 	m_bCreatedCompass = true;
 }
 
@@ -2903,7 +2900,7 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 	{
 		// create a yellow wireframe polygon we can stretch later
 		int yellow = m_pHUDMaterials->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
-		vtGeom *geom = new vtGeom;
+		vtGeode *geom = new vtGeode;
 		geom->setName("Selection Box");
 		geom->SetMaterials(m_pHUDMaterials);
 		m_pWindowBoxMesh = new vtMesh(PrimitiveSet::POLYGON, 0, 4);
@@ -2913,7 +2910,7 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 		m_pWindowBoxMesh->AddVertex(0,1,0);
 		m_pWindowBoxMesh->AddStrip2(4, 0);
 		geom->AddMesh(m_pWindowBoxMesh, yellow);
-		m_pHUD->AddChild(geom);
+		m_pHUD->addChild(geom);
 	}
 	// Invert the coordinates Y, because mouse origin is upper left, and
 	//  HUD origin is lower left

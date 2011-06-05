@@ -1191,7 +1191,7 @@ void EnviroFrame::DoTestCode()
 			float depth, x, y;
 
 			// Add the geometry and materials to the shape
-			vtGeom *pGeom = new vtGeom;
+			vtGeode *pGeom = new vtGeode;
 			vtMaterialArray *pMats = new vtMaterialArray;
 			pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
 			pGeom->SetMaterials(pMats);

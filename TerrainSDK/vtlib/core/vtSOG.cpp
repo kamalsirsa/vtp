@@ -110,7 +110,7 @@ void OutputSOG::WriteMaterials(FILE *fp, const vtMaterialArray *pMats)
 	}
 }
 
-void OutputSOG::WriteSingleGeometry(FILE *fp, const vtGeom *pGeom)
+void OutputSOG::WriteSingleGeometry(FILE *fp, const vtGeode *pGeom)
 {
 	const vtMaterialArray	*pMats = pGeom->GetMaterials();
 	WriteMaterials(fp, pMats);
@@ -129,7 +129,7 @@ void OutputSOG::WriteMultiGeometry(FILE *fp, const vtGroup *pParent)
 	for (i = 0; i < num_geom; i++)
 	{
 		vtNode *pChild = pParent->GetChild(i);
-		vtGeom *pGeom = dynamic_cast<vtGeom*>(pChild);
+		vtGeode *pGeom = dynamic_cast<vtGeode*>(pChild);
 		if (i == 0)
 		{
 			// assume that they share the same materials
@@ -143,7 +143,7 @@ void OutputSOG::WriteMultiGeometry(FILE *fp, const vtGroup *pParent)
 //
 //
 //
-void OutputSOG::WriteGeometry(FILE *fp, const vtGeom *pGeom, short id)
+void OutputSOG::WriteGeometry(FILE *fp, const vtGeode *pGeom, short id)
 {
 	short i;
 
@@ -151,7 +151,7 @@ void OutputSOG::WriteGeometry(FILE *fp, const vtGeom *pGeom, short id)
 	short components = 4;
 	Write(fp, FT_GEOMETRY, components);
 
-	vtString gname = pGeom->getName();
+	vtString gname(pGeom->getName().c_str());
 	Write(fp, FT_GEOMNAME, gname);
 
 	Write(fp, FT_GEOMID, id);
@@ -557,14 +557,14 @@ bool InputSOG::ReadContents(FILE *fp, vtGroup *Parent)
 	quiet = fread(&num_geom, 2, 1, fp);
 	for (j = 0; j < num_geom; j++)
 	{
-		vtGeom *pGeom = ReadGeometry(fp, pMats);
-		Parent->AddChild(pGeom);
+		vtGeode *pGeom = ReadGeometry(fp, pMats);
+		Parent->addChild(pGeom);
 	}
 
 	return true;
 }
 
-vtGeom *InputSOG::ReadGeometry(FILE *fp, vtMaterialArray *pMats)
+vtGeode *InputSOG::ReadGeometry(FILE *fp, vtMaterialArray *pMats)
 {
 	short num_mesh, components;
 	short token, len, i, j;
@@ -575,7 +575,7 @@ vtGeom *InputSOG::ReadGeometry(FILE *fp, vtMaterialArray *pMats)
 	assert(token == FT_GEOMETRY);
 	quiet = fread(&components, 2, 1, fp);
 
-	vtGeom *pGeom = new vtGeom;
+	vtGeode *pGeom = new vtGeode;
 	vtMesh *pMesh;
 
 	pGeom->SetMaterials(pMats);

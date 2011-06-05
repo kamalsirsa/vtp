@@ -42,15 +42,14 @@ bool vtLodGrid::AppendToGrid(vtTransform *pTNode)
 		return false;
 }
 
-bool vtLodGrid::AppendToGrid(vtGeom *pGNode)
+bool vtLodGrid::AppendToGrid(vtGeode *pGNode)
 {
-	FSphere sph;
-	pGNode->GetBoundSphere(sph);
+	osg::BoundingSphere sph = pGNode->getBound();
 
-	vtGroup *pGroup = FindCellParent(sph.center);
+	vtGroup *pGroup = FindCellParent(s2v(sph.center()));
 	if (pGroup)
 	{
-		pGroup->AddChild(pGNode);
+		pGroup->addChild(pGNode);
 		return true;
 	}
 	else
@@ -64,14 +63,13 @@ void vtLodGrid::RemoveFromGrid(vtTransform *pTNode)
 		pGroup->RemoveChild(pTNode);
 }
 
-void vtLodGrid::RemoveFromGrid(vtGeom *pGNode)
+void vtLodGrid::RemoveFromGrid(vtGeode *pGNode)
 {
-	FSphere sph;
-	pGNode->GetBoundSphere(sph);
+	osg::BoundingSphere sph = pGNode->getBound();
 
-	vtGroup *pGroup = FindCellParent(sph.center);
+	vtGroup *pGroup = FindCellParent(s2v(sph.center()));
 	if (pGroup)
-		pGroup->RemoveChild(pGNode);
+		pGroup->removeChild(pGNode);
 }
 
 /**
