@@ -105,7 +105,7 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 				// the highlight geometry doesn't exist, so create it
 				// get bounding sphere
 				FSphere sphere;
-				m_pModel->GetBoundSphere(sphere);
+				s2v(m_pModel->getBound(), sphere);
 
 				m_pHighlight = CreateBoundSphereGeom(sphere);
 				m_pHighlight->SetCastShadow(false);		// no shadow
@@ -129,8 +129,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	if (m_pModel)
 	{
 		bRecreating = true;
-		m_pContainer->RemoveChild(m_pModel);
-		m_pModel->Release();
+		m_pContainer->removeChild(m_pModel);
 		m_pModel = NULL;
 	}
 
@@ -158,7 +157,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 #if VTDEBUG
 		VTLOG("Loading Model from '%s'\n", (const char *)fullpath);
 #endif
-		m_pModel = vtNode::LoadModel(fullpath, !bForce);
+		m_pModel = vtLoadModel(fullpath, !bForce);
 		if (!m_pModel)
 		{
 			VTLOG("Couldn't load model from file '%s'\n", filename);
@@ -187,7 +186,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		m_pContainer = new vtTransform;
 		m_pContainer->setName("instance container");
 	}
-	m_pContainer->AddChild(m_pModel);
+	m_pContainer->addChild(m_pModel);
 
 	float sc;
 	if (GetValueFloat("scale", sc))
@@ -218,8 +217,7 @@ void vtStructInstance3d::DeleteNode()
 		}
 		if (m_pModel)
 		{
-			m_pContainer->RemoveChild(m_pModel);
-			m_pModel->Release();
+			m_pContainer->removeChild(m_pModel);
 			m_pModel = NULL;
 		}
 		m_pContainer->Release();
@@ -240,7 +238,7 @@ double vtStructInstance3d::DistanceToPoint(const DPoint2 &p, float fMaxRadius) c
 		//  is larger for larger objects.  This is a little messy, because
 		//  it's a world-coord operation applied to a earth-coord result.
 		FSphere sphere;
-		m_pModel->GetBoundSphere(sphere);
+		s2v(m_pModel->getBound(), sphere);
 		FPoint3 trans = m_pContainer->GetTrans();
 		sphere.center += trans;
 		if (sphere.radius < fMaxRadius)

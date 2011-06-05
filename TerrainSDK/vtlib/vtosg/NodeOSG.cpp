@@ -112,6 +112,32 @@ bool NodeExtension::GetCastShadow()
 	return m_bCastShadow;
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+
+vtNode *GroupExtension::GetChild(unsigned int num) const
+{
+	unsigned int children = m_pGroup->getNumChildren();
+	if (num < children)
+	{
+		Node *pChild = (Node *) m_pGroup->getChild(num);
+		osg::Referenced *ref = pChild->getUserData();
+		if (ref)
+			return dynamic_cast<vtNode*>(ref);
+		else
+		{
+			// We have found an unwrapped node
+			vtNativeNode *native = new vtNativeNode(pChild);
+			return native;
+		}
+	}
+	else
+		return NULL;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+
 bool FindAncestor(osg::Node *node, osg::Node *parent)
 {
 	for (unsigned int i = 0; i < node->getNumParents(); i++)
@@ -695,50 +721,20 @@ public:
 // Find and decorate a native node
 // To allow subsequent graph following from the VT side
 // return osg::Group as vtGroup
-vtNode *vtNode::FindNativeNode(const char *pName, bool bDescend)
+osg::Node *FindDescendent(osg::Node *node, const char *pName)
 {
 	vtNode *pVTNode = NULL;
-	osg::Group *pGroup = dynamic_cast<osg::Group*>(m_pNode.get());
+	osg::Group *pGroup = dynamic_cast<osg::Group*>(node);
 	if (NULL == pGroup)
 		return NULL;
-	osg::ref_ptr<osg::Node> pNode;
 	osg::ref_ptr<CFindNodeVisitor> pFNVisitor = new CFindNodeVisitor(pName,
-																	bDescend ?
-																	osg::NodeVisitor::TRAVERSE_ALL_CHILDREN :
-																	osg::NodeVisitor::TRAVERSE_NONE);
-	if (bDescend)
-		pGroup->accept(*pFNVisitor.get());
-	else
-		pGroup->traverse(*pFNVisitor.get());
-	pNode = pFNVisitor->m_pNode.get();
+																	osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
+	pGroup->accept(*pFNVisitor.get());
 
-	if (!pNode.valid())
-		return NULL;
+	osg::Node *result = pFNVisitor->m_pNode.get();
 
-	pVTNode = (vtNode*)pNode->getUserData();
-	if (NULL != pVTNode)
-		return pVTNode;
-
-	// Now we know it's an OSG node that's not already wrapped.
-	// Maybe it's a transform.
-	osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform*>(pNode.get());
-	if (mt)
-	{
-		vtTransform *pVTXform = new vtTransform(mt);
-		return pVTXform;
-	}
-
-	// Maybe it's a group.
-	osg::Group *grp = dynamic_cast<osg::Group*>(pNode.get());
-	if (grp)
-	{
-		vtGroup *pVTGroup = new vtGroup(true);
-		pVTGroup->SetOsgGroup(grp);
-		return pVTGroup;
-	}
-
-	// Otherwise we have to use the opaque wrapper "Native Node"
-	return new vtNativeNode(pNode.get());
+	// Just return it
+	return result;
 }
 
 bool vtNode::ContainsParticleSystem() const
@@ -812,9 +808,6 @@ public:
 	}
 };
 
-// Our own cache of models loaded from OSG
-typedef std::map< vtString, osg::ref_ptr<Node> > NodeCache;
-NodeCache m_ModelCache;
 bool vtNode::s_bDisableMipmaps = false;
 osg::Node *(*s_NodeCallback)(osg::Transform *input) = NULL;
 
@@ -832,7 +825,7 @@ void SetLoadModelCallback(osg::Node *callback(osg::Transform *input))
  * subgraph with vtTerrain::AddNode().
  *
  * \param filename The filename to load from.
- * \param bAllowCache Default is true, to allow vtosg to cache models.
+ * \param bAllowCache Default is true, to allow OSG to cache models.
  *	This means that if you load from the same filename more than once, you
  *  will get the same model again instantly.  If you don't want this, for
  *	example if the model has changed on disk and you want to force loading,
@@ -842,8 +835,7 @@ void SetLoadModelCallback(osg::Node *callback(osg::Transform *input))
  *
  * \return A node pointer if successful, or NULL if the load failed.
  */
-vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
-						  bool bDisableMipmaps)
+osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
 {
 	// Some of OSG's file readers, such as the Wavefront OBJ reader, have
 	//  sensitivity to stdio issues with '.' and ',' in European locales.
@@ -856,24 +848,14 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 		if (fname.GetAt(i) == '\\') fname.SetAt(i, '/');
 	}
 
-	// We must track whether we have loaded this object already; that is, whether
-	//  it is in the OSG object cache.  If it is in the cache, then we musn't
-	//  apply the rotation below, because it's already been applied to the
-	//  one in the cache that we've gotten again.
-	Node *node, *existing_node = NULL;
-	bool bInCache = (m_ModelCache.count(fname) != 0);
-	if (bInCache)
-		existing_node = m_ModelCache[fname].get();
-
-	bool bDoLoad = (!bInCache || !bAllowCache);
-	if (bDoLoad)
-	{
 #define HINT osgDB::ReaderWriter::Options::CacheHintOptions
-		// In case of reloading a previously loaded model, we must empty
-		//  our own cache as well as disable OSG's cache.
-		osgDB::Registry *reg = osgDB::Registry::instance();
-		osgDB::ReaderWriter::Options *opts;
+	// In case of reloading a previously loaded model, we must empty
+	//  our own cache as well as disable OSG's cache.
+	osgDB::Registry *reg = osgDB::Registry::instance();
+	osgDB::ReaderWriter::Options *opts;
 
+	if (!bAllowCache)
+	{
 		opts = reg->getOptions();
 		if (!opts)
 		{
@@ -882,117 +864,95 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 				// closing its DLL, as the options get deleted twice (?) or
 				// perhaps it doesn't like deleting the object WE allocated.
 		}
-		// Always disable OSG's cache, we don't use it.
+		// Disable OSG's cache
 		opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() & ~(osgDB::ReaderWriter::Options::CACHE_NODES))));
 		reg->setOptions(opts);
-
-		// OSG doesn't yet support utf-8 or wide filenames, so convert
-		vtString fname_local = UTF8ToLocal(fname);
-
-		// Now actually request the node from OSG
-#if VTDEBUG
-		VTLOG("[");
-#endif
-		node = osgDB::readNodeFile((const char *)fname_local);
-#if VTDEBUG
-		VTLOG("]");
-#endif
-		// If OSG could not load it, there is nothing more to do
-		if (!node)
-			return NULL;
 	}
-	else
-	{
-		// Simple case: use cached node
-		node = existing_node;
-	}
+
+	// OSG doesn't yet support utf-8 or wide filenames, so convert
+	vtString fname_local = UTF8ToLocal(fname);
+
+	// Now actually request the node from OSG
+#if VTDEBUG
+	VTLOG("[");
+#endif
+	Node *node = osgDB::readNodeFile((const char *)fname_local);
+#if VTDEBUG
+	VTLOG("]");
+#endif
+	// If OSG could not load it, there is nothing more to do
+	if (!node)
+		return NULL;
 
 #if DEBUG_NODE_LOAD
 	VTLOG("LoadModel: osg raw node %lx (rc %d), ", node, node->referenceCount());
 #endif
 
-	if (bDoLoad)
+	// We must insert a 'Normalize' state above the geometry objects
+	// that we load, otherwise when they are scaled, the vertex normals
+	// will cause strange lighting.  Fortunately, we only need to create
+	// a single State object which is shared by all loaded models.
+	StateSet *stateset = node->getOrCreateStateSet();
+	stateset->setMode(GL_NORMALIZE, StateAttribute::ON);
+
+	// For some reason, some file readers (at least .obj) will load models with
+	//  alpha textures, but _not_ enable blending for them or put them in the
+	//  transparent bin.  This visitor walks the tree and corrects that.
+	AlphaVisitor visitor_a;
+	node->accept(visitor_a);
+
+	// If the user wants to, we can disable mipmaps at this point, using
+	//  another visitor.
+	if (bDisableMipmaps || vtNode::s_bDisableMipmaps)
 	{
-		// We must insert a 'Normalize' state above the geometry objects
-		// that we load, otherwise when they are scaled, the vertex normals
-		// will cause strange lighting.  Fortunately, we only need to create
-		// a single State object which is shared by all loaded models.
-		StateSet *stateset = node->getOrCreateStateSet();
-		stateset->setMode(GL_NORMALIZE, StateAttribute::ON);
-
-		// For some reason, some file readers (at least .obj) will load models with
-		//  alpha textures, but _not_ enable blending for them or put them in the
-		//  transparent bin.  This visitor walks the tree and corrects that.
-		AlphaVisitor visitor_a;
-		node->accept(visitor_a);
-
-		// If the user wants to, we can disable mipmaps at this point, using
-		//  another visitor.
-		if (bDisableMipmaps || s_bDisableMipmaps)
-		{
-			MipmapVisitor visitor;
-			node->accept(visitor);
-		}
-
-		// We must insert a rotation transform above the model, because OSG's
-		//  file loaders (now mostly consistently) tweak the model to put Z
-		//  up, and the VTP uses OpenGL coordinates which has Y up.
-		float fRotation = -PID2f;
-
-		// OSG expects OBJ models to have Y up.  I have seen models with Z
-		//  up, and we used to correct for that here (fRotation = -PIf).
-		//  However, over time it has appeared that there are more OBJ out
-		//  there with Y up than with Z up.  So, we now treat all models from
-		//  OSG the same.
-
-		osg::MatrixTransform *transform = new osg::MatrixTransform;
-		transform->setName("corrective 90 degrees");
-		transform->setMatrix(osg::Matrix::rotate(fRotation, Vec3(1,0,0)));
-		transform->addChild(node);
-		// it's not going to change, so tell OSG that it can be optimized
-		transform->setDataVariance(osg::Object::STATIC);
-
-		if (s_NodeCallback == NULL)
-		{
-#if 0
-			// Now do some OSG voodoo, which should spread ("flatten") the
-			//  transform downward through the loaded model, and delete the transform.
-			// In practice, i find that it doesn't actually do any flattening.
-			osg::Group *group = new osg::Group;
-			group->addChild(transform);
-
-			osgUtil::Optimizer optimizer;
-			optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
-			node = group;
-#else
-			node = transform;
-#endif
-		}
-		else
-		{
-			osg::Node *node_new = s_NodeCallback(transform);
-			node = node_new;
-		}
-		//VTLOG1("--------------\n");
-		//vtLogNativeGraph(node);
-
-		// Store the node in the cache by filename so we'll know next
-		//  time that we have already have it
-		m_ModelCache[fname] = node;
+		MipmapVisitor visitor;
+		node->accept(visitor);
 	}
 
-	// Since there must be a 1-1 correspondence between VTP nodes
-	//  at OSG nodes, we can't have multiple VTP nodes sharing a
-	//  single OSG node.  So, we can't simply use the OSG node ptr
-	//  that we get: we must wrap it.
-	osg::Group *container_group = new osg::Group;
-	container_group->addChild(node);
+	// We must insert a rotation transform above the model, because OSG's
+	//  file loaders (now mostly consistently) tweak the model to put Z
+	//  up, and the VTP uses OpenGL coordinates which has Y up.
+	float fRotation = -PID2f;
 
-	// The final resulting node is the container of that operation
-	vtNativeNode *pNode = new vtNativeNode(container_group);
+	// OSG expects OBJ models to have Y up.  I have seen models with Z
+	//  up, and we used to correct for that here (fRotation = -PIf).
+	//  However, over time it has appeared that there are more OBJ out
+	//  there with Y up than with Z up.  So, we now treat all models from
+	//  OSG the same.
+
+	osg::MatrixTransform *transform = new osg::MatrixTransform;
+	transform->setName("corrective 90 degrees");
+	transform->setMatrix(osg::Matrix::rotate(fRotation, Vec3(1,0,0)));
+	transform->addChild(node);
+	// it's not going to change, so tell OSG that it can be optimized
+	transform->setDataVariance(osg::Object::STATIC);
+
+	if (s_NodeCallback == NULL)
+	{
+#if 0
+		// Now do some OSG voodoo, which should spread ("flatten") the
+		//  transform downward through the loaded model, and delete the transform.
+		// In practice, i find that it doesn't actually do any flattening.
+		osg::Group *group = new osg::Group;
+		group->addChild(transform);
+
+		osgUtil::Optimizer optimizer;
+		optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
+		node = group;
+#else
+		node = transform;
+#endif
+	}
+	else
+	{
+		osg::Node *node_new = s_NodeCallback(transform);
+		node = node_new;
+	}
+	//VTLOG1("--------------\n");
+	//vtLogNativeGraph(node);
 
 	// Use the filename as the node's name
-	pNode->setName(fname);
+	node->setName(fname);
 
 #if DEBUG_NODE_LOAD
 	VTLOG("node %lx (rc %d),\n ", node, node->referenceCount());
@@ -1000,7 +960,7 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache,
 	VTLOG("VTP node %lx (rc %d)\n", pNode, pNode->referenceCount());
 #endif
 
-	return pNode;
+	return node;
 }
 
 /**
@@ -1066,24 +1026,6 @@ void vtNode::ApplyVertexTransform(const FMatrix4 &mat)
 	//
 	osgUtil::Optimizer optimizer;
 	optimizer.optimize(temp.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
-}
-
-void vtNode::ClearOsgModelCache()
-{
-#if DEBUG_NODE_LOAD
-	VTLOG1("Clearing OSG Model Cache.  Contents:\n");
-	for (NodeCache::iterator iter = m_ModelCache.begin();
-		iter != m_ModelCache.end(); iter++)
-	{
-		vtString str = iter->first;
-		osg::Node *node = iter->second.get();
-		VTLOG("  Model '%s', node %lx (rc %d, parents %d)\n", (const char *) str,
-			node, node->referenceCount(), node->getNumParents());
-	}
-#endif
-	// Each model in the cache, at exit time, should have a refcount
-	//  of 1.  Deleting the cache will push them to 0 and delete them.
-	m_ModelCache.clear();
 }
 
 void DecorateVisit(osg::Node *node)
@@ -2208,19 +2150,10 @@ vtMaterial *vtGeode::GetMaterial(int idx)
 // vtLOD
 //
 
-vtLOD::vtLOD() : vtGroup(true)
+vtLOD::vtLOD()
 {
-	m_pLOD = new osg::LOD;
-	m_pLOD->setCenter(osg::Vec3(0, 0, 0));
-	SetOsgGroup(m_pLOD);
-}
-
-void vtLOD::Release()
-{
-	// Check if this node is no longer referenced.
-	if (m_pNode->referenceCount() == 1)
-		m_pLOD = NULL;
-	vtGroup::Release();
+	setCenter(osg::Vec3(0, 0, 0));
+	SetOsgGroup(this);
 }
 
 void vtLOD::SetRanges(float *ranges, int nranges)
@@ -2233,7 +2166,7 @@ void vtLOD::SetRanges(float *ranges, int nranges)
 			next = ranges[i+1];
 		else
 			next = 1E10;
-		m_pLOD->setRange(i, ranges[i], next);
+		setRange(i, ranges[i], next);
 	}
 }
 
@@ -2241,7 +2174,7 @@ void vtLOD::SetCenter(FPoint3 &center)
 {
 	Vec3 p;
 	v2s(center, p);
-	m_pLOD->setCenter(p);
+	setCenter(p);
 }
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -2521,18 +2454,6 @@ void vtHUD::Release()
 		vtGetScene()->SetHUD(NULL);
 	}
 	vtGroup::Release();
-}
-
-vtNode *vtHUD::Clone(bool bDeep)
-{
-	vtHUD *hud = new vtHUD;
-	hud->CloneFrom(this, bDeep);
-	return hud;
-}
-
-void vtHUD::CloneFrom(vtHUD *rhs, bool bDeep)
-{
-	// TODO
 }
 
 void vtHUD::SetWindowSize(int w, int h)

@@ -381,35 +381,48 @@ float CarEngine::DetermineYawPitchAndHeight(const FPoint3 &next_pos)
 }
 
 
-/*	finds and sets the tire variables in the model.  assumes that the tires are under a group name ending
-	in "tires" and the 4 tires are the children of the group.  the 4 tire names should end with their
-	location names: "front left" "front right" "rear left" "rear right"
-
-  RUN BEFORE EVAL!!!!
-	*/
+/*
+ Finds and sets the tire variables in the model.  assumes that the tires are
+ under a group name ending in "tires" and the 4 tires are the children of the
+ group.  the 4 tire names should end with their location names: "front left"
+ "front right" "rear left" "rear right"
+*/
 bool CarEngine::FindWheelTransforms()
 {
+
 	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
 	if (!car)
 		return false;
-
-	vtTransform *tModel;
-	tModel = (vtTransform *) car->FindNativeNode("front_left_xform");
+#if 0
+	osg::Node *tModel;
+	tModel = FindDescendent(car, "front_left_xform");
 	if (tModel)
-		m_pFrontLeft = tModel;
+	{
+		m_pFrontLeft = new vtTransform;
+		m_pFrontLeft->addChild(tModel);
+	}
 
-	tModel = (vtTransform *) car->FindNativeNode("front_right_xform");
+	tModel = FindDescendent(car, "front_right_xform");
 	if (tModel)
-		m_pFrontRight = tModel;
+	{
+		m_pFrontRight = new vtTransform;
+		m_pFrontRight->addChild(tModel);
+	}
 
-	tModel = (vtTransform *) car->FindNativeNode("rear_left_xform");
+	tModel = FindDescendent(car, "rear_left_xform");
 	if (tModel)
-		m_pRearLeft = tModel;
+	{
+		m_pRearLeft = new vtTransform;
+		m_pRearLeft->addChild(tModel);
+	}
 
-	tModel = (vtTransform *) car->FindNativeNode("rear_right_xform");
+	tModel = FindDescendent(car, "rear_right_xform");
 	if (tModel)
-		m_pRearRight = tModel;
-
+	{
+		m_pRearRight = new vtTransform;
+		m_pRearRight->addChild(tModel);
+	}
+#endif
 	return true;
 }
 

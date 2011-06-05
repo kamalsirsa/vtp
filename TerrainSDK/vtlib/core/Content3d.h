@@ -31,7 +31,7 @@ public:
 	bool LoadModels();
 	void UpdateExtents();
 
-	vtNode *m_pNode;
+	osg::Node *m_pNode;
 };
 
 /**
@@ -45,7 +45,7 @@ public:
 	~vtContentManager3d();
 
 	// implementation
-	vtNode *CreateNodeFromItemname(const char *itemname);
+	osg::Node *CreateNodeFromItemname(const char *itemname);
 	virtual vtItem *NewItem() { return new vtItem3d; }
 	void ReleaseContents();
 

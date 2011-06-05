@@ -31,7 +31,7 @@ public:
 		m_iNumWires = 0;
 	}
 
-	vtNode	*m_pTower;	// The station may have a tower placed on it
+	osg::Node	*m_pTower;	// The station may have a tower placed on it
 	vtString m_sStructName;
 
 	// The points at which the wires attach

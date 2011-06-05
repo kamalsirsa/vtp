@@ -174,14 +174,14 @@ void vtRoute::_CreateStruct(int iNode)
 		if (!sobj)
 			return;
 
-		vtNode *tower = sobj->m_pTower;
+		osg::Node *tower = sobj->m_pTower;
 		if (tower)
 		{
 			node->m_pTrans = new vtTransform;
 			vtString name;
 			name.Format("RouteNode %d", iNode);
 			node->m_pTrans->setName(name);
-			node->m_pTrans->AddChild(tower);
+			node->m_pTrans->addChild(tower);
 			add = true;
 		}
 	}

@@ -37,7 +37,7 @@ public:
 	Vehicle *CreateVehicle(const char *szType, const RGBf &cColor);
 
 protected:
-	Vehicle *CreateVehicleFromNode(vtNode *node, const RGBf &cColor);
+	Vehicle *CreateVehicleFromNode(osg::Node *node, const RGBf &cColor);
 };
 
 class VehicleSet

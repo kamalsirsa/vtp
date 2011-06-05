@@ -789,7 +789,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 	vtGeode *pGeode;
 	if (m_pRoads[a][b])
 	{
-		pGeode = (vtGeode *)m_pRoads[a][b]->GetChild(0);
+		pGeode = (vtGeode *) m_pRoads[a][b]->getChild(0);
 	}
 	else
 	{
@@ -799,7 +799,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 
 		m_pRoads[a][b] = new vtLOD;
 		m_pRoads[a][b]->SetRanges(fDist, 2);
-		m_pGroup->AddChild(m_pRoads[a][b]);
+		m_pGroup->addChild(m_pRoads[a][b]);
 
 		FPoint3 lod_center;
 		lod_center.x = m_extents.min.x + ((m_extent_range.x / ROAD_CLUSTER) * (a + 0.5f));
@@ -959,8 +959,8 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 		return;
 
 	vtContentManager3d &con = vtGetContent();
-	vtNode *stopsign = con.CreateNodeFromItemname("American Stopsign");
-	vtNode *stoplight = con.CreateNodeFromItemname("Stoplight (right)");
+	osg::Node *stopsign = con.CreateNodeFromItemname("American Stopsign");
+	osg::Node *stoplight = con.CreateNodeFromItemname("Stoplight (right)");
 
 	if (!stopsign || !stoplight)
 	{
@@ -971,19 +971,19 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 	{
 		for (int r = 0; r < pN->m_iLinks; r++)
 		{
-			vtNode *shape = NULL;
+			osg::Node *shape = NULL;
 			if (pN->GetIntersectType(r) == IT_STOPSIGN && stopsign)
 			{
-				shape = stopsign->Clone();
+				shape = (osg::Node *) stopsign->clone(osg::CopyOp::SHALLOW_COPY);
 			}
 			if (pN->GetIntersectType(r) == IT_LIGHT && stoplight)
 			{
-				shape = stoplight->Clone();
+				shape = (osg::Node *) stoplight->clone(osg::CopyOp::SHALLOW_COPY);
 			}
 			if (!shape) continue;
 
 			vtTransform *trans = new vtTransform;
-			trans->AddChild(shape);
+			trans->addChild(shape);
 
 			LinkGeom *link = pN->GetLink(r);
 			FPoint3 unit = pN->GetUnitLinkVector(r);

@@ -471,7 +471,7 @@ vtUtilStruct *vtTerrainScene::LoadUtilStructure(const vtString &name)
 	// If not, look for it in the global content manager
 	vtItem *item = m_Content.FindItemByName(name);
 	VTLOG(item != NULL ? " Item Found.\n" : "Item not found.\n");
-	vtNode *node = m_Content.CreateNodeFromItemname(name);
+	osg::Node *node = m_Content.CreateNodeFromItemname(name);
 	VTLOG(node != NULL ? " Node Loaded.\n" : "Node not Loaded.\n");
 
 	if (node == NULL)

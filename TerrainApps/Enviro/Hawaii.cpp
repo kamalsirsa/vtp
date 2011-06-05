@@ -311,7 +311,7 @@ void IslandTerrain::create_state_park()
 #if 0
 	// Here is an example of how to directly create a content item and
 	//	plant it manually on the terrain.
-	vtNode *node = s_Content.CreateNodeFromItemname("Riesenbuehl");
+	osg::Node *node = s_Content.CreateNodeFromItemname("Riesenbuehl");
 	if (node)
 	{
 		// plant it
@@ -660,13 +660,13 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 //	Vehicle *copy = g_App.m_VehicleManager.CreateVehicle("Boeing 747", red);
 
 	vtContentManager3d &con = vtGetContent();
-	vtNode *copy = con.CreateNodeFromItemname("Boeing 747");
+	osg::Node *copy = con.CreateNodeFromItemname("Boeing 747");
 	if (!copy)
 		return;
 
 	vtTransform *trans = new vtTransform;
 	trans->setName("Plane xform");
-	trans->AddChild(copy);
+	trans->addChild(copy);
 	AddNode(trans);
 
 	// make it faster than real life

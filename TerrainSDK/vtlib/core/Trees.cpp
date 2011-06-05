@@ -41,9 +41,6 @@ vtPlantAppearance3d::vtPlantAppearance3d(AppearType type, const char *filename,
 
 vtPlantAppearance3d::~vtPlantAppearance3d()
 {
-	if (m_pExternal)
-		m_pExternal->Release();
-
 #if SUPPORT_XFROG
 	if (m_pFrogModel) delete m_pFrogModel;
 #endif
@@ -157,12 +154,12 @@ void vtPlantAppearance3d::LoadAndCreate()
 	}
 	else if (m_eType == AT_MODEL)
 	{
-		m_pExternal = vtNode::LoadModel(m_filename);
+		m_pExternal = vtLoadModel(m_filename);
 		if (!m_pExternal)
 		{
 			vtString fname = FindPlantModel(m_filename);
 			if (fname != "")
-				m_pExternal = vtNode::LoadModel(fname);
+				m_pExternal = vtLoadModel(fname);
 		}
 		if (m_pExternal != NULL)
 			m_bCreated = true;
@@ -261,7 +258,7 @@ bool vtPlantAppearance3d::GenerateGeom(vtTransform *container)
 	{
 		if (m_pExternal)
 		{
-			container->AddChild(m_pExternal);
+			container->addChild(m_pExternal);
 			return true;
 		}
 	}

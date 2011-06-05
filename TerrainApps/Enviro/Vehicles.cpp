@@ -75,10 +75,11 @@ VehicleManager::~VehicleManager()
 {
 }
 
-Vehicle *VehicleManager::CreateVehicleFromNode(vtNode *node, const RGBf &cColor)
+Vehicle *VehicleManager::CreateVehicleFromNode(osg::Node *node, const RGBf &cColor)
 {
-	vtNativeNode *pNewModel = dynamic_cast<vtNativeNode *>(node->Clone(true));	// Deep copy
-	if (NULL == pNewModel)
+	// Deep copy
+	osg::Node *pNewModel = (osg::Node *) node->clone(osg::CopyOp::DEEP_COPY_NODES);
+	if (!pNewModel)
 		return NULL;
 
 	Vehicle *pNewVehicle = new Vehicle;
@@ -92,12 +93,14 @@ Vehicle *VehicleManager::CreateVehicleFromNode(vtNode *node, const RGBf &cColor)
 	//VTLOG1("-----------------\n");
 	//vtLogNativeGraph(pNewModel->GetOsgNode());
 
-	pNewVehicle->AddChild(pNewModel);
+	pNewVehicle->addChild(pNewModel);
 
+#if 0
 	pNewVehicle->m_pFrontLeft = pNewModel->FindNativeNode("front_left");
 	pNewVehicle->m_pFrontRight = pNewModel->FindNativeNode("front_right");
 	pNewVehicle->m_pRearLeft = pNewModel->FindNativeNode("rear_left");
 	pNewVehicle->m_pRearRight = pNewModel->FindNativeNode("rear_right");
+#endif
 
 	if (!pNewVehicle->m_pFrontLeft || !pNewVehicle->m_pFrontRight || !pNewVehicle->m_pRearLeft || !pNewVehicle->m_pRearRight)
 	{
@@ -115,6 +118,7 @@ Vehicle *VehicleManager::CreateVehicleFromNode(vtNode *node, const RGBf &cColor)
 	}
 	else
 	{
+#if 0	// TODO restore this someday
 		// Stick transform above them (this seems like a bad way to go)
 		// There has go to be an easier way of doing this RFJ 4/02/09
 		vtTransform *pTransform;
@@ -149,6 +153,7 @@ Vehicle *VehicleManager::CreateVehicleFromNode(vtNode *node, const RGBf &cColor)
 
 		//VTLOG1("-----------------\n");
 		//vtLogNativeGraph(pNewModel->GetOsgNode());
+#endif
 	}
 	ConvertPurpleToColor(pNewVehicle, cColor);
 
@@ -159,7 +164,7 @@ Vehicle *VehicleManager::CreateVehicleFromNode(vtNode *node, const RGBf &cColor)
 Vehicle *VehicleManager::CreateVehicle(const char *szType, const RGBf &cColor)
 {
 	vtContentManager3d &con = vtGetContent();
-	vtNode *node = con.CreateNodeFromItemname(szType);
+	osg::Node *node = con.CreateNodeFromItemname(szType);
 	if (!node)
 		return NULL;
 	Vehicle *v = CreateVehicleFromNode(node, cColor);

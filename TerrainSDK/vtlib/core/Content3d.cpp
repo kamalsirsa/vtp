@@ -52,17 +52,17 @@ bool vtItem3d::LoadModels()
 	for (i = 0; i < models; i++)
 	{
 		vtModel *model = GetModel(i);
-		vtNode *pNode = NULL;
+		osg::Node *pNode = NULL;
 
 		// perhaps it's directly resolvable
-		pNode = vtNode::LoadModel(model->m_filename);
+		pNode = vtLoadModel(model->m_filename);
 
 		// if there are some data path(s) to search, use them
 		if (!pNode)
 		{
 			vtString fullpath = FindFileOnPaths(vtGetDataPath(), model->m_filename);
 			if (fullpath != "")
-				pNode = vtNode::LoadModel(fullpath);
+				pNode = vtLoadModel(fullpath);
 		}
 
 		if (pNode)
@@ -79,14 +79,14 @@ bool vtItem3d::LoadModels()
 			// Wrap in a transform node so that we can scale/rotate the node
 			vtTransform *pTrans = new vtTransform;
 			pTrans->setName("scaling xform");
-			pTrans->AddChild(pNode);
+			pTrans->addChild(pNode);
 			pTrans->Identity();
 			pTrans->Scale3(model->m_scale, model->m_scale, model->m_scale);
-			pNode = pTrans;
+			pNode = pTrans->GetOsgNode();
 		}
 
 		if (models > 1)
-			pLod->AddChild(pNode);
+			pLod->addChild(pNode);
 		else
 			m_pNode = pNode;
 
@@ -121,7 +121,7 @@ void vtItem3d::UpdateExtents()
 	// Both the 3D model and the extents are in approximate meters and
 	//  centered on the item's local origin.
 	FSphere sph;
-	m_pNode->GetBoundSphere(sph);
+	s2v(m_pNode->getBound(), sph);
 	m_extents.left = sph.center.x - sph.radius;
 	m_extents.right = sph.center.x + sph.radius;
 
@@ -151,7 +151,7 @@ vtContentManager3d::~vtContentManager3d()
 	ReleaseContents();
 }
 
-vtNode *vtContentManager3d::CreateNodeFromItemname(const char *itemname)
+osg::Node *vtContentManager3d::CreateNodeFromItemname(const char *itemname)
 {
 	vtItem3d *pItem = (vtItem3d *) FindItemByName(itemname);
 	if (!pItem)
@@ -170,7 +170,7 @@ vtNode *vtContentManager3d::CreateNodeFromItemname(const char *itemname)
 
 		// Add to content container: must keep a reference to each item's
 		//  model node so it doesn't get deleted while the manager is alive.
-		m_pGroup->AddChild(pItem->m_pNode);
+		m_pGroup->addChild(pItem->m_pNode);
 	}
 	return pItem->m_pNode;
 }

@@ -138,10 +138,7 @@ void vtSimpleLodGrid::Release()
 		{
 			lod = m_pCells[CellIndex(a,b)];
 			if (lod != NULL)
-			{
-				RemoveChild(lod);
-				lod->Release();
-			}
+				removeChild(lod);
 		}
 	}
 	free(m_pCells);
@@ -177,9 +174,9 @@ void vtSimpleLodGrid::AllocateCell(int a, int b)
 	vtGroup *group = new vtGroup;
 	group->setName("LOD group");
 	m_pCells[i]->SetCenter(lod_center);
-	m_pCells[i]->AddChild(group);
+	m_pCells[i]->addChild(group->GetOsgNode());
 
-	AddChild(m_pCells[i]);
+	addChild(m_pCells[i]);
 }
 
 

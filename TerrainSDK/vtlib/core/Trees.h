@@ -54,7 +54,7 @@ protected:
 	vtGeodePtr		m_pGeode;
 	osg::ref_ptr<vtMesh> m_pMesh;
 	int				m_iMatIdx;
-	vtNode			*m_pExternal;
+	osg::ref_ptr<osg::Node>	m_pExternal;
 #if SUPPORT_XFROG
 	CFrogModel	*m_pFrogModel;
 #endif

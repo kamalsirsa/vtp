@@ -10,10 +10,11 @@
 #ifndef VTOSG_NODEH
 #define VTOSG_NODEH
 
-#include <osg/LightSource>
-#include <osg/MatrixTransform>
 #include <osg/Fog>
 #include <osg/Geode>
+#include <osg/LightSource>
+#include <osg/LOD>
+#include <osg/MatrixTransform>
 #include <osg/Version>
 #include <osgShadow/ShadowedScene>
 
@@ -87,7 +88,18 @@ struct NodeExtension
 	bool m_bCastShadow;
 };
 
+struct GroupExtension
+{
+	/** Return a child node, by index. */
+	vtNode *GetChild(unsigned int num) const;
+
+	void SetOsgGroup(osg::Group *group) { m_pGroup = group; }
+
+	osg::Group *m_pGroup;
+};
+
 bool FindAncestor(osg::Node *node, osg::Node *parent);
+osg::Node *FindDescendent(osg::Node *node, const char *pName);
 
 vtMultiTexture *AddMultiTexture(osg::Node *onode, int iTextureUnit, vtImage *pImage,
 								int iTextureMode, const FPoint2 &scale, const FPoint2 &offset);
@@ -100,6 +112,10 @@ bool ContainsParticleSystem(osg::Node *node);
 
 void SetEnabled(osg::Node *node, bool bOn);
 bool GetEnabled(osg::Node *node);
+
+/// Load a 3D model file
+osg::Node *vtLoadModel(const char *filename, bool bAllowCache = true,
+					   bool bDisableMipmaps = false);
 
 /**
  * Represents a node in the vtlib scenegraph.  The scenegraph is simply
@@ -147,13 +163,8 @@ public:
 	void DecorateNativeGraph();
 	void ApplyVertexRotation(const FPoint3 &axis, float angle);
 	void ApplyVertexTransform(const FMatrix4 &mat);
-	virtual vtNode *FindNativeNode(const char *pName, bool bDescend = true);
 	bool ContainsParticleSystem() const;
 
-	/// Load a 3D model file
-	static vtNode *LoadModel(const char *filename, bool bAllowCache = true,
-		bool bDisableMipmaps = false);
-	static void ClearOsgModelCache();
 	static bool s_bDisableMipmaps;	// set to disable ALL mipmaps
 
 	/// Set this node to cast a shadow, if it is under a vtShadow node.  Default is false.
@@ -612,17 +623,15 @@ typedef osg::ref_ptr<vtDynGeom> vtDynGeomPtr;
  * You should set a distance value (range) for each child, which determines
  * at what distance from the camera a node should be rendered.
  */
-class vtLOD : public vtGroup
+class vtLOD : public osg::LOD, public GroupExtension
 {
 public:
 	vtLOD();
-	void Release();
 
 	void SetRanges(float *ranges, int nranges);
 	void SetCenter(FPoint3 &center);
 
 protected:
-	osg::LOD *m_pLOD;
 	virtual ~vtLOD() {}
 };
 
@@ -678,8 +687,6 @@ class vtHUD : public vtGroup
 {
 public:
 	vtHUD(bool bPixelCoords = true);
-	virtual vtNode *Clone(bool bDeep = false);
-	void CloneFrom(vtHUD *rhs, bool bDeep);
 	void Release();
 
 	void SetWindowSize(int w, int h);

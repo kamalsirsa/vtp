@@ -1352,19 +1352,19 @@ MyTerrain::CreateCustomCulture()
  */
 vtTransform *vtTerrain::LoadModel(const char *filename, bool bAllowCache)
 {
-	vtNode *node = NULL;
+	osg::Node *node = NULL;
 	vtString path = FindFileOnPaths(vtGetDataPath(), filename);
 	if (path == "")
 	{
 		VTLOG("Couldn't locate file '%s'\n", filename);
 	}
 	else
-		node = vtNode::LoadModel(path, bAllowCache);
+		node = vtLoadModel(path, bAllowCache);
 
 	if (node)
 	{
 		vtTransform *trans = new vtTransform;
-		trans->AddChild(node);
+		trans->addChild(node);
 		return trans;
 	}
 	else

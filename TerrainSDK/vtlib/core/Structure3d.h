@@ -141,7 +141,7 @@ public:
 	virtual bool IsCreated();
 	virtual void DeleteNode();
 	virtual void ShowBounds(bool bShow);
-	virtual osg::Node *GetContained() { return m_pModel->GetOsgNode(); }
+	virtual osg::Node *GetContained() { return m_pModel.get(); }
 
 	/// (Re-)position the instance on the indicated heightfield
 	void UpdateTransform(vtHeightField3d *pHeightField);
@@ -151,7 +151,7 @@ public:
 
 protected:
 	vtGeode		*m_pHighlight;	// The wireframe highlight
-	vtNode		*m_pModel; // the contained model
+	osg::ref_ptr<osg::Node> m_pModel; // the contained model
 };
 
 
