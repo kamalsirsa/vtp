@@ -85,6 +85,15 @@ public:
 	wxNumericValidator *AddNumValidator(long id, double *dptr, int digits = -1);
 };
 
+// And forms of the methods which don't require subclassing from AutoDialog
+void AddValidator(wxDialog *dlg, long id, wxString *sptr);
+void AddValidator(wxDialog *dlg, long id, bool *bptr);
+void AddValidator(wxDialog *dlg, long id, int *iptr);
+wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, short *sptr);
+wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, int *iptr);
+wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, float *fptr, int digits = -1);
+wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, double *dptr, int digits = -1);
+
 class AutoPanel : public wxPanel
 {
 public:
@@ -102,5 +111,15 @@ public:
 	wxNumericValidator *AddNumValidator(long id, float *fptr, int digits = -1);
 	wxNumericValidator *AddNumValidator(long id, double *dptr, int digits = -1);
 };
+
+// And forms of the methods which don't require subclassing from AutoPanel
+void AddValidator(wxPanel *pan, long id, wxString *sptr);
+void AddValidator(wxPanel *pan, long id, bool *bptr);
+void AddValidator(wxPanel *pan, long id, int *iptr);
+wxNumericValidator *AddNumValidator(wxPanel *pan, long id, short *sptr);
+wxNumericValidator *AddNumValidator(wxPanel *pan, long id, int *iptr);
+wxNumericValidator *AddNumValidator(wxPanel *pan, long id, float *fptr, int digits = -1);
+wxNumericValidator *AddNumValidator(wxPanel *pan, long id, double *dptr, int digits = -1);
+
 
 #endif

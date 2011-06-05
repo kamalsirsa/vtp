@@ -42,12 +42,12 @@ ExtentDlg::ExtentDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	ExtentDialogFunc( this, TRUE );
 
-	AddValidator(ID_EXTENT_ALL, &m_strAll);
-	AddValidator(ID_EXTENT_E, &m_strEast);
-	AddValidator(ID_EXTENT_N, &m_strNorth);
-	AddValidator(ID_EXTENT_S, &m_strSouth);
-	AddValidator(ID_EXTENT_W, &m_strWest);
-	AddValidator(ID_DMS, &m_bDMS);
+	AddValidator(this, ID_EXTENT_ALL, &m_strAll);
+	AddValidator(this, ID_EXTENT_E, &m_strEast);
+	AddValidator(this, ID_EXTENT_N, &m_strNorth);
+	AddValidator(this, ID_EXTENT_S, &m_strSouth);
+	AddValidator(this, ID_EXTENT_W, &m_strWest);
+	AddValidator(this, ID_DMS, &m_bDMS);
 }
 
 void ExtentDlg::SetArea(DRECT area, bool bDegrees)

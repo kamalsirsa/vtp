@@ -1,7 +1,7 @@
 //
 // Name: SceneGraphDlg.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,7 +9,7 @@
 #define __SceneGraphDlg_H__
 
 #include "wx/imaglist.h"
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 
 // WDR: class declarations
 
@@ -17,7 +17,7 @@
 // SceneGraphDlg
 //----------------------------------------------------------------------------
 
-class SceneGraphDlg: public wxDialog
+class SceneGraphDlg: public SceneGraphDlgBase
 {
 public:
 	// constructors and destructors

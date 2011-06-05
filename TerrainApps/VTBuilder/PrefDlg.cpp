@@ -44,25 +44,25 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// WDR: dialog function PrefDialogFunc for PrefDlg
 	PrefDialogFunc(this, true);
 
-	AddValidator(ID_RADIO1, &b1);
-	AddValidator(ID_RADIO2, &b2);
-	AddValidator(ID_RADIO3, &b3);
-	AddValidator(ID_RADIO4, &b4);
-	AddValidator(ID_RADIO5, &b5);
-	AddValidator(ID_RADIO6, &b6);
-	AddValidator(ID_RADIO7, &b7);
-	AddValidator(ID_RADIO8, &b8);
-	AddValidator(ID_RADIO9, &b9);
-	AddValidator(ID_RADIO10, &b10);
-	AddValidator(ID_RADIO11, &b11);
-	AddValidator(ID_BLACK_TRANSP, &b12);
-	AddValidator(ID_DEFLATE_TIFF, &b13);
-	AddValidator(ID_BT_GZIP, &b14);
-	AddValidator(ID_DELAY_LOAD, &b15);
-	AddNumValidator(ID_SAMPLING_N, &i1);
-	AddNumValidator(ID_MAX_MEGAPIXELS, &i2);
-	AddNumValidator(ID_ELEV_MAX_SIZE, &i3);
-	AddNumValidator(ID_MAX_MEM_GRID, &i4);
+	AddValidator(this, ID_RADIO1, &b1);
+	AddValidator(this, ID_RADIO2, &b2);
+	AddValidator(this, ID_RADIO3, &b3);
+	AddValidator(this, ID_RADIO4, &b4);
+	AddValidator(this, ID_RADIO5, &b5);
+	AddValidator(this, ID_RADIO6, &b6);
+	AddValidator(this, ID_RADIO7, &b7);
+	AddValidator(this, ID_RADIO8, &b8);
+	AddValidator(this, ID_RADIO9, &b9);
+	AddValidator(this, ID_RADIO10, &b10);
+	AddValidator(this, ID_RADIO11, &b11);
+	AddValidator(this, ID_BLACK_TRANSP, &b12);
+	AddValidator(this, ID_DEFLATE_TIFF, &b13);
+	AddValidator(this, ID_BT_GZIP, &b14);
+	AddValidator(this, ID_DELAY_LOAD, &b15);
+	AddNumValidator(this, ID_SAMPLING_N, &i1);
+	AddNumValidator(this, ID_MAX_MEGAPIXELS, &i2);
+	AddNumValidator(this, ID_ELEV_MAX_SIZE, &i3);
+	AddNumValidator(this, ID_MAX_MEM_GRID, &i4);
 }
 
 void PrefDlg::UpdateEnable()

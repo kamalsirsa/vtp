@@ -1,7 +1,7 @@
 //
 // Name: TagDlg.cpp
 //
-// Copyright (c) 2007 Virtual Terrain Project.
+// Copyright (c) 2007-2011 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,16 +21,13 @@
 
 // WDR: event table for TagDlg
 
-BEGIN_EVENT_TABLE(TagDlg,wxDialog)
+BEGIN_EVENT_TABLE(TagDlg,TagDlgBase)
 END_EVENT_TABLE()
 
 TagDlg::TagDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	TagDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function TagDialogFunc for TagDlg
-	TagDialogFunc(this, TRUE);
-
 	m_pList = GetList();
 
 	m_pList->ClearAll();

@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.cpp
 //
-// Copyright (c) 2004-2008 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -28,7 +28,7 @@
 
 // WDR: event table for OptionsDlg
 
-BEGIN_EVENT_TABLE(OptionsDlg,AutoDialog)
+BEGIN_EVENT_TABLE(OptionsDlg,OptionsDlgBase)
 	EVT_INIT_DIALOG (OptionsDlg::OnInitDialog)
 	EVT_CHECKBOX( ID_FULLSCREEN, OptionsDlg::OnCheck )
 	EVT_CHECKBOX( ID_STEREO, OptionsDlg::OnCheck )
@@ -39,37 +39,34 @@ END_EVENT_TABLE()
 
 OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	OptionsDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function OptionsDialogFunc for OptionsDlg
-	OptionsDialogFunc( this, TRUE );
+	AddValidator(this, ID_FULLSCREEN, &m_bFullscreen);
+	AddValidator(this, ID_STEREO, &m_bStereo);
+	AddNumValidator(this, ID_WINX, &m_WinPos.x);
+	AddNumValidator(this, ID_WINY, &m_WinPos.y);
+	AddNumValidator(this, ID_WIN_XSIZE, &m_WinSize.x);
+	AddNumValidator(this, ID_WIN_YSIZE, &m_WinSize.y);
+	AddValidator(this, ID_SIZE_INSIDE, &m_bLocationInside);
 
-	AddValidator(ID_FULLSCREEN, &m_bFullscreen);
-	AddValidator(ID_STEREO, &m_bStereo);
-	AddNumValidator(ID_WINX, &m_WinPos.x);
-	AddNumValidator(ID_WINY, &m_WinPos.y);
-	AddNumValidator(ID_WIN_XSIZE, &m_WinSize.x);
-	AddNumValidator(ID_WIN_YSIZE, &m_WinSize.y);
-	AddValidator(ID_SIZE_INSIDE, &m_bLocationInside);
+//  AddValidator(this, ID_HTML_PANE, &m_bHtmlpane);
+//  AddValidator(this, ID_FLOATING, &m_bFloatingToolbar);
+	AddValidator(this, ID_TEXTURE_COMPRESSION, &m_bTextureCompression);
+//  AddValidator(this, ID_SHADOWS, &m_bShadows);
+	AddValidator(this, ID_DISABLE_MIPMAPS, &m_bDisableMipmaps);
 
-//  AddValidator(ID_HTML_PANE, &m_bHtmlpane);
-//  AddValidator(ID_FLOATING, &m_bFloatingToolbar);
-	AddValidator(ID_TEXTURE_COMPRESSION, &m_bTextureCompression);
-//  AddValidator(ID_SHADOWS, &m_bShadows);
-	AddValidator(ID_DISABLE_MIPMAPS, &m_bDisableMipmaps);
+	AddValidator(this, ID_DIRECT_PICKING, &m_bDirectPicking);
+	AddNumValidator(this, ID_SELECTION_CUTOFF, &m_fSelectionCutoff, 2);
+	AddNumValidator(this, ID_SELECTION_RADIUS, &m_fMaxPickableInstanceRadius, 2);
 
-	AddValidator(ID_DIRECT_PICKING, &m_bDirectPicking);
-	AddNumValidator(ID_SELECTION_CUTOFF, &m_fSelectionCutoff, 2);
-	AddNumValidator(ID_SELECTION_RADIUS, &m_fMaxPickableInstanceRadius, 2);
+	AddNumValidator(this, ID_PLANTSIZE, &m_fPlantScale, 2);
+	AddValidator(this, ID_ONLY_AVAILABLE_SPECIES, &m_bOnlyAvailableSpecies);
 
-	AddNumValidator(ID_PLANTSIZE, &m_fPlantScale, 2);
-	AddValidator(ID_ONLY_AVAILABLE_SPECIES, &m_bOnlyAvailableSpecies);
+	AddValidator(this, ID_CHOICE_CONTENT, &m_iContentFile);
+	AddValidator(this, ID_CHOICE_CONTENT, &m_strContentFile);
 
-	AddValidator(ID_CHOICE_CONTENT, &m_iContentFile);
-	AddValidator(ID_CHOICE_CONTENT, &m_strContentFile);
-
-	AddValidator(ID_TERRAIN_PROGRESS, &m_bShowProgress);
-	AddValidator(ID_FLY_IN, &m_bFlyIn);
+	AddValidator(this, ID_TERRAIN_PROGRESS, &m_bShowProgress);
+	AddValidator(this, ID_FLY_IN, &m_bFlyIn);
 }
 
 

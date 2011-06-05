@@ -69,34 +69,34 @@ ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	FormatTilingString();
 
 	// output options
-	AddValidator(ID_RADIO_CREATE_NEW, &m_bNewLayer);
-	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
-	AddValidator(ID_RADIO_TO_TILES, &m_bToTiles);
+	AddValidator(this, ID_RADIO_CREATE_NEW, &m_bNewLayer);
+	AddValidator(this, ID_RADIO_TO_FILE, &m_bToFile);
+	AddValidator(this, ID_RADIO_TO_TILES, &m_bToTiles);
 
-	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
-	AddValidator(ID_TEXT_TILE_INFO, &m_strTileInfo);
+	AddValidator(this, ID_TEXT_TO_FILE, &m_strToFile);
+	AddValidator(this, ID_TEXT_TILE_INFO, &m_strTileInfo);
 
-	AddValidator(ID_DERIVED_IMAGES, &m_tileopts.bCreateDerivedImages);
-	AddValidator(ID_TEXT_TO_IMAGE_FILE, &m_strToFileImages);
+	AddValidator(this, ID_DERIVED_IMAGES, &m_tileopts.bCreateDerivedImages);
+	AddValidator(this, ID_TEXT_TO_IMAGE_FILE, &m_strToFileImages);
 
 	// sampling
-	spacing1 = AddNumValidator(ID_SPACINGX, &m_fSpacingX);
-	spacing2 = AddNumValidator(ID_SPACINGY, &m_fSpacingY);
-	AddNumValidator(ID_SIZEX, &m_iSizeX);
-	AddNumValidator(ID_SIZEY, &m_iSizeY);
-	AddValidator(ID_CONSTRAIN, &m_bConstraint);
+	spacing1 = AddNumValidator(this, ID_SPACINGX, &m_fSpacingX);
+	spacing2 = AddNumValidator(this, ID_SPACINGY, &m_fSpacingY);
+	AddNumValidator(this, ID_SIZEX, &m_iSizeX);
+	AddNumValidator(this, ID_SIZEY, &m_iSizeY);
+	AddValidator(this, ID_CONSTRAIN, &m_bConstraint);
 
 	// output grid
-	AddValidator(ID_FLOATS, &m_bFloats);
-	AddNumValidator(ID_VUNITS, &m_fVUnits);
-	AddValidator(ID_FILL_GAPS, &m_bFillGaps);
+	AddValidator(this, ID_FLOATS, &m_bFloats);
+	AddNumValidator(this, ID_VUNITS, &m_fVUnits);
+	AddValidator(this, ID_FILL_GAPS, &m_bFillGaps);
 
 	// informations
-	AddNumValidator(ID_AREAX, &m_fAreaX);
-	AddNumValidator(ID_AREAY, &m_fAreaY);
+	AddNumValidator(this, ID_AREAX, &m_fAreaX);
+	AddNumValidator(this, ID_AREAY, &m_fAreaY);
 
-	AddNumValidator(ID_ESTX, &m_fEstX);
-	AddNumValidator(ID_ESTY, &m_fEstY);
+	AddNumValidator(this, ID_ESTX, &m_fEstX);
+	AddNumValidator(this, ID_ESTY, &m_fEstY);
 }
 
 void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)

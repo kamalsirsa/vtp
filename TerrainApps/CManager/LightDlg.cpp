@@ -46,9 +46,9 @@ LightDlg::LightDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// WDR: dialog function LightDialogFunc for LightDlg
 	LightDialogFunc( this, TRUE );
 
-	AddNumValidator(ID_DIRX, &m_dir.x);
-	AddNumValidator(ID_DIRY, &m_dir.y);
-	AddNumValidator(ID_DIRZ, &m_dir.z);
+	AddNumValidator(this, ID_DIRX, &m_dir.x);
+	AddNumValidator(this, ID_DIRY, &m_dir.y);
+	AddNumValidator(this, ID_DIRZ, &m_dir.z);
 
 	GetLight()->SetSelection(0);
 }

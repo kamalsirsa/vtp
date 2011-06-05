@@ -41,6 +41,8 @@ wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
 			pImage.SetRGB(i, j, color.Red(), color.Green(), color.Blue());
 		}
 
+	bool bOk = pImage.Ok();
+
 	wxBitmap *pBitmap = new wxBitmap(pImage);
 	return pBitmap;
 }
@@ -61,22 +63,30 @@ wxBitmap *DibToBitmap(vtDIB *dib)
 	return new wxBitmap(image);
 }
 
+void FillWithColorSize(wxStaticBitmap *pStaticBitmap, int w, int h, const wxColour &color)
+{
+	wxBitmap *pNewBitmap = MakeColorBitmap(w, h, color);
+	pStaticBitmap->SetBitmap(*pNewBitmap);
+	delete pNewBitmap;
+}
+
+void FillWithColorSize(wxBitmapButton *pBitmapButton, int w, int h, const wxColour &color)
+{
+	wxBitmap *pNewBitmap = MakeColorBitmap(w, h, color);
+	pBitmapButton->SetBitmapLabel(*pNewBitmap);
+	delete pNewBitmap;
+}
+
 void FillWithColor(wxStaticBitmap *pStaticBitmap, const wxColour &color)
 {
 	const wxBitmap &bm = pStaticBitmap->GetBitmap();
-
-	wxBitmap *pNewBitmap = MakeColorBitmap(bm.GetWidth(), bm.GetHeight(), color);
-	pStaticBitmap->SetBitmap(*pNewBitmap);
-	delete pNewBitmap;
+	FillWithColorSize(pStaticBitmap, bm.GetWidth(), bm.GetHeight(), color);
 }
 
 void FillWithColor(wxBitmapButton *pBitmapButton, const wxColour &color)
 {
 	const wxBitmap &bm = pBitmapButton->GetBitmapLabel();
-
-	wxBitmap *pNewBitmap = MakeColorBitmap(bm.GetWidth(), bm.GetHeight(), color);
-	pBitmapButton->SetBitmapLabel(*pNewBitmap);
-	delete pNewBitmap;
+	FillWithColorSize(pBitmapButton, bm.GetWidth(), bm.GetHeight(), color);
 }
 
 void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color)
@@ -87,6 +97,16 @@ void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color)
 void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color)
 {
 	FillWithColor(pBitmapButton, wxColour(color.r, color.g, color.b));
+}
+
+void FillWithColorSize(wxStaticBitmap *pStaticBitmap, int w, int h, const RGBi &color)
+{
+	FillWithColorSize(pStaticBitmap, w, h, wxColour(color.r, color.g, color.b));
+}
+
+void FillWithColorSize(wxBitmapButton *pBitmapButton, int w, int h, const RGBi &color)
+{
+	FillWithColorSize(pBitmapButton, w, h, wxColour(color.r, color.g, color.b));
 }
 
 /**

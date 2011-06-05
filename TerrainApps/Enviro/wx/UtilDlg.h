@@ -1,14 +1,14 @@
 //
 // Name: UtilDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __UtilDlg_H__
 #define __UtilDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 
 // WDR: class declarations
@@ -17,7 +17,7 @@
 // UtilDlg
 //----------------------------------------------------------------------------
 
-class UtilDlg: public AutoDialog
+class UtilDlg: public UtilDlgBase
 {
 public:
 	// constructors and destructors

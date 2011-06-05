@@ -326,30 +326,8 @@
 				>
 			</File>
 			<File
-				RelativePath="vtui_wdr.cpp"
+				RelativePath=".\vtui_UI.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"
-					/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -418,6 +396,10 @@
 			</File>
 			<File
 				RelativePath=".\TagDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\vtui_UI.h"
 				>
 			</File>
 			<File

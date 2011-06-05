@@ -1,14 +1,14 @@
 //
 // Name: BuildingDlg.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __BuildingDlg_H__
 #define __BuildingDlg_H__
 
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/Building.h"
 #include "vtdata/StructArray.h"
@@ -19,7 +19,7 @@
 // BuildingDlg
 //----------------------------------------------------------------------------
 
-class BuildingDlg: public AutoDialog
+class BuildingDlg: public BuildingDlgBase
 {
 public:
 	// constructors and destructors

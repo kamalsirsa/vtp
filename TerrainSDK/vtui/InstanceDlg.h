@@ -1,14 +1,14 @@
 //
 // InstanceDlg.h
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __InstanceDlg_H__
 #define __InstanceDlg_H__
 
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 #include "AutoDialog.h"
 #include "vtdata/Projections.h"
 #include "vtdata/Content.h"
@@ -19,7 +19,7 @@
 // InstanceDlg
 //----------------------------------------------------------------------------
 
-class InstanceDlg: public AutoDialog
+class InstanceDlg: public InstanceDlgBase
 {
 public:
 	// constructors and destructors

@@ -48,19 +48,19 @@ RawDlg::RawDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	RawDialogFunc( this, TRUE );
 
-	AddNumValidator(ID_BYTES, &m_iBytes);
-	AddNumValidator(ID_WIDTH, &m_iWidth);
-	AddNumValidator(ID_HEIGHT, &m_iHeight);
-	AddNumValidator(ID_VUNITS, &m_fVUnits);
-	AddNumValidator(ID_SPACING, &m_fSpacing);
-	AddValidator(ID_BIG_ENDIAN, &m_bBigEndian);
+	AddNumValidator(this, ID_BYTES, &m_iBytes);
+	AddNumValidator(this, ID_WIDTH, &m_iWidth);
+	AddNumValidator(this, ID_HEIGHT, &m_iHeight);
+	AddNumValidator(this, ID_VUNITS, &m_fVUnits);
+	AddNumValidator(this, ID_SPACING, &m_fSpacing);
+	AddValidator(this, ID_BIG_ENDIAN, &m_bBigEndian);
 
-	AddValidator(ID_EXT_SPACING, &m_bExtSpacing);
-	AddValidator(ID_EXT_EXACT, &m_bExtExact);
+	AddValidator(this, ID_EXT_SPACING, &m_bExtSpacing);
+	AddValidator(this, ID_EXT_EXACT, &m_bExtExact);
 
-	AddValidator(ID_CRS_SIMPLE, &m_bCrsSimple);
-	AddValidator(ID_CRS_CURRENT, &m_bCrsCurrent);
-	AddValidator(ID_CRS_EXACT, &m_bCrsExact);
+	AddValidator(this, ID_CRS_SIMPLE, &m_bCrsSimple);
+	AddValidator(this, ID_CRS_CURRENT, &m_bCrsCurrent);
+	AddValidator(this, ID_CRS_EXACT, &m_bCrsExact);
 }
 
 // WDR: handler implementations for RawDlg

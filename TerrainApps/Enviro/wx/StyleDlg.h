@@ -1,14 +1,14 @@
 //
 // Name: StyleDlg.h
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project.
+// Copyright (c) 2004-2011 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __StyleDlg_H__
 #define __StyleDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/Features.h"
 
@@ -20,7 +20,7 @@ class vtTagArray;
 // StyleDlg
 //----------------------------------------------------------------------------
 
-class StyleDlg: public AutoDialog
+class StyleDlg: public StyleDlgBase
 {
 public:
 	// constructors and destructors

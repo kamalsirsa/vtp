@@ -1,7 +1,7 @@
 //
 // Name: BuildingDlg.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -30,7 +30,7 @@ wxColourData BuildingDlg::s_ColorData;
 
 // WDR: event table for BuildingDlg
 
-BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
+BEGIN_EVENT_TABLE(BuildingDlg, BuildingDlgBase)
 	EVT_INIT_DIALOG (BuildingDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, BuildingDlg::OnOK )
 	EVT_BUTTON( ID_SET_COLOR, BuildingDlg::OnColor1 )
@@ -58,30 +58,34 @@ END_EVENT_TABLE()
 
 BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	BuildingDlgBase( parent, id, title, position, size, style )
 {
 	m_bSetting = false;
 	m_bEdges = false;
 
-	BuildingDialogFunc( this, TRUE );
+	m_panel1->Show(true);
+	m_panel2->Show(false);
+	Layout();
+	GetSizer()->Fit( this );
+
 	SetupValidators();
 }
 
 void BuildingDlg::SetupValidators()
 {
-	AddValidator(ID_STORIES, &m_iStories);
-	AddNumValidator(ID_STORY_HEIGHT, &m_fStoryHeight);
+	AddValidator(this, ID_STORIES, &m_iStories);
+	AddNumValidator(this, ID_STORY_HEIGHT, &m_fStoryHeight);
 
 	if (m_bEdges)
 	{
-		AddValidator(ID_MATERIAL2, &m_strMaterial);
-		AddNumValidator(ID_EDGE_SLOPE, &m_iEdgeSlope);
-		AddValidator(ID_FEATURES, &m_strFeatures);
+		AddValidator(this, ID_MATERIAL2, &m_strMaterial);
+		AddNumValidator(this, ID_EDGE_SLOPE, &m_iEdgeSlope);
+		AddValidator(this, ID_FEATURES, &m_strFeatures);
 	}
 	else
 	{
-		AddValidator(ID_MATERIAL1, &m_strMaterial);
-		AddValidator(ID_EDGE_SLOPES, &m_strEdgeSlopes);
+		AddValidator(this, ID_MATERIAL1, &m_strMaterial);
+		AddValidator(this, ID_EDGE_SLOPES, &m_strEdgeSlopes);
 	}
 }
 
@@ -526,7 +530,7 @@ void BuildingDlg::UpdateColorControl()
 	else
 	{
 		// Case of a single edge, much simpler.
-		FillWithColor(m_pColorBitmapControl, m_pEdge->m_Color);
+		FillWithColorSize(m_pColorBitmapControl, 32, 18, m_pEdge->m_Color);
 	}
 }
 
@@ -728,16 +732,23 @@ void BuildingDlg::AdjustDialogForEdges()
 {
 	if (m_bEdges)
 	{
-		DestroyChildren();
-		BuildingEdgesDialogFunc( this, TRUE );
+		//DestroyChildren();
+		//BuildingEdgesDialogFunc( this, TRUE );
+		m_panel1->Show(false);
+		m_panel2->Show(true);
 	}
 	else
 	{
-		DestroyChildren();
-		BuildingDialogFunc( this, TRUE );
+		//DestroyChildren();
+		//BuildingDialogFunc( this, TRUE );
+		m_panel1->Show(true);
+		m_panel2->Show(false);
+
 		if (m_pSA)
 			m_pSA->SetEditedEdge(NULL, 0, 0);
 	}
+	Layout();
+	GetSizer()->Fit( this );
 }
 
 void BuildingDlg::OnEdges( wxCommandEvent &event )

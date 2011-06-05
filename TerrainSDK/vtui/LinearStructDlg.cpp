@@ -33,7 +33,7 @@
 
 // WDR: event table for LinearStructureDlg
 
-BEGIN_EVENT_TABLE(LinearStructureDlg, AutoDialog)
+BEGIN_EVENT_TABLE(LinearStructureDlg, LinearStructDlgBase)
 	EVT_INIT_DIALOG (LinearStructureDlg::OnInitDialog)
 	EVT_CHOICE( ID_LINEAR_STRUCTURE_STYLE, LinearStructureDlg::OnStyle )
 	EVT_TEXT( ID_POST_HEIGHT_EDIT, LinearStructureDlg::OnTextEdit )
@@ -61,9 +61,8 @@ END_EVENT_TABLE()
 
 LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	LinearStructDlgBase( parent, id, title, position, size, style )
 {
-	LinearStructDialogFunc( this, TRUE );
 	m_bSetting = false;
 
 	m_pStructureMaterials = NULL;
@@ -71,27 +70,27 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	m_param.Defaults();
 	m_pProfileEditDlg = NULL;
 
-	AddValidator(ID_LINEAR_STRUCTURE_STYLE, &m_iStyle);
+	AddValidator(this, ID_LINEAR_STRUCTURE_STYLE, &m_iStyle);
 
-	AddValidator(ID_POST_HEIGHT_SLIDER, &m_iPostHeight);
-	AddValidator(ID_POST_SPACING_SLIDER, &m_iPostSpacing);
-	AddValidator(ID_POST_SIZE_SLIDER, &m_iPostSize);
+	AddValidator(this, ID_POST_HEIGHT_SLIDER, &m_iPostHeight);
+	AddValidator(this, ID_POST_SPACING_SLIDER, &m_iPostSpacing);
+	AddValidator(this, ID_POST_SIZE_SLIDER, &m_iPostSize);
 
-	AddValidator(ID_CONN_TYPE, &m_param.m_iConnectType);
-	AddValidator(ID_CONN_WIDTH_SLIDER, &m_iConnWidth);
-	AddValidator(ID_CONN_TOP_SLIDER, &m_iConnTop);
-	AddValidator(ID_CONN_BOTTOM_SLIDER, &m_iConnBottom);
-	AddValidator(ID_SLOPE_SLIDER, &m_iSlope);
-	AddValidator(ID_CONSTANT_TOP, &m_param.m_bConstantTop);
+	AddValidator(this, ID_CONN_TYPE, &m_param.m_iConnectType);
+	AddValidator(this, ID_CONN_WIDTH_SLIDER, &m_iConnWidth);
+	AddValidator(this, ID_CONN_TOP_SLIDER, &m_iConnTop);
+	AddValidator(this, ID_CONN_BOTTOM_SLIDER, &m_iConnBottom);
+	AddValidator(this, ID_SLOPE_SLIDER, &m_iSlope);
+	AddValidator(this, ID_CONSTANT_TOP, &m_param.m_bConstantTop);
 
-	AddNumValidator(ID_POST_HEIGHT_EDIT, &m_param.m_fPostHeight, 2);
-	AddNumValidator(ID_POST_SPACING_EDIT, &m_param.m_fPostSpacing, 2);
-	AddNumValidator(ID_POST_SIZE_EDIT, &m_param.m_fPostWidth, 2);
+	AddNumValidator(this, ID_POST_HEIGHT_EDIT, &m_param.m_fPostHeight, 2);
+	AddNumValidator(this, ID_POST_SPACING_EDIT, &m_param.m_fPostSpacing, 2);
+	AddNumValidator(this, ID_POST_SIZE_EDIT, &m_param.m_fPostWidth, 2);
 
-	AddNumValidator(ID_CONN_WIDTH_EDIT, &m_param.m_fConnectWidth, 2);
-	AddNumValidator(ID_CONN_TOP_EDIT, &m_param.m_fConnectTop, 2);
-	AddNumValidator(ID_CONN_BOTTOM_EDIT, &m_param.m_fConnectBottom, 2);
-	AddNumValidator(ID_SLOPE, &m_param.m_iConnectSlope);
+	AddNumValidator(this, ID_CONN_WIDTH_EDIT, &m_param.m_fConnectWidth, 2);
+	AddNumValidator(this, ID_CONN_TOP_EDIT, &m_param.m_fConnectTop, 2);
+	AddNumValidator(this, ID_CONN_BOTTOM_EDIT, &m_param.m_fConnectBottom, 2);
+	AddNumValidator(this, ID_SLOPE, &m_param.m_iConnectSlope);
 
 	UpdateChoices();
 }

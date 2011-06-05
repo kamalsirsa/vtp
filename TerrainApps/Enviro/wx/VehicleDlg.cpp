@@ -1,7 +1,7 @@
 //
 // Name: VehicleDlg.cpp
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,7 +31,7 @@ extern void EnableContinuousRendering(bool bTrue);
 
 // WDR: event table for VehicleDlg
 
-BEGIN_EVENT_TABLE(VehicleDlg,wxDialog)
+BEGIN_EVENT_TABLE(VehicleDlg,VehicleDlgBase)
 	EVT_INIT_DIALOG (VehicleDlg::OnInitDialog)
 	EVT_BUTTON( ID_SET_VEHICLE_COLOR, VehicleDlg::OnSetColor )
 	EVT_CHOICE( ID_CHOICE_VEHICLES, VehicleDlg::OnChoiceVehicle )
@@ -39,11 +39,8 @@ END_EVENT_TABLE()
 
 VehicleDlg::VehicleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	VehicleDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function VehicleDialogFunc for VehicleDlg
-	VehicleDialogFunc( this, TRUE );
-
 	m_options.m_Color.Set(255, 255, 0);
 	wxColour rgb(255, 255, 0);
 	m_ColorData.SetChooseFull(true);

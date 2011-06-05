@@ -12,7 +12,7 @@
 	#include "wx/wx.h"
 #endif
 
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 #include "vtui/AutoDialog.h"
 #include "vtui/wxString2.h"
 #include "vtdata/Building.h"

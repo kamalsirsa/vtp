@@ -8,7 +8,7 @@
 #ifndef __StartupDlg_H__
 #define __StartupDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 #include "../Options.h"
 
@@ -20,7 +20,7 @@ class EnviroOptions;
 // StartupDlg
 //----------------------------------------------------------------------------
 
-class StartupDlg: public AutoDialog
+class StartupDlg: public StartupDlgBase
 {
 public:
 	// constructors and destructors

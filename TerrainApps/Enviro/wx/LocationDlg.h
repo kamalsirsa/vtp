@@ -1,14 +1,14 @@
 //
 // Name:		LocationDlg.h
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __LocationDlg_H__
 #define __LocationDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtlib/core/Location.h"
 #include "vtlib/core/AnimPath.h"
 #include "vtui/AutoDialog.h"
@@ -28,7 +28,7 @@ class vtLocationSaver;
 // LocationDlg
 //----------------------------------------------------------------------------
 
-class LocationDlg: public AutoDialog
+class LocationDlg: public LocationDlgBase
 {
 public:
 	// constructors and destructors

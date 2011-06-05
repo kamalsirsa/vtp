@@ -11,7 +11,7 @@
 #include "wx/imaglist.h"
 #include "wx/aui/aui.h"
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtlib/core/AbstractLayer.h"
 #include "vtlib/core/TerrainLayers.h"
 #include "vtlib/core/Globe.h"

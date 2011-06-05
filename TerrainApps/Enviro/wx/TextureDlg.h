@@ -1,14 +1,14 @@
 //
 // Name: TextureDlg.h
 //
-// Copyright (c) 2006-2007 Virtual Terrain Project
+// Copyright (c) 2006-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __TextureDlg_H__
 #define __TextureDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 #include "vtlib/core/TParams.h"
 
@@ -18,7 +18,7 @@
 // TextureDlg
 //----------------------------------------------------------------------------
 
-class TextureDlg: public AutoDialog
+class TextureDlg: public TextureDlgBase
 {
 public:
 	// constructors and destructors

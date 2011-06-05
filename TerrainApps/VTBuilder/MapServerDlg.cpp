@@ -60,15 +60,15 @@ MapServerDlg::MapServerDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 
 	MapServerDialogFunc( this, TRUE );
 
-	AddValidator(ID_RADIO_CREATE_NEW, &m_bNewLayer);
-	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
+	AddValidator(this, ID_RADIO_CREATE_NEW, &m_bNewLayer);
+	AddValidator(this, ID_RADIO_TO_FILE, &m_bToFile);
 
-	AddNumValidator(ID_WIDTH, &m_iXSize);
-	AddNumValidator(ID_HEIGHT, &m_iYSize);
+	AddNumValidator(this, ID_WIDTH, &m_iXSize);
+	AddNumValidator(this, ID_HEIGHT, &m_iYSize);
 
-	AddValidator(ID_QUERY, &m_strQueryURL);   // query url string
-	AddValidator(ID_CHOICE_FORMAT, &m_iFormat);
-	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
+	AddValidator(this, ID_QUERY, &m_strQueryURL);   // query url string
+	AddValidator(this, ID_CHOICE_FORMAT, &m_iFormat);
+	AddValidator(this, ID_TEXT_TO_FILE, &m_strToFile);
 
 	GetListLayers()->Clear();
 	GetListLayers()->Append(_T("<none>"));

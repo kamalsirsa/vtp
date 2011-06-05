@@ -1,7 +1,7 @@
 //
 // Name: ProfileDlg.h
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,7 +12,7 @@
 	#include "wx/wx.h"
 #endif
 
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 #include "AutoDialog.h"
 #include "vtdata/HeightField.h"
 
@@ -31,7 +31,7 @@ public:
 // ProfileDlg
 //----------------------------------------------------------------------------
 
-class ProfileDlg: public AutoDialog
+class ProfileDlg: public ProfileDlgBase
 {
 public:
 	// constructors and destructors

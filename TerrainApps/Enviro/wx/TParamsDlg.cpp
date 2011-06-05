@@ -82,7 +82,7 @@ END_EVENT_TABLE()
 
 // WDR: event table for TParamsDlg
 
-BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
+BEGIN_EVENT_TABLE(TParamsDlg,TParamsDlgBase)
 	EVT_INIT_DIALOG (TParamsDlg::OnInitDialog)
 
 	// Elevation
@@ -152,13 +152,19 @@ END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style | wxRESIZE_BORDER )
+	TParamsDlgBase( parent, id, title, position, size, style | wxRESIZE_BORDER )
 {
 	VTLOG("TParamsDlg: Constructing.\n");
 
-	TParamsFunc( this, TRUE, TRUE );
-
 	m_bSetting = false;
+
+	// Work around the limitation of wxFormDesigner which can only load bitmaps
+	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
+	//  want them in the resources (on Windows) or as xpm (on Linux)
+	m_color3->SetBitmap(wxBITMAP(dummy_32x18));
+
+	// Work around wxFormDesigner's lack of support for limiting to smallest size
+	GetSizer()->SetSizeHints(this);
 
 	// make sure that validation gets down to the child windows
 	SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
@@ -214,116 +220,116 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// Create Validators To Attach C++ Members To WX Controls
 
 	// overall name
-	AddValidator(ID_TNAME, &m_strTerrainName);
+	AddValidator(this, ID_TNAME, &m_strTerrainName);
 
 	// elevation
-	AddValidator(ID_USE_GRID, &m_bGrid);
-	AddValidator(ID_USE_TIN, &m_bTin);
-	AddValidator(ID_USE_TILESET, &m_bTileset);
-	AddValidator(ID_USE_EXTERNAL, &m_bExternal);
-	AddValidator(ID_TT_EXTERNAL_DATA, &m_strExternalData);
-	AddValidator(ID_FILENAME, &m_strFilename);
-	AddValidator(ID_FILENAME_TIN, &m_strFilenameTin);
-	AddValidator(ID_FILENAME_TILES, &m_strFilenameTileset);
-	AddNumValidator(ID_VERTEXAG, &m_fVerticalExag, 2);
+	AddValidator(this, ID_USE_GRID, &m_bGrid);
+	AddValidator(this, ID_USE_TIN, &m_bTin);
+	AddValidator(this, ID_USE_TILESET, &m_bTileset);
+	AddValidator(this, ID_USE_EXTERNAL, &m_bExternal);
+	AddValidator(this, ID_TT_EXTERNAL_DATA, &m_strExternalData);
+	AddValidator(this, ID_FILENAME, &m_strFilename);
+	AddValidator(this, ID_FILENAME_TIN, &m_strFilenameTin);
+	AddValidator(this, ID_FILENAME_TILES, &m_strFilenameTileset);
+	AddNumValidator(this, ID_VERTEXAG, &m_fVerticalExag, 2);
 
 	// nav
-	AddNumValidator(ID_MINHEIGHT, &m_fMinHeight, 2);
-	AddValidator(ID_NAV_STYLE, &m_iNavStyle);
-	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
-	AddValidator(ID_LOCFILE, &m_strLocFile);
-	AddValidator(ID_INIT_LOCATION, &m_iInitLocation);
-	AddNumValidator(ID_HITHER, &m_fHither);
-	AddValidator(ID_ACCEL, &m_bAccel);
-	AddValidator(ID_ALLOW_ROLL, &m_bAllowRoll);
+	AddNumValidator(this, ID_MINHEIGHT, &m_fMinHeight, 2);
+	AddValidator(this, ID_NAV_STYLE, &m_iNavStyle);
+	AddNumValidator(this, ID_NAVSPEED, &m_fNavSpeed, 2);
+	AddValidator(this, ID_LOCFILE, &m_strLocFile);
+	AddValidator(this, ID_INIT_LOCATION, &m_iInitLocation);
+	AddNumValidator(this, ID_HITHER, &m_fHither);
+	AddValidator(this, ID_ACCEL, &m_bAccel);
+	AddValidator(this, ID_ALLOW_ROLL, &m_bAllowRoll);
 
 	// LOD
-	AddValidator(ID_LODMETHOD, &m_iLodMethod);
-	AddNumValidator(ID_TRI_COUNT, &m_iTriCount);
-	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
-	AddNumValidator(ID_VTX_COUNT, &m_iVertCount);
-	AddNumValidator(ID_TILE_CACHE_SIZE, &m_iTileCacheSize);
-	AddValidator(ID_TILE_THREADING, &m_bTileThreading);
+	AddValidator(this, ID_LODMETHOD, &m_iLodMethod);
+	AddNumValidator(this, ID_TRI_COUNT, &m_iTriCount);
+	AddValidator(this, ID_TRISTRIPS, &m_bTriStrips);
+	AddNumValidator(this, ID_VTX_COUNT, &m_iVertCount);
+	AddNumValidator(this, ID_TILE_CACHE_SIZE, &m_iTileCacheSize);
+	AddValidator(this, ID_TILE_THREADING, &m_bTileThreading);
 
 	// time
-	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
-	AddValidator(ID_TEXT_INIT_TIME, &m_strInitTime);
-	AddNumValidator(ID_TIMESPEED, &m_fTimeSpeed, 2);
+	AddValidator(this, ID_TIMEMOVES, &m_bTimeOn);
+	AddValidator(this, ID_TEXT_INIT_TIME, &m_strInitTime);
+	AddNumValidator(this, ID_TIMESPEED, &m_fTimeSpeed, 2);
 
 	// texture
-	AddValidator(ID_TFILE_SINGLE, &m_strTextureSingle);
-	AddValidator(ID_CHOICE_TILESIZE, &m_iTilesizeIndex);
-	AddValidator(ID_TFILE_BASE, &m_strTextureBase);
-	AddValidator(ID_TFILENAME, &m_strTexture4x4);
-	AddValidator(ID_TFILE_TILESET, &m_strTextureTileset);
-	AddValidator(ID_TEXTURE_GRADUAL, &m_bTextureGradual);
-	AddNumValidator(ID_TEX_LOD, &m_fTextureLODFactor);
-	AddValidator(ID_MIPMAP, &m_bMipmap);
-	AddValidator(ID_16BIT, &m_b16bit);
-	AddValidator(ID_PRELIGHT, &m_bPreLight);
-	AddValidator(ID_CAST_SHADOWS, &m_bCastShadows);
-	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
-	AddValidator(ID_CHOICE_COLORS, &m_strColorMap);
-	AddValidator(ID_RETAIN, &m_bTextureRetain);
+	AddValidator(this, ID_TFILE_SINGLE, &m_strTextureSingle);
+	AddValidator(this, ID_CHOICE_TILESIZE, &m_iTilesizeIndex);
+	AddValidator(this, ID_TFILE_BASE, &m_strTextureBase);
+	AddValidator(this, ID_TFILENAME, &m_strTexture4x4);
+	AddValidator(this, ID_TFILE_TILESET, &m_strTextureTileset);
+	AddValidator(this, ID_TEXTURE_GRADUAL, &m_bTextureGradual);
+	AddNumValidator(this, ID_TEX_LOD, &m_fTextureLODFactor);
+	AddValidator(this, ID_MIPMAP, &m_bMipmap);
+	AddValidator(this, ID_16BIT, &m_b16bit);
+	AddValidator(this, ID_PRELIGHT, &m_bPreLight);
+	AddValidator(this, ID_CAST_SHADOWS, &m_bCastShadows);
+	AddNumValidator(this, ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
+	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
+	AddValidator(this, ID_RETAIN, &m_bTextureRetain);
 
 	// detail texture
-	AddValidator(ID_DETAILTEXTURE, &m_bDetailTexture);
-	AddValidator(ID_DT_NAME, &m_strDetailName);
-	AddNumValidator(ID_DT_SCALE, &m_fDetailScale);
-	AddNumValidator(ID_DT_DISTANCE, &m_fDetailDistance);
+	AddValidator(this, ID_DETAILTEXTURE, &m_bDetailTexture);
+	AddValidator(this, ID_DT_NAME, &m_strDetailName);
+	AddNumValidator(this, ID_DT_SCALE, &m_fDetailScale);
+	AddNumValidator(this, ID_DT_DISTANCE, &m_fDetailDistance);
 
 	// culture page
-	AddValidator(ID_PLANTS, &m_bPlants);
-	AddValidator(ID_TREEFILE, &m_strVegFile);
-	AddNumValidator(ID_VEGDISTANCE, &m_iVegDistance);
+	AddValidator(this, ID_PLANTS, &m_bPlants);
+	AddValidator(this, ID_TREEFILE, &m_strVegFile);
+	AddNumValidator(this, ID_VEGDISTANCE, &m_iVegDistance);
 
-	AddValidator(ID_ROADS, &m_bRoads);
-	AddValidator(ID_ROADFILE, &m_strRoadFile);
-	AddValidator(ID_HIGHWAYS, &m_bHwy);
-	AddValidator(ID_PAVED, &m_bPaved);
-	AddValidator(ID_DIRT, &m_bDirt);
-	AddNumValidator(ID_ROADHEIGHT, &m_fRoadHeight);
-	AddNumValidator(ID_ROADDISTANCE, &m_fRoadDistance);
-	AddValidator(ID_TEXROADS, &m_bTexRoads);
-	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
+	AddValidator(this, ID_ROADS, &m_bRoads);
+	AddValidator(this, ID_ROADFILE, &m_strRoadFile);
+	AddValidator(this, ID_HIGHWAYS, &m_bHwy);
+	AddValidator(this, ID_PAVED, &m_bPaved);
+	AddValidator(this, ID_DIRT, &m_bDirt);
+	AddNumValidator(this, ID_ROADHEIGHT, &m_fRoadHeight);
+	AddNumValidator(this, ID_ROADDISTANCE, &m_fRoadDistance);
+	AddValidator(this, ID_TEXROADS, &m_bTexRoads);
+	AddValidator(this, ID_ROADCULTURE, &m_bRoadCulture);
 
-	AddValidator(ID_CONTENT_FILE, &m_strContent);
-	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
+	AddValidator(this, ID_CONTENT_FILE, &m_strContent);
+	AddNumValidator(this, ID_STRUCT_DISTANCE, &m_iStructDistance);
 
 	// shadows
-	AddValidator(ID_CHECK_STRUCTURE_SHADOWS, &m_bStructureShadows);
-	AddValidator(ID_CHOICE_SHADOW_REZ, &m_iShadowRez);
-	AddNumValidator(ID_DARKNESS, &m_fDarkness, 2);
-	AddValidator(ID_SHADOWS_DEFAULT_ON, &m_bShadowsDefaultOn);
-	AddValidator(ID_SHADOWS_EVERY_FRAME, &m_bShadowsEveryFrame);
-	AddValidator(ID_SHADOW_LIMIT, &m_bLimitShadowArea);
-	AddNumValidator(ID_SHADOW_LIMIT_RADIUS, &m_fShadowRadius);
+	AddValidator(this, ID_CHECK_STRUCTURE_SHADOWS, &m_bStructureShadows);
+	AddValidator(this, ID_CHOICE_SHADOW_REZ, &m_iShadowRez);
+	AddNumValidator(this, ID_DARKNESS, &m_fDarkness, 2);
+	AddValidator(this, ID_SHADOWS_DEFAULT_ON, &m_bShadowsDefaultOn);
+	AddValidator(this, ID_SHADOWS_EVERY_FRAME, &m_bShadowsEveryFrame);
+	AddValidator(this, ID_SHADOW_LIMIT, &m_bLimitShadowArea);
+	AddNumValidator(this, ID_SHADOW_LIMIT_RADIUS, &m_fShadowRadius);
 
 	// paging
-	AddValidator(ID_CHECK_STRUCTURE_PAGING, &m_bPagingStructures);
-	AddNumValidator(ID_PAGING_MAX_STRUCTURES, &m_iPagingStructureMax);
-	AddNumValidator(ID_PAGE_OUT_DISTANCE, &m_fPagingStructureDist, 1);
-//	AddValidator(ID_VEHICLES, &m_bVehicles);
+	AddValidator(this, ID_CHECK_STRUCTURE_PAGING, &m_bPagingStructures);
+	AddNumValidator(this, ID_PAGING_MAX_STRUCTURES, &m_iPagingStructureMax);
+	AddNumValidator(this, ID_PAGE_OUT_DISTANCE, &m_fPagingStructureDist, 1);
+//	AddValidator(this, ID_VEHICLES, &m_bVehicles);
 
 	// Ephemeris
-	AddValidator(ID_SKY, &m_bSky);
-	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
-	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
-	AddNumValidator(ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
-	AddValidator(ID_WATER, &m_bWater);
-	AddValidator(ID_FILENAME_WATER, &m_strFilenameWater);
-	AddValidator(ID_DEPRESSOCEAN, &m_bDepressOcean);
-	AddNumValidator(ID_DEPRESSOCEANOFFSET, &m_fDepressOceanLevel);
-	AddValidator(ID_HORIZON, &m_bHorizon);
-	AddValidator(ID_FOG, &m_bFog);
-	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
+	AddValidator(this, ID_SKY, &m_bSky);
+	AddValidator(this, ID_SKYTEXTURE, &m_strSkyTexture);
+	AddValidator(this, ID_OCEANPLANE, &m_bOceanPlane);
+	AddNumValidator(this, ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
+	AddValidator(this, ID_WATER, &m_bWater);
+	AddValidator(this, ID_FILENAME_WATER, &m_strFilenameWater);
+	AddValidator(this, ID_DEPRESSOCEAN, &m_bDepressOcean);
+	AddNumValidator(this, ID_DEPRESSOCEANOFFSET, &m_fDepressOceanLevel);
+	AddValidator(this, ID_HORIZON, &m_bHorizon);
+	AddValidator(this, ID_FOG, &m_bFog);
+	AddNumValidator(this, ID_FOG_DISTANCE, &m_fFogDistance);
 
 	// HUD
-	AddValidator(ID_OVERLAY_FILE, &m_strOverlayFile);
-	AddNumValidator(ID_OVERLAY_X, &m_iOverlayX);
-	AddNumValidator(ID_OVERLAY_Y, &m_iOverlayY);
-	AddValidator(ID_CHECK_OVERVIEW, &m_bOverview);
-	AddValidator(ID_CHECK_COMPASS, &m_bCompass);
+	AddValidator(this, ID_OVERLAY_FILE, &m_strOverlayFile);
+	AddNumValidator(this, ID_OVERLAY_X, &m_iOverlayX);
+	AddNumValidator(this, ID_OVERLAY_Y, &m_iOverlayY);
+	AddValidator(this, ID_CHECK_OVERVIEW, &m_bOverview);
+	AddValidator(this, ID_CHECK_COMPASS, &m_bCompass);
 
 	// It's somewhat roundabout, but this lets us capture events on the
 	// listbox controls without having to subclass.
@@ -1526,7 +1532,7 @@ void TParamsDlg::OnDeleteScenario( wxCommandEvent &event )
 
 void TParamsDlg::OnEditScenario( wxCommandEvent &event )
 {
-	CScenarioParamsDialog ScenarioParamsDialog(this, -1, _("Scenario Parameters"));
+	ScenarioParamsDialog ScenarioParamsDialog(this, -1, _("Scenario Parameters"));
 	int iSelected = m_pScenarioList->GetSelection();
 
 	if (iSelected != wxNOT_FOUND)

@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.h
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,7 +12,7 @@
 	#include "wx/wx.h"
 #endif
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 #include "../Options.h"
 
@@ -22,7 +22,7 @@
 // OptionsDlg
 //----------------------------------------------------------------------------
 
-class OptionsDlg: public AutoDialog
+class OptionsDlg: public OptionsDlgBase
 {
 public:
 	// constructors and destructors

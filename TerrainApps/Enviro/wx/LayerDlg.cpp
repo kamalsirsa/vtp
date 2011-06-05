@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.cpp
 //
-// Copyright (c) 2003-2009 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,8 +21,9 @@
 #include "EnviroFrame.h"
 #include "canvas.h"		// for EnableContinuousRendering
 #include "StyleDlg.h"
-
 #include "LayerDlg.h"
+
+#include "menu_id.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "building.xpm"
@@ -33,6 +34,18 @@
 #  include "instance.xpm"
 #  include "icon8.xpm"
 #  include "image.xpm"
+
+#  include "layer_create.xpm"
+#  include "layer_open.xpm"
+#  include "save.xpm"
+#  include "save_as.xpm"
+#  include "zoom_to.xpm"
+#  include "delete1.xpm"
+#  include "eye.xpm"
+#  include "shadow.xpm"
+#  include "treeview.xpm"
+#  include "grid.xpm"
+#  include "refresh.xpm"
 #endif
 
 #define ICON_BUILDING	0
@@ -86,17 +99,37 @@ BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 
 END_EVENT_TABLE()
 
+void LayerToolBarFunc(wxToolBar *bar)
+{
+    bar->SetMargins( 1, 1 );
+    
+    bar->AddTool( ID_LAYER_CREATE, _("Create"),	  wxBITMAP(layer_create), wxNullBitmap, wxITEM_NORMAL, _("Create New Layer") );
+    bar->AddTool( ID_LAYER_LOAD, _("Load"),		  wxBITMAP(layer_open),	  wxNullBitmap, wxITEM_NORMAL, _("Load Layer") );
+    bar->AddTool( ID_LAYER_SAVE, _("Save"),		  wxBITMAP(save),		  wxNullBitmap, wxITEM_NORMAL, _("Save Layer") );
+    bar->AddTool( ID_LAYER_SAVE_AS, _("Save As"), wxBITMAP(save_as),	  wxNullBitmap, wxITEM_NORMAL, _("Save Layer As...") );
+    bar->AddTool( ID_LAYER_DELETE, _("Delete"),	  wxBITMAP(delete1),	  wxNullBitmap, wxITEM_NORMAL, _("Delete Layer") );
+    bar->AddSeparator();
+    bar->AddTool( ID_LAYER_ZOOM_TO, _("Zoom"),	  wxBITMAP(zoom_to),	  wxNullBitmap, wxITEM_NORMAL, _("Zoom to Layer") );
+    bar->AddTool( ID_LAYER_VISIBLE, _("Visible"), wxBITMAP(eye),		  wxNullBitmap, wxITEM_CHECK, _("Toggle Layer Visibility") );
+    bar->AddTool( ID_LAYER_TABLE, wxT(""),		  wxBITMAP(grid),		  wxNullBitmap, wxITEM_NORMAL, _("Table of Attributes") );
+    bar->AddTool( ID_LAYER_SHADOW, _("Shadow"),	  wxBITMAP(shadow),		  wxNullBitmap, wxITEM_CHECK, _("Toggle Structure Shadow") );
+    bar->AddTool( ID_LAYER_REFRESH, _("Refresh"), wxBITMAP(refresh),	  wxNullBitmap, wxITEM_NORMAL, _("Refresh") );
+    bar->AddSeparator();
+    bar->AddTool( ID_SHOW_ALL, _("All"),		  wxBITMAP(treeview),	  wxNullBitmap, wxITEM_CHECK, _("Show all elements of every layer") );
+    
+    bar->Realize();
+}
+
+
 LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	wxDialog( parent, id, title, position, size, style )
 {
 	long tbstyle = wxTB_FLAT | wxTB_NODIVIDER;
 	//tbstyle |= wxTB_HORZ_TEXT;
-	m_pToolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-								   tbstyle);
+	m_pToolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, tbstyle);
 	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
 	LayerToolBarFunc(m_pToolbar);
-	m_pToolbar->Realize();
 
 	// tell wxAuiManager to manage this frame
 	m_mgr.SetManagedWindow(this);
@@ -140,6 +173,71 @@ LayerDlg::~LayerDlg()
 	m_mgr.UnInit();
 
 	delete m_imageListNormal;
+}
+
+wxBitmap IconsFunc( size_t index )
+{
+    if (index == 0)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "16 16 3 1",
+        "  c None",
+        "a c Black",
+        "b c #808080",
+        /* pixels */
+        "                ",
+        " aaaaaaa  a  a  ",
+        " a    a  a  a   ",
+        " a   a  a  a    ",
+        " a  a  a  a     ",
+        " a a  a  a   b  ",
+        " aa  a  a   bab ",
+        " a  a  a     b  ",
+        "   a  a   b     ",
+        "  a  a   bab    ",
+        " a  a     b     ",
+        "   a   b     b  ",
+        "  a   bab   bab ",
+        " a     b     b  ",
+        "                ",
+        "                "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 1)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "16 16 3 1",
+        "a c Black",
+        "b c #808080",
+        "c c #FFFF00",
+        /* pixels */
+        "cccccccccccccccc",
+        "caaaaaaaccaccacc",
+        "caccccaccaccaccc",
+        "cacccaccaccacccc",
+        "caccaccaccaccccc",
+        "cacaccaccacccbcc",
+        "caaccaccacccbabc",
+        "caccaccacccccbcc",
+        "cccaccacccbccccc",
+        "ccaccacccbabcccc",
+        "caccacccccbccccc",
+        "cccacccbcccccbcc",
+        "ccacccbabcccbabc",
+        "cacccccbcccccbcc",
+        "cccccccccccccccc",
+        "cccccccccccccccc"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    return wxNullBitmap;
 }
 
 void LayerDlg::CreateImageList(int size)
@@ -648,13 +746,14 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 			// Ask style for the newly loaded layer
 			vtTagArray &props = alay->GetProperties();
 
-			StyleDlg dlg(NULL, -1, _("Style"));
+			StyleDlg dlg(NULL, -1, _("Style"), wxDefaultPosition, wxDefaultSize,
+				wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 			dlg.SetFeatureSet(alay->GetFeatureSet());
 			dlg.SetOptions(props);
 			if (dlg.ShowModal() != wxID_OK)
 			{
+				// The layer is reference-counted, so it will be freed when we remove it
 				terr->GetLayers().Remove(alay);
-				delete alay;
 				return;
 			}
 			// Copy all the style attributes to the new featureset

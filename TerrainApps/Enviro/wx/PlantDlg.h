@@ -1,14 +1,14 @@
 //
 // Name:		PlantDlg.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __PlantDlg_H__
 #define __PlantDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 #include "../PlantingOptions.h"
 #include "vtdata/Array.h"
@@ -22,7 +22,7 @@ class vtPlantInstance3d;
 // PlantDlg
 //---------------------------------------------------------------------------
 
-class PlantDlg: public AutoDialog
+class PlantDlg: public PlantDlgBase
 {
 public:
 	// constructors and destructors

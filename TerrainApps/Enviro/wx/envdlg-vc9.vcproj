@@ -166,6 +166,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EnviroUI.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\EphemDlg.cpp"
 				>
 			</File>

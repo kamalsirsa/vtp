@@ -1,7 +1,7 @@
 //
 // Name: DistanceDlg.cpp
 //
-// Copyright (c) 2002-2009 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,7 +27,7 @@
 
 // WDR: event table for DistanceDlg
 
-BEGIN_EVENT_TABLE(DistanceDlg, AutoDialog)
+BEGIN_EVENT_TABLE(DistanceDlg, DistanceDlgBase)
 	EVT_INIT_DIALOG (DistanceDlg::OnInitDialog)
 	EVT_CHOICE( ID_UNITS1, DistanceDlg::OnUnits )
 	EVT_CHOICE( ID_UNITS2, DistanceDlg::OnUnits )
@@ -42,10 +42,8 @@ END_EVENT_TABLE()
 
 DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	DistanceDlgBase( parent, id, title, position, size, style )
 {
-	DistanceDialogFunc( this, TRUE );
-
 	GetUnits2()->Append(_("Meters"));
 	GetUnits2()->Append(_("Feet"));
 	GetUnits2()->Append(_("US Survey Feet"));
@@ -68,11 +66,11 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	GetUnits5()->Append(_("Feet"));
 	GetUnits5()->Append(_("US Survey Feet"));
 
-	AddValidator(ID_UNITS1, &m_iUnits1);
-	AddValidator(ID_UNITS2, &m_iUnits2);
-	AddValidator(ID_UNITS3, &m_iUnits3);
-	AddValidator(ID_UNITS4, &m_iUnits4);
-	AddValidator(ID_UNITS5, &m_iUnits5);
+	AddValidator(this, ID_UNITS1, &m_iUnits1);
+	AddValidator(this, ID_UNITS2, &m_iUnits2);
+	AddValidator(this, ID_UNITS3, &m_iUnits3);
+	AddValidator(this, ID_UNITS4, &m_iUnits4);
+	AddValidator(this, ID_UNITS5, &m_iUnits5);
 
 	m_pTransformToGeo = NULL;
 	m_bPathMode = false;

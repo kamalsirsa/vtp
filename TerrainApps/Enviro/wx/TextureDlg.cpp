@@ -1,7 +1,7 @@
 //
 // Name: TextureDlg.cpp
 //
-// Copyright (c) 2006-2007 Virtual Terrain Project
+// Copyright (c) 2006-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -30,7 +30,7 @@
 
 // WDR: event table for TextureDlg
 
-BEGIN_EVENT_TABLE(TextureDlg,wxDialog)
+BEGIN_EVENT_TABLE(TextureDlg,TextureDlgBase)
 	EVT_INIT_DIALOG (TextureDlg::OnInitDialog)
 
 	EVT_CHOICE( ID_CHOICE_TILESIZE, TextureDlg::OnTileSize )
@@ -44,11 +44,8 @@ END_EVENT_TABLE()
 
 TextureDlg::TextureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	TextureDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function TextureDialogFunc for TextureDlg
-	TextureDialogFunc( this, TRUE );
-
 	m_pSingle = GetSingle();
 	m_pDerived = GetDerived();
 	m_pTiled = GetTiled4by4();
@@ -65,11 +62,11 @@ TextureDlg::TextureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iTilesizeIndex = 2;
 	m_iTilesize = 1024;
 
-	AddValidator(ID_TFILE_SINGLE, &m_strTextureSingle);
-	AddValidator(ID_CHOICE_TILESIZE, &m_iTilesizeIndex);
-	AddValidator(ID_TFILE_BASE, &m_strTextureBase);
-	AddValidator(ID_TFILENAME, &m_strTexture4x4);
-	AddValidator(ID_CHOICE_COLORS, &m_strColorMap);
+	AddValidator(this, ID_TFILE_SINGLE, &m_strTextureSingle);
+	AddValidator(this, ID_CHOICE_TILESIZE, &m_iTilesizeIndex);
+	AddValidator(this, ID_TFILE_BASE, &m_strTextureBase);
+	AddValidator(this, ID_TFILENAME, &m_strTexture4x4);
+	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
 }
 
 void TextureDlg::SetParams(const TParams &Params)

@@ -1,14 +1,14 @@
 //
 // Name: ScenarioSelectDialog.h
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __ScenarioSelectDialog_H__
 #define __ScenarioSelectDialog_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 
@@ -38,14 +38,14 @@ protected:
 };
 
 //----------------------------------------------------------------------------
-// CScenarioSelectDialog
+// ScenarioSelectDialog
 //----------------------------------------------------------------------------
 
-class CScenarioSelectDialog: public wxDialog
+class ScenarioSelectDialog: public ScenarioSelectDlgBase
 {
 public:
 	// constructors and destructors
-	CScenarioSelectDialog( wxWindow *parent, wxWindowID id, const wxString &title,
+	ScenarioSelectDialog( wxWindow *parent, wxWindowID id, const wxString &title,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
@@ -54,7 +54,7 @@ public:
 	virtual bool TransferDataToWindow();
 	void ActivateCurrent();
 
-	// WDR: method declarations for CScenarioSelectDialog
+	// WDR: method declarations for ScenarioSelectDialog
 	wxButton* GetApply()  { return (wxButton*) FindWindow( wxID_APPLY ); }
 	wxButton* GetScenarioNext()  { return (wxButton*) FindWindow( ID_SCENARIO_NEXT ); }
 	wxButton* GetScenarioPrevious()  { return (wxButton*) FindWindow( ID_SCENARIO_PREVIOUS ); }
@@ -66,10 +66,10 @@ public:
 	wxListBox* GetScenarioList()  { return (wxListBox*) FindWindow( ID_SCENARIO_LIST ); }
 
 private:
-	// WDR: member variable declarations for CScenarioSelectDialog
+	// WDR: member variable declarations for ScenarioSelectDialog
 
 private:
-	// WDR: handler declarations for CScenarioSelectDialog
+	// WDR: handler declarations for ScenarioSelectDialog
 	void OnScenarioNext( wxCommandEvent &event );
 	void OnScenarioPrevious( wxCommandEvent &event );
 	void OnMoveDownScenario( wxCommandEvent &event );

@@ -43,18 +43,18 @@ VegFieldsDlg::VegFieldsDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	m_bUseSpecies = true;
 	m_bSpeciesUseField = false;
 
-	AddValidator(ID_USE_SPECIES, &m_bUseSpecies);
-	AddValidator(ID_SPECIES_USE_FIELD, &m_bSpeciesUseField);
+	AddValidator(this, ID_USE_SPECIES, &m_bUseSpecies);
+	AddValidator(this, ID_SPECIES_USE_FIELD, &m_bSpeciesUseField);
 
 	m_bHeightRandomize = true;
 	m_bHeightFixed = false;
 	m_bHeightUseField = false;
 	m_fFixedHeight = 5.0f;
 
-	AddValidator(ID_HEIGHT_RANDOM, &m_bHeightRandomize);
-	AddValidator(ID_HEIGHT_FIXED, &m_bHeightFixed);
-	AddValidator(ID_HEIGHT_USE_FIELD, &m_bHeightUseField);
-	AddNumValidator(ID_HEIGHT_FIXED_VALUE, &m_fFixedHeight);
+	AddValidator(this, ID_HEIGHT_RANDOM, &m_bHeightRandomize);
+	AddValidator(this, ID_HEIGHT_FIXED, &m_bHeightFixed);
+	AddValidator(this, ID_HEIGHT_USE_FIELD, &m_bHeightUseField);
+	AddNumValidator(this, ID_HEIGHT_FIXED_VALUE, &m_fFixedHeight);
 }
 
 void VegFieldsDlg::SetShapefileName(const wxString &filename)

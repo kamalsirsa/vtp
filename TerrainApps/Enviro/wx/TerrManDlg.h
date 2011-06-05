@@ -1,14 +1,14 @@
 //
 // Name: TerrManDlg.h
 //
-// Copyright (c) 2003-2007 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __TerrManDlg_H__
 #define __TerrManDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 
 // WDR: class declarations
 
@@ -16,7 +16,7 @@
 // TerrainManagerDlg
 //---------------------------------------------------------------------------
 
-class TerrainManagerDlg: public wxDialog
+class TerrainManagerDlg: public TerrManDlgBase
 {
 public:
 	// constructors and destructors

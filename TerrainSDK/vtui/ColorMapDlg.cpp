@@ -4,7 +4,7 @@
 // This dialog is for defining a set of colors which map onto elevations,
 //  to define how the user wants an elevation dataset to be colored.
 //
-// Copyright (c) 2004-2008 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -29,7 +29,7 @@
 
 // WDR: event table for ColorMapDlg
 
-BEGIN_EVENT_TABLE(ColorMapDlg, AutoDialog)
+BEGIN_EVENT_TABLE(ColorMapDlg, ColorMapDlgBase)
 	EVT_INIT_DIALOG (ColorMapDlg::OnInitDialog)
 	EVT_LIST_ITEM_SELECTED( ID_COLORLIST, ColorMapDlg::OnItemSelected )
 	EVT_LIST_ITEM_DESELECTED( ID_COLORLIST, ColorMapDlg::OnItemSelected )
@@ -43,15 +43,12 @@ END_EVENT_TABLE()
 
 ColorMapDlg::ColorMapDlg( wxWindow *parent, wxWindowID id,
 	const wxString& title, const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style | wxRESIZE_BORDER )
+	ColorMapDlgBase( parent, id, title, position, size, style | wxRESIZE_BORDER )
 {
-	// WDR: dialog function ColorMapDialogFunc for ColorMapDlg
-	ColorMapDialogFunc( this, TRUE );
-
-	AddValidator(ID_CMAP_FILE, &m_strFile);
-	AddNumValidator(ID_HEIGHT_TO_ADD, &m_fHeight);
-	AddValidator(ID_RELATIVE, &m_bRelative);
-	AddValidator(ID_BLEND, &m_bBlend);
+	AddValidator(this, ID_CMAP_FILE, &m_strFile);
+	AddNumValidator(this, ID_HEIGHT_TO_ADD, &m_fHeight);
+	AddValidator(this, ID_RELATIVE, &m_bRelative);
+	AddValidator(this, ID_BLEND, &m_bBlend);
 
 	m_iItem = -1;
 	m_fHeight = 0.0f;

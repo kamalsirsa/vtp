@@ -1,7 +1,7 @@
 //
 // Name:		FeatureTableDlg.cpp
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -26,7 +26,7 @@
 
 // WDR: event table for FeatInfoDlg
 
-BEGIN_EVENT_TABLE(FeatureTableDlg, AutoDialog)
+BEGIN_EVENT_TABLE(FeatureTableDlg, FeatureTableDlgBase)
 	EVT_INIT_DIALOG (FeatureTableDlg::OnInitDialog)
 	EVT_LIST_ITEM_SELECTED( ID_LIST, FeatureTableDlg::OnItemSelected )
 	EVT_LIST_ITEM_DESELECTED( ID_LIST, FeatureTableDlg::OnItemSelected )
@@ -39,16 +39,14 @@ END_EVENT_TABLE()
 
 FeatureTableDlg::FeatureTableDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	FeatureTableDlgBase( parent, id, title, position, size, style )
 {
 	m_iShow = 1;
 	m_iVUnits = 0;
 	m_pFeatures = NULL;
 
-	FeatureTableDialogFunc( this, TRUE );
-
-	AddValidator(ID_CHOICE_SHOW, &m_iShow);
-	AddValidator(ID_CHOICE_VERTICAL, &m_iVUnits);
+	AddValidator(this, ID_CHOICE_SHOW, &m_iShow);
+	AddValidator(this, ID_CHOICE_VERTICAL, &m_iVUnits);
 
 	UpdateTitle();
 }

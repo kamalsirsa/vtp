@@ -1,7 +1,7 @@
 //
 // Name: ProfileDlg.cpp
 //
-// Copyright (c) 2005-2008 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -26,7 +26,7 @@
 
 // WDR: event table for ProfileDlg
 
-BEGIN_EVENT_TABLE(ProfileDlg, AutoDialog)
+BEGIN_EVENT_TABLE(ProfileDlg, ProfileDlgBase)
 	EVT_PAINT(ProfileDlg::OnPaint)
 	EVT_SIZE(ProfileDlg::OnSize)
 	EVT_LEFT_DOWN(ProfileDlg::OnLeftDown)
@@ -49,7 +49,7 @@ END_EVENT_TABLE()
 
 ProfileDlg::ProfileDlg( wxWindow *parent, wxWindowID id,
 	const wxString& title, const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style | wxRESIZE_BORDER | wxMAXIMIZE)
+	ProfileDlgBase( parent, id, title, position, size, style | wxRESIZE_BORDER | wxMAXIMIZE)
 {
 	m_callback = NULL;
 	m_clientsize.Set(0, 0);
@@ -72,13 +72,13 @@ ProfileDlg::ProfileDlg( wxWindow *parent, wxWindowID id,
 	m_bGetCulture = false;
 	m_bHaveCulture = false;
 
-	// WDR: dialog function ColorMapDialogFunc for ProfileDlg
-	ProfileDialogFunc( this, TRUE );
+	// Work around wxFormDesigner's lack of support for limiting to smallest size
+	GetSizer()->SetSizeHints(this);
 
-	AddNumValidator(ID_HEIGHT1, &m_fHeight1);
-	AddNumValidator(ID_HEIGHT2, &m_fHeight2);
-	AddNumValidator(ID_RF, &m_fRadioFrequency);
-	AddValidator(ID_CURVATURE, &m_iCurvature);
+	AddNumValidator(this, ID_HEIGHT1, &m_fHeight1);
+	AddNumValidator(this, ID_HEIGHT2, &m_fHeight2);
+	AddNumValidator(this, ID_RF, &m_fRadioFrequency);
+	AddValidator(this, ID_CURVATURE, &m_iCurvature);
 
 	GetHeight1()->Enable(false);
 	GetHeight2()->Enable(false);

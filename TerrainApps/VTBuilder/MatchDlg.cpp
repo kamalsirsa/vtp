@@ -41,14 +41,14 @@ MatchDlg::MatchDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	m_pView = NULL;
 
-	AddValidator(ID_EXTENT1, &m_strExtent1);
-	AddValidator(ID_EXTENT2, &m_strExtent2);
-	AddValidator(ID_MATCH_LAYER, &m_iLayer);
-	AddValidator(ID_LAYER_RES, &m_strLayerRes);
-	AddValidator(ID_GROW, &m_bGrow);
-	AddValidator(ID_SHRINK, &m_bShrink);
-	AddNumValidator(ID_TILE_SIZE, &m_iTileSize);
-	AddValidator(ID_TILING, &m_strTiling);
+	AddValidator(this, ID_EXTENT1, &m_strExtent1);
+	AddValidator(this, ID_EXTENT2, &m_strExtent2);
+	AddValidator(this, ID_MATCH_LAYER, &m_iLayer);
+	AddValidator(this, ID_LAYER_RES, &m_strLayerRes);
+	AddValidator(this, ID_GROW, &m_bGrow);
+	AddValidator(this, ID_SHRINK, &m_bShrink);
+	AddNumValidator(this, ID_TILE_SIZE, &m_iTileSize);
+	AddValidator(this, ID_TILING, &m_strTiling);
 
 	UpdateLayers();
 	GetLayerSpacing();

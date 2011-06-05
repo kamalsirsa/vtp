@@ -8,7 +8,7 @@
 #ifndef CANVASH
 #define CANVASH
 
-//#include "vtui_wdr.h"
+//#include "vtui_UI.h"
 //#include "vtlib/vtlib.h"
 
 #if !wxUSE_GLCANVAS

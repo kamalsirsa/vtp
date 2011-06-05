@@ -1,14 +1,14 @@
 //
 // LODDlg.h
 //
-// Copyright (c) 2005-2008 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __LODDlg_H__
 #define __LODDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 
 class EnviroFrame;
@@ -22,7 +22,7 @@ class vtPagedStructureLodGrid;
 // LODDlg
 //----------------------------------------------------------------------------
 
-class LODDlg: public AutoDialog
+class LODDlg: public PagingDlgBase
 {
 public:
 	// constructors and destructors

@@ -1,14 +1,14 @@
 //
 // Name: EphemDlg.h
 //
-// Copyright (c) 2007-2008 Virtual Terrain Project
+// Copyright (c) 2007-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __EphemDlg_H__
 #define __EphemDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 
 // WDR: class declarations
@@ -17,7 +17,7 @@
 // EphemDlg
 //----------------------------------------------------------------------------
 
-class EphemDlg: public AutoDialog
+class EphemDlg: public EphemDlgBase
 {
 public:
 	// constructors and destructors

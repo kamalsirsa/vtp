@@ -1,14 +1,14 @@
 //
 // Name: DistanceDlg.h
 //
-// Copyright (c) 2002-2009 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __DistanceDlg_H__
 #define __DistanceDlg_H__
 
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/Projections.h"
 
@@ -18,7 +18,7 @@
 // DistanceDlg
 //----------------------------------------------------------------------------
 
-class DistanceDlg: public AutoDialog
+class DistanceDlg: public DistanceDlgBase
 {
 public:
 	// constructors and destructors

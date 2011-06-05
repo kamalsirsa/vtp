@@ -1,7 +1,7 @@
 //
 // Name: TimeDlg.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,7 +27,7 @@
 
 // WDR: event table for TimeDlg
 
-BEGIN_EVENT_TABLE(TimeDlg, AutoDialog)
+BEGIN_EVENT_TABLE(TimeDlg, TimeDlgBase)
 	EVT_INIT_DIALOG (TimeDlg::OnInitDialog)
 	EVT_BUTTON( ID_STOP, TimeDlg::OnStop )
 	EVT_TEXT( ID_TEXT_SPEED, TimeDlg::OnTextSpeed )
@@ -42,10 +42,9 @@ END_EVENT_TABLE()
 
 TimeDlg::TimeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	TimeDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function TimeDialogFunc for TimeDlg
-	m_pTop = TimeDialogFunc( this, TRUE );
+	m_pTop = GetSizer();
 
 	m_bGoing = false;
 	m_iSpeed = 0;
@@ -60,16 +59,16 @@ TimeDlg::TimeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	minute = 0;
 	second = 0;
 
-	AddValidator(ID_SPIN_YEAR, &year);
-	AddValidator(ID_SPIN_MONTH, &month);
-	AddValidator(ID_SPIN_DAY, &day);
+	AddValidator(this, ID_SPIN_YEAR, &year);
+	AddValidator(this, ID_SPIN_MONTH, &month);
+	AddValidator(this, ID_SPIN_DAY, &day);
 
-	AddValidator(ID_SPIN_HOUR, &hour);
-	AddValidator(ID_SPIN_MINUTE, &minute);
-	AddValidator(ID_SPIN_SECOND, &second);
+	AddValidator(this, ID_SPIN_HOUR, &hour);
+	AddValidator(this, ID_SPIN_MINUTE, &minute);
+	AddValidator(this, ID_SPIN_SECOND, &second);
 
-	AddNumValidator(ID_TEXT_SPEED, &m_fSpeed);
-	AddValidator(ID_SLIDER_SPEED, &m_iSpeed);
+	AddNumValidator(this, ID_TEXT_SPEED, &m_fSpeed);
+	AddValidator(this, ID_SLIDER_SPEED, &m_iSpeed);
 
 	GetSliderSpeed()->Enable(false);
 	GetTextSpeed()->Enable(false);

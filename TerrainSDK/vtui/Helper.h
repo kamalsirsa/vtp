@@ -17,10 +17,16 @@ class vtDIB;
 
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color);
 wxBitmap *DibToBitmap(vtDIB *dib);
-void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color);
-void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color);
+
 void FillWithColor(wxStaticBitmap *pStaticBitmap, const wxColour &color);
 void FillWithColor(wxBitmapButton *pBitmapButton, const wxColour &color);
+void FillWithColorSize(wxStaticBitmap *pStaticBitmap, int w, int h, const wxColour &color);
+void FillWithColorSize(wxBitmapButton *pBitmapButton, int w, int h, const wxColour &color);
+
+void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color);
+void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color);
+void FillWithColorSize(wxStaticBitmap *pStaticBitmap, int w, int h, const RGBi &color);
+void FillWithColorSize(wxBitmapButton *pBitmapButton, int w, int h, const RGBi &color);
 
 int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	const char *wildcard, int omit_chars = 0);

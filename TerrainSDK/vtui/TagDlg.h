@@ -1,14 +1,14 @@
 //
 // Name: TagDlg.h
 //
-// Copyright (c) 2007 Virtual Terrain Project.
+// Copyright (c) 2007-2011 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __TagDlg_H__
 #define __TagDlg_H__
 
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 #include "vtdata/Content.h"
 
 // WDR: class declarations
@@ -17,7 +17,7 @@
 // TagDlg
 //----------------------------------------------------------------------------
 
-class TagDlg: public wxDialog
+class TagDlg: public TagDlgBase
 {
 public:
 	// constructors and destructors

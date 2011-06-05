@@ -1,7 +1,7 @@
 //
 // Name: TerrManDlg.cpp
 //
-// Copyright (c) 2003-2008 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -37,7 +37,7 @@ public:
 
 // WDR: event table for TerrainManagerDlg
 
-BEGIN_EVENT_TABLE(TerrainManagerDlg,wxDialog)
+BEGIN_EVENT_TABLE(TerrainManagerDlg,TerrManDlgBase)
 	EVT_INIT_DIALOG (TerrainManagerDlg::OnInitDialog)
 	EVT_TREE_SEL_CHANGED( ID_TREECTRL, TerrainManagerDlg::OnSelChanged )
 	EVT_TREE_DELETE_ITEM( ID_TREECTRL, TerrainManagerDlg::OnDeleteItem )
@@ -50,10 +50,8 @@ END_EVENT_TABLE()
 
 TerrainManagerDlg::TerrainManagerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style | wxRESIZE_BORDER )
+	TerrManDlgBase( parent, id, title, position, size, style | wxRESIZE_BORDER )
 {
-	// WDR: dialog function TerrManFunc for TerrainManagerDlg
-	TerrManFunc( this, TRUE );
 	m_pTree = GetTree();
 	m_iSelect = 0;
 }

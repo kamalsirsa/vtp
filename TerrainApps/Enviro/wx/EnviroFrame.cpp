@@ -98,6 +98,8 @@
 #  include "route.xpm"
 #  include "scenario.xpm"
 #  include "select.xpm"
+#  include "select_box.xpm"
+#  include "select_move.xpm"
 #  include "sgraph.xpm"
 #  include "snap.xpm"
 #  include "snap_num.xpm"
@@ -295,6 +297,81 @@ EVT_MENU(ID_POPUP_DELETE, EnviroFrame::OnPopupDelete)
 EVT_MENU(ID_POPUP_URL, EnviroFrame::OnPopupURL)
 END_EVENT_TABLE()
 
+wxBitmap ToolsFunc( size_t index )
+{
+    if (index == 0)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 4 1",
+        "  c None",
+        "a c Black",
+        "b c #FFFFFF",
+        "c c #FFFF00",
+        /* pixels */
+        "acacacacacaca       ",
+        "c           c       ",
+        "a           a       ",
+        "c           c       ",
+        "a           a       ",
+        "c           c       ",
+        "a          aa       ",
+        "c          aa       ",
+        "acacacacacaaba      ",
+        "           abba     ",
+        "           abbba    ",
+        "           abbbba   ",
+        "           abbbbba  ",
+        "           abbbbbba ",
+        "           abbbbaaaa",
+        "           abbabba  ",
+        "           abaabba  ",
+        "           aa  abba ",
+        "           a   abba ",
+        "                abba"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 1)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "20 20 4 1",
+        "  c None",
+        "a c Black",
+        "b c #FFFFFF",
+        "c c #808080",
+        /* pixels */
+        "             cc     ",
+        "           caaac    ",
+        "         caaaaaac   ",
+        "            ac      ",
+        "   c       ac   c   ",
+        "  ca      ac    ac  ",
+        " caaaaaaaaaaaaaaaac ",
+        " caaccccccaaccccaac ",
+        "  ca    acaba   ac  ",
+        "   c   ac abba  c   ",
+        "      ac  abbba     ",
+        "   caaaaaaabbbba    ",
+        "    caaac abbbbba   ",
+        "     cc   abbbbbba  ",
+        "          abbbbaaaa ",
+        "          abbabba   ",
+        "          abaabba   ",
+        "          aa  abba  ",
+        "          a   abba  ",
+        "               abba "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    return wxNullBitmap;
+}
+
 
 //
 // Frame constructor
@@ -394,7 +471,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pSceneGraphDlg->SetSize(450, 600);
 	m_pTimeDlg = new TimeDlg(this, -1, _("Time"));
 	m_pUtilDlg = new UtilDlg(this, -1, _("Routes"));
-	m_pScenarioSelectDialog = new CScenarioSelectDialog(this, -1, _("Scenarios"));
+	m_pScenarioSelectDialog = new ScenarioSelectDialog(this, -1, _("Scenarios"));
 	m_pVehicleDlg = new VehicleDlg(this, -1, _("Vehicles"));
 	m_pProfileDlg = NULL;
 	#ifdef NVIDIA_PERFORMANCE_MONITORING
@@ -690,10 +767,10 @@ void EnviroFrame::RefreshToolbar()
 
 	if (bTerr)
 	{
-		AddTool(ID_TOOLS_SELECT_BOX, ToolsFunc(0), _("Select Box"), true);
+		AddTool(ID_TOOLS_SELECT_BOX, wxBITMAP(select_box), _("Select Box"), true);
 		if (g_Options.m_bShowToolsCulture)
 		{
-			AddTool(ID_TOOLS_SELECT_MOVE, ToolsFunc(1), _("Select and Move"), true);
+			AddTool(ID_TOOLS_SELECT_MOVE, wxBITMAP(select_move), _("Select and Move"), true);
 			AddTool(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);
 			AddTool(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
 			AddTool(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);

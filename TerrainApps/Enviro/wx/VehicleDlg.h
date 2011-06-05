@@ -1,14 +1,14 @@
 //
 // Name: VehicleDlg.h
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __VehicleDlg_H__
 #define __VehicleDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "../PlantingOptions.h"
 
 // WDR: class declarations
@@ -17,7 +17,7 @@
 // VehicleDlg
 //----------------------------------------------------------------------------
 
-class VehicleDlg: public wxDialog
+class VehicleDlg: public VehicleDlgBase
 {
 public:
 	// constructors and destructors

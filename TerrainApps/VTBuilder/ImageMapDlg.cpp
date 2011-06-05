@@ -35,7 +35,7 @@ ImageMapDlg::ImageMapDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	// WDR: dialog function ImageMapDialogFunc for ImageMapDlg
 	ImageMapDialogFunc( this, TRUE );
 
-	AddValidator(ID_LINK_FIELD, &m_iField);
+	AddValidator(this, ID_LINK_FIELD, &m_iField);
 }
 
 void ImageMapDlg::SetFields(vtFeatureSet *pSet)

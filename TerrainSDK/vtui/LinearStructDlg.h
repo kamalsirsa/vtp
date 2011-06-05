@@ -1,14 +1,14 @@
 //
 // Name:		LinearStructDlg.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __LinearStruct_H__
 #define __LinearStruct_H__
 
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/Fence.h"
 #include "ProfileEditDlg.h"
@@ -19,7 +19,7 @@
 // LinearStructureDlg
 //----------------------------------------------------------------------------
 
-class LinearStructureDlg: public AutoDialog
+class LinearStructureDlg: public LinearStructDlgBase
 {
 public:
 	// constructors and destructors

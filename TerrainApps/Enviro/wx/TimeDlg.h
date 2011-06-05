@@ -1,14 +1,14 @@
 //
 // Name: TimeDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __TimeDlg_H__
 #define __TimeDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/vtTime.h"
 #include "vtlib/core/TimeEngines.h"
@@ -19,7 +19,7 @@
 // TimeDlg
 //----------------------------------------------------------------------------
 
-class TimeDlg: public AutoDialog, public vtTimeTarget
+class TimeDlg: public TimeDlgBase, public vtTimeTarget
 {
 public:
 	// constructors and destructors

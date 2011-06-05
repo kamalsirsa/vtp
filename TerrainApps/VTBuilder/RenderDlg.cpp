@@ -64,17 +64,17 @@ RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iSizeY = 256;
 
 	// sampling
-	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
-	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
-	AddValidator(ID_JPEG, &m_bJPEG);
+	AddValidator(this, ID_RADIO_TO_FILE, &m_bToFile);
+	AddValidator(this, ID_TEXT_TO_FILE, &m_strToFile);
+	AddValidator(this, ID_JPEG, &m_bJPEG);
 
-	AddValidator(ID_CHOICE_COLORS, &m_strColorMap);
-	AddValidator(ID_SHADING, &m_bShading);
+	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
+	AddValidator(this, ID_SHADING, &m_bShading);
 
-	AddNumValidator(ID_SIZEX, &m_iSizeX);
-	AddNumValidator(ID_SIZEY, &m_iSizeY);
-	AddValidator(ID_CONSTRAIN, &m_bConstraint);
-	AddValidator(ID_TILING, &m_bTiling);
+	AddNumValidator(this, ID_SIZEX, &m_iSizeX);
+	AddNumValidator(this, ID_SIZEY, &m_iSizeY);
+	AddValidator(this, ID_CONSTRAIN, &m_bConstraint);
+	AddValidator(this, ID_TILING, &m_bTiling);
 
 	UpdateEnabling();
 }

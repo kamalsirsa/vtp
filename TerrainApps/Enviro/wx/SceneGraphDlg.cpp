@@ -1,7 +1,7 @@
 //
-// Name:		SceneGraphDlg.cpp
+// Name: SceneGraphDlg.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -63,7 +63,7 @@ public:
 
 // WDR: event table for SceneGraphDlg
 
-BEGIN_EVENT_TABLE(SceneGraphDlg,wxDialog)
+BEGIN_EVENT_TABLE(SceneGraphDlg,SceneGraphDlgBase)
 	EVT_INIT_DIALOG (SceneGraphDlg::OnInitDialog)
 	EVT_TREE_SEL_CHANGED( ID_SCENETREE, SceneGraphDlg::OnTreeSelChanged )
 	EVT_CHECKBOX( ID_ENABLED, SceneGraphDlg::OnEnabled )
@@ -75,9 +75,10 @@ END_EVENT_TABLE()
 
 SceneGraphDlg::SceneGraphDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	SceneGraphDlgBase( parent, id, title, position, size, style )
 {
-	SceneGraphFunc( this, TRUE );
+	// Work around wxFormDesigner's lack of support for limiting to smallest size
+	GetSizer()->SetSizeHints(this);
 
 	m_pZoomTo = GetZoomto();
 	m_pEnabled = GetEnabled();

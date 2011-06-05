@@ -1,7 +1,7 @@
 //
 // Name: SizeDlg.cpp
 //
-// Copyright (c) 2008 Virtual Terrain Project
+// Copyright (c) 2008-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,23 +22,20 @@
 
 // WDR: event table for SizeDlg
 
-BEGIN_EVENT_TABLE(SizeDlg,AutoDialog)
+BEGIN_EVENT_TABLE(SizeDlg,SizeDlgBase)
 EVT_SLIDER( ID_SLIDER_RATIO, SizeDlg::OnSlider )
 END_EVENT_TABLE()
 
 SizeDlg::SizeDlg(wxWindow *parent, wxWindowID id, const wxString &title,
 				 const wxPoint &position, const wxSize& size, long style) :
-	AutoDialog( parent, id, title, position, size, style )
+	SizeDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function SnapSizeDialogFunc for SizeDlg
-	SizeDialogFunc( this, TRUE ); 
-
 	m_fRatio = 1.0f;
 	m_iRatio = 0;
 
-	AddValidator(ID_SLIDER_RATIO, &m_iRatio);
-	AddNumValidator(ID_TEXT_X, &m_Current.x);
-	AddNumValidator(ID_TEXT_Y, &m_Current.y);
+	AddValidator(this, ID_SLIDER_RATIO, &m_iRatio);
+	AddNumValidator(this, ID_TEXT_X, &m_Current.x);
+	AddNumValidator(this, ID_TEXT_Y, &m_Current.y);
 
 	GetSliderRatio()->SetFocus();
 }

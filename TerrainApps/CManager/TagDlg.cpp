@@ -33,8 +33,8 @@ TagDlg::TagDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	TagDialogFunc( this, TRUE );
 
-	AddValidator(ID_TAGNAME, &m_strName);
-	AddValidator(ID_TAGTEXT, &m_strValue);
+	AddValidator(this, ID_TAGNAME, &m_strName);
+	AddValidator(this, ID_TAGTEXT, &m_strValue);
 
 	GetTagName()->Clear();
 

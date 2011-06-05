@@ -1,7 +1,7 @@
 //
 // Name: ProfileEditDlg.cpp
 //
-// Copyright (c) 2006-2008 Virtual Terrain Project
+// Copyright (c) 2006-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,34 +14,33 @@
 
 // WDR: class implementations
 
-BEGIN_EVENT_TABLE(ProfDlgView, wxScrolledWindow)
-	EVT_MOUSE_EVENTS(ProfDlgView::OnMouseEvent)
-	EVT_SIZE(ProfDlgView::OnSize)
-END_EVENT_TABLE()
+//BEGIN_EVENT_TABLE(ProfDlgView, wxScrolledWindow)
+//	EVT_MOUSE_EVENTS(ProfDlgView::OnMouseEvent)
+//	EVT_SIZE(ProfDlgView::OnSize)
+//END_EVENT_TABLE()
+//
+//ProfDlgView::ProfDlgView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
+//	const wxSize& size, long style, const wxString& name) :
+//		wxScrolledWindow(parent, id, pos, size, style, name)
+//{
+//}
 
-ProfDlgView::ProfDlgView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
-	const wxSize& size, long style, const wxString& name) :
-		wxScrolledWindow(parent, id, pos, size, style, name)
-{
-	m_scale = 30.0f;
-	m_bDragging = false;
-	m_mode = 0;
-}
-
-void ProfDlgView::OnSize(wxSizeEvent& event)
+void ProfileEditDlg::OnViewSize(wxSizeEvent& event)
 {
 	NewSize(event.GetSize());
 	Refresh();
 }
 
-void ProfDlgView::NewSize(const wxSize &s)
+void ProfileEditDlg::NewSize(const wxSize &s)
 {
 	m_org.x = s.x / 2;
 	m_org.y = s.y / 3 * 2;
 }
 
-void ProfDlgView::OnDraw(wxDC &dc)
+void ProfileEditDlg::OnViewPaint()
 {
+	wxPaintDC dc(m_edit_panel);
+
 	// Draw grid
 	wxPen pen;
 	pen.SetColour(200,200,200);
@@ -94,7 +93,7 @@ void ProfDlgView::OnDraw(wxDC &dc)
 	}
 }
 
-void ProfDlgView::OnMouseEvent(wxMouseEvent &event)
+void ProfileEditDlg::OnViewMouseEvent(wxMouseEvent &event)
 {
 	wxCoord x, y;
 	event.GetPosition(&x, &y);
@@ -189,7 +188,7 @@ void ProfDlgView::OnMouseEvent(wxMouseEvent &event)
 
 // WDR: event table for ProfileEditDlg
 
-BEGIN_EVENT_TABLE(ProfileEditDlg,wxDialog)
+BEGIN_EVENT_TABLE(ProfileEditDlg,ProfileEditDlgBase)
 	EVT_INIT_DIALOG (ProfileEditDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_ADD_POINT, ProfileEditDlg::OnAdd )
 	EVT_RADIOBUTTON( ID_MOVE_POINT, ProfileEditDlg::OnMove )
@@ -202,12 +201,13 @@ END_EVENT_TABLE()
 
 ProfileEditDlg::ProfileEditDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	ProfileEditDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function ProfileEditDialogFunc for ProfileEditDlg
-	ProfileEditDialogFunc( this, TRUE );
+	//m_pView = (ProfDlgView *) FindWindow( ID_EDIT_PANEL );
 
-	m_pView = (ProfDlgView *) FindWindow( ID_EDIT_PANEL );
+	m_scale = 30.0f;
+	m_bDragging = false;
+	m_mode = 0;
 }
 
 void ProfileEditDlg::UpdateEnabling()
@@ -217,7 +217,7 @@ void ProfileEditDlg::UpdateEnabling()
 
 void ProfileEditDlg::SetFilename(const char *fname)
 {
-	if (LoadFLine2FromSHP(fname, m_pView->m_profile))
+	if (LoadFLine2FromSHP(fname, m_profile))
 	{
 		m_strFilename = wxString(fname, wxConvUTF8);
 		UpdateEnabling();
@@ -229,9 +229,9 @@ void ProfileEditDlg::CheckClockwisdom()
 	// We want to stick to a counter-clockwise convention for closed shapes.
 	//  Check if they have specified some clockwise points, and flip if so.
 	PolyChecker pc;
-	if (pc.IsClockwisePolygon(m_pView->m_profile))
+	if (pc.IsClockwisePolygon(m_profile))
 	{
-		m_pView->m_profile.ReverseOrder();
+		m_profile.ReverseOrder();
 	}
 }
 
@@ -239,7 +239,7 @@ void ProfileEditDlg::CheckClockwisdom()
 
 void ProfileEditDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	m_pView->NewSize(m_pView->GetSize());
+	NewSize(GetSize());
 	UpdateEnabling();
 }
 
@@ -257,7 +257,7 @@ void ProfileEditDlg::OnLoad( wxCommandEvent &event )
 		return;
 	wxString str = loadFile.GetPath();
 	vtString fname = (const char *) str.mb_str(wxConvUTF8);
-	if (LoadFLine2FromSHP(fname, m_pView->m_profile))
+	if (LoadFLine2FromSHP(fname, m_profile))
 	{
 		m_strFilename = str;
 		Refresh();
@@ -276,7 +276,7 @@ void ProfileEditDlg::OnSaveAs( wxCommandEvent &event )
 		return;
 	wxString str = saveFile.GetPath();
 	vtString fname = (const char *) str.mb_str(wxConvUTF8);
-	if (SaveFLine2ToSHP(fname, m_pView->m_profile))
+	if (SaveFLine2ToSHP(fname, m_profile))
 	{
 		m_strFilename = str;
 		TransferDataToWindow();
@@ -289,21 +289,21 @@ void ProfileEditDlg::OnSave( wxCommandEvent &event )
 	CheckClockwisdom();
 
 	vtString fname = (const char *) m_strFilename.mb_str(wxConvUTF8);
-	SaveFLine2ToSHP(fname, m_pView->m_profile);
+	SaveFLine2ToSHP(fname, m_profile);
 }
 
 void ProfileEditDlg::OnRemove( wxCommandEvent &event )
 {
-	m_pView->m_mode = 2;
+	m_mode = 2;
 }
 
 void ProfileEditDlg::OnMove( wxCommandEvent &event )
 {
-	m_pView->m_mode = 1;
+	m_mode = 1;
 }
 
 void ProfileEditDlg::OnAdd( wxCommandEvent &event )
 {
-	m_pView->m_mode = 0;
+	m_mode = 0;
 }
 

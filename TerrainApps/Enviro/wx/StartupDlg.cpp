@@ -86,8 +86,8 @@ static void ShowOGLInfo2(bool bLog)
 
 	if (!bLog)
 	{
-		wxDialog dlg(NULL, -1, _("OpenGL Info"), wxDefaultPosition);
-		TextDialogFunc(&dlg, true);
+		TextDlgBase dlg(NULL, -1, _("OpenGL Info"), wxDefaultPosition);
+		//TextDialogFunc(&dlg, true);
 		wxTextCtrl* pText = (wxTextCtrl*) dlg.FindWindow( ID_TEXT );
 		pText->SetValue(msg);
 
@@ -103,7 +103,7 @@ static void ShowOGLInfo2(bool bLog)
 
 // WDR: event table for StartupDlg
 
-BEGIN_EVENT_TABLE(StartupDlg,AutoDialog)
+BEGIN_EVENT_TABLE(StartupDlg,StartupDlgBase)
 	EVT_INIT_DIALOG (StartupDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, StartupDlg::OnOK )
 	EVT_BUTTON( ID_OPENGL, StartupDlg::OnOpenGLInfo )
@@ -117,17 +117,14 @@ END_EVENT_TABLE()
 
 StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-		AutoDialog( parent, id, title, position, size, style )
+		StartupDlgBase( parent, id, title, position, size, style )
 {
-	VTLOG("Constructing StartupDlg.\n");
-	StartupDialogFunc( this, TRUE );
-
 	m_psImage = GetImagetext();
 	m_pImage = GetImage();
 
-	AddValidator(ID_EARTHVIEW, &m_bStartEarth);
-	AddValidator(ID_IMAGE, &m_strEarthImage);
-	AddValidator(ID_TERRAIN, &m_bStartTerrain);
+	AddValidator(this, ID_EARTHVIEW, &m_bStartEarth);
+	AddValidator(this, ID_IMAGE, &m_strEarthImage);
+	AddValidator(this, ID_TERRAIN, &m_bStartTerrain);
 }
 
 void StartupDlg::GetOptionsFrom(EnviroOptions &opt)

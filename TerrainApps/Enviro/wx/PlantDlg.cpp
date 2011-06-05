@@ -1,7 +1,7 @@
 //
 // Name: PlantDlg.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -43,7 +43,7 @@ void InsertSortedString(wxChoice *ch, const wxString &str)
 
 // WDR: event table for PlantDlg
 
-BEGIN_EVENT_TABLE(PlantDlg,AutoDialog)
+BEGIN_EVENT_TABLE(PlantDlg,PlantDlgBase)
 	EVT_INIT_DIALOG (PlantDlg::OnInitDialog)
 	EVT_TEXT( ID_PLANT_HEIGHT_EDIT, PlantDlg::OnHeightEdit )
 	EVT_SLIDER( ID_HEIGHT_SLIDER, PlantDlg::OnHeightSlider )
@@ -60,11 +60,8 @@ END_EVENT_TABLE()
 
 PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	PlantDlgBase( parent, id, title, position, size, style )
 {
-	VTLOG1("PlantDlg constructing\n");
-	PlantDialogFunc( this, TRUE );
-
 	m_pHeightSlider = GetHeightSlider();
 	m_pSpecies = GetSpecies();
 	m_bSetting = false;
@@ -75,14 +72,14 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	m_opt.m_fSpacing = 2;
 
-	AddValidator(ID_SPECIES, &m_iSpeciesChoice);
-	AddValidator(ID_COMMON_NAMES, &m_bCommonNames);
-	AddValidator(ID_LANGUAGE, &m_iLanguage);
-	AddNumValidator(ID_PLANT_HEIGHT_EDIT, &m_opt.m_fHeight, 2);		// 2 digits = cm
-	AddNumValidator(ID_PLANT_SPACING_EDIT, &m_opt.m_fSpacing, 2);
+	AddValidator(this, ID_SPECIES, &m_iSpeciesChoice);
+	AddValidator(this, ID_COMMON_NAMES, &m_bCommonNames);
+	AddValidator(this, ID_LANGUAGE, &m_iLanguage);
+	AddNumValidator(this, ID_PLANT_HEIGHT_EDIT, &m_opt.m_fHeight, 2);		// 2 digits = cm
+	AddNumValidator(this, ID_PLANT_SPACING_EDIT, &m_opt.m_fSpacing, 2);
 
-	AddNumValidator(ID_PLANT_VARIANCE_EDIT, &m_opt.m_iVariance);
-	AddValidator(ID_PLANT_VARIANCE_SLIDER, &m_iVarianceSlider);
+	AddNumValidator(this, ID_PLANT_VARIANCE_EDIT, &m_opt.m_iVariance);
+	AddValidator(this, ID_PLANT_VARIANCE_SLIDER, &m_iVarianceSlider);
 }
 
 PlantDlg::~PlantDlg()

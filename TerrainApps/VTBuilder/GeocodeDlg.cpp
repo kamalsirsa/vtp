@@ -33,13 +33,13 @@ GeocodeDlg::GeocodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// WDR: dialog function GeocodeDialogFunc for GeocodeDlg
 	GeocodeDialogFunc( this, TRUE );
 
-	AddValidator(ID_CHECK_USE1, &m_bGeocodeUS);
-	AddValidator(ID_CHECK_USE2, &m_bGazetteer);
-	AddValidator(ID_CHECK_USE3, &m_bGNS);
-	AddValidator(ID_FILE_DATA, &m_strData);
-	AddValidator(ID_FILE_GAZ, &m_strGaz);
-	AddValidator(ID_FILE_ZIP, &m_strZip);
-	AddValidator(ID_FILE_GNS, &m_strGNS);
+	AddValidator(this, ID_CHECK_USE1, &m_bGeocodeUS);
+	AddValidator(this, ID_CHECK_USE2, &m_bGazetteer);
+	AddValidator(this, ID_CHECK_USE3, &m_bGNS);
+	AddValidator(this, ID_FILE_DATA, &m_strData);
+	AddValidator(this, ID_FILE_GAZ, &m_strGaz);
+	AddValidator(this, ID_FILE_ZIP, &m_strZip);
+	AddValidator(this, ID_FILE_GNS, &m_strGNS);
 
 	// If no web, then no Geocode.us
 	GetCheckUse1()->Enable(SUPPORT_CURL);

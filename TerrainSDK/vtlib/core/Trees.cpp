@@ -99,6 +99,10 @@ void vtPlantAppearance3d::CheckAvailability()
 			m_bAvailable = true;
 			fclose(fp);
 		}
+#if 1
+		else
+			VTLOG(" C0uldn't find appearance: %s\n", (const char *)fname);
+#endif
 	}
 	else if (m_eType == AT_XFROG)
 	{

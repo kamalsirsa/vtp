@@ -1,14 +1,14 @@
 //
 // Name: FeatureTableDlg.h
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __FeatureTableDlg_H__
 #define __FeatureTableDlg_H__
 
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 #include "AutoDialog.h"
 #include "vtdata/Features.h"
 
@@ -20,7 +20,7 @@ class vtFeatures;
 // FeatInfoDlg
 //----------------------------------------------------------------------------
 
-class FeatureTableDlg: public AutoDialog
+class FeatureTableDlg: public FeatureTableDlgBase
 {
 public:
 	// constructors and destructors

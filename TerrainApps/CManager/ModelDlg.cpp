@@ -49,10 +49,10 @@ ModelDlg::ModelDlg( wxWindow *parent, wxWindowID id,
 	m_pCurrentModel = NULL;
 	ModelDialogFunc( this, TRUE );
 
-	AddValidator(ID_FILENAME, &m_strFilename);
-	AddNumValidator(ID_DISTANCE, &m_fDistance);
-	AddNumValidator(ID_SCALE, &m_fScale, 5);
-	AddValidator(ID_STATUS, &m_strStatus);
+	AddValidator(this, ID_FILENAME, &m_strFilename);
+	AddNumValidator(this, ID_DISTANCE, &m_fDistance);
+	AddNumValidator(this, ID_SCALE, &m_fScale, 5);
+	AddValidator(this, ID_STATUS, &m_strStatus);
 }
 
 // WDR: handler implementations for ModelDlg

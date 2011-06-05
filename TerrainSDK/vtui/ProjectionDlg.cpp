@@ -1,7 +1,7 @@
 //
 // Name:		ProjectionDlg.cpp
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -33,7 +33,7 @@
 
 // WDR: event table for ProjectionDlg
 
-BEGIN_EVENT_TABLE(ProjectionDlg, AutoDialog)
+BEGIN_EVENT_TABLE(ProjectionDlg, ProjectionDlgBase)
 	EVT_INIT_DIALOG (ProjectionDlg::OnInitDialog)
 	EVT_CHOICE( ID_PROJ, ProjectionDlg::OnProjChoice )
 	EVT_BUTTON( ID_STATEPLANE, ProjectionDlg::OnSetStatePlane )
@@ -49,14 +49,12 @@ END_EVENT_TABLE()
 
 ProjectionDlg::ProjectionDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style | wxRESIZE_BORDER )
+	ProjectionDlgBase( parent, id, title, position, size, style | wxRESIZE_BORDER )
 {
 	m_bInitializedUI = false;
 	m_bShowAllDatums = false;
 
 	m_GeoRefPoint.Set(0,0);
-
-	ProjectionDialogFunc( this, TRUE );
 
 	m_pParamCtrl = GetProjparam();
 	m_pZoneCtrl = GetZonechoice();
@@ -64,9 +62,9 @@ ProjectionDlg::ProjectionDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	m_pDatumCtrl = GetDatumchoice();
 	m_pProjCtrl = GetProjchoice();
 
-	AddValidator(ID_PROJ, &m_iProj);
-	AddValidator(ID_ZONE, &m_iZone);
-	AddValidator(ID_SHOW_ALL_DATUMS, &m_bShowAllDatums);
+	AddValidator(this, ID_PROJ, &m_iProj);
+	AddValidator(this, ID_ZONE, &m_iZone);
+	AddValidator(this, ID_SHOW_ALL_DATUMS, &m_bShowAllDatums);
 
 	// The order here must match the ProjType enum!
 	m_pProjCtrl->Append(_("Albers Equal Area Conic"));

@@ -38,13 +38,13 @@ TSDialog::TSDialog( wxWindow *parent, wxWindowID id, const wxString &title,
 	// WDR: dialog function TSDialogFunc for TSDialog
 	TSDialogFunc(this, true);
 
-	AddValidator(ID_THEME, &m_iTheme);
-	AddValidator(ID_MPP, &m_iMpp);
+	AddValidator(this, ID_THEME, &m_iTheme);
+	AddValidator(this, ID_MPP, &m_iMpp);
 
 	// output options
-	AddValidator(ID_RADIO_CREATE_NEW, &m_bNewLayer);
-	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
-	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
+	AddValidator(this, ID_RADIO_CREATE_NEW, &m_bNewLayer);
+	AddValidator(this, ID_RADIO_TO_FILE, &m_bToFile);
+	AddValidator(this, ID_TEXT_TO_FILE, &m_strToFile);
 
 	GetTheme()->Append(_("Relief"));
 	GetTheme()->Append(_("Image"));

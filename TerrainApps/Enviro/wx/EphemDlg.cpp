@@ -31,7 +31,7 @@
 
 // WDR: event table for EphemDlg
 
-BEGIN_EVENT_TABLE(EphemDlg,AutoDialog)
+BEGIN_EVENT_TABLE(EphemDlg,EphemDlgBase)
 EVT_INIT_DIALOG (EphemDlg::OnInitDialog)
 EVT_CHECKBOX( ID_OCEANPLANE, EphemDlg::OnCheckBox )
 EVT_CHECKBOX( ID_SKY, EphemDlg::OnCheckBox )
@@ -56,44 +56,41 @@ EVT_SLIDER( ID_SLIDER_WIND_DIRECTION, EphemDlg::OnSliderWindDirection )
 EVT_SLIDER( ID_SLIDER_WIND_SPEED, EphemDlg::OnSliderWindSpeed)
 END_EVENT_TABLE()
 
-EphemDlg::EphemDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-				   const wxPoint &position, const wxSize& size, long style ) :
-AutoDialog( parent, id, title, position, size, style )
+EphemDlg::EphemDlg(wxWindow *parent, wxWindowID id, const wxString &title,
+				   const wxPoint &position, const wxSize& size, long style) :
+	EphemDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function EphemDialogFunc for EphemDlg
-	EphemDialogFunc( this, TRUE );
-
 	m_bSetting = false;
 	m_iWindDirSlider = 0;
 	m_iWindSpeedSlider = 0;
 	m_iWindDir = 0;
 	m_fWindSpeed = 0;
 
-	AddValidator(ID_SKY, &m_bSky);
-	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
+	AddValidator(this, ID_SKY, &m_bSky);
+	AddValidator(this, ID_SKYTEXTURE, &m_strSkyTexture);
 
-	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
-	AddNumValidator(ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
-	AddValidator(ID_HORIZON, &m_bHorizon);
+	AddValidator(this, ID_OCEANPLANE, &m_bOceanPlane);
+	AddNumValidator(this, ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
+	AddValidator(this, ID_HORIZON, &m_bHorizon);
 
 	// fog
-	AddValidator(ID_FOG, &m_bFog);
-	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
-	AddValidator(ID_SLIDER_FOG_DISTANCE, &m_iFogDistance);
+	AddValidator(this, ID_FOG, &m_bFog);
+	AddNumValidator(this, ID_FOG_DISTANCE, &m_fFogDistance);
+	AddValidator(this, ID_SLIDER_FOG_DISTANCE, &m_iFogDistance);
 
 	// shadows
-	AddValidator(ID_SHADOWS, &m_bShadows);
-	AddNumValidator(ID_AMBIENT_BIAS, &m_fDarkness);
-	AddValidator(ID_SLIDER_AMBIENT_BIAS, &m_iDarkness);
-	AddValidator(ID_SHADOWS_EVERY_FRAME, &m_bShadowsEveryFrame);
-	AddValidator(ID_SHADOW_LIMIT, &m_bShadowLimit);
-	AddNumValidator(ID_SHADOW_LIMIT_RADIUS, &m_fShadowRadius);
+	AddValidator(this, ID_SHADOWS, &m_bShadows);
+	AddNumValidator(this, ID_AMBIENT_BIAS, &m_fDarkness);
+	AddValidator(this, ID_SLIDER_AMBIENT_BIAS, &m_iDarkness);
+	AddValidator(this, ID_SHADOWS_EVERY_FRAME, &m_bShadowsEveryFrame);
+	AddValidator(this, ID_SHADOW_LIMIT, &m_bShadowLimit);
+	AddNumValidator(this, ID_SHADOW_LIMIT_RADIUS, &m_fShadowRadius);
 
-	AddNumValidator(ID_TEXT_WIND_DIRECTION, &m_iWindDir);
-	AddValidator(ID_SLIDER_WIND_DIRECTION, &m_iWindDirSlider);
+	AddNumValidator(this, ID_TEXT_WIND_DIRECTION, &m_iWindDir);
+	AddValidator(this, ID_SLIDER_WIND_DIRECTION, &m_iWindDirSlider);
 
-	AddNumValidator(ID_TEXT_WIND_SPEED, &m_fWindSpeed);
-	AddValidator(ID_SLIDER_WIND_SPEED, &m_iWindSpeedSlider);
+	AddNumValidator(this, ID_TEXT_WIND_SPEED, &m_fWindSpeed);
+	AddValidator(this, ID_SLIDER_WIND_SPEED, &m_iWindSpeedSlider);
 }
 
 void EphemDlg::UpdateEnableState()

@@ -47,20 +47,20 @@ ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString 
 	m_bFormat3 = false;
 	m_bLongitudeWest = false;
 
-	AddValidator(ID_EASTING, &m_iEasting);
-	AddValidator(ID_NORTHING, &m_iNorthing);
+	AddValidator(this, ID_EASTING, &m_iEasting);
+	AddValidator(this, ID_NORTHING, &m_iNorthing);
 
-	AddValidator(ID_CHECK_ELEVATION, &m_bElevation);
-	AddValidator(ID_ELEVATION, &m_iElevation);
+	AddValidator(this, ID_CHECK_ELEVATION, &m_bElevation);
+	AddValidator(this, ID_ELEVATION, &m_iElevation);
 
-	AddValidator(ID_CHECK_IMPORT_FIELD, &m_bImportField);
-	AddValidator(ID_IMPORT_FIELD, &m_iImportField);
+	AddValidator(this, ID_CHECK_IMPORT_FIELD, &m_bImportField);
+	AddValidator(this, ID_IMPORT_FIELD, &m_iImportField);
 
-	AddValidator(ID_CRS, &m_strCRS);
-	AddValidator(ID_FORMAT_DECIMAL, &m_bFormat1);
-	AddValidator(ID_FORMAT_DMS, &m_bFormat2);
-	AddValidator(ID_FORMAT_HDM, &m_bFormat3);
-	AddValidator(ID_LONGITUDE_WEST, &m_bLongitudeWest);
+	AddValidator(this, ID_CRS, &m_strCRS);
+	AddValidator(this, ID_FORMAT_DECIMAL, &m_bFormat1);
+	AddValidator(this, ID_FORMAT_DMS, &m_bFormat2);
+	AddValidator(this, ID_FORMAT_HDM, &m_bFormat3);
+	AddValidator(this, ID_LONGITUDE_WEST, &m_bLongitudeWest);
 
 	RefreshProjString();
 	UpdateEnabling();

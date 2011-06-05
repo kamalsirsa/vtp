@@ -45,17 +45,17 @@ RenderOptionsDlg::RenderOptionsDlg( wxWindow *parent, wxWindowID id, const wxStr
 	m_opt.m_bShadingDot = false;
 	m_opt.m_bCastShadows = false;
 
-	AddValidator(ID_CHOICE_COLORS, &m_strColorMap);
+	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
 
-	AddValidator(ID_RADIO_SHADING_NONE, &m_bNoShading);
-	AddValidator(ID_RADIO_SHADING_QUICK, &m_opt.m_bShadingQuick);
-	AddValidator(ID_RADIO_SHADING_DOT, &m_opt.m_bShadingDot);
-	AddValidator(ID_CHECK_SHADOWS, &m_opt.m_bCastShadows);
+	AddValidator(this, ID_RADIO_SHADING_NONE, &m_bNoShading);
+	AddValidator(this, ID_RADIO_SHADING_QUICK, &m_opt.m_bShadingQuick);
+	AddValidator(this, ID_RADIO_SHADING_DOT, &m_opt.m_bShadingDot);
+	AddValidator(this, ID_CHECK_SHADOWS, &m_opt.m_bCastShadows);
 
-	AddValidator(ID_SPIN_CAST_ANGLE, &m_opt.m_iCastAngle);
-	AddValidator(ID_SPIN_CAST_DIRECTION, &m_opt.m_iCastDirection);
-	AddNumValidator(ID_AMBIENT, &m_opt.m_fAmbient, 2);
-	AddNumValidator(ID_GAMMA, &m_opt.m_fGamma, 2);
+	AddValidator(this, ID_SPIN_CAST_ANGLE, &m_opt.m_iCastAngle);
+	AddValidator(this, ID_SPIN_CAST_DIRECTION, &m_opt.m_iCastDirection);
+	AddNumValidator(this, ID_AMBIENT, &m_opt.m_fAmbient, 2);
+	AddNumValidator(this, ID_GAMMA, &m_opt.m_fGamma, 2);
 }
 
 void RenderOptionsDlg::SetOptions(ElevDrawOptions &opt)

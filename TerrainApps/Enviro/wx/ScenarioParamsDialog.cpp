@@ -1,7 +1,7 @@
 //
 // Name: ScenarioParamsDialog.cpp
 //
-// Copyright (c) 2005-2007 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,50 +14,47 @@
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
-// CScenarioParamsDialog
+// ScenarioParamsDialog
 //----------------------------------------------------------------------------
 
-// WDR: event table for CScenarioParamsDialog
+// WDR: event table for ScenarioParamsDialog
 
-BEGIN_EVENT_TABLE(CScenarioParamsDialog,AutoDialog)
-	EVT_INIT_DIALOG (CScenarioParamsDialog::OnInitDialog)
-	EVT_BUTTON( ID_SCENARIO_ADD_VISIBLE_LAYER, CScenarioParamsDialog::OnScenarioAddVisibleLayer )
-	EVT_BUTTON( ID_SCENARIO_REMOVE_VISIBLE_LAYER, CScenarioParamsDialog::OnScenarioRemoveVisibleLayer )
-	EVT_LISTBOX( ID_SCENARIO_VISIBLE_LAYERS, CScenarioParamsDialog::OnScenarioVisibleLayers )
-	EVT_LISTBOX( ID_SCENARIO_AVAILABLE_LAYERS, CScenarioParamsDialog::OnScenarioAvailableLayers )
-	EVT_TEXT( ID_SCENARIO_NAME, CScenarioParamsDialog::OnScenarioNameText )
+BEGIN_EVENT_TABLE(ScenarioParamsDialog,ScenarioParamsDlgBase)
+	EVT_INIT_DIALOG (ScenarioParamsDialog::OnInitDialog)
+	EVT_BUTTON( ID_SCENARIO_ADD_VISIBLE_LAYER, ScenarioParamsDialog::OnScenarioAddVisibleLayer )
+	EVT_BUTTON( ID_SCENARIO_REMOVE_VISIBLE_LAYER, ScenarioParamsDialog::OnScenarioRemoveVisibleLayer )
+	EVT_LISTBOX( ID_SCENARIO_VISIBLE_LAYERS, ScenarioParamsDialog::OnScenarioVisibleLayers )
+	EVT_LISTBOX( ID_SCENARIO_AVAILABLE_LAYERS, ScenarioParamsDialog::OnScenarioAvailableLayers )
+	EVT_TEXT( ID_SCENARIO_NAME, ScenarioParamsDialog::OnScenarioNameText )
 END_EVENT_TABLE()
 
-CScenarioParamsDialog::CScenarioParamsDialog( wxWindow *parent, wxWindowID id, const wxString &title,
+ScenarioParamsDialog::ScenarioParamsDialog( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	ScenarioParamsDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function ScenarioParamsDialogFunc for CScenarioParamsDialog
-	ScenarioParamsDialogFunc( this, TRUE );
-
 	m_bModified = false;
 }
 
-// WDR: handler implementations for CScenarioParamsDialog
+// WDR: handler implementations for ScenarioParamsDialog
 
-void CScenarioParamsDialog::OnScenarioNameText( wxCommandEvent &event )
+void ScenarioParamsDialog::OnScenarioNameText( wxCommandEvent &event )
 {
 	wxString str = event.GetString();
 	m_Params.SetValueString(STR_SCENARIO_NAME, (const char *) str.mb_str(wxConvUTF8));
 	m_bModified = true;
 }
 
-void CScenarioParamsDialog::OnScenarioAvailableLayers( wxCommandEvent &event )
+void ScenarioParamsDialog::OnScenarioAvailableLayers( wxCommandEvent &event )
 {
 	UpdateEnableState();
 }
 
-void CScenarioParamsDialog::OnScenarioVisibleLayers( wxCommandEvent &event )
+void ScenarioParamsDialog::OnScenarioVisibleLayers( wxCommandEvent &event )
 {
 	UpdateEnableState();
 }
 
-void CScenarioParamsDialog::OnScenarioRemoveVisibleLayer( wxCommandEvent &event )
+void ScenarioParamsDialog::OnScenarioRemoveVisibleLayer( wxCommandEvent &event )
 {
 	wxListBox *pAvailableLayers = GetScenarioAvailableLayers();
 	wxListBox *pVisibleLayers = GetScenarioVisibleLayers();
@@ -74,7 +71,7 @@ void CScenarioParamsDialog::OnScenarioRemoveVisibleLayer( wxCommandEvent &event 
 	UpdateEnableState();
 }
 
-void CScenarioParamsDialog::OnScenarioAddVisibleLayer( wxCommandEvent &event )
+void ScenarioParamsDialog::OnScenarioAddVisibleLayer( wxCommandEvent &event )
 {
 	wxListBox *pAvailableLayers = GetScenarioAvailableLayers();
 	wxListBox *pVisibleLayers = GetScenarioVisibleLayers();
@@ -91,7 +88,7 @@ void CScenarioParamsDialog::OnScenarioAddVisibleLayer( wxCommandEvent &event )
 	UpdateEnableState();
 }
 
-void CScenarioParamsDialog::OnInitDialog(wxInitDialogEvent& event)
+void ScenarioParamsDialog::OnInitDialog(wxInitDialogEvent& event)
 {
 	wxTextCtrl *pScenarioName = GetScenarioName();
 	wxListBox *pAvailableLayers = GetScenarioAvailableLayers();
@@ -134,7 +131,7 @@ void CScenarioParamsDialog::OnInitDialog(wxInitDialogEvent& event)
 	UpdateEnableState();
 }
 
-void CScenarioParamsDialog::UpdateEnableState()
+void ScenarioParamsDialog::UpdateEnableState()
 {
 	if (wxNOT_FOUND != GetScenarioAvailableLayers()->GetSelection())
 		GetScenarioAddVisibleLayer()->Enable(true);

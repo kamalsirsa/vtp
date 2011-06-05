@@ -1,14 +1,14 @@
 //
 // Name: CameraDlg.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __CameraDlg_H__
 #define __CameraDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 
 // WDR: class declarations
@@ -17,7 +17,7 @@
 // CameraDlg
 //----------------------------------------------------------------------------
 
-class CameraDlg: public AutoDialog
+class CameraDlg: public CameraDlgBase
 {
 public:
 	// constructors and destructors

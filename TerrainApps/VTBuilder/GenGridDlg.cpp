@@ -48,11 +48,11 @@ GenGridDlg::GenGridDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 		digits = 9;
 	else
 		digits = 3;
-	AddNumValidator(ID_SPACINGX, &m_fSpacingX, digits);
-	AddNumValidator(ID_SPACINGY, &m_fSpacingY, digits);
-	AddNumValidator(ID_SIZEX, &m_iSizeX);
-	AddNumValidator(ID_SIZEY, &m_iSizeY);
-	AddNumValidator(ID_TEXT_DIST_CUTOFF, &m_fDistanceCutoff);
+	AddNumValidator(this, ID_SPACINGX, &m_fSpacingX, digits);
+	AddNumValidator(this, ID_SPACINGY, &m_fSpacingY, digits);
+	AddNumValidator(this, ID_SIZEX, &m_iSizeX);
+	AddNumValidator(this, ID_SIZEY, &m_iSizeY);
+	AddNumValidator(this, ID_TEXT_DIST_CUTOFF, &m_fDistanceCutoff);
 }
 
 void GenGridDlg::RecomputeSize()

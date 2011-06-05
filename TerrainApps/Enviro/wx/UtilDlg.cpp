@@ -1,7 +1,7 @@
 //
 // Name: UtilDlg.cpp
 //
-// Copyright (c) 2002-2009 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,21 +27,19 @@
 
 // WDR: event table for UtilDlg
 
-BEGIN_EVENT_TABLE(UtilDlg,AutoDialog)
+BEGIN_EVENT_TABLE(UtilDlg,UtilDlgBase)
 	EVT_INIT_DIALOG (UtilDlg::OnInitDialog)
 	EVT_CHOICE( ID_STRUCTTYPE, UtilDlg::OnStructType )
 END_EVENT_TABLE()
 
 UtilDlg::UtilDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	UtilDlgBase( parent, id, title, position, size, style )
 {
-	UtilDialogFunc( this, TRUE );
-
 	m_pChoice = GetStructtype();
 	m_iType = 0;
 
-	AddValidator(ID_STRUCTTYPE, &m_iType);
+	AddValidator(this, ID_STRUCTTYPE, &m_iType);
 }
 
 // WDR: handler implementations for UtilDlg

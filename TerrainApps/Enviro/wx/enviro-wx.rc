@@ -3,6 +3,7 @@ aaaaaa ICON "icons/Enviro.ico"
 enviro ICON "icons/Enviro.ico"
 #include "wx/msw/wx.rc"
 
+// Used in the main Enviro toolbar(s)
 axes	    BITMAP "bitmap/axes.bmp"
 building    BITMAP "bitmap/building.bmp"
 camera		BITMAP "bitmap/camera.bmp"
@@ -22,6 +23,8 @@ placemark	BITMAP "bitmap/placemark.bmp"
 route       BITMAP "bitmap/route.bmp"
 scenario	BITMAP "bitmap/scenario.bmp"
 select		BITMAP "bitmap/select.bmp"
+select_box	BITMAP "bitmap/select_box.bmp"
+select_move	BITMAP "bitmap/select_move.bmp"
 sgraph		BITMAP "bitmap/sgraph.bmp"
 snap	    BITMAP "bitmap/snap.bmp"
 snap_num    BITMAP "bitmap/snap_num.bmp"
@@ -36,6 +39,29 @@ unfold	    BITMAP "bitmap/unfold.bmp"
 vehicles    BITMAP "bitmap/vehicles.bmp"
 view_profile BITMAP "bitmap/view_profile.bmp"
 
+// Used in the layer toolbar
+layer_create BITMAP "bitmap/layer_create.bmp"
+layer_open	 BITMAP "bitmap/layer_open.bmp"
+save		 BITMAP "bitmap/save.bmp"
+save_as		 BITMAP "bitmap/save_as.bmp"
+zoom_to		 BITMAP "bitmap/zoom_to.bmp"
+delete1		 BITMAP "bitmap/delete1.bmp"
+eye			 BITMAP "bitmap/eye.bmp"
+shadow		 BITMAP "bitmap/shadow.bmp"
+treeview	 BITMAP "bitmap/treeview.bmp"
+grid		 BITMAP "bitmap/grid.bmp"
+refresh		 BITMAP "bitmap/refresh.bmp"
+
+// Bitmap used in Style dialog
+dummy_32x18	 BITMAP "bitmap/dummy_32x18.bmp"
+
+// Bitmaps used in Locations dialog
+play_back	 BITMAP "bitmap/play_back.bmp"
+play_stop	 BITMAP "bitmap/play_stop.bmp"
+play_record1 BITMAP "bitmap/play_record1.bmp"
+play_play	 BITMAP "bitmap/play_play.bmp"
+
+// Icons for scenegraph treeview
 icon1   ICON "icons/camera.ico"
 icon2   ICON "icons/engine.ico"
 icon3   ICON "icons/geom.ico"
@@ -48,11 +74,11 @@ icon9   ICON "icons/unknown.ico"
 icon10  ICON "icons/xform.ico"
 icon11  ICON "icons/fog.ico"
 
+// Icons for layer treeview
 building  ICON "icons/building.ico"
 road	  ICON "icons/road.ico"
 veg1	  ICON "icons/veg1.ico"
 raw		  ICON "icons/raw.ico"
 fence	  ICON "icons/fence.ico"
 instance  ICON "icons/instance.ico"
-image  ICON "icons/image.ico"
-
+image	  ICON "icons/image.ico"

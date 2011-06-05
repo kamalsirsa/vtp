@@ -1,7 +1,7 @@
 //
 // InstanceDlg.cpp
 //
-// Copyright (c) 2003-2007 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -29,7 +29,7 @@
 
 // WDR: event table for InstanceDlg
 
-BEGIN_EVENT_TABLE(InstanceDlg, AutoDialog)
+BEGIN_EVENT_TABLE(InstanceDlg, InstanceDlgBase)
 	EVT_INIT_DIALOG (InstanceDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_RADIO_CONTENT, InstanceDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_MODEL, InstanceDlg::OnRadio )
@@ -42,18 +42,18 @@ END_EVENT_TABLE()
 
 InstanceDlg::InstanceDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	InstanceDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function InstanceDialogFunc for InstanceDlg
-	InstanceDialogFunc( this, TRUE );
-
 	m_bContent = true;
 	m_iManager = 0;
 	m_iItem = 0;
 
-	AddValidator(ID_RADIO_CONTENT, &m_bContent);
-	AddValidator(ID_CHOICE_FILE, &m_iManager);
-	AddValidator(ID_CHOICE_ITEM, &m_iItem);
+	// Work around wxFormDesigner's lack of support for limiting to smallest size
+	GetSizer()->SetSizeHints(this);
+
+	AddValidator(this, ID_RADIO_CONTENT, &m_bContent);
+	AddValidator(this, ID_CHOICE_FILE, &m_iManager);
+	AddValidator(this, ID_CHOICE_ITEM, &m_iItem);
 }
 
 void InstanceDlg::UpdateLoc()

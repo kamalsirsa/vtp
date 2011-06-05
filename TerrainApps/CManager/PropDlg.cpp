@@ -54,9 +54,9 @@ PropDlg::PropDlg( wxWindow *parent, wxWindowID id,
 	m_pSubtypeChoice = GetSubtypeChoice();
 	m_pTagList = GetTaglist();
 
-	AddValidator(ID_ITEM, &m_strItem);
-	AddValidator(ID_TYPECHOICE, &m_strType);
-	AddValidator(ID_SUBTYPECHOICE, &m_strSubtype);
+	AddValidator(this, ID_ITEM, &m_strItem);
+	AddValidator(this, ID_TYPECHOICE, &m_strType);
+	AddValidator(this, ID_SUBTYPECHOICE, &m_strSubtype);
 }
 
 // WDR: handler implementations for PropDlg

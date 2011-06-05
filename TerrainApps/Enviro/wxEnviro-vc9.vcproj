@@ -226,37 +226,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wx\enviro_wdr.cpp"
-				>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile="$(IntDir)/wxEnviroWX.pch"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile="$(IntDir)\wxEnviroWX.pch"
-						BrowseInformation="1"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\wx\EnviroApp.cpp"
 				>
 				<FileConfiguration
@@ -382,10 +351,6 @@
 			>
 			<File
 				RelativePath="wx\canvas.h"
-				>
-			</File>
-			<File
-				RelativePath="wx\enviro_wdr.h"
 				>
 			</File>
 			<File
@@ -701,7 +666,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\wx\bitmap\delete1.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\wx\bitmap\distance.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\dummy_32x18.bmp"
 				>
 			</File>
 			<File
@@ -731,6 +704,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\wx\bitmap\eye.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\wx\bitmap\faster.bmp"
 				>
 			</File>
@@ -739,7 +716,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\wx\bitmap\grid.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\wx\bitmap\instances.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\layer_create.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\layer_open.bmp"
 				>
 			</File>
 			<File
@@ -775,11 +764,39 @@
 				>
 			</File>
 			<File
+				RelativePath=".\wx\bitmap\play_back.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\play_play.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\play_record1.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\play_stop.bmp"
+				>
+			</File>
+			<File
 				RelativePath="wx\bitmap\points.bmp"
 				>
 			</File>
 			<File
+				RelativePath=".\wx\bitmap\refresh.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\wx\bitmap\route.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\save.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\save_as.bmp"
 				>
 			</File>
 			<File
@@ -788,6 +805,10 @@
 			</File>
 			<File
 				RelativePath="wx\bitmap\sgraph.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\shadow.bmp"
 				>
 			</File>
 			<File
@@ -823,7 +844,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\wx\bitmap\treeview.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\wx\bitmap\unfold.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\zoom_to.bmp"
 				>
 			</File>
 		</Filter>

@@ -31,11 +31,11 @@ LayerPropDlg::LayerPropDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 {
 	LayerPropDialogFunc( this, TRUE );
 
-	AddNumValidator(ID_LEFT, &m_fLeft);
-	AddNumValidator(ID_TOP, &m_fTop);
-	AddNumValidator(ID_RIGHT, &m_fRight);
-	AddNumValidator(ID_BOTTOM, &m_fBottom);
-	AddValidator(ID_PROPS, &m_strText);
+	AddNumValidator(this, ID_LEFT, &m_fLeft);
+	AddNumValidator(this, ID_TOP, &m_fTop);
+	AddNumValidator(this, ID_RIGHT, &m_fRight);
+	AddNumValidator(this, ID_BOTTOM, &m_fBottom);
+	AddValidator(this, ID_PROPS, &m_strText);
 }
 
 // WDR: handler implementations for LayerPropDlg

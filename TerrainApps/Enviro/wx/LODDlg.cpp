@@ -1,7 +1,7 @@
 //
 // LODDlg.cpp
 //
-// Copyright (c) 2005-2008 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,8 @@
 #include "vtlib/core/TiledGeom.h"
 #include "vtlib/core/PagedLodGrid.h"
 #include "vtlib/core/Terrain.h"
+
+#include "vtui/Helper.h"	// for MakeColorBitmap
 
 #include "../Enviro.h"
 
@@ -30,7 +32,7 @@
 
 // WDR: event table for LODDlg
 
-BEGIN_EVENT_TABLE(LODDlg,AutoDialog)
+BEGIN_EVENT_TABLE(LODDlg,PagingDlgBase)
 	EVT_INIT_DIALOG (LODDlg::OnInitDialog)
 	EVT_SPIN_UP( ID_TARGET, LODDlg::OnSpinTargetUp )
 	EVT_SPIN_DOWN( ID_TARGET, LODDlg::OnSpinTargetDown )
@@ -43,7 +45,7 @@ END_EVENT_TABLE()
 
 LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	PagingDlgBase( parent, id, title, position, size, style )
 {
 	m_bSet = false;
 	m_bHaveRange = false;
@@ -53,8 +55,20 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_fPageout = 0.0f;
 	m_fRange = 0.0f;
 
-	// WDR: dialog function LODDialogFunc for LODDlg
-	PagingDialogFunc(this, true);
+	// Work around the limitation of wxFormDesigner which can only load bitmaps
+	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
+	//  want them in the resources (on Windows) or as xpm (on Linux)
+	FillWithColorSize(m_staticbitmap1, 14, 14, wxColour(180,180,180));
+	FillWithColorSize(m_staticbitmap2, 14, 14, wxColour(255,100,255));
+	FillWithColorSize(m_staticbitmap3, 14, 14, wxColour(255,0,0));
+	FillWithColorSize(m_staticbitmap4, 14, 14, wxColour(255,128,0));
+	FillWithColorSize(m_staticbitmap5, 14, 14, wxColour(255,255,0));
+	FillWithColorSize(m_staticbitmap6, 14, 14, wxColour(0,255,0));
+	FillWithColorSize(m_staticbitmap7, 14, 14, wxColour(0,255,255));
+	FillWithColorSize(m_staticbitmap8, 14, 14, wxColour(255,255,255));
+
+	// Work around wxFormDesigner's lack of support for limiting to smallest size
+	GetSizer()->SetSizeHints(this);
 
 	// make sure that validation gets down to the child windows
 	SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
@@ -65,16 +79,16 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetTileStatus()->SetValue(_T("No paging threads"));
 
 	m_iTarget = 0;
-	AddValidator(ID_TARGET, &m_iTarget);
+	AddValidator(this, ID_TARGET, &m_iTarget);
 
-	AddNumValidator(ID_TEXT_PRANGE, &m_fRange);
-	AddValidator(ID_SLIDER_PRANGE, &m_iRange);
+	AddNumValidator(this, ID_TEXT_PRANGE, &m_fRange);
+	AddValidator(this, ID_SLIDER_PRANGE, &m_iRange);
 
-	AddNumValidator(ID_TEXT_PAGEOUT, &m_fPageout);
-	AddValidator(ID_SLIDER_PAGEOUT, &m_iPageout);
+	AddNumValidator(this, ID_TEXT_PAGEOUT, &m_fPageout);
+	AddValidator(this, ID_SLIDER_PAGEOUT, &m_iPageout);
 
-	AddNumValidator(ID_COUNT_CURRENT, &m_iCountCur);
-	AddNumValidator(ID_COUNT_MAXIMUM, &m_iCountMax);
+	AddNumValidator(this, ID_COUNT_CURRENT, &m_iCountCur);
+	AddNumValidator(this, ID_COUNT_MAXIMUM, &m_iCountMax);
 }
 
 float PRANGE_MIN = 0.0f;

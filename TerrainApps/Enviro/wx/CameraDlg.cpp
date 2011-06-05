@@ -30,7 +30,7 @@
 
 // WDR: event table for CameraDlg
 
-BEGIN_EVENT_TABLE(CameraDlg,AutoDialog)
+BEGIN_EVENT_TABLE(CameraDlg,CameraDlgBase)
 	EVT_INIT_DIALOG (CameraDlg::OnInitDialog)
 
 	EVT_TEXT_ENTER( ID_CAMX, CameraDlg::OnTextEnter )
@@ -64,43 +64,42 @@ END_EVENT_TABLE()
 
 CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	CameraDlgBase( parent, id, title, position, size, style )
 {
 	m_iSpeedUnits = 0;
-	CameraDialogFunc( this, TRUE );
 	m_bSet = true;
 
-	AddValidator(ID_CAMX, &m_camX);
-	AddValidator(ID_CAMY, &m_camY);
-	AddValidator(ID_CAMZ, &m_camZ);
+	AddValidator(this, ID_CAMX, &m_camX);
+	AddValidator(this, ID_CAMY, &m_camY);
+	AddValidator(this, ID_CAMZ, &m_camZ);
 
-	AddNumValidator(ID_FOV, &m_fFov);
-	AddNumValidator(ID_NEAR, &m_fNear);
-	AddNumValidator(ID_FAR, &m_fFar);
-	AddNumValidator(ID_EYE_SEP, &m_fEyeSep);
-	AddNumValidator(ID_FUSION_DIST, &m_fFusionDist);
-	AddNumValidator(ID_SPEED, &m_fSpeed);
+	AddNumValidator(this, ID_FOV, &m_fFov);
+	AddNumValidator(this, ID_NEAR, &m_fNear);
+	AddNumValidator(this, ID_FAR, &m_fFar);
+	AddNumValidator(this, ID_EYE_SEP, &m_fEyeSep);
+	AddNumValidator(this, ID_FUSION_DIST, &m_fFusionDist);
+	AddNumValidator(this, ID_SPEED, &m_fSpeed);
 
 	GetSpeedUnits()->Append(_("Meters/sec"));
 	GetSpeedUnits()->Append(_("Km/hour"));
 	GetSpeedUnits()->Append(_("Miles/hour"));
-	AddValidator(ID_SPEED_UNITS, &m_iSpeedUnits);
-	AddValidator(ID_ACCEL, &m_bAccel);
+	AddValidator(this, ID_SPEED_UNITS, &m_iSpeedUnits);
+	AddValidator(this, ID_ACCEL, &m_bAccel);
 
-	AddNumValidator(ID_LOD_VEG, &m_fDistVeg);
-	AddNumValidator(ID_LOD_STRUCT, &m_fDistStruct);
-	AddNumValidator(ID_LOD_ROAD, &m_fDistRoad);
+	AddNumValidator(this, ID_LOD_VEG, &m_fDistVeg);
+	AddNumValidator(this, ID_LOD_STRUCT, &m_fDistStruct);
+	AddNumValidator(this, ID_LOD_ROAD, &m_fDistRoad);
 
-	AddValidator(ID_FOVSLIDER, &m_iFov);
-	AddValidator(ID_NEARSLIDER, &m_iNear);
-	AddValidator(ID_FARSLIDER, &m_iFar);
-	AddValidator(ID_EYE_SEPSLIDER, &m_iEyeSep);
-	AddValidator(ID_FUSION_DIST_SLIDER, &m_iFusionDist);
-	AddValidator(ID_SPEEDSLIDER, &m_iSpeed);
+	AddValidator(this, ID_FOVSLIDER, &m_iFov);
+	AddValidator(this, ID_NEARSLIDER, &m_iNear);
+	AddValidator(this, ID_FARSLIDER, &m_iFar);
+	AddValidator(this, ID_EYE_SEPSLIDER, &m_iEyeSep);
+	AddValidator(this, ID_FUSION_DIST_SLIDER, &m_iFusionDist);
+	AddValidator(this, ID_SPEEDSLIDER, &m_iSpeed);
 
-	AddValidator(ID_SLIDER_VEG, &m_iDistVeg);
-	AddValidator(ID_SLIDER_STRUCT, &m_iDistStruct);
-	AddValidator(ID_SLIDER_ROAD, &m_iDistRoad);
+	AddValidator(this, ID_SLIDER_VEG, &m_iDistVeg);
+	AddValidator(this, ID_SLIDER_STRUCT, &m_iDistStruct);
+	AddValidator(this, ID_SLIDER_ROAD, &m_iDistRoad);
 }
 
 #define FOV_MIN	2.0f

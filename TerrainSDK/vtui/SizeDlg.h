@@ -1,7 +1,7 @@
 //
 // Name: SizeDlg.h
 //
-// Copyright (c) 2008 Virtual Terrain Project
+// Copyright (c) 2008-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,7 @@
 
 #include "vtdata/MathTypes.h"
 #include "vtui/AutoDialog.h"
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 
 // WDR: class declarations
 
@@ -18,7 +18,7 @@
 // SizeDlg
 //----------------------------------------------------------------------------
 
-class SizeDlg: public AutoDialog
+class SizeDlg: public SizeDlgBase
 {
 public:
 	// constructors and destructors

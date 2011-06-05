@@ -31,8 +31,8 @@ ChunkDlg::ChunkDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	// WDR: dialog function ChunkDialogFunc for ChunkDlg
 	ChunkDialogFunc( this, TRUE );
-	AddNumValidator(ID_DEPTH, &m_iDepth);
-	AddNumValidator(ID_MAXERROR, &m_fMaxError);
+	AddNumValidator(this, ID_DEPTH, &m_iDepth);
+	AddNumValidator(this, ID_MAXERROR, &m_fMaxError);
 }
 
 // WDR: handler implementations for ChunkDlg

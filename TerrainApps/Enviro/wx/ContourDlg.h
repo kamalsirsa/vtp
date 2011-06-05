@@ -1,14 +1,14 @@
 //
 // Name:		ContourDlg.h
 //
-// Copyright (c) 2009 Virtual Terrain Project.
+// Copyright (c) 2009-2011 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __ContourDlg_H__
 #define __ContourDlg_H__
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 
 // WDR: class declarations
@@ -17,7 +17,7 @@
 // ContourDlg
 //----------------------------------------------------------------------------
 
-class ContourDlg: public AutoDialog
+class ContourDlg: public ContourDlgBase
 {
 public:
 	// constructors and destructors

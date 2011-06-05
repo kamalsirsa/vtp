@@ -40,7 +40,7 @@ CHeightDialog::CHeightDialog( wxWindow *parent, wxWindowID id, const wxString &t
 	HeightDialogFunc( this, TRUE );
 
 	// TODO? --- find an easy way of adding a KILL_FOCUS handler to this ctrl
-	AddNumValidator(ID_BASELINEOFFSET, &m_fBaselineOffset);
+	AddNumValidator(this, ID_BASELINEOFFSET, &m_fBaselineOffset);
 }
 
 void CHeightDialog::Setup(vtBuilding  * const pBuilding, vtHeightField *pHeightField)

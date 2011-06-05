@@ -1,7 +1,7 @@
 //
 // Name: ScenarioSelectDialog.cpp
 //
-// Copyright (c) 2005-2009 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -46,38 +46,35 @@ bool CScenarioListValidator::TransferFromWindow()
 }
 
 //----------------------------------------------------------------------------
-// CScenarioSelectDialog
+// ScenarioSelectDialog
 //----------------------------------------------------------------------------
 
-// WDR: event table for CScenarioSelectDialog
+// WDR: event table for ScenarioSelectDialog
 
-BEGIN_EVENT_TABLE(CScenarioSelectDialog,wxDialog)
-	EVT_LISTBOX( ID_SCENARIO_LIST, CScenarioSelectDialog::OnScenarioList )
-	EVT_BUTTON( ID_NEW_SCENARIO, CScenarioSelectDialog::OnNewScenario )
-	EVT_BUTTON( ID_DELETE_SCENARIO, CScenarioSelectDialog::OnDeleteScenario )
-	EVT_BUTTON( ID_EDIT_SCENARIO, CScenarioSelectDialog::OnEditScenario )
-	EVT_BUTTON( ID_MOVEUP_SCENARIO, CScenarioSelectDialog::OnMoveUpScenario )
-	EVT_BUTTON( ID_MOVEDOWN_SCENARIO, CScenarioSelectDialog::OnMoveDownScenario )
-	EVT_BUTTON( ID_SCENARIO_PREVIOUS, CScenarioSelectDialog::OnScenarioPrevious )
-	EVT_BUTTON( ID_SCENARIO_NEXT, CScenarioSelectDialog::OnScenarioNext )
-	EVT_BUTTON(wxID_OK, CScenarioSelectDialog::OnOK)
-	EVT_BUTTON(wxID_APPLY, CScenarioSelectDialog::OnApply)
-	EVT_BUTTON(wxID_CANCEL, CScenarioSelectDialog::OnCancel)
+BEGIN_EVENT_TABLE(ScenarioSelectDialog,ScenarioSelectDlgBase)
+	EVT_LISTBOX( ID_SCENARIO_LIST, ScenarioSelectDialog::OnScenarioList )
+	EVT_BUTTON( ID_NEW_SCENARIO, ScenarioSelectDialog::OnNewScenario )
+	EVT_BUTTON( ID_DELETE_SCENARIO, ScenarioSelectDialog::OnDeleteScenario )
+	EVT_BUTTON( ID_EDIT_SCENARIO, ScenarioSelectDialog::OnEditScenario )
+	EVT_BUTTON( ID_MOVEUP_SCENARIO, ScenarioSelectDialog::OnMoveUpScenario )
+	EVT_BUTTON( ID_MOVEDOWN_SCENARIO, ScenarioSelectDialog::OnMoveDownScenario )
+	EVT_BUTTON( ID_SCENARIO_PREVIOUS, ScenarioSelectDialog::OnScenarioPrevious )
+	EVT_BUTTON( ID_SCENARIO_NEXT, ScenarioSelectDialog::OnScenarioNext )
+	EVT_BUTTON(wxID_OK, ScenarioSelectDialog::OnOK)
+	EVT_BUTTON(wxID_APPLY, ScenarioSelectDialog::OnApply)
+	EVT_BUTTON(wxID_CANCEL, ScenarioSelectDialog::OnCancel)
 END_EVENT_TABLE()
 
-CScenarioSelectDialog::CScenarioSelectDialog( wxWindow *parent, wxWindowID id, const wxString &title,
+ScenarioSelectDialog::ScenarioSelectDialog( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	ScenarioSelectDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function ScenarioSelectDialogFunc for CScenarioSelectDialog
-	ScenarioSelectDialogFunc( this, TRUE );
-
 	GetScenarioList()->SetValidator(CScenarioListValidator(&m_Scenarios));
 
 	m_bModified = false;
 }
 
-void CScenarioSelectDialog::SetTerrain(vtTerrain *pTerrain)
+void ScenarioSelectDialog::SetTerrain(vtTerrain *pTerrain)
 {
 	m_pTerrain = pTerrain;
 	m_Scenarios = pTerrain->GetParams().m_Scenarios;
@@ -85,7 +82,7 @@ void CScenarioSelectDialog::SetTerrain(vtTerrain *pTerrain)
 	UpdateEnableState();
 }
 
-bool CScenarioSelectDialog::TransferDataToWindow()
+bool ScenarioSelectDialog::TransferDataToWindow()
 {
 	bool bRet = wxDialog::TransferDataToWindow();
 
@@ -94,7 +91,7 @@ bool CScenarioSelectDialog::TransferDataToWindow()
 	return bRet;
 }
 
-void CScenarioSelectDialog::ActivateCurrent()
+void ScenarioSelectDialog::ActivateCurrent()
 {
 	int sel = GetScenarioList()->GetSelection();
 	if (sel < 0)
@@ -103,7 +100,7 @@ void CScenarioSelectDialog::ActivateCurrent()
 	g_App.SetScenario(sel);
 }
 
-void CScenarioSelectDialog::UpdateEnableState()
+void ScenarioSelectDialog::UpdateEnableState()
 {
 	int iSelected = GetScenarioList()->GetSelection();
 	if (iSelected != wxNOT_FOUND)
@@ -145,9 +142,9 @@ void CScenarioSelectDialog::UpdateEnableState()
 }
 
 
-// WDR: handler implementations for CScenarioSelectDialog
+// WDR: handler implementations for ScenarioSelectDialog
 
-void CScenarioSelectDialog::OnScenarioNext( wxCommandEvent &event )
+void ScenarioSelectDialog::OnScenarioNext( wxCommandEvent &event )
 {
 	wxListBox *pScenarioList = GetScenarioList();
 	int iCount = pScenarioList->GetCount();
@@ -159,7 +156,7 @@ void CScenarioSelectDialog::OnScenarioNext( wxCommandEvent &event )
 	}
 }
 
-void CScenarioSelectDialog::OnScenarioPrevious( wxCommandEvent &event )
+void ScenarioSelectDialog::OnScenarioPrevious( wxCommandEvent &event )
 {
 	wxListBox *pScenarioList = GetScenarioList();
 	int iCount = pScenarioList->GetCount();
@@ -171,7 +168,7 @@ void CScenarioSelectDialog::OnScenarioPrevious( wxCommandEvent &event )
 	}
 }
 
-void CScenarioSelectDialog::OnMoveDownScenario( wxCommandEvent &event )
+void ScenarioSelectDialog::OnMoveDownScenario( wxCommandEvent &event )
 {
 	wxListBox *pScenarioList = GetScenarioList();
 	int iSelected = pScenarioList->GetSelection();
@@ -192,7 +189,7 @@ void CScenarioSelectDialog::OnMoveDownScenario( wxCommandEvent &event )
 	}
 }
 
-void CScenarioSelectDialog::OnMoveUpScenario( wxCommandEvent &event )
+void ScenarioSelectDialog::OnMoveUpScenario( wxCommandEvent &event )
 {
 	wxListBox *pScenarioList = GetScenarioList();
 	int iSelected = pScenarioList->GetSelection();
@@ -213,10 +210,10 @@ void CScenarioSelectDialog::OnMoveUpScenario( wxCommandEvent &event )
 	}
 }
 
-void CScenarioSelectDialog::OnEditScenario( wxCommandEvent &event )
+void ScenarioSelectDialog::OnEditScenario( wxCommandEvent &event )
 {
 	wxListBox *pScenarioList = GetScenarioList();
-	CScenarioParamsDialog ScenarioParamsDialog(this, -1, _("Scenario Parameters"));
+	ScenarioParamsDialog ScenarioParamsDialog(this, -1, _("Scenario Parameters"));
 	int iSelected = pScenarioList->GetSelection();
 
 	if (iSelected != wxNOT_FOUND)
@@ -251,7 +248,7 @@ void CScenarioSelectDialog::OnEditScenario( wxCommandEvent &event )
 	}
 }
 
-void CScenarioSelectDialog::OnDeleteScenario( wxCommandEvent &event )
+void ScenarioSelectDialog::OnDeleteScenario( wxCommandEvent &event )
 {
 	wxListBox *pScenarioList = GetScenarioList();
 	int iSelected = pScenarioList->GetSelection();
@@ -265,7 +262,7 @@ void CScenarioSelectDialog::OnDeleteScenario( wxCommandEvent &event )
 	}
 }
 
-void CScenarioSelectDialog::OnNewScenario( wxCommandEvent &event )
+void ScenarioSelectDialog::OnNewScenario( wxCommandEvent &event )
 {
 	wxString ScenarioName = wxGetTextFromUser(_("Enter Scenario Name"), _("New Scenario"));
 	wxListBox *pScenarioList = GetScenarioList();
@@ -283,7 +280,7 @@ void CScenarioSelectDialog::OnNewScenario( wxCommandEvent &event )
 	}
 }
 
-void CScenarioSelectDialog::OnScenarioList( wxCommandEvent &event )
+void ScenarioSelectDialog::OnScenarioList( wxCommandEvent &event )
 {
 	UpdateEnableState();
 	if (!m_bModified)
@@ -293,7 +290,7 @@ void CScenarioSelectDialog::OnScenarioList( wxCommandEvent &event )
 	}
 }
 
-void CScenarioSelectDialog::OnApply(wxCommandEvent& event)
+void ScenarioSelectDialog::OnApply(wxCommandEvent& event)
 {
 	std::vector<ScenarioParams> TempParams = m_pTerrain->GetParams().m_Scenarios;
 
@@ -314,7 +311,7 @@ void CScenarioSelectDialog::OnApply(wxCommandEvent& event)
 	}
 }
 
-void CScenarioSelectDialog::OnOK(wxCommandEvent& event)
+void ScenarioSelectDialog::OnOK(wxCommandEvent& event)
 {
 	if (m_bModified)
 	{
@@ -340,7 +337,7 @@ void CScenarioSelectDialog::OnOK(wxCommandEvent& event)
 		event.Skip();
 }
 
-void CScenarioSelectDialog::OnCancel(wxCommandEvent& event)
+void ScenarioSelectDialog::OnCancel(wxCommandEvent& event)
 {
 	if (m_bModified)
 	{

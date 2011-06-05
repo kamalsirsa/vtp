@@ -31,7 +31,7 @@
 
 // WDR: event table for StyleDlg
 
-BEGIN_EVENT_TABLE(StyleDlg,AutoDialog)
+BEGIN_EVENT_TABLE(StyleDlg,StyleDlgBase)
 	EVT_INIT_DIALOG (StyleDlg::OnInitDialog)
 
 	// Object Geometry
@@ -58,11 +58,8 @@ END_EVENT_TABLE()
 
 StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	StyleDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function StyleDialogFunc for StyleDlg
-	StyleDialogFunc( this, TRUE );
-
 	// make sure that validation gets down to the child windows
 	SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
@@ -71,7 +68,17 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	notebook->SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
 	m_pFeatureSet = NULL;
-	AddValidator(ID_FEATURE_TYPE, &m_strFeatureType);
+	AddValidator(this, ID_FEATURE_TYPE, &m_strFeatureType);
+
+	// Work around the limitation of wxFormDesigner which can only load bitmaps
+	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
+	//  want them in the resources (on Windows) or as xpm (on Linux)
+	m_line_geom_color->SetBitmapLabel(wxBITMAP(dummy_32x18));
+	m_object_geom_color->SetBitmapLabel(wxBITMAP(dummy_32x18));
+	m_text_color->SetBitmapLabel(wxBITMAP(dummy_32x18));
+
+	// Work around wxFormDesigner's lack of support for limiting to smallest size
+	GetSizer()->SetSizeHints(this);
 
 	// Object Geometry
 	m_bObjectGeometry = false;
@@ -81,11 +88,11 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_fObjectGeomHeight = 1.0f;
 	m_fObjectGeomSize = 1.0f;
 
-	AddValidator(ID_ENABLE_OBJECT_GEOM, &m_bObjectGeometry);
-	AddValidator(ID_RADIO_USE_OBJECT_COLOR_FIELD, &m_bRadioUseObjectColorField);
-	AddValidator(ID_OBJECT_COLOR_FIELD, &m_iObjectColorField);
-	AddNumValidator(ID_OBJECT_GEOM_HEIGHT, &m_fObjectGeomHeight);
-	AddNumValidator(ID_OBJECT_GEOM_SIZE, &m_fObjectGeomSize);
+	AddValidator(this, ID_ENABLE_OBJECT_GEOM, &m_bObjectGeometry);
+	AddValidator(this, ID_RADIO_USE_OBJECT_COLOR_FIELD, &m_bRadioUseObjectColorField);
+	AddValidator(this, ID_OBJECT_COLOR_FIELD, &m_iObjectColorField);
+	AddNumValidator(this, ID_OBJECT_GEOM_HEIGHT, &m_fObjectGeomHeight);
+	AddNumValidator(this, ID_OBJECT_GEOM_SIZE, &m_fObjectGeomSize);
 
 	// Line Geometry
 	m_bLineGeometry = false;
@@ -96,12 +103,12 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_fLineWidth = 1.0f;
 	m_bTessellate = false;
 
-	AddValidator(ID_ENABLE_LINE_GEOM, &m_bLineGeometry);
-	AddValidator(ID_RADIO_USE_LINE_COLOR_FIELD, &m_bRadioUseLineColorField);
-	AddValidator(ID_LINE_COLOR_FIELD, &m_iLineColorField);
-	AddNumValidator(ID_LINE_GEOM_HEIGHT, &m_fLineGeomHeight);
-	AddNumValidator(ID_LINE_WIDTH, &m_fLineWidth);
-	AddValidator(ID_TESSELLATE, &m_bTessellate);
+	AddValidator(this, ID_ENABLE_LINE_GEOM, &m_bLineGeometry);
+	AddValidator(this, ID_RADIO_USE_LINE_COLOR_FIELD, &m_bRadioUseLineColorField);
+	AddValidator(this, ID_LINE_COLOR_FIELD, &m_iLineColorField);
+	AddNumValidator(this, ID_LINE_GEOM_HEIGHT, &m_fLineGeomHeight);
+	AddNumValidator(this, ID_LINE_WIDTH, &m_fLineWidth);
+	AddValidator(this, ID_TESSELLATE, &m_bTessellate);
 
 	// Text Labels
 	m_bTextLabels = false;
@@ -112,21 +119,21 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_fLabelHeight = 0.0f;
 	m_fLabelSize = 0.0f;
 
-	AddValidator(ID_ENABLE_TEXT_LABELS, &m_bTextLabels);
-	AddValidator(ID_RADIO_USE_TEXT_COLOR_FIELD, &m_bRadioUseTextColorField);
-	AddValidator(ID_TEXT_COLOR_FIELD, &m_iTextColorField);
-	AddValidator(ID_TEXT_FIELD, &m_iTextField);
-	AddNumValidator(ID_LABEL_HEIGHT, &m_fLabelHeight);
-	AddNumValidator(ID_LABEL_SIZE, &m_fLabelSize);
-	AddValidator(ID_FONT, &m_strFont);
+	AddValidator(this, ID_ENABLE_TEXT_LABELS, &m_bTextLabels);
+	AddValidator(this, ID_RADIO_USE_TEXT_COLOR_FIELD, &m_bRadioUseTextColorField);
+	AddValidator(this, ID_TEXT_COLOR_FIELD, &m_iTextColorField);
+	AddValidator(this, ID_TEXT_FIELD, &m_iTextField);
+	AddNumValidator(this, ID_LABEL_HEIGHT, &m_fLabelHeight);
+	AddNumValidator(this, ID_LABEL_SIZE, &m_fLabelSize);
+	AddValidator(this, ID_FONT, &m_strFont);
 
 	// Texture Overlay
-	AddValidator(ID_ENABLE_TEXTURE_OVERLAY, &m_bTextureOverlay);
+	AddValidator(this, ID_ENABLE_TEXTURE_OVERLAY, &m_bTextureOverlay);
 	GetTextureMode()->Clear();
 	GetTextureMode()->Append(_("ADD"));
 	GetTextureMode()->Append(_("MODULATE"));
 	GetTextureMode()->Append(_("DECAL"));
-	AddValidator(ID_TEXTURE_MODE, &m_strTextureMode);
+	AddValidator(this, ID_TEXTURE_MODE, &m_strTextureMode);
 }
 
 //

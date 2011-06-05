@@ -51,30 +51,30 @@ DistribVegDlg::DistribVegDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	m_iRandomFrom = 1;
 	m_iRandomTo = 100;
 
-	AddNumValidator(IDC_SAMPLING, &m_opt.m_fSampling);
-	AddNumValidator(IDC_SCARCITY, &m_opt.m_fScarcity);
+	AddNumValidator(this, IDC_SAMPLING, &m_opt.m_fSampling);
+	AddNumValidator(this, IDC_SCARCITY, &m_opt.m_fScarcity);
 
 	// species
-	AddValidator(ID_SPECIES1, &m_bSpecies1);
-	AddValidator(ID_SPECIES2, &m_bSpecies2);
-	AddValidator(ID_SPECIES3, &m_bSpecies3);
-	AddValidator(ID_CHOICE_SPECIES, &m_iChoiceSpecies);
-	AddValidator(ID_CHOICE_BIOTYPE, &m_iChoiceBiotype);
-	AddValidator(ID_CHOICE_BIOTYPE_LAYER, &m_iChoiceBiotypeLayer);
+	AddValidator(this, ID_SPECIES1, &m_bSpecies1);
+	AddValidator(this, ID_SPECIES2, &m_bSpecies2);
+	AddValidator(this, ID_SPECIES3, &m_bSpecies3);
+	AddValidator(this, ID_CHOICE_SPECIES, &m_iChoiceSpecies);
+	AddValidator(this, ID_CHOICE_BIOTYPE, &m_iChoiceBiotype);
+	AddValidator(this, ID_CHOICE_BIOTYPE_LAYER, &m_iChoiceBiotypeLayer);
 
 	// density
-	AddValidator(ID_DENSITY1, &m_bDensity1);
-	AddNumValidator(ID_TEXT_FIXED_DENSITY, &m_opt.m_fFixedDensity);
-	AddValidator(ID_DENSITY2, &m_bDensity2);
-	AddValidator(ID_DENSITY3, &m_bDensity3);
-	AddValidator(ID_CHOICE_DENSITY_LAYER, &m_iChoiceDensityLayer);
+	AddValidator(this, ID_DENSITY1, &m_bDensity1);
+	AddNumValidator(this, ID_TEXT_FIXED_DENSITY, &m_opt.m_fFixedDensity);
+	AddValidator(this, ID_DENSITY2, &m_bDensity2);
+	AddValidator(this, ID_DENSITY3, &m_bDensity3);
+	AddValidator(this, ID_CHOICE_DENSITY_LAYER, &m_iChoiceDensityLayer);
 
 	// size
-	AddValidator(ID_SIZE1, &m_bSize1);
-	AddValidator(ID_SIZE2, &m_bSize2);
-	AddNumValidator(ID_TEXT_FIXED_SIZE, &m_opt.m_fFixedSize);
-	AddValidator(ID_SPIN_RANDOM_FROM, &m_iRandomFrom);
-	AddValidator(ID_SPIN_RANDOM_TO, &m_iRandomTo);
+	AddValidator(this, ID_SIZE1, &m_bSize1);
+	AddValidator(this, ID_SIZE2, &m_bSize2);
+	AddNumValidator(this, ID_TEXT_FIXED_SIZE, &m_opt.m_fFixedSize);
+	AddValidator(this, ID_SPIN_RANDOM_FROM, &m_iRandomFrom);
+	AddValidator(this, ID_SPIN_RANDOM_TO, &m_iRandomTo);
 }
 
 

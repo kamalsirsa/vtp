@@ -1,7 +1,7 @@
 //
 // Name:		LocationDlg.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -38,7 +38,7 @@ void BlockingMessageBox(const wxString &msg)
 
 // WDR: event table for LocationDlg
 
-BEGIN_EVENT_TABLE(LocationDlg,AutoDialog)
+BEGIN_EVENT_TABLE(LocationDlg,LocationDlgBase)
 	EVT_LISTBOX( ID_LOCLIST, LocationDlg::OnLocList )
 	EVT_BUTTON( ID_RECALL, LocationDlg::OnRecall )
 	EVT_BUTTON( ID_STORE, LocationDlg::OnStore )
@@ -72,7 +72,7 @@ END_EVENT_TABLE()
 
 LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	LocationDlgBase( parent, id, title, position, size, style )
 {
 	m_bActive = true;
 	m_bLoop = true;
@@ -87,25 +87,34 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_bRecordLinear = true;
 	m_bRecordInterval = false;
 
-	LocationDialogFunc( this, TRUE );
-
 	m_pSaver = NULL;
 	m_pAnimPaths = NULL;
 
 	m_pLocList = GetLoclist();
 
-	AddValidator(ID_ACTIVE, &m_bActive);
-	AddValidator(ID_LOOP, &m_bLoop);
-	AddValidator(ID_CONTINUOUS, &m_bContinuous);
-	AddValidator(ID_SMOOTH, &m_bSmooth);
-	AddValidator(ID_POS_ONLY, &m_bPosOnly);
-	AddNumValidator(ID_SPEED, &m_fSpeed, 2);
-	AddValidator(ID_SPEEDSLIDER, &m_iSpeed);
-	AddNumValidator(ID_RECORD_SPACING, &m_fRecordSpacing);
-	AddValidator(ID_ANIM_POS, &m_iPos);
+	// Work around the limitation of wxFormDesigner which can only load bitmaps
+	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
+	//  want them in the resources (on Windows) or as xpm (on Linux)
+	m_reset->SetBitmapLabel(wxBITMAP(play_back));
+	m_stop->SetBitmapLabel(wxBITMAP(play_stop));
+	m_record1->SetBitmapLabel(wxBITMAP(play_record1));
+	m_play->SetBitmapLabel(wxBITMAP(play_play));
 
-	AddValidator(ID_RECORD_LINEAR, &m_bRecordLinear);
-	AddValidator(ID_RECORD_INTERVAL, &m_bRecordInterval);
+	// Work around wxFormDesigner's lack of support for limiting to smallest size
+	GetSizer()->SetSizeHints(this);
+
+	AddValidator(this, ID_ACTIVE, &m_bActive);
+	AddValidator(this, ID_LOOP, &m_bLoop);
+	AddValidator(this, ID_CONTINUOUS, &m_bContinuous);
+	AddValidator(this, ID_SMOOTH, &m_bSmooth);
+	AddValidator(this, ID_POS_ONLY, &m_bPosOnly);
+	AddNumValidator(this, ID_SPEED, &m_fSpeed, 2);
+	AddValidator(this, ID_SPEEDSLIDER, &m_iSpeed);
+	AddNumValidator(this, ID_RECORD_SPACING, &m_fRecordSpacing);
+	AddValidator(this, ID_ANIM_POS, &m_iPos);
+
+	AddValidator(this, ID_RECORD_LINEAR, &m_bRecordLinear);
+	AddValidator(this, ID_RECORD_INTERVAL, &m_bRecordInterval);
 
 	RefreshButtons();
 	UpdateEnabling();

@@ -46,10 +46,10 @@ ImportStructDlgOGR::ImportStructDlgOGR( wxWindow *parent, wxWindowID id, const w
 	m_opt.bBuildFoundations = false;;
 	m_opt.bUse25DForElevation = false;
 
-	AddValidator(ID_INSIDE_AREA, &m_opt.bInsideOnly);
-	AddValidator(ID_BUILD_FOUNDATIONS, &m_opt.bBuildFoundations);
-	AddValidator(ID_USE_25D, &m_opt.bUse25DForElevation);
-	AddValidator(ID_CHOICE_HEIGHT_TYPE, (int *)&m_opt.m_HeightType);
+	AddValidator(this, ID_INSIDE_AREA, &m_opt.bInsideOnly);
+	AddValidator(this, ID_BUILD_FOUNDATIONS, &m_opt.bBuildFoundations);
+	AddValidator(this, ID_USE_25D, &m_opt.bUse25DForElevation);
+	AddValidator(this, ID_CHOICE_HEIGHT_TYPE, (int *)&m_opt.m_HeightType);
 }
 
 bool ImportStructDlgOGR::GetRadio(int id)

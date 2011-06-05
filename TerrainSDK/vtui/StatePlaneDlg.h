@@ -1,14 +1,14 @@
 //
 // Name: StatePlaneDlg.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __StatePlaneDlg_H__
 #define __StatePlaneDlg_H__
 
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 #include "AutoDialog.h"
 #include "vtdata/Projections.h"
 
@@ -18,7 +18,7 @@
 // StatePlaneDlg
 //----------------------------------------------------------------------------
 
-class StatePlaneDlg: public AutoDialog
+class StatePlaneDlg: public StatePlaneDlgBase
 {
 public:
 	// constructors and destructors

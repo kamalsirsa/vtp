@@ -1,7 +1,7 @@
 //
 // Name: ColorMapDlg.h
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,7 @@
 
 #include "wx/imaglist.h"
 
-#include "vtui_wdr.h"
+#include "vtui_UI.h"
 #include "AutoDialog.h"
 #include "vtdata/HeightField.h"
 
@@ -24,7 +24,7 @@
 // ColorMapDlg
 //----------------------------------------------------------------------------
 
-class ColorMapDlg: public AutoDialog
+class ColorMapDlg: public ColorMapDlgBase
 {
 public:
 	// constructors and destructors

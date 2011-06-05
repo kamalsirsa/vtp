@@ -37,17 +37,17 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetElevUnit()->Append(_("Feet (International)"));
 	GetElevUnit()->Append(_("Feet (U.S. Survey)"));
 
-	AddValidator(ID_MINUTES, &m_bShowMinutes);
-	AddValidator(ID_ELEVUNIT, &m_iElevUnits);
+	AddValidator(this, ID_MINUTES, &m_bShowMinutes);
+	AddValidator(this, ID_ELEVUNIT, &m_iElevUnits);
 
-	AddValidator(ID_RADIO_OUTLINE_ONLY, &m_bShowOutlines);
-	AddValidator(ID_RADIO_COLOR, &m_opt.m_bShowElevation);
-	AddValidator(ID_CHECK_HIDE_UNKNOWN, &m_opt.m_bDoMask);
-	AddValidator(ID_CHECK_DRAW_TIN_SIMPLE, &m_bDrawTinSimple);
+	AddValidator(this, ID_RADIO_OUTLINE_ONLY, &m_bShowOutlines);
+	AddValidator(this, ID_RADIO_COLOR, &m_opt.m_bShowElevation);
+	AddValidator(this, ID_CHECK_HIDE_UNKNOWN, &m_opt.m_bDoMask);
+	AddValidator(this, ID_CHECK_DRAW_TIN_SIMPLE, &m_bDrawTinSimple);
 
-	AddValidator(ID_CHECK_SHOW_ROAD_WIDTH, &m_bShowRoadWidth);
-	AddValidator(ID_CHECK_DRAW_RAW_SIMPLE, &m_bDrawRawSimple);
-	AddValidator(ID_PATHNAMES, &m_bShowPath);
+	AddValidator(this, ID_CHECK_SHOW_ROAD_WIDTH, &m_bShowRoadWidth);
+	AddValidator(this, ID_CHECK_DRAW_RAW_SIMPLE, &m_bDrawRawSimple);
+	AddValidator(this, ID_PATHNAMES, &m_bShowPath);
 }
 
 // WDR: handler implementations for OptionsDlg

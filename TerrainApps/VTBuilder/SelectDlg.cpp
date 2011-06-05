@@ -40,7 +40,7 @@ SelectDlg::SelectDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iCondition = 0;
 	m_strValue = _T("");
 
-	AddValidator(ID_CONDITION, &m_iCondition);
+	AddValidator(this, ID_CONDITION, &m_iCondition);
 
 	// The order of these must not change
 	GetCondition()->Append(_T(" = "));

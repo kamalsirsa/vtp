@@ -67,11 +67,11 @@ ImportStructDlg::ImportStructDlg( wxWindow *parent, wxWindowID id, const wxStrin
 
 	m_defaults_filename = wxString(g_DefaultStructures.GetFilename(), wxConvUTF8);
 
-	AddValidator(ID_INSIDE_AREA, &m_opt.bInsideOnly);
-	AddValidator(ID_CHOICE_HEIGHT_TYPE, &m_iHeightType);
-	AddValidator(ID_CHOICE_ROOF_TYPE, &m_iRoofType);
-	AddValidator(ID_RADIO_COLOR_FIXED, &m_opt.m_bFixedColor);
-	AddValidator(ID_DEFAULTS_FILE, &m_defaults_filename);
+	AddValidator(this, ID_INSIDE_AREA, &m_opt.bInsideOnly);
+	AddValidator(this, ID_CHOICE_HEIGHT_TYPE, &m_iHeightType);
+	AddValidator(this, ID_CHOICE_ROOF_TYPE, &m_iRoofType);
+	AddValidator(this, ID_RADIO_COLOR_FIXED, &m_opt.m_bFixedColor);
+	AddValidator(this, ID_DEFAULTS_FILE, &m_defaults_filename);
 }
 
 bool ImportStructDlg::GetRadio(int id)

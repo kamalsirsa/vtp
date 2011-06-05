@@ -1,7 +1,7 @@
 //
 // Name: StatePlaneDlg.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,7 +22,7 @@
 
 // WDR: event table for StatePlaneDlg
 
-BEGIN_EVENT_TABLE(StatePlaneDlg, AutoDialog)
+BEGIN_EVENT_TABLE(StatePlaneDlg, StatePlaneDlgBase)
 	EVT_INIT_DIALOG (StatePlaneDlg::OnInitDialog)
 	EVT_LISTBOX( ID_STATEPLANES, StatePlaneDlg::OnListBox )
 	EVT_RADIOBUTTON( ID_NAD27, StatePlaneDlg::OnNad27 )
@@ -31,7 +31,7 @@ END_EVENT_TABLE()
 
 StatePlaneDlg::StatePlaneDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	StatePlaneDlgBase( parent, id, title, position, size, style )
 {
 	m_bSetting = false;
 
@@ -42,13 +42,11 @@ StatePlaneDlg::StatePlaneDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	m_bFeet = false;
 	m_bFeetUS = false;
 
-	StatePlaneDialogFunc( this, TRUE );
-
-	AddValidator(ID_NAD27, &m_bNAD27);
-	AddValidator(ID_NAD83, &m_bNAD83);
-	AddValidator(ID_RADIO_METERS, &m_bMeters);
-	AddValidator(ID_RADIO_FEET, &m_bFeet);
-	AddValidator(ID_RADIO_FEET_US, &m_bFeetUS);
+	AddValidator(this, ID_NAD27, &m_bNAD27);
+	AddValidator(this, ID_NAD83, &m_bNAD83);
+	AddValidator(this, ID_RADIO_METERS, &m_bMeters);
+	AddValidator(this, ID_RADIO_FEET, &m_bFeet);
+	AddValidator(this, ID_RADIO_FEET_US, &m_bFeetUS);
 }
 
 void StatePlaneDlg::OnInitDialog(wxInitDialogEvent& event)

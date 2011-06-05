@@ -51,33 +51,33 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bCompressSquishSlow = false;
 	m_bCompressJPEG = false;
 
-	AddValidator(ID_TEXT_TO_FOLDER, &m_strToFile);
-	AddNumValidator(ID_COLUMNS, &m_iColumns);
-	AddNumValidator(ID_ROWS, &m_iRows);
-	AddValidator(ID_CHOICE_LOD0_SIZE, &m_iLODChoice);
-	AddValidator(ID_SPIN_NUM_LODS, &m_iNumLODs);
+	AddValidator(this, ID_TEXT_TO_FOLDER, &m_strToFile);
+	AddNumValidator(this, ID_COLUMNS, &m_iColumns);
+	AddNumValidator(this, ID_ROWS, &m_iRows);
+	AddValidator(this, ID_CHOICE_LOD0_SIZE, &m_iLODChoice);
+	AddValidator(this, ID_SPIN_NUM_LODS, &m_iNumLODs);
 
 	// informations
-	AddNumValidator(ID_TOTALX, &m_iTotalX);
-	AddNumValidator(ID_TOTALY, &m_iTotalY);
+	AddNumValidator(this, ID_TOTALX, &m_iTotalX);
+	AddNumValidator(this, ID_TOTALY, &m_iTotalY);
 
-	AddNumValidator(ID_AREAX, &m_fAreaX);
-	AddNumValidator(ID_AREAY, &m_fAreaY);
+	AddNumValidator(this, ID_AREAX, &m_fAreaX);
+	AddNumValidator(this, ID_AREAY, &m_fAreaY);
 
-	AddNumValidator(ID_ESTX, &m_fEstX);
-	AddNumValidator(ID_ESTY, &m_fEstY);
+	AddNumValidator(this, ID_ESTX, &m_fEstX);
+	AddNumValidator(this, ID_ESTY, &m_fEstY);
 
-	AddNumValidator(ID_CURX, &m_fCurX);
-	AddNumValidator(ID_CURY, &m_fCurY);
+	AddNumValidator(this, ID_CURX, &m_fCurX);
+	AddNumValidator(this, ID_CURY, &m_fCurY);
 
-	AddValidator(ID_OMIT_FLAT, &m_bOmitFlatTiles);
-	AddValidator(ID_MASK_UNKNOWN, &m_bMaskUnknown);
+	AddValidator(this, ID_OMIT_FLAT, &m_bOmitFlatTiles);
+	AddValidator(this, ID_MASK_UNKNOWN, &m_bMaskUnknown);
 
-	AddValidator(ID_TC_NONE, &m_bCompressNone);
-	AddValidator(ID_TC_OGL, &m_bCompressOGL);
-	AddValidator(ID_TC_SQUISH_FAST, &m_bCompressSquishFast);
-	AddValidator(ID_TC_SQUISH_SLOW, &m_bCompressSquishSlow);
-	AddValidator(ID_TC_JPEG, &m_bCompressJPEG);
+	AddValidator(this, ID_TC_NONE, &m_bCompressNone);
+	AddValidator(this, ID_TC_OGL, &m_bCompressOGL);
+	AddValidator(this, ID_TC_SQUISH_FAST, &m_bCompressSquishFast);
+	AddValidator(this, ID_TC_SQUISH_SLOW, &m_bCompressSquishSlow);
+	AddValidator(this, ID_TC_JPEG, &m_bCompressJPEG);
 
 	UpdateEnables();
 

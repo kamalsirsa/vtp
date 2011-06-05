@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtui", "..\..\TerrainSDK\vt
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro-OSG-vc7.vcproj", "{13E5F4CD-63ED-454D-A086-1545C79E2552}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro-vc7.vcproj", "{13E5F4CD-63ED-454D-A086-1545C79E2552}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1182B805-A4E1-4E20-AED3-C535DC09F2DD} = {1182B805-A4E1-4E20-AED3-C535DC09F2DD}
 		{945DEB8C-5D7D-4CAC-9E5D-9FB69BF5A7D4} = {945DEB8C-5D7D-4CAC-9E5D-9FB69BF5A7D4}

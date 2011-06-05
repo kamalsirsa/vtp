@@ -25,7 +25,7 @@ class LinearStructureDlg3d;
 class LocationDlg;
 class LayerDlg;
 class PlantDlg;
-class CScenarioSelectDialog;
+class ScenarioSelectDialog;
 class SceneGraphDlg;
 class TagDlg;
 class TimeDlg;
@@ -300,7 +300,7 @@ public:
 	DistanceDlg3d		*m_pDistanceDlg;
 	EphemDlg			*m_pEphemDlg;
 	TimeDlg				*m_pTimeDlg;
-	CScenarioSelectDialog *m_pScenarioSelectDialog;
+	ScenarioSelectDialog *m_pScenarioSelectDialog;
 	LODDlg				*m_pLODDlg;
 	ProfileDlg			*m_pProfileDlg;
 	VehicleDlg			*m_pVehicleDlg;
