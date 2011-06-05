@@ -23,11 +23,11 @@ public:
 	IPoint2 GetSize() const { return m_Size; }
 	void SetPosition(float l, float t, float r, float b, float rot = 0.0f);
 	void SetImage(vtImage *image);
-	vtGeode *GetGeode() const { return m_pGeom; }
+	vtGeode *GetGeode() const { return m_pGeode; }
 
 protected:
 	vtMaterialArrayPtr m_pMats;
-	vtGeode *m_pGeom;
+	vtGeode *m_pGeode;
 	vtMesh *m_pMesh;
 	IPoint2 m_Size;
 };

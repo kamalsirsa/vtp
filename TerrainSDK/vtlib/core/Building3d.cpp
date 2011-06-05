@@ -25,7 +25,7 @@
 vtBuilding3d::vtBuilding3d() : vtBuilding()
 {
 	m_pContainer = NULL;
-	m_pGeom = NULL;
+	m_pGeode = NULL;
 	m_pHighlight = NULL;
 }
 
@@ -73,11 +73,11 @@ float vtBuilding3d::GetHeightOfStories()
 
 void vtBuilding3d::DestroyGeometry()
 {
-	if (!m_pGeom)	// safety check
+	if (!m_pGeode)	// safety check
 		return;
 
-	m_pContainer->removeChild(m_pGeom);
-	m_pGeom = NULL;
+	m_pContainer->removeChild(m_pGeode);
+	m_pGeode = NULL;
 	m_Mesh.Empty();
 }
 
@@ -258,16 +258,16 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 #endif
 
 	// wrap in a shape and set materials
-	m_pGeom = new vtGeode;
-	m_pGeom->setName("building-geom");
+	m_pGeode = new vtGeode;
+	m_pGeode->setName("building-geom");
 	vtMaterialArray *pShared = GetSharedMaterialArray();
-	m_pGeom->SetMaterials(pShared);
+	m_pGeode->SetMaterials(pShared);
 
 	for (j = 0; j < m_Mesh.GetSize(); j++)
 	{
 		vtMesh *mesh = m_Mesh[j].m_pMesh;
 		int index = m_Mesh[j].m_iMatIdx;
-		m_pGeom->AddMesh(mesh, index);
+		m_pGeode->AddMesh(mesh, index);
 	}
 
 	// resize bounding box
@@ -278,7 +278,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		m_pContainer->removeChild(m_pHighlight);
 
 		FSphere sphere;
-		s2v(m_pGeom->getBound(), sphere);
+		s2v(m_pGeode->getBound(), sphere);
 		m_pHighlight = CreateBoundSphereGeom(sphere);
 		m_pHighlight->SetCastShadow(false);		// no shadow
 		m_pContainer->addChild(m_pHighlight);
@@ -1231,7 +1231,7 @@ bool vtBuilding3d::CreateNode(vtTerrain *pTerr)
 	}
 	if (!CreateGeometry(pTerr->GetHeightField()))
 		return false;
-	m_pContainer->addChild(m_pGeom);
+	m_pContainer->addChild(m_pGeode);
 	m_pContainer->SetTrans(m_center);
 	return true;
 }
@@ -1268,7 +1268,7 @@ void vtBuilding3d::ShowBounds(bool bShow)
 			// the highlight geometry doesn't exist, so create it
 			// get bounding sphere
 			FSphere sphere;
-			s2v(m_pGeom->getBound(), sphere);
+			s2v(m_pGeode->getBound(), sphere);
 
 			m_pHighlight = CreateBoundSphereGeom(sphere);
 			m_pHighlight->SetCastShadow(false);		// no shadow

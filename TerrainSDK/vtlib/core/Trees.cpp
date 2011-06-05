@@ -63,7 +63,7 @@ vtPlantAppearance3d::vtPlantAppearance3d(const vtPlantAppearance &v)
 
 void vtPlantAppearance3d::_Defaults()
 {
-	m_pGeom = NULL;
+	m_pGeode = NULL;
 	m_pMats = NULL;
 	m_pMesh = NULL;
 #if SUPPORT_XFROG
@@ -143,9 +143,9 @@ void vtPlantAppearance3d::LoadAndCreate()
 
 		// create a surface object to represent the tree
 		m_pMesh = CreateTreeMesh(s_fPlantScale, s_bPlantShadows);
-		m_pGeom = new vtGeode;
-		m_pGeom->SetMaterials(m_pMats);
-		m_pGeom->AddMesh(m_pMesh, m_iMatIdx);
+		m_pGeode = new vtGeode;
+		m_pGeode->SetMaterials(m_pMats);
+		m_pGeode->AddMesh(m_pMesh, m_iMatIdx);
 	}
 	else if (m_eType == AT_XFROG)
 	{
@@ -246,15 +246,15 @@ bool vtPlantAppearance3d::GenerateGeom(vtTransform *container)
 {
 	if (m_eType == AT_BILLBOARD)
 	{
-		container->addChild(m_pGeom);
+		container->addChild(m_pGeode);
 		return true;
 	}
 	else if (m_eType == AT_XFROG)
 	{
 #if SUPPORT_XFROG
-		pGeom = m_pFrogModel->CreateShape(1.0f);
+		pGeode = m_pFrogModel->CreateShape(1.0f);
 		float factor = s_fPlantScale;
-		pGeom->Scale(factor, factor, factor);
+		pGeode->Scale(factor, factor, factor);
 #endif
 	}
 	else if (m_eType == AT_MODEL)

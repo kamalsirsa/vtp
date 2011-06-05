@@ -181,15 +181,15 @@ void vtAbstractLayer::CreateGeomGroup()
 	// There is always a yellow highlight material
 	material_index_yellow = pGeomMats->AddRGBMaterial1(RGBf(1,1,0), false, false);
 
-	pGeomObject = new vtGeode;
-	pGeomObject->setName("Objects");
-	pGeomObject->SetMaterials(pGeomMats);
-	pGeomGroup->addChild(pGeomObject);
+	pGeodeObject = new vtGeode;
+	pGeodeObject->setName("Objects");
+	pGeodeObject->SetMaterials(pGeomMats);
+	pGeomGroup->addChild(pGeodeObject);
 
-	pGeomLine = new vtGeode;
-	pGeomLine->setName("Lines");
-	pGeomLine->SetMaterials(pGeomMats);
-	pGeomGroup->addChild(pGeomLine);
+	pGeodeLine = new vtGeode;
+	pGeodeLine->setName("Lines");
+	pGeodeLine->SetMaterials(pGeomMats);
+	pGeomGroup->addChild(pGeodeLine);
 }
 
 void vtAbstractLayer::CreateLabelGroup()
@@ -291,7 +291,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 		vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res*2);
 		mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 
-		pGeomObject->AddMesh(mesh, material_index);
+		pGeodeObject->AddMesh(mesh, material_index);
 
 		// Track
 		if (viz) viz->m_meshes.push_back(mesh);
@@ -320,7 +320,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 		}
 
-		pGeomObject->AddMesh(mesh, material_index);
+		pGeodeObject->AddMesh(mesh, material_index);
 
 		// Track
 		if (viz) viz->m_meshes.push_back(mesh);
@@ -337,7 +337,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 			vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res*2);
 			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 
-			pGeomObject->AddMesh(mesh, material_index);
+			pGeodeObject->AddMesh(mesh, material_index);
 
 			// Track
 			if (viz) viz->m_meshes.push_back(mesh);
@@ -354,7 +354,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 			vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res*2);
 			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
 
-			pGeomObject->AddMesh(mesh, material_index);
+			pGeodeObject->AddMesh(mesh, material_index);
 
 			// Track
 			if (viz) viz->m_meshes.push_back(mesh);
@@ -436,7 +436,7 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 		}
 	}
 
-	vtMeshFactory mf(pGeomLine, PrimitiveSet::LINE_STRIP, 0, 3000, material_index,
+	vtGeomFactory mf(pGeodeLine, PrimitiveSet::LINE_STRIP, 0, 3000, material_index,
 		iEstimatedVerts);
 
 	float fHeight = 0.0f;
@@ -532,7 +532,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
 	unsigned int size = dline.GetSize();
 	int iEstimatedVerts = size;
 
-	vtMeshFactory mf(pGeomLine, PrimitiveSet::LINE_STRIP, 0, 30000, material_index,
+	vtGeomFactory mf(pGeodeLine, PrimitiveSet::LINE_STRIP, 0, 30000, material_index,
 		iEstimatedVerts);
 
 	FPoint3 f3;
@@ -641,8 +641,8 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 #endif
 
 	// Create the vtGeode object to contain the vtTextMesh
-	vtGeode *geom = new vtGeode;
-	geom->setName(str);
+	vtGeode *geode = new vtGeode;
+	geode->setName(str);
 
 	// Determine feature color
 	bool bGotColor = false;
@@ -662,12 +662,12 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 		text->SetColor(rgb);
 	}
 
-	geom->AddTextMesh(text, -1);
+	geode->AddTextMesh(text, -1);
 
 	// Add to a billboarding transform so that the labels turn
 	// toward the viewer
 	vtTransform *bb = new vtTransform;
-	bb->addChild(geom);
+	bb->addChild(geode);
 	m_pTerr->GetBillboardEngine()->AddTarget(bb);
 
 	bb->SetTrans(fp3);
@@ -769,8 +769,8 @@ void vtAbstractLayer::ReleaseFeatureGeometry(vtFeature *f)
 	{
 		vtMesh *mesh = v->m_meshes[m];
 
-		pGeomObject->RemoveMesh(mesh);
-		pGeomLine->RemoveMesh(mesh);
+		pGeodeObject->RemoveMesh(mesh);
+		pGeodeLine->RemoveMesh(mesh);
 	}
 	if (v->m_xform)
 	{
@@ -856,7 +856,7 @@ void vtAbstractLayer::UpdateVisualSelection()
 			for (unsigned int k = 0; k < viz->m_meshes.size(); k++)
 			{
 				vtMesh *mesh = viz->m_meshes[k];
-				pGeomObject->SetMeshMatIndex(mesh, material_index);
+				pGeodeObject->SetMeshMatIndex(mesh, material_index);
 			}
 		}
 	}

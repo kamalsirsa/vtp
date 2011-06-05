@@ -45,8 +45,8 @@ public:
 	// implement vtStructure3d methods
 	virtual bool CreateNode(vtTerrain *pTerr);
 	virtual bool IsCreated();
-	virtual vtGeode *GetGeom() { return m_pGeom; }
-	virtual osg::Node *GetContained() { return m_pGeom; }
+	virtual vtGeode *GetGeom() { return m_pGeode; }
+	virtual osg::Node *GetContained() { return m_pGeode; }
 	virtual void DeleteNode();
 	// display a bounding box around to object to highlight it
 	virtual void ShowBounds(bool bShow);
@@ -111,7 +111,7 @@ protected:
 	bool Collinear2d(const FPoint3& p1, const FPoint3& p2, const FPoint3& p3);
 	int FindVertex(FPoint3 Point, FLine3 &RoofSection3D, vtArray<int> &iaVertices);
 
-	vtGeode		*m_pGeom;		// The geometry node which contains the building geometry
+	vtGeode		*m_pGeode;		// The geometry node which contains the building geometry
 	vtGeode		*m_pHighlight;	// The wireframe highlight
 };
 

@@ -406,9 +406,9 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 				pContainer->SetEnabled(bTrue);
 			else
 			{
-				vtGeode *geom = str3d->GetGeom();
-				if (geom)
-					geom->SetEnabled(bTrue);
+				vtGeode *geode = str3d->GetGeom();
+				if (geode)
+					geode->SetEnabled(bTrue);
 			}
 		}
 	}

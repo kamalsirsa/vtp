@@ -15,8 +15,8 @@
 vtTin3d::vtTin3d()
 {
 	m_pMats = NULL;
-	m_pGeom = NULL;
-	m_pDropGeom = NULL;
+	m_pGeode = NULL;
+	m_pDropGeode = NULL;
 }
 
 /**
@@ -106,8 +106,8 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 			MakeSurfaceMaterials();
 	}
 
-	m_pGeom = new vtGeode;
-	m_pGeom->SetMaterials(m_pMats);
+	m_pGeode = new vtGeode;
+	m_pGeode->SetMaterials(m_pMats);
 
 	// Break it up into a series of meshes - this is good for both
 	// culling and memory management
@@ -290,7 +290,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 			{
 				if (pTypeMeshes[j] != NULL)
 				{
-					m_pGeom->AddMesh(pTypeMeshes[j], texture_base + j);
+					m_pGeode->AddMesh(pTypeMeshes[j], texture_base + j);
 					m_Meshes.Append(pTypeMeshes[j]);
 				}
 			}
@@ -298,7 +298,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 		else
 		{
 			// Simple case
-			m_pGeom->AddMesh(pMesh, m_matidx);
+			m_pGeode->AddMesh(pMesh, m_matidx);
 			m_Meshes.Append(pMesh);
 		}
 	}
@@ -337,7 +337,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 				pMesh->SetVtxColor(i*3+j, color);
 			}
 		}
-		m_pGeom->AddMesh(pMesh, 0);
+		m_pGeode->AddMesh(pMesh, 0);
 		m_Meshes.Append(pMesh);
 
 		if (bDropShadowMesh)
@@ -350,7 +350,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 				m_Conversion.ConvertFromEarth(ep, wp);
 				pShadowMesh->AddVertex(wp);
 			}
-			m_pGeom->AddMesh(pShadowMesh, 2);
+			m_pGeode->AddMesh(pShadowMesh, 2);
 		}
 
 		remaining -= chunk;
@@ -379,14 +379,14 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 		pBaseMesh->AddVertex(wp);
 
 		pBaseMesh->AddFan(0, 1, 2, 3);
-		m_pGeom->AddMesh(pBaseMesh, 1);
+		m_pGeode->AddMesh(pBaseMesh, 1);
 	}
 
 	// The TIN is a large geometry which should not attempt to cast a shadow,
 	//  because shadow algos tend to support only small regions of casters.
-	m_pGeom->SetCastShadow(false);
+	m_pGeode->SetCastShadow(false);
 
-	return m_pGeom;
+	return m_pGeode;
 }
 
 /**

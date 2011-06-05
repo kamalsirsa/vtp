@@ -44,7 +44,7 @@ class SurfaceGrid;
  * \par If you keep a pointer to the geometry, you can toggle or delete it later:
 	\code
 	vtContourConverter cc;
-	vtGeode *geom = cc.Setup(pTerrain, RGBf(1,1,0), 10);
+	vtGeode *geode = cc.Setup(pTerrain, RGBf(1,1,0), 10);
 	[...]
 	geom->SetEnabled(bool);	// set visibility
 	[...]
@@ -84,8 +84,8 @@ protected:
 	DLine2	m_line;
 
 	// These are used if building geometry directly
-	vtGeode *m_pGeom;
-	vtMeshFactory *m_pMF;
+	vtGeode *m_pGeode;
+	vtGeomFactory *m_pMF;
 
 	// This is used if building line features
 	vtFeatureSetLineString *m_pLS;

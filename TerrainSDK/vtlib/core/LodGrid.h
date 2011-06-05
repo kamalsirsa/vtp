@@ -42,7 +42,7 @@ public:
 
 	// methods
 	bool AppendToGrid(vtTransform *pTrans);
-	bool AppendToGrid(vtGeode *pGeom);
+	bool AppendToGrid(vtGeode *pGeode);
 	void RemoveFromGrid(vtTransform *pTNode);
 	void RemoveFromGrid(vtGeode *pModel);
 	void RemoveNodeFromGrid(vtNode *pNode);

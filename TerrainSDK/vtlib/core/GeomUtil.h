@@ -14,20 +14,20 @@
 /*@{*/
 
 /**
- * The vtMeshFactory class makes it easy to create meshes with a lot
+ * The vtGeomFactory class makes it easy to create geometry with a lot
  * of vertices.  You simply provide vertices, and it will create as
- * many meshes as necessary to contain them all.
+ * many geometries as necessary to contain them all.
  *
  * \par Example:
 	This example produces a line strip with 10000 vertices.  The factory
 	is told to limit the number of vertices in a single primitive to 3000,
-	so it will automatically produce four meshes with 3000, 3000, 3000, and
-	1000 vertices each.  The meshes are automatically added to the indicated
-	geometry node.
+	so it will automatically produce four geometries with 3000, 3000, 3000, and
+	1000 vertices each.  The geometries are automatically added to the indicated
+	geode.
 	\code
 	{
 		vtGeode *pLineGeom = new vtGeode;
-		vtMeshFactory mf(pLineGeom, PrimitiveSet::LINE_STRIP, 0, 3000, 1);
+		vtGeomFactory mf(pLineGeom, PrimitiveSet::LINE_STRIP, 0, 3000, 1);
 		mf.PrimStart();
 		for (int i = 0; i < 10000; i++)
 			mf.AddVertex(FPoint3(i,i,i));
@@ -35,12 +35,12 @@
 	}
 	\endcode
  */
-class vtMeshFactory
+class vtGeomFactory
 {
 public:
-	vtMeshFactory(vtGeode *pGeom, vtMesh::PrimType ePrimType,
+	vtGeomFactory(vtGeode *pGeode, vtMesh::PrimType ePrimType,
 		int iVertType, int iMaxVertsPerMesh, int iMatIndex, int iExpectedVerts = -1);
-	vtMeshFactory(vtMesh *pMesh);
+	vtGeomFactory(vtMesh *pMesh);
 
 	void PrimStart();
 	void AddVertex(const FPoint3 &p);
@@ -54,7 +54,7 @@ public:
 protected:
 	void NewMesh();
 
-	vtGeode *m_pGeom;
+	vtGeode *m_pGeode;
 	vtMesh::PrimType m_ePrimType;
 	int m_iVertType;
 	int m_iMaxVertsPerMesh;
@@ -84,7 +84,7 @@ public:
 
 	void SetText(const char *text);
 
-	vtGeode *m_pGeom;
+	vtGeode *m_pGeode;
 	vtMaterialArrayPtr m_pMats;
 	vtMesh *m_pLines;
 	vtTextMesh *m_pLabel, *m_pLabel2;
@@ -101,7 +101,7 @@ vtGeode *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						float fTiling, int steps);
 vtGeode *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 						const FPoint3 &size);
-void AddLineMesh(vtGeode *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1);
+void AddLineMesh(vtGeode *pGeode, int iMatIdx, FPoint3 &p0, FPoint3 &p1);
 vtGeode *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res);
 vtGeode *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
@@ -117,7 +117,7 @@ vtGeode *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 \code
 	// Create
 	vtDynBoundBox *box = new vtDynBoundBox(RGBf(0,0,1));	// blue box
-	parent->AddChild(box->pGeom);
+	parent->AddChild(box->pGeode);
 
 	// Use it to show a node's bounding box
 	FBox3 bb;
@@ -130,7 +130,7 @@ class vtDynBoundBox
 public:
 	vtDynBoundBox(const RGBf &color);
 	void SetBox(const FBox3 &box);
-	vtGeode *pGeom;
+	vtGeode *pGeode;
 	vtMesh *pMesh;
 };
 
@@ -140,9 +140,9 @@ struct vtOBJFile
 	FILE *fp;
 	int verts_written;
 };
-vtOBJFile *OBJFileBegin(vtGeode *geom, const char *filename);
-void OBJFileWriteGeom(vtOBJFile *file, vtGeode *geom);
-bool WriteGeomToOBJ(vtGeode *geom, const char *filename);
+vtOBJFile *OBJFileBegin(vtGeode *geode, const char *filename);
+void OBJFileWriteGeom(vtOBJFile *file, vtGeode *geode);
+bool WriteGeomToOBJ(vtGeode *geode, const char *filename);
 
 /*@}*/	// Group sg
 

@@ -75,12 +75,12 @@ vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color)
 	mesh->AddVertex(FPoint3(0,  0.07, -0.94));
 	mesh->AddLine(0, 1);
 	mesh->AddLine(2, 3);
-	vtGeode *geom = new vtGeode;
-	geom->setName("sky marker");
-	geom->SetMaterials(pMats);
-	geom->AddMesh(mesh, matidx);
+	vtGeode *geode = new vtGeode;
+	geode->setName("sky marker");
+	geode->SetMaterials(pMats);
+	geode->AddMesh(mesh, matidx);
 	vtTransform *trans = new vtTransform;
-	trans->addChild(geom);
+	trans->addChild(geode);
 	return trans;
 }
 void PlaceMarker(vtTransform *trans, float alt, float azi)
@@ -201,17 +201,17 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		m_pSunMat = m_pMats->at(idx);
 
 		VTLOG("   Creating Sun Geom\n");
-		vtGeode *pGeom = new vtGeode;
-		pGeom->setName("Sun geom");
-		m_pSunGeom = new vtMovGeom(pGeom);
+		vtGeode *pGeode = new vtGeode;
+		pGeode->setName("Sun geom");
+		m_pSunGeom = new vtMovGeom(pGeode);
 		m_pSunGeom->setName("Sun xform");
 
 		VTLOG("   Creating Sun Mesh\n");
 		vtMesh *SunMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
 
 		SunMesh->AddRectangleXZ(0.50f, 0.50f);
-		pGeom->SetMaterials(m_pMats);
-		pGeom->AddMesh(SunMesh, idx);
+		pGeode->SetMaterials(m_pMats);
+		pGeode->AddMesh(SunMesh, idx);
 
 		// Z translation, to face us at the topographic north (horizon)
 		FMatrix4 trans;
@@ -710,16 +710,16 @@ void vtStarDome::Create(const char *starfile, float brightness,
 			return;		// could not load texture, cannot have sun
 
 		// Create moon
-		vtGeode *pGeom = new vtGeode;
-		pGeom->setName("Moon geom");
-		m_pMoonGeom = new vtMovGeom(pGeom);
+		vtGeode *pGeode = new vtGeode;
+		pGeode->setName("Moon geom");
+		m_pMoonGeom = new vtMovGeom(pGeode);
 		m_pMoonGeom->setName("Moon xform");
 
 		vtMesh *MoonMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
 
 		MoonMesh->AddRectangleXZ(0.1f, 0.1f);
-		pGeom->SetMaterials(m_pMats);
-		pGeom->AddMesh(MoonMesh, idx);
+		pGeode->SetMaterials(m_pMats);
+		pGeode->AddMesh(MoonMesh, idx);
 
 		// Y translation
 		FMatrix4 trans;

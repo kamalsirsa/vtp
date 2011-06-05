@@ -24,7 +24,7 @@ class ModelDlg;
 class LightDlg;
 class vtGroup;
 class vtLOD;
-class vtGeom;
+class vtGeode;
 class vtTransform;
 class ItemGroup;
 

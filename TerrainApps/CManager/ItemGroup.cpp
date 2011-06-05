@@ -195,14 +195,14 @@ void ItemGroup::ShowLOD(bool bTrue)
 ///////////////////////////////////////////////////////////////////////
 // Ruler geometry
 
-vtGeom *CreateRulers(osgText::Font *font, float fSize)
+vtGeode *CreateRulers(osgText::Font *font, float fSize)
 {
 	int i, j;
 
-	vtGeom *pGeom = new vtGeom;
+	vtGeode *pGeode = new vtGeode;
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
-	pGeom->SetMaterials(pMats);
+	pGeode->SetMaterials(pMats);
 
 	int up = 0;
 	float interval = 0.001f;
@@ -248,7 +248,7 @@ vtGeom *CreateRulers(osgText::Font *font, float fSize)
 			mesh->AddVertex(p);
 			mesh->AddLine(start, start+1);
 		}
-		pGeom->AddMesh(mesh, 0);
+		pGeode->AddMesh(mesh, 0);
 	}
 
 	// then the text labels on each tick
@@ -278,10 +278,10 @@ vtGeom *CreateRulers(osgText::Font *font, float fSize)
 				if (i == 3)
 					text->SetAlignment(0);
 				text->SetText(str);
-				pGeom->AddTextMesh(text, 0);
+				pGeode->AddTextMesh(text, 0);
 			}
 		}
 	}
-	return pGeom;
+	return pGeode;
 }
 

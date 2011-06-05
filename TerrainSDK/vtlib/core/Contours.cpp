@@ -31,7 +31,7 @@ vtContourConverter::vtContourConverter()
 {
 	m_pMF = NULL;
 	m_pGrid = NULL;
-	m_pGeom = NULL;
+	m_pGeode = NULL;
 	m_pLS = NULL;
 }
 
@@ -149,13 +149,13 @@ vtGeode *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fH
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(color, false, false, true);
 
-	m_pGeom = new vtGeode;
-	m_pGeom->setName("Contour Geometry");
-	m_pGeom->SetMaterials(pMats);
+	m_pGeode = new vtGeode;
+	m_pGeode->setName("Contour Geometry");
+	m_pGeode->SetMaterials(pMats);
 
-	m_pMF = new vtMeshFactory(m_pGeom, PrimitiveSet::LINE_STRIP, 0, 30000, 0);
+	m_pMF = new vtGeomFactory(m_pGeode, PrimitiveSet::LINE_STRIP, 0, 30000, 0);
 
-	return m_pGeom;
+	return m_pGeode;
 }
 
 
@@ -244,7 +244,7 @@ void vtContourConverter::Finish()
 	{
 		// Add the geometry to the terrain's scaled features, so that it will scale
 		//  up/down with the terrain's vertical exaggeration.
-		m_pTerrain->GetScaledFeatures()->addChild(m_pGeom);
+		m_pTerrain->GetScaledFeatures()->addChild(m_pGeode);
 	}
 }
 

@@ -1191,10 +1191,10 @@ void EnviroFrame::DoTestCode()
 			float depth, x, y;
 
 			// Add the geometry and materials to the shape
-			vtGeode *pGeom = new vtGeode;
+			vtGeode *pGeode = new vtGeode;
 			vtMaterialArray *pMats = new vtMaterialArray;
 			pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
-			pGeom->SetMaterials(pMats);
+			pGeode->SetMaterials(pMats);
 
 			vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLES, VT_Normals | VT_Colors, 4000);
 
@@ -1246,11 +1246,11 @@ void EnviroFrame::DoTestCode()
 				}
 				line++;
 			}
-			pGeom->AddMesh(mesh, 0);
-			WriteGeomToOBJ(pGeom, "bore.obj");
+			pGeode->AddMesh(mesh, 0);
+			WriteGeomToOBJ(pGeode, "bore.obj");
 
 			vtTransform *model = new vtTransform;
-			model->AddChild(pGeom);
+			model->AddChild(pGeode);
 			DPoint3 pos;
 			g_App.m_pTerrainPicker->GetCurrentEarthPos(pos);
 			GetCurrentTerrain()->AddNode(model);

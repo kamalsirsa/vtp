@@ -130,7 +130,7 @@ void Enviro::SetupGlobe()
 }
 
 // Helper
-void GeomAddRectMesh(vtGeode *pGeom, const FRECT &rect, float z, int matidx)
+void GeomAddRectMesh(vtGeode *pGeode, const FRECT &rect, float z, int matidx)
 {
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
 	mesh->AddVertexUV(FPoint3(rect.left, rect.bottom, z), 0, 0);
@@ -138,7 +138,7 @@ void GeomAddRectMesh(vtGeode *pGeom, const FRECT &rect, float z, int matidx)
 	mesh->AddVertexUV(FPoint3(rect.right, rect.top, z), 1, 1);
 	mesh->AddVertexUV(FPoint3(rect.left, rect.top, z), 0, 1);
 	mesh->AddFan(0, 1, 2, 3);
-	pGeom->AddMesh(mesh, matidx);
+	pGeode->AddMesh(mesh, matidx);
 }
 
 
@@ -288,18 +288,18 @@ void Enviro::MakeDemoGlobe()
 	time.SetTimeOfDay(15,0,0);
 	m_pGlobeTime->SetTime(time);
 
-	vtGeode *geom = new vtGeode;
+	vtGeode *geode = new vtGeode;
 	vtMaterialArray *mats = new vtMaterialArray;
 	mats->AddTextureMaterial2("Planetwork/logo3.png", false, false, true);
 	mats->AddTextureMaterial2("Planetwork/logo2.png", false, false, true);
-	geom->SetMaterials(mats);
+	geode->SetMaterials(mats);
 
 	float width = 1.9, height = .22;
 	FRECT rect(-width/2, height/2, width/2, -height/2);
-	GeomAddRectMesh(geom, rect, 1.15, 0);
+	GeomAddRectMesh(geode, rect, 1.15, 0);
 	rect += FPoint2(0.01, -0.01);
-	GeomAddRectMesh(geom, rect, 1.14, 1);
-	m_pDemoGroup->addChild(geom);
+	GeomAddRectMesh(geode, rect, 1.14, 1);
+	m_pDemoGroup->addChild(geode);
 	Globe2->SetTime(m_pGlobeTime->GetTime());
 
 	int i;
@@ -345,7 +345,7 @@ void Enviro::MakeDemoGlobe()
 			if (p1.y < 0 && p2.y < 0)
 				continue;
 
-			vtMeshFactory mf(m_pDemoTrails, PrimitiveSet::LINE_STRIP, 0, 7000, i%6);
+			vtGeomFactory mf(m_pDemoTrails, PrimitiveSet::LINE_STRIP, 0, 7000, i%6);
 			Globe2->AddSurfaceLineToMesh(&mf, p1, p2);
 		}
 		delete feat1;
@@ -819,7 +819,7 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 {
 	SetupArcMesh();
 
-	vtMeshFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 0);
+	vtGeomFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 0);
 	double angle = m_pIcoGlobe->AddSurfaceLineToMesh(&mf, g1, g2);
 
 	// estimate horizontal distance (angle * radius)
@@ -830,7 +830,7 @@ void Enviro::SetDisplayedArc(const DLine2 &path)
 {
 	SetupArcMesh();
 
-	vtMeshFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 0);
+	vtGeomFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 0);
 	double angle = m_pIcoGlobe->AddSurfaceLineToMesh(&mf, path);
 
 	// estimate horizontal distance (angle * radius)

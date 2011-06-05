@@ -786,10 +786,10 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 	// outside of what they should be, go no further
 	assert(a >= 0 && a < ROAD_CLUSTER && b >= 0 && b < ROAD_CLUSTER);
 
-	vtGeode *pGeom;
+	vtGeode *pGeode;
 	if (m_pRoads[a][b])
 	{
-		pGeom = (vtGeode *)m_pRoads[a][b]->GetChild(0);
+		pGeode = (vtGeode *)m_pRoads[a][b]->GetChild(0);
 	}
 	else
 	{
@@ -814,14 +814,14 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 		pSphere2->SetTrans(lod_center);
 #endif
 
-		pGeom = new vtGeode;
-		pGeom->setName("road");
-		m_pRoads[a][b]->addChild(pGeom);
-		pGeom->SetMaterials(m_pMats);
+		pGeode = new vtGeode;
+		pGeode->setName("road");
+		m_pRoads[a][b]->addChild(pGeode);
+		pGeode->SetMaterials(m_pMats);
 
 		clusters_used++;
 	}
-	pGeom->AddMesh(pMesh, iMatIdx);
+	pGeode->AddMesh(pMesh, iMatIdx);
 }
 
 
@@ -846,9 +846,9 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture, bool progress_callback(i
 	_GatherExtents();
 
 #if 0
-	vtGeode *pGeom = CreateLineGridGeom(m_pMats, 0,
+	vtGeode *pGeode = CreateLineGridGeom(m_pMats, 0,
 						   m_extents.min, m_extents.max, ROAD_CLUSTER);
-	m_pGroup->AddChild(pGeom);
+	m_pGroup->AddChild(pGeode);
 #endif
 
 	vtMesh *pMesh;

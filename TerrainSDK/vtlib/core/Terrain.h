@@ -242,7 +242,7 @@ public:
 							  int &structure, double &closest, float fMaxInstRadius,
 							  float fLinearWidthBuffer);
 	bool AddNodeToStructGrid(vtTransform *pTrans);
-	bool AddNodeToStructGrid(vtGeode *pGeom);
+	bool AddNodeToStructGrid(vtGeode *pGeode);
 	void RemoveNodeFromStructGrid(vtNode *pNode);
 	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
 	int DoStructurePaging();
@@ -309,7 +309,7 @@ public:
 	int GetShadowTextureUnit();
 
 	// symbols and labels for abstract data
-	float AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
+	float AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 		float fOffset, bool bInterp = true, bool bCurve = false, bool bTrue = false);
 
 	// Access the viewpoint(s) associated with this terrain

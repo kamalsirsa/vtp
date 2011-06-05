@@ -341,11 +341,11 @@ vtGeode *IslandTerrain::make_test_cone()
 
 	pMesh->CreateConicalSurface(tip, cone_radius, theta1, theta2, r1, r2, res);
 
-	vtGeode *pGeom = new vtGeode;
-	pGeom->SetMaterials(looks);
-	pGeom->AddMesh(pMesh, 0);
+	vtGeode *pGeode = new vtGeode;
+	pGeode->SetMaterials(looks);
+	pGeode->AddMesh(pMesh, 0);
 
-	return pGeom;
+	return pGeode;
 }
 
 vtGeode *IslandTerrain::make_red_cube()

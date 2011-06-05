@@ -507,10 +507,10 @@ class vtMovGeom : public vtTransform
 public:
 	vtMovGeom(vtGeode *pContained) : vtTransform()
 	{
-		m_pGeom = pContained;
-		addChild(m_pGeom);
+		m_pGeode = pContained;
+		addChild(m_pGeode);
 	}
-	vtGeode	*m_pGeom;
+	vtGeode	*m_pGeode;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

@@ -14,7 +14,7 @@
 vtImageSprite::vtImageSprite()
 {
 	m_pMats = NULL;
-	m_pGeom = NULL;
+	m_pGeode = NULL;
 	m_pMesh = NULL;
 }
 
@@ -53,8 +53,8 @@ bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
 
 	// set up material and geometry container
 	m_pMats = new vtMaterialArray;
-	m_pGeom = new vtGeode;
-	m_pGeom->SetMaterials(m_pMats);
+	m_pGeode = new vtGeode;
+	m_pGeode->SetMaterials(m_pMats);
 
 	m_pMats->AddTextureMaterial(pImage, false, false, bBlending);
 
@@ -65,7 +65,7 @@ bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
 	m_pMesh->AddVertexUV(FPoint3(1,1,0), FPoint2(1,1));
 	m_pMesh->AddVertexUV(FPoint3(0,1,0), FPoint2(0,1));
 	m_pMesh->AddQuad(0, 1, 2, 3);
-	m_pGeom->AddMesh(m_pMesh, 0);
+	m_pGeode->AddMesh(m_pMesh, 0);
 	return true;
 }
 

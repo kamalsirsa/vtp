@@ -72,8 +72,8 @@ public:
 	void RemoveLayer(GlobeLayer *glay);
 
 	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
-	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, const DPoint2 &g2);
-	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line);
+	double AddSurfaceLineToMesh(vtGeomFactory *pMF, const DPoint2 &g1, const DPoint2 &g2);
+	double AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line);
 
 	void SetEarthMaterials(vtMaterialArray *mats);
 	vtMaterialArray *GetEarthMaterials();
@@ -91,7 +91,7 @@ protected:
 	struct MFace
 	{
 		vtTransform *xform;
-		vtGeode *geom;
+		vtGeode *geode;
 		vtGroup *surfgroup;
 		FPoint3 local_origin;
 		FPoint3 axis;		// axis of rotation ("hinge") for each face

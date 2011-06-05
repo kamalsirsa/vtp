@@ -29,7 +29,7 @@ public:
 	bool Read(const char *fname);
 
 	vtGeode *CreateGeometry(bool bDropShadowMesh, int m_matidx = 0);
-	vtGeode *GetGeometry() { return m_pGeom; }
+	vtGeode *GetGeometry() { return m_pGeode; }
 	void SetTextureMaterials(vtMaterialArray *pMats);
 
 	// implement HeightField3d virtual methods
@@ -46,8 +46,8 @@ protected:
 
 	vtArray<vtMesh*> m_Meshes;
 	vtMaterialArrayPtr m_pMats;
-	vtGeode		*m_pGeom;
-	vtGeode		*m_pDropGeom;
+	vtGeode		*m_pGeode;
+	vtGeode		*m_pDropGeode;
 };
 typedef osg::ref_ptr<vtTin3d> vtTin3dPtr;
 

@@ -1199,9 +1199,9 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 		bSuccess = AddNodeToStructGrid(pTrans);
 	else
 	{
-		vtGeode *pGeom = str3d->GetGeom();
-		if (pGeom)
-			bSuccess = AddNodeToStructGrid(pGeom);
+		vtGeode *pGeode = str3d->GetGeom();
+		if (pGeode)
+			bSuccess = AddNodeToStructGrid(pGeode);
 	}
 	if (!bSuccess)
 	{
@@ -2437,9 +2437,9 @@ bool vtTerrain::CreateFromTIN()
 	int tex = m_Params.GetValueInt(STR_TEXTURE);
 	if (tex == 1)
 		m_pTin->SetTextureMaterials(m_pTerrMats);
-	vtGeode *geom = m_pTin->CreateGeometry(bDropShadow);
-	geom->SetCastShadow(false);
-	m_pTerrainGroup->addChild(geom);
+	vtGeode *geode = m_pTin->CreateGeometry(bDropShadow);
+	geode->SetCastShadow(false);
+	m_pTerrainGroup->addChild(geode);
 
 	return true;
 }
@@ -3031,7 +3031,7 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bit
  * Create geometry on the terrain for a 2D line by draping the point onto
  * the terrain surface.
  *
- * \param pMF	A vtMeshFactory which will produces the mesh geometry.
+ * \param pMF	A vtGeomFactory which will produces the mesh geometry.
  * \param line	The 2D line to drape, in Earth coordinates.
  * \param fOffset	An offset to elevate each point in the resulting geometry,
  *		useful for keeping it visibly above the ground.
@@ -3052,11 +3052,11 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bit
 	vtTerrain *pTerr = ...;
 	vtGeode *pLineGeom = new vtGeode;
 	pTerr->AddNode(pLineGeom);
-	vtMeshFactory mf(pLineGeom, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
+	vtGeomFactory mf(pLineGeom, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	float length = pTerr->AddSurfaceLineToMesh(&mf, dline, 10, true);
 	\endcode
  */
-float vtTerrain::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
+float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 									 float fOffset, bool bInterp, bool bCurve,
 									 bool bTrue)
 {
@@ -3395,11 +3395,11 @@ bool vtTerrain::AddNodeToStructGrid(vtTransform *pTrans)
  *
  * \sa AddNode
  */
-bool vtTerrain::AddNodeToStructGrid(vtGeode *pGeom)
+bool vtTerrain::AddNodeToStructGrid(vtGeode *pGeode)
 {
 	if (!m_pStructGrid)
 		return false;
-	return m_pStructGrid->AppendToGrid(pGeom);
+	return m_pStructGrid->AppendToGrid(pGeode);
 }
 
 

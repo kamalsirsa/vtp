@@ -877,15 +877,15 @@ void Enviro::SetupScene2()
 	// The HUD always has a place to put status messages to the user
 	m_pArial = osgText::readFontFile("Arial.ttf");
 
-	vtGeode *geom = new vtGeode;
-	geom->setName("Message");
-	m_pHUD->addChild(geom);
+	vtGeode *geode = new vtGeode;
+	geode->setName("Message");
+	m_pHUD->addChild(geode);
 	if (m_pArial)
 	{
 		m_pHUDMessage = new vtTextMesh(m_pArial, 18);
 		m_pHUDMessage->SetText("");
 		m_pHUDMessage->SetPosition(FPoint3(3,3,0));
-		geom->AddTextMesh(m_pHUDMessage, 0);
+		geode->AddTextMesh(m_pHUDMessage, 0);
 	}
 }
 
@@ -2230,7 +2230,7 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 	dline.Append(g2);
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtMeshFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
+	vtGeomFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	mf.SetLineWidth(2);
 	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, dline, m_fDistToolHeight, true);
 }
@@ -2241,7 +2241,7 @@ void Enviro::SetTerrainMeasure(const DLine2 &path)
 	SetupArcMesh();
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtMeshFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
+	vtGeomFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	mf.SetLineWidth(2);
 	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, path, m_fDistToolHeight, true);
 }
@@ -2312,10 +2312,10 @@ void Enviro::PolygonSelectionAddPoint()
 	int matidx = 2;
 	float fHeight = 10.0f;
 	float fRadius = 0.2f;
-	vtGeode *geom = CreateCylinderGeom(m_pArcMats, matidx, VT_Normals, fHeight,
+	vtGeode *geode = CreateCylinderGeom(m_pArcMats, matidx, VT_Normals, fHeight,
 		fRadius, 10, true, false, false, 1);
 	vtTransform *trans = new vtTransform;
-	trans->addChild(geom);
+	trans->addChild(geode);
 	m_Markers.push_back(trans);
 	vtTerrain *pTerr = GetCurrentTerrain();
 	pTerr->PlantModelAtPoint(trans, g1);
@@ -2327,7 +2327,7 @@ void Enviro::PolygonSelectionAddPoint()
 		m_NewLine.Append(g1);
 
 		vtTerrain *pTerr = GetCurrentTerrain();
-		vtMeshFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
+		vtGeomFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 		pTerr->AddSurfaceLineToMesh(&mf, m_NewLine, m_fDistToolHeight, true);
 	}
 	else
@@ -2900,17 +2900,17 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 	{
 		// create a yellow wireframe polygon we can stretch later
 		int yellow = m_pHUDMaterials->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
-		vtGeode *geom = new vtGeode;
-		geom->setName("Selection Box");
-		geom->SetMaterials(m_pHUDMaterials);
+		vtGeode *geode = new vtGeode;
+		geode->setName("Selection Box");
+		geode->SetMaterials(m_pHUDMaterials);
 		m_pWindowBoxMesh = new vtMesh(PrimitiveSet::POLYGON, 0, 4);
 		m_pWindowBoxMesh->AddVertex(0,0,0);
 		m_pWindowBoxMesh->AddVertex(1,0,0);
 		m_pWindowBoxMesh->AddVertex(1,1,0);
 		m_pWindowBoxMesh->AddVertex(0,1,0);
 		m_pWindowBoxMesh->AddStrip2(4, 0);
-		geom->AddMesh(m_pWindowBoxMesh, yellow);
-		m_pHUD->addChild(geom);
+		geode->AddMesh(m_pWindowBoxMesh, yellow);
+		m_pHUD->addChild(geode);
 	}
 	// Invert the coordinates Y, because mouse origin is upper left, and
 	//  HUD origin is lower left

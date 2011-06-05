@@ -110,14 +110,14 @@ void OutputSOG::WriteMaterials(FILE *fp, const vtMaterialArray *pMats)
 	}
 }
 
-void OutputSOG::WriteSingleGeometry(FILE *fp, const vtGeode *pGeom)
+void OutputSOG::WriteSingleGeometry(FILE *fp, const vtGeode *pGeode)
 {
-	const vtMaterialArray	*pMats = pGeom->GetMaterials();
+	const vtMaterialArray	*pMats = pGeode->GetMaterials();
 	WriteMaterials(fp, pMats);
 
 	short num_geom = 1;
 	Write(fp, FT_NUM_GEOMETRIES, num_geom);
-	WriteGeometry(fp, pGeom, 0);
+	WriteGeometry(fp, pGeode, 0);
 }
 
 void OutputSOG::WriteMultiGeometry(FILE *fp, const vtGroup *pParent)
@@ -129,21 +129,21 @@ void OutputSOG::WriteMultiGeometry(FILE *fp, const vtGroup *pParent)
 	for (i = 0; i < num_geom; i++)
 	{
 		vtNode *pChild = pParent->GetChild(i);
-		vtGeode *pGeom = dynamic_cast<vtGeode*>(pChild);
+		vtGeode *pGeode = dynamic_cast<vtGeode*>(pChild);
 		if (i == 0)
 		{
 			// assume that they share the same materials
-			const vtMaterialArray	*pMats = pGeom->GetMaterials();
+			const vtMaterialArray	*pMats = pGeode->GetMaterials();
 			WriteMaterials(fp, pMats);
 		}
-		WriteGeometry(fp, pGeom, i);
+		WriteGeometry(fp, pGeode, i);
 	}
 }
 
 //
 //
 //
-void OutputSOG::WriteGeometry(FILE *fp, const vtGeode *pGeom, short id)
+void OutputSOG::WriteGeometry(FILE *fp, const vtGeode *pGeode, short id)
 {
 	short i;
 
@@ -151,7 +151,7 @@ void OutputSOG::WriteGeometry(FILE *fp, const vtGeode *pGeom, short id)
 	short components = 4;
 	Write(fp, FT_GEOMETRY, components);
 
-	vtString gname(pGeom->getName().c_str());
+	vtString gname(pGeode->getName().c_str());
 	Write(fp, FT_GEOMNAME, gname);
 
 	Write(fp, FT_GEOMID, id);
@@ -161,12 +161,12 @@ void OutputSOG::WriteGeometry(FILE *fp, const vtGeode *pGeom, short id)
 	//
 	// Write the Meshes
 	//
-	short num_mesh = pGeom->GetNumMeshes();
+	short num_mesh = pGeode->GetNumMeshes();
 	Write(fp, FT_NUM_MESHES, num_mesh);
 
 	for (i = 0; i < num_mesh; i++)
 	{
-		vtMesh *pMesh = pGeom->GetMesh(i);
+		vtMesh *pMesh = pGeode->GetMesh(i);
 		if (pMesh)
 			WriteMesh(fp, pMesh);
 	}
@@ -557,8 +557,8 @@ bool InputSOG::ReadContents(FILE *fp, vtGroup *Parent)
 	quiet = fread(&num_geom, 2, 1, fp);
 	for (j = 0; j < num_geom; j++)
 	{
-		vtGeode *pGeom = ReadGeometry(fp, pMats);
-		Parent->addChild(pGeom);
+		vtGeode *pGeode = ReadGeometry(fp, pMats);
+		Parent->addChild(pGeode);
 	}
 
 	return true;
@@ -575,10 +575,10 @@ vtGeode *InputSOG::ReadGeometry(FILE *fp, vtMaterialArray *pMats)
 	assert(token == FT_GEOMETRY);
 	quiet = fread(&components, 2, 1, fp);
 
-	vtGeode *pGeom = new vtGeode;
+	vtGeode *pGeode = new vtGeode;
 	vtMesh *pMesh;
 
-	pGeom->SetMaterials(pMats);
+	pGeode->SetMaterials(pMats);
 
 	for (i = 0; i < components; i++)
 	{
@@ -591,7 +591,7 @@ vtGeode *InputSOG::ReadGeometry(FILE *fp, vtMaterialArray *pMats)
 			for (j = 0; j < num_mesh; j++)
 			{
 				pMesh = ReadMesh(fp);
-				pGeom->AddMesh(pMesh, pMesh->GetMatIndex());
+				pGeode->AddMesh(pMesh, pMesh->GetMatIndex());
 			}
 			break;
 		case FT_GEOMNAME:
@@ -602,6 +602,6 @@ vtGeode *InputSOG::ReadGeometry(FILE *fp, vtMaterialArray *pMats)
 			fseek(fp, len, SEEK_CUR);
 		}
 	}
-	return pGeom;
+	return pGeode;
 }
 

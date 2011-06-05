@@ -41,7 +41,7 @@ class OutputSOG
 {
 public:
 	void WriteHeader(FILE *fp);
-	void WriteSingleGeometry(FILE *fp, const vtGeode *pGeom);
+	void WriteSingleGeometry(FILE *fp, const vtGeode *pGeode);
 	void WriteMultiGeometry(FILE *fp, const vtGroup *pParent);
 
 private:
@@ -54,7 +54,7 @@ private:
 	void Write(FILE *fp, FileToken ft, FPoint2 &p);
 	void WriteToken(FILE *fp, FileToken ft, short length);
 
-	void WriteGeometry(FILE *fp, const vtGeode *pGeom, short id);
+	void WriteGeometry(FILE *fp, const vtGeode *pGeode, short id);
 	void WriteMaterials(FILE *fp, const vtMaterialArray *pMats);
 	void WriteMaterial(FILE *fp, const vtMaterial *pMat);
 	void WriteMesh(FILE *fp, const vtMesh *pMesh);

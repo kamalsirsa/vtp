@@ -51,7 +51,7 @@ protected:
 	void _Defaults();
 
 	osg::ref_ptr<vtMaterialArray> m_pMats;
-	vtGeodePtr		m_pGeom;
+	vtGeodePtr		m_pGeode;
 	osg::ref_ptr<vtMesh> m_pMesh;
 	int				m_iMatIdx;
 	vtNode			*m_pExternal;

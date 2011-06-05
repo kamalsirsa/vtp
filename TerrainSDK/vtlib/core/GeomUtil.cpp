@@ -40,20 +40,20 @@ vtGeode *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	}
 
 	// Add the geometry and materials to the shape
-	vtGeode *pGeom = new vtGeode;
+	vtGeode *pGeode = new vtGeode;
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
 
 	pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true, true, false, fAlpha);
 	pMats->AddRGBMaterial1(RGBf(0.0f, 1.0f, 0.0f), true, true, false, fAlpha);
 	pMats->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), true, true, false, fAlpha);
 
-	pGeom->SetMaterials(pMats);
-	pGeom->setName("3D Crosshair");
+	pGeode->SetMaterials(pMats);
+	pGeode->setName("3D Crosshair");
 
 	for (i = 0; i < 3; i++)
-		pGeom->AddMesh(mesh[i], i);
+		pGeode->AddMesh(mesh[i], i);
 
-	return pGeom;
+	return pGeode;
 }
 
 /**
@@ -62,15 +62,15 @@ vtGeode *Create3DCursor(float fSize, float fSmall, float fAlpha)
  */
 vtGeode *CreateBoundSphereGeom(const FSphere &sphere, int res)
 {
-	vtGeode *pGeom = new vtGeode;
+	vtGeode *pGeode = new vtGeode;
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f), false, false, true);
-	pGeom->SetMaterials(pMats);
+	pGeode->SetMaterials(pMats);
 
 	vtMesh *pMesh = CreateSphereMesh(sphere, res);
-	pGeom->AddMesh(pMesh, 0);
+	pGeode->AddMesh(pMesh, 0);
 
-	return pGeom;
+	return pGeode;
 }
 
 /**
@@ -125,14 +125,14 @@ vtGeode *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						const FPoint2 &min1, const FPoint2 &max1,
 						float fTiling, int steps)
 {
-	vtGeode *pGeom = new vtGeode;
+	vtGeode *pGeode = new vtGeode;
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, steps * steps);
 
 	mesh->CreateRectangle(steps, steps, Axis1, Axis2, Axis3, min1, max1, 0.0f, fTiling);
 
-	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(mesh, iMatIdx);
-	return pGeom;
+	pGeode->SetMaterials(pMats);
+	pGeode->AddMesh(mesh, iMatIdx);
+	return pGeode;
 }
 
 
@@ -147,19 +147,19 @@ vtGeode *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 vtGeode *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 						const FPoint3 &size)
 {
-	vtGeode *pGeom = new vtGeode;
+	vtGeode *pGeode = new vtGeode;
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 24);
 	mesh->CreateBlock(size);
-	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(mesh, iMatIdx);
-	return pGeom;
+	pGeode->SetMaterials(pMats);
+	pGeode->AddMesh(mesh, iMatIdx);
+	return pGeode;
 }
 
-void AddLineMesh(vtGeode *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1)
+void AddLineMesh(vtGeode *pGeode, int iMatIdx, FPoint3 &p0, FPoint3 &p1)
 {
 	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, 2);
 	mesh->AddLine(p0, p1);
-	pGeom->AddMesh(mesh, iMatIdx);
+	pGeode->AddMesh(mesh, iMatIdx);
 }
 
 /**
@@ -179,12 +179,12 @@ void AddLineMesh(vtGeode *pGeom, int iMatIdx, FPoint3 &p0, FPoint3 &p1)
 vtGeode *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res)
 {
-	vtGeode *pGeom = new vtGeode;
+	vtGeode *pGeode = new vtGeode;
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, iVertType, res*res*2);
 	mesh->CreateEllipsoid(FPoint3(0,0,0), FPoint3(fRadius, fRadius, fRadius), res);
-	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(mesh, iMatIdx);
-	return pGeom;
+	pGeode->SetMaterials(pMats);
+	pGeode->AddMesh(mesh, iMatIdx);
+	return pGeode;
 }
 
 /**
@@ -221,12 +221,12 @@ vtGeode *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVert
 	else
 		verts = res * 2;
 
-	vtGeode *pGeom = new vtGeode;
+	vtGeode *pGeode = new vtGeode;
 	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, iVertType, res*2);
 	mesh->CreateCylinder(fHeight, fRadius, res, bTop, bBottom, bCentered);
-	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(mesh, iMatIdx);
-	return pGeom;
+	pGeode->SetMaterials(pMats);
+	pGeode->AddMesh(mesh, iMatIdx);
+	return pGeode;
 }
 
 /**
@@ -236,7 +236,7 @@ vtGeode *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVert
 vtGeode *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 						   const FPoint3 &min1, const FPoint3 &max1, int steps)
 {
-	vtGeode *pGeom = new vtGeode;
+	vtGeode *pGeode = new vtGeode;
 	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, (steps+1)*4);
 
 	FPoint3 p, diff = max1 - min1, step = diff / (float)steps;
@@ -262,19 +262,19 @@ vtGeode *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 		mesh->AddLine(idx, idx+1);
 		idx += 2;
 	}
-	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(mesh, iMatIdx);
-	return pGeom;
+	pGeode->SetMaterials(pMats);
+	pGeode->AddMesh(mesh, iMatIdx);
+	return pGeode;
 }
 
 
 vtDynBoundBox::vtDynBoundBox(const RGBf &color)
 {
-	pGeom = new vtGeode;
+	pGeode = new vtGeode;
 
 	vtMaterialArrayPtr mats = new vtMaterialArray;
 	mats->AddRGBMaterial1(color, false, false, true);	// wire material
-	pGeom->SetMaterials(mats);
+	pGeode->SetMaterials(mats);
 
 	pMesh = new vtMesh(PrimitiveSet::LINES, 0, 8);
 	for (int i = 0; i < 8; i++)
@@ -293,8 +293,8 @@ vtDynBoundBox::vtDynBoundBox(const RGBf &color)
 	pMesh->AddLine(5, 7);
 	pMesh->AddLine(7, 6);
 	pMesh->AddLine(6, 4);
-	pGeom->AddMesh(pMesh, 0);
-	pGeom->SetCastShadow(false);
+	pGeode->AddMesh(pMesh, 0);
+	pGeode->SetCastShadow(false);
 }
 
 void vtDynBoundBox::SetBox(const FBox3 &box)
@@ -317,7 +317,7 @@ void vtDynBoundBox::SetBox(const FBox3 &box)
 /**
  * Constructor.
  *
- * \param pGeom		The geometry node which will receive the mesh object(s)
+ * \param pGeode	The geometry node which will receive the mesh object(s)
  *		that this factory will produce.
  * \param ePrimType	The type of mesh to produce.
  * \param iVertType	The vertex attributes for the meshes to produce.
@@ -329,11 +329,11 @@ void vtDynBoundBox::SetBox(const FBox3 &box)
  * \param iExpectedVerts If you know how many vertices will be mesh ahead of
  *		time, you can save a little time and memory by passing the number.
  */
-vtMeshFactory::vtMeshFactory(vtGeode *pGeom, vtMesh::PrimType ePrimType,
+vtGeomFactory::vtGeomFactory(vtGeode *pGeode, vtMesh::PrimType ePrimType,
 							 int iVertType, int iMaxVertsPerMesh, int iMatIndex,
 							 int iExpectedVerts)
 {
-	m_pGeom = pGeom;
+	m_pGeode = pGeode;
 	m_ePrimType = ePrimType;
 	m_iVertType = iVertType;
 	m_iMaxVertsPerMesh = iMaxVertsPerMesh;
@@ -358,9 +358,9 @@ vtMeshFactory::vtMeshFactory(vtGeode *pGeom, vtMesh::PrimType ePrimType,
  * \param pMesh The mesh which will receive all the vertices that this factory
  *		produces.
  */
-vtMeshFactory::vtMeshFactory(vtMesh *pMesh)
+vtGeomFactory::vtGeomFactory(vtMesh *pMesh)
 {
-	m_pGeom = NULL;
+	m_pGeode = NULL;
 	m_pMesh = pMesh;
 	m_iPrimStart = -1;
 	m_iPrimVerts = -1;
@@ -369,10 +369,10 @@ vtMeshFactory::vtMeshFactory(vtMesh *pMesh)
 	m_bSimple = true;
 }
 
-void vtMeshFactory::NewMesh()
+void vtGeomFactory::NewMesh()
 {
 	m_pMesh = new vtMesh(m_ePrimType, m_iVertType, m_iExpectedVerts);
-	m_pGeom->AddMesh(m_pMesh, m_iMatIndex);
+	m_pGeode->AddMesh(m_pMesh, m_iMatIndex);
 
 	if (m_fLineWidth != 1)
 		m_pMesh->SetLineWidth(m_fLineWidth);
@@ -382,7 +382,7 @@ void vtMeshFactory::NewMesh()
 }
 
 /** Tell the factory to start a primitive. */
-void vtMeshFactory::PrimStart()
+void vtGeomFactory::PrimStart()
 {
 	if (!m_pMesh)
 		NewMesh();
@@ -391,7 +391,7 @@ void vtMeshFactory::PrimStart()
 }
 
 /** Tell the factory to add a vertex to the current primitive. */
-void vtMeshFactory::AddVertex(const FPoint3 &p)
+void vtGeomFactory::AddVertex(const FPoint3 &p)
 {
 	if (!m_bSimple)
 	{
@@ -413,7 +413,7 @@ void vtMeshFactory::AddVertex(const FPoint3 &p)
 }
 
 /** Tell the factory to end a primitive. */
-void vtMeshFactory::PrimEnd()
+void vtGeomFactory::PrimEnd()
 {
 	if (m_iPrimVerts > 0)
 		m_pMesh->AddStrip2(m_iPrimVerts, m_iPrimStart);
@@ -421,12 +421,12 @@ void vtMeshFactory::PrimEnd()
 	m_iPrimVerts = -1;
 }
 
-void vtMeshFactory::SetLineWidth(float width)
+void vtGeomFactory::SetLineWidth(float width)
 {
 	m_fLineWidth = width;
 }
 
-void vtMeshFactory::SetMatIndex(int iIdx)
+void vtGeomFactory::SetMatIndex(int iIdx)
 {
 	if (iIdx != m_iMatIndex)
 	{
@@ -447,16 +447,16 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 {
 	// We can't orient the text message in space without a transform, so that's
 	//  why we're subclassed from vtTransform.
-	m_pGeom = new vtGeode;
-	addChild(m_pGeom);
+	m_pGeode = new vtGeode;
+	addChild(m_pGeode);
 
 	// create materials and meshes
 	m_pMats = new vtMaterialArray;
 	m_pMats->AddRGBMaterial1(line_color, false, false);	// plain, no culling
-	m_pGeom->SetMaterials(m_pMats);
+	m_pGeode->SetMaterials(m_pMats);
 
 	m_pLines = new vtMesh(PrimitiveSet::LINES, 0, 12);
-	m_pGeom->AddMesh(m_pLines, 0);
+	m_pGeode->AddMesh(m_pLines, 0);
 
 	// Now determine the points in space which define the geometry.
 	FPoint3 diff = p2 - p1;
@@ -478,7 +478,7 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 
 	// add the text object.
 	m_pLabel = new vtTextMesh(font, height, true);
-	m_pGeom->AddTextMesh(m_pLabel, 0);
+	m_pGeode->AddTextMesh(m_pLabel, 0);
 
 	m_pLabel->SetColor(text_color);
 	m_pLabel->SetAlignment(2);	// YZ plane
@@ -488,7 +488,7 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 
 	// and a second text object, facing the other way
 	m_pLabel2 = new vtTextMesh(font, height, true);
-	m_pGeom->AddTextMesh(m_pLabel2, 0);
+	m_pGeode->AddTextMesh(m_pLabel2, 0);
 
 	m_pLabel2->SetColor(text_color);
 	m_pLabel2->SetAlignment(2);	// YZ plane
@@ -512,7 +512,7 @@ void vtDimension::SetText(const char *text)
 
 ///////////////////////////////////////////////////////////////////////
 
-vtOBJFile *OBJFileBegin(vtGeode *geom, const char *filename)
+vtOBJFile *OBJFileBegin(vtGeode *geode, const char *filename)
 {
 	FILE *fp = vtFileOpen(filename, "wb");
 	if (!fp)
@@ -521,7 +521,7 @@ vtOBJFile *OBJFileBegin(vtGeode *geom, const char *filename)
 	fprintf(fp, "#  Wavefront OBJ generated by the VTP software (http://vterrain.org/)\n\n");
 
 	unsigned int i;
-	const vtMaterialArray *mats = geom->GetMaterials();
+	const vtMaterialArray *mats = geode->GetMaterials();
 	unsigned int num_mats = 0;
 	if (mats)
 		num_mats = mats->size();
@@ -570,13 +570,13 @@ vtOBJFile *OBJFileBegin(vtGeode *geom, const char *filename)
 	return file;
 }
 
-void OBJFileWriteGeom(vtOBJFile *file, vtGeode *geom)
+void OBJFileWriteGeom(vtOBJFile *file, vtGeode *geode)
 {
 	unsigned int i, j, k;
-	unsigned int num_mesh = geom->GetNumMeshes();
+	unsigned int num_mesh = geode->GetNumMeshes();
 	for (i = 0; i < num_mesh; i++)
 	{
-		vtMesh *mesh = geom->GetMesh(i);
+		vtMesh *mesh = geode->GetMesh(i);
 		if (!mesh)
 			continue;
 
@@ -687,14 +687,14 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeode *geom)
 /**
  * Write a geometry node to a old-fashioned Wavefront OBJ file.
  */
-bool WriteGeomToOBJ(vtGeode *geom, const char *filename)
+bool WriteGeomToOBJ(vtGeode *geode, const char *filename)
 {
-	vtOBJFile *file = OBJFileBegin(geom, filename);
+	vtOBJFile *file = OBJFileBegin(geode, filename);
 	if (!file)
 		return false;
 
 	// Now write the geometry itself
-	OBJFileWriteGeom(file, geom);
+	OBJFileWriteGeom(file, geode);
 	fclose(file->fp);
 	delete file;
 	return true;

@@ -97,17 +97,17 @@ bool vtApp::OnInit(void)
 	// make a yellow sphere
 	vtMaterialArray *pMats = new vtMaterialArray;
 	pMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f), RGBf(0.0f, 0.0f, 1.0f));
-	vtGeom *pGeom = CreateSphereGeom(pMats, 0, VT_Normals, 0.5, 16);
-	pGeom->setName("Yellow Sphere");
+	vtGeode *pGeode = CreateSphereGeom(pMats, 0, VT_Normals, 0.5, 16);
+	pGeode->setName("Yellow Sphere");
 	pMats->Release();
 
 	OutputSOG osog;
 
 	FILE *fp = fopen("output.sog", "wb");
 	osog.WriteHeader(fp);
-	osog.WriteSingleGeometry(fp, pGeom);
+	osog.WriteSingleGeometry(fp, pGeode);
 	fclose(fp);
-	m_pRoot->AddChild(pGeom);
+	m_pRoot->AddChild(pGeode);
 #else
 	InputSOG isog;
 

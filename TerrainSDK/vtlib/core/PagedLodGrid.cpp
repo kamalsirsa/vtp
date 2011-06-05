@@ -534,9 +534,9 @@ void vtPagedStructureLodGrid::ConstructByIndex(vtPagedStructureLOD *pLOD,
 			pLOD->AddChild(pTrans);
 		else
 		{
-			vtGeode *pGeom = str3d->GetGeom();
-			if (pGeom)
-				pLOD->addChild(pGeom);
+			vtGeode *pGeode = str3d->GetGeom();
+			if (pGeode)
+				pLOD->addChild(pGeode);
 		}
 		pLOD->m_iNumConstructed ++;
 

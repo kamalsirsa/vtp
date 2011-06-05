@@ -31,13 +31,13 @@ protected:
 	vtGroup	*m_pTop;
 	vtGroup *m_pGroup;
 	vtLOD	*m_pLOD;
-	vtGeom	*m_pAxes;
-	vtGeom	*m_pRulers;
+	vtGeode	*m_pAxes;
+	vtGeode	*m_pRulers;
 	float m_ranges[20];		// One LOD distance for each child
 };
 
 // helper
-vtGeom *CreateRulers(osgText::Font *font, float fSize);
+vtGeode *CreateRulers(osgText::Font *font, float fSize);
 
 #endif // ITEMGROUPH
 

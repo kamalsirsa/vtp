@@ -224,13 +224,13 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	const std::type_info &t1 = typeid(*pNode);
 	if (t1 == typeid(vtGeode))
 	{
-		vtGeode *pGeom = dynamic_cast<vtGeode*>(pNode);
-		int num_mesh = pGeom->GetNumMeshes();
+		vtGeode *pGeode = dynamic_cast<vtGeode*>(pNode);
+		int num_mesh = pGeode->GetNumMeshes();
 		wxTreeItemId	hGeomItem;
 
 		for (int i = 0; i < num_mesh; i++)
 		{
-			vtMesh *pMesh = pGeom->GetMesh(i);
+			vtMesh *pMesh = pGeode->GetMesh(i);
 			if (pMesh)
 			{
 				int iNumPrim = pMesh->GetNumPrims();

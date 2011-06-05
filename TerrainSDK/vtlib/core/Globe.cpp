@@ -554,11 +554,11 @@ void vtIcoGlobe::BuildSphericalPoints(GlobeLayer *glay, float fSize)
 		if (spheres[i].radius == 0.0f)
 			continue;
 
-		vtGeode *geom = new vtGeode;
-		geom->SetMaterials(m_coremats);
-		geom->AddMesh(mesh, m_yellow);
+		vtGeode *geode = new vtGeode;
+		geode->SetMaterials(m_coremats);
+		geode->AddMesh(mesh, m_yellow);
 
-		vtMovGeom *mgeom = new vtMovGeom(geom);
+		vtMovGeom *mgeom = new vtMovGeom(geode);
 		mgeom->setName("GlobeShape");
 
 		mgeom->PointTowards(spheres[i].center);
@@ -590,13 +590,13 @@ void vtIcoGlobe::BuildSphericalLines(GlobeLayer *glay, float fSize)
 	int i, size;
 	size = feat->GetNumEntities();
 
-	vtGeode *geom = new vtGeode;
-	geom->setName("spherical lines");
-	geom->SetMaterials(m_coremats);
-	m_SurfaceGroup->addChild(geom);
-	glay->addChild(geom);
+	vtGeode *geode = new vtGeode;
+	geode->setName("spherical lines");
+	geode->SetMaterials(m_coremats);
+	m_SurfaceGroup->addChild(geode);
+	glay->addChild(geode);
 
-	vtMeshFactory mf(geom, PrimitiveSet::LINE_STRIP, 0, 30000, m_yellow);
+	vtGeomFactory mf(geode, PrimitiveSet::LINE_STRIP, 0, 30000, m_yellow);
 	for (i = 0; i < size; i++)
 	{
 		const DLine2 &line = pSetLS->GetPolyLine(i);
@@ -614,13 +614,13 @@ void vtIcoGlobe::BuildSphericalPolygons(GlobeLayer *glay, float fSize)
 	int i, size;
 	size = feat->GetNumEntities();
 
-	vtGeode *geom = new vtGeode;
-	geom->setName("spherical lines");
-	geom->SetMaterials(m_coremats);
-	m_SurfaceGroup->addChild(geom);
-	glay->addChild(geom);
+	vtGeode *geode = new vtGeode;
+	geode->setName("spherical lines");
+	geode->SetMaterials(m_coremats);
+	m_SurfaceGroup->addChild(geode);
+	glay->addChild(geode);
 
-	vtMeshFactory mf(geom, PrimitiveSet::LINE_STRIP, 0, 30000, m_yellow);
+	vtGeomFactory mf(geode, PrimitiveSet::LINE_STRIP, 0, 30000, m_yellow);
 	for (i = 0; i < size; i++)
 	{
 		const DPolygon2 &poly = pSetPoly->GetPolygon(i);
@@ -678,11 +678,11 @@ void vtIcoGlobe::BuildFlatPoint(GlobeLayer *glay, int i, float fSize)
 
 	p_out -= m_mface[mface].local_origin;
 
-	vtGeode *geom = new vtGeode;
-	geom->SetMaterials(m_coremats);
-	geom->AddMesh(m_cylinder, m_yellow);
+	vtGeode *geode = new vtGeode;
+	geode->SetMaterials(m_coremats);
+	geode->AddMesh(m_cylinder, m_yellow);
 
-	vtMovGeom *mgeom = new vtMovGeom(geom);
+	vtMovGeom *mgeom = new vtMovGeom(geode);
 	mgeom->setName("GlobeShape");
 
 //	mgeom->RotateLocal(FPoint3(1,0,0), -PID2f);
@@ -712,7 +712,7 @@ void vtIcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 	m_pRectangles->SetMaterials(m_coremats);
 	m_SurfaceGroup->addChild(m_pRectangles);
 
-	vtMeshFactory mf(m_pRectangles, PrimitiveSet::LINE_STRIP, 0, 30000, m_red);
+	vtGeomFactory mf(m_pRectangles, PrimitiveSet::LINE_STRIP, 0, 30000, m_red);
 	for (unsigned int a = 0; a < pTerrainScene->NumTerrains(); a++)
 	{
 		vtTerrain *pTerr = pTerrainScene->GetTerrain(a);
@@ -734,7 +734,7 @@ void vtIcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 	}
 }
 
-double vtIcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, const DPoint2 &g2)
+double vtIcoGlobe::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DPoint2 &g1, const DPoint2 &g2)
 {
 	// first determine how many points we should use for a smooth arc
 	DPoint3 p1, p2;
@@ -777,7 +777,7 @@ double vtIcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, c
 	return angle;
 }
 
-double vtIcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line)
+double vtIcoGlobe::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line)
 {
 	DPoint2 g1, g2;
 	DPoint3 p1, p2;
@@ -1305,8 +1305,8 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 		m_mface[i].xform = new vtTransform;
 		m_mface[i].surfgroup = new vtGroup;
 		m_mface[i].surfgroup->SetEnabled(false);
-		m_mface[i].geom = new vtGeode;
-		m_mface[i].xform->addChild(m_mface[i].geom);
+		m_mface[i].geode = new vtGeode;
+		m_mface[i].xform->addChild(m_mface[i].geode);
 		m_mface[i].xform->AddChild(m_mface[i].surfgroup);
 
 		vtString str;
@@ -1321,8 +1321,8 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 
 		add_face2(m_mesh[i], face, i, subfaces, which);
 
-		m_mface[i].geom->SetMaterials(m_earthmats);
-		m_mface[i].geom->AddMesh(m_mesh[i], m_globe_mat[mat]);
+		m_mface[i].geode->SetMaterials(m_earthmats);
+		m_mface[i].geode->AddMesh(m_mesh[i], m_globe_mat[mat]);
 	}
 	m_top->AddChild(m_mface[0].xform);
 
@@ -1654,12 +1654,12 @@ void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo)
 //
 vtTransform *WireAxis(RGBf color, float len)
 {
-	vtGeode *geom = new vtGeode;
-	geom->setName("axis");
+	vtGeode *geode = new vtGeode;
+	geode->setName("axis");
 
 	vtMaterialArray *pMats = new vtMaterialArray;
 	int index = pMats->AddRGBMaterial1(color, false, false);
-	geom->SetMaterials(pMats);
+	geode->SetMaterials(pMats);
 
 	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, 6);
 	mesh->AddVertex(FPoint3(-len,0,0));
@@ -1671,9 +1671,9 @@ vtTransform *WireAxis(RGBf color, float len)
 	mesh->AddLine(0,1);
 	mesh->AddLine(2,3);
 	mesh->AddLine(4,5);
-	geom->AddMesh(mesh, index);
+	geode->AddMesh(mesh, index);
 	vtTransform *trans = new vtTransform;
-	trans->addChild(geom);
+	trans->addChild(geode);
 	return trans;
 }
 
@@ -1695,8 +1695,8 @@ vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
 		mesh->SetVtxTexCoord(i, coord);
 	}
 
-	vtGeode *geom = new vtGeode;
-	vtMovGeom *mgeom = new vtMovGeom(geom);
+	vtGeode *geode = new vtGeode;
+	vtMovGeom *mgeom = new vtMovGeom(geode);
 	mgeom->setName("GlobeGeom");
 
 	vtMaterialArray *pMats = new vtMaterialArray;
@@ -1705,9 +1705,9 @@ vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
 	bool bTransp = false;
 	pMats->AddTextureMaterial2(strDataPath + "WholeEarth/earth2k_free.jpg",
 						 bCulling, bLighting, bTransp);
-	geom->SetMaterials(pMats);
+	geode->SetMaterials(pMats);
 
-	geom->AddMesh(mesh, 0);
+	geode->AddMesh(mesh, 0);
 
 	return mgeom;
 }

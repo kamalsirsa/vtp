@@ -726,7 +726,7 @@ void vtFrame::OnItemSaveSOG(wxCommandEvent& event)
 	vtTransform *trans = m_nodemap[m_pCurrentModel];
 	if (!trans)
 		return;
-	vtGeom *geom = dynamic_cast<vtGeom*>(trans->GetChild(0));
+	vtGeode *geode = dynamic_cast<vtGeode*>(trans->GetChild(0));
 	if (!geom)
 		return;
 
@@ -828,14 +828,14 @@ void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
 void vtFrame::OnUpdateItemSaveSOG(wxUpdateUIEvent& event)
 {
 	vtTransform *trans;
-	vtGeom *geom;
+	vtGeode *geode;
 
 	bool enable = true;
 	if (m_pCurrentModel == NULL)
 		enable = false;
 	if (enable && !(trans = m_nodemap[m_pCurrentModel]))
 		enable = false;
-	if (enable && !(geom = dynamic_cast<vtGeom*>(trans->GetChild(0))))
+	if (enable && !(geom = dynamic_cast<vtGeode*>(trans->GetChild(0))))
 		enable = false;
 	event.Enable(enable);
 }
