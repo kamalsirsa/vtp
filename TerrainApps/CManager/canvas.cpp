@@ -20,6 +20,8 @@
 #include "frame.h"
 #include "app.h"
 
+#include "vtui/GraphicsWindowWX.h"
+
 #ifndef WIN32
 #define Sleep sleep
 #endif
@@ -64,6 +66,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 
 vtGLCanvas::~vtGLCanvas(void)
 {
+	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->CloseOsgContext();
 	VTLOG(" destructing Canvas\n");
 }
 

@@ -212,6 +212,10 @@ void vtScene::Shutdown()
 	m_pRootEnginePostDraw = NULL;
 	m_piKeyState = NULL;
 
+	// remove our hold on refcounted objects
+	m_pOsgViewer = NULL;
+	m_pGraphicsContext = NULL;
+
 	// restore
 	std::cout.rdbuf(previous_cout);
 	std::cerr.rdbuf(previous_cerr);

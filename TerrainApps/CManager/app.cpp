@@ -18,10 +18,12 @@
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/vtSOG.h"
 #include "vtui/Helper.h"	// for ConvertArgcArgv
+#include "vtui/GraphicsWindowWX.h"
 #include "vtdata/vtLog.h"
 
 #include "app.h"
 #include "frame.h"
+#include "canvas.h"
 
 IMPLEMENT_APP(vtApp)
 
@@ -75,6 +77,8 @@ bool vtApp::OnInit(void)
 #if VTLIB_SGL
 	CreateTestSGLScene();
 #endif
+
+	pScene->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
 
 	// make a simple directional light
 	VTLOG(" creating light\n");
