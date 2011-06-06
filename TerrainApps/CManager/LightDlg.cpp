@@ -1,13 +1,9 @@
 //
 // Name:		LightDlg.cpp
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
-
-#ifdef __GNUG__
-	#pragma implementation "LightDlg.cpp"
-#endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
@@ -17,6 +13,7 @@
 #endif
 
 #include "vtlib/vtlib.h"
+#include "vtui/AutoDialog.h"
 #include "vtui/Helper.h"	// for FillWithColor
 #include "LightDlg.h"
 
@@ -30,7 +27,7 @@
 
 // WDR: event table for LightDlg
 
-BEGIN_EVENT_TABLE(LightDlg,AutoDialog)
+BEGIN_EVENT_TABLE(LightDlg, LightDlgBase)
 	EVT_CHOICE( ID_LIGHT, LightDlg::OnLight )
 	EVT_BUTTON( ID_AMBIENT, LightDlg::OnAmbient )
 	EVT_BUTTON( ID_DIFFUSE, LightDlg::OnDiffuse )
@@ -41,11 +38,8 @@ END_EVENT_TABLE()
 
 LightDlg::LightDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	LightDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function LightDialogFunc for LightDlg
-	LightDialogFunc( this, TRUE );
-
 	AddNumValidator(this, ID_DIRX, &m_dir.x);
 	AddNumValidator(this, ID_DIRY, &m_dir.y);
 	AddNumValidator(this, ID_DIRZ, &m_dir.z);
@@ -82,8 +76,8 @@ void LightDlg::UseLight(vtTransform *pMovLight)
 void LightDlg::UpdateColorBitmaps()
 {
 	// Case of a single color, simple
-	FillWithColor(GetAmbient(), m_ambient);
-	FillWithColor(GetDiffuse(), m_diffuse);
+	FillWithColorSize(GetAmbient(), 26, 14, m_ambient);
+	FillWithColorSize(GetDiffuse(), 26, 14, m_diffuse);
 }
 
 

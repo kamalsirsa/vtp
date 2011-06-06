@@ -1,13 +1,9 @@
 //
 // Name:	PropDlg.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
-
-#ifdef __GNUG__
-	#pragma implementation "PropDlg.cpp"
-#endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
@@ -20,35 +16,34 @@
 
 #include "PropDlg.h"
 #include "vtdata/Content.h"
+#include "vtui/AutoDialog.h"
 #include "frame.h"
 #include "TagDlg.h"
 
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
-// PropDlg
+// PropPanel
 //----------------------------------------------------------------------------
 
-// WDR: event table for PropDlg
+// WDR: event table for PropPanel
 
-BEGIN_EVENT_TABLE(PropDlg,AutoPanel)
-	EVT_INIT_DIALOG(PropDlg::OnInitDialog)
-	EVT_TEXT( ID_ITEM, PropDlg::OnTextItem )
-	EVT_CHOICE( ID_TYPECHOICE, PropDlg::OnChoiceType )
-	EVT_CHOICE( ID_SUBTYPECHOICE, PropDlg::OnChoiceSubtype )
-	EVT_BUTTON( ID_ADDTAG, PropDlg::OnAddTag )
-	EVT_BUTTON( ID_REMOVETAG, PropDlg::OnRemoveTag )
-	EVT_BUTTON( ID_EDITTAG, PropDlg::OnTagEdit )
+BEGIN_EVENT_TABLE(PropPanel, PropPanelBase)
+	EVT_INIT_DIALOG(PropPanel::OnInitDialog)
+	EVT_TEXT( ID_ITEM, PropPanel::OnTextItem )
+	EVT_CHOICE( ID_TYPECHOICE, PropPanel::OnChoiceType )
+	EVT_CHOICE( ID_SUBTYPECHOICE, PropPanel::OnChoiceSubtype )
+	EVT_BUTTON( ID_ADDTAG, PropPanel::OnAddTag )
+	EVT_BUTTON( ID_REMOVETAG, PropPanel::OnRemoveTag )
+	EVT_BUTTON( ID_EDITTAG, PropPanel::OnTagEdit )
 END_EVENT_TABLE()
 
-PropDlg::PropDlg( wxWindow *parent, wxWindowID id,
+PropPanel::PropPanel( wxWindow *parent, wxWindowID id,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoPanel( parent, id, position, size, style )
+	PropPanelBase( parent, id, position, size, style )
 {
 	m_bUpdating = false;
 	m_pCurrentItem = NULL;
-
-	PropDialogFunc( this, TRUE );
 
 	m_pTypeChoice = GetTypeChoice();
 	m_pSubtypeChoice = GetSubtypeChoice();
@@ -59,9 +54,9 @@ PropDlg::PropDlg( wxWindow *parent, wxWindowID id,
 	AddValidator(this, ID_SUBTYPECHOICE, &m_strSubtype);
 }
 
-// WDR: handler implementations for PropDlg
+// WDR: handler implementations for PropPanel
 
-void PropDlg::OnAddTag( wxCommandEvent &event )
+void PropPanel::OnAddTag( wxCommandEvent &event )
 {
 	GetMainFrame()->RenderingPause();
 	TagDlg dlg(GetMainFrame(), -1, _T("Add New Tag"));
@@ -76,7 +71,7 @@ void PropDlg::OnAddTag( wxCommandEvent &event )
 	GetMainFrame()->RenderingResume();
 }
 
-void PropDlg::OnRemoveTag( wxCommandEvent &event )
+void PropPanel::OnRemoveTag( wxCommandEvent &event )
 {
 	int sel = m_pTagList->GetNextItem(-1, wxLIST_NEXT_ALL,
 		wxLIST_STATE_SELECTED);
@@ -89,7 +84,7 @@ void PropDlg::OnRemoveTag( wxCommandEvent &event )
 	}
 }
 
-void PropDlg::OnTagEdit( wxCommandEvent &event )
+void PropPanel::OnTagEdit( wxCommandEvent &event )
 {
 	GetMainFrame()->RenderingPause();
 
@@ -114,7 +109,7 @@ void PropDlg::OnTagEdit( wxCommandEvent &event )
 	GetMainFrame()->RenderingResume();
 }
 
-void PropDlg::OnInitDialog(wxInitDialogEvent& event)
+void PropPanel::OnInitDialog(wxInitDialogEvent& event)
 {
 	char buf[80];
 	FILE *fp = fopen("itemtypes.txt", "rb");
@@ -155,18 +150,18 @@ void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pTagList->SetColumnWidth(1, 120);
 }
 
-void PropDlg::OnChoiceType( wxCommandEvent &event )
+void PropPanel::OnChoiceType( wxCommandEvent &event )
 {
 	UpdateFromControls();
 	UpdateSubtypes();
 }
 
-void PropDlg::OnChoiceSubtype( wxCommandEvent &event )
+void PropPanel::OnChoiceSubtype( wxCommandEvent &event )
 {
 	UpdateFromControls();
 }
 
-void PropDlg::OnTextItem( wxCommandEvent &event )
+void PropPanel::OnTextItem( wxCommandEvent &event )
 {
 	UpdateFromControls();
 	if (!m_bUpdating)
@@ -176,7 +171,7 @@ void PropDlg::OnTextItem( wxCommandEvent &event )
 
 //////////////////////////////////////////////////////////////////////////
 
-void PropDlg::UpdateSubtypes()
+void PropPanel::UpdateSubtypes()
 {
 	vtString type = (const char *) m_pTypeChoice->GetStringSelection().mb_str();
 
@@ -194,7 +189,7 @@ void PropDlg::UpdateSubtypes()
 	}
 }
 
-void PropDlg::UpdateTagList()
+void PropPanel::UpdateTagList()
 {
 	m_pTagList->DeleteAllItems();
 	if (!m_pCurrentItem)
@@ -215,7 +210,7 @@ void PropDlg::UpdateTagList()
 	}
 }
 
-void PropDlg::SetCurrentItem(vtItem *item)
+void PropPanel::SetCurrentItem(vtItem *item)
 {
 	if (item)
 	{
@@ -250,7 +245,7 @@ void PropDlg::SetCurrentItem(vtItem *item)
 	m_bUpdating = false;
 }
 
-void PropDlg::UpdateFromControls()
+void PropPanel::UpdateFromControls()
 {
 	if (m_bUpdating)
 		return;

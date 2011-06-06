@@ -175,32 +175,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wx\enviro_wdr.cpp">
-				<FileConfiguration
-					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\wx\EnviroApp.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -265,6 +239,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\EnviroUI.cpp">
+			</File>
+			<File
 				RelativePath=".\wx\StatusBar.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -319,9 +296,6 @@
 				RelativePath=".\wx\DistanceDlg3d.h">
 			</File>
 			<File
-				RelativePath="wx\enviro_wdr.h">
-			</File>
-			<File
 				RelativePath=".\wx\EnviroApp.h">
 			</File>
 			<File
@@ -329,6 +303,9 @@
 			</File>
 			<File
 				RelativePath=".\wx\EnviroGUI.h">
+			</File>
+			<File
+				RelativePath=".\wx\EnviroUI.h">
 			</File>
 			<File
 				RelativePath=".\wx\EphemDlg.h">

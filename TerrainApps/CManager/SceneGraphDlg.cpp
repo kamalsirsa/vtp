@@ -5,16 +5,8 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifdef __GNUG__
-	#pragma implementation "SceneGraphDlg.cpp"
-#endif
-
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
 
 #include "wx/treectrl.h"
 #include "wx/image.h"
@@ -62,7 +54,7 @@ public:
 
 // WDR: event table for SceneGraphDlg
 
-BEGIN_EVENT_TABLE(SceneGraphDlg,wxDialog)
+BEGIN_EVENT_TABLE(SceneGraphDlg, SceneGraphDlgBase)
 	EVT_INIT_DIALOG (SceneGraphDlg::OnInitDialog)
 	EVT_TREE_SEL_CHANGED( ID_SCENETREE, SceneGraphDlg::OnTreeSelChanged )
 	EVT_CHECKBOX( ID_ENABLED, SceneGraphDlg::OnEnabled )
@@ -72,10 +64,8 @@ END_EVENT_TABLE()
 
 SceneGraphDlg::SceneGraphDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	SceneGraphDlgBase( parent, id, title, position, size, style )
 {
-	SceneGraphFunc( this, TRUE );
-
 	m_pZoomTo = GetZoomto();
 	m_pEnabled = GetEnabled();
 	m_pTree = GetScenetree();

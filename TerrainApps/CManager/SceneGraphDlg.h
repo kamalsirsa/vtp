@@ -9,7 +9,7 @@
 #define __SceneGraphDlg_H__
 
 #include "wx/imaglist.h"
-#include "cmanager_wdr.h"
+#include "CManager_UI.h"
 
 // WDR: class declarations
 
@@ -17,7 +17,7 @@
 // SceneGraphDlg
 //----------------------------------------------------------------------------
 
-class SceneGraphDlg: public wxDialog
+class SceneGraphDlg: public SceneGraphDlgBase
 {
 public:
 	// constructors and destructors

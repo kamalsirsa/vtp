@@ -49,9 +49,8 @@ DECLARE_APP(vtApp)
 
 // MyTreeCtrl implementation
 
-MyTreeCtrl::MyTreeCtrl(wxWindow *parent, const wxWindowID id,
-					   const wxPoint& pos, const wxSize& size,
-					   long style)
+MyTreeCtrl::MyTreeCtrl(wxWindow *parent, const wxWindowID id, const wxPoint& pos,
+					   const wxSize& size, long style)
 		  : wxTreeCtrl(parent, id, pos, size, style)
 {
 	m_imageListNormal = NULL;

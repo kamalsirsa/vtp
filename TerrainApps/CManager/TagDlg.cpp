@@ -1,19 +1,16 @@
 //
 // Name:     TagDlg.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
-
-#ifdef __GNUG__
-	#pragma implementation "TagDlg.cpp"
-#endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
 #include "TagDlg.h"
 #include <wx/valgen.h>
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -23,16 +20,14 @@
 
 // WDR: event table for TagDlg
 
-BEGIN_EVENT_TABLE(TagDlg,AutoDialog)
+BEGIN_EVENT_TABLE(TagDlg, TagDlgBase)
 EVT_INIT_DIALOG (TagDlg::OnInitDialog)
 END_EVENT_TABLE()
 
 TagDlg::TagDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	TagDlgBase( parent, id, title, position, size, style )
 {
-	TagDialogFunc( this, TRUE );
-
 	AddValidator(this, ID_TAGNAME, &m_strName);
 	AddValidator(this, ID_TAGTEXT, &m_strValue);
 
@@ -61,5 +56,4 @@ void TagDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	wxDialog::OnInitDialog(event);
 }
-
 

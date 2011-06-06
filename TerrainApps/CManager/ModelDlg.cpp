@@ -1,20 +1,12 @@
 //
 // Name:	ModelDlg.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
-#ifdef __GNUG__
-	#pragma implementation "ModelDlg.cpp"
-#endif
-
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4786 )
@@ -24,30 +16,30 @@
 
 #include "ModelDlg.h"
 #include "vtdata/Content.h"
+#include "vtui/AutoDialog.h"
 #include "frame.h"
 
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
-// ModelDlg
+// ModelPanel
 //----------------------------------------------------------------------------
 
-// WDR: event table for ModelDlg
+// WDR: event table for ModelPanel
 
-BEGIN_EVENT_TABLE(ModelDlg,AutoPanel)
-	EVT_TEXT( ID_FILENAME, ModelDlg::OnTextFilename )
-	EVT_TEXT_ENTER( ID_DISTANCE, ModelDlg::OnTextVisible )
-	EVT_TEXT_ENTER( ID_SCALE, ModelDlg::OnTextScale )
-	EVT_TEXT_ENTER( ID_FILENAME, ModelDlg::OnEnterFilename )
+BEGIN_EVENT_TABLE(ModelPanel, ModelPanelBase)
+	EVT_TEXT( ID_FILENAME, ModelPanel::OnTextFilename )
+	EVT_TEXT_ENTER( ID_DISTANCE, ModelPanel::OnTextVisible )
+	EVT_TEXT_ENTER( ID_SCALE, ModelPanel::OnTextScale )
+	EVT_TEXT_ENTER( ID_FILENAME, ModelPanel::OnEnterFilename )
 END_EVENT_TABLE()
 
-ModelDlg::ModelDlg( wxWindow *parent, wxWindowID id,
+ModelPanel::ModelPanel( wxWindow *parent, wxWindowID id,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoPanel( parent, id, position, size, style )
+	ModelPanelBase( parent, id, position, size, style )
 {
 	m_bUpdating = false;
 	m_pCurrentModel = NULL;
-	ModelDialogFunc( this, TRUE );
 
 	AddValidator(this, ID_FILENAME, &m_strFilename);
 	AddNumValidator(this, ID_DISTANCE, &m_fDistance);
@@ -55,9 +47,9 @@ ModelDlg::ModelDlg( wxWindow *parent, wxWindowID id,
 	AddValidator(this, ID_STATUS, &m_strStatus);
 }
 
-// WDR: handler implementations for ModelDlg
+// WDR: handler implementations for ModelPanel
 
-void ModelDlg::OnEnterFilename( wxCommandEvent &event )
+void ModelPanel::OnEnterFilename( wxCommandEvent &event )
 {
 	if (!m_pCurrentModel)
 		return;
@@ -74,7 +66,7 @@ void ModelDlg::OnEnterFilename( wxCommandEvent &event )
 	GetMainFrame()->ModelNameChanged(m_pCurrentModel);
 }
 
-void ModelDlg::OnTextScale( wxCommandEvent &event )
+void ModelPanel::OnTextScale( wxCommandEvent &event )
 {
 	UpdateFromControls();
 
@@ -86,7 +78,7 @@ void ModelDlg::OnTextScale( wxCommandEvent &event )
 	GetMainFrame()->ZoomToCurrentModel();
 }
 
-void ModelDlg::OnTextVisible( wxCommandEvent &event )
+void ModelPanel::OnTextVisible( wxCommandEvent &event )
 {
 	if (m_bUpdating)
 		return;
@@ -97,12 +89,12 @@ void ModelDlg::OnTextVisible( wxCommandEvent &event )
 	GetMainFrame()->UpdateCurrentModelLOD();
 }
 
-void ModelDlg::OnTextFilename( wxCommandEvent &event )
+void ModelPanel::OnTextFilename( wxCommandEvent &event )
 {
 	//UpdateFromControls();
 }
 
-void ModelDlg::SetCurrentModel(vtModel *model)
+void ModelPanel::SetCurrentModel(vtModel *model)
 {
 	if (model)
 	{
@@ -123,7 +115,7 @@ void ModelDlg::SetCurrentModel(vtModel *model)
 	m_bUpdating = false;
 }
 
-void ModelDlg::SetModelStatus(const char *string)
+void ModelPanel::SetModelStatus(const char *string)
 {
 	m_strStatus = wxString(string, wxConvUTF8);
 	m_bUpdating = true;
@@ -131,7 +123,7 @@ void ModelDlg::SetModelStatus(const char *string)
 	m_bUpdating = false;
 }
 
-void ModelDlg::UpdateFromControls()
+void ModelPanel::UpdateFromControls()
 {
 	if (m_bUpdating)
 		return;

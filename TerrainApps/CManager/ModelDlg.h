@@ -1,15 +1,14 @@
 //
 // Name: ModelDlg.h
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __ModelDlg_H__
 #define __ModelDlg_H__
 
-#include "cmanager_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "CManager_UI.h"
 
 class vtModel;
 
@@ -19,11 +18,11 @@ class vtModel;
 // ModelDlg
 //----------------------------------------------------------------------------
 
-class ModelDlg: public AutoPanel
+class ModelPanel: public ModelPanelBase
 {
 public:
 	// constructors and destructors
-	ModelDlg( wxWindow *parent, wxWindowID id = -1,
+	ModelPanel( wxWindow *parent, wxWindowID id = -1,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxTAB_TRAVERSAL | wxNO_BORDER );

@@ -199,25 +199,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="cmanager_wdr.cpp">
-				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
+				RelativePath=".\CManager_UI.cpp">
 			</File>
 			<File
 				RelativePath="frame.cpp">
@@ -403,7 +385,7 @@
 				RelativePath="canvas.h">
 			</File>
 			<File
-				RelativePath="cmanager_wdr.h">
+				RelativePath=".\CManager_UI.h">
 			</File>
 			<File
 				RelativePath="frame.h">

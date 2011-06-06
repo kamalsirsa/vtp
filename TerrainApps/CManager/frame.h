@@ -19,8 +19,8 @@ class MyTreeCtrl;
 class vtNode;
 class vtTransform;
 class SceneGraphDlg;
-class PropDlg;
-class ModelDlg;
+class PropPanel;
+class ModelPanel;
 class LightDlg;
 class vtGroup;
 class vtLOD;
@@ -111,8 +111,8 @@ public:
 
 	// Modeless dialogs
 	SceneGraphDlg	*m_pSceneGraphDlg;
-	PropDlg			*m_pPropDlg;
-	ModelDlg		*m_pModelDlg;
+	PropPanel		*m_pPropDlg;
+	ModelPanel		*m_pModelDlg;
 	LightDlg		*m_pLightDlg;
 
 public:

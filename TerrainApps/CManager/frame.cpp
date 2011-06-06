@@ -42,7 +42,18 @@
 
 #ifndef __WXMSW__
 #  include "icons/cmanager.xpm"
+#  include "bitmaps/axes.xpm"
+#  include "bitmaps/contents_open.xpm"
+#  include "bitmaps/dummy_26x14.xpm"
+#  include "bitmaps/item_new.xpm"
+#  include "bitmaps/item_remove.xpm"
+#  include "bitmaps/model_add.xpm"
+#  include "bitmaps/model_remove.xpm"
+#  include "bitmaps/properties.xpm"
+#  include "bitmaps/rulers.xpm"
+#  include "bitmaps/wireframe.xpm"
 #endif
+
 
 DECLARE_APP(vtApp)
 
@@ -192,10 +203,10 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(250, 350);
 
-	m_pPropDlg = new PropDlg(m_splitter2, wxID_ANY,
+	m_pPropDlg = new PropPanel(m_splitter2, wxID_ANY,
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
 
-	m_pModelDlg = new ModelDlg(m_splitter2, wxID_ANY,
+	m_pModelDlg = new ModelPanel(m_splitter2, wxID_ANY,
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
 	m_pModelDlg->Show(false);
 	m_pModelDlg->InitDialog();
@@ -340,18 +351,18 @@ void vtFrame::CreateToolbar()
 	m_pToolbar->SetMargins(2, 2);
 	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
 
-	ADD_TOOL(wxID_OPEN, MyBitmapsFunc(ID_BM_CONTENTS_OPEN), _("Open Contents File"), false);
+	ADD_TOOL(wxID_OPEN, wxBITMAP(contents_open), _("Open Contents File"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_ITEM_NEW, MyBitmapsFunc(ID_BM_ITEM_NEW), _("New Item"), false);
-	ADD_TOOL(ID_ITEM_DEL, MyBitmapsFunc(ID_BM_ITEM_REMOVE), _("Delete Item"), false);
+	ADD_TOOL(ID_ITEM_NEW, wxBITMAP(item_new), _("New Item"), false);
+	ADD_TOOL(ID_ITEM_DEL, wxBITMAP(item_remove), _("Delete Item"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_ITEM_ADDMODEL, MyBitmapsFunc(ID_BM_MODEL_ADD), _("Add Model"), false);
-	ADD_TOOL(ID_ITEM_REMOVEMODEL, MyBitmapsFunc(ID_BM_MODEL_REMOVE), _("Remove Model"), false);
-	ADD_TOOL(ID_ITEM_MODELPROPS, MyBitmapsFunc(ID_BM_PROPERTIES), _("Model Properties"), false);
+	ADD_TOOL(ID_ITEM_ADDMODEL, wxBITMAP(model_add), _("Add Model"), false);
+	ADD_TOOL(ID_ITEM_REMOVEMODEL, wxBITMAP(model_remove), _("Remove Model"), false);
+	ADD_TOOL(ID_ITEM_MODELPROPS, wxBITMAP(properties), _("Model Properties"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_VIEW_ORIGIN, MyBitmapsFunc(ID_BM_AXES), _("Show Axes"), true);
-	ADD_TOOL(ID_VIEW_RULERS, MyBitmapsFunc(ID_BM_RULERS), _("Show Rulers"), true);
-	ADD_TOOL(ID_VIEW_WIREFRAME, MyBitmapsFunc(ID_BM_WIRE), _("Wireframe"), true);
+	ADD_TOOL(ID_VIEW_ORIGIN, wxBITMAP(axes), _("Show Axes"), true);
+	ADD_TOOL(ID_VIEW_RULERS, wxBITMAP(rulers), _("Show Rulers"), true);
+	ADD_TOOL(ID_VIEW_WIREFRAME, wxBITMAP(wireframe), _("Wireframe"), true);
 
 	m_pToolbar->Realize();
 }
@@ -727,7 +738,7 @@ void vtFrame::OnItemSaveSOG(wxCommandEvent& event)
 	if (!trans)
 		return;
 	vtGeode *geode = dynamic_cast<vtGeode*>(trans->GetChild(0));
-	if (!geom)
+	if (!geode)
 		return;
 
 	vtString fname = GetSaveName("SOG", "*.sog");
@@ -738,7 +749,7 @@ void vtFrame::OnItemSaveSOG(wxCommandEvent& event)
 	OutputSOG osog;
 	FILE *fp = fopen(fname, "wb");
 	osog.WriteHeader(fp);
-	osog.WriteSingleGeometry(fp, geom);
+	osog.WriteSingleGeometry(fp, geode);
 	fclose(fp);
 	CloseProgressDialog();
 }
@@ -835,7 +846,7 @@ void vtFrame::OnUpdateItemSaveSOG(wxUpdateUIEvent& event)
 		enable = false;
 	if (enable && !(trans = m_nodemap[m_pCurrentModel]))
 		enable = false;
-	if (enable && !(geom = dynamic_cast<vtGeode*>(trans->GetChild(0))))
+	if (enable && !(geode = dynamic_cast<vtGeode*>(trans->GetChild(0))))
 		enable = false;
 	event.Enable(enable);
 }
@@ -1000,12 +1011,12 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	wxString str(model->m_filename, wxConvUTF8);
 	UpdateProgressDialog(1, str);
 
-	vtNode *pNode = NULL;
+	osg::Node *pNode = NULL;
 	vtString fullpath = FindFileOnPaths(vtGetDataPath(), model->m_filename);
 	if (fullpath != "")
 	{
 		UpdateProgressDialog(5, str);
-		pNode = vtNode::LoadModel(fullpath);
+		pNode = vtLoadModel(fullpath);
 	}
 	CloseProgressDialog();
 	if (!pNode)
@@ -1020,12 +1031,12 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 
 	// check
 	FSphere sphere;
-	pNode->GetBoundSphere(sphere);
+	s2v(pNode->getBound(), sphere);
 
 	// Wrap in a transform node so that we can scale/rotate the node
 	vtTransform *pTrans = new vtTransform;
 	pTrans->setName("Scaling Transform");
-	pTrans->AddChild(pNode);
+	pTrans->addChild(pNode);
 
 	// Add to map of model -> nodes
 	m_nodemap[model] = pTrans;

@@ -1,19 +1,14 @@
 //
 // Name: LightDlg.h
 //
-// Copyright (c) 2004-2005 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __LightDlg_H__
 #define __LightDlg_H__
 
-#ifndef WX_PRECOMP
-	#include "wx/wx.h"
-#endif
-
-#include "cmanager_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "CManager_UI.h"
 
 // WDR: class declarations
 
@@ -21,7 +16,7 @@
 // LightDlg
 //----------------------------------------------------------------------------
 
-class LightDlg: public AutoDialog
+class LightDlg: public LightDlgBase
 {
 public:
 	// constructors and destructors

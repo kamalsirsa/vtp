@@ -8,8 +8,7 @@
 #ifndef __PropDlg_H__
 #define __PropDlg_H__
 
-#include "cmanager_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "CManager_UI.h"
 #include "vtdata/vtString.h"
 
 class vtItem;
@@ -18,14 +17,14 @@ class vtModel;
 // WDR: class declarations
 
 //----------------------------------------------------------------------------
-// PropDlg
+// PropPanel
 //----------------------------------------------------------------------------
 
-class PropDlg: public AutoPanel
+class PropPanel: public PropPanelBase
 {
 public:
 	// constructors and destructors
-	PropDlg( wxWindow *parent, wxWindowID id = -1,
+	PropPanel( wxWindow *parent, wxWindowID id = -1,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxTAB_TRAVERSAL | wxNO_BORDER );

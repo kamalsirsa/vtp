@@ -34,7 +34,7 @@ void ItemGroup::CreateNodes()
 	m_pTop = new vtGroup;
 	m_pLOD->setName("Individual Container");
 	m_pTop->setName("ItemGroupTop");
-	m_pTop->AddChild(m_pLOD);
+	m_pTop->addChild(m_pLOD);
 	m_pTop->AddChild(m_pGroup);
 }
 
@@ -59,7 +59,7 @@ void ItemGroup::AttachModels(osgText::Font *font)
 	// Undo previous attachments
 	vtNode *pNode;
 	while (pNode = m_pLOD->GetChild(0))
-		m_pLOD->RemoveChild(pNode);
+		m_pLOD->removeChild(pNode->GetOsgNode());
 	while (pNode = m_pGroup->GetChild(0))
 		m_pGroup->RemoveChild(pNode);
 
@@ -75,7 +75,7 @@ void ItemGroup::AttachModels(osgText::Font *font)
 		if (node)
 		{
 			m_pGroup->AddChild(node);
-			m_pLOD->AddChild(node);
+			m_pLOD->addChild(node->GetOsgNode());
 			node->GetBoundSphere(sph);
 			if (sph.radius > largest_sph.radius)
 				largest_sph = sph;
@@ -101,28 +101,24 @@ void ItemGroup::UpdateCrosshair(const FSphere &sph)
 {
 	// Update origin crosshair
 	if (m_pAxes)
-	{
-		m_pTop->RemoveChild(m_pAxes);
-		m_pAxes->Release();
-	}
+		m_pTop->removeChild(m_pAxes);
+
 	float size = sph.radius * 2;
 	m_pAxes = Create3DCursor(size, size/100, 0.4f);
 	m_pAxes->setName("Origin Axes");
-	m_pTop->AddChild(m_pAxes);
+	m_pTop->addChild(m_pAxes);
 }
 
 void ItemGroup::UpdateRulers(osgText::Font *font, const FSphere &sph)
 {
 	// Update rulers
 	if (m_pRulers)
-	{
-		m_pTop->RemoveChild(m_pRulers);
-		m_pRulers->Release();
-	}
+		m_pTop->removeChild(m_pRulers);
+
 	float size = sph.radius * 2;
 	m_pRulers = CreateRulers(font, size);
 	m_pRulers->setName("Rulers");
-	m_pTop->AddChild(m_pRulers);
+	m_pTop->addChild(m_pRulers);
 }
 
 void ItemGroup::ShowOrigin(bool bShow)
@@ -163,7 +159,7 @@ void ItemGroup::SetRanges()
 
 void ItemGroup::ShowLOD(bool bTrue)
 {
-	m_pLOD->SetEnabled(bTrue);
+	SetEnabled(m_pLOD, bTrue);
 	m_pGroup->SetEnabled(!bTrue);
 	if (bTrue)
 	{
