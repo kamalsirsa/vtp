@@ -1483,7 +1483,7 @@ ImportStructDlgBase::ImportStructDlgBase( wxWindow* parent, wxWindowID id, const
 	m_radio_color_fixed->SetValue( true ); 
 	bSizer78->Add( m_radio_color_fixed, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( wxT("VTBuilder_wdr/MyBitmapsFunc_0.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, 0 );
+	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( wxT("bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer78->Add( m_color3, 0, wxALIGN_CENTER|wxLEFT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_color1 = new wxButton( this, ID_SET_COLOR1, wxT("Set"), wxDefaultPosition, wxSize( 40,-1 ), 0 );
@@ -1494,7 +1494,7 @@ ImportStructDlgBase::ImportStructDlgBase( wxWindow* parent, wxWindowID id, const
 	m_text1->Wrap( 0 );
 	bSizer78->Add( m_text1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color4 = new wxStaticBitmap( this, ID_COLOR4, wxBitmap( wxT("VTBuilder_wdr/MyBitmapsFunc_0.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, 0 );
+	m_color4 = new wxStaticBitmap( this, ID_COLOR4, wxBitmap( wxT("bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer78->Add( m_color4, 0, wxALIGN_CENTER|wxLEFT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_color2 = new wxButton( this, ID_SET_COLOR2, wxT("Set"), wxDefaultPosition, wxSize( 40,-1 ), 0 );
@@ -2356,7 +2356,7 @@ RenderDlgBase::RenderDlgBase( wxWindow* parent, wxWindowID id, const wxString& t
 	m_text27->Wrap( -1 );
 	bSizer122->Add( m_text27, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color_nodata = new wxBitmapButton( this, ID_COLOR_NODATA, wxBitmap( wxT("VTBuilder_wdr/MyBitmapsFunc_0.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_color_nodata = new wxBitmapButton( this, ID_COLOR_NODATA, wxBitmap( wxT("bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_color_nodata->SetDefault(); 
 	bSizer122->Add( m_color_nodata, 0, wxALIGN_CENTER, 5 );
 	
@@ -3487,22 +3487,5 @@ GenGridDlgBase::GenGridDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 }
 
 GenGridDlgBase::~GenGridDlgBase()
-{
-}
-
-MainToolBarFunc::MainToolBarFunc( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style ) : wxToolBar( parent, id, pos, size, style )
-{
-	SetToolBitmapSize( wxSize( 16,15 ) );
-	SetToolSeparation( 0 );
-	SetMargins( wxSize( 2,2 ) );
-	SetToolPacking( 0 );
-	
-	AddTool( ID_VIEW_LAYER_UP, wxEmptyString, wxBitmap( wxT("VTBuilder_wdr/ToolBitmapsFunc_0.png"), wxBITMAP_TYPE_ANY ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString ); 
-	AddTool( ID_VIEW_LAYER_DOWN, wxEmptyString, wxBitmap( wxT("VTBuilder_wdr/ToolBitmapsFunc_1.png"), wxBITMAP_TYPE_ANY ), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString ); 
-	
-	Realize();
-}
-
-MainToolBarFunc::~MainToolBarFunc()
 {
 }

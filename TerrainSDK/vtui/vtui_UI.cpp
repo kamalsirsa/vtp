@@ -976,7 +976,7 @@ ColorMapDlgBase::ColorMapDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_line1 = new wxStaticLine( this, ID_LINE1, wxDefaultPosition, wxSize( 20,-1 ), wxLI_HORIZONTAL );
 	bSizer357->Add( m_line1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_close = new wxButton( this, wxID_ANY, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_close = new wxButton( this, wxID_OK, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_close->SetDefault(); 
 	bSizer357->Add( m_close, 0, wxALIGN_CENTER|wxALL, 5 );
 	

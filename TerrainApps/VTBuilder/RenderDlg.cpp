@@ -51,6 +51,11 @@ RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	RenderDlgBase( parent, id, title, position, size, style )
 {
+	// Work around the limitation of wxFormDesigner which can only load bitmaps
+	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
+	//  want them in the resources (on Windows) or as xpm (on Linux)
+	m_color_nodata->SetBitmapLabel(wxBITMAP(dummy_32x18));
+
 	m_power = 8;
 	m_bConstraint = false;
 	m_bTiling = false;
@@ -80,7 +85,7 @@ RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void RenderDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	UpdateColorMapChoice();
-	FillWithColor(GetColorNodata(), m_ColorNODATA);
+	FillWithColorSize(GetColorNodata(), 32, 18, m_ColorNODATA);
 
 	m_bSetting = true;
 	wxDialog::OnInitDialog(event);
@@ -147,7 +152,7 @@ void RenderDlg::OnColorNODATA( wxCommandEvent &event )
 		ColorData = dlg.GetColourData();
 		Color = ColorData.GetColour();
 		m_ColorNODATA.Set(Color.Red(), Color.Green(), Color.Blue());
-		FillWithColor(GetColorNodata(), m_ColorNODATA);
+		FillWithColorSize(GetColorNodata(), 32, 18, m_ColorNODATA);
 	}
 }
 

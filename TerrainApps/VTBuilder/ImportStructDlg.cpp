@@ -58,6 +58,12 @@ ImportStructDlg::ImportStructDlg( wxWindow *parent, wxWindowID id, const wxStrin
 	const wxPoint &position, const wxSize& size, long style ) :
 	ImportStructDlgBase( parent, id, title, position, size, style )
 {
+	// Work around the limitation of wxFormDesigner which can only load bitmaps
+	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
+	//  want them in the resources (on Windows) or as xpm (on Linux)
+	m_color3->SetBitmap(wxBITMAP(dummy_32x18));
+	m_color4->SetBitmap(wxBITMAP(dummy_32x18));
+
 	m_iType = 0;
 	m_iHeightType = 0;
 	m_iRoofType = 0;
@@ -165,8 +171,8 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pColorBitmapRoof = GetColorBitmapRoof();
 	m_pColorBitmapBuilding = GetColorBitmapBuilding();
 
-	FillWithColor(m_pColorBitmapRoof, m_opt.m_RoofColor);
-	FillWithColor(m_pColorBitmapBuilding, m_opt.m_BuildingColor);
+	FillWithColorSize(m_pColorBitmapRoof, 32, 18, m_opt.m_RoofColor);
+	FillWithColorSize(m_pColorBitmapBuilding, 32, 18, m_opt.m_BuildingColor);
 
 	UpdateEnables();
 
@@ -292,9 +298,9 @@ void ImportStructDlg::OnSpinRoofDegrees( wxSpinEvent &event )
 void ImportStructDlg::UpdateColorControl(bool select)
 {
 	if( select )
-		FillWithColor(m_pColorBitmapBuilding, m_opt.m_BuildingColor); //Building Bitmap
+		FillWithColorSize(m_pColorBitmapBuilding, 32, 18, m_opt.m_BuildingColor); //Building Bitmap
 	else
-		FillWithColor(m_pColorBitmapRoof, m_opt.m_RoofColor); //Roof Bitmap
+		FillWithColorSize(m_pColorBitmapRoof, 32, 18, m_opt.m_RoofColor); //Roof Bitmap
 }
 
 void ImportStructDlg::OnColorBuilding( wxCommandEvent &event )

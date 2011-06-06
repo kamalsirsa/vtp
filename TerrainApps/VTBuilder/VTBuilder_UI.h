@@ -37,7 +37,6 @@ class NodeDlgView;
 #include <wx/splitter.h>
 #include <wx/bmpbuttn.h>
 #include <wx/spinbutt.h>
-#include <wx/toolbar.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -282,8 +281,6 @@ class NodeDlgView;
 #define ID_DELAY_LOAD 1238
 #define ID_MAX_MEM_GRID 1239
 #define ID_TEXT_DIST_CUTOFF 1240
-#define ID_VIEW_LAYER_UP 1241
-#define ID_VIEW_LAYER_DOWN 1242
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ExtentDlgBase
@@ -1254,22 +1251,6 @@ class GenGridDlgBase : public wxDialog
 		
 		GenGridDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 278,194 ), long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~GenGridDlgBase();
-	
-};
-
-///////////////////////////////////////////////////////////////////////////////
-/// Class MainToolBarFunc
-///////////////////////////////////////////////////////////////////////////////
-class MainToolBarFunc : public wxToolBar 
-{
-	private:
-	
-	protected:
-	
-	public:
-		
-		MainToolBarFunc( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0 );
-		~MainToolBarFunc();
 	
 };
 
