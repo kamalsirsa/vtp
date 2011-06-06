@@ -1,36 +1,35 @@
 //
-// Name: ImportStructDlgOGR.h
+// Name: ImportStructOGRDlg.h
 //
-// Copyright (c) 2003-2008 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
-#ifndef __ImportStructDlgOGR_H__
-#define __ImportStructDlgOGR_H__
+#ifndef __ImportStructOGRDlg_H__
+#define __ImportStructOGRDlg_H__
 
 #ifndef WX_PRECOMP
 	#include "wx/wx.h"
 #endif
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 #include "vtdata/StructArray.h"
 
 // WDR: class declarations
 
 //----------------------------------------------------------------------------
-// ImportStructDlgOGR
+// ImportStructOGRDlg
 //----------------------------------------------------------------------------
 
-class ImportStructDlgOGR: public AutoDialog
+class ImportStructOGRDlg: public ImportStructOGRDlgBase
 {
 public:
-	ImportStructDlgOGR( wxWindow *parent, wxWindowID id, const wxString &title,
+	ImportStructOGRDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
-	// WDR: method declarations for ImportStructDlgOGR
+	// WDR: method declarations for ImportStructOGRDlg
 	wxChoice* GetLayername()  { return (wxChoice*) FindWindow( ID_LAYERNAME ); }
 	wxCheckBox* GetUse25d()  { return (wxCheckBox*) FindWindow( ID_USE_25D ); }
 	wxCheckBox* GetBuildFoundations()  { return (wxCheckBox*) FindWindow( ID_BUILD_FOUNDATIONS ); }
@@ -52,11 +51,11 @@ public:
 	StructImportOptions m_opt;
 
 private:
-	// WDR: member variable declarations for ImportStructDlgOGR
+	// WDR: member variable declarations for ImportStructOGRDlg
 	OGRDataSource *m_pDatasource;
 
 private:
-	// WDR: handler declarations for ImportStructDlgOGR
+	// WDR: handler declarations for ImportStructOGRDlg
 	void OnChoiceLayerName( wxCommandEvent &event );
 	void OnChoiceFileField( wxCommandEvent &event );
 	void OnChoiceHeightField( wxCommandEvent &event );
@@ -66,5 +65,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif	// __ImportStructDlgOGR_H__
+#endif	// __ImportStructOGRDlg_H__
 

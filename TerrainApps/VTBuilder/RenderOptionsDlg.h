@@ -1,15 +1,15 @@
 //
 // Name: RenderOptionsDlg.h
 //
-// Copyright (c) 2006-2007 Virtual Terrain Project
+// Copyright (c) 2006-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __RenderOptionsDlg_H__
 #define __RenderOptionsDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
+
 #include "ElevDrawOptions.h"
 
 // WDR: class declarations
@@ -18,7 +18,7 @@
 // RenderOptionsDlg
 //----------------------------------------------------------------------------
 
-class RenderOptionsDlg: public AutoDialog
+class RenderOptionsDlg: public RenderOptionsDlgBase
 {
 public:
 	// constructors and destructors

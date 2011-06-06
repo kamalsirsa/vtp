@@ -10,10 +10,6 @@
 // For compilers that support precompilation
 #include "wx/wxprec.h"
 
-#ifdef __BORLANDC__
-    #pragma hdrstop
-#endif
-
 // Include private header
 #include "cmanager_wdr.h"
 

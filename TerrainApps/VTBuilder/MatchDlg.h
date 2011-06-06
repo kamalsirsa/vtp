@@ -1,15 +1,14 @@
 //
 // Name: MatchDlg.h
 //
-// Copyright (c) 2007-2008 Virtual Terrain Project
+// Copyright (c) 2007-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __MatchDlg_H__
 #define __MatchDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 #include "vtdata/MathTypes.h"
 
 class BuilderView;
@@ -20,7 +19,7 @@ class BuilderView;
 // MatchDlg
 //----------------------------------------------------------------------------
 
-class MatchDlg: public AutoDialog
+class MatchDlg: public MatchDlgBase
 {
 public:
 	// constructors and destructors

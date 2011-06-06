@@ -1,7 +1,7 @@
 //
 // Name:		ImportVegDlg.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,8 +12,8 @@
 #include "wx/wx.h"
 #endif
 
-#include "vtdata/shapelib/shapefil.h"
 #include "ImportVegDlg.h"
+#include "vtdata/shapelib/shapefil.h"
 
 // WDR: class implementations
 
@@ -23,16 +23,15 @@
 
 // WDR: event table for ImportVegDlg
 
-BEGIN_EVENT_TABLE(ImportVegDlg,wxDialog)
+BEGIN_EVENT_TABLE(ImportVegDlg,ImportVegDlgBase)
 	EVT_BUTTON( wxID_OK, ImportVegDlg::OnOK )
 	EVT_INIT_DIALOG (ImportVegDlg::OnInitDialog)
 END_EVENT_TABLE()
 
 ImportVegDlg::ImportVegDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	ImportVegDlgBase( parent, id, title, position, size, style )
 {
-	ImportVegFunc( this );
 	m_pcbField = GetField();
 	m_pDensity = GetDensity();
 	m_pBiotype1 = GetBiotype1();

@@ -1,15 +1,14 @@
 //
 // Name: RoadDlg.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __RoadDlg_H__
 #define __RoadDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 
 class LinkEdit;
 class vtRoadLayer;
@@ -20,7 +19,7 @@ class vtRoadLayer;
 // RoadDlg
 //----------------------------------------------------------------------------
 
-class RoadDlg: public AutoDialog
+class RoadDlg: public RoadDlgBase
 {
 public:
 	// constructors and destructors

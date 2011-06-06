@@ -1,7 +1,7 @@
 //
 // Name: OptionsDlg.cpp
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,7 @@
 
 #include "OptionsDlg.h"
 #include "RenderOptionsDlg.h"
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -19,7 +20,7 @@
 
 // WDR: event table for OptionsDlg
 
-BEGIN_EVENT_TABLE(OptionsDlg, AutoDialog)
+BEGIN_EVENT_TABLE(OptionsDlg, OptionsDlgBase)
 	EVT_INIT_DIALOG (OptionsDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_RADIO_OUTLINE_ONLY, OptionsDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_COLOR, OptionsDlg::OnRadio )
@@ -29,10 +30,8 @@ END_EVENT_TABLE()
 
 OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	OptionsDlgBase( parent, id, title, position, size, style )
 {
-	OptionsDialogFunc( this, TRUE );
-
 	GetElevUnit()->Append(_("Meters"));
 	GetElevUnit()->Append(_("Feet (International)"));
 	GetElevUnit()->Append(_("Feet (U.S. Survey)"));

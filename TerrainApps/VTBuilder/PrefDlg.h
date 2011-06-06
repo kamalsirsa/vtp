@@ -1,15 +1,14 @@
 //
 // Name: PrefDlg.h
 //
-// Copyright (c) 2007-2008 Virtual Terrain Project
+// Copyright (c) 2007-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __PrefDlg_H__
 #define __PrefDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 
 // WDR: class declarations
 
@@ -17,7 +16,7 @@
 // PrefDlg
 //----------------------------------------------------------------------------
 
-class PrefDlg: public AutoDialog
+class PrefDlg: public PrefDlgBase
 {
 public:
 	// constructors and destructors

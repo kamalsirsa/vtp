@@ -77,6 +77,7 @@
 #  include "layer_save.xpm"
 #  include "layer_show.xpm"
 #  include "layer_up.xpm"
+#  include "layer_down.xpm"
 
 #  include "proj_new.xpm"
 #  include "proj_open.xpm"
@@ -418,8 +419,8 @@ void MainFrame::AddMainToolbars()
 	ADD_TOOL(m_pToolbar, ID_EDIT_DELETE, wxBITMAP(edit_delete), _("Delete"));
 	ADD_TOOL(m_pToolbar, ID_EDIT_OFFSET, wxBITMAP(edit_offset), _("Offset"));
 	ADD_TOOL2(m_pToolbar, ID_VIEW_SHOWLAYER, wxBITMAP(layer_show), _("Layer Visibility"), wxITEM_CHECK);
-	ADD_TOOL(m_pToolbar, ID_VIEW_LAYER_UP, ToolBitmapsFunc( 0 ), _("Layer Up"));
-	ADD_TOOL(m_pToolbar, ID_VIEW_LAYER_DOWN, ToolBitmapsFunc( 1 ), _("Layer Down"));
+	ADD_TOOL(m_pToolbar, ID_VIEW_LAYER_UP, wxBITMAP(layer_up), _("Layer Up"));
+	ADD_TOOL(m_pToolbar, ID_VIEW_LAYER_DOWN, wxBITMAP(layer_down), _("Layer Down"));
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(m_pToolbar, ID_VIEW_ZOOMIN, wxBITMAP(view_plus), _("Zoom In"));
 	ADD_TOOL(m_pToolbar, ID_VIEW_ZOOMOUT, wxBITMAP(view_minus), _("Zoom Out"));

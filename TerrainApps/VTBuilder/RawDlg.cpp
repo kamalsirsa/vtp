@@ -1,7 +1,7 @@
 //
 // Name: RawDlg.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include "RawDlg.h"
+#include "vtui/AutoDialog.h"
 #include "vtui/ProjectionDlg.h"
 #include "ExtentDlg.h"
 
@@ -24,7 +25,7 @@
 
 // WDR: event table for RawDlg
 
-BEGIN_EVENT_TABLE(RawDlg, AutoDialog)
+BEGIN_EVENT_TABLE(RawDlg, RawDlgBase)
 	EVT_INIT_DIALOG (RawDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_EXT_SPACING, RawDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_EXT_EXACT, RawDlg::OnRadio )
@@ -37,7 +38,7 @@ END_EVENT_TABLE()
 
 RawDlg::RawDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 		const wxPoint& pos, const wxSize& size, long style ) :
-	AutoDialog(parent, id, title, pos, size, style)
+	RawDlgBase(parent, id, title, pos, size, style)
 {
 	m_bExtSpacing = true;
 	m_bExtExact = false;
@@ -45,8 +46,6 @@ RawDlg::RawDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bCrsSimple = true;
 	m_bCrsCurrent = false;
 	m_bCrsExact = false;
-
-	RawDialogFunc( this, TRUE );
 
 	AddNumValidator(this, ID_BYTES, &m_iBytes);
 	AddNumValidator(this, ID_WIDTH, &m_iWidth);

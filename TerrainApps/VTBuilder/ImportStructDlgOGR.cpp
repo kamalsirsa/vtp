@@ -1,7 +1,7 @@
 //
-// Name: ImportStructDlgOGR.cpp
+// Name: ImportStructOGRDlg.cpp
 //
-// Copyright (c) 2003-2008 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include "ImportStructDlgOGR.h"
+#include "vtui/AutoDialog.h"
 #include "StructLayer.h"
 
 #include "ogrsf_frmts.h"
@@ -20,27 +21,25 @@
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
-// ImportStructDlgOGR
+// ImportStructOGRDlg
 //----------------------------------------------------------------------------
 
-// WDR: event table for ImportStructDlgOGR
+// WDR: event table for ImportStructOGRDlg
 
-BEGIN_EVENT_TABLE(ImportStructDlgOGR, AutoDialog)
-	EVT_INIT_DIALOG (ImportStructDlgOGR::OnInitDialog)
-	EVT_RADIOBUTTON( ID_TYPE_BUILDING, ImportStructDlgOGR::OnRadio )
-	EVT_RADIOBUTTON( ID_TYPE_LINEAR, ImportStructDlgOGR::OnRadio )
-	EVT_RADIOBUTTON( ID_TYPE_INSTANCE, ImportStructDlgOGR::OnRadio )
-	EVT_CHOICE( ID_CHOICE_HEIGHT_FIELD, ImportStructDlgOGR::OnChoiceHeightField )
-	EVT_CHOICE( ID_CHOICE_FILE_FIELD, ImportStructDlgOGR::OnChoiceFileField )
-	EVT_CHOICE( ID_LAYERNAME, ImportStructDlgOGR::OnChoiceLayerName )
+BEGIN_EVENT_TABLE(ImportStructOGRDlg, ImportStructOGRDlgBase)
+	EVT_INIT_DIALOG (ImportStructOGRDlg::OnInitDialog)
+	EVT_RADIOBUTTON( ID_TYPE_BUILDING, ImportStructOGRDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_TYPE_LINEAR, ImportStructOGRDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_TYPE_INSTANCE, ImportStructOGRDlg::OnRadio )
+	EVT_CHOICE( ID_CHOICE_HEIGHT_FIELD, ImportStructOGRDlg::OnChoiceHeightField )
+	EVT_CHOICE( ID_CHOICE_FILE_FIELD, ImportStructOGRDlg::OnChoiceFileField )
+	EVT_CHOICE( ID_LAYERNAME, ImportStructOGRDlg::OnChoiceLayerName )
 END_EVENT_TABLE()
 
-ImportStructDlgOGR::ImportStructDlgOGR( wxWindow *parent, wxWindowID id, const wxString &title,
+ImportStructOGRDlg::ImportStructOGRDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	ImportStructOGRDlgBase( parent, id, title, position, size, style )
 {
-	ImportStructFuncOGR( this, TRUE );
-
 	m_opt.m_HeightType = StructImportOptions::METERS;
 	m_opt.bInsideOnly = false;
 	m_opt.bBuildFoundations = false;;
@@ -52,7 +51,7 @@ ImportStructDlgOGR::ImportStructDlgOGR( wxWindow *parent, wxWindowID id, const w
 	AddValidator(this, ID_CHOICE_HEIGHT_TYPE, (int *)&m_opt.m_HeightType);
 }
 
-bool ImportStructDlgOGR::GetRadio(int id)
+bool ImportStructOGRDlg::GetRadio(int id)
 {
 	wxRadioButton *button = (wxRadioButton*) FindWindow(id);
 	if (!button)
@@ -61,9 +60,9 @@ bool ImportStructDlgOGR::GetRadio(int id)
 }
 
 
-// WDR: handler implementations for ImportStructDlgOGR
+// WDR: handler implementations for ImportStructOGRDlg
 
-void ImportStructDlgOGR::OnChoiceLayerName( wxCommandEvent &event )
+void ImportStructOGRDlg::OnChoiceLayerName( wxCommandEvent &event )
 {
 	wxString str = GetLayername()->GetStringSelection();
 	m_opt.m_strLayerName = str.mb_str(wxConvUTF8);
@@ -71,19 +70,19 @@ void ImportStructDlgOGR::OnChoiceLayerName( wxCommandEvent &event )
 	UpdateEnables();
 }
 
-void ImportStructDlgOGR::OnChoiceFileField( wxCommandEvent &event )
+void ImportStructOGRDlg::OnChoiceFileField( wxCommandEvent &event )
 {
 	wxString str = GetChoiceFileField()->GetStringSelection();
 	m_opt.m_strFieldNameFile = str.mb_str(wxConvUTF8);
 }
 
-void ImportStructDlgOGR::OnChoiceHeightField( wxCommandEvent &event )
+void ImportStructOGRDlg::OnChoiceHeightField( wxCommandEvent &event )
 {
 	wxString str = GetChoiceHeightField()->GetStringSelection();
 	m_opt.m_strFieldNameHeight = str.mb_str(wxConvUTF8);
 }
 
-void ImportStructDlgOGR::OnRadio( wxCommandEvent &event )
+void ImportStructOGRDlg::OnRadio( wxCommandEvent &event )
 {
 	if (GetRadio(ID_TYPE_BUILDING))
 		m_iType = 1;
@@ -94,7 +93,7 @@ void ImportStructDlgOGR::OnRadio( wxCommandEvent &event )
 	UpdateEnables();
 }
 
-void ImportStructDlgOGR::OnInitDialog(wxInitDialogEvent& event)
+void ImportStructOGRDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	// Select one of the radio buttons, whichever is enabled
 	m_iType = 1;
@@ -123,7 +122,7 @@ void ImportStructDlgOGR::OnInitDialog(wxInitDialogEvent& event)
 	TransferDataToWindow();
 }
 
-void ImportStructDlgOGR::UpdateFieldNames()
+void ImportStructOGRDlg::UpdateFieldNames()
 {
 	OGRLayer *pLayer;
 	OGRFeatureDefn *pFeatureDefn;
@@ -186,7 +185,7 @@ void ImportStructDlgOGR::UpdateFieldNames()
 	OnChoiceHeightField(wce);
 }
 
-void ImportStructDlgOGR::UpdateEnables()
+void ImportStructOGRDlg::UpdateEnables()
 {
 	GetBuildFoundations()->Enable(m_iType == 1);
 	GetChoiceHeightField()->Enable(GetChoiceHeightField()->GetCount() > 1);

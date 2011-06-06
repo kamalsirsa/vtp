@@ -1,15 +1,15 @@
 //
 // Name: MapServerDlg.h
 //
-// Copyright (c) 2003-2005 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __MapServerDlg_H__
 #define __MapServerDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
+
 #include "vtdata/MathTypes.h"
 #include "vtdata/WFSClient.h"
 #include "vtdata/Projections.h"
@@ -20,7 +20,7 @@
 // MapServerDlg.cpp
 //----------------------------------------------------------------------------
 
-class MapServerDlg: public AutoDialog
+class MapServerDlg: public MapServerDlgBase
 {
 public:
 	// constructors and destructors

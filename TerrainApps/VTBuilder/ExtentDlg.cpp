@@ -1,7 +1,7 @@
 //
 // Name: ExtentDlg.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include "ExtentDlg.h"
+#include "vtui/AutoDialog.h"
 #include "vtdata/vtString.h"
 
 // WDR: class implementations
@@ -23,7 +24,7 @@
 
 // WDR: event table for ExtentDlg
 
-BEGIN_EVENT_TABLE(ExtentDlg,AutoDialog)
+BEGIN_EVENT_TABLE(ExtentDlg,ExtentDlgBase)
 	EVT_INIT_DIALOG (ExtentDlg::OnInitDialog)
 	EVT_TEXT_ENTER( ID_EXTENT_N, ExtentDlg::OnExtentN )
 	EVT_TEXT_ENTER( ID_EXTENT_W, ExtentDlg::OnExtentW )
@@ -35,12 +36,10 @@ END_EVENT_TABLE()
 
 ExtentDlg::ExtentDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	ExtentDlgBase( parent, id, title, position, size, style )
 {
 	m_bSetting = false;
 	m_bDMS = false;
-
-	ExtentDialogFunc( this, TRUE );
 
 	AddValidator(this, ID_EXTENT_ALL, &m_strAll);
 	AddValidator(this, ID_EXTENT_E, &m_strEast);

@@ -1,7 +1,7 @@
 //
 // Name: ImportPointDlg.h
 //
-// Copyright (c) 2004-2008 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,8 +12,7 @@
 	#include "wx/wx.h"
 #endif
 
-#include "vtui/AutoDialog.h"
-#include "VTBuilder_wdr.h"
+#include "VTBuilder_UI.h"
 #include "vtdata/Projections.h"
 
 // WDR: class declarations
@@ -22,7 +21,7 @@
 // ImportPointDlg
 //----------------------------------------------------------------------------
 
-class ImportPointDlg: public AutoDialog
+class ImportPointDlg: public ImportPointDlgBase
 {
 public:
 	// constructors and destructors

@@ -1,15 +1,14 @@
 //
 // Name:		SelectDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __SelectDlg_H__
 #define __SelectDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 
 class vtRawLayer;
 
@@ -19,7 +18,7 @@ class vtRawLayer;
 // SelectDlg
 //----------------------------------------------------------------------------
 
-class SelectDlg: public AutoDialog
+class SelectDlg: public SelectDlgBase
 {
 public:
 	// constructors and destructors

@@ -1,16 +1,16 @@
 //
 // Name: ResampleDlg.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __ResampleDlg_H__
 #define __ResampleDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 #include "vtdata/MathTypes.h"
+#include "vtui/AutoDialog.h"
 #include "TileDlg.h"
 #include "ElevDrawOptions.h"
 
@@ -22,7 +22,7 @@ class BuilderView;
 // ResampleDlg
 //----------------------------------------------------------------------------
 
-class ResampleDlg: public AutoDialog
+class ResampleDlg: public ResampleDlgBase
 {
 public:
 	// constructors and destructors

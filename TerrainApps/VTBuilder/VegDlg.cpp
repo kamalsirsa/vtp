@@ -1,7 +1,7 @@
 //
 // VegDlg.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 
 #include "VegDlg.h"
 #include "Builder.h"
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -22,7 +23,7 @@
 
 // WDR: event table for SpeciesListDlg
 
-BEGIN_EVENT_TABLE(SpeciesListDlg,wxDialog)
+BEGIN_EVENT_TABLE(SpeciesListDlg, SpeciesListDlgBase)
 	EVT_INIT_DIALOG (SpeciesListDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, SpeciesListDlg::OnOK )
 	EVT_LIST_ITEM_SELECTED( ID_LISTCTRL_SPECIES, SpeciesListDlg::OnSelect )
@@ -30,11 +31,8 @@ END_EVENT_TABLE()
 
 SpeciesListDlg::SpeciesListDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	SpeciesListDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function SpeciesListFunc for SpeciesListDlg
-	SpeciesListFunc( this, TRUE );
-
 	m_idx = 0;
 }
 

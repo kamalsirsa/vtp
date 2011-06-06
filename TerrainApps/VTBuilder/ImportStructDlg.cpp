@@ -1,7 +1,7 @@
 //
 // Name: ImportStructDlg.cpp
 //
-// Copyright (c) 2003-2008 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include <wx/colordlg.h>
+#include "vtui/AutoDialog.h"
 #include "vtui/Helper.h"
 
 #include "ImportStructDlg.h"
@@ -26,7 +27,7 @@
 
 // WDR: event table for ImportStructDlg
 
-BEGIN_EVENT_TABLE(ImportStructDlg, AutoDialog)
+BEGIN_EVENT_TABLE(ImportStructDlg, ImportStructDlgBase)
 	EVT_INIT_DIALOG (ImportStructDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_TYPE_LINEAR, ImportStructDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_TYPE_INSTANCE, ImportStructDlg::OnRadio )
@@ -55,10 +56,8 @@ END_EVENT_TABLE()
 
 ImportStructDlg::ImportStructDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	ImportStructDlgBase( parent, id, title, position, size, style )
 {
-	ImportStructFunc( this, TRUE );
-
 	m_iType = 0;
 	m_iHeightType = 0;
 	m_iRoofType = 0;

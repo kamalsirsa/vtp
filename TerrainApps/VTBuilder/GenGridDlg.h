@@ -1,23 +1,14 @@
 //
 // Name: GenGridDlg.h
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __GenGridDlg_H__
 #define __GenGridDlg_H__
 
-#if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
-	#pragma interface "GenGridDlg.cpp"
-#endif
-
-#ifndef WX_PRECOMP
-	#include "wx/wx.h"
-#endif
-
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 
 // WDR: class declarations
 
@@ -25,7 +16,7 @@
 // GenGridDlg
 //----------------------------------------------------------------------------
 
-class GenGridDlg: public AutoDialog
+class GenGridDlg: public GenGridDlgBase
 {
 public:
 	// constructors and destructors

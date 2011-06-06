@@ -1,7 +1,7 @@
 //
 // Name:		VegFieldsDlg.cpp
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@
 
 #include "VegFieldsDlg.h"
 #include "Builder.h"		// for Plants List
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -23,7 +24,7 @@
 
 // WDR: event table for VegFieldsDlg
 
-BEGIN_EVENT_TABLE(VegFieldsDlg, AutoDialog)
+BEGIN_EVENT_TABLE(VegFieldsDlg, VegFieldsDlgBase)
 	EVT_INIT_DIALOG (VegFieldsDlg::OnInitDialog)
 	EVT_CHOICE( ID_SPECIES_FIELD, VegFieldsDlg::OnChoice1 )
 	EVT_CHOICE( ID_HEIGHT_FIELD, VegFieldsDlg::OnChoice2 )
@@ -36,10 +37,8 @@ END_EVENT_TABLE()
 
 VegFieldsDlg::VegFieldsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	VegFieldsDlgBase( parent, id, title, position, size, style )
 {
-	VegFieldsDialogFunc(this, true);
-
 	m_bUseSpecies = true;
 	m_bSpeciesUseField = false;
 

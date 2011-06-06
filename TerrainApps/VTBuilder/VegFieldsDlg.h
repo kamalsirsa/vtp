@@ -1,16 +1,15 @@
 //
 // Name:		VegFieldsDlg.h
 //
-// Copyright (c) 2002-2007 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __VegFieldsDlg_H__
 #define __VegFieldsDlg_H__
 
-#include "VTBuilder_wdr.h"
+#include "VTBuilder_UI.h"
 #include "vtdata/shapelib/shapefil.h"
-#include "vtui/AutoDialog.h"
 #include "VegPointOptions.h"
 
 class vtVegLayer;
@@ -21,7 +20,7 @@ class vtVegLayer;
 // VegFieldsDlg
 //----------------------------------------------------------------------------
 
-class VegFieldsDlg: public AutoDialog
+class VegFieldsDlg: public VegFieldsDlgBase
 {
 public:
 	// constructors and destructors

@@ -1,7 +1,7 @@
 //
 // Name: RawDlg.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,8 +11,7 @@
 #include "vtdata/MathTypes.h"
 #include "vtdata/Projections.h"
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 
 // WDR: class declarations
 
@@ -20,7 +19,7 @@
 // RawDlg
 //----------------------------------------------------------------------------
 
-class RawDlg: public AutoDialog
+class RawDlg: public RawDlgBase
 {
 public:
 	// constructors and destructors

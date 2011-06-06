@@ -231,7 +231,7 @@
 				RelativePath=".\vtBitmap.cpp">
 			</File>
 			<File
-				RelativePath=".\VTBuilder_wdr.cpp">
+				RelativePath=".\VTBuilder_UI.cpp">
 			</File>
 			<File
 				RelativePath=".\vtImage.cpp">
@@ -335,7 +335,7 @@
 				RelativePath=".\vtBitmap.h">
 			</File>
 			<File
-				RelativePath=".\VTBuilder_wdr.h">
+				RelativePath=".\VTBuilder_UI.h">
 			</File>
 			<File
 				RelativePath=".\vtImage.h">

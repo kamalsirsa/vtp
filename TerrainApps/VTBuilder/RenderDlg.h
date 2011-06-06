@@ -1,17 +1,16 @@
 //
 // Name: RenderDlg.h
 //
-// Copyright (c) 2004-2008 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __RenderDlg_H__
 #define __RenderDlg_H__
 
-#include "VTBuilder_wdr.h"
+#include "VTBuilder_UI.h"
 #include "vtdata/vtString.h"
 #include "vtdata/MathTypes.h"
-#include "vtui/AutoDialog.h"
 #include "RenderOptions.h"
 
 // WDR: class declarations
@@ -20,7 +19,7 @@
 // RenderDlg
 //----------------------------------------------------------------------------
 
-class RenderDlg: public AutoDialog, public RenderOptions
+class RenderDlg: public RenderDlgBase, public RenderOptions
 {
 public:
 	// constructors and destructors

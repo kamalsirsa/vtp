@@ -21,7 +21,7 @@
 #include "Builder.h"
 #include "MenuEnum.h"
 #include "Helper.h"
-#include "VTBuilder_wdr.h"
+#include "VTBuilder_UI.h"
 // Layers
 #include "ElevLayer.h"
 #include "ImageLayer.h"

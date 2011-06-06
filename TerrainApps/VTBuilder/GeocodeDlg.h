@@ -1,15 +1,14 @@
 //
 // Name: GeocodeDlg.h
 //
-// Copyright (c) 2005-2006 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __GeocodeDlg_H__
 #define __GeocodeDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 
 // WDR: class declarations
 
@@ -17,7 +16,7 @@
 // GeocodeDlg
 //----------------------------------------------------------------------------
 
-class GeocodeDlg: public AutoDialog
+class GeocodeDlg: public GeocodeDlgBase
 {
 public:
 	// constructors and destructors

@@ -1,16 +1,15 @@
 //
 // Name: TileDlg.h
 //
-// Copyright (c) 2005-2007 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __TileDlg_H__
 #define __TileDlg_H__
 
-#include "VTBuilder_wdr.h"
+#include "VTBuilder_UI.h"
 #include "vtdata/ElevationGrid.h"
-#include "vtui/AutoDialog.h"
 #include "TilingOptions.h"
 
 class BuilderView;
@@ -21,7 +20,7 @@ class BuilderView;
 // TileDlg
 //----------------------------------------------------------------------------
 
-class TileDlg: public AutoDialog
+class TileDlg: public TileDlgBase
 {
 public:
 	// constructors and destructors

@@ -1,15 +1,14 @@
 //
 // Name: TSDlg.cpp
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __TSDlg_H__
 #define __TSDlg_H__
 
-#include "vtui/AutoDialog.h"
-#include "VTBuilder_wdr.h"
+#include "VTBuilder_UI.h"
 
 // WDR: class declarations
 
@@ -17,7 +16,7 @@
 // TSDialog
 //----------------------------------------------------------------------------
 
-class TSDialog: public AutoDialog
+class TSDialog: public TSDlgBase
 {
 public:
 	// constructors and destructors

@@ -1,7 +1,7 @@
 //
 // Name: ImageMapDlg.cpp
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@
 
 #include "ImageMapDlg.h"
 #include "vtdata/Features.h"
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -23,17 +24,14 @@
 
 // WDR: event table for ImageMapDlg
 
-BEGIN_EVENT_TABLE(ImageMapDlg,wxDialog)
+BEGIN_EVENT_TABLE(ImageMapDlg,ImageMapDlgBase)
 END_EVENT_TABLE()
 
 ImageMapDlg::ImageMapDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	ImageMapDlgBase( parent, id, title, position, size, style )
 {
 	m_iField = 0;
-
-	// WDR: dialog function ImageMapDialogFunc for ImageMapDlg
-	ImageMapDialogFunc( this, TRUE );
 
 	AddValidator(this, ID_LINK_FIELD, &m_iField);
 }

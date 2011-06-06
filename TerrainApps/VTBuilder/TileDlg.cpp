@@ -1,7 +1,7 @@
 //
 // Name: TileDlg.cpp
 //
-// Copyright (c) 2005-2009 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,7 @@
 #include "FileFilters.h"	// for FSTRING_INI
 #include "BuilderView.h"
 #include "vtdata/vtLog.h"
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -21,7 +22,7 @@
 
 // WDR: event table for TileDlg
 
-BEGIN_EVENT_TABLE(TileDlg,AutoDialog)
+BEGIN_EVENT_TABLE(TileDlg,TileDlgBase)
 	EVT_BUTTON( ID_DOTDOTDOT, TileDlg::OnDotDotDot )
 	EVT_TEXT( ID_COLUMNS, TileDlg::OnSize )
 	EVT_TEXT( ID_ROWS, TileDlg::OnSize )
@@ -31,11 +32,8 @@ END_EVENT_TABLE()
 
 TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	TileDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function TileDialogFunc for TileDlg
-	TileDialogFunc( this, TRUE );
-
 	m_fEstX = -1;
 	m_fEstY = -1;
 	m_iColumns = 1;

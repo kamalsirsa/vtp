@@ -1,15 +1,14 @@
 //
 // Name: SampleImageDlg.h
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __SampleImageDlg_H__
 #define __SampleImageDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 #include "vtdata/MathTypes.h"
 #include "TileDlg.h"
 
@@ -21,7 +20,7 @@ class BuilderView;
 // SampleImageDlg
 //----------------------------------------------------------------------------
 
-class SampleImageDlg: public AutoDialog
+class SampleImageDlg: public SampleImageDlgBase
 {
 public:
 	// constructors and destructors

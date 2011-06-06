@@ -1,15 +1,15 @@
 //
 // Name: NodeDlg.h
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __NodeDlg_H__
 #define __NodeDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
+
 #include "RoadMapEdit.h"
 #include "ScaledView.h"
 
@@ -31,7 +31,7 @@ public:
 // NodeDlg
 //----------------------------------------------------------------------------
 
-class NodeDlg: public AutoDialog
+class NodeDlg: public NodeDlgBase
 {
 public:
 	// constructors and destructors

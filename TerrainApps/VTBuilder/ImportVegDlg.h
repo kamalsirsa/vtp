@@ -1,14 +1,14 @@
 //
 // Name: ImportVegDlg.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __ImportVegDlg_H__
 #define __ImportVegDlg_H__
 
-#include "VTBuilder_wdr.h"
+#include "VTBuilder_UI.h"
 #include "VegLayer.h"
 
 // WDR: class declarations
@@ -17,7 +17,7 @@
 // ImportVegDlg
 //----------------------------------------------------------------------------
 
-class ImportVegDlg: public wxDialog
+class ImportVegDlg: public ImportVegDlgBase
 {
 public:
 	// constructors and destructors

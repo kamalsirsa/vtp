@@ -1,7 +1,7 @@
 //
 // Name: DistribVegDlg.cpp
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,7 @@
 #include "DistribVegDlg.h"
 #include "Frame.h"
 #include "VegLayer.h"
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -24,7 +25,7 @@
 
 // WDR: event table for DistribVegDlg
 
-BEGIN_EVENT_TABLE(DistribVegDlg,AutoDialog)
+BEGIN_EVENT_TABLE(DistribVegDlg, DistribVegDlgBase)
 	EVT_INIT_DIALOG (DistribVegDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, DistribVegDlg::OnOK )
 	EVT_RADIOBUTTON( ID_SPECIES1, DistribVegDlg::OnRadio )
@@ -39,10 +40,8 @@ END_EVENT_TABLE()
 
 DistribVegDlg::DistribVegDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	DistribVegDlgBase( parent, id, title, position, size, style )
 {
-	DistribVegFunc( this, TRUE );
-
 	m_iChoiceSpecies = 0;
 	m_iChoiceBiotype = 0;
 	m_iChoiceBiotypeLayer = 0;
@@ -51,8 +50,8 @@ DistribVegDlg::DistribVegDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	m_iRandomFrom = 1;
 	m_iRandomTo = 100;
 
-	AddNumValidator(this, IDC_SAMPLING, &m_opt.m_fSampling);
-	AddNumValidator(this, IDC_SCARCITY, &m_opt.m_fScarcity);
+	AddNumValidator(this, ID_SAMPLING, &m_opt.m_fSampling);
+	AddNumValidator(this, ID_SCARCITY, &m_opt.m_fScarcity);
 
 	// species
 	AddValidator(this, ID_SPECIES1, &m_bSpecies1);

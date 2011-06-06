@@ -1,15 +1,14 @@
 //
 // Name: ChunkDlg.h
 //
-// Copyright (c) 2005-2006 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __ChunkDlg_H__
 #define __ChunkDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 
 // WDR: class declarations
 
@@ -17,7 +16,7 @@
 // ChunkDlg
 //----------------------------------------------------------------------------
 
-class ChunkDlg: public AutoDialog
+class ChunkDlg: public ChunkDlgBase
 {
 public:
 	// constructors and destructors

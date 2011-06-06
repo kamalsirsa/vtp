@@ -1,15 +1,14 @@
 //
 // Name: ExtentDlg.h
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __ExtentDlg_H__
 #define __ExtentDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 #include "vtdata/MathTypes.h"
 
 // WDR: class declarations
@@ -18,7 +17,7 @@
 // ExtentDlg
 //---------------------------------------------------------------------------
 
-class ExtentDlg: public AutoDialog
+class ExtentDlg: public ExtentDlgBase
 {
 public:
 	// constructors and destructors

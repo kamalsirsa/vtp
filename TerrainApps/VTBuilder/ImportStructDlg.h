@@ -1,15 +1,14 @@
 //
 // Name: ImportStructDlg.h
 //
-// Copyright (c) 2003-2008 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __ImportStructDlg_H__
 #define __ImportStructDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 #include "vtdata/StructArray.h"
 
 // WDR: class declarations
@@ -18,7 +17,7 @@
 // ImportStructDlg
 //----------------------------------------------------------------------------
 
-class ImportStructDlg: public AutoDialog
+class ImportStructDlg: public ImportStructDlgBase
 {
 public:
 	// constructors and destructors

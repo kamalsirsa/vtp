@@ -1,15 +1,14 @@
 //
 // Name: DistribVegDlg.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __DistribVegDlg_H__
 #define __DistribVegDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 #include "VegGenOptions.h"
 
 // WDR: class declarations
@@ -18,7 +17,7 @@
 // DistribVegDlg
 //----------------------------------------------------------------------------
 
-class DistribVegDlg: public AutoDialog
+class DistribVegDlg: public DistribVegDlgBase
 {
 public:
 	// constructors and destructors

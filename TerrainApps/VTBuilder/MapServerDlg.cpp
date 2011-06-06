@@ -17,6 +17,7 @@
 #include "vtdata/WFSClient.h"
 #endif
 #include "vtdata/vtLog.h"
+#include "vtui/AutoDialog.h"
 #include "vtui/Helper.h"	// for progress dialog
 #include "FileFilters.h"	// for FSTRING filters
 #include "Helper.h"
@@ -29,7 +30,7 @@
 
 // WDR: event table for MapServerDlg.cpp
 
-BEGIN_EVENT_TABLE(MapServerDlg, AutoDialog)
+BEGIN_EVENT_TABLE(MapServerDlg, MapServerDlgBase)
 	EVT_INIT_DIALOG (MapServerDlg::OnInitDialog)
 	EVT_COMBOBOX( ID_BASE_URL, MapServerDlg::OnServer )
 	EVT_TEXT( ID_BASE_URL, MapServerDlg::OnBaseUrlText )
@@ -46,7 +47,7 @@ END_EVENT_TABLE()
 
 MapServerDlg::MapServerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	MapServerDlgBase( parent, id, title, position, size, style )
 {
 	m_bSetting = false;
 	m_iXSize = 1024;
@@ -57,8 +58,6 @@ MapServerDlg::MapServerDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	m_iFormat = 1;
 	m_bNewLayer = true;
 	m_bToFile = false;
-
-	MapServerDialogFunc( this, TRUE );
 
 	AddValidator(this, ID_RADIO_CREATE_NEW, &m_bNewLayer);
 	AddValidator(this, ID_RADIO_TO_FILE, &m_bToFile);

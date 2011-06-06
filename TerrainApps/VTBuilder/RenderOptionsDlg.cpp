@@ -1,7 +1,7 @@
 //
 // Name: RenderOptionsDlg.cpp
 //
-// Copyright (c) 2006 Virtual Terrain Project
+// Copyright (c) 2006-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,8 @@
 #include "wx/wxprec.h"
 
 #include "RenderOptionsDlg.h"
+
+#include "vtui/AutoDialog.h"
 #include "vtui/Helper.h"		// for AddFilenamesToChoice
 #include "vtui/ColorMapDlg.h"
 #include "vtdata/DataPath.h"
@@ -22,7 +24,7 @@
 
 // WDR: event table for RenderOptionsDlg
 
-BEGIN_EVENT_TABLE(RenderOptionsDlg,wxDialog)
+BEGIN_EVENT_TABLE(RenderOptionsDlg,RenderOptionsDlgBase)
 	EVT_INIT_DIALOG (RenderOptionsDlg::OnInitDialog)
 	EVT_BUTTON( ID_EDIT_COLORS, RenderOptionsDlg::OnEditColors )
 	EVT_RADIOBUTTON( ID_RADIO_SHADING_NONE, RenderOptionsDlg::OnRadio )
@@ -34,11 +36,8 @@ END_EVENT_TABLE()
 
 RenderOptionsDlg::RenderOptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	RenderOptionsDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function RenderOptionsDialogFunc for RenderOptionsDlg
-	RenderOptionsDialogFunc(this, true);
-
 	m_opt.m_bShowElevation = true;
 	m_bNoShading = false;
 	m_opt.m_bShadingQuick = true;

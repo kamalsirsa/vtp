@@ -1,19 +1,16 @@
 //
 // VegDlg.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef VEGDLGH
 #define VEGDLGH
 
-#include "VTBuilder_wdr.h"
+#include "VTBuilder_UI.h"
 #include "wx/splitter.h"
 #include "wx/treectrl.h"
-#include "wx/listctrl.h"
-#include "wx/dialog.h"
-#include "vtui/AutoDialog.h"
 
 // WDR: class declarations
 
@@ -21,7 +18,7 @@
 // SpeciesListDlg
 //----------------------------------------------------------------------------
 
-class SpeciesListDlg: public wxDialog
+class SpeciesListDlg: public SpeciesListDlgBase
 {
 public:
 	// constructors and destructors
@@ -54,13 +51,13 @@ private:
 };
 
 
-class BioRegionDlg : public AutoDialog
+class BioRegionDlg : public wxDialog
 {
 public:
 	BioRegionDlg(wxWindow *parent, wxWindowID id, const wxString& title,
 		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE)
-		: AutoDialog(parent, id, title, pos, size, style)
+		: wxDialog(parent, id, title, pos, size, style)
 	{
 		RefreshContents();
 	}

@@ -1,15 +1,14 @@
 //
 // Name: ImageMapDlg.h
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __ImageMapDlg_H__
 #define __ImageMapDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 
 // WDR: class declarations
 
@@ -17,7 +16,7 @@
 // ImageMapDlg
 //----------------------------------------------------------------------------
 
-class ImageMapDlg: public AutoDialog
+class ImageMapDlg: public ImageMapDlgBase
 {
 public:
 	// constructors and destructors

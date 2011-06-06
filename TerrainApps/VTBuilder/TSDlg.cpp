@@ -1,7 +1,7 @@
 //
 // Name: TSDlg.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@
 
 #include "TSDlg.h"
 #include "FileFilters.h"	// for FSTRING_JPEG
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -23,7 +24,7 @@
 
 // WDR: event table for TSDialog
 
-BEGIN_EVENT_TABLE(TSDialog, AutoDialog)
+BEGIN_EVENT_TABLE(TSDialog, TSDlgBase)
 	EVT_CHOICE( ID_MPP, TSDialog::OnMpp )
 	EVT_CHOICE( ID_THEME, TSDialog::OnTheme )
 	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, TSDialog::OnRadioOutput )
@@ -33,11 +34,8 @@ END_EVENT_TABLE()
 
 TSDialog::TSDialog( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	TSDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function TSDialogFunc for TSDialog
-	TSDialogFunc(this, true);
-
 	AddValidator(this, ID_THEME, &m_iTheme);
 	AddValidator(this, ID_MPP, &m_iMpp);
 

@@ -245,25 +245,7 @@
 				RelativePath=".\TagDlg.cpp">
 			</File>
 			<File
-				RelativePath="vtui_wdr.cpp">
-				<FileConfiguration
-					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
+				RelativePath=".\vtui_UI.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -321,7 +303,7 @@
 				RelativePath=".\TagDlg.h">
 			</File>
 			<File
-				RelativePath="vtui_wdr.h">
+				RelativePath=".\vtui_UI.h">
 			</File>
 		</Filter>
 	</Files>

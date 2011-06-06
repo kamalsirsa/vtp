@@ -1,7 +1,7 @@
 //
 // Name: GeocodeDlg.cpp
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,7 @@
 
 #include "GeocodeDlg.h"
 #include "vtdata/config_vtdata.h"
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -19,7 +20,7 @@
 
 // WDR: event table for GeocodeDlg
 
-BEGIN_EVENT_TABLE(GeocodeDlg,wxDialog)
+BEGIN_EVENT_TABLE(GeocodeDlg, GeocodeDlgBase)
 	EVT_BUTTON( ID_GET_FILE_DATA, GeocodeDlg::OnGetFileData )
 	EVT_BUTTON( ID_GET_FILE_GAZ, GeocodeDlg::OnGetFileGaz )
 	EVT_BUTTON( ID_GET_FILE_GNS, GeocodeDlg::OnGetFileGNS )
@@ -28,11 +29,8 @@ END_EVENT_TABLE()
 
 GeocodeDlg::GeocodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	GeocodeDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function GeocodeDialogFunc for GeocodeDlg
-	GeocodeDialogFunc( this, TRUE );
-
 	AddValidator(this, ID_CHECK_USE1, &m_bGeocodeUS);
 	AddValidator(this, ID_CHECK_USE2, &m_bGazetteer);
 	AddValidator(this, ID_CHECK_USE3, &m_bGNS);

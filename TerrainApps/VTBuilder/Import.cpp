@@ -1582,7 +1582,7 @@ vtLayerPtr Builder::ImportVectorsWithOGR(const wxString &strFileName, LayerType 
 	}
 	if (ltype == LT_STRUCTURE)
 	{
-		ImportStructDlgOGR ImportDialog(g_bld->m_pParentWindow, -1, _("Import Structures"));
+		ImportStructOGRDlg ImportDialog(g_bld->m_pParentWindow, -1, _("Import Structures"));
 
 		ImportDialog.SetDatasource(datasource);
 

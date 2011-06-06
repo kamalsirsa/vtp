@@ -1,7 +1,7 @@
 //
 // Name:		SelectDlg.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@
 
 #include "SelectDlg.h"
 #include "RawLayer.h"
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -23,7 +24,7 @@
 
 // WDR: event table for SelectDlg
 
-BEGIN_EVENT_TABLE(SelectDlg, AutoDialog)
+BEGIN_EVENT_TABLE(SelectDlg, SelectDlgBase)
 	EVT_INIT_DIALOG (SelectDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, SelectDlg::OnOK )
 	EVT_LISTBOX( ID_FIELD, SelectDlg::OnChoiceField )
@@ -31,10 +32,8 @@ END_EVENT_TABLE()
 
 SelectDlg::SelectDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	SelectDlgBase( parent, id, title, position, size, style )
 {
-	SelectDialogFunc( this, TRUE );
-
 	m_pLayer = NULL;
 	m_iField = 0;
 	m_iCondition = 0;

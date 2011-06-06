@@ -436,6 +436,9 @@
 				RelativePath="bitmaps\hand.bmp">
 			</File>
 			<File
+				RelativePath=".\bitmaps\layer_down.bmp">
+			</File>
+			<File
 				RelativePath="bitmaps\layer_export.bmp">
 			</File>
 			<File
@@ -452,6 +455,9 @@
 			</File>
 			<File
 				RelativePath="bitmaps\layer_show.bmp">
+			</File>
+			<File
+				RelativePath=".\bitmaps\layer_up.bmp">
 			</File>
 			<File
 				RelativePath="bitmaps\loadimage.bmp">
@@ -602,26 +608,6 @@
 			</File>
 			<File
 				RelativePath=".\ImageMapDlg.cpp">
-			</File>
-			<File
-				RelativePath="ImportVegDlg.cpp">
-				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="LayerPropDlg.cpp">

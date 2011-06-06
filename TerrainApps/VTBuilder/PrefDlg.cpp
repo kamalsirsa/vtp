@@ -1,7 +1,7 @@
 //
 // Name: PrefDlg.cpp
 //
-// Copyright (c) 2007-2008 Virtual Terrain Project
+// Copyright (c) 2007-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,7 @@
 #include "wx/wxprec.h"
 
 #include "PrefDlg.h"
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -18,7 +19,7 @@
 
 // WDR: event table for PrefDlg
 
-BEGIN_EVENT_TABLE(PrefDlg,AutoDialog)
+BEGIN_EVENT_TABLE(PrefDlg, PrefDlgBase)
 	EVT_INIT_DIALOG (PrefDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, PrefDlg::OnOK )
 	EVT_RADIOBUTTON( ID_RADIO1, PrefDlg::OnRadio )
@@ -39,11 +40,8 @@ END_EVENT_TABLE()
 
 PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	PrefDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function PrefDialogFunc for PrefDlg
-	PrefDialogFunc(this, true);
-
 	AddValidator(this, ID_RADIO1, &b1);
 	AddValidator(this, ID_RADIO2, &b2);
 	AddValidator(this, ID_RADIO3, &b3);

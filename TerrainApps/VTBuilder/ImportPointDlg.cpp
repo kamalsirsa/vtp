@@ -1,7 +1,7 @@
 //
 // Name: ImportPointDlg.cpp
 //
-// Copyright (c) 2004-2008 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include "ImportPointDlg.h"
+#include "vtui/AutoDialog.h"
 #include "vtui/ProjectionDlg.h"
 
 // WDR: class implementations
@@ -23,18 +24,15 @@
 
 // WDR: event table for ImportPointDlg
 
-BEGIN_EVENT_TABLE(ImportPointDlg,AutoDialog)
+BEGIN_EVENT_TABLE(ImportPointDlg,ImportPointDlgBase)
 	EVT_BUTTON( ID_SET_CRS, ImportPointDlg::OnSetCRS )
 	EVT_CHECKBOX( ID_CHECK_ELEVATION, ImportPointDlg::OnCheck )
 END_EVENT_TABLE()
 
 ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	ImportPointDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function ImportPointDialogFunc for ImportPointDlg
-	ImportPointDialogFunc( this, TRUE );
-
 	m_iEasting = 0;
 	m_iNorthing = 0;
 	m_bElevation = false;

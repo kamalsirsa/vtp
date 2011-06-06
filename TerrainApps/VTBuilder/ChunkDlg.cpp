@@ -1,7 +1,7 @@
 //
 // Name: ChunkDlg.cpp
 //
-// Copyright (c) 2005 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include "ChunkDlg.h"
+#include "vtui/AutoDialog.h"
 
 // WDR: class implementations
 
@@ -22,15 +23,13 @@
 
 // WDR: event table for ChunkDlg
 
-BEGIN_EVENT_TABLE(ChunkDlg,AutoDialog)
+BEGIN_EVENT_TABLE(ChunkDlg,ChunkDlgBase)
 END_EVENT_TABLE()
 
 ChunkDlg::ChunkDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	ChunkDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function ChunkDialogFunc for ChunkDlg
-	ChunkDialogFunc( this, TRUE );
 	AddNumValidator(this, ID_DEPTH, &m_iDepth);
 	AddNumValidator(this, ID_MAXERROR, &m_fMaxError);
 }

@@ -1,7 +1,7 @@
 //
 // Name: RenderDlg.cpp
 //
-// Copyright (c) 2004-2008 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,10 +17,11 @@
 #include "FileFilters.h"
 #include "Helper.h"
 
-#include "vtdata/FilePath.h"
-#include "vtui/Helper.h"		// for AddFilenamesToChoice
-#include "vtui/ColorMapDlg.h"
 #include "vtdata/DataPath.h"
+#include "vtdata/FilePath.h"
+#include "vtui/AutoDialog.h"
+#include "vtui/ColorMapDlg.h"
+#include "vtui/Helper.h"		// for AddFilenamesToChoice
 
 // WDR: class implementations
 
@@ -30,7 +31,7 @@
 
 // WDR: event table for RenderDlg
 
-BEGIN_EVENT_TABLE(RenderDlg, AutoDialog)
+BEGIN_EVENT_TABLE(RenderDlg, RenderDlgBase)
 	EVT_INIT_DIALOG (RenderDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, RenderDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, RenderDlg::OnRadio )
@@ -48,11 +49,8 @@ END_EVENT_TABLE()
 
 RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	RenderDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function RenderBitmapDialogFunc for RenderDlg
-	RenderBitmapDialogFunc( this, TRUE );
-
 	m_power = 8;
 	m_bConstraint = false;
 	m_bTiling = false;

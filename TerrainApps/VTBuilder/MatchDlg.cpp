@@ -1,7 +1,7 @@
 //
 // Name: MatchDlg.cpp
 //
-// Copyright (c) 2007-2008 Virtual Terrain Project
+// Copyright (c) 2007-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,9 @@
 #include "BuilderView.h"
 #include "ElevLayer.h"
 #include "ImageLayer.h"
+
 #include "vtdata/ElevationGrid.h"
+#include "vtui/AutoDialog.h"
 #include "vtui/Helper.h"
 
 // WDR: class implementations
@@ -24,7 +26,7 @@
 
 // WDR: event table for MatchDlg
 
-BEGIN_EVENT_TABLE(MatchDlg,AutoDialog)
+BEGIN_EVENT_TABLE(MatchDlg, MatchDlgBase)
 	EVT_SPIN_UP( ID_SIZE_SPIN, MatchDlg::OnSpinUp )
 	EVT_SPIN_DOWN( ID_SIZE_SPIN, MatchDlg::OnSpinDown )
 	EVT_CHOICE( ID_MATCH_LAYER, MatchDlg::OnMatchLayer )
@@ -34,11 +36,8 @@ END_EVENT_TABLE()
 
 MatchDlg::MatchDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	MatchDlgBase( parent, id, title, position, size, style )
 {
-	// WDR: dialog function MatchDialogFunc for MatchDlg
-	MatchDialogFunc( this, TRUE );
-
 	m_pView = NULL;
 
 	AddValidator(this, ID_EXTENT1, &m_strExtent1);

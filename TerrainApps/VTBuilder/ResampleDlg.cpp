@@ -1,7 +1,7 @@
 //
 // Name: ResampleDlg.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,8 @@
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
+
+#include "vtui/AutoDialog.h"
 
 #include "ResampleDlg.h"
 #include "TileDlg.h"
@@ -25,7 +27,7 @@
 
 // WDR: event table for ResampleDlg
 
-BEGIN_EVENT_TABLE(ResampleDlg, AutoDialog)
+BEGIN_EVENT_TABLE(ResampleDlg, ResampleDlgBase)
 	EVT_INIT_DIALOG (ResampleDlg::OnInitDialog)
 	EVT_BUTTON( ID_SMALLER, ResampleDlg::OnSmaller )
 	EVT_BUTTON( ID_BIGGER, ResampleDlg::OnBigger )
@@ -49,9 +51,8 @@ END_EVENT_TABLE()
 
 ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	ResampleDlgBase( parent, id, title, position, size, style )
 {
-	ResampleDialogFunc( this, TRUE );
 	m_bSetting = false;
 
 	m_bNewLayer = true;

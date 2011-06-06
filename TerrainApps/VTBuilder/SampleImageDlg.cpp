@@ -1,7 +1,7 @@
 //
 // Name: SampleImageDlg.cpp
 //
-// Copyright (c) 2003-2008 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,8 @@
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
+
+#include "vtui/AutoDialog.h"
 
 #include "SampleImageDlg.h"
 #include "TileDlg.h"
@@ -26,7 +28,7 @@
 
 // WDR: event table for SampleImageDlg
 
-BEGIN_EVENT_TABLE(SampleImageDlg, AutoDialog)
+BEGIN_EVENT_TABLE(SampleImageDlg, SampleImageDlgBase)
 	EVT_INIT_DIALOG (SampleImageDlg::OnInitDialog)
 	EVT_BUTTON( ID_SMALLER, SampleImageDlg::OnSmaller )
 	EVT_BUTTON( ID_BIGGER, SampleImageDlg::OnBigger )
@@ -45,14 +47,12 @@ END_EVENT_TABLE()
 
 SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	SampleImageDlgBase( parent, id, title, position, size, style )
 {
 	m_power = 8;
 	m_bConstraint = false;
 	m_bTiling = false;
 	m_bSetting = false;
-
-	SampleImageDialogFunc(this, true);
 
 	m_bNewLayer = true;
 	m_bToFile = false;

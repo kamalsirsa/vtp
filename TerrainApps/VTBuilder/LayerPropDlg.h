@@ -1,15 +1,14 @@
 //
 // Name: LayerPropDlg.h
 //
-// Copyright (c) 2002-2005 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __LayerPropDlg_H__
 #define __LayerPropDlg_H__
 
-#include "VTBuilder_wdr.h"
-#include "vtui/AutoDialog.h"
+#include "VTBuilder_UI.h"
 
 // WDR: class declarations
 
@@ -17,7 +16,7 @@
 // LayerPropDlg
 //----------------------------------------------------------------------------
 
-class LayerPropDlg: public AutoDialog
+class LayerPropDlg: public LayerPropDlgBase
 {
 public:
 	// constructors and destructors

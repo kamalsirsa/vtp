@@ -1,7 +1,7 @@
 //
-// Name:		RoadDlg.cpp
+// Name: RoadDlg.cpp
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,8 @@
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
+
+#include "vtui/AutoDialog.h"
 
 #include "RoadDlg.h"
 #include "RoadLayer.h"
@@ -25,17 +27,15 @@
 
 // WDR: event table for RoadDlg
 
-BEGIN_EVENT_TABLE(RoadDlg, AutoDialog)
+BEGIN_EVENT_TABLE(RoadDlg, RoadDlgBase)
 	EVT_INIT_DIALOG (RoadDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, RoadDlg::OnOK )
 END_EVENT_TABLE()
 
 RoadDlg::RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	RoadDlgBase( parent, id, title, position, size, style )
 {
-	RoadPropDialogFunc( this, TRUE );
-
 	GetSurfType()->Append(_("None"));
 	GetSurfType()->Append(_("Gravel"));
 	GetSurfType()->Append(_("Trail"));

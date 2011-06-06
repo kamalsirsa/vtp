@@ -1,7 +1,7 @@
 //
 // Name: NodeDlg.cpp
 //
-// Copyright (c) 2002-2010 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,8 @@
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
+
+#include "vtui/AutoDialog.h"
 
 #include "NodeDlg.h"
 #include "RoadLayer.h"
@@ -134,7 +136,7 @@ void NodeDlgView::OnDraw(wxDC &dc)
 
 // WDR: event table for NodeDlg
 
-BEGIN_EVENT_TABLE(NodeDlg, AutoDialog)
+BEGIN_EVENT_TABLE(NodeDlg, NodeDlgBase)
 	EVT_INIT_DIALOG (NodeDlg::OnInitDialog)
 	EVT_LISTBOX( ID_INTTYPE, NodeDlg::OnIntType )
 	EVT_LISTBOX( ID_ROADNUM, NodeDlg::OnLinkNum )
@@ -143,10 +145,8 @@ END_EVENT_TABLE()
 
 NodeDlg::NodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	NodeDlgBase( parent, id, title, position, size, style )
 {
-	NodePropDialogFunc( this, TRUE );
-
 	GetIntType()->Append(_("Unknown"));
 	GetIntType()->Append(_("Uncontrolled"));
 	GetIntType()->Append(_("All Traffic Light(s)"));
