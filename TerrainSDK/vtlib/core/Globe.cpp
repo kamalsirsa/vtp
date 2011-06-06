@@ -258,7 +258,7 @@ void vtIcoGlobe::CreateNodes()
 	// Create groups to contain the surface features
 	m_SurfaceGroup = new vtGroup;
 	m_SurfaceGroup->setName("SurfaceGroup");
-	m_top->AddChild(m_SurfaceGroup);
+	m_top->addChild(m_SurfaceGroup);
 
 	if (m_style == DYMAX_UNFOLD)
 		CreateUnfoldableDymax();
@@ -575,8 +575,8 @@ void vtIcoGlobe::BuildSphericalPoints(GlobeLayer *glay, float fSize)
 			double area = PIf * spheres[i].radius * spheres[i].radius;
 			mgeom->Scale3(0.002f, (float)area*1000, 0.002f);
 		}
-		m_SurfaceGroup->AddChild(mgeom);
-		glay->addChild(mgeom->GetOsgNode());
+		m_SurfaceGroup->addChild(mgeom);
+		glay->addChild(mgeom);
 	}
 }
 
@@ -699,8 +699,8 @@ void vtIcoGlobe::BuildFlatPoint(GlobeLayer *glay, int i, float fSize)
 	// scale just the radius of the cylinder
 	mgeom->Scale3(fSize, 0.001f, fSize);
 
-	m_mface[mface].surfgroup->AddChild(mgeom);
-	glay->addChild(mgeom->GetOsgNode());
+	m_mface[mface].surfgroup->addChild(mgeom);
+	glay->addChild(mgeom);
 }
 
 void vtIcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
@@ -1276,7 +1276,7 @@ void vtIcoGlobe::SetMeshConnect(int mface)
 	vtMesh *mesh = m_mesh[mface];
 
 	// attach heirarchy
-	m_mface[parent_mface].xform->AddChild(xform);
+	m_mface[parent_mface].xform->addChild(xform);
 
 	// translate vertices to set origin of this mface
 	int i;
@@ -1307,7 +1307,7 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 		m_mface[i].surfgroup->SetEnabled(false);
 		m_mface[i].geode = new vtGeode;
 		m_mface[i].xform->addChild(m_mface[i].geode);
-		m_mface[i].xform->AddChild(m_mface[i].surfgroup);
+		m_mface[i].xform->addChild(m_mface[i].surfgroup);
 
 		vtString str;
 		str.Format("IcoFace %d", i);
@@ -1324,7 +1324,7 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 		m_mface[i].geode->SetMaterials(m_earthmats);
 		m_mface[i].geode->AddMesh(m_mesh[i], m_globe_mat[mat]);
 	}
-	m_top->AddChild(m_mface[0].xform);
+	m_top->addChild(m_mface[0].xform);
 
 	m_mface[0].local_origin.Set(0,0,0);
 	for (i = 1; i < 22; i++)
@@ -1578,7 +1578,7 @@ void vtIcoGlobe::add_face_independent_meshes(int pair, int face, bool second)
 
 void GlobeLayer::DestructGeometry()
 {
-	GetOsgGroup()->removeChildren(0, GetOsgGroup()->getNumChildren());
+	removeChildren(0, getNumChildren());
 }
 
 

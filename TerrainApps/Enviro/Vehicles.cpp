@@ -58,11 +58,11 @@ public:
 	RGBf c;
 };
 
-void ConvertPurpleToColor(vtNode *pModel, RGBf replace)
+void ConvertPurpleToColor(osg::Node *pModel, RGBf replace)
 {
 	RemapDiffuseVisitor viz;
 	viz.c = replace;
-	pModel->GetOsgNode()->accept(viz);
+	pModel->accept(viz);
 }
 
 /////////////////////////////////////////
@@ -187,14 +187,6 @@ Vehicle::Vehicle()
 
 Vehicle::~Vehicle()
 {
-	if (NULL != m_pFrontLeft)
-		m_pFrontLeft->Release();
-	if (NULL != m_pFrontRight)
-		m_pFrontRight->Release();
-	if (NULL != m_pRearLeft)
-		m_pRearLeft->Release();
-	if (NULL != m_pRearRight)
-		m_pRearRight->Release();
 }
 
 
@@ -206,7 +198,7 @@ void Vehicle::ShowBounds(bool bShow)
 		{
 			// the highlight geometry doesn't exist, so create it
 			// get bounding sphere
-			vtNode *contents = GetChild(0);
+			osg::Node *contents = getChild(0);
 			if (contents)
 			{
 				FSphere sphere;

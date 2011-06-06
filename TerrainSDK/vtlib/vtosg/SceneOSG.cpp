@@ -197,7 +197,6 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
 void vtScene::Shutdown()
 {
 	VTLOG("vtScene::Shutdown\n");
-	m_pDefaultCamera->Release();
 	m_pDefaultCamera = NULL;
 	m_pCamera = NULL;
 
@@ -283,7 +282,7 @@ void vtScene::AddEngine(vtEngine *ptr)
 		m_pRootEngine = ptr;
 }
 
-void vtScene::TargetRemoved(vtTarget *tar)
+void vtScene::TargetRemoved(osg::Referenced *tar)
 {
 	// Look at all Engines
 	vtEngineArray list(m_pRootEngine);
@@ -387,7 +386,7 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	}
 
 	// And apply the rotation and translation of the camera itself
-	const osg::Matrix &mat2 = m_pCamera->GetOsgTransform()->getMatrix();
+	const osg::Matrix &mat2 = m_pCamera->getMatrix();
 	osg::Matrix imat;
 	imat.invert(mat2);
 	m_pOsgViewer->getCamera()->setViewMatrix(imat);
@@ -437,7 +436,7 @@ void vtScene::DoUpdate()
 void vtScene::SetRoot(vtGroup *pRoot)
 {
 	if (pRoot)
-		m_pOsgSceneRoot = pRoot->GetOsgGroup();
+		m_pOsgSceneRoot = pRoot;
 	else
 		m_pOsgSceneRoot = NULL;
 
@@ -717,30 +716,29 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 // Shadow methods
 
 #if OLD_OSG_SHADOWS
-void vtScene::ShadowVisibleNode(vtNode *node, bool bVis)
+void vtScene::ShadowVisibleNode(osg::Node *node, bool bVis)
 {
 	if (m_pStructureShadowsOSG.valid())
 		if (bVis)
-			m_pStructureShadowsOSG->ExcludeFromShadower(node->GetOsgNode(), false);
+			m_pStructureShadowsOSG->ExcludeFromShadower(node, false);
 		else
-			m_pStructureShadowsOSG->ExcludeFromShadower(node->GetOsgNode(), true);
+			m_pStructureShadowsOSG->ExcludeFromShadower(node, true);
 }
 
-bool vtScene::IsShadowVisibleNode(vtNode *node)
+bool vtScene::IsShadowVisibleNode(osg::Node *node)
 {
 	if (m_pStructureShadowsOSG.valid())
-		return (m_pStructureShadowsOSG->IsExcludedFromShadower(node->GetOsgNode()) == false);
+		return (m_pStructureShadowsOSG->IsExcludedFromShadower(node) == false);
 	return false;
 }
 
-void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowerNode,
-							  vtNode *pShadowed, int iRez, float fDarkness,
+void vtScene::SetShadowedNode(vtTransform *pLight, osg::Node *pShadowerNode,
+							  osg::Node *pShadowed, int iRez, float fDarkness,
 							  int iTextureUnit, const FSphere &ShadowSphere)
 {
 	m_pStructureShadowsOSG = new CStructureShadowsOSG;
-	m_pStructureShadowsOSG->Initialise(m_pOsgSceneView.get(),
-		pShadowerNode->GetOsgNode(), pShadowed->GetOsgNode(), iRez, fDarkness,
-		iTextureUnit, ShadowSphere);
+	m_pStructureShadowsOSG->Initialise(m_pOsgSceneView.get(), pShadowerNode,
+		pShadowed, iRez, fDarkness, iTextureUnit, ShadowSphere);
 	m_pStructureShadowsOSG->SetSunDirection(v2s(-pLight->GetDirection()));
 	m_pStructureShadowsOSG->ComputeShadows();
 }

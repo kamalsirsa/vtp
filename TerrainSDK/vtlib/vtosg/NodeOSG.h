@@ -15,10 +15,9 @@
 #include <osg/LightSource>
 #include <osg/LOD>
 #include <osg/MatrixTransform>
+#include <osg/Projection>
 #include <osg/Version>
 #include <osgShadow/ShadowedScene>
-
-#include "../core/Engine.h"	// for vtTarget
 
 #define VTLISPSM 0
 
@@ -58,8 +57,6 @@ struct vtPrimInfo
 	int LineSegments;
 };
 
-class vtNode;
-
 class vtMultiTexture
 {
 public:
@@ -84,191 +81,26 @@ struct NodeExtension
 	/// Get whether this node casts a shadow.
 	bool GetCastShadow();
 
+	/** Get the Bounding Sphere of the node */
+	void GetBoundSphere(FSphere &sphere, bool bGlobal = false);
+
 	osg::Node *m_pNode;
 	bool m_bCastShadow;
 };
 
-struct GroupExtension
+struct GroupExtension : public NodeExtension
 {
-	/** Return a child node, by index. */
-	vtNode *GetChild(unsigned int num) const;
-
-	void SetOsgGroup(osg::Group *group) { m_pGroup = group; }
-
-	osg::Group *m_pGroup;
-};
-
-bool FindAncestor(osg::Node *node, osg::Node *parent);
-osg::Node *FindDescendent(osg::Node *node, const char *pName);
-
-vtMultiTexture *AddMultiTexture(osg::Node *onode, int iTextureUnit, vtImage *pImage,
-								int iTextureMode, const FPoint2 &scale, const FPoint2 &offset);
-void EnableMultiTexture(osg::Node *node, vtMultiTexture *mt, bool bEnable);
-bool MultiTextureIsEnabled(osg::Node *node, vtMultiTexture *mt);
-
-void LocalToWorld(osg::Node *node, FPoint3 &point);
-FSphere GetGlobalBoundSphere(osg::Node *node);
-bool ContainsParticleSystem(osg::Node *node);
-
-void SetEnabled(osg::Node *node, bool bOn);
-bool GetEnabled(osg::Node *node);
-
-/// Load a 3D model file
-osg::Node *vtLoadModel(const char *filename, bool bAllowCache = true,
-					   bool bDisableMipmaps = false);
-
-/**
- * Represents a node in the vtlib scenegraph.  The scenegraph is simply
- * a tree of nodes, with a root node at the top.
- */
-class vtNode : public osg::Referenced, public vtTarget
-{
-public:
-	enum FogType { FM_LINEAR, FM_EXP, FM_EXP2 };
-
-	virtual void Release();
-
-	void SetEnabled(bool bOn);
-	bool GetEnabled() const;
-
-	/** Set the name of the node. */
-	void setName(const char *str) { m_pNode->setName(str); }
-	/** Get the name of the node. */
-	const char *getName() const { return m_pNode->getName().c_str(); }
-
-	/// Get the Bounding Box of the node, in world coordinates
-	void GetBoundBox(FBox3 &box);
-
-	/** Get the Bounding Sphere of the node */
-	void GetBoundSphere(FSphere &sphere, bool bGlobal = false);
-
-	/// Get information about the number of display primitives
-	void GetPrimCounts(vtPrimInfo &info);
-
-	/// Transform a point from a node's local coordinates to world coordinates
-	void LocalToWorld(FPoint3 &point);
-
-	vtGroup *GetParent(int iParent = 0);
-	virtual vtNode *Clone(bool bDeep = false);
-
-	//vtMultiTexture *AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
-	//									const FPoint2 &scale, const FPoint2 &offset);
-	//void EnableMultiTexture(vtMultiTexture *mt, bool bEnable);
-	//bool MultiTextureIsEnabled(vtMultiTexture *mt);
-
-	// OSG access
-	void SetOsgNode(osg::Node *n);
-	osg::Node *GetOsgNode() { return m_pNode.get(); }
-	const osg::Node *GetOsgNode() const { return m_pNode.get(); }
-	void DecorateNativeGraph();
-	void ApplyVertexRotation(const FPoint3 &axis, float angle);
-	void ApplyVertexTransform(const FMatrix4 &mat);
-	bool ContainsParticleSystem() const;
-
-	static bool s_bDisableMipmaps;	// set to disable ALL mipmaps
-
-	/// Set this node to cast a shadow, if it is under a vtShadow node.  Default is false.
-	void SetCastShadow(bool b);
-	/// Get whether this node casts a shadow.
-	bool GetCastShadow();
-
-protected:
-	osg::ref_ptr<osg::Node> m_pNode;
-	bool m_bCastShadow;
-
-	// Constructor is protected because vtNode is an abstract base class,
-	//  not to be instantiated directly.
-	vtNode();
-
-	// Destructor is protected so that people will use Release() instead,
-	//  to ensure that reference counting is respected.
-	virtual ~vtNode() {}
-};
-
-/**
- * This class represents a node which is native to the underlying scene graph
- * libraries, e.g. OSG.
- */
-class vtNativeNode : public vtNode
-{
-public:
-	vtNativeNode(osg::Node *node);
-	virtual vtNode *Clone(bool bDeep = false);
-
-	vtNode *FindParentVTNode();
-
-protected:
-	// Destructor is protected so that people will use Release() instead,
-	//  to ensure that reference counting is respected.
-	virtual ~vtNativeNode() {}
-};
-
-/**
- * Represents a Group (a node that can have children) in the vtlib Scene Graph.
- */
-class vtGroup : public vtNode
-{
-public:
-	vtGroup(bool suppress = false);
-	virtual vtNode *Clone(bool bDeep = false);
-	void CloneFrom(vtGroup *group, bool bDeep);
-	virtual void Release();
-
-	/** Add a node as a child of this Group. */
-	void AddChild(vtNode *pChild);
-
-	/** Add a node as a child of this Group. */
-	void addChild(osg::Node *pChild);
-
-	/** Remove a node as a child of this Group.  If the indicated node is not
-	 a child, then this method has no effect. */
-	void RemoveChild(vtNode *pChild);
-
-	/** Remove a node as a child of this Group.  If the indicated node is not
-	 a child, then this method has no effect. */
-	void removeChild(osg::Node *pChild);
-
-	/** Return a child node, by index. */
-	vtNode *GetChild(unsigned int num) const;
-
-	/** Return a child node, by index. */
-	osg::Node *getChild(unsigned int num) const;
-
-	/** Return the number of child nodes */
-	unsigned int GetNumChildren() const;
-
-	/** Looks for a descendent node with a given name.  If not found, NULL
-	 is returned. */
-	const vtNode *FindDescendantByName(const char *name) const;
-
 	/** Return true if the given node is a child of this group. */
-	bool ContainsChild(vtNode *pNode) const;
+	bool containsChild(osg::Node *pNode) const;
 
-	// OSG-specific Implementation
-	osg::Group *GetOsgGroup() { return m_pGroup; }
-	const osg::Group *GetOsgGroup() const { return m_pGroup; }
-	void SetOsgGroup(osg::Group *g);
-
-protected:
-	// Destructor is protected so that people will use Release() instead,
-	//  to ensure that reference counting is respected.
-	virtual ~vtGroup() {}
+	void SetOsgGroup(osg::Group *group) { m_pNode = m_pGroup = group; }
 
 	osg::Group *m_pGroup;
 };
 
-/**
- * A Transform node allows you to apply a transform (scale, rotate, translate)
- * to all its child nodes.
- */
-class vtTransform : public vtGroup
+struct TransformExtension: public GroupExtension
 {
-public:
-	vtTransform();
-	vtTransform(osg::MatrixTransform *mt);
-	virtual vtNode *Clone(bool bDeep = false);
-	void CloneFrom(vtTransform *xform, bool bDeep);
-	void Release();
+	void SetOsgTransform(osg::MatrixTransform *xform) { m_pNode = m_pGroup = m_pTransform = xform; }
 
 	/** Set this transform to identity (no scale, rotation, or translation). */
 	void Identity();
@@ -323,39 +155,139 @@ public:
 		desired direction. */
 	void PointTowards(const FPoint3 &point, bool bPitch = true);
 
+	osg::MatrixTransform *m_pTransform;
+};
+
+bool FindAncestor(osg::Node *node, osg::Node *parent);
+osg::Node *FindDescendent(osg::Node *node, const char *pName);
+
+vtMultiTexture *AddMultiTexture(osg::Node *onode, int iTextureUnit, vtImage *pImage,
+								int iTextureMode, const FPoint2 &scale, const FPoint2 &offset);
+void EnableMultiTexture(osg::Node *node, vtMultiTexture *mt, bool bEnable);
+bool MultiTextureIsEnabled(osg::Node *node, vtMultiTexture *mt);
+
+void LocalToWorld(osg::Node *node, FPoint3 &point);
+FSphere GetGlobalBoundSphere(osg::Node *node);
+bool ContainsParticleSystem(osg::Node *node);
+
+void SetEnabled(osg::Node *node, bool bOn);
+bool GetEnabled(osg::Node *node);
+bool NodeIsEnabled(osg::Node *node);
+
+/// Load a 3D model file
+osg::Node *vtLoadModel(const char *filename, bool bAllowCache = true,
+					   bool bDisableMipmaps = false);
+
+/** Get the Bounding Sphere of the node */
+void GetBoundSphere(osg::Node *node, FSphere &sphere, bool bGlobal = false);
+
+void GetNodeBoundBox(osg::Node *node, FBox3 &box);
+void GetNodePrimCounts(osg::Node *node, vtPrimInfo &info);
+
+void ApplyVertexRotation(osg::Node *node, const FPoint3 &axis, float angle);
+void ApplyVertexTransform(osg::Node *node, const FMatrix4 &mat);
+
+extern bool g_bDisableMipmaps;	// set to disable ALL mipmaps
+
+
+#if 0
+/**
+ * Represents a node in the vtlib scenegraph.  The scenegraph is simply
+ * a tree of nodes, with a root node at the top.
+ */
+class vtNode : public osg::Referenced
+{
+public:
+	virtual void Release();
+
+	void SetEnabled(bool bOn);
+	bool GetEnabled() const;
+
+	/** Set the name of the node. */
+	void setName(const char *str) { m_pNode->setName(str); }
+	/** Get the name of the node. */
+	const char *getName() const { return m_pNode->getName().c_str(); }
+
+	/// Get the Bounding Box of the node, in world coordinates
+	void GetBoundBox(FBox3 &box);
+
+	/** Get the Bounding Sphere of the node */
+	void GetBoundSphere(FSphere &sphere, bool bGlobal = false);
+
+	/// Get information about the number of display primitives
+	void GetPrimCounts(vtPrimInfo &info);
+
+	/// Transform a point from a node's local coordinates to world coordinates
+	void LocalToWorld(FPoint3 &point);
+
+	vtGroup *GetParent(int iParent = 0);
+	virtual vtNode *Clone(bool bDeep = false);
+
+	//vtMultiTexture *AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
+	//									const FPoint2 &scale, const FPoint2 &offset);
+	//void EnableMultiTexture(vtMultiTexture *mt, bool bEnable);
+	//bool MultiTextureIsEnabled(vtMultiTexture *mt);
+
 	// OSG access
-	osg::MatrixTransform *GetOsgTransform() { return m_pTransform; }
+	void SetOsgNode(osg::Node *n);
+	osg::Node *GetOsgNode() { return m_pNode.get(); }
+	const osg::Node *GetOsgNode() const { return m_pNode.get(); }
+	bool ContainsParticleSystem() const;
+
+	/// Set this node to cast a shadow, if it is under a vtShadow node.  Default is false.
+	void SetCastShadow(bool b);
+	/// Get whether this node casts a shadow.
+	bool GetCastShadow();
 
 protected:
-	// OSG-specific Implementation
-	osg::MatrixTransform *m_pTransform;
+	osg::ref_ptr<osg::Node> m_pNode;
+	bool m_bCastShadow;
+
+	// Constructor is protected because vtNode is an abstract base class,
+	//  not to be instantiated directly.
+	vtNode();
 
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
-	virtual ~vtTransform() {}
+	virtual ~vtNode() {}
 };
+#endif
+
+/**
+ * Represents a Group (a node that can have children) in the vtlib Scene Graph.
+ */
+class vtGroup : public osg::Group, public GroupExtension
+{
+public:
+	vtGroup();
+};
+typedef osg::ref_ptr<vtGroup> vtGroupPtr;
+
+/**
+ * A Transform node allows you to apply a transform (scale, rotate, translate)
+ * to all its child nodes.
+ */
+class vtTransform : public osg::MatrixTransform, public TransformExtension
+{
+public:
+	vtTransform();
+};
+typedef osg::ref_ptr<vtTransform> vtTransformPtr;
 
 /**
  * A Fog node allows you to apply a fog to all its child nodes.
  */
-class vtFog : public vtGroup
+class vtFog : public osg::Group, public GroupExtension
 {
 public:
 	vtFog();
-	virtual vtNode *Clone(bool bDeep = false);
-	void CloneFrom(vtFog *xform, bool bDeep);
-	void Release();
 
 	static RGBf s_white;
-	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
+	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, osg::Fog::Mode eType = osg::Fog::LINEAR);
 
 protected:
 	osg::ref_ptr<osg::StateSet> m_pFogStateSet;
 	osg::ref_ptr<osg::Fog> m_pFog;
-
-	// Destructor is protected so that people will use Release() instead,
-	//  to ensure that reference counting is respected.
-	virtual ~vtFog() {}
 };
 
 
@@ -368,14 +300,10 @@ class vtLodGrid;
 	shadow.  Only certain nodes, which are set with vtNode::SetCastShadow,
 	will cast a shadow.
  */
-class vtShadow : public vtGroup
+class vtShadow : public osgShadow::ShadowedScene, public GroupExtension
 {
 public:
 	vtShadow(const int ShadowTextureUnit);
-
-	virtual vtNode *Clone(bool bDeep = false);
-	void CloneFrom(vtShadow *xform, bool bDeep);
-	void Release();
 
 	/// Set the darkness of the shadow, from 0 to 1.  Only supported on newer 3D cards.
 	void SetDarkness(float bias);
@@ -401,11 +329,6 @@ public:
 	void SetDebugHUD(vtGroup *pGroup);
 
 protected:
-	osgShadow::ShadowedScene *m_pShadowedScene;
-
-	// Destructor is protected so that people will use Release() instead,
-	//  to ensure that reference counting is respected.
-	virtual ~vtShadow() {}
 	const int m_ShadowTextureUnit;
 };
 
@@ -417,13 +340,10 @@ protected:
  * scene graph.  To move or orient the light, make it a child of a
  * vtTransform node.  The light will illuminate the entire scene.
  */
-class vtLight : public vtNode
+class vtLight : public osg::LightSource, public GroupExtension
 {
 public:
 	vtLight();
-	virtual vtNode *Clone(bool bDeep = false);
-	void CloneFrom(const vtLight *rhs);
-	void Release();
 
 	void SetDiffuse(const RGBf &color);
 	RGBf GetDiffuse() const;
@@ -432,16 +352,7 @@ public:
 	void SetSpecular(const RGBf &color);
 	RGBf GetSpecular() const;
 
-	// provide override to catch this state
-	virtual void SetEnabled(bool bOn);
-
-	osg::LightSource *m_pLightSource;
-
 protected:
-	osg::Light *GetOsgLight() { return m_pLightSource->getLight(); }
-	const osg::Light *GetOsgLight() const { return m_pLightSource->getLight(); }
-
-	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
 	virtual ~vtLight() {}
 };
@@ -523,6 +434,7 @@ public:
 	}
 	vtGeode	*m_pGeode;
 };
+typedef osg::ref_ptr<vtMovGeom> vtMovGeomPtr;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -630,6 +542,10 @@ public:
 
 	void SetRanges(float *ranges, int nranges);
 	void SetCenter(FPoint3 &center);
+	void GetCenter(FPoint3 &center)
+	{
+		s2v(getCenter(), center);
+	}
 
 protected:
 	virtual ~vtLOD() {}
@@ -650,8 +566,6 @@ class vtCamera : public vtTransform
 {
 public:
 	vtCamera();
-	virtual vtNode *Clone(bool bDeep = false);
-	void CloneFrom(vtCamera *rhs, bool bDeep);
 
 	void SetHither(float f);
 	float GetHither() const;
@@ -678,25 +592,21 @@ protected:
 
 	virtual ~vtCamera() {}
 };
+typedef osg::ref_ptr<vtCamera> vtCameraPtr;
 
 /**
  * A HUD ("heads-up display") is a group whose whose children are transformed
  * to be drawn in window coordinates, rather than world coordinates.
  */
-class vtHUD : public vtGroup
+class vtHUD : public osg::Projection, public GroupExtension
 {
 public:
 	vtHUD(bool bPixelCoords = true);
-	void Release();
 
 	void SetWindowSize(int w, int h);
 
 protected:
-	// OSG-specific Implementation
-	osg::Projection *m_projection;
 	bool m_bPixelCoords;
-
-	virtual ~vtHUD() {}
 };
 
 /* Intersection method */
@@ -709,17 +619,16 @@ protected:
 struct vtHit
 {
 	bool operator < (const vtHit &i) const { return distance < i.distance; }
-	vtNode *node;
+	osg::Geode *geode;
 	FPoint3 point;
 	float distance;
 };
 
 typedef std::vector<vtHit> vtHitList;
-int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
+int vtIntersect(osg::Node *pTop, const FPoint3 &start, const FPoint3 &end,
 				vtHitList &hitlist, bool bLocalCoords = false, bool bNativeNodes = true);
 void SetLoadModelCallback(osg::Node *callback(osg::Transform *input));
-void vtLogGraph(vtNode *node, int indent=0);
-void vtLogNativeGraph(osg::Node *node, bool bExtents = false, bool bRefCounts = false, int indent=0);
+void vtLogGraph(osg::Node *node, bool bExtents = false, bool bRefCounts = false, int indent=0);
 
 /*@}*/	// Group sg
 

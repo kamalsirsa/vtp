@@ -121,7 +121,7 @@ vtGeode *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 
 	// Use it to show a node's bounding box
 	FBox3 bb;
-	node->GetBoundBox(bb);
+	GetNodeBoundBox(node, bb);
 	box->SetBox(bb);
 \endcode
  */

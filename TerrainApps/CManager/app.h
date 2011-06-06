@@ -16,6 +16,6 @@ public:
 	int OnExit(void);
 
 	vtTrackball	*m_pTrackball;
-	vtGroup *m_pRoot;
+	vtGroupPtr m_pRoot;
 };
 

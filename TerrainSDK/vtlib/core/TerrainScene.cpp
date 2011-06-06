@@ -99,7 +99,7 @@ void vtTerrainScene::CleanupScene()
 		vtTerrain *curr = GetTerrain(i);
 		vtGroup *group = curr->GetTopGroup();
 		if (m_pTop != NULL && group != NULL)
-			m_pTop->RemoveChild(group);
+			m_pTop->removeChild(group);
 		delete curr;
 	}
 	m_Terrains.clear();
@@ -108,9 +108,8 @@ void vtTerrainScene::CleanupScene()
 	for (unsigned int i = 0; i < m_StructObjs.GetSize(); i++)
 		delete m_StructObjs[i];
 
-	// get anything left at the top of the scene graph
-	if (m_pTop)
-		m_pTop->Release();
+	// let go of anything left at the top of the scene graph
+	m_pTop = NULL;
 
 	// free some statics
 	vtStructure3d::ReleaseSharedMaterials();
@@ -125,14 +124,14 @@ void vtTerrainScene::_CreateSky()
 	vtLight *pLight = new vtLight;
 	pLight->setName("Main Light");
 	m_pSunLight = new vtTransform;
-	m_pSunLight->AddChild(pLight);
+	m_pSunLight->addChild(pLight);
 	m_pSunLight->setName("SunLight");
-	m_pTop->AddChild(m_pSunLight);
+	m_pTop->addChild(m_pSunLight);
 
 	VTLOG(" Creating SkyDome\n");
 	m_pAtmosphereGroup = new vtGroup;
 	m_pAtmosphereGroup->setName("Atmosphere Group");
-	m_pTop->AddChild(m_pAtmosphereGroup);
+	m_pTop->addChild(m_pAtmosphereGroup);
 
 	// 'bsc' is the Bright Star Catalog
 	vtString bsc = FindFileOnPaths(vtGetDataPath(), "Sky/bsc.data");
@@ -149,7 +148,7 @@ void vtTerrainScene::_CreateSky()
 	m_pSkyDome->SetDayColors(horizon_color, azimuth_color);
 	m_pSkyDome->setName("The Sky");
 	m_pSkyDome->SetSunLight(GetSunLight());
-	m_pAtmosphereGroup->AddChild(m_pSkyDome);
+	m_pAtmosphereGroup->addChild(m_pSkyDome);
 
 	m_pSkyTrack = new vtSkyTrackEngine;
 	m_pSkyTrack->setName("Sky-Camera-Following");
@@ -268,7 +267,7 @@ void vtTerrainScene::RemoveTerrain(vtTerrain *pTerrain)
 
 		// remove from scene graph
 		vtGroup *group = pTerrain->GetTopGroup();
-		m_pTop->RemoveChild(group);
+		m_pTop->removeChild(group);
 
 		// remove from engine graph
 		vtEngine *eng = pTerrain->GetEngineGroup();
@@ -312,8 +311,8 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 
 	// switch: add the terrain's node to the scene graph
 	vtGroup *pTerrainGroup = m_pCurrentTerrain->GetTopGroup();
-	if (!m_pTop->ContainsChild(pTerrainGroup))
-		m_pTop->AddChild(pTerrainGroup);
+	if (!m_pTop->containsChild(pTerrainGroup))
+		m_pTop->addChild(pTerrainGroup);
 
 	// make the new terrain visible
 	m_pCurrentTerrain->Enable(true);
@@ -352,7 +351,7 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 		// Experimental OSG-specific code!
 		// Set up cull callback on the dynamic geometry transform node
 		vtLodGrid *pStructures = m_pCurrentTerrain->GetStructureGrid();
-		vtNode *pShadowed = m_pCurrentTerrain->GetTopGroup()->GetChild(0);
+		osg::Node *pShadowed = m_pCurrentTerrain->GetTopGroup()->getChild(0);
 		if (NULL != pShadowed)
 		{
 			bool bPaging = (pTerrain->GetStructureLodGrid() != NULL);

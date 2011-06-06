@@ -142,8 +142,7 @@ void Enviro::Shutdown()
 
 	delete m_pPlantList;
 
-	if (m_pTopDownCamera)
-		m_pTopDownCamera->Release();
+	m_pTopDownCamera = NULL;
 
 	// Clean up the rest of the TerrainScene container
 	vtGetScene()->SetRoot(NULL);
@@ -769,7 +768,7 @@ void Enviro::SetupScene1()
 	// Set some global properties
 	m_fCatenaryFactor = g_Options.m_fCatenaryFactor;
 	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
-	vtNode::s_bDisableMipmaps = g_Options.m_bDisableModelMipmaps;
+	g_bDisableMipmaps = g_Options.m_bDisableModelMipmaps;
 
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCamera = pScene->GetCamera();
@@ -830,7 +829,7 @@ void Enviro::SetupScene2()
 	m_pCursorMGeom = new vtMovGeom(pCursor);
 	m_pCursorMGeom->setName("Cursor");
 
-	GetTop()->AddChild(m_pCursorMGeom);
+	GetTop()->addChild(m_pCursorMGeom);
 	m_pTerrainPicker = new TerrainPicker();
 	m_pTerrainPicker->setName("TerrainPicker");
 	vtGetScene()->AddEngine(m_pTerrainPicker);
@@ -871,7 +870,7 @@ void Enviro::SetupScene2()
 	// This HUD group will contain geometry such as the legend
 	m_pHUD = new vtHUD;
 	m_pHUD->setName("HUD");
-	m_pRoot->AddChild(m_pHUD);
+	m_pRoot->addChild(m_pHUD);
 	m_pHUDMaterials = new vtMaterialArray;
 
 	// The HUD always has a place to put status messages to the user
@@ -1024,7 +1023,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	{
 		vtGroup *pOverlay = m_pCurrentTerrain->GetOverlay();
 		if (pOverlay)
-			m_pHUD->RemoveChild(pOverlay);
+			m_pHUD->removeChild(pOverlay);
 	}
 
 	// Inform the container that this new terrain is current
@@ -1105,7 +1104,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 
 	vtGroup *pOverlay = pTerrain->GetOverlay();
 	if (pOverlay)
-		m_pHUD->AddChild(pOverlay);
+		m_pHUD->addChild(pOverlay);
 
 	if (m_iFlightStage != 2)
 	{
@@ -1594,7 +1593,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 	// Check for structures
 	int iOffset;
 	vtStructureLayer *slay;
-	slay = pTerr->GetLayers().FindStructureFromNode(HitList.front().node->GetOsgNode(), iOffset);
+	slay = pTerr->GetLayers().FindStructureFromNode(HitList.front().geode, iOffset);
 	if (slay)
 	{
 		VTLOG("  Found structure ");
@@ -1661,7 +1660,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 			m_bSelectedStruct = false;
 	}
 	// Check for plants
-	else if (Plants.FindPlantFromNode(HitList.front().node->GetOsgNode(), iOffset))
+	else if (Plants.FindPlantFromNode(HitList.front().geode, iOffset))
 	{
 		VTLOG("  Found plant\n");
 		Plants.VisualSelect(iOffset);
@@ -1669,7 +1668,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		m_bSelectedPlant = true;
 	}
 	// Check for routes
-	else if (Routes.FindRouteFromNode(HitList.front().node->GetOsgNode(), iOffset))
+	else if (Routes.FindRouteFromNode(HitList.front().geode, iOffset))
 	{
 		VTLOG("  Found route\n");
 		m_bDragging = true;
@@ -2319,7 +2318,7 @@ void Enviro::PolygonSelectionAddPoint()
 	m_Markers.push_back(trans);
 	vtTerrain *pTerr = GetCurrentTerrain();
 	pTerr->PlantModelAtPoint(trans, g1);
-	pTerr->AddNode(trans);
+	pTerr->addNode(trans);
 
 	if (m_bLineDrawing)
 	{
@@ -2346,10 +2345,8 @@ void Enviro::PolygonSelectionClose()
 	// Hide the temporary markers which showed the vertices
 	SetupArcMesh();
 	for (unsigned int i = 0; i < m_Markers.size(); i++)
-	{
-		GetCurrentTerrain()->removeNode(m_Markers[i]->GetOsgNode());
-		m_Markers[i]->Release();
-	}
+		GetCurrentTerrain()->removeNode(m_Markers[i]);
+
 	m_Markers.clear();
 }
 
@@ -2944,7 +2941,7 @@ void Enviro::CreateGroundVehicle(const VehicleOptions &opt)
 	vtTransform *car = m_VehicleManager.CreateVehicle(opt.m_Itemname, opt.m_Color);
 	if (!car)
 		return;
-	pTerr->AddNode(car);
+	pTerr->addNode(car);
 
 	pTerr->PlantModelAtPoint(car, DPoint2(epos.x, epos.y));
 
@@ -3004,7 +3001,7 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, floa
 		vtTransform *car = m_VehicleManager.CreateVehicle(vnames[vnum], color);
 		if (car)
 		{
-			pTerrain->AddNode(car);
+			pTerrain->addNode(car);
 			pTerrain->PlantModelAtPoint(car, road_node->m_p);
 
 			float fSpeed = 60.0f;	// kmph

@@ -82,7 +82,7 @@ bool vtItem3d::LoadModels()
 			pTrans->addChild(pNode);
 			pTrans->Identity();
 			pTrans->Scale3(model->m_scale, model->m_scale, model->m_scale);
-			pNode = pTrans->GetOsgNode();
+			pNode = pTrans;
 		}
 
 		if (models > 1)
@@ -141,8 +141,6 @@ vtContentManager3d::vtContentManager3d()
 
 void vtContentManager3d::ReleaseContents()
 {
-	if (m_pGroup)
-		m_pGroup->Release();
 	m_pGroup = NULL;
 }
 

@@ -78,7 +78,7 @@ void NevadaTerrain::CreateCustomCulture()
 	pEE->setName("Epoch Engine");
 	pEE->SetTarget(vtGetScene()->GetCamera());
 	AddEngine(pEE);
-//	AddNode(pEE->m_pSprite);
+//	addNode(pEE->m_pSprite);
 
 #if 0
 	// Buildings
@@ -119,7 +119,7 @@ void NevadaTerrain::CreateWater()
 	geode = CreatePlaneGeom(m_pMats, id, 0, 2, 1, org, org+size, 125.0f, 10);
 	m_pWaterShape = new vtMovGeom(geode);
 	m_pWaterShape->setName("WaterSurface");
-	AddNode(m_pWaterShape);
+	addNode(m_pWaterShape);
 
 	id = m_pMats->AddTextureMaterial2(str,
 		false, true,	// cull, light
@@ -131,7 +131,7 @@ void NevadaTerrain::CreateWater()
 	m_pWaterShape2 = new vtMovGeom(geode);
 	m_pWaterShape2->setName("WaterSurface2");
 	m_pWaterShape2->Translate1(FPoint3(0.0f, .01f, 0.0f));
-	AddNode(m_pWaterShape2);
+	addNode(m_pWaterShape2);
 }
 
 
@@ -182,7 +182,7 @@ void NevadaTerrain::CreateDetailTextures()
 void NevadaTerrain::CreatePast()
 {
 	m_pPast = new vtGroup();
-	AddNode(m_pPast);
+	addNode(m_pPast);
 	m_pPast->setName("Past");
 	m_pPast->SetEnabled(false);
 
@@ -312,7 +312,7 @@ void NevadaTerrain::CreatePresent()
 {
 	m_pPresent = new vtGroup();
 
-	AddNode(m_pPresent);
+	addNode(m_pPresent);
 	m_pPresent->setName("Present");
 	m_pPresent->SetEnabled(false);
 
@@ -396,7 +396,7 @@ void NevadaTerrain::CreateFuture()
 {
 	m_pFuture = new vtGroup();
 
-	AddNode(m_pFuture);
+	addNode(m_pFuture);
 	m_pFuture->setName("Future");
 	m_pFuture->SetEnabled(false);
 }

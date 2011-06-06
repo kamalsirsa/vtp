@@ -36,12 +36,12 @@ using namespace std;
 class MyTreeItemData : public wxTreeItemData
 {
 public:
-	MyTreeItemData(vtNode *pNode, vtEngine *pEngine)
+	MyTreeItemData(osg::Node *pNode, vtEngine *pEngine)
 	{
 		m_pNode = pNode;
 		m_pEngine = pEngine;
 	}
-	vtNode *m_pNode;
+	osg::Node *m_pNode;
 	vtEngine *m_pEngine;
 };
 
@@ -130,7 +130,7 @@ void SceneGraphDlg::RefreshTreeContents()
 
 	// Fill in the tree with nodes
 	m_bFirst = true;
-	vtNode *pRoot = scene->GetRoot();
+	vtGroup *pRoot = scene->GetRoot();
 	if (pRoot) AddNodeItemsRecursively(wxTreeItemId(), pRoot, 0);
 
 	wxTreeItemId hRoot = m_pTree->GetRootItem();
@@ -146,7 +146,7 @@ void SceneGraphDlg::RefreshTreeContents()
 
 
 void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
-										vtNode *pNode, int depth)
+											osg::Node *pNode, int depth)
 {
 	wxString str;
 	int nImage;
@@ -186,10 +186,10 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		str = _("Other");
 		nImage = 8;
 	}
-	if (pNode->getName())
+	if (pNode->getName() != "")
 	{
 		str += _T(" \"");
-		str += wxString::FromAscii(pNode->getName());
+		str += wxString::FromAscii(pNode->getName().c_str());
 		str += _T("\"");
 	}
 
@@ -244,7 +244,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	vtGroup *pGroup = dynamic_cast<vtGroup*>(pNode);
 	if (pGroup)
 	{
-		int num_children = pGroup->GetNumChildren();
+		int num_children = pGroup->getNumChildren();
 		if (num_children > 200)
 		{
 			str.Printf(_("(%d children)"), num_children);
@@ -254,7 +254,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		{
 			for (int i = 0; i < num_children; i++)
 			{
-				vtNode *pChild = pGroup->GetChild(i);
+				osg::Node *pChild = pGroup->getChild(i);
 				if (pChild)
 					AddNodeItemsRecursively(hNewItem, pChild, depth+1);
 				else
@@ -279,15 +279,15 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 		str = _T("unnamed");
 
 	int targets = pEng->NumTargets();
-	vtTarget *target = pEng->GetTarget();
+	osg::Referenced *target = pEng->GetTarget();
 	if (target)
 	{
 		str += _T(" -> ");
-		vtNode *node = dynamic_cast<vtNode*>(target);
+		osg::Node *node = dynamic_cast<osg::Node*>(target);
 		if (node)
 		{
 			str += _T("\"");
-			str += wxString::FromAscii(node->getName());
+			str += wxString::FromAscii(node->getName().c_str());
 			str += _T("\"");
 		}
 		else
@@ -325,7 +325,7 @@ void SceneGraphDlg::OnZoomTo( wxCommandEvent &event )
 	if (m_pSelectedNode)
 	{
 		FSphere sph;
-		m_pSelectedNode->GetBoundSphere(sph, true);	// global bounds
+		GetBoundSphere(m_pSelectedNode, sph, true);	// global bounds
 
 		// a bit back to make sure whole volume of bounding sphere is in view
 		vtCamera *pCam = vtGetScene()->GetCamera();
@@ -343,7 +343,7 @@ void SceneGraphDlg::OnEnabled( wxCommandEvent &event )
 	if (m_pSelectedEngine)
 		m_pSelectedEngine->SetEnabled(m_pEnabled->GetValue());
 	if (m_pSelectedNode)
-		m_pSelectedNode->SetEnabled(m_pEnabled->GetValue());
+		SetEnabled(m_pSelectedNode, m_pEnabled->GetValue());
 }
 
 void SceneGraphDlg::OnTreeSelChanged( wxTreeEvent &event )
@@ -364,7 +364,7 @@ void SceneGraphDlg::OnTreeSelChanged( wxTreeEvent &event )
 	if (data && data->m_pNode)
 	{
 		m_pSelectedNode = data->m_pNode;
-		m_pEnabled->SetValue(m_pSelectedNode->GetEnabled());
+		m_pEnabled->SetValue(NodeIsEnabled(m_pSelectedNode));
 		m_pZoomTo->Enable(true);
 	}
 	else

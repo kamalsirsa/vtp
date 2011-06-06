@@ -14,7 +14,7 @@ vtEngine::vtEngine() : vtEnabledBase()
 	m_pWindow = NULL;
 }
 
-vtTarget *vtEngine::GetTarget(unsigned int which)
+osg::Referenced *vtEngine::GetTarget(unsigned int which)
 {
 	if (which < NumTargets())
 		return m_Targets.GetAt(which);
@@ -22,7 +22,7 @@ vtTarget *vtEngine::GetTarget(unsigned int which)
 		return NULL;
 }
 
-void vtEngine::RemoveTarget(vtTarget *ptr)
+void vtEngine::RemoveTarget(osg::Referenced *ptr)
 {
 	int index = m_Targets.Find(ptr);
 	if (index != -1)

@@ -202,7 +202,6 @@ void vtRoute::_DeleteStruct(int iNode)
 	if (node->m_pTrans)
 	{
 		m_pTheTerrain->RemoveNodeFromStructGrid(node->m_pTrans);
-		node->m_pTrans->Release();
 		node->m_pTrans = NULL;
 	}
 }

@@ -543,10 +543,8 @@ void vtFrame::ModelNameChanged(vtModel *model)
 {
 	vtTransform *trans = m_nodemap[model];
 	if (trans)
-	{
-		trans->Release();
 		m_nodemap[model] = NULL;
-	}
+
 	model->m_attempted_load = false;
 
 	DisplayCurrentModel();
@@ -638,20 +636,17 @@ void vtFrame::OnItemRemoveModel(wxCommandEvent& event)
 	UpdateItemGroup(m_pCurrentItem);
 
 	// free memory
-	vtNode *node = m_nodemap[previous];
-	if (node)
-		node->Release();
 	m_nodemap.erase(previous);
 }
 
 void vtFrame::OnItemModelProps(wxCommandEvent& event)
 {
 	vtModel *mod = m_pCurrentModel;
-	vtNode *node = m_nodemap[mod];
+	osg::Node *node = m_nodemap[mod];
 	if (!node)
 		return;
 	FBox3 box;
-	node->GetBoundBox(box);
+	GetNodeBoundBox(node, box);
 	wxString str, s;
 	s.Printf(_T("Extents:\n  %f %f (width %f)\n  %f %f (height %f)\n  %f %f (depth %f)\n"),
 		box.min.x, box.max.x, box.max.x - box.min.x,
@@ -660,7 +655,7 @@ void vtFrame::OnItemModelProps(wxCommandEvent& event)
 	str += s;
 
 	vtPrimInfo info;
-	node->GetPrimCounts(info);
+	GetNodePrimCounts(node, info);
 	s.Printf(_T("\nPrimitives:\n"));
 	str += s;
 	s.Printf(_T("  Vertices: %d\n"), info.MemVertices);
@@ -699,14 +694,14 @@ void vtFrame::OnUpdateItemModelExists(wxUpdateUIEvent& event)
 void vtFrame::OnItemRotModel(wxCommandEvent& event)
 {
 	vtModel *mod = m_pCurrentModel;
-	vtNode *node = m_nodemap[mod];
+	osg::Node *node = m_nodemap[mod];
 	// this node is actually the scaling transform; we want its child
 	vtTransform *transform = dynamic_cast<vtTransform*>(node);
 	if (!transform)
 		return;
-	vtNode *node2 = transform->GetChild(0);
+	osg::Node *node2 = transform->getChild(0);
 
-	node2->ApplyVertexRotation(FPoint3(1,0,0), -PID2f);
+	ApplyVertexRotation(node2, FPoint3(1,0,0), -PID2f);
 }
 
 #include "vtlib/core/vtSOG.h"
@@ -737,7 +732,7 @@ void vtFrame::OnItemSaveSOG(wxCommandEvent& event)
 	vtTransform *trans = m_nodemap[m_pCurrentModel];
 	if (!trans)
 		return;
-	vtGeode *geode = dynamic_cast<vtGeode*>(trans->GetChild(0));
+	vtGeode *geode = dynamic_cast<vtGeode*>(trans->getChild(0));
 	if (!geode)
 		return;
 
@@ -759,7 +754,7 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 	vtTransform *trans = m_nodemap[m_pCurrentModel];
 	if (!trans)
 		return;
-	vtNode *node = dynamic_cast<vtNode*>(trans->GetChild(0));
+	osg::Node *node = dynamic_cast<osg::Node*>(trans->getChild(0));
 	if (!node)
 		return;
 
@@ -772,18 +767,17 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 
 	// OSG/IVE has a different axis convention that VTLIB does (Z up, not Y up)
 	//  So we must rotate before saving, then rotate back again
-	node->ApplyVertexRotation(FPoint3(1,0,0), PID2f);
+	ApplyVertexRotation(node, FPoint3(1,0,0), PID2f);
 
-	osg::Node *onode = node->GetOsgNode();
 	osgDB::ReaderWriter::WriteResult result;
 #if (OPENSCENEGRAPH_MAJOR_VERSION==2 && OPENSCENEGRAPH_MINOR_VERSION>=2) || OPENSCENEGRAPH_MAJOR_VERSION>2
-	result = osgDB::Registry::instance()->writeNode(*onode, std::string((const char *)fname), NULL);
+	result = osgDB::Registry::instance()->writeNode(*node, std::string((const char *)fname), NULL);
 #else
-	result = osgDB::Registry::instance()->writeNode(*onode, (const char *)fname);
+	result = osgDB::Registry::instance()->writeNode(*node, (const char *)fname);
 #endif
 
 	// Rotate back again
-	node->ApplyVertexRotation(FPoint3(1,0,0), -PID2f);
+	ApplyVertexRotation(node, FPoint3(1,0,0), -PID2f);
 
 	CloseProgressDialog();
 	if (result.notHandled())
@@ -800,7 +794,7 @@ void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
 	vtTransform *trans = m_nodemap[m_pCurrentModel];
 	if (!trans)
 		return;
-	vtNode *node = dynamic_cast<vtNode*>(trans->GetChild(0));
+	osg::Node *node = dynamic_cast<osg::Node*>(trans->getChild(0));
 	if (!node)
 		return;
 
@@ -813,19 +807,18 @@ void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
 
 	// OSG/IVE has a different axis convention that VTLIB does (Z up, not Y up)
 	//  So we must rotate before saving, then rotate back again
-	node->ApplyVertexRotation(FPoint3(1,0,0), PID2f);
+	ApplyVertexRotation(node, FPoint3(1,0,0), PID2f);
 
-	osg::Node *onode = node->GetOsgNode();
 	osgDB::ReaderWriter::WriteResult result;
 	CloseProgressDialog();
 #if (OPENSCENEGRAPH_MAJOR_VERSION==2 && OPENSCENEGRAPH_MINOR_VERSION>=2) || OPENSCENEGRAPH_MAJOR_VERSION>2
-	result = osgDB::Registry::instance()->writeNode(*onode, std::string((const char *)fname), NULL);
+	result = osgDB::Registry::instance()->writeNode(*node, std::string((const char *)fname), NULL);
 #else
-	result = osgDB::Registry::instance()->writeNode(*onode, (const char *)fname);
+	result = osgDB::Registry::instance()->writeNode(*node, (const char *)fname);
 #endif
 
 	// Rotate back again
-	node->ApplyVertexRotation(FPoint3(1,0,0), -PID2f);
+	ApplyVertexRotation(node, FPoint3(1,0,0), -PID2f);
 
 	if (result.notHandled())
 		wxMessageBox(_("File type not handled.\n"));
@@ -846,7 +839,7 @@ void vtFrame::OnUpdateItemSaveSOG(wxUpdateUIEvent& event)
 		enable = false;
 	if (enable && !(trans = m_nodemap[m_pCurrentModel]))
 		enable = false;
-	if (enable && !(geode = dynamic_cast<vtGeode*>(trans->GetChild(0))))
+	if (enable && !(geode = dynamic_cast<vtGeode*>(trans->getChild(0))))
 		enable = false;
 	event.Enable(enable);
 }
@@ -982,7 +975,7 @@ vtModel *vtFrame::AddModel(const wxString &fname_in)
 	vtModel *new_model = new vtModel;
 	new_model->m_filename = fname;
 
-	vtNode *node = AttemptLoad(new_model);
+	osg::Node *node = AttemptLoad(new_model);
 	if (!node)
 	{
 		delete new_model;
@@ -1102,7 +1095,7 @@ ItemGroup *vtFrame::GetItemGroup(vtItem *item)
 
 		vtScene *pScene = vtGetScene();
 		vtGroup *pRoot = pScene->GetRoot();
-		pRoot->AddChild(ig->GetTop());
+		pRoot->addChild(ig->GetTop());
 	}
 	return ig;
 }

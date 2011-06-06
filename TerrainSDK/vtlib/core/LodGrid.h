@@ -38,14 +38,10 @@ public:
 	vtLodGrid();
 	virtual void Setup(const FPoint3 &origin, const FPoint3 &size,
 		int iDimension, float fLODDistance, vtHeightField3d *pHF = NULL) = 0;
-	void Release() = 0;
 
 	// methods
-	bool AppendToGrid(vtTransform *pTrans);
-	bool AppendToGrid(vtGeode *pGeode);
-	void RemoveFromGrid(vtTransform *pTNode);
-	void RemoveFromGrid(vtGeode *pModel);
-	void RemoveNodeFromGrid(vtNode *pNode);
+	bool AddToGrid(osg::Node *pNode);
+	void RemoveFromGrid(osg::Node *pNode);
 
 	virtual void SetDistance(float fLODDistance) = 0;
 	float GetDistance() { return m_fLODDistance; }
@@ -61,9 +57,9 @@ protected:
 	float m_fLODDistance;
 	vtHeightField3d *m_pHeightField;
 
-	virtual vtGroup *FindCellParent(const FPoint3 &point) = 0;
+	virtual osg::Group *FindCellParent(const FPoint3 &point) = 0;
 	virtual void AllocateCell(int a, int b) = 0;
-	virtual vtGroup *GetCell(int a, int b) = 0;
+	virtual osg::Group *GetCell(int a, int b) = 0;
 	void DetermineCell(const FPoint3 &pos, int &a, int &b);
 };
 
@@ -78,9 +74,10 @@ class vtSimpleLodGrid : public vtLodGrid
 {
 public:
 	vtSimpleLodGrid();
+	~vtSimpleLodGrid();
+
 	void Setup(const FPoint3 &origin, const FPoint3 &size,
 		int iDimension, float fLODDistance, vtHeightField3d *pHF = NULL);
-	void Release();
 
 	// methods
 	void SetDistance(float fLODDistance);
@@ -88,9 +85,9 @@ public:
 protected:
 	vtLOD **m_pCells;
 
-	vtGroup *FindCellParent(const FPoint3 &point);
+	osg::Group *FindCellParent(const FPoint3 &point);
 	void AllocateCell(int a, int b);
-	vtGroup *GetCell(int a, int b);
+	osg::Group *GetCell(int a, int b);
 };
 
 /*@}*/  // sg

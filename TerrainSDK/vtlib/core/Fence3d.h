@@ -1,7 +1,7 @@
 //
 // Fence3d.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -51,7 +51,7 @@ protected:
 
 	void	AddFenceMeshes(vtHeightField3d *pHeightField);
 
-	vtGeode		*m_pFenceGeom;
+	vtGeodePtr	m_pFenceGeom;
 	vtMesh		*m_pHighlightMesh;	// The wireframe highlight
 	bool		m_bBuilt;
 	FLine3		m_Posts3d;

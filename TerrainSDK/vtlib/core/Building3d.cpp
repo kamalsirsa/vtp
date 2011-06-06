@@ -1251,7 +1251,6 @@ void vtBuilding3d::DeleteNode()
 			m_pHighlight = NULL;
 		}
 		DestroyGeometry();
-		m_pContainer->Release();
 		m_pContainer = NULL;
 	}
 }

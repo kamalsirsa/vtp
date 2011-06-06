@@ -329,8 +329,8 @@ protected:
 	DLine2		m_distance_path;
 
 	// view and navigation
-	vtCamera	*m_pNormalCamera;
-	vtCamera	*m_pTopDownCamera;
+	vtCameraPtr	m_pNormalCamera;
+	vtCameraPtr	m_pTopDownCamera;
 	bool		m_bTopDown;
 	vtEngine	*m_pNavEngines;
 

@@ -22,10 +22,10 @@ public:
 
 	vtGeode	*m_pHighlight;	// The wireframe highlight
 
-	vtNode *m_pFrontLeft;
-	vtNode *m_pFrontRight;
-	vtNode *m_pRearLeft;
-	vtNode *m_pRearRight;
+	osg::Node *m_pFrontLeft;
+	osg::Node *m_pFrontRight;
+	osg::Node *m_pRearLeft;
+	osg::Node *m_pRearRight;
 };
 
 class VehicleManager

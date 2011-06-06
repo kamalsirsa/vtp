@@ -132,7 +132,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	VTLOG("   Creating Dome Nodes\n");
 	m_pCelestial = new vtTransform;
 	m_pCelestial->setName("Celestial Sphere");
-	AddChild(m_pCelestial);
+	addChild(m_pCelestial);
 
 	m_pDomeGeom = new vtGeode;
 	m_pDomeGeom->setName("SkyDomeGeom");
@@ -223,7 +223,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		SunMesh->TransformVertices(trans);
 
 		// The sun is attached to the celestial sphere which rotates
-		m_pCelestial->AddChild(m_pSunGeom);
+		m_pCelestial->addChild(m_pSunGeom);
 	}
 
 	// Create the vtStarDome
@@ -232,7 +232,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		m_pStarDome = new vtStarDome;
 		m_pStarDome->Create(starfile, 2.0f, moon_texture);
 		m_pStarDome->setName("StarDome");
-		m_pCelestial->AddChild(m_pStarDome);
+		m_pCelestial->addChild(m_pStarDome);
 	}
 }
 
@@ -258,12 +258,12 @@ void vtSkyDome::CreateMarkers()
 	// Put green marker on alt-axi location of sun.
 	m_pGreenMarker = CreateMarker(m_pMats, RGBf(0,1,0));
 	m_pGreenMarker->setName("Green Marker");
-	AddChild(m_pGreenMarker);
+	addChild(m_pGreenMarker);
 
 	// Put red marker on the sun's position on the celestial sphere.
 	m_pRedMarker = CreateMarker(m_pMats, RGBf(1,0,0));
 	m_pRedMarker->setName("Red Marker");
-	m_pCelestial->AddChild(m_pRedMarker);
+	m_pCelestial->addChild(m_pRedMarker);
 
 	// Create celestial sphere wifreframe, to aid in development and testing
 	FSphere sph(FPoint3(0,0,0), 0.99);
@@ -455,7 +455,7 @@ void vtSkyDome::UpdateSunLight()
 	}
 
 	color *= intensity;
-	vtLight *pLight = (vtLight *) m_pSunLight->GetChild(0);
+	vtLight *pLight = (vtLight *) m_pSunLight->getChild(0);
 	if (pLight)
 	{
 		pLight->SetDiffuse(color);
@@ -727,7 +727,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 		trans.Translate(FPoint3(0.0f, 0.90f, 0.0f));
 		MoonMesh->TransformVertices(trans);
 
-		AddChild(m_pMoonGeom);
+		addChild(m_pMoonGeom);
 	}
 }
 

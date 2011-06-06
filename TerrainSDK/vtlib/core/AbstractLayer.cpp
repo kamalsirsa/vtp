@@ -33,8 +33,8 @@ vtAbstractLayer::~vtAbstractLayer()
 	ReleaseGeometry();
 	if (pContainer)
 	{
-		pContainer->GetParent()->RemoveChild(pContainer);
-		pContainer->Release();
+		pContainer->getParent(0)->removeChild(pContainer);
+		pContainer = NULL;
 	}
 	delete pMultiTexture;
 	delete pSet;
@@ -107,7 +107,7 @@ void vtAbstractLayer::CreateContainer()
 
 	// Abstract geometry goes into the scale features group, so it will be
 	//  scaled up/down with the vertical exaggeration.
-	m_pTerr->GetScaledFeatures()->AddChild(pContainer);
+	m_pTerr->GetScaledFeatures()->addChild(pContainer);
 }
 
 /**
@@ -164,7 +164,7 @@ void vtAbstractLayer::CreateGeomGroup()
 	// create geometry group to contain all the meshes
 	pGeomGroup = new vtGroup;
 	pGeomGroup->setName("Geometry");
-	pContainer->AddChild(pGeomGroup);
+	pContainer->addChild(pGeomGroup);
 
 	// Create materials.
 	pGeomMats = new vtMaterialArray;
@@ -196,7 +196,7 @@ void vtAbstractLayer::CreateLabelGroup()
 {
 	pLabelGroup = new vtGroup;
 	pLabelGroup->setName("Labels");
-	pContainer->AddChild(pLabelGroup);
+	pContainer->addChild(pLabelGroup);
 
 	// If they specified a font name, use it
 	vtString fontfile;
@@ -671,7 +671,7 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 	m_pTerr->GetBillboardEngine()->AddTarget(bb);
 
 	bb->SetTrans(fp3);
-	pLabelGroup->AddChild(bb);
+	pLabelGroup->addChild(bb);
 
 	// Track what was created
 	vtVisual *viz = GetViz(pSet->GetFeature(iIndex));
@@ -746,14 +746,12 @@ void vtAbstractLayer::ReleaseGeometry()
 	}
 	if (pGeomGroup)
 	{
-		pContainer->RemoveChild(pGeomGroup);
-		pGeomGroup->Release();
+		pContainer->removeChild(pGeomGroup);
 		pGeomGroup = NULL;
 	}
 	if (pLabelGroup)
 	{
-		pContainer->RemoveChild(pLabelGroup);
-		pLabelGroup->Release();
+		pContainer->removeChild(pLabelGroup);
 		pLabelGroup = NULL;
 	}
 }
@@ -774,8 +772,7 @@ void vtAbstractLayer::ReleaseFeatureGeometry(vtFeature *f)
 	}
 	if (v->m_xform)
 	{
-		pLabelGroup->RemoveChild(v->m_xform);
-		v->m_xform->Release();
+		pLabelGroup->removeChild(v->m_xform);
 
 		// labels might be targets of the billboard engine
 		vtEngine *bbe = m_pTerr->GetBillboardEngine();

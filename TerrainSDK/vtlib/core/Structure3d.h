@@ -20,7 +20,6 @@
 
 class vtBuilding3d;
 class vtFence3d;
-class vtNode;
 class vtTerrain;
 class vtTransform;
 
@@ -113,7 +112,7 @@ protected:
 	{
 		return s_MaterialDescriptors.GetMatArray();
 	}
-	vtTransform	*m_pContainer;	// The transform which is used to position the object
+	vtTransformPtr m_pContainer;	// The transform which is used to position the object
 
 protected:
 	float ColorDiff(const RGBi &c1, const RGBi &c2);

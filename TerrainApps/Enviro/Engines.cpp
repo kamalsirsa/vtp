@@ -657,7 +657,7 @@ MapOverviewEngine::MapOverviewEngine()
 	m_pMapGroup = new vtGroup;
 	m_pMapGroup->setName("MapOverview group");
 
-	vtGetScene()->GetHUD()->AddChild(m_pMapGroup);
+	vtGetScene()->GetHUD()->addChild(m_pMapGroup);
 	CreateMapView();
 }
 
@@ -822,7 +822,7 @@ void MapOverviewEngine::CreateArrow()
 
 	arrowGeom->AddMesh(mesh,0);
 
-	m_pMapGroup->AddChild(m_pArrow);
+	m_pMapGroup->addChild(m_pArrow);
 }
 
 void MapOverviewEngine::RefreshMapView()

@@ -1,7 +1,7 @@
 //
 // PagedLodGrid.cpp
 //
-// Copyright (c) 2007-2008 Virtual Terrain Project
+// Copyright (c) 2007-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,44 +16,19 @@
 
 #include <algorithm>	// for sort
 
-vtPagedStructureLOD::vtPagedStructureLOD() : vtGroup(true)
+vtPagedStructureLOD::vtPagedStructureLOD() : vtLOD()
 {
 	m_iNumConstructed = 0;
 	m_bAddedToQueue = false;
 
-	m_pNativeLOD = new PagedNativeLOD;
-	m_pNativeLOD->SetCenter(FPoint3(0, 0, 0));
+	SetCenter(FPoint3(0, 0, 0));
 
-	SetOsgGroup(m_pNativeLOD);
-}
-
-void vtPagedStructureLOD::Release()
-{
-	// Check if this node is no longer referenced.
-	if (m_pNode->referenceCount() == 1)
-		m_pNativeLOD = NULL;
-
-	vtGroup::Release();
+	SetOsgGroup(this);
 }
 
 void vtPagedStructureLOD::SetRange(float range)
 {
 	m_fRange = range;
-}
-
-void vtPagedStructureLOD::SetCenter(const FPoint3 &center)
-{
-	m_pNativeLOD->SetCenter(center);
-}
-
-void vtPagedStructureLOD::SetRadius(float r)
-{
-	m_pNativeLOD->SetRadius(r);
-}
-
-void vtPagedStructureLOD::GetCenter(FPoint3 &center)
-{
-	m_pNativeLOD->GetCenter(center);
 }
 
 /**
@@ -160,28 +135,14 @@ void vtPagedStructureLodGrid::Setup(const FPoint3 &origin, const FPoint3 &size,
 	m_pHeightField = pHF;
 }
 
-void vtPagedStructureLodGrid::Release()
+void vtPagedStructureLodGrid::Cleanup()
 {
 	// get rid of children first
-	vtPagedStructureLOD *lod;
-	int a, b;
-	for (a = 0; a < m_dim; a++)
-	{
-		for (b = 0; b < m_dim; b++)
-		{
-			lod = m_pCells[CellIndex(a,b)];
-			if (lod != NULL)
-			{
-				RemoveChild(lod);
-				lod->Release();
-			}
-		}
-	}
+	removeChildren(0, getNumChildren());
+
+	// free all our pointers to them
 	free(m_pCells);
 	m_pCells = NULL;
-
-	// now self-destruct
-	vtGroup::Release();
 }
 
 
@@ -214,13 +175,13 @@ void vtPagedStructureLodGrid::AllocateCell(int a, int b)
 	//  the minimal bounding sphere
 	radius *= 1.6f;
 
-	m_pCells[i]->SetRadius(radius);
+	m_pCells[i]->setRadius(radius);
 	m_pCells[i]->SetGrid(this);
 
-	AddChild(m_pCells[i]);
+	addChild(m_pCells[i]);
 }
 
-vtGroup *vtPagedStructureLodGrid::GetCell(int a, int b)
+osg::Group *vtPagedStructureLodGrid::GetCell(int a, int b)
 {
 	int i = CellIndex(a, b);
 	return m_pCells[i];
@@ -241,7 +202,7 @@ vtPagedStructureLOD *vtPagedStructureLodGrid::FindPagedCellParent(const FPoint3 
 	return m_pCells[i];
 }
 
-vtGroup *vtPagedStructureLodGrid::FindCellParent(const FPoint3 &point)
+osg::Group *vtPagedStructureLodGrid::FindCellParent(const FPoint3 &point)
 {
 	return FindPagedCellParent(point);
 }
@@ -318,7 +279,7 @@ void vtPagedStructureLodGrid::DeconstructCell(vtPagedStructureLOD *pLOD)
 	{
 		StructureRef &ref = refs[i];
 		vtStructure3d *str3d = ref.pArray->GetStructure3d(ref.iIndex);
-		osg::Node *node = str3d->GetContainer()->GetOsgNode();
+		osg::Node *node = str3d->GetContainer();
 		if (!node)
 			node = str3d->GetGeom();
 		if (!node)
@@ -361,7 +322,7 @@ void vtPagedStructureLodGrid::CullFarawayStructures(const FPoint3 &CamPos,
 		for (int b = 0; b < m_dim; b++)
 		{
 			vtPagedStructureLOD *lod = m_pCells[CellIndex(a,b)];
-			if (lod) m_iTotalConstructed += lod->GetNumChildren();
+			if (lod) m_iTotalConstructed += lod->getNumChildren();
 		}
 	}
 	// If we have too many or have items in the queue
@@ -531,7 +492,7 @@ void vtPagedStructureLodGrid::ConstructByIndex(vtPagedStructureLOD *pLOD,
 		vtStructure3d *str3d = pArray->GetStructure3d(iStructIndex);
 		vtTransform *pTrans = str3d->GetContainer();
 		if (pTrans)
-			pLOD->AddChild(pTrans);
+			pLOD->addChild(pTrans);
 		else
 		{
 			vtGeode *pGeode = str3d->GetGeom();

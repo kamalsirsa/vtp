@@ -123,44 +123,31 @@ vtTerrain::~vtTerrain()
 		m_pElevGrid.release();
 
 	if (m_pRoadGroup)
-	{
-		m_pTerrainGroup->RemoveChild(m_pRoadGroup);
-		m_pRoadGroup->Release();
-	}
+		m_pTerrainGroup->removeChild(m_pRoadGroup);
+
 	if (m_pHorizonGeom)
-	{
-		m_pTerrainGroup->RemoveChild(m_pHorizonGeom);
-		m_pHorizonGeom->Release();
-	}
+		m_pTerrainGroup->removeChild(m_pHorizonGeom);
+
 	if (m_pOceanGeom)
-	{
-		m_pTerrainGroup->RemoveChild(m_pOceanGeom);
-		m_pOceanGeom->Release();
-	}
+		m_pTerrainGroup->removeChild(m_pOceanGeom);
+
 	if (m_pStructGrid)
-	{
-		m_pTerrainGroup->RemoveChild(m_pStructGrid);
-		m_pStructGrid->Release();
-	}
+		m_pTerrainGroup->removeChild(m_pStructGrid);
+
 	if (m_pVegGrid)
-	{
-		m_pTerrainGroup->RemoveChild(m_pVegGrid);
-		m_pVegGrid->Release();
-	}
+		m_pTerrainGroup->removeChild(m_pVegGrid);
+
 	if (m_pDynGeom)
 		m_pDynGeomScale->removeChild(m_pDynGeom);
 
 	if (m_pDynGeomScale)
-	{
-		m_pTerrainGroup->RemoveChild(m_pDynGeomScale);
-		m_pDynGeomScale->Release();
-	}
+		m_pTerrainGroup->removeChild(m_pDynGeomScale);
+
 	if (m_pTiledGeom)
 		m_pDynGeomScale->removeChild(m_pTiledGeom);
 
-	// This will mop up anything remaining in the terrain's scenegraph
-	if (m_pContainerGroup != NULL)
-		m_pContainerGroup->Release();
+	// Release anything remaining in the terrain's scenegraph
+	m_pContainerGroup = NULL;
 
 	VTLOG1(" done.\n");
 }
@@ -301,7 +288,7 @@ void vtTerrain::_CreateRoads()
 	bool bDoTexture = m_Params.GetValueBool(STR_TEXROADS);
 	m_pRoadGroup = m_pRoadMap->GenerateGeometry(bDoTexture, m_progress_callback);
 	m_pRoadGroup->SetCastShadow(false);
-	m_pTerrainGroup->AddChild(m_pRoadGroup);
+	m_pTerrainGroup->addChild(m_pRoadGroup);
 
 	if (m_Params.GetValueBool(STR_ROADCULTURE))
 		m_pRoadMap->GenerateSigns(m_pStructGrid);
@@ -824,7 +811,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 	m_pDynGeomScale->Scale3(spacing.x, m_fVerticalExag, -spacing.y);
 
 	m_pDynGeomScale->addChild(m_pDynGeom);
-	m_pTerrainGroup->AddChild(m_pDynGeomScale);
+	m_pTerrainGroup->addChild(m_pDynGeomScale);
 
 	// the Dynamic terrain will be the heightfield used at runtime, so extend
 	//  it with the terrain's culture
@@ -906,6 +893,8 @@ bool vtTerrain::AddFence(vtFence3d *fen)
 
 void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
 {
+	VTLOG("AddFencepoint %.1lf %.1lf\n", epos.x, epos.y);
+
 	// Adding a fence point might change the fence extents such that it moves
 	// to a new LOD cell.  So, remove it from the LOD grid, add the point,
 	// then add it back.
@@ -1013,7 +1002,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 		m_pOceanGeom = new vtMovGeom(pOceanGeom);
 		m_pOceanGeom->setName("Ocean plane");
 		m_pOceanGeom->SetCastShadow(false);
-		m_pTerrainGroup->AddChild(m_pOceanGeom);
+		m_pTerrainGroup->addChild(m_pOceanGeom);
 	}
 	if (bHorizon)
 	{
@@ -1044,7 +1033,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 		m_pHorizonGeom = new vtMovGeom(pHorizonGeom);
 		m_pHorizonGeom->setName("Horizon plane");
 		m_pHorizonGeom->SetCastShadow(false);
-		m_pTerrainGroup->AddChild(m_pHorizonGeom);
+		m_pTerrainGroup->addChild(m_pHorizonGeom);
 	}
 }
 
@@ -1272,13 +1261,11 @@ int vtTerrain::DeleteSelectedStructures()
 				m_pPagedStructGrid->RemoveFromGrid(structures, i);
 
 			vtStructure3d *str3d = structures->GetStructure3d(i);
-			vtNode *node = str3d->GetContainer();
-			if (node)
-				RemoveNodeFromStructGrid(node);
-			else
-			{
-				vtGeode *geode = str3d->GetGeom();
-			}
+			osg::Node *node = str3d->GetContainer();
+			if (!node)
+				node = str3d->GetGeom();
+
+			RemoveNodeFromStructGrid(node);
 
 			// if there are any engines pointing to this node, inform them
 			vtGetScene()->TargetRemoved(node);
@@ -1507,7 +1494,7 @@ void vtTerrain::_SetupVegGrid(float fLODDistance)
 	m_pVegGrid->Setup(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
 	m_pVegGrid->setName("Vegetation LOD Grid");
 	m_pVegGrid->SetCastShadow(false);
-	m_pTerrainGroup->AddChild(m_pVegGrid);
+	m_pTerrainGroup->addChild(m_pVegGrid);
 }
 
 // create vegetation
@@ -1608,7 +1595,7 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 
 	m_pStructGrid->Setup(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
 	m_pStructGrid->setName("Structures LOD Grid");
-	m_pTerrainGroup->AddChild(m_pStructGrid);
+	m_pTerrainGroup->addChild(m_pStructGrid);
 }
 
 void vtTerrain::_CreateStructures()
@@ -2030,28 +2017,28 @@ void vtTerrain::SetBgColor(const RGBf &color)
 void vtTerrain::ConnectFogShadow(bool bFog, bool bShadow)
 {
 	// Add the fog, or shadow, into the scene graph between container and terrain
-	while (m_pContainerGroup->GetNumChildren() > 0)
-		m_pContainerGroup->RemoveChild(m_pContainerGroup->GetChild(0));
+	while (m_pContainerGroup->getNumChildren() > 0)
+		m_pContainerGroup->removeChild(m_pContainerGroup->getChild(0));
 	if (m_pShadow)
-		m_pShadow->RemoveChild(m_pTerrainGroup);
+		m_pShadow->removeChild(m_pTerrainGroup);
 	if (m_pFog)
-		m_pFog->RemoveChild(m_pTerrainGroup);
+		m_pFog->removeChild(m_pTerrainGroup);
 
 	if (bFog && m_pFog)
 	{
-		m_pContainerGroup->AddChild(m_pFog);
-		m_pFog->AddChild(m_pTerrainGroup);
+		m_pContainerGroup->addChild(m_pFog);
+		m_pFog->addChild(m_pTerrainGroup);
 	}
 	else if (bShadow && m_pShadow)
 	{
-		m_pContainerGroup->AddChild(m_pShadow);
-		m_pShadow->AddChild(m_pTerrainGroup);
+		m_pContainerGroup->addChild(m_pShadow);
+		m_pShadow->addChild(m_pTerrainGroup);
 	}
 	else
-		m_pContainerGroup->AddChild(m_pTerrainGroup);
+		m_pContainerGroup->addChild(m_pTerrainGroup);
 
 	// re-attach
-	m_pContainerGroup->AddChild(m_pUnshadowedGroup);
+	m_pContainerGroup->addChild(m_pUnshadowedGroup);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -2485,7 +2472,7 @@ bool vtTerrain::CreateFromTiles()
 
 bool vtTerrain::CreateFromExternal()
 {
-	m_pTerrainGroup->AddChild(m_pExternalHeightField->CreateGeometry());
+	m_pTerrainGroup->addChild(m_pExternalHeightField->CreateGeometry());
 	return true;
 }
 
@@ -2528,7 +2515,7 @@ bool vtTerrain::CreateStep5()
 	m_pScaledFeatures->setName("Scaled Features");
 	m_pScaledFeatures->Scale3(1.0f, m_fVerticalExag, 1.0f);
 	m_pScaledFeatures->SetCastShadow(false);
-	m_pUnshadowedGroup->AddChild(m_pScaledFeatures);
+	m_pUnshadowedGroup->addChild(m_pScaledFeatures);
 
 	_CreateCulture();
 
@@ -2600,7 +2587,7 @@ bool vtTerrain::CreateStep5()
 				xform->Translate1(FPoint3(x, 0, z));
 
 				xform->addChild(wsgeom);
-				m_pTerrainGroup->AddChild(xform);
+				m_pTerrainGroup->addChild(xform);
 			}
 			else
 			{
@@ -2910,7 +2897,7 @@ vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()
 bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
 									  bool bTrue, int iCultureFlags) const
 {
-	// beware - OSG can be picking about the length of this segment.  It
+	// beware - OSG can be picky about the length of this segment.  It
 	//  is a numerical precision issue.  If we use 1E9,-1E9 then it fails
 	//  to find some objects.  Instead, search just in the range of elevation
 	//  for this terrain, plus a margin to include potential culture.
@@ -2930,7 +2917,6 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude,
 	if (hlist.size() > 0)
 	{
 		// take first match encountered
-		vtString name = hlist[0].node->getName();
 		fAltitude =  hlist[0].point.y;
 
 		if (bTrue)
@@ -3317,10 +3303,10 @@ int vtTerrain::DeleteSelectedPlants()
 			vtTransform *pTrans = m_PIA.GetPlantNode(i);
 			if (pTrans != NULL)
 			{
-				vtGroup *pParent = pTrans->GetParent();
+				osg::Group *pParent = pTrans->getParent(0);
 				if (pParent)
 				{
-					pParent->RemoveChild(pTrans);
+					pParent->removeChild(pTrans);
 					m_PIA.DeletePlant(i);
 					num_deleted ++;
 				}
@@ -3361,11 +3347,11 @@ void vtTerrain::addNode(osg::Node *pNode)
  *
  * \sa AddNode
  */
-bool vtTerrain::AddNodeToVegGrid(vtTransform *pTrans)
+bool vtTerrain::AddNodeToVegGrid(osg::Node *pNode)
 {
 	if (!m_pVegGrid)
 		return false;
-	return m_pVegGrid->AppendToGrid(pTrans);
+	return m_pVegGrid->AddToGrid(pNode);
 }
 
 /**
@@ -3378,30 +3364,12 @@ bool vtTerrain::AddNodeToVegGrid(vtTransform *pTrans)
  *
  * \sa AddNode
  */
-bool vtTerrain::AddNodeToStructGrid(vtTransform *pTrans)
+bool vtTerrain::AddNodeToStructGrid(osg::Node *pNode)
 {
 	if (!m_pStructGrid)
 		return false;
-	return m_pStructGrid->AppendToGrid(pTrans);
+	return m_pStructGrid->AddToGrid(pNode);
 }
-
-/**
- * Adds a node to the terrain.
- * The node will be added to the Structure LOD Grid of the terrain, so it will be
- * culled when it is far from the viewer.  This is usually desirable when
- * the models are complicated or there are lot of them.
- *
- * There is another form of this method which takes a vtTransform node instead.
- *
- * \sa AddNode
- */
-bool vtTerrain::AddNodeToStructGrid(vtGeode *pGeode)
-{
-	if (!m_pStructGrid)
-		return false;
-	return m_pStructGrid->AppendToGrid(pGeode);
-}
-
 
 /**
  * Removes a node from the terrain.
@@ -3418,10 +3386,10 @@ void vtTerrain::removeNode(osg::Node *pNode)
  *
  * \sa RemoveNode
  */
-void vtTerrain::RemoveNodeFromStructGrid(vtNode *pNode)
+void vtTerrain::RemoveNodeFromStructGrid(osg::Node *pNode)
 {
 	if (m_pStructGrid)
-		m_pStructGrid->RemoveNodeFromGrid(pNode);
+		m_pStructGrid->RemoveFromGrid(pNode);
 }
 
 int vtTerrain::DoStructurePaging()
@@ -3485,8 +3453,8 @@ void vtTerrain::RemoveFeatureGeometries(vtAbstractLayer *alay)
 	vtGroup *labels = alay->GetLabelGroup();
 	if (labels)
 	{
-		for (unsigned int i = 0; i < labels->GetNumChildren(); i++)
-			GetBillboardEngine()->RemoveTarget(labels->GetChild(i));
+		for (unsigned int i = 0; i < labels->getNumChildren(); i++)
+			GetBillboardEngine()->RemoveTarget(labels->getChild(i));
 	}
 	alay->ReleaseGeometry();
 }

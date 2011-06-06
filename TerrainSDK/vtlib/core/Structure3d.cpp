@@ -220,7 +220,6 @@ void vtStructInstance3d::DeleteNode()
 			m_pContainer->removeChild(m_pModel);
 			m_pModel = NULL;
 		}
-		m_pContainer->Release();
 		m_pContainer = NULL;
 	}
 }
@@ -399,7 +398,7 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 		{
 			// Hide the structure's whole container, which includes the node
 			//  and highlight and any other nodes associated with it.
-			vtNode *pContainer = str3d->GetContainer();
+			vtTransform *pContainer = str3d->GetContainer();
 			if (pContainer)
 				pContainer->SetEnabled(bTrue);
 			else
@@ -434,7 +433,7 @@ void vtStructureArray3d::SetShadows(bool bTrue)
 		if (str3d)
 		{
 			// Set shadow
-			vtNode *pContainer = str3d->GetContainer();
+			vtTransform *pContainer = str3d->GetContainer();
 			if (pContainer)
 				pContainer->SetCastShadow(bTrue);
 		}
@@ -755,13 +754,13 @@ void vtStructure3d::ReleaseSharedMaterials()
 
 void vtStructure3d::SetCastShadow(bool b)
 {
-	if (NULL != m_pContainer)
+	if (m_pContainer.valid())
 		m_pContainer->SetCastShadow(b);
 }
 
 bool vtStructure3d::GetCastShadow()
 {
-	if (NULL != m_pContainer)
+	if (m_pContainer.valid())
 		return m_pContainer->GetCastShadow();
 	else
 		return false;

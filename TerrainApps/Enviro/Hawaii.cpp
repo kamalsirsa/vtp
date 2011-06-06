@@ -136,19 +136,6 @@ protected:
 
 void IslandTerrain::CreateCustomCulture()
 {
-#if 0
-	osg::Group *cessna = (osg::Group*) osgDB::readNodeFile("C:/Dev/OSGParticleDirt/cessnafire.osg");
-	if (cessna)
-	{
-		//particleSystemHelper* psh = new particleSystemHelper(cessna);
-		//vtNativeNode *native = new vtNativeNode(psh);
-
-		vtNativeNode *native = new vtNativeNode(cessna);
-
-		AddNode(native);
-	}
-#endif
-
 	// Enable this to test Line Of Sight feature on texture recalculation
 //	g_bLineOfSightTest = true;
 
@@ -195,7 +182,7 @@ void IslandTerrain::CreateCustomCulture()
 		container->setName("Test Shape");
 		container->addChild(thebox);
 		container->addChild(thecone);
-		AddNode(container);
+		addNode(container);
 		PlantModelAtPoint(container, mauna_loa);
 	}
 
@@ -206,7 +193,7 @@ void IslandTerrain::CreateCustomCulture()
 	}
 
 #if 0
-	vtNode *blade = vtNode::LoadModel("G:/Data-Distro/Culture/picnictable.ive");
+	osg::Node *blade = vtLoadModel("G:/Data-Distro/Culture/picnictable.ive");
 	vtTransform *trans = new vtTransform;
 	trans->AddChild(blade);
 	SpinEngine *eng = new SpinEngine;
@@ -234,8 +221,8 @@ void IslandTerrain::create_state_park()
 		scale *= 10;	// Exaggerate its size to make it easier to find
 		table->Scale3(scale, scale, scale);
 		PlantModelAtPoint(table, park_location);
-//		AddNodeToStructGrid(table);
-		AddNode(table);
+//		addNodeToStructGrid(table);
+		addNode(table);
 		table->setName("Placement for Picnic Table");
 
 #if 0
@@ -376,17 +363,17 @@ void IslandTerrain::create_airports()
 	if (ITO)
 	{
 		PlantModelAtPoint(ITO, DPoint2(283575, 2181163));
-		AddNode(ITO);
+		addNode(ITO);
 	}
 	if (KOA)
 	{
 		PlantModelAtPoint(KOA, DPoint2(180290, 2184990));
-		AddNode(KOA);
+		addNode(KOA);
 	}
 	if (MUE)
 	{
 		PlantModelAtPoint(MUE, DPoint2(219990, 2213505));
-		AddNode(MUE);
+		addNode(MUE);
 	}
 }
 
@@ -667,7 +654,7 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 	vtTransform *trans = new vtTransform;
 	trans->setName("Plane xform");
 	trans->addChild(copy);
-	AddNode(trans);
+	addNode(trans);
 
 	// make it faster than real life
 	float fSpeedExag = fSpeed;

@@ -270,7 +270,7 @@ protected:
 
 	void DoTestCode();
 	void LoadClouds(const char *fname);
-	void CarveTerrainToFitNode(vtNode *node);
+	void CarveTerrainToFitNode(osg::Node *node);
 
 public:
 	class vtGLCanvas	*m_canvas;

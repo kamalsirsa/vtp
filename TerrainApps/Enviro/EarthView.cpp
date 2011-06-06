@@ -71,7 +71,7 @@ void Enviro::SetupGlobe()
 			m_SpaceTrackballState[0].Set(0,0,INITIAL_SPACE_DIST);
 			m_SpaceTrackballState[1].Set(0,0,0);
 			m_SpaceTrackballState[2].Set(0,0,0);
-			m_pRoot->AddChild(m_pGlobeContainer);
+			m_pRoot->addChild(m_pGlobeContainer);
 		}
 		SetMessage("Switching to Globe");
 	}
@@ -82,7 +82,7 @@ void Enviro::SetupGlobe()
 		pSunLight->Identity();
 		pSunLight->SetTrans(FPoint3(0, 0, -5));
 
-		vtLight *pLight = (vtLight *) pSunLight->GetChild(0);
+		vtLight *pLight = (vtLight *) pSunLight->getChild(0);
 		if (pLight)
 		{
 			// standard bright sunlight
@@ -166,7 +166,7 @@ void Enviro::MakeGlobe()
 //		vtIcoGlobe::RIGHT_TRIANGLE);
 		vtIcoGlobe::DYMAX_UNFOLD);
 //		vtIcoGlobe::INDEPENDENT_GEODESIC);
-	m_pGlobeContainer->AddChild(m_pIcoGlobe->GetTop());
+	m_pGlobeContainer->addChild(m_pIcoGlobe->GetTop());
 	m_pGlobeTime->AddTarget(m_pIcoGlobe);
 	m_pDemoGroup = NULL;
 
@@ -212,8 +212,8 @@ void Enviro::MakeGlobe()
 		vtTransform *pScale = new vtTransform;
 		pScale->setName("Star Scaling Transform");
 		pScale->Scale3(20, 20, 20);
-		m_pGlobeContainer->AddChild(pScale);
-		pScale->AddChild(pStars);
+		m_pGlobeContainer->addChild(pScale);
+		pScale->addChild(pStars);
 	}
 
 	// create some geometry showing various astronomical axes
@@ -276,9 +276,9 @@ void Enviro::MakeDemoGlobe()
 	//Globe2->SetInflation(1.0f);
 	vtTransform *trans = new vtTransform;
 	trans->setName("2nd Globe Scaler");
-	m_pGlobeContainer->AddChild(m_pDemoGroup);
-	m_pDemoGroup->AddChild(trans);
-	trans->AddChild(Globe2->GetTop());
+	m_pGlobeContainer->addChild(m_pDemoGroup);
+	m_pDemoGroup->addChild(trans);
+	trans->addChild(Globe2->GetTop());
 	trans->Scale3(1.006f, 1.006f, 1.006f);
 	m_pGlobeTime->AddTarget((vtTimeTarget *)Globe2);
 
@@ -353,7 +353,7 @@ void Enviro::MakeDemoGlobe()
 
 	// Stark lighting, no ambient
 	vtTransform *pSunLight = GetSunLight();
-	vtLight *pLight = (vtLight *) pSunLight->GetChild(0);
+	vtLight *pLight = (vtLight *) pSunLight->getChild(0);
 	if (pLight)
 	{
 		pLight->SetDiffuse(RGBf(1, 1, 1));
@@ -449,8 +449,8 @@ void Enviro::MakeOverlayGlobe(vtImage *input, bool progress_callback(int))
 	trans->setName("Overlay Globe Scaler");
 	trans->Scale3(1.006f, 1.005f, 1.005f);
 
-	m_pIcoGlobe->GetTop()->AddChild(trans);
-	trans->AddChild(m_pOverlayGlobe->GetTop());
+	m_pIcoGlobe->GetTop()->addChild(trans);
+	trans->addChild(m_pOverlayGlobe->GetTop());
 }
 
 void Enviro::SetEarthLines(double lon, double lat)

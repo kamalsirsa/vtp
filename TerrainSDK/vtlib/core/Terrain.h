@@ -186,7 +186,7 @@ public:
 
 	/// Add a model (or any node) to the terrain.
 	void addNode(osg::Node *pNode);
-	void AddNode(vtNode *pNode) { return addNode(pNode->GetOsgNode()); }
+
 	/// Remove a node from the terrain's scene graph.
 	void removeNode(osg::Node *pNode);
 
@@ -227,7 +227,7 @@ public:
 	vtSpeciesList3d *GetPlantList() { return m_pPlantList; }
 	/// Get the plant array for this terrain.  You can modify it directly.
 	vtPlantInstanceArray3d &GetPlantInstances() { return m_PIA; }
-	bool AddNodeToVegGrid(vtTransform *pTrans);
+	bool AddNodeToVegGrid(osg::Node *pNode);
 
 	// structures
 	vtStructureLayer *GetStructureLayer();
@@ -241,9 +241,10 @@ public:
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
 							  int &structure, double &closest, float fMaxInstRadius,
 							  float fLinearWidthBuffer);
-	bool AddNodeToStructGrid(vtTransform *pTrans);
-	bool AddNodeToStructGrid(vtGeode *pGeode);
-	void RemoveNodeFromStructGrid(vtNode *pNode);
+
+	bool AddNodeToStructGrid(osg::Node *pNode);
+	void RemoveNodeFromStructGrid(osg::Node *pNode);
+
 	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
 	int DoStructurePaging();
 	vtPagedStructureLodGrid *GetStructureLodGrid() { return m_pPagedStructGrid; }
@@ -401,13 +402,13 @@ protected:
 	/********************** Protected Data ******************/
 
 	// main scene graph outline
-	vtGroup		*m_pContainerGroup;
-	vtGroup		*m_pTerrainGroup;
-	vtGroup		*m_pUnshadowedGroup;
+	vtGroupPtr	m_pContainerGroup;
+	vtGroupPtr	m_pTerrainGroup;
+	vtGroupPtr	m_pUnshadowedGroup;
 
 	// dynamic terrain (CLOD)
 	vtDynTerrainGeomPtr m_pDynGeom;
-	vtTransform		 *m_pDynGeomScale;
+	vtTransformPtr	m_pDynGeomScale;
 	float			m_fVerticalExag;
 
 	// triangulated irregular network (TIN)
@@ -437,8 +438,8 @@ protected:
 	// horizon, water and fog
 	vtFog		*m_pFog;
 	vtShadow	*m_pShadow;
-	vtMovGeom	*m_pHorizonGeom;
-	vtMovGeom	*m_pOceanGeom;
+	vtMovGeomPtr m_pHorizonGeom;
+	vtMovGeomPtr m_pOceanGeom;
 	bool		m_bFog;
 	RGBf		m_fog_color;
 	RGBf		m_background_color;

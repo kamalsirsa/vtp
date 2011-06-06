@@ -1002,7 +1002,7 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 				offset = pN->m_p3 - (unit * 6.0f) + (perp * (link->m_fWidth/2.0f));
 			}
 			trans->Translate1(FPoint3(offset.x, offset.y + s_fHeight, offset.z));
-			pLodGrid->AppendToGrid(trans);
+			pLodGrid->AddToGrid(trans);
 		}
 	}
 }

@@ -293,7 +293,7 @@ osg::Node *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 	if (!data)
 		return NULL;
 	if (data->m_alay)
-		return data->m_alay->GetContainer()->GetOsgNode();
+		return data->m_alay->GetContainer();
 	if (data->m_item == -1)
 		return NULL;
 
@@ -302,7 +302,7 @@ osg::Node *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 	vtStructureType typ = str->GetType();
 
 	if (bContainer && typ != ST_LINEAR)
-		return str3d->GetContainer()->GetOsgNode();
+		return str3d->GetContainer();
 	else
 		// always get contained geometry for linears; they have no container
 		return str3d->GetContained();
@@ -895,7 +895,7 @@ void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 {
 #if OLD_OSG_SHADOWS
 	bool bShadows = false;
-	vtNode *pThing = NULL;
+	osg::Node *pThing = NULL;
 
 	LayerItemData *data = GetLayerDataFromItem(m_item);
 	if (data && data->m_slay)

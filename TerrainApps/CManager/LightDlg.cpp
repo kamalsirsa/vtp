@@ -50,7 +50,7 @@ LightDlg::LightDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void LightDlg::UseLight(vtTransform *pMovLight)
 {
 	m_pMovLight = pMovLight;
-	m_pLight = (vtLight *) pMovLight->GetChild(0);
+	m_pLight = (vtLight *) pMovLight->getChild(0);
 
 	unsigned char r, g, b;
 	RGBf col;

@@ -23,10 +23,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CManager", "CManager-vc7.vc
 		{C2715AAA-C99B-438E-BF57-8357BD21AE98} = {C2715AAA-C99B-438E-BF57-8357BD21AE98}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxSimple", "..\wxSimple\wxSimple-vc7.vcproj", "{3595B8FF-523B-4DD4-AFF2-BB738C8A6C6C}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -75,14 +71,6 @@ Global
 		{620C6FB1-C94C-459D-AF5F-DCBB765F69CF}.Release.Build.0 = Release Unicode|Win32
 		{620C6FB1-C94C-459D-AF5F-DCBB765F69CF}.Release Unicode.ActiveCfg = Release Unicode|Win32
 		{620C6FB1-C94C-459D-AF5F-DCBB765F69CF}.Release Unicode.Build.0 = Release Unicode|Win32
-		{3595B8FF-523B-4DD4-AFF2-BB738C8A6C6C}.Debug.ActiveCfg = Debug|Win32
-		{3595B8FF-523B-4DD4-AFF2-BB738C8A6C6C}.Debug.Build.0 = Debug|Win32
-		{3595B8FF-523B-4DD4-AFF2-BB738C8A6C6C}.Debug Unicode.ActiveCfg = Debug|Win32
-		{3595B8FF-523B-4DD4-AFF2-BB738C8A6C6C}.Debug Unicode.Build.0 = Debug|Win32
-		{3595B8FF-523B-4DD4-AFF2-BB738C8A6C6C}.Release.ActiveCfg = Release|Win32
-		{3595B8FF-523B-4DD4-AFF2-BB738C8A6C6C}.Release.Build.0 = Release|Win32
-		{3595B8FF-523B-4DD4-AFF2-BB738C8A6C6C}.Release Unicode.ActiveCfg = Release|Win32
-		{3595B8FF-523B-4DD4-AFF2-BB738C8A6C6C}.Release Unicode.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

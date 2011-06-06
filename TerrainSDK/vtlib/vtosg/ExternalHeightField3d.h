@@ -14,7 +14,6 @@
 #endif
 
 class vtGeode;
-class vtNode;
 class vtProjection;
 namespace osgTerrain
 {
@@ -32,7 +31,7 @@ public:
 	~vtExternalHeightField3d(void);
 
 	bool Initialize(const char *external_data);
-	vtNode* CreateGeometry();
+	osg::Node *CreateGeometry();
 
 	vtProjection &GetProjection();
 	const vtProjection &GetProjection() const;

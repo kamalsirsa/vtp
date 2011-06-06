@@ -85,13 +85,13 @@ bool vtApp::OnInit(void)
 	vtLight *pLight = new vtLight;
 	pLight->setName("Light");
 	vtTransform *pMovLight = new vtTransform;
-	pMovLight->AddChild(pLight);
+	pMovLight->addChild(pLight);
 	pMovLight->setName("Movable Light");
 	pLight->SetAmbient(RGBf(1, 1, 1));
 	pLight->SetDiffuse(RGBf(1, 1, 1));
 	pLight->SetSpecular(RGBf(1, 1, 1));
 	pMovLight->SetDirection(FPoint3(-0.2, -0.4, -0.9));
-	m_pRoot->AddChild(pMovLight);
+	m_pRoot->addChild(pMovLight);
 
 	frame->UseLight(pMovLight);
 
@@ -136,7 +136,7 @@ bool vtApp::OnInit(void)
 
 	// Memleak Testing
 //	GetMainFrame()->AddModelFromFile("E:/3D/Sample FLT files/spitfire.flt");
-//	vtNode *pNode = vtNode::LoadModel("E:/3D/Sample FLT files/spitfire.flt");
+//	osg::Node *pNode = vtLoadModel("E:/3D/Sample FLT files/spitfire.flt");
 //	if (pNode)
 //		m_pRoot->AddChild(pNode);
 //	GetMainFrame()->AddNewItem();
@@ -154,7 +154,7 @@ int vtApp::OnExit(void)
 	VTLOG("App OnExit\n");
 
 	vtGetScene()->SetRoot(NULL);
-	m_pRoot->Release();
+	m_pRoot = NULL;
 
 	vtGetScene()->Shutdown();
 	return 0;

@@ -697,7 +697,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 
 void vtFence3d::DestroyGeometry()
 {
-	if (m_pFenceGeom)
+	if (m_pFenceGeom.valid())
 	{
 		// Destroy the meshes so they can be re-made
 		while (m_pFenceGeom->GetNumMeshes())
@@ -743,7 +743,7 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 
 bool vtFence3d::IsCreated()
 {
-	return (m_pFenceGeom != NULL);
+	return (m_pFenceGeom.valid());
 }
 
 void vtFence3d::DeleteNode()

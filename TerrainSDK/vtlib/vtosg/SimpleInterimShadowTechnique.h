@@ -5,7 +5,7 @@
 // It's interim because it should be replaced with something better.
 // It's a shadow technique.
 //
-// Copyright (c) 2008 Virtual Terrain Project
+// Copyright (c) 2008-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,7 +34,7 @@ public:
 	void SetShadowTextureResolution(const unsigned int ShadowTextureResolution) { m_ShadowTextureResolution = ShadowTextureResolution; }
 	unsigned int GetShadowTextureResolution() { return m_ShadowTextureResolution; }
 	void SetRecalculateEveryFrame(const bool RecalculateEveryFrame) { m_RecalculateEveryFrame = RecalculateEveryFrame; }
-	bool GetRecalculateEveryFrame() { return m_RecalculateEveryFrame; }
+	bool GetRecalculateEveryFrame() const { return m_RecalculateEveryFrame; }
 	void SetShadowDarkness(const float Darkness);
 	float GetShadowDarkness() { return m_ShadowDarkness; }
 	void SetShadowSphereRadius(const float ShadowSphereRadius) { m_ShadowSphereRadius = ShadowSphereRadius; }

@@ -123,7 +123,7 @@ public:
 	void AddEngine(vtEngine *ptr);
 
 	/// Inform all engines in the scene that a target no longer exists
-	void TargetRemoved(vtTarget *tar);
+	void TargetRemoved(osg::Referenced *tar);
 
 	/** Set the camera associated with this scene.  The scene has
 	 * a default camera already supplied; you can use GetCamera()
@@ -158,15 +158,15 @@ public:
 #if OLD_OSG_SHADOWS
 	// Experimental:
 	// Object-terrain shadow casting, only for OSG
-	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowerNode,
-		vtNode *pShadowed, int iRez, float fDarkness, int iTextureUnit,
+	void SetShadowedNode(vtTransform *pLight, osg::Node *pShadowerNode,
+		osg::Node *pShadowed, int iRez, float fDarkness, int iTextureUnit,
 		const FSphere &ShadowSphere);
 	void UnsetShadowedNode(vtTransform *pTransform);
 	void UpdateShadowLightDirection(vtTransform *pLight);
 	void SetShadowDarkness(float fDarkness);
 	void SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw);
-	void ShadowVisibleNode(vtNode *node, bool bVis);
-	bool IsShadowVisibleNode(vtNode *node);
+	void ShadowVisibleNode(osg::Node *node, bool bVis);
+	bool IsShadowVisibleNode(osg::Node *node);
 	void ComputeShadows();
 #endif
 
@@ -203,7 +203,7 @@ protected:
 	vtEngine	*m_pRootEnginePostDraw;
 	bool		*m_piKeyState;
 
-	vtCamera	*m_pDefaultCamera;
+	vtCameraPtr	 m_pDefaultCamera;
 	vtWindow	*m_pDefaultWindow;
 
 protected:

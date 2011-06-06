@@ -602,7 +602,7 @@ void vtAnimPathEngine::UpdateTargets()
 {
 	for (unsigned int i = 0; i < NumTargets(); i++)
 	{
-		vtTarget *target = GetTarget(i);
+		osg::Referenced *target = GetTarget(i);
 		vtTransform *tr = dynamic_cast<vtTransform*>(target);
 		if (!tr)
 			continue;

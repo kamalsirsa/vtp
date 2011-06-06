@@ -511,11 +511,11 @@ void vtPlantInstance3d::ShowBounds(bool bShow)
 		{
 			// the highlight geometry doesn't exist, so create it
 			// get bounding sphere
-			vtNode *contents = m_pContainer->GetChild(0);
+			osg::Node *contents = m_pContainer->getChild(0);
 			if (contents)
 			{
 				FSphere sphere;
-				contents->GetBoundSphere(sphere);
+				GetBoundSphere(contents, sphere);
 
 				m_pHighlight = CreateBoundSphereGeom(sphere);
 				m_pContainer->addChild(m_pHighlight);
@@ -535,7 +535,7 @@ void vtPlantInstance3d::ReleaseContents()
 	if (!m_pContainer)	// safety check
 		return;
 
-	int ch = m_pContainer->GetNumChildren();
+	int ch = m_pContainer->getNumChildren();
 	for (int i = 0; i < ch; i++)
 	{
 		osg::Node *node = m_pContainer->getChild(ch-1-i);
@@ -738,9 +738,6 @@ void vtPlantInstanceArray3d::DeletePlant(unsigned int i)
 	SetToDelete(i);
 	ApplyDeletion();
 
-	// Since it has been removed from the scene graph, we must release its nodes
-	inst3d->m_pContainer->Release();
-
 	// and its 3D component
 	m_Instances3d.RemoveAt(i);
 	delete inst3d;
@@ -756,7 +753,7 @@ bool vtPlantInstanceArray3d::FindPlantFromNode(osg::Node *pNode, int &iOffset)
 		vtTransform *pTransform = GetPlantNode(i);
 		if (!pTransform)	// safety check
 			continue;
-		for (j = 0; (j < pTransform->GetNumChildren()) && !bFound; j++)
+		for (j = 0; (j < pTransform->getNumChildren()) && !bFound; j++)
 		{
 			osg::Node *pPlantNode = pTransform->getChild(j);
 			if (pPlantNode != GetInstance3d(i)->m_pHighlight)

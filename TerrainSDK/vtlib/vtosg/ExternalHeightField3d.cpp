@@ -175,10 +175,9 @@ bool vtExternalHeightField3d::Initialize(const char *external_data)
 	return true;
 }
 
-vtNode* vtExternalHeightField3d::CreateGeometry()
+osg::Node *vtExternalHeightField3d::CreateGeometry()
 {
-	vtNode *pNode = new vtNativeNode(m_pNode.get());
-	return pNode;
+	return m_pNode.get();
 }
 
 vtProjection &vtExternalHeightField3d::GetProjection()

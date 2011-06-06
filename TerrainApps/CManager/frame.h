@@ -16,7 +16,6 @@
 
 class vtGLCanvas;
 class MyTreeCtrl;
-class vtNode;
 class vtTransform;
 class SceneGraphDlg;
 class PropPanel;

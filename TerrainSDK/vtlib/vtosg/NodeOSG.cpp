@@ -56,6 +56,283 @@ public:
 };
 
 
+/**
+ * Transform a 3D point from a node's local frame of reference to world
+ * coordinates.  This is done by walking the scene graph upwards, applying
+ * all transforms that are encountered.
+ *
+ * \param point A reference to the input point is modified in-place with
+ *	world coordinate result.
+ */
+void LocalToWorld(osg::Node *node, FPoint3 &point)
+{
+	// Suport any OSG nodes
+	osg::Vec3 pos = v2s(point);
+	while (node = node->getParent(0))
+	{
+		osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform *>(node);
+		if (mt != NULL)
+		{
+			const osg::Matrix &mat = mt->getMatrix();
+			pos = mat.preMult(pos);
+		}
+		if (node->getNumParents() == 0)
+			break;
+	}
+	s2v(pos, point);
+}
+
+bool ContainsParticleSystem(osg::Node *node)
+{
+	osg::ref_ptr<findParticlesVisitor> fp = new findParticlesVisitor;
+	findParticlesVisitor *fpp = fp.get();
+	node->accept(*fpp);
+	return fp->bFound;
+}
+
+void GetBoundSphere(osg::Node *node, FSphere &sphere, bool bGlobal)
+{
+	// Try to just get the bounds normally
+	BoundingSphere bs = node->getBound();
+
+	// Hack to support particle systems, which do not return a reliably
+	//  correct bounding sphere, because of the extra transform inside which
+	//  provides the particle effects with an absolute position
+	if (ContainsParticleSystem(node))
+	{
+		osg::Group *grp = dynamic_cast<osg::Group*>(node);
+		for (int i = 0; i < 3; i++)
+		{
+			grp = dynamic_cast<osg::Group*>(grp->getChild(0));
+			if (grp)
+				bs = grp->getBound();
+			else
+				break;
+		}
+	}
+
+	s2v(bs, sphere);
+	if (bGlobal)
+	{
+		// Note that this isn't 100% complete; we should be
+		//  transforming the radius as well, with scale.
+		LocalToWorld(node, sphere.center);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// class ExtentsVisitor
+//
+// description: visit all nodes and compute bounding box extents
+//
+class ExtentsVisitor : public osg::NodeVisitor
+{
+public:
+	// constructor
+	ExtentsVisitor():NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
+	// destructor
+	~ExtentsVisitor() {}
+
+	virtual void apply(osg::Geode &node)
+	{
+		// update bounding box
+		osg::BoundingBox bb;
+		for (unsigned int i = 0; i < node.getNumDrawables(); ++i)
+		{
+			// expand overall bounding box
+			bb.expandBy(node.getDrawable(i)->getBound());
+		}
+
+		// transform corners by current matrix
+		osg::BoundingBox xbb;
+		for (unsigned int i = 0; i < 8; ++i)
+		{
+			osg::Vec3 xv = bb.corner(i) * m_TransformMatrix;
+			xbb.expandBy(xv);
+		}
+
+		// update overall bounding box size
+		m_BoundingBox.expandBy(xbb);
+
+		// continue traversing the graph
+		traverse(node);
+	}
+	// handle geode drawable extents to expand the box
+	virtual void apply(osg::MatrixTransform &node)
+	{
+		m_TransformMatrix *= node.getMatrix();
+		// continue traversing the graph
+		traverse(node);
+	}
+	// handle transform to expand bounding box
+	// return bounding box
+	osg::BoundingBox &GetBound() { return m_BoundingBox; }
+
+protected:
+	osg::BoundingBox m_BoundingBox;	// bound box
+	osg::Matrix m_TransformMatrix;	// current transform matrix
+};
+
+/**
+ * Calculates the bounding box of the geometry contained in and under
+ * this node in the scene graph.  Note that unlike bounding sphere which
+ * is cached, this value is calculated every time.
+ *
+ * \param box Will receive the bounding box.
+ */
+void GetNodeBoundBox(osg::Node *node, FBox3 &box)
+{
+	ExtentsVisitor ev;
+	node->accept(ev);
+	osg::BoundingBox extents = ev.GetBound();
+	s2v(extents, box);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+class PolygonCountVisitor : public osg::NodeVisitor
+{
+public:
+	int numVertices, numFaces, numObjects;
+	PolygonCountVisitor() :
+		osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN)
+	{
+		reset();
+		memset(&info, 0, sizeof(info));
+	}
+	virtual void reset() { numVertices=numFaces=numObjects=0; }
+	virtual void apply(osg::Geode& geode);
+	vtPrimInfo info;
+};
+
+void PolygonCountVisitor::apply(osg::Geode& geode)
+{
+	numObjects++;
+	for (unsigned int i=0; i<geode.getNumDrawables(); ++i)
+	{
+		osg::Geometry* geometry = geode.getDrawable(i)->asGeometry();
+		if (!geometry) continue;
+		for (unsigned int j=0; j<geometry->getPrimitiveSetList().size(); ++j)
+		{
+			osg::PrimitiveSet *pset = geometry->getPrimitiveSet(j);
+			osg::DrawArrayLengths *dal = dynamic_cast<osg::DrawArrayLengths*>(pset);
+			//osg::DrawArray *da = dynamic_cast<osg::DrawArray*>(pset);
+
+			int numIndices = pset->getNumIndices();
+			int numPrimitives = pset->getNumPrimitives();
+
+			info.Vertices += numIndices;
+			info.Primitives += numPrimitives;
+
+			// This code isn't completely finished as it doesn't iterate down
+			//  into each variable-length indexed primitives to count each
+			//  component line or triangle, but it does get most useful info.
+			GLenum mode = pset->getMode();
+			switch (mode)
+			{
+			case GL_POINTS:			info.Points += numPrimitives;	 break;
+			case GL_LINES:			info.LineSegments += numPrimitives; break;
+			case GL_TRIANGLES:		info.Triangles += numPrimitives; break;
+			case GL_QUADS:			info.Quads += numPrimitives;
+									info.Triangles += numPrimitives*2; break;
+			case GL_POLYGON:		info.Polygons += numPrimitives;
+									//info.Triangles += ...;
+									break;
+			case GL_LINE_STRIP:		info.LineStrips += numPrimitives;
+									//info.LineSegments += ...;
+									break;
+			case GL_TRIANGLE_STRIP:	info.TriStrips += numPrimitives;
+									//info.Triangles += ...;
+									break;
+			case GL_TRIANGLE_FAN:	info.TriFans += numPrimitives;
+									//info.Triangles += ...;
+									break;
+			case GL_QUAD_STRIP:		info.QuadStrips += numPrimitives;
+									//info.Quads += ...;
+									//info.Triangles += ...;
+									break;
+			}
+			// This kind of thing is incomplete because pset can be something
+			//  called 'osg::DrawElementsUShort'
+			if (mode == GL_TRIANGLE_STRIP && dal != NULL)
+			{
+				for (osg::DrawArrayLengths::const_iterator itr=dal->begin(); itr!=dal->end(); ++itr)
+				{
+					int iIndicesInThisStrip = static_cast<int>(*itr);
+					info.Triangles += (iIndicesInThisStrip-1);
+				}
+			}
+		}
+		info.MemVertices += geometry->getVertexArray()->getNumElements();
+	}
+	traverse(geode);
+}
+
+/**
+ * This method walks through a node (and all its children), collecting
+ * information about all the geometric primitives.  The result is placed
+ * in an object of type vtPrimInfo.  This includes information such as
+ * number of vertices, number of triangles, and so forth.  Note that this
+ * can be a time-consuming operation if your geometry is large or complex.
+ * The results are not cached, so this method should be called only when
+ * needed.
+ *
+ * \param info A vtPrimInfo object which will receive all the information
+ *	about this node and its children.
+ */
+void GetNodePrimCounts(osg::Node *node, vtPrimInfo &info)
+{
+	PolygonCountVisitor pv;
+	node->accept(pv);
+	info = pv.info;
+}
+
+/**
+ * Given a node with geometry under it, rotate the vertices of that geometry
+ *  by a given axis/angle.
+ */
+void ApplyVertexRotation(osg::Node *node, const FPoint3 &axis, float angle)
+{
+	FMatrix4 mat;
+	mat.AxisAngle(axis, angle);
+	ApplyVertexTransform(node, mat);
+}
+
+/**
+ * Given any node with geometry under it, transform the vertices of that geometry.
+ */
+void ApplyVertexTransform(osg::Node *node, const FMatrix4 &mat)
+{
+	if (!node)
+		return;
+
+	vtGroupPtr temp = new vtGroup;
+
+	osg::Matrix omat;
+	ConvertMatrix4(&mat, &omat);
+
+	osg::MatrixTransform *transform = new osg::MatrixTransform;
+	transform->setMatrix(omat);
+	// it's not going to change, so tell OSG that it can be optimized
+	transform->setDataVariance(osg::Object::STATIC);
+
+    temp->addChild(transform);
+	transform->addChild(node);
+
+	// Now do some OSG voodoo, which should spread the transform downward
+	//  through the loaded model, and delete the transform.
+	//
+	// NOTE: OSG 1.0 seems to have a bug (limitation): Optimizer doesn't
+	//  inform the display lists that they have changed.  So, this doesn't
+	//  produce a visual update for objects which have already been rendered.
+	// It is a one-line fix in Optimizer.cpp (CollectLowestTransformsVisitor::doTransform)
+	// I wrote the OSG list with the fix on 2006.04.12.
+	//
+	osgUtil::Optimizer optimizer;
+	optimizer.optimize(temp.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
+}
+
+
 ///////////////////////////////////////////////////////////////////////
 // NodeExtension
 //
@@ -112,27 +389,161 @@ bool NodeExtension::GetCastShadow()
 	return m_bCastShadow;
 }
 
+void NodeExtension::GetBoundSphere(FSphere &sphere, bool bGlobal)
+{
+	// Try to just get the bounds normally
+	BoundingSphere bs = m_pNode->getBound();
+
+	// Hack to support particle systems, which do not return a reliably
+	//  correct bounding sphere, because of the extra transform inside which
+	//  provides the particle effects with an absolute position
+	if (ContainsParticleSystem(m_pNode))
+	{
+		osg::Group *grp = dynamic_cast<osg::Group*>(m_pNode);
+		for (int i = 0; i < 3; i++)
+		{
+			grp = dynamic_cast<osg::Group*>(grp->getChild(0));
+			if (grp)
+				bs = grp->getBound();
+			else
+				break;
+		}
+	}
+
+	s2v(bs, sphere);
+	if (bGlobal)
+	{
+		// Note that this isn't 100% complete; we should be
+		//  transforming the radius as well, with scale.
+		LocalToWorld(m_pNode, sphere.center);
+	}
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 
-vtNode *GroupExtension::GetChild(unsigned int num) const
+bool GroupExtension::containsChild(osg::Node *node) const
 {
-	unsigned int children = m_pGroup->getNumChildren();
-	if (num < children)
-	{
-		Node *pChild = (Node *) m_pGroup->getChild(num);
-		osg::Referenced *ref = pChild->getUserData();
-		if (ref)
-			return dynamic_cast<vtNode*>(ref);
-		else
-		{
-			// We have found an unwrapped node
-			vtNativeNode *native = new vtNativeNode(pChild);
-			return native;
-		}
-	}
-	else
-		return NULL;
+	return m_pGroup->getChildIndex(node) != m_pGroup->getNumChildren();
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+
+void TransformExtension::Identity()
+{
+	m_pTransform->setMatrix(Matrix::identity());
+}
+
+FPoint3 TransformExtension::GetTrans() const
+{
+	Vec3 v = m_pTransform->getMatrix().getTrans();
+	return FPoint3(v[0], v[1], v[2]);
+}
+
+void TransformExtension::SetTrans(const FPoint3 &pos)
+{
+	osg::Matrix m = m_pTransform->getMatrix();
+	m.setTrans(pos.x, pos.y, pos.z);
+	m_pTransform->setMatrix(m);
+
+	m_pTransform->dirtyBound();
+}
+
+void TransformExtension::Translate1(const FPoint3 &pos)
+{
+	// OSG 0.8.43 and later
+	m_pTransform->postMult(Matrix::translate(pos.x, pos.y, pos.z));
+}
+
+void TransformExtension::TranslateLocal(const FPoint3 &pos)
+{
+	// OSG 0.8.43 and later
+	m_pTransform->preMult(Matrix::translate(pos.x, pos.y, pos.z));
+}
+
+void TransformExtension::Rotate2(const FPoint3 &axis, double angle)
+{
+	// OSG 0.8.43 and later
+	m_pTransform->postMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
+}
+
+void TransformExtension::RotateLocal(const FPoint3 &axis, double angle)
+{
+	// OSG 0.8.43 and later
+	m_pTransform->preMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
+}
+
+void TransformExtension::RotateParent(const FPoint3 &axis, double angle)
+{
+	// OSG 0.8.43 and later
+	Vec3 trans = m_pTransform->getMatrix().getTrans();
+	m_pTransform->postMult(Matrix::translate(-trans)*
+			  Matrix::rotate(angle, axis.x, axis.y, axis.z)*
+			  Matrix::translate(trans));
+}
+
+FQuat TransformExtension::GetOrient() const
+{
+	const Matrix &xform = m_pTransform->getMatrix();
+	Quat q;
+	xform.get(q);
+	return FQuat(q.x(), q.y(), q.z(), q.w());
+}
+
+FPoint3 TransformExtension::GetDirection() const
+{
+	const Matrix &xform = m_pTransform->getMatrix();
+	const osg_matrix_value *ptr = xform.ptr();
+	return FPoint3(-ptr[8], -ptr[9], -ptr[10]);
+}
+
+void TransformExtension::SetDirection(const FPoint3 &point, bool bPitch)
+{
+	// get current matrix
+	FMatrix4 m4;
+	GetTransform1(m4);
+
+	// remember where it is now
+	FPoint3 trans = m4.GetTrans();
+
+	// orient it in the desired direction
+	FMatrix3 m3;
+	m3.MakeOrientation(point, bPitch);
+	m4.SetFromMatrix3(m3);
+
+	// restore translation
+	m4.SetTrans(trans);
+
+	// set current matrix
+	SetTransform1(m4);
+}
+
+void TransformExtension::Scale3(float x, float y, float z)
+{
+	// OSG 0.8.43 and later
+	m_pTransform->preMult(Matrix::scale(x, y, z));
+}
+
+void TransformExtension::SetTransform1(const FMatrix4 &mat)
+{
+	Matrix mat_osg;
+
+	ConvertMatrix4(&mat, &mat_osg);
+
+	m_pTransform->setMatrix(mat_osg);
+	m_pTransform->dirtyBound();
+}
+
+void TransformExtension::GetTransform1(FMatrix4 &mat) const
+{
+	const Matrix &xform = m_pTransform->getMatrix();
+	ConvertMatrix4(&xform, &mat);
+}
+
+void TransformExtension::PointTowards(const FPoint3 &point, bool bPitch)
+{
+	SetDirection(point - GetTrans(), bPitch);
 }
 
 
@@ -223,32 +634,6 @@ bool MultiTextureIsEnabled(osg::Node *onode, vtMultiTexture *mt)
 	return (attr != NULL);
 }
 
-/**
- * Transform a 3D point from a node's local frame of reference to world
- * coordinates.  This is done by walking the scene graph upwards, applying
- * all transforms that are encountered.
- *
- * \param point A reference to the input point is modified in-place with
- *	world coordinate result.
- */
-void LocalToWorld(osg::Node *node, FPoint3 &point)
-{
-	// Suport any OSG nodes
-	osg::Vec3 pos = v2s(point);
-	while (node = node->getParent(0))
-	{
-		osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform *>(node);
-		if (mt != NULL)
-		{
-			const osg::Matrix &mat = mt->getMatrix();
-			pos = mat.preMult(pos);
-		}
-		if (node->getNumParents() == 0)
-			break;
-	}
-	s2v(pos, point);
-}
-
 FSphere GetGlobalBoundSphere(osg::Node *node)
 {
 	// Try to just get the bounds normally
@@ -279,14 +664,6 @@ FSphere GetGlobalBoundSphere(osg::Node *node)
 	return sphere;
 }
 
-bool ContainsParticleSystem(osg::Node *node)
-{
-	osg::ref_ptr<findParticlesVisitor> fp = new findParticlesVisitor;
-	findParticlesVisitor *fpp = fp.get();
-	node->accept(*fpp);
-	return fp->bFound;
-}
-
 void SetEnabled(osg::Node *node, bool bOn)
 {
 	NodeExtension *ne = dynamic_cast<NodeExtension*>(node);
@@ -300,7 +677,12 @@ bool GetEnabled(osg::Node *node)
 	return ((mask&0x3) != 0);
 }
 
+bool NodeIsEnabled(osg::Node *node)
+{
+	return GetEnabled(node);
+}
 
+#if 0
 ///////////////////////////////////////////////////////////////////////
 // vtNode
 //
@@ -416,76 +798,6 @@ bool vtNode::GetEnabled() const
 	return ((mask&0x3) != 0);
 }
 
-
-//////////////////////////////////////////////////////////////////////////////
-// class ExtentsVisitor
-//
-// description: visit all nodes and compute bounding box extents
-//
-class ExtentsVisitor : public osg::NodeVisitor
-{
-public:
-	// constructor
-	ExtentsVisitor():NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
-	// destructor
-	~ExtentsVisitor() {}
-
-	virtual void apply(osg::Geode &node)
-	{
-		// update bounding box
-		osg::BoundingBox bb;
-		for (unsigned int i = 0; i < node.getNumDrawables(); ++i)
-		{
-			// expand overall bounding box
-			bb.expandBy(node.getDrawable(i)->getBound());
-		}
-
-		// transform corners by current matrix
-		osg::BoundingBox xbb;
-		for (unsigned int i = 0; i < 8; ++i)
-		{
-			osg::Vec3 xv = bb.corner(i) * m_TransformMatrix;
-			xbb.expandBy(xv);
-		}
-
-		// update overall bounding box size
-		m_BoundingBox.expandBy(xbb);
-
-		// continue traversing the graph
-		traverse(node);
-	}
-	// handle geode drawable extents to expand the box
-	virtual void apply(osg::MatrixTransform &node)
-	{
-		m_TransformMatrix *= node.getMatrix();
-		// continue traversing the graph
-		traverse(node);
-	}
-	// handle transform to expand bounding box
-	// return bounding box
-	osg::BoundingBox &GetBound() { return m_BoundingBox; }
-
-protected:
-	osg::BoundingBox m_BoundingBox;	// bound box
-	osg::Matrix m_TransformMatrix;	// current transform matrix
-};
-
-
-/**
- * Calculates the bounding box of the geometry contained in and under
- * this node in the scene graph.  Note that unlike bounding sphere which
- * is cached, this value is calculated every time.
- *
- * \param box Will receive the bounding box.
- */
-void vtNode::GetBoundBox(FBox3 &box)
-{
-	ExtentsVisitor ev;
-	m_pNode->accept(ev);
-	osg::BoundingBox extents = ev.GetBound();
-	s2v(extents, box);
-}
-
 void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
 {
 	// Try to just get the bounds normally
@@ -516,104 +828,7 @@ void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
 	}
 }
 
-class PolygonCountVisitor : public osg::NodeVisitor
-{
-public:
-	int numVertices, numFaces, numObjects;
-	PolygonCountVisitor() :
-		osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN)
-	{
-		reset();
-		memset(&info, 0, sizeof(info));
-	}
-	virtual void reset() { numVertices=numFaces=numObjects=0; }
-	virtual void apply(osg::Geode& geode);
-	vtPrimInfo info;
-};
-
-void PolygonCountVisitor::apply(osg::Geode& geode)
-{
-	numObjects++;
-	for (unsigned int i=0; i<geode.getNumDrawables(); ++i)
-	{
-		osg::Geometry* geometry = geode.getDrawable(i)->asGeometry();
-		if (!geometry) continue;
-		for (unsigned int j=0; j<geometry->getPrimitiveSetList().size(); ++j)
-		{
-			osg::PrimitiveSet *pset = geometry->getPrimitiveSet(j);
-			osg::DrawArrayLengths *dal = dynamic_cast<osg::DrawArrayLengths*>(pset);
-			//osg::DrawArray *da = dynamic_cast<osg::DrawArray*>(pset);
-
-			int numIndices = pset->getNumIndices();
-			int numPrimitives = pset->getNumPrimitives();
-
-			info.Vertices += numIndices;
-			info.Primitives += numPrimitives;
-
-			// This code isn't completely finished as it doesn't iterate down
-			//  into each variable-length indexed primitives to count each
-			//  component line or triangle, but it does get most useful info.
-			GLenum mode = pset->getMode();
-			switch (mode)
-			{
-			case GL_POINTS:			info.Points += numPrimitives;	 break;
-			case GL_LINES:			info.LineSegments += numPrimitives; break;
-			case GL_TRIANGLES:		info.Triangles += numPrimitives; break;
-			case GL_QUADS:			info.Quads += numPrimitives;
-									info.Triangles += numPrimitives*2; break;
-			case GL_POLYGON:		info.Polygons += numPrimitives;
-									//info.Triangles += ...;
-									break;
-			case GL_LINE_STRIP:		info.LineStrips += numPrimitives;
-									//info.LineSegments += ...;
-									break;
-			case GL_TRIANGLE_STRIP:	info.TriStrips += numPrimitives;
-									//info.Triangles += ...;
-									break;
-			case GL_TRIANGLE_FAN:	info.TriFans += numPrimitives;
-									//info.Triangles += ...;
-									break;
-			case GL_QUAD_STRIP:		info.QuadStrips += numPrimitives;
-									//info.Quads += ...;
-									//info.Triangles += ...;
-									break;
-			}
-			// This kind of thing is incomplete because pset can be something
-			//  called 'osg::DrawElementsUShort'
-			if (mode == GL_TRIANGLE_STRIP && dal != NULL)
-			{
-				for (osg::DrawArrayLengths::const_iterator itr=dal->begin(); itr!=dal->end(); ++itr)
-				{
-					int iIndicesInThisStrip = static_cast<int>(*itr);
-					info.Triangles += (iIndicesInThisStrip-1);
-				}
-			}
-		}
-		info.MemVertices += geometry->getVertexArray()->getNumElements();
-	}
-	traverse(geode);
-}
-
-/**
- * This method walks through a node (and all its children), collecting
- * information about all the geometric primitives.  The result is placed
- * in an object of type vtPrimInfo.  This includes information such as
- * number of vertices, number of triangles, and so forth.  Note that this
- * can be a time-consuming operation if your geometry is large or complex.
- * The results are not cached, so this method should be called only when
- * needed.
- *
- * \param info A vtPrimInfo object which will receive all the information
- *	about this node and its children.
- */
-void vtNode::GetPrimCounts(vtPrimInfo &info)
-{
-	PolygonCountVisitor pv;
-	m_pNode->accept(pv);
-	info = pv.info;
-}
-
-/**
+**
  * Transform a 3D point from a node's local frame of reference to world
  * coordinates.  This is done by walking the scene graph upwards, applying
  * all transforms that are encountered.
@@ -679,7 +894,8 @@ vtGroup *vtNode::GetParent(int iParent)
 	vtGroup *pGroup =  dynamic_cast<vtGroup *>(parent->getUserData());
 	if (NULL == pGroup)
 	{
-		pGroup = new vtGroup(true);
+		// Dubious - we don't reall want to do this. Find anyone using it, and stop them.
+		pGroup = new vtGroup;
 		pGroup->SetOsgGroup(parent);
 	}
 	return pGroup;
@@ -745,6 +961,18 @@ bool vtNode::ContainsParticleSystem() const
 	return fp->bFound;
 }
 
+void vtNode::SetCastShadow(bool b)
+{
+	m_bCastShadow = b;
+	if (GetEnabled())
+		SetEnabled(true);
+}
+
+bool vtNode::GetCastShadow()
+{
+	return m_bCastShadow;
+}
+#endif
 
 // Walk an OSG scenegraph looking for Texture states, and disable mipmap.
 class MipmapVisitor : public NodeVisitor
@@ -808,7 +1036,8 @@ public:
 	}
 };
 
-bool vtNode::s_bDisableMipmaps = false;
+bool g_bDisableMipmaps = false;		// global
+
 osg::Node *(*s_NodeCallback)(osg::Transform *input) = NULL;
 
 void SetLoadModelCallback(osg::Node *callback(osg::Transform *input))
@@ -903,7 +1132,7 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 
 	// If the user wants to, we can disable mipmaps at this point, using
 	//  another visitor.
-	if (bDisableMipmaps || vtNode::s_bDisableMipmaps)
+	if (bDisableMipmaps || g_bDisableMipmaps)
 	{
 		MipmapVisitor visitor;
 		node->accept(visitor);
@@ -963,361 +1192,14 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 	return node;
 }
 
-/**
- * Given a node with geometry under it, rotate the vertices of that geometry
- *  by a given axis/angle.
- */
-void vtNode::ApplyVertexRotation(const FPoint3 &axis, float angle)
-{
-	FMatrix4 mat;
-	mat.AxisAngle(axis, angle);
-	ApplyVertexTransform(mat);
-}
-
-/**
- * Given any node with geometry under it, transform the vertices of that geometry.
- */
-void vtNode::ApplyVertexTransform(const FMatrix4 &mat)
-{
-#if 0
-	vtGroup *vtgroup = dynamic_cast<vtGroup*>(this);
-	if (!vtgroup)
-		return;
-	osg::Group *container_group = vtgroup->GetOsgGroup();
-	osg::Node *unique_node = container_group->getChild(0);
-	if (!unique_node)
-		return;
-	osg::Group *unique_group = dynamic_cast<osg::Group*>(unique_node);
-	if (!unique_group)
-		return;
-	osg::Node *node = unique_group->getChild(0);
-#else
-	osg::Node *node = GetOsgNode();
-	osg::ref_ptr<osg::Group> temp = new osg::Group;
-#endif
-	if (!node)
-		return;
-
-	osg::Matrix omat;
-	ConvertMatrix4(&mat, &omat);
-
-	osg::MatrixTransform *transform = new osg::MatrixTransform;
-	transform->setMatrix(omat);
-	// it's not going to change, so tell OSG that it can be optimized
-	transform->setDataVariance(osg::Object::STATIC);
-
-	node->ref();	// avoid losing this node
-#if 0
-	unique_group->removeChild(node);
-	unique_group->addChild(transform);
-#endif
-	temp->addChild(transform);
-	transform->addChild(node);
-	node->unref();
-
-	// Now do some OSG voodoo, which should spread the transform downward
-	//  through the loaded model, and delete the transform.
-	//
-	// NOTE: OSG 1.0 seems to have a bug (limitation): Optimizer doesn't
-	//  inform the display lists that they have changed.  So, this doesn't
-	//  produce a visual update for objects which have already been rendered.
-	// It is a one-line fix in Optimizer.cpp (CollectLowestTransformsVisitor::doTransform)
-	// I wrote the OSG list with the fix on 2006.04.12.
-	//
-	osgUtil::Optimizer optimizer;
-	optimizer.optimize(temp.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
-}
-
-void DecorateVisit(osg::Node *node)
-{
-	if (!node) return;
-
-	vtNode *vnode = NULL;
-	osg::Group *group = NULL;
-	vtGroup *vgroup = NULL;
-
-	// first, determine if this node is already decorated
-	vnode = (vtNode *) (node->getUserData());
-	group = dynamic_cast<osg::Group*>(node);
-	if (!vnode)
-	{
-		// needs decorating.  it is a group?
-		if (group)
-		{
-			vgroup = new vtGroup(true);
-			vgroup->SetOsgGroup(group);
-			vnode = vgroup;
-		}
-		else
-		{
-			// decorate as plain native node
-			vnode = new vtNativeNode(node);
-		}
-	}
-	if (group)
-	{
-		for (unsigned int i = 0; i < group->getNumChildren(); i++)
-			DecorateVisit(group->getChild(i));
-	}
-}
-
-void vtNode::DecorateNativeGraph()
-{
-	DecorateVisit(m_pNode.get());
-}
-
-void vtNode::SetCastShadow(bool b)
-{
-	m_bCastShadow = b;
-	if (GetEnabled())
-		SetEnabled(true);
-}
-
-bool vtNode::GetCastShadow()
-{
-	return m_bCastShadow;
-}
-
-///////////////////////////////////////////////////////////////////////
-
-vtNativeNode::vtNativeNode(osg::Node *node)
-{
-	SetOsgNode(node);
-}
-
-vtNode *vtNativeNode::Clone(bool bDeep)
-{
-	if (bDeep)
-	{
-		// 'Deep' copies all the nodes, but not the geometry inside them
-		osg::CopyOp deep_op(osg::CopyOp::DEEP_COPY_OBJECTS |
-							osg::CopyOp::DEEP_COPY_NODES |
-							osg::CopyOp::DEEP_COPY_DRAWABLES |
-							osg::CopyOp::DEEP_COPY_STATESETS);
-		osg::Node *newnode = (osg::Node *) m_pNode->clone(deep_op);
-		return new vtNativeNode(newnode);
-	}
-	else
-		// A shallow copy of a native node is just a second reference
-		return this;
-}
-
-vtNode *vtNativeNode::FindParentVTNode()
-{
-	osg::Node *node = GetOsgNode();
-	while (node)
-	{
-		// safety check: handle the case in which moving upwards leads nowhere
-		int parents = node->getNumParents();
-		if (parents == 0)
-			return NULL;
-
-		node = node->getParent(0);
-		osg::Referenced *ref = node->getUserData();
-		if (ref)
-		{
-			vtNode *vnode = dynamic_cast<vtNode *>(ref);
-			if (vnode)
-				return vnode;
-		}
-	}
-	return NULL;
-}
-
 
 ///////////////////////////////////////////////////////////////////////
 // vtGroup
 //
 
-vtGroup::vtGroup(bool suppress) : vtNode()
+vtGroup::vtGroup()
 {
-	if (!suppress)
-	{
-		m_pGroup = new Group;
-		SetOsgNode(m_pGroup);
-	}
-}
-
-void vtGroup::SetOsgGroup(osg::Group *g)
-{
-	m_pGroup = g;
-	SetOsgNode(g);
-}
-
-vtNode *vtGroup::Clone(bool bDeep)
-{
-	vtGroup *newgroup = new vtGroup;
-	newgroup->CloneFrom(this, bDeep);
-	return newgroup;
-}
-
-void vtGroup::CloneFrom(vtGroup *group, bool bDeep)
-{
-	if (bDeep)
-	{
-		osg::CopyOp deep_op(osg::CopyOp::DEEP_COPY_OBJECTS | osg::CopyOp::DEEP_COPY_NODES);
-
-		// Deep copy: Duplicate the entire tree of nodes
-		for (unsigned int i = 0; i < group->GetNumChildren(); i++)
-		{
-			vtNode *child = group->GetChild(i);
-			if (child)
-				AddChild(child->Clone(bDeep));
-			else
-			{
-				// Might be an internal (native OSG) node - try to cope with that
-				Node *pOsgChild = const_cast<Node *>( group->m_pGroup->getChild(i) );
-				if (pOsgChild)
-				{
-					osg::Node *newnode = (osg::Node *) pOsgChild->clone(deep_op);
-					m_pGroup->addChild(newnode);
-				}
-			}
-		}
-	}
-	else
-	{
-		// Shallow copy: Add another reference to the existing children.
-		for (unsigned int i = 0; i < group->GetNumChildren(); i++)
-		{
-			vtNode *child = group->GetChild(i);
-			if (child)
-				AddChild(child);
-			else
-			{
-				// Might be an internal (native OSG) node - try to cope with that
-				Node *pOsgChild = const_cast<Node *>( group->m_pGroup->getChild(i) );
-				if (pOsgChild)
-					m_pGroup->addChild(pOsgChild);
-			}
-		}
-	}
-}
-
-void vtGroup::Release()
-{
-	// Check if there are no more external references to this group node.
-	// If so, clean up the VTP side of the scene graph.
-	if (m_pNode->referenceCount() == 1)
-	{
-		// it's over for this node, start the destruction process
-		// Release children depth-first
-		int children = GetNumChildren();
-		vtNode *pChild;
-
-		for (int i = 0; i < children; i++)
-		{
-			if (NULL == (pChild = GetChild(0)))
-			{
-				// Probably a raw osg node Group, access it directly.
-				Node *node = m_pGroup->getChild(0);
-				// This deletes the node as well as there is no outer vtNode
-				// holding a reference.
-				m_pGroup->removeChild(node);
-			}
-			else
-			{
-				m_pGroup->removeChild(pChild->GetOsgNode());
-				pChild->Release();
-			}
-		}
-		m_pGroup = NULL;
-	}
-	// Now release itself
-	vtNode::Release();
-}
-
-vtNode *FindNodeByName(vtNode *node, const char *name)
-{
-	if (!strcmp(node->getName(), name))
-		return node;
-
-	const vtGroup *pGroup = dynamic_cast<const vtGroup *>(node);
-	if (pGroup)
-	{
-		unsigned int children = pGroup->GetNumChildren();
-		for (unsigned int i = 0; i < children; i++)
-		{
-			vtNode *pChild = pGroup->GetChild(i);
-			vtNode *pResult = FindNodeByName(pChild, name);
-			if (pResult)
-				return pResult;
-		}
-	}
-	return NULL;
-}
-
-const vtNode *vtGroup::FindDescendantByName(const char *name) const
-{
-	return FindNodeByName((vtNode *)this, name);
-}
-
-void vtGroup::AddChild(vtNode *pChild)
-{
-	if (pChild)
-		m_pGroup->addChild(pChild->GetOsgNode());
-}
-
-void vtGroup::addChild(osg::Node *pChild)
-{
-	if (pChild)
-		m_pGroup->addChild(pChild);
-}
-
-void vtGroup::RemoveChild(vtNode *pChild)
-{
-	if (pChild)
-		m_pGroup->removeChild(pChild->GetOsgNode());
-}
-
-void vtGroup::removeChild(osg::Node *pChild)
-{
-	if (pChild)
-		m_pGroup->removeChild(pChild);
-}
-
-vtNode *vtGroup::GetChild(unsigned int num) const
-{
-	unsigned int children = m_pGroup->getNumChildren();
-	if (num < children)
-	{
-		Node *pChild = (Node *) m_pGroup->getChild(num);
-		osg::Referenced *ref = pChild->getUserData();
-		if (ref)
-			return dynamic_cast<vtNode*>(ref);
-		else
-		{
-			// We have found an unwrapped node
-			vtNativeNode *native = new vtNativeNode(pChild);
-			return native;
-		}
-	}
-	else
-		return NULL;
-}
-
-osg::Node *vtGroup::getChild(unsigned int num) const
-{
-	return m_pGroup->getChild(num);
-}
-
-unsigned int vtGroup::GetNumChildren() const
-{
-	// shoudln't happen but... safety check anyway
-	if (m_pGroup == NULL)
-		return 0;
-	return m_pGroup->getNumChildren();
-}
-
-bool vtGroup::ContainsChild(vtNode *pNode) const
-{
-	int i, children = GetNumChildren();
-	for (i = 0; i < children; i++)
-	{
-		if (GetChild(i) == pNode)
-			return true;
-	}
-	return false;
+	SetOsgGroup(this);
 }
 
 
@@ -1325,159 +1207,10 @@ bool vtGroup::ContainsChild(vtNode *pNode) const
 // vtTransform
 //
 
-vtTransform::vtTransform() : vtGroup(true)
+vtTransform::vtTransform()
 {
-	m_pTransform = new osg::MatrixTransform;
-	SetOsgGroup(m_pTransform);
+	SetOsgTransform(this);
 }
-
-vtTransform::vtTransform(osg::MatrixTransform *mt) : vtGroup(true)
-{
-	m_pTransform = mt;
-	SetOsgGroup(m_pTransform);
-}
-
-vtNode *vtTransform::Clone(bool bDeep)
-{
-	vtTransform *newtrans = new vtTransform;
-	newtrans->CloneFrom(this, bDeep);
-	return newtrans;
-}
-
-void vtTransform::CloneFrom(vtTransform *xform, bool bDeep)
-{
-	// copy the transform's matrix
-	const osg::MatrixTransform *mt = xform->m_pTransform;
-	m_pTransform->setMatrix(mt->getMatrix());
-
-	// and the parent members
-	vtGroup::CloneFrom(xform, bDeep);
-}
-
-void vtTransform::Release()
-{
-	// Check if there are no more external references to this transform node.
-	if (m_pNode->referenceCount() == 1)
-		m_pTransform = NULL;
-	vtGroup::Release();
-}
-
-void vtTransform::Identity()
-{
-	m_pTransform->setMatrix(Matrix::identity());
-}
-
-FPoint3 vtTransform::GetTrans() const
-{
-	Vec3 v = m_pTransform->getMatrix().getTrans();
-	return FPoint3(v[0], v[1], v[2]);
-}
-
-void vtTransform::SetTrans(const FPoint3 &pos)
-{
-	osg::Matrix m = m_pTransform->getMatrix();
-	m.setTrans(pos.x, pos.y, pos.z);
-	m_pTransform->setMatrix(m);
-
-	m_pTransform->dirtyBound();
-}
-
-void vtTransform::Translate1(const FPoint3 &pos)
-{
-	// OSG 0.8.43 and later
-	m_pTransform->postMult(Matrix::translate(pos.x, pos.y, pos.z));
-}
-
-void vtTransform::TranslateLocal(const FPoint3 &pos)
-{
-	// OSG 0.8.43 and later
-	m_pTransform->preMult(Matrix::translate(pos.x, pos.y, pos.z));
-}
-
-void vtTransform::Rotate2(const FPoint3 &axis, double angle)
-{
-	// OSG 0.8.43 and later
-	m_pTransform->postMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
-}
-
-void vtTransform::RotateLocal(const FPoint3 &axis, double angle)
-{
-	// OSG 0.8.43 and later
-	m_pTransform->preMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
-}
-
-void vtTransform::RotateParent(const FPoint3 &axis, double angle)
-{
-	// OSG 0.8.43 and later
-	Vec3 trans = m_pTransform->getMatrix().getTrans();
-	m_pTransform->postMult(Matrix::translate(-trans)*
-			  Matrix::rotate(angle, axis.x, axis.y, axis.z)*
-			  Matrix::translate(trans));
-}
-
-FQuat vtTransform::GetOrient() const
-{
-	const Matrix &xform = m_pTransform->getMatrix();
-	Quat q;
-	xform.get(q);
-	return FQuat(q.x(), q.y(), q.z(), q.w());
-}
-
-FPoint3 vtTransform::GetDirection() const
-{
-	const Matrix &xform = m_pTransform->getMatrix();
-	const osg_matrix_value *ptr = xform.ptr();
-	return FPoint3(-ptr[8], -ptr[9], -ptr[10]);
-}
-
-void vtTransform::SetDirection(const FPoint3 &point, bool bPitch)
-{
-	// get current matrix
-	FMatrix4 m4;
-	GetTransform1(m4);
-
-	// remember where it is now
-	FPoint3 trans = m4.GetTrans();
-
-	// orient it in the desired direction
-	FMatrix3 m3;
-	m3.MakeOrientation(point, bPitch);
-	m4.SetFromMatrix3(m3);
-
-	// restore translation
-	m4.SetTrans(trans);
-
-	// set current matrix
-	SetTransform1(m4);
-}
-
-void vtTransform::Scale3(float x, float y, float z)
-{
-	// OSG 0.8.43 and later
-	m_pTransform->preMult(Matrix::scale(x, y, z));
-}
-
-void vtTransform::SetTransform1(const FMatrix4 &mat)
-{
-	Matrix mat_osg;
-
-	ConvertMatrix4(&mat, &mat_osg);
-
-	m_pTransform->setMatrix(mat_osg);
-	m_pTransform->dirtyBound();
-}
-
-void vtTransform::GetTransform1(FMatrix4 &mat) const
-{
-	const Matrix &xform = m_pTransform->getMatrix();
-	ConvertMatrix4(&xform, &mat);
-}
-
-void vtTransform::PointTowards(const FPoint3 &point, bool bPitch)
-{
-	SetDirection(point - GetTrans(), bPitch);
-}
-
 
 ///////////////////////////////////////////////////////////////////////
 // vtFog
@@ -1485,34 +1218,8 @@ void vtTransform::PointTowards(const FPoint3 &point, bool bPitch)
 
 RGBf vtFog::s_white(1, 1, 1);
 
-vtFog::vtFog() : vtGroup(false)
+vtFog::vtFog()
 {
-}
-
-vtNode *vtFog::Clone(bool bDeep)
-{
-	vtFog *newfog = new vtFog;
-	newfog->CloneFrom(this, bDeep);
-	return newfog;
-}
-
-void vtFog::CloneFrom(vtFog *fog, bool bDeep)
-{
-	// copy
-	// TODO
-
-	// and the parent members
-	vtGroup::CloneFrom(fog, bDeep);
-}
-
-void vtFog::Release()
-{
-	if (m_pNode->referenceCount() == 1)
-	{
-		m_pFogStateSet = NULL;
-		m_pFog = NULL;
-	}
-	vtGroup::Release();
 }
 
 /**
@@ -1531,26 +1238,11 @@ void vtFog::Release()
  *		increase of the fog density.
  */
 void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color,
-				   enum FogType Type)
+				   osg::Fog::Mode eType)
 {
-	osg::StateSet *set = GetOsgNode()->getStateSet();
-	if (!set)
-	{
-		m_pFogStateSet = new osg::StateSet;
-		set = m_pFogStateSet.get();
-		GetOsgNode()->setStateSet(set);
-	}
-
+	osg::StateSet *set = getOrCreateStateSet();
 	if (bOn)
 	{
-		Fog::Mode eType;
-		switch (Type)
-		{
-		case FM_LINEAR: eType = Fog::LINEAR; break;
-		case FM_EXP: eType = Fog::EXP; break;
-		case FM_EXP2: eType = Fog::EXP2; break;
-		default: return;
-		}
 		m_pFog = new Fog;
 		m_pFog->setMode(eType);
 		m_pFog->setDensity(0.25f);	// not used for linear
@@ -1572,12 +1264,10 @@ void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color,
 // vtShadow
 //
 
-vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowTextureUnit), vtGroup(true)
+vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowTextureUnit)
 {
-	m_pShadowedScene = new osgShadow::ShadowedScene;
-
-	m_pShadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
-	m_pShadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
+	setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
+	setCastsShadowTraversalMask(CastsShadowTraversalMask);
 
 #if VTLISPSM
 	osg::ref_ptr<CLightSpacePerspectiveShadowTechnique> pShadowTechnique = new CLightSpacePerspectiveShadowTechnique;
@@ -1597,45 +1287,21 @@ vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowText
 	pShadowTechnique->SetShadowTextureUnit(m_ShadowTextureUnit);
 	pShadowTechnique->SetShadowSphereRadius(50.0);
 #endif
-	m_pShadowedScene->setShadowTechnique(pShadowTechnique.get());
+	setShadowTechnique(pShadowTechnique.get());
 
-	SetOsgGroup(m_pShadowedScene);
-}
-
-vtNode *vtShadow::Clone(bool bDeep)
-{
-	vtShadow *newshadow = new vtShadow(m_ShadowTextureUnit);
-	newshadow->CloneFrom(this, bDeep);
-	return newshadow;
-}
-
-void vtShadow::CloneFrom(vtShadow *shadow, bool bDeep)
-{
-	// copy
-	// TODO
-
-	// and the parent members
-	vtGroup::CloneFrom(shadow, bDeep);
-}
-
-void vtShadow::Release()
-{
-	if (m_pNode->referenceCount() == 1)
-		m_pShadowedScene = NULL;
-
-	vtGroup::Release();
+	SetOsgGroup(this);
 }
 
 void vtShadow::SetDarkness(float bias)
 {
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->SetShadowDarkness(bias);
 }
 
 float vtShadow::GetDarkness()
 {
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		return pTechnique->GetShadowDarkness();
 	else
@@ -1645,11 +1311,11 @@ float vtShadow::GetDarkness()
 void vtShadow::AddAdditionalTerrainTextureUnit(const unsigned int Unit, const unsigned int Mode)
 {
 #if VTLISPSM
-	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->AddAdditionalTerrainTextureUnit(Unit, Mode);
 #else
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->AddMainSceneTextureUnit(Unit, Mode);
 #endif
@@ -1658,11 +1324,11 @@ void vtShadow::AddAdditionalTerrainTextureUnit(const unsigned int Unit, const un
 void vtShadow::RemoveAdditionalTerrainTextureUnit(const unsigned int Unit)
 {
 #if VTLISPSM
-	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->RemoveAdditionalTerrainTextureUnit(Unit);
 #else
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->RemoveMainSceneTextureUnit(Unit);
 #endif
@@ -1671,7 +1337,7 @@ void vtShadow::RemoveAdditionalTerrainTextureUnit(const unsigned int Unit)
 void vtShadow::RemoveAllAdditionalTerrainTextureUnits()
 {
 #if VTLISPSM
-	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->RemoveAllAdditionalTerrainTextureUnits();
 #endif
@@ -1680,11 +1346,11 @@ void vtShadow::RemoveAllAdditionalTerrainTextureUnits()
 void vtShadow::SetShadowTextureResolution(const unsigned int ShadowTextureResolution)
 {
 #if VTLISPSM
-	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->setTextureSize(osg::Vec2s(ShadowTextureResolution,ShadowTextureResolution));
 #else
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->SetShadowTextureResolution(ShadowTextureResolution);
 #endif
@@ -1692,14 +1358,14 @@ void vtShadow::SetShadowTextureResolution(const unsigned int ShadowTextureResolu
 
 void vtShadow::SetRecalculateEveryFrame(const bool RecalculateEveryFrame)
 {
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->SetRecalculateEveryFrame(RecalculateEveryFrame);
 }
 
 bool vtShadow::GetRecalculateEveryFrame() const
 {
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	const CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<const CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		return pTechnique->GetRecalculateEveryFrame();
 	else 
@@ -1709,11 +1375,11 @@ bool vtShadow::GetRecalculateEveryFrame() const
 void vtShadow::SetShadowSphereRadius(const float ShadowSphereRadius)
 {
 #if VTLISPSM
-	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->setMaxFarPlane(ShadowSphereRadius);
 #else
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->SetShadowSphereRadius(ShadowSphereRadius);
 #endif
@@ -1721,21 +1387,21 @@ void vtShadow::SetShadowSphereRadius(const float ShadowSphereRadius)
 
 void vtShadow::SetHeightField3d(vtHeightField3d *pHeightField3d)
 {
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->SetHeightField3d(pHeightField3d);
 }
 
 void vtShadow::AddLodGridToIgnore(vtLodGrid* pLodGrid)
 {
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->AddLodGridToIgnore(pLodGrid);
 }
 
 void vtShadow::ForceShadowUpdate()
 {
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		pTechnique->ForceShadowUpdate();
 }
@@ -1743,7 +1409,7 @@ void vtShadow::ForceShadowUpdate()
 void vtShadow::SetDebugHUD(vtGroup *pGroup)
 {
 #if defined (VTDEBUG) && defined (VTDEBUGSHADOWS)
-	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(m_pShadowedScene->getShadowTechnique());
+	CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 	{
 		osg::ref_ptr<osg::Camera> pCamera = pTechnique->makeDebugHUD();
@@ -1762,78 +1428,42 @@ vtLight::vtLight()
 {
 	// Lights can now go into the scene graph in OSG, with LightSource.
 	// A lightsource creates a light, which we can get with getLight().
-	m_pLightSource = new osg::LightSource;
-	SetOsgNode(m_pLightSource);
+	SetOsgGroup(this);
 
 	// However, because lighting is also a 'state', we need to inform
 	// the whole scene graph that we have another light.
-	m_pLightSource->setLocalStateSetModes(osg::StateAttribute::ON);
-	m_pLightSource->setStateSetModes(*vtGetScene()->getViewer()->getCamera()->getOrCreateStateSet(),osg::StateAttribute::ON);
-}
-
-vtNode *vtLight::Clone(bool bDeep)
-{
-	vtLight *light = new vtLight;
-	light->CloneFrom(this);
-	return light;
-}
-
-void vtLight::CloneFrom(const vtLight *rhs)
-{
-	// copy attributes
-	SetDiffuse(rhs->GetDiffuse());
-	SetAmbient(rhs->GetAmbient());
-}
-
-void vtLight::Release()
-{
-	// Check if we are completely deferenced
-	if (m_pNode->referenceCount() == 1)
-		m_pLightSource = NULL;
-	vtNode::Release();
+	setLocalStateSetModes(osg::StateAttribute::ON);
+	setStateSetModes(*vtGetScene()->getViewer()->getCamera()->getOrCreateStateSet(),osg::StateAttribute::ON);
 }
 
 void vtLight::SetDiffuse(const RGBf &color)
 {
-	GetOsgLight()->setDiffuse(v2s(color));
+	getLight()->setDiffuse(v2s(color));
 }
 
 RGBf vtLight::GetDiffuse() const
 {
-	return s2v(GetOsgLight()->getDiffuse());
+	return s2v(getLight()->getDiffuse());
 }
 
 void vtLight::SetAmbient(const RGBf &color)
 {
-	GetOsgLight()->setAmbient(v2s(color));
+	getLight()->setAmbient(v2s(color));
 }
 
 RGBf vtLight::GetAmbient() const
 {
-	return s2v(GetOsgLight()->getAmbient());
+	return s2v(getLight()->getAmbient());
 }
 
 void vtLight::SetSpecular(const RGBf &color)
 {
-	GetOsgLight()->setSpecular(v2s(color));
+	getLight()->setSpecular(v2s(color));
 }
 
 RGBf vtLight::GetSpecular() const
 {
-	return s2v(GetOsgLight()->getSpecular());
-}
-
-void vtLight::SetEnabled(bool bOn)
-{
-/*
-	// TODO - figure out the long discussion on the OSG list about how to
-	//  actually disable a light.
-	if (bOn)
-		m_pLightSource->setLocalStateSetModes(StateAttribute::ON);
-	else
-		m_pLightSource->setLocalStateSetModes(StateAttribute::OFF);
-*/
-	vtNode::SetEnabled(bOn);
+	return s2v(getLight()->getSpecular());
 }
 
 
@@ -1848,25 +1478,6 @@ vtCamera::vtCamera() : vtTransform()
 	m_fFOV = PIf/3.0f;
 	m_bOrtho = false;
 	m_fWidth = 1;
-}
-
-vtNode *vtCamera::Clone(bool bDeep)
-{
-	vtCamera *newcam = new vtCamera;
-	newcam->CloneFrom(this, bDeep);
-	return newcam;
-}
-
-void vtCamera::CloneFrom(vtCamera *rhs, bool bDeep)
-{
-	m_fFOV = rhs->m_fFOV;
-	m_fHither = rhs->m_fHither;
-	m_fYon = rhs->m_fYon;
-	m_bOrtho = rhs->m_bOrtho;
-	m_fWidth = rhs->m_fWidth;
-
-	// Also parent
-	vtTransform::CloneFrom(rhs, bDeep);
 }
 
 /**
@@ -2391,6 +2002,7 @@ void vtDynGeom::ApplyMaterial(vtMaterial *mat)
 	}
 }
 
+
 ///////////////////////////////////////////////////////////
 // vtHUD
 
@@ -2406,15 +2018,12 @@ void vtDynGeom::ApplyMaterial(vtMaterial *mat)
  *		Otherwise, they are considered in normalized window coordinates,
  *		from (0,0) in the lower-left to (1,1) in the upper right.
  */
-vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true)
+vtHUD::vtHUD(bool bPixelCoords)
 {
 	osg::MatrixTransform* modelview_abs = new osg::MatrixTransform;
 	modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 	modelview_abs->setMatrix(osg::Matrix::identity());
-
-	m_projection = new osg::Projection;
-	m_projection->addChild(modelview_abs);
-	SetOsgGroup(m_projection);
+	addChild(modelview_abs);
 
 	// We can set the projection to pixels (0,width,0,height) or
 	//	normalized (0,1,0,1)
@@ -2425,35 +2034,25 @@ vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true)
 
 		// safety check first, avoid /0 crash
 		if (winsize.x != 0 && winsize.y != 0)
-			m_projection->setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
+			setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
 	}
 	else
 	{
 		// Normalized window coordinates, 0 to 1
-		m_projection->setMatrix(osg::Matrix::ortho2D(0, 1, 0, 1));
+		setMatrix(osg::Matrix::ortho2D(0, 1, 0, 1));
 	}
 
 	// To ensure that the sprite appears on top we can use osg::Depth to
 	//  force the depth fragments to be placed at the front of the screen.
-	osg::StateSet* stateset = m_projection->getOrCreateStateSet();
+	osg::StateSet* stateset = getOrCreateStateSet();
 	stateset->setAttribute(new osg::Depth(osg::Depth::LESS,0.0,0.0001));
 
 	// A HUD node is unlike other group nodes!
 	// The modelview node is the container for the node's children.
-	m_pGroup = modelview_abs;
+	SetOsgGroup(modelview_abs);
+	SetOsgNode(this);
 
 	vtGetScene()->SetHUD(this);
-}
-
-void vtHUD::Release()
-{
-	// Check if there are no more external references to this HUD node.
-	if (m_pNode->referenceCount() == 1)
-	{
-		m_projection = NULL;
-		vtGetScene()->SetHUD(NULL);
-	}
-	vtGroup::Release();
 }
 
 void vtHUD::SetWindowSize(int w, int h)
@@ -2462,7 +2061,7 @@ void vtHUD::SetWindowSize(int w, int h)
 	{
 		if (w != 0 && h != 0)
 		{
-			m_projection->setMatrix(osg::Matrix::ortho2D(0, w, 0, h));
+			setMatrix(osg::Matrix::ortho2D(0, w, 0, h));
 			// VTLOG("HUD SetWindowSize %d %d\n", w, h);
 		}
 	}
@@ -2494,7 +2093,7 @@ void vtHUD::SetWindowSize(int w, int h)
  *
  * \return The number of intersection hits (size of the hitlist array).
  */
-int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
+int vtIntersect(osg::Node *pTop, const FPoint3 &start, const FPoint3 &end,
 				vtHitList &hitlist, bool bLocalCoords, bool bNativeNodes)
 {
 	// set up intersect visitor and create the line segment
@@ -2506,8 +2105,7 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 	visitor.addLineSegment(segment.get());
 
 	// the accept() method does the intersection testing work
-	osg::Node *osgnode = pTop->GetOsgNode();
-	osgnode->accept(visitor);
+	pTop->accept(visitor);
 
 	hlist = visitor.getHitList(segment.get());
 
@@ -2544,35 +2142,9 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 		if (!hitr->_geode.valid())
 			continue;
 
-		osg::Node *onode = hitr->_geode.get();
-		vtNode *vnode = NULL;
-		if (bNativeNodes)
-		{
-			vnode = (vtNode *) (hitr->_geode->getUserData());
-			if (vnode == NULL)
-			{
-				// a bit radical here - wrap the OSG node in a VTLIB wrapper
-				//  on the fly.  hope it doesn't get confused with refcounts.
-				vtNativeNode *native = new vtNativeNode(onode);
-				vnode = native;
-			}
-		}
-		else
-		{
-			// Look up along the nodepath for a real vtNode
-			osg::NodePath &NodePath = hitr->getNodePath();
-			for (osg::NodePath::reverse_iterator Ritr = NodePath.rbegin(); Ritr != NodePath.rend(); ++Ritr)
-			{
-				vnode = dynamic_cast<vtNode*>((*Ritr)->getUserData());
-				if (vnode)
-					break;
-			}
-			if (NULL == vnode)
-				continue;
-		}
 		// put it on the list of hit results
 		vtHit hit;
-		hit.node = vnode;
+		hit.geode = hitr->_geode.get();
 		if (bLocalCoords)
 		{
 			hit.point = s2v(hitr->getLocalIntersectPoint());
@@ -2602,7 +2174,7 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
 
 
 // Diagnostic function to help debugging
-void vtLogNativeGraph(osg::Node *node, bool bExtents, bool bRefCounts, int indent)
+void vtLogGraph(osg::Node *node, bool bExtents, bool bRefCounts, int indent)
 {
 	for (int i = 0; i < indent; i++)
 		VTLOG1(" ");
@@ -2688,7 +2260,7 @@ void vtLogNativeGraph(osg::Node *node, bool bExtents, bool bRefCounts, int inden
 	if (grp)
 	{
 		for (unsigned int i = 0; i < grp->getNumChildren(); i++)
-			vtLogNativeGraph(grp->getChild(i), bExtents, bRefCounts, indent+2);
+			vtLogGraph(grp->getChild(i), bExtents, bRefCounts, indent+2);
 	}
 	osg::Geode *geode = dynamic_cast<osg::Geode*>(node);
 	if (geode)
@@ -2715,54 +2287,6 @@ void vtLogNativeGraph(osg::Node *node, bool bExtents, bool bRefCounts, int inden
 			}
 			VTLOG1("\n");
 		}
-	}
-}
-
-// Diagnostic function to help debugging
-void vtLogGraph(vtNode *node, int indent)
-{
-	for (int i = 0; i < indent; i++)
-		VTLOG1(" ");
-	if (node)
-	{
-		VTLOG("<%x>", node);
-		if (dynamic_cast<vtHUD*>(node))
-			VTLOG1(" (vtHUD)");
-
-		else if (dynamic_cast<vtCamera*>(node))
-			VTLOG1(" (vtCamera)");
-		else if (dynamic_cast<vtLOD*>(node))
-			VTLOG1(" (vtLOD)");
-		else if (dynamic_cast<vtDynGeom*>(node))
-			VTLOG1(" (vtDynGeom)");
-		else if (dynamic_cast<vtMovGeom*>(node))
-			VTLOG1(" (vtMovGeom)");
-		else if (dynamic_cast<vtGeode*>(node))
-			VTLOG1(" (vtGeode)");
-		else if (dynamic_cast<vtLight*>(node))
-			VTLOG1(" (vtLight)");
-
-		else if (dynamic_cast<vtTransform*>(node))
-			VTLOG1(" (vtTransform)");
-		else if (dynamic_cast<vtGroup*>(node))
-			VTLOG1(" (vtGroup)");
-		else if (dynamic_cast<vtNativeNode*>(node))
-			VTLOG1(" (vtNativeNode)");
-		else if (dynamic_cast<vtNode*>(node))
-			VTLOG1(" (vtNode)");
-		else
-			VTLOG1(" (non-node!)");
-
-		VTLOG(" '%s'\n", node->getName());
-	}
-	else
-		VTLOG1("<null>\n");
-
-	vtGroup *grp = dynamic_cast<vtGroup*>(node);
-	if (grp)
-	{
-		for (unsigned int i = 0; i < grp->GetNumChildren(); i++)
-			vtLogGraph(grp->GetChild(i), indent+2);
 	}
 }
 

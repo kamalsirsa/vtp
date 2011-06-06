@@ -18,7 +18,7 @@
  * A TimeTarget is a kind of vtTarget which expects to be told what time
  * it is.
  */
-class vtTimeTarget : public vtTarget
+class vtTimeTarget : public osg::Referenced
 {
 public:
 	virtual void SetTime(const vtTime &time) {}

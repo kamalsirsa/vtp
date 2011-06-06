@@ -35,7 +35,7 @@ void ItemGroup::CreateNodes()
 	m_pLOD->setName("Individual Container");
 	m_pTop->setName("ItemGroupTop");
 	m_pTop->addChild(m_pLOD);
-	m_pTop->AddChild(m_pGroup);
+	m_pTop->addChild(m_pGroup);
 }
 
 void ItemGroup::AttemptToLoadModels()
@@ -57,11 +57,11 @@ void ItemGroup::AttemptToLoadModels()
 void ItemGroup::AttachModels(osgText::Font *font)
 {
 	// Undo previous attachments
-	vtNode *pNode;
-	while (pNode = m_pLOD->GetChild(0))
-		m_pLOD->removeChild(pNode->GetOsgNode());
-	while (pNode = m_pGroup->GetChild(0))
-		m_pGroup->RemoveChild(pNode);
+	osg::Node *pNode;
+	while (pNode = m_pLOD->getChild(0))
+		m_pLOD->removeChild(pNode);
+	while (pNode = m_pGroup->getChild(0))
+		m_pGroup->removeChild(pNode);
 
 	// re-attach
 	int i, num_models = m_pItem->NumModels();
@@ -71,12 +71,12 @@ void ItemGroup::AttachModels(osgText::Font *font)
 	for (i = 0; i < num_models; i++)
 	{
 		vtModel *mod = m_pItem->GetModel(i);
-		vtNode *node = GetMainFrame()->m_nodemap[mod];
+		osg::Node *node = GetMainFrame()->m_nodemap[mod];
 		if (node)
 		{
-			m_pGroup->AddChild(node);
-			m_pLOD->addChild(node->GetOsgNode());
-			node->GetBoundSphere(sph);
+			m_pGroup->addChild(node);
+			m_pLOD->addChild(node);
+			GetBoundSphere(node, sph);
 			if (sph.radius > largest_sph.radius)
 				largest_sph = sph;
 		}

@@ -16,8 +16,6 @@
 #include "vtlib/core/TerrainLayers.h"
 #include "vtlib/core/Globe.h"
 
-class vtNode;
-
 enum LayerType
 {
 	LT_UNKNOWN = -1,

@@ -48,7 +48,7 @@ vtStructureLayer *LayerSet::FindStructureFromNode(osg::Node *pNode, int &iOffset
 		for (int j = 0; (j < iNumStructures) && !bFound; j++)
 		{
 			vtStructure3d *pStructure3d = slay->GetStructure3d(j);
-			if (FindAncestor(pNode, pStructure3d->GetContainer()->GetOsgNode()) ||
+			if (FindAncestor(pNode, pStructure3d->GetContainer()) ||
 				FindAncestor(pNode, pStructure3d->GetContained()) ||
 				FindAncestor(pNode, pStructure3d->GetGeom()))
 			{

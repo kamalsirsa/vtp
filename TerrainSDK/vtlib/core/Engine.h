@@ -37,18 +37,6 @@ protected:
 	bool m_bEnabled;
 };
 
-/** This class is a placeholder parent class for all objects which can
- * be the target of an Engine (vtEngine).  Given a vtTarget point, you
- * can use dynamic_cast<> to downcast safely to any specific child class.
- */
-class vtTarget
-{
-public:
-	// need at least one method to make this class polymorphic
-	virtual void PlaceHolder() {}
-};
-
-
 typedef osg::ref_ptr<class vtEngine> vtEnginePtr;
 
 /**
@@ -74,13 +62,13 @@ public:
 	 * target.
 	 * \param which The number of the target (default 0).
 	 */
-	vtTarget *GetTarget(unsigned int which = 0);
+	osg::Referenced *GetTarget(unsigned int which = 0);
 	/** Adds a target to the engine. */
-	void AddTarget(vtTarget *ptr) { m_Targets.Append(ptr); }
+	void AddTarget(osg::Referenced *ptr) { m_Targets.Append(ptr); }
 	/** Sets a single target for this engine (for backward compatibility.) */
-	void SetTarget(vtTarget *ptr) { m_Targets.SetAt(0, ptr); }
+	void SetTarget(osg::Referenced *ptr) { m_Targets.SetAt(0, ptr); }
 	/** Removes a target from the engine. */
-	void RemoveTarget(vtTarget *ptr);
+	void RemoveTarget(osg::Referenced *ptr);
 
 	/// Return the number of targets for this engine.
 	unsigned int NumTargets() { return m_Targets.GetSize(); }
@@ -115,7 +103,7 @@ public:
 	void AddChildrenToList(vtArray<vtEngine*> &list, bool bEnabledOnly);
 
 protected:
-	vtArray<vtTarget*> m_Targets;
+	vtArray<osg::Referenced*> m_Targets;
 	std::vector<vtEnginePtr> m_Children;
 	vtString		 m_strName;
 	vtWindow		*m_pWindow;

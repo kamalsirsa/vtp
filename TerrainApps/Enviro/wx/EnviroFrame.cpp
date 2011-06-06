@@ -2254,9 +2254,9 @@ void EnviroFrame::OnSceneSave(wxCommandEvent& event)
 {
 	vtGroup *pRoot = vtGetTS()->GetTop();
 #if (OPENSCENEGRAPH_MAJOR_VERSION==2 && OPENSCENEGRAPH_MINOR_VERSION>=2) || OPENSCENEGRAPH_MAJOR_VERSION>2
-	osgDB::Registry::instance()->writeNode(*pRoot->GetOsgGroup(), std::string("scene.osg"), NULL);
+	osgDB::Registry::instance()->writeNode(*pRoot, std::string("scene.osg"), NULL);
 #else
-	osgDB::Registry::instance()->writeNode(*pRoot->GetOsgGroup(), "scene.osg");
+	osgDB::Registry::instance()->writeNode(*pRoot, "scene.osg");
 #endif
 }
 
@@ -3373,7 +3373,7 @@ void EnviroFrame::OnPopupShadow(wxCommandEvent& event)
 	pTerr->ForceShadowUpdate();
 }
 
-void EnviroFrame::CarveTerrainToFitNode(vtNode *node)
+void EnviroFrame::CarveTerrainToFitNode(osg::Node *node)
 {
 	vtTerrain *terr = GetCurrentTerrain();
 	if (!terr)
@@ -3383,7 +3383,7 @@ void EnviroFrame::CarveTerrainToFitNode(vtNode *node)
 		return;
 
 	FSphere sph;
-	node->GetBoundSphere(sph, true);
+	GetBoundSphere(node, sph, true);
 
 	int changed = 0;
 	int cols, rows;

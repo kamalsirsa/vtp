@@ -30,66 +30,43 @@ void vtLodGrid::DetermineCell(const FPoint3 &pos, int &a, int &b)
 	b = (int) ((pos.z - m_origin.z) / m_step.z);
 }
 
-bool vtLodGrid::AppendToGrid(vtTransform *pTNode)
+bool vtLodGrid::AddToGrid(osg::Node *pNode)
 {
-	vtGroup *pGroup = FindCellParent(pTNode->GetTrans());
+	osg::BoundingSphere sph = pNode->getBound();
+
+	osg::Group *pGroup = FindCellParent(s2v(sph.center()));
 	if (pGroup)
 	{
-		pGroup->AddChild(pTNode);
+		pGroup->addChild(pNode);
 		return true;
 	}
 	else
 		return false;
 }
 
-bool vtLodGrid::AppendToGrid(vtGeode *pGNode)
+void vtLodGrid::RemoveFromGrid(osg::Node *pNode)
 {
-	osg::BoundingSphere sph = pGNode->getBound();
-
-	vtGroup *pGroup = FindCellParent(s2v(sph.center()));
-	if (pGroup)
-	{
-		pGroup->addChild(pGNode);
-		return true;
-	}
+	osg::Group *pGroup = FindCellParent(s2v(pNode->getBound().center()));
+	if (pGroup && pGroup->getChildIndex(pNode) != pGroup->getNumChildren())
+		pGroup->removeChild(pNode);
 	else
-		return false;
-}
-
-void vtLodGrid::RemoveFromGrid(vtTransform *pTNode)
-{
-	vtGroup *pGroup = FindCellParent(pTNode->GetTrans());
-	if (pGroup)
-		pGroup->RemoveChild(pTNode);
-}
-
-void vtLodGrid::RemoveFromGrid(vtGeode *pGNode)
-{
-	osg::BoundingSphere sph = pGNode->getBound();
-
-	vtGroup *pGroup = FindCellParent(s2v(sph.center()));
-	if (pGroup)
-		pGroup->removeChild(pGNode);
-}
-
-/**
- * This version is slower than calling RemoveFromGrid, but it covers more
- * situations.  It searches through all of the LOD grid's cells looking
- * for the node, so it will work even in cases where the object may have
- * moved out of its original cell.
- */
-void vtLodGrid::RemoveNodeFromGrid(vtNode *pNode)
-{
-	int a, b;
-	for (a = 0; a < m_dim; a++)
 	{
-		for (b = 0; b < m_dim; b++)
+		/*
+		 * Search through all of the LOD grid's cells looking
+		 * for the node, so we can handle even cases where the object may have
+		 * moved out of its original cell.
+		 */
+		int a, b;
+		for (a = 0; a < m_dim; a++)
 		{
-			vtGroup *group = GetCell(a, b);
-			if (group && group->ContainsChild(pNode))
+			for (b = 0; b < m_dim; b++)
 			{
-				group->RemoveChild(pNode);
-				return;
+				osg::Group *group = GetCell(a, b);
+				if (group && group->getChildIndex(pNode) != group->getNumChildren())
+				{
+					group->removeChild(pNode);
+					return;
+				}
 			}
 		}
 	}
@@ -101,6 +78,13 @@ void vtLodGrid::RemoveNodeFromGrid(vtNode *pNode)
 
 vtSimpleLodGrid::vtSimpleLodGrid()
 {
+	m_pCells = NULL;
+}
+
+vtSimpleLodGrid::~vtSimpleLodGrid()
+{
+	// free our pointers to children; they are removed separately
+	free(m_pCells);
 	m_pCells = NULL;
 }
 
@@ -127,28 +111,6 @@ void vtSimpleLodGrid::Setup(const FPoint3 &origin, const FPoint3 &size,
 	m_pHeightField = pHF;
 }
 
-void vtSimpleLodGrid::Release()
-{
-	// get rid of children first
-	vtLOD *lod;
-	int a, b;
-	for (a = 0; a < m_dim; a++)
-	{
-		for (b = 0; b < m_dim; b++)
-		{
-			lod = m_pCells[CellIndex(a,b)];
-			if (lod != NULL)
-				removeChild(lod);
-		}
-	}
-	free(m_pCells);
-	m_pCells = NULL;
-
-	// now self-destruct
-	vtGroup::Release();
-}
-
-
 void vtSimpleLodGrid::AllocateCell(int a, int b)
 {
 	int i = CellIndex(a,b);
@@ -174,22 +136,22 @@ void vtSimpleLodGrid::AllocateCell(int a, int b)
 	vtGroup *group = new vtGroup;
 	group->setName("LOD group");
 	m_pCells[i]->SetCenter(lod_center);
-	m_pCells[i]->addChild(group->GetOsgNode());
+	m_pCells[i]->addChild(group);
 
 	addChild(m_pCells[i]);
 }
 
 
-vtGroup *vtSimpleLodGrid::GetCell(int a, int b)
+osg::Group *vtSimpleLodGrid::GetCell(int a, int b)
 {
 	int i = CellIndex(a, b);
 	vtLOD *pCell = m_pCells[i];
 	if (!pCell)
 		return NULL;
-	return (vtGroup *) pCell->GetChild(0);
+	return pCell;
 }
 
-vtGroup *vtSimpleLodGrid::FindCellParent(const FPoint3 &point)
+osg::Group *vtSimpleLodGrid::FindCellParent(const FPoint3 &point)
 {
 	int a, b;
 
@@ -201,7 +163,7 @@ vtGroup *vtSimpleLodGrid::FindCellParent(const FPoint3 &point)
 	if (!m_pCells[i])
 		AllocateCell(a, b);
 
-	return (vtGroup *)m_pCells[i]->GetChild(0);
+	return m_pCells[i];
 }
 
 void vtSimpleLodGrid::SetDistance(float fLODDistance)

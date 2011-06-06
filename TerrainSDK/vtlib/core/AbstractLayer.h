@@ -132,7 +132,7 @@ protected:
 
 	/// This is the set of features which the layer contains.
 	vtFeatureSet *pSet;
-	vtGroup *pContainer;
+	vtGroupPtr pContainer;
 	vtGroup *pGeomGroup;
 	vtGroup *pLabelGroup;
 	vtMultiTexture *pMultiTexture;

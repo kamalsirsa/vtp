@@ -35,7 +35,7 @@ public:
 
 	DPoint2 m_Point;
 
-	vtTransform *m_pTrans;
+	vtTransformPtr m_pTrans;
 };
 
 /**

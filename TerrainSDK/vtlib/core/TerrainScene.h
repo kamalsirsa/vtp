@@ -105,7 +105,7 @@ public:
 
 protected:
 	// main scene graph outline
-	vtGroup		*m_pTop;
+	vtGroupPtr	m_pTop;
 	vtSkyDome	*m_pSkyDome;
 
 	void _CreateSky();

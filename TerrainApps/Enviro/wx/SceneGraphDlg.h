@@ -36,18 +36,16 @@ protected:
 	wxTreeCtrl* GetScenetree()  { return (wxTreeCtrl*) FindWindow( ID_SCENETREE ); }
 
 	void CreateImageList(int size = 16);
-	void AddNodeItemsRecursively(wxTreeItemId hParentItem,
-								 vtNode *pNode, int depth);
-	void AddEnginesRecursively(wxTreeItemId hParentItem,
-							   vtEngine *pEng, int depth);
+	void AddNodeItemsRecursively(wxTreeItemId hParentItem, osg::Node *pNode, int depth);
+	void AddEnginesRecursively(wxTreeItemId hParentItem, vtEngine *pEng, int depth);
 private:
 	// WDR: member variable declarations for SceneGraphDlg
 	wxImageList *m_imageListNormal;
 	wxButton	*m_pZoomTo;
 	wxCheckBox  *m_pEnabled;
 	wxTreeCtrl  *m_pTree;
-	vtEngine *m_pSelectedEngine;
-	vtNode		*m_pSelectedNode;
+	vtEngine	*m_pSelectedEngine;
+	osg::Node	*m_pSelectedNode;
 
 private:
 	// WDR: handler declarations for SceneGraphDlg

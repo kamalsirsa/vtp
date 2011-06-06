@@ -49,7 +49,7 @@ public:
 	virtual vtItem *NewItem() { return new vtItem3d; }
 	void ReleaseContents();
 
-	vtGroup *m_pGroup;
+	vtGroupPtr m_pGroup;
 };
 
 /*@}*/	// group content

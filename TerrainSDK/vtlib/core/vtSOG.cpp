@@ -123,13 +123,13 @@ void OutputSOG::WriteSingleGeometry(FILE *fp, const vtGeode *pGeode)
 void OutputSOG::WriteMultiGeometry(FILE *fp, const vtGroup *pParent)
 {
 	int i;
-	short num_geom = pParent->GetNumChildren();
+	short num_geom = pParent->getNumChildren();
 
 	Write(fp, FT_NUM_GEOMETRIES, num_geom);
 	for (i = 0; i < num_geom; i++)
 	{
-		vtNode *pChild = pParent->GetChild(i);
-		vtGeode *pGeode = dynamic_cast<vtGeode*>(pChild);
+		const osg::Node *pChild = pParent->getChild(i);
+		const vtGeode *pGeode = dynamic_cast<const vtGeode*>(pChild);
 		if (i == 0)
 		{
 			// assume that they share the same materials
