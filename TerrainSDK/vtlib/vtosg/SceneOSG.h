@@ -141,6 +141,8 @@ public:
 	void SetWindowSize(int w, int h, vtWindow *pWindow = NULL);
 	IPoint2 GetWindowSize(vtWindow *pWindow = NULL);
 
+	bool GetWindowSizeFromOSG();
+
 	/// Get the root node, which is the top of the scene graph.
 	vtGroup *GetRoot() { return m_pRoot; }
 

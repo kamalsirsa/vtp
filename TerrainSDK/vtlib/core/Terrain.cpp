@@ -999,7 +999,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 				pOceanGeom->AddMesh(mesh, m_idx_water);
 			}
 		}
-		m_pOceanGeom = new vtMovGeom(pOceanGeom);
+		m_pOceanGeom = new vtMovGeode(pOceanGeom);
 		m_pOceanGeom->setName("Ocean plane");
 		m_pOceanGeom->SetCastShadow(false);
 		m_pTerrainGroup->addChild(m_pOceanGeom);
@@ -1030,7 +1030,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 				pHorizonGeom->AddMesh(mesh, m_idx_horizon);
 			}
 		}
-		m_pHorizonGeom = new vtMovGeom(pHorizonGeom);
+		m_pHorizonGeom = new vtMovGeode(pHorizonGeom);
 		m_pHorizonGeom->setName("Horizon plane");
 		m_pHorizonGeom->SetCastShadow(false);
 		m_pTerrainGroup->addChild(m_pHorizonGeom);
@@ -2145,10 +2145,6 @@ void vtTerrain::CreateStep0()
 #else
 	// Initially, there is no fog or shadow
 	ConnectFogShadow(false, false);
-#endif
-
-#ifdef VTLIB_PSM
-	m_pTerrainGroup->IncUse();
 #endif
 
 	// create engine group, the parent of all engines for this terrain

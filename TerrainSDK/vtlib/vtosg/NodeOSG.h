@@ -1,7 +1,7 @@
 //
 // NodeOSG.h
 //
-// Encapsulate behavior for OSG scene graph nodes.
+// Extend the behavior of OSG scene graph nodes.
 //
 // Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -21,53 +21,16 @@
 
 #define VTLISPSM 0
 
-class vtGroup;
 class vtCamera;
 
 /** \addtogroup sg */
 /*@{*/
 
-/** Contains information about the primitives in a set of geometry */
-struct vtPrimInfo
-{
-	/// Number of vertices which the geometry will draw.
-	int Vertices;
-	/// Total number of primitives of all types.
-	int Primitives;
-	/// Number of vertices stored in memory, which may appear more than once in indexed primitives.
-	int MemVertices;
 
-	/// Number of Point primitives.
-	int Points;
-	/// Number of Triangle Strip primitives.
-	int TriStrips;
-	/// Number of Triangle Fan primitives.
-	int TriFans;
-	/// Number of total Triangles in all the primitives.
-	int Triangles;
-	/// Number of Quad primitives.
-	int Quads;
-	/// Number of Quad Strip primitives.
-	int QuadStrips;
-	/// Number of Polygon primitives.
-	int Polygons;
-	/// Number of Line Strip primitives.
-	int LineStrips;
-	/// Number of Line Segments in all the primitives.
-	int LineSegments;
-};
-
-class vtMultiTexture
-{
-public:
-	int	m_iTextureUnit;
-#if VTLISPSM
-	int	m_iMode;
-#endif
-	osg::Node *m_pNode;
-	osg::ref_ptr<osg::Texture2D> m_pTexture;
-};
-
+///////////////////////////////////////////////////////////////////////////////
+// vtlib's Extension class provide some additional functionality to OSG's
+//  Node, Group, and MatrixTransform classes.
+//
 struct NodeExtension
 {
 	NodeExtension();
@@ -158,6 +121,22 @@ struct TransformExtension: public GroupExtension
 	osg::MatrixTransform *m_pTransform;
 };
 
+class vtMultiTexture
+{
+public:
+	int	m_iTextureUnit;
+#if VTLISPSM
+	int	m_iMode;
+#endif
+	osg::Node *m_pNode;
+	osg::ref_ptr<osg::Texture2D> m_pTexture;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Standalone methods which operate on a node
+//
+
 bool FindAncestor(osg::Node *node, osg::Node *parent);
 osg::Node *FindDescendent(osg::Node *node, const char *pName);
 
@@ -167,6 +146,7 @@ void EnableMultiTexture(osg::Node *node, vtMultiTexture *mt, bool bEnable);
 bool MultiTextureIsEnabled(osg::Node *node, vtMultiTexture *mt);
 
 void LocalToWorld(osg::Node *node, FPoint3 &point);
+void GetBoundSphere(osg::Node *node, FSphere &sphere, bool bGlobal = false);
 FSphere GetGlobalBoundSphere(osg::Node *node);
 bool ContainsParticleSystem(osg::Node *node);
 
@@ -174,84 +154,27 @@ void SetEnabled(osg::Node *node, bool bOn);
 bool GetEnabled(osg::Node *node);
 bool NodeIsEnabled(osg::Node *node);
 
-/// Load a 3D model file
-osg::Node *vtLoadModel(const char *filename, bool bAllowCache = true,
-					   bool bDisableMipmaps = false);
-
-/** Get the Bounding Sphere of the node */
-void GetBoundSphere(osg::Node *node, FSphere &sphere, bool bGlobal = false);
-
-void GetNodeBoundBox(osg::Node *node, FBox3 &box);
-void GetNodePrimCounts(osg::Node *node, vtPrimInfo &info);
-
 void ApplyVertexRotation(osg::Node *node, const FPoint3 &axis, float angle);
 void ApplyVertexTransform(osg::Node *node, const FMatrix4 &mat);
 
+void vtLogGraph(osg::Node *node, bool bExtents = false, bool bRefCounts = false, int indent=0);
+
+
+///////////////////////////////////////////////////////////////////////////////
+// File I/O
+//
+
+/// Load a 3D model file
+osg::Node *vtLoadModel(const char *filename, bool bAllowCache = true,
+					   bool bDisableMipmaps = false);
+bool vtSaveModel(osg::Node *node, const char *filename);
+void SetLoadModelCallback(osg::Node *callback(osg::Transform *input));
 extern bool g_bDisableMipmaps;	// set to disable ALL mipmaps
 
 
-#if 0
-/**
- * Represents a node in the vtlib scenegraph.  The scenegraph is simply
- * a tree of nodes, with a root node at the top.
- */
-class vtNode : public osg::Referenced
-{
-public:
-	virtual void Release();
-
-	void SetEnabled(bool bOn);
-	bool GetEnabled() const;
-
-	/** Set the name of the node. */
-	void setName(const char *str) { m_pNode->setName(str); }
-	/** Get the name of the node. */
-	const char *getName() const { return m_pNode->getName().c_str(); }
-
-	/// Get the Bounding Box of the node, in world coordinates
-	void GetBoundBox(FBox3 &box);
-
-	/** Get the Bounding Sphere of the node */
-	void GetBoundSphere(FSphere &sphere, bool bGlobal = false);
-
-	/// Get information about the number of display primitives
-	void GetPrimCounts(vtPrimInfo &info);
-
-	/// Transform a point from a node's local coordinates to world coordinates
-	void LocalToWorld(FPoint3 &point);
-
-	vtGroup *GetParent(int iParent = 0);
-	virtual vtNode *Clone(bool bDeep = false);
-
-	//vtMultiTexture *AddMultiTexture(int iTextureUnit, vtImage *pImage, int iTextureMode,
-	//									const FPoint2 &scale, const FPoint2 &offset);
-	//void EnableMultiTexture(vtMultiTexture *mt, bool bEnable);
-	//bool MultiTextureIsEnabled(vtMultiTexture *mt);
-
-	// OSG access
-	void SetOsgNode(osg::Node *n);
-	osg::Node *GetOsgNode() { return m_pNode.get(); }
-	const osg::Node *GetOsgNode() const { return m_pNode.get(); }
-	bool ContainsParticleSystem() const;
-
-	/// Set this node to cast a shadow, if it is under a vtShadow node.  Default is false.
-	void SetCastShadow(bool b);
-	/// Get whether this node casts a shadow.
-	bool GetCastShadow();
-
-protected:
-	osg::ref_ptr<osg::Node> m_pNode;
-	bool m_bCastShadow;
-
-	// Constructor is protected because vtNode is an abstract base class,
-	//  not to be instantiated directly.
-	vtNode();
-
-	// Destructor is protected so that people will use Release() instead,
-	//  to ensure that reference counting is respected.
-	virtual ~vtNode() {}
-};
-#endif
+///////////////////////////////////////////////////////////////////////////////
+// Node classes
+//
 
 /**
  * Represents a Group (a node that can have children) in the vtlib Scene Graph.
@@ -333,12 +256,12 @@ protected:
 };
 
 /**
- * A Light node is placed into the scene graph to illumninate all
- * lit geometry with vertex normals.
+ * A Light node is placed into the scene graph to illumninate all lit geometry
+ * with vertex normals.
  *
  * If you want a light, you should create a vtLight node and add it to your
- * scene graph.  To move or orient the light, make it a child of a
- * vtTransform node.  The light will illuminate the entire scene.
+ * scene graph.  To move or orient the light, make it a child of a vtTransform
+ * node.  The light will illuminate the entire scene.
  */
 class vtLight : public osg::LightSource, public GroupExtension
 {
@@ -357,18 +280,16 @@ protected:
 	virtual ~vtLight() {}
 };
 
-class vtTextMesh;
-
-/** The vtGeode class represents a Geometry Node which can contain any number
-	of visible vtMesh objects.
-	\par
-	A vtGeode also manages a set of Materials (vtMaterial).  Each contained
-	mesh is assigned one of these materials, by index.
-	\par
-	This separation (Group/Mesh) provides the useful ability to define a vtMesh
-	once in memory, and have multiple vtGeode nodes which contain it, which
-	permits a large number of visual instances (each with potentially different
-	material and transform) with very little memory cost.
+/** A vtGeode is a "Geometry Node "which can contain any number of visible
+ vtMesh objects.
+ \par
+ A vtGeode also manages a set of Materials (vtMaterial).  Each contained mesh
+ is assigned one of these materials, by index.
+ \par
+ This separation (Group/Mesh) provides the useful ability to define a vtMesh
+ once in memory, and have multiple vtGeode nodes which contain it, which
+ permits a large number of visual instances (each with potentially different
+ material and transform) with very little memory cost.
  */
 class vtGeode : public osg::Geode, public NodeExtension
 {
@@ -421,20 +342,101 @@ protected:
 typedef osg::ref_ptr<vtGeode> vtGeodePtr;
 
 /**
- * A utility class which simply wraps a geometry (vtGeode) inside a
+ * A utility class which simply wraps some geometry (vtGeode) inside a
  * transform (vtTransform) so that you can move it.
  */
-class vtMovGeom : public vtTransform
+class vtMovGeode : public vtTransform
 {
 public:
-	vtMovGeom(vtGeode *pContained) : vtTransform()
+	vtMovGeode(vtGeode *pContained) : vtTransform()
 	{
 		m_pGeode = pContained;
 		addChild(m_pGeode);
 	}
 	vtGeode	*m_pGeode;
 };
-typedef osg::ref_ptr<vtMovGeom> vtMovGeomPtr;
+typedef osg::ref_ptr<vtMovGeode> vtMovGeodePtr;
+
+/**
+ * An LOD node controls the visibility of its child nodes.
+ *
+ * You should set a distance value (range) for each child, which determines
+ * at what distance from the camera a node should be rendered.
+ */
+class vtLOD : public osg::LOD, public GroupExtension
+{
+public:
+	vtLOD();
+
+	void SetRanges(float *ranges, int nranges);
+	void SetCenter(FPoint3 &center) { setCenter(v2s(center)); }
+	void GetCenter(FPoint3 &center) { s2v(getCenter(), center); }
+
+protected:
+	virtual ~vtLOD() {}
+};
+
+/**
+ * A Camera is analogous to a physical camera: it description the location
+ * of a point from which the scene is rendered.  It can either be a
+ * perspective or orthographic camera, and it very easy to control
+ * since it inherits all the methods of a transform (vtTransform).
+ *
+ * Although the camera is a node, this is purely for convenience.  You
+ * do not have to place the camera node in your scene graph.  You may,
+ * however, tell your scene (vtScene) which camera to use.  The scene
+ * produces a default camera which is used unless you tell it otherwise.
+ */
+class vtCamera : public vtTransform
+{
+public:
+	vtCamera();
+
+	void SetHither(float f);
+	float GetHither() const;
+	void SetYon(float f);
+	float GetYon() const;
+	void SetFOV(float f);
+	float GetFOV() const;
+	float GetVertFOV() const;
+
+	void SetOrtho(bool bOrtho);
+	bool IsOrtho() const;
+	void SetWidth(float f);
+	float GetWidth() const;
+
+	void ZoomToSphere(const FSphere &sphere, float fPitch = 0.0f);
+
+protected:
+	float m_fFOV;
+	float m_fHither;
+	float m_fYon;
+
+	bool m_bOrtho;
+	float m_fWidth;
+
+	virtual ~vtCamera() {}
+};
+typedef osg::ref_ptr<vtCamera> vtCameraPtr;
+
+/**
+ * A HUD ("heads-up display") is a group whose whose children are transformed
+ * to be drawn in window coordinates, rather than world coordinates.
+ */
+class vtHUD : public osg::Projection, public GroupExtension
+{
+public:
+	vtHUD(bool bPixelCoords = true);
+
+	void SetWindowSize(int w, int h);
+
+protected:
+	bool m_bPixelCoords;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Dynamic geometry
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -527,89 +529,10 @@ protected:
 };
 typedef osg::ref_ptr<vtDynGeom> vtDynGeomPtr;
 
-//////////////////////////////////////////////////
 
-/**
- * An LOD node controls the visibility of its child nodes.
- *
- * You should set a distance value (range) for each child, which determines
- * at what distance from the camera a node should be rendered.
- */
-class vtLOD : public osg::LOD, public GroupExtension
-{
-public:
-	vtLOD();
+///////////////////////////////////////////////////////////////////////////////
+// Intersection testing
 
-	void SetRanges(float *ranges, int nranges);
-	void SetCenter(FPoint3 &center);
-	void GetCenter(FPoint3 &center)
-	{
-		s2v(getCenter(), center);
-	}
-
-protected:
-	virtual ~vtLOD() {}
-};
-
-/**
- * A Camera is analogous to a physical camera: it description the location
- * of a point from which the scene is rendered.  It can either be a
- * perspective or orthographic camera, and it very easy to control
- * since it inherits all the methods of a transform (vtTransform).
- *
- * Although the camera is a node, this is purely for convenience.  You
- * do not have to place the camera node in your scene graph.  You may,
- * however, tell your scene (vtScene) which camera to use.  The scene
- * produces a default camera which is used unless you tell it otherwise.
- */
-class vtCamera : public vtTransform
-{
-public:
-	vtCamera();
-
-	void SetHither(float f);
-	float GetHither() const;
-	void SetYon(float f);
-	float GetYon() const;
-	void SetFOV(float f);
-	float GetFOV() const;
-	float GetVertFOV() const;
-
-	void SetOrtho(bool bOrtho);
-	bool IsOrtho() const;
-	void SetWidth(float f);
-	float GetWidth() const;
-
-	void ZoomToSphere(const FSphere &sphere, float fPitch = 0.0f);
-
-protected:
-	float m_fFOV;
-	float m_fHither;
-	float m_fYon;
-
-	bool m_bOrtho;
-	float m_fWidth;
-
-	virtual ~vtCamera() {}
-};
-typedef osg::ref_ptr<vtCamera> vtCameraPtr;
-
-/**
- * A HUD ("heads-up display") is a group whose whose children are transformed
- * to be drawn in window coordinates, rather than world coordinates.
- */
-class vtHUD : public osg::Projection, public GroupExtension
-{
-public:
-	vtHUD(bool bPixelCoords = true);
-
-	void SetWindowSize(int w, int h);
-
-protected:
-	bool m_bPixelCoords;
-};
-
-/* Intersection method */
 /**
  * This class describes a single point at which vtIntersect has determined
  * a line has intersected some geometry.  At this point, vtHit tells
@@ -627,8 +550,43 @@ struct vtHit
 typedef std::vector<vtHit> vtHitList;
 int vtIntersect(osg::Node *pTop, const FPoint3 &start, const FPoint3 &end,
 				vtHitList &hitlist, bool bLocalCoords = false, bool bNativeNodes = true);
-void SetLoadModelCallback(osg::Node *callback(osg::Transform *input));
-void vtLogGraph(osg::Node *node, bool bExtents = false, bool bRefCounts = false, int indent=0);
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Statistics: exact bounds and primitive counts
+
+/** Contains information about the primitives in a set of geometry */
+struct vtPrimInfo
+{
+	/// Number of vertices which the geometry will draw.
+	int Vertices;
+	/// Total number of primitives of all types.
+	int Primitives;
+	/// Number of vertices stored in memory, which may appear more than once in indexed primitives.
+	int MemVertices;
+
+	/// Number of Point primitives.
+	int Points;
+	/// Number of Triangle Strip primitives.
+	int TriStrips;
+	/// Number of Triangle Fan primitives.
+	int TriFans;
+	/// Number of total Triangles in all the primitives.
+	int Triangles;
+	/// Number of Quad primitives.
+	int Quads;
+	/// Number of Quad Strip primitives.
+	int QuadStrips;
+	/// Number of Polygon primitives.
+	int Polygons;
+	/// Number of Line Strip primitives.
+	int LineStrips;
+	/// Number of Line Segments in all the primitives.
+	int LineSegments;
+};
+
+void GetNodeBoundBox(osg::Node *node, FBox3 &box);
+void GetNodePrimCounts(osg::Node *node, vtPrimInfo &info);
 
 /*@}*/	// Group sg
 

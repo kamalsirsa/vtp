@@ -136,7 +136,7 @@ public:
 	DPoint3			m_EarthPos;
 	TerrainPicker	*m_pTerrainPicker;
 	GlobePicker		*m_pGlobePicker;
-	vtMovGeom		*m_pCursorMGeom;
+	vtMovGeode		*m_pCursorMGeom;
 
 	// navigation engines
 	vtTerrainFlyer	*m_pTFlyer;

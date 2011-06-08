@@ -438,8 +438,8 @@ protected:
 	// horizon, water and fog
 	vtFog		*m_pFog;
 	vtShadow	*m_pShadow;
-	vtMovGeomPtr m_pHorizonGeom;
-	vtMovGeomPtr m_pOceanGeom;
+	vtMovGeodePtr m_pHorizonGeom;
+	vtMovGeodePtr m_pOceanGeom;
 	bool		m_bFog;
 	RGBf		m_fog_color;
 	RGBf		m_background_color;

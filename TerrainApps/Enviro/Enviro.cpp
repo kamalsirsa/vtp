@@ -826,7 +826,7 @@ void Enviro::SetupScene2()
 
 	// create picker object and picker engine
 	vtGeode *pCursor = Create3DCursor(1.0, g_Options.m_fCursorThickness);
-	m_pCursorMGeom = new vtMovGeom(pCursor);
+	m_pCursorMGeom = new vtMovGeode(pCursor);
 	m_pCursorMGeom->setName("Cursor");
 
 	GetTop()->addChild(m_pCursorMGeom);

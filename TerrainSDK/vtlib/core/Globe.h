@@ -176,7 +176,7 @@ protected:
 	GlobeLayerArray	m_GlobeLayers;
 };
 
-vtMovGeom *CreateSimpleEarth(const vtString &strDataPath);
+vtMovGeode *CreateSimpleEarth(const vtString &strDataPath);
 
 void geo_to_xyz(double radius, const DPoint2 &geo, FPoint3 &p);
 void geo_to_xyz(double radius, const DPoint2 &geo, DPoint3 &p);

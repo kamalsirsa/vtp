@@ -2,7 +2,7 @@
 // Name:	 sdlSimple/app.cpp
 // Purpose:  Example SDL/vtlib application.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,7 +27,7 @@ public:
 	void videosettings(bool same_video_mode, bool fullscreen);
 	void display();
 	void run();
-	int main();
+	int main(int argc, char **argv);
 	int  process_modifiers();
 	void process_mouse_button(const SDL_Event &event);
 	void process_mouse_motion(const SDL_Event &event);
@@ -118,8 +118,6 @@ void App::videosettings(bool same_video_mode, bool fullscreen)
 		std::cerr << "Video mode set failed: " << SDL_GetError( ) << std::endl;
 		exit( -1 );
 	}
-	// Tell the SDL output size to vtlib
-	vtGetScene()->SetWindowSize(width, height);
 }
 
 //--------------------------------------------------------------------------
@@ -191,9 +189,12 @@ bool App::CreateScene()
 
 void App::display()
 {
+	const GLubyte *ver = glGetString(GL_VERSION);
+//	VTLOG1((const char *)ver);
+
 	vtGetScene()->DoUpdate();
 
-	SDL_GL_SwapBuffers();
+//	SDL_GL_SwapBuffers();
 }
 
 int App::process_modifiers()
@@ -294,7 +295,7 @@ void App::run()
 /*
   The works.
 */
-int App::main()
+int App::main(int argc, char **argv)
 {
 #ifdef __FreeBSD__
 	/*  FreeBSD is more stringent with FP ops by default, and OSG is	*/
@@ -304,8 +305,18 @@ int App::main()
 	fpsetmask(0);
 #endif
 
+	int width = 800, height = 600;
+
 	printf("Initializing SDL..\n");
-	videosettings(true, false);
+	videosettings(true, true);
+
+	printf("Initializing vtlib/OSG..\n");
+	vtGetScene()->Init(argc, argv);
+    vtGetScene()->getViewer()->setThreadingModel(osgViewer::Viewer::SingleThreaded);
+    vtGetScene()->SetGraphicsContext(new osgViewer::GraphicsWindowEmbedded(0, 0, width, height));
+
+	// Tell the SDL output size to vtlib
+	vtGetScene()->SetWindowSize(width, height);
 
 	printf("Creating the terrain..\n");
 	if (!CreateScene())
@@ -331,8 +342,6 @@ int main(int argc, char **argv)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	vtGetScene()->Init(argc, argv);
-
 	App app;
-	return app.main();
+	return app.main(argc, argv);
 }

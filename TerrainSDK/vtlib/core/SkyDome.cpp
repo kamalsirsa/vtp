@@ -203,7 +203,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		VTLOG("   Creating Sun Geom\n");
 		vtGeode *pGeode = new vtGeode;
 		pGeode->setName("Sun geom");
-		m_pSunGeom = new vtMovGeom(pGeode);
+		m_pSunGeom = new vtMovGeode(pGeode);
 		m_pSunGeom->setName("Sun xform");
 
 		VTLOG("   Creating Sun Mesh\n");
@@ -712,7 +712,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 		// Create moon
 		vtGeode *pGeode = new vtGeode;
 		pGeode->setName("Moon geom");
-		m_pMoonGeom = new vtMovGeom(pGeode);
+		m_pMoonGeom = new vtMovGeode(pGeode);
 		m_pMoonGeom->setName("Moon xform");
 
 		vtMesh *MoonMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);

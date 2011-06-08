@@ -973,6 +973,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\OSGEventHandler.cpp">
+			</File>
+			<File
 				RelativePath="SceneOSG.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1023,6 +1026,9 @@
 			</File>
 			<File
 				RelativePath="NodeOSG.h">
+			</File>
+			<File
+				RelativePath=".\OSGEventHandler.h">
 			</File>
 			<File
 				RelativePath="SceneOSG.h">

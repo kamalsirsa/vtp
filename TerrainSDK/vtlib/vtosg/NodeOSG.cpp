@@ -1,9 +1,9 @@
 //
 // NodeOSG.cpp
 //
-// Encapsulate behavior for OSG scene graph nodes.
+// Extend the behavior of OSG scene graph nodes.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -90,6 +90,7 @@ bool ContainsParticleSystem(osg::Node *node)
 	return fp->bFound;
 }
 
+/** Get the Bounding Sphere of the node */
 void GetBoundSphere(osg::Node *node, FSphere &sphere, bool bGlobal)
 {
 	// Try to just get the bounds normally
@@ -682,298 +683,6 @@ bool NodeIsEnabled(osg::Node *node)
 	return GetEnabled(node);
 }
 
-#if 0
-///////////////////////////////////////////////////////////////////////
-// vtNode
-//
-
-vtNode::vtNode()
-{
-	m_bCastShadow = true; // osg nodes default to all mask bits set
-						  // so set this true to match
-}
-
-/**
- * Releases a node.  Use this method instead of C++'s delete operator when
- * you are done with a node.  Internally, the node is reference counted so
- * it is not deleted until all references to it are removed.
- */
-void vtNode::Release()
-{
-	// shouldn't happen but... safety check anyway
-	if (m_pNode == NULL)
-		return;
-
-	if (m_pNode->referenceCount() == 1)
-	{
-#if DEBUG_NODE_LOAD
-		VTLOG("Deleting vtNode: %lx (\"%s\") (osg %lx, rc %d", this,
-			m_pNode->getName().c_str(), m_pNode, m_pNode->referenceCount());
-		osg::Group *cg = dynamic_cast<osg::Group*>(m_pNode.get());	// container group
-		if (cg)
-		{
-			unsigned int nc = cg->getNumChildren();
-			VTLOG(", children %d", nc);
-			if (nc)
-			{
-				osg::Node *child = cg->getChild(0);
-				VTLOG(", child0 %lx", child);
-			}
-		}
-		VTLOG1(")\n");
-#endif
-		// Tell OSG that we're through with this node.
-		// The following statement calls unref() on m_pNode, which deletes the
-		//  OSG node, which decrements its reference to us, which deletes us.
-		m_pNode = NULL;
-	}
-}
-
-void vtNode::SetOsgNode(osg::Node *n)
-{
-	// set refptr to the OSG node, which bumps its refcount
-	m_pNode = n;
-
-	if (m_pNode.valid())
-	{
-		// set its user data back to use, which bumps our refcount
-		m_pNode->setUserData((vtNode *)this);
-	}
-}
-
-/**
- * Set the enabled state of this node.  When the node is not enabled, it
- * is not rendered.  If it is a group node, all of the nodes children are
- * also not rendered.
- */
-void vtNode::SetEnabled(bool bOn)
-{
-	// OSG controls traversal of the scene node tree using
-	// a traversal mask which the node visitor applies to the inappropriately named
-	// NodeMask of a node. NodeFlagBits would probably be a more descriptive name.
-	// The traversal mask is applied using a bitwise and (& operator) and a non-zero
-	// result will cause the node to be traversed. A zero result will cause the node
-	// and all its children to be skipped. The important consequence of this is that
-	// all the unmasked bits need to be unset for the node to "disabled" or skipped.
-	// This means that when we disable a node and subsequently enable it we need to
-	// have the correct information to set any bits that we set to zero back to one.
-	// i.e. we have to have sufficent state elsewhere in the node to do this.
-	//
-	// We use the least significant two bits of the node mask to control both the
-	// node enabled state and the shadow rendering.
-	// At the moment all the nodes in our tree receive shadows so we dont have to
-	// separately store the "receive shadows" bit, we just unconditionally turn
-	// it on when we enable the node. Not all nodes cast shadows so we have to
-	// store the required state of that bit elsewhere in the node so that we can
-	// set it to the correct state when we enable the node.
-	// If we ever decide to have some nodes not receiving shadows (and the osg
-	// shadowers implement this) we will need to store the state of the "receive
-	// shadows" bit as well. We will also have to use another bit in the NodeMask
-	// (NodeFlagBits!) to cover the case for enabled nodes that neither cast nor
-	// receive shadows.
-	// I will leave you to work out why we do not need to store the state of this bit :-)
-	//
-	// For the time being valid values for the bottom bits are
-	// 0x0 Node is disabled
-	// 0x1 Node is enabled and will receive shadows
-	// 0x3 Node is enabled and will cast and receive shadows
-	osg::Node::NodeMask nm = m_pNode->getNodeMask();
-	if (bOn)
-	{
-		if (m_bCastShadow)
-			m_pNode->setNodeMask(nm | 3);
-		else
-			m_pNode->setNodeMask(nm & ~3 | 1);
-	}
-	else
-		m_pNode->setNodeMask(nm & ~3);
-}
-
-/**
- * Return the enabled state of a node.
- */
-bool vtNode::GetEnabled() const
-{
-	int mask = m_pNode->getNodeMask();
-	return ((mask&0x3) != 0);
-}
-
-void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
-{
-	// Try to just get the bounds normally
-	BoundingSphere bs = m_pNode->getBound();
-
-	// Hack to support particle systems, which do not return a reliably
-	//  correct bounding sphere, because of the extra transform inside which
-	//  provides the particle effects with an absolute position
-	if (ContainsParticleSystem())
-	{
-		osg::Group *grp = dynamic_cast<osg::Group*>(m_pNode.get());
-		for (int i = 0; i < 3; i++)
-		{
-			grp = dynamic_cast<osg::Group*>(grp->getChild(0));
-			if (grp)
-				bs = grp->getBound();
-			else
-				break;
-		}
-	}
-
-	s2v(bs, sphere);
-	if (bGlobal)
-	{
-		// Note that this isn't 100% complete; we should be
-		//  transforming the radius as well, with scale.
-		LocalToWorld(sphere.center);
-	}
-}
-
-**
- * Transform a 3D point from a node's local frame of reference to world
- * coordinates.  This is done by walking the scene graph upwards, applying
- * all transforms that are encountered.
- *
- * \param point A reference to the input point is modified in-place with
- *	world coordinate result.
- */
-void vtNode::LocalToWorld(FPoint3 &point)
-{
-#if 0
-	// Work our way up the tree to the root, accumulating the transforms,
-	//  to get the point in the world reference frame.
-	// This code uses VTLIB calls and works find on a purely VTLIB graph.
-	vtNode *node = this;
-	while (node = node->GetParent(0))
-	{
-		vtTransform *trans = dynamic_cast<vtTransform *>(node);
-		if (trans)
-		{
-			FMatrix4 mat;
-			trans->GetTransform1(mat);
-			FPoint3 result;
-			mat.Transform(point, result);
-			point = result;
-		}
-	}
-#else
-	// We must use OSG native calls instead if we want to support raw OSG
-	//  nodes which might be returned from collision detection
-	osg::Vec3 pos = v2s(point);
-	osg::Node *node = GetOsgNode();
-	while (node = node->getParent(0))
-	{
-		osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform *>(node);
-		if (mt != NULL)
-		{
-			const osg::Matrix &mat = mt->getMatrix();
-			pos = mat.preMult(pos);
-		}
-		if (node->getNumParents() == 0)
-			break;
-	}
-	s2v(pos, point);
-#endif
-}
-
-/**
- * Return the parent of this node in the scene graph.  If the node is not
- * in the scene graph, NULL is returned.
- *
- * \param iParent If the node has multiple parents, you can specify which
- *	one you want.
- */
-vtGroup *vtNode::GetParent(int iParent)
-{
-	int num = m_pNode->getNumParents();
-	if (iParent >= num)
-		return NULL;
-	osg::Group *parent = m_pNode->getParent(iParent);
-	if (!parent)
-		return NULL;
-
-	vtGroup *pGroup =  dynamic_cast<vtGroup *>(parent->getUserData());
-	if (NULL == pGroup)
-	{
-		// Dubious - we don't reall want to do this. Find anyone using it, and stop them.
-		pGroup = new vtGroup;
-		pGroup->SetOsgGroup(parent);
-	}
-	return pGroup;
-}
-
-vtNode *vtNode::Clone(bool bDeep)
-{
-	// We should never get here, because only subclasses of vtNode are
-	//  ever instantiated.
-	return NULL;
-}
-
-class CFindNodeVisitor : public osg::NodeVisitor
-{
-public:
-	CFindNodeVisitor(const char *pName, osg::NodeVisitor::TraversalMode Mode = osg::NodeVisitor::TRAVERSE_ALL_CHILDREN):
-	osg::NodeVisitor(Mode)
-	{
-		m_Name = pName;
-		_nodeMaskOverride = 0xffffffff;
-	}
-
-	virtual void apply(osg::Node& node)
-	{
-		if (node.getName().find(m_Name) != std::string::npos)
-		{
-			m_pNode = &node;
-
-			_traversalMode = TRAVERSE_NONE;
-			return;
-		}
-		traverse(node);
-	}
-
-	osg::ref_ptr<osg::Node> m_pNode;
-	std::string m_Name;
-};
-
-// Find and decorate a native node
-// To allow subsequent graph following from the VT side
-// return osg::Group as vtGroup
-osg::Node *FindDescendent(osg::Node *node, const char *pName)
-{
-	vtNode *pVTNode = NULL;
-	osg::Group *pGroup = dynamic_cast<osg::Group*>(node);
-	if (NULL == pGroup)
-		return NULL;
-	osg::ref_ptr<CFindNodeVisitor> pFNVisitor = new CFindNodeVisitor(pName,
-																	osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
-	pGroup->accept(*pFNVisitor.get());
-
-	osg::Node *result = pFNVisitor->m_pNode.get();
-
-	// Just return it
-	return result;
-}
-
-bool vtNode::ContainsParticleSystem() const
-{
-	osg::ref_ptr<findParticlesVisitor> fp = new findParticlesVisitor;
-	findParticlesVisitor *fpp = fp.get();
-	m_pNode->accept(*fpp);
-	return fp->bFound;
-}
-
-void vtNode::SetCastShadow(bool b)
-{
-	m_bCastShadow = b;
-	if (GetEnabled())
-		SetEnabled(true);
-}
-
-bool vtNode::GetCastShadow()
-{
-	return m_bCastShadow;
-}
-#endif
-
 // Walk an OSG scenegraph looking for Texture states, and disable mipmap.
 class MipmapVisitor : public NodeVisitor
 {
@@ -1185,11 +894,20 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 
 #if DEBUG_NODE_LOAD
 	VTLOG("node %lx (rc %d),\n ", node, node->referenceCount());
-	VTLOG("container %lx (rc %d, nc %d), ", container_group, container_group->referenceCount(), container_group->getNumChildren());
-	VTLOG("VTP node %lx (rc %d)\n", pNode, pNode->referenceCount());
 #endif
 
 	return node;
+}
+
+bool vtSaveModel(osg::Node *node, const char *filename)
+{
+	osgDB::ReaderWriter::WriteResult result;
+#if (OPENSCENEGRAPH_MAJOR_VERSION==2 && OPENSCENEGRAPH_MINOR_VERSION>=2) || OPENSCENEGRAPH_MAJOR_VERSION>2
+	result = osgDB::Registry::instance()->writeNode(*node, std::string((const char *)filename), NULL);
+#else
+	result = osgDB::Registry::instance()->writeNode(*node, (const char *)filename);
+#endif
+	return result.success();
 }
 
 
@@ -1237,8 +955,7 @@ vtFog::vtFog()
  * \param Type Can be FM_LINEAR, FM_EXP, or FM_EXP2 for linear or exponential
  *		increase of the fog density.
  */
-void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color,
-				   osg::Fog::Mode eType)
+void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, osg::Fog::Mode eType)
 {
 	osg::StateSet *set = getOrCreateStateSet();
 	if (bOn)
@@ -1781,13 +1498,6 @@ void vtLOD::SetRanges(float *ranges, int nranges)
 	}
 }
 
-void vtLOD::SetCenter(FPoint3 &center)
-{
-	Vec3 p;
-	v2s(center, p);
-	setCenter(p);
-}
-
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 
@@ -2172,8 +1882,9 @@ int vtIntersect(osg::Node *pTop, const FPoint3 &start, const FPoint3 &end,
 
 #include <osg/ClipNode>
 
-
-// Diagnostic function to help debugging
+/**
+ Diagnostic function to help debugging: Log the scene graph from a given node downwards.
+*/
 void vtLogGraph(osg::Node *node, bool bExtents, bool bRefCounts, int indent)
 {
 	for (int i = 0; i < indent; i++)

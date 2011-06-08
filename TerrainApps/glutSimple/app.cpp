@@ -267,13 +267,9 @@ int main(int argc, char ** argv)
 	printf("Initializing GLUT..\n");
 	InitGLUT();
 
-#if VTLIB_OSG
 	vtGetScene()->Init(argc, argv);
     vtGetScene()->getViewer()->setThreadingModel(osgViewer::Viewer::SingleThreaded);
     vtGetScene()->SetGraphicsContext(new osgViewer::GraphicsWindowEmbedded(0, 0, 800, 600));
-#else
-	vtGetScene()->Init();
-#endif
 
 	printf("Creating the terrain..\n");
 	CreateScene();

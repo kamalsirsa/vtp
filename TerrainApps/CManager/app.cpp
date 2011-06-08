@@ -74,10 +74,6 @@ bool vtApp::OnInit(void)
 	m_pRoot->setName("Root");
 	pScene->SetRoot(m_pRoot);
 
-#if VTLIB_SGL
-	CreateTestSGLScene();
-#endif
-
 	pScene->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
 
 	// make a simple directional light

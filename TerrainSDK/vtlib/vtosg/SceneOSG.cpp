@@ -129,8 +129,8 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
     // use an ArgumentParser object to manage the program arguments.
     osg::ArgumentParser arguments(&argc,argv);
 
-
 	m_pOsgViewer = new osgViewer::Viewer(arguments);
+
 	m_pOsgViewer->setDisplaySettings(osg::DisplaySettings::instance());
 	if (bStereo)
 	{
@@ -711,6 +711,42 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 	}
 }
 
+bool vtScene::GetWindowSizeFromOSG()
+{
+	bool bNeedSize = true;
+
+	// Get initial size from OSG?
+	osg::Camera *cam = m_pOsgViewer->getCamera();
+	osg::Viewport *vport = cam->getViewport();
+	if (vport)
+	{
+		vtGetScene()->SetWindowSize(vport->width(), vport->height());
+		bNeedSize = false;
+	}
+
+	if (bNeedSize)
+	{
+		// or another way
+		osgViewer::ViewerBase::Contexts contexts;
+		m_pOsgViewer->getContexts(contexts);
+		if (contexts.size() > 0)
+		{
+			const osg::GraphicsContext::Traits *traits = contexts[0]->getTraits();
+			vtGetScene()->SetWindowSize(traits->width, traits->height);
+			bNeedSize = false;
+		}
+	}
+
+	//// or another way
+	//osgViewer::ViewerBase::Windows windows;
+	//m_pOsgViewer->getWindows(windows);
+
+	//// or another
+	//osgViewer::ViewerBase::Views views;
+	//m_pOsgViewer->getViews(views);
+
+	return !bNeedSize;
+}
 
 ////////////////////////////////////////
 // Shadow methods

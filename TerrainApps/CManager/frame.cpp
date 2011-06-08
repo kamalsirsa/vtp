@@ -34,12 +34,6 @@
 #include "ItemGroup.h"
 #include "LightDlg.h"
 
-#if VTLIB_OSG
-#include <osg/Version>
-#include <osgDB/Registry>
-#include <osgDB/ReadFile>
-#endif
-
 #ifndef __WXMSW__
 #  include "icons/cmanager.xpm"
 #  include "bitmaps/axes.xpm"
@@ -228,11 +222,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	Show(true);
 
 	// Load the font
-#if VTLIB_OPENSG
-	vtString fontfile = "Arial.txf";
-#else
 	vtString fontfile = "Arial.ttf";
-#endif
 	m_pFont = osgText::readFontFile((const char *)fontfile);
 	if (!m_pFont.valid())
 	{
@@ -247,7 +237,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		}
 	}
 
-#if VTLIB_OSG && 0
+#if 0
 	// TEST CODE
 	osg::Node *node = osgDB::readNodeFile("in.obj");
 	osgDB::Registry::instance()->writeNode(*node, "out.osg");
@@ -322,10 +312,8 @@ void vtFrame::CreateMenus()
 	itemMenu->Append(ID_ITEM_ROTMODEL, _T("Rotate Model Around X Axis"));
 	itemMenu->AppendSeparator();
 	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"));
-#if VTLIB_OSG
 	itemMenu->Append(ID_ITEM_SAVEOSG, _T("Save Model as OSG"));
 	itemMenu->Append(ID_ITEM_SAVEIVE, _T("Save Model as IVE"));
-#endif
 
 	wxMenu *viewMenu = new wxMenu;
 	viewMenu->AppendCheckItem(ID_VIEW_ORIGIN, _T("Show Local Origin"));
@@ -762,31 +750,22 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 	if (fname == "")
 		return;
 
-#if VTLIB_OSG
 	OpenProgressDialog(_T("Writing file"), false, this);
 
 	// OSG/IVE has a different axis convention that VTLIB does (Z up, not Y up)
 	//  So we must rotate before saving, then rotate back again
 	ApplyVertexRotation(node, FPoint3(1,0,0), PID2f);
 
-	osgDB::ReaderWriter::WriteResult result;
-#if (OPENSCENEGRAPH_MAJOR_VERSION==2 && OPENSCENEGRAPH_MINOR_VERSION>=2) || OPENSCENEGRAPH_MAJOR_VERSION>2
-	result = osgDB::Registry::instance()->writeNode(*node, std::string((const char *)fname), NULL);
-#else
-	result = osgDB::Registry::instance()->writeNode(*node, (const char *)fname);
-#endif
+	bool success = vtSaveModel(node, fname);
 
 	// Rotate back again
 	ApplyVertexRotation(node, FPoint3(1,0,0), -PID2f);
 
 	CloseProgressDialog();
-	if (result.notHandled())
-		wxMessageBox(_("File type not handled.\n"));
-	else if (result.success())
+	if (success)
 		wxMessageBox(_("File saved.\n"));
-	else if (result.error())
+	else
 		wxMessageBox(_("Error in writing file.\n"));
-#endif
 }
 
 void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
@@ -802,31 +781,21 @@ void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
 	if (fname == "")
 		return;
 
-#if VTLIB_OSG
 	OpenProgressDialog(_T("Writing file"), false, this);
 
 	// OSG/IVE has a different axis convention that VTLIB does (Z up, not Y up)
 	//  So we must rotate before saving, then rotate back again
 	ApplyVertexRotation(node, FPoint3(1,0,0), PID2f);
 
-	osgDB::ReaderWriter::WriteResult result;
-	CloseProgressDialog();
-#if (OPENSCENEGRAPH_MAJOR_VERSION==2 && OPENSCENEGRAPH_MINOR_VERSION>=2) || OPENSCENEGRAPH_MAJOR_VERSION>2
-	result = osgDB::Registry::instance()->writeNode(*node, std::string((const char *)fname), NULL);
-#else
-	result = osgDB::Registry::instance()->writeNode(*node, (const char *)fname);
-#endif
+	bool success = vtSaveModel(node, fname);
 
 	// Rotate back again
 	ApplyVertexRotation(node, FPoint3(1,0,0), -PID2f);
 
-	if (result.notHandled())
-		wxMessageBox(_("File type not handled.\n"));
-	else if (result.success())
+	if (success)
 		wxMessageBox(_("File saved.\n"));
-	else if (result.error())
+	else
 		wxMessageBox(_("Error in writing file.\n"));
-#endif
 }
 
 void vtFrame::OnUpdateItemSaveSOG(wxUpdateUIEvent& event)
@@ -909,17 +878,6 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 	str += _T("Manages sources of 3d models for the Virtual Terrain Project software.\n\n");
 	str += _T("Please read the HTML documentation and license.\n");
 	str += _T("Send feedback to: ben@vterrain.org\n\n");
-	str += _T("This version was built with the ");
-#if VTLIB_DSM
-	str += _T("DSM");
-#elif VTLIB_OSG
-	str += _T("OSG");
-#elif VTLIB_SGL
-	str += _T("SGL");
-#elif VTLIB_SSG
-	str += _T("SSG");
-#endif
-	str += _T(" Library.\n");
 	str += _T("Build date: ");
 	str += _T(__DATE__);
 	wxMessageBox(str, _T("About CManager"));

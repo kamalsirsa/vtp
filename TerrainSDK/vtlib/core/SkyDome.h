@@ -46,7 +46,7 @@ public:
 private:
 	vtGeode		*m_pStarGeom;
 	vtMesh		*m_pStarMesh;
-	vtMovGeom	*m_pMoonGeom;
+	vtMovGeode	*m_pMoonGeom;
 	vtMaterialArrayPtr m_pMats;
 	vtImagePtr	 m_pMoonImage;
 
@@ -130,7 +130,7 @@ protected:
 	vtMaterial		*m_pTextureMat;
 	vtMesh			*m_pDomeMesh;
 
-	vtMovGeom		*m_pSunGeom;
+	vtMovGeode		*m_pSunGeom;
 	vtMaterial		*m_pSunMat;
 	vtImagePtr		 m_pSunImage;
 

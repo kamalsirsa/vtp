@@ -809,7 +809,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 
 #if 0
 		vtGeode *pSphere = CreateSphereGeom(m_pMats, m_mi_red, 1000.0f, 8);
-		vtMovGeom *pSphere2 = new vtMovGeom(pSphere);
+		vtMovGeode *pSphere2 = new vtMovGeode(pSphere);
 		m_pGroup->AddChild(pSphere2);
 		pSphere2->SetTrans(lod_center);
 #endif

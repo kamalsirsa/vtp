@@ -558,7 +558,7 @@ void vtIcoGlobe::BuildSphericalPoints(GlobeLayer *glay, float fSize)
 		geode->SetMaterials(m_coremats);
 		geode->AddMesh(mesh, m_yellow);
 
-		vtMovGeom *mgeom = new vtMovGeom(geode);
+		vtMovGeode *mgeom = new vtMovGeode(geode);
 		mgeom->setName("GlobeShape");
 
 		mgeom->PointTowards(spheres[i].center);
@@ -682,7 +682,7 @@ void vtIcoGlobe::BuildFlatPoint(GlobeLayer *glay, int i, float fSize)
 	geode->SetMaterials(m_coremats);
 	geode->AddMesh(m_cylinder, m_yellow);
 
-	vtMovGeom *mgeom = new vtMovGeom(geode);
+	vtMovGeode *mgeom = new vtMovGeode(geode);
 	mgeom->setName("GlobeShape");
 
 //	mgeom->RotateLocal(FPoint3(1,0,0), -PID2f);
@@ -1677,7 +1677,7 @@ vtTransform *WireAxis(RGBf color, float len)
 	return trans;
 }
 
-vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
+vtMovGeode *CreateSimpleEarth(const vtString &strDataPath)
 {
 	// create simple texture-mapped sphere
 	vtMesh *mesh = new vtMesh(PrimitiveSet::QUADS, VT_Normals | VT_TexCoords, 20*20*2);
@@ -1696,7 +1696,7 @@ vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
 	}
 
 	vtGeode *geode = new vtGeode;
-	vtMovGeom *mgeom = new vtMovGeom(geode);
+	vtMovGeode *mgeom = new vtMovGeode(geode);
 	mgeom->setName("GlobeGeom");
 
 	vtMaterialArray *pMats = new vtMaterialArray;
