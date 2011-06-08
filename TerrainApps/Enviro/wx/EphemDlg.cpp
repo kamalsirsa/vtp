@@ -66,6 +66,9 @@ EphemDlg::EphemDlg(wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iWindDir = 0;
 	m_fWindSpeed = 0;
 
+	// Work around the limitation of wxFormDesigner
+	m_color3->SetBitmap(wxBITMAP(dummy_32x18));
+
 	AddValidator(this, ID_SKY, &m_bSky);
 	AddValidator(this, ID_SKYTEXTURE, &m_strSkyTexture);
 
@@ -140,7 +143,7 @@ void EphemDlg::SetSliderControls()
 
 void EphemDlg::UpdateColorControl()
 {
-	FillWithColor(GetColorBitmap(), m_BgColor);
+	FillWithColorSize(GetColorBitmap(), 32, 18, m_BgColor);
 }
 
 void EphemDlg::SetToScene()

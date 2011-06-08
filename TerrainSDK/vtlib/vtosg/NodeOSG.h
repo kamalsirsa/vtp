@@ -212,6 +212,7 @@ protected:
 	osg::ref_ptr<osg::StateSet> m_pFogStateSet;
 	osg::ref_ptr<osg::Fog> m_pFog;
 };
+typedef osg::ref_ptr<vtFog> vtFogPtr;
 
 
 class vtHeightField3d;
@@ -254,6 +255,7 @@ public:
 protected:
 	const int m_ShadowTextureUnit;
 };
+typedef osg::ref_ptr<vtShadow> vtShadowPtr;
 
 /**
  * A Light node is placed into the scene graph to illumninate all lit geometry

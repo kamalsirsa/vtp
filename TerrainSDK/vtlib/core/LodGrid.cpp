@@ -1,7 +1,7 @@
 //
 // LodGrid.cpp
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -163,7 +163,7 @@ osg::Group *vtSimpleLodGrid::FindCellParent(const FPoint3 &point)
 	if (!m_pCells[i])
 		AllocateCell(a, b);
 
-	return m_pCells[i];
+	return (osg::Group *) (m_pCells[i]->getChild(0));
 }
 
 void vtSimpleLodGrid::SetDistance(float fLODDistance)

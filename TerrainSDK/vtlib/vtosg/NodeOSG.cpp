@@ -938,6 +938,7 @@ RGBf vtFog::s_white(1, 1, 1);
 
 vtFog::vtFog()
 {
+	SetOsgGroup(this);
 }
 
 /**

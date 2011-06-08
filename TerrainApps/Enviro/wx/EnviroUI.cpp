@@ -3474,7 +3474,7 @@ EphemDlgBase::EphemDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_text207->Wrap( -1 );
 	bSizer306->Add( m_text207, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( wxT("enviro_wdr/MyBitmapsFunc_0.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( wxT("bitmap/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer306->Add( m_color3, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_bgcolor = new wxButton( this, ID_BGCOLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );

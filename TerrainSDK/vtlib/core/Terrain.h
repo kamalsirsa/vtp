@@ -436,8 +436,8 @@ protected:
 	vtAnimContainer m_AnimContainer;
 
 	// horizon, water and fog
-	vtFog		*m_pFog;
-	vtShadow	*m_pShadow;
+	vtFogPtr	m_pFog;
+	vtShadowPtr	m_pShadow;
 	vtMovGeodePtr m_pHorizonGeom;
 	vtMovGeodePtr m_pOceanGeom;
 	bool		m_bFog;

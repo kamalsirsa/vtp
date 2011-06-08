@@ -2016,6 +2016,10 @@ void vtTerrain::SetBgColor(const RGBf &color)
 
 void vtTerrain::ConnectFogShadow(bool bFog, bool bShadow)
 {
+	// Be careful - we are switching around some nodes, don't lose them to
+	//  dereferencing deletion.
+	m_pTerrainGroup->ref();
+
 	// Add the fog, or shadow, into the scene graph between container and terrain
 	while (m_pContainerGroup->getNumChildren() > 0)
 		m_pContainerGroup->removeChild(m_pContainerGroup->getChild(0));
@@ -2039,6 +2043,9 @@ void vtTerrain::ConnectFogShadow(bool bFog, bool bShadow)
 
 	// re-attach
 	m_pContainerGroup->addChild(m_pUnshadowedGroup);
+
+	// Now safe to reset
+	m_pTerrainGroup->unref();
 }
 
 ///////////////////////////////////////////////////////////////////////
