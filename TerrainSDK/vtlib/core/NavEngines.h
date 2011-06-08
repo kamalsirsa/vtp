@@ -63,6 +63,9 @@ protected:
 	bool	m_bDOF[6];		// six degrees of freedom
 	bool	m_bAlwaysMove;
 	float	m_fCurrentSpeed; // current speed (most recent frame)
+
+protected:
+	~vtFlyer() {}
 };
 
 /**
@@ -103,6 +106,9 @@ public:
 protected:
 	vtHeightField3d *m_pHeightField;
 	bool	m_bExag;		// exaggerate speed based on height
+
+protected:
+	~vtTerrainFlyer() {}
 };
 
 
@@ -258,6 +264,9 @@ protected:
 	float m_fMinGroundOffset;
 	bool	m_bUseCulture;
 	bool	m_bOnGround;
+
+protected:
+	~vtHeightConstrain() {}
 };
 
 
@@ -337,6 +346,9 @@ protected:
 	// Limits
 	FPoint3 m_pos_min, m_pos_max;
 	FPoint3 m_trans_min, m_trans_max;
+
+protected:
+	~vtTrackball() {}
 };
 
 /*@}*/	// Group nav

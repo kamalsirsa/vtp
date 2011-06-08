@@ -26,7 +26,7 @@ bool vtOSGEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActio
 	switch (etype)
 	{
 	case GEType::KEYDOWN:
-	case GEType::KEYUP:
+	//case GEType::KEYUP:
 		handleKeyEvent(ea);
 		break;
 	case GEType::PUSH:

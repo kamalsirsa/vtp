@@ -55,7 +55,6 @@ class vtEngine : public vtEnabledBase, public osg::Referenced
 {
 public:
 	vtEngine();
-	virtual ~vtEngine() {}
 
 	/**
 	 * Get a target from the engine.  Most engines will have only a single
@@ -107,6 +106,9 @@ protected:
 	std::vector<vtEnginePtr> m_Children;
 	vtString		 m_strName;
 	vtWindow		*m_pWindow;
+
+protected:
+	~vtEngine() {}
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -134,7 +136,6 @@ class vtLastMouse : public vtEngine
 {
 public:
 	vtLastMouse();
-	virtual ~vtLastMouse() {}
 
 	void OnMouse(vtMouseEvent &event);
 
@@ -148,6 +149,9 @@ public:
 
 	/** Last known state of the modifier flags */
 	int m_flags;
+
+protected:
+	virtual ~vtLastMouse() {}
 };
 
 /**

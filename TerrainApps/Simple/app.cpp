@@ -17,6 +17,8 @@
 #include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
 
+vtTerrainScene *g_terrscene;
+
 //
 // Create the 3d scene
 //
@@ -35,7 +37,7 @@ bool CreateScene()
 	pCamera->SetYon(100000);
 
 	// The  terrain scene will contain all the terrains that are created.
-	vtTerrainScene *ts = new vtTerrainScene;
+	g_terrscene = new vtTerrainScene;
 
 	// Set the global data path
 	vtStringArray paths;
@@ -44,7 +46,7 @@ bool CreateScene()
 	vtSetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
-	vtGroup *pTopGroup = ts->BeginTerrainScene();
+	vtGroup *pTopGroup = g_terrscene->BeginTerrainScene();
 
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
@@ -55,14 +57,14 @@ bool CreateScene()
 	pTerr->LoadParams();
 
 	// Add the terrain to the scene, and contruct it
-	ts->AppendTerrain(pTerr);
-	if (!ts->BuildTerrain(pTerr))
+	g_terrscene->AppendTerrain(pTerr);
+	if (!g_terrscene->BuildTerrain(pTerr))
 	{
 		printf("Terrain creation failed: %s\n",
 			(const char *)pTerr->GetLastError());
 		return false;
 	}
-	ts->SetCurrentTerrain(pTerr);
+	g_terrscene->SetCurrentTerrain(pTerr);
 
 	// Create a navigation engine to move around on the terrain
 	// Get flight speed from terrain parameters
@@ -87,13 +89,17 @@ bool CreateScene()
   */
 int main(int argc, char ** argv)
 {
-	osg::ArgumentParser arguments(&argc,argv);
+#if WIN32 && defined(_MSC_VER) && VTDEBUG
+	// sometimes, MSVC seems to need to be told to show unfreed memory on exit
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 
 	// Make a scene and a viewer:
 	vtGetScene()->Init(argc, argv);
 	osgViewer::Viewer *viewer = vtGetScene()->getViewer();
 
-	vtOSGEventHandler* pHandler = new vtOSGEventHandler;
+	// Add a handler for GUI events
+	osg::ref_ptr<vtOSGEventHandler> pHandler = new vtOSGEventHandler;
 	viewer->addEventHandler(pHandler);
 
 	printf("Creating the terrain..\n");
@@ -108,6 +114,11 @@ int main(int argc, char ** argv)
 	printf("Running..\n");
 	while (!viewer->done())
 		vtGetScene()->DoUpdate();		// calls viewer::frame
+
+	g_terrscene->CleanupScene();
+	delete g_terrscene;
+
+	vtGetScene()->Shutdown();
 
 	return 0;
 }
