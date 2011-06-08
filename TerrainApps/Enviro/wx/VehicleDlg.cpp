@@ -45,6 +45,13 @@ VehicleDlg::VehicleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	wxColour rgb(255, 255, 0);
 	m_ColorData.SetChooseFull(true);
 	m_ColorData.SetColour(rgb);
+
+	// Work around the limitation of wxFormDesigner which can only load bitmaps
+	//  at runtime.
+	m_color3->SetBitmap(wxBITMAP(dummy_32x18));
+
+	// Work around wxFormDesigner's lack of support for limiting to smallest size
+	GetSizer()->SetSizeHints(this);
 }
 
 void VehicleDlg::UpdateEnabling()
@@ -69,7 +76,7 @@ void VehicleDlg::ItemChanged()
 void VehicleDlg::UpdateColorControl()
 {
 	// Case of a single edge, very simple.
-	FillWithColor(GetColor(), m_options.m_Color);
+	FillWithColorSize(GetColor(), 32, 18, m_options.m_Color);
 }
 
 

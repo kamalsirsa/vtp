@@ -25538,7 +25538,7 @@
                                             <property name="proportion">0</property>
                                             <object class="wxBitmapButton" expanded="0">
                                                 <property name="bg"></property>
-                                                <property name="bitmap">enviro_wdr/MyBitmapsFunc_1.png; Load From File</property>
+                                                <property name="bitmap">bitmap/play_back.bmp; Load From File</property>
                                                 <property name="context_help"></property>
                                                 <property name="context_menu">1</property>
                                                 <property name="default"></property>
@@ -25600,7 +25600,7 @@
                                             <property name="proportion">0</property>
                                             <object class="wxBitmapButton" expanded="0">
                                                 <property name="bg"></property>
-                                                <property name="bitmap">enviro_wdr/MyBitmapsFunc_2.png; Load From File</property>
+                                                <property name="bitmap">bitmap/play_stop.bmp; Load From File</property>
                                                 <property name="context_help"></property>
                                                 <property name="context_menu">1</property>
                                                 <property name="default"></property>
@@ -25662,7 +25662,7 @@
                                             <property name="proportion">0</property>
                                             <object class="wxBitmapButton" expanded="0">
                                                 <property name="bg"></property>
-                                                <property name="bitmap">enviro_wdr/MyBitmapsFunc_3.png; Load From File</property>
+                                                <property name="bitmap">bitmap/play_play.bmp; Load From File</property>
                                                 <property name="context_help"></property>
                                                 <property name="context_menu">1</property>
                                                 <property name="default"></property>
@@ -25914,7 +25914,7 @@
             <property name="minimum_size"></property>
             <property name="name">VehicleDlgBase</property>
             <property name="pos"></property>
-            <property name="size"></property>
+            <property name="size">164,92</property>
             <property name="style">wxDEFAULT_DIALOG_STYLE</property>
             <property name="subclass"></property>
             <property name="title"></property>
@@ -26088,7 +26088,7 @@
                             <property name="proportion">0</property>
                             <object class="wxStaticBitmap" expanded="0">
                                 <property name="bg"></property>
-                                <property name="bitmap">enviro_wdr/MyBitmapsFunc_0.png; Load From File</property>
+                                <property name="bitmap">bitmap/dummy_32x18.bmp; Load From File</property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
                                 <property name="enabled">1</property>
@@ -29636,7 +29636,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="1">
+        <object class="Dialog" expanded="0">
             <property name="bg"></property>
             <property name="center">wxBOTH</property>
             <property name="context_help"></property>
@@ -29694,16 +29694,16 @@
             <event name="OnSetFocus"></event>
             <event name="OnSize"></event>
             <event name="OnUpdateUI"></event>
-            <object class="wxBoxSizer" expanded="1">
+            <object class="wxBoxSizer" expanded="0">
                 <property name="minimum_size"></property>
                 <property name="name">bSizer285</property>
                 <property name="orient">wxVERTICAL</property>
                 <property name="permission">none</property>
-                <object class="sizeritem" expanded="1">
+                <object class="sizeritem" expanded="0">
                     <property name="border">5</property>
                     <property name="flag">wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL</property>
                     <property name="proportion">1</property>
-                    <object class="wxNotebook" expanded="1">
+                    <object class="wxNotebook" expanded="0">
                         <property name="bg"></property>
                         <property name="bitmapsize"></property>
                         <property name="context_help"></property>

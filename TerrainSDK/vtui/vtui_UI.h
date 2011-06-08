@@ -250,22 +250,6 @@ class BuildingDlgBase : public wxDialog
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Class BuildingEdgesDlgBase
-///////////////////////////////////////////////////////////////////////////////
-class BuildingEdgesDlgBase : public wxDialog 
-{
-	private:
-	
-	protected:
-	
-	public:
-		
-		BuildingEdgesDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
-		~BuildingEdgesDlgBase();
-	
-};
-
-///////////////////////////////////////////////////////////////////////////////
 /// Class LinearStructDlgBase
 ///////////////////////////////////////////////////////////////////////////////
 class LinearStructDlgBase : public wxDialog 

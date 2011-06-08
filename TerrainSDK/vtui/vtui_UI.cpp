@@ -136,7 +136,7 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_text6->Wrap( 0 );
 	bSizer315->Add( m_text6, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color1 = new wxStaticBitmap( m_panel1, ID_COLOR1, wxBitmap( wxT("vtui_wdr/vtuiBitmapsFunc_0.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color1 = new wxStaticBitmap( m_panel1, ID_COLOR1, wxBitmap( wxT("../../TerrainApps/VTBuilder/bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer315->Add( m_color1, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_color = new wxButton( m_panel1, ID_SET_COLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -332,7 +332,7 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_text15->Wrap( 0 );
 	bSizer326->Add( m_text15, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color2 = new wxStaticBitmap( m_panel2, ID_COLOR2, wxBitmap( wxT("vtui_wdr/vtuiBitmapsFunc_0.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color2 = new wxStaticBitmap( m_panel2, ID_COLOR2, wxBitmap( wxT("../../TerrainApps/VTBuilder/bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer326->Add( m_color2, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_color1 = new wxButton( m_panel2, ID_SET_COLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -413,24 +413,6 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 }
 
 BuildingDlgBase::~BuildingDlgBase()
-{
-}
-
-BuildingEdgesDlgBase::BuildingEdgesDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
-{
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	
-	wxBoxSizer* bSizer318;
-	bSizer318 = new wxBoxSizer( wxVERTICAL );
-	
-	this->SetSizer( bSizer318 );
-	this->Layout();
-	bSizer318->Fit( this );
-	
-	this->Centre( wxBOTH );
-}
-
-BuildingEdgesDlgBase::~BuildingEdgesDlgBase()
 {
 }
 

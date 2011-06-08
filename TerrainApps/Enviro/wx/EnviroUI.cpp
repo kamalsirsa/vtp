@@ -2682,15 +2682,15 @@ LayerAnimDlgBase::LayerAnimDlgBase( wxWindow* parent, wxWindowID id, const wxStr
 	wxBoxSizer* bSizer254;
 	bSizer254 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_reset = new wxBitmapButton( this, ID_RESET, wxBitmap( wxT("enviro_wdr/MyBitmapsFunc_1.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_reset = new wxBitmapButton( this, ID_RESET, wxBitmap( wxT("bitmap/play_back.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_reset->SetDefault(); 
 	bSizer254->Add( m_reset, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_stop = new wxBitmapButton( this, ID_STOP, wxBitmap( wxT("enviro_wdr/MyBitmapsFunc_2.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_stop = new wxBitmapButton( this, ID_STOP, wxBitmap( wxT("bitmap/play_stop.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_stop->SetDefault(); 
 	bSizer254->Add( m_stop, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_play = new wxBitmapButton( this, ID_PLAY, wxBitmap( wxT("enviro_wdr/MyBitmapsFunc_3.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_play = new wxBitmapButton( this, ID_PLAY, wxBitmap( wxT("bitmap/play_play.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_play->SetDefault(); 
 	bSizer254->Add( m_play, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -2742,7 +2742,7 @@ VehicleDlgBase::VehicleDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_text165->Wrap( -1 );
 	bSizer256->Add( m_text165, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( wxT("enviro_wdr/MyBitmapsFunc_0.png"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( wxT("bitmap/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer256->Add( m_color3, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_vehicle_color = new wxButton( this, ID_SET_VEHICLE_COLOR, wxT("Set"), wxDefaultPosition, wxSize( 40,-1 ), 0 );
@@ -2753,7 +2753,6 @@ VehicleDlgBase::VehicleDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	this->SetSizer( bSizer255 );
 	this->Layout();
-	bSizer255->Fit( this );
 	
 	this->Centre( wxBOTH );
 }
