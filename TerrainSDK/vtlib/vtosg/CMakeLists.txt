@@ -1,7 +1,7 @@
 set(VTLIB_OSG_SOURCE_FILES ImageOSG.cpp Material.cpp Mesh.cpp NodeOSG.cpp SceneOSG.cpp SimpleInterimShadowTechnique.cpp StructureShadowsOSG.cpp
-					LightSpacePerspectiveShadowTechnique.cpp ExternalHeightField3d.cpp)
+					LightSpacePerspectiveShadowTechnique.cpp ExternalHeightField3d.cpp OSGEventHandler.cpp)
 set(VTLIB_OSG_HEADER_FILES ImageOSG.h MathOSG.h Material.h Mesh.h NodeOSG.h SceneOSG.h SimpleInterimShadowTechnique.h StructureShadowsOSG.h
-					LightSpacePerspectiveShadowTechnique.h ExternalHeightField3d.h)
+					LightSpacePerspectiveShadowTechnique.h ExternalHeightField3d.h OSGEventHandler.h)
 
 
 
@@ -55,7 +55,6 @@ if (WIN32)
 endif (WIN32)
 
 # Specify normal preprocessor definition for this target
-set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
 if(OSGEARTH_FOUND)
 	set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS USE_OSGEARTH=1)
 endif(OSGEARTH_FOUND)

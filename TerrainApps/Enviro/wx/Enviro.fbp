@@ -34328,7 +34328,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="0">
+        <object class="Dialog" expanded="1">
             <property name="bg"></property>
             <property name="center"></property>
             <property name="context_help"></property>
@@ -34447,7 +34447,7 @@
                         <event name="OnListItemDeselected"></event>
                         <event name="OnListItemFocused"></event>
                         <event name="OnListItemMiddleClick"></event>
-                        <event name="OnListItemRightClick"></event>
+                        <event name="OnListItemRightClick">OnListItemRightClick</event>
                         <event name="OnListItemSelected"></event>
                         <event name="OnListKeyDown"></event>
                         <event name="OnMiddleDClick"></event>

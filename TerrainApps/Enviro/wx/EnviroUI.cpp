@@ -3608,8 +3608,14 @@ PerformanceMonitorDlgBase::PerformanceMonitorDlgBase( wxWindow* parent, wxWindow
 	this->SetSizer( bSizer312 );
 	this->Layout();
 	bSizer312->Fit( this );
+	
+	// Connect Events
+	m_pm_listctrl->Connect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK, wxListEventHandler( PerformanceMonitorDlgBase::OnListItemRightClick ), NULL, this );
 }
 
 PerformanceMonitorDlgBase::~PerformanceMonitorDlgBase()
 {
+	// Disconnect Events
+	m_pm_listctrl->Disconnect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK, wxListEventHandler( PerformanceMonitorDlgBase::OnListItemRightClick ), NULL, this );
+	
 }

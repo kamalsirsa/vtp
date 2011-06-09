@@ -1,12 +1,12 @@
 # Add a library target called vtui
 set(VTUI_SOURCE_FILES 
-		AutoDialog.cpp BuildingDlg.cpp ColorMapDlg.cpp DistanceDlg.cpp DoubleProgDlg.cpp FeatureTableDlg.cpp Helper.cpp
+		vtui_UI.cpp AutoDialog.cpp BuildingDlg.cpp ColorMapDlg.cpp DistanceDlg.cpp DoubleProgDlg.cpp FeatureTableDlg.cpp Helper.cpp
 		InstanceDlg.cpp Joystick.cpp LinearStructDlg.cpp ProfileDlg.cpp ProfileEditDlg.cpp ProjectionDlg.cpp
-		SizeDlg.cpp StatePlaneDlg.cpp TagDlg.cpp vtui_wdr.cpp)
+		SizeDlg.cpp StatePlaneDlg.cpp TagDlg.cpp)
 set(VTUI_HEADER_FILES 
-		AutoDialog.h BuildingDlg.h ColorMapDlg.h DistanceDlg.h DoubleProgDlg.h FeatureTableDlg.h Helper.h InstanceDlg.h
+		vtui_UI.h AutoDialog.h BuildingDlg.h ColorMapDlg.h DistanceDlg.h DoubleProgDlg.h FeatureTableDlg.h Helper.h InstanceDlg.h
 		Joystick.h LinearStructDlg.h ProfileDlg.h ProfileEditDlg.h ProjectionDlg.h SizeDlg.h StatePlaneDlg.h
-		TagDlg.h vtui_wdr.h GraphicsWindowWX.h)
+		TagDlg.h GraphicsWindowWX.h)
 
 if(MSVC)
 	add_library(vtui ${VTUI_SOURCE_FILES} ${VTUI_HEADER_FILES} pre.cpp)
@@ -39,11 +39,8 @@ if (WIN32)
 	set_property(TARGET vtui APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 endif (WIN32)
 
-if(BUILD_OSG_VERSIONS)
-	set_property(TARGET vtui APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
-	if(OSG_FOUND)
-		include_directories(${OSG_INCLUDE_DIR})
-	endif(OSG_FOUND)
-endif(BUILD_OSG_VERSIONS)
+if(OSG_FOUND)
+	include_directories(${OSG_INCLUDE_DIR})
+endif(OSG_FOUND)
 
 

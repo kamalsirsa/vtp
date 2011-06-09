@@ -1224,6 +1224,10 @@ class PerformanceMonitorDlgBase : public wxDialog
 	protected:
 		wxListCtrl* m_pm_listctrl;
 		wxStaticText* m_text212;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnListItemRightClick( wxListEvent& event ) { event.Skip(); }
+		
 	
 	public:
 		

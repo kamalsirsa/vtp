@@ -16,7 +16,7 @@
     #include "wx/wx.h"
 #endif
 
-#include "enviro_wdr.h"
+#include "EnviroUI.h"
 
 // WDR: class declarations
 
@@ -24,7 +24,7 @@
 // CPerformanceMonitorDialog
 //----------------------------------------------------------------------------
 
-class CPerformanceMonitorDialog: public wxDialog
+class CPerformanceMonitorDialog: public PerformanceMonitorDlgBase
 {
 public:
     // constructors and destructors
@@ -46,12 +46,11 @@ private:
 
 private:
     // WDR: handler declarations for CPerformanceMonitorDialog
-    void OnListItemRightClick( wxListEvent &event );
+    virtual void OnListItemRightClick( wxListEvent &event );
 
 private:
     void UpdateCounters();
     static bool m_NVPMInitialised;
-    DECLARE_EVENT_TABLE()
 };
 
 #endif

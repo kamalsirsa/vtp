@@ -4,9 +4,6 @@ add_executable(VTConvert VTConvert.cpp)
 # Internal library dependencies for this target
 target_link_libraries(VTConvert vtdata)
 
-# Specify common preprocessor definitions for this target
-set_property(TARGET VTConvert APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1)
-
 # Specify debug preprocessor definitions for this target
 set_property(TARGET VTConvert APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 

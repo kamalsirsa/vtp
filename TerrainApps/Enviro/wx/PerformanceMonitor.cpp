@@ -47,15 +47,10 @@ typedef struct _CounterInfo
 bool CPerformanceMonitorDialog::m_NVPMInitialised = false;
 
 
-// WDR: event table for CPerformanceMonitorDialog
-
-BEGIN_EVENT_TABLE(CPerformanceMonitorDialog,wxDialog)
-    EVT_LIST_ITEM_RIGHT_CLICK( ID_PM_LISTCTRL, CPerformanceMonitorDialog::OnListItemRightClick )
-END_EVENT_TABLE()
 
 CPerformanceMonitorDialog::CPerformanceMonitorDialog( wxWindow *parent, wxWindowID id, const wxString &title,
     const wxPoint &position, const wxSize& size, long style ) :
-    wxDialog( parent, id, title, position, size, style )
+    PerformanceMonitorDlgBase( parent, id, title, position, size, style )
 {
 #if NVPERFSDK_FOUND
 

@@ -1,15 +1,14 @@
 find_package(GLUT)
 find_package(OpenGL)
 
-if(BUILD_GLUTSIMPLE_OSG AND GLUT_FOUND)
+if(GLUT_FOUND)
 	add_executable(glutSimple_osg app.cpp)
 
 	# Internal library dependencies for this target
 	target_link_libraries(glutSimple_osg vtlib_osg minidata vtdata  xmlhelper)
 
 	# Specify common preprocessor definitions for this target
-	set_property(TARGET glutSimple_osg APPEND PROPERTY COMPILE_DEFINITIONS VTLIB_OSG=1 FREEGLUT_LIB_PRAGMAS=0)
-
+	set_property(TARGET glutSimple_osg APPEND PROPERTY COMPILE_DEFINITIONS FREEGLUT_LIB_PRAGMAS=0)
 
 	# Windows specific stuff
 	if (WIN32)
@@ -71,5 +70,5 @@ if(BUILD_GLUTSIMPLE_OSG AND GLUT_FOUND)
 		include_directories(${ZLIB_INCLUDE_DIR})
 	endif(ZLIB_FOUND)
 
-endif(BUILD_GLUTSIMPLE_OSG AND GLUT_FOUND)
+endif(GLUT_FOUND)
 
