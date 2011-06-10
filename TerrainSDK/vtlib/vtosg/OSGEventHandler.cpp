@@ -13,42 +13,40 @@
 
 #define GEA		osgGA::GUIEventAdapter				// shorthand
 #define GEType	osgGA::GUIEventAdapter::EventType	// shorthand
-#define GEMask	osgGA::GUIEventAdapter::ModKeyMask	// shorthand
-#define GEKey	osgGA::GUIEventAdapter::KeySymbol	// shorthand
 
 bool vtOSGEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
 	GEType etype = ea.getEventType();
 
-	//if (etype != osgGA::GUIEventAdapter::FRAME)
+	//if (etype != GEA::FRAME)
 	//	VTLOG("getEventType %d button %d\n", etype, ea.getButton());
 
 	switch (etype)
 	{
-	case GEType::KEYDOWN:
-	//case GEType::KEYUP:
+	case GEA::KEYDOWN:
+	//case GEA::KEYUP:
 		handleKeyEvent(ea);
 		break;
-	case GEType::PUSH:
-	case GEType::RELEASE:
-	case GEType::DOUBLECLICK:
-	case GEType::DRAG:
-	case GEType::MOVE:
+	case GEA::PUSH:
+	case GEA::RELEASE:
+	case GEA::DOUBLECLICK:
+	case GEA::DRAG:
+	case GEA::MOVE:
 		handleMouseEvent(ea);
 		break;
-	case GEType::FRAME:
+	case GEA::FRAME:
 		break;
-	case GEType::RESIZE:
+	case GEA::RESIZE:
 		VTLOG("RESIZE %d %d\n", ea.getWindowWidth(), ea.getWindowHeight());
 		vtGetScene()->SetWindowSize(ea.getWindowWidth(), ea.getWindowHeight());
 		break;
-	case GEType::SCROLL:
+	case GEA::SCROLL:
 		VTLOG("SCROLL\n");
 		break;
-	case GEType::CLOSE_WINDOW:
+	case GEA::CLOSE_WINDOW:
 		VTLOG("CLOSE_WINDOW\n");
 		break;
-	case GEType::QUIT_APPLICATION:
+	case GEA::QUIT_APPLICATION:
 		VTLOG("QUIT_APPLICATION\n");
 		break;
 	}
@@ -61,40 +59,40 @@ void vtOSGEventHandler::handleKeyEvent(const osgGA::GUIEventAdapter& ea)
 
 	int flags = 0;
 	int mkm = ea.getModKeyMask();
-	if (mkm & GEMask::MODKEY_SHIFT) flags |= VT_SHIFT;
-	if (mkm & GEMask::MODKEY_CTRL) flags |= VT_CONTROL;
-	if (mkm & GEMask::MODKEY_ALT) flags |= VT_ALT;
+	if (mkm & GEA::MODKEY_SHIFT) flags |= VT_SHIFT;
+	if (mkm & GEA::MODKEY_CTRL) flags |= VT_CONTROL;
+	if (mkm & GEA::MODKEY_ALT) flags |= VT_ALT;
 
 	switch (ea.getKey())
 	{
-	case GEKey::KEY_Home: vtkey = VTK_HOME; break;
-	case GEKey::KEY_Left: vtkey = VTK_LEFT; break;
-	case GEKey::KEY_Up: vtkey = VTK_UP; break;
-	case GEKey::KEY_Right: vtkey = VTK_RIGHT; break;
-	case GEKey::KEY_Down: vtkey = VTK_DOWN; break;
+	case GEA::KEY_Home: vtkey = VTK_HOME; break;
+	case GEA::KEY_Left: vtkey = VTK_LEFT; break;
+	case GEA::KEY_Up: vtkey = VTK_UP; break;
+	case GEA::KEY_Right: vtkey = VTK_RIGHT; break;
+	case GEA::KEY_Down: vtkey = VTK_DOWN; break;
 
-	case GEKey::KEY_Page_Up: vtkey = VTK_PAGEUP; break;
-	case GEKey::KEY_Page_Down: vtkey = VTK_PAGEDOWN; break;
+	case GEA::KEY_Page_Up: vtkey = VTK_PAGEUP; break;
+	case GEA::KEY_Page_Down: vtkey = VTK_PAGEDOWN; break;
 
-	case GEKey::KEY_F1 : vtkey = VTK_F1; break;
-	case GEKey::KEY_F2 : vtkey = VTK_F2; break;
-	case GEKey::KEY_F3 : vtkey = VTK_F3; break;
-	case GEKey::KEY_F4 : vtkey = VTK_F4; break;
-	case GEKey::KEY_F5 : vtkey = VTK_F5; break;
-	case GEKey::KEY_F6 : vtkey = VTK_F6; break;
-	case GEKey::KEY_F7 : vtkey = VTK_F7; break;
-	case GEKey::KEY_F8 : vtkey = VTK_F8; break;
-	case GEKey::KEY_F9 : vtkey = VTK_F9; break;
-	case GEKey::KEY_F10: vtkey = VTK_F10; break;
-	case GEKey::KEY_F11: vtkey = VTK_F11; break;
-	case GEKey::KEY_F12: vtkey = VTK_F12; break;
+	case GEA::KEY_F1 : vtkey = VTK_F1; break;
+	case GEA::KEY_F2 : vtkey = VTK_F2; break;
+	case GEA::KEY_F3 : vtkey = VTK_F3; break;
+	case GEA::KEY_F4 : vtkey = VTK_F4; break;
+	case GEA::KEY_F5 : vtkey = VTK_F5; break;
+	case GEA::KEY_F6 : vtkey = VTK_F6; break;
+	case GEA::KEY_F7 : vtkey = VTK_F7; break;
+	case GEA::KEY_F8 : vtkey = VTK_F8; break;
+	case GEA::KEY_F9 : vtkey = VTK_F9; break;
+	case GEA::KEY_F10: vtkey = VTK_F10; break;
+	case GEA::KEY_F11: vtkey = VTK_F11; break;
+	case GEA::KEY_F12: vtkey = VTK_F12; break;
 
-	case GEKey::KEY_Shift_L: vtkey = VTK_SHIFT; break;
-	case GEKey::KEY_Shift_R: vtkey = VTK_SHIFT; break;
-	case GEKey::KEY_Control_L: vtkey = VTK_CONTROL; break;
-	case GEKey::KEY_Control_R: vtkey = VTK_CONTROL; break;
-	case GEKey::KEY_Alt_L: vtkey = VTK_ALT; break;
-	case GEKey::KEY_Alt_R: vtkey = VTK_ALT; break;
+	case GEA::KEY_Shift_L: vtkey = VTK_SHIFT; break;
+	case GEA::KEY_Shift_R: vtkey = VTK_SHIFT; break;
+	case GEA::KEY_Control_L: vtkey = VTK_CONTROL; break;
+	case GEA::KEY_Control_R: vtkey = VTK_CONTROL; break;
+	case GEA::KEY_Alt_L: vtkey = VTK_ALT; break;
+	case GEA::KEY_Alt_R: vtkey = VTK_ALT; break;
 	}
 	vtGetScene()->OnKey(vtkey, flags);
 }
@@ -107,14 +105,14 @@ void vtOSGEventHandler::handleMouseEvent(const osgGA::GUIEventAdapter& ea)
 	event.pos.Set(ea.getX(), ea.getWindowHeight()-1-ea.getY());		// Flip Y from OSG to everyone else
 
 	int mkm = ea.getModKeyMask();
-	if (mkm & GEMask::MODKEY_SHIFT) event.flags |= VT_SHIFT;
-	if (mkm & GEMask::MODKEY_CTRL) event.flags |= VT_CONTROL;
-	if (mkm & GEMask::MODKEY_ALT) event.flags |= VT_ALT;
+	if (mkm & GEA::MODKEY_SHIFT) event.flags |= VT_SHIFT;
+	if (mkm & GEA::MODKEY_CTRL) event.flags |= VT_CONTROL;
+	if (mkm & GEA::MODKEY_ALT) event.flags |= VT_ALT;
 
 	GEType etype = ea.getEventType();
 	switch (etype)
 	{
-	case GEType::PUSH:
+	case GEA::PUSH:
 		event.type = VT_DOWN;
 		if (ea.getButton() == GEA::LEFT_MOUSE_BUTTON)
 			event.button = VT_LEFT;
@@ -124,7 +122,7 @@ void vtOSGEventHandler::handleMouseEvent(const osgGA::GUIEventAdapter& ea)
 			event.button = VT_RIGHT;
 		vtGetScene()->OnMouse(event);
 		break;
-	case GEType::RELEASE:
+	case GEA::RELEASE:
 		event.type = VT_UP;
 		if (ea.getButton() == GEA::LEFT_MOUSE_BUTTON)
 			event.button = VT_LEFT;
@@ -134,10 +132,10 @@ void vtOSGEventHandler::handleMouseEvent(const osgGA::GUIEventAdapter& ea)
 			event.button = VT_RIGHT;
 		vtGetScene()->OnMouse(event);
 		break;
-	case GEType::DOUBLECLICK:
+	case GEA::DOUBLECLICK:
 		break;
-	case GEType::DRAG:
-	case GEType::MOVE:
+	case GEA::DRAG:
+	case GEA::MOVE:
 		event.type = VT_MOVE;
 		if (ea.getButton() == 0)
 			event.button = VT_LEFT;
