@@ -76,7 +76,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Advapi32.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgShadowd.lib OpenThreadsd.lib netcdf.lib libpng15d-vc9.lib zlib1d-vc9.lib gdal_id-vc9.lib opengl32.lib glu32.lib libjpeg.lib libMini.lib libcurl-static.lib Ws2_32.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib osgUtild.lib osgSimd.lib osgTerraind.lib osgTextd.lib osgViewerd.lib osgShadowd.lib OpenThreadsd.lib netcdf.lib libpng15d-vc9.lib zlib1d-vc9.lib gdal_id-vc9.lib opengl32.lib glu32.lib libjpeg.lib libMini.lib libcurl-static.lib Ws2_32.lib Advapi32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
@@ -170,7 +170,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Advapi32.lib osg.lib osgDB.lib osgUtil.lib osgText.lib osgShadow.lib OpenThreads.lib netcdf.lib libpng15-vc9.lib zlib1-vc9.lib gdal_i-vc9.lib opengl32.lib glu32.lib libjpeg.lib libMini.lib libcurl-static.lib Ws2_32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib osgUtil.lib osgShadow.lib osgSim.lib osgText.lib osgTerrain.lib osgViewer.lib OpenThreads.lib netcdf.lib libpng15-vc9.lib zlib1-vc9.lib gdal_i-vc9.lib opengl32.lib glu32.lib libjpeg.lib libMini.lib libcurl-static.lib Ws2_32.lib Advapi32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib"
@@ -262,30 +262,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="cmanager_wdr.cpp"
+				RelativePath=".\CManager_UI.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="frame.cpp"
@@ -515,7 +493,7 @@
 				>
 			</File>
 			<File
-				RelativePath="cmanager_wdr.h"
+				RelativePath=".\CManager_UI.h"
 				>
 			</File>
 			<File

@@ -168,7 +168,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib osg.lib osgUtil.lib osgDB.lib osgText.lib osgShadow.lib opengl32.lib netcdf.lib libpng15-vc9.lib zlib1-vc9.lib gdal_i-vc9.lib glu32.lib libjpeg.lib libMini.lib libcurl-static.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib osgUtil.lib osgShadow.lib osgSim.lib osgText.lib osgTerrain.lib osgViewer.lib opengl32.lib netcdf.lib libpng15-vc9.lib zlib1-vc9.lib gdal_i-vc9.lib glu32.lib libjpeg.lib libMini.lib libcurl-static.lib Ws2_32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="\APIs\libpng-1.0.8,\APIs\netcdf-3.5.0.win32bin\lib"

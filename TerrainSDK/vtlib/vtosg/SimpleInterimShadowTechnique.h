@@ -54,7 +54,7 @@ public:
 
 #if VTDEBUGSHADOWS
 	// instrumentation
-	vtGroup *m_pParent;
+	osg::Group *m_pParent;
 	vtDynBoundBox *Box1, *Box2, *Box3;
 #endif
 

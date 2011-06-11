@@ -325,7 +325,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\VTBuilder_wdr.cpp"
+				RelativePath=".\VTBuilder_UI.cpp"
 				>
 			</File>
 			<File
@@ -467,7 +467,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\VTBuilder_wdr.h"
+				RelativePath=".\VTBuilder_UI.h"
 				>
 			</File>
 			<File

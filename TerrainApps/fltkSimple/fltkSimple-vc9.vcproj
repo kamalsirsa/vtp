@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgShadowd.lib netcdf.lib libpng15d-vc9.lib zlib1d-vc9.lib gdal_id-vc9.lib libjpeg.lib fltkd.lib fltkgld.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib libMinid.lib libcurl-staticd.lib"
+				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osgd.lib osgDBd.lib osgGAd.lib osgUtild.lib osgSimd.lib osgTerraind.lib osgTextd.lib osgViewerd.lib osgShadowd.lib netcdf.lib libpng15d-vc9.lib zlib1d-vc9.lib gdal_id-vc9.lib libjpeg.lib fltkd.lib fltkgld.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib libMinid.lib libcurl-staticd.lib"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
@@ -139,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Gdi32.lib ole32.lib shell32.lib osg.lib osgDB.lib osgUtil.lib osgText.lib osgShadow.lib netcdf.lib libpng15-vc9.lib zlib1-vc9.lib gdal_i-vc9.lib libjpeg.lib fltk.lib fltkgl.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib libMini.lib libcurl-static.lib Ws2_32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib osgUtil.lib osgShadow.lib osgSim.lib osgText.lib osgTerrain.lib osgViewer.lib netcdf.lib libpng15-vc9.lib zlib1-vc9.lib gdal_i-vc9.lib libjpeg.lib fltk.lib fltkgl.lib opengl32.lib glu32.lib ws2_32.lib User32.lib Comctl32.lib libMini.lib libcurl-static.lib Ws2_32.lib Gdi32.lib ole32.lib shell32.lib"
 				OutputFile="$(OutDir)/fltkSimple.exe"
 				LinkIncremental="1"
 				SubSystem="1"

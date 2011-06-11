@@ -1191,7 +1191,7 @@ void vtShadow::SetDebugHUD(vtGroup *pGroup)
 	{
 		osg::ref_ptr<osg::Camera> pCamera = pTechnique->makeDebugHUD();
 		pCamera->setName("Shadow DEBUG HUD camera");
-		pGroup->GetOsgGroup()->addChild(pCamera.get());
+		pGroup->addChild(pCamera.get());
 	}
 #endif
 }
