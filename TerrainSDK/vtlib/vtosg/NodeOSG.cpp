@@ -550,6 +550,10 @@ void TransformExtension::PointTowards(const FPoint3 &point, bool bPitch)
 
 //////////////////////////////////////////////////////////////////////////
 
+/**
+ Recursively travel up the scene graph, looking for a specific parent node.
+ Return true if it is found.
+ */
 bool FindAncestor(osg::Node *node, osg::Node *parent)
 {
 	for (unsigned int i = 0; i < node->getNumParents(); i++)
@@ -561,6 +565,61 @@ bool FindAncestor(osg::Node *node, osg::Node *parent)
 			return true;
 	}
 	return false;
+}
+
+/**
+ Recursively travel down the scene graph, looking for a specific child node by
+ name.  Return it if it is found.
+ */
+osg::Node *FindDescendent(osg::Group *group, const char *pName)
+{
+	for (unsigned int i = 0; i < group->getNumChildren(); i++)
+	{
+		osg::Node *child = group->getChild(i);
+		if (child->getName() == pName)
+			return child;
+		osg::Group *group = dynamic_cast<osg::Group*>(child);
+		if (group)
+		{
+			osg::Node *found = FindDescendent(group, pName);
+			if (found)
+				return found;
+		}
+	}
+	return NULL;
+}
+
+/**
+ Insert a node into a scene graph.  For example, if the graph is A-B-C,
+ where B is the child of A and C is the child of B, then inserting a node D
+ above C results in A-B-D-C.
+
+ \param node The node to insert above.
+ \param newnode The node to insert.
+ */
+void InsertNodeAbove(osg::Node *node, osg::Group *newnode)
+{
+	osg::Group *parent = (osg::Group*) node->getParent(0);
+	newnode->addChild(node);
+	parent->addChild(newnode);
+	parent->removeChild(node);
+}
+
+/**
+ Insert a node into a scene graph.  For example, if the graph is A-B-C,
+ where B is the child of A and C is the child of B, then inserting a node D
+ below A results in A-D-B-C.
+
+ \param node The node to insert above.
+ \param newnode The node to insert.
+ */
+void InsertNodeBelow(osg::Group *group, osg::Group *newnode)
+{
+	for (unsigned int i = 0; i < group->getNumChildren(); i++)
+		newnode->addChild(group->getChild(i));
+
+	group->removeChildren(0, group->getNumChildren());
+	group->addChild(newnode);
 }
 
 vtMultiTexture *AddMultiTexture(osg::Node *onode, int iTextureUnit, vtImage *pImage,
@@ -887,7 +946,7 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 		node = node_new;
 	}
 	//VTLOG1("--------------\n");
-	//vtLogNativeGraph(node);
+	//vtLogGraph(node);
 
 	// Use the filename as the node's name
 	node->setName(fname);

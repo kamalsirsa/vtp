@@ -2924,8 +2924,6 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 ////////////////////////////////////////////////////////////////////////
 // Vehicles
 
-#include "CarEngine.h"
-
 void Enviro::CreateGroundVehicle(const VehicleOptions &opt)
 {
 	// Create test vehicle
@@ -2938,7 +2936,7 @@ void Enviro::CreateGroundVehicle(const VehicleOptions &opt)
 	if (!bOn)
 		return;
 
-	vtTransform *car = m_VehicleManager.CreateVehicle(opt.m_Itemname, opt.m_Color);
+	Vehicle *car = m_VehicleManager.CreateVehicle(opt.m_Itemname, opt.m_Color);
 	if (!car)
 		return;
 	pTerr->addNode(car);
@@ -2947,7 +2945,7 @@ void Enviro::CreateGroundVehicle(const VehicleOptions &opt)
 
 	float speed = 0.0f;		// kmph
 	float wheel_radius = 0.25f;
-	CarEngine *pE1 = new CarEngine(pTerr->GetHeightField(), speed, wheel_radius, car->GetTrans());
+	CarEngine *pE1 = new CarEngine(car, pTerr->GetHeightField(), speed, wheel_radius, car->GetTrans());
 	pE1->setName("drive");
 	pE1->SetTarget(car);
 	if (pE1->FindWheelTransforms())
@@ -2998,7 +2996,7 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, floa
 
 		// Create some of each land vehicle type
 		int vnum = i % numv;
-		vtTransform *car = m_VehicleManager.CreateVehicle(vnames[vnum], color);
+		Vehicle *car = m_VehicleManager.CreateVehicle(vnames[vnum], color);
 		if (car)
 		{
 			pTerrain->addNode(car);
@@ -3009,12 +3007,12 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, floa
 			CarEngine *pE1;
 			if (road_node == NULL)
 			{
-				pE1 = new CarEngine(pTerrain->GetHeightField(), fSpeed, .25f,
+				pE1 = new CarEngine(car, pTerrain->GetHeightField(), fSpeed, .25f,
 					car->GetTrans());
 			}
 			else
 			{
-				pE1 = new CarEngine(pTerrain->GetHeightField(), fSpeed, .25f,
+				pE1 = new CarEngine(car, pTerrain->GetHeightField(), fSpeed, .25f,
 					road_node, 1);
 			}
 			pE1->setName("drive");

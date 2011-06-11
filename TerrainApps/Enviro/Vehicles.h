@@ -3,7 +3,7 @@
 //
 // Classes for describing and operating on vehicles.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,10 +22,10 @@ public:
 
 	vtGeode	*m_pHighlight;	// The wireframe highlight
 
-	osg::Node *m_pFrontLeft;
-	osg::Node *m_pFrontRight;
-	osg::Node *m_pRearLeft;
-	osg::Node *m_pRearRight;
+	vtTransform *m_pFrontLeft;
+	vtTransform *m_pFrontRight;
+	vtTransform *m_pRearLeft;
+	vtTransform *m_pRearRight;
 };
 
 class VehicleManager

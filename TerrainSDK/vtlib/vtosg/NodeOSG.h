@@ -138,7 +138,10 @@ public:
 //
 
 bool FindAncestor(osg::Node *node, osg::Node *parent);
-osg::Node *FindDescendent(osg::Node *node, const char *pName);
+osg::Node *FindDescendent(osg::Group *node, const char *pName);
+
+void InsertNodeAbove(osg::Node *node, osg::Group *newnode);
+void InsertNodeBelow(osg::Group *group, osg::Group *newnode);
 
 vtMultiTexture *AddMultiTexture(osg::Node *onode, int iTextureUnit, vtImage *pImage,
 								int iTextureMode, const FPoint2 &scale, const FPoint2 &offset);
@@ -175,6 +178,8 @@ extern bool g_bDisableMipmaps;	// set to disable ALL mipmaps
 ///////////////////////////////////////////////////////////////////////////////
 // Node classes
 //
+
+typedef osg::ref_ptr<osg::Node> NodePtr;
 
 /**
  * Represents a Group (a node that can have children) in the vtlib Scene Graph.

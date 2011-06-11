@@ -2,7 +2,7 @@
 // CarEngine.h
 // header file for CarEngine.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,7 @@
 #include "vtdata/HeightField.h"
 #include "vtlib/core/Roads.h"
 #include "vtlib/core/IntersectionEngine.h"
+#include "Vehicles.h"
 
 enum CarEngineMode { NONE, JUST_DRIVE, FOLLOW_ROAD, FOLLOW_PATH };
 
@@ -26,9 +27,9 @@ public:
 	// lane is which lane to drive on.
 	// road height is how high road is off the ground.
 	// target_speed in km per hour.
-	CarEngine(vtHeightField3d *grid, float target_speed, float wRadius, const FPoint3 &pos);
+	CarEngine(Vehicle *vehicle, vtHeightField3d *grid, float target_speed, float wRadius, const FPoint3 &pos);
 	//drives from the given node.  takes position from given node.
-	CarEngine(vtHeightField3d *grid, float target_speed, float wRadius, TNode *n, int lane=1);
+	CarEngine(Vehicle *vehicle, vtHeightField3d *grid, float target_speed, float wRadius, TNode *n, int lane=1);
 
 	/*	finds and sets the tire variables in the model.  assumes that the tires are under a group name ending
 		in "tires" and the 4 tires are the children of the group.  the 4 tire names should end with their
@@ -127,6 +128,8 @@ private:
 	int m_iNumRoads;	//number of roads to follow
 	int m_iNextRoad;	//index to next road to follow
 	bool m_bPathReverse;//when we reach end of path, want to reverse traverse it.
+
+	Vehicle *m_pVehicle;
 };
 
 #endif // CARENGINEH

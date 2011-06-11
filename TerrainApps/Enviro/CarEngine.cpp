@@ -1,7 +1,7 @@
 //
 // CarEngine.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -68,9 +68,10 @@ float Angle(const FPoint3 &center, const FPoint3 &p1, const FPoint3 &p2)
 // Setup engine to drive freely.
 // Target speed in kilometers per hour
 //
-CarEngine::CarEngine(vtHeightField3d *grid, float target_speed,
+CarEngine::CarEngine(Vehicle *vehicle, vtHeightField3d *grid, float target_speed,
 					 float wRadius, const FPoint3 &pos)
 {
+	m_pVehicle = vehicle;
 	Init(grid, target_speed, wRadius);
 	m_pCurNode = NULL;
 	m_vCurPos = pos;
@@ -82,9 +83,10 @@ CarEngine::CarEngine(vtHeightField3d *grid, float target_speed,
 // Setup engine to drive on roads, starting from node n.
 // Takes position from given node.
 //
-CarEngine::CarEngine(vtHeightField3d *grid, float target_speed,
+CarEngine::CarEngine(Vehicle *vehicle, vtHeightField3d *grid, float target_speed,
 					 float wRadius, TNode *n, int lane)
 {
+	m_pVehicle = vehicle;
 	Init(grid, target_speed, wRadius);
 	m_pCurNode = n;
 	m_vCurPos = ((NodeGeom*)n)->m_p3;
@@ -382,47 +384,14 @@ float CarEngine::DetermineYawPitchAndHeight(const FPoint3 &next_pos)
 
 
 /*
- Finds and sets the tire variables in the model.  assumes that the tires are
- under a group name ending in "tires" and the 4 tires are the children of the
- group.  the 4 tire names should end with their location names: "front left"
- "front right" "rear left" "rear right"
+ Get the wheel transforms from the Vehicle object.
 */
 bool CarEngine::FindWheelTransforms()
 {
-
-	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
-	if (!car)
-		return false;
-#if 0
-	osg::Node *tModel;
-	tModel = FindDescendent(car, "front_left_xform");
-	if (tModel)
-	{
-		m_pFrontLeft = new vtTransform;
-		m_pFrontLeft->addChild(tModel);
-	}
-
-	tModel = FindDescendent(car, "front_right_xform");
-	if (tModel)
-	{
-		m_pFrontRight = new vtTransform;
-		m_pFrontRight->addChild(tModel);
-	}
-
-	tModel = FindDescendent(car, "rear_left_xform");
-	if (tModel)
-	{
-		m_pRearLeft = new vtTransform;
-		m_pRearLeft->addChild(tModel);
-	}
-
-	tModel = FindDescendent(car, "rear_right_xform");
-	if (tModel)
-	{
-		m_pRearRight = new vtTransform;
-		m_pRearRight->addChild(tModel);
-	}
-#endif
+	m_pFrontLeft = m_pVehicle->m_pFrontLeft;
+	m_pFrontRight = m_pVehicle->m_pFrontRight;
+	m_pRearLeft = m_pVehicle->m_pRearLeft;
+	m_pRearRight = m_pVehicle->m_pRearRight;
 	return true;
 }
 

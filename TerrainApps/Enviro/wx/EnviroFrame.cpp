@@ -1155,7 +1155,7 @@ void EnviroFrame::DoTestCode()
 	vtg->GetOsgGroup()->addChild(shadowedScene.get());
 	//	vtg->GetOsgGroup()->addChild(container.get());
 
-	vtLogNativeGraph(shadowedScene.get());
+	vtLogGraph(shadowedScene.get());
 #endif
 #if 0
 		if (pTerr && g_App.m_bSelectedStruct)

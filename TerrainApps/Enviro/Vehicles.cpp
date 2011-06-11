@@ -78,83 +78,53 @@ VehicleManager::~VehicleManager()
 Vehicle *VehicleManager::CreateVehicleFromNode(osg::Node *node, const RGBf &cColor)
 {
 	// Deep copy
-	osg::Node *pNewModel = (osg::Node *) node->clone(osg::CopyOp::DEEP_COPY_NODES);
-	if (!pNewModel)
+	NodePtr pNewModel = (osg::Node *) node->clone(osg::CopyOp::DEEP_COPY_NODES);
+	if (!pNewModel.valid())
 		return NULL;
 
-	Vehicle *pNewVehicle = new Vehicle;
+	osg::Group *group = dynamic_cast<osg::Group*>(pNewModel.get());
 
 	//VTLOG1("-----------------\n");
 	//vtLogGraph(node);
-	//VTLOG1("-----------------\n");
-	//vtLogNativeGraph(node->GetOsgNode());
-
 
 	//VTLOG1("-----------------\n");
-	//vtLogNativeGraph(pNewModel->GetOsgNode());
+	//vtLogGraph(pNewModel);
 
-	pNewVehicle->addChild(pNewModel);
+	osg::Node *pFrontLeft = FindDescendent(group, "front_left");
+	osg::Node *pFrontRight = FindDescendent(group, "front_right");
+	osg::Node *pRearLeft = FindDescendent(group, "rear_left");
+	osg::Node *pRearRight = FindDescendent(group, "rear_right");
 
-#if 0
-	pNewVehicle->m_pFrontLeft = pNewModel->FindNativeNode("front_left");
-	pNewVehicle->m_pFrontRight = pNewModel->FindNativeNode("front_right");
-	pNewVehicle->m_pRearLeft = pNewModel->FindNativeNode("rear_left");
-	pNewVehicle->m_pRearRight = pNewModel->FindNativeNode("rear_right");
-#endif
-
-	if (!pNewVehicle->m_pFrontLeft || !pNewVehicle->m_pFrontRight || !pNewVehicle->m_pRearLeft || !pNewVehicle->m_pRearRight)
+	if (!pFrontLeft || !pFrontRight || !pRearLeft || !pRearRight)
 	{
 		// Didn't find them.
-		delete pNewVehicle;
 		return NULL;
 	}
-	if (dynamic_cast<vtTransform*>(pNewVehicle->m_pFrontLeft))
-	{
-		// They are already transforms, no need to insert any
-		pNewVehicle->m_pFrontLeft->setName("front_left_xform");
-		pNewVehicle->m_pFrontRight->setName("front_right_xform");
-		pNewVehicle->m_pRearLeft->setName("rear_left_xform");
-		pNewVehicle->m_pRearRight->setName("rear_right_xform");
-	}
-	else
-	{
-#if 0	// TODO restore this someday
-		// Stick transform above them (this seems like a bad way to go)
-		// There has go to be an easier way of doing this RFJ 4/02/09
-		vtTransform *pTransform;
 
-		pTransform = new vtTransform;
-		pTransform->setName("front_left_xform");
-		pTransform->AddChild(pNewVehicle->m_pFrontLeft);
-		pNewVehicle->m_pFrontLeft->GetParent()->RemoveChild(pNewVehicle->m_pFrontLeft);
-		pNewVehicle->m_pFrontLeft->Release();
-		pNewVehicle->m_pFrontLeft = pTransform;
+	Vehicle *pNewVehicle = new Vehicle;
+	pNewVehicle->addChild(pNewModel);
 
-		pTransform = new vtTransform;
-		pTransform->setName("front_right_xform");
-		pTransform->AddChild(pNewVehicle->m_pFrontRight);
-		pNewVehicle->m_pFrontRight->GetParent()->RemoveChild(pNewVehicle->m_pFrontRight);
-		pNewVehicle->m_pFrontRight->Release();
-		pNewVehicle->m_pFrontRight = pTransform;
+	// Stick transform above them
+	pNewVehicle->m_pFrontLeft = new vtTransform;
+	pNewVehicle->m_pFrontLeft->setName("front_left_xform");
+	InsertNodeBelow(pFrontLeft->asGroup(), pNewVehicle->m_pFrontLeft);
+	
+	pNewVehicle->m_pFrontRight = new vtTransform;
+	pNewVehicle->m_pFrontRight->setName("front_right_xform");
+	InsertNodeBelow(pFrontRight->asGroup(), pNewVehicle->m_pFrontRight);
 
-		pTransform = new vtTransform;
-		pTransform->setName("rear_left_xform");
-		pTransform->AddChild(pNewVehicle->m_pRearLeft);
-		pNewVehicle->m_pRearLeft->GetParent()->RemoveChild(pNewVehicle->m_pRearLeft);
-		pNewVehicle->m_pRearLeft->Release();
-		pNewVehicle->m_pRearLeft = pTransform;
+	pNewVehicle->m_pRearLeft = new vtTransform;
+	pNewVehicle->m_pRearLeft->setName("rear_left_xform");
+	InsertNodeBelow(pRearLeft->asGroup(), pNewVehicle->m_pRearLeft);
 
-		pTransform = new vtTransform;
-		pTransform->setName("rear_right_xform");
-		pTransform->AddChild(pNewVehicle->m_pRearRight);
-		pNewVehicle->m_pRearRight->GetParent()->RemoveChild(pNewVehicle->m_pRearRight);
-		pNewVehicle->m_pRearRight->Release();
-		pNewVehicle->m_pRearRight = pTransform;
+	pNewVehicle->m_pRearRight = new vtTransform;
+	pNewVehicle->m_pRearRight->setName("rear_right_xform");
+	InsertNodeBelow(pRearRight->asGroup(), pNewVehicle->m_pRearRight);
 
-		//VTLOG1("-----------------\n");
-		//vtLogNativeGraph(pNewModel->GetOsgNode());
-#endif
-	}
+	//VTLOG1("-----------------\n");
+	//vtLogGraph(pNewModel);
+
+	// Replace the special 'purple' materials in the model with our color of choice
 	ConvertPurpleToColor(pNewVehicle, cColor);
 
 	return pNewVehicle;
