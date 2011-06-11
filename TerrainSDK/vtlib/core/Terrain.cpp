@@ -144,7 +144,7 @@ vtTerrain::~vtTerrain()
 		m_pTerrainGroup->removeChild(m_pDynGeomScale);
 
 	if (m_pTiledGeom)
-		m_pDynGeomScale->removeChild(m_pTiledGeom);
+		m_pTerrainGroup->removeChild(m_pTiledGeom);
 
 	// Release anything remaining in the terrain's scenegraph
 	m_pContainerGroup = NULL;
