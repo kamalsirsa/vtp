@@ -44,6 +44,9 @@ RenderOptionsDlg::RenderOptionsDlg( wxWindow *parent, wxWindowID id, const wxStr
 	m_opt.m_bShadingDot = false;
 	m_opt.m_bCastShadows = false;
 
+	// Work around wxFormDesigner's lack of support for limiting to smallest size
+	GetSizer()->SetSizeHints(this);
+
 	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
 
 	AddValidator(this, ID_RADIO_SHADING_NONE, &m_bNoShading);

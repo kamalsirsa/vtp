@@ -453,7 +453,7 @@ void WriteDotFile(osg::Group *node, const char *filename)
 	fprintf(fp, "digraph G\n{\n");
 
 	fprintf(fp, "node [fontname=\"Arial.ttf\",fontsize=\"9\",shape=ellipse,height=0.2,width=0.4,color=\"black\",style=\"filled\"];\n");
-	fprintf(fp, "edge [color=\"midnightblue\",style=\"solid\",penwidth=\"1.5\"]\n");
+	fprintf(fp, "edge [color=\"midnightblue\",style=\"solid\",penwidth=\"1.5\"];\n");
 
 	std::vector<void*> visited;
 

@@ -177,6 +177,7 @@ EVT_UPDATE_UI(ID_ROAD_FLATTEN,		MainFrame::OnUpdateRoadFlatten)
 
 EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
 EVT_MENU(ID_ELEV_REMOVERANGE,		MainFrame::OnRemoveElevRange)
+EVT_MENU(ID_ELEV_COMPUTE_DIFF,		MainFrame::OnElevComputeDiff)
 EVT_MENU(ID_ELEV_SETUNKNOWN,		MainFrame::OnElevSetUnknown)
 EVT_MENU(ID_ELEV_FILL_FAST,			MainFrame::OnFillFast)
 EVT_MENU(ID_ELEV_FILL_SLOW,			MainFrame::OnFillSlow)
@@ -194,6 +195,7 @@ EVT_MENU(ID_ELEV_TRIMTIN,			MainFrame::OnElevTrimTin)
 
 EVT_UPDATE_UI(ID_ELEV_SELECT,		MainFrame::OnUpdateElevSelect)
 EVT_UPDATE_UI(ID_ELEV_REMOVERANGE,	MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_COMPUTE_DIFF,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SETUNKNOWN,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILL_FAST,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILL_SLOW,	MainFrame::OnUpdateIsGrid)
@@ -497,6 +499,7 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_SCALE, _("Sc&ale Elevation"));
 	elevMenu->Append(ID_ELEV_VERT_OFFSET, _("Offset Elevation Vertically"));
 	elevMenu->Append(ID_ELEV_REMOVERANGE, _("&Remove Elevation Range..."));
+	elevMenu->Append(ID_ELEV_COMPUTE_DIFF, _("&Compute Difference Layer"));
 
 	wxMenu *fillMenu = new wxMenu;
 	fillMenu->Append(ID_ELEV_FILL_FAST, _("Fast"));
@@ -2052,6 +2055,24 @@ void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
 		t->SetModified(true);
 		t->ReRender();
 		m_pView->Refresh();
+	}
+}
+
+void MainFrame::OnElevComputeDiff(wxCommandEvent &event)
+{
+	vtElevLayer *t = GetActiveElevLayer();
+	if (!t && !t->m_pGrid)
+		return;
+
+	vtElevLayer *t2 = ComputeDifference(t);
+
+	if (t2)
+	{
+		SetActiveLayer(t2);
+		m_pView->SetActiveLayer(t2);
+		RefreshTreeView();
+		RefreshToolbars();
+		RefreshLayerInView(t2);
 	}
 }
 

@@ -1,7 +1,7 @@
 //
 // Builder.cpp: The main Builder class of the VTBuilder
 //
-// Copyright (c) 2001-2010 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -774,60 +774,6 @@ void Builder::ResolveInstanceItem(vtStructInstance *inst)
 	}
 }
 
-unsigned int Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
-{
-	for (int l = 0; l < NumLayers(); l++)
-	{
-		vtLayer *lp = m_Layers.GetAt(l);
-		if (lp->GetType() == LT_ELEVATION && lp->GetVisible())
-			elevs.push_back((vtElevLayer *)lp);
-	}
-	return (unsigned int)elevs.size();
-}
-
-/**
- * Fill the gaps (NODATA heixels) in an elevation layer, by interpolating
- * from the surrounding values.
- *
- * \param el The elevation layer to fill the gaps on.
- * \param area Optionally, restrict the operation to a given area.
- */
-bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
-{
-	// Create progress dialog for the slow part
-	OpenProgressDialog(_("Filling Gaps"), true);
-
-	bool bGood;
-
-	if (iMethod == -1)
-		iMethod = g_Options.GetValueInt(TAG_GAP_FILL_METHOD);
-	if (iMethod == 1)
-		// fast
-		bGood = el->m_pGrid->FillGaps(area, progress_callback);
-	else if (iMethod == 2)
-		// slow and smooth
-		bGood = el->m_pGrid->FillGapsSmooth(area, progress_callback);
-	else if (iMethod == 3)
-	{
-		int result = el->m_pGrid->FillGapsByRegionGrowing(2, 5, progress_callback);
-		bGood = (result != -1);
-	}
-
-	CloseProgressDialog();
-	return bGood;
-}
-
-void Builder::FlagStickyLayers(const std::vector<vtElevLayer*> &elevs)
-{
-	// Clear sticky flag for all layers
-	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
-		m_Layers[i]->SetSticky(false);
-
-	// Set sticky flag for the desired layers
-	for (size_t e = 0; e < elevs.size(); e++)
-		elevs[e]->SetSticky(true);
-}
-
 /**
  * Sample all elevation layers into a target layer.
  */
@@ -896,6 +842,146 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 	VTLOG(" SampleCurrentTerrains: %.3f seconds.\n", time);
 
 	return true;
+}
+
+float Builder::GetHeightFromTerrain(const DPoint2 &p)
+{
+	float height = INVALID_ELEVATION;
+
+	int layers = m_Layers.GetSize();
+	for (int i = 0; i < layers; i++)
+	{
+		vtLayer *l = m_Layers.GetAt(i);
+		if (l->GetType() != LT_ELEVATION || !l->GetVisible()) continue;
+		vtElevLayer *pEL = (vtElevLayer *)l;
+		float val = pEL->GetElevation(p);
+		if (val != INVALID_ELEVATION)
+			height = val;
+	}
+	return height;
+}
+
+unsigned int Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
+{
+	for (int l = 0; l < NumLayers(); l++)
+	{
+		vtLayer *lp = m_Layers.GetAt(l);
+		if (lp->GetType() == LT_ELEVATION && lp->GetVisible())
+			elevs.push_back((vtElevLayer *)lp);
+	}
+	return (unsigned int)elevs.size();
+}
+
+/**
+ * Fill the gaps (NODATA heixels) in an elevation layer, by interpolating
+ * from the surrounding values.
+ *
+ * \param el The elevation layer to fill the gaps on.
+ * \param area Optionally, restrict the operation to a given area.
+ */
+bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
+{
+	// Create progress dialog for the slow part
+	OpenProgressDialog(_("Filling Gaps"), true);
+
+	bool bGood;
+
+	if (iMethod == -1)
+		iMethod = g_Options.GetValueInt(TAG_GAP_FILL_METHOD);
+	if (iMethod == 1)
+		// fast
+		bGood = el->m_pGrid->FillGaps(area, progress_callback);
+	else if (iMethod == 2)
+		// slow and smooth
+		bGood = el->m_pGrid->FillGapsSmooth(area, progress_callback);
+	else if (iMethod == 3)
+	{
+		int result = el->m_pGrid->FillGapsByRegionGrowing(2, 5, progress_callback);
+		bGood = (result != -1);
+	}
+
+	CloseProgressDialog();
+	return bGood;
+}
+
+void Builder::FlagStickyLayers(const std::vector<vtElevLayer*> &elevs)
+{
+	// Clear sticky flag for all layers
+	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+		m_Layers[i]->SetSticky(false);
+
+	// Set sticky flag for the desired layers
+	for (size_t e = 0; e < elevs.size(); e++)
+		elevs[e]->SetSticky(true);
+}
+
+/*
+ Given an elevation layer, produce another layer which contains the difference
+ between it and any other elevation layers that it overlaps.
+
+ This is useful for comparing two elevations grids A and B.  The resulting grid
+ will be positive where the height of A is greater than B, and negative where
+ A is less than B.
+ */
+vtElevLayer *Builder::ComputeDifference(vtElevLayer *pElev)
+{
+	vtElevationGrid	*grid = pElev->GetGrid();
+	if (!grid)
+		return NULL;
+
+	int xsize, ysize;
+	grid->GetDimensions(xsize, ysize);
+
+	// Make an array of pointers to all the visible existing elevation layers
+	//  other than this one.
+	std::vector<vtElevLayer*> elevs;
+	for (int l = 0; l < NumLayers(); l++)
+	{
+		vtLayer *lp = GetLayer(l);
+		if (lp->GetType() == LT_ELEVATION && lp->GetVisible() && lp != pElev)
+			elevs.push_back((vtElevLayer *)lp);
+	}
+	unsigned int elays = elevs.size();
+
+	// Make layer for difference value; initially copy from source
+	vtElevationGrid *diffgrid = new vtElevationGrid(*grid);
+	diffgrid->Invalidate();
+
+	OpenProgressDialog(_("Comparing Elevation Layers"), false);
+
+	DPoint2 p;
+	for (int i = 0; i < xsize; i++)
+	{
+		UpdateProgressDialog(i * 100 / xsize);
+
+		for (int j = 0; j < ysize; j++)
+		{
+			grid->GetEarthPoint(i, j, p);
+
+			float val1 = grid->GetFValue(i, j);
+			if (val1 == INVALID_ELEVATION)
+				continue;
+
+			float val2 = INVALID_ELEVATION;
+			for (unsigned int e = 0; e < elays; e++)
+			{
+				val2 = elevs[e]->GetElevation(p);
+				if (val2 != INVALID_ELEVATION)
+					break;
+			}
+			if (val2 == INVALID_ELEVATION)
+				continue;
+
+			float dz = val1 - val2;
+			diffgrid->SetFValue(i, j, dz);
+		}
+	}
+	CloseProgressDialog();
+
+	vtElevLayer *pNewLayer = new vtElevLayer(diffgrid);
+	pNewLayer->SetLayerFilename(_("difference"));
+	AddLayer(pNewLayer);
+	return pNewLayer;
 }
 
 
@@ -977,23 +1063,6 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 	return true;
 }
 
-
-float Builder::GetHeightFromTerrain(const DPoint2 &p)
-{
-	float height = INVALID_ELEVATION;
-
-	int layers = m_Layers.GetSize();
-	for (int i = 0; i < layers; i++)
-	{
-		vtLayer *l = m_Layers.GetAt(i);
-		if (l->GetType() != LT_ELEVATION || !l->GetVisible()) continue;
-		vtElevLayer *pEL = (vtElevLayer *)l;
-		float val = pEL->GetElevation(p);
-		if (val != INVALID_ELEVATION)
-			height = val;
-	}
-	return height;
-}
 
 bool Builder::GetRGBUnderCursor(const DPoint2 &p, RGBi &rgb)
 {

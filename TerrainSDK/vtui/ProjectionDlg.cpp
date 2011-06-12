@@ -66,6 +66,9 @@ ProjectionDlg::ProjectionDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	AddValidator(this, ID_ZONE, &m_iZone);
 	AddValidator(this, ID_SHOW_ALL_DATUMS, &m_bShowAllDatums);
 
+	// Work around wxFormDesigner's lack of support for limiting to smallest size
+	GetSizer()->SetSizeHints(this);
+
 	// The order here must match the ProjType enum!
 	m_pProjCtrl->Append(_("Albers Equal Area Conic"));
 	m_pProjCtrl->Append(_("Geographic"));

@@ -97,6 +97,7 @@ public:
 	vtElevLayer();
 	vtElevLayer(const DRECT &area, int iColumns, int iRows,
 		bool bFloats, float fScale, const vtProjection &proj);
+	vtElevLayer(vtElevationGrid *grid);
 	virtual ~vtElevLayer();
 
 	// overrides

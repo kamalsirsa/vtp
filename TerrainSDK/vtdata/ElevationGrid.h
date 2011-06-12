@@ -58,6 +58,8 @@ public:
 		const vtProjection &proj);
 	void FreeData();
 
+	void Clear();
+	void Invalidate();
 	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj,
 		float bUpgradeToFloat, bool progress_callback(int) = NULL);
 	bool ReprojectExtents(const vtProjection &proj_new);
@@ -192,6 +194,7 @@ protected:
 	float	m_fVMeters;	// scale factor to convert stored heights to meters
 	float	m_fVerticalScale;
 
+	void SetupMembers();
 	void ComputeExtentsFromCorners();
 	void ComputeCornersFromExtents();
 	bool ParseNTF5(OGRDataSource *pDatasource, vtString &msg, bool progress_callback(int));

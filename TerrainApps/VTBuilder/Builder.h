@@ -1,7 +1,7 @@
 //
 // Builder.h
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -137,6 +137,7 @@ public:
 	unsigned int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
 	bool FillElevGaps(vtElevLayer *el, DRECT *area = NULL, int iMethod = -1);
 	void FlagStickyLayers(const std::vector<vtElevLayer*> &elevs);
+	vtElevLayer *ComputeDifference(vtElevLayer *pElev);
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);

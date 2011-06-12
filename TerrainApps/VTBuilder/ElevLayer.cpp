@@ -384,6 +384,16 @@ vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
 }
 
+vtElevLayer::vtElevLayer(vtElevationGrid *grid) : vtLayer(LT_ELEVATION)
+{
+	SetupDefaults();
+
+	m_pTin = NULL;
+	m_pGrid = grid;
+	m_pGrid->GetDimensions(m_iColumns, m_iRows);
+	m_pGrid->SetupConversion(1.0f);
+}
+
 vtElevLayer::~vtElevLayer()
 {
 	if (m_bBitmapRendered)

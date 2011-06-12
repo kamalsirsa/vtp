@@ -179,6 +179,7 @@ protected:
 
 	void OnElevSelect(wxCommandEvent& event);
 	void OnRemoveElevRange(wxCommandEvent& event);
+	void OnElevComputeDiff(wxCommandEvent& event);
 	void OnElevSetUnknown(wxCommandEvent& event);
 	void OnFillFast(wxCommandEvent& event);
 	void OnFillSlow(wxCommandEvent& event);

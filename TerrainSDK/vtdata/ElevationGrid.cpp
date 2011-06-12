@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project.
+// Copyright (c) 2001-2011 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,6 +19,11 @@
  * Constructor: Creates an empty grid.
  */
 vtElevationGrid::vtElevationGrid()
+{
+	SetupMembers();
+}
+
+void vtElevationGrid::SetupMembers()
 {
 	m_bFloatMode = false;
 	m_pData = NULL;
@@ -46,6 +51,7 @@ vtElevationGrid::vtElevationGrid()
 vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
 	bool bFloat, const vtProjection &proj)
 {
+	SetupMembers();
 	Create(area, iColumns, iRows, bFloat, proj);
 }
 
@@ -54,6 +60,7 @@ vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
  */
 vtElevationGrid::vtElevationGrid(const vtElevationGrid &rhs)
 {
+	SetupMembers();
 	*this = rhs;
 }
 
@@ -82,21 +89,33 @@ bool vtElevationGrid::CopyHeaderFrom(const vtElevationGrid &rhs)
 	// Free data first before copying from other grid
 	FreeData();
 
-	// Copy each member individually
+	// Copy each vtHeightField member
+	m_fMinHeight = rhs.m_fMinHeight;
+	m_fMaxHeight = rhs.m_fMaxHeight;
 	m_EarthExtents = rhs.m_EarthExtents;
+
+	// Copy each vtHeightField3d member
+	m_WorldExtents	  = rhs.m_WorldExtents;
+	m_Conversion	  = rhs.m_Conversion;
+	m_fDiagonalLength = rhs.m_fDiagonalLength;
+
+	// Copy each vtHeightFieldGrid3d member
 	m_iColumns   = rhs.m_iColumns;
 	m_iRows		 = rhs.m_iRows;
-	m_bFloatMode = rhs.m_bFloatMode;
-	m_fVMeters   = rhs.m_fVMeters;
+	m_fXStep	 = rhs.m_fXStep;
+	m_fZStep	 = rhs.m_fZStep;
+	m_dXStep	 = rhs.m_dXStep;
+	m_dYStep	 = rhs.m_dYStep;
+
+	// Copy each vtElevationGrid member
+	m_bFloatMode		= rhs.m_bFloatMode;
+	m_fVMeters			= rhs.m_fVMeters;
+	m_fVerticalScale	= rhs.m_fVerticalScale;
 
 	for (unsigned ii = 0; ii < sizeof( m_Corners ) / sizeof( *m_Corners ); ++ii)
 		m_Corners[ii] = rhs.m_Corners[ii];
 
 	m_proj = rhs.m_proj;
-
-	m_fMinHeight = rhs.m_fMinHeight;
-	m_fMaxHeight = rhs.m_fMaxHeight;
-
 	m_strOriginalDEMName = rhs.m_strOriginalDEMName;
 
 	return _AllocateArray();
@@ -173,6 +192,46 @@ void vtElevationGrid::FreeData()
 	if (m_pFData)
 		free(m_pFData);
 	m_pFData = NULL;
+}
+
+/**
+ Set all the values in the grid to zero.
+ */
+void vtElevationGrid::Clear()
+{
+	int i, j;
+	if (m_bFloatMode)
+	{
+		for (i = 0; i < m_iColumns; i++)
+			for (j = 0; j < m_iRows; j++)
+				m_pFData[i*m_iRows+j] = 0.0f;
+	}
+	else
+	{
+		for (i = 0; i < m_iColumns; i++)
+			for (j = 0; j < m_iRows; j++)
+				m_pData[i*m_iRows+j] = 0;
+	}
+}
+
+/**
+ Set all the values in the grid to INVALID_ELEVATION.
+ */
+void vtElevationGrid::Invalidate()
+{
+	int i, j;
+	if (m_bFloatMode)
+	{
+		for (i = 0; i < m_iColumns; i++)
+			for (j = 0; j < m_iRows; j++)
+				m_pFData[i*m_iRows+j] = INVALID_ELEVATION;
+	}
+	else
+	{
+		for (i = 0; i < m_iColumns; i++)
+			for (j = 0; j < m_iRows; j++)
+				m_pData[i*m_iRows+j] = INVALID_ELEVATION;
+	}
 }
 
 /**
