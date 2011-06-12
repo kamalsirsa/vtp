@@ -67,6 +67,8 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddValidator(this, ID_TERRAIN_PROGRESS, &m_bShowProgress);
 	AddValidator(this, ID_FLY_IN, &m_bFlyIn);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 

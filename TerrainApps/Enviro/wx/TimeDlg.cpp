@@ -73,6 +73,8 @@ TimeDlg::TimeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetSliderSpeed()->Enable(false);
 	GetTextSpeed()->Enable(false);
 	GetStop()->Enable(false);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void TimeDlg::AddOkCancel()

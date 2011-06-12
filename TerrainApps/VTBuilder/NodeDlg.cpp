@@ -160,6 +160,8 @@ NodeDlg::NodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetBehavior()->Append(_("Stop Sign"));		// IT_STOPSIGN
 
 	m_pView = (NodeDlgView *) FindWindow( ID_SCROLLED );
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void NodeDlg::SetScale(float fScale)

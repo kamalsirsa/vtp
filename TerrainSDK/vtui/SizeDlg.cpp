@@ -38,6 +38,8 @@ SizeDlg::SizeDlg(wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(this, ID_TEXT_Y, &m_Current.y);
 
 	GetSliderRatio()->SetFocus();
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void SizeDlg::SetBase(const IPoint2 &size)

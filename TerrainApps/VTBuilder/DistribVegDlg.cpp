@@ -74,6 +74,8 @@ DistribVegDlg::DistribVegDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	AddNumValidator(this, ID_TEXT_FIXED_SIZE, &m_opt.m_fFixedSize);
 	AddValidator(this, ID_SPIN_RANDOM_FROM, &m_iRandomFrom);
 	AddValidator(this, ID_SPIN_RANDOM_TO, &m_iRandomTo);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 

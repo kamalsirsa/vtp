@@ -60,6 +60,8 @@ RawDlg::RawDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_CRS_SIMPLE, &m_bCrsSimple);
 	AddValidator(this, ID_CRS_CURRENT, &m_bCrsCurrent);
 	AddValidator(this, ID_CRS_EXACT, &m_bCrsExact);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 // WDR: handler implementations for RawDlg

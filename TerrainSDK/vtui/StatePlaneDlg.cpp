@@ -47,6 +47,8 @@ StatePlaneDlg::StatePlaneDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	AddValidator(this, ID_RADIO_METERS, &m_bMeters);
 	AddValidator(this, ID_RADIO_FEET, &m_bFeet);
 	AddValidator(this, ID_RADIO_FEET_US, &m_bFeetUS);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void StatePlaneDlg::OnInitDialog(wxInitDialogEvent& event)

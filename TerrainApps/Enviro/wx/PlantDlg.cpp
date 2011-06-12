@@ -80,6 +80,8 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddNumValidator(this, ID_PLANT_VARIANCE_EDIT, &m_opt.m_iVariance);
 	AddValidator(this, ID_PLANT_VARIANCE_SLIDER, &m_iVarianceSlider);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 PlantDlg::~PlantDlg()

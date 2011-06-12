@@ -87,6 +87,8 @@ SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString 
 
 	AddNumValidator(this, ID_ESTX, &m_fEstX);
 	AddNumValidator(this, ID_ESTY, &m_fEstY);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 // WDR: handler implementations for SampleImageDlg

@@ -77,6 +77,8 @@ ImportStructDlg::ImportStructDlg( wxWindow *parent, wxWindowID id, const wxStrin
 	AddValidator(this, ID_CHOICE_ROOF_TYPE, &m_iRoofType);
 	AddValidator(this, ID_RADIO_COLOR_FIXED, &m_opt.m_bFixedColor);
 	AddValidator(this, ID_DEFAULTS_FILE, &m_defaults_filename);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 bool ImportStructDlg::GetRadio(int id)

@@ -98,6 +98,8 @@ ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 	AddNumValidator(this, ID_ESTX, &m_fEstX);
 	AddNumValidator(this, ID_ESTY, &m_fEstY);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)

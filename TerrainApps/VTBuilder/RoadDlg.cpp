@@ -61,6 +61,8 @@ RoadDlg::RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetMargin()->Append(_("Yes"));
 	GetMargin()->Append(_("(multiple)"));
 	GetMargin()->SetSelection(0);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void RoadDlg::SetRoad(LinkEdit *pSingleRoad, vtRoadLayer *pLayer)

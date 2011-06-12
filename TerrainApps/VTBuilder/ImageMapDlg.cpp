@@ -34,6 +34,8 @@ ImageMapDlg::ImageMapDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_iField = 0;
 
 	AddValidator(this, ID_LINK_FIELD, &m_iField);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void ImageMapDlg::SetFields(vtFeatureSet *pSet)

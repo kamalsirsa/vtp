@@ -373,7 +373,7 @@ protected:
 	float		m_fTransitionHeight;	// in meters
 
 	// HUD UI
-	vtMaterialArray *m_pHUDMaterials;
+	vtMaterialArrayPtr m_pHUDMaterials;
 
 	vtGeode		*m_pLegendGeom;
 	bool		m_bCreatedLegend;

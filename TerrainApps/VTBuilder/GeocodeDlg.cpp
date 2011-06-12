@@ -41,6 +41,8 @@ GeocodeDlg::GeocodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	// If no web, then no Geocode.us
 	GetCheckUse1()->Enable(SUPPORT_CURL);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 // WDR: handler implementations for GeocodeDlg

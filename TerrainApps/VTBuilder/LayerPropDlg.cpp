@@ -35,6 +35,8 @@ LayerPropDlg::LayerPropDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	AddNumValidator(this, ID_RIGHT, &m_fRight);
 	AddNumValidator(this, ID_BOTTOM, &m_fBottom);
 	AddValidator(this, ID_PROPS, &m_strText);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 // WDR: handler implementations for LayerPropDlg

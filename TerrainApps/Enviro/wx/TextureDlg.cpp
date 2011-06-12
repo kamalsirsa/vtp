@@ -67,6 +67,8 @@ TextureDlg::TextureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_TFILE_BASE, &m_strTextureBase);
 	AddValidator(this, ID_TFILENAME, &m_strTexture4x4);
 	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void TextureDlg::SetParams(const TParams &Params)

@@ -54,6 +54,8 @@ VegFieldsDlg::VegFieldsDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	AddValidator(this, ID_HEIGHT_FIXED, &m_bHeightFixed);
 	AddValidator(this, ID_HEIGHT_USE_FIELD, &m_bHeightUseField);
 	AddNumValidator(this, ID_HEIGHT_FIXED_VALUE, &m_fFixedHeight);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void VegFieldsDlg::SetShapefileName(const wxString &filename)

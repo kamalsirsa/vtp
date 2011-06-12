@@ -55,6 +55,8 @@ ColorMapDlg::ColorMapDlg( wxWindow *parent, wxWindowID id,
 
 	GetList()->SetImageList(&m_imlist, wxIMAGE_LIST_SMALL);
 	GetList()->InsertColumn(0, _T(""), wxLIST_FORMAT_LEFT, 180);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 

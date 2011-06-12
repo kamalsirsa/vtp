@@ -29,6 +29,8 @@ DistanceDlg2d::DistanceDlg2d( wxWindow *parent, wxWindowID id, const wxString &t
 	DistanceDlg( parent, id, title, position, size, style )
 {
 	m_pFrame = NULL;
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void DistanceDlg2d::OnMode(bool bPath)

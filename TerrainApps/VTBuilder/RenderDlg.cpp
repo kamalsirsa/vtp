@@ -80,6 +80,8 @@ RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_TILING, &m_bTiling);
 
 	UpdateEnabling();
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void RenderDlg::OnInitDialog(wxInitDialogEvent& event)

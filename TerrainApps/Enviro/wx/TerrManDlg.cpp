@@ -54,6 +54,8 @@ TerrainManagerDlg::TerrainManagerDlg( wxWindow *parent, wxWindowID id, const wxS
 {
 	m_pTree = GetTree();
 	m_iSelect = 0;
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void TerrainManagerDlg::RefreshTreeContents()

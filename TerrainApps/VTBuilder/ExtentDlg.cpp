@@ -47,6 +47,8 @@ ExtentDlg::ExtentDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_EXTENT_S, &m_strSouth);
 	AddValidator(this, ID_EXTENT_W, &m_strWest);
 	AddValidator(this, ID_DMS, &m_bDMS);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void ExtentDlg::SetArea(DRECT area, bool bDegrees)

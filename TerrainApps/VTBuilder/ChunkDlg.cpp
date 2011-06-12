@@ -32,6 +32,8 @@ ChunkDlg::ChunkDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	AddNumValidator(this, ID_DEPTH, &m_iDepth);
 	AddNumValidator(this, ID_MAXERROR, &m_fMaxError);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 // WDR: handler implementations for ChunkDlg

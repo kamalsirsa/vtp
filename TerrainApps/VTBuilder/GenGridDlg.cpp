@@ -47,6 +47,8 @@ GenGridDlg::GenGridDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(this, ID_SIZEX, &m_iSizeX);
 	AddNumValidator(this, ID_SIZEY, &m_iSizeY);
 	AddNumValidator(this, ID_TEXT_DIST_CUTOFF, &m_fDistanceCutoff);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void GenGridDlg::RecomputeSize()

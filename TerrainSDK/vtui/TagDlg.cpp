@@ -36,6 +36,8 @@ TagDlg::TagDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pList->SetColumnWidth(0, 60);
 	m_pList->InsertColumn(1, _T("Value"));
 	m_pList->SetColumnWidth(1, 320);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void TagDlg::SetTags(vtTagArray *tags)

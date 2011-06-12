@@ -80,6 +80,8 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	UpdateEnables();
 
 	TransferDataToWindow();
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void TileDlg::SetElevation(bool bElev)

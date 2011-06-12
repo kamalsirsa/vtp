@@ -72,6 +72,8 @@ ScenarioSelectDialog::ScenarioSelectDialog( wxWindow *parent, wxWindowID id, con
 	GetScenarioList()->SetValidator(CScenarioListValidator(&m_Scenarios));
 
 	m_bModified = false;
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void ScenarioSelectDialog::SetTerrain(vtTerrain *pTerrain)

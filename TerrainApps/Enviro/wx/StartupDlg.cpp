@@ -125,6 +125,8 @@ StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_EARTHVIEW, &m_bStartEarth);
 	AddValidator(this, ID_IMAGE, &m_strEarthImage);
 	AddValidator(this, ID_TERRAIN, &m_bStartTerrain);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void StartupDlg::GetOptionsFrom(EnviroOptions &opt)

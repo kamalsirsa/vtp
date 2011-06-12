@@ -40,6 +40,8 @@ UtilDlg::UtilDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iType = 0;
 
 	AddValidator(this, ID_STRUCTTYPE, &m_iType);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 // WDR: handler implementations for UtilDlg

@@ -94,6 +94,8 @@ EphemDlg::EphemDlg(wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddNumValidator(this, ID_TEXT_WIND_SPEED, &m_fWindSpeed);
 	AddValidator(this, ID_SLIDER_WIND_SPEED, &m_iWindSpeedSlider);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void EphemDlg::UpdateEnableState()

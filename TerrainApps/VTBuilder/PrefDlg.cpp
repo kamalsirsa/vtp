@@ -61,6 +61,8 @@ PrefDlg::PrefDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(this, ID_MAX_MEGAPIXELS, &i2);
 	AddNumValidator(this, ID_ELEV_MAX_SIZE, &i3);
 	AddNumValidator(this, ID_MAX_MEM_GRID, &i4);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void PrefDlg::UpdateEnable()

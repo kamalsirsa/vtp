@@ -62,6 +62,8 @@ ImportPointDlg::ImportPointDlg( wxWindow *parent, wxWindowID id, const wxString 
 
 	RefreshProjString();
 	UpdateEnabling();
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void ImportPointDlg::SetCRS(const vtProjection &proj)

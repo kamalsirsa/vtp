@@ -55,6 +55,8 @@ TSDialog::TSDialog( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iMpp = 0;
 	UpdateMpp();
 	UpdateMetersPerPixel();
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void TSDialog::UpdateMpp()

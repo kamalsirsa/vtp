@@ -22,6 +22,8 @@ FeatInfoDlg::FeatInfoDlg( wxWindow *parent, wxWindowID id,
 {
 	m_pLayer = NULL;
 	m_pView = NULL;
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void FeatInfoDlg::OnModified()

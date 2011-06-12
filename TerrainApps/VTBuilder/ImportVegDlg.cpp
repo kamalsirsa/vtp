@@ -36,6 +36,8 @@ ImportVegDlg::ImportVegDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	m_pDensity = GetDensity();
 	m_pBiotype1 = GetBiotype1();
 	m_pBiotype2 = GetBiotype2();
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void ImportVegDlg::SetShapefileName(const wxString &filename)

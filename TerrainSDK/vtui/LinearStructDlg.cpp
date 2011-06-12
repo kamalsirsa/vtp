@@ -93,6 +93,8 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	AddNumValidator(this, ID_SLOPE, &m_param.m_iConnectSlope);
 
 	UpdateChoices();
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void LinearStructureDlg::SetStructureMaterials(const vtMaterialDescriptorArray *desc)

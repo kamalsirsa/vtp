@@ -75,6 +75,8 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_pTransformToGeo = NULL;
 	m_bPathMode = false;
 	Zero();
+
+	GetSizer()->SetSizeHints(this);
 }
 
 DistanceDlg::~DistanceDlg()

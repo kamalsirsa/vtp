@@ -51,6 +51,8 @@ MatchDlg::MatchDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	UpdateLayers();
 	GetLayerSpacing();
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void MatchDlg::SetArea(const DRECT &area, bool bIsGeo)

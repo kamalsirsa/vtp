@@ -47,6 +47,8 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_CHECK_SHOW_ROAD_WIDTH, &m_bShowRoadWidth);
 	AddValidator(this, ID_CHECK_DRAW_RAW_SIMPLE, &m_bDrawRawSimple);
 	AddValidator(this, ID_PATHNAMES, &m_bShowPath);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 // WDR: handler implementations for OptionsDlg

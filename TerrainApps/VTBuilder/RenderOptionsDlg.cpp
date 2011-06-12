@@ -44,9 +44,6 @@ RenderOptionsDlg::RenderOptionsDlg( wxWindow *parent, wxWindowID id, const wxStr
 	m_opt.m_bShadingDot = false;
 	m_opt.m_bCastShadows = false;
 
-	// Work around wxFormDesigner's lack of support for limiting to smallest size
-	GetSizer()->SetSizeHints(this);
-
 	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
 
 	AddValidator(this, ID_RADIO_SHADING_NONE, &m_bNoShading);
@@ -58,6 +55,8 @@ RenderOptionsDlg::RenderOptionsDlg( wxWindow *parent, wxWindowID id, const wxStr
 	AddValidator(this, ID_SPIN_CAST_DIRECTION, &m_opt.m_iCastDirection);
 	AddNumValidator(this, ID_AMBIENT, &m_opt.m_fAmbient, 2);
 	AddNumValidator(this, ID_GAMMA, &m_opt.m_fGamma, 2);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void RenderOptionsDlg::SetOptions(ElevDrawOptions &opt)

@@ -40,6 +40,8 @@ ContourDlg::ContourDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_CHOICE_LAYER, &m_strLayer);
 
 	UpdateEnabling();
+
+	GetSizer()->SetSizeHints(this);
 }
 
 // WDR: handler implementations for ContourDlg

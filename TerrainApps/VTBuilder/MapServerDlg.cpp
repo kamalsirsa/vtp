@@ -78,6 +78,8 @@ MapServerDlg::MapServerDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	GetFormat()->Append(_T("PNG"));
 	GetFormat()->Append(_T("GeoTIFF"));
 	GetFormat()->SetSelection(0);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void MapServerDlg::SetServerArray(OGCServerArray &array)

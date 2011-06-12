@@ -49,6 +49,8 @@ SelectDlg::SelectDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetCondition()->Append(_T(" <= "));
 	GetCondition()->Append(_T(" <> "));
 	GetCondition()->SetSelection(0);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void SelectDlg::SetRawLayer(vtRawLayer *pRL)

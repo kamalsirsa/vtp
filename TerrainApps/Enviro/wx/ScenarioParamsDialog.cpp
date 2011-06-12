@@ -33,6 +33,8 @@ ScenarioParamsDialog::ScenarioParamsDialog( wxWindow *parent, wxWindowID id, con
 	ScenarioParamsDlgBase( parent, id, title, position, size, style )
 {
 	m_bModified = false;
+
+	GetSizer()->SetSizeHints(this);
 }
 
 // WDR: handler implementations for ScenarioParamsDialog

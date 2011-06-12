@@ -49,6 +49,8 @@ ImportStructOGRDlg::ImportStructOGRDlg( wxWindow *parent, wxWindowID id, const w
 	AddValidator(this, ID_BUILD_FOUNDATIONS, &m_opt.bBuildFoundations);
 	AddValidator(this, ID_USE_25D, &m_opt.bUse25DForElevation);
 	AddValidator(this, ID_CHOICE_HEIGHT_TYPE, (int *)&m_opt.m_HeightType);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 bool ImportStructOGRDlg::GetRadio(int id)

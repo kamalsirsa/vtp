@@ -100,6 +100,8 @@ CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_SLIDER_VEG, &m_iDistVeg);
 	AddValidator(this, ID_SLIDER_STRUCT, &m_iDistStruct);
 	AddValidator(this, ID_SLIDER_ROAD, &m_iDistRoad);
+
+	GetSizer()->SetSizeHints(this);
 }
 
 #define FOV_MIN	2.0f

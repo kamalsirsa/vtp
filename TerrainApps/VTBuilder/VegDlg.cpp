@@ -34,6 +34,8 @@ SpeciesListDlg::SpeciesListDlg( wxWindow *parent, wxWindowID id, const wxString 
 	SpeciesListDlgBase( parent, id, title, position, size, style )
 {
 	m_idx = 0;
+
+	GetSizer()->SetSizeHints(this);
 }
 
 // WDR: handler implementations for SpeciesListDlg
