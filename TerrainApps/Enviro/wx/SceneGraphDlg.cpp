@@ -5,16 +5,8 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifdef __GNUG__
-	#pragma implementation "SceneGraphDlg.cpp"
-#endif
-
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
 
 #include "wx/treectrl.h"
 #include "wx/image.h"
@@ -22,9 +14,6 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Engine.h"
 #include "SceneGraphDlg.h"
-
-#include <typeinfo>
-using namespace std;
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "icon1.xpm"
@@ -38,6 +27,9 @@ using namespace std;
 #  include "icon9.xpm"
 #  include "icon10.xpm"
 #  include "icon11.xpm"
+#  include "icon12.xpm"
+#  include "icon13.xpm"
+#  include "icon14.xpm"
 #endif
 
 /////////////////////////////
@@ -55,15 +47,13 @@ public:
 };
 
 
-// WDR: class implementations
-
 //----------------------------------------------------------------------------
 // SceneGraphDlg
 //----------------------------------------------------------------------------
 
 // WDR: event table for SceneGraphDlg
 
-BEGIN_EVENT_TABLE(SceneGraphDlg,SceneGraphDlgBase)
+BEGIN_EVENT_TABLE(SceneGraphDlg, SceneGraphDlgBase)
 	EVT_INIT_DIALOG (SceneGraphDlg::OnInitDialog)
 	EVT_TREE_SEL_CHANGED( ID_SCENETREE, SceneGraphDlg::OnTreeSelChanged )
 	EVT_CHECKBOX( ID_ENABLED, SceneGraphDlg::OnEnabled )
@@ -95,6 +85,7 @@ SceneGraphDlg::~SceneGraphDlg()
 	delete m_imageListNormal;
 }
 
+
 ///////////
 
 void SceneGraphDlg::CreateImageList(int size)
@@ -109,18 +100,21 @@ void SceneGraphDlg::CreateImageList(int size)
 	// Make an image list containing small icons
 	m_imageListNormal = new wxImageList(size, size, TRUE);
 
-	wxIcon icons[11];
-	icons[0] = wxICON(icon1);
-	icons[1] = wxICON(icon2);
-	icons[2] = wxICON(icon3);
-	icons[3] = wxICON(icon4);
-	icons[4] = wxICON(icon5);
-	icons[5] = wxICON(icon6);
-	icons[6] = wxICON(icon7);
-	icons[7] = wxICON(icon8);
-	icons[8] = wxICON(icon9);
-	icons[9] = wxICON(icon10);
-	icons[10] = wxICON(icon11);
+	wxIcon icons[14];
+	icons[0] = wxICON(icon1);		// camera
+	icons[1] = wxICON(icon2);		// engine
+	icons[2] = wxICON(icon3);		// geom
+	icons[3] = wxICON(icon4);		// group
+	icons[4] = wxICON(icon5);		// light
+	icons[5] = wxICON(icon6);		// lod
+	icons[6] = wxICON(icon7);		// mesh
+	icons[7] = wxICON(icon8);		// top
+	icons[8] = wxICON(icon9);		// unknown
+	icons[9] = wxICON(icon10);		// xform
+	icons[10] = wxICON(icon11);		// fog
+	icons[11] = wxICON(icon12);		// shadow
+	icons[12] = wxICON(icon13);		// hud
+	icons[13] = wxICON(icon14);		// dyngeom
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )
@@ -171,34 +165,70 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 
 	if (dynamic_cast<vtLight*>(pNode))
 	{
-		str = _("Light");
+		str = _("vtLight");
 		nImage = 4;
+	}
+	else if (dynamic_cast<vtDynGeom*>(pNode))
+	{
+		str = _("vtDynGeom");
+		nImage = 13;
 	}
 	else if (dynamic_cast<vtGeode*>(pNode))
 	{
-		str = _("Geometry");
+		str = _("vtGeode");
 		nImage = 2;
 	}
 	else if (dynamic_cast<vtLOD*>(pNode))
 	{
-		str = _T("LOD");
+		str = _T("vtLOD");
 		nImage = 5;
 	}
 	else if (dynamic_cast<vtTransform*>(pNode))
 	{
-		str = _T("XForm");
+		str = _T("vtTransform");
 		nImage = 9;
 	}
 	else if (dynamic_cast<vtFog*>(pNode))
 	{
-		str = _("Fog");
+		str = _("vtFog");
 		nImage = 10;
+	}
+	else if (dynamic_cast<vtShadow*>(pNode))
+	{
+		str = _("vtShadow");
+		nImage = 11;
+	}
+	else if (dynamic_cast<vtHUD*>(pNode))
+	{
+		str = _("vtHUD");
+		nImage = 12;
 	}
 	else if (dynamic_cast<vtGroup*>(pNode))
 	{
 		// must be just a group for grouping's sake
+		str = _("vtGroup");
+		nImage = 3;
+	}
+	// Or, raw OSG nodes
+	else if (dynamic_cast<osg::MatrixTransform*>(pNode))
+	{
+		str = _("MatrixTransform");
+		nImage = 9;
+	}
+	else if (dynamic_cast<osg::LOD*>(pNode))
+	{
+		str = _("LOD");
+		nImage = 5;
+	}
+	else if (dynamic_cast<osg::Group*>(pNode))
+	{
 		str = _("Group");
 		nImage = 3;
+	}
+	else if (dynamic_cast<osg::Geode*>(pNode))
+	{
+		str = _("Geode");
+		nImage = 2;
 	}
 	else
 	{
@@ -221,16 +251,20 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	else
 		hNewItem = m_pTree->AppendItem(hParentItem, str, nImage, nImage);
 
-	const std::type_info &t1 = typeid(*pNode);
-	if (t1 == typeid(vtGeode))
+	vtGeode *pGeode = dynamic_cast<vtGeode*>(pNode);
+	osg::Geode *geode = dynamic_cast<osg::Geode*>(pNode);
+	if (pGeode)
 	{
-		vtGeode *pGeode = dynamic_cast<vtGeode*>(pNode);
 		int num_mesh = pGeode->GetNumMeshes();
 		wxTreeItemId	hGeomItem;
 
 		for (int i = 0; i < num_mesh; i++)
 		{
+			osg::Drawable *draw = pGeode->getDrawable(i);
 			vtMesh *pMesh = pGeode->GetMesh(i);
+			vtTextMesh *pTextMesh = pGeode->GetTextMesh(i);
+			osg::Geometry *geom = dynamic_cast<osg::Geometry*>(draw);
+
 			if (pMesh)
 			{
 				int iNumPrim = pMesh->GetNumPrims();
@@ -250,21 +284,53 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 				case PrimitiveSet::QUAD_STRIP: mtype = "QuadStrip"; break;
 				case PrimitiveSet::POLYGON: mtype = "Polygon"; break;
 				}
-				str.Printf(_("Mesh %d, %hs, %d verts, %d prims"), i, mtype, iNumVert, iNumPrim);
+				str.Printf(_("%d: Mesh, %hs, %d verts, %d prims"), i, mtype, iNumVert, iNumPrim);
+				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
+			}
+			else if (pTextMesh)
+				hGeomItem = m_pTree->AppendItem(hNewItem, _("Text Mesh"), 6, 6);
+			else if (geom)
+			{
+				int iNumVert = geom->getVertexArray()->getNumElements();
+				str.Printf(_("%d: Drawable, %d verts"), i, iNumVert);
+				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
+			}
+			else if (draw)
+			{
+				str = _("Drawable");
+				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
+			}
+		}
+	}
+	else if (geode)
+	{
+		int num_draw = geode->getNumDrawables();
+		wxTreeItemId	hGeomItem;
+
+		for (int i = 0; i < num_draw; i++)
+		{
+			osg::Geometry *geom = dynamic_cast<osg::Geometry*>(geode->getDrawable(i));
+			if (geom)
+			{
+				int iNumVert = geom->getVertexArray()->getNumElements();
+				str.Printf(_("%d: %d verts"), i, iNumVert);
 				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
 			}
 			else
-				hGeomItem = m_pTree->AppendItem(hNewItem, _("Text Mesh"), 6, 6);
+			{
+				str.Printf(_("%d: drawable"), i);
+				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
+			}
 		}
 	}
 
 	m_pTree->SetItemData(hNewItem, new MyTreeItemData(pNode, NULL));
 
 	wxTreeItemId hSubItem;
-	vtGroup *pGroup = dynamic_cast<vtGroup*>(pNode);
-	if (pGroup)
+	osg::Group *group = dynamic_cast<osg::Group*>(pNode);
+	if (group)
 	{
-		int num_children = pGroup->getNumChildren();
+		int num_children = group->getNumChildren();
 		if (num_children > 200)
 		{
 			str.Printf(_("(%d children)"), num_children);
@@ -274,7 +340,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		{
 			for (int i = 0; i < num_children; i++)
 			{
-				osg::Node *pChild = pGroup->getChild(i);
+				osg::Node *pChild = group->getChild(i);
 				if (pChild)
 					AddNodeItemsRecursively(hNewItem, pChild, depth+1);
 				else
@@ -350,7 +416,7 @@ void SceneGraphDlg::OnZoomTo( wxCommandEvent &event )
 
 		// a bit back to make sure whole volume of bounding sphere is in view
 		vtCamera *pCam = vtGetScene()->GetCamera();
-		float smallest = min(pCam->GetFOV(), pCam->GetVertFOV());
+		float smallest = std::min(pCam->GetFOV(), pCam->GetVertFOV());
 		float alpha = smallest / 2.0f;
 		float distance = sph.radius / tanf(alpha);
 		sph.radius = distance;
@@ -412,7 +478,22 @@ void SceneGraphDlg::OnChar(wxKeyEvent& event)
 
 void SceneGraphDlg::OnLog( wxCommandEvent &event )
 {
-	if (m_pSelectedNode)
+	if (!m_pSelectedNode)
+		return;
+
+	wxArrayString choices;
+	choices.Add(_("The standard log file (debug.txt)"));
+	choices.Add(_("A dot file (scene.dot)"));
+	int index = wxGetSingleChoiceIndex(_("Log the scene graph to:"), _(""), choices, this);
+	if (index == 0)
+	{
 		vtLogGraph(m_pSelectedNode);
+	}
+	else if (index == 1)
+	{
+		osg::Group *group = dynamic_cast<osg::Group*>(m_pSelectedNode);
+		if (group)
+			WriteDotFile(group, "scene.dot");
+	}
 }
 

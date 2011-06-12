@@ -195,11 +195,11 @@ void IslandTerrain::CreateCustomCulture()
 #if 0
 	osg::Node *blade = vtLoadModel("G:/Data-Distro/Culture/picnictable.ive");
 	vtTransform *trans = new vtTransform;
-	trans->AddChild(blade);
+	trans->addChild(blade);
 	SpinEngine *eng = new SpinEngine;
 	eng->AddTarget(trans);
 	vtGetScene()->AddEngine(eng);
-	vtGetScene()->GetRoot()->AddChild(trans);
+	vtGetScene()->GetRoot()->addChild(trans);
 #endif
 }
 
@@ -303,7 +303,7 @@ void IslandTerrain::create_state_park()
 	{
 		// plant it
 		vtTransform *xform = new vtTransform;
-		xform->AddChild(node);
+		xform->addChild(node);
 		PlantModelAtPoint(xform, park_location);
 		m_pLodGrid->AppendToGrid(xform);
 	}

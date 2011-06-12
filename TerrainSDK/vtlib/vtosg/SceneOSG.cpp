@@ -44,7 +44,7 @@ static std::streambuf *previous_cerr;
 
 ///////////////////////////////////////////////////////////////
 
-// There is always and only one global vtScene object
+/// There one and only global vtScene object
 vtScene g_Scene;
 
 
@@ -103,6 +103,7 @@ int vtGetMaxTextureSize()
  * Initialize the vtlib library, including the display and scene graph.
  * You should call this function only once, before any other vtlib calls.
  *
+ * \param argc, argv Command-line arguments.
  * \param bStereo True for a stereo display output.
  * \param iStereoMode Currently for vtosg, supported values are 0 for
  *		Anaglyphic (red-blue) and 1 for Quad-buffer (shutter glasses).
@@ -835,5 +836,19 @@ void printnode(osg::Node *node, int tab)
 			printnode(group->getChild(i), tab+1);
 		}
 	}
+}
+
+//////////////////////////////////////////////
+// Window
+
+vtWindow::vtWindow()
+{
+	m_BgColor.Set(0.2f, 0.2f, 0.4f);
+	m_Size.Set(0, 0);
+}
+
+void vtWindow::SetSize(int w, int h)
+{
+	m_Size.Set(w,h);
 }
 

@@ -18,7 +18,10 @@
 class CStructureShadowsOSG;
 #endif
 
-/** \addtogroup sg */
+/** \defgroup sg Scene graph
+ * These classes define the node of a scene graph and the Scene class which
+ * contains them.
+ */
 /*@{*/
 
 /**

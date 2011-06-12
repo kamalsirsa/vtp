@@ -878,7 +878,7 @@ void Enviro::SetupScene2()
 
 	vtGeode *geode = new vtGeode;
 	geode->setName("Message");
-	m_pHUD->addChild(geode);
+	m_pHUD->GetContainer()->addChild(geode);
 	if (m_pArial)
 	{
 		m_pHUDMessage = new vtTextMesh(m_pArial, 18);
@@ -1023,7 +1023,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	{
 		vtGroup *pOverlay = m_pCurrentTerrain->GetOverlay();
 		if (pOverlay)
-			m_pHUD->removeChild(pOverlay);
+			m_pHUD->GetContainer()->removeChild(pOverlay);
 	}
 
 	// Inform the container that this new terrain is current
@@ -1104,7 +1104,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 
 	vtGroup *pOverlay = pTerrain->GetOverlay();
 	if (pOverlay)
-		m_pHUD->addChild(pOverlay);
+		m_pHUD->GetContainer()->addChild(pOverlay);
 
 	if (m_iFlightStage != 2)
 	{
@@ -1243,7 +1243,7 @@ void Enviro::SetMessage(const vtString &msg, float fTime)
 	{
 		m_pMessageSprite = new vtSprite;
 		m_pMessageSprite->setName("MessageSprite");
-		m_pRoot->AddChild(m_pMessageSprite);
+		m_pRoot->addChild(m_pMessageSprite);
 	}
 	if (msg == "")
 		m_pMessageSprite->SetEnabled(false);
@@ -2858,7 +2858,7 @@ void Enviro::CreateElevationLegend()
 		m_pLegendGeom->AddTextMesh(mesh3, white);
 	}
 
-	m_pHUD->addChild(m_pLegendGeom);
+	m_pHUD->GetContainer()->addChild(m_pLegendGeom);
 	m_bCreatedLegend = true;
 }
 
@@ -2887,7 +2887,7 @@ void Enviro::CreateCompass()
 
 	m_pCompassGeom = CompassSprite->GetGeode();
 	m_pCompassGeom->setName("Compass");
-	m_pHUD->addChild(m_pCompassGeom);
+	m_pHUD->GetContainer()->addChild(m_pCompassGeom);
 	m_bCreatedCompass = true;
 }
 
@@ -2907,7 +2907,7 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 		m_pWindowBoxMesh->AddVertex(0,1,0);
 		m_pWindowBoxMesh->AddStrip2(4, 0);
 		geode->AddMesh(m_pWindowBoxMesh, yellow);
-		m_pHUD->addChild(geode);
+		m_pHUD->GetContainer()->addChild(geode);
 	}
 	// Invert the coordinates Y, because mouse origin is upper left, and
 	//  HUD origin is lower left

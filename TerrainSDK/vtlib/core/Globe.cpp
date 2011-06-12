@@ -1389,7 +1389,7 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 
 #if 0
 	axis = WireAxis(RGBf(1,1,1), 1.1f);
-	m_top->AddChild(axis);
+	m_top->addChild(axis);
 #endif
 }
 

@@ -1250,7 +1250,7 @@ void EnviroFrame::DoTestCode()
 			WriteGeomToOBJ(pGeode, "bore.obj");
 
 			vtTransform *model = new vtTransform;
-			model->AddChild(pGeode);
+			model->addChild(pGeode);
 			DPoint3 pos;
 			g_App.m_pTerrainPicker->GetCurrentEarthPos(pos);
 			GetCurrentTerrain()->AddNode(model);

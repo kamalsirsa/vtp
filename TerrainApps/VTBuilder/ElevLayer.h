@@ -144,6 +144,7 @@ public:
 		float fDistanceRatio);
 
 	// grid operations
+	vtElevationGrid	*GetGrid() { return m_pGrid; }
 	int RemoveElevRange(float zmin, float zmax, const DRECT *area = NULL);
 	int SetUnknown(float fValue, const DRECT *area = NULL);
 	void DetermineMeterSpacing();

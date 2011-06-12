@@ -107,7 +107,7 @@ bool vtApp::OnInit(void)
 	osog.WriteHeader(fp);
 	osog.WriteSingleGeometry(fp, pGeode);
 	fclose(fp);
-	m_pRoot->AddChild(pGeode);
+	m_pRoot->addChild(pGeode);
 #else
 	InputSOG isog;
 
@@ -115,7 +115,7 @@ bool vtApp::OnInit(void)
 	vtGroup *pGroup = new vtGroup;
 	bool success = isog.ReadContents(fp, pGroup);
 	fclose(fp);
-	m_pRoot->AddChild(pGroup);
+	m_pRoot->addChild(pGroup);
 #endif
 #endif
 
@@ -134,7 +134,7 @@ bool vtApp::OnInit(void)
 //	GetMainFrame()->AddModelFromFile("E:/3D/Sample FLT files/spitfire.flt");
 //	osg::Node *pNode = vtLoadModel("E:/3D/Sample FLT files/spitfire.flt");
 //	if (pNode)
-//		m_pRoot->AddChild(pNode);
+//		m_pRoot->addChild(pNode);
 //	GetMainFrame()->AddNewItem();
 
 //	osg::ref_ptr<osg::Node> node = osgDB::readNodeFile("E:/3D/Sample FLT files/spitfire.flt");

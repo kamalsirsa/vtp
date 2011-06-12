@@ -51,19 +51,9 @@ struct NodeExtension
 	bool m_bCastShadow;
 };
 
-struct GroupExtension : public NodeExtension
+struct TransformExtension: public NodeExtension
 {
-	/** Return true if the given node is a child of this group. */
-	bool containsChild(osg::Node *pNode) const;
-
-	void SetOsgGroup(osg::Group *group) { m_pNode = m_pGroup = group; }
-
-	osg::Group *m_pGroup;
-};
-
-struct TransformExtension: public GroupExtension
-{
-	void SetOsgTransform(osg::MatrixTransform *xform) { m_pNode = m_pGroup = m_pTransform = xform; }
+	void SetOsgTransform(osg::MatrixTransform *xform) { m_pNode = m_pTransform = xform; }
 
 	/** Set this transform to identity (no scale, rotation, or translation). */
 	void Identity();
@@ -161,6 +151,7 @@ void ApplyVertexRotation(osg::Node *node, const FPoint3 &axis, float angle);
 void ApplyVertexTransform(osg::Node *node, const FMatrix4 &mat);
 
 void vtLogGraph(osg::Node *node, bool bExtents = false, bool bRefCounts = false, int indent=0);
+void WriteDotFile(osg::Group *node, const char *filename);
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,7 +175,7 @@ typedef osg::ref_ptr<osg::Node> NodePtr;
 /**
  * Represents a Group (a node that can have children) in the vtlib Scene Graph.
  */
-class vtGroup : public osg::Group, public GroupExtension
+class vtGroup : public osg::Group, public NodeExtension
 {
 public:
 	vtGroup();
@@ -205,7 +196,7 @@ typedef osg::ref_ptr<vtTransform> vtTransformPtr;
 /**
  * A Fog node allows you to apply a fog to all its child nodes.
  */
-class vtFog : public osg::Group, public GroupExtension
+class vtFog : public osg::Group, public NodeExtension
 {
 public:
 	vtFog();
@@ -229,7 +220,7 @@ class vtLodGrid;
 	shadow.  Only certain nodes, which are set with vtNode::SetCastShadow,
 	will cast a shadow.
  */
-class vtShadow : public osgShadow::ShadowedScene, public GroupExtension
+class vtShadow : public osgShadow::ShadowedScene, public NodeExtension
 {
 public:
 	vtShadow(const int ShadowTextureUnit);
@@ -270,7 +261,7 @@ typedef osg::ref_ptr<vtShadow> vtShadowPtr;
  * scene graph.  To move or orient the light, make it a child of a vtTransform
  * node.  The light will illuminate the entire scene.
  */
-class vtLight : public osg::LightSource, public GroupExtension
+class vtLight : public osg::LightSource, public NodeExtension
 {
 public:
 	vtLight();
@@ -370,7 +361,7 @@ typedef osg::ref_ptr<vtMovGeode> vtMovGeodePtr;
  * You should set a distance value (range) for each child, which determines
  * at what distance from the camera a node should be rendered.
  */
-class vtLOD : public osg::LOD, public GroupExtension
+class vtLOD : public osg::LOD, public NodeExtension
 {
 public:
 	vtLOD();
@@ -430,14 +421,16 @@ typedef osg::ref_ptr<vtCamera> vtCameraPtr;
  * A HUD ("heads-up display") is a group whose whose children are transformed
  * to be drawn in window coordinates, rather than world coordinates.
  */
-class vtHUD : public osg::Projection, public GroupExtension
+class vtHUD : public osg::Projection, public NodeExtension
 {
 public:
 	vtHUD(bool bPixelCoords = true);
 
 	void SetWindowSize(int w, int h);
+	osg::Group *GetContainer() { return modelview_abs.get(); }
 
 protected:
+	osg::ref_ptr<osg::MatrixTransform> modelview_abs;
 	bool m_bPixelCoords;
 };
 

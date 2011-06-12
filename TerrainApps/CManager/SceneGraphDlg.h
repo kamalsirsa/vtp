@@ -51,9 +51,11 @@ private:
 	// WDR: handler declarations for SceneGraphDlg
 	void OnInitDialog(wxInitDialogEvent& event);
 	void OnRefresh( wxCommandEvent &event );
+	void OnLog( wxCommandEvent &event );
 	void OnZoomTo( wxCommandEvent &event );
 	void OnEnabled( wxCommandEvent &event );
 	void OnTreeSelChanged( wxTreeEvent &event );
+	void OnChar(wxKeyEvent& event);
 
 	bool m_bFirst;
 

@@ -713,17 +713,6 @@ vtMaterialDescriptor *vtMaterialDescriptorArray3d::FindMaterialDescriptor(const 
 	return NULL;
 }
 
-void vtMaterialDescriptorArray3d::ReleaseMaterials()
-{
-	VTLOG(" vtMaterialDescriptorArray3d::ReleaseMaterials (%lx)\n", m_pMaterials);
-	if (m_pMaterials)
-	{
-		m_pMaterials = NULL;
-		// do not free them - they were not dynamically allocated
-		// FreeGlobalMaterials();
-	}
-}
-
 
 /////////////////////////////////////////////////////////////////////////////
 // Methods for vtStructure3d
@@ -744,12 +733,6 @@ void vtStructure3d::InitializeMaterialArrays()
 
 		SetGlobalMaterials(&s_MaterialDescriptors);
 	}
-}
-
-void vtStructure3d::ReleaseSharedMaterials()
-{
-	VTLOG1("ReleaseSharedMaterials\n");
-	s_MaterialDescriptors.ReleaseMaterials();
 }
 
 void vtStructure3d::SetCastShadow(bool b)

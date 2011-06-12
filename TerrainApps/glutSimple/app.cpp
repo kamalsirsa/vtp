@@ -174,7 +174,7 @@ bool CreateScene()
 	//precipitationEffect->rain(1);
 	vtTransform *xform = new vtTransform;
 	xform->Rotate2(FPoint3(1,0,0), -PID2f);
-	pTopGroup->AddChild(xform);
+	pTopGroup->addChild(xform);
 	xform->GetOsgGroup()->addChild(precipitationEffect);
 #endif
 
@@ -244,7 +244,7 @@ bool CreateScene()
 	vtMesh *mesh2 = new vtMesh(PrimitiveSet::LINES, 0, 6);
 	mesh2->AddLine(FPoint3(-1000,0,0), FPoint3(1000,0,0));
 	pGeode->AddMesh(mesh2, 2);
-	pTopGroup->AddChild(pGeode);
+	pTopGroup->addChild(pGeode);
 #endif
 
 	return true;

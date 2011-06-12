@@ -43,7 +43,6 @@ public:
 		const RGBf &color = RGBf(), int iType = -1) const;
 	void InitializeMaterials();
 	void CreateMaterials();
-	void ReleaseMaterials();
 	vtMaterialArray *GetMatArray() const { return m_pMaterials; };
 
 protected:
@@ -97,7 +96,6 @@ public:
 	}
 
 	static void InitializeMaterialArrays();
-	static void ReleaseSharedMaterials();
 
 	// all fences share the same set of materials
 	static void CreateSharedMaterials();

@@ -117,7 +117,7 @@ vtGeode *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 \code
 	// Create
 	vtDynBoundBox *box = new vtDynBoundBox(RGBf(0,0,1));	// blue box
-	parent->AddChild(box->pGeode);
+	parent->addChild(box->pGeode);
 
 	// Use it to show a node's bounding box
 	FBox3 bb;

@@ -73,6 +73,9 @@ icon8   ICON "icons/top.ico"
 icon9   ICON "icons/unknown.ico"
 icon10  ICON "icons/xform.ico"
 icon11  ICON "icons/fog.ico"
+icon12  ICON "icons/shadow.ico"
+icon13  ICON "icons/hud.ico"
+icon14  ICON "icons/dyngeom.ico"
 
 // Icons for layer treeview
 building  ICON "icons/building.ico"

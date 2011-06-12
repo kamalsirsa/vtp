@@ -4,7 +4,7 @@
 // Creates a route (a series of utility structures, e.g. an electrical
 // transmission line), creates geometry, drapes on a terrain
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 //////////////////////////////////////////////////////////////////////
@@ -156,11 +156,6 @@ void vtRoute::_CreateMaterials()
 		RGBf(1.5f, 1.5f, 1.5f),	// ambient bright white
 		false, true, false,		// culling, lighting, wireframe
 		1.0f);					// alpha
-}
-
-void vtRoute::ReleaseMaterials()
-{
-	m_pRouteMats = NULL;
 }
 
 void vtRoute::_CreateStruct(int iNode)

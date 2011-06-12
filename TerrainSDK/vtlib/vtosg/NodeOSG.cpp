@@ -61,6 +61,7 @@ public:
  * coordinates.  This is done by walking the scene graph upwards, applying
  * all transforms that are encountered.
  *
+ * \param node The node to consider.
  * \param point A reference to the input point is modified in-place with
  *	world coordinate result.
  */
@@ -175,11 +176,12 @@ protected:
 };
 
 /**
- * Calculates the bounding box of the geometry contained in and under
- * this node in the scene graph.  Note that unlike bounding sphere which
- * is cached, this value is calculated every time.
- *
- * \param box Will receive the bounding box.
+ Calculates the bounding box of the geometry contained in and under this node
+ in the scene graph.  Note that unlike the bounding sphere which is cached,
+ this value is calculated every time.
+ 
+ \param node The node to visit.
+ \param box Will receive the bounding box.
  */
 void GetNodeBoundBox(osg::Node *node, FBox3 &box)
 {
@@ -278,6 +280,7 @@ void PolygonCountVisitor::apply(osg::Geode& geode)
  * The results are not cached, so this method should be called only when
  * needed.
  *
+ * \param node The node to investigate.
  * \param info A vtPrimInfo object which will receive all the information
  *	about this node and its children.
  */
@@ -418,14 +421,6 @@ void NodeExtension::GetBoundSphere(FSphere &sphere, bool bGlobal)
 		//  transforming the radius as well, with scale.
 		LocalToWorld(m_pNode, sphere.center);
 	}
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-
-bool GroupExtension::containsChild(osg::Node *node) const
-{
-	return m_pGroup->getChildIndex(node) != m_pGroup->getNumChildren();
 }
 
 
@@ -610,7 +605,7 @@ void InsertNodeAbove(osg::Node *node, osg::Group *newnode)
  where B is the child of A and C is the child of B, then inserting a node D
  below A results in A-D-B-C.
 
- \param node The node to insert above.
+ \param group The node to insert below.
  \param newnode The node to insert.
  */
 void InsertNodeBelow(osg::Group *group, osg::Group *newnode)
@@ -816,10 +811,10 @@ void SetLoadModelCallback(osg::Node *callback(osg::Transform *input))
 /**
  * Load a 3D model from a file.
  *
- * The underlying scenegraph (e.g. OSG) is used to load the model, which is
- * returned as a vtNode.  You can then use this node normally, for example
- * add it to your scenegraph with vtGroup::AddChild(), or to your terrain's
- * subgraph with vtTerrain::AddNode().
+ * The underlying scenegraph (i.e. OSG) is used to load the model, which is
+ * returned as an osg::Node.  You can then use this node normally, for example
+ * add it to your scenegraph with addChild(), or to your terrain's subgraph
+ * with vtTerrain::AddNode().
  *
  * \param filename The filename to load from.
  * \param bAllowCache Default is true, to allow OSG to cache models.
@@ -976,7 +971,7 @@ bool vtSaveModel(osg::Node *node, const char *filename)
 
 vtGroup::vtGroup()
 {
-	SetOsgGroup(this);
+	SetOsgNode(this);
 }
 
 
@@ -997,7 +992,7 @@ RGBf vtFog::s_white(1, 1, 1);
 
 vtFog::vtFog()
 {
-	SetOsgGroup(this);
+	SetOsgNode(this);
 }
 
 /**
@@ -1012,7 +1007,7 @@ vtFog::vtFog()
  *		is the point at which it becomes totally opaque.
  * \param color The color of the fog.  All geometry will be faded toward this
  *		color.
- * \param Type Can be FM_LINEAR, FM_EXP, or FM_EXP2 for linear or exponential
+ * \param eType Can be FM_LINEAR, FM_EXP, or FM_EXP2 for linear or exponential
  *		increase of the fog density.
  */
 void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, osg::Fog::Mode eType)
@@ -1066,7 +1061,7 @@ vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowText
 #endif
 	setShadowTechnique(pShadowTechnique.get());
 
-	SetOsgGroup(this);
+	SetOsgNode(this);
 }
 
 void vtShadow::SetDarkness(float bias)
@@ -1205,7 +1200,7 @@ vtLight::vtLight()
 {
 	// Lights can now go into the scene graph in OSG, with LightSource.
 	// A lightsource creates a light, which we can get with getLight().
-	SetOsgGroup(this);
+	SetOsgNode(this);
 
 	// However, because lighting is also a 'state', we need to inform
 	// the whole scene graph that we have another light.
@@ -1541,7 +1536,7 @@ vtMaterial *vtGeode::GetMaterial(int idx)
 vtLOD::vtLOD()
 {
 	setCenter(osg::Vec3(0, 0, 0));
-	SetOsgGroup(this);
+	SetOsgNode(this);
 }
 
 void vtLOD::SetRanges(float *ranges, int nranges)
@@ -1790,7 +1785,7 @@ void vtDynGeom::ApplyMaterial(vtMaterial *mat)
  */
 vtHUD::vtHUD(bool bPixelCoords)
 {
-	osg::MatrixTransform* modelview_abs = new osg::MatrixTransform;
+	modelview_abs = new osg::MatrixTransform;
 	modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 	modelview_abs->setMatrix(osg::Matrix::identity());
 	addChild(modelview_abs);
@@ -1817,9 +1812,6 @@ vtHUD::vtHUD(bool bPixelCoords)
 	osg::StateSet* stateset = getOrCreateStateSet();
 	stateset->setAttribute(new osg::Depth(osg::Depth::LESS,0.0,0.0001));
 
-	// A HUD node is unlike other group nodes!
-	// The modelview node is the container for the node's children.
-	SetOsgGroup(modelview_abs);
 	SetOsgNode(this);
 
 	vtGetScene()->SetHUD(this);
@@ -1928,136 +1920,5 @@ int vtIntersect(osg::Node *pTop, const FPoint3 &start, const FPoint3 &end,
 	}
 	std::sort(hitlist.begin(), hitlist.end());
 	return hitlist.size();
-}
-
-#include <osg/PositionAttitudeTransform>
-#include <osg/AutoTransform>
-#include <osg/TexGenNode>
-#include <osg/Switch>
-#include <osg/Sequence>
-
-#include <osg/OccluderNode>
-#include <osg/CoordinateSystemNode>
-#include <osg/Billboard>
-
-#include <osg/ClipNode>
-
-/**
- Diagnostic function to help debugging: Log the scene graph from a given node downwards.
-*/
-void vtLogGraph(osg::Node *node, bool bExtents, bool bRefCounts, int indent)
-{
-	for (int i = 0; i < indent; i++)
-		VTLOG1(" ");
-	if (node)
-	{
-		VTLOG("<%x>", node);
-
-		if (dynamic_cast<osg::PositionAttitudeTransform*>(node))
-			VTLOG1(" (PositionAttitudeTransform)");
-		else if (dynamic_cast<osg::MatrixTransform*>(node))
-			VTLOG1(" (MatrixTransform)");
-		else if (dynamic_cast<osg::AutoTransform*>(node))
-			VTLOG1(" (AutoTransform)");
-		else if (dynamic_cast<osg::Transform*>(node))
-			VTLOG1(" (Transform)");
-
-		else if (dynamic_cast<osg::TexGenNode*>(node))
-			VTLOG1(" (TexGenNode)");
-		else if (dynamic_cast<osg::Switch*>(node))
-			VTLOG1(" (Switch)");
-		else if (dynamic_cast<osg::Sequence*>(node))
-			VTLOG1(" (Sequence)");
-		else if (dynamic_cast<osg::Projection*>(node))
-			VTLOG1(" (Projection)");
-		else if (dynamic_cast<osg::OccluderNode*>(node))
-			VTLOG1(" (OccluderNode)");
-		else if (dynamic_cast<osg::LightSource*>(node))
-			VTLOG1(" (LightSource)");
-
-		else if (dynamic_cast<osg::LOD*>(node))
-			VTLOG1(" (LOD)");
-		else if (dynamic_cast<osg::CoordinateSystemNode*>(node))
-			VTLOG1(" (CoordinateSystemNode)");
-		else if (dynamic_cast<osg::ClipNode*>(node))
-			VTLOG1(" (ClipNode)");
-		else if (dynamic_cast<osg::ClearNode*>(node))
-			VTLOG1(" (ClearNode)");
-		else if (dynamic_cast<osg::Group*>(node))
-			VTLOG1(" (Group)");
-
-		else if (dynamic_cast<osg::Billboard*>(node))
-			VTLOG1(" (Billboard)");
-		else if (dynamic_cast<osg::Geode*>(node))
-			VTLOG1(" (Geode)");
-
-		else if (dynamic_cast<osgParticle::ModularEmitter*>(node))
-			VTLOG1(" (Geode)");
-		else if (dynamic_cast<osgParticle::ParticleSystemUpdater*>(node))
-			VTLOG1(" (Geode)");
-		else
-			VTLOG1(" (non-node!)");
-
-		VTLOG(" '%s'", node->getName().c_str());
-
-		if (node->getNodeMask() != 0xffffffff)
-			VTLOG(" mask=%x", node->getNodeMask());
-
-		if (bExtents)
-		{
-			const osg::BoundingSphere &bs = node->getBound();
-			if (bs._radius != -1)
-				VTLOG(" (bs: %.1f %.1f %.1f %1.f)", bs._center[0], bs._center[1], bs._center[2], bs._radius);
-		}
-		if (bRefCounts)
-		{
-			VTLOG(" {rc:%d}", node->referenceCount());
-		}
-
-		VTLOG1("\n");
-	}
-	else
-		VTLOG1("<null>\n");
-
-	osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform*>(node);
-	if (mt)
-	{
-		for (int i = 0; i < indent+1; i++)
-			VTLOG1(" ");
-		osg::Vec3 v = mt->getMatrix().getTrans();
-		VTLOG("[Pos %.2f %.2f %.2f]\n", v.x(), v.y(), v.z());
-	}
-	osg::Group *grp = dynamic_cast<osg::Group*>(node);
-	if (grp)
-	{
-		for (unsigned int i = 0; i < grp->getNumChildren(); i++)
-			vtLogGraph(grp->getChild(i), bExtents, bRefCounts, indent+2);
-	}
-	osg::Geode *geode = dynamic_cast<osg::Geode*>(node);
-	if (geode)
-	{
-		for (unsigned int i = 0; i < geode->getNumDrawables(); i++)
-		{
-			osg::Geometry *geo = dynamic_cast<osg::Geometry *>(geode->getDrawable(i));
-			if (!geo) continue;
-
-			osg::StateSet *stateset = geo->getStateSet();
-			if (!stateset) continue;
-
-			for (int j = 0; j < indent+3; j++)
-				VTLOG1(" ");
-
-			VTLOG("drawable %d: geometry %x, stateset %x", i, geo, stateset);
-
-			osg::StateAttribute *state = stateset->getAttribute(osg::StateAttribute::MATERIAL);
-			if (state)
-			{
-				osg::Material *mat = dynamic_cast<osg::Material *>(state);
-				if (mat)
-					VTLOG(", mat %x", mat);
-			}
-			VTLOG1("\n");
-		}
-	}
 }
 

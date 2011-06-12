@@ -23,7 +23,7 @@ vtPagedStructureLOD::vtPagedStructureLOD() : vtLOD()
 
 	SetCenter(FPoint3(0, 0, 0));
 
-	SetOsgGroup(this);
+	SetOsgNode(this);
 }
 
 void vtPagedStructureLOD::SetRange(float range)

@@ -136,5 +136,7 @@ public:
 };
 typedef osg::ref_ptr<vtMaterialArray> vtMaterialArrayPtr;
 
+/*@}*/	// Group sg
+
 #endif // VTOSG_MATERIAL
 

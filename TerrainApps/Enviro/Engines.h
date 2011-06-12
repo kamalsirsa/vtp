@@ -1,6 +1,10 @@
 //
 // Engines.h
-// header file for Engines.cpp
+//
+// Engines used by Enviro
+//
+// Copyright (c) 2001-2011 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
 //
 
 #ifndef ENVIRO_ENGINESH

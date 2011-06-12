@@ -810,7 +810,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 #if 0
 		vtGeode *pSphere = CreateSphereGeom(m_pMats, m_mi_red, 1000.0f, 8);
 		vtMovGeode *pSphere2 = new vtMovGeode(pSphere);
-		m_pGroup->AddChild(pSphere2);
+		m_pGroup->addChild(pSphere2);
 		pSphere2->SetTrans(lod_center);
 #endif
 
@@ -848,7 +848,7 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture, bool progress_callback(i
 #if 0
 	vtGeode *pGeode = CreateLineGridGeom(m_pMats, 0,
 						   m_extents.min, m_extents.max, ROAD_CLUSTER);
-	m_pGroup->AddChild(pGeode);
+	m_pGroup->addChild(pGeode);
 #endif
 
 	vtMesh *pMesh;

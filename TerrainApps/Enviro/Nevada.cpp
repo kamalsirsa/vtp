@@ -82,10 +82,10 @@ void NevadaTerrain::CreateCustomCulture()
 
 #if 0
 	// Buildings
-	vtTransform *dome = LoadModel("Nevada/bluedometent.dsm");
+	osg::Node *dome = vtLoadModel("Nevada/bluedometent.dsm");
 	if (dome)
 	{
-		m_Future.AddChild(dome);
+		m_Future.addChild(dome);
 		PlantModelAtPoint(dome, DPoint2(MAN_LONLAT), true);
 	}
 #endif
@@ -194,11 +194,11 @@ void NevadaTerrain::CreatePast()
 	float height = 80.0f;
 
 	vtGeode *bfly = new Butterfly(this, 0.2f, 50.0f, height, center, 200.0);
-	m_pPast->AddChild(bfly);
+	m_pPast->addChild(bfly);
 	vtGeode *bfly2 = new Butterfly(this, 0.3f, 50.0f, height, center, 200.0);
-	m_pPast->AddChild(bfly2);
+	m_pPast->addChild(bfly2);
 	vtGeode *bfly3 = new Butterfly(this, 0.4f, 50.0f, height, center, 200.0);
-	m_pPast->AddChild(bfly3);
+	m_pPast->addChild(bfly3);
 #endif
 
 #if 0
@@ -213,7 +213,7 @@ void NevadaTerrain::CreatePast()
 			location.x = center.x - 8 + (x * 2.0f);
 			location.z = center.z - 8 + (y * 2.0f);
 			Butterfly *but = new Butterfly(this, 0.8f, 60 + random(40), height, location, 40);
-			m_pPast->AddChild(but);
+			m_pPast->addChild(but);
 		}
 	}
 #endif
@@ -245,7 +245,7 @@ void NevadaTerrain::CreatePast()
 	// use a 12x12 grid of LOD cells
 	m_pTreeGrid = new vtLodGrid(origin, size, 12, fLODDistance);
 	m_pTreeGrid->setName("Tree Grid");
-	m_pPast->AddChild(m_pTreeGrid);
+	m_pPast->addChild(m_pTreeGrid);
 
 	//populate with trees.  set initial size to zero?
 	int tcount = 0, ccount = 0;
@@ -279,7 +279,7 @@ void NevadaTerrain::CreatePast()
 			tree->SetTrans(p3);
 			// add tree to scene graph
 			m_pTreeGrid->AppendToGrid(tree);
-			//m_pPast->AddChild(tree);
+			//m_pPast->addChild(tree);
 			tcount++;
 		}
 	}
@@ -293,7 +293,7 @@ void NevadaTerrain::CreatePast()
 //		vtTransform *bigmike = LoadModel("Nevada/bigmikev2.dsm");
 		vtTransform *bigmike = LoadModel("Nevada/parameciummike.dsm");
 		float sc = 0.05f;	// abstract units, scale to taste
-		m_pPast->AddChild(bigmike);
+		m_pPast->addChild(bigmike);
 		PlantModelAtPoint(bigmike, DPoint2(MAN_LONLAT), true);
 		bigmike->Translate2(FPoint3(0.0f, i * 800.0f, 0.0f));
 
@@ -325,7 +325,7 @@ void NevadaTerrain::CreatePresent()
 	vtTransform *man = LoadModel("Nevada/man_v7_e1.dsm");
 #endif
 	man->Scale2(sc, sc, sc);
-	m_pPresent->AddChild(man);
+	m_pPresent->addChild(man);
 	PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 
 	sc = overall_scale * 0.01f;		// cm
@@ -336,8 +336,8 @@ void NevadaTerrain::CreatePresent()
 	lamppost2->Scale2(sc, sc, sc);
 
 	vtLOD *pLampLod = new vtLOD();
-	pLampLod->AddChild(lamppost);
-	pLampLod->AddChild(lamppost2);
+	pLampLod->addChild(lamppost);
+	pLampLod->addChild(lamppost2);
 	float ranges[3];
 	ranges[0] = 1.0f;
 	ranges[1] = 40.0f;
@@ -353,7 +353,7 @@ void NevadaTerrain::CreatePresent()
 		{
 			copy = (vtTransform *)pLampLod->Clone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
-			m_pPresent->AddChild(copy);
+			m_pPresent->addChild(copy);
 
 			float radius = 638;
 			float deg = 30.0f - (i * 15.0f);
@@ -367,7 +367,7 @@ void NevadaTerrain::CreatePresent()
 		{
 			copy = (vtTransform *)pLampLod->Clone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
-			m_pPresent->AddChild(copy);
+			m_pPresent->addChild(copy);
 
 			float radius = 78.0f + (i * (600.0f - 78.0f) / 17);
 			float deg = -90;
@@ -499,7 +499,7 @@ EpochEngine::EpochEngine(NevadaTerrain *pNevada, float fLow, float fHigh,
 	m_pSprite->setName("Year Sprite");
 	m_pSprite->AddTextMesh(m_pSpriteText, 0);
 
-	vtGetScene()->GetHUD()->addChild(m_pSprite);
+	vtGetScene()->GetHUD()->GetContainer()->addChild(m_pSprite);
 	pNevada->addNode(m_pSprite);
 
 	m_pPastMat = pastApp;

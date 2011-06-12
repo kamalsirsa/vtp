@@ -1,7 +1,7 @@
 //
 // Route.h
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 //////////////////////////////////////////////////////////////////////
@@ -53,7 +53,6 @@ public:
 	void BuildGeometry(vtHeightField3d *pHeightField);
 	void DestroyGeometry();
 	void Dirty();
-	static void ReleaseMaterials();
 
 	vtGeode *GetGeom() { return m_pWireGeom; }
 

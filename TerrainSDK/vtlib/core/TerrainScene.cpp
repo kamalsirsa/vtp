@@ -110,10 +110,6 @@ void vtTerrainScene::CleanupScene()
 
 	// let go of anything left at the top of the scene graph
 	m_pTop = NULL;
-
-	// free some statics
-	vtStructure3d::ReleaseSharedMaterials();
-	vtRoute::ReleaseMaterials();
 }
 
 void vtTerrainScene::_CreateSky()
@@ -311,7 +307,7 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 
 	// switch: add the terrain's node to the scene graph
 	vtGroup *pTerrainGroup = m_pCurrentTerrain->GetTopGroup();
-	if (!m_pTop->containsChild(pTerrainGroup))
+	if (m_pTop->getChildIndex(pTerrainGroup) == m_pTop->getNumChildren())
 		m_pTop->addChild(pTerrainGroup);
 
 	// make the new terrain visible

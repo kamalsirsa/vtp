@@ -102,7 +102,7 @@ typedef bool (*ProgFuncPtrType)(int);
  * and add it to the terrain.  Generally you should add your nodes with
  * AddNode(), or AddNodeToStructGrid() if it is a structure that should
  * be culled in the distance.  You can also add your nodes with
- * GetScaledFeatures()->AddChild(), if they are 'flat' like GIS features
+ * GetScaledFeatures()->addChild(), if they are 'flat' like GIS features
  * or contour lines, which should be scaled up/down with the vertical
  * exaggeration of the terrain.
  *
