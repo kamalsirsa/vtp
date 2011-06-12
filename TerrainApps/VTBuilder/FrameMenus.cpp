@@ -32,15 +32,16 @@
 #include "gdal_priv.h"
 
 #include "App.h"
-#include "Frame.h"
-#include "MenuEnum.h"
 #include "BuilderView.h"
-#include "TreeView.h"
+#include "FileFilters.h"
+#include "Frame.h"
 #include "Helper.h"
+#include "MenuEnum.h"
+#include "Options.h"
+#include "Tin2d.h"
+#include "TreeView.h"
 #include "vtBitmap.h"
 #include "vtImage.h"
-#include "FileFilters.h"
-#include "Options.h"
 // Layers
 #include "ElevLayer.h"
 #include "ImageLayer.h"
@@ -1063,8 +1064,9 @@ void MainFrame::OnLayerNew(wxCommandEvent &event)
 	if (lt == LT_ELEVATION)
 	{
 		vtElevLayer *pEL = (vtElevLayer *)pL;
-		pEL->m_pGrid = new vtElevationGrid(m_area, 1025, 1025, false, m_proj);
-		pEL->m_pGrid->FillWithSingleValue(1000);
+		vtElevationGrid *grid = new vtElevationGrid(m_area, 1025, 1025, false, m_proj);
+		grid->FillWithSingleValue(1000);
+		pEL->SetGrid(grid);
 	}
 	else
 	{
@@ -2002,7 +2004,7 @@ void MainFrame::OnUpdateRoadFlatten(wxUpdateUIEvent& event)
 {
 	vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
 
-	event.Enable(pE != NULL && pE->m_pGrid != NULL);
+	event.Enable(pE != NULL && pE->GetGrid() != NULL);
 }
 
 
@@ -2033,7 +2035,7 @@ void MainFrame::OnUpdateElevSelect(wxUpdateUIEvent& event)
 void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
 {
 	vtElevLayer *t = GetActiveElevLayer();
-	if (!t && !t->m_pGrid)
+	if (!t && !t->GetGrid())
 		return;
 
 	wxString str;
@@ -2061,7 +2063,7 @@ void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
 void MainFrame::OnElevComputeDiff(wxCommandEvent &event)
 {
 	vtElevLayer *t = GetActiveElevLayer();
-	if (!t && !t->m_pGrid)
+	if (!t && !t->GetGrid())
 		return;
 
 	vtElevLayer *t2 = ComputeDifference(t);
@@ -2151,13 +2153,13 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	if (fScale == 1.0f)
 		return;
 
-	vtElevationGrid *grid = el->m_pGrid;
+	vtElevationGrid *grid = el->GetGrid();
 	if (grid)
 	{
 		grid->Scale(fScale, true);
 		el->ReRender();
 	}
-	vtTin2d *tin = el->m_pTin;
+	vtTin2d *tin = el->GetTin();
 	if (tin)
 	{
 		tin->Scale(fScale);
@@ -2185,13 +2187,13 @@ void MainFrame::OnVertOffsetElevation(wxCommandEvent &event)
 		return;
 	}
 
-	vtElevationGrid *grid = el->m_pGrid;
+	vtElevationGrid *grid = el->GetGrid();
 	if (grid)
 	{
 		grid->VertOffset(fValue);
 		el->ReRender();
 	}
-	vtTin2d *tin = el->m_pTin;
+	vtTin2d *tin = el->GetTin();
 	if (tin)
 	{
 		tin->VertOffset(fValue);
@@ -2262,7 +2264,7 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 {
 	int cols, rows;
 	vtElevLayer *pEL = GetActiveElevLayer();
-	pEL->m_pGrid->GetDimensions(cols, rows);
+	pEL->GetGrid()->GetDimensions(cols, rows);
 
 	RenderDlg dlg(this, -1, _("Render Elevation to Bitmap"));
 	dlg.m_iSizeX = cols;
@@ -2279,7 +2281,7 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 void MainFrame::OnElevToTin(wxCommandEvent& event)
 {
 	vtElevLayer *pEL1 = GetActiveElevLayer();
-	vtElevationGrid *grid = pEL1->m_pGrid;
+	vtElevationGrid *grid = pEL1->GetGrid();
 
 	vtTin2d *tin = new vtTin2d(grid);
 	vtElevLayer *pEL = new vtElevLayer;

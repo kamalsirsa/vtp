@@ -128,8 +128,8 @@ public:
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);
 	void  SetValue(int i, int j, short value);
-	short GetValue(int i, int j) const;	// returns height value as a integer
-	float GetFValue(int i, int j) const;	// returns height value as a float
+	short GetShortValue(int i, int j) const;	// returns height value as a short integer
+	float GetFValue(int i, int j) const;		// returns height value as a float
 	float GetFValueSafe(int i, int j) const;
 
 	float GetClosestValue(const DPoint2 &p) const;

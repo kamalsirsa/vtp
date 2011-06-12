@@ -991,7 +991,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 					for (int i  = cols / 4; i < cols / 2; i++)
 						for (int j = rows / 4; j < rows / 2; j++)
 						{
-							grid->SetValue(i, j, grid->GetValue(i, j) + 40);
+							grid->SetFValue(i, j, grid->GetFValue(i, j) + 40);
 						}
 					pTerr->UpdateElevation();
 					clock_t t2 = clock();

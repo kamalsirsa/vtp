@@ -9,13 +9,10 @@
 #define ELEVLAYER_H
 
 #include "wx/image.h"
+#include "vtdata/Heightfield.h"
 #include "Layer.h"
-#include "vtdata/ElevationGrid.h"
-#include "vtdata/vtTin.h"
 #include "ElevDrawOptions.h"
 #include "TilingOptions.h"
-
-#include <set>
 
 #define SHADING_BIAS	200
 
@@ -23,71 +20,10 @@ class vtBitmap;
 class vtDIB;
 class vtElevationGrid;
 class vtFeatureSet;
+class vtTin2d;
 class vtFeatureSetPoint3D;
 class vtFeatureSetPolygon;
 class vtHeightField;
-
-struct IntPair
-{
-	IntPair() {}
-	bool operator <(const IntPair &b) const
-	{
-		if (v0 < b.v0)
-			return true;
-		else if (v0 > b.v0)
-			return false;
-		else
-		{
-			if (v1 < b.v1)
-				return true;
-			else
-				return false;
-		}
-	}
-	bool operator==(const IntPair &b)
-	{
-		return (v0 == b.v0 && v1 == b.v1);
-	}
-	IntPair(int i0, int i1) { v0 = i0; v1 = i1; }
-	int v0, v1;
-};
-
-struct Outline : public std::set<IntPair>
-{
-	void AddUniqueEdge(const IntPair &b)
-	{
-		iterator it = find(b);
-		if (it != end())
-			erase(it);
-		else
-			insert(b);
-	}
-};
-
-class vtTin2d : public vtTin
-{
-public:
-	vtTin2d();
-	~vtTin2d();
-
-	vtTin2d(vtElevationGrid *grid);
-	vtTin2d(vtFeatureSetPoint3D *set);
-	vtTin2d(vtFeatureSetPolygon *set, int iFieldNum);
-
-	void DrawTin(wxDC *pDC, vtScaledView *pView);
-	void ComputeEdgeLengths();
-	void CullLongEdgeTris();
-	void FreeEdgeLengths();
-	void SetConstraint(bool bConstrain, double fMaxEdge);
-	void MakeOutline();
-	int GetMemoryUsed() const;
-
-	double *m_fEdgeLen;
-	bool m_bConstrain;
-	double m_fMaxEdge;
-
-	Outline m_edges;
-};
 
 //////////////////////////////////////////////////////////
 
@@ -145,6 +81,7 @@ public:
 		float fDistanceRatio);
 
 	// grid operations
+	void SetGrid(vtElevationGrid *grid);
 	vtElevationGrid	*GetGrid() { return m_pGrid; }
 	int RemoveElevRange(float zmin, float zmax, const DRECT *area = NULL);
 	int SetUnknown(float fValue, const DRECT *area = NULL);
@@ -169,19 +106,18 @@ public:
 	// only this many elevation files may be loaded, the rest are paged out on an LRU basis
 	static int m_iElevMemLimit;
 
-	vtElevationGrid	*m_pGrid;
-	vtTin2d *m_pTin;
-
 	bool NeedsDraw();
 
 protected:
+	vtElevationGrid	*m_pGrid;
+	vtTin2d *m_pTin;
+
 	bool	m_bNeedsDraw;
 	bool	m_bBitmapRendered;
 	bool	m_bHasMask;
 	float	m_fSpacing;
 	bool	m_bPreferGZip;	// user wants their elevation treated as a .gz file
 
-	int m_iColumns, m_iRows;
 	int m_iImageWidth, m_iImageHeight;
 
 	vtBitmap	*m_pBitmap;

@@ -1,7 +1,7 @@
 //
 // RoadLayer.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -552,7 +552,7 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 
 void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 {
-	vtElevationGrid	*grid = pElev->m_pGrid;
+	vtElevationGrid	*grid = pElev->GetGrid();
 
 	if (!pElev || !grid)
 		return;

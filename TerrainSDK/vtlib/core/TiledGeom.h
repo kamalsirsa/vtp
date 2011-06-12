@@ -47,8 +47,7 @@ typedef bool (*ProgFuncPtrType)(int);
 /**
  * This class represents a tiled textured terrain heightfield, which is drawn
  * using the tiled paging capabilities of Roettger's libMini.  It is rendered
- * directly using OpenGL, instead of going through whichever scene graph vtlib is
- * built on.
+ * directly using OpenGL, instead of going through OSG.
  */
 class vtTiledGeom : public vtDynGeom, public vtHeightField3d
 {

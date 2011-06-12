@@ -1,7 +1,7 @@
 //
 //  The Special menu functions of the VTBuilder application.
 //
-// Copyright (c) 2003-2008 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -251,7 +251,7 @@ static bool VerifyHFclip(BYTE* pMem, size_t size)
 
 //
 // Create a new elevation layer by pasting data from the clipboard, using the
-//  Daylone Leveller clipboard format for heightfields.
+//  Daylon Leveller clipboard format for heightfields.
 //
 void Builder::ElevCopy()
 {
@@ -266,7 +266,9 @@ void Builder::ElevCopy()
 	vtElevLayer *pEL = GetActiveElevLayer();
 	if (!pEL)
 		return;
-	vtElevationGrid *grid = pEL->m_pGrid;
+	vtElevationGrid *grid = pEL->GetGrid();
+	if (!grid)
+		return;
 
 	int cw, cb;
 	grid->GetDimensions(cw, cb);
@@ -332,7 +334,7 @@ void Builder::ElevCopy()
 	{
 		for (int j = 0; j < cb; j++)
 		{
-			if (grid->GetValue(i, j) == INVALID_ELEVATION)
+			if (grid->GetFValue(i, j) == INVALID_ELEVATION)
 			{
 				bAlpha = true;
 				break;
@@ -469,7 +471,7 @@ void Builder::ElevCopy()
 			{
 				for(x = 0; x < cw; x++)
 				{
-					*pa++ = (grid->GetValue(x, cb-1-z)==INVALID_ELEVATION ? 0 : 255);
+					*pa++ = (grid->GetFValue(x, cb-1-z)==INVALID_ELEVATION ? 0 : 255);
 				}
 			}
 		}
@@ -597,9 +599,9 @@ void Builder::ElevPasteNew()
 	for (int z = 0; z < breadth; z++)
 	{
 		for(int x = 0; x < width; x++, i++)
-			pEL->m_pGrid->SetFValue(x, breadth-1-z, pElevs[i] * fElevScale);
+			pEL->GetGrid()->SetFValue(x, breadth-1-z, pElevs[i] * fElevScale);
 	}
-	pEL->m_pGrid->ComputeHeightExtents();
+	pEL->GetGrid()->ComputeHeightExtents();
 	g_bld->AddLayerWithCheck(pEL);
 
 	::GlobalUnlock(hMem);

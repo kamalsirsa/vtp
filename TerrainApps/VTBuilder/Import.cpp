@@ -1,7 +1,7 @@
 //
 // Import.cpp - MainFrame methods for importing data
 //
-// Copyright (c) 2001-2010 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -28,6 +28,7 @@
 #include "Builder.h"
 #include "Helper.h"
 #include "FileFilters.h"
+#include "Tin2d.h"
 // Layers
 #include "StructLayer.h"
 #include "WaterLayer.h"
@@ -972,8 +973,8 @@ vtLayerPtr Builder::ImportElevation(const wxString &strFileName, bool bWarn)
 		{
 			// Try getting descriptive message from the grid
 			vtString msg;
-			if (pElev->m_pGrid)
-				msg = pElev->m_pGrid->GetErrorMsg();
+			if (pElev->GetGrid())
+				msg = pElev->GetGrid()->GetErrorMsg();
 			if (msg == "")
 				msg = "Couldn't import data from that file.";
 			DisplayAndLog(msg);

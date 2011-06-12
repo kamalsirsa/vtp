@@ -176,6 +176,8 @@ public:
 	DPoint2 GetSpacing() const;
 	FPoint2 GetWorldSpacing() const;
 	void GetDimensions(int &nColumns, int &nRows) const;
+	int NumColumns() { return m_iColumns; }
+	int NumRows() { return m_iRows; }
 	void EarthToGrid(const DPoint2 &epos, IPoint2 &ipos);
 	void WorldToGrid(const FPoint3 &pos, IPoint2 &ipos);
 

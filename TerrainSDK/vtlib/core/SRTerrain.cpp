@@ -93,7 +93,7 @@ void notify_vtp(int i, int j, int size)
 
 short int getelevation_vtp1(int i, int j, int size, void *objref)
 {
-	return ((vtElevationGrid *)objref)->GetValue(i, s_iRows-1-j);
+	return ((vtElevationGrid *)objref)->GetShortValue(i, s_iRows-1-j);
 }
 
 float getelevation_vtp2(int i, int j, int size, void *objref)

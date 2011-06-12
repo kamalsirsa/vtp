@@ -113,8 +113,8 @@ void MatchDlg::GetLayerSpacing()
 	if (lay->GetType() == LT_ELEVATION)
 	{
 		vtElevLayer *elay = (vtElevLayer *)lay;
-		if (elay->m_pGrid)
-			m_spacing = elay->m_pGrid->GetSpacing();
+		if (elay->GetGrid())
+			m_spacing = elay->GetGrid()->GetSpacing();
 	}
 	if (lay->GetType() == LT_IMAGE)
 		m_spacing = ((vtImageLayer *)lay)->GetSpacing();

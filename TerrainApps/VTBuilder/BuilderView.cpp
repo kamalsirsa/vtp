@@ -1,7 +1,7 @@
 //
 // BuilderView.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1422,10 +1422,10 @@ void BuilderView::DeleteSelected(vtRoadLayer *pRL)
 
 void BuilderView::MatchZoomToElev(vtElevLayer *pEL)
 {
-	if (!pEL || !pEL->m_pGrid)
+	if (!pEL || !pEL->GetGrid())
 		return;
 
-	DPoint2 spacing = pEL->m_pGrid->GetSpacing();
+	DPoint2 spacing = pEL->GetGrid()->GetSpacing();
 	SetScale(1.0f / spacing.x);
 
 	DPoint2 center;

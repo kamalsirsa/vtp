@@ -309,6 +309,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Tin2d.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\UtilityLayer.cpp"
 				>
 			</File>
@@ -448,6 +452,10 @@
 			</File>
 			<File
 				RelativePath=".\TilingOptions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tin2d.h"
 				>
 			</File>
 			<File

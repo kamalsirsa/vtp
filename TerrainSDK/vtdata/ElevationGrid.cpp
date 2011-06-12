@@ -1018,9 +1018,9 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 				for (i=-sizex/2; i<(int)m_iColumns; i++)
 				{
 					if (i-sizex/2-1 >= 0)
-						cells -= cnt.GetValue(i-sizex/2-1, j);
+						cells -= cnt.GetShortValue(i-sizex/2-1, j);
 					if (i+sizex/2 < m_iColumns)
-						cells += cnt.GetValue(i+sizex/2, j);
+						cells += cnt.GetShortValue(i+sizex/2, j);
 					if (i>=0)
 						tmp.SetValue(i, j, cells);
 				}
@@ -1038,9 +1038,9 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 				for (j=-sizey/2; j<(int)m_iRows; j++)
 				{
 					if (j-sizey/2-1 >= 0)
-						cells -= cnt.GetValue(i, j-sizey/2-1);
+						cells -= cnt.GetShortValue(i, j-sizey/2-1);
 					if (j+sizey/2 < m_iRows)
-						cells += cnt.GetValue(i, j+sizey/2);
+						cells += cnt.GetShortValue(i, j+sizey/2);
 					if (j>=0)
 						tmp.SetValue(i,j,cells);
 				}
@@ -1058,7 +1058,7 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 					continue;
 
 				// check number of foot print cells against growing threshold
-				if (cnt.GetValue(i,j) < thres)
+				if (cnt.GetShortValue(i,j) < thres)
 					continue;
 
 				dx=dy=0.0f;
@@ -1218,25 +1218,14 @@ void vtElevationGrid::SetFValue(int i, int j, float value)
 	}
 }
 
-/** Get an elevation value from the grid.
+/** Get a value direct from the grid, in the special case
+ * where the grid is composed of short integers with no scaling.
  * \param i, j Column and row location in the grid.
- * \return The value in (integer) meters.
+ * \return The value of the grid.
  */
-short vtElevationGrid::GetValue(int i, int j) const
+short vtElevationGrid::GetShortValue(int i, int j) const
 {
-	if (m_bFloatMode)
-	{
-		float value = m_pFData[i*m_iRows+j];
-		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
-			return (short) value;
-		else
-			return (short) (value * m_fVMeters);
-	}
-	short svalue = m_pData[i*m_iRows+j];
-	if (m_fVMeters == 1.0f || svalue == INVALID_ELEVATION)
-		return svalue;
-	else
-		return (short) ((float)svalue * m_fVMeters);
+	return m_pData[i*m_iRows+j];
 }
 
 /** Get an elevation value from the grid.

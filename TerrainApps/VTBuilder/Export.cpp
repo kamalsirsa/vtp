@@ -1,7 +1,7 @@
 //
 //  The export functions of the VTBuilder application.
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,14 +21,14 @@
 
 #include "vtui/Helper.h"
 
+#include "Builder.h"
 #include "BuilderView.h"
 #include "FileFilters.h"
-#include "Builder.h"
 #include "Helper.h"
+#include "Options.h"
+#include "Tin2d.h"
 #include "vtBitmap.h"
 #include "vtImage.h"
-#include "minidata/LocalDatabuf.h"
-#include "Options.h"
 // Layers
 #include "ElevLayer.h"
 #include "ImageLayer.h"
@@ -38,14 +38,17 @@
 #include "RenderOptionsDlg.h"
 #include "TileDlg.h"
 
+#include "minidata/LocalDatabuf.h"
+
 #if USE_OPENGL
 	#include "wx/glcanvas.h"	// needed for writing pre-compressed textures
 #endif
 
+
 void Builder::ExportASC()
 {
 	// check spacing
-	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
+	vtElevationGrid *grid = GetActiveElevLayer()->GetGrid();
 	DPoint2 spacing = grid->GetSpacing();
 	double ratio = spacing.x / spacing.y;
 	if (ratio < 0.999 || ratio > 1.001)
@@ -75,7 +78,7 @@ void Builder::ExportTerragen()
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TER);
 	if (fname == "")
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToTerragen(fname);
+	bool success = GetActiveElevLayer()->GetGrid()->SaveToTerragen(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
@@ -87,7 +90,7 @@ void Builder::ExportGeoTIFF()
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TIF);
 	if (fname == "")
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToGeoTIFF(fname);
+	bool success = GetActiveElevLayer()->GetGrid()->SaveToGeoTIFF(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
@@ -99,7 +102,7 @@ void Builder::ExportBMP()
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_BMP);
 	if (fname == "")
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToBMP(fname);
+	bool success = GetActiveElevLayer()->GetGrid()->SaveToBMP(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
@@ -111,7 +114,7 @@ void Builder::ExportSTM()
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_STM);
 	if (fname == "")
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToSTM(fname);
+	bool success = GetActiveElevLayer()->GetGrid()->SaveToSTM(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
@@ -123,7 +126,7 @@ void Builder::ExportTIN()
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TIN);
 	if (fname == "")
 		return;
-	vtTin2d *tin = new vtTin2d(GetActiveElevLayer()->m_pGrid);
+	vtTin2d *tin = new vtTin2d(GetActiveElevLayer()->GetGrid());
 	bool success = tin->Write(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
@@ -149,7 +152,7 @@ void Builder::ExportPlanet()
 
 	if (strDirName == _T(""))
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToPlanet(strDirName.mb_str(wxConvUTF8));
+	bool success = GetActiveElevLayer()->GetGrid()->SaveToPlanet(strDirName.mb_str(wxConvUTF8));
 	if (success)
 		DisplayAndLog("Successfully wrote Planet dataset to '%s'",
 		(const char *) strDirName.mb_str(wxConvUTF8));
@@ -162,7 +165,7 @@ void Builder::ExportVRML()
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_WRL);
 	if (fname == "")
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToVRML(fname);
+	bool success = GetActiveElevLayer()->GetGrid()->SaveToVRML(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
@@ -174,7 +177,7 @@ void Builder::ExportXYZ()
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TXT);
 	if (fname == "")
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToXYZ(fname);
+	bool success = GetActiveElevLayer()->GetGrid()->SaveToXYZ(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
@@ -186,7 +189,7 @@ void Builder::ExportRAWINF()
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_RAW);
 	if (fname == "")
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToRAWINF(fname);
+	bool success = GetActiveElevLayer()->GetGrid()->SaveToRAWINF(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
@@ -196,7 +199,7 @@ void Builder::ExportRAWINF()
 void Builder::ExportChunkLOD()
 {
 	// Check dimensions; must be 2^n+1 for .chu
-	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
+	vtElevationGrid *grid = GetActiveElevLayer()->GetGrid();
 	int x, y;
 	grid->GetDimensions(x, y);
 	bool good = false;
@@ -292,7 +295,7 @@ void Builder::ExportPNG16()
 	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_PNG);
 	if (fname == "")
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToPNG16(fname);
+	bool success = GetActiveElevLayer()->GetGrid()->SaveToPNG16(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
@@ -301,7 +304,7 @@ void Builder::ExportPNG16()
 
 void Builder::Export3TX()
 {
-	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
+	vtElevationGrid *grid = GetActiveElevLayer()->GetGrid();
 	int col, row;
 	grid->GetDimensions(col, row);
 	if (col != 1201 || row != 1201)
@@ -322,7 +325,7 @@ void Builder::Export3TX()
 void Builder::ElevExportTiles(BuilderView *pView)
 {
 	vtElevLayer *pEL = GetActiveElevLayer();
-	vtElevationGrid *grid = pEL->m_pGrid;
+	vtElevationGrid *grid = pEL->GetGrid();
 	bool floatmode = (grid->IsFloatMode() || grid->GetScale() != 1.0f);
 	DPoint2 spacing = grid->GetSpacing();
 	DRECT area = grid->GetEarthExtents();
@@ -417,7 +420,7 @@ void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 
 	// Elevation is pixel-is-point, but Imagery is pixel-is-area, so expand
 	//  the area slightly: Imagery is a half-cell larger in each direction.
-	DPoint2 spacing = pEL->m_pGrid->GetSpacing();
+	DPoint2 spacing = pEL->GetGrid()->GetSpacing();
 	area.Grow(spacing.x/2, spacing.y/2);
 
 	vtImageLayer *pOutputLayer = NULL;
@@ -439,13 +442,13 @@ void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 		pBitmap = pOutputLayer->GetImage()->GetBitmap();
 	}
 
-	pEL->m_pGrid->ColorDibFromElevation(pBitmap, &cmap, 8000,
+	pEL->GetGrid()->ColorDibFromElevation(pBitmap, &cmap, 8000,
 		ropt.m_ColorNODATA, progress_callback);
 
 	if (ropt.m_bShading)
 	{
 		if (vtElevLayer::m_draw.m_bShadingQuick)
-			pEL->m_pGrid->ShadeQuick(pBitmap, SHADING_BIAS, true, progress_callback);
+			pEL->GetGrid()->ShadeQuick(pBitmap, SHADING_BIAS, true, progress_callback);
 		else
 		{
 			// Quick and simple sunlight vector
@@ -453,10 +456,10 @@ void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 				vtElevLayer::m_draw.m_iCastDirection);
 
 			if (vtElevLayer::m_draw.m_bCastShadows)
-				pEL->m_pGrid->ShadowCastDib(pBitmap, light_dir, 1.0f,
+				pEL->GetGrid()->ShadowCastDib(pBitmap, light_dir, 1.0f,
 					vtElevLayer::m_draw.m_fAmbient, progress_callback);
 			else
-				pEL->m_pGrid->ShadeDibFromElevation(pBitmap, light_dir, 1.0f,
+				pEL->GetGrid()->ShadeDibFromElevation(pBitmap, light_dir, 1.0f,
 					vtElevLayer::m_draw.m_fAmbient, vtElevLayer::m_draw.m_fGamma,
 					true, progress_callback);
 		}
@@ -755,15 +758,15 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 	for (e = 0; e < elev_layers; e++)
 	{
 		vtElevLayer *el = elevs[e];
-		if (el->m_pTin)
+		if (el->GetTin())
 		{
-			int tris = el->m_pTin->NumTris();
+			int tris = el->GetTin()->NumTris();
 			// Aim for no more than 50 triangles in a bin
 			int bins = (int) sqrt((double) tris / 50);
 			if (bins < 10)
 				bins = 10;
 			UpdateProgressDialog2(1, -1, _("Binning TIN"));
-			el->m_pTin->SetupTriangleBins(bins, progress_callback_minor);
+			el->GetTin()->SetupTriangleBins(bins, progress_callback_minor);
 		}
 	}
 
@@ -818,7 +821,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 					relevant_elevs.push_back(elevs[e]);
 
 					DPoint2 spacing;
-					vtElevationGrid *grid = elevs[e]->m_pGrid;
+					vtElevationGrid *grid = elevs[e]->GetGrid();
 					if (grid)
 						spacing = grid->GetSpacing();
 					else
@@ -1065,7 +1068,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 						}
 						else
 						{
-							*sdata = base_lod.GetValue(x, y);
+							*sdata = base_lod.GetShortValue(x, y);
 							sdata++;
 						}
 					}

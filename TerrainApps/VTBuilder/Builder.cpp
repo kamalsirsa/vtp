@@ -20,6 +20,7 @@
 
 #include "Builder.h"
 #include "Helper.h"
+#include "Tin2d.h"
 #include "VegGenOptions.h"
 #include "vtImage.h"
 #include "Options.h"
@@ -785,12 +786,12 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 
 	DRECT area;
 	pTarget->GetExtent(area);
-	DPoint2 step = pTarget->m_pGrid->GetSpacing();
+	DPoint2 step = pTarget->GetGrid()->GetSpacing();
 
 	int layers = m_Layers.GetSize();
 	float fData=0, fBestData;
 	int iColumns, iRows;
-	pTarget->m_pGrid->GetDimensions(iColumns, iRows);
+	pTarget->GetGrid()->GetDimensions(iColumns, iRows);
 
 	// Create progress dialog for the slow part
 	OpenProgressDialog(_("Merging and Resampling Elevation Layers"), true);
@@ -832,7 +833,7 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 
 			// find some data for this point
 			fBestData = ElevLayerArrayValue(relevant_elevs, p);
-			pTarget->m_pGrid->SetFValue(i, j, fBestData);
+			pTarget->GetGrid()->SetFValue(i, j, fBestData);
 		}
 	}
 	CloseProgressDialog();
@@ -890,13 +891,13 @@ bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
 		iMethod = g_Options.GetValueInt(TAG_GAP_FILL_METHOD);
 	if (iMethod == 1)
 		// fast
-		bGood = el->m_pGrid->FillGaps(area, progress_callback);
+		bGood = el->GetGrid()->FillGaps(area, progress_callback);
 	else if (iMethod == 2)
 		// slow and smooth
-		bGood = el->m_pGrid->FillGapsSmooth(area, progress_callback);
+		bGood = el->GetGrid()->FillGapsSmooth(area, progress_callback);
 	else if (iMethod == 3)
 	{
-		int result = el->m_pGrid->FillGapsByRegionGrowing(2, 5, progress_callback);
+		int result = el->GetGrid()->FillGapsByRegionGrowing(2, 5, progress_callback);
 		bGood = (result != -1);
 	}
 
@@ -1136,7 +1137,7 @@ void Builder::ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 
 		vtElevLayer *el = (vtElevLayer *)l;
 		if (el->IsGrid())
 		{
-			vtElevationGrid *grid = el->m_pGrid;
+			vtElevationGrid *grid = el->GetGrid();
 			if (grid->IsFloatMode() || grid->GetScale() != 1.0f)
 				floating++;
 
@@ -1207,7 +1208,7 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 	vtElevLayer *pOutput = new vtElevLayer(dlg.m_area, dlg.m_iSizeX,
 			dlg.m_iSizeY, dlg.m_bFloats, dlg.m_fVUnits, m_proj);
 
-	if (!pOutput->m_pGrid->HasData())
+	if (!pOutput->GetGrid()->HasData())
 	{
 		wxString str;
 		str.Printf(_("Failed to initialize %d x %d elevation grid"), dlg.m_iSizeX, dlg.m_iSizeY);
@@ -1221,7 +1222,7 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 		delete pOutput;
 		return;
 	}
-	pOutput->m_pGrid->ComputeHeightExtents();
+	pOutput->GetGrid()->ComputeHeightExtents();
 
 	if (dlg.m_bFillGaps)
 	{
@@ -1242,7 +1243,7 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 		bool gzip = (fname.Right(3).CmpNoCase(_T(".gz")) == 0);
 		vtString fname_utf8 = (const char *) fname.mb_str(wxConvUTF8);
 
-		bool success = pOutput->m_pGrid->SaveToBT(fname_utf8, progress_callback, gzip);
+		bool success = pOutput->GetGrid()->SaveToBT(fname_utf8, progress_callback, gzip);
 		delete pOutput;
 		CloseProgressDialog();
 
@@ -1673,8 +1674,8 @@ float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 			elev->SetupTinTriangleBins(50);	// target 50 tris per bin
 		}
 
-		vtElevationGrid *grid = elev->m_pGrid;
-		vtTin2d *tin = elev->m_pTin;
+		vtElevationGrid *grid = elev->GetGrid();
+		vtTin2d *tin = elev->GetTin();
 
 		if (grid)
 		{

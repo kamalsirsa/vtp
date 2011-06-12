@@ -1661,7 +1661,7 @@ bool vtElevationGrid::SaveTo3TX(const char *szFileName, bool progress_callback(i
 			progress_callback(i * 100 / 1201);
 		for (int j = 0; j < 1201; j++)
 		{
-			val = GetValue(i, j);
+			val = (short) GetFValue(i, j);
 			fprintf(fp, "%d\r\n", val);
 		}
 	}
@@ -2789,7 +2789,7 @@ bool vtElevationGrid::SaveToSTM(const char *szFileName, bool progress_callback(i
 		for (int i = 0; i < m_iColumns; i++)
 		{
 			/* This byte swap is only necessary for PC and Alpha machines */
-			short val = GetValue(i, j);
+			short val = (short) GetFValue(i, j);
 			BSWAP_W(val);
 			data[i] = val;
 			data[i] += 32767;
@@ -2847,7 +2847,7 @@ bool vtElevationGrid::SaveToPlanet(const char *szDirName, bool progress_callback
 			for (int i = 0; i < xsize; i++)
 			{
 				int x = xbase + i;
-				short val = GetValue(x, y);
+				short val = (short) GetFValue(x, y);
 				BSWAP_W(val);
 				pixels[idx++] = val;
 			}
@@ -3243,7 +3243,7 @@ bool vtElevationGrid::SaveToPNG16(const char *fname)
 		png_bytep pngptr = row_pointers[row];
 		for (col = 0; col < width; col++)
 		{
-			val = GetValue(col, height-1-row);
+			val = (short) GetFValue(col, height-1-row);
 			*pngptr++ = adr[0];
 			*pngptr++ = adr[1];
 		}
