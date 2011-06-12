@@ -35,26 +35,27 @@
 #define ID_ENABLED 1001
 #define ID_ZOOMTO 1002
 #define ID_REFRESH 1003
-#define ID_TEXT 1004
-#define ID_ITEM 1005
-#define ID_TYPECHOICE 1006
-#define ID_SUBTYPECHOICE 1007
-#define ID_ADDTAG 1008
-#define ID_REMOVETAG 1009
-#define ID_EDITTAG 1010
-#define ID_TAGLIST 1011
-#define ID_FILENAME 1012
-#define ID_DISTANCE 1013
-#define ID_SCALE 1014
-#define ID_STATUS 1015
-#define ID_TAGNAME 1016
-#define ID_TAGTEXT 1017
-#define ID_LIGHT 1018
-#define ID_AMBIENT 1019
-#define ID_DIFFUSE 1020
-#define ID_DIRX 1021
-#define ID_DIRY 1022
-#define ID_DIRZ 1023
+#define ID_LOG 1004
+#define ID_TEXT 1005
+#define ID_ITEM 1006
+#define ID_TYPECHOICE 1007
+#define ID_SUBTYPECHOICE 1008
+#define ID_ADDTAG 1009
+#define ID_REMOVETAG 1010
+#define ID_EDITTAG 1011
+#define ID_TAGLIST 1012
+#define ID_FILENAME 1013
+#define ID_DISTANCE 1014
+#define ID_SCALE 1015
+#define ID_STATUS 1016
+#define ID_TAGNAME 1017
+#define ID_TAGTEXT 1018
+#define ID_LIGHT 1019
+#define ID_AMBIENT 1020
+#define ID_DIFFUSE 1021
+#define ID_DIRX 1022
+#define ID_DIRY 1023
+#define ID_DIRZ 1024
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class SceneGraphDlgBase
@@ -68,6 +69,7 @@ class SceneGraphDlgBase : public wxDialog
 		wxCheckBox* m_enabled;
 		wxButton* m_zoomto;
 		wxButton* m_refresh;
+		wxButton* m_log;
 	
 	public:
 		

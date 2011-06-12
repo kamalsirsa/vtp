@@ -36,6 +36,10 @@ SceneGraphDlgBase::SceneGraphDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	m_refresh->SetDefault(); 
 	bSizer79->Add( m_refresh, 0, wxALIGN_CENTER|wxALL, 5 );
 	
+	m_log = new wxButton( this, ID_LOG, wxT("Log"), wxDefaultPosition, wxSize( 55,-1 ), 0 );
+	m_log->SetDefault(); 
+	bSizer79->Add( m_log, 0, wxALL, 5 );
+	
 	bSizer78->Add( bSizer79, 0, wxALIGN_CENTER|wxALL, 0 );
 	
 	this->SetSizer( bSizer78 );

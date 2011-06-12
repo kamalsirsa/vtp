@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="glutSimple"
+	Name="Simple"
 	ProjectGUID="{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}"
 	RootNamespace="glutSimple"
 	TargetFrameworkVersion="131072"
@@ -71,7 +71,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glut32.lib osgd.lib osgGAd.lib osgSimd.lib osgTerraind.lib osgViewerd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgShadowd.lib netcdf.lib libpng15d-vc9.lib zlib1d-vc9.lib gdal_id-vc9.lib libjpeg.lib libMinid.lib libcurl-staticd.lib Ws2_32.lib"
+				AdditionalDependencies="opengl32.lib osgd.lib osgGAd.lib osgSimd.lib osgTerraind.lib osgViewerd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgShadowd.lib netcdf.lib libpng15d-vc9.lib zlib1d-vc9.lib gdal_id-vc9.lib libjpeg.lib libMinid.lib libcurl-staticd.lib Ws2_32.lib glu32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,libcd.lib,libcmt.lib,msvcrt.lib"
@@ -158,7 +158,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgGA.lib osgUtil.lib osgShadow.lib osgSim.lib osgText.lib osgTerrain.lib osgViewer.lib netcdf.lib libpng15-vc9.lib zlib1-vc9.lib gdal_i-vc9.lib libjpeg.lib libMini.lib libcurl-static.lib Ws2_32.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib osgShadow.lib netcdf.lib libpng15-vc9.lib zlib1-vc9.lib gdal_i-vc9.lib libjpeg.lib libMini.lib libcurl-static.lib Ws2_32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib,libcmt.lib"

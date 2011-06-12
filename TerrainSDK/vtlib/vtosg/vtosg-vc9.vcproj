@@ -1280,6 +1280,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\OSGEventHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath="SceneOSG.cpp"
 				>
 				<FileConfiguration
@@ -1344,6 +1348,10 @@
 			</File>
 			<File
 				RelativePath="NodeOSG.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OSGEventHandler.h"
 				>
 			</File>
 			<File

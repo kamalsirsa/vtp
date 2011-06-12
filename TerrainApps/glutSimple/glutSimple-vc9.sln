@@ -1,12 +1,12 @@
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual C++ Express 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata-vc8.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\vtdata\vtdata-vc9.vcproj", "{C2715AAA-C99B-438E-BF57-8357BD21AE98}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg-vc8.vcproj", "{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg-vc9.vcproj", "{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper-vc8.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper-vc9.vcproj", "{F35AD44A-5921-4C7F-842F-0B3138825EA6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glutSimple", "glutSimple-OSG-vc8.vcproj", "{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glutSimple", "glutSimple-vc9.vcproj", "{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F6E0C647-2E2F-4DAE-A085-9C8085481706} = {F6E0C647-2E2F-4DAE-A085-9C8085481706}
 		{F35AD44A-5921-4C7F-842F-0B3138825EA6} = {F35AD44A-5921-4C7F-842F-0B3138825EA6}
@@ -14,7 +14,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glutSimple", "glutSimple-OS
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D} = {15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "minidata", "..\..\TerrainSDK\minidata\minidata-vc8.vcproj", "{F6E0C647-2E2F-4DAE-A085-9C8085481706}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "minidata", "..\..\TerrainSDK\minidata\minidata-vc9.vcproj", "{F6E0C647-2E2F-4DAE-A085-9C8085481706}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
