@@ -463,9 +463,6 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 
 	m_pLocationDlg = new LocationDlg(this, -1, _("Locations"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pLayerDlg = new LayerDlg(this, -1, _("Layers"), wxDefaultPosition,
-		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pLayerDlg->SetSize(600, 250);
 	m_pSceneGraphDlg = new SceneGraphDlg(this, -1, _("Scene Graph"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(450, 600);
@@ -485,6 +482,16 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 				  Name(wxT("canvas")).Caption(wxT("Canvas")).
 				  CenterPane());
 	m_mgr.Update();
+
+	m_pLayerDlg = new LayerDlg(this, -1, _("Layers"), wxDefaultPosition,
+		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	m_pLayerDlg->SetSize(500, -1);
+
+	m_mgr.AddPane(m_pLayerDlg, wxAuiPaneInfo().
+				  Name(_T("layers")).Caption(_("Layers")).
+				  Left().Hide());
+	m_mgr.Update();
+
 }
 
 EnviroFrame::~EnviroFrame()
@@ -1457,7 +1464,9 @@ WXLRESULT EnviroFrame::MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lPar
 
 void EnviroFrame::OnFileLayers(wxCommandEvent& event)
 {
-	m_pLayerDlg->Show(true);
+	wxAuiPaneInfo &info = m_mgr.GetPane(m_pLayerDlg);
+	info.Show(!info.IsShown());
+	m_mgr.Update();
 }
 
 void EnviroFrame::OnLayerCreate(wxCommandEvent& event)
@@ -2740,7 +2749,6 @@ void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 
 	// and show it in the layers dialog
 	m_pLayerDlg->RefreshTreeContents();	// full refresh
-
 #endif
 }
 

@@ -497,9 +497,6 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 		ShowProgress(true);
 		SetProgressTerrain(pTerr);
 	}
-
-	// Layer view needs to update
-	RefreshLayerView();
 }
 
 void Enviro::SetupTerrain(vtTerrain *pTerr)
@@ -674,15 +671,15 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		str += pTerr->GetName();
 		SetMessage(str, 5.0f);
 
-		// Layer view needs to update
-		RefreshLayerView();
-
 		clock_t clock2 = clock();
 		VTLOG(" seconds since app start: %.2f\n", (float)clock2/CLOCKS_PER_SEC);
 
 		ShowProgress(false);
 
 		SetState(AS_Terrain);
+
+		// Layer view needs to update
+		RefreshLayerView();
 	}
 }
 

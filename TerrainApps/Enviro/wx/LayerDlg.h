@@ -94,7 +94,7 @@ public:
 // LayerDlg
 //----------------------------------------------------------------------------
 
-class LayerDlg: public wxDialog
+class LayerDlg: public wxPanel
 {
 public:
 	// constructors and destructors
@@ -148,7 +148,6 @@ private:
 	void OnShadowVisible( wxCommandEvent &event );
 	void OnShowAll( wxCommandEvent &event );
 	void OnSelChanged( wxTreeEvent &event );
-	void OnInitDialog(wxInitDialogEvent& event);
 
 	void OnUpdateCreate(wxUpdateUIEvent& event);
 	void OnUpdateVisible(wxUpdateUIEvent& event);

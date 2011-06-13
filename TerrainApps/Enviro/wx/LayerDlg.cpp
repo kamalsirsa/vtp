@@ -70,7 +70,7 @@
 
 // WDR: event table for LayerDlg
 
-BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
+BEGIN_EVENT_TABLE(LayerDlg,wxPanel)
 	EVT_INIT_DIALOG (LayerDlg::OnInitDialog)
 	EVT_TREE_SEL_CHANGED( ID_LAYER_TREE, LayerDlg::OnSelChanged )
 
@@ -123,7 +123,7 @@ void LayerToolBarFunc(wxToolBar *bar)
 
 LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	wxDialog( parent, id, title, position, size, style )
+	wxPanel( parent, id, position, size, style )
 {
 	long tbstyle = wxTB_FLAT | wxTB_NODIVIDER;
 	//tbstyle |= wxTB_HORZ_TEXT;
@@ -152,7 +152,8 @@ LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_mgr.Update();
 
 	wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
-	m_pTree = new wxTreeCtrl( m_main, ID_LAYER_TREE, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_LINES_AT_ROOT|wxSUNKEN_BORDER );
+	m_pTree = new wxTreeCtrl( m_main, ID_LAYER_TREE, wxDefaultPosition,
+		wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_LINES_AT_ROOT|wxSUNKEN_BORDER );
 	item0->Add( m_pTree, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	wxSizer *top = item0;
 
@@ -334,12 +335,6 @@ LayerItemData *LayerDlg::GetLayerDataFromItem(wxTreeItemId item)
 	return data;
 }
 
-void LayerDlg::OnInitDialog(wxInitDialogEvent& event)
-{
-	RefreshTreeContents();
-	wxWindow::OnInitDialog(event);
-}
-
 void LayerDlg::RefreshTreeContents()
 {
 	if (!m_pTree)
@@ -506,15 +501,12 @@ void LayerDlg::RefreshTreeTerrain()
 		}
 	}
 
-	// Vegetation
-	if (terr->GetPlantList())
-	{
-		vtPlantInstanceArray3d &pia = terr->GetPlantInstances();
-		wxString str = MakeVegLayerString(pia);
+	// Vegetation: always show
+	vtPlantInstanceArray3d &pia = terr->GetPlantInstances();
+	str = MakeVegLayerString(pia);
 
-		wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_VEG1, ICON_VEG1);
-		m_pTree->SetItemData(hLayer, new LayerItemData(LT_VEG));
-	}
+	wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, ICON_VEG1, ICON_VEG1);
+	m_pTree->SetItemData(hLayer, new LayerItemData(LT_VEG));
 
 	m_pTree->Expand(m_root);
 }
