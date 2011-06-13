@@ -1310,11 +1310,10 @@ ProfileEditDlgBase::ProfileEditDlgBase( wxWindow* parent, wxWindowID id, const w
 	wxBoxSizer* bSizer375;
 	bSizer375 = new wxBoxSizer( wxVERTICAL );
 	
-	m_edit_panel = new wxScrolledWindow( this, ID_EDIT_PANEL, wxDefaultPosition, wxSize( 250,160 ), wxSUNKEN_BORDER );
-	m_edit_panel->SetScrollRate( 5, 5 );
-	m_edit_panel->SetBackgroundColour( wxColour( 255, 255, 255 ) );
+	viewsizer = new wxBoxSizer( wxVERTICAL );
 	
-	bSizer375->Add( m_edit_panel, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	viewsizer->SetMinSize( wxSize( -1,240 ) ); 
+	bSizer375->Add( viewsizer, 1, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer376;
 	bSizer376 = new wxBoxSizer( wxHORIZONTAL );
@@ -1360,51 +1359,17 @@ ProfileEditDlgBase::ProfileEditDlgBase( wxWindow* parent, wxWindowID id, const w
 	
 	bSizer376->Add( gSizer1, 0, wxALIGN_CENTER, 0 );
 	
-	bSizer375->Add( bSizer376, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer375->Add( bSizer376, 0, wxEXPAND, 5 );
 	
 	this->SetSizer( bSizer375 );
 	this->Layout();
 	bSizer375->Fit( this );
 	
 	this->Centre( wxBOTH );
-	
-	// Connect Events
-	m_edit_panel->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_LEFT_UP, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_MIDDLE_DOWN, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_MIDDLE_UP, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_RIGHT_UP, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_MOTION, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_MIDDLE_DCLICK, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_RIGHT_DCLICK, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_LEAVE_WINDOW, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_ENTER_WINDOW, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_MOUSEWHEEL, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Connect( wxEVT_PAINT, wxPaintEventHandler( ProfileEditDlgBase::OnViewPaint ), NULL, this );
-	m_edit_panel->Connect( wxEVT_SIZE, wxSizeEventHandler( ProfileEditDlgBase::OnViewSize ), NULL, this );
 }
 
 ProfileEditDlgBase::~ProfileEditDlgBase()
 {
-	// Disconnect Events
-	m_edit_panel->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_LEFT_UP, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_MIDDLE_DOWN, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_MIDDLE_UP, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_RIGHT_UP, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_MOTION, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_MIDDLE_DCLICK, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_RIGHT_DCLICK, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_LEAVE_WINDOW, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_ENTER_WINDOW, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_MOUSEWHEEL, wxMouseEventHandler( ProfileEditDlgBase::OnViewMouseEvent ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_PAINT, wxPaintEventHandler( ProfileEditDlgBase::OnViewPaint ), NULL, this );
-	m_edit_panel->Disconnect( wxEVT_SIZE, wxSizeEventHandler( ProfileEditDlgBase::OnViewSize ), NULL, this );
-	
 }
 
 TagDlgBase::TagDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )

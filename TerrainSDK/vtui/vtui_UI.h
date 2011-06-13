@@ -32,7 +32,6 @@
 #include <wx/checkbox.h>
 #include <wx/radiobut.h>
 #include <wx/listctrl.h>
-#include <wx/scrolwin.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -150,24 +149,23 @@
 #define ID_RADIO_METERS 1111
 #define ID_RADIO_FEET 1112
 #define ID_RADIO_FEET_US 1113
-#define ID_EDIT_PANEL 1114
-#define ID_ADD_POINT 1115
-#define ID_MOVE_POINT 1116
-#define ID_REMOVE_POINT 1117
-#define ID_SAVE_PROF 1118
-#define ID_SAVE_AS_PROF 1119
-#define ID_LOAD_PROF 1120
-#define ID_TAGLIST 1121
-#define ID_TEXT_SHOW 1122
-#define ID_CHOICE_SHOW 1123
-#define ID_TEXT_VERTICAL 1124
-#define ID_CHOICE_VERTICAL 1125
-#define ID_DEL_HIGH 1126
-#define ID_LIST 1127
-#define ID_TEXTCTRL 1128
-#define ID_SLIDER_RATIO 1129
-#define ID_TEXT_X 1130
-#define ID_TEXT_Y 1131
+#define ID_ADD_POINT 1114
+#define ID_MOVE_POINT 1115
+#define ID_REMOVE_POINT 1116
+#define ID_SAVE_PROF 1117
+#define ID_SAVE_AS_PROF 1118
+#define ID_LOAD_PROF 1119
+#define ID_TAGLIST 1120
+#define ID_TEXT_SHOW 1121
+#define ID_CHOICE_SHOW 1122
+#define ID_TEXT_VERTICAL 1123
+#define ID_CHOICE_VERTICAL 1124
+#define ID_DEL_HIGH 1125
+#define ID_LIST 1126
+#define ID_TEXTCTRL 1127
+#define ID_SLIDER_RATIO 1128
+#define ID_TEXT_X 1129
+#define ID_TEXT_Y 1130
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class BuildingDlgBase
@@ -506,7 +504,6 @@ class ProfileEditDlgBase : public wxDialog
 	private:
 	
 	protected:
-		wxScrolledWindow* m_edit_panel;
 		wxRadioButton* m_add_point;
 		wxRadioButton* m_move_point;
 		wxRadioButton* m_remove_point;
@@ -515,14 +512,9 @@ class ProfileEditDlgBase : public wxDialog
 		wxButton* m_save_as_prof;
 		wxButton* m_load_prof;
 		wxButton* m_close;
-		
-		// Virtual event handlers, overide them in your derived class
-		virtual void OnViewMouseEvent( wxMouseEvent& event ) { event.Skip(); }
-		virtual void OnViewPaint( wxPaintEvent& event ) { event.Skip(); }
-		virtual void OnViewSize( wxSizeEvent& event ) { event.Skip(); }
-		
 	
 	public:
+		wxBoxSizer* viewsizer;
 		
 		ProfileEditDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~ProfileEditDlgBase();

@@ -14,33 +14,34 @@
 
 // WDR: class implementations
 
-//BEGIN_EVENT_TABLE(ProfDlgView, wxScrolledWindow)
-//	EVT_MOUSE_EVENTS(ProfDlgView::OnMouseEvent)
-//	EVT_SIZE(ProfDlgView::OnSize)
-//END_EVENT_TABLE()
-//
-//ProfDlgView::ProfDlgView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
-//	const wxSize& size, long style, const wxString& name) :
-//		wxScrolledWindow(parent, id, pos, size, style, name)
-//{
-//}
+BEGIN_EVENT_TABLE(ProfDlgView, wxScrolledWindow)
+	EVT_MOUSE_EVENTS(ProfDlgView::OnMouseEvent)
+	EVT_SIZE(ProfDlgView::OnSize)
+END_EVENT_TABLE()
 
-void ProfileEditDlg::OnViewSize(wxSizeEvent& event)
+ProfDlgView::ProfDlgView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
+	const wxSize& size, long style, const wxString& name) :
+		wxScrolledWindow(parent, id, pos, size, style, name)
+{
+	m_scale = 30.0f;
+	m_bDragging = false;
+	m_mode = 0;
+}
+
+void ProfDlgView::OnSize(wxSizeEvent& event)
 {
 	NewSize(event.GetSize());
 	Refresh();
 }
 
-void ProfileEditDlg::NewSize(const wxSize &s)
+void ProfDlgView::NewSize(const wxSize &s)
 {
 	m_org.x = s.x / 2;
 	m_org.y = s.y / 3 * 2;
 }
 
-void ProfileEditDlg::OnViewPaint()
+void ProfDlgView::OnDraw(wxDC &dc)
 {
-	wxPaintDC dc(m_edit_panel);
-
 	// Draw grid
 	wxPen pen;
 	pen.SetColour(200,200,200);
@@ -93,7 +94,7 @@ void ProfileEditDlg::OnViewPaint()
 	}
 }
 
-void ProfileEditDlg::OnViewMouseEvent(wxMouseEvent &event)
+void ProfDlgView::OnMouseEvent(wxMouseEvent &event)
 {
 	wxCoord x, y;
 	event.GetPosition(&x, &y);
@@ -203,11 +204,12 @@ ProfileEditDlg::ProfileEditDlg( wxWindow *parent, wxWindowID id, const wxString 
 	const wxPoint &position, const wxSize& size, long style ) :
 	ProfileEditDlgBase( parent, id, title, position, size, style )
 {
-	//m_pView = (ProfDlgView *) FindWindow( ID_EDIT_PANEL );
+	m_pView = new ProfDlgView(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+	m_pView->SetMinSize( wxSize( 240,240 ) );
 
-	m_scale = 30.0f;
-	m_bDragging = false;
-	m_mode = 0;
+	viewsizer->Add( m_pView, 1, wxEXPAND | wxALL, 5 );
+
+	GetSizer()->SetSizeHints(this);
 }
 
 void ProfileEditDlg::UpdateEnabling()
@@ -217,7 +219,7 @@ void ProfileEditDlg::UpdateEnabling()
 
 void ProfileEditDlg::SetFilename(const char *fname)
 {
-	if (LoadFLine2FromSHP(fname, m_profile))
+	if (LoadFLine2FromSHP(fname, m_pView->m_profile))
 	{
 		m_strFilename = wxString(fname, wxConvUTF8);
 		UpdateEnabling();
@@ -229,9 +231,9 @@ void ProfileEditDlg::CheckClockwisdom()
 	// We want to stick to a counter-clockwise convention for closed shapes.
 	//  Check if they have specified some clockwise points, and flip if so.
 	PolyChecker pc;
-	if (pc.IsClockwisePolygon(m_profile))
+	if (pc.IsClockwisePolygon(m_pView->m_profile))
 	{
-		m_profile.ReverseOrder();
+		m_pView->m_profile.ReverseOrder();
 	}
 }
 
@@ -239,7 +241,6 @@ void ProfileEditDlg::CheckClockwisdom()
 
 void ProfileEditDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	NewSize(GetSize());
 	UpdateEnabling();
 }
 
@@ -257,7 +258,7 @@ void ProfileEditDlg::OnLoad( wxCommandEvent &event )
 		return;
 	wxString str = loadFile.GetPath();
 	vtString fname = (const char *) str.mb_str(wxConvUTF8);
-	if (LoadFLine2FromSHP(fname, m_profile))
+	if (LoadFLine2FromSHP(fname, m_pView->m_profile))
 	{
 		m_strFilename = str;
 		Refresh();
@@ -276,7 +277,7 @@ void ProfileEditDlg::OnSaveAs( wxCommandEvent &event )
 		return;
 	wxString str = saveFile.GetPath();
 	vtString fname = (const char *) str.mb_str(wxConvUTF8);
-	if (SaveFLine2ToSHP(fname, m_profile))
+	if (SaveFLine2ToSHP(fname, m_pView->m_profile))
 	{
 		m_strFilename = str;
 		TransferDataToWindow();
@@ -289,21 +290,20 @@ void ProfileEditDlg::OnSave( wxCommandEvent &event )
 	CheckClockwisdom();
 
 	vtString fname = (const char *) m_strFilename.mb_str(wxConvUTF8);
-	SaveFLine2ToSHP(fname, m_profile);
+	SaveFLine2ToSHP(fname, m_pView->m_profile);
 }
 
 void ProfileEditDlg::OnRemove( wxCommandEvent &event )
 {
-	m_mode = 2;
+	m_pView->m_mode = 2;
 }
 
 void ProfileEditDlg::OnMove( wxCommandEvent &event )
 {
-	m_mode = 1;
+	m_pView->m_mode = 1;
 }
 
 void ProfileEditDlg::OnAdd( wxCommandEvent &event )
 {
-	m_mode = 0;
+	m_pView->m_mode = 0;
 }
-
