@@ -1036,7 +1036,7 @@ void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, osg::Fog
 // vtShadow
 //
 
-vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowTextureUnit)
+vtShadow::vtShadow(const int ShadowTextureUnit, osg::Light *pSunLight) : m_ShadowTextureUnit(ShadowTextureUnit)
 {
 	setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
 	setCastsShadowTraversalMask(CastsShadowTraversalMask);
@@ -1056,6 +1056,7 @@ vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowText
 	pShadowTechnique->m_pParent = this;
 #endif
 
+	pShadowTechnique->SetSunLight(pSunLight);
 	pShadowTechnique->SetShadowTextureUnit(m_ShadowTextureUnit);
 	pShadowTechnique->SetShadowSphereRadius(50.0);
 #endif

@@ -223,7 +223,7 @@ class vtLodGrid;
 class vtShadow : public osgShadow::ShadowedScene, public NodeExtension
 {
 public:
-	vtShadow(const int ShadowTextureUnit);
+	vtShadow(const int ShadowTextureUnit, osg::Light *pSunLight);
 
 	/// Set the darkness of the shadow, from 0 to 1.  Only supported on newer 3D cards.
 	void SetDarkness(float bias);

@@ -32,7 +32,8 @@ CSimpleInterimShadowTechnique::CSimpleInterimShadowTechnique():
 	m_ShadowDarkness(1.0f),
 	m_ShadowSphereRadius(0.0f),
 	m_RecalculateEveryFrame(false),
-	m_pHeightField3d(NULL)
+	m_pHeightField3d(NULL),
+	m_pSunLight(NULL)
 {
 	m_MainSceneTextureUnits[0] = GL_MODULATE;
 }
@@ -41,6 +42,11 @@ CSimpleInterimShadowTechnique::CSimpleInterimShadowTechnique(const CSimpleInteri
     ShadowTechnique(copy,copyop),
     m_ShadowTextureUnit(copy.m_ShadowTextureUnit)
 {
+}
+
+void CSimpleInterimShadowTechnique::SetSunLight(osg::Light *pLight)
+{
+	m_pSunLight = pLight;
 }
 
 void CSimpleInterimShadowTechnique::SetShadowTextureUnit(const unsigned int Unit)
@@ -229,7 +235,7 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
         ++itr)
     {
         pSunLight = dynamic_cast<const osg::Light*>(itr->first.get());
-        if (NULL != pSunLight)
+        if ((NULL != pSunLight) && (m_pSunLight == pSunLight))
         {
             osg::RefMatrix* pMatrix = itr->second.get();
             if (pMatrix)
