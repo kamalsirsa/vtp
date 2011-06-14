@@ -1089,7 +1089,6 @@ void LayerDlg::OnSelChanged( wxTreeEvent &event )
 	m_item = event.GetItem();
 
 	LayerItemData *data = GetLayerDataFromItem(m_item);
-	VTLOG("OnSelChanged, item %d, data %d\n", m_item.m_pItem, data);
 	if (data && data->m_slay != NULL)
 	{
 		vtStructureLayer *newlay = data->m_slay;

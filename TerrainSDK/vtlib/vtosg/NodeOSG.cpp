@@ -1194,10 +1194,10 @@ void vtShadow::SetDebugHUD(vtGroup *pGroup)
 
 
 ///////////////////////////////////////////////////////////////////////
-// vtLight
+// vtLightSource
 //
 
-vtLight::vtLight()
+vtLightSource::vtLightSource()
 {
 	// Lights can now go into the scene graph in OSG, with LightSource.
 	// A lightsource creates a light, which we can get with getLight().
@@ -1209,32 +1209,32 @@ vtLight::vtLight()
 	setStateSetModes(*vtGetScene()->getViewer()->getCamera()->getOrCreateStateSet(),osg::StateAttribute::ON);
 }
 
-void vtLight::SetDiffuse(const RGBf &color)
+void vtLightSource::SetDiffuse(const RGBf &color)
 {
 	getLight()->setDiffuse(v2s(color));
 }
 
-RGBf vtLight::GetDiffuse() const
+RGBf vtLightSource::GetDiffuse() const
 {
 	return s2v(getLight()->getDiffuse());
 }
 
-void vtLight::SetAmbient(const RGBf &color)
+void vtLightSource::SetAmbient(const RGBf &color)
 {
 	getLight()->setAmbient(v2s(color));
 }
 
-RGBf vtLight::GetAmbient() const
+RGBf vtLightSource::GetAmbient() const
 {
 	return s2v(getLight()->getAmbient());
 }
 
-void vtLight::SetSpecular(const RGBf &color)
+void vtLightSource::SetSpecular(const RGBf &color)
 {
 	getLight()->setSpecular(v2s(color));
 }
 
-RGBf vtLight::GetSpecular() const
+RGBf vtLightSource::GetSpecular() const
 {
 	return s2v(getLight()->getSpecular());
 }

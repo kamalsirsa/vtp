@@ -2,7 +2,7 @@
 // SkyDome - a simple day/night skydome, should be replaced with a
 // more realistic version at some point.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -99,6 +99,7 @@ vtSkyDome::vtSkyDome()
 {
 	m_pStarDome = NULL;
 	m_pSunLight = NULL;
+	m_pSunLightSource = NULL;
 
 	m_pMats = NULL;
 	m_pMat = NULL;
@@ -234,6 +235,11 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		m_pStarDome->setName("StarDome");
 		m_pCelestial->addChild(m_pStarDome);
 	}
+
+	// Default untextured sky colors
+	RGBf horizon_color(0.70f, 0.85f, 1.0f);
+	RGBf azimuth_color(0.12f, 0.32f, 0.70f);
+	SetDayColors(horizon_color, azimuth_color);
 }
 
 void vtSkyDome::CreateMarkers()
@@ -455,13 +461,11 @@ void vtSkyDome::UpdateSunLight()
 	}
 
 	color *= intensity;
-	vtLight *pLight = (vtLight *) m_pSunLight->getChild(0);
-	if (pLight)
-	{
-		pLight->SetDiffuse(color);
-		pLight->SetAmbient(RGBf(ambient, ambient, ambient));
-		pLight->SetSpecular(color);
-	}
+
+	m_pSunLightSource->SetDiffuse(color);
+	m_pSunLightSource->SetAmbient(RGBf(ambient, ambient, ambient));
+	m_pSunLightSource->SetSpecular(color);
+
 	// Don't actually color the sun geometry, because we use a sun texture now.
 	// if (m_pSunMat) m_pSunMat->SetDiffuse1(color);
 }

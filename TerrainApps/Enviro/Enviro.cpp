@@ -563,7 +563,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			m_pSkyDome->SetTime(pTerr->GetInitialTime());
 		}
 
-		if (!pTerr->CreateStep2(GetSunLight()))
+		if (!pTerr->CreateStep2(GetSunLightTransform(), GetSunLightSource()))
 		{
 			SetState(AS_Error);
 			SetMessage(pTerr->GetLastError());
@@ -658,7 +658,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		m_pNormalCamera->SetYon(500000.0f);
 
 		// ensure that sunlight is active
-		GetSunLight()->SetEnabled(true);
+		GetSunLightTransform()->SetEnabled(true);
 
 		m_pCurRoute=pTerr->GetLastRoute();	// Error checking needed here.
 
@@ -1145,12 +1145,11 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 //
 void Enviro::StoreTerrainParameters()
 {
-	vtTerrainScene *ts = vtGetTS();
-	vtTimeEngine *te = ts->GetTimeEngine();
+	vtTimeEngine *te = GetTimeEngine();
 	vtTerrain *terr = GetCurrentTerrain();
 	TParams &par = terr->GetParams();
 	vtCamera *cam = vtGetScene()->GetCamera();
-	vtSkyDome *sky = ts->GetSkyDome();
+	vtSkyDome *sky = GetSkyDome();
 
 	par.SetValueFloat(STR_VERTICALEXAG, terr->GetVerticalExag());
 
@@ -1373,7 +1372,7 @@ void Enviro::SetSpeed(float x)
 	if (m_state == AS_Orbit && m_pGlobeTime)
 		m_pGlobeTime->SetSpeed(x);
 	else if (m_state == AS_Terrain)
-		vtGetTS()->GetTimeEngine()->SetSpeed(x);
+		GetTimeEngine()->SetSpeed(x);
 }
 
 float Enviro::GetSpeed()
@@ -1381,7 +1380,7 @@ float Enviro::GetSpeed()
 	if (m_state == AS_Orbit && m_pGlobeTime)
 		return m_pGlobeTime->GetSpeed();
 	else if (m_state == AS_Terrain)
-		return vtGetTS()->GetTimeEngine()->GetSpeed();
+		return GetTimeEngine()->GetSpeed();
 	return 0;
 }
 

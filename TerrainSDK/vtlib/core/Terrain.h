@@ -154,7 +154,7 @@ public:
 	// or simply use the method vtTerrainScene::BuildTerrain.
 	void CreateStep0();
 	bool CreateStep1();
-	bool CreateStep2(vtTransform *pSunLight);
+	bool CreateStep2(vtTransform *pSunLight, vtLightSource *pLightSource);
 	bool CreateStep3();
 	bool CreateStep4();
 	bool CreateStep5();
@@ -435,7 +435,7 @@ protected:
 	vtLocationSaver	m_LocSaver;
 	vtAnimContainer m_AnimContainer;
 
-	// horizon, water and fog
+	// horizon, water, and fog
 	vtFogPtr	m_pFog;
 	vtShadowPtr	m_pShadow;
 	vtMovGeodePtr m_pHorizonGeom;
@@ -481,7 +481,7 @@ protected:
 	// routes
 	vtRouteMap		m_Routes;
 
-	// ground texture
+	// ground texture and shadows
 	vtImagePtr		m_pImageSource;
 	vtImagePtr		m_pImage;
 	vtOverlappedTiledImage	m_ImageTiles;
@@ -489,6 +489,7 @@ protected:
 	bool			m_bTextureInitialized;
 	vtTextureUnitManager m_TextureUnits;
 	int				m_iShadowTextureUnit;
+	vtLightSource	*m_pLightSource;
 
 	FSphere			m_bound_sphere;	// bounding sphere of terrain
 									// (without surrounding ocean)

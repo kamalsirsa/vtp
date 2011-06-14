@@ -9,6 +9,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Light.h"	// for TERRAIN_AMBIENT etc.
+#include "vtlib/core/SkyDome.h"
 #include "vtdata/DataPath.h"
 
 #include "Nevada.h"
@@ -42,9 +43,6 @@ NevadaTerrain::NevadaTerrain()
 	m_pMats = NULL;
 }
 
-NevadaTerrain::~NevadaTerrain()
-{
-}
 
 //
 // Nevada culture
@@ -52,9 +50,8 @@ NevadaTerrain::~NevadaTerrain()
 void NevadaTerrain::CreateCustomCulture()
 {
 	// We use a different horizon color
-	vtTerrainScene *scene = vtGetTS();
-	scene->horizon_color = HORIZON_FOG;
-	scene->azimuth_color = RGBi(30, 70, 255);
+	vtSkyDome *sky = vtGetTS()->GetSkyDome();
+	sky->SetDayColors(HORIZON_FOG, RGBi(30, 70, 255));
 
 	m_pHeightField->ConvertEarthToSurfacePoint(DPoint2(MAN_LONLAT), man_location);
 

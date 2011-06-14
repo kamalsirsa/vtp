@@ -213,7 +213,7 @@ void LogToDot(osg::Group *pParent, osg::Node *pNode, int depth, FILE *fp, std::v
 
 	if (!pNode) return;
 
-	if (dynamic_cast<vtLight*>(pNode))
+	if (dynamic_cast<vtLightSource*>(pNode))
 	{
 		label = "Light";
 		nColor = 4;

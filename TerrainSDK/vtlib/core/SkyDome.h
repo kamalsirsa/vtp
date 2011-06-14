@@ -1,7 +1,7 @@
 //
 // SkyDome.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -75,8 +75,8 @@ private:
  * to make it large and far away from the camera, so that it is always behind
  * all the terrain and objects in the world.  It also contains an image of
  * the Sun (as a texture billboard).  The Sun is moved and sky is colored
- * appropriately for the time of day (set with SetTime).  It also supplies
- * a real Light (vtLight) which approximates the actual color, direction and
+ * appropriately for the time of day (set with SetTime).  It also supplies a
+ * real Light (vtLightSource) which approximates the actual color, direction and
  * intensity of sunlight.
  */
 class vtSkyDome : public vtTransform
@@ -94,6 +94,7 @@ public:
 	void	SetSunsetColor(const RGBf &sunset);
 	void	SetInterpCutoff(float cutoff);
 	void	SetSunLight(vtTransform *light) { m_pSunLight = light; }
+	void	SetSunLightSource(vtLightSource *ls) { m_pSunLightSource = ls; }
 	bool	SetTexture(const char *filename);
 	void	SetStarAltitude(float fDegrees) { m_fStarAltitude = fDegrees; }
 	void	RefreshCelestialObjects();
@@ -115,7 +116,9 @@ protected:
 
 	vtStarDome	*m_pStarDome;
 	vtTransform	*m_pSunLight;
+	vtLightSource *m_pSunLightSource;
 
+	// day dome colors (when not textured)
 	RGBf	DayHorizonCol, DayAzimuthCol, SunsetCol;
 	float	Cutoff;
 

@@ -163,9 +163,9 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 
 	if (!pNode) return;
 
-	if (dynamic_cast<vtLight*>(pNode))
+	if (dynamic_cast<vtLightSource*>(pNode))
 	{
-		str = _("vtLight");
+		str = _("vtLightSource");
 		nImage = 4;
 	}
 	else if (dynamic_cast<vtDynGeom*>(pNode))

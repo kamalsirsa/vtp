@@ -84,13 +84,13 @@ public:
 
 	/// Find a terrain by its name.
 	vtTerrain *FindTerrainByName(const char *name);
-	vtTransform *GetSunLight() { return m_pSunLight; }
 	vtTimeEngine *GetTimeEngine() { return m_pTimeEngine; }
 
-	void SetTime(const vtTime &time);
+	/// The Sun
+	vtTransform *GetSunLightTransform() { return m_pSunLight; }
+	vtLightSource *GetSunLightSource() { return m_pLightSource; }
 
-	// skydome
-	RGBf		horizon_color, azimuth_color;
+	void SetTime(const vtTime &time);
 
 	// utility structures, shared between all terrains
 	vtUtilStruct *LoadUtilStructure(const vtString &name);
@@ -127,7 +127,8 @@ protected:
 	// Utility structures, created on demand from global content file
 	vtArray<vtUtilStruct*>	m_StructObjs;
 
-	vtTransform	*m_pSunLight;
+	vtLightSource	*m_pLightSource;
+	vtTransform		*m_pSunLight;
 };
 
 // global helper function

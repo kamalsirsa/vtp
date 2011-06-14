@@ -592,6 +592,8 @@ bool vtImageGeo::ReadTIF(const char *filename, bool progress_callback(int))
 	bool bRet = true;
 	vtString message;
 
+	setFileName(filename);
+
 	g_GDALWrapper.RequestGDALFormats();
 
 	GDALDataset *pDataset = NULL;

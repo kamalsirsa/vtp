@@ -78,16 +78,17 @@ void Enviro::SetupGlobe()
 	if (m_iInitStep == 3)
 	{
 		// put the light where the sun should be
-		vtTransform *pSunLight = GetSunLight();
+		vtTransform *pSunLight = GetSunLightTransform();
+		vtLightSource *pLightSource = GetSunLightSource();
+
 		pSunLight->Identity();
 		pSunLight->SetTrans(FPoint3(0, 0, -5));
 
-		vtLight *pLight = (vtLight *) pSunLight->getChild(0);
-		if (pLight)
+		if (pLightSource)
 		{
 			// standard bright sunlight
-			pLight->SetDiffuse(RGBf(3, 3, 3));
-			pLight->SetAmbient(RGBf(0.5f, 0.5f, 0.5f));
+			pLightSource->SetDiffuse(RGBf(3, 3, 3));
+			pLightSource->SetAmbient(RGBf(0.5f, 0.5f, 0.5f));
 		}
 		vtGetScene()->SetBgColor(RGBf(SPACE_DARKNESS, SPACE_DARKNESS, SPACE_DARKNESS));
 
@@ -352,8 +353,7 @@ void Enviro::MakeDemoGlobe()
 	}
 
 	// Stark lighting, no ambient
-	vtTransform *pSunLight = GetSunLight();
-	vtLight *pLight = (vtLight *) pSunLight->getChild(0);
+	vtLightSource *pLight = GetSunLightSource();
 	if (pLight)
 	{
 		pLight->SetDiffuse(RGBf(1, 1, 1));
@@ -725,7 +725,7 @@ void Enviro::SetEarthShading(bool bShade)
 {
 	m_bEarthShade = bShade;
 
-	vtTransform *pMovableLight = GetSunLight();
+	vtTransform *pMovableLight = GetSunLightTransform();
 
 	pMovableLight->SetEnabled(bShade);
 	m_pIcoGlobe->SetLighting(bShade);
@@ -1018,7 +1018,7 @@ void Enviro::FlyInStage1()
 		m_pNormalCamera->SetYon(500000.0f);
 
 		// ensure that sunlight is active
-		GetSunLight()->SetEnabled(true);
+		GetSunLightTransform()->SetEnabled(true);
 
 		m_pTerrainPicker->SetEnabled(true);
 		SetMode(MM_NAVIGATE);

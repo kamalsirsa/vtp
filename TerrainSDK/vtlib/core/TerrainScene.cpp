@@ -62,9 +62,6 @@ vtTerrainScene::vtTerrainScene()
 {
 	s_pTerrainScene = this;
 
-	horizon_color.Set(0.70f, 0.85f, 1.0f);
-	azimuth_color.Set(0.12f, 0.32f, 0.70f);
-
 	m_pTop = NULL;
 	m_pSkyDome = NULL;
 	m_pCurrentTerrain = NULL;
@@ -117,10 +114,10 @@ void vtTerrainScene::_CreateSky()
 	// create the sun
 	VTLOG(" Creating Main Light\n");
 
-	vtLight *pLight = new vtLight;
-	pLight->setName("Main Light");
+	m_pLightSource = new vtLightSource;
+	m_pLightSource->setName("Main Light");
 	m_pSunLight = new vtTransform;
-	m_pSunLight->addChild(pLight);
+	m_pSunLight->addChild(m_pLightSource);
 	m_pSunLight->setName("SunLight");
 	m_pTop->addChild(m_pSunLight);
 
@@ -141,9 +138,9 @@ void vtTerrainScene::_CreateSky()
 	// create a day-night dome
 	m_pSkyDome = new vtSkyDome;
 	m_pSkyDome->Create(bsc, 3, 1.0f, sun, moon);	// initially unit radius
-	m_pSkyDome->SetDayColors(horizon_color, azimuth_color);
 	m_pSkyDome->setName("The Sky");
-	m_pSkyDome->SetSunLight(GetSunLight());
+	m_pSkyDome->SetSunLight(GetSunLightTransform());
+	m_pSkyDome->SetSunLightSource(GetSunLightSource());
 	m_pAtmosphereGroup->addChild(m_pSkyDome);
 
 	m_pSkyTrack = new vtSkyTrackEngine;
@@ -239,7 +236,7 @@ vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 	DPoint2 geo = pTerrain->GetCenterGeoLocation();
 	m_pSkyDome->SetGeoLocation(geo);
 
-	if (!pTerrain->CreateStep2(m_pSunLight))
+	if (!pTerrain->CreateStep2(m_pSunLight, m_pLightSource))
 		return NULL;
 
 	if (!pTerrain->CreateStep3())

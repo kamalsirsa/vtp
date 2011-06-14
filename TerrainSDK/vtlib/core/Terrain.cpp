@@ -12,13 +12,14 @@
 #include "vtdata/DataPath.h"
 
 #include "Terrain.h"
-#include "Light.h"
+
 #include "Building3d.h"
-#include "IntersectionEngine.h"
 #include "Fence3d.h"
+#include "ImageSprite.h"
+#include "IntersectionEngine.h"
+#include "Light.h"
 #include "PagedLodGrid.h"
 #include "vtTin3d.h"
-#include "ImageSprite.h"
 
 #include "TVTerrain.h"
 #include "SMTerrain.h"
@@ -26,12 +27,8 @@
 #include "SRTerrain.h"
 #include "DemeterTerrain.h"
 #include "TiledGeom.h"
-
 #include "vtlib/vtosg/ExternalHeightField3d.h"
-
-#include "vtlib/core/TerrainScene.h"
-
-// add your own LOD method header here!
+// add your own terrain method header here!
 
 
 // The Terrain uses two LOD grids (class vtLodGrid, a sparse grid of LOD cells)
@@ -1914,7 +1911,7 @@ void vtTerrain::SetShadows(bool shadows)
 	{
 		if (!m_pShadow)
 		{
-			m_pShadow = new vtShadow(GetShadowTextureUnit(), ((vtLight*)(vtGetTS()->GetSunLight()->getChild(0)))->getLight());
+			m_pShadow = new vtShadow(GetShadowTextureUnit(), m_pLightSource->getLight());
 			m_pShadow->SetHeightField3d(GetHeightField());
 			m_pShadow->SetDarkness(m_Params.GetValueFloat(STR_SHADOW_DARKNESS));
 			m_pShadow->SetShadowTextureResolution(m_Params.GetValueInt(STR_SHADOW_REZ));
@@ -2383,9 +2380,12 @@ bool vtTerrain::CreateStep1()
 /**
  * Next step in terrain creation: create textures.
  */
-bool vtTerrain::CreateStep2(vtTransform *pSunLight)
+bool vtTerrain::CreateStep2(vtTransform *pSunLight, vtLightSource *pLightSource)
 {
 	VTLOG("Step2\n");
+
+	// Remember the lightsource in case we need it later for shadows
+	m_pLightSource = pLightSource;
 
 	// if we aren't going to produce the terrain surface, nothing to do
 	if (m_Params.GetValueBool(STR_SUPPRESS))

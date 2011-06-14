@@ -17,7 +17,6 @@ class NevadaTerrain : public vtTerrain
 {
 public:
 	NevadaTerrain();
-	~NevadaTerrain();
 
 	void CreateCustomCulture();
 

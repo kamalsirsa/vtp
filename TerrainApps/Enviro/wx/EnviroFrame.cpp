@@ -1005,7 +1005,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 					VTLOG(" Modify1: %.3f sec\n", (float)(t2-t1)/CLOCKS_PER_SEC);
 
 					// Update the shading and culture
-					pTerr->RecreateTextures(vtGetTS()->GetSunLight());
+					pTerr->RecreateTextures(vtGetTS()->GetSunLightTransform());
 					DRECT area;
 					area.Empty();
 					pTerr->RedrapeCulture(area);
@@ -1036,7 +1036,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 					VTLOG(" Modify2: %.3f sec\n", (float)(t2-t1)/CLOCKS_PER_SEC);
 
 					// Update the shading and culture
-					pTerr->RecreateTextures(vtGetTS()->GetSunLight());
+					pTerr->RecreateTextures(vtGetTS()->GetSunLightTransform());
 					DRECT area;
 					area.Empty();
 					pTerr->RedrapeCulture(area);
@@ -1066,7 +1066,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 						}
 
 					// Update the (entire) shading and culture
-					pTerr->RecreateTextures(vtGetTS()->GetSunLight());
+					pTerr->RecreateTextures(vtGetTS()->GetSunLightTransform());
 					DRECT area;
 					area.Empty();
 					pTerr->RedrapeCulture(area);
@@ -2566,7 +2566,7 @@ void EnviroFrame::OnTerrainReshade(wxCommandEvent& event)
 
 	EnableContinuousRendering(false);
 	OpenProgressDialog(_("Recalculating Shading"), false, this);
-	pTerr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
+	pTerr->RecreateTextures(vtGetTS()->GetSunLightTransform(), progress_callback);
 	CloseProgressDialog();
 	EnableContinuousRendering(true);
 
@@ -2592,7 +2592,7 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 		dlg.GetParams(pTerr->GetParams());
 
 		OpenProgressDialog(_("Changing Texture"), false, this);
-		pTerr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
+		pTerr->RecreateTextures(vtGetTS()->GetSunLightTransform(), progress_callback);
 		CloseProgressDialog();
 
 		// Also update the overview, if there is one.
@@ -3438,7 +3438,7 @@ void EnviroFrame::CarveTerrainToFitNode(osg::Node *node)
 			EnableContinuousRendering(false);
 			OpenProgressDialog(_("Recalculating Shading"), false, this);
 
-			terr->RecreateTextures(vtGetTS()->GetSunLight(), progress_callback);
+			terr->RecreateTextures(vtGetTS()->GetSunLightTransform(), progress_callback);
 			DRECT area;
 			area.Empty();
 			terr->RedrapeCulture(area);
