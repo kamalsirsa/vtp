@@ -1,6 +1,6 @@
 set(VTLIB_CORE_SOURCE_FILES
 		 ../core/AbstractLayer.cpp ../core/AnimPath.cpp ../core/AttribMap.cpp ../core/Building3d.cpp ../core/Content3d.cpp
-		../core/Contours.cpp ../core/CoreScene.cpp ../core/BruteTerrain.cpp ../core/DemeterTerrain.cpp
+		../core/Contours.cpp ../core/BruteTerrain.cpp ../core/DemeterTerrain.cpp
 		../core/DynTerrain.cpp ../core/Engine.cpp ../core/Fence3d.cpp ../core/GeomUtil.cpp ../core/Globe.cpp ../core/ImageSprite.cpp
 		../core/IntersectionEngine.cpp ../core/Location.cpp ../core/LodGrid.cpp ../core/NavEngines.cpp ../core/PagedLodGrid.cpp
 		../core/Roads.cpp ../core/Route.cpp ../core/SkyDome.cpp ../core/SMTerrain.cpp ../core/SRTerrain.cpp
