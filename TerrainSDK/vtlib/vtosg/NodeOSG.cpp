@@ -10,6 +10,7 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/vtString.h"
+#include "vtlib/core/TerrainScene.h"
 #if VTLISPSM
 #include "LightSpacePerspectiveShadowTechnique.h"
 #endif
@@ -1036,7 +1037,7 @@ void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, osg::Fog
 // vtShadow
 //
 
-vtShadow::vtShadow(const int ShadowTextureUnit, osg::Light *pSunLight) : m_ShadowTextureUnit(ShadowTextureUnit)
+vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowTextureUnit)
 {
 	setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
 	setCastsShadowTraversalMask(CastsShadowTraversalMask);
@@ -1056,7 +1057,6 @@ vtShadow::vtShadow(const int ShadowTextureUnit, osg::Light *pSunLight) : m_Shado
 	pShadowTechnique->m_pParent = this;
 #endif
 
-	pShadowTechnique->SetSunLight(pSunLight);
 	pShadowTechnique->SetShadowTextureUnit(m_ShadowTextureUnit);
 	pShadowTechnique->SetShadowSphereRadius(50.0);
 #endif
@@ -1197,16 +1197,17 @@ void vtShadow::SetDebugHUD(vtGroup *pGroup)
 // vtLightSource
 //
 
-vtLightSource::vtLightSource()
+vtLightSource::vtLightSource(int LightNumber)
 {
 	// Lights can now go into the scene graph in OSG, with LightSource.
 	// A lightsource creates a light, which we can get with getLight().
+	getLight()->setLightNum(LightNumber);
 	SetOsgNode(this);
 
 	// However, because lighting is also a 'state', we need to inform
 	// the whole scene graph that we have another light.
 	setLocalStateSetModes(osg::StateAttribute::ON);
-	setStateSetModes(*vtGetScene()->getViewer()->getCamera()->getOrCreateStateSet(),osg::StateAttribute::ON);
+	setStateSetModes(*vtGetTS()->GetTop()->getOrCreateStateSet(),osg::StateAttribute::ON);
 }
 
 void vtLightSource::SetDiffuse(const RGBf &color)

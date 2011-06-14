@@ -30,7 +30,6 @@ public:
 	CSimpleInterimShadowTechnique();
 	CSimpleInterimShadowTechnique(const CSimpleInterimShadowTechnique& es, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY);
 	META_Object(osgShadow, CSimpleInterimShadowTechnique);
-	void SetSunLight(osg::Light *pLight);
 	void SetShadowTextureUnit(const unsigned int Unit);
 	void SetShadowTextureResolution(const unsigned int ShadowTextureResolution) { m_ShadowTextureResolution = ShadowTextureResolution; }
 	unsigned int GetShadowTextureResolution() { return m_ShadowTextureResolution; }
@@ -82,7 +81,6 @@ protected :
 	vtHeightField3d					*m_pHeightField3d;
 	osg::Vec3						m_OldBoundingSphereCentre;
 	osg::Vec3						m_OldSunPos;
-	osg::Light						*m_pSunLight;
 };
 
 #endif	// VTOSG_SIMPLEINTERIMSHADOWTECHNIQUEH

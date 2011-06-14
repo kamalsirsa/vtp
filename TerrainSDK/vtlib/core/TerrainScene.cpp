@@ -114,7 +114,7 @@ void vtTerrainScene::_CreateSky()
 	// create the sun
 	VTLOG(" Creating Main Light\n");
 
-	m_pLightSource = new vtLightSource;
+	m_pLightSource = new vtLightSource(0); // Light number 0 is reserved for the Sun light
 	m_pLightSource->setName("Main Light");
 	m_pSunLight = new vtTransform;
 	m_pSunLight->addChild(m_pLightSource);
@@ -197,6 +197,8 @@ vtGroup *vtTerrainScene::BeginTerrainScene()
 
 	m_pTop = new vtGroup;
 	m_pTop->setName("All Terrain");
+	// Manage our own lights
+	m_pTop->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 
 	// create sky group - this holds all celestial objects
 	_CreateSky();

@@ -1911,7 +1911,7 @@ void vtTerrain::SetShadows(bool shadows)
 	{
 		if (!m_pShadow)
 		{
-			m_pShadow = new vtShadow(GetShadowTextureUnit(), m_pLightSource->getLight());
+			m_pShadow = new vtShadow(GetShadowTextureUnit());
 			m_pShadow->SetHeightField3d(GetHeightField());
 			m_pShadow->SetDarkness(m_Params.GetValueFloat(STR_SHADOW_DARKNESS));
 			m_pShadow->SetShadowTextureResolution(m_Params.GetValueInt(STR_SHADOW_REZ));

@@ -183,7 +183,7 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
 	// global state set of the SceneView.  With the default options applied,
 	// I have tried subsequently calling setLightingMode(NO_SCENE_LIGHT)
 	// and setLight(NULL), but I still get a headlight.
-	m_pOsgViewer->setLightingMode(osg::View::SKY_LIGHT);
+	m_pOsgViewer->setLightingMode(osg::View::NO_LIGHT);
 	m_pOsgViewer->getCamera()->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
 	m_pOsgViewer->getCamera()->setCullingMode(m_pOsgViewer->getCamera()->getCullingMode() & ~osg::CullSettings::SMALL_FEATURE_CULLING);
 
