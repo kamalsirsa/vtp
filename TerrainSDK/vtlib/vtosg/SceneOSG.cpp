@@ -669,13 +669,12 @@ void vtScene::SetGlobalWireframe(bool bWire)
 	// Set the scene's global PolygonMode attribute, which will affect all
 	// other materials in the scene, except those which explicitly override
 	// the attribute themselves.
-	StateSet *global_state = m_pOsgViewer->getCamera()->getOrCreateStateSet();
-	PolygonMode *npm = new PolygonMode();
+	PolygonMode *npm = new PolygonMode;
 	if (m_bWireframe)
 		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
 	else
 		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::FILL);
-	global_state->setAttributeAndModes(npm, StateAttribute::ON);
+	GetRootState()->setAttributeAndModes(npm, StateAttribute::ON);
 }
 
 bool vtScene::GetGlobalWireframe()

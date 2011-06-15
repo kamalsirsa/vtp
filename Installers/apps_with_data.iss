@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2011.01.23
+AppVerName=VTP Software 2011.06.15
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -82,25 +82,25 @@ Source: "G:\Data-Distro\*"; DestDir: "{app}\Data"; Flags: ignoreversion recurses
 Source: "C:\VTP\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs; Components: docs
 
 ; Projection Stuff
-Source: "C:\APIs\gdal-1.7.3\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
+Source: "C:\APIs\gdal-1.8.0\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
 Source: "C:\APIs\proj-4.6.1\nad\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
 
 ; DLLs
 Source: "C:\APIs\bzip2-1.0.3-bin-vc9\bzip2.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal-1.7.3\distro\bin\gdal17-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal-1.7.3\distro\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal-1.7.3\distro\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal-1.8.0\distro-vc9\bin\gdal18-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal-1.8.0\distro-vc9\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal-1.8.0\distro-vc9\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 ;Source: "C:\APIs\libcurl-7.15.0\libcurl.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\lpng150\projects\visualc9\Win32_DLL_Release\libpng15-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\lpng150\projects\visualc9\Win32_DLL_Release\ZLib\zlib1-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\osg-2.83-bin-vc9\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: dlls
+Source: "C:\APIs\OpenSceneGraph-2.8.3\vc9\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxbase28u_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxmsw28u_core_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxmsw28u_gl_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxbase28u_net_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxmsw28u_aui_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\Program Files (x86)\Expat 2.0.1\Bin\libexpat.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\expat-2.0.1\win32\bin\release\libexpat-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 
 ; Microsoft DLLs (not useful, since vc8 they don't work if installed this way)
 ;Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
