@@ -43,10 +43,9 @@ endif(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET Enviro APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1 wxUSE_NO_MANIFEST=1)
+	set_property(TARGET Enviro APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 	set_property(TARGET Enviro APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
 	set_property(TARGET Enviro APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
-	target_link_libraries(Enviro opengl32.lib glu32.lib Winmm.lib Ws2_32.lib)
 endif (WIN32)
 
 # Specify debug preprocessor definitions for this target

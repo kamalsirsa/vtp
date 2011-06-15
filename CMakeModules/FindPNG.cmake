@@ -4,7 +4,6 @@
 # PNG_LIBRARIES
 
 set(PNG_FIND_DEBUG TRUE CACHE BOOL "Also search for the debug version of the PNG library")
-mark_as_advanced(PNG_FIND_DEBUG)
 
 if(PNG_FIND_DEBUG)
 	if(PNG_INCLUDE_DIR AND PNG_LIBRARY AND PNG_LIBRARY_DEBUG)

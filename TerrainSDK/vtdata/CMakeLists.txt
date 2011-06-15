@@ -37,9 +37,11 @@ endif(BZIP2_FOUND)
 
 if(CURL_FOUND)
 	include_directories(${CURL_INCLUDE_DIR})
+	if(CURL_IS_STATIC)
+		set_property(TARGET vtdata APPEND PROPERTY COMPILE_DEFINITIONS CURL_STATICLIB)
+	endif(CURL_IS_STATIC)
 endif (CURL_FOUND)
 
-# Find the directory containing curl/curl.h
 find_path(NETCDF_INCLUDE_DIR netcdf.h.h DOC "Directory containing netcdf.h")
 if (NETCDF_INCLUDE_DIR)
 	# Add the netcdf include directory to the compilers search path 

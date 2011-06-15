@@ -4,7 +4,6 @@
 # MINI_LIBRARIES
 
 set(MINI_FIND_DEBUG TRUE CACHE BOOL "Also search for the debug version of the MINI library")
-mark_as_advanced(MINI_FIND_DEBUG)
 
 if(MINI_FIND_DEBUG)
 	if(MINI_INCLUDE_DIR AND MINI_LIBRARY AND MINI_LIBRARY_DEBUG)

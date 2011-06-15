@@ -12,7 +12,6 @@ if(MSVC)
 	add_executable(CManager WIN32 ${CMANAGER_SOURCE_FILES} ${CMANAGER_HEADER_FILES} ${CMANAGER_RC_FILES} pre.cpp)
 	set_source_files_properties(${CMANAGER_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 	set_source_files_properties(pre.cpp PROPERTIES COMPILE_FLAGS /Ycwx/wxprec.h)
-	target_link_libraries(CManager opengl32.lib)
 else(MSVC)
 	add_executable(CManager WIN32 ${CMANAGER_SOURCE_FILES} ${CMANAGER_HEADER_FILES}
 			${CMANAGER_RC_FILES})
@@ -23,7 +22,7 @@ target_link_libraries(CManager vtlib vtdata vtui xmlhelper minidata)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET CManager APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE WXUSINGDLL=1 wxUSE_NO_MANIFEST=1)
+	set_property(TARGET CManager APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 	set_property(TARGET CManager APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
 	set_property(TARGET CManager APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
 endif (WIN32)

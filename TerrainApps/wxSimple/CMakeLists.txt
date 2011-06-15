@@ -14,10 +14,9 @@ target_link_libraries(wxSimple vtlib minidata vtdata xmlhelper vtui)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET wxSimple APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE WXUSINGDLL=1)
+	set_property(TARGET wxSimple APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 	set_property(TARGET wxSimple APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
 	set_property(TARGET wxSimple APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
-	target_link_libraries(wxSimple opengl32.lib glu32.lib)
 endif (WIN32)
 
 # External libraries for this target
@@ -44,9 +43,6 @@ endif(BZIP2_FOUND)
 
 if(CURL_FOUND)
 	target_link_libraries(wxSimple ${CURL_LIBRARIES})
-	if (WIN32)
-		target_link_libraries(wxSimple Ws2_32.lib)
-	endif (WIN32)
 endif(CURL_FOUND)
 
 if(ZLIB_FOUND)

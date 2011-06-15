@@ -4,7 +4,6 @@
 # ZLIB_LIBRARIES
 
 set(ZLIB_FIND_DEBUG TRUE CACHE BOOL "Also search for the debug version of the ZLIB library")
-mark_as_advanced(ZLIB_FIND_DEBUG)
 
 if(ZLIB_FIND_DEBUG)
 	if(ZLIB_INCLUDE_DIR AND ZLIB_LIBRARY AND ZLIB_LIBRARY_DEBUG)

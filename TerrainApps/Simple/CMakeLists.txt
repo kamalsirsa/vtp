@@ -26,9 +26,6 @@ endif(OPENGL_FOUND)
 
 if(CURL_FOUND)
 	target_link_libraries(Simple ${CURL_LIBRARIES})
-	if (WIN32)
-		target_link_libraries(Simple Ws2_32.lib)
-	endif (WIN32)
 endif(CURL_FOUND)
 	
 if(PNG_FOUND)

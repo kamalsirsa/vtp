@@ -14,7 +14,6 @@
 # Modified for debug libraries by Roger James 07/03/09
 
 set(BZip2_FIND_DEBUG TRUE CACHE BOOL "Also search for the debug version of the BZip2 library")
-mark_as_advanced(BZip2_FIND_DEBUG)
 
 if(BZip2_FIND_DEBUG)
 	IF (BZIP2_INCLUDE_DIR AND BZIP2_LIBRARY AND BZIP2_LIBRARY_DEBUG)

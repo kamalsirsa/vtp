@@ -4,7 +4,6 @@
 # QUIKGRID_LIBRARIES
 
 set(QuikGrid_FIND_DEBUG TRUE CACHE BOOL "Also search for the debug version of the QuikGrid library")
-mark_as_advanced(QuikGrid_FIND_DEBUG)
 
 if(QuikGrid_FIND_DEBUG)
 	if(QUIKGRID_INCLUDE_DIR AND QUIKGRID_LIBRARY AND QUIKGRID_LIBRARY_DEBUG)

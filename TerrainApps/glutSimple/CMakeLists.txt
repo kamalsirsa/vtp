@@ -17,8 +17,13 @@ if(GLUT_FOUND)
 	endif (WIN32)
 
 	# External libraries for this target
-	target_link_libraries(glutSimple ${GLUT_LIBRARIES})
-	target_link_libraries(glutSimple ${OPENGL_LIBRARIES})
+	if(GLUT_FOUND)
+		target_link_libraries(glutSimple ${GLUT_LIBRARIES})
+	endif(GLUT_FOUND)
+	
+	if(OPENGL_FOUND)
+		target_link_libraries(glutSimple ${OPENGL_LIBRARIES})
+	endif(OPENGL_FOUND)
 	
 	if(OSG_FOUND)
 		target_link_libraries(glutSimple ${OSG_ALL_LIBRARIES})
@@ -30,9 +35,6 @@ if(GLUT_FOUND)
 
 	if(CURL_FOUND)
 		target_link_libraries(glutSimple ${CURL_LIBRARIES})
-		if (WIN32)
-			target_link_libraries(glutSimple Ws2_32.lib)
-		endif (WIN32)
 	endif(CURL_FOUND)
 
 	if(GDAL_FOUND)
