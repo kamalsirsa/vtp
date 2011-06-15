@@ -3,14 +3,14 @@ set(BUILDERLIB_SOURCE_FILES
 	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp Helper.cpp ImageLayer.cpp
 	Import.cpp ImportPointDlg.cpp ImportStructDlg.cpp ImportStructDlgOGR.cpp ImportVegDlg.cpp Layer.cpp NodeDlg.cpp RawDlg.cpp
 	RawLayer.cpp RenderOptionsDlg.cpp ResampleDlg.cpp RoadDlg.cpp RoadLayer.cpp RoadMapEdit.cpp RoadMapIO.cpp SampleImageDlg.cpp
-	ScaledView.cpp StructLayer.cpp TileDlg.cpp UtilityLayer.cpp VegFieldsDlg.cpp VegLayer.cpp vtBitmap.cpp VTBuilder_UI.cpp
+	ScaledView.cpp StructLayer.cpp TileDlg.cpp Tin2d.cpp UtilityLayer.cpp VegFieldsDlg.cpp VegLayer.cpp vtBitmap.cpp VTBuilder_UI.cpp
 	vtImage.cpp WaterLayer.cpp)
 set(BUILDERLIB_SOURCE_FILES_NO_PCH
 	ElevDrawOptions.cpp)
 set(BUILDERLIB_HEADER_FILES
 	Builder.h BuilderView.h ChunkDlg.h ElevDrawOptions.h ElevLayer.h ExtentDlg.h Helper.h ImageLayer.h ImportPointDlg.h ImportStructDlg.h
 	ImportStructDlgOGR.h ImportVegDlg.h Layer.h NodeDlg.h Options.h RawDlg.h RawLayer.h RenderOptionsDlg.h ResampleDlg.h RoadDlg.h
-	RoadLayer.h RoadMapEdit.h SampleImageDlg.h ScaledView.h StructLayer.h TileDlg.h UtilityLayer.h VegFieldsDlg.h VegLayer.h
+	RoadLayer.h RoadMapEdit.h SampleImageDlg.h ScaledView.h StructLayer.h TileDlg.h Tin2d.h UtilityLayer.h VegFieldsDlg.h VegLayer.h
 	vtBitmap.h VTBuilder_UI.h vtImage.h WaterLayer.h)
 if(MSVC)
 	add_library(BuilderLib ${BUILDERLIB_SOURCE_FILES} ${BUILDERLIB_SOURCE_FILES_NO_PCH} ${BUILDERLIB_HEADER_FILES} pre.cpp)
@@ -25,7 +25,7 @@ set_property(TARGET BuilderLib APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANS
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET BuilderLib APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
+	set_property(TARGET BuilderLib APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1)
 endif (WIN32)
 
 
@@ -60,9 +60,10 @@ set_property(TARGET VTBuilder APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANSI
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET VTBuilder APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
+	set_property(TARGET VTBuilder APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1) 
 	set_property(TARGET VTBuilder APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
 	set_property(TARGET VTBuilder APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
+	target_link_libraries(VTBuilder Ws2_32.lib)
 endif (WIN32)
 
 

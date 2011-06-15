@@ -2,67 +2,71 @@ set(WXSIMPLE_SOURCE_FILES app.cpp canvas.cpp frame.cpp)
 set(WXSIMPLE_HEADER_FILES app.h canvas.h frame.h)
 
 if(MSVC)
-	add_executable(wxSimple_osg WIN32 ${WXSIMPLE_SOURCE_FILES} ${WXSIMPLE_HEADER_FILES} wx_headers.cpp)
+	add_executable(wxSimple WIN32 ${WXSIMPLE_SOURCE_FILES} ${WXSIMPLE_HEADER_FILES} wx_headers.cpp)
 	set_source_files_properties(${WXSIMPLE_SOURCE_FILES} PROPERTIES COMPILE_FLAGS "/Yuwx/wxprec.h")
 	set_source_files_properties(wx_headers.cpp PROPERTIES COMPILE_FLAGS "/Ycwx/wxprec.h")
 else(MSVC)
-	add_executable(wxSimple_osg WIN32 ${WXSIMPLE_SOURCE_FILES} ${WXSIMPLE_HEADER_FILES})
+	add_executable(wxSimple WIN32 ${WXSIMPLE_SOURCE_FILES} ${WXSIMPLE_HEADER_FILES})
 endif(MSVC)
 
 # Internal library dependencies for this target
-target_link_libraries(wxSimple_osg vtlib_osg minidata vtdata xmlhelper vtui)
+target_link_libraries(wxSimple vtlib minidata vtdata xmlhelper vtui)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET wxSimple_osg APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
-	set_property(TARGET wxSimple_osg APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
-	set_property(TARGET wxSimple_osg APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
+	set_property(TARGET wxSimple APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE WXUSINGDLL=1)
+	set_property(TARGET wxSimple APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
+	set_property(TARGET wxSimple APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
+	target_link_libraries(wxSimple opengl32.lib glu32.lib)
 endif (WIN32)
 
 # External libraries for this target
 if(wxWidgets_FOUND)
 	include(${wxWidgets_USE_FILE})
-	target_link_libraries(wxSimple_osg ${wxWidgets_LIBRARIES})
+	target_link_libraries(wxSimple ${wxWidgets_LIBRARIES})
 endif(wxWidgets_FOUND)
 
 if(GDAL_FOUND)
-	target_link_libraries(wxSimple_osg ${GDAL_LIBRARIES})
+	target_link_libraries(wxSimple ${GDAL_LIBRARIES})
 endif (GDAL_FOUND)
 
 if(OSG_FOUND)
-	target_link_libraries(wxSimple_osg ${OSG_ALL_LIBRARIES})
+	target_link_libraries(wxSimple ${OSG_ALL_LIBRARIES})
 endif (OSG_FOUND)
 
 if (OSGEARTH_FOUND)
-	target_link_libraries(wxSimple_osg ${OSGEARTH_ALL_LIBRARIES})
+	target_link_libraries(wxSimple ${OSGEARTH_ALL_LIBRARIES})
 endif(OSGEARTH_FOUND)
 
 if(BZIP2_FOUND)
-	target_link_libraries(wxSimple_osg ${BZIP2_LIBRARIES})
+	target_link_libraries(wxSimple ${BZIP2_LIBRARIES})
 endif(BZIP2_FOUND)
 
 if(CURL_FOUND)
-	target_link_libraries(wxSimple_osg ${CURL_LIBRARIES})
+	target_link_libraries(wxSimple ${CURL_LIBRARIES})
+	if (WIN32)
+		target_link_libraries(wxSimple Ws2_32.lib)
+	endif (WIN32)
 endif(CURL_FOUND)
 
 if(ZLIB_FOUND)
-	target_link_libraries(wxSimple_osg ${ZLIB_LIBRARIES})
+	target_link_libraries(wxSimple ${ZLIB_LIBRARIES})
 endif(ZLIB_FOUND)
 
 if(JPEG_FOUND)
-	target_link_libraries(wxSimple_osg ${JPEG_LIBRARY})
+	target_link_libraries(wxSimple ${JPEG_LIBRARY})
 endif(JPEG_FOUND)
 
 if(PNG_FOUND)
-	target_link_libraries(wxSimple_osg ${PNG_LIBRARIES})
+	target_link_libraries(wxSimple ${PNG_LIBRARIES})
 endif(PNG_FOUND)
 
 if(QUIKGRID_FOUND)
-	target_link_libraries(wxSimple_osg ${QUIKGRID_LIBRARIES})
+	target_link_libraries(wxSimple ${QUIKGRID_LIBRARIES})
 endif(QUIKGRID_FOUND)
 
 if(MINI_FOUND)
-	target_link_libraries(wxSimple_osg ${MINI_LIBRARIES})
+	target_link_libraries(wxSimple ${MINI_LIBRARIES})
 endif(MINI_FOUND)
 
 # Set up include directories for all targets at this level

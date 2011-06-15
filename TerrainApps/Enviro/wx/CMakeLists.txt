@@ -21,6 +21,7 @@ if(MSVC)
 	add_library(envdlg ${ENVDLG_SOURCE_FILES} ${ENVDLG_HEADER_FILES} wx_headers.cpp)
 	set_source_files_properties(${ENVDLG_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 	set_source_files_properties(wx_headers.cpp PROPERTIES COMPILE_FLAGS /Ycwx/wxprec.h)
+	set_property(TARGET envdlg APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1)
 else(MSVC)
 	add_library(envdlg ${ENVDLG_SOURCE_FILES} ${ENVDLG_HEADER_FILES})
 endif(MSVC)
@@ -29,7 +30,6 @@ endif(MSVC)
 if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
 	set_property(TARGET envdlg APPEND PROPERTY COMPILE_DEFINITIONS NVIDIA_PERFORMANCE_MONITORING=1)
 endif(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
-
 
 # Set up include directories for all targets at this level
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/icons)

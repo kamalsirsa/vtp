@@ -39,7 +39,7 @@ public:
 private:
 	// WDR: member variable declarations for LightDlg
 	vtTransform *m_pMovLight;
-	vtLight *m_pLight;
+	vtLightSource *m_pLight;
 	FPoint3 m_dir;
 
 	wxColour m_ambient, m_diffuse;

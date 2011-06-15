@@ -73,9 +73,11 @@ bool vtApp::CreateScene()
 	// The  terrain scene will contain all the terrains that are created.
 	m_pTerrainScene = new vtTerrainScene;
 
-	// Set the global data path
+	// Set the global data path to look in the many place the sample data might be
 	vtStringArray paths;
 	paths.push_back(vtString("G:/Data-Distro/"));
+	paths.push_back(vtString("../../../Data/"));
+	paths.push_back(vtString("../../Data/"));
 	paths.push_back(vtString("../Data/"));
 	paths.push_back(vtString("Data/"));
 	vtSetDataPath(paths);
@@ -86,9 +88,16 @@ bool vtApp::CreateScene()
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
 
+	vtString pfile = FindFileOnPaths(vtGetDataPath(), "Terrains/Simple.xml");
+	if (pfile == "")
+	{
+		printf("Couldn't find terrain parameters Simple.xml\n");
+		return false;
+	}
+
 	// Create a new vtTerrain, read its paramters from a file
 	vtTerrain *pTerr = new vtTerrain;
-	pTerr->SetParamFile("Data/Simple.xml");
+	pTerr->SetParamFile(pfile);
 	pTerr->LoadParams();
 
 	// Add the terrain to the scene, and contruct it

@@ -3,7 +3,7 @@ find_package(OpenGL)
 add_executable(Simple app.cpp)
 
 # Internal library dependencies for this target
-target_link_libraries(Simple vtlib_osg minidata vtdata xmlhelper)
+target_link_libraries(Simple vtlib minidata vtdata xmlhelper)
 
 # Windows specific stuff
 if (WIN32)
@@ -26,6 +26,9 @@ endif(OPENGL_FOUND)
 
 if(CURL_FOUND)
 	target_link_libraries(Simple ${CURL_LIBRARIES})
+	if (WIN32)
+		target_link_libraries(Simple Ws2_32.lib)
+	endif (WIN32)
 endif(CURL_FOUND)
 	
 if(PNG_FOUND)

@@ -18,7 +18,7 @@ set(ENVIRO_RC_FILES
 	wx/enviro-wx.rc)
 	
 if(MSVC)
-	add_executable(enviro_osg WIN32 ${ENVIRO_SOURCE_FILES} ${ENVIRO_SOURCE_FILES_WX} ${ENVIRO_HEADER_FILES}
+	add_executable(Enviro WIN32 ${ENVIRO_SOURCE_FILES} ${ENVIRO_SOURCE_FILES_WX} ${ENVIRO_HEADER_FILES}
 		${ENVIRO_HEADER_FILES_WX} ${ENVIRO_RC_FILES} vtlib_headers.cpp wx/wx_headers.cpp)
 	# When I can find a way of having telling CMake to pch files in the build directories (Debug Release etc.)
 	# then I can have more than pch file. One possible way round thnis would be to force vtlib_headers.cpp
@@ -28,72 +28,73 @@ if(MSVC)
 	set_source_files_properties(${ENVIRO_SOURCE_FILES_WX} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 	set_source_files_properties(wx/wx_headers.cpp PROPERTIES COMPILE_FLAGS /Ycwx/wxprec.h)
 else(MSVC)
-	add_executable(enviro_osg WIN32 ${ENVIRO_SOURCE_FILES} ${ENVIRO_SOURCE_FILES_WX} ${ENVIRO_HEADER_FILES}
+	add_executable(Enviro WIN32 ${ENVIRO_SOURCE_FILES} ${ENVIRO_SOURCE_FILES_WX} ${ENVIRO_HEADER_FILES}
 		${ENVIRO_HEADER_FILES_WX} ${ENVIRO_RC_FILES})
 endif(MSVC)
 
 # Internal dependencies for this target
-target_link_libraries(enviro_osg envdlg vtlib_osg vtui minidata vtdata xmlhelper)
+target_link_libraries(Enviro envdlg vtlib vtui minidata vtdata xmlhelper)
 
 # Performance monitoring
 if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
-	set_property(TARGET enviro_osg APPEND PROPERTY COMPILE_DEFINITIONS NVIDIA_PERFORMANCE_MONITORING=1)
-	target_link_libraries(enviro_osg ${NVPERFSDK_LIBRARY})
+	set_property(TARGET Enviro APPEND PROPERTY COMPILE_DEFINITIONS NVIDIA_PERFORMANCE_MONITORING=1)
+	target_link_libraries(Enviro ${NVPERFSDK_LIBRARY})
 endif(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET enviro_osg APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1 wxUSE_NO_MANIFEST=1)
-	set_property(TARGET enviro_osg APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
-	set_property(TARGET enviro_osg APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
+	set_property(TARGET Enviro APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE UNICODE WXUSINGDLL=1 wxUSE_NO_MANIFEST=1)
+	set_property(TARGET Enviro APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
+	set_property(TARGET Enviro APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
+	target_link_libraries(Enviro opengl32.lib glu32.lib Winmm.lib Ws2_32.lib)
 endif (WIN32)
 
 # Specify debug preprocessor definitions for this target
-set_property(TARGET enviro_osg APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
+set_property(TARGET Enviro APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG VTDEBUG)
 
 # External libraries for this target
 if(wxWidgets_FOUND)
-	target_link_libraries(enviro_osg ${wxWidgets_LIBRARIES})
+	target_link_libraries(Enviro ${wxWidgets_LIBRARIES})
 endif(wxWidgets_FOUND)
 
 if(GDAL_FOUND)
-	target_link_libraries(enviro_osg ${GDAL_LIBRARIES})
+	target_link_libraries(Enviro ${GDAL_LIBRARIES})
 endif (GDAL_FOUND)
 
 if(OSG_FOUND)
-	target_link_libraries(enviro_osg ${OSG_ALL_LIBRARIES})
+	target_link_libraries(Enviro ${OSG_ALL_LIBRARIES})
 endif (OSG_FOUND)
 
 if (OSGEARTH_FOUND)
-	target_link_libraries(enviro_osg ${OSGEARTH_ALL_LIBRARIES})
+	target_link_libraries(Enviro ${OSGEARTH_ALL_LIBRARIES})
 endif(OSGEARTH_FOUND)
 
 if(BZIP2_FOUND)
-	target_link_libraries(enviro_osg ${BZIP2_LIBRARIES})
+	target_link_libraries(Enviro ${BZIP2_LIBRARIES})
 endif(BZIP2_FOUND)
 
 if(CURL_FOUND)
-	target_link_libraries(enviro_osg ${CURL_LIBRARIES})
+	target_link_libraries(Enviro ${CURL_LIBRARIES})
 endif(CURL_FOUND)
 
 if(ZLIB_FOUND)
-	target_link_libraries(enviro_osg ${ZLIB_LIBRARIES})
+	target_link_libraries(Enviro ${ZLIB_LIBRARIES})
 endif(ZLIB_FOUND)
 
 if(JPEG_FOUND)
-	target_link_libraries(enviro_osg ${JPEG_LIBRARY})
+	target_link_libraries(Enviro ${JPEG_LIBRARY})
 endif(JPEG_FOUND)
 
 if(PNG_FOUND)
-	target_link_libraries(enviro_osg ${PNG_LIBRARIES})
+	target_link_libraries(Enviro ${PNG_LIBRARIES})
 endif(PNG_FOUND)
 
 if(QUIKGRID_FOUND)
-	target_link_libraries(enviro_osg ${QUIKGRID_LIBRARIES})
+	target_link_libraries(Enviro ${QUIKGRID_LIBRARIES})
 endif(QUIKGRID_FOUND)
 
 if(MINI_FOUND)
-	target_link_libraries(enviro_osg ${MINI_LIBRARIES})
+	target_link_libraries(Enviro ${MINI_LIBRARIES})
 endif(MINI_FOUND)
 
 # Set up include directories for all targets at this level

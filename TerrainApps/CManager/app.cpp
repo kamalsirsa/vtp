@@ -78,7 +78,7 @@ bool vtApp::OnInit(void)
 
 	// make a simple directional light
 	VTLOG(" creating light\n");
-	vtLight *pLight = new vtLight;
+	vtLightSource *pLight = new vtLightSource(0);
 	pLight->setName("Light");
 	vtTransform *pMovLight = new vtTransform;
 	pMovLight->addChild(pLight);

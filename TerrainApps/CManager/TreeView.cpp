@@ -40,8 +40,8 @@ DECLARE_APP(vtApp)
 #  include "../Enviro/wx/icons/icon8.xpm"
 #  include "../Enviro/wx/icons/icon9.xpm"
 #  include "../Enviro/wx/icons/icon10.xpm"
-#  include "icons/icon11.xpm"
-#  include "icons/icon12.xpm"
+#  include "icons/group2.xpm"
+#  include "icons/geom2.xpm"
 #endif
 
 
@@ -79,9 +79,9 @@ void MyTreeCtrl::CreateImageList(int size)
 	wxIcon icons[5];
 	icons[0] = wxICON(icon8);
 	icons[1] = wxICON(icon4);
-	icons[2] = wxICON(icon11);
+	icons[2] = wxICON(group2);
 	icons[3] = wxICON(icon3);
-	icons[4] = wxICON(icon12);
+	icons[4] = wxICON(geom2);
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )

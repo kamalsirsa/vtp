@@ -5,15 +5,15 @@ set(VTLIB_OSG_HEADER_FILES ImageOSG.h MathOSG.h Material.h Mesh.h NodeOSG.h Scen
 
 
 
-# Add a library target called vtlib_osg
+# Add a library target called vtlib
 
 if(MSVC)
-	add_library(vtlib_osg ${VTLIB_CORE_SOURCE_FILES} ${VTLIB_CORE_SOURCE_FILES_NON_PCH} ${VTLIB_CORE_HEADER_FILES}
+	add_library(vtlib ${VTLIB_CORE_SOURCE_FILES} ${VTLIB_CORE_SOURCE_FILES_NON_PCH} ${VTLIB_CORE_HEADER_FILES}
 			${VTLIB_OSG_SOURCE_FILES} ${VTLIB_OSG_HEADER_FILES} ../pre.cpp)
 	set_source_files_properties(${VTLIB_CORE_SOURCE_FILES} ${VTLIB_OSG_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuvtlib/vtlib.h)
 	set_source_files_properties(../pre.cpp PROPERTIES COMPILE_FLAGS /Ycvtlib/vtlib.h)
 else(MSVC)
-	add_library(vtlib_osg ${VTLIB_CORE_SOURCE_FILES} ${VTLIB_CORE_SOURCE_FILES_NON_PCH} ${VTLIB_CORE_HEADER_FILES}
+	add_library(vtlib ${VTLIB_CORE_SOURCE_FILES} ${VTLIB_CORE_SOURCE_FILES_NON_PCH} ${VTLIB_CORE_HEADER_FILES}
 	${VTLIB_OSG_SOURCE_FILES} ${VTLIB_OSG_HEADER_FILES})
 endif(MSVC)
 
@@ -51,10 +51,10 @@ endif (GLEXT_INCLUDE_DIR)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
+	set_property(TARGET vtlib APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
 endif (WIN32)
 
 # Specify normal preprocessor definition for this target
 if(OSGEARTH_FOUND)
-	set_property(TARGET vtlib_osg APPEND PROPERTY COMPILE_DEFINITIONS USE_OSGEARTH=1)
+	set_property(TARGET vtlib APPEND PROPERTY COMPILE_DEFINITIONS USE_OSGEARTH=1)
 endif(OSGEARTH_FOUND)

@@ -155,7 +155,7 @@ public:
 	vtFontPtr			 m_pFont;
 
 	std::map<vtItem *, ItemGroup *> m_itemmap;
-	std::map<vtModel *, vtTransform *> m_nodemap;
+	std::map<vtModel *, vtTransformPtr> m_nodemap;
 
 	bool m_bShowOrigin;
 	bool m_bShowRulers;

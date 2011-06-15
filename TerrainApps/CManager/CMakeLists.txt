@@ -9,65 +9,66 @@ set(CMANAGER_RC_FILES
 	CManager.rc)
 	
 if(MSVC)
-	add_executable(cmanager_osg WIN32 ${CMANAGER_SOURCE_FILES} ${CMANAGER_HEADER_FILES} ${CMANAGER_RC_FILES} pre.cpp)
+	add_executable(CManager WIN32 ${CMANAGER_SOURCE_FILES} ${CMANAGER_HEADER_FILES} ${CMANAGER_RC_FILES} pre.cpp)
 	set_source_files_properties(${CMANAGER_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 	set_source_files_properties(pre.cpp PROPERTIES COMPILE_FLAGS /Ycwx/wxprec.h)
+	target_link_libraries(CManager opengl32.lib)
 else(MSVC)
-	add_executable(cmanager_osg WIN32 ${CMANAGER_SOURCE_FILES} ${CMANAGER_HEADER_FILES}
+	add_executable(CManager WIN32 ${CMANAGER_SOURCE_FILES} ${CMANAGER_HEADER_FILES}
 			${CMANAGER_RC_FILES})
 endif(MSVC)
 
 # Internal library dependencies for this target
-target_link_libraries(cmanager_osg vtlib_osg vtdata vtui xmlhelper minidata)
+target_link_libraries(CManager vtlib vtdata vtui xmlhelper minidata)
 
 # Windows specific stuff
 if (WIN32)
-	set_property(TARGET cmanager_osg APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
-	set_property(TARGET cmanager_osg APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
-	set_property(TARGET cmanager_osg APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
+	set_property(TARGET CManager APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE _UNICODE WXUSINGDLL=1 wxUSE_NO_MANIFEST=1)
+	set_property(TARGET CManager APPEND PROPERTY LINK_FLAGS_DEBUG /NODEFAULTLIB:msvcrt;wxpngd;wxtiffd;wxjpegd;wxzlibd)
+	set_property(TARGET CManager APPEND PROPERTY LINK_FLAGS /NODEFAULTLIB:wxpng;wxtiff;wxjpeg;wxzlib)
 endif (WIN32)
 
 
 # External libraries for this target
 if(wxWidgets_FOUND)
 	include(${wxWidgets_USE_FILE})
-	target_link_libraries(cmanager_osg ${wxWidgets_LIBRARIES})
+	target_link_libraries(CManager ${wxWidgets_LIBRARIES})
 endif(wxWidgets_FOUND)
 
 if(GDAL_FOUND)
-	target_link_libraries(cmanager_osg ${GDAL_LIBRARIES})
+	target_link_libraries(CManager ${GDAL_LIBRARIES})
 endif (GDAL_FOUND)
 
 if(OSG_FOUND)
-	target_link_libraries(cmanager_osg ${OSG_ALL_LIBRARIES})
+	target_link_libraries(CManager ${OSG_ALL_LIBRARIES})
 endif (OSG_FOUND)
 	
 if (OSGEARTH_FOUND)
-	target_link_libraries(cmanager_osg ${OSGEARTH_ALL_LIBRARIES})
+	target_link_libraries(CManager ${OSGEARTH_ALL_LIBRARIES})
 endif(OSGEARTH_FOUND)
 	
 if(BZIP2_FOUND)
-	target_link_libraries(cmanager_osg ${BZIP2_LIBRARIES})
+	target_link_libraries(CManager ${BZIP2_LIBRARIES})
 endif(BZIP2_FOUND)
 
 if(ZLIB_FOUND)
-	target_link_libraries(cmanager_osg ${ZLIB_LIBRARIES})
+	target_link_libraries(CManager ${ZLIB_LIBRARIES})
 endif(ZLIB_FOUND)
 
 if(JPEG_FOUND)
-	target_link_libraries(cmanager_osg ${JPEG_LIBRARY})
+	target_link_libraries(CManager ${JPEG_LIBRARY})
 endif(JPEG_FOUND)
 
 if(PNG_FOUND)
-	target_link_libraries(cmanager_osg ${PNG_LIBRARIES})
+	target_link_libraries(CManager ${PNG_LIBRARIES})
 endif(PNG_FOUND)
 	
 if(MINI_FOUND)
-	target_link_libraries(cmanager_osg ${MINI_LIBRARIES})
+	target_link_libraries(CManager ${MINI_LIBRARIES})
 endif(MINI_FOUND)
 
 if(CURL_FOUND)
-	target_link_libraries(cmanager_osg ${CURL_LIBRARIES})
+	target_link_libraries(CManager ${CURL_LIBRARIES})
 endif(CURL_FOUND)
 
 # Set up include directories for all targets at this level

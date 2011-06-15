@@ -57,11 +57,8 @@ void ItemGroup::AttemptToLoadModels()
 void ItemGroup::AttachModels(osgText::Font *font)
 {
 	// Undo previous attachments
-	osg::Node *pNode;
-	while (pNode = m_pLOD->getChild(0))
-		m_pLOD->removeChild(pNode);
-	while (pNode = m_pGroup->getChild(0))
-		m_pGroup->removeChild(pNode);
+	m_pLOD->removeChildren(0, m_pLOD->getNumChildren());
+	m_pGroup->removeChildren(0, m_pGroup->getNumChildren());
 
 	// re-attach
 	int i, num_models = m_pItem->NumModels();
