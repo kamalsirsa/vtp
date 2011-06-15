@@ -268,7 +268,6 @@ int main(int argc, char ** argv)
 	InitGLUT();
 
 	vtGetScene()->Init(argc, argv);
-    vtGetScene()->getViewer()->setThreadingModel(osgViewer::Viewer::SingleThreaded);
     vtGetScene()->SetGraphicsContext(new osgViewer::GraphicsWindowEmbedded(0, 0, 800, 600));
 
 	printf("Creating the terrain..\n");

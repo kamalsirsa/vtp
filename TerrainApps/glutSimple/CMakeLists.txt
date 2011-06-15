@@ -30,6 +30,9 @@ if(GLUT_FOUND)
 
 	if(CURL_FOUND)
 		target_link_libraries(glutSimple ${CURL_LIBRARIES})
+		if (WIN32)
+			target_link_libraries(glutSimple Ws2_32.lib)
+		endif (WIN32)
 	endif(CURL_FOUND)
 
 	if(GDAL_FOUND)
