@@ -187,6 +187,11 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
 	m_pOsgViewer->getCamera()->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
 	m_pOsgViewer->getCamera()->setCullingMode(m_pOsgViewer->getCamera()->getCullingMode() & ~osg::CullSettings::SMALL_FEATURE_CULLING);
 
+	// We maintain a node between OSG's viewer/camera and the vtlib Root, to
+	//  control global state
+	m_StateRoot = new osg::Group;
+	m_pOsgViewer->setSceneData(m_StateRoot);
+
 	m_bInitialized = true;
 
 	_initialTick = _timer.tick();
@@ -436,23 +441,17 @@ void vtScene::DoUpdate()
 
 void vtScene::SetRoot(vtGroup *pRoot)
 {
+	// Remove previous root, add this one
+	m_StateRoot->removeChildren(0, m_StateRoot->getNumChildren());
 	if (pRoot)
-		m_pOsgSceneRoot = pRoot;
-	else
-		m_pOsgSceneRoot = NULL;
+		m_StateRoot->addChild(pRoot);
 
 #if OLD_OSG_SHADOWS
 	// Clear out any shadow stuff
 	m_pStructureShadowsOSG = NULL;
 #endif
 
-	if (m_pOsgViewer != NULL)
-	{
-		if (m_pOsgSceneRoot.valid())
-			m_pOsgViewer->setSceneData(m_pOsgSceneRoot.get());
-		else
-			m_pOsgViewer->setSceneData(NULL);
-	}
+	// Remember it
 	m_pRoot = pRoot;
 }
 

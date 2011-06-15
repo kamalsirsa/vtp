@@ -30,6 +30,7 @@ public:
 	CSimpleInterimShadowTechnique();
 	CSimpleInterimShadowTechnique(const CSimpleInterimShadowTechnique& es, const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY);
 	META_Object(osgShadow, CSimpleInterimShadowTechnique);
+	void SetLightNumber(const unsigned int Light);
 	void SetShadowTextureUnit(const unsigned int Unit);
 	void SetShadowTextureResolution(const unsigned int ShadowTextureResolution) { m_ShadowTextureResolution = ShadowTextureResolution; }
 	unsigned int GetShadowTextureResolution() { return m_ShadowTextureResolution; }
@@ -69,6 +70,7 @@ protected :
 	osg::ref_ptr<osg::Texture2D>	m_pTexture;
 	osg::ref_ptr<osg::StateSet>		m_pStateset;
 	osg::ref_ptr<osg::Material>		m_pMaterial;
+	unsigned int					m_LightNumber;// Must be set before init is called
 	unsigned int					m_ShadowTextureUnit;// Must be set before init is called
 	unsigned int					m_ShadowTextureResolution; // Must be set before init is called
 	bool							m_RecalculateEveryFrame; // Can be set any time

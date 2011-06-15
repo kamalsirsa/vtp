@@ -114,8 +114,9 @@ void vtTerrainScene::_CreateSky()
 	// create the sun
 	VTLOG(" Creating Main Light\n");
 
-	m_pLightSource = new vtLightSource(0); // Light number 0 is reserved for the Sun light
-	m_pLightSource->setName("Main Light");
+	// TerrainScene reserves light number 0 for the Sun light
+	m_pLightSource = new vtLightSource(0);
+	m_pLightSource->setName("Sun LightSource");
 	m_pSunLight = new vtTransform;
 	m_pSunLight->addChild(m_pLightSource);
 	m_pSunLight->setName("SunLight");

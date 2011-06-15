@@ -10,7 +10,7 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/vtString.h"
-#include "vtlib/core/TerrainScene.h"
+
 #if VTLISPSM
 #include "LightSpacePerspectiveShadowTechnique.h"
 #endif
@@ -29,8 +29,6 @@
 #include <osgParticle/ParticleSystemUpdater>
 #include <osgShadow/ShadowMap>
 #include <osgShadow/ShadowTexture>
-
-#define DEBUG_NODE_LOAD	0
 
 // We use bits 1 and 2 of the node mask as shadow flags.
 const int ReceivesShadowTraversalMask = 0x1;
@@ -877,10 +875,6 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 	if (!node)
 		return NULL;
 
-#if DEBUG_NODE_LOAD
-	VTLOG("LoadModel: osg raw node %lx (rc %d), ", node, node->referenceCount());
-#endif
-
 	// We must insert a 'Normalize' state above the geometry objects
 	// that we load, otherwise when they are scaled, the vertex normals
 	// will cause strange lighting.  Fortunately, we only need to create
@@ -946,10 +940,6 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 
 	// Use the filename as the node's name
 	node->setName(fname);
-
-#if DEBUG_NODE_LOAD
-	VTLOG("node %lx (rc %d),\n ", node, node->referenceCount());
-#endif
 
 	return node;
 }
@@ -1037,7 +1027,8 @@ void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, osg::Fog
 // vtShadow
 //
 
-vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowTextureUnit)
+vtShadow::vtShadow(const int ShadowTextureUnit, int LightNumber) :
+	m_ShadowTextureUnit(ShadowTextureUnit), m_LightNumber(LightNumber)
 {
 	setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
 	setCastsShadowTraversalMask(CastsShadowTraversalMask);
@@ -1047,6 +1038,7 @@ vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowText
 	// No need to set the BaseTextureUnit as the default of zero is OK for us
 	// But the ShadowTextureUnit might be different (default 1)
 	pShadowTechnique->setShadowTextureUnit(m_ShadowTextureUnit);
+	pShadowTechnique->setLightNumber(m_LightNumber);
 #else
 	osg::ref_ptr<CSimpleInterimShadowTechnique> pShadowTechnique = new CSimpleInterimShadowTechnique;
 #endif
@@ -1057,6 +1049,7 @@ vtShadow::vtShadow(const int ShadowTextureUnit) : m_ShadowTextureUnit(ShadowText
 	pShadowTechnique->m_pParent = this;
 #endif
 
+	pShadowTechnique->SetLightNumber(LightNumber);
 	pShadowTechnique->SetShadowTextureUnit(m_ShadowTextureUnit);
 	pShadowTechnique->SetShadowSphereRadius(50.0);
 #endif
@@ -1197,6 +1190,15 @@ void vtShadow::SetDebugHUD(vtGroup *pGroup)
 // vtLightSource
 //
 
+/**
+	Makes a lightsource, which is placed in the scenegraph in order to
+	position the light.
+
+	\param LightNumber Each light should use a different light number which
+	should be one of the valid light numbers for the current OpenGL implementation.
+	Only light numbers up to 7 are guaranteed by default.  The convention,
+	higher up in vtlib, is to use light number 0 for the sun.
+*/
 vtLightSource::vtLightSource(int LightNumber)
 {
 	// Lights can now go into the scene graph in OSG, with LightSource.
@@ -1204,10 +1206,10 @@ vtLightSource::vtLightSource(int LightNumber)
 	getLight()->setLightNum(LightNumber);
 	SetOsgNode(this);
 
-	// However, because lighting is also a 'state', we need to inform
-	// the whole scene graph that we have another light.
+	// Because lighting is also a 'state', we need to inform
+	// the whole scene graph that we will control lighting.
 	setLocalStateSetModes(osg::StateAttribute::ON);
-	setStateSetModes(*vtGetTS()->GetTop()->getOrCreateStateSet(),osg::StateAttribute::ON);
+	setStateSetModes(*(vtGetScene()->GetRootState()), osg::StateAttribute::ON);
 }
 
 void vtLightSource::SetDiffuse(const RGBf &color)

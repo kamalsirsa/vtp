@@ -148,6 +148,7 @@ public:
 
 	/// Get the root node, which is the top of the scene graph.
 	vtGroup *GetRoot() { return m_pRoot; }
+	osg::StateSet *GetRootState() { return m_StateRoot->getOrCreateStateSet(); }
 
 	// Windows
 	void AddWindow(vtWindow *pWindow) {
@@ -207,19 +208,18 @@ protected:
 	vtEnginePtr	m_pRootEngine;
 	vtEngine	*m_pRootEnginePostDraw;
 	bool		*m_piKeyState;
+	vtHUD		*m_pHUD;
 
 	vtCameraPtr	 m_pDefaultCamera;
 	vtWindow	*m_pDefaultWindow;
 
-protected:
-	// OSG-specific implementation
 	osg::ref_ptr<osgViewer::Viewer>	m_pOsgViewer;
 	osg::ref_ptr<osg::GraphicsContext>	m_pGraphicsContext;
 
 	// for culling
 	FPlane		m_cullPlanes[6];
 
-	osg::ref_ptr<osg::Group>	m_pOsgSceneRoot;
+	osg::ref_ptr<osg::Group>	m_StateRoot;
 
 	osg::Timer   _timer;
 	osg::Timer_t _initialTick;
@@ -234,7 +234,6 @@ protected:
 #if OLD_OSG_SHADOWS
 	osg::ref_ptr<CStructureShadowsOSG> m_pStructureShadowsOSG;
 #endif
-	vtHUD	*m_pHUD;
 };
 
 // global

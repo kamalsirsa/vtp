@@ -3,7 +3,7 @@
 //
 // Implement an OSG shadow technique for vtosg.
 //
-// Copyright (c) 2008 Virtual Terrain Project
+// Copyright (c) 2008-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -41,6 +41,11 @@ CSimpleInterimShadowTechnique::CSimpleInterimShadowTechnique(const CSimpleInteri
     ShadowTechnique(copy,copyop),
     m_ShadowTextureUnit(copy.m_ShadowTextureUnit)
 {
+}
+
+void CSimpleInterimShadowTechnique::SetLightNumber(const unsigned int Light)
+{
+    m_LightNumber = Light;
 }
 
 void CSimpleInterimShadowTechnique::SetShadowTextureUnit(const unsigned int Unit)
@@ -220,7 +225,7 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
     // 1) get the light position
     // 2) get the center and extents of the view frustum
 
-    const osg::Light* pSunLight = NULL;
+    const osg::Light* pLight = NULL;
     osg::Vec4 lightpos;
 
     osgUtil::PositionalStateContainer::AttrMatrixList& aml = orig_rs->getPositionalStateContainer()->getAttrMatrixList();
@@ -228,19 +233,19 @@ void CSimpleInterimShadowTechnique::cull(osgUtil::CullVisitor& cv)
         itr != aml.end();
         ++itr)
     {
-        pSunLight = dynamic_cast<const osg::Light*>(itr->first.get());
-		if ((NULL != pSunLight) && (0 == pSunLight->getLightNum()))
+        pLight = dynamic_cast<const osg::Light*>(itr->first.get());
+		if ((NULL != pLight) && (m_LightNumber == pLight->getLightNum()))
         {
             osg::RefMatrix* pMatrix = itr->second.get();
             if (pMatrix)
-				lightpos = pSunLight->getPosition() * (*pMatrix);
+				lightpos = pLight->getPosition() * (*pMatrix);
             else
-				lightpos = pSunLight->getPosition();
+				lightpos = pLight->getPosition();
 			break;
         }
     }
 
-    if (NULL != pSunLight)
+    if (NULL != pLight)
     {
 		osg::Vec3 EyeLocal = cv.getEyeLocal();
 		osg::Matrix eyeToWorld;

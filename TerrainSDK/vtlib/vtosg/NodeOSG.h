@@ -223,7 +223,7 @@ class vtLodGrid;
 class vtShadow : public osgShadow::ShadowedScene, public NodeExtension
 {
 public:
-	vtShadow(const int ShadowTextureUnit);
+	vtShadow(const int ShadowTextureUnit, int LightNumber);
 
 	/// Set the darkness of the shadow, from 0 to 1.  Only supported on newer 3D cards.
 	void SetDarkness(float bias);
@@ -250,6 +250,7 @@ public:
 
 protected:
 	const int m_ShadowTextureUnit;
+	const int m_LightNumber;
 };
 typedef osg::ref_ptr<vtShadow> vtShadowPtr;
 
@@ -264,10 +265,7 @@ typedef osg::ref_ptr<vtShadow> vtShadowPtr;
 class vtLightSource : public osg::LightSource, public NodeExtension
 {
 public:
-	vtLightSource(int LightNumber); // LightNumber 0 is assumed to be sun light
-									// other lights should use a different light number which should be
-									// one of the valid light numbers for the current OpenGL implementation.
-									// Only light numbers up to 7 are guaranteed by default
+	vtLightSource(int LightNumber);
 
 	void SetDiffuse(const RGBf &color);
 	RGBf GetDiffuse() const;
