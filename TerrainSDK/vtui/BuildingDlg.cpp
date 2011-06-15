@@ -60,39 +60,66 @@ BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	const wxPoint &position, const wxSize& size, long style ) :
 	BuildingDlgBase( parent, id, title, position, size, style )
 {
+	SetExtraStyle(GetExtraStyle()|wxWS_EX_VALIDATE_RECURSIVELY );
+
+	m_pSA = NULL;
+
 	m_bSetting = false;
 	m_bEdges = false;
 
-	m_panel1->Show(true);
-	m_panel2->Show(false);
-	Layout();
-	GetSizer()->Fit( this );
-
+	// we only need to do this once
 	SetupValidators();
-}
 
-void BuildingDlg::SetupValidators()
-{
-	AddValidator(this, ID_STORIES, &m_iStories);
-	AddNumValidator(this, ID_STORY_HEIGHT, &m_fStoryHeight);
-
-	if (m_bEdges)
-	{
-		AddValidator(this, ID_MATERIAL2, &m_strMaterial);
-		AddNumValidator(this, ID_EDGE_SLOPE, &m_iEdgeSlope);
-		AddValidator(this, ID_FEATURES, &m_strFeatures);
-	}
-	else
-	{
-		AddValidator(this, ID_MATERIAL1, &m_strMaterial);
-		AddValidator(this, ID_EDGE_SLOPES, &m_strEdgeSlopes);
-	}
+	AdjustDialogForEdges();
 }
 
 void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld)
 {
 	m_pSA = pSA;
 	m_pBuilding = bld;
+}
+
+void BuildingDlg::SetupValidators()
+{
+	// In panel 1
+	AddValidator(this, ID_STORIES, &m_iStories);
+	AddNumValidator(this, ID_STORY_HEIGHT, &m_fStoryHeight);
+	AddValidator(this, ID_MATERIAL1, &m_strMaterial1);
+	AddValidator(this, ID_EDGE_SLOPES, &m_strEdgeSlopes);
+
+	// In panel 3
+	AddValidator(this, ID_MATERIAL2, &m_strMaterial2);
+	AddNumValidator(this, ID_EDGE_SLOPE, &m_iEdgeSlope);
+	AddValidator(this, ID_FEATURES, &m_strFeatures);
+}
+
+void BuildingDlg::AdjustDialogForEdges()
+{
+	if (m_bEdges)
+	{
+		m_panel1->Show(false);
+		m_panel2->Show(true);
+		m_panel3->Show(true);
+
+		m_pColorBitmapControl = GetColorBitmap2();
+
+		RefreshEdgesBox();
+		m_pEdgeListBox->SetSelection(0);
+		SetEdge(0);
+	}
+	else
+	{
+		m_panel1->Show(true);
+		m_panel2->Show(false);
+		m_panel3->Show(false);
+
+		m_pColorBitmapControl = GetColorBitmap1();
+
+		if (m_pSA)
+			m_pSA->SetEditedEdge(NULL, 0, 0);
+	}
+	Layout();
+	GetSizer()->Fit( this );
 }
 
 void BuildingDlg::EditColor()
@@ -306,18 +333,10 @@ void BuildingDlg::OnCloseWindow(wxCloseEvent& event)
 
 void BuildingDlg::SetupControls()
 {
-	if (m_bEdges == false)
-		m_pColorBitmapControl = GetColorBitmap1();
-	else
-		m_pColorBitmapControl = GetColorBitmap2();
-
 	m_pLevelListBox = GetLevelCtrl();
-	if (m_bEdges)
-		m_pEdgeListBox = GetEdgeCtrl();
+	m_pEdgeListBox = GetEdgeCtrl();
 
 	RefreshLevelsBox();
-//  if (m_bEdges)
-//  RefreshEdgesBox();
 
 	if (NULL != GetFacadeChoice())
 	{
@@ -356,7 +375,8 @@ void BuildingDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pLevel = NULL;
 	m_pEdge = NULL;
 	m_fStoryHeight = 0.0f;
-	m_strMaterial = _T("");
+	m_strMaterial1 = _T("");
+	m_strMaterial2 = _T("");
 
 	SetupControls();
 
@@ -448,12 +468,12 @@ void BuildingDlg::SetLevel(int iLev)
 	m_iStories = m_pLevel->m_iStories;
 	m_fStoryHeight = m_pLevel->m_fStoryHeight;
 
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+
 	if (m_bEdges)
 	{
-		m_bSetting = true;
-		TransferDataToWindow();
-		m_bSetting = false;
-
 		RefreshEdgesBox();
 		SetEdge(0);
 		HighlightSelectedEdge();
@@ -477,13 +497,13 @@ void BuildingDlg::UpdateMaterialControl()
 	// In the case of a whole level, attempt to show the most
 	//  commonly occuring material.
 	if (m_bEdges == false)
-		m_strMaterial = wxString(m_pLevel->GetOverallEdgeMaterial(), wxConvUTF8);
+		m_strMaterial1 = wxString(m_pLevel->GetOverallEdgeMaterial(), wxConvUTF8);
 	else
 	{
 		if (m_pEdge->m_pMaterial == NULL)
-			m_strMaterial = _("Unknown");
+			m_strMaterial2 = _("Unknown");
 		else
-			m_strMaterial = wxString(*m_pEdge->m_pMaterial, wxConvUTF8);
+			m_strMaterial2 = wxString(*m_pEdge->m_pMaterial, wxConvUTF8);
 	}
 }
 
@@ -671,7 +691,13 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	int iInitialSelection = -1;
 	int iNumberofMaterials = GetGlobalMaterials()->GetSize();
 
-	m_strMaterial = wxString(m_pLevel->GetOverallEdgeMaterial(), wxConvUTF8);
+	wxString *matstring;
+	if (m_bEdges)
+		matstring = &m_strMaterial2;
+	else
+		matstring = &m_strMaterial1;
+
+	*matstring = wxString(m_pLevel->GetOverallEdgeMaterial(), wxConvUTF8);
 
 	wxString *pChoices = new wxString[iNumberofMaterials];
 
@@ -697,7 +723,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 			continue;
 
 		pChoices[iShown] = matname;
-		if (pChoices[iShown] == m_strMaterial)
+		if (pChoices[iShown] == *matstring)
 			iInitialSelection = iShown;
 		iShown++;
 	}
@@ -711,11 +737,11 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 
-	m_strMaterial = pChoices[dialog.GetSelection()];
+	*matstring = pChoices[dialog.GetSelection()];
 
 	delete[] pChoices;
 
-	vtString matname = (const char *) m_strMaterial.mb_str(wxConvUTF8);
+	vtString matname = (const char *) matstring->mb_str(wxConvUTF8);
 	const vtString *matname2 = GetGlobalMaterials()->FindName(matname);
 	if (m_bEdges)
 		m_pEdge->m_pMaterial = matname2;
@@ -728,38 +754,12 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	Modified();
 }
 
-void BuildingDlg::AdjustDialogForEdges()
-{
-	if (m_bEdges)
-	{
-		//DestroyChildren();
-		//BuildingEdgesDialogFunc( this, TRUE );
-		m_panel1->Show(false);
-		m_panel2->Show(true);
-	}
-	else
-	{
-		//DestroyChildren();
-		//BuildingDialogFunc( this, TRUE );
-		m_panel1->Show(true);
-		m_panel2->Show(false);
-
-		if (m_pSA)
-			m_pSA->SetEditedEdge(NULL, 0, 0);
-	}
-	Layout();
-	GetSizer()->Fit( this );
-}
-
 void BuildingDlg::OnEdges( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	m_bEdges = !m_bEdges;
 
 	AdjustDialogForEdges();
-
-	SetupValidators();
-	SetupControls();
 
 	m_bSetting = true;
 	TransferDataToWindow();

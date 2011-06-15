@@ -7,7 +7,7 @@
 //
 // wxNumericValidator - A validator capable of transfering numeric values.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -300,72 +300,6 @@ wxNumericValidator *AutoDialog::AddNumValidator(long id, double *dptr, int digit
 /////////////////////////////////////////////////
 //
 
-// And forms of the methods which don't require subclassing from AutoDialog
-void AddValidator(wxDialog *dlg, long id, wxString *sptr)
-{
-	wxWindow *pWin = dlg->FindWindow(id);
-	if (!pWin) return;
-	pWin->SetValidator(wxGenericValidator(sptr));	// actually clones the one we pass in
-}
-
-void AddValidator(wxDialog *dlg, long id, bool *bptr)
-{
-	wxWindow *pWin = dlg->FindWindow(id);
-	if (!pWin) return;
-	pWin->SetValidator(wxGenericValidator(bptr));	// actually clones the one we pass in
-}
-
-void AddValidator(wxDialog *dlg, long id, int *iptr)
-{
-	wxWindow *pWin = dlg->FindWindow(id);
-	if (!pWin) return;
-	pWin->SetValidator(wxGenericValidator(iptr));	// actually clones the one we pass in
-}
-
-wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, short *sptr)
-{
-	wxWindow *pWin = dlg->FindWindow(id);
-	if (!pWin) return NULL;
-
-	// actually clones the one we pass in
-	pWin->SetValidator(wxNumericValidator(sptr));
-	return (wxNumericValidator*) pWin->GetValidator();
-}
-
-wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, int *iptr)
-{
-	wxWindow *pWin = dlg->FindWindow(id);
-	if (!pWin) return NULL;
-
-	// actually clones the one we pass in
-	pWin->SetValidator(wxNumericValidator(iptr));
-	return (wxNumericValidator*) pWin->GetValidator();
-}
-
-wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, float *fptr, int digits)
-{
-	wxWindow *pWin = dlg->FindWindow(id);
-	if (!pWin) return NULL;
-
-	// actually clones the one we pass in
-	pWin->SetValidator(wxNumericValidator(fptr, digits));
-	return (wxNumericValidator*) pWin->GetValidator();
-}
-
-wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, double *dptr, int digits)
-{
-	wxWindow *pWin = dlg->FindWindow(id);
-	if (!pWin) return NULL;
-
-	// actually clones the one we pass in
-	pWin->SetValidator(wxNumericValidator(dptr, digits));
-	return (wxNumericValidator*) pWin->GetValidator();
-}
-
-
-/////////////////////////////////////////////////
-//
-
 void AutoPanel::AddValidator(long id, wxString *sptr)
 {
 	wxWindow *pWin = FindWindow(id);
@@ -421,55 +355,114 @@ wxNumericValidator *AutoPanel::AddNumValidator(long id, double *dptr, int digits
 /////////////////////////////////////////////////
 //
 
-void AddValidator(wxPanel *pan, long id, wxString *sptr)
+// And forms of the methods which don't require subclassing from AutoDialog or AutoPanel
+void AddValidator(wxWindow *parent, long id, wxString *sptr)
 {
-	wxWindow *pWin = pan->FindWindow(id);
+	wxWindow *pWin = parent->FindWindow(id);
 	if (!pWin) return;
 	pWin->SetValidator(wxGenericValidator(sptr));	// actually clones the one we pass in
 }
 
-void AddValidator(wxPanel *pan, long id, bool *bptr)
+void AddValidator(wxWindow *parent, long id, bool *bptr)
 {
-	wxWindow *pWin = pan->FindWindow(id);
+	wxWindow *pWin = parent->FindWindow(id);
 	if (!pWin) return;
 	pWin->SetValidator(wxGenericValidator(bptr));	// actually clones the one we pass in
 }
 
-void AddValidator(wxPanel *pan, long id, int *iptr)
+void AddValidator(wxWindow *parent, long id, int *iptr)
 {
-	wxWindow *pWin = pan->FindWindow(id);
+	wxWindow *pWin = parent->FindWindow(id);
 	if (!pWin) return;
 	pWin->SetValidator(wxGenericValidator(iptr));	// actually clones the one we pass in
 }
 
-wxNumericValidator *AddNumValidator(wxPanel *pan, long id, int *iptr)
+wxNumericValidator *AddNumValidator(wxWindow *parent, long id, short *sptr)
 {
-	wxWindow *pWin = pan->FindWindow(id);
+	wxWindow *pWin = parent->FindWindow(id);
+	if (!pWin) return NULL;
+
+	// actually clones the one we pass in
+	pWin->SetValidator(wxNumericValidator(sptr));
+	return (wxNumericValidator*) pWin->GetValidator();
+}
+
+wxNumericValidator *AddNumValidator(wxWindow *parent, long id, int *iptr)
+{
+	wxWindow *pWin = parent->FindWindow(id);
 	if (!pWin) return NULL;
 
 	// actually clones the one we pass in
 	pWin->SetValidator(wxNumericValidator(iptr));
-	return (wxNumericValidator *) pWin->GetValidator();
+	return (wxNumericValidator*) pWin->GetValidator();
 }
 
-wxNumericValidator *AddNumValidator(wxPanel *pan, long id, float *fptr, int digits)
+wxNumericValidator *AddNumValidator(wxWindow *parent, long id, float *fptr, int digits)
 {
-	wxWindow *pWin = pan->FindWindow(id);
+	wxWindow *pWin = parent->FindWindow(id);
 	if (!pWin) return NULL;
 
 	// actually clones the one we pass in
 	pWin->SetValidator(wxNumericValidator(fptr, digits));
-	return (wxNumericValidator *) pWin->GetValidator();
+	return (wxNumericValidator*) pWin->GetValidator();
 }
 
-wxNumericValidator *AddNumValidator(wxPanel *pan, long id, double *dptr, int digits)
+wxNumericValidator *AddNumValidator(wxWindow *parent, long id, double *dptr, int digits)
 {
-	wxWindow *pWin = pan->FindWindow(id);
+	wxWindow *pWin = parent->FindWindow(id);
 	if (!pWin) return NULL;
 
-	pWin->SetValidator(wxNumericValidator(dptr, digits));
 	// actually clones the one we pass in
-	return (wxNumericValidator *) pWin->GetValidator();
+	pWin->SetValidator(wxNumericValidator(dptr, digits));
+	return (wxNumericValidator*) pWin->GetValidator();
+}
+
+
+/////////////////////////////////////////////////
+//
+
+// And forms of the methods which take a pointer directly
+void AddValidator(wxWindow *win, wxString *sptr)
+{
+	win->SetValidator(wxGenericValidator(sptr));	// actually clones the one we pass in
+}
+
+void AddValidator(wxWindow *win, bool *bptr)
+{
+	win->SetValidator(wxGenericValidator(bptr));	// actually clones the one we pass in
+}
+
+void AddValidator(wxWindow *win, int *iptr)
+{
+	win->SetValidator(wxGenericValidator(iptr));	// actually clones the one we pass in
+}
+
+wxNumericValidator *AddNumValidator(wxWindow *win, short *sptr)
+{
+	// actually clones the one we pass in
+	win->SetValidator(wxNumericValidator(sptr));
+	return (wxNumericValidator*) win->GetValidator();
+}
+
+wxNumericValidator *AddNumValidator(wxWindow *win, int *iptr)
+{
+	// actually clones the one we pass in
+	win->SetValidator(wxNumericValidator(iptr));
+	return (wxNumericValidator*) win->GetValidator();
+}
+
+wxNumericValidator *AddNumValidator(wxWindow *win, float *fptr, int digits)
+{
+	// actually clones the one we pass in
+	win->SetValidator(wxNumericValidator(fptr, digits));
+	return (wxNumericValidator*) win->GetValidator();
+}
+
+wxNumericValidator *AddNumValidator(wxWindow *win, double *dptr, int digits)
+{
+	// actually clones the one we pass in
+	win->SetValidator(wxNumericValidator(dptr, digits));
+	return (wxNumericValidator*) win->GetValidator();
 }
 
 

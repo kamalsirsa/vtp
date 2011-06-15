@@ -52,17 +52,17 @@
 #define ID_SET_COLOR 1014
 #define ID_EDGE_SLOPES 1015
 #define ID_SET_EDGE_SLOPES 1016
-#define ID_EDGES 1017
-#define ID_EDGE 1018
-#define ID_MATERIAL2 1019
-#define ID_FACADE 1020
-#define ID_COLOR2 1021
-#define ID_EDGE_SLOPE 1022
-#define ID_FEATURES 1023
-#define ID_FEAT_CLEAR 1024
-#define ID_FEAT_WALL 1025
-#define ID_FEAT_WINDOW 1026
-#define ID_FEAT_DOOR 1027
+#define ID_EDGE 1017
+#define ID_MATERIAL2 1018
+#define ID_FACADE 1019
+#define ID_COLOR2 1020
+#define ID_EDGE_SLOPE 1021
+#define ID_FEATURES 1022
+#define ID_FEAT_CLEAR 1023
+#define ID_FEAT_WALL 1024
+#define ID_FEAT_WINDOW 1025
+#define ID_FEAT_DOOR 1026
+#define ID_EDGES 1027
 #define ID_LINEAR_STRUCTURE_STYLE 1028
 #define ID_POST_TYPE 1029
 #define ID_POST_SPACING_EDIT 1030
@@ -175,9 +175,8 @@ class BuildingDlgBase : public wxDialog
 	private:
 	
 	protected:
-		wxPanel* m_panel1;
 		wxStaticText* m_text1;
-		wxListBox* m_level;
+		wxListBox* m_level1;
 		wxButton* m_level_copy;
 		wxButton* m_level_del;
 		wxButton* m_level_up;
@@ -185,6 +184,8 @@ class BuildingDlgBase : public wxDialog
 		wxStaticLine* m_line1;
 		wxButton* m_editheights;
 		wxButton* m_set_roof_type;
+		wxPanel* m_panel1;
+		wxStaticBoxSizer* sbSizer57;
 		wxStaticText* m_text2;
 		wxSpinCtrl* m_stories;
 		wxStaticText* m_text3;
@@ -199,50 +200,32 @@ class BuildingDlgBase : public wxDialog
 		wxStaticText* m_text7;
 		wxTextCtrl* m_edge_slopes;
 		wxButton* m_set_edge_slopes;
+		wxPanel* m_panel2;
+		wxListBox* m_edge1;
+		wxPanel* m_panel3;
+		wxStaticText* m_text131;
+		wxTextCtrl* m_material21;
+		wxButton* m_set_material11;
+		wxStaticText* m_text141;
+		wxChoice* m_facade1;
+		wxStaticText* m_text151;
+		wxStaticBitmap* m_color21;
+		wxButton* m_set_color11;
+		wxStaticText* m_text161;
+		wxTextCtrl* m_edge_slope1;
+		wxTextCtrl* m_features1;
+		wxButton* m_feat_clear1;
+		wxButton* m_feat_wall1;
+		wxButton* m_feat_window1;
+		wxButton* m_feat_door1;
 		
 		wxButton* m_ok1;
 		
 		wxButton* m_edges;
-		wxPanel* m_panel2;
-		wxStaticText* m_text8;
-		wxListBox* m_level1;
-		wxButton* m_level_copy1;
-		wxButton* m_level_del1;
-		wxButton* m_level_up1;
-		wxButton* m_level_down1;
-		wxStaticLine* m_line11;
-		wxButton* m_editheights1;
-		wxButton* m_set_roof_type1;
-		wxStaticText* m_text9;
-		wxSpinCtrl* m_stories1;
-		wxStaticText* m_text10;
-		wxTextCtrl* m_story_height1;
-		wxStaticText* m_text11;
-		wxStaticText* m_text12;
-		wxListBox* m_edge;
-		wxStaticText* m_text13;
-		wxTextCtrl* m_material2;
-		wxButton* m_set_material1;
-		wxStaticText* m_text14;
-		wxChoice* m_facade;
-		wxStaticText* m_text15;
-		wxStaticBitmap* m_color2;
-		wxButton* m_set_color1;
-		wxStaticText* m_text16;
-		wxTextCtrl* m_edge_slope;
-		wxTextCtrl* m_features;
-		wxButton* m_feat_clear;
-		wxButton* m_feat_wall;
-		wxButton* m_feat_window;
-		wxButton* m_feat_door;
-		
-		wxButton* m_ok2;
-		
-		wxButton* m_edges1;
 	
 	public:
 		
-		BuildingDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
+		BuildingDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~BuildingDlgBase();
 	
 };

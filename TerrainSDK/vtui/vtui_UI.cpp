@@ -18,63 +18,59 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer308;
 	bSizer308 = new wxBoxSizer( wxVERTICAL );
 	
-	m_panel1 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizer76;
-	bSizer76 = new wxBoxSizer( wxVERTICAL );
-	
 	wxBoxSizer* bSizer309;
 	bSizer309 = new wxBoxSizer( wxHORIZONTAL );
 	
 	wxBoxSizer* bSizer310;
 	bSizer310 = new wxBoxSizer( wxVERTICAL );
 	
-	m_text1 = new wxStaticText( m_panel1, ID_TEXT, wxT("Building Levels"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text1 = new wxStaticText( this, ID_TEXT, wxT("Building Levels"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text1->Wrap( -1 );
 	bSizer310->Add( m_text1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_level = new wxListBox( m_panel1, ID_LEVEL, wxDefaultPosition, wxSize( 60,100 ), 0, NULL, wxLB_SINGLE ); 
-	bSizer310->Add( m_level, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
+	m_level1 = new wxListBox( this, ID_LEVEL, wxDefaultPosition, wxSize( 60,100 ), 0, NULL, wxLB_SINGLE ); 
+	bSizer310->Add( m_level1, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
 	wxFlexGridSizer* fgSizer9;
 	fgSizer9 = new wxFlexGridSizer( 0, 2, 0, 0 );
 	fgSizer9->SetFlexibleDirection( wxBOTH );
 	fgSizer9->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_level_copy = new wxButton( m_panel1, ID_LEVEL_COPY, wxT("Copy"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_level_copy = new wxButton( this, ID_LEVEL_COPY, wxT("Copy"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_level_copy->SetDefault(); 
 	m_level_copy->Enable( false );
 	
 	fgSizer9->Add( m_level_copy, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
-	m_level_del = new wxButton( m_panel1, ID_LEVEL_DEL, wxT("Del"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_level_del = new wxButton( this, ID_LEVEL_DEL, wxT("Del"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_level_del->SetDefault(); 
 	m_level_del->Enable( false );
 	
 	fgSizer9->Add( m_level_del, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
-	m_level_up = new wxButton( m_panel1, ID_LEVEL_UP, wxT("Up"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_level_up = new wxButton( this, ID_LEVEL_UP, wxT("Up"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_level_up->SetDefault(); 
 	fgSizer9->Add( m_level_up, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_level_down = new wxButton( m_panel1, ID_LEVEL_DOWN, wxT("Down"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_level_down = new wxButton( this, ID_LEVEL_DOWN, wxT("Down"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_level_down->SetDefault(); 
 	fgSizer9->Add( m_level_down, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer310->Add( fgSizer9, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 	
-	m_line1 = new wxStaticLine( m_panel1, ID_LINE1, wxDefaultPosition, wxSize( 20,-1 ), wxLI_HORIZONTAL );
+	m_line1 = new wxStaticLine( this, ID_LINE1, wxDefaultPosition, wxSize( 20,-1 ), wxLI_HORIZONTAL );
 	bSizer310->Add( m_line1, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxBoxSizer* bSizer311;
 	bSizer311 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_editheights = new wxButton( m_panel1, ID_EDITHEIGHTS, wxT("Baseline Editor"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_editheights = new wxButton( this, ID_EDITHEIGHTS, wxT("Baseline Editor"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_editheights->SetDefault(); 
 	m_editheights->Enable( false );
 	
 	bSizer311->Add( m_editheights, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_set_roof_type = new wxButton( m_panel1, ID_SET_ROOF_TYPE, wxT("Set Roof Type"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_set_roof_type = new wxButton( this, ID_SET_ROOF_TYPE, wxT("Set Roof Type"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_set_roof_type->SetDefault(); 
 	bSizer311->Add( m_set_roof_type, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -82,7 +78,7 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer309->Add( bSizer310, 0, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 	
-	wxStaticBoxSizer* sbSizer57;
+	m_panel1 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	sbSizer57 = new wxStaticBoxSizer( new wxStaticBox( m_panel1, wxID_ANY, wxT("Level Properties") ), wxVERTICAL );
 	
 	wxBoxSizer* bSizer312;
@@ -161,9 +157,118 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	sbSizer57->Add( bSizer316, 0, wxALIGN_CENTER, 5 );
 	
-	bSizer309->Add( sbSizer57, 0, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+	m_panel1->SetSizer( sbSizer57 );
+	m_panel1->Layout();
+	sbSizer57->Fit( m_panel1 );
+	bSizer309->Add( m_panel1, 0, wxEXPAND | wxALL, 5 );
 	
-	bSizer76->Add( bSizer309, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5 );
+	m_panel2 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxStaticBoxSizer* sbSizer8;
+	sbSizer8 = new wxStaticBoxSizer( new wxStaticBox( m_panel2, wxID_ANY, wxT("Edges") ), wxVERTICAL );
+	
+	m_edge1 = new wxListBox( m_panel2, ID_EDGE, wxDefaultPosition, wxSize( 60,60 ), 0, NULL, wxLB_SINGLE ); 
+	m_edge1->SetMinSize( wxSize( 80,-1 ) );
+	
+	sbSizer8->Add( m_edge1, 1, wxALL|wxEXPAND, 5 );
+	
+	m_panel2->SetSizer( sbSizer8 );
+	m_panel2->Layout();
+	sbSizer8->Fit( m_panel2 );
+	bSizer309->Add( m_panel2, 0, wxEXPAND | wxALL, 5 );
+	
+	m_panel3 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxStaticBoxSizer* g_pEdgeGroup1;
+	g_pEdgeGroup1 = new wxStaticBoxSizer( new wxStaticBox( m_panel3, wxID_ANY, wxT("Edge Properties") ), wxVERTICAL );
+	
+	wxBoxSizer* bSizer3241;
+	bSizer3241 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_text131 = new wxStaticText( m_panel3, ID_TEXT, wxT("Material:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text131->Wrap( 0 );
+	bSizer3241->Add( m_text131, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_material21 = new wxTextCtrl( m_panel3, ID_MATERIAL2, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), wxTE_READONLY );
+	bSizer3241->Add( m_material21, 1, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_set_material11 = new wxButton( m_panel3, ID_SET_MATERIAL, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_set_material11->SetDefault(); 
+	bSizer3241->Add( m_set_material11, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
+	
+	g_pEdgeGroup1->Add( bSizer3241, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	wxBoxSizer* bSizer3251;
+	bSizer3251 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_text141 = new wxStaticText( m_panel3, ID_TEXT, wxT("Facade:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text141->Wrap( 0 );
+	bSizer3251->Add( m_text141, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	wxString m_facade1Choices[] = { wxT("ChoiceItem") };
+	int m_facade1NChoices = sizeof( m_facade1Choices ) / sizeof( wxString );
+	m_facade1 = new wxChoice( m_panel3, ID_FACADE, wxDefaultPosition, wxSize( 100,-1 ), m_facade1NChoices, m_facade1Choices, 0 );
+	m_facade1->SetSelection( 0 );
+	bSizer3251->Add( m_facade1, 1, wxALIGN_CENTER|wxALL, 5 );
+	
+	g_pEdgeGroup1->Add( bSizer3251, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	wxBoxSizer* bSizer3261;
+	bSizer3261 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_text151 = new wxStaticText( m_panel3, ID_TEXT, wxT("Color:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text151->Wrap( 0 );
+	bSizer3261->Add( m_text151, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_color21 = new wxStaticBitmap( m_panel3, ID_COLOR2, wxBitmap( wxT("../../TerrainApps/VTBuilder/bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
+	bSizer3261->Add( m_color21, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+	
+	m_set_color11 = new wxButton( m_panel3, ID_SET_COLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_set_color11->SetDefault(); 
+	bSizer3261->Add( m_set_color11, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	g_pEdgeGroup1->Add( bSizer3261, 0, wxALIGN_CENTER_VERTICAL, 5 );
+	
+	wxBoxSizer* bSizer3271;
+	bSizer3271 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_text161 = new wxStaticText( m_panel3, ID_TEXT, wxT("Slope:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text161->Wrap( 0 );
+	bSizer3271->Add( m_text161, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_edge_slope1 = new wxTextCtrl( m_panel3, ID_EDGE_SLOPE, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	bSizer3271->Add( m_edge_slope1, 0, wxALIGN_CENTER|wxRIGHT|wxBOTTOM, 5 );
+	
+	g_pEdgeGroup1->Add( bSizer3271, 0, wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_features1 = new wxTextCtrl( m_panel3, ID_FEATURES, wxEmptyString, wxDefaultPosition, wxSize( -1,55 ), wxTE_MULTILINE );
+	g_pEdgeGroup1->Add( m_features1, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+	
+	wxBoxSizer* bSizer3281;
+	bSizer3281 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_feat_clear1 = new wxButton( m_panel3, ID_FEAT_CLEAR, wxT("Clear"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
+	m_feat_clear1->SetDefault(); 
+	bSizer3281->Add( m_feat_clear1, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_feat_wall1 = new wxButton( m_panel3, ID_FEAT_WALL, wxT("Wall"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
+	m_feat_wall1->SetDefault(); 
+	bSizer3281->Add( m_feat_wall1, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+	
+	m_feat_window1 = new wxButton( m_panel3, ID_FEAT_WINDOW, wxT("Window"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
+	m_feat_window1->SetDefault(); 
+	bSizer3281->Add( m_feat_window1, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_feat_door1 = new wxButton( m_panel3, ID_FEAT_DOOR, wxT("Door"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
+	m_feat_door1->SetDefault(); 
+	bSizer3281->Add( m_feat_door1, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	g_pEdgeGroup1->Add( bSizer3281, 0, wxALIGN_CENTER, 5 );
+	
+	m_panel3->SetSizer( g_pEdgeGroup1 );
+	m_panel3->Layout();
+	g_pEdgeGroup1->Fit( m_panel3 );
+	bSizer309->Add( m_panel3, 1, wxEXPAND | wxALL, 5 );
+	
+	bSizer308->Add( bSizer309, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer317;
 	bSizer317 = new wxBoxSizer( wxHORIZONTAL );
@@ -171,239 +276,18 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer317->Add( 80, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_ok1 = new wxButton( m_panel1, wxID_OK, wxT("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ok1 = new wxButton( this, wxID_OK, wxT("OK"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ok1->SetDefault(); 
 	bSizer317->Add( m_ok1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	
 	bSizer317->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_edges = new wxButton( m_panel1, ID_EDGES, wxT("Edges >>"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_edges = new wxButton( this, ID_EDGES, wxT("Edges >>"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_edges->SetDefault(); 
 	bSizer317->Add( m_edges, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	bSizer76->Add( bSizer317, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	m_panel1->SetSizer( bSizer76 );
-	m_panel1->Layout();
-	bSizer76->Fit( m_panel1 );
-	bSizer308->Add( m_panel1, 1, wxEXPAND | wxALL, 5 );
-	
-	m_panel2 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizer77;
-	bSizer77 = new wxBoxSizer( wxVERTICAL );
-	
-	wxBoxSizer* g_pTopGroup;
-	g_pTopGroup = new wxBoxSizer( wxHORIZONTAL );
-	
-	wxBoxSizer* bSizer320;
-	bSizer320 = new wxBoxSizer( wxVERTICAL );
-	
-	m_text8 = new wxStaticText( m_panel2, ID_TEXT, wxT("Building Levels"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text8->Wrap( -1 );
-	bSizer320->Add( m_text8, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_level1 = new wxListBox( m_panel2, ID_LEVEL, wxDefaultPosition, wxSize( 60,100 ), 0, NULL, wxLB_SINGLE ); 
-	bSizer320->Add( m_level1, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
-	
-	wxFlexGridSizer* fgSizer10;
-	fgSizer10 = new wxFlexGridSizer( 0, 2, 0, 0 );
-	fgSizer10->SetFlexibleDirection( wxBOTH );
-	fgSizer10->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	m_level_copy1 = new wxButton( m_panel2, ID_LEVEL_COPY, wxT("Copy"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_level_copy1->SetDefault(); 
-	m_level_copy1->Enable( false );
-	
-	fgSizer10->Add( m_level_copy1, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
-	m_level_del1 = new wxButton( m_panel2, ID_LEVEL_DEL, wxT("Del"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_level_del1->SetDefault(); 
-	m_level_del1->Enable( false );
-	
-	fgSizer10->Add( m_level_del1, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
-	m_level_up1 = new wxButton( m_panel2, ID_LEVEL_UP, wxT("Up"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_level_up1->SetDefault(); 
-	fgSizer10->Add( m_level_up1, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_level_down1 = new wxButton( m_panel2, ID_LEVEL_DOWN, wxT("Down"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_level_down1->SetDefault(); 
-	fgSizer10->Add( m_level_down1, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer320->Add( fgSizer10, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
-	
-	m_line11 = new wxStaticLine( m_panel2, ID_LINE1, wxDefaultPosition, wxSize( 20,-1 ), wxLI_HORIZONTAL );
-	bSizer320->Add( m_line11, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	wxBoxSizer* bSizer321;
-	bSizer321 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_editheights1 = new wxButton( m_panel2, ID_EDITHEIGHTS, wxT("Baseline Editor"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_editheights1->SetDefault(); 
-	bSizer321->Add( m_editheights1, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_set_roof_type1 = new wxButton( m_panel2, ID_SET_ROOF_TYPE, wxT("Set Roof Type"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_set_roof_type1->SetDefault(); 
-	bSizer321->Add( m_set_roof_type1, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer320->Add( bSizer321, 0, wxALIGN_CENTER, 5 );
-	
-	g_pTopGroup->Add( bSizer320, 0, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
-	
-	wxStaticBoxSizer* sbSizer58;
-	sbSizer58 = new wxStaticBoxSizer( new wxStaticBox( m_panel2, wxID_ANY, wxT("Level Properties") ), wxVERTICAL );
-	
-	wxBoxSizer* bSizer322;
-	bSizer322 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text9 = new wxStaticText( m_panel2, ID_TEXT, wxT("Stories:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text9->Wrap( 0 );
-	bSizer322->Add( m_text9, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_stories1 = new wxSpinCtrl( m_panel2, ID_STORIES, wxT("0"), wxDefaultPosition, wxSize( 60,-1 ), wxSP_ARROW_KEYS, 0, 100, 0 );
-	bSizer322->Add( m_stories1, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
-	
-	sbSizer58->Add( bSizer322, 0, wxALIGN_CENTER_VERTICAL, 5 );
-	
-	wxBoxSizer* bSizer323;
-	bSizer323 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text10 = new wxStaticText( m_panel2, ID_TEXT, wxT("Story Height:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text10->Wrap( -1 );
-	bSizer323->Add( m_text10, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_story_height1 = new wxTextCtrl( m_panel2, ID_STORY_HEIGHT, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	bSizer323->Add( m_story_height1, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
-	
-	m_text11 = new wxStaticText( m_panel2, ID_TEXT, wxT("meters"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text11->Wrap( 0 );
-	bSizer323->Add( m_text11, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
-	
-	sbSizer58->Add( bSizer323, 0, wxALIGN_CENTER_VERTICAL, 5 );
-	
-	m_text12 = new wxStaticText( m_panel2, ID_TEXT, wxT("Edges:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text12->Wrap( 0 );
-	sbSizer58->Add( m_text12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	m_edge = new wxListBox( m_panel2, ID_EDGE, wxDefaultPosition, wxSize( 60,60 ), 0, NULL, wxLB_SINGLE ); 
-	sbSizer58->Add( m_edge, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-	
-	g_pTopGroup->Add( sbSizer58, 0, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
-	
-	wxStaticBoxSizer* g_pEdgeGroup;
-	g_pEdgeGroup = new wxStaticBoxSizer( new wxStaticBox( m_panel2, wxID_ANY, wxT("Edge Properties") ), wxVERTICAL );
-	
-	wxBoxSizer* bSizer324;
-	bSizer324 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text13 = new wxStaticText( m_panel2, ID_TEXT, wxT("Material:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text13->Wrap( 0 );
-	bSizer324->Add( m_text13, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_material2 = new wxTextCtrl( m_panel2, ID_MATERIAL2, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), wxTE_READONLY );
-	bSizer324->Add( m_material2, 1, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_set_material1 = new wxButton( m_panel2, ID_SET_MATERIAL, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_set_material1->SetDefault(); 
-	bSizer324->Add( m_set_material1, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
-	g_pEdgeGroup->Add( bSizer324, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
-	
-	wxBoxSizer* bSizer325;
-	bSizer325 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text14 = new wxStaticText( m_panel2, ID_TEXT, wxT("Facade:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text14->Wrap( 0 );
-	bSizer325->Add( m_text14, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	wxString m_facadeChoices[] = { wxT("ChoiceItem") };
-	int m_facadeNChoices = sizeof( m_facadeChoices ) / sizeof( wxString );
-	m_facade = new wxChoice( m_panel2, ID_FACADE, wxDefaultPosition, wxSize( 100,-1 ), m_facadeNChoices, m_facadeChoices, 0 );
-	m_facade->SetSelection( 0 );
-	bSizer325->Add( m_facade, 1, wxALIGN_CENTER|wxALL, 5 );
-	
-	g_pEdgeGroup->Add( bSizer325, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
-	
-	wxBoxSizer* bSizer326;
-	bSizer326 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text15 = new wxStaticText( m_panel2, ID_TEXT, wxT("Color:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text15->Wrap( 0 );
-	bSizer326->Add( m_text15, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_color2 = new wxStaticBitmap( m_panel2, ID_COLOR2, wxBitmap( wxT("../../TerrainApps/VTBuilder/bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
-	bSizer326->Add( m_color2, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
-	
-	m_set_color1 = new wxButton( m_panel2, ID_SET_COLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_set_color1->SetDefault(); 
-	bSizer326->Add( m_set_color1, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	g_pEdgeGroup->Add( bSizer326, 0, wxALIGN_CENTER_VERTICAL, 5 );
-	
-	wxBoxSizer* bSizer327;
-	bSizer327 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text16 = new wxStaticText( m_panel2, ID_TEXT, wxT("Slope:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text16->Wrap( 0 );
-	bSizer327->Add( m_text16, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_edge_slope = new wxTextCtrl( m_panel2, ID_EDGE_SLOPE, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	bSizer327->Add( m_edge_slope, 0, wxALIGN_CENTER|wxRIGHT|wxBOTTOM, 5 );
-	
-	g_pEdgeGroup->Add( bSizer327, 0, wxALIGN_CENTER_VERTICAL, 5 );
-	
-	m_features = new wxTextCtrl( m_panel2, ID_FEATURES, wxEmptyString, wxDefaultPosition, wxSize( -1,55 ), wxTE_MULTILINE );
-	g_pEdgeGroup->Add( m_features, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
-	
-	wxBoxSizer* bSizer328;
-	bSizer328 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_feat_clear = new wxButton( m_panel2, ID_FEAT_CLEAR, wxT("Clear"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
-	m_feat_clear->SetDefault(); 
-	bSizer328->Add( m_feat_clear, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_feat_wall = new wxButton( m_panel2, ID_FEAT_WALL, wxT("Wall"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
-	m_feat_wall->SetDefault(); 
-	bSizer328->Add( m_feat_wall, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
-	
-	m_feat_window = new wxButton( m_panel2, ID_FEAT_WINDOW, wxT("Window"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
-	m_feat_window->SetDefault(); 
-	bSizer328->Add( m_feat_window, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_feat_door = new wxButton( m_panel2, ID_FEAT_DOOR, wxT("Door"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
-	m_feat_door->SetDefault(); 
-	bSizer328->Add( m_feat_door, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	g_pEdgeGroup->Add( bSizer328, 0, wxALIGN_CENTER, 5 );
-	
-	g_pTopGroup->Add( g_pEdgeGroup, 0, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
-	
-	bSizer77->Add( g_pTopGroup, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
-	wxBoxSizer* bSizer329;
-	bSizer329 = new wxBoxSizer( wxHORIZONTAL );
-	
-	
-	bSizer329->Add( 80, 20, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_ok2 = new wxButton( m_panel2, wxID_OK, wxT("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_ok2->SetDefault(); 
-	bSizer329->Add( m_ok2, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	
-	bSizer329->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_edges1 = new wxButton( m_panel2, ID_EDGES, wxT("Edges <<"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_edges1->SetDefault(); 
-	bSizer329->Add( m_edges1, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer77->Add( bSizer329, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	m_panel2->SetSizer( bSizer77 );
-	m_panel2->Layout();
-	bSizer77->Fit( m_panel2 );
-	bSizer308->Add( m_panel2, 1, wxEXPAND | wxALL, 5 );
+	bSizer308->Add( bSizer317, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	this->SetSizer( bSizer308 );
 	this->Layout();

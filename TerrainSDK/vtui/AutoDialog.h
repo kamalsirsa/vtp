@@ -1,7 +1,7 @@
 //
 // AutoDialog.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -85,15 +85,6 @@ public:
 	wxNumericValidator *AddNumValidator(long id, double *dptr, int digits = -1);
 };
 
-// And forms of the methods which don't require subclassing from AutoDialog
-void AddValidator(wxDialog *dlg, long id, wxString *sptr);
-void AddValidator(wxDialog *dlg, long id, bool *bptr);
-void AddValidator(wxDialog *dlg, long id, int *iptr);
-wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, short *sptr);
-wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, int *iptr);
-wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, float *fptr, int digits = -1);
-wxNumericValidator *AddNumValidator(wxDialog *dlg, long id, double *dptr, int digits = -1);
-
 class AutoPanel : public wxPanel
 {
 public:
@@ -112,14 +103,22 @@ public:
 	wxNumericValidator *AddNumValidator(long id, double *dptr, int digits = -1);
 };
 
-// And forms of the methods which don't require subclassing from AutoPanel
-void AddValidator(wxPanel *pan, long id, wxString *sptr);
-void AddValidator(wxPanel *pan, long id, bool *bptr);
-void AddValidator(wxPanel *pan, long id, int *iptr);
-wxNumericValidator *AddNumValidator(wxPanel *pan, long id, short *sptr);
-wxNumericValidator *AddNumValidator(wxPanel *pan, long id, int *iptr);
-wxNumericValidator *AddNumValidator(wxPanel *pan, long id, float *fptr, int digits = -1);
-wxNumericValidator *AddNumValidator(wxPanel *pan, long id, double *dptr, int digits = -1);
+// And forms of the methods which don't require subclassing from AutoDialog or AutoPanel
+void AddValidator(wxWindow *parent, long id, wxString *sptr);
+void AddValidator(wxWindow *parent, long id, bool *bptr);
+void AddValidator(wxWindow *parent, long id, int *iptr);
+wxNumericValidator *AddNumValidator(wxWindow *parent, long id, short *sptr);
+wxNumericValidator *AddNumValidator(wxWindow *parent, long id, int *iptr);
+wxNumericValidator *AddNumValidator(wxWindow *parent, long id, float *fptr, int digits = -1);
+wxNumericValidator *AddNumValidator(wxWindow *parent, long id, double *dptr, int digits = -1);
 
+// And forms of the methods which take a pointer directly
+void AddValidator(wxWindow *win, wxString *sptr);
+void AddValidator(wxWindow *win, bool *bptr);
+void AddValidator(wxWindow *win, int *iptr);
+wxNumericValidator *AddNumValidator(wxWindow *win, short *sptr);
+wxNumericValidator *AddNumValidator(wxWindow *win, int *iptr);
+wxNumericValidator *AddNumValidator(wxWindow *win, float *fptr, int digits = -1);
+wxNumericValidator *AddNumValidator(wxWindow *win, double *dptr, int digits = -1);
 
 #endif

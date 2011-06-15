@@ -77,7 +77,8 @@ protected:
 	int  m_iEdge;
 	int  m_iStories;
 	float   m_fStoryHeight;
-	wxString	m_strMaterial;
+	wxString	m_strMaterial1;
+	wxString	m_strMaterial2;
 	wxString	m_strEdgeSlopes;
 	wxString	m_strFeatures;
 	wxColour	m_Color;
