@@ -813,7 +813,7 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 			float ey = 10*farp;
 			float ez = center.z;
 			// This ensures that lowest detail is loaded first
-			m_pMiniLoad->updateroi(res, ex, ey, ez, rx, rz, rrad);
+			m_pMiniLoad->updateroi(rrad);
 		}
 	}
 #endif // THREADED

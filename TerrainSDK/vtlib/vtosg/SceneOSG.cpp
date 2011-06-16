@@ -153,15 +153,6 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
 	m_pOsgViewer->addEventHandler(pStatsHandler);
 #endif
 
-	// Of the four OSG threading options, only "SingleThreaded" works.  This is because
-	//  libMini tilesets can't be rendered at queried (getheight) at the same time.  We could
-	//  work around it by putting locks around our usage of libMini, but until then, we
-	//  must be "single" threaded.
-	m_pOsgViewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
-	//m_pOsgViewer->setThreadingModel(osgViewer::Viewer::DrawThreadPerContext);
-	//m_pOsgViewer->setThreadingModel(osgViewer::Viewer::CullDrawThreadPerContext);
-	//m_pOsgViewer->setThreadingModel(osgViewer::Viewer::CullThreadPerCameraDrawThreadPerContext);
-
 	// Kill the event visitor (saves a scenegraph traversal)
 	// This will need to be restored if we need to use FRAME events etc. in the scenegraph
 	m_pOsgViewer->setEventVisitor(NULL);

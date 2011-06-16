@@ -2329,7 +2329,8 @@ bool vtTerrain::CreateStep1()
 		m_pTiledGeom->setName("Tiled Geometry Container");
 		m_pTiledGeom->SetVerticalExag(m_fVerticalExag);
 		m_pTiledGeom->SetVertexTarget(m_Params.GetValueInt(STR_VERTCOUNT));
-		m_pTiledGeom->SetProgressCallback(m_progress_callback);
+		if (vtGetScene()->getViewer()->getThreadingModel() == osgViewer::Viewer::SingleThreaded)
+			m_pTiledGeom->SetProgressCallback(m_progress_callback);
 		m_pTiledGeom->SetCastShadow(false);
 
 		// tile cache size is in MB for the user, but bytes for the class
