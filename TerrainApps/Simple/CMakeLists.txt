@@ -16,6 +16,10 @@ if(OSG_FOUND)
 	target_link_libraries(Simple ${OSG_ALL_LIBRARIES})
 endif (OSG_FOUND)
 
+if (OSGEARTH_FOUND)
+	target_link_libraries(Simple ${OSGEARTH_ALL_LIBRARIES})
+endif(OSGEARTH_FOUND)
+
 if(GDAL_FOUND)
 	target_link_libraries(Simple ${GDAL_LIBRARIES})
 endif (GDAL_FOUND)
@@ -27,7 +31,7 @@ endif(OPENGL_FOUND)
 if(CURL_FOUND)
 	target_link_libraries(Simple ${CURL_LIBRARIES})
 endif(CURL_FOUND)
-	
+
 if(PNG_FOUND)
 	target_link_libraries(Simple ${PNG_LIBRARIES})
 endif(PNG_FOUND)
