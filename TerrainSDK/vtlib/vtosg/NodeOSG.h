@@ -368,7 +368,7 @@ public:
 	vtLOD();
 
 	void SetRanges(float *ranges, int nranges);
-	void SetCenter(FPoint3 &center) { setCenter(v2s(center)); }
+	void SetCenter(const FPoint3 &center) { setCenter(v2s(center)); }
 	void GetCenter(FPoint3 &center) { s2v(getCenter(), center); }
 
 protected:

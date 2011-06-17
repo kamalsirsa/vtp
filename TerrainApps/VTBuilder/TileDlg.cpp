@@ -8,6 +8,10 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "TileDlg.h"
 #include "FileFilters.h"	// for FSTRING_INI
 #include "BuilderView.h"

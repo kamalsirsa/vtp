@@ -25,6 +25,8 @@
 #include "Trees.h"	// for vtSpeciesList3d, vtPlantInstanceArray3d
 #include "vtTin3d.h"
 
+#include <memory>
+
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
 class vtElevationGrid;
@@ -485,7 +487,7 @@ protected:
 	vtImagePtr		m_pImageSource;
 	vtImagePtr		m_pImage;
 	vtOverlappedTiledImage	m_ImageTiles;
-	auto_ptr<ColorMap>		m_pTextureColors;
+	auto_ptr<ColorMap>	m_pTextureColors;
 	bool			m_bTextureInitialized;
 	vtTextureUnitManager m_TextureUnits;
 	int				m_iShadowTextureUnit;

@@ -23,6 +23,7 @@
 #define MAKE_XYZ2(x,y) (float)(x), m_pData[offset((x),(y))], (float)(y)
 
 #ifdef USE_OSGEARTH
+namespace VTP {}
 using namespace VTP;
 #endif
 

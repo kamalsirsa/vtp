@@ -9,9 +9,18 @@
 #include "vtdata/vtString.h"
 #include "vtdata/MathTypes.h"
 
+//dummy xpm bitmaps
+static const char *dummy_32x18_xpm = "";
+
 bool IsGUIApp();
 
 class vtDIB;
+class wxBitmap;
+class wxColour;
+class wxStaticBitmap;
+class wxBitmapButton;
+class wxComboBox;
+class wxChoice;
 
 //////
 

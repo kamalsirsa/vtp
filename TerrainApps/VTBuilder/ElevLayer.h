@@ -9,7 +9,8 @@
 #define ELEVLAYER_H
 
 #include "wx/image.h"
-#include "vtdata/Heightfield.h"
+#include "vtdata/ElevationGrid.h"
+#include "vtdata/HeightField.h"
 #include "Layer.h"
 #include "ElevDrawOptions.h"
 #include "TilingOptions.h"
